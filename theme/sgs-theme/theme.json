@@ -4,16 +4,18 @@
 	"settings": {
 		"color": {
 			"palette": [
-				{ "slug": "primary", "color": "#1A3A5C", "name": "Primary" },
-				{ "slug": "primary-dark", "color": "#0F2640", "name": "Primary Dark" },
-				{ "slug": "accent", "color": "#D4A843", "name": "Accent" },
-				{ "slug": "accent-light", "color": "#F5E6C4", "name": "Accent Light" },
+				{ "slug": "primary", "color": "#0F7E80", "name": "Primary" },
+				{ "slug": "primary-dark", "color": "#0A5B5D", "name": "Primary Dark" },
+				{ "slug": "accent", "color": "#F87A1F", "name": "Accent" },
+				{ "slug": "accent-light", "color": "#FEE8D4", "name": "Accent Light" },
 				{ "slug": "success", "color": "#2E7D4F", "name": "Success" },
 				{ "slug": "whatsapp", "color": "#25D366", "name": "WhatsApp" },
 				{ "slug": "surface", "color": "#FFFFFF", "name": "Surface" },
-				{ "slug": "surface-alt", "color": "#F8F7F4", "name": "Surface Alt" },
+				{ "slug": "surface-alt", "color": "#F5F7F7", "name": "Surface Alt" },
 				{ "slug": "text", "color": "#1E1E1E", "name": "Text" },
-				{ "slug": "text-muted", "color": "#555555", "name": "Text Muted" }
+				{ "slug": "text-muted", "color": "#555555", "name": "Text Muted" },
+				{ "slug": "text-inverse", "color": "#94B0B1", "name": "Text Inverse" },
+				{ "slug": "border-subtle", "color": "#0D5557", "name": "Border Subtle" }
 			],
 			"gradients": [],
 			"defaultPalette": false,
@@ -112,7 +114,7 @@
 				{
 					"name": "Glow",
 					"slug": "glow",
-					"shadow": "0 0 20px rgba(212,168,67,0.3)"
+					"shadow": "0 0 20px rgba(248,122,31,0.3)"
 				}
 			]
 		},
@@ -157,6 +159,14 @@
 				":hover": {
 					"color": {
 						"text": "var:preset|color|primary-dark"
+					}
+				},
+				":focus": {
+					"color": {
+						"text": "var:preset|color|primary-dark"
+					},
+					"typography": {
+						"textDecoration": "underline"
 					}
 				}
 			},
@@ -226,8 +236,16 @@
 				},
 				":hover": {
 					"color": {
-						"background": "var:preset|color|accent",
-						"text": "var:preset|color|primary-dark"
+						"background": "var:preset|color|primary-dark",
+						"text": "var:preset|color|accent"
+					}
+				},
+				":focus": {
+					"outline": {
+						"color": "var:preset|color|accent",
+						"width": "2px",
+						"offset": "2px",
+						"style": "solid"
 					}
 				}
 			}
@@ -310,6 +328,13 @@
 			"area": "footer",
 			"name": "footer-minimal",
 			"title": "Footer (Minimal)"
+		}
+	],
+	"customTemplates": [
+		{
+			"name": "front-page",
+			"title": "Front Page",
+			"postTypes": ["page"]
 		}
 	]
 }

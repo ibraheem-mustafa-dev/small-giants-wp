@@ -39,14 +39,15 @@ Future clients (Dream Wedding, Workwear Now, etc.) get their own folder when onb
 
 ## Design Tokens
 
-All components read from `theme.json` design tokens. Default values (Indus Foods):
+All components read from `theme.json` design tokens. Defaults are SGS branding (clients override via style variations):
 
 ```
---primary: #1A3A5C (navy)       --accent: #D4A843 (gold)
---primary-dark: #0F2640          --accent-light: #F5E6C4
+--primary: #0F7E80 (teal)        --accent: #F87A1F (orange)
+--primary-dark: #0A5B5D          --accent-light: #FEE8D4
 --success: #2E7D4F (green)       --whatsapp: #25D366
---surface: #FFFFFF               --surface-alt: #F8F7F4
+--surface: #FFFFFF               --surface-alt: #F5F7F7
 --text: #1E1E1E                  --text-muted: #555555
+--text-inverse: #94B0B1          --border-subtle: #0D5557
 ```
 
 Fonts: DM Serif Display (headings) + DM Sans (body) — self-hosted WOFF2, no CDN.
