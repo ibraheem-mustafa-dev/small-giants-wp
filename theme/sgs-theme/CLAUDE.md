@@ -40,7 +40,7 @@ sgs-theme/
 
 Clients override via style variations in `styles/`. Indus Foods uses navy (#1A3A5C) + gold (#D4A843).
 
-Fonts: DM Serif Display (headings) + DM Sans (body) — WOFF2, `font-display: swap`.
+Fonts: Inter variable (body + headings, 48KB, weights 100-900) — WOFF2, `font-display: swap`. DM Serif Display and DM Sans kept as "Display" and "DM Sans" family options for client style variations.
 
 ## Per-Site Customisation
 

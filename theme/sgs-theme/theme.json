@@ -23,12 +23,43 @@
 			"custom": false
 		},
 		"typography": {
-			"fluid": true,
+			"fluid": {
+				"minViewportWidth": "375px",
+				"maxViewportWidth": "1200px"
+			},
 			"fontFamilies": [
 				{
-					"fontFamily": "'DM Serif Display', serif",
+					"fontFamily": "Inter, system-ui, -apple-system, sans-serif",
+					"slug": "body",
+					"name": "Body",
+					"fontFace": [
+						{
+							"fontFamily": "Inter",
+							"fontWeight": "100 900",
+							"fontStyle": "normal",
+							"fontDisplay": "swap",
+							"src": ["file:./assets/fonts/inter-variable-latin.woff2"]
+						}
+					]
+				},
+				{
+					"fontFamily": "Inter, system-ui, -apple-system, sans-serif",
 					"slug": "heading",
 					"name": "Heading",
+					"fontFace": [
+						{
+							"fontFamily": "Inter",
+							"fontWeight": "100 900",
+							"fontStyle": "normal",
+							"fontDisplay": "swap",
+							"src": ["file:./assets/fonts/inter-variable-latin.woff2"]
+						}
+					]
+				},
+				{
+					"fontFamily": "'DM Serif Display', Georgia, serif",
+					"slug": "display",
+					"name": "Display",
 					"fontFace": [
 						{
 							"fontFamily": "DM Serif Display",
@@ -41,8 +72,8 @@
 				},
 				{
 					"fontFamily": "'DM Sans', sans-serif",
-					"slug": "body",
-					"name": "Body",
+					"slug": "dm-sans",
+					"name": "DM Sans",
 					"fontFace": [
 						{
 							"fontFamily": "DM Sans",
@@ -55,18 +86,55 @@
 				}
 			],
 			"fontSizes": [
-				{ "slug": "small", "size": "0.875rem", "name": "Small" },
-				{ "slug": "medium", "size": "1rem", "name": "Medium" },
-				{ "slug": "large", "size": "1.25rem", "name": "Large" },
-				{ "slug": "x-large", "size": "1.75rem", "name": "XL" },
-				{ "slug": "xx-large", "size": "2.5rem", "name": "XXL" },
+				{
+					"slug": "small",
+					"size": "0.875rem",
+					"name": "Small",
+					"fluid": {
+						"min": "0.8125rem",
+						"max": "0.875rem"
+					}
+				},
+				{
+					"slug": "medium",
+					"size": "1rem",
+					"name": "Medium",
+					"fluid": false
+				},
+				{
+					"slug": "large",
+					"size": "1.25rem",
+					"name": "Large",
+					"fluid": {
+						"min": "1.0625rem",
+						"max": "1.25rem"
+					}
+				},
+				{
+					"slug": "x-large",
+					"size": "1.5rem",
+					"name": "XL",
+					"fluid": {
+						"min": "1.25rem",
+						"max": "1.5rem"
+					}
+				},
+				{
+					"slug": "xx-large",
+					"size": "2.25rem",
+					"name": "XXL",
+					"fluid": {
+						"min": "1.625rem",
+						"max": "2.25rem"
+					}
+				},
 				{
 					"slug": "hero",
-					"size": "3.5rem",
+					"size": "3.25rem",
 					"name": "Hero",
 					"fluid": {
 						"min": "2rem",
-						"max": "3.5rem"
+						"max": "3.25rem"
 					}
 				}
 			],
@@ -173,7 +241,7 @@
 			"heading": {
 				"typography": {
 					"fontFamily": "var:preset|font-family|heading",
-					"fontWeight": "400",
+					"fontWeight": "700",
 					"lineHeight": "1.2"
 				},
 				"color": {

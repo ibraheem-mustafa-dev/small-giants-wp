@@ -50,7 +50,7 @@ All components read from `theme.json` design tokens. Defaults are SGS branding (
 --text-inverse: #C0D5D6          --border-subtle: #0D5557
 ```
 
-Fonts: DM Serif Display (headings) + DM Sans (body) — self-hosted WOFF2, no CDN.
+Fonts: Inter variable (body + headings, 48KB) — self-hosted WOFF2, no CDN. DM Serif Display + DM Sans available for client style variations.
 
 ## Development
 

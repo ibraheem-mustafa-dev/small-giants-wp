@@ -30,8 +30,7 @@ add_action( 'after_setup_theme', __NAMESPACE__ . '\setup' );
  */
 function preload_fonts(): void {
 	$fonts = [
-		'dm-serif-display-v15-latin-regular.woff2',
-		'dm-sans-v15-latin-regular.woff2',
+		'inter-variable-latin.woff2',
 	];
 
 	foreach ( $fonts as $font ) {
