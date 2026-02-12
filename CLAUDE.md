@@ -47,7 +47,7 @@ All components read from `theme.json` design tokens. Defaults are SGS branding (
 --success: #2E7D4F (green)       --whatsapp: #25D366
 --surface: #FFFFFF               --surface-alt: #F5F7F7
 --text: #1E1E1E                  --text-muted: #555555
---text-inverse: #94B0B1          --border-subtle: #0D5557
+--text-inverse: #C0D5D6          --border-subtle: #0D5557
 ```
 
 Fonts: DM Serif Display (headings) + DM Sans (body) — self-hosted WOFF2, no CDN.

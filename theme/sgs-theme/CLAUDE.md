@@ -27,15 +27,18 @@ sgs-theme/
 └── screenshot.png
 ```
 
-## Design Tokens (Defaults — Indus Foods)
+## Design Tokens (Defaults — SGS Branding)
 
 ```
---primary: #1A3A5C (navy)         --accent: #D4A843 (gold)
---primary-dark: #0F2640            --accent-light: #F5E6C4
+--primary: #0F7E80 (teal)          --accent: #F87A1F (orange)
+--primary-dark: #0A5B5D            --accent-light: #FEE8D4
 --success: #2E7D4F (green)         --whatsapp: #25D366
---surface: #FFFFFF                 --surface-alt: #F8F7F4
+--surface: #FFFFFF                 --surface-alt: #F5F7F7
 --text: #1E1E1E                    --text-muted: #555555
+--text-inverse: #C0D5D6            --border-subtle: #0D5557
 ```
+
+Clients override via style variations in `styles/`. Indus Foods uses navy (#1A3A5C) + gold (#D4A843).
 
 Fonts: DM Serif Display (headings) + DM Sans (body) — WOFF2, `font-display: swap`.
 

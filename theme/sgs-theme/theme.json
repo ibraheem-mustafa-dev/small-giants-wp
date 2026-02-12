@@ -14,7 +14,7 @@
 				{ "slug": "surface-alt", "color": "#F5F7F7", "name": "Surface Alt" },
 				{ "slug": "text", "color": "#1E1E1E", "name": "Text" },
 				{ "slug": "text-muted", "color": "#555555", "name": "Text Muted" },
-				{ "slug": "text-inverse", "color": "#94B0B1", "name": "Text Inverse" },
+				{ "slug": "text-inverse", "color": "#C0D5D6", "name": "Text Inverse" },
 				{ "slug": "border-subtle", "color": "#0D5557", "name": "Border Subtle" }
 			],
 			"gradients": [],
@@ -217,7 +217,7 @@
 			"button": {
 				"color": {
 					"background": "var:preset|color|accent",
-					"text": "var:preset|color|primary-dark"
+					"text": "var:preset|color|text"
 				},
 				"typography": {
 					"fontWeight": "700",
@@ -237,7 +237,7 @@
 				":hover": {
 					"color": {
 						"background": "var:preset|color|primary-dark",
-						"text": "var:preset|color|accent"
+						"text": "var:preset|color|surface"
 					}
 				},
 				":focus": {

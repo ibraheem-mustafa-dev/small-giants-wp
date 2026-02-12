@@ -81,6 +81,8 @@ sgs-theme/
 
 ### Design Tokens (Settings)
 
+> **Note:** Defaults are SGS branding. Clients override via style variations (e.g., Indus Foods uses navy #1A3A5C + gold #D4A843).
+
 ```jsonc
 {
   "$schema": "https://schemas.wp.org/trunk/theme.json",
@@ -88,16 +90,18 @@ sgs-theme/
   "settings": {
     "color": {
       "palette": [
-        { "slug": "primary",    "color": "#1A3A5C", "name": "Primary" },
-        { "slug": "primary-dark","color": "#0F2640", "name": "Primary Dark" },
-        { "slug": "accent",     "color": "#D4A843", "name": "Accent" },
-        { "slug": "accent-light","color": "#F5E6C4", "name": "Accent Light" },
-        { "slug": "success",    "color": "#2E7D4F", "name": "Success" },
-        { "slug": "whatsapp",   "color": "#25D366", "name": "WhatsApp" },
-        { "slug": "surface",    "color": "#FFFFFF", "name": "Surface" },
-        { "slug": "surface-alt", "color": "#F8F7F4", "name": "Surface Alt" },
-        { "slug": "text",       "color": "#1E1E1E", "name": "Text" },
-        { "slug": "text-muted", "color": "#555555", "name": "Text Muted" }
+        { "slug": "primary",       "color": "#0F7E80", "name": "Primary" },
+        { "slug": "primary-dark",  "color": "#0A5B5D", "name": "Primary Dark" },
+        { "slug": "accent",        "color": "#F87A1F", "name": "Accent" },
+        { "slug": "accent-light",  "color": "#FEE8D4", "name": "Accent Light" },
+        { "slug": "success",       "color": "#2E7D4F", "name": "Success" },
+        { "slug": "whatsapp",      "color": "#25D366", "name": "WhatsApp" },
+        { "slug": "surface",       "color": "#FFFFFF", "name": "Surface" },
+        { "slug": "surface-alt",   "color": "#F5F7F7", "name": "Surface Alt" },
+        { "slug": "text",          "color": "#1E1E1E", "name": "Text" },
+        { "slug": "text-muted",    "color": "#555555", "name": "Text Muted" },
+        { "slug": "text-inverse",  "color": "#C0D5D6", "name": "Text Inverse" },
+        { "slug": "border-subtle", "color": "#0D5557", "name": "Border Subtle" }
       ],
       "gradients": [],
       "defaultPalette": false,
