@@ -1,0 +1,163 @@
+/**
+ * SGS Theme — Core Block Style Overrides
+ *
+ * Styles WordPress core blocks to match the SGS design system.
+ * Uses only theme.json CSS custom properties — no hardcoded colours.
+ *
+ * @package SGS\Theme
+ */
+
+/* ─── BUTTONS ─── */
+
+.wp-block-button__link {
+	border-radius: var(--wp--custom--border-radius--medium);
+	font-weight: 700;
+	transition: transform var(--wp--custom--transition--fast),
+	            box-shadow var(--wp--custom--transition--fast);
+}
+
+.wp-block-button__link:hover {
+	transform: translateY(-2px);
+	box-shadow: var(--wp--preset--shadow--md);
+}
+
+.wp-block-button__link:active {
+	transform: translateY(0);
+}
+
+/* Outline variant */
+.wp-block-button.is-style-outline .wp-block-button__link {
+	border-width: 2px;
+}
+
+/* ─── NAVIGATION — Megamenu-ready ─── */
+
+/* Top-level links */
+.wp-block-navigation .wp-block-navigation-item__content {
+	transition: color var(--wp--custom--transition--fast),
+	            opacity var(--wp--custom--transition--fast);
+}
+
+/* Submenu container — megamenu foundation */
+.wp-block-navigation .has-child .wp-block-navigation__submenu-container {
+	background: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--surface-alt);
+	border-radius: var(--wp--custom--border-radius--medium);
+	box-shadow: var(--wp--preset--shadow--lg);
+	padding: var(--wp--preset--spacing--30);
+	min-width: 220px;
+}
+
+/* Submenu links */
+.wp-block-navigation .wp-block-navigation__submenu-container .wp-block-navigation-item__content {
+	color: var(--wp--preset--color--text);
+	padding: var(--wp--preset--spacing--10) var(--wp--preset--spacing--20);
+	border-radius: var(--wp--custom--border-radius--small);
+}
+
+.wp-block-navigation .wp-block-navigation__submenu-container .wp-block-navigation-item__content:hover {
+	color: var(--wp--preset--color--primary);
+	background: var(--wp--preset--color--surface-alt);
+}
+
+/* Megamenu — wide submenu for items with .sgs-megamenu class */
+.wp-block-navigation .has-child.sgs-megamenu > .wp-block-navigation__submenu-container {
+	left: 0;
+	right: 0;
+	width: 100vw;
+	max-width: 1200px;
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: var(--wp--preset--spacing--30);
+	padding: var(--wp--preset--spacing--40);
+}
+
+/* Mobile overlay menu */
+.wp-block-navigation__responsive-container.is-menu-open {
+	padding: var(--wp--preset--spacing--50) var(--wp--preset--spacing--40);
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation-item__content {
+	font-size: var(--wp--preset--font-size--large);
+	padding: var(--wp--preset--spacing--20) 0;
+}
+
+/* ─── COLUMNS ─── */
+
+@media (max-width: 781px) {
+	.wp-block-columns {
+		gap: var(--wp--preset--spacing--30);
+	}
+}
+
+/* ─── HEADINGS ─── */
+
+.wp-block-heading {
+	letter-spacing: -0.01em;
+}
+
+/* ─── IMAGES ─── */
+
+.wp-block-image img {
+	border-radius: var(--wp--custom--border-radius--medium);
+}
+
+.wp-block-image.is-style-rounded img {
+	border-radius: var(--wp--custom--border-radius--pill);
+}
+
+/* ─── SEPARATOR ─── */
+
+.wp-block-separator:not(.is-style-dots) {
+	border-bottom-width: 2px;
+}
+
+/* ─── QUOTE & PULLQUOTE ─── */
+
+.wp-block-quote {
+	padding-left: var(--wp--preset--spacing--40);
+}
+
+.wp-block-pullquote {
+	padding: var(--wp--preset--spacing--40);
+}
+
+.wp-block-pullquote cite {
+	font-style: normal;
+	font-size: var(--wp--preset--font-size--small);
+	color: var(--wp--preset--color--text-muted);
+}
+
+/* ─── LIST ─── */
+
+/* Footer link lists — no bullets, no padding */
+.sgs-footer-links {
+	list-style: none;
+}
+
+.sgs-footer-links a {
+	text-decoration: none;
+	transition: color var(--wp--custom--transition--fast);
+}
+
+.sgs-footer-links a:hover {
+	color: var(--wp--preset--color--accent);
+}
+
+/* ─── SITE TITLE ─── */
+
+.wp-block-site-title a {
+	text-decoration: none;
+}
+
+/* ─── HEADER CTA ─── */
+
+.sgs-header-cta .wp-block-button__link {
+	transition: transform var(--wp--custom--transition--fast),
+	            box-shadow var(--wp--custom--transition--fast);
+}
+
+.sgs-header-cta .wp-block-button__link:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(212, 168, 67, 0.4);
+}
