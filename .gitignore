@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Build output
+plugins/sgs-blocks/build/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+
+# WordPress
+*.log
+wp-content/uploads/
