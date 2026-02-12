@@ -1,0 +1,17 @@
+Here's the Food Service page rebuilt with real images throughout. The big differences you'll see:
+What now has real images:
+
+Hero — a chef cooking in a commercial kitchen (with flames, looks dynamic)
+8 product tiles — each has a relevant food photo (spices in bowls, rice grains, lentils, oils, frozen food, tinned goods, cashew nuts, cleaning products)
+Delivery section — warehouse/logistics image instead of an empty box
+New "Our Heritage" strip — added between benefits and products, with two image slots (warehouse + Amir portrait) flanking the family story copy
+
+What I've labelled "📸 Replace with Indus Foods photography":
+Every placeholder image has a small tag in the corner flagging it as a placeholder. This makes it crystal clear to Amir which images need swapping for real ones — he can't miss them.
+What I deliberately kept as non-images:
+
+Testimonial avatars — initials are better than fake stock headshots. Real customer photos can be swapped in later
+Certification logos — these need the actual logo files from BRC, Halal bodies, etc. Text placeholders until then
+Brand logos — Sanam, Shaan, Falak etc. shown as text until real logo files are provided
+
+I didn't rebuild the trade application page with images because it's 90% form UI — the only image area is the small product tiles in Step 3, and those work fine as the interactive emoji tiles since users are tapping to select, not browsing to be impressed. The food service page is where the visual heavy lifting happens.

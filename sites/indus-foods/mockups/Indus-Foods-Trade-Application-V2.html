@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apply for a Trade Account — Indus Foods Ltd</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1A3A5C;
+    --navy-dark: #0F2640;
+    --gold: #D4A843;
+    --gold-light: #F5E6C4;
+    --white: #FFFFFF;
+    --off-white: #F8F7F4;
+    --light-grey: #E8E6E1;
+    --text-dark: #1E1E1E;
+    --text-mid: #555555;
+    --green: #2E7D4F;
+    --green-light: #E8F5EE;
+    --whatsapp: #25D366;
+    --red: #DC3545;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text-dark);
+    background: var(--off-white);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ─── HEADER ─── */
+  .site-header {
+    background: var(--navy);
+    padding: 0 48px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 80px; position: sticky; top: 0; z-index: 100;
+  }
+  .logo {
+    font-family: 'DM Serif Display', serif; color: var(--white);
+    font-size: 1.6rem; letter-spacing: 0.02em;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .logo-icon {
+    width: 40px; height: 40px; background: var(--gold); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; color: var(--navy-dark); font-size: 1.1rem;
+  }
+  .nav { display: flex; gap: 32px; align-items: center; }
+  .nav a {
+    color: rgba(255,255,255,0.8); text-decoration: none;
+    font-size: 0.9rem; font-weight: 500; transition: color 0.2s;
+  }
+  .nav a:hover { color: var(--white); }
+  .nav-cta {
+    background: var(--gold) !important; color: var(--navy-dark) !important;
+    padding: 10px 22px; border-radius: 8px; font-weight: 600 !important;
+  }
+
+  /* ─── PAGE HERO ─── */
+  .page-hero {
+    background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 60%, #2A5A8C 100%);
+    padding: 60px 48px 48px;
+    position: relative; overflow: hidden;
+  }
+  .page-hero::before {
+    content: ''; position: absolute; top: -100%; right: -10%;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(212,168,67,0.06) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .page-hero-inner {
+    max-width: 1200px; margin: 0 auto; position: relative; z-index: 2;
+  }
+  .page-hero h1 {
+    font-family: 'DM Serif Display', serif; color: var(--white);
+    font-size: 2.6rem; margin-bottom: 14px; line-height: 1.2;
+  }
+  .page-hero h1 span { color: var(--gold); }
+  .page-hero p {
+    color: rgba(255,255,255,0.65); font-size: 1.05rem;
+    line-height: 1.7; max-width: 640px;
+  }
+  .hero-badges {
+    display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap;
+  }
+  .hero-badge-item {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 8px 14px; border-radius: 8px;
+    color: rgba(255,255,255,0.7); font-size: 0.8rem; font-weight: 600;
+  }
+  .hero-badge-item .icon { font-size: 1rem; }
+
+  /* ─── MAIN LAYOUT ─── */
+  .main-layout {
+    max-width: 1200px; margin: 0 auto; padding: 48px;
+    display: grid; grid-template-columns: 1fr 360px;
+    gap: 40px; align-items: start;
+  }
+
+  /* ─── BENEFITS BAR ─── */
+  .benefits-bar {
+    background: var(--white); border: 1px solid var(--light-grey);
+    border-radius: 16px; padding: 28px 32px; margin-bottom: 32px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+  }
+  .benefit-item { text-align: center; padding: 8px; }
+  .benefit-item .icon { font-size: 1.6rem; margin-bottom: 8px; display: block; }
+  .benefit-item h4 { font-size: 0.82rem; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+  .benefit-item p { font-size: 0.75rem; color: var(--text-mid); line-height: 1.4; }
+
+  /* ─── FORM CARD ─── */
+  .form-card {
+    background: var(--white); border: 1px solid var(--light-grey);
+    border-radius: 20px; overflow: hidden;
+    box-shadow: 0 4px 24px rgba(26,58,92,0.06);
+  }
+
+  /* Progress Bar */
+  .progress-bar {
+    background: var(--off-white); padding: 24px 32px;
+    border-bottom: 1px solid var(--light-grey);
+    display: flex; align-items: center; gap: 0;
+  }
+  .progress-step {
+    display: flex; align-items: center; gap: 10px; flex: 1;
+    position: relative;
+  }
+  .progress-step:not(:last-child)::after {
+    content: ''; flex: 1; height: 2px; background: var(--light-grey); margin-left: 10px;
+  }
+  .progress-step.completed:not(:last-child)::after { background: var(--green); }
+  .progress-step.active:not(:last-child)::after {
+    background: linear-gradient(to right, var(--gold) 50%, var(--light-grey) 50%);
+  }
+  .step-dot {
+    width: 36px; height: 36px; border-radius: 50%;
+    border: 2px solid var(--light-grey);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem; font-weight: 700; color: var(--text-mid);
+    background: var(--white); flex-shrink: 0; transition: all 0.3s;
+  }
+  .progress-step.active .step-dot {
+    border-color: var(--gold); background: var(--gold); color: var(--navy-dark);
+  }
+  .progress-step.completed .step-dot {
+    border-color: var(--green); background: var(--green); color: var(--white);
+  }
+  .step-label { font-size: 0.75rem; font-weight: 600; color: var(--text-mid); white-space: nowrap; }
+  .progress-step.active .step-label { color: var(--navy); }
+  .progress-step.completed .step-label { color: var(--green); }
+
+  /* Form Content */
+  .form-content { padding: 36px 32px; }
+  .form-step-header { margin-bottom: 28px; }
+  .form-step-header h2 {
+    font-family: 'DM Serif Display', serif; font-size: 1.5rem;
+    color: var(--navy); margin-bottom: 6px;
+  }
+  .form-step-header p { font-size: 0.88rem; color: var(--text-mid); line-height: 1.5; }
+
+  /* Form Fields */
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
+  .form-row.full { grid-template-columns: 1fr; }
+  .form-group { display: flex; flex-direction: column; }
+  .form-group label {
+    font-size: 0.82rem; font-weight: 600; color: var(--text-dark); margin-bottom: 6px;
+  }
+  .form-group label .optional { font-weight: 400; color: var(--text-mid); }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 14px 16px; border: 1.5px solid var(--light-grey);
+    border-radius: 10px; font-size: 0.9rem;
+    font-family: 'DM Sans', sans-serif; color: var(--text-dark);
+    background: var(--white); transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none; appearance: none;
+  }
+  .form-group textarea { resize: vertical; min-height: 80px; }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    outline: none; border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(212,168,67,0.15);
+  }
+  .form-group input::placeholder, .form-group textarea::placeholder { color: #ACACAC; }
+  .form-group select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 14px center; padding-right: 40px;
+  }
+
+  /* Sole trader hint */
+  .field-hint {
+    font-size: 0.75rem; color: var(--text-mid); margin-top: 4px;
+    line-height: 1.4; font-style: italic;
+  }
+
+  /* Radio toggle */
+  .radio-toggle {
+    display: flex; gap: 12px; margin-bottom: 18px;
+  }
+  .radio-option {
+    flex: 1; background: var(--off-white);
+    border: 2px solid var(--light-grey); border-radius: 12px;
+    padding: 16px 18px; cursor: pointer; transition: all 0.2s;
+    text-align: center;
+  }
+  .radio-option:hover { border-color: var(--gold); }
+  .radio-option.selected {
+    border-color: var(--gold); background: rgba(212,168,67,0.06);
+    box-shadow: 0 0 0 2px rgba(212,168,67,0.15);
+  }
+  .radio-option h4 { font-size: 0.88rem; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+  .radio-option p { font-size: 0.75rem; color: var(--text-mid); line-height: 1.4; }
+
+  /* Visual Tiles */
+  .visual-tiles-label {
+    font-size: 0.82rem; font-weight: 600; color: var(--text-dark);
+    margin-bottom: 12px; display: block;
+  }
+  .visual-tiles {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 12px; margin-bottom: 18px;
+  }
+  .visual-tile {
+    background: var(--off-white); border: 2px solid var(--light-grey);
+    border-radius: 12px; padding: 16px 10px; text-align: center;
+    cursor: pointer; transition: all 0.2s; position: relative;
+  }
+  .visual-tile:hover { border-color: var(--gold); background: rgba(212,168,67,0.04); }
+  .visual-tile.selected {
+    border-color: var(--gold); background: rgba(212,168,67,0.08);
+    box-shadow: 0 0 0 2px rgba(212,168,67,0.2);
+  }
+  .visual-tile.selected::after {
+    content: '✓'; position: absolute; top: 6px; right: 8px;
+    width: 20px; height: 20px; background: var(--gold);
+    color: var(--navy-dark); border-radius: 50%;
+    font-size: 0.65rem; display: flex; align-items: center;
+    justify-content: center; font-weight: 700;
+  }
+  .visual-tile .tile-icon { font-size: 1.8rem; margin-bottom: 6px; display: block; }
+  .visual-tile .tile-label { font-size: 0.72rem; font-weight: 600; color: var(--navy); }
+
+  /* Form Buttons */
+  .form-actions {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--light-grey);
+  }
+  .btn-back {
+    background: none; border: none; color: var(--text-mid);
+    font-size: 0.9rem; font-weight: 600; cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .btn-back:hover { color: var(--navy); }
+  .btn-next {
+    background: var(--gold); color: var(--navy-dark); border: none;
+    padding: 14px 32px; border-radius: 10px; font-weight: 700;
+    font-size: 0.95rem; cursor: pointer; font-family: 'DM Sans', sans-serif;
+    display: flex; align-items: center; gap: 8px; transition: all 0.25s;
+  }
+  .btn-next:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(212,168,67,0.35); }
+  .btn-submit {
+    background: var(--green); color: var(--white); border: none;
+    padding: 16px 36px; border-radius: 10px; font-weight: 700;
+    font-size: 1rem; cursor: pointer; font-family: 'DM Sans', sans-serif;
+    display: flex; align-items: center; gap: 8px; transition: all 0.25s;
+  }
+  .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(46,125,79,0.35); }
+
+  /* WhatsApp help strip inside form */
+  .form-wa-help {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--green-light); border: 1px solid #C8E6D4;
+    border-radius: 10px; padding: 14px 18px; margin-top: 20px;
+  }
+  .form-wa-help .icon { font-size: 1.2rem; flex-shrink: 0; }
+  .form-wa-help p { font-size: 0.8rem; color: var(--text-mid); line-height: 1.4; }
+  .form-wa-help a { color: var(--green); font-weight: 700; text-decoration: none; }
+  .form-wa-help a:hover { text-decoration: underline; }
+
+  /* ─── SIDEBAR ─── */
+  .sidebar { position: sticky; top: 112px; }
+  .sidebar-card {
+    background: var(--white); border: 1px solid var(--light-grey);
+    border-radius: 16px; padding: 28px; margin-bottom: 20px;
+  }
+  .sidebar-card h3 {
+    font-family: 'DM Serif Display', serif; font-size: 1.15rem;
+    color: var(--navy); margin-bottom: 16px;
+  }
+  .sidebar-checklist { list-style: none; }
+  .sidebar-checklist li {
+    display: flex; align-items: flex-start; gap: 10px; margin-bottom: 14px;
+    font-size: 0.85rem; color: var(--text-mid); line-height: 1.5;
+  }
+  .sidebar-checklist .check { color: var(--green); font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+
+  .sidebar-social {
+    background: linear-gradient(135deg, var(--navy-dark), var(--navy));
+    border-radius: 16px; padding: 28px; text-align: center; margin-bottom: 20px;
+  }
+  .sidebar-social .big-number {
+    font-family: 'DM Serif Display', serif; font-size: 2.8rem;
+    color: var(--gold); line-height: 1; margin-bottom: 6px;
+  }
+  .sidebar-social .big-label { font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-bottom: 16px; }
+  .sidebar-social .divider { height: 1px; background: rgba(255,255,255,0.1); margin: 16px 0; }
+  .sidebar-social .mini-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .sidebar-social .mini-stat .num {
+    font-family: 'DM Serif Display', serif; font-size: 1.3rem;
+    color: var(--white); line-height: 1;
+  }
+  .sidebar-social .mini-stat .lbl { font-size: 0.7rem; color: rgba(255,255,255,0.45); margin-top: 4px; }
+
+  .sidebar-whatsapp {
+    background: var(--green-light); border: 1px solid #C8E6D4;
+    border-radius: 16px; padding: 24px; text-align: center;
+  }
+  .sidebar-whatsapp .wa-icon { font-size: 1.8rem; margin-bottom: 8px; display: block; }
+  .sidebar-whatsapp h4 { font-size: 0.92rem; font-weight: 700; color: var(--text-dark); margin-bottom: 6px; }
+  .sidebar-whatsapp p { font-size: 0.82rem; color: var(--text-mid); line-height: 1.5; margin-bottom: 14px; }
+  .btn-wa {
+    background: var(--whatsapp); color: var(--white); border: none;
+    padding: 12px 24px; border-radius: 10px; font-weight: 700;
+    font-size: 0.85rem; cursor: pointer; font-family: 'DM Sans', sans-serif;
+    display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;
+  }
+  .btn-wa:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(37,211,102,0.3); }
+
+  .certs-inline { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
+  .cert-badge {
+    background: var(--off-white); border: 1px solid var(--light-grey);
+    border-radius: 6px; padding: 6px 12px;
+    font-size: 0.68rem; color: var(--text-mid); font-weight: 600;
+  }
+
+  /* ─── REVIEW STEP ─── */
+  .review-section {
+    background: var(--off-white); border-radius: 12px;
+    padding: 20px 24px; margin-bottom: 16px;
+  }
+  .review-section-header {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
+  }
+  .review-section-header h4 { font-size: 0.88rem; font-weight: 700; color: var(--navy); }
+  .review-edit {
+    font-size: 0.78rem; color: var(--gold); font-weight: 600;
+    cursor: pointer; border: none; background: none;
+    font-family: 'DM Sans', sans-serif; text-decoration: underline;
+  }
+  .review-row {
+    display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.84rem;
+  }
+  .review-label { color: var(--text-mid); }
+  .review-value { color: var(--text-dark); font-weight: 500; text-align: right; }
+
+  .consent-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 14px; }
+  .consent-row input[type="checkbox"] {
+    margin-top: 3px; accent-color: var(--navy); width: 18px; height: 18px; flex-shrink: 0;
+  }
+  .consent-row label { font-size: 0.84rem; color: var(--text-mid); line-height: 1.5; }
+  .consent-row label a { color: var(--navy); }
+
+  /* File upload area */
+  .file-upload-area {
+    border: 2px dashed var(--light-grey); border-radius: 12px;
+    padding: 24px; text-align: center; margin-top: 8px;
+    transition: all 0.2s; cursor: pointer;
+  }
+  .file-upload-area:hover { border-color: var(--gold); background: rgba(212,168,67,0.03); }
+  .file-upload-area .icon { font-size: 1.4rem; margin-bottom: 6px; display: block; }
+  .file-upload-area p { font-size: 0.82rem; color: var(--text-mid); line-height: 1.5; }
+  .file-upload-area .formats { font-size: 0.72rem; color: #ACACAC; margin-top: 4px; }
+
+  /* ─── VIEW TABS ─── */
+  .view-tabs {
+    display: flex; gap: 0; max-width: 1200px;
+    margin: 0 auto; padding: 0 48px; margin-top: -1px;
+  }
+  .view-tab {
+    padding: 14px 28px; font-size: 0.85rem; font-weight: 600;
+    color: var(--text-mid); background: rgba(255,255,255,0.05);
+    border: 1px solid var(--light-grey); border-bottom: none;
+    border-radius: 12px 12px 0 0; cursor: pointer; transition: all 0.2s;
+  }
+  .view-tab.active { background: var(--off-white); color: var(--navy); }
+
+  .form-step { display: none; }
+  .form-step.active { display: block; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 960px) {
+    .main-layout { grid-template-columns: 1fr; padding: 24px 20px; }
+    .sidebar { position: static; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .benefits-bar { grid-template-columns: repeat(2, 1fr); }
+    .visual-tiles { grid-template-columns: repeat(3, 1fr); }
+    .form-row { grid-template-columns: 1fr; }
+    .radio-toggle { flex-direction: column; }
+  }
+  @media (max-width: 600px) {
+    .page-hero { padding: 40px 20px; }
+    .page-hero h1 { font-size: 1.8rem; }
+    .site-header { padding: 0 20px; }
+    .nav a:not(.nav-cta) { display: none; }
+    .sidebar { grid-template-columns: 1fr; }
+    .benefits-bar { grid-template-columns: 1fr; }
+    .visual-tiles { grid-template-columns: repeat(2, 1fr); }
+    .progress-bar { padding: 16px 20px; }
+    .step-label { display: none; }
+    .form-content { padding: 24px 20px; }
+    .view-tabs { padding: 0 20px; }
+    .view-tab { padding: 10px 14px; font-size: 0.75rem; }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .form-step.active { animation: fadeIn 0.3s ease-out; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="site-header">
+  <div class="logo">
+    <div class="logo-icon">IF</div>
+    Indus Foods
+  </div>
+  <nav class="nav">
+    <a href="#">Home</a>
+    <a href="#">Food Service</a>
+    <a href="#">Manufacturing</a>
+    <a href="#">Retail</a>
+    <a href="#">Wholesale</a>
+    <a href="#">Our Brands</a>
+    <a href="#" class="nav-cta">Apply for Trade Account</a>
+  </nav>
+</header>
+
+<!-- Page Hero -->
+<section class="page-hero">
+  <div class="page-hero-inner">
+    <h1>Open your <span>trade account</span> in minutes.</h1>
+    <p>No membership fees. No complicated paperwork. Just fill in the form below and our team will have you set up within 1–2 business days. Whether you're a one-person takeaway or a hotel chain — we'll tailor your account to your business.</p>
+    <div class="hero-badges">
+      <div class="hero-badge-item"><span class="icon">⏱</span> Takes ~3 minutes</div>
+      <div class="hero-badge-item"><span class="icon">💷</span> No membership fees</div>
+      <div class="hero-badge-item"><span class="icon">🚛</span> Min order just £75</div>
+      <div class="hero-badge-item"><span class="icon">✓</span> 5,000+ businesses joined</div>
+    </div>
+  </div>
+</section>
+
+<!-- Step Tabs -->
+<div class="view-tabs">
+  <div class="view-tab active" onclick="showStep(1)">Step 1: About You</div>
+  <div class="view-tab" onclick="showStep(2)">Step 2: Business</div>
+  <div class="view-tab" onclick="showStep(3)">Step 3: Preferences</div>
+  <div class="view-tab" onclick="showStep(4)">Step 4: Review</div>
+</div>
+
+<!-- Main Layout -->
+<div class="main-layout">
+  <div class="form-area">
+
+    <!-- Benefits Bar -->
+    <div class="benefits-bar">
+      <div class="benefit-item">
+        <span class="icon">💷</span>
+        <h4>Trade Pricing</h4>
+        <p>15–30% below retail from day one</p>
+      </div>
+      <div class="benefit-item">
+        <span class="icon">👤</span>
+        <h4>Account Manager</h4>
+        <p>A named person who knows your business</p>
+      </div>
+      <div class="benefit-item">
+        <span class="icon">🚛</span>
+        <h4>Reliable Delivery</h4>
+        <p>Next-day Midlands, 48hr nationwide</p>
+      </div>
+      <div class="benefit-item">
+        <span class="icon">📋</span>
+        <h4>Full Catalogue</h4>
+        <p>3,000+ products, one supplier</p>
+      </div>
+    </div>
+
+    <!-- Form Card -->
+    <div class="form-card">
+
+      <!-- Progress Bar -->
+      <div class="progress-bar">
+        <div class="progress-step active" id="prog-1">
+          <div class="step-dot">1</div>
+          <span class="step-label">About You</span>
+        </div>
+        <div class="progress-step" id="prog-2">
+          <div class="step-dot">2</div>
+          <span class="step-label">Business Details</span>
+        </div>
+        <div class="progress-step" id="prog-3">
+          <div class="step-dot">3</div>
+          <span class="step-label">Preferences</span>
+        </div>
+        <div class="progress-step" id="prog-4">
+          <div class="step-dot">4</div>
+          <span class="step-label">Review & Submit</span>
+        </div>
+      </div>
+
+      <div class="form-content">
+
+        <!-- ═══ STEP 1: About You (softened — personal info first) ═══ -->
+        <div class="form-step active" id="step-1">
+          <div class="form-step-header">
+            <h2>Let's start with you</h2>
+            <p>Tell us who you are and where to deliver. This takes about a minute.</p>
+          </div>
+
+          <!-- "Applying for yourself or on behalf of someone?" toggle -->
+          <span class="visual-tiles-label">Who is this account for?</span>
+          <div class="radio-toggle">
+            <div class="radio-option selected" onclick="document.querySelectorAll('.radio-option').forEach(r => r.classList.remove('selected')); this.classList.add('selected');">
+              <h4>I'm the account holder</h4>
+              <p>I'll manage the orders and deliveries myself</p>
+            </div>
+            <div class="radio-option" onclick="document.querySelectorAll('.radio-option').forEach(r => r.classList.remove('selected')); this.classList.add('selected');">
+              <h4>I'm requesting on behalf of someone</h4>
+              <p>I'm a chef, buyer, or team member setting this up</p>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Your Name</label>
+              <input type="text" placeholder="e.g. Priya Sharma">
+            </div>
+            <div class="form-group">
+              <label>Your Role</label>
+              <input type="text" placeholder="e.g. Owner, Head Chef, Buyer">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Email Address</label>
+              <input type="email" placeholder="e.g. priya@bombaykitchen.co.uk">
+            </div>
+            <div class="form-group">
+              <label>Phone Number</label>
+              <input type="tel" placeholder="e.g. 07700 900 123">
+            </div>
+          </div>
+          <div class="form-row full">
+            <div class="form-group">
+              <label>Delivery Postcode</label>
+              <input type="text" placeholder="e.g. LE1 5PQ — we'll use this to estimate delivery times">
+            </div>
+          </div>
+
+          <div class="form-wa-help">
+            <span class="icon">💬</span>
+            <p>Stuck or prefer not to type? <a href="#">Message us on WhatsApp</a> and we'll complete this together with you.</p>
+          </div>
+
+          <div class="form-actions">
+            <div></div>
+            <button class="btn-next" onclick="showStep(2)">Continue →</button>
+          </div>
+        </div>
+
+        <!-- ═══ STEP 2: Business Details (CRN/VAT moved here, clearly optional) ═══ -->
+        <div class="form-step" id="step-2">
+          <div class="form-step-header">
+            <h2>Tell us about your business</h2>
+            <p>This helps us set up the right pricing and account type. Sole traders welcome — just fill in what applies to you.</p>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Business / Trading Name</label>
+              <input type="text" placeholder="e.g. Bombay Kitchen Ltd">
+            </div>
+            <div class="form-group">
+              <label>Business Type</label>
+              <select>
+                <option value="" disabled selected>Select your business type</option>
+                <option>Restaurant</option>
+                <option>Takeaway / Fast Food</option>
+                <option>Retail Shop / Convenience Store</option>
+                <option>Manufacturer</option>
+                <option>Caterer / Event Caterer</option>
+                <option>Hotel / HORECA</option>
+                <option>Other Wholesaler</option>
+                <option>Cash & Carry</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>How long have you been trading?</label>
+              <select>
+                <option value="" disabled selected>Select</option>
+                <option>Just starting up</option>
+                <option>Less than 1 year</option>
+                <option>1–3 years</option>
+                <option>3–5 years</option>
+                <option>5–10 years</option>
+                <option>10+ years</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>VAT Registration Number <span class="optional">(if registered)</span></label>
+              <input type="text" placeholder="e.g. GB 123 4567 89">
+              <span class="field-hint">No VAT number? No problem — sole traders and businesses under the £90k threshold can leave this blank.</span>
+            </div>
+          </div>
+          <div class="form-row full">
+            <div class="form-group">
+              <label>Company Registration Number <span class="optional">(limited companies only)</span></label>
+              <input type="text" placeholder="e.g. 12345678">
+              <span class="field-hint">Sole traders and partnerships don't have one — skip this if it doesn't apply.</span>
+            </div>
+          </div>
+          <div class="form-row full">
+            <div class="form-group">
+              <label>Delivery Address</label>
+              <input type="text" placeholder="Start typing your address...">
+            </div>
+          </div>
+          <div class="form-row full">
+            <div class="form-group">
+              <label>Delivery Access Notes <span class="optional">(optional)</span></label>
+              <input type="text" placeholder="e.g. Rear entrance, loading bay available, ring bell on arrival">
+            </div>
+          </div>
+
+          <div class="form-wa-help">
+            <span class="icon">💬</span>
+            <p>Not sure about something? <a href="#">Message us on WhatsApp</a> — we'll help you through it.</p>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn-back" onclick="showStep(1)">← Back</button>
+            <button class="btn-next" onclick="showStep(3)">Continue →</button>
+          </div>
+        </div>
+
+        <!-- ═══ STEP 3: Preferences (visual tiles + ordering details) ═══ -->
+        <div class="form-step" id="step-3">
+          <div class="form-step-header">
+            <h2>Your ordering preferences</h2>
+            <p>Help us tailor your account. Don't worry — you can change all of this later.</p>
+          </div>
+
+          <span class="visual-tiles-label">Which product categories interest you? <span class="optional">(tap all that apply)</span></span>
+          <div class="visual-tiles">
+            <div class="visual-tile selected" onclick="this.classList.toggle('selected')">
+              <span class="tile-icon">🌶️</span>
+              <span class="tile-label">Spices</span>
+            </div>
+            <div class="visual-tile selected" onclick="this.classList.toggle('selected')">
+              <span class="tile-icon">🍚</span>
+              <span class="tile-label">Rice & Grains</span>
+            </div>
+            <div class="visual-tile" onclick="this.classList.toggle('selected')">
+              <span class="tile-icon">🫘</span>
+              <span class="tile-label">Lentils & Pulses</span>
+            </div>
+            <div class="visual-tile selected" onclick="this.classList.toggle('selected')">
+              <span class="tile-icon">🫒</span>
+              <span class="tile-label">Oils & Ghee</span>
+            </div>
+            <div class="visual-tile" onclick="this.classList.toggle('selected')">
+              <span class="tile-icon">🧊</span>
+              <span class="tile-label">Frozen Foods</span>
+            </div>
+            <div class="visual-tile" onclick="this.classList.toggle('selected')">
+              <span class="tile-icon">🥫</span>
+              <span class="tile-label">Tinned / Canned</span>
+            </div>
+            <div class="visual-tile" onclick="this.classList.toggle('selected')">
+              <span class="tile-icon">🥜</span>
+              <span class="tile-label">Nuts & Dried Fruit</span>
+            </div>
+            <div class="visual-tile" onclick="this.classList.toggle('selected')">
+              <span class="tile-icon">🧴</span>
+              <span class="tile-label">Cleaning</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Estimated Monthly Spend <span class="optional">(your best guess is fine)</span></label>
+              <select>
+                <option value="" disabled selected>Roughly how much per month?</option>
+                <option>Under £500</option>
+                <option>£500 – £1,000</option>
+                <option>£1,000 – £2,500</option>
+                <option>£2,500 – £5,000</option>
+                <option>£5,000 – £10,000</option>
+                <option>£10,000+</option>
+                <option>Not sure yet</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Preferred Delivery Days</label>
+              <select>
+                <option value="" disabled selected>When suits you best?</option>
+                <option>Monday – Wednesday</option>
+                <option>Thursday – Friday</option>
+                <option>Any weekday</option>
+                <option>Specific day (tell us later)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Payment Terms Requested</label>
+              <select>
+                <option value="" disabled selected>Select</option>
+                <option>Proforma (pay before delivery) — fastest approval</option>
+                <option>7-day terms</option>
+                <option>14-day terms</option>
+                <option>30-day terms (subject to credit check)</option>
+              </select>
+              <span class="field-hint">First orders are proforma. Credit terms available after your first few orders — no pressure.</span>
+            </div>
+            <div class="form-group">
+              <label>How Did You Hear About Us?</label>
+              <select>
+                <option value="" disabled selected>Select</option>
+                <option>Recommendation from another business</option>
+                <option>Google search</option>
+                <option>Social media</option>
+                <option>Industry event / trade show</option>
+                <option>Already know Indus Foods / Zaf Cash & Carry</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-wa-help">
+            <span class="icon">💬</span>
+            <p>Nearly done! Questions about pricing or delivery? <a href="#">Ask on WhatsApp</a> — we reply within minutes during business hours.</p>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn-back" onclick="showStep(2)">← Back</button>
+            <button class="btn-next" onclick="showStep(4)">Review Your Application →</button>
+          </div>
+        </div>
+
+        <!-- ═══ STEP 4: Review & Submit ═══ -->
+        <div class="form-step" id="step-4">
+          <div class="form-step-header">
+            <h2>Review your application</h2>
+            <p>Check everything looks right. You can edit any section before submitting.</p>
+          </div>
+
+          <div class="review-section">
+            <div class="review-section-header">
+              <h4>Your Details</h4>
+              <button class="review-edit" onclick="showStep(1)">Edit</button>
+            </div>
+            <div class="review-row">
+              <span class="review-label">Name</span>
+              <span class="review-value">Priya Sharma (Owner)</span>
+            </div>
+            <div class="review-row">
+              <span class="review-label">Account type</span>
+              <span class="review-value">I'm the account holder</span>
+            </div>
+            <div class="review-row">
+              <span class="review-label">Email</span>
+              <span class="review-value">priya@bombaykitchen.co.uk</span>
+            </div>
+            <div class="review-row">
+              <span class="review-label">Phone</span>
+              <span class="review-value">07700 900 123</span>
+            </div>
+          </div>
+
+          <div class="review-section">
+            <div class="review-section-header">
+              <h4>Business & Delivery</h4>
+              <button class="review-edit" onclick="showStep(2)">Edit</button>
+            </div>
+            <div class="review-row">
+              <span class="review-label">Business</span>
+              <span class="review-value">Bombay Kitchen Ltd · Restaurant</span>
+            </div>
+            <div class="review-row">
+              <span class="review-label">Trading</span>
+              <span class="review-value">5–10 years</span>
+            </div>
+            <div class="review-row">
+              <span class="review-label">VAT</span>
+              <span class="review-value">GB 123 4567 89</span>
+            </div>
+            <div class="review-row">
+              <span class="review-label">Delivery</span>
+              <span class="review-value">42 Belgrave Road, Leicester, LE1 5PQ</span>
+            </div>
+          </div>
+
+          <div class="review-section">
+            <div class="review-section-header">
+              <h4>Preferences</h4>
+              <button class="review-edit" onclick="showStep(3)">Edit</button>
+            </div>
+            <div class="review-row">
+              <span class="review-label">Interests</span>
+              <span class="review-value">Spices, Rice & Grains, Oils & Ghee</span>
+            </div>
+            <div class="review-row">
+              <span class="review-label">Monthly spend</span>
+              <span class="review-value">£2,500 – £5,000</span>
+            </div>
+            <div class="review-row">
+              <span class="review-label">Delivery days</span>
+              <span class="review-value">Monday – Wednesday</span>
+            </div>
+            <div class="review-row">
+              <span class="review-label">Payment terms</span>
+              <span class="review-value">Proforma (fastest approval)</span>
+            </div>
+          </div>
+
+          <!-- File upload -->
+          <div style="margin-top: 24px; margin-bottom: 24px;">
+            <label style="font-size: 0.82rem; font-weight: 600; color: var(--text-dark); margin-bottom: 8px; display: block;">
+              Food Hygiene Certificate or FHRS Rating <span class="optional" style="font-weight: 400; color: var(--text-mid);">(optional — you can send this later)</span>
+            </label>
+            <div class="file-upload-area">
+              <span class="icon">📎</span>
+              <p>Drag & drop your certificate here, or <strong style="color: var(--navy);">click to browse</strong></p>
+              <div class="formats">PDF, JPG, PNG, or screenshot of your FHRS rating · Max 10MB</div>
+            </div>
+          </div>
+
+          <!-- Consents -->
+          <div>
+            <div class="consent-row">
+              <input type="checkbox" id="terms" checked>
+              <label for="terms">I agree to the <a href="#">Terms & Conditions</a> including payment terms and returns policy.</label>
+            </div>
+            <div class="consent-row">
+              <input type="checkbox" id="gdpr" checked>
+              <label for="gdpr">I consent to Indus Foods contacting me about my account, orders, and relevant promotions. See our <a href="#">Privacy Policy</a>.</label>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn-back" onclick="showStep(3)">← Back</button>
+            <button class="btn-submit">✓ Submit Your Application</button>
+          </div>
+
+          <div style="text-align: center; margin-top: 20px; padding: 16px; background: var(--off-white); border-radius: 10px;">
+            <p style="font-size: 0.82rem; color: var(--text-mid); line-height: 1.6;">
+              We aim to review applications within <strong>1–2 business days</strong>. You'll receive a confirmation email immediately.
+              First orders are proforma (pay before delivery). Credit terms become available once your account is established — we'll discuss this with you personally.
+            </p>
+          </div>
+        </div>
+
+      </div><!-- /form-content -->
+    </div><!-- /form-card -->
+  </div><!-- /form-area -->
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-social">
+      <div class="big-number">5,000+</div>
+      <div class="big-label">businesses trust Indus Foods</div>
+      <div class="divider"></div>
+      <div class="mini-stats">
+        <div class="mini-stat">
+          <div class="num">60+</div>
+          <div class="lbl">Years in Business</div>
+        </div>
+        <div class="mini-stat">
+          <div class="num">3,000+</div>
+          <div class="lbl">Products Available</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-card">
+      <h3>What you'll get</h3>
+      <ul class="sidebar-checklist">
+        <li><span class="check">✓</span> Trade pricing (15–30% below retail)</li>
+        <li><span class="check">✓</span> Dedicated account manager</li>
+        <li><span class="check">✓</span> Access to 3,000+ products</li>
+        <li><span class="check">✓</span> Minimum order just £75</li>
+        <li><span class="check">✓</span> Free delivery over £250</li>
+        <li><span class="check">✓</span> Credit facilities (after first orders)</li>
+        <li><span class="check">✓</span> Exclusive promotions & new product alerts</li>
+      </ul>
+      <div style="text-align: center; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--light-grey);">
+        <p style="font-size: 0.78rem; color: var(--green); font-weight: 700;">✓ No membership fees · Sole traders welcome</p>
+      </div>
+      <div class="certs-inline">
+        <span class="cert-badge">BRC</span>
+        <span class="cert-badge">Halal</span>
+        <span class="cert-badge">SALSA</span>
+        <span class="cert-badge">Unitas</span>
+        <span class="cert-badge">FWD</span>
+      </div>
+    </div>
+
+    <div class="sidebar-whatsapp">
+      <span class="wa-icon">💬</span>
+      <h4>Prefer to talk first?</h4>
+      <p>Not ready to apply? Message us on WhatsApp and we'll answer any questions. We can even complete the application together over chat.</p>
+      <button class="btn-wa">Message Us on WhatsApp</button>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer style="background: #0A1929; padding: 32px 48px; text-align: center;">
+  <p style="color: rgba(255,255,255,0.3); font-size: 0.78rem;">© 2026 Indus Foods Ltd. All rights reserved. Stratford Street North, Sparkbrook, Birmingham B11 1BU · Website by Small Giants Studio</p>
+</footer>
+
+<script>
+function showStep(n) {
+  document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
+  document.getElementById('step-' + n).classList.add('active');
+  document.querySelectorAll('.progress-step').forEach((s, i) => {
+    s.classList.remove('active', 'completed');
+    if (i + 1 < n) s.classList.add('completed');
+    if (i + 1 === n) s.classList.add('active');
+  });
+  document.querySelectorAll('.progress-step.completed .step-dot').forEach(d => d.textContent = '✓');
+  document.querySelectorAll('.view-tab').forEach((t, i) => {
+    t.classList.toggle('active', i + 1 === n);
+  });
+  document.querySelector('.form-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+</script>
+
+</body>
+</html>

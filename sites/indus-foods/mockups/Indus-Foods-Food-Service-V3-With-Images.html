@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Food Service — Indus Foods Ltd</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1A3A5C;
+    --navy-dark: #0F2640;
+    --gold: #D4A843;
+    --gold-light: #F5E6C4;
+    --white: #FFFFFF;
+    --off-white: #F8F7F4;
+    --light-grey: #E8E6E1;
+    --text-dark: #1E1E1E;
+    --text-mid: #555555;
+    --green: #2E7D4F;
+    --green-light: #E8F5EE;
+    --whatsapp: #25D366;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text-dark);
+    background: var(--white);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* ─── ANNOUNCEMENT BAR ─── */
+  .announcement-bar {
+    background: var(--gold);
+    color: var(--navy-dark);
+    text-align: center;
+    padding: 10px 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .announcement-bar a { color: var(--navy-dark); text-decoration: underline; }
+
+  /* ─── HEADER ─── */
+  .site-header {
+    background: var(--navy);
+    padding: 0 48px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 80px; position: sticky; top: 0; z-index: 100;
+  }
+  .logo {
+    font-family: 'DM Serif Display', serif; color: var(--white);
+    font-size: 1.6rem; display: flex; align-items: center; gap: 10px;
+  }
+  .logo-icon {
+    width: 40px; height: 40px; background: var(--gold); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; color: var(--navy-dark); font-size: 1.1rem;
+  }
+  .nav { display: flex; gap: 32px; align-items: center; }
+  .nav a {
+    color: rgba(255,255,255,0.8); text-decoration: none;
+    font-size: 0.9rem; font-weight: 500; transition: color 0.2s;
+  }
+  .nav a:hover, .nav a.active { color: var(--white); }
+  .nav-cta {
+    background: var(--gold) !important; color: var(--navy-dark) !important;
+    padding: 10px 22px; border-radius: 8px; font-weight: 600 !important;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(212,168,67,0.4); }
+
+  /* ─── HERO ─── */
+  .hero {
+    background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 60%, #2A5A8C 100%);
+    padding: 100px 48px 80px;
+    position: relative; overflow: hidden; min-height: 520px;
+    display: flex; align-items: center;
+  }
+  .hero::before {
+    content: ''; position: absolute; top: -50%; right: -20%;
+    width: 800px; height: 800px;
+    background: radial-gradient(circle, rgba(212,168,67,0.08) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .hero-inner {
+    max-width: 1200px; margin: 0 auto; width: 100%;
+    display: grid; grid-template-columns: 1.1fr 0.9fr;
+    gap: 60px; align-items: center; position: relative; z-index: 2;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(212,168,67,0.15); border: 1px solid rgba(212,168,67,0.3);
+    color: var(--gold); padding: 8px 16px; border-radius: 100px;
+    font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em;
+    text-transform: uppercase; margin-bottom: 24px;
+  }
+  .hero h1 {
+    font-family: 'DM Serif Display', serif; color: var(--white);
+    font-size: 3.2rem; line-height: 1.15; margin-bottom: 20px;
+  }
+  .hero h1 span { color: var(--gold); }
+  .hero p {
+    color: rgba(255,255,255,0.75); font-size: 1.15rem;
+    line-height: 1.7; margin-bottom: 36px; max-width: 520px;
+  }
+  .hero-buttons { display: flex; gap: 14px; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--gold); color: var(--navy-dark);
+    padding: 16px 32px; border-radius: 10px; font-weight: 700;
+    font-size: 0.95rem; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: all 0.25s; border: none; cursor: pointer;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(212,168,67,0.35); }
+  .btn-secondary {
+    background: rgba(255,255,255,0.08);
+    border: 1.5px solid rgba(255,255,255,0.25);
+    color: var(--white); padding: 16px 28px; border-radius: 10px;
+    font-weight: 600; font-size: 0.95rem; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 8px; transition: all 0.25s;
+  }
+  .btn-secondary:hover { background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.4); }
+
+  /* Hero image */
+  .hero-image {
+    position: relative; border-radius: 20px; overflow: hidden;
+    aspect-ratio: 4/3;
+  }
+  .hero-image img {
+    width: 100%; height: 100%; object-fit: cover;
+    display: block;
+  }
+  .hero-image-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(15,38,64,0.5) 0%, transparent 50%);
+  }
+  .hero-image-badge {
+    position: absolute; bottom: 20px; left: 20px;
+    background: var(--white); border-radius: 12px;
+    padding: 14px 18px; display: flex; align-items: center; gap: 12px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+  }
+  .hero-image-badge .number {
+    font-family: 'DM Serif Display', serif; font-size: 1.8rem;
+    color: var(--navy); line-height: 1;
+  }
+  .hero-image-badge .label { font-size: 0.75rem; color: var(--text-mid); line-height: 1.3; }
+  .hero-mov {
+    position: absolute; bottom: 20px; right: 20px;
+    background: var(--green); border-radius: 12px;
+    padding: 12px 16px; text-align: center;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+  }
+  .hero-mov .num { font-family: 'DM Serif Display', serif; font-size: 1.4rem; color: var(--white); line-height: 1; }
+  .hero-mov .lbl { font-size: 0.68rem; color: rgba(255,255,255,0.8); margin-top: 2px; }
+
+  /* ─── IMAGE CREDIT STRIP ─── */
+  .image-credit {
+    position: absolute; top: 12px; right: 12px;
+    background: rgba(0,0,0,0.5); color: rgba(255,255,255,0.7);
+    padding: 4px 10px; border-radius: 6px;
+    font-size: 0.6rem; letter-spacing: 0.02em;
+  }
+
+  /* ─── TRUST BAR ─── */
+  .trust-bar {
+    background: var(--off-white);
+    border-top: 1px solid var(--light-grey);
+    border-bottom: 1px solid var(--light-grey);
+    padding: 32px 48px;
+  }
+  .trust-bar-inner {
+    max-width: 1000px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 24px; text-align: center;
+  }
+  .trust-stat .number {
+    font-family: 'DM Serif Display', serif; font-size: 2rem;
+    color: var(--navy); line-height: 1; margin-bottom: 6px;
+  }
+  .trust-stat .label {
+    font-size: 0.78rem; color: var(--text-mid);
+    font-weight: 500;
+  }
+
+  /* ─── SECTIONS ─── */
+  .section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
+  .section-label {
+    display: inline-flex; align-items: center; gap: 8px;
+    color: var(--gold); font-size: 0.8rem; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 14px;
+  }
+  .section-label::before {
+    content: ''; width: 24px; height: 2px;
+    background: var(--gold); display: inline-block;
+  }
+  .section-title {
+    font-family: 'DM Serif Display', serif; font-size: 2.4rem;
+    color: var(--navy); margin-bottom: 16px; line-height: 1.2;
+  }
+  .section-subtitle {
+    font-size: 1.05rem; color: var(--text-mid); line-height: 1.7;
+    max-width: 640px; margin-bottom: 48px;
+  }
+
+  /* ─── BENEFITS ─── */
+  .benefits-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .benefit-card {
+    background: var(--white); border: 1px solid var(--light-grey);
+    border-radius: 16px; padding: 32px 28px;
+    transition: all 0.3s; position: relative; overflow: hidden;
+  }
+  .benefit-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 3px; background: var(--gold);
+    transform: scaleX(0); transition: transform 0.3s;
+  }
+  .benefit-card:hover {
+    border-color: var(--gold); transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(26,58,92,0.08);
+  }
+  .benefit-card:hover::before { transform: scaleX(1); }
+  .benefit-icon {
+    width: 52px; height: 52px;
+    background: linear-gradient(135deg, rgba(212,168,67,0.12), rgba(212,168,67,0.05));
+    border-radius: 12px; display: flex; align-items: center;
+    justify-content: center; font-size: 1.5rem; margin-bottom: 20px;
+  }
+  .benefit-card h3 { font-size: 1.05rem; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
+  .benefit-card p { font-size: 0.9rem; color: var(--text-mid); line-height: 1.65; }
+
+  /* ─── HERITAGE STRIP ─── */
+  .heritage-strip {
+    background: var(--navy); padding: 60px 48px;
+  }
+  .heritage-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 28px; align-items: center;
+  }
+  .heritage-image {
+    border-radius: 16px; overflow: hidden;
+    aspect-ratio: 4/3; position: relative;
+  }
+  .heritage-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .heritage-image-label {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(to top, rgba(15,38,64,0.85), transparent);
+    padding: 16px; text-align: center;
+  }
+  .heritage-image-label h4 { color: var(--white); font-size: 0.85rem; font-weight: 700; }
+  .heritage-image-label p { color: rgba(255,255,255,0.6); font-size: 0.72rem; margin-top: 2px; }
+  .heritage-text {
+    padding: 0 20px; text-align: center;
+  }
+  .heritage-text .section-label { color: var(--gold); justify-content: center; }
+  .heritage-text .section-label::before { background: var(--gold); }
+  .heritage-text h3 {
+    font-family: 'DM Serif Display', serif; color: var(--white);
+    font-size: 1.6rem; margin-bottom: 12px; line-height: 1.3;
+  }
+  .heritage-text p {
+    color: rgba(255,255,255,0.6); font-size: 0.88rem; line-height: 1.7;
+  }
+
+  /* ─── PRODUCTS ─── */
+  .products-section { background: var(--off-white); padding: 80px 48px; }
+  .products-inner { max-width: 1200px; margin: 0 auto; }
+  .products-header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    flex-wrap: wrap; gap: 20px; margin-bottom: 48px;
+  }
+  .products-header-right { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .btn-catalogue {
+    background: var(--navy); color: var(--white);
+    padding: 12px 24px; border-radius: 10px;
+    font-weight: 600; font-size: 0.88rem; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: all 0.25s; border: none; cursor: pointer;
+  }
+  .btn-catalogue:hover { background: var(--navy-dark); transform: translateY(-1px); }
+  .catalogue-note { font-size: 0.78rem; color: var(--text-mid); line-height: 1.4; }
+  .products-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+  .product-tile {
+    background: var(--white); border-radius: 14px; overflow: hidden;
+    transition: all 0.3s; border: 1px solid var(--light-grey); cursor: pointer;
+  }
+  .product-tile:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(26,58,92,0.1); }
+  .product-tile-img {
+    aspect-ratio: 16/10; overflow: hidden; position: relative;
+  }
+  .product-tile-img img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    transition: transform 0.4s;
+  }
+  .product-tile:hover .product-tile-img img { transform: scale(1.05); }
+  .product-tile-body { padding: 16px 18px; }
+  .product-tile-body h4 { font-size: 0.9rem; font-weight: 600; color: var(--navy); margin-bottom: 4px; }
+  .product-tile-body span { font-size: 0.78rem; color: var(--text-mid); display: block; }
+  .product-tile-body .price-hint {
+    font-size: 0.75rem; color: var(--green); font-weight: 600;
+    margin-top: 6px; display: inline-block;
+    background: var(--green-light); padding: 3px 8px; border-radius: 4px;
+  }
+
+  .mov-banner {
+    background: var(--green-light); border: 1px solid #C8E6D4;
+    border-radius: 12px; padding: 20px 28px;
+    display: flex; align-items: center; justify-content: center;
+    gap: 16px; margin-top: 32px; text-align: center;
+  }
+  .mov-banner .mov-icon { font-size: 1.6rem; }
+  .mov-banner p { font-size: 0.9rem; color: var(--text-dark); line-height: 1.5; }
+  .mov-banner strong { color: var(--green); }
+
+  /* ─── HOW IT WORKS ─── */
+  .process-steps {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 24px; position: relative;
+  }
+  .process-steps::before {
+    content: ''; position: absolute; top: 36px; left: 15%; right: 15%;
+    height: 2px;
+    background: linear-gradient(to right, var(--gold), var(--light-grey) 33%, var(--light-grey) 66%, var(--gold));
+    z-index: 0;
+  }
+  .step { text-align: center; position: relative; z-index: 1; }
+  .step-number {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: var(--white); border: 2px solid var(--gold);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+    font-family: 'DM Serif Display', serif; font-size: 1.5rem; color: var(--navy);
+  }
+  .step h4 { font-size: 1rem; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+  .step p { font-size: 0.85rem; color: var(--text-mid); line-height: 1.6; padding: 0 8px; }
+
+  /* ─── DELIVERY ─── */
+  .delivery-section { background: var(--navy); padding: 80px 48px; }
+  .delivery-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 60px; align-items: center;
+  }
+  .delivery-section .section-label { color: var(--gold); }
+  .delivery-section .section-label::before { background: var(--gold); }
+  .delivery-section .section-title { color: var(--white); }
+  .delivery-section .section-subtitle { color: rgba(255,255,255,0.65); }
+  .delivery-features { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .delivery-feature {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px; padding: 20px;
+  }
+  .delivery-feature h4 { color: var(--gold); font-size: 0.9rem; font-weight: 600; margin-bottom: 6px; }
+  .delivery-feature p { color: rgba(255,255,255,0.6); font-size: 0.82rem; line-height: 1.5; }
+  .delivery-feature .cutoff {
+    display: inline-block; margin-top: 8px;
+    background: rgba(212,168,67,0.15); color: var(--gold);
+    padding: 4px 10px; border-radius: 6px;
+    font-size: 0.72rem; font-weight: 700;
+  }
+  .delivery-map {
+    border-radius: 20px; overflow: hidden; aspect-ratio: 4/3;
+    position: relative;
+  }
+  .delivery-map img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .delivery-map-overlay {
+    position: absolute; inset: 0;
+    background: rgba(15,38,64,0.3);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .delivery-map-label {
+    background: var(--white); border-radius: 12px; padding: 16px 24px;
+    text-align: center; box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+  }
+  .delivery-map-label h4 { font-size: 0.9rem; font-weight: 700; color: var(--navy); }
+  .delivery-map-label p { font-size: 0.75rem; color: var(--text-mid); margin-top: 2px; }
+  .delivery-mov {
+    grid-column: 1 / -1;
+    background: rgba(46,125,79,0.15); border: 1px solid rgba(46,125,79,0.25);
+    border-radius: 12px; padding: 18px 24px;
+    display: flex; align-items: center; gap: 12px; margin-top: 8px;
+  }
+  .delivery-mov .icon { font-size: 1.3rem; }
+  .delivery-mov p { color: rgba(255,255,255,0.8); font-size: 0.85rem; }
+  .delivery-mov strong { color: var(--green-light); }
+
+  /* ─── BRANDS STRIP ─── */
+  .brands-strip {
+    background: var(--white); border-top: 1px solid var(--light-grey);
+    border-bottom: 1px solid var(--light-grey);
+    padding: 36px 48px; text-align: center;
+  }
+  .brands-strip p {
+    font-size: 0.78rem; color: var(--text-mid); font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 20px;
+  }
+  .brand-logos {
+    display: flex; justify-content: center; gap: 48px;
+    flex-wrap: wrap; align-items: center;
+  }
+  .brand-logo {
+    padding: 8px 20px; border-radius: 8px;
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.2rem; color: var(--navy); opacity: 0.6;
+    transition: opacity 0.2s;
+  }
+  .brand-logo:hover { opacity: 1; }
+
+  /* ─── CERTIFICATIONS ─── */
+  .certs-bar {
+    background: var(--off-white);
+    border-top: 1px solid var(--light-grey);
+    border-bottom: 1px solid var(--light-grey);
+    padding: 48px; text-align: center;
+  }
+  .certs-bar p {
+    font-size: 0.78rem; color: var(--text-mid); font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 24px;
+  }
+  .cert-logos {
+    display: flex; justify-content: center; gap: 40px;
+    flex-wrap: wrap; align-items: center;
+  }
+  .cert-logo {
+    width: 80px; height: 50px; background: var(--white);
+    border: 1px solid var(--light-grey); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.65rem; color: var(--text-mid); font-weight: 600;
+    padding: 4px; text-align: center;
+  }
+
+  /* ─── TESTIMONIALS ─── */
+  .testimonials-section { padding: 80px 48px; background: var(--white); }
+  .testimonials-inner { max-width: 1200px; margin: 0 auto; }
+  .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  .testimonial-card {
+    background: var(--off-white); border: 1px solid var(--light-grey);
+    border-radius: 16px; padding: 32px 28px; position: relative;
+  }
+  .testimonial-card::before {
+    content: '"'; font-family: 'DM Serif Display', serif;
+    font-size: 4rem; color: var(--gold); opacity: 0.25;
+    position: absolute; top: 12px; left: 20px; line-height: 1;
+  }
+  .testimonial-stars { color: var(--gold); font-size: 0.9rem; letter-spacing: 3px; margin-bottom: 16px; }
+  .testimonial-quote {
+    font-size: 0.92rem; color: var(--text-dark);
+    line-height: 1.7; margin-bottom: 20px; font-style: italic;
+  }
+  .testimonial-footer { display: flex; align-items: center; gap: 12px; }
+  .testimonial-avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--navy); display: flex; align-items: center;
+    justify-content: center; color: var(--white);
+    font-weight: 700; font-size: 0.85rem; flex-shrink: 0;
+  }
+  .testimonial-name { font-weight: 700; font-size: 0.88rem; color: var(--text-dark); }
+  .testimonial-role { font-size: 0.78rem; color: var(--text-mid); margin-top: 2px; }
+  .testimonial-type {
+    display: inline-block; margin-top: 6px;
+    background: rgba(26,58,92,0.08); color: var(--navy);
+    padding: 3px 10px; border-radius: 4px;
+    font-size: 0.68rem; font-weight: 600;
+  }
+
+  /* ─── FINAL CTA ─── */
+  .final-cta {
+    background: linear-gradient(135deg, var(--navy-dark), var(--navy));
+    padding: 80px 48px; text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .final-cta::before {
+    content: ''; position: absolute; top: -200px; right: -200px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(212,168,67,0.06), transparent 70%);
+    border-radius: 50%;
+  }
+  .final-cta-inner { max-width: 700px; margin: 0 auto; position: relative; z-index: 2; }
+  .final-cta h2 {
+    font-family: 'DM Serif Display', serif; color: var(--white);
+    font-size: 2.4rem; margin-bottom: 16px; line-height: 1.2;
+  }
+  .final-cta p {
+    color: rgba(255,255,255,0.65); font-size: 1.05rem;
+    line-height: 1.7; margin-bottom: 36px;
+  }
+  .final-cta-buttons { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .btn-whatsapp {
+    background: var(--whatsapp); color: var(--white);
+    padding: 16px 28px; border-radius: 10px; font-weight: 600;
+    font-size: 0.95rem; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 8px; transition: all 0.25s;
+  }
+  .btn-whatsapp:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(37,211,102,0.35); }
+  .btn-outline-light {
+    background: transparent; border: 1.5px solid rgba(255,255,255,0.25);
+    color: var(--white); padding: 16px 28px; border-radius: 10px;
+    font-weight: 600; font-size: 0.95rem; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 8px; transition: all 0.25s;
+  }
+  .btn-outline-light:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.4); }
+
+  /* ─── FOOTER ─── */
+  .site-footer { background: #0A1929; padding: 60px 48px 32px; }
+  .footer-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr;
+    gap: 48px; margin-bottom: 48px;
+  }
+  .footer-brand .logo { margin-bottom: 16px; font-size: 1.3rem; }
+  .footer-brand p { color: rgba(255,255,255,0.45); font-size: 0.85rem; line-height: 1.7; }
+  .footer-col h5 {
+    color: var(--white); font-size: 0.82rem; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 18px;
+  }
+  .footer-col a {
+    display: block; color: rgba(255,255,255,0.45); text-decoration: none;
+    font-size: 0.88rem; margin-bottom: 10px; transition: color 0.2s;
+  }
+  .footer-col a:hover { color: var(--gold); }
+  .footer-bottom {
+    max-width: 1200px; margin: 0 auto;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 24px; display: flex;
+    justify-content: space-between; align-items: center;
+  }
+  .footer-bottom p { color: rgba(255,255,255,0.3); font-size: 0.78rem; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 960px) {
+    .hero-inner { grid-template-columns: 1fr; }
+    .hero-image { max-height: 360px; }
+    .hero h1 { font-size: 2.4rem; }
+    .trust-bar-inner { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .benefits-grid { grid-template-columns: repeat(2, 1fr); }
+    .products-grid { grid-template-columns: repeat(2, 1fr); }
+    .process-steps { grid-template-columns: repeat(2, 1fr); }
+    .process-steps::before { display: none; }
+    .delivery-inner { grid-template-columns: 1fr; }
+    .delivery-map { max-height: 300px; }
+    .heritage-inner { grid-template-columns: 1fr; }
+    .heritage-image:first-child { display: none; }
+    .testimonials-grid { grid-template-columns: 1fr; }
+    .footer-inner { grid-template-columns: 1fr 1fr; }
+    .products-header { flex-direction: column; align-items: flex-start; }
+  }
+  @media (max-width: 600px) {
+    .site-header { padding: 0 20px; }
+    .nav a:not(.nav-cta) { display: none; }
+    .hero { padding: 60px 20px; }
+    .hero h1 { font-size: 1.9rem; }
+    .section, .products-section, .delivery-section, .final-cta, .testimonials-section, .heritage-strip { padding: 60px 20px; }
+    .trust-bar { padding: 24px 20px; }
+    .trust-bar-inner { grid-template-columns: repeat(2, 1fr); }
+    .benefits-grid, .products-grid, .process-steps { grid-template-columns: 1fr; }
+    .delivery-features { grid-template-columns: 1fr; }
+    .final-cta h2 { font-size: 1.8rem; }
+    .section-title { font-size: 1.8rem; }
+    .certs-bar, .brands-strip { padding: 32px 20px; }
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .hero-inner > * { animation: fadeInUp 0.7s ease-out both; }
+  .hero-inner > *:nth-child(2) { animation-delay: 0.15s; }
+</style>
+</head>
+<body>
+
+<!-- Announcement Bar -->
+<div class="announcement-bar">
+  🏆 Exclusive UK distributors of Falak Rice — <a href="#">Learn more about our brands</a>
+</div>
+
+<!-- Header -->
+<header class="site-header">
+  <div class="logo">
+    <div class="logo-icon">IF</div>
+    Indus Foods
+  </div>
+  <nav class="nav">
+    <a href="#">Home</a>
+    <a href="#" class="active">Food Service</a>
+    <a href="#">Manufacturing</a>
+    <a href="#">Retail</a>
+    <a href="#">Wholesale</a>
+    <a href="#">Our Brands</a>
+    <a href="#">About</a>
+    <a href="#" class="nav-cta">Apply for Trade Account</a>
+  </nav>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-badge">☆ Food Service</div>
+      <h1>Your kitchen's secret to <span>authentic flavour,</span> delivered on time, every time.</h1>
+      <p>From Balti Triangle restaurants to hotel kitchens across the UK — 5,000+ food businesses trust Indus Foods for recipe-ready ingredients in catering sizes, with next-day delivery and a dedicated account manager who actually picks up the phone.</p>
+      <div class="hero-buttons">
+        <a href="#" class="btn-primary">Apply for a Trade Account →</a>
+        <a href="#" class="btn-secondary">📄 Download Full Catalogue (PDF)</a>
+      </div>
+    </div>
+    <div class="hero-image">
+      <img src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=800&h=600&fit=crop&q=80" alt="Chef cooking in commercial kitchen with flames">
+      <div class="hero-image-overlay"></div>
+      <div class="image-credit">📸 Replace with Indus Foods photography</div>
+      <div class="hero-image-badge">
+        <div class="number">60+</div>
+        <div class="label">Years Supplying<br>UK Kitchens</div>
+      </div>
+      <div class="hero-mov">
+        <div class="num">From £75</div>
+        <div class="lbl">Minimum order</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Trust Bar -->
+<div class="trust-bar">
+  <div class="trust-bar-inner">
+    <div class="trust-stat">
+      <div class="number">5,000+</div>
+      <div class="label">Businesses Served</div>
+    </div>
+    <div class="trust-stat">
+      <div class="number">3,000+</div>
+      <div class="label">Products Available</div>
+    </div>
+    <div class="trust-stat">
+      <div class="number">60+</div>
+      <div class="label">Years in Business</div>
+    </div>
+    <div class="trust-stat">
+      <div class="number">Next-Day</div>
+      <div class="label">Midlands Delivery</div>
+    </div>
+  </div>
+</div>
+
+<!-- Benefits -->
+<section class="section">
+  <div class="section-label">Why Indus Foods</div>
+  <h2 class="section-title">Built around what your kitchen actually needs.</h2>
+  <p class="section-subtitle">We don't just deliver ingredients — we help food businesses run smoothly with consistent quality, competitive pricing, and a team that picks up the phone.</p>
+  <div class="benefits-grid">
+    <div class="benefit-card">
+      <div class="benefit-icon">✓</div>
+      <h3>Consistent Quality for Menu Reliability</h3>
+      <p>Your customers expect the same taste every visit. Our sourcing and quality controls ensure your key ingredients arrive at the same standard, batch after batch — so your signature dishes stay signature.</p>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon">📦</div>
+      <h3>Catering-Size Packaging</h3>
+      <p>Spices in 5kg and 10kg bags. Rice in 20kg sacks. Oils in 20-litre drums. Every format designed for commercial kitchen use — no more decanting from retail packs or running out mid-service.</p>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon">👤</div>
+      <h3>Dedicated Account Manager</h3>
+      <p>A named person who knows your business, your regular order, and your delivery preferences. Not a call centre. Not a different person each time. Someone who understands your operation.</p>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon">🚛</div>
+      <h3>Flexible Delivery Schedules</h3>
+      <p>Choose the delivery days that fit your prep cycle. Next-day delivery across the Midlands (order by 2pm), nationwide within 48 hours. We work around your kitchen, not the other way around.</p>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon">💷</div>
+      <h3>Trade Pricing & Credit Facilities</h3>
+      <p>Competitive wholesale rates from day one — typically 15–30% below retail. For established customers, credit terms of up to 30 days give you cashflow flexibility without squeezing your margins.</p>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon">📊</div>
+      <h3>Allergen & Nutritional Data</h3>
+      <p>Full allergen information and nutritional data for every product — helping you meet Natasha's Law requirements and serve your customers with confidence. Erudus integration coming soon.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Heritage Strip -->
+<section class="heritage-strip">
+  <div class="heritage-inner">
+    <div class="heritage-image">
+      <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=600&h=450&fit=crop&q=80" alt="Warehouse interior with shelving">
+      <div class="heritage-image-label">
+        <h4>Our Sparkbrook Warehouse</h4>
+        <p>📸 Replace with real warehouse photo</p>
+      </div>
+    </div>
+    <div class="heritage-text">
+      <div class="section-label" style="justify-content: center;">Our Heritage</div>
+      <h3>Three generations. One family. Since 1962.</h3>
+      <p>When Amir Chaudhary's grandparents opened one of the UK's first halal butchers on Ladypool Road in Birmingham's Balti Triangle, they couldn't have known it would become a £15M wholesale operation serving 5,000 customers across the UK, Ireland, and Europe. But the values haven't changed: know your customer, never compromise on quality, and always deliver on your word.</p>
+    </div>
+    <div class="heritage-image">
+      <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=600&h=450&fit=crop&q=80" alt="Business professional at work">
+      <div class="heritage-image-label">
+        <h4>Amir Chaudhary, Director</h4>
+        <p>📸 Replace with real portrait</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Product Categories -->
+<section class="products-section">
+  <div class="products-inner">
+    <div class="products-header">
+      <div>
+        <div class="section-label">Product Range</div>
+        <h2 class="section-title">Everything your kitchen needs, under one account.</h2>
+        <p class="section-subtitle" style="margin-bottom: 0;">From whole spices to frozen proteins, cleaning supplies to takeaway packaging — order everything from one supplier instead of juggling five.</p>
+      </div>
+      <div class="products-header-right">
+        <a href="#" class="btn-catalogue">📄 Download Full Catalogue</a>
+        <span class="catalogue-note">PDF · 3,000+ products<br>with sizes & formats</span>
+      </div>
+    </div>
+    <div class="products-grid">
+      <div class="product-tile">
+        <div class="product-tile-img">
+          <img src="https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=600&h=375&fit=crop&q=80" alt="Colourful spices in bowls">
+        </div>
+        <div class="product-tile-body">
+          <h4>Spices & Seasonings</h4>
+          <span>200+ lines · Whole & ground · 500g to 10kg</span>
+          <div class="price-hint">Trade prices from £3.50/kg</div>
+        </div>
+      </div>
+      <div class="product-tile">
+        <div class="product-tile-img">
+          <img src="https://images.unsplash.com/photo-1586201375761-83865001e31c?w=600&h=375&fit=crop&q=80" alt="Basmati rice grains">
+        </div>
+        <div class="product-tile-body">
+          <h4>Rice & Grains</h4>
+          <span>Inc. exclusive Falak Rice · 5kg to 25kg sacks</span>
+          <div class="price-hint">Trade prices from £0.85/kg</div>
+        </div>
+      </div>
+      <div class="product-tile">
+        <div class="product-tile-img">
+          <img src="https://images.unsplash.com/photo-1515543904406-bd78f0e3ac68?w=600&h=375&fit=crop&q=80" alt="Lentils and pulses in bowls">
+        </div>
+        <div class="product-tile-body">
+          <h4>Pulses & Lentils</h4>
+          <span>Chana, masoor, urad & more · 2kg to 20kg</span>
+          <div class="price-hint">Trade prices from £1.20/kg</div>
+        </div>
+      </div>
+      <div class="product-tile">
+        <div class="product-tile-img">
+          <img src="https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=600&h=375&fit=crop&q=80" alt="Cooking oils in bottles">
+        </div>
+        <div class="product-tile-body">
+          <h4>Oils & Ghee</h4>
+          <span>Vegetable, sunflower, mustard · 5L to 20L drums</span>
+          <div class="price-hint">Trade prices from £1.80/L</div>
+        </div>
+      </div>
+      <div class="product-tile">
+        <div class="product-tile-img">
+          <img src="https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=600&h=375&fit=crop&q=80" alt="Frozen food items">
+        </div>
+        <div class="product-tile-body">
+          <h4>Frozen Foods</h4>
+          <span>Shaan range · Temperature-controlled delivery</span>
+          <div class="price-hint">Trade prices from £2.40/kg</div>
+        </div>
+      </div>
+      <div class="product-tile">
+        <div class="product-tile-img">
+          <img src="https://images.unsplash.com/photo-1534483509719-8127d1d2c2a3?w=600&h=375&fit=crop&q=80" alt="Tinned and canned food">
+        </div>
+        <div class="product-tile-body">
+          <h4>Tinned & Canned</h4>
+          <span>Shaan bestsellers · Cases of 6/12/24</span>
+          <div class="price-hint">Trade prices from £0.65/tin</div>
+        </div>
+      </div>
+      <div class="product-tile">
+        <div class="product-tile-img">
+          <img src="https://images.unsplash.com/photo-1599599810694-b5b37304c041?w=600&h=375&fit=crop&q=80" alt="Cashew nuts and dried fruits">
+        </div>
+        <div class="product-tile-body">
+          <h4>Nuts & Dried Fruits</h4>
+          <span>Shaan cashews bestseller · 1kg to 12.5kg</span>
+          <div class="price-hint">Trade prices from £5.80/kg</div>
+        </div>
+      </div>
+      <div class="product-tile">
+        <div class="product-tile-img">
+          <img src="https://images.unsplash.com/photo-1585421514284-efb74c2b69ba?w=600&h=375&fit=crop&q=80" alt="Cleaning products and supplies">
+        </div>
+        <div class="product-tile-body">
+          <h4>Cleaning Products</h4>
+          <span>Lemon Tree & Leaf Green · Cases & bulk</span>
+          <div class="price-hint">Trade prices from £0.90/unit</div>
+        </div>
+      </div>
+    </div>
+    <div class="mov-banner">
+      <span class="mov-icon">🚛</span>
+      <p>Minimum order just <strong>£75</strong> — lower than most wholesalers. Mix and match across any categories. Free delivery on orders over £250.</p>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section class="section">
+  <div class="section-label">How It Works</div>
+  <h2 class="section-title">Open your trade account in four simple steps.</h2>
+  <p class="section-subtitle">No membership fees. No complicated paperwork. Just a quick application and you're ordering within days.</p>
+  <div class="process-steps">
+    <div class="step">
+      <div class="step-number">1</div>
+      <h4>Apply Online</h4>
+      <p>Fill in our simple trade application — takes about 3 minutes. Or message us on WhatsApp and we'll do it together.</p>
+    </div>
+    <div class="step">
+      <div class="step-number">2</div>
+      <h4>Get Approved</h4>
+      <p>Our team reviews your application within 1–2 business days. No credit checks for proforma accounts.</p>
+    </div>
+    <div class="step">
+      <div class="step-number">3</div>
+      <h4>Browse & Order</h4>
+      <p>Access our full catalogue with trade pricing and place your first order online, by phone, or via WhatsApp.</p>
+    </div>
+    <div class="step">
+      <div class="step-number">4</div>
+      <h4>We Deliver</h4>
+      <p>Reliable delivery to your door on the schedule that suits your prep cycle. Temperature-controlled where needed.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Delivery -->
+<section class="delivery-section">
+  <div class="delivery-inner">
+    <div>
+      <div class="section-label">Delivery & Coverage</div>
+      <h2 class="section-title">From our warehouse to your kitchen — fast.</h2>
+      <p class="section-subtitle">Based in Birmingham's Sparkbrook, we deliver across the UK, Ireland, and Europe. Our fleet has been on the road since 1972.</p>
+      <div class="delivery-features">
+        <div class="delivery-feature">
+          <h4>Next-Day Midlands</h4>
+          <p>Same-region delivery across the West Midlands and surrounding areas.</p>
+          <span class="cutoff">Order by 2:00pm</span>
+        </div>
+        <div class="delivery-feature">
+          <h4>48hr Nationwide</h4>
+          <p>Full UK coverage within 48 hours via our fleet and trusted logistics partners.</p>
+          <span class="cutoff">Order by 12:00pm</span>
+        </div>
+        <div class="delivery-feature">
+          <h4>Temperature Controlled</h4>
+          <p>Chilled and frozen lines delivered with full cold-chain integrity from warehouse to kitchen.</p>
+        </div>
+        <div class="delivery-feature">
+          <h4>European Export</h4>
+          <p>Active export to Ireland, Norway, Greece, Italy, and growing. Established since the 1970s.</p>
+        </div>
+        <div class="delivery-mov">
+          <span class="icon">💷</span>
+          <p>Minimum order <strong>£75</strong> · Free delivery on orders over <strong>£250</strong> · Choose your preferred delivery days at sign-up</p>
+        </div>
+      </div>
+    </div>
+    <div class="delivery-map">
+      <img src="https://images.unsplash.com/photo-1553413077-190dd305871c?w=800&h=600&fit=crop&q=80" alt="Warehouse with delivery logistics">
+      <div class="delivery-map-overlay">
+        <div class="delivery-map-label">
+          <h4>📍 UK-Wide Delivery Coverage</h4>
+          <p>Replace with interactive map or fleet photo</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Brands Strip -->
+<div class="brands-strip">
+  <p>Our Brands</p>
+  <div class="brand-logos">
+    <div class="brand-logo">Sanam</div>
+    <div class="brand-logo">Shaan</div>
+    <div class="brand-logo">Falak Rice</div>
+    <div class="brand-logo">Lemon Tree</div>
+    <div class="brand-logo">Leaf Green</div>
+  </div>
+</div>
+
+<!-- Certifications -->
+<div class="certs-bar">
+  <p>Trusted certifications & memberships</p>
+  <div class="cert-logos">
+    <div class="cert-logo">BRC Certified</div>
+    <div class="cert-logo">Halal Certified</div>
+    <div class="cert-logo">SALSA Approved</div>
+    <div class="cert-logo">FSA Registered</div>
+    <div class="cert-logo">Unitas Wholesale</div>
+    <div class="cert-logo">FWD Member</div>
+  </div>
+</div>
+
+<!-- Testimonials -->
+<section class="testimonials-section">
+  <div class="testimonials-inner">
+    <div style="text-align: center; margin-bottom: 48px;">
+      <div class="section-label" style="justify-content: center;">What Our Customers Say</div>
+      <h2 class="section-title">Trusted by restaurants, caterers, and hotels across the UK.</h2>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★ ★ ★ ★ ★</div>
+        <div class="testimonial-quote">We've been ordering from Indus Foods for over eight years. The quality is always spot-on, our account manager knows exactly what we need before we ask, and the delivery has never let us down during a busy Friday service.</div>
+        <div class="testimonial-footer">
+          <div class="testimonial-avatar">PS</div>
+          <div>
+            <div class="testimonial-name">Priya Sharma</div>
+            <div class="testimonial-role">Owner — Bombay Kitchen, Leicester</div>
+            <div class="testimonial-type">Restaurant</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★ ★ ★ ★ ★</div>
+        <div class="testimonial-quote">When we're catering for 500 guests, I can't afford a supplier who's inconsistent. Indus Foods' traceability documentation and allergen data make compliance straightforward, and their bulk pricing keeps our margins healthy.</div>
+        <div class="testimonial-footer">
+          <div class="testimonial-avatar">FK</div>
+          <div>
+            <div class="testimonial-name">Fatima Khan</div>
+            <div class="testimonial-role">Operations Director — Zara's Kitchen Catering, Birmingham</div>
+            <div class="testimonial-type">Caterer</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★ ★ ★ ★ ★</div>
+        <div class="testimonial-quote">I recommended Indus Foods to our procurement team and the onboarding was seamless. Their range covers everything we need for our South Asian menu, and the flexible delivery days fit perfectly around our prep schedule.</div>
+        <div class="testimonial-footer">
+          <div class="testimonial-avatar">DC</div>
+          <div>
+            <div class="testimonial-name">Danny Chen</div>
+            <div class="testimonial-role">Head Chef — The Grand Hotel, Solihull</div>
+            <div class="testimonial-type">Hotel</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Final CTA -->
+<section class="final-cta">
+  <div class="final-cta-inner">
+    <h2>Ready to partner with a wholesaler that treats you like family?</h2>
+    <p>Join 5,000+ food businesses across the UK who trust Indus Foods for authentic ingredients, competitive pricing, and a team that genuinely cares. Minimum order just £75. No membership fees.</p>
+    <div class="final-cta-buttons">
+      <a href="#" class="btn-primary">Apply for a Trade Account →</a>
+      <a href="#" class="btn-whatsapp">💬 Chat on WhatsApp</a>
+      <a href="#" class="btn-outline-light">📞 Call 0121 771 4330</a>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="logo"><div class="logo-icon">IF</div> Indus Foods</div>
+      <p>Three generations of quality. Family-owned since 1962, supplying the UK's best kitchens, shops, and manufacturers from the heart of Birmingham.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Services</h5>
+      <a href="#">Food Service</a>
+      <a href="#">Manufacturing</a>
+      <a href="#">Retail</a>
+      <a href="#">Wholesale</a>
+    </div>
+    <div class="footer-col">
+      <h5>Our Brands</h5>
+      <a href="#">Sanam</a>
+      <a href="#">Shaan</a>
+      <a href="#">Falak Rice</a>
+      <a href="#">Lemon Tree</a>
+    </div>
+    <div class="footer-col">
+      <h5>Company</h5>
+      <a href="#">About Us</a>
+      <a href="#">Contact</a>
+      <a href="#">Trade Application</a>
+      <a href="#">Privacy Policy</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 Indus Foods Ltd. All rights reserved. Stratford Street North, Sparkbrook, Birmingham B11 1BU</p>
+    <p>Website by Small Giants Studio</p>
+  </div>
+</footer>
+
+</body>
+</html>

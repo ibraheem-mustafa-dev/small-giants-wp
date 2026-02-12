@@ -8,14 +8,24 @@ A custom WordPress development framework for Small Giants Studio. Contains a blo
 
 ```
 small-giants-wp/
-├── theme/sgs-theme/          # WordPress block theme
+├── theme/sgs-theme/          # WordPress block theme (has its own CLAUDE.md)
 ├── plugins/
-│   ├── sgs-blocks/           # Custom Gutenberg blocks + forms
-│   ├── sgs-booking/          # Appointment & event booking
-│   └── sgs-client-notes/     # Visual annotation system
+│   ├── sgs-blocks/           # Custom Gutenberg blocks + forms (has its own CLAUDE.md)
+│   ├── sgs-booking/          # Appointment & event booking (has its own CLAUDE.md)
+│   └── sgs-client-notes/     # Visual annotation system (has its own CLAUDE.md)
+├── sites/                    # Client-specific content (one folder per client)
+│   └── indus-foods/          # Indus Foods — mockups, content, research (has its own CLAUDE.md)
 ├── specs/                    # Specification documents (00-06)
-└── CLAUDE.md                 # This file
+└── CLAUDE.md                 # This file — framework-wide instructions
 ```
+
+Each sub-project has its own CLAUDE.md with component-specific instructions. Read the relevant one when working on that component.
+
+### Client Sites (`sites/`)
+
+Each client gets a folder under `sites/` containing mockups, content briefs, research docs, and a site-specific CLAUDE.md. Style variation JSON files stay in `theme/sgs-theme/styles/` (where WordPress reads them), but everything else lives here.
+
+Future clients (Dream Wedding, Workwear Now, etc.) get their own folder when onboarded.
 
 ## Naming Convention
 
