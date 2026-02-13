@@ -15,7 +15,13 @@
 		"html": false,
 		"color": {
 			"background": true,
-			"text": true
+			"text": true,
+			"link": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true,
+			"textAlign": true
 		},
 		"spacing": {
 			"margin": true,
@@ -61,6 +67,15 @@
 		"iconSize": {
 			"type": "string",
 			"default": "medium"
+		},
+		"headingColour": {
+			"type": "string"
+		},
+		"headingFontSize": {
+			"type": "string"
+		},
+		"descriptionColour": {
+			"type": "string"
 		},
 		"cardStyle": {
 			"type": "string",

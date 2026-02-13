@@ -26,7 +26,7 @@ import {
 	megaphone,
 } from '@wordpress/icons';
 import { DesignTokenPicker } from '../../components';
-import { colourVar } from '../../utils';
+import { colourVar, fontSizeVar } from '../../utils';
 
 const ICON_OPTIONS = [
 	{ label: __( 'Star', 'sgs-blocks' ), value: 'star-filled', icon: starFilled },
@@ -67,6 +67,15 @@ const ICON_SIZE_OPTIONS = [
 	{ label: __( 'Large', 'sgs-blocks' ), value: 'large' },
 ];
 
+const FONT_SIZE_OPTIONS = [
+	{ label: __( 'Default', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Small', 'sgs-blocks' ), value: 'small' },
+	{ label: __( 'Medium', 'sgs-blocks' ), value: 'medium' },
+	{ label: __( 'Large', 'sgs-blocks' ), value: 'large' },
+	{ label: __( 'XL', 'sgs-blocks' ), value: 'x-large' },
+	{ label: __( 'XXL', 'sgs-blocks' ), value: 'xx-large' },
+];
+
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		icon,
@@ -77,6 +86,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		iconColour,
 		iconBackgroundColour,
 		iconSize,
+		headingColour,
+		headingFontSize,
+		descriptionColour,
 		cardStyle,
 		hoverEffect,
 	} = attributes;
@@ -115,6 +127,40 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { hoverEffect: val } )
 						}
 						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Text Styling', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<DesignTokenPicker
+						label={ __( 'Heading colour', 'sgs-blocks' ) }
+						value={ headingColour }
+						onChange={ ( val ) =>
+							setAttributes( { headingColour: val } )
+						}
+					/>
+					<SelectControl
+						label={ __( 'Heading font size', 'sgs-blocks' ) }
+						value={ headingFontSize || '' }
+						options={ FONT_SIZE_OPTIONS }
+						onChange={ ( val ) =>
+							setAttributes( { headingFontSize: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					<DesignTokenPicker
+						label={ __(
+							'Description colour',
+							'sgs-blocks'
+						) }
+						value={ descriptionColour }
+						onChange={ ( val ) =>
+							setAttributes( {
+								descriptionColour: val,
+							} )
+						}
 					/>
 				</PanelBody>
 
@@ -205,6 +251,11 @@ export default function Edit( { attributes, setAttributes } ) {
 						setAttributes( { heading: val } )
 					}
 					placeholder={ __( 'Feature heading…', 'sgs-blocks' ) }
+					style={ {
+						color: colourVar( headingColour ) || undefined,
+						fontSize:
+							fontSizeVar( headingFontSize ) || undefined,
+					} }
 				/>
 				<RichText
 					tagName="p"
@@ -214,6 +265,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						setAttributes( { description: val } )
 					}
 					placeholder={ __( 'Description…', 'sgs-blocks' ) }
+					style={ {
+						color:
+							colourVar( descriptionColour ) || undefined,
+					} }
 				/>
 			</div>
 		</>

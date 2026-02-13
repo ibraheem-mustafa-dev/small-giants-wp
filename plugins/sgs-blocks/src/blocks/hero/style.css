@@ -70,7 +70,7 @@
 	margin: 0 0 var(--wp--preset--spacing--30) 0;
 }
 
-.sgs-hero--standard .sgs-hero__headline {
+.sgs-hero--standard .sgs-hero__headline:not([style*="color"]) {
 	color: var(--wp--preset--color--surface, #fff);
 }
 
@@ -81,7 +81,7 @@
 	margin: 0 0 var(--wp--preset--spacing--40) 0;
 }
 
-.sgs-hero--standard .sgs-hero__subheadline {
+.sgs-hero--standard .sgs-hero__subheadline:not([style*="color"]) {
 	color: var(--wp--preset--color--text-inverse, #C0D5D6);
 }
 

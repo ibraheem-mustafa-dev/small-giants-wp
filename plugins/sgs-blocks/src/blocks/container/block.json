@@ -16,7 +16,14 @@
 		"color": {
 			"background": true,
 			"text": true,
-			"gradients": true
+			"gradients": true,
+			"link": true,
+			"heading": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true,
+			"textAlign": true
 		},
 		"spacing": {
 			"margin": true,

@@ -67,15 +67,21 @@
 	font-size: var(--wp--preset--font-size--large);
 	font-weight: 700;
 	margin: 0 0 var(--wp--preset--spacing--20) 0;
+}
+
+.sgs-info-box__heading:not([style*="color"]) {
 	color: var(--wp--preset--color--text);
 }
 
 /* Description */
 .sgs-info-box__description {
 	font-size: var(--wp--preset--font-size--medium);
-	color: var(--wp--preset--color--text-muted);
 	margin: 0;
 	line-height: 1.6;
+}
+
+.sgs-info-box__description:not([style*="color"]) {
+	color: var(--wp--preset--color--text-muted);
 }
 
 /* ===== Hover Effects ===== */

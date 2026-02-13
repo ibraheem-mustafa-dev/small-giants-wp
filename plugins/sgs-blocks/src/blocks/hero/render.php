@@ -28,6 +28,14 @@ $cta_secondary_text = $attributes['ctaSecondaryText'] ?? '';
 $cta_secondary_url  = $attributes['ctaSecondaryUrl'] ?? '';
 $cta_secondary_style = $attributes['ctaSecondaryStyle'] ?? 'outline';
 
+$headline_colour       = $attributes['headlineColour'] ?? '';
+$sub_headline_font_size = $attributes['subHeadlineFontSize'] ?? '';
+$sub_headline_colour   = $attributes['subHeadlineColour'] ?? '';
+$cta_primary_colour    = $attributes['ctaPrimaryColour'] ?? '';
+$cta_primary_bg        = $attributes['ctaPrimaryBackground'] ?? '';
+$cta_secondary_colour  = $attributes['ctaSecondaryColour'] ?? '';
+$cta_secondary_bg      = $attributes['ctaSecondaryBackground'] ?? '';
+
 $is_split = 'split' === $variant;
 
 // Build wrapper styles.
@@ -65,23 +73,56 @@ if ( ! $is_split && ! empty( $bg_image['url'] ) ) {
 	$overlay_html = '<span class="sgs-hero__overlay" style="' . $overlay_style . '" aria-hidden="true"></span>';
 }
 
+// Helper: build inline style string from colour slug.
+$colour_var = function ( $slug ) {
+	if ( ! $slug ) {
+		return '';
+	}
+	return 'var(--wp--preset--color--' . esc_attr( $slug ) . ')';
+};
+
+$font_size_var = function ( $slug ) {
+	if ( ! $slug ) {
+		return '';
+	}
+	return 'var(--wp--preset--font-size--' . esc_attr( $slug ) . ')';
+};
+
 // Build CTA buttons.
 $ctas_html = '';
 if ( $cta_primary_text || $cta_secondary_text ) {
 	$ctas_html .= '<div class="sgs-hero__ctas">';
 	if ( $cta_primary_text ) {
+		$cta_pri_styles = array();
+		if ( $cta_primary_colour ) {
+			$cta_pri_styles[] = 'color:' . $colour_var( $cta_primary_colour );
+		}
+		if ( $cta_primary_bg ) {
+			$cta_pri_styles[] = 'background-color:' . $colour_var( $cta_primary_bg );
+		}
+		$cta_pri_style_attr = $cta_pri_styles ? ' style="' . implode( ';', $cta_pri_styles ) . '"' : '';
 		$ctas_html .= sprintf(
-			'<a href="%s" class="sgs-hero__cta sgs-hero__cta--%s">%s</a>',
+			'<a href="%s" class="sgs-hero__cta sgs-hero__cta--%s"%s>%s</a>',
 			esc_url( $cta_primary_url ),
 			esc_attr( $cta_primary_style ),
+			$cta_pri_style_attr,
 			esc_html( $cta_primary_text )
 		);
 	}
 	if ( $cta_secondary_text ) {
+		$cta_sec_styles = array();
+		if ( $cta_secondary_colour ) {
+			$cta_sec_styles[] = 'color:' . $colour_var( $cta_secondary_colour );
+		}
+		if ( $cta_secondary_bg ) {
+			$cta_sec_styles[] = 'background-color:' . $colour_var( $cta_secondary_bg );
+		}
+		$cta_sec_style_attr = $cta_sec_styles ? ' style="' . implode( ';', $cta_sec_styles ) . '"' : '';
 		$ctas_html .= sprintf(
-			'<a href="%s" class="sgs-hero__cta sgs-hero__cta--%s">%s</a>',
+			'<a href="%s" class="sgs-hero__cta sgs-hero__cta--%s"%s>%s</a>',
 			esc_url( $cta_secondary_url ),
 			esc_attr( $cta_secondary_style ),
+			$cta_sec_style_attr,
 			esc_html( $cta_secondary_text )
 		);
 	}
@@ -115,10 +156,22 @@ if ( ! empty( $badges ) ) {
 // Build content area.
 $content_html = '<div class="sgs-hero__content">';
 if ( $headline ) {
-	$content_html .= '<h1 class="sgs-hero__headline">' . wp_kses_post( $headline ) . '</h1>';
+	$headline_style = '';
+	if ( $headline_colour ) {
+		$headline_style = ' style="color:' . $colour_var( $headline_colour ) . '"';
+	}
+	$content_html .= '<h1 class="sgs-hero__headline"' . $headline_style . '>' . wp_kses_post( $headline ) . '</h1>';
 }
 if ( $sub_headline ) {
-	$content_html .= '<p class="sgs-hero__subheadline">' . wp_kses_post( $sub_headline ) . '</p>';
+	$sub_styles = array();
+	if ( $sub_headline_colour ) {
+		$sub_styles[] = 'color:' . $colour_var( $sub_headline_colour );
+	}
+	if ( $sub_headline_font_size ) {
+		$sub_styles[] = 'font-size:' . $font_size_var( $sub_headline_font_size );
+	}
+	$sub_style_attr = $sub_styles ? ' style="' . implode( ';', $sub_styles ) . '"' : '';
+	$content_html .= '<p class="sgs-hero__subheadline"' . $sub_style_attr . '>' . wp_kses_post( $sub_headline ) . '</p>';
 }
 $content_html .= $ctas_html;
 $content_html .= '</div>';

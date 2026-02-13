@@ -17,6 +17,7 @@ import {
 	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 } from '@wordpress/components';
 import { DesignTokenPicker } from '../../components';
+import { colourVar, fontSizeVar } from '../../utils';
 
 const VARIANT_OPTIONS = [
 	{ label: __( 'Standard', 'sgs-blocks' ), value: 'standard' },
@@ -99,6 +100,15 @@ function BadgeEditor( { badge, index, onChange, onRemove } ) {
 	);
 }
 
+const FONT_SIZE_OPTIONS = [
+	{ label: __( 'Default', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Small', 'sgs-blocks' ), value: 'small' },
+	{ label: __( 'Medium', 'sgs-blocks' ), value: 'medium' },
+	{ label: __( 'Large', 'sgs-blocks' ), value: 'large' },
+	{ label: __( 'XL', 'sgs-blocks' ), value: 'x-large' },
+	{ label: __( 'XXL', 'sgs-blocks' ), value: 'xx-large' },
+];
+
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		variant,
@@ -111,12 +121,19 @@ export default function Edit( { attributes, setAttributes } ) {
 		splitImage,
 		minHeight,
 		badges,
+		headlineColour,
+		subHeadlineFontSize,
+		subHeadlineColour,
 		ctaPrimaryText,
 		ctaPrimaryUrl,
 		ctaPrimaryStyle,
+		ctaPrimaryColour,
+		ctaPrimaryBackground,
 		ctaSecondaryText,
 		ctaSecondaryUrl,
 		ctaSecondaryStyle,
+		ctaSecondaryColour,
+		ctaSecondaryBackground,
 	} = attributes;
 
 	const isSplit = variant === 'split';
@@ -208,6 +225,38 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { minHeight: val } )
 						}
 						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Text Styling', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<DesignTokenPicker
+						label={ __( 'Headline colour', 'sgs-blocks' ) }
+						value={ headlineColour }
+						onChange={ ( val ) =>
+							setAttributes( { headlineColour: val } )
+						}
+					/>
+					<SelectControl
+						label={ __( 'Sub-headline font size', 'sgs-blocks' ) }
+						value={ subHeadlineFontSize || '' }
+						options={ FONT_SIZE_OPTIONS }
+						onChange={ ( val ) =>
+							setAttributes( { subHeadlineFontSize: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					<DesignTokenPicker
+						label={ __(
+							'Sub-headline colour',
+							'sgs-blocks'
+						) }
+						value={ subHeadlineColour }
+						onChange={ ( val ) =>
+							setAttributes( { subHeadlineColour: val } )
+						}
 					/>
 				</PanelBody>
 
@@ -384,6 +433,25 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 					/>
+					<DesignTokenPicker
+						label={ __( 'Text colour', 'sgs-blocks' ) }
+						value={ ctaPrimaryColour }
+						onChange={ ( val ) =>
+							setAttributes( { ctaPrimaryColour: val } )
+						}
+					/>
+					<DesignTokenPicker
+						label={ __(
+							'Background colour',
+							'sgs-blocks'
+						) }
+						value={ ctaPrimaryBackground }
+						onChange={ ( val ) =>
+							setAttributes( {
+								ctaPrimaryBackground: val,
+							} )
+						}
+					/>
 				</PanelBody>
 
 				<PanelBody
@@ -414,6 +482,27 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { ctaSecondaryStyle: val } )
 						}
 						__nextHasNoMarginBottom
+					/>
+					<DesignTokenPicker
+						label={ __( 'Text colour', 'sgs-blocks' ) }
+						value={ ctaSecondaryColour }
+						onChange={ ( val ) =>
+							setAttributes( {
+								ctaSecondaryColour: val,
+							} )
+						}
+					/>
+					<DesignTokenPicker
+						label={ __(
+							'Background colour',
+							'sgs-blocks'
+						) }
+						value={ ctaSecondaryBackground }
+						onChange={ ( val ) =>
+							setAttributes( {
+								ctaSecondaryBackground: val,
+							} )
+						}
 					/>
 				</PanelBody>
 
@@ -462,6 +551,9 @@ export default function Edit( { attributes, setAttributes } ) {
 							'Write your headline…',
 							'sgs-blocks'
 						) }
+						style={ {
+							color: colourVar( headlineColour ) || undefined,
+						} }
 					/>
 					<RichText
 						tagName="p"
@@ -474,12 +566,27 @@ export default function Edit( { attributes, setAttributes } ) {
 							'Supporting text…',
 							'sgs-blocks'
 						) }
+						style={ {
+							color:
+								colourVar( subHeadlineColour ) || undefined,
+							fontSize:
+								fontSizeVar( subHeadlineFontSize ) ||
+								undefined,
+						} }
 					/>
 
 					<div className="sgs-hero__ctas">
 						{ ctaPrimaryText && (
 							<span
 								className={ `sgs-hero__cta sgs-hero__cta--${ ctaPrimaryStyle }` }
+								style={ {
+									color:
+										colourVar( ctaPrimaryColour ) ||
+										undefined,
+									backgroundColor:
+										colourVar( ctaPrimaryBackground ) ||
+										undefined,
+								} }
 							>
 								{ ctaPrimaryText }
 							</span>
@@ -487,6 +594,15 @@ export default function Edit( { attributes, setAttributes } ) {
 						{ ctaSecondaryText && (
 							<span
 								className={ `sgs-hero__cta sgs-hero__cta--${ ctaSecondaryStyle }` }
+								style={ {
+									color:
+										colourVar( ctaSecondaryColour ) ||
+										undefined,
+									backgroundColor:
+										colourVar(
+											ctaSecondaryBackground
+										) || undefined,
+								} }
 							>
 								{ ctaSecondaryText }
 							</span>

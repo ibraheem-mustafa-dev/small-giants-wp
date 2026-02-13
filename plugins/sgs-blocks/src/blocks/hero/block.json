@@ -18,10 +18,19 @@
 			"text": true,
 			"gradients": false
 		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true,
+			"textAlign": true
+		},
 		"spacing": {
 			"margin": true,
 			"padding": true
 		}
+	},
+	"selectors": {
+		"root": ".sgs-hero",
+		"typography": ".sgs-hero__headline"
 	},
 	"attributes": {
 		"variant": {
@@ -64,6 +73,15 @@
 			"type": "array",
 			"default": []
 		},
+		"headlineColour": {
+			"type": "string"
+		},
+		"subHeadlineFontSize": {
+			"type": "string"
+		},
+		"subHeadlineColour": {
+			"type": "string"
+		},
 		"ctaPrimaryText": {
 			"type": "string"
 		},
@@ -74,6 +92,12 @@
 			"type": "string",
 			"default": "accent"
 		},
+		"ctaPrimaryColour": {
+			"type": "string"
+		},
+		"ctaPrimaryBackground": {
+			"type": "string"
+		},
 		"ctaSecondaryText": {
 			"type": "string"
 		},
@@ -83,6 +107,12 @@
 		"ctaSecondaryStyle": {
 			"type": "string",
 			"default": "outline"
+		},
+		"ctaSecondaryColour": {
+			"type": "string"
+		},
+		"ctaSecondaryBackground": {
+			"type": "string"
 		}
 	},
 	"render": "file:./render.php",

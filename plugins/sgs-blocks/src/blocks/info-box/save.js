@@ -1,5 +1,5 @@
 import { useBlockProps, RichText } from '@wordpress/block-editor';
-import { colourVar } from '../../utils';
+import { colourVar, fontSizeVar } from '../../utils';
 
 export default function Save( { attributes } ) {
 	const {
@@ -11,6 +11,9 @@ export default function Save( { attributes } ) {
 		iconColour,
 		iconBackgroundColour,
 		iconSize,
+		headingColour,
+		headingFontSize,
+		descriptionColour,
 		cardStyle,
 		hoverEffect,
 	} = attributes;
@@ -28,6 +31,15 @@ export default function Save( { attributes } ) {
 		backgroundColor: colourVar( iconBackgroundColour ),
 	};
 
+	const headingStyle = {
+		color: colourVar( headingColour ) || undefined,
+		fontSize: fontSizeVar( headingFontSize ) || undefined,
+	};
+
+	const descriptionStyle = {
+		color: colourVar( descriptionColour ) || undefined,
+	};
+
 	const cardContent = (
 		<>
 			<span
@@ -40,11 +52,13 @@ export default function Save( { attributes } ) {
 				tagName="h3"
 				className="sgs-info-box__heading"
 				value={ heading }
+				style={ headingStyle }
 			/>
 			<RichText.Content
 				tagName="p"
 				className="sgs-info-box__description"
 				value={ description }
+				style={ descriptionStyle }
 			/>
 		</>
 	);
