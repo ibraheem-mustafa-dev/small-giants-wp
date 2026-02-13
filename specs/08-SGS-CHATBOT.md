@@ -2,7 +2,7 @@
 
 ## Purpose
 
-A self-hosted WordPress plugin providing live chat, AI-powered chatbot, and hybrid chat modes. Replaces Tidio ($24-2999/month SaaS), LiveChat ($20-59/month per agent), Crisp ($45-295/month), tawk.to (free but SaaS-hosted), and Intercom ($29-132/month).
+A self-hosted WordPress plugin providing live chat, AI-powered chatbot, and hybrid chat modes. Replaces Tidio (free-$749/month, enterprise from $2,999), LiveChat ($20-59/month per agent), Crisp (free-EUR 295/month), tawk.to (free but SaaS-hosted), and Intercom ($29-132/seat/month).
 
 **Core advantage over SaaS competitors:** All conversation data stays on the WordPress server. No per-agent licensing. Widget appearance reads from theme.json design tokens. AI processing delegated to N8N (use any LLM — OpenAI, Anthropic, local models). Zero vendor lock-in.
 
@@ -90,19 +90,20 @@ sgs-chatbot/
 
 - Visitor sends message → stored in DB → appears in admin inbox
 - Operator responds from admin inbox → stored in DB → pushed to visitor widget
-- Real-time updates via Server-Sent Events (SSE) with long-polling fallback
+- Real-time updates via long-polling (primary) with Server-Sent Events (SSE) as an upgrade path. SSE holds a PHP process open per connection, which is impractical on shared hosting (Hostinger limits concurrent PHP workers to 5-15 and may terminate long-running requests after 30-300 seconds). Long-polling with a 15-second cycle is the realistic default
 - Typing indicators (both directions)
 - Operator can transfer conversation to another operator
 - Offline mode: when no operators online, widget shows "Leave a message" form instead
 
 ### 2. AI Chat (N8N + LLM)
 
-- Visitor sends message → stored in DB → forwarded to N8N webhook
-- N8N workflow: retrieves relevant KB articles → constructs prompt with context → calls LLM → returns response
-- Response stored in DB → pushed to visitor widget
+- Visitor sends message → stored in DB → immediate 200 response to visitor (message accepted)
+- Asynchronously: `wp_remote_post` fires N8N webhook with 2-second timeout (fire-and-forget). N8N processes and calls back to a `POST /sgs-chatbot/v1/ai-response` endpoint with the result. This avoids blocking a PHP worker for the full LLM processing time (which can be 5-15 seconds)
+- Response stored in DB → delivered to visitor widget via next poll cycle
+- Widget shows typing indicator ("AI is thinking...") between sending and receiving response
 - AI messages clearly marked as "AI Assistant" (not pretending to be human)
 - Conversation context maintained (last 10 messages sent with each request for continuity)
-- Fallback: if N8N webhook times out (>15s) or returns error, show "Sorry, I couldn't process that. Would you like to speak to a human?"
+- Fallback: if no AI response received within 30 seconds, show "Sorry, I couldn't process that. Would you like to speak to a human?"
 
 ### 3. Hybrid Chat (AI-first, Human Escalation)
 
@@ -198,7 +199,7 @@ Start a new conversation.
 }
 ```
 
-The `visitor_token` is a short-lived JWT (24h) that authenticates subsequent messages for this conversation. Stored in sessionStorage on the client.
+The `visitor_token` is a random 64-character hex string stored in the `sgs_chat_conversations` table alongside the conversation. No JWT or cryptographic signing needed — the token is validated by a simple database lookup. Stored in sessionStorage on the client. Expires when conversation is resolved or after 24 hours of inactivity.
 
 #### `POST /conversations/{id}/messages`
 
@@ -583,7 +584,7 @@ Admin settings under Settings → SGS Chatbot:
 **Mobile-specific:**
 - Chat panel becomes full-screen overlay on mobile
 - Close button: minimum 44×44px touch target
-- Input field positioned above virtual keyboard (uses `visualViewport` API)
+- Input field positioned above virtual keyboard (uses `visualViewport` API with `dvh` unit fallback — Safari has known issues with `visualViewport` resize events when keyboard appears)
 - Back button / swipe-down to minimise
 
 ---
@@ -634,7 +635,7 @@ Admin settings under Settings → SGS Chatbot:
 ## Security
 
 - **REST API nonces** — all visitor endpoints verified via `wp_rest` nonce
-- **Visitor tokens** — JWT with 24h expiry, conversation-scoped (visitors can only access their own conversations)
+- **Visitor tokens** — random 64-char hex string, conversation-scoped, validated by DB lookup (visitors can only access their own conversations)
 - **Admin endpoints** — capability check (`manage_options`) on all admin REST routes
 - **N8N webhook authentication** — HMAC-SHA256 signature verification on all outgoing webhooks
 - **Input sanitisation** — all messages sanitised with `wp_kses_post()` before storage
@@ -662,16 +663,16 @@ Admin settings under Settings → SGS Chatbot:
 
 | Feature | Tidio | LiveChat | Crisp | tawk.to | Intercom | SGS Chatbot |
 |---|---|---|---|---|---|---|
-| Pricing | $24-2999/mo | $20-59/mo/agent | $45-295/mo | Free (+$29 branding) | $29-132/mo | Free (self-hosted) |
+| Pricing | Free-$749/mo (enterprise $2,999) | $20-59/mo/agent | Free-EUR 295/mo | Free (+$29 branding) | $29-132/seat/mo | Free (self-hosted) |
 | Data location | SaaS (EU/US) | SaaS | SaaS (EU) | SaaS | SaaS (US) | Your server |
 | AI chatbot | Lyro AI (paid) | ChatBot add-on | Basic | No | Fin AI ($0.99/resolution) | Any LLM via N8N |
-| Custom LLM | No | No | No | No | No | Yes (via N8N) |
+| Custom LLM | No | No | Yes (via API, EUR 0.10/action) | No | No | Yes (via N8N) |
 | Knowledge base | Built-in | Separate product | Built-in | Built-in | Built-in | Built-in + N8N RAG |
 | Theme integration | Limited | Limited | Limited | Limited | Limited | Native theme.json tokens |
 | Block editor | No | No | No | No | No | Admin uses React, widget uses Interactivity API |
-| Per-agent pricing | Yes | Yes | Yes | No | Yes | No |
+| Per-agent pricing | Yes | Yes | Yes | No | Yes (per seat) | No |
 | GDPR self-hosted | No (SaaS) | No (SaaS) | Yes (EU hosting) | No (SaaS) | No (SaaS) | Yes (fully self-hosted) |
-| Performance | External script ~80KB | External script ~120KB | External script ~100KB | External script ~200KB | External script ~150KB | < 14KB total (no external scripts) |
+| Performance | External ~200-250KB | External ~350-385KB | External ~100KB | External ~300KB JS (~750KB total) | External ~300KB | < 14KB total (no external scripts) |
 
 ---
 

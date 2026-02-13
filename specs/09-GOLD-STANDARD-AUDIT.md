@@ -1,8 +1,19 @@
 # Gold Standard Audit — SGS Blocks vs Competitors
 
+> **STATUS: DRAFT — REQUIRES LIVE RESEARCH VERIFICATION**
+>
+> This audit was initially written from cached knowledge and contains known inaccuracies
+> (particularly around GenerateBlocks 2.x features, Kadence 3.x updates, and Elementor 4.x
+> Container improvements). A follow-up session using Firecrawl scrapes of actual product
+> pages is needed to verify every cell. See `CONVERSATION-HANDOFF.md` for the research plan.
+>
+> **Known corrections applied:** Kadence Count Up block, Kadence/Spectra testimonial carousels,
+> Kadence/Spectra shape dividers and background video, GenerateBlocks 2.x Accordion/Tabs/Carousel/
+> Conditions, Kadence mega menu, WordPress core Copy/Paste Styles, pricing corrections.
+
 ## Overview
 
-Per-block comparison of the 25 SGS blocks against their closest equivalents in Kadence Blocks Pro ($119-299/yr), Spectra Pro ($69-249/yr), GenerateBlocks Pro ($79/yr), and Elementor Pro ($59-399/yr). Followed by cross-cutting concerns audit.
+Per-block comparison of the 25 SGS blocks against their closest equivalents in Kadence Blocks Pro ($69-299/yr depending on bundle), Spectra Pro ($49-199/yr), GenerateBlocks Pro ($99/yr), and Elementor Pro ($59-999/yr). Followed by cross-cutting concerns audit.
 
 **Rating key:**
 - **Full** — Feature present with comparable or superior implementation
@@ -28,8 +39,8 @@ Per-block comparison of the 25 SGS blocks against their closest equivalents in K
 | CSS Grid layout | Full | Full | Full | Full | Partial (basic) |
 | Stack (vertical) layout | Full | Full | Full | Full | Full |
 | Background image/gradient | Full (via supports) | Full | Full | Full | Full |
-| Background video | None | None | None | None | Full |
-| Shape dividers | None | None | None | Pro | Full (15+ shapes) |
+| Background video | None | Full (Row Layout) | Full | None | Full |
+| Shape dividers | None | Full (Row Layout, Pro adds more) | Full (20+ shapes) | Full (free since 1.2) | Full (15+ shapes) |
 | Per-breakpoint padding/margin | Full | Full | Full | Full | Full |
 | Inner content width control | Full | Full | Full | Full | Full |
 | Min/max height | Full | Full | Full | Full | Full |
@@ -38,7 +49,7 @@ Per-block comparison of the 25 SGS blocks against their closest equivalents in K
 | **Performance** | Dynamic render.php, zero JS | Zero JS | Zero JS | Zero JS | 40KB+ base CSS |
 | **Gap** | Shape dividers, background video, sticky positioning |
 
-**Recommendation:** Add shape dividers as an optional extension (SVG clip-path, < 1KB CSS). Background video is heavy and rarely used — defer. Sticky positioning can be a CSS utility class rather than a block feature.
+**Recommendation:** Shape dividers are standard across all competitors — this is a real gap. Add as an optional extension (SVG clip-path, < 1KB CSS). Background video is offered by Kadence and Spectra too — consider for Phase 2. Sticky positioning can be a CSS utility class.
 
 ---
 
@@ -47,7 +58,7 @@ Per-block comparison of the 25 SGS blocks against their closest equivalents in K
 | Feature | SGS | Kadence | Spectra | GenerateBlocks | Elementor Pro |
 |---|---|---|---|---|---|
 | Full-width with background image | Full | Full (via Container) | Full (via Container) | Full (via Container) | Full |
-| Video background | None | None | None | None | Full |
+| Video background | None | Full (via Row Layout) | Full (via Container) | None | Full |
 | Headline customisation (colour, size) | Full | Full | Full | Full | Full |
 | Sub-headline customisation | Full | Full | Full | Full | Full |
 | CTA button (text + bg colour) | Full | Full | Full | Partial | Full |
@@ -87,15 +98,15 @@ Per-block comparison of the 25 SGS blocks against their closest equivalents in K
 
 | Feature | SGS | Kadence | Spectra | GenerateBlocks | Elementor Pro |
 |---|---|---|---|---|---|
-| Animated number counting | Full | None (no native counter) | Full | None | Full |
-| Prefix/suffix text | Full | N/A | Full | N/A | Full |
-| Decimal support | Full | N/A | Full | N/A | Full |
-| Duration control | Full | N/A | Full | N/A | Full |
-| Number colour | Full | N/A | Full | N/A | Full |
-| Label colour + size | Full | N/A | Full | N/A | Full |
-| Thousands separator | Full | N/A | Full | N/A | Full |
-| Icon/image above number | None | N/A | None | N/A | Full |
-| **Performance** | 839B viewScriptModule | N/A | ~5KB | N/A | 40KB+ base |
+| Animated number counting | Full | Full (Count Up block) | Full | None | Full |
+| Prefix/suffix text | Full | Full | Full | N/A | Full |
+| Decimal support | Full | Full | Full | N/A | Full |
+| Duration control | Full | Full | Full | N/A | Full |
+| Number colour | Full | Full | Full | N/A | Full |
+| Label colour + size | Full | Full | Full | N/A | Full |
+| Thousands separator | Full | Full | Full | N/A | Full |
+| Icon/image above number | None | Full | None | N/A | Full |
+| **Performance** | 839B viewScriptModule | ~3KB | ~5KB | N/A | 40KB+ base |
 | **Gap** | Optional icon/image above number |
 
 **Recommendation:** Minor — add optional icon slot above number. Low priority since Trust Bar covers the icon + number pattern.
@@ -153,13 +164,13 @@ Per-block comparison of the 25 SGS blocks against their closest equivalents in K
 | Feature | SGS | Kadence | Spectra | GenerateBlocks | Elementor Pro |
 |---|---|---|---|---|---|
 | Single testimonial card | Full | Full | Full | N/A | Full |
-| Slider/carousel | Full | None (single only) | None | N/A | Full (Carousel widget) |
+| Slider/carousel | Full | Full (grid + carousel layouts) | Full (built-in carousel mode) | N/A | Full (Carousel widget) |
 | Star rating display | Full | Full | Full | N/A | Full |
 | Quote text customisation | Full (colour) | Full | Full | N/A | Full |
 | Name + role customisation | Full (colour + size) | Full | Full | N/A | Full |
 | Avatar/photo | Full | Full | Full | N/A | Full |
-| Slider autoplay | Full | N/A | N/A | N/A | Full |
-| Slider dots/arrows | Full | N/A | N/A | N/A | Full |
+| Slider autoplay | Full | Full | Full | N/A | Full |
+| Slider dots/arrows | Full | Full | Full | N/A | Full |
 | Schema markup (Review) | None | None | Full (Review block) | N/A | None |
 | **Performance** | 1.63KB viewScriptModule | Zero JS | Zero JS | N/A | 40KB+ |
 | **Gap** | Schema markup for reviews/testimonials |
@@ -204,14 +215,14 @@ Per-block comparison of the 25 SGS blocks against their closest equivalents in K
 
 | Feature | SGS | Kadence | Spectra | GenerateBlocks | Elementor Pro |
 |---|---|---|---|---|---|
-| Expandable sections | Full | Full | Full | N/A | Full |
-| FAQ Schema markup | None | Full | Full | N/A | Full |
-| Allow multiple open | Full | Full | Full | N/A | Full |
-| Custom icon (open/close) | None | Full | Full | N/A | Full |
-| Nested accordions | None | None | None | N/A | Full |
-| Title typography control | Full | Full | Full | N/A | Full |
-| Content area (inner blocks) | Full | Full | Full | N/A | Full |
-| Initial open item | Full | Full | Full | N/A | Full |
+| Expandable sections | Full | Full | Full | Pro (v2.x+) | Full |
+| FAQ Schema markup | None | Full | Full | Needs verification | Full |
+| Allow multiple open | Full | Full | Full | Needs verification | Full |
+| Custom icon (open/close) | None | Full (basic free, custom SVG Pro) | Full | Needs verification | Full |
+| Nested accordions | None | None | None | Needs verification | Full |
+| Title typography control | Full | Full | Full | Needs verification | Full |
+| Content area (inner blocks) | Full | Full | Full | Needs verification | Full |
+| Initial open item | Full | Full | Full | Needs verification | Full |
 | **Gap** | FAQ Schema markup, custom open/close icons |
 
 **Recommendation:** Add FAQ Schema (`schema.org/FAQPage`) JSON-LD output — critical for SEO. Add `openIcon` and `closeIcon` attributes (chevron, plus/minus, arrow). Both Kadence and Spectra offer these.
@@ -222,14 +233,14 @@ Per-block comparison of the 25 SGS blocks against their closest equivalents in K
 
 | Feature | SGS | Kadence | Spectra | GenerateBlocks | Elementor Pro |
 |---|---|---|---|---|---|
-| Tabbed content panels | Full | Full | Full | N/A | Full |
-| Horizontal tabs | Full | Full | Full | N/A | Full |
-| Vertical tabs | None | Full | Full | N/A | Full |
-| Tab icon | None | Full | Full | N/A | Full |
-| Tab alignment | Full | Full | Full | N/A | Full |
-| Initial active tab | Full | Full | Full | N/A | Full |
-| Tab content (inner blocks) | Full | Full | Full | N/A | Full |
-| Anchor links to tabs | None | Full | Full | N/A | Full |
+| Tabbed content panels | Full | Full | Full | Pro (v2.x+) | Full |
+| Horizontal tabs | Full | Full | Full | Needs verification | Full |
+| Vertical tabs | None | Full | Full | Needs verification | Full |
+| Tab icon | None | Full | Full | Needs verification | Full |
+| Tab alignment | Full | Full | Full | Needs verification | Full |
+| Initial active tab | Full | Full | Full | Needs verification | Full |
+| Tab content (inner blocks) | Full | Full | Full | Needs verification | Full |
+| Anchor links to tabs | None | Full | Full | Needs verification | Full |
 | **Gap** | Vertical tab layout, tab icons, anchor/deep links |
 
 **Recommendation:** Add vertical tab layout (tabs on left, content on right). Add optional icon per tab. Add URL hash anchoring so direct links can open specific tabs.
@@ -389,14 +400,14 @@ Per-block comparison of the 25 SGS blocks against their closest equivalents in K
 
 | Feature | SGS | Kadence | Spectra | GenerateBlocks | Elementor Pro |
 |---|---|---|---|---|---|
-| Multi-column dropdowns | Full | None | None | None | Pro |
-| Template part content areas | Full | N/A | N/A | N/A | Custom content areas |
-| Full keyboard navigation | Full | N/A | N/A | N/A | Partial |
-| ARIA menubar pattern | Full | N/A | N/A | N/A | Partial |
-| Mobile accordion fallback | Full | N/A | N/A | N/A | Full |
+| Multi-column dropdowns | Full | Pro (Advanced Navigation) | None | None | Pro |
+| Template part content areas | Full | Pro (inner block content areas) | N/A | N/A | Custom content areas |
+| Full keyboard navigation | Full | Needs verification | N/A | N/A | Partial |
+| ARIA menubar pattern | Full | Needs verification | N/A | N/A | Partial |
+| Mobile accordion fallback | Full | Needs verification | N/A | N/A | Full |
 | Interactivity API | Full | N/A | N/A | N/A | jQuery |
 
-**Recommendation:** No gaps. Most block plugin ecosystems have no native mega menu. Elementor Pro's version is heavy and has known WCAG issues.
+**Recommendation:** Kadence Pro has a competing mega menu via Advanced Navigation. SGS's template-part-based approach and Interactivity API are differentiators. Need to verify Kadence's keyboard navigation and ARIA compliance in follow-up research.
 
 ---
 
@@ -431,9 +442,9 @@ Per-block comparison of the 25 SGS blocks against their closest equivalents in K
 
 | Concern | SGS | Kadence | Spectra | GenerateBlocks | Elementor Pro |
 |---|---|---|---|---|---|
-| Copy styles from one block, paste to another | None | None | None | None | Full (Right-click → Copy/Paste Style) |
+| Copy styles from one block, paste to another | None (but WP core has it) | Full (Kadence 3.0+) | Full (via WP core) | Full (via WP core) | Full (Right-click → Copy/Paste Style) |
 
-**Recommendation:** This is an Elementor exclusive. WordPress core has no equivalent. Building this would require a custom clipboard mechanism (store styles in sessionStorage, paste via block toolbar action). Nice-to-have, low priority — the block supports system and theme.json tokens already ensure consistency.
+**Recommendation:** WordPress core added Copy Styles / Paste Styles to the block toolbar three-dot menu in WP 6.2+. SGS blocks already inherit this via core. However, SGS custom attributes (per-element colours, sizes) may not be included in core's copy/paste — verify whether custom attributes are handled. If not, extend the copy/paste mechanism to include SGS-specific attributes.
 
 ---
 
@@ -453,7 +464,7 @@ Per-block comparison of the 25 SGS blocks against their closest equivalents in K
 
 | Concern | SGS | Kadence | Spectra | GenerateBlocks | Elementor Pro |
 |---|---|---|---|---|---|
-| Pre-built patterns/templates | None | 800+ (Pro) | 100+ templates | 30+ patterns | 300+ templates |
+| Pre-built patterns/templates | None | ~650+ (Pro) | 100+ templates | 30+ patterns | 300+ templates |
 | Pattern categories | N/A | Full | Full | Basic | Full |
 | One-click import | N/A | Full | Full | Full | Full |
 | **Gap assessment** | SGS has zero pre-built patterns. Competitors use patterns as a major selling point and onboarding tool. |
@@ -479,10 +490,10 @@ Per-block comparison of the 25 SGS blocks against their closest equivalents in K
 
 | Concern | SGS | Kadence | Spectra | GenerateBlocks | Elementor Pro |
 |---|---|---|---|---|---|
-| Show/hide blocks by user role | None | Pro (Kadence Conversions) | Full (Display Conditions extension) | None | Full (Conditions) |
-| Show/hide by login state | None | Pro | Full | None | Full |
-| Show/hide by date/time | None | Pro | Full | None | Full |
-| Show/hide by URL parameter | None | None | None | None | Full |
+| Show/hide blocks by user role | None | Pro (Kadence Conversions) | Full (Display Conditions extension) | Pro (Conditions, v2.4+) | Full (Conditions) |
+| Show/hide by login state | None | Pro | Full | Pro (v2.4+) | Full |
+| Show/hide by date/time | None | Pro | Full | Pro (v2.4+) | Full |
+| Show/hide by URL parameter | None | None | None | Needs verification | Full |
 | **Gap assessment** | SGS currently has device-based visibility (hideOnMobile/Tablet/Desktop) but no role/login/schedule visibility. Spectra's Display Conditions extension is comprehensive. |
 
 **Recommendation:** Extend the existing Visibility Extension to add: `hideWhenLoggedIn`, `hideWhenLoggedOut`, `hideForRoles` (array), `showAfterDate`, `showBeforeDate`. These are server-side checks in render.php — zero frontend cost. Important for client sites that show different content to members vs visitors.
@@ -562,10 +573,10 @@ Per-block comparison of the 25 SGS blocks against their closest equivalents in K
 
 **SGS beats all competitors on:**
 1. **Purpose-built blocks** — Trust Bar, Heritage Strip, Brand Strip, WhatsApp CTA, Certification Bar, Announcement Bar, Google Reviews, Mega Menu, Decorative Image have no direct equivalents
-2. **Performance** — < 100KB CSS + < 50KB JS budget vs Elementor's 200-400KB baseline
+2. **Performance** — < 100KB CSS + < 50KB JS budget vs Elementor's heavier baseline (improved with Containers + asset loading optimisation in 4.x, but still larger than native blocks)
 3. **Interactivity API** — modern, WordPress-native interactive blocks vs jQuery-dependent competitors
 4. **Accessibility** — WCAG 2.2 AA as non-negotiable vs competitors' inconsistent compliance
-5. **Zero licensing** — no per-site fees vs $59-399/year for competitors
+5. **Zero licensing** — no per-site fees vs $59-999/year for competitors
 
 **Key areas to address:**
 1. **SEO schema markup** — FAQ and Review schema on Accordion and Testimonial blocks (Kadence and Spectra offer this)

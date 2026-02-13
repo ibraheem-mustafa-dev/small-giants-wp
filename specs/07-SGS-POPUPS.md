@@ -2,11 +2,11 @@
 
 ## Purpose
 
-A standalone WordPress plugin for creating, targeting, and measuring conversion pop-ups. Replaces OptinMonster ($9-49/month SaaS), Popup Maker (free + $99-299 Pro), Convert Pro ($99/year), Elementor Pro's popup builder ($59-399/year), and Hustle Pro ($3+/month).
+A standalone WordPress plugin for creating, targeting, and measuring conversion pop-ups. Replaces OptinMonster ($7-49/month SaaS), Popup Maker (free + $99-249/yr Pro), Convert Pro ($99/yr or $399 lifetime), Elementor Pro's popup builder ($59-999/year), and Hustle Pro (requires WPMU DEV membership, $30+/year).
 
 **Core advantage over competitors:** Zero external SaaS dependency, zero per-site licensing, native block editor content, full Interactivity API integration, no performance penalty on pages without pop-ups, and deep integration with SGS Forms for lead capture.
 
-**Core advantage over Elementor:** Elementor treats entire pages as popups (heavy DOM), requires Pro licence per site, generates deeply nested markup, and loads popup JS/CSS globally. SGS loads zero popup assets on pages without active popups.
+**Core advantage over Elementor:** Elementor Pro has a dedicated popup builder (including a Hello Bar template type) but requires a per-licence annual fee, loads popup assets globally, and generates heavier markup. SGS loads zero popup assets on pages without active popups.
 
 ---
 
@@ -285,7 +285,7 @@ class SGS_Display_Rules {
         // 2. For each popup, evaluate rules against current request:
         //    - Page targeting (is_page, is_single, get_queried_object_id, etc.)
         //    - User targeting (is_user_logged_in, current_user_can, cookie check)
-        //    - Device targeting (wp_is_mobile + user agent parsing)
+        //    - Device targeting (user agent parsing — wp_is_mobile() cannot distinguish tablet from phone, so custom UA detection needed for 3-way split. Note: creates page caching considerations)
         //    - Referrer targeting ($_SERVER['HTTP_REFERER'])
         //    - Schedule targeting (current_time vs start/end)
         // 3. Return array of matching popup IDs + their trigger configs
@@ -362,7 +362,7 @@ Records an analytics event. Called from frontend JS.
 }
 ```
 
-**Security:** Nonce-verified via `wp_rest` nonce injected into page. Rate-limited to 10 events per second per IP to prevent abuse. No sensitive data stored — just aggregate counts.
+**Security:** For logged-in users, nonce-verified via `wp_rest` nonce as URL parameter. For anonymous visitors (the majority), nonces are not available — the endpoint relies on rate-limiting (10 events per second per IP) and input validation (only accepts known popup IDs and valid event types). No sensitive data stored — just aggregate counts, so the risk of unauthenticated access is limited to count inflation.
 
 #### `GET /sgs-popups/v1/analytics`
 
@@ -418,7 +418,7 @@ Admin settings under Settings → SGS Pop-ups:
 |---|---|---|---|
 | Global enable | Toggle | On | Master switch to disable all popups |
 | Respect Do Not Track | Toggle | On | Skip analytics recording when DNT header is set |
-| GDPR mode | Toggle | Off | Require cookie consent before showing popups (checks for CookieYes/Complianz/CookieBot consent cookie) |
+| GDPR mode | Toggle | Off | Require cookie consent before showing popups (checks for CookieYes/Complianz/Cookiebot consent cookie) |
 | GDPR consent cookie name | Text | `cookieyes-consent` | Cookie name to check for GDPR consent |
 | Max popups per page | Number | 1 | Maximum simultaneous popups per page load |
 | Priority mode | Select | First match | First match / Highest priority / Random |
@@ -538,15 +538,20 @@ const { state, actions, callbacks } = store( 'sgs/popups', {
         },
         recordEvent( eventType ) {
             const ctx = getContext();
-            navigator.sendBeacon(
-                sgsPopupsSettings.restUrl + 'sgs-popups/v1/event',
-                JSON.stringify({
+            // Use Blob with application/json type so sendBeacon sets correct Content-Type.
+            // Nonce passed as URL param since sendBeacon cannot set custom headers.
+            // For anonymous visitors, endpoint uses rate-limiting instead of nonce auth.
+            const url = sgsPopupsSettings.restUrl + 'sgs-popups/v1/event'
+                + '?_wpnonce=' + encodeURIComponent( sgsPopupsSettings.nonce );
+            const blob = new Blob(
+                [ JSON.stringify({
                     popup_id: ctx.popupId,
                     variant: ctx.variant,
                     event_type: eventType,
-                    _wpnonce: sgsPopupsSettings.nonce,
-                })
+                }) ],
+                { type: 'application/json' }
             );
+            navigator.sendBeacon( url, blob );
         },
         convert() {
             const ctx = getContext();
@@ -653,7 +658,7 @@ When an SGS Form block is placed inside a popup's block editor content:
 
 - **No personal data stored** — analytics are aggregate counts, not per-visitor
 - **Cookie usage:** Only a small frequency-capping cookie (`sgs_popup_{id}` = impression count, 1-30 day expiry)
-- **GDPR consent mode:** When enabled, the plugin checks for a third-party consent cookie (CookieYes, Complianz, CookieBot) before showing any popups. No consent → no popups → no cookies
+- **GDPR consent mode:** When enabled, the plugin checks for third-party consent signals before showing any popups. CookieYes: reads `cookieyes-consent` cookie. Cookiebot: reads `CookieConsent` cookie. Complianz: uses their JS API (`cmplz_event_status`) rather than reading cookies directly (per Complianz documentation). No consent → no popups → no cookies
 - **Do Not Track:** When the `Respect DNT` setting is on, `navigator.sendBeacon` calls for analytics are skipped for visitors with DNT enabled
 - **No external requests** — all popup content is served from the WordPress site itself, no third-party SaaS calls
 - **Data retention:** Analytics data automatically pruned by daily cron based on configured retention period
@@ -708,15 +713,15 @@ CREATE TABLE {prefix}sgs_popup_events (
 
 | Feature | OptinMonster | Popup Maker | Convert Pro | Elementor Pro | SGS Pop-ups |
 |---|---|---|---|---|---|
-| Pricing | $9-49/month SaaS | Free + $99-299 Pro | $99/year | $59-399/year | Free (self-hosted) |
+| Pricing | $7-49/month SaaS | Free + $99-249/yr Pro | $99/yr or $399 lifetime | $59-999/year | Free (self-hosted) |
 | Block editor content | No (proprietary builder) | Limited | No | Elementor builder | Full WordPress block editor |
-| Exit intent | Yes (patented term) | Pro only | Yes | Yes | Yes |
-| A/B testing | Yes (all plans) | Pro only | Yes | No | Yes |
-| Analytics | Yes (SaaS dashboard) | Basic | Basic | No | Built-in per-popup |
+| Exit intent | Yes (trademarked term) | Pro only | Yes | Yes | Yes |
+| A/B testing | Plus plan+ ($19/mo) | Pro only | Yes | No | Yes |
+| Analytics | Yes (SaaS dashboard) | Basic | Basic | Via JS events only | Built-in per-popup |
 | GDPR consent mode | Basic | Basic | Yes | No | Yes (auto-detects consent plugins) |
 | Performance impact | External JS on all pages | Plugin JS on all pages | Plugin JS on all pages | Elementor JS on all pages | Zero assets on pages without popups |
 | SGS Forms integration | No | No | No | No | Native |
-| Per-site licensing | Per-site SaaS fee | One-time Pro licence | One-time | Per-site annual | None |
+| Per-site licensing | Per-site SaaS fee | Annual Pro licence | Annual or lifetime | Per-licence annual | None |
 
 ---
 
