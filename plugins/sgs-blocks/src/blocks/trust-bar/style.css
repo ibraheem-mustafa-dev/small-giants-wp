@@ -1,0 +1,65 @@
+/* ===== SGS Trust Bar — Frontend + Editor ===== */
+
+.sgs-trust-bar {
+	display: flex;
+	justify-content: space-evenly;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: var(--wp--preset--spacing--40);
+	padding: var(--wp--preset--spacing--40) var(--wp--preset--spacing--50);
+	text-align: center;
+}
+
+.sgs-trust-bar:not([style*="background"]) {
+	background-color: var(--wp--preset--color--primary-dark);
+}
+
+/* Individual stat item */
+.sgs-trust-bar__item {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	min-width: 120px;
+}
+
+/* Value / number */
+.sgs-trust-bar__value {
+	display: block;
+	font-size: var(--wp--preset--font-size--x-large, 2rem);
+	font-weight: 700;
+	line-height: 1.1;
+	margin-bottom: var(--wp--preset--spacing--10);
+}
+
+.sgs-trust-bar__value:not([style*="color"]) {
+	color: var(--wp--preset--color--surface, #fff);
+}
+
+/* Label */
+.sgs-trust-bar__label {
+	display: block;
+	font-size: var(--wp--preset--font-size--small);
+	line-height: 1.4;
+	opacity: 0.85;
+}
+
+.sgs-trust-bar__label:not([style*="color"]) {
+	color: var(--wp--preset--color--text-inverse, #C0D5D6);
+}
+
+/* ===== Responsive — 2x2 grid on mobile ===== */
+@media (max-width: 767px) {
+	.sgs-trust-bar {
+		gap: var(--wp--preset--spacing--30);
+		padding: var(--wp--preset--spacing--30);
+	}
+
+	.sgs-trust-bar__item {
+		flex: 1 1 40%;
+		min-width: 0;
+	}
+
+	.sgs-trust-bar__value {
+		font-size: var(--wp--preset--font-size--large, 1.5rem);
+	}
+}

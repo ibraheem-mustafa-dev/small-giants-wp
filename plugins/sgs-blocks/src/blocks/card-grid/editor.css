@@ -1,0 +1,19 @@
+/* ===== SGS Card Grid — Editor Only ===== */
+
+.sgs-card-grid {
+	border: 1px dashed rgba(0, 0, 0, 0.1);
+	min-height: 100px;
+	padding: var(--wp--preset--spacing--20);
+}
+
+.sgs-card-grid:hover {
+	border-color: var(--wp--preset--color--primary, #0F7E80);
+}
+
+.sgs-card-grid__placeholder {
+	grid-column: 1 / -1;
+	text-align: center;
+	color: var(--wp--preset--color--text-muted, #555);
+	font-style: italic;
+	padding: var(--wp--preset--spacing--40);
+}

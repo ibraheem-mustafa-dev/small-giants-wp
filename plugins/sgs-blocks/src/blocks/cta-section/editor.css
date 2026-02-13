@@ -1,0 +1,15 @@
+/* ===== SGS CTA Section — Editor Only ===== */
+
+.sgs-cta-section {
+	border: 1px dashed rgba(0, 0, 0, 0.1);
+	min-height: 120px;
+}
+
+.sgs-cta-section:hover {
+	border-color: var(--wp--preset--color--primary, #0F7E80);
+}
+
+/* Preview buttons as non-interactive in editor */
+.sgs-cta-section__btn {
+	pointer-events: none;
+}

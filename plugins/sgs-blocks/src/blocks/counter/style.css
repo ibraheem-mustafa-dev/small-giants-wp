@@ -1,0 +1,30 @@
+/* ===== SGS Counter — Frontend + Editor ===== */
+
+.sgs-counter {
+	text-align: center;
+	padding: var(--wp--preset--spacing--30) var(--wp--preset--spacing--20);
+}
+
+/* Number */
+.sgs-counter__number {
+	display: block;
+	font-size: var(--wp--preset--font-size--xx-large, 3rem);
+	font-weight: 700;
+	line-height: 1.1;
+	margin-bottom: var(--wp--preset--spacing--10);
+}
+
+.sgs-counter__number:not([style*="color"]) {
+	color: var(--wp--preset--color--primary);
+}
+
+/* Label */
+.sgs-counter__label {
+	font-size: var(--wp--preset--font-size--medium);
+	line-height: 1.4;
+	margin: 0;
+}
+
+.sgs-counter__label:not([style*="color"]) {
+	color: var(--wp--preset--color--text-muted);
+}

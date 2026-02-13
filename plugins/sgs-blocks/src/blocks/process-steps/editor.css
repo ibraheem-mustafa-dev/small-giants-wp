@@ -1,0 +1,11 @@
+/* ===== SGS Process Steps — Editor Only ===== */
+
+.sgs-process-steps {
+	border: 1px dashed rgba(0, 0, 0, 0.1);
+	min-height: 100px;
+	padding: var(--wp--preset--spacing--30);
+}
+
+.sgs-process-steps:hover {
+	border-color: var(--wp--preset--color--primary, #0F7E80);
+}

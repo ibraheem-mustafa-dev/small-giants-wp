@@ -1,0 +1,10 @@
+/* ===== SGS Trust Bar — Editor Only ===== */
+
+.sgs-trust-bar {
+	border: 1px dashed rgba(0, 0, 0, 0.1);
+	min-height: 80px;
+}
+
+.sgs-trust-bar:hover {
+	border-color: var(--wp--preset--color--primary, #0F7E80);
+}

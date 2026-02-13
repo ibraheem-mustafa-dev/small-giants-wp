@@ -1,0 +1,10 @@
+/* ===== SGS Icon List — Editor Only ===== */
+
+.sgs-icon-list {
+	border: 1px dashed rgba(0, 0, 0, 0.1);
+	padding: var(--wp--preset--spacing--20);
+}
+
+.sgs-icon-list:hover {
+	border-color: var(--wp--preset--color--primary, #0F7E80);
+}
