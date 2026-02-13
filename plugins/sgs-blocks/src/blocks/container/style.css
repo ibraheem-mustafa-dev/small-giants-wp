@@ -1,0 +1,55 @@
+/* ===== SGS Container — Frontend + Editor ===== */
+
+.sgs-container {
+	position: relative;
+	box-sizing: border-box;
+}
+
+.sgs-container__overlay {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+}
+
+.sgs-container > *:not(.sgs-container__overlay) {
+	position: relative;
+	z-index: 1;
+}
+
+/* Width variants */
+.sgs-container--width-content {
+	max-width: var(--wp--style--global--content-size, 800px);
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.sgs-container--width-wide {
+	max-width: var(--wp--style--global--wide-size, 1200px);
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.sgs-container--width-full {
+	max-width: none;
+}
+
+/* Layout: stack */
+.sgs-container--stack {
+	display: flex;
+	flex-direction: column;
+}
+
+/* Responsive grid columns */
+@media (max-width: 767px) {
+	.sgs-cols-mobile-1 { grid-template-columns: 1fr !important; }
+	.sgs-cols-mobile-2 { grid-template-columns: repeat(2, 1fr) !important; }
+	.sgs-cols-mobile-3 { grid-template-columns: repeat(3, 1fr) !important; }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+	.sgs-cols-tablet-1 { grid-template-columns: 1fr !important; }
+	.sgs-cols-tablet-2 { grid-template-columns: repeat(2, 1fr) !important; }
+	.sgs-cols-tablet-3 { grid-template-columns: repeat(3, 1fr) !important; }
+	.sgs-cols-tablet-4 { grid-template-columns: repeat(4, 1fr) !important; }
+}

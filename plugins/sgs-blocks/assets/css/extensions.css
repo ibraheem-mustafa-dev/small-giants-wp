@@ -1,0 +1,48 @@
+/* ===== SGS Animation Extension ===== */
+
+[data-sgs-animation] {
+	opacity: 0;
+	transition-property: opacity, transform;
+	transition-timing-function: ease;
+}
+
+/* Duration variants */
+[data-sgs-animation-duration="fast"] { transition-duration: 0.3s; }
+[data-sgs-animation-duration="medium"] { transition-duration: 0.5s; }
+[data-sgs-animation-duration="slow"] { transition-duration: 0.8s; }
+
+/* Starting positions */
+[data-sgs-animation="fade-up"] { transform: translateY(30px); }
+[data-sgs-animation="fade-in"] { transform: none; }
+[data-sgs-animation="slide-left"] { transform: translateX(-30px); }
+[data-sgs-animation="slide-right"] { transform: translateX(30px); }
+[data-sgs-animation="scale-in"] { transform: scale(0.9); }
+
+/* Animated state — added by IntersectionObserver */
+[data-sgs-animation].sgs-animated {
+	opacity: 1;
+	transform: none;
+}
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+	[data-sgs-animation] {
+		opacity: 1;
+		transform: none;
+		transition: none;
+	}
+}
+
+/* ===== SGS Visibility Extension ===== */
+
+@media (max-width: 767px) {
+	.sgs-hide-mobile { display: none !important; }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+	.sgs-hide-tablet { display: none !important; }
+}
+
+@media (min-width: 1025px) {
+	.sgs-hide-desktop { display: none !important; }
+}

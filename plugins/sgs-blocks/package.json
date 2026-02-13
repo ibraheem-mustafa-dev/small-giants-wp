@@ -1,0 +1,17 @@
+{
+	"name": "sgs-blocks",
+	"version": "0.1.0",
+	"private": true,
+	"description": "Custom Gutenberg block library for Small Giants Studio",
+	"scripts": {
+		"build": "wp-scripts build --experimental-modules --webpack-copy-php",
+		"start": "wp-scripts start --experimental-modules --webpack-copy-php",
+		"lint:js": "wp-scripts lint-js src/",
+		"lint:css": "wp-scripts lint-style src/",
+		"format": "wp-scripts format src/"
+	},
+	"devDependencies": {
+		"@wordpress/icons": "^11.6.0",
+		"@wordpress/scripts": "^30.0.0"
+	}
+}

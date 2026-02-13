@@ -1,0 +1,85 @@
+<?php
+/**
+ * Main plugin class — auto-discovers and registers all blocks.
+ *
+ * @package SGS\Blocks
+ */
+
+namespace SGS\Blocks;
+
+defined( 'ABSPATH' ) || exit;
+
+final class SGS_Blocks {
+
+	private static ?self $instance = null;
+
+	public static function instance(): self {
+		if ( null === self::$instance ) {
+			self::$instance = new self();
+		}
+		return self::$instance;
+	}
+
+	private function __construct() {
+		add_action( 'init', [ $this, 'register_blocks' ] );
+		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_frontend_assets' ] );
+	}
+
+	/**
+	 * Auto-discover and register all blocks from the build directory.
+	 *
+	 * Each subdirectory of build/blocks/ that contains a block.json
+	 * is automatically registered. No manual registration needed —
+	 * just create the block folder, build, and it appears.
+	 */
+	public function register_blocks(): void {
+		$blocks_dir = SGS_BLOCKS_PATH . 'build/blocks';
+
+		if ( ! is_dir( $blocks_dir ) ) {
+			return;
+		}
+
+		$block_dirs = array_filter(
+			scandir( $blocks_dir ),
+			fn( string $item ): bool => is_dir( $blocks_dir . '/' . $item )
+				&& ! \in_array( $item, [ '.', '..' ], true )
+		);
+
+		foreach ( $block_dirs as $block ) {
+			$block_json = $blocks_dir . '/' . $block . '/block.json';
+
+			if ( file_exists( $block_json ) ) {
+				register_block_type( $block_json );
+			}
+		}
+	}
+
+	/**
+	 * Enqueue frontend CSS and JS for extensions.
+	 *
+	 * Animation CSS and IntersectionObserver script load on every page.
+	 * Combined weight is < 2KB — negligible impact on performance.
+	 */
+	public function enqueue_frontend_assets(): void {
+		$css_file = SGS_BLOCKS_PATH . 'assets/css/extensions.css';
+		if ( file_exists( $css_file ) ) {
+			wp_enqueue_style(
+				'sgs-extensions',
+				SGS_BLOCKS_URL . 'assets/css/extensions.css',
+				[],
+				SGS_BLOCKS_VERSION
+			);
+		}
+
+		$js_file = SGS_BLOCKS_PATH . 'assets/js/animation-observer.js';
+		if ( file_exists( $js_file ) ) {
+			wp_enqueue_script(
+				'sgs-animation-observer',
+				SGS_BLOCKS_URL . 'assets/js/animation-observer.js',
+				[],
+				SGS_BLOCKS_VERSION,
+				true
+			);
+		}
+	}
+}

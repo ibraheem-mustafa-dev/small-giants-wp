@@ -1,0 +1,10 @@
+/* ===== SGS Container — Editor Only ===== */
+
+.sgs-container {
+	border: 1px dashed rgba(0, 0, 0, 0.1);
+	min-height: 50px;
+}
+
+.sgs-container:hover {
+	border-color: var(--wp--preset--color--primary, #0F7E80);
+}
