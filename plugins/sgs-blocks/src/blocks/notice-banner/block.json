@@ -1,0 +1,64 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/notice-banner",
+	"version": "0.1.0",
+	"title": "SGS Notice Banner",
+	"category": "sgs-content",
+	"description": "Inline informational banner for contextual messages like minimum order values, delivery terms, or promotional notices.",
+	"keywords": [ "notice", "banner", "alert", "info", "message", "announcement" ],
+	"textdomain": "sgs-blocks",
+	"icon": "megaphone",
+	"supports": {
+		"align": [ "wide", "full" ],
+		"anchor": true,
+		"html": false,
+		"color": {
+			"background": false,
+			"text": false
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true,
+			"textAlign": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true
+		}
+	},
+	"selectors": {
+		"root": ".sgs-notice-banner",
+		"typography": ".sgs-notice-banner__text"
+	},
+	"attributes": {
+		"icon": {
+			"type": "string",
+			"default": "info"
+		},
+		"text": {
+			"type": "string",
+			"source": "html",
+			"selector": ".sgs-notice-banner__text"
+		},
+		"variant": {
+			"type": "string",
+			"default": "info"
+		},
+		"textColour": {
+			"type": "string"
+		},
+		"textFontSize": {
+			"type": "string"
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./editor.css",
+	"style": "file:./style.css"
+}

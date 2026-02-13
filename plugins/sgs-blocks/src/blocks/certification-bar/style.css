@@ -1,0 +1,93 @@
+/* ===== SGS Certification Bar — Frontend + Editor ===== */
+
+.sgs-certification-bar {
+	text-align: center;
+}
+
+/* ===== Title ===== */
+.sgs-certification-bar__title {
+	font-size: var(--wp--preset--font-size--small);
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	margin: 0 0 var(--wp--preset--spacing--30) 0;
+}
+
+.sgs-certification-bar__title:not([style*="color"]) {
+	color: var(--wp--preset--color--text-muted, #555);
+}
+
+/* ===== Badges container ===== */
+.sgs-certification-bar__badges {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	gap: var(--wp--preset--spacing--30);
+}
+
+/* ===== Badge ===== */
+.sgs-certification-bar__badge {
+	display: inline-flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 6px;
+	text-decoration: none;
+}
+
+a.sgs-certification-bar__badge:focus-visible {
+	outline: 2px solid var(--wp--preset--color--accent, #F87A1F);
+	outline-offset: 4px;
+	border-radius: 4px;
+}
+
+/* ===== Badge image ===== */
+.sgs-certification-bar__badge-img {
+	object-fit: contain;
+	display: block;
+}
+
+/* Size variants — image dimensions */
+.sgs-certification-bar--small .sgs-certification-bar__badge-img {
+	max-height: 32px;
+}
+
+.sgs-certification-bar--medium .sgs-certification-bar__badge-img {
+	max-height: 48px;
+}
+
+.sgs-certification-bar--large .sgs-certification-bar__badge-img {
+	max-height: 64px;
+}
+
+/* ===== Badge label ===== */
+.sgs-certification-bar__badge-label {
+	font-size: var(--wp--preset--font-size--small);
+	font-weight: 500;
+}
+
+.sgs-certification-bar__badge-label:not([style*="color"]) {
+	color: var(--wp--preset--color--text, #1E1E1E);
+}
+
+/* ===== Text-only style — pill badges ===== */
+.sgs-certification-bar--text-only .sgs-certification-bar__badge {
+	background: var(--wp--preset--color--surface-alt, #F5F7F7);
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	padding: var(--wp--preset--spacing--10) var(--wp--preset--spacing--30);
+}
+
+/* Size variants — text-only padding */
+.sgs-certification-bar--text-only.sgs-certification-bar--small .sgs-certification-bar__badge-label {
+	font-size: 12px;
+}
+
+.sgs-certification-bar--text-only.sgs-certification-bar--large .sgs-certification-bar__badge-label {
+	font-size: var(--wp--preset--font-size--medium);
+}
+
+/* ===== Empty state (editor) ===== */
+.sgs-certification-bar__empty {
+	color: var(--wp--preset--color--text-muted, #555);
+	font-style: italic;
+}

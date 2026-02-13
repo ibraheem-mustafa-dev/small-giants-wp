@@ -1,0 +1,11 @@
+/* ===== SGS WhatsApp CTA — Editor Only ===== */
+
+/* Show floating variant in editor (not fixed positioned) */
+.sgs-whatsapp-cta--floating {
+	position: relative;
+	bottom: auto;
+	right: auto;
+	opacity: 1;
+	transform: none;
+	pointer-events: auto;
+}

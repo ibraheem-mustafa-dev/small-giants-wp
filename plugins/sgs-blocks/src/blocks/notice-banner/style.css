@@ -1,0 +1,68 @@
+/* ===== SGS Notice Banner — Frontend + Editor ===== */
+
+.sgs-notice-banner {
+	display: flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--20);
+	padding: var(--wp--preset--spacing--20) var(--wp--preset--spacing--30);
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	border-left: 4px solid transparent;
+}
+
+/* ===== Variant: Info ===== */
+.sgs-notice-banner--info {
+	background-color: #EBF5FF;
+	border-left-color: #3B82F6;
+}
+
+/* ===== Variant: Success ===== */
+.sgs-notice-banner--success {
+	background-color: #ECFDF5;
+	border-left-color: var(--wp--preset--color--success, #2E7D4F);
+}
+
+/* ===== Variant: Warning ===== */
+.sgs-notice-banner--warning {
+	background-color: #FFFBEB;
+	border-left-color: #F59E0B;
+}
+
+/* ===== Variant: Accent ===== */
+.sgs-notice-banner--accent {
+	background-color: var(--wp--preset--color--accent-light, #FEE8D4);
+	border-left-color: var(--wp--preset--color--accent, #F87A1F);
+}
+
+/* ===== Icon ===== */
+.sgs-notice-banner__icon {
+	flex-shrink: 0;
+	font-size: 20px;
+	line-height: 1;
+}
+
+/* ===== Text ===== */
+.sgs-notice-banner__text {
+	margin: 0;
+	font-size: var(--wp--preset--font-size--small);
+	line-height: 1.5;
+	flex: 1;
+}
+
+.sgs-notice-banner__text:not([style*="color"]) {
+	color: var(--wp--preset--color--text, #1E1E1E);
+}
+
+/* Bold within text */
+.sgs-notice-banner__text strong {
+	font-weight: 700;
+}
+
+/* Links within text */
+.sgs-notice-banner__text a {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.sgs-notice-banner__text a:hover {
+	text-decoration: none;
+}

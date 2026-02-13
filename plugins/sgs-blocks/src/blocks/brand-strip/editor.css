@@ -1,0 +1,8 @@
+/* ===== SGS Brand Strip — Editor Only ===== */
+
+/* Disable scrolling animation in editor */
+.sgs-brand-strip--scrolling .sgs-brand-strip__track {
+	animation: none;
+	flex-wrap: wrap;
+	justify-content: center;
+}

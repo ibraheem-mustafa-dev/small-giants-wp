@@ -1,0 +1,6 @@
+/* ===== SGS Heritage Strip — Editor Only ===== */
+
+.sgs-heritage-strip .sgs-heritage-strip__headline [data-rich-text-placeholder],
+.sgs-heritage-strip .sgs-heritage-strip__body [data-rich-text-placeholder] {
+	opacity: 0.5;
+}

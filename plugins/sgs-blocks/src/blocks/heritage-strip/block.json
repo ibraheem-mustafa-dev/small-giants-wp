@@ -1,0 +1,78 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/heritage-strip",
+	"version": "0.1.0",
+	"title": "SGS Heritage Strip",
+	"category": "sgs-content",
+	"description": "Full-width story section with images and narrative text. Three layout options.",
+	"keywords": [ "heritage", "story", "about", "history", "strip", "narrative" ],
+	"textdomain": "sgs-blocks",
+	"icon": "book-alt",
+	"supports": {
+		"align": [ "wide", "full" ],
+		"anchor": true,
+		"html": false,
+		"color": {
+			"background": true,
+			"text": true,
+			"gradients": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true,
+			"textAlign": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true
+		}
+	},
+	"selectors": {
+		"root": ".sgs-heritage-strip",
+		"typography": ".sgs-heritage-strip__headline"
+	},
+	"attributes": {
+		"layout": {
+			"type": "string",
+			"default": "image-text-image"
+		},
+		"headline": {
+			"type": "string",
+			"source": "html",
+			"selector": ".sgs-heritage-strip__headline"
+		},
+		"body": {
+			"type": "string",
+			"source": "html",
+			"selector": ".sgs-heritage-strip__body"
+		},
+		"imageLeft": {
+			"type": "object"
+		},
+		"imageRight": {
+			"type": "object"
+		},
+		"headlineColour": {
+			"type": "string"
+		},
+		"headlineFontSize": {
+			"type": "string"
+		},
+		"bodyColour": {
+			"type": "string"
+		},
+		"bodyFontSize": {
+			"type": "string"
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./editor.css",
+	"style": "file:./style.css"
+}

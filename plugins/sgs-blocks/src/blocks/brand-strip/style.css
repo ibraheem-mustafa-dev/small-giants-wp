@@ -1,0 +1,91 @@
+/* ===== SGS Brand Strip — Frontend + Editor ===== */
+
+.sgs-brand-strip {
+	overflow: hidden;
+}
+
+/* ===== Track ===== */
+.sgs-brand-strip__track {
+	display: flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--50);
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+/* ===== Item ===== */
+.sgs-brand-strip__item {
+	flex-shrink: 0;
+	display: inline-flex;
+	align-items: center;
+}
+
+.sgs-brand-strip__item a {
+	display: inline-flex;
+}
+
+/* ===== Logo image ===== */
+.sgs-brand-strip__logo {
+	max-height: var(--sgs-logo-max-height, 48px);
+	width: auto;
+	object-fit: contain;
+	display: block;
+}
+
+/* ===== Greyscale ===== */
+.sgs-brand-strip--greyscale .sgs-brand-strip__logo {
+	filter: grayscale(100%);
+	opacity: 0.6;
+	transition: var(--wp--custom--transition--medium, 0.3s ease);
+}
+
+.sgs-brand-strip--greyscale .sgs-brand-strip__item:hover .sgs-brand-strip__logo {
+	filter: grayscale(0%);
+	opacity: 1;
+}
+
+/* ===== Infinite scrolling ===== */
+.sgs-brand-strip--scrolling .sgs-brand-strip__track {
+	flex-wrap: nowrap;
+	justify-content: flex-start;
+	animation: sgs-brand-scroll var(--sgs-scroll-speed, 25s) linear infinite;
+}
+
+@keyframes sgs-brand-scroll {
+	0% {
+		transform: translateX(0);
+	}
+	100% {
+		transform: translateX(-50%);
+	}
+}
+
+.sgs-brand-strip--scrolling:hover .sgs-brand-strip__track {
+	animation-play-state: paused;
+}
+
+/* ===== Focus ===== */
+.sgs-brand-strip__item a:focus-visible {
+	outline: 2px solid var(--wp--preset--color--accent, #F87A1F);
+	outline-offset: 4px;
+	border-radius: 2px;
+}
+
+/* ===== Empty state (editor) ===== */
+.sgs-brand-strip__empty {
+	text-align: center;
+	color: var(--wp--preset--color--text-muted, #555);
+	font-style: italic;
+	padding: var(--wp--preset--spacing--40);
+}
+
+/* ===== Reduced motion ===== */
+@media (prefers-reduced-motion: reduce) {
+	.sgs-brand-strip--scrolling .sgs-brand-strip__track {
+		animation: none;
+	}
+
+	.sgs-brand-strip--greyscale .sgs-brand-strip__logo {
+		transition: none;
+	}
+}

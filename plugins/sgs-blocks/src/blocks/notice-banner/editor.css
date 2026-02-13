@@ -1,0 +1,5 @@
+/* ===== SGS Notice Banner — Editor Only ===== */
+
+.sgs-notice-banner .sgs-notice-banner__text [data-rich-text-placeholder] {
+	opacity: 0.5;
+}

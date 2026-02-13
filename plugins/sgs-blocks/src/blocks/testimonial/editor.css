@@ -1,0 +1,11 @@
+/* ===== SGS Testimonial — Editor Only ===== */
+
+.sgs-testimonial .sgs-testimonial__quote [data-rich-text-placeholder] {
+	opacity: 0.5;
+	font-style: italic;
+}
+
+.sgs-testimonial .sgs-testimonial__name [data-rich-text-placeholder],
+.sgs-testimonial .sgs-testimonial__role [data-rich-text-placeholder] {
+	opacity: 0.4;
+}

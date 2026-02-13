@@ -1,0 +1,18 @@
+/* ===== SGS Testimonial Slider — Editor Only ===== */
+
+/* In editor, prevent scroll-snap so all slides are visible */
+.sgs-testimonial-slider__track {
+	overflow-x: visible;
+	scroll-snap-type: none;
+	flex-wrap: wrap;
+}
+
+.sgs-testimonial-slider__slide {
+	scroll-snap-align: none;
+}
+
+/* Hide arrows and dots in editor */
+.sgs-testimonial-slider__arrows,
+.sgs-testimonial-slider__dots {
+	display: none;
+}
