@@ -38,6 +38,8 @@ A custom WordPress development framework built and maintained by Claude Code for
 | 3 | **SGS Booking** | WP Amelia Premium | WordPress plugin (appointment/event booking) |
 | 4 | **SGS Forms** | Fluent Forms Pro / SureForms | Built into SGS Blocks (form block system) |
 | 5 | **SGS Client Notes** | Atarim / ProjectHuddle | WordPress plugin (visual annotation system) |
+| 6 | **SGS Pop-ups** | OptinMonster / Popup Maker | WordPress plugin (conversion pop-ups) |
+| 7 | **SGS Chatbot** | Tidio / LiveChat / Crisp | WordPress plugin (live chat + AI assistant) |
 
 ### Kept as-is (not replaced)
 

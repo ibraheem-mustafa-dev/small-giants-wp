@@ -65,11 +65,14 @@ Fonts: Inter variable (body + headings, 48KB) — self-hosted WOFF2, no CDN. DM 
 Full specifications in `specs/` directory:
 - `00-OVERVIEW.md` — Framework overview, philosophy, architecture
 - `01-SGS-THEME.md` — Block theme spec (theme.json v3, templates, performance)
-- `02-SGS-BLOCKS.md` — All block specifications (22 blocks + form blocks)
+- `02-SGS-BLOCKS.md` — All block specifications (25 blocks + form blocks + animation extension)
 - `03-SGS-BOOKING.md` — Booking system spec (phases 1-4)
 - `04-SGS-FORMS.md` — Form system spec (built into sgs-blocks)
 - `05-SGS-CLIENT-NOTES.md` — Visual annotation system spec
 - `06-BUILD-ORDER.md` — Dependencies, phasing, testing strategy
+- `07-SGS-POPUPS.md` — Conversion pop-ups plugin spec
+- `08-SGS-CHATBOT.md` — Live chat + AI chatbot plugin spec
+- `09-GOLD-STANDARD-AUDIT.md` — Per-block competitor comparison and gap analysis
 
 ## Non-Negotiables
 
