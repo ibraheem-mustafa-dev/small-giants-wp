@@ -33,11 +33,14 @@ sgs-blocks/
 │   │   ├── brand-strip/          # Logo/brand carousel strip
 │   │   ├── certification-bar/    # Certification/accreditation badges strip
 │   │   ├── notice-banner/        # Inline informational banner (MOV, delivery terms, promos)
-│   │   ├── announcement-bar/     # Top-of-page announcement banner
+│   │   ├── announcement-bar/     # Top-of-page announcement banner (countdown, scheduling, rotation)
 │   │   ├── whatsapp-cta/         # WhatsApp floating button + contextual CTA
 │   │   ├── svg-background/       # SVG animation background container
 │   │   ├── pricing-table/        # Service/pricing comparison table
-│   │   └── modal/                # Lightbox/modal overlay
+│   │   ├── modal/                # Lightbox/modal overlay
+│   │   ├── google-reviews/       # Google Business Profile reviews display
+│   │   ├── mega-menu/            # Block-based mega menu for Navigation block
+│   │   └── decorative-image/     # Absolute-positioned decorative floating images
 │   │
 │   ├── components/               # Shared React components for editor UI
 │   │   ├── ResponsiveControl.js  # Breakpoint switcher (mobile/tablet/desktop)
@@ -441,13 +444,520 @@ block-name/
 
 ---
 
-### 18-22. Additional Blocks
+### 18. Announcement Bar (`sgs/announcement-bar`)
 
-- **Announcement Bar** (`sgs/announcement-bar`) — dismissible top banner with close button, fixed to top of page
-- **SVG Background** (`sgs/svg-background`) — container that renders an SVG animation behind its inner blocks, with responsive sizing handled properly
-- **Pricing Table** (`sgs/pricing-table`) — comparison table with highlighted column
-- **Modal** (`sgs/modal`) — lightbox overlay triggered by button click
-- **Icon List** (`sgs/icon-list`) — list with custom icons/checkmarks per item
+**Replaces:** HelloBar, OptinMonster top bars, HashBar
+
+**Purpose:** Dismissible top-of-page banner for time-sensitive announcements, promotions, and alerts. Fixed to the top of the viewport above the header. Supports countdown timers, CTA buttons, message rotation, and date-range scheduling — all as block attributes with zero external dependencies.
+
+**Competitive edge over Elementor:** HelloBar charges $29/month. OptinMonster requires a 3rd-party account. Elementor's "Hello Bar" is a popup workaround. SGS delivers this natively as a block in the header template part with zero CLS, zero external JS, and no per-site licensing.
+
+**Variants:**
+- `standard` — Single message with optional CTA button
+- `countdown` — Message with live countdown timer to a target date/time
+- `rotating` — Multiple messages cycling on a timer
+
+**Attributes:**
+- `messages` — array of { text (RichText), ctaText (string), ctaUrl (string) } objects. Minimum 1 message.
+- `variant` — standard | countdown | rotating (default: standard)
+- `backgroundColour` — token slug (default: primary)
+- `textColour` — token slug (default: text-inverse)
+- `ctaStyle` — filled | outline | text-link (default: outline)
+- `ctaColour` — token slug (default: accent)
+- `position` — top | bottom (default: top)
+- `sticky` — boolean (default: true — stays fixed on scroll)
+- `dismissible` — boolean (default: true — shows close button)
+- `closeBehaviour` — session | persistent | none (default: session)
+  - `session` — dismissed for current browser session (sessionStorage)
+  - `persistent` — dismissed permanently via localStorage with configurable expiry
+  - `none` — cannot be dismissed (no close button shown)
+- `cookieDays` — integer (default: 7 — days before persistent dismissal expires)
+- `targetDate` — ISO 8601 datetime string (for countdown variant)
+- `showDays` — boolean (default: true)
+- `showHours` — boolean (default: true)
+- `showMinutes` — boolean (default: true)
+- `showSeconds` — boolean (default: true)
+- `countdownEndAction` — hide | show-message (default: hide — hides bar when countdown reaches zero)
+- `countdownEndMessage` — string (shown when countdown ends, if countdownEndAction is show-message)
+- `rotationInterval` — integer ms (default: 5000 — for rotating variant)
+- `rotationType` — fade | slide (default: fade — transition between messages)
+- `startDate` — ISO 8601 date string (optional — bar hidden before this date)
+- `endDate` — ISO 8601 date string (optional — bar hidden after this date)
+- `icon` — SVG slug (optional — displayed before message text)
+- `fontSize` — token slug (default: small)
+
+**Render:** Dynamic `render.php` — server checks startDate/endDate and hides bar outside the scheduled range. Client-side JS handles dismissal, countdown, and rotation.
+
+**Interactivity:** Uses `viewScriptModule` with WordPress Interactivity API:
+- `data-wp-interactive="sgs/announcement-bar"` on root element
+- `data-wp-context` stores `{ isDismissed, currentMessage, countdownRemaining }`
+- `data-wp-bind--hidden="context.isDismissed"` hides when dismissed
+- `data-wp-on--click="actions.dismiss"` on close button
+- Countdown: `data-wp-watch="callbacks.updateCountdown"` ticks every second
+- Rotation: `data-wp-watch="callbacks.rotateMessage"` cycles messages on interval
+- All animation respects `prefers-reduced-motion` (no slide/fade, instant switch)
+
+**Responsive:**
+- Desktop: full-width strip, text + CTA inline
+- Mobile: text wraps, CTA stacks below message, countdown digits smaller
+- Touch target for close button: minimum 44×44px
+
+**Accessibility:**
+- `role="alert"` with `aria-live="polite"` for message updates
+- Close button: `aria-label="Dismiss announcement"`
+- Countdown: `aria-hidden="true"` on decorative timer digits, `aria-live="off"` (not announced every second)
+
+**Performance:**
+- Zero CLS: bar height reserved via CSS `min-height` before JS hydrates
+- JS loaded as viewScriptModule — deferred, non-blocking
+- No external dependencies — pure CSS transitions + Interactivity API
+- sessionStorage/localStorage for dismissal state — no cookies
+
+---
+
+### 19. SVG Background (`sgs/svg-background`)
+
+**Purpose:** Container that renders an SVG animation behind its inner blocks, with responsive sizing handled properly.
+
+**Attributes:**
+- `svgContent` — SVG markup string
+- `svgPosition` — background | foreground
+- `animationType` — none | pulse | float | wave
+- `animationSpeed` — slow | medium | fast
+
+**Inner blocks:** Yes — accepts any blocks as children.
+
+**Render:** Dynamic `render.php`.
+
+---
+
+### 20. Pricing Table (`sgs/pricing-table`)
+
+**Purpose:** Service/pricing comparison table with highlighted "recommended" column.
+
+**Attributes:**
+- `plans` — array of { name, price, period, features[], ctaText, ctaUrl, highlighted } objects
+- `columns` — 2-4
+- `style` — card | flat | bordered
+
+**Render:** Static `save()`.
+
+---
+
+### 21. Modal (`sgs/modal`)
+
+**Purpose:** Lightbox/modal overlay triggered by button click.
+
+**Attributes:**
+- `triggerText` — string (button label)
+- `triggerStyle` — primary | secondary | text-link
+- `maxWidth` — small (480px) | medium (640px) | large (800px) | full
+- `closeOnOverlay` — boolean (default: true)
+
+**Inner blocks:** Yes — modal content accepts any blocks.
+
+**Render:** Dynamic `render.php` + `viewScriptModule` for open/close logic via Interactivity API. Uses `<dialog>` element for native accessibility. Focus trap and Escape key handling built-in.
+
+---
+
+### 22. Icon List (`sgs/icon-list`)
+
+**Purpose:** List with custom icons/checkmarks per item. Used for feature lists, benefit lists, and comparison points.
+
+**Attributes:**
+- `items` — array of { icon, text } objects
+- `icon` — default SVG slug (check | star | arrow-right | circle | cross)
+- `iconColour` — token slug (default: success)
+- `iconSize` — small | medium | large (default: medium)
+- `textColour` — token slug
+- `gap` — integer px (default: 20)
+
+**Render:** Static `save()`. Icons rendered via CSS `::before` with `data-icon` attribute.
+
+**Block Selectors:** `"typography"` targets `.sgs-icon-list__text` for native font controls.
+
+---
+
+### 23. Google Reviews (`sgs/google-reviews`)
+
+**Replaces:** Elfsight Google Reviews ($$$), Widget for Google Reviews, Trustindex, ReviewsOnMyWebsite
+
+**Purpose:** Display Google Business Profile reviews with aggregate ratings, individual review cards, and schema.org markup for SEO rich snippets. Server-side fetching via Google Places API (New) with WordPress transient caching — zero client-side API calls.
+
+**Competitive edge over Elementor:** Elementor has no native Google Reviews widget — users rely on Elfsight ($5-18/month per widget) or custom HTML embeds. SGS provides this natively with self-hosted data (no 3rd-party widget injection), schema.org markup, and zero recurring cost.
+
+**Variants:**
+- `grid` — Reviews in a responsive CSS Grid (2-4 columns)
+- `slider` — Horizontal carousel using CSS scroll-snap
+- `list` — Vertical stacked list
+- `badge` — Compact aggregate rating badge (stars + count + "Google Reviews")
+- `floating-badge` — Fixed-position badge in corner (bottom-left or bottom-right)
+- `wall` — Masonry-style layout
+
+**Attributes:**
+- `variant` — grid | slider | list | badge | floating-badge | wall (default: grid)
+- `placeId` — string (Google Place ID — configured in settings page, overridable per block)
+- `columns` — 2-4 (for grid variant, default: 3)
+- `columnsTablet` — 1-3 (default: 2)
+- `columnsMobile` — 1-2 (default: 1)
+- `maxReviews` — integer (default: 10, max: 50)
+- `minRating` — 1-5 (default: 1 — show all ratings)
+- `textOnly` — boolean (default: false — only show reviews that contain text)
+- `excludeKeywords` — comma-separated string (hide reviews containing these words)
+- `sortBy` — newest | highest | lowest (default: newest)
+- `showAggregate` — boolean (default: true — show overall rating header)
+- `showBreakdown` — boolean (default: false — show rating distribution bar chart in header)
+- `showAvatar` — boolean (default: true)
+- `showDate` — boolean (default: true)
+- `showGoogleLogo` — boolean (default: true — required by Google attribution policy)
+- `reviewRequestUrl` — URL (optional — "Write a review" CTA linking to Google)
+- `theme` — light | dark | transparent (default: light)
+- `cardStyle` — flat | bordered | elevated (default: bordered)
+- `starColour` — token slug (default: accent)
+- `textColour` — token slug
+- `backgroundColour` — token slug
+- `autoplay` — boolean (for slider variant, default: false)
+- `autoplaySpeed` — integer ms (for slider variant, default: 5000)
+- `showDots` — boolean (for slider variant, default: true)
+- `showArrows` — boolean (for slider variant, default: true)
+
+**Settings Page (sgs-blocks admin):**
+- `sgs_google_api_key` — Google Places API key (encrypted in wp_options via AES-256-CBC + `wp_salt('auth')` — same pattern as sgs-booking)
+- `sgs_google_place_id` — Default Place ID
+- `sgs_google_reviews_cache_ttl` — Cache duration in hours (default: 6)
+- Connection test button (fetches one review to verify API key + Place ID)
+
+**Google Places API (New) Integration:**
+- Endpoint: `POST https://places.googleapis.com/v1/places/{placeId}` with `fieldMask=reviews,rating,userRatingCount`
+- Authentication: API key in `X-Goog-Api-Key` header
+- Free tier: 10,000 requests/month (Essentials plan, post-March 2025)
+- Server-side only — API key never exposed to frontend
+- Response cached as WordPress transient (`sgs_google_reviews_{placeId}`) with configurable TTL
+- Manual cache clear button on settings page
+- Fallback: if API fails, show cached data with "Reviews may not be current" notice
+
+**Schema.org Markup:**
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.7",
+    "reviewCount": "156"
+  }
+}
+```
+Output as `<script type="application/ld+json">` in render.php — enables Google rich snippets.
+
+**Render:** Dynamic `render.php` — fetches cached reviews server-side, renders HTML. No client-side API calls.
+- Slider variant uses `viewScriptModule` for carousel interactivity (CSS scroll-snap + Interactivity API for autoplay/nav)
+- Floating badge uses `viewScriptModule` for positioning + expand/collapse
+
+**Responsive:**
+- Grid: columns reduce per breakpoint settings
+- Slider: single slide on mobile, multi-slide on desktop
+- Badge: adapts width, truncates text at small sizes
+- Floating badge: smaller on mobile, bottom-right default
+
+**Accessibility:**
+- Review cards: `article` element with `aria-label="Review by {name}, {rating} stars"`
+- Star rating: `aria-label="{rating} out of 5 stars"` — stars are `aria-hidden="true"`
+- Slider: same carousel accessibility as testimonial-slider (arrow key navigation, aria-live)
+- Google logo: `alt="Google"` — required attribution
+
+**Performance:**
+- Server-side rendering — no client-side API calls, no loading spinners
+- Images lazy-loaded (`loading="lazy"`)
+- Slider JS loaded only when slider variant is used (viewScriptModule)
+- Reviews cached server-side — one API call per cache TTL period, not per page view
+- < 3KB additional JS for slider variant, 0KB for static variants
+
+---
+
+### 24. Mega Menu (`sgs/mega-menu`)
+
+**Replaces:** Max Mega Menu, JetMenu (Crocoblock), Kadence Pro mega menu
+
+**Purpose:** Block-based mega menu that integrates with the WordPress Navigation block. Each top-level menu item can open a full-width or constrained-width dropdown panel containing any Gutenberg blocks — columns, images, CTAs, icon lists, product grids. Built using the Interactivity API for hover/focus/click interactions.
+
+**Competitive edge over Elementor:** Elementor's mega menu requires Elementor Pro ($59-399/yr) and generates heavy DOM. Max Mega Menu (most popular free alternative) has documented WCAG failures and mobile toggle issues. SGS delivers a block-native, ARIA-compliant mega menu with semantic HTML and zero external dependencies.
+
+**Architecture (based on WordPress Developer Blog tutorial):**
+- Registers a custom template part area (`mega-menu`) via `default_wp_template_part_areas` hook
+- Each mega menu panel is a template part created in the Site Editor
+- The `sgs/mega-menu` block is allowed inside the Navigation block as a child
+- In the editor, users select which template part to display as the dropdown panel
+- On the frontend, the template part content renders inside the dropdown
+
+**Block hierarchy:**
+```
+sgs/mega-menu                    # Top-level menu item (replaces core/navigation-link)
+├── [label] — RichText           # Menu item text
+└── [panel] — Template part      # Dropdown content (any blocks)
+```
+
+**Attributes:**
+- `label` — RichText (menu item text)
+- `url` — string (optional — top-level item can be a link itself)
+- `menuTemplatePart` — string (slug of the template part to render as dropdown)
+- `panelWidth` — full | content | custom (default: full — full viewport width)
+- `panelMaxWidth` — CSS value (for custom width, e.g., "800px")
+- `panelAlignment` — left | centre | right (alignment of panel under menu item)
+- `openOn` — hover | click (default: hover on desktop, click on mobile)
+- `icon` — SVG slug (optional icon before or after label)
+- `iconPosition` — before | after (default: after — dropdown indicator arrow)
+- `highlight` — boolean (default: false — accent-colour label for featured items)
+- `badge` — string (optional — small badge text like "New" or "Sale")
+- `badgeColour` — token slug (default: accent)
+
+**Parent block:** `core/navigation` — the mega menu block is registered as an allowed child of the Navigation block via the `allowedBlocks` API.
+
+**Registration:**
+```php
+// In sgs-blocks.php or plugin bootstrap
+add_filter( 'default_wp_template_part_areas', function( $areas ) {
+    $areas[] = array(
+        'area'        => 'mega-menu',
+        'area_tag'    => 'div',
+        'label'       => __( 'Mega Menu', 'sgs-blocks' ),
+        'description' => __( 'Mega menu dropdown panel content.', 'sgs-blocks' ),
+        'icon'        => 'layout',
+    );
+    return $areas;
+} );
+```
+
+**Render:** Dynamic `render.php`:
+- Renders the menu item `<li>` with ARIA attributes
+- Fetches and renders the template part content inside the dropdown `<div>`
+- Wraps with Interactivity API directives for open/close
+
+**Interactivity (render.php output):**
+```html
+<li
+    data-wp-interactive="sgs/mega-menu"
+    data-wp-context='{ "isOpen": false, "menuId": "menu-1" }'
+    data-wp-class--is-open="context.isOpen"
+    data-wp-on--mouseenter="actions.openOnHover"
+    data-wp-on--mouseleave="actions.closeOnHover"
+    data-wp-on--keydown="actions.handleKeydown"
+    role="none"
+>
+    <a
+        role="menuitem"
+        aria-haspopup="true"
+        data-wp-bind--aria-expanded="context.isOpen"
+        data-wp-on--click="actions.toggle"
+        data-wp-on--keydown="actions.handleTriggerKeydown"
+    >
+        {label}
+        <span class="sgs-mega-menu__indicator" aria-hidden="true"></span>
+    </a>
+    <div
+        class="sgs-mega-menu__panel"
+        role="menu"
+        data-wp-bind--hidden="!context.isOpen"
+    >
+        <!-- Template part content rendered here -->
+    </div>
+</li>
+```
+
+**Interactivity Store (view.js):**
+```javascript
+import { store, getContext, getElement } from '@wordpress/interactivity';
+
+const { state } = store( 'sgs/mega-menu', {
+    state: {
+        openMenuId: null,
+    },
+    actions: {
+        toggle() {
+            const ctx = getContext();
+            ctx.isOpen = !ctx.isOpen;
+            state.openMenuId = ctx.isOpen ? ctx.menuId : null;
+        },
+        openOnHover() {
+            const ctx = getContext();
+            ctx.isOpen = true;
+            state.openMenuId = ctx.menuId;
+        },
+        closeOnHover() {
+            const ctx = getContext();
+            ctx.isOpen = false;
+            state.openMenuId = null;
+        },
+        handleKeydown( event ) {
+            // Escape: close panel, return focus to trigger
+            // ArrowDown: move focus into panel
+            // ArrowLeft/Right: move to adjacent menu item
+        },
+        handleTriggerKeydown( event ) {
+            // Enter/Space: toggle panel
+            // ArrowDown: open panel and focus first item
+        },
+    },
+} );
+```
+
+**Mobile behaviour:**
+- Breakpoint: below 782px (WordPress admin bar breakpoint, configurable)
+- Dropdown replaced with accordion-style expand/collapse
+- Full-width panels stack below menu item
+- Hamburger toggle wraps entire menu (handled by core Navigation block responsive mode)
+- Touch: tap to expand, tap again to collapse
+- Panel content reflows to single column via CSS Grid `grid-template-columns: 1fr`
+
+**Keyboard navigation (WCAG 2.2 AA compliant):**
+- `Tab` / `Shift+Tab` — move between top-level menu items
+- `Enter` / `Space` — toggle dropdown panel
+- `ArrowDown` — open panel and focus first focusable element inside
+- `ArrowUp` — focus last focusable element in panel (when panel open)
+- `ArrowLeft` / `ArrowRight` — move between top-level menu items
+- `Escape` — close panel, return focus to trigger
+- `Home` / `End` — first/last top-level menu item
+
+**ARIA roles:**
+- Navigation landmark: `<nav role="navigation" aria-label="Primary">`
+- Menu bar: `<ul role="menubar">`
+- Menu items: `<li role="none">`, `<a role="menuitem">`
+- Dropdown: `<div role="menu">`
+- Expanded state: `aria-expanded="true|false"` on trigger
+- Has popup: `aria-haspopup="true"` on trigger
+
+**Responsive:**
+- Desktop: horizontal menu bar with dropdown panels on hover/click
+- Tablet: same as desktop or hamburger (configurable breakpoint)
+- Mobile: hamburger menu with accordion sub-menus
+
+**Performance:**
+- Panel content rendered server-side (in `render.php`) but hidden via CSS `display: none`
+- No additional HTTP requests on hover — content is in the DOM, just hidden
+- Interactivity API JS: < 3KB viewScriptModule
+- Panel CSS loaded only when mega-menu block is present (block-level stylesheet)
+- No external menu libraries — pure CSS Grid + Interactivity API
+
+---
+
+### 25. Decorative Image (`sgs/decorative-image`)
+
+**Purpose:** Absolute-positioned decorative images that float freely across page sections, unconstrained by containers and not affecting layout flow. Used for organic, editorial-style design where images (food photography, decorative elements, brand illustrations) are scattered naturally over section backgrounds.
+
+**Competitive edge over Elementor:** Elementor's "Motion Effects" allow floating elements but generate heavy JS and deeply nested DOM. CSS-native absolute positioning with percentage offsets is lighter, more predictable, and produces cleaner markup. Zero JS required for static positioning — optional parallax is < 1KB.
+
+**Use case — Indus Foods homepage:** Food photography (samosas, spice bowls, rice bags, chilli peppers) scattered organically across the homepage. Each image floats over its parent section's background colour without affecting the layout of headings, text, or other blocks. Desktop shows 4-6 images at varied positions and rotations. Mobile shows fewer, smaller, repositioned to edges or hidden entirely.
+
+**Parent block:** Works inside any block that sets `position: relative` — primarily `sgs/container` and `core/group`. The decorative image positions itself relative to the parent container using percentage-based offsets.
+
+**Attributes:**
+- `image` — media object (ID + URL + alt text, though alt will always be empty — decorative)
+- `positionX` — number 0-100 (percentage from left edge, default: 50)
+- `positionY` — number 0-100 (percentage from top edge, default: 50)
+- `width` — number px (default: 200 — image width)
+- `maxWidthPercent` — number 0-50 (max width as % of parent container, default: 20)
+- `rotation` — number degrees (-180 to 180, default: 0)
+- `opacity` — number 0-100 (default: 85)
+- `zIndex` — number (-1 to 10, default: 1 — above background, below content)
+- `flipX` — boolean (horizontal mirror, default: false)
+- `parallaxStrength` — number 0-100 (default: 0 — 0 means no parallax, 100 means strong parallax scroll effect)
+- `overflow` — visible | hidden (default: visible — whether image can extend beyond parent boundaries)
+- **Responsive overrides:**
+  - `positionXTablet` — number 0-100 (override position on tablet)
+  - `positionYTablet` — number 0-100
+  - `widthTablet` — number px
+  - `rotationTablet` — number degrees
+  - `hideOnTablet` — boolean (default: false)
+  - `positionXMobile` — number 0-100
+  - `positionYMobile` — number 0-100
+  - `widthMobile` — number px
+  - `rotationMobile` — number degrees
+  - `hideOnMobile` — boolean (default: false)
+
+**Render:** Static `save()` — outputs a single `<img>` element with inline styles for positioning.
+
+**Output markup:**
+```html
+<img
+    class="sgs-decorative-image"
+    src="{url}"
+    alt=""
+    role="presentation"
+    aria-hidden="true"
+    loading="lazy"
+    decoding="async"
+    style="
+        position: absolute;
+        left: {positionX}%;
+        top: {positionY}%;
+        width: {width}px;
+        max-width: {maxWidthPercent}%;
+        transform: translate(-50%, -50%) rotate({rotation}deg) {flipX ? 'scaleX(-1)' : ''};
+        opacity: {opacity / 100};
+        z-index: {zIndex};
+        pointer-events: none;
+    "
+    data-parallax="{parallaxStrength}"
+/>
+```
+
+**CSS (style.css):**
+```css
+.sgs-decorative-image {
+    position: absolute;
+    pointer-events: none;
+    user-select: none;
+    will-change: transform;
+    transition: none; /* no layout transitions — purely positional */
+}
+
+/* Parent container must be position: relative */
+.wp-block-sgs-container,
+.wp-block-group {
+    position: relative;
+}
+
+/* Responsive overrides via media queries using data attributes */
+@media (max-width: 781px) {
+    .sgs-decorative-image[data-hide-tablet="true"] {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .sgs-decorative-image[data-hide-mobile="true"] {
+        display: none;
+    }
+}
+```
+
+**Parallax (optional viewScriptModule):**
+- Only loaded when `parallaxStrength > 0` on any decorative image on the page
+- Uses `IntersectionObserver` + `requestAnimationFrame` for smooth scroll-linked transform
+- Offset: `translateY` shifts by `(scrollPosition * parallaxStrength / 100)` pixels
+- Respects `prefers-reduced-motion` — disables parallax, shows static position
+- < 1KB minified
+
+**Editor experience:**
+- In the editor, decorative images render at their configured positions
+- Drag handles for adjusting positionX/positionY visually (stretch goal)
+- Sidebar: ResponsiveControl for per-breakpoint position/size/visibility
+- Preview: shows desktop/tablet/mobile positions when breakpoint is switched
+
+**Accessibility:**
+- `aria-hidden="true"` — completely hidden from assistive technology
+- `role="presentation"` — reinforces decorative nature
+- `alt=""` — empty alt text, not omitted (WAI standard for decorative images)
+- `pointer-events: none` — cannot be accidentally clicked/focused
+- No tab stop — not in the focus order
+
+**Performance:**
+- Zero JS for static positioning (pure CSS)
+- < 1KB JS only when parallax is used
+- `loading="lazy"` + `decoding="async"` on all images
+- `will-change: transform` only on parallax images (opt-in via data attribute)
+- Images should be optimised WebP/AVIF, 150-300px wide — small file sizes
+- `contain: layout` on parent container prevents sticker overflow from causing reflow
 
 ---
 
@@ -463,15 +973,114 @@ Every block with layout/sizing attributes gets a responsive control panel in the
 
 Switching between views shows/hides the relevant attribute inputs. Generates CSS classes: `.sgs-desktop-*`, `.sgs-tablet-*`, `.sgs-mobile-*`.
 
-### Animation Extension
+### Animation & Interactivity Extension
 
-All blocks can optionally receive scroll-triggered animations:
+All SGS blocks receive animation and interaction controls via the block extension system (`addFilter`). Three categories of effects: **entrance animations** (scroll-triggered), **hover animations** (user interaction), and **scroll-linked effects** (continuous).
 
-- `animation` — none | fade-up | fade-in | slide-left | slide-right | scale-in
-- `animationDelay` — 0 | 100 | 200 | 300 ms
-- `animationDuration` — fast (300ms) | medium (500ms) | slow (800ms)
+**Competitive context:** Elementor Pro offers 40+ entrance animations, parallax scroll, mouse effects, and 3D tilt. Motion.page offers scroll-linked timeline animations. Kadence Pro offers 12 entrance animations. SGS matches or exceeds these with a CSS-first approach that produces zero layout shift and respects `prefers-reduced-motion`.
 
-Implemented via Intersection Observer in a shared `viewScriptModule`. Uses CSS transitions (not a JS animation library) for performance.
+#### Entrance Animations (scroll-triggered via IntersectionObserver)
+
+**Attributes (injected into all `sgs/*` blocks):**
+- `sgsAnimation` — none | fade-up | fade-down | fade-in | fade-left | fade-right | slide-up | slide-down | slide-left | slide-right | scale-in | scale-out | rotate-in | flip-in | blur-in (default: none)
+- `sgsAnimationDelay` — 0 | 100 | 200 | 300 | 400 | 500 ms (default: 0)
+- `sgsAnimationDuration` — fast (300ms) | medium (500ms) | slow (800ms) | very-slow (1200ms) (default: medium)
+- `sgsAnimationStagger` — boolean (default: false — when true, direct children animate in sequence with incrementing delay)
+- `sgsAnimationStaggerDelay` — integer ms (default: 100 — delay between each child animation)
+- `sgsAnimationOnce` — boolean (default: true — animate only on first scroll into view, not every time)
+
+**Implementation:**
+- CSS classes: `.sgs-animate--fade-up`, `.sgs-animate--slide-left`, etc.
+- Initial state: elements start with `opacity: 0` and transform offset
+- Triggered state: `.sgs-animate--visible` class added by IntersectionObserver
+- Stagger: JS calculates `animation-delay` per child based on index × staggerDelay
+- CSS: `transition: opacity {duration} ease-out, transform {duration} ease-out`
+- GPU-accelerated: only `transform` and `opacity` are animated — no layout thrashing
+
+#### Hover Animations (CSS-first, JS for complex effects)
+
+**Attributes (injected into all `sgs/*` blocks):**
+- `sgsHoverEffect` — none | lift | scale | glow | tilt-3d | border-accent | shadow-grow | colour-shift (default: none)
+- `sgsHoverScale` — number 1.0-1.2 (default: 1.05 — for scale effect)
+- `sgsHoverLift` — number px (default: -4 — translateY offset for lift effect)
+- `sgsHoverTransitionDuration` — fast (150ms) | medium (300ms) | slow (500ms) (default: medium)
+
+**Pure CSS effects (no JS):**
+- `lift` — `transform: translateY({hoverLift}px)` + shadow increase on `:hover`
+- `scale` — `transform: scale({hoverScale})` on `:hover`
+- `glow` — `box-shadow: 0 0 20px {accentColour}` on `:hover`
+- `border-accent` — `::before` pseudo-element scaleX transition (accent-colour top border slides in)
+- `shadow-grow` — shadow transitions from `shadow-sm` to `shadow-lg` on `:hover`
+- `colour-shift` — background-colour transitions to a lighter/darker variant on `:hover`
+
+**JS-required effects (loaded only when used):**
+- `tilt-3d` — Perspective-based 3D tilt following mouse position. Uses `mousemove` event + `requestAnimationFrame`. `transform: perspective(1000px) rotateX({tiltY}deg) rotateY({tiltX}deg)`. Resets smoothly on `mouseleave`. < 1KB JS.
+
+**Inner element hover effects (for specific blocks):**
+- Card Grid, Info Box, Card: already have per-block hover attributes
+- The extension adds block-level hover to ALL blocks for wrapper-level effects
+- Inner element effects (e.g., icon rotate on card hover) handled by individual block CSS
+
+#### Scroll-Linked Effects (continuous, viewport-aware)
+
+**Attributes (injected into all `sgs/*` blocks):**
+- `sgsParallax` — none | background | element (default: none)
+  - `background` — background image moves at different speed to scroll (CSS `background-attachment: fixed` with fallback)
+  - `element` — entire block translates on scroll (subtle vertical shift)
+- `sgsParallaxStrength` — number 0-100 (default: 30 — higher = more pronounced effect)
+- `sgsScrollProgress` — boolean (default: false — when true, a CSS custom property `--sgs-scroll-progress` is set on the element, ranging 0-1 based on element's position in viewport)
+
+**Implementation approach:**
+- CSS Scroll-Driven Animations (`animation-timeline: scroll()`) used where supported (Chrome 115+, Firefox 135+)
+- JS fallback using `IntersectionObserver` + `requestAnimationFrame` for unsupported browsers
+- `--sgs-scroll-progress` custom property enables creative CSS-only effects:
+  ```css
+  /* Example: progress bar fills as section scrolls into view */
+  .my-element {
+      width: calc(var(--sgs-scroll-progress, 0) * 100%);
+  }
+  ```
+
+#### General Page Effects
+
+These are not block-level attributes but theme/page-level CSS utilities:
+
+- **Floating/bobbing elements** — CSS keyframe `@keyframes sgs-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }` — applied via `.sgs-float` utility class on decorative images
+- **Smooth scroll-snap** — `scroll-snap-type: y proximity` on full-page section layouts
+- **Section colour transitions** — `scroll-timeline` with `@keyframes` that blend `background-color` between sections (progressive enhancement — static fallback)
+
+#### Reduced Motion (Non-Negotiable)
+
+All animations check `prefers-reduced-motion: reduce`:
+
+```css
+@media (prefers-reduced-motion: reduce) {
+    .sgs-animate--fade-up,
+    .sgs-animate--slide-left,
+    /* ... all animation classes */ {
+        transition: none !important;
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+    .sgs-decorative-image {
+        /* Disable parallax, show at static position */
+    }
+    [data-sgs-hover="tilt-3d"] {
+        /* Disable 3D tilt, keep static */
+    }
+}
+```
+
+#### Performance Budget
+
+- Entrance animation CSS: < 5KB (shared across all blocks)
+- Hover animation CSS: < 2KB
+- IntersectionObserver JS: < 2KB (already loaded for existing animations)
+- Parallax JS (fallback): < 1KB, loaded only when parallax attributes are set
+- 3D tilt JS: < 1KB, loaded only when tilt-3d hover is used
+- Total extension overhead: < 10KB CSS + < 4KB JS worst case
+- All animations use GPU-accelerated properties only (`transform`, `opacity`, `box-shadow`)
 
 ### Visibility Extension
 
