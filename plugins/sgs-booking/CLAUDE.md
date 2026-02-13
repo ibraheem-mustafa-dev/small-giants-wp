@@ -2,65 +2,156 @@
 
 ## What This Is
 
-Appointment scheduling, event ticketing, and multi-provider calendar management. Replaces WP Amelia Premium. Integrates with Google Calendar, Stripe, and N8N.
+A thin WordPress plugin that connects to the Small Giants Booking System (a standalone Next.js application) via its REST API. Provides Gutenberg blocks for embedding booking forms on WordPress sites. **This plugin is a frontend client only — it stores no booking data and has no database tables.**
 
 Full spec: `specs/03-SGS-BOOKING.md`
+
+## Architecture: Thin API Client
+
+The plugin calls the booking system's REST API for everything:
+- Availability slots, booking types, org branding: `GET` requests to the booking system
+- Booking creation: `POST` to the booking system
+- Payment: Stripe Elements (client-side) + Payment Intent (created by booking system API)
+- Emails, reminders, calendar sync, ICS files: all handled by the booking system
+
+**The plugin NEVER:**
+- Creates database tables
+- Calculates availability
+- Syncs calendars
+- Processes payments server-side
+- Sends emails or notifications
+- Stores OAuth tokens
 
 ## Plugin Structure
 
 ```
 sgs-booking/
-├── sgs-booking.php              # Plugin bootstrap
-├── uninstall.php                # Clean removal (drop tables, remove options)
+├── sgs-booking.php              # Plugin bootstrap (singleton)
+├── uninstall.php                # Remove wp_options only
 ├── includes/
-│   ├── class-sgs-booking.php    # Main plugin class (singleton)
-│   ├── class-installer.php      # Database table creation
-│   ├── models/                  # Service, Provider, Booking, Event, Ticket, Schedule, Payment
-│   ├── services/                # Availability engine, Calendar sync, Payment, Notifications, ICS
-│   ├── api/                     # REST endpoints (sgs-booking/v1/*)
-│   ├── admin/                   # Admin pages (bookings, services, providers, events, settings, dashboard)
-│   └── blocks/                  # Gutenberg blocks (booking-form, event-list, event-tickets, provider-schedule)
-├── assets/
-│   ├── js/                      # Frontend (booking-form, calendar-picker, event-tickets) + Admin (calendar-view, settings)
-│   ├── css/                     # Frontend + admin styles
-│   └── vendor/fullcalendar/     # FullCalendar.js (admin calendar only)
-└── templates/                   # Confirmation page, email templates, ICS feed
+│   ├── class-sgs-booking.php    # Main plugin class
+│   ├── class-api-client.php     # HTTP client (wp_remote_get/post)
+│   ├── class-encryption.php     # API key encryption (AES-256-CBC + wp_salt)
+│   ├── admin/
+│   │   └── class-admin-settings.php  # Settings page (API URL, key, org slug)
+│   └── blocks/
+│       ├── booking-form/        # Full booking flow block
+│       ├── booking-types/       # Service list block
+│       └── provider-schedule/   # Provider availability display block
+├── src/                         # TypeScript source (@wordpress/scripts)
+│   ├── booking-form/            # edit.tsx, view.ts (Interactivity API), style.css
+│   ├── booking-types/
+│   ├── provider-schedule/
+│   └── shared/                  # api.ts, stripe.ts, types.ts
+└── build/                       # Compiled output
 ```
 
-## Database Tables
+## Data Flow
 
-- `sgs_services` — appointment types with duration, pricing, buffers
-- `sgs_providers` — people/resources with Google Calendar links
-- `sgs_provider_services` — many-to-many with optional price override
-- `sgs_schedules` — recurring weekly availability per provider
-- `sgs_schedule_overrides` — date-specific exceptions (holidays, leave)
-- `sgs_bookings` — individual bookings with payment and calendar sync
-- `sgs_events` — events with capacity
-- `sgs_tickets` — event tickets
+```
+WordPress Page
+  └─ Gutenberg Block (render.php)
+       ├─ Injects org branding as CSS custom properties (from cached API response)
+       ├─ Outputs data attributes (API URL, org slug, type slug)
+       └─ Loads viewScriptModule
+            └─ Frontend JS (Interactivity API)
+                 ├─ Fetches availability: GET /api/v1/book/{org}/{type}/availability
+                 ├─ Submits booking: POST /api/v1/book/{org}/{type}/create
+                 └─ Stripe Elements for payment (client-side only)
+```
 
-## Core Complexity: Availability Engine
+## Configuration (wp_options)
 
-Calculates available time slots: recurring schedule + overrides + existing bookings + Google Calendar busy times + buffer times + capacity. All datetimes stored in UTC, converted per timezone. Never use manual offset calculation — always PHP DateTimeZone.
+| Key | Value | Encrypted |
+|---|---|---|
+| `sgs_booking_api_url` | Booking system base URL | No |
+| `sgs_booking_api_key` | Organisation API key | Yes |
+| `sgs_booking_org_slug` | Organisation slug | No |
+| `sgs_booking_default_type_slug` | Default service slug (optional) | No |
+| `sgs_booking_cache_ttl` | Cache duration in minutes (default: 10) | No |
 
-## External Integrations
+## Terminology Mapping
 
-- **Stripe** — Payment Intents for booking payments and deposits. Webhook signature verification required.
-- **Google Calendar** — OAuth2 2-way sync. Refresh tokens encrypted at rest (AES-256). Sync every 15 min via WP-Cron + real-time on booking changes.
-- **N8N** — All notifications via webhooks. Webhook URLs stored in wp_options.
+| Booking System (API) | WP Plugin (user-facing) |
+|---|---|
+| `bookingType` | Service |
+| `organiser` / `user` | Provider |
+| `organisation` | Organisation |
+| `orgSlug` | Organisation slug |
+| `typeSlug` | Service slug |
+
+## Conventions
+
+- **Monday is the first day of the week** — all calendar UIs show Mon-Sun (UK/ISO 8601). The booking system uses `0 = Sunday` internally (JS `Date.getDay()`), so reorder when displaying.
+- **Provider step order is configurable** — `stepOrder` block attribute: `service-first` (default) or `provider-first`. Clinics pick doctor first, general sites pick service first.
+- UK English everywhere (organisation, colour, cancelled)
+- 44px minimum touch targets (WCAG 2.2 AA)
+- Currency defaults to GBP, timezone to `Europe/London`
+
+## Security Rules (Non-Negotiable)
+
+1. **Every API response value must be escaped** — `esc_html()`, `esc_attr()`, `esc_url()`, `wp_json_encode()`. Never `echo` raw values
+2. **Never inject `customCss`** from the branding response — XSS vector. Discard silently
+3. **API key encrypted in wp_options** — AES-256-CBC via `wp_salt('auth')`
+4. **API key never in frontend** — not in HTML, JS, data attributes, or API responses to browsers
+5. **HTTPS enforced** — refuse API calls to HTTP URLs
+6. **SSRF protection** — validate API URL resolves to public IP, not private/reserved ranges
+7. **Admin pages require `manage_options`** — nonce verification on all form submissions
+8. **Frontend JS uses `textContent` not `innerHTML`** for API data — or Interactivity API template system
+
+## Caching
+
+- Organisation branding: 15 min transient
+- Booking types list: 10 min transient
+- **Availability: NEVER cached** (stale cache = double bookings)
+- **Writes: NEVER cached** (booking creation, payment)
+
+## Build Commands
+
+```bash
+npm run build         # Production build (TypeScript → JS)
+npm run start         # Dev with hot reload
+```
+
+Source in `src/` is TypeScript (`.tsx`/`.ts`). The `build/` directory is compiled output.
+
+## Deploy
+
+```bash
+# Build first
+npm run build
+
+# Deploy plugin files
+scp -r sgs-booking.php uninstall.php includes build hd:~/domains/palestine-lives.org/public_html/wp-content/plugins/sgs-booking/
+
+# Purge cache
+ssh hd "cd ~/domains/palestine-lives.org/public_html && wp litespeed-purge all"
+```
 
 ## Phased Build
 
-- **Phase 1 (= Build Phase 5):** Single-provider appointments, Stripe, N8N notifications
-- **Phase 2 (= Build Phase 6):** Multi-provider, Google Calendar sync, events, ticketing
+- **Phase 1:** Settings page + API client + booking-form block (date/time, details, confirmation) + booking-types block
+- **Phase 2:** Stripe Elements payment + multi-provider selection + provider-schedule block
+- **Phase 3:** Events + ticketing (requires booking system to add event support)
+- **Phase 4:** Shortcode fallback, WP admin dashboard widget, webhook receiver
 
-This is the LAST component to build. Features still being refined. See `specs/06-BUILD-ORDER.md`.
+**This is the LAST component to build.** The booking system must complete its Phase 1 (steps 1-11) and add the missing API endpoints before the WP plugin can function.
 
-## Key Rules
+## Booking System API Dependency
 
-- All REST endpoints: nonces, capability checks, sanitised input, prepared statements
-- Public booking endpoints rate-limited (transient-based throttle)
-- Stripe webhook signature verification on all payment webhooks
-- OAuth tokens encrypted at rest
-- IP logging for fraud detection
-- Admin endpoints require `manage_options` capability
-- No wp_mail — all notifications via N8N webhooks
+The plugin requires these endpoints. Check the booking system repo to see which exist:
+
+| Endpoint | Status |
+|---|---|
+| `GET /api/v1/health` | Exists |
+| `GET /api/v1/book/{orgSlug}/{typeSlug}/availability` | Exists |
+| `POST /api/v1/book/{orgSlug}/{typeSlug}/create` | Exists |
+| `GET /api/v1/book/{orgSlug}/{typeSlug}/ics/{bookingId}` | Exists (needs token auth fix) |
+| `GET /api/v1/book/{orgSlug}` | Needs building |
+| `GET /api/v1/book/{orgSlug}/types` | Needs building |
+| `GET /api/v1/book/{orgSlug}/{typeSlug}` | Needs building |
+| `POST /api/v1/book/{orgSlug}/{typeSlug}/payment-intent` | Needs building |
+| `GET /api/v1/bookings/{id}/status?token=` | Needs building |
+| `POST /api/v1/bookings/{id}/cancel?token=` | Needs building |
+| `GET /api/v1/book/{orgSlug}/providers` | Needs building (Phase 2) |
+| `GET /api/v1/invoices/{id}/pdf?token=` | Being built (invoice PDF download via token) |

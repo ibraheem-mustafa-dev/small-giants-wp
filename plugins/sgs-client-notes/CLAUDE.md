@@ -57,6 +57,18 @@ Positions stored as percentage offsets (not pixels). Viewport width recorded for
 - All input sanitised, all output escaped
 - Notifications via N8N webhooks (not wp_mail)
 
+## Build & Deploy
+
+No npm build step — this plugin is pure PHP + vanilla JS.
+
+```bash
+# Deploy plugin files
+scp -r sgs-client-notes.php uninstall.php includes assets templates hd:~/domains/palestine-lives.org/public_html/wp-content/plugins/sgs-client-notes/
+
+# Purge cache
+ssh hd "cd ~/domains/palestine-lives.org/public_html && wp litespeed-purge all"
+```
+
 ## Build Phase
 
 This is **Phase 3** — independent of SGS Blocks. Can be built in parallel with Phase 2 (Forms Advanced) once the theme exists. See `specs/06-BUILD-ORDER.md`.

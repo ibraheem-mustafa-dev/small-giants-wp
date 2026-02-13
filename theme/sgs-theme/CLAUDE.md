@@ -77,6 +77,17 @@ Chrome/Edge 90+, Firefox 90+, Safari 15+, iOS Safari 15+, Samsung Internet 18+. 
 
 This is **Phase 1a** — the very first thing to build. Everything else depends on it. See `specs/06-BUILD-ORDER.md` section 1a for the exact build sequence.
 
+## Deploy
+
+```bash
+scp -r theme/sgs-theme hd:~/domains/palestine-lives.org/public_html/wp-content/themes/
+
+# Purge cache
+ssh hd "cd ~/domains/palestine-lives.org/public_html && wp litespeed-purge all"
+```
+
+Run from the repo root (`small-giants-wp/`).
+
 ## Key Rules
 
 - All templates use block markup only — no PHP template tags

@@ -53,6 +53,35 @@ Shared sections (trust bar, heritage strip, process, delivery, brands, certifica
 | `content/` | Image status notes, test site URL, asset requirements |
 | `notes/` | Research document (V2V3) — full company intel, competitive analysis, design rationale |
 
+## Deploy
+
+```bash
+# Build blocks plugin first
+cd ../../plugins/sgs-blocks && npm run build && cd ../../sites/indus-foods
+
+# Deploy blocks + theme to dev site
+scp -r ../../plugins/sgs-blocks/sgs-blocks.php ../../plugins/sgs-blocks/includes ../../plugins/sgs-blocks/build ../../plugins/sgs-blocks/assets hd:~/domains/palestine-lives.org/public_html/wp-content/plugins/sgs-blocks/
+scp -r ../../theme/sgs-theme hd:~/domains/palestine-lives.org/public_html/wp-content/themes/
+
+# Purge cache
+ssh hd "cd ~/domains/palestine-lives.org/public_html && wp litespeed-purge all"
+```
+
+**DO NOT deploy to lightsalmon-tarsier-683012.hostingersite.com** — that's the client-facing test site.
+
+## Page Build Status
+
+| Page | Status | Notes |
+|---|---|---|
+| Homepage | Not started | — |
+| Food Service | Not started | Template for all service pages (V3 mockup) |
+| Manufacturing | Not started | Same template, different content |
+| Retail | Not started | Same template, different content |
+| Wholesale | Not started | Same template, different content |
+| Trade Application | Not started | V2 mockup, requires form blocks (Phase 1b) |
+
+Update this table as pages are built and deployed.
+
 ## Placeholder Items Awaiting Client
 
 - Real customer testimonials (mockups have placeholders)

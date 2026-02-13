@@ -79,6 +79,30 @@ Full specifications in `specs/` directory:
 - Progressive enhancement — blocks must render meaningful content without JS
 - Performance budget: < 100KB CSS, < 50KB JS per page, green Core Web Vitals
 - UK English in all code, comments, and user-facing text
+- **Cross-project sync** — any API or feature change affecting the booking WP plugin must also update `specs/03-SGS-BOOKING.md` and `plugins/sgs-booking/CLAUDE.md`
+
+## Deploy Commands
+
+```bash
+# Build blocks plugin
+cd plugins/sgs-blocks && npm run build
+
+# Deploy blocks plugin
+scp -r plugins/sgs-blocks/sgs-blocks.php plugins/sgs-blocks/includes plugins/sgs-blocks/build plugins/sgs-blocks/assets hd:~/domains/palestine-lives.org/public_html/wp-content/plugins/sgs-blocks/
+
+# Deploy theme
+scp -r theme/sgs-theme hd:~/domains/palestine-lives.org/public_html/wp-content/themes/
+
+# Purge cache after any deploy
+ssh hd "cd ~/domains/palestine-lives.org/public_html && wp litespeed-purge all"
+```
+
+## Gotchas
+
+- **`--webpack-copy-php` flag** — the build script copies `render.php` to `build/` automatically. Dynamic blocks won't render without this.
+- **`--experimental-modules` flag** — required in build/start scripts for `viewScriptModule` in block.json. Check if stabilised in your @wordpress/scripts version.
+- **Deprecations required** — when changing a static block's `save.js` output, you MUST add a deprecation to avoid "This block contains unexpected content" errors on existing posts.
+- **Theme spec drift** — `specs/01-SGS-THEME.md` still shows DM Serif Display + DM Sans as default fonts. The actual `theme.json` uses Inter variable. The CLAUDE.md files are correct; the spec needs updating.
 
 ## External Services
 
