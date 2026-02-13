@@ -1,0 +1,9 @@
+/* ===== SGS Info Box — Editor Only ===== */
+
+.sgs-info-box {
+	border: 1px dashed rgba(0, 0, 0, 0.1);
+}
+
+.sgs-info-box:hover {
+	border-color: var(--wp--preset--color--primary, #0F7E80);
+}

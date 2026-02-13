@@ -1,0 +1,262 @@
+/* ===== SGS Hero — Frontend + Editor ===== */
+
+.sgs-hero {
+	position: relative;
+	display: flex;
+	align-items: center;
+	overflow: hidden;
+	box-sizing: border-box;
+}
+
+/* Standard variant — text over background */
+.sgs-hero--standard {
+	flex-direction: column;
+	justify-content: center;
+	padding: var(--wp--preset--spacing--60) var(--wp--preset--spacing--40);
+}
+
+/* Split variant — two columns */
+.sgs-hero--split {
+	flex-direction: row;
+	gap: var(--wp--preset--spacing--50);
+	padding: var(--wp--preset--spacing--60) var(--wp--preset--spacing--40);
+}
+
+/* Overlay */
+.sgs-hero__overlay {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+}
+
+/* Content area */
+.sgs-hero__content {
+	position: relative;
+	z-index: 1;
+	max-width: 680px;
+}
+
+.sgs-hero--split .sgs-hero__content {
+	flex: 1 1 50%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.sgs-hero--standard .sgs-hero__content {
+	max-width: var(--wp--style--global--wide-size, 1200px);
+	width: 100%;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+/* Text alignment */
+.sgs-hero--align-centre .sgs-hero__content {
+	text-align: center;
+	align-items: center;
+}
+
+.sgs-hero--align-left .sgs-hero__content {
+	text-align: left;
+	align-items: flex-start;
+}
+
+/* Headline */
+.sgs-hero__headline {
+	font-size: var(--wp--preset--font-size--hero);
+	font-weight: 700;
+	line-height: 1.1;
+	margin: 0 0 var(--wp--preset--spacing--30) 0;
+}
+
+.sgs-hero--standard .sgs-hero__headline {
+	color: var(--wp--preset--color--surface, #fff);
+}
+
+/* Sub-headline */
+.sgs-hero__subheadline {
+	font-size: var(--wp--preset--font-size--large);
+	line-height: 1.5;
+	margin: 0 0 var(--wp--preset--spacing--40) 0;
+}
+
+.sgs-hero--standard .sgs-hero__subheadline {
+	color: var(--wp--preset--color--text-inverse, #C0D5D6);
+}
+
+/* CTA buttons */
+.sgs-hero__ctas {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--wp--preset--spacing--30);
+}
+
+.sgs-hero__cta {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 16px 32px;
+	border-radius: 10px;
+	font-weight: 700;
+	font-size: var(--wp--preset--font-size--small);
+	text-decoration: none;
+	min-height: 44px;
+	min-width: 44px;
+	cursor: pointer;
+	transition: var(--wp--custom--transition--medium, 0.3s ease);
+}
+
+.sgs-hero__cta--accent {
+	background-color: var(--wp--preset--color--accent);
+	color: var(--wp--preset--color--text);
+}
+
+.sgs-hero__cta--accent:hover {
+	background-color: var(--wp--preset--color--primary-dark);
+	color: var(--wp--preset--color--surface);
+}
+
+.sgs-hero__cta--primary {
+	background-color: var(--wp--preset--color--primary);
+	color: var(--wp--preset--color--surface);
+}
+
+.sgs-hero__cta--primary:hover {
+	background-color: var(--wp--preset--color--primary-dark);
+}
+
+.sgs-hero__cta--outline {
+	background-color: transparent;
+	border: 2px solid currentColor;
+	color: var(--wp--preset--color--surface, #fff);
+}
+
+.sgs-hero--split .sgs-hero__cta--outline {
+	color: var(--wp--preset--color--primary);
+}
+
+.sgs-hero__cta--outline:hover {
+	background-color: var(--wp--preset--color--surface);
+	color: var(--wp--preset--color--primary-dark);
+}
+
+/* Split image */
+.sgs-hero__media {
+	position: relative;
+	flex: 1 1 50%;
+}
+
+.sgs-hero__split-image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	border-radius: var(--wp--custom--border-radius--large, 16px);
+}
+
+/* Badges */
+.sgs-hero__badge {
+	position: absolute;
+	z-index: 2;
+	padding: var(--wp--preset--spacing--30) var(--wp--preset--spacing--30);
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	text-align: center;
+	min-width: 120px;
+	box-shadow: var(--wp--preset--shadow--md);
+}
+
+.sgs-hero__badge--bottom-left { bottom: var(--wp--preset--spacing--40); left: var(--wp--preset--spacing--30); }
+.sgs-hero__badge--bottom-right { bottom: var(--wp--preset--spacing--40); right: var(--wp--preset--spacing--30); }
+.sgs-hero__badge--top-left { top: var(--wp--preset--spacing--40); left: var(--wp--preset--spacing--30); }
+.sgs-hero__badge--top-right { top: var(--wp--preset--spacing--40); right: var(--wp--preset--spacing--30); }
+
+.sgs-hero__badge--light {
+	background-color: var(--wp--preset--color--surface);
+	color: var(--wp--preset--color--text);
+}
+
+.sgs-hero__badge--accent {
+	background-color: var(--wp--preset--color--accent);
+	color: var(--wp--preset--color--text);
+}
+
+.sgs-hero__badge--success {
+	background-color: var(--wp--preset--color--success);
+	color: var(--wp--preset--color--surface);
+}
+
+.sgs-hero__badge-number {
+	display: block;
+	font-size: var(--wp--preset--font-size--xx-large);
+	font-weight: 700;
+	line-height: 1.1;
+}
+
+.sgs-hero__badge-label {
+	display: block;
+	font-size: var(--wp--preset--font-size--small);
+	line-height: 1.3;
+	margin-top: var(--wp--preset--spacing--10);
+}
+
+/* Standard variant badges — positioned relative to the hero */
+.sgs-hero--standard .sgs-hero__badge {
+	/* Badges are already absolute, relative to .sgs-hero */
+}
+
+/* ===== Responsive ===== */
+
+/* Tablet */
+@media (max-width: 1024px) {
+	.sgs-hero__headline {
+		font-size: clamp(1.75rem, 4vw, 2.5rem);
+	}
+
+	.sgs-hero--split {
+		gap: var(--wp--preset--spacing--40);
+	}
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+	.sgs-hero--split {
+		flex-direction: column;
+	}
+
+	.sgs-hero--split .sgs-hero__content,
+	.sgs-hero--split .sgs-hero__media {
+		flex: 1 1 100%;
+	}
+
+	.sgs-hero {
+		min-height: 400px !important;
+	}
+
+	.sgs-hero--standard {
+		padding: var(--wp--preset--spacing--50) var(--wp--preset--spacing--30);
+	}
+
+	.sgs-hero__headline {
+		font-size: clamp(1.5rem, 6vw, 2rem);
+	}
+
+	.sgs-hero__badge {
+		position: relative;
+		inset: auto;
+		margin-top: var(--wp--preset--spacing--30);
+	}
+
+	.sgs-hero--split .sgs-hero__badge {
+		position: absolute;
+	}
+
+	.sgs-hero__ctas {
+		flex-direction: column;
+		width: 100%;
+	}
+
+	.sgs-hero__cta {
+		width: 100%;
+		text-align: center;
+	}
+}

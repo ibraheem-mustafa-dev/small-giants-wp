@@ -1,0 +1,27 @@
+/* ===== SGS Hero — Editor Only ===== */
+
+.sgs-hero {
+	border: 1px dashed rgba(0, 0, 0, 0.1);
+}
+
+.sgs-hero:hover {
+	border-color: var(--wp--preset--color--primary, #0F7E80);
+}
+
+/* Show placeholder background in editor when no image set */
+.sgs-hero--standard:not([style*="background-image"]) {
+	background-color: var(--wp--preset--color--primary-dark, #0A5B5D);
+}
+
+/* Badge editor in sidebar */
+.sgs-hero-badge-editor {
+	padding: 12px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	margin-bottom: 12px;
+}
+
+/* CTA preview in editor */
+.sgs-hero__ctas .sgs-hero__cta {
+	pointer-events: none;
+}

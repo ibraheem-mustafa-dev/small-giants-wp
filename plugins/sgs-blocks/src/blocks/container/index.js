@@ -1,7 +1,7 @@
 import { registerBlockType } from '@wordpress/blocks';
 import metadata from './block.json';
 import Edit from './edit';
-import Save from './save';
+import Save, { deprecated } from './save';
 import './style.css';
 import './editor.css';
 
@@ -13,4 +13,5 @@ import '../extensions/responsive-visibility';
 registerBlockType( metadata.name, {
 	edit: Edit,
 	save: Save,
+	deprecated,
 } );

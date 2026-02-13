@@ -1,0 +1,141 @@
+/* ===== SGS Info Box — Frontend + Editor ===== */
+
+.sgs-info-box {
+	position: relative;
+	padding: var(--wp--preset--spacing--40);
+	box-sizing: border-box;
+	transition: var(--wp--custom--transition--medium, 0.3s ease);
+}
+
+/* Link wrapper */
+.sgs-info-box__link {
+	display: block;
+	text-decoration: none;
+	color: inherit;
+}
+
+/* Card styles */
+.sgs-info-box--flat {
+	background: transparent;
+}
+
+.sgs-info-box--bordered {
+	border: 1px solid var(--wp--preset--color--border-subtle, #0D5557);
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+}
+
+.sgs-info-box--elevated {
+	background: var(--wp--preset--color--surface, #fff);
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	box-shadow: var(--wp--preset--shadow--md);
+}
+
+.sgs-info-box--filled {
+	background: var(--wp--preset--color--surface-alt, #F5F7F7);
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+}
+
+/* Icon */
+.sgs-info-box__icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	margin-bottom: var(--wp--preset--spacing--30);
+}
+
+.sgs-info-box__icon--small {
+	width: 40px;
+	height: 40px;
+	font-size: 16px;
+}
+
+.sgs-info-box__icon--medium {
+	width: 52px;
+	height: 52px;
+	font-size: 24px;
+}
+
+.sgs-info-box__icon--large {
+	width: 64px;
+	height: 64px;
+	font-size: 32px;
+}
+
+/* Heading */
+.sgs-info-box__heading {
+	font-size: var(--wp--preset--font-size--large);
+	font-weight: 700;
+	margin: 0 0 var(--wp--preset--spacing--20) 0;
+	color: var(--wp--preset--color--text);
+}
+
+/* Description */
+.sgs-info-box__description {
+	font-size: var(--wp--preset--font-size--medium);
+	color: var(--wp--preset--color--text-muted);
+	margin: 0;
+	line-height: 1.6;
+}
+
+/* ===== Hover Effects ===== */
+
+/* Lift — translateY + shadow increase */
+.sgs-info-box--hover-lift:hover {
+	transform: translateY(-4px);
+	box-shadow: var(--wp--preset--shadow--lg);
+}
+
+/* Border accent — accent top border slides in + slight lift */
+.sgs-info-box--hover-border-accent {
+	overflow: hidden;
+}
+
+.sgs-info-box--hover-border-accent::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 3px;
+	background-color: var(--wp--preset--color--accent);
+	transform: scaleX(0);
+	transform-origin: left;
+	transition: transform var(--wp--custom--transition--medium, 0.3s ease);
+}
+
+.sgs-info-box--hover-border-accent:hover::before {
+	transform: scaleX(1);
+}
+
+.sgs-info-box--hover-border-accent:hover {
+	transform: translateY(-2px);
+}
+
+/* Glow — accent box-shadow */
+.sgs-info-box--hover-glow:hover {
+	box-shadow: 0 0 20px rgba(248, 122, 31, 0.3);
+}
+
+/* ===== Focus for linked cards ===== */
+.sgs-info-box__link:focus-visible {
+	outline: 2px solid var(--wp--preset--color--accent);
+	outline-offset: 2px;
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+}
+
+/* ===== Reduced motion ===== */
+@media (prefers-reduced-motion: reduce) {
+	.sgs-info-box {
+		transition: none;
+	}
+
+	.sgs-info-box--hover-border-accent::before {
+		transition: none;
+	}
+
+	.sgs-info-box--hover-lift:hover,
+	.sgs-info-box--hover-border-accent:hover {
+		transform: none;
+	}
+}
