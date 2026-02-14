@@ -33,6 +33,9 @@ require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-upload.php';
 require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-rest-api.php';
 require_once SGS_BLOCKS_PATH . 'includes/forms/field-render-helpers.php';
 
+// Schema output filters.
+require_once SGS_BLOCKS_PATH . 'includes/review-schema.php';
+
 // Register REST API endpoints.
 Forms\Form_REST_API::register();
 

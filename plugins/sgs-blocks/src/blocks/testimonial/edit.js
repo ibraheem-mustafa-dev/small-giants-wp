@@ -11,6 +11,7 @@ import {
 	SelectControl,
 	RangeControl,
 	Button,
+	TextControl,
 } from '@wordpress/components';
 import { DesignTokenPicker } from '../../components';
 import { colourVar, fontSizeVar } from '../../utils';
@@ -62,6 +63,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		nameFontSize,
 		roleColour,
 		ratingColour,
+		reviewSource,
+		reviewDate,
 	} = attributes;
 
 	const className = [
@@ -200,6 +203,39 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { ratingColour: val } )
 						}
 					/>
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Review Source', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<TextControl
+						label={ __( 'Source platform', 'sgs-blocks' ) }
+						help={ __(
+							'e.g. Google Reviews, LinkedIn, Trustpilot. Leave empty for hand-written testimonials (no schema output).',
+							'sgs-blocks'
+						) }
+						value={ reviewSource }
+						onChange={ ( val ) =>
+							setAttributes( { reviewSource: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					{ reviewSource && (
+						<TextControl
+							label={ __( 'Review date', 'sgs-blocks' ) }
+							help={ __(
+								'Date of the original review (YYYY-MM-DD).',
+								'sgs-blocks'
+							) }
+							value={ reviewDate }
+							onChange={ ( val ) =>
+								setAttributes( { reviewDate: val } )
+							}
+							type="date"
+							__nextHasNoMarginBottom
+						/>
+					) }
 				</PanelBody>
 			</InspectorControls>
 

@@ -80,6 +80,14 @@
 		"ratingColour": {
 			"type": "string",
 			"default": "accent"
+		},
+		"reviewSource": {
+			"type": "string",
+			"default": ""
+		},
+		"reviewDate": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"editorScript": "file:./index.js",
