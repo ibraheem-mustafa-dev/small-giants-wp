@@ -1,165 +1,152 @@
-# Session Handoff — 2026-02-13 (Session 8 — Final Content Blocks + Spec Expansion)
+# Session Handoff — 2026-02-14 (Session 10 — SGS Forms Built, Deployed, Verified)
 
 ## Completed This Session
 
-1. **Built 7 new blocks** — Testimonial, Testimonial Slider, Heritage Strip, Brand Strip, Certification Bar, Notice Banner, WhatsApp CTA. All follow the mandatory per-element customisation standard.
-2. **Committed** — `aebb879` "feat(sgs-blocks): add Testimonial, Testimonial Slider, Heritage Strip, Brand Strip, Certification Bar, Notice Banner, WhatsApp CTA blocks" (44 files, 4,537 insertions).
-3. **Deployed all 16 blocks** to palestine-lives.org and verified registration via WP-CLI.
-4. **Expanded specs** — significant additions to `specs/02-SGS-BLOCKS.md` (+639 lines) and major rewrite of `specs/03-SGS-BOOKING.md` (+928/-481 lines).
-5. **Updated all CLAUDE.md files** across the project (root, sgs-blocks, sgs-booking, sgs-client-notes, sgs-theme, indus-foods) with current state and patterns.
-6. **Competitive research** — scraped and stored research on Elfsight Google Reviews, Google Places API, HelloBar notification bars, and WordPress mega menu patterns (files in `.firecrawl/competitor-research/`).
-7. **Created RESEARCH-PROMPT.md** — a detailed prompt for a future deep-research session covering pop-ups, announcement bar audit, Google Reviews, mega menu, chatbot, and gold-standard audit of all 22 blocks.
+1. **Assessed previous session's work** — the previous session (which was cut off) completed far more than its transcript showed. All form source files, CSS, and build output were already on disk.
+2. **Spot-checked all form blocks for correctness** — verified field-render-helpers usage, output escaping, Interactivity API directives, view.js store logic (597 lines), and style.css (551 lines).
+3. **Rebuilt the plugin** — clean `npm run build` with no errors. 170 assets, both webpack passes compiled successfully.
+4. **Deployed to palestine-lives.org** — SCP'd plugin files (sgs-blocks.php, includes/, build/, assets/) and purged LiteSpeed cache.
+5. **Verified deployment** — all 29 blocks registered (16 original + 13 form blocks), both REST API endpoints live (`/sgs-forms/v1/submit` and `/sgs-forms/v1/upload`), `wp_sgs_form_submissions` DB table created.
+6. **Confirmed Indus Foods coverage** — the 4-step trade application form (About You, Business Details, Account Preferences, Review & Submit) maps directly to the deployed field types.
 
 ## Current State
 
-- **SGS Theme Phase 1a LIVE** on palestine-lives.org (WP 6.9.1) — Inter font, teal/orange SGS branding.
-- **SGS Blocks** — **16 blocks** registered and deployed:
-
-| Block | Type | viewScriptModule | Customisation |
-|---|---|---|---|
-| `sgs/container` | Dynamic (render.php) | No | Native typography + colour supports |
-| `sgs/hero` | Dynamic (render.php) | No | Headline colour, sub-headline size/colour, CTA text/bg |
-| `sgs/info-box` | Static save | No | Heading colour/size, description colour, icon colour/bg |
-| `sgs/counter` | Static + viewScriptModule | 839 B | Number colour, label colour/size |
-| `sgs/trust-bar` | Static + viewScriptModule | 733 B | Value colour, label colour/size |
-| `sgs/icon-list` | Static save | No | Icon colour, text colour |
-| `sgs/card-grid` | Static save | No | Title colour, subtitle colour |
-| `sgs/cta-section` | Static save | No | Headline colour, body colour/size, button text/bg |
-| `sgs/process-steps` | Static save | No | Number colour/bg, title colour, description colour |
-| `sgs/testimonial` | Static save | No | Quote, name (colour+size), role, star colour |
-| `sgs/testimonial-slider` | Static + viewScriptModule | 1.63 KB | Quote, name (colour+size), role, star colour |
-| `sgs/heritage-strip` | Static save | No | Headline (colour+size), body (colour+size) |
-| `sgs/brand-strip` | Static save | No | Greyscale toggle, scroll animation |
-| `sgs/certification-bar` | Static save | No | Title (colour+size), label (colour+size) |
-| `sgs/notice-banner` | Static save | No | Text (colour+size), 4 variants |
-| `sgs/whatsapp-cta` | Static + viewScriptModule | 303 B | Label (colour+size), background colour |
-
-- **Indus Foods style variation** deployed in theme.
-- **Git:** 12 commits on `main`, latest `aebb879`.
-- **Uncommitted changes:** 8 modified files (CLAUDE.md updates, spec expansions) + 4 research files + RESEARCH-PROMPT.md. None of these are committed — they're documentation/spec work, not code.
-- **No remote repository** — local git only.
-- **Test site** (lightsalmon-tarsier-683012.hostingersite.com) is client-facing — DO NOT modify.
+- **SGS Theme Phase 1a LIVE** on palestine-lives.org (WP 6.9.1)
+- **SGS Blocks** — 29 blocks registered and deployed (16 original + 13 form blocks)
+- **SGS Forms fully operational** — 13 blocks, REST API, DB table, Interactivity API store, 551 lines CSS
+- **Git:** 18 commits on `main`, latest `d2aff31`. **All form code is UNCOMMITTED** — see Files Modified below.
+- **No remote repository** — local git only
+- **Gold Standard Audit still DRAFT** — unchanged this session
 
 ## Known Issues / Blockers
 
-- **Font preloading may duplicate WP's automatic loading** — `functions.php` manually preloads Inter, but WP 6.9 may also preload from theme.json `fontFace` declarations. Check page source for duplicates.
-- **Extensions bundled with Container** — animation + visibility extensions are imported from `src/blocks/container/index.js`. If container block is ever removed, extensions need a new home.
-- **`--experimental-modules` flag** — still required for `viewScriptModule` support. May become stable in a future `@wordpress/scripts` release.
-- **DesignTokenPicker may store hex values instead of token slugs** — `ColorPalette` returns hex, but `colourVar()` expects slugs. Not yet tested with real content. Investigate when first placing blocks with custom colours.
-- **Uncommitted spec/doc changes need committing** — the CLAUDE.md updates, spec expansions, and research files from this session are still unstaged. Commit them early next session or when convenient.
+1. **Form code is uncommitted** — significant amount of new files (13 block directories, 5 PHP infrastructure files, 1 plan doc) plus 2 modified files. Needs committing before any other work.
+2. **Gold Standard Audit still needs live research** — unchanged from Session 9. Still has "Needs verification" markers.
+3. **Firefox 135+ claim** in `specs/02-SGS-BLOCKS.md` line 1034 should be Firefox 136+. Minor, unfixed.
+4. **No end-to-end form submission test** — blocks register and REST endpoints respond, but no actual form submission test was run (would require creating a test post with form blocks in the editor).
 
 ## Next Priorities (in order)
 
-1. **Form blocks** — Build the 13 form blocks + form processing engine as specified in `specs/04-SGS-FORMS.md`. This is Phase 1b completion. Blocks: `sgs/form`, `sgs/form-step`, 10 field types (`text`, `email`, `phone`, `textarea`, `select`, `radio`, `checkbox`, `tiles`, `file`, `consent`), `sgs/form-review`. Plus: submission REST endpoint, `sgs_form_submissions` database table, validation engine, N8N webhook integration.
-2. **Indus Foods pages** — Build actual client pages using completed blocks. 5 pages: Homepage, Product Catalogue, About/Heritage, Trade Application (needs form blocks), Contact.
-3. **Commit uncommitted docs** — Stage and commit the spec expansions, CLAUDE.md updates, and research files from this session.
-4. **Deep research session** — Run `specs/RESEARCH-PROMPT.md` to spec out pop-ups, Google Reviews, mega menu, chatbot, and audit existing blocks against competitors.
+1. **Commit form blocks** — all form code needs committing. Two logical commits: infrastructure (PHP classes + categories) and blocks (13 block directories + CSS + plan doc).
+2. **Build Indus Foods trade application page** — the 4-step form is now possible. Needs the actual page content composed in the block editor using the deployed form blocks. Reference `sites/indus-foods/CLAUDE.md` for the step breakdown and `sites/indus-foods/mockups/` for design.
+3. **Build remaining Indus Foods pages** — Homepage, Food Service (template), Manufacturing, Retail, Wholesale. The Food Service page is the template for all service pages.
+4. **Deep research: verify Gold Standard Audit** — scrape competitor product pages, identify missing block types, research critiques. This can run in parallel with Indus Foods page building.
 
-## Files Modified This Session
+## Files Modified
 
 All paths relative to `c:\Users\Bean\Projects\small-giants-wp\`:
 
-**Created and committed (`aebb879`):**
-- `plugins/sgs-blocks/src/blocks/testimonial/` — block.json, index.js, edit.js, save.js, style.css, editor.css
-- `plugins/sgs-blocks/src/blocks/testimonial-slider/` — block.json, index.js, edit.js, save.js, style.css, editor.css, view.js
-- `plugins/sgs-blocks/src/blocks/heritage-strip/` — block.json, index.js, edit.js, save.js, style.css, editor.css
-- `plugins/sgs-blocks/src/blocks/brand-strip/` — block.json, index.js, edit.js, save.js, style.css, editor.css
-- `plugins/sgs-blocks/src/blocks/certification-bar/` — block.json, index.js, edit.js, save.js, style.css, editor.css
-- `plugins/sgs-blocks/src/blocks/notice-banner/` — block.json, index.js, edit.js, save.js, style.css, editor.css
-- `plugins/sgs-blocks/src/blocks/whatsapp-cta/` — block.json, index.js, edit.js, save.js, style.css, editor.css, view.js
+**Modified (tracked, uncommitted):**
+- `plugins/sgs-blocks/sgs-blocks.php` — added form class requires, REST API registration, activation hook
+- `plugins/sgs-blocks/includes/block-categories.php` — added `sgs-forms` category
 
-**Modified (uncommitted):**
-- `CLAUDE.md` — framework-wide instruction updates
-- `plugins/sgs-blocks/CLAUDE.md` — blocks plugin instruction updates
-- `plugins/sgs-booking/CLAUDE.md` — booking plugin instruction rewrite
-- `plugins/sgs-client-notes/CLAUDE.md` — client notes instruction updates
-- `sites/indus-foods/CLAUDE.md` — Indus Foods instruction updates
-- `theme/sgs-theme/CLAUDE.md` — theme instruction updates
-- `specs/02-SGS-BLOCKS.md` — block spec expansion (+639 lines)
-- `specs/03-SGS-BOOKING.md` — booking spec major rewrite (+928/-481)
+**New (untracked):**
+- `plugins/sgs-blocks/includes/forms/class-form-activator.php` — DB table creation via dbDelta
+- `plugins/sgs-blocks/includes/forms/class-form-processor.php` — sanitisation, DB insert, N8N webhook
+- `plugins/sgs-blocks/includes/forms/class-form-upload.php` — file upload handler with MIME/size validation
+- `plugins/sgs-blocks/includes/forms/class-form-rest-api.php` — REST endpoints (submit + upload) with rate limiting
+- `plugins/sgs-blocks/includes/forms/field-render-helpers.php` — shared PHP rendering functions
+- `plugins/sgs-blocks/src/blocks/form/` — wrapper block (block.json, edit.js, save.js, index.js, render.php, view.js, style.css, editor.css)
+- `plugins/sgs-blocks/src/blocks/form-step/` — step container (block.json, edit.js, save.js, index.js, render.php)
+- `plugins/sgs-blocks/src/blocks/form-field-text/` — text input (block.json, edit.js, index.js, render.php)
+- `plugins/sgs-blocks/src/blocks/form-field-email/` — email input
+- `plugins/sgs-blocks/src/blocks/form-field-phone/` — phone input
+- `plugins/sgs-blocks/src/blocks/form-field-textarea/` — textarea
+- `plugins/sgs-blocks/src/blocks/form-field-select/` — dropdown select
+- `plugins/sgs-blocks/src/blocks/form-field-radio/` — radio buttons
+- `plugins/sgs-blocks/src/blocks/form-field-checkbox/` — checkboxes
+- `plugins/sgs-blocks/src/blocks/form-field-tiles/` — visual tile selector
+- `plugins/sgs-blocks/src/blocks/form-field-file/` — file upload with progress
+- `plugins/sgs-blocks/src/blocks/form-field-consent/` — consent checkbox
+- `plugins/sgs-blocks/src/blocks/form-review/` — auto-populated review summary
+- `docs/plans/2026-02-13-sgs-forms.md` — implementation plan
 
-**Untracked (new files, uncommitted):**
-- `.firecrawl/competitor-research/elfsight-google-reviews-features.md`
-- `.firecrawl/competitor-research/google-places-api-overview.md`
-- `.firecrawl/competitor-research/hellobar-notification-bars.md`
-- `.firecrawl/competitor-research/wp-dev-mega-menu.md`
-- `specs/RESEARCH-PROMPT.md` — deep research prompt for future session
+**Also untracked (from previous sessions, not yet committed):**
+- `.claude/` — Claude Code config
+- `.firecrawl/competitor-research/` — research files (critiques, cross-cutting, competitor data)
 
 ## Notes for Next Session
 
-- **Form blocks are the biggest build yet.** 13 blocks + a processing engine with REST endpoints, database table, and N8N integration. Read `specs/04-SGS-FORMS.md` thoroughly before starting — it has the full architecture, attributes, and endpoints.
-- **Form blocks live inside sgs-blocks**, not a separate plugin. They share the same build toolchain, namespace, and registration system.
-- **The form wrapper (`sgs/form`) is dynamic** — it needs `render.php` for server-side submission handling, nonce injection, and honeypot field. Field blocks can be static save.
-- **N8N webhook** replaces wp_mail() for all notifications. The webhook URL is stored as a form attribute. N8N handles email formatting, routing, and notification logic.
-- **Stripe integration is Phase 2** — don't build payment into forms yet. The basic form blocks for Indus Foods (trade application) don't need payment.
-- **File upload needs a REST endpoint** — `POST /sgs/v1/forms/upload` with nonce, capability check, file type/size validation. Stores in WordPress media library.
-- **Block customisation standard is MANDATORY** — see auto memory `block-standards.md`. Every block gets: native WordPress supports, Block Selectors API for primary text, custom attributes for each inner element, DesignTokenPicker controls, CSS fallbacks with `:not([style*="color"])`.
-- **Adding a new block:** Create `src/blocks/block-name/` with `block.json`, `edit.js`, `save.js` (or `render.php` for dynamic), `style.css`. Run `npm run build`. Deploy. Auto-registers via `class-sgs-blocks.php`.
-- **Shared components:** Import from `../../components` — `ResponsiveControl`, `DesignTokenPicker`, `SpacingControl`, `AnimationControl`.
-- **Token utilities:** Import from `../../utils` — `colourVar()`, `spacingVar()`, `shadowVar()`, `fontSizeVar()`, `borderRadiusVar()`, `transitionVar()`.
+### Form System Architecture
+- **Dynamic rendering:** All blocks use `render.php` (server-side). The `save.js` for `sgs/form` returns `<InnerBlocks.Content />`.
+- **Interactivity API:** `view.js` (597 lines) handles multi-step navigation, validation, submission, tile toggling, file uploads. Uses generator functions (`function*` with `yield`) for async actions — this is the standard Interactivity API pattern.
+- **Field helpers:** All field `render.php` files import shared functions from `includes/forms/field-render-helpers.php` via `use function` statements.
+- **Webhook URL registration:** The form's `render.php` registers the N8N webhook URL via `add_filter('sgs_form_webhook_url', ...)` at render time. This means the URL is available when the REST endpoint processes the submission.
+- **Rate limiting:** 5 submissions per IP per form per hour, using WordPress transients.
+
+### Indus Foods Trade Application Mapping
+| Step | Label | Fields |
+|---|---|---|
+| 1 | About You | text (name), email, phone, text (job title) |
+| 2 | Business Details | text (business name, address, VAT, CRN) |
+| 3 | Account Preferences | tiles (product categories), radio/select (delivery, payment) |
+| 4 | Review & Submit | form-review, file (upload), consent |
+
+### Build output
+- `build/` directory is NOT committed (gitignored) — it's deployed directly via SCP
+- Rebuild with `cd plugins/sgs-blocks && npm run build` before any deploy
 
 ## Relevant Tooling for Next Tasks
 
 ### Commands
-- `/handoff` — generate session handoff at end
-- `/commit` — create git commits
+- `/commit` — commit the uncommitted form code
+- `/handoff` — generate session handoff
+- `/deploy-check` — pre-deployment checklist
 
 ### Skills
-- `/superpowers:using-superpowers` — start every session with this
-- `/superpowers:brainstorming` — use before designing the form architecture (how to structure the processing engine, validation flow, multi-step UX)
-- `/superpowers:writing-plans` — plan the form block build sequence (13 blocks + engine is complex)
-- `/superpowers:verification-before-completion` — verify each form block works before moving on
-- `wp-block-development` — block.json, registration, static save, dynamic render.php, viewScriptModule
-- `wp-plugin-development` — REST endpoints, database tables, activation hooks, capability checks
-- `wp-rest-api` — form submission endpoint, file upload endpoint, nonce authentication
-- `wp-interactivity-api` — multi-step form navigation, conditional field visibility, client-side validation
-- `writing-clearly-and-concisely` — if updating specs
+- `/superpowers:using-superpowers` — start every session
+- `/superpowers:verification-before-completion` — verify before claiming done
+- `wp-block-development` — block patterns, registration, render.php
+- `wp-interactivity-api` — if debugging multi-step form behaviour
+- `/firecrawl:firecrawl-cli` — for Gold Standard Audit research (if doing that)
 
 ### Agents
 - `wp-developer` — WordPress development specialist
-- `test-and-explain` — test deployed form blocks, explain results in plain English
+- `test-and-explain` — test deployed blocks, explain results in plain English
 
 ### MCP Servers
-- `context7` — up-to-date WordPress block development docs, Interactivity API reference, REST API handbook
-
-## Deployment Commands
-
-```bash
-# Build
-cd plugins/sgs-blocks && npm run build
-
-# Deploy plugin
-scp -r plugins/sgs-blocks/sgs-blocks.php plugins/sgs-blocks/includes plugins/sgs-blocks/build plugins/sgs-blocks/assets hd:~/domains/palestine-lives.org/public_html/wp-content/plugins/sgs-blocks/
-
-# Deploy theme
-scp -r theme/sgs-theme hd:~/domains/palestine-lives.org/public_html/wp-content/themes/
-
-# Flush cache
-ssh hd "cd ~/domains/palestine-lives.org/public_html && wp litespeed-purge all"
-```
+- **Context7** — WordPress block development docs
+- **Firecrawl** — competitor research (for audit task)
+- **Memory** — store findings
 
 ## Next Session Prompt
 
-```
-/superpowers:using-superpowers
-/superpowers:brainstorming
-/superpowers:writing-plans
+### Option A: Commit + Start Indus Foods Pages
 
-SGS Blocks has 16 layout/content blocks built and deployed on palestine-lives.org. All follow the per-element customisation standard. 12 commits on main, latest aebb879. Phase 1b content blocks are COMPLETE.
+~~~
+/superpowers:using-superpowers
+
+SGS Forms is fully built and deployed — 13 form blocks, REST API, DB table, Interactivity API multi-step navigation, 551 lines of CSS. All 29 SGS blocks are registered on palestine-lives.org. The form code is uncommitted.
 
 Read CONVERSATION-HANDOFF.md and CLAUDE.md for full context, then work through these priorities:
 
-1. **Commit uncommitted docs** — there are 8 modified files (CLAUDE.md updates, spec expansions) and 5 new files (research, RESEARCH-PROMPT.md) from the previous session. Stage and commit these first. Use `/commit` for this.
+1. **Commit the form blocks** — use `/commit` to commit the uncommitted form code. Two logical commits: (a) infrastructure (PHP classes in includes/forms/ + modified sgs-blocks.php + block-categories.php), (b) blocks (13 block directories in src/blocks/ + plan doc). Include the .firecrawl research files in a separate commit if desired.
 
-2. **Build SGS Form blocks** — this is the main task. Read `specs/04-SGS-FORMS.md` thoroughly first, then use `/superpowers:brainstorming` to explore the form architecture before coding. Use `/superpowers:writing-plans` to plan the build sequence. The form system has 13 blocks + a processing engine:
-   - `sgs/form` (dynamic — render.php, handles submission, nonces, honeypot)
-   - `sgs/form-step` (step container for multi-step)
-   - 10 field blocks: text, email, phone, textarea, select, radio, checkbox, tiles, file, consent
-   - `sgs/form-review` (auto-generated summary step)
-   - Processing engine: REST submission endpoint, `sgs_form_submissions` DB table, validation, N8N webhook
-   - Invoke `wp-block-development` for block patterns, `wp-rest-api` for endpoints, `wp-plugin-development` for DB table + activation hooks, `wp-interactivity-api` for multi-step navigation + client validation
+2. **Build the Indus Foods trade application page** — read `sites/indus-foods/CLAUDE.md` for the 4-step form spec and `sites/indus-foods/mockups/` for the V2 design. Compose the page content using the SGS Form blocks in the WordPress block editor on palestine-lives.org. The form needs: Step 1 (name, email, phone, job title), Step 2 (business name, address, VAT, CRN), Step 3 (product category tiles, delivery preferences), Step 4 (review, file upload, consent). Set the N8N webhook URL via the form settings panel.
 
-3. **Deploy and verify forms** — use `/superpowers:verification-before-completion` before claiming done. Deploy and test on palestine-lives.org.
+3. **Build the Food Service page** — this is the template for all 4 service pages. Read `sites/indus-foods/notes/Indus-Foods-Website-Research-Updated-V2V3.md` for content and `sites/indus-foods/mockups/` for the V3 design. Use existing SGS blocks (hero, trust-bar, heritage-strip, process-steps, card-grid, testimonial, cta-section, brand-strip, certification-bar).
 
-IMPORTANT: Stripe payment integration is Phase 2 — do NOT build it now. The Indus Foods trade application form only needs basic fields + N8N webhook submission. File upload REST endpoint IS needed (Phase 1b).
-```
+IMPORTANT: The test site (lightsalmon-tarsier-683012.hostingersite.com) is client-facing — DO NOT deploy there. Use palestine-lives.org only.
+~~~
+
+### Option B: Deep Research Session (Gold Standard Audit)
+
+~~~
+/superpowers:using-superpowers
+
+The SGS WordPress Framework has 29 deployed blocks (including 13 new form blocks) and 10 spec documents. The Gold Standard Audit (specs/09-GOLD-STANDARD-AUDIT.md) is still marked DRAFT — it was written from stale knowledge and has "Needs verification" markers. It also doesn't identify block types that competitors offer but SGS lacks.
+
+Read CONVERSATION-HANDOFF.md and CLAUDE.md for full context, then work through these priorities:
+
+1. **Commit uncommitted form code first** — use `/commit`. Two commits: infrastructure PHP + block source files.
+
+2. **Verify the Gold Standard Audit with live research** — use `/firecrawl:firecrawl-cli` to scrape Kadence Blocks Pro (kadencewp.com), Spectra Pro (wpspectra.com), GenerateBlocks Pro (generateblocks.com), and Elementor Pro (elementor.com). Get complete current block lists, verify every feature claim, replace all "Needs verification" cells.
+
+3. **Identify missing block types** — compare competitor block lists against SGS's 25 non-form blocks. Add a "Block Types SGS Does Not Cover" section to the audit.
+
+4. **Research competitor critiques** — use Firecrawl to search Reddit, WordPress.org reviews (1-2 star), G2, Capterra for complaints. Identify patterns and differentiation opportunities.
+
+5. **Update the audit** — remove DRAFT banner, replace all data with verified information, add missing block types section, update priority gap summary. Use `/commit` when done.
+
+Use Firecrawl for ALL web research. This is a research-only session — do NOT build any code.
+~~~

@@ -24,6 +24,10 @@ add_filter( 'block_categories_all', function ( array $categories ): array {
 				'slug'  => 'sgs-interactive',
 				'title' => __( 'SGS Interactive', 'sgs-blocks' ),
 			],
+			[
+				'slug'  => 'sgs-forms',
+				'title' => __( 'SGS Forms', 'sgs-blocks' ),
+			],
 		],
 		$categories
 	);

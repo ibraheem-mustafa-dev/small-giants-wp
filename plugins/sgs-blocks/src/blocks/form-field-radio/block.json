@@ -1,0 +1,52 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/form-field-radio",
+	"version": "0.1.0",
+	"title": "Radio Field",
+	"category": "sgs-forms",
+	"description": "A radio button group for single selection.",
+	"keywords": [ "radio", "choice", "option", "select" ],
+	"textdomain": "sgs-blocks",
+	"icon": "list-view",
+	"parent": [ "sgs/form", "sgs/form-step" ],
+	"usesContext": [ "sgs/formId" ],
+	"supports": {
+		"html": false,
+		"anchor": false
+	},
+	"attributes": {
+		"fieldName": {
+			"type": "string",
+			"default": ""
+		},
+		"label": {
+			"type": "string",
+			"default": ""
+		},
+		"placeholder": {
+			"type": "string",
+			"default": ""
+		},
+		"helpText": {
+			"type": "string",
+			"default": ""
+		},
+		"required": {
+			"type": "boolean",
+			"default": false
+		},
+		"width": {
+			"type": "string",
+			"default": "full"
+		},
+		"options": {
+			"type": "array",
+			"default": [
+				{ "value": "option-1", "label": "Option 1" }
+			]
+		}
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js"
+}

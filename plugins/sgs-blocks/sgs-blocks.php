@@ -26,4 +26,17 @@ define( 'SGS_BLOCKS_URL', plugin_dir_url( __FILE__ ) );
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-blocks.php';
 require_once SGS_BLOCKS_PATH . 'includes/block-categories.php';
 
+// Form processing classes.
+require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-activator.php';
+require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-processor.php';
+require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-upload.php';
+require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-rest-api.php';
+require_once SGS_BLOCKS_PATH . 'includes/forms/field-render-helpers.php';
+
+// Register REST API endpoints.
+Forms\Form_REST_API::register();
+
+// Activation hook for database setup.
+register_activation_hook( __FILE__, [ Forms\Form_Activator::class, 'activate' ] );
+
 SGS_Blocks::instance();
