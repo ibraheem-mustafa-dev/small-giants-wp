@@ -4,8 +4,10 @@ import Edit from './edit';
 import Save from './save';
 import './style.css';
 import './editor.css';
+import { processStepsIcon } from '../../utils';
 
 registerBlockType( metadata.name, {
+	icon: processStepsIcon,
 	edit: Edit,
 	save: Save,
 } );

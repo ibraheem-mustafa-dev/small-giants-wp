@@ -4,8 +4,10 @@ import Edit from './edit';
 import Save from './save';
 import './style.css';
 import './editor.css';
+import { testimonialSliderIcon } from '../../utils';
 
 registerBlockType( metadata.name, {
+	icon: testimonialSliderIcon,
 	edit: Edit,
 	save: Save,
 } );

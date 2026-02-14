@@ -9,8 +9,10 @@ import './editor.css';
 // for all sgs/* blocks. Bundled here because container always loads.
 import '../extensions/animation';
 import '../extensions/responsive-visibility';
+import { containerIcon } from '../../utils';
 
 registerBlockType( metadata.name, {
+	icon: containerIcon,
 	edit: Edit,
 	save: Save,
 	deprecated,

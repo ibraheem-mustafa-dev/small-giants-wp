@@ -1,0 +1,33 @@
+/* ─── Accordion — Editor-Only Styles ─── */
+
+.sgs-accordion .block-editor-block-list__layout {
+	display: flex;
+	flex-direction: column;
+}
+
+/* Make the header clickable in editor to toggle preview */
+.sgs-accordion-item__header {
+	cursor: pointer;
+	user-select: none;
+}
+
+/* Allow RichText clicks without toggling */
+.sgs-accordion-item__title [contenteditable] {
+	cursor: text;
+}
+
+/* Subtle border in editor for visibility */
+.sgs-accordion-item {
+	border: 1px dashed rgba(0, 0, 0, 0.1);
+	border-radius: 4px;
+	margin-bottom: 4px;
+}
+
+.sgs-accordion-item .sgs-accordion-item__content {
+	border-top: 1px dashed rgba(0, 0, 0, 0.06);
+}
+
+/* Collapsed state hint */
+.sgs-accordion-item__content[style*="display: none"] + .sgs-accordion-item__collapsed-hint {
+	display: block;
+}

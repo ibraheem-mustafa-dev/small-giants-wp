@@ -1,11 +1,11 @@
 import { registerBlockType } from '@wordpress/blocks';
 import edit from './edit';
 import metadata from './block.json';
-import { formFieldCheckboxIcon } from '../../utils';
+import { accordionItemIcon } from '../../utils';
 
 registerBlockType( metadata.name, {
 	...metadata,
-	icon: formFieldCheckboxIcon,
+	icon: accordionItemIcon,
 	edit,
 	save: () => null,
 } );

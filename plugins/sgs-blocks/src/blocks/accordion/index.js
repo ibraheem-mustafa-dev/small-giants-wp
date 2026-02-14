@@ -2,12 +2,12 @@ import { registerBlockType } from '@wordpress/blocks';
 import metadata from './block.json';
 import Edit from './edit';
 import Save from './save';
+import { accordionIcon } from '../../utils';
 import './style.css';
 import './editor.css';
-import { certificationBarIcon } from '../../utils';
 
 registerBlockType( metadata.name, {
-	icon: certificationBarIcon,
+	icon: accordionIcon,
 	edit: Edit,
 	save: Save,
 } );

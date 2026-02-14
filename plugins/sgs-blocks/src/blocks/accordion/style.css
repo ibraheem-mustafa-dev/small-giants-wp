@@ -1,0 +1,163 @@
+/* ─── Accordion — Frontend + Editor Styles ─── */
+
+.sgs-accordion {
+	display: flex;
+	flex-direction: column;
+}
+
+/* ─── ACCORDION ITEM ─── */
+
+.sgs-accordion-item {
+	border: 0;
+}
+
+/* Remove native marker */
+.sgs-accordion-item > summary {
+	list-style: none;
+	cursor: pointer;
+}
+
+.sgs-accordion-item > summary::-webkit-details-marker {
+	display: none;
+}
+
+.sgs-accordion-item > summary::marker {
+	display: none;
+	content: "";
+}
+
+/* ─── HEADER ─── */
+
+.sgs-accordion-item__header {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 16px 20px;
+	font-weight: 600;
+	font-size: 1rem;
+	line-height: 1.4;
+	transition: background-color 0.2s ease;
+	min-height: 44px; /* WCAG 2.2 AA touch target */
+}
+
+.sgs-accordion-item__header:not([style*="color"]) {
+	color: var(--wp--preset--color--text, #1e1e1e);
+}
+
+.sgs-accordion-item__header:hover {
+	opacity: 0.85;
+}
+
+.sgs-accordion-item__title {
+	flex: 1;
+}
+
+/* ─── ICON ─── */
+
+.sgs-accordion-item__icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	width: 24px;
+	height: 24px;
+	transition: transform 0.3s ease;
+}
+
+.sgs-accordion-item__icon:not([style*="color"]) {
+	color: var(--wp--preset--color--primary, currentColor);
+}
+
+.sgs-accordion-item[open] > .sgs-accordion-item__header .sgs-accordion-item__icon,
+.sgs-accordion-item--open .sgs-accordion-item__icon--open {
+	transform: rotate(180deg);
+}
+
+/* ─── CONTENT ─── */
+
+.sgs-accordion-item__content {
+	padding: 0 20px 16px;
+}
+
+.sgs-accordion-item__content > :first-child {
+	margin-top: 0;
+}
+
+.sgs-accordion-item__content > :last-child {
+	margin-bottom: 0;
+}
+
+/* ─── STYLE: BORDERED ─── */
+
+.sgs-accordion--bordered .sgs-accordion-item {
+	border: 1px solid var(--wp--preset--color--border-subtle, #e0e0e0);
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+}
+
+.sgs-accordion--bordered .sgs-accordion-item + .sgs-accordion-item {
+	margin-top: -1px;
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+}
+
+.sgs-accordion--bordered .sgs-accordion-item:first-child {
+	border-top-left-radius: var(--wp--custom--border-radius--medium, 8px);
+	border-top-right-radius: var(--wp--custom--border-radius--medium, 8px);
+}
+
+.sgs-accordion--bordered .sgs-accordion-item:last-child {
+	border-bottom-left-radius: var(--wp--custom--border-radius--medium, 8px);
+	border-bottom-right-radius: var(--wp--custom--border-radius--medium, 8px);
+}
+
+/* ─── STYLE: FLUSH ─── */
+
+.sgs-accordion--flush .sgs-accordion-item {
+	border-bottom: 1px solid var(--wp--preset--color--border-subtle, #e0e0e0);
+}
+
+.sgs-accordion--flush .sgs-accordion-item:last-child {
+	border-bottom: 0;
+}
+
+.sgs-accordion--flush .sgs-accordion-item__header {
+	padding-left: 0;
+	padding-right: 0;
+}
+
+.sgs-accordion--flush .sgs-accordion-item__content {
+	padding-left: 0;
+	padding-right: 0;
+}
+
+/* ─── STYLE: CARD ─── */
+
+.sgs-accordion--card .sgs-accordion-item {
+	background: var(--wp--preset--color--surface, #ffffff);
+	border: 1px solid var(--wp--preset--color--border-subtle, #e0e0e0);
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.sgs-accordion--card .sgs-accordion-item + .sgs-accordion-item {
+	margin-top: 8px;
+}
+
+/* ─── ICON POSITION: LEFT ─── */
+
+.sgs-accordion--icon-left .sgs-accordion-item__header {
+	flex-direction: row;
+}
+
+/* ─── RESPONSIVE ─── */
+
+@media (max-width: 600px) {
+	.sgs-accordion-item__header {
+		padding: 14px 16px;
+		font-size: 0.9rem;
+	}
+
+	.sgs-accordion-item__content {
+		padding: 0 16px 14px;
+	}
+}
