@@ -1,0 +1,16 @@
+/**
+ * Table of Contents — editor-only styles.
+ */
+
+/* Prevent link clicks in editor */
+.sgs-toc__link {
+	pointer-events: none;
+}
+
+/* Subtle placeholder styling */
+.sgs-toc__empty {
+	border: 1px dashed var(--wp--preset--color--border-subtle, #ccc);
+	padding: 1rem;
+	text-align: center;
+	border-radius: 4px;
+}

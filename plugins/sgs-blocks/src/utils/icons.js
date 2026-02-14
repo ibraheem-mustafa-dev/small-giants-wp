@@ -299,6 +299,18 @@ export const formReviewIcon = icon(
 	</SVG>
 );
 
+/** Table of Contents — nested list with connector line */
+export const tableOfContentsIcon = icon(
+	<SVG viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+		<Rect x="3" y="3" width="12" height="2" rx="1" />
+		<Rect x="6" y="7.5" width="10" height="1.5" rx="0.75" fillOpacity="0.6" />
+		<Rect x="6" y="11" width="9" height="1.5" rx="0.75" fillOpacity="0.6" />
+		<Rect x="9" y="14.5" width="8" height="1.5" rx="0.75" fillOpacity="0.4" />
+		<Rect x="6" y="18" width="11" height="1.5" rx="0.75" fillOpacity="0.6" />
+		<Rect x="3" y="7" width="1.5" height="14" rx="0.5" fillOpacity="0.3" />
+	</SVG>
+);
+
 /* ═══════════════════════════════════════════════════════════
    INTERACTIVE BLOCKS
    ═══════════════════════════════════════════════════════════ */

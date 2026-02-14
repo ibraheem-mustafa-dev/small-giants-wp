@@ -1,0 +1,173 @@
+/**
+ * Table of Contents — shared styles (frontend + editor).
+ */
+
+/* ─── Base ─── */
+
+.sgs-toc {
+	--sgs-toc-link-indent: 1rem;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	line-height: 1.6;
+}
+
+/* ─── Card style ─── */
+
+.sgs-toc--card {
+	background: var(--wp--preset--color--surface, #fff);
+	border: 1px solid var(--wp--preset--color--border-subtle, #e2e8f0);
+	border-radius: var(--wp--custom--border-radius--md, 0.5rem);
+	padding: var(--wp--preset--spacing--40, 1.5rem);
+}
+
+/* ─── Minimal style ─── */
+
+.sgs-toc--minimal {
+	border-left: 3px solid var(--wp--preset--color--primary, #0F7E80);
+	padding-left: var(--wp--preset--spacing--30, 1rem);
+}
+
+/* ─── Flush style ─── */
+
+.sgs-toc--flush {
+	padding: 0;
+}
+
+/* ─── Title ─── */
+
+.sgs-toc__title {
+	font-weight: 600;
+	font-size: var(--wp--preset--font-size--medium, 1rem);
+	margin: 0 0 0.75rem;
+	cursor: default;
+}
+
+/* Collapsible: title is a summary element */
+.sgs-toc details > summary.sgs-toc__title {
+	cursor: pointer;
+	list-style: none;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	min-height: 44px;
+	user-select: none;
+}
+
+.sgs-toc details > summary.sgs-toc__title::after {
+	content: "";
+	display: inline-block;
+	width: 0.5em;
+	height: 0.5em;
+	border-right: 2px solid currentColor;
+	border-bottom: 2px solid currentColor;
+	transform: rotate(-45deg);
+	transition: transform 0.2s ease;
+	flex-shrink: 0;
+	margin-left: 0.5rem;
+}
+
+.sgs-toc details[open] > summary.sgs-toc__title::after {
+	transform: rotate(45deg);
+}
+
+/* Remove default marker in Safari */
+.sgs-toc details > summary.sgs-toc__title::-webkit-details-marker {
+	display: none;
+}
+
+/* ─── List ─── */
+
+.sgs-toc__list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.sgs-toc--numbered .sgs-toc__list {
+	list-style: decimal;
+	padding-left: 1.5em;
+}
+
+.sgs-toc--bulleted .sgs-toc__list {
+	list-style: disc;
+	padding-left: 1.5em;
+}
+
+/* ─── Items ─── */
+
+.sgs-toc__item {
+	margin: 0;
+	padding: 0;
+}
+
+/* Indent based on heading level */
+.sgs-toc__item--h3 {
+	padding-left: var(--sgs-toc-link-indent);
+}
+
+.sgs-toc__item--h4 {
+	padding-left: calc(var(--sgs-toc-link-indent) * 2);
+}
+
+.sgs-toc__item--h5 {
+	padding-left: calc(var(--sgs-toc-link-indent) * 3);
+}
+
+.sgs-toc__item--h6 {
+	padding-left: calc(var(--sgs-toc-link-indent) * 4);
+}
+
+/* ─── Links ─── */
+
+.sgs-toc__link {
+	display: flex;
+	align-items: center;
+	padding: 0.25em 0;
+	text-decoration: none;
+	min-height: 44px;
+	transition: color 0.15s ease;
+}
+
+.sgs-toc__link:not([style*="color"]) {
+	color: var(--wp--preset--color--text, #1e1e1e);
+}
+
+.sgs-toc__link:hover,
+.sgs-toc__link:focus-visible {
+	text-decoration: underline;
+}
+
+.sgs-toc__link--active {
+	font-weight: 600;
+}
+
+.sgs-toc__link--active:not([style*="color"]) {
+	color: var(--wp--preset--color--primary, #0F7E80);
+}
+
+/* ─── Empty state ─── */
+
+.sgs-toc__empty {
+	color: var(--wp--preset--color--text-muted, #555);
+	font-style: italic;
+	margin: 0;
+}
+
+/* ─── Responsive ─── */
+
+@media (max-width: 600px) {
+	.sgs-toc__link {
+		padding: 0.375em 0;
+	}
+}
+
+/* ─── Reduced motion ─── */
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-toc details > summary.sgs-toc__title::after {
+		transition: none;
+	}
+
+	.sgs-toc__link {
+		transition: none;
+	}
+}

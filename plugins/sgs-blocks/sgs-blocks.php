@@ -36,6 +36,9 @@ require_once SGS_BLOCKS_PATH . 'includes/forms/field-render-helpers.php';
 // Schema output filters.
 require_once SGS_BLOCKS_PATH . 'includes/review-schema.php';
 
+// Heading anchor injection for Table of Contents.
+require_once SGS_BLOCKS_PATH . 'includes/heading-anchors.php';
+
 // Register REST API endpoints.
 Forms\Form_REST_API::register();
 
