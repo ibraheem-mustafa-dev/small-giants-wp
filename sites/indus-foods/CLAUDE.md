@@ -73,7 +73,7 @@ ssh hd "cd ~/domains/palestine-lives.org/public_html && wp litespeed-purge all"
 
 | Page | Status | Notes |
 |---|---|---|
-| Homepage | Not started | — |
+| Homepage | ✅ Complete | Deployed to palestine-lives.org (post ID 13) |
 | Food Service | Not started | Template for all service pages (V3 mockup) |
 | Manufacturing | Not started | Same template, different content |
 | Retail | Not started | Same template, different content |
