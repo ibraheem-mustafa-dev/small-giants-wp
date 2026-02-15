@@ -52,6 +52,14 @@ All components read from `theme.json` design tokens. Defaults are SGS branding (
 
 Fonts: Inter variable (body + headings, 48KB) — self-hosted WOFF2, no CDN. DM Serif Display + DM Sans available for client style variations.
 
+## Agent Delegation
+
+**MANDATORY:** Delegate all heavy WordPress build work to the `wp-developer` agent — page builds, template creation, block configuration, theme customisation, plugin development. This rule applies across all WP projects and non-WP projects with WP integrations.
+
+## Git
+
+**Remote:** `github.com/ibraheem-mustafa-dev/small-giants-wp` (private). See global CLAUDE.md for workflow rules.
+
 ## Development
 
 - **Build:** `npm run build` (from `plugins/sgs-blocks/`) — uses @wordpress/scripts with `--experimental-modules`
