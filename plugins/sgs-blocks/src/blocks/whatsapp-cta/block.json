@@ -1,71 +1,78 @@
 {
-	"$schema": "https://schemas.wp.org/trunk/block.json",
-	"apiVersion": 3,
-	"name": "sgs/whatsapp-cta",
-	"version": "0.1.0",
-	"title": "SGS WhatsApp CTA",
-	"category": "sgs-content",
-	"description": "WhatsApp integration with floating button, inline CTA, or banner variants.",
-	"keywords": [ "whatsapp", "chat", "cta", "contact", "message", "button" ],
-	"textdomain": "sgs-blocks",
-	"icon": "phone",
-	"supports": {
-		"align": false,
-		"anchor": true,
-		"html": false,
-		"color": {
-			"background": false,
-			"text": false
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true
-		},
-		"__experimentalBorder": {
-			"radius": true
-		}
-	},
-	"selectors": {
-		"root": ".sgs-whatsapp-cta",
-		"typography": ".sgs-whatsapp-cta__label"
-	},
-	"attributes": {
-		"phoneNumber": {
-			"type": "string"
-		},
-		"message": {
-			"type": "string",
-			"default": "Hi, I'd like to know more about your services."
-		},
-		"variant": {
-			"type": "string",
-			"default": "inline"
-		},
-		"label": {
-			"type": "string",
-			"source": "html",
-			"selector": ".sgs-whatsapp-cta__label"
-		},
-		"showOnMobile": {
-			"type": "boolean",
-			"default": true
-		},
-		"showOnDesktop": {
-			"type": "boolean",
-			"default": true
-		},
-		"labelColour": {
-			"type": "string"
-		},
-		"labelFontSize": {
-			"type": "string"
-		},
-		"backgroundColour": {
-			"type": "string"
-		}
-	},
-	"editorScript": "file:./index.js",
-	"editorStyle": "file:./editor.css",
-	"style": "file:./style.css",
-	"viewScriptModule": "file:./view.js"
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "sgs/whatsapp-cta",
+  "version": "0.1.0",
+  "title": "SGS WhatsApp CTA",
+  "category": "sgs-content",
+  "description": "WhatsApp integration with floating button, inline CTA, or banner variants.",
+  "keywords": [
+    "whatsapp",
+    "chat",
+    "cta",
+    "contact",
+    "message",
+    "button"
+  ],
+  "textdomain": "sgs-blocks",
+  "icon": "phone",
+  "supports": {
+    "align": false,
+    "anchor": true,
+    "html": false,
+    "color": {
+      "background": false,
+      "text": false
+    },
+    "spacing": {
+      "margin": true,
+      "padding": true
+    },
+    "__experimentalBorder": {
+      "radius": true
+    }
+  },
+  "selectors": {
+    "root": ".sgs-whatsapp-cta",
+    "typography": ".sgs-whatsapp-cta__label"
+  },
+  "attributes": {
+    "phoneNumber": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string",
+      "default": "Hi, I'd like to know more about your services."
+    },
+    "variant": {
+      "type": "string",
+      "default": "inline"
+    },
+    "label": {
+      "type": "string",
+      "source": "html",
+      "selector": ".sgs-whatsapp-cta__label"
+    },
+    "showOnMobile": {
+      "type": "boolean",
+      "default": true
+    },
+    "showOnDesktop": {
+      "type": "boolean",
+      "default": true
+    },
+    "labelColour": {
+      "type": "string"
+    },
+    "labelFontSize": {
+      "type": "string"
+    },
+    "backgroundColour": {
+      "type": "string"
+    }
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "viewScriptModule": "file:./view.js"
 }

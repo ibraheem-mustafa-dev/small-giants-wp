@@ -1,78 +1,88 @@
 {
-	"$schema": "https://schemas.wp.org/trunk/block.json",
-	"apiVersion": 3,
-	"name": "sgs/card-grid",
-	"version": "0.1.0",
-	"title": "SGS Card Grid",
-	"category": "sgs-content",
-	"description": "Flexible image and content grid with overlay and card variants.",
-	"keywords": [ "card", "grid", "image", "gallery", "product", "tiles" ],
-	"textdomain": "sgs-blocks",
-	"icon": "grid-view",
-	"supports": {
-		"align": [ "wide", "full" ],
-		"anchor": true,
-		"html": false,
-		"color": {
-			"background": true,
-			"text": true
-		},
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true
-		}
-	},
-	"selectors": {
-		"root": ".sgs-card-grid",
-		"typography": ".sgs-card-grid__title"
-	},
-	"attributes": {
-		"variant": {
-			"type": "string",
-			"default": "card"
-		},
-		"items": {
-			"type": "array",
-			"default": []
-		},
-		"columns": {
-			"type": "number",
-			"default": 3
-		},
-		"columnsMobile": {
-			"type": "number",
-			"default": 1
-		},
-		"gap": {
-			"type": "string",
-			"default": "30"
-		},
-		"aspectRatio": {
-			"type": "string",
-			"default": "16/10"
-		},
-		"hoverEffect": {
-			"type": "string",
-			"default": "zoom"
-		},
-		"titleColour": {
-			"type": "string"
-		},
-		"subtitleColour": {
-			"type": "string"
-		}
-	},
-	"editorScript": "file:./index.js",
-	"editorStyle": "file:./editor.css",
-	"style": "file:./style.css"
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "sgs/card-grid",
+  "version": "0.1.0",
+  "title": "SGS Card Grid",
+  "category": "sgs-content",
+  "description": "Flexible image and content grid with overlay and card variants.",
+  "keywords": [
+    "card",
+    "grid",
+    "image",
+    "gallery",
+    "product",
+    "tiles"
+  ],
+  "textdomain": "sgs-blocks",
+  "icon": "grid-view",
+  "supports": {
+    "align": [
+      "wide",
+      "full"
+    ],
+    "anchor": true,
+    "html": false,
+    "color": {
+      "background": true,
+      "text": true
+    },
+    "typography": {
+      "fontSize": true,
+      "lineHeight": true
+    },
+    "spacing": {
+      "margin": true,
+      "padding": true
+    },
+    "__experimentalBorder": {
+      "radius": true,
+      "width": true,
+      "color": true,
+      "style": true
+    }
+  },
+  "selectors": {
+    "root": ".sgs-card-grid",
+    "typography": ".sgs-card-grid__title"
+  },
+  "attributes": {
+    "variant": {
+      "type": "string",
+      "default": "card"
+    },
+    "items": {
+      "type": "array",
+      "default": []
+    },
+    "columns": {
+      "type": "number",
+      "default": 3
+    },
+    "columnsMobile": {
+      "type": "number",
+      "default": 1
+    },
+    "gap": {
+      "type": "string",
+      "default": "30"
+    },
+    "aspectRatio": {
+      "type": "string",
+      "default": "16/10"
+    },
+    "hoverEffect": {
+      "type": "string",
+      "default": "zoom"
+    },
+    "titleColour": {
+      "type": "string"
+    },
+    "subtitleColour": {
+      "type": "string"
+    }
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css"
 }

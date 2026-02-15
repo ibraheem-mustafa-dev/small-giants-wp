@@ -1,106 +1,115 @@
 {
-	"$schema": "https://schemas.wp.org/trunk/block.json",
-	"apiVersion": 3,
-	"name": "sgs/form",
-	"version": "0.1.0",
-	"title": "SGS Form",
-	"category": "sgs-forms",
-	"description": "Form wrapper with multi-step support, validation, and N8N webhook notifications.",
-	"keywords": [ "form", "contact", "application", "submission", "multi-step" ],
-	"textdomain": "sgs-blocks",
-	"icon": "feedback",
-	"supports": {
-		"align": [ "wide", "full" ],
-		"anchor": true,
-		"html": false,
-		"color": {
-			"background": true,
-			"text": true
-		},
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true
-		},
-		"interactivity": true
-	},
-	"attributes": {
-		"formId": {
-			"type": "string",
-			"default": ""
-		},
-		"formName": {
-			"type": "string",
-			"default": ""
-		},
-		"submitLabel": {
-			"type": "string",
-			"default": "Submit"
-		},
-		"submitStyle": {
-			"type": "string",
-			"default": "primary"
-		},
-		"successMessage": {
-			"type": "string",
-			"default": "Thank you! Your submission has been received."
-		},
-		"successRedirect": {
-			"type": "string",
-			"default": ""
-		},
-		"n8nWebhookUrl": {
-			"type": "string",
-			"default": ""
-		},
-		"honeypot": {
-			"type": "boolean",
-			"default": true
-		},
-		"storeSubmissions": {
-			"type": "boolean",
-			"default": true
-		},
-		"submitColour": {
-			"type": "string"
-		},
-		"submitBackground": {
-			"type": "string"
-		},
-		"progressBarColour": {
-			"type": "string",
-			"default": "primary"
-		}
-	},
-	"providesContext": {
-		"sgs/formId": "formId"
-	},
-	"allowedBlocks": [
-		"sgs/form-step",
-		"sgs/form-field-text",
-		"sgs/form-field-email",
-		"sgs/form-field-phone",
-		"sgs/form-field-textarea",
-		"sgs/form-field-select",
-		"sgs/form-field-radio",
-		"sgs/form-field-checkbox",
-		"sgs/form-field-tiles",
-		"sgs/form-field-file",
-		"sgs/form-field-consent",
-		"sgs/form-review"
-	],
-	"render": "file:./render.php",
-	"editorScript": "file:./index.js",
-	"editorStyle": "file:./editor.css",
-	"style": "file:./style.css",
-	"viewScriptModule": "file:./view.js"
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "sgs/form",
+  "version": "0.1.0",
+  "title": "SGS Form",
+  "category": "sgs-forms",
+  "description": "Form wrapper with multi-step support, validation, and N8N webhook notifications.",
+  "keywords": [
+    "form",
+    "contact",
+    "application",
+    "submission",
+    "multi-step"
+  ],
+  "textdomain": "sgs-blocks",
+  "icon": "feedback",
+  "supports": {
+    "align": [
+      "wide",
+      "full"
+    ],
+    "anchor": true,
+    "html": false,
+    "color": {
+      "background": true,
+      "text": true
+    },
+    "typography": {
+      "fontSize": true,
+      "lineHeight": true
+    },
+    "spacing": {
+      "margin": true,
+      "padding": true
+    },
+    "__experimentalBorder": {
+      "radius": true,
+      "width": true,
+      "color": true,
+      "style": true
+    },
+    "interactivity": true
+  },
+  "attributes": {
+    "formId": {
+      "type": "string",
+      "default": ""
+    },
+    "formName": {
+      "type": "string",
+      "default": ""
+    },
+    "submitLabel": {
+      "type": "string",
+      "default": "Submit"
+    },
+    "submitStyle": {
+      "type": "string",
+      "default": "primary"
+    },
+    "successMessage": {
+      "type": "string",
+      "default": "Thank you! Your submission has been received."
+    },
+    "successRedirect": {
+      "type": "string",
+      "default": ""
+    },
+    "n8nWebhookUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "honeypot": {
+      "type": "boolean",
+      "default": true
+    },
+    "storeSubmissions": {
+      "type": "boolean",
+      "default": true
+    },
+    "submitColour": {
+      "type": "string"
+    },
+    "submitBackground": {
+      "type": "string"
+    },
+    "progressBarColour": {
+      "type": "string",
+      "default": "primary"
+    }
+  },
+  "providesContext": {
+    "sgs/formId": "formId"
+  },
+  "allowedBlocks": [
+    "sgs/form-step",
+    "sgs/form-field-text",
+    "sgs/form-field-email",
+    "sgs/form-field-phone",
+    "sgs/form-field-textarea",
+    "sgs/form-field-select",
+    "sgs/form-field-radio",
+    "sgs/form-field-checkbox",
+    "sgs/form-field-tiles",
+    "sgs/form-field-file",
+    "sgs/form-field-consent",
+    "sgs/form-review"
+  ],
+  "render": "file:./render.php",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "viewScriptModule": "file:./view.js"
 }

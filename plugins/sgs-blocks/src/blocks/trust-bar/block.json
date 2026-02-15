@@ -1,68 +1,92 @@
 {
-	"$schema": "https://schemas.wp.org/trunk/block.json",
-	"apiVersion": 3,
-	"name": "sgs/trust-bar",
-	"version": "0.1.0",
-	"title": "SGS Trust Bar",
-	"category": "sgs-content",
-	"description": "Horizontal strip of stats and trust signals.",
-	"keywords": [ "trust", "stats", "bar", "strip", "numbers" ],
-	"textdomain": "sgs-blocks",
-	"icon": "awards",
-	"supports": {
-		"align": [ "wide", "full" ],
-		"anchor": true,
-		"html": false,
-		"color": {
-			"background": true,
-			"text": true,
-			"gradients": true
-		},
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true,
-			"textAlign": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true
-		}
-	},
-	"selectors": {
-		"root": ".sgs-trust-bar",
-		"typography": ".sgs-trust-bar__value"
-	},
-	"attributes": {
-		"items": {
-			"type": "array",
-			"default": [
-				{ "value": "5,000", "suffix": "+", "label": "Businesses Served", "animated": true },
-				{ "value": "60", "suffix": "+", "label": "Years Experience", "animated": true },
-				{ "value": "Next-Day", "suffix": "", "label": "Delivery Available", "animated": false }
-			]
-		},
-		"animated": {
-			"type": "boolean",
-			"default": true
-		},
-		"valueColour": {
-			"type": "string"
-		},
-		"labelColour": {
-			"type": "string"
-		},
-		"labelFontSize": {
-			"type": "string"
-		}
-	},
-	"editorScript": "file:./index.js",
-	"editorStyle": "file:./editor.css",
-	"style": "file:./style.css",
-	"viewScriptModule": "file:./view.js"
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "sgs/trust-bar",
+  "version": "0.1.0",
+  "title": "SGS Trust Bar",
+  "category": "sgs-content",
+  "description": "Horizontal strip of stats and trust signals.",
+  "keywords": [
+    "trust",
+    "stats",
+    "bar",
+    "strip",
+    "numbers"
+  ],
+  "textdomain": "sgs-blocks",
+  "icon": "awards",
+  "supports": {
+    "align": [
+      "wide",
+      "full"
+    ],
+    "anchor": true,
+    "html": false,
+    "color": {
+      "background": true,
+      "text": true,
+      "gradients": true
+    },
+    "typography": {
+      "fontSize": true,
+      "lineHeight": true,
+      "textAlign": true
+    },
+    "spacing": {
+      "margin": true,
+      "padding": true
+    },
+    "__experimentalBorder": {
+      "radius": true,
+      "width": true,
+      "color": true,
+      "style": true
+    }
+  },
+  "selectors": {
+    "root": ".sgs-trust-bar",
+    "typography": ".sgs-trust-bar__value"
+  },
+  "attributes": {
+    "items": {
+      "type": "array",
+      "default": [
+        {
+          "value": "5,000",
+          "suffix": "+",
+          "label": "Businesses Served",
+          "animated": true
+        },
+        {
+          "value": "60",
+          "suffix": "+",
+          "label": "Years Experience",
+          "animated": true
+        },
+        {
+          "value": "Next-Day",
+          "suffix": "",
+          "label": "Delivery Available",
+          "animated": false
+        }
+      ]
+    },
+    "animated": {
+      "type": "boolean",
+      "default": true
+    },
+    "valueColour": {
+      "type": "string"
+    },
+    "labelColour": {
+      "type": "string"
+    },
+    "labelFontSize": {
+      "type": "string"
+    }
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "viewScriptModule": "file:./view.js"
 }
