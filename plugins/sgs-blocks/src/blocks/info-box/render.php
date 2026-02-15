@@ -26,19 +26,26 @@ $description_colour      = $attributes['descriptionColour'] ?? '';
 $card_style              = $attributes['cardStyle'] ?? 'elevated';
 $hover_effect            = $attributes['hoverEffect'] ?? 'lift';
 
-// Helper closures for design token CSS vars.
-$colour_var = function ( $slug ) {
-	if ( ! $slug ) {
+// Helper: resolve a colour value — hex passes through, slugs become var().
+$colour_var = function ( $value ) {
+	if ( ! $value ) {
 		return '';
 	}
-	return 'var(--wp--preset--color--' . esc_attr( $slug ) . ')';
+	if ( '#' === $value[0] || 0 === strpos( $value, 'rgb' ) ) {
+		return esc_attr( $value );
+	}
+	return 'var(--wp--preset--color--' . esc_attr( $value ) . ')';
 };
 
-$font_size_var = function ( $slug ) {
-	if ( ! $slug ) {
+// Helper: resolve a font-size value — CSS units pass through, slugs become var().
+$font_size_var = function ( $value ) {
+	if ( ! $value ) {
 		return '';
 	}
-	return 'var(--wp--preset--font-size--' . esc_attr( $slug ) . ')';
+	if ( preg_match( '/^[\d.]/', $value ) || 0 === strpos( $value, 'clamp' ) ) {
+		return esc_attr( $value );
+	}
+	return 'var(--wp--preset--font-size--' . esc_attr( $value ) . ')';
 };
 
 // Build wrapper classes.
@@ -80,12 +87,16 @@ if ( $description_colour ) {
 	$description_style_attr = ' style="color:' . $colour_var( $description_colour ) . '"';
 }
 
+// Load Lucide icon from generated PHP map (1900+ icons).
+require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
+$icon_svg = sgs_get_lucide_icon( $icon );
+
 // Build icon HTML.
 $icon_html = sprintf(
-	'<span class="sgs-info-box__icon sgs-info-box__icon--%s"%s data-icon="%s" aria-hidden="true"></span>',
+	'<span class="sgs-info-box__icon sgs-info-box__icon--%s"%s aria-hidden="true">%s</span>',
 	esc_attr( $icon_size ),
 	$icon_style_attr,
-	esc_attr( $icon )
+	$icon_svg
 );
 
 // Build heading HTML.

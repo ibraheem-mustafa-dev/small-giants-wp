@@ -73,19 +73,30 @@ if ( ! $is_split && ! empty( $bg_image['url'] ) ) {
 	$overlay_html = '<span class="sgs-hero__overlay" style="' . $overlay_style . '" aria-hidden="true"></span>';
 }
 
-// Helper: build inline style string from colour slug.
-$colour_var = function ( $slug ) {
-	if ( ! $slug ) {
+// Helper: resolve a colour value — hex passes through, slugs become var().
+$colour_var = function ( $value ) {
+	if ( ! $value ) {
 		return '';
 	}
-	return 'var(--wp--preset--color--' . esc_attr( $slug ) . ')';
+	// Raw hex or rgb — use directly.
+	if ( '#' === $value[0] || 0 === strpos( $value, 'rgb' ) ) {
+		return esc_attr( $value );
+	}
+	// Design token slug.
+	return 'var(--wp--preset--color--' . esc_attr( $value ) . ')';
 };
 
-$font_size_var = function ( $slug ) {
-	if ( ! $slug ) {
+// Helper: resolve a font-size value — CSS units pass through, slugs become var().
+$font_size_var = function ( $value ) {
+	if ( ! $value ) {
 		return '';
 	}
-	return 'var(--wp--preset--font-size--' . esc_attr( $slug ) . ')';
+	// Raw CSS value (has digits + unit like 1.5em, 16px, clamp(...)).
+	if ( preg_match( '/^[\d.]/', $value ) || 0 === strpos( $value, 'clamp' ) ) {
+		return esc_attr( $value );
+	}
+	// Design token slug.
+	return 'var(--wp--preset--font-size--' . esc_attr( $value ) . ')';
 };
 
 // Build CTA buttons.

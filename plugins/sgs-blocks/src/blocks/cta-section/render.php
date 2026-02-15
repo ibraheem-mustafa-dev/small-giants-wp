@@ -28,7 +28,7 @@ $colour_value = function ( $value ) {
 		return '';
 	}
 	// If it starts with # or rgb, it's a direct CSS value.
-	if ( str_starts_with( $value, '#' ) || str_starts_with( $value, 'rgb' ) ) {
+	if ( '#' === $value[0] || 0 === strpos( $value, 'rgb' ) ) {
 		return esc_attr( $value );
 	}
 	// Otherwise it's a design token slug.
