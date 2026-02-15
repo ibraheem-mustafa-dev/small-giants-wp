@@ -13,3 +13,22 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Text Domain: sgs-theme
 Tags: block-patterns, full-site-editing, custom-colors, custom-fonts
 */
+
+/* Indus Foods Homepage - Service Cards */
+.service-card {
+	box-shadow: rgba(0, 0, 0, 0.5) 0px 50px 50px -40px;
+	transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.service-card:hover {
+	box-shadow: rgba(0, 0, 0, 0.75) 0px 60px 60px -50px;
+	transform: translateY(-2px);
+}
+
+.service-card img {
+	transition: transform 0.3s ease;
+}
+
+.service-card:hover img {
+	transform: scale(1.05);
+}

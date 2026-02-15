@@ -73,3 +73,15 @@ function register_pattern_categories(): void {
 	] );
 }
 add_action( 'init', __NAMESPACE__ . '\register_pattern_categories' );
+
+/**
+ * Replace [current_year] token in rendered block output.
+ * Works in block theme template parts where shortcodes are not processed.
+ */
+function replace_current_year_token( string $block_content ): string {
+	if ( str_contains( $block_content, '[current_year]' ) ) {
+		$block_content = str_replace( '[current_year]', gmdate( 'Y' ), $block_content );
+	}
+	return $block_content;
+}
+add_filter( 'render_block', __NAMESPACE__ . '\replace_current_year_token' );

@@ -1,20 +1,51 @@
-<!-- wp:group {"style":{"position":{"type":"sticky","top":"0px"},"spacing":{"padding":{"top":"0","bottom":"0","left":"0","right":"0"}}},"backgroundColor":"primary","layout":{"type":"default"},"metadata":{"name":"Site Header"}} -->
-<div class="wp-block-group has-primary-background-color has-background" style="padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
+<!-- wp:group {"style":{"position":{"type":"sticky","top":"0px"},"spacing":{"padding":{"top":"0","bottom":"0","left":"0","right":"0"}}},"backgroundColor":"surface","layout":{"type":"default"},"metadata":{"name":"Site Header"}} -->
+<div class="wp-block-group has-surface-background-color has-background" style="padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
 
-	<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|30","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"layout":{"type":"flex","justifyContent":"space-between","flexWrap":"nowrap"},"metadata":{"name":"Header Inner"}} -->
-	<div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--40)">
+	<!-- Top Bar -->
+	<!-- wp:group {"style":{"spacing":{"padding":{"top":"8px","bottom":"8px","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"primary","layout":{"type":"flex","justifyContent":"space-between","flexWrap":"nowrap"},"metadata":{"name":"Top Bar"}} -->
+	<div class="wp-block-group has-primary-background-color has-background" style="padding-top:8px;padding-right:var(--wp--preset--spacing--40);padding-bottom:8px;padding-left:var(--wp--preset--spacing--40)">
 
-		<!-- wp:site-title {"level":0,"style":{"elements":{"link":{"color":{"text":"var:preset|color|surface"},":hover":{"color":{"text":"var:preset|color|surface"}}}},"typography":{"fontStyle":"normal","fontWeight":"400"}},"fontFamily":"heading"} /-->
+		<!-- wp:group {"layout":{"type":"flex","flexWrap":"nowrap"},"style":{"spacing":{"blockGap":"var:preset|spacing|40"}}} -->
+		<div class="wp-block-group" style="gap:var(--wp--preset--spacing--40)">
+			<!-- wp:paragraph {"style":{"elements":{"link":{"color":{"text":"var:preset|color|surface"}}}},"textColor":"surface","fontSize":"x-small"} -->
+			<p class="has-surface-color has-text-color has-x-small-font-size"><a href="tel:01217714330">0121 771 4330</a></p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:paragraph {"style":{"elements":{"link":{"color":{"text":"var:preset|color|surface"}}}},"textColor":"surface","fontSize":"x-small"} -->
+			<p class="has-surface-color has-text-color has-x-small-font-size"><a href="mailto:amir@indusfoodsltd.com">amir@indusfoodsltd.com</a></p>
+			<!-- /wp:paragraph -->
+		</div>
+		<!-- /wp:group -->
+
+		<!-- wp:social-links {"iconColor":"surface","iconColorValue":"#FFFFFF","size":"has-small-icon-size","className":"is-style-logos-only"} -->
+		<ul class="wp-block-social-links has-small-icon-size has-icon-color is-style-logos-only">
+			<!-- wp:social-link {"url":"https://www.linkedin.com/company/indus-foods-ltd/","service":"linkedin"} /-->
+			<!-- wp:social-link {"url":"https://www.facebook.com/indusfoodsltd/","service":"facebook"} /-->
+			<!-- wp:social-link {"url":"https://www.tiktok.com/@indusfoodsltd","service":"tiktok"} /-->
+			<!-- wp:social-link {"url":"https://g.page/r/CYLLa_01-rZvEAE/review","service":"google"} /-->
+		</ul>
+		<!-- /wp:social-links -->
+
+	</div>
+	<!-- /wp:group -->
+
+	<!-- Main Navigation -->
+	<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|30","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}},"border":{"bottom":{"color":"var:preset|color|surface-alt","width":"1px"}}},"layout":{"type":"flex","justifyContent":"space-between","flexWrap":"nowrap"},"metadata":{"name":"Main Navigation"}} -->
+	<div class="wp-block-group" style="border-bottom-color:var(--wp--preset--color--surface-alt);border-bottom-width:1px;padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--40)">
+
+		<!-- wp:image {"width":"180px","sizeSlug":"full","linkDestination":"custom"} -->
+		<figure class="wp-block-image size-full is-resized"><a href="/"><img src="/wp-content/uploads/indus-foods/2026/01/IndusFoods_Animated_Logo_Horizontal_Multi_Shade-1.svg" alt="Indus Foods Ltd" style="width:180px"/></a></figure>
+		<!-- /wp:image -->
 
 		<!-- wp:group {"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"right"},"metadata":{"name":"Navigation and CTA"}} -->
 		<div class="wp-block-group">
 
-			<!-- wp:navigation {"textColor":"surface","overlayMenu":"mobile","overlayBackgroundColor":"primary-dark","overlayTextColor":"surface","layout":{"type":"flex","justifyContent":"right"},"style":{"typography":{"fontWeight":"500"},"spacing":{"blockGap":"var:preset|spacing|40"}},"fontSize":"small"} /-->
+			<!-- wp:navigation {"textColor":"text","overlayMenu":"mobile","overlayBackgroundColor":"primary","overlayTextColor":"surface","layout":{"type":"flex","justifyContent":"right"},"style":{"typography":{"fontWeight":"500"},"spacing":{"blockGap":"var:preset|spacing|40"}},"fontSize":"small"} /-->
 
 			<!-- wp:buttons -->
 			<div class="wp-block-buttons">
-				<!-- wp:button {"backgroundColor":"accent","textColor":"text","style":{"border":{"radius":"8px"},"spacing":{"padding":{"top":"10px","bottom":"10px","left":"22px","right":"22px"}},"typography":{"fontWeight":"600"}},"fontSize":"small","className":"sgs-header-cta"} -->
-				<div class="wp-block-button sgs-header-cta"><a class="wp-block-button__link has-text-color has-accent-background-color has-text-color has-background wp-element-button" href="#" style="border-radius:8px;padding-top:10px;padding-right:22px;padding-bottom:10px;padding-left:22px;font-weight:600">Get in Touch</a></div>
+				<!-- wp:button {"backgroundColor":"primary","textColor":"surface","style":{"border":{"radius":"8px"},"spacing":{"padding":{"top":"12px","bottom":"12px","left":"24px","right":"24px"}},"typography":{"fontWeight":"600"}},"fontSize":"small","className":"sgs-header-cta"} -->
+				<div class="wp-block-button has-custom-font-size sgs-header-cta has-small-font-size"><a class="wp-block-button__link has-surface-color has-primary-background-color has-text-color has-background wp-element-button" href="/apply-for-trade-account/" style="border-radius:8px;padding-top:12px;padding-right:24px;padding-bottom:12px;padding-left:24px;font-weight:600">Register For a Trade Account</a></div>
 				<!-- /wp:button -->
 			</div>
 			<!-- /wp:buttons -->

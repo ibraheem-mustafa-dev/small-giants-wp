@@ -1,15 +1,61 @@
-<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|50","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"primary-dark","layout":{"type":"constrained","wideSize":"1200px"},"metadata":{"name":"Site Footer"}} -->
-<div class="wp-block-group has-primary-dark-background-color has-background" style="padding-top:var(--wp--preset--spacing--60);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--40)">
+<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|50","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"footer-bg","layout":{"type":"constrained","wideSize":"1200px"},"metadata":{"name":"Site Footer"}} -->
+<div class="wp-block-group has-footer-bg-background-color has-background" style="padding-top:var(--wp--preset--spacing--60);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--40)">
 
 	<!-- wp:columns {"align":"wide","style":{"spacing":{"blockGap":{"left":"var:preset|spacing|50"}}}} -->
 	<div class="wp-block-columns alignwide">
 
 		<!-- wp:column {"width":"35%"} -->
 		<div class="wp-block-column" style="flex-basis:35%">
-			<!-- wp:site-title {"level":0,"style":{"elements":{"link":{"color":{"text":"var:preset|color|surface"},":hover":{"color":{"text":"var:preset|color|surface"}}}},"typography":{"fontStyle":"normal","fontWeight":"400"}},"fontFamily":"heading","fontSize":"large"} /-->
+			<!-- wp:image {"width":"200px","sizeSlug":"full"} -->
+			<figure class="wp-block-image size-full is-resized"><img src="/wp-content/uploads/indus-foods/2026/01/IndusFoods_Animated_Logo_Horizontal_Multi_Shade-1.svg" alt="Indus Foods Ltd" style="width:200px"/></figure>
+			<!-- /wp:image -->
+
+			<!-- wp:social-links {"iconColor":"surface","iconColorValue":"#FFFFFF","size":"has-normal-icon-size","className":"is-style-logos-only","style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
+			<ul class="wp-block-social-links has-normal-icon-size has-icon-color is-style-logos-only" style="margin-top:var(--wp--preset--spacing--40)">
+				<!-- wp:social-link {"url":"https://www.linkedin.com/company/indus-foods-ltd/","service":"linkedin"} /-->
+				<!-- wp:social-link {"url":"https://www.facebook.com/indusfoodsltd/","service":"facebook"} /-->
+				<!-- wp:social-link {"url":"https://g.page/r/CYLLa_01-rZvEAE/review","service":"google"} /-->
+				<!-- wp:social-link {"url":"https://www.instagram.com/indusfoodsltd/","service":"instagram"} /-->
+			</ul>
+			<!-- /wp:social-links -->
+		</div>
+		<!-- /wp:column -->
+
+		<!-- wp:column -->
+		<div class="wp-block-column">
+			<!-- wp:heading {"level":6,"textColor":"surface","fontSize":"small"} -->
+			<h6 class="wp-block-heading has-surface-color has-text-color has-small-font-size">Quick Links</h6>
+			<!-- /wp:heading -->
+
+			<!-- wp:list {"style":{"spacing":{"padding":{"left":"0"}},"typography":{"lineHeight":"2.2"}},"className":"is-style-no-bullets","fontSize":"small"} -->
+			<ul class="is-style-no-bullets has-small-font-size" style="padding-left:0;line-height:2.2">
+				<!-- wp:list-item {"style":{"elements":{"link":{"color":{"text":"var:preset|color|text-inverse"}}}}} -->
+				<li><a href="/certifications/">Certifications</a></li>
+				<!-- /wp:list-item -->
+				<!-- wp:list-item {"style":{"elements":{"link":{"color":{"text":"var:preset|color|text-inverse"}}}}} -->
+				<li><a href="/apply-for-trade-account/">Trade</a></li>
+				<!-- /wp:list-item -->
+				<!-- wp:list-item {"style":{"elements":{"link":{"color":{"text":"var:preset|color|text-inverse"}}}}} -->
+				<li><a href="/brands/">Brands</a></li>
+				<!-- /wp:list-item -->
+				<!-- wp:list-item {"style":{"elements":{"link":{"color":{"text":"var:preset|color|text-inverse"}}}}} -->
+				<li><a href="/delivery-logistics/">Delivery &amp; Logistics</a></li>
+				<!-- /wp:list-item -->
+				<!-- wp:list-item {"style":{"elements":{"link":{"color":{"text":"var:preset|color|text-inverse"}}}}} -->
+				<li><a href="/terms-conditions/">Terms &amp; Conditions</a></li>
+				<!-- /wp:list-item -->
+				<!-- wp:list-item {"style":{"elements":{"link":{"color":{"text":"var:preset|color|text-inverse"}}}}} -->
+				<li><a href="/blog/">Blog</a></li>
+				<!-- /wp:list-item -->
+			</ul>
+			<!-- /wp:list -->
+
+			<!-- wp:heading {"level":6,"textColor":"surface","fontSize":"small","style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
+			<h6 class="wp-block-heading has-surface-color has-text-color has-small-font-size" style="margin-top:var(--wp--preset--spacing--40)">Contact</h6>
+			<!-- /wp:heading -->
 
 			<!-- wp:paragraph {"textColor":"text-inverse","fontSize":"small"} -->
-			<p class="has-text-inverse-color has-text-color has-small-font-size">Your trusted partner for quality and service. Edit this tagline in the Site Editor to match your brand.</p>
+			<p class="has-text-inverse-color has-text-color has-small-font-size"><strong>Phone:</strong> <a href="tel:01217714330">0121 771 4330</a><br><strong>Email:</strong> <a href="mailto:amir@indusfoodsltd.com">amir@indusfoodsltd.com</a></p>
 			<!-- /wp:paragraph -->
 		</div>
 		<!-- /wp:column -->
@@ -17,49 +63,43 @@
 		<!-- wp:column -->
 		<div class="wp-block-column">
 			<!-- wp:heading {"level":6,"textColor":"surface","fontSize":"small"} -->
-			<h6 class="wp-block-heading has-surface-color has-text-color has-small-font-size">Services</h6>
+			<h6 class="wp-block-heading has-surface-color has-text-color has-small-font-size">Opening Hours</h6>
 			<!-- /wp:heading -->
 
-			<!-- wp:navigation {"textColor":"text-inverse","overlayMenu":"never","layout":{"type":"flex","orientation":"vertical"},"style":{"typography":{"lineHeight":"2.2"}},"fontSize":"small","className":"sgs-footer-nav"} /-->
-		</div>
-		<!-- /wp:column -->
+			<!-- wp:paragraph {"textColor":"text-inverse","fontSize":"small","style":{"typography":{"lineHeight":"2.2"}}} -->
+			<p class="has-text-inverse-color has-text-color has-small-font-size" style="line-height:2.2"><strong>Monday – Thursday</strong><br>9:30am – 5:00pm<br><br><strong>Friday</strong><br>9:30am – 12:00pm<br>2:30pm – 5:00pm<br><br><strong>Saturday</strong><br>10:00am – 3:00pm<br><br><strong>Sunday</strong><br>Closed</p>
+			<!-- /wp:paragraph -->
 
-		<!-- wp:column -->
-		<div class="wp-block-column">
-			<!-- wp:heading {"level":6,"textColor":"surface","fontSize":"small"} -->
-			<h6 class="wp-block-heading has-surface-color has-text-color has-small-font-size">Company</h6>
+			<!-- wp:heading {"level":6,"textColor":"surface","fontSize":"small","style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
+			<h6 class="wp-block-heading has-surface-color has-text-color has-small-font-size" style="margin-top:var(--wp--preset--spacing--40)">Address</h6>
 			<!-- /wp:heading -->
 
-			<!-- wp:navigation {"textColor":"text-inverse","overlayMenu":"never","layout":{"type":"flex","orientation":"vertical"},"style":{"typography":{"lineHeight":"2.2"}},"fontSize":"small","className":"sgs-footer-nav"} /-->
-		</div>
-		<!-- /wp:column -->
+			<!-- wp:paragraph {"textColor":"text-inverse","fontSize":"small"} -->
+			<p class="has-text-inverse-color has-text-color has-small-font-size">55-58 Stratford St N<br>Birmingham<br>B11 1BU</p>
+			<!-- /wp:paragraph -->
 
-		<!-- wp:column -->
-		<div class="wp-block-column">
-			<!-- wp:heading {"level":6,"textColor":"surface","fontSize":"small"} -->
-			<h6 class="wp-block-heading has-surface-color has-text-color has-small-font-size">Legal</h6>
-			<!-- /wp:heading -->
-
-			<!-- wp:navigation {"textColor":"text-inverse","overlayMenu":"never","layout":{"type":"flex","orientation":"vertical"},"style":{"typography":{"lineHeight":"2.2"}},"fontSize":"small","className":"sgs-footer-nav"} /-->
+			<!-- wp:buttons {"style":{"spacing":{"margin":{"top":"var:preset|spacing|30"}}}} -->
+			<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--30)">
+				<!-- wp:button {"backgroundColor":"accent","textColor":"text","style":{"border":{"radius":"8px"},"typography":{"fontWeight":"600"}},"fontSize":"small"} -->
+				<div class="wp-block-button has-custom-font-size has-small-font-size"><a class="wp-block-button__link has-text-color has-accent-background-color has-text-color has-background wp-element-button" href="https://maps.google.com/?cid=7952814055868010143" target="_blank" rel="noopener" style="border-radius:8px;font-weight:600">Get Directions</a></div>
+				<!-- /wp:button -->
+			</div>
+			<!-- /wp:buttons -->
 		</div>
 		<!-- /wp:column -->
 
 	</div>
 	<!-- /wp:columns -->
 
-	<!-- wp:separator {"align":"wide","backgroundColor":"border-subtle","className":"is-style-wide"} -->
-	<hr class="wp-block-separator alignwide has-text-color has-border-subtle-color has-alpha-channel-opacity has-border-subtle-background-color has-background is-style-wide"/>
+	<!-- wp:separator {"align":"wide","backgroundColor":"accent","className":"is-style-wide","style":{"spacing":{"margin":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|40"}}}} -->
+	<hr class="wp-block-separator alignwide has-text-color has-accent-color has-alpha-channel-opacity has-accent-background-color has-background is-style-wide" style="margin-top:var(--wp--preset--spacing--50);margin-bottom:var(--wp--preset--spacing--40)"/>
 	<!-- /wp:separator -->
 
-	<!-- wp:group {"align":"wide","layout":{"type":"flex","justifyContent":"space-between","flexWrap":"wrap"},"style":{"spacing":{"padding":{"top":"var:preset|spacing|30"}}}} -->
-	<div class="wp-block-group alignwide" style="padding-top:var(--wp--preset--spacing--30)">
+	<!-- wp:group {"align":"wide","layout":{"type":"flex","justifyContent":"center"},"style":{"spacing":{"padding":{"top":"0"}}}} -->
+	<div class="wp-block-group alignwide" style="padding-top:0">
 
-		<!-- wp:paragraph {"textColor":"text-inverse","fontSize":"small"} -->
-		<p class="has-text-inverse-color has-text-color has-small-font-size">&copy; 2026 All rights reserved.</p>
-		<!-- /wp:paragraph -->
-
-		<!-- wp:paragraph {"textColor":"text-inverse","fontSize":"small"} -->
-		<p class="has-text-inverse-color has-text-color has-small-font-size">Website by Small Giants Studio</p>
+		<!-- wp:paragraph {"textColor":"text-inverse","fontSize":"small","style":{"elements":{"link":{"color":{"text":"var:preset|color|accent"}}}}} -->
+		<p class="has-text-inverse-color has-text-color has-small-font-size">Copyright © [current_year] Indus Foods Ltd | Website by <a href="https://smallgiantsstudio.co.uk/">Small Giants Studio</a></p>
 		<!-- /wp:paragraph -->
 
 	</div>

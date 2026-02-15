@@ -15,7 +15,8 @@
 				{ "slug": "text", "color": "#1E1E1E", "name": "Text" },
 				{ "slug": "text-muted", "color": "#555555", "name": "Text Muted" },
 				{ "slug": "text-inverse", "color": "#C0D5D6", "name": "Text Inverse" },
-				{ "slug": "border-subtle", "color": "#0D5557", "name": "Border Subtle" }
+				{ "slug": "border-subtle", "color": "#0D5557", "name": "Border Subtle" },
+			{ "slug": "footer-bg", "color": "#0A5B5D", "name": "Footer Background" }
 			],
 			"gradients": [],
 			"defaultPalette": false,
