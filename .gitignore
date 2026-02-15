@@ -15,9 +15,15 @@ desktop.ini
 *.swp
 *.swo
 
+# Claude Code local settings
+.claude/
+
 # Environment
 .env
 .env.local
+
+# Windows artifacts
+NUL
 
 # WordPress
 *.log
