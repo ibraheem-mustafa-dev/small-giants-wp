@@ -24,6 +24,10 @@ final class SGS_Blocks {
 		add_action( 'init', [ $this, 'register_blocks' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_frontend_assets' ] );
 		add_action( 'enqueue_block_editor_assets', [ $this, 'enqueue_editor_extensions' ] );
+
+		// Post Grid REST endpoint for AJAX pagination and category filtering.
+		require_once SGS_BLOCKS_PATH . 'includes/class-post-grid-rest.php';
+		Post_Grid_REST::register();
 	}
 
 	/**
