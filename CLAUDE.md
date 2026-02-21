@@ -146,8 +146,11 @@ scp -r plugins/sgs-blocks/sgs-blocks.php plugins/sgs-blocks/includes plugins/sgs
 # Deploy theme
 scp -r theme/sgs-theme hd:~/domains/palestine-lives.org/public_html/wp-content/themes/
 
-# Purge cache after any deploy
-ssh hd "cd ~/domains/palestine-lives.org/public_html && wp litespeed-purge all"
+# Clear LiteSpeed page cache (wp litespeed-purge is broken on this host)
+ssh hd "rm -rf ~/domains/palestine-lives.org/public_html/wp-content/litespeed/cache/*"
+
+# Reset PHP OPcache after deploying PHP files (CLI reset is a SEPARATE pool — must use HTTP)
+ssh hd "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/palestine-lives.org/public_html/op-reset-tmp.php" && curl -s https://palestine-lives.org/op-reset-tmp.php && ssh hd "rm ~/domains/palestine-lives.org/public_html/op-reset-tmp.php"
 ```
 
 ## Gotchas
