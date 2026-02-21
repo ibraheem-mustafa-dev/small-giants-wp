@@ -15,7 +15,10 @@ small-giants-wp/
 │   └── sgs-client-notes/     # Visual annotation system (has its own CLAUDE.md)
 ├── sites/                    # Client-specific content (one folder per client)
 │   └── indus-foods/          # Indus Foods — mockups, content, research (has its own CLAUDE.md)
-├── specs/                    # Specification documents (00-06)
+├── specs/                    # Specification documents (00-09)
+├── docs/plans/               # Planning documents and audits
+│   └── 2026-02-21-master-feature-audit.md  # Truth document: 354-feature graded roadmap
+├── ARCHITECTURE.md           # Architecture overview, block inventory, data flow
 └── CLAUDE.md                 # This file — framework-wide instructions
 ```
 
@@ -73,7 +76,7 @@ Fonts: Inter variable (body + headings, 48KB) — self-hosted WOFF2, no CDN. DM 
 Full specifications in `specs/` directory:
 - `00-OVERVIEW.md` — Framework overview, philosophy, architecture
 - `01-SGS-THEME.md` — Block theme spec (theme.json v3, templates, performance)
-- `02-SGS-BLOCKS.md` — All block specifications (25 blocks + form blocks + animation extension)
+- `02-SGS-BLOCKS.md` — All block specifications (20 content/layout blocks + 12 form blocks + extensions)
 - `03-SGS-BOOKING.md` — Booking system spec (phases 1-4)
 - `04-SGS-FORMS.md` — Form system spec (built into sgs-blocks)
 - `05-SGS-CLIENT-NOTES.md` — Visual annotation system spec
@@ -81,6 +84,27 @@ Full specifications in `specs/` directory:
 - `07-SGS-POPUPS.md` — Conversion pop-ups plugin spec
 - `08-SGS-CHATBOT.md` — Live chat + AI chatbot plugin spec
 - `09-GOLD-STANDARD-AUDIT.md` — Per-block competitor comparison and gap analysis
+
+## Master Feature Audit
+
+The truth document for feature scope, priorities, and competitive position is:
+**`docs/plans/2026-02-21-master-feature-audit.md`** — 354 features graded by impact, difficulty, and priority (P0-P4).
+
+Current framework maturity: **33% (98/294)** — targeting 72% after Phase 2-3, 90% after S-tier phase.
+
+**Phase 2 priorities (P1 blocks, next to build):**
+1. Post Grid / Query Loop — grid/list/masonry/carousel + AJAX pagination
+2. Image Gallery + Lightbox — grid/masonry/carousel + Interactivity API lightbox
+3. Tabs — horizontal/vertical, InnerBlocks, ARIA
+4. Countdown Timer — date-based + evergreen; flip/simple variants
+5. Star Rating — SVG stars; Schema.org/Rating
+6. Team Member — photo/name/role/bio/socials; Schema.org/Person
+
+**Phase 2 extensions (P1, apply to all blocks):**
+- Hover scale transform, hover shadow elevation, hover image zoom (inner)
+- Transition duration/easing control
+- Block link (wrap entire block in link)
+- Block style variations (register_block_style)
 
 ## Architecture Rules
 
@@ -115,6 +139,27 @@ if ( 'indus-foods' === $active_style ) {
 ```
 
 3. Never load variation CSS unconditionally — it must be gated so other style variations are unaffected
+
+### Block customisation standard (MANDATORY)
+
+Every block MUST provide per-element customisation matching Kadence/Spectra depth:
+
+1. Native WordPress `supports` for wrapper-level controls (colour, typography, spacing, border)
+2. Custom attributes + controls for each inner text element (colour, font size)
+3. Custom attributes + controls for interactive elements like CTAs (text colour, background colour)
+4. CSS fallback colours use `:not([style*="color"])` so custom values always win
+5. Use Block Selectors API in `block.json` to target native typography to primary text element
+
+### Hover controls spec
+
+Blocks with interactive hover states MUST expose these controls in the editor inspector:
+- **Scale transform** — `transform: scale()` on hover (GPU-composited, safe)
+- **Shadow elevation** — box-shadow transition on hover
+- **Image zoom (inner)** — `overflow:hidden` + scale on `<img>` on hover
+- **Transition duration** — CSS transition-duration control (default 300ms)
+- **Transition easing** — CSS transition-timing-function (ease, ease-in-out, etc.)
+
+Colour-only hover shifts (bg/text/border) are already done in Phase 1.3 for 4 blocks. The above controls are P1 for Phase 2.
 
 ### No hard-coded environment paths
 

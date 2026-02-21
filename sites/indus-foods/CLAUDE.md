@@ -57,16 +57,21 @@ Shared sections (trust bar, heritage strip, process, delivery, brands, certifica
 
 ## Deploy
 
+All commands run from repo root (`small-giants-wp/`):
+
 ```bash
 # Build blocks plugin first
-cd ../../plugins/sgs-blocks && npm run build && cd ../../sites/indus-foods
+cd plugins/sgs-blocks && npm run build && cd ../..
 
 # Deploy blocks + theme to dev site
-scp -r ../../plugins/sgs-blocks/sgs-blocks.php ../../plugins/sgs-blocks/includes ../../plugins/sgs-blocks/build ../../plugins/sgs-blocks/assets hd:~/domains/palestine-lives.org/public_html/wp-content/plugins/sgs-blocks/
-scp -r ../../theme/sgs-theme hd:~/domains/palestine-lives.org/public_html/wp-content/themes/
+scp -r plugins/sgs-blocks/sgs-blocks.php plugins/sgs-blocks/includes plugins/sgs-blocks/build plugins/sgs-blocks/assets hd:~/domains/palestine-lives.org/public_html/wp-content/plugins/sgs-blocks/
+scp -r theme/sgs-theme hd:~/domains/palestine-lives.org/public_html/wp-content/themes/
 
-# Purge cache
-ssh hd "cd ~/domains/palestine-lives.org/public_html && wp litespeed-purge all"
+# Clear LiteSpeed cache (wp litespeed-purge is broken on this host)
+ssh hd "rm -rf ~/domains/palestine-lives.org/public_html/wp-content/litespeed/cache/*"
+
+# Reset PHP OPcache after deploying PHP files (CLI reset is a SEPARATE pool — must use HTTP)
+ssh hd "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/palestine-lives.org/public_html/op-reset-tmp.php" && curl -s https://palestine-lives.org/op-reset-tmp.php && ssh hd "rm ~/domains/palestine-lives.org/public_html/op-reset-tmp.php"
 ```
 
 **DO NOT deploy to lightsalmon-tarsier-683012.hostingersite.com** — that's the client-facing test site.

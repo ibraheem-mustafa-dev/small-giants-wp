@@ -75,15 +75,27 @@ Chrome/Edge 90+, Firefox 90+, Safari 15+, iOS Safari 15+, Samsung Internet 18+. 
 
 ## Build Phase
 
-This is **Phase 1a** — the very first thing to build. Everything else depends on it. See `specs/06-BUILD-ORDER.md` section 1a for the exact build sequence.
+Phase 1a (theme foundation) is **complete**. The theme is deployed and functional.
+
+**Phase 2 theme priorities (from master feature audit):**
+- `prefers-contrast` high-contrast support (P1, S-tier differentiator — first WP theme to support this)
+- `text-wrap: balance` on headings (P1, CSS-only, zero effort)
+- Dark mode toggle + `light-dark()` colour palette (P2)
+- `content-visibility: auto` on below-fold sections (P2, performance)
+- Block patterns library — hero, feature, testimonial, CTA, content, footer, header patterns (P2)
+
+See `docs/plans/2026-02-21-master-feature-audit.md` for the full graded roadmap.
 
 ## Deploy
 
 ```bash
 scp -r theme/sgs-theme hd:~/domains/palestine-lives.org/public_html/wp-content/themes/
 
-# Purge cache
-ssh hd "cd ~/domains/palestine-lives.org/public_html && wp litespeed-purge all"
+# Clear LiteSpeed cache (wp litespeed-purge is broken on this host)
+ssh hd "rm -rf ~/domains/palestine-lives.org/public_html/wp-content/litespeed/cache/*"
+
+# Reset PHP OPcache after deploying PHP files (CLI reset is a SEPARATE pool — must use HTTP)
+ssh hd "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/palestine-lives.org/public_html/op-reset-tmp.php" && curl -s https://palestine-lives.org/op-reset-tmp.php && ssh hd "rm ~/domains/palestine-lives.org/public_html/op-reset-tmp.php"
 ```
 
 Run from the repo root (`small-giants-wp/`).
@@ -93,4 +105,5 @@ Run from the repo root (`small-giants-wp/`).
 - All templates use block markup only — no PHP template tags
 - All styles flow from theme.json tokens — no hardcoded colours/fonts
 - `functions.php` stays minimal — enqueuing, theme support, pattern registration
+- Style variation-specific CSS goes in `functions.php` via `wp_add_inline_style()`, gated on the active variation — never in `style.css`
 - Test that theme activates cleanly and core WP blocks render correctly before moving on

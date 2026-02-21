@@ -1,6 +1,6 @@
 # Architecture — SGS WordPress Framework
 
-> Last updated: 2026-02-21 | Status: Active Development (Indus Foods client sprint)
+> Last updated: 2026-02-21 | Status: Active Development (Phase 2 — Missing Blocks)
 
 ## Overview
 
@@ -12,9 +12,9 @@ SGS is a standalone WordPress block theme and Gutenberg blocks plugin built by S
 |---|---|---|
 | CMS | WordPress 6.9.1 | Block theme, no classic editor |
 | Theme | `sgs-theme` (block theme) | theme.json v3, template parts, style variations per client |
-| Blocks plugin | `sgs-blocks` | 33 custom blocks + form system, dynamic (server-rendered) |
+| Blocks plugin | `sgs-blocks` | 32 blocks (20 content/layout + 12 form) + 3 extensions, dynamic (server-rendered) |
 | Block build | `@wordpress/scripts` | `--experimental-modules` flag required for `viewScriptModule` |
-| Frontend JS | WordPress Interactivity API | Used for nav, testimonial slider, accordion, form steps |
+| Frontend JS | Interactivity API + vanilla ES modules | Interactivity API for stateful blocks; vanilla `viewScriptModule` for AJAX (Post Grid) |
 | Icons | Lucide (1900+ icons) | Pre-generated to `lucide-icons.php` via `scripts/generate-icons.js` |
 | Fonts | Inter variable (default) | Self-hosted WOFF2, no CDN. Montserrat + Source Sans 3 for Indus Foods |
 | Hosting | Hostinger (`ssh hd`) | Shared hosting, LiteSpeed cache |
@@ -95,9 +95,9 @@ small-giants-wp/
 
 6. **`sgs/container` is the universal layout primitive** — Used for all multi-column and section layouts. Supports `layout` (stack/grid/flex), `columns`, `columnsTablet`, `columnsMobile`, `gap`, `backgroundImage`, `minHeight`, `htmlTag`. Nesting containers inside containers is the correct pattern for complex layouts. Do NOT add bespoke layout attributes to content blocks.
 
-7. **Hover effects are CSS-class-driven, set by a block attribute** — The `hoverEffect` attribute (e.g. `"lift"`, `"border-accent"`, `"glow"`, `"none"`) maps to a BEM modifier class (`.sgs-info-box--hover-lift`). The CSS for each variant is in the block's `style.css`. This means hover behaviour is fully editor-configurable without hardcoding.
+7. **Hover effects are CSS-class-driven, set by block attributes** — Phase 1.3 delivered per-element colour hover controls (bg/text/border) on 4 blocks. Phase 2 adds: scale transform, shadow elevation, image zoom (inner), transition duration/easing controls. The `hoverEffect` attribute (e.g. `"lift"`, `"border-accent"`, `"glow"`, `"none"`) maps to a BEM modifier class (`.sgs-info-box--hover-lift`). CSS for each variant lives in the block's `style.css`. All hover behaviour is fully editor-configurable — not just colour shifts, but transforms, shadows, and timing.
 
-8. **WordPress Interactivity API for all frontend JS** — No jQuery. No vanilla JS outside of Interactivity API modules. All interactive blocks (nav, slider, accordion, form steps) use `viewScriptModule` + `@wordpress/interactivity` store/state. The `--experimental-modules` build flag is required.
+8. **WordPress Interactivity API for most frontend JS; Post Grid uses vanilla ES module** — No jQuery. Stateful interactive blocks (nav, slider, accordion, form steps) use `viewScriptModule` + `@wordpress/interactivity` store/state. Post Grid uses a vanilla ES module with `fetch()` for AJAX pagination — lighter weight, no state management needed. The `--experimental-modules` build flag is required for all `viewScriptModule` blocks.
 
 9. **`sgs/container` responsive layout — three independent breakpoints** — `columns` (desktop), `columnsTablet` (768–1024px), `columnsMobile` (<768px) are independent. CSS media query classes (`.sgs-cols-tablet-{n}`) handle the breakpoint overrides. Clients set all three from the inspector panel.
 
@@ -132,8 +132,16 @@ small-giants-wp/
 | `sgs/icon-list` | Icon + text list items |
 | `sgs/notice-banner` | Alert/notice bar |
 | `sgs/process-steps` | Numbered process/steps block |
+| `sgs/responsive-logo` | Two-image logo (desktop + mobile) with CSS media query switching |
 | `sgs/table-of-contents` | Auto-generates ToC from headings, scroll spy (currently broken) |
 | `sgs/whatsapp-cta` | Floating/inline WhatsApp CTA with Interactivity API |
+
+### Phase 2 (Planned)
+| Block | Key capability |
+|---|---|
+| `sgs/post-grid` | Grid/list/masonry layouts, AJAX pagination + category filtering, vanilla ES module |
+| `sgs/gallery` | Image gallery with grid/masonry layouts + Interactivity API lightbox |
+| `sgs/tabs` | Horizontal/vertical tabs, InnerBlocks per tab, full ARIA (tablist/tab/tabpanel) |
 
 ### Form blocks (14 blocks)
 | Block | Notes |
@@ -183,48 +191,40 @@ N8N webhook triggered → notification sent (email/Slack/WhatsApp)
 
 ## Current Development Focus
 
-**Indus Foods homepage visual QA and fixes (active sprint)**
+**Phase 2 — Missing Blocks (in progress)**
 
-The homepage is live at palestine-lives.org but has ~48 visual, interactive, and accessibility issues vs the reference site. Next session works through `sites/indus-foods/vscode-session-prompt.md` (ordered fix checklist, 6 groups).
+Phase 1 is complete: device visibility extension (#35/#85), responsive header with mobile CTA hiding (#43), per-element hover state controls on 4 blocks (#86/#103). Phase 2 is now building the highest-impact missing blocks:
 
-**Immediate priorities:**
-1. Commit + deploy Session 17 P0 fixes (uncommitted)
-2. Fix mobile nav (broken at 768px), services section blank, hero colours
-3. CSS hover state fixes for hero CTA buttons, nav links, CTA section buttons
-4. Block editor content configuration (hero background, reviews two-column layout, footer)
-5. Add `columnsTablet` to `sgs/card-grid` (missing attribute)
-6. Fix `sgs/info-box` link `aria-label` in render.php
+1. **Post Grid** (#63) — grid/list/masonry layouts, AJAX pagination + category filtering
+2. **Gallery + Lightbox** (#64) — grid/masonry + Interactivity API lightbox
+3. **Tabs** (#65) — horizontal/vertical, InnerBlocks per tab, full ARIA
 
-**Pending research (background agent a76a3d5):**
-- Independent per-device header/footer layouts (may require a responsive visibility block extension)
-- Logo switching per breakpoint (horizontal desktop → square mobile/tablet)
+The master feature audit (`docs/plans/2026-02-21-master-feature-audit.md`) tracks 354 features across the framework. Current score: 98/294 (33%). Target after Phase 2-3 completion: 213/294 (72%).
 
 ## Known Technical Debt
 
 | Item | Severity | Notes |
 |---|---|---|
-| Colour regex too narrow | High | Checks `#` and `rgb` only — breaks on `oklch`, `hsl`. Gutenberg moving to oklch. Fix in all 4 render.php files. |
-| Colour/font-size helpers duplicated 4× | Medium | `info-box`, `hero`, `cta-section`, `testimonial-slider` all define the same closure. Extract to `includes/render-helpers.php`. |
+| ~~Colour regex too narrow~~ | ~~High~~ | Fixed in Session 19 — colour var detection now handles `oklch`, `hsl`, and all CSS colour formats. |
+| Colour/font-size helpers duplicated 4x | Medium | `info-box`, `hero`, `cta-section`, `testimonial-slider` all define the same closure. Extract to `includes/render-helpers.php`. |
 | `navigation ref="4"` in header.html | High | DB post ID specific to dev site. Will render no nav on any other install. Remove `ref` attribute. |
-| `$used_slugs` not reset between posts | Medium | Heading anchor slugs bleed across posts on archive pages. Fix in `heading-anchors.php`. |
 | Table of Contents broken | Medium | Root cause unknown since session 12. Regex heading detection may miss nested blocks. |
 | Accordion never browser-tested | Medium | Progressive enhancement also broken (`e.preventDefault()` at view.js:56 disables native `<details>`). |
 | Forms never end-to-end tested | High | REST endpoints built, submission never verified. |
-| `sgs/card-grid` missing `columnsTablet` | Medium | Jumps from 3-column desktop to 1-column mobile with no tablet step. Quick fix. |
-| `sgs/info-box` link `aria-label` | High | WCAG fail — link wrapper has no accessible name when card is linked. |
 | Testimonial slider ARIA incomplete | Medium | Dots have `role="tab"` but missing `aria-controls`. Slides missing `role="tabpanel"`. |
 | `lucide-react` unused devDependency | Low | Adds ~1MB to node_modules. Remove from package.json. |
 | No `prestart` hook | Low | `npm start` on fresh clone won't have `lucide-icons.php`. |
 | DesignTokenPicker hex vs slug | Medium | Untested — `ColorPalette` returns hex but `colourVar()` expects slug. May cause colour breakage. |
 | Font preload duplication | Low | `functions.php` manually preloads Inter; WP 6.9 may also preload from theme.json `fontFace`. |
 | `lucide-icons.php` no exemption comment | Low | 1,963 lines, exceeds 300-line limit. Add auto-generated exemption comment. |
+| No `.gitattributes` file | Low | LF/CRLF warnings on every commit. Needs `* text=auto` and binary file rules. |
 
 ## External Dependencies
 
 | Service | Purpose | Notes |
 |---|---|---|
 | Hostinger | Web hosting | Shared hosting, `ssh hd` alias configured |
-| LiteSpeed Cache | Server-side caching | `wp litespeed-purge all` after every deploy |
+| LiteSpeed Cache | Server-side caching | `rm -rf` cache directory after every deploy (WP-CLI command broken) |
 | N8N (72.62.212.169) | Notifications | All form/booking notifications via webhook, not `wp_mail()` |
 | Stripe | Payments | Booking + forms Phase 2+ |
 | Google Calendar | Booking sync | Phase 5, not yet implemented |
@@ -252,10 +252,17 @@ scp -r plugins/sgs-blocks/sgs-blocks.php \
 scp -r theme/sgs-theme \
         hd:~/domains/palestine-lives.org/public_html/wp-content/themes/
 
-# 4. Purge LiteSpeed cache (always — changes won't show without this)
-ssh hd "cd ~/domains/palestine-lives.org/public_html && wp litespeed-purge all"
+# 4. Clear LiteSpeed cache (wp litespeed-purge is broken on this host)
+ssh hd "rm -rf ~/domains/palestine-lives.org/public_html/wp-content/litespeed/cache/*"
+
+# 5. Reset PHP OPcache after deploying PHP files (CLI reset is a separate pool — must use HTTP)
+ssh hd "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/palestine-lives.org/public_html/op-reset-tmp.php" && curl -s https://palestine-lives.org/op-reset-tmp.php && ssh hd "rm ~/domains/palestine-lives.org/public_html/op-reset-tmp.php"
 ```
 
 Run all commands from `C:\Users\Bean\Projects\small-giants-wp` (repo root).
 
 **Environment:** Windows 11, Git Bash, Node.js v22.18.0, no Node.js on server. Build locally, deploy compiled `build/` output only.
+
+## Framework Maturity
+
+The master feature audit at `docs/plans/2026-02-21-master-feature-audit.md` tracks 354 features across 13 domains (core blocks, extensions, theme, typography, hover/interactions, scroll animations, accessibility, performance, SEO/schema, forms, patterns, dark mode, S-tier differentiators). Current framework score: **98/294 (33%)**. Phase 2-3 target: **213/294 (72%)** — equivalent to Grade B, competitive with Kadence and GenerateBlocks. Full S-tier roadmap target: **266/294 (90%)** — Grade A, the most technically advanced WordPress block framework in existence.
