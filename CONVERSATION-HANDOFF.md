@@ -1,122 +1,142 @@
-# Session Handoff — 2026-02-21 (Session 22 — Competitive Grading + Post Grid Plan)
+# Session Handoff — 2026-02-21 (Session 23 — Phase 2 Block Build Sprint)
 
 ## Completed This Session
 
-1. **Competitive grading against 10 platforms** — Ran 2 parallel research agents (40+ web searches total) scoring SGS against Kadence, Spectra, GenerateBlocks, Elementor, Breakdance, Bricks, Webflow, Framer, Squarespace, and Wix. Each platform scored across 11 domains (227 max points). Evidence from Equalize Digital accessibility report, official product pages, Kadence feature request board, and independent reviews.
+1. **Committed planning docs** — Master feature audit (354 features, 294 max points) and Post Grid 8-task implementation plan pushed to GitHub. 5 commits total this session.
 
-2. **Letter grades assigned** — Kadence A (85%), Elementor B (83%), Webflow B (83%), Bricks B (79%), Breakdance B (78%), SGS Target B (75%), Spectra C (72%), Framer C (70%), GenerateBlocks C (68%), Wix D (63%), Squarespace D (59%), SGS Now F (43%). SGS after Phase 2-3 lands at Grade B — ahead of 5 out of 10 competitors.
+2. **Phase 2.1: Built Post Grid block (`sgs/post-grid`)** — The most complex block in the framework. 42 attributes, 4 layouts (grid/list/masonry/carousel), 4 card styles (card/flat/overlay/minimal), AJAX pagination (standard/load-more/infinite scroll), category/tag filtering, skeleton loading, full ARIA. REST endpoint at `sgs-blocks/v1/posts` returns pre-rendered HTML. Shared `Post_Grid_REST::render_card()` used by both render.php and REST endpoint (DRY). 10 files, 3,132 lines.
 
-3. **S-tier differentiators identified** — 17 new features added to the master audit (items 338-354) that no competitor offers: scroll-driven animations in block inspector (CSS-only), View Transitions API, `prefers-contrast` support, `contrast-color()` progressive enhancement, native `<dialog>` modals, Popover API, `@starting-style` animations, Bento Grid block, dark mode toggle, APCA contrast checking, and more.
+3. **Phase 2.2: Built Gallery block (`sgs/gallery`)** — Image gallery with WordPress Interactivity API lightbox, 3 layouts (grid/masonry/carousel), Media Library integration with multi-select, captions, hover overlay, responsive columns. Lightbox uses `store('sgs/gallery')` for reactive state. 8 files, 1,973 lines.
 
-4. **Master audit expanded to 354 features** — Was 337 features / 227 max points. Now 354 features / 294 max points with new sections: Dark Mode (3 features), S-Tier Differentiators (14 features). Added a third projection column: "After S-Tier Phase" showing SGS reaching Grade A (90%, 266/294). Updated competitive position tables with full 10-platform comparison.
+4. **Phase 2.3: Built Tabs block (`sgs/tabs` + `sgs/tab`)** — Parent-child block pair. ARIA tablist/tab/tabpanel, 3 styles (underline/boxed/pills), horizontal/vertical orientation, deep linking via URL hash, InnerBlocks per tab, WAI-ARIA keyboard navigation (Arrow/Home/End). 13 files, 1,139 lines.
 
-5. **Priority upgrades** — Timeline block upgraded P3 → P2 (278 Kadence votes), Before/After slider impact 3 → 4 (137 votes), scroll-driven animations P2 → P1, View Transitions P3 → P2, `@starting-style` P2 → P1, `contrast-color()` P4 → P3, `light-dark()` P3 → P2, Anchor Positioning P3 → P2.
+5. **Updated all documentation** — 3 parallel background agents:
+   - ARCHITECTURE.md: Phase 2 status, fixed deploy commands, framework maturity section, block inventory
+   - All 7 CLAUDE.md files: Fixed broken `wp litespeed-purge` commands (5 files), added OPcache reset, updated block counts (now 37 block directories), added Phase 2 context, documented block customisation standard and hover controls spec
+   - Project manager: SGS Framework tracked at P1c with Phase 2 progress
 
-6. **Post Grid implementation plan written** — 8-task plan at `docs/plans/2026-02-21-post-grid-block.md` covering: block scaffolding (42 attributes), REST API endpoint, server-side render, frontend AJAX interactivity, CSS for 4 layouts + 4 card styles, editor component with 8 inspector panels, integration testing, and deploy. Key architecture: shared `Post_Grid_REST::render_card()` called by both render.php and REST endpoint (DRY).
-
-7. **Codebase architecture fully explored** — Deep dive into the existing plugin: card-grid (static block), testimonial-slider (dynamic block with view.js), extension system (animation, device visibility), shared utilities (token resolvers, DesignTokenPicker, ResponsiveControl), REST API patterns (forms), webpack config, and auto-discovery.
+6. **Deployed and verified** — All 3 blocks built, deployed to palestine-lives.org, LiteSpeed cache cleared, OPcache reset. REST endpoint confirmed working. Site loads 200 OK with no JS console errors from new blocks.
 
 ## Current State
 
 - **Branch:** `feature/indus-foods-homepage`
-- **Latest commit:** `62818bd feat(sgs-blocks): add per-element hover state controls to 4 blocks (Phase 1.3)`
-- **Build status:** Last built and deployed in Session 20 (Phase 1.3)
-- **Deploy status:** All Phase 0 + Phase 1 changes live on palestine-lives.org
-- **Theme version:** 1.1.0
-- **Phase 1 complete:** Device visibility, responsive header, hover state controls all done
-- **Phase 2 not started:** Post Grid plan written but no code yet. User chose "full delegation" approach.
-- **Master audit expanded:** 354 features at `docs/plans/2026-02-21-master-feature-audit.md`
-- **Post Grid plan ready:** 8-task plan at `docs/plans/2026-02-21-post-grid-block.md`
-- **Indus Foods homepage:** Still has 17 visual issues (Phase 4 in the plan)
-- **Nothing committed this session** — audit updates and post grid plan are untracked
+- **Latest commit:** `b71842f feat(sgs-blocks): add Tabs block with ARIA tablist, 3 styles, deep linking`
+- **Build status:** Clean build, all blocks compile successfully
+- **Deploy status:** All Phase 0 + Phase 1 + Phase 2.1-2.3 live on palestine-lives.org
+- **Block count:** 37 block directories (25 content/layout + 12 form)
+- **Phase 1 complete:** Device visibility, responsive header, hover state controls
+- **Phase 2.1-2.3 complete:** Post Grid, Gallery, Tabs all built and deployed
+- **Phase 2.4 not started:** Countdown Timer, Star Rating, Team Member blocks
+- **New blocks need editor testing** — All 3 Phase 2 blocks are deployed but haven't been inserted into any page via the block editor yet
+- **Master audit score:** ~33% → should be recalculated after Phase 2 blocks
+- **Untracked files:** `.firecrawl/` screenshots, loose PNGs, `sites/indus-foods/assets.zip`, `theme/sgs-theme/assets/decorative-foods/` — should be gitignored
 
 ## Known Issues / Blockers
 
-1. **Phase 1.1 needs manual editor verification** — Device visibility toggles need testing in WP admin editor.
-2. **Phase 1.3 needs manual editor verification** — Hover States panel needs testing in WP admin.
-3. **Device visibility breakpoints may differ** — extensions.css updated but deployed version may have older breakpoints.
+1. **New blocks need manual editor verification** — Post Grid, Gallery, and Tabs are deployed but haven't been inserted into a page yet. Need to verify they appear in the block inserter, render correctly in the editor, and all inspector controls work.
+2. **Post Grid has only 1 test post** — The dev site (palestine-lives.org) only has the default "Hello world!" post. Post Grid pagination/filtering can't be properly tested until more posts exist.
+3. **Gallery needs test images** — No images in the Media Library to test the gallery block.
 4. **Font preload warning** — `inter-variable-latin.woff2` preloaded but not used within a few seconds. Pre-existing.
 5. **No `.gitattributes`** — LF/CRLF warnings on every commit.
-6. **Master audit + post grid plan not committed** — Both docs files are untracked.
-7. **User hasn't confirmed execution approach** — Asked for "subagent-driven" vs "full delegation" for Post Grid build. Answer pending (session ended with /handoff request).
+6. **Untracked files accumulating** — `.firecrawl/`, screenshots, and assets.zip should be added to `.gitignore`.
+7. **Phase 1.1/1.3 still need manual editor verification** — Device visibility and hover state controls never tested in WP admin.
+8. **Tabs save.js returns InnerBlocks.Content** — If the block's save output ever changes, deprecations will be needed for existing content.
+9. **Gallery view.js uses Interactivity API but most blocks use vanilla JS** — Mixed pattern is intentional but worth noting for consistency decisions.
 
 ## Next Priorities (in order)
 
-1. **Commit planning work** — Commit the updated master audit and post grid plan to git.
-2. **Phase 2.1: Build Post Grid block** — Execute the 8-task plan at `docs/plans/2026-02-21-post-grid-block.md`. Delegate to `wp-developer` agent. This is the most complex block in the framework.
-3. **Phase 2.2: Build Gallery block** — Multi-image gallery with lightbox (Interactivity API), masonry, carousel, grid layouts. Delegate to `wp-developer` agent.
-4. **Phase 2.3: Build Tabs block** — Horizontal/vertical, ARIA tablist/tab/tabpanel, deep linking via URL hash, InnerBlocks per tab. Delegate to `wp-developer` agent.
-5. **Deploy and verify Phase 2 blocks** — Build, deploy, visual testing at 375/768/1440.
+1. **Test Phase 2 blocks in editor** — Log into WP admin, create a test page, insert Post Grid/Gallery/Tabs. Verify inspector controls, live preview, and frontend rendering.
+2. **Create test content** — Add 6-10 blog posts with featured images and categories to properly test Post Grid pagination and filtering. Add images to Media Library for Gallery testing.
+3. **Phase 2.4: Build remaining P1 blocks** — Countdown Timer (#66), Star Rating (#67), Team Member (#68) from the master audit. Delegate to `wp-developer`.
+4. **Add `.gitignore` entries** — Ignore `.firecrawl/`, `*.png` at root, `sites/*/assets.zip`.
+5. **Phase 2.5: Block extensions** — Hover scale (#87), hover shadow (#88), hover image zoom (#90), transition controls (#91), block link (#96), block style variations (#99).
+6. **Open PR for Phase 2** — All Phase 2 work is on `feature/indus-foods-homepage`. Create a PR to merge to `main` with summary of all blocks built.
 
 ## Files Modified This Session
 
 ```
-docs/plans/2026-02-21-master-feature-audit.md  — MODIFIED (354 features, S-tier section, dark mode, updated scorecard)
-docs/plans/2026-02-21-post-grid-block.md        — CREATED (8-task implementation plan)
-CONVERSATION-HANDOFF.md                          — REWRITTEN (this file)
-```
+# Commits (5 total, all pushed):
+bc76fca docs: add master feature audit (354 features) and Post Grid implementation plan
+c46966f feat(sgs-blocks): add Post Grid block with 4 layouts and AJAX pagination
+2572a9e docs: sync all CLAUDE.md and ARCHITECTURE.md with master feature audit
+c0c5b42 feat(sgs-blocks): add Image Gallery block with lightbox and 3 layouts
+b71842f feat(sgs-blocks): add Tabs block with ARIA tablist, 3 styles, deep linking
 
-No code files were modified. This was research, planning, and documentation.
+# 43 files changed, 8,944 insertions, 127 deletions
+
+# New block files (31 files):
+plugins/sgs-blocks/src/blocks/post-grid/{block.json,index.js,save.js,edit.js,render.php,view.js,style.css,editor.css}
+plugins/sgs-blocks/src/blocks/gallery/{block.json,index.js,save.js,edit.js,render.php,view.js,style.css,editor.css}
+plugins/sgs-blocks/src/blocks/tabs/{block.json,index.js,save.js,edit.js,render.php,view.js,style.css,editor.css}
+plugins/sgs-blocks/src/blocks/tab/{block.json,index.js,edit.js}
+plugins/sgs-blocks/includes/class-post-grid-rest.php
+
+# Modified files:
+plugins/sgs-blocks/includes/class-sgs-blocks.php  — Added Post_Grid_REST::register()
+plugins/sgs-blocks/src/utils/icons.js              — Added tabs/tab icons
+ARCHITECTURE.md                                     — Phase 2 status, deploy fixes, maturity section
+CLAUDE.md                                           — Master audit section, block standard, hover spec
+plugins/sgs-blocks/CLAUDE.md                        — Block status tables, hover spec, deploy fixes
+theme/sgs-theme/CLAUDE.md                           — Deploy fixes, Phase 2 priorities
+plugins/sgs-booking/CLAUDE.md                       — Deploy fixes
+plugins/sgs-client-notes/CLAUDE.md                  — Deploy fixes
+sites/indus-foods/CLAUDE.md                         — Deploy fixes
+docs/plans/2026-02-21-master-feature-audit.md       — 354-feature truth document
+docs/plans/2026-02-21-post-grid-block.md            — 8-task implementation plan
+CONVERSATION-HANDOFF.md                             — This file
+```
 
 ## Notes for Next Session
 
-- **Post Grid plan is the immediate build target** — `docs/plans/2026-02-21-post-grid-block.md` has everything: block.json with 42 attributes, REST API endpoint class, render.php pattern, view.js architecture, CSS for 4 layouts + 4 card styles, and editor component with 8 inspector panels. The plan references exact file paths, code patterns, and the shared `render_card()` architecture.
-- **The shared card renderer is the key architecture** — `Post_Grid_REST::render_card()` is called by both render.php (initial load) and the REST endpoint (AJAX). Never duplicate card HTML.
-- **All hover controls from the master audit must be included** — Scale, shadow, image zoom, transition duration/easing, and the existing bg/text/border colour shifts. These are in the block.json attributes in the plan.
-- **The master audit is now 354 features** — Expanded from 337. New max is 294 points (was 227). S-tier features push the final target to Grade A (90%).
-- **Codebase patterns are well-documented** — The exploration agent produced a comprehensive report of all patterns. Key reference blocks: testimonial-slider (dynamic + view.js), card-grid (static + hover), accordion (dynamic + Interactivity API).
-- **Block customisation standard is non-negotiable:** Native `supports` for wrapper, custom attributes for inner elements, hover controls, full editor inspector UI. See MEMORY.md `block-standards.md`.
-- **Deploy pattern:** After any PHP file deploy, reset OPcache via HTTP (not CLI). See MEMORY.md.
+- **All 3 Phase 2 blocks are deployed but untested in the editor.** The REST endpoint works (`curl` confirmed), the site loads without JS errors, but nobody has opened the WP admin and inserted a Post Grid, Gallery, or Tabs block into a page yet. This is the first priority.
+- **Post Grid REST endpoint:** `GET /sgs-blocks/v1/posts` — public, returns `{html, totalPages, currentPage, totalPosts}`. Pre-rendered HTML cards from `Post_Grid_REST::render_card()`.
+- **Gallery uses Interactivity API**, tabs and all other interactive blocks use vanilla JS. Both patterns are correct — Interactivity API for reactive state (lightbox, forms), vanilla JS for simpler event handling.
+- **The master audit is the truth document** — `docs/plans/2026-02-21-master-feature-audit.md` defines all 354 features, priorities, and the scoring system. Items #63 (Post Grid), #64 (Gallery), #65 (Tabs) are now done.
+- **Deploy pattern:** Build → SCP → clear LiteSpeed cache (`rm -rf`) → reset OPcache via HTTP. All commands in MEMORY.md and every CLAUDE.md file.
+- **Block customisation standard:** Every block needs native `supports` for wrapper, custom attributes + controls for inner elements, hover controls (scale, shadow, image zoom, transition), full editor inspector UI.
+- **Framework maturity recalculation needed** — With Post Grid, Gallery, and Tabs built, the score should jump from 33% (98/294). Each P1 block completion adds to the score.
 
 ## Relevant Tooling for Next Tasks
 
 ### Commands
 - `/handoff` — Session handoff at end
-- `/commit` or `/commit-push-pr` — Commit the planning docs, then after each block build
+- `/commit` or `/commit-push-pr` — After each block build or test verification
 
-### Skills — Process
+### Skills
 - `/superpowers:using-superpowers` — Always first
-- `/superpowers:executing-plans` — To execute the Post Grid plan task-by-task (referenced in the plan header)
-- `/superpowers:subagent-driven-development` — For dispatching wp-developer per task
-- `/superpowers:verification-before-completion` — Before any deploy
-
-### Skills — WordPress Domain
-- `/wp-block-development` — For ALL block builds (Post Grid, Gallery, Tabs)
-- `/wp-rest-api` — For Post Grid AJAX pagination endpoint
-- `/wp-interactivity-api` — For Gallery lightbox, Tabs switching
-- `/wp-block-themes` — For patterns library (Phase 3)
-
-### Skills — Quality
-- `/code-quality` — Enforce standards on all block code
-- `/skill-adapter` — WCAG accessibility audit after each block
+- `/superpowers:verification-before-completion` — Before claiming any block works
+- `/wp-block-development` — For remaining P1 blocks (Countdown, Star Rating, Team Member)
+- `/wp-block-themes` — For block patterns library (Phase 3)
 
 ### Agents
-- **wp-developer (opus)** — MANDATORY for all block builds. Delegate Post Grid, Gallery, Tabs. Never build WordPress features in the main conversation.
-- **design-reviewer** — After each block deploy, verify visual quality at 375/768/1440px
-- **test-and-explain** — After Phase 2 completion, test and explain in plain English
-- **performance-auditor** — After Post Grid deploy, check Core Web Vitals impact (AJAX, image loading)
+- **wp-developer** — MANDATORY for all block builds. Delegate Countdown Timer, Star Rating, Team Member.
+- **design-reviewer** — After blocks are placed on pages, verify visual quality at 375/768/1440px
+- **test-and-explain** — Test the Phase 2 blocks and explain results in plain English
+- **performance-auditor** — Check Core Web Vitals impact of Post Grid (AJAX, image loading)
 
 ### MCP Servers
-- **Context7** — WordPress block editor docs (`useEntityRecords`, Interactivity API, REST API)
-- **GitHub** — PR creation after Phase 2 blocks are built
-- **Playwright** — Visual testing at 375/768/1440 after each deploy
+- **Context7** — WordPress block editor docs (useEntityRecords, Interactivity API)
+- **GitHub** — PR creation after Phase 2 is fully verified
+- **Playwright** — Visual testing at 375/768/1440 after blocks are placed on pages
 
 ## Next Session Prompt
 
 ~~~
 /superpowers:using-superpowers
 
-SGS Framework has an expanded Master Feature Audit (354 features, 294 max points) and a complete Post Grid implementation plan (8 tasks). Competitive grading done — SGS targets Grade A (90%) after S-tier features. Phase 1 deployed. Phase 2 (missing blocks) is next. Nothing built yet.
+SGS Framework Phase 2.1-2.3 complete: Post Grid (4 layouts, AJAX pagination, REST endpoint), Gallery (Interactivity API lightbox, 3 layouts), and Tabs (ARIA tablist, 3 styles, deep linking) are all built, deployed, and pushed. 37 block directories total. All documentation synced with the 354-feature master audit. Blocks need editor testing.
 
-Read CONVERSATION-HANDOFF.md, CLAUDE.md, and `docs/plans/2026-02-21-post-grid-block.md` for full context, then work through these priorities:
+Read CONVERSATION-HANDOFF.md and CLAUDE.md for full context, then work through these priorities:
 
-1. **Commit planning docs** — Commit `docs/plans/2026-02-21-master-feature-audit.md` and `docs/plans/2026-02-21-post-grid-block.md` to git. Use `/commit`.
+1. **Test Phase 2 blocks in editor** — Log into WP admin at palestine-lives.org, create a test page, insert Post Grid, Gallery, and Tabs blocks. Verify all inspector controls work, live preview renders, and frontend output is correct. Use Playwright for visual verification at 375/768/1440. Use `/superpowers:verification-before-completion`.
 
-2. **Phase 2.1: Build Post Grid Block** — Execute the 8-task plan at `docs/plans/2026-02-21-post-grid-block.md`. Delegate entirely to `wp-developer` agent with `/wp-block-development` and `/wp-rest-api` skills. The plan has full code, file paths, and architecture. Key: shared `Post_Grid_REST::render_card()` for both render.php and REST endpoint. 42 attributes, 4 layouts (grid/list/masonry/carousel), 4 card styles, AJAX pagination (standard/load-more/infinite), category filtering, skeleton loading, full ARIA.
+2. **Create test content** — Add 6-10 blog posts with featured images and categories so Post Grid pagination and filtering can be properly tested. Add images to Media Library for Gallery testing. Use `wp-developer` agent.
 
-3. **Phase 2.2: Build Gallery Block** — After Post Grid ships, build Image Gallery with lightbox (Interactivity API), masonry, carousel, grid layouts. Use `/brainstorming` first, then delegate to `wp-developer` with `/wp-block-development` and `/wp-interactivity-api`.
+3. **Phase 2.4: Build remaining P1 blocks** — Countdown Timer (#66 in master audit, date-based + evergreen, flip/simple variants), Star Rating (#67, SVG stars, Schema.org/Rating), Team Member (#68, photo/name/role/bio/socials, Schema.org/Person). Delegate each to `wp-developer` with `/wp-block-development`.
 
-4. **Phase 2.3: Build Tabs Block** — After Gallery ships, build Tabs with horizontal/vertical orientation, ARIA tablist/tab/tabpanel, deep linking via URL hash, InnerBlocks per tab. Delegate to `wp-developer`.
+4. **Clean up untracked files** — Add `.firecrawl/`, `*.png` at root, `sites/*/assets.zip` to `.gitignore`.
 
-CRITICAL: Every block MUST follow the block customisation standard (MEMORY.md) AND include expanded hover controls from the audit (scale, shadow, image zoom, transition duration/easing — not just colour shifts). Deploy after each block: build, SCP, clear LiteSpeed cache, reset OPcache via HTTP. Verify at 375/768/1440 with Playwright.
+5. **Open PR for Phase 2** — All work is on `feature/indus-foods-homepage`. Use `/commit-push-pr` to create a PR summarising all Phase 2 blocks.
+
+CRITICAL: Every block MUST follow the block customisation standard (MEMORY.md) — native supports for wrapper, custom attributes for inner elements, hover controls (scale, shadow, image zoom, transition). Deploy after each block: build, SCP, clear LiteSpeed cache, reset OPcache via HTTP.
 ~~~
