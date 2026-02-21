@@ -181,3 +181,10 @@
 	transform: translateY(-1px);
 	box-shadow: var(--wp--preset--shadow--glow);
 }
+
+/* Hide header CTA on mobile and tablet — hamburger menu is sufficient */
+@media (max-width: 1023px) {
+	.sgs-header-cta {
+		display: none !important;
+	}
+}
