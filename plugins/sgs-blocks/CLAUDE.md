@@ -128,7 +128,7 @@ ssh hd "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/palestine-lives.o
 |---|---|
 | Post Grid / Query Loop | Grid/list/masonry/carousel + AJAX pagination + category filtering |
 | Image Gallery + Lightbox | Grid/masonry/carousel + Interactivity API lightbox |
-| Tabs | Horizontal/vertical, InnerBlocks per tab, full ARIA |
+| Tabs | Built — not yet deployed |
 | Countdown Timer | Date-based + evergreen; flip/simple variants |
 | Star Rating | SVG stars; Schema.org/Rating |
 | Team Member | Photo/name/role/bio/socials; Schema.org/Person |

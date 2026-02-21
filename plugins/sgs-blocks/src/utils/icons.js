@@ -336,3 +336,27 @@ export const accordionItemIcon = icon(
 		<Rect x="6" y="15.5" width="9" height="1.5" rx="0.75" fillOpacity="0.4" />
 	</SVG>
 );
+
+/** Tabs — horizontal tab bar with content panel */
+export const tabsIcon = icon(
+	<SVG viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+		<Rect x="3" y="3" width="5" height="4" rx="1" />
+		<Rect x="9.5" y="3" width="5" height="4" rx="1" fillOpacity="0.4" />
+		<Rect x="16" y="3" width="5" height="4" rx="1" fillOpacity="0.4" />
+		<Rect x="3" y="7" width="18" height="14" rx="1.5" fillOpacity="0.15" />
+		<Rect x="3" y="7" width="18" height="14" rx="1.5" fill="none" stroke="currentColor" strokeWidth="1.5" />
+		<Rect x="6" y="11" width="10" height="1.5" rx="0.75" fillOpacity="0.5" />
+		<Rect x="6" y="14.5" width="7" height="1.5" rx="0.75" fillOpacity="0.35" />
+	</SVG>
+);
+
+/** Tab — single tab panel */
+export const tabIcon = icon(
+	<SVG viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+		<Rect x="3" y="3" width="18" height="18" rx="2" fillOpacity="0.15" />
+		<Rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="currentColor" strokeWidth="1.5" />
+		<Rect x="3" y="3" width="6" height="4" rx="1" />
+		<Rect x="6" y="10" width="12" height="1.5" rx="0.75" fillOpacity="0.5" />
+		<Rect x="6" y="13.5" width="9" height="1.5" rx="0.75" fillOpacity="0.35" />
+	</SVG>
+);
