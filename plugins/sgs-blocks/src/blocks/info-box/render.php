@@ -28,6 +28,22 @@ $description_colour      = $attributes['descriptionColour'] ?? '';
 $card_style              = $attributes['cardStyle'] ?? 'elevated';
 $hover_effect            = $attributes['hoverEffect'] ?? 'lift';
 
+$hover_background_colour = $attributes['hoverBackgroundColour'] ?? '';
+$hover_text_colour       = $attributes['hoverTextColour'] ?? '';
+$hover_border_colour     = $attributes['hoverBorderColour'] ?? '';
+
+// Build wrapper styles.
+$wrapper_styles = array();
+if ( $hover_background_colour ) {
+	$wrapper_styles[] = '--sgs-hover-bg:' . sgs_colour_value( $hover_background_colour );
+}
+if ( $hover_text_colour ) {
+	$wrapper_styles[] = '--sgs-hover-text:' . sgs_colour_value( $hover_text_colour );
+}
+if ( $hover_border_colour ) {
+	$wrapper_styles[] = '--sgs-hover-border:' . sgs_colour_value( $hover_border_colour );
+}
+
 // Build wrapper classes.
 $classes = array(
 	'sgs-info-box',
@@ -35,11 +51,14 @@ $classes = array(
 	'sgs-info-box--hover-' . esc_attr( $hover_effect ),
 );
 
-$wrapper_attributes = get_block_wrapper_attributes(
-	array(
-		'class' => implode( ' ', $classes ),
-	)
+$wrapper_attr_args = array(
+	'class' => implode( ' ', $classes ),
 );
+if ( $wrapper_styles ) {
+	$wrapper_attr_args['style'] = implode( ';', $wrapper_styles );
+}
+
+$wrapper_attributes = get_block_wrapper_attributes( $wrapper_attr_args );
 
 // Build icon styles.
 $icon_styles = array();

@@ -12,6 +12,9 @@ export default function Save( { attributes } ) {
 		hoverEffect,
 		titleColour,
 		subtitleColour,
+		hoverBackgroundColour,
+		hoverTextColour,
+		hoverBorderColour,
 	} = attributes;
 
 	const className = [
@@ -27,6 +30,9 @@ export default function Save( { attributes } ) {
 		'--sgs-card-grid-columns-mobile': columnsMobile,
 		'--sgs-card-grid-gap': spacingVar( gap ),
 		'--sgs-card-grid-aspect': aspectRatio,
+		'--sgs-hover-bg': colourVar( hoverBackgroundColour ) || undefined,
+		'--sgs-hover-text': colourVar( hoverTextColour ) || undefined,
+		'--sgs-hover-border': colourVar( hoverBorderColour ) || undefined,
 	};
 
 	const titleStyle = {

@@ -124,6 +124,20 @@
 	color: var(--wp--preset--color--primary);
 }
 
+/* ===== Custom Hover States (editor-configurable) ===== */
+
+.sgs-card-grid[style*="--sgs-hover-bg"] .sgs-card-grid__item:hover {
+	background-color: var(--sgs-hover-bg);
+}
+
+.sgs-card-grid[style*="--sgs-hover-text"] .sgs-card-grid__item:hover {
+	color: var(--sgs-hover-text);
+}
+
+.sgs-card-grid[style*="--sgs-hover-border"] .sgs-card-grid__item:hover {
+	border-color: var(--sgs-hover-border);
+}
+
 /* ===== Hover Effects ===== */
 
 /* Zoom — image scales up */

@@ -38,11 +38,25 @@ $cta_primary_bg        = $attributes['ctaPrimaryBackground'] ?? '';
 $cta_secondary_colour  = $attributes['ctaSecondaryColour'] ?? '';
 $cta_secondary_bg      = $attributes['ctaSecondaryBackground'] ?? '';
 
+$hover_background_colour = $attributes['hoverBackgroundColour'] ?? '';
+$hover_text_colour       = $attributes['hoverTextColour'] ?? '';
+$hover_border_colour     = $attributes['hoverBorderColour'] ?? '';
+
 $is_split = 'split' === $variant;
 
 // Build wrapper styles.
 $styles = array();
 $styles[] = 'min-height:' . esc_attr( $min_height );
+
+if ( $hover_background_colour ) {
+	$styles[] = '--sgs-hover-bg:' . sgs_colour_value( $hover_background_colour );
+}
+if ( $hover_text_colour ) {
+	$styles[] = '--sgs-hover-text:' . sgs_colour_value( $hover_text_colour );
+}
+if ( $hover_border_colour ) {
+	$styles[] = '--sgs-hover-border:' . sgs_colour_value( $hover_border_colour );
+}
 
 if ( ! $is_split && ! empty( $bg_image['url'] ) ) {
 	$styles[] = 'background-image:url(' . esc_url( $bg_image['url'] ) . ')';

@@ -91,6 +91,18 @@
     "hoverEffect": {
       "type": "string",
       "default": "lift"
+    },
+    "hoverBackgroundColour": {
+      "type": "string",
+      "default": ""
+    },
+    "hoverTextColour": {
+      "type": "string",
+      "default": ""
+    },
+    "hoverBorderColour": {
+      "type": "string",
+      "default": ""
     }
   },
   "editorScript": "file:./index.js",

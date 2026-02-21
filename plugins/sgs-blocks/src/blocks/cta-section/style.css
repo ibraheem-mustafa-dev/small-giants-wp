@@ -2,6 +2,9 @@
 
 .sgs-cta-section {
 	padding: var(--wp--preset--spacing--60) var(--wp--preset--spacing--40);
+	transition: background-color var(--wp--custom--transition--medium, 0.3s ease),
+		color var(--wp--custom--transition--medium, 0.3s ease),
+		border-color var(--wp--custom--transition--medium, 0.3s ease);
 }
 
 .sgs-cta-section:not([style*="background"]) {
@@ -134,6 +137,20 @@
 	outline-offset: 2px;
 }
 
+/* ===== Custom Hover States (editor-configurable) ===== */
+
+.sgs-cta-section[style*="--sgs-hover-bg"]:hover {
+	background-color: var(--sgs-hover-bg);
+}
+
+.sgs-cta-section[style*="--sgs-hover-text"]:hover {
+	color: var(--sgs-hover-text);
+}
+
+.sgs-cta-section[style*="--sgs-hover-border"]:hover {
+	border-color: var(--sgs-hover-border);
+}
+
 /* ===== Responsive ===== */
 
 @media (max-width: 767px) {
@@ -159,6 +176,10 @@
 /* ===== Reduced Motion ===== */
 
 @media (prefers-reduced-motion: reduce) {
+	.sgs-cta-section {
+		transition: none;
+	}
+
 	.sgs-cta-section__btn {
 		transition: none;
 	}

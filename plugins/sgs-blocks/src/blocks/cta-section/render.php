@@ -24,17 +24,36 @@ $body_font_size    = $attributes['bodyFontSize'] ?? '';
 $button_colour     = $attributes['buttonColour'] ?? '';
 $button_background = $attributes['buttonBackground'] ?? '';
 
+$hover_background_colour = $attributes['hoverBackgroundColour'] ?? '';
+$hover_text_colour       = $attributes['hoverTextColour'] ?? '';
+$hover_border_colour     = $attributes['hoverBorderColour'] ?? '';
+
+// Build wrapper styles.
+$wrapper_styles = array();
+if ( $hover_background_colour ) {
+	$wrapper_styles[] = '--sgs-hover-bg:' . sgs_colour_value( $hover_background_colour );
+}
+if ( $hover_text_colour ) {
+	$wrapper_styles[] = '--sgs-hover-text:' . sgs_colour_value( $hover_text_colour );
+}
+if ( $hover_border_colour ) {
+	$wrapper_styles[] = '--sgs-hover-border:' . sgs_colour_value( $hover_border_colour );
+}
+
 // Build wrapper classes.
 $classes = array(
 	'sgs-cta-section',
 	'sgs-cta-section--' . esc_attr( $layout ),
 );
 
-$wrapper_attributes = get_block_wrapper_attributes(
-	array(
-		'class' => implode( ' ', $classes ),
-	)
+$wrapper_attr_args = array(
+	'class' => implode( ' ', $classes ),
 );
+if ( $wrapper_styles ) {
+	$wrapper_attr_args['style'] = implode( ';', $wrapper_styles );
+}
+
+$wrapper_attributes = get_block_wrapper_attributes( $wrapper_attr_args );
 
 // Build headline styles.
 $headline_style_attr = '';

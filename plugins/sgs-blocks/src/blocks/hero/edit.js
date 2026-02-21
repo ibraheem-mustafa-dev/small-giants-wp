@@ -134,6 +134,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		ctaSecondaryStyle,
 		ctaSecondaryColour,
 		ctaSecondaryBackground,
+		hoverBackgroundColour,
+		hoverTextColour,
+		hoverBorderColour,
 	} = attributes;
 
 	const isSplit = variant === 'split';
@@ -182,6 +185,37 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
+				<PanelBody
+					title={ __( 'Hover States', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<DesignTokenPicker
+						label={ __( 'Hover background', 'sgs-blocks' ) }
+						value={ hoverBackgroundColour }
+						onChange={ ( val ) =>
+							setAttributes( {
+								hoverBackgroundColour: val,
+							} )
+						}
+					/>
+					<DesignTokenPicker
+						label={ __( 'Hover text', 'sgs-blocks' ) }
+						value={ hoverTextColour }
+						onChange={ ( val ) =>
+							setAttributes( { hoverTextColour: val } )
+						}
+					/>
+					<DesignTokenPicker
+						label={ __( 'Hover border', 'sgs-blocks' ) }
+						value={ hoverBorderColour }
+						onChange={ ( val ) =>
+							setAttributes( {
+								hoverBorderColour: val,
+							} )
+						}
+					/>
+				</PanelBody>
+
 				<PanelBody title={ __( 'Hero Settings', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Variant', 'sgs-blocks' ) }

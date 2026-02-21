@@ -84,6 +84,20 @@
 	color: var(--wp--preset--color--text-muted);
 }
 
+/* ===== Custom Hover States (editor-configurable) ===== */
+
+.sgs-info-box[style*="--sgs-hover-bg"]:hover {
+	background-color: var(--sgs-hover-bg);
+}
+
+.sgs-info-box[style*="--sgs-hover-text"]:hover {
+	color: var(--sgs-hover-text);
+}
+
+.sgs-info-box[style*="--sgs-hover-border"]:hover {
+	border-color: var(--sgs-hover-border);
+}
+
 /* ===== Hover Effects ===== */
 
 /* Lift — translateY + shadow increase */

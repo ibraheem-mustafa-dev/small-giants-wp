@@ -6,6 +6,9 @@
 	align-items: center;
 	overflow: hidden;
 	box-sizing: border-box;
+	transition: background-color var(--wp--custom--transition--medium, 0.3s ease),
+		color var(--wp--custom--transition--medium, 0.3s ease),
+		border-color var(--wp--custom--transition--medium, 0.3s ease);
 }
 
 /* Standard variant — text over background */
@@ -204,6 +207,20 @@
 	/* Badges are already absolute, relative to .sgs-hero */
 }
 
+/* ===== Custom Hover States (editor-configurable) ===== */
+
+.sgs-hero[style*="--sgs-hover-bg"]:hover {
+	background-color: var(--sgs-hover-bg);
+}
+
+.sgs-hero[style*="--sgs-hover-text"]:hover {
+	color: var(--sgs-hover-text);
+}
+
+.sgs-hero[style*="--sgs-hover-border"]:hover {
+	border-color: var(--sgs-hover-border);
+}
+
 /* ===== Responsive ===== */
 
 /* Tablet */
@@ -258,5 +275,13 @@
 	.sgs-hero__cta {
 		width: 100%;
 		text-align: center;
+	}
+}
+
+/* ===== Reduced Motion ===== */
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-hero {
+		transition: none;
 	}
 }

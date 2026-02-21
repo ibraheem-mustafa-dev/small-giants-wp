@@ -122,6 +122,18 @@
     },
     "ctaSecondaryBackground": {
       "type": "string"
+    },
+    "hoverBackgroundColour": {
+      "type": "string",
+      "default": ""
+    },
+    "hoverTextColour": {
+      "type": "string",
+      "default": ""
+    },
+    "hoverBorderColour": {
+      "type": "string",
+      "default": ""
     }
   },
   "render": "file:./render.php",

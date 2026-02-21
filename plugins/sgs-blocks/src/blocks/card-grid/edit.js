@@ -175,6 +175,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		hoverEffect,
 		titleColour,
 		subtitleColour,
+		hoverBackgroundColour,
+		hoverTextColour,
+		hoverBorderColour,
 	} = attributes;
 
 	const className = [
@@ -190,6 +193,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		'--sgs-card-grid-columns-mobile': columnsMobile,
 		'--sgs-card-grid-gap': spacingVar( gap ),
 		'--sgs-card-grid-aspect': aspectRatio,
+		'--sgs-hover-bg': colourVar( hoverBackgroundColour ) || undefined,
+		'--sgs-hover-text': colourVar( hoverTextColour ) || undefined,
+		'--sgs-hover-border': colourVar( hoverBorderColour ) || undefined,
 	};
 
 	const titleStyle = {
@@ -231,6 +237,37 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
+				<PanelBody
+					title={ __( 'Hover States', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<DesignTokenPicker
+						label={ __( 'Hover background', 'sgs-blocks' ) }
+						value={ hoverBackgroundColour }
+						onChange={ ( val ) =>
+							setAttributes( {
+								hoverBackgroundColour: val,
+							} )
+						}
+					/>
+					<DesignTokenPicker
+						label={ __( 'Hover text', 'sgs-blocks' ) }
+						value={ hoverTextColour }
+						onChange={ ( val ) =>
+							setAttributes( { hoverTextColour: val } )
+						}
+					/>
+					<DesignTokenPicker
+						label={ __( 'Hover border', 'sgs-blocks' ) }
+						value={ hoverBorderColour }
+						onChange={ ( val ) =>
+							setAttributes( {
+								hoverBorderColour: val,
+							} )
+						}
+					/>
+				</PanelBody>
+
 				<PanelBody title={ __( 'Items', 'sgs-blocks' ) }>
 					{ items.map( ( item, index ) => (
 						<ItemEditor
