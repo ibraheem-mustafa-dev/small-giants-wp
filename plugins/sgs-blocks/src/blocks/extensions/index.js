@@ -2,8 +2,9 @@
  * SGS Block Extensions
  *
  * Loaded once in the editor via enqueue_block_editor_assets.
- * Injects animation and visibility controls into all sgs/* blocks
- * via WordPress block filters — no per-block code needed.
+ *
+ * - Animation: controls for sgs/* blocks only (scroll-triggered animations).
+ * - Device visibility: show/hide per breakpoint for ALL blocks (core + SGS).
  */
 import './animation';
 import './responsive-visibility';

@@ -11,6 +11,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+
 // Extract attributes with defaults.
 $icon                    = $attributes['icon'] ?? 'star-filled';
 $heading                 = $attributes['heading'] ?? '';
@@ -25,28 +27,6 @@ $heading_font_size       = $attributes['headingFontSize'] ?? '';
 $description_colour      = $attributes['descriptionColour'] ?? '';
 $card_style              = $attributes['cardStyle'] ?? 'elevated';
 $hover_effect            = $attributes['hoverEffect'] ?? 'lift';
-
-// Helper: resolve a colour value — hex passes through, slugs become var().
-$colour_var = function ( $value ) {
-	if ( ! $value ) {
-		return '';
-	}
-	if ( '#' === $value[0] || 0 === strpos( $value, 'rgb' ) ) {
-		return esc_attr( $value );
-	}
-	return 'var(--wp--preset--color--' . esc_attr( $value ) . ')';
-};
-
-// Helper: resolve a font-size value — CSS units pass through, slugs become var().
-$font_size_var = function ( $value ) {
-	if ( ! $value ) {
-		return '';
-	}
-	if ( preg_match( '/^[\d.]/', $value ) || 0 === strpos( $value, 'clamp' ) ) {
-		return esc_attr( $value );
-	}
-	return 'var(--wp--preset--font-size--' . esc_attr( $value ) . ')';
-};
 
 // Build wrapper classes.
 $classes = array(
@@ -64,27 +44,27 @@ $wrapper_attributes = get_block_wrapper_attributes(
 // Build icon styles.
 $icon_styles = array();
 if ( $icon_colour ) {
-	$icon_styles[] = 'color:' . $colour_var( $icon_colour );
+	$icon_styles[] = 'color:' . sgs_colour_value( $icon_colour );
 }
 if ( $icon_background_colour ) {
-	$icon_styles[] = 'background-color:' . $colour_var( $icon_background_colour );
+	$icon_styles[] = 'background-color:' . sgs_colour_value( $icon_background_colour );
 }
 $icon_style_attr = $icon_styles ? ' style="' . implode( ';', $icon_styles ) . '"' : '';
 
 // Build heading styles.
 $heading_styles = array();
 if ( $heading_colour ) {
-	$heading_styles[] = 'color:' . $colour_var( $heading_colour );
+	$heading_styles[] = 'color:' . sgs_colour_value( $heading_colour );
 }
 if ( $heading_font_size ) {
-	$heading_styles[] = 'font-size:' . $font_size_var( $heading_font_size );
+	$heading_styles[] = 'font-size:' . sgs_font_size_value( $heading_font_size );
 }
 $heading_style_attr = $heading_styles ? ' style="' . implode( ';', $heading_styles ) . '"' : '';
 
 // Build description styles.
 $description_style_attr = '';
 if ( $description_colour ) {
-	$description_style_attr = ' style="color:' . $colour_var( $description_colour ) . '"';
+	$description_style_attr = ' style="color:' . sgs_colour_value( $description_colour ) . '"';
 }
 
 // Load Lucide icon from generated PHP map (1900+ icons).

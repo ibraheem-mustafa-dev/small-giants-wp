@@ -11,6 +11,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+
 // Extract attributes with defaults.
 $testimonials   = $attributes['testimonials'] ?? array();
 $autoplay       = $attributes['autoplay'] ?? false;
@@ -24,26 +26,6 @@ $name_colour    = $attributes['nameColour'] ?? '';
 $name_font_size = $attributes['nameFontSize'] ?? '';
 $role_colour    = $attributes['roleColour'] ?? '';
 $rating_colour  = $attributes['ratingColour'] ?? 'accent';
-
-// Helper for colour values (handles both hex and design token slugs).
-$colour_value = function ( $value ) {
-	if ( ! $value ) {
-		return '';
-	}
-	// If it starts with # or rgb, it's a direct CSS value.
-	if ( '#' === $value[0] || 0 === strpos( $value, 'rgb' ) ) {
-		return esc_attr( $value );
-	}
-	// Otherwise it's a design token slug.
-	return 'var(--wp--preset--color--' . esc_attr( $value ) . ')';
-};
-
-$font_size_var = function ( $slug ) {
-	if ( ! $slug ) {
-		return '';
-	}
-	return 'var(--wp--preset--font-size--' . esc_attr( $slug ) . ')';
-};
 
 // Helper to extract initials from name.
 $get_initials = function ( $name ) {
@@ -72,6 +54,9 @@ $wrapper_attributes = get_block_wrapper_attributes(
 // Build track styles.
 $track_style_attr = ' style="--sgs-slides-visible:' . absint( $slides_visible ) . '"';
 
+// Generate a unique prefix so multiple sliders on the same page have distinct IDs.
+$slider_prefix = wp_unique_id( 'sgs-slider-' );
+
 // Build testimonial slides HTML.
 $slides_html = '';
 $total_testimonials = count( $testimonials );
@@ -89,7 +74,7 @@ if ( ! empty( $testimonials ) ) {
 		if ( $rating > 0 ) {
 			$rating_style_attr = '';
 			if ( $rating_colour ) {
-				$rating_style_attr = ' style="color:' . $colour_value( $rating_colour ) . '"';
+				$rating_style_attr = ' style="color:' . sgs_colour_value( $rating_colour ) . '"';
 			}
 			$stars_html .= sprintf(
 				'<div class="sgs-testimonial-slider__stars"%s role="img" aria-label="%d out of 5 stars">',
@@ -122,29 +107,33 @@ if ( ! empty( $testimonials ) ) {
 		// Build quote styles.
 		$quote_style_attr = '';
 		if ( $quote_colour ) {
-			$quote_style_attr = ' style="color:' . $colour_value( $quote_colour ) . '"';
+			$quote_style_attr = ' style="color:' . sgs_colour_value( $quote_colour ) . '"';
 		}
 
 		// Build name styles.
 		$name_styles = array();
 		if ( $name_colour ) {
-			$name_styles[] = 'color:' . $colour_value( $name_colour );
+			$name_styles[] = 'color:' . sgs_colour_value( $name_colour );
 		}
 		if ( $name_font_size ) {
-			$name_styles[] = 'font-size:' . $font_size_var( $name_font_size );
+			$name_styles[] = 'font-size:' . sgs_font_size_value( $name_font_size );
 		}
 		$name_style_attr = $name_styles ? ' style="' . implode( ';', $name_styles ) . '"' : '';
 
 		// Build role styles.
 		$role_style_attr = '';
 		if ( $role_colour ) {
-			$role_style_attr = ' style="color:' . $colour_value( $role_colour ) . '"';
+			$role_style_attr = ' style="color:' . sgs_colour_value( $role_colour ) . '"';
 		}
 
 		// Build slide HTML.
+		$slide_id = esc_attr( $slider_prefix ) . '-slide-' . $i;
+		$dot_id   = esc_attr( $slider_prefix ) . '-dot-' . $i;
 		$slides_html .= sprintf(
-			'<blockquote class="sgs-testimonial-slider__slide sgs-testimonial-slider__slide--%s" role="group" aria-label="Testimonial %d of %d">%s<p class="sgs-testimonial-slider__quote"%s>%s</p><footer class="sgs-testimonial-slider__footer">%s<div class="sgs-testimonial-slider__meta"><cite class="sgs-testimonial-slider__name"%s>%s</cite><span class="sgs-testimonial-slider__role"%s>%s</span></div></footer></blockquote>',
+			'<blockquote id="%s" class="sgs-testimonial-slider__slide sgs-testimonial-slider__slide--%s" role="tabpanel" aria-labelledby="%s" aria-label="Testimonial %d of %d">%s<p class="sgs-testimonial-slider__quote"%s>%s</p><footer class="sgs-testimonial-slider__footer">%s<div class="sgs-testimonial-slider__meta"><cite class="sgs-testimonial-slider__name"%s>%s</cite><span class="sgs-testimonial-slider__role"%s>%s</span></div></footer></blockquote>',
+			$slide_id,
 			esc_attr( $card_style ),
+			$dot_id,
 			$i,
 			$total_testimonials,
 			$stars_html,
@@ -175,11 +164,15 @@ $dots_html = '';
 if ( $show_dots && $total_testimonials > $slides_visible ) {
 	$dots_html = '<div class="sgs-testimonial-slider__dots" role="tablist" aria-label="Testimonial navigation">';
 	for ( $d = 1; $d <= $total_testimonials; $d++ ) {
-		$is_first = ( 1 === $d );
-		$dots_html .= sprintf(
-			'<button class="sgs-testimonial-slider__dot%s" role="tab" aria-selected="%s" aria-label="Go to testimonial %d" type="button"></button>',
+		$is_first    = ( 1 === $d );
+		$this_dot_id = esc_attr( $slider_prefix ) . '-dot-' . $d;
+		$controls_id = esc_attr( $slider_prefix ) . '-slide-' . $d;
+		$dots_html  .= sprintf(
+			'<button id="%s" class="sgs-testimonial-slider__dot%s" role="tab" aria-selected="%s" aria-controls="%s" aria-label="Go to testimonial %d" type="button"></button>',
+			$this_dot_id,
 			$is_first ? ' sgs-testimonial-slider__dot--active' : '',
 			$is_first ? 'true' : 'false',
+			$controls_id,
 			$d
 		);
 	}

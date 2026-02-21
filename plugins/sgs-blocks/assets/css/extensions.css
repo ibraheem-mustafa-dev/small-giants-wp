@@ -33,16 +33,27 @@
 	}
 }
 
-/* ===== SGS Visibility Extension ===== */
+/* ===== SGS Device Visibility Extension ===== */
 
-@media (max-width: 767px) {
+/*
+ * Breakpoints:
+ *   Mobile:  0 – 599px
+ *   Tablet:  600px – 1023px
+ *   Desktop: 1024px+
+ *
+ * CSS-only hiding preserves SEO (content remains in DOM).
+ * display:none also hides from screen readers — acceptable
+ * for genuine device-specific content patterns.
+ */
+
+@media (max-width: 599px) {
 	.sgs-hide-mobile { display: none !important; }
 }
 
-@media (min-width: 768px) and (max-width: 1024px) {
+@media (min-width: 600px) and (max-width: 1023px) {
 	.sgs-hide-tablet { display: none !important; }
 }
 
-@media (min-width: 1025px) {
+@media (min-width: 1024px) {
 	.sgs-hide-desktop { display: none !important; }
 }

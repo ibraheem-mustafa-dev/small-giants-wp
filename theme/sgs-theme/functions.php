@@ -85,3 +85,51 @@ function replace_current_year_token( string $block_content ): string {
 	return $block_content;
 }
 add_filter( 'render_block', __NAMESPACE__ . '\replace_current_year_token' );
+
+/**
+ * Enqueue style-variation-specific extras.
+ *
+ * Each style variation may need additional CSS that references theme assets
+ * (e.g. decorative images). This keeps the base theme stylesheet clean and
+ * ensures other variations carry no dead weight.
+ *
+ * Images are bundled in theme/assets/decorative-foods/ so paths resolve
+ * correctly on any WordPress installation via get_theme_file_uri().
+ */
+function enqueue_style_variation_extras(): void {
+	$variation = get_theme_mod( 'active_theme_style', '' );
+
+	if ( 'indus-foods' === $variation ) {
+		$base = trailingslashit( get_theme_file_uri( 'assets/decorative-foods' ) );
+
+		$css = "
+/* Indus Foods — Service card hover effects */
+.service-card{box-shadow:rgba(0,0,0,.5) 0 50px 50px -40px;transition:box-shadow .3s ease,transform .3s ease}
+.service-card:hover{box-shadow:rgba(0,0,0,.75) 0 60px 60px -50px;transform:translateY(-2px)}
+.service-card img{transition:transform .3s ease}
+.service-card:hover img{transform:scale(1.05)}
+
+/* Indus Foods — Decorative ingredient images (hidden on mobile) */
+.home .wp-block-group.alignwide:has(.service-card){position:relative;overflow:hidden}
+.home .wp-block-group.alignwide:has(.service-card)::before{content:'';position:absolute;top:-20px;left:-30px;width:150px;height:150px;background-image:url('{$base}turmeric-pile.png');background-size:contain;background-repeat:no-repeat;opacity:.2;transform:rotate(-15deg);pointer-events:none;z-index:0}
+.home .wp-block-group.alignwide:has(.service-card)::after{content:'';position:absolute;top:-30px;right:-20px;width:140px;height:140px;background-image:url('{$base}chilli-scatter.png');background-size:contain;background-repeat:no-repeat;opacity:.18;transform:rotate(25deg);pointer-events:none;z-index:0}
+.home .wp-block-group.alignfull.has-accent-background-color{position:relative;overflow:hidden}
+.home .wp-block-group.alignfull.has-accent-background-color::before{content:'';position:absolute;bottom:-25px;left:-35px;width:160px;height:160px;background-image:url('{$base}cumin-seeds.png');background-size:contain;background-repeat:no-repeat;opacity:.22;transform:rotate(12deg);pointer-events:none;z-index:0}
+.home .wp-block-group.alignfull.has-accent-background-color::after{content:'';position:absolute;bottom:-40px;right:-30px;width:170px;height:170px;background-image:url('{$base}coriander-leaves.png');background-size:contain;background-repeat:no-repeat;opacity:.2;transform:rotate(-18deg);pointer-events:none;z-index:0}
+.home .wp-block-sgs-cta-section{position:relative;overflow:hidden}
+.home .wp-block-sgs-cta-section::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-8deg);width:180px;height:180px;background-image:url('{$base}curry-splash.png');background-size:contain;background-repeat:no-repeat;opacity:.15;pointer-events:none;z-index:0}
+.home .wp-block-group.alignwide:has(.service-card)>*,
+.home .wp-block-group.alignfull.has-accent-background-color>*,
+.home .wp-block-sgs-cta-section>*{position:relative;z-index:1}
+@media(max-width:767px){
+.home .wp-block-group.alignwide:has(.service-card)::before,
+.home .wp-block-group.alignwide:has(.service-card)::after,
+.home .wp-block-group.alignfull.has-accent-background-color::before,
+.home .wp-block-group.alignfull.has-accent-background-color::after,
+.home .wp-block-sgs-cta-section::before{display:none}}
+";
+
+		wp_add_inline_style( 'sgs-utilities', $css );
+	}
+}
+add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\enqueue_style_variation_extras' );

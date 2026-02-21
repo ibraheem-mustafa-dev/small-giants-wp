@@ -14,6 +14,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+
 $form_id            = $attributes['formId'] ?? '';
 $form_name          = $attributes['formName'] ?? '';
 $submit_label       = $attributes['submitLabel'] ?? 'Submit';
@@ -82,20 +84,17 @@ $context = array(
 // Build submit button inline styles.
 $submit_styles = array();
 if ( $submit_colour ) {
-	$colour_var      = 'var(--wp--preset--color--' . esc_attr( $submit_colour ) . ')';
-	$submit_styles[] = 'color:' . $colour_var;
+	$submit_styles[] = 'color:' . sgs_colour_value( $submit_colour );
 }
 if ( $submit_background ) {
-	$bg_var          = 'var(--wp--preset--color--' . esc_attr( $submit_background ) . ')';
-	$submit_styles[] = 'background-color:' . $bg_var;
+	$submit_styles[] = 'background-color:' . sgs_colour_value( $submit_background );
 }
 $submit_style_attr = ! empty( $submit_styles ) ? ' style="' . implode( ';', $submit_styles ) . '"' : '';
 
 // Build progress bar colour style.
 $progress_style_attr = '';
 if ( $progress_colour ) {
-	$progress_var        = 'var(--wp--preset--color--' . esc_attr( $progress_colour ) . ')';
-	$progress_style_attr = ' style="--sgs-progress-colour:' . $progress_var . '"';
+	$progress_style_attr = ' style="--sgs-progress-colour:' . sgs_colour_value( $progress_colour ) . '"';
 }
 
 $wrapper_attributes = get_block_wrapper_attributes(

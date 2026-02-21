@@ -11,6 +11,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+
 // Extract attributes with defaults.
 $headline          = $attributes['headline'] ?? '';
 $body              = $attributes['body'] ?? '';
@@ -21,26 +23,6 @@ $body_colour       = $attributes['bodyColour'] ?? '';
 $body_font_size    = $attributes['bodyFontSize'] ?? '';
 $button_colour     = $attributes['buttonColour'] ?? '';
 $button_background = $attributes['buttonBackground'] ?? '';
-
-// Helper for colour values (handles both hex and design token slugs).
-$colour_value = function ( $value ) {
-	if ( ! $value ) {
-		return '';
-	}
-	// If it starts with # or rgb, it's a direct CSS value.
-	if ( '#' === $value[0] || 0 === strpos( $value, 'rgb' ) ) {
-		return esc_attr( $value );
-	}
-	// Otherwise it's a design token slug.
-	return 'var(--wp--preset--color--' . esc_attr( $value ) . ')';
-};
-
-$font_size_var = function ( $slug ) {
-	if ( ! $slug ) {
-		return '';
-	}
-	return 'var(--wp--preset--font-size--' . esc_attr( $slug ) . ')';
-};
 
 // Build wrapper classes.
 $classes = array(
@@ -57,16 +39,16 @@ $wrapper_attributes = get_block_wrapper_attributes(
 // Build headline styles.
 $headline_style_attr = '';
 if ( $headline_colour ) {
-	$headline_style_attr = ' style="color:' . $colour_value( $headline_colour ) . '"';
+	$headline_style_attr = ' style="color:' . sgs_colour_value( $headline_colour ) . '"';
 }
 
 // Build body styles.
 $body_styles = array();
 if ( $body_colour ) {
-	$body_styles[] = 'color:' . $colour_value( $body_colour );
+	$body_styles[] = 'color:' . sgs_colour_value( $body_colour );
 }
 if ( $body_font_size ) {
-	$body_styles[] = 'font-size:' . $font_size_var( $body_font_size );
+	$body_styles[] = 'font-size:' . sgs_font_size_value( $body_font_size );
 }
 $body_style_attr = $body_styles ? ' style="' . implode( ';', $body_styles ) . '"' : '';
 
@@ -85,10 +67,10 @@ if ( ! empty( $buttons ) ) {
 
 		$btn_styles = array();
 		if ( $button_colour ) {
-			$btn_styles[] = 'color:' . $colour_value( $button_colour );
+			$btn_styles[] = 'color:' . sgs_colour_value( $button_colour );
 		}
 		if ( $button_background ) {
-			$btn_styles[] = 'background-color:' . $colour_value( $button_background );
+			$btn_styles[] = 'background-color:' . sgs_colour_value( $button_background );
 		}
 		$btn_style_attr = $btn_styles ? ' style="' . implode( ';', $btn_styles ) . '"' : '';
 

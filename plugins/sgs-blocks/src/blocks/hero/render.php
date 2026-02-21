@@ -11,6 +11,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+
 $variant          = $attributes['variant'] ?? 'standard';
 $headline         = $attributes['headline'] ?? '';
 $sub_headline     = $attributes['subHeadline'] ?? '';
@@ -73,32 +75,6 @@ if ( ! $is_split && ! empty( $bg_image['url'] ) ) {
 	$overlay_html = '<span class="sgs-hero__overlay" style="' . $overlay_style . '" aria-hidden="true"></span>';
 }
 
-// Helper: resolve a colour value — hex passes through, slugs become var().
-$colour_var = function ( $value ) {
-	if ( ! $value ) {
-		return '';
-	}
-	// Raw hex or rgb — use directly.
-	if ( '#' === $value[0] || 0 === strpos( $value, 'rgb' ) ) {
-		return esc_attr( $value );
-	}
-	// Design token slug.
-	return 'var(--wp--preset--color--' . esc_attr( $value ) . ')';
-};
-
-// Helper: resolve a font-size value — CSS units pass through, slugs become var().
-$font_size_var = function ( $value ) {
-	if ( ! $value ) {
-		return '';
-	}
-	// Raw CSS value (has digits + unit like 1.5em, 16px, clamp(...)).
-	if ( preg_match( '/^[\d.]/', $value ) || 0 === strpos( $value, 'clamp' ) ) {
-		return esc_attr( $value );
-	}
-	// Design token slug.
-	return 'var(--wp--preset--font-size--' . esc_attr( $value ) . ')';
-};
-
 // Build CTA buttons.
 $ctas_html = '';
 if ( $cta_primary_text || $cta_secondary_text ) {
@@ -106,10 +82,10 @@ if ( $cta_primary_text || $cta_secondary_text ) {
 	if ( $cta_primary_text ) {
 		$cta_pri_styles = array();
 		if ( $cta_primary_colour ) {
-			$cta_pri_styles[] = 'color:' . $colour_var( $cta_primary_colour );
+			$cta_pri_styles[] = 'color:' . sgs_colour_value( $cta_primary_colour );
 		}
 		if ( $cta_primary_bg ) {
-			$cta_pri_styles[] = 'background-color:' . $colour_var( $cta_primary_bg );
+			$cta_pri_styles[] = 'background-color:' . sgs_colour_value( $cta_primary_bg );
 		}
 		$cta_pri_style_attr = $cta_pri_styles ? ' style="' . implode( ';', $cta_pri_styles ) . '"' : '';
 		$ctas_html .= sprintf(
@@ -123,10 +99,10 @@ if ( $cta_primary_text || $cta_secondary_text ) {
 	if ( $cta_secondary_text ) {
 		$cta_sec_styles = array();
 		if ( $cta_secondary_colour ) {
-			$cta_sec_styles[] = 'color:' . $colour_var( $cta_secondary_colour );
+			$cta_sec_styles[] = 'color:' . sgs_colour_value( $cta_secondary_colour );
 		}
 		if ( $cta_secondary_bg ) {
-			$cta_sec_styles[] = 'background-color:' . $colour_var( $cta_secondary_bg );
+			$cta_sec_styles[] = 'background-color:' . sgs_colour_value( $cta_secondary_bg );
 		}
 		$cta_sec_style_attr = $cta_sec_styles ? ' style="' . implode( ';', $cta_sec_styles ) . '"' : '';
 		$ctas_html .= sprintf(
@@ -169,17 +145,17 @@ $content_html = '<div class="sgs-hero__content">';
 if ( $headline ) {
 	$headline_style = '';
 	if ( $headline_colour ) {
-		$headline_style = ' style="color:' . $colour_var( $headline_colour ) . '"';
+		$headline_style = ' style="color:' . sgs_colour_value( $headline_colour ) . '"';
 	}
 	$content_html .= '<h1 class="sgs-hero__headline"' . $headline_style . '>' . wp_kses_post( $headline ) . '</h1>';
 }
 if ( $sub_headline ) {
 	$sub_styles = array();
 	if ( $sub_headline_colour ) {
-		$sub_styles[] = 'color:' . $colour_var( $sub_headline_colour );
+		$sub_styles[] = 'color:' . sgs_colour_value( $sub_headline_colour );
 	}
 	if ( $sub_headline_font_size ) {
-		$sub_styles[] = 'font-size:' . $font_size_var( $sub_headline_font_size );
+		$sub_styles[] = 'font-size:' . sgs_font_size_value( $sub_headline_font_size );
 	}
 	$sub_style_attr = $sub_styles ? ' style="' . implode( ';', $sub_styles ) . '"' : '';
 	$content_html .= '<p class="sgs-hero__subheadline"' . $sub_style_attr . '>' . wp_kses_post( $sub_headline ) . '</p>';

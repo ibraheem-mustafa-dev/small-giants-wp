@@ -29,12 +29,8 @@ function inject_heading_anchor( string $block_content, array $block ): string {
 		return $block_content;
 	}
 
-	// DEBUG: Log filter execution
-	error_log( 'inject_heading_anchor called for: ' . wp_strip_all_tags( $block_content ) );
-
 	// Skip if this heading already has an id.
 	if ( preg_match( '/\bid=["\']/', $block_content ) ) {
-		error_log( '  -> Already has ID, skipping' );
 		return $block_content;
 	}
 
@@ -47,6 +43,7 @@ function inject_heading_anchor( string $block_content, array $block ): string {
 	// Check once per request and cache the result.
 	static $has_toc = null;
 	static $checked_post_id = null;
+	static $used_slugs = [];
 
 	$current_post_id = get_the_ID();
 	if ( ! $current_post_id ) {
@@ -54,18 +51,16 @@ function inject_heading_anchor( string $block_content, array $block ): string {
 		$current_post_id = $post->ID ?? 0;
 	}
 
-	// Re-check if we're rendering a different post
+	// Re-check if we're rendering a different post (e.g. archive pages).
 	if ( $current_post_id !== $checked_post_id ) {
 		$checked_post_id = $current_post_id;
-		$has_toc = $current_post_id && has_block( 'sgs/table-of-contents', $current_post_id );
+		$used_slugs      = []; // Reset slugs for each new post — prevents archive bleed.
+		$has_toc         = $current_post_id && has_block( 'sgs/table-of-contents', $current_post_id );
 	}
 
 	if ( ! $has_toc ) {
-		error_log( '  -> No ToC on page, skipping (post ID: ' . $current_post_id . ')' );
 		return $block_content;
 	}
-
-	error_log( '  -> ToC detected, injecting anchor' );
 
 	// Extract text content for slug generation.
 	$text = wp_strip_all_tags( $block_content );
@@ -75,8 +70,7 @@ function inject_heading_anchor( string $block_content, array $block ): string {
 		return $block_content;
 	}
 
-	// Handle duplicate slugs within the same page.
-	static $used_slugs = [];
+	// Handle duplicate slugs within the same post.
 	$original_slug = $slug;
 	$counter       = 2;
 	while ( in_array( $slug, $used_slugs, true ) ) {

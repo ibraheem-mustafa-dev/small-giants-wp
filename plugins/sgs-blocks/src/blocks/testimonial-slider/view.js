@@ -41,10 +41,9 @@ sliders.forEach( ( slider ) => {
 		const clamped = Math.max( 0, Math.min( index, slides.length - 1 ) );
 		currentIndex = clamped;
 
-		slides[ clamped ].scrollIntoView( {
+		track.scrollTo( {
+			left: slides[ clamped ].offsetLeft,
 			behavior: prefersReducedMotion ? 'auto' : 'smooth',
-			block: 'nearest',
-			inline: 'start',
 		} );
 
 		updateDots();

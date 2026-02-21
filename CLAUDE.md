@@ -82,6 +82,48 @@ Full specifications in `specs/` directory:
 - `08-SGS-CHATBOT.md` — Live chat + AI chatbot plugin spec
 - `09-GOLD-STANDARD-AUDIT.md` — Per-block competitor comparison and gap analysis
 
+## Architecture Rules
+
+### SGS is a standalone framework, not a client project
+
+SGS Theme and SGS Blocks must work correctly on **any** WordPress installation for **any** client. They compete directly with Kadence, Spectra, and GenerateBlocks. Every design decision must pass this test: "Will this make sense for a restaurant, a wedding planner, and a law firm — not just Indus Foods?"
+
+- Never hard-code Indus Foods colours, copy, imagery, or structure into the base theme or blocks plugin
+- Client-specific work lives in `sites/indus-foods/` and `theme/sgs-theme/styles/indus-foods.json` only
+- The base theme's `style.css` and the blocks plugin's CSS must contain zero client-specific rules
+
+### Client experience is primary
+
+No block feature is complete until it has full block editor UI controls. Clients are tech-illiterate — they use the block editor exclusively, never code or WP-CLI. Every customisable property (colour, spacing, text, layout) must be exposed as an inspector control in the editor. If a setting requires touching code, it is not done.
+
+### WP-CLI is a developer tool only
+
+WP-CLI is used by the developer (Claude Code) during setup, debugging, and deployment. It is **never** something clients interact with. Do not design features that require WP-CLI for normal operation. Document WP-CLI commands in CLAUDE.md files, not in user-facing documentation.
+
+### Style variation architecture
+
+Style variation-specific CSS (decorative images, client-specific hover effects, custom gradients, etc.) must **never** go in the base `style.css`. The correct pattern:
+
+1. Images used by a style variation go in `theme/sgs-theme/assets/` — version-controlled with the theme, never in `uploads/`
+2. Variation-specific CSS goes in `functions.php` via `wp_add_inline_style()`, gated on the active variation:
+
+```php
+$active_style = get_theme_mod( 'active_theme_style', 'default' );
+if ( 'indus-foods' === $active_style ) {
+    wp_add_inline_style( 'sgs-theme-style', $indus_foods_css );
+}
+```
+
+3. Never load variation CSS unconditionally — it must be gated so other style variations are unaffected
+
+### No hard-coded environment paths
+
+Never use absolute server paths or hard-coded `/wp-content/...` URLs in CSS, PHP, or JS. Always use WordPress functions that resolve correctly on any install:
+
+- PHP: `get_theme_file_uri()`, `get_stylesheet_directory_uri()`, `wp_upload_dir()`
+- JS/CSS: use CSS custom properties set by PHP via `wp_add_inline_style()` or `wp_localize_script()`
+- Never: `/wp-content/themes/sgs-theme/assets/image.png` (breaks on any non-standard install)
+
 ## Non-Negotiables
 
 - WCAG 2.2 AA accessible, mobile-first responsive (44px minimum touch targets)

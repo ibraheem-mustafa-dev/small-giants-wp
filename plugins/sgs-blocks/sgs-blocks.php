@@ -39,6 +39,9 @@ require_once SGS_BLOCKS_PATH . 'includes/review-schema.php';
 // Heading anchor injection for Table of Contents.
 require_once SGS_BLOCKS_PATH . 'includes/heading-anchors.php';
 
+// Device visibility — server-side class injection for show/hide per device.
+require_once SGS_BLOCKS_PATH . 'includes/device-visibility.php';
+
 // Register REST API endpoints.
 Forms\Form_REST_API::register();
 
