@@ -6,6 +6,9 @@
  * - Single-open mode (closes siblings when one opens)
  * - Respects data-allow-multiple and data-default-open attributes
  *
+ * Uses a WeakSet to track programmatic toggles, preventing
+ * re-entrant animation loops when closing siblings.
+ *
  * @package SGS\Blocks
  */
 
@@ -23,12 +26,15 @@ function initAccordions() {
 			':scope > .sgs-accordion-item'
 		);
 
+		// Track which items are being animated programmatically.
+		const animatingItems = new WeakSet();
+
 		// Open the default item if set.
 		if ( defaultOpen >= 0 && items[ defaultOpen ] ) {
 			items[ defaultOpen ].setAttribute( 'open', '' );
 		}
 
-		// Animate and handle exclusive open.
+		// Set up each accordion item.
 		items.forEach( ( details ) => {
 			const summary = details.querySelector( 'summary' );
 			const content = details.querySelector(
@@ -39,7 +45,7 @@ function initAccordions() {
 				return;
 			}
 
-			// Wrap content for animation.
+			// Wrap content for animation measurement.
 			let wrapper = content.querySelector(
 				'.sgs-accordion-item__content-inner'
 			);
@@ -53,26 +59,27 @@ function initAccordions() {
 				content.appendChild( wrapper );
 			}
 
-			// Guard flag: prevents the toggle listener re-firing when closeItem
-		// programmatically removes the open attribute at animation end.
-		let animating = false;
+			// Use click on summary instead of toggle event.
+			// This fires BEFORE the native toggle, giving us control.
+			summary.addEventListener( 'click', ( e ) => {
+				e.preventDefault();
 
-		details.addEventListener( 'toggle', () => {
-				// Skip programmatic toggles triggered by our own animation code.
-				if ( animating ) {
+				if ( animatingItems.has( details ) ) {
 					return;
 				}
 
-				// The native toggle has already updated details.open.
-				// We use this event so we always know the new state without
-				// needing e.preventDefault(), preserving progressive enhancement.
 				if ( details.open ) {
-					// Close siblings first (if single-open mode).
+					// Currently open — close it.
+					closeItem( details, content, wrapper, animatingItems );
+				} else {
+					// Currently closed — open it.
+					// Close siblings first (single-open mode).
 					if ( ! allowMultiple ) {
 						items.forEach( ( sibling ) => {
 							if (
 								sibling !== details &&
-								sibling.hasAttribute( 'open' )
+								sibling.hasAttribute( 'open' ) &&
+								! animatingItems.has( sibling )
 							) {
 								const sibContent =
 									sibling.querySelector(
@@ -87,22 +94,13 @@ function initAccordions() {
 										sibling,
 										sibContent,
 										sibWrapper,
-										() => { animating = false; }
+										animatingItems
 									);
 								}
 							}
 						} );
 					}
-					// Animate the newly-opened item.
-					openItem( details, content, wrapper );
-				} else {
-					// Native already removed open — restore it so closeItem
-					// can measure and animate the collapse, then removes it.
-					animating = true;
-					details.setAttribute( 'open', '' );
-					closeItem( details, content, wrapper, () => {
-						animating = false;
-					} );
+					openItem( details, content, wrapper, animatingItems );
 				}
 			} );
 		} );
@@ -111,12 +109,12 @@ function initAccordions() {
 
 /**
  * Open an accordion item with smooth animation.
- *
- * The native <details> toggle has already set the open attribute before this
- * is called, so content is already visible. We animate from 0 to full height.
  */
-function openItem( details, content, wrapper ) {
-	// details is already open — measure the natural height, then animate from 0.
+function openItem( details, content, wrapper, animatingItems ) {
+	animatingItems.add( details );
+	details.setAttribute( 'open', '' );
+
+	// Measure height after open.
 	const height = wrapper.offsetHeight;
 	content.style.height = '0px';
 	content.style.overflow = 'hidden';
@@ -131,6 +129,7 @@ function openItem( details, content, wrapper ) {
 				content.style.height = '';
 				content.style.overflow = '';
 				content.style.transition = '';
+				animatingItems.delete( details );
 			},
 			{ once: true }
 		);
@@ -139,13 +138,9 @@ function openItem( details, content, wrapper ) {
 
 /**
  * Close an accordion item with smooth animation.
- *
- * @param {HTMLElement}  details    The <details> element.
- * @param {HTMLElement}  content    The content wrapper element.
- * @param {HTMLElement}  wrapper    The inner content element used for height measurement.
- * @param {Function|undefined} onComplete Optional callback fired after animation completes.
  */
-function closeItem( details, content, wrapper, onComplete ) {
+function closeItem( details, content, wrapper, animatingItems ) {
+	animatingItems.add( details );
 	const height = wrapper.offsetHeight;
 	content.style.height = height + 'px';
 	content.style.overflow = 'hidden';
@@ -161,9 +156,7 @@ function closeItem( details, content, wrapper, onComplete ) {
 				content.style.height = '';
 				content.style.overflow = '';
 				content.style.transition = '';
-				if ( 'function' === typeof onComplete ) {
-					onComplete();
-				}
+				animatingItems.delete( details );
 			},
 			{ once: true }
 		);
