@@ -173,33 +173,124 @@ function enqueue_style_variation_extras(): void {
 ";
 
 		/*
-		 * Footer social icon brand colours (item 14 of visual comparison audit).
-		 * Applies brand colours to social-link icons in the footer area.
-		 * CSS colour values are well-established brand standards, not client-specific
-		 * arbitrary values — they match the actual social network brand guidelines.
+		 * Indus Foods — additional variation-specific CSS.
+		 * Sourced from the visual comparison audit (outstanding-issues.md § 10).
+		 * All values reference CSS custom properties from the Indus Foods style
+		 * variation so nothing is hardcoded against a specific hex value.
 		 */
 		$css .= "
-/* Indus Foods — Footer social icon brand colours */
-.sgs-footer-social .wp-block-social-link--service-linkedin svg{fill:#0077b5}
-.sgs-footer-social .wp-block-social-link--service-facebook svg{fill:#1877f2}
-.sgs-footer-social .wp-block-social-link--service-instagram svg{fill:url(#sgs-instagram-gradient)}
-.sgs-footer-social .wp-block-social-link--service-google svg{fill:#ea4335}
-.sgs-footer-social .wp-block-social-link--service-twitter svg,.sgs-footer-social .wp-block-social-link--service-x svg{fill:#000000}
-/* SVG gradient for Instagram — injected via :before to avoid inline SVG in CSS */
-.sgs-footer-social .wp-block-social-link--service-instagram{background:linear-gradient(45deg,#f09433,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888);border-radius:4px}
-.sgs-footer-social .wp-block-social-link--service-instagram svg{fill:#fff}
-
-/* Indus Foods — Footer logo mobile max-width cap (item 16 of visual comparison audit) */
-@media(max-width:767px){
-.sgs-footer-logo .wp-block-site-logo img,.sgs-footer-logo img{max-width:140px!important}
+/* ── Issue 7: Top bar — pill-shaped icon buttons ────────────────────────────
+ * Converts plain phone/email anchor links in the teal top bar into pill-shaped
+ * pseudo-buttons matching the original Indus Foods design. Targets only
+ * <a href='tel:'> and <a href='mailto:'> inside the primary-coloured top-bar
+ * group, so no other links on the page are affected. */
+.has-primary-background-color.wp-block-group a[href^='tel:'],
+.has-primary-background-color.wp-block-group a[href^='mailto:'] {
+	display:inline-flex;align-items:center;gap:6px;
+	background-color:rgba(255,255,255,.15);
+	border-radius:9999px;padding:4px 12px;
+	transition:background-color .2s ease;text-decoration:none;
+}
+.has-primary-background-color.wp-block-group a[href^='tel:']:hover,
+.has-primary-background-color.wp-block-group a[href^='mailto:']:hover {
+	background-color:rgba(255,255,255,.28);
 }
 
-/* Indus Foods — Hero CTA buttons stacked vertically on all viewports (item 9).
-   The original site stacks buttons vertically because the CTA text is long.
-   All devices. */
-.sgs-hero__ctas{flex-direction:column;align-items:flex-start}
+/* ── Issue 9 & 8: Hero CTA buttons — vertical stack, mobile-visible ─────────
+ * Stacks CTA buttons vertically across all viewports (original design). Also
+ * ensures the second button is never hidden on mobile by explicitly setting
+ * display:flex on the container and visibility:visible on each button. */
+.sgs-hero__ctas{flex-direction:column!important;align-items:flex-start}
 .sgs-hero--align-centre .sgs-hero__ctas{align-items:center}
-.sgs-hero__cta{width:100%;max-width:360px;text-align:center}
+.sgs-hero__cta{width:100%;max-width:380px;text-align:center;display:inline-flex!important;visibility:visible!important}
+
+/* ── Issue 4: Why Choose info-boxes — text contrast on accent background ─────
+ * When info-boxes use cardStyle 'subtle' (transparent) on the accent/yellow
+ * section background, override text colours to ensure readable dark-on-yellow
+ * contrast. The base info-box CSS uses --text-muted which can be too light. */
+.has-accent-background-color .sgs-info-box--subtle .sgs-info-box__heading {
+	color:var(--wp--preset--color--text,#1e1e1e)!important;
+}
+.has-accent-background-color .sgs-info-box--subtle .sgs-info-box__description {
+	color:var(--wp--preset--color--text,#1e1e1e)!important;
+}
+
+/* ── Issue 14: Footer social icons — brand colours ───────────────────────────
+ * Applies the well-established brand colour standards (LinkedIn, Facebook, etc.)
+ * to the WordPress social-links block. WordPress uses the wp-social-link-{service}
+ * class format on the <li> element (not wp-block-social-link--service-{name}).
+ * Scoped to Indus Foods variation via wp_add_inline_style() gate. */
+.wp-block-social-links .wp-social-link-linkedin svg{fill:#0077b5!important}
+.wp-block-social-links .wp-social-link-facebook svg{fill:#1877f2!important}
+.wp-block-social-links .wp-social-link-google svg{fill:#ea4335!important}
+.wp-block-social-links .wp-social-link-twitter svg,
+.wp-block-social-links .wp-social-link-x svg{fill:#000000!important}
+/* Instagram uses a gradient background with white icon */
+.wp-block-social-links .wp-social-link-instagram{
+	background:linear-gradient(45deg,#f09433,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888)!important;
+	border-radius:6px;
+}
+.wp-block-social-links .wp-social-link-instagram svg{fill:#fff!important}
+
+/* ── Issue 16: Footer logo — mobile max-width cap ───────────────────────────
+ * Prevents the footer logo taking up excessive vertical space on 375px screens
+ * when flex columns stack. Uses !important to override WordPress's inline
+ * width attribute (style='width:200px') that takes precedence over CSS. */
+@media(max-width:767px){
+	footer .wp-block-image img,footer figure.wp-block-image img{max-width:140px!important;height:auto!important}
+}
+
+/* ── Issue 1 (mobile nav): ensure overlay open-button is always visible ──────
+ * Belt-and-braces rule in case core navigation CSS overrides our
+ * core-blocks.css display rule at this specificity level. */
+.wp-block-navigation__responsive-container-open{display:inline-flex!important}
+
+/* ── Issue 6 (tablet nav): hide CTA and compress nav at 768–1023px ──────────
+ * At tablet the CTA button already hides at ≤1023px (core-blocks.css).
+ * This rule additionally limits nav-item gap so items don't wrap. */
+@media(min-width:768px) and (max-width:1023px){
+	.wp-block-navigation .wp-block-navigation__container{gap:.5rem}
+}
+
+/* ── Navigation mobile overlay z-index ───────────────────────────────────────
+ * Ensures the full-screen overlay menu appears above all page content. */
+.wp-block-navigation__responsive-container.is-menu-open{z-index:9999!important}
+
+/* ── Issue 12: Hover effects ─────────────────────────────────────────────────
+ * H1: Primary hero CTA — full invert on hover (teal bg → white bg, white text → teal text) */
+.sgs-hero .wp-block-buttons .wp-block-button .wp-block-button__link.has-primary-background-color:hover,
+.sgs-hero .wp-block-buttons .wp-block-button .wp-block-button__link.has-primary-background-color:focus{
+	background-color:var(--wp--preset--color--surface,#fff)!important;
+	color:var(--wp--preset--color--primary,#0a7ea8)!important;
+	border-color:var(--wp--preset--color--primary,#0a7ea8)!important;
+}
+/* H2: Secondary hero CTA — teal fill + white text on hover (outline → filled teal) */
+.sgs-hero .wp-block-buttons .wp-block-button .wp-block-button__link.is-style-outline:hover,
+.sgs-hero .wp-block-buttons .wp-block-button .wp-block-button__link.is-style-outline:focus,
+.sgs-hero .wp-block-buttons .wp-block-button.is-style-outline .wp-block-button__link:hover,
+.sgs-hero .wp-block-buttons .wp-block-button.is-style-outline .wp-block-button__link:focus{
+	background-color:var(--wp--preset--color--primary,#0a7ea8)!important;
+	color:var(--wp--preset--color--surface,#fff)!important;
+	border-color:var(--wp--preset--color--primary,#0a7ea8)!important;
+}
+/* H3: Top-level nav links — gold background on hover */
+.wp-block-navigation .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content:hover,
+.wp-block-navigation .wp-block-navigation__container > .wp-block-page-list__item > a:hover{
+	background-color:var(--wp--preset--color--accent,#d8ca50)!important;
+	color:var(--wp--preset--color--text,#1e1e1e)!important;
+	border-radius:4px;
+}
+/* H6: CTA section buttons — full invert on hover */
+.sgs-cta-section .wp-block-button .wp-block-button__link.has-accent-background-color:hover,
+.sgs-cta-section .wp-block-button .wp-block-button__link.has-accent-background-color:focus{
+	background-color:var(--wp--preset--color--surface,#fff)!important;
+	color:var(--wp--preset--color--primary,#0a7ea8)!important;
+}
+.sgs-cta-section .wp-block-button .wp-block-button__link:not(.has-accent-background-color):hover,
+.sgs-cta-section .wp-block-button .wp-block-button__link:not(.has-accent-background-color):focus{
+	background-color:var(--wp--preset--color--accent,#d8ca50)!important;
+	color:var(--wp--preset--color--text,#1e1e1e)!important;
+}
 ";
 
 		wp_add_inline_style( 'sgs-utilities', $css );
