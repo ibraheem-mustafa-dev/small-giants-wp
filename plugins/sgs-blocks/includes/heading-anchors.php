@@ -24,12 +24,12 @@ add_filter( 'render_block', __NAMESPACE__ . '\\inject_heading_anchor', 10, 2 );
  * @return string Heading HTML with id attribute.
  */
 function inject_heading_anchor( string $block_content, array $block ): string {
-	// Only process core/heading blocks
-	if ( empty( $block['blockName'] ) || $block['blockName'] !== 'core/heading' ) {
+	// Only process core/heading blocks.
+	if ( empty( $block['blockName'] ) || 'core/heading' !== $block['blockName'] ) {
 		return $block_content;
 	}
 
-	// Skip if this heading already has an id.
+	// Skip if this heading already has an id attribute.
 	if ( preg_match( '/\bid=["\']/', $block_content ) ) {
 		return $block_content;
 	}
@@ -62,9 +62,14 @@ function inject_heading_anchor( string $block_content, array $block ): string {
 		return $block_content;
 	}
 
-	// Extract text content for slug generation.
-	$text = wp_strip_all_tags( $block_content );
-	$slug = sanitize_title( $text );
+	// Use explicit anchor attribute if set by the user.
+	if ( ! empty( $block['attrs']['anchor'] ) ) {
+		$slug = $block['attrs']['anchor'];
+	} else {
+		// Extract text content for slug generation.
+		$text = wp_strip_all_tags( $block_content );
+		$slug = sanitize_title( $text );
+	}
 
 	if ( empty( $slug ) ) {
 		return $block_content;

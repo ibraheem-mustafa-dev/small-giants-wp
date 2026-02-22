@@ -5,6 +5,9 @@
  * Parses the current post content to detect headings
  * and renders a navigable nested list.
  *
+ * Uses WordPress's block parser for reliable heading extraction
+ * rather than raw regex on post_content.
+ *
  * @var array    $attributes Block attributes.
  * @var string   $content    (unused — no inner blocks).
  * @var WP_Block $block      Block instance.
@@ -27,7 +30,7 @@ $title_colour      = $attributes['titleColour'] ?? '';
 $link_colour       = $attributes['linkColour'] ?? '';
 $active_colour     = $attributes['activeLinkColour'] ?? 'primary';
 
-// ─── Parse headings from post content ───
+// ——— Parse headings from post content ———
 $post = get_post();
 if ( ! $post ) {
 	return;
@@ -38,63 +41,82 @@ if ( empty( $post_content ) ) {
 	return;
 }
 
-// Build regex for the selected heading levels.
-$levels_pattern = implode( '|', array_map( 'intval', $heading_levels ) );
-$pattern        = '/<h(' . $levels_pattern . ')([^>]*)>(.*?)<\/h\1>/si';
-
-if ( ! preg_match_all( $pattern, $post_content, $matches, PREG_SET_ORDER ) ) {
-	return; // No headings found — render nothing.
-}
-
-$headings   = [];
+// Use WordPress block parser for reliable heading extraction.
+$blocks   = parse_blocks( $post_content );
+$headings = [];
 $used_slugs = [];
 
-foreach ( $matches as $match ) {
-	$level     = (int) $match[1];
-	$attrs_str = $match[2];
-	$text      = wp_strip_all_tags( $match[3] );
+/**
+ * Recursively extract headings from parsed blocks.
+ *
+ * @param array $blocks      Parsed block array.
+ * @param array &$headings   Collected headings.
+ * @param array &$used_slugs Slugs already used (for deduplication).
+ * @param array $levels      Heading levels to include.
+ */
+function sgs_toc_extract_headings( array $blocks, array &$headings, array &$used_slugs, array $levels ): void {
+	foreach ( $blocks as $block ) {
+		if ( 'core/heading' === ( $block['blockName'] ?? '' ) ) {
+			$level = (int) ( $block['attrs']['level'] ?? 2 );
 
-	if ( empty( $text ) ) {
-		continue;
+			if ( ! in_array( $level, $levels, true ) ) {
+				continue;
+			}
+
+			// Extract text from the innerHTML.
+			$text = wp_strip_all_tags( $block['innerHTML'] ?? '' );
+			$text = trim( $text );
+
+			if ( empty( $text ) ) {
+				continue;
+			}
+
+			// Check for sgs-toc-ignore class.
+			if ( isset( $block['attrs']['className'] ) && str_contains( $block['attrs']['className'], 'sgs-toc-ignore' ) ) {
+				continue;
+			}
+
+			// Use explicit anchor if set, otherwise generate from text.
+			if ( ! empty( $block['attrs']['anchor'] ) ) {
+				$slug = $block['attrs']['anchor'];
+			} else {
+				$slug = sanitize_title( $text );
+			}
+
+			if ( empty( $slug ) ) {
+				continue;
+			}
+
+			// Deduplicate slugs.
+			$original = $slug;
+			$counter  = 2;
+			while ( in_array( $slug, $used_slugs, true ) ) {
+				$slug = $original . '-' . $counter;
+				$counter++;
+			}
+			$used_slugs[] = $slug;
+
+			$headings[] = [
+				'level' => $level,
+				'text'  => $text,
+				'id'    => $slug,
+			];
+		}
+
+		// Recurse into inner blocks (headings inside groups, columns, etc.).
+		if ( ! empty( $block['innerBlocks'] ) ) {
+			sgs_toc_extract_headings( $block['innerBlocks'], $headings, $used_slugs, $levels );
+		}
 	}
-
-	// Skip headings with sgs-toc-ignore class.
-	if ( str_contains( $attrs_str, 'sgs-toc-ignore' ) ) {
-		continue;
-	}
-
-	// Extract existing id or generate one.
-	if ( preg_match( '/\bid=["\']([^"\']+)["\']/', $attrs_str, $id_match ) ) {
-		$slug = $id_match[1];
-	} else {
-		$slug = sanitize_title( $text );
-	}
-
-	if ( empty( $slug ) ) {
-		continue;
-	}
-
-	// Deduplicate slugs.
-	$original = $slug;
-	$counter  = 2;
-	while ( in_array( $slug, $used_slugs, true ) ) {
-		$slug = $original . '-' . $counter;
-		$counter++;
-	}
-	$used_slugs[] = $slug;
-
-	$headings[] = [
-		'level' => $level,
-		'text'  => $text,
-		'id'    => $slug,
-	];
 }
+
+sgs_toc_extract_headings( $blocks, $headings, $used_slugs, $heading_levels );
 
 if ( empty( $headings ) ) {
 	return;
 }
 
-// ─── Build output ───
+// ——— Build output ———
 $classes = [
 	'sgs-toc',
 	'sgs-toc--' . esc_attr( $toc_style ),
