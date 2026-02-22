@@ -53,3 +53,39 @@
 	.sgs-cols-tablet-3 { grid-template-columns: repeat(3, 1fr) !important; }
 	.sgs-cols-tablet-4 { grid-template-columns: repeat(4, 1fr) !important; }
 }
+
+/* --- Shape Dividers --- */
+
+.sgs-container--has-shape-divider {
+	position: relative;
+	overflow: hidden;
+}
+
+.sgs-shape-divider {
+	position: absolute;
+	left: 0;
+	right: 0;
+	width: 100%;
+	line-height: 0;
+	pointer-events: none;
+}
+
+.sgs-shape-divider--top {
+	top: -1px;
+}
+
+.sgs-shape-divider--bottom {
+	bottom: -1px;
+}
+
+.sgs-shape-divider svg {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+/* Ensure content stays above shape dividers */
+.sgs-container--has-shape-divider > *:not(.sgs-shape-divider):not(.sgs-container__overlay) {
+	position: relative;
+	z-index: 1;
+}
