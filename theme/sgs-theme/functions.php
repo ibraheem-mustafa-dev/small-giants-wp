@@ -193,6 +193,13 @@ function enqueue_style_variation_extras(): void {
 @media(max-width:767px){
 .sgs-footer-logo .wp-block-site-logo img,.sgs-footer-logo img{max-width:140px!important}
 }
+
+/* Indus Foods — Hero CTA buttons stacked vertically on all viewports (item 9).
+   The original site stacks buttons vertically because the CTA text is long.
+   All devices. */
+.sgs-hero__ctas{flex-direction:column;align-items:flex-start}
+.sgs-hero--align-centre .sgs-hero__ctas{align-items:center}
+.sgs-hero__cta{width:100%;max-width:360px;text-align:center}
 ";
 
 		wp_add_inline_style( 'sgs-utilities', $css );
