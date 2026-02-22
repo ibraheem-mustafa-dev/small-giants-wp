@@ -20,9 +20,10 @@ class Form_Processor {
 	 * @param string $form_id   Unique form identifier.
 	 * @param array  $fields    Form field data (unsanitised).
 	 * @param array  $file_ids  Attachment IDs from uploads (default empty).
+	 * @param bool   $store     Whether to store in the database (default true).
 	 * @return array|WP_Error   Success array with submission_id, or WP_Error on failure.
 	 */
-	public static function process( string $form_id, array $fields, array $file_ids = [] ) {
+	public static function process( string $form_id, array $fields, array $file_ids = [], bool $store = true ) {
 		global $wpdb;
 
 		// Sanitise all field data.
@@ -31,47 +32,51 @@ class Form_Processor {
 		// Prepare file data.
 		$files_data = self::prepare_files_data( $file_ids );
 
-		// Collect request metadata.
-		$ip_address = self::get_client_ip();
-		$user_agent = self::get_user_agent();
-		$user_id    = get_current_user_id() ?: null;
+		$submission_id = 0;
 
-		// Insert into database.
-		$table_name = $wpdb->prefix . 'sgs_form_submissions';
+		// Only store in database if the form owner enabled it.
+		if ( $store ) {
+			// Collect request metadata.
+			$ip_address = self::get_client_ip();
+			$user_agent = self::get_user_agent();
+			$user_id    = get_current_user_id() ?: null;
 
-		$inserted = $wpdb->insert(
-			$table_name,
-			[
-				'form_id'        => sanitize_key( $form_id ),
-				'data'           => wp_json_encode( $sanitised_fields ),
-				'files'          => $files_data ? wp_json_encode( $files_data ) : null,
-				'payment_status' => 'none',
-				'ip_address'     => $ip_address,
-				'user_agent'     => $user_agent,
-				'user_id'        => $user_id,
-				'status'         => 'new',
-				'created_at'     => current_time( 'mysql' ),
-			],
-			[
-				'%s', // form_id
-				'%s', // data
-				'%s', // files
-				'%s', // payment_status
-				'%s', // ip_address
-				'%s', // user_agent
-				'%d', // user_id
-				'%s', // status
-				'%s', // created_at
-			]
-		);
+			$table_name = $wpdb->prefix . 'sgs_form_submissions';
 
-		if ( false === $inserted ) {
-			return new \WP_Error( 'db_insert_failed', __( 'Failed to save form submission.', 'sgs-blocks' ) );
+			$inserted = $wpdb->insert(
+				$table_name,
+				[
+					'form_id'        => sanitize_key( $form_id ),
+					'data'           => wp_json_encode( $sanitised_fields ),
+					'files'          => $files_data ? wp_json_encode( $files_data ) : null,
+					'payment_status' => 'none',
+					'ip_address'     => $ip_address,
+					'user_agent'     => $user_agent,
+					'user_id'        => $user_id,
+					'status'         => 'new',
+					'created_at'     => current_time( 'mysql' ),
+				],
+				[
+					'%s', // form_id
+					'%s', // data
+					'%s', // files
+					'%s', // payment_status
+					'%s', // ip_address
+					'%s', // user_agent
+					'%d', // user_id
+					'%s', // status
+					'%s', // created_at
+				]
+			);
+
+			if ( false === $inserted ) {
+				return new \WP_Error( 'db_insert_failed', __( 'Failed to save form submission.', 'sgs-blocks' ) );
+			}
+
+			$submission_id = $wpdb->insert_id;
 		}
 
-		$submission_id = $wpdb->insert_id;
-
-		// Fire N8N webhook (non-blocking).
+		// Fire N8N webhook (non-blocking) — always, regardless of storage setting.
 		self::send_webhook( $form_id, $submission_id, $sanitised_fields, $files_data );
 
 		return [
@@ -143,20 +148,17 @@ class Form_Processor {
 	}
 
 	/**
-	 * Get client IP address (handles proxies).
+	 * Get client IP address.
 	 *
-	 * @return string Client IP address.
+	 * Uses REMOTE_ADDR only — X-Forwarded-For is trivially spoofable.
+	 *
+	 * @return string Validated client IP address, or 0.0.0.0 if unavailable.
 	 */
 	private static function get_client_ip(): string {
-		$ip = '';
+		$ip = ! empty( $_SERVER['REMOTE_ADDR'] )
+			? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) )
+			: '';
 
-		if ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
-			$ip = sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_FORWARDED_FOR'] ) );
-		} elseif ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) {
-			$ip = sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) );
-		}
-
-		// Validate IP address.
 		$ip = filter_var( $ip, FILTER_VALIDATE_IP );
 
 		return $ip ?: '0.0.0.0';
@@ -178,8 +180,11 @@ class Form_Processor {
 	/**
 	 * Send submission data to N8N webhook.
 	 *
-	 * Fire-and-forget: uses blocking => false and minimal timeout
-	 * so it doesn't delay the form submission response.
+	 * Reads the webhook URL from the `sgs_n8n_webhook_url` option (server-side
+	 * only — never exposed in block attributes or the REST API).
+	 *
+	 * Uses wp_safe_remote_post() to prevent SSRF attacks against internal networks.
+	 * Fire-and-forget: uses blocking => false so it doesn't delay the response.
 	 *
 	 * @param string $form_id       Form identifier.
 	 * @param int    $submission_id Database submission ID.
@@ -187,15 +192,22 @@ class Form_Processor {
 	 * @param array  $files         File data (or null).
 	 */
 	private static function send_webhook( string $form_id, int $submission_id, array $fields, ?array $files ): void {
+		$webhook_url = get_option( 'sgs_n8n_webhook_url', '' );
+
 		/**
 		 * Filter the N8N webhook URL for a specific form.
 		 *
-		 * @param string $url     Webhook URL (empty by default).
+		 * @param string $url     Webhook URL from options.
 		 * @param string $form_id Form identifier.
 		 */
-		$webhook_url = apply_filters( 'sgs_form_webhook_url', '', $form_id );
+		$webhook_url = apply_filters( 'sgs_form_webhook_url', $webhook_url, $form_id );
 
 		if ( empty( $webhook_url ) ) {
+			return;
+		}
+
+		// Validate URL scheme — only HTTPS allowed.
+		if ( 'https' !== wp_parse_url( $webhook_url, PHP_URL_SCHEME ) ) {
 			return;
 		}
 
@@ -208,7 +220,8 @@ class Form_Processor {
 			'files'         => $files,
 		];
 
-		wp_remote_post(
+		// wp_safe_remote_post blocks requests to internal/private IP ranges.
+		wp_safe_remote_post(
 			$webhook_url,
 			[
 				'body'     => wp_json_encode( $payload ),

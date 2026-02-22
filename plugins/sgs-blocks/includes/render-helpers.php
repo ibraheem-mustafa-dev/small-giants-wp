@@ -102,7 +102,10 @@ function sgs_colour_value( ?string $slug_or_value ): string {
 		return esc_attr( $value );
 	}
 
-	return 'var(--wp--preset--color--' . esc_attr( $value ) . ')';
+	// Sanitise slug to valid WordPress preset characters only (prevents CSS injection).
+	$slug = preg_replace( '/[^a-z0-9-]/', '', strtolower( $value ) );
+
+	return 'var(--wp--preset--color--' . $slug . ')';
 }
 
 /**
@@ -122,9 +125,17 @@ function sgs_font_size_value( ?string $slug_or_value ): string {
 
 	$value = trim( $slug_or_value );
 
-	if ( preg_match( '/^[\d.]/', $value ) || 0 === strpos( $value, 'clamp(' ) ) {
-		return esc_attr( $value );
+	// Raw CSS value: only permit <number><unit> or clamp() — block injection attempts.
+	if ( preg_match( '/^\d+(\.\d+)?(px|em|rem|vh|vw|vmin|vmax|ch|ex|%)$/', $value ) ) {
+		return $value;
+	}
+	if ( 0 === strpos( $value, 'clamp(' ) ) {
+		$sanitised = safecss_filter_attr( 'font-size:' . $value );
+		return $sanitised ? $value : '';
 	}
 
-	return 'var(--wp--preset--font-size--' . esc_attr( $value ) . ')';
+	// Sanitise slug to valid WordPress preset characters only.
+	$slug = preg_replace( '/[^a-z0-9-]/', '', strtolower( $value ) );
+
+	return 'var(--wp--preset--font-size--' . $slug . ')';
 }

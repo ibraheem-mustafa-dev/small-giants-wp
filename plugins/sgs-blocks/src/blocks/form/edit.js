@@ -28,7 +28,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		submitStyle,
 		successMessage,
 		successRedirect,
-		n8nWebhookUrl,
 		honeypot,
 		storeSubmissions,
 		submitColour,
@@ -127,19 +126,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						type="url"
 						__nextHasNoMarginBottom
 					/>
-					<TextControl
-						label={ __( 'N8N Webhook URL', 'sgs-blocks' ) }
-						value={ n8nWebhookUrl }
-						onChange={ ( value ) =>
-							setAttributes( { n8nWebhookUrl: value } )
-						}
-						help={ __(
-							'Webhook endpoint for notifications. Leave empty to disable.',
+					<p className="components-base-control__help">
+						{ __(
+							'Webhook URL is configured in Settings → SGS Forms for security.',
 							'sgs-blocks'
 						) }
-						type="url"
-						__nextHasNoMarginBottom
-					/>
+					</p>
 					<ToggleControl
 						label={ __( 'Store Submissions', 'sgs-blocks' ) }
 						checked={ storeSubmissions }

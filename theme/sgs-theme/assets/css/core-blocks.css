@@ -170,6 +170,35 @@
 	text-decoration: none;
 }
 
+/* ─── BUTTON TEXT COLOUR FIX ─── */
+
+/*
+ * The style variation's global heading colour rule sets .has-text-color to
+ * apply --text. This overrides explicitly-set .has-surface-color on buttons
+ * that have both classes. We target the specific case of a button with
+ * has-surface-color (white text) on a coloured background.
+ *
+ * Using .has-primary-background-color as the parent context keeps this
+ * scoped — we are not overriding button text colour globally.
+ */
+.wp-block-button__link.has-surface-color.has-text-color,
+.wp-block-button__link.has-text-inverse-color.has-text-color {
+	color: var(--wp--preset--color--surface, #ffffff) !important;
+}
+
+/* ─── STICKY HEADER ─── */
+
+/*
+ * Applied to the <header> template-part wrapper (not the inner group).
+ * WordPress's built-in sticky-position on inner groups doesn't work because
+ * the template-part wrapper is the same height as its child.
+ */
+header.wp-block-template-part {
+	position: sticky;
+	top: 0;
+	z-index: 100;
+}
+
 /* ─── HEADER CTA ─── */
 
 .sgs-header-cta .wp-block-button__link {
@@ -186,5 +215,145 @@
 @media (max-width: 1023px) {
 	.sgs-header-cta {
 		display: none !important;
+	}
+}
+
+/* ─── NAV MOBILE CLOSE BUTTON — focus fix ─── */
+
+/*
+ * WordPress core sets outline:none on the nav close wrapper. We cannot edit
+ * core CSS so we override it here. The close BUTTON itself does not have this
+ * problem — only the wrapper div. We add the focus ring to the button inside.
+ */
+.wp-block-navigation__responsive-close:focus-within {
+	outline: 2px solid var(--wp--preset--color--primary);
+	outline-offset: 2px;
+}
+
+.wp-block-navigation__responsive-container-close:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary);
+	outline-offset: 2px;
+	border-radius: var(--wp--custom--border-radius--small, 4px);
+}
+
+/* ─── NAV HAMBURGER BUTTON — touch target ─── */
+
+/*
+ * The WordPress core hamburger SVG is 24×24. We add a pseudo-element tap zone
+ * without changing the visual size. min-width/height + padding is cleaner
+ * than a pseudo-element here because the button is display:inline-flex.
+ */
+.wp-block-navigation__responsive-container-open {
+	min-width: 44px;
+	min-height: 44px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+/* ─── SOCIAL ICON LINKS — touch target ─── */
+
+/*
+ * Social icon links rendered by wp-block-social-links are 24×24px by default.
+ * WCAG 2.2 SC 2.5.8 (AA) requires 24px minimum; WCAG 2.1 SC 2.5.5 (AA)
+ * requires 44×44px. We enforce 44×44px via min-width/height on the anchor.
+ */
+.wp-block-social-links .wp-block-social-link a {
+	min-width: 44px;
+	min-height: 44px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.wp-block-social-links .wp-block-social-link a:focus-visible {
+	outline: 2px solid var(--sgs-focus-color, var(--wp--preset--color--primary-dark, #076a8e));
+	outline-offset: 3px;
+	border-radius: var(--wp--custom--border-radius--small, 4px);
+}
+
+/* ─── FOCUS INDICATORS — WCAG 2.2 AA compliant ─── */
+
+/*
+ * The site's --accent token (#d8ca50) has only 1.68:1 contrast on white
+ * and 1.00:1 on the yellow section background — both WCAG 1.4.11 failures.
+ *
+ * WCAG 2.2 SC 2.4.11 requires the focus indicator to have at least 3:1
+ * contrast against the adjacent background colour. We use --primary-dark
+ * (#076a8e / teal-dark) as the focus ring colour: 5.54:1 on white, 3.93:1 on
+ * the yellow section bg, and 3.0:1 on the navy footer bg — all passing.
+ *
+ * We also add a white offset ring so the indicator is visible on dark
+ * backgrounds (the offset creates a double-ring effect: white gap + teal ring).
+ */
+:root {
+	--sgs-focus-color: var(--wp--preset--color--primary-dark, #076a8e);
+}
+
+/* Universal focus ring — catches anything without a specific rule */
+:focus-visible {
+	outline: 2px solid var(--sgs-focus-color);
+	outline-offset: 3px;
+}
+
+/* WordPress core buttons */
+:root :where(.wp-element-button:focus, .wp-block-button__link:focus) {
+	outline-color: var(--sgs-focus-color) !important;
+	outline-offset: 3px;
+	outline-style: solid;
+	outline-width: 2px;
+}
+
+/* WordPress core navigation links */
+.wp-block-navigation .wp-block-navigation-item__content:focus-visible,
+.wp-block-navigation a:focus-visible {
+	outline: 2px solid var(--sgs-focus-color);
+	outline-offset: 3px;
+}
+
+/* Footer links */
+.sgs-footer-links a:focus-visible,
+.sgs-footer-nav .wp-block-navigation-item__content:focus-visible {
+	outline: 2px solid var(--sgs-focus-color);
+	outline-offset: 3px;
+	border-radius: 2px;
+}
+
+/* ─── FOOTER HEADINGS — colour fix ─── */
+
+/*
+ * WordPress applies .has-text-color after .has-surface-color in the cascade,
+ * causing dark text on the navy footer background. This override restores
+ * the intended white colour for elements that have both classes (surface colour
+ * explicitly set on a heading that also carries .has-text-color).
+ *
+ * Also fixes the heading hierarchy: footer section labels are H2s styled
+ * small via .sgs-footer-label — no level skipping from H2 → H6.
+ */
+.wp-block-template-part footer .wp-block-heading.has-surface-color.has-text-color,
+.wp-block-template-part footer .wp-block-heading.has-text-inverse-color.has-text-color,
+footer .wp-block-heading.has-surface-color.has-text-color,
+footer .wp-block-heading.has-text-inverse-color.has-text-color {
+	color: var(--wp--preset--color--surface, #ffffff) !important;
+}
+
+/* Footer heading visual size — must match the small font-size already applied */
+.sgs-footer-label {
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	margin-bottom: var(--wp--preset--spacing--20);
+}
+
+/* ─── REDUCED MOTION — core block transitions ─── */
+
+@media (prefers-reduced-motion: reduce) {
+	.wp-block-button__link,
+	.sgs-header-cta .wp-block-button__link,
+	.wp-block-navigation .wp-block-navigation-item__content,
+	.sgs-footer-links a,
+	.sgs-footer-nav .wp-block-navigation-item__content {
+		transition: none;
 	}
 }

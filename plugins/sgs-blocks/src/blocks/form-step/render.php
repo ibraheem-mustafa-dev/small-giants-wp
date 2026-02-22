@@ -14,7 +14,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$label = $attributes['label'] ?? 'Step';
+$label = $attributes['label'] ?? __( 'Step', 'sgs-blocks' );
 
 $wrapper_attributes = get_block_wrapper_attributes(
 	array(

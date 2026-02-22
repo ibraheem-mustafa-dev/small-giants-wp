@@ -133,8 +133,8 @@
 
 /* Focus */
 .sgs-cta-section__btn:focus-visible {
-	outline: 2px solid var(--wp--preset--color--accent);
-	outline-offset: 2px;
+	outline: 2px solid var(--wp--preset--color--primary-dark, #076a8e);
+	outline-offset: 3px;
 }
 
 /* ===== Custom Hover States (editor-configurable) ===== */

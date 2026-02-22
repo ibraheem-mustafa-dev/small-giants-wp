@@ -13,6 +13,23 @@ namespace SGS\Theme;
 defined( 'ABSPATH' ) || exit;
 
 /**
+ * Remove WordPress emoji scripts and styles.
+ *
+ * Saves ~22KB of JS that loads on every page. The site does not use emoji
+ * rendering — browsers handle emoji natively.
+ */
+function disable_emojis(): void {
+	remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
+	remove_action( 'admin_print_scripts', 'print_emoji_detection_script' );
+	remove_action( 'wp_print_styles', 'print_emoji_styles' );
+	remove_action( 'admin_print_styles', 'print_emoji_styles' );
+	remove_filter( 'the_content_feed', 'wp_staticize_emoji' );
+	remove_filter( 'comment_text_rss', 'wp_staticize_emoji' );
+	remove_filter( 'wp_mail', 'wp_staticize_emoji_for_email' );
+}
+add_action( 'init', __NAMESPACE__ . '\disable_emojis' );
+
+/**
  * Theme setup — register support for block features.
  */
 function setup(): void {

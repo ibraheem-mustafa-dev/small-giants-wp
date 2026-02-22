@@ -28,3 +28,12 @@ NUL
 # WordPress
 *.log
 wp-content/uploads/
+
+# Firecrawl scraping artefacts
+.firecrawl/
+
+# Root-level screenshots (session artefacts)
+/*.png
+
+# Client asset archives
+sites/indus-foods/assets.zip

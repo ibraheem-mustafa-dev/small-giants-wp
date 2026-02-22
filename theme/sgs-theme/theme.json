@@ -150,12 +150,12 @@
 			"spacingSizes": [
 				{ "slug": "10", "size": "0.25rem", "name": "XXS" },
 				{ "slug": "20", "size": "0.5rem", "name": "XS" },
-				{ "slug": "30", "size": "1rem", "name": "S" },
-				{ "slug": "40", "size": "1.5rem", "name": "M" },
-				{ "slug": "50", "size": "2rem", "name": "L" },
-				{ "slug": "60", "size": "3rem", "name": "XL" },
-				{ "slug": "70", "size": "5rem", "name": "XXL" },
-				{ "slug": "80", "size": "8rem", "name": "XXXL" }
+				{ "slug": "30", "size": "1rem", "name": "S", "fluid": { "min": "0.75rem", "max": "1rem" } },
+				{ "slug": "40", "size": "1.5rem", "name": "M", "fluid": { "min": "1rem", "max": "1.5rem" } },
+				{ "slug": "50", "size": "2rem", "name": "L", "fluid": { "min": "1.25rem", "max": "2rem" } },
+				{ "slug": "60", "size": "3rem", "name": "XL", "fluid": { "min": "1.75rem", "max": "3rem" } },
+				{ "slug": "70", "size": "5rem", "name": "XXL", "fluid": { "min": "2.5rem", "max": "5rem" } },
+				{ "slug": "80", "size": "8rem", "name": "XXXL", "fluid": { "min": "4rem", "max": "8rem" } }
 			]
 		},
 		"layout": {

@@ -186,8 +186,8 @@
 }
 
 .sgs-testimonial-slider__arrow:focus-visible {
-	outline: 2px solid var(--wp--preset--color--accent, #F87A1F);
-	outline-offset: 2px;
+	outline: 2px solid var(--wp--preset--color--primary-dark, #076a8e);
+	outline-offset: 3px;
 }
 
 /* ===== Dots ===== */
@@ -215,8 +215,47 @@
 }
 
 .sgs-testimonial-slider__dot:focus-visible {
-	outline: 2px solid var(--wp--preset--color--accent, #F87A1F);
-	outline-offset: 2px;
+	outline: 2px solid var(--wp--preset--color--primary-dark, #076a8e);
+	outline-offset: 3px;
+}
+
+/* ===== Pause/Play button — WCAG 2.2.2 compliant ===== */
+
+/*
+ * Injected by view.js when autoplay is active. Provides a persistent
+ * mechanism to pause auto-advancing content (WCAG 2.2.2 requirement).
+ * Placed inside or adjacent to the arrows container.
+ */
+.sgs-testimonial-slider__pause-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	border-radius: 50%;
+	border: 1px solid var(--wp--preset--color--border-subtle, #ccc);
+	background: var(--wp--preset--color--surface, #fff);
+	color: var(--wp--preset--color--text, #1e1e1e);
+	font-size: 16px;
+	cursor: pointer;
+	transition: var(--wp--custom--transition--medium, 0.3s ease);
+	margin-left: var(--wp--preset--spacing--20, 8px);
+}
+
+.sgs-testimonial-slider__pause-btn:hover {
+	background: var(--wp--preset--color--primary, #0f7e80);
+	color: #fff;
+	border-color: var(--wp--preset--color--primary, #0f7e80);
+}
+
+.sgs-testimonial-slider__pause-btn:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary-dark, #076a8e);
+	outline-offset: 3px;
+}
+
+.sgs-testimonial-slider__pause-icon {
+	font-size: 14px;
+	line-height: 1;
 }
 
 /* ===== Empty state (editor) ===== */

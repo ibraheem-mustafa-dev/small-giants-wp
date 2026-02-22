@@ -249,6 +249,7 @@ const { state } = store( 'sgs/form', {
 							fields,
 							fileIds,
 							honeypot: honeypotValue,
+							storeSubmissions: formRoot.getAttribute( 'data-store-submissions' ) !== 'false',
 						} ),
 					}
 				);

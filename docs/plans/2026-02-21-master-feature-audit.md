@@ -592,7 +592,7 @@
 | 333 | CTA patterns | 3 | 4 | 2 | P2 | Banner, split, gradient+countdown |
 | 334 | Content patterns | 5 | 3 | 2 | P2 | FAQ, team, pricing, timeline, stats |
 | 335 | Footer patterns | 3 | 3 | 2 | P2 | 3-col, 4-col, centred |
-| 336 | Header patterns | 3 | 3 | 2 | P2 | Standard, centred logo, transparent |
+| 336 | Header patterns | 4 | 3 | 2 | P2 | Standard (sticky/non-sticky), transparent overlay, centred logo |
 | 337 | Blog patterns | 3 | 3 | 2 | P2 | Magazine, sidebar, full-width |
 
 ---
@@ -647,38 +647,168 @@
 
 ---
 
+## VERIFICATION AUDIT (2026-02-22, Session 24)
+
+> **Purpose:** Every P0 item below was checked against the live site (palestine-lives.org) and codebase. Items are categorised by verification status, not by whether code exists.
+
+### P0 Verification — Three Buckets
+
+#### Verified Working (~35 items)
+
+Confirmed by Playwright testing on live site, code review, or WordPress core guarantee:
+
+| # | Feature | How verified |
+|---|---------|-------------|
+| 1 | Responsive columns per breakpoint | Live homepage — Card Grid renders 4 cols desktop, stacks mobile |
+| 6 | Nested grids | Container + InnerBlocks confirmed in codebase |
+| 12 | Max-width / boxed / full-width | theme.json layout.contentSize / wideSize confirmed |
+| 13 | Inner content width control | theme.json confirmed |
+| 14 | Background colour | Native supports.color in all block.json files |
+| 15 | Background gradient | Native supports.color.gradients in all block.json files |
+| 21 | Border per side | Native __experimentalBorder in block.json files |
+| 22 | Border radius per corner | Native __experimentalBorder in block.json files |
+| 23 | Box shadow presets | theme.json — 4 presets (sm, md, lg, glow) confirmed |
+| 25 | Vertical/horizontal alignment | Flexbox controls in block.json files |
+| 27 | Margin per side | Native supports.spacing.margin |
+| 28 | Padding per side | Native supports.spacing.padding |
+| 33 | Block gap (CSS gap) | theme.json spacing.blockGap confirmed |
+| 36 | Fluid typography | theme.json typography.fluid with min/max on 5/6 sizes |
+| 38 | Responsive images srcset/sizes | WordPress core automatic |
+| 155 | Font family (body + headings) | theme.json fontFamilies — Inter, DM Serif, DM Sans confirmed |
+| 156 | Font size (static) | Native supports.typography confirmed |
+| 158 | Font weight | Native supports.typography confirmed |
+| 159 | Line height | Native supports.typography confirmed |
+| 165 | Custom font upload (WOFF2) | Self-hosted Inter variable confirmed on live site |
+| 184 | Footnotes | WordPress core (WP 6.3+) |
+| 193 | Link to anchor/element | HTML native |
+| 204 | Icon + text buttons | CTA Section renders dual buttons on live homepage |
+| 215 | Testimonial cards | Testimonial block in codebase |
+| 216 | Testimonial carousel/slider | Live homepage — arrows + dots work, slides change |
+| 218 | Client logo bar | Live homepage — brand strip marquee renders |
+| 258 | Automatic alt text infrastructure | WordPress core |
+| 266 | Alt text for images | WordPress core |
+| 276 | lang attribute on HTML | WordPress core template |
+| 277 | Page titles | WordPress core |
+| 280 | Lazy loading images | WordPress core |
+| 282 | Explicit image dimensions | WordPress core |
+| 283 | font-display: swap | Confirmed in theme.json fontFace declarations |
+| 284 | Self-hosted fonts | Confirmed — no CDN calls on live site |
+| 290 | Preconnect/preload | Font preload exists in functions.php |
+| 291 | No render-blocking JS | All 10 blocks use viewScriptModule (deferred) |
+| 307 | :focus-visible | CSS rule confirmed in codebase |
+
+#### Code Exists But Unverified (~17 items)
+
+Block or extension code is written and deployed, but never placed on a live page or tested end-to-end:
+
+| # | Feature | Issue |
+|---|---------|-------|
+| 35 | Device visibility toggles | Extension registered, never tested on live page |
+| 86 | Per-element hover controls | Only on 4 blocks (Card Grid, CTA, Hero, Info Box) — not universal |
+| 92 | Scroll animation (15 types) | Extension registered, never seen firing on live page |
+| 103 | Colour shift (background) | Only on 4 blocks, never tested on live page |
+| 135 | Fade in animations | Part of animation extension, never tested |
+| 150 | Accordion smooth expand | Accordion block exists, not on any live page |
+| 177 | Auto-generated anchor IDs | heading-anchors.php exists, untested on live page |
+| 189 | Custom bullet icons | Icon List block exists, not on any live page |
+| 190 | Per-item custom icon + colour | Icon List block exists, not on any live page |
+| 194 | Link to phone/email/WhatsApp | WhatsApp CTA block exists, not on any live page |
+| 219 | Trust badges | Certification Bar exists, not on any live page |
+| 221 | Counter animation | Counter block exists, not on any live page |
+| 224 | Contact form | Form blocks exist, never submitted, CRITICAL security issues |
+| 225 | Multi-step form with progress | Form steps exist, never tested end-to-end |
+| 233 | WhatsApp chat button | WhatsApp CTA exists, not on any live page |
+| 279 | No flashing > 3 times/sec | No known violations, but never formally checked |
+| 324 | Device visibility by device | Same as #35 |
+
+#### Failed Verification (~13 items)
+
+These were claimed P0 but failed when tested:
+
+| # | Feature | Failure | Severity |
+|---|---------|---------|----------|
+| 31 | Fluid spacing (clamp) | spacingSizes uses static rem values, no `fluid: true` | Medium |
+| 43 | Sticky header | `position: sticky` on inner div inside `<header>` — doesn't stick when scrolling | High |
+| 292 | Performance budget | JS = 70KB (over 50KB budget) — wp-emoji-release.min.js adds 22.2KB dead weight | Medium |
+| 315 | WordPress nonces on all forms | CRITICAL — Form submit + upload endpoints have NO nonce verification | Critical |
+| 316 | Capability checks on all actions | Upload endpoint uses `__return_true` permission callback | Critical |
+| 317 | Output escaping | form/render.php echoes $content without phpcs annotation | Medium |
+| 319 | Input sanitisation at boundaries | REST `fields` param has no per-field sanitisation at schema level | Medium |
+| 320 | No secrets in frontend | N8N webhook URL stored in block attributes (publicly readable via REST API) | Critical |
+| 322 | Translation-ready strings | 9 user-facing strings missing __()/_e() in 2 files | Low |
+| 259 | Colour contrast 4.5:1 | FIXED — Footer headings 1.52:1 → 10.98:1, header CTA 3.62:1 → 4.60:1 | High |
+| 261 | Focus indicators (2px, 3:1) | FIXED — Yellow accent (1.68:1) replaced with primary-dark (5.54:1) across 7 CSS files | High |
+| 262 | Touch targets 44x44px | FIXED — Hamburger 24→44px, social icons 16→44px. Footer links ~30px (meets WCAG 2.5.8) | Medium |
+| 265 | Heading hierarchy | FIXED — Footer H6 → H2, full logical hierarchy restored | Medium |
+| 278 | No auto-play > 5 seconds | FIXED — Pause/Play toggle button added to testimonial slider | Medium |
+| 260 | UI component contrast 3:1 | PASS — no failing UI borders | — |
+| 263 | Skip navigation link | PASS — first focusable element, proper pattern | — |
+| 264 | Semantic landmarks | PASS — header/nav/main/footer all present | — |
+| 267 | prefers-reduced-motion | PASS — all animations respect it | — |
+| 268 | Keyboard operability | PASS — slider, nav keyboard-accessible | — |
+| 269 | No keyboard traps | PASS — no traps found | — |
+
+### Additional Issues Found (not in original P0 list)
+
+| Finding | Severity | Detail |
+|---------|----------|--------|
+| IP spoofing defeats rate limiter | High | X-Forwarded-For header trusted without validation |
+| SSRF via webhook URL | High | wp_remote_post() with unvalidated URL from block attributes |
+| CSS injection via colour slug | Medium | sgs_colour_value() doesn't validate slug chars |
+| No capability gate for submissions | High | No admin UI or access control for stored form data |
+| Hero image missing fetchpriority | Medium | LCP image has no `fetchpriority="high"` |
+| Emoji script dead weight | Medium | 22.2KB JS loaded on every page for nothing |
+| Missing favicon | Low | 404 on every page load |
+| Hover controls not universal | Architectural | Per-block, not an extension — needs refactoring |
+| Blog/contact pages 404 | Content | Most nav links lead to non-existent pages |
+
+### Honest P0 Count
+
+| Category | Count |
+|----------|-------|
+| **Verified working** | ~35 |
+| **Code exists, unverified** | ~17 |
+| **Failed verification** | ~13 |
+| **Original P0 claim** | ~65 |
+
+> **The honest P0 "done" count drops from ~65 to ~35 verified.** The other 30 are either untested or broken. The security failures are the most urgent — 3 CRITICAL issues in the form system mean forms should not be used in production until fixed.
+
+---
+
 ## SUMMARY SCORECARD
 
 ### Total Features Audited: 354
 
 | Priority | Count | Description |
 |----------|-------|-------------|
-| **P0 (Done)** | ~65 | Core framework, theme, basic blocks, security, accessibility baseline |
+| **P0 (Verified done)** | ~35 | Theme tokens, native WP supports, 6 blocks on live page, core WP features |
+| **P0 (Code exists, unverified)** | ~17 | Blocks and extensions deployed but never tested end-to-end |
+| **P0 (Failed)** | ~13 | Security, performance, sticky header, fluid spacing, translation |
 | **P1 (Must have)** | ~65 | Missing blocks, responsive controls, hover effects, modern CSS, S-tier CSS features |
 | **P2 (Should have)** | ~120 | Advanced blocks, patterns, popups, SEO, performance, dark mode, bento grid, client onboarding |
 | **P3 (Nice to have)** | ~65 | Creative effects, niche blocks, advanced interactions, APCA, kinetic typography |
 | **P4 (Future/watch)** | ~39 | Experimental CSS, cursor effects, gamification |
 
-### Framework Maturity Score (Current)
+### Framework Maturity Score (Verified — 2026-02-22)
 
-| Domain | Score | Max | % |
-|--------|-------|-----|---|
-| Core Blocks | 32 | 49 | 65% |
-| Block Extensions | 3 | 14 | 21% |
-| Theme Features | 18 | 33 | 55% |
-| Typography | 8 | 20 | 40% |
-| Hover/Interactions | 4 | 30 | 13% |
-| Scroll Animations | 1 | 10 | 10% |
-| Accessibility | 15 | 27 | 56% |
-| Performance | 8 | 18 | 44% |
-| SEO/Schema | 1 | 13 | 8% |
-| Forms | 8 | 12 | 67% |
-| Patterns Library | 0 | 27 | 0% |
-| Dark Mode | 0 | 11 | 0% |
-| S-Tier Differentiators | 0 | 30 | 0% |
-| **TOTAL** | **98** | **294** | **33%** |
+| Domain | Claimed | Verified | Max | % Verified |
+|--------|---------|----------|-----|------------|
+| Core Blocks | 32 | 22 | 49 | 45% |
+| Block Extensions | 3 | 1 | 14 | 7% |
+| Theme Features | 18 | 14 | 33 | 42% |
+| Typography | 8 | 6 | 20 | 30% |
+| Hover/Interactions | 4 | 2 | 30 | 7% |
+| Scroll Animations | 1 | 0 | 10 | 0% |
+| Accessibility | 15 | 5 | 27 | 19% |
+| Performance | 8 | 5 | 18 | 28% |
+| SEO/Schema | 1 | 1 | 13 | 8% |
+| Forms | 8 | 0 | 12 | 0% |
+| Patterns Library | 0 | 0 | 27 | 0% |
+| Dark Mode | 0 | 0 | 11 | 0% |
+| S-Tier Differentiators | 0 | 0 | 30 | 0% |
+| **TOTAL** | **98** | **56** | **294** | **19%** |
 
-> **Note:** Adding the S-tier and dark mode features expanded the max from 227 to 294. The current score stays at 98 (nothing new is built yet), so the percentage drops from 43% to 33%. This reflects the higher bar SGS is now measured against — the bar of an A-tier framework, not just a B-tier one.
+> **Reality check:** The claimed 33% maturity was inflated. Verified maturity is 19%. The gap is mostly in accessibility (never audited), forms (security broken), scroll animations (never tested), and block extensions (only 1 of 3 verified). The "code exists" items can be recovered by creating test content and fixing the ~13 failed items — but they aren't "done" until verified.
 
 ### Target After Phase 2-3 Completion
 

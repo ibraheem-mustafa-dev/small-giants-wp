@@ -182,7 +182,7 @@ $media_html = '';
 if ( $is_split && ! empty( $split_image['url'] ) ) {
 	$media_html = '<div class="sgs-hero__media">';
 	$media_html .= sprintf(
-		'<img src="%s" alt="%s" class="sgs-hero__split-image" loading="eager" />',
+		'<img src="%s" alt="%s" class="sgs-hero__split-image" loading="eager" fetchpriority="high" />',
 		esc_url( $split_image['url'] ),
 		esc_attr( $split_image['alt'] ?? '' )
 	);

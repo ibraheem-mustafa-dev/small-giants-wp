@@ -67,10 +67,6 @@
       "type": "string",
       "default": ""
     },
-    "n8nWebhookUrl": {
-      "type": "string",
-      "default": ""
-    },
     "honeypot": {
       "type": "boolean",
       "default": true

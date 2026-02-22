@@ -31,6 +31,7 @@ require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-activator.php';
 require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-processor.php';
 require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-upload.php';
 require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-rest-api.php';
+require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-admin.php';
 require_once SGS_BLOCKS_PATH . 'includes/forms/field-render-helpers.php';
 
 // Schema output filters.
@@ -44,6 +45,9 @@ require_once SGS_BLOCKS_PATH . 'includes/device-visibility.php';
 
 // Register REST API endpoints.
 Forms\Form_REST_API::register();
+
+// Register admin settings page (webhook URL + submissions viewer).
+Forms\Form_Admin::register();
 
 // Activation hook for database setup.
 register_activation_hook( __FILE__, [ Forms\Form_Activator::class, 'activate' ] );

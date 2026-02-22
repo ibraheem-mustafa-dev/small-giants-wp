@@ -28,8 +28,8 @@
 }
 
 .sgs-whatsapp-cta__btn:focus-visible {
-	outline: 2px solid var(--wp--preset--color--accent, #F87A1F);
-	outline-offset: 2px;
+	outline: 2px solid var(--wp--preset--color--primary-dark, #076a8e);
+	outline-offset: 3px;
 }
 
 /* ===== Icon ===== */
