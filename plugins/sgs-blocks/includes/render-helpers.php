@@ -139,3 +139,48 @@ function sgs_font_size_value( ?string $slug_or_value ): string {
 
 	return 'var(--wp--preset--font-size--' . $slug . ')';
 }
+
+/**
+ * Output a responsive image tag with srcset when a valid attachment ID is available.
+ *
+ * Falls back to a plain <img> when the attachment ID is 0 or invalid (e.g. images
+ * imported from external URLs or pasted content without media library entries).
+ *
+ * @param int    $id    WordPress attachment ID (0 = unknown/external).
+ * @param string $url   Image URL fallback.
+ * @param string $alt   Alt text.
+ * @param string $size  WordPress image size name (default: 'large').
+ * @param array  $attrs Extra HTML attributes (class, style, loading, etc.).
+ * @return string HTML img tag.
+ */
+function sgs_responsive_image( int $id, string $url, string $alt = '', string $size = 'large', array $attrs = [] ): string {
+	// Merge defaults.
+	$attrs = array_merge(
+		[
+			'loading' => 'lazy',
+			'decoding' => 'async',
+		],
+		$attrs
+	);
+
+	// Use wp_get_attachment_image when we have a real attachment ID.
+	if ( $id > 0 ) {
+		$image = wp_get_attachment_image( $id, $size, false, array_merge( $attrs, [ 'alt' => $alt ] ) );
+		if ( $image ) {
+			return $image;
+		}
+	}
+
+	// Fallback: plain <img> with no srcset.
+	$attr_str = '';
+	foreach ( $attrs as $key => $value ) {
+		$attr_str .= ' ' . esc_attr( $key ) . '="' . esc_attr( $value ) . '"';
+	}
+
+	return sprintf(
+		'<img src="%s" alt="%s"%s />',
+		esc_url( $url ),
+		esc_attr( $alt ),
+		$attr_str
+	);
+}

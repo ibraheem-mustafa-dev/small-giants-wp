@@ -182,17 +182,28 @@ $content_html .= '</div>';
 // Build split media area.
 $media_html = '';
 if ( $is_split && ! empty( $split_image['url'] ) ) {
-	// H14: include explicit width/height from stored media object to prevent CLS.
-	$img_width  = ! empty( $split_image['width'] ) ? ' width="' . absint( $split_image['width'] ) . '"' : '';
-	$img_height = ! empty( $split_image['height'] ) ? ' height="' . absint( $split_image['height'] ) . '"' : '';
+	// H13/H14: use responsive image helper for srcset + explicit dimensions.
+	$img_id    = ! empty( $split_image['id'] ) ? absint( $split_image['id'] ) : 0;
+	$img_attrs = [
+		'class'         => 'sgs-hero__split-image',
+		'loading'       => 'eager',
+		'decoding'      => 'async',
+		'fetchpriority' => 'high',
+	];
+	if ( ! empty( $split_image['width'] ) ) {
+		$img_attrs['width'] = absint( $split_image['width'] );
+	}
+	if ( ! empty( $split_image['height'] ) ) {
+		$img_attrs['height'] = absint( $split_image['height'] );
+	}
 
 	$media_html = '<div class="sgs-hero__media">';
-	$media_html .= sprintf(
-		'<img src="%s" alt="%s" class="sgs-hero__split-image" loading="eager" fetchpriority="high"%s%s />',
-		esc_url( $split_image['url'] ),
-		esc_attr( $split_image['alt'] ?? '' ),
-		$img_width,
-		$img_height
+	$media_html .= sgs_responsive_image(
+		$img_id,
+		$split_image['url'],
+		$split_image['alt'] ?? '',
+		'large',
+		$img_attrs
 	);
 	$media_html .= $badges_html;
 	$media_html .= '</div>';

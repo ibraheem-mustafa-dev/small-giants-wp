@@ -93,11 +93,11 @@ if ( ! empty( $testimonials ) ) {
 		// Build avatar HTML.
 		$avatar_html = '<div class="sgs-testimonial-slider__avatar">';
 		if ( ! empty( $avatar['url'] ) ) {
-			$avatar_html .= sprintf(
-				'<img src="%s" alt="%s" class="sgs-testimonial-slider__avatar-img" loading="lazy" />',
-				esc_url( $avatar['url'] ),
-				esc_attr( $name )
-			);
+			$avatar_id = ! empty( $avatar['id'] ) ? absint( $avatar['id'] ) : 0;
+			$avatar_html .= sgs_responsive_image( $avatar_id, $avatar['url'], $name, 'thumbnail', [
+				'class'   => 'sgs-testimonial-slider__avatar-img',
+				'loading' => 'lazy',
+			] );
 		} else {
 			$initials = $get_initials( $name );
 			$avatar_html .= sprintf(

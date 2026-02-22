@@ -30,6 +30,7 @@ const STYLE_OPTIONS = [
 	{ label: __( 'Card', 'sgs-blocks' ), value: 'card' },
 	{ label: __( 'Minimal', 'sgs-blocks' ), value: 'minimal' },
 	{ label: __( 'Featured', 'sgs-blocks' ), value: 'featured' },
+	{ label: __( 'Accent', 'sgs-blocks' ), value: 'accent' },
 ];
 
 const SLIDES_VISIBLE_OPTIONS = [

@@ -35,11 +35,14 @@ $wrapper_attributes = get_block_wrapper_attributes( array(
 // Photo.
 $photo_html = '';
 if ( ! empty( $photo['url'] ) ) {
+	$photo_id = ! empty( $photo['id'] ) ? absint( $photo['id'] ) : 0;
+	$photo_img = sgs_responsive_image( $photo_id, $photo['url'], $photo['alt'] ?? $name, 'medium', [
+		'loading' => 'lazy',
+	] );
 	$photo_html = sprintf(
-		'<div class="sgs-team-member__photo sgs-team-member__photo--%s"><img src="%s" alt="%s" loading="lazy" /></div>',
+		'<div class="sgs-team-member__photo sgs-team-member__photo--%s">%s</div>',
 		esc_attr( $photo_shape ),
-		esc_url( $photo['url'] ),
-		esc_attr( $photo['alt'] ?? $name )
+		$photo_img
 	);
 }
 

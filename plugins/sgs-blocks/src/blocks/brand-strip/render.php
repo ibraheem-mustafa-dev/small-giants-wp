@@ -68,21 +68,25 @@ if ( ! empty( $logos ) ) {
 			continue;
 		}
 
-		// H14: use stored width/height attributes to prevent CLS.
+		// H13/H14: use responsive image helper for srcset + explicit dimensions.
+		$logo_id = isset( $logo['id'] ) ? absint( $logo['id'] ) : ( isset( $logo['image']['id'] ) ? absint( $logo['image']['id'] ) : 0 );
+		$logo_attrs = [
+			'class'   => 'sgs-brand-strip__logo',
+			'loading' => 'lazy',
+			'style'   => 'max-height:' . absint( $max_height ) . 'px',
+		];
 		$logo_w = isset( $logo['image']['width'] ) ? absint( $logo['image']['width'] ) : 0;
 		$logo_h = isset( $logo['image']['height'] ) ? absint( $logo['image']['height'] ) : 0;
-		$dim_attrs = '';
-		if ( $logo_w && $logo_h ) {
-			$dim_attrs = sprintf( ' width="%d" height="%d"', $logo_w, $logo_h );
+		if ( $logo_w ) {
+			$logo_attrs['width'] = $logo_w;
+		}
+		if ( $logo_h ) {
+			$logo_attrs['height'] = $logo_h;
 		}
 
-		$logos_html .= sprintf(
-			'<div class="sgs-brand-strip__item"><img src="%s" alt="%s" class="sgs-brand-strip__logo" loading="lazy" style="max-height:%dpx"%s /></div>',
-			esc_url( $logo_url ),
-			esc_attr( $logo_alt ),
-			absint( $max_height ),
-			$dim_attrs
-		);
+		$logos_html .= '<div class="sgs-brand-strip__item">';
+		$logos_html .= sgs_responsive_image( $logo_id, $logo_url, $logo_alt, 'medium', $logo_attrs );
+		$logos_html .= '</div>';
 	}
 
 	// M10: If scrolling is enabled, duplicate logos for seamless infinite scroll.

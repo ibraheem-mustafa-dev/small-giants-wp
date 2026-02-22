@@ -81,11 +81,27 @@ if ( $overlay_opacity > 0 ) {
 }
 
 // Render.
+$img_attrs = [
+	'class'       => 'sgs-decorative-image__img',
+	'aria-hidden' => 'true',
+	'loading'     => 'lazy',
+];
+if ( $image_style_attr ) {
+	// Strip the leading ' style="' and trailing '"' from the pre-built attribute.
+	$img_attrs['style'] = trim( str_replace( [ ' style="', '"' ], '', $image_style_attr ) );
+}
+$img_html = sgs_responsive_image(
+	$image_id ? absint( $image_id ) : 0,
+	$image_url,
+	'', // Decorative: always empty alt.
+	'large',
+	$img_attrs
+);
+
 printf(
-	'<div %s%s><div class="sgs-decorative-image__wrapper"><img src="%s" alt="" class="sgs-decorative-image__img"%s aria-hidden="true" />%s</div></div>',
+	'<div %s%s><div class="sgs-decorative-image__wrapper">%s%s</div></div>',
 	$wrapper_attributes,
 	$data_attrs,
-	esc_url( $image_url ),
-	$image_style_attr,
+	$img_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped - sgs_responsive_image() escapes internally.
 	$overlay_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 );
