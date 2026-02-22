@@ -1,0 +1,44 @@
+/**
+ * Icon Block — shared styles.
+ */
+
+.sgs-icon-block {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.sgs-icon-block--circle,
+.sgs-icon-block--rounded,
+.sgs-icon-block--square {
+	width: calc(var(--sgs-icon-size, 48px) * 2);
+	height: calc(var(--sgs-icon-size, 48px) * 2);
+}
+
+.sgs-icon-block--circle {
+	border-radius: 50%;
+}
+
+.sgs-icon-block--rounded {
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+}
+
+.sgs-icon-block__icon {
+	display: flex;
+	line-height: 0;
+}
+
+.sgs-icon-block__icon svg {
+	width: var(--sgs-icon-size, 48px);
+	height: var(--sgs-icon-size, 48px);
+}
+
+.sgs-icon-block__link {
+	color: inherit;
+	text-decoration: none;
+	display: inline-flex;
+}
+
+.sgs-icon-block__link:hover {
+	opacity: 0.8;
+}

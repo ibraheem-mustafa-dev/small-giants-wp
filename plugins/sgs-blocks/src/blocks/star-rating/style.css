@@ -1,0 +1,30 @@
+/* ===== SGS Star Rating ===== */
+
+.sgs-star-rating {
+	display: flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--20, 8px);
+	flex-wrap: wrap;
+}
+
+.sgs-star-rating__stars {
+	display: flex;
+	gap: 2px;
+	align-items: center;
+}
+
+.sgs-star-rating__stars svg {
+	display: block;
+	flex-shrink: 0;
+}
+
+.sgs-star-rating__numeric {
+	font-weight: 700;
+	font-size: var(--wp--preset--font-size--medium, 1rem);
+	color: var(--wp--preset--color--text);
+}
+
+.sgs-star-rating__label {
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	color: var(--wp--preset--color--text-muted);
+}

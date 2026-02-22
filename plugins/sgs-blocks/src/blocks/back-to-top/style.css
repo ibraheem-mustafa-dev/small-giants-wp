@@ -1,0 +1,54 @@
+/**
+ * Back to Top — shared styles.
+ */
+
+.sgs-back-to-top {
+	position: fixed;
+	bottom: var(--sgs-btt-offset, 24px);
+	right: var(--sgs-btt-offset, 24px);
+	z-index: 99;
+	width: var(--sgs-btt-size, 48px);
+	height: var(--sgs-btt-size, 48px);
+	border-radius: 50%;
+	border: none;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: var(--sgs-btt-bg, var(--wp--preset--color--primary, #0F7E80));
+	color: var(--sgs-btt-color, var(--wp--preset--color--surface, #fff));
+	box-shadow: var(--wp--preset--shadow--md, 0 4px 12px rgba(0,0,0,0.1));
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(20px);
+	transition: opacity 0.3s ease,
+	            visibility 0.3s ease,
+	            transform 0.3s ease;
+}
+
+.sgs-back-to-top--visible {
+	opacity: 1;
+	visibility: visible;
+	transform: translateY(0);
+}
+
+.sgs-back-to-top:hover {
+	transform: translateY(-2px);
+	box-shadow: var(--wp--preset--shadow--lg, 0 8px 30px rgba(0,0,0,0.12));
+}
+
+.sgs-back-to-top:focus-visible {
+	outline: 2px solid var(--sgs-focus-color, var(--wp--preset--color--primary-dark));
+	outline-offset: 2px;
+}
+
+.sgs-back-to-top svg {
+	width: 24px;
+	height: 24px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-back-to-top {
+		transition: none;
+	}
+}

@@ -1,0 +1,54 @@
+/* ===== SGS Breadcrumbs ===== */
+
+.sgs-breadcrumbs {
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+}
+
+.sgs-breadcrumbs__list {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	gap: var(--wp--preset--spacing--10, 4px);
+}
+
+.sgs-breadcrumbs__item {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--10, 4px);
+}
+
+.sgs-breadcrumbs__item a {
+	color: var(--wp--preset--color--text-muted, #666);
+	text-decoration: none;
+	transition: var(--wp--custom--transition--fast, 0.15s ease);
+}
+
+.sgs-breadcrumbs__item a:hover {
+	color: var(--wp--preset--color--primary);
+	text-decoration: underline;
+}
+
+.sgs-breadcrumbs__item a:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary);
+	outline-offset: 2px;
+	border-radius: 2px;
+}
+
+.sgs-breadcrumbs__item--current {
+	color: var(--wp--preset--color--text);
+	font-weight: 600;
+}
+
+.sgs-breadcrumbs__separator {
+	color: var(--wp--preset--color--text-muted, #999);
+	user-select: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-breadcrumbs__item a {
+		transition: none;
+	}
+}
