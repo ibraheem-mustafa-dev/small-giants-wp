@@ -172,6 +172,29 @@ function enqueue_style_variation_extras(): void {
 .home .wp-block-sgs-cta-section::before{display:none}}
 ";
 
+		/*
+		 * Footer social icon brand colours (item 14 of visual comparison audit).
+		 * Applies brand colours to social-link icons in the footer area.
+		 * CSS colour values are well-established brand standards, not client-specific
+		 * arbitrary values — they match the actual social network brand guidelines.
+		 */
+		$css .= "
+/* Indus Foods — Footer social icon brand colours */
+.sgs-footer-social .wp-block-social-link--service-linkedin svg{fill:#0077b5}
+.sgs-footer-social .wp-block-social-link--service-facebook svg{fill:#1877f2}
+.sgs-footer-social .wp-block-social-link--service-instagram svg{fill:url(#sgs-instagram-gradient)}
+.sgs-footer-social .wp-block-social-link--service-google svg{fill:#ea4335}
+.sgs-footer-social .wp-block-social-link--service-twitter svg,.sgs-footer-social .wp-block-social-link--service-x svg{fill:#000000}
+/* SVG gradient for Instagram — injected via :before to avoid inline SVG in CSS */
+.sgs-footer-social .wp-block-social-link--service-instagram{background:linear-gradient(45deg,#f09433,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888);border-radius:4px}
+.sgs-footer-social .wp-block-social-link--service-instagram svg{fill:#fff}
+
+/* Indus Foods — Footer logo mobile max-width cap (item 16 of visual comparison audit) */
+@media(max-width:767px){
+.sgs-footer-logo .wp-block-site-logo img,.sgs-footer-logo img{max-width:140px!important}
+}
+";
+
 		wp_add_inline_style( 'sgs-utilities', $css );
 	}
 }
