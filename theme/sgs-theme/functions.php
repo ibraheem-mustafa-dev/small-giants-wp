@@ -181,6 +181,22 @@ function enqueue_styles(): void {
 		$theme_version,
 		true // Load in footer — runs after DOM is available.
 	);
+
+	// M17: off-canvas mobile navigation drawer.
+	wp_enqueue_style(
+		'sgs-mobile-nav-drawer',
+		get_theme_file_uri( 'assets/css/mobile-nav-drawer.css' ),
+		[],
+		$theme_version
+	);
+
+	wp_enqueue_script(
+		'sgs-mobile-nav-drawer',
+		get_theme_file_uri( 'assets/js/mobile-nav-drawer.js' ),
+		[],
+		$theme_version,
+		true // Load in footer — runs after DOM is available.
+	);
 }
 add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\enqueue_styles' );
 

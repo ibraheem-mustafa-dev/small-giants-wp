@@ -1,0 +1,254 @@
+/**
+ * SGS Theme — Off-Canvas Mobile Navigation Drawer
+ *
+ * Replaces WordPress core's full-screen overlay with a side-drawer that
+ * slides in from the right. Maintains accessibility with focus trapping
+ * and proper ARIA states.
+ *
+ * Design: 320px drawer width (max 85vw), teal background, white text,
+ * semi-transparent backdrop, 300ms slide animation.
+ *
+ * @package SGS\Theme
+ */
+
+/* ─── DRAWER CONTAINER ─── */
+
+/**
+ * The drawer itself — slides in from right, fixed positioning.
+ * Transform: translateX(100%) when closed, translateX(0) when open.
+ */
+.sgs-mobile-nav-drawer {
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	width: 320px;
+	max-width: 85vw;
+	background-color: var(--wp--preset--color--primary);
+	color: var(--wp--preset--color--surface);
+	transform: translateX(100%);
+	transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+	z-index: 10000;
+	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
+	/* Ensure drawer is hidden from screen readers when closed */
+	visibility: hidden;
+}
+
+.sgs-mobile-nav-drawer.is-open {
+	transform: translateX(0);
+	visibility: visible;
+}
+
+/* ─── BACKDROP OVERLAY ─── */
+
+/**
+ * Semi-transparent backdrop — click to close.
+ * Hidden when drawer is closed, fades in when open.
+ */
+.sgs-mobile-nav-drawer__backdrop {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.5);
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity 300ms ease, visibility 0s linear 300ms;
+	z-index: 9999;
+}
+
+.sgs-mobile-nav-drawer__backdrop.is-open {
+	opacity: 1;
+	visibility: visible;
+	transition: opacity 300ms ease, visibility 0s linear 0s;
+}
+
+/* ─── DRAWER HEADER ─── */
+
+/**
+ * Close button sits at top-right corner of drawer.
+ * 44×44px touch target meets WCAG 2.2 AA requirements.
+ */
+.sgs-mobile-nav-drawer__header {
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	padding: var(--wp--preset--spacing--30);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.sgs-mobile-nav-drawer__close {
+	min-width: 44px;
+	min-height: 44px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: transparent;
+	border: none;
+	color: var(--wp--preset--color--surface);
+	cursor: pointer;
+	border-radius: var(--wp--custom--border-radius--small, 4px);
+	transition: background-color 200ms ease;
+}
+
+.sgs-mobile-nav-drawer__close:hover,
+.sgs-mobile-nav-drawer__close:focus {
+	background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sgs-mobile-nav-drawer__close:focus-visible {
+	outline: 3px solid var(--wp--preset--color--surface);
+	outline-offset: 2px;
+}
+
+.sgs-mobile-nav-drawer__close svg {
+	width: 24px;
+	height: 24px;
+	fill: currentColor;
+}
+
+/* ─── DRAWER CONTENT ─── */
+
+/**
+ * Navigation links container.
+ * Full-width links with generous touch targets (min 48px height).
+ */
+.sgs-mobile-nav-drawer__content {
+	padding: var(--wp--preset--spacing--30);
+}
+
+.sgs-mobile-nav-drawer__content .wp-block-navigation__container {
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.sgs-mobile-nav-drawer__content .wp-block-navigation-item {
+	width: 100%;
+	margin: 0;
+}
+
+.sgs-mobile-nav-drawer__content .wp-block-navigation-item__content {
+	display: block;
+	width: 100%;
+	min-height: 48px;
+	padding: var(--wp--preset--spacing--20) var(--wp--preset--spacing--30);
+	color: var(--wp--preset--color--surface);
+	text-decoration: none;
+	text-align: left;
+	border-radius: var(--wp--custom--border-radius--small, 4px);
+	transition: background-color 200ms ease;
+	/* Override any inherited font sizes */
+	font-size: var(--wp--preset--font-size--medium, 1rem);
+	font-weight: 500;
+}
+
+.sgs-mobile-nav-drawer__content .wp-block-navigation-item__content:hover,
+.sgs-mobile-nav-drawer__content .wp-block-navigation-item__content:focus {
+	background-color: rgba(255, 255, 255, 0.15);
+}
+
+.sgs-mobile-nav-drawer__content .wp-block-navigation-item__content:focus-visible {
+	outline: 3px solid var(--wp--preset--color--surface);
+	outline-offset: 2px;
+}
+
+/* Current page indicator */
+.sgs-mobile-nav-drawer__content .wp-block-navigation-item__content[aria-current="page"] {
+	background-color: rgba(255, 255, 255, 0.2);
+	font-weight: 600;
+}
+
+/* ─── HAMBURGER TOGGLE BUTTON ─── */
+
+/**
+ * Custom hamburger button — replaces WordPress core's responsive toggle.
+ * Only visible on mobile/tablet (max-width: 1023px).
+ */
+.sgs-mobile-nav-toggle {
+	min-width: 44px;
+	min-height: 44px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: transparent;
+	border: none;
+	color: var(--wp--preset--color--text);
+	cursor: pointer;
+	border-radius: var(--wp--custom--border-radius--small, 4px);
+	transition: background-color 200ms ease;
+}
+
+.sgs-mobile-nav-toggle:hover,
+.sgs-mobile-nav-toggle:focus {
+	background-color: var(--wp--preset--color--surface-alt);
+}
+
+.sgs-mobile-nav-toggle:focus-visible {
+	outline: 3px solid var(--sgs-focus-color, var(--wp--preset--color--primary-dark));
+	outline-offset: 2px;
+}
+
+.sgs-mobile-nav-toggle svg {
+	width: 24px;
+	height: 24px;
+	fill: currentColor;
+}
+
+/* Hide toggle on desktop (≥1024px where full nav is always visible) */
+@media (min-width: 1024px) {
+	.sgs-mobile-nav-toggle {
+		display: none;
+	}
+}
+
+/* ─── HIDE CORE NAVIGATION ON MOBILE ─── */
+
+/**
+ * Hide the desktop navigation menu on mobile/tablet.
+ * The drawer will be the only navigation on these screen sizes.
+ */
+@media (max-width: 1023px) {
+	/* Hide the navigation block's desktop menu on mobile */
+	.wp-block-navigation:not(.sgs-mobile-nav-drawer__content .wp-block-navigation) .wp-block-navigation__container {
+		display: none;
+	}
+	
+	/* Hide WordPress core's responsive toggle button (we use our custom one) */
+	.wp-block-navigation__responsive-container-open,
+	.wp-block-navigation__responsive-container-close {
+		display: none !important;
+	}
+}
+
+/* ─── PREVENT BODY SCROLL WHEN DRAWER IS OPEN ─── */
+
+/**
+ * When drawer is open, prevent background scrolling.
+ * Applied via JavaScript to <body> element.
+ */
+body.sgs-mobile-nav-drawer-open {
+	overflow: hidden;
+	/* Prevent layout shift by maintaining scrollbar gutter */
+	padding-right: var(--sgs-scrollbar-width, 0);
+}
+
+/* ─── REDUCED MOTION ─── */
+
+/**
+ * Users who prefer reduced motion get instant show/hide (no slide animation).
+ */
+@media (prefers-reduced-motion: reduce) {
+	.sgs-mobile-nav-drawer,
+	.sgs-mobile-nav-drawer__backdrop,
+	.sgs-mobile-nav-drawer__close,
+	.sgs-mobile-nav-toggle,
+	.sgs-mobile-nav-drawer__content .wp-block-navigation-item__content {
+		transition: none;
+	}
+}
