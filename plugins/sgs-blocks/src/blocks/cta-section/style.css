@@ -125,9 +125,23 @@
 	color: var(--wp--preset--color--surface, #fff);
 }
 
-/* Hover states */
-.sgs-cta-section__btn:hover {
-	opacity: 0.9;
+/* Hover states — per variant, matching the hero block invert pattern. */
+.sgs-cta-section__btn--accent:hover {
+	background-color: transparent;
+	color: var(--wp--preset--color--accent);
+	box-shadow: inset 0 0 0 2px var(--wp--preset--color--accent);
+	transform: translateY(-1px);
+}
+
+.sgs-cta-section__btn--primary:hover {
+	background-color: var(--wp--preset--color--primary-dark);
+	transform: translateY(-1px);
+}
+
+.sgs-cta-section__btn--outline:hover {
+	background-color: var(--wp--preset--color--primary);
+	color: var(--wp--preset--color--surface);
+	border-color: var(--wp--preset--color--primary);
 	transform: translateY(-1px);
 }
 
