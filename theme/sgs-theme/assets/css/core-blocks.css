@@ -311,13 +311,24 @@ header.wp-block-template-part.sgs-header-transparent .wp-block-site-title a {
  * The WordPress core hamburger SVG is 24×24. We add a pseudo-element tap zone
  * without changing the visual size. min-width/height + padding is cleaner
  * than a pseudo-element here because the button is display:inline-flex.
+ *
+ * The !important ensures our display rule beats the WordPress core navigation
+ * CSS that conditionally hides the button via JS-driven class toggles.
  */
 .wp-block-navigation__responsive-container-open {
 	min-width: 44px;
 	min-height: 44px;
-	display: inline-flex;
+	display: inline-flex !important;
 	align-items: center;
 	justify-content: center;
+}
+
+/* On mobile, ensure the hamburger icon colour is visible (dark on white
+   header background). */
+@media (max-width: 767px) {
+	.wp-block-navigation__responsive-container-open svg {
+		fill: var(--wp--preset--color--text, #1e1e1e);
+	}
 }
 
 /* ─── SOCIAL ICON LINKS — touch target ─── */
