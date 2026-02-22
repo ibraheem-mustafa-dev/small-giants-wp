@@ -185,11 +185,15 @@ Never use absolute server paths or hard-coded `/wp-content/...` URLs in CSS, PHP
 # Build blocks plugin
 cd plugins/sgs-blocks && npm run build
 
-# Deploy blocks plugin
-scp -r plugins/sgs-blocks/sgs-blocks.php plugins/sgs-blocks/includes plugins/sgs-blocks/build plugins/sgs-blocks/assets hd:~/domains/palestine-lives.org/public_html/wp-content/plugins/sgs-blocks/
+# Deploy via tar (RELIABLE — scp -r creates nested dirs on Hostinger)
+cd /path/to/small-giants-wp
+tar -cf sgs-deploy.tar --exclude='node_modules' --exclude='.git' --exclude='src' theme/sgs-theme plugins/sgs-blocks
+scp -P 65002 sgs-deploy.tar u945238940@141.136.39.73:sgs-deploy.tar
+ssh -p 65002 u945238940@141.136.39.73 "WP=domains/palestine-lives.org/public_html/wp-content && rm -rf \$WP/themes/sgs-theme \$WP/plugins/sgs-blocks && tar -xf sgs-deploy.tar && mv theme/sgs-theme \$WP/themes/ && mv plugins/sgs-blocks \$WP/plugins/ && rm -rf theme plugins sgs-deploy.tar"
+rm sgs-deploy.tar
 
-# Deploy theme
-scp -r theme/sgs-theme hd:~/domains/palestine-lives.org/public_html/wp-content/themes/
+# Deploy single files (for quick patches)
+scp -P 65002 -i ~/.ssh/id_ed25519 path/to/file u945238940@141.136.39.73:domains/palestine-lives.org/public_html/wp-content/path/to/file
 
 # Clear LiteSpeed page cache (wp litespeed-purge is broken on this host)
 ssh hd "rm -rf ~/domains/palestine-lives.org/public_html/wp-content/litespeed/cache/*"
@@ -200,6 +204,8 @@ ssh hd "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/palestine-lives.o
 
 ## Gotchas
 
+- **SCP `-r` creates nested directories** — `scp -r theme/sgs-theme remote:path/sgs-theme` creates `sgs-theme/sgs-theme/`. Always use the tar method above, or SCP to the parent directory (`scp -r theme/sgs-theme remote:path/themes/`).
+- **Hostinger caches CSS aggressively** — bump the version in `style.css` after CSS changes to bust the cache. The theme version is used as the query string for all enqueued styles.
 - **`--webpack-copy-php` flag** — the build script copies `render.php` to `build/` automatically. Dynamic blocks won't render without this.
 - **`--experimental-modules` flag** — required in build/start scripts for `viewScriptModule` in block.json. Check if stabilised in your @wordpress/scripts version.
 - **Deprecations required** — when changing a static block's `save.js` output, you MUST add a deprecation to avoid "This block contains unexpected content" errors on existing posts.

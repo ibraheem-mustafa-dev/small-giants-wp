@@ -80,12 +80,18 @@ ssh hd "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/palestine-lives.o
 
 | Page | Status | Notes |
 |---|---|---|
-| Homepage | ✅ Complete | Deployed to palestine-lives.org (post ID 13) |
+| Homepage | ✅ Deployed | Post ID 13, all sections rendering (needs visual polish) |
+| /contact/ | ✅ Created | Post ID 57 (placeholder content) |
+| /apply-for-trade-account/ | ✅ Created | Post ID 58 (placeholder content) |
 | Food Service | Not started | Template for all service pages (V3 mockup) |
 | Manufacturing | Not started | Same template, different content |
 | Retail | Not started | Same template, different content |
 | Wholesale | Not started | Same template, different content |
 | Trade Application | Not started | V2 mockup, requires form blocks (Phase 1b) |
+| /brands/ | Not started | Mega menu template parts ready |
+| /our-story/ | Not started | |
+| /certifications/ | Not started | |
+| /blog/ | Not started | |
 
 Update this table as pages are built and deployed.
 

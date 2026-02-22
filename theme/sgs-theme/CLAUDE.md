@@ -38,7 +38,11 @@ sgs-theme/
 --text-inverse: #C0D5D6            --border-subtle: #0D5557
 ```
 
-Clients override via style variations in `styles/`. Indus Foods uses navy (#1A3A5C) + gold (#D4A843).
+Clients override via style variations in `styles/`. Indus Foods uses teal (#0a7ea8) + gold (#d8ca50).
+
+### Layout
+- `contentSize`: 1200px (was 800px, fixed 2026-02-22)
+- `wideSize`: 1400px (was 1200px, fixed 2026-02-22)
 
 Fonts: Inter variable (body + headings, 48KB, weights 100-900) — WOFF2, `font-display: swap`. DM Serif Display and DM Sans kept as "Display" and "DM Sans" family options for client style variations.
 
@@ -75,7 +79,7 @@ Chrome/Edge 90+, Firefox 90+, Safari 15+, iOS Safari 15+, Samsung Internet 18+. 
 
 ## Build Phase
 
-Phase 1a (theme foundation) is **complete**. The theme is deployed and functional.
+Phase 1a (theme foundation) is **complete**. Theme version 1.2.1, deployed and functional on palestine-lives.org.
 
 **Phase 2 theme priorities (from master feature audit):**
 - `prefers-contrast` high-contrast support (P1, S-tier differentiator — first WP theme to support this)

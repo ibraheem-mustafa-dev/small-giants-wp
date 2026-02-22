@@ -82,7 +82,7 @@ ssh hd "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/palestine-lives.o
 
 ## Block Build Status
 
-### Content/Layout Blocks (20 built)
+### Content/Layout Blocks (24 built)
 
 | Block | Status |
 |---|---|
@@ -104,6 +104,10 @@ ssh hd "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/palestine-lives.o
 | WhatsApp CTA | Deployed |
 | Accordion + Accordion Item | Deployed |
 | Table of Contents | Deployed (broken — needs debugging) |
+| Pricing Table | Built (L14, needs build + deploy) |
+| Modal | Built (L14, needs build + deploy) |
+| Decorative Image | Built (L14, needs build + deploy) |
+| Mega Menu | Built (L3, needs build + deploy) |
 
 ### Form Blocks (12 built)
 
@@ -114,13 +118,14 @@ ssh hd "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/palestine-lives.o
 | Form Review | Deployed |
 | Form Field: Text, Email, Phone, Textarea, Checkbox, Radio, Select, Tiles, File, Consent | Deployed |
 
-### Extensions (3 built)
+### Extensions (4 built)
 
 | Extension | Status |
 |---|---|
 | Animation (15 scroll animation types) | Deployed |
 | Responsive Visibility (device show/hide) | Deployed |
 | Hover State Controls (bg/text/border colour) | Deployed (4 blocks: Info Box, Card Grid, CTA Section, Hero) |
+| Off-Canvas Mobile Nav (M17) | Built (needs build + deploy) |
 
 ### Phase 2 — Not Started (P1 priority)
 
