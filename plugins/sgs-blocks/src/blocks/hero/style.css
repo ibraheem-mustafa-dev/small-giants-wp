@@ -148,6 +148,18 @@
 	border-color: var(--wp--preset--color--primary);
 }
 
+/* Custom — colours set entirely via inline style attributes from the editor.
+   We only provide a base layout; the actual colours come from ctaPrimaryColour
+   and ctaPrimaryBackground block attributes. */
+.sgs-hero__cta--custom {
+	border: 2px solid transparent;
+}
+
+.sgs-hero__cta--custom:hover {
+	filter: brightness(0.92);
+	transform: translateY(-2px);
+}
+
 /* Split image */
 .sgs-hero__media {
 	position: relative;
