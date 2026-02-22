@@ -3,7 +3,7 @@
  * Title: Stats — Counter Section
  * Slug: sgs/stats-counter
  * Categories: sgs
- * Description: Four-column statistics section with large numbers and labels.
+ * Description: Four-column statistics section using the SGS Counter block for animated number counting.
  *
  * @package SGS\Theme
  */
@@ -17,45 +17,25 @@
 
 		<!-- wp:column -->
 		<div class="wp-block-column">
-			<!-- wp:paragraph {"align":"center","textColor":"surface","fontSize":"xx-large","style":{"typography":{"fontWeight":"700"},"spacing":{"margin":{"bottom":"0"}}}} -->
-			<p class="has-text-align-center has-surface-color has-text-color has-xx-large-font-size" style="margin-bottom:0;font-weight:700">150+</p>
-			<!-- /wp:paragraph -->
-			<!-- wp:paragraph {"align":"center","textColor":"text-inverse","fontSize":"small","style":{"typography":{"textTransform":"uppercase","letterSpacing":"0.1em"},"spacing":{"margin":{"top":"0"}}}} -->
-			<p class="has-text-align-center has-text-inverse-color has-text-color has-small-font-size" style="margin-top:0;letter-spacing:0.1em;text-transform:uppercase">Projects Completed</p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/counter {"target":150,"suffix":"+","label":"Projects Completed","numberColour":"surface","labelColour":"text-inverse","align":"centre"} /-->
 		</div>
 		<!-- /wp:column -->
 
 		<!-- wp:column -->
 		<div class="wp-block-column">
-			<!-- wp:paragraph {"align":"center","textColor":"surface","fontSize":"xx-large","style":{"typography":{"fontWeight":"700"},"spacing":{"margin":{"bottom":"0"}}}} -->
-			<p class="has-text-align-center has-surface-color has-text-color has-xx-large-font-size" style="margin-bottom:0;font-weight:700">98%</p>
-			<!-- /wp:paragraph -->
-			<!-- wp:paragraph {"align":"center","textColor":"text-inverse","fontSize":"small","style":{"typography":{"textTransform":"uppercase","letterSpacing":"0.1em"},"spacing":{"margin":{"top":"0"}}}} -->
-			<p class="has-text-align-center has-text-inverse-color has-text-color has-small-font-size" style="margin-top:0;letter-spacing:0.1em;text-transform:uppercase">Client Satisfaction</p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/counter {"target":98,"suffix":"%","label":"Client Satisfaction","numberColour":"surface","labelColour":"text-inverse","align":"centre"} /-->
 		</div>
 		<!-- /wp:column -->
 
 		<!-- wp:column -->
 		<div class="wp-block-column">
-			<!-- wp:paragraph {"align":"center","textColor":"surface","fontSize":"xx-large","style":{"typography":{"fontWeight":"700"},"spacing":{"margin":{"bottom":"0"}}}} -->
-			<p class="has-text-align-center has-surface-color has-text-color has-xx-large-font-size" style="margin-bottom:0;font-weight:700">10+</p>
-			<!-- /wp:paragraph -->
-			<!-- wp:paragraph {"align":"center","textColor":"text-inverse","fontSize":"small","style":{"typography":{"textTransform":"uppercase","letterSpacing":"0.1em"},"spacing":{"margin":{"top":"0"}}}} -->
-			<p class="has-text-align-center has-text-inverse-color has-text-color has-small-font-size" style="margin-top:0;letter-spacing:0.1em;text-transform:uppercase">Years Experience</p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/counter {"target":10,"suffix":"+","label":"Years Experience","numberColour":"surface","labelColour":"text-inverse","align":"centre"} /-->
 		</div>
 		<!-- /wp:column -->
 
 		<!-- wp:column -->
 		<div class="wp-block-column">
-			<!-- wp:paragraph {"align":"center","textColor":"surface","fontSize":"xx-large","style":{"typography":{"fontWeight":"700"},"spacing":{"margin":{"bottom":"0"}}}} -->
-			<p class="has-text-align-center has-surface-color has-text-color has-xx-large-font-size" style="margin-bottom:0;font-weight:700">24/7</p>
-			<!-- /wp:paragraph -->
-			<!-- wp:paragraph {"align":"center","textColor":"text-inverse","fontSize":"small","style":{"typography":{"textTransform":"uppercase","letterSpacing":"0.1em"},"spacing":{"margin":{"top":"0"}}}} -->
-			<p class="has-text-align-center has-text-inverse-color has-text-color has-small-font-size" style="margin-top:0;letter-spacing:0.1em;text-transform:uppercase">Support Available</p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/counter {"target":24,"suffix":"/7","label":"Support Available","numberColour":"surface","labelColour":"text-inverse","align":"centre"} /-->
 		</div>
 		<!-- /wp:column -->
 

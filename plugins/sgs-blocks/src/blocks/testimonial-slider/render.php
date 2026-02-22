@@ -36,6 +36,9 @@ $get_initials = function ( $name ) {
 	return strtoupper( substr( $words[0], 0, 1 ) . substr( end( $words ), 0, 1 ) );
 };
 
+// H10: announce slide changes to screen readers.
+$aria_live_region = 'polite';
+
 // Build wrapper classes.
 $classes = array(
 	'sgs-testimonial-slider',
@@ -180,10 +183,11 @@ if ( $show_dots && $total_testimonials > $slides_visible ) {
 }
 
 // Output.
-// Note: tabindex is omitted from the track — keyboard users navigate via the
-// prev/next arrow buttons and the dot tablist (which is the correct ARIA pattern).
+// H10: role="region" + aria-label names the carousel landmark for screen readers.
+// aria-live="polite" announces when the active slide changes (view.js updates
+// aria-selected on dots). tabindex is omitted — keyboard nav is via dots/arrows.
 printf(
-	'<div %s><div class="sgs-testimonial-slider__track" role="region" aria-label="Testimonials"%s>%s</div>%s%s</div>',
+	'<div %s><div class="sgs-testimonial-slider__track" role="region" aria-label="Customer Testimonials" aria-live="polite"%s>%s</div>%s%s</div>',
 	$wrapper_attributes,
 	$track_style_attr,
 	$slides_html,

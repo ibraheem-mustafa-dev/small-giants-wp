@@ -4,19 +4,71 @@
 	"settings": {
 		"color": {
 			"palette": [
-				{ "slug": "primary", "color": "#0F7E80", "name": "Primary" },
-				{ "slug": "primary-dark", "color": "#0A5B5D", "name": "Primary Dark" },
-				{ "slug": "accent", "color": "#F87A1F", "name": "Accent" },
-				{ "slug": "accent-light", "color": "#FEE8D4", "name": "Accent Light" },
-				{ "slug": "success", "color": "#2E7D4F", "name": "Success" },
-				{ "slug": "whatsapp", "color": "#25D366", "name": "WhatsApp" },
-				{ "slug": "surface", "color": "#FFFFFF", "name": "Surface" },
-				{ "slug": "surface-alt", "color": "#F5F7F7", "name": "Surface Alt" },
-				{ "slug": "text", "color": "#1E1E1E", "name": "Text" },
-				{ "slug": "text-muted", "color": "#555555", "name": "Text Muted" },
-				{ "slug": "text-inverse", "color": "#C0D5D6", "name": "Text Inverse" },
-				{ "slug": "border-subtle", "color": "#0D5557", "name": "Border Subtle" },
-			{ "slug": "footer-bg", "color": "#0A5B5D", "name": "Footer Background" }
+				{
+					"slug": "primary",
+					"color": "#0F7E80",
+					"name": "Primary"
+				},
+				{
+					"slug": "primary-dark",
+					"color": "#0A5B5D",
+					"name": "Primary Dark"
+				},
+				{
+					"slug": "accent",
+					"color": "#F87A1F",
+					"name": "Accent"
+				},
+				{
+					"slug": "accent-light",
+					"color": "#FEE8D4",
+					"name": "Accent Light"
+				},
+				{
+					"slug": "success",
+					"color": "#2E7D4F",
+					"name": "Success"
+				},
+				{
+					"slug": "whatsapp",
+					"color": "#25D366",
+					"name": "WhatsApp"
+				},
+				{
+					"slug": "surface",
+					"color": "#FFFFFF",
+					"name": "Surface"
+				},
+				{
+					"slug": "surface-alt",
+					"color": "#F5F7F7",
+					"name": "Surface Alt"
+				},
+				{
+					"slug": "text",
+					"color": "#1E1E1E",
+					"name": "Text"
+				},
+				{
+					"slug": "text-muted",
+					"color": "#555555",
+					"name": "Text Muted"
+				},
+				{
+					"slug": "text-inverse",
+					"color": "#C0D5D6",
+					"name": "Text Inverse"
+				},
+				{
+					"slug": "border-subtle",
+					"color": "#0D5557",
+					"name": "Border Subtle"
+				},
+				{
+					"slug": "footer-bg",
+					"color": "#0A5B5D",
+					"name": "Footer Background"
+				}
 			],
 			"gradients": [],
 			"defaultPalette": false,
@@ -39,7 +91,9 @@
 							"fontWeight": "100 900",
 							"fontStyle": "normal",
 							"fontDisplay": "swap",
-							"src": ["file:./assets/fonts/inter-variable-latin.woff2"]
+							"src": [
+								"file:./assets/fonts/inter-variable-latin.woff2"
+							]
 						}
 					]
 				},
@@ -53,7 +107,9 @@
 							"fontWeight": "100 900",
 							"fontStyle": "normal",
 							"fontDisplay": "swap",
-							"src": ["file:./assets/fonts/inter-variable-latin.woff2"]
+							"src": [
+								"file:./assets/fonts/inter-variable-latin.woff2"
+							]
 						}
 					]
 				},
@@ -67,7 +123,9 @@
 							"fontWeight": "400",
 							"fontStyle": "normal",
 							"fontDisplay": "swap",
-							"src": ["file:./assets/fonts/dm-serif-display-v15-latin-regular.woff2"]
+							"src": [
+								"file:./assets/fonts/dm-serif-display-v15-latin-regular.woff2"
+							]
 						}
 					]
 				},
@@ -81,7 +139,9 @@
 							"fontWeight": "400 700",
 							"fontStyle": "normal",
 							"fontDisplay": "swap",
-							"src": ["file:./assets/fonts/dm-sans-v15-latin-regular.woff2"]
+							"src": [
+								"file:./assets/fonts/dm-sans-v15-latin-regular.woff2"
+							]
 						}
 					]
 				}
@@ -130,32 +190,99 @@
 					}
 				},
 				{
+					"slug": "x-small",
+					"size": "0.75rem",
+					"name": "XSmall",
+					"fluid": false
+				},
+				{
 					"slug": "hero",
-					"size": "3.25rem",
+					"size": "3.125rem",
 					"name": "Hero",
 					"fluid": {
 						"min": "2rem",
-						"max": "3.25rem"
+						"max": "3.125rem"
 					}
 				}
 			],
 			"defaultFontSizes": false
 		},
 		"spacing": {
-			"units": ["px", "rem", "%", "vw"],
+			"units": [
+				"px",
+				"rem",
+				"%",
+				"vw"
+			],
 			"blockGap": true,
 			"margin": true,
 			"padding": true,
 			"customSpacingSize": true,
 			"spacingSizes": [
-				{ "slug": "10", "size": "0.25rem", "name": "XXS" },
-				{ "slug": "20", "size": "0.5rem", "name": "XS" },
-				{ "slug": "30", "size": "1rem", "name": "S", "fluid": { "min": "0.75rem", "max": "1rem" } },
-				{ "slug": "40", "size": "1.5rem", "name": "M", "fluid": { "min": "1rem", "max": "1.5rem" } },
-				{ "slug": "50", "size": "2rem", "name": "L", "fluid": { "min": "1.25rem", "max": "2rem" } },
-				{ "slug": "60", "size": "3rem", "name": "XL", "fluid": { "min": "1.75rem", "max": "3rem" } },
-				{ "slug": "70", "size": "5rem", "name": "XXL", "fluid": { "min": "2.5rem", "max": "5rem" } },
-				{ "slug": "80", "size": "8rem", "name": "XXXL", "fluid": { "min": "4rem", "max": "8rem" } }
+				{
+					"slug": "10",
+					"size": "0.25rem",
+					"name": "XXS"
+				},
+				{
+					"slug": "20",
+					"size": "0.5rem",
+					"name": "XS"
+				},
+				{
+					"slug": "30",
+					"size": "1rem",
+					"name": "S",
+					"fluid": {
+						"min": "0.75rem",
+						"max": "1rem"
+					}
+				},
+				{
+					"slug": "40",
+					"size": "1.5rem",
+					"name": "M",
+					"fluid": {
+						"min": "1rem",
+						"max": "1.5rem"
+					}
+				},
+				{
+					"slug": "50",
+					"size": "2rem",
+					"name": "L",
+					"fluid": {
+						"min": "1.25rem",
+						"max": "2rem"
+					}
+				},
+				{
+					"slug": "60",
+					"size": "3rem",
+					"name": "XL",
+					"fluid": {
+						"min": "1.75rem",
+						"max": "3rem"
+					}
+				},
+				{
+					"slug": "70",
+					"size": "5rem",
+					"name": "XXL",
+					"fluid": {
+						"min": "2.5rem",
+						"max": "5rem"
+					}
+				},
+				{
+					"slug": "80",
+					"size": "8rem",
+					"name": "XXXL",
+					"fluid": {
+						"min": "4rem",
+						"max": "8rem"
+					}
+				}
 			]
 		},
 		"layout": {
@@ -293,7 +420,7 @@
 					"fontSize": "var:preset|font-size|small"
 				},
 				"border": {
-					"radius": "10px"
+					"radius": "8px"
 				},
 				"spacing": {
 					"padding": {
@@ -418,7 +545,9 @@
 		{
 			"name": "front-page",
 			"title": "Front Page",
-			"postTypes": ["page"]
+			"postTypes": [
+				"page"
+			]
 		}
 	]
 }

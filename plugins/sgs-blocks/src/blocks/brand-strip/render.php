@@ -68,17 +68,33 @@ if ( ! empty( $logos ) ) {
 			continue;
 		}
 
+		// H14: use stored width/height attributes to prevent CLS.
+		$logo_w = isset( $logo['image']['width'] ) ? absint( $logo['image']['width'] ) : 0;
+		$logo_h = isset( $logo['image']['height'] ) ? absint( $logo['image']['height'] ) : 0;
+		$dim_attrs = '';
+		if ( $logo_w && $logo_h ) {
+			$dim_attrs = sprintf( ' width="%d" height="%d"', $logo_w, $logo_h );
+		}
+
 		$logos_html .= sprintf(
-			'<div class="sgs-brand-strip__item"><img src="%s" alt="%s" class="sgs-brand-strip__logo" loading="lazy" style="max-height:%dpx" /></div>',
+			'<div class="sgs-brand-strip__item"><img src="%s" alt="%s" class="sgs-brand-strip__logo" loading="lazy" style="max-height:%dpx"%s /></div>',
 			esc_url( $logo_url ),
 			esc_attr( $logo_alt ),
-			absint( $max_height )
+			absint( $max_height ),
+			$dim_attrs
 		);
 	}
 
-	// If scrolling is enabled, duplicate all logos for seamless infinite scroll.
+	// M10: If scrolling is enabled, duplicate logos for seamless infinite scroll.
+	// The clones are purely decorative — hide them from screen readers so assistive
+	// technology does not announce the same logos twice.
 	if ( $scrolling ) {
-		$logos_html .= $logos_html;
+		$cloned = preg_replace(
+			'/<div class="sgs-brand-strip__item">/',
+			'<div class="sgs-brand-strip__item" aria-hidden="true">',
+			$logos_html
+		);
+		$logos_html .= $cloned;
 	}
 }
 

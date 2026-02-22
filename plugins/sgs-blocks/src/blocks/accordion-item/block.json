@@ -24,6 +24,8 @@
 	"attributes": {
 		"title": {
 			"type": "string",
+			"source": "html",
+			"selector": ".sgs-accordion-item__title-text",
 			"default": ""
 		},
 		"isOpen": {

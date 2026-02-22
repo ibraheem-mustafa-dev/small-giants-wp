@@ -81,6 +81,14 @@
     "buttonBackground": {
       "type": "string"
     },
+    "backgroundImage": {
+      "type": "object",
+      "default": null
+    },
+    "backgroundImageOpacity": {
+      "type": "number",
+      "default": 30
+    },
     "hoverBackgroundColour": {
       "type": "string",
       "default": ""

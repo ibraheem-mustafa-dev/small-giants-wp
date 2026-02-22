@@ -7,6 +7,8 @@ export default function Save( { attributes } ) {
 		items,
 		columns,
 		columnsMobile,
+		columnsTablet,
+		overlayStyle,
 		gap,
 		aspectRatio,
 		hoverEffect,
@@ -28,6 +30,7 @@ export default function Save( { attributes } ) {
 	const gridStyle = {
 		'--sgs-card-grid-columns': columns,
 		'--sgs-card-grid-columns-mobile': columnsMobile,
+		'--sgs-card-grid-columns-tablet': columnsTablet,
 		'--sgs-card-grid-gap': spacingVar( gap ),
 		'--sgs-card-grid-aspect': aspectRatio,
 		'--sgs-hover-bg': colourVar( hoverBackgroundColour ) || undefined,

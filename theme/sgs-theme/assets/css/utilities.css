@@ -33,7 +33,7 @@
 	 * WCAG 1.4.11 (non-text contrast) for the focus indicator component.
 	 */
 	background: var(--wp--preset--color--primary-dark, #076a8e);
-	color: #ffffff;
+	color: var(--wp--preset--color--surface, #ffffff);
 	font-weight: 700;
 	border-radius: var(--wp--custom--border-radius--medium);
 	text-decoration: none;
@@ -54,4 +54,22 @@
 
 .text-right {
 	text-align: right;
+}
+
+/* ─── Opening hours definition list (footer M11) ─── */
+.sgs-opening-hours {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: 0.25rem 1rem;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	color: var(--wp--preset--color--text-inverse, #fff);
+	margin: 0;
+}
+
+.sgs-opening-hours dt {
+	font-weight: 700;
+}
+
+.sgs-opening-hours dd {
+	margin: 0;
 }

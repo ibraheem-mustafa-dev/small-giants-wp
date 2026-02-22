@@ -105,7 +105,7 @@
 }
 
 .sgs-cta-section__btn--accent:not([style*="color"]) {
-	color: #fff;
+	color: var(--wp--preset--color--surface, #fff);
 }
 
 .sgs-cta-section__btn--primary:not([style*="background"]) {
@@ -113,7 +113,7 @@
 }
 
 .sgs-cta-section__btn--primary:not([style*="color"]) {
-	color: #fff;
+	color: var(--wp--preset--color--surface, #fff);
 }
 
 .sgs-cta-section__btn--outline {

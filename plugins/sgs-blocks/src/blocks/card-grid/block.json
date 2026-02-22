@@ -63,6 +63,14 @@
       "type": "number",
       "default": 1
     },
+    "columnsTablet": {
+      "type": "number",
+      "default": 2
+    },
+    "overlayStyle": {
+      "type": "string",
+      "default": "none"
+    },
     "gap": {
       "type": "string",
       "default": "30"

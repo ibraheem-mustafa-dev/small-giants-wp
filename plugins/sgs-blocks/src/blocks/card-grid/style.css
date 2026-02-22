@@ -50,6 +50,11 @@
 }
 
 /* Overlay variant — text on image */
+/* M14: replace raw rgb() gradient with CSS custom property */
+:root {
+	--sgs-overlay-gradient-start: rgba(0, 0, 0, 0.7);
+}
+
 .sgs-card-grid__overlay {
 	position: absolute;
 	inset: 0;
@@ -59,17 +64,18 @@
 	padding: var(--wp--preset--spacing--30);
 	background: linear-gradient(
 		to top,
-		rgba(0, 0, 0, 0.7) 0%,
-		rgba(0, 0, 0, 0) 60%
+		var(--sgs-overlay-gradient-start) 0%,
+		transparent 60%
 	);
 }
 
 .sgs-card-grid--overlay .sgs-card-grid__title:not([style*="color"]) {
-	color: #fff;
+	color: var(--wp--preset--color--surface, #fff);
 }
 
 .sgs-card-grid--overlay .sgs-card-grid__subtitle:not([style*="color"]) {
-	color: rgba(255, 255, 255, 0.85);
+	color: var(--wp--preset--color--surface, #fff);
+	opacity: 0.85;
 }
 
 /* Card variant — body below image */
@@ -168,9 +174,13 @@ a.sgs-card-grid__item:focus-visible {
 	}
 }
 
-@media (min-width: 768px) and (max-width: 1024px) {
+/* H16/M22: use columnsTablet attribute instead of hardcoded 2 columns */
+@media (min-width: 768px) and (max-width: 1023px) {
 	.sgs-card-grid {
-		grid-template-columns: repeat(2, 1fr);
+		grid-template-columns: repeat(
+			var(--sgs-card-grid-columns-tablet, 2),
+			1fr
+		);
 	}
 }
 

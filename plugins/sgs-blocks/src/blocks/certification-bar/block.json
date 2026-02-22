@@ -76,6 +76,9 @@
     },
     "labelFontSize": {
       "type": "string"
+    },
+    "backgroundColour": {
+      "type": "string"
     }
   },
   "editorScript": "file:./index.js",

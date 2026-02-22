@@ -55,8 +55,9 @@
 	color: var(--wp--preset--color--text-inverse, #C0D5D6);
 }
 
+/* H6: cite/name must be white on teal — yellow (#d8ca50) on teal gives 3.13:1, fail */
 .sgs-testimonial-slider__slide--featured .sgs-testimonial-slider__name:not([style*="color"]) {
-	color: #fff;
+	color: var(--wp--preset--color--surface, #fff);
 }
 
 .sgs-testimonial-slider__slide--featured .sgs-testimonial-slider__role:not([style*="color"]) {
@@ -116,6 +117,7 @@
 	display: block;
 }
 
+/* H7: blue text on light grey = 4.2:1 — borderline fail. Use white text on primary blue = 5.0:1+ */
 .sgs-testimonial-slider__avatar-initials {
 	display: flex;
 	align-items: center;
@@ -123,8 +125,8 @@
 	width: 48px;
 	height: 48px;
 	border-radius: 50%;
-	background-color: var(--wp--preset--color--surface-alt, #F5F7F7);
-	color: var(--wp--preset--color--primary, #0F7E80);
+	background-color: var(--wp--preset--color--primary, #0F7E80);
+	color: var(--wp--preset--color--surface, #fff);
 	font-weight: 700;
 	font-size: var(--wp--preset--font-size--small);
 	line-height: 1;
@@ -198,14 +200,20 @@
 	margin-top: var(--wp--preset--spacing--30);
 }
 
+/* H11: WCAG 2.2 SC 2.5.8 requires 24px minimum touch target.
+   The visible dot is kept small (12px) but surrounded by a 6px transparent
+   padding on each side giving a 24×24px interactive area. */
 .sgs-testimonial-slider__dot {
 	width: 12px;
 	height: 12px;
+	min-width: 24px;
+	min-height: 24px;
 	border-radius: 50%;
 	border: none;
 	background: var(--wp--preset--color--border-subtle, #ccc);
 	cursor: pointer;
-	padding: 0;
+	padding: 6px;
+	box-sizing: content-box;
 	transition: var(--wp--custom--transition--medium, 0.3s ease);
 }
 
@@ -258,6 +266,35 @@
 	line-height: 1;
 }
 
+/* ===== Gold / accent card variant — M4 ===== */
+
+/*
+ * Adds a gold/accent background option for testimonial cards.
+ * Applied when the block has sgs-testimonial-slider--accent class
+ * (set via inspector control). Text uses dark colour for contrast.
+ */
+.sgs-testimonial-slider--accent .sgs-testimonial-slider__slide--card {
+	background: var(--wp--preset--color--accent, #F87A1F);
+	border: none;
+}
+
+.sgs-testimonial-slider--accent .sgs-testimonial-slider__quote:not([style*="color"]) {
+	color: var(--wp--preset--color--text, #1e1e1e);
+}
+
+.sgs-testimonial-slider--accent .sgs-testimonial-slider__name:not([style*="color"]) {
+	color: var(--wp--preset--color--text, #1e1e1e);
+}
+
+.sgs-testimonial-slider--accent .sgs-testimonial-slider__role:not([style*="color"]) {
+	color: var(--wp--preset--color--text, #1e1e1e);
+}
+
+.sgs-testimonial-slider--accent .sgs-testimonial-slider__avatar-initials {
+	background-color: var(--wp--preset--color--text, #1e1e1e);
+	color: var(--wp--preset--color--surface, #fff);
+}
+
 /* ===== Empty state (editor) ===== */
 .sgs-testimonial-slider__empty {
 	text-align: center;
@@ -267,7 +304,7 @@
 }
 
 /* ===== Responsive ===== */
-@media (max-width: 768px) {
+@media (max-width: 767px) {
 	.sgs-testimonial-slider__slide {
 		flex: 0 0 100%;
 	}

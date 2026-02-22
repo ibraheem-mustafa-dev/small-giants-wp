@@ -180,11 +180,17 @@ $content_html .= '</div>';
 // Build split media area.
 $media_html = '';
 if ( $is_split && ! empty( $split_image['url'] ) ) {
+	// H14: include explicit width/height from stored media object to prevent CLS.
+	$img_width  = ! empty( $split_image['width'] ) ? ' width="' . absint( $split_image['width'] ) . '"' : '';
+	$img_height = ! empty( $split_image['height'] ) ? ' height="' . absint( $split_image['height'] ) . '"' : '';
+
 	$media_html = '<div class="sgs-hero__media">';
 	$media_html .= sprintf(
-		'<img src="%s" alt="%s" class="sgs-hero__split-image" loading="eager" fetchpriority="high" />',
+		'<img src="%s" alt="%s" class="sgs-hero__split-image" loading="eager" fetchpriority="high"%s%s />',
 		esc_url( $split_image['url'] ),
-		esc_attr( $split_image['alt'] ?? '' )
+		esc_attr( $split_image['alt'] ?? '' ),
+		$img_width,
+		$img_height
 	);
 	$media_html .= $badges_html;
 	$media_html .= '</div>';

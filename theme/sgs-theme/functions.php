@@ -56,10 +56,78 @@ function dark_mode_inline_script(): void {
 }
 add_action( 'wp_head', __NAMESPACE__ . '\dark_mode_inline_script', 0 );
 
+/**
+ * Preload the hero block background image on front-page/single posts.
+ *
+ * H15: The hero background image is the LCP element on most pages. Preloading
+ * it at priority 1 (before stylesheets) eliminates the render-blocking delay
+ * that occurs when the browser discovers it only after parsing CSS.
+ *
+ * We parse the post content at wp_head time (before the main loop) using
+ * parse_blocks(). This is the correct window to output <link rel="preload">.
+ */
+function preload_hero_image(): void {
+	if ( ! is_singular() && ! is_front_page() ) {
+		return;
+	}
+
+	$post = get_post();
+	if ( ! $post || empty( $post->post_content ) ) {
+		return;
+	}
+
+	$blocks = parse_blocks( $post->post_content );
+
+	foreach ( $blocks as $block ) {
+		if ( 'sgs/hero' !== ( $block['blockName'] ?? '' ) ) {
+			continue;
+		}
+
+		$attrs    = $block['attrs'] ?? [];
+		$variant  = $attrs['variant'] ?? 'standard';
+		$bg_image = $attrs['backgroundImage'] ?? null;
+
+		// Standard hero with background image.
+		if ( 'split' !== $variant && ! empty( $bg_image['url'] ) ) {
+			printf(
+				'<link rel="preload" href="%s" as="image" fetchpriority="high">' . "\n",
+				esc_url( $bg_image['url'] )
+			);
+		}
+
+		// Split hero — image rendered as an <img> in render.php (already has
+		// fetchpriority="high" attribute), so add the preload link too.
+		if ( 'split' === $variant && ! empty( $attrs['splitImage']['url'] ) ) {
+			printf(
+				'<link rel="preload" href="%s" as="image" fetchpriority="high">' . "\n",
+				esc_url( $attrs['splitImage']['url'] )
+			);
+		}
+
+		break; // Only one hero per page needs preloading.
+	}
+}
+add_action( 'wp_head', __NAMESPACE__ . '\preload_hero_image', 1 );
+
 function preload_fonts(): void {
-	$fonts = [
-		'inter-variable-latin.woff2',
-	];
+	/*
+	 * Preload the heading font for whichever style variation is active.
+	 * The Indus Foods variation uses Montserrat; the base SGS theme uses Inter.
+	 * Always preload the body font (Inter / Source Sans 3) as a second entry
+	 * only when it differs from the heading font.
+	 */
+	$variation = get_theme_mod( 'active_theme_style', '' );
+
+	if ( 'indus-foods' === $variation ) {
+		$fonts = [
+			'montserrat-variable-latin.woff2',
+			'source-sans-3-variable-latin.woff2',
+		];
+	} else {
+		$fonts = [
+			'inter-variable-latin.woff2',
+		];
+	}
 
 	foreach ( $fonts as $font ) {
 		printf(
@@ -104,6 +172,15 @@ function enqueue_styles(): void {
 		$theme_version,
 		false // Load in head for flash-free dark mode init.
 	);
+
+	// M8: hide duplicate nav copies from assistive technology.
+	wp_enqueue_script(
+		'sgs-nav-accessibility',
+		get_theme_file_uri( 'assets/js/nav-accessibility.js' ),
+		[],
+		$theme_version,
+		true // Load in footer — runs after DOM is available.
+	);
 }
 add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\enqueue_styles' );
 
@@ -116,6 +193,20 @@ function register_pattern_categories(): void {
 	] );
 }
 add_action( 'init', __NAMESPACE__ . '\register_pattern_categories' );
+
+/**
+ * Register extra button block styles.
+ *
+ * M16: ghost/outline style for service card CTAs — gold border, transparent
+ * background, gold text. CSS is in core-blocks.css under is-style-ghost.
+ */
+function register_block_styles(): void {
+	register_block_style( 'core/button', [
+		'name'  => 'ghost',
+		'label' => __( 'Ghost', 'sgs-theme' ),
+	] );
+}
+add_action( 'init', __NAMESPACE__ . '\register_block_styles' );
 
 /**
  * Replace [current_year] token in rendered block output.
@@ -339,3 +430,56 @@ function propagate_header_classes( string $block_content, array $block ): string
 	);
 }
 add_filter( 'render_block', __NAMESPACE__ . '\propagate_header_classes', 10, 2 );
+
+/**
+ * Replace generic 'Toggle Menu' aria-label on submenu toggle buttons with
+ * item-specific labels (e.g. 'About submenu', 'Sectors submenu').
+ *
+ * WordPress core outputs a generic label for every submenu toggle. This filter
+ * replaces it with one that includes the parent nav item text so screen readers
+ * announce the correct submenu name (WCAG 2.4.6 Headings and Labels).
+ */
+function specific_submenu_aria_labels( string $block_content, array $block ): string {
+	if ( empty( $block['blockName'] ) || 'core/navigation' !== $block['blockName'] ) {
+		return $block_content;
+	}
+
+	/*
+	 * Match each submenu toggle button and prepend the parent link text.
+	 * Pattern: the toggle button immediately follows its parent <a> tag within
+	 * the same .wp-block-navigation-item wrapper. We capture the nav item text
+	 * from aria-current or the preceding link content.
+	 *
+	 * Strategy: find each <li> with a submenu toggle, extract the item label,
+	 * then replace the generic aria-label on the button.
+	 */
+	$block_content = preg_replace_callback(
+		'/<li\b[^>]*class="[^"]*wp-block-navigation-item[^"]*has-child[^"]*"[^>]*>(.*?)<\/li>/s',
+		function ( $matches ) {
+			$item_html = $matches[0];
+			$inner     = $matches[1];
+
+			// Extract the nav item label from the anchor text.
+			$label = '';
+			if ( preg_match( '/<a\b[^>]*class="[^"]*wp-block-navigation-item__content[^"]*"[^>]*>(.*?)<\/a>/s', $inner, $link_match ) ) {
+				$label = wp_strip_all_tags( $link_match[1] );
+				$label = trim( $label );
+			}
+
+			if ( ! $label ) {
+				return $item_html;
+			}
+
+			// Replace generic 'Toggle Menu' with '<Item> submenu'.
+			return str_replace(
+				'aria-label="Toggle Menu"',
+				'aria-label="' . esc_attr( $label ) . ' submenu"',
+				$item_html
+			);
+		},
+		$block_content
+	);
+
+	return $block_content;
+}
+add_filter( 'render_block', __NAMESPACE__ . '\specific_submenu_aria_labels', 10, 2 );

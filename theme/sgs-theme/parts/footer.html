@@ -6,8 +6,8 @@
 
 		<!-- wp:column {"width":"35%"} -->
 		<div class="wp-block-column" style="flex-basis:35%">
-			<!-- wp:image {"width":"200px","sizeSlug":"full"} -->
-			<figure class="wp-block-image size-full is-resized"><img src="/wp-content/uploads/indus-foods/2026/01/IndusFoods_Animated_Logo_Horizontal_Multi_Shade-1.svg" alt="Indus Foods Ltd" style="width:200px"/></figure>
+			<!-- wp:image {"width":"200px","sizeSlug":"full","linkDestination":"custom"} -->
+			<figure class="wp-block-image size-full is-resized"><a href="/" aria-label="Indus Foods Ltd — Home"><img src="/wp-content/uploads/indus-foods/2026/01/IndusFoods_Animated_Logo_Horizontal_Multi_Shade-1.svg" alt="Indus Foods Ltd" style="width:200px" width="200" height="60"/></a></figure>
 			<!-- /wp:image -->
 
 			<!-- wp:social-links {"iconColor":"surface","iconColorValue":"#FFFFFF","size":"has-normal-icon-size","className":"is-style-logos-only","style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
@@ -66,9 +66,14 @@
 			<h2 class="wp-block-heading has-surface-color has-text-color has-small-font-size sgs-footer-label">Opening Hours</h2>
 			<!-- /wp:heading -->
 
-			<!-- wp:paragraph {"textColor":"text-inverse","fontSize":"small","style":{"typography":{"lineHeight":"2.2"}}} -->
-			<p class="has-text-inverse-color has-text-color has-small-font-size" style="line-height:2.2"><strong>Monday – Thursday</strong><br>9:30am – 5:00pm<br><br><strong>Friday</strong><br>9:30am – 12:00pm<br>2:30pm – 5:00pm<br><br><strong>Saturday</strong><br>10:00am – 3:00pm<br><br><strong>Sunday</strong><br>Closed</p>
-			<!-- /wp:paragraph -->
+			<!-- wp:html -->
+			<dl class="sgs-opening-hours has-text-inverse-color has-text-color has-small-font-size">
+				<dt>Monday – Thursday</dt><dd>9:30am – 5:00pm</dd>
+				<dt>Friday</dt><dd>9:30am – 12:00pm, 2:30pm – 5:00pm</dd>
+				<dt>Saturday</dt><dd>10:00am – 3:00pm</dd>
+				<dt>Sunday</dt><dd>Closed</dd>
+			</dl>
+			<!-- /wp:html -->
 
 			<!-- wp:heading {"level":2,"textColor":"surface","fontSize":"small","className":"sgs-footer-label","style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
 			<h2 class="wp-block-heading has-surface-color has-text-color has-small-font-size sgs-footer-label" style="margin-top:var(--wp--preset--spacing--40)">Address</h2>

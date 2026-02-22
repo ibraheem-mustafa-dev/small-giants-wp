@@ -46,7 +46,7 @@
     },
     "variant": {
       "type": "string",
-      "default": "inline"
+      "default": "floating"
     },
     "label": {
       "type": "string",

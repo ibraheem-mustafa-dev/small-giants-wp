@@ -26,7 +26,7 @@
 }
 
 .wp-block-button__link:focus-visible {
-	outline: 2px solid var(--wp--preset--color--accent);
+	outline: 3px solid var(--sgs-focus-color, var(--wp--preset--color--primary-dark, #076a8e));
 	outline-offset: 2px;
 }
 
@@ -99,7 +99,8 @@
 
 /* ─── COLUMNS ─── */
 
-@media (max-width: 781px) {
+/* M12: standardised mobile breakpoint — max-width: 767px */
+@media (max-width: 767px) {
 	.wp-block-columns {
 		gap: var(--wp--preset--spacing--30);
 	}
@@ -352,7 +353,7 @@ header.wp-block-template-part.sgs-header-transparent .wp-block-site-title a {
 	border-radius: var(--wp--custom--border-radius--small, 4px);
 }
 
-/* ─── FOCUS INDICATORS — WCAG 2.2 AA compliant ─── */
+/* ─── FOCUS INDICATORS — WCAG 2.2 AA compliant (C5) ─── */
 
 /*
  * The site's --accent token (#d8ca50) has only 1.68:1 contrast on white
@@ -363,39 +364,38 @@ header.wp-block-template-part.sgs-header-transparent .wp-block-site-title a {
  * (#076a8e / teal-dark) as the focus ring colour: 5.54:1 on white, 3.93:1 on
  * the yellow section bg, and 3.0:1 on the navy footer bg — all passing.
  *
- * We also add a white offset ring so the indicator is visible on dark
- * backgrounds (the offset creates a double-ring effect: white gap + teal ring).
+ * WCAG 2.2 SC 2.4.11 also requires the focus indicator area to be at least
+ * as large as a 2px perimeter — 3px outline exceeds this safely.
  */
 :root {
 	--sgs-focus-color: var(--wp--preset--color--primary-dark, #076a8e);
 }
 
-/* Universal focus ring — catches anything without a specific rule */
+/* Universal focus ring — catches anything without a specific rule.
+   3px width ensures WCAG 2.4.11 compliance. Never suppress with outline: 0. */
 :focus-visible {
-	outline: 2px solid var(--sgs-focus-color);
-	outline-offset: 3px;
+	outline: 3px solid var(--sgs-focus-color);
+	outline-offset: 2px;
 }
 
 /* WordPress core buttons */
-:root :where(.wp-element-button:focus, .wp-block-button__link:focus) {
-	outline-color: var(--sgs-focus-color) !important;
-	outline-offset: 3px;
-	outline-style: solid;
-	outline-width: 2px;
+:root :where(.wp-element-button:focus-visible, .wp-block-button__link:focus-visible) {
+	outline: 3px solid var(--sgs-focus-color) !important;
+	outline-offset: 2px;
 }
 
 /* WordPress core navigation links */
 .wp-block-navigation .wp-block-navigation-item__content:focus-visible,
 .wp-block-navigation a:focus-visible {
-	outline: 2px solid var(--sgs-focus-color);
-	outline-offset: 3px;
+	outline: 3px solid var(--sgs-focus-color);
+	outline-offset: 2px;
 }
 
 /* Footer links */
 .sgs-footer-links a:focus-visible,
 .sgs-footer-nav .wp-block-navigation-item__content:focus-visible {
-	outline: 2px solid var(--sgs-focus-color);
-	outline-offset: 3px;
+	outline: 3px solid var(--sgs-focus-color);
+	outline-offset: 2px;
 	border-radius: 2px;
 }
 
@@ -436,4 +436,169 @@ footer .wp-block-heading.has-text-inverse-color.has-text-color {
 	.sgs-footer-nav .wp-block-navigation-item__content {
 		transition: none;
 	}
+}
+
+/* ─── BUTTON TEXT CONTRAST — H4 ─── */
+
+/*
+ * White text on the Indus Foods gold/accent (#d8ca50) fails WCAG AA at 1.68:1.
+ * When a button sits on an accent background, force text to dark (#2c3e50).
+ * Uses the footer-bg token which is #2c3e50 on Indus Foods.
+ */
+.wp-block-button__link.has-accent-background-color:not([style*="color"]) {
+	color: var(--wp--preset--color--text, #1e1e1e);
+}
+
+/* ─── FOOTER LINK COLOUR — H5 ─── */
+
+/*
+ * Footer phone and email links use the site's link colour (primary/teal).
+ * On the dark footer background this gives only ~2.38:1 — WCAG AA failure.
+ * Force to white (surface token) for all links within the footer template part.
+ */
+footer .wp-block-paragraph a,
+.wp-block-template-part footer .wp-block-paragraph a {
+	color: var(--wp--preset--color--surface, #ffffff) !important;
+}
+
+footer .wp-block-paragraph a:hover,
+.wp-block-template-part footer .wp-block-paragraph a:hover {
+	color: var(--wp--preset--color--accent-light, #fee8d4) !important;
+	text-decoration: underline;
+}
+
+/* ─── NAV LINK HOVER SCALE — H18 ─── */
+
+/*
+ * Adds subtle transform: scale(1.05) on hover to desktop nav links.
+ * GPU-composited via transform, safe for 60fps. Mobile excluded (touch targets
+ * should not scale as it creates visual noise during tap).
+ */
+@media (min-width: 1024px) {
+	.wp-block-navigation .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content:hover {
+		transform: scale(1.05);
+	}
+}
+
+/* ─── DROPDOWN SUBMENU ENTRANCE ANIMATION — H19 ─── */
+
+/*
+ * Submenus previously appeared instantly. This gives them a 200ms
+ * fade + slide-down entrance for a polished feel. Uses
+ * visibility:hidden not display:none so CSS transitions work.
+ * Reduced-motion: immediate show, no transform.
+ */
+.wp-block-navigation .has-child:hover > .wp-block-navigation__submenu-container,
+.wp-block-navigation .has-child:focus-within > .wp-block-navigation__submenu-container {
+	opacity: 1;
+	transform: translateY(0);
+	visibility: visible;
+}
+
+.wp-block-navigation .wp-block-navigation__submenu-container {
+	opacity: 0;
+	transform: translateY(-0.5em);
+	visibility: hidden;
+	transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0.2s;
+}
+
+.wp-block-navigation .has-child:hover > .wp-block-navigation__submenu-container,
+.wp-block-navigation .has-child:focus-within > .wp-block-navigation__submenu-container {
+	transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.wp-block-navigation .wp-block-navigation__submenu-container {
+		transition: none;
+	}
+}
+
+/* ─── SOCIAL ICON BRAND COLOURS ON HOVER — H21 ─── */
+
+/*
+ * Applies well-established brand colour standards to social icon hovers.
+ * WordPress outputs wp-social-link-{service} on the <li> element.
+ */
+.wp-block-social-links .wp-social-link-linkedin:hover svg,
+.wp-block-social-links .wp-social-link-linkedin:focus svg {
+	fill: #0a66c2 !important;
+}
+
+.wp-block-social-links .wp-social-link-facebook:hover svg,
+.wp-block-social-links .wp-social-link-facebook:focus svg {
+	fill: #1877f2 !important;
+}
+
+/* Instagram uses gradient background on hover with white icon */
+.wp-block-social-links .wp-social-link-instagram:hover,
+.wp-block-social-links .wp-social-link-instagram:focus {
+	background: linear-gradient(45deg, #833ab4, #fd1d1d, #fcaf45) !important;
+	border-radius: 6px;
+}
+
+.wp-block-social-links .wp-social-link-instagram:hover svg,
+.wp-block-social-links .wp-social-link-instagram:focus svg {
+	fill: #fff !important;
+}
+
+/* ─── SERVICE CARD + CARD GRID IMAGE HOVER ZOOM — H17 ─── */
+
+/*
+ * Image hover zoom for service cards and card-grid items.
+ * overflow:hidden is already on .sgs-card-grid__image-wrap.
+ * Generic .service-card class used by patterns and legacy content.
+ */
+.service-card {
+	overflow: hidden;
+}
+
+.service-card img {
+	transition: transform var(--wp--custom--transition--medium, 0.3s ease);
+}
+
+.service-card:hover img {
+	transform: scale(1.05);
+}
+
+/* ─── ICON LIST SIZE — M3 ─── */
+
+/*
+ * "Why Choose" sections use the icon-list block with icon-large size.
+ * 32px is too small to read at a glance in a feature-highlight context.
+ * Increase the large icon to ~50px.
+ */
+.sgs-icon-list--icon-large .sgs-icon-list__icon {
+	width: 50px;
+	height: 50px;
+	font-size: 32px;
+}
+
+/* ─── GHOST / OUTLINE BUTTON VARIANT — M16 ─── */
+
+/*
+ * Adds a gold-border ghost button style for service section CTAs.
+ * Used with the is-style-ghost class registered via PHP.
+ * Accent border + transparent background + accent text.
+ */
+.wp-block-button.is-style-ghost .wp-block-button__link {
+	background: transparent !important;
+	border: 2px solid var(--wp--preset--color--accent, #d8ca50);
+	color: var(--wp--preset--color--accent, #d8ca50) !important;
+}
+
+.wp-block-button.is-style-ghost .wp-block-button__link:hover,
+.wp-block-button.is-style-ghost .wp-block-button__link:focus {
+	background: var(--wp--preset--color--accent, #d8ca50) !important;
+	color: var(--wp--preset--color--text, #1e1e1e) !important;
+}
+
+/* ─── SOCIAL ICON TOUCH TARGETS — L5 ─── */
+
+/*
+ * Social icon touch targets were 36px. WCAG 2.2 AA requires 44×44px minimum.
+ * Adding transparent padding to reach 44×44 without affecting visual size.
+ * Already handled by the min-width/height rule above, but ensure padding too.
+ */
+.wp-block-social-links .wp-block-social-link a {
+	padding: 4px;
 }
