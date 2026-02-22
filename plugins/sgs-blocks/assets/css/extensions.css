@@ -68,12 +68,25 @@
 	            box-shadow var(--sgs-hover-duration, 300ms) ease;
 }
 
-.sgs-has-hover:hover {
-	background-color: var(--sgs-hover-bg, revert);
-	color: var(--sgs-hover-text, revert);
-	border-color: var(--sgs-hover-border, revert);
-	transform: scale(var(--sgs-hover-scale, 1));
-	box-shadow: var(--sgs-hover-shadow, revert);
+/* Only apply individual hover properties when the custom property is set */
+.sgs-has-hover[style*="--sgs-hover-bg"]:hover {
+	background-color: var(--sgs-hover-bg);
+}
+
+.sgs-has-hover[style*="--sgs-hover-text"]:hover {
+	color: var(--sgs-hover-text);
+}
+
+.sgs-has-hover[style*="--sgs-hover-border"]:hover {
+	border-color: var(--sgs-hover-border);
+}
+
+.sgs-has-hover[style*="--sgs-hover-scale"]:hover {
+	transform: scale(var(--sgs-hover-scale));
+}
+
+.sgs-has-hover[style*="--sgs-hover-shadow"]:hover {
+	box-shadow: var(--sgs-hover-shadow);
 }
 
 @media (prefers-reduced-motion: reduce) {
