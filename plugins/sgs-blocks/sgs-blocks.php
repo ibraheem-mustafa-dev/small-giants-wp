@@ -55,4 +55,16 @@ Forms\Form_Admin::register();
 // Activation hook for database setup.
 register_activation_hook( __FILE__, [ Forms\Form_Activator::class, 'activate' ] );
 
+// Register mega menu template part area.
+add_filter( 'default_wp_template_part_areas', function( $areas ) {
+	$areas[] = array(
+		'area'        => 'mega-menu',
+		'area_tag'    => 'div',
+		'label'       => __( 'Mega Menu', 'sgs-blocks' ),
+		'description' => __( 'Mega menu dropdown panel content.', 'sgs-blocks' ),
+		'icon'        => 'layout',
+	);
+	return $areas;
+} );
+
 SGS_Blocks::instance();

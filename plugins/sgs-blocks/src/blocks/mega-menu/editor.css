@@ -1,0 +1,42 @@
+/**
+ * SGS Mega Menu — Editor-only Styles
+ *
+ * @package SGS\Blocks
+ */
+
+.sgs-mega-menu-editor {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.5rem 1rem;
+	background: var(--wp--preset--color--surface, #f7f7f7);
+	border: 1px solid var(--wp--preset--color--border, #ddd);
+	border-radius: var(--wp--custom--border-radius--small, 0.25rem);
+}
+
+.sgs-mega-menu-editor .sgs-mega-menu__label {
+	font-weight: 500;
+}
+
+.sgs-mega-menu-editor .sgs-mega-menu__badge {
+	display: inline-block;
+	padding: 0.125rem 0.375rem;
+	font-size: 0.75rem;
+	font-weight: 600;
+	line-height: 1;
+	color: #fff;
+	background-color: var(--wp--preset--color--accent, #000);
+	border-radius: var(--wp--custom--border-radius--small, 0.25rem);
+	text-transform: uppercase;
+	letter-spacing: 0.025em;
+}
+
+.sgs-mega-menu__preview-note {
+	margin-top: 0.5rem;
+	padding: 0.5rem;
+	font-size: 0.875rem;
+	color: var(--wp--preset--color--foreground-light, #666);
+	background: var(--wp--preset--color--surface-dark, #f0f0f0);
+	border-left: 3px solid var(--wp--preset--color--accent, #000);
+	border-radius: var(--wp--custom--border-radius--small, 0.25rem);
+}

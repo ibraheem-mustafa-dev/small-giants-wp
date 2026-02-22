@@ -539,6 +539,36 @@
 			"area": "footer",
 			"name": "footer-minimal",
 			"title": "Footer (Minimal)"
+		},
+		{
+			"area": "mega-menu",
+			"name": "mega-menu-brands",
+			"title": "Mega Menu: Brands"
+		},
+		{
+			"area": "mega-menu",
+			"name": "mega-menu-services",
+			"title": "Mega Menu: Services"
+		},
+		{
+			"area": "mega-menu",
+			"name": "mega-menu-products",
+			"title": "Mega Menu: Products"
+		},
+		{
+			"area": "mega-menu",
+			"name": "mega-menu-about",
+			"title": "Mega Menu: About"
+		},
+		{
+			"area": "mega-menu",
+			"name": "mega-menu-resources",
+			"title": "Mega Menu: Resources"
+		},
+		{
+			"area": "mega-menu",
+			"name": "mega-menu-contact",
+			"title": "Mega Menu: Contact"
 		}
 	],
 	"customTemplates": [
