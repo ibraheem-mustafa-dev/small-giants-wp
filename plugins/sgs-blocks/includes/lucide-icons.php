@@ -2,9 +2,7 @@
 /**
  * Auto-generated Lucide icon map — DO NOT EDIT.
  * Generated from lucide-static (1917 icons).
- * Last generated: 2026-02-22T07:35:15.679Z
- *
- * Auto-generated — exempt from 300-line limit. See scripts/generate-icons.js.
+ * Last generated: 2026-02-22T12:24:16.412Z
  *
  * @package SGS\Blocks
  */

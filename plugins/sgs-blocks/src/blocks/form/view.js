@@ -415,11 +415,30 @@ const { state } = store( 'sgs/form', {
  * @param {HTMLElement} formRoot Form wrapper element.
  * @param {number}      currentStep Current step index.
  */
+/**
+ * Show/hide form steps and trigger entrance animation on the active step.
+ *
+ * Uses a CSS class (sgs-form-step--hidden) rather than the hidden attribute
+ * so that the entering step can animate in via CSS transition/keyframe.
+ *
+ * @param {HTMLElement} formRoot    The form wrapper element.
+ * @param {number}      currentStep Zero-based index of the step to show.
+ */
 function updateStepVisibility( formRoot, currentStep ) {
 	const steps = formRoot.querySelectorAll( '.sgs-form-step' );
 
 	steps.forEach( ( step, index ) => {
-		step.hidden = index !== currentStep;
+		if ( index === currentStep ) {
+			step.classList.remove( 'sgs-form-step--hidden' );
+			// Re-trigger the entrance animation by removing and re-adding the class.
+			step.classList.remove( 'sgs-form-step--entering' );
+			// Force reflow so the animation restarts.
+			void step.offsetWidth; // eslint-disable-line no-void
+			step.classList.add( 'sgs-form-step--entering' );
+		} else {
+			step.classList.add( 'sgs-form-step--hidden' );
+			step.classList.remove( 'sgs-form-step--entering' );
+		}
 	} );
 
 	// If current step contains a review block, populate it.
@@ -581,9 +600,12 @@ function initForms() {
 		const steps = formRoot.querySelectorAll( '.sgs-form-step' );
 
 		if ( steps.length > 1 ) {
-			// Multi-step form: hide all steps except first.
+			// Multi-step form: hide all steps except the first using the
+			// CSS class approach so transitions work correctly.
 			steps.forEach( ( step, index ) => {
-				step.hidden = index !== 0;
+				if ( index !== 0 ) {
+					step.classList.add( 'sgs-form-step--hidden' );
+				}
 			} );
 		}
 	} );

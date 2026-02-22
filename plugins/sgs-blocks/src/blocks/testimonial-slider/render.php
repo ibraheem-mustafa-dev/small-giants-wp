@@ -180,8 +180,10 @@ if ( $show_dots && $total_testimonials > $slides_visible ) {
 }
 
 // Output.
+// Note: tabindex is omitted from the track — keyboard users navigate via the
+// prev/next arrow buttons and the dot tablist (which is the correct ARIA pattern).
 printf(
-	'<div %s><div class="sgs-testimonial-slider__track" role="region" aria-label="Testimonials" tabindex="0"%s>%s</div>%s%s</div>',
+	'<div %s><div class="sgs-testimonial-slider__track" role="region" aria-label="Testimonials"%s>%s</div>%s%s</div>',
 	$wrapper_attributes,
 	$track_style_attr,
 	$slides_html,

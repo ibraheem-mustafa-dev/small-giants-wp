@@ -109,10 +109,17 @@ function initAccordions() {
 
 /**
  * Open an accordion item with smooth animation.
+ * Also updates aria-expanded on the summary for legacy screen reader support.
  */
 function openItem( details, content, wrapper, animatingItems ) {
 	animatingItems.add( details );
 	details.setAttribute( 'open', '' );
+
+	// Sync aria-expanded so legacy screen readers announce the open state.
+	const summary = details.querySelector( 'summary' );
+	if ( summary ) {
+		summary.setAttribute( 'aria-expanded', 'true' );
+	}
 
 	// Measure height after open.
 	const height = wrapper.offsetHeight;
@@ -138,9 +145,17 @@ function openItem( details, content, wrapper, animatingItems ) {
 
 /**
  * Close an accordion item with smooth animation.
+ * Also updates aria-expanded on the summary for legacy screen reader support.
  */
 function closeItem( details, content, wrapper, animatingItems ) {
 	animatingItems.add( details );
+
+	// Sync aria-expanded immediately — the item is logically closed now.
+	const summary = details.querySelector( 'summary' );
+	if ( summary ) {
+		summary.setAttribute( 'aria-expanded', 'false' );
+	}
+
 	const height = wrapper.offsetHeight;
 	content.style.height = height + 'px';
 	content.style.overflow = 'hidden';

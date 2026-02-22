@@ -187,17 +187,25 @@ sliders.forEach( ( slider ) => {
 		}
 	} );
 
-	/* Keyboard navigation for the track */
-	track.addEventListener( 'keydown', ( e ) => {
-		if ( e.key === 'ArrowLeft' ) {
-			e.preventDefault();
-			goToSlide( currentIndex - 1 );
-			pausePermanently();
-		} else if ( e.key === 'ArrowRight' ) {
-			e.preventDefault();
-			goToSlide( currentIndex + 1 );
-			pausePermanently();
-		}
+	/*
+	 * Keyboard navigation for the dot tablist (ARIA tab pattern).
+	 *
+	 * When a dot button has focus, Left/Right arrow keys move between dots
+	 * and navigate slides. This is the correct pattern for role="tablist".
+	 * The prev/next arrow buttons also accept focus for keyboard access.
+	 */
+	dots.forEach( ( dot, i ) => {
+		dot.addEventListener( 'keydown', ( e ) => {
+			if ( e.key === 'ArrowLeft' || e.key === 'ArrowRight' ) {
+				e.preventDefault();
+				const next = e.key === 'ArrowRight'
+					? Math.min( i + 1, slides.length - 1 )
+					: Math.max( i - 1, 0 );
+				dots[ next ].focus();
+				goToSlide( next );
+				pausePermanently();
+			}
+		} );
 	} );
 
 	/*
