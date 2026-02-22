@@ -40,6 +40,8 @@ const phpLines = [
 	` * Generated from lucide-static (${ files.length } icons).`,
 	` * Last generated: ${ new Date().toISOString() }`,
 	' *',
+	' * Auto-generated — exempt from 300-line limit. See scripts/generate-icons.js.',
+	' *',
 	' * @package SGS\\Blocks',
 	' */',
 	'',
