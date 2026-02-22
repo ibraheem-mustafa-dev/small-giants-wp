@@ -147,7 +147,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		wrapperStyle.backgroundSize = 'cover';
 		wrapperStyle.backgroundPosition = 'center';
 	}
-	wrapperStyle.minHeight = minHeight || '520px';
+	if ( minHeight ) {
+		wrapperStyle.minHeight = minHeight;
+	}
 
 	const className = [
 		'sgs-hero',
@@ -249,6 +251,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						label={ __( 'Min height', 'sgs-blocks' ) }
 						value={ minHeight }
 						options={ [
+							{ label: 'Auto (fit content)', value: '' },
 							{ label: '400px', value: '400px' },
 							{ label: '520px', value: '520px' },
 							{ label: '600px', value: '600px' },

@@ -262,7 +262,7 @@
 	}
 
 	.sgs-hero {
-		min-height: 400px !important;
+		min-height: auto;
 	}
 
 	.sgs-hero--standard {

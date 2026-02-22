@@ -76,7 +76,7 @@
     },
     "minHeight": {
       "type": "string",
-      "default": "520px"
+      "default": ""
     },
     "badges": {
       "type": "array",

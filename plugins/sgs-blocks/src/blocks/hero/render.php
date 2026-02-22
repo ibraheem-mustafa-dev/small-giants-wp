@@ -21,7 +21,7 @@ $bg_image         = $attributes['backgroundImage'] ?? null;
 $overlay_colour   = $attributes['overlayColour'] ?? '#1E1E1E';
 $overlay_opacity  = $attributes['overlayOpacity'] ?? 50;
 $split_image      = $attributes['splitImage'] ?? null;
-$min_height       = $attributes['minHeight'] ?? '520px';
+$min_height       = $attributes['minHeight'] ?? '';
 $badges           = $attributes['badges'] ?? array();
 $cta_primary_text = $attributes['ctaPrimaryText'] ?? '';
 $cta_primary_url  = $attributes['ctaPrimaryUrl'] ?? '';
@@ -46,7 +46,9 @@ $is_split = 'split' === $variant;
 
 // Build wrapper styles.
 $styles = array();
-$styles[] = 'min-height:' . esc_attr( $min_height );
+if ( ! empty( $min_height ) ) {
+	$styles[] = 'min-height:' . esc_attr( $min_height );
+}
 
 if ( $hover_background_colour ) {
 	$styles[] = '--sgs-hover-bg:' . sgs_colour_value( $hover_background_colour );
