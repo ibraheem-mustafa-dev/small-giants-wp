@@ -1,0 +1,17 @@
+# Enforce Unix (LF) line endings for all text files.
+# Prevents Windows CRLF warnings on every commit on Windows machines.
+* text=auto eol=lf
+
+# Force binary treatment for binary assets.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.zip binary
+*.gz binary
