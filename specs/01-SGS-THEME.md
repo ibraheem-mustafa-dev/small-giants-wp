@@ -111,28 +111,30 @@ sgs-theme/
     "typography": {
       "fontFamilies": [
         {
-          "fontFamily": "'DM Serif Display', serif",
+          "fontFamily": "Inter, system-ui, sans-serif",
           "slug": "heading",
           "name": "Heading",
           "fontFace": [
             {
-              "fontFamily": "DM Serif Display",
-              "fontWeight": "400",
+              "fontFamily": "Inter",
+              "fontWeight": "100 900",
               "fontStyle": "normal",
-              "src": ["file:./assets/fonts/dm-serif-display-v15-latin-regular.woff2"]
+              "fontDisplay": "swap",
+              "src": ["file:./assets/fonts/inter-variable-latin.woff2"]
             }
           ]
         },
         {
-          "fontFamily": "'DM Sans', sans-serif",
+          "fontFamily": "Inter, system-ui, sans-serif",
           "slug": "body",
           "name": "Body",
           "fontFace": [
             {
-              "fontFamily": "DM Sans",
-              "fontWeight": "400 700",
+              "fontFamily": "Inter",
+              "fontWeight": "100 900",
               "fontStyle": "normal",
-              "src": ["file:./assets/fonts/dm-sans-v15-latin-regular.woff2"]
+              "fontDisplay": "swap",
+              "src": ["file:./assets/fonts/inter-variable-latin.woff2"]
             }
           ]
         }
@@ -201,14 +203,16 @@ Each client site gets a JSON file in `styles/` that overrides just the tokens:
   "settings": {
     "color": {
       "palette": [
-        { "slug": "primary", "color": "#1A3A5C" },
-        { "slug": "accent",  "color": "#D4A843" }
+        { "slug": "primary",      "color": "#0a7ea8" },
+        { "slug": "primary-dark", "color": "#076a8e" },
+        { "slug": "accent",       "color": "#d8ca50" },
+        { "slug": "accent-light", "color": "#e7d768" }
       ]
     },
     "typography": {
       "fontFamilies": [
-        { "slug": "heading", "fontFamily": "'DM Serif Display', serif" },
-        { "slug": "body",    "fontFamily": "'DM Sans', sans-serif" }
+        { "slug": "heading", "fontFamily": "Montserrat, system-ui, sans-serif" },
+        { "slug": "body",    "fontFamily": "'Source Sans 3', system-ui, sans-serif" }
       ]
     }
   }
