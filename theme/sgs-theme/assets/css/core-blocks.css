@@ -186,17 +186,76 @@
 	color: var(--wp--preset--color--surface, #ffffff) !important;
 }
 
-/* ─── STICKY HEADER ─── */
+/* ─── HEADER VARIANTS ─── */
 
 /*
- * Applied to the <header> template-part wrapper (not the inner group).
- * WordPress's built-in sticky-position on inner groups doesn't work because
- * the template-part wrapper is the same height as its child.
+ * Header style variants controlled by classes on the <header> template part.
+ *
+ * - .sgs-header-sticky: Fixed to top on scroll
+ * - .sgs-header-transparent: Overlays content with transparent background
+ * - .sgs-header-shrink: Shrinks padding on scroll (progressive enhancement)
+ *
+ * Default: static header with z-index for dropdown menus.
  */
+
 header.wp-block-template-part {
+	z-index: 100;
+	transition: padding var(--wp--custom--transition--medium, 0.3s ease),
+	            background-color var(--wp--custom--transition--medium, 0.3s ease),
+	            box-shadow var(--wp--custom--transition--medium, 0.3s ease);
+}
+
+/* Sticky header */
+header.wp-block-template-part.sgs-header-sticky {
 	position: sticky;
 	top: 0;
-	z-index: 100;
+}
+
+/* Transparent/overlay header */
+header.wp-block-template-part.sgs-header-transparent {
+	position: absolute;
+	width: 100%;
+	background: transparent !important;
+}
+
+header.wp-block-template-part.sgs-header-transparent > .wp-block-group {
+	background: transparent !important;
+}
+
+header.wp-block-template-part.sgs-header-transparent .wp-block-navigation .wp-block-navigation-item__content,
+header.wp-block-template-part.sgs-header-transparent .wp-block-site-title a {
+	color: var(--wp--preset--color--surface, #fff);
+}
+
+/* Shrinking header — uses CSS scroll-driven animation (Chrome 115+) */
+@supports (animation-timeline: scroll()) {
+	header.wp-block-template-part.sgs-header-shrink {
+		position: sticky;
+		top: 0;
+		animation: sgs-header-shrink linear both;
+		animation-timeline: scroll();
+		animation-range: 0px 200px;
+	}
+
+	@keyframes sgs-header-shrink {
+		from {
+			padding-top: var(--wp--preset--spacing--30, 1rem);
+			padding-bottom: var(--wp--preset--spacing--30, 1rem);
+		}
+		to {
+			padding-top: 0;
+			padding-bottom: 0;
+			box-shadow: var(--wp--preset--shadow--md, 0 4px 12px rgba(0,0,0,0.1));
+		}
+	}
+}
+
+/* Shrink fallback for browsers without scroll-driven animation */
+@supports not (animation-timeline: scroll()) {
+	header.wp-block-template-part.sgs-header-shrink {
+		position: sticky;
+		top: 0;
+	}
 }
 
 /* ─── HEADER CTA ─── */

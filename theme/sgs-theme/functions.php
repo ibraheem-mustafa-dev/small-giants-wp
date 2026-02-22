@@ -150,3 +150,45 @@ function enqueue_style_variation_extras(): void {
 	}
 }
 add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\enqueue_style_variation_extras' );
+
+/**
+ * Propagate header variant classes from inner group to <header> template part.
+ *
+ * WordPress block themes render template parts as:
+ *   <header class="wp-block-template-part">
+ *     <div class="wp-block-group sgs-header-sticky ...">
+ *
+ * Our CSS targets `header.wp-block-template-part.sgs-header-sticky`.
+ * This filter moves the sgs-header-* class up to the <header> wrapper.
+ */
+function propagate_header_classes( string $block_content, array $block ): string {
+	if ( empty( $block['blockName'] ) || 'core/template-part' !== $block['blockName'] ) {
+		return $block_content;
+	}
+
+	// Only apply to header area.
+	$area = $block['attrs']['tagName'] ?? '';
+	if ( 'header' !== $area ) {
+		return $block_content;
+	}
+
+	// Check if inner content has sgs-header-* classes.
+	$header_classes = [];
+	if ( preg_match_all( '/\bsgs-header-(sticky|transparent|shrink)\b/', $block_content, $matches ) ) {
+		$header_classes = array_unique( $matches[0] );
+	}
+
+	if ( empty( $header_classes ) ) {
+		return $block_content;
+	}
+
+	// Add classes to the outer <header> tag.
+	$classes_str = implode( ' ', $header_classes );
+	return preg_replace(
+		'/^(<header\b[^>]*class=["\'])/',
+		'$1' . $classes_str . ' ',
+		$block_content,
+		1
+	);
+}
+add_filter( 'render_block', __NAMESPACE__ . '\propagate_header_classes', 10, 2 );

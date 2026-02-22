@@ -389,6 +389,21 @@
 			"title": "Header (Minimal)"
 		},
 		{
+			"area": "header",
+			"name": "header-sticky",
+			"title": "Header (Sticky)"
+		},
+		{
+			"area": "header",
+			"name": "header-transparent",
+			"title": "Header (Transparent Overlay)"
+		},
+		{
+			"area": "header",
+			"name": "header-shrink",
+			"title": "Header (Shrink on Scroll)"
+		},
+		{
 			"area": "footer",
 			"name": "footer",
 			"title": "Footer"
