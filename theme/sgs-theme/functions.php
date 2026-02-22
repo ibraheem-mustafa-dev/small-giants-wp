@@ -45,6 +45,17 @@ add_action( 'after_setup_theme', __NAMESPACE__ . '\setup' );
  * Preload critical font files to prevent FOUT.
  * Outputs <link rel="preload"> tags in <head> before stylesheets load.
  */
+/**
+ * Inline critical dark mode script to prevent flash of wrong theme.
+ * Runs before any CSS paints.
+ */
+function dark_mode_inline_script(): void {
+	echo '<script>
+(function(){try{var t=localStorage.getItem("sgs-theme-preference");if(t)document.documentElement.setAttribute("data-theme",t);var d=window.matchMedia("(prefers-color-scheme:dark)").matches;document.documentElement.setAttribute("data-prefers-dark",d?"true":"false")}catch(e){}})();
+</script>' . "\n";
+}
+add_action( 'wp_head', __NAMESPACE__ . '\dark_mode_inline_script', 0 );
+
 function preload_fonts(): void {
 	$fonts = [
 		'inter-variable-latin.woff2',
@@ -77,6 +88,21 @@ function enqueue_styles(): void {
 		get_theme_file_uri( 'assets/css/utilities.css' ),
 		[],
 		$theme_version
+	);
+
+	wp_enqueue_style(
+		'sgs-dark-mode',
+		get_theme_file_uri( 'assets/css/dark-mode.css' ),
+		[],
+		$theme_version
+	);
+
+	wp_enqueue_script(
+		'sgs-dark-mode',
+		get_theme_file_uri( 'assets/js/dark-mode.js' ),
+		[],
+		$theme_version,
+		false // Load in head for flash-free dark mode init.
 	);
 }
 add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\enqueue_styles' );
