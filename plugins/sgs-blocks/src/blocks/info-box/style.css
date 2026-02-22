@@ -19,6 +19,13 @@
 	background: transparent;
 }
 
+/* Subtle — transparent background, no shadow, no border. Intended for use
+   on coloured section backgrounds (e.g. accent/yellow "Why Choose" section)
+   where a white card would look out of place. */
+.sgs-info-box--subtle {
+	background: transparent;
+}
+
 .sgs-info-box--bordered {
 	border: 1px solid var(--wp--preset--color--border-subtle, #0D5557);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
