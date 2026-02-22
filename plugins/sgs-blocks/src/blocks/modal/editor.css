@@ -1,0 +1,26 @@
+/**
+ * Modal — editor-only styles.
+ *
+ * Preview of modal content in the block editor.
+ */
+
+.sgs-modal__editor-preview {
+	margin-top: var(--wp--preset--spacing--40, 2rem);
+	padding: var(--wp--preset--spacing--40, 2rem);
+	border: 2px dashed var(--wp--preset--color--neutral-200, #e5e5e5);
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	background-color: var(--wp--preset--color--neutral-50, #fafafa);
+}
+
+.sgs-modal__editor-hint {
+	margin: 0 0 var(--wp--preset--spacing--30, 1.5rem);
+	font-size: 0.875rem;
+	font-weight: 600;
+	color: var(--wp--preset--color--text-light, #6b6b6b);
+}
+
+.sgs-modal__content-preview {
+	background-color: var(--wp--preset--color--white, #fff);
+	padding: var(--wp--preset--spacing--40, 2rem);
+	border-radius: var(--wp--custom--border-radius--small, 4px);
+}

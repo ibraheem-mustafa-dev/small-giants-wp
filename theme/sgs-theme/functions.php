@@ -303,18 +303,19 @@ function enqueue_style_variation_extras(): void {
 	background-color:rgba(255,255,255,.28);
 }
 
-/* ── Issue 9 & 8: Hero CTA buttons — vertical stack, mobile-visible ─────────
- * Stacks CTA buttons vertically across all viewports (original design). Also
- * ensures the second button is never hidden on mobile by explicitly setting
- * display:flex on the container and visibility:visible on each button. */
+/* ── Issue 9 & 8: Hero CTA buttons — vertical stack ─────────────────────────
+ * Indus Foods variation stacks CTA buttons vertically on all viewports
+ * (matches original design). Base theme only stacks on mobile.
+ * !important required to override base theme flex-wrap: wrap behaviour. */
 .sgs-hero__ctas{flex-direction:column!important;align-items:flex-start}
 .sgs-hero--align-centre .sgs-hero__ctas{align-items:center}
-.sgs-hero__cta{width:100%;max-width:380px;text-align:center;display:inline-flex!important;visibility:visible!important}
+.sgs-hero__cta{width:100%;max-width:380px;text-align:center}
 
 /* ── Issue 4: Why Choose info-boxes — text contrast on accent background ─────
  * When info-boxes use cardStyle 'subtle' (transparent) on the accent/yellow
  * section background, override text colours to ensure readable dark-on-yellow
- * contrast. The base info-box CSS uses --text-muted which can be too light. */
+ * contrast. The base info-box CSS uses --text-muted which is too light.
+ * !important required to fix WCAG AA contrast failure (1.68:1 → 4.5:1+). */
 .has-accent-background-color .sgs-info-box--subtle .sgs-info-box__heading {
 	color:var(--wp--preset--color--text,#1e1e1e)!important;
 }
@@ -322,35 +323,18 @@ function enqueue_style_variation_extras(): void {
 	color:var(--wp--preset--color--text,#1e1e1e)!important;
 }
 
-/* ── Issue 14: Footer social icons — brand colours ───────────────────────────
- * Applies the well-established brand colour standards (LinkedIn, Facebook, etc.)
- * to the WordPress social-links block. WordPress uses the wp-social-link-{service}
- * class format on the <li> element (not wp-block-social-link--service-{name}).
- * Scoped to Indus Foods variation via wp_add_inline_style() gate. */
-.wp-block-social-links .wp-social-link-linkedin svg{fill:#0077b5!important}
-.wp-block-social-links .wp-social-link-facebook svg{fill:#1877f2!important}
-.wp-block-social-links .wp-social-link-google svg{fill:#ea4335!important}
-.wp-block-social-links .wp-social-link-twitter svg,
-.wp-block-social-links .wp-social-link-x svg{fill:#000000!important}
-/* Instagram uses a gradient background with white icon */
-.wp-block-social-links .wp-social-link-instagram{
-	background:linear-gradient(45deg,#f09433,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888)!important;
-	border-radius:6px;
-}
-.wp-block-social-links .wp-social-link-instagram svg{fill:#fff!important}
+/* ── Social icon brand colours covered by H21 in core-blocks.css ──────────── */
 
 /* ── Issue 16: Footer logo — mobile max-width cap ───────────────────────────
  * Prevents the footer logo taking up excessive vertical space on 375px screens
- * when flex columns stack. Uses !important to override WordPress's inline
- * width attribute (style='width:200px') that takes precedence over CSS. */
+ * when flex columns stack.
+ * !important required to override WordPress's inline width attribute
+ * (style='width:200px') which has higher specificity than CSS. */
 @media(max-width:767px){
 	footer .wp-block-image img,footer figure.wp-block-image img{max-width:140px!important;height:auto!important}
 }
 
-/* ── Issue 1 (mobile nav): ensure overlay open-button is always visible ──────
- * Belt-and-braces rule in case core navigation CSS overrides our
- * core-blocks.css display rule at this specificity level. */
-.wp-block-navigation__responsive-container-open{display:inline-flex!important}
+/* ── Issue 1: Hamburger button display handled in core-blocks.css line 322 ── */
 
 /* ── Issue 6 (tablet nav): hide CTA and compress nav at 768–1023px ──────────
  * At tablet the CTA button already hides at ≤1023px (core-blocks.css).
@@ -361,9 +345,13 @@ function enqueue_style_variation_extras(): void {
 
 /* ── Navigation mobile overlay z-index ───────────────────────────────────────
  * Ensures the full-screen overlay menu appears above all page content. */
-.wp-block-navigation__responsive-container.is-menu-open{z-index:9999!important}
+.wp-block-navigation__responsive-container.is-menu-open{z-index:9999}
 
 /* ── Issue 12: Hover effects ─────────────────────────────────────────────────
+ * Indus Foods variation-specific hover states for buttons and navigation.
+ * !important required to override WordPress button block inline colour styles
+ * (background-color, color, border-color added by block editor colour picker).
+ *
  * H1: Primary hero CTA — full invert on hover (teal bg → white bg, white text → teal text) */
 .sgs-hero .wp-block-buttons .wp-block-button .wp-block-button__link.has-primary-background-color:hover,
 .sgs-hero .wp-block-buttons .wp-block-button .wp-block-button__link.has-primary-background-color:focus{
@@ -380,7 +368,9 @@ function enqueue_style_variation_extras(): void {
 	color:var(--wp--preset--color--surface,#fff)!important;
 	border-color:var(--wp--preset--color--primary,#0a7ea8)!important;
 }
-/* H3: Top-level nav links — gold background on hover */
+/* H3: Top-level nav links — gold background on hover
+ * Overrides base theme's accent hover (core-blocks.css line 55) with Indus
+ * Foods gold + dark text for better contrast on teal header background. */
 .wp-block-navigation .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content:hover,
 .wp-block-navigation .wp-block-navigation__container > .wp-block-page-list__item > a:hover{
 	background-color:var(--wp--preset--color--accent,#d8ca50)!important;

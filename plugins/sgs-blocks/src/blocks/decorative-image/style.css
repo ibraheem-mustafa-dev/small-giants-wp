@@ -1,0 +1,127 @@
+/**
+ * Decorative Image — frontend and editor styles.
+ *
+ * Image with decorative effects (parallax, float, reveal) and CSS clip-path masks.
+ * Marked aria-hidden since decorative — no semantic meaning.
+ */
+
+.sgs-decorative-image {
+	position: relative;
+	display: block;
+	overflow: hidden;
+}
+
+.sgs-decorative-image__wrapper {
+	position: relative;
+	display: inline-block;
+	width: 100%;
+}
+
+.sgs-decorative-image__img {
+	display: block;
+	max-width: 100%;
+	height: auto;
+	transition: transform 0.3s ease;
+}
+
+/* Overlay */
+.sgs-decorative-image__overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+	z-index: 1;
+}
+
+/* ─── Mask Shapes (CSS clip-path) ─── */
+
+.sgs-decorative-image--mask-circle .sgs-decorative-image__img,
+.sgs-decorative-image--mask-circle .sgs-decorative-image__overlay {
+	clip-path: circle(50% at 50% 50%);
+}
+
+.sgs-decorative-image--mask-blob .sgs-decorative-image__img,
+.sgs-decorative-image--mask-blob .sgs-decorative-image__overlay {
+	clip-path: polygon(
+		30% 0%,
+		70% 0%,
+		100% 30%,
+		100% 70%,
+		70% 100%,
+		30% 100%,
+		0% 70%,
+		0% 30%
+	);
+	/* Organic blob shape (soft octagon) */
+	border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+}
+
+.sgs-decorative-image--mask-hexagon .sgs-decorative-image__img,
+.sgs-decorative-image--mask-hexagon .sgs-decorative-image__overlay {
+	clip-path: polygon(
+		50% 0%,
+		100% 25%,
+		100% 75%,
+		50% 100%,
+		0% 75%,
+		0% 25%
+	);
+}
+
+.sgs-decorative-image--mask-diamond .sgs-decorative-image__img,
+.sgs-decorative-image--mask-diamond .sgs-decorative-image__overlay {
+	clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+
+/* ─── Effects ─── */
+
+/* Parallax effect (applied via JS scroll listener) */
+.sgs-decorative-image--parallax .sgs-decorative-image__img {
+	will-change: transform;
+}
+
+/* Float effect (gentle up/down animation) */
+.sgs-decorative-image--float .sgs-decorative-image__img {
+	animation: sgs-float 6s ease-in-out infinite;
+}
+
+@keyframes sgs-float {
+	0%,
+	100% {
+		transform: translateY(0);
+	}
+	50% {
+		transform: translateY(-20px);
+	}
+}
+
+/* Reveal on scroll effect (starts hidden, fades in) */
+.sgs-decorative-image--reveal {
+	opacity: 0;
+	transform: translateY(40px);
+	transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.sgs-decorative-image--reveal.sgs-revealed {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+/* Reduce motion preference (disable animations) */
+@media (prefers-reduced-motion: reduce) {
+	.sgs-decorative-image--float .sgs-decorative-image__img {
+		animation: none;
+	}
+
+	.sgs-decorative-image--reveal {
+		opacity: 1;
+		transform: none;
+		transition: none;
+	}
+
+	.sgs-decorative-image--parallax .sgs-decorative-image__img {
+		will-change: auto;
+	}
+}

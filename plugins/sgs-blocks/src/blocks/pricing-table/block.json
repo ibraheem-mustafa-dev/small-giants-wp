@@ -1,0 +1,136 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "sgs/pricing-table",
+  "version": "0.1.0",
+  "title": "SGS Pricing Table",
+  "category": "sgs-content",
+  "description": "Pricing plans displayed in responsive columns with features, CTAs, and optional badges.",
+  "keywords": [
+    "pricing",
+    "plans",
+    "table",
+    "price",
+    "subscription",
+    "tiers"
+  ],
+  "textdomain": "sgs-blocks",
+  "icon": "table-col-after",
+  "supports": {
+    "align": [
+      "wide",
+      "full"
+    ],
+    "anchor": true,
+    "html": false,
+    "color": {
+      "background": true,
+      "text": true
+    },
+    "typography": {
+      "fontSize": true,
+      "lineHeight": true
+    },
+    "spacing": {
+      "margin": true,
+      "padding": true,
+      "blockGap": true
+    }
+  },
+  "attributes": {
+    "columns": {
+      "type": "number",
+      "default": 3
+    },
+    "plans": {
+      "type": "array",
+      "default": [
+        {
+          "title": "Basic",
+          "price": "£9.99",
+          "period": "monthly",
+          "features": [
+            "5 projects",
+            "10GB storage",
+            "Email support"
+          ],
+          "ctaText": "Get Started",
+          "ctaUrl": "",
+          "isPopular": false
+        },
+        {
+          "title": "Pro",
+          "price": "£29.99",
+          "period": "monthly",
+          "features": [
+            "Unlimited projects",
+            "100GB storage",
+            "Priority support",
+            "Advanced analytics"
+          ],
+          "ctaText": "Get Started",
+          "ctaUrl": "",
+          "isPopular": true
+        },
+        {
+          "title": "Enterprise",
+          "price": "£99.99",
+          "period": "monthly",
+          "features": [
+            "Everything in Pro",
+            "Unlimited storage",
+            "24/7 phone support",
+            "Custom integrations",
+            "SLA guarantee"
+          ],
+          "ctaText": "Contact Sales",
+          "ctaUrl": "",
+          "isPopular": false
+        }
+      ]
+    },
+    "highlightedPlan": {
+      "type": "number",
+      "default": 1
+    },
+    "cardStyle": {
+      "type": "string",
+      "default": "elevated"
+    },
+    "titleColour": {
+      "type": "string"
+    },
+    "priceColour": {
+      "type": "string"
+    },
+    "featureColour": {
+      "type": "string"
+    },
+    "ctaStyle": {
+      "type": "string",
+      "default": "accent"
+    },
+    "ctaColour": {
+      "type": "string"
+    },
+    "ctaBackground": {
+      "type": "string"
+    },
+    "popularBadgeText": {
+      "type": "string",
+      "default": "Popular"
+    },
+    "popularBadgeColour": {
+      "type": "string",
+      "default": "white"
+    },
+    "popularBadgeBackground": {
+      "type": "string",
+      "default": "accent"
+    }
+  },
+  "render": "file:./render.php",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css"
+}

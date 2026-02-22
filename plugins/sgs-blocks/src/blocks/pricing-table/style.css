@@ -1,0 +1,210 @@
+/**
+ * Pricing Table — frontend and editor styles.
+ *
+ * Responsive pricing plans with column layout, badges, and CTA buttons.
+ * Uses CSS Grid for layout and stack to single column on mobile.
+ */
+
+.sgs-pricing-table {
+	--sgs-pricing-gap: var(--wp--preset--spacing--40, 2rem);
+	--sgs-pricing-padding: var(--wp--preset--spacing--50, 2.5rem);
+	--sgs-pricing-border-radius: var(--wp--custom--border-radius--medium, 8px);
+}
+
+.sgs-pricing-table__grid {
+	display: grid;
+	gap: var(--sgs-pricing-gap);
+	grid-template-columns: 1fr;
+}
+
+/* Column layouts (desktop only) */
+@media (min-width: 768px) {
+	.sgs-pricing-table--columns-2 .sgs-pricing-table__grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+
+	.sgs-pricing-table--columns-3 .sgs-pricing-table__grid {
+		grid-template-columns: repeat(3, 1fr);
+	}
+
+	.sgs-pricing-table--columns-4 .sgs-pricing-table__grid {
+		grid-template-columns: repeat(4, 1fr);
+	}
+}
+
+/* Plan card */
+.sgs-pricing-table__plan {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	padding: var(--sgs-pricing-padding);
+	border-radius: var(--sgs-pricing-border-radius);
+	background-color: var(--wp--preset--color--white, #fff);
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Card styles */
+.sgs-pricing-table--flat .sgs-pricing-table__plan {
+	border: none;
+	box-shadow: none;
+}
+
+.sgs-pricing-table--bordered .sgs-pricing-table__plan {
+	border: 1px solid var(--wp--preset--color--neutral-200, #e5e5e5);
+}
+
+.sgs-pricing-table--elevated .sgs-pricing-table__plan {
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.sgs-pricing-table--filled .sgs-pricing-table__plan {
+	background-color: var(--wp--preset--color--neutral-50, #fafafa);
+	border: 1px solid var(--wp--preset--color--neutral-200, #e5e5e5);
+}
+
+/* Highlighted plan (scale up slightly) */
+.sgs-pricing-table__plan--highlighted {
+	transform: scale(1.05);
+	z-index: 1;
+}
+
+.sgs-pricing-table--elevated .sgs-pricing-table__plan--highlighted {
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Popular badge */
+.sgs-pricing-table__badge {
+	position: absolute;
+	top: calc(var(--sgs-pricing-padding) * -0.5);
+	right: var(--sgs-pricing-padding);
+	padding: 0.25rem 1rem;
+	border-radius: 999px;
+	font-size: 0.875rem;
+	font-weight: 600;
+	color: var(--wp--preset--color--white, #fff);
+	background-color: var(--wp--preset--color--accent, #007bff);
+	text-transform: uppercase;
+	letter-spacing: 0.025em;
+}
+
+/* Header */
+.sgs-pricing-table__header {
+	margin-bottom: var(--wp--preset--spacing--40, 2rem);
+	text-align: center;
+}
+
+.sgs-pricing-table__title {
+	margin: 0 0 var(--wp--preset--spacing--20, 1rem);
+	font-size: var(--wp--preset--font-size--large, 1.5rem);
+	font-weight: 700;
+	color: var(--wp--preset--color--heading, #1e1e1e);
+}
+
+.sgs-pricing-table__price-wrapper {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.sgs-pricing-table__price {
+	font-size: var(--wp--preset--font-size--xx-large, 3rem);
+	font-weight: 800;
+	line-height: 1;
+	color: var(--wp--preset--color--primary, #333);
+}
+
+.sgs-pricing-table__period {
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	color: var(--wp--preset--color--text-light, #6b6b6b);
+}
+
+/* Features list */
+.sgs-pricing-table__features {
+	margin: 0 0 var(--wp--preset--spacing--40, 2rem);
+	padding: 0;
+	list-style: none;
+	flex-grow: 1;
+}
+
+.sgs-pricing-table__feature {
+	position: relative;
+	padding: 0.75rem 0 0.75rem 2rem;
+	border-bottom: 1px solid var(--wp--preset--color--neutral-100, #f5f5f5);
+	color: var(--wp--preset--color--text, #333);
+}
+
+.sgs-pricing-table__feature:last-child {
+	border-bottom: none;
+}
+
+/* Checkmark icon (pure CSS) */
+.sgs-pricing-table__feature::before {
+	content: '✓';
+	position: absolute;
+	left: 0;
+	top: 0.75rem;
+	width: 1.25rem;
+	height: 1.25rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 0.875rem;
+	font-weight: 700;
+	color: var(--wp--preset--color--accent, #007bff);
+	background-color: var(--wp--preset--color--accent-light, rgba(0, 123, 255, 0.1));
+	border-radius: 50%;
+}
+
+/* CTA button */
+.sgs-pricing-table__cta {
+	display: block;
+	width: 100%;
+	padding: 0.875rem 1.5rem;
+	border: 2px solid transparent;
+	border-radius: var(--wp--custom--border-radius--small, 4px);
+	font-size: var(--wp--preset--font-size--medium, 1rem);
+	font-weight: 600;
+	text-align: center;
+	text-decoration: none;
+	cursor: pointer;
+	transition: all 0.3s ease;
+}
+
+.sgs-pricing-table__cta--primary {
+	color: var(--wp--preset--color--white, #fff);
+	background-color: var(--wp--preset--color--primary, #333);
+}
+
+.sgs-pricing-table__cta--primary:hover {
+	background-color: var(--wp--preset--color--primary-dark, #000);
+}
+
+.sgs-pricing-table__cta--secondary {
+	color: var(--wp--preset--color--white, #fff);
+	background-color: var(--wp--preset--color--secondary, #6c757d);
+}
+
+.sgs-pricing-table__cta--secondary:hover {
+	background-color: var(--wp--preset--color--secondary-dark, #5a6268);
+}
+
+.sgs-pricing-table__cta--accent {
+	color: var(--wp--preset--color--white, #fff);
+	background-color: var(--wp--preset--color--accent, #007bff);
+}
+
+.sgs-pricing-table__cta--accent:hover {
+	background-color: var(--wp--preset--color--accent-dark, #0056b3);
+}
+
+.sgs-pricing-table__cta--outline {
+	color: var(--wp--preset--color--primary, #333);
+	background-color: transparent;
+	border-color: var(--wp--preset--color--primary, #333);
+}
+
+.sgs-pricing-table__cta--outline:hover {
+	color: var(--wp--preset--color--white, #fff);
+	background-color: var(--wp--preset--color--primary, #333);
+}

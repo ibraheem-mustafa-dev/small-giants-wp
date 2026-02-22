@@ -1,0 +1,67 @@
+/**
+ * Pricing Table — editor-only styles.
+ *
+ * Controls visibility and layout for plan editing in the block editor.
+ */
+
+.sgs-pricing-table__add-plan {
+	margin-top: var(--wp--preset--spacing--40, 2rem);
+}
+
+.sgs-pricing-table__plan {
+	position: relative;
+}
+
+.sgs-pricing-table__remove-plan {
+	margin-top: var(--wp--preset--spacing--30, 1.5rem);
+	width: 100%;
+}
+
+.sgs-pricing-table__add-feature {
+	margin-bottom: var(--wp--preset--spacing--30, 1.5rem);
+}
+
+.sgs-pricing-table__feature {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.sgs-pricing-table__feature span[contenteditable] {
+	flex: 1;
+}
+
+.sgs-pricing-table__remove-feature {
+	flex-shrink: 0;
+	opacity: 0.6;
+}
+
+.sgs-pricing-table__remove-feature:hover {
+	opacity: 1;
+}
+
+/* Make period select smaller in editor */
+.sgs-pricing-table__price-wrapper .components-select-control {
+	margin-top: 0.5rem;
+	margin-bottom: 0;
+}
+
+.sgs-pricing-table__price-wrapper .components-select-control__input {
+	font-size: 0.875rem;
+	padding: 0.25rem 0.5rem;
+}
+
+/* Footer controls in editor */
+.sgs-pricing-table__footer {
+	margin-top: var(--wp--preset--spacing--30, 1.5rem);
+	padding-top: var(--wp--preset--spacing--30, 1.5rem);
+	border-top: 1px solid var(--wp--preset--color--neutral-200, #e5e5e5);
+}
+
+.sgs-pricing-table__footer .components-base-control {
+	margin-bottom: 1rem;
+}
+
+.sgs-pricing-table__footer .components-base-control:last-child {
+	margin-bottom: 0;
+}

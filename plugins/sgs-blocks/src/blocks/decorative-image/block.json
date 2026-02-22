@@ -1,0 +1,76 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "sgs/decorative-image",
+  "version": "0.1.0",
+  "title": "SGS Decorative Image",
+  "category": "sgs-content",
+  "description": "Image with decorative effects (parallax, float, reveal) and mask shapes. Marked aria-hidden since decorative.",
+  "keywords": [
+    "image",
+    "decorative",
+    "parallax",
+    "mask",
+    "shape",
+    "effect"
+  ],
+  "textdomain": "sgs-blocks",
+  "icon": "format-image",
+  "supports": {
+    "align": [
+      "wide",
+      "full"
+    ],
+    "anchor": true,
+    "html": false,
+    "spacing": {
+      "margin": true,
+      "padding": false
+    }
+  },
+  "attributes": {
+    "imageId": {
+      "type": "number"
+    },
+    "imageUrl": {
+      "type": "string"
+    },
+    "imageAlt": {
+      "type": "string",
+      "default": ""
+    },
+    "effect": {
+      "type": "string",
+      "default": "none"
+    },
+    "maskShape": {
+      "type": "string",
+      "default": "none"
+    },
+    "overlayColour": {
+      "type": "string",
+      "default": ""
+    },
+    "overlayOpacity": {
+      "type": "number",
+      "default": 0
+    },
+    "width": {
+      "type": "string",
+      "default": "100%"
+    },
+    "height": {
+      "type": "string",
+      "default": "auto"
+    },
+    "objectFit": {
+      "type": "string",
+      "default": "cover"
+    }
+  },
+  "render": "file:./render.php",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "viewScriptModule": "file:./view.js"
+}
