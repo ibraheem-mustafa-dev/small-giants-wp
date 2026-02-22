@@ -1,40 +1,91 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, RangeControl } from '@wordpress/components';
+import {
+	PanelBody,
+	SelectControl,
+	RangeControl,
+} from '@wordpress/components';
 import { DesignTokenPicker } from '../../components';
 import { colourVar } from '../../utils';
 
+const POSITIONS = [
+	{ label: __( 'Bottom right', 'sgs-blocks' ), value: 'bottom-right' },
+	{ label: __( 'Bottom left', 'sgs-blocks' ), value: 'bottom-left' },
+	{ label: __( 'Bottom centre', 'sgs-blocks' ), value: 'bottom-centre' },
+];
+
+const SHAPES = [
+	{ label: __( 'Circle', 'sgs-blocks' ), value: 'circle' },
+	{ label: __( 'Rounded', 'sgs-blocks' ), value: 'rounded' },
+	{ label: __( 'Square', 'sgs-blocks' ), value: 'square' },
+];
+
 export default function Edit( { attributes, setAttributes } ) {
-	const { buttonColour, iconColour, size, offset, showAfter } = attributes;
+	const { buttonColour, iconColour, position, size, scrollThreshold, shape } = attributes;
 
 	const blockProps = useBlockProps( {
-		className: 'sgs-back-to-top sgs-back-to-top--visible',
+		className: `sgs-back-to-top sgs-back-to-top--${ shape }`,
 		style: {
-			'--sgs-btt-bg': colourVar( buttonColour ) || undefined,
-			'--sgs-btt-color': colourVar( iconColour ) || undefined,
-			'--sgs-btt-size': size + 'px',
-			position: 'relative',
-			bottom: 'auto',
-			right: 'auto',
+			width: `${ size }px`,
+			height: `${ size }px`,
+			backgroundColor: colourVar( buttonColour ),
+			color: colourVar( iconColour ),
 		},
 	} );
 
 	return (
 		<>
 			<InspectorControls>
-				<PanelBody title={ __( 'Back to Top', 'sgs-blocks' ) }>
-					<DesignTokenPicker label={ __( 'Button colour', 'sgs-blocks' ) } value={ buttonColour } onChange={ ( val ) => setAttributes( { buttonColour: val } ) } />
-					<DesignTokenPicker label={ __( 'Icon colour', 'sgs-blocks' ) } value={ iconColour } onChange={ ( val ) => setAttributes( { iconColour: val } ) } />
-					<RangeControl label={ __( 'Size (px)', 'sgs-blocks' ) } value={ size } onChange={ ( val ) => setAttributes( { size: val } ) } min={ 32 } max={ 72 } __nextHasNoMarginBottom />
-					<RangeControl label={ __( 'Offset from edge (px)', 'sgs-blocks' ) } value={ offset } onChange={ ( val ) => setAttributes( { offset: val } ) } min={ 8 } max={ 60 } __nextHasNoMarginBottom />
-					<RangeControl label={ __( 'Show after scroll (px)', 'sgs-blocks' ) } value={ showAfter } onChange={ ( val ) => setAttributes( { showAfter: val } ) } min={ 100 } max={ 1000 } step={ 50 } __nextHasNoMarginBottom />
+				<PanelBody title={ __( 'Settings', 'sgs-blocks' ) }>
+					<SelectControl
+						label={ __( 'Position', 'sgs-blocks' ) }
+						value={ position }
+						options={ POSITIONS }
+						onChange={ ( val ) => setAttributes( { position: val } ) }
+						__nextHasNoMarginBottom
+					/>
+					<SelectControl
+						label={ __( 'Shape', 'sgs-blocks' ) }
+						value={ shape }
+						options={ SHAPES }
+						onChange={ ( val ) => setAttributes( { shape: val } ) }
+						__nextHasNoMarginBottom
+					/>
+					<RangeControl
+						label={ __( 'Size (px)', 'sgs-blocks' ) }
+						value={ size }
+						onChange={ ( val ) => setAttributes( { size: val } ) }
+						min={ 32 }
+						max={ 80 }
+						__nextHasNoMarginBottom
+					/>
+					<RangeControl
+						label={ __( 'Show after scroll (px)', 'sgs-blocks' ) }
+						value={ scrollThreshold }
+						onChange={ ( val ) => setAttributes( { scrollThreshold: val } ) }
+						min={ 100 }
+						max={ 1000 }
+						step={ 50 }
+						__nextHasNoMarginBottom
+					/>
+					<DesignTokenPicker
+						label={ __( 'Button colour', 'sgs-blocks' ) }
+						value={ buttonColour }
+						onChange={ ( val ) => setAttributes( { buttonColour: val } ) }
+					/>
+					<DesignTokenPicker
+						label={ __( 'Icon colour', 'sgs-blocks' ) }
+						value={ iconColour }
+						onChange={ ( val ) => setAttributes( { iconColour: val } ) }
+					/>
 				</PanelBody>
 			</InspectorControls>
-			<button { ...blockProps } type="button" aria-label={ __( 'Back to top', 'sgs-blocks' ) }>
-				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-					<path d="M12 19V5"/><path d="m5 12 7-7 7 7"/>
+
+			<div { ...blockProps }>
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+					<path d="M18 15l-6-6-6 6" />
 				</svg>
-			</button>
+			</div>
 		</>
 	);
 }

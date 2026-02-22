@@ -57,3 +57,27 @@
 @media (min-width: 1024px) {
 	.sgs-hide-desktop { display: none !important; }
 }
+
+/* --- Universal Hover Effects --- */
+
+.sgs-has-hover {
+	transition: background-color var(--sgs-hover-duration, 300ms) ease,
+	            color var(--sgs-hover-duration, 300ms) ease,
+	            border-color var(--sgs-hover-duration, 300ms) ease,
+	            transform var(--sgs-hover-duration, 300ms) ease,
+	            box-shadow var(--sgs-hover-duration, 300ms) ease;
+}
+
+.sgs-has-hover:hover {
+	background-color: var(--sgs-hover-bg, revert);
+	color: var(--sgs-hover-text, revert);
+	border-color: var(--sgs-hover-border, revert);
+	transform: scale(var(--sgs-hover-scale, 1));
+	box-shadow: var(--sgs-hover-shadow, revert);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-has-hover {
+		transition: none;
+	}
+}

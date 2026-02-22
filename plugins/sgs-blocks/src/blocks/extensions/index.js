@@ -8,3 +8,4 @@
  */
 import './animation';
 import './responsive-visibility';
+import './hover-effects';

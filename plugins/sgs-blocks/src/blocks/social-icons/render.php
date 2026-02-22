@@ -82,7 +82,7 @@ foreach ( $icons as $icon_item ) {
 	$label      = $platform_labels[ $platform ] ?? ucfirst( $platform );
 	$icon_name  = $platform_icons[ $platform ] ?? 'link';
 	$href       = 'email' === $platform ? 'mailto:' . esc_attr( $icon_item['url'] ) : esc_url( $icon_item['url'] );
-	$icon_svg   = sgs_get_lucide_icon( $icon_name, $icon_size );
+	$icon_svg   = sgs_get_lucide_icon( $icon_name );
 
 	$items_html .= sprintf(
 		'<a href="%s" class="sgs-social-icons__item" target="_blank" rel="noopener noreferrer" aria-label="%s" style="width:%dpx;height:%dpx">%s</a>',

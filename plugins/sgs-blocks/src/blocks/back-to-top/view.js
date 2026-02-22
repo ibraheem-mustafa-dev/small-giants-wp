@@ -1,44 +1,38 @@
 /**
  * Back to Top — frontend interactivity.
  *
- * Shows/hides the button based on scroll position.
- * Uses IntersectionObserver for performance.
+ * Shows/hides the button based on scroll position and smooth-scrolls to top on click.
  *
  * @package SGS\Blocks
  */
 
-function initBackToTop() {
-	const buttons = document.querySelectorAll( '.sgs-back-to-top' );
+function initBackToTop( btn ) {
+	const threshold = parseInt( btn.dataset.threshold, 10 ) || 300;
 
-	buttons.forEach( ( btn ) => {
-		const showAfter = parseInt( btn.dataset.showAfter || '300', 10 );
+	function toggleVisibility() {
+		const shouldShow = window.scrollY > threshold;
+		btn.hidden = ! shouldShow;
+		btn.setAttribute( 'aria-hidden', String( ! shouldShow ) );
+	}
 
-		// Create a sentinel element at the threshold.
-		const sentinel = document.createElement( 'div' );
-		sentinel.style.cssText = 'position:absolute;top:' + showAfter + 'px;width:1px;height:1px;pointer-events:none';
-		sentinel.setAttribute( 'aria-hidden', 'true' );
-		document.body.appendChild( sentinel );
-
-		const observer = new IntersectionObserver(
-			( entries ) => {
-				// When sentinel is NOT visible, user has scrolled past it.
-				entries.forEach( ( entry ) => {
-					btn.classList.toggle( 'sgs-back-to-top--visible', ! entry.isIntersecting );
-				} );
-			},
-			{ threshold: 0 }
-		);
-
-		observer.observe( sentinel );
-
-		btn.addEventListener( 'click', () => {
-			window.scrollTo( { top: 0, behavior: 'smooth' } );
-		} );
+	btn.addEventListener( 'click', () => {
+		window.scrollTo( { top: 0, behavior: 'smooth' } );
 	} );
+
+	// Debounced scroll listener.
+	let ticking = false;
+	window.addEventListener( 'scroll', () => {
+		if ( ! ticking ) {
+			requestAnimationFrame( () => {
+				toggleVisibility();
+				ticking = false;
+			} );
+			ticking = true;
+		}
+	}, { passive: true } );
+
+	// Initial check.
+	toggleVisibility();
 }
 
-if ( document.readyState === 'loading' ) {
-	document.addEventListener( 'DOMContentLoaded', initBackToTop );
-} else {
-	initBackToTop();
-}
+document.querySelectorAll( '.sgs-back-to-top' ).forEach( initBackToTop );

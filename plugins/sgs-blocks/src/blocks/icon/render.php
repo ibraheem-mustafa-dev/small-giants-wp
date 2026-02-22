@@ -42,7 +42,7 @@ $wrapper_attributes = get_block_wrapper_attributes( array(
 	'style' => implode( ';', $styles ),
 ) );
 
-$icon_svg = sgs_get_lucide_icon( $icon, $size );
+$icon_svg = sgs_get_lucide_icon( $icon );
 
 $output = sprintf( '<span class="sgs-icon__svg" aria-hidden="true">%s</span>', $icon_svg );
 

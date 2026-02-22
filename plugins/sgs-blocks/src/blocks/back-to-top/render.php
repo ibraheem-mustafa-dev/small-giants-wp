@@ -13,30 +13,37 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
-$button_colour = $attributes['buttonColour'] ?? 'primary';
-$icon_colour   = $attributes['iconColour'] ?? 'surface';
-$size          = (int) ( $attributes['size'] ?? 48 );
-$offset        = (int) ( $attributes['offset'] ?? 24 );
-$show_after    = (int) ( $attributes['showAfter'] ?? 300 );
+$button_colour   = $attributes['buttonColour'] ?? 'primary';
+$icon_colour     = $attributes['iconColour'] ?? 'surface';
+$position        = $attributes['position'] ?? 'bottom-right';
+$size            = (int) ( $attributes['size'] ?? 48 );
+$scroll_threshold = (int) ( $attributes['scrollThreshold'] ?? 300 );
+$shape           = $attributes['shape'] ?? 'circle';
 
-$styles = [
-	'--sgs-btt-bg:' . sgs_colour_value( $button_colour ),
-	'--sgs-btt-color:' . sgs_colour_value( $icon_colour ),
-	'--sgs-btt-size:' . $size . 'px',
-	'--sgs-btt-offset:' . $offset . 'px',
-];
+$classes = array(
+	'sgs-back-to-top',
+	'sgs-back-to-top--' . esc_attr( $position ),
+	'sgs-back-to-top--' . esc_attr( $shape ),
+);
 
-$wrapper = get_block_wrapper_attributes( [
-	'class'           => 'sgs-back-to-top',
-	'style'           => implode( ';', $styles ),
-	'data-show-after' => (string) $show_after,
-] );
+$styles = array(
+	'width:' . $size . 'px',
+	'height:' . $size . 'px',
+	'background-color:' . sgs_colour_value( $button_colour ),
+	'color:' . sgs_colour_value( $icon_colour ),
+);
+
+$wrapper_attributes = get_block_wrapper_attributes( array(
+	'class' => implode( ' ', $classes ),
+	'style' => implode( ';', $styles ),
+) );
+
+$arrow_svg = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 15l-6-6-6 6"/></svg>';
 
 printf(
-	'<button %s aria-label="%s" type="button">' .
-	'<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' .
-	'<path d="M12 19V5"/><path d="m5 12 7-7 7 7"/>' .
-	'</svg></button>',
-	$wrapper,
-	esc_attr__( 'Back to top', 'sgs-blocks' )
+	'<button %s data-threshold="%d" aria-label="%s" hidden>%s</button>',
+	$wrapper_attributes,
+	$scroll_threshold,
+	esc_attr__( 'Back to top', 'sgs-blocks' ),
+	$arrow_svg
 );
