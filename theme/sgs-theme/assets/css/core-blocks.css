@@ -39,8 +39,18 @@
 
 /* Top-level links */
 .wp-block-navigation .wp-block-navigation-item__content {
+	padding: 4px 8px;
+	border-radius: var(--wp--custom--border-radius--small);
 	transition: color var(--wp--custom--transition--fast),
+	            background-color var(--wp--custom--transition--fast),
 	            opacity var(--wp--custom--transition--fast);
+}
+
+/* Top-level nav link hover — accent background fill.
+   Submenu links override this with a higher-specificity rule below. */
+.wp-block-navigation .wp-block-navigation-item__content:hover {
+	background-color: var(--wp--preset--color--accent);
+	color: var(--wp--preset--color--text);
 }
 
 /* Submenu container — megamenu foundation */
