@@ -37,6 +37,15 @@ export default function Save( { attributes } ) {
 		<div { ...blockProps }>
 			{ steps.map( ( step, index ) => (
 				<div key={ index } className="sgs-process-steps__step">
+					{ step.icon && (
+						<span
+							className="sgs-process-steps__icon"
+							aria-hidden="true"
+							data-icon={ step.icon }
+						>
+							{ step.icon }
+						</span>
+					) }
 					{ numberStyle !== 'none' && (
 						<span
 							className="sgs-process-steps__number"

@@ -19,6 +19,16 @@
 	align-items: center;
 }
 
+/* ===== Icon ===== */
+
+.sgs-process-steps__icon {
+	display: inline-block;
+	font-size: var(--wp--preset--font-size--x-large);
+	line-height: 1;
+	margin-bottom: var(--wp--preset--spacing--20);
+	color: var(--wp--preset--color--primary);
+}
+
 /* ===== Number Badge ===== */
 
 .sgs-process-steps__number {
