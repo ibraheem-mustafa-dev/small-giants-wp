@@ -226,7 +226,7 @@ add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\enqueue_styles' );
  * asynchronously without blocking first paint.
  */
 function defer_non_critical_css( string $tag, string $handle ): string {
-	$deferred = [ 'sgs-dark-mode', 'sgs-mobile-nav-drawer' ];
+	$deferred = [ 'sgs-dark-mode', 'sgs-mobile-nav-drawer', 'sgs-utilities', 'sgs-extensions' ];
 
 	if ( in_array( $handle, $deferred, true ) ) {
 		// Replace media="all" with media="print" and add onload swap.
