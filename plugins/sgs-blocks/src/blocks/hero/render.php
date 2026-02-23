@@ -21,6 +21,8 @@ $bg_image         = $attributes['backgroundImage'] ?? null;
 $overlay_colour   = $attributes['overlayColour'] ?? '#1E1E1E';
 $overlay_opacity  = $attributes['overlayOpacity'] ?? 50;
 $split_image      = $attributes['splitImage'] ?? null;
+$bg_video         = $attributes['backgroundVideo'] ?? null;
+$svg_content      = $attributes['svgContent'] ?? '';
 $min_height       = $attributes['minHeight'] ?? '';
 $badges           = $attributes['badges'] ?? array();
 $cta_primary_text = $attributes['ctaPrimaryText'] ?? '';
@@ -42,7 +44,9 @@ $hover_background_colour = $attributes['hoverBackgroundColour'] ?? '';
 $hover_text_colour       = $attributes['hoverTextColour'] ?? '';
 $hover_border_colour     = $attributes['hoverBorderColour'] ?? '';
 
-$is_split = 'split' === $variant;
+$is_split        = 'split' === $variant;
+$is_video        = 'video' === $variant;
+$is_svg_animated = 'svg-animated' === $variant;
 
 // Build wrapper styles.
 $styles = array();
@@ -60,7 +64,7 @@ if ( $hover_border_colour ) {
 	$styles[] = '--sgs-hover-border:' . sgs_colour_value( $hover_border_colour );
 }
 
-if ( ! $is_split && ! empty( $bg_image['url'] ) ) {
+if ( ! $is_split && ! $is_video && ! $is_svg_animated && ! empty( $bg_image['url'] ) ) {
 	$styles[] = 'background-image:url(' . esc_url( $bg_image['url'] ) . ')';
 	$styles[] = 'background-size:cover';
 	$styles[] = 'background-position:center';
@@ -80,9 +84,24 @@ $wrapper_attributes = get_block_wrapper_attributes(
 	)
 );
 
+// Build video background.
+$video_html = '';
+if ( $is_video && ! empty( $bg_video['url'] ) ) {
+	$video_html = sprintf(
+		'<video class="sgs-hero__video-bg" autoplay loop muted playsinline aria-hidden="true"><source src="%s" type="video/mp4"></video>',
+		esc_url( $bg_video['url'] )
+	);
+}
+
+// Build SVG background.
+$svg_html = '';
+if ( $is_svg_animated && ! empty( $svg_content ) ) {
+	$svg_html = '<div class="sgs-hero__svg-bg" aria-hidden="true">' . wp_kses_post( $svg_content ) . '</div>';
+}
+
 // Build overlay.
 $overlay_html = '';
-if ( ! $is_split && ! empty( $bg_image['url'] ) ) {
+if ( ( ! $is_split && ! empty( $bg_image['url'] ) ) || $is_video || $is_svg_animated ) {
 	$overlay_style = sprintf(
 		'background-color:%s;opacity:%s',
 		esc_attr( $overlay_colour ),
@@ -211,8 +230,10 @@ if ( $is_split && ! empty( $split_image['url'] ) ) {
 
 // Output.
 printf(
-	'<section %s>%s%s%s%s</section>',
+	'<section %s>%s%s%s%s%s%s</section>',
 	$wrapper_attributes,
+	$video_html,
+	$svg_html,
 	$overlay_html,
 	$content_html,
 	$media_html,

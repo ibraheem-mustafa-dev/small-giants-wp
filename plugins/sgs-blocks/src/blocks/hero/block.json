@@ -44,7 +44,8 @@
   "attributes": {
     "variant": {
       "type": "string",
-      "default": "standard"
+      "default": "standard",
+      "enum": ["standard", "split", "video", "svg-animated"]
     },
     "headline": {
       "type": "string",
@@ -73,6 +74,12 @@
     },
     "splitImage": {
       "type": "object"
+    },
+    "backgroundVideo": {
+      "type": "object"
+    },
+    "svgContent": {
+      "type": "string"
     },
     "minHeight": {
       "type": "string",

@@ -13,6 +13,7 @@ import {
 	RangeControl,
 	Button,
 	TextControl,
+	TextareaControl,
 	__experimentalToggleGroupControl as ToggleGroupControl,
 	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 } from '@wordpress/components';
@@ -22,6 +23,8 @@ import { colourVar, fontSizeVar } from '../../utils';
 const VARIANT_OPTIONS = [
 	{ label: __( 'Standard', 'sgs-blocks' ), value: 'standard' },
 	{ label: __( 'Split', 'sgs-blocks' ), value: 'split' },
+	{ label: __( 'Video', 'sgs-blocks' ), value: 'video' },
+	{ label: __( 'SVG Animated', 'sgs-blocks' ), value: 'svg-animated' },
 ];
 
 const ALIGN_OPTIONS = [
@@ -119,6 +122,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		overlayColour,
 		overlayOpacity,
 		splitImage,
+		backgroundVideo,
+		svgContent,
 		minHeight,
 		badges,
 		headlineColour,
@@ -140,9 +145,11 @@ export default function Edit( { attributes, setAttributes } ) {
 	} = attributes;
 
 	const isSplit = variant === 'split';
+	const isVideo = variant === 'video';
+	const isSvgAnimated = variant === 'svg-animated';
 
 	const wrapperStyle = {};
-	if ( ! isSplit && backgroundImage?.url ) {
+	if ( ! isSplit && ! isVideo && ! isSvgAnimated && backgroundImage?.url ) {
 		wrapperStyle.backgroundImage = `url(${ backgroundImage.url })`;
 		wrapperStyle.backgroundSize = 'cover';
 		wrapperStyle.backgroundPosition = 'center';
@@ -441,6 +448,90 @@ export default function Edit( { attributes, setAttributes } ) {
 					</PanelBody>
 				) }
 
+				{ isVideo && (
+					<PanelBody
+						title={ __( 'Background Video', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
+						<MediaUploadCheck>
+							<MediaUpload
+								onSelect={ ( media ) =>
+									setAttributes( {
+										backgroundVideo: {
+											id: media.id,
+											url: media.url,
+										},
+									} )
+								}
+								allowedTypes={ [ 'video' ] }
+								value={ backgroundVideo?.id }
+								render={ ( { open } ) => (
+									<div>
+										{ backgroundVideo?.url ? (
+											<>
+												<video
+													src={ backgroundVideo.url }
+													controls
+													style={ {
+														maxWidth: '100%',
+														marginBottom: '8px',
+													} }
+												/>
+												<Button
+													variant="secondary"
+													onClick={ () =>
+														setAttributes( {
+															backgroundVideo:
+																undefined,
+														} )
+													}
+													isDestructive
+												>
+													{ __(
+														'Remove video',
+														'sgs-blocks'
+													) }
+												</Button>
+											</>
+										) : (
+											<Button
+												variant="secondary"
+												onClick={ open }
+											>
+												{ __(
+													'Select background video (MP4/WebM)',
+													'sgs-blocks'
+												) }
+											</Button>
+										) }
+									</div>
+								) }
+							/>
+						</MediaUploadCheck>
+					</PanelBody>
+				) }
+
+				{ isSvgAnimated && (
+					<PanelBody
+						title={ __( 'SVG Background', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
+						<TextareaControl
+							label={ __( 'SVG markup', 'sgs-blocks' ) }
+							value={ svgContent || '' }
+							onChange={ ( val ) =>
+								setAttributes( { svgContent: val } )
+							}
+							rows={ 10 }
+							help={ __(
+								'Paste your SVG code here. Animation will be handled by the SVG itself.',
+								'sgs-blocks'
+							) }
+							__nextHasNoMarginBottom
+						/>
+					</PanelBody>
+				) }
+
 				<PanelBody
 					title={ __( 'Primary CTA', 'sgs-blocks' ) }
 					initialOpen={ false }
@@ -565,7 +656,38 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				{ ! isSplit && backgroundImage?.url && (
+				{ isVideo && backgroundVideo?.url && (
+					<video
+						className="sgs-hero__video-bg"
+						src={ backgroundVideo.url }
+						autoPlay
+						loop
+						muted
+						playsInline
+						aria-hidden="true"
+					/>
+				) }
+
+				{ isSvgAnimated && svgContent && (
+					<div
+						className="sgs-hero__svg-bg"
+						dangerouslySetInnerHTML={ { __html: svgContent } }
+						aria-hidden="true"
+					/>
+				) }
+
+				{ ( ! isSplit && ! isVideo && ! isSvgAnimated && backgroundImage?.url ) && (
+					<span
+						className="sgs-hero__overlay"
+						style={ {
+							backgroundColor: overlayColour,
+							opacity: overlayOpacity / 100,
+						} }
+						aria-hidden="true"
+					/>
+				) }
+
+				{ ( isVideo || isSvgAnimated ) && (
 					<span
 						className="sgs-hero__overlay"
 						style={ {
