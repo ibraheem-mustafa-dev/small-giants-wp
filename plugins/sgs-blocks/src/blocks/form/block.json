@@ -101,6 +101,10 @@
     "sgs/form-field-tiles",
     "sgs/form-field-file",
     "sgs/form-field-consent",
+    "sgs/form-field-date",
+    "sgs/form-field-number",
+    "sgs/form-field-hidden",
+    "sgs/form-field-address",
     "sgs/form-review"
   ],
   "render": "file:./render.php",
