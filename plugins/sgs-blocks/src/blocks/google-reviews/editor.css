@@ -1,0 +1,36 @@
+/**
+ * Google Reviews — Editor-Only Styles
+ *
+ * @package SGS\Blocks
+ */
+
+.sgs-google-reviews__placeholder {
+	padding: 3rem 2rem;
+	text-align: center;
+	background: linear-gradient( 135deg, rgba( 15, 126, 128, 0.05 ) 0%, rgba( 248, 122, 31, 0.05 ) 100% );
+	border: 2px dashed var( --wp--preset--color--border-subtle, #ddd );
+	border-radius: var( --wp--custom--border-radius--medium, 8px );
+}
+
+.sgs-google-reviews__placeholder-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+	opacity: 0.6;
+}
+
+.sgs-google-reviews__placeholder h3 {
+	margin: 0 0 0.5rem;
+	font-size: 1.5rem;
+	color: var( --wp--preset--color--text, #1e1e1e );
+}
+
+.sgs-google-reviews__placeholder p {
+	margin: 0 0 1rem;
+	color: var( --wp--preset--color--text-muted, #555 );
+}
+
+.sgs-google-reviews__placeholder-settings {
+	font-size: 0.875rem;
+	color: var( --wp--preset--color--text-muted, #555 );
+	line-height: 1.6;
+}

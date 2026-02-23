@@ -46,6 +46,9 @@ require_once SGS_BLOCKS_PATH . 'includes/device-visibility.php';
 // Universal hover effects — server-side CSS variable injection.
 require_once SGS_BLOCKS_PATH . 'includes/hover-effects.php';
 
+// Google Reviews settings and API integration.
+require_once SGS_BLOCKS_PATH . 'includes/google-reviews-settings.php';
+
 // Register REST API endpoints.
 Forms\Form_REST_API::register();
 

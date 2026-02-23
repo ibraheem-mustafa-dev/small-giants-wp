@@ -1,0 +1,127 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/google-reviews",
+	"title": "Google Reviews",
+	"category": "sgs-content",
+	"description": "Display Google Business Profile reviews with aggregate ratings and schema.org markup.",
+	"keywords": [ "reviews", "google", "testimonials", "ratings", "stars" ],
+	"textdomain": "sgs-blocks",
+	"supports": {
+		"align": [ "wide", "full" ],
+		"anchor": true,
+		"className": true,
+		"html": false
+	},
+	"attributes": {
+		"variant": {
+			"type": "string",
+			"default": "grid",
+			"enum": [ "grid", "slider", "list", "badge", "floating-badge", "wall" ]
+		},
+		"placeId": {
+			"type": "string",
+			"default": ""
+		},
+		"columns": {
+			"type": "number",
+			"default": 3
+		},
+		"columnsTablet": {
+			"type": "number",
+			"default": 2
+		},
+		"columnsMobile": {
+			"type": "number",
+			"default": 1
+		},
+		"maxReviews": {
+			"type": "number",
+			"default": 10
+		},
+		"minRating": {
+			"type": "number",
+			"default": 1
+		},
+		"textOnly": {
+			"type": "boolean",
+			"default": false
+		},
+		"excludeKeywords": {
+			"type": "string",
+			"default": ""
+		},
+		"sortBy": {
+			"type": "string",
+			"default": "newest",
+			"enum": [ "newest", "highest", "lowest" ]
+		},
+		"showAggregate": {
+			"type": "boolean",
+			"default": true
+		},
+		"showBreakdown": {
+			"type": "boolean",
+			"default": false
+		},
+		"showAvatar": {
+			"type": "boolean",
+			"default": true
+		},
+		"showDate": {
+			"type": "boolean",
+			"default": true
+		},
+		"showGoogleLogo": {
+			"type": "boolean",
+			"default": true
+		},
+		"reviewRequestUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"theme": {
+			"type": "string",
+			"default": "light",
+			"enum": [ "light", "dark", "transparent" ]
+		},
+		"cardStyle": {
+			"type": "string",
+			"default": "bordered",
+			"enum": [ "flat", "bordered", "elevated" ]
+		},
+		"starColour": {
+			"type": "string",
+			"default": "accent"
+		},
+		"textColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"autoplay": {
+			"type": "boolean",
+			"default": false
+		},
+		"autoplaySpeed": {
+			"type": "number",
+			"default": 5000
+		},
+		"showDots": {
+			"type": "boolean",
+			"default": true
+		},
+		"showArrows": {
+			"type": "boolean",
+			"default": true
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./editor.css",
+	"style": "file:./style.css",
+	"viewScriptModule": "file:./view.js",
+	"render": "file:./render.php"
+}
