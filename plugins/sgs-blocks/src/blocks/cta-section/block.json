@@ -89,6 +89,10 @@
       "type": "number",
       "default": 30
     },
+    "stats": {
+      "type": "array",
+      "default": []
+    },
     "hoverBackgroundColour": {
       "type": "string",
       "default": ""

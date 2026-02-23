@@ -14,15 +14,18 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 // Extract attributes with defaults.
-$headline          = $attributes['headline'] ?? '';
-$body              = $attributes['body'] ?? '';
-$buttons           = $attributes['buttons'] ?? array();
-$layout            = $attributes['layout'] ?? 'centred';
-$headline_colour   = $attributes['headlineColour'] ?? '';
-$body_colour       = $attributes['bodyColour'] ?? '';
-$body_font_size    = $attributes['bodyFontSize'] ?? '';
-$button_colour     = $attributes['buttonColour'] ?? '';
-$button_background = $attributes['buttonBackground'] ?? '';
+$headline                = $attributes['headline'] ?? '';
+$body                    = $attributes['body'] ?? '';
+$buttons                 = $attributes['buttons'] ?? array();
+$layout                  = $attributes['layout'] ?? 'centred';
+$headline_colour         = $attributes['headlineColour'] ?? '';
+$body_colour             = $attributes['bodyColour'] ?? '';
+$body_font_size          = $attributes['bodyFontSize'] ?? '';
+$button_colour           = $attributes['buttonColour'] ?? '';
+$button_background       = $attributes['buttonBackground'] ?? '';
+$background_image        = $attributes['backgroundImage'] ?? null;
+$background_image_opacity = $attributes['backgroundImageOpacity'] ?? 30;
+$stats                   = $attributes['stats'] ?? array();
 
 $hover_background_colour = $attributes['hoverBackgroundColour'] ?? '';
 $hover_text_colour       = $attributes['hoverTextColour'] ?? '';
@@ -40,6 +43,12 @@ if ( $hover_border_colour ) {
 	$wrapper_styles[] = '--sgs-hover-border:' . sgs_colour_value( $hover_border_colour );
 }
 
+if ( ! empty( $background_image['url'] ) ) {
+	$wrapper_styles[] = 'background-image:url(' . esc_url( $background_image['url'] ) . ')';
+	$wrapper_styles[] = 'background-size:cover';
+	$wrapper_styles[] = 'background-position:center';
+}
+
 // Build wrapper classes.
 $classes = array(
 	'sgs-cta-section',
@@ -54,6 +63,15 @@ if ( $wrapper_styles ) {
 }
 
 $wrapper_attributes = get_block_wrapper_attributes( $wrapper_attr_args );
+
+// Build background overlay.
+$overlay_html = '';
+if ( ! empty( $background_image['url'] ) ) {
+	$overlay_html = sprintf(
+		'<span class="sgs-cta-section__overlay" style="opacity:%s" aria-hidden="true"></span>',
+		esc_attr( $background_image_opacity / 100 )
+	);
+}
 
 // Build headline styles.
 $headline_style_attr = '';
@@ -71,6 +89,23 @@ if ( $body_font_size ) {
 }
 $body_style_attr = $body_styles ? ' style="' . implode( ';', $body_styles ) . '"' : '';
 
+// Build stats HTML.
+$stats_html = '';
+if ( ! empty( $stats ) ) {
+	$stats_html .= '<div class="sgs-cta-section__stats">';
+	foreach ( $stats as $stat ) {
+		$stat_text = $stat['text'] ?? '';
+		if ( ! $stat_text ) {
+			continue;
+		}
+		$stats_html .= sprintf(
+			'<span class="sgs-cta-section__stat">%s</span>',
+			esc_html( $stat_text )
+		);
+	}
+	$stats_html .= '</div>';
+}
+
 // Build buttons HTML.
 $buttons_html = '';
 if ( ! empty( $buttons ) ) {
@@ -79,6 +114,7 @@ if ( ! empty( $buttons ) ) {
 		$btn_text  = $btn['text'] ?? '';
 		$btn_url   = $btn['url'] ?? '';
 		$btn_style = $btn['style'] ?? 'accent';
+		$btn_icon  = $btn['icon'] ?? '';
 
 		if ( ! $btn_text || ! $btn_url ) {
 			continue;
@@ -93,11 +129,20 @@ if ( ! empty( $buttons ) ) {
 		}
 		$btn_style_attr = $btn_styles ? ' style="' . implode( ';', $btn_styles ) . '"' : '';
 
+		$icon_html = '';
+		if ( $btn_icon ) {
+			$icon_html = sprintf(
+				'<span class="sgs-cta-section__btn-icon" aria-hidden="true">%s</span>',
+				esc_html( $btn_icon )
+			);
+		}
+
 		$buttons_html .= sprintf(
-			'<a href="%s" class="sgs-cta-section__btn sgs-cta-section__btn--%s"%s>%s</a>',
+			'<a href="%s" class="sgs-cta-section__btn sgs-cta-section__btn--%s"%s>%s%s</a>',
 			esc_url( $btn_url ),
 			esc_attr( $btn_style ),
 			$btn_style_attr,
+			$icon_html,
 			esc_html( $btn_text )
 		);
 	}
@@ -106,11 +151,13 @@ if ( ! empty( $buttons ) ) {
 
 // Output.
 printf(
-	'<section %s><div class="sgs-cta-section__content"><h2 class="sgs-cta-section__headline"%s>%s</h2><p class="sgs-cta-section__body"%s>%s</p></div>%s</section>',
+	'<section %s>%s<div class="sgs-cta-section__content"><h2 class="sgs-cta-section__headline"%s>%s</h2><p class="sgs-cta-section__body"%s>%s</p>%s</div>%s</section>',
 	$wrapper_attributes,
+	$overlay_html,
 	$headline_style_attr,
 	wp_kses_post( $headline ),
 	$body_style_attr,
 	wp_kses_post( $body ),
+	$stats_html,
 	$buttons_html
 );
