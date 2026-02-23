@@ -43,7 +43,11 @@
 	transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Card styles */
+/* Style variants */
+.sgs-pricing-table--card .sgs-pricing-table__plan {
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
 .sgs-pricing-table--flat .sgs-pricing-table__plan {
 	border: none;
 	box-shadow: none;
@@ -51,15 +55,7 @@
 
 .sgs-pricing-table--bordered .sgs-pricing-table__plan {
 	border: 1px solid var(--wp--preset--color--neutral-200, #e5e5e5);
-}
-
-.sgs-pricing-table--elevated .sgs-pricing-table__plan {
-	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.sgs-pricing-table--filled .sgs-pricing-table__plan {
-	background-color: var(--wp--preset--color--neutral-50, #fafafa);
-	border: 1px solid var(--wp--preset--color--neutral-200, #e5e5e5);
+	box-shadow: none;
 }
 
 /* Highlighted plan (scale up slightly) */
@@ -68,7 +64,7 @@
 	z-index: 1;
 }
 
-.sgs-pricing-table--elevated .sgs-pricing-table__plan--highlighted {
+.sgs-pricing-table--card .sgs-pricing-table__plan--highlighted {
 	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 

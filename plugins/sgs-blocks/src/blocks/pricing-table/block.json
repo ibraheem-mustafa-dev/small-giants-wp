@@ -46,7 +46,7 @@
       "type": "array",
       "default": [
         {
-          "title": "Basic",
+          "name": "Basic",
           "price": "£9.99",
           "period": "monthly",
           "features": [
@@ -56,10 +56,10 @@
           ],
           "ctaText": "Get Started",
           "ctaUrl": "",
-          "isPopular": false
+          "highlighted": false
         },
         {
-          "title": "Pro",
+          "name": "Pro",
           "price": "£29.99",
           "period": "monthly",
           "features": [
@@ -70,10 +70,10 @@
           ],
           "ctaText": "Get Started",
           "ctaUrl": "",
-          "isPopular": true
+          "highlighted": true
         },
         {
-          "title": "Enterprise",
+          "name": "Enterprise",
           "price": "£99.99",
           "period": "monthly",
           "features": [
@@ -85,17 +85,13 @@
           ],
           "ctaText": "Contact Sales",
           "ctaUrl": "",
-          "isPopular": false
+          "highlighted": false
         }
       ]
     },
-    "highlightedPlan": {
-      "type": "number",
-      "default": 1
-    },
-    "cardStyle": {
+    "style": {
       "type": "string",
-      "default": "elevated"
+      "default": "card"
     },
     "titleColour": {
       "type": "string"
@@ -129,7 +125,6 @@
       "default": "accent"
     }
   },
-  "render": "file:./render.php",
   "editorScript": "file:./index.js",
   "editorStyle": "file:./index.css",
   "style": "file:./style-index.css"

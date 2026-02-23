@@ -16,11 +16,10 @@ import { Icon, plus, close } from '@wordpress/icons';
 import { DesignTokenPicker } from '../../components';
 import { colourVar } from '../../utils';
 
-const CARD_STYLE_OPTIONS = [
+const STYLE_OPTIONS = [
+	{ label: __( 'Card', 'sgs-blocks' ), value: 'card' },
 	{ label: __( 'Flat', 'sgs-blocks' ), value: 'flat' },
 	{ label: __( 'Bordered', 'sgs-blocks' ), value: 'bordered' },
-	{ label: __( 'Elevated', 'sgs-blocks' ), value: 'elevated' },
-	{ label: __( 'Filled', 'sgs-blocks' ), value: 'filled' },
 ];
 
 const PERIOD_OPTIONS = [
@@ -40,8 +39,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const {
 		columns,
 		plans,
-		highlightedPlan,
-		cardStyle,
+		style,
 		titleColour,
 		priceColour,
 		featureColour,
@@ -56,7 +54,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const className = [
 		'sgs-pricing-table',
 		`sgs-pricing-table--columns-${ columns }`,
-		`sgs-pricing-table--${ cardStyle }`,
+		`sgs-pricing-table--${ style }`,
 	].join( ' ' );
 
 	const blockProps = useBlockProps( { className } );
@@ -100,13 +98,13 @@ export default function Edit( { attributes, setAttributes } ) {
 			plans: [
 				...plans,
 				{
-					title: __( 'New Plan', 'sgs-blocks' ),
+					name: __( 'New Plan', 'sgs-blocks' ),
 					price: '£0.00',
 					period: 'monthly',
 					features: [ __( 'Feature 1', 'sgs-blocks' ) ],
 					ctaText: __( 'Get Started', 'sgs-blocks' ),
 					ctaUrl: '',
-					isPopular: false,
+					highlighted: false,
 				},
 			],
 		} );
@@ -134,27 +132,12 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 					/>
 					<SelectControl
-						label={ __( 'Card style', 'sgs-blocks' ) }
-						value={ cardStyle }
-						options={ CARD_STYLE_OPTIONS }
+						label={ __( 'Style', 'sgs-blocks' ) }
+						value={ style }
+						options={ STYLE_OPTIONS }
 						onChange={ ( val ) =>
-							setAttributes( { cardStyle: val } )
+							setAttributes( { style: val } )
 						}
-						__nextHasNoMarginBottom
-					/>
-					<RangeControl
-						label={ __( 'Highlighted plan', 'sgs-blocks' ) }
-						help={ __(
-							'0 = first plan, -1 = none highlighted',
-							'sgs-blocks'
-						) }
-						value={ highlightedPlan }
-						onChange={ ( val ) =>
-							setAttributes( { highlightedPlan: val } )
-						}
-						min={ -1 }
-						max={ plans.length - 1 }
-						step={ 1 }
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
@@ -257,21 +240,17 @@ export default function Edit( { attributes, setAttributes } ) {
 			<div { ...blockProps }>
 				<div className="sgs-pricing-table__grid">
 					{ plans.map( ( plan, planIndex ) => {
-						const isHighlighted =
-							planIndex === highlightedPlan;
 						const planClass = [
 							'sgs-pricing-table__plan',
-							isHighlighted &&
+							plan.highlighted &&
 								'sgs-pricing-table__plan--highlighted',
-							plan.isPopular &&
-								'sgs-pricing-table__plan--popular',
 						]
 							.filter( Boolean )
 							.join( ' ' );
 
 						return (
 							<div key={ planIndex } className={ planClass }>
-								{ plan.isPopular && (
+								{ plan.highlighted && (
 									<div
 										className="sgs-pricing-table__badge"
 										style={ {
@@ -291,11 +270,11 @@ export default function Edit( { attributes, setAttributes } ) {
 									<RichText
 										tagName="h3"
 										className="sgs-pricing-table__title"
-										value={ plan.title }
+										value={ plan.name }
 										onChange={ ( val ) =>
 											updatePlan(
 												planIndex,
-												'title',
+												'name',
 												val
 											)
 										}
@@ -442,14 +421,14 @@ export default function Edit( { attributes, setAttributes } ) {
 									/>
 									<ToggleControl
 										label={ __(
-											'Mark as popular',
+											'Highlight this plan',
 											'sgs-blocks'
 										) }
-										checked={ plan.isPopular }
+										checked={ plan.highlighted }
 										onChange={ ( val ) =>
 											updatePlan(
 												planIndex,
-												'isPopular',
+												'highlighted',
 												val
 											)
 										}
