@@ -1,0 +1,30 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/form-field-hidden",
+	"version": "0.1.0",
+	"title": "Hidden Field",
+	"category": "sgs-forms",
+	"description": "A hidden field for storing values not visible to users.",
+	"keywords": [ "hidden", "invisible", "field" ],
+	"textdomain": "sgs-blocks",
+	"icon": "hidden",
+	"parent": [ "sgs/form", "sgs/form-step" ],
+	"usesContext": [ "sgs/formId" ],
+	"supports": {
+		"html": false,
+		"anchor": false
+	},
+	"attributes": {
+		"fieldName": {
+			"type": "string",
+			"default": ""
+		},
+		"defaultValue": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js"
+}

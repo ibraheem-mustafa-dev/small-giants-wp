@@ -1,0 +1,46 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/form-field-address",
+	"version": "0.1.0",
+	"title": "Address Field",
+	"category": "sgs-forms",
+	"description": "An address field with optional postcode lookup.",
+	"keywords": [ "address", "postcode", "location", "field" ],
+	"textdomain": "sgs-blocks",
+	"icon": "location",
+	"parent": [ "sgs/form", "sgs/form-step" ],
+	"usesContext": [ "sgs/formId" ],
+	"supports": {
+		"html": false,
+		"anchor": false
+	},
+	"attributes": {
+		"fieldName": {
+			"type": "string",
+			"default": ""
+		},
+		"label": {
+			"type": "string",
+			"default": ""
+		},
+		"required": {
+			"type": "boolean",
+			"default": false
+		},
+		"enableLookup": {
+			"type": "boolean",
+			"default": false
+		},
+		"lookupProvider": {
+			"type": "string",
+			"default": "getaddress.io"
+		},
+		"fields": {
+			"type": "array",
+			"default": [ "line1", "line2", "city", "county", "postcode", "country" ]
+		}
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js"
+}

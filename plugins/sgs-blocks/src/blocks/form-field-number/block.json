@@ -1,0 +1,58 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/form-field-number",
+	"version": "0.1.0",
+	"title": "Number Field",
+	"category": "sgs-forms",
+	"description": "A number input field with min/max/step controls.",
+	"keywords": [ "number", "integer", "quantity", "field" ],
+	"textdomain": "sgs-blocks",
+	"icon": "calculator",
+	"parent": [ "sgs/form", "sgs/form-step" ],
+	"usesContext": [ "sgs/formId" ],
+	"supports": {
+		"html": false,
+		"anchor": false
+	},
+	"attributes": {
+		"fieldName": {
+			"type": "string",
+			"default": ""
+		},
+		"label": {
+			"type": "string",
+			"default": ""
+		},
+		"placeholder": {
+			"type": "string",
+			"default": ""
+		},
+		"helpText": {
+			"type": "string",
+			"default": ""
+		},
+		"required": {
+			"type": "boolean",
+			"default": false
+		},
+		"width": {
+			"type": "string",
+			"default": "full"
+		},
+		"min": {
+			"type": "string",
+			"default": ""
+		},
+		"max": {
+			"type": "string",
+			"default": ""
+		},
+		"step": {
+			"type": "string",
+			"default": "1"
+		}
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js"
+}
