@@ -17,15 +17,14 @@ import { colourVar } from '../../utils';
 const TRIGGER_STYLE_OPTIONS = [
 	{ label: __( 'Primary', 'sgs-blocks' ), value: 'primary' },
 	{ label: __( 'Secondary', 'sgs-blocks' ), value: 'secondary' },
-	{ label: __( 'Accent', 'sgs-blocks' ), value: 'accent' },
-	{ label: __( 'Outline', 'sgs-blocks' ), value: 'outline' },
+	{ label: __( 'Text Link', 'sgs-blocks' ), value: 'text-link' },
 ];
 
-const MODAL_SIZE_OPTIONS = [
-	{ label: __( 'Small', 'sgs-blocks' ), value: 'small' },
-	{ label: __( 'Medium', 'sgs-blocks' ), value: 'medium' },
-	{ label: __( 'Large', 'sgs-blocks' ), value: 'large' },
-	{ label: __( 'Full', 'sgs-blocks' ), value: 'full' },
+const MAX_WIDTH_OPTIONS = [
+	{ label: __( 'Small (480px)', 'sgs-blocks' ), value: 'small' },
+	{ label: __( 'Medium (640px)', 'sgs-blocks' ), value: 'medium' },
+	{ label: __( 'Large (800px)', 'sgs-blocks' ), value: 'large' },
+	{ label: __( 'Full Width', 'sgs-blocks' ), value: 'full' },
 ];
 
 const TEMPLATE = [
@@ -53,8 +52,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		triggerStyle,
 		triggerColour,
 		triggerBackground,
-		modalSize,
-		closeOnBackdrop,
+		maxWidth,
+		closeOnOverlay,
 		modalBackground,
 		overlayColour,
 		overlayOpacity,
@@ -123,26 +122,26 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				<PanelBody title={ __( 'Modal Settings', 'sgs-blocks' ) }>
 					<SelectControl
-						label={ __( 'Modal size', 'sgs-blocks' ) }
-						value={ modalSize }
-						options={ MODAL_SIZE_OPTIONS }
+						label={ __( 'Max width', 'sgs-blocks' ) }
+						value={ maxWidth }
+						options={ MAX_WIDTH_OPTIONS }
 						onChange={ ( val ) =>
-							setAttributes( { modalSize: val } )
+							setAttributes( { maxWidth: val } )
 						}
 						__nextHasNoMarginBottom
 					/>
 					<ToggleControl
 						label={ __(
-							'Close on backdrop click',
+							'Close on overlay click',
 							'sgs-blocks'
 						) }
 						help={ __(
 							'Allow users to close the modal by clicking outside it.',
 							'sgs-blocks'
 						) }
-						checked={ closeOnBackdrop }
+						checked={ closeOnOverlay }
 						onChange={ ( val ) =>
-							setAttributes( { closeOnBackdrop: val } )
+							setAttributes( { closeOnOverlay: val } )
 						}
 						__nextHasNoMarginBottom
 					/>

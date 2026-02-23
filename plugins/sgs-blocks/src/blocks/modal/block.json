@@ -31,7 +31,8 @@
     },
     "triggerStyle": {
       "type": "string",
-      "default": "primary"
+      "default": "primary",
+      "enum": ["primary", "secondary", "text-link"]
     },
     "triggerColour": {
       "type": "string"
@@ -39,11 +40,12 @@
     "triggerBackground": {
       "type": "string"
     },
-    "modalSize": {
+    "maxWidth": {
       "type": "string",
-      "default": "medium"
+      "default": "medium",
+      "enum": ["small", "medium", "large", "full"]
     },
-    "closeOnBackdrop": {
+    "closeOnOverlay": {
       "type": "boolean",
       "default": true
     },

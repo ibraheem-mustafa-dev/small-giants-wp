@@ -1,12 +1,15 @@
 /**
  * Modal — frontend and editor styles.
  *
- * Accessible modal overlay with focus trap, smooth animations, and responsive sizing.
+ * Uses native HTML dialog element with ::backdrop for overlay.
+ * Accessible modal with built-in focus trap, Escape key handling, and smooth animations.
  */
 
 .sgs-modal {
 	--sgs-modal-z-index: 99999;
 	--sgs-modal-transition: 0.3s ease;
+	--sgs-modal-backdrop-colour: #000000;
+	--sgs-modal-backdrop-opacity: 0.5;
 }
 
 /* Trigger button */
@@ -41,91 +44,87 @@
 	background-color: var(--wp--preset--color--secondary-dark, #5a6268);
 }
 
-.sgs-modal__trigger--accent {
-	color: var(--wp--preset--color--white, #fff);
-	background-color: var(--wp--preset--color--accent, #007bff);
-}
-
-.sgs-modal__trigger--accent:hover {
-	background-color: var(--wp--preset--color--accent-dark, #0056b3);
-}
-
-.sgs-modal__trigger--outline {
+.sgs-modal__trigger--text-link {
+	padding: 0;
+	border: none;
+	background: none;
 	color: var(--wp--preset--color--primary, #333);
-	background-color: transparent;
-	border-color: var(--wp--preset--color--primary, #333);
+	font-weight: 400;
+	text-decoration: underline;
 }
 
-.sgs-modal__trigger--outline:hover {
-	color: var(--wp--preset--color--white, #fff);
-	background-color: var(--wp--preset--color--primary, #333);
+.sgs-modal__trigger--text-link:hover {
+	color: var(--wp--preset--color--primary-dark, #000);
+	text-decoration: none;
 }
 
-/* Modal overlay (backdrop) */
-.sgs-modal__overlay {
+/* Native dialog element */
+.sgs-modal__dialog {
 	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100vw;
-	height: 100vh;
-	z-index: var(--sgs-modal-z-index);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	background-color: rgba(0, 0, 0, 0.5);
-	opacity: 0;
-	visibility: hidden;
-	transition: opacity var(--sgs-modal-transition), visibility var(--sgs-modal-transition);
-	padding: 1rem;
-	overflow-y: auto;
-}
-
-.sgs-modal__overlay[aria-hidden="false"] {
-	opacity: 1;
-	visibility: visible;
-}
-
-/* Modal container (for vertical centering) */
-.sgs-modal__container {
-	width: 100%;
-	max-width: 100%;
 	margin: auto;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	min-height: 100%;
-	padding: 2rem 0;
-}
-
-/* Modal content box */
-.sgs-modal__content {
-	position: relative;
-	width: 100%;
+	padding: 0;
+	border: none;
 	background-color: var(--wp--preset--color--white, #fff);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+	max-height: 90vh;
+	overflow-y: auto;
+	opacity: 0;
 	transform: scale(0.9);
-	transition: transform var(--sgs-modal-transition);
+	transition: opacity var(--sgs-modal-transition), transform var(--sgs-modal-transition), overlay var(--sgs-modal-transition) allow-discrete, display var(--sgs-modal-transition) allow-discrete;
 }
 
-.sgs-modal__overlay[aria-hidden="false"] .sgs-modal__content {
+/* Dialog opening animation */
+.sgs-modal__dialog[open] {
+	opacity: 1;
 	transform: scale(1);
 }
 
-.sgs-modal__content--small {
-	max-width: 400px;
+/* Starting state for animation (from closed to open) */
+@starting-style {
+	.sgs-modal__dialog[open] {
+		opacity: 0;
+		transform: scale(0.9);
+	}
 }
 
-.sgs-modal__content--medium {
-	max-width: 600px;
+/* Max width variants */
+.sgs-modal__dialog--small {
+	width: 480px;
+	max-width: calc(100vw - 2rem);
 }
 
-.sgs-modal__content--large {
-	max-width: 900px;
+.sgs-modal__dialog--medium {
+	width: 640px;
+	max-width: calc(100vw - 2rem);
 }
 
-.sgs-modal__content--full {
+.sgs-modal__dialog--large {
+	width: 800px;
+	max-width: calc(100vw - 2rem);
+}
+
+.sgs-modal__dialog--full {
+	width: 95vw;
 	max-width: 95vw;
+}
+
+/* Backdrop (native dialog ::backdrop pseudo-element) */
+.sgs-modal__dialog::backdrop {
+	background-color: var(--sgs-modal-backdrop-colour);
+	opacity: 0;
+	transition: opacity var(--sgs-modal-transition), overlay var(--sgs-modal-transition) allow-discrete, display var(--sgs-modal-transition) allow-discrete;
+}
+
+.sgs-modal__dialog[open]::backdrop {
+	opacity: var(--sgs-modal-backdrop-opacity);
+}
+
+/* Starting state for backdrop animation */
+@starting-style {
+	.sgs-modal__dialog[open]::backdrop {
+		opacity: 0;
+	}
 }
 
 /* Close button */
@@ -167,9 +166,4 @@
 	.sgs-modal__inner {
 		padding: 3rem 3rem 2rem;
 	}
-}
-
-/* Prevent body scroll when modal is open */
-body.sgs-modal-open {
-	overflow: hidden;
 }

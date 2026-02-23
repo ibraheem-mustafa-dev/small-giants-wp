@@ -1,7 +1,8 @@
 /**
  * Modal — frontend interactivity.
  *
- * Handles modal open/close, focus trap, Escape key, and backdrop click.
+ * Uses native HTML dialog element with showModal() and close() methods.
+ * Native dialog provides built-in focus trap, Escape key handling, and ::backdrop styling.
  * WCAG 2.2 AA compliant with proper ARIA attributes and keyboard navigation.
  *
  * @package SGS\Blocks
@@ -16,123 +17,83 @@ function initModals() {
 			return;
 		}
 
-		const modal = document.getElementById( modalId );
-		if ( ! modal ) {
+		const dialog = document.getElementById( modalId );
+		if ( ! dialog ) {
 			return;
 		}
 
-		const closeButton = modal.querySelector( '.sgs-modal__close' );
-		const closeOnBackdrop =
-			modal.getAttribute( 'data-close-on-backdrop' ) === 'true';
+		const closeButton = dialog.querySelector( '.sgs-modal__close' );
+		const closeOnOverlay =
+			dialog.getAttribute( 'data-close-on-overlay' ) === 'true';
 
-		// Store the element that opened the modal (for focus restoration).
-		let previousActiveElement = null;
-
-		// Open modal.
+		// Open modal when trigger button is clicked.
 		trigger.addEventListener( 'click', () => {
-			previousActiveElement = document.activeElement;
-			openModal( modal, closeButton );
+			openModal( dialog, closeButton );
 		} );
 
 		// Close button.
 		if ( closeButton ) {
 			closeButton.addEventListener( 'click', () => {
-				closeModal( modal, previousActiveElement );
+				closeModal( dialog );
 			} );
 		}
 
-		// Backdrop click.
-		if ( closeOnBackdrop ) {
-			modal.addEventListener( 'click', ( e ) => {
-				// Only close if clicking the overlay itself (not the content).
-				if ( e.target === modal ) {
-					closeModal( modal, previousActiveElement );
+		// Close on backdrop/overlay click.
+		// Native dialog fires a 'click' event on the dialog element when clicking the backdrop.
+		if ( closeOnOverlay ) {
+			dialog.addEventListener( 'click', ( e ) => {
+				// Check if the click was on the dialog itself (backdrop area).
+				// dialog.getBoundingClientRect() gives us the content box, excluding the backdrop.
+				const rect = dialog.getBoundingClientRect();
+				const clickedInDialog =
+					rect.top <= e.clientY &&
+					e.clientY <= rect.top + rect.height &&
+					rect.left <= e.clientX &&
+					e.clientX <= rect.left + rect.width;
+
+				if ( ! clickedInDialog ) {
+					closeModal( dialog );
 				}
 			} );
 		}
 
-		// Escape key.
-		document.addEventListener( 'keydown', ( e ) => {
-			if (
-				e.key === 'Escape' &&
-				modal.getAttribute( 'aria-hidden' ) === 'false'
-			) {
-				closeModal( modal, previousActiveElement );
-			}
-		} );
-
-		// Focus trap (Tab and Shift+Tab).
-		modal.addEventListener( 'keydown', ( e ) => {
-			if (
-				e.key === 'Tab' &&
-				modal.getAttribute( 'aria-hidden' ) === 'false'
-			) {
-				trapFocus( e, modal );
-			}
+		// Native dialog handles Escape key automatically, but we can listen for the 'cancel' event
+		// if we want to prevent default behaviour or add custom logic.
+		dialog.addEventListener( 'cancel', ( e ) => {
+			// Allow default (close on Escape).
+			// If you wanted to prevent Escape closing, you'd use e.preventDefault() here.
 		} );
 	} );
 }
 
 /**
- * Open a modal.
+ * Open a modal using native dialog.showModal().
+ *
+ * Native dialog provides:
+ * - Automatic focus trap (Tab cycles within dialog)
+ * - Escape key handling (closes dialog)
+ * - Backdrop styling via ::backdrop pseudo-element
+ * - Accessibility with aria-modal implicit from showModal()
  */
-function openModal( modal, closeButton ) {
-	modal.setAttribute( 'aria-hidden', 'false' );
-	document.body.classList.add( 'sgs-modal-open' );
+function openModal( dialog, closeButton ) {
+	dialog.showModal();
 
 	// Focus the close button (first focusable element).
 	if ( closeButton ) {
-		// Use a small delay to ensure the modal is visible before focusing.
+		// Small delay to ensure dialog is fully rendered.
 		setTimeout( () => {
 			closeButton.focus();
-		}, 100 );
+		}, 50 );
 	}
 }
 
 /**
- * Close a modal.
- */
-function closeModal( modal, previousActiveElement ) {
-	modal.setAttribute( 'aria-hidden', 'true' );
-	document.body.classList.remove( 'sgs-modal-open' );
-
-	// Restore focus to the element that opened the modal.
-	if ( previousActiveElement && previousActiveElement.focus ) {
-		previousActiveElement.focus();
-	}
-}
-
-/**
- * Trap focus within the modal (accessibility requirement).
+ * Close a modal using native dialog.close().
  *
- * When Tab is pressed, keep focus cycling within the modal.
- * When Shift+Tab is pressed at the first element, jump to the last.
+ * Native dialog automatically restores focus to the element that opened it.
  */
-function trapFocus( e, modal ) {
-	const focusableElements = modal.querySelectorAll(
-		'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
-	);
-
-	if ( focusableElements.length === 0 ) {
-		return;
-	}
-
-	const firstElement = focusableElements[ 0 ];
-	const lastElement = focusableElements[ focusableElements.length - 1 ];
-
-	if ( e.shiftKey ) {
-		// Shift+Tab: if on first element, jump to last.
-		if ( document.activeElement === firstElement ) {
-			e.preventDefault();
-			lastElement.focus();
-		}
-	} else {
-		// Tab: if on last element, jump to first.
-		if ( document.activeElement === lastElement ) {
-			e.preventDefault();
-			firstElement.focus();
-		}
-	}
+function closeModal( dialog ) {
+	dialog.close();
 }
 
 // Initialise on DOM ready.
