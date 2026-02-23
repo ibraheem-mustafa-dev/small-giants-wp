@@ -14,9 +14,8 @@
  * (3:1) but fails for normal small text (4.5:1). Making the top-bar text
  * bold + 14px qualifies it as "large text" under WCAG, so 4.07:1 passes.
  */
-.has-primary-background-color > .wp-block-group > p.has-x-small-font-size {
+.has-primary-background-color > .wp-block-group > p.has-small-font-size {
 	font-weight: 600;
-	font-size: 0.875rem; /* 14px — meets large text threshold when bold */
 }
 
 /* ─── SITE LOGO ─── */
