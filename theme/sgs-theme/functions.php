@@ -197,6 +197,24 @@ function enqueue_styles(): void {
 		$theme_version,
 		true // Load in footer — runs after DOM is available.
 	);
+
+	// Sticky header — adds .is-scrolled class for shrink/shadow effect.
+	wp_enqueue_script(
+		'sgs-sticky-header',
+		get_theme_file_uri( 'assets/js/sticky-header.js' ),
+		[],
+		$theme_version,
+		true // Load in footer — runs after DOM is available.
+	);
+
+	// Smooth scroll for anchor links.
+	wp_enqueue_script(
+		'sgs-smooth-scroll',
+		get_theme_file_uri( 'assets/js/smooth-scroll.js' ),
+		[],
+		$theme_version,
+		true // Load in footer — runs after DOM is available.
+	);
 }
 add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\enqueue_styles' );
 
