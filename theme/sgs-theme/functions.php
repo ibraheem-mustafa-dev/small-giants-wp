@@ -170,7 +170,7 @@ function enqueue_styles(): void {
 		get_theme_file_uri( 'assets/js/dark-mode.js' ),
 		[],
 		$theme_version,
-		false // Load in head for flash-free dark mode init.
+		true // Load in footer — inline head script handles flash prevention.
 	);
 
 	// M8: hide duplicate nav copies from assistive technology.
@@ -217,6 +217,38 @@ function enqueue_styles(): void {
 	);
 }
 add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\enqueue_styles' );
+
+/**
+ * Output meta description from post excerpt or custom field.
+ * Only fires when no SEO plugin is active.
+ */
+function meta_description(): void {
+	if ( is_front_page() || is_home() ) {
+		$desc = get_bloginfo( 'description' );
+		$post = get_post();
+		if ( $post && ! empty( $post->post_excerpt ) ) {
+			$desc = $post->post_excerpt;
+		}
+	} elseif ( is_singular() ) {
+		$post = get_post();
+		$desc = $post ? wp_trim_words( wp_strip_all_tags( $post->post_content ), 25, '...' ) : '';
+	} elseif ( is_archive() ) {
+		$desc = get_the_archive_description();
+	} else {
+		$desc = get_bloginfo( 'description' );
+	}
+
+	if ( ! empty( $desc ) ) {
+		printf(
+			'<meta name="description" content="%s">' . "\n",
+			esc_attr( wp_strip_all_tags( $desc ) )
+		);
+	}
+}
+// Only add if no SEO plugin handles it.
+if ( ! defined( 'WPSEO_VERSION' ) && ! defined( 'RANK_MATH_VERSION' ) ) {
+	add_action( 'wp_head', __NAMESPACE__ . '\meta_description', 1 );
+}
 
 /**
  * Register block pattern category for SGS patterns.

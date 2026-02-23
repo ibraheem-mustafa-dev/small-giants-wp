@@ -105,7 +105,7 @@
 }
 
 .sgs-cta-section__btn--accent:not([style*="color"]) {
-	color: var(--wp--preset--color--surface, #fff);
+	color: var(--wp--preset--color--text, #1e1e1e);
 }
 
 .sgs-cta-section__btn--primary:not([style*="background"]) {
