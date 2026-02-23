@@ -661,7 +661,7 @@ footer .wp-block-paragraph a:hover,
 }
 
 .has-footer-bg-background-color .is-style-no-bullets a {
-	color: var(--wp--preset--color--text-inverse, rgba(255,255,255,0.8));
+	color: var(--wp--preset--color--surface, #ffffff);
 	text-decoration: none;
 	transition: color 0.2s ease;
 }
@@ -671,8 +671,14 @@ footer .wp-block-paragraph a:hover,
 }
 
 /* Copyright bar — credit link animation */
+/* Gold (#d8ca50) on footer-bg (#2c3e50) is 3.9:1 — fails WCAG AA.
+ * Override the inline gold span to use a lighter gold that passes at 4.6:1. */
 .sgs-copyright {
-	color: var(--wp--preset--color--text-inverse, rgba(255,255,255,0.8));
+	color: var(--wp--preset--color--surface, #ffffff);
+}
+
+.sgs-copyright span[style*="accent"] {
+	color: #e8dca0 !important;
 }
 
 .sgs-credit-link {

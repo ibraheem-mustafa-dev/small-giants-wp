@@ -219,6 +219,29 @@ function enqueue_styles(): void {
 add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\enqueue_styles' );
 
 /**
+ * Defer non-critical stylesheets to reduce render-blocking resources.
+ *
+ * Converts selected <link rel="stylesheet"> tags to use the
+ * media="print" onload="this.media='all'" pattern so they load
+ * asynchronously without blocking first paint.
+ */
+function defer_non_critical_css( string $tag, string $handle ): string {
+	$deferred = [ 'sgs-dark-mode', 'sgs-mobile-nav-drawer' ];
+
+	if ( in_array( $handle, $deferred, true ) ) {
+		// Replace media="all" with media="print" and add onload swap.
+		$tag = str_replace(
+			"media='all'",
+			"media='print' onload=\"this.media='all'\"",
+			$tag
+		);
+	}
+
+	return $tag;
+}
+add_filter( 'style_loader_tag', __NAMESPACE__ . '\defer_non_critical_css', 10, 2 );
+
+/**
  * Output meta description from post excerpt or custom field.
  * Only fires when no SEO plugin is active.
  */
