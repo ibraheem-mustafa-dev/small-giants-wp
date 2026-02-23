@@ -14,6 +14,7 @@
 	let createForm = null;
 	let selectedElement = null;
 	let clickPosition = { x: 0, y: 0 };
+	let capturedScreenshotUrl = null;
 
 	/**
 	 * Initialise annotation mode.
@@ -228,6 +229,12 @@
 						<option value="urgent">Urgent</option>
 					</select>
 				</div>
+				<div class="sgs-cn-form-group">
+					<button type="button" class="sgs-cn-btn-secondary sgs-cn-screenshot-btn" id="sgs-cn-capture-screenshot">
+						&#128247; Capture Screenshot
+					</button>
+					<div id="sgs-cn-screenshot-preview" class="sgs-cn-screenshot-preview" hidden></div>
+				</div>
 				<div class="sgs-cn-form-actions">
 					<button type="button" class="sgs-cn-btn-secondary sgs-cn-cancel">Cancel</button>
 					<button type="button" class="sgs-cn-btn-primary sgs-cn-submit">Submit Note</button>
@@ -242,10 +249,52 @@
 			createForm.querySelector( '#sgs-cn-comment' ).focus();
 		}, 100 );
 
+		// Reset captured screenshot state.
+		capturedScreenshotUrl = null;
+
 		// Attach form handlers.
 		createForm.querySelector( '.sgs-cn-create-close' ).addEventListener( 'click', closeCreateForm );
 		createForm.querySelector( '.sgs-cn-cancel' ).addEventListener( 'click', closeCreateForm );
 		createForm.querySelector( '.sgs-cn-submit' ).addEventListener( 'click', submitNote );
+		createForm.querySelector( '#sgs-cn-capture-screenshot' ).addEventListener( 'click', handleCaptureScreenshot );
+	}
+
+	/**
+	 * Handle screenshot capture button click.
+	 */
+	function handleCaptureScreenshot() {
+		var btn     = createForm.querySelector( '#sgs-cn-capture-screenshot' );
+		var preview = createForm.querySelector( '#sgs-cn-screenshot-preview' );
+
+		if ( ! window.sgsClientNotesScreenshot ) {
+			btn.textContent = 'Screenshot unavailable';
+			btn.disabled    = true;
+			return;
+		}
+
+		btn.textContent = 'Capturing...';
+		btn.disabled    = true;
+
+		window.sgsClientNotesScreenshot.capture( selectedElement, function ( url ) {
+			if ( url ) {
+				capturedScreenshotUrl = url;
+				btn.textContent = '\u2713 Screenshot captured';
+
+				// Build preview using safe DOM methods.
+				var img = document.createElement( 'img' );
+				img.src          = url;
+				img.alt          = 'Screenshot preview';
+				img.style.cssText = 'max-width:100%;border-radius:4px;';
+				while ( preview.firstChild ) {
+					preview.removeChild( preview.firstChild );
+				}
+				preview.appendChild( img );
+				preview.hidden = false;
+			} else {
+				btn.textContent = 'Could not capture \u2014 describe the issue in your comment';
+				btn.disabled    = false;
+			}
+		} );
 	}
 
 	/**
@@ -291,6 +340,7 @@
 			priority: priority,
 			page_url: sgsClientNotes.currentUrl,
 			element_text: elementText,
+			screenshot_url: capturedScreenshotUrl || '',
 		};
 
 		fetch( sgsClientNotes.apiUrl + '/notes', {

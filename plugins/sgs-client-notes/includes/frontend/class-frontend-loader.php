@@ -58,10 +58,19 @@ class Frontend_Loader {
 		);
 
 		if ( current_user_can( 'sgs_create_notes' ) ) {
+			// Screenshot capture — loaded on demand by screenshot.js, never on page load.
+			wp_register_script(
+				'sgs-client-notes-screenshot',
+				SGS_CLIENT_NOTES_URL . 'assets/js/screenshot.js',
+				array(),
+				SGS_CLIENT_NOTES_VERSION,
+				true
+			);
+
 			wp_enqueue_script(
 				'sgs-client-notes-annotation',
 				SGS_CLIENT_NOTES_URL . 'assets/js/annotation-mode.js',
-				array( 'sgs-client-notes-comment-panel' ),
+				array( 'sgs-client-notes-comment-panel', 'sgs-client-notes-screenshot' ),
 				SGS_CLIENT_NOTES_VERSION,
 				true
 			);
@@ -79,6 +88,7 @@ class Frontend_Loader {
 				'canManage'     => current_user_can( 'sgs_manage_notes' ),
 				'userId'        => get_current_user_id(),
 				'viewportWidth' => 0,
+				'vendorUrl'     => SGS_CLIENT_NOTES_URL . 'assets/vendor',
 			)
 		);
 	}
