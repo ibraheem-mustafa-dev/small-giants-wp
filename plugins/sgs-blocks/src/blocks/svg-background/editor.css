@@ -1,0 +1,19 @@
+/**
+ * SVG Background — Editor-Only Styles
+ *
+ * @package SGS\Blocks
+ */
+
+.sgs-svg-background__placeholder {
+	padding: 2rem;
+	text-align: center;
+	background: rgba( 0, 0, 0, 0.05 );
+	border: 2px dashed rgba( 0, 0, 0, 0.2 );
+	border-radius: 4px;
+}
+
+.sgs-svg-background__placeholder p {
+	margin: 0;
+	color: rgba( 0, 0, 0, 0.5 );
+	font-size: 0.875rem;
+}
