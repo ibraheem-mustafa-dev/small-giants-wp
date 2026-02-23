@@ -1,0 +1,23 @@
+/**
+ * Announcement Bar — Editor-Only Styles
+ *
+ * @package SGS\Blocks
+ */
+
+.sgs-announcement-bar__message-editor {
+	margin-bottom: 1rem;
+	padding: 1rem;
+	background-color: rgba( 0, 0, 0, 0.05 );
+	border-radius: 4px;
+}
+
+.sgs-announcement-bar__cta-inputs {
+	display: grid;
+	grid-template-columns: 1fr 2fr;
+	gap: 0.5rem;
+	margin-top: 0.5rem;
+}
+
+.sgs-announcement-bar__close:disabled {
+	cursor: not-allowed;
+}
