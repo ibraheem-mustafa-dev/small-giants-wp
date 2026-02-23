@@ -1,27 +1,46 @@
 /**
  * Decorative Image — editor-only styles.
- *
- * Upload button and remove button positioning.
  */
 
-.sgs-decorative-image__upload {
-	min-width: 200px;
-	min-height: 120px;
+.sgs-decorative-image-editor__placeholder {
+	padding: 2rem;
+	text-align: center;
+	border: 2px dashed #ccc;
+	background: #f9f9f9;
 }
 
-.sgs-decorative-image__wrapper {
+.sgs-decorative-image-editor__help {
+	margin-top: 1rem;
+	font-size: 0.875rem;
+	color: #666;
+}
+
+.sgs-decorative-image-editor__preview-wrapper {
+	border: 1px solid #ddd;
+	background: #f9f9f9;
+	padding: 1rem;
+}
+
+.sgs-decorative-image-editor__preview-container {
 	position: relative;
+	min-height: 400px;
+	background: repeating-linear-gradient(
+		45deg,
+		#ffffff,
+		#ffffff 10px,
+		#f0f0f0 10px,
+		#f0f0f0 20px
+	);
+	overflow: hidden;
 }
 
-.sgs-decorative-image__remove {
-	position: absolute;
-	top: 1rem;
-	right: 1rem;
-	z-index: 10;
-	background-color: rgba(255, 255, 255, 0.9);
-	backdrop-filter: blur(4px);
+.sgs-decorative-image-editor__preview {
+	max-width: 100%;
+	height: auto;
 }
 
-.sgs-decorative-image__remove:hover {
-	background-color: rgba(255, 255, 255, 1);
+.sgs-decorative-image-editor__actions {
+	margin-top: 1rem;
+	display: flex;
+	gap: 0.5rem;
 }

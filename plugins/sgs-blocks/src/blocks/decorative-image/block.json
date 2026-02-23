@@ -2,31 +2,22 @@
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
   "name": "sgs/decorative-image",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "title": "SGS Decorative Image",
   "category": "sgs-content",
-  "description": "Image with decorative effects (parallax, float, reveal) and mask shapes. Marked aria-hidden since decorative.",
+  "description": "Absolute-positioned decorative image that floats freely over sections. Used for organic, editorial-style design with optional parallax scroll effects.",
   "keywords": [
     "image",
     "decorative",
     "parallax",
-    "mask",
-    "shape",
-    "effect"
+    "float",
+    "position"
   ],
   "textdomain": "sgs-blocks",
   "icon": "format-image",
   "supports": {
-    "align": [
-      "wide",
-      "full"
-    ],
     "anchor": true,
-    "html": false,
-    "spacing": {
-      "margin": true,
-      "padding": false
-    }
+    "html": false
   },
   "attributes": {
     "imageId": {
@@ -39,33 +30,77 @@
       "type": "string",
       "default": ""
     },
-    "effect": {
-      "type": "string",
-      "default": "none"
+    "positionX": {
+      "type": "number",
+      "default": 50
     },
-    "maskShape": {
-      "type": "string",
-      "default": "none"
+    "positionY": {
+      "type": "number",
+      "default": 50
     },
-    "overlayColour": {
-      "type": "string",
-      "default": ""
+    "width": {
+      "type": "number",
+      "default": 200
     },
-    "overlayOpacity": {
+    "maxWidthPercent": {
+      "type": "number",
+      "default": 20
+    },
+    "rotation": {
       "type": "number",
       "default": 0
     },
-    "width": {
-      "type": "string",
-      "default": "100%"
+    "opacity": {
+      "type": "number",
+      "default": 85
     },
-    "height": {
-      "type": "string",
-      "default": "auto"
+    "zIndex": {
+      "type": "number",
+      "default": 1
     },
-    "objectFit": {
+    "flipX": {
+      "type": "boolean",
+      "default": false
+    },
+    "parallaxStrength": {
+      "type": "number",
+      "default": 0
+    },
+    "overflow": {
       "type": "string",
-      "default": "cover"
+      "default": "visible"
+    },
+    "positionXTablet": {
+      "type": "number"
+    },
+    "positionYTablet": {
+      "type": "number"
+    },
+    "widthTablet": {
+      "type": "number"
+    },
+    "rotationTablet": {
+      "type": "number"
+    },
+    "hideOnTablet": {
+      "type": "boolean",
+      "default": false
+    },
+    "positionXMobile": {
+      "type": "number"
+    },
+    "positionYMobile": {
+      "type": "number"
+    },
+    "widthMobile": {
+      "type": "number"
+    },
+    "rotationMobile": {
+      "type": "number"
+    },
+    "hideOnMobile": {
+      "type": "boolean",
+      "default": false
     }
   },
   "render": "file:./render.php",

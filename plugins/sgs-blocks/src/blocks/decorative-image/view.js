@@ -1,108 +1,112 @@
 /**
  * Decorative Image — frontend interactivity.
  *
- * Implements parallax scroll effect and reveal-on-scroll animation.
- * Uses simple scroll listener (no heavy libraries) and Intersection Observer.
+ * Implements parallax scroll effect only. Uses IntersectionObserver +
+ * requestAnimationFrame for smooth, performant scroll-linked transforms.
+ * Respects prefers-reduced-motion. Less than 1KB minified.
  *
  * @package SGS\Blocks
  */
 
-function initDecorativeImages() {
+function initDecorativeImageParallax() {
 	// Check for reduced motion preference.
 	const prefersReducedMotion = window.matchMedia(
 		'(prefers-reduced-motion: reduce)'
 	).matches;
 
 	if ( prefersReducedMotion ) {
-		// Skip all animations if user prefers reduced motion.
+		// Skip all parallax if user prefers reduced motion.
 		return;
 	}
 
-	// ─── Parallax Effect ───
+	// Find all decorative images with parallax enabled.
 	const parallaxImages = document.querySelectorAll(
-		'.sgs-decorative-image--parallax[data-parallax="true"]'
+		'.sgs-decorative-image[data-parallax]'
 	);
 
-	if ( parallaxImages.length > 0 ) {
-		// Throttle scroll events for performance.
-		let ticking = false;
+	if ( parallaxImages.length === 0 ) {
+		return;
+	}
 
-		function handleParallaxScroll() {
-			if ( ! ticking ) {
-				window.requestAnimationFrame( () => {
-					parallaxImages.forEach( ( wrapper ) => {
-						const img = wrapper.querySelector(
-							'.sgs-decorative-image__img'
-						);
-						if ( ! img ) {
-							return;
-						}
+	// Track images currently in viewport.
+	const visibleImages = new Set();
 
-						const rect = wrapper.getBoundingClientRect();
-						const windowHeight = window.innerHeight;
-
-						// Only apply parallax when element is in viewport.
-						if (
-							rect.top < windowHeight &&
-							rect.bottom > 0
-						) {
-							// Calculate scroll progress through viewport.
-							const scrollProgress =
-								( windowHeight - rect.top ) /
-								( windowHeight + rect.height );
-
-							// Parallax intensity (adjust multiplier to taste).
-							const offset = scrollProgress * 50 - 25;
-
-							img.style.transform = `translateY(${ offset }px)`;
-						}
-					} );
-					ticking = false;
-				} );
-
-				ticking = true;
-			}
+	// Intersection Observer to track which images are in viewport.
+	const observer = new IntersectionObserver(
+		( entries ) => {
+			entries.forEach( ( entry ) => {
+				if ( entry.isIntersecting ) {
+					visibleImages.add( entry.target );
+				} else {
+					visibleImages.delete( entry.target );
+				}
+			} );
+		},
+		{
+			rootMargin: '20% 0px', // Start parallax slightly before/after viewport.
 		}
-
-		window.addEventListener( 'scroll', handleParallaxScroll, {
-			passive: true,
-		} );
-
-		// Run once on load.
-		handleParallaxScroll();
-	}
-
-	// ─── Reveal on Scroll Effect ───
-	const revealImages = document.querySelectorAll(
-		'.sgs-decorative-image--reveal'
 	);
 
-	if ( revealImages.length > 0 && 'IntersectionObserver' in window ) {
-		const revealObserver = new IntersectionObserver(
-			( entries ) => {
-				entries.forEach( ( entry ) => {
-					if ( entry.isIntersecting ) {
-						entry.target.classList.add( 'sgs-revealed' );
-						// Optionally stop observing once revealed.
-						revealObserver.unobserve( entry.target );
-					}
-				} );
-			},
-			{
-				threshold: 0.2, // Trigger when 20% of the image is visible.
-				rootMargin: '0px 0px -50px 0px', // Reveal slightly before entering viewport.
-			}
-		);
+	// Observe all parallax images.
+	parallaxImages.forEach( ( img ) => {
+		observer.observe( img );
+	} );
 
-		revealImages.forEach( ( img ) => {
-			revealObserver.observe( img );
+	// Parallax scroll handler using requestAnimationFrame.
+	let ticking = false;
+
+	function applyParallax() {
+		visibleImages.forEach( ( img ) => {
+			const parallaxStrength =
+				parseFloat( img.getAttribute( 'data-parallax' ) ) || 0;
+
+			if ( parallaxStrength === 0 ) {
+				return;
+			}
+
+			const rect = img.getBoundingClientRect();
+			const windowHeight = window.innerHeight;
+
+			// Calculate scroll progress through viewport (0 to 1).
+			const scrollProgress =
+				( windowHeight - rect.top ) / ( windowHeight + rect.height );
+
+			// Parallax offset based on scroll progress and strength.
+			// Range: -parallaxStrength to +parallaxStrength pixels.
+			const offset = ( scrollProgress - 0.5 ) * parallaxStrength * 2;
+
+			// Get existing transform and replace translateY.
+			const currentTransform = img.style.transform || '';
+			const baseTransform = currentTransform.replace(
+				/translateY\([^)]+\)/g,
+				''
+			);
+
+			img.style.transform = `${ baseTransform } translateY(${ offset }px)`.trim();
 		} );
+
+		ticking = false;
 	}
+
+	function onScroll() {
+		if ( ! ticking ) {
+			requestAnimationFrame( applyParallax );
+			ticking = true;
+		}
+	}
+
+	window.addEventListener( 'scroll', onScroll, { passive: true } );
+
+	// Apply parallax on initial load.
+	applyParallax();
 }
 
 // Initialise on DOM ready.
 if ( document.readyState === 'loading' ) {
-	document.addEventListener( 'DOMContentLoaded', initDecorativeImages );
+	document.addEventListener(
+		'DOMContentLoaded',
+		initDecorativeImageParallax
+	);
 } else {
-	initDecorativeImages();
+	initDecorativeImageParallax();
 }

@@ -2,6 +2,9 @@
 /**
  * Server-side render for the SGS Decorative Image block.
  *
+ * Outputs an absolute-positioned image with inline styles for positioning,
+ * rotation, opacity, and z-index. Supports responsive overrides and parallax.
+ *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content.
  * @var WP_Block $block      Block instance.
@@ -14,94 +17,126 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 // Extract attributes with defaults.
-$image_id        = $attributes['imageId'] ?? null;
-$image_url       = $attributes['imageUrl'] ?? '';
-$image_alt       = $attributes['imageAlt'] ?? '';
-$effect          = $attributes['effect'] ?? 'none';
-$mask_shape      = $attributes['maskShape'] ?? 'none';
-$overlay_colour  = $attributes['overlayColour'] ?? '';
-$overlay_opacity = $attributes['overlayOpacity'] ?? 0;
-$width           = $attributes['width'] ?? '100%';
-$height          = $attributes['height'] ?? 'auto';
-$object_fit      = $attributes['objectFit'] ?? 'cover';
+$image_id            = $attributes['imageId'] ?? null;
+$image_url           = $attributes['imageUrl'] ?? '';
+$position_x          = $attributes['positionX'] ?? 50;
+$position_y          = $attributes['positionY'] ?? 50;
+$width               = $attributes['width'] ?? 200;
+$max_width_percent   = $attributes['maxWidthPercent'] ?? 20;
+$rotation            = $attributes['rotation'] ?? 0;
+$opacity             = $attributes['opacity'] ?? 85;
+$z_index             = $attributes['zIndex'] ?? 1;
+$flip_x              = $attributes['flipX'] ?? false;
+$parallax_strength   = $attributes['parallaxStrength'] ?? 0;
+$overflow            = $attributes['overflow'] ?? 'visible';
+
+// Responsive overrides.
+$position_x_tablet   = $attributes['positionXTablet'] ?? null;
+$position_y_tablet   = $attributes['positionYTablet'] ?? null;
+$width_tablet        = $attributes['widthTablet'] ?? null;
+$rotation_tablet     = $attributes['rotationTablet'] ?? null;
+$hide_on_tablet      = $attributes['hideOnTablet'] ?? false;
+
+$position_x_mobile   = $attributes['positionXMobile'] ?? null;
+$position_y_mobile   = $attributes['positionYMobile'] ?? null;
+$width_mobile        = $attributes['widthMobile'] ?? null;
+$rotation_mobile     = $attributes['rotationMobile'] ?? null;
+$hide_on_mobile      = $attributes['hideOnMobile'] ?? false;
 
 // Don't render if no image.
 if ( ! $image_url ) {
 	return;
 }
 
-// Build wrapper classes.
-$classes = array(
-	'sgs-decorative-image',
+// Build inline styles for desktop.
+$styles = array(
+	'position: absolute',
+	'left: ' . esc_attr( $position_x ) . '%',
+	'top: ' . esc_attr( $position_y ) . '%',
+	'width: ' . esc_attr( $width ) . 'px',
+	'max-width: ' . esc_attr( $max_width_percent ) . '%',
+	'opacity: ' . esc_attr( $opacity / 100 ),
+	'z-index: ' . esc_attr( $z_index ),
+	'pointer-events: none',
 );
-if ( 'none' !== $effect ) {
-	$classes[] = 'sgs-decorative-image--' . esc_attr( $effect );
+
+// Build transform.
+$transforms = array(
+	'translate(-50%, -50%)',
+);
+if ( 0 !== $rotation ) {
+	$transforms[] = 'rotate(' . esc_attr( $rotation ) . 'deg)';
 }
-if ( 'none' !== $mask_shape ) {
-	$classes[] = 'sgs-decorative-image--mask-' . esc_attr( $mask_shape );
+if ( $flip_x ) {
+	$transforms[] = 'scaleX(-1)';
+}
+$styles[] = 'transform: ' . implode( ' ', $transforms );
+
+$style_attr = implode( '; ', $styles );
+
+// Build data attributes.
+$data_attrs = array();
+if ( $parallax_strength > 0 ) {
+	$data_attrs['data-parallax'] = esc_attr( $parallax_strength );
+}
+if ( $hide_on_tablet ) {
+	$data_attrs['data-hide-tablet'] = 'true';
+}
+if ( $hide_on_mobile ) {
+	$data_attrs['data-hide-mobile'] = 'true';
 }
 
-// Build wrapper data attributes for parallax effect.
-$data_attrs = '';
-if ( 'parallax' === $effect ) {
-	$data_attrs .= ' data-parallax="true"';
+// Responsive overrides via data attributes for CSS.
+if ( null !== $position_x_tablet ) {
+	$data_attrs['data-position-x-tablet'] = esc_attr( $position_x_tablet );
+}
+if ( null !== $position_y_tablet ) {
+	$data_attrs['data-position-y-tablet'] = esc_attr( $position_y_tablet );
+}
+if ( null !== $width_tablet ) {
+	$data_attrs['data-width-tablet'] = esc_attr( $width_tablet );
+}
+if ( null !== $rotation_tablet ) {
+	$data_attrs['data-rotation-tablet'] = esc_attr( $rotation_tablet );
 }
 
-$wrapper_attributes = get_block_wrapper_attributes( array(
-	'class' => implode( ' ', $classes ),
-) );
-
-// Build image styles.
-$image_styles = array();
-if ( $width ) {
-	$image_styles[] = 'width:' . esc_attr( $width );
+if ( null !== $position_x_mobile ) {
+	$data_attrs['data-position-x-mobile'] = esc_attr( $position_x_mobile );
 }
-if ( $height ) {
-	$image_styles[] = 'height:' . esc_attr( $height );
+if ( null !== $position_y_mobile ) {
+	$data_attrs['data-position-y-mobile'] = esc_attr( $position_y_mobile );
 }
-if ( $object_fit ) {
-	$image_styles[] = 'object-fit:' . esc_attr( $object_fit );
+if ( null !== $width_mobile ) {
+	$data_attrs['data-width-mobile'] = esc_attr( $width_mobile );
 }
-$image_style_attr = $image_styles ? ' style="' . implode( ';', $image_styles ) . '"' : '';
-
-// Build overlay styles.
-$overlay_html = '';
-if ( $overlay_opacity > 0 ) {
-	$overlay_styles = array();
-	if ( $overlay_colour ) {
-		$overlay_styles[] = 'background-color:' . sgs_colour_value( $overlay_colour );
-	}
-	$overlay_styles[] = 'opacity:' . ( (float) $overlay_opacity / 100 );
-	$overlay_style_attr = ' style="' . implode( ';', $overlay_styles ) . '"';
-
-	$overlay_html = sprintf(
-		'<div class="sgs-decorative-image__overlay"%s aria-hidden="true"></div>',
-		$overlay_style_attr
-	);
+if ( null !== $rotation_mobile ) {
+	$data_attrs['data-rotation-mobile'] = esc_attr( $rotation_mobile );
 }
 
-// Render.
-$img_attrs = [
-	'class'       => 'sgs-decorative-image__img',
+// Build data attribute string.
+$data_attr_str = '';
+foreach ( $data_attrs as $key => $value ) {
+	$data_attr_str .= ' ' . $key . '="' . $value . '"';
+}
+
+// Render using sgs_responsive_image helper.
+$img_attrs = array(
+	'class'       => 'sgs-decorative-image',
+	'style'       => $style_attr,
 	'aria-hidden' => 'true',
+	'role'        => 'presentation',
+	'alt'         => '', // Always empty for decorative images.
 	'loading'     => 'lazy',
-];
-if ( $image_style_attr ) {
-	// Strip the leading ' style="' and trailing '"' from the pre-built attribute.
-	$img_attrs['style'] = trim( str_replace( [ ' style="', '"' ], '', $image_style_attr ) );
-}
+	'decoding'    => 'async',
+);
+
 $img_html = sgs_responsive_image(
 	$image_id ? absint( $image_id ) : 0,
 	$image_url,
-	'', // Decorative: always empty alt.
+	'', // Empty alt for decorative.
 	'large',
 	$img_attrs
 );
 
-printf(
-	'<div %s%s><div class="sgs-decorative-image__wrapper">%s%s</div></div>',
-	$wrapper_attributes,
-	$data_attrs,
-	$img_html, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped - sgs_responsive_image() escapes internally.
-	$overlay_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-);
+// Output with data attributes.
+echo str_replace( 'class="sgs-decorative-image"', 'class="sgs-decorative-image"' . $data_attr_str, $img_html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped - sgs_responsive_image() escapes internally.

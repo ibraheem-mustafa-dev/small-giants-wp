@@ -7,34 +7,16 @@ import {
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
-	SelectControl,
 	RangeControl,
+	ToggleControl,
 	Button,
-	TextControl,
+	SelectControl,
 } from '@wordpress/components';
-import { DesignTokenPicker } from '../../components';
-import { colourVar } from '../../utils';
+import { ResponsiveControl } from '../../components';
 
-const EFFECT_OPTIONS = [
-	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-	{ label: __( 'Parallax', 'sgs-blocks' ), value: 'parallax' },
-	{ label: __( 'Float', 'sgs-blocks' ), value: 'float' },
-	{ label: __( 'Reveal on scroll', 'sgs-blocks' ), value: 'reveal' },
-];
-
-const MASK_SHAPE_OPTIONS = [
-	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
-	{ label: __( 'Circle', 'sgs-blocks' ), value: 'circle' },
-	{ label: __( 'Blob', 'sgs-blocks' ), value: 'blob' },
-	{ label: __( 'Hexagon', 'sgs-blocks' ), value: 'hexagon' },
-	{ label: __( 'Diamond', 'sgs-blocks' ), value: 'diamond' },
-];
-
-const OBJECT_FIT_OPTIONS = [
-	{ label: __( 'Cover', 'sgs-blocks' ), value: 'cover' },
-	{ label: __( 'Contain', 'sgs-blocks' ), value: 'contain' },
-	{ label: __( 'Fill', 'sgs-blocks' ), value: 'fill' },
-	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
+const OVERFLOW_OPTIONS = [
+	{ label: __( 'Visible', 'sgs-blocks' ), value: 'visible' },
+	{ label: __( 'Hidden', 'sgs-blocks' ), value: 'hidden' },
 ];
 
 export default function Edit( { attributes, setAttributes } ) {
@@ -42,24 +24,31 @@ export default function Edit( { attributes, setAttributes } ) {
 		imageId,
 		imageUrl,
 		imageAlt,
-		effect,
-		maskShape,
-		overlayColour,
-		overlayOpacity,
+		positionX,
+		positionY,
 		width,
-		height,
-		objectFit,
+		maxWidthPercent,
+		rotation,
+		opacity,
+		zIndex,
+		flipX,
+		parallaxStrength,
+		overflow,
+		positionXTablet,
+		positionYTablet,
+		widthTablet,
+		rotationTablet,
+		hideOnTablet,
+		positionXMobile,
+		positionYMobile,
+		widthMobile,
+		rotationMobile,
+		hideOnMobile,
 	} = attributes;
 
-	const className = [
-		'sgs-decorative-image',
-		effect !== 'none' && `sgs-decorative-image--${ effect }`,
-		maskShape !== 'none' && `sgs-decorative-image--mask-${ maskShape }`,
-	]
-		.filter( Boolean )
-		.join( ' ' );
-
-	const blockProps = useBlockProps( { className } );
+	const blockProps = useBlockProps( {
+		className: 'sgs-decorative-image-editor',
+	} );
 
 	const onSelectImage = ( media ) => {
 		setAttributes( {
@@ -77,111 +66,282 @@ export default function Edit( { attributes, setAttributes } ) {
 		} );
 	};
 
-	const overlayStyle = {
-		backgroundColor: colourVar( overlayColour ) || overlayColour || undefined,
-		opacity: overlayOpacity > 0 ? overlayOpacity / 100 : undefined,
-	};
-
-	const imageStyle = {
-		width: width || '100%',
-		height: height || 'auto',
-		objectFit,
+	// Build preview styles for editor.
+	const previewStyles = {
+		position: 'absolute',
+		left: `${ positionX }%`,
+		top: `${ positionY }%`,
+		width: `${ width }px`,
+		maxWidth: `${ maxWidthPercent }%`,
+		opacity: opacity / 100,
+		zIndex,
+		pointerEvents: 'none',
+		transform: [
+			'translate(-50%, -50%)',
+			rotation !== 0 && `rotate(${ rotation }deg)`,
+			flipX && 'scaleX(-1)',
+		]
+			.filter( Boolean )
+			.join( ' ' ),
 	};
 
 	return (
 		<>
 			<InspectorControls>
-				<PanelBody title={ __( 'Image Settings', 'sgs-blocks' ) }>
-					<TextControl
-						label={ __( 'Width', 'sgs-blocks' ) }
-						help={ __(
-							'e.g. 100%, 600px, 50vw',
-							'sgs-blocks'
-						) }
-						value={ width }
-						onChange={ ( val ) =>
-							setAttributes( { width: val } )
-						}
+				<PanelBody title={ __( 'Position', 'sgs-blocks' ) }>
+					<RangeControl
+						label={ __( 'Position X (%)', 'sgs-blocks' ) }
+						help={ __( 'Horizontal position from left edge', 'sgs-blocks' ) }
+						value={ positionX }
+						onChange={ ( val ) => setAttributes( { positionX: val } ) }
+						min={ 0 }
+						max={ 100 }
+						step={ 1 }
 						__nextHasNoMarginBottom
-					/>
-					<TextControl
-						label={ __( 'Height', 'sgs-blocks' ) }
-						help={ __(
-							'e.g. auto, 400px, 50vh',
-							'sgs-blocks'
-						) }
-						value={ height }
-						onChange={ ( val ) =>
-							setAttributes( { height: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					<SelectControl
-						label={ __( 'Object fit', 'sgs-blocks' ) }
-						value={ objectFit }
-						options={ OBJECT_FIT_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { objectFit: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					<TextControl
-						label={ __( 'Alt text (optional)', 'sgs-blocks' ) }
-						help={ __(
-							'Decorative images are marked aria-hidden, but alt text helps editors understand the image.',
-							'sgs-blocks'
-						) }
-						value={ imageAlt }
-						onChange={ ( val ) =>
-							setAttributes( { imageAlt: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-				</PanelBody>
-
-				<PanelBody title={ __( 'Effects', 'sgs-blocks' ) }>
-					<SelectControl
-						label={ __( 'Effect', 'sgs-blocks' ) }
-						value={ effect }
-						options={ EFFECT_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { effect: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					<SelectControl
-						label={ __( 'Mask shape', 'sgs-blocks' ) }
-						value={ maskShape }
-						options={ MASK_SHAPE_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { maskShape: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-				</PanelBody>
-
-				<PanelBody
-					title={ __( 'Overlay', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<DesignTokenPicker
-						label={ __( 'Overlay colour', 'sgs-blocks' ) }
-						value={ overlayColour }
-						onChange={ ( val ) =>
-							setAttributes( { overlayColour: val } )
-						}
 					/>
 					<RangeControl
-						label={ __( 'Overlay opacity', 'sgs-blocks' ) }
-						value={ overlayOpacity }
-						onChange={ ( val ) =>
-							setAttributes( { overlayOpacity: val } )
-						}
+						label={ __( 'Position Y (%)', 'sgs-blocks' ) }
+						help={ __( 'Vertical position from top edge', 'sgs-blocks' ) }
+						value={ positionY }
+						onChange={ ( val ) => setAttributes( { positionY: val } ) }
+						min={ 0 }
+						max={ 100 }
+						step={ 1 }
+						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+
+				<PanelBody title={ __( 'Size', 'sgs-blocks' ) }>
+					<RangeControl
+						label={ __( 'Width (px)', 'sgs-blocks' ) }
+						value={ width }
+						onChange={ ( val ) => setAttributes( { width: val } ) }
+						min={ 50 }
+						max={ 800 }
+						step={ 10 }
+						__nextHasNoMarginBottom
+					/>
+					<RangeControl
+						label={ __( 'Max Width (% of parent)', 'sgs-blocks' ) }
+						value={ maxWidthPercent }
+						onChange={ ( val ) => setAttributes( { maxWidthPercent: val } ) }
+						min={ 0 }
+						max={ 50 }
+						step={ 1 }
+						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+
+				<PanelBody title={ __( 'Transform', 'sgs-blocks' ) }>
+					<RangeControl
+						label={ __( 'Rotation (degrees)', 'sgs-blocks' ) }
+						value={ rotation }
+						onChange={ ( val ) => setAttributes( { rotation: val } ) }
+						min={ -180 }
+						max={ 180 }
+						step={ 5 }
+						__nextHasNoMarginBottom
+					/>
+					<ToggleControl
+						label={ __( 'Flip horizontally', 'sgs-blocks' ) }
+						checked={ flipX }
+						onChange={ ( val ) => setAttributes( { flipX: val } ) }
+						__nextHasNoMarginBottom
+					/>
+					<RangeControl
+						label={ __( 'Opacity (%)', 'sgs-blocks' ) }
+						value={ opacity }
+						onChange={ ( val ) => setAttributes( { opacity: val } ) }
 						min={ 0 }
 						max={ 100 }
 						step={ 5 }
 						__nextHasNoMarginBottom
 					/>
+					<RangeControl
+						label={ __( 'Z-Index', 'sgs-blocks' ) }
+						help={ __( 'Stacking order (above background, below content)', 'sgs-blocks' ) }
+						value={ zIndex }
+						onChange={ ( val ) => setAttributes( { zIndex: val } ) }
+						min={ -1 }
+						max={ 10 }
+						step={ 1 }
+						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+
+				<PanelBody title={ __( 'Effects', 'sgs-blocks' ) }>
+					<RangeControl
+						label={ __( 'Parallax Strength', 'sgs-blocks' ) }
+						help={ __( '0 = disabled, 100 = strong scroll effect', 'sgs-blocks' ) }
+						value={ parallaxStrength }
+						onChange={ ( val ) => setAttributes( { parallaxStrength: val } ) }
+						min={ 0 }
+						max={ 100 }
+						step={ 5 }
+						__nextHasNoMarginBottom
+					/>
+					<SelectControl
+						label={ __( 'Overflow', 'sgs-blocks' ) }
+						help={ __( 'Whether image can extend beyond parent boundaries', 'sgs-blocks' ) }
+						value={ overflow }
+						options={ OVERFLOW_OPTIONS }
+						onChange={ ( val ) => setAttributes( { overflow: val } ) }
+						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Responsive (Tablet)', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ToggleControl
+						label={ __( 'Hide on tablet', 'sgs-blocks' ) }
+						checked={ hideOnTablet }
+						onChange={ ( val ) => setAttributes( { hideOnTablet: val } ) }
+						__nextHasNoMarginBottom
+					/>
+
+					{ ! hideOnTablet && (
+						<>
+							<RangeControl
+								label={ __( 'Position X (tablet)', 'sgs-blocks' ) }
+								help={ __( 'Leave empty to use desktop value', 'sgs-blocks' ) }
+								value={ positionXTablet ?? '' }
+								onChange={ ( val ) =>
+									setAttributes( {
+										positionXTablet: val === '' ? undefined : val,
+									} )
+								}
+								min={ 0 }
+								max={ 100 }
+								step={ 1 }
+								allowReset
+								__nextHasNoMarginBottom
+							/>
+							<RangeControl
+								label={ __( 'Position Y (tablet)', 'sgs-blocks' ) }
+								help={ __( 'Leave empty to use desktop value', 'sgs-blocks' ) }
+								value={ positionYTablet ?? '' }
+								onChange={ ( val ) =>
+									setAttributes( {
+										positionYTablet: val === '' ? undefined : val,
+									} )
+								}
+								min={ 0 }
+								max={ 100 }
+								step={ 1 }
+								allowReset
+								__nextHasNoMarginBottom
+							/>
+							<RangeControl
+								label={ __( 'Width (tablet, px)', 'sgs-blocks' ) }
+								help={ __( 'Leave empty to use desktop value', 'sgs-blocks' ) }
+								value={ widthTablet ?? '' }
+								onChange={ ( val ) =>
+									setAttributes( {
+										widthTablet: val === '' ? undefined : val,
+									} )
+								}
+								min={ 50 }
+								max={ 800 }
+								step={ 10 }
+								allowReset
+								__nextHasNoMarginBottom
+							/>
+							<RangeControl
+								label={ __( 'Rotation (tablet, degrees)', 'sgs-blocks' ) }
+								help={ __( 'Leave empty to use desktop value', 'sgs-blocks' ) }
+								value={ rotationTablet ?? '' }
+								onChange={ ( val ) =>
+									setAttributes( {
+										rotationTablet: val === '' ? undefined : val,
+									} )
+								}
+								min={ -180 }
+								max={ 180 }
+								step={ 5 }
+								allowReset
+								__nextHasNoMarginBottom
+							/>
+						</>
+					) }
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Responsive (Mobile)', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ToggleControl
+						label={ __( 'Hide on mobile', 'sgs-blocks' ) }
+						checked={ hideOnMobile }
+						onChange={ ( val ) => setAttributes( { hideOnMobile: val } ) }
+						__nextHasNoMarginBottom
+					/>
+
+					{ ! hideOnMobile && (
+						<>
+							<RangeControl
+								label={ __( 'Position X (mobile)', 'sgs-blocks' ) }
+								help={ __( 'Leave empty to use desktop value', 'sgs-blocks' ) }
+								value={ positionXMobile ?? '' }
+								onChange={ ( val ) =>
+									setAttributes( {
+										positionXMobile: val === '' ? undefined : val,
+									} )
+								}
+								min={ 0 }
+								max={ 100 }
+								step={ 1 }
+								allowReset
+								__nextHasNoMarginBottom
+							/>
+							<RangeControl
+								label={ __( 'Position Y (mobile)', 'sgs-blocks' ) }
+								help={ __( 'Leave empty to use desktop value', 'sgs-blocks' ) }
+								value={ positionYMobile ?? '' }
+								onChange={ ( val ) =>
+									setAttributes( {
+										positionYMobile: val === '' ? undefined : val,
+									} )
+								}
+								min={ 0 }
+								max={ 100 }
+								step={ 1 }
+								allowReset
+								__nextHasNoMarginBottom
+							/>
+							<RangeControl
+								label={ __( 'Width (mobile, px)', 'sgs-blocks' ) }
+								help={ __( 'Leave empty to use desktop value', 'sgs-blocks' ) }
+								value={ widthMobile ?? '' }
+								onChange={ ( val ) =>
+									setAttributes( {
+										widthMobile: val === '' ? undefined : val,
+									} )
+								}
+								min={ 50 }
+								max={ 800 }
+								step={ 10 }
+								allowReset
+								__nextHasNoMarginBottom
+							/>
+							<RangeControl
+								label={ __( 'Rotation (mobile, degrees)', 'sgs-blocks' ) }
+								help={ __( 'Leave empty to use desktop value', 'sgs-blocks' ) }
+								value={ rotationMobile ?? '' }
+								onChange={ ( val ) =>
+									setAttributes( {
+										rotationMobile: val === '' ? undefined : val,
+									} )
+								}
+								min={ -180 }
+								max={ 180 }
+								step={ 5 }
+								allowReset
+								__nextHasNoMarginBottom
+							/>
+						</>
+					) }
 				</PanelBody>
 			</InspectorControls>
 
@@ -193,44 +353,54 @@ export default function Edit( { attributes, setAttributes } ) {
 							allowedTypes={ [ 'image' ] }
 							value={ imageId }
 							render={ ( { open } ) => (
-								<Button
-									onClick={ open }
-									variant="primary"
-									className="sgs-decorative-image__upload"
-								>
-									{ __(
-										'Select Image',
-										'sgs-blocks'
-									) }
-								</Button>
+								<div className="sgs-decorative-image-editor__placeholder">
+									<Button onClick={ open } variant="primary">
+										{ __( 'Select Decorative Image', 'sgs-blocks' ) }
+									</Button>
+									<p className="sgs-decorative-image-editor__help">
+										{ __(
+											'Decorative images float absolutely over sections with optional parallax effects.',
+											'sgs-blocks'
+										) }
+									</p>
+								</div>
 							) }
 						/>
 					</MediaUploadCheck>
 				) : (
-					<div className="sgs-decorative-image__wrapper">
-						<img
-							src={ imageUrl }
-							alt={ imageAlt }
-							className="sgs-decorative-image__img"
-							style={ imageStyle }
-						/>
-						{ overlayOpacity > 0 && (
-							<div
-								className="sgs-decorative-image__overlay"
-								style={ overlayStyle }
-								aria-hidden="true"
+					<div className="sgs-decorative-image-editor__preview-wrapper">
+						<div
+							className="sgs-decorative-image-editor__preview-container"
+							style={ { position: 'relative', minHeight: '400px' } }
+						>
+							<img
+								src={ imageUrl }
+								alt={ imageAlt || __( 'Decorative image preview', 'sgs-blocks' ) }
+								className="sgs-decorative-image-editor__preview"
+								style={ previewStyles }
 							/>
-						) }
-						<MediaUploadCheck>
-							<Button
-								onClick={ onRemoveImage }
-								variant="secondary"
-								isDestructive
-								className="sgs-decorative-image__remove"
-							>
-								{ __( 'Remove Image', 'sgs-blocks' ) }
-							</Button>
-						</MediaUploadCheck>
+						</div>
+						<div className="sgs-decorative-image-editor__actions">
+							<MediaUploadCheck>
+								<MediaUpload
+									onSelect={ onSelectImage }
+									allowedTypes={ [ 'image' ] }
+									value={ imageId }
+									render={ ( { open } ) => (
+										<Button onClick={ open } variant="secondary">
+											{ __( 'Replace Image', 'sgs-blocks' ) }
+										</Button>
+									) }
+								/>
+								<Button
+									onClick={ onRemoveImage }
+									variant="secondary"
+									isDestructive
+								>
+									{ __( 'Remove Image', 'sgs-blocks' ) }
+								</Button>
+							</MediaUploadCheck>
+						</div>
 					</div>
 				) }
 			</div>
