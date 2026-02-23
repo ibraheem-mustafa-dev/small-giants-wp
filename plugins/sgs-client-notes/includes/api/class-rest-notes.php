@@ -392,7 +392,7 @@ class Rest_Notes extends \WP_REST_Controller {
 			'created_at' => $note['created_at'],
 		);
 
-		wp_remote_post(
+		wp_safe_remote_post(
 			$webhook_url,
 			array(
 				'body'    => wp_json_encode( $payload ),

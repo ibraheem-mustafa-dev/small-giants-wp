@@ -209,7 +209,7 @@ class Rest_Replies extends \WP_REST_Controller {
 			'created_at' => $reply['created_at'],
 		);
 
-		wp_remote_post(
+		wp_safe_remote_post(
 			$webhook_url,
 			array(
 				'body'    => wp_json_encode( $payload ),
