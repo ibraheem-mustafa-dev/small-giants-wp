@@ -1,11 +1,11 @@
-﻿{
+{
     "$schema":  "https://schemas.wp.org/trunk/block.json",
     "apiVersion":  3,
     "name":  "sgs/trust-bar",
     "version":  "0.1.0",
     "title":  "SGS Trust Bar",
     "category":  "sgs-content",
-    "description":  "Horizontal strip of stats and trust signals.",
+    "description":  "Horizontal strip of key stats and trust signals with animated number counters. Great for showcasing years of experience, customers served, or certifications.",
     "keywords":  [
                      "trust",
                      "stats",

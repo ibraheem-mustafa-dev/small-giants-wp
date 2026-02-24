@@ -1,11 +1,11 @@
-﻿{
+{
     "$schema":  "https://schemas.wp.org/trunk/block.json",
     "apiVersion":  3,
     "name":  "sgs/icon-block",
     "version":  "0.1.0",
     "title":  "SGS Icon Block",
     "category":  "sgs-content",
-    "description":  "Standalone SVG icon with size, colour, and link controls.",
+    "description":  "Standalone SVG icon from the Lucide icon set with size, colour, background shape, and optional link. Use inside info boxes, lists, or feature grids.",
     "keywords":  [
                      "icon",
                      "svg",

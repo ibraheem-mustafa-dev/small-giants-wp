@@ -1,1 +1,106 @@
-﻿
+﻿{
+    "$schema":  "https://schemas.wp.org/trunk/block.json",
+    "apiVersion":  3,
+    "name":  "sgs/certification-bar",
+    "version":  "0.1.0",
+    "title":  "SGS Certification Bar",
+    "category":  "sgs-content",
+    "description":  "Horizontal strip of certification badges with optional labels. Trust signals like BRC, Halal, SALSA.",
+    "keywords":  [
+                     "certification",
+                     "badge",
+                     "accreditation",
+                     "trust",
+                     "halal",
+                     "brc"
+                 ],
+    "textdomain":  "sgs-blocks",
+    "icon":  "awards",
+    "supports":  {
+                     "align":  [
+                                   "wide",
+                                   "full"
+                               ],
+                     "anchor":  true,
+                     "html":  false,
+                     "color":  {
+                                   "background":  true,
+                                   "text":  true
+                               },
+                     "typography":  {
+                                        "fontSize":  true,
+                                        "lineHeight":  true,
+                                        "textAlign":  true
+                                    },
+                     "spacing":  {
+                                     "margin":  true,
+                                     "padding":  true
+                                 },
+                     "__experimentalBorder":  {
+                                                  "radius":  true,
+                                                  "width":  true,
+                                                  "color":  true,
+                                                  "style":  true
+                                              }
+                 },
+    "selectors":  {
+                      "root":  ".sgs-certification-bar",
+                      "typography":  ".sgs-certification-bar__title"
+                  },
+    "attributes":  {
+                       "title":  {
+                                     "type":  "string",
+                                     "source":  "html",
+                                     "selector":  ".sgs-certification-bar__title"
+                                 },
+                       "items":  {
+                                     "type":  "array",
+                                     "default":  [
+
+                                                 ]
+                                 },
+                       "badgeStyle":  {
+                                          "type":  "string",
+                                          "default":  "text-only"
+                                      },
+                       "badgeSize":  {
+                                         "type":  "string",
+                                         "default":  "medium"
+                                     },
+                       "titleColour":  {
+                                           "type":  "string"
+                                       },
+                       "titleFontSize":  {
+                                             "type":  "string"
+                                         },
+                       "labelColour":  {
+                                           "type":  "string"
+                                       },
+                       "labelFontSize":  {
+                                             "type":  "string"
+                                         }
+                   },
+    "editorScript":  "file:./index.js",
+    "editorStyle":  "file:./index.css",
+    "style":  "file:./style-index.css",
+    "example":  {
+                    "attributes":  {
+                                       "title":  "Our Accreditations",
+                                       "badgeStyle":  "text-only",
+                                       "items":  [
+                                                     {
+                                                         "label":  "BRC Grade AA"
+                                                     },
+                                                     {
+                                                         "label":  "Halal Certified"
+                                                     },
+                                                     {
+                                                         "label":  "SALSA Approved"
+                                                     },
+                                                     {
+                                                         "label":  "ISO 9001:2015"
+                                                     }
+                                                 ]
+                                   }
+                }
+}

@@ -1,11 +1,11 @@
-﻿{
+{
     "$schema":  "https://schemas.wp.org/trunk/block.json",
     "apiVersion":  3,
     "name":  "sgs/social-icons",
     "version":  "0.1.0",
     "title":  "SGS Social Icons",
     "category":  "sgs-content",
-    "description":  "List of social platform icons with links.",
+    "description":  "Row of social media platform icons with links. Supports Facebook, Instagram, LinkedIn, X, YouTube, TikTok, and more. Configurable size, style, and hover colour.",
     "keywords":  [
                      "social",
                      "icons",

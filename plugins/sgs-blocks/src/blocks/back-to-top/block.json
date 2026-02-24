@@ -1,1 +1,61 @@
-﻿
+{
+    "$schema":  "https://schemas.wp.org/trunk/block.json",
+    "apiVersion":  3,
+    "name":  "sgs/back-to-top",
+    "version":  "0.1.0",
+    "title":  "SGS Back to Top",
+    "category":  "sgs-interactive",
+    "description":  "Floating button that appears when the user scrolls down, smoothly returning them to the top of the page. Configurable position, size, shape, and colour.",
+    "keywords":  [
+                     "back",
+                     "top",
+                     "scroll",
+                     "button",
+                     "up"
+                 ],
+    "textdomain":  "sgs-blocks",
+    "icon":  "arrow-up-alt",
+    "supports":  {
+                     "align":  false,
+                     "anchor":  true,
+                     "html":  false,
+                     "multiple":  false
+                 },
+    "attributes":  {
+                       "buttonColour":  {
+                                            "type":  "string",
+                                            "default":  "primary"
+                                        },
+                       "iconColour":  {
+                                          "type":  "string",
+                                          "default":  "surface"
+                                      },
+                       "position":  {
+                                        "type":  "string",
+                                        "default":  "bottom-right"
+                                    },
+                       "size":  {
+                                    "type":  "number",
+                                    "default":  48
+                                },
+                       "scrollThreshold":  {
+                                               "type":  "number",
+                                               "default":  300
+                                           },
+                       "shape":  {
+                                     "type":  "string",
+                                     "default":  "circle"
+                                 }
+                   },
+    "editorScript":  "file:./index.js",
+    "editorStyle":  "file:./index.css",
+    "style":  "file:./style-index.css",
+    "render":  "file:./render.php",
+    "viewScriptModule":  "file:./view.js",
+    "example":  {
+                    "attributes":  {
+                                       "shape":  "circle",
+                                       "position":  "bottom-right"
+                                   }
+                }
+}

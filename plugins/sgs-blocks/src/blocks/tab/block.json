@@ -1,11 +1,11 @@
-﻿{
+{
     "$schema":  "https://schemas.wp.org/trunk/block.json",
     "apiVersion":  3,
     "name":  "sgs/tab",
     "version":  "0.1.0",
     "title":  "SGS Tab",
     "category":  "sgs-interactive",
-    "description":  "Individual tab panel â€” add any blocks inside.",
+    "description":  "Individual tab panel — add any content blocks inside.",
     "keywords":  [
                      "tab",
                      "panel",
