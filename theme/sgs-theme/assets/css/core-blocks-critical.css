@@ -1,0 +1,334 @@
+/**
+ * SGS Theme — Core Block Critical Styles
+ *
+ * Above-the-fold CSS: header, site logo, navigation base, hero buttons,
+ * and accessibility foundations. Loaded synchronously on every page to
+ * prevent a Flash of Unstyled Content for visible elements.
+ *
+ * Everything below the fold (footer, social icons, hover animations,
+ * dropdowns) lives in core-blocks.css, which is deferred via the
+ * defer_non_critical_css filter in functions.php.
+ *
+ * @package SGS\Theme
+ */
+
+/* ─── FOCUS INDICATORS — WCAG 2.2 AA compliant (C5) ─── */
+
+/*
+ * The site's --accent token (#d8ca50) has only 1.68:1 contrast on white
+ * and 1.00:1 on the yellow section background — both WCAG 1.4.11 failures.
+ *
+ * WCAG 2.2 SC 2.4.11 requires the focus indicator to have at least 3:1
+ * contrast against the adjacent background colour. We use --primary-dark
+ * (#076a8e / teal-dark) as the focus ring colour: 5.54:1 on white, 3.93:1 on
+ * the yellow section bg, and 3.0:1 on the navy footer bg — all passing.
+ *
+ * WCAG 2.2 SC 2.4.11 also requires the focus indicator area to be at least
+ * as large as a 2px perimeter — 3px outline exceeds this safely.
+ */
+:root {
+	--sgs-focus-color: var(--wp--preset--color--primary-dark, #076a8e);
+}
+
+/* Universal focus ring — catches anything without a specific rule.
+   3px width ensures WCAG 2.4.11 compliance. Never suppress with outline: 0. */
+:focus-visible {
+	outline: 3px solid var(--sgs-focus-color);
+	outline-offset: 2px;
+}
+
+/* WordPress core buttons */
+:root :where(.wp-element-button:focus-visible, .wp-block-button__link:focus-visible) {
+	outline: 3px solid var(--sgs-focus-color) !important;
+	outline-offset: 2px;
+}
+
+/* WordPress core navigation links */
+.wp-block-navigation .wp-block-navigation-item__content:focus-visible,
+.wp-block-navigation a:focus-visible {
+	outline: 3px solid var(--sgs-focus-color);
+	outline-offset: 2px;
+}
+
+/* ─── HEADER TOP BAR CONTRAST ─── */
+
+/*
+ * White (#fff) on primary (#0a7ea8) is 4.07:1 — passes AA for large text
+ * (3:1) but fails for normal small text (4.5:1). Making the top-bar text
+ * bold + 14px qualifies it as "large text" under WCAG, so 4.07:1 passes.
+ */
+.has-primary-background-color > .wp-block-group > p.has-small-font-size {
+	font-weight: 600;
+}
+
+/* ─── SITE LOGO ─── */
+
+.wp-block-site-logo img {
+	max-width: 200px !important;
+	max-height: 70px !important;
+	width: auto !important;
+	height: auto !important;
+	object-fit: contain;
+}
+
+/* Override inline width from block attributes */
+.sgs-header-sticky .wp-block-site-logo {
+	flex-shrink: 0;
+}
+
+/* Prevent nav from wrapping in header */
+.sgs-header-sticky .wp-block-group[class*="is-layout-flex"] {
+	flex-wrap: nowrap;
+	align-items: center;
+}
+
+.sgs-header-sticky .wp-block-navigation {
+	flex-wrap: nowrap;
+}
+
+.sgs-header-sticky .wp-block-navigation .wp-block-navigation-item {
+	white-space: nowrap;
+}
+
+/* ─── SITE TITLE ─── */
+
+.wp-block-site-title a {
+	text-decoration: none;
+}
+
+/* ─── BUTTONS ─── */
+
+.wp-block-button__link {
+	border-radius: var(--wp--custom--border-radius--medium);
+	font-weight: 700;
+	transition: transform var(--wp--custom--transition--fast),
+	            box-shadow var(--wp--custom--transition--fast);
+}
+
+.wp-block-button__link:hover {
+	transform: translateY(-2px);
+	box-shadow: var(--wp--preset--shadow--md);
+}
+
+.wp-block-button__link:active {
+	transform: translateY(0);
+}
+
+.wp-block-button__link:focus-visible {
+	outline: 3px solid var(--sgs-focus-color, var(--wp--preset--color--primary-dark, #076a8e));
+	outline-offset: 2px;
+}
+
+/* Outline variant */
+.wp-block-button.is-style-outline .wp-block-button__link {
+	border-width: 2px;
+}
+
+/* ─── BUTTON TEXT COLOUR FIX ─── */
+
+/*
+ * The style variation's global heading colour rule sets .has-text-color to
+ * apply --text. This overrides explicitly-set .has-surface-color on buttons
+ * that have both classes. We target the specific case of a button with
+ * has-surface-color (white text) on a coloured background.
+ *
+ * Using .has-primary-background-color as the parent context keeps this
+ * scoped — we are not overriding button text colour globally.
+ */
+.wp-block-button__link.has-surface-color.has-text-color,
+.wp-block-button__link.has-text-inverse-color.has-text-color {
+	color: var(--wp--preset--color--surface, #ffffff) !important;
+}
+
+/* ─── BUTTON TEXT CONTRAST — H4 ─── */
+
+/*
+ * White text on the Indus Foods gold/accent (#d8ca50) fails WCAG AA at 1.68:1.
+ * When a button sits on an accent background, force text to dark (#2c3e50).
+ * Uses the footer-bg token which is #2c3e50 on Indus Foods.
+ */
+.wp-block-button__link.has-accent-background-color:not([style*="color"]) {
+	color: var(--wp--preset--color--text, #1e1e1e);
+}
+
+/* ─── NAVIGATION — above-the-fold base styles ─── */
+
+/*
+ * Only the visible resting state of nav links belongs here.
+ * Hover effects, dropdown containers, and animations are deferred
+ * in core-blocks.css — they require interaction before they are seen.
+ */
+
+/* Top-level link base — padding and transition declaration */
+.wp-block-navigation .wp-block-navigation-item__content {
+	padding: 4px 8px;
+	border-radius: var(--wp--custom--border-radius--small);
+	transition: color var(--wp--custom--transition--fast),
+	            background-color var(--wp--custom--transition--fast),
+	            opacity var(--wp--custom--transition--fast);
+}
+
+/* ─── COLUMNS ─── */
+
+/* M12: standardised mobile breakpoint — max-width: 767px */
+@media (max-width: 767px) {
+	.wp-block-columns {
+		gap: var(--wp--preset--spacing--30);
+	}
+}
+
+/* ─── HEADINGS ─── */
+
+.wp-block-heading {
+	letter-spacing: -0.01em;
+}
+
+/* ─── HEADER VARIANTS ─── */
+
+/*
+ * Header style variants controlled by classes on the <header> template part.
+ *
+ * - .sgs-header-sticky: Fixed to top on scroll
+ * - .sgs-header-transparent: Overlays content with transparent background
+ * - .sgs-header-shrink: Shrinks padding on scroll (progressive enhancement)
+ *
+ * Default: static header with z-index for dropdown menus.
+ */
+
+header.wp-block-template-part {
+	z-index: 100;
+	transition: padding var(--wp--custom--transition--medium, 0.3s ease),
+	            background-color var(--wp--custom--transition--medium, 0.3s ease),
+	            box-shadow var(--wp--custom--transition--medium, 0.3s ease);
+}
+
+/* Sticky header */
+header.wp-block-template-part.sgs-header-sticky {
+	position: sticky;
+	top: 0;
+}
+
+/* Transparent/overlay header */
+header.wp-block-template-part.sgs-header-transparent {
+	position: absolute;
+	width: 100%;
+	background: transparent !important;
+}
+
+header.wp-block-template-part.sgs-header-transparent > .wp-block-group {
+	background: transparent !important;
+}
+
+header.wp-block-template-part.sgs-header-transparent .wp-block-navigation .wp-block-navigation-item__content,
+header.wp-block-template-part.sgs-header-transparent .wp-block-site-title a {
+	color: var(--wp--preset--color--surface, #fff);
+}
+
+/* Shrinking header — uses CSS scroll-driven animation (Chrome 115+) */
+@supports (animation-timeline: scroll()) {
+	header.wp-block-template-part.sgs-header-shrink {
+		position: sticky;
+		top: 0;
+		animation: sgs-header-shrink linear both;
+		animation-timeline: scroll();
+		animation-range: 0px 200px;
+	}
+
+	@keyframes sgs-header-shrink {
+		from {
+			padding-top: var(--wp--preset--spacing--30, 1rem);
+			padding-bottom: var(--wp--preset--spacing--30, 1rem);
+		}
+		to {
+			padding-top: 0;
+			padding-bottom: 0;
+			box-shadow: var(--wp--preset--shadow--md, 0 4px 12px rgba(0,0,0,0.1));
+		}
+	}
+}
+
+/* Shrink fallback for browsers without scroll-driven animation */
+@supports not (animation-timeline: scroll()) {
+	header.wp-block-template-part.sgs-header-shrink {
+		position: sticky;
+		top: 0;
+	}
+}
+
+/* ─── HEADER CTA ─── */
+
+.sgs-header-cta .wp-block-button__link {
+	transition: transform var(--wp--custom--transition--fast),
+	            box-shadow var(--wp--custom--transition--fast);
+}
+
+.sgs-header-cta .wp-block-button__link:hover {
+	transform: translateY(-1px);
+	box-shadow: var(--wp--preset--shadow--glow);
+}
+
+/* Hide header CTA on mobile and tablet — hamburger menu is sufficient */
+@media (max-width: 1023px) {
+	.sgs-header-cta {
+		display: none !important;
+	}
+}
+
+/* ─── NAV MOBILE CLOSE BUTTON — focus fix ─── */
+
+/*
+ * WordPress core sets outline:none on the nav close wrapper. We cannot edit
+ * core CSS so we override it here. The close BUTTON itself does not have this
+ * problem — only the wrapper div. We add the focus ring to the button inside.
+ */
+.wp-block-navigation__responsive-close:focus-within {
+	outline: 2px solid var(--wp--preset--color--primary);
+	outline-offset: 2px;
+}
+
+.wp-block-navigation__responsive-container-close:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary);
+	outline-offset: 2px;
+	border-radius: var(--wp--custom--border-radius--small, 4px);
+}
+
+/* ─── NAV HAMBURGER BUTTON — touch target ─── */
+
+/*
+ * The WordPress core hamburger SVG is 24×24. We add a pseudo-element tap zone
+ * without changing the visual size. min-width/height + padding is cleaner
+ * than a pseudo-element here because the button is display:inline-flex.
+ *
+ * The !important ensures our display rule beats the WordPress core navigation
+ * CSS that conditionally hides the button via JS-driven class toggles.
+ */
+.wp-block-navigation__responsive-container-open {
+	min-width: 44px;
+	min-height: 44px;
+	display: inline-flex !important;
+	align-items: center;
+	justify-content: center;
+}
+
+/* On mobile, ensure the hamburger icon colour is visible (dark on white
+   header background). */
+@media (max-width: 767px) {
+	.wp-block-navigation__responsive-container-open svg {
+		fill: var(--wp--preset--color--text, #1e1e1e);
+	}
+}
+
+/* ─── REDUCED MOTION — critical transitions only ─── */
+
+/*
+ * Covers only the above-the-fold elements declared in this file.
+ * Non-critical reduced-motion rules (footer links, submenu animations)
+ * are in core-blocks.css.
+ */
+@media (prefers-reduced-motion: reduce) {
+	.wp-block-button__link,
+	.sgs-header-cta .wp-block-button__link,
+	.wp-block-navigation .wp-block-navigation-item__content {
+		transition: none;
+	}
+}

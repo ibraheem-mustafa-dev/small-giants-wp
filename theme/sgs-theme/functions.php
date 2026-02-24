@@ -37,6 +37,7 @@ function setup(): void {
 	add_theme_support( 'editor-styles' );
 	add_theme_support( 'responsive-embeds' );
 
+	add_editor_style( 'assets/css/core-blocks-critical.css' );
 	add_editor_style( 'assets/css/core-blocks.css' );
 }
 add_action( 'after_setup_theme', __NAMESPACE__ . '\setup' );
@@ -144,10 +145,19 @@ add_action( 'wp_head', __NAMESPACE__ . '\preload_fonts', 1 );
 function enqueue_styles(): void {
 	$theme_version = wp_get_theme()->get( 'Version' );
 
+	// Critical above-the-fold styles — loaded synchronously (small file, ~5 KB).
+	wp_enqueue_style(
+		'sgs-core-blocks-critical',
+		get_theme_file_uri( 'assets/css/core-blocks-critical.css' ),
+		[],
+		$theme_version
+	);
+
+	// Non-critical block styles — deferred via defer_non_critical_css() below.
 	wp_enqueue_style(
 		'sgs-core-blocks',
 		get_theme_file_uri( 'assets/css/core-blocks.css' ),
-		[],
+		[ 'sgs-core-blocks-critical' ],
 		$theme_version
 	);
 
@@ -226,7 +236,7 @@ add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\enqueue_styles' );
  * asynchronously without blocking first paint.
  */
 function defer_non_critical_css( string $tag, string $handle ): string {
-	$deferred = [ 'sgs-dark-mode', 'sgs-mobile-nav-drawer', 'sgs-utilities', 'sgs-extensions' ];
+	$deferred = [ 'sgs-core-blocks', 'sgs-dark-mode', 'sgs-mobile-nav-drawer', 'sgs-utilities', 'sgs-extensions' ];
 
 	if ( in_array( $handle, $deferred, true ) ) {
 		// Replace media="all" with media="print" and add onload swap.
