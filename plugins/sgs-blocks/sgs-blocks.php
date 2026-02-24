@@ -32,6 +32,7 @@ require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-processor.php';
 require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-upload.php';
 require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-rest-api.php';
 require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-admin.php';
+require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-privacy.php';
 require_once SGS_BLOCKS_PATH . 'includes/forms/field-render-helpers.php';
 
 // Schema output filters.
@@ -54,6 +55,9 @@ Forms\Form_REST_API::register();
 
 // Register admin settings page (webhook URL + submissions viewer).
 Forms\Form_Admin::register();
+
+// Register GDPR personal data exporters and erasers.
+Forms\Form_Privacy::register();
 
 // Activation hook for database setup.
 register_activation_hook( __FILE__, [ Forms\Form_Activator::class, 'activate' ] );
