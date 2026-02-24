@@ -15,13 +15,19 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Open a form field wrapper div.
  *
+ * When conditionalField is set, the wrapper receives data-conditional-* attributes
+ * so that view.js can show or hide the field based on another field's value.
+ * Hidden-by-default fields also receive the sgs-form-field--hidden CSS class so
+ * they are invisible before JavaScript initialises.
+ *
  * @param array  $attributes Block attributes.
  * @param string $type       Field type (text, email, textarea, select, etc.).
  * @param string $extra_class Additional CSS class (optional).
  * @return string Opening div tag.
  */
 function field_open( array $attributes, string $type, string $extra_class = '' ): string {
-	$width = $attributes['width'] ?? 'full';
+	$width             = $attributes['width'] ?? 'full';
+	$conditional_field = $attributes['conditionalField'] ?? '';
 
 	$classes = [
 		'sgs-form-field',
@@ -33,9 +39,29 @@ function field_open( array $attributes, string $type, string $extra_class = '' )
 		$classes[] = esc_attr( $extra_class );
 	}
 
+	// Fields with conditional logic start hidden; view.js evaluates and shows them.
+	if ( ! empty( $conditional_field ) ) {
+		$classes[] = 'sgs-form-field--hidden';
+	}
+
+	$data_attrs = '';
+
+	if ( ! empty( $conditional_field ) ) {
+		$operator = $attributes['conditionalOperator'] ?? 'equals';
+		$value    = $attributes['conditionalValue'] ?? '';
+
+		$data_attrs = sprintf(
+			' data-conditional-field="%s" data-conditional-operator="%s" data-conditional-value="%s"',
+			esc_attr( $conditional_field ),
+			esc_attr( $operator ),
+			esc_attr( $value )
+		);
+	}
+
 	return sprintf(
-		'<div class="%s">',
-		implode( ' ', $classes )
+		'<div class="%s"%s>',
+		implode( ' ', $classes ),
+		$data_attrs
 	);
 }
 
@@ -109,6 +135,9 @@ function field_id( string $field_name ): string {
  * Generates all common input attributes (id, name, placeholder,
  * required, aria-describedby) for use in text/email/number fields.
  *
+ * Always wires aria-describedby to the error element (and help text when present)
+ * so that screen readers announce inline validation messages.
+ *
  * @param string $field_id   Field ID (from field_id()).
  * @param array  $attributes Block attributes.
  * @return string Space-separated attribute string.
@@ -133,9 +162,29 @@ function field_input_attrs( string $field_id, array $attributes ): string {
 		$attrs[] = 'aria-required="true"';
 	}
 
+	// Always include the error element ID in aria-describedby so that screen readers
+	// announce inline validation messages when the field becomes invalid.
+	$described_by = [ esc_attr( $field_id ) . '-error' ];
 	if ( ! empty( $help_text ) ) {
-		$attrs[] = 'aria-describedby="' . esc_attr( $field_id ) . '-help"';
+		$described_by[] = esc_attr( $field_id ) . '-help';
 	}
+	$attrs[] = 'aria-describedby="' . implode( ' ', $described_by ) . '"';
 
 	return implode( ' ', $attrs );
+}
+
+/**
+ * Render an inline error message placeholder for a field.
+ *
+ * The element is visually hidden when empty and populated by client-side
+ * validation. Screen readers pick it up via aria-describedby on the input.
+ *
+ * @param string $field_id Field ID (from field_id()).
+ * @return string Error span HTML.
+ */
+function field_error( string $field_id ): string {
+	return sprintf(
+		'<span id="%s-error" class="sgs-form-field__error" role="alert" aria-live="polite"></span>',
+		esc_attr( $field_id )
+	);
 }

@@ -1,26 +1,41 @@
-{
-	"$schema": "https://schemas.wp.org/trunk/block.json",
-	"apiVersion": 3,
-	"name": "sgs/form-review",
-	"version": "0.1.0",
-	"title": "Form Review",
-	"category": "sgs-forms",
-	"description": "Displays a summary of form fields for review before submission.",
-	"keywords": [ "review", "summary", "preview", "confirmation" ],
-	"textdomain": "sgs-blocks",
-	"icon": "clipboard",
-	"parent": [ "sgs/form", "sgs/form-step" ],
-	"usesContext": [ "sgs/formId" ],
-	"supports": {
-		"html": false,
-		"anchor": false
-	},
-	"attributes": {
-		"heading": {
-			"type": "string",
-			"default": "Review your information"
-		}
-	},
-	"render": "file:./render.php",
-	"editorScript": "file:./index.js"
+﻿{
+    "$schema":  "https://schemas.wp.org/trunk/block.json",
+    "apiVersion":  3,
+    "name":  "sgs/form-review",
+    "version":  "0.1.0",
+    "title":  "SGS Form Review",
+    "category":  "sgs-forms",
+    "description":  "Displays a summary of form fields for review before submission.",
+    "keywords":  [
+                     "review",
+                     "summary",
+                     "preview",
+                     "confirmation"
+                 ],
+    "textdomain":  "sgs-blocks",
+    "icon":  "clipboard",
+    "parent":  [
+                   "sgs/form",
+                   "sgs/form-step"
+               ],
+    "usesContext":  [
+                        "sgs/formId"
+                    ],
+    "supports":  {
+                     "html":  false,
+                     "anchor":  false
+                 },
+    "attributes":  {
+                       "heading":  {
+                                       "type":  "string",
+                                       "default":  "Review your information"
+                                   }
+                   },
+    "render":  "file:./render.php",
+    "editorScript":  "file:./index.js",
+    "example":  {
+                    "attributes":  {
+                                       "heading":  "Review your information"
+                                   }
+                }
 }

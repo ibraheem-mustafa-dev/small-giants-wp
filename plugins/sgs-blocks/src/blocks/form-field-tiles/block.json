@@ -1,58 +1,109 @@
-{
-	"$schema": "https://schemas.wp.org/trunk/block.json",
-	"apiVersion": 3,
-	"name": "sgs/form-field-tiles",
-	"version": "0.1.0",
-	"title": "Tiles Field",
-	"category": "sgs-forms",
-	"description": "Visual tile selection with icons.",
-	"keywords": [ "tiles", "choice", "visual", "icon" ],
-	"textdomain": "sgs-blocks",
-	"icon": "grid-view",
-	"parent": [ "sgs/form", "sgs/form-step" ],
-	"usesContext": [ "sgs/formId" ],
-	"supports": {
-		"html": false,
-		"anchor": false
-	},
-	"attributes": {
-		"fieldName": {
-			"type": "string",
-			"default": ""
-		},
-		"label": {
-			"type": "string",
-			"default": ""
-		},
-		"placeholder": {
-			"type": "string",
-			"default": ""
-		},
-		"helpText": {
-			"type": "string",
-			"default": ""
-		},
-		"required": {
-			"type": "boolean",
-			"default": false
-		},
-		"width": {
-			"type": "string",
-			"default": "full"
-		},
-		"tiles": {
-			"type": "array",
-			"default": []
-		},
-		"multiSelect": {
-			"type": "boolean",
-			"default": false
-		},
-		"columns": {
-			"type": "number",
-			"default": 3
-		}
-	},
-	"render": "file:./render.php",
-	"editorScript": "file:./index.js"
+﻿{
+    "$schema":  "https://schemas.wp.org/trunk/block.json",
+    "apiVersion":  3,
+    "name":  "sgs/form-field-tiles",
+    "version":  "0.1.0",
+    "title":  "SGS Tiles Field",
+    "category":  "sgs-forms",
+    "description":  "Visual tile selection with icons.",
+    "keywords":  [
+                     "tiles",
+                     "choice",
+                     "visual",
+                     "icon"
+                 ],
+    "textdomain":  "sgs-blocks",
+    "icon":  "grid-view",
+    "parent":  [
+                   "sgs/form",
+                   "sgs/form-step"
+               ],
+    "usesContext":  [
+                        "sgs/formId"
+                    ],
+    "supports":  {
+                     "html":  false,
+                     "anchor":  false
+                 },
+    "attributes":  {
+                       "fieldName":  {
+                                         "type":  "string",
+                                         "default":  ""
+                                     },
+                       "label":  {
+                                     "type":  "string",
+                                     "default":  ""
+                                 },
+                       "placeholder":  {
+                                           "type":  "string",
+                                           "default":  ""
+                                       },
+                       "helpText":  {
+                                        "type":  "string",
+                                        "default":  ""
+                                    },
+                       "required":  {
+                                        "type":  "boolean",
+                                        "default":  false
+                                    },
+                       "width":  {
+                                     "type":  "string",
+                                     "default":  "full"
+                                 },
+                       "tiles":  {
+                                     "type":  "array",
+                                     "default":  [
+
+                                                 ]
+                                 },
+                       "multiSelect":  {
+                                           "type":  "boolean",
+                                           "default":  false
+                                       },
+                       "columns":  {
+                                       "type":  "number",
+                                       "default":  3
+                                   },
+                       "conditionalField":  {
+                                                "type":  "string",
+                                                "default":  ""
+                                            },
+                       "conditionalOperator":  {
+                                                   "type":  "string",
+                                                   "default":  "equals"
+                                               },
+                       "conditionalValue":  {
+                                                "type":  "string",
+                                                "default":  ""
+                                            },
+                       "selectedStyle":  {
+                                             "type":  "string",
+                                             "default":  "checkmark"
+                                         }
+                   },
+    "render":  "file:./render.php",
+    "editorScript":  "file:./index.js",
+    "example":  {
+                    "attributes":  {
+                                       "label":  "What type of business are you?",
+                                       "tiles":  [
+                                                     {
+                                                         "label":  "Restaurant",
+                                                         "icon":  "utensils"
+                                                     },
+                                                     {
+                                                         "label":  "Hotel",
+                                                         "icon":  "building"
+                                                     },
+                                                     {
+                                                         "label":  "Retailer",
+                                                         "icon":  "shopping-bag"
+                                                     },
+                                                     {
+                                                         "label":  "Caterer",
+                                                         "icon":  "chef-hat"
+                                                     }
+                                                 ]
+                                   }
+                }
 }

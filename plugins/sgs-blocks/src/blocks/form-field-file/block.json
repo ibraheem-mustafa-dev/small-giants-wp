@@ -1,59 +1,97 @@
-{
-	"$schema": "https://schemas.wp.org/trunk/block.json",
-	"apiVersion": 3,
-	"name": "sgs/form-field-file",
-	"version": "0.1.0",
-	"title": "File Upload Field",
-	"category": "sgs-forms",
-	"description": "File upload field with drag-and-drop support.",
-	"keywords": [ "file", "upload", "attachment", "document" ],
-	"textdomain": "sgs-blocks",
-	"icon": "upload",
-	"parent": [ "sgs/form", "sgs/form-step" ],
-	"usesContext": [ "sgs/formId" ],
-	"supports": {
-		"html": false,
-		"anchor": false,
-		"interactivity": true
-	},
-	"attributes": {
-		"fieldName": {
-			"type": "string",
-			"default": ""
-		},
-		"label": {
-			"type": "string",
-			"default": ""
-		},
-		"placeholder": {
-			"type": "string",
-			"default": ""
-		},
-		"helpText": {
-			"type": "string",
-			"default": ""
-		},
-		"required": {
-			"type": "boolean",
-			"default": false
-		},
-		"width": {
-			"type": "string",
-			"default": "full"
-		},
-		"allowedTypes": {
-			"type": "string",
-			"default": "image/*,application/pdf"
-		},
-		"maxSize": {
-			"type": "number",
-			"default": 10
-		},
-		"maxFiles": {
-			"type": "number",
-			"default": 1
-		}
-	},
-	"render": "file:./render.php",
-	"editorScript": "file:./index.js"
+﻿{
+    "$schema":  "https://schemas.wp.org/trunk/block.json",
+    "apiVersion":  3,
+    "name":  "sgs/form-field-file",
+    "version":  "0.1.0",
+    "title":  "SGS File Upload Field",
+    "category":  "sgs-forms",
+    "description":  "File upload field with drag-and-drop support.",
+    "keywords":  [
+                     "file",
+                     "upload",
+                     "attachment",
+                     "document"
+                 ],
+    "textdomain":  "sgs-blocks",
+    "icon":  "upload",
+    "parent":  [
+                   "sgs/form",
+                   "sgs/form-step"
+               ],
+    "usesContext":  [
+                        "sgs/formId"
+                    ],
+    "supports":  {
+                     "html":  false,
+                     "anchor":  false,
+                     "interactivity":  true
+                 },
+    "attributes":  {
+                       "fieldName":  {
+                                         "type":  "string",
+                                         "default":  ""
+                                     },
+                       "label":  {
+                                     "type":  "string",
+                                     "default":  ""
+                                 },
+                       "placeholder":  {
+                                           "type":  "string",
+                                           "default":  ""
+                                       },
+                       "helpText":  {
+                                        "type":  "string",
+                                        "default":  ""
+                                    },
+                       "required":  {
+                                        "type":  "boolean",
+                                        "default":  false
+                                    },
+                       "width":  {
+                                     "type":  "string",
+                                     "default":  "full"
+                                 },
+                       "allowedTypes":  {
+                                            "type":  "array",
+                                            "default":  [
+                                                            "image/*",
+                                                            "application/pdf"
+                                                        ],
+                                            "items":  {
+                                                          "type":  "string"
+                                                      }
+                                        },
+                       "maxSize":  {
+                                       "type":  "number",
+                                       "default":  10
+                                   },
+                       "maxFiles":  {
+                                        "type":  "number",
+                                        "default":  1
+                                    },
+                       "conditionalField":  {
+                                                "type":  "string",
+                                                "default":  ""
+                                            },
+                       "conditionalOperator":  {
+                                                   "type":  "string",
+                                                   "default":  "equals"
+                                               },
+                       "conditionalValue":  {
+                                                "type":  "string",
+                                                "default":  ""
+                                            },
+                       "uploadText":  {
+                                          "type":  "string",
+                                          "default":  ""
+                                      }
+                   },
+    "render":  "file:./render.php",
+    "editorScript":  "file:./index.js",
+    "example":  {
+                    "attributes":  {
+                                       "label":  "Upload your trade documents",
+                                       "required":  false
+                                   }
+                }
 }

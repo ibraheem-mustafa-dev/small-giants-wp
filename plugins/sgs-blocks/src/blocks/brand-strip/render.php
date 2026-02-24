@@ -11,6 +11,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+
 // Extract attributes with defaults.
 $logos        = $attributes['logos'] ?? array();
 $scrolling    = $attributes['scrolling'] ?? false;

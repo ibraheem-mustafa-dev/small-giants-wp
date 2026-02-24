@@ -88,6 +88,71 @@ class Form_REST_API {
 				'permission_callback' => [ __CLASS__, 'verify_form_nonce' ],
 			]
 		);
+
+		// Admin: list submissions with optional filtering.
+		register_rest_route(
+			'sgs-forms/v1',
+			'/submissions',
+			[
+				'methods'             => 'GET',
+				'callback'            => [ __CLASS__, 'list_submissions' ],
+				'permission_callback' => [ __CLASS__, 'require_manage_options' ],
+				'args'                => [
+					'form_id' => [
+						'required'          => false,
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_key',
+					],
+					'status' => [
+						'required'          => false,
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_key',
+					],
+					'per_page' => [
+						'required' => false,
+						'type'     => 'integer',
+						'default'  => 20,
+						'minimum'  => 1,
+						'maximum'  => 100,
+					],
+					'page' => [
+						'required' => false,
+						'type'     => 'integer',
+						'default'  => 1,
+						'minimum'  => 1,
+					],
+				],
+			]
+		);
+
+		// Admin: single submission detail.
+		register_rest_route(
+			'sgs-forms/v1',
+			'/submissions/(?P<id>[\d]+)',
+			[
+				[
+					'methods'             => 'GET',
+					'callback'            => [ __CLASS__, 'get_submission' ],
+					'permission_callback' => [ __CLASS__, 'require_manage_options' ],
+				],
+				[
+					'methods'             => 'DELETE',
+					'callback'            => [ __CLASS__, 'delete_submission' ],
+					'permission_callback' => [ __CLASS__, 'require_manage_options' ],
+				],
+			]
+		);
+
+		// Admin: CSV export for a specific form.
+		register_rest_route(
+			'sgs-forms/v1',
+			'/export/(?P<formId>[a-z0-9\-_]+)',
+			[
+				'methods'             => 'GET',
+				'callback'            => [ __CLASS__, 'export_submissions' ],
+				'permission_callback' => [ __CLASS__, 'require_manage_options' ],
+			]
+		);
 	}
 
 	/**
@@ -114,6 +179,238 @@ class Form_REST_API {
 	}
 
 	/**
+	 * Permission callback: require manage_options capability (admin endpoints).
+	 *
+	 * @return true|\WP_Error True if user can manage options, WP_Error otherwise.
+	 */
+	public static function require_manage_options(): bool|\WP_Error {
+		if ( current_user_can( 'manage_options' ) ) {
+			return true;
+		}
+
+		return new \WP_Error(
+			'rest_forbidden',
+			__( 'You do not have permission to access form submissions.', 'sgs-blocks' ),
+			[ 'status' => 403 ]
+		);
+	}
+
+	/**
+	 * List form submissions with optional filtering.
+	 *
+	 * @param \WP_REST_Request $request REST API request.
+	 * @return \WP_REST_Response Response with submissions array and pagination data.
+	 */
+	public static function list_submissions( \WP_REST_Request $request ): \WP_REST_Response {
+		global $wpdb;
+
+		$table_name = $wpdb->prefix . 'sgs_form_submissions';
+		$form_id    = $request->get_param( 'form_id' );
+		$status     = $request->get_param( 'status' );
+		$per_page   = $request->get_param( 'per_page' );
+		$page       = $request->get_param( 'page' );
+		$offset     = ( $page - 1 ) * $per_page;
+
+		// Build WHERE clause.
+		$where        = 'WHERE 1=1';
+		$prepare_args = [];
+
+		if ( ! empty( $form_id ) ) {
+			$where         .= ' AND form_id = %s';
+			$prepare_args[] = $form_id;
+		}
+
+		if ( ! empty( $status ) ) {
+			$where         .= ' AND status = %s';
+			$prepare_args[] = $status;
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		$total = $wpdb->get_var(
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$wpdb->prepare( "SELECT COUNT(*) FROM $table_name $where", ...$prepare_args )
+		);
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		$rows = $wpdb->get_results(
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$wpdb->prepare(
+				"SELECT id, form_id, files, payment_status, payment_amount, ip_address, user_id, status, created_at FROM $table_name $where ORDER BY created_at DESC LIMIT %d OFFSET %d",
+				...array_merge( $prepare_args, [ $per_page, $offset ] )
+			)
+		);
+
+		$response = new \WP_REST_Response(
+			[
+				'submissions' => $rows,
+				'total'       => (int) $total,
+				'pages'       => (int) ceil( $total / $per_page ),
+				'page'        => $page,
+			],
+			200
+		);
+
+		$response->header( 'X-WP-Total', (int) $total );
+		$response->header( 'X-WP-TotalPages', (int) ceil( $total / $per_page ) );
+
+		return $response;
+	}
+
+	/**
+	 * Get a single submission by ID.
+	 *
+	 * @param \WP_REST_Request $request REST API request.
+	 * @return \WP_REST_Response|\WP_Error Submission data or 404.
+	 */
+	public static function get_submission( \WP_REST_Request $request ): \WP_REST_Response|\WP_Error {
+		global $wpdb;
+
+		$table_name    = $wpdb->prefix . 'sgs_form_submissions';
+		$submission_id = absint( $request->get_param( 'id' ) );
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		$row = $wpdb->get_row(
+			$wpdb->prepare( "SELECT * FROM $table_name WHERE id = %d", $submission_id )
+		);
+
+		if ( ! $row ) {
+			return new \WP_Error(
+				'not_found',
+				__( 'Submission not found.', 'sgs-blocks' ),
+				[ 'status' => 404 ]
+			);
+		}
+
+		// Decode JSON columns.
+		$row->data  = json_decode( $row->data, true );
+		$row->files = $row->files ? json_decode( $row->files, true ) : [];
+
+		return new \WP_REST_Response( $row, 200 );
+	}
+
+	/**
+	 * Delete a submission (GDPR erasure).
+	 *
+	 * @param \WP_REST_Request $request REST API request.
+	 * @return \WP_REST_Response|\WP_Error Success response or 404.
+	 */
+	public static function delete_submission( \WP_REST_Request $request ): \WP_REST_Response|\WP_Error {
+		global $wpdb;
+
+		$table_name    = $wpdb->prefix . 'sgs_form_submissions';
+		$submission_id = absint( $request->get_param( 'id' ) );
+
+		// Check submission exists.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		$exists = $wpdb->get_var(
+			$wpdb->prepare( "SELECT id FROM $table_name WHERE id = %d", $submission_id )
+		);
+
+		if ( ! $exists ) {
+			return new \WP_Error(
+				'not_found',
+				__( 'Submission not found.', 'sgs-blocks' ),
+				[ 'status' => 404 ]
+			);
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+		$deleted = $wpdb->delete( $table_name, [ 'id' => $submission_id ], [ '%d' ] );
+
+		if ( false === $deleted ) {
+			return new \WP_Error(
+				'delete_failed',
+				__( 'Failed to delete submission.', 'sgs-blocks' )
+			);
+		}
+
+		return new \WP_REST_Response( [ 'deleted' => true, 'id' => $submission_id ], 200 );
+	}
+
+	/**
+	 * Export all submissions for a given form as CSV.
+	 *
+	 * Streams CSV directly so large data sets don't exhaust PHP memory.
+	 *
+	 * @param \WP_REST_Request $request REST API request.
+	 * @return void Outputs CSV and exits.
+	 */
+	public static function export_submissions( \WP_REST_Request $request ): void {
+		global $wpdb;
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'Permission denied.', 'sgs-blocks' ), 403 );
+		}
+
+		$table_name = $wpdb->prefix . 'sgs_form_submissions';
+		$form_id    = sanitize_key( $request->get_param( 'formId' ) );
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT * FROM $table_name WHERE form_id = %s ORDER BY created_at ASC",
+				$form_id
+			),
+			ARRAY_A
+		);
+
+		// Set CSV response headers.
+		header( 'Content-Type: text/csv; charset=utf-8' );
+		header( 'Content-Disposition: attachment; filename="sgs-form-' . sanitize_file_name( $form_id ) . '-' . gmdate( 'Y-m-d' ) . '.csv"' );
+		header( 'Pragma: no-cache' );
+		header( 'Expires: 0' );
+
+		$output = fopen( 'php://output', 'w' );
+
+		if ( empty( $rows ) ) {
+			fputcsv( $output, [ __( 'No submissions found.', 'sgs-blocks' ) ] );
+			fclose( $output );
+			exit;
+		}
+
+		// Build unified column list from all submissions' JSON data.
+		$field_keys = [];
+		foreach ( $rows as $row ) {
+			$data = json_decode( $row['data'], true );
+			if ( is_array( $data ) ) {
+				foreach ( array_keys( $data ) as $key ) {
+					if ( ! in_array( $key, $field_keys, true ) ) {
+						$field_keys[] = $key;
+					}
+				}
+			}
+		}
+
+		// CSV header row: metadata columns then dynamic field columns.
+		$meta_cols = [ 'id', 'form_id', 'status', 'payment_status', 'payment_amount', 'ip_address', 'user_id', 'created_at' ];
+		fputcsv( $output, array_merge( $meta_cols, $field_keys ) );
+
+		// Data rows.
+		foreach ( $rows as $row ) {
+			$data = json_decode( $row['data'], true );
+			$csv_row = [];
+
+			foreach ( $meta_cols as $col ) {
+				$csv_row[] = $row[ $col ] ?? '';
+			}
+
+			foreach ( $field_keys as $key ) {
+				$val = $data[ $key ] ?? '';
+				// Flatten arrays (e.g. checkboxes) to comma-separated strings.
+				if ( is_array( $val ) ) {
+					$val = implode( ', ', $val );
+				}
+				$csv_row[] = $val;
+			}
+
+			fputcsv( $output, $csv_row );
+		}
+
+		fclose( $output );
+		exit;
+	}
+
+	/**
 	 * Handle form submission request.
 	 *
 	 * @param \WP_REST_Request $request REST API request.
@@ -128,7 +425,7 @@ class Form_REST_API {
 
 		// Check honeypot (bot trap).
 		if ( ! empty( $honeypot ) ) {
-			// Return fake success — don't reveal the trap.
+			// Return fake success — don't reveal the trap to automated tools.
 			return new \WP_REST_Response(
 				[
 					'success' => true,
@@ -138,8 +435,22 @@ class Form_REST_API {
 			);
 		}
 
-		// Rate limiting: 5 submissions per IP per hour.
-		$rate_limit_check = self::check_rate_limit( $form_id );
+		// Retrieve cached form configuration (set by render.php, lives 24 hours).
+		$form_config    = get_transient( 'sgs_form_config_' . sanitize_key( $form_id ) );
+		$require_login  = is_array( $form_config ) ? (bool) ( $form_config['requireLogin'] ?? false ) : false;
+		$rate_limit_max = is_array( $form_config ) ? absint( $form_config['rateLimit'] ?? 5 ) : 5;
+
+		// Enforce login requirement when the form editor has enabled it.
+		if ( $require_login && ! is_user_logged_in() ) {
+			return new \WP_Error(
+				'login_required',
+				__( 'You must be logged in to submit this form.', 'sgs-blocks' ),
+				[ 'status' => 401 ]
+			);
+		}
+
+		// Rate limiting: configurable per-form, defaulting to 5 per IP per hour.
+		$rate_limit_check = self::check_rate_limit( $form_id, $rate_limit_max );
 
 		if ( is_wp_error( $rate_limit_check ) ) {
 			return $rate_limit_check;

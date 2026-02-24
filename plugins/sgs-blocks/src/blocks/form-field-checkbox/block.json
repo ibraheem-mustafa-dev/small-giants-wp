@@ -1,52 +1,88 @@
-{
-	"$schema": "https://schemas.wp.org/trunk/block.json",
-	"apiVersion": 3,
-	"name": "sgs/form-field-checkbox",
-	"version": "0.1.0",
-	"title": "Checkbox Field",
-	"category": "sgs-forms",
-	"description": "A checkbox group for multiple selections.",
-	"keywords": [ "checkbox", "choice", "multi-select", "option" ],
-	"textdomain": "sgs-blocks",
-	"icon": "yes",
-	"parent": [ "sgs/form", "sgs/form-step" ],
-	"usesContext": [ "sgs/formId" ],
-	"supports": {
-		"html": false,
-		"anchor": false
-	},
-	"attributes": {
-		"fieldName": {
-			"type": "string",
-			"default": ""
-		},
-		"label": {
-			"type": "string",
-			"default": ""
-		},
-		"placeholder": {
-			"type": "string",
-			"default": ""
-		},
-		"helpText": {
-			"type": "string",
-			"default": ""
-		},
-		"required": {
-			"type": "boolean",
-			"default": false
-		},
-		"width": {
-			"type": "string",
-			"default": "full"
-		},
-		"options": {
-			"type": "array",
-			"default": [
-				{ "value": "option-1", "label": "Option 1" }
-			]
-		}
-	},
-	"render": "file:./render.php",
-	"editorScript": "file:./index.js"
+﻿{
+    "$schema":  "https://schemas.wp.org/trunk/block.json",
+    "apiVersion":  3,
+    "name":  "sgs/form-field-checkbox",
+    "version":  "0.1.0",
+    "title":  "SGS Checkbox Field",
+    "category":  "sgs-forms",
+    "description":  "A checkbox group for multiple selections.",
+    "keywords":  [
+                     "checkbox",
+                     "choice",
+                     "multi-select",
+                     "option"
+                 ],
+    "textdomain":  "sgs-blocks",
+    "icon":  "yes",
+    "parent":  [
+                   "sgs/form",
+                   "sgs/form-step"
+               ],
+    "usesContext":  [
+                        "sgs/formId"
+                    ],
+    "supports":  {
+                     "html":  false,
+                     "anchor":  false
+                 },
+    "attributes":  {
+                       "fieldName":  {
+                                         "type":  "string",
+                                         "default":  ""
+                                     },
+                       "label":  {
+                                     "type":  "string",
+                                     "default":  ""
+                                 },
+                       "placeholder":  {
+                                           "type":  "string",
+                                           "default":  ""
+                                       },
+                       "helpText":  {
+                                        "type":  "string",
+                                        "default":  ""
+                                    },
+                       "required":  {
+                                        "type":  "boolean",
+                                        "default":  false
+                                    },
+                       "width":  {
+                                     "type":  "string",
+                                     "default":  "full"
+                                 },
+                       "options":  {
+                                       "type":  "array",
+                                       "default":  [
+                                                       {
+                                                           "value":  "option-1",
+                                                           "label":  "Option 1"
+                                                       }
+                                                   ]
+                                   },
+                       "conditionalField":  {
+                                                "type":  "string",
+                                                "default":  ""
+                                            },
+                       "conditionalOperator":  {
+                                                   "type":  "string",
+                                                   "default":  "equals"
+                                               },
+                       "conditionalValue":  {
+                                                "type":  "string",
+                                                "default":  ""
+                                            }
+                   },
+    "render":  "file:./render.php",
+    "editorScript":  "file:./index.js",
+    "example":  {
+                    "attributes":  {
+                                       "label":  "Which products are you interested in?",
+                                       "options":  [
+                                                       "Fresh Produce",
+                                                       "Dairy \u0026 Eggs",
+                                                       "Bakery",
+                                                       "Meat \u0026 Poultry"
+                                                   ]
+                                   }
+                }
 }

@@ -15,7 +15,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-require_once plugin_dir_path( __FILE__ ) . '../../../../includes/render-helpers.php';
+require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 $orientation  = $attributes['orientation'] ?? 'horizontal';
 $tab_style    = $attributes['tabStyle'] ?? 'underline';

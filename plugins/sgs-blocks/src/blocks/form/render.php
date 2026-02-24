@@ -42,7 +42,23 @@ foreach ( $block->inner_blocks as $inner_block ) {
 	}
 }
 
-$is_multi_step = $total_steps > 1;
+$is_multi_step  = $total_steps > 1;
+$require_login  = $attributes['requireLogin'] ?? false;
+$rate_limit     = absint( $attributes['rateLimit'] ?? 5 );
+
+// Cache form configuration server-side so the submit handler can enforce
+// requireLogin and per-form rateLimit without trusting client data.
+// Transient lasts 24 hours; re-cached on every page render.
+if ( ! empty( $form_id ) ) {
+	set_transient(
+		'sgs_form_config_' . sanitize_key( $form_id ),
+		array(
+			'requireLogin' => $require_login,
+			'rateLimit'    => $rate_limit,
+		),
+		DAY_IN_SECONDS
+	);
+}
 
 // Initialise Interactivity API global state.
 wp_interactivity_state(

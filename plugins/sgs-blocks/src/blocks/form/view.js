@@ -110,6 +110,7 @@ const { state } = store( 'sgs/form', {
 			if ( ctx.currentStep < ctx.totalSteps - 1 ) {
 				ctx.currentStep++;
 				updateStepVisibility( formRoot, ctx.currentStep );
+				saveStepState( formRoot, ctx.currentStep );
 				formRoot.scrollIntoView( {
 					behavior: 'smooth',
 					block: 'start',
@@ -132,6 +133,7 @@ const { state } = store( 'sgs/form', {
 			if ( ctx.currentStep > 0 ) {
 				ctx.currentStep--;
 				updateStepVisibility( formRoot, ctx.currentStep );
+				saveStepState( formRoot, ctx.currentStep );
 				formRoot.scrollIntoView( {
 					behavior: 'smooth',
 					block: 'start',
@@ -156,6 +158,7 @@ const { state } = store( 'sgs/form', {
 			if ( ctx.stepIndex <= ctx.currentStep ) {
 				ctx.currentStep = ctx.stepIndex;
 				updateStepVisibility( formRoot, ctx.currentStep );
+				saveStepState( formRoot, ctx.currentStep );
 				formRoot.scrollIntoView( {
 					behavior: 'smooth',
 					block: 'start',
@@ -265,6 +268,16 @@ const { state } = store( 'sgs/form', {
 				// Success.
 				ctx.submitted = true;
 				ctx.submitting = false;
+
+				// Clear persisted step state — submission is complete.
+				try {
+					const key = getStepStorageKey( formRoot );
+					if ( key ) {
+						sessionStorage.removeItem( key );
+					}
+				} catch ( _e ) {
+					// sessionStorage unavailable — ignore.
+				}
 
 				// Redirect if configured.
 				if ( ctx.successRedirect ) {
@@ -588,8 +601,62 @@ function populateReview( formRoot, reviewList ) {
 }
 
 /**
+ * Build the sessionStorage key for a form's step state.
+ *
+ * @param {HTMLElement} formRoot Form wrapper element.
+ * @return {string|null} Storage key, or null if no form ID.
+ */
+function getStepStorageKey( formRoot ) {
+	const formId = formRoot.getAttribute( 'data-form-id' );
+	return formId ? `sgs-form-step-${ formId }` : null;
+}
+
+/**
+ * Persist the current step index to sessionStorage.
+ * Survives page refresh so users don't lose progress.
+ *
+ * @param {HTMLElement} formRoot   Form wrapper element.
+ * @param {number}      stepIndex  Zero-based step index to save.
+ */
+function saveStepState( formRoot, stepIndex ) {
+	try {
+		const key = getStepStorageKey( formRoot );
+		if ( key ) {
+			sessionStorage.setItem( key, String( stepIndex ) );
+		}
+	} catch ( _e ) {
+		// sessionStorage may be unavailable (private browsing restrictions, etc.).
+	}
+}
+
+/**
+ * Restore the step index from sessionStorage.
+ *
+ * @param {HTMLElement} formRoot Form wrapper element.
+ * @return {number} Saved step index (defaults to 0 if not found).
+ */
+function restoreStepState( formRoot ) {
+	try {
+		const key = getStepStorageKey( formRoot );
+		if ( key ) {
+			const saved = sessionStorage.getItem( key );
+			if ( saved !== null ) {
+				const parsed = parseInt( saved, 10 );
+				if ( ! isNaN( parsed ) && parsed >= 0 ) {
+					return parsed;
+				}
+			}
+		}
+	} catch ( _e ) {
+		// sessionStorage unavailable — start from step 0.
+	}
+	return 0;
+}
+
+/**
  * Initialise forms on page load.
  * Sets up initial step visibility for multi-step forms.
+ * Restores saved step state from sessionStorage when available.
  */
 function initForms() {
 	const forms = document.querySelectorAll(
@@ -600,12 +667,114 @@ function initForms() {
 		const steps = formRoot.querySelectorAll( '.sgs-form-step' );
 
 		if ( steps.length > 1 ) {
-			// Multi-step form: hide all steps except the first using the
-			// CSS class approach so transitions work correctly.
+			// Restore saved step (survives page refresh as per spec).
+			const savedStep = restoreStepState( formRoot );
+			const startStep = Math.min( savedStep, steps.length - 1 );
+
+			// Multi-step form: hide all steps except the restored one.
 			steps.forEach( ( step, index ) => {
-				if ( index !== 0 ) {
+				if ( index !== startStep ) {
 					step.classList.add( 'sgs-form-step--hidden' );
 				}
+			} );
+
+			// Update Interactivity API context to match the restored step.
+			if ( startStep > 0 ) {
+				try {
+					const ctxAttr = formRoot.getAttribute( 'data-wp-context' );
+					if ( ctxAttr ) {
+						const ctx = JSON.parse( ctxAttr );
+						ctx.currentStep = startStep;
+						formRoot.setAttribute( 'data-wp-context', JSON.stringify( ctx ) );
+					}
+				} catch ( _e ) {
+					// Context parse failure — leave at step 0.
+				}
+			}
+		}
+	} );
+}
+
+/**
+ * Evaluate a single conditional logic rule against current form values.
+ *
+ * @param {HTMLElement} formRoot  The form wrapper element.
+ * @param {string}      watchName Field name to watch (conditionalField).
+ * @param {string}      operator  Comparison operator (conditionalOperator).
+ * @param {string}      expected  Value to compare against (conditionalValue).
+ * @return {boolean} True if the condition is met (field should be visible).
+ */
+function evaluateCondition( formRoot, watchName, operator, expected ) {
+	// Collect the current value(s) of the watched field.
+	const watchedInputs = Array.from(
+		formRoot.querySelectorAll( `[name="${ CSS.escape( watchName ) }"], [name="${ CSS.escape( watchName ) }[]"]` )
+	);
+
+	let current = '';
+
+	if ( watchedInputs.length === 0 ) {
+		return false;
+	}
+
+	const firstInput = watchedInputs[ 0 ];
+
+	if ( firstInput.type === 'checkbox' || firstInput.type === 'radio' ) {
+		const checked = watchedInputs.filter( ( i ) => i.checked );
+		current = checked.map( ( i ) => i.value ).join( ',' );
+	} else {
+		current = firstInput.value;
+	}
+
+	switch ( operator ) {
+		case 'equals':
+			return current === expected;
+		case 'not_equals':
+			return current !== expected;
+		case 'contains':
+			return current.includes( expected );
+		case 'greater_than':
+			return parseFloat( current ) > parseFloat( expected );
+		case 'is_empty':
+			return current === '' || current === undefined;
+		default:
+			return true;
+	}
+}
+
+/**
+ * Apply conditional logic to all fields with data-conditional-field set.
+ *
+ * Called on init and on every change event within the form.
+ *
+ * @param {HTMLElement} formRoot The form wrapper element.
+ */
+function applyConditionalLogic( formRoot ) {
+	const conditionalFields = formRoot.querySelectorAll(
+		'.sgs-form-field[data-conditional-field]'
+	);
+
+	conditionalFields.forEach( ( fieldEl ) => {
+		const watchName = fieldEl.getAttribute( 'data-conditional-field' );
+		const operator  = fieldEl.getAttribute( 'data-conditional-operator' ) || 'equals';
+		const expected  = fieldEl.getAttribute( 'data-conditional-value' ) || '';
+
+		if ( ! watchName ) {
+			return;
+		}
+
+		const shouldShow = evaluateCondition( formRoot, watchName, operator, expected );
+
+		if ( shouldShow ) {
+			fieldEl.classList.remove( 'sgs-form-field--hidden' );
+			// Re-enable inputs so they are submitted and validated.
+			fieldEl.querySelectorAll( 'input, select, textarea' ).forEach( ( i ) => {
+				i.removeAttribute( 'disabled' );
+			} );
+		} else {
+			fieldEl.classList.add( 'sgs-form-field--hidden' );
+			// Disable inputs so they don't participate in validation or submission.
+			fieldEl.querySelectorAll( 'input, select, textarea' ).forEach( ( i ) => {
+				i.setAttribute( 'disabled', 'disabled' );
 			} );
 		}
 	} );
@@ -613,7 +782,35 @@ function initForms() {
 
 // Run initialisation when DOM is ready.
 if ( document.readyState === 'loading' ) {
-	document.addEventListener( 'DOMContentLoaded', initForms );
+	document.addEventListener( 'DOMContentLoaded', () => {
+		initForms();
+		initConditionalLogic();
+	} );
 } else {
 	initForms();
+	initConditionalLogic();
+}
+
+/**
+ * Wire up conditional logic listeners for all forms on the page.
+ */
+function initConditionalLogic() {
+	const forms = document.querySelectorAll(
+		'[data-wp-interactive="sgs/form"]'
+	);
+
+	forms.forEach( ( formRoot ) => {
+		// Apply on load.
+		applyConditionalLogic( formRoot );
+
+		// Re-apply whenever any form value changes.
+		formRoot.addEventListener( 'change', () => {
+			applyConditionalLogic( formRoot );
+		} );
+
+		// Also handle text input (for text/number/email fields triggering greater_than etc.).
+		formRoot.addEventListener( 'input', () => {
+			applyConditionalLogic( formRoot );
+		} );
+	} );
 }

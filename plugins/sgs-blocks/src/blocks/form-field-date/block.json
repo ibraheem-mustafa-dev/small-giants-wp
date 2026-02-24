@@ -1,54 +1,82 @@
-{
-	"$schema": "https://schemas.wp.org/trunk/block.json",
-	"apiVersion": 3,
-	"name": "sgs/form-field-date",
-	"version": "0.1.0",
-	"title": "Date Field",
-	"category": "sgs-forms",
-	"description": "A date picker input field with min/max date constraints.",
-	"keywords": [ "date", "calendar", "picker", "field" ],
-	"textdomain": "sgs-blocks",
-	"icon": "calendar-alt",
-	"parent": [ "sgs/form", "sgs/form-step" ],
-	"usesContext": [ "sgs/formId" ],
-	"supports": {
-		"html": false,
-		"anchor": false
-	},
-	"attributes": {
-		"fieldName": {
-			"type": "string",
-			"default": ""
-		},
-		"label": {
-			"type": "string",
-			"default": ""
-		},
-		"placeholder": {
-			"type": "string",
-			"default": ""
-		},
-		"helpText": {
-			"type": "string",
-			"default": ""
-		},
-		"required": {
-			"type": "boolean",
-			"default": false
-		},
-		"width": {
-			"type": "string",
-			"default": "full"
-		},
-		"minDate": {
-			"type": "string",
-			"default": ""
-		},
-		"maxDate": {
-			"type": "string",
-			"default": ""
-		}
-	},
-	"render": "file:./render.php",
-	"editorScript": "file:./index.js"
+﻿{
+    "$schema":  "https://schemas.wp.org/trunk/block.json",
+    "apiVersion":  3,
+    "name":  "sgs/form-field-date",
+    "version":  "0.1.0",
+    "title":  "SGS Date Field",
+    "category":  "sgs-forms",
+    "description":  "A date picker input field with min/max date constraints.",
+    "keywords":  [
+                     "date",
+                     "calendar",
+                     "picker",
+                     "field"
+                 ],
+    "textdomain":  "sgs-blocks",
+    "icon":  "calendar-alt",
+    "parent":  [
+                   "sgs/form",
+                   "sgs/form-step"
+               ],
+    "usesContext":  [
+                        "sgs/formId"
+                    ],
+    "supports":  {
+                     "html":  false,
+                     "anchor":  false
+                 },
+    "attributes":  {
+                       "fieldName":  {
+                                         "type":  "string",
+                                         "default":  ""
+                                     },
+                       "label":  {
+                                     "type":  "string",
+                                     "default":  ""
+                                 },
+                       "placeholder":  {
+                                           "type":  "string",
+                                           "default":  ""
+                                       },
+                       "helpText":  {
+                                        "type":  "string",
+                                        "default":  ""
+                                    },
+                       "required":  {
+                                        "type":  "boolean",
+                                        "default":  false
+                                    },
+                       "width":  {
+                                     "type":  "string",
+                                     "default":  "full"
+                                 },
+                       "minDate":  {
+                                       "type":  "string",
+                                       "default":  ""
+                                   },
+                       "maxDate":  {
+                                       "type":  "string",
+                                       "default":  ""
+                                   },
+                       "conditionalField":  {
+                                                "type":  "string",
+                                                "default":  ""
+                                            },
+                       "conditionalOperator":  {
+                                                   "type":  "string",
+                                                   "default":  "equals"
+                                               },
+                       "conditionalValue":  {
+                                                "type":  "string",
+                                                "default":  ""
+                                            }
+                   },
+    "render":  "file:./render.php",
+    "editorScript":  "file:./index.js",
+    "example":  {
+                    "attributes":  {
+                                       "label":  "Preferred Delivery Date",
+                                       "required":  true
+                                   }
+                }
 }
