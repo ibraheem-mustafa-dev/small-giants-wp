@@ -596,8 +596,11 @@ function fix_has_text_color_override( string $block_content ): string {
 			$classes = $matches[1];
 			$style   = $matches[2];
 
-			// If element also has a preset colour class, leave it alone.
-			if ( preg_match( '/has-(?!text-color)[a-z0-9-]+-color\b/', $classes ) ) {
+			// If element also has a preset colour class (not border/bg), leave it alone.
+			// Preset colour classes: has-surface-color, has-accent-color, etc.
+			// Exclude: has-text-color (that's what we're removing), has-border-color,
+			// has-*-background-color (bg, not text).
+			if ( preg_match( '/has-(?!text-color\b)(?!border-color\b)[a-z0-9-]+-color\b(?!-)/', $classes ) ) {
 				return $matches[0];
 			}
 
