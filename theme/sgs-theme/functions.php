@@ -572,3 +572,42 @@ function specific_submenu_aria_labels( string $block_content, array $block ): st
 	return $block_content;
 }
 add_filter( 'render_block', __NAMESPACE__ . '\specific_submenu_aria_labels', 10, 2 );
+
+/**
+ * Fix WP 6.9 .has-text-color override.
+ *
+ * WordPress global styles apply .has-text-color { color: var(--text) !important }
+ * which overrides inline style="color:#xyz" on elements with custom colours.
+ * This filter removes .has-text-color from elements that have an inline color
+ * BUT do not use a preset colour class (has-{slug}-color).
+ *
+ * Elements using preset classes (has-surface-color, has-accent-color, etc.)
+ * keep has-text-color because WP's preset classes use !important correctly.
+ */
+function fix_has_text_color_override( string $block_content ): string {
+	if ( ! str_contains( $block_content, 'has-text-color' ) ) {
+		return $block_content;
+	}
+
+	// Match elements with has-text-color class and inline color style.
+	return preg_replace_callback(
+		'/class="([^"]*has-text-color[^"]*)"(\s+style="[^"]*color:[^"]*")/i',
+		function ( $matches ) {
+			$classes = $matches[1];
+			$style   = $matches[2];
+
+			// If element also has a preset colour class, leave it alone.
+			if ( preg_match( '/has-(?!text-color)[a-z0-9-]+-color\b/', $classes ) ) {
+				return $matches[0];
+			}
+
+			// Remove has-text-color so the inline style wins.
+			$classes = preg_replace( '/\bhas-text-color\b/', '', $classes );
+			$classes = preg_replace( '/\s{2,}/', ' ', trim( $classes ) );
+
+			return 'class="' . $classes . '"' . $style;
+		},
+		$block_content
+	);
+}
+add_filter( 'render_block', __NAMESPACE__ . '\fix_has_text_color_override' );

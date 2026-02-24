@@ -57,6 +57,13 @@
  * (3:1) but fails for normal small text (4.5:1). Making the top-bar text
  * bold + 14px qualifies it as "large text" under WCAG, so 4.07:1 passes.
  */
+/* ─── INLINE COLOUR OVERRIDE ─── */
+
+/*
+ * WordPress 6.9 contrast fix is handled server-side in functions.php
+ * (fix_has_text_color_override filter). No CSS workaround needed.
+ */
+
 /* Top bar links: fluid "small" can shrink below 14px on mobile.
  * Force minimum 0.875rem (14px) so bold text qualifies as WCAG
  * "large text" (3:1 threshold) regardless of viewport width. */
