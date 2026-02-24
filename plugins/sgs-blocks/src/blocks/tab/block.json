@@ -1,28 +1,40 @@
-{
-	"$schema": "https://schemas.wp.org/trunk/block.json",
-	"apiVersion": 3,
-	"name": "sgs/tab",
-	"version": "0.1.0",
-	"title": "SGS Tab",
-	"category": "sgs-interactive",
-	"description": "Individual tab panel — add any blocks inside.",
-	"keywords": [ "tab", "panel", "section", "content" ],
-	"textdomain": "sgs-blocks",
-	"icon": "table-row-after",
-	"parent": [ "sgs/tabs" ],
-	"supports": {
-		"html": false,
-		"reusable": false
-	},
-	"usesContext": [
-		"sgs/tabsOrientation",
-		"sgs/tabsStyle"
-	],
-	"attributes": {
-		"label": {
-			"type": "string",
-			"default": "Tab"
-		}
-	},
-	"editorScript": "file:./index.js"
+﻿{
+    "$schema":  "https://schemas.wp.org/trunk/block.json",
+    "apiVersion":  3,
+    "name":  "sgs/tab",
+    "version":  "0.1.0",
+    "title":  "SGS Tab",
+    "category":  "sgs-interactive",
+    "description":  "Individual tab panel â€” add any blocks inside.",
+    "keywords":  [
+                     "tab",
+                     "panel",
+                     "section",
+                     "content"
+                 ],
+    "textdomain":  "sgs-blocks",
+    "icon":  "table-row-after",
+    "parent":  [
+                   "sgs/tabs"
+               ],
+    "supports":  {
+                     "html":  false,
+                     "reusable":  false
+                 },
+    "usesContext":  [
+                        "sgs/tabsOrientation",
+                        "sgs/tabsStyle"
+                    ],
+    "attributes":  {
+                       "label":  {
+                                     "type":  "string",
+                                     "default":  "Tab"
+                                 }
+                   },
+    "editorScript":  "file:./index.js",
+    "example":  {
+                    "attributes":  {
+                                       "label":  "Overview"
+                                   }
+                }
 }

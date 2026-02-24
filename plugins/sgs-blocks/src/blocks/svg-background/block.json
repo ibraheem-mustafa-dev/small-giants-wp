@@ -1,61 +1,90 @@
-{
-	"$schema": "https://schemas.wp.org/trunk/block.json",
-	"apiVersion": 3,
-	"name": "sgs/svg-background",
-	"title": "SVG Background",
-	"category": "sgs-layout",
-	"description": "Container that renders an SVG animation behind its inner blocks, with responsive sizing.",
-	"keywords": [ "svg", "background", "animation", "container" ],
-	"textdomain": "sgs-blocks",
-	"supports": {
-		"align": [ "wide", "full" ],
-		"anchor": true,
-		"className": true,
-		"html": false,
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"blockGap": true
-		},
-		"color": {
-			"background": true,
-			"text": true,
-			"gradients": true
-		}
-	},
-	"attributes": {
-		"svgContent": {
-			"type": "string",
-			"default": ""
-		},
-		"svgPosition": {
-			"type": "string",
-			"default": "background",
-			"enum": [ "background", "foreground" ]
-		},
-		"animationType": {
-			"type": "string",
-			"default": "none",
-			"enum": [ "none", "pulse", "float", "wave" ]
-		},
-		"animationSpeed": {
-			"type": "string",
-			"default": "medium",
-			"enum": [ "slow", "medium", "fast" ]
-		},
-		"opacity": {
-			"type": "number",
-			"default": 100
-		},
-		"minHeight": {
-			"type": "string",
-			"default": ""
-		}
-	},
-	"providesContext": {},
-	"editorScript": "file:./index.js",
-	"editorStyle": "file:./editor.css",
-	"style": "file:./style.css",
-	"viewScriptModule": "file:./view.js",
-	"render": "file:./render.php"
+﻿{
+    "$schema":  "https://schemas.wp.org/trunk/block.json",
+    "apiVersion":  3,
+    "name":  "sgs/svg-background",
+    "title":  "SGS SVG Background",
+    "category":  "sgs-layout",
+    "description":  "Container that renders an SVG animation behind its inner blocks, with responsive sizing.",
+    "keywords":  [
+                     "svg",
+                     "background",
+                     "animation",
+                     "container"
+                 ],
+    "icon":  "layout",
+    "textdomain":  "sgs-blocks",
+    "supports":  {
+                     "align":  [
+                                   "wide",
+                                   "full"
+                               ],
+                     "anchor":  true,
+                     "className":  true,
+                     "html":  false,
+                     "spacing":  {
+                                     "margin":  true,
+                                     "padding":  true,
+                                     "blockGap":  true
+                                 },
+                     "color":  {
+                                   "background":  true,
+                                   "text":  true,
+                                   "gradients":  true
+                               }
+                 },
+    "attributes":  {
+                       "svgContent":  {
+                                          "type":  "string",
+                                          "default":  ""
+                                      },
+                       "svgPosition":  {
+                                           "type":  "string",
+                                           "default":  "background",
+                                           "enum":  [
+                                                        "background",
+                                                        "foreground"
+                                                    ]
+                                       },
+                       "animationType":  {
+                                             "type":  "string",
+                                             "default":  "none",
+                                             "enum":  [
+                                                          "none",
+                                                          "pulse",
+                                                          "float",
+                                                          "wave"
+                                                      ]
+                                         },
+                       "animationSpeed":  {
+                                              "type":  "string",
+                                              "default":  "medium",
+                                              "enum":  [
+                                                           "slow",
+                                                           "medium",
+                                                           "fast"
+                                                       ]
+                                          },
+                       "opacity":  {
+                                       "type":  "number",
+                                       "default":  100
+                                   },
+                       "minHeight":  {
+                                         "type":  "string",
+                                         "default":  ""
+                                     }
+                   },
+    "providesContext":  {
+
+                        },
+    "editorScript":  "file:./index.js",
+    "editorStyle":  "file:./editor.css",
+    "style":  "file:./style.css",
+    "viewScriptModule":  "file:./view.js",
+    "render":  "file:./render.php",
+    "example":  {
+                    "attributes":  {
+                                       "animationType":  "float",
+                                       "opacity":  60
+                                   }
+                }
 }

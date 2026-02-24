@@ -1,111 +1,120 @@
-{
-  "$schema": "https://schemas.wp.org/trunk/block.json",
-  "apiVersion": 3,
-  "name": "sgs/decorative-image",
-  "version": "0.2.0",
-  "title": "SGS Decorative Image",
-  "category": "sgs-content",
-  "description": "Absolute-positioned decorative image that floats freely over sections. Used for organic, editorial-style design with optional parallax scroll effects.",
-  "keywords": [
-    "image",
-    "decorative",
-    "parallax",
-    "float",
-    "position"
-  ],
-  "textdomain": "sgs-blocks",
-  "icon": "format-image",
-  "supports": {
-    "anchor": true,
-    "html": false
-  },
-  "attributes": {
-    "imageId": {
-      "type": "number"
-    },
-    "imageUrl": {
-      "type": "string"
-    },
-    "imageAlt": {
-      "type": "string",
-      "default": ""
-    },
-    "positionX": {
-      "type": "number",
-      "default": 50
-    },
-    "positionY": {
-      "type": "number",
-      "default": 50
-    },
-    "width": {
-      "type": "number",
-      "default": 200
-    },
-    "maxWidthPercent": {
-      "type": "number",
-      "default": 20
-    },
-    "rotation": {
-      "type": "number",
-      "default": 0
-    },
-    "opacity": {
-      "type": "number",
-      "default": 85
-    },
-    "zIndex": {
-      "type": "number",
-      "default": 1
-    },
-    "flipX": {
-      "type": "boolean",
-      "default": false
-    },
-    "parallaxStrength": {
-      "type": "number",
-      "default": 0
-    },
-    "overflow": {
-      "type": "string",
-      "default": "visible"
-    },
-    "positionXTablet": {
-      "type": "number"
-    },
-    "positionYTablet": {
-      "type": "number"
-    },
-    "widthTablet": {
-      "type": "number"
-    },
-    "rotationTablet": {
-      "type": "number"
-    },
-    "hideOnTablet": {
-      "type": "boolean",
-      "default": false
-    },
-    "positionXMobile": {
-      "type": "number"
-    },
-    "positionYMobile": {
-      "type": "number"
-    },
-    "widthMobile": {
-      "type": "number"
-    },
-    "rotationMobile": {
-      "type": "number"
-    },
-    "hideOnMobile": {
-      "type": "boolean",
-      "default": false
-    }
-  },
-  "render": "file:./render.php",
-  "editorScript": "file:./index.js",
-  "editorStyle": "file:./index.css",
-  "style": "file:./style-index.css",
-  "viewScriptModule": "file:./view.js"
+﻿{
+    "$schema":  "https://schemas.wp.org/trunk/block.json",
+    "apiVersion":  3,
+    "name":  "sgs/decorative-image",
+    "version":  "0.2.0",
+    "title":  "SGS Decorative Image",
+    "category":  "sgs-content",
+    "description":  "Absolute-positioned decorative image that floats freely over sections. Used for organic, editorial-style design with optional parallax scroll effects.",
+    "keywords":  [
+                     "image",
+                     "decorative",
+                     "parallax",
+                     "float",
+                     "position"
+                 ],
+    "textdomain":  "sgs-blocks",
+    "icon":  "format-image",
+    "supports":  {
+                     "anchor":  true,
+                     "html":  false
+                 },
+    "attributes":  {
+                       "imageId":  {
+                                       "type":  "number"
+                                   },
+                       "imageUrl":  {
+                                        "type":  "string"
+                                    },
+                       "imageAlt":  {
+                                        "type":  "string",
+                                        "default":  ""
+                                    },
+                       "positionX":  {
+                                         "type":  "number",
+                                         "default":  50
+                                     },
+                       "positionY":  {
+                                         "type":  "number",
+                                         "default":  50
+                                     },
+                       "width":  {
+                                     "type":  "number",
+                                     "default":  200
+                                 },
+                       "maxWidthPercent":  {
+                                               "type":  "number",
+                                               "default":  20
+                                           },
+                       "rotation":  {
+                                        "type":  "number",
+                                        "default":  0
+                                    },
+                       "opacity":  {
+                                       "type":  "number",
+                                       "default":  85
+                                   },
+                       "zIndex":  {
+                                      "type":  "number",
+                                      "default":  1
+                                  },
+                       "flipX":  {
+                                     "type":  "boolean",
+                                     "default":  false
+                                 },
+                       "parallaxStrength":  {
+                                                "type":  "number",
+                                                "default":  0
+                                            },
+                       "overflow":  {
+                                        "type":  "string",
+                                        "default":  "visible"
+                                    },
+                       "positionXTablet":  {
+                                               "type":  "number"
+                                           },
+                       "positionYTablet":  {
+                                               "type":  "number"
+                                           },
+                       "widthTablet":  {
+                                           "type":  "number"
+                                       },
+                       "rotationTablet":  {
+                                              "type":  "number"
+                                          },
+                       "hideOnTablet":  {
+                                            "type":  "boolean",
+                                            "default":  false
+                                        },
+                       "positionXMobile":  {
+                                               "type":  "number"
+                                           },
+                       "positionYMobile":  {
+                                               "type":  "number"
+                                           },
+                       "widthMobile":  {
+                                           "type":  "number"
+                                       },
+                       "rotationMobile":  {
+                                              "type":  "number"
+                                          },
+                       "hideOnMobile":  {
+                                            "type":  "boolean",
+                                            "default":  false
+                                        }
+                   },
+    "render":  "file:./render.php",
+    "editorScript":  "file:./index.js",
+    "editorStyle":  "file:./index.css",
+    "style":  "file:./style-index.css",
+    "viewScriptModule":  "file:./view.js",
+    "example":  {
+                    "attributes":  {
+                                       "positionX":  80,
+                                       "positionY":  20,
+                                       "width":  200,
+                                       "rotation":  15,
+                                       "opacity":  85
+                                   }
+                }
 }

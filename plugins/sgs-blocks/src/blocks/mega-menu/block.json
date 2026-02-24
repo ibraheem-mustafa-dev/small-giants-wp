@@ -1,85 +1,91 @@
-{
-  "$schema": "https://schemas.wp.org/trunk/block.json",
-  "apiVersion": 3,
-  "name": "sgs/mega-menu",
-  "version": "0.1.0",
-  "title": "SGS Mega Menu",
-  "category": "sgs-interactive",
-  "description": "Block-based mega menu with template part dropdowns. Works inside Navigation block.",
-  "keywords": [
-    "mega menu",
-    "navigation",
-    "dropdown",
-    "menu",
-    "navbar"
-  ],
-  "textdomain": "sgs-blocks",
-  "icon": "menu-alt",
-  "parent": [
-    "core/navigation"
-  ],
-  "supports": {
-    "align": false,
-    "anchor": false,
-    "html": false,
-    "reusable": false
-  },
-  "attributes": {
-    "label": {
-      "type": "string",
-      "source": "html",
-      "selector": ".sgs-mega-menu__label"
-    },
-    "url": {
-      "type": "string"
-    },
-    "opensInNewTab": {
-      "type": "boolean",
-      "default": false
-    },
-    "menuTemplatePart": {
-      "type": "string",
-      "default": ""
-    },
-    "panelWidth": {
-      "type": "string",
-      "default": "full"
-    },
-    "panelMaxWidth": {
-      "type": "string",
-      "default": "1200px"
-    },
-    "panelAlignment": {
-      "type": "string",
-      "default": "left"
-    },
-    "openOn": {
-      "type": "string",
-      "default": "hover"
-    },
-    "icon": {
-      "type": "string",
-      "default": "chevron-down"
-    },
-    "iconPosition": {
-      "type": "string",
-      "default": "after"
-    },
-    "highlight": {
-      "type": "boolean",
-      "default": false
-    },
-    "badge": {
-      "type": "string"
-    },
-    "badgeColour": {
-      "type": "string",
-      "default": "accent"
-    }
-  },
-  "render": "file:./render.php",
-  "editorScript": "file:./index.js",
-  "editorStyle": "file:./index.css",
-  "style": "file:./style-index.css",
-  "viewScriptModule": "file:./view.js"
+﻿{
+    "$schema":  "https://schemas.wp.org/trunk/block.json",
+    "apiVersion":  3,
+    "name":  "sgs/mega-menu",
+    "version":  "0.1.0",
+    "title":  "SGS Mega Menu",
+    "category":  "sgs-interactive",
+    "description":  "Block-based mega menu with template part dropdowns. Works inside Navigation block.",
+    "keywords":  [
+                     "mega menu",
+                     "navigation",
+                     "dropdown",
+                     "menu",
+                     "navbar"
+                 ],
+    "textdomain":  "sgs-blocks",
+    "icon":  "menu-alt",
+    "parent":  [
+                   "core/navigation"
+               ],
+    "supports":  {
+                     "align":  false,
+                     "anchor":  false,
+                     "html":  false,
+                     "reusable":  false
+                 },
+    "attributes":  {
+                       "label":  {
+                                     "type":  "string",
+                                     "source":  "html",
+                                     "selector":  ".sgs-mega-menu__label"
+                                 },
+                       "url":  {
+                                   "type":  "string"
+                               },
+                       "opensInNewTab":  {
+                                             "type":  "boolean",
+                                             "default":  false
+                                         },
+                       "menuTemplatePart":  {
+                                                "type":  "string",
+                                                "default":  ""
+                                            },
+                       "panelWidth":  {
+                                          "type":  "string",
+                                          "default":  "full"
+                                      },
+                       "panelMaxWidth":  {
+                                             "type":  "string",
+                                             "default":  "1200px"
+                                         },
+                       "panelAlignment":  {
+                                              "type":  "string",
+                                              "default":  "left"
+                                          },
+                       "openOn":  {
+                                      "type":  "string",
+                                      "default":  "hover"
+                                  },
+                       "icon":  {
+                                    "type":  "string",
+                                    "default":  "chevron-down"
+                                },
+                       "iconPosition":  {
+                                            "type":  "string",
+                                            "default":  "after"
+                                        },
+                       "highlight":  {
+                                         "type":  "boolean",
+                                         "default":  false
+                                     },
+                       "badge":  {
+                                     "type":  "string"
+                                 },
+                       "badgeColour":  {
+                                           "type":  "string",
+                                           "default":  "accent"
+                                       }
+                   },
+    "render":  "file:./render.php",
+    "editorScript":  "file:./index.js",
+    "editorStyle":  "file:./index.css",
+    "style":  "file:./style-index.css",
+    "viewScriptModule":  "file:./view.js",
+    "example":  {
+                    "attributes":  {
+                                       "label":  "Products",
+                                       "panelWidth":  "full"
+                                   }
+                }
 }

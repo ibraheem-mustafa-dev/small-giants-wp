@@ -1,71 +1,84 @@
-{
-  "$schema": "https://schemas.wp.org/trunk/block.json",
-  "apiVersion": 3,
-  "name": "sgs/star-rating",
-  "version": "0.1.0",
-  "title": "SGS Star Rating",
-  "category": "sgs-content",
-  "description": "Star rating display with half-star support and schema.org markup.",
-  "keywords": ["star", "rating", "review", "score"],
-  "textdomain": "sgs-blocks",
-  "icon": "star-filled",
-  "supports": {
-    "align": false,
-    "anchor": true,
-    "html": false,
-    "color": {
-      "background": true,
-      "text": true
-    },
-    "spacing": {
-      "margin": true,
-      "padding": true
-    }
-  },
-  "attributes": {
-    "rating": {
-      "type": "number",
-      "default": 5
-    },
-    "maxRating": {
-      "type": "number",
-      "default": 5
-    },
-    "starSize": {
-      "type": "number",
-      "default": 24
-    },
-    "starColour": {
-      "type": "string",
-      "default": "#F5A623"
-    },
-    "emptyColour": {
-      "type": "string",
-      "default": "#E0E0E0"
-    },
-    "label": {
-      "type": "string",
-      "default": ""
-    },
-    "showNumeric": {
-      "type": "boolean",
-      "default": false
-    },
-    "schemaEnabled": {
-      "type": "boolean",
-      "default": true
-    },
-    "schemaItemName": {
-      "type": "string",
-      "default": ""
-    },
-    "schemaReviewCount": {
-      "type": "number",
-      "default": 1
-    }
-  },
-  "editorScript": "file:./index.js",
-  "editorStyle": "file:./index.css",
-  "style": "file:./style-index.css",
-  "render": "file:./render.php"
+﻿{
+    "$schema":  "https://schemas.wp.org/trunk/block.json",
+    "apiVersion":  3,
+    "name":  "sgs/star-rating",
+    "version":  "0.1.0",
+    "title":  "SGS Star Rating",
+    "category":  "sgs-content",
+    "description":  "Star rating display with half-star support and schema.org markup.",
+    "keywords":  [
+                     "star",
+                     "rating",
+                     "review",
+                     "score"
+                 ],
+    "textdomain":  "sgs-blocks",
+    "icon":  "star-filled",
+    "supports":  {
+                     "align":  false,
+                     "anchor":  true,
+                     "html":  false,
+                     "color":  {
+                                   "background":  true,
+                                   "text":  true
+                               },
+                     "spacing":  {
+                                     "margin":  true,
+                                     "padding":  true
+                                 }
+                 },
+    "attributes":  {
+                       "rating":  {
+                                      "type":  "number",
+                                      "default":  5
+                                  },
+                       "maxRating":  {
+                                         "type":  "number",
+                                         "default":  5
+                                     },
+                       "starSize":  {
+                                        "type":  "number",
+                                        "default":  24
+                                    },
+                       "starColour":  {
+                                          "type":  "string",
+                                          "default":  "#F5A623"
+                                      },
+                       "emptyColour":  {
+                                           "type":  "string",
+                                           "default":  "#E0E0E0"
+                                       },
+                       "label":  {
+                                     "type":  "string",
+                                     "default":  ""
+                                 },
+                       "showNumeric":  {
+                                           "type":  "boolean",
+                                           "default":  false
+                                       },
+                       "schemaEnabled":  {
+                                             "type":  "boolean",
+                                             "default":  true
+                                         },
+                       "schemaItemName":  {
+                                              "type":  "string",
+                                              "default":  ""
+                                          },
+                       "schemaReviewCount":  {
+                                                 "type":  "number",
+                                                 "default":  1
+                                             }
+                   },
+    "editorScript":  "file:./index.js",
+    "editorStyle":  "file:./index.css",
+    "style":  "file:./style-index.css",
+    "render":  "file:./render.php",
+    "example":  {
+                    "attributes":  {
+                                       "rating":  4.5,
+                                       "maxRating":  5,
+                                       "starSize":  24,
+                                       "label":  "4.5 out of 5"
+                                   }
+                }
 }

@@ -1,61 +1,90 @@
-{
-  "$schema": "https://schemas.wp.org/trunk/block.json",
-  "apiVersion": 3,
-  "name": "sgs/social-icons",
-  "version": "0.1.0",
-  "title": "SGS Social Icons",
-  "category": "sgs-content",
-  "description": "List of social platform icons with links.",
-  "keywords": ["social", "icons", "links", "facebook", "twitter", "instagram"],
-  "textdomain": "sgs-blocks",
-  "icon": "share",
-  "supports": {
-    "align": false,
-    "anchor": true,
-    "html": false,
-    "color": {
-      "background": true,
-      "text": true
-    },
-    "spacing": {
-      "margin": true,
-      "padding": true
-    },
-    "typography": {
-      "textAlign": true
-    }
-  },
-  "attributes": {
-    "icons": {
-      "type": "array",
-      "default": [],
-      "items": {
-        "type": "object"
-      }
-    },
-    "iconSize": {
-      "type": "number",
-      "default": 24
-    },
-    "iconColour": {
-      "type": "string",
-      "default": "text-muted"
-    },
-    "hoverColour": {
-      "type": "string",
-      "default": "primary"
-    },
-    "style": {
-      "type": "string",
-      "default": "plain"
-    },
-    "gap": {
-      "type": "string",
-      "default": "20"
-    }
-  },
-  "editorScript": "file:./index.js",
-  "editorStyle": "file:./index.css",
-  "style": "file:./style-index.css",
-  "render": "file:./render.php"
+﻿{
+    "$schema":  "https://schemas.wp.org/trunk/block.json",
+    "apiVersion":  3,
+    "name":  "sgs/social-icons",
+    "version":  "0.1.0",
+    "title":  "SGS Social Icons",
+    "category":  "sgs-content",
+    "description":  "List of social platform icons with links.",
+    "keywords":  [
+                     "social",
+                     "icons",
+                     "links",
+                     "facebook",
+                     "twitter",
+                     "instagram"
+                 ],
+    "textdomain":  "sgs-blocks",
+    "icon":  "share",
+    "supports":  {
+                     "align":  false,
+                     "anchor":  true,
+                     "html":  false,
+                     "color":  {
+                                   "background":  true,
+                                   "text":  true
+                               },
+                     "spacing":  {
+                                     "margin":  true,
+                                     "padding":  true
+                                 },
+                     "typography":  {
+                                        "textAlign":  true
+                                    }
+                 },
+    "attributes":  {
+                       "icons":  {
+                                     "type":  "array",
+                                     "default":  [
+
+                                                 ],
+                                     "items":  {
+                                                   "type":  "object"
+                                               }
+                                 },
+                       "iconSize":  {
+                                        "type":  "number",
+                                        "default":  24
+                                    },
+                       "iconColour":  {
+                                          "type":  "string",
+                                          "default":  "text-muted"
+                                      },
+                       "hoverColour":  {
+                                           "type":  "string",
+                                           "default":  "primary"
+                                       },
+                       "style":  {
+                                     "type":  "string",
+                                     "default":  "plain"
+                                 },
+                       "gap":  {
+                                   "type":  "string",
+                                   "default":  "20"
+                               }
+                   },
+    "editorScript":  "file:./index.js",
+    "editorStyle":  "file:./index.css",
+    "style":  "file:./style-index.css",
+    "render":  "file:./render.php",
+    "example":  {
+                    "attributes":  {
+                                       "iconSize":  24,
+                                       "style":  "plain",
+                                       "icons":  [
+                                                     {
+                                                         "platform":  "facebook",
+                                                         "url":  "https://facebook.com"
+                                                     },
+                                                     {
+                                                         "platform":  "instagram",
+                                                         "url":  "https://instagram.com"
+                                                     },
+                                                     {
+                                                         "platform":  "linkedin",
+                                                         "url":  "https://linkedin.com"
+                                                     }
+                                                 ]
+                                   }
+                }
 }

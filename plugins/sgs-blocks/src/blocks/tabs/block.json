@@ -1,82 +1,130 @@
-{
-	"$schema": "https://schemas.wp.org/trunk/block.json",
-	"apiVersion": 3,
-	"name": "sgs/tabs",
-	"version": "0.1.0",
-	"title": "SGS Tabs",
-	"category": "sgs-interactive",
-	"description": "Tabbed content with horizontal or vertical layout, full ARIA support, and deep linking via URL hash.",
-	"keywords": [ "tabs", "tabbed", "panels", "sections", "switch" ],
-	"textdomain": "sgs-blocks",
-	"icon": "table-row-after",
-	"supports": {
-		"align": [ "wide", "full" ],
-		"anchor": true,
-		"html": false,
-		"color": {
-			"background": true,
-			"text": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true
-		}
-	},
-	"attributes": {
-		"orientation": {
-			"type": "string",
-			"default": "horizontal",
-			"enum": [ "horizontal", "vertical" ]
-		},
-		"tabAlignment": {
-			"type": "string",
-			"default": "left",
-			"enum": [ "left", "centre", "right", "stretch" ]
-		},
-		"tabStyle": {
-			"type": "string",
-			"default": "underline",
-			"enum": [ "underline", "boxed", "pills" ]
-		},
-		"tabTextColour": {
-			"type": "string"
-		},
-		"tabActiveTextColour": {
-			"type": "string"
-		},
-		"tabActiveBgColour": {
-			"type": "string"
-		},
-		"tabActiveIndicatorColour": {
-			"type": "string"
-		},
-		"tabHoverBgColour": {
-			"type": "string"
-		},
-		"panelBgColour": {
-			"type": "string"
-		},
-		"panelBorderColour": {
-			"type": "string"
-		},
-		"transitionDuration": {
-			"type": "number",
-			"default": 200
-		}
-	},
-	"providesContext": {
-		"sgs/tabsOrientation": "orientation",
-		"sgs/tabsStyle": "tabStyle"
-	},
-	"render": "file:./render.php",
-	"editorScript": "file:./index.js",
-	"editorStyle": "file:./index.css",
-	"style": "file:./style-index.css",
-	"viewScriptModule": "file:./view.js"
+﻿{
+    "$schema":  "https://schemas.wp.org/trunk/block.json",
+    "apiVersion":  3,
+    "name":  "sgs/tabs",
+    "version":  "0.1.0",
+    "title":  "SGS Tabs",
+    "category":  "sgs-interactive",
+    "description":  "Tabbed content with horizontal or vertical layout, full ARIA support, and deep linking via URL hash.",
+    "keywords":  [
+                     "tabs",
+                     "tabbed",
+                     "panels",
+                     "sections",
+                     "switch"
+                 ],
+    "textdomain":  "sgs-blocks",
+    "icon":  "table-row-after",
+    "supports":  {
+                     "align":  [
+                                   "wide",
+                                   "full"
+                               ],
+                     "anchor":  true,
+                     "html":  false,
+                     "color":  {
+                                   "background":  true,
+                                   "text":  true
+                               },
+                     "spacing":  {
+                                     "margin":  true,
+                                     "padding":  true
+                                 },
+                     "__experimentalBorder":  {
+                                                  "radius":  true,
+                                                  "width":  true,
+                                                  "color":  true,
+                                                  "style":  true
+                                              }
+                 },
+    "attributes":  {
+                       "orientation":  {
+                                           "type":  "string",
+                                           "default":  "horizontal",
+                                           "enum":  [
+                                                        "horizontal",
+                                                        "vertical"
+                                                    ]
+                                       },
+                       "tabAlignment":  {
+                                            "type":  "string",
+                                            "default":  "left",
+                                            "enum":  [
+                                                         "left",
+                                                         "centre",
+                                                         "right",
+                                                         "stretch"
+                                                     ]
+                                        },
+                       "tabStyle":  {
+                                        "type":  "string",
+                                        "default":  "underline",
+                                        "enum":  [
+                                                     "underline",
+                                                     "boxed",
+                                                     "pills"
+                                                 ]
+                                    },
+                       "tabTextColour":  {
+                                             "type":  "string"
+                                         },
+                       "tabActiveTextColour":  {
+                                                   "type":  "string"
+                                               },
+                       "tabActiveBgColour":  {
+                                                 "type":  "string"
+                                             },
+                       "tabActiveIndicatorColour":  {
+                                                        "type":  "string"
+                                                    },
+                       "tabHoverBgColour":  {
+                                                "type":  "string"
+                                            },
+                       "panelBgColour":  {
+                                             "type":  "string"
+                                         },
+                       "panelBorderColour":  {
+                                                 "type":  "string"
+                                             },
+                       "transitionDuration":  {
+                                                  "type":  "number",
+                                                  "default":  200
+                                              }
+                   },
+    "providesContext":  {
+                            "sgs/tabsOrientation":  "orientation",
+                            "sgs/tabsStyle":  "tabStyle"
+                        },
+    "render":  "file:./render.php",
+    "editorScript":  "file:./index.js",
+    "editorStyle":  "file:./index.css",
+    "style":  "file:./style-index.css",
+    "viewScriptModule":  "file:./view.js",
+    "example":  {
+                    "attributes":  {
+                                       "orientation":  "horizontal",
+                                       "tabStyle":  "underline",
+                                       "tabAlignment":  "left"
+                                   },
+                    "innerBlocks":  [
+                                        {
+                                            "name":  "sgs/tab",
+                                            "attributes":  {
+                                                               "label":  "Overview"
+                                                           }
+                                        },
+                                        {
+                                            "name":  "sgs/tab",
+                                            "attributes":  {
+                                                               "label":  "Specifications"
+                                                           }
+                                        },
+                                        {
+                                            "name":  "sgs/tab",
+                                            "attributes":  {
+                                                               "label":  "Delivery"
+                                                           }
+                                        }
+                                    ]
+                }
 }

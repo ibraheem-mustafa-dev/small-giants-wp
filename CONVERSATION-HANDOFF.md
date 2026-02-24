@@ -369,6 +369,7 @@ Invoke these skills at the right moment — not all upfront:
 
 | Task | Delegate To |
 |------|-------------|
+| All dev work should be managed, tracked and orchestrated by | 'project-manager' agent |
 | ALL WordPress build work (blocks, templates, PHP, CSS) | `wp-developer` agent |
 | Testing completed features | `test-and-explain` agent |
 | Visual quality check after fixes | `design-reviewer` agent |
