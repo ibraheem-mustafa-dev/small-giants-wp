@@ -57,8 +57,12 @@
  * (3:1) but fails for normal small text (4.5:1). Making the top-bar text
  * bold + 14px qualifies it as "large text" under WCAG, so 4.07:1 passes.
  */
+/* Top bar links: fluid "small" can shrink below 14px on mobile.
+ * Force minimum 0.875rem (14px) so bold text qualifies as WCAG
+ * "large text" (3:1 threshold) regardless of viewport width. */
 .has-primary-background-color > .wp-block-group > p.has-small-font-size {
 	font-weight: 600;
+	font-size: max(0.875rem, var(--wp--preset--font-size--small, 0.875rem));
 }
 
 /* ─── SITE LOGO ─── */
