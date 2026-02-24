@@ -1,0 +1,64 @@
+{
+  "name": "SGS Form Submissions",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "sgs-form-submit",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "webhook1",
+      "name": "Form Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json.body || $input.first().json;\nconst fields = data.fields || {};\nconst meta = data.meta || {};\nconst formId = data.form_id || 'Unknown form';\n\nlet msg = '<b>New Form Submission</b>\\n';\nmsg += '<b>Form:</b> ' + formId + '\\n';\nif (meta.page_url) msg += '<b>Page:</b> ' + meta.page_url + '\\n';\nmsg += '\\n';\n\nfor (const [key, value] of Object.entries(fields)) {\n  const label = key.replace(/_/g, ' ').replace(/\\b\\w/g, c => c.toUpperCase());\n  msg += '<b>' + label + ':</b> ' + (value || '(empty)') + '\\n';\n}\n\nif (meta.submitted_at) msg += '\\n<i>' + new Date(meta.submitted_at).toLocaleString('en-GB', {timeZone:'Europe/London'}) + '</i>';\n\nreturn [{ json: { message: msg, success: true } }];"
+      },
+      "id": "format1",
+      "name": "Format Message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [470, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.telegram.org/bot8251722074:AAFbETI4tnoM2_XfRYQGY7q0wLhTg92tft0/sendMessage",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "chat_id", "value": "8342232018" },
+            { "name": "text", "value": "={{ $json.message }}" },
+            { "name": "parse_mode", "value": "HTML" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "telegram1",
+      "name": "Send Telegram",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [690, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { success: true } }];"
+      },
+      "id": "respond1",
+      "name": "Respond OK",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [910, 300]
+    }
+  ],
+  "connections": {
+    "Form Webhook": { "main": [[{ "node": "Format Message", "type": "main", "index": 0 }]] },
+    "Format Message": { "main": [[{ "node": "Send Telegram", "type": "main", "index": 0 }]] },
+    "Send Telegram": { "main": [[{ "node": "Respond OK", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" }
+}
