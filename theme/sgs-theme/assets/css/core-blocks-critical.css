@@ -130,9 +130,50 @@
 	outline-offset: 2px;
 }
 
-/* Outline variant */
+/* ─── PRIMARY BUTTON — explicit defaults ─── */
+/*
+ * WP's global styles generate .wp-element-button from the style variation's
+ * elements.button object. But when a user restores a "broken" block, the
+ * inline style attributes are stripped and only class-based styles apply.
+ * These rules ensure a button WITHOUT any inline attributes still looks right.
+ */
+.wp-block-button__link:not([style*="background"]):not(.has-background) {
+	background-color: var(--wp--preset--color--primary, #0a7ea8);
+	color: var(--wp--preset--color--surface, #ffffff);
+}
+
+/* ─── SECONDARY / OUTLINE BUTTON ─── */
+/*
+ * WP core registers the "Outline" button style (is-style-outline) but leaves
+ * its colours to the theme. We define it using the primary token so outline
+ * buttons always match the brand, even after a block restore.
+ */
 .wp-block-button.is-style-outline .wp-block-button__link {
-	border-width: 2px;
+	background-color: transparent !important;
+	color: var(--wp--preset--color--primary, #0a7ea8) !important;
+	border: 2px solid currentColor !important;
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+}
+
+.wp-block-button.is-style-outline .wp-block-button__link:hover {
+	background-color: var(--wp--preset--color--primary, #0a7ea8) !important;
+	color: var(--wp--preset--color--surface, #ffffff) !important;
+	border-color: var(--wp--preset--color--primary, #0a7ea8) !important;
+}
+
+/* Outline on dark/primary backgrounds: flip to white */
+.has-primary-background-color .wp-block-button.is-style-outline .wp-block-button__link,
+.has-primary-dark-background-color .wp-block-button.is-style-outline .wp-block-button__link,
+.has-footer-bg-background-color .wp-block-button.is-style-outline .wp-block-button__link {
+	color: var(--wp--preset--color--surface, #ffffff) !important;
+	border-color: var(--wp--preset--color--surface, #ffffff) !important;
+}
+
+.has-primary-background-color .wp-block-button.is-style-outline .wp-block-button__link:hover,
+.has-primary-dark-background-color .wp-block-button.is-style-outline .wp-block-button__link:hover,
+.has-footer-bg-background-color .wp-block-button.is-style-outline .wp-block-button__link:hover {
+	background-color: var(--wp--preset--color--surface, #ffffff) !important;
+	color: var(--wp--preset--color--primary, #0a7ea8) !important;
 }
 
 /* ─── BUTTON TEXT COLOUR FIX ─── */
@@ -160,6 +201,25 @@
  */
 .wp-block-button__link.has-accent-background-color:not([style*="color"]) {
 	color: var(--wp--preset--color--text, #1e1e1e);
+}
+
+/* ─── HERO BLOCK ─── */
+
+/*
+ * When a hero block is placed directly in the site root (no container),
+ * width:100% fills the full viewport — correct.
+ *
+ * When placed INSIDE a Group/container block, the hero should stay within
+ * that container's bounds. We remove any breakout margin that a parent's
+ * alignfull layout might introduce, so the hero fills the container exactly
+ * rather than escaping to 100vw.
+ */
+.wp-block-group .wp-block-sgs-hero,
+.wp-block-column .wp-block-sgs-hero {
+	margin-left: 0 !important;
+	margin-right: 0 !important;
+	width: 100% !important;
+	max-width: 100% !important;
 }
 
 /* ─── NAVIGATION — above-the-fold base styles ─── */

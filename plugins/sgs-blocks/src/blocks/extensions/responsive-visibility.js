@@ -23,6 +23,17 @@ import { __ } from '@wordpress/i18n';
 import { mobile, tablet, desktop } from '@wordpress/icons';
 
 /**
+ * Guard against double registration.
+ *
+ * If the extensions bundle is evaluated twice (e.g. a CJS build and an ESM
+ * build both loaded by WordPress), the addFilter calls would fire twice and
+ * the controls would appear twice in the inspector. The global flag prevents
+ * this without throwing any console errors.
+ */
+if ( ! window.__sgsDeviceVisibilityRegistered ) {
+window.__sgsDeviceVisibilityRegistered = true;
+
+/**
  * Check whether a block type supports the className prop.
  *
  * If a block explicitly sets supports.className to false,
@@ -256,3 +267,5 @@ addFilter(
 	'sgs/device-visibility-editor-styles',
 	withVisibilityEditorStyles
 );
+
+} // end guard: window.__sgsDeviceVisibilityRegistered
