@@ -381,6 +381,14 @@ header.wp-block-template-part.sgs-header-transparent .wp-block-site-title a {
 	justify-content: center;
 }
 
+/* Hide native WP nav toggle on desktop — we use .sgs-mobile-nav-toggle only */
+@media (min-width: 1024px) {
+	.wp-block-navigation__responsive-container-open,
+	.wp-block-navigation__responsive-container-close {
+		display: none !important;
+	}
+}
+
 /* On mobile, ensure the hamburger icon colour is visible (dark on white
    header background). */
 @media (max-width: 767px) {

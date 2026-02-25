@@ -48,13 +48,11 @@
                                 },
                        "heading":  {
                                        "type":  "string",
-                                       "source":  "html",
-                                       "selector":  ".sgs-info-box__heading"
+                                       "default":  ""
                                    },
                        "description":  {
                                            "type":  "string",
-                                           "source":  "html",
-                                           "selector":  ".sgs-info-box__description"
+                                           "default":  ""
                                        },
                        "link":  {
                                     "type":  "string"

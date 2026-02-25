@@ -1,228 +1,128 @@
-# Session Handoff — 2026-02-22 (Session 25 Complete — Security + Performance + Correctness Fixes)
+# Session Handoff — 2026-02-25 (Session 26 — Indus Foods Visual Audit + Block Validation Fixes)
 
-## What Session 25 Accomplished
+## Completed This Session
 
-**6 of 8 audit gap steps completed.** All CRITICAL and HIGH security issues fixed, performance optimised, and correctness issues resolved. Built, deployed, and verified on live site.
+1. **Full visual & interactivity audit** of three live pages (palestine-lives.org) using Playwright
+   - Captured screenshots at 1440px desktop and 375px mobile for all three pages
+   - Captured test site (lightsalmon-tarsier) for header/footer reference
+   - Read HTML mockup (Food Service V3) and homepage screenshot mockups
+   - Extracted computed CSS from both sites via `browser_evaluate`
+   - Found 28 issues documented in `.claude/plans/glistening-greeting-cerf.md`
 
-### Steps Completed
+2. **Block validation errors fixed** — three SGS blocks showed "Block contains unexpected or invalid content" in the WP editor
+   - Root cause: all three had `render.php` (dynamic) but also complex `save()` functions — any change to save.js after content was saved causes editor validation failure
+   - Fix: converted all three to `save() { return null }` + added `deprecated.js` with the old save function for content migration
+   - **sgs/info-box** — deprecated.js created, save.js → null, block.json `source:"html"` removed from heading/description, index.js wired
+   - **sgs/testimonial-slider** — deprecated.js created, save.js → null, index.js wired
+   - **sgs/cta-section** — deprecated.js created, save.js → null, block.json `source:"html"` removed from headline/body, index.js wired
+   - Built and deployed to live site (info-box, testimonial-slider, cta-section JS + JSON files)
 
-| Step | Status | Details |
-|------|--------|---------|
-| 1. Deploy a11y fixes | DONE | Built, deployed, verified via curl (focus-visible, H2 headings, 44px targets, pause button) |
-| 2. Security fixes (3 CRITICAL + 7 HIGH) | DONE | See security section below |
-| 3. Performance quick wins | DONE | Emoji removed (22KB saved), fetchpriority="high" on hero, fluid spacing |
-| 4. Fix sticky header | DONE | Moved position:sticky from inner group to `<header>` element |
-| 5. Fix fluid spacing | DONE | 6 spacing sizes now have fluid min/max in theme.json |
-| 6. Translation strings | DONE | 6 strings wrapped in __()/_e() across 3 files |
-| 7. Test content + verify blocks | NOT STARTED | Needs WP admin access or WP-CLI |
-| 8. Commit + scorecard | NOT STARTED | Waiting for Step 7 |
-
-### Security Fixes Applied (Step 2)
-
-**Original 3 CRITICAL from audit:**
-1. Nonce verification added to form submit + upload REST endpoints (`verify_form_nonce` callback)
-2. `__return_true` replaced with nonce-checking permission callback on both endpoints
-3. N8N webhook URL moved from block attributes to `wp_options` (`sgs_n8n_webhook_url`), admin Settings page created
-
-**Original 4 HIGH from audit:**
-4. IP spoofing fixed — `get_client_ip()` now uses only `REMOTE_ADDR` (in both class-form-rest-api.php and class-form-processor.php)
-5. SSRF prevented — `wp_safe_remote_post()` replaces `wp_remote_post()` + HTTPS-only check
-6. CSS injection via colour slug — slug sanitised with `preg_replace('/[^a-z0-9-]/', '')`
-7. Admin capability gate — Settings → SGS Forms page requires `manage_options`
-
-**Additional issues found by `ehr-security-reviewer` agent and fixed:**
-8. Orphaned `n8nWebhookUrl` attribute removed from block.json (was still serialised in post_content)
-9. `storeSubmissions` toggle now enforced server-side (was client-only HTML attribute)
-10. `successRedirect` sanitised with `wp_validate_redirect()` to prevent open redirects
-11. `fields` REST parameter now has `validate_callback` — 64KB max, no nested objects
-12. Upload endpoint now has rate limiting (10/hour/IP)
-13. Font-size raw CSS values validated with strict regex (prevents style injection)
-
-**Known remaining items from security review (LOW priority, defer to later):**
-- Nonce expiry handling in view.js (403 on long-lived forms — needs client-side retry with page refresh message)
-- `get_client_ip()` duplicated in 2 files — extract to shared helper
-- `data-store-submissions` HTML attribute still rendered (LOW info disclosure, harmless)
-- `wp_check_filetype()` extension-only MIME check — `wp_handle_upload()` does content check on most servers
-
-### Performance Fixes (Step 3)
-
-- Emoji scripts removed via `remove_action()` in functions.php — saves 22.2KB JS
-- `fetchpriority="high"` added to hero split image
-- Fluid spacing: sizes 30-80 now use `clamp()` via `fluid: { min, max }` in theme.json
-
-### Other Fixes
-
-- **Sticky header:** `position: sticky` moved from inner group (where it can't work) to `<header.wp-block-template-part>` via core-blocks.css
-- **Header variants:** Added to P2 roadmap (item 336) with bumped impact grade — sticky/non-sticky/transparent for style variations
-- **Translation strings:** 6 bare strings wrapped: Submit, Thank you message, Step labels, Leave this field empty, Read more
+3. **Mockup colour note clarified** — the Food Service V3 HTML mockup and homepage JPG mockups use navy/gold colours that are NOT the Indus Foods brand. They were layout/template references only. Actual brand colours come from the logo and test site (teal `#0A7EA8` primary).
 
 ## Current State
 
 - **Branch:** `feature/indus-foods-homepage`
-- **Latest commit:** `48cdffd` (no new commit yet — waiting for Steps 7-8)
-- **Uncommitted changes:** ~20 modified files (all fixes) + 1 new file (class-form-admin.php) + untracked screenshots
-- **Build status:** Built and deployed
-- **Deploy status:** Live site matches source — all fixes deployed
-- **Dev site:** palestine-lives.org (WP 6.9.1)
+- **Uncommitted changes:** Block validation fixes (6 new/modified files) + previous session's ~29 files
+- **Build:** Done and deployed (block JS only — not full plugin deploy)
+- **Dev site:** palestine-lives.org — block validation errors should now be gone
+- **User action needed:** Open each affected page in WP editor and hit Update/Save once to trigger deprecation migration
 
-### Files Modified This Session
+### What's Working
+- All three broken blocks (info-box, testimonial-slider, cta-section) should now load cleanly in editor
+- Frontend output unchanged — render.php was already handling it
+- Build clean — no errors or warnings
 
-**Plugin — security fixes:**
-- `plugins/sgs-blocks/includes/forms/class-form-rest-api.php` — nonce verification, rate limiting, IP fix, fields validation, storeSubmissions
-- `plugins/sgs-blocks/includes/forms/class-form-processor.php` — IP fix, webhook to wp_options, wp_safe_remote_post, storeSubmissions support
-- `plugins/sgs-blocks/includes/forms/class-form-upload.php` — unchanged (rate limiting added in REST layer)
-- `plugins/sgs-blocks/includes/forms/class-form-admin.php` — NEW: Settings page + submissions viewer
-- `plugins/sgs-blocks/includes/render-helpers.php` — CSS slug sanitisation, font-size CSS injection fix
-- `plugins/sgs-blocks/sgs-blocks.php` — register Form_Admin
-- `plugins/sgs-blocks/src/blocks/form/block.json` — removed n8nWebhookUrl attribute
-- `plugins/sgs-blocks/src/blocks/form/edit.js` — webhook URL field replaced with server-side notice
-- `plugins/sgs-blocks/src/blocks/form/render.php` — removed webhook filter, sanitised redirect, translation strings
-- `plugins/sgs-blocks/src/blocks/form/view.js` — storeSubmissions param added to REST body
+### What's NOT Working / Still Needs Fixing
+See full audit at `.claude/plans/glistening-greeting-cerf.md`. Top issues by priority:
 
-**Plugin — performance:**
-- `plugins/sgs-blocks/src/blocks/hero/render.php` — fetchpriority="high"
+**HIGH priority — design/functionality:**
+- Header CTA inconsistency: inner pages show "Get in Touch" instead of "Register For a Trade Account"
+- Nav link colours: dark/black text instead of brand teal
+- Homepage hero: text stacked above image instead of side-by-side two-column layout
+- Homepage hero image: tiny (369×246px), should fill half the hero
+- Homepage hero buttons: dark text on teal/dark backgrounds — nearly invisible
+- Food Service benefit cards: completely unstyled (no border, padding, radius, shadow)
+- Food Service "How It Works": heading/intro present but the 4 steps are entirely missing
+- Trade Account hero stats: garbled/overlapping text
 
-**Plugin — translations:**
-- `plugins/sgs-blocks/src/blocks/form-step/render.php` — 'Step' wrapped
-- `plugins/sgs-blocks/src/blocks/post-grid/render.php` — 'Read more' wrapped
+**MEDIUM priority:**
+- Service card headings truncated ("Manufact...", "Wholesa...")
+- Service "Learn More" buttons: white border on white bg — invisible
+- Only 4 of 8 product tiles built on Food Service
+- Delivery section missing warehouse image column
 
-**Theme:**
-- `theme/sgs-theme/functions.php` — emoji removal
-- `theme/sgs-theme/parts/header.html` — removed sticky from inner group
-- `theme/sgs-theme/assets/css/core-blocks.css` — sticky header CSS on `<header>`
-- `theme/sgs-theme/theme.json` — fluid spacing sizes
+**Theme code needed (4 items):**
+- Hero image hover zoom (overflow:hidden container + scale on img:hover)
+- Benefit card hover lift (translateY(-4px) + gold top-line animation)
+- Nav active state highlighting
+- Product tile image hover zoom
 
-**Docs:**
-- `docs/plans/2026-02-21-master-feature-audit.md` — header patterns item 336 updated
+## Known Issues / Blockers
 
-## Untracked Files to Handle
+- Two other blocks (`brand-strip`, `container`) have the same dual save.js+render.php pattern but aren't broken yet — convert if they break
+- Previous session's ~29 files are still uncommitted — need git commit before pushing
+- `.firecrawl/`, `*.png`, `sites/indus-foods/assets.zip` still need adding to `.gitignore` before committing
 
-Same as Session 24 — `.firecrawl/` directory, loose PNGs, `sites/indus-foods/assets.zip`. Add to `.gitignore` before committing.
+## Next Priorities (in order)
 
----
+1. **Commit everything** — previous session's security/perf/a11y fixes + this session's block validation fixes
+2. **Header/nav consistency** — fix CTA text on inner pages, nav link colours (teal), active state
+3. **Homepage hero layout** — restructure to two-column (text left, image right), fix image size, fix button text colours
+4. **Food Service benefit cards** — add border/radius/padding via block settings + theme CSS for hover lift effect
+5. **Food Service "How It Works"** — build the 4 steps with numbered circles in WP editor
+6. **Theme CSS hover effects** — hero image zoom, benefit card lift+gold-line (theme code changes)
 
-## Next Session: Complete Steps 7-8
+## Files Modified This Session
 
-### Step 7: Create Test Content + Verify Unverified Blocks
+**New files:**
+- `plugins/sgs-blocks/src/blocks/info-box/deprecated.js`
+- `plugins/sgs-blocks/src/blocks/testimonial-slider/deprecated.js`
+- `plugins/sgs-blocks/src/blocks/cta-section/deprecated.js`
+- `.claude/plans/glistening-greeting-cerf.md` (audit report — 28 issues)
 
-17 blocks/extensions have code deployed but were never tested end-to-end. This requires WP admin access or WP-CLI:
+**Modified files:**
+- `plugins/sgs-blocks/src/blocks/info-box/save.js` — returns null
+- `plugins/sgs-blocks/src/blocks/info-box/block.json` — removed source/selector from heading + description
+- `plugins/sgs-blocks/src/blocks/info-box/index.js` — imports deprecated
+- `plugins/sgs-blocks/src/blocks/testimonial-slider/save.js` — returns null
+- `plugins/sgs-blocks/src/blocks/testimonial-slider/index.js` — imports deprecated
+- `plugins/sgs-blocks/src/blocks/cta-section/save.js` — returns null
+- `plugins/sgs-blocks/src/blocks/cta-section/block.json` — removed source/selector from headline + body
+- `plugins/sgs-blocks/src/blocks/cta-section/index.js` — imports deprecated
 
-1. Create a "Block Showcase" test page on palestine-lives.org
-2. Insert every Phase 0 block never on a live page: Accordion, Counter, Icon List, WhatsApp CTA, Certification Bar, all form blocks
-3. Insert Phase 1 extensions on test blocks: device visibility, scroll animations, hover colour shifts
-4. Create 6-10 blog posts with featured images and categories (for Post Grid testing)
-5. Upload 8-10 images to Media Library (for Gallery testing)
-6. Test Phase 2 blocks: Post Grid (all layouts, pagination, filtering), Gallery (all layouts, lightbox), Tabs (styles, keyboard nav, deep linking)
+## Notes for Next Session
 
-### Step 8: Commit, Update Scorecard, Prepare for Phase 2.4
+- **Mockup colour mismatch is intentional** — the HTML mockup used navy/gold as placeholder colours. Don't change the live site's teal brand colour to navy. The teal on the live site IS the Indus Foods brand colour per the logo and test site.
+- **Most fixes are block-level in WP editor** — only 4 issues need actual theme CSS code. Don't over-engineer. Almost everything else is block inspector controls (colour, spacing, border, padding).
+- **Deprecation migration needs a manual trigger** — after the block fixes are deployed, someone needs to open the Homepage, Food Service, and Trade Account pages in the WP editor and click Update. This triggers WordPress to run the deprecation function and migrate the old save HTML to null. The blocks won't break on the frontend regardless (render.php handles it), but the editor will keep showing the error until this save happens.
+- **Inner pages use a different header template part** — Food Service and Trade Account both show a hamburger menu at desktop and "Get in Touch" CTA. This is because they use a different template part from the homepage header. Fix by either: (a) editing the inner pages template part to match the homepage, or (b) assigning the same template part to all pages.
+- **CSS data from audit:**
+  - Test site top bar: `rgb(10, 126, 168)` teal, phone/email are pill buttons (30px radius)
+  - Test site footer: `rgb(44, 62, 80)` dark slate
+  - Test site nav active: white text on teal bg
+  - Live site nav links: `rgb(30, 30, 30)` dark — needs changing to teal
 
-1. Add `.firecrawl/`, `*.png`, `sites/indus-foods/assets.zip` to `.gitignore`
-2. Commit all fixes with descriptive messages
-3. Update verification section in `docs/plans/2026-02-21-master-feature-audit.md`
-4. Recalculate maturity score (target: 25-30% after fixes + verification)
-5. Update MEMORY.md with new patterns
-6. Set the N8N webhook URL via WP admin: Settings → SGS Forms
+## Relevant Tooling for Next Tasks
 
-### THEN Phase 2.4: Countdown Timer, Star Rating, Team Member
+### Commands
+- `/handoff` — end of session summary
+- `/commit-push-pr` — commit + push everything (do this first)
 
----
+### Skills
+- `/wp-block-themes` — when editing header template parts, theme.json, style variation colours
+- `/wp-block-development` — if any block CSS changes are needed for hover effects
+- `/frontend-design` — for hover transitions, button states, pill button design
+- `/systematic-debugging` — before investigating header template inconsistency
+- `/verification-before-completion` — before claiming any fix is done
 
-## Webhook URL Migration
+### Agents
+- **`wp-developer`** — MANDATORY for ALL WordPress work: template parts, header/nav fixes, theme CSS, block CSS changes
+- **`design-reviewer`** — after visual fixes, compare against test site at 375/768/1440px
+- **`test-and-explain`** — after block validation fixes deployed, verify editor is clean
 
-**IMPORTANT:** The N8N webhook URL was moved from block attributes to `wp_options`. The next session needs to:
-
-1. Log into WP admin → Settings → SGS Forms
-2. Enter the N8N webhook URL (ask the user for the value)
-3. Any existing blocks with `n8nWebhookUrl` in their saved content are harmless — the attribute is no longer read, but the old value persists in post_content. A cleanup migration could be written but is low priority.
-
----
-
-## Relevant Tooling
-
-### Patterns Established in Session 25
-
-| Pattern | Reference File | Notes |
-|---------|---------------|-------|
-| REST nonce verification | `class-form-rest-api.php` | `verify_form_nonce()` checks `X-WP-Nonce` header against `wp_rest` action |
-| Rate limiting | `class-form-rest-api.php` | 10/hour/IP via transient, `REMOTE_ADDR` only |
-| SSRF prevention | `class-form-processor.php` | `wp_safe_remote_post()` + HTTPS-only check |
-| CSS injection prevention | `render-helpers.php` | Slug: `preg_replace('/[^a-z0-9-]/', '')`. Raw CSS values: strict regex |
-| Settings API admin page | `class-form-admin.php` | Template for future admin pages (webhook URL, submissions viewer) |
-| Fluid spacing | `theme.json` | `fluid: { min, max }` on spacing sizes 30-80, generates `clamp()` |
-| Sticky header | `core-blocks.css` | `position: sticky` on `<header.wp-block-template-part>`, NOT inner group |
-
-### Agents — When to Use Each
-
-| Agent | When to Use |
-|-------|-------------|
-| `wp-developer` | **MANDATORY** for ALL WordPress build work — block development, template creation, PHP, theme customisation, plugin architecture |
-| `test-and-explain` | After completing any feature, fix, or modification — tests it and explains results in plain English |
-| `design-reviewer` | After visual changes — checks WCAG 2.2 AA, design system consistency, responsive behaviour |
-| `performance-auditor` | After deployment — checks Core Web Vitals, Lighthouse, bundle size, page load |
-| `seo-auditor` | When building new pages — checks SEO, content optimisation, technical SEO |
-| `project-manager` | Status dashboard, blocker tracking, deciding which agent to use next |
-
-### Skills — When to Invoke Each
-
-| Skill | When to Invoke | Notes |
-|-------|---------------|-------|
-| `/superpowers:using-superpowers` | **First thing every session** | Establishes skill checking before every action |
-| `/brainstorming` | Before any creative work — new blocks, new features, new pages | Explores requirements and approaches |
-| `/writing-plans` | Before any multi-step task touching 3+ files | Creates `.claude/plans/current_mission.md` |
-| `/systematic-debugging` | Before proposing any fix for broken functionality | Investigate root cause first, never guess |
-| `/verification-before-completion` | Before claiming work is done | Runs verification commands, confirms output |
-| `/commit` or `/commit-push-pr` | When committing work | Handles git workflow, branch strategy, PR creation |
-| `/handoff` | End of session | Generates session summary for next session |
-| `/wp-block-development` | When building new Gutenberg blocks | block.json, attributes, supports, save/render |
-| `/wp-block-themes` | When modifying theme.json, templates, template parts | theme.json v3, patterns, style variations |
-| `/wp-interactivity-api` | When building blocks needing reactive frontend state | `data-wp-*` directives, `@wordpress/interactivity` store |
-| `/wp-plugin-development` | Plugin architecture, hooks, activation, settings API | Security patterns, admin UI, data storage |
-| `/wp-rest-api` | When building or debugging REST endpoints | `register_rest_route`, controllers, schema validation |
-| `/wp-performance` | When profiling or optimising WordPress performance | Query Monitor, Server-Timing, code profiling |
-| `/frontend-design` | When building polished UI — hover transitions, button states, pill buttons, animations | Production-grade frontend — NOT for structural bugs |
-| `/interaction-design` | When adding microinteractions, transitions, feedback patterns | Loading states, form transitions, hover polish |
-| `/review` | When reviewing code quality before merge | Best practices check |
-
-### MCP Servers — What to Use Each For
-
-| MCP Server | Tools | When to Use |
-|------------|-------|-------------|
-| **Playwright** (`mcp__plugin_playwright_*`) | `browser_navigate`, `browser_take_screenshot`, `browser_snapshot`, `browser_resize`, `browser_evaluate`, `browser_click`, `browser_console_messages` | Visual verification at 375/768/1440px, testing interactive blocks (accordion, slider, tabs, gallery lightbox), checking console errors, confirming CSS loads correctly |
-| **GitHub** (`mcp__plugin_github_*`) | `create_pull_request`, `list_issues`, `search_code`, `get_file_contents`, `push_files` | PR creation, issue tracking, code search across repos |
-| **Context7** (`mcp__plugin_context7_*`) | `resolve-library-id`, `get-library-docs` | Up-to-date docs for WordPress, @wordpress/scripts, Interactivity API, any npm package |
-| **Memory** (`mcp__memory__*`) | `search_nodes`, `create_entities`, `add_observations` | Persistent knowledge graph — store patterns, decisions, gotchas across sessions |
-| **n8n** (`mcp__n8n__*`) | `search_nodes`, `get_node`, `search_templates`, `validate_workflow` | Building/debugging n8n workflows for form notifications, webhook processing |
-
-### Playwright Verification Checklist (Use After Every Deploy)
-
-```
-1. browser_resize → 1440 (desktop)
-2. browser_navigate → https://palestine-lives.org/
-3. browser_take_screenshot → fullPage: true
-4. browser_resize → 768 (tablet) → screenshot
-5. browser_resize → 375 (mobile) → screenshot
-6. browser_console_messages → level: "error" (check for JS errors)
-7. browser_snapshot → check accessibility tree
-```
-
-### Deploy Pipeline (Run After Every Build)
-
-```bash
-# 1. Build
-cd plugins/sgs-blocks && npm run build
-
-# 2. Deploy plugin
-scp -r plugins/sgs-blocks/sgs-blocks.php plugins/sgs-blocks/includes plugins/sgs-blocks/build plugins/sgs-blocks/assets hd:~/domains/palestine-lives.org/public_html/wp-content/plugins/sgs-blocks/
-
-# 3. Deploy theme (if theme files changed)
-scp -r theme/sgs-theme hd:~/domains/palestine-lives.org/public_html/wp-content/themes/
-
-# 4. Clear LiteSpeed page cache (wp litespeed-purge is broken on this host)
-ssh hd "rm -rf ~/domains/palestine-lives.org/public_html/wp-content/litespeed/cache/*"
-
-# 5. Reset PHP OPcache via HTTP (CLI reset is a SEPARATE pool — does nothing for web)
-ssh hd "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/palestine-lives.org/public_html/op-reset-tmp.php" && curl -s https://palestine-lives.org/op-reset-tmp.php && ssh hd "rm ~/domains/palestine-lives.org/public_html/op-reset-tmp.php"
-```
+### MCP Servers
+- **Playwright** (`mcp__plugin_playwright_*`) — visual verification after every fix. Use `browser_navigate` + `browser_take_screenshot` at 1440px and 375px. Use `browser_evaluate` to check computed styles.
+- **Context7** (`mcp__plugin_context7_*`) — WordPress block deprecation docs if needed
 
 ---
 
@@ -231,194 +131,96 @@ ssh hd "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/palestine-lives.o
 ~~~
 /superpowers:using-superpowers
 
-SGS Framework — Session 26: Commit Session 25 Fixes + Visual/Hover Audit + Phase 2.4
+SGS Framework — Session 27: Commit Fixes + Indus Foods Design Repairs
 
-## Context
+Three broken blocks (sgs/info-box, sgs/testimonial-slider, sgs/cta-section) have been fixed with deprecations and deployed. The homepage, food service, and trade account pages have 20+ visual/layout issues identified in a full Playwright audit. Read CONVERSATION-HANDOFF.md and CLAUDE.md for full context.
 
-Read these files IN ORDER before touching anything:
-1. `CONVERSATION-HANDOFF.md` — full session 25 recap, what's done, what remains
-2. `CLAUDE.md` (root) — framework architecture rules, deploy commands, naming conventions
-3. `plugins/sgs-blocks/CLAUDE.md` — block inventory, build commands, customisation standard
-4. `theme/sgs-theme/CLAUDE.md` — theme structure, design tokens, style variation rules
-5. `sites/indus-foods/CLAUDE.md` — client-specific design tokens, page status, deploy rules
-6. `sites/indus-foods/outstanding-issues.md` — 17 visual/hover issues (Section 10), accessibility findings, broken blocks
-7. `sites/indus-foods/vscode-session-prompt.md` — detailed fix order for visual/hover issues with architecture rules
+Read CONVERSATION-HANDOFF.md and .claude/plans/glistening-greeting-cerf.md for the full issue list, then work through these priorities:
 
-Session 25 completed steps 1-6 of 8 from the audit gap closure plan:
-- All 3 CRITICAL + 7 HIGH security issues fixed (nonce verification, rate limiting, SSRF, CSS injection, webhook URL migration)
-- 3 additional security issues found by `ehr-security-reviewer` agent and fixed
-- Performance: emoji removed (22KB saved), fetchpriority on hero, fluid spacing
-- Sticky header fixed, translation strings wrapped
-- All fixes built, deployed, and verified on live site (palestine-lives.org)
+Priorities A (Taken from conversation) - If it's easier to work in the HTML code directly in the editor, let me know and you can use playwright and I'll log you in.
 
-**Branch:** `feature/indus-foods-homepage` — ~29 files modified, NOT YET COMMITTED.
+The user is sharing several issues:
 
----
+Saving pages doesn't work - The Update/Save button in the WP editor isn't actually saving changes. This is a critical problem. This could be related to the block validation errors - if there are still broken blocks on the page, WordPress may refuse to save (or appear to save but not actually commit the changes).
 
-## Task 1: Commit Session 25 Fixes (Step 8)
+Homepage hero padding/margins - The user has added excessive padding/margins to the hero to compensate for the fact that it expands to fill the screen rather than fitting in a container. The screenshot shows the Food Service page with a full-width hero that looks good.
 
-Use `/commit-push-pr` skill.
+Top bar contact buttons are blue on blue - The phone/email buttons in the header top bar have blue text on a blue background - invisible. This needs a colour fix.
 
-1. Add to `.gitignore`: `.firecrawl/`, `*.png` (root only), `sites/indus-foods/assets.zip`, loose screenshot PNGs
-2. Stage and commit all Session 25 security + performance + a11y fixes
-3. Push to `feature/indus-foods-homepage` branch
-4. Do NOT merge to main yet — more work coming on this branch
+Burger menu on desktop - The navigation is showing a hamburger menu icon at desktop width when it shouldn't be there. There's also a stuck element at the bottom of the homepage that won't delete - likely a broken block that's preventing saves.
 
----
+Looking at the screenshot, the Food Service hero section actually looks solid with its full-width two-column layout, teal background, and image positioning. But the header has that hamburger icon visible on desktop, and the "Get in Touch" button is showing in the header.
 
-## Task 2: Set N8N Webhook URL
+The save issue is probably stemming from broken blocks still on the page. When WordPress encounters a block with "unexpected or invalid content," it may fail to save or throw an error. My deprecation migration should detect the old HTML format and convert it to the new one, but if the deprecation's save function isn't matching the stored content correctly, the editor will still flag it as invalid and refuse to save.
 
-**IMPORTANT:** The N8N webhook URL was moved from block attributes to `wp_options` in Session 25.
+There's also a possibility that some blocks are in an unrecoverable state where the deprecation can't help—in those cases, the user would need to manually delete and recreate them. Or there could be a JavaScript error or nonce issue preventing the save from completing entirely.
 
-1. Ask the user for the N8N webhook URL value
-2. Set it via WP admin → Settings → SGS Forms (or via WP-CLI: `wp option update sgs_n8n_webhook_url '<URL>'`)
-3. Verify form submission works end-to-end after setting it
+Looking at the screenshot, I can see the actual issues now: there's a hamburger menu showing on desktop when it shouldn't be, the top bar text is blue on a blue background making it invisible, and the hero section has spacing problems. I need to hide the responsive navigation container on desktop with CSS, fix the text color contrast on the top bar, and address the hero padding on the homepage. has manually added padding, but the hero expands to fill the screen on other pages (this is actually correct behaviour for a full-width hero)
 
----
+Let me address these systematically:
 
-## Task 3: Visual + Hover Audit Fixes (from outstanding-issues.md Section 10)
+Issue 1 & 5: Save not working
+This is likely caused by a stuck broken block. The most reliable fix is to use the Code Editor view in WordPress (top right menu → "Code editor") to directly edit the post HTML and manually remove the problematic block markup. I can also try via WP-CLI to see what's in the page content.
 
-Read `sites/indus-foods/vscode-session-prompt.md` for the FULL fix order. Work through groups in exact order. Verify each group with Playwright screenshots before moving to the next.
+Issue 3: Blue on blue top bar
+The top bar has a teal/blue background. The phone number and email text need to be white (or at minimum, have sufficient contrast). This is a block-level fix in the header template part.
 
-### Fix Order Summary
+Issue 4: Burger menu on desktop
+The navigation block has a responsive container that shows a hamburger button, and the SGS theme should have CSS hiding this at desktop breakpoints—but that styling might be missing or not applying correctly. I need to check the navigation CSS to see what's going on.
 
-**Group 1 — Critical (broken functionality):**
-- Issue #1: Mobile hamburger menu missing (375px). Use `/systematic-debugging` before proposing fix
-- Issue #2: Services section renders blank (all devices). Use `/systematic-debugging` before proposing fix
+For the save button issue, the most likely culprit is one or more broken blocks. The user can either use the Code Editor to remove them, check the page content via WP-CLI, or attempt recovery on each broken block. Actually, looking at the screenshot more carefully—that's from the Food Service page preview, not the editor. The save problem is on the homepage, so I should investigate the homepage content directly to identify the stuck block, figure out why the hamburger menu appears on desktop, and fix the color contrast issue. the right. The hamburger should only show on mobile, so this is a CSS breakpoint issue in the theme that I need to fix. Let me prioritize the most impactful problems: the save functionality (likely broken blocks), the hamburger visibility on desktop, the blue-on-blue contrast in the top bar, and the hero block expansion. I'll start by checking the editor state with Playwright to see what's actually happening.
 
-**Group 2 — Critical visual (most visible on load):**
-- Issue #3: Hero background teal → should be gold/mustard (`--accent` token)
-- Issue #4: Why Choose section white cards → should have no card/border/shadow
-- Issue #5: Testimonials background teal → should be white (`--surface` token)
+Let me look at what's happening before touching anything. I need to check the nav CSS, the header template, and what block is stuck on the homepage.
 
-**Group 3 — Hover effects (code changes required):**
-Invoke `/frontend-design` for hover transition polish.
-- H1: Hero primary CTA — filled → ghost/outline on hover
-- H2: Hero secondary CTA — outline → teal fill on hover
-- H3: Top-level nav link — add gold background fill on hover
-- H4: CTA section buttons — full invert to match hero buttons
+Update Todos
 
-**Group 4 — Significant visual:**
-- Issue #6: Tablet nav wraps to two rows at 768px
-- Issue #7: Top bar plain text → icon pill buttons (invoke `/frontend-design`)
-- Issue #8: Hero second CTA missing on mobile
-- Issue #9: Hero buttons side-by-side → stacked vertically
+Investigate homepage save failure + stuck block via WP-CLI
 
-**Group 5 — Content fixes (editor only, no code):**
-- Issues #10-12, #15, #17: title text, button labels, social icons, button variant, brands background
+Fix hamburger menu showing on desktop
 
-**Group 6 — Minor:**
-- Issues #13-14, #16: footer logo, social icon brand colours, mobile logo sizing
+Fix blue-on-blue top bar contact links
 
-### Architecture Rules for Visual Fixes
-- **Never hardcode** — use block attributes, `indus-foods.json` style variation, or `wp_add_inline_style()` gated on active variation
-- **Variation-specific CSS** in `functions.php` gated on `'indus-foods' === $active_style`
-- **Variation-specific images** in `theme/sgs-theme/assets/`, never `uploads/`
-- **After any PHP/JS/CSS block change:** build → deploy → Playwright verify
+Review hero width/container behaviour
 
----
+Now I can see the full homepage content. The issues are clear:
 
-## Task 4: Phase 2.4 Blocks (After Visual Fixes Complete)
+The stuck "extra section" at the bottom — there's a last group block that's a duplicate/extra section at the bottom. It contains the "About Indus Foods" description text and a samosas image with a gradient from teal to #2c3e50. This is the section the user wants to delete. It's separate from the footer.
 
-Build these three blocks. Invoke `/brainstorming` before each block, then `/writing-plans` for the implementation plan. Use the `wp-developer` agent for all build work. Invoke `/wp-block-development` when starting block development.
+The "What Are You Waiting For?" section — there's one button there with border-color:#ffffff (white) but it's on a dark #2c3e50 background, so the outline style might be tricky.
 
-1. **Countdown Timer** (`sgs/countdown`) — date-based + evergreen; flip/simple/minimal variants; auto-expire message
-2. **Star Rating** (`sgs/star-rating`) — 1-5 SVG stars; half-star support; Schema.org/Rating JSON-LD
-3. **Team Member** (`sgs/team-member`) — photo/name/role/bio; social links; Schema.org/Person JSON-LD
+The custom blocks like info-box and testimonial-slider are properly formatted as self-closing dynamic blocks, which is correct. The "What Are You Waiting For?" section uses standard core buttons rather than a custom CTA block, so there shouldn't be any broken block issues preventing the save.
 
-For each block, follow the Block Customisation Standard (MANDATORY):
-1. Native WP `supports` for wrapper-level controls
-2. Custom attributes + controls for each inner text element
-3. Custom attributes + controls for interactive elements
-4. CSS fallback colours with `:not([style*="color"])`
-5. Block Selectors API in block.json
+Looking at the actual block markup, the self-closing format with no inner HTML confirms these are already using the null-save pattern, so the deprecation should be working as intended. Now I'm checking the brand-strip block to see if there's something different happening there.
 
-After each block: build → deploy → verify with Playwright → run `test-and-explain` agent.
+Wait, the testimonial-slider is also self-closing, which means it's already in the correct format too. So the blocks themselves seem fine. The real issue might not be about block validation at all—it could be something else preventing the save, like a JavaScript error, a nonce problem, or the page getting locked by auto-save. The user mentioned they've tried deleting content multiple times without success, which suggests the save action itself is failing rather than a block format issue.
 
----
+Looking more closely at the "What Are You Waiting For?" section, I'm noticing a discrepancy between the inline styles and the JSON attributes—the button's HTML shows white styling while the JSON has teal colors, which could be causing a conflict that breaks the save. the hamburger menu on desktop and the blue-on-blue top bar issue. I can use WP-CLI to fix the post content directly, then I'll need to check the theme's navigation CSS for the hamburger visibility problem and examine the header template part for the color contrast issue. Let me start by updating the post content to remove the stuck block and resolve the button validation error.
 
-## Task 5: Update Scorecard + Handoff
+Actually, I'm realizing the user's save issue might stem from JavaScript errors in the editor or a broken block preventing the save action from completing. Looking at their description more carefully — they're trying to delete the bottom section but the save isn't working — this could mean either the deletion isn't persisting when they click Update, or the block is somehow reappearing. I'm noticing that "What Are You Waiting For?" section has a button with conflicting color attributes that might be causing the editor to choke. The cleaner approach is to update the JSON attributes to match the white styling in the HTML, since that's what's actually rendering on the dark background. I'll fix the button's color and border attributes to white, then remove that problematic last section with the gradient block via WP-CLI. I'm checking whether that last section is actually needed—it's a gradient group with the "About Indus Foods" text and image that looks like footer content. The user confirmed it shouldn't be there, so I need to remove it along with fixing the button mismatch. I'll use WP-CLI on the server to update the post content directly, constructing the corrected version carefully. I'm reconsidering the approach—using WP-CLI with a temp file workflow would be more reliable than trying to do complex string manipulation through eval. I'll grab the post content, edit it locally, then push it back up. The key is identifying where that last section starts so I can cleanly remove it and fix the button issue in one operation. I see the color mismatch in the button block—the JSON metadata specifies teal but the actual HTML renders white text and borders, which looks correct against the dark background. I'll update the JSON to match the white styling that's already in the HTML. Now I'm writing a PHP script using WP-CLI to fix this button color inconsistency and remove that last section from the page. After that, I need to check the theme's CSS to understand how the hamburger menu is being hidden on desktop.
 
-1. Update verification section in `docs/plans/2026-02-21-master-feature-audit.md`
-2. Recalculate maturity score (target: 30-35% after Session 26 work)
-3. Update `MEMORY.md` with any new patterns or gotchas
-4. Run `/handoff` to generate session summary
+I can see everything. Let me check the three issues now in parallel: the stuck block + button mismatch causing save failures, the nav CSS, and the header template.
 
----
+Globpattern: "theme/sgs-theme/assets/css/*.css"
+Found 5 files
+Bash Get header template part content
+IN
+ssh -p 65002 u945238940@141.136.39.73 "cd domains/palestine-lives.org/public_html && wp post get $(wp post list --post_type=wp_template_part --fields=ID,post_title --format=csv 2>/dev/null | grep -i header | head -1 | cut -d, -f1) --field=post_content 2>/dev/null | head -80" 2>&1
 
-## Skill Invocation Guide
+OUT
+usage: wp post get <id> [--field=<field>] [--fields=<fields>] [--format=<format>]
+Prompt is too long
 
-Invoke these skills at the right moment — not all upfront:
+*Priorities B*
 
-| When | Invoke |
-|------|--------|
-| Session start | `/superpowers:using-superpowers` |
-| Before committing (Task 1) | `/commit-push-pr` |
-| Before investigating Issues #1 or #2 | `/systematic-debugging` |
-| Before hover transition work (Group 3) | `/frontend-design` |
-| Before pill button design (Issue #7) | `/frontend-design` |
-| Before each new block (Task 4) | `/brainstorming` then `/writing-plans` |
-| When starting block dev | `/wp-block-development` |
-| When modifying theme.json or templates | `/wp-block-themes` |
-| When building REST endpoints | `/wp-rest-api` |
-| When adding Interactivity API features | `/wp-interactivity-api` |
-| Before claiming any task complete | `/verification-before-completion` |
-| End of session | `/handoff` |
+1. **Commit all uncommitted work** — ~37 files across session 25 security fixes + session 26 block validation fixes. Use `/commit-push-pr` skill. Add `.firecrawl/`, `*.png` (root), `sites/indus-foods/assets.zip` to `.gitignore` first. Push to `feature/indus-foods-homepage`, do NOT merge to main.
 
-## Agent Delegation Guide
+2. **Trigger deprecation migration** — open Homepage, Food Service, and Trade Account in WP editor and click Update on each. This migrates the old block HTML to the new null save format. Use `wp-developer` agent if WP-CLI is faster.
 
-| Task | Delegate To |
-|------|-------------|
-| All dev work should be managed, tracked and orchestrated by | 'project-manager' agent |
-| ALL WordPress build work (blocks, templates, PHP, CSS) | `wp-developer` agent |
-| Testing completed features | `test-and-explain` agent |
-| Visual quality check after fixes | `design-reviewer` agent |
-| Performance check after deployment | `performance-auditor` agent |
-| Security review of new code | `ehr-security-reviewer` agent |
-| SEO check on new pages | `seo-auditor` agent |
+3. **Header/nav consistency fixes** — inner pages (Food Service, Trade Account) use a different header template showing "Get in Touch" CTA and hamburger menu at desktop. Fix so all pages use the same header template with "Register For a Trade Account" CTA. Nav links should be teal `rgb(10, 126, 168)` not dark text. Delegate to `wp-developer` agent.
 
-## MCP Tools Reference
+4. **Homepage hero layout** — restructure to two-column (text left, image right), fix hero image size, fix button text colours (dark text on teal bg is nearly invisible). These are block editor changes, not theme code. Delegate to `wp-developer` agent.
 
-| Tool | Use For |
-|------|---------|
-| **Playwright** `browser_navigate` + `browser_take_screenshot` | Visual verification at 375/768/1440px after every deploy |
-| **Playwright** `browser_snapshot` | Accessibility tree — better than screenshots for finding elements and ARIA issues |
-| **Playwright** `browser_console_messages` | Check for JS errors after page load |
-| **Playwright** `browser_evaluate` | Run JS in page to inspect computed styles, DOM state |
-| **Playwright** `browser_resize` | Switch viewport: 375 (mobile), 768 (tablet), 1440 (desktop) |
-| **Context7** `resolve-library-id` + `get-library-docs` | Up-to-date docs for @wordpress/scripts, Interactivity API, any npm package |
-| **GitHub MCP** | PR creation, issue tracking, code search |
-| **Memory MCP** `search_nodes` + `create_entities` | Persist patterns and decisions across sessions |
+5. **Food Service benefit cards + hover effects** — cards have zero styling (no border/padding/radius). Apply via block inspector settings. Then add theme CSS for hover lift (translateY(-4px) + gold top-line) — this IS a theme code change. Delegate to `wp-developer` agent.
 
-## Research Approach (Before Non-Trivial Implementations)
-
-1. Read the relevant spec document (`specs/02-SGS-BLOCKS.md` for blocks, `specs/09-GOLD-STANDARD-AUDIT.md` for competitor analysis)
-2. Check `docs/plans/2026-02-21-master-feature-audit.md` for the feature's priority, impact grade, and difficulty rating
-3. Use Context7 to get current WordPress/block development docs
-4. Web search for current best practices + competitor implementations
-5. Check complaints/poor reviews of Kadence, Spectra, GenerateBlocks for the equivalent feature — avoid repeating their mistakes
-6. Search the existing codebase for established patterns (`Grep` for similar blocks/components)
-7. Present findings before coding — get user approval on approach
-
-## Deploy Pipeline
-
-```bash
-# Build
-cd plugins/sgs-blocks && npm run build
-
-# Deploy plugin
-scp -r plugins/sgs-blocks/sgs-blocks.php plugins/sgs-blocks/includes plugins/sgs-blocks/build plugins/sgs-blocks/assets hd:~/domains/palestine-lives.org/public_html/wp-content/plugins/sgs-blocks/
-
-# Deploy theme (if theme files changed)
-scp -r theme/sgs-theme hd:~/domains/palestine-lives.org/public_html/wp-content/themes/
-
-# Clear LiteSpeed cache
-ssh hd "rm -rf ~/domains/palestine-lives.org/public_html/wp-content/litespeed/cache/*"
-
-# Reset OPcache via HTTP (CLI reset does nothing for web requests)
-ssh hd "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/palestine-lives.org/public_html/op-reset-tmp.php" && curl -s https://palestine-lives.org/op-reset-tmp.php && ssh hd "rm ~/domains/palestine-lives.org/public_html/op-reset-tmp.php"
-```
-
-**Dev site:** palestine-lives.org — safe for testing
-**Test site:** lightsalmon-tarsier-683012.hostingersite.com — DO NOT modify (client-facing)
+IMPORTANT: The HTML mockup colours (navy/gold) are layout references only — NOT the brand. Keep the live site's teal brand colour. Almost all fixes are block inspector settings, not code. Only 4 issues need theme CSS (hover effects). After any fix, use Playwright to verify at 1440px and 375px.
 ~~~

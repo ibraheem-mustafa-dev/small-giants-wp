@@ -50,13 +50,11 @@
     "attributes":  {
                        "headline":  {
                                         "type":  "string",
-                                        "source":  "html",
-                                        "selector":  ".sgs-cta-section__headline"
+                                        "default":  ""
                                     },
                        "body":  {
                                     "type":  "string",
-                                    "source":  "html",
-                                    "selector":  ".sgs-cta-section__body"
+                                    "default":  ""
                                 },
                        "buttons":  {
                                        "type":  "array",
