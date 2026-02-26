@@ -370,28 +370,12 @@ header.wp-block-template-part.sgs-header-transparent .wp-block-site-title a {
  * via min-width/height. No !important at the base level so the desktop
  * hide rule (below) can override without a specificity conflict.
  */
-/* Touch target enforcement — no !important on display so desktop hide rule wins */
+/* Touch target enforcement for WP core nav toggle */
 .wp-block-navigation__responsive-container-open {
 	min-width: 44px;
 	min-height: 44px;
-	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-}
-
-/* Ensure hamburger is visible on mobile even if WP core CSS tries to hide it */
-@media (max-width: 1023px) {
-	.wp-block-navigation__responsive-container-open {
-		display: inline-flex !important;
-	}
-}
-
-/* Hide native WP nav toggle on desktop */
-@media (min-width: 1024px) {
-	.wp-block-navigation__responsive-container-open,
-	.wp-block-navigation__responsive-container-close {
-		display: none !important;
-	}
 }
 
 /* On mobile, ensure the hamburger icon colour is visible */
@@ -400,6 +384,12 @@ header.wp-block-template-part.sgs-header-transparent .wp-block-site-title a {
 		fill: var(--wp--preset--color--text, #1e1e1e);
 	}
 }
+
+/*
+ * Show/hide rules for the WP core nav toggle are in mobile-nav-drawer.css.
+ * They were moved there to avoid a LiteSpeed CSS optimiser bug that incorrectly
+ * merges adjacent max-width/min-width media blocks and drops the desktop hide rule.
+ */
 
 /* ─── REDUCED MOTION — critical transitions only ─── */
 

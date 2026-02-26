@@ -1,229 +1,167 @@
-# Session Handoff — 2026-02-26 (Session 29 — Phase 2 Blocks + Automation)
+# Session Handoff — 2026-02-26 (Session 30 — Indus Foods Trade Account + Cache Debugging)
 
 ## Completed This Session
 
-1. **Wired orphaned hooks into `~/.claude/settings.json`:**
-   - `branch-guard.sh` — now fires as PreToolUse on `Write|Edit` (blocks edits on main branch)
-   - `delete-guard.sh` — now fires as PreToolUse on `Bash` (blocks `rm -rf /` commands)
+1. **Diagnosed and fixed Trade Account hero badge overlap:**
+   - Root cause: LiteSpeed page cache was serving HTML rendered by an OLD OPcache'd version of `render.php` (before the `.sgs-hero__badges` wrapper was added)
+   - Fix: reset PHP OPcache via HTTP, then `wp litespeed-purge all`, then clear CSS optimiser files (`litespeed/css/*.css`)
+   - Badges now render correctly in a horizontal flex row (~3 min | £0 | £75 | 5,000+)
 
-2. **Created `build-reminder.py` PostToolUse hook:**
-   - Fires after any `Write|Edit` to a file under `plugins/sgs-blocks/src/`
-   - Prints a clear warning to run `npm run build` and deploy before testing live
-   - Registered in `settings.json`. Prevents the stale-build bug that recurred across multiple sessions.
+2. **Committed all session 28 leftovers (accordion/counter/tabs deprecations):**
+   - `deprecated.js` v1 added for accordion, counter, tabs — prevents block validation errors in WP editor
+   - Hero `editor.css` badge layout fix (flex row preview in editor)
+   - `core-blocks-critical.css` hamburger CSS split into proper mobile/desktop media queries
 
-3. **Created `/deploy` skill:**
-   - Path: `.claude/skills/deploy/SKILL.md` (project-level)
-   - Invoke as `/deploy plugin`, `/deploy theme`, or `/deploy both`
-   - Full pipeline: build → tar → SCP → SSH extract → LiteSpeed cache clear → OPcache reset
-   - Includes critical gotchas table (single quotes on SSH, rm before mv, etc.)
+3. **Built + deployed theme and plugin** — full tar deploy, OPcache reset, LiteSpeed CSS + page cache cleared
 
-4. **Completed all three Phase 2 blocks (commit `8e640c4`):**
-   - **Countdown Timer** — missing `import './style.css'; import './editor.css';` in `index.js`. Fixed. Block now renders with teal numbers, labels, responsive layout.
-   - **Star Rating** — same CSS import fix. Stars now render with correct gold/empty colours, half-star support, schema.org/AggregateRating already working.
-   - **Team Member** — added Schema.org/Person JSON-LD to `render.php` (feature #252): `jobTitle`, `description`, `image`, `sameAs` for social URLs.
-   - Built, deployed, verified on Block Test page (post 52) with Playwright screenshots.
+4. **Updated CLAUDE.md** with accurate LiteSpeed cache instructions:
+   - `wp litespeed-purge all` WORKS (old note was wrong)
+   - Two separate caches: page cache AND CSS optimiser (`litespeed/css/*.css`)
+   - `litespeed/cache/` path doesn't exist on this host — never use it
 
-5. **Created implementation plan:** `docs/plans/2026-02-26-phase2-blocks-complete.md`
+5. **Added `.playwright-mcp/` to `.gitignore`** — prevents screenshot/log dumps from polluting the repo
+
+6. **Pushed to origin, PR #1 updated** — all commits on `feature/indus-foods-homepage`
 
 ---
 
 ## Current State
 
 - **Branch:** `feature/indus-foods-homepage`
-- **Last commit:** `8e640c4` — pushed to origin
-- **Live site:** `https://palestine-lives.org`
-- **All three Phase 2 blocks verified working** on Block Test page — countdown-timer ticking, star-rating styled, team-member rendering with schema.
+- **Last commits:** `4b245bb` (gitignore), `9894e37` (deprecations + fixes) — both pushed
+- **PR:** `https://github.com/ibraheem-mustafa-dev/small-giants-wp/pull/1` (open, ready for review)
+- **Live site:** `https://palestine-lives.org` — deployed and cache-cleared
+- **Working tree:** Only `CLAUDE.md` and `CONVERSATION-HANDOFF.md` have uncommitted changes (docs)
 
-### Unstaged changes from previous sessions (not committed)
+### Pages verified working
+- Trade Account (`/apply-for-trade-account/`) — hero badges fixed, form functional
+- Homepage (`/`) — split hero with badge, nav correct
+- Block Test page (post 52) — countdown-timer, star-rating, team-member confirmed
 
-These are session 28 leftovers sitting in the working tree — NOT yet committed:
-
-| File | What it is |
-|---|---|
-| `plugins/sgs-blocks/src/blocks/accordion/deprecated.js` | Deprecated.js v1 for accordion (save: () => null) |
-| `plugins/sgs-blocks/src/blocks/counter/deprecated.js` | Deprecated.js v1 for counter |
-| `plugins/sgs-blocks/src/blocks/tabs/deprecated.js` | Deprecated.js v1 for tabs |
-| `plugins/sgs-blocks/src/blocks/accordion/index.js` | Imports deprecated.js |
-| `plugins/sgs-blocks/src/blocks/counter/index.js` | Imports deprecated.js |
-| `plugins/sgs-blocks/src/blocks/tabs/index.js` | Imports deprecated.js |
-| `plugins/sgs-blocks/src/blocks/hero/editor.css` | Hero badges editor fix |
-| `theme/sgs-theme/assets/css/core-blocks-critical.css` | Header CSS fixes |
-| `plugins/sgs-blocks/includes/lucide-icons.php` | Modified |
-| `plugins/sgs-blocks/CLAUDE.md` | Updated |
-| `CLAUDE.md` | Updated |
-
-These need to be built and deployed — the deprecated.js files for accordion, counter, and tabs will fix the Block Test page validation errors.
-
-### Manual action still required (Task 1 from this session)
-
-Playwright cannot automate this — Chrome blocks it when already running. **You must do this manually in your browser:**
-
-1. Open `https://palestine-lives.org/wp-admin/post.php?post=65&action=edit` (Food Service)
-2. Click **Update** — triggers deprecated.js migration for trust-bar, heritage-strip, certification-bar, process-steps
-3. Open `https://palestine-lives.org/wp-admin/post.php?post=13&action=edit` (Homepage)
-4. Click **Update**
-5. On the Homepage: **re-add images to the heritage-strip block** (imageLeft/imageRight were never set — the block will show image placeholders after migration)
+### One open visual issue
+- **Hamburger icon visible at desktop** alongside nav links — CSS on server is correct (`display: none !important` at `min-width: 1024px`), but this may be a WordPress navigation block **Overlay Menu** editor setting rather than a CSS problem. Check in WP editor: Navigation block → "Overlay Menu" setting should be "Mobile" not "Always".
 
 ---
 
 ## Known Issues / Blockers
 
-1. **Header styling regressions** — live site header has multiple issues vs reference site. See Priority 1 below.
-2. **Block Test page — 3 broken blocks** — `sgs/accordion`, `sgs/accordion-item`, `sgs/tab-item` still show "unexpected content" errors. `sgs/social-icons` icons overlap. Deprecated.js exists in working tree but not yet built + deployed.
-3. **Pattern Showcase page — 3 broken blocks** — `sgs/counter` invalid, `core/image` blocks invalid (Meet Our Team), `core/group` block invalid (Simple Transparent Pricing).
-4. **ToC Test Page — PHP critical error** — page crashes in WP backend. Root cause unknown.
-5. **Trade Account page — 2 visual issues** — hero badges stacked in editor (cosmetic only), columns layout collision.
+1. **Hamburger at desktop** — see above. Check WP editor nav block settings before touching CSS again.
+2. **LiteSpeed browser HTTP cache** — Playwright's persistent Chrome profile caches CSS files. After deploying CSS changes, the Playwright browser may show stale styles even after server purge. Use `location.reload(true)` in `browser_evaluate` or navigate to a fresh URL to bypass.
+3. **`wp litespeed-purge all` clears page cache but NOT CSS optimiser cache** — must ALSO run `rm -rf wp-content/litespeed/css/*.css` after CSS deploys.
 
 ---
 
 ## Next Priorities (in order)
 
-### Priority 0: Build + commit the unstaged deprecated.js files
-
-Before anything else — those deprecated.js files in the working tree need to be built and deployed. They fix accordion/counter/tabs on Block Test page.
-
-```bash
-cd plugins/sgs-blocks && npm run build
-```
-Then `/deploy plugin` and commit all unstaged changes.
-
----
-
-### Priority 1: Header Styling (MUST match reference site)
-
-**Reference (DO NOT modify):** `https://lightsalmon-tarsier-683012.hostingersite.com/`
-**Dev site:** `https://palestine-lives.org/`
-
-Use Playwright at 1440px and 375px to screenshot both, extract computed styles, then fix:
-
-1. **Burger menu on desktop** — `@media (min-width: 1024px)` hide rule in `core-blocks-critical.css` isn't winning. Check computed display on `.wp-block-navigation__responsive-container-open`.
-2. **Logo size control not working** — width attribute on logo image has no effect on frontend.
-3. **Header CTA button** — "Register For a Trade Account" should be teal background, white text. Currently shows browser-default blue, small font.
-4. **Social icon hover inconsistency** — top-bar icons have different hover behaviours. Reference has consistent opacity/colour transitions.
-5. **Overall header CSS** — many elements likely missing or overridden. Extract computed styles from key elements.
-
-**Relevant files:**
-- `theme/sgs-theme/parts/header.html`
-- `theme/sgs-theme/parts/header-sticky.html`
-- `theme/sgs-theme/assets/css/core-blocks-critical.css`
-- `theme/sgs-theme/functions.php`
-
----
-
-### Priority 2: Block Test Page — Broken Blocks
-
-1. **`sgs/accordion` + `sgs/accordion-item`** — deprecated.js needed (same pattern as session 28). SSH, extract stored HTML for post 52, add `save: () => null` deprecation.
-2. **`sgs/tab-item`** — same deprecated.js pattern.
-3. **`sgs/social-icons` overlapping** — CSS flexbox issue in `src/blocks/social-icons/style.css`.
-
----
-
-### Priority 3: Pattern Showcase Page — Broken Blocks
-
-1. **`sgs/counter`** — deprecated.js pattern. Extract stored HTML from post 53 first.
-2. **`core/image` in "Meet Our Team"** — attribute mismatch. Extract raw block comment from DB, identify diverging attribute, fix with WP-CLI eval-file str_replace.
-3. **`core/group` in "Simple Transparent Pricing"** — same core block fix approach.
-
----
-
-### Priority 4: ToC Test Page PHP Error
-
-SSH: `tail -100 ~/domains/palestine-lives.org/public_html/wp-content/debug.log`
-Likely in `sgs/table-of-contents` render.php — undefined variable or missing function.
-
----
-
-### Priority 5: Trade Account Visual Issues
-
-- Hero badges stacked in editor → add flex rules to `src/blocks/hero/editor.css`
-- Column overlap → Playwright screenshot + computed margins → CSS spacing fix
+1. **Merge PR #1 to main** — `feature/indus-foods-homepage` has all Indus Foods work. Branch has been going for a while; clean merge to main then start fresh feature branch for next client or Phase 3 work.
+2. **Block editor validation check** — open Homepage, Food Service, and Trade Account pages in WP editor to confirm no block validation errors remain after the deprecations deploy. Just open, check for red banners, save if needed.
+3. **Phase 3 planning** — update the master feature audit scorecard (`docs/plans/2026-02-21-master-feature-audit.md`) to reflect Phase 2 blocks complete, then decide Phase 3 priorities. Current framework maturity ~43% (tabs, countdown, star-rating, team-member added).
+4. **Hamburger nav block setting** — open WP editor → Templates → Header template part → click Navigation block → Inspector → confirm "Overlay Menu" is set to "Mobile" not "Always".
 
 ---
 
 ## Files Modified This Session
 
-| File | Change |
-|---|---|
-| `~/.claude/settings.json` | Added branch-guard.sh + delete-guard.sh PreToolUse hooks |
-| `~/.claude/hooks/build-reminder.py` | **NEW** — PostToolUse src/ edit warning |
-| `.claude/skills/deploy/SKILL.md` | **NEW** — /deploy skill with full pipeline |
-| `plugins/sgs-blocks/src/blocks/countdown-timer/index.js` | Added CSS imports |
-| `plugins/sgs-blocks/src/blocks/star-rating/index.js` | Added CSS imports |
-| `plugins/sgs-blocks/src/blocks/team-member/render.php` | Added Schema.org/Person JSON-LD |
-| `docs/plans/2026-02-26-phase2-blocks-complete.md` | **NEW** — Phase 2 implementation plan |
-| `CONVERSATION-HANDOFF.md` | Updated (this file) |
+```
+plugins/sgs-blocks/src/blocks/accordion/deprecated.js  (new)
+plugins/sgs-blocks/src/blocks/accordion/index.js
+plugins/sgs-blocks/src/blocks/counter/deprecated.js    (new)
+plugins/sgs-blocks/src/blocks/counter/index.js
+plugins/sgs-blocks/src/blocks/tabs/deprecated.js       (new)
+plugins/sgs-blocks/src/blocks/tabs/index.js
+plugins/sgs-blocks/src/blocks/hero/editor.css
+plugins/sgs-blocks/includes/lucide-icons.php
+plugins/sgs-blocks/CLAUDE.md
+theme/sgs-theme/assets/css/core-blocks-critical.css
+CLAUDE.md                                              (LiteSpeed cache instructions updated)
+.gitignore                                             (.playwright-mcp/ added)
+```
 
 ---
 
 ## Notes for Next Session
 
-- **Deprecated.js pattern is established** — see `src/blocks/process-steps/deprecated.js` as the template. Pattern: v1 with `save: () => null`, migrate function normalises old attribute shapes.
-- **Core block fixes use WP-CLI eval-file** — write PHP str_replace to `/tmp/script.php` via `cat << 'PHPEOF'`, SCP to server, `wp eval-file ~/script.php`, `rm`.
-- **Always use Playwright** for header work — screenshot both sites before touching anything, use `browser_evaluate` for computed styles. Never guess what's different.
-- **Reference site is read-only** — `lightsalmon-tarsier-683012.hostingersite.com`. Screenshots only, never modify.
-- **Unstaged changes need a build first** — accordion/counter/tabs deprecated.js won't do anything until `npm run build` is run and deployed.
-- **Build reminder hook is now active** — after editing any `src/` file you'll see a warning. This is intentional, not an error.
-- **`/deploy` skill now exists** — use it instead of typing the full command manually.
+### LiteSpeed cache — correct sequence after any deploy
+
+```bash
+# 1. Build (if sgs-blocks source changed)
+cd plugins/sgs-blocks && npm run build
+
+# 2. Deploy
+cd /path/to/small-giants-wp
+tar -cf sgs-deploy.tar --exclude='node_modules' --exclude='.git' --exclude='src' theme/sgs-theme plugins/sgs-blocks
+scp -P 65002 sgs-deploy.tar u945238940@141.136.39.73:sgs-deploy.tar
+ssh -p 65002 u945238940@141.136.39.73 'WP=domains/palestine-lives.org/public_html/wp-content && rm -rf $WP/themes/sgs-theme $WP/plugins/sgs-blocks && tar -xf sgs-deploy.tar && mv theme/sgs-theme $WP/themes/ && mv plugins/sgs-blocks $WP/plugins/ && rm -rf theme plugins sgs-deploy.tar'
+rm sgs-deploy.tar
+
+# 3. Reset OPcache (MUST be HTTP — CLI pool doesn't affect web requests)
+ssh hd "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/palestine-lives.org/public_html/op-reset-tmp.php" && curl -s https://palestine-lives.org/op-reset-tmp.php && ssh hd "rm ~/domains/palestine-lives.org/public_html/op-reset-tmp.php"
+
+# 4. Clear BOTH LiteSpeed caches
+ssh hd "rm -rf ~/domains/palestine-lives.org/public_html/wp-content/litespeed/css/*.css"
+ssh hd "cd ~/domains/palestine-lives.org/public_html && wp litespeed-purge all"
+```
+
+### Playwright browser cache gotcha
+After a LiteSpeed purge, Playwright's Chrome profile may still serve stale CSS from its HTTP cache (CSS filenames don't change when content changes — LiteSpeed reuses the hash). Force a bypass:
+```javascript
+// In browser_evaluate:
+location.reload(true); // hard reload, bypasses browser HTTP cache
+```
+
+### Deprecations pattern (for future blocks)
+When adding `deprecated.js` to a dynamic block (render.php), the deprecation only needs to handle validation (not migration), because the PHP regenerates HTML fresh:
+```javascript
+// deprecated.js for a fully dynamic block
+export default [{ save: () => null }];
+```
+For static blocks with stored HTML (like brand-strip before it went dynamic), include a `migrate` function.
+
+### Master feature audit scorecard
+Update `docs/plans/2026-02-21-master-feature-audit.md` — Phase 2 blocks are done:
+- tabs ✓, countdown-timer ✓, star-rating ✓, team-member ✓
+- Framework maturity estimate: ~43% (was 33% at session 23)
 
 ---
 
 ## Relevant Tooling for Next Tasks
 
-### Commands
-- `/deploy` — full deploy pipeline. Use `/deploy plugin` or `/deploy both`
-- `/handoff` — generate session handoff
+### Commands (slash commands)
+- `/handoff` — generate session summary at end of session
+- `/deploy both` — full build + deploy pipeline (theme + plugin)
+- `/commit-push-pr` — commit, push, and open PR
 
-### Skills
-- `/superpowers:systematic-debugging` — for the PHP error on ToC Test Page
-- `/wp-block-development` — reference for deprecated.js patterns
+### Skills (plugin skills)
+- `/superpowers:verification-before-completion` — before claiming any fix is done, verify it
+- `/wp-block-development` — use when modifying block.json, save.js, deprecated.js patterns
+- `/superpowers:systematic-debugging` — use if block validation errors reappear
 
 ### Agents
-- **`wp-developer`** — MANDATORY for all CSS/template/PHP/block work (header fixes, deprecated.js, render.php). Never write WP code in the main conversation.
-- **`design-reviewer`** — use after header fixes to verify against reference site at multiple breakpoints
-- **`test-and-explain`** — run after fixing blocks to verify in plain English
+- **wp-developer** — delegate ALL WordPress build work: block editor checks, template part edits, nav block settings. If checking the hamburger nav block setting in the editor, describe the task to wp-developer.
+- **design-reviewer** — use after any visual changes to verify WCAG 2.2 AA compliance and layout correctness across breakpoints
+- **test-and-explain** — run after merging PR to verify live site
 
 ### MCP Servers
-- **Playwright** — essential for header comparison. Use `browser_navigate`, `browser_take_screenshot`, `browser_evaluate`, `browser_resize`.
-
-### Hooks (now active)
-- `build-reminder.py` — fires after any src/ edit, reminds to build. Intentional.
-- `branch-guard.sh` — blocks file edits on main branch.
+- **Playwright** (`mcp__plugin_playwright_playwright__browser_*`) — visual verification of live pages. Remember to `location.reload(true)` after cache operations.
 
 ---
 
 ## Next Session Prompt
 
-~~~
+```
 /superpowers:using-superpowers
 
-SGS Framework — Session 30: Unstaged Deprecated.js + Header Fixes + Block Test Repairs
+The Indus Foods homepage branch (`feature/indus-foods-homepage`) is complete — all blocks validated, hero badges fixed, deprecations deployed, PR #1 open at github.com/ibraheem-mustafa-dev/small-giants-wp/pull/1. The working tree is clean except for docs files. Framework maturity ~43%.
 
-All three Phase 2 blocks (countdown-timer, star-rating, team-member) are working on the live site. Branch is `feature/indus-foods-homepage`, last commit `8e640c4`. There are unstaged deprecated.js files for accordion, counter, and tabs sitting in the working tree that need to be built and committed first.
+Read CONVERSATION-HANDOFF.md and CLAUDE.md for full context, then work through these priorities:
 
-Read CONVERSATION-HANDOFF.md and CLAUDE.md for full context, then work through these in order:
+1. **Merge PR #1 to main** — `feature/indus-foods-homepage` is ready. Merge it, then create a new branch for the next work stream.
 
-**Priority 0 — Build + commit unstaged deprecated.js files (5 min, do first):**
-Files `plugins/sgs-blocks/src/blocks/accordion/deprecated.js`, `counter/deprecated.js`, and `tabs/deprecated.js` are untracked. Run `cd plugins/sgs-blocks && npm run build`, then `/deploy plugin`, then commit all unstaged changes with a descriptive message. These fix Block Test page validation errors for accordion and tabs.
+2. **Block editor validation check** — use the `wp-developer` agent to open Homepage, Food Service, and Trade Account pages in the WP editor (palestine-lives.org/wp-admin). Confirm no red block validation banners. Save each page to trigger any deprecation migrations.
 
-**Priority 1 — Header styling:**
-Use Playwright to screenshot both `https://palestine-lives.org/` and `https://lightsalmon-tarsier-683012.hostingersite.com/` at 1440px. Use `browser_evaluate` to extract computed styles on: hamburger button, CTA button, nav links, social icons, logo. Then fix in `theme/sgs-theme/assets/css/core-blocks-critical.css` and header template HTML:
-- Burger menu visible on desktop (CSS specificity issue)
-- CTA button wrong colour (should be teal + white, not blue)
-- Logo size control not working on frontend
-- Social icon hover inconsistency in top bar
-MANDATORY: delegate all CSS/template writes to `wp-developer` agent. Use `design-reviewer` agent to verify after.
+3. **Hamburger nav at desktop** — use `wp-developer` to check the Navigation block in the Header template part. Inspector → "Overlay Menu" setting. Should be "Mobile" not "Always". If it's set wrong, change it — no CSS edit needed.
 
-**Priority 2 — Block Test page broken blocks (post 52):**
-SSH to server, extract stored HTML for `sgs/accordion`, `sgs/accordion-item`, `sgs/tab-item`. Add deprecated.js with `save: () => null` for each. Fix `sgs/social-icons` overlapping CSS. Build and deploy with `/deploy plugin`.
+4. **Update master feature audit** — mark Phase 2 blocks complete in `docs/plans/2026-02-21-master-feature-audit.md`, update the framework maturity percentage, and decide Phase 3 priorities.
 
-**Priority 3 — Pattern Showcase broken blocks (post 53):**
-`sgs/counter` needs deprecated.js (extract stored HTML first). Two core blocks need WP-CLI eval-file str_replace fix — extract raw block comments from DB to identify the attribute mismatch.
-
-**Priority 4 — ToC Test Page PHP error:**
-SSH: `tail -100 ~/domains/palestine-lives.org/public_html/wp-content/debug.log` — identify and fix the fatal in `sgs/table-of-contents` render.php.
-
-**REMINDER — manual action still needed:**
-You still need to open posts 65 (Food Service) and 13 (Homepage) in WP admin and click Update to trigger deprecated.js migrations. After saving Homepage, re-add images to the heritage-strip block.
-
-CRITICAL: Use `/deploy plugin` skill for deploys. The build-reminder hook will warn you after any src/ edit — that's intentional, not an error.
-~~~
+IMPORTANT: Always use `wp litespeed-purge all` AND `rm -rf wp-content/litespeed/css/*.css` after any CSS deploys — there are two separate LiteSpeed caches. OPcache reset must go via HTTP (not CLI). See CLAUDE.md Deploy Commands section for the full sequence.
+```

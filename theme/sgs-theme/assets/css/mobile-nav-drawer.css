@@ -218,8 +218,23 @@
 	.wp-block-navigation:not(.sgs-mobile-nav-drawer__content .wp-block-navigation) .wp-block-navigation__container {
 		display: none;
 	}
-	
+
 	/* Hide WordPress core's responsive toggle button (we use our custom one) */
+	.wp-block-navigation__responsive-container-open,
+	.wp-block-navigation__responsive-container-close {
+		display: none !important;
+	}
+}
+
+/* ─── HIDE WP CORE NAV TOGGLE AT DESKTOP ─── */
+
+/**
+ * WordPress core's responsive-container-open button must be hidden at desktop.
+ * This rule lives here (separate from core-blocks-critical.css) as a safeguard
+ * against the LiteSpeed CSS optimiser incorrectly merging adjacent min/max media
+ * blocks, which can cause the desktop hide rule to be silently dropped.
+ */
+@media (min-width: 1024px) {
 	.wp-block-navigation__responsive-container-open,
 	.wp-block-navigation__responsive-container-close {
 		display: none !important;

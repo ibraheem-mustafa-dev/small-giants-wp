@@ -156,12 +156,12 @@
 
 | # | Block | Impact | Diff | Priority | Status | Notes |
 |---|-------|--------|------|----------|--------|-------|
-| 63 | Post Grid / Query Loop | 5 | 5 | P1 | Not started | Grid/list/masonry/carousel + AJAX pagination |
-| 64 | Image Gallery + Lightbox | 5 | 4 | P1 | Not started | Grid/masonry/carousel + Interactivity API lightbox |
-| 65 | Tabs | 5 | 3 | P1 | Not started | Horizontal/vertical, InnerBlocks, ARIA |
-| 66 | Countdown Timer | 4 | 3 | P1 | Not started | Date-based + evergreen; flip/simple variants |
-| 67 | Star Rating | 3 | 2 | P1 | Not started | SVG stars; Schema.org/Rating |
-| 68 | Team Member | 4 | 2 | P1 | Not started | Photo/name/role/bio/socials; Schema.org/Person |
+| 63 | Post Grid / Query Loop | 5 | 5 | P1 | ✓ Done | Grid/list/masonry/carousel + AJAX pagination; REST endpoint; verified live |
+| 64 | Image Gallery + Lightbox | 5 | 4 | P1 | ✓ Done | Grid/masonry/carousel + Interactivity API lightbox; verified live |
+| 65 | Tabs | 5 | 3 | P1 | ✓ Done | Horizontal/vertical, InnerBlocks, ARIA; verified live |
+| 66 | Countdown Timer | 4 | 3 | P1 | ✓ Done | Date-based + evergreen; flip/simple variants; verified live |
+| 67 | Star Rating | 3 | 2 | P1 | ✓ Done | SVG stars; Schema.org/Rating; verified live |
+| 68 | Team Member | 4 | 2 | P1 | ✓ Done | Photo/name/role/bio/socials; Schema.org/Person; verified live |
 | 69 | Table of Contents | 4 | 3 | P2 | Broken | Auto-scan headings, scroll spy, collapsible |
 | 70 | Pricing Table | 4 | 3 | P2 | Not started | 2-4 tiers, monthly/yearly toggle |
 | 71 | Before/After Image Slider | 4 | 3 | P2 | Not started | Drag comparison; 137 Kadence votes unresolved |
@@ -809,6 +809,27 @@ These were claimed P0 but failed when tested:
 | **TOTAL** | **98** | **56** | **294** | **19%** |
 
 > **Reality check:** The claimed 33% maturity was inflated. Verified maturity is 19%. The gap is mostly in accessibility (never audited), forms (security broken), scroll animations (never tested), and block extensions (only 1 of 3 verified). The "code exists" items can be recovered by creating test content and fixing the ~13 failed items — but they aren't "done" until verified.
+
+### Framework Maturity Score (Updated — 2026-02-26, after Phase 2)
+
+Phase 2 complete: all 6 P1 blocks built and verified live (Post Grid, Gallery, Tabs, Countdown Timer, Star Rating, Team Member). Forms security fixed (CRITICAL/HIGH issues resolved in session 25). LiteSpeed CSS optimiser bug fixed (hamburger CSS). PR #1 merged to main.
+
+| Domain | Verified | Max | % Verified | Change |
+|--------|----------|-----|------------|--------|
+| Core Blocks | 28 | 49 | 57% | +6 (Phase 2 blocks) |
+| Block Extensions | 1 | 14 | 7% | — |
+| Theme Features | 15 | 33 | 45% | +1 (hamburger fix) |
+| Typography | 6 | 20 | 30% | — |
+| Hover/Interactions | 2 | 30 | 7% | — |
+| Scroll Animations | 0 | 10 | 0% | — |
+| Accessibility | 5 | 27 | 19% | — |
+| Performance | 5 | 18 | 28% | — |
+| SEO/Schema | 1 | 13 | 8% | — |
+| Forms | 5 | 12 | 42% | +5 (security fixes) |
+| Patterns Library | 0 | 27 | 0% | — |
+| Dark Mode | 0 | 11 | 0% | — |
+| S-Tier Differentiators | 0 | 30 | 0% | — |
+| **TOTAL** | **68** | **294** | **23%** | **+12** |
 
 ### Target After Phase 2-3 Completion
 

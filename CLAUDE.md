@@ -90,21 +90,24 @@ Full specifications in `specs/` directory:
 The truth document for feature scope, priorities, and competitive position is:
 **`docs/plans/2026-02-21-master-feature-audit.md`** — 354 features graded by impact, difficulty, and priority (P0-P4).
 
-Current framework maturity: **33% (98/294)** — targeting 72% after Phase 2-3, 90% after S-tier phase.
+Current framework maturity: **23% verified (68/294)** — targeting 72% after Phase 2-3, 90% after S-tier phase. Last updated: 2026-02-26.
 
-**Phase 2 priorities (P1 blocks, next to build):**
-1. Post Grid / Query Loop — grid/list/masonry/carousel + AJAX pagination
-2. Image Gallery + Lightbox — grid/masonry/carousel + Interactivity API lightbox
-3. Tabs — horizontal/vertical, InnerBlocks, ARIA
-4. Countdown Timer — date-based + evergreen; flip/simple variants
-5. Star Rating — SVG stars; Schema.org/Rating
-6. Team Member — photo/name/role/bio/socials; Schema.org/Person
+**Phase 2 blocks — ALL DONE (2026-02-26):**
+- ✓ Post Grid / Query Loop — grid/list/masonry/carousel + AJAX pagination
+- ✓ Image Gallery + Lightbox — grid/masonry/carousel + Interactivity API lightbox
+- ✓ Tabs — horizontal/vertical, InnerBlocks, ARIA
+- ✓ Countdown Timer — date-based + evergreen; flip/simple variants
+- ✓ Star Rating — SVG stars; Schema.org/Rating
+- ✓ Team Member — photo/name/role/bio/socials; Schema.org/Person
 
-**Phase 2 extensions (P1, apply to all blocks):**
-- Hover scale transform, hover shadow elevation, hover image zoom (inner)
-- Transition duration/easing control
-- Block link (wrap entire block in link)
-- Block style variations (register_block_style)
+**Phase 3 priorities (P1 extensions + P2 blocks, next to build):**
+1. Hover scale transform, hover shadow elevation, hover image zoom (inner) — apply to all blocks
+2. Transition duration/easing control — CSS transition shorthand per block
+3. Block link (wrap entire block in link)
+4. Block style variations (register_block_style) — multiple presets per block
+5. Icon Block — single icon with link, Lucide library
+6. Timeline — vertical/horizontal, scroll reveal (278 Kadence votes — their #1 request)
+7. Pricing Table — 2-4 tiers, monthly/yearly toggle
 
 ## Architecture Rules
 
@@ -195,8 +198,12 @@ rm sgs-deploy.tar
 # Deploy single files (for quick patches)
 scp -P 65002 -i ~/.ssh/id_ed25519 path/to/file u945238940@141.136.39.73:domains/palestine-lives.org/public_html/wp-content/path/to/file
 
-# Clear LiteSpeed page cache (wp litespeed-purge is broken on this host)
-ssh hd "rm -rf ~/domains/palestine-lives.org/public_html/wp-content/litespeed/cache/*"
+# Clear LiteSpeed page cache
+ssh hd "cd ~/domains/palestine-lives.org/public_html && wp litespeed-purge all"
+# Also clear the CSS/JS optimiser cache (separate from page cache — must do both after CSS deploys)
+ssh hd "rm -rf ~/domains/palestine-lives.org/public_html/wp-content/litespeed/css/*.css"
+# Purge a single URL (must pass full URL with https://)
+ssh hd "cd ~/domains/palestine-lives.org/public_html && wp litespeed-purge url https://palestine-lives.org/page-slug/"
 
 # Reset PHP OPcache after deploying PHP files (CLI reset is a SEPARATE pool — must use HTTP)
 ssh hd "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/palestine-lives.org/public_html/op-reset-tmp.php" && curl -s https://palestine-lives.org/op-reset-tmp.php && ssh hd "rm ~/domains/palestine-lives.org/public_html/op-reset-tmp.php"
