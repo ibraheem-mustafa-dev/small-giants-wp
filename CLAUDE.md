@@ -209,6 +209,10 @@ ssh hd "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/palestine-lives.o
 - **`--webpack-copy-php` flag** — the build script copies `render.php` to `build/` automatically. Dynamic blocks won't render without this.
 - **`--experimental-modules` flag** — required in build/start scripts for `viewScriptModule` in block.json. Check if stabilised in your @wordpress/scripts version.
 - **Deprecations required** — when changing a static block's `save.js` output, you MUST add a deprecation to avoid "This block contains unexpected content" errors on existing posts.
+- **SSH remote variable expansion** — use single quotes for the outer string when running `ssh hd '...'` so `$WP` expands on the server. Double quotes expand locally (to empty), silently breaking the deploy.
+- **Tar deploy: delete before move** — `mv plugins/sgs-blocks $WP/plugins/` fails with "Directory not empty" if the target exists. Always `rm -rf $WP/plugins/sgs-blocks` first in the same SSH command, then `mv`.
+- **WP-CLI inline PHP escaping** — `wp eval '...'` breaks on shell special chars (`!--`, `$b[0]`, heredocs, etc.). Reliable fallback: write to `/tmp/script.php` with `cat << 'PHPEOF'`, `scp` to server, then `wp eval-file ~/script.php`, then `rm`.
+- **`parse_blocks()` is shallow** — only returns top-level blocks. Finding nested blocks (inside Columns, Groups, etc.) requires a recursive function that walks `$b['innerBlocks']` at every level.
 - **Theme spec drift** — `specs/01-SGS-THEME.md` still shows DM Serif Display + DM Sans as default fonts. The actual `theme.json` uses Inter variable. The CLAUDE.md files are correct; the spec needs updating.
 
 ## External Services

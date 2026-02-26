@@ -1,152 +1,193 @@
-# Session Handoff — 2026-02-25 (Session 27 — Commit Fixes + Block Validation Diagnosis)
+# Session Handoff — 2026-02-26 (Session 29 — Phase 2 Blocks + Automation)
 
 ## Completed This Session
 
-1. **Updated .gitignore** — Fixed corrupted UTF-16LE `lighthouse-report.json` entry, added `/*.jpeg` and `/*.jpg` rules for root-level session screenshots.
+1. **Wired orphaned hooks into `~/.claude/settings.json`:**
+   - `branch-guard.sh` — now fires as PreToolUse on `Write|Edit` (blocks edits on main branch)
+   - `delete-guard.sh` — now fires as PreToolUse on `Bash` (blocks `rm -rf /` commands)
 
-2. **Committed all session 25+26 work** — 17 files committed to `feature/indus-foods-homepage` (commit `2c0c9cd`) and pushed. Includes block deprecations (info-box, testimonial-slider, cta-section), lucide-icons update, and CONVERSATION-HANDOFF.
+2. **Created `build-reminder.py` PostToolUse hook:**
+   - Fires after any `Write|Edit` to a file under `plugins/sgs-blocks/src/`
+   - Prints a clear warning to run `npm run build` and deploy before testing live
+   - Registered in `settings.json`. Prevents the stale-build bug that recurred across multiple sessions.
 
-3. **Fixed hamburger showing on desktop** — Added `@media (min-width: 1024px)` rule to `core-blocks-critical.css` hiding `.wp-block-navigation__responsive-container-open/close`. Root cause: a global `display: inline-flex !important` rule had no desktop override, so the native WP nav toggle showed at all widths.
+3. **Created `/deploy` skill:**
+   - Path: `.claude/skills/deploy/SKILL.md` (project-level)
+   - Invoke as `/deploy plugin`, `/deploy theme`, or `/deploy both`
+   - Full pipeline: build → tar → SCP → SSH extract → LiteSpeed cache clear → OPcache reset
+   - Includes critical gotchas table (single quotes on SSH, rm before mv, etc.)
 
-4. **Fixed header template (both files + live DB)**:
-   - CTA text: "Get in Touch" → "Register For a Trade Account" (links to `/trade-account/`)
-   - Nav `textColor`: `"text"` (dark `#1E1E1E`) → `"primary"` (teal) in both `header.html` and `header-sticky.html`
-   - **DB version of header-sticky (post 102)** was completely different from local file — it had been edited in the WP Site Editor and used plain `wp:button` elements for the top-bar phone/email (no colour class = default blue link on teal background = the blue-on-blue bug). Overwrote DB with corrected local file via `wp eval-file`.
-   - Deployed both template files + CSS to live server.
+4. **Completed all three Phase 2 blocks (commit `8e640c4`):**
+   - **Countdown Timer** — missing `import './style.css'; import './editor.css';` in `index.js`. Fixed. Block now renders with teal numbers, labels, responsive layout.
+   - **Star Rating** — same CSS import fix. Stars now render with correct gold/empty colours, half-star support, schema.org/AggregateRating already working.
+   - **Team Member** — added Schema.org/Person JSON-LD to `render.php` (feature #252): `jobTitle`, `description`, `image`, `sameAs` for social URLs.
+   - Built, deployed, verified on Block Test page (post 52) with Playwright screenshots.
 
-5. **Removed stuck block from homepage** — Used `wp eval-file` to remove the final gradient group block from homepage (post 13) that was preventing the editor from saving. The block contained "About Indus Foods" text + samosas image with a teal-to-dark gradient. Removed 2,387 characters.
-
-6. **Diagnosed all remaining broken blocks** — User opened pages in WP editor and confirmed blocks still broken. Identified 9 broken blocks across 3 pages and 4 root causes. Full plan written at `.claude/plans/lexical-gliding-hearth.md`.
+5. **Created implementation plan:** `docs/plans/2026-02-26-phase2-blocks-complete.md`
 
 ---
 
 ## Current State
 
 - **Branch:** `feature/indus-foods-homepage`
-- **Last commit:** `2c0c9cd` — pushed to origin
-- **Live site:** Header template fixed (teal nav links, correct CTA, custom hamburger), stuck homepage block removed, hamburger CSS deployed
-- **WP editor:** ALL SGS blocks on all 3 pages still show "Block contains unexpected or invalid content" — saving is still broken
+- **Last commit:** `8e640c4` — pushed to origin
+- **Live site:** `https://palestine-lives.org`
+- **All three Phase 2 blocks verified working** on Block Test page — countdown-timer ticking, star-rating styled, team-member rendering with schema.
 
-### What's working
-- Homepage frontend renders correctly (stuck gradient block gone)
-- Header top bar: white text on teal background (correct)
-- Header CTA: "Register For a Trade Account" on all pages
-- Nav links: teal colour (after DB template update)
-- Hamburger hidden at desktop ≥1024px
+### Unstaged changes from previous sessions (not committed)
 
-### What's NOT working
-Every single SGS block on Food Service, Homepage, and Trade Account is invalid in the WP editor. Saving any page fails because of these errors.
+These are session 28 leftovers sitting in the working tree — NOT yet committed:
+
+| File | What it is |
+|---|---|
+| `plugins/sgs-blocks/src/blocks/accordion/deprecated.js` | Deprecated.js v1 for accordion (save: () => null) |
+| `plugins/sgs-blocks/src/blocks/counter/deprecated.js` | Deprecated.js v1 for counter |
+| `plugins/sgs-blocks/src/blocks/tabs/deprecated.js` | Deprecated.js v1 for tabs |
+| `plugins/sgs-blocks/src/blocks/accordion/index.js` | Imports deprecated.js |
+| `plugins/sgs-blocks/src/blocks/counter/index.js` | Imports deprecated.js |
+| `plugins/sgs-blocks/src/blocks/tabs/index.js` | Imports deprecated.js |
+| `plugins/sgs-blocks/src/blocks/hero/editor.css` | Hero badges editor fix |
+| `theme/sgs-theme/assets/css/core-blocks-critical.css` | Header CSS fixes |
+| `plugins/sgs-blocks/includes/lucide-icons.php` | Modified |
+| `plugins/sgs-blocks/CLAUDE.md` | Updated |
+| `CLAUDE.md` | Updated |
+
+These need to be built and deployed — the deprecated.js files for accordion, counter, and tabs will fix the Block Test page validation errors.
+
+### Manual action still required (Task 1 from this session)
+
+Playwright cannot automate this — Chrome blocks it when already running. **You must do this manually in your browser:**
+
+1. Open `https://palestine-lives.org/wp-admin/post.php?post=65&action=edit` (Food Service)
+2. Click **Update** — triggers deprecated.js migration for trust-bar, heritage-strip, certification-bar, process-steps
+3. Open `https://palestine-lives.org/wp-admin/post.php?post=13&action=edit` (Homepage)
+4. Click **Update**
+5. On the Homepage: **re-add images to the heritage-strip block** (imageLeft/imageRight were never set — the block will show image placeholders after migration)
 
 ---
 
 ## Known Issues / Blockers
 
-### Broken blocks (full inventory)
-
-**Homepage (post 13):**
-- `sgs/brand-strip` — "Our Brands" section
-- `sgs/info-box` (8 blocks)
-- `sgs/testimonial-slider`
-- Core `buttons` block — 2nd button has `border-color:#fff` in HTML vs `border-color:#0a7ea8` in JSON attributes (mismatch)
-
-**Food Service (post 65):**
-- `sgs/trust-bar`
-- `sgs/info-box` (6 blocks)
-- `sgs/heritage-strip`
-- `sgs/brand-strip`
-- `sgs/certification-bar`
-- `sgs/testimonial-slider`
-- `sgs/cta-section`
-
-**Trade Account (post 58):**
-- `sgs/icon-list`
-- `sgs/hero` — badges (stats) all stacking/overlapping in bottom-left corner of hero (render.php CSS bug, separate from validation)
-
-### Root causes
-
-1. **Stale build on server** — `info-box`, `testimonial-slider`, `cta-section` were converted to null save in session 26 but the compiled `build/` JS was never deployed to the server. Server still runs old compiled save function → generates HTML → self-closing DB content doesn't match → INVALID.
-
-2. **Static blocks with no deprecated.js** — `trust-bar`, `heritage-strip`, `certification-bar`, `icon-list` had their `save.js` changed after content was stored. No `deprecated.js` to bridge old HTML to current save. These need converting to dynamic (add `render.php` + null save + `deprecated.js` matching stored HTML).
-
-3. **brand-strip** — Has `render.php` but `save.js` still returns HTML (same broken dual-pattern as the 3 fixed in session 26). Needs null save + `deprecated.js`.
-
-4. **Homepage button mismatch** — Core `buttons` block, 2nd button (outline style) has `border-color:#ffffff` in stored HTML but `#0a7ea8` in JSON attributes. WP-CLI fix needed.
-
-5. **Hero badge overlap** — `sgs/hero` render.php positions badges with absolute coordinates, all stacking at same position. CSS layout fix needed.
+1. **Header styling regressions** — live site header has multiple issues vs reference site. See Priority 1 below.
+2. **Block Test page — 3 broken blocks** — `sgs/accordion`, `sgs/accordion-item`, `sgs/tab-item` still show "unexpected content" errors. `sgs/social-icons` icons overlap. Deprecated.js exists in working tree but not yet built + deployed.
+3. **Pattern Showcase page — 3 broken blocks** — `sgs/counter` invalid, `core/image` blocks invalid (Meet Our Team), `core/group` block invalid (Simple Transparent Pricing).
+4. **ToC Test Page — PHP critical error** — page crashes in WP backend. Root cause unknown.
+5. **Trade Account page — 2 visual issues** — hero badges stacked in editor (cosmetic only), columns layout collision.
 
 ---
 
 ## Next Priorities (in order)
 
-1. **Fix all broken blocks** — Convert trust-bar, heritage-strip, certification-bar, icon-list to dynamic (add render.php + null save + deprecated.js). Fix brand-strip (null save + deprecated.js). Full rebuild + full plugin deploy.
-2. **Fix homepage button mismatch** — WP-CLI PHP script to align HTML with JSON attributes on post 13.
-3. **Fix hero badge overlap** — Check `hero/render.php`, fix badge container layout so they display as a row not a stack.
-4. **Verify editor** — Open all 3 pages in WP editor, confirm zero validation errors, click Update on each.
-5. **Commit fixes** — Use `/commit-push-pr` once all blocks are clean.
+### Priority 0: Build + commit the unstaged deprecated.js files
+
+Before anything else — those deprecated.js files in the working tree need to be built and deployed. They fix accordion/counter/tabs on Block Test page.
+
+```bash
+cd plugins/sgs-blocks && npm run build
+```
+Then `/deploy plugin` and commit all unstaged changes.
+
+---
+
+### Priority 1: Header Styling (MUST match reference site)
+
+**Reference (DO NOT modify):** `https://lightsalmon-tarsier-683012.hostingersite.com/`
+**Dev site:** `https://palestine-lives.org/`
+
+Use Playwright at 1440px and 375px to screenshot both, extract computed styles, then fix:
+
+1. **Burger menu on desktop** — `@media (min-width: 1024px)` hide rule in `core-blocks-critical.css` isn't winning. Check computed display on `.wp-block-navigation__responsive-container-open`.
+2. **Logo size control not working** — width attribute on logo image has no effect on frontend.
+3. **Header CTA button** — "Register For a Trade Account" should be teal background, white text. Currently shows browser-default blue, small font.
+4. **Social icon hover inconsistency** — top-bar icons have different hover behaviours. Reference has consistent opacity/colour transitions.
+5. **Overall header CSS** — many elements likely missing or overridden. Extract computed styles from key elements.
+
+**Relevant files:**
+- `theme/sgs-theme/parts/header.html`
+- `theme/sgs-theme/parts/header-sticky.html`
+- `theme/sgs-theme/assets/css/core-blocks-critical.css`
+- `theme/sgs-theme/functions.php`
+
+---
+
+### Priority 2: Block Test Page — Broken Blocks
+
+1. **`sgs/accordion` + `sgs/accordion-item`** — deprecated.js needed (same pattern as session 28). SSH, extract stored HTML for post 52, add `save: () => null` deprecation.
+2. **`sgs/tab-item`** — same deprecated.js pattern.
+3. **`sgs/social-icons` overlapping** — CSS flexbox issue in `src/blocks/social-icons/style.css`.
+
+---
+
+### Priority 3: Pattern Showcase Page — Broken Blocks
+
+1. **`sgs/counter`** — deprecated.js pattern. Extract stored HTML from post 53 first.
+2. **`core/image` in "Meet Our Team"** — attribute mismatch. Extract raw block comment from DB, identify diverging attribute, fix with WP-CLI eval-file str_replace.
+3. **`core/group` in "Simple Transparent Pricing"** — same core block fix approach.
+
+---
+
+### Priority 4: ToC Test Page PHP Error
+
+SSH: `tail -100 ~/domains/palestine-lives.org/public_html/wp-content/debug.log`
+Likely in `sgs/table-of-contents` render.php — undefined variable or missing function.
+
+---
+
+### Priority 5: Trade Account Visual Issues
+
+- Hero badges stacked in editor → add flex rules to `src/blocks/hero/editor.css`
+- Column overlap → Playwright screenshot + computed margins → CSS spacing fix
 
 ---
 
 ## Files Modified This Session
 
-**New files:**
-- `plugins/sgs-blocks/src/blocks/cta-section/deprecated.js`
-- `plugins/sgs-blocks/src/blocks/info-box/deprecated.js`
-- `plugins/sgs-blocks/src/blocks/testimonial-slider/deprecated.js`
-
-**Modified files:**
-- `.gitignore` — added `/*.jpeg`, `/*.jpg`, fixed corrupted entry
-- `CONVERSATION-HANDOFF.md`
-- `plugins/sgs-blocks/includes/lucide-icons.php`
-- `plugins/sgs-blocks/src/blocks/cta-section/block.json` — removed source/selector from headline + body
-- `plugins/sgs-blocks/src/blocks/cta-section/index.js` — imports deprecated
-- `plugins/sgs-blocks/src/blocks/cta-section/save.js` — returns null
-- `plugins/sgs-blocks/src/blocks/info-box/block.json` — removed source/selector from heading + description
-- `plugins/sgs-blocks/src/blocks/info-box/index.js` — imports deprecated
-- `plugins/sgs-blocks/src/blocks/info-box/save.js` — returns null
-- `plugins/sgs-blocks/src/blocks/testimonial-slider/index.js` — imports deprecated
-- `plugins/sgs-blocks/src/blocks/testimonial-slider/save.js` — returns null
-- `theme/sgs-theme/assets/css/core-blocks-critical.css` — added desktop hamburger hide rule
-- `theme/sgs-theme/parts/header-sticky.html` — "Register For a Trade Account" CTA, teal nav
-- `theme/sgs-theme/parts/header.html` — same
-
-**Live DB changes (via WP-CLI, not in git):**
-- Post 102 (`header-sticky` template part) — overwritten with corrected local file
-- Post 13 (Homepage) — gradient "About Indus Foods" group block removed
+| File | Change |
+|---|---|
+| `~/.claude/settings.json` | Added branch-guard.sh + delete-guard.sh PreToolUse hooks |
+| `~/.claude/hooks/build-reminder.py` | **NEW** — PostToolUse src/ edit warning |
+| `.claude/skills/deploy/SKILL.md` | **NEW** — /deploy skill with full pipeline |
+| `plugins/sgs-blocks/src/blocks/countdown-timer/index.js` | Added CSS imports |
+| `plugins/sgs-blocks/src/blocks/star-rating/index.js` | Added CSS imports |
+| `plugins/sgs-blocks/src/blocks/team-member/render.php` | Added Schema.org/Person JSON-LD |
+| `docs/plans/2026-02-26-phase2-blocks-complete.md` | **NEW** — Phase 2 implementation plan |
+| `CONVERSATION-HANDOFF.md` | Updated (this file) |
 
 ---
 
 ## Notes for Next Session
 
-- **Deprecation approach for static→dynamic conversion:** For each static block (trust-bar, heritage-strip, certification-bar, icon-list), the `deprecated.js` v1 `save()` must match the EXACT HTML stored in the DB. Use `wp post get <ID> --field=post_content` to extract stored HTML first, then write the deprecated save() to reproduce it. Don't guess.
-
-- **Full plan at `.claude/plans/lexical-gliding-hearth.md`** — includes the complete block inventory, root cause analysis, and step-by-step implementation guide. Read it before starting.
-
-- **Build MUST be deployed in full** — The `build/` directory is gitignored and was never deployed to the server in session 26. This is why info-box/testimonial-slider/cta-section are still broken even though the source files are correct. Always deploy `build/` after any `npm run build`.
-
-- **Hero badge overlap is separate from validation** — The `sgs/hero` block on Trade Account shows badges stacking. This is render.php CSS (absolute positioning all badges to same coords). Fix after block validation is clean.
-
-- **Don't touch the test site** — `lightsalmon-tarsier-683012.hostingersite.com` is client-facing. Only use `palestine-lives.org` for dev.
-
-- **header-sticky DB version** was completely custom — phone/email buttons had no colour class, no custom hamburger toggle, no off-canvas drawer. All of this was lost when someone edited the header in the Site Editor. Now fixed and pushed back. The plain `header` template part was NOT in the DB (using file version directly), so it's fine.
+- **Deprecated.js pattern is established** — see `src/blocks/process-steps/deprecated.js` as the template. Pattern: v1 with `save: () => null`, migrate function normalises old attribute shapes.
+- **Core block fixes use WP-CLI eval-file** — write PHP str_replace to `/tmp/script.php` via `cat << 'PHPEOF'`, SCP to server, `wp eval-file ~/script.php`, `rm`.
+- **Always use Playwright** for header work — screenshot both sites before touching anything, use `browser_evaluate` for computed styles. Never guess what's different.
+- **Reference site is read-only** — `lightsalmon-tarsier-683012.hostingersite.com`. Screenshots only, never modify.
+- **Unstaged changes need a build first** — accordion/counter/tabs deprecated.js won't do anything until `npm run build` is run and deployed.
+- **Build reminder hook is now active** — after editing any `src/` file you'll see a warning. This is intentional, not an error.
+- **`/deploy` skill now exists** — use it instead of typing the full command manually.
 
 ---
 
 ## Relevant Tooling for Next Tasks
 
 ### Commands
-- `/handoff` — end of session summary
-- `/commit-push-pr` — commit + push after blocks are fixed
+- `/deploy` — full deploy pipeline. Use `/deploy plugin` or `/deploy both`
+- `/handoff` — generate session handoff
 
 ### Skills
-- `/wp-block-development` — for deprecated.js, render.php, null save conversions
-- `/wp-wpcli-and-ops` — for WP-CLI post content updates and DB operations
-- `/verification-before-completion` — before claiming blocks are fixed, verify in editor
+- `/superpowers:systematic-debugging` — for the PHP error on ToC Test Page
+- `/wp-block-development` — reference for deprecated.js patterns
 
 ### Agents
-- **`wp-developer`** — MANDATORY for ALL the block fix work: writing deprecated.js files, render.php files, converting save.js to null. Also for the button mismatch WP-CLI fix and hero render.php badge fix. Do NOT write this code in the main conversation.
+- **`wp-developer`** — MANDATORY for all CSS/template/PHP/block work (header fixes, deprecated.js, render.php). Never write WP code in the main conversation.
+- **`design-reviewer`** — use after header fixes to verify against reference site at multiple breakpoints
+- **`test-and-explain`** — run after fixing blocks to verify in plain English
 
 ### MCP Servers
-- **Playwright** (`mcp__plugin_playwright_*`) — screenshot verification after fixes at 1440px and 375px. Note: Chrome must be closed for Playwright to work (it fails when Chrome is already running on the user's machine).
+- **Playwright** — essential for header comparison. Use `browser_navigate`, `browser_take_screenshot`, `browser_evaluate`, `browser_resize`.
+
+### Hooks (now active)
+- `build-reminder.py` — fires after any src/ edit, reminds to build. Intentional.
+- `branch-guard.sh` — blocks file edits on main branch.
 
 ---
 
@@ -155,21 +196,34 @@ Every single SGS block on Food Service, Homepage, and Trade Account is invalid i
 ~~~
 /superpowers:using-superpowers
 
-SGS Framework — Session 28: Fix All Broken Blocks
+SGS Framework — Session 30: Unstaged Deprecated.js + Header Fixes + Block Test Repairs
 
-Multiple SGS blocks are showing "Block contains unexpected or invalid content" in the WP editor across all three Indus Foods pages (Homepage, Food Service, Trade Account). The root causes are identified and a full implementation plan exists. The WP editor cannot save any page until these are fixed.
+All three Phase 2 blocks (countdown-timer, star-rating, team-member) are working on the live site. Branch is `feature/indus-foods-homepage`, last commit `8e640c4`. There are unstaged deprecated.js files for accordion, counter, and tabs sitting in the working tree that need to be built and committed first.
 
-Read CONVERSATION-HANDOFF.md, CLAUDE.md, and `.claude/plans/lexical-gliding-hearth.md` for full context, then work through these priorities:
+Read CONVERSATION-HANDOFF.md and CLAUDE.md for full context, then work through these in order:
 
-1. **Fix all broken blocks** — Convert trust-bar, heritage-strip, certification-bar, icon-list from static to dynamic (add render.php + null save + deprecated.js matching stored HTML). Fix brand-strip (null save + deprecated.js). Before writing any deprecated.js, SSH to server and extract the actual stored HTML for each block to confirm what the save function must reproduce. MANDATORY: delegate ALL code writing to `wp-developer` agent.
+**Priority 0 — Build + commit unstaged deprecated.js files (5 min, do first):**
+Files `plugins/sgs-blocks/src/blocks/accordion/deprecated.js`, `counter/deprecated.js`, and `tabs/deprecated.js` are untracked. Run `cd plugins/sgs-blocks && npm run build`, then `/deploy plugin`, then commit all unstaged changes with a descriptive message. These fix Block Test page validation errors for accordion and tabs.
 
-2. **Rebuild and full deploy** — `npm run build` in `plugins/sgs-blocks/`, then deploy the FULL `build/` directory to the server (not just source files — the stale build is why info-box/testimonial-slider/cta-section are still broken despite being fixed in source). Full plugin SCP deploy.
+**Priority 1 — Header styling:**
+Use Playwright to screenshot both `https://palestine-lives.org/` and `https://lightsalmon-tarsier-683012.hostingersite.com/` at 1440px. Use `browser_evaluate` to extract computed styles on: hamburger button, CTA button, nav links, social icons, logo. Then fix in `theme/sgs-theme/assets/css/core-blocks-critical.css` and header template HTML:
+- Burger menu visible on desktop (CSS specificity issue)
+- CTA button wrong colour (should be teal + white, not blue)
+- Logo size control not working on frontend
+- Social icon hover inconsistency in top bar
+MANDATORY: delegate all CSS/template writes to `wp-developer` agent. Use `design-reviewer` agent to verify after.
 
-3. **Fix homepage button mismatch** — The 2nd button in the "What Are You Waiting For?" section has `border-color:#fff` in stored HTML but `#0a7ea8` in JSON attributes. Use WP-CLI eval-file PHP script to update post 13, aligning the HTML to white (#fff) to match the dark background it sits on.
+**Priority 2 — Block Test page broken blocks (post 52):**
+SSH to server, extract stored HTML for `sgs/accordion`, `sgs/accordion-item`, `sgs/tab-item`. Add deprecated.js with `save: () => null` for each. Fix `sgs/social-icons` overlapping CSS. Build and deploy with `/deploy plugin`.
 
-4. **Fix hero badge overlap** — `sgs/hero` render.php positions all badges at the same absolute coordinates on Trade Account page. Check render.php, fix layout to flex row.
+**Priority 3 — Pattern Showcase broken blocks (post 53):**
+`sgs/counter` needs deprecated.js (extract stored HTML first). Two core blocks need WP-CLI eval-file str_replace fix — extract raw block comments from DB to identify the attribute mismatch.
 
-5. **Verify + commit** — Open all 3 pages in WP editor, confirm zero validation errors, click Update on each. Use `/commit-push-pr` to commit. Push to `feature/indus-foods-homepage` — do NOT merge to main.
+**Priority 4 — ToC Test Page PHP error:**
+SSH: `tail -100 ~/domains/palestine-lives.org/public_html/wp-content/debug.log` — identify and fix the fatal in `sgs/table-of-contents` render.php.
 
-CRITICAL: The `build/` directory is gitignored and must be deployed manually via SCP every time after `npm run build`. This was missed in session 26 and is the primary reason blocks are still broken. Full plugin deploy command is in CLAUDE.md under "Deploy Commands".
+**REMINDER — manual action still needed:**
+You still need to open posts 65 (Food Service) and 13 (Homepage) in WP admin and click Update to trigger deprecated.js migrations. After saving Homepage, re-add images to the heritage-strip block.
+
+CRITICAL: Use `/deploy plugin` skill for deploys. The build-reminder hook will warn you after any src/ edit — that's intentional, not an error.
 ~~~

@@ -196,6 +196,9 @@ Use `DesignTokenPicker` component for colour selection from theme.json palette i
 ## Gotchas
 
 - **Deprecations required** — when changing a static block's `save.js` output, you MUST add a deprecation. Otherwise existing posts show "This block contains unexpected content" errors.
+- **Empty innerHTML → null-save deprecation** — blocks inserted via WP-CLI often have empty `innerHTML` (no serialised HTML). If `save.js` later returns actual HTML, you get "unexpected content" validation errors. Fix: add `deprecated.js` v1 with `save: () => null`. If attribute field names also changed (e.g. `heading` → `title`, `certifications[]` strings → `items[]` objects), add a `migrate()` that transforms them. See `src/blocks/process-steps/deprecated.js` for the full pattern.
+- **Core block attribute mismatches** — when `core/heading`, `core/button`, etc. show "unexpected content", the cause is a JSON attribute that doesn't match stored HTML. Fix via WP-CLI: SCP a PHP script that uses `preg_match_all()` to extract the raw block comment, identify the diverging value, then `str_replace()` the attribute in `post_content` and save with `wp_update_post()`. Always extract first — never guess.
+- **`style.css` vs `editor.css` are independent** — `style.css` compiles to the frontend-only `style-index.css`. `editor.css` compiles to the editor-only `index.css`. A layout fix in one does not affect the other. When fixing a visual issue in `style.css`, add matching rules to `editor.css` separately if the editor preview should match.
 - **`viewScriptModule` vs `viewScript`** — use `viewScriptModule` (ES modules, deferred). Don't use `viewScript` (classic scripts).
 - **CSS `color` fallback pattern** — use `:not([style*="color"])` selectors so inline styles from the editor always win over CSS defaults.
 - **`useInnerBlocksProps`** — always use this (not `InnerBlocks` component directly) for proper block editor integration.

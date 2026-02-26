@@ -366,22 +366,27 @@ header.wp-block-template-part.sgs-header-transparent .wp-block-site-title a {
 /* ─── NAV HAMBURGER BUTTON — touch target ─── */
 
 /*
- * The WordPress core hamburger SVG is 24×24. We add a pseudo-element tap zone
- * without changing the visual size. min-width/height + padding is cleaner
- * than a pseudo-element here because the button is display:inline-flex.
- *
- * The !important ensures our display rule beats the WordPress core navigation
- * CSS that conditionally hides the button via JS-driven class toggles.
+ * The WordPress core hamburger SVG is 24×24. We enforce a 44px touch target
+ * via min-width/height. No !important at the base level so the desktop
+ * hide rule (below) can override without a specificity conflict.
  */
+/* Touch target enforcement — no !important on display so desktop hide rule wins */
 .wp-block-navigation__responsive-container-open {
 	min-width: 44px;
 	min-height: 44px;
-	display: inline-flex !important;
+	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 }
 
-/* Hide native WP nav toggle on desktop — we use .sgs-mobile-nav-toggle only */
+/* Ensure hamburger is visible on mobile even if WP core CSS tries to hide it */
+@media (max-width: 1023px) {
+	.wp-block-navigation__responsive-container-open {
+		display: inline-flex !important;
+	}
+}
+
+/* Hide native WP nav toggle on desktop */
 @media (min-width: 1024px) {
 	.wp-block-navigation__responsive-container-open,
 	.wp-block-navigation__responsive-container-close {
@@ -389,8 +394,7 @@ header.wp-block-template-part.sgs-header-transparent .wp-block-site-title a {
 	}
 }
 
-/* On mobile, ensure the hamburger icon colour is visible (dark on white
-   header background). */
+/* On mobile, ensure the hamburger icon colour is visible */
 @media (max-width: 767px) {
 	.wp-block-navigation__responsive-container-open svg {
 		fill: var(--wp--preset--color--text, #1e1e1e);
