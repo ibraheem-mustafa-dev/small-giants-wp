@@ -40,3 +40,4 @@ wp-content/uploads/
 # Client asset archives
 sites/indus-foods/assets.zip
 lighthouse-report.json
+.playwright-mcp/
