@@ -93,12 +93,46 @@ if ( ! empty( $social_links ) ) {
 	}
 }
 
+// Schema.org/Person markup (feature #252).
+$schema_html = '';
+if ( $name ) {
+	$schema = array(
+		'@context' => 'https://schema.org',
+		'@type'    => 'Person',
+		'name'     => $name,
+	);
+	if ( $role ) {
+		$schema['jobTitle'] = $role;
+	}
+	if ( $bio ) {
+		$schema['description'] = wp_strip_all_tags( $bio );
+	}
+	if ( ! empty( $photo['url'] ) ) {
+		$schema['image'] = $photo['url'];
+	}
+	// Map social link URLs to sameAs (exclude email links).
+	$same_as = array();
+	foreach ( $social_links as $link ) {
+		if ( ! empty( $link['url'] ) && 'email' !== ( $link['platform'] ?? '' ) ) {
+			$same_as[] = esc_url_raw( $link['url'] );
+		}
+	}
+	if ( $same_as ) {
+		$schema['sameAs'] = $same_as;
+	}
+	$schema_html = sprintf(
+		'<script type="application/ld+json">%s</script>',
+		wp_json_encode( $schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE )
+	);
+}
+
 printf(
-	'<div %s>%s<div class="sgs-team-member__content">%s%s%s%s</div></div>',
+	'<div %s>%s<div class="sgs-team-member__content">%s%s%s%s</div>%s</div>',
 	$wrapper_attributes,
 	$photo_html,
 	$name_html,
 	$role_html,
 	$bio_html,
-	$social_html
+	$social_html,
+	$schema_html
 );
