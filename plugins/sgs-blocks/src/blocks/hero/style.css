@@ -202,21 +202,44 @@
 	border-radius: var(--wp--custom--border-radius--large, 16px);
 }
 
-/* Badges */
-.sgs-hero__badge {
+/* Badges — container */
+.sgs-hero__badges {
 	position: absolute;
+	bottom: var(--wp--preset--spacing--40);
+	left: var(--wp--preset--spacing--30);
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	gap: var(--wp--preset--spacing--30);
 	z-index: 2;
+}
+
+/* Individual badges — relative within the flex container */
+.sgs-hero__badge {
+	position: relative;
+	inset: auto;
 	padding: var(--wp--preset--spacing--30) var(--wp--preset--spacing--30);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	text-align: center;
-	min-width: 120px;
+	min-width: 80px;
 	box-shadow: var(--wp--preset--shadow--md);
 }
 
-.sgs-hero__badge--bottom-left { bottom: var(--wp--preset--spacing--40); left: var(--wp--preset--spacing--30); }
-.sgs-hero__badge--bottom-right { bottom: var(--wp--preset--spacing--40); right: var(--wp--preset--spacing--30); }
-.sgs-hero__badge--top-left { top: var(--wp--preset--spacing--40); left: var(--wp--preset--spacing--30); }
-.sgs-hero__badge--top-right { top: var(--wp--preset--spacing--40); right: var(--wp--preset--spacing--30); }
+/* Split variant: dissolve the container so each badge positions itself
+   independently using its position modifier class. */
+.sgs-hero--split .sgs-hero__badges {
+	position: static;
+	display: contents;
+}
+
+.sgs-hero--split .sgs-hero__badge {
+	position: absolute;
+}
+
+.sgs-hero--split .sgs-hero__badge--bottom-left  { bottom: var(--wp--preset--spacing--40); left:  var(--wp--preset--spacing--30); }
+.sgs-hero--split .sgs-hero__badge--bottom-right { bottom: var(--wp--preset--spacing--40); right: var(--wp--preset--spacing--30); }
+.sgs-hero--split .sgs-hero__badge--top-left     { top:    var(--wp--preset--spacing--40); left:  var(--wp--preset--spacing--30); }
+.sgs-hero--split .sgs-hero__badge--top-right    { top:    var(--wp--preset--spacing--40); right: var(--wp--preset--spacing--30); }
 
 .sgs-hero__badge--light {
 	background-color: var(--wp--preset--color--surface);
@@ -245,11 +268,6 @@
 	font-size: var(--wp--preset--font-size--small);
 	line-height: 1.3;
 	margin-top: var(--wp--preset--spacing--10);
-}
-
-/* Standard variant badges — positioned relative to the hero */
-.sgs-hero--standard .sgs-hero__badge {
-	/* Badges are already absolute, relative to .sgs-hero */
 }
 
 /* ===== Custom Hover States (editor-configurable) ===== */
@@ -302,10 +320,23 @@
 		font-size: clamp(1.5rem, 6vw, 2rem);
 	}
 
+	/* Standard variant — stack badges below content on mobile. */
+	.sgs-hero__badges {
+		position: static;
+		display: flex;
+		margin-top: var(--wp--preset--spacing--30);
+	}
+
 	.sgs-hero__badge {
 		position: relative;
 		inset: auto;
-		margin-top: var(--wp--preset--spacing--30);
+	}
+
+	/* Split variant — keep badges absolutely placed on mobile too
+	   (they sit within the media column which retains its height). */
+	.sgs-hero--split .sgs-hero__badges {
+		position: static;
+		display: contents;
 	}
 
 	.sgs-hero--split .sgs-hero__badge {

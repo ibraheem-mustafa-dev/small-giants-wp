@@ -173,6 +173,9 @@ if ( ! empty( $badges ) ) {
 			$label
 		);
 	}
+	if ( $badges_html ) {
+		$badges_html = '<div class="sgs-hero__badges">' . $badges_html . '</div>';
+	}
 }
 
 // Build content area.
