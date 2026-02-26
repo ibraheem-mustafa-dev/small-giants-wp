@@ -1,0 +1,250 @@
+/**
+ * Announcement Bar — Frontend & Editor Styles
+ *
+ * @package SGS\Blocks
+ */
+
+.sgs-announcement-bar {
+	position: relative;
+	z-index: 1000;
+	width: 100%;
+	min-height: 48px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.75rem 1rem;
+	transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.sgs-announcement-bar--sticky {
+	position: sticky;
+	top: 0;
+}
+
+.sgs-announcement-bar--bottom {
+	position: sticky;
+	bottom: 0;
+	top: auto;
+}
+
+.sgs-announcement-bar--dismissible.is-dismissed {
+	transform: translateY( -100% );
+	opacity: 0;
+	pointer-events: none;
+}
+
+.sgs-announcement-bar--bottom.is-dismissed {
+	transform: translateY( 100% );
+}
+
+.sgs-announcement-bar__content {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 1rem;
+	max-width: 1200px;
+	margin: 0 auto;
+	width: 100%;
+	position: relative;
+}
+
+.sgs-announcement-bar__icon {
+	font-size: 1.25em;
+	flex-shrink: 0;
+}
+
+.sgs-announcement-bar__messages {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+	min-height: 1.5rem;
+}
+
+.sgs-announcement-bar__message {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 1rem;
+	flex-wrap: wrap;
+	transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Rotating variant — hide non-current messages. */
+.sgs-announcement-bar--rotating .sgs-announcement-bar__message {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.sgs-announcement-bar--rotating .sgs-announcement-bar__message[data-current="true"] {
+	position: relative;
+	opacity: 1;
+	pointer-events: auto;
+}
+
+/* Slide transition for rotating. */
+.sgs-announcement-bar--slide .sgs-announcement-bar__message {
+	transform: translateX( 20px );
+}
+
+.sgs-announcement-bar--slide .sgs-announcement-bar__message[data-current="true"] {
+	transform: translateX( 0 );
+}
+
+.sgs-announcement-bar__text {
+	font-size: inherit;
+	line-height: 1.5;
+	margin: 0;
+}
+
+.sgs-announcement-bar__cta {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.375rem 1rem;
+	font-size: 0.875em;
+	font-weight: 600;
+	text-decoration: none;
+	border-radius: var( --wp--custom--border-radius--small, 4px );
+	transition: all var( --wp--custom--transition--fast, 0.15s ease );
+	white-space: nowrap;
+}
+
+.sgs-announcement-bar__cta--filled {
+	background-color: var( --wp--preset--color--accent, #f87a1f );
+	color: var( --wp--preset--color--surface, #fff );
+	border: 2px solid transparent;
+}
+
+.sgs-announcement-bar__cta--filled:hover,
+.sgs-announcement-bar__cta--filled:focus {
+	opacity: 0.9;
+	transform: translateY( -1px );
+}
+
+.sgs-announcement-bar__cta--outline {
+	background-color: transparent;
+	color: currentColor;
+	border: 2px solid currentColor;
+}
+
+.sgs-announcement-bar__cta--outline:hover,
+.sgs-announcement-bar__cta--outline:focus {
+	background-color: rgba( 255, 255, 255, 0.15 );
+}
+
+.sgs-announcement-bar__cta--text-link {
+	background-color: transparent;
+	color: currentColor;
+	border: none;
+	text-decoration: underline;
+	padding: 0;
+}
+
+.sgs-announcement-bar__cta--text-link:hover,
+.sgs-announcement-bar__cta--text-link:focus {
+	text-decoration: none;
+}
+
+.sgs-announcement-bar__countdown {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	flex-shrink: 0;
+}
+
+.sgs-countdown-digit {
+	display: inline-flex;
+	align-items: baseline;
+	gap: 0.125rem;
+	font-weight: 700;
+	font-size: 1.125em;
+	font-variant-numeric: tabular-nums;
+}
+
+.sgs-countdown-digit small {
+	font-size: 0.75em;
+	font-weight: 400;
+	opacity: 0.8;
+}
+
+.sgs-announcement-bar__close {
+	position: absolute;
+	right: 0.5rem;
+	top: 50%;
+	transform: translateY( -50% );
+	width: 2.75rem;
+	height: 2.75rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: transparent;
+	border: none;
+	color: currentColor;
+	font-size: 1.75rem;
+	line-height: 1;
+	cursor: pointer;
+	opacity: 0.7;
+	transition: opacity var( --wp--custom--transition--fast, 0.15s ease );
+	padding: 0;
+	border-radius: var( --wp--custom--border-radius--small, 4px );
+}
+
+.sgs-announcement-bar__close:hover,
+.sgs-announcement-bar__close:focus {
+	opacity: 1;
+	background-color: rgba( 0, 0, 0, 0.1 );
+}
+
+/* Mobile responsive. */
+@media ( max-width: 767px ) {
+	.sgs-announcement-bar {
+		padding: 0.5rem 3rem 0.5rem 0.75rem; /* Extra right padding for close button. */
+		min-height: auto;
+	}
+
+	.sgs-announcement-bar__content {
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.sgs-announcement-bar__message {
+		flex-direction: column;
+		text-align: center;
+	}
+
+	.sgs-announcement-bar__countdown {
+		gap: 0.375rem;
+	}
+
+	.sgs-countdown-digit {
+		font-size: 1em;
+	}
+
+	.sgs-announcement-bar__cta {
+		width: 100%;
+		justify-content: center;
+	}
+
+	.sgs-announcement-bar__close {
+		width: 2.25rem;
+		height: 2.25rem;
+		font-size: 1.5rem;
+	}
+}
+
+/* Reduced motion. */
+@media ( prefers-reduced-motion: reduce ) {
+	.sgs-announcement-bar,
+	.sgs-announcement-bar__message {
+		transition: none;
+	}
+
+	.sgs-announcement-bar--slide .sgs-announcement-bar__message {
+		transform: none;
+	}
+}

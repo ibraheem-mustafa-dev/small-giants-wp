@@ -6,10 +6,15 @@
 	align-items: center;
 	overflow: hidden;
 	box-sizing: border-box;
+	transition: background-color var(--wp--custom--transition--medium, 0.3s ease),
+		color var(--wp--custom--transition--medium, 0.3s ease),
+		border-color var(--wp--custom--transition--medium, 0.3s ease);
 }
 
 /* Standard variant — text over background */
-.sgs-hero--standard {
+.sgs-hero--standard,
+.sgs-hero--video,
+.sgs-hero--svg-animated {
 	flex-direction: column;
 	justify-content: center;
 	padding: var(--wp--preset--spacing--60) var(--wp--preset--spacing--40);
@@ -20,6 +25,33 @@
 	flex-direction: row;
 	gap: var(--wp--preset--spacing--50);
 	padding: var(--wp--preset--spacing--60) var(--wp--preset--spacing--40);
+}
+
+/* Background video */
+.sgs-hero__video-bg {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	pointer-events: none;
+}
+
+/* Background SVG */
+.sgs-hero__svg-bg {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	pointer-events: none;
+}
+
+.sgs-hero__svg-bg svg {
+	width: 100%;
+	height: 100%;
 }
 
 /* Overlay */
@@ -112,9 +144,11 @@
 	color: var(--wp--preset--color--text);
 }
 
+/* Invert on hover — transparent fill, accent text (ghost/outline effect). */
 .sgs-hero__cta--accent:hover {
-	background-color: var(--wp--preset--color--primary-dark);
-	color: var(--wp--preset--color--surface);
+	background-color: transparent;
+	color: var(--wp--preset--color--accent);
+	box-shadow: inset 0 0 0 2px var(--wp--preset--color--accent);
 }
 
 .sgs-hero__cta--primary {
@@ -136,9 +170,23 @@
 	color: var(--wp--preset--color--primary);
 }
 
+/* Invert on hover — fill with primary teal, white text. */
 .sgs-hero__cta--outline:hover {
-	background-color: var(--wp--preset--color--surface);
-	color: var(--wp--preset--color--primary-dark);
+	background-color: var(--wp--preset--color--primary);
+	color: var(--wp--preset--color--surface);
+	border-color: var(--wp--preset--color--primary);
+}
+
+/* Custom — colours set entirely via inline style attributes from the editor.
+   We only provide a base layout; the actual colours come from ctaPrimaryColour
+   and ctaPrimaryBackground block attributes. */
+.sgs-hero__cta--custom {
+	border: 2px solid transparent;
+}
+
+.sgs-hero__cta--custom:hover {
+	filter: brightness(0.92);
+	transform: translateY(-2px);
 }
 
 /* Split image */
@@ -154,21 +202,44 @@
 	border-radius: var(--wp--custom--border-radius--large, 16px);
 }
 
-/* Badges */
-.sgs-hero__badge {
+/* Badges — container */
+.sgs-hero__badges {
 	position: absolute;
+	bottom: var(--wp--preset--spacing--40);
+	left: var(--wp--preset--spacing--30);
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	gap: var(--wp--preset--spacing--30);
 	z-index: 2;
+}
+
+/* Individual badges — relative within the flex container */
+.sgs-hero__badge {
+	position: relative;
+	inset: auto;
 	padding: var(--wp--preset--spacing--30) var(--wp--preset--spacing--30);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	text-align: center;
-	min-width: 120px;
+	min-width: 80px;
 	box-shadow: var(--wp--preset--shadow--md);
 }
 
-.sgs-hero__badge--bottom-left { bottom: var(--wp--preset--spacing--40); left: var(--wp--preset--spacing--30); }
-.sgs-hero__badge--bottom-right { bottom: var(--wp--preset--spacing--40); right: var(--wp--preset--spacing--30); }
-.sgs-hero__badge--top-left { top: var(--wp--preset--spacing--40); left: var(--wp--preset--spacing--30); }
-.sgs-hero__badge--top-right { top: var(--wp--preset--spacing--40); right: var(--wp--preset--spacing--30); }
+/* Split variant: dissolve the container so each badge positions itself
+   independently using its position modifier class. */
+.sgs-hero--split .sgs-hero__badges {
+	position: static;
+	display: contents;
+}
+
+.sgs-hero--split .sgs-hero__badge {
+	position: absolute;
+}
+
+.sgs-hero--split .sgs-hero__badge--bottom-left  { bottom: var(--wp--preset--spacing--40); left:  var(--wp--preset--spacing--30); }
+.sgs-hero--split .sgs-hero__badge--bottom-right { bottom: var(--wp--preset--spacing--40); right: var(--wp--preset--spacing--30); }
+.sgs-hero--split .sgs-hero__badge--top-left     { top:    var(--wp--preset--spacing--40); left:  var(--wp--preset--spacing--30); }
+.sgs-hero--split .sgs-hero__badge--top-right    { top:    var(--wp--preset--spacing--40); right: var(--wp--preset--spacing--30); }
 
 .sgs-hero__badge--light {
 	background-color: var(--wp--preset--color--surface);
@@ -199,9 +270,18 @@
 	margin-top: var(--wp--preset--spacing--10);
 }
 
-/* Standard variant badges — positioned relative to the hero */
-.sgs-hero--standard .sgs-hero__badge {
-	/* Badges are already absolute, relative to .sgs-hero */
+/* ===== Custom Hover States (editor-configurable) ===== */
+
+.sgs-hero[style*="--sgs-hover-bg"]:hover {
+	background-color: var(--sgs-hover-bg);
+}
+
+.sgs-hero[style*="--sgs-hover-text"]:hover {
+	color: var(--sgs-hover-text);
+}
+
+.sgs-hero[style*="--sgs-hover-border"]:hover {
+	border-color: var(--sgs-hover-border);
 }
 
 /* ===== Responsive ===== */
@@ -229,7 +309,7 @@
 	}
 
 	.sgs-hero {
-		min-height: 400px !important;
+		min-height: auto;
 	}
 
 	.sgs-hero--standard {
@@ -240,10 +320,23 @@
 		font-size: clamp(1.5rem, 6vw, 2rem);
 	}
 
+	/* Standard variant — stack badges below content on mobile. */
+	.sgs-hero__badges {
+		position: static;
+		display: flex;
+		margin-top: var(--wp--preset--spacing--30);
+	}
+
 	.sgs-hero__badge {
 		position: relative;
 		inset: auto;
-		margin-top: var(--wp--preset--spacing--30);
+	}
+
+	/* Split variant — keep badges absolutely placed on mobile too
+	   (they sit within the media column which retains its height). */
+	.sgs-hero--split .sgs-hero__badges {
+		position: static;
+		display: contents;
 	}
 
 	.sgs-hero--split .sgs-hero__badge {
@@ -258,5 +351,13 @@
 	.sgs-hero__cta {
 		width: 100%;
 		text-align: center;
+	}
+}
+
+/* ===== Reduced Motion ===== */
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-hero {
+		transition: none;
 	}
 }

@@ -6,6 +6,9 @@
  * - Single-open mode (closes siblings when one opens)
  * - Respects data-allow-multiple and data-default-open attributes
  *
+ * Uses a WeakSet to track programmatic toggles, preventing
+ * re-entrant animation loops when closing siblings.
+ *
  * @package SGS\Blocks
  */
 
@@ -23,12 +26,15 @@ function initAccordions() {
 			':scope > .sgs-accordion-item'
 		);
 
+		// Track which items are being animated programmatically.
+		const animatingItems = new WeakSet();
+
 		// Open the default item if set.
 		if ( defaultOpen >= 0 && items[ defaultOpen ] ) {
 			items[ defaultOpen ].setAttribute( 'open', '' );
 		}
 
-		// Animate and handle exclusive open.
+		// Set up each accordion item.
 		items.forEach( ( details ) => {
 			const summary = details.querySelector( 'summary' );
 			const content = details.querySelector(
@@ -39,7 +45,7 @@ function initAccordions() {
 				return;
 			}
 
-			// Wrap content for animation.
+			// Wrap content for animation measurement.
 			let wrapper = content.querySelector(
 				'.sgs-accordion-item__content-inner'
 			);
@@ -53,20 +59,27 @@ function initAccordions() {
 				content.appendChild( wrapper );
 			}
 
+			// Use click on summary instead of toggle event.
+			// This fires BEFORE the native toggle, giving us control.
 			summary.addEventListener( 'click', ( e ) => {
 				e.preventDefault();
-				const isOpen = details.hasAttribute( 'open' );
 
-				if ( isOpen ) {
-					// Close this item with animation.
-					closeItem( details, content, wrapper );
+				if ( animatingItems.has( details ) ) {
+					return;
+				}
+
+				if ( details.open ) {
+					// Currently open — close it.
+					closeItem( details, content, wrapper, animatingItems );
 				} else {
-					// Close siblings first (if single-open mode).
+					// Currently closed — open it.
+					// Close siblings first (single-open mode).
 					if ( ! allowMultiple ) {
 						items.forEach( ( sibling ) => {
 							if (
 								sibling !== details &&
-								sibling.hasAttribute( 'open' )
+								sibling.hasAttribute( 'open' ) &&
+								! animatingItems.has( sibling )
 							) {
 								const sibContent =
 									sibling.querySelector(
@@ -80,14 +93,14 @@ function initAccordions() {
 									closeItem(
 										sibling,
 										sibContent,
-										sibWrapper
+										sibWrapper,
+										animatingItems
 									);
 								}
 							}
 						} );
 					}
-					// Open this item with animation.
-					openItem( details, content, wrapper );
+					openItem( details, content, wrapper, animatingItems );
 				}
 			} );
 		} );
@@ -96,9 +109,19 @@ function initAccordions() {
 
 /**
  * Open an accordion item with smooth animation.
+ * Also updates aria-expanded on the summary for legacy screen reader support.
  */
-function openItem( details, content, wrapper ) {
+function openItem( details, content, wrapper, animatingItems ) {
+	animatingItems.add( details );
 	details.setAttribute( 'open', '' );
+
+	// Sync aria-expanded so legacy screen readers announce the open state.
+	const summary = details.querySelector( 'summary' );
+	if ( summary ) {
+		summary.setAttribute( 'aria-expanded', 'true' );
+	}
+
+	// Measure height after open.
 	const height = wrapper.offsetHeight;
 	content.style.height = '0px';
 	content.style.overflow = 'hidden';
@@ -113,6 +136,7 @@ function openItem( details, content, wrapper ) {
 				content.style.height = '';
 				content.style.overflow = '';
 				content.style.transition = '';
+				animatingItems.delete( details );
 			},
 			{ once: true }
 		);
@@ -121,8 +145,17 @@ function openItem( details, content, wrapper ) {
 
 /**
  * Close an accordion item with smooth animation.
+ * Also updates aria-expanded on the summary for legacy screen reader support.
  */
-function closeItem( details, content, wrapper ) {
+function closeItem( details, content, wrapper, animatingItems ) {
+	animatingItems.add( details );
+
+	// Sync aria-expanded immediately — the item is logically closed now.
+	const summary = details.querySelector( 'summary' );
+	if ( summary ) {
+		summary.setAttribute( 'aria-expanded', 'false' );
+	}
+
 	const height = wrapper.offsetHeight;
 	content.style.height = height + 'px';
 	content.style.overflow = 'hidden';
@@ -138,6 +171,7 @@ function closeItem( details, content, wrapper ) {
 				content.style.height = '';
 				content.style.overflow = '';
 				content.style.transition = '';
+				animatingItems.delete( details );
 			},
 			{ once: true }
 		);

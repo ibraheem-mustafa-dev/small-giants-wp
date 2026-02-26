@@ -13,6 +13,9 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once dirname( __DIR__, 3 ) . '/includes/shape-dividers.php';
+
 $layout           = $attributes['layout'] ?? 'stack';
 $columns          = $attributes['columns'] ?? 2;
 $columns_mobile   = $attributes['columnsMobile'] ?? 1;
@@ -96,10 +99,55 @@ if ( ! empty( $bg_image['url'] ) && $overlay_colour ) {
 	$overlay_html = '<span class="sgs-container__overlay" style="' . $overlay_style . '" aria-hidden="true"></span>';
 }
 
+// Shape dividers.
+$shape_top    = $attributes['shapeDividerTop'] ?? '';
+$shape_bottom = $attributes['shapeDividerBottom'] ?? '';
+
+$shape_top_html    = '';
+$shape_bottom_html = '';
+
+if ( $shape_top ) {
+	$shape_top_html = sgs_render_shape_divider(
+		$shape_top,
+		sgs_colour_value( $attributes['shapeDividerTopColour'] ?? 'surface' ),
+		(int) ( $attributes['shapeDividerTopHeight'] ?? 60 ),
+		! empty( $attributes['shapeDividerTopFlip'] ),
+		! empty( $attributes['shapeDividerTopInvert'] ),
+		'top'
+	);
+}
+
+if ( $shape_bottom ) {
+	$shape_bottom_html = sgs_render_shape_divider(
+		$shape_bottom,
+		sgs_colour_value( $attributes['shapeDividerBottomColour'] ?? 'surface' ),
+		(int) ( $attributes['shapeDividerBottomHeight'] ?? 60 ),
+		! empty( $attributes['shapeDividerBottomFlip'] ),
+		! empty( $attributes['shapeDividerBottomInvert'] ),
+		'bottom'
+	);
+}
+
+if ( $shape_top || $shape_bottom ) {
+	$classes[] = 'sgs-container--has-shape-divider';
+}
+
+// Rebuild wrapper attributes if shapes added a class.
+if ( $shape_top || $shape_bottom ) {
+	$wrapper_attributes = get_block_wrapper_attributes(
+		array(
+			'class' => implode( ' ', $classes ),
+			'style' => implode( ';', $styles ),
+		)
+	);
+}
+
 printf(
-	'<%1$s %2$s>%3$s%4$s</%1$s>',
+	'<%1$s %2$s>%3$s%4$s%5$s%6$s</%1$s>',
 	$html_tag,
 	$wrapper_attributes,
+	$shape_top_html,
 	$overlay_html,
-	$content
+	$content,
+	$shape_bottom_html
 );

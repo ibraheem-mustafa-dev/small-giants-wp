@@ -1,80 +1,113 @@
 {
-	"$schema": "https://schemas.wp.org/trunk/block.json",
-	"apiVersion": 3,
-	"name": "sgs/accordion",
-	"version": "0.1.0",
-	"title": "SGS Accordion",
-	"category": "sgs-interactive",
-	"description": "Expandable content sections — ideal for FAQs, product details, and policies. Optional FAQ Schema for SEO.",
-	"keywords": [ "accordion", "faq", "toggle", "collapse", "expand", "details" ],
-	"textdomain": "sgs-blocks",
-	"icon": "list-view",
-	"supports": {
-		"align": [ "wide", "full" ],
-		"anchor": true,
-		"html": false,
-		"color": {
-			"background": true,
-			"text": true
-		},
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"blockGap": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true
-		}
-	},
-	"attributes": {
-		"allowMultiple": {
-			"type": "boolean",
-			"default": false
-		},
-		"defaultOpen": {
-			"type": "number",
-			"default": -1
-		},
-		"iconPosition": {
-			"type": "string",
-			"default": "right"
-		},
-		"style": {
-			"type": "string",
-			"default": "bordered"
-		},
-		"faqSchema": {
-			"type": "boolean",
-			"default": false
-		},
-		"headerColour": {
-			"type": "string"
-		},
-		"headerBackground": {
-			"type": "string"
-		},
-		"iconColour": {
-			"type": "string"
-		}
-	},
-	"providesContext": {
-		"sgs/accordionStyle": "style",
-		"sgs/accordionIconPosition": "iconPosition",
-		"sgs/accordionHeaderColour": "headerColour",
-		"sgs/accordionHeaderBackground": "headerBackground",
-		"sgs/accordionIconColour": "iconColour"
-	},
-	"allowedBlocks": [ "sgs/accordion-item" ],
-	"render": "file:./render.php",
-	"editorScript": "file:./index.js",
-	"editorStyle": "file:./editor.css",
-	"style": "file:./style.css",
-	"viewScriptModule": "file:./view.js"
+    "$schema":  "https://schemas.wp.org/trunk/block.json",
+    "apiVersion":  3,
+    "name":  "sgs/accordion",
+    "version":  "0.1.0",
+    "title":  "SGS Accordion",
+    "category":  "sgs-interactive",
+    "description":  "Expandable content sections â€” ideal for FAQs, product details, and policies. Optional FAQ Schema for SEO.",
+    "keywords":  [
+                     "accordion",
+                     "faq",
+                     "toggle",
+                     "collapse",
+                     "expand",
+                     "details"
+                 ],
+    "textdomain":  "sgs-blocks",
+    "icon":  "list-view",
+    "supports":  {
+                     "align":  [
+                                   "wide",
+                                   "full"
+                               ],
+                     "anchor":  true,
+                     "html":  false,
+                     "color":  {
+                                   "background":  true,
+                                   "text":  true
+                               },
+                     "typography":  {
+                                        "fontSize":  true,
+                                        "lineHeight":  true
+                                    },
+                     "spacing":  {
+                                     "margin":  true,
+                                     "padding":  true,
+                                     "blockGap":  true
+                                 },
+                     "__experimentalBorder":  {
+                                                  "radius":  true,
+                                                  "width":  true,
+                                                  "color":  true,
+                                                  "style":  true
+                                              }
+                 },
+    "attributes":  {
+                       "allowMultiple":  {
+                                             "type":  "boolean",
+                                             "default":  false
+                                         },
+                       "defaultOpen":  {
+                                           "type":  "number",
+                                           "default":  -1
+                                       },
+                       "iconPosition":  {
+                                            "type":  "string",
+                                            "default":  "right"
+                                        },
+                       "style":  {
+                                     "type":  "string",
+                                     "default":  "bordered"
+                                 },
+                       "faqSchema":  {
+                                         "type":  "boolean",
+                                         "default":  false
+                                     },
+                       "headerColour":  {
+                                            "type":  "string"
+                                        },
+                       "headerBackground":  {
+                                                "type":  "string"
+                                            },
+                       "iconColour":  {
+                                          "type":  "string"
+                                      }
+                   },
+    "providesContext":  {
+                            "sgs/accordionStyle":  "style",
+                            "sgs/accordionIconPosition":  "iconPosition",
+                            "sgs/accordionHeaderColour":  "headerColour",
+                            "sgs/accordionHeaderBackground":  "headerBackground",
+                            "sgs/accordionIconColour":  "iconColour"
+                        },
+    "allowedBlocks":  [
+                          "sgs/accordion-item"
+                      ],
+    "render":  "file:./render.php",
+    "editorScript":  "file:./index.js",
+    "editorStyle":  "file:./index.css",
+    "style":  "file:./style-index.css",
+    "viewScriptModule":  "file:./view.js",
+    "example":  {
+                    "attributes":  {
+                                       "style":  "bordered",
+                                       "allowMultiple":  false,
+                                       "iconPosition":  "right"
+                                   },
+                    "innerBlocks":  [
+                                        {
+                                            "name":  "sgs/accordion-item",
+                                            "attributes":  {
+                                                               "title":  "What are your delivery options?"
+                                                           }
+                                        },
+                                        {
+                                            "name":  "sgs/accordion-item",
+                                            "attributes":  {
+                                                               "title":  "What is your minimum order quantity?"
+                                                           }
+                                        }
+                                    ]
+                }
 }

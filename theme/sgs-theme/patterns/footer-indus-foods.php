@@ -64,17 +64,50 @@
 		<!-- wp:column -->
 		<div class="wp-block-column">
 			<!-- wp:heading {"level":6,"textColor":"surface","fontSize":"small"} -->
-			<h6 class="wp-block-heading has-surface-color has-text-color has-small-font-size">Company</h6>
+			<h6 class="wp-block-heading has-surface-color has-text-color has-small-font-size">Quick Links</h6>
 			<!-- /wp:heading -->
 
 			<!-- wp:list {"textColor":"text-inverse","style":{"typography":{"lineHeight":"2.2"},"spacing":{"padding":{"left":"0"}}},"fontSize":"small","className":"sgs-footer-links"} -->
 			<ul style="padding-left:0;line-height:2.2" class="has-text-inverse-color has-text-color has-small-font-size sgs-footer-links">
-				<!-- wp:list-item --><li><a href="#">About Us</a></li><!-- /wp:list-item -->
-				<!-- wp:list-item --><li><a href="#">Contact</a></li><!-- /wp:list-item -->
-				<!-- wp:list-item --><li><a href="#">Trade Application</a></li><!-- /wp:list-item -->
-				<!-- wp:list-item --><li><a href="#">Privacy Policy</a></li><!-- /wp:list-item -->
+				<!-- wp:list-item --><li><a href="/">Home</a></li><!-- /wp:list-item -->
+				<!-- wp:list-item --><li><a href="/about/">About Us</a></li><!-- /wp:list-item -->
+				<!-- wp:list-item --><li><a href="/brands/">Brands</a></li><!-- /wp:list-item -->
+				<!-- wp:list-item --><li><a href="/terms-and-conditions/">Terms &amp; Conditions</a></li><!-- /wp:list-item -->
+				<!-- wp:list-item --><li><a href="/privacy-policy/">Privacy Policy</a></li><!-- /wp:list-item -->
 			</ul>
 			<!-- /wp:list -->
+		</div>
+		<!-- /wp:column -->
+
+		<!-- wp:column -->
+		<div class="wp-block-column">
+			<!-- wp:heading {"level":6,"textColor":"surface","fontSize":"small"} -->
+			<h6 class="wp-block-heading has-surface-color has-text-color has-small-font-size">Contact</h6>
+			<!-- /wp:heading -->
+
+			<!-- wp:paragraph {"textColor":"text-inverse","fontSize":"small"} -->
+			<p class="has-text-inverse-color has-text-color has-small-font-size">Call us: 0121 772 6677</p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:paragraph {"textColor":"text-inverse","fontSize":"small"} -->
+			<p class="has-text-inverse-color has-text-color has-small-font-size">Email: info@indusfoodsltd.com</p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:heading {"level":6,"textColor":"surface","fontSize":"small","style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
+			<h6 class="wp-block-heading has-surface-color has-text-color has-small-font-size" style="margin-top:var(--wp--preset--spacing--40)">Opening Hours</h6>
+			<!-- /wp:heading -->
+
+			<!-- wp:paragraph {"textColor":"text-inverse","fontSize":"small","style":{"typography":{"lineHeight":"2"}}} -->
+			<p class="has-text-inverse-color has-text-color has-small-font-size" style="line-height:2">Monday - Thursday: 9am - 5pm<br>Friday: 9am - 1pm<br>Saturday: Closed<br>Sunday: Closed</p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:heading {"level":6,"textColor":"surface","fontSize":"small","style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
+			<h6 class="wp-block-heading has-surface-color has-text-color has-small-font-size" style="margin-top:var(--wp--preset--spacing--40)">Address</h6>
+			<!-- /wp:heading -->
+
+			<!-- wp:paragraph {"textColor":"text-inverse","fontSize":"small"} -->
+			<p class="has-text-inverse-color has-text-color has-small-font-size">Stratford Street North<br>Sparkbrook, Birmingham<br>B11 1BU</p>
+			<!-- /wp:paragraph -->
 		</div>
 		<!-- /wp:column -->
 

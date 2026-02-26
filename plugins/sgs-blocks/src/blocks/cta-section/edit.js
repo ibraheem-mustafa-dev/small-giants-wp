@@ -3,12 +3,15 @@ import {
 	useBlockProps,
 	InspectorControls,
 	RichText,
+	MediaUpload,
+	MediaUploadCheck,
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
 	SelectControl,
 	TextControl,
 	Button,
+	RangeControl,
 } from '@wordpress/components';
 import { DesignTokenPicker } from '../../components';
 import { colourVar, fontSizeVar } from '../../utils';
@@ -67,6 +70,17 @@ function ButtonEditor( { button, onChange, onRemove } ) {
 				onChange={ ( val ) => update( 'style', val ) }
 				__nextHasNoMarginBottom
 			/>
+			<TextControl
+				label={ __( 'Icon (optional)', 'sgs-blocks' ) }
+				value={ button.icon || '' }
+				onChange={ ( val ) => update( 'icon', val ) }
+				placeholder="dashicon-name or emoji"
+				help={ __(
+					'Optional icon before button text',
+					'sgs-blocks'
+				) }
+				__nextHasNoMarginBottom
+			/>
 			<Button
 				variant="secondary"
 				isDestructive
@@ -91,6 +105,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		bodyFontSize,
 		buttonColour,
 		buttonBackground,
+		backgroundImage,
+		backgroundImageOpacity,
+		stats,
+		hoverBackgroundColour,
+		hoverTextColour,
+		hoverBorderColour,
 	} = attributes;
 
 	const className = [
@@ -98,7 +118,17 @@ export default function Edit( { attributes, setAttributes } ) {
 		`sgs-cta-section--${ layout }`,
 	].join( ' ' );
 
-	const blockProps = useBlockProps( { className } );
+	const wrapperStyle = {};
+	if ( backgroundImage?.url ) {
+		wrapperStyle.backgroundImage = `url(${ backgroundImage.url })`;
+		wrapperStyle.backgroundSize = 'cover';
+		wrapperStyle.backgroundPosition = 'center';
+	}
+
+	const blockProps = useBlockProps( {
+		className,
+		style: wrapperStyle,
+	} );
 
 	const headlineStyle = {
 		color: colourVar( headlineColour ) || undefined,
@@ -130,14 +160,63 @@ export default function Edit( { attributes, setAttributes } ) {
 		setAttributes( {
 			buttons: [
 				...buttons,
-				{ text: '', url: '', style: 'accent' },
+				{ text: '', url: '', style: 'accent', icon: '' },
 			],
+		} );
+	};
+
+	const addStat = () => {
+		setAttributes( {
+			stats: [ ...stats, { text: '' } ],
+		} );
+	};
+
+	const updateStat = ( index, text ) => {
+		const updated = [ ...stats ];
+		updated[ index ] = { text };
+		setAttributes( { stats: updated } );
+	};
+
+	const removeStat = ( index ) => {
+		setAttributes( {
+			stats: stats.filter( ( _, i ) => i !== index ),
 		} );
 	};
 
 	return (
 		<>
 			<InspectorControls>
+				<PanelBody
+					title={ __( 'Hover States', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<DesignTokenPicker
+						label={ __( 'Hover background', 'sgs-blocks' ) }
+						value={ hoverBackgroundColour }
+						onChange={ ( val ) =>
+							setAttributes( {
+								hoverBackgroundColour: val,
+							} )
+						}
+					/>
+					<DesignTokenPicker
+						label={ __( 'Hover text', 'sgs-blocks' ) }
+						value={ hoverTextColour }
+						onChange={ ( val ) =>
+							setAttributes( { hoverTextColour: val } )
+						}
+					/>
+					<DesignTokenPicker
+						label={ __( 'Hover border', 'sgs-blocks' ) }
+						value={ hoverBorderColour }
+						onChange={ ( val ) =>
+							setAttributes( {
+								hoverBorderColour: val,
+							} )
+						}
+					/>
+				</PanelBody>
+
 				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Layout', 'sgs-blocks' ) }
@@ -166,6 +245,122 @@ export default function Edit( { attributes, setAttributes } ) {
 					) ) }
 					<Button variant="secondary" onClick={ addButton }>
 						{ __( 'Add button', 'sgs-blocks' ) }
+					</Button>
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Background Image', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<MediaUploadCheck>
+						<MediaUpload
+							onSelect={ ( media ) =>
+								setAttributes( {
+									backgroundImage: {
+										id: media.id,
+										url: media.url,
+										alt: media.alt,
+									},
+								} )
+							}
+							allowedTypes={ [ 'image' ] }
+							value={ backgroundImage?.id }
+							render={ ( { open } ) => (
+								<div>
+									{ backgroundImage?.url ? (
+										<>
+											<img
+												src={
+													backgroundImage.url
+												}
+												alt=""
+												style={ {
+													maxWidth: '100%',
+													marginBottom: '8px',
+												} }
+											/>
+											<Button
+												variant="secondary"
+												onClick={ () =>
+													setAttributes( {
+														backgroundImage:
+															undefined,
+													} )
+												}
+												isDestructive
+											>
+												{ __(
+													'Remove image',
+													'sgs-blocks'
+												) }
+											</Button>
+										</>
+									) : (
+										<Button
+											variant="secondary"
+											onClick={ open }
+										>
+											{ __(
+												'Select background image',
+												'sgs-blocks'
+											) }
+										</Button>
+									) }
+								</div>
+							) }
+						/>
+					</MediaUploadCheck>
+					<RangeControl
+						label={ __(
+							'Image opacity (%)',
+							'sgs-blocks'
+						) }
+						value={ backgroundImageOpacity }
+						onChange={ ( val ) =>
+							setAttributes( {
+								backgroundImageOpacity: val,
+							} )
+						}
+						min={ 0 }
+						max={ 100 }
+						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Stats / Social Proof', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					{ stats.map( ( stat, index ) => (
+						<div
+							key={ index }
+							style={ {
+								display: 'flex',
+								gap: '8px',
+								marginBottom: '8px',
+							} }
+						>
+							<TextControl
+								value={ stat.text || '' }
+								onChange={ ( val ) =>
+									updateStat( index, val )
+								}
+								placeholder={ __(
+									'e.g., Trusted by 5,000+ businesses',
+									'sgs-blocks'
+								) }
+								__nextHasNoMarginBottom
+							/>
+							<Button
+								icon="trash"
+								isDestructive
+								onClick={ () => removeStat( index ) }
+								size="small"
+							/>
+						</div>
+					) ) }
+					<Button variant="secondary" onClick={ addStat }>
+						{ __( 'Add stat', 'sgs-blocks' ) }
 					</Button>
 				</PanelBody>
 
@@ -217,6 +412,16 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
+				{ backgroundImage?.url && (
+					<span
+						className="sgs-cta-section__overlay"
+						style={ {
+							opacity: backgroundImageOpacity / 100,
+						} }
+						aria-hidden="true"
+					/>
+				) }
+
 				<div className="sgs-cta-section__content">
 					<RichText
 						tagName="h2"
@@ -245,6 +450,21 @@ export default function Edit( { attributes, setAttributes } ) {
 						style={ bodyStyle }
 					/>
 				</div>
+				{ stats.length > 0 && (
+					<div className="sgs-cta-section__stats">
+						{ stats.map( ( stat, index ) =>
+							stat.text ? (
+								<span
+									key={ index }
+									className="sgs-cta-section__stat"
+								>
+									{ stat.text }
+								</span>
+							) : null
+						) }
+					</div>
+				) }
+
 				{ buttons.length > 0 && (
 					<div className="sgs-cta-section__buttons">
 						{ buttons.map( ( btn, index ) =>
@@ -254,6 +474,14 @@ export default function Edit( { attributes, setAttributes } ) {
 									className={ `sgs-cta-section__btn sgs-cta-section__btn--${ btn.style || 'accent' }` }
 									style={ btnStyle }
 								>
+									{ btn.icon && (
+										<span
+											className="sgs-cta-section__btn-icon"
+											aria-hidden="true"
+										>
+											{ btn.icon }
+										</span>
+									) }
 									{ btn.text }
 								</span>
 							) : null

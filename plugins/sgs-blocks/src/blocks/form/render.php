@@ -14,13 +14,15 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+
 $form_id            = $attributes['formId'] ?? '';
 $form_name          = $attributes['formName'] ?? '';
-$submit_label       = $attributes['submitLabel'] ?? 'Submit';
+$submit_label       = $attributes['submitLabel'] ?? __( 'Submit', 'sgs-blocks' );
 $submit_style       = $attributes['submitStyle'] ?? 'primary';
-$success_message    = $attributes['successMessage'] ?? 'Thank you! Your submission has been received.';
+$success_message    = $attributes['successMessage'] ?? __( 'Thank you! Your submission has been received.', 'sgs-blocks' );
 $success_redirect   = $attributes['successRedirect'] ?? '';
-$n8n_webhook_url    = $attributes['n8nWebhookUrl'] ?? '';
+$success_redirect   = $success_redirect ? wp_validate_redirect( $success_redirect, '' ) : '';
 $honeypot           = $attributes['honeypot'] ?? true;
 $store_submissions  = $attributes['storeSubmissions'] ?? true;
 $submit_colour      = $attributes['submitColour'] ?? '';
@@ -35,25 +37,26 @@ foreach ( $block->inner_blocks as $inner_block ) {
 	if ( 'sgs/form-step' === $inner_block->name ) {
 		$total_steps++;
 		$steps[] = array(
-			'label' => $inner_block->attributes['label'] ?? 'Step ' . $total_steps,
+			'label' => $inner_block->attributes['label'] ?? sprintf( __( 'Step %d', 'sgs-blocks' ), $total_steps ),
 		);
 	}
 }
 
-$is_multi_step = $total_steps > 1;
+$is_multi_step  = $total_steps > 1;
+$require_login  = $attributes['requireLogin'] ?? false;
+$rate_limit     = absint( $attributes['rateLimit'] ?? 5 );
 
-// Register the webhook URL via filter so the REST endpoint can access it.
-if ( $n8n_webhook_url ) {
-	add_filter(
-		'sgs_form_webhook_url',
-		function ( $url, $id ) use ( $form_id, $n8n_webhook_url ) {
-			if ( $id === $form_id ) {
-				return $n8n_webhook_url;
-			}
-			return $url;
-		},
-		10,
-		2
+// Cache form configuration server-side so the submit handler can enforce
+// requireLogin and per-form rateLimit without trusting client data.
+// Transient lasts 24 hours; re-cached on every page render.
+if ( ! empty( $form_id ) ) {
+	set_transient(
+		'sgs_form_config_' . sanitize_key( $form_id ),
+		array(
+			'requireLogin' => $require_login,
+			'rateLimit'    => $rate_limit,
+		),
+		DAY_IN_SECONDS
 	);
 }
 
@@ -82,20 +85,17 @@ $context = array(
 // Build submit button inline styles.
 $submit_styles = array();
 if ( $submit_colour ) {
-	$colour_var      = 'var(--wp--preset--color--' . esc_attr( $submit_colour ) . ')';
-	$submit_styles[] = 'color:' . $colour_var;
+	$submit_styles[] = 'color:' . sgs_colour_value( $submit_colour );
 }
 if ( $submit_background ) {
-	$bg_var          = 'var(--wp--preset--color--' . esc_attr( $submit_background ) . ')';
-	$submit_styles[] = 'background-color:' . $bg_var;
+	$submit_styles[] = 'background-color:' . sgs_colour_value( $submit_background );
 }
 $submit_style_attr = ! empty( $submit_styles ) ? ' style="' . implode( ';', $submit_styles ) . '"' : '';
 
 // Build progress bar colour style.
 $progress_style_attr = '';
 if ( $progress_colour ) {
-	$progress_var        = 'var(--wp--preset--color--' . esc_attr( $progress_colour ) . ')';
-	$progress_style_attr = ' style="--sgs-progress-colour:' . $progress_var . '"';
+	$progress_style_attr = ' style="--sgs-progress-colour:' . sgs_colour_value( $progress_colour ) . '"';
 }
 
 $wrapper_attributes = get_block_wrapper_attributes(
@@ -142,7 +142,7 @@ $wrapper_attributes = get_block_wrapper_attributes(
 
 		<?php if ( $honeypot ) : ?>
 			<div class="sgs-form__honeypot" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
-				<label for="sgs_hp_<?php echo esc_attr( $form_id ); ?>">Leave this field empty</label>
+				<label for="sgs_hp_<?php echo esc_attr( $form_id ); ?>"><?php esc_html_e( 'Leave this field empty', 'sgs-blocks' ); ?></label>
 				<input type="text" id="sgs_hp_<?php echo esc_attr( $form_id ); ?>" name="sgs_hp_<?php echo esc_attr( $form_id ); ?>" tabindex="-1" autocomplete="off" />
 			</div>
 		<?php endif; ?>

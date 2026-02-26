@@ -31,6 +31,8 @@ require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-activator.php';
 require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-processor.php';
 require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-upload.php';
 require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-rest-api.php';
+require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-admin.php';
+require_once SGS_BLOCKS_PATH . 'includes/forms/class-form-privacy.php';
 require_once SGS_BLOCKS_PATH . 'includes/forms/field-render-helpers.php';
 
 // Schema output filters.
@@ -39,10 +41,37 @@ require_once SGS_BLOCKS_PATH . 'includes/review-schema.php';
 // Heading anchor injection for Table of Contents.
 require_once SGS_BLOCKS_PATH . 'includes/heading-anchors.php';
 
+// Device visibility — server-side class injection for show/hide per device.
+require_once SGS_BLOCKS_PATH . 'includes/device-visibility.php';
+
+// Universal hover effects — server-side CSS variable injection.
+require_once SGS_BLOCKS_PATH . 'includes/hover-effects.php';
+
+// Google Reviews settings and API integration.
+require_once SGS_BLOCKS_PATH . 'includes/google-reviews-settings.php';
+
 // Register REST API endpoints.
 Forms\Form_REST_API::register();
 
+// Register admin settings page (webhook URL + submissions viewer).
+Forms\Form_Admin::register();
+
+// Register GDPR personal data exporters and erasers.
+Forms\Form_Privacy::register();
+
 // Activation hook for database setup.
 register_activation_hook( __FILE__, [ Forms\Form_Activator::class, 'activate' ] );
+
+// Register mega menu template part area.
+add_filter( 'default_wp_template_part_areas', function( $areas ) {
+	$areas[] = array(
+		'area'        => 'mega-menu',
+		'area_tag'    => 'div',
+		'label'       => __( 'Mega Menu', 'sgs-blocks' ),
+		'description' => __( 'Mega menu dropdown panel content.', 'sgs-blocks' ),
+		'icon'        => 'layout',
+	);
+	return $areas;
+} );
 
 SGS_Blocks::instance();

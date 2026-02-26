@@ -53,6 +53,13 @@ $icon_html = sprintf(
 
 $open_attr = $is_open ? ' open' : '';
 
+/*
+ * aria-expanded on <summary> improves compatibility with legacy screen readers
+ * that do not fully support the native <details>/<summary> open state.
+ * The value is kept in sync by view.js on every toggle.
+ */
+$aria_expanded = $is_open ? 'true' : 'false';
+
 printf(
 	'<details class="%s"%s>',
 	esc_attr( implode( ' ', $classes ) ),
@@ -60,7 +67,8 @@ printf(
 );
 
 printf(
-	'<summary class="sgs-accordion-item__header"%s>',
+	'<summary class="sgs-accordion-item__header" aria-expanded="%s"%s>',
+	esc_attr( $aria_expanded ),
 	$header_style_attr
 );
 

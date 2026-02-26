@@ -1,11 +1,31 @@
 /* ===== SGS CTA Section — Frontend + Editor ===== */
 
 .sgs-cta-section {
+	position: relative;
 	padding: var(--wp--preset--spacing--60) var(--wp--preset--spacing--40);
+	overflow: hidden;
+	transition: background-color var(--wp--custom--transition--medium, 0.3s ease),
+		color var(--wp--custom--transition--medium, 0.3s ease),
+		border-color var(--wp--custom--transition--medium, 0.3s ease);
 }
 
 .sgs-cta-section:not([style*="background"]) {
 	background-color: var(--wp--preset--color--primary-dark);
+}
+
+/* Background overlay */
+.sgs-cta-section__overlay {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	background-color: var(--wp--preset--color--primary-dark, #0B3D51);
+	pointer-events: none;
+}
+
+/* Content wrapper needs z-index to sit above overlay */
+.sgs-cta-section__content {
+	position: relative;
+	z-index: 1;
 }
 
 /* ===== Layout Variants ===== */
@@ -18,6 +38,9 @@
 .sgs-cta-section--centred .sgs-cta-section__content {
 	max-width: 680px;
 	margin: 0 auto;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 }
 
 /* Left-aligned */
@@ -69,9 +92,36 @@
 	color: var(--wp--preset--color--text-inverse, #C0D5D6);
 }
 
+/* ===== Stats / Social Proof ===== */
+
+.sgs-cta-section__stats {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--wp--preset--spacing--30);
+	margin-bottom: var(--wp--preset--spacing--30);
+	font-size: var(--wp--preset--font-size--small);
+	opacity: 0.9;
+}
+
+.sgs-cta-section--centred .sgs-cta-section__stats {
+	justify-content: center;
+}
+
+.sgs-cta-section__stat {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.sgs-cta-section__stat:not([style*="color"]) {
+	color: var(--wp--preset--color--text-inverse, #C0D5D6);
+}
+
 /* ===== Buttons ===== */
 
 .sgs-cta-section__buttons {
+	position: relative;
+	z-index: 1;
 	display: flex;
 	flex-wrap: wrap;
 	gap: var(--wp--preset--spacing--20);
@@ -82,7 +132,10 @@
 }
 
 .sgs-cta-section__btn {
-	display: inline-block;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
 	padding: var(--wp--preset--spacing--20) var(--wp--preset--spacing--40);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	font-weight: 600;
@@ -96,13 +149,18 @@
 	cursor: pointer;
 }
 
+.sgs-cta-section__btn-icon {
+	display: inline-block;
+	font-size: 1.2em;
+}
+
 /* Button styles */
 .sgs-cta-section__btn--accent:not([style*="background"]) {
 	background-color: var(--wp--preset--color--accent);
 }
 
 .sgs-cta-section__btn--accent:not([style*="color"]) {
-	color: #fff;
+	color: var(--wp--preset--color--text, #1e1e1e);
 }
 
 .sgs-cta-section__btn--primary:not([style*="background"]) {
@@ -110,7 +168,7 @@
 }
 
 .sgs-cta-section__btn--primary:not([style*="color"]) {
-	color: #fff;
+	color: var(--wp--preset--color--surface, #fff);
 }
 
 .sgs-cta-section__btn--outline {
@@ -122,16 +180,44 @@
 	color: var(--wp--preset--color--surface, #fff);
 }
 
-/* Hover states */
-.sgs-cta-section__btn:hover {
-	opacity: 0.9;
+/* Hover states — per variant, matching the hero block invert pattern. */
+.sgs-cta-section__btn--accent:hover {
+	background-color: transparent;
+	color: var(--wp--preset--color--accent);
+	box-shadow: inset 0 0 0 2px var(--wp--preset--color--accent);
+	transform: translateY(-1px);
+}
+
+.sgs-cta-section__btn--primary:hover {
+	background-color: var(--wp--preset--color--primary-dark);
+	transform: translateY(-1px);
+}
+
+.sgs-cta-section__btn--outline:hover {
+	background-color: var(--wp--preset--color--primary);
+	color: var(--wp--preset--color--surface);
+	border-color: var(--wp--preset--color--primary);
 	transform: translateY(-1px);
 }
 
 /* Focus */
 .sgs-cta-section__btn:focus-visible {
-	outline: 2px solid var(--wp--preset--color--accent);
-	outline-offset: 2px;
+	outline: 2px solid var(--wp--preset--color--primary-dark, #076a8e);
+	outline-offset: 3px;
+}
+
+/* ===== Custom Hover States (editor-configurable) ===== */
+
+.sgs-cta-section[style*="--sgs-hover-bg"]:hover {
+	background-color: var(--sgs-hover-bg);
+}
+
+.sgs-cta-section[style*="--sgs-hover-text"]:hover {
+	color: var(--sgs-hover-text);
+}
+
+.sgs-cta-section[style*="--sgs-hover-border"]:hover {
+	border-color: var(--sgs-hover-border);
 }
 
 /* ===== Responsive ===== */
@@ -159,6 +245,10 @@
 /* ===== Reduced Motion ===== */
 
 @media (prefers-reduced-motion: reduce) {
+	.sgs-cta-section {
+		transition: none;
+	}
+
 	.sgs-cta-section__btn {
 		transition: none;
 	}

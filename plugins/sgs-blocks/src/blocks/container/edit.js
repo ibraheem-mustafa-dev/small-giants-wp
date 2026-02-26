@@ -11,11 +11,28 @@ import {
 	SelectControl,
 	RangeControl,
 	Button,
+	ToggleControl,
 	__experimentalToggleGroupControl as ToggleGroupControl,
 	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 } from '@wordpress/components';
 import { ResponsiveControl, SpacingControl, DesignTokenPicker } from '../../components';
 import { spacingVar, shadowVar } from '../../utils';
+
+const SHAPE_OPTIONS = [
+	{ label: __( 'None', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Wave', 'sgs-blocks' ), value: 'wave' },
+	{ label: __( 'Wave (Smooth)', 'sgs-blocks' ), value: 'wave-smooth' },
+	{ label: __( 'Triangle', 'sgs-blocks' ), value: 'triangle' },
+	{ label: __( 'Triangle (Asymmetric)', 'sgs-blocks' ), value: 'triangle-asymmetric' },
+	{ label: __( 'Curve', 'sgs-blocks' ), value: 'curve' },
+	{ label: __( 'Curve (Asymmetric)', 'sgs-blocks' ), value: 'curve-asymmetric' },
+	{ label: __( 'Zigzag', 'sgs-blocks' ), value: 'zigzag' },
+	{ label: __( 'Cloud', 'sgs-blocks' ), value: 'cloud' },
+	{ label: __( 'Slant', 'sgs-blocks' ), value: 'slant' },
+	{ label: __( 'Slant (Gentle)', 'sgs-blocks' ), value: 'slant-gentle' },
+	{ label: __( 'Mountains', 'sgs-blocks' ), value: 'mountains' },
+	{ label: __( 'Drops', 'sgs-blocks' ), value: 'drops' },
+];
 
 const LAYOUT_OPTIONS = [
 	{ label: __( 'Stack', 'sgs-blocks' ), value: 'stack' },
@@ -323,6 +340,113 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 					/>
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Shape Dividers', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<p className="components-base-control__label" style={ { fontWeight: 600, marginBottom: '8px' } }>
+						{ __( 'Top Divider', 'sgs-blocks' ) }
+					</p>
+					<SelectControl
+						label={ __( 'Shape', 'sgs-blocks' ) }
+						value={ attributes.shapeDividerTop || '' }
+						options={ SHAPE_OPTIONS }
+						onChange={ ( val ) =>
+							setAttributes( { shapeDividerTop: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					{ attributes.shapeDividerTop && (
+						<>
+							<DesignTokenPicker
+								label={ __( 'Colour', 'sgs-blocks' ) }
+								value={ attributes.shapeDividerTopColour }
+								onChange={ ( val ) =>
+									setAttributes( { shapeDividerTopColour: val } )
+								}
+							/>
+							<RangeControl
+								label={ __( 'Height (px)', 'sgs-blocks' ) }
+								value={ attributes.shapeDividerTopHeight }
+								onChange={ ( val ) =>
+									setAttributes( { shapeDividerTopHeight: val } )
+								}
+								min={ 20 }
+								max={ 300 }
+								__nextHasNoMarginBottom
+							/>
+							<ToggleControl
+								label={ __( 'Flip horizontally', 'sgs-blocks' ) }
+								checked={ attributes.shapeDividerTopFlip }
+								onChange={ ( val ) =>
+									setAttributes( { shapeDividerTopFlip: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+							<ToggleControl
+								label={ __( 'Invert vertically', 'sgs-blocks' ) }
+								checked={ attributes.shapeDividerTopInvert }
+								onChange={ ( val ) =>
+									setAttributes( { shapeDividerTopInvert: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+						</>
+					) }
+
+					<hr style={ { margin: '16px 0' } } />
+
+					<p className="components-base-control__label" style={ { fontWeight: 600, marginBottom: '8px' } }>
+						{ __( 'Bottom Divider', 'sgs-blocks' ) }
+					</p>
+					<SelectControl
+						label={ __( 'Shape', 'sgs-blocks' ) }
+						value={ attributes.shapeDividerBottom || '' }
+						options={ SHAPE_OPTIONS }
+						onChange={ ( val ) =>
+							setAttributes( { shapeDividerBottom: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					{ attributes.shapeDividerBottom && (
+						<>
+							<DesignTokenPicker
+								label={ __( 'Colour', 'sgs-blocks' ) }
+								value={ attributes.shapeDividerBottomColour }
+								onChange={ ( val ) =>
+									setAttributes( { shapeDividerBottomColour: val } )
+								}
+							/>
+							<RangeControl
+								label={ __( 'Height (px)', 'sgs-blocks' ) }
+								value={ attributes.shapeDividerBottomHeight }
+								onChange={ ( val ) =>
+									setAttributes( { shapeDividerBottomHeight: val } )
+								}
+								min={ 20 }
+								max={ 300 }
+								__nextHasNoMarginBottom
+							/>
+							<ToggleControl
+								label={ __( 'Flip horizontally', 'sgs-blocks' ) }
+								checked={ attributes.shapeDividerBottomFlip }
+								onChange={ ( val ) =>
+									setAttributes( { shapeDividerBottomFlip: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+							<ToggleControl
+								label={ __( 'Invert vertically', 'sgs-blocks' ) }
+								checked={ attributes.shapeDividerBottomInvert }
+								onChange={ ( val ) =>
+									setAttributes( { shapeDividerBottomInvert: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+						</>
+					) }
 				</PanelBody>
 			</InspectorControls>
 

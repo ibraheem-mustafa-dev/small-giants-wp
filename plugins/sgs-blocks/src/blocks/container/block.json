@@ -1,94 +1,111 @@
 {
-	"$schema": "https://schemas.wp.org/trunk/block.json",
-	"apiVersion": 3,
-	"name": "sgs/container",
-	"version": "0.1.0",
-	"title": "SGS Container",
-	"category": "sgs-layout",
-	"description": "Flexible layout wrapper — the fundamental building block for all page sections.",
-	"keywords": [ "container", "section", "wrapper", "layout", "grid", "flex" ],
-	"textdomain": "sgs-blocks",
-	"icon": "layout",
-	"supports": {
-		"align": [ "wide", "full" ],
-		"anchor": true,
-		"html": false,
-		"color": {
-			"background": true,
-			"text": true,
-			"gradients": true,
-			"link": true,
-			"heading": true
-		},
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true,
-			"textAlign": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true,
-			"blockGap": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true
-		}
-	},
-	"attributes": {
-		"layout": {
-			"type": "string",
-			"default": "stack"
-		},
-		"columns": {
-			"type": "number",
-			"default": 2
-		},
-		"columnsMobile": {
-			"type": "number",
-			"default": 1
-		},
-		"columnsTablet": {
-			"type": "number",
-			"default": 2
-		},
-		"gap": {
-			"type": "string",
-			"default": "40"
-		},
-		"backgroundImage": {
-			"type": "object"
-		},
-		"backgroundOverlayColour": {
-			"type": "string"
-		},
-		"backgroundOverlayOpacity": {
-			"type": "number",
-			"default": 50
-		},
-		"shadow": {
-			"type": "string"
-		},
-		"maxWidth": {
-			"type": "string",
-			"default": "wide"
-		},
-		"minHeight": {
-			"type": "string"
-		},
-		"verticalAlign": {
-			"type": "string",
-			"default": "start"
-		},
-		"htmlTag": {
-			"type": "string",
-			"default": "section"
-		}
-	},
-	"render": "file:./render.php",
-	"editorScript": "file:./index.js",
-	"editorStyle": "file:./editor.css",
-	"style": "file:./style.css"
+    "$schema":  "https://schemas.wp.org/trunk/block.json",
+    "apiVersion":  3,
+    "name":  "sgs/container",
+    "version":  "0.1.0",
+    "title":  "SGS Container",
+    "category":  "sgs-layout",
+    "description":  "Flexible layout wrapper â€” the fundamental building block for all page sections.",
+    "keywords":  [
+                     "container",
+                     "section",
+                     "wrapper",
+                     "layout",
+                     "grid",
+                     "flex"
+                 ],
+    "textdomain":  "sgs-blocks",
+    "icon":  "layout",
+    "supports":  {
+                     "align":  [
+                                   "wide",
+                                   "full"
+                               ],
+                     "anchor":  true,
+                     "html":  false,
+                     "color":  {
+                                   "background":  true,
+                                   "text":  true,
+                                   "gradients":  true,
+                                   "link":  true,
+                                   "heading":  true
+                               },
+                     "typography":  {
+                                        "fontSize":  true,
+                                        "lineHeight":  true,
+                                        "textAlign":  true
+                                    },
+                     "spacing":  {
+                                     "margin":  true,
+                                     "padding":  true,
+                                     "blockGap":  true
+                                 },
+                     "__experimentalBorder":  {
+                                                  "radius":  true,
+                                                  "width":  true,
+                                                  "color":  true,
+                                                  "style":  true
+                                              }
+                 },
+    "attributes":  {
+                       "layout":  {
+                                      "type":  "string",
+                                      "default":  "stack"
+                                  },
+                       "columns":  {
+                                       "type":  "number",
+                                       "default":  2
+                                   },
+                       "columnsMobile":  {
+                                             "type":  "number",
+                                             "default":  1
+                                         },
+                       "columnsTablet":  {
+                                             "type":  "number",
+                                             "default":  2
+                                         },
+                       "gap":  {
+                                   "type":  "string",
+                                   "default":  "40"
+                               },
+                       "backgroundImage":  {
+                                               "type":  "object"
+                                           },
+                       "backgroundOverlayColour":  {
+                                                       "type":  "string"
+                                                   },
+                       "backgroundOverlayOpacity":  {
+                                                        "type":  "number",
+                                                        "default":  50
+                                                    },
+                       "shadow":  {
+                                      "type":  "string"
+                                  },
+                       "maxWidth":  {
+                                        "type":  "string",
+                                        "default":  "wide"
+                                    },
+                       "minHeight":  {
+                                         "type":  "string"
+                                     },
+                       "verticalAlign":  {
+                                             "type":  "string",
+                                             "default":  "start"
+                                         },
+                       "htmlTag":  {
+                                       "type":  "string",
+                                       "default":  "section"
+                                   }
+                   },
+    "render":  "file:./render.php",
+    "editorScript":  "file:./index.js",
+    "editorStyle":  "file:./index.css",
+    "style":  "file:./style-index.css",
+    "example":  {
+                    "attributes":  {
+                                       "layout":  "grid",
+                                       "columns":  2,
+                                       "gap":  "40"
+                                   }
+                }
 }

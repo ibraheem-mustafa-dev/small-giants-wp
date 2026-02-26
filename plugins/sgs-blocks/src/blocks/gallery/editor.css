@@ -1,0 +1,121 @@
+/**
+ * SGS Image Gallery — editor-only styles.
+ *
+ * Ensures the live preview in the block editor looks correct.
+ * Also styles the thumbnail strip and media picker controls in the sidebar.
+ * Does not affect frontend output.
+ */
+
+/* ==========================================================================
+   Placeholder — shown when no images are selected
+   ========================================================================== */
+
+.sgs-gallery-editor__placeholder {
+	padding:      40px 20px;
+	text-align:   center;
+	border:       2px dashed #ccc;
+	border-radius: 8px;
+	color:        #888;
+}
+
+.sgs-gallery-editor__placeholder p {
+	margin:    0 0 16px;
+	font-size: 0.9375rem;
+}
+
+/* ==========================================================================
+   Thumbnail strip — drag-to-reorder image previews in the sidebar
+   ========================================================================== */
+
+.sgs-gallery-editor__thumbs {
+	display:         flex;
+	flex-wrap:       wrap;
+	gap:             8px;
+	margin-bottom:   12px;
+}
+
+.sgs-gallery-editor__thumb {
+	position:     relative;
+	width:        64px;
+	height:       64px;
+	border-radius: 4px;
+	overflow:     hidden;
+	cursor:       grab;
+	flex-shrink:  0;
+}
+
+.sgs-gallery-editor__thumb:active {
+	cursor: grabbing;
+}
+
+.sgs-gallery-editor__thumb-img {
+	display:    block;
+	width:      100%;
+	height:     100%;
+	object-fit: cover;
+}
+
+.sgs-gallery-editor__thumb-remove {
+	position:   absolute;
+	top:        2px;
+	right:      2px;
+	width:      20px;
+	height:     20px;
+	padding:    0;
+	border:     none;
+	border-radius: 50%;
+	background: rgba( 0, 0, 0, 0.7 );
+	color:      #ffffff;
+	font-size:  14px;
+	line-height: 1;
+	cursor:     pointer;
+	display:    flex;
+	align-items: center;
+	justify-content: center;
+	opacity:    0;
+	transition: opacity 150ms ease;
+}
+
+.sgs-gallery-editor__thumb:hover .sgs-gallery-editor__thumb-remove,
+.sgs-gallery-editor__thumb:focus-within .sgs-gallery-editor__thumb-remove {
+	opacity: 1;
+}
+
+.sgs-gallery-editor__thumb-remove:focus-visible {
+	opacity:        1;
+	outline:        2px solid #fff;
+	outline-offset: 1px;
+}
+
+/* ==========================================================================
+   Media picker button
+   ========================================================================== */
+
+.sgs-gallery-editor__media-btn {
+	width: 100%;
+}
+
+/* ==========================================================================
+   Inspector panel note text
+   ========================================================================== */
+
+.sgs-gallery-editor__panel-note {
+	font-size: 0.8125rem;
+	color:     #666;
+	margin:    0 0 12px;
+}
+
+/* ==========================================================================
+   Editor preview — gallery items are non-interactive in the editor
+   ========================================================================== */
+
+/* Prevent hover effects triggering in the editor canvas */
+.block-editor .sgs-gallery__item-btn {
+	cursor: default;
+	pointer-events: none;
+}
+
+/* The lightbox modal is never shown in the editor */
+.block-editor .sgs-gallery__lightbox {
+	display: none !important; /* stylelint-disable-line declaration-no-important */
+}

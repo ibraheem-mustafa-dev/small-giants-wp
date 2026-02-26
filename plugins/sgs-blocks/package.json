@@ -4,6 +4,8 @@
 	"private": true,
 	"description": "Custom Gutenberg block library for Small Giants Studio",
 	"scripts": {
+		"prebuild": "node scripts/generate-icons.js",
+		"prestart": "node scripts/generate-icons.js",
 		"build": "wp-scripts build --experimental-modules --webpack-copy-php",
 		"start": "wp-scripts start --experimental-modules --webpack-copy-php",
 		"lint:js": "wp-scripts lint-js src/",
@@ -12,6 +14,7 @@
 	},
 	"devDependencies": {
 		"@wordpress/icons": "^11.6.0",
-		"@wordpress/scripts": "^30.0.0"
+		"@wordpress/scripts": "^30.0.0",
+		"lucide-static": "^0.564.0"
 	}
 }

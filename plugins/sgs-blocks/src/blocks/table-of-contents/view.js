@@ -7,6 +7,62 @@
  * @package SGS\Blocks
  */
 
+/**
+ * Generate a slug from heading text (matches PHP sanitize_title behaviour).
+ */
+function generateSlug( text ) {
+	return text
+		.toLowerCase()
+		.trim()
+		.replace( /[^\w\s-]/g, '' )
+		.replace( /[\s_]+/g, '-' )
+		.replace( /^-+|-+$/g, '' );
+}
+
+/**
+ * Ensure headings have IDs that match the ToC links.
+ * This is a fallback in case the PHP filter doesn't run.
+ */
+function ensureHeadingIds( toc ) {
+	const links = toc.querySelectorAll( '.sgs-toc__link' );
+	const usedSlugs = [];
+
+	links.forEach( ( link ) => {
+		const targetId = link.getAttribute( 'href' )?.slice( 1 );
+		if ( ! targetId ) {
+			return;
+		}
+
+		// Check if heading already exists with this ID
+		let heading = document.getElementById( targetId );
+		if ( heading ) {
+			return; // Already has correct ID
+		}
+
+		// Find heading by text content
+		const headingText = link.textContent.trim();
+		const allHeadings = document.querySelectorAll(
+			'h1, h2, h3, h4, h5, h6'
+		);
+
+		for ( const h of allHeadings ) {
+			if ( h.textContent.trim() === headingText && ! h.id ) {
+				// Generate slug with deduplication
+				let slug = targetId;
+				let counter = 2;
+				while ( usedSlugs.includes( slug ) ) {
+					slug = targetId.replace( /-\d+$/, '' ) + '-' + counter;
+					counter++;
+				}
+				usedSlugs.push( slug );
+
+				h.id = slug;
+				break;
+			}
+		}
+	} );
+}
+
 function initTableOfContents() {
 	const tocBlocks = document.querySelectorAll( '.sgs-toc' );
 	const prefersReduced = window.matchMedia(
@@ -14,6 +70,8 @@ function initTableOfContents() {
 	).matches;
 
 	tocBlocks.forEach( ( toc ) => {
+		// Ensure headings have IDs before initializing interactions
+		ensureHeadingIds( toc );
 		const smoothScroll = toc.dataset.smoothScroll === 'true';
 		const scrollOffset = parseInt(
 			toc.dataset.scrollOffset || '0',

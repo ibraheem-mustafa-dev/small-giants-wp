@@ -1,0 +1,73 @@
+{
+    "$schema":  "https://schemas.wp.org/trunk/block.json",
+    "apiVersion":  3,
+    "name":  "sgs/icon",
+    "version":  "0.1.0",
+    "title":  "SGS Icon",
+    "category":  "sgs-content",
+    "description":  "Standalone SVG icon with size, colour, background, and optional link.",
+    "keywords":  [
+                     "icon",
+                     "svg",
+                     "symbol",
+                     "graphic"
+                 ],
+    "textdomain":  "sgs-blocks",
+    "icon":  "heart",
+    "supports":  {
+                     "align":  false,
+                     "anchor":  true,
+                     "html":  false,
+                     "color":  {
+                                   "background":  true,
+                                   "text":  true
+                               },
+                     "spacing":  {
+                                     "margin":  true,
+                                     "padding":  true
+                                 }
+                 },
+    "attributes":  {
+                       "icon":  {
+                                    "type":  "string",
+                                    "default":  "star"
+                                },
+                       "size":  {
+                                    "type":  "number",
+                                    "default":  48
+                                },
+                       "iconColour":  {
+                                          "type":  "string",
+                                          "default":  "primary"
+                                      },
+                       "backgroundColour":  {
+                                                "type":  "string",
+                                                "default":  ""
+                                            },
+                       "backgroundShape":  {
+                                               "type":  "string",
+                                               "default":  "none"
+                                           },
+                       "link":  {
+                                    "type":  "string",
+                                    "default":  ""
+                                },
+                       "linkOpensNewTab":  {
+                                               "type":  "boolean",
+                                               "default":  false
+                                           }
+                   },
+    "editorScript":  "file:./index.js",
+    "editorStyle":  "file:./index.css",
+    "style":  "file:./style-index.css",
+    "render":  "file:./render.php",
+    "example":  {
+                    "attributes":  {
+                                       "icon":  "star",
+                                       "size":  48,
+                                       "iconColour":  "primary",
+                                       "backgroundShape":  "circle",
+                                       "backgroundColour":  "accent-light"
+                                   }
+                }
+}

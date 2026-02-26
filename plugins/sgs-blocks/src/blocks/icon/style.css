@@ -1,0 +1,55 @@
+/* ===== SGS Icon ===== */
+
+.sgs-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.sgs-icon__svg svg {
+	width: 100%;
+	height: 100%;
+	display: block;
+}
+
+.sgs-icon__link {
+	display: inline-flex;
+	text-decoration: none;
+	color: inherit;
+	transition: var(--wp--custom--transition--fast, 0.15s ease);
+}
+
+.sgs-icon__link:hover {
+	opacity: 0.8;
+}
+
+.sgs-icon__link:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary);
+	outline-offset: 2px;
+}
+
+.sgs-icon--bg-circle {
+	border-radius: 50%;
+	padding: 12px;
+}
+
+.sgs-icon--bg-rounded {
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	padding: 12px;
+}
+
+.sgs-icon--bg-square {
+	padding: 12px;
+}
+
+.sgs-icon__placeholder {
+	font-size: 12px;
+	text-transform: lowercase;
+	opacity: 0.6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-icon__link {
+		transition: none;
+	}
+}

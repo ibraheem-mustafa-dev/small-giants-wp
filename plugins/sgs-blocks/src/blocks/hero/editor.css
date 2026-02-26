@@ -25,3 +25,17 @@
 .sgs-hero__ctas .sgs-hero__cta {
 	pointer-events: none;
 }
+
+/* ── Badge layout preview — matches frontend flex behaviour ────────────────── */
+.sgs-hero__badges {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	gap: var(--wp--preset--spacing--30, 0.75rem);
+	position: static;
+}
+
+.sgs-hero__badge {
+	position: relative;
+	inset: auto;
+}

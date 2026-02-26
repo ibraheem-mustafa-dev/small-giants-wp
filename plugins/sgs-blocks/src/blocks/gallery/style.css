@@ -1,0 +1,466 @@
+/**
+ * SGS Image Gallery — frontend styles.
+ *
+ * Covers all 3 layout variants (grid, masonry, carousel),
+ * lightbox modal, hover effects, captions, and responsive breakpoints.
+ *
+ * All configurable values come from CSS custom properties set as inline
+ * styles by render.php. The CSS custom properties defined in .sgs-gallery
+ * act as fallbacks only — inline styles from render.php always win.
+ *
+ * prefers-reduced-motion: all transitions and transforms are disabled.
+ */
+
+/* ==========================================================================
+   CSS custom property defaults
+   ========================================================================== */
+
+.sgs-gallery {
+	--sgs-columns-desktop:       3;
+	--sgs-columns-tablet:        2;
+	--sgs-columns-mobile:        1;
+	--sgs-columns:               var( --sgs-columns-desktop );
+	--sgs-gap:                   16px;
+	--sgs-transition-duration:   300ms;
+	--sgs-transition-easing:     ease;
+	--sgs-hover-scale:           1;
+	--sgs-hover-overlay:         transparent;
+	--sgs-hover-image-zoom:      1.05;
+	--sgs-caption-colour:        var( --wp--preset--color--base, #ffffff );
+	--sgs-caption-bg:            rgba( 0, 0, 0, 0.55 );
+	--sgs-item-radius:           var( --wp--custom--border-radius--small, 4px );
+}
+
+/* ==========================================================================
+   Grid inner track — shared by all layout variants
+   ========================================================================== */
+
+.sgs-gallery__grid {
+	display: grid;
+	gap: var( --sgs-gap );
+}
+
+/* ==========================================================================
+   Grid layout
+   ========================================================================== */
+
+.sgs-gallery--grid .sgs-gallery__grid {
+	grid-template-columns: repeat( var( --sgs-columns ), 1fr );
+}
+
+/* ==========================================================================
+   Masonry layout (CSS columns — break-inside:avoid)
+   ========================================================================== */
+
+.sgs-gallery--masonry .sgs-gallery__grid {
+	display:      block;
+	column-count: var( --sgs-columns );
+	column-gap:   var( --sgs-gap );
+}
+
+.sgs-gallery--masonry .sgs-gallery__item {
+	break-inside:   avoid;
+	page-break-inside: avoid; /* legacy prefix */
+	margin-bottom:  var( --sgs-gap );
+}
+
+/* ==========================================================================
+   Carousel layout (horizontal scroll-snap)
+   ========================================================================== */
+
+.sgs-gallery--carousel {
+	position: relative;
+}
+
+.sgs-gallery--carousel .sgs-gallery__grid {
+	display:                grid;
+	grid-template-columns:  repeat( var( --sgs-columns ), calc( ( 100% - ( var( --sgs-columns ) - 1 ) * var( --sgs-gap ) ) / var( --sgs-columns ) ) );
+	overflow-x:             auto;
+	scroll-snap-type:       x mandatory;
+	-webkit-overflow-scrolling: touch;
+	scrollbar-width:        none; /* Firefox */
+}
+
+.sgs-gallery--carousel .sgs-gallery__grid::-webkit-scrollbar {
+	display: none; /* Chrome/Safari */
+}
+
+.sgs-gallery--carousel .sgs-gallery__item {
+	scroll-snap-align: start;
+	flex-shrink:       0;
+}
+
+/* Carousel prev/next arrows */
+.sgs-gallery__carousel-prev,
+.sgs-gallery__carousel-next {
+	position:       absolute;
+	top:            50%;
+	transform:      translateY( -50% );
+	z-index:        10;
+	display:        flex;
+	align-items:    center;
+	justify-content: center;
+	width:          44px;
+	height:         44px;
+	border:         none;
+	border-radius:  50%;
+	background:     rgba( 0, 0, 0, 0.55 );
+	color:          #ffffff;
+	cursor:         pointer;
+	transition:     background var( --sgs-transition-duration ) var( --sgs-transition-easing );
+}
+
+.sgs-gallery__carousel-prev {
+	left: 8px;
+}
+
+.sgs-gallery__carousel-next {
+	right: 8px;
+}
+
+.sgs-gallery__carousel-prev:hover,
+.sgs-gallery__carousel-next:hover {
+	background: rgba( 0, 0, 0, 0.8 );
+}
+
+.sgs-gallery__carousel-prev:disabled,
+.sgs-gallery__carousel-next:disabled {
+	opacity: 0.35;
+	cursor:  not-allowed;
+}
+
+/* Carousel dots */
+.sgs-gallery__carousel-dots {
+	display:         flex;
+	justify-content: center;
+	gap:             8px;
+	margin-top:      12px;
+}
+
+.sgs-gallery__dot {
+	width:        10px;
+	height:       10px;
+	min-width:    44px;
+	min-height:   44px;
+	padding:      0;
+	border:       none;
+	border-radius: 50%;
+	background:   rgba( 0, 0, 0, 0.25 );
+	cursor:       pointer;
+	transition:   background var( --sgs-transition-duration ) var( --sgs-transition-easing );
+}
+
+.sgs-gallery__dot--active {
+	background: var( --wp--preset--color--primary, #1A3A5C );
+}
+
+/* ==========================================================================
+   Gallery item (figure)
+   ========================================================================== */
+
+.sgs-gallery__item {
+	position:    relative;
+	overflow:    hidden;
+	border-radius: var( --sgs-item-radius );
+	margin:      0;
+}
+
+/* Image wrap — contains the img and the hover overlay pseudo-element */
+.sgs-gallery__img-wrap {
+	position: relative;
+	overflow: hidden;
+	display:  block;
+	width:    100%;
+}
+
+/* The hover overlay — shown on hover via opacity */
+.sgs-gallery__img-wrap::after {
+	content:    '';
+	position:   absolute;
+	inset:      0;
+	background: var( --sgs-hover-overlay, transparent );
+	opacity:    0;
+	transition: opacity var( --sgs-transition-duration ) var( --sgs-transition-easing );
+	pointer-events: none;
+}
+
+.sgs-gallery__item:hover .sgs-gallery__img-wrap::after,
+.sgs-gallery__item:focus-within .sgs-gallery__img-wrap::after {
+	opacity: 0.4;
+}
+
+/* The image itself */
+.sgs-gallery__img {
+	display:    block;
+	width:      100%;
+	height:     auto;
+	object-fit: cover;
+	transition: transform var( --sgs-transition-duration ) var( --sgs-transition-easing );
+}
+
+/* Image zoom on hover (toggled via class on wrapper) */
+.sgs-gallery--zoom .sgs-gallery__item:hover .sgs-gallery__img,
+.sgs-gallery--zoom .sgs-gallery__item:focus-within .sgs-gallery__img {
+	transform: scale( var( --sgs-hover-image-zoom, 1.05 ) );
+}
+
+/* Card-level scale transform on hover */
+.sgs-gallery__item {
+	transition: transform var( --sgs-transition-duration ) var( --sgs-transition-easing );
+}
+
+.sgs-gallery__item:hover {
+	transform: scale( var( --sgs-hover-scale, 1 ) );
+}
+
+/* ==========================================================================
+   Lightbox trigger button (wraps image when lightbox is enabled)
+   ========================================================================== */
+
+.sgs-gallery__item-btn {
+	display:    block;
+	width:      100%;
+	padding:    0;
+	border:     none;
+	background: none;
+	cursor:     pointer;
+}
+
+.sgs-gallery__item-btn:focus-visible {
+	outline:        2px solid var( --wp--preset--color--primary, #1A3A5C );
+	outline-offset: 2px;
+}
+
+/* ==========================================================================
+   Caption
+   ========================================================================== */
+
+.sgs-gallery__caption {
+	position:    absolute;
+	bottom:      0;
+	left:        0;
+	right:       0;
+	padding:     8px 12px;
+	margin:      0;
+	background:  var( --sgs-caption-bg );
+	color:       var( --sgs-caption-colour );
+	font-size:   0.875rem;
+	line-height: 1.4;
+	text-align:  center;
+}
+
+/* Masonry captions are relative (not absolute) since items don't have fixed height */
+.sgs-gallery--masonry .sgs-gallery__caption {
+	position: relative;
+	inset:    unset;
+}
+
+/* ==========================================================================
+   Lightbox modal
+   ========================================================================== */
+
+.sgs-gallery__lightbox {
+	position:        fixed;
+	inset:           0;
+	z-index:         100000;
+	background:      rgba( 0, 0, 0, 0.92 );
+	display:         none; /* shown via --open class */
+	align-items:     center;
+	justify-content: center;
+	padding:         20px;
+}
+
+.sgs-gallery__lightbox--open {
+	display: flex;
+}
+
+/* Close button — top right */
+.sgs-gallery__lightbox-close {
+	position:   absolute;
+	top:        16px;
+	right:      16px;
+	z-index:    1;
+	display:    flex;
+	align-items: center;
+	justify-content: center;
+	width:      44px;
+	height:     44px;
+	padding:    0;
+	border:     none;
+	border-radius: 50%;
+	background: rgba( 255, 255, 255, 0.15 );
+	color:      #ffffff;
+	cursor:     pointer;
+	transition: background 200ms ease;
+}
+
+.sgs-gallery__lightbox-close:hover {
+	background: rgba( 255, 255, 255, 0.3 );
+}
+
+.sgs-gallery__lightbox-close:focus-visible {
+	outline:        2px solid #ffffff;
+	outline-offset: 2px;
+}
+
+/* Prev/next navigation inside lightbox */
+.sgs-gallery__lightbox-prev,
+.sgs-gallery__lightbox-next {
+	position:   absolute;
+	top:        50%;
+	transform:  translateY( -50% );
+	z-index:    1;
+	display:    flex;
+	align-items: center;
+	justify-content: center;
+	width:      52px;
+	height:     52px;
+	padding:    0;
+	border:     none;
+	border-radius: 50%;
+	background: rgba( 255, 255, 255, 0.15 );
+	color:      #ffffff;
+	cursor:     pointer;
+	transition: background 200ms ease;
+}
+
+.sgs-gallery__lightbox-prev {
+	left: 12px;
+}
+
+.sgs-gallery__lightbox-next {
+	right: 12px;
+}
+
+.sgs-gallery__lightbox-prev:hover,
+.sgs-gallery__lightbox-next:hover {
+	background: rgba( 255, 255, 255, 0.3 );
+}
+
+.sgs-gallery__lightbox-prev:focus-visible,
+.sgs-gallery__lightbox-next:focus-visible {
+	outline:        2px solid #ffffff;
+	outline-offset: 2px;
+}
+
+/* Central image + caption container */
+.sgs-gallery__lightbox-body {
+	display:        flex;
+	flex-direction: column;
+	align-items:    center;
+	gap:            12px;
+	max-width:      90vw;
+}
+
+.sgs-gallery__lightbox-img {
+	display:    block;
+	max-width:  90vw;
+	max-height: 80vh;
+	object-fit: contain;
+	border-radius: 4px;
+}
+
+.sgs-gallery__lightbox-caption {
+	margin:      0;
+	color:       rgba( 255, 255, 255, 0.85 );
+	font-size:   0.9375rem;
+	text-align:  center;
+	max-width:   600px;
+}
+
+.sgs-gallery__lightbox-counter {
+	position:    absolute;
+	bottom:      20px;
+	left:        50%;
+	transform:   translateX( -50% );
+	margin:      0;
+	color:       rgba( 255, 255, 255, 0.65 );
+	font-size:   0.875rem;
+	white-space: nowrap;
+}
+
+/* ==========================================================================
+   Empty state
+   ========================================================================== */
+
+.sgs-gallery__empty {
+	padding:     24px;
+	text-align:  center;
+	color:       var( --wp--preset--color--contrast-2, #888 );
+	font-size:   0.9375rem;
+}
+
+/* ==========================================================================
+   Responsive breakpoints
+   ========================================================================== */
+
+/* Tablet: 600px – 1023px */
+@media ( max-width: 1023px ) {
+	.sgs-gallery--grid .sgs-gallery__grid,
+	.sgs-gallery--carousel .sgs-gallery__grid {
+		grid-template-columns: repeat( var( --sgs-columns-tablet, 2 ), 1fr );
+	}
+
+	.sgs-gallery--masonry .sgs-gallery__grid {
+		column-count: var( --sgs-columns-tablet, 2 );
+	}
+
+	.sgs-gallery--carousel .sgs-gallery__grid {
+		grid-template-columns: repeat(
+			var( --sgs-columns-tablet, 2 ),
+			calc( ( 100% - ( var( --sgs-columns-tablet, 2 ) - 1 ) * var( --sgs-gap ) ) / var( --sgs-columns-tablet, 2 ) )
+		);
+	}
+}
+
+/* Mobile: max 599px */
+@media ( max-width: 599px ) {
+	.sgs-gallery--grid .sgs-gallery__grid {
+		grid-template-columns: repeat( var( --sgs-columns-mobile, 1 ), 1fr );
+	}
+
+	.sgs-gallery--masonry .sgs-gallery__grid {
+		column-count: var( --sgs-columns-mobile, 1 );
+	}
+
+	.sgs-gallery--carousel .sgs-gallery__grid {
+		grid-template-columns: repeat(
+			var( --sgs-columns-mobile, 1 ),
+			calc( 100% )
+		);
+	}
+
+	/* Slightly larger lightbox nav buttons on touch screens */
+	.sgs-gallery__lightbox-prev,
+	.sgs-gallery__lightbox-next {
+		width:  48px;
+		height: 48px;
+	}
+}
+
+/* ==========================================================================
+   prefers-reduced-motion — disable all transitions and hover transforms
+   ========================================================================== */
+
+@media ( prefers-reduced-motion: reduce ) {
+	.sgs-gallery__img,
+	.sgs-gallery__item,
+	.sgs-gallery__img-wrap::after,
+	.sgs-gallery__carousel-prev,
+	.sgs-gallery__carousel-next,
+	.sgs-gallery__dot,
+	.sgs-gallery__lightbox-close,
+	.sgs-gallery__lightbox-prev,
+	.sgs-gallery__lightbox-next {
+		transition: none;
+	}
+
+	.sgs-gallery--zoom .sgs-gallery__item:hover .sgs-gallery__img,
+	.sgs-gallery--zoom .sgs-gallery__item:focus-within .sgs-gallery__img {
+		transform: none;
+	}
+
+	.sgs-gallery__item:hover {
+		transform: none;
+	}
+}

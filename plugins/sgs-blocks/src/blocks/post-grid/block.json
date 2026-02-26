@@ -1,0 +1,272 @@
+{
+    "$schema":  "https://schemas.wp.org/trunk/block.json",
+    "apiVersion":  3,
+    "name":  "sgs/post-grid",
+    "version":  "0.1.0",
+    "title":  "SGS Post Grid",
+    "category":  "sgs-content",
+    "description":  "Display posts in grid, list, masonry, or carousel layouts with AJAX filtering and pagination.",
+    "keywords":  [
+                     "posts",
+                     "grid",
+                     "blog",
+                     "query",
+                     "news",
+                     "articles",
+                     "cards",
+                     "masonry",
+                     "carousel"
+                 ],
+    "textdomain":  "sgs-blocks",
+    "icon":  "grid-view",
+    "supports":  {
+                     "align":  [
+                                   "wide",
+                                   "full"
+                               ],
+                     "anchor":  true,
+                     "html":  false,
+                     "color":  {
+                                   "background":  true,
+                                   "text":  true
+                               },
+                     "typography":  {
+                                        "fontSize":  true,
+                                        "lineHeight":  true
+                                    },
+                     "spacing":  {
+                                     "margin":  true,
+                                     "padding":  true
+                                 },
+                     "__experimentalBorder":  {
+                                                  "radius":  true,
+                                                  "width":  true,
+                                                  "color":  true,
+                                                  "style":  true
+                                              }
+                 },
+    "selectors":  {
+                      "root":  ".sgs-post-grid",
+                      "typography":  ".sgs-post-grid__title"
+                  },
+    "attributes":  {
+                       "postType":  {
+                                        "type":  "string",
+                                        "default":  "post"
+                                    },
+                       "postsPerPage":  {
+                                            "type":  "number",
+                                            "default":  6
+                                        },
+                       "orderBy":  {
+                                       "type":  "string",
+                                       "default":  "date"
+                                   },
+                       "order":  {
+                                     "type":  "string",
+                                     "default":  "desc"
+                                 },
+                       "categories":  {
+                                          "type":  "array",
+                                          "default":  [
+
+                                                      ]
+                                      },
+                       "tags":  {
+                                    "type":  "array",
+                                    "default":  [
+
+                                                ]
+                                },
+                       "excludeCurrent":  {
+                                              "type":  "boolean",
+                                              "default":  true
+                                          },
+                       "offset":  {
+                                      "type":  "number",
+                                      "default":  0
+                                  },
+                       "layout":  {
+                                      "type":  "string",
+                                      "default":  "grid",
+                                      "enum":  [
+                                                   "grid",
+                                                   "list",
+                                                   "masonry",
+                                                   "carousel"
+                                               ]
+                                  },
+                       "cardStyle":  {
+                                         "type":  "string",
+                                         "default":  "card",
+                                         "enum":  [
+                                                      "card",
+                                                      "flat",
+                                                      "overlay",
+                                                      "minimal"
+                                                  ]
+                                     },
+                       "columns":  {
+                                       "type":  "number",
+                                       "default":  3
+                                   },
+                       "columnsTablet":  {
+                                             "type":  "number",
+                                             "default":  2
+                                         },
+                       "columnsMobile":  {
+                                             "type":  "number",
+                                             "default":  1
+                                         },
+                       "gap":  {
+                                   "type":  "string",
+                                   "default":  "30"
+                               },
+                       "aspectRatio":  {
+                                           "type":  "string",
+                                           "default":  "16/10"
+                                       },
+                       "imageSize":  {
+                                         "type":  "string",
+                                         "default":  "medium_large"
+                                     },
+                       "showImage":  {
+                                         "type":  "boolean",
+                                         "default":  true
+                                     },
+                       "showTitle":  {
+                                         "type":  "boolean",
+                                         "default":  true
+                                     },
+                       "showExcerpt":  {
+                                           "type":  "boolean",
+                                           "default":  true
+                                       },
+                       "excerptLength":  {
+                                             "type":  "number",
+                                             "default":  20
+                                         },
+                       "showDate":  {
+                                        "type":  "boolean",
+                                        "default":  true
+                                    },
+                       "showAuthor":  {
+                                          "type":  "boolean",
+                                          "default":  false
+                                      },
+                       "showCategory":  {
+                                            "type":  "boolean",
+                                            "default":  true
+                                        },
+                       "showReadMore":  {
+                                            "type":  "boolean",
+                                            "default":  true
+                                        },
+                       "readMoreText":  {
+                                            "type":  "string",
+                                            "default":  "Read more"
+                                        },
+                       "pagination":  {
+                                          "type":  "string",
+                                          "default":  "none",
+                                          "enum":  [
+                                                       "none",
+                                                       "standard",
+                                                       "load-more",
+                                                       "infinite"
+                                                   ]
+                                      },
+                       "showFilters":  {
+                                           "type":  "boolean",
+                                           "default":  false
+                                       },
+                       "filterTaxonomy":  {
+                                              "type":  "string",
+                                              "default":  "category"
+                                          },
+                       "titleColour":  {
+                                           "type":  "string"
+                                       },
+                       "titleFontSize":  {
+                                             "type":  "string"
+                                         },
+                       "excerptColour":  {
+                                             "type":  "string"
+                                         },
+                       "metaColour":  {
+                                          "type":  "string"
+                                      },
+                       "categoryBadgeColour":  {
+                                                   "type":  "string"
+                                               },
+                       "categoryBadgeBgColour":  {
+                                                     "type":  "string"
+                                                 },
+                       "readMoreColour":  {
+                                              "type":  "string"
+                                          },
+                       "cardBgColour":  {
+                                            "type":  "string"
+                                        },
+                       "hoverBackgroundColour":  {
+                                                     "type":  "string"
+                                                 },
+                       "hoverTextColour":  {
+                                               "type":  "string"
+                                           },
+                       "hoverBorderColour":  {
+                                                 "type":  "string"
+                                             },
+                       "hoverScale":  {
+                                          "type":  "string",
+                                          "default":  ""
+                                      },
+                       "hoverShadow":  {
+                                           "type":  "string",
+                                           "default":  ""
+                                       },
+                       "hoverImageZoom":  {
+                                              "type":  "boolean",
+                                              "default":  true
+                                          },
+                       "transitionDuration":  {
+                                                  "type":  "string",
+                                                  "default":  "300"
+                                              },
+                       "transitionEasing":  {
+                                                "type":  "string",
+                                                "default":  "ease"
+                                            },
+                       "carouselAutoplay":  {
+                                                "type":  "boolean",
+                                                "default":  false
+                                            },
+                       "carouselSpeed":  {
+                                             "type":  "number",
+                                             "default":  5000
+                                         },
+                       "carouselShowDots":  {
+                                                "type":  "boolean",
+                                                "default":  true
+                                            },
+                       "carouselShowArrows":  {
+                                                  "type":  "boolean",
+                                                  "default":  true
+                                              }
+                   },
+    "editorScript":  "file:./index.js",
+    "editorStyle":  "file:./index.css",
+    "style":  "file:./style-index.css",
+    "viewScriptModule":  "file:./view.js",
+    "render":  "file:./render.php",
+    "example":  {
+                    "attributes":  {
+                                       "layout":  "grid",
+                                       "columns":  3,
+                                       "cardStyle":  "card",
+                                       "showImage":  true,
+                                       "showExcerpt":  true,
+                                       "postsPerPage":  6
+                                   }
+                }
+}

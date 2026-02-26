@@ -50,6 +50,11 @@
 }
 
 /* Overlay variant — text on image */
+/* M14: replace raw rgb() gradient with CSS custom property */
+:root {
+	--sgs-overlay-gradient-start: rgba(0, 0, 0, 0.7);
+}
+
 .sgs-card-grid__overlay {
 	position: absolute;
 	inset: 0;
@@ -59,17 +64,18 @@
 	padding: var(--wp--preset--spacing--30);
 	background: linear-gradient(
 		to top,
-		rgba(0, 0, 0, 0.7) 0%,
-		rgba(0, 0, 0, 0) 60%
+		var(--sgs-overlay-gradient-start) 0%,
+		transparent 60%
 	);
 }
 
 .sgs-card-grid--overlay .sgs-card-grid__title:not([style*="color"]) {
-	color: #fff;
+	color: var(--wp--preset--color--surface, #fff);
 }
 
 .sgs-card-grid--overlay .sgs-card-grid__subtitle:not([style*="color"]) {
-	color: rgba(255, 255, 255, 0.85);
+	color: var(--wp--preset--color--surface, #fff);
+	opacity: 0.85;
 }
 
 /* Card variant — body below image */
@@ -124,6 +130,20 @@
 	color: var(--wp--preset--color--primary);
 }
 
+/* ===== Custom Hover States (editor-configurable) ===== */
+
+.sgs-card-grid[style*="--sgs-hover-bg"] .sgs-card-grid__item:hover {
+	background-color: var(--sgs-hover-bg);
+}
+
+.sgs-card-grid[style*="--sgs-hover-text"] .sgs-card-grid__item:hover {
+	color: var(--sgs-hover-text);
+}
+
+.sgs-card-grid[style*="--sgs-hover-border"] .sgs-card-grid__item:hover {
+	border-color: var(--sgs-hover-border);
+}
+
 /* ===== Hover Effects ===== */
 
 /* Zoom — image scales up */
@@ -139,8 +159,8 @@
 
 /* Focus for linked items */
 a.sgs-card-grid__item:focus-visible {
-	outline: 2px solid var(--wp--preset--color--accent);
-	outline-offset: 2px;
+	outline: 2px solid var(--wp--preset--color--primary-dark, #076a8e);
+	outline-offset: 3px;
 }
 
 /* ===== Responsive ===== */
@@ -154,9 +174,13 @@ a.sgs-card-grid__item:focus-visible {
 	}
 }
 
-@media (min-width: 768px) and (max-width: 1024px) {
+/* H16/M22: use columnsTablet attribute instead of hardcoded 2 columns */
+@media (min-width: 768px) and (max-width: 1023px) {
 	.sgs-card-grid {
-		grid-template-columns: repeat(2, 1fr);
+		grid-template-columns: repeat(
+			var(--sgs-card-grid-columns-tablet, 2),
+			1fr
+		);
 	}
 }
 

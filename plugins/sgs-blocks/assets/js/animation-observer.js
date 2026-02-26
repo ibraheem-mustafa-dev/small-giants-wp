@@ -17,6 +17,17 @@
 		return;
 	}
 
+	// L4: Respect prefers-reduced-motion. Immediately show all animated
+	// elements without transitions — CSS already sets opacity/transform
+	// to final values in the reduced-motion media query, so just add the
+	// class to mark them as done without waiting for IntersectionObserver.
+	if ( window.matchMedia && window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches ) {
+		elements.forEach( function ( el ) {
+			el.classList.add( 'sgs-animated' );
+		} );
+		return;
+	}
+
 	if ( typeof IntersectionObserver === 'undefined' ) {
 		elements.forEach( function ( el ) {
 			el.classList.add( 'sgs-animated' );

@@ -1,0 +1,172 @@
+{
+    "$schema":  "https://schemas.wp.org/trunk/block.json",
+    "apiVersion":  3,
+    "name":  "sgs/announcement-bar",
+    "title":  "SGS Announcement Bar",
+    "category":  "sgs-interactive",
+    "description":  "Dismissible top-of-page banner for announcements, promotions, and time-sensitive messages with countdown timer and message rotation.",
+    "keywords":  [
+                     "announcement",
+                     "banner",
+                     "notification",
+                     "countdown",
+                     "promo"
+                 ],
+    "icon":  "megaphone",
+    "textdomain":  "sgs-blocks",
+    "supports":  {
+                     "align":  false,
+                     "anchor":  true,
+                     "className":  true,
+                     "html":  false,
+                     "customClassName":  false
+                 },
+    "attributes":  {
+                       "messages":  {
+                                        "type":  "array",
+                                        "default":  [
+                                                        {
+                                                            "text":  "­ƒÄë New product launch ÔÇö get 20% off with code LAUNCH20!",
+                                                            "ctaText":  "Shop Now",
+                                                            "ctaUrl":  ""
+                                                        }
+                                                    ]
+                                    },
+                       "variant":  {
+                                       "type":  "string",
+                                       "default":  "standard",
+                                       "enum":  [
+                                                    "standard",
+                                                    "countdown",
+                                                    "rotating"
+                                                ]
+                                   },
+                       "backgroundColour":  {
+                                                "type":  "string",
+                                                "default":  "primary"
+                                            },
+                       "textColour":  {
+                                          "type":  "string",
+                                          "default":  "text-inverse"
+                                      },
+                       "ctaStyle":  {
+                                        "type":  "string",
+                                        "default":  "outline",
+                                        "enum":  [
+                                                     "filled",
+                                                     "outline",
+                                                     "text-link"
+                                                 ]
+                                    },
+                       "ctaColour":  {
+                                         "type":  "string",
+                                         "default":  "accent"
+                                     },
+                       "position":  {
+                                        "type":  "string",
+                                        "default":  "top",
+                                        "enum":  [
+                                                     "top",
+                                                     "bottom"
+                                                 ]
+                                    },
+                       "sticky":  {
+                                      "type":  "boolean",
+                                      "default":  true
+                                  },
+                       "dismissible":  {
+                                           "type":  "boolean",
+                                           "default":  true
+                                       },
+                       "closeBehaviour":  {
+                                              "type":  "string",
+                                              "default":  "session",
+                                              "enum":  [
+                                                           "session",
+                                                           "persistent",
+                                                           "none"
+                                                       ]
+                                          },
+                       "cookieDays":  {
+                                          "type":  "number",
+                                          "default":  7
+                                      },
+                       "targetDate":  {
+                                          "type":  "string",
+                                          "default":  ""
+                                      },
+                       "showDays":  {
+                                        "type":  "boolean",
+                                        "default":  true
+                                    },
+                       "showHours":  {
+                                         "type":  "boolean",
+                                         "default":  true
+                                     },
+                       "showMinutes":  {
+                                           "type":  "boolean",
+                                           "default":  true
+                                       },
+                       "showSeconds":  {
+                                           "type":  "boolean",
+                                           "default":  true
+                                       },
+                       "countdownEndAction":  {
+                                                  "type":  "string",
+                                                  "default":  "hide",
+                                                  "enum":  [
+                                                               "hide",
+                                                               "show-message"
+                                                           ]
+                                              },
+                       "countdownEndMessage":  {
+                                                   "type":  "string",
+                                                   "default":  "This offer has ended."
+                                               },
+                       "rotationInterval":  {
+                                                "type":  "number",
+                                                "default":  5000
+                                            },
+                       "rotationType":  {
+                                            "type":  "string",
+                                            "default":  "fade",
+                                            "enum":  [
+                                                         "fade",
+                                                         "slide"
+                                                     ]
+                                        },
+                       "startDate":  {
+                                         "type":  "string",
+                                         "default":  ""
+                                     },
+                       "endDate":  {
+                                       "type":  "string",
+                                       "default":  ""
+                                   },
+                       "icon":  {
+                                    "type":  "string",
+                                    "default":  ""
+                                },
+                       "fontSize":  {
+                                        "type":  "string",
+                                        "default":  "small"
+                                    }
+                   },
+    "editorScript":  "file:./index.js",
+    "editorStyle":  "file:./editor.css",
+    "style":  "file:./style.css",
+    "viewScriptModule":  "file:./view.js",
+    "render":  "file:./render.php",
+    "example":  {
+                    "attributes":  {
+                                       "variant":  "standard",
+                                       "messages":  [
+                                                        {
+                                                            "text":  "Free delivery on orders over £50 — use code FREEDEL at checkout!",
+                                                            "ctaText":  "Shop Now",
+                                                            "ctaUrl":  ""
+                                                        }
+                                                    ]
+                                   }
+                }
+}

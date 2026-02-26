@@ -18,14 +18,16 @@ All design decisions are documented in `notes/Indus-Foods-Website-Research-Updat
 These values live in `theme/sgs-theme/styles/indus-foods.json` (WordPress style variation):
 
 ```
---primary: #1A3A5C (navy)         --accent: #D4A843 (gold)
---primary-dark: #0F2640            --accent-light: #F5E6C4
+--primary: #0a7ea8 (teal)          --accent: #d8ca50 (gold)
+--primary-dark: #076a8e            --accent-light: #e7d768
 --success: #2E7D4F (green)         --whatsapp: #25D366
---surface: #FFFFFF                 --surface-alt: #F8F7F4
---text: #1E1E1E                    --text-muted: #555555
+--surface: #FFFFFF                 --surface-alt: #F2F5F7
+--text: #1E1E1E                    --text-muted: #424242
+--text-inverse: #FFFFFF            --border-subtle: #2eade2
+--footer-bg: #2c3e50
 ```
 
-**Fonts:** DM Serif Display (headings) + DM Sans (body) — self-hosted WOFF2.
+**Fonts:** Montserrat (headings) + Source Sans 3 (body) — self-hosted variable WOFF2.
 
 ### Page Architecture
 
@@ -55,16 +57,21 @@ Shared sections (trust bar, heritage strip, process, delivery, brands, certifica
 
 ## Deploy
 
+All commands run from repo root (`small-giants-wp/`):
+
 ```bash
 # Build blocks plugin first
-cd ../../plugins/sgs-blocks && npm run build && cd ../../sites/indus-foods
+cd plugins/sgs-blocks && npm run build && cd ../..
 
 # Deploy blocks + theme to dev site
-scp -r ../../plugins/sgs-blocks/sgs-blocks.php ../../plugins/sgs-blocks/includes ../../plugins/sgs-blocks/build ../../plugins/sgs-blocks/assets hd:~/domains/palestine-lives.org/public_html/wp-content/plugins/sgs-blocks/
-scp -r ../../theme/sgs-theme hd:~/domains/palestine-lives.org/public_html/wp-content/themes/
+scp -r plugins/sgs-blocks/sgs-blocks.php plugins/sgs-blocks/includes plugins/sgs-blocks/build plugins/sgs-blocks/assets hd:~/domains/palestine-lives.org/public_html/wp-content/plugins/sgs-blocks/
+scp -r theme/sgs-theme hd:~/domains/palestine-lives.org/public_html/wp-content/themes/
 
-# Purge cache
-ssh hd "cd ~/domains/palestine-lives.org/public_html && wp litespeed-purge all"
+# Clear LiteSpeed cache (wp litespeed-purge is broken on this host)
+ssh hd "rm -rf ~/domains/palestine-lives.org/public_html/wp-content/litespeed/cache/*"
+
+# Reset PHP OPcache after deploying PHP files (CLI reset is a SEPARATE pool — must use HTTP)
+ssh hd "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/palestine-lives.org/public_html/op-reset-tmp.php" && curl -s https://palestine-lives.org/op-reset-tmp.php && ssh hd "rm ~/domains/palestine-lives.org/public_html/op-reset-tmp.php"
 ```
 
 **DO NOT deploy to lightsalmon-tarsier-683012.hostingersite.com** — that's the client-facing test site.
@@ -73,12 +80,18 @@ ssh hd "cd ~/domains/palestine-lives.org/public_html && wp litespeed-purge all"
 
 | Page | Status | Notes |
 |---|---|---|
-| Homepage | Not started | — |
+| Homepage | ✅ Deployed | Post ID 13, all sections rendering (needs visual polish) |
+| /contact/ | ✅ Created | Post ID 57 (placeholder content) |
+| /apply-for-trade-account/ | ✅ Created | Post ID 58 (placeholder content) |
 | Food Service | Not started | Template for all service pages (V3 mockup) |
 | Manufacturing | Not started | Same template, different content |
 | Retail | Not started | Same template, different content |
 | Wholesale | Not started | Same template, different content |
 | Trade Application | Not started | V2 mockup, requires form blocks (Phase 1b) |
+| /brands/ | Not started | Mega menu template parts ready |
+| /our-story/ | Not started | |
+| /certifications/ | Not started | |
+| /blog/ | Not started | |
 
 Update this table as pages are built and deployed.
 

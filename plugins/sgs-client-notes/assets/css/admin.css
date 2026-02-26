@@ -1,0 +1,185 @@
+/**
+ * Admin Styles
+ * 
+ * @package SGS\ClientNotes
+ */
+
+/* ===========================
+   Notes List Table
+   =========================== */
+
+.sgs-cn-filters {
+	background: #fff;
+	padding: 15px;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+}
+
+.sgs-cn-filters form {
+	display: flex;
+	gap: 10px;
+	align-items: center;
+	flex-wrap: wrap;
+}
+
+.sgs-cn-filters select {
+	min-width: 150px;
+}
+
+.sgs-cn-priority,
+.sgs-cn-status {
+	display: inline-block;
+	padding: 4px 10px;
+	border-radius: 12px;
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+}
+
+/* Priority Badges */
+
+.sgs-cn-priority-urgent {
+	background: #d63638;
+	color: #fff;
+}
+
+.sgs-cn-priority-issue {
+	background: #f39c12;
+	color: #fff;
+}
+
+.sgs-cn-priority-suggestion {
+	background: #3498db;
+	color: #fff;
+}
+
+/* Status Badges */
+
+.sgs-cn-status-open {
+	background: #e7f7e8;
+	color: #46b450;
+}
+
+.sgs-cn-status-in_progress,
+.sgs-cn-status-in-progress {
+	background: #fff8e5;
+	color: #f39c12;
+}
+
+.sgs-cn-status-resolved {
+	background: #f0f0f1;
+	color: #666;
+}
+
+.sgs-cn-status-archived {
+	background: #f0f0f1;
+	color: #999;
+	text-decoration: line-through;
+}
+
+/* Table Enhancements */
+
+.wp-list-table .sgs-cn-priority,
+.wp-list-table .sgs-cn-status {
+	white-space: nowrap;
+}
+
+/* ===========================
+   Settings Page
+   =========================== */
+
+.form-table th {
+	width: 200px;
+}
+
+.form-table .description {
+	margin-top: 5px;
+	font-size: 13px;
+}
+
+/* ===========================
+   Dashboard Widget
+   =========================== */
+
+.sgs-cn-dashboard-widget {
+	font-size: 13px;
+}
+
+.sgs-cn-summary > div {
+	transition: transform 0.2s;
+}
+
+.sgs-cn-summary > div:hover {
+	transform: translateY( -2px );
+}
+
+.sgs-cn-dashboard-widget ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.sgs-cn-dashboard-widget li {
+	padding: 10px 0;
+	border-bottom: 1px solid #eee;
+}
+
+.sgs-cn-dashboard-widget li:last-child {
+	border-bottom: none;
+}
+
+.sgs-cn-dashboard-widget li:hover {
+	background: #f9f9f9;
+	margin: 0 -10px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+/* Priority badges in dashboard */
+
+#sgs_client_notes_dashboard .sgs-cn-priority-badge {
+	display: inline-block;
+	padding: 2px 6px;
+	border-radius: 3px;
+	font-size: 10px;
+	font-weight: 600;
+	text-transform: uppercase;
+	margin-right: 5px;
+}
+
+#sgs_client_notes_dashboard .sgs-cn-priority-urgent {
+	background: #d63638;
+	color: #fff;
+}
+
+#sgs_client_notes_dashboard .sgs-cn-priority-issue {
+	background: #f39c12;
+	color: #fff;
+}
+
+#sgs_client_notes_dashboard .sgs-cn-priority-suggestion {
+	background: #3498db;
+	color: #fff;
+}
+
+/* ===========================
+   Responsive Admin
+   =========================== */
+
+@media screen and ( max-width: 782px ) {
+	.sgs-cn-filters form {
+		flex-direction: column;
+		align-items: stretch;
+	}
+	
+	.sgs-cn-filters select {
+		width: 100%;
+	}
+	
+	.form-table th,
+	.form-table td {
+		display: block;
+		width: 100%;
+		padding: 10px;
+	}
+}

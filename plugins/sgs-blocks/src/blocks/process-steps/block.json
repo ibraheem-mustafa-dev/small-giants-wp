@@ -1,72 +1,114 @@
 {
-	"$schema": "https://schemas.wp.org/trunk/block.json",
-	"apiVersion": 3,
-	"name": "sgs/process-steps",
-	"version": "0.1.0",
-	"title": "SGS Process Steps",
-	"category": "sgs-content",
-	"description": "Horizontal timeline showing a multi-step process.",
-	"keywords": [ "process", "steps", "timeline", "how", "workflow" ],
-	"textdomain": "sgs-blocks",
-	"icon": "editor-ol",
-	"supports": {
-		"align": [ "wide", "full" ],
-		"anchor": true,
-		"html": false,
-		"color": {
-			"background": true,
-			"text": true
-		},
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true
-		}
-	},
-	"selectors": {
-		"root": ".sgs-process-steps",
-		"typography": ".sgs-process-steps__title"
-	},
-	"attributes": {
-		"steps": {
-			"type": "array",
-			"default": [
-				{ "number": "1", "title": "First Step", "description": "Description of the first step." },
-				{ "number": "2", "title": "Second Step", "description": "Description of the second step." },
-				{ "number": "3", "title": "Third Step", "description": "Description of the third step." }
-			]
-		},
-		"connectorStyle": {
-			"type": "string",
-			"default": "line"
-		},
-		"numberStyle": {
-			"type": "string",
-			"default": "circle"
-		},
-		"numberColour": {
-			"type": "string"
-		},
-		"numberBackground": {
-			"type": "string"
-		},
-		"titleColour": {
-			"type": "string"
-		},
-		"descriptionColour": {
-			"type": "string"
-		}
-	},
-	"editorScript": "file:./index.js",
-	"editorStyle": "file:./editor.css",
-	"style": "file:./style.css"
+    "$schema":  "https://schemas.wp.org/trunk/block.json",
+    "apiVersion":  3,
+    "name":  "sgs/process-steps",
+    "version":  "0.1.0",
+    "title":  "SGS Process Steps",
+    "category":  "sgs-content",
+    "description":  "Horizontal timeline showing a multi-step process.",
+    "keywords":  [
+                     "process",
+                     "steps",
+                     "timeline",
+                     "how",
+                     "workflow"
+                 ],
+    "textdomain":  "sgs-blocks",
+    "icon":  "editor-ol",
+    "supports":  {
+                     "align":  [
+                                   "wide",
+                                   "full"
+                               ],
+                     "anchor":  true,
+                     "html":  false,
+                     "color":  {
+                                   "background":  true,
+                                   "text":  true
+                               },
+                     "typography":  {
+                                        "fontSize":  true,
+                                        "lineHeight":  true
+                                    },
+                     "spacing":  {
+                                     "margin":  true,
+                                     "padding":  true
+                                 },
+                     "__experimentalBorder":  {
+                                                  "radius":  true,
+                                                  "width":  true,
+                                                  "color":  true,
+                                                  "style":  true
+                                              }
+                 },
+    "selectors":  {
+                      "root":  ".sgs-process-steps",
+                      "typography":  ".sgs-process-steps__title"
+                  },
+    "attributes":  {
+                       "steps":  {
+                                     "type":  "array",
+                                     "default":  [
+                                                     {
+                                                         "number":  "1",
+                                                         "title":  "First Step",
+                                                         "description":  "Description of the first step."
+                                                     },
+                                                     {
+                                                         "number":  "2",
+                                                         "title":  "Second Step",
+                                                         "description":  "Description of the second step."
+                                                     },
+                                                     {
+                                                         "number":  "3",
+                                                         "title":  "Third Step",
+                                                         "description":  "Description of the third step."
+                                                     }
+                                                 ]
+                                 },
+                       "connectorStyle":  {
+                                              "type":  "string",
+                                              "default":  "line"
+                                          },
+                       "numberStyle":  {
+                                           "type":  "string",
+                                           "default":  "circle"
+                                       },
+                       "numberColour":  {
+                                            "type":  "string"
+                                        },
+                       "numberBackground":  {
+                                                "type":  "string"
+                                            },
+                       "titleColour":  {
+                                           "type":  "string"
+                                       },
+                       "descriptionColour":  {
+                                                 "type":  "string"
+                                             }
+                   },
+    "editorScript":  "file:./index.js",
+    "editorStyle":  "file:./index.css",
+    "style":  "file:./style-index.css",
+    "example":  {
+                    "attributes":  {
+                                       "steps":  [
+                                                     {
+                                                         "number":  "1",
+                                                         "title":  "Request a Quote",
+                                                         "description":  "Fill in our online form with your requirements."
+                                                     },
+                                                     {
+                                                         "number":  "2",
+                                                         "title":  "We Prepare Your Order",
+                                                         "description":  "Our team picks and packs your items fresh."
+                                                     },
+                                                     {
+                                                         "number":  "3",
+                                                         "title":  "Next-Day Delivery",
+                                                         "description":  "Your order arrives the following business day."
+                                                     }
+                                                 ]
+                                   }
+                }
 }

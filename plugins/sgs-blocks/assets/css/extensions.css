@@ -11,38 +11,102 @@
 [data-sgs-animation-duration="medium"] { transition-duration: 0.5s; }
 [data-sgs-animation-duration="slow"] { transition-duration: 0.8s; }
 
-/* Starting positions */
-[data-sgs-animation="fade-up"] { transform: translateY(30px); }
-[data-sgs-animation="fade-in"] { transform: none; }
+/* Starting positions — M20: expanded from 5 to 14 animation types */
+[data-sgs-animation="fade-up"]    { transform: translateY(30px); }
+[data-sgs-animation="fade-down"]  { transform: translateY(-30px); }
+[data-sgs-animation="fade-in"]    { transform: none; }
+[data-sgs-animation="fade-left"]  { transform: translateX(30px); }
+[data-sgs-animation="fade-right"] { transform: translateX(-30px); }
+[data-sgs-animation="slide-up"]   { transform: translateY(30px); }
+[data-sgs-animation="slide-down"] { transform: translateY(-30px); }
 [data-sgs-animation="slide-left"] { transform: translateX(-30px); }
-[data-sgs-animation="slide-right"] { transform: translateX(30px); }
-[data-sgs-animation="scale-in"] { transform: scale(0.9); }
+[data-sgs-animation="slide-right"]{ transform: translateX(30px); }
+[data-sgs-animation="scale-in"]   { transform: scale(0.9); }
+[data-sgs-animation="scale-out"]  { transform: scale(1.1); }
+[data-sgs-animation="rotate-in"]  { transform: rotate(-10deg); }
+[data-sgs-animation="flip-in"]    { transform: perspective(600px) rotateX(30deg); }
+[data-sgs-animation="blur-in"]    { filter: blur(8px); transform: none; }
+
+/* Additional transition property for blur-in */
+[data-sgs-animation="blur-in"] {
+	transition-property: opacity, filter;
+}
 
 /* Animated state — added by IntersectionObserver */
 [data-sgs-animation].sgs-animated {
 	opacity: 1;
 	transform: none;
+	filter: none;
 }
 
-/* Respect prefers-reduced-motion */
+/* L4: Respect prefers-reduced-motion — skip ALL animation for users who prefer it */
 @media (prefers-reduced-motion: reduce) {
 	[data-sgs-animation] {
 		opacity: 1;
 		transform: none;
+		filter: none;
 		transition: none;
 	}
 }
 
-/* ===== SGS Visibility Extension ===== */
+/* ===== SGS Device Visibility Extension ===== */
 
-@media (max-width: 767px) {
+/*
+ * Breakpoints:
+ *   Mobile:  0 – 599px
+ *   Tablet:  600px – 1023px
+ *   Desktop: 1024px+
+ *
+ * CSS-only hiding preserves SEO (content remains in DOM).
+ * display:none also hides from screen readers — acceptable
+ * for genuine device-specific content patterns.
+ */
+
+@media (max-width: 599px) {
 	.sgs-hide-mobile { display: none !important; }
 }
 
-@media (min-width: 768px) and (max-width: 1024px) {
+@media (min-width: 600px) and (max-width: 1023px) {
 	.sgs-hide-tablet { display: none !important; }
 }
 
-@media (min-width: 1025px) {
+@media (min-width: 1024px) {
 	.sgs-hide-desktop { display: none !important; }
+}
+
+/* --- Universal Hover Effects --- */
+
+.sgs-has-hover {
+	transition: background-color var(--sgs-hover-duration, 300ms) ease,
+	            color var(--sgs-hover-duration, 300ms) ease,
+	            border-color var(--sgs-hover-duration, 300ms) ease,
+	            transform var(--sgs-hover-duration, 300ms) ease,
+	            box-shadow var(--sgs-hover-duration, 300ms) ease;
+}
+
+/* Only apply individual hover properties when the custom property is set */
+.sgs-has-hover[style*="--sgs-hover-bg"]:hover {
+	background-color: var(--sgs-hover-bg);
+}
+
+.sgs-has-hover[style*="--sgs-hover-text"]:hover {
+	color: var(--sgs-hover-text);
+}
+
+.sgs-has-hover[style*="--sgs-hover-border"]:hover {
+	border-color: var(--sgs-hover-border);
+}
+
+.sgs-has-hover[style*="--sgs-hover-scale"]:hover {
+	transform: scale(var(--sgs-hover-scale));
+}
+
+.sgs-has-hover[style*="--sgs-hover-shadow"]:hover {
+	box-shadow: var(--sgs-hover-shadow);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-has-hover {
+		transition: none;
+	}
 }

@@ -121,11 +121,14 @@ Source in `src/` is TypeScript (`.tsx`/`.ts`). The `build/` directory is compile
 # Build first
 npm run build
 
-# Deploy plugin files
-scp -r sgs-booking.php uninstall.php includes build hd:~/domains/palestine-lives.org/public_html/wp-content/plugins/sgs-booking/
+# Deploy plugin files (run from repo root)
+scp -r plugins/sgs-booking/sgs-booking.php plugins/sgs-booking/uninstall.php plugins/sgs-booking/includes plugins/sgs-booking/build hd:~/domains/palestine-lives.org/public_html/wp-content/plugins/sgs-booking/
 
-# Purge cache
-ssh hd "cd ~/domains/palestine-lives.org/public_html && wp litespeed-purge all"
+# Clear LiteSpeed cache (wp litespeed-purge is broken on this host)
+ssh hd "rm -rf ~/domains/palestine-lives.org/public_html/wp-content/litespeed/cache/*"
+
+# Reset PHP OPcache after deploying PHP files (CLI reset is a SEPARATE pool — must use HTTP)
+ssh hd "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/palestine-lives.org/public_html/op-reset-tmp.php" && curl -s https://palestine-lives.org/op-reset-tmp.php && ssh hd "rm ~/domains/palestine-lives.org/public_html/op-reset-tmp.php"
 ```
 
 ## Phased Build

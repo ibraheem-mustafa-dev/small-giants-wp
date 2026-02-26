@@ -288,6 +288,50 @@ export const formFieldConsentIcon = icon(
 	</SVG>
 );
 
+/** Form Field Date — calendar */
+export const formFieldDateIcon = icon(
+	<SVG viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+		<Rect x="3" y="4" width="18" height="17" rx="2" fill="none" stroke="currentColor" strokeWidth="1.5" />
+		<Path d="M3 9h18" stroke="currentColor" strokeWidth="1.5" />
+		<Circle cx="8" cy="14" r="1.5" />
+		<Circle cx="12" cy="14" r="1.5" />
+		<Circle cx="16" cy="14" r="1.5" />
+		<Rect x="7" y="2" width="1.5" height="4" rx="0.5" />
+		<Rect x="15.5" y="2" width="1.5" height="4" rx="0.5" />
+	</SVG>
+);
+
+/** Form Field Number — hash symbol with input */
+export const formFieldNumberIcon = icon(
+	<SVG viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+		<Rect x="2" y="7" width="20" height="10" rx="2" fillOpacity="0.15" />
+		<Rect x="2" y="7" width="20" height="10" rx="2" fill="none" stroke="currentColor" strokeWidth="1.5" />
+		<Path d="M8 9.5v5M11 9.5v5M6 11.5h5M6 13.5h5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+		<Rect x="14" y="11" width="5" height="2" rx="0.75" fillOpacity="0.5" />
+	</SVG>
+);
+
+/** Form Field Hidden — eye with slash */
+export const formFieldHiddenIcon = icon(
+	<SVG viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+		<Rect x="2" y="7" width="20" height="10" rx="2" fillOpacity="0.15" />
+		<Rect x="2" y="7" width="20" height="10" rx="2" fill="none" stroke="currentColor" strokeWidth="1.5" />
+		<Path d="M4 12c1.5-3 4.5-5 8-5s6.5 2 8 5c-1.5 3-4.5 5-8 5s-6.5-2-8-5z" fillOpacity="0.3" />
+		<Circle cx="12" cy="12" r="2" />
+		<Path d="M4 4l16 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+	</SVG>
+);
+
+/** Form Field Address — location pin with address lines */
+export const formFieldAddressIcon = icon(
+	<SVG viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+		<Path d="M12 2a7 7 0 00-7 7c0 4.5 7 13 7 13s7-8.5 7-13a7 7 0 00-7-7z" />
+		<Circle cx="12" cy="9" r="2.5" fill="white" />
+		<Rect x="3" y="16" width="9" height="1.5" rx="0.75" fillOpacity="0.5" />
+		<Rect x="3" y="19" width="7" height="1.5" rx="0.75" fillOpacity="0.5" />
+	</SVG>
+);
+
 /** Form Review — clipboard with tick */
 export const formReviewIcon = icon(
 	<SVG viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -334,5 +378,29 @@ export const accordionItemIcon = icon(
 		<Path d="M16 7l1.5 1.5L19 7" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
 		<Rect x="6" y="12" width="12" height="1.5" rx="0.75" fillOpacity="0.4" />
 		<Rect x="6" y="15.5" width="9" height="1.5" rx="0.75" fillOpacity="0.4" />
+	</SVG>
+);
+
+/** Tabs — horizontal tab bar with content panel */
+export const tabsIcon = icon(
+	<SVG viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+		<Rect x="3" y="3" width="5" height="4" rx="1" />
+		<Rect x="9.5" y="3" width="5" height="4" rx="1" fillOpacity="0.4" />
+		<Rect x="16" y="3" width="5" height="4" rx="1" fillOpacity="0.4" />
+		<Rect x="3" y="7" width="18" height="14" rx="1.5" fillOpacity="0.15" />
+		<Rect x="3" y="7" width="18" height="14" rx="1.5" fill="none" stroke="currentColor" strokeWidth="1.5" />
+		<Rect x="6" y="11" width="10" height="1.5" rx="0.75" fillOpacity="0.5" />
+		<Rect x="6" y="14.5" width="7" height="1.5" rx="0.75" fillOpacity="0.35" />
+	</SVG>
+);
+
+/** Tab — single tab panel */
+export const tabIcon = icon(
+	<SVG viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+		<Rect x="3" y="3" width="18" height="18" rx="2" fillOpacity="0.15" />
+		<Rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="currentColor" strokeWidth="1.5" />
+		<Rect x="3" y="3" width="6" height="4" rx="1" />
+		<Rect x="6" y="10" width="12" height="1.5" rx="0.75" fillOpacity="0.5" />
+		<Rect x="6" y="13.5" width="9" height="1.5" rx="0.75" fillOpacity="0.35" />
 	</SVG>
 );

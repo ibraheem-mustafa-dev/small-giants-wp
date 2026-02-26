@@ -1,0 +1,46 @@
+/**
+ * Decorative Image — editor-only styles.
+ */
+
+.sgs-decorative-image-editor__placeholder {
+	padding: 2rem;
+	text-align: center;
+	border: 2px dashed #ccc;
+	background: #f9f9f9;
+}
+
+.sgs-decorative-image-editor__help {
+	margin-top: 1rem;
+	font-size: 0.875rem;
+	color: #666;
+}
+
+.sgs-decorative-image-editor__preview-wrapper {
+	border: 1px solid #ddd;
+	background: #f9f9f9;
+	padding: 1rem;
+}
+
+.sgs-decorative-image-editor__preview-container {
+	position: relative;
+	min-height: 400px;
+	background: repeating-linear-gradient(
+		45deg,
+		#ffffff,
+		#ffffff 10px,
+		#f0f0f0 10px,
+		#f0f0f0 20px
+	);
+	overflow: hidden;
+}
+
+.sgs-decorative-image-editor__preview {
+	max-width: 100%;
+	height: auto;
+}
+
+.sgs-decorative-image-editor__actions {
+	margin-top: 1rem;
+	display: flex;
+	gap: 0.5rem;
+}

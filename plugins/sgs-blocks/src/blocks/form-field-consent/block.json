@@ -1,54 +1,82 @@
 {
-	"$schema": "https://schemas.wp.org/trunk/block.json",
-	"apiVersion": 3,
-	"name": "sgs/form-field-consent",
-	"version": "0.1.0",
-	"title": "Consent Field",
-	"category": "sgs-forms",
-	"description": "Consent checkbox for GDPR, terms, and marketing.",
-	"keywords": [ "consent", "gdpr", "terms", "checkbox", "privacy" ],
-	"textdomain": "sgs-blocks",
-	"icon": "privacy",
-	"parent": [ "sgs/form", "sgs/form-step" ],
-	"usesContext": [ "sgs/formId" ],
-	"supports": {
-		"html": false,
-		"anchor": false
-	},
-	"attributes": {
-		"fieldName": {
-			"type": "string",
-			"default": "consent"
-		},
-		"label": {
-			"type": "string",
-			"default": ""
-		},
-		"placeholder": {
-			"type": "string",
-			"default": ""
-		},
-		"helpText": {
-			"type": "string",
-			"default": ""
-		},
-		"required": {
-			"type": "boolean",
-			"default": false
-		},
-		"width": {
-			"type": "string",
-			"default": "full"
-		},
-		"consentType": {
-			"type": "string",
-			"default": "terms"
-		},
-		"consentText": {
-			"type": "string",
-			"default": "I agree to the Terms & Conditions"
-		}
-	},
-	"render": "file:./render.php",
-	"editorScript": "file:./index.js"
+    "$schema":  "https://schemas.wp.org/trunk/block.json",
+    "apiVersion":  3,
+    "name":  "sgs/form-field-consent",
+    "version":  "0.1.0",
+    "title":  "SGS Consent Field",
+    "category":  "sgs-forms",
+    "description":  "Consent checkbox for GDPR, terms, and marketing.",
+    "keywords":  [
+                     "consent",
+                     "gdpr",
+                     "terms",
+                     "checkbox",
+                     "privacy"
+                 ],
+    "textdomain":  "sgs-blocks",
+    "icon":  "privacy",
+    "parent":  [
+                   "sgs/form",
+                   "sgs/form-step"
+               ],
+    "usesContext":  [
+                        "sgs/formId"
+                    ],
+    "supports":  {
+                     "html":  false,
+                     "anchor":  false
+                 },
+    "attributes":  {
+                       "fieldName":  {
+                                         "type":  "string",
+                                         "default":  "consent"
+                                     },
+                       "label":  {
+                                     "type":  "string",
+                                     "default":  ""
+                                 },
+                       "placeholder":  {
+                                           "type":  "string",
+                                           "default":  ""
+                                       },
+                       "helpText":  {
+                                        "type":  "string",
+                                        "default":  ""
+                                    },
+                       "required":  {
+                                        "type":  "boolean",
+                                        "default":  false
+                                    },
+                       "width":  {
+                                     "type":  "string",
+                                     "default":  "full"
+                                 },
+                       "consentType":  {
+                                           "type":  "string",
+                                           "default":  "terms"
+                                       },
+                       "consentText":  {
+                                           "type":  "string",
+                                           "default":  "I agree to the Terms \u0026 Conditions"
+                                       },
+                       "conditionalField":  {
+                                                "type":  "string",
+                                                "default":  ""
+                                            },
+                       "conditionalOperator":  {
+                                                   "type":  "string",
+                                                   "default":  "equals"
+                                               },
+                       "conditionalValue":  {
+                                                "type":  "string",
+                                                "default":  ""
+                                            }
+                   },
+    "render":  "file:./render.php",
+    "editorScript":  "file:./index.js",
+    "example":  {
+                    "attributes":  {
+                                       "label":  "I agree to the terms and conditions and privacy policy."
+                                   }
+                }
 }

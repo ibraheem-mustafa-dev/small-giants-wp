@@ -1,0 +1,4 @@
+/* Back to Top — editor-only (show as static in editor) */
+.sgs-back-to-top {
+	position: static !important;
+}

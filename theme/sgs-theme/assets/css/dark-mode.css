@@ -1,0 +1,134 @@
+/**
+ * SGS Theme — Dark Mode
+ *
+ * Uses [data-theme="dark"] on <html> for toggled dark mode,
+ * and @media (prefers-color-scheme: dark) for OS-level preference.
+ *
+ * All colours use CSS custom properties from theme.json, overridden here.
+ * Blocks using var(--wp--preset--color--*) automatically adapt.
+ *
+ * @package SGS\Theme
+ */
+
+/* ─── Dark palette overrides ─── */
+
+:root[data-theme="dark"],
+:root[data-theme="auto"][data-prefers-dark="true"] {
+	--wp--preset--color--surface: #121212;
+	--wp--preset--color--surface-alt: #1E1E1E;
+	--wp--preset--color--text: #E8E8E8;
+	--wp--preset--color--text-muted: #A0A0A0;
+	--wp--preset--color--text-inverse: #333333;
+	--wp--preset--color--primary: #1AACAE;
+	--wp--preset--color--primary-dark: #0F7E80;
+	--wp--preset--color--accent: #FFA04D;
+	--wp--preset--color--accent-light: #3D2A1A;
+	--wp--preset--color--border-subtle: #2A4A4B;
+	--wp--preset--color--footer-bg: #0A3B3D;
+
+	/* Shadow adjustments for dark backgrounds */
+	--wp--preset--shadow--sm: 0 1px 3px rgba(0,0,0,0.3);
+	--wp--preset--shadow--md: 0 4px 12px rgba(0,0,0,0.4);
+	--wp--preset--shadow--lg: 0 8px 30px rgba(0,0,0,0.5);
+	--wp--preset--shadow--glow: 0 0 20px rgba(255,160,77,0.3);
+
+	color-scheme: dark;
+}
+
+/* OS-level preference (no toggle needed) */
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme="light"]):not([data-theme="dark"]) {
+		--wp--preset--color--surface: #121212;
+		--wp--preset--color--surface-alt: #1E1E1E;
+		--wp--preset--color--text: #E8E8E8;
+		--wp--preset--color--text-muted: #A0A0A0;
+		--wp--preset--color--text-inverse: #333333;
+		--wp--preset--color--primary: #1AACAE;
+		--wp--preset--color--primary-dark: #0F7E80;
+		--wp--preset--color--accent: #FFA04D;
+		--wp--preset--color--accent-light: #3D2A1A;
+		--wp--preset--color--border-subtle: #2A4A4B;
+		--wp--preset--color--footer-bg: #0A3B3D;
+
+		--wp--preset--shadow--sm: 0 1px 3px rgba(0,0,0,0.3);
+		--wp--preset--shadow--md: 0 4px 12px rgba(0,0,0,0.4);
+		--wp--preset--shadow--lg: 0 8px 30px rgba(0,0,0,0.5);
+		--wp--preset--shadow--glow: 0 0 20px rgba(255,160,77,0.3);
+
+		color-scheme: dark;
+	}
+}
+
+/* ─── Image brightness in dark mode ─── */
+
+:root[data-theme="dark"] img:not(.sgs-no-dim),
+:root[data-theme="auto"][data-prefers-dark="true"] img:not(.sgs-no-dim) {
+	filter: brightness(0.9);
+}
+
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme="light"]):not([data-theme="dark"]) img:not(.sgs-no-dim) {
+		filter: brightness(0.9);
+	}
+}
+
+/* ─── Dark mode toggle button ─── */
+
+.sgs-dark-mode-toggle {
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	padding: 0.5rem;
+	border-radius: var(--wp--custom--border-radius--small, 4px);
+	color: currentColor;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 44px;
+	min-height: 44px;
+	transition: background-color var(--wp--custom--transition--fast, 0.15s ease);
+}
+
+.sgs-dark-mode-toggle:hover {
+	background-color: var(--wp--preset--color--surface-alt);
+}
+
+.sgs-dark-mode-toggle:focus-visible {
+	outline: 2px solid var(--sgs-focus-color, var(--wp--preset--color--primary-dark));
+	outline-offset: 2px;
+}
+
+.sgs-dark-mode-toggle svg {
+	width: 20px;
+	height: 20px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+/* Show/hide sun/moon icons based on theme */
+.sgs-dark-mode-toggle .sgs-icon-moon {
+	display: block;
+}
+
+.sgs-dark-mode-toggle .sgs-icon-sun {
+	display: none;
+}
+
+:root[data-theme="dark"] .sgs-dark-mode-toggle .sgs-icon-moon {
+	display: none;
+}
+
+:root[data-theme="dark"] .sgs-dark-mode-toggle .sgs-icon-sun {
+	display: block;
+}
+
+/* ─── Reduced motion ─── */
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-dark-mode-toggle {
+		transition: none;
+	}
+}

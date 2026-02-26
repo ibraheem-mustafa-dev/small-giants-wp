@@ -1,0 +1,64 @@
+/**
+ * SGS Tabs — editor-only styles.
+ *
+ * Overrides that only apply inside the block editor canvas.
+ * The tab nav buttons use the WP Button component which adds its own
+ * styles — we need to reset those back to our tab appearance.
+ *
+ * @package SGS\Blocks
+ */
+
+/* ─── Tab label control in child block ──────────────────────────────────────── */
+
+.sgs-tab__label-control {
+	padding: 8px 12px;
+	background: rgba( 0, 0, 0, 0.04 );
+	border-bottom: 1px solid rgba( 0, 0, 0, 0.1 );
+	margin-bottom: 0;
+}
+
+.sgs-tab__label-control .components-base-control {
+	margin-bottom: 0;
+}
+
+/* ─── Reset WP Button component to look like our tab button ─────────────────── */
+
+.sgs-tabs__nav .sgs-tabs__tab.components-button {
+	height: auto;
+	padding: 12px 20px;
+	min-height: 44px;
+	border-radius: 0;
+	font-size: inherit;
+	font-family: inherit;
+	color: inherit;
+	flex-shrink: 0;
+}
+
+.sgs-tabs__nav .sgs-tabs__tab.components-button:hover {
+	background-color: rgba( 0, 0, 0, 0.05 );
+	color: inherit;
+}
+
+/* Active state in editor */
+.sgs-tabs__nav .sgs-tabs__tab.sgs-tabs__tab--active.components-button {
+	color: var( --sgs-tab-active-text, var( --wp--preset--color--primary, #0F7E80 ) );
+}
+
+/* Pills active in editor */
+.sgs-tabs--style-pills .sgs-tabs__nav .sgs-tabs__tab.sgs-tabs__tab--active.components-button {
+	background-color: var( --sgs-tab-active-bg, var( --wp--preset--color--primary, #0F7E80 ) );
+	color: var( --sgs-tab-active-text, #fff );
+	border-radius: 999px;
+}
+
+/* ─── Editor InnerBlocks for tabs panels ────────────────────────────────────── */
+
+/* Hide inactive tab panels in editor via the data attribute on the panels wrapper */
+.sgs-tabs__panels .sgs-tab--hidden {
+	display: none;
+}
+
+/* Ensure the active panel shows its appender */
+.sgs-tabs__panels .sgs-tab--active {
+	display: block;
+}

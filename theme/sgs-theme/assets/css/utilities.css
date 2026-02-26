@@ -26,8 +26,14 @@
 	left: var(--wp--preset--spacing--30);
 	z-index: 999;
 	padding: var(--wp--preset--spacing--20) var(--wp--preset--spacing--30);
-	background: var(--wp--preset--color--accent);
-	color: var(--wp--preset--color--primary-dark);
+	/*
+	 * Using primary-dark (#076a8e) background + white text.
+	 * Contrast: white on #076a8e = 5.54:1 — passes WCAG AA for normal text.
+	 * The dark background also has 5.54:1 against the white page — passes
+	 * WCAG 1.4.11 (non-text contrast) for the focus indicator component.
+	 */
+	background: var(--wp--preset--color--primary-dark, #076a8e);
+	color: var(--wp--preset--color--surface, #ffffff);
 	font-weight: 700;
 	border-radius: var(--wp--custom--border-radius--medium);
 	text-decoration: none;
@@ -49,3 +55,62 @@
 .text-right {
 	text-align: right;
 }
+
+/* ─── Opening hours definition list (footer M11) ─── */
+.sgs-opening-hours {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: 0.25rem 1rem;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	color: var(--wp--preset--color--text-inverse, #fff);
+	margin: 0;
+}
+
+.sgs-opening-hours dt {
+	font-weight: 700;
+}
+
+.sgs-opening-hours dd {
+	margin: 0;
+}
+
+/* ─── Custom Spacing Utilities ─── */
+/* Margin Top */
+.sgs-mt-10 { margin-top: var(--wp--preset--spacing--10); }
+.sgs-mt-20 { margin-top: var(--wp--preset--spacing--20); }
+.sgs-mt-30 { margin-top: var(--wp--preset--spacing--30); }
+.sgs-mt-40 { margin-top: var(--wp--preset--spacing--40); }
+.sgs-mt-50 { margin-top: var(--wp--preset--spacing--50); }
+.sgs-mt-60 { margin-top: var(--wp--preset--spacing--60); }
+.sgs-mt-70 { margin-top: var(--wp--preset--spacing--70); }
+.sgs-mt-80 { margin-top: var(--wp--preset--spacing--80); }
+
+/* Margin Bottom */
+.sgs-mb-10 { margin-bottom: var(--wp--preset--spacing--10); }
+.sgs-mb-20 { margin-bottom: var(--wp--preset--spacing--20); }
+.sgs-mb-30 { margin-bottom: var(--wp--preset--spacing--30); }
+.sgs-mb-40 { margin-bottom: var(--wp--preset--spacing--40); }
+.sgs-mb-50 { margin-bottom: var(--wp--preset--spacing--50); }
+.sgs-mb-60 { margin-bottom: var(--wp--preset--spacing--60); }
+.sgs-mb-70 { margin-bottom: var(--wp--preset--spacing--70); }
+.sgs-mb-80 { margin-bottom: var(--wp--preset--spacing--80); }
+
+/* Padding Top */
+.sgs-pt-10 { padding-top: var(--wp--preset--spacing--10); }
+.sgs-pt-20 { padding-top: var(--wp--preset--spacing--20); }
+.sgs-pt-30 { padding-top: var(--wp--preset--spacing--30); }
+.sgs-pt-40 { padding-top: var(--wp--preset--spacing--40); }
+.sgs-pt-50 { padding-top: var(--wp--preset--spacing--50); }
+.sgs-pt-60 { padding-top: var(--wp--preset--spacing--60); }
+.sgs-pt-70 { padding-top: var(--wp--preset--spacing--70); }
+.sgs-pt-80 { padding-top: var(--wp--preset--spacing--80); }
+
+/* Padding Bottom */
+.sgs-pb-10 { padding-bottom: var(--wp--preset--spacing--10); }
+.sgs-pb-20 { padding-bottom: var(--wp--preset--spacing--20); }
+.sgs-pb-30 { padding-bottom: var(--wp--preset--spacing--30); }
+.sgs-pb-40 { padding-bottom: var(--wp--preset--spacing--40); }
+.sgs-pb-50 { padding-bottom: var(--wp--preset--spacing--50); }
+.sgs-pb-60 { padding-bottom: var(--wp--preset--spacing--60); }
+.sgs-pb-70 { padding-bottom: var(--wp--preset--spacing--70); }
+.sgs-pb-80 { padding-bottom: var(--wp--preset--spacing--80); }

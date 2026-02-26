@@ -1,89 +1,122 @@
 {
-	"$schema": "https://schemas.wp.org/trunk/block.json",
-	"apiVersion": 3,
-	"name": "sgs/testimonial-slider",
-	"version": "0.1.0",
-	"title": "SGS Testimonial Slider",
-	"category": "sgs-content",
-	"description": "Carousel of testimonials with CSS scroll-snap and optional autoplay.",
-	"keywords": [ "testimonial", "slider", "carousel", "reviews", "feedback" ],
-	"textdomain": "sgs-blocks",
-	"icon": "slides",
-	"supports": {
-		"align": [ "wide", "full" ],
-		"anchor": true,
-		"html": false,
-		"color": {
-			"background": true,
-			"text": true
-		},
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true
-		}
-	},
-	"selectors": {
-		"root": ".sgs-testimonial-slider",
-		"typography": ".sgs-testimonial-slider__quote"
-	},
-	"attributes": {
-		"testimonials": {
-			"type": "array",
-			"default": []
-		},
-		"autoplay": {
-			"type": "boolean",
-			"default": false
-		},
-		"autoplaySpeed": {
-			"type": "number",
-			"default": 5000
-		},
-		"showDots": {
-			"type": "boolean",
-			"default": true
-		},
-		"showArrows": {
-			"type": "boolean",
-			"default": true
-		},
-		"slidesVisible": {
-			"type": "number",
-			"default": 1
-		},
-		"cardStyle": {
-			"type": "string",
-			"default": "card"
-		},
-		"quoteColour": {
-			"type": "string"
-		},
-		"nameColour": {
-			"type": "string"
-		},
-		"nameFontSize": {
-			"type": "string"
-		},
-		"roleColour": {
-			"type": "string"
-		},
-		"ratingColour": {
-			"type": "string",
-			"default": "accent"
-		}
-	},
-	"editorScript": "file:./index.js",
-	"editorStyle": "file:./editor.css",
-	"style": "file:./style.css",
-	"viewScriptModule": "file:./view.js"
+    "$schema":  "https://schemas.wp.org/trunk/block.json",
+    "apiVersion":  3,
+    "name":  "sgs/testimonial-slider",
+    "version":  "0.1.0",
+    "title":  "SGS Testimonial Slider",
+    "category":  "sgs-content",
+    "description":  "Carousel of testimonials with CSS scroll-snap and optional autoplay.",
+    "keywords":  [
+                     "testimonial",
+                     "slider",
+                     "carousel",
+                     "reviews",
+                     "feedback"
+                 ],
+    "textdomain":  "sgs-blocks",
+    "icon":  "slides",
+    "supports":  {
+                     "align":  [
+                                   "wide",
+                                   "full"
+                               ],
+                     "anchor":  true,
+                     "html":  false,
+                     "color":  {
+                                   "background":  true,
+                                   "text":  true
+                               },
+                     "typography":  {
+                                        "fontSize":  true,
+                                        "lineHeight":  true
+                                    },
+                     "spacing":  {
+                                     "margin":  true,
+                                     "padding":  true
+                                 },
+                     "__experimentalBorder":  {
+                                                  "radius":  true,
+                                                  "width":  true,
+                                                  "color":  true,
+                                                  "style":  true
+                                              }
+                 },
+    "selectors":  {
+                      "root":  ".sgs-testimonial-slider",
+                      "typography":  ".sgs-testimonial-slider__quote"
+                  },
+    "attributes":  {
+                       "testimonials":  {
+                                            "type":  "array",
+                                            "default":  [
+
+                                                        ]
+                                        },
+                       "autoplay":  {
+                                        "type":  "boolean",
+                                        "default":  false
+                                    },
+                       "autoplaySpeed":  {
+                                             "type":  "number",
+                                             "default":  5000
+                                         },
+                       "showDots":  {
+                                        "type":  "boolean",
+                                        "default":  true
+                                    },
+                       "showArrows":  {
+                                          "type":  "boolean",
+                                          "default":  true
+                                      },
+                       "slidesVisible":  {
+                                             "type":  "number",
+                                             "default":  1
+                                         },
+                       "cardStyle":  {
+                                         "type":  "string",
+                                         "default":  "card"
+                                     },
+                       "quoteColour":  {
+                                           "type":  "string"
+                                       },
+                       "nameColour":  {
+                                          "type":  "string"
+                                      },
+                       "nameFontSize":  {
+                                            "type":  "string"
+                                        },
+                       "roleColour":  {
+                                          "type":  "string"
+                                      },
+                       "ratingColour":  {
+                                            "type":  "string",
+                                            "default":  "accent"
+                                        }
+                   },
+    "editorScript":  "file:./index.js",
+    "editorStyle":  "file:./index.css",
+    "style":  "file:./style-index.css",
+    "viewScriptModule":  "file:./view.js",
+    "render":  "file:./render.php",
+    "example":  {
+                    "attributes":  {
+                                       "showDots":  true,
+                                       "showArrows":  true,
+                                       "cardStyle":  "card",
+                                       "testimonials":  [
+                                                            {
+                                                                "quote":  "Exceptional service — our go-to supplier for over three years.",
+                                                                "name":  "Mark Davidson",
+                                                                "role":  "Catering Manager",
+                                                                "rating":  5
+                                                            },
+                                                            {
+                                                                "quote":  "Reliable, great value, and the team are always helpful.",
+                                                                "name":  "Priya Sharma",
+                                                                "role":  "Restaurant Owner",
+                                                                "rating":  5
+                                                            }
+                                                        ]
+                                   }
+                }
 }

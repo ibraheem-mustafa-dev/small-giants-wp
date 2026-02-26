@@ -1,79 +1,129 @@
 {
-	"$schema": "https://schemas.wp.org/trunk/block.json",
-	"apiVersion": 3,
-	"name": "sgs/cta-section",
-	"version": "0.1.0",
-	"title": "SGS CTA Section",
-	"category": "sgs-content",
-	"description": "Call-to-action section with headline, supporting text, and buttons.",
-	"keywords": [ "cta", "call", "action", "banner", "buttons" ],
-	"textdomain": "sgs-blocks",
-	"icon": "megaphone",
-	"supports": {
-		"align": [ "wide", "full" ],
-		"anchor": true,
-		"html": false,
-		"color": {
-			"background": true,
-			"text": true,
-			"gradients": true
-		},
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true,
-			"textAlign": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true
-		}
-	},
-	"selectors": {
-		"root": ".sgs-cta-section",
-		"typography": ".sgs-cta-section__headline"
-	},
-	"attributes": {
-		"headline": {
-			"type": "string",
-			"source": "html",
-			"selector": ".sgs-cta-section__headline"
-		},
-		"body": {
-			"type": "string",
-			"source": "html",
-			"selector": ".sgs-cta-section__body"
-		},
-		"buttons": {
-			"type": "array",
-			"default": []
-		},
-		"layout": {
-			"type": "string",
-			"default": "centred"
-		},
-		"headlineColour": {
-			"type": "string"
-		},
-		"bodyColour": {
-			"type": "string"
-		},
-		"bodyFontSize": {
-			"type": "string"
-		},
-		"buttonColour": {
-			"type": "string"
-		},
-		"buttonBackground": {
-			"type": "string"
-		}
-	},
-	"editorScript": "file:./index.js",
-	"editorStyle": "file:./editor.css",
-	"style": "file:./style.css"
+    "$schema":  "https://schemas.wp.org/trunk/block.json",
+    "apiVersion":  3,
+    "name":  "sgs/cta-section",
+    "version":  "0.1.0",
+    "title":  "SGS CTA Section",
+    "category":  "sgs-content",
+    "description":  "Call-to-action section with headline, supporting text, and buttons.",
+    "keywords":  [
+                     "cta",
+                     "call",
+                     "action",
+                     "banner",
+                     "buttons"
+                 ],
+    "textdomain":  "sgs-blocks",
+    "icon":  "megaphone",
+    "supports":  {
+                     "align":  [
+                                   "wide",
+                                   "full"
+                               ],
+                     "anchor":  true,
+                     "html":  false,
+                     "color":  {
+                                   "background":  true,
+                                   "text":  true,
+                                   "gradients":  true
+                               },
+                     "typography":  {
+                                        "fontSize":  true,
+                                        "lineHeight":  true,
+                                        "textAlign":  true
+                                    },
+                     "spacing":  {
+                                     "margin":  true,
+                                     "padding":  true
+                                 },
+                     "__experimentalBorder":  {
+                                                  "radius":  true,
+                                                  "width":  true,
+                                                  "color":  true,
+                                                  "style":  true
+                                              }
+                 },
+    "selectors":  {
+                      "root":  ".sgs-cta-section",
+                      "typography":  ".sgs-cta-section__headline"
+                  },
+    "attributes":  {
+                       "headline":  {
+                                        "type":  "string",
+                                        "default":  ""
+                                    },
+                       "body":  {
+                                    "type":  "string",
+                                    "default":  ""
+                                },
+                       "buttons":  {
+                                       "type":  "array",
+                                       "default":  [
+
+                                                   ]
+                                   },
+                       "layout":  {
+                                      "type":  "string",
+                                      "default":  "centred"
+                                  },
+                       "headlineColour":  {
+                                              "type":  "string"
+                                          },
+                       "bodyColour":  {
+                                          "type":  "string"
+                                      },
+                       "bodyFontSize":  {
+                                            "type":  "string"
+                                        },
+                       "buttonColour":  {
+                                            "type":  "string"
+                                        },
+                       "buttonBackground":  {
+                                                "type":  "string"
+                                            },
+                       "backgroundImage":  {
+                                               "type":  "object",
+                                               "default":  null
+                                           },
+                       "backgroundImageOpacity":  {
+                                                      "type":  "number",
+                                                      "default":  30
+                                                  },
+                       "stats":  {
+                                     "type":  "array",
+                                     "default":  [
+
+                                                 ]
+                                 },
+                       "hoverBackgroundColour":  {
+                                                     "type":  "string",
+                                                     "default":  ""
+                                                 },
+                       "hoverTextColour":  {
+                                               "type":  "string",
+                                               "default":  ""
+                                           },
+                       "hoverBorderColour":  {
+                                                 "type":  "string",
+                                                 "default":  ""
+                                             }
+                   },
+    "editorScript":  "file:./index.js",
+    "editorStyle":  "file:./index.css",
+    "style":  "file:./style-index.css",
+    "render":  "file:./render.php",
+    "example":  {
+                    "attributes":  {
+                                       "headline":  "Ready to order in bulk?",
+                                       "body":  "Get competitive wholesale pricing with next-day delivery across the UK.",
+                                       "layout":  "centred",
+                                       "buttons":  [
+                                                       {
+                                                           "text":  "Request a Quote",
+                                                           "style":  "accent",
+                                                           "url":  ""
+                                                       }
+                                                   ]
+                                   }
+                }
 }

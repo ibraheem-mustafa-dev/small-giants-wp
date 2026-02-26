@@ -5,6 +5,7 @@
  * - Prev/next arrow functionality
  * - Dot navigation synced to scroll position
  * - Optional autoplay that pauses on hover/focus
+ * - WCAG 2.2.2-compliant persistent pause/play button (injected into DOM)
  *
  * Loaded as a viewScriptModule (ES module, frontend only).
  * Target: < 3KB minified.
@@ -31,6 +32,7 @@ sliders.forEach( ( slider ) => {
 
 	let currentIndex = 0;
 	let autoplayTimer = null;
+	let isPaused = false;
 
 	/**
 	 * Scroll to a specific slide index.
@@ -41,10 +43,9 @@ sliders.forEach( ( slider ) => {
 		const clamped = Math.max( 0, Math.min( index, slides.length - 1 ) );
 		currentIndex = clamped;
 
-		slides[ clamped ].scrollIntoView( {
+		track.scrollTo( {
+			left: slides[ clamped ].offsetLeft,
 			behavior: prefersReducedMotion ? 'auto' : 'smooth',
-			block: 'nearest',
-			inline: 'start',
 		} );
 
 		updateDots();
@@ -95,14 +96,14 @@ sliders.forEach( ( slider ) => {
 	if ( prevBtn ) {
 		prevBtn.addEventListener( 'click', () => {
 			goToSlide( currentIndex - 1 );
-			stopAutoplay();
+			pausePermanently();
 		} );
 	}
 
 	if ( nextBtn ) {
 		nextBtn.addEventListener( 'click', () => {
 			goToSlide( currentIndex + 1 );
-			stopAutoplay();
+			pausePermanently();
 		} );
 	}
 
@@ -110,7 +111,7 @@ sliders.forEach( ( slider ) => {
 	dots.forEach( ( dot, i ) => {
 		dot.addEventListener( 'click', () => {
 			goToSlide( i );
-			stopAutoplay();
+			pausePermanently();
 		} );
 	} );
 
@@ -127,7 +128,7 @@ sliders.forEach( ( slider ) => {
 
 	/* Autoplay */
 	function startAutoplay() {
-		if ( ! shouldAutoplay || prefersReducedMotion ) {
+		if ( ! shouldAutoplay || prefersReducedMotion || isPaused ) {
 			return;
 		}
 		stopAutoplay();
@@ -145,24 +146,112 @@ sliders.forEach( ( slider ) => {
 		}
 	}
 
-	/* Pause autoplay on hover and focus */
-	slider.addEventListener( 'mouseenter', stopAutoplay );
-	slider.addEventListener( 'focusin', stopAutoplay );
-	slider.addEventListener( 'mouseleave', startAutoplay );
-	slider.addEventListener( 'focusout', startAutoplay );
+	/**
+	 * Permanently pause autoplay — called when the user explicitly interacts.
+	 * This prevents autoplay resuming when the mouse leaves or focus shifts.
+	 * The pause button re-enables it.
+	 */
+	function pausePermanently() {
+		isPaused = true;
+		stopAutoplay();
+		if ( pauseBtn ) {
+			pauseBtn.setAttribute( 'aria-label', 'Play testimonials' );
+			pauseBtn.setAttribute( 'aria-pressed', 'false' );
+			pauseBtn.querySelector( '.sgs-testimonial-slider__pause-icon' ).textContent = '▶';
+		}
+	}
 
-	/* Keyboard navigation for the track */
-	track.addEventListener( 'keydown', ( e ) => {
-		if ( e.key === 'ArrowLeft' ) {
-			e.preventDefault();
-			goToSlide( currentIndex - 1 );
-			stopAutoplay();
-		} else if ( e.key === 'ArrowRight' ) {
-			e.preventDefault();
-			goToSlide( currentIndex + 1 );
-			stopAutoplay();
+	function resumeAutoplay() {
+		isPaused = false;
+		startAutoplay();
+		if ( pauseBtn ) {
+			pauseBtn.setAttribute( 'aria-label', 'Pause testimonials' );
+			pauseBtn.setAttribute( 'aria-pressed', 'true' );
+			pauseBtn.querySelector( '.sgs-testimonial-slider__pause-icon' ).textContent = '⏸';
+		}
+	}
+
+	/* Pause autoplay temporarily on hover and focus (while not permanently paused) */
+	slider.addEventListener( 'mouseenter', () => {
+		if ( ! isPaused ) stopAutoplay();
+	} );
+	slider.addEventListener( 'focusin', () => {
+		if ( ! isPaused ) stopAutoplay();
+	} );
+	slider.addEventListener( 'mouseleave', () => {
+		if ( ! isPaused ) startAutoplay();
+	} );
+	slider.addEventListener( 'focusout', ( e ) => {
+		if ( ! isPaused && ! slider.contains( e.relatedTarget ) ) {
+			startAutoplay();
 		}
 	} );
+
+	/*
+	 * Keyboard navigation for the dot tablist (ARIA tab pattern).
+	 *
+	 * When a dot button has focus, Left/Right arrow keys move between dots
+	 * and navigate slides. This is the correct pattern for role="tablist".
+	 * The prev/next arrow buttons also accept focus for keyboard access.
+	 */
+	dots.forEach( ( dot, i ) => {
+		dot.addEventListener( 'keydown', ( e ) => {
+			if ( e.key === 'ArrowLeft' || e.key === 'ArrowRight' ) {
+				e.preventDefault();
+				const next = e.key === 'ArrowRight'
+					? Math.min( i + 1, slides.length - 1 )
+					: Math.max( i - 1, 0 );
+				dots[ next ].focus();
+				goToSlide( next );
+				pausePermanently();
+			}
+		} );
+	} );
+
+	/*
+	 * WCAG 2.2.2 — Pause, Stop, Hide
+	 *
+	 * Auto-playing content that lasts more than 5 seconds MUST provide a
+	 * mechanism to pause, stop, or hide it. The prev/next/dot interactions
+	 * pause autoplay, but they do not provide a persistent mechanism — the
+	 * user has no way to know autoplay will resume when they leave.
+	 *
+	 * We inject a pause/play toggle button into the arrows container (or
+	 * adjacent to the slider if no arrows are shown). This button persists
+	 * the paused state for the lifetime of the page session.
+	 */
+	let pauseBtn = null;
+
+	if ( shouldAutoplay && ! prefersReducedMotion ) {
+		pauseBtn = document.createElement( 'button' );
+		pauseBtn.type = 'button';
+		pauseBtn.className = 'sgs-testimonial-slider__pause-btn';
+		pauseBtn.setAttribute( 'aria-label', 'Pause testimonials' );
+		pauseBtn.setAttribute( 'aria-pressed', 'true' );
+		pauseBtn.setAttribute( 'aria-live', 'polite' );
+
+		const icon = document.createElement( 'span' );
+		icon.className = 'sgs-testimonial-slider__pause-icon';
+		icon.setAttribute( 'aria-hidden', 'true' );
+		icon.textContent = '⏸';
+		pauseBtn.appendChild( icon );
+
+		pauseBtn.addEventListener( 'click', () => {
+			if ( isPaused ) {
+				resumeAutoplay();
+			} else {
+				pausePermanently();
+			}
+		} );
+
+		/* Insert after the arrows container, or directly after the track */
+		const arrowsContainer = slider.querySelector( '.sgs-testimonial-slider__arrows' );
+		if ( arrowsContainer ) {
+			arrowsContainer.appendChild( pauseBtn );
+		} else {
+			slider.appendChild( pauseBtn );
+		}
+	}
 
 	/* Initialise */
 	startAutoplay();

@@ -15,10 +15,29 @@ desktop.ini
 *.swp
 *.swo
 
+# Claude Code local settings
+.claude/
+
 # Environment
 .env
 .env.local
 
+# Windows artifacts
+NUL
+
 # WordPress
 *.log
 wp-content/uploads/
+
+# Firecrawl scraping artefacts
+.firecrawl/
+
+# Root-level screenshots (session artefacts)
+/*.png
+/*.jpeg
+/*.jpg
+
+# Client asset archives
+sites/indus-foods/assets.zip
+lighthouse-report.json
+.playwright-mcp/

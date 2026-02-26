@@ -59,6 +59,17 @@ function StepEditor( { step, index, onChange, onRemove } ) {
 				rows={ 2 }
 				__nextHasNoMarginBottom
 			/>
+			<TextControl
+				label={ __( 'Icon (optional)', 'sgs-blocks' ) }
+				value={ step.icon || '' }
+				onChange={ ( val ) => update( 'icon', val ) }
+				placeholder="icon-name or emoji"
+				help={ __(
+					'Optional icon slug (e.g., shopping-cart)',
+					'sgs-blocks'
+				) }
+				__nextHasNoMarginBottom
+			/>
 			<Button
 				variant="secondary"
 				isDestructive
@@ -124,6 +135,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					number: String( steps.length + 1 ),
 					title: '',
 					description: '',
+					icon: '',
 				},
 			],
 		} );
@@ -217,6 +229,15 @@ export default function Edit( { attributes, setAttributes } ) {
 			<div { ...blockProps }>
 				{ steps.map( ( step, index ) => (
 					<div key={ index } className="sgs-process-steps__step">
+						{ step.icon && (
+							<span
+								className="sgs-process-steps__icon"
+								aria-hidden="true"
+								data-icon={ step.icon }
+							>
+								{ step.icon }
+							</span>
+						) }
 						{ numberStyle !== 'none' && (
 							<span
 								className="sgs-process-steps__number"

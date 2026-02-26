@@ -1,108 +1,229 @@
-# Session Handoff — 2026-02-14 (Session 12 — Accordion + Review Schema + ToC)
+# Session Handoff — 2026-02-26 (Session 29 — Phase 2 Blocks + Automation)
 
 ## Completed This Session
 
-1. **Committed and deployed accordion blocks with FAQ Schema** — Accordion (3 styles: bordered/flush/card, single/multi-open, default-open item, FAQ Schema JSON-LD toggle) and Accordion Item (parent-constrained, context-inherited styling, progressive enhancement via `<details>/<summary>`). Commit `6c01146`.
+1. **Wired orphaned hooks into `~/.claude/settings.json`:**
+   - `branch-guard.sh` — now fires as PreToolUse on `Write|Edit` (blocks edits on main branch)
+   - `delete-guard.sh` — now fires as PreToolUse on `Bash` (blocks `rm -rf /` commands)
 
-2. **Committed and deployed custom SVG icons for all 32 blocks** — Every SGS block now has a distinct teal (#0F7E80) SVG icon in the block inserter. Block categories renamed to "SGS — Layout/Content/Interactive/Forms". Included in commit `6c01146`.
+2. **Created `build-reminder.py` PostToolUse hook:**
+   - Fires after any `Write|Edit` to a file under `plugins/sgs-blocks/src/`
+   - Prints a clear warning to run `npm run build` and deploy before testing live
+   - Registered in `settings.json`. Prevents the stale-build bug that recurred across multiple sessions.
 
-3. **Added Review Schema to testimonial block** — `render_block` PHP filter injects `schema.org/Review` JSON-LD when `reviewSource` attribute is set. Only externally sourced reviews (Google Reviews, LinkedIn, Trustpilot) get schema — hand-written testimonials are excluded. Two new attributes: `reviewSource`, `reviewDate`. No save.js changes, no deprecation needed. Commit `76cb362`.
+3. **Created `/deploy` skill:**
+   - Path: `.claude/skills/deploy/SKILL.md` (project-level)
+   - Invoke as `/deploy plugin`, `/deploy theme`, or `/deploy both`
+   - Full pipeline: build → tar → SCP → SSH extract → LiteSpeed cache clear → OPcache reset
+   - Includes critical gotchas table (single quotes on SSH, rm before mv, etc.)
 
-4. **Built and deployed Table of Contents block** — Dynamic block with server-side heading detection. Parses post content for H2-H6 tags, builds navigable nested list with auto-generated anchor IDs. Features: smooth scroll with configurable offset, IntersectionObserver scroll spy, collapsible via `<details>/<summary>`, three visual styles (card/minimal/flush), heading level toggles, `sgs-toc-ignore` class exclusion. Also created `heading-anchors.php` filter to inject `id` attributes on core/heading blocks that lack them (only when a ToC block is present on the page). Commit `3761ac0`.
+4. **Completed all three Phase 2 blocks (commit `8e640c4`):**
+   - **Countdown Timer** — missing `import './style.css'; import './editor.css';` in `index.js`. Fixed. Block now renders with teal numbers, labels, responsive layout.
+   - **Star Rating** — same CSS import fix. Stars now render with correct gold/empty colours, half-star support, schema.org/AggregateRating already working.
+   - **Team Member** — added Schema.org/Person JSON-LD to `render.php` (feature #252): `jobTitle`, `description`, `image`, `sameAs` for social URLs.
+   - Built, deployed, verified on Block Test page (post 52) with Playwright screenshots.
 
-5. **Wrote implementation plan** — `docs/plans/2026-02-14-accordion-deploy-review-schema-toc.md`
+5. **Created implementation plan:** `docs/plans/2026-02-26-phase2-blocks-complete.md`
+
+---
 
 ## Current State
 
-- **SGS Theme Phase 1a LIVE** on palestine-lives.org (WP 6.9.1)
-- **SGS Blocks** — 32 blocks registered and deployed (16 original + 13 form blocks + accordion + accordion-item + table-of-contents)
-- **SGS Forms** — fully operational (13 blocks, REST API, DB table, multi-step navigation)
-- **All blocks have custom teal SVG icons** in the inserter
-- **Git:** 22 commits on `main`, latest `3761ac0`. All code committed and deployed.
-- **No remote repository** — local git only
+- **Branch:** `feature/indus-foods-homepage`
+- **Last commit:** `8e640c4` — pushed to origin
+- **Live site:** `https://palestine-lives.org`
+- **All three Phase 2 blocks verified working** on Block Test page — countdown-timer ticking, star-rating styled, team-member rendering with schema.
+
+### Unstaged changes from previous sessions (not committed)
+
+These are session 28 leftovers sitting in the working tree — NOT yet committed:
+
+| File | What it is |
+|---|---|
+| `plugins/sgs-blocks/src/blocks/accordion/deprecated.js` | Deprecated.js v1 for accordion (save: () => null) |
+| `plugins/sgs-blocks/src/blocks/counter/deprecated.js` | Deprecated.js v1 for counter |
+| `plugins/sgs-blocks/src/blocks/tabs/deprecated.js` | Deprecated.js v1 for tabs |
+| `plugins/sgs-blocks/src/blocks/accordion/index.js` | Imports deprecated.js |
+| `plugins/sgs-blocks/src/blocks/counter/index.js` | Imports deprecated.js |
+| `plugins/sgs-blocks/src/blocks/tabs/index.js` | Imports deprecated.js |
+| `plugins/sgs-blocks/src/blocks/hero/editor.css` | Hero badges editor fix |
+| `theme/sgs-theme/assets/css/core-blocks-critical.css` | Header CSS fixes |
+| `plugins/sgs-blocks/includes/lucide-icons.php` | Modified |
+| `plugins/sgs-blocks/CLAUDE.md` | Updated |
+| `CLAUDE.md` | Updated |
+
+These need to be built and deployed — the deprecated.js files for accordion, counter, and tabs will fix the Block Test page validation errors.
+
+### Manual action still required (Task 1 from this session)
+
+Playwright cannot automate this — Chrome blocks it when already running. **You must do this manually in your browser:**
+
+1. Open `https://palestine-lives.org/wp-admin/post.php?post=65&action=edit` (Food Service)
+2. Click **Update** — triggers deprecated.js migration for trust-bar, heritage-strip, certification-bar, process-steps
+3. Open `https://palestine-lives.org/wp-admin/post.php?post=13&action=edit` (Homepage)
+4. Click **Update**
+5. On the Homepage: **re-add images to the heritage-strip block** (imageLeft/imageRight were never set — the block will show image placeholders after migration)
+
+---
 
 ## Known Issues / Blockers
 
-1. **No browser testing done this session** — Accordion, ToC, and Review Schema deployed but not tested in the editor or frontend. Need manual verification.
-2. **ToC heading detection uses regex** — Works for standard heading blocks but may miss headings deeply nested in custom block HTML. `DOMDocument` parsing would be more robust but adds complexity.
-3. **Review Schema `itemReviewed` defaults to site name as LocalBusiness** — May need per-page configuration for multi-service sites.
-4. **No end-to-end form submission test** — REST endpoints respond but no actual form submission tested.
-5. **Firefox 136+ claim** in `specs/02-SGS-BLOCKS.md` line 1034 should be 136+ (not 135+). Minor.
+1. **Header styling regressions** — live site header has multiple issues vs reference site. See Priority 1 below.
+2. **Block Test page — 3 broken blocks** — `sgs/accordion`, `sgs/accordion-item`, `sgs/tab-item` still show "unexpected content" errors. `sgs/social-icons` icons overlap. Deprecated.js exists in working tree but not yet built + deployed.
+3. **Pattern Showcase page — 3 broken blocks** — `sgs/counter` invalid, `core/image` blocks invalid (Meet Our Team), `core/group` block invalid (Simple Transparent Pricing).
+4. **ToC Test Page — PHP critical error** — page crashes in WP backend. Root cause unknown.
+5. **Trade Account page — 2 visual issues** — hero badges stacked in editor (cosmetic only), columns layout collision.
+
+---
 
 ## Next Priorities (in order)
 
-1. **Manual testing of new blocks** — Verify accordion (expand/collapse, FAQ Schema in page source), ToC (scroll spy, smooth scroll, heading detection, anchor IDs), Review Schema (JSON-LD output when reviewSource is set vs not set).
-2. **Build Indus Foods pages** — Homepage, Trade Application (4-step form), Food Service (template for all service pages). Reference `sites/indus-foods/CLAUDE.md`.
-3. **Build Post Grid / Query Loop block** — highest-priority missing block type (all 4 competitors have it).
-4. **Build Image Gallery with lightbox** — third-highest missing block type (3 of 4 competitors have it).
-5. **Build remaining blocks** — Tabs, Pricing Table, Modal, SVG Background, Announcement Bar (from spec).
+### Priority 0: Build + commit the unstaged deprecated.js files
+
+Before anything else — those deprecated.js files in the working tree need to be built and deployed. They fix accordion/counter/tabs on Block Test page.
+
+```bash
+cd plugins/sgs-blocks && npm run build
+```
+Then `/deploy plugin` and commit all unstaged changes.
+
+---
+
+### Priority 1: Header Styling (MUST match reference site)
+
+**Reference (DO NOT modify):** `https://lightsalmon-tarsier-683012.hostingersite.com/`
+**Dev site:** `https://palestine-lives.org/`
+
+Use Playwright at 1440px and 375px to screenshot both, extract computed styles, then fix:
+
+1. **Burger menu on desktop** — `@media (min-width: 1024px)` hide rule in `core-blocks-critical.css` isn't winning. Check computed display on `.wp-block-navigation__responsive-container-open`.
+2. **Logo size control not working** — width attribute on logo image has no effect on frontend.
+3. **Header CTA button** — "Register For a Trade Account" should be teal background, white text. Currently shows browser-default blue, small font.
+4. **Social icon hover inconsistency** — top-bar icons have different hover behaviours. Reference has consistent opacity/colour transitions.
+5. **Overall header CSS** — many elements likely missing or overridden. Extract computed styles from key elements.
+
+**Relevant files:**
+- `theme/sgs-theme/parts/header.html`
+- `theme/sgs-theme/parts/header-sticky.html`
+- `theme/sgs-theme/assets/css/core-blocks-critical.css`
+- `theme/sgs-theme/functions.php`
+
+---
+
+### Priority 2: Block Test Page — Broken Blocks
+
+1. **`sgs/accordion` + `sgs/accordion-item`** — deprecated.js needed (same pattern as session 28). SSH, extract stored HTML for post 52, add `save: () => null` deprecation.
+2. **`sgs/tab-item`** — same deprecated.js pattern.
+3. **`sgs/social-icons` overlapping** — CSS flexbox issue in `src/blocks/social-icons/style.css`.
+
+---
+
+### Priority 3: Pattern Showcase Page — Broken Blocks
+
+1. **`sgs/counter`** — deprecated.js pattern. Extract stored HTML from post 53 first.
+2. **`core/image` in "Meet Our Team"** — attribute mismatch. Extract raw block comment from DB, identify diverging attribute, fix with WP-CLI eval-file str_replace.
+3. **`core/group` in "Simple Transparent Pricing"** — same core block fix approach.
+
+---
+
+### Priority 4: ToC Test Page PHP Error
+
+SSH: `tail -100 ~/domains/palestine-lives.org/public_html/wp-content/debug.log`
+Likely in `sgs/table-of-contents` render.php — undefined variable or missing function.
+
+---
+
+### Priority 5: Trade Account Visual Issues
+
+- Hero badges stacked in editor → add flex rules to `src/blocks/hero/editor.css`
+- Column overlap → Playwright screenshot + computed margins → CSS spacing fix
+
+---
 
 ## Files Modified This Session
 
-**Created:**
-- `plugins/sgs-blocks/src/blocks/accordion/` (8 files: block.json, index.js, edit.js, save.js, render.php, view.js, style.css, editor.css)
-- `plugins/sgs-blocks/src/blocks/accordion-item/` (4 files: block.json, index.js, edit.js, render.php)
-- `plugins/sgs-blocks/src/blocks/table-of-contents/` (7 files: block.json, index.js, edit.js, render.php, view.js, style.css, editor.css)
-- `plugins/sgs-blocks/includes/review-schema.php`
-- `plugins/sgs-blocks/includes/heading-anchors.php`
-- `plugins/sgs-blocks/src/utils/icons.js` (custom SVG icons for all blocks)
-- `docs/plans/2026-02-14-accordion-deploy-review-schema-toc.md`
+| File | Change |
+|---|---|
+| `~/.claude/settings.json` | Added branch-guard.sh + delete-guard.sh PreToolUse hooks |
+| `~/.claude/hooks/build-reminder.py` | **NEW** — PostToolUse src/ edit warning |
+| `.claude/skills/deploy/SKILL.md` | **NEW** — /deploy skill with full pipeline |
+| `plugins/sgs-blocks/src/blocks/countdown-timer/index.js` | Added CSS imports |
+| `plugins/sgs-blocks/src/blocks/star-rating/index.js` | Added CSS imports |
+| `plugins/sgs-blocks/src/blocks/team-member/render.php` | Added Schema.org/Person JSON-LD |
+| `docs/plans/2026-02-26-phase2-blocks-complete.md` | **NEW** — Phase 2 implementation plan |
+| `CONVERSATION-HANDOFF.md` | Updated (this file) |
 
-**Modified:**
-- `plugins/sgs-blocks/src/blocks/testimonial/block.json` (added reviewSource, reviewDate attributes)
-- `plugins/sgs-blocks/src/blocks/testimonial/edit.js` (added Review Source panel with TextControl)
-- `plugins/sgs-blocks/src/utils/icons.js` (added tableOfContentsIcon)
-- `plugins/sgs-blocks/sgs-blocks.php` (added requires for review-schema.php, heading-anchors.php)
-- `plugins/sgs-blocks/includes/block-categories.php` (renamed to "SGS — Layout/Content/Interactive/Forms")
-- `plugins/sgs-blocks/src/blocks/*/index.js` (30+ files — imported custom SVG icons)
+---
 
 ## Notes for Next Session
 
-- **Review Schema is gated by `reviewSource`** — hand-written testimonials get no schema (correct). Only testimonials with a source platform set (e.g. "Google Reviews") output JSON-LD. This was a deliberate design decision because Google penalises self-serving review markup.
-- **Accordion blocks were written in a previous session** but never committed or built. This session committed, built, and deployed them.
-- **The `heading-anchors.php` filter only runs when `has_block('sgs/table-of-contents')` returns true** — it won't inject anchor IDs on pages without a ToC block.
-- **The ToC `render.php` and `heading-anchors.php` both generate slugs independently** — they use the same deduplication logic (`sanitize_title` + counter suffix) but maintain separate `$used_slugs` arrays. This could theoretically cause mismatches on pages with duplicate heading text. Worth monitoring during testing.
-- **Gold Standard Audit** (`specs/09-GOLD-STANDARD-AUDIT.md`) is verified with live competitor data. It identifies remaining block gaps and competitive positioning.
+- **Deprecated.js pattern is established** — see `src/blocks/process-steps/deprecated.js` as the template. Pattern: v1 with `save: () => null`, migrate function normalises old attribute shapes.
+- **Core block fixes use WP-CLI eval-file** — write PHP str_replace to `/tmp/script.php` via `cat << 'PHPEOF'`, SCP to server, `wp eval-file ~/script.php`, `rm`.
+- **Always use Playwright** for header work — screenshot both sites before touching anything, use `browser_evaluate` for computed styles. Never guess what's different.
+- **Reference site is read-only** — `lightsalmon-tarsier-683012.hostingersite.com`. Screenshots only, never modify.
+- **Unstaged changes need a build first** — accordion/counter/tabs deprecated.js won't do anything until `npm run build` is run and deployed.
+- **Build reminder hook is now active** — after editing any `src/` file you'll see a warning. This is intentional, not an error.
+- **`/deploy` skill now exists** — use it instead of typing the full command manually.
+
+---
 
 ## Relevant Tooling for Next Tasks
 
 ### Commands
+- `/deploy` — full deploy pipeline. Use `/deploy plugin` or `/deploy both`
 - `/handoff` — generate session handoff
-- `/deploy-check` — pre-deployment checklist
-- `/commit` — create git commit
 
 ### Skills
-- `/superpowers:using-superpowers` — start every session
-- `/superpowers:brainstorming` — explore page composition before building Indus Foods pages
-- `/superpowers:verification-before-completion` — verify blocks work before claiming done
-- `wp-block-development` — for building Post Grid, Image Gallery, Tabs blocks
-- `wp-interactivity-api` — for multi-step form behaviour on Indus Foods trade application
-- `wp-block-themes` — for theme.json template work on Indus Foods pages
+- `/superpowers:systematic-debugging` — for the PHP error on ToC Test Page
+- `/wp-block-development` — reference for deprecated.js patterns
 
 ### Agents
-- `test-and-explain` — test deployed blocks and explain results in plain English
-- `wp-developer` — WordPress development specialist
-- `performance-auditor` — check Core Web Vitals after deploying Indus Foods pages
+- **`wp-developer`** — MANDATORY for all CSS/template/PHP/block work (header fixes, deprecated.js, render.php). Never write WP code in the main conversation.
+- **`design-reviewer`** — use after header fixes to verify against reference site at multiple breakpoints
+- **`test-and-explain`** — run after fixing blocks to verify in plain English
 
 ### MCP Servers
-- **Context7** — WordPress block development docs
-- **Firecrawl** — web research, competitor page scraping
-- **Playwright** — browser testing for manual verification of new blocks
+- **Playwright** — essential for header comparison. Use `browser_navigate`, `browser_take_screenshot`, `browser_evaluate`, `browser_resize`.
+
+### Hooks (now active)
+- `build-reminder.py` — fires after any src/ edit, reminds to build. Intentional.
+- `branch-guard.sh` — blocks file edits on main branch.
+
+---
 
 ## Next Session Prompt
 
-```
+~~~
 /superpowers:using-superpowers
 
-SGS Blocks has 32 deployed blocks on palestine-lives.org (WP 6.9.1), including 3 new blocks from this session: Accordion (with FAQ Schema), Table of Contents (with scroll spy), and Review Schema on Testimonials. All blocks have custom teal SVG icons. Nothing has been browser-tested yet.
+SGS Framework — Session 30: Unstaged Deprecated.js + Header Fixes + Block Test Repairs
 
-Read CONVERSATION-HANDOFF.md and CLAUDE.md for full context, then work through these priorities:
+All three Phase 2 blocks (countdown-timer, star-rating, team-member) are working on the live site. Branch is `feature/indus-foods-homepage`, last commit `8e640c4`. There are unstaged deprecated.js files for accordion, counter, and tabs sitting in the working tree that need to be built and committed first.
 
-1. **Test the new blocks** — Use `test-and-explain` agent or Playwright to verify: (a) Accordion expand/collapse animation works, FAQ Schema JSON-LD appears in page source when toggle is on, (b) Table of Contents detects headings, generates anchor links, smooth scroll works, scroll spy highlights active heading, (c) Review Schema outputs JSON-LD only when reviewSource is set on a testimonial. Use `/superpowers:verification-before-completion` before moving on.
+Read CONVERSATION-HANDOFF.md and CLAUDE.md for full context, then work through these in order:
 
-2. **Build Indus Foods pages** — Read `sites/indus-foods/CLAUDE.md` for the full brief. Start with the Trade Application page (4-step form using deployed SGS Form blocks). Use `/superpowers:brainstorming` to plan page composition before building. Invoke `wp-interactivity-api` for form step navigation. Invoke `wp-block-themes` for template work.
+**Priority 0 — Build + commit unstaged deprecated.js files (5 min, do first):**
+Files `plugins/sgs-blocks/src/blocks/accordion/deprecated.js`, `counter/deprecated.js`, and `tabs/deprecated.js` are untracked. Run `cd plugins/sgs-blocks && npm run build`, then `/deploy plugin`, then commit all unstaged changes with a descriptive message. These fix Block Test page validation errors for accordion and tabs.
 
-3. **Build Post Grid / Query Loop block** — All 4 competitors have this. Use `/superpowers:brainstorming` to design it, then `wp-block-development` to build. Research how Kadence and Spectra implement theirs first (use Firecrawl).
+**Priority 1 — Header styling:**
+Use Playwright to screenshot both `https://palestine-lives.org/` and `https://lightsalmon-tarsier-683012.hostingersite.com/` at 1440px. Use `browser_evaluate` to extract computed styles on: hamburger button, CTA button, nav links, social icons, logo. Then fix in `theme/sgs-theme/assets/css/core-blocks-critical.css` and header template HTML:
+- Burger menu visible on desktop (CSS specificity issue)
+- CTA button wrong colour (should be teal + white, not blue)
+- Logo size control not working on frontend
+- Social icon hover inconsistency in top bar
+MANDATORY: delegate all CSS/template writes to `wp-developer` agent. Use `design-reviewer` agent to verify after.
 
-IMPORTANT: The test site (lightsalmon-tarsier-683012.hostingersite.com) is client-facing — DO NOT deploy there. Use palestine-lives.org only.
-```
+**Priority 2 — Block Test page broken blocks (post 52):**
+SSH to server, extract stored HTML for `sgs/accordion`, `sgs/accordion-item`, `sgs/tab-item`. Add deprecated.js with `save: () => null` for each. Fix `sgs/social-icons` overlapping CSS. Build and deploy with `/deploy plugin`.
+
+**Priority 3 — Pattern Showcase broken blocks (post 53):**
+`sgs/counter` needs deprecated.js (extract stored HTML first). Two core blocks need WP-CLI eval-file str_replace fix — extract raw block comments from DB to identify the attribute mismatch.
+
+**Priority 4 — ToC Test Page PHP error:**
+SSH: `tail -100 ~/domains/palestine-lives.org/public_html/wp-content/debug.log` — identify and fix the fatal in `sgs/table-of-contents` render.php.
+
+**REMINDER — manual action still needed:**
+You still need to open posts 65 (Food Service) and 13 (Homepage) in WP admin and click Update to trigger deprecated.js migrations. After saving Homepage, re-add images to the heritage-strip block.
+
+CRITICAL: Use `/deploy plugin` skill for deploys. The build-reminder hook will warn you after any src/ edit — that's intentional, not an error.
+~~~

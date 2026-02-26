@@ -1,46 +1,28 @@
 /**
- * SGS Theme — Core Block Style Overrides
+ * SGS Theme — Core Block Non-Critical Styles
  *
- * Styles WordPress core blocks to match the SGS design system.
- * Uses only theme.json CSS custom properties — no hardcoded colours.
+ * Below-the-fold and interaction-based styles deferred until after first paint.
+ * Loaded asynchronously via the defer_non_critical_css filter in functions.php
+ * using the media="print" onload="this.media='all'" pattern.
+ *
+ * Above-the-fold critical styles (header, logo, nav base, hero buttons) are in
+ * core-blocks-critical.css, which loads synchronously.
  *
  * @package SGS\Theme
  */
 
-/* ─── BUTTONS ─── */
+/* ─── NAVIGATION — hover, dropdown, submenu, and overlay styles ─── */
 
-.wp-block-button__link {
-	border-radius: var(--wp--custom--border-radius--medium);
-	font-weight: 700;
-	transition: transform var(--wp--custom--transition--fast),
-	            box-shadow var(--wp--custom--transition--fast);
-}
+/*
+ * These rules require user interaction (hover/focus) or are hidden until the
+ * mobile menu is opened — none are visible during initial page paint.
+ */
 
-.wp-block-button__link:hover {
-	transform: translateY(-2px);
-	box-shadow: var(--wp--preset--shadow--md);
-}
-
-.wp-block-button__link:active {
-	transform: translateY(0);
-}
-
-.wp-block-button__link:focus-visible {
-	outline: 2px solid var(--wp--preset--color--accent);
-	outline-offset: 2px;
-}
-
-/* Outline variant */
-.wp-block-button.is-style-outline .wp-block-button__link {
-	border-width: 2px;
-}
-
-/* ─── NAVIGATION — Megamenu-ready ─── */
-
-/* Top-level links */
-.wp-block-navigation .wp-block-navigation-item__content {
-	transition: color var(--wp--custom--transition--fast),
-	            opacity var(--wp--custom--transition--fast);
+/* Top-level nav link hover — accent background fill.
+   Submenu links override this with a higher-specificity rule below. */
+.wp-block-navigation .wp-block-navigation-item__content:hover {
+	background-color: var(--wp--preset--color--accent);
+	color: var(--wp--preset--color--text);
 }
 
 /* Submenu container — megamenu foundation */
@@ -85,20 +67,6 @@
 .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation-item__content {
 	font-size: var(--wp--preset--font-size--large);
 	padding: var(--wp--preset--spacing--20) 0;
-}
-
-/* ─── COLUMNS ─── */
-
-@media (max-width: 781px) {
-	.wp-block-columns {
-		gap: var(--wp--preset--spacing--30);
-	}
-}
-
-/* ─── HEADINGS ─── */
-
-.wp-block-heading {
-	letter-spacing: -0.01em;
 }
 
 /* ─── IMAGES ─── */
@@ -164,20 +132,305 @@
 	outline-offset: 2px;
 }
 
-/* ─── SITE TITLE ─── */
+/* ─── SOCIAL ICON LINKS — touch target ─── */
 
-.wp-block-site-title a {
+/*
+ * Social icon links rendered by wp-block-social-links are 24×24px by default.
+ * WCAG 2.2 SC 2.5.8 (AA) requires 24px minimum; WCAG 2.1 SC 2.5.5 (AA)
+ * requires 44×44px. We enforce 44×44px via min-width/height on the anchor.
+ */
+.wp-block-social-links .wp-block-social-link a {
+	min-width: 44px;
+	min-height: 44px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.wp-block-social-links .wp-block-social-link a:focus-visible {
+	outline: 2px solid var(--sgs-focus-color, var(--wp--preset--color--primary-dark, #076a8e));
+	outline-offset: 3px;
+	border-radius: var(--wp--custom--border-radius--small, 4px);
+}
+
+/* ─── FOCUS INDICATORS — footer links ─── */
+
+/* Footer links */
+.sgs-footer-links a:focus-visible,
+.sgs-footer-nav .wp-block-navigation-item__content:focus-visible {
+	outline: 3px solid var(--sgs-focus-color);
+	outline-offset: 2px;
+	border-radius: 2px;
+}
+
+/* ─── FOOTER HEADINGS — colour fix ─── */
+
+/*
+ * WordPress applies .has-text-color after .has-surface-color in the cascade,
+ * causing dark text on the navy footer background. This override restores
+ * the intended white colour for elements that have both classes (surface colour
+ * explicitly set on a heading that also carries .has-text-color).
+ *
+ * Also fixes the heading hierarchy: footer section labels are H2s styled
+ * small via .sgs-footer-label — no level skipping from H2 → H6.
+ */
+.wp-block-template-part footer .wp-block-heading.has-surface-color.has-text-color,
+.wp-block-template-part footer .wp-block-heading.has-text-inverse-color.has-text-color,
+footer .wp-block-heading.has-surface-color.has-text-color,
+footer .wp-block-heading.has-text-inverse-color.has-text-color {
+	color: var(--wp--preset--color--surface, #ffffff) !important;
+}
+
+/* Footer heading visual size — must match the small font-size already applied */
+.sgs-footer-label {
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	margin-bottom: var(--wp--preset--spacing--20);
+}
+
+/* ─── REDUCED MOTION — non-critical transitions ─── */
+
+/*
+ * Covers footer links and submenu animations declared in this file.
+ * Critical reduced-motion rules (buttons, nav base) are in
+ * core-blocks-critical.css.
+ */
+@media (prefers-reduced-motion: reduce) {
+	.sgs-footer-links a,
+	.sgs-footer-nav .wp-block-navigation-item__content {
+		transition: none;
+	}
+}
+
+/* ─── FOOTER LINK COLOUR — H5 ─── */
+
+/*
+ * Footer phone and email links use the site's link colour (primary/teal).
+ * On the dark footer background this gives only ~2.38:1 — WCAG AA failure.
+ * Force to white (surface token) for all links within the footer template part.
+ */
+footer p a,
+footer .wp-block-paragraph a,
+.wp-block-template-part footer p a {
+	color: var(--wp--preset--color--surface, #ffffff) !important;
+}
+
+footer p a:hover,
+footer .wp-block-paragraph a:hover,
+.wp-block-template-part footer p a:hover {
+	color: var(--wp--preset--color--accent-light, #fee8d4) !important;
+	text-decoration: underline;
+}
+
+/* ─── NAV LINK HOVER SCALE — H18 ─── */
+
+/*
+ * Adds subtle transform: scale(1.05) on hover to desktop nav links.
+ * GPU-composited via transform, safe for 60fps. Mobile excluded (touch targets
+ * should not scale as it creates visual noise during tap).
+ */
+@media (min-width: 1024px) {
+	.wp-block-navigation .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content:hover {
+		transform: scale(1.05);
+	}
+}
+
+/* ─── DROPDOWN SUBMENU ENTRANCE ANIMATION — H19 ─── */
+
+/*
+ * Submenus previously appeared instantly. This gives them a 200ms
+ * fade + slide-down entrance for a polished feel. Uses
+ * visibility:hidden not display:none so CSS transitions work.
+ * Reduced-motion: immediate show, no transform.
+ */
+.wp-block-navigation .has-child:hover > .wp-block-navigation__submenu-container,
+.wp-block-navigation .has-child:focus-within > .wp-block-navigation__submenu-container {
+	opacity: 1;
+	transform: translateY(0);
+	visibility: visible;
+}
+
+.wp-block-navigation .wp-block-navigation__submenu-container {
+	opacity: 0;
+	transform: translateY(-0.5em);
+	visibility: hidden;
+	transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0.2s;
+}
+
+.wp-block-navigation .has-child:hover > .wp-block-navigation__submenu-container,
+.wp-block-navigation .has-child:focus-within > .wp-block-navigation__submenu-container {
+	transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.wp-block-navigation .wp-block-navigation__submenu-container {
+		transition: none;
+	}
+}
+
+/* ─── SOCIAL ICON BRAND COLOURS ON HOVER — H21 ─── */
+
+/*
+ * Applies well-established brand colour standards to social icon hovers.
+ * WordPress outputs wp-social-link-{service} on the <li> element.
+ */
+.wp-block-social-links .wp-social-link-linkedin:hover svg,
+.wp-block-social-links .wp-social-link-linkedin:focus svg {
+	fill: #0a66c2 !important;
+}
+
+.wp-block-social-links .wp-social-link-facebook:hover svg,
+.wp-block-social-links .wp-social-link-facebook:focus svg {
+	fill: #1877f2 !important;
+}
+
+/* Instagram uses gradient background on hover with white icon */
+.wp-block-social-links .wp-social-link-instagram:hover,
+.wp-block-social-links .wp-social-link-instagram:focus {
+	background: linear-gradient(45deg, #833ab4, #fd1d1d, #fcaf45) !important;
+	border-radius: 6px;
+}
+
+.wp-block-social-links .wp-social-link-instagram:hover svg,
+.wp-block-social-links .wp-social-link-instagram:focus svg {
+	fill: #fff !important;
+}
+
+/* ─── SERVICE CARD + CARD GRID IMAGE HOVER ZOOM — H17 ─── */
+
+/*
+ * Image hover zoom for service cards and card-grid items.
+ * overflow:hidden is already on .sgs-card-grid__image-wrap.
+ * Generic .service-card class used by patterns and legacy content.
+ */
+.service-card {
+	overflow: hidden;
+}
+
+.service-card img {
+	transition: transform var(--wp--custom--transition--medium, 0.3s ease);
+}
+
+.service-card:hover img {
+	transform: scale(1.05);
+}
+
+/* ─── ICON LIST SIZE — M3 ─── */
+
+/*
+ * "Why Choose" sections use the icon-list block with icon-large size.
+ * 32px is too small to read at a glance in a feature-highlight context.
+ * Increase the large icon to ~50px.
+ */
+.sgs-icon-list--icon-large .sgs-icon-list__icon {
+	width: 50px;
+	height: 50px;
+	font-size: 32px;
+}
+
+/* ─── GHOST / OUTLINE BUTTON VARIANT — M16 ─── */
+
+/*
+ * Adds a gold-border ghost button style for service section CTAs.
+ * Used with the is-style-ghost class registered via PHP.
+ * Accent border + transparent background + accent text.
+ */
+.wp-block-button.is-style-ghost .wp-block-button__link {
+	background: transparent !important;
+	border: 2px solid var(--wp--preset--color--accent, #d8ca50);
+	color: var(--wp--preset--color--accent, #d8ca50) !important;
+}
+
+.wp-block-button.is-style-ghost .wp-block-button__link:hover,
+.wp-block-button.is-style-ghost .wp-block-button__link:focus {
+	background: var(--wp--preset--color--accent, #d8ca50) !important;
+	color: var(--wp--preset--color--text, #1e1e1e) !important;
+}
+
+/* ─── SOCIAL ICON TOUCH TARGETS — L5 ─── */
+
+/*
+ * Social icon touch targets were 36px. WCAG 2.2 AA requires 44×44px minimum.
+ * Adding transparent padding to reach 44×44 without affecting visual size.
+ * Already handled by the min-width/height rule above, but ensure padding too.
+ */
+.wp-block-social-links .wp-block-social-link a {
+	padding: 4px;
+}
+
+/* ─── FOOTER ─── */
+
+/* Gold social icons with hover glow */
+.sgs-footer-socials .wp-block-social-link a {
+	transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.sgs-footer-socials .wp-block-social-link a:hover {
+	transform: scale(1.15);
+	filter: brightness(1.3);
+}
+
+/* Footer label headings */
+.sgs-footer-label {
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
+/* Footer list items — ensure no bullets and proper link colour */
+.has-footer-bg-background-color .is-style-no-bullets,
+.has-footer-bg-background-color .is-style-no-bullets li,
+.is-style-no-bullets,
+.is-style-no-bullets li {
+	list-style: none !important;
+	list-style-type: none !important;
+	padding-left: 0 !important;
+}
+
+.has-footer-bg-background-color .is-style-no-bullets a {
+	color: var(--wp--preset--color--surface, #ffffff);
 	text-decoration: none;
+	transition: color 0.2s ease;
 }
 
-/* ─── HEADER CTA ─── */
-
-.sgs-header-cta .wp-block-button__link {
-	transition: transform var(--wp--custom--transition--fast),
-	            box-shadow var(--wp--custom--transition--fast);
+.has-footer-bg-background-color .is-style-no-bullets a:hover {
+	color: var(--wp--preset--color--accent, #d8ca50);
 }
 
-.sgs-header-cta .wp-block-button__link:hover {
-	transform: translateY(-1px);
-	box-shadow: var(--wp--preset--shadow--glow);
+/* Copyright bar — credit link animation */
+/* Gold (#d8ca50) on footer-bg (#2c3e50) is 3.9:1 — fails WCAG AA.
+ * Override the inline gold span to use a lighter gold that passes at 4.6:1. */
+.sgs-copyright {
+	color: var(--wp--preset--color--surface, #ffffff);
+}
+
+.sgs-copyright span[style*="accent"] {
+	color: #e8dca0 !important;
+}
+
+.sgs-credit-link {
+	color: var(--wp--preset--color--surface, #FFFFFF) !important;
+	text-decoration: none !important;
+	position: relative;
+	transition: color 0.2s ease;
+}
+
+.sgs-credit-link::after {
+	content: '';
+	position: absolute;
+	bottom: -2px;
+	left: 0;
+	width: 0;
+	height: 2px;
+	background: var(--wp--preset--color--accent, #d8ca50);
+	transition: width 0.3s ease;
+}
+
+.sgs-credit-link:hover {
+	color: var(--wp--preset--color--accent, #d8ca50) !important;
+}
+
+.sgs-credit-link:hover::after {
+	width: 100%;
 }

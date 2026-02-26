@@ -1,0 +1,224 @@
+/**
+ * SGS Tabs — frontend + editor shared styles.
+ *
+ * Uses CSS custom properties set via inline styles on the wrapper:
+ *   --sgs-tab-text              Tab label text colour
+ *   --sgs-tab-active-text       Active tab label colour
+ *   --sgs-tab-active-bg         Active tab background
+ *   --sgs-tab-active-indicator  Underline / indicator colour
+ *   --sgs-tab-hover-bg          Tab hover background
+ *   --sgs-panel-bg              Panel background
+ *   --sgs-panel-border          Border between nav and panel
+ *   --sgs-transition-duration   Transition speed (ms value with unit)
+ *
+ * @package SGS\Blocks
+ */
+
+/* ─── Wrapper ───────────────────────────────────────────────────────────────── */
+
+.sgs-tabs {
+	--sgs-panel-border: #e0e0e0;
+	--sgs-transition-duration: 200ms;
+}
+
+/* Vertical layout: nav left, panels right */
+.sgs-tabs--vertical {
+	display: flex;
+	align-items: flex-start;
+}
+
+/* ─── Tab navigation bar ────────────────────────────────────────────────────── */
+
+.sgs-tabs__nav {
+	display: flex;
+	flex-wrap: nowrap;
+	gap: 0;
+	border-bottom: 2px solid var( --sgs-panel-border );
+}
+
+.sgs-tabs--vertical .sgs-tabs__nav {
+	flex-direction: column;
+	flex-shrink: 0;
+	border-bottom: none;
+	border-right: 2px solid var( --sgs-panel-border );
+}
+
+/* ─── Alignment modifiers ───────────────────────────────────────────────────── */
+
+.sgs-tabs--align-centre .sgs-tabs__nav {
+	justify-content: center;
+}
+
+.sgs-tabs--align-right .sgs-tabs__nav {
+	justify-content: flex-end;
+}
+
+.sgs-tabs--align-stretch .sgs-tabs__tab {
+	flex: 1;
+	text-align: center;
+}
+
+/* ─── Tab buttons ───────────────────────────────────────────────────────────── */
+
+.sgs-tabs__tab {
+	/* Reset button styles */
+	appearance: none;
+	border: none;
+	border-radius: 0;
+	background: transparent;
+	margin: 0;
+	cursor: pointer;
+	outline: none;
+
+	padding: 12px 20px;
+	font-size: inherit;
+	font-family: inherit;
+	line-height: 1.4;
+	white-space: nowrap;
+
+	/* WCAG 2.2 AA minimum touch target */
+	min-height: 44px;
+	min-width: 44px;
+
+	color: var( --sgs-tab-text, inherit );
+
+	transition:
+		color var( --sgs-transition-duration ) ease,
+		background-color var( --sgs-transition-duration ) ease,
+		box-shadow var( --sgs-transition-duration ) ease;
+}
+
+.sgs-tabs__tab:hover {
+	background-color: var( --sgs-tab-hover-bg, rgba( 0, 0, 0, 0.05 ) );
+}
+
+.sgs-tabs__tab:focus-visible {
+	outline: 2px solid var( --wp--preset--color--primary, currentColor );
+	outline-offset: -2px;
+}
+
+.sgs-tabs__tab[aria-selected="true"],
+.sgs-tabs__tab--active {
+	color: var( --sgs-tab-active-text, var( --wp--preset--color--primary, inherit ) );
+	background-color: var( --sgs-tab-active-bg, transparent );
+}
+
+/* ─── Style: Underline ──────────────────────────────────────────────────────── */
+
+.sgs-tabs--style-underline .sgs-tabs__tab[aria-selected="true"],
+.sgs-tabs--style-underline .sgs-tabs__tab--active {
+	box-shadow: inset 0 -2px 0 var( --sgs-tab-active-indicator, var( --wp--preset--color--primary, currentColor ) );
+}
+
+.sgs-tabs--vertical.sgs-tabs--style-underline .sgs-tabs__tab[aria-selected="true"],
+.sgs-tabs--vertical.sgs-tabs--style-underline .sgs-tabs__tab--active {
+	box-shadow: inset -2px 0 0 var( --sgs-tab-active-indicator, var( --wp--preset--color--primary, currentColor ) );
+}
+
+/* ─── Style: Boxed ──────────────────────────────────────────────────────────── */
+
+.sgs-tabs--style-boxed .sgs-tabs__tab[aria-selected="true"],
+.sgs-tabs--style-boxed .sgs-tabs__tab--active {
+	border: 1px solid var( --sgs-panel-border );
+	border-bottom-color: var( --sgs-panel-bg, #fff );
+	background: var( --sgs-panel-bg, #fff );
+	/* Pull tab down to overlap the nav border */
+	margin-bottom: -2px;
+	position: relative;
+	z-index: 1;
+}
+
+.sgs-tabs--vertical.sgs-tabs--style-boxed .sgs-tabs__tab[aria-selected="true"],
+.sgs-tabs--vertical.sgs-tabs--style-boxed .sgs-tabs__tab--active {
+	border-bottom-color: var( --sgs-panel-border );
+	border-right-color: var( --sgs-panel-bg, #fff );
+	margin-bottom: 0;
+	margin-right: -2px;
+}
+
+/* ─── Style: Pills ──────────────────────────────────────────────────────────── */
+
+.sgs-tabs--style-pills .sgs-tabs__nav {
+	gap: 4px;
+	border-bottom: none;
+	padding-bottom: 8px;
+}
+
+.sgs-tabs--vertical.sgs-tabs--style-pills .sgs-tabs__nav {
+	border-right: none;
+	padding-bottom: 0;
+	padding-right: 8px;
+}
+
+.sgs-tabs--style-pills .sgs-tabs__tab[aria-selected="true"],
+.sgs-tabs--style-pills .sgs-tabs__tab--active {
+	background: var( --sgs-tab-active-bg, var( --wp--preset--color--primary, #0F7E80 ) );
+	color: var( --sgs-tab-active-text, #fff );
+	border-radius: 999px;
+}
+
+.sgs-tabs--style-pills .sgs-tabs__tab {
+	border-radius: 999px;
+}
+
+/* ─── Tab panels container ──────────────────────────────────────────────────── */
+
+.sgs-tabs__panels {
+	flex: 1;
+	min-width: 0; /* Prevent flex children from overflowing */
+}
+
+/* ─── Individual panel ──────────────────────────────────────────────────────── */
+
+.sgs-tabs__panel {
+	padding: 24px;
+	background: var( --sgs-panel-bg, transparent );
+}
+
+/* Semantic hidden — display:none is correct here (hidden attribute) */
+.sgs-tabs__panel[hidden] {
+	display: none;
+}
+
+/* ─── Responsive: vertical collapses to horizontal on small screens ─────────── */
+
+@media ( max-width: 599px ) {
+	.sgs-tabs--vertical {
+		flex-direction: column;
+	}
+
+	.sgs-tabs--vertical .sgs-tabs__nav {
+		flex-direction: row;
+		border-right: none;
+		border-bottom: 2px solid var( --sgs-panel-border );
+		overflow-x: auto;
+		/* Hide scrollbar while keeping functionality */
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+	}
+
+	.sgs-tabs--vertical .sgs-tabs__nav::-webkit-scrollbar {
+		display: none;
+	}
+
+	.sgs-tabs--vertical.sgs-tabs--style-underline .sgs-tabs__tab[aria-selected="true"],
+	.sgs-tabs--vertical.sgs-tabs--style-underline .sgs-tabs__tab--active {
+		box-shadow: inset 0 -2px 0 var( --sgs-tab-active-indicator, var( --wp--preset--color--primary, currentColor ) );
+	}
+
+	.sgs-tabs--vertical.sgs-tabs--style-boxed .sgs-tabs__tab[aria-selected="true"],
+	.sgs-tabs--vertical.sgs-tabs--style-boxed .sgs-tabs__tab--active {
+		border-right-color: var( --sgs-panel-border );
+		border-bottom-color: var( --sgs-panel-bg, #fff );
+		margin-right: 0;
+		margin-bottom: -2px;
+	}
+}
+
+/* ─── Reduced motion ────────────────────────────────────────────────────────── */
+
+@media ( prefers-reduced-motion: reduce ) {
+	.sgs-tabs__tab {
+		transition: none;
+	}
+}

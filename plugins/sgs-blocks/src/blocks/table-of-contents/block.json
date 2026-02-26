@@ -1,89 +1,109 @@
 {
-	"$schema": "https://schemas.wp.org/trunk/block.json",
-	"apiVersion": 3,
-	"name": "sgs/table-of-contents",
-	"version": "0.1.0",
-	"title": "SGS Table of Contents",
-	"category": "sgs-content",
-	"description": "Auto-generated table of contents from heading blocks. Smooth scroll, scroll spy, collapsible.",
-	"keywords": [ "toc", "table of contents", "navigation", "headings", "index" ],
-	"textdomain": "sgs-blocks",
-	"icon": "list-view",
-	"supports": {
-		"align": [ "wide" ],
-		"anchor": true,
-		"html": false,
-		"color": {
-			"background": true,
-			"text": true,
-			"link": true
-		},
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true
-		}
-	},
-	"attributes": {
-		"headingLevels": {
-			"type": "array",
-			"default": [ 2, 3, 4 ]
-		},
-		"title": {
-			"type": "string",
-			"default": "Table of Contents"
-		},
-		"collapsible": {
-			"type": "boolean",
-			"default": true
-		},
-		"defaultCollapsed": {
-			"type": "boolean",
-			"default": false
-		},
-		"smoothScroll": {
-			"type": "boolean",
-			"default": true
-		},
-		"scrollOffset": {
-			"type": "number",
-			"default": 0
-		},
-		"scrollSpy": {
-			"type": "boolean",
-			"default": true
-		},
-		"listStyle": {
-			"type": "string",
-			"default": "numbered"
-		},
-		"style": {
-			"type": "string",
-			"default": "card"
-		},
-		"titleColour": {
-			"type": "string"
-		},
-		"linkColour": {
-			"type": "string"
-		},
-		"activeLinkColour": {
-			"type": "string",
-			"default": "primary"
-		}
-	},
-	"render": "file:./render.php",
-	"editorScript": "file:./index.js",
-	"editorStyle": "file:./editor.css",
-	"style": "file:./style.css",
-	"viewScriptModule": "file:./view.js"
+    "$schema":  "https://schemas.wp.org/trunk/block.json",
+    "apiVersion":  3,
+    "name":  "sgs/table-of-contents",
+    "version":  "0.1.0",
+    "title":  "SGS Table of Contents",
+    "category":  "sgs-content",
+    "description":  "Auto-generated table of contents from heading blocks. Smooth scroll, scroll spy, collapsible.",
+    "keywords":  [
+                     "toc",
+                     "table of contents",
+                     "navigation",
+                     "headings",
+                     "index"
+                 ],
+    "textdomain":  "sgs-blocks",
+    "icon":  "list-view",
+    "supports":  {
+                     "align":  [
+                                   "wide"
+                               ],
+                     "anchor":  true,
+                     "html":  false,
+                     "color":  {
+                                   "background":  true,
+                                   "text":  true,
+                                   "link":  true
+                               },
+                     "typography":  {
+                                        "fontSize":  true,
+                                        "lineHeight":  true
+                                    },
+                     "spacing":  {
+                                     "margin":  true,
+                                     "padding":  true
+                                 },
+                     "__experimentalBorder":  {
+                                                  "radius":  true,
+                                                  "width":  true,
+                                                  "color":  true,
+                                                  "style":  true
+                                              }
+                 },
+    "attributes":  {
+                       "headingLevels":  {
+                                             "type":  "array",
+                                             "default":  [
+                                                             2,
+                                                             3,
+                                                             4
+                                                         ]
+                                         },
+                       "title":  {
+                                     "type":  "string",
+                                     "default":  "Table of Contents"
+                                 },
+                       "collapsible":  {
+                                           "type":  "boolean",
+                                           "default":  true
+                                       },
+                       "defaultCollapsed":  {
+                                                "type":  "boolean",
+                                                "default":  false
+                                            },
+                       "smoothScroll":  {
+                                            "type":  "boolean",
+                                            "default":  true
+                                        },
+                       "scrollOffset":  {
+                                            "type":  "number",
+                                            "default":  0
+                                        },
+                       "scrollSpy":  {
+                                         "type":  "boolean",
+                                         "default":  true
+                                     },
+                       "listStyle":  {
+                                         "type":  "string",
+                                         "default":  "numbered"
+                                     },
+                       "style":  {
+                                     "type":  "string",
+                                     "default":  "card"
+                                 },
+                       "titleColour":  {
+                                           "type":  "string"
+                                       },
+                       "linkColour":  {
+                                          "type":  "string"
+                                      },
+                       "activeLinkColour":  {
+                                                "type":  "string",
+                                                "default":  "primary"
+                                            }
+                   },
+    "render":  "file:./render.php",
+    "editorScript":  "file:./index.js",
+    "editorStyle":  "file:./index.css",
+    "style":  "file:./style-index.css",
+    "viewScriptModule":  "file:./view.js",
+    "example":  {
+                    "attributes":  {
+                                       "title":  "Table of Contents",
+                                       "collapsible":  true,
+                                       "listStyle":  "numbered",
+                                       "style":  "card"
+                                   }
+                }
 }

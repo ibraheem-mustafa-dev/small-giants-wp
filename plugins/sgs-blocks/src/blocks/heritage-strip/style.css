@@ -85,7 +85,7 @@
 }
 
 /* ===== Responsive ===== */
-@media (max-width: 768px) {
+@media (max-width: 767px) {
 	.sgs-heritage-strip--image-text-image,
 	.sgs-heritage-strip--text-image,
 	.sgs-heritage-strip--image-text {

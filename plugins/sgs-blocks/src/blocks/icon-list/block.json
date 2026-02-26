@@ -1,72 +1,106 @@
 {
-	"$schema": "https://schemas.wp.org/trunk/block.json",
-	"apiVersion": 3,
-	"name": "sgs/icon-list",
-	"version": "0.1.0",
-	"title": "SGS Icon List",
-	"category": "sgs-content",
-	"description": "List with custom icons or checkmarks per item.",
-	"keywords": [ "list", "icon", "check", "tick", "features", "benefits" ],
-	"textdomain": "sgs-blocks",
-	"icon": "yes-alt",
-	"supports": {
-		"align": false,
-		"anchor": true,
-		"html": false,
-		"color": {
-			"background": true,
-			"text": true,
-			"link": true
-		},
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true,
-			"textAlign": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true
-		}
-	},
-	"selectors": {
-		"root": ".sgs-icon-list",
-		"typography": ".sgs-icon-list__text"
-	},
-	"attributes": {
-		"items": {
-			"type": "array",
-			"default": [
-				{ "icon": "check", "text": "First list item" },
-				{ "icon": "check", "text": "Second list item" },
-				{ "icon": "check", "text": "Third list item" }
-			]
-		},
-		"icon": {
-			"type": "string",
-			"default": "check"
-		},
-		"iconColour": {
-			"type": "string"
-		},
-		"iconSize": {
-			"type": "string",
-			"default": "medium"
-		},
-		"textColour": {
-			"type": "string"
-		},
-		"gap": {
-			"type": "string",
-			"default": "20"
-		}
-	},
-	"editorScript": "file:./index.js",
-	"editorStyle": "file:./editor.css",
-	"style": "file:./style.css"
+    "$schema":  "https://schemas.wp.org/trunk/block.json",
+    "apiVersion":  3,
+    "name":  "sgs/icon-list",
+    "version":  "0.1.0",
+    "title":  "SGS Icon List",
+    "category":  "sgs-content",
+    "description":  "List with custom icons or checkmarks per item.",
+    "keywords":  [
+                     "list",
+                     "icon",
+                     "check",
+                     "tick",
+                     "features",
+                     "benefits"
+                 ],
+    "textdomain":  "sgs-blocks",
+    "icon":  "yes-alt",
+    "supports":  {
+                     "align":  false,
+                     "anchor":  true,
+                     "html":  false,
+                     "color":  {
+                                   "background":  true,
+                                   "text":  true,
+                                   "link":  true
+                               },
+                     "typography":  {
+                                        "fontSize":  true,
+                                        "lineHeight":  true,
+                                        "textAlign":  true
+                                    },
+                     "spacing":  {
+                                     "margin":  true,
+                                     "padding":  true
+                                 },
+                     "__experimentalBorder":  {
+                                                  "radius":  true,
+                                                  "width":  true,
+                                                  "color":  true,
+                                                  "style":  true
+                                              }
+                 },
+    "selectors":  {
+                      "root":  ".sgs-icon-list",
+                      "typography":  ".sgs-icon-list__text"
+                  },
+    "attributes":  {
+                       "items":  {
+                                     "type":  "array",
+                                     "default":  [
+                                                     {
+                                                         "icon":  "check",
+                                                         "text":  "First list item"
+                                                     },
+                                                     {
+                                                         "icon":  "check",
+                                                         "text":  "Second list item"
+                                                     },
+                                                     {
+                                                         "icon":  "check",
+                                                         "text":  "Third list item"
+                                                     }
+                                                 ]
+                                 },
+                       "icon":  {
+                                    "type":  "string",
+                                    "default":  "check"
+                                },
+                       "iconColour":  {
+                                          "type":  "string"
+                                      },
+                       "iconSize":  {
+                                        "type":  "string",
+                                        "default":  "medium"
+                                    },
+                       "textColour":  {
+                                          "type":  "string"
+                                      },
+                       "gap":  {
+                                   "type":  "string",
+                                   "default":  "20"
+                               }
+                   },
+    "editorScript":  "file:./index.js",
+    "editorStyle":  "file:./index.css",
+    "style":  "file:./style-index.css",
+    "example":  {
+                    "attributes":  {
+                                       "items":  [
+                                                     {
+                                                         "icon":  "check",
+                                                         "text":  "BRC Grade AA certified"
+                                                     },
+                                                     {
+                                                         "icon":  "check",
+                                                         "text":  "Next-day delivery available"
+                                                     },
+                                                     {
+                                                         "icon":  "check",
+                                                         "text":  "Minimum order £250"
+                                                     }
+                                                 ]
+                                   }
+                }
 }

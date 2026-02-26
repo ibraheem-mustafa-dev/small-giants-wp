@@ -62,11 +62,14 @@ Positions stored as percentage offsets (not pixels). Viewport width recorded for
 No npm build step — this plugin is pure PHP + vanilla JS.
 
 ```bash
-# Deploy plugin files
-scp -r sgs-client-notes.php uninstall.php includes assets templates hd:~/domains/palestine-lives.org/public_html/wp-content/plugins/sgs-client-notes/
+# Deploy plugin files (run from repo root)
+scp -r plugins/sgs-client-notes/sgs-client-notes.php plugins/sgs-client-notes/uninstall.php plugins/sgs-client-notes/includes plugins/sgs-client-notes/assets plugins/sgs-client-notes/templates hd:~/domains/palestine-lives.org/public_html/wp-content/plugins/sgs-client-notes/
 
-# Purge cache
-ssh hd "cd ~/domains/palestine-lives.org/public_html && wp litespeed-purge all"
+# Clear LiteSpeed cache (wp litespeed-purge is broken on this host)
+ssh hd "rm -rf ~/domains/palestine-lives.org/public_html/wp-content/litespeed/cache/*"
+
+# Reset PHP OPcache after deploying PHP files (CLI reset is a SEPARATE pool — must use HTTP)
+ssh hd "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/palestine-lives.org/public_html/op-reset-tmp.php" && curl -s https://palestine-lives.org/op-reset-tmp.php && ssh hd "rm ~/domains/palestine-lives.org/public_html/op-reset-tmp.php"
 ```
 
 ## Build Phase

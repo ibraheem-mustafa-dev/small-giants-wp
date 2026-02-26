@@ -12,7 +12,7 @@ namespace SGS\Blocks;
 
 defined( 'ABSPATH' ) || exit;
 
-add_filter( 'render_block_core/heading', __NAMESPACE__ . '\\inject_heading_anchor', 10, 2 );
+add_filter( 'render_block', __NAMESPACE__ . '\\inject_heading_anchor', 10, 2 );
 
 /**
  * Add an id attribute to headings that do not have one.
@@ -24,7 +24,12 @@ add_filter( 'render_block_core/heading', __NAMESPACE__ . '\\inject_heading_ancho
  * @return string Heading HTML with id attribute.
  */
 function inject_heading_anchor( string $block_content, array $block ): string {
-	// Skip if this heading already has an id.
+	// Only process core/heading blocks.
+	if ( empty( $block['blockName'] ) || 'core/heading' !== $block['blockName'] ) {
+		return $block_content;
+	}
+
+	// Skip if this heading already has an id attribute.
 	if ( preg_match( '/\bid=["\']/', $block_content ) ) {
 		return $block_content;
 	}
@@ -35,24 +40,42 @@ function inject_heading_anchor( string $block_content, array $block ): string {
 	}
 
 	// Only inject anchors if this post contains a ToC block.
+	// Check once per request and cache the result.
 	static $has_toc = null;
-	if ( null === $has_toc ) {
-		$has_toc = has_block( 'sgs/table-of-contents' );
+	static $checked_post_id = null;
+	static $used_slugs = [];
+
+	$current_post_id = get_the_ID();
+	if ( ! $current_post_id ) {
+		global $post;
+		$current_post_id = $post->ID ?? 0;
 	}
+
+	// Re-check if we're rendering a different post (e.g. archive pages).
+	if ( $current_post_id !== $checked_post_id ) {
+		$checked_post_id = $current_post_id;
+		$used_slugs      = []; // Reset slugs for each new post — prevents archive bleed.
+		$has_toc         = $current_post_id && has_block( 'sgs/table-of-contents', $current_post_id );
+	}
+
 	if ( ! $has_toc ) {
 		return $block_content;
 	}
 
-	// Extract text content for slug generation.
-	$text = wp_strip_all_tags( $block_content );
-	$slug = sanitize_title( $text );
+	// Use explicit anchor attribute if set by the user.
+	if ( ! empty( $block['attrs']['anchor'] ) ) {
+		$slug = $block['attrs']['anchor'];
+	} else {
+		// Extract text content for slug generation.
+		$text = wp_strip_all_tags( $block_content );
+		$slug = sanitize_title( $text );
+	}
 
 	if ( empty( $slug ) ) {
 		return $block_content;
 	}
 
-	// Handle duplicate slugs within the same page.
-	static $used_slugs = [];
+	// Handle duplicate slugs within the same post.
 	$original_slug = $slug;
 	$counter       = 2;
 	while ( in_array( $slug, $used_slugs, true ) ) {

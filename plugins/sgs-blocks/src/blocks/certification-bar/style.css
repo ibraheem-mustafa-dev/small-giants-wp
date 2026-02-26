@@ -36,7 +36,7 @@
 }
 
 a.sgs-certification-bar__badge:focus-visible {
-	outline: 2px solid var(--wp--preset--color--accent, #F87A1F);
+	outline: 2px solid var(--wp--preset--color--primary-dark, #076a8e);
 	outline-offset: 4px;
 	border-radius: 4px;
 }

@@ -1,0 +1,51 @@
+/**
+ * SGS Post Grid — editor-only styles.
+ *
+ * Ensures the live preview in the block editor looks correct.
+ * Does not affect frontend output.
+ */
+
+/* Placeholder shown when no posts are loaded yet */
+.sgs-post-grid-editor__placeholder {
+	padding: 40px 20px;
+	text-align: center;
+	border: 2px dashed #ccc;
+	border-radius: 8px;
+	color: #888;
+}
+
+.sgs-post-grid-editor__placeholder p {
+	margin: 0;
+	font-size: 0.9375rem;
+}
+
+/* Editor preview grid wrapper */
+.sgs-post-grid-editor__preview {
+	display: grid;
+	gap: var( --sgs-gap, 30px );
+}
+
+/* Editor live preview cards — inherit frontend styles but override
+   any position:absolute that would break the editor layout */
+.sgs-post-grid-editor .sgs-post-grid__card--overlay .sgs-post-grid__content {
+	position: relative;
+	background: rgba( 0, 0, 0, 0.6 );
+}
+
+/* Loading spinner shown when useEntityRecords is resolving */
+.sgs-post-grid-editor__loading {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 200px;
+	gap: 12px;
+	color: #888;
+	font-size: 0.9375rem;
+}
+
+/* Inspector panel header labels */
+.sgs-post-grid-editor__panel-note {
+	font-size: 0.8125rem;
+	color: #666;
+	margin: 0 0 12px;
+}

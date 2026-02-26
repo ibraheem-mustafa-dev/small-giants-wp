@@ -1,0 +1,685 @@
+/**
+ * SGS Post Grid — frontend styles.
+ *
+ * Covers all 4 layout variants (grid, list, masonry, carousel),
+ * all 4 card style variants (card, flat, overlay, minimal),
+ * filter buttons, pagination, skeleton loading states, hover effects,
+ * and responsive breakpoints.
+ *
+ * All configurable values come from CSS custom properties set as inline
+ * styles by render.php — the same properties work for server-rendered
+ * AND AJAX-loaded content.
+ */
+
+/* ==========================================================================
+   CSS custom property defaults
+   ========================================================================== */
+
+.sgs-post-grid {
+	--sgs-columns-desktop: 3;
+	--sgs-columns-tablet: 2;
+	--sgs-columns-mobile: 1;
+	--sgs-columns: var( --sgs-columns-desktop );
+	--sgs-gap: 30px;
+	--sgs-card-bg: var( --wp--preset--color--base, #ffffff );
+	--sgs-card-radius: 8px;
+	--sgs-card-shadow: 0 2px 12px rgba( 0, 0, 0, 0.08 );
+	--sgs-hover-scale: 1;
+	--sgs-hover-shadow: none;
+	--sgs-transition-duration: 300ms;
+	--sgs-transition-easing: ease;
+	--sgs-image-radius: var( --sgs-card-radius ) var( --sgs-card-radius ) 0 0;
+}
+
+/* ==========================================================================
+   Grid layout
+   ========================================================================== */
+
+.sgs-post-grid__inner {
+	display: grid;
+	gap: var( --sgs-gap );
+}
+
+.sgs-post-grid--grid .sgs-post-grid__inner {
+	grid-template-columns: repeat( var( --sgs-columns ), 1fr );
+}
+
+/* ==========================================================================
+   List layout (horizontal card: image left, content right)
+   ========================================================================== */
+
+.sgs-post-grid--list .sgs-post-grid__inner {
+	grid-template-columns: 1fr;
+}
+
+.sgs-post-grid--list .sgs-post-grid__card {
+	display: grid;
+	grid-template-columns: clamp( 140px, 30%, 240px ) 1fr;
+	align-items: start;
+}
+
+.sgs-post-grid--list .sgs-post-grid__image-link {
+	display: block;
+	border-radius: var( --sgs-card-radius ) 0 0 var( --sgs-card-radius );
+	overflow: hidden;
+}
+
+.sgs-post-grid--list .sgs-post-grid__image {
+	height: 100%;
+	min-height: 140px;
+}
+
+.sgs-post-grid--list .sgs-post-grid__image img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+/* ==========================================================================
+   Masonry layout
+   ========================================================================== */
+
+.sgs-post-grid--masonry .sgs-post-grid__inner {
+	display: block;
+	column-count: var( --sgs-columns );
+	column-gap: var( --sgs-gap );
+}
+
+.sgs-post-grid--masonry .sgs-post-grid__card {
+	break-inside: avoid;
+	margin-bottom: var( --sgs-gap );
+}
+
+/* ==========================================================================
+   Carousel layout
+   ========================================================================== */
+
+.sgs-post-grid--carousel {
+	position: relative;
+}
+
+.sgs-post-grid--carousel .sgs-post-grid__inner {
+	display: flex;
+	overflow-x: auto;
+	scroll-snap-type: x mandatory;
+	scroll-behavior: smooth;
+	gap: var( --sgs-gap );
+	padding-bottom: 4px; /* prevent scrollbar clipping card shadow */
+	/* Hide scrollbar visually; keep functional for a11y */
+	scrollbar-width: none;
+}
+
+.sgs-post-grid--carousel .sgs-post-grid__inner::-webkit-scrollbar {
+	display: none;
+}
+
+.sgs-post-grid--carousel .sgs-post-grid__card {
+	flex: 0 0 calc( ( 100% - ( var( --sgs-columns ) - 1 ) * var( --sgs-gap ) ) / var( --sgs-columns ) );
+	scroll-snap-align: start;
+}
+
+/* ==========================================================================
+   Shared card base
+   ========================================================================== */
+
+.sgs-post-grid__card {
+	position: relative;
+	overflow: hidden;
+	background-color: var( --sgs-card-bg );
+	transition:
+		transform var( --sgs-transition-duration ) var( --sgs-transition-easing ),
+		box-shadow var( --sgs-transition-duration ) var( --sgs-transition-easing );
+}
+
+/* ==========================================================================
+   Card style: card (default)
+   ========================================================================== */
+
+.sgs-post-grid__card--card {
+	border-radius: var( --sgs-card-radius );
+	box-shadow: var( --sgs-card-shadow );
+}
+
+.sgs-post-grid__card--card .sgs-post-grid__image {
+	border-radius: var( --sgs-image-radius );
+	overflow: hidden;
+}
+
+/* ==========================================================================
+   Card style: flat
+   ========================================================================== */
+
+.sgs-post-grid__card--flat {
+	border-radius: var( --sgs-card-radius );
+	box-shadow: none;
+	border: 1px solid var( --wp--preset--color--border-subtle, #e0e0e0 );
+}
+
+.sgs-post-grid__card--flat .sgs-post-grid__image {
+	border-radius: var( --sgs-image-radius );
+	overflow: hidden;
+}
+
+/* ==========================================================================
+   Card style: overlay (image fills card, content overlays bottom)
+   ========================================================================== */
+
+.sgs-post-grid__card--overlay {
+	border-radius: var( --sgs-card-radius );
+	box-shadow: var( --sgs-card-shadow );
+}
+
+.sgs-post-grid__card--overlay .sgs-post-grid__image-link {
+	display: block;
+	position: relative;
+}
+
+.sgs-post-grid__card--overlay .sgs-post-grid__image {
+	border-radius: var( --sgs-card-radius );
+	overflow: hidden;
+}
+
+.sgs-post-grid__card--overlay .sgs-post-grid__content {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	padding: 24px 20px 20px;
+	background: linear-gradient( to top, rgba( 0, 0, 0, 0.75 ) 0%, transparent 100% );
+	border-radius: 0 0 var( --sgs-card-radius ) var( --sgs-card-radius );
+	color: #fff;
+}
+
+.sgs-post-grid__card--overlay .sgs-post-grid__title a,
+.sgs-post-grid__card--overlay .sgs-post-grid__excerpt,
+.sgs-post-grid__card--overlay .sgs-post-grid__meta,
+.sgs-post-grid__card--overlay .sgs-post-grid__readmore {
+	color: inherit;
+}
+
+/* ==========================================================================
+   Card style: minimal (no image container, text-focused, thin separator)
+   ========================================================================== */
+
+.sgs-post-grid__card--minimal {
+	border-top: 2px solid var( --wp--preset--color--primary, currentColor );
+	padding-top: 20px;
+	background: transparent;
+	box-shadow: none;
+}
+
+.sgs-post-grid__card--minimal .sgs-post-grid__image {
+	display: none;
+}
+
+/* ==========================================================================
+   Card image
+   ========================================================================== */
+
+.sgs-post-grid__image {
+	overflow: hidden;
+}
+
+.sgs-post-grid__img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform var( --sgs-transition-duration ) var( --sgs-transition-easing );
+}
+
+/* ==========================================================================
+   Card content
+   ========================================================================== */
+
+.sgs-post-grid__content {
+	padding: 20px;
+}
+
+.sgs-post-grid__card--overlay .sgs-post-grid__content {
+	padding: 24px 20px 20px; /* override — no top padding on overlay */
+}
+
+.sgs-post-grid__card--minimal .sgs-post-grid__content {
+	padding: 0;
+}
+
+.sgs-post-grid__card--flat .sgs-post-grid__content {
+	padding: 20px;
+}
+
+/* ==========================================================================
+   Card meta (date / author)
+   ========================================================================== */
+
+.sgs-post-grid__meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	align-items: center;
+	font-size: 0.8125rem;
+	color: var( --wp--preset--color--text-muted, #555 );
+	margin-bottom: 8px;
+}
+
+.sgs-post-grid__meta time,
+.sgs-post-grid__meta .sgs-post-grid__author {
+	font-size: inherit;
+}
+
+/* ==========================================================================
+   Category badge and inline label
+   ========================================================================== */
+
+.sgs-post-grid__badge {
+	position: absolute;
+	top: 12px;
+	left: 12px;
+	display: inline-block;
+	padding: 3px 10px;
+	font-size: 0.75rem;
+	font-weight: 600;
+	border-radius: 20px;
+	background-color: var( --wp--preset--color--primary, #1a3a5c );
+	color: #fff;
+	text-decoration: none;
+	line-height: 1.4;
+}
+
+.sgs-post-grid__category {
+	display: inline-block;
+	font-size: 0.75rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	color: var( --wp--preset--color--primary, #1a3a5c );
+	margin-bottom: 6px;
+}
+
+/* ==========================================================================
+   Card title
+   ========================================================================== */
+
+.sgs-post-grid__title {
+	margin: 0 0 10px;
+	font-size: 1.125rem;
+	line-height: 1.35;
+	font-weight: 700;
+}
+
+.sgs-post-grid__title a {
+	color: var( --wp--preset--color--text, #1e1e1e );
+	text-decoration: none;
+}
+
+.sgs-post-grid__title a:hover,
+.sgs-post-grid__title a:focus-visible {
+	text-decoration: underline;
+}
+
+/* ==========================================================================
+   Card excerpt
+   ========================================================================== */
+
+.sgs-post-grid__excerpt {
+	font-size: 0.9375rem;
+	line-height: 1.6;
+	color: var( --wp--preset--color--text-muted, #555 );
+	margin: 0 0 12px;
+}
+
+/* ==========================================================================
+   Read more link
+   ========================================================================== */
+
+.sgs-post-grid__readmore {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	font-size: 0.875rem;
+	font-weight: 600;
+	color: var( --wp--preset--color--primary, #1a3a5c );
+	text-decoration: none;
+}
+
+.sgs-post-grid__readmore:hover,
+.sgs-post-grid__readmore:focus-visible {
+	text-decoration: underline;
+}
+
+/* ==========================================================================
+   Hover effects (configurable via CSS custom properties from attributes)
+   ========================================================================== */
+
+.sgs-post-grid__card:hover {
+	transform: scale( var( --sgs-hover-scale ) );
+	box-shadow: var( --sgs-hover-shadow );
+}
+
+/* Image zoom — enabled by data-hover-image-zoom="true" on wrapper */
+.sgs-post-grid[data-hover-image-zoom="true"] .sgs-post-grid__card:hover .sgs-post-grid__img {
+	transform: scale( 1.05 );
+}
+
+/* Respect prefers-reduced-motion — non-negotiable */
+@media ( prefers-reduced-motion: reduce ) {
+	.sgs-post-grid__card,
+	.sgs-post-grid__img {
+		transition: none !important;
+		transform: none !important;
+	}
+}
+
+/* ==========================================================================
+   Filter buttons
+   ========================================================================== */
+
+.sgs-post-grid__filters {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-bottom: 32px;
+}
+
+.sgs-post-grid__filter {
+	display: inline-flex;
+	align-items: center;
+	min-height: 44px; /* WCAG 2.2 minimum touch target */
+	padding: 8px 20px;
+	font-size: 0.875rem;
+	font-weight: 600;
+	border: 2px solid var( --wp--preset--color--primary, #1a3a5c );
+	border-radius: 4px;
+	background: transparent;
+	color: var( --wp--preset--color--primary, #1a3a5c );
+	cursor: pointer;
+	transition: background-color 200ms ease, color 200ms ease;
+}
+
+.sgs-post-grid__filter:hover,
+.sgs-post-grid__filter:focus-visible {
+	background-color: var( --wp--preset--color--primary, #1a3a5c );
+	color: #fff;
+}
+
+.sgs-post-grid__filter--active,
+.sgs-post-grid__filter[aria-pressed="true"] {
+	background-color: var( --wp--preset--color--primary, #1a3a5c );
+	color: #fff;
+}
+
+.sgs-post-grid__filter:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+/* ==========================================================================
+   Pagination (standard / numbered)
+   ========================================================================== */
+
+.sgs-post-grid__pagination {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	justify-content: center;
+	margin-top: 40px;
+}
+
+.sgs-post-grid__page-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 44px;
+	min-height: 44px;
+	padding: 8px 14px;
+	font-size: 0.875rem;
+	font-weight: 600;
+	border: 2px solid var( --wp--preset--color--primary, #1a3a5c );
+	border-radius: 4px;
+	background: transparent;
+	color: var( --wp--preset--color--primary, #1a3a5c );
+	cursor: pointer;
+	transition: background-color 150ms ease, color 150ms ease;
+}
+
+.sgs-post-grid__page-btn:hover,
+.sgs-post-grid__page-btn:focus-visible {
+	background-color: var( --wp--preset--color--primary, #1a3a5c );
+	color: #fff;
+}
+
+.sgs-post-grid__page-btn--current,
+.sgs-post-grid__page-btn[aria-current="page"] {
+	background-color: var( --wp--preset--color--primary, #1a3a5c );
+	color: #fff;
+}
+
+.sgs-post-grid__page-btn:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+/* ==========================================================================
+   Load More button
+   ========================================================================== */
+
+.sgs-post-grid__load-more-wrap {
+	display: flex;
+	justify-content: center;
+	margin-top: 40px;
+}
+
+.sgs-post-grid__load-more {
+	display: inline-flex;
+	align-items: center;
+	min-height: 44px;
+	padding: 10px 32px;
+	font-size: 1rem;
+	font-weight: 600;
+	border: 2px solid var( --wp--preset--color--primary, #1a3a5c );
+	border-radius: 4px;
+	background: transparent;
+	color: var( --wp--preset--color--primary, #1a3a5c );
+	cursor: pointer;
+	transition: background-color 200ms ease, color 200ms ease;
+}
+
+.sgs-post-grid__load-more:hover,
+.sgs-post-grid__load-more:focus-visible {
+	background-color: var( --wp--preset--color--primary, #1a3a5c );
+	color: #fff;
+}
+
+.sgs-post-grid__load-more:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+/* ==========================================================================
+   Carousel controls
+   ========================================================================== */
+
+.sgs-post-grid__carousel-prev,
+.sgs-post-grid__carousel-next {
+	position: absolute;
+	top: 50%;
+	transform: translateY( -50% );
+	z-index: 10;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 44px;
+	min-height: 44px;
+	font-size: 2rem;
+	line-height: 1;
+	background: var( --wp--preset--color--base, #fff );
+	border: 1px solid var( --wp--preset--color--border-subtle, #e0e0e0 );
+	border-radius: 50%;
+	box-shadow: 0 2px 8px rgba( 0, 0, 0, 0.12 );
+	cursor: pointer;
+	color: var( --wp--preset--color--text, #1e1e1e );
+	transition: background-color 150ms ease, box-shadow 150ms ease;
+}
+
+.sgs-post-grid__carousel-prev {
+	left: -22px;
+}
+
+.sgs-post-grid__carousel-next {
+	right: -22px;
+}
+
+.sgs-post-grid__carousel-prev:hover,
+.sgs-post-grid__carousel-next:hover,
+.sgs-post-grid__carousel-prev:focus-visible,
+.sgs-post-grid__carousel-next:focus-visible {
+	background-color: var( --wp--preset--color--primary, #1a3a5c );
+	color: #fff;
+	box-shadow: 0 4px 16px rgba( 0, 0, 0, 0.18 );
+}
+
+.sgs-post-grid__carousel-prev:disabled,
+.sgs-post-grid__carousel-next:disabled {
+	opacity: 0.35;
+	cursor: not-allowed;
+}
+
+.sgs-post-grid__carousel-dots {
+	display: flex;
+	justify-content: center;
+	gap: 8px;
+	margin-top: 24px;
+}
+
+.sgs-post-grid__dot {
+	display: block;
+	min-width: 44px;
+	min-height: 44px;
+	width: 10px;
+	height: 10px;
+	min-width: initial;
+	min-height: initial;
+	padding: 0;
+	border-radius: 50%;
+	border: none;
+	background: var( --wp--preset--color--border-subtle, #ccc );
+	cursor: pointer;
+	transition: background-color 150ms ease, transform 150ms ease;
+}
+
+/* Ensure 44×44 touch target for dots by using pseudo-element */
+.sgs-post-grid__dot::before {
+	content: '';
+	display: block;
+	position: absolute;
+	inset: -17px;
+}
+
+.sgs-post-grid__dot {
+	position: relative;
+}
+
+.sgs-post-grid__dot--active,
+.sgs-post-grid__dot[aria-selected="true"] {
+	background: var( --wp--preset--color--primary, #1a3a5c );
+	transform: scale( 1.3 );
+}
+
+/* ==========================================================================
+   Skeleton loading state
+   ========================================================================== */
+
+.sgs-post-grid__card--skeleton {
+	background: linear-gradient( 90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75% );
+	background-size: 200% 100%;
+	animation: sgs-shimmer 1.5s infinite;
+	border-radius: var( --sgs-card-radius );
+	min-height: 300px;
+	box-shadow: none;
+}
+
+@keyframes sgs-shimmer {
+	0% {
+		background-position: 200% 0;
+	}
+	100% {
+		background-position: -200% 0;
+	}
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+	.sgs-post-grid__card--skeleton {
+		animation: none;
+		background: #f0f0f0;
+	}
+}
+
+/* ==========================================================================
+   Empty and error states
+   ========================================================================== */
+
+.sgs-post-grid__empty,
+.sgs-post-grid__error {
+	grid-column: 1 / -1;
+	padding: 40px;
+	text-align: center;
+	color: var( --wp--preset--color--text-muted, #555 );
+}
+
+/* ==========================================================================
+   Responsive breakpoints
+   ========================================================================== */
+
+@media ( max-width: 599px ) {
+	.sgs-post-grid--grid .sgs-post-grid__inner,
+	.sgs-post-grid--masonry .sgs-post-grid__inner,
+	.sgs-post-grid--carousel .sgs-post-grid__inner {
+		--sgs-columns: var( --sgs-columns-mobile, 1 );
+	}
+
+	.sgs-post-grid--masonry .sgs-post-grid__inner {
+		column-count: var( --sgs-columns-mobile, 1 );
+	}
+
+	.sgs-post-grid--list .sgs-post-grid__card {
+		grid-template-columns: 1fr; /* stack image above content on mobile */
+	}
+
+	.sgs-post-grid--list .sgs-post-grid__image-link {
+		border-radius: var( --sgs-card-radius ) var( --sgs-card-radius ) 0 0;
+	}
+
+	.sgs-post-grid--list .sgs-post-grid__image {
+		min-height: 200px;
+	}
+
+	.sgs-post-grid__carousel-prev {
+		left: 0;
+	}
+
+	.sgs-post-grid__carousel-next {
+		right: 0;
+	}
+}
+
+@media ( 600px <= width <= 1023px ) {
+	.sgs-post-grid--grid .sgs-post-grid__inner,
+	.sgs-post-grid--carousel .sgs-post-grid__inner {
+		--sgs-columns: var( --sgs-columns-tablet, 2 );
+	}
+
+	.sgs-post-grid--masonry .sgs-post-grid__inner {
+		column-count: var( --sgs-columns-tablet, 2 );
+	}
+}
+
+@media ( min-width: 1024px ) {
+	.sgs-post-grid--grid .sgs-post-grid__inner,
+	.sgs-post-grid--carousel .sgs-post-grid__inner {
+		--sgs-columns: var( --sgs-columns-desktop, 3 );
+	}
+
+	.sgs-post-grid--masonry .sgs-post-grid__inner {
+		column-count: var( --sgs-columns-desktop, 3 );
+	}
+}

@@ -1,81 +1,95 @@
 {
-	"$schema": "https://schemas.wp.org/trunk/block.json",
-	"apiVersion": 3,
-	"name": "sgs/counter",
-	"version": "0.1.0",
-	"title": "SGS Counter",
-	"category": "sgs-content",
-	"description": "Animated number counter with prefix, suffix, and label.",
-	"keywords": [ "counter", "number", "stat", "animated", "count" ],
-	"textdomain": "sgs-blocks",
-	"icon": "chart-bar",
-	"supports": {
-		"align": false,
-		"anchor": true,
-		"html": false,
-		"color": {
-			"background": true,
-			"text": true,
-			"link": true
-		},
-		"typography": {
-			"fontSize": true,
-			"lineHeight": true,
-			"textAlign": true
-		},
-		"spacing": {
-			"margin": true,
-			"padding": true
-		},
-		"__experimentalBorder": {
-			"radius": true,
-			"width": true,
-			"color": true,
-			"style": true
-		}
-	},
-	"selectors": {
-		"root": ".sgs-counter",
-		"typography": ".sgs-counter__number"
-	},
-	"attributes": {
-		"number": {
-			"type": "number",
-			"default": 0
-		},
-		"prefix": {
-			"type": "string",
-			"default": ""
-		},
-		"suffix": {
-			"type": "string",
-			"default": ""
-		},
-		"label": {
-			"type": "string",
-			"source": "html",
-			"selector": ".sgs-counter__label"
-		},
-		"duration": {
-			"type": "number",
-			"default": 2000
-		},
-		"separator": {
-			"type": "boolean",
-			"default": true
-		},
-		"numberColour": {
-			"type": "string"
-		},
-		"labelColour": {
-			"type": "string"
-		},
-		"labelFontSize": {
-			"type": "string"
-		}
-	},
-	"editorScript": "file:./index.js",
-	"editorStyle": "file:./editor.css",
-	"style": "file:./style.css",
-	"viewScriptModule": "file:./view.js"
+    "$schema":  "https://schemas.wp.org/trunk/block.json",
+    "apiVersion":  3,
+    "name":  "sgs/counter",
+    "version":  "0.1.0",
+    "title":  "SGS Counter",
+    "category":  "sgs-content",
+    "description":  "Animated number counter with prefix, suffix, and label.",
+    "keywords":  [
+                     "counter",
+                     "number",
+                     "stat",
+                     "animated",
+                     "count"
+                 ],
+    "textdomain":  "sgs-blocks",
+    "icon":  "chart-bar",
+    "supports":  {
+                     "align":  false,
+                     "anchor":  true,
+                     "html":  false,
+                     "color":  {
+                                   "background":  true,
+                                   "text":  true,
+                                   "link":  true
+                               },
+                     "typography":  {
+                                        "fontSize":  true,
+                                        "lineHeight":  true,
+                                        "textAlign":  true
+                                    },
+                     "spacing":  {
+                                     "margin":  true,
+                                     "padding":  true
+                                 },
+                     "__experimentalBorder":  {
+                                                  "radius":  true,
+                                                  "width":  true,
+                                                  "color":  true,
+                                                  "style":  true
+                                              }
+                 },
+    "selectors":  {
+                      "root":  ".sgs-counter",
+                      "typography":  ".sgs-counter__number"
+                  },
+    "attributes":  {
+                       "number":  {
+                                      "type":  "number",
+                                      "default":  0
+                                  },
+                       "prefix":  {
+                                      "type":  "string",
+                                      "default":  ""
+                                  },
+                       "suffix":  {
+                                      "type":  "string",
+                                      "default":  ""
+                                  },
+                       "label":  {
+                                     "type":  "string",
+                                     "source":  "html",
+                                     "selector":  ".sgs-counter__label"
+                                 },
+                       "duration":  {
+                                        "type":  "number",
+                                        "default":  2000
+                                    },
+                       "separator":  {
+                                         "type":  "boolean",
+                                         "default":  true
+                                     },
+                       "numberColour":  {
+                                            "type":  "string"
+                                        },
+                       "labelColour":  {
+                                           "type":  "string"
+                                       },
+                       "labelFontSize":  {
+                                             "type":  "string"
+                                         }
+                   },
+    "editorScript":  "file:./index.js",
+    "editorStyle":  "file:./index.css",
+    "style":  "file:./style-index.css",
+    "viewScriptModule":  "file:./view.js",
+    "example":  {
+                    "attributes":  {
+                                       "number":  5000,
+                                       "prefix":  "",
+                                       "suffix":  "+",
+                                       "label":  "Happy Customers"
+                                   }
+                }
 }

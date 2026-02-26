@@ -37,6 +37,47 @@
 	grid-column: 1 / -1;
 }
 
+/* ----------------------------------------------------------------
+   1a. Step visibility and entrance animation
+   ---------------------------------------------------------------- */
+
+/* Hidden steps — display:none removes from layout entirely. */
+.sgs-form-step--hidden {
+	display: none;
+}
+
+/* Entrance animation — fade in and slide up when a step becomes active. */
+.sgs-form-step--entering {
+	animation: sgs-step-enter 0.2s ease forwards;
+}
+
+@keyframes sgs-step-enter {
+	from {
+		opacity: 0;
+		transform: translateY(8px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* Progress bar width transition. */
+.sgs-form__progress-track {
+	transition: width 0.3s ease;
+}
+
+/* Honour the user's motion preference. */
+@media (prefers-reduced-motion: reduce) {
+	.sgs-form-step--entering {
+		animation: none;
+	}
+
+	.sgs-form__progress-track {
+		transition: none;
+	}
+}
+
 /* Mobile: single column */
 @media (max-width: 599px) {
 	.sgs-form__inner,

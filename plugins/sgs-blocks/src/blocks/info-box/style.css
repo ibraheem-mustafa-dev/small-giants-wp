@@ -19,6 +19,13 @@
 	background: transparent;
 }
 
+/* Subtle — transparent background, no shadow, no border. Intended for use
+   on coloured section backgrounds (e.g. accent/yellow "Why Choose" section)
+   where a white card would look out of place. */
+.sgs-info-box--subtle {
+	background: transparent;
+}
+
 .sgs-info-box--bordered {
 	border: 1px solid var(--wp--preset--color--border-subtle, #0D5557);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
@@ -84,6 +91,20 @@
 	color: var(--wp--preset--color--text-muted);
 }
 
+/* ===== Custom Hover States (editor-configurable) ===== */
+
+.sgs-info-box[style*="--sgs-hover-bg"]:hover {
+	background-color: var(--sgs-hover-bg);
+}
+
+.sgs-info-box[style*="--sgs-hover-text"]:hover {
+	color: var(--sgs-hover-text);
+}
+
+.sgs-info-box[style*="--sgs-hover-border"]:hover {
+	border-color: var(--sgs-hover-border);
+}
+
 /* ===== Hover Effects ===== */
 
 /* Lift — translateY + shadow increase */
@@ -125,8 +146,8 @@
 
 /* ===== Focus for linked cards ===== */
 .sgs-info-box__link:focus-visible {
-	outline: 2px solid var(--wp--preset--color--accent);
-	outline-offset: 2px;
+	outline: 2px solid var(--wp--preset--color--primary-dark, #076a8e);
+	outline-offset: 3px;
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 }
 

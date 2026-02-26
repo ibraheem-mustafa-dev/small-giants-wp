@@ -11,10 +11,19 @@ import { __ } from '@wordpress/i18n';
 const ANIMATIONS = [
 	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
 	{ label: __( 'Fade Up', 'sgs-blocks' ), value: 'fade-up' },
+	{ label: __( 'Fade Down', 'sgs-blocks' ), value: 'fade-down' },
 	{ label: __( 'Fade In', 'sgs-blocks' ), value: 'fade-in' },
+	{ label: __( 'Fade Left', 'sgs-blocks' ), value: 'fade-left' },
+	{ label: __( 'Fade Right', 'sgs-blocks' ), value: 'fade-right' },
+	{ label: __( 'Slide Up', 'sgs-blocks' ), value: 'slide-up' },
+	{ label: __( 'Slide Down', 'sgs-blocks' ), value: 'slide-down' },
 	{ label: __( 'Slide Left', 'sgs-blocks' ), value: 'slide-left' },
 	{ label: __( 'Slide Right', 'sgs-blocks' ), value: 'slide-right' },
 	{ label: __( 'Scale In', 'sgs-blocks' ), value: 'scale-in' },
+	{ label: __( 'Scale Out', 'sgs-blocks' ), value: 'scale-out' },
+	{ label: __( 'Rotate In', 'sgs-blocks' ), value: 'rotate-in' },
+	{ label: __( 'Flip In', 'sgs-blocks' ), value: 'flip-in' },
+	{ label: __( 'Blur In', 'sgs-blocks' ), value: 'blur-in' },
 ];
 
 const DELAYS = [

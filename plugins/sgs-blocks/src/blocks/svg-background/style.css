@@ -1,0 +1,135 @@
+/**
+ * SVG Background — Frontend & Editor Styles
+ *
+ * @package SGS\Blocks
+ */
+
+.sgs-svg-background {
+	position: relative;
+	overflow: hidden;
+	width: 100%;
+}
+
+.sgs-svg-background__svg {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+	z-index: 0;
+}
+
+.sgs-svg-background--foreground .sgs-svg-background__svg {
+	z-index: 2;
+}
+
+.sgs-svg-background__svg svg {
+	width: 100%;
+	height: 100%;
+	display: block;
+}
+
+.sgs-svg-background__content {
+	position: relative;
+	z-index: 1;
+}
+
+.sgs-svg-background--foreground .sgs-svg-background__content {
+	z-index: 0;
+}
+
+/* Animation: Pulse. */
+@keyframes sgs-svg-pulse {
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.5;
+	}
+}
+
+.sgs-svg-background--anim-pulse .sgs-svg-background__svg {
+	animation: sgs-svg-pulse infinite;
+}
+
+.sgs-svg-background--anim-pulse.sgs-svg-background--speed-slow .sgs-svg-background__svg {
+	animation-duration: 5s;
+}
+
+.sgs-svg-background--anim-pulse.sgs-svg-background--speed-medium .sgs-svg-background__svg {
+	animation-duration: 3s;
+}
+
+.sgs-svg-background--anim-pulse.sgs-svg-background--speed-fast .sgs-svg-background__svg {
+	animation-duration: 1.5s;
+}
+
+/* Animation: Float. */
+@keyframes sgs-svg-float {
+	0%,
+	100% {
+		transform: translateY( 0 );
+	}
+	50% {
+		transform: translateY( -10px );
+	}
+}
+
+.sgs-svg-background--anim-float .sgs-svg-background__svg {
+	animation: sgs-svg-float infinite ease-in-out;
+}
+
+.sgs-svg-background--anim-float.sgs-svg-background--speed-slow .sgs-svg-background__svg {
+	animation-duration: 6s;
+}
+
+.sgs-svg-background--anim-float.sgs-svg-background--speed-medium .sgs-svg-background__svg {
+	animation-duration: 4s;
+}
+
+.sgs-svg-background--anim-float.sgs-svg-background--speed-fast .sgs-svg-background__svg {
+	animation-duration: 2s;
+}
+
+/* Animation: Wave. */
+@keyframes sgs-svg-wave {
+	0%,
+	100% {
+		transform: scale( 1 ) rotate( 0deg );
+	}
+	25% {
+		transform: scale( 1.05 ) rotate( 1deg );
+	}
+	50% {
+		transform: scale( 1 ) rotate( 0deg );
+	}
+	75% {
+		transform: scale( 1.05 ) rotate( -1deg );
+	}
+}
+
+.sgs-svg-background--anim-wave .sgs-svg-background__svg {
+	animation: sgs-svg-wave infinite ease-in-out;
+	transform-origin: center;
+}
+
+.sgs-svg-background--anim-wave.sgs-svg-background--speed-slow .sgs-svg-background__svg {
+	animation-duration: 8s;
+}
+
+.sgs-svg-background--anim-wave.sgs-svg-background--speed-medium .sgs-svg-background__svg {
+	animation-duration: 5s;
+}
+
+.sgs-svg-background--anim-wave.sgs-svg-background--speed-fast .sgs-svg-background__svg {
+	animation-duration: 3s;
+}
+
+/* Reduced motion. */
+@media ( prefers-reduced-motion: reduce ) {
+	.sgs-svg-background__svg {
+		animation: none !important;
+	}
+}
