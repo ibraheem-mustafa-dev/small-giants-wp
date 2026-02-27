@@ -50,6 +50,10 @@ require_once SGS_BLOCKS_PATH . 'includes/hover-effects.php';
 // Google Reviews settings and API integration.
 require_once SGS_BLOCKS_PATH . 'includes/google-reviews-settings.php';
 
+// Stripe payment settings, admin UI and PaymentIntent AJAX handler.
+require_once SGS_BLOCKS_PATH . 'includes/stripe-settings.php';
+Stripe_Settings::init();
+
 // Register REST API endpoints.
 Forms\Form_REST_API::register();
 
