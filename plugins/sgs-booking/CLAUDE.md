@@ -1,4 +1,4 @@
-# SGS Booking — Claude Code Instructions
+ # SGS Booking — Claude Code Instructions
 
 ## What This Is
 
