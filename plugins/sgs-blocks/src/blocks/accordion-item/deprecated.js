@@ -1,28 +1,14 @@
 /**
- * Accordion Item block — v1 deprecation.
+ * Accordion Item block — no active deprecations.
  *
- * Original save() used <InnerBlocks.Content /> which serialised the
- * inner block paragraph HTML as the block's innerHTML. When save() was
- * later changed to null (dynamic render.php), the stored paragraph HTML
- * no longer matched the null output, causing validation errors.
+ * The v1 deprecated.js using <InnerBlocks.Content /> was incorrect because
+ * the raw <p>text</p> innerHTML is NOT serialized inner block content — it
+ * was stored as the outer block's own innerHTML (innerBlocks was []).
+ * <InnerBlocks.Content /> rendered "" when innerBlocks=[], so it never matched.
  *
- * This deprecation bridges that gap: v1 save returns <InnerBlocks.Content />
- * to match the stored HTML, migrate() passes attributes through unchanged.
+ * Fix was applied directly to the database (post 52) via wp eval-file:
+ * raw <p> HTML was replaced with <!-- wp:paragraph --> inner block markup,
+ * leaving outer innerHTML="" which matches the current save: () => null.
  */
 
-import { InnerBlocks } from '@wordpress/block-editor';
-
-const v1 = {
-	attributes: {
-		title:  { type: 'string', default: '' },
-		isOpen: { type: 'boolean', default: false },
-	},
-	supports: {
-		html:     false,
-		reusable: false,
-	},
-	save: () => <InnerBlocks.Content />,
-	migrate: ( attributes ) => attributes,
-};
-
-export default [ v1 ];
+export default [];
