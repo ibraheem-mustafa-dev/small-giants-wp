@@ -1,5 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import { SocialIconSVG } from './icons';
 import {
 	PanelBody,
 	SelectControl,
@@ -117,8 +118,13 @@ export default function Edit( { attributes, setAttributes } ) {
 					<p style={ { opacity: 0.5 } }>{ __( 'Add social links in the sidebar…', 'sgs-blocks' ) }</p>
 				) : (
 					icons.map( ( icon, i ) => (
-						<span key={ i } className="sgs-social-icons__item" style={ { width: iconSize, height: iconSize } }>
-							{ icon.platform }
+						<span
+							key={ i }
+							className="sgs-social-icons__item"
+							style={ { width: iconSize + ( style !== 'plain' ? 16 : 0 ), height: iconSize + ( style !== 'plain' ? 16 : 0 ) } }
+							title={ icon.platform }
+						>
+							<SocialIconSVG platform={ icon.platform } size={ iconSize } />
 						</span>
 					) )
 				) }
