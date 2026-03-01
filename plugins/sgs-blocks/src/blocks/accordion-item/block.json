@@ -1,4 +1,4 @@
-{
+﻿{
     "$schema":  "https://schemas.wp.org/trunk/block.json",
     "apiVersion":  3,
     "name":  "sgs/accordion-item",
@@ -20,7 +20,15 @@
                ],
     "supports":  {
                      "html":  false,
-                     "reusable":  false
+                     "reusable":  false,
+                     "spacing":  {
+                                     "margin":  true,
+                                     "padding":  true
+                                 },
+                     "color":  {
+                                   "text":  true,
+                                   "background":  true
+                               }
                  },
     "usesContext":  [
                         "sgs/accordionStyle",

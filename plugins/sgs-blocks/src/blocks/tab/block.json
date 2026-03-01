@@ -1,11 +1,11 @@
-{
+﻿{
     "$schema":  "https://schemas.wp.org/trunk/block.json",
     "apiVersion":  3,
     "name":  "sgs/tab",
     "version":  "0.1.0",
     "title":  "SGS Tab",
     "category":  "sgs-interactive",
-    "description":  "Individual tab panel — add any content blocks inside.",
+    "description":  "Individual tab panel â€” add any content blocks inside.",
     "keywords":  [
                      "tab",
                      "panel",
@@ -19,7 +19,15 @@
                ],
     "supports":  {
                      "html":  false,
-                     "reusable":  false
+                     "reusable":  false,
+                     "spacing":  {
+                                     "margin":  true,
+                                     "padding":  true
+                                 },
+                     "color":  {
+                                   "text":  true,
+                                   "background":  true
+                               }
                  },
     "usesContext":  [
                         "sgs/tabsOrientation",
@@ -36,5 +44,6 @@
                     "attributes":  {
                                        "label":  "Overview"
                                    }
-                }
+                },
+    "render":  "file:./render.php"
 }

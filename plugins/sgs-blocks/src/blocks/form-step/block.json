@@ -1,4 +1,4 @@
-{
+﻿{
     "$schema":  "https://schemas.wp.org/trunk/block.json",
     "apiVersion":  3,
     "name":  "sgs/form-step",
@@ -20,8 +20,13 @@
                      "html":  false,
                      "spacing":  {
                                      "padding":  true,
-                                     "blockGap":  true
-                                 }
+                                     "blockGap":  true,
+                                     "margin":  true
+                                 },
+                     "color":  {
+                                   "text":  true,
+                                   "background":  true
+                               }
                  },
     "usesContext":  [
                         "sgs/formId"
