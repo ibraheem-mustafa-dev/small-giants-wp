@@ -123,22 +123,31 @@ class RenderOutputTest extends TestCase {
     }
 
     /**
-     * render.php must reference the $attributes variable (WP render contract).
+     * render.php must reference at least one of the standard WP render callback
+     * variables: $attributes, $content, or $block.
+     *
+     * Inner/wrapper blocks (e.g. sgs/tab) legitimately use only $content or
+     * $block without $attributes, so we allow any of the three.
      *
      * @param string $slug Block slug.
      */
     #[DataProvider( 'server_rendered_block_provider' )]
-    public function test_render_php_uses_attributes_variable( string $slug ): void {
+    public function test_render_php_uses_wp_render_variables( string $slug ): void {
         $path = SGS_BLOCKS_PLUGIN_DIR . '/src/blocks/' . $slug . '/render.php';
 
         if ( ! file_exists( $path ) ) {
             $this->markTestSkipped( "render.php not found for sgs/{$slug}." );
         }
 
-        $this->assertStringContainsString(
-            '$attributes',
-            file_get_contents( $path ),
-            "sgs/{$slug} render.php must use \$attributes (WordPress render callback contract)."
+        $content = file_get_contents( $path );
+
+        $uses_wp_vars = str_contains( $content, '$attributes' )
+            || str_contains( $content, '$content' )
+            || str_contains( $content, '$block' );
+
+        $this->assertTrue(
+            $uses_wp_vars,
+            "sgs/{$slug} render.php must use at least one of: \$attributes, \$content, or \$block."
         );
     }
 
