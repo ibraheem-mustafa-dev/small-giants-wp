@@ -251,3 +251,111 @@ All form submissions are stored securely in the WordPress database table `wp_sgs
 To trigger a webhook when a form is submitted, enter your N8N webhook URL in the **SGS Form** block settings. The webhook fires after every successful submission and includes all field values, the form name, and a timestamp.
 
 Separate webhook URLs can be set for standard submissions and for high-priority forms.
+
+
+---
+
+## Testing
+
+The plugin ships with two test suites -- PHPUnit for PHP server-side code and Jest for JavaScript block editor components.
+
+---
+
+### PHPUnit (PHP)
+
+#### What is tested
+
+| Test file | Coverage |
+|-----------|---------|
+| `tests/php/test-block-registration.php` | All 55 blocks register correctly via WP_Block_Type_Registry; server-side blocks have a render_callback. |
+| `tests/php/test-form-submission.php` | REST API: valid submission (200), honeypot fake-success (200), rate limiting (429), missing/invalid nonce (403), oversized payload rejection, admin-only routes. |
+| `tests/php/test-render-output.php` | Render output for hero (section), accordion-item (details/summary), form (form element, form ID, honeypot, Interactivity API), and modal (dialog). |
+
+#### Prerequisites
+
+1. **WordPress test suite** -- install once per environment:
+
+```bash
+bash bin/install-wp-tests.sh wordpress_tests root '' localhost latest
+```
+
+2. **Build the plugin assets** (block registration reads from `build/blocks/`):
+
+```bash
+npm run build
+```
+
+3. **PHPUnit** -- install via Composer:
+
+```bash
+composer require --dev phpunit/phpunit
+```
+
+#### Running the tests
+
+```bash
+npm run test:php
+
+vendor/bin/phpunit --configuration phpunit.xml.dist
+
+vendor/bin/phpunit --configuration phpunit.xml.dist tests/php/test-block-registration.php
+
+vendor/bin/phpunit --configuration phpunit.xml.dist --coverage-text
+```
+
+#### Environment variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `WP_TESTS_DIR` | `/tmp/wordpress-tests-lib` | Path to the WordPress test suite |
+| `DB_HOST` | `localhost` | Test database host |
+| `DB_NAME` | `wordpress_tests` | Test database name |
+| `DB_USER` | `root` | Test database user |
+| `DB_PASSWORD` | _(empty)_ | Test database password |
+
+---
+
+### Jest (JavaScript)
+
+#### What is tested
+
+| Test file | Coverage |
+|-----------|---------|
+| `tests/js/block-edit.test.js` | Edit components for hero, accordion, form, card-grid: exports a function, renders without throwing, InspectorControls present, registerBlockType called by index.js. |
+
+#### Prerequisites
+
+All JS test dependencies are included via `@wordpress/scripts`. No extra packages required beyond the standard `npm install`.
+
+#### Running the tests
+
+```bash
+npm run test:js
+
+npx jest --config jest.config.js --watch
+
+npx jest --config jest.config.js --coverage
+```
+
+#### How the mocks work
+
+The `@wordpress/*` packages are webpack **externals** -- not installed as node_modules. `tests/js/setup.js` provides lightweight mocks for:
+
+- `@wordpress/element` -- real React primitives
+- `@wordpress/i18n` -- __() returns the string as-is
+- `@wordpress/blocks` -- jest.fn() stubs for registerBlockType etc.
+- `@wordpress/block-editor` -- useBlockProps, InspectorControls, RichText etc.
+- `@wordpress/components` -- PanelBody, SelectControl, ToggleControl etc.
+- `@wordpress/data` -- useSelect, useDispatch, select, dispatch
+- `lucide-react` -- proxy returning a span for any icon name
+
+---
+
+### Running both suites
+
+```bash
+npm run test:php
+npm run test:js
+npm test
+```
+

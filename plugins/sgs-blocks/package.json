@@ -10,7 +10,10 @@
 		"start": "wp-scripts start --experimental-modules --webpack-copy-php",
 		"lint:js": "wp-scripts lint-js src/",
 		"lint:css": "wp-scripts lint-style src/",
-		"format": "wp-scripts format src/"
+		"format": "wp-scripts format src/",
+		"test:js": "jest --config jest.config.js",
+		"test:php": "phpunit --configuration phpunit.xml.dist",
+		"test": "npm run test:js"
 	},
 	"devDependencies": {
 		"@wordpress/icons": "^11.6.0",
