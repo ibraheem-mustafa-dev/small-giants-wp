@@ -47,6 +47,10 @@ require_once SGS_BLOCKS_PATH . 'includes/device-visibility.php';
 // Universal hover effects — server-side CSS variable injection.
 require_once SGS_BLOCKS_PATH . 'includes/hover-effects.php';
 
+// Backward compatibility shim — keeps retired sgs/icon-block rendering until all
+// existing content has been transformed to sgs/icon via the block editor.
+require_once SGS_BLOCKS_PATH . 'includes/icon-block-compat.php';
+
 // Google Reviews settings and API integration.
 require_once SGS_BLOCKS_PATH . 'includes/google-reviews-settings.php';
 
