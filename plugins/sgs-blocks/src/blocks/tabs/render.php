@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * SGS Tabs — server-side render.
  *

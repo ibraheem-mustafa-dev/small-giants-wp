@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Frontend: Screenshot Processing
  *

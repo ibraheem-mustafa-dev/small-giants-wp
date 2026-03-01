@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Register SGS block categories.
  *

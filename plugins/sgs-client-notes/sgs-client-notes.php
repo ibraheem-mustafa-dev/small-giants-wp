@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Plugin Name: SGS Client Notes
  * Plugin URI: https://smallgiantsstudio.com

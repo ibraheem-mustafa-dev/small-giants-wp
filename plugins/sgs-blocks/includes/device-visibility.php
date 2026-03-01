@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Device visibility — server-side class injection.
  *

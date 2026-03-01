@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * REST API endpoint for Post Grid AJAX pagination and filtering.
  *

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Heading anchor injection for Table of Contents.
  *

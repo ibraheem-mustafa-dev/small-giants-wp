@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Admin settings page for SGS Forms.
  *

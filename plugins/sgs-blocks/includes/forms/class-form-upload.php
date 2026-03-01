@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Handle file uploads for form fields.
  *

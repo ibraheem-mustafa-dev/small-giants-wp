@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Server-side render for the SGS Back to Top block.
  *

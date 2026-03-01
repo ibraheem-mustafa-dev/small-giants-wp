@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Shared render helper functions for SGS block server-side rendering.
  *

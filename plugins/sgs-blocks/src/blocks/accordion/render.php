@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Accordion — server-side render.
  *

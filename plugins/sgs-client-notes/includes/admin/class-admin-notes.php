@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Admin: Notes Management Page
  *

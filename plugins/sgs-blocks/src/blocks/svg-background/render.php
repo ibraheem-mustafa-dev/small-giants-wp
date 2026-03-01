@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * SVG Background — Server Render
  *

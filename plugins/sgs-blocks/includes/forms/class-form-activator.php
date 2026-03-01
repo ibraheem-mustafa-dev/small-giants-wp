@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Form database setup on plugin activation.
  *

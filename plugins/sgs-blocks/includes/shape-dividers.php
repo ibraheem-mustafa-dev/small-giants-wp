@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Shape divider SVG library.
  *

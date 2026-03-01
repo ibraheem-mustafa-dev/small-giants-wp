@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * REST API endpoints for form submission and uploads.
  *

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Server-side render for Email Field block.
  *

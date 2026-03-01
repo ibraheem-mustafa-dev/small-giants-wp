@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Process form submissions and store in database.
  *

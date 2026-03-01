@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Google Reviews Settings Page
  *

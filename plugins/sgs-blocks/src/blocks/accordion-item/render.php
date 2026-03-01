@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Accordion Item — server-side render.
  *

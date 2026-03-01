@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Main plugin class — auto-discovers and registers all blocks.
  *

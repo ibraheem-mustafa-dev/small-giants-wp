@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Announcement Bar — Server Render
  *

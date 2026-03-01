@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Table of Contents — server-side render.
  *

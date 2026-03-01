@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * GDPR personal data hooks for SGS form submissions.
  *

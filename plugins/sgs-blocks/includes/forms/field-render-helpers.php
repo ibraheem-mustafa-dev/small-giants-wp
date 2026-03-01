@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Server-side field rendering helpers.
  *

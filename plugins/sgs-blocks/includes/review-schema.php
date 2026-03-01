@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Review Schema JSON-LD for SGS Testimonial blocks.
  *
