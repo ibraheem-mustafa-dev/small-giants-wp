@@ -1,7 +1,8 @@
-<?php
+﻿<?php
 /**
  * Server-side render for the SGS Mega Menu block.
  *
+ * @since 1.0.0
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content.
  * @var WP_Block $block      Block instance.
@@ -62,14 +63,14 @@ $wrapper_attr = array(
 	'role'                   => 'none',
 );
 
-if ( $open_on === 'hover' ) {
+if ( 'hover' === $open_on ) {
 	$wrapper_attr['data-wp-on--mouseenter'] = 'actions.openOnHover';
 	$wrapper_attr['data-wp-on--mouseleave'] = 'actions.closeOnHover';
 }
 
 // Add custom styles for panel width if needed.
 $wrapper_styles = array();
-if ( $panel_width === 'custom' && $panel_max_width ) {
+if ( 'custom' === $panel_width && $panel_max_width ) {
 	$wrapper_styles[] = '--sgs-mega-menu-max-width:' . esc_attr( $panel_max_width );
 }
 
@@ -117,9 +118,9 @@ $trigger_html = sprintf(
 	$href,
 	$type,
 	$target,
-	$icon_position === 'before' ? $icon_html : '',
+	'before' === $icon_position ? $icon_html : '',
 	wp_kses_post( $label ),
-	$icon_position === 'after' ? $icon_html : '',
+	'after' === $icon_position ? $icon_html : '',
 	$badge_html
 );
 

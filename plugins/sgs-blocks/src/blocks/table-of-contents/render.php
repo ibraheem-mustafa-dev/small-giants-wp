@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Table of Contents — server-side render.
  *
@@ -8,6 +8,7 @@
  * Uses WordPress's block parser for reliable heading extraction
  * rather than raw regex on post_content.
  *
+ * @since 1.0.0
  * @var array    $attributes Block attributes.
  * @var string   $content    (unused — no inner blocks).
  * @var WP_Block $block      Block instance.
@@ -49,6 +50,7 @@ $used_slugs = [];
 /**
  * Recursively extract headings from parsed blocks.
  *
+ * @since 1.0.0
  * @param array $blocks      Parsed block array.
  * @param array &$headings   Collected headings.
  * @param array &$used_slugs Slugs already used (for deduplication).

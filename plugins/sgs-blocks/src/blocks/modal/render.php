@@ -1,7 +1,8 @@
-<?php
+﻿<?php
 /**
  * Server-side render for the SGS Modal block.
  *
+ * @since 1.0.0
  * @var array    $attributes Block attributes.
  * @var string   $content    Rendered inner blocks (modal content).
  * @var WP_Block $block      Block instance.
@@ -60,13 +61,13 @@ $wrapper_attributes = get_block_wrapper_attributes( array(
 
 // Render.
 ?>
-<div <?php echo $wrapper_attributes; ?> <?php echo $backdrop_style_attr; ?>>
+<div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() returns pre-escaped HTML. ?> <?php echo $backdrop_style_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS custom properties built from esc_attr() values. ?>>
 	<button
 		type="button"
 		class="sgs-modal__trigger sgs-modal__trigger--<?php echo esc_attr( $trigger_style ); ?>"
 		data-modal-id="<?php echo esc_attr( $modal_id ); ?>"
 		aria-haspopup="dialog"
-		<?php echo $trigger_style_attr; ?>
+		<?php echo $trigger_style_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Inline style built from sgs_colour_value() which sanitises all values. ?>
 	>
 		<?php echo esc_html( $trigger_text ); ?>
 	</button>
@@ -74,8 +75,8 @@ $wrapper_attributes = get_block_wrapper_attributes( array(
 	<dialog
 		id="<?php echo esc_attr( $modal_id ); ?>"
 		class="sgs-modal__dialog sgs-modal__dialog--<?php echo esc_attr( $max_width ); ?>"
-		data-close-on-overlay="<?php echo $close_on_overlay ? 'true' : 'false'; ?>"
-		<?php echo $dialog_style_attr; ?>
+		data-close-on-overlay="<?php echo $close_on_overlay ? 'true' : 'false'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Outputs only the string literal 'true' or 'false'. ?>"
+		<?php echo $dialog_style_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Inline style built from sgs_colour_value() which sanitises all values. ?>
 	>
 		<button
 			type="button"

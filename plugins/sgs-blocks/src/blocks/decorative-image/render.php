@@ -1,10 +1,11 @@
-<?php
+﻿<?php
 /**
  * Server-side render for the SGS Decorative Image block.
  *
  * Outputs an absolute-positioned image with inline styles for positioning,
  * rotation, opacity, and z-index. Supports responsive overrides and parallax.
  *
+ * @since 1.0.0
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content.
  * @var WP_Block $block      Block instance.

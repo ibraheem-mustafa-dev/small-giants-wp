@@ -1,7 +1,8 @@
-<?php
+﻿<?php
 /**
  * Server-side render for the SGS Trust Bar block.
  *
+ * @since 1.0.0
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content.
  * @var WP_Block $block      Block instance.
@@ -43,6 +44,7 @@ $label_style_attr = $label_styles ? ' style="' . implode( ';', $label_styles ) .
  * Determine whether a value string represents a plain number.
  * Strips commas and whitespace before testing (matches view.js logic).
  *
+ * @since 1.0.0
  * @param string $val The display value to test.
  * @return bool True if the value is numeric.
  */

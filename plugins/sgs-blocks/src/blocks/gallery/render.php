@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Server-side render for sgs/gallery.
  *
@@ -10,6 +10,7 @@
  *
  * @package SGS\Blocks
  *
+ * @since 1.0.0
  * @var array    $attributes Block attributes (sanitised by block.json defaults).
  * @var string   $content    Inner block content (unused — dynamic block).
  * @var WP_Block $block      The WP_Block instance.
@@ -200,7 +201,7 @@ $wrapper_attrs = get_block_wrapper_attributes( $wrapper_attrs_extra );
 										src="<?php echo esc_url( $img['url'] ); ?>"
 										alt="<?php echo esc_attr( $img_alt ); ?>"
 										class="sgs-gallery__img"
-										loading="<?php echo $index < 4 ? 'eager' : 'lazy'; ?>"
+										loading="<?php echo $index < 4 ? 'eager' : 'lazy'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- outputs only the string literal 'eager' or 'lazy'. ?>"
 									/>
 									<?php
 								}
@@ -240,7 +241,7 @@ $wrapper_attrs = get_block_wrapper_attributes( $wrapper_attrs_extra );
 									src="<?php echo esc_url( $img['url'] ); ?>"
 									alt="<?php echo esc_attr( $img_alt ); ?>"
 									class="sgs-gallery__img"
-									loading="<?php echo $index < 4 ? 'eager' : 'lazy'; ?>"
+									loading="<?php echo $index < 4 ? 'eager' : 'lazy'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- outputs only the string literal 'eager' or 'lazy'. ?>"
 								/>
 								<?php
 							}

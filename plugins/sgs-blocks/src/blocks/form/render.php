@@ -1,10 +1,11 @@
-<?php
+﻿<?php
 /**
  * Server-side render for the SGS Form block.
  *
  * Outputs a form wrapper with multi-step support, validation, and N8N webhook integration.
  * Uses WordPress Interactivity API for client-side state management.
  *
+ * @since 1.0.0
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content.
  * @var WP_Block $block      Block instance.
@@ -109,10 +110,10 @@ $wrapper_attributes = get_block_wrapper_attributes(
 );
 
 ?>
-<div <?php echo $wrapper_attributes; ?>>
+<div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() returns pre-escaped HTML. ?>> 
 
 	<?php if ( $is_multi_step ) : ?>
-		<div class="sgs-form__progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"<?php echo $progress_style_attr; ?>>
+		<div class="sgs-form__progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"<?php echo $progress_style_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS custom property built from sgs_colour_value() which sanitises values. ?>> 
 			<div class="sgs-form__progress-bar" data-wp-style--width="state.progressWidth"></div>
 			<div class="sgs-form__progress-steps">
 				<?php foreach ( $steps as $index => $step ) : ?>
@@ -122,7 +123,7 @@ $wrapper_attributes = get_block_wrapper_attributes(
 					<button
 						type="button"
 						class="sgs-form__progress-step"
-						data-wp-context='<?php echo $step_context; ?>'
+						data-wp-context='<?php echo $step_context; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_json_encode() output is safe for use in HTML data attributes. ?>'
 						data-wp-on--click="actions.goToStep"
 						data-wp-class--sgs-form__progress-step--active="state.isStepActive"
 						data-wp-class--sgs-form__progress-step--completed="state.isStepCompleted"
@@ -147,7 +148,7 @@ $wrapper_attributes = get_block_wrapper_attributes(
 			</div>
 		<?php endif; ?>
 
-		<?php echo $content; ?>
+		<?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Block inner content is processed by WordPress's block renderer. ?>
 
 		<div class="sgs-form__actions">
 			<?php if ( $is_multi_step ) : ?>
@@ -177,7 +178,7 @@ $wrapper_attributes = get_block_wrapper_attributes(
 				<?php if ( $is_multi_step ) : ?>
 					data-wp-bind--hidden="!state.isLastStep"
 				<?php endif; ?>
-				<?php echo $submit_style_attr; ?>
+				<?php echo $submit_style_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Inline style built from sgs_colour_value() which sanitises all values. ?>
 			>
 				<?php echo esc_html( $submit_label ); ?>
 			</button>

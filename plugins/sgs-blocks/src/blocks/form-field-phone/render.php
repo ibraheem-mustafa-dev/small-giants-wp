@@ -1,8 +1,10 @@
-<?php
+﻿<?php
 /**
  * Server-side render for Phone Field block.
  *
  * @package SGS\Blocks
+ *
+ * @since 1.0.0
  */
 
 defined( 'ABSPATH' ) || exit;

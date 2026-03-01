@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Server-side render for Consent Field block.
  *
@@ -6,6 +6,8 @@
  * Marketing consent is optional by default unless `required` is explicitly set.
  *
  * @package SGS\Blocks
+ *
+ * @since 1.0.0
  */
 
 defined( 'ABSPATH' ) || exit;

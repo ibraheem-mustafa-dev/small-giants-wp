@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Server-side render for Radio Field block.
  *
@@ -7,6 +7,8 @@
  * legend as context for each individual option.
  *
  * @package SGS\Blocks
+ *
+ * @since 1.0.0
  */
 
 defined( 'ABSPATH' ) || exit;

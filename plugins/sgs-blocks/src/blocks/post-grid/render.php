@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Server-side render for sgs/post-grid.
  *
@@ -8,6 +8,7 @@
  *
  * @package SGS\Blocks
  *
+ * @since 1.0.0
  * @var array  $attributes Block attributes (sanitised by block.json defaults).
  * @var string $content    Inner block content (unused — dynamic block).
  * @var WP_Block $block    The WP_Block instance.
@@ -293,9 +294,9 @@ $wrapper_attrs = get_block_wrapper_attributes( [
 				<?php for ( $p = 1; $p <= $total_pages; $p++ ) : ?>
 					<button
 						type="button"
-						class="sgs-post-grid__page-btn<?php echo $p === (int) $current_page ? ' sgs-post-grid__page-btn--current' : ''; ?>"
+						class="sgs-post-grid__page-btn<?php echo $p === (int) $current_page ? ' sgs-post-grid__page-btn--current' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- outputs a literal CSS class string. ?>"
 						data-page="<?php echo esc_attr( $p ); ?>"
-						<?php echo $p === (int) $current_page ? 'aria-current="page"' : ''; ?>
+						<?php echo $p === (int) $current_page ? 'aria-current="page"' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- outputs only the literal string 'aria-current="page"' or empty string. ?>
 					><?php echo esc_html( $p ); ?></button>
 				<?php endfor; ?>
 			</nav>

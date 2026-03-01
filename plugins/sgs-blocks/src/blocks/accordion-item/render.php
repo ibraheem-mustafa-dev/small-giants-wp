@@ -1,10 +1,11 @@
-<?php
+﻿<?php
 /**
  * Accordion Item — server-side render.
  *
  * Outputs a <details>/<summary> element for progressive enhancement.
  * Works without JS; enhanced with smooth animation via viewScriptModule.
  *
+ * @since 1.0.0
  * @var array    $attributes Block attributes.
  * @var string   $content    Rendered inner blocks.
  * @var WP_Block $block      Block instance.

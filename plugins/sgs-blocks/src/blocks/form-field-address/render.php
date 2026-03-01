@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Server-side render for Address Field block.
  *
@@ -7,6 +7,8 @@
  * so they submit as a nested array and arrive at the server as a single key.
  *
  * @package SGS\Blocks
+ *
+ * @since 1.0.0
  */
 
 defined( 'ABSPATH' ) || exit;

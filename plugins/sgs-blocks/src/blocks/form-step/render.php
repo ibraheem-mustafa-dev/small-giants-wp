@@ -1,10 +1,11 @@
-<?php
+﻿<?php
 /**
  * Server-side render for the SGS Form Step block.
  *
  * Groups form fields into a step for multi-step forms.
  * Step visibility is controlled by the parent form's Interactivity API state.
  *
+ * @since 1.0.0
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content.
  * @var WP_Block $block      Block instance.

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Server-side render for File Upload Field block.
  *
@@ -6,6 +6,8 @@
  * and rendered as a comma-separated string in the HTML accept attribute.
  *
  * @package SGS\Blocks
+ *
+ * @since 1.0.0
  */
 
 defined( 'ABSPATH' ) || exit;

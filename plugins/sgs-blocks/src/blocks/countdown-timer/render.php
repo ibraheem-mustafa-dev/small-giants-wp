@@ -1,7 +1,8 @@
-<?php
+﻿<?php
 /**
  * Server-side render for the SGS Countdown Timer block.
  *
+ * @since 1.0.0
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content.
  * @var WP_Block $block      Block instance.
@@ -55,12 +56,12 @@ if ( $show_minutes ) $units[] = array( 'class' => 'minutes', 'label' => __( 'Min
 if ( $show_seconds ) $units[] = array( 'class' => 'seconds', 'label' => __( 'Seconds', 'sgs-blocks' ) );
 
 ?>
-<div <?php echo $wrapper_attributes; ?><?php echo $data_attrs; ?> role="timer" aria-live="polite" aria-atomic="true">
+<div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() returns pre-escaped HTML. ?><?php echo $data_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- all attributes built with esc_attr() above. ?> role="timer" aria-live="polite" aria-atomic="true">
 	<div class="sgs-countdown__grid">
 		<?php foreach ( $units as $unit ) : ?>
 			<div class="sgs-countdown__unit">
-				<span class="sgs-countdown__number sgs-countdown__<?php echo esc_attr( $unit['class'] ); ?>" style="<?php echo $number_style; ?>">00</span>
-				<span class="sgs-countdown__label" style="<?php echo $label_style; ?>"><?php echo esc_html( $unit['label'] ); ?></span>
+				<span class="sgs-countdown__number sgs-countdown__<?php echo esc_attr( $unit['class'] ); ?>" style="<?php echo esc_attr( $number_style ); ?>">00</span>
+				<span class="sgs-countdown__label" style="<?php echo esc_attr( $label_style ); ?>"><?php echo esc_html( $unit['label'] ); ?></span>
 			</div>
 		<?php endforeach; ?>
 	</div>

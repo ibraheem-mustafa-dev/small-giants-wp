@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * SGS Tabs — server-side render.
  *
@@ -6,6 +6,7 @@
  * from the inner sgs/tab child blocks. Handles deep linking via data attributes
  * consumed by view.js.
  *
+ * @since 1.0.0
  * @var array    $attributes Block attributes.
  * @var string   $content    Rendered inner blocks (not used — we render manually).
  * @var WP_Block $block      Block instance with ->inner_blocks available.
@@ -106,12 +107,12 @@ $tab_count = count( $tabs );
 			$is_first = ( 0 === $i );
 		?>
 		<button
-			id="<?php echo $tab_id; ?>"
-			class="sgs-tabs__tab<?php echo $is_first ? ' sgs-tabs__tab--active' : ''; ?>"
+			id="<?php echo $tab_id; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $tab_id is assigned via esc_attr() above. ?>"
+			class="sgs-tabs__tab<?php echo $is_first ? ' sgs-tabs__tab--active' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- outputs literal class name strings only. ?>"
 			role="tab"
-			aria-selected="<?php echo $is_first ? 'true' : 'false'; ?>"
-			aria-controls="<?php echo $panel_id; ?>"
-			tabindex="<?php echo $is_first ? '0' : '-1'; ?>"
+			aria-selected="<?php echo $is_first ? 'true' : 'false'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- outputs only the string literals 'true' or 'false'. ?>"
+			aria-controls="<?php echo $panel_id; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $panel_id is assigned via esc_attr() above. ?>"
+			tabindex="<?php echo $is_first ? '0' : '-1'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- outputs only the string literals '0' or '-1'. ?>"
 			data-tab-index="<?php echo (int) $i; ?>"
 		>
 			<?php echo esc_html( $tab['label'] ); ?>
@@ -126,10 +127,10 @@ $tab_count = count( $tabs );
 			$is_first = ( 0 === $i );
 		?>
 		<div
-			id="<?php echo $panel_id; ?>"
+			id="<?php echo $panel_id; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $panel_id is assigned via esc_attr() above. ?>"
 			class="sgs-tabs__panel"
 			role="tabpanel"
-			aria-labelledby="<?php echo $tab_id; ?>"
+			aria-labelledby="<?php echo $tab_id; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $tab_id is assigned via esc_attr() above. ?>"
 			tabindex="0"
 			<?php if ( ! $is_first ) : ?>hidden<?php endif; ?>
 		>

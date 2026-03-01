@@ -1,9 +1,10 @@
-<?php
+﻿<?php
 /**
  * Server-side render for the SGS Breadcrumbs block.
  *
  * Auto-generates breadcrumbs from the current page hierarchy.
  *
+ * @since 1.0.0
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content.
  * @var WP_Block $block      Block instance.

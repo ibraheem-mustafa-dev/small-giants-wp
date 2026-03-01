@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Server-side render for Tiles Field block.
  *
@@ -6,6 +6,8 @@
  * selectedStyle controls the visual selected state: border | background | checkmark.
  *
  * @package SGS\Blocks
+ *
+ * @since 1.0.0
  */
 
 defined( 'ABSPATH' ) || exit;

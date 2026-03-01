@@ -1,9 +1,10 @@
-<?php
+﻿<?php
 /**
  * Announcement Bar — Server Render
  *
  * @package SGS\Blocks
  *
+ * @since 1.0.0
  * @param array    $attributes Block attributes.
  * @param string   $content    Block content.
  * @param WP_Block $block      Block instance.
@@ -88,7 +89,7 @@ $wrapper_attributes = get_block_wrapper_attributes( [
 ] );
 
 ?>
-<div <?php echo $wrapper_attributes; ?>>
+<div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() returns pre-escaped HTML. ?>>
 	<div class="sgs-announcement-bar__content">
 		<?php if ( ! empty( $icon ) ) : ?>
 			<span class="sgs-announcement-bar__icon" aria-hidden="true"><?php echo esc_html( $icon ); ?></span>

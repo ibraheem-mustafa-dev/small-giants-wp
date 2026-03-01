@@ -1,7 +1,8 @@
-<?php
+﻿<?php
 /**
  * Server-side render for the SGS Star Rating block.
  *
+ * @since 1.0.0
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content.
  * @var WP_Block $block      Block instance.
@@ -81,9 +82,9 @@ if ( $schema_enabled && $schema_item_name ) {
 }
 
 ?>
-<div <?php echo $wrapper_attributes; ?>>
+<div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() returns pre-escaped HTML. ?>>
 	<div class="sgs-star-rating__stars" role="img" aria-label="<?php echo esc_attr( $aria_label ); ?>">
-		<?php echo $stars_html; ?>
+		<?php echo $stars_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG built from esc_attr() values and hardcoded paths only. ?>
 	</div>
 	<?php if ( $show_numeric ) : ?>
 		<span class="sgs-star-rating__numeric"><?php echo esc_html( $rating . '/' . $max_rating ); ?></span>
@@ -91,5 +92,5 @@ if ( $schema_enabled && $schema_item_name ) {
 	<?php if ( $label ) : ?>
 		<span class="sgs-star-rating__label"><?php echo esc_html( $label ); ?></span>
 	<?php endif; ?>
-	<?php echo $schema_html; ?>
+	<?php echo $schema_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- JSON-LD script built with wp_json_encode() which handles escaping. ?>
 </div>

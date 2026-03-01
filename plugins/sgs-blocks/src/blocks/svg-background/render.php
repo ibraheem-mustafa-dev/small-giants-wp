@@ -1,9 +1,10 @@
-<?php
+﻿<?php
 /**
  * SVG Background — Server Render
  *
  * @package SGS\Blocks
  *
+ * @since 1.0.0
  * @param array    $attributes Block attributes.
  * @param string   $content    Block content (inner blocks).
  * @param WP_Block $block      Block instance.
@@ -35,7 +36,7 @@ $wrapper_attributes = get_block_wrapper_attributes( [
 ] );
 
 ?>
-<div <?php echo $wrapper_attributes; ?>>
+<div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() returns pre-escaped HTML. ?>>
 	<?php if ( ! empty( $svg_content ) ) : ?>
 		<div
 			class="sgs-svg-background__svg"
@@ -74,6 +75,6 @@ $wrapper_attributes = get_block_wrapper_attributes( [
 	<?php endif; ?>
 
 	<div class="sgs-svg-background__content">
-		<?php echo $content; ?>
+		<?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Block inner content is processed by WordPress's block renderer. ?>
 	</div>
 </div>

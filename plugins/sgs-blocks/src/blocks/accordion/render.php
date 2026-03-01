@@ -1,9 +1,10 @@
-<?php
+﻿<?php
 /**
  * Accordion — server-side render.
  *
  * Wraps accordion items and conditionally outputs FAQ Schema JSON-LD.
  *
+ * @since 1.0.0
  * @var array    $attributes Block attributes.
  * @var string   $content    Rendered inner blocks (accordion items).
  * @var WP_Block $block      Block instance.
