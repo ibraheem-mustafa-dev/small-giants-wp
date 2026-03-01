@@ -10,6 +10,8 @@
  * @param WP_Block $block      Block instance.
  */
 
+defined( 'ABSPATH' ) || exit;
+
 $messages              = $attributes['messages'] ?? [ [ 'text' => '', 'ctaText' => '', 'ctaUrl' => '' ] ];
 $variant               = $attributes['variant'] ?? 'standard';
 $background_colour     = $attributes['backgroundColour'] ?? 'primary';

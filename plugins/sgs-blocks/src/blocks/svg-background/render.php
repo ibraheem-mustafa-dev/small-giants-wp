@@ -10,6 +10,8 @@
  * @param WP_Block $block      Block instance.
  */
 
+defined( 'ABSPATH' ) || exit;
+
 $svg_content     = $attributes['svgContent'] ?? '';
 $svg_position    = $attributes['svgPosition'] ?? 'background';
 $animation_type  = $attributes['animationType'] ?? 'none';

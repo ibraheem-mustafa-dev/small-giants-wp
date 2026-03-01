@@ -50,12 +50,16 @@ $used_slugs = [];
 /**
  * Recursively extract headings from parsed blocks.
  *
+ * Guarded against redeclaration so multiple table-of-contents blocks on the
+ * same page do not cause a PHP fatal error.
+ *
  * @since 1.0.0
  * @param array $blocks      Parsed block array.
  * @param array &$headings   Collected headings.
  * @param array &$used_slugs Slugs already used (for deduplication).
  * @param array $levels      Heading levels to include.
  */
+if ( ! function_exists( 'sgs_toc_extract_headings' ) ) {
 function sgs_toc_extract_headings( array $blocks, array &$headings, array &$used_slugs, array $levels ): void {
 	foreach ( $blocks as $block ) {
 		if ( 'core/heading' === ( $block['blockName'] ?? '' ) ) {
@@ -111,6 +115,7 @@ function sgs_toc_extract_headings( array $blocks, array &$headings, array &$used
 		}
 	}
 }
+} // end if ( ! function_exists( 'sgs_toc_extract_headings' ) )
 
 sgs_toc_extract_headings( $blocks, $headings, $used_slugs, $heading_levels );
 

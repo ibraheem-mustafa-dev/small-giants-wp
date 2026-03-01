@@ -1,6 +1,6 @@
-<?php
+﻿<?php
 /**
- * Google Reviews — Server Render
+ * Google Reviews â€” Server Render
  *
  * @package SGS\Blocks
  *
@@ -9,6 +9,8 @@
  * @param string   $content    Block content.
  * @param WP_Block $block      Block instance.
  */
+
+defined( 'ABSPATH' ) || exit;
 
 use SGS\Blocks\Google_Reviews_Settings;
 
@@ -119,34 +121,39 @@ $wrapper_attributes = get_block_wrapper_attributes( [
 ] );
 
 /**
- * Render star rating.
+ * Render star rating HTML.
+ *
+ * Prefixed and guarded against redeclaration so multiple google-reviews
+ * blocks on the same page do not cause a PHP fatal error.
  *
  * @since 1.0.0
  * @param float $rating Rating value (0-5).
  * @return string HTML for star rating.
  */
-function render_stars( float $rating ): string {
-	$full_stars  = floor( $rating );
-	$half_star   = ( $rating - $full_stars ) >= 0.5 ? 1 : 0;
-	$empty_stars = 5 - $full_stars - $half_star;
+if ( ! function_exists( 'sgs_google_reviews_render_stars' ) ) {
+	function sgs_google_reviews_render_stars( float $rating ): string {
+		$full_stars  = floor( $rating );
+		$half_star   = ( $rating - $full_stars ) >= 0.5 ? 1 : 0;
+		$empty_stars = 5 - $full_stars - $half_star;
 
-	$html = '<div class="sgs-stars" aria-label="' . esc_attr( sprintf( __( '%s out of 5 stars', 'sgs-blocks' ), number_format( $rating, 1 ) ) ) . '">';
+		$html = '<div class="sgs-stars" aria-label="' . esc_attr( sprintf( __( '%s out of 5 stars', 'sgs-blocks' ), number_format( $rating, 1 ) ) ) . '">';
 
-	for ( $i = 0; $i < $full_stars; $i++ ) {
-		$html .= '<span class="sgs-star sgs-star--full" aria-hidden="true">★</span>';
+		for ( $i = 0; $i < $full_stars; $i++ ) {
+			$html .= '<span class="sgs-star sgs-star--full" aria-hidden="true">â˜…</span>';
+		}
+
+		if ( $half_star ) {
+			$html .= '<span class="sgs-star sgs-star--half" aria-hidden="true">â˜…</span>';
+		}
+
+		for ( $i = 0; $i < $empty_stars; $i++ ) {
+			$html .= '<span class="sgs-star sgs-star--empty" aria-hidden="true">â˜†</span>';
+		}
+
+		$html .= '</div>';
+
+		return $html;
 	}
-
-	if ( $half_star ) {
-		$html .= '<span class="sgs-star sgs-star--half" aria-hidden="true">★</span>';
-	}
-
-	for ( $i = 0; $i < $empty_stars; $i++ ) {
-		$html .= '<span class="sgs-star sgs-star--empty" aria-hidden="true">☆</span>';
-	}
-
-	$html .= '</div>';
-
-	return $html;
 }
 
 // Output schema.org markup.
@@ -167,12 +174,12 @@ $schema = [
 <div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() returns pre-escaped HTML. ?>>
 	<?php if ( $show_aggregate && ! in_array( $variant, [ 'badge', 'floating-badge' ], true ) ) : ?>
 		<div class="sgs-google-reviews__aggregate">
-			<?php echo render_stars( $rating ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_stars() returns SVG built from esc_attr() values. ?>
+			<?php echo sgs_google_reviews_render_stars( $rating ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_google_reviews_render_stars() returns SVG built from esc_attr() values. ?>
 			<div class="sgs-google-reviews__aggregate-text">
 				<strong><?php echo esc_html( number_format( $rating, 1 ) ); ?></strong>
 				<?php
-				printf(
-					/* translators: %s: number of reviews */
+				printf( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- %s is '<span>' . number_format() . '</span>'; number_format() returns only digits and separators.
+					/* translators: %s: number of reviews wrapped in a span for styling */
 					esc_html__( 'based on %s reviews', 'sgs-blocks' ),
 					'<span>' . number_format( $rating_count ) . '</span>'
 				);
@@ -192,7 +199,7 @@ $schema = [
 
 	<?php if ( in_array( $variant, [ 'badge', 'floating-badge' ], true ) ) : ?>
 		<div class="sgs-google-reviews__badge">
-			<?php echo render_stars( $rating ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_stars() returns SVG built from esc_attr() values. ?>
+			<?php echo sgs_google_reviews_render_stars( $rating ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_google_reviews_render_stars() returns SVG built from esc_attr() values. ?>
 			<div class="sgs-google-reviews__badge-text">
 				<strong><?php echo esc_html( number_format( $rating, 1 ) ); ?></strong>
 				<span><?php echo esc_html( number_format( $rating_count ) ); ?> reviews</span>
@@ -245,7 +252,7 @@ $schema = [
 							<?php endif; ?>
 						</div>
 
-						<?php echo render_stars( $review_rating ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_stars() returns SVG built from esc_attr() values. ?>
+						<?php echo sgs_google_reviews_render_stars( $review_rating ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_google_reviews_render_stars() returns SVG built from esc_attr() values. ?>
 
 						<?php if ( ! empty( $text ) ) : ?>
 							<p class="sgs-google-reviews__text"><?php echo esc_html( $text ); ?></p>

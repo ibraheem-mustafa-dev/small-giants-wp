@@ -44,16 +44,21 @@ $label_style_attr = $label_styles ? ' style="' . implode( ';', $label_styles ) .
  * Determine whether a value string represents a plain number.
  * Strips commas and whitespace before testing (matches view.js logic).
  *
+ * Guarded against redeclaration so multiple trust-bar blocks on the same
+ * page do not cause a PHP fatal error.
+ *
  * @since 1.0.0
  * @param string $val The display value to test.
  * @return bool True if the value is numeric.
  */
-function sgs_trust_bar_is_numeric( string $val ): bool {
-	if ( '' === $val ) {
-		return false;
+if ( ! function_exists( 'sgs_trust_bar_is_numeric' ) ) {
+	function sgs_trust_bar_is_numeric( string $val ): bool {
+		if ( '' === $val ) {
+			return false;
+		}
+		$cleaned = preg_replace( '/[,\s]/', '', $val );
+		return is_numeric( $cleaned ) && '' !== $cleaned;
 	}
-	$cleaned = preg_replace( '/[,\s]/', '', $val );
-	return is_numeric( $cleaned ) && '' !== $cleaned;
 }
 
 // Build item HTML.
