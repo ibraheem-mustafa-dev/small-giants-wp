@@ -551,6 +551,23 @@ function output_speculation_rules(): void {
 add_action( 'wp_footer', __NAMESPACE__ . '\output_speculation_rules', 20 );
 
 /**
+ * Output the View Transitions meta tag.
+ *
+ * Opts the site in to the View Transitions API (Chrome 111+) for same-origin
+ * navigations. Browsers that don't support the API safely ignore the tag.
+ * The CSS fade animations are defined in core-blocks.css.
+ *
+ * @since 1.0.0
+ */
+function output_view_transition_meta(): void {
+	if ( is_admin() ) {
+		return;
+	}
+	echo '<meta name="view-transition" content="same-origin">' . "\n";
+}
+add_action( 'wp_head', __NAMESPACE__ . '\output_view_transition_meta', 1 );
+
+/**
  * Fix WP 6.9 .has-text-color override.
  *
  * WordPress global styles apply .has-text-color { color: var(--text) !important }
