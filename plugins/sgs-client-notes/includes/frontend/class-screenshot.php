@@ -1,8 +1,10 @@
-<?php
+﻿<?php
 /**
  * Frontend: Screenshot Processing
  *
  * @package SGS\ClientNotes
+ *
+ * @since 1.0.0
  */
 
 namespace SGS\ClientNotes\Frontend;
@@ -14,11 +16,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Screenshot class.
+ *
+ * @since 1.0.0
  */
 class Screenshot {
 
 	/**
 	 * Initialise screenshot handling.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function init() {
 		add_action( 'rest_api_init', array( __CLASS__, 'register_upload_endpoint' ) );
@@ -26,6 +32,8 @@ class Screenshot {
 
 	/**
 	 * Register REST API endpoint for screenshot upload.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function register_upload_endpoint() {
 		register_rest_route(
@@ -42,6 +50,7 @@ class Screenshot {
 	/**
 	 * Upload screenshot to media library.
 	 *
+	 * @since 1.0.0
 	 * @param \WP_REST_Request $request Request object.
 	 * @return \WP_REST_Response
 	 */
@@ -137,6 +146,7 @@ class Screenshot {
 	/**
 	 * Permission check for screenshot upload.
 	 *
+	 * @since 1.0.0
 	 * @return bool
 	 */
 	public static function upload_permission_check( $request ) {

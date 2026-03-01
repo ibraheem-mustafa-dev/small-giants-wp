@@ -1,8 +1,10 @@
-<?php
+﻿<?php
 /**
  * Roles and Capabilities Manager
  *
  * @package SGS\ClientNotes
+ *
+ * @since 1.0.0
  */
 
 namespace SGS\ClientNotes;
@@ -14,11 +16,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Roles class.
+ *
+ * @since 1.0.0
  */
 class Roles {
 
 	/**
 	 * Initialise roles.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function init() {
 		// Hook to check if roles need updating.
@@ -27,6 +33,8 @@ class Roles {
 
 	/**
 	 * Check if roles need updating.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function check_roles() {
 		$db_version = get_option( 'sgs_client_notes_db_version', '0' );
@@ -38,6 +46,8 @@ class Roles {
 
 	/**
 	 * Create the sgs_client role.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function create_client_role() {
 		// Remove role if it exists (to refresh capabilities).
@@ -59,6 +69,8 @@ class Roles {
 
 	/**
 	 * Add note management capabilities to administrator role.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function add_admin_capabilities() {
 		$admin_role = get_role( 'administrator' );
@@ -81,6 +93,8 @@ class Roles {
 
 	/**
 	 * Remove plugin capabilities from all roles.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function remove_capabilities() {
 		global $wp_roles;
@@ -108,6 +122,8 @@ class Roles {
 
 	/**
 	 * Remove the sgs_client role.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function remove_client_role() {
 		remove_role( 'sgs_client' );

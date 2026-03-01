@@ -1,8 +1,10 @@
-<?php
+﻿<?php
 /**
  * Main Plugin Class
  *
  * @package SGS\ClientNotes
+ *
+ * @since 1.0.0
  */
 
 namespace SGS\ClientNotes;
@@ -14,12 +16,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Main SGS Client Notes class.
+ *
+ * @since 1.0.0
  */
 class SGS_Client_Notes {
 
 	/**
 	 * Single instance of the class.
 	 *
+	 * @since 1.0.0
 	 * @var SGS_Client_Notes
 	 */
 	protected static $instance = null;
@@ -27,6 +32,7 @@ class SGS_Client_Notes {
 	/**
 	 * Get the single instance.
 	 *
+	 * @since 1.0.0
 	 * @return SGS_Client_Notes
 	 */
 	public static function instance() {
@@ -38,6 +44,8 @@ class SGS_Client_Notes {
 
 	/**
 	 * Constructor.
+	 *
+	 * @since 1.0.0
 	 */
 	private function __construct() {
 		$this->init_hooks();
@@ -45,6 +53,8 @@ class SGS_Client_Notes {
 
 	/**
 	 * Initialise WordPress hooks.
+	 *
+	 * @since 1.0.0
 	 */
 	private function init_hooks() {
 		// Activation and deactivation hooks.
@@ -76,6 +86,8 @@ class SGS_Client_Notes {
 
 	/**
 	 * Plugin activation.
+	 *
+	 * @since 1.0.0
 	 */
 	public function activate() {
 		require_once SGS_CLIENT_NOTES_PATH . 'includes/class-installer.php';
@@ -84,6 +96,8 @@ class SGS_Client_Notes {
 
 	/**
 	 * Plugin deactivation.
+	 *
+	 * @since 1.0.0
 	 */
 	public function deactivate() {
 		// Clean up scheduled events if any.
@@ -92,6 +106,8 @@ class SGS_Client_Notes {
 
 	/**
 	 * Load plugin text domain for translations.
+	 *
+	 * @since 1.0.0
 	 */
 	public function load_textdomain() {
 		load_plugin_textdomain(
@@ -103,6 +119,8 @@ class SGS_Client_Notes {
 
 	/**
 	 * Initialise plugin components.
+	 *
+	 * @since 1.0.0
 	 */
 	public function init_components() {
 		// Initialise roles.
@@ -116,6 +134,8 @@ class SGS_Client_Notes {
 
 	/**
 	 * Register REST API routes.
+	 *
+	 * @since 1.0.0
 	 */
 	public function register_rest_routes() {
 		require_once SGS_CLIENT_NOTES_PATH . 'includes/api/class-rest-notes.php';
@@ -130,6 +150,8 @@ class SGS_Client_Notes {
 
 	/**
 	 * Register admin menu.
+	 *
+	 * @since 1.0.0
 	 */
 	public function register_admin_menu() {
 		if ( ! current_user_can( 'sgs_manage_notes' ) ) {
@@ -144,6 +166,8 @@ class SGS_Client_Notes {
 
 	/**
 	 * Register dashboard widget.
+	 *
+	 * @since 1.0.0
 	 */
 	public function register_dashboard_widget() {
 		if ( ! current_user_can( 'sgs_manage_notes' ) ) {
@@ -159,6 +183,7 @@ class SGS_Client_Notes {
 	/**
 	 * Enqueue admin assets.
 	 *
+	 * @since 1.0.0
 	 * @param string $hook Current admin page hook.
 	 */
 	public function enqueue_admin_assets( $hook ) {
@@ -177,6 +202,8 @@ class SGS_Client_Notes {
 
 	/**
 	 * Enqueue frontend assets.
+	 *
+	 * @since 1.0.0
 	 */
 	public function enqueue_frontend_assets() {
 		// Only load for users who can create or manage notes.
@@ -240,6 +267,8 @@ class SGS_Client_Notes {
 
 	/**
 	 * Render frontend toolbar.
+	 *
+	 * @since 1.0.0
 	 */
 	public function render_frontend_toolbar() {
 		// Only show for users who can create notes.
@@ -253,7 +282,7 @@ class SGS_Client_Notes {
 				<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
 					<path d="M10 2C5.58 2 2 5.58 2 10C2 14.42 5.58 18 10 18C14.42 18 18 14.42 18 10C18 5.58 14.42 2 10 2ZM10 16C6.69 16 4 13.31 4 10C4 6.69 6.69 4 10 4C13.31 4 16 6.69 16 10C16 13.31 13.31 16 10 16ZM10.5 6H9.5V11H10.5V6ZM10.5 12H9.5V13H10.5V12Z" fill="currentColor"/>
 				</svg>
-				<span>Leave Feedback</span>
+				<span><?php esc_html_e( 'Leave Feedback', 'sgs-client-notes' ); ?></span>
 			</button>
 		</div>
 		<?php

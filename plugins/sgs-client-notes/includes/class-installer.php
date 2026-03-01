@@ -1,10 +1,12 @@
-<?php
+﻿<?php
 /**
  * Plugin Installer
  *
  * Handles database table creation and plugin setup on activation.
  *
  * @package SGS\ClientNotes
+ *
+ * @since 1.0.0
  */
 
 namespace SGS\ClientNotes;
@@ -16,11 +18,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Installer class.
+ *
+ * @since 1.0.0
  */
 class Installer {
 
 	/**
 	 * Run activation tasks.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function activate() {
 		self::create_tables();
@@ -36,6 +42,8 @@ class Installer {
 
 	/**
 	 * Create database tables.
+	 *
+	 * @since 1.0.0
 	 */
 	private static function create_tables() {
 		global $wpdb;
@@ -95,6 +103,8 @@ class Installer {
 
 	/**
 	 * Create custom roles and assign capabilities.
+	 *
+	 * @since 1.0.0
 	 */
 	private static function create_roles() {
 		require_once SGS_CLIENT_NOTES_PATH . 'includes/class-roles.php';
@@ -104,6 +114,8 @@ class Installer {
 
 	/**
 	 * Set default plugin options.
+	 *
+	 * @since 1.0.0
 	 */
 	private static function set_default_options() {
 		$defaults = array(

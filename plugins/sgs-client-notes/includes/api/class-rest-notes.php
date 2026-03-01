@@ -1,8 +1,10 @@
-<?php
+﻿<?php
 /**
  * REST API: Notes Controller
  *
  * @package SGS\ClientNotes
+ *
+ * @since 1.0.0
  */
 
 namespace SGS\ClientNotes\API;
@@ -14,12 +16,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * REST Notes Controller.
+ *
+ * @since 1.0.0
  */
 class Rest_Notes extends \WP_REST_Controller {
 
 	/**
 	 * Namespace.
 	 *
+	 * @since 1.0.0
 	 * @var string
 	 */
 	protected $namespace = 'sgs-client-notes/v1';
@@ -27,12 +32,15 @@ class Rest_Notes extends \WP_REST_Controller {
 	/**
 	 * Resource name.
 	 *
+	 * @since 1.0.0
 	 * @var string
 	 */
 	protected $rest_base = 'notes';
 
 	/**
 	 * Register routes.
+	 *
+	 * @since 1.0.0
 	 */
 	public function register_routes() {
 		// GET /notes - Get notes for current page.
@@ -94,6 +102,7 @@ class Rest_Notes extends \WP_REST_Controller {
 	/**
 	 * Get notes for the current page.
 	 *
+	 * @since 1.0.0
 	 * @param \WP_REST_Request $request Request object.
 	 * @return \WP_REST_Response
 	 */
@@ -154,6 +163,7 @@ class Rest_Notes extends \WP_REST_Controller {
 	/**
 	 * Create a new note.
 	 *
+	 * @since 1.0.0
 	 * @param \WP_REST_Request $request Request object.
 	 * @return \WP_REST_Response
 	 */
@@ -212,6 +222,7 @@ class Rest_Notes extends \WP_REST_Controller {
 	/**
 	 * Update a note.
 	 *
+	 * @since 1.0.0
 	 * @param \WP_REST_Request $request Request object.
 	 * @return \WP_REST_Response
 	 */
@@ -266,6 +277,7 @@ class Rest_Notes extends \WP_REST_Controller {
 	/**
 	 * Delete a note.
 	 *
+	 * @since 1.0.0
 	 * @param \WP_REST_Request $request Request object.
 	 * @return \WP_REST_Response
 	 */
@@ -296,6 +308,7 @@ class Rest_Notes extends \WP_REST_Controller {
 	/**
 	 * Prepare item for response.
 	 *
+	 * @since 1.0.0
 	 * @param array            $item    Note data.
 	 * @param \WP_REST_Request $request Request object.
 	 * @return array
@@ -336,6 +349,7 @@ class Rest_Notes extends \WP_REST_Controller {
 	/**
 	 * Check rate limit.
 	 *
+	 * @since 1.0.0
 	 * @return bool
 	 */
 	private function check_rate_limit() {
@@ -360,6 +374,7 @@ class Rest_Notes extends \WP_REST_Controller {
 	/**
 	 * Send webhook notification.
 	 *
+	 * @since 1.0.0
 	 * @param string $event Event type.
 	 * @param array  $note  Note data.
 	 */
@@ -405,6 +420,7 @@ class Rest_Notes extends \WP_REST_Controller {
 	/**
 	 * Get collection params.
 	 *
+	 * @since 1.0.0
 	 * @return array
 	 */
 	public function get_collection_params() {
@@ -428,6 +444,7 @@ class Rest_Notes extends \WP_REST_Controller {
 	/**
 	 * Permission check for getting notes.
 	 *
+	 * @since 1.0.0
 	 * @return bool
 	 */
 	public function get_items_permissions_check( $request ) {
@@ -437,6 +454,7 @@ class Rest_Notes extends \WP_REST_Controller {
 	/**
 	 * Permission check for creating notes.
 	 *
+	 * @since 1.0.0
 	 * @return bool
 	 */
 	public function create_item_permissions_check( $request ) {
@@ -446,6 +464,7 @@ class Rest_Notes extends \WP_REST_Controller {
 	/**
 	 * Permission check for updating notes.
 	 *
+	 * @since 1.0.0
 	 * @return bool
 	 */
 	public function update_item_permissions_check( $request ) {
@@ -455,6 +474,7 @@ class Rest_Notes extends \WP_REST_Controller {
 	/**
 	 * Permission check for deleting notes.
 	 *
+	 * @since 1.0.0
 	 * @return bool
 	 */
 	public function delete_item_permissions_check( $request ) {

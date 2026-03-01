@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Plugin Name: SGS Client Notes
  * Plugin URI: https://smallgiantsstudio.com
@@ -14,6 +14,8 @@
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  *
  * @package SGS\ClientNotes
+ *
+ * @since 1.0.0
  */
 
 namespace SGS\ClientNotes;
@@ -53,6 +55,7 @@ require_once SGS_CLIENT_NOTES_PATH . 'includes/class-sgs-client-notes.php';
 /**
  * Main plugin instance.
  *
+ * @since 1.0.0
  * @return SGS_Client_Notes
  */
 function sgs_client_notes() {

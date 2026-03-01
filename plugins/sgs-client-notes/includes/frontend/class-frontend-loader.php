@@ -1,8 +1,10 @@
-<?php
+﻿<?php
 /**
  * Frontend: Asset Loader
  *
  * @package SGS\ClientNotes
+ *
+ * @since 1.0.0
  */
 
 namespace SGS\ClientNotes\Frontend;
@@ -14,11 +16,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Frontend Loader class.
+ *
+ * @since 1.0.0
  */
 class Frontend_Loader {
 
 	/**
 	 * Initialise frontend hooks.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function init() {
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue_assets' ) );
@@ -27,6 +33,8 @@ class Frontend_Loader {
 
 	/**
 	 * Enqueue frontend assets.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function enqueue_assets() {
 		// Only load for users who can create or manage notes.
@@ -95,6 +103,8 @@ class Frontend_Loader {
 
 	/**
 	 * Render frontend toolbar.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function render_toolbar() {
 		if ( ! current_user_can( 'sgs_create_notes' ) ) {

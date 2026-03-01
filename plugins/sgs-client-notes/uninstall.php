@@ -1,10 +1,12 @@
-<?php
+﻿<?php
 /**
  * Uninstall Script
  *
  * Removes all plugin data when uninstalled.
  *
  * @package SGS\ClientNotes
+ *
+ * @since 1.0.0
  */
 
 // Exit if not called from WordPress.

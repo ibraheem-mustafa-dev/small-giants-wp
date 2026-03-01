@@ -1,8 +1,10 @@
-<?php
+﻿<?php
 /**
  * Admin: Notes Management Page
  *
  * @package SGS\ClientNotes
+ *
+ * @since 1.0.0
  */
 
 namespace SGS\ClientNotes\Admin;
@@ -14,11 +16,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Admin Notes class.
+ *
+ * @since 1.0.0
  */
 class Admin_Notes {
 
 	/**
 	 * Register admin menu.
+	 *
+	 * @since 1.0.0
 	 */
 	public function register_menu() {
 		global $wpdb;
@@ -54,6 +60,8 @@ class Admin_Notes {
 
 	/**
 	 * Render notes management page.
+	 *
+	 * @since 1.0.0
 	 */
 	public function render_page() {
 		global $wpdb;
@@ -240,6 +248,8 @@ class Admin_Notes {
 
 	/**
 	 * Render settings page.
+	 *
+	 * @since 1.0.0
 	 */
 	public function render_settings_page() {
 		// Handle form submission.
@@ -315,6 +325,8 @@ class Admin_Notes {
 
 	/**
 	 * Handle bulk actions.
+	 *
+	 * @since 1.0.0
 	 */
 	private function handle_bulk_actions() {
 		if ( ! isset( $_POST['action'] ) || '-1' === $_POST['action'] ) {

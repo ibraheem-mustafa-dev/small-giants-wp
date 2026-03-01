@@ -1,8 +1,10 @@
-<?php
+﻿<?php
 /**
  * REST API: Replies Controller
  *
  * @package SGS\ClientNotes
+ *
+ * @since 1.0.0
  */
 
 namespace SGS\ClientNotes\API;
@@ -14,12 +16,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * REST Replies Controller.
+ *
+ * @since 1.0.0
  */
 class Rest_Replies extends \WP_REST_Controller {
 
 	/**
 	 * Namespace.
 	 *
+	 * @since 1.0.0
 	 * @var string
 	 */
 	protected $namespace = 'sgs-client-notes/v1';
@@ -27,12 +32,15 @@ class Rest_Replies extends \WP_REST_Controller {
 	/**
 	 * Resource name.
 	 *
+	 * @since 1.0.0
 	 * @var string
 	 */
 	protected $rest_base = 'notes/(?P<note_id>[\d]+)/replies';
 
 	/**
 	 * Register routes.
+	 *
+	 * @since 1.0.0
 	 */
 	public function register_routes() {
 		// GET /notes/{note_id}/replies - Get replies for a note.
@@ -73,6 +81,7 @@ class Rest_Replies extends \WP_REST_Controller {
 	/**
 	 * Get replies for a note.
 	 *
+	 * @since 1.0.0
 	 * @param \WP_REST_Request $request Request object.
 	 * @return \WP_REST_Response
 	 */
@@ -101,6 +110,7 @@ class Rest_Replies extends \WP_REST_Controller {
 	/**
 	 * Create a reply.
 	 *
+	 * @since 1.0.0
 	 * @param \WP_REST_Request $request Request object.
 	 * @return \WP_REST_Response
 	 */
@@ -150,6 +160,7 @@ class Rest_Replies extends \WP_REST_Controller {
 	/**
 	 * Prepare item for response.
 	 *
+	 * @since 1.0.0
 	 * @param array            $item    Reply data.
 	 * @param \WP_REST_Request $request Request object.
 	 * @return array
@@ -170,6 +181,7 @@ class Rest_Replies extends \WP_REST_Controller {
 	/**
 	 * Send webhook notification.
 	 *
+	 * @since 1.0.0
 	 * @param int   $note_id Note ID.
 	 * @param array $reply   Reply data.
 	 */
@@ -222,6 +234,7 @@ class Rest_Replies extends \WP_REST_Controller {
 	/**
 	 * Permission check for getting replies.
 	 *
+	 * @since 1.0.0
 	 * @return bool
 	 */
 	public function get_items_permissions_check( $request ) {
@@ -231,6 +244,7 @@ class Rest_Replies extends \WP_REST_Controller {
 	/**
 	 * Permission check for creating replies.
 	 *
+	 * @since 1.0.0
 	 * @return bool
 	 */
 	public function create_item_permissions_check( $request ) {

@@ -1,8 +1,10 @@
-<?php
+﻿<?php
 /**
  * Admin: Dashboard Widget
  *
  * @package SGS\ClientNotes
+ *
+ * @since 1.0.0
  */
 
 namespace SGS\ClientNotes\Admin;
@@ -14,11 +16,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Admin Dashboard class.
+ *
+ * @since 1.0.0
  */
 class Admin_Dashboard {
 
 	/**
 	 * Register dashboard widget.
+	 *
+	 * @since 1.0.0
 	 */
 	public function register_widget() {
 		wp_add_dashboard_widget(
@@ -30,6 +36,8 @@ class Admin_Dashboard {
 
 	/**
 	 * Render dashboard widget.
+	 *
+	 * @since 1.0.0
 	 */
 	public function render_widget() {
 		global $wpdb;
