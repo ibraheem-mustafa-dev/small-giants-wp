@@ -54,6 +54,10 @@ require_once SGS_BLOCKS_PATH . 'includes/google-reviews-settings.php';
 require_once SGS_BLOCKS_PATH . 'includes/stripe-settings.php';
 Stripe_Settings::init();
 
+// Stripe webhook handler — receives and verifies events from Stripe's servers.
+require_once SGS_BLOCKS_PATH . 'includes/stripe-webhook.php';
+Stripe_Webhook::init();
+
 // Register REST API endpoints.
 Forms\Form_REST_API::register();
 

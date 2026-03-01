@@ -17,13 +17,22 @@ class Form_Processor {
 	/**
 	 * Process a form submission.
 	 *
-	 * @param string $form_id   Unique form identifier.
-	 * @param array  $fields    Form field data (unsanitised).
-	 * @param array  $file_ids  Attachment IDs from uploads (default empty).
-	 * @param bool   $store     Whether to store in the database (default true).
-	 * @return array|WP_Error   Success array with submission_id, or WP_Error on failure.
+	 * When a PaymentIntent ID is provided the submission is stored with
+	 * payment_status = 'pending' and status = 'pending_payment'. The
+	 * Stripe_Webhook handler will update these to 'paid' / 'completed'
+	 * once the payment_intent.succeeded event is received from Stripe.
+	 *
+	 * This two-step flow (submission → pending, webhook → confirmed) ensures
+	 * we never mark a submission as complete before payment is verified.
+	 *
+	 * @param string $form_id           Unique form identifier.
+	 * @param array  $fields            Form field data (unsanitised).
+	 * @param array  $file_ids          Attachment IDs from uploads (default empty).
+	 * @param bool   $store             Whether to store in the database (default true).
+	 * @param string $payment_intent_id Stripe PaymentIntent ID if payment is involved (default empty).
+	 * @return array|\WP_Error          Success array with submission_id, or WP_Error on failure.
 	 */
-	public static function process( string $form_id, array $fields, array $file_ids = [], bool $store = true ) {
+	public static function process( string $form_id, array $fields, array $file_ids = [], bool $store = true, string $payment_intent_id = '' ) {
 		global $wpdb;
 
 		// Sanitise all field data.
@@ -34,7 +43,7 @@ class Form_Processor {
 
 		$submission_id = 0;
 
-		// Only store in database if the form owner enabled it.
+		// Only store in the database if the form owner enabled it.
 		if ( $store ) {
 			// Collect request metadata.
 			$ip_address = self::get_client_ip();
@@ -43,31 +52,39 @@ class Form_Processor {
 
 			$table_name = $wpdb->prefix . 'sgs_form_submissions';
 
-			$inserted = $wpdb->insert(
-				$table_name,
-				[
-					'form_id'        => sanitize_key( $form_id ),
-					'data'           => wp_json_encode( $sanitised_fields ),
-					'files'          => $files_data ? wp_json_encode( $files_data ) : null,
-					'payment_status' => 'none',
-					'ip_address'     => $ip_address,
-					'user_agent'     => $user_agent,
-					'user_id'        => $user_id,
-					'status'         => 'new',
-					'created_at'     => current_time( 'mysql' ),
-				],
-				[
-					'%s', // form_id
-					'%s', // data
-					'%s', // files
-					'%s', // payment_status
-					'%s', // ip_address
-					'%s', // user_agent
-					'%d', // user_id
-					'%s', // status
-					'%s', // created_at
-				]
-			);
+			// When a PaymentIntent is supplied, the submission starts in
+			// 'pending_payment' status. The webhook confirms the payment.
+			$has_payment    = ! empty( $payment_intent_id );
+			$payment_status = $has_payment ? 'pending' : 'none';
+			$status         = $has_payment ? 'pending_payment' : 'new';
+
+			$row = [
+				'form_id'           => sanitize_key( $form_id ),
+				'data'              => wp_json_encode( $sanitised_fields ),
+				'files'             => $files_data ? wp_json_encode( $files_data ) : null,
+				'payment_status'    => $payment_status,
+				'stripe_payment_id' => $has_payment ? sanitize_text_field( $payment_intent_id ) : null,
+				'ip_address'        => $ip_address,
+				'user_agent'        => $user_agent,
+				'user_id'           => $user_id,
+				'status'            => $status,
+				'created_at'        => current_time( 'mysql' ),
+			];
+
+			$formats = [
+				'%s', // form_id
+				'%s', // data
+				'%s', // files
+				'%s', // payment_status
+				'%s', // stripe_payment_id
+				'%s', // ip_address
+				'%s', // user_agent
+				'%d', // user_id
+				'%s', // status
+				'%s', // created_at
+			];
+
+			$inserted = $wpdb->insert( $table_name, $row, $formats );
 
 			if ( false === $inserted ) {
 				return new \WP_Error( 'db_insert_failed', __( 'Failed to save form submission.', 'sgs-blocks' ) );
@@ -80,8 +97,9 @@ class Form_Processor {
 		self::send_webhook( $form_id, $submission_id, $sanitised_fields, $files_data );
 
 		return [
-			'success'       => true,
-			'submission_id' => $submission_id,
+			'success'            => true,
+			'submission_id'      => $submission_id,
+			'requires_payment'   => ! empty( $payment_intent_id ),
 		];
 	}
 
