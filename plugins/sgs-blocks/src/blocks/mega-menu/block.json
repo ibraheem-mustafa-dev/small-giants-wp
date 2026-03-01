@@ -2,16 +2,17 @@
     "$schema":  "https://schemas.wp.org/trunk/block.json",
     "apiVersion":  3,
     "name":  "sgs/mega-menu",
-    "version":  "0.1.0",
+    "version":  "0.2.0",
     "title":  "SGS Mega Menu",
     "category":  "sgs-interactive",
-    "description":  "Block-based mega menu with template part dropdowns. Works inside Navigation block.",
+    "description":  "Block-based mega menu with template part dropdowns, layout variants, configurable animations and full keyboard navigation. Works inside Navigation block.",
     "keywords":  [
                      "mega menu",
                      "navigation",
                      "dropdown",
                      "menu",
-                     "navbar"
+                     "navbar",
+                     "flyout"
                  ],
     "textdomain":  "sgs-blocks",
     "icon":  "menu-alt",
@@ -41,6 +42,16 @@
                                                 "type":  "string",
                                                 "default":  ""
                                             },
+                       "layoutVariant":  {
+                                             "type":  "string",
+                                             "default":  "full-width",
+                                             "enum":  [
+                                                          "full-width",
+                                                          "contained",
+                                                          "columns",
+                                                          "flyout"
+                                                      ]
+                                         },
                        "panelWidth":  {
                                           "type":  "string",
                                           "default":  "full"
@@ -57,6 +68,19 @@
                                       "type":  "string",
                                       "default":  "hover"
                                   },
+                       "openAnimation":  {
+                                             "type":  "string",
+                                             "default":  "fade",
+                                             "enum":  [
+                                                          "fade",
+                                                          "slide-down",
+                                                          "scale"
+                                                      ]
+                                         },
+                       "closeDelay":  {
+                                          "type":  "number",
+                                          "default":  300
+                                      },
                        "icon":  {
                                     "type":  "string",
                                     "default":  "chevron-down"
@@ -85,7 +109,8 @@
     "example":  {
                     "attributes":  {
                                        "label":  "Products",
-                                       "panelWidth":  "full"
+                                       "layoutVariant":  "full-width",
+                                       "openAnimation":  "fade"
                                    }
                 }
 }

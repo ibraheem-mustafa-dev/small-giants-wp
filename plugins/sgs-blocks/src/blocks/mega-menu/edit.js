@@ -1,3 +1,12 @@
+/**
+ * SGS Mega Menu — Block Editor (edit.js)
+ *
+ * Inspector controls for layout variants, animation, close delay,
+ * panel content, and icon/badge options.
+ *
+ * @package SGS\Blocks
+ */
+
 import { __ } from '@wordpress/i18n';
 import {
 	useBlockProps,
@@ -9,44 +18,72 @@ import {
 	SelectControl,
 	TextControl,
 	ToggleControl,
+	RangeControl,
 	Icon,
+	Notice,
 } from '@wordpress/components';
 import { chevronDown, chevronRight } from '@wordpress/icons';
 import { useSelect } from '@wordpress/data';
 import { DesignTokenPicker } from '../../components';
 
-const PANEL_WIDTH_OPTIONS = [
-	{ label: __( 'Full width', 'sgs-blocks' ), value: 'full' },
-	{ label: __( 'Content width', 'sgs-blocks' ), value: 'content' },
-	{ label: __( 'Custom width', 'sgs-blocks' ), value: 'custom' },
+// ─── Layout variant options ────────────────────────────────────────────────
+const LAYOUT_VARIANT_OPTIONS = [
+	{
+		label: __( 'Full width — spans viewport', 'sgs-blocks' ),
+		value: 'full-width',
+	},
+	{
+		label: __( 'Contained — content width (1200 px)', 'sgs-blocks' ),
+		value: 'contained',
+	},
+	{
+		label: __( 'Columns — auto-column grid', 'sgs-blocks' ),
+		value: 'columns',
+	},
+	{
+		label: __( 'Flyout — slides in from the right', 'sgs-blocks' ),
+		value: 'flyout',
+	},
 ];
 
+// ─── Panel alignment options (not shown for flyout) ────────────────────────
 const PANEL_ALIGNMENT_OPTIONS = [
 	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
 	{ label: __( 'Centre', 'sgs-blocks' ), value: 'centre' },
 	{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
 ];
 
+// ─── Open trigger options ──────────────────────────────────────────────────
 const OPEN_ON_OPTIONS = [
-	{ label: __( 'Hover', 'sgs-blocks' ), value: 'hover' },
-	{ label: __( 'Click', 'sgs-blocks' ), value: 'click' },
+	{ label: __( 'Hover (desktop)', 'sgs-blocks' ), value: 'hover' },
+	{ label: __( 'Click / tap', 'sgs-blocks' ), value: 'click' },
 ];
 
+// ─── Animation options ─────────────────────────────────────────────────────
+const OPEN_ANIMATION_OPTIONS = [
+	{ label: __( 'Fade', 'sgs-blocks' ), value: 'fade' },
+	{ label: __( 'Slide down', 'sgs-blocks' ), value: 'slide-down' },
+	{ label: __( 'Scale', 'sgs-blocks' ), value: 'scale' },
+];
+
+// ─── Icon position options ─────────────────────────────────────────────────
 const ICON_POSITION_OPTIONS = [
-	{ label: __( 'Before', 'sgs-blocks' ), value: 'before' },
-	{ label: __( 'After', 'sgs-blocks' ), value: 'after' },
+	{ label: __( 'Before label', 'sgs-blocks' ), value: 'before' },
+	{ label: __( 'After label', 'sgs-blocks' ), value: 'after' },
 ];
 
+// ─── Edit component ────────────────────────────────────────────────────────
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		label,
 		url,
 		opensInNewTab,
 		menuTemplatePart,
-		panelWidth,
-		panelMaxWidth,
+		layoutVariant,
 		panelAlignment,
 		openOn,
+		openAnimation,
+		closeDelay,
 		icon,
 		iconPosition,
 		highlight,
@@ -54,7 +91,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		badgeColour,
 	} = attributes;
 
-	// Fetch available template parts with area='mega-menu'.
+	// Fetch available template parts with area='mega-menu' from the API.
 	const templateParts = useSelect( ( select ) => {
 		const { getEntityRecords } = select( 'core' );
 		const parts = getEntityRecords( 'postType', 'wp_template_part', {
@@ -78,11 +115,15 @@ export default function Edit( { attributes, setAttributes } ) {
 	const iconElement =
 		icon === 'chevron-down' ? chevronDown : chevronRight;
 
+	const isFlyout = layoutVariant === 'flyout';
+
 	return (
 		<>
 			<InspectorControls>
+
+				{/* ── Menu Item ──────────────────────────────────────── */}
 				<PanelBody
-					title={ __( 'Menu Item Settings', 'sgs-blocks' ) }
+					title={ __( 'Menu Item', 'sgs-blocks' ) }
 				>
 					<TextControl
 						label={ __( 'Link URL', 'sgs-blocks' ) }
@@ -90,7 +131,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { url: val } ) }
 						type="url"
 						help={ __(
-							'Optional: make the menu item itself a link.',
+							'Optional — makes the trigger itself a link.',
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
@@ -104,19 +145,20 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 					/>
 					<ToggleControl
-						label={ __( 'Highlight', 'sgs-blocks' ) }
+						label={ __( 'Highlight item', 'sgs-blocks' ) }
 						checked={ highlight }
 						onChange={ ( val ) =>
 							setAttributes( { highlight: val } )
 						}
 						help={ __(
-							'Accent colour label for featured items.',
+							'Renders the label in the accent colour.',
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
 
+				{/* ── Panel Content ──────────────────────────────────── */}
 				<PanelBody
 					title={ __( 'Panel Content', 'sgs-blocks' ) }
 					initialOpen={ true }
@@ -138,57 +180,52 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { menuTemplatePart: val } )
 						}
 						help={ __(
-							'Choose a mega menu template part from the Site Editor.',
+							'Choose a mega-menu template part from the Site Editor.',
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
 					/>
 					{ ! templateParts.length && (
-						<p className="components-base-control__help">
+						<Notice isDismissible={ false } status="info">
 							{ __(
-								'No mega menu template parts found. Create one in the Site Editor (Appearance → Editor → Patterns → Template Parts).',
+								'No mega-menu template parts found. Create one in Appearance → Editor → Patterns → Template Parts and set its area to "mega-menu".',
 								'sgs-blocks'
 							) }
-						</p>
+						</Notice>
 					) }
 				</PanelBody>
 
+				{/* ── Panel Layout ───────────────────────────────────── */}
 				<PanelBody
 					title={ __( 'Panel Layout', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
 					<SelectControl
-						label={ __( 'Panel width', 'sgs-blocks' ) }
-						value={ panelWidth }
-						options={ PANEL_WIDTH_OPTIONS }
+						label={ __( 'Layout variant', 'sgs-blocks' ) }
+						value={ layoutVariant }
+						options={ LAYOUT_VARIANT_OPTIONS }
 						onChange={ ( val ) =>
-							setAttributes( { panelWidth: val } )
+							setAttributes( { layoutVariant: val } )
 						}
+						help={ __(
+							'Controls how the dropdown panel appears.',
+							'sgs-blocks'
+						) }
 						__nextHasNoMarginBottom
 					/>
-					{ panelWidth === 'custom' && (
-						<TextControl
-							label={ __( 'Max width', 'sgs-blocks' ) }
-							value={ panelMaxWidth }
+
+					{ ! isFlyout && (
+						<SelectControl
+							label={ __( 'Panel alignment', 'sgs-blocks' ) }
+							value={ panelAlignment }
+							options={ PANEL_ALIGNMENT_OPTIONS }
 							onChange={ ( val ) =>
-								setAttributes( { panelMaxWidth: val } )
+								setAttributes( { panelAlignment: val } )
 							}
-							help={ __(
-								'CSS value, e.g., 800px or 60vw',
-								'sgs-blocks'
-							) }
 							__nextHasNoMarginBottom
 						/>
 					) }
-					<SelectControl
-						label={ __( 'Panel alignment', 'sgs-blocks' ) }
-						value={ panelAlignment }
-						options={ PANEL_ALIGNMENT_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { panelAlignment: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
+
 					<SelectControl
 						label={ __( 'Open on', 'sgs-blocks' ) }
 						value={ openOn }
@@ -197,13 +234,51 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { openOn: val } )
 						}
 						help={ __(
-							'Mobile always uses click/tap.',
+							'Mobile always uses tap regardless of this setting.',
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
 
+				{/* ── Animation ──────────────────────────────────────── */}
+				<PanelBody
+					title={ __( 'Animation', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<SelectControl
+						label={ __( 'Opening animation', 'sgs-blocks' ) }
+						value={ openAnimation }
+						options={ OPEN_ANIMATION_OPTIONS }
+						onChange={ ( val ) =>
+							setAttributes( { openAnimation: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
+
+					{ openOn === 'hover' && (
+						<RangeControl
+							label={ __(
+								'Close delay on mouse-out (ms)',
+								'sgs-blocks'
+							) }
+							value={ closeDelay }
+							onChange={ ( val ) =>
+								setAttributes( { closeDelay: val } )
+							}
+							min={ 0 }
+							max={ 1000 }
+							step={ 50 }
+							help={ __(
+								'Milliseconds to wait before closing after the cursor leaves. Prevents accidental closure.',
+								'sgs-blocks'
+							) }
+							__nextHasNoMarginBottom
+						/>
+					) }
+				</PanelBody>
+
+				{/* ── Icon & Badge ───────────────────────────────────── */}
 				<PanelBody
 					title={ __( 'Icon & Badge', 'sgs-blocks' ) }
 					initialOpen={ false }
@@ -224,7 +299,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { badge: val } )
 						}
 						help={ __(
-							'Optional small badge like "New" or "Sale".',
+							'Short text badge e.g. "New" or "Sale".',
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
@@ -239,8 +314,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						/>
 					) }
 				</PanelBody>
+
 			</InspectorControls>
 
+			{/* ── Editor preview ──────────────────────────────────────── */}
 			<div { ...blockProps }>
 				{ iconPosition === 'before' && (
 					<Icon icon={ iconElement } size={ 16 } />
@@ -260,13 +337,20 @@ export default function Edit( { attributes, setAttributes } ) {
 				{ badge && (
 					<span className="sgs-mega-menu__badge">{ badge }</span>
 				) }
-				{ menuTemplatePart && (
-					<div className="sgs-mega-menu__preview-note">
+				{ menuTemplatePart ? (
+					<p className="sgs-mega-menu__preview-note">
 						{ __(
-							'Mega menu panel content will render on the frontend.',
+							'Mega-menu panel will render on the frontend.',
 							'sgs-blocks'
 						) }
-					</div>
+					</p>
+				) : (
+					<p className="sgs-mega-menu__preview-note sgs-mega-menu__preview-note--empty">
+						{ __(
+							'← Select a template part in the sidebar.',
+							'sgs-blocks'
+						) }
+					</p>
 				) }
 			</div>
 		</>
