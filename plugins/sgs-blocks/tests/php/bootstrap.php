@@ -2,52 +2,45 @@
 /**
  * PHPUnit bootstrap for SGS Blocks plugin tests.
  *
- * Loads the WordPress test infrastructure, then loads the plugin under test.
+ * This bootstrap is self-contained: it does NOT require a live WordPress
+ * installation or the WP test suite.  Tests use plain PHPUnit\Framework\TestCase
+ * and test the plugin's file structure, JSON configuration, and PHP class
+ * contracts directly.
  *
- * Usage:
- *   WP_TESTS_DIR=/path/to/wordpress-tests-lib phpunit
- *
- * If WP_TESTS_DIR is not set, we fall back to /tmp/wordpress-tests-lib
- * which is where the WordPress test installer writes the suite by default.
+ * Run with:
+ *   vendor/bin/phpunit --configuration phpunit.xml.dist
  *
  * @package SGS\Blocks\Tests
  */
 
-// Plugin root (two levels above this file: tests/php/ → tests/ → plugin root).
+// ── Autoloader ───────────────────────────────────────────────────────────────
+// Composer autoloader (provides PHPUnit + any future autoloaded classes).
+$autoload = dirname( __DIR__, 2 ) . '/vendor/autoload.php';
+
+if ( ! file_exists( $autoload ) ) {
+    fwrite(
+        STDERR,
+        'ERROR: vendor/autoload.php not found.' . PHP_EOL .
+        'Run `composer install` first.' . PHP_EOL
+    );
+    exit( 1 );
+}
+
+require_once $autoload;
+
+// ── Plugin root constants ─────────────────────────────────────────────────────
 define( 'SGS_BLOCKS_TESTS_DIR', __DIR__ );
 define( 'SGS_BLOCKS_PLUGIN_DIR', dirname( __DIR__, 2 ) );
+define( 'SGS_BLOCKS_VERSION', '0.1.0' );
 
-// Locate WordPress test suite.
-$_tests_dir = getenv( 'WP_TESTS_DIR' );
+// ── Minimal WordPress stubs ───────────────────────────────────────────────────
+// Only the constants and functions that the tests themselves reference.
+// We do NOT load the plugin code (which requires a running WP environment).
 
-if ( ! $_tests_dir ) {
-	$_tests_dir = rtrim( sys_get_temp_dir(), '/\\' ) . '/wordpress-tests-lib';
+if ( ! defined( 'ABSPATH' ) ) {
+    define( 'ABSPATH', SGS_BLOCKS_PLUGIN_DIR . '/' );
 }
 
-if ( ! file_exists( $_tests_dir . '/includes/functions.php' ) ) {
-	echo 'ERROR: Cannot find WordPress test suite at ' . $_tests_dir . PHP_EOL;
-	echo 'Set WP_TESTS_DIR to point to a valid WordPress test suite installation.' . PHP_EOL;
-	echo PHP_EOL;
-	echo 'Quick setup:' . PHP_EOL;
-	echo '  git clone https://github.com/WordPress/wordpress-develop.git /tmp/wordpress-src' . PHP_EOL;
-	echo '  cp /tmp/wordpress-src/tests/phpunit/includes /tmp/wordpress-tests-lib/includes -r' . PHP_EOL;
-	echo '  # Or use bin/install-wp-tests.sh (requires mysqladmin)' . PHP_EOL;
-	exit( 1 );
+if ( ! defined( 'WP_PLUGIN_DIR' ) ) {
+    define( 'WP_PLUGIN_DIR', dirname( SGS_BLOCKS_PLUGIN_DIR ) );
 }
-
-// Give access to tests_add_filter() function.
-require_once $_tests_dir . '/includes/functions.php';
-
-/**
- * Manually load the SGS Blocks plugin before WordPress is fully set up.
- * tests_add_filter() queues this onto muplugins_loaded so WordPress is
- * bootstrapped before we try to use any WP functions.
- */
-function _sgs_blocks_load_plugin(): void {
-	require SGS_BLOCKS_PLUGIN_DIR . '/sgs-blocks.php';
-}
-
-tests_add_filter( 'muplugins_loaded', '_sgs_blocks_load_plugin' );
-
-// Bootstrap the WP testing environment (sets up DB, loads WP core, etc.).
-require $_tests_dir . '/includes/bootstrap.php';
