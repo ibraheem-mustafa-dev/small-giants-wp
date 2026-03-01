@@ -1,96 +1,112 @@
-﻿{
-    "$schema":  "https://schemas.wp.org/trunk/block.json",
-    "apiVersion":  3,
-    "name":  "sgs/form-field-select",
-    "version":  "0.1.0",
-    "title":  "SGS Select Field",
-    "category":  "sgs-forms",
-    "description":  "A dropdown select field with custom options.",
-    "keywords":  [
-                     "select",
-                     "dropdown",
-                     "options",
-                     "choice"
-                 ],
-    "textdomain":  "sgs-blocks",
-    "icon":  "menu",
-    "parent":  [
-                   "sgs/form",
-                   "sgs/form-step"
-               ],
-    "usesContext":  [
-                        "sgs/formId"
-                    ],
-    "supports":  {
-                     "html":  false,
-                     "anchor":  false,
-                     "spacing":  {
-                                     "margin":  true,
-                                     "padding":  true
-                                 },
-                     "color":  {
-                                   "text":  true,
-                                   "background":  true
-                               }
-                 },
-    "attributes":  {
-                       "fieldName":  {
-                                         "type":  "string",
-                                         "default":  ""
-                                     },
-                       "label":  {
-                                     "type":  "string",
-                                     "default":  ""
-                                 },
-                       "placeholder":  {
-                                           "type":  "string",
-                                           "default":  ""
-                                       },
-                       "helpText":  {
-                                        "type":  "string",
-                                        "default":  ""
-                                    },
-                       "required":  {
-                                        "type":  "boolean",
-                                        "default":  false
-                                    },
-                       "width":  {
-                                     "type":  "string",
-                                     "default":  "full"
-                                 },
-                       "options":  {
-                                       "type":  "array",
-                                       "default":  [
-                                                       {
-                                                           "value":  "option-1",
-                                                           "label":  "Option 1"
-                                                       }
-                                                   ]
-                                   },
-                       "conditionalField":  {
-                                                "type":  "string",
-                                                "default":  ""
-                                            },
-                       "conditionalOperator":  {
-                                                   "type":  "string",
-                                                   "default":  "equals"
-                                               },
-                       "conditionalValue":  {
-                                                "type":  "string",
-                                                "default":  ""
-                                            }
-                   },
-    "render":  "file:./render.php",
-    "editorScript":  "file:./index.js",
-    "example":  {
-                    "attributes":  {
-                                       "label":  "Product Category",
-                                       "options":  [
-                                                       "Fresh Produce",
-                                                       "Dairy \u0026 Eggs",
-                                                       "Bakery",
-                                                       "Beverages"
-                                                   ]
-                                   }
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "sgs/form-field-select",
+    "version": "0.1.0",
+    "title": "SGS Select Field",
+    "category": "sgs-forms",
+    "description": "A dropdown select field with custom options.",
+    "keywords": [
+        "select",
+        "dropdown",
+        "options",
+        "choice"
+    ],
+    "textdomain": "sgs-blocks",
+    "icon": "menu",
+    "parent": [
+        "sgs/form",
+        "sgs/form-step"
+    ],
+    "usesContext": [
+        "sgs/formId"
+    ],
+    "supports": {
+        "html": false,
+        "anchor": false,
+        "spacing": {
+            "margin": true,
+            "padding": true
+        },
+        "color": {
+            "text": true,
+            "background": true
+        }
+    },
+    "attributes": {
+        "fieldName": {
+            "type": "string",
+            "default": ""
+        },
+        "label": {
+            "type": "string",
+            "default": ""
+        },
+        "placeholder": {
+            "type": "string",
+            "default": ""
+        },
+        "helpText": {
+            "type": "string",
+            "default": ""
+        },
+        "required": {
+            "type": "boolean",
+            "default": false
+        },
+        "width": {
+            "type": "string",
+            "default": "full"
+        },
+        "options": {
+            "type": "array",
+            "default": [
+                {
+                    "value": "option-1",
+                    "label": "Option 1"
                 }
+            ]
+        },
+        "conditionalField": {
+            "type": "string",
+            "default": ""
+        },
+        "conditionalOperator": {
+            "type": "string",
+            "default": "equals"
+        },
+        "conditionalValue": {
+            "type": "string",
+            "default": ""
+        },
+        "minLength": {
+            "type": "number",
+            "default": 0
+        },
+        "maxLength": {
+            "type": "number",
+            "default": 0
+        },
+        "pattern": {
+            "type": "string",
+            "default": ""
+        },
+        "customError": {
+            "type": "string",
+            "default": ""
+        }
+    },
+    "render": "file:./render.php",
+    "editorScript": "file:./index.js",
+    "example": {
+        "attributes": {
+            "label": "Product Category",
+            "options": [
+                "Fresh Produce",
+                "Dairy & Eggs",
+                "Bakery",
+                "Beverages"
+            ]
+        }
+    }
 }

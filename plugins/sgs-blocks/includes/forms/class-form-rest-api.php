@@ -442,11 +442,13 @@ class Form_REST_API {
 	 * @return \WP_REST_Response|\WP_Error Response with submission ID or error.
 	 */
 	public static function handle_submit( \WP_REST_Request $request ) {
-		$form_id           = $request->get_param( 'formId' );
-		$fields            = $request->get_param( 'fields' );
-		$file_ids          = $request->get_param( 'fileIds' );
-		$honeypot          = $request->get_param( 'honeypot' );
-		$store_submissions = $request->get_param( 'storeSubmissions' );
+		$form_id            = $request->get_param( 'formId' );
+		$fields             = $request->get_param( 'fields' );
+		$file_ids           = $request->get_param( 'fileIds' );
+		$honeypot           = $request->get_param( 'honeypot' );
+		$store_submissions  = $request->get_param( 'storeSubmissions' );
+		$turnstile_response = $request->get_param( 'turnstileResponse' );
+		$notification_email = $request->get_param( 'notificationEmail' );
 
 		// Check honeypot (bot trap).
 		if ( ! empty( $honeypot ) ) {
@@ -461,9 +463,18 @@ class Form_REST_API {
 		}
 
 		// Retrieve cached form configuration (set by render.php, lives 24 hours).
-		$form_config    = get_transient( 'sgs_form_config_' . sanitize_key( $form_id ) );
-		$require_login  = is_array( $form_config ) ? (bool) ( $form_config['requireLogin'] ?? false ) : false;
-		$rate_limit_max = is_array( $form_config ) ? absint( $form_config['rateLimit'] ?? 5 ) : 5;
+		$form_config       = get_transient( 'sgs_form_config_' . sanitize_key( $form_id ) );
+		$require_login     = is_array( $form_config ) ? (bool) ( $form_config['requireLogin'] ?? false ) : false;
+		$rate_limit_max    = is_array( $form_config ) ? absint( $form_config['rateLimit'] ?? 5 ) : 5;
+		$turnstile_enabled = is_array( $form_config ) ? (bool) ( $form_config['turnstileEnabled'] ?? false ) : false;
+		$field_rules       = is_array( $form_config ) ? ( $form_config['fieldRules'] ?? [] ) : [];
+
+		// Use notification email from cached config (server-side truth) if available,
+		// falling back to the request param for backwards compatibility.
+		$cached_notification_email = is_array( $form_config ) ? ( $form_config['notificationEmail'] ?? '' ) : '';
+		if ( ! empty( $cached_notification_email ) ) {
+			$notification_email = sanitize_email( $cached_notification_email );
+		}
 
 		// Enforce login requirement when the form editor has enabled it.
 		if ( $require_login && ! is_user_logged_in() ) {
@@ -474,6 +485,14 @@ class Form_REST_API {
 			);
 		}
 
+		// Verify Cloudflare Turnstile token when CAPTCHA is enabled for this form.
+		if ( $turnstile_enabled ) {
+			$turnstile_result = self::verify_turnstile( $turnstile_response );
+			if ( is_wp_error( $turnstile_result ) ) {
+				return $turnstile_result;
+			}
+		}
+
 		// Rate limiting: configurable per-form, defaulting to 5 per IP per hour.
 		$rate_limit_check = self::check_rate_limit( $form_id, $rate_limit_max );
 
@@ -481,11 +500,32 @@ class Form_REST_API {
 			return $rate_limit_check;
 		}
 
+		// Server-side field validation against rules cached from render.php.
+		if ( ! empty( $field_rules ) ) {
+			$validation_errors = self::validate_fields( $fields, $field_rules );
+			if ( ! empty( $validation_errors ) ) {
+				return new \WP_Error(
+					'validation_failed',
+					__( 'Please correct the highlighted fields.', 'sgs-blocks' ),
+					[
+						'status' => 422,
+						'errors' => $validation_errors,
+					]
+				);
+			}
+		}
+
 		// Process the submission.
 		$result = Form_Processor::process( $form_id, $fields, $file_ids, $store_submissions );
 
 		if ( is_wp_error( $result ) ) {
 			return $result;
+		}
+
+		// Send notification email (belt-and-suspenders: always send when configured,
+		// regardless of webhook success/failure).
+		if ( ! empty( $notification_email ) ) {
+			self::send_notification_email( $notification_email, $form_id, $fields );
 		}
 
 		return new \WP_REST_Response(
@@ -496,6 +536,186 @@ class Form_REST_API {
 			],
 			200
 		);
+	}
+
+	/**
+	 * Verify a Cloudflare Turnstile token via the siteverify API.
+	 *
+	 * @since 1.0.0
+	 * @param string $token The cf-turnstile-response token from the client.
+	 * @return true|\WP_Error True on success, WP_Error on failure.
+	 */
+	private static function verify_turnstile( string $token ) {
+		if ( empty( $token ) ) {
+			return new \WP_Error(
+				'turnstile_missing',
+				__( 'CAPTCHA verification is required. Please complete the challenge.', 'sgs-blocks' ),
+				[ 'status' => 400 ]
+			);
+		}
+
+		$secret_key = get_option( 'sgs_turnstile_secret_key', '' );
+
+		if ( empty( $secret_key ) ) {
+			// Secret key not configured — skip verification gracefully.
+			return true;
+		}
+
+		$response = wp_remote_post(
+			'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+			[
+				'body'    => [
+					'secret'   => $secret_key,
+					'response' => $token,
+					'remoteip' => self::get_client_ip(),
+				],
+				'timeout' => 10,
+			]
+		);
+
+		if ( is_wp_error( $response ) ) {
+			// Network error — fail open to avoid blocking legitimate users.
+			return true;
+		}
+
+		$body = json_decode( wp_remote_retrieve_body( $response ), true );
+
+		if ( empty( $body['success'] ) ) {
+			return new \WP_Error(
+				'turnstile_failed',
+				__( 'CAPTCHA verification failed. Please try again.', 'sgs-blocks' ),
+				[ 'status' => 403 ]
+			);
+		}
+
+		return true;
+	}
+
+	/**
+	 * Validate submitted fields against cached validation rules.
+	 *
+	 * @since 1.0.0
+	 * @param array $fields     Submitted field values (key => value).
+	 * @param array $field_rules Validation rules keyed by fieldName.
+	 * @return array Associative array of fieldName => error message. Empty if valid.
+	 */
+	private static function validate_fields( array $fields, array $field_rules ): array {
+		$errors = [];
+
+		foreach ( $field_rules as $field_name => $rules ) {
+			$value       = $fields[ $field_name ] ?? '';
+			$label       = $rules['label'] ?? $field_name;
+			$custom_err  = ! empty( $rules['customError'] ) ? $rules['customError'] : null;
+			$min_length  = absint( $rules['minLength'] ?? 0 );
+			$max_length  = absint( $rules['maxLength'] ?? 0 );
+			$pattern     = $rules['pattern'] ?? '';
+			$required    = ! empty( $rules['required'] );
+
+			// Flatten arrays (checkboxes, tiles) to a comma-separated string for length checks.
+			$str_value = is_array( $value ) ? implode( ', ', $value ) : (string) $value;
+
+			// Required check.
+			if ( $required && '' === trim( $str_value ) ) {
+				/* translators: %s: Field label. */
+				$errors[ $field_name ] = $custom_err ?? sprintf( __( '%s is required.', 'sgs-blocks' ), $label );
+				continue;
+			}
+
+			// Skip further validation for empty optional fields.
+			if ( '' === trim( $str_value ) ) {
+				continue;
+			}
+
+			// Minimum length.
+			if ( $min_length > 0 && mb_strlen( $str_value ) < $min_length ) {
+				/* translators: 1: Field label, 2: Minimum length. */
+				$errors[ $field_name ] = $custom_err ?? sprintf( __( '%1$s must be at least %2$d characters.', 'sgs-blocks' ), $label, $min_length );
+				continue;
+			}
+
+			// Maximum length.
+			if ( $max_length > 0 && mb_strlen( $str_value ) > $max_length ) {
+				/* translators: 1: Field label, 2: Maximum length. */
+				$errors[ $field_name ] = $custom_err ?? sprintf( __( '%1$s must not exceed %2$d characters.', 'sgs-blocks' ), $label, $max_length );
+				continue;
+			}
+
+			// Pattern validation (regex).
+			if ( ! empty( $pattern ) ) {
+				// Wrap the pattern as a full regex with anchors.
+				$regex = '/^(?:' . $pattern . ')$/u';
+				// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- testing if pattern is valid.
+				if ( false === @preg_match( $regex, $str_value ) ) {
+					// Invalid pattern — skip silently.
+				} elseif ( ! preg_match( $regex, $str_value ) ) {
+					/* translators: %s: Field label. */
+					$errors[ $field_name ] = $custom_err ?? sprintf( __( '%s does not match the required format.', 'sgs-blocks' ), $label );
+				}
+			}
+		}
+
+		return $errors;
+	}
+
+	/**
+	 * Send a wp_mail() notification with form submission data.
+	 *
+	 * Formats all submitted fields as a simple HTML table for readability.
+	 * Sent regardless of webhook success/failure (belt-and-suspenders).
+	 *
+	 * @since 1.0.0
+	 * @param string $to      Recipient email address.
+	 * @param string $form_id Form identifier.
+	 * @param array  $fields  Sanitised field data.
+	 */
+	private static function send_notification_email( string $to, string $form_id, array $fields ): void {
+		if ( ! is_email( $to ) ) {
+			return;
+		}
+
+		$site_name = get_bloginfo( 'name' );
+
+		/* translators: 1: Site name, 2: Form ID. */
+		$subject = sprintf( __( '[%1$s] New form submission: %2$s', 'sgs-blocks' ), $site_name, $form_id );
+
+		// Build HTML table of field values.
+		$rows = '';
+		foreach ( $fields as $key => $value ) {
+			$display_value = is_array( $value ) ? implode( ', ', array_map( 'sanitize_text_field', $value ) ) : sanitize_text_field( (string) $value );
+			$rows .= sprintf(
+				'<tr><th style="text-align:left;padding:6px 12px;background:#f5f5f5;border:1px solid #ddd;">%s</th><td style="padding:6px 12px;border:1px solid #ddd;">%s</td></tr>',
+				esc_html( ucwords( str_replace( [ '_', '-' ], ' ', $key ) ) ),
+				esc_html( $display_value )
+			);
+		}
+
+		$message = sprintf(
+			'<!DOCTYPE html><html><body style="font-family:sans-serif;color:#333;">
+			<h2 style="color:#1a1a1a;">%s</h2>
+			<p><strong>%s</strong> %s</p>
+			<p><strong>%s</strong> %s</p>
+			<table style="border-collapse:collapse;width:100%%;max-width:600px;">%s</table>
+			<p style="margin-top:24px;font-size:12px;color:#999;">%s</p>
+			</body></html>',
+			esc_html__( 'New Form Submission', 'sgs-blocks' ),
+			esc_html__( 'Form:', 'sgs-blocks' ),
+			esc_html( $form_id ),
+			esc_html__( 'Submitted:', 'sgs-blocks' ),
+			esc_html( gmdate( 'Y-m-d H:i:s T' ) ),
+			$rows,
+			esc_html( sprintf(
+				/* translators: %s: Site URL. */
+				__( 'Submitted via %s', 'sgs-blocks' ),
+				get_site_url()
+			) )
+		);
+
+		$headers = [
+			'Content-Type: text/html; charset=UTF-8',
+			'From: ' . $site_name . ' <' . get_option( 'admin_email' ) . '>',
+		];
+
+		wp_mail( $to, $subject, $message, $headers );
 	}
 
 	/**

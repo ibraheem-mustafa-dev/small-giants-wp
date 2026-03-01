@@ -1,101 +1,117 @@
-﻿{
-    "$schema":  "https://schemas.wp.org/trunk/block.json",
-    "apiVersion":  3,
-    "name":  "sgs/form-field-address",
-    "version":  "0.1.0",
-    "title":  "SGS Address Field",
-    "category":  "sgs-forms",
-    "description":  "An address field with optional postcode lookup.",
-    "keywords":  [
-                     "address",
-                     "postcode",
-                     "location",
-                     "field"
-                 ],
-    "textdomain":  "sgs-blocks",
-    "icon":  "location",
-    "parent":  [
-                   "sgs/form",
-                   "sgs/form-step"
-               ],
-    "usesContext":  [
-                        "sgs/formId"
-                    ],
-    "supports":  {
-                     "html":  false,
-                     "anchor":  false,
-                     "spacing":  {
-                                     "margin":  true,
-                                     "padding":  true
-                                 },
-                     "color":  {
-                                   "text":  true,
-                                   "background":  true
-                               }
-                 },
-    "attributes":  {
-                       "fieldName":  {
-                                         "type":  "string",
-                                         "default":  ""
-                                     },
-                       "label":  {
-                                     "type":  "string",
-                                     "default":  ""
-                                 },
-                       "required":  {
-                                        "type":  "boolean",
-                                        "default":  false
-                                    },
-                       "enableLookup":  {
-                                            "type":  "boolean",
-                                            "default":  false
-                                        },
-                       "lookupProvider":  {
-                                              "type":  "string",
-                                              "default":  "getaddress.io"
-                                          },
-                       "fields":  {
-                                      "type":  "array",
-                                      "default":  [
-                                                      "line1",
-                                                      "line2",
-                                                      "city",
-                                                      "county",
-                                                      "postcode",
-                                                      "country"
-                                                  ]
-                                  },
-                       "conditionalField":  {
-                                                "type":  "string",
-                                                "default":  ""
-                                            },
-                       "conditionalOperator":  {
-                                                   "type":  "string",
-                                                   "default":  "equals"
-                                               },
-                       "conditionalValue":  {
-                                                "type":  "string",
-                                                "default":  ""
-                                            },
-                       "placeholder":  {
-                                           "type":  "string",
-                                           "default":  ""
-                                       },
-                       "helpText":  {
-                                        "type":  "string",
-                                        "default":  ""
-                                    },
-                       "width":  {
-                                     "type":  "string",
-                                     "default":  "full"
-                                 }
-                   },
-    "render":  "file:./render.php",
-    "editorScript":  "file:./index.js",
-    "example":  {
-                    "attributes":  {
-                                       "label":  "Delivery Address",
-                                       "required":  true
-                                   }
-                }
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "sgs/form-field-address",
+    "version": "0.1.0",
+    "title": "SGS Address Field",
+    "category": "sgs-forms",
+    "description": "An address field with optional postcode lookup.",
+    "keywords": [
+        "address",
+        "postcode",
+        "location",
+        "field"
+    ],
+    "textdomain": "sgs-blocks",
+    "icon": "location",
+    "parent": [
+        "sgs/form",
+        "sgs/form-step"
+    ],
+    "usesContext": [
+        "sgs/formId"
+    ],
+    "supports": {
+        "html": false,
+        "anchor": false,
+        "spacing": {
+            "margin": true,
+            "padding": true
+        },
+        "color": {
+            "text": true,
+            "background": true
+        }
+    },
+    "attributes": {
+        "fieldName": {
+            "type": "string",
+            "default": ""
+        },
+        "label": {
+            "type": "string",
+            "default": ""
+        },
+        "required": {
+            "type": "boolean",
+            "default": false
+        },
+        "enableLookup": {
+            "type": "boolean",
+            "default": false
+        },
+        "lookupProvider": {
+            "type": "string",
+            "default": "getaddress.io"
+        },
+        "fields": {
+            "type": "array",
+            "default": [
+                "line1",
+                "line2",
+                "city",
+                "county",
+                "postcode",
+                "country"
+            ]
+        },
+        "conditionalField": {
+            "type": "string",
+            "default": ""
+        },
+        "conditionalOperator": {
+            "type": "string",
+            "default": "equals"
+        },
+        "conditionalValue": {
+            "type": "string",
+            "default": ""
+        },
+        "placeholder": {
+            "type": "string",
+            "default": ""
+        },
+        "helpText": {
+            "type": "string",
+            "default": ""
+        },
+        "width": {
+            "type": "string",
+            "default": "full"
+        },
+        "minLength": {
+            "type": "number",
+            "default": 0
+        },
+        "maxLength": {
+            "type": "number",
+            "default": 0
+        },
+        "pattern": {
+            "type": "string",
+            "default": ""
+        },
+        "customError": {
+            "type": "string",
+            "default": ""
+        }
+    },
+    "render": "file:./render.php",
+    "editorScript": "file:./index.js",
+    "example": {
+        "attributes": {
+            "label": "Delivery Address",
+            "required": true
+        }
+    }
 }

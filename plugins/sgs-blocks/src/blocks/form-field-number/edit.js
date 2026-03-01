@@ -1,10 +1,13 @@
-import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import {
+	__ } from '@wordpress/i18n';
+import { useBlockProps,
+	InspectorControls } from '@wordpress/block-editor';
 import {
 	PanelBody,
 	TextControl,
 	ToggleControl,
 	SelectControl,
+	NumberControl,
 } from '@wordpress/components';
 
 const WIDTH_OPTIONS = [
@@ -24,6 +27,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		min,
 		max,
 		step,
+		minLength,
+		maxLength,
+		pattern,
+		customError,
 	} = attributes;
 
 	const className = [
@@ -121,6 +128,62 @@ export default function Edit( { attributes, setAttributes } ) {
 						type="number"
 						help={ __(
 							'Increment/decrement amount (default: 1)',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+			
+				<PanelBody
+					title={ __( 'Validation', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<NumberControl
+						label={ __( 'Min length', 'sgs-blocks' ) }
+						value={ minLength }
+						onChange={ ( val ) =>
+							setAttributes( { minLength: parseInt( val, 10 ) || 0 } )
+						}
+						min={ 0 }
+						help={ __(
+							'Minimum characters required (0 = no minimum).',
+							'sgs-blocks'
+						) }
+						__next40pxDefaultSize
+					/>
+					<NumberControl
+						label={ __( 'Max length', 'sgs-blocks' ) }
+						value={ maxLength }
+						onChange={ ( val ) =>
+							setAttributes( { maxLength: parseInt( val, 10 ) || 0 } )
+						}
+						min={ 0 }
+						help={ __(
+							'Maximum characters allowed (0 = no limit).',
+							'sgs-blocks'
+						) }
+						__next40pxDefaultSize
+					/>
+					<TextControl
+						label={ __( 'Pattern (regex)', 'sgs-blocks' ) }
+						value={ pattern }
+						onChange={ ( val ) =>
+							setAttributes( { pattern: val } )
+						}
+						help={ __(
+							'HTML5 pattern (regex, no delimiters). Leave empty for no check.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+					/>
+					<TextControl
+						label={ __( 'Custom error message', 'sgs-blocks' ) }
+						value={ customError }
+						onChange={ ( val ) =>
+							setAttributes( { customError: val } )
+						}
+						help={ __(
+							'Override the default validation error shown to users.',
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom

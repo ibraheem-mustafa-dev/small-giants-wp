@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
+    bootstrap="tests/php/bootstrap.php"
+    cacheDirectory=".phpunit.cache"
+    displayDetailsOnTestsThatTriggerWarnings="true"
+    displayDetailsOnTestsThatTriggerDeprecations="true"
+    displayDetailsOnTestsThatTriggerErrors="true"
+    displayDetailsOnTestsThatTriggerNotices="true"
+    colors="true"
+>
+    <!--
+    ┌─────────────────────────────────────────────────────────────────────────┐
+    │  SGS Blocks – PHPUnit Configuration                                     │
+    │                                                                         │
+    │  Prerequisites                                                           │
+    │  ─────────────                                                          │
+    │  1. Install WordPress test suite:                                       │
+    │       bash bin/install-wp-tests.sh <db> <user> <pass> <host> latest     │
+    │     or clone https://github.com/WordPress/wordpress-develop and set     │
+    │       WP_TESTS_DIR=/path/to/tests/phpunit                               │
+    │                                                                         │
+    │  2. Build the plugin assets:                                            │
+    │       npm run build                                                     │
+    │                                                                         │
+    │  3. Run tests:                                                          │
+    │       vendor/bin/phpunit  (if Composer-installed)                       │
+    │    or phpunit             (if globally installed)                       │
+    └─────────────────────────────────────────────────────────────────────────┘
+    -->
+
+    <!-- Test suites -->
+    <testsuites>
+        <testsuite name="SGS Blocks">
+            <directory>tests/php</directory>
+            <exclude>tests/php/bootstrap.php</exclude>
+        </testsuite>
+    </testsuites>
+
+    <!-- Code coverage source (PHP 10+: use <source> instead of deprecated <filter>) -->
+    <source>
+        <include>
+            <directory>includes</directory>
+            <directory>src</directory>
+            <file>sgs-blocks.php</file>
+        </include>
+        <exclude>
+            <directory>vendor</directory>
+            <directory>node_modules</directory>
+            <directory>build</directory>
+            <directory>tests</directory>
+        </exclude>
+    </source>
+
+    <!-- PHP INI settings for the test run -->
+    <php>
+        <!-- Display all errors during testing -->
+        <ini name="display_errors" value="1" />
+        <ini name="error_reporting" value="-1" />
+
+        <!-- Common WordPress test env vars. Override via shell env for your setup. -->
+        <!-- <env name="DB_HOST" value="localhost" /> -->
+        <!-- <env name="DB_NAME" value="wordpress_tests" /> -->
+        <!-- <env name="DB_USER" value="root" /> -->
+        <!-- <env name="DB_PASSWORD" value="" /> -->
+        <!-- <env name="WP_TESTS_DIR" value="/tmp/wordpress-tests-lib" /> -->
+    </php>
+</phpunit>

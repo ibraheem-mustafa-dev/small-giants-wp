@@ -1,87 +1,103 @@
-﻿{
-    "$schema":  "https://schemas.wp.org/trunk/block.json",
-    "apiVersion":  3,
-    "name":  "sgs/form-field-textarea",
-    "version":  "0.1.0",
-    "title":  "SGS Textarea Field",
-    "category":  "sgs-forms",
-    "description":  "A multi-line text input field.",
-    "keywords":  [
-                     "textarea",
-                     "text",
-                     "message",
-                     "comment"
-                 ],
-    "textdomain":  "sgs-blocks",
-    "icon":  "text",
-    "parent":  [
-                   "sgs/form",
-                   "sgs/form-step"
-               ],
-    "usesContext":  [
-                        "sgs/formId"
-                    ],
-    "supports":  {
-                     "html":  false,
-                     "anchor":  false,
-                     "spacing":  {
-                                     "margin":  true,
-                                     "padding":  true
-                                 },
-                     "color":  {
-                                   "text":  true,
-                                   "background":  true
-                               }
-                 },
-    "attributes":  {
-                       "fieldName":  {
-                                         "type":  "string",
-                                         "default":  ""
-                                     },
-                       "label":  {
-                                     "type":  "string",
-                                     "default":  ""
-                                 },
-                       "placeholder":  {
-                                           "type":  "string",
-                                           "default":  ""
-                                       },
-                       "helpText":  {
-                                        "type":  "string",
-                                        "default":  ""
-                                    },
-                       "required":  {
-                                        "type":  "boolean",
-                                        "default":  false
-                                    },
-                       "width":  {
-                                     "type":  "string",
-                                     "default":  "full"
-                                 },
-                       "rows":  {
-                                    "type":  "number",
-                                    "default":  4
-                                },
-                       "conditionalField":  {
-                                                "type":  "string",
-                                                "default":  ""
-                                            },
-                       "conditionalOperator":  {
-                                                   "type":  "string",
-                                                   "default":  "equals"
-                                               },
-                       "conditionalValue":  {
-                                                "type":  "string",
-                                                "default":  ""
-                                            }
-                   },
-    "render":  "file:./render.php",
-    "editorScript":  "file:./index.js",
-    "example":  {
-                    "attributes":  {
-                                       "label":  "Your Message",
-                                       "placeholder":  "Tell us about your requirementsâ€¦",
-                                       "rows":  4
-                                   }
-                }
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "sgs/form-field-textarea",
+    "version": "0.1.0",
+    "title": "SGS Textarea Field",
+    "category": "sgs-forms",
+    "description": "A multi-line text input field.",
+    "keywords": [
+        "textarea",
+        "text",
+        "message",
+        "comment"
+    ],
+    "textdomain": "sgs-blocks",
+    "icon": "text",
+    "parent": [
+        "sgs/form",
+        "sgs/form-step"
+    ],
+    "usesContext": [
+        "sgs/formId"
+    ],
+    "supports": {
+        "html": false,
+        "anchor": false,
+        "spacing": {
+            "margin": true,
+            "padding": true
+        },
+        "color": {
+            "text": true,
+            "background": true
+        }
+    },
+    "attributes": {
+        "fieldName": {
+            "type": "string",
+            "default": ""
+        },
+        "label": {
+            "type": "string",
+            "default": ""
+        },
+        "placeholder": {
+            "type": "string",
+            "default": ""
+        },
+        "helpText": {
+            "type": "string",
+            "default": ""
+        },
+        "required": {
+            "type": "boolean",
+            "default": false
+        },
+        "width": {
+            "type": "string",
+            "default": "full"
+        },
+        "rows": {
+            "type": "number",
+            "default": 4
+        },
+        "conditionalField": {
+            "type": "string",
+            "default": ""
+        },
+        "conditionalOperator": {
+            "type": "string",
+            "default": "equals"
+        },
+        "conditionalValue": {
+            "type": "string",
+            "default": ""
+        },
+        "minLength": {
+            "type": "number",
+            "default": 0
+        },
+        "maxLength": {
+            "type": "number",
+            "default": 0
+        },
+        "pattern": {
+            "type": "string",
+            "default": ""
+        },
+        "customError": {
+            "type": "string",
+            "default": ""
+        }
+    },
+    "render": "file:./render.php",
+    "editorScript": "file:./index.js",
+    "example": {
+        "attributes": {
+            "label": "Your Message",
+            "placeholder": "Tell us about your requirementsâ€¦",
+            "rows": 4
+        }
+    }
 }
