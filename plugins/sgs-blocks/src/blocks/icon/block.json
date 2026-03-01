@@ -25,7 +25,13 @@
                      "spacing":  {
                                      "margin":  true,
                                      "padding":  true
-                                 }
+                                 },
+                     "__experimentalBorder":  {
+                                                  "radius":  true,
+                                                  "width":   true,
+                                                  "color":   true,
+                                                  "style":   true
+                                              }
                  },
     "attributes":  {
                        "icon":  {
