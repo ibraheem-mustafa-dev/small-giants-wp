@@ -255,3 +255,53 @@ function inject_whatsapp_number( array $parsed_block ): array {
 }
 
 add_filter( 'render_block_data', __NAMESPACE__ . '\inject_whatsapp_number' );
+
+/**
+ * Substitute Customiser social media URLs into core/social-link blocks.
+ *
+ * The core/social-links block stores URLs statically in block markup.
+ * This filter replaces them at render time with the values set in
+ * Appearance → Customise → SGS Site Info, so the header social icons
+ * always reflect the latest Customiser settings without editing templates.
+ *
+ * Only substitutes when the Customiser value is non-empty; placeholder
+ * URLs (e.g. "#") are always replaced by the Customiser value if one exists.
+ *
+ * @param array $parsed_block Parsed block data (blockName, attrs, ...).
+ *
+ * @return array Possibly modified parsed block data.
+ *
+ * @since 1.0.0
+ */
+function inject_social_urls( array $parsed_block ): array {
+	if ( 'core/social-link' !== ( $parsed_block['blockName'] ?? '' ) ) {
+		return $parsed_block;
+	}
+
+	$service = $parsed_block['attrs']['service'] ?? '';
+	if ( empty( $service ) ) {
+		return $parsed_block;
+	}
+
+	// Map core/social-link service slugs to our Customiser keys.
+	$service_map = [
+		'linkedin'  => 'sgs_linkedin_url',
+		'facebook'  => 'sgs_facebook_url',
+		'instagram' => 'sgs_instagram_url',
+		'twitter'   => 'sgs_twitter_url',
+		'x'         => 'sgs_twitter_url', // 'x' is the newer slug for Twitter/X.
+	];
+
+	if ( ! isset( $service_map[ $service ] ) ) {
+		return $parsed_block;
+	}
+
+	$customiser_url = (string) get_theme_mod( $service_map[ $service ], '' );
+	if ( ! empty( $customiser_url ) ) {
+		$parsed_block['attrs']['url'] = $customiser_url;
+	}
+
+	return $parsed_block;
+}
+
+add_filter( 'render_block_data', __NAMESPACE__ . '\inject_social_urls' );
