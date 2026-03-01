@@ -1,0 +1,187 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/theme.json",
+	"version": 3,
+	"title": "SGS Healthcare",
+	"settings": {
+		"color": {
+			"palette": [
+				{ "slug": "primary", "color": "#1565C0", "name": "Primary" },
+				{ "slug": "primary-dark", "color": "#0D47A1", "name": "Primary Dark" },
+				{ "slug": "secondary", "color": "#4CAF50", "name": "Secondary" },
+				{ "slug": "secondary-dark", "color": "#388E3C", "name": "Secondary Dark" },
+				{ "slug": "accent", "color": "#FF9800", "name": "Accent" },
+				{ "slug": "accent-light", "color": "#FFE0B2", "name": "Accent Light" },
+				{ "slug": "success", "color": "#388E3C", "name": "Success" },
+				{ "slug": "surface", "color": "#FFFFFF", "name": "Surface" },
+				{ "slug": "surface-alt", "color": "#F3F6FB", "name": "Surface Alt" },
+				{ "slug": "text", "color": "#212121", "name": "Text" },
+				{ "slug": "text-muted", "color": "#616161", "name": "Text Muted" },
+				{ "slug": "text-inverse", "color": "#FFFFFF", "name": "Text Inverse" },
+				{ "slug": "border-subtle", "color": "#BBDEFB", "name": "Border Subtle" },
+				{ "slug": "footer-bg", "color": "#0D2B5E", "name": "Footer Background" }
+			]
+		},
+		"typography": {
+			"fontFamilies": [
+				{
+					"fontFamily": "Inter, system-ui, -apple-system, sans-serif",
+					"slug": "heading",
+					"name": "Heading",
+					"fontFace": [
+						{
+							"fontFamily": "Inter",
+							"fontWeight": "100 900",
+							"fontStyle": "normal",
+							"fontDisplay": "swap",
+							"src": [ "file:./assets/fonts/inter-variable-latin.woff2" ]
+						}
+					]
+				},
+				{
+					"fontFamily": "'Source Sans 3', system-ui, sans-serif",
+					"slug": "body",
+					"name": "Body",
+					"fontFace": [
+						{
+							"fontFamily": "Source Sans 3",
+							"fontWeight": "200 900",
+							"fontStyle": "normal",
+							"fontDisplay": "swap",
+							"src": [ "file:./assets/fonts/source-sans-3-variable-latin.woff2" ]
+						}
+					]
+				}
+			]
+		}
+	},
+	"styles": {
+		"color": {
+			"background": "var:preset|color|surface",
+			"text": "var:preset|color|text"
+		},
+		"typography": {
+			"fontFamily": "var:preset|font-family|body",
+			"lineHeight": "1.7"
+		},
+		"elements": {
+			"heading": {
+				"typography": {
+					"fontFamily": "var:preset|font-family|heading",
+					"fontWeight": "600",
+					"lineHeight": "1.25"
+				},
+				"color": {
+					"text": "var:preset|color|primary"
+				}
+			},
+			"h1": {
+				"typography": {
+					"fontSize": "var:preset|font-size|hero"
+				}
+			},
+			"h2": {
+				"typography": {
+					"fontSize": "var:preset|font-size|xx-large"
+				}
+			},
+			"h3": {
+				"typography": {
+					"fontSize": "var:preset|font-size|x-large"
+				}
+			},
+			"h4": {
+				"typography": {
+					"fontSize": "var:preset|font-size|large"
+				}
+			},
+			"h5": {
+				"typography": {
+					"fontSize": "var:preset|font-size|medium",
+					"fontWeight": "600"
+				}
+			},
+			"h6": {
+				"typography": {
+					"fontSize": "var:preset|font-size|small",
+					"fontWeight": "600",
+					"textTransform": "uppercase",
+					"letterSpacing": "0.06em"
+				}
+			},
+			"link": {
+				"color": {
+					"text": "var:preset|color|primary"
+				},
+				":hover": {
+					"color": {
+						"text": "var:preset|color|primary-dark"
+					}
+				},
+				":focus": {
+					"color": {
+						"text": "var:preset|color|primary-dark"
+					},
+					"typography": {
+						"textDecoration": "underline"
+					}
+				}
+			},
+			"button": {
+				"color": {
+					"background": "var:preset|color|accent",
+					"text": "var:preset|color|surface"
+				},
+				"typography": {
+					"fontWeight": "600",
+					"fontSize": "var:preset|font-size|small",
+					"textDecoration": "none"
+				},
+				"border": {
+					"radius": "24px"
+				},
+				"spacing": {
+					"padding": {
+						"top": "14px",
+						"bottom": "14px",
+						"left": "28px",
+						"right": "28px"
+					}
+				},
+				":hover": {
+					"color": {
+						"background": "var:preset|color|primary",
+						"text": "var:preset|color|surface"
+					}
+				},
+				":focus": {
+					"outline": {
+						"color": "var:preset|color|primary",
+						"width": "2px",
+						"offset": "2px",
+						"style": "solid"
+					}
+				}
+			}
+		},
+		"blocks": {
+			"core/site-title": {
+				"typography": {
+					"fontFamily": "var:preset|font-family|heading",
+					"fontSize": "var:preset|font-size|large"
+				}
+			},
+			"core/navigation": {
+				"typography": {
+					"fontSize": "var:preset|font-size|small",
+					"fontWeight": "500"
+				}
+			},
+			"core/quote": {
+				"border": {
+					"color": "var:preset|color|secondary",
+					"width": "3px"
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,200 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/theme.json",
+	"version": 3,
+	"title": "SGS Restaurant & Food",
+	"settings": {
+		"color": {
+			"palette": [
+				{ "slug": "primary", "color": "#BF360C", "name": "Primary" },
+				{ "slug": "primary-dark", "color": "#8D2C0A", "name": "Primary Dark" },
+				{ "slug": "secondary", "color": "#33691E", "name": "Secondary" },
+				{ "slug": "secondary-dark", "color": "#1B5E20", "name": "Secondary Dark" },
+				{ "slug": "accent", "color": "#FFB300", "name": "Accent" },
+				{ "slug": "accent-light", "color": "#FFF3C4", "name": "Accent Light" },
+				{ "slug": "success", "color": "#2E7D32", "name": "Success" },
+				{ "slug": "surface", "color": "#FFF8E1", "name": "Surface" },
+				{ "slug": "surface-alt", "color": "#FFF3CD", "name": "Surface Alt" },
+				{ "slug": "text", "color": "#3E2723", "name": "Text" },
+				{ "slug": "text-muted", "color": "#6D4C41", "name": "Text Muted" },
+				{ "slug": "text-inverse", "color": "#FFF8E1", "name": "Text Inverse" },
+				{ "slug": "border-subtle", "color": "#BCAAA4", "name": "Border Subtle" },
+				{ "slug": "footer-bg", "color": "#2C1810", "name": "Footer Background" }
+			]
+		},
+		"typography": {
+			"fontFamilies": [
+				{
+					"fontFamily": "'Playfair Display', Georgia, serif",
+					"slug": "heading",
+					"name": "Heading",
+					"fontFace": [
+						{
+							"fontFamily": "Playfair Display",
+							"fontWeight": "400 900",
+							"fontStyle": "normal",
+							"fontDisplay": "swap",
+							"src": [ "file:./assets/fonts/playfair-display-variable-latin.woff2" ]
+						}
+					]
+				},
+				{
+					"fontFamily": "Nunito, system-ui, sans-serif",
+					"slug": "body",
+					"name": "Body",
+					"fontFace": [
+						{
+							"fontFamily": "Nunito",
+							"fontWeight": "200 900",
+							"fontStyle": "normal",
+							"fontDisplay": "swap",
+							"src": [ "file:./assets/fonts/nunito-variable-latin.woff2" ]
+						}
+					]
+				}
+			]
+		}
+	},
+	"styles": {
+		"color": {
+			"background": "var:preset|color|surface",
+			"text": "var:preset|color|text"
+		},
+		"typography": {
+			"fontFamily": "var:preset|font-family|body",
+			"lineHeight": "1.7"
+		},
+		"elements": {
+			"heading": {
+				"typography": {
+					"fontFamily": "var:preset|font-family|heading",
+					"fontWeight": "700",
+					"lineHeight": "1.2"
+				},
+				"color": {
+					"text": "var:preset|color|primary"
+				}
+			},
+			"h1": {
+				"typography": {
+					"fontSize": "var:preset|font-size|hero"
+				}
+			},
+			"h2": {
+				"typography": {
+					"fontSize": "var:preset|font-size|xx-large"
+				}
+			},
+			"h3": {
+				"typography": {
+					"fontSize": "var:preset|font-size|x-large"
+				}
+			},
+			"h4": {
+				"typography": {
+					"fontSize": "var:preset|font-size|large"
+				}
+			},
+			"h5": {
+				"typography": {
+					"fontSize": "var:preset|font-size|medium",
+					"fontWeight": "700"
+				}
+			},
+			"h6": {
+				"typography": {
+					"fontSize": "var:preset|font-size|small",
+					"fontWeight": "700",
+					"textTransform": "uppercase",
+					"letterSpacing": "0.08em"
+				}
+			},
+			"link": {
+				"color": {
+					"text": "var:preset|color|primary"
+				},
+				":hover": {
+					"color": {
+						"text": "var:preset|color|secondary"
+					}
+				},
+				":focus": {
+					"color": {
+						"text": "var:preset|color|secondary"
+					},
+					"typography": {
+						"textDecoration": "underline"
+					}
+				}
+			},
+			"button": {
+				"color": {
+					"background": "var:preset|color|primary",
+					"text": "var:preset|color|text-inverse"
+				},
+				"typography": {
+					"fontFamily": "var:preset|font-family|body",
+					"fontWeight": "700",
+					"fontSize": "var:preset|font-size|small",
+					"textDecoration": "none"
+				},
+				"border": {
+					"radius": "12px"
+				},
+				"spacing": {
+					"padding": {
+						"top": "14px",
+						"bottom": "14px",
+						"left": "30px",
+						"right": "30px"
+					}
+				},
+				":hover": {
+					"color": {
+						"background": "var:preset|color|accent",
+						"text": "var:preset|color|text"
+					}
+				},
+				":focus": {
+					"outline": {
+						"color": "var:preset|color|primary",
+						"width": "2px",
+						"offset": "2px",
+						"style": "solid"
+					}
+				}
+			}
+		},
+		"blocks": {
+			"core/site-title": {
+				"typography": {
+					"fontFamily": "var:preset|font-family|heading",
+					"fontSize": "var:preset|font-size|large"
+				}
+			},
+			"core/navigation": {
+				"typography": {
+					"fontSize": "var:preset|font-size|small",
+					"fontWeight": "600"
+				}
+			},
+			"core/quote": {
+				"typography": {
+					"fontFamily": "var:preset|font-family|heading",
+					"fontStyle": "italic"
+				},
+				"border": {
+					"color": "var:preset|color|accent",
+					"width": "3px"
+				}
+			},
+			"core/separator": {
+				"color": {
+					"background": "var:preset|color|accent"
+				},
+				"border": {
+					"color": "var:preset|color|accent"
+				}
+			}
+		}
+	}
+}
