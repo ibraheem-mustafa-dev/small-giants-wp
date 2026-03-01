@@ -85,13 +85,11 @@
 			<h6 class="wp-block-heading has-surface-color has-text-color has-small-font-size">Contact</h6>
 			<!-- /wp:heading -->
 
-			<!-- wp:paragraph {"textColor":"text-inverse","fontSize":"small"} -->
-			<p class="has-text-inverse-color has-text-color has-small-font-size">Call us: 0121 772 6677</p>
-			<!-- /wp:paragraph -->
+			<!-- Phone — Customiser → SGS Site Info → Main Phone Number -->
+			<!-- wp:sgs/site-info {"type":"phone","linkPhone":true,"textColor":"text-inverse","fontSize":"small"} /-->
 
-			<!-- wp:paragraph {"textColor":"text-inverse","fontSize":"small"} -->
-			<p class="has-text-inverse-color has-text-color has-small-font-size">Email: info@indusfoodsltd.com</p>
-			<!-- /wp:paragraph -->
+			<!-- Email — Customiser → SGS Site Info → Main Email Address -->
+			<!-- wp:sgs/site-info {"type":"email","linkEmail":true,"textColor":"text-inverse","fontSize":"small"} /-->
 
 			<!-- wp:heading {"level":6,"textColor":"surface","fontSize":"small","style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
 			<h6 class="wp-block-heading has-surface-color has-text-color has-small-font-size" style="margin-top:var(--wp--preset--spacing--40)">Opening Hours</h6>
@@ -105,9 +103,8 @@
 			<h6 class="wp-block-heading has-surface-color has-text-color has-small-font-size" style="margin-top:var(--wp--preset--spacing--40)">Address</h6>
 			<!-- /wp:heading -->
 
-			<!-- wp:paragraph {"textColor":"text-inverse","fontSize":"small"} -->
-			<p class="has-text-inverse-color has-text-color has-small-font-size">Stratford Street North<br>Sparkbrook, Birmingham<br>B11 1BU</p>
-			<!-- /wp:paragraph -->
+			<!-- Address — Customiser → SGS Site Info → Address fields -->
+			<!-- wp:sgs/site-info {"type":"address","showIcon":false,"textColor":"text-inverse","fontSize":"small"} /-->
 		</div>
 		<!-- /wp:column -->
 
@@ -121,9 +118,8 @@
 	<!-- wp:group {"align":"wide","layout":{"type":"flex","justifyContent":"space-between","flexWrap":"wrap"},"style":{"spacing":{"padding":{"top":"var:preset|spacing|30"}}}} -->
 	<div class="wp-block-group alignwide" style="padding-top:var(--wp--preset--spacing--30)">
 
-		<!-- wp:paragraph {"textColor":"text-inverse","fontSize":"small"} -->
-		<p class="has-text-inverse-color has-text-color has-small-font-size">&copy; 2026 Indus Foods Ltd. All rights reserved. Stratford Street North, Sparkbrook, Birmingham B11 1BU</p>
-		<!-- /wp:paragraph -->
+		<!-- Copyright — Customiser → SGS Site Info → Copyright Line -->
+		<!-- wp:sgs/site-info {"type":"copyright","textColor":"text-inverse","fontSize":"small"} /-->
 
 		<!-- wp:paragraph {"textColor":"text-inverse","fontSize":"small"} -->
 		<p class="has-text-inverse-color has-text-color has-small-font-size">Website by Small Giants Studio</p>

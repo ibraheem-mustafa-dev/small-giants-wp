@@ -39,15 +39,12 @@
 			<!-- wp:heading {"level":3,"fontSize":"large"} -->
 			<h3 class="wp-block-heading has-large-font-size">Contact Details</h3>
 			<!-- /wp:heading -->
-			<!-- wp:paragraph {"textColor":"text-muted"} -->
-			<p class="has-text-muted-color has-text-color">📧 hello@example.com</p>
-			<!-- /wp:paragraph -->
-			<!-- wp:paragraph {"textColor":"text-muted"} -->
-			<p class="has-text-muted-color has-text-color">📞 +44 (0) 123 456 7890</p>
-			<!-- /wp:paragraph -->
-			<!-- wp:paragraph {"textColor":"text-muted"} -->
-			<p class="has-text-muted-color has-text-color">📍 123 Business Street, London, EC1A 1BB</p>
-			<!-- /wp:paragraph -->
+			<!-- Email — Customiser → SGS Site Info → Main Email Address -->
+			<!-- wp:sgs/site-info {"type":"email","showIcon":true,"linkEmail":true,"textColor":"text-muted"} /-->
+			<!-- Phone — Customiser → SGS Site Info → Main Phone Number -->
+			<!-- wp:sgs/site-info {"type":"phone","showIcon":true,"linkPhone":true,"textColor":"text-muted"} /-->
+			<!-- Address — Customiser → SGS Site Info → Address fields -->
+			<!-- wp:sgs/site-info {"type":"address","showIcon":true,"textColor":"text-muted"} /-->
 			<!-- wp:heading {"level":3,"fontSize":"large","style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
 			<h3 class="wp-block-heading has-large-font-size" style="margin-top:var(--wp--preset--spacing--40)">Opening Hours</h3>
 			<!-- /wp:heading -->

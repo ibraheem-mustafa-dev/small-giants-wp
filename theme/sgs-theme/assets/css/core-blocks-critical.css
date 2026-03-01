@@ -195,9 +195,10 @@
 /* ─── BUTTON TEXT CONTRAST — H4 ─── */
 
 /*
- * White text on the Indus Foods gold/accent (#d8ca50) fails WCAG AA at 1.68:1.
- * When a button sits on an accent background, force text to dark (#2c3e50).
- * Uses the footer-bg token which is #2c3e50 on Indus Foods.
+ * White text on the theme accent colour (e.g. a gold swatch like #d8ca50)
+ * can fail WCAG AA contrast. When a button sits on an accent background,
+ * force the label to the dark text token so contrast is always sufficient.
+ * The footer-bg colour token (#2c3e50 in the default palette) is used here.
  */
 .wp-block-button__link.has-accent-background-color:not([style*="color"]) {
 	color: var(--wp--preset--color--text, #1e1e1e);

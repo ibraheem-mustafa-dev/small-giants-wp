@@ -23,13 +23,21 @@
 	<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"},"style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
 	<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--40)">
 		<!-- wp:button {"backgroundColor":"primary","textColor":"surface","style":{"border":{"radius":"8px"}}} -->
-		<div class="wp-block-button"><a class="wp-block-button__link has-surface-color has-primary-background-color has-text-color has-background wp-element-button" style="border-radius:8px" href="mailto:hello@example.com">Email Us</a></div>
+		<div class="wp-block-button"><a class="wp-block-button__link has-surface-color has-primary-background-color has-text-color has-background wp-element-button" style="border-radius:8px" href="/contact/">Email Us</a></div>
 		<!-- /wp:button -->
 		<!-- wp:button {"className":"is-style-outline","style":{"border":{"radius":"8px"}}} -->
-		<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" style="border-radius:8px" href="tel:+441234567890">Call Us</a></div>
+		<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" style="border-radius:8px" href="/contact/">Call Us</a></div>
 		<!-- /wp:button -->
 	</div>
 	<!-- /wp:buttons -->
+
+	<!-- Contact detail links — managed via Customiser: Appearance → Customise → SGS Site Info -->
+	<!-- wp:group {"layout":{"type":"flex","justifyContent":"center","flexWrap":"wrap"},"style":{"spacing":{"margin":{"top":"var:preset|spacing|30"},"blockGap":"var:preset|spacing|30"}}} -->
+	<div class="wp-block-group">
+		<!-- wp:sgs/site-info {"type":"email","linkEmail":true,"textColor":"text-muted","fontSize":"small"} /-->
+		<!-- wp:sgs/site-info {"type":"phone","linkPhone":true,"textColor":"text-muted","fontSize":"small"} /-->
+	</div>
+	<!-- /wp:group -->
 
 </div>
 <!-- /wp:group -->

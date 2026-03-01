@@ -5,15 +5,12 @@
 	<!-- wp:group {"style":{"spacing":{"padding":{"top":"8px","bottom":"8px","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"primary","layout":{"type":"flex","justifyContent":"space-between","flexWrap":"nowrap"},"metadata":{"name":"Top Bar"}} -->
 	<div class="wp-block-group has-primary-background-color has-background" style="padding-top:8px;padding-right:var(--wp--preset--spacing--40);padding-bottom:8px;padding-left:var(--wp--preset--spacing--40)">
 
+		<!-- Phone and email — managed via Customiser: Appearance → Customise → SGS Site Info -->
 		<!-- wp:group {"layout":{"type":"flex","flexWrap":"nowrap"},"style":{"spacing":{"blockGap":"var:preset|spacing|40"}}} -->
 		<div class="wp-block-group" style="gap:var(--wp--preset--spacing--40)">
-			<!-- wp:paragraph {"style":{"elements":{"link":{"color":{"text":"var:preset|color|surface"}}},"typography":{"fontWeight":"600"}},"textColor":"surface","fontSize":"small"} -->
-			<p class="has-surface-color has-text-color has-small-font-size" style="font-weight:600"><a href="tel:+440000000000">+44 (0) 000 000 0000</a></p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/site-info {"type":"phone","linkPhone":true,"style":{"elements":{"link":{"color":{"text":"var:preset|color|surface"}}},"typography":{"fontWeight":"600"}},"textColor":"surface","fontSize":"small"} /-->
 
-			<!-- wp:paragraph {"style":{"elements":{"link":{"color":{"text":"var:preset|color|surface"}}},"typography":{"fontWeight":"600"}},"textColor":"surface","fontSize":"small"} -->
-			<p class="has-surface-color has-text-color has-small-font-size" style="font-weight:600"><a href="mailto:hello@example.com">hello@example.com</a></p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/site-info {"type":"email","linkEmail":true,"style":{"elements":{"link":{"color":{"text":"var:preset|color|surface"}}},"typography":{"fontWeight":"600"}},"textColor":"surface","fontSize":"small"} /-->
 		</div>
 		<!-- /wp:group -->
 
