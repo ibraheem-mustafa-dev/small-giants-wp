@@ -434,3 +434,20 @@ footer .wp-block-paragraph a:hover,
 .sgs-credit-link:hover::after {
 	width: 100%;
 }
+
+/* ─────────────────────────────────────────────
+   Content Visibility — skip paint/layout for off-screen block sections.
+
+   contain-intrinsic-size gives the browser an estimated placeholder height
+   while the section is off-screen; it corrects itself once painted.
+   Only applied to large, predictably-below-fold block containers.
+   ───────────────────────────────────────────── */
+
+.sgs-testimonial-slider,
+.sgs-trust-bar,
+.sgs-brand-strip,
+.sgs-post-grid,
+.sgs-google-reviews {
+	content-visibility: auto;
+	contain-intrinsic-size: auto 300px;
+}

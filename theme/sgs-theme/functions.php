@@ -165,6 +165,24 @@ function preload_fonts(): void {
 add_action( 'wp_head', __NAMESPACE__ . '\preload_fonts', 1 );
 
 /**
+ * Preconnect to third-party origins used by blocks.
+ *
+ * Reduces connection setup latency for Google Maps (google-reviews block)
+ * and WhatsApp (whatsapp-cta block, wa.me links).
+ *
+ * @since 1.0.0
+ */
+function preconnect_origins(): void {
+	// Google Maps API — used by google-reviews block.
+	printf( '<link rel="preconnect" href="https://maps.googleapis.com">' . "\n" );
+	printf( '<link rel="dns-prefetch" href="https://maps.googleapis.com">' . "\n" );
+
+	// WhatsApp — used by whatsapp-cta block and wa.me links.
+	printf( '<link rel="dns-prefetch" href="https://wa.me">' . "\n" );
+}
+add_action( 'wp_head', __NAMESPACE__ . '\preconnect_origins', 1 );
+
+/**
  * Enqueue frontend stylesheets.
  *
  * @since 1.0.0
