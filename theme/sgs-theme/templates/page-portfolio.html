@@ -1,0 +1,76 @@
+<!-- Page template: Portfolio / Case Studies
+     Layout: Full-width hero title, then responsive grid of portfolio posts
+     Use for: agency portfolios, case study indexes, project galleries
+     Tip: Use a "portfolio" custom post type or category to filter results -->
+
+<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+
+<!-- wp:group {"tagName":"main","layout":{"type":"default"}} -->
+<main class="wp-block-group">
+
+	<!-- Page title hero area -->
+	<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|60"}}},"backgroundColor":"primary","textColor":"surface","layout":{"type":"constrained"}} -->
+	<div class="wp-block-group has-primary-background-color has-surface-color has-text-color has-background" style="padding-top:var(--wp--preset--spacing--70);padding-bottom:var(--wp--preset--spacing--60)">
+
+		<!-- wp:post-title {"level":1,"textAlign":"center","textColor":"surface","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}}} /-->
+
+		<!-- wp:post-excerpt {"textAlign":"center","textColor":"surface","fontSize":"medium"} /-->
+
+	</div>
+	<!-- /wp:group -->
+
+	<!-- Portfolio grid — queries posts with any category, card layout -->
+	<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|70"}}},"layout":{"type":"constrained","contentSize":"1400px"}} -->
+	<div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--70);padding-bottom:var(--wp--preset--spacing--70)">
+
+		<!-- wp:query {"queryId":0,"query":{"perPage":12,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","author":"","search":"","exclude":[],"sticky":"","inherit":false},"displayLayout":{"type":"flex","columns":3},"style":{"spacing":{"blockGap":"var:preset|spacing|50"}}} -->
+		<div class="wp-block-query">
+
+			<!-- wp:post-template {"style":{"spacing":{"blockGap":"var:preset|spacing|50"}}} -->
+
+				<!-- wp:group {"style":{"border":{"radius":"8px"},"spacing":{"padding":{"top":"0","bottom":"var:preset|spacing|40","left":"0","right":"0"}},"shadow":"var:preset|shadow|md"},"backgroundColor":"surface","layout":{"type":"default"},"className":"sgs-portfolio-card"} -->
+				<div class="wp-block-group sgs-portfolio-card has-surface-background-color has-background" style="border-radius:8px;padding-top:0;padding-bottom:var(--wp--preset--spacing--40);padding-left:0;padding-right:0;box-shadow:var(--wp--preset--shadow--md)">
+
+					<!-- wp:post-featured-image {"isLink":true,"height":"240px","style":{"border":{"radius":{"topLeft":"8px","topRight":"8px","bottomLeft":"0px","bottomRight":"0px"}},"spacing":{"margin":{"bottom":"var:preset|spacing|40"}}}} /-->
+
+					<!-- wp:group {"style":{"spacing":{"padding":{"left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"layout":{"type":"default"}} -->
+					<div class="wp-block-group" style="padding-left:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40)">
+
+						<!-- wp:post-terms {"term":"category","style":{"typography":{"fontWeight":"600","textTransform":"uppercase","letterSpacing":"0.08em"}},"textColor":"primary","fontSize":"x-small"} /-->
+
+						<!-- wp:post-title {"level":3,"isLink":true,"style":{"spacing":{"margin":{"top":"var:preset|spacing|20","bottom":"var:preset|spacing|30"}},"typography":{"fontWeight":"700"}}} /-->
+
+						<!-- wp:post-excerpt {"moreText":"View case study","excerptLength":20,"style":{"spacing":{"margin":{"bottom":"0"}}}} /-->
+
+					</div>
+					<!-- /wp:group -->
+
+				</div>
+				<!-- /wp:group -->
+
+			<!-- /wp:post-template -->
+
+			<!-- Pagination -->
+			<!-- wp:query-pagination {"layout":{"type":"flex","justifyContent":"center"},"style":{"spacing":{"margin":{"top":"var:preset|spacing|60"}}}} -->
+				<!-- wp:query-pagination-previous /-->
+				<!-- wp:query-pagination-numbers /-->
+				<!-- wp:query-pagination-next /-->
+			<!-- /wp:query-pagination -->
+
+			<!-- No results message -->
+			<!-- wp:query-no-results -->
+				<!-- wp:paragraph {"textAlign":"center","textColor":"text-muted"} -->
+				<p class="has-text-align-center has-text-muted-color has-text-color">No portfolio items found.</p>
+				<!-- /wp:paragraph -->
+			<!-- /wp:query-no-results -->
+
+		</div>
+		<!-- /wp:query -->
+
+	</div>
+	<!-- /wp:group -->
+
+</main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->

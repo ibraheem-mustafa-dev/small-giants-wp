@@ -1,0 +1,58 @@
+<!-- Template part: Related posts
+     Area: post
+     Usage: single-post.html after author bio
+     Layout: 3-column responsive grid of recent posts
+     Note: WordPress core does not natively filter by the current post's category
+     in a template part — this shows the 3 most recent posts (excluding current).
+     For true "related" filtering, hook into pre_get_posts or use a plugin such as
+     Yet Another Related Posts Plugin (YARPP). -->
+
+<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|60"}}},"layout":{"type":"constrained"}} -->
+<div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--70);padding-bottom:var(--wp--preset--spacing--60)">
+
+	<!-- Section heading -->
+	<!-- wp:heading {"level":2,"style":{"typography":{"fontWeight":"700"},"spacing":{"margin":{"bottom":"var:preset|spacing|50"}}},"fontSize":"x-large"} -->
+	<h2 class="wp-block-heading has-x-large-font-size" style="font-weight:700;margin-bottom:var(--wp--preset--spacing--50)">You might also like</h2>
+	<!-- /wp:heading -->
+
+	<!-- 3-column post query — most recent 3 posts, excludes current via JS context -->
+	<!-- wp:query {"queryId":1,"query":{"perPage":3,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","author":"","search":"","exclude":[],"sticky":"exclude","inherit":false},"displayLayout":{"type":"flex","columns":3},"style":{"spacing":{"blockGap":"var:preset|spacing|50"}}} -->
+	<div class="wp-block-query">
+
+		<!-- wp:post-template {"style":{"spacing":{"blockGap":"var:preset|spacing|50"}}} -->
+
+			<!-- Each related post card -->
+			<!-- wp:group {"style":{"spacing":{"padding":{"top":"0","bottom":"var:preset|spacing|40","left":"0","right":"0"}},"border":{"radius":"8px"},"shadow":"var:preset|shadow|sm"},"backgroundColor":"surface","layout":{"type":"default"},"className":"sgs-related-post-card"} -->
+			<div class="wp-block-group sgs-related-post-card has-surface-background-color has-background" style="border-radius:8px;padding-top:0;padding-bottom:var(--wp--preset--spacing--40);box-shadow:var(--wp--preset--shadow--sm)">
+
+				<!-- wp:post-featured-image {"isLink":true,"height":"200px","style":{"border":{"radius":{"topLeft":"8px","topRight":"8px","bottomLeft":"0","bottomRight":"0"}},"spacing":{"margin":{"bottom":"var:preset|spacing|40"}}}} /-->
+
+				<!-- wp:group {"style":{"spacing":{"padding":{"left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"layout":{"type":"default"}} -->
+				<div class="wp-block-group" style="padding-left:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40)">
+
+					<!-- wp:post-terms {"term":"category","style":{"typography":{"fontWeight":"600","textTransform":"uppercase","letterSpacing":"0.06em"}},"textColor":"primary","fontSize":"x-small"} /-->
+
+					<!-- wp:post-title {"level":3,"isLink":true,"style":{"typography":{"fontWeight":"700","fontSize":"1.1rem"},"spacing":{"margin":{"top":"var:preset|spacing|20","bottom":"var:preset|spacing|20"}}}} /-->
+
+					<!-- wp:post-date {"textColor":"text-muted","fontSize":"small"} /-->
+
+				</div>
+				<!-- /wp:group -->
+
+			</div>
+			<!-- /wp:group -->
+
+		<!-- /wp:post-template -->
+
+		<!-- No results fallback (hidden when posts exist) -->
+		<!-- wp:query-no-results -->
+			<!-- wp:spacer {"height":"0"} -->
+			<div style="height:0" aria-hidden="true" class="wp-block-spacer"></div>
+			<!-- /wp:spacer -->
+		<!-- /wp:query-no-results -->
+
+	</div>
+	<!-- /wp:query -->
+
+</div>
+<!-- /wp:group -->
