@@ -1,0 +1,98 @@
+<!-- Template part: Split header
+     Layout: [Left navigation] [Logo — centred] [Right navigation + CTA]
+     Use for: agencies, luxury brands, professional services
+     Note: The left and right navigation blocks can be assigned different menus
+           in Appearance → Editor → select this header → click each nav block.
+     Hamburger breakpoint: 1024 px and below -->
+
+<!-- wp:group {"style":{"spacing":{"padding":{"top":"0","bottom":"0","left":"0","right":"0"}}},"backgroundColor":"surface","layout":{"type":"default"},"metadata":{"name":"Header (Split)"},"className":"sgs-header-split"} -->
+<div class="wp-block-group sgs-header-split has-surface-background-color has-background" style="padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
+
+	<!-- Main bar: three-column layout -->
+	<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|30","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}},"border":{"bottom":{"color":"var:preset|color|surface-alt","width":"1px"}}},"layout":{"type":"flex","justifyContent":"space-between","flexWrap":"nowrap","verticalAlignment":"center"},"metadata":{"name":"Split Nav Bar"}} -->
+	<div class="wp-block-group" style="border-bottom-color:var(--wp--preset--color--surface-alt);border-bottom-width:1px;padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--40)">
+
+		<!-- Left nav — assign your primary/left menu here -->
+		<!-- wp:group {"layout":{"type":"flex","justifyContent":"right","flexWrap":"nowrap","verticalAlignment":"center"},"style":{"spacing":{"blockGap":"0"}},"className":"sgs-header-split__left"} -->
+		<div class="wp-block-group sgs-header-split__left">
+			<!-- wp:navigation {"textColor":"text","layout":{"type":"flex","justifyContent":"right"},"style":{"typography":{"fontWeight":"500"},"spacing":{"blockGap":"var:preset|spacing|40"}},"fontSize":"small"} /-->
+		</div>
+		<!-- /wp:group -->
+
+		<!-- Centre — site logo -->
+		<!-- wp:group {"layout":{"type":"flex","justifyContent":"center","flexWrap":"nowrap","verticalAlignment":"center"},"className":"sgs-header-split__center"} -->
+		<div class="wp-block-group sgs-header-split__center">
+			<!-- wp:site-logo {"width":160,"shouldSyncIcon":true} /-->
+		</div>
+		<!-- /wp:group -->
+
+		<!-- Right nav — assign your secondary/right menu here; includes CTA -->
+		<!-- wp:group {"layout":{"type":"flex","justifyContent":"left","flexWrap":"nowrap","verticalAlignment":"center"},"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"className":"sgs-header-split__right"} -->
+		<div class="wp-block-group sgs-header-split__right">
+
+			<!-- wp:navigation {"textColor":"text","layout":{"type":"flex","justifyContent":"left"},"style":{"typography":{"fontWeight":"500"},"spacing":{"blockGap":"var:preset|spacing|40"}},"fontSize":"small"} /-->
+
+			<!-- wp:buttons {"className":"sgs-header-split__cta"} -->
+			<div class="wp-block-buttons sgs-header-split__cta">
+				<!-- wp:button {"backgroundColor":"primary","textColor":"surface","style":{"border":{"radius":"8px"},"spacing":{"padding":{"top":"10px","bottom":"10px","left":"20px","right":"20px"}},"typography":{"fontWeight":"600"}},"fontSize":"small"} -->
+				<div class="wp-block-button has-custom-font-size has-small-font-size"><a class="wp-block-button__link has-surface-color has-primary-background-color has-text-color has-background wp-element-button" href="/contact/" style="border-radius:8px;padding-top:10px;padding-right:20px;padding-bottom:10px;padding-left:20px;font-weight:600">Get in Touch</a></div>
+				<!-- /wp:button -->
+			</div>
+			<!-- /wp:buttons -->
+
+		</div>
+		<!-- /wp:group -->
+
+		<!-- Hamburger — CSS hides above 1024 px (shown only on mobile/tablet) -->
+		<!-- wp:html -->
+		<button class="sgs-mobile-nav-toggle sgs-header-split__hamburger" aria-label="Open navigation menu" aria-expanded="false">
+			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+				<path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+			</svg>
+		</button>
+		<!-- /wp:html -->
+
+	</div>
+	<!-- /wp:group -->
+
+	<!-- Off-canvas navigation drawer (mobile/tablet) -->
+	<!-- wp:html -->
+	<div class="sgs-mobile-nav-drawer__backdrop"></div>
+	<nav class="sgs-mobile-nav-drawer" aria-label="Site navigation" aria-hidden="true">
+		<div class="sgs-mobile-nav-drawer__header">
+			<button class="sgs-mobile-nav-drawer__close" aria-label="Close navigation menu">
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+					<path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+				</svg>
+			</button>
+		</div>
+		<div class="sgs-mobile-nav-drawer__content">
+			<!-- wp:navigation {"textColor":"surface","layout":{"type":"flex","orientation":"vertical"},"style":{"spacing":{"blockGap":"0"}},"fontSize":"medium"} /-->
+		</div>
+	</nav>
+
+	<style>
+		/* Split header — hide nav columns and CTA on mobile/tablet; show hamburger */
+		@media (max-width: 1024px) {
+			.sgs-header-split__left,
+			.sgs-header-split__right {
+				display: none;
+			}
+
+			/* On mobile, centre the logo within the main row */
+			.sgs-header-split .wp-block-group > .sgs-header-split__center {
+				flex: 1;
+				justify-content: center;
+			}
+		}
+
+		@media (min-width: 1025px) {
+			.sgs-header-split__hamburger {
+				display: none;
+			}
+		}
+	</style>
+	<!-- /wp:html -->
+
+</div>
+<!-- /wp:group -->

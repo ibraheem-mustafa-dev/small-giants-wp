@@ -1,0 +1,68 @@
+<!-- Template part: Centred header
+     Layout: Logo centred (row 1) | Navigation centred (row 2)
+     Use for: luxury brands, editorial sites, agencies with prominent branding
+     Hamburger breakpoint: 1024 px and below -->
+
+<!-- wp:group {"style":{"spacing":{"padding":{"top":"0","bottom":"0","left":"0","right":"0"}}},"backgroundColor":"surface","layout":{"type":"default"},"metadata":{"name":"Header (Centred)"},"className":"sgs-header-centered"} -->
+<div class="wp-block-group sgs-header-centered has-surface-background-color has-background" style="padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
+
+	<!-- Row 1: Logo centred, with hamburger visible only on mobile/tablet -->
+	<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|30","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"layout":{"type":"flex","justifyContent":"center","flexWrap":"nowrap"},"metadata":{"name":"Logo Row"}} -->
+	<div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--40)">
+
+		<!-- wp:site-logo {"width":200,"shouldSyncIcon":true} /-->
+
+		<!-- Hamburger — CSS hides this above 1024 px -->
+		<!-- wp:html -->
+		<button class="sgs-mobile-nav-toggle sgs-header-centered__hamburger" aria-label="Open navigation menu" aria-expanded="false">
+			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+				<path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+			</svg>
+		</button>
+		<!-- /wp:html -->
+
+	</div>
+	<!-- /wp:group -->
+
+	<!-- Row 2: Navigation centred (hidden on mobile/tablet, replaced by drawer) -->
+	<!-- wp:group {"style":{"spacing":{"padding":{"top":"0","bottom":"var:preset|spacing|30","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}},"border":{"bottom":{"color":"var:preset|color|surface-alt","width":"1px"}}},"layout":{"type":"flex","justifyContent":"center","flexWrap":"nowrap"},"metadata":{"name":"Navigation Row"},"className":"sgs-header-centered__nav"} -->
+	<div class="wp-block-group sgs-header-centered__nav" style="border-bottom-color:var(--wp--preset--color--surface-alt);border-bottom-width:1px;padding-top:0;padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--40)">
+
+		<!-- wp:navigation {"textColor":"text","layout":{"type":"flex","justifyContent":"center","flexWrap":"nowrap"},"style":{"typography":{"fontWeight":"500"},"spacing":{"blockGap":"var:preset|spacing|50"}},"fontSize":"small"} /-->
+
+	</div>
+	<!-- /wp:group -->
+
+	<!-- Off-canvas navigation drawer (mobile/tablet) -->
+	<!-- wp:html -->
+	<div class="sgs-mobile-nav-drawer__backdrop"></div>
+	<nav class="sgs-mobile-nav-drawer" aria-label="Site navigation" aria-hidden="true">
+		<div class="sgs-mobile-nav-drawer__header">
+			<button class="sgs-mobile-nav-drawer__close" aria-label="Close navigation menu">
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+					<path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+				</svg>
+			</button>
+		</div>
+		<div class="sgs-mobile-nav-drawer__content">
+			<!-- wp:navigation {"textColor":"surface","layout":{"type":"flex","orientation":"vertical"},"style":{"spacing":{"blockGap":"0"}},"fontSize":"medium"} /-->
+		</div>
+	</nav>
+
+	<style>
+		/* Centred header — hide nav row on mobile/tablet, show hamburger */
+		@media (max-width: 1024px) {
+			.sgs-header-centered__nav {
+				display: none;
+			}
+		}
+		@media (min-width: 1025px) {
+			.sgs-header-centered__hamburger {
+				display: none;
+			}
+		}
+	</style>
+	<!-- /wp:html -->
+
+</div>
+<!-- /wp:group -->
