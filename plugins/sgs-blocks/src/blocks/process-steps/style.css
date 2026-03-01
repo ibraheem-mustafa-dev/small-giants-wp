@@ -124,6 +124,57 @@
 	color: var(--wp--preset--color--text-muted);
 }
 
+/* ===== Scroll-driven staggered reveal (Chrome 115+ / Edge 115+) ===== */
+
+/*
+ * Each step fades in sequentially as the block scrolls into view.
+ * A named view-timeline on the parent lets all children reference the
+ * same scroll progress, so we can stagger them with different
+ * animation-range offsets rather than time-based delays.
+ *
+ * Stagger: steps reveal at 0%, 15%, 30%, 45% entry respectively
+ * (supports up to 6 steps; beyond that they all complete by entry 100%).
+ */
+
+@supports (animation-timeline: view()) {
+
+	@keyframes sgs-step-reveal {
+		from {
+			opacity: 0;
+			translate: 0 20px;
+		}
+		to {
+			opacity: 1;
+			translate: 0 0;
+		}
+	}
+
+	.sgs-process-steps {
+		view-timeline-name: --sgs-process-steps;
+		view-timeline-axis: block;
+	}
+
+	.sgs-process-steps__step {
+		animation: sgs-step-reveal 300ms ease-out both;
+		animation-timeline: --sgs-process-steps;
+	}
+
+	/* Staggered entry ranges — each step starts revealing 15% later */
+	.sgs-process-steps__step:nth-child(1) { animation-range: entry  0% entry  60%; }
+	.sgs-process-steps__step:nth-child(2) { animation-range: entry 15% entry  75%; }
+	.sgs-process-steps__step:nth-child(3) { animation-range: entry 30% entry  90%; }
+	.sgs-process-steps__step:nth-child(4) { animation-range: entry 40% entry 100%; }
+	.sgs-process-steps__step:nth-child(5) { animation-range: entry 50% entry 100%; }
+	.sgs-process-steps__step:nth-child(6) { animation-range: entry 60% entry 100%; }
+}
+
+/* Respect reduced-motion: disable all step animations */
+@media (prefers-reduced-motion: reduce) {
+	.sgs-process-steps__step {
+		animation: none !important;
+	}
+}
+
 /* ===== Responsive — vertical stack when container is narrow ===== */
 /*
  * Container query: steps switch from horizontal row to vertical list when

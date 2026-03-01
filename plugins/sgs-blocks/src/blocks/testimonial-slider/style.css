@@ -314,6 +314,28 @@
 	}
 }
 
+/* ===== Scroll-driven fade-in (Chrome 115+ / Edge 115+) ===== */
+
+@supports (animation-timeline: view()) {
+
+	@keyframes sgs-testimonial-reveal {
+		from {
+			opacity: 0;
+			translate: 0 20px;
+		}
+		to {
+			opacity: 1;
+			translate: 0 0;
+		}
+	}
+
+	.sgs-testimonial-slider {
+		animation: sgs-testimonial-reveal 400ms ease-out both;
+		animation-timeline: view();
+		animation-range: entry 0% entry 75%;
+	}
+}
+
 /* ===== Reduced motion ===== */
 @media (prefers-reduced-motion: reduce) {
 	.sgs-testimonial-slider__track {
@@ -323,5 +345,10 @@
 	.sgs-testimonial-slider__arrow,
 	.sgs-testimonial-slider__dot {
 		transition: none;
+	}
+
+	/* Disable scroll-driven reveal */
+	.sgs-testimonial-slider {
+		animation: none !important;
 	}
 }

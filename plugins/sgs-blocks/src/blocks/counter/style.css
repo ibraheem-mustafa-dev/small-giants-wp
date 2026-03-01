@@ -28,3 +28,32 @@
 .sgs-counter__label:not([style*="color"]) {
 	color: var(--wp--preset--color--text-muted);
 }
+
+/* ===== Scroll-driven fade-in + slide-up (Chrome 115+ / Edge 115+) ===== */
+
+@supports (animation-timeline: view()) {
+
+	@keyframes sgs-counter-reveal {
+		from {
+			opacity: 0;
+			translate: 0 24px;
+		}
+		to {
+			opacity: 1;
+			translate: 0 0;
+		}
+	}
+
+	.sgs-counter {
+		animation: sgs-counter-reveal 350ms ease-out both;
+		animation-timeline: view();
+		animation-range: entry 0% entry 100%;
+	}
+}
+
+/* Respect reduced-motion: disable all counter animations */
+@media (prefers-reduced-motion: reduce) {
+	.sgs-counter {
+		animation: none !important;
+	}
+}
