@@ -14,6 +14,18 @@ namespace SGS\Theme;
 
 defined( 'ABSPATH' ) || exit;
 
+/*
+ * Centralised site contact/business settings.
+ *
+ * template-tags.php — global sgs_get_*() helper functions (no namespace).
+ * class-site-settings.php — Customiser section, theme_mod registrations,
+ *                            and the WhatsApp number injection filter.
+ * Order matters: template-tags.php first so the helpers are available when
+ * class-site-settings.php registers its render_block_data filter.
+ */
+require_once get_template_directory() . '/includes/template-tags.php';
+require_once get_template_directory() . '/includes/class-site-settings.php';
+
 /**
  * Remove WordPress emoji scripts and styles.
  *
