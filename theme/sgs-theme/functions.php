@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * SGS Theme — functions.php
  *
@@ -6,6 +6,8 @@
  * All styling flows from theme.json — this file stays lean.
  *
  * @package SGS\Theme
+ *
+ * @since 1.0.0
  */
 
 namespace SGS\Theme;
@@ -17,6 +19,8 @@ defined( 'ABSPATH' ) || exit;
  *
  * Saves ~22KB of JS that loads on every page. The site does not use emoji
  * rendering — browsers handle emoji natively.
+ *
+ * @since 1.0.0
  */
 function disable_emojis(): void {
 	remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
@@ -31,6 +35,8 @@ add_action( 'init', __NAMESPACE__ . '\disable_emojis' );
 
 /**
  * Theme setup — register support for block features.
+ *
+ * @since 1.0.0
  */
 function setup(): void {
 	add_theme_support( 'wp-block-styles' );
@@ -43,12 +49,10 @@ function setup(): void {
 add_action( 'after_setup_theme', __NAMESPACE__ . '\setup' );
 
 /**
- * Preload critical font files to prevent FOUT.
- * Outputs <link rel="preload"> tags in <head> before stylesheets load.
- */
-/**
  * Inline critical dark mode script to prevent flash of wrong theme.
  * Runs before any CSS paints.
+ *
+ * @since 1.0.0
  */
 function dark_mode_inline_script(): void {
 	echo '<script>
@@ -66,6 +70,8 @@ add_action( 'wp_head', __NAMESPACE__ . '\dark_mode_inline_script', 0 );
  *
  * We parse the post content at wp_head time (before the main loop) using
  * parse_blocks(). This is the correct window to output <link rel="preload">.
+ *
+ * @since 1.0.0
  */
 function preload_hero_image(): void {
 	if ( ! is_singular() && ! is_front_page() ) {
@@ -110,6 +116,13 @@ function preload_hero_image(): void {
 }
 add_action( 'wp_head', __NAMESPACE__ . '\preload_hero_image', 1 );
 
+/**
+ * Preload critical font files to prevent FOUT.
+ *
+ * Outputs <link rel="preload"> tags in <head> before stylesheets load.
+ *
+ * @since 1.0.0
+ */
 function preload_fonts(): void {
 	/*
 	 * Preload the heading font for whichever style variation is active.
@@ -141,6 +154,8 @@ add_action( 'wp_head', __NAMESPACE__ . '\preload_fonts', 1 );
 
 /**
  * Enqueue frontend stylesheets.
+ *
+ * @since 1.0.0
  */
 function enqueue_styles(): void {
 	$theme_version = wp_get_theme()->get( 'Version' );
@@ -234,6 +249,8 @@ add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\enqueue_styles' );
  * Converts selected <link rel="stylesheet"> tags to use the
  * media="print" onload="this.media='all'" pattern so they load
  * asynchronously without blocking first paint.
+ *
+ * @since 1.0.0
  */
 function defer_non_critical_css( string $tag, string $handle ): string {
 	$deferred = [ 'sgs-core-blocks', 'sgs-dark-mode', 'sgs-mobile-nav-drawer', 'sgs-utilities', 'sgs-extensions' ];
@@ -254,6 +271,8 @@ add_filter( 'style_loader_tag', __NAMESPACE__ . '\defer_non_critical_css', 10, 2
 /**
  * Output meta description from post excerpt or custom field.
  * Only fires when no SEO plugin is active.
+ *
+ * @since 1.0.0
  */
 function meta_description(): void {
 	if ( is_front_page() || is_home() ) {
@@ -285,6 +304,8 @@ if ( ! defined( 'WPSEO_VERSION' ) && ! defined( 'RANK_MATH_VERSION' ) ) {
 
 /**
  * Register block pattern category for SGS patterns.
+ *
+ * @since 1.0.0
  */
 function register_pattern_categories(): void {
 	register_block_pattern_category( 'sgs', [
@@ -298,6 +319,8 @@ add_action( 'init', __NAMESPACE__ . '\register_pattern_categories' );
  *
  * M16: ghost/outline style for service card CTAs — gold border, transparent
  * background, gold text. CSS is in core-blocks.css under is-style-ghost.
+ *
+ * @since 1.0.0
  */
 function register_block_styles(): void {
 	register_block_style( 'core/button', [
@@ -310,6 +333,8 @@ add_action( 'init', __NAMESPACE__ . '\register_block_styles' );
 /**
  * Replace [current_year] token in rendered block output.
  * Works in block theme template parts where shortcodes are not processed.
+ *
+ * @since 1.0.0
  */
 function replace_current_year_token( string $block_content ): string {
 	if ( str_contains( $block_content, '[current_year]' ) ) {
@@ -328,6 +353,8 @@ add_filter( 'render_block', __NAMESPACE__ . '\replace_current_year_token' );
  *
  * Images are bundled in theme/assets/decorative-foods/ so paths resolve
  * correctly on any WordPress installation via get_theme_file_uri().
+ *
+ * @since 1.0.0
  */
 function enqueue_style_variation_extras(): void {
 	$variation = get_theme_mod( 'active_theme_style', '' );
@@ -487,6 +514,8 @@ add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\enqueue_style_variation_extr
  *
  * Our CSS targets `header.wp-block-template-part.sgs-header-sticky`.
  * This filter moves the sgs-header-* class up to the <header> wrapper.
+ *
+ * @since 1.0.0
  */
 function propagate_header_classes( string $block_content, array $block ): string {
 	if ( empty( $block['blockName'] ) || 'core/template-part' !== $block['blockName'] ) {
@@ -527,6 +556,8 @@ add_filter( 'render_block', __NAMESPACE__ . '\propagate_header_classes', 10, 2 )
  * WordPress core outputs a generic label for every submenu toggle. This filter
  * replaces it with one that includes the parent nav item text so screen readers
  * announce the correct submenu name (WCAG 2.4.6 Headings and Labels).
+ *
+ * @since 1.0.0
  */
 function specific_submenu_aria_labels( string $block_content, array $block ): string {
 	if ( empty( $block['blockName'] ) || 'core/navigation' !== $block['blockName'] ) {
@@ -583,6 +614,8 @@ add_filter( 'render_block', __NAMESPACE__ . '\specific_submenu_aria_labels', 10,
  *
  * Elements using preset classes (has-surface-color, has-accent-color, etc.)
  * keep has-text-color because WP's preset classes use !important correctly.
+ *
+ * @since 1.0.0
  */
 function fix_has_text_color_override( string $block_content ): string {
 	if ( ! str_contains( $block_content, 'has-text-color' ) ) {
