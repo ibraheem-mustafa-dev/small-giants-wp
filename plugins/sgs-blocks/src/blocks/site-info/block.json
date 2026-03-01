@@ -1,0 +1,72 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "sgs/site-info",
+    "version": "1.0.0",
+    "title": "SGS Site Info",
+    "category": "sgs-content",
+    "description": "Outputs a single piece of centralised site contact or business information — phone, email, address, social links, copyright notice, or map — managed from Appearance → Customise → SGS Site Info.",
+    "keywords": [
+        "phone",
+        "email",
+        "address",
+        "contact",
+        "social",
+        "copyright",
+        "map",
+        "info"
+    ],
+    "textdomain": "sgs-blocks",
+    "icon": "info",
+    "supports": {
+        "align": false,
+        "anchor": true,
+        "html": false,
+        "color": {
+            "background": false,
+            "text": true,
+            "link": true
+        },
+        "typography": {
+            "fontSize": true,
+            "lineHeight": false
+        },
+        "spacing": {
+            "margin": true,
+            "padding": false
+        }
+    },
+    "attributes": {
+        "type": {
+            "type": "string",
+            "default": "phone",
+            "enum": ["phone", "email", "address", "social", "copyright", "map"]
+        },
+        "showIcon": {
+            "type": "boolean",
+            "default": false
+        },
+        "iconSize": {
+            "type": "string",
+            "default": "medium",
+            "enum": ["small", "medium", "large"]
+        },
+        "linkPhone": {
+            "type": "boolean",
+            "default": true
+        },
+        "linkEmail": {
+            "type": "boolean",
+            "default": true
+        }
+    },
+    "editorScript": "file:./index.js",
+    "render": "file:./render.php",
+    "example": {
+        "attributes": {
+            "type": "phone",
+            "showIcon": true,
+            "linkPhone": true
+        }
+    }
+}
