@@ -7,7 +7,8 @@
  */
 
 /* Screen reader only — visually hidden but accessible */
-.sr-only {
+.sr-only,
+.sgs-sr-only {
 	position: absolute;
 	width: 1px;
 	height: 1px;

@@ -12,7 +12,6 @@
 
 	const header = document.querySelector( '.wp-block-template-part[class*="header"]' );
 	const scrollThreshold = 100; // Pixels scrolled before class is added.
-	let lastScrollTop = 0;
 	let ticking = false;
 
 	if ( ! header ) {
@@ -31,7 +30,6 @@
 			header.classList.remove( 'is-scrolled' );
 		}
 
-		lastScrollTop = scrollTop;
 		ticking = false;
 	}
 
