@@ -238,6 +238,14 @@ const { state } = store( 'sgs/form', {
 					}
 				} );
 
+				// Collect Cloudflare Turnstile token (if widget is present).
+				const turnstileInput = formEl.querySelector(
+					'[name="cf-turnstile-response"]'
+				);
+				const turnstileToken = turnstileInput
+					? turnstileInput.value
+					: '';
+
 				// Submit to REST endpoint.
 				const response = yield fetch(
 					state.restUrl + 'submit',
@@ -253,6 +261,7 @@ const { state } = store( 'sgs/form', {
 							fileIds,
 							honeypot: honeypotValue,
 							storeSubmissions: formRoot.getAttribute( 'data-store-submissions' ) !== 'false',
+							turnstileResponse: turnstileToken,
 						} ),
 					}
 				);
@@ -654,6 +663,52 @@ function restoreStepState( formRoot ) {
 }
 
 /**
+ * Apply HTML5 validation attributes (minlength, maxlength, pattern) to form
+ * inputs based on data attributes on their field wrapper elements.
+ *
+ * Render.php outputs data-min-length / data-max-length / data-pattern /
+ * data-custom-error on each .sgs-form-field wrapper. This function reads
+ * those and sets the corresponding HTML5 attributes on the real inputs so
+ * browser-native validation fires before submission.
+ *
+ * @param {HTMLElement} formRoot Form wrapper element.
+ */
+function applyValidationAttributes( formRoot ) {
+	const fields = formRoot.querySelectorAll( '.sgs-form-field[data-min-length], .sgs-form-field[data-max-length], .sgs-form-field[data-pattern]' );
+
+	fields.forEach( ( fieldEl ) => {
+		const minLen      = fieldEl.getAttribute( 'data-min-length' );
+		const maxLen      = fieldEl.getAttribute( 'data-max-length' );
+		const pattern     = fieldEl.getAttribute( 'data-pattern' );
+		const customError = fieldEl.getAttribute( 'data-custom-error' ) || '';
+
+		const inputs = fieldEl.querySelectorAll( 'input:not([type="hidden"]):not([type="file"]):not([type="checkbox"]):not([type="radio"]), textarea' );
+
+		inputs.forEach( ( input ) => {
+			if ( minLen && parseInt( minLen, 10 ) > 0 ) {
+				input.setAttribute( 'minlength', minLen );
+			}
+			if ( maxLen && parseInt( maxLen, 10 ) > 0 ) {
+				input.setAttribute( 'maxlength', maxLen );
+			}
+			if ( pattern ) {
+				input.setAttribute( 'pattern', pattern );
+			}
+
+			// Wire custom validity message for pattern/length failures.
+			if ( customError ) {
+				input.addEventListener( 'invalid', () => {
+					input.setCustomValidity( customError );
+				} );
+				input.addEventListener( 'input', () => {
+					input.setCustomValidity( '' );
+				} );
+			}
+		} );
+	} );
+}
+
+/**
  * Initialise forms on page load.
  * Sets up initial step visibility for multi-step forms.
  * Restores saved step state from sessionStorage when available.
@@ -664,6 +719,9 @@ function initForms() {
 	);
 
 	forms.forEach( ( formRoot ) => {
+		// Apply HTML5 validation attributes from server-side data attributes.
+		applyValidationAttributes( formRoot );
+
 		const steps = formRoot.querySelectorAll( '.sgs-form-step' );
 
 		if ( steps.length > 1 ) {

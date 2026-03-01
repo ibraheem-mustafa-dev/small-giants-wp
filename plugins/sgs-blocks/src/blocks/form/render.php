@@ -29,6 +29,8 @@ $store_submissions  = $attributes['storeSubmissions'] ?? true;
 $submit_colour      = $attributes['submitColour'] ?? '';
 $submit_background  = $attributes['submitBackground'] ?? '';
 $progress_colour    = $attributes['progressBarColour'] ?? 'primary';
+$turnstile_site_key = $attributes['turnstileSiteKey'] ?? '';
+$notification_email = $attributes['notificationEmail'] ?? '';
 
 // Count form steps from inner blocks (not rendered content).
 $steps       = array();
@@ -47,17 +49,64 @@ $is_multi_step  = $total_steps > 1;
 $require_login  = $attributes['requireLogin'] ?? false;
 $rate_limit     = absint( $attributes['rateLimit'] ?? 5 );
 
+/**
+ * Recursively collect field validation rules from inner blocks.
+ * Traverses form-step wrappers transparently.
+ *
+ * @param WP_Block[] $inner_blocks Inner block list.
+ * @return array<string, array> Keyed by fieldName.
+ */
+$collect_field_rules = function( array $inner_blocks ) use ( &$collect_field_rules ): array {
+	$rules = array();
+	foreach ( $inner_blocks as $b ) {
+		if ( 'sgs/form-step' === $b->name ) {
+			$rules = array_merge( $rules, $collect_field_rules( $b->inner_blocks ) );
+			continue;
+		}
+		$field_name = sanitize_key( $b->attributes['fieldName'] ?? '' );
+		if ( empty( $field_name ) ) {
+			continue;
+		}
+		$rules[ $field_name ] = array(
+			'minLength'   => absint( $b->attributes['minLength'] ?? 0 ),
+			'maxLength'   => absint( $b->attributes['maxLength'] ?? 0 ),
+			'pattern'     => $b->attributes['pattern'] ?? '',
+			'customError' => $b->attributes['customError'] ?? '',
+			'required'    => ! empty( $b->attributes['required'] ),
+			'label'       => $b->attributes['label'] ?? $field_name,
+		);
+	}
+	return $rules;
+};
+
+$field_rules = $collect_field_rules( $block->inner_blocks );
+
 // Cache form configuration server-side so the submit handler can enforce
-// requireLogin and per-form rateLimit without trusting client data.
+// requireLogin, per-form rateLimit, Turnstile, email notification, and field
+// validation rules without trusting client data.
 // Transient lasts 24 hours; re-cached on every page render.
 if ( ! empty( $form_id ) ) {
 	set_transient(
 		'sgs_form_config_' . sanitize_key( $form_id ),
 		array(
-			'requireLogin' => $require_login,
-			'rateLimit'    => $rate_limit,
+			'requireLogin'      => $require_login,
+			'rateLimit'         => $rate_limit,
+			'turnstileEnabled'  => ! empty( $turnstile_site_key ),
+			'notificationEmail' => $notification_email,
+			'fieldRules'        => $field_rules,
 		),
 		DAY_IN_SECONDS
+	);
+}
+
+// Enqueue Cloudflare Turnstile script when a site key is configured.
+if ( ! empty( $turnstile_site_key ) ) {
+	wp_enqueue_script(
+		'cloudflare-turnstile',
+		'https://challenges.cloudflare.com/turnstile/v0/api.js',
+		array(),
+		null, // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- external script, no version pinning.
+		true
 	);
 }
 
@@ -149,6 +198,14 @@ $wrapper_attributes = get_block_wrapper_attributes(
 		<?php endif; ?>
 
 		<?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Block inner content is processed by WordPress's block renderer. ?>
+
+		<?php if ( ! empty( $turnstile_site_key ) ) : ?>
+			<div
+				class="cf-turnstile sgs-form__turnstile"
+				data-sitekey="<?php echo esc_attr( $turnstile_site_key ); ?>"
+				data-theme="auto"
+			></div>
+		<?php endif; ?>
 
 		<div class="sgs-form__actions">
 			<?php if ( $is_multi_step ) : ?>

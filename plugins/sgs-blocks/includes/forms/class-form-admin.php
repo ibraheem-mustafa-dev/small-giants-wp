@@ -58,6 +58,16 @@ class Form_Admin {
 			]
 		);
 
+		register_setting(
+			'sgs_forms_settings',
+			'sgs_turnstile_secret_key',
+			[
+				'type'              => 'string',
+				'sanitize_callback' => 'sanitize_text_field',
+				'default'           => '',
+			]
+		);
+
 		add_settings_section(
 			'sgs_forms_webhook',
 			__( 'Webhook Configuration', 'sgs-blocks' ),
@@ -71,6 +81,21 @@ class Form_Admin {
 			[ __CLASS__, 'render_webhook_field' ],
 			'sgs-forms',
 			'sgs_forms_webhook'
+		);
+
+		add_settings_section(
+			'sgs_forms_captcha',
+			__( 'Cloudflare Turnstile CAPTCHA', 'sgs-blocks' ),
+			[ __CLASS__, 'render_captcha_section' ],
+			'sgs-forms'
+		);
+
+		add_settings_field(
+			'sgs_turnstile_secret_key',
+			__( 'Turnstile Secret Key', 'sgs-blocks' ),
+			[ __CLASS__, 'render_turnstile_secret_field' ],
+			'sgs-forms',
+			'sgs_forms_captcha'
 		);
 	}
 
@@ -123,6 +148,40 @@ class Form_Admin {
 		);
 		echo '<p class="description">' . esc_html__(
 			'All forms will send notifications to this URL. Leave empty to disable webhooks.',
+			'sgs-blocks'
+		) . '</p>';
+	}
+
+	/**
+	 * Render Cloudflare Turnstile CAPTCHA section description.
+	 *
+	 * @since 1.0.0
+	 */
+	public static function render_captcha_section(): void {
+		echo '<p>' . esc_html__(
+			'Configure Cloudflare Turnstile CAPTCHA. Add your site key to individual form blocks via the block editor. The secret key below is used for server-side token verification.',
+			'sgs-blocks'
+		) . '</p>';
+		printf(
+			'<p><a href="%s" target="_blank" rel="noopener noreferrer">%s</a></p>',
+			'https://dash.cloudflare.com/sign-up/turnstile',
+			esc_html__( 'Get your Turnstile keys from the Cloudflare dashboard →', 'sgs-blocks' )
+		);
+	}
+
+	/**
+	 * Render the Turnstile secret key input field.
+	 *
+	 * @since 1.0.0
+	 */
+	public static function render_turnstile_secret_field(): void {
+		$value = get_option( 'sgs_turnstile_secret_key', '' );
+		printf(
+			'<input type="password" name="sgs_turnstile_secret_key" value="%s" class="regular-text" autocomplete="new-password" />',
+			esc_attr( $value )
+		);
+		echo '<p class="description">' . esc_html__(
+			'Your Cloudflare Turnstile secret key. Stored server-side only — never exposed to visitors. Required for server-side token verification.',
 			'sgs-blocks'
 		) . '</p>';
 	}

@@ -33,6 +33,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		submitColour,
 		submitBackground,
 		progressBarColour,
+		turnstileSiteKey,
+		notificationEmail,
 	} = attributes;
 
 	// Auto-generate formId from clientId on first insert.
@@ -152,6 +154,37 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						}
 						help={ __(
 							'Add a hidden field to catch spam bots.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+					/>
+					<TextControl
+						label={ __( 'Notification Email', 'sgs-blocks' ) }
+						value={ notificationEmail }
+						onChange={ ( value ) =>
+							setAttributes( { notificationEmail: value } )
+						}
+						help={ __(
+							'Optional. Send a wp_mail() notification with field data to this address after each submission.',
+							'sgs-blocks'
+						) }
+						type="email"
+						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Security (Turnstile)', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<TextControl
+						label={ __( 'Cloudflare Turnstile Site Key', 'sgs-blocks' ) }
+						value={ turnstileSiteKey }
+						onChange={ ( value ) =>
+							setAttributes( { turnstileSiteKey: value } )
+						}
+						help={ __(
+							'Enter your Turnstile site key to enable CAPTCHA protection. Leave empty to use honeypot only. Secret key is configured in Settings → SGS Forms.',
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom

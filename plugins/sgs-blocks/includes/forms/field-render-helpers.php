@@ -53,12 +53,32 @@ function field_open( array $attributes, string $type, string $extra_class = '' )
 		$operator = $attributes['conditionalOperator'] ?? 'equals';
 		$value    = $attributes['conditionalValue'] ?? '';
 
-		$data_attrs = sprintf(
+		$data_attrs .= sprintf(
 			' data-conditional-field="%s" data-conditional-operator="%s" data-conditional-value="%s"',
 			esc_attr( $conditional_field ),
 			esc_attr( $operator ),
 			esc_attr( $value )
 		);
+	}
+
+	// Output validation rules as data attributes so view.js can apply them
+	// as HTML5 attributes to inputs for client-side validation.
+	$min_length   = absint( $attributes['minLength'] ?? 0 );
+	$max_length   = absint( $attributes['maxLength'] ?? 0 );
+	$pattern      = $attributes['pattern'] ?? '';
+	$custom_error = $attributes['customError'] ?? '';
+
+	if ( $min_length > 0 ) {
+		$data_attrs .= ' data-min-length="' . esc_attr( (string) $min_length ) . '"';
+	}
+	if ( $max_length > 0 ) {
+		$data_attrs .= ' data-max-length="' . esc_attr( (string) $max_length ) . '"';
+	}
+	if ( ! empty( $pattern ) ) {
+		$data_attrs .= ' data-pattern="' . esc_attr( $pattern ) . '"';
+	}
+	if ( ! empty( $custom_error ) ) {
+		$data_attrs .= ' data-custom-error="' . esc_attr( $custom_error ) . '"';
 	}
 
 	return sprintf(
@@ -168,6 +188,21 @@ function field_input_attrs( string $field_id, array $attributes ): string {
 	if ( $required ) {
 		$attrs[] = 'required';
 		$attrs[] = 'aria-required="true"';
+	}
+
+	// HTML5 server-side validation attributes.
+	$min_length = absint( $attributes['minLength'] ?? 0 );
+	$max_length = absint( $attributes['maxLength'] ?? 0 );
+	$pattern    = $attributes['pattern'] ?? '';
+
+	if ( $min_length > 0 ) {
+		$attrs[] = 'minlength="' . esc_attr( (string) $min_length ) . '"';
+	}
+	if ( $max_length > 0 ) {
+		$attrs[] = 'maxlength="' . esc_attr( (string) $max_length ) . '"';
+	}
+	if ( ! empty( $pattern ) ) {
+		$attrs[] = 'pattern="' . esc_attr( $pattern ) . '"';
 	}
 
 	// Always include the error element ID in aria-describedby so that screen readers

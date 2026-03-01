@@ -104,7 +104,15 @@
                        "paymentDescription":  {
                                                   "type":  "string",
                                                   "default":  ""
-                                              }
+                                              },
+                       "turnstileSiteKey":  {
+                                                "type":  "string",
+                                                "default":  ""
+                                            },
+                       "notificationEmail":  {
+                                                 "type":  "string",
+                                                 "default":  ""
+                                             }
                    },
     "providesContext":  {
                             "sgs/formId":  "formId"

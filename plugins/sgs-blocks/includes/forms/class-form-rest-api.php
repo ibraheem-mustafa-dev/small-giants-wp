@@ -80,6 +80,18 @@ class Form_REST_API {
 						'type'     => 'boolean',
 						'default'  => true,
 					],
+					'turnstileResponse' => [
+						'required'          => false,
+						'type'              => 'string',
+						'default'           => '',
+						'sanitize_callback' => 'sanitize_text_field',
+					],
+					'notificationEmail' => [
+						'required'          => false,
+						'type'              => 'string',
+						'default'           => '',
+						'sanitize_callback' => 'sanitize_email',
+					],
 				],
 			]
 		);

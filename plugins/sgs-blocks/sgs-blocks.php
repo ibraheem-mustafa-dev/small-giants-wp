@@ -51,6 +51,12 @@ require_once SGS_BLOCKS_PATH . 'includes/hover-effects.php';
 // existing content has been transformed to sgs/icon via the block editor.
 require_once SGS_BLOCKS_PATH . 'includes/icon-block-compat.php';
 
+// Block Patterns — pre-built SGS starter sections.
+require_once SGS_BLOCKS_PATH . 'includes/patterns.php';
+
+// Block Variations — quick-start presets for SGS blocks.
+require_once SGS_BLOCKS_PATH . 'includes/variations.php';
+
 // Google Reviews settings and API integration.
 require_once SGS_BLOCKS_PATH . 'includes/google-reviews-settings.php';
 
