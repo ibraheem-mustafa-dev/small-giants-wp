@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Device visibility — server-side class injection.
  *
@@ -11,6 +11,8 @@
  * with display:none to hide content. Content remains in the DOM for SEO.
  *
  * @package SGS\Blocks
+ *
+ * @since 1.0.0
  */
 
 namespace SGS\Blocks;
@@ -26,6 +28,7 @@ add_filter( 'render_block', __NAMESPACE__ . '\\inject_device_visibility_classes'
  * boolean attributes and adds the corresponding CSS classes to the
  * outermost wrapper element of the block.
  *
+ * @since 1.0.0
  * @param string $block_content The rendered block HTML.
  * @param array  $block         The parsed block data including attrs.
  * @return string Modified block HTML with visibility classes.

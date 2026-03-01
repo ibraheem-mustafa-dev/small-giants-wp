@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * REST API endpoint for Post Grid AJAX pagination and filtering.
  *
@@ -8,6 +8,8 @@
  * Public endpoint (no auth required) — serves front-end visitors.
  *
  * @package SGS\Blocks
+ *
+ * @since 1.0.0
  */
 
 namespace SGS\Blocks;
@@ -19,6 +21,8 @@ defined( 'ABSPATH' ) || exit;
  *
  * The render_card() method is public static so render.php can call it
  * directly — this keeps card HTML in one place (DRY).
+ *
+ * @since 1.0.0
  */
 class Post_Grid_REST {
 
@@ -29,6 +33,8 @@ class Post_Grid_REST {
 	 * Wire up the REST route.
 	 *
 	 * Called once from the main plugin class constructor.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function register(): void {
 		add_action( 'rest_api_init', [ __CLASS__, 'register_routes' ] );
@@ -36,6 +42,8 @@ class Post_Grid_REST {
 
 	/**
 	 * Register the REST route with WordPress.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function register_routes(): void {
 		register_rest_route(
@@ -53,6 +61,7 @@ class Post_Grid_REST {
 	/**
 	 * Define, sanitise, and validate every accepted parameter.
 	 *
+	 * @since 1.0.0
 	 * @return array<string, array<string, mixed>>
 	 */
 	private static function get_args(): array {
@@ -207,6 +216,7 @@ class Post_Grid_REST {
 	/**
 	 * Handle the GET request and return posts as pre-rendered HTML.
 	 *
+	 * @since 1.0.0
 	 * @param \WP_REST_Request $request The incoming REST request.
 	 * @return \WP_REST_Response
 	 */
@@ -272,6 +282,7 @@ class Post_Grid_REST {
 	 * Shared between render.php (initial server render) and the REST
 	 * endpoint (AJAX subsequent pages). Changes here affect both paths.
 	 *
+	 * @since 1.0.0
 	 * @param int   $post_id The post ID to render.
 	 * @param array $params  Block attributes / REST parameters.
 	 * @return string Complete <article> HTML for one card.

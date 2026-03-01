@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Shared render helper functions for SGS block server-side rendering.
  *
@@ -7,6 +7,8 @@
  * CSS values through unchanged.
  *
  * @package SGS\Blocks
+ *
+ * @since 1.0.0
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -19,6 +21,7 @@ defined( 'ABSPATH' ) || exit;
  * - Functional: rgb(), rgba(), hsl(), hsla(), oklch(), lch(), oklab(), lab(), hwb()
  * - Named keywords: red, blue, transparent, currentColor, inherit, etc.
  *
+ * @since 1.0.0
  * @param string $value The value to test.
  * @return bool True if the value is a CSS colour, false if it looks like a slug.
  */
@@ -88,6 +91,7 @@ function sgs_is_css_colour( string $value ): bool {
  * escaped as-is. If it is a design token slug, it is wrapped in a CSS custom
  * property reference: var(--wp--preset--color--{slug}).
  *
+ * @since 1.0.0
  * @param string|null $slug_or_value A CSS colour string or a design token slug.
  * @return string A CSS colour value, or an empty string if input is empty.
  */
@@ -115,6 +119,7 @@ function sgs_colour_value( ?string $slug_or_value ): string {
  * it is treated as a raw CSS value and returned escaped. Otherwise it is
  * treated as a design token slug: var(--wp--preset--font-size--{slug}).
  *
+ * @since 1.0.0
  * @param string|null $slug_or_value A CSS font-size string or a design token slug.
  * @return string A CSS font-size value, or an empty string if input is empty.
  */
@@ -146,6 +151,7 @@ function sgs_font_size_value( ?string $slug_or_value ): string {
  * Falls back to a plain <img> when the attachment ID is 0 or invalid (e.g. images
  * imported from external URLs or pasted content without media library entries).
  *
+ * @since 1.0.0
  * @param int    $id    WordPress attachment ID (0 = unknown/external).
  * @param string $url   Image URL fallback.
  * @param string $alt   Alt text.

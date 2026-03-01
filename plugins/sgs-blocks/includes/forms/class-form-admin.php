@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Admin settings page for SGS Forms.
  *
@@ -7,6 +7,8 @@
  * - Basic form submissions viewer with capability gate (manage_options)
  *
  * @package SGS\Blocks\Forms
+ *
+ * @since 1.0.0
  */
 
 namespace SGS\Blocks\Forms;
@@ -17,6 +19,8 @@ class Form_Admin {
 
 	/**
 	 * Register admin hooks.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function register(): void {
 		add_action( 'admin_menu', [ __CLASS__, 'add_menu_page' ] );
@@ -25,6 +29,8 @@ class Form_Admin {
 
 	/**
 	 * Add settings page under Settings menu.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function add_menu_page(): void {
 		add_options_page(
@@ -38,6 +44,8 @@ class Form_Admin {
 
 	/**
 	 * Register settings with the Settings API.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function register_settings(): void {
 		register_setting(
@@ -71,6 +79,7 @@ class Form_Admin {
 	 *
 	 * Only HTTPS URLs are accepted.
 	 *
+	 * @since 1.0.0
 	 * @param string $value Raw input.
 	 * @return string Sanitised URL or empty string.
 	 */
@@ -91,6 +100,8 @@ class Form_Admin {
 
 	/**
 	 * Render the webhook settings section description.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function render_webhook_section(): void {
 		echo '<p>' . esc_html__(
@@ -101,6 +112,8 @@ class Form_Admin {
 
 	/**
 	 * Render the webhook URL input field.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function render_webhook_field(): void {
 		$value = get_option( 'sgs_n8n_webhook_url', '' );
@@ -116,6 +129,8 @@ class Form_Admin {
 
 	/**
 	 * Render the settings page.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function render_settings_page(): void {
 		if ( ! current_user_can( 'manage_options' ) ) {
@@ -142,6 +157,8 @@ class Form_Admin {
 	 * Render a basic table of recent form submissions.
 	 *
 	 * Requires manage_options capability (enforced by the parent page).
+	 *
+	 * @since 1.0.0
 	 */
 	private static function render_submissions_table(): void {
 		global $wpdb;

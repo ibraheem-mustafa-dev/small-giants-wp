@@ -1,8 +1,10 @@
-<?php
+﻿<?php
 /**
  * Register SGS block categories.
  *
  * @package SGS\Blocks
+ *
+ * @since 1.0.0
  */
 
 namespace SGS\Blocks;

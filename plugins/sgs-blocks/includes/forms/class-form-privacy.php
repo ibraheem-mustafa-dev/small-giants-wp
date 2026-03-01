@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * GDPR personal data hooks for SGS form submissions.
  *
@@ -10,6 +10,8 @@
  * @see https://developer.wordpress.org/plugins/privacy/adding-the-personal-data-exporter-to-your-plugin/
  *
  * @package SGS\Blocks\Forms
+ *
+ * @since 1.0.0
  */
 
 namespace SGS\Blocks\Forms;
@@ -26,6 +28,7 @@ class Form_Privacy {
 	 * Keeping this below 500 avoids PHP memory exhaustion on sites
 	 * with a large volume of form submissions.
 	 *
+	 * @since 1.0.0
 	 * @var int
 	 */
 	const ITEMS_PER_PAGE = 500;
@@ -36,6 +39,8 @@ class Form_Privacy {
 	 * Called once during plugin bootstrap. Attaches to the two
 	 * WordPress Privacy API filters that drive Tools > Export Personal
 	 * Data and Tools > Erase Personal Data in the admin.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function register(): void {
 		add_filter( 'wp_privacy_personal_data_exporters', [ __CLASS__, 'register_exporter' ] );
@@ -49,6 +54,7 @@ class Form_Privacy {
 	/**
 	 * Register the SGS Forms personal data exporter.
 	 *
+	 * @since 1.0.0
 	 * @param array $exporters Existing registered exporters.
 	 * @return array Exporters array with SGS Forms appended.
 	 */
@@ -63,6 +69,7 @@ class Form_Privacy {
 	/**
 	 * Register the SGS Forms personal data eraser.
 	 *
+	 * @since 1.0.0
 	 * @param array $erasers Existing registered erasers.
 	 * @return array Erasers array with SGS Forms appended.
 	 */
@@ -91,6 +98,7 @@ class Form_Privacy {
 	 * JSON text, with the address wrapped in `"` characters to target
 	 * JSON string values rather than key names or partial substrings.
 	 *
+	 * @since 1.0.0
 	 * @param string $email_address The e-mail address whose data to export.
 	 * @param int    $page          1-indexed pagination page sent by WordPress.
 	 * @return array {
@@ -182,6 +190,7 @@ class Form_Privacy {
 	 * ITEMS_PER_PAGE; when fewer rows remain than the batch size the
 	 * eraser signals completion.
 	 *
+	 * @since 1.0.0
 	 * @param string $email_address The e-mail address whose data to erase.
 	 * @param int    $page          1-indexed pagination page sent by WordPress.
 	 * @return array {

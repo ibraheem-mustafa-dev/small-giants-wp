@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Heading anchor injection for Table of Contents.
  *
@@ -6,6 +6,8 @@
  * so the ToC has valid link targets. Respects user-set anchors.
  *
  * @package SGS\Blocks
+ *
+ * @since 1.0.0
  */
 
 namespace SGS\Blocks;
@@ -19,6 +21,7 @@ add_filter( 'render_block', __NAMESPACE__ . '\\inject_heading_anchor', 10, 2 );
  *
  * Only runs when the current post/page contains an sgs/table-of-contents block.
  *
+ * @since 1.0.0
  * @param string $block_content Rendered heading HTML.
  * @param array  $block         Block data.
  * @return string Heading HTML with id attribute.

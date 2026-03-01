@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Stripe Settings
  *
@@ -22,6 +22,8 @@
  * payment element client-side and sends tokenised data directly to Stripe.
  *
  * @package SGS\Blocks
+ *
+ * @since 1.0.0
  */
 
 namespace SGS\Blocks;
@@ -30,6 +32,8 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * Stripe settings management.
+ *
+ * @since 1.0.0
  */
 class Stripe_Settings {
 
@@ -43,6 +47,8 @@ class Stripe_Settings {
 
 	/**
 	 * Initialise hooks.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function init(): void {
 		add_action( 'admin_menu', [ __CLASS__, 'add_settings_page' ] );
@@ -54,6 +60,8 @@ class Stripe_Settings {
 
 	/**
 	 * Add settings page under SGS Blocks admin menu.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function add_settings_page(): void {
 		add_options_page(
@@ -70,6 +78,8 @@ class Stripe_Settings {
 	 *
 	 * Two key sets are registered: live keys and test keys. The active set
 	 * is determined by the 'mode' setting ('live' or 'test').
+	 *
+	 * @since 1.0.0
 	 */
 	public static function register_settings(): void {
 		register_setting(
@@ -173,6 +183,7 @@ class Stripe_Settings {
 	 * Masked values (bullets) are left unchanged to avoid re-encrypting
 	 * the placeholder display value and destroying stored keys.
 	 *
+	 * @since 1.0.0
 	 * @param array $input Raw input from the settings form.
 	 * @return array Sanitised settings ready for wp_options storage.
 	 */
@@ -226,6 +237,8 @@ class Stripe_Settings {
 
 	/**
 	 * Mode selector field.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function field_mode(): void {
 		$settings = self::get_settings();
@@ -243,6 +256,8 @@ class Stripe_Settings {
 
 	/**
 	 * Live publishable key field.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function field_publishable_key(): void {
 		$settings = self::get_settings();
@@ -256,6 +271,8 @@ class Stripe_Settings {
 
 	/**
 	 * Live secret key field — masked display, password input.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function field_secret_key(): void {
 		$settings  = self::get_settings();
@@ -273,6 +290,8 @@ class Stripe_Settings {
 
 	/**
 	 * Live webhook secret field — masked display, password input.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function field_webhook_secret(): void {
 		$settings  = self::get_settings();
@@ -290,6 +309,8 @@ class Stripe_Settings {
 
 	/**
 	 * Test publishable key field.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function field_test_publishable_key(): void {
 		$settings = self::get_settings();
@@ -303,6 +324,8 @@ class Stripe_Settings {
 
 	/**
 	 * Test secret key field — masked display.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function field_test_secret_key(): void {
 		$settings  = self::get_settings();
@@ -320,6 +343,8 @@ class Stripe_Settings {
 
 	/**
 	 * Test webhook secret field — masked display.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function field_test_webhook_secret(): void {
 		$settings  = self::get_settings();
@@ -339,6 +364,8 @@ class Stripe_Settings {
 
 	/**
 	 * Render the admin settings page.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function render_settings_page(): void {
 		if ( ! current_user_can( 'manage_options' ) ) {
@@ -372,6 +399,8 @@ class Stripe_Settings {
 	 *
 	 * Displays 🔴 LIVE MODE or 🟡 TEST MODE so it is immediately obvious
 	 * which key set is active.
+	 *
+	 * @since 1.0.0
 	 */
 	private static function render_mode_badge(): void {
 		$settings = self::get_settings();
@@ -390,6 +419,8 @@ class Stripe_Settings {
 
 	/**
 	 * Render the key/webhook configuration status table.
+	 *
+	 * @since 1.0.0
 	 */
 	private static function render_status(): void {
 		$settings = self::get_settings();
@@ -441,6 +472,8 @@ class Stripe_Settings {
 	 *
 	 * Only loaded when the page has a payment-enabled form, reducing
 	 * unnecessary third-party script loading on other pages.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function enqueue_stripe_js(): void {
 		if ( ! is_singular() ) {
@@ -493,6 +526,8 @@ class Stripe_Settings {
 	 * metadata so the webhook handler can match events to submissions.
 	 *
 	 * PCI: card data never passes through this endpoint.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function ajax_create_payment_intent(): void {
 		check_ajax_referer( 'sgs_stripe_nonce', 'nonce' );
@@ -613,6 +648,7 @@ class Stripe_Settings {
 	 *   - A fixed paymentAmount attribute, or
 	 *   - A priceOptions array (for variable pricing via dropdown).
 	 *
+	 * @since 1.0.0
 	 * @param int $form_post_id    The WP post ID of the page containing the form.
 	 * @param int $submitted_amount Amount in pence, as submitted by the client.
 	 * @return int|\WP_Error Validated amount in pence, or WP_Error on failure.
@@ -685,6 +721,7 @@ class Stripe_Settings {
 	/**
 	 * Recursively search parsed blocks for the first sgs/form block.
 	 *
+	 * @since 1.0.0
 	 * @param array $blocks Parsed block array from parse_blocks().
 	 * @return array|null The sgs/form block, or null if not found.
 	 */
@@ -711,6 +748,7 @@ class Stripe_Settings {
 	/**
 	 * Get the active mode ('live' or 'test').
 	 *
+	 * @since 1.0.0
 	 * @return string 'live' or 'test'.
 	 */
 	public static function get_mode(): string {
@@ -725,6 +763,7 @@ class Stripe_Settings {
 	 *
 	 * Safe to expose to the browser (Stripe's design intent).
 	 *
+	 * @since 1.0.0
 	 * @return string Publishable key or empty string if not configured.
 	 */
 	public static function get_publishable_key(): string {
@@ -739,6 +778,7 @@ class Stripe_Settings {
 	 *
 	 * PHP only — this must NEVER be returned to the browser.
 	 *
+	 * @since 1.0.0
 	 * @return string Decrypted secret key or empty string if not configured.
 	 */
 	public static function get_secret_key(): string {
@@ -755,6 +795,7 @@ class Stripe_Settings {
 	 *
 	 * Used by Stripe_Webhook::verify_signature().
 	 *
+	 * @since 1.0.0
 	 * @return string Decrypted webhook secret or empty string.
 	 */
 	public static function get_webhook_secret(): string {
@@ -769,6 +810,7 @@ class Stripe_Settings {
 	/**
 	 * Get all raw settings from wp_options.
 	 *
+	 * @since 1.0.0
 	 * @return array Settings array (may be empty if not yet configured).
 	 */
 	public static function get_settings(): array {
@@ -783,6 +825,7 @@ class Stripe_Settings {
 	 * AES-256-GCM provides authenticated encryption (unlike AES-256-CBC)
 	 * so the ciphertext cannot be tampered with without detection.
 	 *
+	 * @since 1.0.0
 	 * @param string $value Plaintext value to encrypt.
 	 * @return string Base64-encoded ciphertext (IV + tag + cipher), or empty on failure.
 	 */
@@ -808,6 +851,7 @@ class Stripe_Settings {
 	/**
 	 * Decrypt a value produced by encrypt().
 	 *
+	 * @since 1.0.0
 	 * @param string $encoded Base64-encoded ciphertext.
 	 * @return string Decrypted plaintext, or empty string on failure.
 	 */

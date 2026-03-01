@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Process form submissions and store in database.
  *
@@ -6,6 +6,8 @@
  * for all SGS form submissions.
  *
  * @package SGS\Blocks\Forms
+ *
+ * @since 1.0.0
  */
 
 namespace SGS\Blocks\Forms;
@@ -25,6 +27,7 @@ class Form_Processor {
 	 * This two-step flow (submission → pending, webhook → confirmed) ensures
 	 * we never mark a submission as complete before payment is verified.
 	 *
+	 * @since 1.0.0
 	 * @param string $form_id           Unique form identifier.
 	 * @param array  $fields            Form field data (unsanitised).
 	 * @param array  $file_ids          Attachment IDs from uploads (default empty).
@@ -106,6 +109,7 @@ class Form_Processor {
 	/**
 	 * Sanitise form field data.
 	 *
+	 * @since 1.0.0
 	 * @param array $fields Raw field data.
 	 * @return array Sanitised fields.
 	 */
@@ -132,6 +136,7 @@ class Form_Processor {
 	/**
 	 * Prepare file data for JSON storage.
 	 *
+	 * @since 1.0.0
 	 * @param array $file_ids Attachment post IDs.
 	 * @return array|null File data with id, name, url, size.
 	 */
@@ -170,6 +175,7 @@ class Form_Processor {
 	 *
 	 * Uses REMOTE_ADDR only — X-Forwarded-For is trivially spoofable.
 	 *
+	 * @since 1.0.0
 	 * @return string Validated client IP address, or 0.0.0.0 if unavailable.
 	 */
 	private static function get_client_ip(): string {
@@ -185,6 +191,7 @@ class Form_Processor {
 	/**
 	 * Get user agent string.
 	 *
+	 * @since 1.0.0
 	 * @return string User agent (max 500 chars).
 	 */
 	private static function get_user_agent(): string {
@@ -204,6 +211,7 @@ class Form_Processor {
 	 * Uses wp_safe_remote_post() to prevent SSRF attacks against internal networks.
 	 * Fire-and-forget: uses blocking => false so it doesn't delay the response.
 	 *
+	 * @since 1.0.0
 	 * @param string $form_id       Form identifier.
 	 * @param int    $submission_id Database submission ID.
 	 * @param array  $fields        Sanitised field data.
@@ -215,6 +223,7 @@ class Form_Processor {
 		/**
 		 * Filter the N8N webhook URL for a specific form.
 		 *
+		 * @since 1.0.0
 		 * @param string $url     Webhook URL from options.
 		 * @param string $form_id Form identifier.
 		 */

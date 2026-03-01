@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Handle file uploads for form fields.
  *
@@ -6,6 +6,8 @@
  * attachment post. Returns attachment ID for later reference.
  *
  * @package SGS\Blocks\Forms
+ *
+ * @since 1.0.0
  */
 
 namespace SGS\Blocks\Forms;
@@ -17,6 +19,7 @@ class Form_Upload {
 	/**
 	 * Handle file upload from REST request.
 	 *
+	 * @since 1.0.0
 	 * @param \WP_REST_Request $request REST API request object.
 	 * @return array|\WP_Error Upload result with id, name, url, size — or error.
 	 */
@@ -97,12 +100,14 @@ class Form_Upload {
 	/**
 	 * Get maximum upload size in bytes.
 	 *
+	 * @since 1.0.0
 	 * @return int Maximum upload size (default 10MB).
 	 */
 	private static function get_max_upload_size(): int {
 		/**
 		 * Filter the maximum file upload size for forms.
 		 *
+		 * @since 1.0.0
 		 * @param int $max_size Maximum size in bytes (default 10485760 = 10MB).
 		 */
 		return apply_filters( 'sgs_form_max_upload_size', 10 * 1024 * 1024 );
@@ -111,12 +116,14 @@ class Form_Upload {
 	/**
 	 * Get allowed MIME types for uploads.
 	 *
+	 * @since 1.0.0
 	 * @return array Allowed MIME types.
 	 */
 	private static function get_allowed_mime_types(): array {
 		/**
 		 * Filter allowed MIME types for form uploads.
 		 *
+		 * @since 1.0.0
 		 * @param array $mime_types Allowed MIME types.
 		 */
 		return apply_filters(

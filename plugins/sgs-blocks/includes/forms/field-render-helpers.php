@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Server-side field rendering helpers.
  *
@@ -6,6 +6,8 @@
  * All functions return strings — echo them in your template.
  *
  * @package SGS\Blocks\Forms
+ *
+ * @since 1.0.0
  */
 
 namespace SGS\Blocks\Forms;
@@ -20,6 +22,7 @@ defined( 'ABSPATH' ) || exit;
  * Hidden-by-default fields also receive the sgs-form-field--hidden CSS class so
  * they are invisible before JavaScript initialises.
  *
+ * @since 1.0.0
  * @param array  $attributes Block attributes.
  * @param string $type       Field type (text, email, textarea, select, etc.).
  * @param string $extra_class Additional CSS class (optional).
@@ -68,6 +71,7 @@ function field_open( array $attributes, string $type, string $extra_class = '' )
 /**
  * Render a field label.
  *
+ * @since 1.0.0
  * @param string $field_id   Field identifier (from field_id()).
  * @param array  $attributes Block attributes.
  * @return string Label HTML (empty if no label).
@@ -92,6 +96,7 @@ function field_label( string $field_id, array $attributes ): string {
 /**
  * Render field help text.
  *
+ * @since 1.0.0
  * @param string $field_id   Field identifier (from field_id()).
  * @param array  $attributes Block attributes.
  * @return string Help text HTML (empty if no help text).
@@ -113,6 +118,7 @@ function field_help( string $field_id, array $attributes ): string {
 /**
  * Close field wrapper div.
  *
+ * @since 1.0.0
  * @return string Closing div tag.
  */
 function field_close(): string {
@@ -122,6 +128,7 @@ function field_close(): string {
 /**
  * Generate field ID from field name.
  *
+ * @since 1.0.0
  * @param string $field_name Field name attribute.
  * @return string Field ID (sgs-field-{name}).
  */
@@ -138,6 +145,7 @@ function field_id( string $field_name ): string {
  * Always wires aria-describedby to the error element (and help text when present)
  * so that screen readers announce inline validation messages.
  *
+ * @since 1.0.0
  * @param string $field_id   Field ID (from field_id()).
  * @param array  $attributes Block attributes.
  * @return string Space-separated attribute string.
@@ -179,6 +187,7 @@ function field_input_attrs( string $field_id, array $attributes ): string {
  * The element is visually hidden when empty and populated by client-side
  * validation. Screen readers pick it up via aria-describedby on the input.
  *
+ * @since 1.0.0
  * @param string $field_id Field ID (from field_id()).
  * @return string Error span HTML.
  */

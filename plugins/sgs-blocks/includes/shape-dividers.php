@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Shape divider SVG library.
  *
@@ -6,6 +6,8 @@
  * Each shape is a viewBox 1200x120 SVG path.
  *
  * @package SGS\Blocks
+ *
+ * @since 1.0.0
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -13,6 +15,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Get all available shape divider definitions.
  *
+ * @since 1.0.0
  * @return array<string, array{label: string, path: string}>
  */
 function sgs_get_shape_dividers(): array {
@@ -71,6 +74,7 @@ function sgs_get_shape_dividers(): array {
 /**
  * Get a single shape divider SVG.
  *
+ * @since 1.0.0
  * @param string $shape   Shape key.
  * @param string $colour  CSS colour value.
  * @param int    $height  Height in pixels.

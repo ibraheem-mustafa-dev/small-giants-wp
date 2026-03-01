@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Form database setup on plugin activation.
  *
@@ -6,6 +6,8 @@
  * and indexes for storing form submission data.
  *
  * @package SGS\Blocks\Forms
+ *
+ * @since 1.0.0
  */
 
 namespace SGS\Blocks\Forms;
@@ -17,6 +19,7 @@ class Form_Activator {
 	/**
 	 * Database version for tracking schema changes.
 	 *
+	 * @since 1.0.0
 	 * @var string
 	 */
 	const DB_VERSION = '1.0.0';
@@ -26,6 +29,8 @@ class Form_Activator {
 	 *
 	 * Called on plugin activation. Uses dbDelta() so it's safe to run
 	 * multiple times — it will only modify the schema if needed.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function activate(): void {
 		global $wpdb;

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Universal Hover Effects — server-side injection.
  *
@@ -6,6 +6,8 @@
  * dynamically rendered blocks that have hover attributes set.
  *
  * @package SGS\Blocks
+ *
+ * @since 1.0.0
  */
 
 namespace SGS\Blocks;
@@ -17,6 +19,7 @@ add_filter( 'render_block', __NAMESPACE__ . '\\inject_hover_effects', 10, 2 );
 /**
  * Inject hover CSS custom properties and class into block output.
  *
+ * @since 1.0.0
  * @param string $block_content Rendered block HTML.
  * @param array  $block         Block data including attrs.
  * @return string Modified block HTML.

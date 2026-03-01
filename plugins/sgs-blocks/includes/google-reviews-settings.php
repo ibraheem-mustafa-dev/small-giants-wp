@@ -1,10 +1,12 @@
-<?php
+﻿<?php
 /**
  * Google Reviews Settings Page
  *
  * Admin settings page for Google Places API configuration and cache management.
  *
  * @package SGS\Blocks
+ *
+ * @since 1.0.0
  */
 
 namespace SGS\Blocks;
@@ -13,20 +15,28 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * Google Reviews Settings Class
+ *
+ * @since 1.0.0
  */
 class Google_Reviews_Settings {
 	/**
 	 * Option key for API settings.
+	 *
+	 * @since 1.0.0
 	 */
 	const OPTION_KEY = 'sgs_google_reviews_settings';
 
 	/**
 	 * Transient key prefix for cached reviews.
+	 *
+	 * @since 1.0.0
 	 */
 	const CACHE_KEY_PREFIX = 'sgs_google_reviews_';
 
 	/**
 	 * Initialise the settings page.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function init(): void {
 		add_action( 'admin_menu', [ __CLASS__, 'add_settings_page' ] );
@@ -37,6 +47,8 @@ class Google_Reviews_Settings {
 
 	/**
 	 * Add settings page to WordPress admin menu.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function add_settings_page(): void {
 		add_options_page(
@@ -50,6 +62,8 @@ class Google_Reviews_Settings {
 
 	/**
 	 * Register settings fields.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function register_settings(): void {
 		register_setting( 'sgs_google_reviews', self::OPTION_KEY, [
@@ -96,6 +110,7 @@ class Google_Reviews_Settings {
 	 * encrypted value is preserved rather than overwriting it with the mask string.
 	 * This matches the same guard used in stripe-settings.php.
 	 *
+	 * @since 1.0.0
 	 * @param array $input Raw input data.
 	 * @return array Sanitised data.
 	 */
@@ -125,6 +140,7 @@ class Google_Reviews_Settings {
 	 *
 	 * Uses the same pattern as stripe-settings.php so both files stay consistent.
 	 *
+	 * @since 1.0.0
 	 * @param string $value Plaintext value.
 	 * @return string Base64-encoded ciphertext, or empty string on failure.
 	 */
@@ -151,6 +167,7 @@ class Google_Reviews_Settings {
 	 * Attempts GCM first (new format). Falls back to the legacy AES-256-CBC
 	 * format so that keys stored before the upgrade are not lost.
 	 *
+	 * @since 1.0.0
 	 * @param string $data Base64-encoded ciphertext.
 	 * @return string Decrypted plaintext, or empty string on failure.
 	 */
@@ -193,6 +210,7 @@ class Google_Reviews_Settings {
 	/**
 	 * Get saved settings.
 	 *
+	 * @since 1.0.0
 	 * @return array Settings array.
 	 */
 	public static function get_settings(): array {
@@ -208,6 +226,7 @@ class Google_Reviews_Settings {
 	/**
 	 * Get decrypted API key.
 	 *
+	 * @since 1.0.0
 	 * @return string Decrypted API key.
 	 */
 	public static function get_api_key(): string {
@@ -218,6 +237,7 @@ class Google_Reviews_Settings {
 	/**
 	 * Fetch reviews from Google Places API.
 	 *
+	 * @since 1.0.0
 	 * @param string $place_id Google Place ID.
 	 * @param bool   $force    Force fresh fetch (bypass cache).
 	 * @return array|WP_Error  Reviews data or error.
@@ -274,6 +294,8 @@ class Google_Reviews_Settings {
 
 	/**
 	 * Clear all cached reviews.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function clear_cache(): void {
 		global $wpdb;
@@ -290,6 +312,8 @@ class Google_Reviews_Settings {
 
 	/**
 	 * AJAX handler: Test API connection.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function ajax_test_api(): void {
 		check_ajax_referer( 'sgs-google-reviews-test', 'nonce' );
@@ -321,6 +345,8 @@ class Google_Reviews_Settings {
 
 	/**
 	 * AJAX handler: Clear cache.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function ajax_clear_cache(): void {
 		check_ajax_referer( 'sgs-google-reviews-clear-cache', 'nonce' );
@@ -336,6 +362,8 @@ class Google_Reviews_Settings {
 
 	/**
 	 * Render settings page.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function render_settings_page(): void {
 		?>
@@ -415,6 +443,8 @@ class Google_Reviews_Settings {
 
 	/**
 	 * Render section description.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function render_section_description(): void {
 		?>
@@ -433,6 +463,8 @@ class Google_Reviews_Settings {
 
 	/**
 	 * Render API key field.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function render_api_key_field(): void {
 		$settings = self::get_settings();
@@ -452,6 +484,8 @@ class Google_Reviews_Settings {
 
 	/**
 	 * Render Place ID field.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function render_place_id_field(): void {
 		$settings = self::get_settings();
@@ -477,6 +511,8 @@ class Google_Reviews_Settings {
 
 	/**
 	 * Render cache TTL field.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function render_cache_ttl_field(): void {
 		$settings = self::get_settings();

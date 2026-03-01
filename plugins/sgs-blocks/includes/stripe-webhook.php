@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Stripe Webhook Handler
  *
@@ -20,6 +20,8 @@
  * event for admin review.
  *
  * @package SGS\Blocks
+ *
+ * @since 1.0.0
  */
 
 namespace SGS\Blocks;
@@ -28,6 +30,8 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * Stripe webhook receiver and event processor.
+ *
+ * @since 1.0.0
  */
 class Stripe_Webhook {
 
@@ -45,6 +49,8 @@ class Stripe_Webhook {
 
 	/**
 	 * Initialise hooks.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function init(): void {
 		add_action( 'rest_api_init', [ __CLASS__, 'register_endpoint' ] );
@@ -57,6 +63,8 @@ class Stripe_Webhook {
 	 * Public endpoint (permission_callback = __return_true) because Stripe
 	 * cannot send WordPress nonces. Authentication is handled entirely by the
 	 * Stripe-Signature HMAC verification inside handle_webhook().
+	 *
+	 * @since 1.0.0
 	 */
 	public static function register_endpoint(): void {
 		register_rest_route(
@@ -75,6 +83,8 @@ class Stripe_Webhook {
 	 *
 	 * Runs on 'init' with a version flag to avoid running on every request.
 	 * Uses information_schema so we don't attempt an ALTER on each load.
+	 *
+	 * @since 1.0.0
 	 */
 	public static function maybe_add_db_columns(): void {
 		if ( get_option( 'sgs_stripe_db_v2' ) ) {
@@ -112,6 +122,7 @@ class Stripe_Webhook {
 	 * will retry. After MAX_RETRY_COUNT failures we acknowledge with 200 and
 	 * log for admin review.
 	 *
+	 * @since 1.0.0
 	 * @param \WP_REST_Request $request Incoming REST request.
 	 * @return \WP_REST_Response        Response sent back to Stripe.
 	 */
@@ -191,6 +202,7 @@ class Stripe_Webhook {
 	 * Marks the associated form submission status as 'paid' and updates the
 	 * overall submission status to 'completed'.
 	 *
+	 * @since 1.0.0
 	 * @param array $event Full Stripe event payload.
 	 * @return bool True on success, false on failure.
 	 */
@@ -216,6 +228,7 @@ class Stripe_Webhook {
 	 *
 	 * Marks the associated form submission as 'failed' and logs the error.
 	 *
+	 * @since 1.0.0
 	 * @param array $event Full Stripe event payload.
 	 * @return bool True on success, false on failure.
 	 */
@@ -245,6 +258,7 @@ class Stripe_Webhook {
 	 * Looks up the associated submission by PaymentIntent ID and marks it as
 	 * 'refunded'. Stripe's charge object contains the PaymentIntent ID.
 	 *
+	 * @since 1.0.0
 	 * @param array $event Full Stripe event payload.
 	 * @return bool True on success, false on failure.
 	 */
@@ -269,6 +283,7 @@ class Stripe_Webhook {
 	 * (which can happen if the PaymentIntent was created before the submission
 	 * was stored, or if metadata was not set).
 	 *
+	 * @since 1.0.0
 	 * @param int    $submission_id Submission row ID (0 = unknown).
 	 * @param string $intent_id     Stripe PaymentIntent ID.
 	 * @param string $status        Payment status: 'paid', 'failed', 'refunded'.
@@ -313,6 +328,7 @@ class Stripe_Webhook {
 	/**
 	 * Update payment status by searching for the PaymentIntent ID column.
 	 *
+	 * @since 1.0.0
 	 * @param string $intent_id Stripe PaymentIntent ID.
 	 * @param string $status    Payment status.
 	 * @return bool True on success.
@@ -355,6 +371,7 @@ class Stripe_Webhook {
 	/**
 	 * Derive the overall submission status from a payment status string.
 	 *
+	 * @since 1.0.0
 	 * @param string $payment_status Payment status.
 	 * @return string Submission status.
 	 */
@@ -378,6 +395,7 @@ class Stripe_Webhook {
 	 * The signed payload string is: timestamp + "." + raw_body
 	 * Events older than 5 minutes are rejected to prevent replay attacks.
 	 *
+	 * @since 1.0.0
 	 * @param string $payload          Raw HTTP request body (before any parsing).
 	 * @param string $signature_header Full value of the Stripe-Signature header.
 	 * @param string $secret           Webhook signing secret (whsec_...).
@@ -425,6 +443,7 @@ class Stripe_Webhook {
 	/**
 	 * Check whether a Stripe event ID has already been processed.
 	 *
+	 * @since 1.0.0
 	 * @param string $event_id Stripe event ID (e.g. evt_xxx).
 	 * @return bool True if the event was previously handled successfully.
 	 */
@@ -439,6 +458,7 @@ class Stripe_Webhook {
 	 * Keeps a rolling window of MAX_PROCESSED_IDS entries. Oldest entries
 	 * are dropped when the cap is reached.
 	 *
+	 * @since 1.0.0
 	 * @param string $event_id Stripe event ID.
 	 */
 	private static function mark_event_processed( string $event_id ): void {
@@ -455,6 +475,7 @@ class Stripe_Webhook {
 	/**
 	 * Get the number of times an event has failed processing.
 	 *
+	 * @since 1.0.0
 	 * @param string $event_id Stripe event ID.
 	 * @return int Failure count.
 	 */
@@ -469,6 +490,7 @@ class Stripe_Webhook {
 	 * Increments the failure counter and stores event metadata for admin
 	 * review. Caps the failed events list at 200 entries.
 	 *
+	 * @since 1.0.0
 	 * @param string $event_id   Stripe event ID.
 	 * @param string $event_type Stripe event type.
 	 * @param array  $event      Full Stripe event payload.

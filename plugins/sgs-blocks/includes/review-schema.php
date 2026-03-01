@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Review Schema JSON-LD for SGS Testimonial blocks.
  *
@@ -6,6 +6,8 @@
  * has a reviewSource attribute set (externally sourced reviews only).
  *
  * @package SGS\Blocks
+ *
+ * @since 1.0.0
  */
 
 namespace SGS\Blocks;
@@ -20,6 +22,7 @@ add_filter( 'render_block_sgs/testimonial', __NAMESPACE__ . '\\add_review_schema
  * Only fires when reviewSource is set (non-empty string), ensuring
  * hand-written testimonials do not get self-serving review markup.
  *
+ * @since 1.0.0
  * @param string $block_content Rendered block HTML.
  * @param array  $block         Full block data including attrs.
  * @return string Block HTML with optional JSON-LD appended.
