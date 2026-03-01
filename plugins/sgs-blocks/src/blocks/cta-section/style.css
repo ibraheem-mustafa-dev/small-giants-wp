@@ -7,6 +7,8 @@
 	transition: background-color var(--wp--custom--transition--medium, 0.3s ease),
 		color var(--wp--custom--transition--medium, 0.3s ease),
 		border-color var(--wp--custom--transition--medium, 0.3s ease);
+	/* Container context: layout variants respond to container width */
+	container-type: inline-size;
 }
 
 .sgs-cta-section:not([style*="background"]) {
@@ -221,8 +223,13 @@
 }
 
 /* ===== Responsive ===== */
-
-@media (max-width: 767px) {
+/*
+ * Container query: split layout collapses to column when the CTA section
+ * is placed in a narrow container (e.g. a two-column page layout).
+ * Padding is also tightened — appropriate for any narrow context.
+ * Falls back to viewport width when no ancestor container-type exists.
+ */
+@container (max-width: 767px) {
 	.sgs-cta-section {
 		padding: var(--wp--preset--spacing--40) var(--wp--preset--spacing--30);
 	}

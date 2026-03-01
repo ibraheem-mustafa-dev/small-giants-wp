@@ -8,6 +8,8 @@
 	gap: var(--wp--preset--spacing--40);
 	padding: var(--wp--preset--spacing--40) var(--wp--preset--spacing--50);
 	text-align: center;
+	/* Container context: allows children to respond to trust-bar width */
+	container-type: inline-size;
 }
 
 .sgs-trust-bar:not([style*="background"]) {
@@ -47,8 +49,13 @@
 	color: var(--wp--preset--color--text-inverse, #C0D5D6);
 }
 
-/* ===== Responsive — 2x2 grid on mobile ===== */
-@media (max-width: 767px) {
+/* ===== Responsive — 2×2 wrap when container is narrow ===== */
+/*
+ * Container query: stat items wrap into a 2×2 grid when the trust bar
+ * itself is in a narrow container (sidebar, 2-col section).  Falls back
+ * to viewport width behaviour when no ancestor container-type is set.
+ */
+@container (max-width: 767px) {
 	.sgs-trust-bar {
 		gap: var(--wp--preset--spacing--30);
 		padding: var(--wp--preset--spacing--30);

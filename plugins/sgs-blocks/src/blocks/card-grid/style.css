@@ -7,6 +7,8 @@
 		1fr
 	);
 	gap: var(--sgs-card-grid-gap, var(--wp--preset--spacing--30));
+	/* Container context: children can @container-query this block's width */
+	container-type: inline-size;
 }
 
 /* Individual card/tile */
@@ -164,21 +166,30 @@ a.sgs-card-grid__item:focus-visible {
 }
 
 /* ===== Responsive ===== */
+/*
+ * Container queries let the grid respond to the width of its containing
+ * block (e.g. a WP Column, sidebar, or narrow section) rather than the
+ * viewport — so a 3-col grid in a 400px sidebar collapses correctly on
+ * a wide desktop screen. Browser support: Chrome 105+, Firefox 110+,
+ * Safari 16+ (~95%+ global). The @container falls back to the initial
+ * containing block (≈ viewport) when no ancestor container-type exists,
+ * giving the same result as the old @media rules for full-width layouts.
+ */
 
-@media (max-width: 767px) {
+/* H16/M22: use columnsTablet attribute instead of hardcoded 2 columns */
+@container (min-width: 768px) and (max-width: 1023px) {
 	.sgs-card-grid {
 		grid-template-columns: repeat(
-			var(--sgs-card-grid-columns-mobile, 1),
+			var(--sgs-card-grid-columns-tablet, 2),
 			1fr
 		);
 	}
 }
 
-/* H16/M22: use columnsTablet attribute instead of hardcoded 2 columns */
-@media (min-width: 768px) and (max-width: 1023px) {
+@container (max-width: 767px) {
 	.sgs-card-grid {
 		grid-template-columns: repeat(
-			var(--sgs-card-grid-columns-tablet, 2),
+			var(--sgs-card-grid-columns-mobile, 1),
 			1fr
 		);
 	}

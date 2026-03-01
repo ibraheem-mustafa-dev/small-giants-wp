@@ -7,6 +7,8 @@
 	gap: var(--wp--preset--spacing--30);
 	padding: var(--wp--preset--spacing--40) 0;
 	counter-reset: step-counter;
+	/* Container context: steps can stack when the block is in a narrow column */
+	container-type: inline-size;
 }
 
 /* Individual step */
@@ -122,9 +124,14 @@
 	color: var(--wp--preset--color--text-muted);
 }
 
-/* ===== Responsive — vertical on mobile ===== */
-
-@media (max-width: 767px) {
+/* ===== Responsive — vertical stack when container is narrow ===== */
+/*
+ * Container query: steps switch from horizontal row to vertical list when
+ * the block is placed in a narrow container (column, sidebar).  Without an
+ * ancestor container-type, evaluates against the initial containing block
+ * (~viewport), giving identical behaviour to the old @media rule.
+ */
+@container (max-width: 767px) {
 	.sgs-process-steps {
 		flex-direction: column;
 		align-items: flex-start;

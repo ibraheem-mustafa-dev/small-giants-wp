@@ -79,6 +79,22 @@
 	border-radius: var(--wp--custom--border-radius--pill);
 }
 
+/* ─── COLUMN CONTAINMENT — container query foundation ─── */
+
+/*
+ * Give every WP Column block a CSS containment scope so child blocks
+ * placed in narrow columns or sidebar layouts can use @container queries
+ * to respond to their actual available width rather than the viewport.
+ * This is the foundational context for the @container rules in the
+ * individual block stylesheets (card-grid, trust-bar, process-steps,
+ * cta-section).  Without an ancestor container-type, @container falls
+ * back to the initial containing block (≈ viewport), so existing layouts
+ * are unaffected — this purely enables the narrow-container improvement.
+ */
+.wp-block-column {
+	container-type: inline-size;
+}
+
 /* ─── SEPARATOR ─── */
 
 .wp-block-separator:not(.is-style-dots) {
