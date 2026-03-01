@@ -99,6 +99,7 @@
     "editorScript":  "file:./index.js",
     "editorStyle":  "file:./index.css",
     "style":  "file:./style-index.css",
+    "render":  "file:./render.php",
     "example":  {
                     "attributes":  {
                                        "quote":  "The quality and reliability of SGS has been outstanding. Next-day delivery keeps our kitchen running smoothly.",
