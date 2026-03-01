@@ -1,14 +1,12 @@
-﻿<?php
+<?php
 /**
  * Auto-generated Lucide icon map — DO NOT EDIT.
  * Generated from lucide-static (1917 icons).
- * Last generated: 2026-02-28T07:04:47.865Z
+ * Last generated: 2026-03-01T01:29:19.641Z
  *
  * Auto-generated — exempt from 300-line limit. See scripts/generate-icons.js.
  *
  * @package SGS\Blocks
- *
- * @since 1.0.0
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -18,12 +16,10 @@ defined( 'ABSPATH' ) || exit;
  *
  * Uses a static variable so the array is only built once per request.
  *
- * @since 1.0.0
- *
  * @param string $name Icon name (e.g. "clock", "shield-check").
  * @return string SVG markup or empty string if not found.
  */
-function sgs_get_lucide_icon( string $name ): string {
+function sgs_get_lucide_icon( $name ) {
 	static $icons = null;
 	if ( null === $icons ) {
 		$icons = array(

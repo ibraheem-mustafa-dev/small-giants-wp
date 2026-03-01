@@ -190,12 +190,40 @@ class Admin_Notes {
 								<td colspan="8"><?php esc_html_e( 'No notes found.', 'sgs-client-notes' ); ?></td>
 							</tr>
 						<?php else : ?>
+							<?php
+							// Pre-fetch reply counts in a single query to avoid N+1.
+							$note_ids      = array_column( $notes, 'id' );
+							$replies_table = $wpdb->prefix . 'sgs_client_note_replies';
+							$reply_counts  = array();
+							if ( ! empty( $note_ids ) ) {
+								$placeholders = implode( ',', array_fill( 0, count( $note_ids ), '%d' ) );
+								// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+								$rows = $wpdb->get_results( $wpdb->prepare(
+									"SELECT note_id, COUNT(*) AS cnt FROM {$replies_table} WHERE note_id IN ({$placeholders}) GROUP BY note_id",
+									...$note_ids
+								), ARRAY_A );
+								foreach ( $rows as $row ) {
+									$reply_counts[ $row['note_id'] ] = (int) $row['cnt'];
+								}
+							}
+
+							// Prime WP post cache in one query.
+							$post_ids = array_unique( array_column( $notes, 'post_id' ) );
+							if ( ! empty( $post_ids ) ) {
+								_prime_post_caches( $post_ids );
+							}
+
+							// Prime user cache in one query.
+							$user_ids = array_unique( array_column( $notes, 'user_id' ) );
+							if ( ! empty( $user_ids ) ) {
+								cache_users( $user_ids );
+							}
+							?>
 							<?php foreach ( $notes as $note ) : ?>
 								<?php
-								$post = get_post( $note['post_id'] );
-								$author = get_userdata( $note['user_id'] );
-								$replies_table = $wpdb->prefix . 'sgs_client_note_replies';
-								$reply_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$replies_table} WHERE note_id = %d", $note['id'] ) );
+								$post        = get_post( $note['post_id'] );
+								$author      = get_userdata( $note['user_id'] );
+								$reply_count = $reply_counts[ $note['id'] ] ?? 0;
 								?>
 								<tr>
 									<th scope="row" class="check-column">

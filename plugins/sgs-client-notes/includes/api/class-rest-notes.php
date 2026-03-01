@@ -232,19 +232,23 @@ class Rest_Notes extends \WP_REST_Controller {
 		$table = $wpdb->prefix . 'sgs_client_notes';
 		$note_id = $request->get_param( 'id' );
 
-		$data = array(
+		$data   = array(
 			'updated_at' => current_time( 'mysql' ),
 		);
+		$format = array( '%s' );
 
 		// Update status.
 		if ( $request->has_param( 'status' ) ) {
-			$status = sanitize_text_field( $request->get_param( 'status' ) );
+			$status         = sanitize_text_field( $request->get_param( 'status' ) );
 			$data['status'] = $status;
+			$format[]       = '%s';
 
 			// If resolving, set resolved_by and resolved_at.
 			if ( 'resolved' === $status ) {
 				$data['resolved_by'] = get_current_user_id();
 				$data['resolved_at'] = current_time( 'mysql' );
+				$format[]            = '%d';
+				$format[]            = '%s';
 			}
 		}
 
@@ -252,7 +256,7 @@ class Rest_Notes extends \WP_REST_Controller {
 			$table,
 			$data,
 			array( 'id' => $note_id ),
-			array( '%s', '%s', '%d', '%s' ),
+			$format,
 			array( '%d' )
 		);
 

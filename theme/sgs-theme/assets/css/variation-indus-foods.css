@@ -1,0 +1,234 @@
+/**
+ * Indus Foods style variation — extra CSS.
+ *
+ * Loaded conditionally when the Indus Foods variation is active.
+ * Decorative background images use CSS custom properties set inline
+ * by PHP so the asset URL resolves correctly on any installation.
+ *
+ * @package SGS\Theme
+ * @since   1.0.0
+ */
+
+/* ── Service card hover effects ─────────────────────────────────────────── */
+.service-card {
+	box-shadow: rgba(0, 0, 0, .5) 0 50px 50px -40px;
+	transition: box-shadow .3s ease, transform .3s ease;
+}
+.service-card:hover {
+	box-shadow: rgba(0, 0, 0, .75) 0 60px 60px -50px;
+	transform: translateY(-2px);
+}
+.service-card img {
+	transition: transform .3s ease;
+}
+.service-card:hover img {
+	transform: scale(1.05);
+}
+
+/* ── Decorative ingredient images (hidden on mobile) ────────────────────── */
+.home .wp-block-group.alignwide:has(.service-card) {
+	position: relative;
+	overflow: hidden;
+}
+.home .wp-block-group.alignwide:has(.service-card)::before {
+	content: '';
+	position: absolute;
+	top: -20px;
+	left: -30px;
+	width: 150px;
+	height: 150px;
+	background-image: var(--sgs-deco-turmeric);
+	background-size: contain;
+	background-repeat: no-repeat;
+	opacity: .2;
+	transform: rotate(-15deg);
+	pointer-events: none;
+	z-index: 0;
+}
+.home .wp-block-group.alignwide:has(.service-card)::after {
+	content: '';
+	position: absolute;
+	top: -30px;
+	right: -20px;
+	width: 140px;
+	height: 140px;
+	background-image: var(--sgs-deco-chilli);
+	background-size: contain;
+	background-repeat: no-repeat;
+	opacity: .18;
+	transform: rotate(25deg);
+	pointer-events: none;
+	z-index: 0;
+}
+
+.home .wp-block-group.alignfull.has-accent-background-color {
+	position: relative;
+	overflow: hidden;
+}
+.home .wp-block-group.alignfull.has-accent-background-color::before {
+	content: '';
+	position: absolute;
+	bottom: -25px;
+	left: -35px;
+	width: 160px;
+	height: 160px;
+	background-image: var(--sgs-deco-cumin);
+	background-size: contain;
+	background-repeat: no-repeat;
+	opacity: .22;
+	transform: rotate(12deg);
+	pointer-events: none;
+	z-index: 0;
+}
+.home .wp-block-group.alignfull.has-accent-background-color::after {
+	content: '';
+	position: absolute;
+	bottom: -40px;
+	right: -30px;
+	width: 170px;
+	height: 170px;
+	background-image: var(--sgs-deco-coriander);
+	background-size: contain;
+	background-repeat: no-repeat;
+	opacity: .2;
+	transform: rotate(-18deg);
+	pointer-events: none;
+	z-index: 0;
+}
+
+.home .wp-block-sgs-cta-section {
+	position: relative;
+	overflow: hidden;
+}
+.home .wp-block-sgs-cta-section::before {
+	content: '';
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%) rotate(-8deg);
+	width: 180px;
+	height: 180px;
+	background-image: var(--sgs-deco-curry);
+	background-size: contain;
+	background-repeat: no-repeat;
+	opacity: .15;
+	pointer-events: none;
+	z-index: 0;
+}
+
+.home .wp-block-group.alignwide:has(.service-card) > *,
+.home .wp-block-group.alignfull.has-accent-background-color > *,
+.home .wp-block-sgs-cta-section > * {
+	position: relative;
+	z-index: 1;
+}
+
+@media (max-width: 767px) {
+	.home .wp-block-group.alignwide:has(.service-card)::before,
+	.home .wp-block-group.alignwide:has(.service-card)::after,
+	.home .wp-block-group.alignfull.has-accent-background-color::before,
+	.home .wp-block-group.alignfull.has-accent-background-color::after,
+	.home .wp-block-sgs-cta-section::before {
+		display: none;
+	}
+}
+
+/* ── Top bar pill-shaped icon buttons ───────────────────────────────────── */
+.has-primary-background-color.wp-block-group a[href^='tel:'],
+.has-primary-background-color.wp-block-group a[href^='mailto:'] {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	background-color: rgba(255, 255, 255, .15);
+	border-radius: 9999px;
+	padding: 4px 12px;
+	transition: background-color .2s ease;
+	text-decoration: none;
+}
+.has-primary-background-color.wp-block-group a[href^='tel:']:hover,
+.has-primary-background-color.wp-block-group a[href^='mailto:']:hover {
+	background-color: rgba(255, 255, 255, .28);
+}
+
+/* ── Hero CTA buttons — vertical stack ──────────────────────────────────── */
+.sgs-hero__ctas {
+	flex-direction: column !important;
+	align-items: flex-start;
+}
+.sgs-hero--align-centre .sgs-hero__ctas {
+	align-items: center;
+}
+.sgs-hero__cta {
+	width: 100%;
+	max-width: 380px;
+	text-align: center;
+}
+
+/* ── Info-boxes on accent background — text contrast ────────────────────── */
+.has-accent-background-color .sgs-info-box--subtle .sgs-info-box__heading {
+	color: var(--wp--preset--color--text, #1e1e1e) !important;
+}
+.has-accent-background-color .sgs-info-box--subtle .sgs-info-box__description {
+	color: var(--wp--preset--color--text, #1e1e1e) !important;
+}
+
+/* ── Footer logo — mobile max-width cap ─────────────────────────────────── */
+@media (max-width: 767px) {
+	footer .wp-block-image img,
+	footer figure.wp-block-image img {
+		max-width: 140px !important;
+		height: auto !important;
+	}
+}
+
+/* ── Tablet nav — compress items ────────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023px) {
+	.wp-block-navigation .wp-block-navigation__container {
+		gap: .5rem;
+	}
+}
+
+/* ── Navigation mobile overlay z-index ──────────────────────────────────── */
+.wp-block-navigation__responsive-container.is-menu-open {
+	z-index: 9999;
+}
+
+/* ── Hover effects ──────────────────────────────────────────────────────── */
+
+/* H1: Primary hero CTA — full invert on hover */
+.sgs-hero .wp-block-buttons .wp-block-button .wp-block-button__link.has-primary-background-color:hover,
+.sgs-hero .wp-block-buttons .wp-block-button .wp-block-button__link.has-primary-background-color:focus {
+	background-color: var(--wp--preset--color--surface, #fff) !important;
+	color: var(--wp--preset--color--primary, #0a7ea8) !important;
+	border-color: var(--wp--preset--color--primary, #0a7ea8) !important;
+}
+
+/* H2: Secondary hero CTA — outline → filled teal */
+.sgs-hero .wp-block-buttons .wp-block-button .wp-block-button__link.is-style-outline:hover,
+.sgs-hero .wp-block-buttons .wp-block-button .wp-block-button__link.is-style-outline:focus,
+.sgs-hero .wp-block-buttons .wp-block-button.is-style-outline .wp-block-button__link:hover,
+.sgs-hero .wp-block-buttons .wp-block-button.is-style-outline .wp-block-button__link:focus {
+	background-color: var(--wp--preset--color--primary, #0a7ea8) !important;
+	color: var(--wp--preset--color--surface, #fff) !important;
+	border-color: var(--wp--preset--color--primary, #0a7ea8) !important;
+}
+
+/* H3: Top-level nav links — gold background on hover */
+.wp-block-navigation .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content:hover,
+.wp-block-navigation .wp-block-navigation__container > .wp-block-page-list__item > a:hover {
+	background-color: var(--wp--preset--color--accent, #d8ca50) !important;
+	color: var(--wp--preset--color--text, #1e1e1e) !important;
+	border-radius: 4px;
+}
+
+/* H6: CTA section buttons — full invert on hover */
+.sgs-cta-section .wp-block-button .wp-block-button__link.has-accent-background-color:hover,
+.sgs-cta-section .wp-block-button .wp-block-button__link.has-accent-background-color:focus {
+	background-color: var(--wp--preset--color--surface, #fff) !important;
+	color: var(--wp--preset--color--primary, #0a7ea8) !important;
+}
+.sgs-cta-section .wp-block-button .wp-block-button__link:not(.has-accent-background-color):hover,
+.sgs-cta-section .wp-block-button .wp-block-button__link:not(.has-accent-background-color):focus {
+	background-color: var(--wp--preset--color--accent, #d8ca50) !important;
+	color: var(--wp--preset--color--text, #1e1e1e) !important;
+}

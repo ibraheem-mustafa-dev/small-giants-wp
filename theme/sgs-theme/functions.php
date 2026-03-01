@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * SGS Theme — functions.php
  *
@@ -360,151 +360,27 @@ function enqueue_style_variation_extras(): void {
 	$variation = get_theme_mod( 'active_theme_style', '' );
 
 	if ( 'indus-foods' === $variation ) {
+		wp_enqueue_style(
+			'sgs-variation-indus-foods',
+			get_theme_file_uri( 'assets/css/variation-indus-foods.css' ),
+			array( 'sgs-utilities' ),
+			wp_get_theme()->get( 'Version' )
+		);
+
+		// Inject decorative image URLs as CSS custom properties (path-dependent).
 		$base = trailingslashit( get_theme_file_uri( 'assets/decorative-foods' ) );
-
-		$css = "
-/* Indus Foods — Service card hover effects */
-.service-card{box-shadow:rgba(0,0,0,.5) 0 50px 50px -40px;transition:box-shadow .3s ease,transform .3s ease}
-.service-card:hover{box-shadow:rgba(0,0,0,.75) 0 60px 60px -50px;transform:translateY(-2px)}
-.service-card img{transition:transform .3s ease}
-.service-card:hover img{transform:scale(1.05)}
-
-/* Indus Foods — Decorative ingredient images (hidden on mobile) */
-.home .wp-block-group.alignwide:has(.service-card){position:relative;overflow:hidden}
-.home .wp-block-group.alignwide:has(.service-card)::before{content:'';position:absolute;top:-20px;left:-30px;width:150px;height:150px;background-image:url('{$base}turmeric-pile.png');background-size:contain;background-repeat:no-repeat;opacity:.2;transform:rotate(-15deg);pointer-events:none;z-index:0}
-.home .wp-block-group.alignwide:has(.service-card)::after{content:'';position:absolute;top:-30px;right:-20px;width:140px;height:140px;background-image:url('{$base}chilli-scatter.png');background-size:contain;background-repeat:no-repeat;opacity:.18;transform:rotate(25deg);pointer-events:none;z-index:0}
-.home .wp-block-group.alignfull.has-accent-background-color{position:relative;overflow:hidden}
-.home .wp-block-group.alignfull.has-accent-background-color::before{content:'';position:absolute;bottom:-25px;left:-35px;width:160px;height:160px;background-image:url('{$base}cumin-seeds.png');background-size:contain;background-repeat:no-repeat;opacity:.22;transform:rotate(12deg);pointer-events:none;z-index:0}
-.home .wp-block-group.alignfull.has-accent-background-color::after{content:'';position:absolute;bottom:-40px;right:-30px;width:170px;height:170px;background-image:url('{$base}coriander-leaves.png');background-size:contain;background-repeat:no-repeat;opacity:.2;transform:rotate(-18deg);pointer-events:none;z-index:0}
-.home .wp-block-sgs-cta-section{position:relative;overflow:hidden}
-.home .wp-block-sgs-cta-section::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-8deg);width:180px;height:180px;background-image:url('{$base}curry-splash.png');background-size:contain;background-repeat:no-repeat;opacity:.15;pointer-events:none;z-index:0}
-.home .wp-block-group.alignwide:has(.service-card)>*,
-.home .wp-block-group.alignfull.has-accent-background-color>*,
-.home .wp-block-sgs-cta-section>*{position:relative;z-index:1}
-@media(max-width:767px){
-.home .wp-block-group.alignwide:has(.service-card)::before,
-.home .wp-block-group.alignwide:has(.service-card)::after,
-.home .wp-block-group.alignfull.has-accent-background-color::before,
-.home .wp-block-group.alignfull.has-accent-background-color::after,
-.home .wp-block-sgs-cta-section::before{display:none}}
-";
-
-		/*
-		 * Indus Foods — additional variation-specific CSS.
-		 * Sourced from the visual comparison audit (outstanding-issues.md § 10).
-		 * All values reference CSS custom properties from the Indus Foods style
-		 * variation so nothing is hardcoded against a specific hex value.
-		 */
-		$css .= "
-/* ── Issue 7: Top bar — pill-shaped icon buttons ────────────────────────────
- * Converts plain phone/email anchor links in the teal top bar into pill-shaped
- * pseudo-buttons matching the original Indus Foods design. Targets only
- * <a href='tel:'> and <a href='mailto:'> inside the primary-coloured top-bar
- * group, so no other links on the page are affected. */
-.has-primary-background-color.wp-block-group a[href^='tel:'],
-.has-primary-background-color.wp-block-group a[href^='mailto:'] {
-	display:inline-flex;align-items:center;gap:6px;
-	background-color:rgba(255,255,255,.15);
-	border-radius:9999px;padding:4px 12px;
-	transition:background-color .2s ease;text-decoration:none;
-}
-.has-primary-background-color.wp-block-group a[href^='tel:']:hover,
-.has-primary-background-color.wp-block-group a[href^='mailto:']:hover {
-	background-color:rgba(255,255,255,.28);
-}
-
-/* ── Issue 9 & 8: Hero CTA buttons — vertical stack ─────────────────────────
- * Indus Foods variation stacks CTA buttons vertically on all viewports
- * (matches original design). Base theme only stacks on mobile.
- * !important required to override base theme flex-wrap: wrap behaviour. */
-.sgs-hero__ctas{flex-direction:column!important;align-items:flex-start}
-.sgs-hero--align-centre .sgs-hero__ctas{align-items:center}
-.sgs-hero__cta{width:100%;max-width:380px;text-align:center}
-
-/* ── Issue 4: Why Choose info-boxes — text contrast on accent background ─────
- * When info-boxes use cardStyle 'subtle' (transparent) on the accent/yellow
- * section background, override text colours to ensure readable dark-on-yellow
- * contrast. The base info-box CSS uses --text-muted which is too light.
- * !important required to fix WCAG AA contrast failure (1.68:1 → 4.5:1+). */
-.has-accent-background-color .sgs-info-box--subtle .sgs-info-box__heading {
-	color:var(--wp--preset--color--text,#1e1e1e)!important;
-}
-.has-accent-background-color .sgs-info-box--subtle .sgs-info-box__description {
-	color:var(--wp--preset--color--text,#1e1e1e)!important;
-}
-
-/* ── Social icon brand colours covered by H21 in core-blocks.css ──────────── */
-
-/* ── Issue 16: Footer logo — mobile max-width cap ───────────────────────────
- * Prevents the footer logo taking up excessive vertical space on 375px screens
- * when flex columns stack.
- * !important required to override WordPress's inline width attribute
- * (style='width:200px') which has higher specificity than CSS. */
-@media(max-width:767px){
-	footer .wp-block-image img,footer figure.wp-block-image img{max-width:140px!important;height:auto!important}
-}
-
-/* ── Issue 1: Hamburger button display handled in core-blocks.css line 322 ── */
-
-/* ── Issue 6 (tablet nav): hide CTA and compress nav at 768–1023px ──────────
- * At tablet the CTA button already hides at ≤1023px (core-blocks.css).
- * This rule additionally limits nav-item gap so items don't wrap. */
-@media(min-width:768px) and (max-width:1023px){
-	.wp-block-navigation .wp-block-navigation__container{gap:.5rem}
-}
-
-/* ── Navigation mobile overlay z-index ───────────────────────────────────────
- * Ensures the full-screen overlay menu appears above all page content. */
-.wp-block-navigation__responsive-container.is-menu-open{z-index:9999}
-
-/* ── Issue 12: Hover effects ─────────────────────────────────────────────────
- * Indus Foods variation-specific hover states for buttons and navigation.
- * !important required to override WordPress button block inline colour styles
- * (background-color, color, border-color added by block editor colour picker).
- *
- * H1: Primary hero CTA — full invert on hover (teal bg → white bg, white text → teal text) */
-.sgs-hero .wp-block-buttons .wp-block-button .wp-block-button__link.has-primary-background-color:hover,
-.sgs-hero .wp-block-buttons .wp-block-button .wp-block-button__link.has-primary-background-color:focus{
-	background-color:var(--wp--preset--color--surface,#fff)!important;
-	color:var(--wp--preset--color--primary,#0a7ea8)!important;
-	border-color:var(--wp--preset--color--primary,#0a7ea8)!important;
-}
-/* H2: Secondary hero CTA — teal fill + white text on hover (outline → filled teal) */
-.sgs-hero .wp-block-buttons .wp-block-button .wp-block-button__link.is-style-outline:hover,
-.sgs-hero .wp-block-buttons .wp-block-button .wp-block-button__link.is-style-outline:focus,
-.sgs-hero .wp-block-buttons .wp-block-button.is-style-outline .wp-block-button__link:hover,
-.sgs-hero .wp-block-buttons .wp-block-button.is-style-outline .wp-block-button__link:focus{
-	background-color:var(--wp--preset--color--primary,#0a7ea8)!important;
-	color:var(--wp--preset--color--surface,#fff)!important;
-	border-color:var(--wp--preset--color--primary,#0a7ea8)!important;
-}
-/* H3: Top-level nav links — gold background on hover
- * Overrides base theme's accent hover (core-blocks.css line 55) with Indus
- * Foods gold + dark text for better contrast on teal header background. */
-.wp-block-navigation .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content:hover,
-.wp-block-navigation .wp-block-navigation__container > .wp-block-page-list__item > a:hover{
-	background-color:var(--wp--preset--color--accent,#d8ca50)!important;
-	color:var(--wp--preset--color--text,#1e1e1e)!important;
-	border-radius:4px;
-}
-/* H6: CTA section buttons — full invert on hover */
-.sgs-cta-section .wp-block-button .wp-block-button__link.has-accent-background-color:hover,
-.sgs-cta-section .wp-block-button .wp-block-button__link.has-accent-background-color:focus{
-	background-color:var(--wp--preset--color--surface,#fff)!important;
-	color:var(--wp--preset--color--primary,#0a7ea8)!important;
-}
-.sgs-cta-section .wp-block-button .wp-block-button__link:not(.has-accent-background-color):hover,
-.sgs-cta-section .wp-block-button .wp-block-button__link:not(.has-accent-background-color):focus{
-	background-color:var(--wp--preset--color--accent,#d8ca50)!important;
-	color:var(--wp--preset--color--text,#1e1e1e)!important;
-}
-";
-
-		wp_add_inline_style( 'sgs-utilities', $css );
+		$vars = sprintf(
+			':root{--sgs-deco-turmeric:url(%s);--sgs-deco-chilli:url(%s);--sgs-deco-cumin:url(%s);--sgs-deco-coriander:url(%s);--sgs-deco-curry:url(%s)}',
+			esc_url( $base . 'turmeric-pile.png' ),
+			esc_url( $base . 'chilli-scatter.png' ),
+			esc_url( $base . 'cumin-seeds.png' ),
+			esc_url( $base . 'coriander-leaves.png' ),
+			esc_url( $base . 'curry-splash.png' )
+		);
+		wp_add_inline_style( 'sgs-variation-indus-foods', $vars );
 	}
 }
 add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\enqueue_style_variation_extras' );
-
 /**
  * Propagate header variant classes from inner group to <header> template part.
  *
