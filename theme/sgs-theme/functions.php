@@ -511,6 +511,46 @@ function specific_submenu_aria_labels( string $block_content, array $block ): st
 add_filter( 'render_block', __NAMESPACE__ . '\specific_submenu_aria_labels', 10, 2 );
 
 /**
+ * Output Speculation Rules for prefetching same-origin page navigations.
+ *
+ * Uses the native Speculation Rules API (Chrome 109+) to hint the browser
+ * to prefetch same-origin pages when nav links are hovered or come into view.
+ * Non-supporting browsers safely ignore the unrecognised script type.
+ *
+ * eagerness: "moderate" — prefetch when link is hovered or visible in viewport.
+ * WP admin, login, cart, and checkout paths are explicitly excluded.
+ *
+ * @since 1.0.0
+ */
+function output_speculation_rules(): void {
+	if ( is_admin() ) {
+		return;
+	}
+	?>
+	<script type="speculationrules">
+	{
+		"prefetch": [
+			{
+				"where": {
+					"and": [
+						{ "href_matches": "/*" },
+						{ "not": { "href_matches": "/wp-admin/*" } },
+						{ "not": { "href_matches": "/wp-login.php" } },
+						{ "not": { "href_matches": "/cart/*" } },
+						{ "not": { "href_matches": "/checkout/*" } },
+						{ "not": { "href_matches": "/*.php" } }
+					]
+				},
+				"eagerness": "moderate"
+			}
+		]
+	}
+	</script>
+	<?php
+}
+add_action( 'wp_footer', __NAMESPACE__ . '\output_speculation_rules', 20 );
+
+/**
  * Fix WP 6.9 .has-text-color override.
  *
  * WordPress global styles apply .has-text-color { color: var(--text) !important }
