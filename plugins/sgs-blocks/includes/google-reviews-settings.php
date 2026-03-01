@@ -92,15 +92,24 @@ class Google_Reviews_Settings {
 	/**
 	 * Sanitise settings before saving.
 	 *
+	 * If the API key field contains the masked placeholder (dots), the existing
+	 * encrypted value is preserved rather than overwriting it with the mask string.
+	 * This matches the same guard used in stripe-settings.php.
+	 *
 	 * @param array $input Raw input data.
 	 * @return array Sanitised data.
 	 */
 	public static function sanitize_settings( array $input ): array {
 		$sanitized = [];
+		$current   = get_option( self::OPTION_KEY, [] );
 
-		// Encrypt API key using WordPress salt (same pattern as sgs-booking).
-		if ( ! empty( $input['api_key'] ) ) {
-			$sanitized['api_key'] = self::encrypt( $input['api_key'] );
+		// Only re-encrypt when a real (non-masked) key was submitted.
+		$submitted_key = $input['api_key'] ?? '';
+		if ( ! empty( $submitted_key ) && ! str_starts_with( $submitted_key, '••••' ) ) {
+			$sanitized['api_key'] = self::encrypt( sanitize_text_field( $submitted_key ) );
+		} else {
+			// Preserve whatever is already stored (may be empty string on first save).
+			$sanitized['api_key'] = $current['api_key'] ?? '';
 		}
 
 		$sanitized['place_id']  = sanitize_text_field( $input['place_id'] ?? '' );
@@ -110,30 +119,75 @@ class Google_Reviews_Settings {
 	}
 
 	/**
-	 * Encrypt API key using AES-256-CBC.
+	 * Encrypt a string using AES-256-GCM (authenticated encryption).
 	 *
-	 * @param string $data Data to encrypt.
-	 * @return string Encrypted data (base64-encoded).
+	 * Layout: base64( 12-byte IV | 16-byte GCM tag | ciphertext )
+	 *
+	 * Uses the same pattern as stripe-settings.php so both files stay consistent.
+	 *
+	 * @param string $value Plaintext value.
+	 * @return string Base64-encoded ciphertext, or empty string on failure.
 	 */
-	private static function encrypt( string $data ): string {
-		$key       = hash( 'sha256', wp_salt( 'auth' ), true );
-		$iv        = openssl_random_pseudo_bytes( 16 );
-		$encrypted = openssl_encrypt( $data, 'AES-256-CBC', $key, 0, $iv );
-		return base64_encode( $iv . $encrypted );
+	private static function encrypt( string $value ): string {
+		if ( ! function_exists( 'openssl_encrypt' ) ) {
+			return '';
+		}
+
+		$key    = substr( hash( 'sha256', AUTH_KEY . SECURE_AUTH_KEY ), 0, 32 );
+		$iv     = random_bytes( 12 ); // GCM uses a 12-byte IV.
+		$tag    = '';
+		$cipher = openssl_encrypt( $value, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag );
+
+		if ( false === $cipher ) {
+			return '';
+		}
+
+		return base64_encode( $iv . $tag . $cipher );
 	}
 
 	/**
-	 * Decrypt API key.
+	 * Decrypt a value produced by encrypt().
 	 *
-	 * @param string $data Encrypted data (base64-encoded).
-	 * @return string Decrypted data.
+	 * Attempts GCM first (new format). Falls back to the legacy AES-256-CBC
+	 * format so that keys stored before the upgrade are not lost.
+	 *
+	 * @param string $data Base64-encoded ciphertext.
+	 * @return string Decrypted plaintext, or empty string on failure.
 	 */
 	public static function decrypt( string $data ): string {
-		$key       = hash( 'sha256', wp_salt( 'auth' ), true );
-		$decoded   = base64_decode( $data );
-		$iv        = substr( $decoded, 0, 16 );
-		$encrypted = substr( $decoded, 16 );
-		return openssl_decrypt( $encrypted, 'AES-256-CBC', $key, 0, $iv );
+		if ( ! function_exists( 'openssl_decrypt' ) || empty( $data ) ) {
+			return '';
+		}
+
+		$raw = base64_decode( $data );
+
+		// --- Try AES-256-GCM (new format: 12-byte IV + 16-byte tag + ciphertext) ---
+		if ( strlen( $raw ) > 28 ) {
+			$key        = substr( hash( 'sha256', AUTH_KEY . SECURE_AUTH_KEY ), 0, 32 );
+			$iv         = substr( $raw, 0, 12 );
+			$tag        = substr( $raw, 12, 16 );
+			$ciphertext = substr( $raw, 28 );
+			$decrypted  = openssl_decrypt( $ciphertext, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag );
+
+			if ( false !== $decrypted ) {
+				return $decrypted;
+			}
+		}
+
+		// --- Fall back to legacy AES-256-CBC (16-byte IV + ciphertext) ---
+		// Keys encrypted before the GCM upgrade are transparently migrated on next save.
+		if ( strlen( $raw ) > 16 ) {
+			$legacy_key = hash( 'sha256', wp_salt( 'auth' ), true );
+			$iv         = substr( $raw, 0, 16 );
+			$ciphertext = substr( $raw, 16 );
+			$decrypted  = openssl_decrypt( $ciphertext, 'AES-256-CBC', $legacy_key, 0, $iv );
+
+			if ( false !== $decrypted ) {
+				return $decrypted;
+			}
+		}
+
+		return '';
 	}
 
 	/**
