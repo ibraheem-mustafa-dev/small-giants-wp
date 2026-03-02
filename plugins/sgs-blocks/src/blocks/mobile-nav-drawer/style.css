@@ -10,18 +10,20 @@
 /* ─── Backdrop ─── */
 
 .sgs-mobile-nav-drawer__backdrop {
-	display: none;
 	position: fixed;
 	inset: 0;
 	z-index: 998;
 	background: rgb(0 0 0 / 50%);
 	opacity: 0;
-	transition: opacity 0.3s ease;
+	visibility: hidden;
+	pointer-events: none;
+	transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 .sgs-mobile-nav-drawer__backdrop.is-active {
-	display: block;
 	opacity: 1;
+	visibility: visible;
+	pointer-events: auto;
 }
 
 /* ─── Shared drawer base ─── */
@@ -133,6 +135,16 @@
 	justify-content: center;
 	text-align: center;
 	font-size: 1.25em;
+}
+
+/* ─── Reduced motion ─── */
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-mobile-nav-drawer,
+	.sgs-mobile-nav-drawer__backdrop {
+		transition: none !important;
+		animation: none !important;
+	}
 }
 
 /* ─── Editor preview ─── */

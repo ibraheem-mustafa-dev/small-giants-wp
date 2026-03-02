@@ -3,3 +3,5 @@ build/
 vendor/
 .phpunit.cache/
 coverage/
+.env
+tests/playwright/.env

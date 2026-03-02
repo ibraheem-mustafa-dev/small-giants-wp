@@ -17,6 +17,6 @@ $label  = $attributes['label'] ?? __( 'Skip to content', 'sgs-blocks' );
 
 printf(
 	'<a class="skip-link" href="%s">%s</a>',
-	esc_attr( $target ),
+	esc_url( $target ),
 	esc_html( $label )
 );

@@ -158,7 +158,7 @@ export default function IconPicker( { value, onChange, label } ) {
 				) ) }
 			</div>
 
-			{ filtered.length === MAX_VISIBLE && (
+			{ filtered.length >= MAX_VISIBLE && (
 				<p style={ { fontSize: '12px', color: '#757575', marginTop: '4px' } }>
 					{ __( 'Showing first 120 results. Type to narrow down.', 'sgs-blocks' ) }
 				</p>

@@ -3,8 +3,8 @@ import { test, expect } from '@playwright/test';
 const SITE = 'https://lightsalmon-tarsier-683012.hostingersite.com';
 const REST = `${SITE}/wp-json`;
 
-// Auth header for WP REST API
-const AUTH = 'Basic ' + Buffer.from('Ibraheem:EmWXce4CtQbMJsoOrByvP22q').toString('base64');
+// Auth header for WP REST API — use env var, never hardcode credentials
+const AUTH = 'Basic ' + Buffer.from(process.env.WP_TEST_AUTH || 'test:test').toString('base64');
 
 // ── 1. Plugin & Theme Active ──────────────────────────────────────
 
