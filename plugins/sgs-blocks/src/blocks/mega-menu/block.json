@@ -60,7 +60,11 @@
                                                           "flyout",
                                                           "card-grid",
                                                           "tabbed",
-                                                          "featured"
+                                                          "featured",
+                                                          "icon-list",
+                                                          "side-tabs",
+                                                          "promo-slot",
+                                                          "search-in-menu"
                                                       ]
                                          },
                        "panelWidth":  {
@@ -126,7 +130,51 @@
                        "featuredCtaUrl":  {
                                               "type":  "string",
                                               "default":  ""
-                                          }
+                                          },
+                       "promoTitle":  {
+                                          "type":  "string",
+                                          "default":  ""
+                                      },
+                       "promoSubtitle":  {
+                                             "type":  "string",
+                                             "default":  ""
+                                         },
+                       "promoCta":  {
+                                        "type":  "string",
+                                        "default":  "Learn more"
+                                    },
+                       "promoCtaUrl":  {
+                                           "type":  "string",
+                                           "default":  ""
+                                       },
+                       "promoImage":  {
+                                          "type":  "object",
+                                          "default":  {}
+                                      },
+                       "promoBadge":  {
+                                          "type":  "string",
+                                          "default":  ""
+                                      },
+                       "promoBackground":  {
+                                               "type":  "string",
+                                               "default":  "primary"
+                                           },
+                       "promoPosition":  {
+                                             "type":  "string",
+                                             "default":  "side",
+                                             "enum":  [
+                                                          "side",
+                                                          "bottom"
+                                                      ]
+                                         },
+                       "searchPlaceholder":  {
+                                                 "type":  "string",
+                                                 "default":  "Search\u2026"
+                                             },
+                       "searchLabel":  {
+                                           "type":  "string",
+                                           "default":  "Search menu"
+                                       }
                    },
     "render":  "file:./render.php",
     "editorScript":  "file:./index.js",

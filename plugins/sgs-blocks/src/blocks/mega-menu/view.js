@@ -86,6 +86,15 @@ const { state } = store( 'sgs/mega-menu', {
 				}
 			}
 
+			// Reset search input when closing a search-in-menu panel.
+			if ( ! ctx.isOpen ) {
+				const searchInput = ref.querySelector( '.sgs-mega-menu__search-input' );
+				if ( searchInput && searchInput.value ) {
+					searchInput.value = '';
+					searchInput.dispatchEvent( new Event( 'input', { bubbles: true } ) );
+				}
+			}
+
 			// Focus first focusable element in panel when opening.
 			if ( ctx.isOpen ) {
 				const panel = ref.querySelector( '.sgs-mega-menu__panel' );
@@ -268,11 +277,11 @@ const { state } = store( 'sgs/mega-menu', {
 		// ── Tabbed layout ─────────────────────────────────────────────────
 
 		/**
-		 * Switch the active tab in a tabbed-layout panel.
+		 * Switch the active tab in a tabbed or side-tabs layout panel.
 		 *
-		 * Expects the panel to contain:
-		 *   .sgs-mega-menu__tab-list > .sgs-mega-menu__tab (buttons)
-		 *   .sgs-mega-menu__tab-content > .sgs-mega-menu__tab-panel (divs)
+		 * Works for both horizontal (.sgs-mega-menu__tab) and vertical
+		 * (.sgs-mega-menu__side-tab) tab buttons. The clicked tab's nearest
+		 * [role="tablist"] container is used to scope the tab set.
 		 *
 		 * The Interactivity API directive is placed on each tab button:
 		 *   data-wp-on--click="actions.switchTab"
@@ -282,17 +291,24 @@ const { state } = store( 'sgs/mega-menu', {
 		switchTab( event ) {
 			const { ref } = getElement();
 
-			const clickedTab = event.target.closest( '.sgs-mega-menu__tab' );
+			const clickedTab = event.target.closest(
+				'.sgs-mega-menu__tab, .sgs-mega-menu__side-tab'
+			);
 			if ( ! clickedTab ) {
 				return;
 			}
 
-			const tabList = ref.querySelector( '.sgs-mega-menu__tab-list' );
+			// Scope to the nearest tablist so nested lists don't collide.
+			const tabList = clickedTab.closest( '[role="tablist"]' );
 			if ( ! tabList ) {
 				return;
 			}
 
-			const tabs     = Array.from( tabList.querySelectorAll( '.sgs-mega-menu__tab' ) );
+			const tabs = Array.from(
+				tabList.querySelectorAll(
+					'.sgs-mega-menu__tab, .sgs-mega-menu__side-tab'
+				)
+			);
 			const tabIndex = tabs.indexOf( clickedTab );
 
 			// Update ARIA attributes and active class on each tab.
@@ -304,6 +320,7 @@ const { state } = store( 'sgs/mega-menu', {
 			} );
 
 			// Show the matching panel; hide all others.
+			// Both tabbed and side-tabs share the .sgs-mega-menu__tab-panel class.
 			const tabPanels = Array.from(
 				ref.querySelectorAll( '.sgs-mega-menu__tab-panel' )
 			);
@@ -313,7 +330,7 @@ const { state } = store( 'sgs/mega-menu', {
 		},
 
 		/**
-		 * Handle ArrowLeft / ArrowRight keyboard navigation within a tab list.
+		 * Handle ArrowLeft / ArrowRight keyboard navigation in a horizontal tab list.
 		 *
 		 * Placed on the tab-list container:
 		 *   data-wp-on--keydown="actions.handleTabListKeydown"
@@ -347,6 +364,109 @@ const { state } = store( 'sgs/mega-menu', {
 			// Trigger tab switch and move focus to the newly active tab.
 			tabs[ nextIndex ]?.dispatchEvent( new MouseEvent( 'click', { bubbles: true } ) );
 			tabs[ nextIndex ]?.focus();
+		},
+
+		/**
+		 * Handle ArrowUp / ArrowDown keyboard navigation in a vertical side-tab list.
+		 *
+		 * Placed on the side-tab-list container:
+		 *   data-wp-on--keydown="actions.handleSideTabListKeydown"
+		 *
+		 * @param {KeyboardEvent} event
+		 */
+		handleSideTabListKeydown( event ) {
+			const key = event.key;
+			// On mobile, the list is horizontal — fall back to L/R arrows.
+			const isMobile = isMobileViewport();
+			const vertical = ! isMobile;
+
+			if ( vertical && key !== 'ArrowUp' && key !== 'ArrowDown' ) {
+				return;
+			}
+			if ( ! vertical && key !== 'ArrowLeft' && key !== 'ArrowRight' ) {
+				return;
+			}
+
+			event.preventDefault();
+
+			const { ref } = getElement();
+			const tabList = ref.querySelector( '.sgs-mega-menu__side-tab-list' );
+			if ( ! tabList ) {
+				return;
+			}
+
+			const tabs = Array.from(
+				tabList.querySelectorAll( '.sgs-mega-menu__side-tab' )
+			);
+			const activeTab    = tabs.find(
+				( t ) => t.getAttribute( 'aria-selected' ) === 'true'
+			);
+			const currentIndex = activeTab ? tabs.indexOf( activeTab ) : 0;
+			const isPrev       = key === 'ArrowUp' || key === 'ArrowLeft';
+
+			const nextIndex = isPrev
+				? ( currentIndex === 0 ? tabs.length - 1 : currentIndex - 1 )
+				: ( currentIndex === tabs.length - 1 ? 0 : currentIndex + 1 );
+
+			tabs[ nextIndex ]?.dispatchEvent( new MouseEvent( 'click', { bubbles: true } ) );
+			tabs[ nextIndex ]?.focus();
+		},
+
+		// ── Search-in-menu ────────────────────────────────────────────────
+
+		/**
+		 * Live-filter menu items as the user types in the search input.
+		 *
+		 * Targets every anchor (<a>) within .sgs-mega-menu__search-content
+		 * and hides the item's nearest container (li / icon-item / nav-item)
+		 * when the link text does not match the query.
+		 *
+		 * Placed on the search input:
+		 *   data-wp-on--input="actions.filterSearch"
+		 *
+		 * @param {InputEvent} event
+		 */
+		filterSearch( event ) {
+			const query   = event.target.value.toLowerCase().trim();
+			const menuWrap = event.target.closest( '.sgs-mega-menu' );
+			const panel    = menuWrap?.querySelector( '.sgs-mega-menu__panel' );
+			const content  = panel?.querySelector( '.sgs-mega-menu__search-content' );
+
+			if ( ! content ) {
+				return;
+			}
+
+			const links   = Array.from( content.querySelectorAll( 'a' ) );
+			let visible   = 0;
+
+			links.forEach( ( link ) => {
+				// Use plain text so HTML entities don't interfere.
+				const text    = link.textContent.toLowerCase();
+				const matches = ! query || text.includes( query );
+
+				// Hide/show the outermost meaningful container.
+				const container =
+					link.closest( '.sgs-mega-menu-icon-item' ) ||
+					link.closest( '.sgs-mega-menu-nav-item' )  ||
+					link.closest( 'li' )                       ||
+					link;
+
+				container.classList.toggle(
+					'sgs-mega-menu__search-item--hidden',
+					! matches
+				);
+
+				if ( matches ) {
+					visible++;
+				}
+			} );
+
+			// Show "no results" when active query returns nothing.
+			const emptyMsg = panel.querySelector( '.sgs-mega-menu__search-empty' );
+			if ( emptyMsg ) {
+				emptyMsg.style.display =
+					( ! query || visible > 0 ) ? 'none' : 'block';
+			}
 		},
 
 		// ── Keyboard — panel ─────────────────────────────────────────────

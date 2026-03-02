@@ -59,6 +59,22 @@ const LAYOUT_VARIANT_OPTIONS = [
 		label: __( 'Featured — hero image with nav links', 'sgs-blocks' ),
 		value: 'featured',
 	},
+	{
+		label: __( 'Icon List — icon + title + description grid', 'sgs-blocks' ),
+		value: 'icon-list',
+	},
+	{
+		label: __( 'Side Tabs — vertical category list + content', 'sgs-blocks' ),
+		value: 'side-tabs',
+	},
+	{
+		label: __( 'Promo Slot — content + promotional panel', 'sgs-blocks' ),
+		value: 'promo-slot',
+	},
+	{
+		label: __( 'Search in Menu — live-filtering search bar', 'sgs-blocks' ),
+		value: 'search-in-menu',
+	},
 ];
 
 // ─── Panel alignment options (not shown for flyout) ────────────────────────
@@ -108,6 +124,16 @@ export default function Edit( { attributes, setAttributes } ) {
 		featuredTitle,
 		featuredCta,
 		featuredCtaUrl,
+		promoTitle,
+		promoSubtitle,
+		promoCta,
+		promoCtaUrl,
+		promoImage,
+		promoBadge,
+		promoBackground,
+		promoPosition,
+		searchPlaceholder,
+		searchLabel,
 	} = attributes;
 
 	// Fetch available template parts with area='mega-menu' from the API.
@@ -134,8 +160,10 @@ export default function Edit( { attributes, setAttributes } ) {
 	const iconElement =
 		icon === 'chevron-down' ? chevronDown : chevronRight;
 
-	const isFlyout   = layoutVariant === 'flyout';
-	const isFeatured = layoutVariant === 'featured';
+	const isFlyout      = layoutVariant === 'flyout';
+	const isFeatured    = layoutVariant === 'featured';
+	const isPromoSlot   = layoutVariant === 'promo-slot';
+	const isSearchMenu  = layoutVariant === 'search-in-menu';
 
 	return (
 		<>
@@ -334,6 +362,155 @@ export default function Edit( { attributes, setAttributes } ) {
 								setAttributes( { featuredCtaUrl: val } )
 							}
 							type="url"
+							__nextHasNoMarginBottom
+						/>
+					</PanelBody>
+				) }
+
+				{/* ── Promo Slot ────────────────────────────────────── */}
+				{ isPromoSlot && (
+					<PanelBody
+						title={ __( 'Promo Slot', 'sgs-blocks' ) }
+						initialOpen={ true }
+					>
+						<SelectControl
+							label={ __( 'Promo position', 'sgs-blocks' ) }
+							value={ promoPosition }
+							options={ [
+								{ label: __( 'Side (right column)', 'sgs-blocks' ), value: 'side' },
+								{ label: __( 'Bottom (full-width strip)', 'sgs-blocks' ), value: 'bottom' },
+							] }
+							onChange={ ( val ) =>
+								setAttributes( { promoPosition: val } )
+							}
+							__nextHasNoMarginBottom
+						/>
+						<DesignTokenPicker
+							label={ __( 'Background colour', 'sgs-blocks' ) }
+							value={ promoBackground }
+							onChange={ ( val ) =>
+								setAttributes( { promoBackground: val } )
+							}
+						/>
+						<TextControl
+							label={ __( 'Badge text', 'sgs-blocks' ) }
+							value={ promoBadge || '' }
+							onChange={ ( val ) =>
+								setAttributes( { promoBadge: val } )
+							}
+							help={ __( 'Small label above the title e.g. "New arrival"', 'sgs-blocks' ) }
+							__nextHasNoMarginBottom
+						/>
+						<TextControl
+							label={ __( 'Title', 'sgs-blocks' ) }
+							value={ promoTitle || '' }
+							onChange={ ( val ) =>
+								setAttributes( { promoTitle: val } )
+							}
+							__nextHasNoMarginBottom
+						/>
+						<TextControl
+							label={ __( 'Subtitle', 'sgs-blocks' ) }
+							value={ promoSubtitle || '' }
+							onChange={ ( val ) =>
+								setAttributes( { promoSubtitle: val } )
+							}
+							__nextHasNoMarginBottom
+						/>
+						<TextControl
+							label={ __( 'CTA button text', 'sgs-blocks' ) }
+							value={ promoCta || '' }
+							onChange={ ( val ) =>
+								setAttributes( { promoCta: val } )
+							}
+							__nextHasNoMarginBottom
+						/>
+						<TextControl
+							label={ __( 'CTA button URL', 'sgs-blocks' ) }
+							value={ promoCtaUrl || '' }
+							onChange={ ( val ) =>
+								setAttributes( { promoCtaUrl: val } )
+							}
+							type="url"
+							__nextHasNoMarginBottom
+						/>
+						<MediaUploadCheck>
+							<MediaUpload
+								onSelect={ ( media ) =>
+									setAttributes( {
+										promoImage: {
+											id:  media.id,
+											url: media.url,
+											alt: media.alt || '',
+										},
+									} )
+								}
+								allowedTypes={ [ 'image' ] }
+								value={ promoImage?.id }
+								render={ ( { open } ) => (
+									<Button
+										onClick={ open }
+										variant="secondary"
+									>
+										{ promoImage?.url
+											? __( 'Replace background image', 'sgs-blocks' )
+											: __( 'Add background image (optional)', 'sgs-blocks' ) }
+									</Button>
+								) }
+							/>
+						</MediaUploadCheck>
+						{ promoImage?.url && (
+							<>
+								<img
+									src={ promoImage.url }
+									alt={ promoImage.alt }
+									style={ {
+										width:        '100%',
+										aspectRatio:  '16/5',
+										objectFit:    'cover',
+										borderRadius: '4px',
+										margin:       '0.5rem 0',
+										display:      'block',
+										opacity:      0.7,
+									} }
+								/>
+								<Button
+									variant="tertiary"
+									isDestructive
+									onClick={ () =>
+										setAttributes( { promoImage: {} } )
+									}
+									style={ { marginBottom: '0.5rem' } }
+								>
+									{ __( 'Remove image', 'sgs-blocks' ) }
+								</Button>
+							</>
+						) }
+					</PanelBody>
+				) }
+
+				{/* ── Search in Menu ─────────────────────────────────── */}
+				{ isSearchMenu && (
+					<PanelBody
+						title={ __( 'Search Settings', 'sgs-blocks' ) }
+						initialOpen={ true }
+					>
+						<TextControl
+							label={ __( 'Input placeholder text', 'sgs-blocks' ) }
+							value={ searchPlaceholder || '' }
+							onChange={ ( val ) =>
+								setAttributes( { searchPlaceholder: val } )
+							}
+							help={ __( 'Hint text shown inside the empty search box.', 'sgs-blocks' ) }
+							__nextHasNoMarginBottom
+						/>
+						<TextControl
+							label={ __( 'Screen reader label', 'sgs-blocks' ) }
+							value={ searchLabel || '' }
+							onChange={ ( val ) =>
+								setAttributes( { searchLabel: val } )
+							}
+							help={ __( 'Accessible label for the search input (hidden visually).', 'sgs-blocks' ) }
 							__nextHasNoMarginBottom
 						/>
 					</PanelBody>

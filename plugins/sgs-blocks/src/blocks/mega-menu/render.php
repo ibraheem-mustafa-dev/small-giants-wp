@@ -78,16 +78,45 @@ $featured_title   = $attributes['featuredTitle']  ?? '';
 $featured_cta     = $attributes['featuredCta']    ?? '';
 $featured_cta_url = $attributes['featuredCtaUrl'] ?? '';
 
+// Promo-slot layout attributes (variant 9).
+$promo_title      = $attributes['promoTitle']      ?? '';
+$promo_subtitle   = $attributes['promoSubtitle']   ?? '';
+$promo_cta        = $attributes['promoCta']        ?? 'Learn more';
+$promo_cta_url    = $attributes['promoCtaUrl']     ?? '';
+$promo_image      = $attributes['promoImage']      ?? array();
+$promo_badge      = $attributes['promoBadge']      ?? '';
+$promo_background = $attributes['promoBackground'] ?? 'primary';
+$promo_position   = $attributes['promoPosition']   ?? 'side';
+
+// Search-in-menu layout attributes (variant 10).
+$search_placeholder = $attributes['searchPlaceholder'] ?? __( 'Search\u2026', 'sgs-blocks' );
+$search_label       = $attributes['searchLabel']       ?? __( 'Search menu', 'sgs-blocks' );
+
 // Whitelist allowed values to prevent arbitrary class injection.
-$allowed_variants   = array( 'full-width', 'contained', 'columns', 'flyout', 'card-grid', 'tabbed', 'featured' );
+$allowed_variants   = array(
+	'full-width',
+	'contained',
+	'columns',
+	'flyout',
+	'card-grid',
+	'tabbed',
+	'featured',
+	'icon-list',
+	'side-tabs',
+	'promo-slot',
+	'search-in-menu',
+);
 $allowed_animations = array( 'fade', 'slide-down', 'scale' );
 $allowed_alignments = array( 'left', 'centre', 'right' );
 $allowed_open_on    = array( 'hover', 'click' );
 
-$layout_variant  = in_array( $layout_variant,   $allowed_variants,   true ) ? $layout_variant  : 'full-width';
-$open_animation  = in_array( $open_animation,   $allowed_animations, true ) ? $open_animation  : 'fade';
-$panel_alignment = in_array( $panel_alignment,  $allowed_alignments, true ) ? $panel_alignment : 'left';
-$open_on         = in_array( $open_on,          $allowed_open_on,    true ) ? $open_on         : 'hover';
+$allowed_promo_positions = array( 'side', 'bottom' );
+
+$layout_variant  = in_array( $layout_variant,   $allowed_variants,        true ) ? $layout_variant  : 'full-width';
+$open_animation  = in_array( $open_animation,   $allowed_animations,      true ) ? $open_animation  : 'fade';
+$panel_alignment = in_array( $panel_alignment,  $allowed_alignments,      true ) ? $panel_alignment : 'left';
+$open_on         = in_array( $open_on,          $allowed_open_on,         true ) ? $open_on         : 'hover';
+$promo_position  = in_array( $promo_position,   $allowed_promo_positions, true ) ? $promo_position  : 'side';
 
 // ── Unique IDs ────────────────────────────────────────────────────────────
 
@@ -108,6 +137,11 @@ $classes = array(
 
 if ( $highlight ) {
 	$classes[] = 'sgs-mega-menu--highlight';
+}
+
+// Promo-slot position modifier.
+if ( 'promo-slot' === $layout_variant ) {
+	$classes[] = 'sgs-mega-menu--promo-' . esc_attr( $promo_position );
 }
 
 // Legacy panel-width class kept for backward compatibility.
@@ -214,12 +248,19 @@ if ( $menu_template_part ) {
 	);
 }
 
-if ( 'tabbed' === $layout_variant && $template_part && ! empty( $template_part->content ) ) {
-	// ── Tabbed variant: parse top-level blocks into individual tab panels.
+if (
+	in_array( $layout_variant, array( 'tabbed', 'side-tabs' ), true )
+	&& $template_part
+	&& ! empty( $template_part->content )
+) {
+	// ── Tabbed / Side-tabs variants: parse top-level blocks into tab items.
 	//
 	// Each non-empty top-level block becomes one tab. The first heading found
 	// within the block (recursively) is used as the tab label; if none is
 	// found a generic "Tab N" label is used.
+	//
+	// Tabbed:    horizontal tab bar across the top, content panels below.
+	// Side-tabs: vertical tab list on the left, content fills the right.
 	//
 	// Template-part authors should use separate wp:group blocks per tab,
 	// each starting with a wp:heading that names the tab.
@@ -236,7 +277,10 @@ if ( 'tabbed' === $layout_variant && $template_part && ! empty( $template_part->
 		$tab_label = sgs_mm_extract_heading( $raw_block );
 		if ( ! $tab_label ) {
 			/* translators: %d: tab position number */
-			$tab_label = sprintf( _x( 'Tab %d', 'mega menu tab label fallback', 'sgs-blocks' ), count( $tab_items ) + 1 );
+			$tab_label = sprintf(
+				_x( 'Tab %d', 'mega menu tab label fallback', 'sgs-blocks' ),
+				count( $tab_items ) + 1
+			);
 		}
 
 		$tab_items[] = array(
@@ -246,37 +290,59 @@ if ( 'tabbed' === $layout_variant && $template_part && ! empty( $template_part->
 	}
 
 	if ( $tab_items ) {
-		// Build the accessible tab list.
-		$tab_list = '<div class="sgs-mega-menu__tab-list" role="tablist" aria-label="'
-			. esc_attr__( 'Panel tabs', 'sgs-blocks' )
-			. '" data-wp-on--keydown="actions.handleTabListKeydown">';
+		// Build shared content panels (same structure for both variants).
+		$tab_panels_html = '<div class="sgs-mega-menu__tab-content">';
 
 		foreach ( $tab_items as $i => $tab ) {
-			$tab_list .= sprintf(
-				'<button class="sgs-mega-menu__tab%s" role="tab" aria-selected="%s" tabindex="%s" data-wp-on--click="actions.switchTab">%s</button>',
-				0 === $i ? ' is-active' : '',
-				0 === $i ? 'true' : 'false',
-				0 === $i ? '0' : '-1',
-				esc_html( $tab['label'] )
-			);
-		}
-
-		$tab_list .= '</div>';
-
-		// Build the tab content panels.
-		$tab_panels = '<div class="sgs-mega-menu__tab-content">';
-
-		foreach ( $tab_items as $i => $tab ) {
-			$tab_panels .= sprintf(
+			$tab_panels_html .= sprintf(
 				'<div class="sgs-mega-menu__tab-panel"%s role="tabpanel">%s</div>',
 				0 === $i ? '' : ' hidden',
 				$tab['content']
 			);
 		}
 
-		$tab_panels .= '</div>';
+		$tab_panels_html .= '</div>';
 
-		$panel_content = $tab_list . $tab_panels;
+		if ( 'tabbed' === $layout_variant ) {
+			// Horizontal tab list.
+			$tab_list_html = '<div class="sgs-mega-menu__tab-list" role="tablist" aria-label="'
+				. esc_attr__( 'Panel tabs', 'sgs-blocks' )
+				. '" data-wp-on--keydown="actions.handleTabListKeydown">';
+
+			foreach ( $tab_items as $i => $tab ) {
+				$tab_list_html .= sprintf(
+					'<button class="sgs-mega-menu__tab%s" role="tab" aria-selected="%s" tabindex="%s" data-wp-on--click="actions.switchTab">%s</button>',
+					0 === $i ? ' is-active' : '',
+					0 === $i ? 'true' : 'false',
+					0 === $i ? '0' : '-1',
+					esc_html( $tab['label'] )
+				);
+			}
+
+			$tab_list_html .= '</div>';
+			$panel_content  = $tab_list_html . $tab_panels_html;
+		} else {
+			// Vertical (side) tab list.
+			$side_list_html = '<div class="sgs-mega-menu__side-tab-list" role="tablist" aria-label="'
+				. esc_attr__( 'Panel tabs', 'sgs-blocks' )
+				. '" data-wp-on--keydown="actions.handleSideTabListKeydown">';
+
+			foreach ( $tab_items as $i => $tab ) {
+				$side_list_html .= sprintf(
+					'<button class="sgs-mega-menu__side-tab%s" role="tab" aria-selected="%s" tabindex="%s" data-wp-on--click="actions.switchTab">%s</button>',
+					0 === $i ? ' is-active' : '',
+					0 === $i ? 'true' : 'false',
+					0 === $i ? '0' : '-1',
+					esc_html( $tab['label'] )
+				);
+			}
+
+			$side_list_html .= '</div>';
+			$panel_content   = '<div class="sgs-mega-menu__side-tabs">'
+				. $side_list_html
+				. $tab_panels_html
+				. '</div>';
+		}
 	}
 } elseif ( $template_part && ! empty( $template_part->content ) ) {
 	// All other variants: render template part content normally.
@@ -323,6 +389,90 @@ if ( 'featured' === $layout_variant ) {
 		$overlay_html,
 		$panel_content
 	);
+}
+
+// ── Promo-slot variant: configurable promotional section ─────────────────────
+//
+// Wraps the template-part content in a "main" div and appends a fully
+// attribute-driven promo slot (image, badge, title, subtitle, CTA).
+// The promo slot position (side | bottom) is driven by a wrapper class.
+
+if ( 'promo-slot' === $layout_variant ) {
+	$promo_img_url = esc_url( $promo_image['url'] ?? '' );
+	$promo_img_alt = esc_attr( $promo_image['alt'] ?? '' );
+	$promo_bg      = sgs_colour_value( $promo_background );
+
+	// Decorative background image (low opacity).
+	$promo_img_html = $promo_img_url
+		? sprintf(
+			'<img src="%s" alt="%s" class="sgs-mega-menu__promo-image" aria-hidden="true" />',
+			$promo_img_url,
+			$promo_img_alt
+		)
+		: '';
+
+	$promo_badge_html = $promo_badge
+		? '<span class="sgs-mega-menu__promo-badge">' . esc_html( $promo_badge ) . '</span>'
+		: '';
+
+	$promo_title_html = $promo_title
+		? '<p class="sgs-mega-menu__promo-title">' . esc_html( $promo_title ) . '</p>'
+		: '';
+
+	$promo_subtitle_html = $promo_subtitle
+		? '<p class="sgs-mega-menu__promo-subtitle">' . esc_html( $promo_subtitle ) . '</p>'
+		: '';
+
+	$promo_cta_html = ( $promo_cta && $promo_cta_url )
+		? sprintf(
+			'<a href="%s" class="sgs-mega-menu__promo-cta">%s</a>',
+			esc_url( $promo_cta_url ),
+			esc_html( $promo_cta )
+		)
+		: '';
+
+	$promo_slot = sprintf(
+		'<div class="sgs-mega-menu__promo-slot" style="background-color:%s">%s%s%s%s%s</div>',
+		esc_attr( $promo_bg ),
+		$promo_img_html,
+		$promo_badge_html,
+		$promo_title_html,
+		$promo_subtitle_html,
+		$promo_cta_html
+	);
+
+	$panel_content = '<div class="sgs-mega-menu__promo-main">' . $panel_content . '</div>'
+		. $promo_slot;
+}
+
+// ── Search-in-menu variant: live-filtering search input ───────────────────
+//
+// Prepends a labelled search input to the panel. The Interactivity API
+// action `actions.filterSearch` handles real-time client-side filtering.
+// Items are searched by text content; non-matching items get the
+// `sgs-mega-menu__search-item--hidden` class applied.
+
+if ( 'search-in-menu' === $layout_variant ) {
+	$search_uid  = esc_attr( $menu_id . '-search' );
+	$search_html = sprintf(
+		'<div class="sgs-mega-menu__search-wrap">'
+		. '<label for="%1$s" class="screen-reader-text">%2$s</label>'
+		. '<input id="%1$s" type="search" class="sgs-mega-menu__search-input"'
+		. ' placeholder="%3$s" autocomplete="off" spellcheck="false"'
+		. ' data-wp-on--input="actions.filterSearch" />'
+		. '</div>',
+		$search_uid,
+		esc_html( $search_label ),
+		esc_attr( $search_placeholder )
+	);
+
+	$empty_html    = '<p class="sgs-mega-menu__search-empty" aria-live="polite">'
+		. esc_html__( 'No results found.', 'sgs-blocks' )
+		. '</p>';
+
+	$panel_content = $search_html
+		. '<div class="sgs-mega-menu__search-content">' . $panel_content . '</div>'
+		. $empty_html;
 }
 
 // ── Panel element ─────────────────────────────────────────────────────────
