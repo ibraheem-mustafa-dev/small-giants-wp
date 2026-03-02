@@ -1,0 +1,24 @@
+/**
+ * Mobile Nav Toggle — frontend + editor styles.
+ *
+ * @since 1.0.0
+ * @package SGS\Blocks
+ */
+
+.sgs-mobile-nav-toggle {
+	display: none; /* Hidden by default on desktop */
+	align-items: center;
+	justify-content: center;
+	padding: 8px;
+	border: none;
+	background: transparent;
+	cursor: pointer;
+	color: inherit;
+	line-height: 0;
+}
+
+@media (max-width: 782px) {
+	.sgs-mobile-nav-toggle {
+		display: inline-flex;
+	}
+}

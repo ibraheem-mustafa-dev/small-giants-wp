@@ -1,0 +1,29 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/skip-link",
+	"version": "1.0.0",
+	"title": "Skip Link",
+	"category": "sgs-layout",
+	"description": "Accessible skip-to-content link, visible only on keyboard focus.",
+	"keywords": [ "skip", "accessibility", "a11y", "navigation" ],
+	"textdomain": "sgs-blocks",
+	"icon": "universal-access-alt",
+	"supports": {
+		"html": false,
+		"multiple": false,
+		"inserter": true
+	},
+	"attributes": {
+		"target": {
+			"type": "string",
+			"default": "#main-content"
+		},
+		"label": {
+			"type": "string",
+			"default": "Skip to content"
+		}
+	},
+	"editorScript": "file:./index.js",
+	"render": "file:./render.php"
+}

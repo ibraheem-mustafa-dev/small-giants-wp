@@ -1,0 +1,42 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/mobile-nav-drawer",
+	"version": "1.0.0",
+	"title": "Mobile Nav Drawer",
+	"category": "sgs-layout",
+	"description": "Off-canvas mobile navigation drawer with backdrop, close button, and inner block content.",
+	"keywords": [ "drawer", "mobile", "navigation", "sidebar", "offcanvas" ],
+	"textdomain": "sgs-blocks",
+	"icon": "slides",
+	"supports": {
+		"html": false,
+		"multiple": false,
+		"color": {
+			"background": true,
+			"text": true
+		}
+	},
+	"attributes": {
+		"closeIcon": {
+			"type": "string",
+			"default": "x"
+		},
+		"closeIconSize": {
+			"type": "number",
+			"default": 24
+		},
+		"closeAriaLabel": {
+			"type": "string",
+			"default": "Close navigation menu"
+		},
+		"position": {
+			"type": "string",
+			"default": "right",
+			"enum": [ "left", "right" ]
+		}
+	},
+	"editorScript": "file:./index.js",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php"
+}
