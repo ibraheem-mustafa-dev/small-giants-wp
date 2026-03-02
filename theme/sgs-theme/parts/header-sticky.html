@@ -1,15 +1,11 @@
-<!-- wp:html -->
-<a class="skip-link" href="#main-content">Skip to content</a>
-<!-- /wp:html -->
+<!-- wp:sgs/skip-link /-->
 
 <!-- wp:group {"style":{"spacing":{"padding":{"top":"0","bottom":"0","left":"0","right":"0"}}},"backgroundColor":"surface","layout":{"type":"default"},"metadata":{"name":"Sticky Header"},"className":"sgs-header-sticky"} -->
 <div class="wp-block-group sgs-header-sticky is-layout-flow wp-block-group-is-layout-flow has-surface-background-color has-background" style="padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
 
-	<!-- Top Bar — edit this section in Appearance → Editor to add your contact details and social links -->
 	<!-- wp:group {"style":{"spacing":{"padding":{"top":"8px","bottom":"8px","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"primary","layout":{"type":"flex","justifyContent":"space-between","flexWrap":"nowrap"},"metadata":{"name":"Top Bar"}} -->
 	<div class="wp-block-group has-primary-background-color has-background is-content-justification-space-between is-nowrap is-layout-flex wp-block-group-is-layout-flex" style="padding-top:8px;padding-right:var(--wp--preset--spacing--40);padding-bottom:8px;padding-left:var(--wp--preset--spacing--40)">
 
-		<!-- Phone and email — managed via Customiser: Appearance → Customise → SGS Site Info -->
 		<!-- wp:group {"layout":{"type":"flex","flexWrap":"nowrap"},"style":{"spacing":{"blockGap":"var:preset|spacing|40"}}} -->
 		<div class="wp-block-group is-nowrap is-layout-flex wp-block-group-is-layout-flex">
 			<!-- wp:sgs/site-info {"type":"phone","linkPhone":true,"style":{"elements":{"link":{"color":{"text":"var:preset|color|surface"}}}},"textColor":"surface","fontSize":"x-small"} /-->
@@ -37,14 +33,7 @@
 		<!-- wp:group {"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"right"},"metadata":{"name":"Navigation and CTA"}} -->
 		<div class="wp-block-group is-content-justification-right is-nowrap is-layout-flex wp-block-group-is-layout-flex">
 
-			<!-- Mobile nav toggle button (hamburger) — only visible on mobile/tablet -->
-			<!-- wp:html -->
-			<button class="sgs-mobile-nav-toggle" aria-label="Open navigation menu" aria-expanded="false">
-				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-					<path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-				</svg>
-			</button>
-			<!-- /wp:html -->
+			<!-- wp:sgs/mobile-nav-toggle /-->
 
 			<!-- wp:navigation {"textColor":"primary","layout":{"type":"flex","justifyContent":"right"},"style":{"typography":{"fontWeight":"500"},"spacing":{"blockGap":"var:preset|spacing|40"}},"fontSize":"small"} /-->
 
@@ -62,22 +51,9 @@
 	</div>
 	<!-- /wp:group -->
 
-	<!-- Mobile navigation drawer — off-canvas side panel -->
-	<!-- wp:html -->
-	<div class="sgs-mobile-nav-drawer__backdrop"></div>
-	<nav class="sgs-mobile-nav-drawer" aria-label="Mobile navigation" aria-hidden="true">
-		<div class="sgs-mobile-nav-drawer__header">
-			<button class="sgs-mobile-nav-drawer__close" aria-label="Close navigation menu">
-				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-					<path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-				</svg>
-			</button>
-		</div>
-		<div class="sgs-mobile-nav-drawer__content">
-			<!-- wp:navigation {"textColor":"surface","layout":{"type":"flex","orientation":"vertical"},"style":{"spacing":{"blockGap":"0"}},"fontSize":"medium"} /-->
-		</div>
-	</nav>
-	<!-- /wp:html -->
+	<!-- wp:sgs/mobile-nav-drawer -->
+	<!-- wp:navigation {"textColor":"surface","layout":{"type":"flex","orientation":"vertical"},"style":{"spacing":{"blockGap":"0"}},"fontSize":"medium"} /-->
+	<!-- /wp:sgs/mobile-nav-drawer -->
 
 </div>
 <!-- /wp:group -->
