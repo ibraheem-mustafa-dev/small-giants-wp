@@ -11,6 +11,8 @@ import { __ } from '@wordpress/i18n';
 import {
 	useBlockProps,
 	InspectorControls,
+	MediaUpload,
+	MediaUploadCheck,
 	RichText,
 } from '@wordpress/block-editor';
 import {
@@ -19,6 +21,7 @@ import {
 	TextControl,
 	ToggleControl,
 	RangeControl,
+	Button,
 	Icon,
 	Notice,
 } from '@wordpress/components';
@@ -43,6 +46,18 @@ const LAYOUT_VARIANT_OPTIONS = [
 	{
 		label: __( 'Flyout — slides in from the right', 'sgs-blocks' ),
 		value: 'flyout',
+	},
+	{
+		label: __( 'Card Grid — image card showcase', 'sgs-blocks' ),
+		value: 'card-grid',
+	},
+	{
+		label: __( 'Tabbed — tab bar with content panels', 'sgs-blocks' ),
+		value: 'tabbed',
+	},
+	{
+		label: __( 'Featured — hero image with nav links', 'sgs-blocks' ),
+		value: 'featured',
 	},
 ];
 
@@ -89,6 +104,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		highlight,
 		badge,
 		badgeColour,
+		featuredImage,
+		featuredTitle,
+		featuredCta,
+		featuredCtaUrl,
 	} = attributes;
 
 	// Fetch available template parts with area='mega-menu' from the API.
@@ -115,7 +134,8 @@ export default function Edit( { attributes, setAttributes } ) {
 	const iconElement =
 		icon === 'chevron-down' ? chevronDown : chevronRight;
 
-	const isFlyout = layoutVariant === 'flyout';
+	const isFlyout   = layoutVariant === 'flyout';
+	const isFeatured = layoutVariant === 'featured';
 
 	return (
 		<>
@@ -240,6 +260,84 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
+
+				{/* ── Featured Layout ───────────────────────────────── */}
+				{ isFeatured && (
+					<PanelBody
+						title={ __( 'Featured Panel', 'sgs-blocks' ) }
+						initialOpen={ true }
+					>
+						<MediaUploadCheck>
+							<MediaUpload
+								onSelect={ ( media ) =>
+									setAttributes( {
+										featuredImage: {
+											id:  media.id,
+											url: media.url,
+											alt: media.alt || '',
+										},
+									} )
+								}
+								allowedTypes={ [ 'image' ] }
+								value={ featuredImage?.id }
+								render={ ( { open } ) => (
+									<Button
+										onClick={ open }
+										variant="secondary"
+										style={ { marginBottom: '0.75rem' } }
+									>
+										{ featuredImage?.url
+											? __( 'Replace featured image', 'sgs-blocks' )
+											: __( 'Select featured image', 'sgs-blocks' ) }
+									</Button>
+								) }
+							/>
+						</MediaUploadCheck>
+						{ featuredImage?.url && (
+							<img
+								src={ featuredImage.url }
+								alt={ featuredImage.alt }
+								style={ {
+									width:        '100%',
+									aspectRatio:  '16/9',
+									objectFit:    'cover',
+									borderRadius: '4px',
+									marginBottom: '0.75rem',
+									display:      'block',
+								} }
+							/>
+						) }
+						<TextControl
+							label={ __( 'Overlay title', 'sgs-blocks' ) }
+							value={ featuredTitle || '' }
+							onChange={ ( val ) =>
+								setAttributes( { featuredTitle: val } )
+							}
+							help={ __(
+								'Text displayed over the image.',
+								'sgs-blocks'
+							) }
+							__nextHasNoMarginBottom
+						/>
+						<TextControl
+							label={ __( 'CTA button text', 'sgs-blocks' ) }
+							value={ featuredCta || '' }
+							onChange={ ( val ) =>
+								setAttributes( { featuredCta: val } )
+							}
+							__nextHasNoMarginBottom
+						/>
+						<TextControl
+							label={ __( 'CTA button URL', 'sgs-blocks' ) }
+							value={ featuredCtaUrl || '' }
+							onChange={ ( val ) =>
+								setAttributes( { featuredCtaUrl: val } )
+							}
+							type="url"
+							__nextHasNoMarginBottom
+						/>
+					</PanelBody>
+				) }
 
 				{/* ── Animation ──────────────────────────────────────── */}
 				<PanelBody

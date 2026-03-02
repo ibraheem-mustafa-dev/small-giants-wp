@@ -20,6 +20,33 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 
+// ── Helper: extract the first heading text from a parsed block ────────────
+
+if ( ! function_exists( 'sgs_mm_extract_heading' ) ) {
+	/**
+	 * Recursively extract the first heading's plain text from a parsed block.
+	 *
+	 * Used by the tabbed layout to auto-label tabs from the template part content.
+	 *
+	 * @since 1.2.0
+	 *
+	 * @param array $block Parsed block array from parse_blocks().
+	 * @return string Heading plain text, or empty string if none found.
+	 */
+	function sgs_mm_extract_heading( array $block ): string {
+		if ( 'core/heading' === $block['blockName'] ) {
+			return wp_strip_all_tags( implode( '', $block['innerContent'] ) );
+		}
+		foreach ( $block['innerBlocks'] ?? array() as $inner_block ) {
+			$text = sgs_mm_extract_heading( $inner_block );
+			if ( $text ) {
+				return $text;
+			}
+		}
+		return '';
+	}
+}
+
 // ── Extract & sanitise attributes ────────────────────────────────────────
 
 $label            = $attributes['label']           ?? '';
@@ -45,8 +72,14 @@ $highlight        = $attributes['highlight']        ?? false;
 $badge            = $attributes['badge']            ?? '';
 $badge_colour     = $attributes['badgeColour']      ?? 'accent';
 
+// Featured layout attributes (variant 7).
+$featured_image   = $attributes['featuredImage']  ?? array();
+$featured_title   = $attributes['featuredTitle']  ?? '';
+$featured_cta     = $attributes['featuredCta']    ?? '';
+$featured_cta_url = $attributes['featuredCtaUrl'] ?? '';
+
 // Whitelist allowed values to prevent arbitrary class injection.
-$allowed_variants   = array( 'full-width', 'contained', 'columns', 'flyout' );
+$allowed_variants   = array( 'full-width', 'contained', 'columns', 'flyout', 'card-grid', 'tabbed', 'featured' );
 $allowed_animations = array( 'fade', 'slide-down', 'scale' );
 $allowed_alignments = array( 'left', 'centre', 'right' );
 $allowed_open_on    = array( 'hover', 'click' );
@@ -172,15 +205,124 @@ $trigger_html = sprintf(
 // ── Panel content (rendered from template part) ────────────────────────────
 
 $panel_content = '';
+$template_part = null;
+
 if ( $menu_template_part ) {
 	$template_part = get_block_template(
 		get_stylesheet() . '//' . $menu_template_part,
 		'wp_template_part'
 	);
+}
 
-	if ( $template_part && ! empty( $template_part->content ) ) {
-		$panel_content = do_blocks( $template_part->content );
+if ( 'tabbed' === $layout_variant && $template_part && ! empty( $template_part->content ) ) {
+	// ── Tabbed variant: parse top-level blocks into individual tab panels.
+	//
+	// Each non-empty top-level block becomes one tab. The first heading found
+	// within the block (recursively) is used as the tab label; if none is
+	// found a generic "Tab N" label is used.
+	//
+	// Template-part authors should use separate wp:group blocks per tab,
+	// each starting with a wp:heading that names the tab.
+
+	$raw_blocks = parse_blocks( $template_part->content );
+	$tab_items  = array();
+
+	foreach ( $raw_blocks as $raw_block ) {
+		// Skip freeform / whitespace-only pseudo-blocks.
+		if ( empty( $raw_block['blockName'] ) ) {
+			continue;
+		}
+
+		$tab_label = sgs_mm_extract_heading( $raw_block );
+		if ( ! $tab_label ) {
+			/* translators: %d: tab position number */
+			$tab_label = sprintf( _x( 'Tab %d', 'mega menu tab label fallback', 'sgs-blocks' ), count( $tab_items ) + 1 );
+		}
+
+		$tab_items[] = array(
+			'label'   => $tab_label,
+			'content' => render_block( $raw_block ),
+		);
 	}
+
+	if ( $tab_items ) {
+		// Build the accessible tab list.
+		$tab_list = '<div class="sgs-mega-menu__tab-list" role="tablist" aria-label="'
+			. esc_attr__( 'Panel tabs', 'sgs-blocks' )
+			. '" data-wp-on--keydown="actions.handleTabListKeydown">';
+
+		foreach ( $tab_items as $i => $tab ) {
+			$tab_list .= sprintf(
+				'<button class="sgs-mega-menu__tab%s" role="tab" aria-selected="%s" tabindex="%s" data-wp-on--click="actions.switchTab">%s</button>',
+				0 === $i ? ' is-active' : '',
+				0 === $i ? 'true' : 'false',
+				0 === $i ? '0' : '-1',
+				esc_html( $tab['label'] )
+			);
+		}
+
+		$tab_list .= '</div>';
+
+		// Build the tab content panels.
+		$tab_panels = '<div class="sgs-mega-menu__tab-content">';
+
+		foreach ( $tab_items as $i => $tab ) {
+			$tab_panels .= sprintf(
+				'<div class="sgs-mega-menu__tab-panel"%s role="tabpanel">%s</div>',
+				0 === $i ? '' : ' hidden',
+				$tab['content']
+			);
+		}
+
+		$tab_panels .= '</div>';
+
+		$panel_content = $tab_list . $tab_panels;
+	}
+} elseif ( $template_part && ! empty( $template_part->content ) ) {
+	// All other variants: render template part content normally.
+	$panel_content = do_blocks( $template_part->content );
+}
+
+// ── Featured variant: wrap content in a two-column hero layout ─────────────
+
+if ( 'featured' === $layout_variant ) {
+	$img_url = esc_url( $featured_image['url'] ?? '' );
+	$img_alt = esc_attr( $featured_image['alt'] ?? '' );
+
+	if ( $img_url ) {
+		$image_html = sprintf(
+			'<img src="%s" alt="%s" class="sgs-mega-menu__featured-image" loading="lazy" decoding="async" />',
+			$img_url,
+			$img_alt
+		);
+	} else {
+		$image_html = '<div class="sgs-mega-menu__featured-image sgs-mega-menu__featured-image--placeholder" aria-hidden="true"></div>';
+	}
+
+	$overlay_parts = array();
+
+	if ( $featured_title ) {
+		$overlay_parts[] = '<p class="sgs-mega-menu__featured-overlay-title">' . esc_html( $featured_title ) . '</p>';
+	}
+
+	if ( $featured_cta && $featured_cta_url ) {
+		$overlay_parts[] = sprintf(
+			'<a href="%s" class="wp-block-button__link wp-element-button sgs-mega-menu__featured-cta">%s</a>',
+			esc_url( $featured_cta_url ),
+			esc_html( $featured_cta )
+		);
+	}
+
+	$overlay_html = $overlay_parts
+		? '<div class="sgs-mega-menu__featured-overlay">' . implode( '', $overlay_parts ) . '</div>'
+		: '';
+
+	$panel_content = sprintf(
+		'<div class="sgs-mega-menu__featured-side">%s%s</div><div class="sgs-mega-menu__featured-content">%s</div>',
+		$image_html,
+		$overlay_html,
+		$panel_content
+	);
 }
 
 // ── Panel element ─────────────────────────────────────────────────────────

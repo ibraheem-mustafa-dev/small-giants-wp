@@ -57,7 +57,10 @@
                                                           "full-width",
                                                           "contained",
                                                           "columns",
-                                                          "flyout"
+                                                          "flyout",
+                                                          "card-grid",
+                                                          "tabbed",
+                                                          "featured"
                                                       ]
                                          },
                        "panelWidth":  {
@@ -107,7 +110,23 @@
                        "badgeColour":  {
                                            "type":  "string",
                                            "default":  "accent"
-                                       }
+                                       },
+                       "featuredImage":  {
+                                             "type":  "object",
+                                             "default":  {}
+                                         },
+                       "featuredTitle":  {
+                                             "type":  "string",
+                                             "default":  ""
+                                         },
+                       "featuredCta":  {
+                                           "type":  "string",
+                                           "default":  "Learn more"
+                                       },
+                       "featuredCtaUrl":  {
+                                              "type":  "string",
+                                              "default":  ""
+                                          }
                    },
     "render":  "file:./render.php",
     "editorScript":  "file:./index.js",

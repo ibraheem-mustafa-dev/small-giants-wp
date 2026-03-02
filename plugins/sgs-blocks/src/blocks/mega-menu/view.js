@@ -265,6 +265,90 @@ const { state } = store( 'sgs/mega-menu', {
 			}
 		},
 
+		// ── Tabbed layout ─────────────────────────────────────────────────
+
+		/**
+		 * Switch the active tab in a tabbed-layout panel.
+		 *
+		 * Expects the panel to contain:
+		 *   .sgs-mega-menu__tab-list > .sgs-mega-menu__tab (buttons)
+		 *   .sgs-mega-menu__tab-content > .sgs-mega-menu__tab-panel (divs)
+		 *
+		 * The Interactivity API directive is placed on each tab button:
+		 *   data-wp-on--click="actions.switchTab"
+		 *
+		 * @param {MouseEvent} event
+		 */
+		switchTab( event ) {
+			const { ref } = getElement();
+
+			const clickedTab = event.target.closest( '.sgs-mega-menu__tab' );
+			if ( ! clickedTab ) {
+				return;
+			}
+
+			const tabList = ref.querySelector( '.sgs-mega-menu__tab-list' );
+			if ( ! tabList ) {
+				return;
+			}
+
+			const tabs     = Array.from( tabList.querySelectorAll( '.sgs-mega-menu__tab' ) );
+			const tabIndex = tabs.indexOf( clickedTab );
+
+			// Update ARIA attributes and active class on each tab.
+			tabs.forEach( ( tab, i ) => {
+				const isActive = i === tabIndex;
+				tab.setAttribute( 'aria-selected', isActive ? 'true' : 'false' );
+				tab.setAttribute( 'tabindex', isActive ? '0' : '-1' );
+				tab.classList.toggle( 'is-active', isActive );
+			} );
+
+			// Show the matching panel; hide all others.
+			const tabPanels = Array.from(
+				ref.querySelectorAll( '.sgs-mega-menu__tab-panel' )
+			);
+			tabPanels.forEach( ( panel, i ) => {
+				panel.hidden = i !== tabIndex;
+			} );
+		},
+
+		/**
+		 * Handle ArrowLeft / ArrowRight keyboard navigation within a tab list.
+		 *
+		 * Placed on the tab-list container:
+		 *   data-wp-on--keydown="actions.handleTabListKeydown"
+		 *
+		 * @param {KeyboardEvent} event
+		 */
+		handleTabListKeydown( event ) {
+			const key = event.key;
+			if ( key !== 'ArrowLeft' && key !== 'ArrowRight' ) {
+				return;
+			}
+
+			event.preventDefault();
+
+			const { ref } = getElement();
+			const tabList = ref.querySelector( '.sgs-mega-menu__tab-list' );
+			if ( ! tabList ) {
+				return;
+			}
+
+			const tabs      = Array.from( tabList.querySelectorAll( '.sgs-mega-menu__tab' ) );
+			const activeTab = tabs.find(
+				( t ) => t.getAttribute( 'aria-selected' ) === 'true'
+			);
+			const currentIndex = activeTab ? tabs.indexOf( activeTab ) : 0;
+
+			const nextIndex = key === 'ArrowLeft'
+				? ( currentIndex === 0 ? tabs.length - 1 : currentIndex - 1 )
+				: ( currentIndex === tabs.length - 1 ? 0 : currentIndex + 1 );
+
+			// Trigger tab switch and move focus to the newly active tab.
+			tabs[ nextIndex ]?.dispatchEvent( new MouseEvent( 'click', { bubbles: true } ) );
+			tabs[ nextIndex ]?.focus();
+		},
+
 		// ── Keyboard — panel ─────────────────────────────────────────────
 
 		/**
