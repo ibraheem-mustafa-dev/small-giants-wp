@@ -7,7 +7,7 @@ import {
 	RangeControl,
 	ToggleControl,
 } from '@wordpress/components';
-import { DesignTokenPicker } from '../../components';
+import { DesignTokenPicker, IconPicker } from '../../components';
 import { colourVar } from '../../utils';
 
 const BG_SHAPES = [
@@ -46,12 +46,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		<>
 			<InspectorControls>
 				<PanelBody title={ __( 'Icon', 'sgs-blocks' ) }>
-					<TextControl
-						label={ __( 'Icon name (Lucide)', 'sgs-blocks' ) }
-						help={ __( 'Enter a Lucide icon name, e.g. "heart", "star", "arrow-right"', 'sgs-blocks' ) }
+					<IconPicker
+						label={ __( 'Choose icon', 'sgs-blocks' ) }
 						value={ icon }
 						onChange={ ( val ) => setAttributes( { icon: val } ) }
-						__nextHasNoMarginBottom
 					/>
 					<RangeControl
 						label={ __( 'Size (px)', 'sgs-blocks' ) }
