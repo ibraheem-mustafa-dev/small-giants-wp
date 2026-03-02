@@ -34,6 +34,11 @@
 			"type": "string",
 			"default": "right",
 			"enum": [ "left", "right" ]
+		},
+		"drawerStyle": {
+			"type": "string",
+			"default": "slide",
+			"enum": [ "slide", "fullwidth", "overlay" ]
 		}
 	},
 	"editorScript": "file:./index.js",
