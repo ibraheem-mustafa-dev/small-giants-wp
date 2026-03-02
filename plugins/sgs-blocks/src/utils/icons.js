@@ -356,6 +356,38 @@ export const tableOfContentsIcon = icon(
 );
 
 /* ═══════════════════════════════════════════════════════════
+   NAVIGATION BLOCKS
+   ═══════════════════════════════════════════════════════════ */
+
+/** Skip Link — keyboard with arrow */
+export const skipLinkIcon = icon(
+	<SVG viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+		<Rect x="2" y="6" width="20" height="12" rx="2" fillOpacity="0.15" />
+		<Rect x="2" y="6" width="20" height="12" rx="2" fill="none" stroke="currentColor" strokeWidth="1.5" />
+		<Path d="M8 12h8m0 0l-3-3m3 3l-3 3" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+	</SVG>
+);
+
+/** Mobile Nav Toggle — hamburger menu lines */
+export const mobileNavToggleIcon = icon(
+	<SVG viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+		<Path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+	</SVG>
+);
+
+/** Mobile Nav Drawer — side panel with lines */
+export const mobileNavDrawerIcon = icon(
+	<SVG viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+		<Rect x="2" y="2" width="20" height="20" rx="2" fillOpacity="0.15" />
+		<Rect x="12" y="2" width="10" height="20" rx="0" />
+		<Rect x="14" y="6" width="6" height="1.5" rx="0.75" fill="white" />
+		<Rect x="14" y="9.5" width="6" height="1.5" rx="0.75" fill="white" fillOpacity="0.7" />
+		<Rect x="14" y="13" width="6" height="1.5" rx="0.75" fill="white" fillOpacity="0.5" />
+		<Rect x="14" y="16.5" width="6" height="1.5" rx="0.75" fill="white" fillOpacity="0.3" />
+	</SVG>
+);
+
+/* ═══════════════════════════════════════════════════════════
    INTERACTIVE BLOCKS
    ═══════════════════════════════════════════════════════════ */
 

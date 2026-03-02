@@ -8,8 +8,10 @@
 import { registerBlockType } from '@wordpress/blocks';
 import metadata from './block.json';
 import Edit from './edit';
+import { skipLinkIcon } from '../../utils/icons';
 
 registerBlockType( metadata.name, {
+	icon: skipLinkIcon,
 	edit: Edit,
 	save: () => null,
 } );
