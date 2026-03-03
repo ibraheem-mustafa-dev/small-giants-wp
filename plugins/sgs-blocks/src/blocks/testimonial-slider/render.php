@@ -148,7 +148,7 @@ if ( ! empty( $testimonials ) ) {
 		$slide_id = esc_attr( $slider_prefix ) . '-slide-' . ( $i + 1 );
 		$dot_id   = esc_attr( $slider_prefix ) . '-dot-' . ( $i + 1 );
 		$slides_html .= sprintf(
-			'<blockquote id="%s" class="sgs-testimonial-slider__slide sgs-testimonial-slider__slide--%s" role="tabpanel" aria-labelledby="%s" aria-label="Testimonial %d of %d" data-wp-context=\'{"slideIndex":%d}\' data-wp-class--is-active="context.currentIndex === context.slideIndex">%s<p class="sgs-testimonial-slider__quote"%s>%s</p><footer class="sgs-testimonial-slider__footer">%s<div class="sgs-testimonial-slider__meta"><cite class="sgs-testimonial-slider__name"%s>%s</cite><span class="sgs-testimonial-slider__role"%s>%s</span></div></footer></blockquote>',
+			'<blockquote id="%s" class="sgs-testimonial-slider__slide sgs-testimonial-slider__slide--%s" role="tabpanel" aria-labelledby="%s" aria-label="Testimonial %d of %d" data-wp-context=\'{"slideIndex":%d}\' data-wp-class--is-active="state.isActiveSlide">%s<p class="sgs-testimonial-slider__quote"%s>%s</p><footer class="sgs-testimonial-slider__footer">%s<div class="sgs-testimonial-slider__meta"><cite class="sgs-testimonial-slider__name"%s>%s</cite><span class="sgs-testimonial-slider__role"%s>%s</span></div></footer></blockquote>',
 			$slide_id,
 			esc_attr( $card_style ),
 			$dot_id,
@@ -181,7 +181,7 @@ if ( $show_arrows && $total_testimonials > $slides_visible ) {
 // Build pause button HTML (only if autoplay is enabled).
 $pause_html = '';
 if ( $autoplay ) {
-	$pause_html = '<button type="button" class="sgs-testimonial-slider__pause-btn" aria-live="polite" data-wp-on--click="actions.togglePlay" data-wp-bind--aria-label="context.isPlaying ? \'Pause testimonials\' : \'Play testimonials\'" data-wp-bind--aria-pressed="context.isPlaying ? \'true\' : \'false\'"><span class="sgs-testimonial-slider__pause-icon" aria-hidden="true" data-wp-bind--textContent="context.isPlaying ? \'⏸\' : \'▶\'">⏸</span></button>';
+	$pause_html = '<button type="button" class="sgs-testimonial-slider__pause-btn" aria-live="polite" data-wp-on--click="actions.togglePlay" data-wp-bind--aria-label="state.pauseAriaLabel" data-wp-bind--aria-pressed="state.pauseAriaPressed"><span class="sgs-testimonial-slider__pause-icon" aria-hidden="true" data-wp-text="state.pauseIcon">⏸</span></button>';
 }
 
 // Build dots HTML (only if there are more testimonials than slides visible).
@@ -192,7 +192,7 @@ if ( $show_dots && $total_testimonials > $slides_visible ) {
 		$this_dot_id = esc_attr( $slider_prefix ) . '-dot-' . $d;
 		$controls_id = esc_attr( $slider_prefix ) . '-slide-' . $d;
 		$dots_html  .= sprintf(
-			'<button id="%s" class="sgs-testimonial-slider__dot" role="tab" aria-controls="%s" aria-label="Go to testimonial %d" type="button" data-wp-context=\'{"dotIndex":%d}\' data-wp-on--click="actions.goTo" data-wp-class--is-active="context.currentIndex === context.dotIndex" data-wp-bind--aria-selected="context.currentIndex === context.dotIndex ? \'true\' : \'false\'"></button>',
+			'<button id="%s" class="sgs-testimonial-slider__dot" role="tab" aria-controls="%s" aria-label="Go to testimonial %d" type="button" data-wp-context=\'{"dotIndex":%d}\' data-wp-on--click="actions.goTo" data-wp-class--is-active="state.isActiveDot" data-wp-bind--aria-selected="state.dotAriaSelected"></button>',
 			$this_dot_id,
 			$controls_id,
 			$d,

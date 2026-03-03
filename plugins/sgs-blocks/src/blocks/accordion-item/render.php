@@ -52,24 +52,27 @@ $icon_html = sprintf(
 	$chevron_svg
 );
 
-$open_attr = $is_open ? ' open' : '';
+$item_id    = 'sgs-acc-item-' . wp_unique_id();
+$ia_context = wp_json_encode( [ 'isOpen' => $is_open, 'itemId' => $item_id ] );
 
 /*
- * aria-expanded on <summary> improves compatibility with legacy screen readers
- * that do not fully support the native <details>/<summary> open state.
- * The value is kept in sync by view.js on every toggle.
+ * Both the static `open` attribute (server-side initial state) and
+ * data-wp-bind--open (reactive after hydration) are intentionally present.
+ * The Interactivity API takes over after hydration.
  */
-$aria_expanded = $is_open ? 'true' : 'false';
-
 printf(
-	'<details class="%s"%s>',
+	'<details class="%s"%s data-wp-context=\'%s\' data-wp-bind--open="context.isOpen" data-wp-watch="callbacks.syncSiblings">',
 	esc_attr( implode( ' ', $classes ) ),
-	$open_attr
+	$is_open ? ' open' : '',
+	esc_attr( $ia_context )
 );
 
+/*
+ * aria-expanded is handled reactively via data-wp-bind--aria-expanded.
+ * The static attribute is intentionally omitted here.
+ */
 printf(
-	'<summary class="sgs-accordion-item__header" aria-expanded="%s"%s>',
-	esc_attr( $aria_expanded ),
+	'<summary class="sgs-accordion-item__header" data-wp-on--click="actions.toggle" data-wp-bind--aria-expanded="state.ariaExpanded"%s>',
 	$header_style_attr
 );
 

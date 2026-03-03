@@ -16,6 +16,21 @@ const { state } = store( 'sgs/accordion', {
 	state: {
 		/** Map of accordionId → currently open itemId (single-open mode). */
 		openItems: {},
+
+		/**
+		 * Returns "true" or "false" string for aria-expanded.
+		 *
+		 * Cannot bind directly to context.isOpen (boolean), because the IA's
+		 * bind directive calls removeAttribute when the value is boolean false,
+		 * which would remove aria-expanded entirely instead of setting "false".
+		 *
+		 * Used by: data-wp-bind--aria-expanded on <summary>.
+		 *
+		 * @returns {string}
+		 */
+		get ariaExpanded() {
+			return getContext().isOpen ? 'true' : 'false';
+		},
 	},
 
 	actions: {

@@ -49,7 +49,81 @@ function detectIndex( track, slides ) {
 	return closest;
 }
 
-store( 'sgs/testimonial-slider', {
+const { state } = store( 'sgs/testimonial-slider', {
+	state: {
+		/**
+		 * True when the current slide element is the active slide.
+		 * Reads context.currentIndex (wrapper) and context.slideIndex (slide).
+		 *
+		 * Used by: data-wp-class--is-active on each <blockquote> slide.
+		 *
+		 * @returns {boolean}
+		 */
+		get isActiveSlide() {
+			const ctx = getContext();
+			return ctx.currentIndex === ctx.slideIndex;
+		},
+
+		/**
+		 * True when the current dot button is the active dot.
+		 * Reads context.currentIndex (wrapper) and context.dotIndex (dot).
+		 *
+		 * Used by: data-wp-class--is-active on each dot button.
+		 *
+		 * @returns {boolean}
+		 */
+		get isActiveDot() {
+			const ctx = getContext();
+			return ctx.currentIndex === ctx.dotIndex;
+		},
+
+		/**
+		 * "true" or "false" string for dot aria-selected.
+		 * Must be a string — IA removes the attribute when value is boolean false.
+		 *
+		 * Used by: data-wp-bind--aria-selected on each dot button.
+		 *
+		 * @returns {string}
+		 */
+		get dotAriaSelected() {
+			const ctx = getContext();
+			return ctx.currentIndex === ctx.dotIndex ? 'true' : 'false';
+		},
+
+		/**
+		 * Accessible label for the pause/play button.
+		 *
+		 * Used by: data-wp-bind--aria-label on the pause button.
+		 *
+		 * @returns {string}
+		 */
+		get pauseAriaLabel() {
+			return getContext().isPlaying ? 'Pause testimonials' : 'Play testimonials';
+		},
+
+		/**
+		 * "true"/"false" string for aria-pressed on the pause button.
+		 *
+		 * Used by: data-wp-bind--aria-pressed on the pause button.
+		 *
+		 * @returns {string}
+		 */
+		get pauseAriaPressed() {
+			return getContext().isPlaying ? 'true' : 'false';
+		},
+
+		/**
+		 * Icon character for the pause/play button.
+		 *
+		 * Used by: data-wp-text on the icon <span>.
+		 *
+		 * @returns {string}
+		 */
+		get pauseIcon() {
+			return getContext().isPlaying ? '⏸' : '▶';
+		},
+	},
+
 	actions: {
 		/** Navigate to the previous slide and stop autoplay. */
 		prev() {

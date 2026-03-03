@@ -76,12 +76,15 @@ $css_vars[] = '--sgs-transition-duration:' . $transition . 'ms';
 $inline_style = implode( ';', $css_vars );
 
 // ─── IA API context ───────────────────────────────────────────────────────────
-$tab_count = count( $tabs );
+// NOTE: Directive expressions are property-access paths only — not JavaScript.
+// Comparisons (===, !==) and ternaries (?:) are invalid in directive strings.
+// All derived values are computed inside state getters (view.js) and referenced
+// via simple paths such as `state.isTabActive`.
 
 $wrapper_context = wp_json_encode( [
-	'activeTabId' => $block_id . '-tab-0',
-	'orientation' => $orientation,
-	'totalTabs'   => $tab_count,
+	'blockId'      => $block_id,
+	'orientation'  => $orientation,
+	'defaultTabId' => $block_id . '-tab-0',
 ] );
 
 // ─── Wrapper attributes ───────────────────────────────────────────────────────
@@ -117,7 +120,10 @@ $wrapper_attrs = get_block_wrapper_attributes(
 			$tab_id      = esc_attr( $block_id . '-tab-' . $i );
 			$panel_id    = esc_attr( $block_id . '-panel-' . $i );
 			$is_first    = ( 0 === $i );
-			$btn_context = esc_attr( wp_json_encode( [ 'tabId' => $block_id . '-tab-' . $i ] ) );
+			$btn_context = esc_attr( wp_json_encode( [
+				'blockId' => $block_id,
+				'tabId'   => $block_id . '-tab-' . $i,
+			] ) );
 		?>
 		<button
 			id="<?php echo $tab_id; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $tab_id is assigned via esc_attr() above. ?>"
@@ -129,9 +135,9 @@ $wrapper_attrs = get_block_wrapper_attributes(
 			data-tab-index="<?php echo (int) $i; ?>"
 			data-wp-context="<?php echo $btn_context; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped via esc_attr() above. ?>"
 			data-wp-on--click="actions.activate"
-			data-wp-class--is-active="context.activeTabId === context.tabId"
-			data-wp-bind--aria-selected="context.activeTabId === context.tabId ? 'true' : 'false'"
-			data-wp-bind--tabindex="context.activeTabId === context.tabId ? '0' : '-1'"
+			data-wp-class--is-active="state.isTabActive"
+			data-wp-bind--aria-selected="state.tabAriaSelected"
+			data-wp-bind--tabindex="state.tabTabIndex"
 		>
 			<?php echo esc_html( $tab['label'] ); ?>
 		</button>
@@ -143,7 +149,10 @@ $wrapper_attrs = get_block_wrapper_attributes(
 			$tab_id        = esc_attr( $block_id . '-tab-' . $i );
 			$panel_id      = esc_attr( $block_id . '-panel-' . $i );
 			$is_first      = ( 0 === $i );
-			$panel_context = esc_attr( wp_json_encode( [ 'tabId' => $block_id . '-tab-' . $i ] ) );
+			$panel_context = esc_attr( wp_json_encode( [
+				'blockId' => $block_id,
+				'tabId'   => $block_id . '-tab-' . $i,
+			] ) );
 		?>
 		<div
 			id="<?php echo $panel_id; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $panel_id is assigned via esc_attr() above. ?>"
@@ -153,7 +162,7 @@ $wrapper_attrs = get_block_wrapper_attributes(
 			tabindex="0"
 			<?php if ( ! $is_first ) : ?>hidden<?php endif; ?>
 			data-wp-context="<?php echo $panel_context; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped via esc_attr() above. ?>"
-			data-wp-bind--hidden="context.activeTabId !== context.tabId"
+			data-wp-bind--hidden="!state.isTabActive"
 		>
 			<?php
 			echo $tab['content']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
