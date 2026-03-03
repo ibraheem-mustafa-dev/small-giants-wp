@@ -1,0 +1,155 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/theme.json",
+	"version": 3,
+	"title": "HelpingDoctors EHR",
+	"settings": {
+		"color": {
+			"palette": [
+				{ "slug": "primary",        "color": "#2d6e5e", "name": "Medical Green" },
+				{ "slug": "primary-dark",   "color": "#1a4139", "name": "Medical Green Dark" },
+				{ "slug": "secondary",      "color": "#3a8c73", "name": "Secondary Green" },
+				{ "slug": "secondary-dark", "color": "#256050", "name": "Secondary Green Dark" },
+				{ "slug": "accent",         "color": "#e8a020", "name": "Amber Alert" },
+				{ "slug": "accent-light",   "color": "#fef3dc", "name": "Amber Light" },
+				{ "slug": "success",        "color": "#2e7d4f", "name": "Success" },
+				{ "slug": "whatsapp",       "color": "#25D366", "name": "WhatsApp" },
+				{ "slug": "surface",        "color": "#ffffff", "name": "Surface" },
+				{ "slug": "surface-alt",    "color": "#e8f5f2", "name": "Surface Alt" },
+				{ "slug": "text",           "color": "#1a1a1a", "name": "Text" },
+				{ "slug": "text-muted",     "color": "#555555", "name": "Text Muted" },
+				{ "slug": "text-inverse",   "color": "#ffffff", "name": "Text Inverse" },
+				{ "slug": "border-subtle",  "color": "#d4e8e4", "name": "Border Subtle" },
+				{ "slug": "footer-bg",      "color": "#1a4139", "name": "Footer Background" }
+			]
+		},
+		"typography": {
+			"fontFamilies": [
+				{
+					"fontFamily": "Inter, system-ui, -apple-system, sans-serif",
+					"slug": "heading",
+					"name": "Heading",
+					"fontFace": [
+						{
+							"fontFamily": "Inter",
+							"fontWeight": "100 900",
+							"fontStyle": "normal",
+							"fontDisplay": "swap",
+							"src": [ "file:./assets/fonts/inter-variable-latin.woff2" ]
+						}
+					]
+				},
+				{
+					"fontFamily": "Inter, system-ui, -apple-system, sans-serif",
+					"slug": "body",
+					"name": "Body",
+					"fontFace": [
+						{
+							"fontFamily": "Inter",
+							"fontWeight": "100 900",
+							"fontStyle": "normal",
+							"fontDisplay": "swap",
+							"src": [ "file:./assets/fonts/inter-variable-latin.woff2" ]
+						}
+					]
+				}
+			]
+		}
+	},
+	"styles": {
+		"color": {
+			"background": "var:preset|color|surface",
+			"text": "var:preset|color|text"
+		},
+		"typography": {
+			"fontFamily": "var:preset|font-family|body",
+			"lineHeight": "1.65"
+		},
+		"elements": {
+			"heading": {
+				"typography": {
+					"fontFamily": "var:preset|font-family|heading",
+					"fontWeight": "600",
+					"lineHeight": "1.25"
+				},
+				"color": {
+					"text": "var:preset|color|primary-dark"
+				}
+			},
+			"h1": { "typography": { "fontSize": "var:preset|font-size|hero" } },
+			"h2": { "typography": { "fontSize": "var:preset|font-size|xx-large" } },
+			"h3": { "typography": { "fontSize": "var:preset|font-size|x-large" } },
+			"h4": { "typography": { "fontSize": "var:preset|font-size|large" } },
+			"h5": { "typography": { "fontSize": "var:preset|font-size|medium", "fontWeight": "600" } },
+			"h6": {
+				"typography": {
+					"fontSize": "var:preset|font-size|small",
+					"fontWeight": "600",
+					"textTransform": "uppercase",
+					"letterSpacing": "0.06em"
+				}
+			},
+			"link": {
+				"color": { "text": "var:preset|color|primary" },
+				":hover": { "color": { "text": "var:preset|color|primary-dark" } },
+				":focus": {
+					"color": { "text": "var:preset|color|primary-dark" },
+					"typography": { "textDecoration": "underline" }
+				}
+			},
+			"button": {
+				"color": {
+					"background": "var:preset|color|primary",
+					"text": "var:preset|color|surface"
+				},
+				"typography": {
+					"fontWeight": "600",
+					"fontSize": "var:preset|font-size|small",
+					"textDecoration": "none"
+				},
+				"border": { "radius": "8px" },
+				"spacing": {
+					"padding": {
+						"top": "12px",
+						"bottom": "12px",
+						"left": "24px",
+						"right": "24px"
+					}
+				},
+				":hover": {
+					"color": {
+						"background": "var:preset|color|primary-dark",
+						"text": "var:preset|color|surface"
+					}
+				},
+				":focus": {
+					"outline": {
+						"color": "var:preset|color|primary",
+						"width": "2px",
+						"offset": "3px",
+						"style": "solid"
+					}
+				}
+			}
+		},
+		"blocks": {
+			"core/site-title": {
+				"typography": {
+					"fontFamily": "var:preset|font-family|heading",
+					"fontSize": "var:preset|font-size|large"
+				}
+			},
+			"core/navigation": {
+				"typography": {
+					"fontSize": "var:preset|font-size|small",
+					"fontWeight": "500"
+				}
+			},
+			"core/quote": {
+				"border": {
+					"color": "var:preset|color|primary",
+					"width": "3px"
+				}
+			}
+		}
+	}
+}
