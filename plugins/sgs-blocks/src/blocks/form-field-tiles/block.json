@@ -38,6 +38,7 @@
             "type": "string",
             "default": ""
         },
+        "name": { "type": "string", "default": "" },
         "label": {
             "type": "string",
             "default": ""
@@ -66,6 +67,7 @@
             "type": "boolean",
             "default": false
         },
+        "multiple": { "type": "boolean", "default": false },
         "columns": {
             "type": "number",
             "default": 3

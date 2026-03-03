@@ -35,7 +35,15 @@
                        "label":  {
                                      "type":  "string",
                                      "default":  "Step"
-                                 }
+                                 },
+                       "stepTitle":  {
+                                         "type":  "string",
+                                         "default":  ""
+                                     },
+                       "stepDescription":  {
+                                               "type":  "string",
+                                               "default":  ""
+                                           }
                    },
     "render":  "file:./render.php",
     "editorScript":  "file:./index.js",

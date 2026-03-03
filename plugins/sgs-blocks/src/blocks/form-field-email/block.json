@@ -37,6 +37,7 @@
             "type": "string",
             "default": ""
         },
+        "name": { "type": "string", "default": "" },
         "label": {
             "type": "string",
             "default": ""

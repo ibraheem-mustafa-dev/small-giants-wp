@@ -17,7 +17,7 @@ use function SGS\Blocks\Forms\field_close;
 use function SGS\Blocks\Forms\field_id;
 use function SGS\Blocks\Forms\field_input_attrs;
 
-$fid = field_id( $attributes['fieldName'] ?? 'unnamed' );
+$fid = field_id( $attributes['fieldName'] ?? $attributes['name'] ?? 'unnamed' );
 
 echo field_open( $attributes, 'email' );
 echo field_label( $fid, $attributes );

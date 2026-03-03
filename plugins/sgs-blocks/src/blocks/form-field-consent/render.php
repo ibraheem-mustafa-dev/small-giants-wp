@@ -18,15 +18,33 @@ use function SGS\Blocks\Forms\field_error;
 use function SGS\Blocks\Forms\field_close;
 use function SGS\Blocks\Forms\field_id;
 
-$fid         = field_id( $attributes['fieldName'] ?? 'consent' );
+$fid         = field_id( $attributes['fieldName'] ?? $attributes['name'] ?? 'consent' );
 $type        = $attributes['consentType'] ?? 'terms';
-$text        = $attributes['consentText'] ?? '';
 $is_required = in_array( $type, array( 'terms', 'gdpr' ), true ) || ( $attributes['required'] ?? false );
+
+// consentText is the current schema field.
+// Older posts used label + optional linkText/linkUrl — construct text from those.
+$text = $attributes['consentText'] ?? '';
+if ( ! $text && ! empty( $attributes['label'] ) ) {
+	$label_raw = $attributes['label'];
+	$link_text = $attributes['linkText'] ?? '';
+	$link_url  = $attributes['linkUrl'] ?? '';
+	if ( $link_text && $link_url && false !== strpos( $label_raw, $link_text ) ) {
+		// Embed the link into the label text.
+		$text = str_replace(
+			esc_html( $link_text ),
+			'<a href="' . esc_url( $link_url ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( $link_text ) . '</a>',
+			esc_html( $label_raw )
+		);
+	} else {
+		$text = esc_html( $label_raw );
+	}
+}
 
 echo field_open( $attributes, 'consent' );
 
 echo '<label class="sgs-form-field__consent" for="' . esc_attr( $fid ) . '">';
-echo '<input type="checkbox" id="' . esc_attr( $fid ) . '" name="' . esc_attr( $attributes['fieldName'] ?? 'consent' ) . '" value="yes"';
+echo '<input type="checkbox" id="' . esc_attr( $fid ) . '" name="' . esc_attr( $attributes['fieldName'] ?? $attributes['name'] ?? 'consent' ) . '" value="yes"';
 if ( $is_required ) {
 	echo ' required aria-required="true"';
 }

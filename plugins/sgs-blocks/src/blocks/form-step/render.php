@@ -15,7 +15,9 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$label = $attributes['label'] ?? __( 'Step', 'sgs-blocks' );
+// stepTitle (legacy) falls back to label (current schema).
+$label       = $attributes['stepTitle'] ?? $attributes['label'] ?? __( 'Step', 'sgs-blocks' );
+$description = $attributes['stepDescription'] ?? '';
 
 $wrapper_attributes = get_block_wrapper_attributes(
 	array(
@@ -25,8 +27,18 @@ $wrapper_attributes = get_block_wrapper_attributes(
 	)
 );
 
+// Optional step heading (only visible if block template includes a step header).
+$step_header = '';
+if ( $label ) {
+	$step_header .= sprintf( '<p class="sgs-form-step__title">%s</p>', esc_html( $label ) );
+}
+if ( $description ) {
+	$step_header .= sprintf( '<p class="sgs-form-step__description">%s</p>', esc_html( $description ) );
+}
+
 printf(
-	'<div %s>%s</div>',
+	'<div %s>%s%s</div>',
 	$wrapper_attributes,
+	$step_header,
 	$content
 );

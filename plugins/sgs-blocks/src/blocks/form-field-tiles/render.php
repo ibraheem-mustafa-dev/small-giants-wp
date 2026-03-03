@@ -19,11 +19,12 @@ use function SGS\Blocks\Forms\field_error;
 use function SGS\Blocks\Forms\field_close;
 use function SGS\Blocks\Forms\field_id;
 
-$fid           = field_id( $attributes['fieldName'] ?? 'unnamed' );
+$fid           = field_id( $attributes['fieldName'] ?? $attributes['name'] ?? 'unnamed' );
 $tiles         = $attributes['tiles'] ?? array();
-$multi         = $attributes['multiSelect'] ?? false;
+// multiSelect is current schema; 'multiple' is legacy key used in older posts.
+$multi         = $attributes['multiSelect'] ?? $attributes['multiple'] ?? false;
 $columns       = absint( $attributes['columns'] ?? 3 );
-$name          = esc_attr( $attributes['fieldName'] ?? '' );
+$name          = esc_attr( $attributes['fieldName'] ?? $attributes['name'] ?? '' );
 $required      = ! empty( $attributes['required'] );
 $help_text     = $attributes['helpText'] ?? '';
 $selected_style = $attributes['selectedStyle'] ?? 'checkmark'; // border | background | checkmark.

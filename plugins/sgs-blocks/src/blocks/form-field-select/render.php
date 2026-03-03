@@ -17,13 +17,13 @@ use function SGS\Blocks\Forms\field_close;
 use function SGS\Blocks\Forms\field_id;
 use function SGS\Blocks\Forms\field_input_attrs;
 
-$fid     = field_id( $attributes['fieldName'] ?? 'unnamed' );
+$fid     = field_id( $attributes['fieldName'] ?? $attributes['name'] ?? 'unnamed' );
 $options = $attributes['options'] ?? array();
 
 echo field_open( $attributes, 'select' );
 echo field_label( $fid, $attributes );
 echo '<select class="sgs-form-field__input" ' . field_input_attrs( $fid, $attributes ) . '>';
-echo '<option value="">' . esc_html( $attributes['placeholder'] ?? __( 'Select…', 'sgs-blocks' ) ) . '</option>';
+echo '<option value="">' . esc_html( $attributes['placeholder'] ?? __( 'SelectÃ¢â‚¬Â¦', 'sgs-blocks' ) ) . '</option>';
 foreach ( $options as $option ) {
 	echo '<option value="' . esc_attr( $option['value'] ?? '' ) . '">' . esc_html( $option['label'] ?? '' ) . '</option>';
 }

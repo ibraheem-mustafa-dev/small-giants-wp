@@ -47,6 +47,7 @@
                                       "type":  "string",
                                       "default":  ""
                                   },
+        "action": { "type": "string", "default": "" },
                        "formName":  {
                                         "type":  "string",
                                         "default":  ""

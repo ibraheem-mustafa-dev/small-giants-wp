@@ -44,7 +44,9 @@
                                        "type":  "string",
                                        "default":  "Hi, I\u0027d like to know more about your services."
                                    },
-                       "variant":  {
+                               "style": { "type": "string", "default": "" },
+        "size": { "type": "string", "default": "" },
+        "headline": { "type": "string", "default": "" },"variant":  {
                                        "type":  "string",
                                        "default":  "floating"
                                    },

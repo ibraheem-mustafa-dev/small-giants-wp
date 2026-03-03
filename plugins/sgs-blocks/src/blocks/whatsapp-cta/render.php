@@ -14,9 +14,15 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
-$phone_number   = $attributes['phoneNumber'] ?? '';
+// phoneNumber in attr takes precedence; falls back to Customiser sgs_whatsapp theme_mod.
+$phone_number   = $attributes['phoneNumber'] ?? get_theme_mod( 'sgs_whatsapp', '' );
 $message        = $attributes['message'] ?? '';
-$variant        = $attributes['variant'] ?? 'floating';
+// 'style' (legacy) and 'variant' (current) both map to the block variant modifier.
+$variant        = $attributes['variant'] ?? $attributes['style'] ?? 'floating';
+// 'size' (legacy) maps to CSS size modifier; ignored if not set.
+$size           = $attributes['size'] ?? '';
+// 'headline' (legacy) — optional title shown above the CTA button.
+$headline       = $attributes['headline'] ?? '';
 $label          = $attributes['label'] ?? '';
 $show_mobile    = $attributes['showOnMobile'] ?? true;
 $show_desktop   = $attributes['showOnDesktop'] ?? true;
@@ -24,7 +30,7 @@ $label_colour   = $attributes['labelColour'] ?? '';
 $label_fontsize = $attributes['labelFontSize'] ?? '';
 $bg_colour      = $attributes['backgroundColour'] ?? '';
 
-// Nothing to render if no phone number is provided.
+// Nothing to render if no phone number is available.
 if ( ! $phone_number ) {
 	return;
 }
@@ -43,6 +49,7 @@ $classes = array_merge(
 		'sgs-whatsapp-cta',
 		'sgs-whatsapp-cta--' . esc_attr( $variant ),
 	),
+	$size ? array( 'sgs-whatsapp-cta--size-' . esc_attr( $size ) ) : array(),
 	$visibility_classes
 );
 
@@ -100,4 +107,9 @@ $btn_html = sprintf(
 	$label_html
 );
 
-printf( '<div %s>%s</div>', $wrapper_attributes, $btn_html );
+// Optional headline shown above the CTA button (legacy posts only — current schema omits this).
+$headline_html = $headline
+	? '<p class="sgs-whatsapp-cta__headline">' . esc_html( $headline ) . '</p>'
+	: '';
+
+printf( '<div %s>%s%s</div>', $wrapper_attributes, $headline_html, $btn_html );

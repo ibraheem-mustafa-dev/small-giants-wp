@@ -19,14 +19,14 @@ use function SGS\Blocks\Forms\field_error;
 use function SGS\Blocks\Forms\field_close;
 use function SGS\Blocks\Forms\field_id;
 
-$fid         = field_id( $attributes['fieldName'] ?? 'unnamed' );
-$field_name  = $attributes['fieldName'] ?? '';
+$fid         = field_id( $attributes['fieldName'] ?? $attributes['name'] ?? 'unnamed' );
+$field_name  = $attributes['fieldName'] ?? $attributes['name'] ?? '';
 $required    = ! empty( $attributes['required'] );
 $max         = absint( $attributes['maxSize'] ?? 10 );
 $upload_text = $attributes['uploadText'] ?? '';
 
-// allowedTypes is an array in the block schema — join for the HTML accept attribute.
-$allowed_types_raw = $attributes['allowedTypes'] ?? array( 'image/*', 'application/pdf' );
+// allowedTypes is an array in the current schema; older posts use 'accept' (string). Ã¢â‚¬â€ join for the HTML accept attribute.
+$allowed_types_raw = $attributes['allowedTypes'] ?? $attributes['accept'] ?? array( 'image/*', 'application/pdf' );
 if ( is_array( $allowed_types_raw ) ) {
 	$accept = esc_attr( implode( ',', $allowed_types_raw ) );
 } else {
@@ -55,7 +55,7 @@ echo '<span>' . esc_html( $drop_label ) . '</span>';
 echo '<span class="sgs-form-field__file-hint">' . sprintf( esc_html__( 'Max %d MB', 'sgs-blocks' ), $max ) . '</span>';
 echo '</div>';
 
-echo '<div class="sgs-form-file__progress" hidden>' . esc_html__( 'Uploading…', 'sgs-blocks' ) . '</div>';
+echo '<div class="sgs-form-file__progress" hidden>' . esc_html__( 'UploadingÃ¢â‚¬Â¦', 'sgs-blocks' ) . '</div>';
 echo '<div class="sgs-form-file__preview" hidden></div>';
 
 // Hidden input stores the attachment ID returned by the upload endpoint.
