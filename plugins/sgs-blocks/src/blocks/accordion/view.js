@@ -1,186 +1,80 @@
 /**
- * Accordion — frontend interactivity.
+ * SGS Accordion — Interactivity API store.
  *
- * Enhances native <details>/<summary> with:
- * - Smooth expand/collapse animation (CSS transitions)
- * - Single-open mode (closes siblings when one opens)
- * - Respects data-allow-multiple and data-default-open attributes
- *
- * Uses a WeakSet to track programmatic toggles, preventing
- * re-entrant animation loops when closing siblings.
+ * Replaces vanilla JS with reactive WP Interactivity API.
+ * Handles: toggle, single-open mode, ARIA sync.
+ * Smooth animation is handled by CSS (no JS animation needed).
  *
  * @package SGS\Blocks
  */
 
-function initAccordions() {
-	const accordions = document.querySelectorAll( '.sgs-accordion' );
+import { store, getContext, getElement } from '@wordpress/interactivity';
 
-	accordions.forEach( ( accordion ) => {
-		const allowMultiple =
-			accordion.dataset.allowMultiple === 'true';
-		const defaultOpen = parseInt(
-			accordion.dataset.defaultOpen ?? '-1',
-			10
-		);
-		const items = accordion.querySelectorAll(
-			':scope > .sgs-accordion-item'
-		);
+// Track the most recently opened item per accordion instance.
+// Keyed by accordionId so multiple accordions on one page don't interfere.
+const { state } = store( 'sgs/accordion', {
+	state: {
+		/** Map of accordionId → currently open itemId (single-open mode). */
+		openItems: {},
+	},
 
-		// Track which items are being animated programmatically.
-		const animatingItems = new WeakSet();
+	actions: {
+		/**
+		 * Toggle the clicked accordion item open or closed.
+		 * In single-open mode, closes any sibling that was open.
+		 */
+		toggle( event ) {
+			// Prevent native <summary> click from toggling <details> directly.
+			event.preventDefault();
 
-		// Open the default item if set.
-		if ( defaultOpen >= 0 && items[ defaultOpen ] ) {
-			items[ defaultOpen ].setAttribute( 'open', '' );
-		}
+			const ctx         = getContext();
+			const accordionId = ctx.accordionId;
+			const willOpen    = ! ctx.isOpen;
 
-		// Set up each accordion item.
-		items.forEach( ( details ) => {
-			const summary = details.querySelector( 'summary' );
-			const content = details.querySelector(
-				'.sgs-accordion-item__content'
-			);
+			ctx.isOpen = willOpen;
 
-			if ( ! summary || ! content ) {
+			if ( willOpen ) {
+				if ( ! ctx.allowMultiple ) {
+					// Signal which item just opened; siblings will react via callbacks.syncSiblings.
+					state.openItems = {
+						...state.openItems,
+						[ accordionId ]: ctx.itemId,
+					};
+				}
+			} else {
+				// If this was the tracked open item, clear it.
+				if ( state.openItems[ accordionId ] === ctx.itemId ) {
+					state.openItems = {
+						...state.openItems,
+						[ accordionId ]: '',
+					};
+				}
+			}
+		},
+	},
+
+	callbacks: {
+		/**
+		 * Reactive callback on each accordion item.
+		 * When another item opens (state.openItems changes), close this one
+		 * if it is not the newly opened item (single-open enforcement).
+		 *
+		 * Attached via data-wp-watch="callbacks.syncSiblings" on each <details>.
+		 */
+		syncSiblings() {
+			const ctx         = getContext();
+			const accordionId = ctx.accordionId;
+			const openId      = state.openItems[ accordionId ];
+
+			// Only act in single-open mode.
+			if ( ctx.allowMultiple ) {
 				return;
 			}
 
-			// Wrap content for animation measurement.
-			let wrapper = content.querySelector(
-				'.sgs-accordion-item__content-inner'
-			);
-			if ( ! wrapper ) {
-				wrapper = document.createElement( 'div' );
-				wrapper.className =
-					'sgs-accordion-item__content-inner';
-				while ( content.firstChild ) {
-					wrapper.appendChild( content.firstChild );
-				}
-				content.appendChild( wrapper );
+			// If another item is the open one and this item is still open, close it.
+			if ( openId && openId !== ctx.itemId && ctx.isOpen ) {
+				ctx.isOpen = false;
 			}
-
-			// Use click on summary instead of toggle event.
-			// This fires BEFORE the native toggle, giving us control.
-			summary.addEventListener( 'click', ( e ) => {
-				e.preventDefault();
-
-				if ( animatingItems.has( details ) ) {
-					return;
-				}
-
-				if ( details.open ) {
-					// Currently open — close it.
-					closeItem( details, content, wrapper, animatingItems );
-				} else {
-					// Currently closed — open it.
-					// Close siblings first (single-open mode).
-					if ( ! allowMultiple ) {
-						items.forEach( ( sibling ) => {
-							if (
-								sibling !== details &&
-								sibling.hasAttribute( 'open' ) &&
-								! animatingItems.has( sibling )
-							) {
-								const sibContent =
-									sibling.querySelector(
-										'.sgs-accordion-item__content'
-									);
-								const sibWrapper =
-									sibling.querySelector(
-										'.sgs-accordion-item__content-inner'
-									);
-								if ( sibContent && sibWrapper ) {
-									closeItem(
-										sibling,
-										sibContent,
-										sibWrapper,
-										animatingItems
-									);
-								}
-							}
-						} );
-					}
-					openItem( details, content, wrapper, animatingItems );
-				}
-			} );
-		} );
-	} );
-}
-
-/**
- * Open an accordion item with smooth animation.
- * Also updates aria-expanded on the summary for legacy screen reader support.
- */
-function openItem( details, content, wrapper, animatingItems ) {
-	animatingItems.add( details );
-	details.setAttribute( 'open', '' );
-
-	// Sync aria-expanded so legacy screen readers announce the open state.
-	const summary = details.querySelector( 'summary' );
-	if ( summary ) {
-		summary.setAttribute( 'aria-expanded', 'true' );
-	}
-
-	// Measure height after open.
-	const height = wrapper.offsetHeight;
-	content.style.height = '0px';
-	content.style.overflow = 'hidden';
-
-	requestAnimationFrame( () => {
-		content.style.transition = 'height 0.3s ease';
-		content.style.height = height + 'px';
-
-		content.addEventListener(
-			'transitionend',
-			() => {
-				content.style.height = '';
-				content.style.overflow = '';
-				content.style.transition = '';
-				animatingItems.delete( details );
-			},
-			{ once: true }
-		);
-	} );
-}
-
-/**
- * Close an accordion item with smooth animation.
- * Also updates aria-expanded on the summary for legacy screen reader support.
- */
-function closeItem( details, content, wrapper, animatingItems ) {
-	animatingItems.add( details );
-
-	// Sync aria-expanded immediately — the item is logically closed now.
-	const summary = details.querySelector( 'summary' );
-	if ( summary ) {
-		summary.setAttribute( 'aria-expanded', 'false' );
-	}
-
-	const height = wrapper.offsetHeight;
-	content.style.height = height + 'px';
-	content.style.overflow = 'hidden';
-
-	requestAnimationFrame( () => {
-		content.style.transition = 'height 0.3s ease';
-		content.style.height = '0px';
-
-		content.addEventListener(
-			'transitionend',
-			() => {
-				details.removeAttribute( 'open' );
-				content.style.height = '';
-				content.style.overflow = '';
-				content.style.transition = '';
-				animatingItems.delete( details );
-			},
-			{ once: true }
-		);
-	} );
-}
-
-// Initialise on DOM ready.
-if ( document.readyState === 'loading' ) {
-	document.addEventListener( 'DOMContentLoaded', initAccordions );
-} else {
-	initAccordions();
-}
+		},
+	},
+} );

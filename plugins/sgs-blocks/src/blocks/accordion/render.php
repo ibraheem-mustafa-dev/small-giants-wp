@@ -26,10 +26,14 @@ $classes = [
 	'sgs-accordion--icon-' . esc_attr( $icon_position ),
 ];
 
+$block_id = 'sgs-acc-' . substr( md5( serialize( $attributes ) ), 0, 8 );
+
 $wrapper = get_block_wrapper_attributes( [
 	'class'                  => implode( ' ', $classes ),
 	'data-allow-multiple'    => $allow_multi ? 'true' : 'false',
 	'data-default-open'      => (string) $default_open,
+	'data-wp-interactive'    => 'sgs/accordion',
+	'data-wp-context'        => wp_json_encode( [ 'allowMultiple' => $allow_multi, 'accordionId' => $block_id ] ),
 ] );
 
 // Output the accordion wrapper with rendered inner blocks.

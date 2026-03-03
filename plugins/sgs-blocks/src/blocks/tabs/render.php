@@ -49,7 +49,7 @@ $block_id = ! empty( $attributes['anchor'] )
 	? sanitize_html_class( $attributes['anchor'] )
 	: 'sgs-tabs-' . substr( md5( serialize( $attributes ) . count( $tabs ) ), 0, 8 );
 
-// ─── Inline CSS custom properties ───────────────────────────────────────────
+// ─── Inline CSS custom properties ────────────────────────────────────────────
 $css_vars = [];
 
 $colour_props = [
@@ -75,23 +75,34 @@ $css_vars[] = '--sgs-transition-duration:' . $transition . 'ms';
 
 $inline_style = implode( ';', $css_vars );
 
-// ─── Wrapper attributes ──────────────────────────────────────────────────────
+// ─── IA API context ───────────────────────────────────────────────────────────
+$tab_count = count( $tabs );
+
+$wrapper_context = wp_json_encode( [
+	'activeTabId' => $block_id . '-tab-0',
+	'orientation' => $orientation,
+	'totalTabs'   => $tab_count,
+] );
+
+// ─── Wrapper attributes ───────────────────────────────────────────────────────
 $wrapper_attrs = get_block_wrapper_attributes(
 	[
-		'class'           => implode( ' ', [
+		'class'               => implode( ' ', [
 			'sgs-tabs',
 			'sgs-tabs--' . esc_attr( $orientation ),
 			'sgs-tabs--style-' . esc_attr( $tab_style ),
 			'sgs-tabs--align-' . esc_attr( $tab_align ),
 		] ),
-		'id'              => esc_attr( $block_id ),
-		'data-tabs-block' => 'true',
-		'style'           => $inline_style,
+		'id'                  => esc_attr( $block_id ),
+		'data-tabs-block'     => 'true',
+		'style'               => $inline_style,
+		'data-wp-interactive' => 'sgs/tabs',
+		'data-wp-context'     => $wrapper_context,
+		'data-wp-init'        => 'callbacks.init',
 	]
 );
 
-// ─── Build output ────────────────────────────────────────────────────────────
-$tab_count = count( $tabs );
+// ─── Build output ─────────────────────────────────────────────────────────────
 ?>
 <div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 
@@ -100,11 +111,13 @@ $tab_count = count( $tabs );
 		role="tablist"
 		aria-label="<?php esc_attr_e( 'Content tabs', 'sgs-blocks' ); ?>"
 		aria-orientation="<?php echo esc_attr( $orientation ); ?>"
+		data-wp-on--keydown="actions.handleKeydown"
 	>
 		<?php foreach ( $tabs as $i => $tab ) :
-			$tab_id   = esc_attr( $block_id . '-tab-' . $i );
-			$panel_id = esc_attr( $block_id . '-panel-' . $i );
-			$is_first = ( 0 === $i );
+			$tab_id      = esc_attr( $block_id . '-tab-' . $i );
+			$panel_id    = esc_attr( $block_id . '-panel-' . $i );
+			$is_first    = ( 0 === $i );
+			$btn_context = esc_attr( wp_json_encode( [ 'tabId' => $block_id . '-tab-' . $i ] ) );
 		?>
 		<button
 			id="<?php echo $tab_id; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $tab_id is assigned via esc_attr() above. ?>"
@@ -114,6 +127,11 @@ $tab_count = count( $tabs );
 			aria-controls="<?php echo $panel_id; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $panel_id is assigned via esc_attr() above. ?>"
 			tabindex="<?php echo $is_first ? '0' : '-1'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- outputs only the string literals '0' or '-1'. ?>"
 			data-tab-index="<?php echo (int) $i; ?>"
+			data-wp-context="<?php echo $btn_context; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped via esc_attr() above. ?>"
+			data-wp-on--click="actions.activate"
+			data-wp-class--is-active="context.activeTabId === context.tabId"
+			data-wp-bind--aria-selected="context.activeTabId === context.tabId ? 'true' : 'false'"
+			data-wp-bind--tabindex="context.activeTabId === context.tabId ? '0' : '-1'"
 		>
 			<?php echo esc_html( $tab['label'] ); ?>
 		</button>
@@ -122,9 +140,10 @@ $tab_count = count( $tabs );
 
 	<div class="sgs-tabs__panels">
 		<?php foreach ( $tabs as $i => $tab ) :
-			$tab_id   = esc_attr( $block_id . '-tab-' . $i );
-			$panel_id = esc_attr( $block_id . '-panel-' . $i );
-			$is_first = ( 0 === $i );
+			$tab_id        = esc_attr( $block_id . '-tab-' . $i );
+			$panel_id      = esc_attr( $block_id . '-panel-' . $i );
+			$is_first      = ( 0 === $i );
+			$panel_context = esc_attr( wp_json_encode( [ 'tabId' => $block_id . '-tab-' . $i ] ) );
 		?>
 		<div
 			id="<?php echo $panel_id; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $panel_id is assigned via esc_attr() above. ?>"
@@ -133,6 +152,8 @@ $tab_count = count( $tabs );
 			aria-labelledby="<?php echo $tab_id; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $tab_id is assigned via esc_attr() above. ?>"
 			tabindex="0"
 			<?php if ( ! $is_first ) : ?>hidden<?php endif; ?>
+			data-wp-context="<?php echo $panel_context; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped via esc_attr() above. ?>"
+			data-wp-bind--hidden="context.activeTabId !== context.tabId"
 		>
 			<?php
 			echo $tab['content']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped

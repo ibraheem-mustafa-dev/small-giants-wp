@@ -1,159 +1,93 @@
 /**
- * SGS Tabs — frontend interactivity.
+ * SGS Tabs — Interactivity API store.
  *
- * Handles:
- * - Tab switching with ARIA state management
- * - Keyboard navigation (Arrow keys, Home, End, Tab into panel)
- * - Deep linking: URL hash (#tab-id) activates the matching tab on load
- * - Focus management: keyboard tab switches move focus to the new tab button
- * - prefers-reduced-motion: skips transitions when motion is reduced
- *
- * Progressive enhancement: tabs render with the first panel visible and
- * correct ARIA from the server. This script adds interactivity on top.
- *
- * Loaded as a viewScriptModule (ES module, frontend only).
+ * Replaces vanilla JS tab switching with reactive WP Interactivity API.
+ * Handles: tab activation, keyboard navigation (WAI-ARIA), deep-link hash.
  *
  * @package SGS\Blocks
  */
 
-/**
- * Initialise all tab blocks on the page.
- */
-function initTabBlocks() {
-	const tabBlocks = document.querySelectorAll( '[data-tabs-block]' );
-	tabBlocks.forEach( initTabBlock );
-}
+import { store, getContext, getElement } from '@wordpress/interactivity';
 
-/**
- * Initialise a single tabs block.
- *
- * @param {HTMLElement} block The .sgs-tabs wrapper element.
- */
-function initTabBlock( block ) {
-	const nav        = block.querySelector( '.sgs-tabs__nav' );
-	const panels     = block.querySelectorAll( '.sgs-tabs__panel' );
-	const tabButtons = nav ? nav.querySelectorAll( '[role="tab"]' ) : [];
+store( 'sgs/tabs', {
+	actions: {
+		/**
+		 * Activate the clicked tab.
+		 * Reads tabId from the item's context and writes activeTabId to the parent context.
+		 */
+		activate() {
+			const ctx = getContext();
+			// ctx.activeTabId lives on the wrapper; ctx.tabId on the button.
+			// Because contexts merge, both are accessible here.
+			ctx.activeTabId = ctx.tabId;
 
-	if ( ! nav || ! tabButtons.length || ! panels.length ) {
-		return;
-	}
-
-	const orientation = nav.getAttribute( 'aria-orientation' ) || 'horizontal';
-	const tabCount    = tabButtons.length;
-
-	/**
-	 * Activate a tab by index.
-	 *
-	 * Updates ARIA attributes, shows the correct panel, and optionally moves
-	 * focus to the newly active tab button.
-	 *
-	 * @param {number}  index         Zero-based tab index to activate.
-	 * @param {boolean} moveFocus     Whether to focus the tab button (keyboard nav).
-	 * @param {boolean} updateHash    Whether to update the URL hash.
-	 */
-	function activateTab( index, moveFocus, updateHash ) {
-		if ( index < 0 || index >= tabCount ) {
-			return;
-		}
-
-		tabButtons.forEach( ( btn, i ) => {
-			const isActive = ( i === index );
-			btn.setAttribute( 'aria-selected', isActive ? 'true' : 'false' );
-			btn.setAttribute( 'tabindex', isActive ? '0' : '-1' );
-			btn.classList.toggle( 'sgs-tabs__tab--active', isActive );
-		} );
-
-		panels.forEach( ( panel, i ) => {
-			if ( i === index ) {
-				panel.removeAttribute( 'hidden' );
-			} else {
-				panel.setAttribute( 'hidden', '' );
+			// Deep-link: update URL hash to the tab button's ID.
+			const { ref } = getElement();
+			if ( ref.id ) {
+				history.replaceState( null, '', '#' + ref.id );
 			}
-		} );
+		},
 
-		if ( moveFocus ) {
-			tabButtons[ index ].focus();
-		}
+		/**
+		 * Keyboard navigation within the tab list.
+		 * WAI-ARIA: Arrow keys, Home, End.
+		 *
+		 * @param {KeyboardEvent} event
+		 */
+		handleKeydown( event ) {
+			const ctx        = getContext();
+			const { ref }    = getElement(); // ref = the tablist div
+			const isHoriz    = 'horizontal' === ctx.orientation;
+			const prevKey    = isHoriz ? 'ArrowLeft' : 'ArrowUp';
+			const nextKey    = isHoriz ? 'ArrowRight' : 'ArrowDown';
+			const key        = event.key;
 
-		if ( updateHash ) {
-			const tabId = tabButtons[ index ].id;
-			if ( tabId ) {
-				history.replaceState( null, '', '#' + tabId );
+			if ( ! [ prevKey, nextKey, 'Home', 'End' ].includes( key ) ) {
+				return;
 			}
-		}
-	}
 
-	/**
-	 * Keydown handler attached to the tab nav list.
-	 *
-	 * Implements WAI-ARIA Authoring Practices keyboard interaction:
-	 * - Arrow keys move between tabs (direction depends on orientation)
-	 * - Home / End jump to first / last tab
-	 * - Tab key is not intercepted — browser default moves focus into panel
-	 *
-	 * @param {KeyboardEvent} event
-	 */
-	function handleKeydown( event ) {
-		const isHorizontal = ( 'horizontal' === orientation );
-		const prevKey      = isHorizontal ? 'ArrowLeft'  : 'ArrowUp';
-		const nextKey      = isHorizontal ? 'ArrowRight' : 'ArrowDown';
+			event.preventDefault();
 
-		const currentIndex = Array.from( tabButtons ).findIndex(
-			( btn ) => btn === document.activeElement
-		);
+			const tabs     = Array.from( ref.querySelectorAll( '[role="tab"]' ) );
+			const total    = tabs.length;
+			const current  = tabs.findIndex(
+				( t ) => t.getAttribute( 'aria-selected' ) === 'true'
+			);
 
-		if ( currentIndex === -1 ) {
-			return;
-		}
+			let target = current;
+			if ( key === nextKey )    { target = ( current + 1 ) % total; }
+			if ( key === prevKey )    { target = ( current - 1 + total ) % total; }
+			if ( key === 'Home' )     { target = 0; }
+			if ( key === 'End' )      { target = total - 1; }
 
-		let targetIndex = currentIndex;
+			if ( target === current ) {
+				return;
+			}
 
-		switch ( event.key ) {
-			case nextKey:
-				targetIndex = ( currentIndex + 1 ) % tabCount;
-				break;
-			case prevKey:
-				targetIndex = ( currentIndex - 1 + tabCount ) % tabCount;
-				break;
-			case 'Home':
-				targetIndex = 0;
-				break;
-			case 'End':
-				targetIndex = tabCount - 1;
-				break;
-			default:
-				return; // Let other keys pass through unhandled.
-		}
+			// Activate target tab and move focus.
+			tabs[ target ].click();
+			tabs[ target ].focus();
+		},
+	},
 
-		event.preventDefault();
-		activateTab( targetIndex, true, true );
-	}
+	callbacks: {
+		/**
+		 * On init: check URL hash for deep-link activation.
+		 * Runs once when the block mounts in the browser.
+		 */
+		init() {
+			const ctx     = getContext();
+			const { ref } = getElement();
+			const hash    = window.location.hash.slice( 1 );
 
-	// Attach click listeners to each tab button.
-	tabButtons.forEach( ( btn, index ) => {
-		btn.addEventListener( 'click', () => {
-			activateTab( index, false, true );
-		} );
-	} );
+			if ( ! hash ) {
+				return;
+			}
 
-	// Attach keyboard listener to the nav container.
-	nav.addEventListener( 'keydown', handleKeydown );
-
-	// ─── Deep linking — check URL hash on load ───────────────────────────
-	const hash = window.location.hash.slice( 1 );
-	if ( hash ) {
-		const matchIndex = Array.from( tabButtons ).findIndex(
-			( btn ) => btn.id === hash
-		);
-		if ( matchIndex !== -1 ) {
-			activateTab( matchIndex, false, false );
-		}
-	}
-}
-
-// Initialise on DOM ready.
-if ( document.readyState === 'loading' ) {
-	document.addEventListener( 'DOMContentLoaded', initTabBlocks );
-} else {
-	initTabBlocks();
-}
+			const matchedTab = ref.querySelector( `[role="tab"][id="${ hash }"]` );
+			if ( matchedTab ) {
+				ctx.activeTabId = matchedTab.dataset.tabId || hash;
+			}
+		},
+	},
+} );

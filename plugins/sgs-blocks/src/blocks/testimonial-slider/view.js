@@ -1,258 +1,230 @@
 /**
- * SGS Testimonial Slider — scroll-snap carousel with autoplay.
+ * SGS Testimonial Slider — Interactivity API store.
  *
- * CSS scroll-snap handles the snap behaviour. This module adds:
- * - Prev/next arrow functionality
- * - Dot navigation synced to scroll position
- * - Optional autoplay that pauses on hover/focus
- * - WCAG 2.2.2-compliant persistent pause/play button (injected into DOM)
+ * CSS scroll-snap handles snapping. This store adds:
+ * - Prev/next and dot navigation
+ * - Scroll-position sync (debounced scroll event)
+ * - Autoplay with WCAG 2.2.2 pause/play toggle
+ * - Pause on hover/focus, resume on leave
+ * - prefers-reduced-motion support
  *
- * Loaded as a viewScriptModule (ES module, frontend only).
- * Target: < 3KB minified.
+ * @package SGS\Blocks
  */
 
-const sliders = document.querySelectorAll( '.sgs-testimonial-slider' );
+import { store, getContext, getElement } from '@wordpress/interactivity';
 
-sliders.forEach( ( slider ) => {
-	const track = slider.querySelector( '.sgs-testimonial-slider__track' );
-	const slides = slider.querySelectorAll( '.sgs-testimonial-slider__slide' );
-	const prevBtn = slider.querySelector( '.sgs-testimonial-slider__arrow--prev' );
-	const nextBtn = slider.querySelector( '.sgs-testimonial-slider__arrow--next' );
-	const dots = slider.querySelectorAll( '.sgs-testimonial-slider__dot' );
+// Module-level timer registry — keyed by element reference to avoid shared state.
+const timers     = new WeakMap();
+const scrollJobs = new WeakMap();
 
-	if ( ! track || slides.length === 0 ) {
+/** Returns true when the user prefers reduced motion. */
+function prefersReducedMotion() {
+	return window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
+}
+
+/** Scroll the track to the given slide index. */
+function scrollToSlide( track, slides, index, smooth ) {
+	const target = slides[ index ];
+	if ( ! target ) {
 		return;
 	}
-
-	const shouldAutoplay = slider.dataset.autoplay === 'true';
-	const speed = parseInt( slider.dataset.speed || '5000', 10 );
-	const prefersReducedMotion = window.matchMedia(
-		'(prefers-reduced-motion: reduce)'
-	).matches;
-
-	let currentIndex = 0;
-	let autoplayTimer = null;
-	let isPaused = false;
-
-	/**
-	 * Scroll to a specific slide index.
-	 *
-	 * @param {number} index Target slide index.
-	 */
-	function goToSlide( index ) {
-		const clamped = Math.max( 0, Math.min( index, slides.length - 1 ) );
-		currentIndex = clamped;
-
-		track.scrollTo( {
-			left: slides[ clamped ].offsetLeft,
-			behavior: prefersReducedMotion ? 'auto' : 'smooth',
-		} );
-
-		updateDots();
-	}
-
-	/**
-	 * Update active dot based on current index.
-	 */
-	function updateDots() {
-		dots.forEach( ( dot, i ) => {
-			const isActive = i === currentIndex;
-			dot.classList.toggle(
-				'sgs-testimonial-slider__dot--active',
-				isActive
-			);
-			dot.setAttribute( 'aria-selected', isActive ? 'true' : 'false' );
-		} );
-	}
-
-	/**
-	 * Detect current slide from scroll position.
-	 */
-	function detectCurrentSlide() {
-		if ( ! slides.length ) {
-			return;
-		}
-
-		const trackRect = track.getBoundingClientRect();
-		let closestIndex = 0;
-		let closestDistance = Infinity;
-
-		slides.forEach( ( slide, i ) => {
-			const slideRect = slide.getBoundingClientRect();
-			const distance = Math.abs( slideRect.left - trackRect.left );
-			if ( distance < closestDistance ) {
-				closestDistance = distance;
-				closestIndex = i;
-			}
-		} );
-
-		if ( closestIndex !== currentIndex ) {
-			currentIndex = closestIndex;
-			updateDots();
-		}
-	}
-
-	/* Arrow navigation */
-	if ( prevBtn ) {
-		prevBtn.addEventListener( 'click', () => {
-			goToSlide( currentIndex - 1 );
-			pausePermanently();
-		} );
-	}
-
-	if ( nextBtn ) {
-		nextBtn.addEventListener( 'click', () => {
-			goToSlide( currentIndex + 1 );
-			pausePermanently();
-		} );
-	}
-
-	/* Dot navigation */
-	dots.forEach( ( dot, i ) => {
-		dot.addEventListener( 'click', () => {
-			goToSlide( i );
-			pausePermanently();
-		} );
+	track.scrollTo( {
+		left:     target.offsetLeft,
+		behavior: ( smooth && ! prefersReducedMotion() ) ? 'smooth' : 'auto',
 	} );
+}
 
-	/* Scroll detection — sync dots as user scrolls */
-	let scrollTimeout;
-	track.addEventListener(
-		'scroll',
-		() => {
-			clearTimeout( scrollTimeout );
-			scrollTimeout = setTimeout( detectCurrentSlide, 100 );
+/** Find the closest slide index to the current scroll position. */
+function detectIndex( track, slides ) {
+	const trackLeft = track.getBoundingClientRect().left;
+	let   closest   = 0;
+	let   minDist   = Infinity;
+	slides.forEach( ( slide, i ) => {
+		const dist = Math.abs( slide.getBoundingClientRect().left - trackLeft );
+		if ( dist < minDist ) {
+			minDist  = dist;
+			closest  = i;
+		}
+	} );
+	return closest;
+}
+
+store( 'sgs/testimonial-slider', {
+	actions: {
+		/** Navigate to the previous slide and stop autoplay. */
+		prev() {
+			const ctx     = getContext();
+			const { ref } = getElement();
+			const slider  = ref.closest( '.sgs-testimonial-slider' );
+			const track   = slider?.querySelector( '.sgs-testimonial-slider__track' );
+			const slides  = slider ? Array.from( slider.querySelectorAll( '.sgs-testimonial-slider__slide' ) ) : [];
+			const next    = Math.max( 0, ctx.currentIndex - 1 );
+
+			ctx.currentIndex = next;
+			ctx.isPlaying    = false; // User interaction: permanently pause.
+			scrollToSlide( track, slides, next, true );
 		},
-		{ passive: true }
-	);
 
-	/* Autoplay */
-	function startAutoplay() {
-		if ( ! shouldAutoplay || prefersReducedMotion || isPaused ) {
+		/** Navigate to the next slide and stop autoplay. */
+		next() {
+			const ctx     = getContext();
+			const { ref } = getElement();
+			const slider  = ref.closest( '.sgs-testimonial-slider' );
+			const track   = slider?.querySelector( '.sgs-testimonial-slider__track' );
+			const slides  = slider ? Array.from( slider.querySelectorAll( '.sgs-testimonial-slider__slide' ) ) : [];
+			const next    = Math.min( ctx.totalSlides - 1, ctx.currentIndex + 1 );
+
+			ctx.currentIndex = next;
+			ctx.isPlaying    = false;
+			scrollToSlide( track, slides, next, true );
+		},
+
+		/** Navigate to a specific slide via dot button click. */
+		goTo( event ) {
+			const ctx      = getContext();
+			const { ref }  = getElement(); // ref = dot button
+			const slider   = ref.closest( '.sgs-testimonial-slider' );
+			const track    = slider?.querySelector( '.sgs-testimonial-slider__track' );
+			const slides   = slider ? Array.from( slider.querySelectorAll( '.sgs-testimonial-slider__slide' ) ) : [];
+			const dotIndex = ctx.dotIndex; // from dot's data-wp-context
+
+			ctx.currentIndex = dotIndex;
+			ctx.isPlaying    = false;
+			scrollToSlide( track, slides, dotIndex, true );
+		},
+
+		/** Toggle autoplay play/pause. */
+		togglePlay() {
+			const ctx     = getContext();
+			ctx.isPlaying = ! ctx.isPlaying;
+		},
+
+		/** Temporarily pause autoplay while hovering (if not manually paused). */
+		pauseOnHover() {
+			const ctx     = getContext();
+			const { ref } = getElement();
+			const slider  = ref.closest( '.sgs-testimonial-slider' ) || ref;
+			if ( ctx.autoplay && ctx.isPlaying ) {
+				const timer = timers.get( slider );
+				if ( timer ) {
+					clearInterval( timer );
+					timers.set( slider, null );
+				}
+			}
+		},
+
+		/** Resume autoplay after hover ends (if still in isPlaying state). */
+		resumeOnLeave() {
+			const ctx     = getContext();
+			const { ref } = getElement();
+			const slider  = ref.closest( '.sgs-testimonial-slider' ) || ref;
+			if ( ctx.autoplay && ctx.isPlaying ) {
+				startTimer( slider, ctx );
+			}
+		},
+
+		/** Debounced scroll handler — syncs currentIndex as user drags. */
+		handleScroll() {
+			const { ref } = getElement(); // ref = track
+			const slider  = ref.closest( '.sgs-testimonial-slider' );
+			if ( ! slider ) { return; }
+
+			// Debounce: detect after scroll settles.
+			const existing = scrollJobs.get( ref );
+			if ( existing ) { clearTimeout( existing ); }
+			const job = setTimeout( () => {
+				const ctx    = getContext();
+				const slides = Array.from( slider.querySelectorAll( '.sgs-testimonial-slider__slide' ) );
+				ctx.currentIndex = detectIndex( ref, slides );
+				scrollJobs.delete( ref );
+			}, 80 );
+			scrollJobs.set( ref, job );
+		},
+	},
+
+	callbacks: {
+		/**
+		 * On block init: check prefers-reduced-motion and start autoplay if configured.
+		 * Also adds hover/focus pause listeners.
+		 * Attached via data-wp-init="callbacks.init" on the wrapper.
+		 */
+		init() {
+			const ctx     = getContext();
+			const { ref } = getElement(); // ref = outer wrapper
+
+			if ( prefersReducedMotion() ) {
+				ctx.isPlaying = false;
+				return;
+			}
+
+			// Pause on mouseenter/focusin, resume on mouseleave/focusout.
+			ref.addEventListener( 'mouseenter', () => {
+				if ( ctx.autoplay && ctx.isPlaying ) {
+					const timer = timers.get( ref );
+					if ( timer ) { clearInterval( timer ); timers.set( ref, null ); }
+				}
+			} );
+			ref.addEventListener( 'mouseleave', () => {
+				if ( ctx.autoplay && ctx.isPlaying ) { startTimer( ref, ctx ); }
+			} );
+			ref.addEventListener( 'focusin', () => {
+				if ( ctx.autoplay && ctx.isPlaying ) {
+					const timer = timers.get( ref );
+					if ( timer ) { clearInterval( timer ); timers.set( ref, null ); }
+				}
+			} );
+			ref.addEventListener( 'focusout', ( e ) => {
+				if ( ctx.autoplay && ctx.isPlaying && ! ref.contains( e.relatedTarget ) ) {
+					startTimer( ref, ctx );
+				}
+			} );
+
+			if ( ctx.autoplay && ctx.isPlaying ) {
+				startTimer( ref, ctx );
+			}
+		},
+
+		/**
+		 * Reactive callback — starts or stops the autoplay timer when isPlaying changes.
+		 * Attached via data-wp-watch="callbacks.onPlayChange" on the wrapper.
+		 */
+		onPlayChange() {
+			const ctx     = getContext();
+			const { ref } = getElement();
+
+			if ( ctx.isPlaying ) {
+				startTimer( ref, ctx );
+			} else {
+				const timer = timers.get( ref );
+				if ( timer ) { clearInterval( timer ); timers.set( ref, null ); }
+			}
+		},
+	},
+} );
+
+/**
+ * Start the autoplay interval for a given slider wrapper element.
+ *
+ * @param {HTMLElement} wrapper The slider wrapper element.
+ * @param {object}      ctx     The Interactivity API context object.
+ */
+function startTimer( wrapper, ctx ) {
+	const existing = timers.get( wrapper );
+	if ( existing ) { clearInterval( existing ); }
+
+	const track  = wrapper.querySelector( '.sgs-testimonial-slider__track' );
+	const slides = Array.from( wrapper.querySelectorAll( '.sgs-testimonial-slider__slide' ) );
+
+	const timer = setInterval( () => {
+		if ( ! ctx.isPlaying ) {
+			clearInterval( timer );
+			timers.delete( wrapper );
 			return;
 		}
-		stopAutoplay();
-		autoplayTimer = setInterval( () => {
-			const next =
-				currentIndex + 1 >= slides.length ? 0 : currentIndex + 1;
-			goToSlide( next );
-		}, speed );
-	}
+		const next = ( ctx.currentIndex + 1 ) % ctx.totalSlides;
+		ctx.currentIndex = next;
+		scrollToSlide( track, slides, next, true );
+	}, ctx.speed );
 
-	function stopAutoplay() {
-		if ( autoplayTimer ) {
-			clearInterval( autoplayTimer );
-			autoplayTimer = null;
-		}
-	}
-
-	/**
-	 * Permanently pause autoplay — called when the user explicitly interacts.
-	 * This prevents autoplay resuming when the mouse leaves or focus shifts.
-	 * The pause button re-enables it.
-	 */
-	function pausePermanently() {
-		isPaused = true;
-		stopAutoplay();
-		if ( pauseBtn ) {
-			pauseBtn.setAttribute( 'aria-label', 'Play testimonials' );
-			pauseBtn.setAttribute( 'aria-pressed', 'false' );
-			pauseBtn.querySelector( '.sgs-testimonial-slider__pause-icon' ).textContent = '▶';
-		}
-	}
-
-	function resumeAutoplay() {
-		isPaused = false;
-		startAutoplay();
-		if ( pauseBtn ) {
-			pauseBtn.setAttribute( 'aria-label', 'Pause testimonials' );
-			pauseBtn.setAttribute( 'aria-pressed', 'true' );
-			pauseBtn.querySelector( '.sgs-testimonial-slider__pause-icon' ).textContent = '⏸';
-		}
-	}
-
-	/* Pause autoplay temporarily on hover and focus (while not permanently paused) */
-	slider.addEventListener( 'mouseenter', () => {
-		if ( ! isPaused ) stopAutoplay();
-	} );
-	slider.addEventListener( 'focusin', () => {
-		if ( ! isPaused ) stopAutoplay();
-	} );
-	slider.addEventListener( 'mouseleave', () => {
-		if ( ! isPaused ) startAutoplay();
-	} );
-	slider.addEventListener( 'focusout', ( e ) => {
-		if ( ! isPaused && ! slider.contains( e.relatedTarget ) ) {
-			startAutoplay();
-		}
-	} );
-
-	/*
-	 * Keyboard navigation for the dot tablist (ARIA tab pattern).
-	 *
-	 * When a dot button has focus, Left/Right arrow keys move between dots
-	 * and navigate slides. This is the correct pattern for role="tablist".
-	 * The prev/next arrow buttons also accept focus for keyboard access.
-	 */
-	dots.forEach( ( dot, i ) => {
-		dot.addEventListener( 'keydown', ( e ) => {
-			if ( e.key === 'ArrowLeft' || e.key === 'ArrowRight' ) {
-				e.preventDefault();
-				const next = e.key === 'ArrowRight'
-					? Math.min( i + 1, slides.length - 1 )
-					: Math.max( i - 1, 0 );
-				dots[ next ].focus();
-				goToSlide( next );
-				pausePermanently();
-			}
-		} );
-	} );
-
-	/*
-	 * WCAG 2.2.2 — Pause, Stop, Hide
-	 *
-	 * Auto-playing content that lasts more than 5 seconds MUST provide a
-	 * mechanism to pause, stop, or hide it. The prev/next/dot interactions
-	 * pause autoplay, but they do not provide a persistent mechanism — the
-	 * user has no way to know autoplay will resume when they leave.
-	 *
-	 * We inject a pause/play toggle button into the arrows container (or
-	 * adjacent to the slider if no arrows are shown). This button persists
-	 * the paused state for the lifetime of the page session.
-	 */
-	let pauseBtn = null;
-
-	if ( shouldAutoplay && ! prefersReducedMotion ) {
-		pauseBtn = document.createElement( 'button' );
-		pauseBtn.type = 'button';
-		pauseBtn.className = 'sgs-testimonial-slider__pause-btn';
-		pauseBtn.setAttribute( 'aria-label', 'Pause testimonials' );
-		pauseBtn.setAttribute( 'aria-pressed', 'true' );
-		pauseBtn.setAttribute( 'aria-live', 'polite' );
-
-		const icon = document.createElement( 'span' );
-		icon.className = 'sgs-testimonial-slider__pause-icon';
-		icon.setAttribute( 'aria-hidden', 'true' );
-		icon.textContent = '⏸';
-		pauseBtn.appendChild( icon );
-
-		pauseBtn.addEventListener( 'click', () => {
-			if ( isPaused ) {
-				resumeAutoplay();
-			} else {
-				pausePermanently();
-			}
-		} );
-
-		/* Insert after the arrows container, or directly after the track */
-		const arrowsContainer = slider.querySelector( '.sgs-testimonial-slider__arrows' );
-		if ( arrowsContainer ) {
-			arrowsContainer.appendChild( pauseBtn );
-		} else {
-			slider.appendChild( pauseBtn );
-		}
-	}
-
-	/* Initialise */
-	startAutoplay();
-} );
+	timers.set( wrapper, timer );
+}

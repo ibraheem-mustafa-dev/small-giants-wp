@@ -56,7 +56,12 @@ if ( $overlay_opacity ) {
 $backdrop_style_attr = $backdrop_vars ? ' style="' . implode( ';', $backdrop_vars ) . '"' : '';
 
 $wrapper_attributes = get_block_wrapper_attributes( array(
-	'class' => 'sgs-modal',
+	'class'              => 'sgs-modal',
+	'data-wp-interactive' => 'sgs/modal',
+	'data-wp-context'    => wp_json_encode( array(
+		'isOpen'         => false,
+		'closeOnOverlay' => (bool) $close_on_overlay,
+	) ),
 ) );
 
 // Render.
@@ -65,7 +70,7 @@ $wrapper_attributes = get_block_wrapper_attributes( array(
 	<button
 		type="button"
 		class="sgs-modal__trigger sgs-modal__trigger--<?php echo esc_attr( $trigger_style ); ?>"
-		data-modal-id="<?php echo esc_attr( $modal_id ); ?>"
+		data-wp-on--click="actions.open"
 		aria-haspopup="dialog"
 		<?php echo $trigger_style_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Inline style built from sgs_colour_value() which sanitises all values. ?>
 	>
@@ -75,12 +80,16 @@ $wrapper_attributes = get_block_wrapper_attributes( array(
 	<dialog
 		id="<?php echo esc_attr( $modal_id ); ?>"
 		class="sgs-modal__dialog sgs-modal__dialog--<?php echo esc_attr( $max_width ); ?>"
-		data-close-on-overlay="<?php echo $close_on_overlay ? 'true' : 'false'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Outputs only the string literal 'true' or 'false'. ?>"
+		data-wp-watch="callbacks.syncDialog"
+		data-wp-on--cancel="actions.handleCancel"
+		data-wp-on--click="actions.handleOverlayClick"
+		data-wp-class--is-open="context.isOpen"
 		<?php echo $dialog_style_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Inline style built from sgs_colour_value() which sanitises all values. ?>
 	>
 		<button
 			type="button"
 			class="sgs-modal__close"
+			data-wp-on--click="actions.close"
 			aria-label="<?php echo esc_attr__( 'Close modal', 'sgs-blocks' ); ?>"
 		>
 			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
