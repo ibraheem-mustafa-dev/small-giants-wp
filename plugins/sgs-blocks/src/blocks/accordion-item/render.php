@@ -53,7 +53,11 @@ $icon_html = sprintf(
 );
 
 $item_id    = 'sgs-acc-item-' . wp_unique_id();
-$ia_context = wp_json_encode( [ 'isOpen' => $is_open, 'itemId' => $item_id ] );
+$ia_context = wp_json_encode( [
+	'isOpen'       => $is_open,
+	'itemId'       => $item_id,
+	'ariaExpanded' => $is_open ? 'true' : 'false',
+] );
 
 /*
  * Both the static `open` attribute (server-side initial state) and
@@ -68,11 +72,13 @@ printf(
 );
 
 /*
- * aria-expanded is handled reactively via data-wp-bind--aria-expanded.
- * The static attribute is intentionally omitted here.
+ * aria-expanded mirrors context.ariaExpanded (a string "true"/"false").
+ * Stored as a context string so the bind directive can use a simple path —
+ * state getters using getContext() are not reliably reactive across IA re-renders.
+ * Updated in actions.toggle and callbacks.syncSiblings alongside isOpen.
  */
 printf(
-	'<summary class="sgs-accordion-item__header" data-wp-on--click="actions.toggle" data-wp-bind--aria-expanded="state.ariaExpanded"%s>',
+	'<summary class="sgs-accordion-item__header" data-wp-on--click="actions.toggle" data-wp-bind--aria-expanded="context.ariaExpanded"%s>',
 	$header_style_attr
 );
 

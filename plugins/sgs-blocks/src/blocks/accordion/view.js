@@ -8,7 +8,7 @@
  * @package SGS\Blocks
  */
 
-import { store, getContext, getElement } from '@wordpress/interactivity';
+import { store, getContext } from '@wordpress/interactivity';
 
 // Track the most recently opened item per accordion instance.
 // Keyed by accordionId so multiple accordions on one page don't interfere.
@@ -16,21 +16,6 @@ const { state } = store( 'sgs/accordion', {
 	state: {
 		/** Map of accordionId → currently open itemId (single-open mode). */
 		openItems: {},
-
-		/**
-		 * Returns "true" or "false" string for aria-expanded.
-		 *
-		 * Cannot bind directly to context.isOpen (boolean), because the IA's
-		 * bind directive calls removeAttribute when the value is boolean false,
-		 * which would remove aria-expanded entirely instead of setting "false".
-		 *
-		 * Used by: data-wp-bind--aria-expanded on <summary>.
-		 *
-		 * @returns {string}
-		 */
-		get ariaExpanded() {
-			return getContext().isOpen ? 'true' : 'false';
-		},
 	},
 
 	actions: {
@@ -46,7 +31,12 @@ const { state } = store( 'sgs/accordion', {
 			const accordionId = ctx.accordionId;
 			const willOpen    = ! ctx.isOpen;
 
-			ctx.isOpen = willOpen;
+			// Update both open state and ARIA attribute together.
+			// ariaExpanded is stored as a string in context so bind--aria-expanded
+			// can use a simple path (state getters with getContext() are not reliably
+			// reactive across re-renders in the WP Interactivity API).
+			ctx.isOpen       = willOpen;
+			ctx.ariaExpanded = willOpen ? 'true' : 'false';
 
 			if ( willOpen ) {
 				if ( ! ctx.allowMultiple ) {
@@ -88,7 +78,8 @@ const { state } = store( 'sgs/accordion', {
 
 			// If another item is the open one and this item is still open, close it.
 			if ( openId && openId !== ctx.itemId && ctx.isOpen ) {
-				ctx.isOpen = false;
+				ctx.isOpen       = false;
+				ctx.ariaExpanded = 'false';
 			}
 		},
 	},
