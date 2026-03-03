@@ -42,6 +42,10 @@
                                               }
                  },
     "attributes":  {
+                       "label":  {
+                                     "type":  "string",
+                                     "default":  ""
+                                 },
                        "targetDate":  {
                                           "type":  "string",
                                           "default":  ""

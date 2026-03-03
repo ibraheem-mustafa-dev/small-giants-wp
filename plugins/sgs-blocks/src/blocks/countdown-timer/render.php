@@ -14,6 +14,7 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
+$label            = $attributes['label'] ?? '';
 $target_date      = $attributes['targetDate'] ?? '';
 $evergreen_mode   = $attributes['evergreenMode'] ?? false;
 $evergreen_hours  = $attributes['evergreenHours'] ?? 24;
@@ -57,6 +58,9 @@ if ( $show_seconds ) $units[] = array( 'class' => 'seconds', 'label' => __( 'Sec
 
 ?>
 <div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() returns pre-escaped HTML. ?><?php echo $data_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- all attributes built with esc_attr() above. ?> role="timer" aria-live="polite" aria-atomic="true">
+	<?php if ( $label ) : ?>
+		<p class="sgs-countdown__heading"><?php echo esc_html( $label ); ?></p>
+	<?php endif; ?>
 	<div class="sgs-countdown__grid">
 		<?php foreach ( $units as $unit ) : ?>
 			<div class="sgs-countdown__unit">
