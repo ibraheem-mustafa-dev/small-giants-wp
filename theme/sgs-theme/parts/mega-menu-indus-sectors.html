@@ -13,81 +13,153 @@
 	</div>
 	<!-- /wp:group -->
 
-	<!-- 4-column text layout — no icons -->
-	<!-- wp:columns {"style":{"spacing":{"blockGap":{"top":"0","left":"var:preset|spacing|50"}}}} -->
+	<!-- Two-column layout: 2×2 photo cards + right panel -->
+	<!-- wp:columns {"style":{"spacing":{"blockGap":{"top":"0","left":"var:preset|spacing|60"}}}} -->
 	<div class="wp-block-columns">
 
-		<!-- Food Service -->
-		<!-- wp:column -->
-		<div class="wp-block-column">
-			<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"},"blockGap":"var:preset|spacing|20"},"border":{"left":{"color":"#0a7ea8","width":"3px"},"radius":"0"}},"layout":{"type":"flex","orientation":"vertical","flexWrap":"nowrap"}} -->
-			<div class="wp-block-group is-layout-flex wp-block-group-is-layout-flex" style="padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40);border-left:3px solid #0a7ea8;gap:var(--wp--preset--spacing--20)">
-				<!-- wp:heading {"level":4,"style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"typography":{"fontWeight":"700"}},"fontSize":"small"} -->
-				<h4 class="wp-block-heading has-small-font-size" style="font-weight:700;margin-top:0;margin-bottom:0"><a href="/sectors/food-service/" style="text-decoration:none;color:inherit">Food Service</a></h4>
-				<!-- /wp:heading -->
-				<!-- wp:paragraph {"fontSize":"x-small","style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"color":{"text":"#555"}}} -->
-				<p class="has-x-small-font-size" style="margin-top:0;margin-bottom:0;color:#555">Restaurants, cafés, hotels, and caterers — authentic South Asian ingredients delivered reliably across the UK.</p>
-				<!-- /wp:paragraph -->
-				<!-- wp:paragraph {"fontSize":"x-small","style":{"spacing":{"margin":{"top":"var:preset|spacing|20","bottom":"0"}},"elements":{"link":{"color":{"text":"#0a7ea8"}}}}} -->
-				<p class="has-x-small-font-size" style="margin-top:var(--wp--preset--spacing--20);margin-bottom:0"><a href="/sectors/food-service/" style="font-weight:600">Explore sector →</a></p>
-				<!-- /wp:paragraph -->
+		<!-- Left: 2×2 sector photo cards (66%) -->
+		<!-- wp:column {"width":"66.66%"} -->
+		<div class="wp-block-column" style="flex-basis:66.66%">
+
+			<!-- Row 1 -->
+			<!-- wp:columns {"style":{"spacing":{"blockGap":{"top":"var:preset|spacing|40","left":"var:preset|spacing|40"}}}} -->
+			<div class="wp-block-columns">
+
+				<!-- Food Service -->
+				<!-- wp:column -->
+				<div class="wp-block-column">
+					<!-- wp:cover {"url":"https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=600&h=320&q=80","dimRatio":55,"isUserOverlayColor":true,"overlayColor":"#081a2c","minHeight":160,"contentPosition":"bottom left","style":{"border":{"radius":"8px"}},"layout":{"type":"constrained"}} -->
+					<div class="wp-block-cover is-position-bottom-left" style="min-height:160px;border-radius:8px">
+						<span aria-hidden="true" class="wp-block-cover__background has-background-dim-55" style="background-color:#081a2c"></span>
+						<img class="wp-block-cover__image-background" src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=600&h=320&q=80" alt="Restaurant kitchen plated dishes" style="object-fit:cover"/>
+						<div class="wp-block-cover__inner-container is-layout-constrained wp-block-cover-is-layout-constrained">
+							<!-- wp:paragraph {"style":{"typography":{"fontWeight":"700"},"spacing":{"margin":{"top":"0","bottom":"2px"}}},"textColor":"surface","fontSize":"small"} -->
+							<p class="has-surface-color has-text-color has-small-font-size" style="font-weight:700;margin-top:0;margin-bottom:2px"><a href="/food-service/" style="color:inherit;text-decoration:none">Food Service</a></p>
+							<!-- /wp:paragraph -->
+							<!-- wp:paragraph {"fontSize":"x-small","style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"color":{"text":"rgba(255,255,255,0.85)"}}} -->
+							<p class="has-x-small-font-size" style="margin-top:0;margin-bottom:0;color:rgba(255,255,255,0.85)">Restaurants, takeaways, hotels and caterers</p>
+							<!-- /wp:paragraph -->
+						</div>
+					</div>
+					<!-- /wp:cover -->
+				</div>
+				<!-- /wp:column -->
+
+				<!-- Manufacturing -->
+				<!-- wp:column -->
+				<div class="wp-block-column">
+					<!-- wp:cover {"url":"https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=600&h=320&q=80","dimRatio":55,"isUserOverlayColor":true,"overlayColor":"#0d1a08","minHeight":160,"contentPosition":"bottom left","style":{"border":{"radius":"8px"}},"layout":{"type":"constrained"}} -->
+					<div class="wp-block-cover is-position-bottom-left" style="min-height:160px;border-radius:8px">
+						<span aria-hidden="true" class="wp-block-cover__background has-background-dim-55" style="background-color:#0d1a08"></span>
+						<img class="wp-block-cover__image-background" src="https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=600&h=320&q=80" alt="Spice processing and food manufacturing" style="object-fit:cover"/>
+						<div class="wp-block-cover__inner-container is-layout-constrained wp-block-cover-is-layout-constrained">
+							<!-- wp:paragraph {"style":{"typography":{"fontWeight":"700"},"spacing":{"margin":{"top":"0","bottom":"2px"}}},"textColor":"surface","fontSize":"small"} -->
+							<p class="has-surface-color has-text-color has-small-font-size" style="font-weight:700;margin-top:0;margin-bottom:2px"><a href="/manufacturing/" style="color:inherit;text-decoration:none">Manufacturing</a></p>
+							<!-- /wp:paragraph -->
+							<!-- wp:paragraph {"fontSize":"x-small","style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"color":{"text":"rgba(255,255,255,0.85)"}}} -->
+							<p class="has-x-small-font-size" style="margin-top:0;margin-bottom:0;color:rgba(255,255,255,0.85)">Bulk commodity ingredients for food manufacturers</p>
+							<!-- /wp:paragraph -->
+						</div>
+					</div>
+					<!-- /wp:cover -->
+				</div>
+				<!-- /wp:column -->
+
 			</div>
-			<!-- /wp:group -->
+			<!-- /wp:columns -->
+
+			<!-- Row 2 -->
+			<!-- wp:columns {"style":{"spacing":{"blockGap":{"top":"var:preset|spacing|40","left":"var:preset|spacing|40"},"margin":{"top":"var:preset|spacing|40"}}}} -->
+			<div class="wp-block-columns" style="margin-top:var(--wp--preset--spacing--40)">
+
+				<!-- Retail -->
+				<!-- wp:column -->
+				<div class="wp-block-column">
+					<!-- wp:cover {"url":"https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&h=320&q=80","dimRatio":50,"isUserOverlayColor":true,"overlayColor":"#1a0a04","minHeight":160,"contentPosition":"bottom left","style":{"border":{"radius":"8px"}},"layout":{"type":"constrained"}} -->
+					<div class="wp-block-cover is-position-bottom-left" style="min-height:160px;border-radius:8px">
+						<span aria-hidden="true" class="wp-block-cover__background has-background-dim-50" style="background-color:#1a0a04"></span>
+						<img class="wp-block-cover__image-background" src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&h=320&q=80" alt="Ethnic grocery and convenience store" style="object-fit:cover"/>
+						<div class="wp-block-cover__inner-container is-layout-constrained wp-block-cover-is-layout-constrained">
+							<!-- wp:paragraph {"style":{"typography":{"fontWeight":"700"},"spacing":{"margin":{"top":"0","bottom":"2px"}}},"textColor":"surface","fontSize":"small"} -->
+							<p class="has-surface-color has-text-color has-small-font-size" style="font-weight:700;margin-top:0;margin-bottom:2px"><a href="/retail/" style="color:inherit;text-decoration:none">Retail</a></p>
+							<!-- /wp:paragraph -->
+							<!-- wp:paragraph {"fontSize":"x-small","style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"color":{"text":"rgba(255,255,255,0.85)"}}} -->
+							<p class="has-x-small-font-size" style="margin-top:0;margin-bottom:0;color:rgba(255,255,255,0.85)">Independent grocery, ethnic supermarkets, convenience</p>
+							<!-- /wp:paragraph -->
+						</div>
+					</div>
+					<!-- /wp:cover -->
+				</div>
+				<!-- /wp:column -->
+
+				<!-- Wholesale -->
+				<!-- wp:column -->
+				<div class="wp-block-column">
+					<!-- wp:cover {"url":"https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=600&h=320&q=80","dimRatio":55,"isUserOverlayColor":true,"overlayColor":"#060d1a","minHeight":160,"contentPosition":"bottom left","style":{"border":{"radius":"8px"}},"layout":{"type":"constrained"}} -->
+					<div class="wp-block-cover is-position-bottom-left" style="min-height:160px;border-radius:8px">
+						<span aria-hidden="true" class="wp-block-cover__background has-background-dim-55" style="background-color:#060d1a"></span>
+						<img class="wp-block-cover__image-background" src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=600&h=320&q=80" alt="Wholesale warehouse and distribution" style="object-fit:cover"/>
+						<div class="wp-block-cover__inner-container is-layout-constrained wp-block-cover-is-layout-constrained">
+							<!-- wp:paragraph {"style":{"typography":{"fontWeight":"700"},"spacing":{"margin":{"top":"0","bottom":"2px"}}},"textColor":"surface","fontSize":"small"} -->
+							<p class="has-surface-color has-text-color has-small-font-size" style="font-weight:700;margin-top:0;margin-bottom:2px"><a href="/wholesale/" style="color:inherit;text-decoration:none">Wholesale</a></p>
+							<!-- /wp:paragraph -->
+							<!-- wp:paragraph {"fontSize":"x-small","style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"color":{"text":"rgba(255,255,255,0.85)"}}} -->
+							<p class="has-x-small-font-size" style="margin-top:0;margin-bottom:0;color:rgba(255,255,255,0.85)">Cash &amp; carry, distributors and trade buyers</p>
+							<!-- /wp:paragraph -->
+						</div>
+					</div>
+					<!-- /wp:cover -->
+				</div>
+				<!-- /wp:column -->
+
+			</div>
+			<!-- /wp:columns -->
+
 		</div>
 		<!-- /wp:column -->
 
-		<!-- Manufacturing -->
-		<!-- wp:column -->
-		<div class="wp-block-column">
-			<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"},"blockGap":"var:preset|spacing|20"},"border":{"left":{"color":"#0a7ea8","width":"3px"}}},"layout":{"type":"flex","orientation":"vertical","flexWrap":"nowrap"}} -->
-			<div class="wp-block-group is-layout-flex wp-block-group-is-layout-flex" style="padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40);border-left:3px solid #0a7ea8;gap:var(--wp--preset--spacing--20)">
-				<!-- wp:heading {"level":4,"style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"typography":{"fontWeight":"700"}},"fontSize":"small"} -->
-				<h4 class="wp-block-heading has-small-font-size" style="font-weight:700;margin-top:0;margin-bottom:0"><a href="/sectors/manufacturing/" style="text-decoration:none;color:inherit">Manufacturing</a></h4>
-				<!-- /wp:heading -->
-				<!-- wp:paragraph {"fontSize":"x-small","style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"color":{"text":"#555"}}} -->
-				<p class="has-x-small-font-size" style="margin-top:0;margin-bottom:0;color:#555">Bulk commodity goods and consistent-quality ingredients for food manufacturers who need reliable supply.</p>
-				<!-- /wp:paragraph -->
-				<!-- wp:paragraph {"fontSize":"x-small","style":{"spacing":{"margin":{"top":"var:preset|spacing|20","bottom":"0"}},"elements":{"link":{"color":{"text":"#0a7ea8"}}}}} -->
-				<p class="has-x-small-font-size" style="margin-top:var(--wp--preset--spacing--20);margin-bottom:0"><a href="/sectors/manufacturing/" style="font-weight:600">Explore sector →</a></p>
-				<!-- /wp:paragraph -->
-			</div>
-			<!-- /wp:group -->
-		</div>
-		<!-- /wp:column -->
+		<!-- Right panel: Who We Serve + CTA (33%) -->
+		<!-- wp:column {"width":"33.33%"} -->
+		<div class="wp-block-column" style="flex-basis:33.33%">
+			<!-- wp:group {"style":{"border":{"radius":"8px"},"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|50","right":"var:preset|spacing|50"},"blockGap":"var:preset|spacing|20"}},"backgroundColor":"footer-bg","layout":{"type":"flex","orientation":"vertical","flexWrap":"nowrap"}} -->
+			<div class="wp-block-group has-footer-bg-background-color has-background is-layout-flex wp-block-group-is-layout-flex" style="border-radius:8px;padding-top:var(--wp--preset--spacing--50);padding-right:var(--wp--preset--spacing--50);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--50);gap:var(--wp--preset--spacing--20)">
 
-		<!-- Wholesale -->
-		<!-- wp:column -->
-		<div class="wp-block-column">
-			<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"},"blockGap":"var:preset|spacing|20"},"border":{"left":{"color":"#0a7ea8","width":"3px"}}},"layout":{"type":"flex","orientation":"vertical","flexWrap":"nowrap"}} -->
-			<div class="wp-block-group is-layout-flex wp-block-group-is-layout-flex" style="padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40);border-left:3px solid #0a7ea8;gap:var(--wp--preset--spacing--20)">
-				<!-- wp:heading {"level":4,"style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"typography":{"fontWeight":"700"}},"fontSize":"small"} -->
-				<h4 class="wp-block-heading has-small-font-size" style="font-weight:700;margin-top:0;margin-bottom:0"><a href="/sectors/wholesale/" style="text-decoration:none;color:inherit">Wholesale</a></h4>
+				<!-- wp:heading {"level":4,"fontSize":"x-small","style":{"typography":{"fontWeight":"700","letterSpacing":"0.1em","textTransform":"uppercase"},"spacing":{"margin":{"top":"0","bottom":"var:preset|spacing|30"}},"color":{"text":"#d8ca50"}}} -->
+				<h4 class="wp-block-heading has-x-small-font-size" style="color:#d8ca50;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-top:0;margin-bottom:var(--wp--preset--spacing--30)">Who We Serve</h4>
 				<!-- /wp:heading -->
-				<!-- wp:paragraph {"fontSize":"x-small","style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"color":{"text":"#555"}}} -->
-				<p class="has-x-small-font-size" style="margin-top:0;margin-bottom:0;color:#555">Trade accounts for wholesalers and distributors — competitive pricing, flexible ordering, fast fulfilment.</p>
-				<!-- /wp:paragraph -->
-				<!-- wp:paragraph {"fontSize":"x-small","style":{"spacing":{"margin":{"top":"var:preset|spacing|20","bottom":"0"}},"elements":{"link":{"color":{"text":"#0a7ea8"}}}}} -->
-				<p class="has-x-small-font-size" style="margin-top:var(--wp--preset--spacing--20);margin-bottom:0"><a href="/sectors/wholesale/" style="font-weight:600">Explore sector →</a></p>
-				<!-- /wp:paragraph -->
-			</div>
-			<!-- /wp:group -->
-		</div>
-		<!-- /wp:column -->
 
-		<!-- Retail -->
-		<!-- wp:column -->
-		<div class="wp-block-column">
-			<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"},"blockGap":"var:preset|spacing|20"},"border":{"left":{"color":"#0a7ea8","width":"3px"}}},"layout":{"type":"flex","orientation":"vertical","flexWrap":"nowrap"}} -->
-			<div class="wp-block-group is-layout-flex wp-block-group-is-layout-flex" style="padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40);border-left:3px solid #0a7ea8;gap:var(--wp--preset--spacing--20)">
-				<!-- wp:heading {"level":4,"style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"typography":{"fontWeight":"700"}},"fontSize":"small"} -->
-				<h4 class="wp-block-heading has-small-font-size" style="font-weight:700;margin-top:0;margin-bottom:0"><a href="/sectors/retail/" style="text-decoration:none;color:inherit">Retail</a></h4>
-				<!-- /wp:heading -->
-				<!-- wp:paragraph {"fontSize":"x-small","style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"color":{"text":"#555"}}} -->
-				<p class="has-x-small-font-size" style="margin-top:0;margin-bottom:0;color:#555">Branded products shelf-ready for supermarkets, convenience stores, and specialist South Asian retailers.</p>
+				<!-- wp:paragraph {"fontSize":"x-small","style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"color":{"text":"rgba(255,255,255,0.85)"}}} -->
+				<p class="has-x-small-font-size" style="margin-top:0;margin-bottom:0;color:rgba(255,255,255,0.85)">Restaurants &amp; takeaways</p>
 				<!-- /wp:paragraph -->
-				<!-- wp:paragraph {"fontSize":"x-small","style":{"spacing":{"margin":{"top":"var:preset|spacing|20","bottom":"0"}},"elements":{"link":{"color":{"text":"#0a7ea8"}}}}} -->
-				<p class="has-x-small-font-size" style="margin-top:var(--wp--preset--spacing--20);margin-bottom:0"><a href="/sectors/retail/" style="font-weight:600">Explore sector →</a></p>
+
+				<!-- wp:paragraph {"fontSize":"x-small","style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"color":{"text":"rgba(255,255,255,0.85)"}}} -->
+				<p class="has-x-small-font-size" style="margin-top:0;margin-bottom:0;color:rgba(255,255,255,0.85)">Hotels &amp; hospitality venues</p>
 				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph {"fontSize":"x-small","style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"color":{"text":"rgba(255,255,255,0.85)"}}} -->
+				<p class="has-x-small-font-size" style="margin-top:0;margin-bottom:0;color:rgba(255,255,255,0.85)">Schools, hospitals &amp; caterers</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph {"fontSize":"x-small","style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"color":{"text":"rgba(255,255,255,0.85)"}}} -->
+				<p class="has-x-small-font-size" style="margin-top:0;margin-bottom:0;color:rgba(255,255,255,0.85)">Food manufacturers &amp; processors</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph {"fontSize":"x-small","style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"color":{"text":"rgba(255,255,255,0.85)"}}} -->
+				<p class="has-x-small-font-size" style="margin-top:0;margin-bottom:0;color:rgba(255,255,255,0.85)">Ethnic supermarkets &amp; grocers</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph {"fontSize":"x-small","style":{"spacing":{"margin":{"top":"0","bottom":"var:preset|spacing|40"}},"color":{"text":"rgba(255,255,255,0.85)"}}} -->
+				<p class="has-x-small-font-size" style="margin-top:0;margin-bottom:var(--wp--preset--spacing--40);color:rgba(255,255,255,0.85)">Cash &amp; carry wholesalers</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:buttons {"style":{"spacing":{"margin":{"top":"0","bottom":"0"}}},"layout":{"type":"flex"}} -->
+				<div class="wp-block-buttons is-layout-flex wp-block-buttons-is-layout-flex" style="margin-top:0;margin-bottom:0">
+					<!-- wp:button {"backgroundColor":"accent","textColor":"text","style":{"border":{"radius":"6px"},"typography":{"fontWeight":"700"},"spacing":{"padding":{"top":"10px","bottom":"10px","left":"16px","right":"16px"}}},"fontSize":"small","width":100} -->
+					<div class="wp-block-button has-custom-font-size has-small-font-size"><a class="wp-block-button__link has-text-color has-text-text-color has-accent-background-color has-background wp-element-button" href="/sectors/" style="border-radius:6px;font-weight:700;padding-top:10px;padding-right:16px;padding-bottom:10px;padding-left:16px">View All Services</a></div>
+					<!-- /wp:button -->
+				</div>
+				<!-- /wp:buttons -->
+
 			</div>
 			<!-- /wp:group -->
 		</div>
@@ -95,29 +167,6 @@
 
 	</div>
 	<!-- /wp:columns -->
-
-	<!-- CTA strip -->
-	<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|60","right":"var:preset|spacing|50"},"margin":{"top":"var:preset|spacing|60"}},"border":{"radius":"8px"}},"backgroundColor":"footer-bg","layout":{"type":"flex","justifyContent":"space-between","verticalAlignment":"center","flexWrap":"wrap"}} -->
-	<div class="wp-block-group has-footer-bg-background-color has-background is-content-justification-space-between is-layout-flex wp-block-group-is-layout-flex" style="border-radius:8px;padding-top:var(--wp--preset--spacing--50);padding-right:var(--wp--preset--spacing--50);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--60);margin-top:var(--wp--preset--spacing--60)">
-		<!-- wp:group {"layout":{"type":"flex","orientation":"vertical","flexWrap":"nowrap"},"style":{"spacing":{"blockGap":"4px"}}} -->
-		<div class="wp-block-group is-layout-flex wp-block-group-is-layout-flex">
-			<!-- wp:paragraph {"style":{"typography":{"fontWeight":"600"},"spacing":{"margin":{"top":"0","bottom":"0"}}},"textColor":"text-inverse","fontSize":"small"} -->
-			<p class="has-text-inverse-color has-text-color has-small-font-size" style="font-weight:600;margin-top:0;margin-bottom:0">Ready to start ordering?</p>
-			<!-- /wp:paragraph -->
-			<!-- wp:paragraph {"style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"color":{"text":"rgba(255,255,255,0.75)"}},"fontSize":"x-small"} -->
-			<p class="has-x-small-font-size" style="margin-top:0;margin-bottom:0;color:rgba(255,255,255,0.75)">Join 500+ businesses already trading with Indus Foods</p>
-			<!-- /wp:paragraph -->
-		</div>
-		<!-- /wp:group -->
-		<!-- wp:buttons {"style":{"spacing":{"margin":{"top":"0","bottom":"0"}}}} -->
-		<div class="wp-block-buttons is-layout-flex wp-block-buttons-is-layout-flex" style="margin-top:0;margin-bottom:0">
-			<!-- wp:button {"backgroundColor":"accent","textColor":"text","style":{"border":{"radius":"6px"},"typography":{"fontWeight":"700"},"spacing":{"padding":{"top":"10px","bottom":"10px","left":"20px","right":"20px"}}},"fontSize":"small"} -->
-			<div class="wp-block-button has-custom-font-size has-small-font-size"><a class="wp-block-button__link has-text-color has-text-text-color has-accent-background-color has-background wp-element-button" href="/trade-account/" style="border-radius:6px;font-weight:700;padding-top:10px;padding-right:20px;padding-bottom:10px;padding-left:20px">Open a Trade Account</a></div>
-			<!-- /wp:button -->
-		</div>
-		<!-- /wp:buttons -->
-	</div>
-	<!-- /wp:group -->
 
 </div>
 <!-- /wp:group -->
