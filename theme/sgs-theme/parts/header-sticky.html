@@ -35,7 +35,12 @@
 
 			<!-- wp:sgs/mobile-nav-toggle /-->
 
-			<!-- wp:navigation {"textColor":"primary","layout":{"type":"flex","justifyContent":"right"},"style":{"typography":{"fontWeight":"500"},"spacing":{"blockGap":"var:preset|spacing|40"}},"fontSize":"small"} /-->
+			<!-- wp:navigation {"textColor":"primary","layout":{"type":"flex","justifyContent":"right"},"style":{"typography":{"fontWeight":"500"},"spacing":{"blockGap":"var:preset|spacing|40"}},"fontSize":"small"} -->
+			<!-- wp:sgs/mega-menu {"label":"Sectors","url":"/sectors/","layoutVariant":"full-width","menuTemplatePart":"mega-menu-indus-sectors","openAnimation":"slide-down","openOn":"hover","closeDelay":200,"icon":"chevron-down","panelWidth":"full"} /-->
+			<!-- wp:sgs/mega-menu {"label":"Products","url":"/products/","layoutVariant":"promo-slot","menuTemplatePart":"mega-menu-indus-products","openAnimation":"slide-down","openOn":"hover","closeDelay":200,"icon":"chevron-down","panelWidth":"full","promoTitle":"New to Indus Foods?","promoSubtitle":"Open a trade account and get exclusive pricing for your business.","promoCta":"Apply Today","promoCtaUrl":"/trade-account/","promoBackground":"primary","promoPosition":"side"} /-->
+			<!-- wp:navigation-link {"label":"Brands","url":"/brands/"} /-->
+			<!-- wp:navigation-link {"label":"About","url":"/about/"} /-->
+		<!-- /wp:navigation -->
 
 			<!-- wp:buttons -->
 			<div class="wp-block-buttons is-layout-flex wp-block-buttons-is-layout-flex">
@@ -52,7 +57,25 @@
 	<!-- /wp:group -->
 
 	<!-- wp:sgs/mobile-nav-drawer -->
-	<!-- wp:navigation {"textColor":"surface","layout":{"type":"flex","orientation":"vertical"},"style":{"spacing":{"blockGap":"0"}},"fontSize":"medium"} /-->
+	<!-- wp:navigation {"textColor":"surface","layout":{"type":"flex","orientation":"vertical"},"style":{"spacing":{"blockGap":"0"}},"fontSize":"medium"} -->
+		<!-- wp:navigation-submenu {"label":"Sectors","url":"/sectors/"} -->
+			<!-- wp:navigation-link {"label":"Food Service","url":"/sectors/food-service/"} /-->
+			<!-- wp:navigation-link {"label":"Manufacturing","url":"/sectors/manufacturing/"} /-->
+			<!-- wp:navigation-link {"label":"Wholesale","url":"/sectors/wholesale/"} /-->
+			<!-- wp:navigation-link {"label":"Retail","url":"/sectors/retail/"} /-->
+		<!-- /wp:navigation-submenu -->
+		<!-- wp:navigation-submenu {"label":"Products","url":"/products/"} -->
+			<!-- wp:navigation-link {"label":"Spices &amp; Seasonings","url":"/products/spices/"} /-->
+			<!-- wp:navigation-link {"label":"Rice &amp; Grains","url":"/products/rice-grains/"} /-->
+			<!-- wp:navigation-link {"label":"Oils &amp; Ghee","url":"/products/oils/"} /-->
+			<!-- wp:navigation-link {"label":"Pulses &amp; Lentils","url":"/products/pulses/"} /-->
+			<!-- wp:navigation-link {"label":"Sauces &amp; Condiments","url":"/products/sauces/"} /-->
+			<!-- wp:navigation-link {"label":"Branded Products","url":"/products/brands/"} /-->
+		<!-- /wp:navigation-submenu -->
+		<!-- wp:navigation-link {"label":"Brands","url":"/brands/"} /-->
+		<!-- wp:navigation-link {"label":"About","url":"/about/"} /-->
+		<!-- wp:navigation-link {"label":"Contact","url":"/contact/"} /-->
+	<!-- /wp:navigation -->
 	<!-- /wp:sgs/mobile-nav-drawer -->
 
 </div>

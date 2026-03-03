@@ -1,47 +1,77 @@
-<!-- wp:group {"layout":{"type":"constrained","contentSize":"1200px"}} -->
-<div class="wp-block-group">
-	<!-- wp:heading {"level":3,"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|40"}}}} -->
-	<h3 class="wp-block-heading" style="margin-bottom:var(--wp--preset--spacing--40)">Sectors We Serve</h3>
-	<!-- /wp:heading -->
+<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|60","left":"var:preset|spacing|60","right":"var:preset|spacing|60"}}},"layout":{"type":"constrained","contentSize":"1200px"}} -->
+<div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--60);padding-right:var(--wp--preset--spacing--60);padding-bottom:var(--wp--preset--spacing--60);padding-left:var(--wp--preset--spacing--60)">
 
-	<!-- wp:columns {"style":{"spacing":{"blockGap":{"top":"var:preset|spacing|60","left":"var:preset|spacing|50"}}}} -->
+	<!-- Header row: label + view-all link -->
+	<!-- wp:group {"layout":{"type":"flex","justifyContent":"space-between","verticalAlignment":"center","flexWrap":"nowrap"},"style":{"spacing":{"margin":{"top":"0","bottom":"var:preset|spacing|50"}}}} -->
+	<div class="wp-block-group is-content-justification-space-between is-nowrap is-layout-flex wp-block-group-is-layout-flex" style="margin-top:0;margin-bottom:var(--wp--preset--spacing--50)">
+
+		<!-- wp:heading {"level":3,"fontSize":"x-small","style":{"typography":{"fontWeight":"700","letterSpacing":"0.12em","textTransform":"uppercase"},"color":{"text":"#0a7ea8"},"spacing":{"margin":{"top":"0","bottom":"0"}}}} -->
+		<h3 class="wp-block-heading has-x-small-font-size" style="color:#0a7ea8;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-top:0;margin-bottom:0">Sectors We Serve</h3>
+		<!-- /wp:heading -->
+
+		<!-- wp:paragraph {"fontSize":"small","style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"elements":{"link":{"color":{"text":"#0a7ea8"},":hover":{"color":{"text":"#076a8e"}}}}}} -->
+		<p class="has-small-font-size" style="margin-top:0;margin-bottom:0"><a href="/sectors/">View all sectors →</a></p>
+		<!-- /wp:paragraph -->
+
+	</div>
+	<!-- /wp:group -->
+
+	<!-- 4 sector cards -->
+	<!-- wp:columns {"style":{"spacing":{"blockGap":{"top":"0","left":"var:preset|spacing|40"}}}} -->
 	<div class="wp-block-columns">
+
 		<!-- wp:column -->
 		<div class="wp-block-column">
-			<!-- wp:sgs/info-box {"icon":"check","heading":"Food Service","description":"Supplying restaurants, cafés, hotels, and catering businesses with authentic ingredients and trusted brands.","iconColour":"primary","iconBackgroundColour":"accent-light","linkUrl":"/sectors/food-service/"} /-->
+			<!-- wp:sgs/info-box {"icon":"utensils","heading":"Food Service","description":"Restaurants, cafés, hotels, and caterers — authentic South Asian ingredients delivered reliably.","iconColour":"primary","iconBackgroundColour":"surface-alt","cardStyle":"flat","link":"/sectors/food-service/","hoverBackgroundColour":"surface-alt"} /-->
 		</div>
 		<!-- /wp:column -->
 
 		<!-- wp:column -->
 		<div class="wp-block-column">
-			<!-- wp:sgs/info-box {"icon":"globe","heading":"Manufacturing","description":"Bulk ingredients and commodity goods for food manufacturers who need consistent quality and reliable supply.","iconColour":"primary","iconBackgroundColour":"accent-light","linkUrl":"/sectors/manufacturing/"} /-->
+			<!-- wp:sgs/info-box {"icon":"factory","heading":"Manufacturing","description":"Bulk commodity goods and consistent ingredients for food manufacturers who can't afford supply disruption.","iconColour":"primary","iconBackgroundColour":"surface-alt","cardStyle":"flat","link":"/sectors/manufacturing/","hoverBackgroundColour":"surface-alt"} /-->
 		</div>
 		<!-- /wp:column -->
 
 		<!-- wp:column -->
 		<div class="wp-block-column">
-			<!-- wp:sgs/info-box {"icon":"shipping","heading":"Wholesale","description":"Trade accounts for wholesalers and distributors — competitive pricing, flexible ordering, and fast fulfilment.","iconColour":"primary","iconBackgroundColour":"accent-light","linkUrl":"/sectors/wholesale/"} /-->
+			<!-- wp:sgs/info-box {"icon":"truck","heading":"Wholesale","description":"Trade accounts for wholesalers and distributors — competitive pricing, flexible ordering, and fast fulfilment.","iconColour":"primary","iconBackgroundColour":"surface-alt","cardStyle":"flat","link":"/sectors/wholesale/","hoverBackgroundColour":"surface-alt"} /-->
 		</div>
 		<!-- /wp:column -->
 
 		<!-- wp:column -->
 		<div class="wp-block-column">
-			<!-- wp:sgs/info-box {"icon":"star","heading":"Retail","description":"Premium branded products ready for supermarket shelves, convenience stores, and specialist retailers.","iconColour":"primary","iconBackgroundColour":"accent-light","linkUrl":"/sectors/retail/"} /-->
+			<!-- wp:sgs/info-box {"icon":"shopping-bag","heading":"Retail","description":"Branded products shelf-ready for supermarkets, convenience stores, and specialist South Asian retailers.","iconColour":"primary","iconBackgroundColour":"surface-alt","cardStyle":"flat","link":"/sectors/retail/","hoverBackgroundColour":"surface-alt"} /-->
 		</div>
 		<!-- /wp:column -->
+
 	</div>
 	<!-- /wp:columns -->
 
-	<!-- wp:separator {"style":{"spacing":{"margin":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50"}}},"backgroundColor":"border"} -->
-	<hr class="wp-block-separator has-text-color has-border-background-color has-alpha-channel-opacity has-border-background-color has-background" style="margin-top:var(--wp--preset--spacing--50);margin-bottom:var(--wp--preset--spacing--50)"/>
-	<!-- /wp:separator -->
+	<!-- CTA strip -->
+	<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|60","right":"var:preset|spacing|50"},"margin":{"top":"var:preset|spacing|60"}},"border":{"radius":"8px"}},"backgroundColor":"footer-bg","layout":{"type":"flex","justifyContent":"space-between","verticalAlignment":"center","flexWrap":"wrap"}} -->
+	<div class="wp-block-group has-footer-bg-background-color has-background is-content-justification-space-between is-layout-flex wp-block-group-is-layout-flex" style="border-radius:8px;padding-top:var(--wp--preset--spacing--50);padding-right:var(--wp--preset--spacing--50);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--60);margin-top:var(--wp--preset--spacing--60)">
 
-	<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
-	<div class="wp-block-buttons">
-		<!-- wp:button {"backgroundColor":"accent","textColor":"surface","style":{"border":{"radius":"8px"}}} -->
-		<div class="wp-block-button"><a class="wp-block-button__link has-surface-color has-accent-background-color has-text-color has-background wp-element-button" style="border-radius:8px" href="/trade-account/">Open a Trade Account →</a></div>
-		<!-- /wp:button -->
+		<!-- wp:group {"layout":{"type":"flex","orientation":"vertical","flexWrap":"nowrap"},"style":{"spacing":{"blockGap":"4px"}}} -->
+		<div class="wp-block-group is-layout-flex wp-block-group-is-layout-flex">
+			<!-- wp:paragraph {"style":{"typography":{"fontWeight":"600"},"spacing":{"margin":{"top":"0","bottom":"0"}}},"textColor":"text-inverse","fontSize":"small"} -->
+			<p class="has-text-inverse-color has-text-color has-small-font-size" style="font-weight:600;margin-top:0;margin-bottom:0">Ready to start ordering?</p>
+			<!-- /wp:paragraph -->
+			<!-- wp:paragraph {"style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"color":{"text":"rgba(255,255,255,0.75)"}},"fontSize":"x-small"} -->
+			<p class="has-x-small-font-size" style="margin-top:0;margin-bottom:0;color:rgba(255,255,255,0.75)">Join 500+ businesses already trading with Indus Foods</p>
+			<!-- /wp:paragraph -->
+		</div>
+		<!-- /wp:group -->
+
+		<!-- wp:buttons {"style":{"spacing":{"margin":{"top":"0","bottom":"0"}}}} -->
+		<div class="wp-block-buttons is-layout-flex wp-block-buttons-is-layout-flex" style="margin-top:0;margin-bottom:0">
+			<!-- wp:button {"backgroundColor":"accent","textColor":"text","style":{"border":{"radius":"6px"},"typography":{"fontWeight":"700"},"spacing":{"padding":{"top":"10px","bottom":"10px","left":"20px","right":"20px"}}},"fontSize":"small"} -->
+			<div class="wp-block-button has-custom-font-size has-small-font-size"><a class="wp-block-button__link has-text-color has-text-text-color has-accent-background-color has-background wp-element-button" href="/trade-account/" style="border-radius:6px;font-weight:700;padding-top:10px;padding-right:20px;padding-bottom:10px;padding-left:20px">Open a Trade Account</a></div>
+			<!-- /wp:button -->
+		</div>
+		<!-- /wp:buttons -->
+
 	</div>
-	<!-- /wp:buttons -->
+	<!-- /wp:group -->
+
 </div>
 <!-- /wp:group -->

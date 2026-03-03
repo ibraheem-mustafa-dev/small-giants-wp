@@ -1,95 +1,48 @@
-<!-- wp:group {"layout":{"type":"constrained","contentSize":"1200px"}} -->
-<div class="wp-block-group">
-	<!-- wp:heading {"level":3,"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|40"}}}} -->
-	<h3 class="wp-block-heading" style="margin-bottom:var(--wp--preset--spacing--40)">Featured Products</h3>
+<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|60","left":"var:preset|spacing|60","right":"var:preset|spacing|60"}}},"layout":{"type":"constrained","contentSize":"680px"}} -->
+<div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--60);padding-right:var(--wp--preset--spacing--60);padding-bottom:var(--wp--preset--spacing--60);padding-left:var(--wp--preset--spacing--60)">
+
+	<!-- Section label -->
+	<!-- wp:heading {"level":3,"fontSize":"x-small","style":{"typography":{"fontWeight":"700","letterSpacing":"0.12em","textTransform":"uppercase"},"color":{"text":"#0a7ea8"},"spacing":{"margin":{"top":"0","bottom":"var:preset|spacing|50"}}}} -->
+	<h3 class="wp-block-heading has-x-small-font-size" style="color:#0a7ea8;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-top:0;margin-bottom:var(--wp--preset--spacing--50)">Product Categories</h3>
 	<!-- /wp:heading -->
 
-	<!-- wp:columns {"style":{"spacing":{"blockGap":{"top":"var:preset|spacing|50","left":"var:preset|spacing|50"}}}} -->
+	<!-- 2-column product category grid -->
+	<!-- wp:columns {"style":{"spacing":{"blockGap":{"top":"0","left":"var:preset|spacing|50"}}}} -->
 	<div class="wp-block-columns">
+
+		<!-- Column 1 -->
 		<!-- wp:column -->
 		<div class="wp-block-column">
-			<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|50","right":"var:preset|spacing|50"}},"border":{"radius":"8px"}},"backgroundColor":"surface-dark","layout":{"type":"constrained"}} -->
-			<div class="wp-block-group has-surface-dark-background-color has-background" style="border-radius:8px;padding-top:var(--wp--preset--spacing--50);padding-right:var(--wp--preset--spacing--50);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--50)">
-				<!-- wp:paragraph {"align":"center","style":{"typography":{"fontSize":"3rem"}}} -->
-				<p class="has-text-align-center" style="font-size:3rem">🌶️</p>
-				<!-- /wp:paragraph -->
 
-				<!-- wp:heading {"textAlign":"center","level":4,"style":{"spacing":{"margin":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|20"}}}} -->
-				<h4 class="wp-block-heading has-text-align-center" style="margin-top:var(--wp--preset--spacing--30);margin-bottom:var(--wp--preset--spacing--20)">Premium Chilli Powder</h4>
-				<!-- /wp:heading -->
+			<!-- wp:sgs/info-box {"icon":"flame","heading":"Spices & Seasonings","description":"Chillies, turmeric, cumin, coriander, masalas","iconColour":"primary","iconBackgroundColour":"surface-alt","cardStyle":"flat","iconSize":"small","link":"/products/spices/","hoverBackgroundColour":"surface-alt"} /-->
 
-				<!-- wp:paragraph {"align":"center","fontSize":"small","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}}} -->
-				<p class="has-text-align-center has-small-font-size" style="margin-bottom:var(--wp--preset--spacing--30)">From £4.99</p>
-				<!-- /wp:paragraph -->
+			<!-- wp:sgs/info-box {"icon":"wheat","heading":"Rice & Grains","description":"Aged basmati, atta flour, suji, rice varieties","iconColour":"primary","iconBackgroundColour":"surface-alt","cardStyle":"flat","iconSize":"small","link":"/products/rice-grains/","hoverBackgroundColour":"surface-alt"} /-->
 
-				<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
-				<div class="wp-block-buttons">
-					<!-- wp:button {"backgroundColor":"primary","textColor":"surface","width":100,"style":{"border":{"radius":"8px"}}} -->
-					<div class="wp-block-button has-custom-width wp-block-button__width-100"><a class="wp-block-button__link has-surface-color has-primary-background-color has-text-color has-background wp-element-button" style="border-radius:8px">View Product</a></div>
-					<!-- /wp:button -->
-				</div>
-				<!-- /wp:buttons -->
-			</div>
-			<!-- /wp:group -->
+			<!-- wp:sgs/info-box {"icon":"droplets","heading":"Oils & Ghee","description":"Pure ghee, vegetable oil, mustard oil, olive blends","iconColour":"primary","iconBackgroundColour":"surface-alt","cardStyle":"flat","iconSize":"small","link":"/products/oils/","hoverBackgroundColour":"surface-alt"} /-->
+
 		</div>
 		<!-- /wp:column -->
 
+		<!-- Column 2 -->
 		<!-- wp:column -->
 		<div class="wp-block-column">
-			<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|50","right":"var:preset|spacing|50"}},"border":{"radius":"8px"}},"backgroundColor":"surface-dark","layout":{"type":"constrained"}} -->
-			<div class="wp-block-group has-surface-dark-background-color has-background" style="border-radius:8px;padding-top:var(--wp--preset--spacing--50);padding-right:var(--wp--preset--spacing--50);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--50)">
-				<!-- wp:paragraph {"align":"center","style":{"typography":{"fontSize":"3rem"}}} -->
-				<p class="has-text-align-center" style="font-size:3rem">🍚</p>
-				<!-- /wp:paragraph -->
 
-				<!-- wp:heading {"textAlign":"center","level":4,"style":{"spacing":{"margin":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|20"}}}} -->
-				<h4 class="wp-block-heading has-text-align-center" style="margin-top:var(--wp--preset--spacing--30);margin-bottom:var(--wp--preset--spacing--20)">Aged Basmati Rice</h4>
-				<!-- /wp:heading -->
+			<!-- wp:sgs/info-box {"icon":"circle-dot","heading":"Pulses & Lentils","description":"Red lentils, chickpeas, black-eyed peas, moong dal","iconColour":"primary","iconBackgroundColour":"surface-alt","cardStyle":"flat","iconSize":"small","link":"/products/pulses/","hoverBackgroundColour":"surface-alt"} /-->
 
-				<!-- wp:paragraph {"align":"center","fontSize":"small","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}}} -->
-				<p class="has-text-align-center has-small-font-size" style="margin-bottom:var(--wp--preset--spacing--30)">From £12.99</p>
-				<!-- /wp:paragraph -->
+			<!-- wp:sgs/info-box {"icon":"bottle","heading":"Sauces & Condiments","description":"Chutneys, pickles, cooking sauces, curry pastes","iconColour":"primary","iconBackgroundColour":"surface-alt","cardStyle":"flat","iconSize":"small","link":"/products/sauces/","hoverBackgroundColour":"surface-alt"} /-->
 
-				<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
-				<div class="wp-block-buttons">
-					<!-- wp:button {"backgroundColor":"primary","textColor":"surface","width":100,"style":{"border":{"radius":"8px"}}} -->
-					<div class="wp-block-button has-custom-width wp-block-button__width-100"><a class="wp-block-button__link has-surface-color has-primary-background-color has-text-color has-background wp-element-button" style="border-radius:8px">View Product</a></div>
-					<!-- /wp:button -->
-				</div>
-				<!-- /wp:buttons -->
-			</div>
-			<!-- /wp:group -->
+			<!-- wp:sgs/info-box {"icon":"tag","heading":"Branded Products","description":"Sanam, Royal, and other trusted South Asian brands","iconColour":"primary","iconBackgroundColour":"surface-alt","cardStyle":"flat","iconSize":"small","link":"/products/brands/","hoverBackgroundColour":"surface-alt"} /-->
+
 		</div>
 		<!-- /wp:column -->
 
-		<!-- wp:column -->
-		<div class="wp-block-column">
-			<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|50","right":"var:preset|spacing|50"}},"border":{"radius":"8px"}},"backgroundColor":"surface-dark","layout":{"type":"constrained"}} -->
-			<div class="wp-block-group has-surface-dark-background-color has-background" style="border-radius:8px;padding-top:var(--wp--preset--spacing--50);padding-right:var(--wp--preset--spacing--50);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--50)">
-				<!-- wp:paragraph {"align":"center","style":{"typography":{"fontSize":"3rem"}}} -->
-				<p class="has-text-align-center" style="font-size:3rem">🫘</p>
-				<!-- /wp:paragraph -->
-
-				<!-- wp:heading {"textAlign":"center","level":4,"style":{"spacing":{"margin":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|20"}}}} -->
-				<h4 class="wp-block-heading has-text-align-center" style="margin-top:var(--wp--preset--spacing--30);margin-bottom:var(--wp--preset--spacing--20)">Organic Lentils</h4>
-				<!-- /wp:heading -->
-
-				<!-- wp:paragraph {"align":"center","fontSize":"small","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}}} -->
-				<p class="has-text-align-center has-small-font-size" style="margin-bottom:var(--wp--preset--spacing--30)">From £3.49</p>
-				<!-- /wp:paragraph -->
-
-				<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
-				<div class="wp-block-buttons">
-					<!-- wp:button {"backgroundColor":"primary","textColor":"surface","width":100,"style":{"border":{"radius":"8px"}}} -->
-					<div class="wp-block-button has-custom-width wp-block-button__width-100"><a class="wp-block-button__link has-surface-color has-primary-background-color has-text-color has-background wp-element-button" style="border-radius:8px">View Product</a></div>
-					<!-- /wp:button -->
-				</div>
-				<!-- /wp:buttons -->
-			</div>
-			<!-- /wp:group -->
-		</div>
-		<!-- /wp:column -->
 	</div>
 	<!-- /wp:columns -->
+
+	<!-- Footer: view all products link -->
+	<!-- wp:paragraph {"fontSize":"small","style":{"spacing":{"margin":{"top":"var:preset|spacing|50","bottom":"0"}},"elements":{"link":{"color":{"text":"#0a7ea8"},":hover":{"color":{"text":"#076a8e"}}}}}} -->
+	<p class="has-small-font-size" style="margin-top:var(--wp--preset--spacing--50);margin-bottom:0"><a href="/products/"><strong>Browse all products →</strong></a></p>
+	<!-- /wp:paragraph -->
+
 </div>
 <!-- /wp:group -->
