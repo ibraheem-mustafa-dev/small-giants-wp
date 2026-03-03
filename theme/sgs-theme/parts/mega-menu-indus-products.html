@@ -1,48 +1,174 @@
-<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|60","left":"var:preset|spacing|60","right":"var:preset|spacing|60"}}},"layout":{"type":"constrained","contentSize":"680px"}} -->
+<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|60","left":"var:preset|spacing|60","right":"var:preset|spacing|60"}}},"layout":{"type":"constrained","contentSize":"1200px"}} -->
 <div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--60);padding-right:var(--wp--preset--spacing--60);padding-bottom:var(--wp--preset--spacing--60);padding-left:var(--wp--preset--spacing--60)">
 
 	<!-- Section label -->
-	<!-- wp:heading {"level":3,"fontSize":"x-small","style":{"typography":{"fontWeight":"700","letterSpacing":"0.12em","textTransform":"uppercase"},"color":{"text":"#0a7ea8"},"spacing":{"margin":{"top":"0","bottom":"var:preset|spacing|50"}}}} -->
-	<h3 class="wp-block-heading has-x-small-font-size" style="color:#0a7ea8;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-top:0;margin-bottom:var(--wp--preset--spacing--50)">Product Categories</h3>
-	<!-- /wp:heading -->
+	<!-- wp:group {"layout":{"type":"flex","justifyContent":"space-between","verticalAlignment":"center","flexWrap":"nowrap"},"style":{"spacing":{"margin":{"top":"0","bottom":"var:preset|spacing|50"}}}} -->
+	<div class="wp-block-group is-content-justification-space-between is-nowrap is-layout-flex wp-block-group-is-layout-flex" style="margin-top:0;margin-bottom:var(--wp--preset--spacing--50)">
+		<!-- wp:heading {"level":3,"fontSize":"x-small","style":{"typography":{"fontWeight":"700","letterSpacing":"0.12em","textTransform":"uppercase"},"color":{"text":"#0a7ea8"},"spacing":{"margin":{"top":"0","bottom":"0"}}}} -->
+		<h3 class="wp-block-heading has-x-small-font-size" style="color:#0a7ea8;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-top:0;margin-bottom:0">Product Categories</h3>
+		<!-- /wp:heading -->
+		<!-- wp:paragraph {"fontSize":"small","style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"elements":{"link":{"color":{"text":"#0a7ea8"}}}}} -->
+		<p class="has-small-font-size" style="margin-top:0;margin-bottom:0"><a href="/products/">View all products →</a></p>
+		<!-- /wp:paragraph -->
+	</div>
+	<!-- /wp:group -->
 
-	<!-- 2-column product category grid -->
-	<!-- wp:columns {"style":{"spacing":{"blockGap":{"top":"0","left":"var:preset|spacing|50"}}}} -->
+	<!-- 3-column food photo grid -->
+	<!-- wp:columns {"style":{"spacing":{"blockGap":{"top":"var:preset|spacing|40","left":"var:preset|spacing|40"}}}} -->
 	<div class="wp-block-columns">
 
-		<!-- Column 1 -->
+		<!-- Spices & Seasonings -->
 		<!-- wp:column -->
 		<div class="wp-block-column">
-
-			<!-- wp:sgs/info-box {"icon":"flame","heading":"Spices & Seasonings","description":"Chillies, turmeric, cumin, coriander, masalas","iconColour":"primary","iconBackgroundColour":"surface-alt","cardStyle":"flat","iconSize":"small","link":"/products/spices/","hoverBackgroundColour":"surface-alt"} /-->
-
-			<!-- wp:sgs/info-box {"icon":"wheat","heading":"Rice & Grains","description":"Aged basmati, atta flour, suji, rice varieties","iconColour":"primary","iconBackgroundColour":"surface-alt","cardStyle":"flat","iconSize":"small","link":"/products/rice-grains/","hoverBackgroundColour":"surface-alt"} /-->
-
-			<!-- wp:sgs/info-box {"icon":"droplets","heading":"Oils & Ghee","description":"Pure ghee, vegetable oil, mustard oil, olive blends","iconColour":"primary","iconBackgroundColour":"surface-alt","cardStyle":"flat","iconSize":"small","link":"/products/oils/","hoverBackgroundColour":"surface-alt"} /-->
-
+			<!-- wp:cover {"url":"/wp-content/themes/sgs-theme/assets/decorative-foods/chilli-scatter.png","dimRatio":55,"isUserOverlayColor":true,"overlayColor":"#0a2a14","minHeight":160,"contentPosition":"bottom left","style":{"border":{"radius":"8px"}},"layout":{"type":"constrained"}} -->
+			<div class="wp-block-cover is-position-bottom-left" style="min-height:160px;border-radius:8px">
+				<span aria-hidden="true" class="wp-block-cover__background has-background-dim-55" style="background-color:#0a2a14"></span>
+				<img class="wp-block-cover__image-background" src="/wp-content/themes/sgs-theme/assets/decorative-foods/chilli-scatter.png" alt="" style="object-fit:cover"/>
+				<div class="wp-block-cover__inner-container is-layout-constrained wp-block-cover-is-layout-constrained">
+					<!-- wp:paragraph {"style":{"typography":{"fontWeight":"700"},"spacing":{"margin":{"top":"0","bottom":"2px"}}},"textColor":"surface","fontSize":"small"} -->
+					<p class="has-surface-color has-text-color has-small-font-size" style="font-weight:700;margin-top:0;margin-bottom:2px"><a href="/products/spices/" style="color:inherit;text-decoration:none">Spices &amp; Seasonings</a></p>
+					<!-- /wp:paragraph -->
+					<!-- wp:paragraph {"fontSize":"x-small","style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"color":{"text":"rgba(255,255,255,0.8)"}}} -->
+					<p class="has-x-small-font-size" style="margin-top:0;margin-bottom:0;color:rgba(255,255,255,0.8)">Chillies, turmeric, cumin, masalas</p>
+					<!-- /wp:paragraph -->
+				</div>
+			</div>
+			<!-- /wp:cover -->
 		</div>
 		<!-- /wp:column -->
 
-		<!-- Column 2 -->
+		<!-- Rice & Grains -->
 		<!-- wp:column -->
 		<div class="wp-block-column">
+			<!-- wp:cover {"url":"/wp-content/themes/sgs-theme/assets/decorative-foods/basmati-rice.png","dimRatio":50,"isUserOverlayColor":true,"overlayColor":"#1a2e0a","minHeight":160,"contentPosition":"bottom left","style":{"border":{"radius":"8px"}},"layout":{"type":"constrained"}} -->
+			<div class="wp-block-cover is-position-bottom-left" style="min-height:160px;border-radius:8px">
+				<span aria-hidden="true" class="wp-block-cover__background has-background-dim-50" style="background-color:#1a2e0a"></span>
+				<img class="wp-block-cover__image-background" src="/wp-content/themes/sgs-theme/assets/decorative-foods/basmati-rice.png" alt="" style="object-fit:cover"/>
+				<div class="wp-block-cover__inner-container is-layout-constrained wp-block-cover-is-layout-constrained">
+					<!-- wp:paragraph {"style":{"typography":{"fontWeight":"700"},"spacing":{"margin":{"top":"0","bottom":"2px"}}},"textColor":"surface","fontSize":"small"} -->
+					<p class="has-surface-color has-text-color has-small-font-size" style="font-weight:700;margin-top:0;margin-bottom:2px"><a href="/products/rice-grains/" style="color:inherit;text-decoration:none">Rice &amp; Grains</a></p>
+					<!-- /wp:paragraph -->
+					<!-- wp:paragraph {"fontSize":"x-small","style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"color":{"text":"rgba(255,255,255,0.8)"}}} -->
+					<p class="has-x-small-font-size" style="margin-top:0;margin-bottom:0;color:rgba(255,255,255,0.8)">Basmati, atta flour, suji, rice varieties</p>
+					<!-- /wp:paragraph -->
+				</div>
+			</div>
+			<!-- /wp:cover -->
+		</div>
+		<!-- /wp:column -->
 
-			<!-- wp:sgs/info-box {"icon":"circle-dot","heading":"Pulses & Lentils","description":"Red lentils, chickpeas, black-eyed peas, moong dal","iconColour":"primary","iconBackgroundColour":"surface-alt","cardStyle":"flat","iconSize":"small","link":"/products/pulses/","hoverBackgroundColour":"surface-alt"} /-->
-
-			<!-- wp:sgs/info-box {"icon":"bottle","heading":"Sauces & Condiments","description":"Chutneys, pickles, cooking sauces, curry pastes","iconColour":"primary","iconBackgroundColour":"surface-alt","cardStyle":"flat","iconSize":"small","link":"/products/sauces/","hoverBackgroundColour":"surface-alt"} /-->
-
-			<!-- wp:sgs/info-box {"icon":"tag","heading":"Branded Products","description":"Sanam, Royal, and other trusted South Asian brands","iconColour":"primary","iconBackgroundColour":"surface-alt","cardStyle":"flat","iconSize":"small","link":"/products/brands/","hoverBackgroundColour":"surface-alt"} /-->
-
+		<!-- Pulses & Lentils -->
+		<!-- wp:column -->
+		<div class="wp-block-column">
+			<!-- wp:cover {"url":"/wp-content/themes/sgs-theme/assets/decorative-foods/lentils-pile.png","dimRatio":50,"isUserOverlayColor":true,"overlayColor":"#2a1a0a","minHeight":160,"contentPosition":"bottom left","style":{"border":{"radius":"8px"}},"layout":{"type":"constrained"}} -->
+			<div class="wp-block-cover is-position-bottom-left" style="min-height:160px;border-radius:8px">
+				<span aria-hidden="true" class="wp-block-cover__background has-background-dim-50" style="background-color:#2a1a0a"></span>
+				<img class="wp-block-cover__image-background" src="/wp-content/themes/sgs-theme/assets/decorative-foods/lentils-pile.png" alt="" style="object-fit:cover"/>
+				<div class="wp-block-cover__inner-container is-layout-constrained wp-block-cover-is-layout-constrained">
+					<!-- wp:paragraph {"style":{"typography":{"fontWeight":"700"},"spacing":{"margin":{"top":"0","bottom":"2px"}}},"textColor":"surface","fontSize":"small"} -->
+					<p class="has-surface-color has-text-color has-small-font-size" style="font-weight:700;margin-top:0;margin-bottom:2px"><a href="/products/pulses/" style="color:inherit;text-decoration:none">Pulses &amp; Lentils</a></p>
+					<!-- /wp:paragraph -->
+					<!-- wp:paragraph {"fontSize":"x-small","style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"color":{"text":"rgba(255,255,255,0.8)"}}} -->
+					<p class="has-x-small-font-size" style="margin-top:0;margin-bottom:0;color:rgba(255,255,255,0.8)">Red lentils, chickpeas, moong dal</p>
+					<!-- /wp:paragraph -->
+				</div>
+			</div>
+			<!-- /wp:cover -->
 		</div>
 		<!-- /wp:column -->
 
 	</div>
 	<!-- /wp:columns -->
 
-	<!-- Footer: view all products link -->
-	<!-- wp:paragraph {"fontSize":"small","style":{"spacing":{"margin":{"top":"var:preset|spacing|50","bottom":"0"}},"elements":{"link":{"color":{"text":"#0a7ea8"},":hover":{"color":{"text":"#076a8e"}}}}}} -->
-	<p class="has-small-font-size" style="margin-top:var(--wp--preset--spacing--50);margin-bottom:0"><a href="/products/"><strong>Browse all products →</strong></a></p>
-	<!-- /wp:paragraph -->
+	<!-- Row 2 -->
+	<!-- wp:columns {"style":{"spacing":{"blockGap":{"top":"var:preset|spacing|40","left":"var:preset|spacing|40"},"margin":{"top":"var:preset|spacing|40"}}}} -->
+	<div class="wp-block-columns" style="margin-top:var(--wp--preset--spacing--40)">
+
+		<!-- Oils & Ghee -->
+		<!-- wp:column -->
+		<div class="wp-block-column">
+			<!-- wp:cover {"url":"/wp-content/themes/sgs-theme/assets/decorative-foods/cumin-seeds.png","dimRatio":55,"isUserOverlayColor":true,"overlayColor":"#1a1a0a","minHeight":160,"contentPosition":"bottom left","style":{"border":{"radius":"8px"}},"layout":{"type":"constrained"}} -->
+			<div class="wp-block-cover is-position-bottom-left" style="min-height:160px;border-radius:8px">
+				<span aria-hidden="true" class="wp-block-cover__background has-background-dim-55" style="background-color:#1a1a0a"></span>
+				<img class="wp-block-cover__image-background" src="/wp-content/themes/sgs-theme/assets/decorative-foods/cumin-seeds.png" alt="" style="object-fit:cover"/>
+				<div class="wp-block-cover__inner-container is-layout-constrained wp-block-cover-is-layout-constrained">
+					<!-- wp:paragraph {"style":{"typography":{"fontWeight":"700"},"spacing":{"margin":{"top":"0","bottom":"2px"}}},"textColor":"surface","fontSize":"small"} -->
+					<p class="has-surface-color has-text-color has-small-font-size" style="font-weight:700;margin-top:0;margin-bottom:2px"><a href="/products/oils/" style="color:inherit;text-decoration:none">Oils &amp; Ghee</a></p>
+					<!-- /wp:paragraph -->
+					<!-- wp:paragraph {"fontSize":"x-small","style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"color":{"text":"rgba(255,255,255,0.8)"}}} -->
+					<p class="has-x-small-font-size" style="margin-top:0;margin-bottom:0;color:rgba(255,255,255,0.8)">Pure ghee, vegetable oil, mustard oil</p>
+					<!-- /wp:paragraph -->
+				</div>
+			</div>
+			<!-- /wp:cover -->
+		</div>
+		<!-- /wp:column -->
+
+		<!-- Sauces & Condiments -->
+		<!-- wp:column -->
+		<div class="wp-block-column">
+			<!-- wp:cover {"url":"/wp-content/themes/sgs-theme/assets/decorative-foods/coriander-leaves.png","dimRatio":55,"isUserOverlayColor":true,"overlayColor":"#0a2a1a","minHeight":160,"contentPosition":"bottom left","style":{"border":{"radius":"8px"}},"layout":{"type":"constrained"}} -->
+			<div class="wp-block-cover is-position-bottom-left" style="min-height:160px;border-radius:8px">
+				<span aria-hidden="true" class="wp-block-cover__background has-background-dim-55" style="background-color:#0a2a1a"></span>
+				<img class="wp-block-cover__image-background" src="/wp-content/themes/sgs-theme/assets/decorative-foods/coriander-leaves.png" alt="" style="object-fit:cover"/>
+				<div class="wp-block-cover__inner-container is-layout-constrained wp-block-cover-is-layout-constrained">
+					<!-- wp:paragraph {"style":{"typography":{"fontWeight":"700"},"spacing":{"margin":{"top":"0","bottom":"2px"}}},"textColor":"surface","fontSize":"small"} -->
+					<p class="has-surface-color has-text-color has-small-font-size" style="font-weight:700;margin-top:0;margin-bottom:2px"><a href="/products/sauces/" style="color:inherit;text-decoration:none">Sauces &amp; Condiments</a></p>
+					<!-- /wp:paragraph -->
+					<!-- wp:paragraph {"fontSize":"x-small","style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"color":{"text":"rgba(255,255,255,0.8)"}}} -->
+					<p class="has-x-small-font-size" style="margin-top:0;margin-bottom:0;color:rgba(255,255,255,0.8)">Chutneys, pickles, cooking sauces</p>
+					<!-- /wp:paragraph -->
+				</div>
+			</div>
+			<!-- /wp:cover -->
+		</div>
+		<!-- /wp:column -->
+
+		<!-- Branded Products — placeholder until logos provided -->
+		<!-- wp:column -->
+		<div class="wp-block-column">
+			<!-- wp:cover {"url":"/wp-content/themes/sgs-theme/assets/decorative-foods/cardamom-pods.png","dimRatio":55,"isUserOverlayColor":true,"overlayColor":"#0a1a2a","minHeight":160,"contentPosition":"bottom left","style":{"border":{"radius":"8px"}},"layout":{"type":"constrained"}} -->
+			<div class="wp-block-cover is-position-bottom-left" style="min-height:160px;border-radius:8px">
+				<span aria-hidden="true" class="wp-block-cover__background has-background-dim-55" style="background-color:#0a1a2a"></span>
+				<img class="wp-block-cover__image-background" src="/wp-content/themes/sgs-theme/assets/decorative-foods/cardamom-pods.png" alt="" style="object-fit:cover"/>
+				<div class="wp-block-cover__inner-container is-layout-constrained wp-block-cover-is-layout-constrained">
+					<!-- wp:paragraph {"style":{"typography":{"fontWeight":"700"},"spacing":{"margin":{"top":"0","bottom":"2px"}}},"textColor":"surface","fontSize":"small"} -->
+					<p class="has-surface-color has-text-color has-small-font-size" style="font-weight:700;margin-top:0;margin-bottom:2px"><a href="/brands/" style="color:inherit;text-decoration:none">Branded Products</a></p>
+					<!-- /wp:paragraph -->
+					<!-- wp:paragraph {"fontSize":"x-small","style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"color":{"text":"rgba(255,255,255,0.8)"}}} -->
+					<p class="has-x-small-font-size" style="margin-top:0;margin-bottom:0;color:rgba(255,255,255,0.8)">Shan, Royal, Green Leaf &amp; more</p>
+					<!-- /wp:paragraph -->
+				</div>
+			</div>
+			<!-- /wp:cover -->
+		</div>
+		<!-- /wp:column -->
+
+	</div>
+	<!-- /wp:columns -->
+
+	<!-- CTA strip -->
+	<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|60","right":"var:preset|spacing|50"},"margin":{"top":"var:preset|spacing|60"}},"border":{"radius":"8px"}},"backgroundColor":"footer-bg","layout":{"type":"flex","justifyContent":"space-between","verticalAlignment":"center","flexWrap":"wrap"}} -->
+	<div class="wp-block-group has-footer-bg-background-color has-background is-content-justification-space-between is-layout-flex wp-block-group-is-layout-flex" style="border-radius:8px;padding-top:var(--wp--preset--spacing--50);padding-right:var(--wp--preset--spacing--50);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--60);margin-top:var(--wp--preset--spacing--60)">
+		<!-- wp:group {"layout":{"type":"flex","orientation":"vertical","flexWrap":"nowrap"},"style":{"spacing":{"blockGap":"4px"}}} -->
+		<div class="wp-block-group is-layout-flex wp-block-group-is-layout-flex">
+			<!-- wp:paragraph {"style":{"typography":{"fontWeight":"600"},"spacing":{"margin":{"top":"0","bottom":"0"}}},"textColor":"text-inverse","fontSize":"small"} -->
+			<p class="has-text-inverse-color has-text-color has-small-font-size" style="font-weight:600;margin-top:0;margin-bottom:0">New to Indus Foods?</p>
+			<!-- /wp:paragraph -->
+			<!-- wp:paragraph {"style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"color":{"text":"rgba(255,255,255,0.75)"}},"fontSize":"x-small"} -->
+			<p class="has-x-small-font-size" style="margin-top:0;margin-bottom:0;color:rgba(255,255,255,0.75)">Open a trade account for exclusive pricing and priority fulfilment</p>
+			<!-- /wp:paragraph -->
+		</div>
+		<!-- /wp:group -->
+		<!-- wp:buttons {"style":{"spacing":{"margin":{"top":"0","bottom":"0"}}}} -->
+		<div class="wp-block-buttons is-layout-flex wp-block-buttons-is-layout-flex" style="margin-top:0;margin-bottom:0">
+			<!-- wp:button {"backgroundColor":"accent","textColor":"text","style":{"border":{"radius":"6px"},"typography":{"fontWeight":"700"},"spacing":{"padding":{"top":"10px","bottom":"10px","left":"20px","right":"20px"}}},"fontSize":"small"} -->
+			<div class="wp-block-button has-custom-font-size has-small-font-size"><a class="wp-block-button__link has-text-color has-text-text-color has-accent-background-color has-background wp-element-button" href="/trade-account/" style="border-radius:6px;font-weight:700;padding-top:10px;padding-right:20px;padding-bottom:10px;padding-left:20px">Apply Today</a></div>
+			<!-- /wp:button -->
+		</div>
+		<!-- /wp:buttons -->
+	</div>
+	<!-- /wp:group -->
 
 </div>
 <!-- /wp:group -->
