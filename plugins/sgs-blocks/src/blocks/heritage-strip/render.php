@@ -14,6 +14,7 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
+$label            = $attributes['label'] ?? '';
 $layout           = $attributes['layout'] ?? 'image-text-image';
 $headline         = $attributes['headline'] ?? '';
 $body             = $attributes['body'] ?? '';
@@ -94,6 +95,13 @@ if ( $show_right && ! empty( $image_right['url'] ) ) {
 
 // Build content area.
 $content_html = '<div class="sgs-heritage-strip__content">';
+
+if ( $label ) {
+	$content_html .= sprintf(
+		'<p class="sgs-heritage-strip__label">%s</p>',
+		esc_html( $label )
+	);
+}
 
 if ( $headline ) {
 	$content_html .= sprintf(

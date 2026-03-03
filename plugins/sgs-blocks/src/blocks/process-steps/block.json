@@ -66,6 +66,10 @@
                                                      }
                                                  ]
                                  },
+                       "connectorLine":  {
+                                             "type":  "boolean",
+                                             "default":  true
+                                         },
                        "connectorStyle":  {
                                               "type":  "string",
                                               "default":  "line"

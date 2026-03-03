@@ -49,6 +49,10 @@
                       "typography":  ".sgs-heritage-strip__headline"
                   },
     "attributes":  {
+                       "label":  {
+                                     "type":  "string",
+                                     "default":  ""
+                                 },
                        "layout":  {
                                       "type":  "string",
                                       "default":  "image-text-image"

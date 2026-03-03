@@ -16,7 +16,9 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 
 $steps             = $attributes['steps'] ?? array();
-$connector_style   = $attributes['connectorStyle'] ?? 'line';
+// connectorLine (bool) hides connectors when false — takes precedence over connectorStyle.
+$connector_line    = $attributes['connectorLine'] ?? true;
+$connector_style   = $connector_line ? ( $attributes['connectorStyle'] ?? 'line' ) : 'none';
 $number_style      = $attributes['numberStyle'] ?? 'circle';
 $number_colour     = $attributes['numberColour'] ?? '';
 $number_background = $attributes['numberBackground'] ?? '';
@@ -82,12 +84,13 @@ foreach ( $steps as $index => $step ) {
 		);
 	}
 
-	// Step title — required.
-	if ( ! empty( $step['title'] ) ) {
+	// Step title — supports both 'title' (current) and 'heading' (legacy) key names.
+	$step_title = $step['title'] ?? $step['heading'] ?? '';
+	if ( $step_title ) {
 		$step_html .= sprintf(
 			'<h3 class="sgs-process-steps__title"%s>%s</h3>',
 			$title_style_attr,
-			esc_html( $step['title'] )
+			esc_html( $step_title )
 		);
 	}
 
