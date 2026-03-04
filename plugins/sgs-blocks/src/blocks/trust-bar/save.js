@@ -61,6 +61,7 @@ export default function Save( { attributes } ) {
 					if ( item.suffix ) {
 						dataAttrs[ 'data-suffix' ] = item.suffix;
 					}
+					dataAttrs[ 'aria-live' ] = 'polite';
 				}
 
 				return (

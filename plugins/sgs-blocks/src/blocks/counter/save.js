@@ -49,6 +49,7 @@ export default function Save( { attributes } ) {
 				data-separator={ separator ? 'true' : 'false' }
 				data-prefix={ prefix || undefined }
 				data-suffix={ suffix || undefined }
+				aria-live="polite"
 			>
 				{ prefix }
 				{ formatNumber( number, separator ) }
