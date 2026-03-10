@@ -19,6 +19,11 @@ namespace SGS\Blocks;
 
 defined( 'ABSPATH' ) || exit;
 
+// Composer autoloader — spatie/color, league/csv, nesbot/carbon.
+if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
+	require_once __DIR__ . '/vendor/autoload.php';
+}
+
 define( 'SGS_BLOCKS_VERSION', '0.1.0' );
 define( 'SGS_BLOCKS_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SGS_BLOCKS_URL', plugin_dir_url( __FILE__ ) );
