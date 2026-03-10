@@ -7,14 +7,28 @@
  */
 
 /* ----------------------------------------------------------------
-   1. Form Layout
+   1. Form Layout — container-query-aware, mobile-first
    ---------------------------------------------------------------- */
+
+/* Container context so @container queries respond to form width, not viewport */
+.sgs-form {
+	container-type: inline-size;
+	container-name: sgs-form;
+}
 
 .sgs-form__inner,
 .sgs-form-step {
 	display: grid;
-	grid-template-columns: 1fr 1fr;
+	grid-template-columns: 1fr;          /* mobile-first: single column */
 	gap: var(--wp--preset--spacing--30, 1rem);
+}
+
+/* 2-column layout kicks in at 560px container width (not viewport) */
+@container sgs-form (min-width: 560px) {
+	.sgs-form__inner,
+	.sgs-form-step {
+		grid-template-columns: 1fr 1fr;
+	}
 }
 
 /* Field width classes */
@@ -24,12 +38,15 @@
 	grid-column: 1 / -1;
 }
 
-.sgs-form-field--half {
-	grid-column: span 1;
-}
+/* Half/third only apply inside 2-col layout */
+@container sgs-form (min-width: 560px) {
+	.sgs-form-field--half {
+		grid-column: span 1;
+	}
 
-.sgs-form-field--third {
-	grid-column: span 1;
+	.sgs-form-field--third {
+		grid-column: span 1;
+	}
 }
 
 /* Steps span full width inside the form grid */
@@ -78,16 +95,18 @@
 	}
 }
 
-/* Mobile: single column */
-@media (max-width: 599px) {
-	.sgs-form__inner,
-	.sgs-form-step {
-		grid-template-columns: 1fr;
-	}
+/* Viewport fallback for browsers without @container support */
+@supports not (container-type: inline-size) {
+	@media (max-width: 599px) {
+		.sgs-form__inner,
+		.sgs-form-step {
+			grid-template-columns: 1fr;
+		}
 
-	.sgs-form-field--half,
-	.sgs-form-field--third {
-		grid-column: 1 / -1;
+		.sgs-form-field--half,
+		.sgs-form-field--third {
+			grid-column: 1 / -1;
+		}
 	}
 }
 
@@ -276,9 +295,17 @@ select.sgs-form-field__input {
 	display: block;
 }
 
-@media (max-width: 599px) {
+/* Tiles: enforce 2-col minimum on narrow containers (avoid 4-5 col on mobile) */
+@container sgs-form (max-width: 480px) {
 	.sgs-form-tiles {
 		grid-template-columns: 1fr 1fr !important;
+	}
+}
+
+/* Single column for very small containers (< 300px — embedded/widget contexts) */
+@container sgs-form (max-width: 300px) {
+	.sgs-form-tiles {
+		grid-template-columns: 1fr !important;
 	}
 }
 
@@ -443,9 +470,16 @@ select.sgs-form-field__input {
 	font-weight: 600;
 }
 
-@media (max-width: 599px) {
+/* Hide step labels on narrow containers — step numbers are enough */
+@container sgs-form (max-width: 480px) {
 	.sgs-form__progress-step-label {
 		display: none;
+	}
+
+	.sgs-form__progress-step-number {
+		width: 24px;
+		height: 24px;
+		font-size: 0.75rem;
 	}
 }
 
@@ -455,9 +489,22 @@ select.sgs-form-field__input {
 
 .sgs-form__actions {
 	display: flex;
+	flex-wrap: wrap;
 	gap: var(--wp--preset--spacing--20, 0.75rem);
 	justify-content: flex-end;
 	padding-top: var(--wp--preset--spacing--30, 1rem);
+}
+
+/* Stack buttons full-width on narrow containers */
+@container sgs-form (max-width: 400px) {
+	.sgs-form__actions {
+		flex-direction: column-reverse;  /* primary action stays on top visually */
+	}
+
+	.sgs-form__button {
+		width: 100%;
+		text-align: center;
+	}
 }
 
 .sgs-form__button {
@@ -567,7 +614,7 @@ select.sgs-form-field__input {
 	font-size: var(--wp--preset--font-size--small, 0.9375rem);
 }
 
-@media (max-width: 599px) {
+@container sgs-form (max-width: 480px) {
 	.sgs-form-review__list {
 		grid-template-columns: 1fr;
 	}
