@@ -14,4 +14,5 @@ echo '<div ' . $wrapper_attributes . '>';
 echo '<h3 class="sgs-form-review__heading">' . esc_html( $heading ) . '</h3>';
 echo '<p class="sgs-form-review__intro">' . esc_html__( 'Please check your details below before submitting.', 'sgs-blocks' ) . '</p>';
 echo '<dl class="sgs-form-review__list"></dl>';
+echo '<noscript><p class="sgs-form-review__noscript">' . esc_html__( 'JavaScript is required to preview your form responses.', 'sgs-blocks' ) . '</p></noscript>';
 echo '</div>';

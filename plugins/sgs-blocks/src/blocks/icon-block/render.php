@@ -14,13 +14,14 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 
-$icon             = $attributes['icon'] ?? 'star';
-$icon_colour      = $attributes['iconColour'] ?? 'primary';
-$icon_size        = (int) ( $attributes['iconSize'] ?? 48 );
+$icon              = $attributes['icon'] ?? 'star';
+$icon_colour       = $attributes['iconColour'] ?? 'primary';
+$icon_size         = (int) ( $attributes['iconSize'] ?? 48 );
 $background_colour = $attributes['backgroundColour'] ?? '';
-$link             = $attributes['link'] ?? '';
-$link_new_tab     = ! empty( $attributes['linkOpensNewTab'] );
-$shape            = $attributes['shape'] ?? 'none';
+$link              = $attributes['link'] ?? '';
+$link_label        = $attributes['linkLabel'] ?? '';
+$link_new_tab      = ! empty( $attributes['linkOpensNewTab'] );
+$shape             = $attributes['shape'] ?? 'none';
 
 $classes = [
 	'sgs-icon-block',
@@ -50,7 +51,16 @@ $inner = sprintf(
 
 if ( $link ) {
 	$target = $link_new_tab ? ' target="_blank" rel="noopener noreferrer"' : '';
-	$inner  = sprintf( '<a href="%s"%s class="sgs-icon-block__link">%s</a>', esc_url( $link ), $target, $inner );
+	// Accessible name: use the author-supplied label; fall back to the icon slug.
+	// WCAG 2.4.4 requires every link to have a discernible purpose.
+	$accessible_label = $link_label ? $link_label : $icon;
+	$inner = sprintf(
+		'<a href="%s"%s class="sgs-icon-block__link" aria-label="%s">%s</a>',
+		esc_url( $link ),
+		$target,
+		esc_attr( $accessible_label ),
+		$inner
+	);
 }
 
 printf( '<div %s>%s</div>', $wrapper, $inner );

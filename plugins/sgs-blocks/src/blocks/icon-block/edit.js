@@ -12,7 +12,7 @@ const SHAPE_OPTIONS = [
 ];
 
 export default function Edit( { attributes, setAttributes } ) {
-	const { icon, iconColour, iconSize, backgroundColour, link, linkOpensNewTab, shape } = attributes;
+	const { icon, iconColour, iconSize, backgroundColour, link, linkLabel, linkOpensNewTab, shape } = attributes;
 
 	const style = {
 		color: colourVar( iconColour ) || undefined,
@@ -36,7 +36,18 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 				<PanelBody title={ __( 'Link', 'sgs-blocks' ) } initialOpen={ false }>
 					<TextControl label={ __( 'URL', 'sgs-blocks' ) } value={ link } onChange={ ( val ) => setAttributes( { link: val } ) } type="url" __nextHasNoMarginBottom />
-					{ link && <ToggleControl label={ __( 'Open in new tab', 'sgs-blocks' ) } checked={ linkOpensNewTab } onChange={ ( val ) => setAttributes( { linkOpensNewTab: val } ) } __nextHasNoMarginBottom /> }
+					{ link && (
+						<>
+							<TextControl
+								label={ __( 'Accessible label', 'sgs-blocks' ) }
+								value={ linkLabel }
+								onChange={ ( val ) => setAttributes( { linkLabel: val } ) }
+								help={ __( 'Describe the link destination for screen readers (e.g. "Visit our Instagram page"). Defaults to the icon name if left blank.', 'sgs-blocks' ) }
+								__nextHasNoMarginBottom
+							/>
+							<ToggleControl label={ __( 'Open in new tab', 'sgs-blocks' ) } checked={ linkOpensNewTab } onChange={ ( val ) => setAttributes( { linkOpensNewTab: val } ) } __nextHasNoMarginBottom />
+						</>
+					) }
 				</PanelBody>
 			</InspectorControls>
 			<div { ...blockProps }>

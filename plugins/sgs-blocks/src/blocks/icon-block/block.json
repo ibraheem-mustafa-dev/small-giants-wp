@@ -53,6 +53,10 @@
                                     "type":  "string",
                                     "default":  ""
                                 },
+                       "linkLabel":  {
+                                         "type":  "string",
+                                         "default":  ""
+                                     },
                        "linkOpensNewTab":  {
                                                "type":  "boolean",
                                                "default":  false

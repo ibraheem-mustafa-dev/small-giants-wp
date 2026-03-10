@@ -6,12 +6,13 @@
 	margin: 0;
 	display: flex;
 	flex-direction: column;
+	gap: var(--sgs-icon-list-gap, var(--wp--preset--spacing--20));
 }
 
 /* Individual item */
 .sgs-icon-list__item {
 	display: flex;
-	align-items: flex-start;
+	align-items: center;
 	gap: var(--wp--preset--spacing--20);
 }
 
@@ -28,67 +29,40 @@
 	color: var(--wp--preset--color--primary);
 }
 
-/* Icon rendered via CSS ::before for frontend (save.js outputs data-icon) */
-.sgs-icon-list__icon[data-icon]::before {
-	display: inline-block;
-	line-height: 1;
-}
-
-.sgs-icon-list__icon[data-icon="check"]::before {
-	content: "\2713";
-}
-
-.sgs-icon-list__icon[data-icon="star-filled"]::before {
-	content: "\2605";
-}
-
-.sgs-icon-list__icon[data-icon="arrow-right"]::before {
-	content: "\2192";
-}
-
-.sgs-icon-list__icon[data-icon="shipping"]::before {
-	content: "\1F69A";
-}
-
-.sgs-icon-list__icon[data-icon="shield"]::before {
-	content: "\1F6E1";
-}
-
-.sgs-icon-list__icon[data-icon="payment"]::before {
-	content: "\1F4B3";
-}
-
-.sgs-icon-list__icon[data-icon="globe"]::before {
-	content: "\1F310";
-}
-
-.sgs-icon-list__icon[data-icon="people"]::before {
-	content: "\1F465";
-}
-
-/* Icon sizes */
+/* Icon sizes — SVG scales to match the container */
 .sgs-icon-list--icon-small .sgs-icon-list__icon {
 	width: 20px;
 	height: 20px;
-	font-size: 14px;
+}
+
+.sgs-icon-list--icon-small .sgs-icon-list__icon svg {
+	width: 16px;
+	height: 16px;
 }
 
 .sgs-icon-list--icon-medium .sgs-icon-list__icon {
 	width: 24px;
 	height: 24px;
-	font-size: 18px;
+}
+
+.sgs-icon-list--icon-medium .sgs-icon-list__icon svg {
+	width: 20px;
+	height: 20px;
 }
 
 .sgs-icon-list--icon-large .sgs-icon-list__icon {
 	width: 32px;
 	height: 32px;
-	font-size: 24px;
+}
+
+.sgs-icon-list--icon-large .sgs-icon-list__icon svg {
+	width: 28px;
+	height: 28px;
 }
 
 /* Text */
 .sgs-icon-list__text {
 	line-height: 1.5;
-	padding-top: 1px;
 }
 
 .sgs-icon-list__text:not([style*="color"]) {

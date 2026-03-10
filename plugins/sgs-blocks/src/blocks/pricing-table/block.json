@@ -33,8 +33,7 @@
                                     },
                      "spacing":  {
                                      "margin":  true,
-                                     "padding":  true,
-                                     "blockGap":  true
+                                     "padding":  true
                                  }
                  },
     "attributes":  {
@@ -47,7 +46,7 @@
                                      "default":  [
                                                      {
                                                          "name":  "Basic",
-                                                         "price":  "Â£9.99",
+                                                         "price":  "£9.99",
                                                          "period":  "monthly",
                                                          "features":  [
                                                                           "5 projects",
@@ -60,7 +59,7 @@
                                                      },
                                                      {
                                                          "name":  "Pro",
-                                                         "price":  "Â£29.99",
+                                                         "price":  "£29.99",
                                                          "period":  "monthly",
                                                          "features":  [
                                                                           "Unlimited projects",
@@ -74,7 +73,7 @@
                                                      },
                                                      {
                                                          "name":  "Enterprise",
-                                                         "price":  "Â£99.99",
+                                                         "price":  "£99.99",
                                                          "period":  "monthly",
                                                          "features":  [
                                                                           "Everything in Pro",

@@ -2,13 +2,26 @@
  * Pricing Table — frontend and editor styles.
  *
  * Responsive pricing plans with column layout, badges, and CTA buttons.
- * Uses CSS Grid for layout and stack to single column on mobile.
+ * Uses CSS Grid for layout and stacks to single column on mobile.
  */
 
 .sgs-pricing-table {
 	--sgs-pricing-gap: var(--wp--preset--spacing--40, 2rem);
 	--sgs-pricing-padding: var(--wp--preset--spacing--50, 2.5rem);
 	--sgs-pricing-border-radius: var(--wp--custom--border-radius--medium, 8px);
+	/* Shadow tokens: foreground colour at low opacity, avoiding raw rgba(). */
+	--sgs-pricing-shadow-soft: 0 4px 12px color-mix(in srgb, currentColor 10%, transparent);
+	--sgs-pricing-shadow-strong: 0 8px 24px color-mix(in srgb, currentColor 15%, transparent);
+	/* Fallback for browsers that predate color-mix (Safari < 16.2, Chrome < 111). */
+	--sgs-pricing-shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.1);
+	--sgs-pricing-shadow-strong: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+@supports (color: color-mix(in srgb, black 10%, transparent)) {
+	.sgs-pricing-table {
+		--sgs-pricing-shadow-soft: 0 4px 12px color-mix(in srgb, var(--wp--preset--color--text, #1e1e1e) 10%, transparent);
+		--sgs-pricing-shadow-strong: 0 8px 24px color-mix(in srgb, var(--wp--preset--color--text, #1e1e1e) 15%, transparent);
+	}
 }
 
 .sgs-pricing-table__grid {
@@ -17,7 +30,7 @@
 	grid-template-columns: 1fr;
 }
 
-/* Column layouts (desktop only) */
+/* Column layouts (tablet and up) */
 @media (min-width: 768px) {
 	.sgs-pricing-table--columns-2 .sgs-pricing-table__grid {
 		grid-template-columns: repeat(2, 1fr);
@@ -40,12 +53,12 @@
 	padding: var(--sgs-pricing-padding);
 	border-radius: var(--sgs-pricing-border-radius);
 	background-color: var(--wp--preset--color--white, #fff);
-	transition: transform 0.3s ease, box-shadow 0.3s ease;
+	transition: box-shadow 0.3s ease;
 }
 
 /* Style variants */
 .sgs-pricing-table--card .sgs-pricing-table__plan {
-	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	box-shadow: var(--sgs-pricing-shadow-soft);
 }
 
 .sgs-pricing-table--flat .sgs-pricing-table__plan {
@@ -58,14 +71,11 @@
 	box-shadow: none;
 }
 
-/* Highlighted plan (scale up slightly) */
+/* Highlighted plan — elevated with shadow and z-index, no scale transform
+   (avoids layout shift and subpixel blur from transform: scale). */
 .sgs-pricing-table__plan--highlighted {
-	transform: scale(1.05);
+	box-shadow: var(--sgs-pricing-shadow-strong);
 	z-index: 1;
-}
-
-.sgs-pricing-table--card .sgs-pricing-table__plan--highlighted {
-	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
 /* Popular badge */
@@ -78,7 +88,7 @@
 	font-size: 0.875rem;
 	font-weight: 600;
 	color: var(--wp--preset--color--white, #fff);
-	background-color: var(--wp--preset--color--accent, #007bff);
+	background-color: var(--wp--preset--color--accent, #d4a843);
 	text-transform: uppercase;
 	letter-spacing: 0.025em;
 }
@@ -134,7 +144,12 @@
 	border-bottom: none;
 }
 
-/* Checkmark icon (pure CSS) */
+/* Checkmark icon — decorative, rendered via CSS ::before.
+   The list item text is the accessible content; the pseudo-element is
+   purely visual. Screen readers skip ::before content in list items.
+   No aria-hidden is needed on a pseudo-element itself, but we ensure
+   the checkmark is not announced by keeping it CSS-only (no role or
+   tabIndex) and not placing it in actual DOM content. */
 .sgs-pricing-table__feature::before {
 	content: '✓';
 	position: absolute;
@@ -147,8 +162,8 @@
 	justify-content: center;
 	font-size: 0.875rem;
 	font-weight: 700;
-	color: var(--wp--preset--color--accent, #007bff);
-	background-color: var(--wp--preset--color--accent-light, rgba(0, 123, 255, 0.1));
+	color: var(--wp--preset--color--accent, #d4a843);
+	background-color: var(--wp--preset--color--accent-light, #f5e6c4);
 	border-radius: 50%;
 }
 
@@ -164,7 +179,12 @@
 	text-align: center;
 	text-decoration: none;
 	cursor: pointer;
-	transition: all 0.3s ease;
+	transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.sgs-pricing-table__cta:focus-visible {
+	outline: 3px solid var(--wp--preset--color--primary, #1a3a5c);
+	outline-offset: 3px;
 }
 
 .sgs-pricing-table__cta--primary {
@@ -187,11 +207,11 @@
 
 .sgs-pricing-table__cta--accent {
 	color: var(--wp--preset--color--white, #fff);
-	background-color: var(--wp--preset--color--accent, #007bff);
+	background-color: var(--wp--preset--color--accent, #d4a843);
 }
 
 .sgs-pricing-table__cta--accent:hover {
-	background-color: var(--wp--preset--color--accent-dark, #0056b3);
+	background-color: var(--wp--preset--color--accent-dark, #b8912e);
 }
 
 .sgs-pricing-table__cta--outline {
@@ -203,4 +223,12 @@
 .sgs-pricing-table__cta--outline:hover {
 	color: var(--wp--preset--color--white, #fff);
 	background-color: var(--wp--preset--color--primary, #333);
+}
+
+/* Reduced motion — disable all transitions and the hover shadow shift. */
+@media (prefers-reduced-motion: reduce) {
+	.sgs-pricing-table__plan,
+	.sgs-pricing-table__cta {
+		transition: none;
+	}
 }
