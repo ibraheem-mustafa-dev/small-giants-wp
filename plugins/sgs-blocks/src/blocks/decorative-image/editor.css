@@ -5,19 +5,19 @@
 .sgs-decorative-image-editor__placeholder {
 	padding: 2rem;
 	text-align: center;
-	border: 2px dashed #ccc;
-	background: #f9f9f9;
+	border: 2px dashed var( --wp--preset--color--contrast-2, #ccc );
+	background: var( --wp--preset--color--base-2, #f9f9f9 );
 }
 
 .sgs-decorative-image-editor__help {
 	margin-top: 1rem;
 	font-size: 0.875rem;
-	color: #666;
+	color: var( --wp--preset--color--contrast-3, #666 );
 }
 
 .sgs-decorative-image-editor__preview-wrapper {
-	border: 1px solid #ddd;
-	background: #f9f9f9;
+	border: 1px solid var( --wp--preset--color--contrast-2, #ddd );
+	background: var( --wp--preset--color--base-2, #f9f9f9 );
 	padding: 1rem;
 }
 

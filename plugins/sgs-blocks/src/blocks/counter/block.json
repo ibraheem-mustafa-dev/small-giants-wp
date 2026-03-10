@@ -38,7 +38,8 @@
                                                   "width":  true,
                                                   "color":  true,
                                                   "style":  true
-                                              }
+                                              },
+                     "interactivity":  true
                  },
     "selectors":  {
                       "root":  ".sgs-counter",

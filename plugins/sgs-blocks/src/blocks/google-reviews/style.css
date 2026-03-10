@@ -40,34 +40,34 @@
 	opacity: 0.7;
 }
 
-/* Star Rating. */
-.sgs-stars {
+/* Star Rating (BEM). */
+.sgs-google-reviews__stars {
 	display: inline-flex;
 	gap: 0.125rem;
 	font-size: 1.25rem;
 	line-height: 1;
 }
 
-.sgs-star--full {
+.sgs-google-reviews__star--full {
 	color: var( --wp--preset--color--accent, #f87a1f );
 }
 
-.sgs-star--half {
+.sgs-google-reviews__star--half {
 	color: var( --wp--preset--color--accent, #f87a1f );
 	opacity: 0.5;
 }
 
-.sgs-star--empty {
+.sgs-google-reviews__star--empty {
 	color: var( --wp--preset--color--border-subtle, #ddd );
 }
 
-.sgs-google-reviews--star-primary .sgs-star--full,
-.sgs-google-reviews--star-primary .sgs-star--half {
+.sgs-google-reviews--star-primary .sgs-google-reviews__star--full,
+.sgs-google-reviews--star-primary .sgs-google-reviews__star--half {
 	color: var( --wp--preset--color--primary, #0f7e80 );
 }
 
-.sgs-google-reviews--star-success .sgs-star--full,
-.sgs-google-reviews--star-success .sgs-star--half {
+.sgs-google-reviews--star-success .sgs-google-reviews__star--full,
+.sgs-google-reviews--star-success .sgs-google-reviews__star--half {
 	color: var( --wp--preset--color--success, #2e7d4f );
 }
 
@@ -249,13 +249,24 @@
 	text-decoration: none;
 	border-radius: var( --wp--custom--border-radius--medium, 8px );
 	font-weight: 600;
-	transition: all var( --wp--custom--transition--fast, 0.15s ease );
 }
 
-.sgs-google-reviews__write-review:hover {
-	background-color: var( --wp--preset--color--primary-dark, #0a5b5d );
-	transform: translateY( -2px );
-	box-shadow: var( --wp--custom--shadow--medium, 0 4px 12px rgba( 0, 0, 0, 0.1 ) );
+@media ( prefers-reduced-motion: no-preference ) {
+	.sgs-google-reviews__write-review {
+		transition: all var( --wp--custom--transition--fast, 0.15s ease );
+	}
+
+	.sgs-google-reviews__write-review:hover {
+		background-color: var( --wp--preset--color--primary-dark, #0a5b5d );
+		transform: translateY( -2px );
+		box-shadow: var( --wp--custom--shadow--medium, 0 4px 12px rgba( 0, 0, 0, 0.1 ) );
+	}
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+	.sgs-google-reviews__write-review:hover {
+		background-color: var( --wp--preset--color--primary-dark, #0a5b5d );
+	}
 }
 
 /* Slider Variant. */

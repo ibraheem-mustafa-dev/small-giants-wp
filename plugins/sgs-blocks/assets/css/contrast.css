@@ -1,0 +1,30 @@
+/**
+ * SGS Blocks — High Contrast Mode
+ *
+ * Baseline rules for prefers-contrast: high that all SGS blocks inherit.
+ * Ensures interactive elements and card surfaces remain distinguishable
+ * when the user has requested increased contrast.
+ *
+ * @package SGS\Blocks
+ */
+
+@media (prefers-contrast: high) {
+	/* Interactive elements — outline for keyboard/pointer focus visibility. */
+	[class*="sgs-"] button,
+	[class*="sgs-"] a,
+	[class*="sgs-"] [role="button"],
+	[class*="sgs-"] input,
+	[class*="sgs-"] select,
+	[class*="sgs-"] textarea {
+		outline: 2px solid currentColor;
+		outline-offset: 2px;
+	}
+
+	/* Cards, panels, and list items — border for surface distinction. */
+	[class*="sgs-"][class*="__card"],
+	[class*="sgs-"][class*="__panel"],
+	[class*="sgs-"][class*="__item"],
+	[class*="sgs-"][class*="__review"] {
+		border: 1px solid currentColor;
+	}
+}

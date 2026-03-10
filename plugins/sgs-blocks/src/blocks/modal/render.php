@@ -52,15 +52,18 @@ if ( $overlay_colour ) {
 if ( $overlay_opacity ) {
 	$backdrop_vars[] = '--sgs-modal-backdrop-opacity:' . ( (float) $overlay_opacity / 100 );
 }
-$backdrop_style_attr = $backdrop_vars ? ' style="' . implode( ';', $backdrop_vars ) . '"' : '';
-
-$wrapper_attributes = get_block_wrapper_attributes( array(
+$wrapper_args = array(
 	'class' => 'sgs-modal',
-) );
+);
+if ( $backdrop_vars ) {
+	$wrapper_args['style'] = implode( ';', $backdrop_vars );
+}
+
+$wrapper_attributes = get_block_wrapper_attributes( $wrapper_args );
 
 // Render.
 ?>
-<div <?php echo $wrapper_attributes; ?> <?php echo $backdrop_style_attr; ?>>
+<div <?php echo $wrapper_attributes; ?>>
 	<button
 		type="button"
 		class="sgs-modal__trigger sgs-modal__trigger--<?php echo esc_attr( $trigger_style ); ?>"

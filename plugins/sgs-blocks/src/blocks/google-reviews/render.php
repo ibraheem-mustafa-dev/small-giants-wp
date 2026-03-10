@@ -95,13 +95,13 @@ usort( $filtered_reviews, function( $a, $b ) use ( $sort_by ) {
 // Limit reviews.
 $reviews = array_slice( $filtered_reviews, 0, $max_reviews );
 
-// Build wrapper classes.
+// Build wrapper classes — sanitise user-influenced values.
 $wrapper_classes = [
 	'sgs-google-reviews',
-	'sgs-google-reviews--' . $variant,
-	'sgs-google-reviews--theme-' . $theme,
-	'sgs-google-reviews--card-' . $card_style,
-	'sgs-google-reviews--star-' . $star_colour,
+	'sgs-google-reviews--' . sanitize_key( $variant ),
+	'sgs-google-reviews--theme-' . sanitize_key( $theme ),
+	'sgs-google-reviews--card-' . sanitize_key( $card_style ),
+	'sgs-google-reviews--star-' . sanitize_key( $star_colour ),
 	'sgs-google-reviews--cols-' . $columns,
 	'sgs-google-reviews--cols-tablet-' . $columns_tablet,
 	'sgs-google-reviews--cols-mobile-' . $columns_mobile,
@@ -115,36 +115,39 @@ $wrapper_attributes = get_block_wrapper_attributes( [
 		'autoplaySpeed' => $autoplay_speed,
 		'currentSlide'  => 0,
 	] ),
+	'data-wp-init'        => 'callbacks.init',
 ] );
 
 /**
- * Render star rating.
+ * Render star rating — prefixed and guarded against redeclaration.
  *
- * @param float $rating Rating value (0-5).
+ * @param float $star_rating Rating value (0-5).
  * @return string HTML for star rating.
  */
-function render_stars( float $rating ): string {
-	$full_stars  = floor( $rating );
-	$half_star   = ( $rating - $full_stars ) >= 0.5 ? 1 : 0;
-	$empty_stars = 5 - $full_stars - $half_star;
+if ( ! function_exists( 'sgs_render_stars' ) ) {
+	function sgs_render_stars( float $star_rating ): string {
+		$full_stars  = floor( $star_rating );
+		$half_star   = ( $star_rating - $full_stars ) >= 0.5 ? 1 : 0;
+		$empty_stars = 5 - $full_stars - $half_star;
 
-	$html = '<div class="sgs-stars" aria-label="' . esc_attr( sprintf( __( '%s out of 5 stars', 'sgs-blocks' ), number_format( $rating, 1 ) ) ) . '">';
+		$html = '<div class="sgs-google-reviews__stars" aria-label="' . esc_attr( sprintf( __( '%s out of 5 stars', 'sgs-blocks' ), number_format( $star_rating, 1 ) ) ) . '">';
 
-	for ( $i = 0; $i < $full_stars; $i++ ) {
-		$html .= '<span class="sgs-star sgs-star--full" aria-hidden="true">★</span>';
+		for ( $i = 0; $i < $full_stars; $i++ ) {
+			$html .= '<span class="sgs-google-reviews__star sgs-google-reviews__star--full" aria-hidden="true">&#9733;</span>';
+		}
+
+		if ( $half_star ) {
+			$html .= '<span class="sgs-google-reviews__star sgs-google-reviews__star--half" aria-hidden="true">&#9733;</span>';
+		}
+
+		for ( $i = 0; $i < $empty_stars; $i++ ) {
+			$html .= '<span class="sgs-google-reviews__star sgs-google-reviews__star--empty" aria-hidden="true">&#9734;</span>';
+		}
+
+		$html .= '</div>';
+
+		return $html;
 	}
-
-	if ( $half_star ) {
-		$html .= '<span class="sgs-star sgs-star--half" aria-hidden="true">★</span>';
-	}
-
-	for ( $i = 0; $i < $empty_stars; $i++ ) {
-		$html .= '<span class="sgs-star sgs-star--empty" aria-hidden="true">☆</span>';
-	}
-
-	$html .= '</div>';
-
-	return $html;
 }
 
 // Output schema.org markup.
@@ -165,15 +168,11 @@ $schema = [
 <div <?php echo $wrapper_attributes; ?>>
 	<?php if ( $show_aggregate && ! in_array( $variant, [ 'badge', 'floating-badge' ], true ) ) : ?>
 		<div class="sgs-google-reviews__aggregate">
-			<?php echo render_stars( $rating ); ?>
+			<?php echo sgs_render_stars( $rating ); ?>
 			<div class="sgs-google-reviews__aggregate-text">
 				<strong><?php echo esc_html( number_format( $rating, 1 ) ); ?></strong>
 				<?php
-				printf(
-					/* translators: %s: number of reviews */
-					esc_html__( 'based on %s reviews', 'sgs-blocks' ),
-					'<span>' . number_format( $rating_count ) . '</span>'
-				);
+				echo '<span class="sgs-google-reviews__count">' . esc_html( number_format( $rating_count ) ) . ' ' . esc_html__( 'reviews', 'sgs-blocks' ) . '</span>';
 				?>
 			</div>
 			<?php if ( $show_google_logo ) : ?>
@@ -190,10 +189,10 @@ $schema = [
 
 	<?php if ( in_array( $variant, [ 'badge', 'floating-badge' ], true ) ) : ?>
 		<div class="sgs-google-reviews__badge">
-			<?php echo render_stars( $rating ); ?>
+			<?php echo sgs_render_stars( $rating ); ?>
 			<div class="sgs-google-reviews__badge-text">
 				<strong><?php echo esc_html( number_format( $rating, 1 ) ); ?></strong>
-				<span><?php echo esc_html( number_format( $rating_count ) ); ?> reviews</span>
+				<span><?php echo esc_html( number_format( $rating_count ) ) . ' ' . esc_html__( 'reviews', 'sgs-blocks' ); ?></span>
 			</div>
 			<?php if ( $show_google_logo ) : ?>
 				<img
@@ -243,7 +242,7 @@ $schema = [
 							<?php endif; ?>
 						</div>
 
-						<?php echo render_stars( $review_rating ); ?>
+						<?php echo sgs_render_stars( $review_rating ); ?>
 
 						<?php if ( ! empty( $text ) ) : ?>
 							<p class="sgs-google-reviews__text"><?php echo esc_html( $text ); ?></p>

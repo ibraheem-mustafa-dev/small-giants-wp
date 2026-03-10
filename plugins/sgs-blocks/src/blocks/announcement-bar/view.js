@@ -10,6 +10,9 @@ import { store, getContext, getElement } from '@wordpress/interactivity';
 
 const STORAGE_KEY_PREFIX = 'sgs_announcement_dismissed_';
 
+/** @type {Map<HTMLElement, number>} Track interval IDs per element for cleanup. */
+const activeIntervals = new Map();
+
 store( 'sgs/announcement-bar', {
 	state: {
 		countdown: {
@@ -26,6 +29,13 @@ store( 'sgs/announcement-bar', {
 		dismiss() {
 			const ctx = getContext();
 			ctx.isDismissed = true;
+
+			// Clear any running interval for this element.
+			const el = getElement().ref;
+			if ( activeIntervals.has( el ) ) {
+				clearInterval( activeIntervals.get( el ) );
+				activeIntervals.delete( el );
+			}
 
 			// Store dismissal based on close behaviour.
 			if ( 'session' === ctx.closeBehaviour ) {
@@ -46,7 +56,6 @@ store( 'sgs/announcement-bar', {
 		 */
 		init() {
 			const ctx = getContext();
-			const element = getElement();
 
 			// Check if already dismissed.
 			if ( 'session' === ctx.closeBehaviour ) {
@@ -62,10 +71,9 @@ store( 'sgs/announcement-bar', {
 						if ( data.expiry && data.expiry > Date.now() ) {
 							ctx.isDismissed = true;
 							return;
-						} else {
-							// Expired — clear it.
-							localStorage.removeItem( STORAGE_KEY_PREFIX + 'persistent' );
 						}
+						// Expired — clear it.
+						localStorage.removeItem( STORAGE_KEY_PREFIX + 'persistent' );
 					} catch ( e ) {
 						// Invalid JSON — ignore.
 					}
@@ -88,21 +96,31 @@ store( 'sgs/announcement-bar', {
 		 */
 		startCountdown() {
 			const ctx = getContext();
+			const el = getElement().ref;
 			const targetTimestamp = new Date( ctx.targetDate ).getTime();
+			const { state } = store( 'sgs/announcement-bar' );
 
 			const updateCountdown = () => {
 				const now = Date.now();
 				const remaining = targetTimestamp - now;
 
 				if ( remaining <= 0 ) {
-					// Countdown ended.
-					store.state.countdown = { days: 0, hours: 0, minutes: 0, seconds: 0 };
+					// Countdown ended — update individual properties.
+					state.countdown.days = 0;
+					state.countdown.hours = 0;
+					state.countdown.minutes = 0;
+					state.countdown.seconds = 0;
+
+					// Clear the interval.
+					if ( activeIntervals.has( el ) ) {
+						clearInterval( activeIntervals.get( el ) );
+						activeIntervals.delete( el );
+					}
 
 					if ( 'hide' === ctx.countdownEndAction ) {
 						ctx.isDismissed = true;
 					} else if ( 'show-message' === ctx.countdownEndAction ) {
-						// Replace message with end message.
-						const messageElement = getElement().ref.querySelector( '.sgs-announcement-bar__text' );
+						const messageElement = el.querySelector( '.sgs-announcement-bar__text' );
 						if ( messageElement ) {
 							messageElement.textContent = ctx.countdownEndMessage;
 						}
@@ -115,26 +133,25 @@ store( 'sgs/announcement-bar', {
 				const minutes = Math.floor( ( remaining % ( 1000 * 60 * 60 ) ) / ( 1000 * 60 ) );
 				const seconds = Math.floor( ( remaining % ( 1000 * 60 ) ) / 1000 );
 
-				store.state.countdown = {
-					days: days.toString().padStart( 2, '0' ),
-					hours: hours.toString().padStart( 2, '0' ),
-					minutes: minutes.toString().padStart( 2, '0' ),
-					seconds: seconds.toString().padStart( 2, '0' ),
-				};
+				// Mutate individual state properties — keeps reactive bindings intact.
+				state.countdown.days = days.toString().padStart( 2, '0' );
+				state.countdown.hours = hours.toString().padStart( 2, '0' );
+				state.countdown.minutes = minutes.toString().padStart( 2, '0' );
+				state.countdown.seconds = seconds.toString().padStart( 2, '0' );
 			};
 
-			// Update every second.
+			// Update immediately, then every second.
 			updateCountdown();
-			setInterval( updateCountdown, 1000 );
+			const intervalId = setInterval( updateCountdown, 1000 );
+			activeIntervals.set( el, intervalId );
 		},
 
 		/**
 		 * Start message rotation.
 		 */
 		startRotation() {
-			const ctx = getContext();
-			const element = getElement();
-			const messages = element.ref.querySelectorAll( '.sgs-announcement-bar__message' );
+			const el = getElement().ref;
+			const messages = el.querySelectorAll( '.sgs-announcement-bar__message' );
 
 			if ( messages.length <= 1 ) {
 				return; // Nothing to rotate.
@@ -143,7 +160,6 @@ store( 'sgs/announcement-bar', {
 			let currentIndex = 0;
 
 			const rotateMessages = () => {
-				// Hide all messages.
 				messages.forEach( ( msg, index ) => {
 					if ( index === currentIndex ) {
 						msg.setAttribute( 'data-current', 'true' );
@@ -158,17 +174,18 @@ store( 'sgs/announcement-bar', {
 			// Initial display.
 			rotateMessages();
 
-			// Rotate on interval.
-			setInterval( rotateMessages, parseInt( ctx.rotationInterval, 10 ) );
+			// Rotate on interval — store ID for cleanup.
+			const ctx = getContext();
+			const intervalId = setInterval( rotateMessages, parseInt( ctx.rotationInterval, 10 ) );
+			activeIntervals.set( el, intervalId );
 		},
 
 		/**
 		 * Update countdown display — called via data-wp-watch.
 		 */
 		updateCountdown() {
-			// This callback is triggered by the data-wp-watch on the countdown element.
-			// The actual countdown logic is in startCountdown().
-			// This just ensures the element updates when state.countdown changes.
+			// Triggered by data-wp-watch on the countdown element.
+			// Actual countdown logic is in startCountdown().
 		},
 
 		/**
@@ -179,7 +196,7 @@ store( 'sgs/announcement-bar', {
 			const element = getElement();
 
 			if ( 'rotating' !== ctx.variant ) {
-				return false; // All messages visible in non-rotating variants.
+				return false;
 			}
 
 			const index = parseInt( element.ref.getAttribute( 'data-index' ), 10 );

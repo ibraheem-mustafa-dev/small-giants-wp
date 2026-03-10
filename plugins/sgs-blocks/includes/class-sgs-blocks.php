@@ -124,5 +124,16 @@ final class SGS_Blocks {
 				true
 			);
 		}
+
+		// High-contrast mode baseline styles for all SGS blocks.
+		$contrast_file = SGS_BLOCKS_PATH . 'assets/css/contrast.css';
+		if ( file_exists( $contrast_file ) ) {
+			wp_enqueue_style(
+				'sgs-contrast',
+				SGS_BLOCKS_URL . 'assets/css/contrast.css',
+				[],
+				SGS_BLOCKS_VERSION
+			);
+		}
 	}
 }

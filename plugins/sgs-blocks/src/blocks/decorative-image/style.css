@@ -25,41 +25,14 @@
 		display: none;
 	}
 
-	.sgs-decorative-image[data-position-x-tablet] {
-		left: attr(data-position-x-tablet percentage) !important;
-	}
-
-	.sgs-decorative-image[data-position-y-tablet] {
-		top: attr(data-position-y-tablet percentage) !important;
-	}
-
-	.sgs-decorative-image[data-width-tablet] {
-		width: attr(data-width-tablet px) !important;
-	}
-
-	/* Transform overrides for tablet (rotation). */
-	.sgs-decorative-image[data-rotation-tablet] {
-		/* Note: CSS attr() doesn't work for transform values in most browsers yet.
-		   We'll handle responsive transform via inline styles in render.php or JS. */
-	}
+	/* Responsive position/width overrides handled by view.js —
+	   CSS attr() for typed values has no browser support. */
 }
 
 /* ─── Responsive Overrides (Mobile) ─── */
 @media (max-width: 480px) {
 	.sgs-decorative-image[data-hide-mobile="true"] {
 		display: none;
-	}
-
-	.sgs-decorative-image[data-position-x-mobile] {
-		left: attr(data-position-x-mobile percentage) !important;
-	}
-
-	.sgs-decorative-image[data-position-y-mobile] {
-		top: attr(data-position-y-mobile percentage) !important;
-	}
-
-	.sgs-decorative-image[data-width-mobile] {
-		width: attr(data-width-mobile px) !important;
 	}
 }
 

@@ -26,7 +26,7 @@ $wrapper_classes = [
 $wrapper_styles = [];
 
 if ( ! empty( $min_height ) ) {
-	$wrapper_styles[] = 'min-height: ' . esc_attr( $min_height );
+	$wrapper_styles[] = '--sgs-min-height: ' . esc_attr( $min_height );
 }
 
 $wrapper_attributes = get_block_wrapper_attributes( [
@@ -39,7 +39,7 @@ $wrapper_attributes = get_block_wrapper_attributes( [
 	<?php if ( ! empty( $svg_content ) ) : ?>
 		<div
 			class="sgs-svg-background__svg"
-			style="opacity: <?php echo esc_attr( $opacity / 100 ); ?>;"
+			style="--sgs-bg-opacity: <?php echo esc_attr( $opacity / 100 ); ?>;"
 			aria-hidden="true"
 		>
 			<?php
@@ -74,6 +74,6 @@ $wrapper_attributes = get_block_wrapper_attributes( [
 	<?php endif; ?>
 
 	<div class="sgs-svg-background__content">
-		<?php echo $content; ?>
+		<?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Inner blocks are pre-rendered by WordPress. ?>
 	</div>
 </div>

@@ -39,7 +39,8 @@
                                                   "width":  true,
                                                   "color":  true,
                                                   "style":  true
-                                              }
+                                              },
+                     "interactivity":  true
                  },
     "attributes":  {
                        "targetDate":  {

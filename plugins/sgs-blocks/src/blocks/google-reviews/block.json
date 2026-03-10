@@ -21,7 +21,8 @@
                                ],
                      "anchor":  true,
                      "className":  true,
-                     "html":  false
+                     "html":  false,
+                     "interactivity":  true
                  },
     "attributes":  {
                        "variant":  {

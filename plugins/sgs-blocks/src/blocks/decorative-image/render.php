@@ -48,7 +48,7 @@ if ( ! $image_url ) {
 	return;
 }
 
-// Build inline styles for desktop.
+// Build inline styles for desktop (pointer-events moved to style.css).
 $styles = array(
 	'position: absolute',
 	'left: ' . esc_attr( $position_x ) . '%',
@@ -57,7 +57,6 @@ $styles = array(
 	'max-width: ' . esc_attr( $max_width_percent ) . '%',
 	'opacity: ' . esc_attr( $opacity / 100 ),
 	'z-index: ' . esc_attr( $z_index ),
-	'pointer-events: none',
 );
 
 // Build transform.
@@ -74,69 +73,59 @@ $styles[] = 'transform: ' . implode( ' ', $transforms );
 
 $style_attr = implode( '; ', $styles );
 
-// Build data attributes.
-$data_attrs = array();
-if ( $parallax_strength > 0 ) {
-	$data_attrs['data-parallax'] = esc_attr( $parallax_strength );
-}
-if ( $hide_on_tablet ) {
-	$data_attrs['data-hide-tablet'] = 'true';
-}
-if ( $hide_on_mobile ) {
-	$data_attrs['data-hide-mobile'] = 'true';
-}
-
-// Responsive overrides via data attributes for CSS.
-if ( null !== $position_x_tablet ) {
-	$data_attrs['data-position-x-tablet'] = esc_attr( $position_x_tablet );
-}
-if ( null !== $position_y_tablet ) {
-	$data_attrs['data-position-y-tablet'] = esc_attr( $position_y_tablet );
-}
-if ( null !== $width_tablet ) {
-	$data_attrs['data-width-tablet'] = esc_attr( $width_tablet );
-}
-if ( null !== $rotation_tablet ) {
-	$data_attrs['data-rotation-tablet'] = esc_attr( $rotation_tablet );
-}
-
-if ( null !== $position_x_mobile ) {
-	$data_attrs['data-position-x-mobile'] = esc_attr( $position_x_mobile );
-}
-if ( null !== $position_y_mobile ) {
-	$data_attrs['data-position-y-mobile'] = esc_attr( $position_y_mobile );
-}
-if ( null !== $width_mobile ) {
-	$data_attrs['data-width-mobile'] = esc_attr( $width_mobile );
-}
-if ( null !== $rotation_mobile ) {
-	$data_attrs['data-rotation-mobile'] = esc_attr( $rotation_mobile );
-}
-
-// Build data attribute string.
-$data_attr_str = '';
-foreach ( $data_attrs as $key => $value ) {
-	$data_attr_str .= ' ' . $key . '="' . $value . '"';
-}
-
-// Render using sgs_responsive_image helper.
+// Build data attributes — passed directly through $img_attrs for proper escaping.
 $img_attrs = array(
 	'class'       => 'sgs-decorative-image',
 	'style'       => $style_attr,
 	'aria-hidden' => 'true',
 	'role'        => 'presentation',
-	'alt'         => '', // Always empty for decorative images.
+	'alt'         => '',
 	'loading'     => 'lazy',
 	'decoding'    => 'async',
 );
 
-$img_html = sgs_responsive_image(
+if ( $parallax_strength > 0 ) {
+	$img_attrs['data-parallax'] = esc_attr( $parallax_strength );
+}
+if ( $hide_on_tablet ) {
+	$img_attrs['data-hide-tablet'] = 'true';
+}
+if ( $hide_on_mobile ) {
+	$img_attrs['data-hide-mobile'] = 'true';
+}
+
+// Responsive overrides via data attributes (consumed by view.js).
+if ( null !== $position_x_tablet ) {
+	$img_attrs['data-position-x-tablet'] = esc_attr( $position_x_tablet );
+}
+if ( null !== $position_y_tablet ) {
+	$img_attrs['data-position-y-tablet'] = esc_attr( $position_y_tablet );
+}
+if ( null !== $width_tablet ) {
+	$img_attrs['data-width-tablet'] = esc_attr( $width_tablet );
+}
+if ( null !== $rotation_tablet ) {
+	$img_attrs['data-rotation-tablet'] = esc_attr( $rotation_tablet );
+}
+
+if ( null !== $position_x_mobile ) {
+	$img_attrs['data-position-x-mobile'] = esc_attr( $position_x_mobile );
+}
+if ( null !== $position_y_mobile ) {
+	$img_attrs['data-position-y-mobile'] = esc_attr( $position_y_mobile );
+}
+if ( null !== $width_mobile ) {
+	$img_attrs['data-width-mobile'] = esc_attr( $width_mobile );
+}
+if ( null !== $rotation_mobile ) {
+	$img_attrs['data-rotation-mobile'] = esc_attr( $rotation_mobile );
+}
+
+// Render using sgs_responsive_image helper — all attributes escaped via $img_attrs.
+echo sgs_responsive_image(
 	$image_id ? absint( $image_id ) : 0,
 	$image_url,
 	'', // Empty alt for decorative.
 	'large',
 	$img_attrs
-);
-
-// Output with data attributes.
-echo str_replace( 'class="sgs-decorative-image"', 'class="sgs-decorative-image"' . $data_attr_str, $img_html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped - sgs_responsive_image() escapes internally.
+); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_responsive_image() escapes all attributes internally.
