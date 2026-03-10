@@ -171,6 +171,7 @@
 .sgs-pricing-table__cta {
 	display: block;
 	width: 100%;
+	min-height: 44px; /* WCAG 2.2 SC 2.5.5 touch target */
 	padding: 0.875rem 1.5rem;
 	border: 2px solid transparent;
 	border-radius: var(--wp--custom--border-radius--small, 4px);

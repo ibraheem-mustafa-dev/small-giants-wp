@@ -94,6 +94,8 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
+	min-height: 44px; /* WCAG 2.2 SC 2.5.5 touch target */
+	min-width: 44px;
 	padding: 6px 12px;
 	font-size: var(--wp--preset--font-size--small, 0.75rem);
 	text-decoration: none;
