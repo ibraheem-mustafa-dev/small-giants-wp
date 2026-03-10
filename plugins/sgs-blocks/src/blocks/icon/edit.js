@@ -26,6 +26,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		backgroundShape,
 		link,
 		linkOpensNewTab,
+		linkLabel,
 	} = attributes;
 
 	const className = [
@@ -93,6 +94,15 @@ export default function Edit( { attributes, setAttributes } ) {
 						type="url"
 						__nextHasNoMarginBottom
 					/>
+					{ link && (
+						<TextControl
+							label={ __( 'Accessible label', 'sgs-blocks' ) }
+							help={ __( 'Describes the link destination for screen readers. Defaults to the icon name if left blank.', 'sgs-blocks' ) }
+							value={ linkLabel }
+							onChange={ ( val ) => setAttributes( { linkLabel: val } ) }
+							__nextHasNoMarginBottom
+						/>
+					) }
 					<ToggleControl
 						label={ __( 'Open in new tab', 'sgs-blocks' ) }
 						checked={ linkOpensNewTab }

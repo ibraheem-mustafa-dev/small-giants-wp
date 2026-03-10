@@ -77,12 +77,29 @@
                                            "type":  "string",
                                            "default":  "zoom"
                                        },
+                       "columnsTablet":  {
+                                             "type":  "number",
+                                             "default":  2
+                                         },
+                       "overlayStyle":  {
+                                            "type":  "string",
+                                            "default":  "gradient"
+                                        },
                        "titleColour":  {
                                            "type":  "string"
                                        },
                        "subtitleColour":  {
                                               "type":  "string"
-                                          }
+                                          },
+                       "hoverBackgroundColour":  {
+                                                     "type":  "string"
+                                                 },
+                       "hoverTextColour":  {
+                                               "type":  "string"
+                                           },
+                       "hoverBorderColour":  {
+                                                 "type":  "string"
+                                             }
                    },
     "editorScript":  "file:./index.js",
     "editorStyle":  "file:./index.css",

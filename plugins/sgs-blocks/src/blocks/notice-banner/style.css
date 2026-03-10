@@ -11,20 +11,26 @@
 
 /* ===== Variant: Info ===== */
 .sgs-notice-banner--info {
-	background-color: #EBF5FF;
-	border-left-color: #3B82F6;
+	--_banner-bg: var(--wp--preset--color--info-bg, #EBF5FF);
+	--_banner-border: var(--wp--preset--color--info-border, #3B82F6);
+	background-color: var(--_banner-bg);
+	border-left-color: var(--_banner-border);
 }
 
 /* ===== Variant: Success ===== */
 .sgs-notice-banner--success {
-	background-color: #ECFDF5;
-	border-left-color: var(--wp--preset--color--success, #2E7D4F);
+	--_banner-bg: var(--wp--preset--color--success-bg, #ECFDF5);
+	--_banner-border: var(--wp--preset--color--success, #2E7D4F);
+	background-color: var(--_banner-bg);
+	border-left-color: var(--_banner-border);
 }
 
 /* ===== Variant: Warning ===== */
 .sgs-notice-banner--warning {
-	background-color: #FFFBEB;
-	border-left-color: #F59E0B;
+	--_banner-bg: var(--wp--preset--color--warning-bg, #FFFBEB);
+	--_banner-border: var(--wp--preset--color--warning-border, #F59E0B);
+	background-color: var(--_banner-bg);
+	border-left-color: var(--_banner-border);
 }
 
 /* ===== Variant: Accent ===== */

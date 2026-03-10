@@ -1,4 +1,53 @@
-/* ===== SGS Trust Bar — Frontend + Editor ===== */
+/* ===== SGS Trust Bar - Frontend + Editor ===== */
+
+/* --- S-grade: Container queries (layout responds to parent width, not viewport) --- */
+.sgs-trust-bar {
+	container-type: inline-size;
+	container-name: sgs-trust-bar;
+}
+
+@container sgs-trust-bar (max-width: 500px) {
+	.sgs-trust-bar__item {
+		flex: 1 1 40%;
+		min-width: 0;
+	}
+
+	.sgs-trust-bar__value {
+		font-size: var(--wp--preset--font-size--large, 1.5rem);
+	}
+}
+/* --- End container queries --- */
+
+/* --- S-grade: Scroll-driven reveal per item (staggered) --- */
+@keyframes sgs-trust-bar-item-reveal {
+	from {
+		opacity: 0;
+		translate: 0 16px;
+	}
+	to {
+		opacity: 1;
+		translate: 0 0;
+	}
+}
+
+@supports (animation-timeline: view()) {
+	.sgs-trust-bar__item {
+		animation: sgs-trust-bar-item-reveal 400ms ease-out both;
+		animation-timeline: view();
+		animation-range: entry 10% entry 60%;
+	}
+
+	.sgs-trust-bar__item:nth-child(2) { animation-delay: 80ms; }
+	.sgs-trust-bar__item:nth-child(3) { animation-delay: 160ms; }
+	.sgs-trust-bar__item:nth-child(4) { animation-delay: 240ms; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-trust-bar__item {
+		animation: none !important;
+	}
+}
+/* --- End scroll-driven reveal --- */
 
 .sgs-trust-bar {
 	display: flex;
@@ -47,7 +96,7 @@
 	color: var(--wp--preset--color--text-inverse, #C0D5D6);
 }
 
-/* ===== Responsive — 2x2 grid on mobile ===== */
+/* ===== Responsive - 2x2 grid on mobile ===== */
 @media (max-width: 767px) {
 	.sgs-trust-bar {
 		gap: var(--wp--preset--spacing--30);

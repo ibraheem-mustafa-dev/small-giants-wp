@@ -79,7 +79,7 @@ a.sgs-certification-bar__badge:focus-visible {
 
 /* Size variants — text-only padding */
 .sgs-certification-bar--text-only.sgs-certification-bar--small .sgs-certification-bar__badge-label {
-	font-size: 12px;
+	font-size: var(--wp--preset--font-size--x-small, 0.75rem);
 }
 
 .sgs-certification-bar--text-only.sgs-certification-bar--large .sgs-certification-bar__badge-label {

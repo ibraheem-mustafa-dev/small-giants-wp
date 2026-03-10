@@ -61,14 +61,17 @@ export default function Save( { attributes } ) {
 					if ( item.suffix ) {
 						dataAttrs[ 'data-suffix' ] = item.suffix;
 					}
-					dataAttrs[ 'aria-live' ] = 'polite';
 				}
 
 				return (
 					<div key={ index } className="sgs-trust-bar__item">
+						<span className="sgs-sr-only">
+							{ item.value }{ item.suffix } { item.label }
+						</span>
 						<span
 							className="sgs-trust-bar__value"
 							style={ valueStyle }
+							aria-hidden="true"
 							{ ...dataAttrs }
 						>
 							{ item.value }
@@ -77,6 +80,7 @@ export default function Save( { attributes } ) {
 						<span
 							className="sgs-trust-bar__label"
 							style={ labelStyle }
+							aria-hidden="true"
 						>
 							{ item.label }
 						</span>

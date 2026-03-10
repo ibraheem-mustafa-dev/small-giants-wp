@@ -48,7 +48,7 @@
 /* ===== Stars ===== */
 .sgs-testimonial__stars {
 	display: flex;
-	gap: 2px;
+	gap: var(--wp--preset--spacing--5, 2px);
 	margin-bottom: var(--wp--preset--spacing--20);
 }
 
@@ -115,7 +115,7 @@
 .sgs-testimonial__meta {
 	display: flex;
 	flex-direction: column;
-	gap: 2px;
+	gap: var(--wp--preset--spacing--5, 2px);
 }
 
 .sgs-testimonial__name {
@@ -134,4 +134,12 @@
 
 .sgs-testimonial__role:not([style*="color"]) {
 	color: var(--wp--preset--color--text-muted, #555);
+}
+
+/* ===== Reduced motion ===== */
+@media (prefers-reduced-motion: reduce) {
+	.sgs-testimonial,
+	.sgs-testimonial * {
+		transition: none !important;
+	}
 }

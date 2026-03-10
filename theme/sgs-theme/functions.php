@@ -471,6 +471,12 @@ function enqueue_style_variation_extras(): void {
 	background-color:var(--wp--preset--color--accent,#d8ca50)!important;
 	color:var(--wp--preset--color--text,#1e1e1e)!important;
 }
+/* H7: Global button hover — inverse text colour for contrast
+ * Uses text-inverse (white) by default, or falls back to #FFFFFF */
+.wp-block-button__link:hover,
+.wp-element-button:hover{
+	color:var(--wp--preset--color--text-inverse,#FFF)!important;
+}
 ";
 
 		wp_add_inline_style( 'sgs-utilities', $css );

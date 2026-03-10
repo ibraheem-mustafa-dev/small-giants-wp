@@ -1,12 +1,12 @@
 /* ===== SGS Process Steps — Frontend + Editor ===== */
 
 .sgs-process-steps {
+	--sgs-step-number-size: 48px;
 	display: flex;
 	justify-content: space-between;
 	align-items: flex-start;
 	gap: var(--wp--preset--spacing--30);
 	padding: var(--wp--preset--spacing--40) 0;
-	counter-reset: step-counter;
 }
 
 /* Individual step */
@@ -35,8 +35,8 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: 48px;
-	height: 48px;
+	width: var(--sgs-step-number-size);
+	height: var(--sgs-step-number-size);
 	font-size: var(--wp--preset--font-size--large);
 	font-weight: 700;
 	line-height: 1;
@@ -68,9 +68,9 @@
 .sgs-process-steps--connector-line .sgs-process-steps__step:not(:last-child)::after {
 	content: "";
 	position: absolute;
-	top: 24px;
-	left: calc(50% + 32px);
-	width: calc(100% - 64px);
+	top: calc(var(--sgs-step-number-size) / 2);
+	left: calc(50% + var(--sgs-step-number-size) / 2 + 8px);
+	width: calc(100% - var(--sgs-step-number-size) - 16px);
 	height: 2px;
 	background-color: var(--wp--preset--color--border-subtle, #0D5557);
 }
@@ -79,8 +79,8 @@
 .sgs-process-steps--connector-arrow .sgs-process-steps__step:not(:last-child)::after {
 	content: "\2192";
 	position: absolute;
-	top: 12px;
-	right: -12px;
+	top: calc(var(--sgs-step-number-size) / 4);
+	right: calc(-1 * var(--sgs-step-number-size) / 4);
 	font-size: 24px;
 	color: var(--wp--preset--color--primary);
 }
@@ -89,8 +89,8 @@
 .sgs-process-steps--connector-dots .sgs-process-steps__step:not(:last-child)::after {
 	content: "\2022 \2022 \2022";
 	position: absolute;
-	top: 16px;
-	right: -20px;
+	top: calc(var(--sgs-step-number-size) / 3);
+	right: calc(-1 * var(--sgs-step-number-size) / 2.4);
 	font-size: 14px;
 	letter-spacing: 4px;
 	color: var(--wp--preset--color--border-subtle, #0D5557);
@@ -115,7 +115,6 @@
 	font-size: var(--wp--preset--font-size--small);
 	line-height: 1.5;
 	margin: 0;
-	max-width: 200px;
 }
 
 .sgs-process-steps__description:not([style*="color"]) {
@@ -162,6 +161,6 @@
 
 	.sgs-process-steps__description {
 		flex-basis: 100%;
-		padding-left: 68px;
+		padding-left: calc(var(--sgs-step-number-size) + var(--wp--preset--spacing--20));
 	}
 }

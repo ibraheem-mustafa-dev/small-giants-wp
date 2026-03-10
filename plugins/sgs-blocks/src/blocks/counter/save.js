@@ -39,8 +39,12 @@ export default function Save( { attributes } ) {
 		fontSize: fontSizeVar( labelFontSize ) || undefined,
 	};
 
+	const formattedNumber = formatNumber( number, separator );
+	const fullText = `${ prefix || '' }${ formattedNumber }${ suffix || '' } ${ label }`;
+
 	return (
 		<div { ...blockProps }>
+			<span className="sgs-sr-only">{ fullText }</span>
 			<span
 				className="sgs-counter__number"
 				style={ numberStyle }
@@ -49,10 +53,10 @@ export default function Save( { attributes } ) {
 				data-separator={ separator ? 'true' : 'false' }
 				data-prefix={ prefix || undefined }
 				data-suffix={ suffix || undefined }
-				aria-live="polite"
+				aria-hidden="true"
 			>
 				{ prefix }
-				{ formatNumber( number, separator ) }
+				{ formattedNumber }
 				{ suffix }
 			</span>
 			<RichText.Content
@@ -60,6 +64,7 @@ export default function Save( { attributes } ) {
 				className="sgs-counter__label"
 				value={ label }
 				style={ labelStyle }
+				aria-hidden="true"
 			/>
 		</div>
 	);

@@ -21,6 +21,7 @@ $bg_colour        = $attributes['backgroundColour'] ?? '';
 $bg_shape         = $attributes['backgroundShape'] ?? 'none';
 $link             = $attributes['link'] ?? '';
 $link_new_tab     = $attributes['linkOpensNewTab'] ?? false;
+$link_label       = $attributes['linkLabel'] ?? '';
 
 $classes = array( 'sgs-icon' );
 if ( 'none' !== $bg_shape ) {
@@ -47,12 +48,13 @@ $icon_svg = sgs_get_lucide_icon( $icon );
 $output = sprintf( '<span class="sgs-icon__svg" aria-hidden="true">%s</span>', $icon_svg );
 
 if ( $link ) {
-	$target = $link_new_tab ? ' target="_blank" rel="noopener noreferrer"' : '';
-	$output = sprintf(
+	$target           = $link_new_tab ? ' target="_blank" rel="noopener noreferrer"' : '';
+	$accessible_label = '' !== $link_label ? $link_label : $icon;
+	$output           = sprintf(
 		'<a href="%s" class="sgs-icon__link"%s aria-label="%s">%s</a>',
 		esc_url( $link ),
 		$target,
-		esc_attr( $icon ),
+		esc_attr( $accessible_label ),
 		$output
 	);
 }
