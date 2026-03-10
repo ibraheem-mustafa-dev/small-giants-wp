@@ -63,6 +63,26 @@ Fonts: Inter variable (body + headings, 48KB) — self-hosted WOFF2, no CDN. DM 
 
 **Remote:** `github.com/ibraheem-mustafa-dev/small-giants-wp` (private). See global CLAUDE.md for workflow rules.
 
+### ⚠️ BRANCH DISCIPLINE — MANDATORY, NO EXCEPTIONS
+
+**Before every `git commit` or `git push`, run `git branch --show-current` and verify the branch matches the scope of the work.**
+
+| Work type | Correct branch |
+|-----------|---------------|
+| Core SGS block fixes (any file in `plugins/sgs-blocks/src/`, `theme/sgs-theme/`, plugin PHP) | `main` |
+| Client-specific work (`sites/indus-foods/`, `theme/sgs-theme/styles/indus-foods.json`, etc.) | client feature branch (e.g. `feat/indus-foods-*`) |
+| HelpingDoctors style variation | `feat/helpingdoctors-style-variation` |
+| New framework features | `feat/<feature-name>` branched from `main` |
+
+**Never commit core SGS framework changes to a client or feature branch.** If you discover you are on the wrong branch mid-work:
+1. Stop before committing
+2. Stash changes: `git stash`
+3. Switch to the correct branch
+4. Pop stash: `git stash pop`
+5. Then commit
+
+This rule exists because framework fixes shipped on a feature branch pollute history, break cherry-pick hygiene, and risk being lost or mis-attributed. This happened on 2026-03-10 and caused unnecessary remediation work.
+
 ## Development
 
 - **Build:** `npm run build` (from `plugins/sgs-blocks/`) — uses @wordpress/scripts with `--experimental-modules`
