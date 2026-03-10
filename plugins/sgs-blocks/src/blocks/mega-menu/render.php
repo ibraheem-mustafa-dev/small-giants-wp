@@ -59,17 +59,18 @@ $wrapper_attr = array(
 	'data-wp-interactive'    => 'sgs/mega-menu',
 	'data-wp-context'        => $context,
 	'data-wp-class--is-open' => 'context.isOpen',
+	'data-wp-watch'          => 'callbacks.watchOpenState',
 	'role'                   => 'none',
 );
 
-if ( $open_on === 'hover' ) {
+if ( 'hover' === $open_on ) {
 	$wrapper_attr['data-wp-on--mouseenter'] = 'actions.openOnHover';
 	$wrapper_attr['data-wp-on--mouseleave'] = 'actions.closeOnHover';
 }
 
 // Add custom styles for panel width if needed.
 $wrapper_styles = array();
-if ( $panel_width === 'custom' && $panel_max_width ) {
+if ( 'custom' === $panel_width && $panel_max_width ) {
 	$wrapper_styles[] = '--sgs-mega-menu-max-width:' . esc_attr( $panel_max_width );
 }
 
@@ -102,25 +103,25 @@ $icon_html = sprintf(
 // Build badge HTML.
 $badge_html = '';
 if ( $badge ) {
-	$badge_style = 'background-color:' . sgs_colour_value( $badge_colour );
-	$badge_html  = sprintf(
-		'<span class="sgs-mega-menu__badge" style="%s">%s</span>',
-		esc_attr( $badge_style ),
+	$badge_html = sprintf(
+		'<span class="sgs-mega-menu__badge" data-sgs-badge-colour="%s">%s</span>',
+		esc_attr( $badge_colour ),
 		esc_html( $badge )
 	);
 }
 
 // Build trigger element.
 $trigger_html = sprintf(
-	'<%1$s%2$s%3$s%4$s class="sgs-mega-menu__trigger" role="menuitem" aria-haspopup="true" data-wp-bind--aria-expanded="context.isOpen" data-wp-on--click="actions.toggle" data-wp-on--keydown="actions.handleTriggerKeydown">%5$s<span class="sgs-mega-menu__label">%6$s</span>%7$s%8$s</%1$s>',
+	'<%1$s%2$s%3$s%4$s class="sgs-mega-menu__trigger" role="menuitem" aria-haspopup="menu" aria-controls="%9$s-panel" data-wp-bind--aria-expanded="context.isOpen" data-wp-on--click="actions.toggle" data-wp-on--keydown="actions.handleTriggerKeydown">%5$s<span class="sgs-mega-menu__label">%6$s</span>%7$s%8$s</%1$s>',
 	$tag,
 	$href,
 	$type,
 	$target,
-	$icon_position === 'before' ? $icon_html : '',
+	'before' === $icon_position ? $icon_html : '',
 	wp_kses_post( $label ),
-	$icon_position === 'after' ? $icon_html : '',
-	$badge_html
+	'after' === $icon_position ? $icon_html : '',
+	$badge_html,
+	esc_attr( $menu_id )
 );
 
 // Render template part content.
@@ -138,7 +139,8 @@ if ( $menu_template_part ) {
 
 // Build panel HTML.
 $panel_html = sprintf(
-	'<div class="sgs-mega-menu__panel" role="menu" data-wp-bind--hidden="!context.isOpen" data-wp-on--keydown="actions.handlePanelKeydown">%s</div>',
+	'<div id="%s-panel" class="sgs-mega-menu__panel" role="menu" data-wp-bind--hidden="!context.isOpen" data-wp-on--keydown="actions.handlePanelKeydown">%s</div>',
+	esc_attr( $menu_id ),
 	$panel_content
 );
 

@@ -1,6 +1,6 @@
 /**
  * SGS Mega Menu — Frontend Styles
- * 
+ *
  * Beautiful, polished mega menu with smooth animations,
  * proper spacing, and responsive behaviour.
  *
@@ -20,6 +20,7 @@
 	display: inline-flex;
 	align-items: center;
 	gap: var(--wp--preset--spacing--20, 0.5rem);
+	min-height: 2.75rem;
 	padding: var(--wp--preset--spacing--30, 0.75rem) var(--wp--preset--spacing--40, 1rem);
 	font-family: inherit;
 	font-size: inherit;
@@ -35,7 +36,7 @@
 .sgs-mega-menu__trigger:hover,
 .sgs-mega-menu__trigger:focus {
 	color: var(--wp--preset--color--primary, currentColor);
-	background-color: var(--wp--preset--color--surface-dark, rgba(0, 0, 0, 0.05));
+	background-color: var(--wp--preset--color--surface-dark, var(--sgs-shadow-colour, rgba(0, 0, 0, 0.05)));
 }
 
 .sgs-mega-menu__trigger:focus {
@@ -75,11 +76,16 @@
 	font-size: 0.75rem;
 	font-weight: 600;
 	line-height: 1;
-	color: var(--wp--preset--color--surface, #fff);
+	color: var(--wp--preset--color--surface, var(--sgs-bg-colour, #fff));
 	background-color: var(--wp--preset--color--accent, currentColor);
 	border-radius: var(--wp--custom--border-radius--small, 0.25rem);
 	text-transform: uppercase;
 	letter-spacing: 0.025em;
+}
+
+/* Badge colour via data attribute */
+.sgs-mega-menu__badge[data-sgs-badge-colour] {
+	background-color: var(--sgs-badge-colour, var(--wp--preset--color--accent, currentColor));
 }
 
 /* ========================================
@@ -90,13 +96,15 @@
 	position: absolute;
 	top: 100%;
 	left: 0;
-	z-index: 1000;
+	z-index: var(--sgs-z-mega-menu, 1000);
 	display: none;
 	min-width: 280px;
 	padding: var(--wp--preset--spacing--60, 2rem);
-	background-color: var(--wp--preset--color--surface, #fff);
+	background-color: var(--wp--preset--color--surface, var(--sgs-bg-colour, #fff));
 	border-top: 3px solid var(--wp--preset--color--accent, currentColor);
-	box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.05);
+	box-shadow:
+		0 4px 24px var(--sgs-shadow-colour, rgba(0, 0, 0, 0.08)),
+		0 0 0 1px var(--sgs-shadow-colour-subtle, rgba(0, 0, 0, 0.05));
 	opacity: 0;
 	transform: translateY(-0.5rem);
 	transition: opacity 0.2s ease-out, transform 0.2s ease-out;
@@ -185,7 +193,7 @@
 	margin-top: 0;
 	margin-bottom: var(--wp--preset--spacing--30, 0.75rem);
 	font-size: var(--wp--preset--font-size--small, 0.875rem);
-	color: var(--wp--preset--color--foreground-light, rgba(0, 0, 0, 0.7));
+	color: var(--wp--preset--color--foreground-light, var(--sgs-text-muted-colour, rgba(0, 0, 0, 0.7)));
 }
 
 .sgs-mega-menu__panel a {
@@ -213,7 +221,7 @@
 		margin-top: var(--wp--preset--spacing--20, 0.5rem);
 		transform: none;
 		box-shadow: none;
-		border-top: 1px solid var(--wp--preset--color--border, rgba(0, 0, 0, 0.1));
+		border-top: 1px solid var(--wp--preset--color--border, var(--sgs-shadow-colour-subtle, rgba(0, 0, 0, 0.1)));
 		border-left: 3px solid var(--wp--preset--color--accent, currentColor);
 	}
 
@@ -229,14 +237,14 @@
 		transform: none;
 	}
 
-	/* Stack columns on mobile */
+	/* Stack columns on mobile — higher specificity avoids !important */
 	.sgs-mega-menu__panel .wp-block-columns {
 		flex-direction: column;
 	}
 
-	.sgs-mega-menu__panel .wp-block-column {
-		width: 100% !important;
-		flex-basis: 100% !important;
+	.sgs-mega-menu.sgs-mega-menu .sgs-mega-menu__panel .wp-block-column {
+		width: 100%;
+		flex-basis: 100%;
 	}
 }
 
