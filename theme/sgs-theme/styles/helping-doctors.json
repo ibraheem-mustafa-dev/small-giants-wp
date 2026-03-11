@@ -1,0 +1,32 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/theme.json",
+  "version": 2,
+  "title": "HelpingDoctors",
+  "settings": {
+    "color": {
+      "palette": [
+        { "slug": "primary", "color": "#1B8A5A", "name": "Primary Green" },
+        { "slug": "secondary", "color": "#0A5C3A", "name": "Dark Green" },
+        { "slug": "accent", "color": "#E8F5F0", "name": "Light Mint" },
+        { "slug": "text", "color": "#1A1A2E", "name": "Dark" },
+        { "slug": "background", "color": "#FFFFFF", "name": "White" }
+      ]
+    }
+  },
+  "styles": {
+    "color": {
+      "background": "#FFFFFF",
+      "text": "#1A1A2E"
+    },
+    "elements": {
+      "link": {
+        "color": { "text": "#1B8A5A" },
+        ":hover": { "color": { "text": "#0A5C3A" } }
+      },
+      "button": {
+        "color": { "background": "#1B8A5A", "text": "#FFFFFF" },
+        ":hover": { "color": { "background": "#0A5C3A" } }
+      }
+    }
+  }
+}
