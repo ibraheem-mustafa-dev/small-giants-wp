@@ -206,14 +206,17 @@
 .sgs-testimonial-slider__dot {
 	width: 12px;
 	height: 12px;
-	min-width: 24px;
-	min-height: 24px;
+	min-width: 44px;
+	min-height: 44px;
 	border-radius: 50%;
 	border: none;
 	background: var(--wp--preset--color--border-subtle, #ccc);
 	cursor: pointer;
 	padding: 6px;
 	box-sizing: content-box;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	transition: var(--wp--custom--transition--medium, 0.3s ease);
 }
 
@@ -325,3 +328,4 @@
 		transition: none;
 	}
 }
+

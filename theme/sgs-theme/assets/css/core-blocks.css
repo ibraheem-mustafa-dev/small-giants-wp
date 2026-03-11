@@ -434,3 +434,14 @@ footer .wp-block-paragraph a:hover,
 .sgs-credit-link:hover::after {
 	width: 100%;
 }
+
+
+/* ── Social links: stack vertically on mobile (≤599px) ────────────────────
+   WordPress renders .wp-block-social-links as a flex row; on mobile this
+   causes overflow when there are many icons. Wrap them instead. */
+@media (max-width: 599px) {
+	.wp-block-social-links {
+		flex-wrap: wrap;
+		justify-content: center;
+	}
+}
