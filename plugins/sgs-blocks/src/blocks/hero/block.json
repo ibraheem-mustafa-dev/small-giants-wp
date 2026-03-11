@@ -90,6 +90,14 @@
                                          "type":  "string",
                                          "default":  ""
                                      },
+                       "minHeightTablet":  {
+                                               "type":  "string",
+                                               "default":  ""
+                                           },
+                       "minHeightMobile":  {
+                                               "type":  "string",
+                                               "default":  "360px"
+                                           },
                        "badges":  {
                                       "type":  "array",
                                       "default":  [

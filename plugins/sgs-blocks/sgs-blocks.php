@@ -62,6 +62,12 @@ require_once SGS_BLOCKS_PATH . 'includes/device-visibility.php';
 // Universal hover effects — server-side CSS variable injection.
 require_once SGS_BLOCKS_PATH . 'includes/hover-effects.php';
 
+// Custom CSS per block — server-side scoped <style> output.
+require_once SGS_BLOCKS_PATH . 'includes/custom-css.php';
+
+// Global block defaults — REST API for save/load per-block defaults.
+require_once SGS_BLOCKS_PATH . 'includes/block-defaults.php';
+
 // Google Reviews settings and API integration.
 require_once SGS_BLOCKS_PATH . 'includes/google-reviews-settings.php';
 

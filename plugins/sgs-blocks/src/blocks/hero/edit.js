@@ -17,7 +17,7 @@ import {
 	__experimentalToggleGroupControl as ToggleGroupControl,
 	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 } from '@wordpress/components';
-import { DesignTokenPicker } from '../../components';
+import { DesignTokenPicker, ResponsiveControl } from '../../components';
 import { colourVar, fontSizeVar } from '../../utils';
 
 const VARIANT_OPTIONS = [
@@ -254,22 +254,63 @@ export default function Edit( { attributes, setAttributes } ) {
 						) ) }
 					</ToggleGroupControl>
 
-					<SelectControl
+					<ResponsiveControl
 						label={ __( 'Min height', 'sgs-blocks' ) }
-						value={ minHeight }
-						options={ [
-							{ label: 'Auto (fit content)', value: '' },
-							{ label: '400px', value: '400px' },
-							{ label: '520px', value: '520px' },
-							{ label: '600px', value: '600px' },
-							{ label: '80vh', value: '80vh' },
-							{ label: '100vh', value: '100vh' },
-						] }
-						onChange={ ( val ) =>
-							setAttributes( { minHeight: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
+					>
+						{ ( breakpoint ) => {
+							const attrMap = {
+								desktop: 'minHeight',
+								tablet: 'minHeightTablet',
+								mobile: 'minHeightMobile',
+							};
+							return (
+								<SelectControl
+									value={
+										attributes[
+											attrMap[ breakpoint ]
+										]
+									}
+									options={ [
+										{
+											label: 'Auto (fit content)',
+											value: '',
+										},
+										{
+											label: '360px',
+											value: '360px',
+										},
+										{
+											label: '400px',
+											value: '400px',
+										},
+										{
+											label: '520px',
+											value: '520px',
+										},
+										{
+											label: '600px',
+											value: '600px',
+										},
+										{
+											label: '80vh',
+											value: '80vh',
+										},
+										{
+											label: '100vh',
+											value: '100vh',
+										},
+									] }
+									onChange={ ( val ) =>
+										setAttributes( {
+											[ attrMap[ breakpoint ] ]:
+												val,
+										} )
+									}
+									__nextHasNoMarginBottom
+								/>
+							);
+						} }
+					</ResponsiveControl>
 				</PanelBody>
 
 				<PanelBody

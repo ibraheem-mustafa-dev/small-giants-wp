@@ -12,7 +12,7 @@ import {
 	RangeControl,
 	Button,
 } from '@wordpress/components';
-import { DesignTokenPicker } from '../../components';
+import { DesignTokenPicker, ResponsiveControl } from '../../components';
 import { colourVar, spacingVar } from '../../utils';
 
 const VARIANT_OPTIONS = [
@@ -169,6 +169,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		variant,
 		items,
 		columns,
+		columnsTablet,
 		columnsMobile,
 		gap,
 		aspectRatio,
@@ -190,6 +191,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const gridStyle = {
 		'--sgs-card-grid-columns': columns,
+		'--sgs-card-grid-columns-tablet': columnsTablet,
 		'--sgs-card-grid-columns-mobile': columnsMobile,
 		'--sgs-card-grid-gap': spacingVar( gap ),
 		'--sgs-card-grid-aspect': aspectRatio,
@@ -298,26 +300,39 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 					/>
-					<RangeControl
-						label={ __( 'Columns (desktop)', 'sgs-blocks' ) }
-						value={ columns }
-						onChange={ ( val ) =>
-							setAttributes( { columns: val } )
-						}
-						min={ 2 }
-						max={ 4 }
-						__nextHasNoMarginBottom
-					/>
-					<RangeControl
-						label={ __( 'Columns (mobile)', 'sgs-blocks' ) }
-						value={ columnsMobile }
-						onChange={ ( val ) =>
-							setAttributes( { columnsMobile: val } )
-						}
-						min={ 1 }
-						max={ 2 }
-						__nextHasNoMarginBottom
-					/>
+					<ResponsiveControl
+						label={ __( 'Columns', 'sgs-blocks' ) }
+					>
+						{ ( breakpoint ) => {
+							const attrMap = {
+								desktop: 'columns',
+								tablet: 'columnsTablet',
+								mobile: 'columnsMobile',
+							};
+							return (
+								<RangeControl
+									value={
+										attributes[
+											attrMap[ breakpoint ]
+										]
+									}
+									onChange={ ( val ) =>
+										setAttributes( {
+											[ attrMap[ breakpoint ] ]:
+												val,
+										} )
+									}
+									min={ 1 }
+									max={
+										breakpoint === 'mobile'
+											? 2
+											: 4
+									}
+									__nextHasNoMarginBottom
+								/>
+							);
+						} }
+					</ResponsiveControl>
 					<SelectControl
 						label={ __( 'Gap', 'sgs-blocks' ) }
 						value={ gap }

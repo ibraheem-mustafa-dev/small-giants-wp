@@ -23,8 +23,10 @@ $overlay_opacity  = $attributes['overlayOpacity'] ?? 50;
 $split_image      = $attributes['splitImage'] ?? null;
 $bg_video         = $attributes['backgroundVideo'] ?? null;
 $svg_content      = $attributes['svgContent'] ?? '';
-$min_height       = $attributes['minHeight'] ?? '';
-$badges           = $attributes['badges'] ?? array();
+$min_height        = $attributes['minHeight'] ?? '';
+$min_height_tablet = $attributes['minHeightTablet'] ?? '';
+$min_height_mobile = $attributes['minHeightMobile'] ?? '360px';
+$badges            = $attributes['badges'] ?? array();
 $cta_primary_text = $attributes['ctaPrimaryText'] ?? '';
 $cta_primary_url  = $attributes['ctaPrimaryUrl'] ?? '';
 $cta_primary_style = $attributes['ctaPrimaryStyle'] ?? 'accent';
@@ -70,11 +72,24 @@ if ( ! $is_split && ! $is_video && ! $is_svg_animated && ! empty( $bg_image['url
 	$styles[] = 'background-position:center';
 }
 
+// Generate a unique ID for responsive CSS scoping.
+$uid = 'sgs-hero-' . substr( md5( wp_json_encode( $attributes ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
+
+// Build responsive min-height CSS.
+$responsive_css = '';
+if ( $min_height_tablet ) {
+	$responsive_css .= '@media (max-width:1023px){.' . $uid . '{min-height:' . esc_attr( $min_height_tablet ) . '}}';
+}
+if ( $min_height_mobile ) {
+	$responsive_css .= '@media (max-width:599px){.' . $uid . '{min-height:' . esc_attr( $min_height_mobile ) . '}}';
+}
+
 // Build wrapper classes.
 $classes = array(
 	'sgs-hero',
 	'sgs-hero--' . esc_attr( $variant ),
 	'sgs-hero--align-' . esc_attr( $alignment ),
+	$uid,
 );
 
 $wrapper_attributes = get_block_wrapper_attributes(
@@ -229,6 +244,11 @@ if ( $is_split && ! empty( $split_image['url'] ) ) {
 	);
 	$media_html .= $badges_html;
 	$media_html .= '</div>';
+}
+
+// Output responsive CSS if needed.
+if ( $responsive_css ) {
+	printf( '<style id="%s">%s</style>', esc_attr( $uid ), $responsive_css );
 }
 
 // Output.

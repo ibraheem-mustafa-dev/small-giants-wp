@@ -25,7 +25,7 @@ import {
 	comment,
 	megaphone,
 } from '@wordpress/icons';
-import { DesignTokenPicker } from '../../components';
+import { DesignTokenPicker, ResponsiveControl } from '../../components';
 import { colourVar, fontSizeVar } from '../../utils';
 
 const ICON_OPTIONS = [
@@ -214,15 +214,47 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 					/>
-					<SelectControl
+					<ResponsiveControl
 						label={ __( 'Icon size', 'sgs-blocks' ) }
-						value={ iconSize }
-						options={ ICON_SIZE_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { iconSize: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
+					>
+						{ ( breakpoint ) => {
+							const attrMap = {
+								desktop: 'iconSize',
+								tablet: 'iconSizeTablet',
+								mobile: 'iconSizeMobile',
+							};
+							return (
+								<SelectControl
+									value={
+										attributes[
+											attrMap[ breakpoint ]
+										] || ''
+									}
+									options={
+										breakpoint === 'desktop'
+											? ICON_SIZE_OPTIONS
+											: [
+													{
+														label: __(
+															'Same as desktop',
+															'sgs-blocks'
+														),
+														value: '',
+													},
+													...ICON_SIZE_OPTIONS,
+												]
+									}
+									onChange={ ( val ) =>
+										setAttributes( {
+											[ attrMap[ breakpoint ] ]:
+												val,
+										} )
+									}
+									__nextHasNoMarginBottom
+								/>
+							);
+						} }
+					</ResponsiveControl>
 					<DesignTokenPicker
 						label={ __( 'Icon colour', 'sgs-blocks' ) }
 						value={ iconColour }

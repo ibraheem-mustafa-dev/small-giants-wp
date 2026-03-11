@@ -22,6 +22,8 @@ $link_opens_new_tab      = $attributes['linkOpensNewTab'] ?? false;
 $icon_colour             = $attributes['iconColour'] ?? 'primary';
 $icon_background_colour  = $attributes['iconBackgroundColour'] ?? 'accent-light';
 $icon_size               = $attributes['iconSize'] ?? 'medium';
+$icon_size_tablet        = $attributes['iconSizeTablet'] ?? '';
+$icon_size_mobile        = $attributes['iconSizeMobile'] ?? '';
 $heading_colour          = $attributes['headingColour'] ?? '';
 $heading_font_size       = $attributes['headingFontSize'] ?? '';
 $description_colour      = $attributes['descriptionColour'] ?? '';
@@ -44,11 +46,33 @@ if ( $hover_border_colour ) {
 	$wrapper_styles[] = '--sgs-hover-border:' . sgs_colour_value( $hover_border_colour );
 }
 
+// Icon size CSS dimensions map.
+$icon_size_map = array(
+	'small'  => array( 'wh' => '40px', 'fs' => '16px' ),
+	'medium' => array( 'wh' => '52px', 'fs' => '24px' ),
+	'large'  => array( 'wh' => '64px', 'fs' => '32px' ),
+);
+
+// Generate uid for responsive CSS scoping.
+$uid = 'sgs-ib-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+
+// Build responsive icon size CSS.
+$responsive_css = '';
+if ( $icon_size_tablet && isset( $icon_size_map[ $icon_size_tablet ] ) ) {
+	$dims            = $icon_size_map[ $icon_size_tablet ];
+	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-info-box__icon{width:' . $dims['wh'] . ';height:' . $dims['wh'] . ';font-size:' . $dims['fs'] . '}}';
+}
+if ( $icon_size_mobile && isset( $icon_size_map[ $icon_size_mobile ] ) ) {
+	$dims            = $icon_size_map[ $icon_size_mobile ];
+	$responsive_css .= '@media (max-width:599px){.' . $uid . ' .sgs-info-box__icon{width:' . $dims['wh'] . ';height:' . $dims['wh'] . ';font-size:' . $dims['fs'] . '}}';
+}
+
 // Build wrapper classes.
 $classes = array(
 	'sgs-info-box',
 	'sgs-info-box--' . esc_attr( $card_style ),
 	'sgs-info-box--hover-' . esc_attr( $hover_effect ),
+	$uid,
 );
 
 $wrapper_attr_args = array(
@@ -123,6 +147,11 @@ if ( $link ) {
 		$target
 	);
 	$link_close = '</a>';
+}
+
+// Output responsive CSS if needed.
+if ( $responsive_css ) {
+	printf( '<style id="%s">%s</style>', esc_attr( $uid ), $responsive_css );
 }
 
 // Output.

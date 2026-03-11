@@ -73,6 +73,14 @@
                                         "type":  "string",
                                         "default":  "medium"
                                     },
+                       "iconSizeTablet":  {
+                                              "type":  "string",
+                                              "default":  ""
+                                          },
+                       "iconSizeMobile":  {
+                                              "type":  "string",
+                                              "default":  ""
+                                          },
                        "headingColour":  {
                                              "type":  "string"
                                          },
