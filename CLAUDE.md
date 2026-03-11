@@ -249,3 +249,13 @@ ssh hd "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/palestine-lives.o
 - **Google Calendar** — 2-way sync for booking (Phase 5)
 - **ACF Pro** — kept for non-block custom fields, usage decreasing over time
 - **Rank Math Free** — SEO, no reason to rebuild
+
+
+## HelpingDoctors Brand Style Variation
+
+- File: `theme/sgs-theme/styles/helping-doctors.json`
+- Committed: `f18889a` (2026-03-11)
+- Deployed to: helpingdoctors.org`/wp-content/themes/sgs-theme/styles/`helping-doctors.json`
+- **To activate:** WP Admin → Appearance → Editor → Styles (top right) → Browse styles → select 'HelpingDoctors'
+- Palette: Primary Green `#1B8A5A`, Dark Green `#0A5C3A`, Light Mint `#E8F5F0`, Dark `#1A1A2E`, White `#FFFFFF`
+- Buttons, links all use green tokens

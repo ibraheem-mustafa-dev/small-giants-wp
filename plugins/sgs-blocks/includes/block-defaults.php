@@ -66,6 +66,46 @@ function register_defaults_endpoints(): void {
 add_action( 'rest_api_init', __NAMESPACE__ . '\register_defaults_endpoints' );
 
 /**
+ * Output all saved block defaults as a JS global on editor load.
+ *
+ * Runs before the editor scripts so window.sgsBlockDefaults is available
+ * when blocks.registerBlockType fires and merges defaults on the client.
+ */
+function enqueue_block_defaults_data(): void {
+	global $wpdb;
+
+	$prefix  = 'sgs_block_defaults_';
+	$rows    = $wpdb->get_results(
+		$wpdb->prepare(
+			"SELECT option_name, option_value FROM {$wpdb->options} WHERE option_name LIKE %s",
+			$wpdb->esc_like( $prefix ) . '%'
+		)
+	);
+
+	$defaults = [];
+	foreach ( $rows as $row ) {
+		// Reconstruct block name: "sgs_block_defaults_sgs_hero" → "sgs/hero".
+		$key        = str_replace( $prefix, '', $row->option_name );
+		$block_name = preg_replace( '/^([a-z0-9]+)_/', '$1/', $key, 1 );
+		$decoded    = json_decode( $row->option_value, true );
+		if ( is_array( $decoded ) ) {
+			$defaults[ $block_name ] = $decoded;
+		}
+	}
+
+	if ( empty( $defaults ) ) {
+		return;
+	}
+
+	wp_add_inline_script(
+		'sgs-block-extensions',
+		'window.sgsBlockDefaults = ' . wp_json_encode( $defaults ) . ';',
+		'before'
+	);
+}
+add_action( 'enqueue_block_editor_assets', __NAMESPACE__ . '\enqueue_block_defaults_data' );
+
+/**
  * Build the wp_options key from a block name.
  *
  * @param string $block Block name (e.g. sgs/hero).
