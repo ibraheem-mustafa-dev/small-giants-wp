@@ -10,6 +10,7 @@
 function initCountdown( el ) {
 	const targetAttr = el.dataset.target;
 	const evergreenSeconds = parseInt( el.dataset.evergreen, 10 );
+	const serverTs = parseInt( el.dataset.serverTs, 10 );
 	const expiredMessage = el.dataset.expiredMessage || 'This offer has expired.';
 
 	let targetTime;
@@ -24,6 +25,8 @@ function initCountdown( el ) {
 			targetTime = Date.now() + ( evergreenSeconds * 1000 );
 			localStorage.setItem( storageKey, targetTime.toString() );
 		}
+	} else if ( serverTs ) {
+		targetTime = serverTs * 1000;
 	} else if ( targetAttr ) {
 		targetTime = new Date( targetAttr ).getTime();
 	} else {

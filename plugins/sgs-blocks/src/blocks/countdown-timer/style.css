@@ -44,6 +44,7 @@
 	font-weight: 700;
 	line-height: 1.1;
 	font-variant-numeric: tabular-nums;
+	color: var(--sgs-countdown-number-colour, inherit);
 }
 
 .sgs-countdown__label {
@@ -51,6 +52,7 @@
 	text-transform: uppercase;
 	letter-spacing: 0.05em;
 	margin-top: var(--wp--preset--spacing--10, 4px);
+	color: var(--sgs-countdown-label-colour, inherit);
 }
 
 .sgs-countdown__expired {

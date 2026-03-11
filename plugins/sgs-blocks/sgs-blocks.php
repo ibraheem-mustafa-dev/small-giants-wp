@@ -28,6 +28,7 @@ define( 'SGS_BLOCKS_VERSION', '0.1.0' );
 define( 'SGS_BLOCKS_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SGS_BLOCKS_URL', plugin_dir_url( __FILE__ ) );
 
+require_once SGS_BLOCKS_PATH . 'includes/colour-helpers.php';
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-blocks.php';
 require_once SGS_BLOCKS_PATH . 'includes/block-categories.php';
 
