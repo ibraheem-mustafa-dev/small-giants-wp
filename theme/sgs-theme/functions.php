@@ -12,6 +12,15 @@ namespace SGS\Theme;
 
 defined( 'ABSPATH' ) || exit;
 
+// Composer autoloader — spatie/color, league/csv, nesbot/carbon.
+// Available globally across all SGS client sites via this theme.
+if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
+	require_once __DIR__ . '/vendor/autoload.php';
+}
+
+// Shared SGS PHP helpers.
+require_once __DIR__ . '/inc/colour-helpers.php';
+
 /**
  * Remove WordPress emoji scripts and styles.
  *

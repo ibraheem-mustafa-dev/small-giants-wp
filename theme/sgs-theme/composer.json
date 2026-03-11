@@ -1,0 +1,20 @@
+{
+    "name": "small-giants/sgs-theme",
+    "description": "SGS Theme — shared PHP utilities for all SGS client sites",
+    "type": "wordpress-theme",
+    "require": {
+        "php": ">=8.2",
+        "league/csv": "^9.28",
+        "nesbot/carbon": "^3.11",
+        "spatie/color": "^2.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "SGS\\Theme\\": "inc/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    }
+}
