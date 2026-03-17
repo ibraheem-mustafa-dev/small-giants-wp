@@ -21,6 +21,9 @@ if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
 // Shared SGS PHP helpers.
 require_once __DIR__ . '/inc/colour-helpers.php';
 
+// Header behaviour system (sticky, transparent, smart-reveal, shrink).
+require_once __DIR__ . '/inc/class-header-behaviour.php';
+
 /**
  * Remove WordPress emoji scripts and styles.
  *
@@ -217,10 +220,17 @@ function enqueue_styles(): void {
 		true // Load in footer — runs after DOM is available.
 	);
 
-	// Sticky header — adds .is-scrolled class for shrink/shadow effect.
+	// Header behaviour system — sticky, transparent, smart-reveal, shrink.
+	wp_enqueue_style(
+		'sgs-header-modes',
+		get_theme_file_uri( 'assets/css/header-modes.css' ),
+		[ 'sgs-core-blocks-critical' ],
+		$theme_version
+	);
+
 	wp_enqueue_script(
-		'sgs-sticky-header',
-		get_theme_file_uri( 'assets/js/sticky-header.js' ),
+		'sgs-header-behaviour',
+		get_theme_file_uri( 'assets/js/header-behaviour.js' ),
 		[],
 		$theme_version,
 		true // Load in footer — runs after DOM is available.
@@ -245,7 +255,7 @@ add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\enqueue_styles' );
  * asynchronously without blocking first paint.
  */
 function defer_non_critical_css( string $tag, string $handle ): string {
-	$deferred = [ 'sgs-core-blocks', 'sgs-dark-mode', 'sgs-mobile-nav-drawer', 'sgs-utilities', 'sgs-extensions' ];
+	$deferred = [ 'sgs-core-blocks', 'sgs-dark-mode', 'sgs-mobile-nav-drawer', 'sgs-utilities', 'sgs-extensions', 'sgs-header-modes' ];
 
 	if ( in_array( $handle, $deferred, true ) ) {
 		// Replace media="all" with media="print" and add onload swap.
@@ -493,47 +503,12 @@ function enqueue_style_variation_extras(): void {
 }
 add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\enqueue_style_variation_extras' );
 
-/**
- * Propagate header variant classes from inner group to <header> template part.
- *
- * WordPress block themes render template parts as:
- *   <header class="wp-block-template-part">
- *     <div class="wp-block-group sgs-header-sticky ...">
- *
- * Our CSS targets `header.wp-block-template-part.sgs-header-sticky`.
- * This filter moves the sgs-header-* class up to the <header> wrapper.
+/*
+ * Header class propagation is now handled by inc/class-header-behaviour.php.
+ * The inject_header_classes() function reads sgs_header_mode settings and
+ * injects the appropriate CSS classes dynamically — no need for classes
+ * to be present in the template HTML.
  */
-function propagate_header_classes( string $block_content, array $block ): string {
-	if ( empty( $block['blockName'] ) || 'core/template-part' !== $block['blockName'] ) {
-		return $block_content;
-	}
-
-	// Only apply to header area.
-	$area = $block['attrs']['tagName'] ?? '';
-	if ( 'header' !== $area ) {
-		return $block_content;
-	}
-
-	// Check if inner content has sgs-header-* classes.
-	$header_classes = [];
-	if ( preg_match_all( '/\bsgs-header-(sticky|transparent|shrink)\b/', $block_content, $matches ) ) {
-		$header_classes = array_unique( $matches[0] );
-	}
-
-	if ( empty( $header_classes ) ) {
-		return $block_content;
-	}
-
-	// Add classes to the outer <header> tag.
-	$classes_str = implode( ' ', $header_classes );
-	return preg_replace(
-		'/^(<header\b[^>]*class=["\'])/',
-		'$1' . $classes_str . ' ',
-		$block_content,
-		1
-	);
-}
-add_filter( 'render_block', __NAMESPACE__ . '\propagate_header_classes', 10, 2 );
 
 /**
  * Replace generic 'Toggle Menu' aria-label on submenu toggle buttons with

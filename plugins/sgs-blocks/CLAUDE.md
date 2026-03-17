@@ -66,18 +66,20 @@ The `--webpack-copy-php` flag copies `render.php` to `build/` automatically — 
 
 ## Deploy
 
+Use the tar method from the framework CLAUDE.md — `scp -r` creates nested directories on Hostinger.
+
 ```bash
 # Build first
 npm run build
 
-# Deploy plugin files (run from repo root)
-scp -r plugins/sgs-blocks/sgs-blocks.php plugins/sgs-blocks/includes plugins/sgs-blocks/build plugins/sgs-blocks/assets hd:~/domains/palestine-lives.org/public_html/wp-content/plugins/sgs-blocks/
+# Deploy via tar (from repo root — see framework CLAUDE.md for full sequence)
+cd /path/to/small-giants-wp
+tar -cf sgs-deploy.tar --exclude='node_modules' --exclude='.git' --exclude='src' plugins/sgs-blocks
+scp -P 65002 sgs-deploy.tar u945238940@141.136.39.73:sgs-deploy.tar
+ssh -p 65002 u945238940@141.136.39.73 "WP=domains/palestine-lives.org/public_html/wp-content && rm -rf \$WP/plugins/sgs-blocks && tar -xf sgs-deploy.tar && mv plugins/sgs-blocks \$WP/plugins/ && rm -rf plugins sgs-deploy.tar"
+rm sgs-deploy.tar
 
-# Clear LiteSpeed cache (wp litespeed-purge is broken on this host)
-ssh hd "rm -rf ~/domains/palestine-lives.org/public_html/wp-content/litespeed/cache/*"
-
-# Reset PHP OPcache after deploying PHP files (CLI reset is a SEPARATE pool — must use HTTP)
-ssh hd "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/palestine-lives.org/public_html/op-reset-tmp.php" && curl -s https://palestine-lives.org/op-reset-tmp.php && ssh hd "rm ~/domains/palestine-lives.org/public_html/op-reset-tmp.php"
+# Then clear caches — see framework CLAUDE.md for OPcache + LiteSpeed commands
 ```
 
 ## Block Build Status

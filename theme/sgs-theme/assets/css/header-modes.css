@@ -1,0 +1,162 @@
+/**
+ * SGS Header Mode System
+ *
+ * Extends the base header styles in core-blocks-critical.css with:
+ * - Transparent + Sticky combo mode
+ * - Smart Reveal (hide-on-scroll-down, show-on-scroll-up)
+ * - Scrolled state transitions (transparent → solid)
+ * - Top bar visibility control
+ * - Admin bar offset
+ * - Skip link focus fix
+ * - Reduced motion support
+ *
+ * Base rules (sticky, transparent, shrink) remain in core-blocks-critical.css.
+ * This file adds only the new behaviours.
+ *
+ * @package SGS\Theme
+ */
+
+/* ─── ADMIN BAR OFFSET ─── */
+
+body.admin-bar header.wp-block-template-part.sgs-header-sticky,
+body.admin-bar header.wp-block-template-part.sgs-header-smart-reveal {
+	top: var(--wp-admin--admin-bar--height, 32px);
+}
+
+@media (max-width: 782px) {
+	body.admin-bar header.wp-block-template-part.sgs-header-sticky,
+	body.admin-bar header.wp-block-template-part.sgs-header-smart-reveal {
+		top: var(--wp-admin--admin-bar--height, 46px);
+	}
+}
+
+/* ─── TRANSPARENT + STICKY COMBO ─── */
+
+/*
+ * Starts transparent (absolute) over the hero.
+ * JS adds .sgs-header-scrolled once user scrolls past the hero.
+ * At that point, switch from absolute to sticky with solid background.
+ */
+header.wp-block-template-part.sgs-header-transparent-sticky {
+	position: fixed;
+	top: 0;
+	width: 100%;
+	background: transparent !important;
+	transition: background-color 0.3s ease,
+	            box-shadow 0.3s ease,
+	            transform 0.3s ease;
+}
+
+body.admin-bar header.wp-block-template-part.sgs-header-transparent-sticky {
+	top: var(--wp-admin--admin-bar--height, 32px);
+}
+
+/* Transparent state — white text */
+header.wp-block-template-part.sgs-header-transparent-sticky:not(.sgs-header-scrolled) .wp-block-navigation .wp-block-navigation-item__content,
+header.wp-block-template-part.sgs-header-transparent-sticky:not(.sgs-header-scrolled) .wp-block-site-title a {
+	color: var(--wp--preset--color--surface, #fff);
+}
+
+header.wp-block-template-part.sgs-header-transparent-sticky:not(.sgs-header-scrolled) > .wp-block-group {
+	background: transparent !important;
+}
+
+/* Scrolled state — solid background, restore normal colours */
+header.wp-block-template-part.sgs-header-transparent-sticky.sgs-header-scrolled {
+	background-color: var(--wp--preset--color--surface, #fff) !important;
+	box-shadow: var(--wp--preset--shadow--md, 0 4px 12px rgba(0, 0, 0, 0.1));
+}
+
+header.wp-block-template-part.sgs-header-transparent-sticky.sgs-header-scrolled .wp-block-navigation .wp-block-navigation-item__content,
+header.wp-block-template-part.sgs-header-transparent-sticky.sgs-header-scrolled .wp-block-site-title a {
+	color: var(--wp--preset--color--text, #1e1e1e);
+}
+
+/* ─── TRANSPARENT HEADER SPACING COMPENSATION ─── */
+
+/*
+ * When the header is transparent or transparent+sticky, it is removed from
+ * document flow (position: absolute/fixed). The first content block slides
+ * up behind it. For hero sections this is desired. For non-hero pages,
+ * add top padding so content is not hidden behind the header.
+ *
+ * The JS sets --sgs-header-height on :root after measuring the header.
+ * Pages with a hero block (sgs/hero) skip this padding because the hero
+ * is designed to sit behind the transparent header.
+ */
+body.sgs-has-transparent-header:not(.sgs-has-hero) .wp-site-blocks > :first-child {
+	padding-top: var(--sgs-header-height, 80px);
+}
+
+/* ─── SMART REVEAL ─── */
+
+/*
+ * Header is sticky but hides on scroll down and reveals on scroll up.
+ * JS toggles .sgs-header-hidden based on scroll direction.
+ */
+header.wp-block-template-part.sgs-header-smart-reveal {
+	position: sticky;
+	top: 0;
+	transition: transform 0.3s ease,
+	            box-shadow 0.3s ease;
+}
+
+header.wp-block-template-part.sgs-header-smart-reveal.sgs-header-hidden {
+	transform: translateY(-100%);
+}
+
+/* Add shadow when scrolled (proves header is floating above content) */
+header.wp-block-template-part.sgs-header-sticky.is-scrolled,
+header.wp-block-template-part.sgs-header-smart-reveal:not(.sgs-header-hidden).is-scrolled {
+	box-shadow: var(--wp--preset--shadow--md, 0 4px 12px rgba(0, 0, 0, 0.1));
+}
+
+/* ─── TOP BAR VISIBILITY ─── */
+
+header.wp-block-template-part.sgs-header-no-top-bar .sgs-header-top-bar {
+	display: none;
+}
+
+/* ─── SKIP LINK FOCUS FIX ─── */
+
+/*
+ * WordPress core skip link scrolls to #main but does not move keyboard focus.
+ * The JS adds tabindex="-1" to the skip link target.
+ * This CSS ensures the target has a visible focus ring when activated.
+ */
+#main:focus {
+	outline: none;
+}
+
+.skip-link:focus {
+	clip: auto;
+	clip-path: none;
+	height: auto;
+	width: auto;
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 100001;
+	padding: 0.75rem 1.5rem;
+	background: var(--wp--preset--color--primary, #0f7e80);
+	color: var(--wp--preset--color--surface, #fff);
+	font-size: 1rem;
+	font-weight: 600;
+	text-decoration: none;
+}
+
+/* ─── REDUCED MOTION ─── */
+
+@media (prefers-reduced-motion: reduce) {
+	header.wp-block-template-part,
+	header.wp-block-template-part.sgs-header-transparent-sticky,
+	header.wp-block-template-part.sgs-header-smart-reveal {
+		transition: none !important;
+		animation: none !important;
+	}
+
+	/* Disable shrink animation */
+	header.wp-block-template-part.sgs-header-shrink {
+		animation: none !important;
+	}
+}
