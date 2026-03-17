@@ -46,7 +46,13 @@
 	 * Used for transparent header spacing compensation.
 	 */
 	function measureHeaderHeight() {
-		var height = header.offsetHeight;
+		/*
+		 * Measure the visible nav row only, not the full header element
+		 * (which includes off-canvas drawer elements with position:fixed
+		 * that inflate offsetHeight).
+		 */
+		var navRow = header.querySelector( '.wp-block-group:not([style*="display:none"]):not(.sgs-mobile-nav-drawer__backdrop):not(.sgs-mobile-nav-drawer)' );
+		var height = navRow ? navRow.offsetHeight : header.offsetHeight;
 		document.documentElement.style.setProperty( '--sgs-header-height', height + 'px' );
 	}
 
@@ -55,8 +61,13 @@
 	 * If so, add a body class so CSS knows not to add spacing compensation.
 	 */
 	function detectHero() {
-		var firstBlock = document.querySelector( '.wp-site-blocks > .wp-block-sgs-hero, .wp-site-blocks > .sgs-hero, .wp-site-blocks > .wp-block-cover' );
-		if ( firstBlock ) {
+		/*
+		 * Search for a hero block anywhere in the first content section,
+		 * not just as a direct child of .wp-site-blocks (the hero is
+		 * typically nested inside a Group or template-part wrapper).
+		 */
+		var hero = document.querySelector( '.wp-block-sgs-hero, .sgs-hero, .wp-block-cover' );
+		if ( hero ) {
 			document.body.classList.add( 'sgs-has-hero' );
 		}
 	}

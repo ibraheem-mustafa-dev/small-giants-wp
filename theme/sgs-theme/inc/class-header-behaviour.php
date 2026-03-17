@@ -164,6 +164,17 @@ function inject_header_classes( string $html, array $block ): string {
 
 	if ( ! $show_top_bar ) {
 		$classes[] = 'sgs-header-no-top-bar';
+
+		/*
+		 * Inject sgs-hidden class onto the top bar element.
+		 * CSS handles the hiding via !important to beat WP global styles.
+		 */
+		$html = preg_replace(
+			'/(<div\b[^>]*class=")(wp-block-group[^"]*(?:sgs-header-top-bar|has-primary-background-color))/i',
+			'$1sgs-hidden $2',
+			$html,
+			1
+		);
 	}
 
 	// Inject classes onto the <header> tag.

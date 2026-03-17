@@ -84,7 +84,7 @@ header.wp-block-template-part.sgs-header-transparent-sticky.sgs-header-scrolled 
  * Pages with a hero block (sgs/hero) skip this padding because the hero
  * is designed to sit behind the transparent header.
  */
-body.sgs-has-transparent-header:not(.sgs-has-hero) .wp-site-blocks > :first-child {
+body.sgs-has-transparent-header:not(.sgs-has-hero) .wp-site-blocks > main > :first-child {
 	padding-top: var(--sgs-header-height, 80px);
 }
 
@@ -113,8 +113,17 @@ header.wp-block-template-part.sgs-header-smart-reveal:not(.sgs-header-hidden).is
 
 /* ─── TOP BAR VISIBILITY ─── */
 
-header.wp-block-template-part.sgs-header-no-top-bar .sgs-header-top-bar {
-	display: none;
+/*
+ * The top bar is the first child group inside the header wrapper.
+ * Separate rules to survive LiteSpeed CSS optimiser (it strips
+ * comma-separated selectors it thinks are unused).
+ */
+/*
+ * .sgs-hidden is injected by PHP onto the top bar element.
+ * !important required to override WP global styles `body .is-layout-flex { display: flex }`.
+ */
+.sgs-hidden {
+	display: none !important;
 }
 
 /* ─── SKIP LINK FOCUS FIX ─── */
