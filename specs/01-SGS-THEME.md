@@ -137,6 +137,34 @@ sgs-theme/
               "src": ["file:./assets/fonts/inter-variable-latin.woff2"]
             }
           ]
+        },
+        {
+          "fontFamily": "'DM Serif Display', Georgia, serif",
+          "slug": "display",
+          "name": "Display",
+          "fontFace": [
+            {
+              "fontFamily": "DM Serif Display",
+              "fontWeight": "400",
+              "fontStyle": "normal",
+              "fontDisplay": "swap",
+              "src": ["file:./assets/fonts/dm-serif-display-v15-latin-regular.woff2"]
+            }
+          ]
+        },
+        {
+          "fontFamily": "'DM Sans', sans-serif",
+          "slug": "dm-sans",
+          "name": "DM Sans",
+          "fontFace": [
+            {
+              "fontFamily": "DM Sans",
+              "fontWeight": "400 700",
+              "fontStyle": "normal",
+              "fontDisplay": "swap",
+              "src": ["file:./assets/fonts/dm-sans-v15-latin-regular.woff2"]
+            }
+          ]
         }
       ],
       "fontSizes": [
