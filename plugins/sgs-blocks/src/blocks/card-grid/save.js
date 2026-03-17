@@ -17,6 +17,8 @@ export default function Save( { attributes } ) {
 		hoverBackgroundColour,
 		hoverTextColour,
 		hoverBorderColour,
+		transitionDuration,
+		transitionEasing,
 	} = attributes;
 
 	const className = [
@@ -36,6 +38,8 @@ export default function Save( { attributes } ) {
 		'--sgs-hover-bg': colourVar( hoverBackgroundColour ) || undefined,
 		'--sgs-hover-text': colourVar( hoverTextColour ) || undefined,
 		'--sgs-hover-border': colourVar( hoverBorderColour ) || undefined,
+		'--sgs-transition-duration': transitionDuration ? `${ transitionDuration }ms` : undefined,
+		'--sgs-transition-easing': transitionEasing || undefined,
 	};
 
 	const titleStyle = {

@@ -33,9 +33,21 @@ $hover_effect            = $attributes['hoverEffect'] ?? 'lift';
 $hover_background_colour = $attributes['hoverBackgroundColour'] ?? '';
 $hover_text_colour       = $attributes['hoverTextColour'] ?? '';
 $hover_border_colour     = $attributes['hoverBorderColour'] ?? '';
+$transition_duration     = $attributes['transitionDuration'] ?? '300';
+$transition_easing       = $attributes['transitionEasing'] ?? 'ease-in-out';
 
 // Build wrapper styles.
 $wrapper_styles = array();
+
+// Transition custom properties — consumed by CSS vars on the block and its children.
+$duration_ms    = preg_replace( '/[^0-9]/', '', $transition_duration );
+$duration_ms    = '' !== $duration_ms ? $duration_ms : '300';
+$wrapper_styles[] = '--sgs-transition-duration:' . $duration_ms . 'ms';
+
+$allowed_easings  = array( 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'linear' );
+$safe_easing      = in_array( $transition_easing, $allowed_easings, true ) ? $transition_easing : 'ease-in-out';
+$wrapper_styles[] = '--sgs-transition-easing:' . $safe_easing;
+
 if ( $hover_background_colour ) {
 	$wrapper_styles[] = '--sgs-hover-bg:' . sgs_colour_value( $hover_background_colour );
 }

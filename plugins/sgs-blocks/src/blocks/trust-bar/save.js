@@ -33,9 +33,25 @@ export default function Save( { attributes } ) {
 		valueColour,
 		labelColour,
 		labelFontSize,
+		hoverBackgroundColour,
+		hoverTextColour,
+		hoverBorderColour,
+		transitionDuration,
+		transitionEasing,
 	} = attributes;
 
-	const blockProps = useBlockProps.save( { className: 'sgs-trust-bar' } );
+	const wrapperStyle = {
+		'--sgs-hover-bg': hoverBackgroundColour ? colourVar( hoverBackgroundColour ) : undefined,
+		'--sgs-hover-text': hoverTextColour ? colourVar( hoverTextColour ) : undefined,
+		'--sgs-hover-border': hoverBorderColour ? colourVar( hoverBorderColour ) : undefined,
+		'--sgs-transition-duration': transitionDuration ? `${ transitionDuration }ms` : undefined,
+		'--sgs-transition-easing': transitionEasing || undefined,
+	};
+
+	const blockProps = useBlockProps.save( {
+		className: 'sgs-trust-bar',
+		style: wrapperStyle,
+	} );
 
 	const valueStyle = {
 		color: colourVar( valueColour ) || undefined,

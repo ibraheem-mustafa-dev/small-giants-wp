@@ -12,6 +12,10 @@ export default function Save( { attributes } ) {
 		headlineFontSize,
 		bodyColour,
 		bodyFontSize,
+		hoverBackgroundColour,
+		hoverTextColour,
+		hoverBorderColour,
+		hoverEffect,
 	} = attributes;
 
 	const showLeftImage =
@@ -22,9 +26,16 @@ export default function Save( { attributes } ) {
 	const className = [
 		'sgs-heritage-strip',
 		`sgs-heritage-strip--${ layout }`,
-	].join( ' ' );
+		hoverEffect && hoverEffect !== 'none' ? `sgs-heritage-strip--hover-${ hoverEffect }` : '',
+	].filter( Boolean ).join( ' ' );
 
-	const blockProps = useBlockProps.save( { className } );
+	const wrapperStyle = {
+		'--sgs-hover-bg': hoverBackgroundColour ? colourVar( hoverBackgroundColour ) : undefined,
+		'--sgs-hover-text': hoverTextColour ? colourVar( hoverTextColour ) : undefined,
+		'--sgs-hover-border': hoverBorderColour ? colourVar( hoverBorderColour ) : undefined,
+	};
+
+	const blockProps = useBlockProps.save( { className, style: wrapperStyle } );
 
 	const headlineStyle = {
 		color: colourVar( headlineColour ) || undefined,

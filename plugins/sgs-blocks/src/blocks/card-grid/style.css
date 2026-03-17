@@ -18,7 +18,9 @@
 	color: inherit;
 	display: flex;
 	flex-direction: column;
-	transition: var(--wp--custom--transition--medium, 0.3s ease);
+	transition-duration: var(--sgs-transition-duration, 300ms);
+	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
+	transition-property: background-color, color, border-color, transform, box-shadow;
 }
 
 /* Card variant — elevated card style */
@@ -39,7 +41,9 @@
 	height: 100%;
 	object-fit: cover;
 	display: block;
-	transition: transform var(--wp--custom--transition--medium, 0.3s ease);
+	transition-duration: var(--sgs-transition-duration, 300ms);
+	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
+	transition-property: transform;
 }
 
 .sgs-card-grid__image-placeholder {

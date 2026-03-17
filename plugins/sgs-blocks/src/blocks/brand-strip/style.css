@@ -36,7 +36,9 @@
 .sgs-brand-strip--greyscale .sgs-brand-strip__logo {
 	filter: grayscale(100%);
 	opacity: 0.6;
-	transition: var(--wp--custom--transition--medium, 0.3s ease);
+	transition-duration: var(--sgs-transition-duration, 300ms);
+	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
+	transition-property: filter, opacity;
 }
 
 .sgs-brand-strip--greyscale .sgs-brand-strip__item:hover .sgs-brand-strip__logo {
@@ -62,6 +64,52 @@
 
 .sgs-brand-strip--scrolling:hover .sgs-brand-strip__track {
 	animation-play-state: paused;
+}
+
+/* ===== Hover States ===== */
+
+.sgs-brand-strip[style*="--sgs-hover-bg"]:hover {
+	background-color: var(--sgs-hover-bg);
+}
+
+.sgs-brand-strip[style*="--sgs-hover-text"]:hover {
+	color: var(--sgs-hover-text);
+}
+
+.sgs-brand-strip[style*="--sgs-hover-border"]:hover {
+	border-color: var(--sgs-hover-border);
+}
+
+/* Hover effect variants */
+.sgs-brand-strip--hover-lift {
+	transition-property: transform, box-shadow;
+	transition-duration: var(--sgs-transition-duration, 300ms);
+	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
+}
+
+.sgs-brand-strip--hover-lift:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.sgs-brand-strip--hover-scale {
+	transition-property: transform;
+	transition-duration: var(--sgs-transition-duration, 300ms);
+	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
+}
+
+.sgs-brand-strip--hover-scale:hover {
+	transform: scale(1.02);
+}
+
+.sgs-brand-strip--hover-glow {
+	transition-property: box-shadow;
+	transition-duration: var(--sgs-transition-duration, 300ms);
+	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
+}
+
+.sgs-brand-strip--hover-glow:hover {
+	box-shadow: 0 0 0 3px var(--wp--preset--color--primary, #0F7E80);
 }
 
 /* ===== Focus ===== */

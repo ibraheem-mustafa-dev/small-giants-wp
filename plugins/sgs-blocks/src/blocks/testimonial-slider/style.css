@@ -178,7 +178,9 @@
 	font-size: 24px;
 	line-height: 1;
 	cursor: pointer;
-	transition: var(--wp--custom--transition--medium, 0.3s ease);
+	transition-duration: var(--sgs-transition-duration, 300ms);
+	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
+	transition-property: background-color, color, border-color;
 }
 
 .sgs-testimonial-slider__arrow:hover {
@@ -217,7 +219,9 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	transition: var(--wp--custom--transition--medium, 0.3s ease);
+	transition-duration: var(--sgs-transition-duration, 300ms);
+	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
+	transition-property: background-color, transform;
 }
 
 .sgs-testimonial-slider__dot--active {
@@ -249,7 +253,9 @@
 	color: var(--wp--preset--color--text, #1e1e1e);
 	font-size: 16px;
 	cursor: pointer;
-	transition: var(--wp--custom--transition--medium, 0.3s ease);
+	transition-duration: var(--sgs-transition-duration, 300ms);
+	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
+	transition-property: background-color, color, border-color;
 	margin-left: var(--wp--preset--spacing--20, 8px);
 }
 
@@ -315,6 +321,61 @@
 	.sgs-testimonial-slider__track {
 		--sgs-slides-visible: 1 !important;
 	}
+}
+
+/* ===== Hover States ===== */
+
+/* Apply hover colours only when the CSS variables are set */
+.sgs-testimonial-slider:has(--sgs-hover-bg),
+.sgs-testimonial-slider:has(--sgs-hover-text),
+.sgs-testimonial-slider:has(--sgs-hover-border) {
+	transition-property: background-color, color, border-color, box-shadow, transform;
+	transition-duration: var(--sgs-transition-duration, 300ms);
+	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
+}
+
+.sgs-testimonial-slider[style*="--sgs-hover-bg"]:hover {
+	background-color: var(--sgs-hover-bg);
+}
+
+.sgs-testimonial-slider[style*="--sgs-hover-text"]:hover {
+	color: var(--sgs-hover-text);
+}
+
+.sgs-testimonial-slider[style*="--sgs-hover-border"]:hover {
+	border-color: var(--sgs-hover-border);
+}
+
+/* Hover effect variants */
+.sgs-testimonial-slider--hover-lift {
+	transition-property: transform, box-shadow;
+	transition-duration: var(--sgs-transition-duration, 300ms);
+	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
+}
+
+.sgs-testimonial-slider--hover-lift:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.sgs-testimonial-slider--hover-scale {
+	transition-property: transform;
+	transition-duration: var(--sgs-transition-duration, 300ms);
+	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
+}
+
+.sgs-testimonial-slider--hover-scale:hover {
+	transform: scale(1.02);
+}
+
+.sgs-testimonial-slider--hover-glow {
+	transition-property: box-shadow;
+	transition-duration: var(--sgs-transition-duration, 300ms);
+	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
+}
+
+.sgs-testimonial-slider--hover-glow:hover {
+	box-shadow: 0 0 0 3px var(--wp--preset--color--primary, #0F7E80);
 }
 
 /* ===== Reduced motion ===== */

@@ -10,6 +10,13 @@ import {
 	ToggleControl,
 	Button,
 } from '@wordpress/components';
+
+const HOVER_EFFECT_OPTIONS = [
+	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
+	{ label: __( 'Lift', 'sgs-blocks' ), value: 'lift' },
+	{ label: __( 'Scale', 'sgs-blocks' ), value: 'scale' },
+	{ label: __( 'Glow', 'sgs-blocks' ), value: 'glow' },
+];
 import { DesignTokenPicker } from '../../components';
 import { colourVar, fontSizeVar } from '../../utils';
 
@@ -83,9 +90,24 @@ export default function Edit( { attributes, setAttributes } ) {
 		valueColour,
 		labelColour,
 		labelFontSize,
+		hoverBackgroundColour,
+		hoverTextColour,
+		hoverBorderColour,
+		hoverEffect,
+		transitionDuration,
+		transitionEasing,
 	} = attributes;
 
-	const blockProps = useBlockProps( { className: 'sgs-trust-bar' } );
+	const blockProps = useBlockProps( {
+		className: 'sgs-trust-bar',
+		style: {
+			'--sgs-hover-bg': hoverBackgroundColour ? colourVar( hoverBackgroundColour ) : undefined,
+			'--sgs-hover-text': hoverTextColour ? colourVar( hoverTextColour ) : undefined,
+			'--sgs-hover-border': hoverBorderColour ? colourVar( hoverBorderColour ) : undefined,
+			'--sgs-transition-duration': transitionDuration ? `${ transitionDuration }ms` : undefined,
+			'--sgs-transition-easing': transitionEasing || undefined,
+		},
+	} );
 
 	const valueStyle = {
 		color: colourVar( valueColour ) || undefined,
@@ -160,6 +182,30 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 						__nextHasNoMarginBottom
 					/>
+					<TextControl
+						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
+						value={ transitionDuration }
+						onChange={ ( val ) =>
+							setAttributes( { transitionDuration: val } )
+						}
+						help={ __( 'Duration of hover transitions in milliseconds. Default: 300.', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+					/>
+					<SelectControl
+						label={ __( 'Transition easing', 'sgs-blocks' ) }
+						value={ transitionEasing }
+						options={ [
+							{ label: __( 'Ease', 'sgs-blocks' ), value: 'ease' },
+							{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
+							{ label: __( 'Ease out', 'sgs-blocks' ), value: 'ease-out' },
+							{ label: __( 'Ease in–out', 'sgs-blocks' ), value: 'ease-in-out' },
+							{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
+						] }
+						onChange={ ( val ) =>
+							setAttributes( { transitionEasing: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
 				</PanelBody>
 
 				<PanelBody
@@ -188,6 +234,42 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { labelFontSize: val } )
 						}
 						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Hover States', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<SelectControl
+						label={ __( 'Hover effect', 'sgs-blocks' ) }
+						value={ hoverEffect }
+						options={ HOVER_EFFECT_OPTIONS }
+						onChange={ ( val ) =>
+							setAttributes( { hoverEffect: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					<DesignTokenPicker
+						label={ __( 'Hover background colour', 'sgs-blocks' ) }
+						value={ hoverBackgroundColour }
+						onChange={ ( val ) =>
+							setAttributes( { hoverBackgroundColour: val } )
+						}
+					/>
+					<DesignTokenPicker
+						label={ __( 'Hover text colour', 'sgs-blocks' ) }
+						value={ hoverTextColour }
+						onChange={ ( val ) =>
+							setAttributes( { hoverTextColour: val } )
+						}
+					/>
+					<DesignTokenPicker
+						label={ __( 'Hover border colour', 'sgs-blocks' ) }
+						value={ hoverBorderColour }
+						onChange={ ( val ) =>
+							setAttributes( { hoverBorderColour: val } )
+						}
 					/>
 				</PanelBody>
 			</InspectorControls>

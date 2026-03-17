@@ -86,6 +86,52 @@
 	font-style: italic;
 }
 
+/* ===== Hover States ===== */
+
+.sgs-heritage-strip[style*="--sgs-hover-bg"]:hover {
+	background-color: var(--sgs-hover-bg);
+}
+
+.sgs-heritage-strip[style*="--sgs-hover-text"]:hover {
+	color: var(--sgs-hover-text);
+}
+
+.sgs-heritage-strip[style*="--sgs-hover-border"]:hover {
+	border-color: var(--sgs-hover-border);
+}
+
+/* Hover effect variants */
+.sgs-heritage-strip--hover-lift {
+	transition-property: transform, box-shadow;
+	transition-duration: 300ms;
+	transition-timing-function: ease-in-out;
+}
+
+.sgs-heritage-strip--hover-lift:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.sgs-heritage-strip--hover-scale {
+	transition-property: transform;
+	transition-duration: 300ms;
+	transition-timing-function: ease-in-out;
+}
+
+.sgs-heritage-strip--hover-scale:hover {
+	transform: scale(1.02);
+}
+
+.sgs-heritage-strip--hover-glow {
+	transition-property: box-shadow;
+	transition-duration: 300ms;
+	transition-timing-function: ease-in-out;
+}
+
+.sgs-heritage-strip--hover-glow:hover {
+	box-shadow: 0 0 0 3px var(--wp--preset--color--primary, #0F7E80);
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 767px) {
 	.sgs-heritage-strip--image-text-image,

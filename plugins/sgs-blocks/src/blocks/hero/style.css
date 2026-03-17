@@ -6,9 +6,9 @@
 	align-items: center;
 	overflow: hidden;
 	box-sizing: border-box;
-	transition: background-color var(--wp--custom--transition--medium, 0.3s ease),
-		color var(--wp--custom--transition--medium, 0.3s ease),
-		border-color var(--wp--custom--transition--medium, 0.3s ease);
+	transition-duration: var(--sgs-transition-duration, 300ms);
+	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
+	transition-property: background-color, color, border-color;
 }
 
 /* Standard variant — text over background */
@@ -136,7 +136,9 @@
 	min-height: 44px;
 	min-width: 44px;
 	cursor: pointer;
-	transition: var(--wp--custom--transition--medium, 0.3s ease);
+	transition-duration: var(--sgs-transition-duration, 300ms);
+	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
+	transition-property: background-color, color, border-color, box-shadow, transform;
 }
 
 .sgs-hero__cta--accent {

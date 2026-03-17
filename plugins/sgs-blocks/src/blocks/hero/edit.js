@@ -142,13 +142,18 @@ export default function Edit( { attributes, setAttributes } ) {
 		hoverBackgroundColour,
 		hoverTextColour,
 		hoverBorderColour,
+		transitionDuration,
+		transitionEasing,
 	} = attributes;
 
 	const isSplit = variant === 'split';
 	const isVideo = variant === 'video';
 	const isSvgAnimated = variant === 'svg-animated';
 
-	const wrapperStyle = {};
+	const wrapperStyle = {
+		'--sgs-transition-duration': transitionDuration ? `${ transitionDuration }ms` : undefined,
+		'--sgs-transition-easing': transitionEasing || undefined,
+	};
 	if ( ! isSplit && ! isVideo && ! isSvgAnimated && backgroundImage?.url ) {
 		wrapperStyle.backgroundImage = `url(${ backgroundImage.url })`;
 		wrapperStyle.backgroundSize = 'cover';
@@ -222,6 +227,30 @@ export default function Edit( { attributes, setAttributes } ) {
 								hoverBorderColour: val,
 							} )
 						}
+					/>
+					<TextControl
+						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
+						value={ transitionDuration }
+						onChange={ ( val ) =>
+							setAttributes( { transitionDuration: val } )
+						}
+						help={ __( 'Duration of all hover transitions in milliseconds. Default: 300.', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+					/>
+					<SelectControl
+						label={ __( 'Transition easing', 'sgs-blocks' ) }
+						value={ transitionEasing }
+						options={ [
+							{ label: __( 'Ease', 'sgs-blocks' ), value: 'ease' },
+							{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
+							{ label: __( 'Ease out', 'sgs-blocks' ), value: 'ease-out' },
+							{ label: __( 'Ease in–out', 'sgs-blocks' ), value: 'ease-in-out' },
+							{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
+						] }
+						onChange={ ( val ) =>
+							setAttributes( { transitionEasing: val } )
+						}
+						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
 

@@ -14,11 +14,17 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 // Extract attributes with defaults.
-$logos        = $attributes['logos'] ?? array();
-$scrolling    = $attributes['scrolling'] ?? false;
-$scroll_speed = $attributes['scrollSpeed'] ?? 'medium';
-$greyscale    = $attributes['greyscale'] ?? true;
-$max_height   = $attributes['maxHeight'] ?? 48;
+$logos                 = $attributes['logos'] ?? array();
+$scrolling             = $attributes['scrolling'] ?? false;
+$scroll_speed          = $attributes['scrollSpeed'] ?? 'medium';
+$greyscale             = $attributes['greyscale'] ?? true;
+$max_height            = $attributes['maxHeight'] ?? 48;
+$hover_bg_colour       = $attributes['hoverBackgroundColour'] ?? '';
+$hover_text_colour     = $attributes['hoverTextColour'] ?? '';
+$hover_border_colour   = $attributes['hoverBorderColour'] ?? '';
+$hover_effect          = $attributes['hoverEffect'] ?? 'none';
+$transition_duration   = $attributes['transitionDuration'] ?? '300';
+$transition_easing     = $attributes['transitionEasing'] ?? 'ease-in-out';
 
 // Map scroll speed to CSS animation duration.
 $speed_map = array(
@@ -38,10 +44,37 @@ if ( $greyscale ) {
 if ( $scrolling ) {
 	$classes[] = 'sgs-brand-strip--scrolling';
 }
+if ( 'none' !== $safe_hover_effect ) {
+	$classes[] = 'sgs-brand-strip--hover-' . esc_attr( $safe_hover_effect );
+}
+
+// Build custom property style string.
+$duration_ms       = preg_replace( '/[^0-9]/', '', $transition_duration );
+$duration_ms       = '' !== $duration_ms ? $duration_ms : '300';
+$allowed_easings   = array( 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'linear' );
+$safe_easing       = in_array( $transition_easing, $allowed_easings, true ) ? $transition_easing : 'ease-in-out';
+$allowed_effects   = array( 'none', 'lift', 'scale', 'glow' );
+$safe_hover_effect = in_array( $hover_effect, $allowed_effects, true ) ? $hover_effect : 'none';
+
+$css_vars = array(
+	'--sgs-transition-duration:' . $duration_ms . 'ms',
+	'--sgs-transition-easing:' . $safe_easing,
+);
+if ( $hover_bg_colour ) {
+	$css_vars[] = '--sgs-hover-bg:' . sgs_colour_value( $hover_bg_colour );
+}
+if ( $hover_text_colour ) {
+	$css_vars[] = '--sgs-hover-text:' . sgs_colour_value( $hover_text_colour );
+}
+if ( $hover_border_colour ) {
+	$css_vars[] = '--sgs-hover-border:' . sgs_colour_value( $hover_border_colour );
+}
+$transition_style = implode( ';', $css_vars );
 
 $wrapper_attributes = get_block_wrapper_attributes(
 	array(
 		'class' => implode( ' ', $classes ),
+		'style' => $transition_style,
 	)
 );
 

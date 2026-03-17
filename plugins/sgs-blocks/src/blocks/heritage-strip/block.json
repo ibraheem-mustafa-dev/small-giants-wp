@@ -83,7 +83,23 @@
                                         },
                        "backgroundColour":  {
                                                 "type":  "string"
-                                            }
+                                            },
+                       "hoverBackgroundColour":  {
+                                                     "type":  "string",
+                                                     "default":  ""
+                                                 },
+                       "hoverTextColour":  {
+                                               "type":  "string",
+                                               "default":  ""
+                                           },
+                       "hoverBorderColour":  {
+                                                 "type":  "string",
+                                                 "default":  ""
+                                             },
+                       "hoverEffect":  {
+                                           "type":  "string",
+                                           "default":  "none"
+                                       }
                    },
     "editorScript":  "file:./index.js",
     "editorStyle":  "file:./index.css",

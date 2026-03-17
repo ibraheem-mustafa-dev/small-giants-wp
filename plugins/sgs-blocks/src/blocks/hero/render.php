@@ -45,6 +45,8 @@ $cta_secondary_bg      = $attributes['ctaSecondaryBackground'] ?? '';
 $hover_background_colour = $attributes['hoverBackgroundColour'] ?? '';
 $hover_text_colour       = $attributes['hoverTextColour'] ?? '';
 $hover_border_colour     = $attributes['hoverBorderColour'] ?? '';
+$transition_duration     = $attributes['transitionDuration'] ?? '300';
+$transition_easing       = $attributes['transitionEasing'] ?? 'ease-in-out';
 
 $is_split        = 'split' === $variant;
 $is_video        = 'video' === $variant;
@@ -55,6 +57,15 @@ $styles = array();
 if ( ! empty( $min_height ) ) {
 	$styles[] = 'min-height:' . esc_attr( $min_height );
 }
+
+// Transition custom properties — consumed by CSS vars on the block and its children.
+$duration_ms = preg_replace( '/[^0-9]/', '', $transition_duration );
+$duration_ms = '' !== $duration_ms ? $duration_ms : '300';
+$styles[]    = '--sgs-transition-duration:' . $duration_ms . 'ms';
+
+$allowed_easings = array( 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'linear' );
+$safe_easing     = in_array( $transition_easing, $allowed_easings, true ) ? $transition_easing : 'ease-in-out';
+$styles[]        = '--sgs-transition-easing:' . $safe_easing;
 
 if ( $hover_background_colour ) {
 	$styles[] = '--sgs-hover-bg:' . sgs_colour_value( $hover_background_colour );

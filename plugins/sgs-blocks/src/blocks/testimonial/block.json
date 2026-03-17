@@ -33,6 +33,7 @@
                                      "margin":  true,
                                      "padding":  true
                                  },
+                     "shadow":  true,
                      "__experimentalBorder":  {
                                                   "radius":  true,
                                                   "width":  true,

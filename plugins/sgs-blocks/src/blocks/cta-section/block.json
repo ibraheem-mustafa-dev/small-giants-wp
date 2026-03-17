@@ -36,6 +36,7 @@
                                      "margin":  true,
                                      "padding":  true
                                  },
+                     "shadow":  true,
                      "__experimentalBorder":  {
                                                   "radius":  true,
                                                   "width":  true,
@@ -106,7 +107,15 @@
                        "hoverBorderColour":  {
                                                  "type":  "string",
                                                  "default":  ""
-                                             }
+                                             },
+                       "transitionDuration":  {
+                                                  "type":  "string",
+                                                  "default":  "300"
+                                              },
+                       "transitionEasing":  {
+                                                "type":  "string",
+                                                "default":  "ease-in-out"
+                                            }
                    },
     "editorScript":  "file:./index.js",
     "editorStyle":  "file:./index.css",

@@ -96,6 +96,52 @@
 	color: var(--wp--preset--color--text-inverse, #C0D5D6);
 }
 
+/* ===== Hover States ===== */
+
+.sgs-trust-bar[style*="--sgs-hover-bg"]:hover {
+	background-color: var(--sgs-hover-bg);
+}
+
+.sgs-trust-bar[style*="--sgs-hover-text"]:hover {
+	color: var(--sgs-hover-text);
+}
+
+.sgs-trust-bar[style*="--sgs-hover-border"]:hover {
+	border-color: var(--sgs-hover-border);
+}
+
+/* Hover effect variants */
+.sgs-trust-bar--hover-lift {
+	transition-property: transform, box-shadow;
+	transition-duration: var(--sgs-transition-duration, 300ms);
+	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
+}
+
+.sgs-trust-bar--hover-lift:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.sgs-trust-bar--hover-scale {
+	transition-property: transform;
+	transition-duration: var(--sgs-transition-duration, 300ms);
+	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
+}
+
+.sgs-trust-bar--hover-scale:hover {
+	transform: scale(1.02);
+}
+
+.sgs-trust-bar--hover-glow {
+	transition-property: box-shadow;
+	transition-duration: var(--sgs-transition-duration, 300ms);
+	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
+}
+
+.sgs-trust-bar--hover-glow:hover {
+	box-shadow: 0 0 0 3px var(--wp--preset--color--primary, #0F7E80);
+}
+
 /* ===== Responsive - 2x2 grid on mobile ===== */
 @media (max-width: 767px) {
 	.sgs-trust-bar {

@@ -10,15 +10,26 @@ export default function Save( { attributes } ) {
 		numberBackground,
 		titleColour,
 		descriptionColour,
+		hoverBackgroundColour,
+		hoverTextColour,
+		hoverBorderColour,
+		hoverEffect,
 	} = attributes;
 
 	const className = [
 		'sgs-process-steps',
 		`sgs-process-steps--connector-${ connectorStyle }`,
 		`sgs-process-steps--number-${ numberStyle }`,
-	].join( ' ' );
+		hoverEffect && hoverEffect !== 'none' ? `sgs-process-steps--hover-${ hoverEffect }` : '',
+	].filter( Boolean ).join( ' ' );
 
-	const blockProps = useBlockProps.save( { className } );
+	const wrapperStyle = {
+		'--sgs-hover-bg': hoverBackgroundColour ? colourVar( hoverBackgroundColour ) : undefined,
+		'--sgs-hover-text': hoverTextColour ? colourVar( hoverTextColour ) : undefined,
+		'--sgs-hover-border': hoverBorderColour ? colourVar( hoverBorderColour ) : undefined,
+	};
+
+	const blockProps = useBlockProps.save( { className, style: wrapperStyle } );
 
 	const numStyle = {
 		color: colourVar( numberColour ) || undefined,

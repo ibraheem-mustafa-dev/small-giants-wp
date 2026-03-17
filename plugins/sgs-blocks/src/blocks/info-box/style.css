@@ -4,7 +4,9 @@
 	position: relative;
 	padding: var(--wp--preset--spacing--40);
 	box-sizing: border-box;
-	transition: var(--wp--custom--transition--medium, 0.3s ease);
+	transition-duration: var(--sgs-transition-duration, 300ms);
+	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
+	transition-property: background-color, color, border-color, transform, box-shadow;
 }
 
 /* Link wrapper */
@@ -128,7 +130,9 @@
 	background-color: var(--wp--preset--color--accent);
 	transform: scaleX(0);
 	transform-origin: left;
-	transition: transform var(--wp--custom--transition--medium, 0.3s ease);
+	transition-duration: var(--sgs-transition-duration, 300ms);
+	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
+	transition-property: transform;
 }
 
 .sgs-info-box--hover-border-accent:hover::before {
