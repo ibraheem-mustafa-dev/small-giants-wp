@@ -675,47 +675,9 @@ function fix_duotone_arg_count(): void {
 // Priority 1 on 'plugins_loaded' ensures this fires before block rendering starts.
 add_action( 'plugins_loaded', __NAMESPACE__ . '\fix_duotone_arg_count', 1 );
 
-/**
- * Add role="menubar" to the WordPress navigation container when it contains
- * mega menu items (role="menuitem"). Without this, ARIA requires that
- * menuitem elements have a menubar or menu parent — failing WCAG 4.1.2.
- *
- * Only applied to core/navigation blocks that contain sgs/mega-menu children.
- * Plain navigation blocks (no mega menu) are left unmodified.
- */
-function add_menubar_role_to_navigation( string $block_content, array $block ): string {
-	if ( empty( $block['blockName'] ) || 'core/navigation' !== $block['blockName'] ) {
-		return $block_content;
-	}
-
-	// Only modify if this navigation contains mega menu items.
-	$has_mega_menu = false;
-	if ( ! empty( $block['innerBlocks'] ) ) {
-		foreach ( $block['innerBlocks'] as $inner ) {
-			if ( isset( $inner['blockName'] ) && 'sgs/mega-menu' === $inner['blockName'] ) {
-				$has_mega_menu = true;
-				break;
-			}
-		}
-	}
-
-	if ( ! $has_mega_menu ) {
-		return $block_content;
-	}
-
-	// Add role="menubar" to the primary navigation <ul>.
-	// The container is .wp-block-navigation__container — match without role first,
-	// then add it. Guard against double application.
-	$block_content = preg_replace(
-		'/(<ul[^>]*wp-block-navigation__container[^>]*)(?!role=)/i',
-		'$1 role="menubar"',
-		$block_content,
-		1
-	);
-
-	return $block_content;
-}
-add_filter( 'render_block', __NAMESPACE__ . '\add_menubar_role_to_navigation', 10, 2 );
+// Note: role="menubar" was previously added here but removed.
+// The mega-menu trigger now uses role="button" instead of role="menuitem",
+// eliminating the need for a menubar parent entirely.
 /**
  * Remove non-li direct children from navigation <ul> elements to satisfy
  * ARIA list structure rules (descendants of ul/ol must be li elements).
@@ -748,7 +710,7 @@ function ensure_nav_list_structure( string $block_content, array $block ): strin
 	 * ARIA list structure requirement.
 	 */
 	$block_content = preg_replace(
-		'/(<li[^>]*?)\s+role="none"([^>]*>)/i',
+		'/(<li(?![^>]*sgs-mega-menu)[^>]*?)\s+role="none"([^>]*>)/i',
 		'$1$2',
 		$block_content
 	);

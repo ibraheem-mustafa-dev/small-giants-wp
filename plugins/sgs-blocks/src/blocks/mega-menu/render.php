@@ -55,13 +55,19 @@ $context = wp_json_encode(
 );
 
 // Build wrapper attributes.
+// No role on the <li> — it keeps its native listitem semantics, satisfying the
+// ARIA list structure requirement. The trigger inside uses role="button" (not
+// role="menuitem") because this is a hybrid navigation where some items are
+// plain links and some are panel triggers. Using role="menuitem" on only some
+// items in the list would require the parent <ul> to have role="menubar", which
+// in turn would break all the non-menuitem siblings. role="button" + aria-expanded
+// + aria-controls is the correct accessible pattern for a disclosure widget.
 $wrapper_attr = array(
 	'class'                  => implode( ' ', $classes ),
 	'data-wp-interactive'    => 'sgs/mega-menu',
 	'data-wp-context'        => $context,
 	'data-wp-class--is-open' => 'context.isOpen',
 	'data-wp-watch'          => 'callbacks.watchOpenState',
-	'role'                   => 'none',
 );
 
 if ( 'hover' === $open_on ) {
@@ -112,8 +118,14 @@ if ( $badge ) {
 }
 
 // Build trigger element.
+// role="button" is used instead of role="menuitem" because this is a disclosure
+// widget in a mixed navigation — not every item in the list is a menu item, so
+// setting role="menubar" on the <ul> would break the non-trigger list items.
+// aria-expanded signals open/closed state; aria-controls points to the panel.
+// aria-haspopup="true" (equivalent to "listbox") signals that activation reveals
+// more content. Keyboard users see this as a standard expandable button.
 $trigger_html = sprintf(
-	'<%1$s%2$s%3$s%4$s class="sgs-mega-menu__trigger" role="menuitem" aria-haspopup="menu" aria-controls="%9$s-panel" data-wp-bind--aria-expanded="context.isOpen" data-wp-on--click="actions.toggle" data-wp-on--keydown="actions.handleTriggerKeydown">%5$s<span class="sgs-mega-menu__label">%6$s</span>%7$s%8$s</%1$s>',
+	'<%1$s%2$s%3$s%4$s class="sgs-mega-menu__trigger" role="button" aria-haspopup="true" aria-expanded="false" aria-controls="%9$s-panel" data-wp-bind--aria-expanded="context.isOpen" data-wp-on--click="actions.toggle" data-wp-on--keydown="actions.handleTriggerKeydown">%5$s<span class="sgs-mega-menu__label">%6$s</span>%7$s%8$s</%1$s>',
 	$tag,
 	$href,
 	$type,
