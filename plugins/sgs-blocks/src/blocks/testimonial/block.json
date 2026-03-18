@@ -27,7 +27,11 @@
                      "typography":  {
                                         "fontSize":  true,
                                         "lineHeight":  true,
-                                        "textAlign":  true
+                                        "textAlign":  true,
+                                        "letterSpacing":  true,
+                                        "textTransform":  true,
+                                        "fontWeight":  true,
+                                        "fontStyle":  true
                                     },
                      "spacing":  {
                                      "margin":  true,
@@ -95,7 +99,31 @@
                        "reviewDate":  {
                                           "type":  "string",
                                           "default":  ""
-                                      }
+                                      },
+                       "hoverBackgroundColour":  {
+                                                     "type":  "string",
+                                                     "default":  ""
+                                                 },
+                       "hoverTextColour":  {
+                                               "type":  "string",
+                                               "default":  ""
+                                           },
+                       "hoverBorderColour":  {
+                                                 "type":  "string",
+                                                 "default":  ""
+                                             },
+                       "hoverEffect":  {
+                                           "type":  "string",
+                                           "default":  "none"
+                                       },
+                       "transitionDuration":  {
+                                                  "type":  "string",
+                                                  "default":  "300"
+                                              },
+                       "transitionEasing":  {
+                                                "type":  "string",
+                                                "default":  "ease-in-out"
+                                            }
                    },
     "editorScript":  "file:./index.js",
     "editorStyle":  "file:./index.css",

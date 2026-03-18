@@ -28,12 +28,18 @@
                                },
                      "typography":  {
                                         "fontSize":  true,
-                                        "lineHeight":  true
+                                        "lineHeight":  true,
+                                        "textAlign":  true,
+                                        "letterSpacing":  true,
+                                        "textTransform":  true,
+                                        "fontWeight":  true,
+                                        "fontStyle":  true
                                     },
                      "spacing":  {
                                      "margin":  true,
                                      "padding":  true
                                  },
+                     "shadow":  true,
                      "__experimentalBorder":  {
                                                   "radius":  true,
                                                   "width":  true,
@@ -101,7 +107,15 @@
                        "hoverEffect":  {
                                            "type":  "string",
                                            "default":  "none"
-                                       }
+                                       },
+                       "transitionDuration":  {
+                                                  "type":  "string",
+                                                  "default":  "300"
+                                              },
+                       "transitionEasing":  {
+                                                "type":  "string",
+                                                "default":  "ease-in-out"
+                                            }
                    },
     "editorScript":  "file:./index.js",
     "editorStyle":  "file:./index.css",

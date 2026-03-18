@@ -1,0 +1,106 @@
+[
+  {
+    "selector": "A.skip-link",
+    "transition": "0.2s linear"
+  },
+  {
+    "selector": "A (general links)",
+    "transition": "0.2s linear"
+  },
+  {
+    "selector": "A (footer copyright links)",
+    "transition": "color 0.3s"
+  },
+  {
+    "selector": "A (footer contact links)",
+    "transition": "color 0.2s"
+  },
+  {
+    "selector": "DIV.uagb-button__wrapper",
+    "transition": "transform 0.2s, box-shadow 0.2s"
+  },
+  {
+    "selector": "A.uagb-buttons-repeater.wp-block-button__link",
+    "transition": "box-shadow 0.2s"
+  },
+  {
+    "selector": "LI.wp-social-link",
+    "transition": "transform 0.1s"
+  },
+  {
+    "selector": "DIV.wp-block-uagb-container (general)",
+    "transition": "box-shadow 0.2s"
+  },
+  {
+    "selector": "NAV.wp-block-uagb-info-box (service cards)",
+    "transition": "background-color 0.25s, box-shadow 0.25s, transform 0.25s, border-radius 0.25s"
+  },
+  {
+    "selector": "DIV.uagb-infobox-margin-wrapper.aos-init",
+    "transition": "opacity 0.4s, transform 0.4s",
+    "note": "AOS scroll animation"
+  },
+  {
+    "selector": "IMG.uag-image (hero/service images)",
+    "transition": "transform 0.35s ease-in-out"
+  },
+  {
+    "selector": "DIV.wp-block-uagb-container.tiles (why choose tiles)",
+    "transition": "transform 0.2s, box-shadow 0.25s, background-color 0.25s"
+  },
+  {
+    "selector": "IMG.spectra-image-gallery__media-thumbnail",
+    "transition": "filter 0.5s, transform 0.5s",
+    "transform": "scale(1.005)"
+  },
+  {
+    "selector": "DIV.spectra-image-gallery__media",
+    "transition": "box-shadow 0.25s"
+  },
+  {
+    "selector": "DIV.spectra-image-gallery__media-thumbnail-blurrer",
+    "transition": "box-shadow 0.25s, backdrop-filter 0.5s"
+  },
+  {
+    "selector": "DIV.spectra-image-gallery__media-thumbnail-caption-wrapper",
+    "transition": "background-color 0.25s"
+  },
+  {
+    "selector": "DIV.uagb-testimonial__wrap",
+    "transition": "0.2s"
+  },
+  {
+    "selector": "UL.sub-menu (desktop)",
+    "transition": "visibility 0.2s, transform 0.2s",
+    "transform": "translateY(-9px)"
+  },
+  {
+    "selector": "UL.sub-menu (mobile)",
+    "transition": "opacity 0.3s ease-in-out"
+  },
+  {
+    "selector": "DIV.ast-mobile-popup-drawer",
+    "transition": "opacity 0.25s ease-in, left 0s 0.25s"
+  },
+  {
+    "selector": "DIV.ast-mobile-popup-inner",
+    "transition": "transform ease-in, opacity 0.2s ease-in"
+  },
+  {
+    "selector": "DIV.ast-mobile-popup-overlay",
+    "transition": "opacity 0.2s ease-in-out"
+  },
+  {
+    "selector": "DIV.wp-block-uagb-image (testimonial side image)",
+    "transition": "transform 0.25s",
+    "transform": "scale(1.2)"
+  },
+  {
+    "selector": "A.ast-builder-social-element (footer socials)",
+    "transition": "0.01s"
+  },
+  {
+    "selector": "SPAN.uagb-svg-wrapper (icon)",
+    "transition": "box-shadow 0.2s"
+  }
+]

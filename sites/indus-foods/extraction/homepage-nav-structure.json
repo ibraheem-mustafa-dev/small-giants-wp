@@ -1,0 +1,193 @@
+{
+  "primaryNav": [
+    {
+      "text": "Home",
+      "href": "/",
+      "hasSubmenu": false
+    },
+    {
+      "text": "About",
+      "href": "/about/",
+      "hasSubmenu": true,
+      "children": [
+        {
+          "text": "Our Story",
+          "href": "/our-story/"
+        },
+        {
+          "text": "Certifications",
+          "href": "/certifications/"
+        },
+        {
+          "text": "Community & Charity",
+          "href": "/community-charity/"
+        },
+        {
+          "text": "Sustainability",
+          "href": "/sustainability/"
+        },
+        {
+          "text": "Careers",
+          "href": "/careers/"
+        }
+      ]
+    },
+    {
+      "text": "Sectors",
+      "href": "/sectors/",
+      "hasSubmenu": true,
+      "children": [
+        {
+          "text": "Food Service",
+          "href": "/food-service/"
+        },
+        {
+          "text": "Manufacturing",
+          "href": "/manufacturing/"
+        },
+        {
+          "text": "Retail",
+          "href": "/retail/"
+        },
+        {
+          "text": "Wholesale",
+          "href": "/wholesale/"
+        }
+      ]
+    },
+    {
+      "text": "Brands",
+      "href": "/brands/",
+      "hasSubmenu": true,
+      "children": [
+        {
+          "text": "Brands Mega Menu (custom Astra mega menu with logo grid)",
+          "href": "#"
+        },
+        {
+          "text": "Shan",
+          "href": "/shan/"
+        },
+        {
+          "text": "Green Leaf",
+          "href": "/green-leaf/"
+        },
+        {
+          "text": "Lemon Tree",
+          "href": "/lemon-tree/"
+        }
+      ]
+    },
+    {
+      "text": "Trade",
+      "href": "/trade/",
+      "hasSubmenu": true,
+      "children": [
+        {
+          "text": "Apply for Trade Account",
+          "href": "/apply-for-trade-account/"
+        },
+        {
+          "text": "Request Catalogue",
+          "href": "/request-catalogue/"
+        },
+        {
+          "text": "Delivery & Logistics",
+          "href": "/delivery-logistics/"
+        },
+        {
+          "text": "Terms & Conditions",
+          "href": "/terms-conditions/"
+        }
+      ]
+    },
+    {
+      "text": "Blog",
+      "href": "/blog/",
+      "hasSubmenu": false
+    },
+    {
+      "text": "Contact",
+      "href": "/contact/",
+      "hasSubmenu": false
+    }
+  ],
+  "topBarLeft": [
+    {
+      "text": "0121 771 4330",
+      "type": "phone",
+      "icon": "phone"
+    },
+    {
+      "text": "amir@indusfoodsltd.com",
+      "type": "email",
+      "icon": "envelope"
+    }
+  ],
+  "topBarRight": [
+    {
+      "text": "LinkedIn",
+      "href": "https://www.linkedin.com/company/indusfoodsltd",
+      "icon": "linkedin"
+    },
+    {
+      "text": "Facebook",
+      "href": "https://www.facebook.com/indusfoodsltd/",
+      "icon": "facebook"
+    },
+    {
+      "text": "Google",
+      "href": "https://share.google/qOmbRhej9INjHbwib",
+      "icon": "google"
+    },
+    {
+      "text": "Instagram",
+      "href": "https://www.instagram.com/indusfoodsltd/",
+      "icon": "instagram"
+    }
+  ],
+  "footerNav": [
+    {
+      "text": "Certifications",
+      "href": "/certifications/"
+    },
+    {
+      "text": "Trade",
+      "href": "/trade/"
+    },
+    {
+      "text": "Brands",
+      "href": "/brands/"
+    },
+    {
+      "text": "Delivery & Logistics",
+      "href": "/delivery-logistics/"
+    },
+    {
+      "text": "Terms & Conditions",
+      "href": "/terms-conditions/"
+    },
+    {
+      "text": "Blog",
+      "href": "/blog/"
+    }
+  ],
+  "footerContact": {
+    "phone": "0121 771 4330",
+    "phoneHref": "tel:+441217714330",
+    "email": "amir@indusfoodsltd.com",
+    "emailHref": "mailto:amir@indusfoodsltd.com"
+  },
+  "footerAddress": {
+    "line1": "55-58 Stratford St N,",
+    "city": "Birmingham",
+    "postcode": "B11 1BU,",
+    "country": "United Kingdom"
+  },
+  "footerHours": {
+    "monThurs": "9:30am - 5pm",
+    "friday": "9:30am - 12pm, 2:30 - 5pm",
+    "saturday": "10am - 3pm",
+    "sunday": "Closed"
+  }
+}

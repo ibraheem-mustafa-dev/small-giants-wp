@@ -33,7 +33,11 @@
                      "typography":  {
                                         "fontSize":  true,
                                         "lineHeight":  true,
-                                        "textAlign":  true
+                                        "textAlign":  true,
+                                        "letterSpacing":  true,
+                                        "textTransform":  true,
+                                        "fontWeight":  true,
+                                        "fontStyle":  true
                                     },
                      "spacing":  {
                                      "margin":  true,

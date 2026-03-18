@@ -136,10 +136,49 @@
 	color: var(--wp--preset--color--text-muted, #555);
 }
 
+/* ===== Transitions ===== */
+.sgs-testimonial {
+	transition-property: background-color, color, border-color, transform, box-shadow;
+	transition-duration: var(--sgs-transition-duration, 300ms);
+	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
+}
+
+/* ===== Hover colour shifts ===== */
+.sgs-testimonial[style*="--sgs-hover-bg"]:hover {
+	background-color: var(--sgs-hover-bg);
+}
+
+.sgs-testimonial[style*="--sgs-hover-text"]:hover {
+	color: var(--sgs-hover-text);
+}
+
+.sgs-testimonial[style*="--sgs-hover-border"]:hover {
+	border-color: var(--sgs-hover-border);
+}
+
+/* ===== Hover effects ===== */
+.sgs-testimonial--hover-lift:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.sgs-testimonial--hover-scale:hover {
+	transform: scale(1.02);
+}
+
+.sgs-testimonial--hover-glow:hover {
+	box-shadow: 0 0 0 3px var(--wp--preset--color--primary, #0F7E80);
+}
+
 /* ===== Reduced motion ===== */
 @media (prefers-reduced-motion: reduce) {
 	.sgs-testimonial,
 	.sgs-testimonial * {
 		transition: none !important;
+	}
+
+	.sgs-testimonial--hover-lift:hover,
+	.sgs-testimonial--hover-scale:hover {
+		transform: none;
 	}
 }

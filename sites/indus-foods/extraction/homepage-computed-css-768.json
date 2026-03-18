@@ -1,0 +1,244 @@
+[
+  {
+    "section": "TOP_BAR",
+    "bg": "rgb(10, 126, 168)",
+    "color": "rgb(44, 62, 80)",
+    "h": 0,
+    "pad": "0px"
+  },
+  {
+    "section": "MAIN_HEADER",
+    "bg": "rgb(255, 255, 255)",
+    "color": "rgb(44, 62, 80)",
+    "h": 0,
+    "pad": "0px"
+  },
+  {
+    "section": "NAV_LINKS",
+    "items": [
+      {
+        "text": "Home",
+        "fontSize": "19.8px",
+        "fontWeight": "600",
+        "color": "rgb(216, 202, 80)",
+        "textTransform": "none"
+      },
+      {
+        "text": "About",
+        "fontSize": "19.8px",
+        "fontWeight": "600",
+        "color": "rgb(255, 255, 255)",
+        "textTransform": "none"
+      },
+      {
+        "text": "Sectors",
+        "fontSize": "19.8px",
+        "fontWeight": "600",
+        "color": "rgb(255, 255, 255)",
+        "textTransform": "none"
+      },
+      {
+        "text": "Brands",
+        "fontSize": "19.8px",
+        "fontWeight": "600",
+        "color": "rgb(255, 255, 255)",
+        "textTransform": "none"
+      },
+      {
+        "text": "Trade",
+        "fontSize": "19.8px",
+        "fontWeight": "600",
+        "color": "rgb(255, 255, 255)",
+        "textTransform": "none"
+      },
+      {
+        "text": "Blog",
+        "fontSize": "19.8px",
+        "fontWeight": "600",
+        "color": "rgb(255, 255, 255)",
+        "textTransform": "none"
+      },
+      {
+        "text": "Contact",
+        "fontSize": "19.8px",
+        "fontWeight": "600",
+        "color": "rgb(255, 255, 255)",
+        "textTransform": "none"
+      }
+    ]
+  },
+  {
+    "section": "HERO",
+    "h1": {
+      "text": "Leading Indian Food & Drinks Wholesaler",
+      "fontSize": "40px",
+      "fontWeight": "700",
+      "fontFamily": "Montserrat, sans-serif",
+      "color": "rgb(44, 62, 80)",
+      "lineHeight": "46px"
+    },
+    "subtitle": {
+      "text": "Proud to be a family-run food wholesaler since 1962!",
+      "fontSize": "27px",
+      "fontWeight": "400",
+      "color": "rgb(44, 62, 80)",
+      "lineHeight": "28.8px"
+    },
+    "buttons": [
+      {
+        "text": "Apply For A Trade Account",
+        "fontSize": "18px",
+        "fontWeight": "500",
+        "color": "rgb(216, 202, 80)",
+        "backgroundColor": "rgb(0, 0, 0)",
+        "borderRadius": "10px",
+        "padding": "15px 20px",
+        "border": "3px solid rgb(216, 202, 80)",
+        "textTransform": "capitalize",
+        "letterSpacing": "1px"
+      },
+      {
+        "text": "Request Our Catalogue",
+        "fontSize": "18px",
+        "fontWeight": "500",
+        "color": "rgb(255, 255, 255)",
+        "backgroundColor": "rgb(10, 126, 168)",
+        "borderRadius": "10px",
+        "padding": "15px 20px",
+        "border": "3px solid rgb(255, 255, 255)",
+        "textTransform": "capitalize",
+        "letterSpacing": "1px"
+      }
+    ]
+  },
+  {
+    "section": "BRANDS_BAR",
+    "bg": "rgb(10, 126, 168)",
+    "h2": {
+      "text": "Our Brands",
+      "fontSize": "35px",
+      "fontWeight": "700",
+      "color": "rgb(231, 215, 104)",
+      "lineHeight": "35px",
+      "textAlign": "center",
+      "fontFamily": "Montserrat, sans-serif"
+    }
+  },
+  {
+    "section": "SERVICES",
+    "h2": {
+      "text": "Our UK Wide Food Services",
+      "fontSize": "35px",
+      "fontWeight": "700",
+      "color": "rgb(44, 62, 80)",
+      "lineHeight": "35px",
+      "textAlign": "center",
+      "fontFamily": "Montserrat, sans-serif"
+    },
+    "cards": {
+      "h3": {
+        "fontSize": "28.8px",
+        "fontWeight": "700",
+        "color": "rgb(44, 62, 80)",
+        "lineHeight": "25.92px",
+        "textAlign": "center"
+      },
+      "p": {
+        "fontSize": "18px",
+        "color": "rgb(44, 62, 80)",
+        "lineHeight": "28.8px",
+        "textAlign": "center"
+      },
+      "button": {
+        "fontSize": "18px",
+        "fontWeight": "500",
+        "color": "rgb(255, 255, 255)",
+        "backgroundColor": "rgb(10, 126, 168)",
+        "borderRadius": "10px",
+        "padding": "20px",
+        "textTransform": "capitalize",
+        "letterSpacing": "1px"
+      }
+    }
+  },
+  {
+    "section": "WHY_CHOOSE",
+    "bg": "linear-gradient(rgb(216, 202, 80), rgb(216, 202, 80))",
+    "pad": "60px 20px",
+    "h2": {
+      "text": "Why Choose Indus Foods?",
+      "fontSize": "35px",
+      "fontWeight": "700",
+      "color": "rgb(44, 62, 80)",
+      "lineHeight": "35px",
+      "textAlign": "center"
+    },
+    "features": {
+      "h3": {
+        "fontSize": "28px",
+        "fontWeight": "700",
+        "color": "rgb(44, 62, 80)",
+        "lineHeight": "25.2px",
+        "textAlign": "center"
+      },
+      "p": {
+        "fontSize": "18px",
+        "color": "rgb(44, 62, 80)",
+        "lineHeight": "28.8px",
+        "textAlign": "center"
+      },
+      "iconColor": "rgb(10, 126, 168)"
+    }
+  },
+  {
+    "section": "TESTIMONIALS",
+    "bg": "rgb(10, 126, 168)",
+    "pad": "60px 0px",
+    "h2": {
+      "text": "Our Partners Love Us!",
+      "fontSize": "35px",
+      "fontWeight": "700",
+      "color": "rgb(231, 215, 104)",
+      "lineHeight": "35px",
+      "textAlign": "center"
+    }
+  },
+  {
+    "section": "FOOTER",
+    "bg": "rgb(44, 62, 80)",
+    "pad": "0px 30px",
+    "headings": [
+      {
+        "text": "Quick Links",
+        "fontSize": "28px",
+        "color": "rgb(231, 215, 104)",
+        "fontWeight": "700"
+      },
+      {
+        "text": "Contact",
+        "fontSize": "28px",
+        "color": "rgb(231, 215, 104)",
+        "fontWeight": "700"
+      },
+      {
+        "text": "Opening Hours",
+        "fontSize": "28px",
+        "color": "rgb(231, 215, 104)",
+        "fontWeight": "700"
+      },
+      {
+        "text": "Address",
+        "fontSize": "28px",
+        "color": "rgb(231, 215, 104)",
+        "fontWeight": "700"
+      }
+    ],
+    "links": {
+      "color": "rgb(255, 255, 255)",
+      "fontSize": "18px"
+    },
+    "socialLinks": {
+      "color": "rgb(231, 215, 104)"
+    }
+  }
+]

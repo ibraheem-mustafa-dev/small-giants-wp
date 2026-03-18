@@ -34,14 +34,42 @@ export default function Save( { attributes } ) {
 		nameFontSize,
 		roleColour,
 		ratingColour,
+		hoverBackgroundColour,
+		hoverTextColour,
+		hoverBorderColour,
+		hoverEffect,
+		transitionDuration,
+		transitionEasing,
 	} = attributes;
 
 	const className = [
 		'sgs-testimonial',
 		`sgs-testimonial--${ cardStyle }`,
-	].join( ' ' );
+		hoverEffect && hoverEffect !== 'none'
+			? `sgs-testimonial--hover-${ hoverEffect }`
+			: '',
+	]
+		.filter( Boolean )
+		.join( ' ' );
 
-	const blockProps = useBlockProps.save( { className } );
+	const blockProps = useBlockProps.save( {
+		className,
+		style: {
+			'--sgs-hover-bg': hoverBackgroundColour
+				? colourVar( hoverBackgroundColour )
+				: undefined,
+			'--sgs-hover-text': hoverTextColour
+				? colourVar( hoverTextColour )
+				: undefined,
+			'--sgs-hover-border': hoverBorderColour
+				? colourVar( hoverBorderColour )
+				: undefined,
+			'--sgs-transition-duration': transitionDuration
+				? `${ transitionDuration }ms`
+				: undefined,
+			'--sgs-transition-easing': transitionEasing || undefined,
+		},
+	} );
 
 	const quoteStyle = {
 		color: colourVar( quoteColour ) || undefined,

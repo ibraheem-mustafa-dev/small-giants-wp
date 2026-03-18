@@ -57,7 +57,7 @@ Fonts: Inter variable (body + headings, 48KB) — self-hosted WOFF2, no CDN. DM 
 
 ## Agent Delegation
 
-**MANDATORY:** Delegate all heavy WordPress build work to the `wp-developer` agent — page builds, template creation, block configuration, theme customisation, plugin development. This rule applies across all WP projects and non-WP projects with WP integrations.
+**MANDATORY:** Delegate all heavy WordPress build work to the `wp-sgs-developer` agent — page builds, template creation, block configuration, theme customisation, plugin development, site migrations, fidelity comparisons. This rule applies across all WP projects and non-WP projects with WP integrations.
 
 ## Git
 
@@ -86,10 +86,41 @@ This rule exists because framework fixes shipped on a feature branch pollute his
 ## Development
 
 - **Build:** `npm run build` (from `plugins/sgs-blocks/`) — uses @wordpress/scripts with `--experimental-modules`
-- **Deploy:** SCP to Hostinger (`ssh hd`)
+- **Deploy:** tar method — `tar -cf sgs-deploy.tar theme/sgs-theme plugins/sgs-blocks` → SCP → extract on server → OPcache reset → LiteSpeed purge. Full sequence in CONVERSATION-HANDOFF.md.
+- **Local dev:** `npx @wp-playground/cli server --auto-mount` — see `/wp-playground` skill
 - **Dev site:** palestine-lives.org (WP 6.9.1)
-- **Test site:** lightsalmon-tarsier-683012.hostingersite.com (DO NOT modify — client-facing)
+- **Reference site:** lightsalmon-tarsier-683012.hostingersite.com (Indus Foods original — Astra/Spectra. DO NOT modify — used as migration reference)
+- **SSH:** `ssh -i ~/.ssh/id_ed25519 -p 65002 u945238940@141.136.39.73`
+- **WP admin:** username: Claude (both sites)
 - **No Node.js on server** — build locally, deploy compiled `build/` output
+
+## SGS WP Engine Skill
+
+The `sgs-wp-engine` skill is the central authority. Invoke it for any SGS work. It provides:
+
+- **SQLite knowledge base** — 55 blocks, 619 attributes, 25 design tokens, 25 patterns
+- **33 reference docs** — migration methodology, design-compare tool, QA pipeline, marketing playbook, brand.json, Indus comparison data, and more
+- **12 scripts** — 6 design QA JS scripts, sgs-db.py, touch-scan, pattern generator, DB tools
+
+Key commands:
+```bash
+python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py stats          # Framework health
+python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py block sgs/hero # Block details
+python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py match "pricing" # Find best block
+python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py context indus-foods # Load client
+```
+
+## Site Migration
+
+The primary client onboarding workflow. Takes any existing website and replicates it using SGS blocks — everything through editor attributes, zero hardcoding. Methodology at `~/.claude/skills/sgs-wp-engine/references/fidelity-comparator.md`.
+
+## Framework Stats (as of 2026-03-17)
+
+- **55 blocks** (26 content, 14 forms, 7 interactive, 4 layout, 4 extensions)
+- **619 block attributes** — all controllable via editor sidebar
+- **7 style variations** — indus-foods, helping-doctors, healthcare, construction, professional, mosque, eye-care
+- **25 patterns**, 25 design tokens, 22 theme templates/parts
+- **Competitive analysis:** `~/.claude/specs/2026-03-17-wp-competitive-analysis.md`
 
 ## Spec Documents
 
@@ -110,7 +141,7 @@ Full specifications in `specs/` directory:
 The truth document for feature scope, priorities, and competitive position is:
 **`docs/plans/2026-02-21-master-feature-audit.md`** — 354 features graded by impact, difficulty, and priority (P0-P4).
 
-Current framework maturity: **23% verified (68/294)** — targeting 72% after Phase 2-3, 90% after S-tier phase. Last updated: 2026-02-26.
+Current framework maturity: **23% verified (68/294)** — targeting 72% after Phase 2-3, 90% after S-tier phase. Last updated: 2026-02-26. Note: this percentage is likely outdated — 23 blocks were added since the audit. Re-run `/sgs-update` to refresh.
 
 **Phase 2 blocks — ALL DONE (2026-02-26):**
 - ✓ Post Grid / Query Loop — grid/list/masonry/carousel + AJAX pagination

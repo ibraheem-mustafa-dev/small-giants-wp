@@ -1,0 +1,348 @@
+{
+  "viewport": "1440x900",
+  "topBar": {
+    "bg": "rgb(10, 126, 168)",
+    "h": 54,
+    "pad": "0px"
+  },
+  "mainHeader": {
+    "bg": "rgb(255, 255, 255)",
+    "h": 115,
+    "pad": "0px"
+  },
+  "nav": [
+    {
+      "text": "Home",
+      "fontSize": "19.8px",
+      "fontWeight": "600",
+      "color": "rgb(255, 255, 255)",
+      "padding": "0px 20px",
+      "note": "active state - white text on teal bg"
+    },
+    {
+      "text": "About",
+      "fontSize": "19.8px",
+      "fontWeight": "600",
+      "color": "rgb(10, 126, 168)",
+      "padding": "0px 20px"
+    },
+    {
+      "text": "Sectors",
+      "fontSize": "19.8px",
+      "fontWeight": "600",
+      "color": "rgb(10, 126, 168)",
+      "padding": "0px 20px"
+    },
+    {
+      "text": "Brands",
+      "fontSize": "19.8px",
+      "fontWeight": "600",
+      "color": "rgb(10, 126, 168)",
+      "padding": "0px 20px"
+    },
+    {
+      "text": "Trade",
+      "fontSize": "19.8px",
+      "fontWeight": "600",
+      "color": "rgb(10, 126, 168)",
+      "padding": "0px 20px"
+    },
+    {
+      "text": "Blog",
+      "fontSize": "19.8px",
+      "fontWeight": "600",
+      "color": "rgb(10, 126, 168)",
+      "padding": "0px 20px"
+    },
+    {
+      "text": "Contact",
+      "fontSize": "19.8px",
+      "fontWeight": "600",
+      "color": "rgb(10, 126, 168)",
+      "padding": "0px 20px"
+    }
+  ],
+  "hero": {
+    "bg": "rgba(0, 0, 0, 0)",
+    "bgImg": "none",
+    "bgColor_visual": "rgb(216, 202, 80) - yellow/gold",
+    "pad": "0px",
+    "h1": {
+      "fontSize": "50px",
+      "fontWeight": "700",
+      "fontFamily": "Montserrat, sans-serif",
+      "color": "rgb(44, 62, 80)",
+      "lineHeight": "57.5px",
+      "letterSpacing": "normal",
+      "marginBottom": "10px"
+    },
+    "subtitle": {
+      "fontSize": "27px",
+      "fontWeight": "400",
+      "color": "rgb(44, 62, 80)",
+      "lineHeight": "28.8px"
+    },
+    "buttons": [
+      {
+        "text": "Apply For A Trade Account",
+        "fontSize": "18px",
+        "fontWeight": "500",
+        "color": "rgb(216, 202, 80)",
+        "bg": "rgb(0, 0, 0)",
+        "borderRadius": "10px",
+        "padding": "15px 20px",
+        "border": "3px solid rgb(216, 202, 80)",
+        "textTransform": "capitalize",
+        "letterSpacing": "1px"
+      },
+      {
+        "text": "Request Our Catalogue",
+        "fontSize": "18px",
+        "fontWeight": "500",
+        "color": "rgb(255, 255, 255)",
+        "bg": "rgb(10, 126, 168)",
+        "borderRadius": "10px",
+        "padding": "15px 20px",
+        "border": "3px solid rgb(255, 255, 255)",
+        "textTransform": "capitalize",
+        "letterSpacing": "1px"
+      }
+    ],
+    "heroImage": {
+      "src": "Indus-Foods-Banner-1024x683.jpg",
+      "borderRadius": "0px"
+    }
+  },
+  "brandsBar": {
+    "bg": "rgb(10, 126, 168)",
+    "pad": "0px 20px",
+    "h": 280,
+    "h2": {
+      "fontSize": "40px",
+      "fontWeight": "700",
+      "color": "rgb(231, 215, 104)",
+      "lineHeight": "40px",
+      "textAlign": "center"
+    }
+  },
+  "services": {
+    "bg": "rgba(0, 0, 0, 0)",
+    "pad": "60px 0px",
+    "h2": {
+      "fontSize": "40px",
+      "fontWeight": "700",
+      "color": "rgb(44, 62, 80)"
+    },
+    "cards": [
+      {
+        "title": "Food Service",
+        "bgImg": "linear-gradient(45deg, rgb(216, 202, 80) 0%, rgb(231, 215, 104) 100%)",
+        "borderRadius": "20px",
+        "pad": "35px 15px 15px",
+        "w": 267,
+        "h3": {
+          "fontSize": "28.8px",
+          "fontWeight": "700",
+          "color": "rgb(44, 62, 80)"
+        },
+        "p": {
+          "fontSize": "18px",
+          "color": "rgb(44, 62, 80)",
+          "lineHeight": "28.8px"
+        },
+        "btn": {
+          "fontSize": "18px",
+          "color": "rgb(255, 255, 255)",
+          "bg": "rgb(10, 126, 168)",
+          "borderRadius": "10px",
+          "padding": "18px 42px"
+        }
+      },
+      {
+        "title": "Manufacturing",
+        "bgImg": "linear-gradient(45deg, rgb(216, 202, 80) 0%, rgb(46, 173, 226) 100%)",
+        "borderRadius": "20px",
+        "pad": "35px 15px 15px",
+        "w": 267
+      },
+      {
+        "title": "Retail",
+        "bgImg": "linear-gradient(315deg, rgb(10, 126, 168) 0%, rgb(46, 173, 226) 100%)",
+        "borderRadius": "20px",
+        "pad": "35px 15px 15px",
+        "w": 267,
+        "h3_color": "rgb(255, 255, 255)",
+        "p_color": "rgb(255, 255, 255)"
+      },
+      {
+        "title": "Wholesale",
+        "bgImg": "linear-gradient(315deg, rgb(10, 126, 168) 0%, rgb(46, 173, 226) 100%)",
+        "borderRadius": "20px",
+        "pad": "35px 15px 15px",
+        "w": 267,
+        "h3_color": "rgb(255, 255, 255)",
+        "p_color": "rgb(255, 255, 255)"
+      }
+    ]
+  },
+  "whyChoose": {
+    "bg": "rgba(0, 0, 0, 0)",
+    "bgImg": "linear-gradient(to right, rgb(216, 202, 80), rgb(216, 202, 80)), url(ChatGPT-Image-Dec-18-2025-07_59_38-PM.png)",
+    "pad": "50px 0px",
+    "h2": {
+      "fontSize": "40px",
+      "fontWeight": "700",
+      "color": "rgb(44, 62, 80)"
+    },
+    "features": [
+      {
+        "title": "Experience",
+        "titleSize": "28.8px",
+        "titleColor": "rgb(44, 62, 80)",
+        "pSize": "18px",
+        "pColor": "rgb(44, 62, 80)"
+      },
+      {
+        "title": "Certifications",
+        "titleSize": "28.8px"
+      },
+      {
+        "title": "Delivery",
+        "titleSize": "28.8px"
+      },
+      {
+        "title": "Quality",
+        "titleSize": "28.8px"
+      },
+      {
+        "title": "Family Values",
+        "titleSize": "25px"
+      },
+      {
+        "title": "Brands",
+        "titleSize": "28.8px"
+      },
+      {
+        "title": "Support",
+        "titleSize": "28.8px"
+      },
+      {
+        "title": "White Labelling",
+        "titleSize": "28.8px"
+      }
+    ],
+    "iconColor": "rgb(10, 126, 168)",
+    "layout": "4x2 grid"
+  },
+  "testimonials": {
+    "bg": "rgb(10, 126, 168)",
+    "pad": "60px 0px",
+    "h2": {
+      "fontSize": "40px",
+      "fontWeight": "700",
+      "color": "rgb(231, 215, 104)"
+    },
+    "cardBg": "rgb(216, 202, 80)",
+    "layout": "carousel with dots, prev/next arrows, side image"
+  },
+  "cta": {
+    "bg": "rgb(216, 202, 80)",
+    "pad": "60px 0px",
+    "h3": {
+      "text": "What Are You Waiting For?",
+      "fontSize": "28.8px",
+      "fontWeight": "700",
+      "color": "rgb(44, 62, 80)"
+    },
+    "p": {
+      "fontSize": "18px",
+      "color": "rgb(85, 85, 85)"
+    },
+    "buttons": [
+      {
+        "text": "Apply For A Trade Account",
+        "color": "rgb(216, 202, 80)",
+        "bg": "rgb(0, 0, 0)",
+        "borderRadius": "10px",
+        "padding": "15px 20px",
+        "border": "3px solid rgb(216, 202, 80)"
+      },
+      {
+        "text": "Request Our Catalogue",
+        "color": "rgb(255, 255, 255)",
+        "bg": "rgb(10, 126, 168)",
+        "borderRadius": "10px",
+        "padding": "15px 20px",
+        "border": "3px solid rgb(255, 255, 255)"
+      }
+    ]
+  },
+  "footer": {
+    "bg": "rgb(44, 62, 80)",
+    "pad": "0px",
+    "headings": [
+      {
+        "text": "Quick Links",
+        "fontSize": "28.8px",
+        "color": "rgb(231, 215, 104)",
+        "fontWeight": "700",
+        "fontFamily": "Montserrat, sans-serif"
+      },
+      {
+        "text": "Contact",
+        "fontSize": "28.8px",
+        "color": "rgb(231, 215, 104)",
+        "fontWeight": "700"
+      },
+      {
+        "text": "Opening Hours",
+        "fontSize": "28.8px",
+        "color": "rgb(231, 215, 104)",
+        "fontWeight": "700"
+      },
+      {
+        "text": "Address",
+        "fontSize": "28.8px",
+        "color": "rgb(231, 215, 104)",
+        "fontWeight": "700"
+      }
+    ],
+    "bodyText": {
+      "fontSize": "18px",
+      "color": "rgb(255, 255, 255)",
+      "lineHeight": "28.8px"
+    },
+    "links": {
+      "color": "rgb(255, 255, 255)",
+      "fontSize": "18px"
+    },
+    "socialLinks": {
+      "color": "rgb(231, 215, 104)"
+    },
+    "copyright": {
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(231, 215, 104)",
+      "fontSize": "18px"
+    },
+    "layout": "3-column: logo+description+socials | quick-links+contact+hours | map+address+directions"
+  },
+  "colourPalette": {
+    "primary": "rgb(10, 126, 168) - teal/blue",
+    "primaryDark": "rgb(44, 62, 80) - dark blue-grey (text)",
+    "accent": "rgb(216, 202, 80) - gold/yellow",
+    "accentLight": "rgb(231, 215, 104) - lighter gold",
+    "accentBlue": "rgb(46, 173, 226) - bright blue",
+    "white": "rgb(255, 255, 255)",
+    "black": "rgb(0, 0, 0)",
+    "footerBg": "rgb(44, 62, 80) - dark blue-grey"
+  },
+  "typography": {
+    "fontFamily": "Montserrat, sans-serif",
+    "h1": "50px / 700",
+    "h2": "40px / 700",
+    "h3": "28.8px / 700",
+    "body": "18px / 400",
+    "nav": "19.8px / 600",
+    "buttons": "18px / 500, capitalize, 1px letter-spacing"
+  }
+}

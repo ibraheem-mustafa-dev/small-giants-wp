@@ -103,6 +103,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		hoverTextColour,
 		hoverBorderColour,
 		hoverEffect,
+		transitionDuration,
+		transitionEasing,
 	} = attributes;
 
 	const className = [
@@ -118,6 +120,8 @@ export default function Edit( { attributes, setAttributes } ) {
 			'--sgs-hover-bg': hoverBackgroundColour ? colourVar( hoverBackgroundColour ) : undefined,
 			'--sgs-hover-text': hoverTextColour ? colourVar( hoverTextColour ) : undefined,
 			'--sgs-hover-border': hoverBorderColour ? colourVar( hoverBorderColour ) : undefined,
+			'--sgs-transition-duration': transitionDuration ? `${ transitionDuration }ms` : undefined,
+			'--sgs-transition-easing': transitionEasing || undefined,
 		},
 	} );
 
@@ -277,6 +281,33 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) =>
 							setAttributes( { hoverBorderColour: val } )
 						}
+					/>
+					<TextControl
+						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
+						value={ transitionDuration }
+						onChange={ ( val ) =>
+							setAttributes( { transitionDuration: val } )
+						}
+						help={ __(
+							'Duration of all hover transitions in milliseconds. Default: 300.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+					/>
+					<SelectControl
+						label={ __( 'Transition easing', 'sgs-blocks' ) }
+						value={ transitionEasing }
+						options={ [
+							{ label: __( 'Ease', 'sgs-blocks' ), value: 'ease' },
+							{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
+							{ label: __( 'Ease out', 'sgs-blocks' ), value: 'ease-out' },
+							{ label: __( 'Ease in\u2013out', 'sgs-blocks' ), value: 'ease-in-out' },
+							{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
+						] }
+						onChange={ ( val ) =>
+							setAttributes( { transitionEasing: val } )
+						}
+						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
 			</InspectorControls>

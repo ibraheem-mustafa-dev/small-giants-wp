@@ -14,6 +14,8 @@ export default function Save( { attributes } ) {
 		hoverTextColour,
 		hoverBorderColour,
 		hoverEffect,
+		transitionDuration,
+		transitionEasing,
 	} = attributes;
 
 	const className = [
@@ -27,6 +29,8 @@ export default function Save( { attributes } ) {
 		'--sgs-hover-bg': hoverBackgroundColour ? colourVar( hoverBackgroundColour ) : undefined,
 		'--sgs-hover-text': hoverTextColour ? colourVar( hoverTextColour ) : undefined,
 		'--sgs-hover-border': hoverBorderColour ? colourVar( hoverBorderColour ) : undefined,
+		'--sgs-transition-duration': transitionDuration ? `${ transitionDuration }ms` : undefined,
+		'--sgs-transition-easing': transitionEasing || undefined,
 	};
 
 	const blockProps = useBlockProps.save( { className, style: wrapperStyle } );

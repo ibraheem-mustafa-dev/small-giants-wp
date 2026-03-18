@@ -81,7 +81,7 @@ sgs-theme/
 
 ### Design Tokens (Settings)
 
-> **Note:** Defaults are SGS branding. Clients override via style variations (e.g., Indus Foods uses navy #1A3A5C + gold #D4A843).
+> **Note:** Defaults are SGS branding. Clients override via style variations (e.g., Indus Foods uses teal #0a7ea8 + gold #d8ca50).
 
 ```jsonc
 {
@@ -101,7 +101,8 @@ sgs-theme/
         { "slug": "text",          "color": "#1E1E1E", "name": "Text" },
         { "slug": "text-muted",    "color": "#555555", "name": "Text Muted" },
         { "slug": "text-inverse",  "color": "#C0D5D6", "name": "Text Inverse" },
-        { "slug": "border-subtle", "color": "#0D5557", "name": "Border Subtle" }
+        { "slug": "border-subtle", "color": "#0D5557", "name": "Border Subtle" },
+        { "slug": "footer-bg",    "color": "#0A5B5D", "name": "Footer Background" }
       ],
       "gradients": [],
       "defaultPalette": false,
@@ -168,14 +169,16 @@ sgs-theme/
         }
       ],
       "fontSizes": [
-        { "slug": "small",   "size": "0.875rem", "name": "Small" },
-        { "slug": "medium",  "size": "1rem",     "name": "Medium" },
-        { "slug": "large",   "size": "1.25rem",  "name": "Large" },
-        { "slug": "x-large", "size": "1.75rem",  "name": "XL" },
-        { "slug": "xx-large","size": "2.5rem",    "name": "XXL" },
-        { "slug": "hero",    "size": "clamp(2rem, 5vw, 3.5rem)", "name": "Hero" }
+        { "slug": "x-small", "size": "0.75rem",    "name": "XSmall" },
+        { "slug": "small",   "size": "0.875rem",   "name": "Small" },
+        { "slug": "medium",  "size": "1rem",       "name": "Medium" },
+        { "slug": "large",   "size": "1.25rem",    "name": "Large" },
+        { "slug": "x-large", "size": "1.5rem",     "name": "XL" },
+        { "slug": "xx-large","size": "2.25rem",     "name": "XXL" },
+        { "slug": "hero",    "size": "3.125rem",    "name": "Hero" }
       ],
-      "fluid": true
+      "defaultFontSizes": false,
+      "fluid": { "minViewportWidth": "375px", "maxViewportWidth": "1200px" }
     },
     "spacing": {
       "units": ["px", "rem", "%", "vw"],
@@ -191,8 +194,17 @@ sgs-theme/
       ]
     },
     "layout": {
-      "contentSize": "800px",
-      "wideSize": "1200px"
+      "contentSize": "1200px",
+      "wideSize": "1400px"
+    },
+    "shadow": {
+      "defaultPresets": false,
+      "presets": [
+        { "name": "Small",  "slug": "sm",   "shadow": "0 1px 3px rgba(0,0,0,0.08)" },
+        { "name": "Medium", "slug": "md",   "shadow": "0 4px 12px rgba(0,0,0,0.1)" },
+        { "name": "Large",  "slug": "lg",   "shadow": "0 8px 30px rgba(0,0,0,0.12)" },
+        { "name": "Glow",   "slug": "glow", "shadow": "0 0 20px rgba(248,122,31,0.3)" }
+      ]
     },
     "custom": {
       "borderRadius": {

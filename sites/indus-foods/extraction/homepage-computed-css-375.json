@@ -1,0 +1,106 @@
+{
+  "viewport": "375x812",
+  "h1": {
+    "fontSize": "40px",
+    "fontWeight": "700",
+    "lineHeight": "46px",
+    "color": "rgb(44, 62, 80)"
+  },
+  "h2s": [
+    {
+      "text": "Our Brands",
+      "fontSize": "35px",
+      "color": "rgb(231, 215, 104)"
+    },
+    {
+      "text": "Our UK Wide Food Services",
+      "fontSize": "35px",
+      "color": "rgb(44, 62, 80)"
+    },
+    {
+      "text": "Why Choose Indus Foods?",
+      "fontSize": "35px",
+      "color": "rgb(44, 62, 80)"
+    },
+    {
+      "text": "Our Partners Love Us!",
+      "fontSize": "35px",
+      "color": "rgb(231, 215, 104)"
+    }
+  ],
+  "h3s": [
+    {
+      "text": "Food Service",
+      "fontSize": "20px",
+      "color": "rgb(44, 62, 80)"
+    },
+    {
+      "text": "Manufacturing",
+      "fontSize": "20px",
+      "color": "rgb(44, 62, 80)"
+    },
+    {
+      "text": "Retail",
+      "fontSize": "20px",
+      "color": "rgb(44, 62, 80)"
+    },
+    {
+      "text": "Wholesale",
+      "fontSize": "20px",
+      "color": "rgb(44, 62, 80)"
+    }
+  ],
+  "bodyText": {
+    "fontSize": "27px",
+    "lineHeight": "28.8px",
+    "color": "rgb(44, 62, 80)",
+    "note": "subtitle is 27px - regular paragraphs are 18px"
+  },
+  "buttons": {
+    "fontSize": "18px",
+    "padding": "10px 20px",
+    "borderRadius": "varies"
+  },
+  "serviceCards": [
+    {
+      "w": 320,
+      "h": 470,
+      "pad": "10px",
+      "borderRadius": "20px",
+      "flexDir": "column",
+      "note": "full-width stacked on mobile"
+    },
+    {
+      "w": 320,
+      "h": 443,
+      "pad": "10px",
+      "borderRadius": "20px",
+      "flexDir": "column"
+    },
+    {
+      "w": 320,
+      "h": 471,
+      "pad": "10px",
+      "borderRadius": "20px",
+      "flexDir": "column"
+    }
+  ],
+  "mobileHeader": {
+    "display": "block",
+    "note": "hamburger menu replaces nav bar"
+  },
+  "footer": {
+    "bg": "rgb(44, 62, 80)",
+    "pad": "0px 30px",
+    "layout": "stacked single column"
+  },
+  "responsiveNotes": {
+    "h1": "40px (same as desktop at this breakpoint, may be reduced via Spectra responsive settings)",
+    "h2": "35px (slightly reduced from 40px desktop)",
+    "h3": "20px (reduced from 28.8px desktop)",
+    "serviceCards": "full-width single column stack",
+    "whyChooseGrid": "2x4 grid becomes 2-column on mobile",
+    "testimonials": "single card visible, no side image",
+    "cta": "stacked layout, buttons full-width"
+  }
+}

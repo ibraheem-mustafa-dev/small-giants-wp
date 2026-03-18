@@ -1,0 +1,260 @@
+<!-- wp:sgs/hero {"variant":"split","headline":"Leading Indian Food & Drinks Wholesaler","subHeadline":"Proud to be a family-run food wholesaler since 1962!","alignment":"left","splitImage":{"id":0,"url":"/wp-content/uploads/indus-foods/2025/11/Indus-Foods-Banner-1024x683.jpg","alt":"Indus Foods warehouse"},"headlineColour":"#2C3E50","subHeadlineColour":"#2C3E50","ctaPrimaryText":"Apply For A Trade Account","ctaPrimaryUrl":"/apply-for-trade-account/","ctaPrimaryBackground":"#2C3E50","ctaPrimaryColour":"#FFFFFF","ctaSecondaryText":"Request Our Catalogue","ctaSecondaryUrl":"/catalogue/","ctaSecondaryBackground":"#0A7EA8","ctaSecondaryColour":"#FFFFFF","transitionDuration":"300","transitionEasing":"ease-in-out","style":{"color":{"gradient":"linear-gradient(135deg, #E7D768 0%, #D8CA50 100%)"}}} /-->
+
+<!-- wp:group {"align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50"}}},"backgroundColor":"primary","layout":{"type":"constrained","contentSize":"1200px"}} -->
+<div class="wp-block-group alignfull has-primary-background-color has-background" style="padding-top:var(--wp--preset--spacing--50);padding-bottom:var(--wp--preset--spacing--50)">
+
+<!-- wp:heading {"textAlign":"center","textColor":"accent","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}}} -->
+<h2 class="wp-block-heading has-text-align-center has-accent-color has-text-color" style="margin-bottom:var(--wp--preset--spacing--30)">Our Brands</h2>
+<!-- /wp:heading -->
+
+<!-- wp:separator {"backgroundColor":"accent","className":"is-style-wide"} -->
+<hr class="wp-block-separator has-text-color has-accent-color has-alpha-channel-opacity has-accent-background-color has-background is-style-wide"/>
+<!-- /wp:separator -->
+
+<!-- wp:sgs/brand-strip {"logos":[{"url":"/wp-content/uploads/indus-foods/2025/11/Sanam-Logo.jpg","alt":"Sanam"},{"url":"/wp-content/uploads/indus-foods/2025/11/Lemontree-Logo.jpg","alt":"Lemon Tree"},{"url":"/wp-content/uploads/indus-foods/2025/11/Green-Leaf-Logo.jpg","alt":"Green Leaf"},{"url":"/wp-content/uploads/indus-foods/2025/11/Shan-Foods.jpg","alt":"Shan Foods"}],"maxHeight":80,"scrolling":true,"scrollSpeed":"medium","greyscale":false,"transitionDuration":"300","transitionEasing":"ease-in-out"} /-->
+
+</div>
+<!-- /wp:group -->
+
+<!-- wp:group {"align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|60"}}},"backgroundColor":"surface","layout":{"type":"constrained","contentSize":"1200px"}} -->
+<div class="wp-block-group alignfull has-surface-background-color has-background" style="padding-top:var(--wp--preset--spacing--60);padding-bottom:var(--wp--preset--spacing--60)">
+
+<!-- wp:heading {"textAlign":"center","textColor":"primary","fontSize":"x-large","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|40"}}}} -->
+<h2 class="wp-block-heading has-text-align-center has-primary-color has-text-color has-x-large-font-size" style="margin-bottom:var(--wp--preset--spacing--40)">Our UK Wide Food Services</h2>
+<!-- /wp:heading -->
+
+<!-- wp:columns {"isStackedOnMobile":true,"style":{"spacing":{"blockGap":{"top":"var:preset|spacing|40","left":"var:preset|spacing|40"}}}} -->
+<div class="wp-block-columns" style="gap:var(--wp--preset--spacing--40)">
+
+<!-- wp:column -->
+<div class="wp-block-column">
+<!-- wp:group {"style":{"border":{"radius":"12px"},"spacing":{"padding":{"top":"0","right":"0","bottom":"var:preset|spacing|40","left":"0"}},"color":{"gradient":"linear-gradient(135deg, #D8CA50 0%, #E7D768 100%)"}},"layout":{"type":"flow"}} -->
+<div class="wp-block-group has-background" style="border-radius:12px;padding-bottom:var(--wp--preset--spacing--40);background:linear-gradient(135deg, #D8CA50 0%, #E7D768 100%)">
+<!-- wp:image {"url":"/wp-content/uploads/indus-foods/2025/11/Seekh-Kebab-1-1024x640.png","alt":"Food service — Seekh Kebabs ready to serve","style":{"border":{"radius":"12px 12px 0 0"}},"width":"100%"} -->
+<figure class="wp-block-image" style="border-radius:12px 12px 0 0"><img src="/wp-content/uploads/indus-foods/2025/11/Seekh-Kebab-1-1024x640.png" alt="Food service — Seekh Kebabs ready to serve" style="border-radius:12px 12px 0 0;width:100%"/></figure>
+<!-- /wp:image -->
+<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","right":"var:preset|spacing|40","bottom":"0","left":"var:preset|spacing|40"}}},"layout":{"type":"flow"}} -->
+<div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
+<!-- wp:heading {"level":3,"style":{"color":{"text":"#2C3E50"},"typography":{"fontWeight":"700"}}} -->
+<h3 class="wp-block-heading has-text-color" style="color:#2C3E50;font-weight:700">Food Service</h3>
+<!-- /wp:heading -->
+<!-- wp:paragraph {"style":{"color":{"text":"#2C3E50"}}} -->
+<p class="has-text-color" style="color:#2C3E50">Top quality ingredients, drinks and food ready to be served at venues or events</p>
+<!-- /wp:paragraph -->
+<!-- wp:buttons {"style":{"spacing":{"margin":{"top":"var:preset|spacing|30"}}}} -->
+<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--30)">
+<!-- wp:button {"url":"/food-service/","className":"is-style-outline","style":{"color":{"text":"#2C3E50"},"border":{"color":"#2C3E50","radius":"8px"}}} -->
+<div class="wp-block-button is-style-outline"><a class="wp-block-button__link has-text-color" href="/food-service/" style="color:#2C3E50;border-color:#2C3E50;border-radius:8px">Top Ethnic Food Services</a></div>
+<!-- /wp:button -->
+</div>
+<!-- /wp:buttons -->
+</div>
+<!-- /wp:group -->
+</div>
+<!-- /wp:group -->
+</div>
+<!-- /wp:column -->
+
+<!-- wp:column -->
+<div class="wp-block-column">
+<!-- wp:group {"style":{"border":{"radius":"12px"},"spacing":{"padding":{"top":"0","right":"0","bottom":"var:preset|spacing|40","left":"0"}},"color":{"gradient":"linear-gradient(45deg, #E7D768 0%, #2EADE2 100%)"}},"layout":{"type":"flow"}} -->
+<div class="wp-block-group has-background" style="border-radius:12px;padding-bottom:var(--wp--preset--spacing--40);background:linear-gradient(45deg, #E7D768 0%, #2EADE2 100%)">
+<!-- wp:image {"url":"/wp-content/uploads/indus-foods/2025/11/cake_rusks_transparent-1.png","alt":"Food manufacturing facility","style":{"border":{"radius":"12px 12px 0 0"}},"width":"100%"} -->
+<figure class="wp-block-image" style="border-radius:12px 12px 0 0"><img src="/wp-content/uploads/indus-foods/2025/11/cake_rusks_transparent-1.png" alt="Food manufacturing facility" style="border-radius:12px 12px 0 0;width:100%"/></figure>
+<!-- /wp:image -->
+<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","right":"var:preset|spacing|40","bottom":"0","left":"var:preset|spacing|40"}}},"layout":{"type":"flow"}} -->
+<div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
+<!-- wp:heading {"level":3,"style":{"color":{"text":"#2C3E50"},"typography":{"fontWeight":"700"}}} -->
+<h3 class="wp-block-heading has-text-color" style="color:#2C3E50;font-weight:700">Manufacturing</h3>
+<!-- /wp:heading -->
+<!-- wp:paragraph {"style":{"color":{"text":"#2C3E50"}}} -->
+<p class="has-text-color" style="color:#2C3E50">Manufacturing high quality, ethically produced and local products</p>
+<!-- /wp:paragraph -->
+<!-- wp:buttons {"style":{"spacing":{"margin":{"top":"var:preset|spacing|30"}}}} -->
+<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--30)">
+<!-- wp:button {"url":"/manufacturing/","className":"is-style-outline","style":{"color":{"text":"#2C3E50"},"border":{"color":"#2C3E50","radius":"8px"}}} -->
+<div class="wp-block-button is-style-outline"><a class="wp-block-button__link has-text-color" href="/manufacturing/" style="color:#2C3E50;border-color:#2C3E50;border-radius:8px">Track Manufacturing</a></div>
+<!-- /wp:button -->
+</div>
+<!-- /wp:buttons -->
+</div>
+<!-- /wp:group -->
+</div>
+<!-- /wp:group -->
+</div>
+<!-- /wp:column -->
+
+<!-- wp:column -->
+<div class="wp-block-column">
+<!-- wp:group {"style":{"border":{"radius":"12px"},"spacing":{"padding":{"top":"0","right":"0","bottom":"var:preset|spacing|40","left":"0"}},"color":{"gradient":"linear-gradient(135deg, #2EADE2 0%, #0A7EA8 100%)"}},"layout":{"type":"flow"}} -->
+<div class="wp-block-group has-background" style="border-radius:12px;padding-bottom:var(--wp--preset--spacing--40);background:linear-gradient(135deg, #2EADE2 0%, #0A7EA8 100%)">
+<!-- wp:image {"url":"/wp-content/uploads/indus-foods/2025/11/Samosas-With-Mint-Chutney-Chilli-1-e1766188272127.png","alt":"Retail food products on shelves","style":{"border":{"radius":"12px 12px 0 0"}},"width":"100%"} -->
+<figure class="wp-block-image" style="border-radius:12px 12px 0 0"><img src="/wp-content/uploads/indus-foods/2025/11/Samosas-With-Mint-Chutney-Chilli-1-e1766188272127.png" alt="Retail food products on shelves" style="border-radius:12px 12px 0 0;width:100%"/></figure>
+<!-- /wp:image -->
+<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","right":"var:preset|spacing|40","bottom":"0","left":"var:preset|spacing|40"}}},"layout":{"type":"flow"}} -->
+<div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
+<!-- wp:heading {"level":3,"style":{"color":{"text":"#FFFFFF"},"typography":{"fontWeight":"700"}}} -->
+<h3 class="wp-block-heading has-text-color" style="color:#FFFFFF;font-weight:700">Retail</h3>
+<!-- /wp:heading -->
+<!-- wp:paragraph {"style":{"color":{"text":"#FFFFFF"}}} -->
+<p class="has-text-color" style="color:#FFFFFF">Our top quality in-house brand food carries best-sell-out value and packaging</p>
+<!-- /wp:paragraph -->
+<!-- wp:buttons {"style":{"spacing":{"margin":{"top":"var:preset|spacing|30"}}}} -->
+<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--30)">
+<!-- wp:button {"url":"/retail/","className":"is-style-outline","style":{"color":{"text":"#FFFFFF"},"border":{"color":"#FFFFFF","radius":"8px"}}} -->
+<div class="wp-block-button is-style-outline"><a class="wp-block-button__link has-text-color" href="/retail/" style="color:#FFFFFF;border-color:#FFFFFF;border-radius:8px">Retail Solutions</a></div>
+<!-- /wp:button -->
+</div>
+<!-- /wp:buttons -->
+</div>
+<!-- /wp:group -->
+</div>
+<!-- /wp:group -->
+</div>
+<!-- /wp:column -->
+
+<!-- wp:column -->
+<div class="wp-block-column">
+<!-- wp:group {"style":{"border":{"radius":"12px"},"spacing":{"padding":{"top":"0","right":"0","bottom":"var:preset|spacing|40","left":"0"}},"color":{"gradient":"linear-gradient(45deg, #0A7EA8 0%, #D8CA50 100%)"}},"layout":{"type":"flow"}} -->
+<div class="wp-block-group has-background" style="border-radius:12px;padding-bottom:var(--wp--preset--spacing--40);background:linear-gradient(45deg, #0A7EA8 0%, #D8CA50 100%)">
+<!-- wp:image {"url":"/wp-content/uploads/indus-foods/2025/11/Ras-Malai-Transparent-Background-1.png","alt":"Food wholesale distribution warehouse","style":{"border":{"radius":"12px 12px 0 0"}},"width":"100%"} -->
+<figure class="wp-block-image" style="border-radius:12px 12px 0 0"><img src="/wp-content/uploads/indus-foods/2025/11/Ras-Malai-Transparent-Background-1.png" alt="Food wholesale distribution warehouse" style="border-radius:12px 12px 0 0;width:100%"/></figure>
+<!-- /wp:image -->
+<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","right":"var:preset|spacing|40","bottom":"0","left":"var:preset|spacing|40"}}},"layout":{"type":"flow"}} -->
+<div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
+<!-- wp:heading {"level":3,"style":{"color":{"text":"#FFFFFF"},"typography":{"fontWeight":"700"}}} -->
+<h3 class="wp-block-heading has-text-color" style="color:#FFFFFF;font-weight:700">Wholesale</h3>
+<!-- /wp:heading -->
+<!-- wp:paragraph {"style":{"color":{"text":"#FFFFFF"}}} -->
+<p class="has-text-color" style="color:#FFFFFF">Wide variety of quality food and drinks with a reliable distribution network</p>
+<!-- /wp:paragraph -->
+<!-- wp:buttons {"style":{"spacing":{"margin":{"top":"var:preset|spacing|30"}}}} -->
+<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--30)">
+<!-- wp:button {"url":"/wholesale/","className":"is-style-outline","style":{"color":{"text":"#FFFFFF"},"border":{"color":"#FFFFFF","radius":"8px"}}} -->
+<div class="wp-block-button is-style-outline"><a class="wp-block-button__link has-text-color" href="/wholesale/" style="color:#FFFFFF;border-color:#FFFFFF;border-radius:8px">UK Food Wholesalers</a></div>
+<!-- /wp:button -->
+</div>
+<!-- /wp:buttons -->
+</div>
+<!-- /wp:group -->
+</div>
+<!-- /wp:group -->
+</div>
+<!-- /wp:column -->
+
+</div>
+<!-- /wp:columns -->
+
+</div>
+<!-- /wp:group -->
+
+<!-- wp:group {"align":"full","style":{"color":{"background":"#D8CA50"},"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|60"}}},"layout":{"type":"constrained","contentSize":"1200px"}} -->
+<div class="wp-block-group alignfull has-background" style="background-color:#D8CA50;padding-top:var(--wp--preset--spacing--60);padding-bottom:var(--wp--preset--spacing--60)">
+
+<!-- wp:heading {"textAlign":"center","style":{"color":{"text":"#2C3E50"},"spacing":{"margin":{"bottom":"var:preset|spacing|50"}}}} -->
+<h2 class="wp-block-heading has-text-align-center has-text-color" style="color:#2C3E50;margin-bottom:var(--wp--preset--spacing--50)">Why Choose Indus Foods?</h2>
+<!-- /wp:heading -->
+
+<!-- wp:columns {"isStackedOnMobile":true,"style":{"spacing":{"blockGap":{"top":"var:preset|spacing|40","left":"var:preset|spacing|40"}}}} -->
+<div class="wp-block-columns" style="gap:var(--wp--preset--spacing--40)">
+
+<!-- wp:column -->
+<div class="wp-block-column">
+<!-- wp:sgs/info-box {"icon":"clock","heading":"60+ Years Experience","description":"A family-run wholesaler since 1962, trusted by generations of food businesses across the UK.","cardStyle":"subtle","iconColour":"#2C3E50","iconBackgroundColour":"transparent","headingColour":"#1E1E1E","descriptionColour":"#1E1E1E","hoverEffect":"lift","transitionDuration":"300","transitionEasing":"ease-in-out"} /-->
+</div>
+<!-- /wp:column -->
+
+<!-- wp:column -->
+<div class="wp-block-column">
+<!-- wp:sgs/info-box {"icon":"shield-check","heading":"Full Certifications","description":"BRC, Halal, SALSA, and Unitas certified. Full traceability on every product we supply.","cardStyle":"subtle","iconColour":"#2C3E50","iconBackgroundColour":"transparent","headingColour":"#1E1E1E","descriptionColour":"#1E1E1E","hoverEffect":"lift","transitionDuration":"300","transitionEasing":"ease-in-out"} /-->
+</div>
+<!-- /wp:column -->
+
+<!-- wp:column -->
+<div class="wp-block-column">
+<!-- wp:sgs/info-box {"icon":"truck","heading":"Reliable Delivery","description":"Our own delivery fleet covers the entire UK, with next-day service to most postcodes.","cardStyle":"subtle","iconColour":"#2C3E50","iconBackgroundColour":"transparent","headingColour":"#1E1E1E","descriptionColour":"#1E1E1E","hoverEffect":"lift","transitionDuration":"300","transitionEasing":"ease-in-out"} /-->
+</div>
+<!-- /wp:column -->
+
+<!-- wp:column -->
+<div class="wp-block-column">
+<!-- wp:sgs/info-box {"icon":"star","heading":"Premium Quality","description":"Over 6,000 SKUs of branded and own-label products, all meeting our strict quality standards.","cardStyle":"subtle","iconColour":"#2C3E50","iconBackgroundColour":"transparent","headingColour":"#1E1E1E","descriptionColour":"#1E1E1E","hoverEffect":"lift","transitionDuration":"300","transitionEasing":"ease-in-out"} /-->
+</div>
+<!-- /wp:column -->
+
+</div>
+<!-- /wp:columns -->
+
+<!-- wp:columns {"isStackedOnMobile":true,"style":{"spacing":{"blockGap":{"top":"var:preset|spacing|40","left":"var:preset|spacing|40"}}}} -->
+<div class="wp-block-columns" style="gap:var(--wp--preset--spacing--40)">
+
+<!-- wp:column -->
+<div class="wp-block-column">
+<!-- wp:sgs/info-box {"icon":"heart","heading":"Family Values","description":"Three generations of the same family, committed to personal relationships with every customer.","cardStyle":"subtle","iconColour":"#2C3E50","iconBackgroundColour":"transparent","headingColour":"#1E1E1E","descriptionColour":"#1E1E1E","hoverEffect":"lift","transitionDuration":"300","transitionEasing":"ease-in-out"} /-->
+</div>
+<!-- /wp:column -->
+
+<!-- wp:column -->
+<div class="wp-block-column">
+<!-- wp:sgs/info-box {"icon":"package","heading":"5,000+ Products","description":"From ambient to chilled to frozen, we stock everything an ethnic food business needs.","cardStyle":"subtle","iconColour":"#2C3E50","iconBackgroundColour":"transparent","headingColour":"#1E1E1E","descriptionColour":"#1E1E1E","hoverEffect":"lift","transitionDuration":"300","transitionEasing":"ease-in-out"} /-->
+</div>
+<!-- /wp:column -->
+
+<!-- wp:column -->
+<div class="wp-block-column">
+<!-- wp:sgs/info-box {"icon":"headphones","heading":"Dedicated Support","description":"Named account managers who know your business and respond within hours, not days.","cardStyle":"subtle","iconColour":"#2C3E50","iconBackgroundColour":"transparent","headingColour":"#1E1E1E","descriptionColour":"#1E1E1E","hoverEffect":"lift","transitionDuration":"300","transitionEasing":"ease-in-out"} /-->
+</div>
+<!-- /wp:column -->
+
+<!-- wp:column -->
+<div class="wp-block-column">
+<!-- wp:sgs/info-box {"icon":"tag","heading":"White Labelling","description":"Custom packaging and branding for retail and food service customers. Your brand, our quality.","cardStyle":"subtle","iconColour":"#2C3E50","iconBackgroundColour":"transparent","headingColour":"#1E1E1E","descriptionColour":"#1E1E1E","hoverEffect":"lift","transitionDuration":"300","transitionEasing":"ease-in-out"} /-->
+</div>
+<!-- /wp:column -->
+
+</div>
+<!-- /wp:columns -->
+
+</div>
+<!-- /wp:group -->
+
+<!-- wp:group {"align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|60"}},"color":{"background":"#0A7EA8"}},"layout":{"type":"constrained","contentSize":"1200px"}} -->
+<div class="wp-block-group alignfull has-background" style="background-color:#0A7EA8;padding-top:var(--wp--preset--spacing--60);padding-bottom:var(--wp--preset--spacing--60)">
+
+<!-- wp:heading {"textAlign":"center","style":{"color":{"text":"#D8CA50"},"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}}} -->
+<h2 class="wp-block-heading has-text-align-center has-text-color" style="color:#D8CA50;margin-bottom:var(--wp--preset--spacing--30)">Our Partners Love Us!</h2>
+<!-- /wp:heading -->
+
+<!-- wp:separator {"style":{"color":{"background":"#D8CA50"}},"className":"is-style-wide"} -->
+<hr class="wp-block-separator has-text-color has-alpha-channel-opacity has-background is-style-wide" style="background-color:#D8CA50;color:#D8CA50"/>
+<!-- /wp:separator -->
+
+<!-- wp:sgs/testimonial-slider {"testimonials":[{"quote":"Since starting with Indus Foods back in the early 2000s, they have consistently supplied us with the best of the UK. We highly recommend.","name":"Sarah Mitchell","role":"Restaurant Owner","rating":5},{"quote":"Their delivery is always on time and the product range is unmatched. We switched from our previous supplier 3 years ago and have not looked back.","name":"Raj Patel","role":"Retail Store Manager","rating":5},{"quote":"The white labelling service has been fantastic for our brand. Quality products with our own packaging — exactly what we needed.","name":"David Chen","role":"Wholesale Buyer","rating":5},{"quote":"Brilliant customer service. Our account manager knows our order patterns and always keeps us informed about new products.","name":"Fatima Khan","role":"Catering Manager","rating":5}],"autoplay":true,"autoplaySpeed":6000,"showDots":true,"showArrows":true,"slidesVisible":1,"cardStyle":"card","quoteColour":"#FFFFFF","nameColour":"#D8CA50","roleColour":"#FFFFFF","ratingColour":"accent","transitionDuration":"300","transitionEasing":"ease-in-out"} /-->
+
+</div>
+<!-- /wp:group -->
+
+<!-- wp:group {"align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|60"}},"color":{"background":"#D8CA50"}},"layout":{"type":"constrained","contentSize":"900px"}} -->
+<div class="wp-block-group alignfull has-background" style="background-color:#D8CA50;padding-top:var(--wp--preset--spacing--60);padding-bottom:var(--wp--preset--spacing--60)">
+
+<!-- wp:heading {"textAlign":"center","style":{"color":{"text":"#2C3E50"},"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}}} -->
+<h2 class="wp-block-heading has-text-align-center has-text-color" style="color:#2C3E50;margin-bottom:var(--wp--preset--spacing--30)">What Are You Waiting For?</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph {"align":"center","style":{"color":{"text":"#2C3E50"},"spacing":{"margin":{"bottom":"var:preset|spacing|40"}}}} -->
+<p class="has-text-align-center has-text-color" style="color:#2C3E50;margin-bottom:var(--wp--preset--spacing--40)">Join 5,000+ satisfied customers who trust Indus Foods for quality, reliability, and service.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center","flexWrap":"wrap"},"style":{"spacing":{"blockGap":"var:preset|spacing|30"}}} -->
+<div class="wp-block-buttons" style="gap:var(--wp--preset--spacing--30)">
+<!-- wp:button {"style":{"color":{"text":"#FFFFFF","background":"#2C3E50"},"border":{"radius":"10px"}}} -->
+<div class="wp-block-button"><a class="wp-block-button__link has-text-color has-background" href="/apply-for-trade-account/" style="color:#FFFFFF;background-color:#2C3E50;border-radius:10px">Apply For A Trade Account</a></div>
+<!-- /wp:button -->
+<!-- wp:button {"style":{"color":{"text":"#FFFFFF","background":"#0A7EA8"},"border":{"radius":"10px"}}} -->
+<div class="wp-block-button"><a class="wp-block-button__link has-text-color has-background" href="/catalogue/" style="color:#FFFFFF;background-color:#0A7EA8;border-radius:10px">Request Our Catalogue</a></div>
+<!-- /wp:button -->
+</div>
+<!-- /wp:buttons -->
+
+</div>
+<!-- /wp:group -->
