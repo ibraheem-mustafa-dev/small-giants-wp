@@ -1,316 +1,131 @@
-# SGS WordPress Framework — Session Handoff — 2026-03-16
+# Session Handoff — 2026-03-18
 
-## What Changed This Session (SGS WP Ecosystem)
+## Completed This Session
 
-This session focused on **tooling and methodology** for the SGS WordPress Framework, not direct block/theme code changes. No code was deployed to palestine-lives.org. The previous WP handoff (2026-02-27) remains the active implementation state.
+1. **Recovered mid-flight subagent work** — two agents (hero-nav-fixer, megamenu-fixer) were running when the previous session hit context. Reviewed all uncommitted diffs, confirmed both completed their tasks, committed 32-file changeset (47dfba8).
+2. **Fixed vendor directory corruption** — `--exclude='src'` in the tar deploy command was stripping `vendor/*/src/` subdirectories (myclabs, phpunit, etc.), causing fatal PHP errors via WP-CLI. Redeployed full vendor via `scp -r`. Fixed the tar exclude in CLAUDE.md to `--exclude='plugins/sgs-blocks/src'`.
+3. **Deployed homepage visual QA fixes** — hero split image bounded (aspect-ratio 4/3, max-width 50%); card grid equal-height rows; testimonial dots refactored to pseudo-element pattern (44px transparent button, 10px visible dot); arrows repositioned to sides of track via absolute stage wrapper; section gap CSS reset; brand strip logos 80px.
+4. **Mega menu overhaul** — animation switched from display:none to visibility:hidden for smooth transitions; viewport overflow repositioning via `repositionPanel()` in view.js; link pill-hover pattern; text colour tokens fixed; panel max-width `min(900px, calc(100vw - 2rem))` added to compiled CSS (2988806).
+5. **Decorative image extension bug fixed** — hero-nav-fixer agent changed `.png` → `.webp` in functions.php for decorative spice images, but only `.png` files exist in theme assets. Reverted to `.png`.
+6. **wp_sgs_developer Playwright tools added** — 8 Playwright MCP tools + mandatory visual QA section added to the agent definition (applied in previous session, logged in skill-writer/results.md).
+7. **functions.php additions** — duotone WP 6.9.x arg-count fix; ARIA menubar role filter for mega-menu navigation; nav list structure filter; global `wp_content_img_tag` image dimension injector; brand-logo-tile CSS for mega menu brands panel; button hover accessibility fix excluding gold-bg buttons.
+8. **Five style variations committed** — eye-care-ward-end, sgs-construction, sgs-healthcare, sgs-mosque, sgs-professional added to `theme/sgs-theme/styles/`.
+9. **LiteSpeed disabled for dev** — deactivated via WP-CLI (`wp plugin deactivate litespeed-cache`). Must be re-enabled before performance testing.
 
-### 1. Agent Renamed: wp-developer → wp-sgs-developer
+## Current State
 
-**What:** The generic `wp-developer` agent was renamed to `wp-sgs-developer` to distinguish it from general WordPress work. The new name starts with `wp-` for easy reference.
+- **Branch:** main at e70a7e3
+- **Tests:** no test suite
+- **Build:** npm run build passes (webpack compiled successfully)
+- **Uncommitted changes:** none (tree is clean)
+- **Live site:** palestine-lives.org — all fixes deployed, OPcache reset
+- **LiteSpeed:** DEACTIVATED — re-enable before any performance testing (`wp plugin activate litespeed-cache`)
 
-**Files changed:**
-- `~/.claude/agents/wp-sgs-developer.md` — NEW (created with updated description, fidelity comparison mode added)
-- `~/.claude/agents/wp-developer.md` — DELETED
-- 6 config files updated with the rename:
-  - `~/.claude/CLAUDE.md` — agent list
-  - `~/.claude/MY-SETUP-GUIDE.md` — agent reference table
-  - `~/.claude/commands/handoff.md` — agent routing suggestion
-  - `~/.claude/agents/project-manager.md` — routing table (`wp-developer` → `wp-sgs-developer`)
-  - `~/.claude/agents/design-reviewer.md` — cross-reference to WP agent
-  - `~/.claude/projects/C--Windows-System32/memory/MEMORY.md` — agent list
+## Known Issues / Blockers
 
-**What the new agent adds over the old:**
-- Description explicitly mentions fidelity comparisons and SGS client sites
-- New "Fidelity Comparison Mode" section with instructions to load `references/fidelity-comparator.md`
-- Gemini comparison tool usage documented:
-  ```bash
-  python ~/.claude/skills/site-reviewer/scripts/gemini-design-review.py \
-    --compare ref.png target.png --breakpoint desktop \
-    --ref-url <reference> --target-url <target>
-  ```
+- **Mega-menu CSS source/build divergence** — `build/blocks/mega-menu/style-index.css` is a more sophisticated implementation than `src/blocks/mega-menu/style.css` (CSS variables, multiple layout variants). The max-width fix was hand-patched into the build file. `index.js` doesn't import `style.css` so webpack never rebuilds it. Next session must sync src to match build and add `import './style.css'` to `index.js`.
+- **Playwright browser cache** — CSS has `Cache-Control: max-age=14400` (4 hours). QA agent will see stale styles until cache expires or file URLs change. Fixes confirmed correct via direct curl checks.
+- **Service pages (IDs 65-68)** — reference `uploads/indus-foods/decorative-foods/*.webp` as actual image blocks. These webp files exist in uploads but the pages were not visually QA'd this session.
+- **ARCHITECTURE.md stale** — says 32 blocks, actual count is 55. Not session-critical but needs a refresh pass.
 
-### 2. SGS Fidelity Comparator Built (NEW — Not Yet Executed)
+## Next Priorities (in order)
 
-**What:** A specialised comparison methodology that compares an SGS-built site against a reference site and produces SGS-actionable fixes. This is NOT the generic site-reviewer — it knows SGS blocks, attributes, tokens, and classifies fixes by mechanism.
+1. **Re-enable LiteSpeed** — `ssh hd "cd ~/domains/palestine-lives.org/public_html && wp plugin activate litespeed-cache"` — do this before any performance work or before handing back to client.
+2. **Fix mega-menu CSS source sync** — copy the sophisticated `build/blocks/mega-menu/style-index.css` content into `src/blocks/mega-menu/style.css`, then add `import './style.css'; import './editor.css';` to `src/blocks/mega-menu/index.js` so future builds are reproducible. Run `npm run build` and verify output matches.
+3. **Visual QA on service pages** — run the `design-reviewer` agent on Food Service (ID 65), Manufacturing (66), Retail (67), Wholesale (68) pages to check image rendering and layout at 375/1440px.
+4. **Testimonial two-column layout** — reference mockup specifies a two-column layout (text left, author/stars right). Currently single-column. Implement as a variant or default style change in `testimonial-slider`.
+5. **ARCHITECTURE.md refresh** — update block count (32 → 55), add the 5 new style variations, add vendor gotcha, update Phase status.
 
-**Design spec:** `~/.claude/specs/2026-03-15-sgs-fidelity-comparator-design.md`
+## Files Modified
 
-**Reference doc:** `~/.claude/skills/sgs-wp-engine/references/fidelity-comparator.md` — detailed 6-phase methodology:
+| File | What changed |
+|------|-------------|
+| `plugins/sgs-blocks/src/blocks/mega-menu/style.css` | max-width added; visibility animation; link pill-hover; text tokens |
+| `plugins/sgs-blocks/src/blocks/mega-menu/render.php` | wp_unique_id() replaces static counter |
+| `plugins/sgs-blocks/src/blocks/mega-menu/view.js` | repositionPanel() for viewport overflow; focus management |
+| `plugins/sgs-blocks/src/blocks/hero/render.php` | Image dimension fallback from WP metadata |
+| `plugins/sgs-blocks/src/blocks/hero/style.css` | Split image: aspect-ratio 4/3, max-height 600px, max-width 50% |
+| `plugins/sgs-blocks/src/blocks/testimonial-slider/render.php` | Added stage wrapper div around track + arrows |
+| `plugins/sgs-blocks/src/blocks/testimonial-slider/style.css` | Arrows absolute within stage; dots refactored to pseudo-element |
+| `plugins/sgs-blocks/src/blocks/card-grid/style.css` | height:100% for equal-height cards |
+| `plugins/sgs-blocks/src/blocks/brand-strip/block.json` | Logo size default updated |
+| `plugins/sgs-blocks/src/blocks/brand-strip/render.php` | Logo output changes |
+| `plugins/sgs-blocks/src/blocks/brand-strip/style.css` | Logo sizing |
+| `plugins/sgs-blocks/src/blocks/trust-bar/style.css` | Style tweaks |
+| `plugins/sgs-blocks/includes/render-helpers.php` | Helper additions |
+| `plugins/sgs-blocks/includes/block-defaults.php` | Default seed updates |
+| `plugins/sgs-blocks/includes/lucide-icons.php` | Timestamp only |
+| `plugins/sgs-blocks/build/blocks/mega-menu/style-index.css` | Hand-patched: max-width added to base panel (not rebuilt from src) |
+| `theme/sgs-theme/functions.php` | Duotone fix; menubar ARIA; nav list filter; image dimensions; brand tiles CSS; decorative .png fix |
+| `theme/sgs-theme/parts/mega-menu-brands.html` | Real brand logo images replacing emoji placeholders |
+| `theme/sgs-theme/styles/indus-foods.json` | Token adjustments |
+| `theme/sgs-theme/assets/css/core-blocks-critical.css` | Section gap reset |
+| `theme/sgs-theme/assets/css/core-blocks.css` | Section gap reset |
+| `theme/sgs-theme/assets/css/mobile-nav-drawer.css` | Mobile nav tweaks |
+| `theme/sgs-theme/styles/eye-care-ward-end.json` | New style variation |
+| `theme/sgs-theme/styles/sgs-construction.json` | New style variation |
+| `theme/sgs-theme/styles/sgs-healthcare.json` | New style variation |
+| `theme/sgs-theme/styles/sgs-mosque.json` | New style variation |
+| `theme/sgs-theme/styles/sgs-professional.json` | New style variation |
+| `CLAUDE.md` | Deploy command fixed: `--exclude='src'` → `--exclude='plugins/sgs-blocks/src'`; vendor gotcha added |
+| `specs/03-SGS-BOOKING.md` | Minor updates |
+| `plugins/sgs-booking/CLAUDE.md` | Minor updates |
 
-| Phase | What | Tools |
-|-------|------|-------|
-| 1. Extract Reference | wp-site-extraction via SSH (colours, fonts, sections, block content) | SSH, WP-CLI |
-| 2. Map Sections → SGS Blocks | `sgs-db.py match` with confidence thresholds (75%+: direct, 50-74%: try, <50%: flag) | sgs-db.py |
-| 3. Screenshot + Visual Comparison | Playwright at 375/768/1440px, Gemini `--compare` mode | Playwright, Gemini |
-| 4. Attribute Diff | Chrome DevTools computed styles, only for Gemini-flagged sections (<8/10) | Chrome DevTools MCP |
-| 5. Classify & Fix | Mechanical decision tree: content → tokens → attributes → theme.json → plugin code | Decision tree |
-| 6. Verify & Loop | Section-level re-screenshot, max 3 loops before escalation | Playwright, Gemini |
+## Notes for Next Session
 
-**Fix classification decision tree (mechanical, no judgement):**
-```
-Text/image content? → WP editor (wp post update)
-Colour/font mismatch? → Token exists? → Block attribute / Add token (theme.json)
-Spacing/layout? → Attribute exists? → WP-CLI / Spacing token / Feature gap (plugin)
-Visual effect? → Block supports? → Block attribute / Feature gap (plugin)
-Structural? → Block editor reorder
-```
-
-**Fidelity definition:** "Match or exceed" = same sections, same visual impact, same UX quality — using SGS blocks and tokens (never hardcoded). Where SGS can improve on the reference (better accessibility, responsive behaviour), it should. Every intentional divergence flagged and justified.
-
-**Tolerance rules:**
-| Property | Tolerance |
-|---|---|
-| Font size | +/- 1px |
-| Padding/margin | +/- 4px |
-| Colour | Exact for brand colours; +/- 5% lightness for neutrals |
-| Border radius | +/- 2px |
-| Line height | +/- 0.05 |
-
-### 3. sgs-wp-engine SKILL.md Updated
-
-**Two additions to the skill file:**
-
-1. **Skill routing table** — new row:
-   ```
-   | Fidelity comparison | Load fidelity-comparator.md |
-   ```
-
-2. **Reference guides table** — new row:
-   ```
-   | fidelity-comparator.md | Comparing SGS site against a reference — 6-phase loop with fix classification |
-   ```
-
-### 4. Gemini Design Review Script Extended
-
-**File:** `~/.claude/skills/site-reviewer/scripts/gemini-design-review.py`
-
-**What was added:** A `--compare` mode that sends TWO screenshots in a single Gemini API call for side-by-side comparison.
-
-**Usage:**
-```bash
-python gemini-design-review.py \
-  --compare ref-screenshot.png target-screenshot.png \
-  --breakpoint desktop \
-  --ref-url <reference-url> \
-  --target-url <target-url>
-```
-
-**How it works:**
-- Both images are base64-encoded and sent as inline data parts in one API request
-- A comparison-specific prompt asks Gemini to:
-  - Identify matching sections between the two screenshots
-  - Score each section's similarity (1-10)
-  - List specific visual differences per section
-  - Note where the target is actually better than the reference
-- Returns structured JSON with per-section scores and diffs
-- 90-second timeout (vs 60 for single review) to handle the larger payload
-- Shares the same API key fallback chain as single-review mode
-
-**New prompt structure:** `COMPARISON_PROMPT` constant with `{{` escaped braces for `.format()` compatibility.
-
-### 5. Site-Reviewer CMX GREEN Test (Passed)
-
-The site-reviewer agent (`~/.claude/skills/site-reviewer/SKILL.md`) was tested on cmx-group.com:
-- Full 9-layer pipeline completed
-- Gemini cross-validation: WORKING
-- Deep L4 visual analysis: WORKING (Gemini 8/10, Claude 6/10)
-- PageSpeed API fallback to Playwright-based capture worked when quota exhausted
-- Report: `~/site-reviews/cmx-group-2026-03-15-v2.md`
-
-This validates the site-reviewer + Gemini integration for future use in fidelity comparisons.
-
-### 6. Search-Conversations Agent Created
-
-**File:** `~/.claude/agents/search-conversations.md`
-
-**Why:** The `episodic-memory:remembering-conversations` skill tries to dispatch a `search-conversations` subagent type, but it didn't exist. The plugin ships with a prompt template (`prompts/search-agent.md`) but doesn't register the agent itself.
-
-**What it does:** Uses Haiku model, has access to `mcp__plugin_episodic-memory_episodic-memory__search` and `mcp__plugin_episodic-memory_episodic-memory__read` tools. Searches historical conversations, reads top 2-5 results, synthesises findings in max 1000 words.
-
-### 7. OC-to-CC Gap Analysis and Asset Porting
-
-**Spec:** `~/.claude/specs/2026-03-16-sgs-wp-gap-analysis.md`
-
-**What:** Systematic comparison of OpenClaw workspace assets vs Claude Code tooling, followed by porting everything useful.
-
-**28+ assets ported from OC:**
-- Design-compare tool (650-line JS with token validator, a11y audit, perf check)
-- `brand.json` (brand identity data)
-- `rubric.yaml` (quality rubric)
-- 6 AI prompts (design review, content audit, etc.)
-- 6 QA JavaScript scripts
-- Touch audit tool
-- Marketing playbook
-- Automation discovery document
-- 3 Indus comparison data files
-- Invoice pipeline
-
-### 8. Five WP Skills Ported to Claude Code
-
-**Skills added:**
-- `wp-playground` — WordPress Playground workflows (local instances, blueprints, debugging)
-- `wp-abilities-api` — WordPress Abilities API integration
-- `wp-phpstan` — PHPStan static analysis for WordPress
-- `wp-project-triage` — Deterministic WordPress repo inspection
-- `wpds` — WordPress Design System components and tokens
-
-CC now has **14 WP skills** total.
-
-### 9. Five Style Variations Deployed
-
-Deployed to the project directory:
-- **Healthcare** style variation
-- **Construction** style variation
-- **Professional** style variation
-- **Mosque** style variation
-- **Eye-care** style variation
-
-### 10. Spec vs DB Gap Analysis
-
-- Block grades: all NULL (no blocks graded)
-- Supports coverage: only 42-58% of blocks have colour/typography/spacing supports
-- 5 new style variations not registered in the DB
-- 0 weaknesses logged
-
-### 11. Competitive Analysis
-
-**Spec:** `~/.claude/specs/2026-03-17-wp-competitive-analysis.md`
-
-| Competitor | Blocks | Strengths |
-|---|---|---|
-| Spectra | 43 | SGS's base (Astra ecosystem) |
-| Kadence | 45 | Best AI integration |
-| GenerateBlocks | 6 | Best performance (smallest footprint) |
-| Greenshift | 100+ | Sleeper hit — animation powerhouse |
-
-**SGS advantages:** Fluid typography, design tokens, WCAG 2.2 AA, curated font pairings.
-
-**Competitor monitor reference doc** created. **n8n workflow** built (needs Firecrawl + Telegram env vars).
-
-### 12. Other Porting Work
-
-- Synced Gemini `--compare` mode to OpenClaw
-- `wp-sgs-developer` agent rewritten as full SGS WordPress employee (not just a generic WP dev)
-
-## Current State of SGS WordPress
-
-- **Live site:** palestine-lives.org — unchanged this session
-- **Branch:** main — clean, pushed (from 2026-02-27 session)
-- **Hero block:** 3 known bugs from last session (heading colour, secondary CTA, content width) — NOT fixed yet
-- **Design-reviewer agent changes:** May need partial reverting (service card gradients)
-- **Fidelity comparator:** Built but NOT executed — ready to run against reference site
-- **Framework:** 55 blocks, 619 attributes, 25 design tokens, 2 style variations, 25 patterns
-- **Style variation:** indus-foods (Montserrat headings, Source Sans 3 body, teal/amber palette)
-
-## Known Issues / Blockers (WP-specific)
-
-1. **Hero heading invisible** — `headlineColour` in DB is `#424242` but renders as `var(--wp--preset--color--surface)` (white). Either post content was changed by previous agent or caching issue
-2. **Hero secondary button solid teal** — should be transparent, renders solid
-3. **Hero no content width control** — no `contentWidth` attribute in block.json
-4. **Hero split image scales forever** — no max-height on `.sgs-hero__media`
-5. **Design-reviewer made incorrect changes** — service card gradients all set to same teal (should differ)
-6. **Full colour audit incomplete** — blocked by hero bugs
-7. **DB stale** — block grades all NULL, 5 style variations not registered, 0 weaknesses logged
-8. **Supports coverage low** — only 42-58% of blocks have colour/typography/spacing supports
-9. **n8n competitor workflow** — needs Firecrawl + Telegram env vars configured before it will run
-
-## Next Priorities for SGS WordPress
-
-1. **Audit all SGS agents and skills** — Use `skill-auditor`, `agent-auditor`, `skill-optimiser`, and `agent-optimiser` before relying on any of the ported tools. Many were ported from OC without testing in CC context.
-2. **Fix hero block bugs** — Existing plan at `docs/plans/2026-02-27-hero-fixes.md` (4 code fixes: heading colour, secondary CTA, content width, split image)
-3. **Validate WP Playground locally** — Test the newly ported `wp-playground` skill with a real SGS project
-4. **Execute Indus migration** — First real test of the fidelity comparator pipeline. Run against lightsalmon-tarsier-683012.hostingersite.com → palestine-lives.org
-5. **Update DB** — Register 5 new style variations, populate block grades, log weaknesses, improve supports coverage
-
-## Files Modified This Session (WP Ecosystem Only)
-
-```
-~/.claude/agents/wp-sgs-developer.md                              NEW (renamed + fidelity mode)
-~/.claude/agents/wp-developer.md                                  DELETED
-~/.claude/agents/search-conversations.md                          NEW
-~/.claude/agents/project-manager.md                               renamed reference
-~/.claude/agents/design-reviewer.md                               renamed reference
-~/.claude/skills/sgs-wp-engine/SKILL.md                           fidelity routing + reference table
-~/.claude/skills/sgs-wp-engine/references/fidelity-comparator.md  NEW (6-phase methodology)
-~/.claude/skills/site-reviewer/scripts/gemini-design-review.py    --compare mode added
-~/.claude/specs/2026-03-15-sgs-fidelity-comparator-design.md      NEW (design spec)
-~/.claude/CLAUDE.md                                               agent rename
-~/.claude/MY-SETUP-GUIDE.md                                       agent rename
-~/.claude/commands/handoff.md                                      agent rename
-
-# Added in late session (2026-03-16/17):
-~/.claude/specs/2026-03-16-sgs-wp-gap-analysis.md                  NEW (OC↔CC gap analysis spec)
-~/.claude/specs/2026-03-17-wp-competitive-analysis.md              NEW (Spectra/Kadence/GenerateBlocks/Greenshift)
-~/.claude/skills/wp-playground/SKILL.md                            NEW (ported from OC)
-~/.claude/skills/wp-abilities-api/SKILL.md                         NEW (ported from OC)
-~/.claude/skills/wp-phpstan/SKILL.md                               NEW (ported from OC)
-~/.claude/skills/wp-project-triage/SKILL.md                        NEW (ported from OC)
-~/.claude/skills/wpds/SKILL.md                                     NEW (ported from OC)
-~/Projects/small-giants-wp/ (5 style variations)                   NEW (healthcare, construction, professional, mosque, eye-care)
-~/.claude/agents/wp-sgs-developer.md                               REWRITTEN (full SGS employee agent)
-# 28+ ported OC assets (brand.json, rubric.yaml, 6 prompts, 6 QA scripts, design-compare tool, etc.)
-# n8n competitor monitor workflow (needs env vars)
-# Competitor monitor reference doc
-```
-
-## Relevant Tooling
-
-### Skills
-| Skill | When |
-|-------|------|
-| `/sgs-wp-engine` | All SGS WP work — invoke first, loads context |
-| `/wp-site-extraction` | Phase 1 of fidelity comparison — extract reference design |
-| `/wp-block-development` | Hero block fixes (render.php, block.json, edit.js) |
-| `/superpowers:brainstorming` | Before WP Playground skill design |
-| `/superpowers:writing-skills` | Building WP Playground as a new skill |
-| `/superpowers:executing-plans` | Working through hero-fixes.md plan |
-| `/firecrawl:firecrawl-cli` | Research WP Playground approaches |
-
-### Agents
-| Agent | Responsibility |
-|-------|---------------|
-| `wp-sgs-developer` | ALL SGS WordPress code — blocks, theme, deploy, fidelity comparison. Must follow plans step-by-step. |
-| `design-reviewer` | Screenshot comparison only. Must NOT make autonomous changes. |
-| `test-and-explain` | Post-deploy verification in plain English |
-
-### Key Infrastructure
-- SSH: `ssh -i ~/.ssh/id_ed25519 -p 65002 u945238940@141.136.39.73`
-- WP path: `~/domains/palestine-lives.org/public_html`
-- WP admin (both sites): username: Claude, password: 49LyNdp%%T@0@2$VbLnALVt1
-- Reference site: lightsalmon-tarsier-683012.hostingersite.com
-- Target site: palestine-lives.org
-- Style variation: indus-foods
-- sgs-db.py: `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py <command>`
-- Deploy: tar method documented in previous handoff (2026-02-27)
+- The `--exclude='src'` tar deploy bug was silently corrupting vendor on every deploy since it was introduced. Any server that received a tar deploy may have incomplete vendor packages — check with `php -r "require '/path/to/vendor/autoload.php';"` if WP-CLI fails with autoload errors.
+- CSS cache `max-age=14400` (4 hours) means Playwright QA will show stale styles. Verify fixes via `curl -s URL | grep 'class-name{[^}]*}'` instead of relying on Playwright screenshots.
+- Mega-menu build/src divergence: the compiled file has CSS variables (`--sgs-mm-panel-min-width`, `--sgs-mega-menu-max-width`), multiple layout variants (full, contained, columns, flyout), and animation via JS removing `[hidden]` — more feature-rich than the source. Do not overwrite the compiled file with webpack output until the source is synced.
+- LiteSpeed is currently OFF on the dev site. Re-enable before any Lighthouse or performance checks.
 
 ## Next Session Prompt
 
-```
-/superpowers:using-superpowers
+~~~
+Invoke `/superpowers:using-superpowers` before doing anything else.
 
-SGS WordPress Framework had a MAJOR tooling session: 28+ assets ported from OC, 5 WP skills added (14 total), 5 style variations deployed, competitive analysis completed, DB gaps identified. Agent rewritten as full SGS employee. No code deployed to palestine-lives.org — hero bugs from 2026-02-27 still pending.
+Read CONVERSATION-HANDOFF.md and CLAUDE.md for full context, then work through the priorities below.
 
-Read CONVERSATION-HANDOFF.md and CLAUDE.md for full context, then:
+## Skills to Invoke
 
-1. **Audit all SGS agents and skills first** — Before using any ported tools, run `skill-auditor` and `agent-auditor` across the SGS-related skills and agents. Many were ported from OC without CC testing. Fix issues before relying on them.
+| Skill | When to use |
+|-------|-------------|
+| `/superpowers:using-superpowers` | FIRST — before any response |
+| `/sgs-wp-engine` | Before any SGS block or theme work — loads block knowledge base |
+| `/wp-block-development` | When syncing mega-menu src/build CSS or implementing testimonial two-column |
+| `/visual-qa` | Before and after any visual changes to the homepage |
 
-2. **Fix hero block bugs** — Follow plan at docs/plans/2026-02-27-hero-fixes.md. Four fixes: heading colour render bug, secondary CTA transparent bg, contentWidth attribute, split image max-height. Delegate to `wp-sgs-developer`.
+## MCP Servers & Tools
 
-3. **Validate WP Playground locally** — Test the `wp-playground` skill with a real SGS project to confirm it works in CC context.
+| Tool | What to use it for |
+|------|-------------------|
+| Playwright MCP | Visual QA on service pages; verify mega-menu after CSS sync |
+| GitHub MCP | Push commits, open PRs if feature branch needed |
 
-4. **Execute Indus migration** — First real test of the fidelity comparator. Run against lightsalmon-tarsier-683012.hostingersite.com → palestine-lives.org. Invoke `/sgs-wp-engine`, load `references/fidelity-comparator.md`, use `sgs-db.py context indus-foods` first. Delegate to `wp-sgs-developer`.
+## Agents to Delegate To
 
-5. **Update DB** — Register 5 new style variations, populate block grades, log weaknesses. Current state: grades all NULL, 42-58% supports coverage, 0 weaknesses.
+| Agent | When |
+|-------|------|
+| `wp-sgs-developer` | All block code changes: mega-menu CSS sync, testimonial two-column |
+| `design-reviewer` | Visual QA on service pages (IDs 65-68) and homepage re-check |
 
-Critical context:
-- Agent is now `wp-sgs-developer` (rewritten as full SGS employee, not generic WP dev)
-- Gap analysis spec: ~/.claude/specs/2026-03-16-sgs-wp-gap-analysis.md
-- Competitive analysis: ~/.claude/specs/2026-03-17-wp-competitive-analysis.md
-- SSH: ssh -i ~/.ssh/id_ed25519 -p 65002 u945238940@141.136.39.73
-- WP admin (both sites): username: Claude, password: 49LyNdp%%T@0@2$VbLnALVt1
-- Reference: lightsalmon-tarsier-683012.hostingersite.com | Target: palestine-lives.org
-- Style variation: indus-foods
-- Gemini API: main key rate-limited, use GOOGLE_API_KEY_FREE fallback
-- design-reviewer agent must NOT make autonomous changes — give explicit instructions only
-- n8n competitor workflow needs Firecrawl + Telegram env vars before it will run
-```
+---
+
+## Task 1: Re-enable LiteSpeed
+
+Run: `ssh hd "cd ~/domains/palestine-lives.org/public_html && wp plugin activate litespeed-cache"` then reset OPcache. Do this first, before any other work.
+
+## Task 2: Fix Mega-Menu CSS Source/Build Divergence
+
+Copy `plugins/sgs-blocks/build/blocks/mega-menu/style-index.css` content into `src/blocks/mega-menu/style.css` (this is the authoritative version — more feature-rich). Then add `import './style.css'; import './editor.css';` to `src/blocks/mega-menu/index.js`. Run `npm run build` and verify the compiled output matches. Deploy and verify the panel max-width still applies via `curl -s "https://palestine-lives.org/wp-content/plugins/sgs-blocks/build/blocks/mega-menu/style-index.css" | grep max-width`. Delegate to `wp-sgs-developer`.
+
+## Task 3: Visual QA — Service Pages
+
+Run `design-reviewer` agent on Food Service, Manufacturing, Retail, Wholesale pages (IDs 65-68) at 375px and 1440px. Check: images load, layout is correct, no broken images. These pages reference `uploads/indus-foods/decorative-foods/*.webp` as image blocks — verify they render.
+
+## Guardrails
+
+- LiteSpeed MUST be re-enabled before any Lighthouse or performance testing.
+- Do NOT run `npm run build` before syncing `src/blocks/mega-menu/style.css` to match the build — it would overwrite the sophisticated compiled version with the simpler source.
+- CSS changes take up to 4 hours to show in Playwright due to `Cache-Control: max-age=14400`. Verify CSS changes via `curl -s URL | grep 'rule'` not Playwright screenshots.
+- Branch discipline: all current work is framework-level (main branch). Client-specific changes go on a `feat/indus-foods-*` branch.
+~~~
