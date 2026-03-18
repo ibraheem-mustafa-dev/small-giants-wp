@@ -227,7 +227,7 @@
 	height: 44px;
 	min-width: 0;
 	min-height: 0;
-	border-radius: 50%;
+	border-radius: 4px; /* Square touch target — visible dot is in ::before pseudo-element */
 	border: none;
 	background: transparent;
 	cursor: pointer;

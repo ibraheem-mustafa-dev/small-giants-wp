@@ -113,6 +113,7 @@
 	left: 0;
 	z-index: var(--sgs-z-mega-menu, 1000);
 	min-width: 520px;
+	max-width: min(900px, calc(100vw - 2rem));
 	padding: 1.5rem;
 	background-color: var(--wp--preset--color--surface, var(--sgs-bg-colour, #fff));
 	/* Explicit dark text — panel background is white, header may be a dark/coloured bar */
