@@ -241,7 +241,7 @@ cd plugins/sgs-blocks && npm run build
 
 # Deploy via tar (RELIABLE — scp -r creates nested dirs on Hostinger)
 cd /path/to/small-giants-wp
-tar -cf sgs-deploy.tar --exclude='node_modules' --exclude='.git' --exclude='src' theme/sgs-theme plugins/sgs-blocks
+tar -cf sgs-deploy.tar --exclude='node_modules' --exclude='.git' --exclude='plugins/sgs-blocks/src' theme/sgs-theme plugins/sgs-blocks
 scp -P 65002 sgs-deploy.tar u945238940@141.136.39.73:sgs-deploy.tar
 ssh -p 65002 u945238940@141.136.39.73 "WP=domains/palestine-lives.org/public_html/wp-content && rm -rf \$WP/themes/sgs-theme \$WP/plugins/sgs-blocks && tar -xf sgs-deploy.tar && mv theme/sgs-theme \$WP/themes/ && mv plugins/sgs-blocks \$WP/plugins/ && rm -rf theme plugins sgs-deploy.tar"
 rm sgs-deploy.tar
@@ -269,6 +269,7 @@ ssh hd "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/palestine-lives.o
 - **Deprecations required** — when changing a static block's `save.js` output, you MUST add a deprecation to avoid "This block contains unexpected content" errors on existing posts.
 - **SSH remote variable expansion** — use single quotes for the outer string when running `ssh hd '...'` so `$WP` expands on the server. Double quotes expand locally (to empty), silently breaking the deploy.
 - **Tar deploy: delete before move** — `mv plugins/sgs-blocks $WP/plugins/` fails with "Directory not empty" if the target exists. Always `rm -rf $WP/plugins/sgs-blocks` first in the same SSH command, then `mv`.
+- **Tar `--exclude='src'` breaks vendor** — `--exclude='src'` is too broad; it strips `vendor/*/src/` subdirectories (e.g. myclabs, phpunit) causing fatal PHP errors on the server. Always use `--exclude='plugins/sgs-blocks/src'` to target only the JS source directory.
 - **WP-CLI inline PHP escaping** — `wp eval '...'` breaks on shell special chars (`!--`, `$b[0]`, heredocs, etc.). Reliable fallback: write to `/tmp/script.php` with `cat << 'PHPEOF'`, `scp` to server, then `wp eval-file ~/script.php`, then `rm`.
 - **`parse_blocks()` is shallow** — only returns top-level blocks. Finding nested blocks (inside Columns, Groups, etc.) requires a recursive function that walks `$b['innerBlocks']` at every level.
 - **Theme spec drift** — `specs/01-SGS-THEME.md` still shows DM Serif Display + DM Sans as default fonts. The actual `theme.json` uses Inter variable. The CLAUDE.md files are correct; the spec needs updating.
@@ -290,3 +291,54 @@ ssh hd "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/palestine-lives.o
 - **To activate:** WP Admin → Appearance → Editor → Styles (top right) → Browse styles → select 'HelpingDoctors'
 - Palette: Primary Green `#1B8A5A`, Dark Green `#0A5C3A`, Light Mint `#E8F5F0`, Dark `#1A1A2E`, White `#FFFFFF`
 - Buttons, links all use green tokens
+
+## Design Context
+
+### Users
+
+**Primary:** B2B trade buyers — restaurant owners, takeaway operators, catering managers, hotel chefs, retail shop owners, other wholesalers. They browse at odd hours (after shifts), on mobile, under time pressure. They want to know: "Can I trust these people? What's the minimum order? How fast is delivery?" Decision-making is relationship-driven, not transactional.
+
+**Secondary:** Start-up food entrepreneurs who Indus actively mentors — first-time caterers, small retailers entering the ethnic food market. Lower confidence, need reassurance and guidance.
+
+### Brand Personality
+
+**Heritage. Partnership. Ambition.**
+
+- **Heritage** — three generations since 1962, on-site production since 1975, Birmingham Balti Triangle roots. Unchallengeable depth of story. This is the warmth layer.
+- **Partnership** — not just a supplier but an active partner in customers' success. Mentors start-ups, sits on industry councils (FWD), champions independent wholesalers nationally. "We will always encourage new opportunities, even if we don't directly benefit financially."
+- **Ambition** — quietly forward-looking. £1.5M manufacturing investment, exclusive distribution deals, technology-driven (Erudus integration, mobile ordering). Innovates without being flashy.
+
+**Tone of voice:** Warm, direct, confident but never boastful. Speaks like a knowledgeable family business owner, not a marketing department. UK English. No jargon, no corporate platitudes, no "synergy."
+
+**Emotional target:** Trust-first for the business decision ("these people are solid"), warmth underneath for the relationship ("they actually care about my business"). The handshake before the hug.
+
+### Aesthetic Direction
+
+**Visual tone:** Premium independent — warmer than corporate, more polished than discount. The approved homepage design at lightsalmon-tarsier-683012.hostingersite.com sets the foundation: teal/gold palette, Montserrat/Source Sans 3 typography, card-based layouts, gradient hero sections. Build on this — don't reinvent.
+
+**What it should feel like:** A quality family business that has invested in doing things properly. Like walking into a well-run warehouse where everything is organised and the owner greets you by name.
+
+**What it should NOT feel like:**
+- Generic corporate B2B (no stock handshake photos, no "leverage our synergies")
+- Cheap wholesale catalogue (no cluttered product grids, no ALL CAPS DEALS)
+- Template website (no cookie-cutter layouts — personality in the details)
+
+**Reference points:** JK Foods has good bones (clean, modern) but lacks personality and warmth. KTC Food Group has good structure (channel-segmented) but feels cold. Neither captures the family heritage feel. Think more like a premium independent brand than either competitor.
+
+**Colour usage (Indus Foods variation):**
+- Teal (#0A7EA8) = trust, professionalism, primary actions
+- Gold (#D8CA50) = heritage, warmth, accent backgrounds (never as text on light — use #7A6B00 for text)
+- Warm white (#F8F7F4) = breathing room, surface-alt sections
+- Dark teal (#075E80) = depth, premium sections, hero gradients
+
+### Design Principles
+
+1. **Trust before conversion** — every section earns trust before asking for action. Stats, heritage, testimonials, certifications come before CTAs. A tired restaurant owner at 11pm needs confidence, not pressure.
+
+2. **Show the family, not the corporation** — real photography over stock, human language over marketing speak, Amir's story over corporate values statements. The 60-year heritage is the strongest differentiator in the sector — use it visually.
+
+3. **Respect the user's time** — these are busy operators. Clear hierarchy, scannable sections, obvious next steps. No scroll-to-discover patterns. Mobile-first because they're browsing on phones after shifts.
+
+4. **Premium but approachable** — generous whitespace, quality typography, polished hover states and transitions. But not intimidating — low minimum orders (£75), WhatsApp as a contact channel, "Apply in 3 minutes" messaging.
+
+5. **Accessible by default** — WCAG 2.2 AA minimum, 44px touch targets, 4.5:1 contrast ratios. Not as a compliance checkbox but because the users include older business owners, people with varying tech literacy, and night-shift workers on dim screens.

@@ -172,6 +172,23 @@ function sgs_responsive_image( int $id, string $url, string $alt = '', string $s
 	}
 
 	// Fallback: plain <img> with no srcset.
+	// Attempt to retrieve explicit dimensions from the attachment metadata so
+	// the browser can reserve the correct space and avoid layout shift (CLS).
+	if ( ! isset( $attrs['width'] ) && ! isset( $attrs['height'] ) ) {
+		$resolve_id = $id;
+		// If no attachment ID was provided, try resolving from URL.
+		if ( 0 === $resolve_id && ! empty( $url ) ) {
+			$resolve_id = absint( attachment_url_to_postid( $url ) );
+		}
+		if ( $resolve_id > 0 ) {
+			$src_data = wp_get_attachment_image_src( $resolve_id, $size );
+			if ( $src_data && ! empty( $src_data[1] ) && ! empty( $src_data[2] ) ) {
+				$attrs['width']  = (int) $src_data[1];
+				$attrs['height'] = (int) $src_data[2];
+			}
+		}
+	}
+
 	$attr_str = '';
 	foreach ( $attrs as $key => $value ) {
 		$attr_str .= ' ' . esc_attr( $key ) . '="' . esc_attr( $value ) . '"';

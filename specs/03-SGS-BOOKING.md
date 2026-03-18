@@ -82,6 +82,29 @@ The plugin's PHP code and admin UI use the WP terms (service, provider). API cal
 
 ---
 
+## Design System — "Dark Confidence" (inherited from booking system)
+
+The booking system established a design system called "Dark Confidence" (2026-03-15). The WordPress plugin inherits this for all client-facing booking UI. Full spec in the booking system's `CLAUDE.md` and in `plugins/sgs-booking/CLAUDE.md`.
+
+**Key constraints for the WP plugin:**
+
+- **Public booking flow:** Warm cream background (`#FAF8F5`), orange (`#F87A1F`) CTAs, teal (`#0F7E80`) for info/confirmation
+- **Per-org theming:** The API branding endpoint returns colours, logo, font. Plugin injects these as `--brand-*` CSS custom properties. Never hardcode colours.
+- **ADHD-friendly UX:** Focus isolation (hovered element brightens, siblings dim to ~60%), spring-based animations (`cubic-bezier(0.34, 1.56, 0.64, 1)`), high-contrast hover/focus/active states
+- **Calendar:** Orange dot indicator on available dates, not highlighted backgrounds
+- **Time slots:** Pill-shaped, flex-wrap layout, hover slides right with orange border
+- **Form inputs:** Bottom-border only, floating labels on focus
+- **Loading:** Pulsing orange dot sequence — never spinning circles
+- **Confirmation:** Teal circle + white tick with pop animation, copy says "You're booked in"
+- **Anti-patterns:** No serif fonts, no grey-on-white cards, no `ease-in-out` transitions, no uniform grids, no `innerHTML` for API data (XSS risk)
+
+**Product vision (future phases):**
+- Phase B: Onboarding wizards, guided tutorials, contextual tooltips
+- Phase C: AI chatbot for guidance/support/booking automation (N8N + RAG)
+- Phase D: Freemium model with paid extras (chatbot automation, advanced analytics)
+
+---
+
 ## Conventions
 
 - **Monday is the first day of the week.** All calendar UIs (date pickers, schedule tables, working hours displays) show Monday first, Sunday last. This is the UK/ISO 8601 convention. The booking system internally uses `0 = Sunday` (JavaScript `Date.getDay()`), so the WP plugin must reorder when displaying. The mapping: Mon=1, Tue=2, Wed=3, Thu=4, Fri=5, Sat=6, Sun=0.

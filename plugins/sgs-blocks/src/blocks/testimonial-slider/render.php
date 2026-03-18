@@ -220,7 +220,7 @@ if ( $show_dots && $total_testimonials > $slides_visible ) {
 // aria-live="polite" announces when the active slide changes (view.js updates
 // aria-selected on dots). tabindex is omitted — keyboard nav is via dots/arrows.
 printf(
-	'<div %s><div class="sgs-testimonial-slider__track" role="region" aria-label="Customer Testimonials" aria-live="polite"%s>%s</div>%s%s</div>',
+	'<div %s><div class="sgs-testimonial-slider__stage"><div class="sgs-testimonial-slider__track" role="region" aria-label="Customer Testimonials" aria-live="polite"%s>%s</div>%s</div>%s</div>',
 	$wrapper_attributes,
 	$track_style_attr,
 	$slides_html,

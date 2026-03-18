@@ -80,6 +80,43 @@ WordPress Page
 | `orgSlug` | Organisation slug |
 | `typeSlug` | Service slug |
 
+## Design Context
+
+### Users
+- **Site visitors** booking appointments on WordPress-hosted sites. They arrive from search, social, or direct links. Non-technical. Expect the booking flow to feel native to the site, not a bolted-on widget.
+- **Site owners** (SGS clients) adding booking blocks via the Gutenberg editor. Non-technical. Need the block to "just work" with minimal configuration.
+- **Bean** managing the plugin code. Has ADHD — all admin UIs must have clear focus states and obvious next actions.
+
+### Brand Personality
+Inherits from the booking system: **Confident. High-energy. Unique.** The WordPress blocks must feel like a natural extension of the booking system, not a degraded version.
+
+### Aesthetic Direction — Inherits "Dark Confidence"
+The plugin's frontend booking UI inherits the booking system's design system via `--brand-*` CSS variables served by the API's branding endpoint. Key principles:
+
+- **Public booking flow:** Warm cream background (`#FAF8F5`), orange (`#F87A1F`) CTAs, teal (`#0F7E80`) for informational elements
+- **Per-org theming:** The API returns brand colours, logo, and font per organisation. The plugin injects these as CSS custom properties — never hardcode colours
+- **ADHD-friendly:** Focus isolation (hovered elements brighten, siblings dim), spring animations, high-contrast interaction states
+- **Time slots:** Pill-shaped, flex-wrap, hover slides right with orange border
+- **Calendar:** Available dates get an orange dot indicator, not highlighted backgrounds
+- **Form inputs:** Bottom-border only, floating labels on focus
+- **Confirmation:** Teal circle + white tick with pop animation, "You're booked in" copy
+- **Loading:** Pulsing orange dot sequence, not spinning circles
+- **Transitions:** Spring-based `cubic-bezier(0.34, 1.56, 0.64, 1)`, never `ease-in-out`
+
+### What NOT to Do (Design)
+- No serif heading fonts
+- No spinning circles for loading
+- No thin grey borders on white cards
+- No uniform card grids
+- No `innerHTML` for API data — use `textContent` or Interactivity API templates
+- Never inject `customCss` from API branding response (XSS vector)
+
+### Design Principles
+1. **Native feel** — The booking block should look like it belongs on the WordPress site, not like an iframe from another product
+2. **API-driven theming** — All visual customisation comes from the booking system API, not WordPress block settings. The plugin is a faithful renderer.
+3. **Progressive enhancement** — No-JS fallback links to the hosted booking page. The block enhances with the full interactive flow when JS loads.
+4. **Spotlight focus** — Inherited from booking system. Interactive elements brighten, siblings dim.
+
 ## Conventions
 
 - **Monday is the first day of the week** — all calendar UIs show Mon-Sun (UK/ISO 8601). The booking system uses `0 = Sunday` internally (JS `Date.getDay()`), so reorder when displaying.

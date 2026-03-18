@@ -246,6 +246,23 @@ if ( $is_split && ! empty( $split_image['url'] ) ) {
 		$img_attrs['height'] = absint( $split_image['height'] );
 	}
 
+	// Fallback: if dimensions still missing, try to resolve them from WordPress
+	// metadata. Prevents CLS when the editor hasn't stored the explicit size.
+	if ( ! isset( $img_attrs['width'] ) || ! isset( $img_attrs['height'] ) ) {
+		$resolve_id = $img_id;
+		// If no ID was stored with the block, try to look up the attachment by URL.
+		if ( 0 === $resolve_id && ! empty( $split_image['url'] ) ) {
+			$resolve_id = absint( attachment_url_to_postid( $split_image['url'] ) );
+		}
+		if ( $resolve_id > 0 ) {
+			$src_data = wp_get_attachment_image_src( $resolve_id, 'large' );
+			if ( $src_data && ! empty( $src_data[1] ) && ! empty( $src_data[2] ) ) {
+				$img_attrs['width']  = $img_attrs['width']  ?? (int) $src_data[1];
+				$img_attrs['height'] = $img_attrs['height'] ?? (int) $src_data[2];
+			}
+		}
+	}
+
 	$media_html = '<div class="sgs-hero__media">';
 	$media_html .= sgs_responsive_image(
 		$img_id,

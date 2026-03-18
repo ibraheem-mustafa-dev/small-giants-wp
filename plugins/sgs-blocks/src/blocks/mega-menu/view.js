@@ -16,6 +16,32 @@ import { store, getContext, getElement } from '@wordpress/interactivity';
 const FOCUSABLE_SELECTOR =
 	'a, button, input, textarea, select, [tabindex]:not([tabindex="-1"])';
 
+/**
+ * Reposition a panel that would overflow the right edge of the viewport.
+ *
+ * Called after a panel opens. Uses getBoundingClientRect to detect overflow
+ * and switches the panel to right-aligned if needed.
+ *
+ * @param {HTMLElement} wrapper - The .sgs-mega-menu wrapper element.
+ */
+function repositionPanel( wrapper ) {
+	const panel = wrapper.querySelector( '.sgs-mega-menu__panel' );
+	if ( ! panel ) {
+		return;
+	}
+	// Reset any previously applied position overrides.
+	panel.style.left = '';
+	panel.style.right = '';
+	requestAnimationFrame( () => {
+		const rect = panel.getBoundingClientRect();
+		const overflow = rect.right - window.innerWidth;
+		if ( overflow > 0 ) {
+			panel.style.left = 'auto';
+			panel.style.right = '0';
+		}
+	} );
+}
+
 const { state } = store( 'sgs/mega-menu', {
 	state: {
 		openMenuId: null,
@@ -29,12 +55,15 @@ const { state } = store( 'sgs/mega-menu', {
 			ctx.isOpen = ! ctx.isOpen;
 			state.openMenuId = ctx.isOpen ? ctx.menuId : null;
 
-			// Focus first focusable element in panel when opening.
 			if ( ctx.isOpen ) {
 				const { ref } = getElement();
-				const panel = ref
-					.closest( '.sgs-mega-menu' )
-					.querySelector( '.sgs-mega-menu__panel' );
+				const wrapper = ref.closest( '.sgs-mega-menu' );
+
+				// Reposition panel if it overflows the viewport edge.
+				repositionPanel( wrapper );
+
+				// Focus first focusable element in panel when opening.
+				const panel = wrapper.querySelector( '.sgs-mega-menu__panel' );
 				if ( panel ) {
 					requestAnimationFrame( () => {
 						const firstFocusable =
@@ -58,6 +87,11 @@ const { state } = store( 'sgs/mega-menu', {
 
 			ctx.isOpen = true;
 			state.openMenuId = ctx.menuId;
+
+			// Reposition panel if it overflows the viewport edge.
+			const { ref } = getElement();
+			const wrapper = ref.closest( '.sgs-mega-menu' );
+			repositionPanel( wrapper );
 		},
 
 		/**

@@ -157,15 +157,27 @@
 	color: var(--wp--preset--color--text-muted, #555);
 }
 
+/* ===== Stage — positions arrows on the sides of the track ===== */
+.sgs-testimonial-slider__stage {
+	position: relative;
+}
+
 /* ===== Arrows ===== */
 .sgs-testimonial-slider__arrows {
+	position: absolute;
+	top: 50%;
+	left: 0;
+	right: 0;
+	transform: translateY(-50%);
 	display: flex;
-	justify-content: center;
-	gap: var(--wp--preset--spacing--20);
-	margin-top: var(--wp--preset--spacing--30);
+	justify-content: space-between;
+	pointer-events: none;
+	padding: 0 var(--wp--preset--spacing--20, 8px);
+	z-index: 2;
 }
 
 .sgs-testimonial-slider__arrow {
+	pointer-events: all;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -202,36 +214,52 @@
 	margin-top: var(--wp--preset--spacing--30);
 }
 
-/* H11: WCAG 2.2 SC 2.5.8 requires 24px minimum touch target.
-   The visible dot is kept small (12px) but surrounded by a 6px transparent
-   padding on each side giving a 24×24px interactive area. */
+/*
+ * WCAG 2.2 SC 2.5.8 requires a 24×24px minimum touch target.
+ * The button is 44×44px transparent so it comfortably exceeds this.
+ * The VISIBLE dot is a 10px pseudo-element so it looks correct visually.
+ * Using a pseudo-element keeps the button background transparent —
+ * the old approach set min-width/min-height on a coloured button
+ * which caused the dot to render as a giant teal circle.
+ */
 .sgs-testimonial-slider__dot {
-	width: 12px;
-	height: 12px;
-	min-width: 44px;
-	min-height: 44px;
+	width: 44px;
+	height: 44px;
+	min-width: 0;
+	min-height: 0;
 	border-radius: 50%;
 	border: none;
-	background: var(--wp--preset--color--border-subtle, #ccc);
+	background: transparent;
 	cursor: pointer;
-	padding: 6px;
-	box-sizing: content-box;
+	padding: 0;
+	box-sizing: border-box;
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	position: relative;
+	transition: none;
+}
+
+.sgs-testimonial-slider__dot::before {
+	content: '';
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.5);
 	transition-duration: var(--sgs-transition-duration, 300ms);
 	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
 	transition-property: background-color, transform;
+	pointer-events: none;
 }
 
-.sgs-testimonial-slider__dot--active {
-	background: var(--wp--preset--color--primary, #0F7E80);
-	transform: scale(1.2);
+.sgs-testimonial-slider__dot--active::before {
+	background: var(--wp--preset--color--surface, #fff);
+	transform: scale(1.4);
 }
 
 .sgs-testimonial-slider__dot:focus-visible {
 	outline: 2px solid var(--wp--preset--color--primary-dark, #076a8e);
-	outline-offset: 3px;
+	outline-offset: 2px;
 }
 
 /* ===== Pause/Play button — WCAG 2.2.2 compliant ===== */
@@ -385,7 +413,8 @@
 	}
 
 	.sgs-testimonial-slider__arrow,
-	.sgs-testimonial-slider__dot {
+	.sgs-testimonial-slider__dot,
+	.sgs-testimonial-slider__dot::before {
 		transition: none;
 	}
 }

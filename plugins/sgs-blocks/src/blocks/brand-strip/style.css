@@ -2,6 +2,14 @@
 
 .sgs-brand-strip {
 	overflow: hidden;
+	/*
+	 * Reserve vertical space equal to the default max logo height (48px) plus
+	 * the block's vertical padding. This prevents CLS when logo images load and
+	 * the track jumps from zero height to full height before images decode.
+	 * Actual height is driven by the images — min-height only catches the
+	 * brief moment before they load.
+	 */
+	min-height: calc(var(--sgs-logo-max-height, 80px) + var(--wp--preset--spacing--50, 2rem) * 2);
 }
 
 /* ===== Track ===== */
@@ -26,7 +34,7 @@
 
 /* ===== Logo image ===== */
 .sgs-brand-strip__logo {
-	max-height: var(--sgs-logo-max-height, 48px);
+	max-height: var(--sgs-logo-max-height, 80px);
 	width: auto;
 	object-fit: contain;
 	display: block;

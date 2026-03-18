@@ -59,7 +59,7 @@
                                      },
                        "maxHeight":  {
                                          "type":  "number",
-                                         "default":  48
+                                         "default":  80
                                      },
                        "hoverBackgroundColour":  {
                                                      "type":  "string",
@@ -94,7 +94,7 @@
                     "attributes":  {
                                        "scrolling":  true,
                                        "greyscale":  true,
-                                       "maxHeight":  48
+                                       "maxHeight":  80
                                    }
                 }
 }

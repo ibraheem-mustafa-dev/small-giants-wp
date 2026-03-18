@@ -129,19 +129,53 @@ function get_block_defaults( \WP_REST_Request $request ): \WP_REST_Response {
 /**
  * POST handler - save block defaults.
  *
+ * Accepts a flat or shallow attributes array. Values are sanitised as text
+ * to prevent persistent XSS via block default injection. Maximum payload
+ * size is enforced to prevent storage abuse.
+ *
  * @param \WP_REST_Request $request Request object.
  * @return \WP_REST_Response|\WP_Error
  */
 function save_block_defaults( \WP_REST_Request $request ) {
 	$attributes = $request->get_param( 'attributes' );
+
 	if ( ! is_array( $attributes ) ) {
 		return new \WP_Error(
 			'invalid_attributes',
-			'Attributes must be an object.',
+			__( 'Attributes must be an object.', 'sgs-blocks' ),
 			[ 'status' => 400 ]
 		);
 	}
-	update_option( defaults_option_key( $request['block'] ), $attributes, false );
+
+	// Cap the number of keys to prevent unbounded storage growth.
+	if ( count( $attributes ) > 100 ) {
+		return new \WP_Error(
+			'too_many_attributes',
+			__( 'Attributes object exceeds maximum allowed keys.', 'sgs-blocks' ),
+			[ 'status' => 400 ]
+		);
+	}
+
+	// Sanitise every scalar value. Arrays (e.g. repeated option lists) are
+	// sanitised element-by-element. Nested objects are rejected.
+	$sanitised = [];
+	foreach ( $attributes as $key => $value ) {
+		$safe_key = sanitize_key( $key );
+		if ( ! $safe_key ) {
+			continue;
+		}
+		if ( is_array( $value ) ) {
+			$sanitised[ $safe_key ] = array_map( 'sanitize_text_field', $value );
+		} elseif ( is_bool( $value ) || is_int( $value ) || is_float( $value ) ) {
+			// Preserve typed primitives — they drive block controls, not output.
+			$sanitised[ $safe_key ] = $value;
+		} elseif ( is_string( $value ) ) {
+			$sanitised[ $safe_key ] = sanitize_text_field( $value );
+		}
+		// Silently drop nested objects — block attributes should never need them.
+	}
+
+	update_option( defaults_option_key( $request['block'] ), $sanitised, false );
 	return rest_ensure_response( [ 'saved' => true ] );
 }
 

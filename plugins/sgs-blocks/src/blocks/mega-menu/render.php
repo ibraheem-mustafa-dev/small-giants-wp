@@ -28,10 +28,11 @@ $highlight          = $attributes['highlight'] ?? false;
 $badge              = $attributes['badge'] ?? '';
 $badge_colour       = $attributes['badgeColour'] ?? 'accent';
 
-// Generate unique menu ID.
-static $menu_counter = 0;
-$menu_counter++;
-$menu_id = 'mega-menu-' . $menu_counter;
+// Generate unique menu ID per block instance.
+// wp_unique_id() is process-safe and persists across nested do_blocks() calls,
+// unlike a static counter which resets in sub-execution contexts (e.g. template
+// parts loaded via do_blocks()). Prefix with 'mega-menu-' to keep IDs readable.
+$menu_id = wp_unique_id( 'mega-menu-' );
 
 // Build wrapper classes.
 $classes = array(

@@ -30,6 +30,24 @@
 	--sgs-focus-color: var(--wp--preset--color--primary-dark, #076a8e);
 }
 
+/* ─── REMOVE INTER-SECTION GAPS ─── */
+
+/*
+ * WordPress adds margin-block to direct children of is-layout-flow containers.
+ * This creates white gaps between full-width sections with different background
+ * colours. We zero these out at the page/post body level so adjacent sections
+ * flow together without white bands. Spacing WITHIN sections is preserved via
+ * padding on the section containers themselves.
+ */
+.entry-content > .alignfull,
+.wp-site-blocks > .wp-block-group,
+.wp-site-blocks > .wp-block-cover,
+.wp-site-blocks > .wp-block-sgs-hero,
+body .is-root-container > .wp-block {
+	margin-block-start: 0 !important;
+	margin-block-end: 0 !important;
+}
+
 /* Universal focus ring — catches anything without a specific rule.
    3px width ensures WCAG 2.4.11 compliance. Never suppress with outline: 0. */
 :focus-visible {
@@ -112,8 +130,10 @@
 .wp-block-button__link {
 	border-radius: var(--wp--custom--border-radius--medium);
 	font-weight: 700;
-	transition: transform var(--wp--custom--transition--fast),
-	            box-shadow var(--wp--custom--transition--fast);
+	/* 200ms micro-interaction: cubic-bezier(0.16, 1, 0.3, 1) is an ease-out
+	 * deceleration curve — fast start, gentle finish. Feels snappier than ease. */
+	transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
+	            box-shadow 200ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .wp-block-button__link:hover {
@@ -128,6 +148,17 @@
 .wp-block-button__link:focus-visible {
 	outline: 3px solid var(--sgs-focus-color, var(--wp--preset--color--primary-dark, #076a8e));
 	outline-offset: 2px;
+}
+
+/* ─── FIX: WP has-text-color override on buttons ─── */
+/*
+ * WordPress 6.9 global styles apply .has-text-color { color: var(--text) !important }
+ * which overrides inline color values on buttons. This rule ensures buttons with
+ * an explicit inline color keep that colour instead of being forced to --text.
+ * The [style*="color"] selector targets only buttons with inline colour set.
+ */
+.wp-block-button__link.has-text-color[style*="color"] {
+	color: inherit !important;
 }
 
 /* ─── PRIMARY BUTTON — explicit defaults ─── */
@@ -234,9 +265,9 @@
 .wp-block-navigation .wp-block-navigation-item__content {
 	padding: 4px 8px;
 	border-radius: var(--wp--custom--border-radius--small);
-	transition: color var(--wp--custom--transition--fast),
-	            background-color var(--wp--custom--transition--fast),
-	            opacity var(--wp--custom--transition--fast);
+	transition: color 200ms cubic-bezier(0.16, 1, 0.3, 1),
+	            background-color 200ms cubic-bezier(0.16, 1, 0.3, 1),
+	            opacity 200ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ─── COLUMNS ─── */
@@ -290,9 +321,27 @@ header.wp-block-template-part.sgs-header-transparent > .wp-block-group {
 	background: transparent !important;
 }
 
-header.wp-block-template-part.sgs-header-transparent .wp-block-navigation .wp-block-navigation-item__content,
+/*
+ * Only top-level nav items get the white colour override in transparent mode.
+ * Submenu items use their own background (white/surface) so they need dark text.
+ * Without this scope, submenu items inherit white-on-white — completely invisible.
+ */
+header.wp-block-template-part.sgs-header-transparent .wp-block-navigation > .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content,
 header.wp-block-template-part.sgs-header-transparent .wp-block-site-title a {
 	color: var(--wp--preset--color--surface, #fff);
+}
+
+/*
+ * When the transparent header is active, compensate the first content section
+ * with padding-top equal to the header height so the header doesn't overlay it.
+ * class-header-behaviour.php adds sgs-has-transparent-header to <body> for
+ * both transparent and transparent-sticky modes.
+ *
+ * --sgs-header-height defaults to 80px. Override via wp_add_inline_style()
+ * if the header height changes.
+ */
+body.sgs-has-transparent-header .wp-site-blocks > :first-child {
+	padding-top: var(--sgs-header-height, 80px);
 }
 
 /* Shrinking header — uses CSS scroll-driven animation (Chrome 115+) */
@@ -329,8 +378,8 @@ header.wp-block-template-part.sgs-header-transparent .wp-block-site-title a {
 /* ─── HEADER CTA ─── */
 
 .sgs-header-cta .wp-block-button__link {
-	transition: transform var(--wp--custom--transition--fast),
-	            box-shadow var(--wp--custom--transition--fast);
+	transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
+	            box-shadow 200ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .sgs-header-cta .wp-block-button__link:hover {
@@ -391,17 +440,23 @@ header.wp-block-template-part.sgs-header-transparent .wp-block-site-title a {
  * merges adjacent max-width/min-width media blocks and drops the desktop hide rule.
  */
 
-/* ─── REDUCED MOTION — critical transitions only ─── */
+/* ─── REDUCED MOTION — universal rule + critical overrides ─── */
 
 /*
- * Covers only the above-the-fold elements declared in this file.
- * Non-critical reduced-motion rules (footer links, submenu animations)
- * are in core-blocks.css.
+ * Universal rule disables all animations and transitions for users who have
+ * requested reduced motion in their OS accessibility settings (WCAG 2.1 SC 2.3.3).
+ * scroll-behavior: auto prevents smooth-scroll from feeling disorienting.
+ *
+ * This rule is intentionally broad. Specific elements that must retain
+ * functional transitions (e.g. focus rings) are restored below.
  */
 @media (prefers-reduced-motion: reduce) {
-	.wp-block-button__link,
-	.sgs-header-cta .wp-block-button__link,
-	.wp-block-navigation .wp-block-navigation-item__content {
-		transition: none;
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
 	}
 }

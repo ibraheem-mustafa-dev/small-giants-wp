@@ -260,11 +260,16 @@ class Stripe_Settings {
 	public static function ajax_create_payment_intent(): void {
 		check_ajax_referer( 'sgs_stripe_nonce', 'nonce' );
 
-		$amount   = absint( $_POST['amount'] ?? 0 );
-		$currency = sanitize_text_field( $_POST['currency'] ?? 'gbp' );
+		$amount = absint( $_POST['amount'] ?? 0 );
 
-		if ( $amount < 50 ) { // Stripe minimum 50p
-			wp_send_json_error( [ 'message' => 'Amount too low (minimum 50p).' ] );
+		// Validate currency against an explicit allowlist — never pass raw user
+		// input directly to the Stripe API as a parameter value.
+		$allowed_currencies = [ 'gbp', 'usd', 'eur', 'cad', 'aud', 'nzd', 'chf', 'sek', 'nok', 'dkk' ];
+		$raw_currency       = strtolower( sanitize_text_field( wp_unslash( $_POST['currency'] ?? 'gbp' ) ) );
+		$currency           = in_array( $raw_currency, $allowed_currencies, true ) ? $raw_currency : 'gbp';
+
+		if ( $amount < 50 ) { // Stripe minimum is 50 pence.
+			wp_send_json_error( [ 'message' => __( 'Amount too low (minimum 50p).', 'sgs-blocks' ) ] );
 			return;
 		}
 

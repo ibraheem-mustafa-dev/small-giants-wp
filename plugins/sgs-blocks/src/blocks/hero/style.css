@@ -195,12 +195,21 @@
 .sgs-hero__media {
 	position: relative;
 	flex: 1 1 50%;
+	/* Cap the image column so it never exceeds half the container width.
+	   Without this the image grows unboundedly past ~1400px viewport. */
+	max-width: 50%;
 }
 
 .sgs-hero__split-image {
 	width: 100%;
-	height: 100%;
+	/* Constrain height so the image doesn't grow unboundedly as the viewport
+	   widens. aspect-ratio keeps proportions correct; max-height is a hard
+	   ceiling for very wide screens. object-fit: cover prevents distortion. */
+	aspect-ratio: 4 / 3;
+	max-height: 600px;
+	height: auto;
 	object-fit: cover;
+	display: block;
 	border-radius: var(--wp--custom--border-radius--large, 16px);
 }
 

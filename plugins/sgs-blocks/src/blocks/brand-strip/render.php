@@ -18,7 +18,7 @@ $logos                 = $attributes['logos'] ?? array();
 $scrolling             = $attributes['scrolling'] ?? false;
 $scroll_speed          = $attributes['scrollSpeed'] ?? 'medium';
 $greyscale             = $attributes['greyscale'] ?? true;
-$max_height            = $attributes['maxHeight'] ?? 48;
+$max_height            = $attributes['maxHeight'] ?? 80;
 $hover_bg_colour       = $attributes['hoverBackgroundColour'] ?? '';
 $hover_text_colour     = $attributes['hoverTextColour'] ?? '';
 $hover_border_colour   = $attributes['hoverBorderColour'] ?? '';
@@ -33,6 +33,14 @@ $speed_map = array(
 	'fast'   => '15s',
 );
 $animation_speed = $speed_map[ $scroll_speed ] ?? '25s';
+
+// Sanitise transition/hover values (must come before class list which uses them).
+$duration_ms       = preg_replace( '/[^0-9]/', '', $transition_duration );
+$duration_ms       = '' !== $duration_ms ? $duration_ms : '300';
+$allowed_easings   = array( 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'linear' );
+$safe_easing       = in_array( $transition_easing, $allowed_easings, true ) ? $transition_easing : 'ease-in-out';
+$allowed_effects   = array( 'none', 'lift', 'scale', 'glow' );
+$safe_hover_effect = in_array( $hover_effect, $allowed_effects, true ) ? $hover_effect : 'none';
 
 // Build wrapper classes.
 $classes = array(
@@ -49,12 +57,6 @@ if ( 'none' !== $safe_hover_effect ) {
 }
 
 // Build custom property style string.
-$duration_ms       = preg_replace( '/[^0-9]/', '', $transition_duration );
-$duration_ms       = '' !== $duration_ms ? $duration_ms : '300';
-$allowed_easings   = array( 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'linear' );
-$safe_easing       = in_array( $transition_easing, $allowed_easings, true ) ? $transition_easing : 'ease-in-out';
-$allowed_effects   = array( 'none', 'lift', 'scale', 'glow' );
-$safe_hover_effect = in_array( $hover_effect, $allowed_effects, true ) ? $hover_effect : 'none';
 
 $css_vars = array(
 	'--sgs-transition-duration:' . $duration_ms . 'ms',

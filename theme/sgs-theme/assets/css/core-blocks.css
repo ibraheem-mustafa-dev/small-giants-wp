@@ -35,16 +35,19 @@
 	min-width: 220px;
 }
 
-/* Submenu links */
+/* Submenu links — explicit dark text regardless of transparent header or
+   style-variation global link colour. The submenu background is always
+   white/surface, so dark text is always correct here. !important beats the
+   transparent-header rule that forces top-level nav items to white. */
 .wp-block-navigation .wp-block-navigation__submenu-container .wp-block-navigation-item__content {
-	color: var(--wp--preset--color--text);
+	color: var(--wp--preset--color--text, #1e1e1e) !important;
 	padding: var(--wp--preset--spacing--10) var(--wp--preset--spacing--20);
 	border-radius: var(--wp--custom--border-radius--small);
 }
 
 .wp-block-navigation .wp-block-navigation__submenu-container .wp-block-navigation-item__content:hover {
-	color: var(--wp--preset--color--primary);
-	background: var(--wp--preset--color--surface-alt);
+	color: var(--wp--preset--color--primary, #0f7e80) !important;
+	background: var(--wp--preset--color--surface-alt, #f5f7f7);
 }
 
 /* Megamenu — wide submenu for items with .sgs-megamenu class */
@@ -110,7 +113,7 @@
 
 .sgs-footer-links a {
 	text-decoration: none;
-	transition: color var(--wp--custom--transition--fast);
+	transition: color 200ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .sgs-footer-links a:hover {
@@ -120,7 +123,7 @@
 /* Footer navigation blocks — vertical link lists */
 .sgs-footer-nav .wp-block-navigation-item__content {
 	text-decoration: none;
-	transition: color var(--wp--custom--transition--fast);
+	transition: color 200ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .sgs-footer-nav .wp-block-navigation-item__content:hover {
@@ -256,12 +259,17 @@ footer .wp-block-paragraph a:hover,
 	opacity: 0;
 	transform: translateY(-0.5em);
 	visibility: hidden;
-	transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0.2s;
+	/* 200ms deceleration curve: submenu fades in fast and eases to rest */
+	transition: opacity 200ms cubic-bezier(0.16, 1, 0.3, 1),
+	            transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
+	            visibility 0s linear 200ms;
 }
 
 .wp-block-navigation .has-child:hover > .wp-block-navigation__submenu-container,
 .wp-block-navigation .has-child:focus-within > .wp-block-navigation__submenu-container {
-	transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0s;
+	transition: opacity 200ms cubic-bezier(0.16, 1, 0.3, 1),
+	            transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
+	            visibility 0s linear 0s;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -302,19 +310,80 @@ footer .wp-block-paragraph a:hover,
 
 /*
  * Image hover zoom for service cards and card-grid items.
- * overflow:hidden is already on .sgs-card-grid__image-wrap.
  * Generic .service-card class used by patterns and legacy content.
  */
 .service-card {
 	overflow: hidden;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.service-card .wp-block-buttons {
+	margin-top: auto !important;
 }
 
 .service-card img {
 	transition: transform var(--wp--custom--transition--medium, 0.3s ease);
+	width: 100%;
+	height: auto;
 }
 
 .service-card:hover img {
 	transform: scale(1.05);
+}
+
+/* Fix for "cascading" / overlapping columns in patterns */
+.wp-block-columns:has(.service-card) {
+	align-items: stretch !important;
+	gap: var(--wp--preset--spacing--40) !important;
+}
+
+.wp-block-column:has(.service-card) {
+	margin-top: 0 !important;
+	margin-bottom: 0 !important;
+	height: auto;
+	display: flex;
+}
+
+/*  BRAND STRIP UNIFORMITY  */
+.sgs-brand-strip__logo {
+	display: flex !important;
+	align-items: center;
+	justify-content: center;
+	padding: 10px;
+	height: 80px;
+}
+
+.sgs-brand-strip__logo img {
+	max-height: 60px !important;
+	width: auto !important;
+	max-width: 120px !important;
+	object-fit: contain;
+	transition: transform 0.3s ease;
+}
+
+.sgs-brand-strip__logo:hover img {
+	transform: scale(1.1);
+}
+
+/* MOBILE GRID FOR FEATURES - H22 */
+@media (max-width: 599px) {
+	.wp-block-columns:has(.wp-block-column .sgs-icon-list) {
+		display: grid !important;
+		grid-template-columns: 1fr 1fr !important;
+		gap: 15px !important;
+	}
+	
+	.wp-block-columns:has(.wp-block-column .sgs-icon-list) .wp-block-column {
+		width: 100% !important;
+		margin-left: 0 !important;
+	}
+
+	.wp-block-columns:has(.service-card) {
+		display: flex !important;
+		flex-direction: column !important;
+	}
 }
 
 /* ─── ICON LIST SIZE — M3 ─── */

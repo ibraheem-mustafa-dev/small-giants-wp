@@ -18,6 +18,9 @@
 	color: inherit;
 	display: flex;
 	flex-direction: column;
+	/* height: 100% combined with the grid's align-items: stretch (default)
+	   ensures all cards in a row grow to match the tallest sibling. */
+	height: 100%;
 	transition-duration: var(--sgs-transition-duration, 300ms);
 	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
 	transition-property: background-color, color, border-color, transform, box-shadow;

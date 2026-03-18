@@ -161,7 +161,8 @@ class Form_Admin {
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 		$submissions = $wpdb->get_results(
-			"SELECT id, form_id, status, ip_address, created_at FROM {$table_name} ORDER BY created_at DESC LIMIT 50"
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$wpdb->prepare( "SELECT id, form_id, status, ip_address, created_at FROM {$table_name} ORDER BY created_at DESC LIMIT %d", 50 )
 		);
 
 		echo '<h2>' . esc_html__( 'Recent Submissions', 'sgs-blocks' ) . '</h2>';

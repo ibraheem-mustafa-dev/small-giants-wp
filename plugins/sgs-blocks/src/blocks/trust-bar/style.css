@@ -32,7 +32,13 @@
 
 @supports (animation-timeline: view()) {
 	.sgs-trust-bar__item {
-		animation: sgs-trust-bar-item-reveal 400ms ease-out both;
+		/*
+		 * animation-fill-mode: forwards (not both) prevents the browser from
+		 * holding the `from` state (opacity: 0) before the scroll timeline
+		 * begins. Items render at full opacity until the animation-range starts,
+		 * which eliminates CLS from above-fold items on page load.
+		 */
+		animation: sgs-trust-bar-item-reveal 400ms ease-out forwards;
 		animation-timeline: view();
 		animation-range: entry 10% entry 60%;
 	}
