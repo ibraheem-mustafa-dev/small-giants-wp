@@ -25,7 +25,7 @@
                      "color":  {
                                    "background":  true,
                                    "text":  true,
-                                   "gradients":  false
+                                   "gradients":  true
                                },
                      "typography":  {
                                         "fontSize":  true,

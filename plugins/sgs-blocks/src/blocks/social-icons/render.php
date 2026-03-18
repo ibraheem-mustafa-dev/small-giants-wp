@@ -68,7 +68,7 @@ $inline_styles = array(
 
 $wrapper_attributes = get_block_wrapper_attributes( array(
 	'class' => implode( ' ', $classes ),
-	'style' => implode( ';', $inline_styles ),
+	'style' => implode( ';', $inline_styles ) . ';',
 ) );
 
 if ( empty( $icons ) ) {

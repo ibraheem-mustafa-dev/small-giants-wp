@@ -84,7 +84,7 @@ if ( 'grid' === $layout ) {
 $wrapper_attributes = get_block_wrapper_attributes(
 	array(
 		'class' => implode( ' ', $classes ),
-		'style' => implode( ';', $styles ),
+		'style' => implode( ';', $styles ) . ';',
 	)
 );
 
@@ -137,7 +137,7 @@ if ( $shape_top || $shape_bottom ) {
 	$wrapper_attributes = get_block_wrapper_attributes(
 		array(
 			'class' => implode( ' ', $classes ),
-			'style' => implode( ';', $styles ),
+			'style' => implode( ';', $styles ) . ';',
 		)
 	);
 }

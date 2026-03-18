@@ -83,6 +83,7 @@ if ( ! $is_split && ! $is_video && ! $is_svg_animated && ! empty( $bg_image['url
 	$styles[] = 'background-position:center';
 }
 
+
 // Generate a unique ID for responsive CSS scoping.
 $uid = 'sgs-hero-' . substr( md5( wp_json_encode( $attributes ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
 
@@ -106,7 +107,7 @@ $classes = array(
 $wrapper_attributes = get_block_wrapper_attributes(
 	array(
 		'class' => implode( ' ', $classes ),
-		'style' => implode( ';', $styles ),
+		'style' => implode( ';', $styles ) . ';',
 	)
 );
 

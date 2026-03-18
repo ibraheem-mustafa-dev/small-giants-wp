@@ -39,7 +39,7 @@ if ( $background_colour ) {
 
 $wrapper = get_block_wrapper_attributes( [
 	'class' => implode( ' ', $classes ),
-	'style' => implode( ';', $styles ),
+	'style' => implode( ';', $styles ) . ';',
 ] );
 
 $icon_svg = sgs_get_lucide_icon( $icon );
