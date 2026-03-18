@@ -73,7 +73,7 @@ if ( $caption_bg_colour ) {
 	$inline_styles_parts[] = '--sgs-caption-bg:' . sgs_colour_value( $caption_bg_colour );
 }
 
-$inline_styles = implode( ';', $inline_styles_parts );
+$inline_styles = implode( ';', $inline_styles_parts ) . ';';
 
 // -------------------------------------------------------------------------
 // Build image context data for Interactivity API store.

@@ -66,7 +66,7 @@ if ( $hover_text_colour ) {
 if ( $hover_border_colour ) {
 	$css_vars[] = '--sgs-hover-border:' . sgs_colour_value( $hover_border_colour );
 }
-$transition_style = implode( ';', $css_vars );
+$transition_style = implode( ';', $css_vars ) . ';';
 
 // Build wrapper classes.
 $classes = array(

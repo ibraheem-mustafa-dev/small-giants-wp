@@ -56,7 +56,7 @@ $wrapper_args = array(
 	'class' => 'sgs-modal',
 );
 if ( $backdrop_vars ) {
-	$wrapper_args['style'] = implode( ';', $backdrop_vars );
+	$wrapper_args['style'] = implode( ';', $backdrop_vars ) . ';';
 }
 
 $wrapper_attributes = get_block_wrapper_attributes( $wrapper_args );

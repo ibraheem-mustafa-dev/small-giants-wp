@@ -72,7 +72,7 @@ foreach ( $colour_props as $attr => $prop ) {
 
 $css_vars[] = '--sgs-transition-duration:' . $transition . 'ms';
 
-$inline_style = implode( ';', $css_vars );
+$inline_style = implode( ';', $css_vars ) . ';';
 
 // ─── Wrapper attributes ──────────────────────────────────────────────────────
 $wrapper_attrs = get_block_wrapper_attributes(

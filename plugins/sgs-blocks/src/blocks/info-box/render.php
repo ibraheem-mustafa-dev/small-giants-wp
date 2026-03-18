@@ -91,7 +91,7 @@ $wrapper_attr_args = array(
 	'class' => implode( ' ', $classes ),
 );
 if ( $wrapper_styles ) {
-	$wrapper_attr_args['style'] = implode( ';', $wrapper_styles );
+	$wrapper_attr_args['style'] = implode( ';', $wrapper_styles ) . ';';
 }
 
 $wrapper_attributes = get_block_wrapper_attributes( $wrapper_attr_args );

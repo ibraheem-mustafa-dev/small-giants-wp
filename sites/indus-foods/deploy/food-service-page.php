@@ -378,7 +378,7 @@ $content = <<<'BLOCKS'
 </div>
 <!-- /wp:group -->
 
-<!-- wp:sgs/cta-section {"align":"full","layout":"centred","headline":"Ready to partner with a wholesaler that treats you like family?","body":"Join 5,000+ food businesses across the UK who trust Indus Foods for authentic ingredients, competitive pricing, and a team that genuinely cares. Minimum order just \u00a375. No membership fees.","headlineColour":"#FFFFFF","bodyColour":"rgba(255,255,255,0.75)","buttons":[{"text":"Apply For A Trade Account","url":"/apply-for-trade-account/","style":"primary"},{"text":"Request Our Catalogue","url":"/catalogue/","style":"secondary"}],"transitionDuration":"300","transitionEasing":"ease-in-out","style":{"color":{"gradient":"linear-gradient(135deg, #075E80 0%, #0A7EA8 100%)"}}} /-->
+<!-- wp:sgs/cta-section {"align":"full","layout":"centred","headline":"Ready to partner with a wholesaler that treats you like family?","body":"Join 5,000+ food businesses across the UK who trust Indus Foods for authentic ingredients, competitive pricing, and a team that genuinely cares. Minimum order just £75. No membership fees.","headlineColour":"#FFFFFF","bodyColour":"rgba(255,255,255,0.75)","buttons":[{"text":"Apply For A Trade Account","url":"/apply-for-trade-account/","style":"primary"},{"text":"Request Our Catalogue","url":"/catalogue/","style":"secondary"}],"transitionDuration":"300","transitionEasing":"ease-in-out","style":{"color":{"gradient":"linear-gradient(135deg, #075E80 0%, #0A7EA8 100%)"}}} /-->
 BLOCKS;
 
 $result = wp_update_post( array(
