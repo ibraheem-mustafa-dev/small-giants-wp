@@ -157,8 +157,9 @@ function inject_header_classes( string $html, array $block ): string {
 	// Check top bar visibility.
 	$show_top_bar = (bool) get_option( 'sgs_header_top_bar', true );
 
-	// In transparent mode, hide top bar by default (matching original transparent header design).
-	if ( in_array( $mode, [ 'transparent', 'transparent-sticky' ], true ) ) {
+	// In fully-transparent mode (no sticky), hide top bar by default.
+	// transparent-sticky retains the top bar since it becomes opaque on scroll.
+	if ( 'transparent' === $mode ) {
 		$show_top_bar = false;
 	}
 

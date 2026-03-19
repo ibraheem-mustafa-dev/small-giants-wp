@@ -17,10 +17,14 @@ const FOCUSABLE_SELECTOR =
 	'a, button, input, textarea, select, [tabindex]:not([tabindex="-1"])';
 
 /**
- * Reposition a panel that would overflow the right edge of the viewport.
+ * Reposition a panel correctly for its layout type.
  *
- * Called after a panel opens. Uses getBoundingClientRect to detect overflow
- * and switches the panel to right-aligned if needed.
+ * For full-width panels (panel-full / layout-full-width): sets the
+ * --sgs-mm-fixed-top CSS variable so the fixed-position panel aligns
+ * directly below the trigger's bounding box (below the header).
+ *
+ * For other panels: detects right-edge overflow and switches to
+ * right-aligned positioning.
  *
  * @param {HTMLElement} wrapper - The .sgs-mega-menu wrapper element.
  */
@@ -29,7 +33,27 @@ function repositionPanel( wrapper ) {
 	if ( ! panel ) {
 		return;
 	}
-	// Reset any previously applied position overrides.
+
+	const isFullWidth =
+		wrapper.classList.contains( 'sgs-mega-menu--panel-full' ) ||
+		wrapper.classList.contains( 'sgs-mega-menu--layout-full-width' );
+
+	if ( isFullWidth ) {
+		// Set top to the bottom of the trigger element so the panel opens
+		// flush below the header bar, regardless of navigation alignment.
+		const trigger = wrapper.querySelector( '.sgs-mega-menu__trigger' );
+		if ( trigger ) {
+			const triggerRect = trigger.getBoundingClientRect();
+			// Include admin bar offset if present.
+			const adminBarEl = document.getElementById( 'wpadminbar' );
+			const adminBarHeight = adminBarEl ? adminBarEl.getBoundingClientRect().height : 0;
+			const topValue = triggerRect.bottom - adminBarHeight;
+			wrapper.style.setProperty( '--sgs-mm-fixed-top', `${ topValue }px` );
+		}
+		return;
+	}
+
+	// Non-full-width: detect and fix right-edge overflow.
 	panel.style.left = '';
 	panel.style.right = '';
 	requestAnimationFrame( () => {

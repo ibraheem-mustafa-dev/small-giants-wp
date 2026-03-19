@@ -51,8 +51,10 @@ body.admin-bar header.wp-block-template-part.sgs-header-transparent-sticky {
 	top: var(--wp-admin--admin-bar--height, 32px);
 }
 
-/* Transparent state — white text */
+/* Transparent state — white text for nav links and mega menu triggers */
 header.wp-block-template-part.sgs-header-transparent-sticky:not(.sgs-header-scrolled) .wp-block-navigation .wp-block-navigation-item__content,
+header.wp-block-template-part.sgs-header-transparent-sticky:not(.sgs-header-scrolled) .wp-block-navigation .sgs-mega-menu__trigger,
+header.wp-block-template-part.sgs-header-transparent-sticky:not(.sgs-header-scrolled) .wp-block-navigation .sgs-mega-menu__label,
 header.wp-block-template-part.sgs-header-transparent-sticky:not(.sgs-header-scrolled) .wp-block-site-title a {
 	color: var(--wp--preset--color--surface, #fff);
 }
@@ -68,6 +70,8 @@ header.wp-block-template-part.sgs-header-transparent-sticky.sgs-header-scrolled 
 }
 
 header.wp-block-template-part.sgs-header-transparent-sticky.sgs-header-scrolled .wp-block-navigation .wp-block-navigation-item__content,
+header.wp-block-template-part.sgs-header-transparent-sticky.sgs-header-scrolled .wp-block-navigation .sgs-mega-menu__trigger,
+header.wp-block-template-part.sgs-header-transparent-sticky.sgs-header-scrolled .wp-block-navigation .sgs-mega-menu__label,
 header.wp-block-template-part.sgs-header-transparent-sticky.sgs-header-scrolled .wp-block-site-title a {
 	color: var(--wp--preset--color--text, #1e1e1e);
 }

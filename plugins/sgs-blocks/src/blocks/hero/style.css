@@ -128,10 +128,11 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	padding: 16px 32px;
-	border-radius: 10px;
-	font-weight: 700;
-	font-size: var(--wp--preset--font-size--small);
+	padding: clamp(0.5rem, 1vw + 0.25rem, 0.875rem) clamp(1rem, 2vw + 0.5rem, 2rem);
+	border-radius: 8px;
+	font-weight: 600;
+	font-size: clamp(0.8125rem, 0.5vw + 0.75rem, 0.9375rem);
+	line-height: 1.4;
 	text-decoration: none;
 	min-height: 44px;
 	min-width: 44px;
@@ -361,7 +362,9 @@
 
 	.sgs-hero__cta {
 		width: 100%;
+		max-width: 100%;
 		text-align: center;
+		box-sizing: border-box;
 	}
 }
 
