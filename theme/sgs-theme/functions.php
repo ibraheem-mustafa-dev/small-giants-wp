@@ -389,20 +389,37 @@ function enqueue_style_variation_extras(): void {
 		 */
 		$css .= "
 /* ── Issue 7: Top bar — pill-shaped icon buttons ────────────────────────────
- * Converts plain phone/email anchor links in the teal top bar into pill-shaped
- * pseudo-buttons matching the original Indus Foods design. Targets only
- * <a href='tel:'> and <a href='mailto:'> inside the primary-coloured top-bar
- * group, so no other links on the page are affected. */
+ * Solid white pills with teal text, matching reference site.
+ * Reference: bg #FFFFFF, text #0A7EA8, border 3px solid #FFFFFF,
+ * border-radius 30px, padding 10px 20px, height 44px. */
 .has-primary-background-color.wp-block-group a[href^='tel:'],
 .has-primary-background-color.wp-block-group a[href^='mailto:'] {
 	display:inline-flex;align-items:center;gap:6px;
-	background-color:rgba(255,255,255,.15);
-	border-radius:9999px;padding:4px 12px;
-	transition:background-color .2s ease;text-decoration:none;
+	background-color:#ffffff!important;
+	color:#0a7ea8!important;
+	border:3px solid #ffffff;
+	border-radius:30px;padding:10px 20px;
+	min-height:44px;
+	transition:background-color .2s ease,color .2s ease;text-decoration:none;
+	font-weight:600;
 }
 .has-primary-background-color.wp-block-group a[href^='tel:']:hover,
 .has-primary-background-color.wp-block-group a[href^='mailto:']:hover {
-	background-color:rgba(255,255,255,.28);
+	background-color:rgba(255,255,255,.9)!important;
+	color:#076a8e!important;
+}
+/* ── Top bar height: reduce to ~54px (reference) ────────────────────────────
+ * Top bar has 8px top/bottom padding giving ~68px total. Reduce to 5px for 54px. */
+.sgs-header-top-bar{padding-top:5px!important;padding-bottom:5px!important}
+/* ── Top bar social icons: reduce from 52px to 24px ─────────────────────────
+ * The WCAG min-width:44px rule in core-blocks.css is for footer/content social
+ * icons. Top bar icons should be 24px to match reference site. */
+.sgs-header-top-bar .wp-block-social-links .wp-block-social-link a{
+	min-width:24px!important;min-height:24px!important;
+	width:24px;height:24px;padding:0!important;
+}
+.sgs-header-top-bar .wp-block-social-links .wp-block-social-link svg{
+	width:18px!important;height:18px!important;
 }
 
 /* ── Issue 9 & 8: Hero CTA buttons — vertical stack ─────────────────────────
@@ -583,11 +600,59 @@ function enqueue_style_variation_extras(): void {
 		color:var(--wp--preset--color--text,#1e1e1e)!important;
 		border-radius:4px;
 	}
-	/* Logo: allow up to 300px on desktop */
+	/* Logo: allow up to 350px on desktop (reference site: 350px) */
 	header .wp-block-site-logo img{
-		max-width:300px!important;
-		max-height:80px!important;
+		max-width:350px!important;
+		max-height:90px!important;
 	}
+	/* Nav bar height: increase to ~115px (reference). The main nav row
+	 * uses var(--wp--preset--spacing--30) top/bottom padding (~93px total).
+	 * Switch to spacing--40 to get ~115px. Targets the nav bar by class sibling. */
+	header .wp-block-group.has-surface-background-color > .wp-block-group:not(.sgs-header-top-bar){
+		padding-top:var(--wp--preset--spacing--40)!important;
+		padding-bottom:var(--wp--preset--spacing--40)!important;
+	}
+}
+";
+
+		$css .= "
+/* ── Hero CTA buttons: border + box-shadow ───────────────────────────────────
+ * block attributes can set bg/text colour but not border or box-shadow.
+ * Primary CTA: 3px solid gold border + shadow. Secondary: 3px solid white + shadow. */
+.sgs-hero__cta--accent{
+	border:3px solid #d8ca50!important;
+	box-shadow:3px 8px 12px rgba(0,0,0,0.15)!important;
+	border-radius:10px!important;
+}
+.sgs-hero__cta:not(.sgs-hero__cta--accent){
+	border:3px solid #ffffff!important;
+	box-shadow:3px 8px 12px rgba(0,0,0,0.15)!important;
+	border-radius:10px!important;
+}
+/* ── Footer headings: gold colour #E7D768, 28.8px ───────────────────────────
+ * core-blocks.css forces .has-surface-color headings in footer to white.
+ * Override for Indus Foods variation: headings should be gold #E7D768.
+ * Also increase font-size from 18px (small) to 28.8px to match reference. */
+footer .wp-block-heading.has-surface-color.has-text-color,
+footer .wp-block-heading.has-text-inverse-color.has-text-color,
+.wp-block-template-part footer .wp-block-heading.has-surface-color.has-text-color,
+.wp-block-template-part footer .wp-block-heading.has-text-inverse-color.has-text-color,
+footer .sgs-footer-label,
+.wp-block-template-part footer .sgs-footer-label{
+	color:#e7d768!important;
+	font-size:28.8px!important;
+	text-transform:none!important;
+	letter-spacing:normal!important;
+}
+/* ── Footer social icons: reduce to 25px ────────────────────────────────────
+ * core-blocks.css sets min-width/height:44px on all social icons for WCAG.
+ * Footer social icons should be 25px to match reference site. */
+.sgs-footer-socials .wp-block-social-link a{
+	min-width:25px!important;min-height:25px!important;
+	width:25px;height:25px;padding:0!important;
+}
+.sgs-footer-socials .wp-block-social-link svg{
+	width:20px!important;height:20px!important;
 }
 ";
 
