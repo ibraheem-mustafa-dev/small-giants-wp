@@ -541,6 +541,56 @@ function enqueue_style_variation_extras(): void {
 }
 ";
 
+		/*
+		 * Indus Foods — Desktop navigation link styles.
+		 * Reference site: Source Sans Pro, ~19.8px, weight 600, colour #0A7EA8 (primary teal).
+		 * Active page (Home) gets a teal background pill with white text.
+		 * Only applies at ≥1025px (desktop) so mobile drawer is unaffected.
+		 */
+		$css .= "
+/* ── Desktop nav links: teal colour, 19.8px, weight 600 ────────────────────
+ * !important required to override wp-block-navigation's inline textColor
+ * attribute (has-text-color with var(--wp--preset--color--text)) which sits
+ * in a style attribute and therefore beats class-based specificity.
+ * Font size 1.1rem at desktop gives approximately 19.8px (matches reference
+ * which uses Source Sans Pro at 19.8px / weight 600). */
+@media(min-width:1025px){
+	header .wp-block-navigation .wp-block-navigation-item__content,
+	header .wp-block-navigation .wp-block-navigation__container > .wp-block-navigation-item > a,
+	header .sgs-mega-menu__trigger,
+	header .sgs-mega-menu__label{
+		color:var(--wp--preset--color--primary,#0a7ea8)!important;
+		font-size:1.1rem!important;
+		font-weight:600!important;
+	}
+	/* Active/current page link — teal background pill with white text.
+	 * Targets both WP's current-menu-item class (added by Navigation block
+	 * when it detects the current URL) and the home link specifically. */
+	header .wp-block-navigation .wp-block-navigation-item.current-menu-item > .wp-block-navigation-item__content,
+	header .wp-block-navigation .wp-block-navigation__container > .wp-block-navigation-item.current-menu-item > a,
+	header .wp-block-navigation .wp-block-page-list__item.current-menu-item > a,
+	header .wp-block-navigation .wp-block-navigation-item__content[href='/'],
+	header .wp-block-navigation a.wp-block-navigation-item__content[href='/']{
+		background-color:var(--wp--preset--color--primary,#0a7ea8)!important;
+		color:var(--wp--preset--color--surface,#fff)!important;
+		border-radius:4px;
+		padding:4px 16px!important;
+	}
+	/* Hover on non-active nav links */
+	header .wp-block-navigation .wp-block-navigation-item__content:hover,
+	header .wp-block-navigation .wp-block-navigation__container > .wp-block-navigation-item > a:hover{
+		background-color:var(--wp--preset--color--accent,#d8ca50)!important;
+		color:var(--wp--preset--color--text,#1e1e1e)!important;
+		border-radius:4px;
+	}
+	/* Logo: allow up to 300px on desktop */
+	header .wp-block-site-logo img{
+		max-width:300px!important;
+		max-height:80px!important;
+	}
+}
+";
+
 		wp_add_inline_style( 'sgs-utilities', $css );
 	}
 }
