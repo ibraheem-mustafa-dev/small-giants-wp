@@ -28,10 +28,10 @@
 - The wp-sgs-developer agent repeatedly hardcodes CSS in functions.php with !important, violating project rules. Agent definition needs fixing.
 
 ## Next Priorities (in order)
-1. Resolve Hostinger server-level cache so header template changes render. Try Hostinger dashboard cache purge or .htaccess no-cache header temporarily, then re-enable LiteSpeed after confirming.
-2. Audit indus-foods.json to comprehensively cover ALL attributes for every element/block (buttons, headings h1-h6, paragraphs, links, navigation, images, separators, social links, columns, groups). Use the 130-item comparison list as source of truth.
-3. Review the 130-item comparison list with the user — go through each discrepancy for decisions (fix, skip, or improve).
-4. Fix the wp-sgs-developer agent definition to prevent hardcoded CSS overrides.
+1. Complete the Block Test Page (post ID 208) — add ALL 55 blocks (currently only ~25). All 14 form blocks, modal, decorative-image, pricing-table are missing. Every block must be valid with no editor errors. Fix the 5 blocks needing deprecated.js (container, testimonial, notice-banner, whatsapp-cta, accordion/tabs).
+2. Re-enable LiteSpeed Cache plugin (`wp plugin activate litespeed-cache`) and verify all changes render correctly. Cloudflare is in developer mode (no cache) — turn that off after confirming.
+3. Audit indus-foods.json to comprehensively cover ALL attributes for every element/block (buttons, headings h1-h6, paragraphs, links, navigation, images, separators, social links, columns, groups). Use the 130-item comparison list as source of truth.
+4. Review the 130-item comparison list with the user — go through each discrepancy for decisions (fix, skip, or improve).
 5. Implement brand-strip infinite carousel refactor (two-container pattern — research complete, not started).
 
 ## Files Modified
