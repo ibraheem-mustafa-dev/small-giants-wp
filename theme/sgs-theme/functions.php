@@ -248,6 +248,44 @@ function enqueue_styles(): void {
 add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\enqueue_styles' );
 
 /**
+ * Output critical layout fix CSS as an inline <style> block.
+ *
+ * These rules MUST load before paint to prevent flash of misaligned layout.
+ * They are added as an inline style (not an external file) so they cannot be
+ * cached and served stale by LiteSpeed's CSS optimiser.
+ *
+ * Covers:
+ * - Section gap: removes block-gap margin between alignfull sections
+ * - Hero margin: removes block-gap top-margin from the hero block
+ * - Site-wide image hover: subtle scale on hover for content images
+ */
+function enqueue_global_layout_fixes(): void {
+	$css = '
+/* SGS: section gap — flush alignfull sections, no white strip between them */
+.wp-block-post-content>.alignfull,.entry-content>.alignfull{margin-block-start:0!important;margin-block-end:0!important}
+/* SGS: hero margin — hero is not alignfull so needs explicit zero top-margin */
+.wp-block-post-content>.wp-block-sgs-hero,.entry-content>.wp-block-sgs-hero{margin-block-start:0!important}
+/* SGS: hero full-bleed — break hero out of constrained layout side padding.
+ * Uses --wp--style--root--padding-right (the actual global padding value WP applies
+ * to has-global-padding containers) instead of spacing-50 which was mismatched. */
+.has-global-padding>.wp-block-sgs-hero{margin-inline:calc(-1 * var(--wp--style--root--padding-right,18px))!important;width:calc(100% + 2 * var(--wp--style--root--padding-right,18px))!important;max-width:none!important}
+/* SGS: hero bottom margin — zero to prevent white strip between hero and next section */
+.wp-block-post-content>.wp-block-sgs-hero,.entry-content>.wp-block-sgs-hero{margin-block-end:0!important}
+/* SGS: site-wide image hover scale — subtle zoom on content images */
+.wp-block-image:not(.brand-logo-tile){overflow:hidden}
+.wp-block-image:not(.brand-logo-tile) img{transition:transform .35s ease}
+.wp-block-image:not(.brand-logo-tile):hover img{transform:scale(1.05)}
+/* SGS: testimonials right-column image — fit to column height, no overflow.
+ * The image should match the height of the testimonial carousel beside it,
+ * not stretch the section. object-fit:contain keeps aspect ratio. */
+.wp-block-group[style*="#0A7EA8"] .wp-block-columns .wp-block-column:last-child .wp-block-image{margin:0}
+.wp-block-group[style*="#0A7EA8"] .wp-block-columns .wp-block-column:last-child .wp-block-image img{width:100%;height:auto;max-height:400px;object-fit:contain}
+';
+	wp_add_inline_style( 'sgs-core-blocks-critical', $css );
+}
+add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\enqueue_global_layout_fixes' );
+
+/**
  * Defer non-critical stylesheets to reduce render-blocking resources.
  *
  * Converts selected <link rel="stylesheet"> tags to use the
@@ -360,6 +398,35 @@ function enqueue_style_variation_extras(): void {
 .service-card:hover{box-shadow:rgba(0,0,0,.75) 0 60px 60px -50px;transform:translateY(-2px)}
 .service-card img{transition:transform .3s ease}
 .service-card:hover img{transform:scale(1.05)}
+
+/* Indus Foods — Service card text improvements.
+ * Targets the gradient-background group blocks inside the services columns.
+ * Selector: .has-surface-background-color (services section) > columns > column > .has-background (card).
+ * Centre text, tighten spacing, prevent word-wrap on headings,
+ * add readability backdrop behind text area, single-line buttons. */
+
+/* Centre-align all text content within the card text area */
+.has-surface-background-color .wp-block-columns .wp-block-column .wp-block-group.has-background .wp-block-group:not(:has(.wp-block-image)){
+	text-align:center;
+	background:rgba(255,255,255,0.12);
+	border-radius:0 0 20px 20px;
+	backdrop-filter:blur(1px);
+}
+
+/* Prevent mid-word wrapping on narrow cards */
+.has-surface-background-color .wp-block-columns .wp-block-column .wp-block-group.has-background h3.wp-block-heading{
+	word-break:normal;
+	overflow-wrap:normal;
+}
+
+/* Service card buttons: centred, single line */
+.has-surface-background-color .wp-block-columns .wp-block-column .wp-block-group.has-background .wp-block-buttons{
+	display:flex;
+	justify-content:center;
+}
+.has-surface-background-color .wp-block-columns .wp-block-column .wp-block-group.has-background .wp-block-button__link{
+	white-space:nowrap;
+}
 
 /* Indus Foods — Decorative ingredient images (hidden on mobile) */
 .home .wp-block-group.alignwide:has(.service-card){position:relative;overflow:hidden}
@@ -565,20 +632,17 @@ function enqueue_style_variation_extras(): void {
 		 * Only applies at ≥1025px (desktop) so mobile drawer is unaffected.
 		 */
 		$css .= "
-/* ── Desktop nav links: teal colour, 19.8px, weight 600 ────────────────────
+/* ── Desktop nav links: teal colour ─────────────────────────────────────────
  * !important required to override wp-block-navigation's inline textColor
  * attribute (has-text-color with var(--wp--preset--color--text)) which sits
  * in a style attribute and therefore beats class-based specificity.
- * Font size 1.1rem at desktop gives approximately 19.8px (matches reference
- * which uses Source Sans Pro at 19.8px / weight 600). */
+ * Font size and weight are set via Global Styles / style variation. */
 @media(min-width:1025px){
 	header .wp-block-navigation .wp-block-navigation-item__content,
 	header .wp-block-navigation .wp-block-navigation__container > .wp-block-navigation-item > a,
 	header .sgs-mega-menu__trigger,
 	header .sgs-mega-menu__label{
 		color:var(--wp--preset--color--primary,#0a7ea8)!important;
-		font-size:1.1rem!important;
-		font-weight:600!important;
 	}
 	/* Active/current page link — teal background pill with white text.
 	 * Targets both WP's current-menu-item class (added by Navigation block
@@ -629,10 +693,10 @@ function enqueue_style_variation_extras(): void {
 	box-shadow:3px 8px 12px rgba(0,0,0,0.15)!important;
 	border-radius:10px!important;
 }
-/* ── Footer headings: gold colour #E7D768, 28.8px ───────────────────────────
+/* ── Footer headings: gold colour #E7D768 ────────────────────────────────────
  * core-blocks.css forces .has-surface-color headings in footer to white.
  * Override for Indus Foods variation: headings should be gold #E7D768.
- * Also increase font-size from 18px (small) to 28.8px to match reference. */
+ * Font size is set via Global Styles — no !important override needed. */
 footer .wp-block-heading.has-surface-color.has-text-color,
 footer .wp-block-heading.has-text-inverse-color.has-text-color,
 .wp-block-template-part footer .wp-block-heading.has-surface-color.has-text-color,
@@ -640,7 +704,6 @@ footer .wp-block-heading.has-text-inverse-color.has-text-color,
 footer .sgs-footer-label,
 .wp-block-template-part footer .sgs-footer-label{
 	color:#e7d768!important;
-	font-size:28.8px!important;
 	text-transform:none!important;
 	letter-spacing:normal!important;
 }
@@ -654,6 +717,171 @@ footer .sgs-footer-label,
 .sgs-footer-socials .wp-block-social-link svg{
 	width:20px!important;height:20px!important;
 }
+";
+
+		$css .= "
+/* ── Issue 5: Hero CTA text-decoration fix ──────────────────────────────────
+ * Ensure no underline appears on hero CTA links. text-decoration:none is in
+ * hero/style.css but can be overridden by theme link resets. This !important
+ * ensures it always wins. Also fixes 'Request Our Catalogue' underline. */
+.sgs-hero__cta,
+.sgs-hero__cta:hover,
+.sgs-hero__cta:focus,
+.sgs-hero__cta:visited{
+	text-decoration:none!important;
+}
+
+/* ── Issue 6: Hero CTA hover effects — matched to reference site ──────────
+ * Reference hover = full colour inversion + enlarged shadow.
+ * Apply (black bg, gold text) - hover inverts to gold bg, black border, bigger shadow.
+ * Catalogue (teal bg, white text) - hover inverts to white bg, teal border, bigger shadow.
+ * Both CTAs use inline styles for bg/color, so !important is required. */
+
+/* Apply CTA (black bg, gold text → gold bg, dark text) */
+.sgs-hero__cta--accent:hover,
+.sgs-hero__cta--accent:focus{
+	background-color:#d8ca50!important;
+	color:#000000!important;
+	border-color:#000000!important;
+	box-shadow:5px 20px 30px 9px rgba(0,0,0,0.15)!important;
+}
+
+/* Catalogue / secondary CTA (teal bg, white text → white bg, teal text) */
+.sgs-hero__cta:not(.sgs-hero__cta--accent):hover,
+.sgs-hero__cta:not(.sgs-hero__cta--accent):focus{
+	background-color:#ffffff!important;
+	color:#0a7ea8!important;
+	border-color:#0a7ea8!important;
+	box-shadow:5px 20px 30px 9px rgba(0,0,0,0.15)!important;
+}
+
+/* Smooth transition for the colour inversion */
+.sgs-hero__cta{
+	transition:background-color .25s ease,color .25s ease,border-color .25s ease,box-shadow .25s ease!important;
+}
+
+/* ── Issue 7: Hero split columns centering ───────────────────────────────────
+ * The hero block now breaks out via negative margin (global layout fix above).
+ * The content inside needs symmetric padding so both columns centre on the viewport.
+ * justify-content:center on the flex row centres the two columns. */
+.sgs-hero--split{
+	justify-content:center;
+	box-sizing:border-box;
+}
+.wp-block-sgs-hero.sgs-hero--split{
+	padding-left:clamp(2rem,5vw,6rem);
+	padding-right:clamp(2rem,5vw,6rem);
+}
+/* Even column distribution: each column gets equal max-width */
+@media(min-width:1200px){
+	.sgs-hero--split .sgs-hero__content,
+	.sgs-hero--split .sgs-hero__media{
+		flex:1 1 50%;
+		max-width:600px;
+	}
+}
+
+/* ── Top bar contact pills ────────────────────────────────────────────────
+ * Keep compact padding. Font-size inherits from global medium (18px). */
+.has-primary-background-color.wp-block-group a[href^='tel:'],
+.has-primary-background-color.wp-block-group a[href^='mailto:']{
+	padding:5px 14px;
+	min-height:36px;
+	gap:5px;
+}
+
+/* ── Issue 9: Top bar contact pills hover effect ─────────────────────────────
+ * Existing rule has background opacity change. Add a subtle lift for premium feel. */
+.has-primary-background-color.wp-block-group a[href^='tel:']:hover,
+.has-primary-background-color.wp-block-group a[href^='mailto:']:hover{
+	transform:translateY(-1px);
+	box-shadow:0 3px 8px rgba(0,0,0,0.15);
+}
+
+/* ── Issue 10: Social icons hover — match Instagram gradient effect ──────────
+ * Apply a consistent premium hover to all social icons: scale + brightness lift.
+ * The Instagram gradient hover is kept from core-blocks.css (H21).
+ * LinkedIn gets LinkedIn blue, Facebook gets Facebook blue (H21 already does SVG fill).
+ * Google gets its brand colour. All get a scale lift to match Instagram's feel.
+ * This applies to BOTH the top bar AND footer social icons. */
+.wp-block-social-links .wp-social-link{
+	transition:transform .2s ease,box-shadow .2s ease!important;
+}
+.wp-block-social-links .wp-social-link:hover,
+.wp-block-social-links .wp-social-link:focus{
+	transform:scale(1.18)!important;
+}
+/* LinkedIn: blue gradient-like background on hover */
+.wp-block-social-links .wp-social-link-linkedin:hover,
+.wp-block-social-links .wp-social-link-linkedin:focus{
+	background:linear-gradient(135deg,#0a66c2,#004182)!important;
+	border-radius:6px;
+}
+.wp-block-social-links .wp-social-link-linkedin:hover svg,
+.wp-block-social-links .wp-social-link-linkedin:focus svg{
+	fill:#fff!important;
+}
+/* Facebook: Facebook blue gradient on hover */
+.wp-block-social-links .wp-social-link-facebook:hover,
+.wp-block-social-links .wp-social-link-facebook:focus{
+	background:linear-gradient(135deg,#1877f2,#0d5bb5)!important;
+	border-radius:6px;
+}
+.wp-block-social-links .wp-social-link-facebook:hover svg,
+.wp-block-social-links .wp-social-link-facebook:focus svg{
+	fill:#fff!important;
+}
+/* Google: red gradient on hover */
+.wp-block-social-links .wp-social-link-google:hover,
+.wp-block-social-links .wp-social-link-google:focus{
+	background:linear-gradient(135deg,#ea4335,#c5221f)!important;
+	border-radius:6px;
+}
+.wp-block-social-links .wp-social-link-google:hover svg,
+.wp-block-social-links .wp-social-link-google:focus svg{
+	fill:#fff!important;
+}
+
+/* ── Hero image hover — match site-wide image hover scale effect ──────────
+ * The hero media container needs overflow:hidden so the scale stays contained.
+ * The image inside gets transform:scale(1.05) on hover. */
+.sgs-hero__media{overflow:hidden!important;border-radius:var(--wp--custom--border-radius--large,16px)}
+.sgs-hero__media img,.sgs-hero__split-image{transition:transform .35s ease}
+.sgs-hero__media:hover img,.sgs-hero__media:hover .sgs-hero__split-image{transform:scale(1.05)}
+
+/* ── Why Choose info-box hover — match reference: navy bg, white text, 10px radius, shadow ──
+ * Reference uses Spectra info-box with hover bg #2C3E50, white text, 10px radius.
+ * Our info-box block uses .sgs-info-box wrapper. */
+.sgs-info-box{
+	transition:background-color .25s ease,box-shadow .25s ease,transform .25s ease,border-radius .25s ease;
+	border-radius:10px;
+	padding:var(--wp--preset--spacing--30);
+}
+.sgs-info-box:hover{
+	background-color:#2c3e50!important;
+	box-shadow:0 8px 24px rgba(0,0,0,0.15);
+	transform:translateY(-2px);
+}
+.sgs-info-box:hover .sgs-info-box__heading,
+.sgs-info-box:hover .sgs-info-box__description{
+	color:#ffffff!important;
+}
+
+/* ── Footer margin — zero gap between last content section and footer ─────
+ * WordPress wp-site-blocks applies block-gap between template parts.
+ * Override to 0 so footer sits flush against the CTA banner above. */
+.wp-site-blocks>*+*{margin-block-start:0!important}
+footer.wp-block-template-part{margin-block-start:0!important}
+
+/* ── CTA + hero button text colour fix ────────────────────────────────────
+ * WordPress global styles inject .has-text-color{color:var(--wp--preset--color--text)!important}
+ * which overrides inline colour on buttons with custom hex values.
+ * This targets buttons with inline style containing color: and forces the
+ * inline value to win. Must use !important to beat the WP global !important. */
+.wp-block-button__link.has-text-color[style*='color:#D8CA50']{color:#D8CA50!important}
+.wp-block-button__link.has-text-color[style*='color:#FFFFFF']{color:#FFFFFF!important}
+.wp-block-button__link.has-text-color[style*='color:#ffffff']{color:#ffffff!important}
+
 ";
 
 		wp_add_inline_style( 'sgs-utilities', $css );

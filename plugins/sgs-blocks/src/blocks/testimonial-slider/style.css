@@ -142,7 +142,7 @@
 .sgs-testimonial-slider__name {
 	font-style: normal;
 	font-weight: 700;
-	font-size: var(--wp--preset--font-size--small);
+	font-size: var(--wp--preset--font-size--medium);
 }
 
 .sgs-testimonial-slider__name:not([style*="color"]) {
@@ -270,7 +270,7 @@
  * Placed inside or adjacent to the arrows container.
  */
 .sgs-testimonial-slider__pause-btn {
-	display: inline-flex;
+	display: flex;
 	align-items: center;
 	justify-content: center;
 	width: 44px;
@@ -284,7 +284,7 @@
 	transition-duration: var(--sgs-transition-duration, 300ms);
 	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
 	transition-property: background-color, color, border-color;
-	margin-left: var(--wp--preset--spacing--20, 8px);
+	margin: var(--wp--preset--spacing--20, 8px) auto 0;
 }
 
 .sgs-testimonial-slider__pause-btn:hover {

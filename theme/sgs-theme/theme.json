@@ -148,60 +148,60 @@
 			],
 			"fontSizes": [
 				{
+					"slug": "x-small",
+					"size": "12px",
+					"name": "XSmall",
+					"fluid": false
+				},
+				{
 					"slug": "small",
-					"size": "0.875rem",
+					"size": "14px",
 					"name": "Small",
 					"fluid": {
-						"min": "0.8125rem",
-						"max": "0.875rem"
+						"min": "13px",
+						"max": "14px"
 					}
 				},
 				{
 					"slug": "medium",
-					"size": "1rem",
+					"size": "18px",
 					"name": "Medium",
 					"fluid": false
 				},
 				{
 					"slug": "large",
-					"size": "1.25rem",
+					"size": "20px",
 					"name": "Large",
 					"fluid": {
-						"min": "1.0625rem",
-						"max": "1.25rem"
+						"min": "17px",
+						"max": "20px"
 					}
 				},
 				{
 					"slug": "x-large",
-					"size": "1.5rem",
+					"size": "24px",
 					"name": "XL",
 					"fluid": {
-						"min": "1.25rem",
-						"max": "1.5rem"
+						"min": "20px",
+						"max": "24px"
 					}
 				},
 				{
 					"slug": "xx-large",
-					"size": "2.25rem",
+					"size": "36px",
 					"name": "XXL",
 					"fluid": {
-						"min": "1.625rem",
-						"max": "2.25rem"
+						"min": "26px",
+						"max": "36px"
 					}
 				},
 				{
-					"slug": "x-small",
-					"size": "0.75rem",
-					"name": "XSmall",
-					"fluid": false
-				},
-				{
 					"slug": "hero",
-					"size": "3.125rem",
+					"size": "50px",
 					"name": "Hero",
 					"fluid": {
-						"min": "2rem",
-						"max": "3.125rem"
+						"min": "32px",
+						"max": "50px"
 					}
 				}
 			],
@@ -416,8 +416,8 @@
 					"text": "var:preset|color|text"
 				},
 				"typography": {
-					"fontWeight": "700",
-					"fontSize": "var:preset|font-size|small"
+					"fontWeight": "600",
+					"fontSize": "var:preset|font-size|medium"
 				},
 				"border": {
 					"radius": "8px"
@@ -426,8 +426,8 @@
 					"padding": {
 						"top": "16px",
 						"bottom": "16px",
-						"left": "32px",
-						"right": "32px"
+						"left": "36px",
+						"right": "36px"
 					}
 				},
 				":hover": {

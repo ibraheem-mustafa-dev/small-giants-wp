@@ -151,9 +151,19 @@ if ( $menu_template_part ) {
 }
 
 // Build panel HTML.
+// Full-width panels need position:fixed inline because LiteSpeed CSS Combine
+// merges the full-width rule with the align-centre rule, dropping position:fixed.
+// Cloudflare then caches the broken combined CSS for up to 30 days. Inline style
+// guarantees correct positioning regardless of CSS optimiser or CDN behaviour.
+$panel_style = '';
+if ( 'full' === $panel_width ) {
+	// top uses CSS var set by JS repositionPanel(); default 0 = flush below header.
+	$panel_style = ' style="position:fixed;top:var(--sgs-mm-fixed-top,0);left:0;width:100vw;max-width:100vw;--sgs-mm-tx:0px;--sgs-mm-open-tx:0px"';
+}
 $panel_html = sprintf(
-	'<div id="%s-panel" class="sgs-mega-menu__panel" role="menu" data-wp-bind--hidden="!context.isOpen" data-wp-on--keydown="actions.handlePanelKeydown">%s</div>',
+	'<div id="%s-panel" class="sgs-mega-menu__panel"%s role="menu" data-wp-bind--hidden="!context.isOpen" data-wp-on--keydown="actions.handlePanelKeydown">%s</div>',
 	esc_attr( $menu_id ),
+	$panel_style,
 	$panel_content
 );
 
