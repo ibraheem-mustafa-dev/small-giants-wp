@@ -21,15 +21,16 @@
 - **Live URL:** https://palestine-lives.org
 
 ## Known Issues / Blockers
-- Header template changes (pill font-size, nav font-size/weight) are correct in the file on the server but Hostinger's LiteSpeed Web Server cache is serving stale HTML. Even with WP plugin disabled and all transients flushed, the server serves old rendered output.
-- indus-foods.json style variation needs comprehensive attribute coverage for ALL customisable properties of every block/element it touches — not just colours and a few typography settings.
-- Button hover CSS (scale + colour inversion) is in the page source but may be losing to core's transition shorthand due to CSS Combine. Needs verification after cache resolution.
-- Hero CTA buttons are larger than CTA strip buttons — inconsistent sizing. Both need matching dimensions.
-- The wp-sgs-developer agent repeatedly hardcodes CSS in functions.php with !important, violating project rules. Agent definition needs fixing.
+- CRITICAL: Block recovery agent DAMAGED the homepage and header. H1 heading is MISSING from the hero. 12 empty paragraphs inserted across header and footer. Pills lost their font-size class. Nav still renders at 14px/500 despite file being correct. All of this must be fixed via the block editor (WP admin), NOT via code.
+- CRITICAL: The root cause was block validation errors — when block attributes in JSON don't match the saved HTML, WordPress falls back to stale HTML. This was caused by editing template files directly and WP-CLI post content updates. ALWAYS check the block editor for validation errors after any code-level block changes.
+- indus-foods.json style variation needs comprehensive attribute coverage for ALL customisable properties of every block/element it touches.
+- Button hover CSS (scale + colour inversion) is in functions.php but transition property is losing to core's `color 0.15s`. Needs CSS specificity fix.
+- LiteSpeed Cache plugin is DISABLED. Cloudflare is in developer mode. Both must be re-enabled after fixes are confirmed.
 
 ## Next Priorities (in order)
-1. Complete the Block Test Page (post ID 208) — add ALL 55 blocks (currently only ~25). All 14 form blocks, modal, decorative-image, pricing-table are missing. Every block must be valid with no editor errors. Fix the 5 blocks needing deprecated.js (container, testimonial, notice-banner, whatsapp-cta, accordion/tabs).
-2. Re-enable LiteSpeed Cache plugin (`wp plugin activate litespeed-cache`) and verify all changes render correctly. Cloudflare is in developer mode (no cache) — turn that off after confirming.
+1. URGENT: Fix homepage via WP admin block editor — restore missing H1 heading in hero, remove 12 empty paragraphs from header/footer, fix pill font-size class, fix nav font-size/weight. Do this through the editor UI, NOT code. Check every section visually in the editor before saving.
+2. Complete the Block Test Page (post ID 208) — add ALL 55 blocks (currently only ~25). All 14 form blocks, modal, decorative-image, pricing-table are missing. Every block must be valid with no editor errors. Fix the 5 blocks needing deprecated.js (container, testimonial, notice-banner, whatsapp-cta, accordion/tabs).
+3. Re-enable LiteSpeed Cache plugin (`wp plugin activate litespeed-cache`) and verify all changes render correctly. Cloudflare is in developer mode (no cache) — turn that off after confirming.
 3. Audit indus-foods.json to comprehensively cover ALL attributes for every element/block (buttons, headings h1-h6, paragraphs, links, navigation, images, separators, social links, columns, groups). Use the 130-item comparison list as source of truth.
 4. Review the 130-item comparison list with the user — go through each discrepancy for decisions (fix, skip, or improve).
 5. Implement brand-strip infinite carousel refactor (two-container pattern — research complete, not started).
