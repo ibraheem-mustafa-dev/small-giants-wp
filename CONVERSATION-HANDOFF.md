@@ -28,12 +28,14 @@
 - LiteSpeed Cache plugin is DISABLED. Cloudflare is in developer mode. Both must be re-enabled after fixes are confirmed.
 
 ## Next Priorities (in order)
-1. URGENT: Fix homepage via WP admin block editor — restore missing H1 heading in hero, remove 12 empty paragraphs from header/footer, fix pill font-size class, fix nav font-size/weight. Do this through the editor UI, NOT code. Check every section visually in the editor before saving.
-2. Complete the Block Test Page (post ID 208) — add ALL 55 blocks (currently only ~25). All 14 form blocks, modal, decorative-image, pricing-table are missing. Every block must be valid with no editor errors. Fix the 5 blocks needing deprecated.js (container, testimonial, notice-banner, whatsapp-cta, accordion/tabs).
-3. Re-enable LiteSpeed Cache plugin (`wp plugin activate litespeed-cache`) and verify all changes render correctly. Cloudflare is in developer mode (no cache) — turn that off after confirming.
-3. Audit indus-foods.json to comprehensively cover ALL attributes for every element/block (buttons, headings h1-h6, paragraphs, links, navigation, images, separators, social links, columns, groups). Use the 130-item comparison list as source of truth.
-4. Review the 130-item comparison list with the user — go through each discrepancy for decisions (fix, skip, or improve).
-5. Implement brand-strip infinite carousel refactor (two-container pattern — research complete, not started).
+1. Fix the 5 blocks needing deprecated.js — container, testimonial, notice-banner, whatsapp-cta, accordion/tabs. Add `deprecated.js` with `save: () => null` to each, build, deploy. This prevents future validation errors.
+2. Fix homepage damage via WP admin block editor — restore missing H1 heading in hero, remove 12 empty paragraphs from header/footer, fix pill font-size, fix nav font-size/weight. Do everything through the editor UI, NOT code.
+3. Run a FULL design review post-recovery — compare every element against the reference site. Check: mega menu panels (open each), all button hover effects, all image hover effects, service card interactions, testimonial layout, CTA strip, footer. Use DevTools computed styles to trace any CSS issues to their source file.
+4. Work through each discrepancy with the user — fix, skip, or improve.
+5. Complete the Block Test Page (post ID 208) — add ALL 55 blocks. Every block must be valid.
+6. Re-enable LiteSpeed Cache and turn off Cloudflare developer mode after confirming.
+7. Audit indus-foods.json to comprehensively cover ALL attributes for every element/block.
+8. Implement brand-strip infinite carousel refactor (two-container pattern — research complete, not started).
 
 ## Files Modified
 | File path | What changed |
