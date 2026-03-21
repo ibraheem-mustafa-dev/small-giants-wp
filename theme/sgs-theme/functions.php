@@ -882,6 +882,57 @@ footer.wp-block-template-part{margin-block-start:0!important}
 .wp-block-button__link.has-text-color[style*='color:#FFFFFF']{color:#FFFFFF!important}
 .wp-block-button__link.has-text-color[style*='color:#ffffff']{color:#ffffff!important}
 
+/* ── Global button hover — scale + colour invert ──────────────────────────
+ * All wp-block-button links get a consistent hover: slight scale lift,
+ * inverted background/text colours. This is behavioural CSS — cannot be
+ * set via theme.json :hover (only supports colour, not transform). */
+.wp-block-button__link{
+	transition:transform .2s ease,background-color .2s ease,color .2s ease,border-color .2s ease,box-shadow .2s ease;
+}
+.wp-block-button__link:hover{
+	transform:scale(1.04);
+	box-shadow:0 4px 12px rgba(0,0,0,0.15);
+}
+/* Teal button → gold bg, dark text on hover */
+.wp-block-button__link[style*='background-color:#0A7EA8']:hover,
+.wp-block-button__link[style*='background-color: #0A7EA8']:hover,
+.wp-block-button__link.has-primary-background-color:hover{
+	background-color:#D8CA50!important;
+	color:#2C3E50!important;
+	border-color:#D8CA50!important;
+}
+/* Black button → gold bg, dark text on hover */
+.wp-block-button__link[style*='background-color:#000000']:hover,
+.wp-block-button__link[style*='background-color: #000']:hover{
+	background-color:#D8CA50!important;
+	color:#2C3E50!important;
+	border-color:#2C3E50!important;
+}
+/* Gold/accent button → teal bg, white text on hover */
+.wp-block-button__link.has-accent-background-color:hover,
+.wp-block-button__link[style*='background-color:#D8CA50']:hover{
+	background-color:#0A7EA8!important;
+	color:#FFFFFF!important;
+	border-color:#0A7EA8!important;
+}
+
+/* ── Top bar pill hover ───────────────────────────────────────────────────
+ * Lift + shadow on hover for the compact pill buttons. */
+.sgs-header-top-bar a[href^='tel:'],
+.sgs-header-top-bar a[href^='mailto:'],
+.has-primary-background-color.wp-block-group a[href^='tel:'],
+.has-primary-background-color.wp-block-group a[href^='mailto:']{
+	transition:transform .2s ease,box-shadow .2s ease,background-color .2s ease;
+}
+.sgs-header-top-bar a[href^='tel:']:hover,
+.sgs-header-top-bar a[href^='mailto:']:hover,
+.has-primary-background-color.wp-block-group a[href^='tel:']:hover,
+.has-primary-background-color.wp-block-group a[href^='mailto:']:hover{
+	transform:translateY(-2px);
+	box-shadow:0 4px 12px rgba(0,0,0,0.2);
+	background-color:rgba(255,255,255,0.9);
+}
+
 ";
 
 		wp_add_inline_style( 'sgs-utilities', $css );

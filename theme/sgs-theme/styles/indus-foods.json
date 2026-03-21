@@ -180,6 +180,12 @@
 				"typography": {
 					"fontFamily": "var:preset|font-family|heading"
 				}
+			},
+			"core/navigation": {
+				"typography": {
+					"fontSize": "var:preset|font-size|medium",
+					"fontWeight": "600"
+				}
 			}
 		}
 	}
