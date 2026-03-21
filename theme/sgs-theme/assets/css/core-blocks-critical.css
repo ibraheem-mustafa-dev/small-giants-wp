@@ -82,12 +82,11 @@ body .is-root-container > .wp-block {
  * (fix_has_text_color_override filter). No CSS workaround needed.
  */
 
-/* Top bar links: force 14px bold so text qualifies as WCAG "large text"
- * (3:1 threshold). Targets both x-small and small in case of caching. */
+/* Top bar pill font-weight — inherits font-size from global medium (18px). */
+.has-primary-background-color > .wp-block-group > p.has-medium-font-size,
 .has-primary-background-color > .wp-block-group > p.has-small-font-size,
 .has-primary-background-color > .wp-block-group > p.has-x-small-font-size {
-	font-weight: 600 !important;
-	font-size: 0.875rem !important;
+	font-weight: 600;
 }
 
 /* ─── SITE LOGO ─── */
@@ -153,12 +152,13 @@ body .is-root-container > .wp-block {
 /* ─── FIX: WP has-text-color override on buttons ─── */
 /*
  * WordPress 6.9 global styles apply .has-text-color { color: var(--text) !important }
- * which overrides inline color values on buttons. This rule ensures buttons with
- * an explicit inline color keep that colour instead of being forced to --text.
- * The [style*="color"] selector targets only buttons with inline colour set.
+ * which overrides inline color values on buttons with custom hex colours.
+ * We counteract this by resetting the specificity so the inline style wins.
+ * The double :where() wrapper brings specificity to (0,0,0) so any inline
+ * style attribute beats it without needing !important.
  */
-.wp-block-button__link.has-text-color[style*="color"] {
-	color: inherit !important;
+:where(.wp-block-button__link.has-text-color) {
+	color: unset;
 }
 
 /* ─── PRIMARY BUTTON — explicit defaults ─── */
@@ -459,4 +459,26 @@ body.sgs-has-transparent-header .wp-site-blocks > :first-child {
 		transition-duration: 0.01ms !important;
 		scroll-behavior: auto !important;
 	}
+}
+
+/* ── Section gap fix: remove block-gap between full-width sections ────────
+ * WordPress constrained layout applies --wp--style--block-gap as margin-top
+ * to every child. alignfull sections should be flush — zero white strips
+ * between coloured section containers. */
+.wp-block-post-content > .alignfull,
+.entry-content > .alignfull {
+	margin-block-start: 0 !important;
+	margin-block-end: 0 !important;
+}
+
+/* Remove block-gap top margin from hero block specifically (not alignfull). */
+.wp-block-post-content > .wp-block-sgs-hero,
+.entry-content > .wp-block-sgs-hero {
+	margin-block-start: 0 !important;
+}
+
+/* Hero full-bleed: break out of constrained layout padding on wide viewports.
+ * Mirrors what WordPress does for alignfull but applied to the hero block. */
+.has-global-padding > .wp-block-sgs-hero {
+	margin-inline: calc(-1 * var(--wp--preset--spacing--50, 1.5rem)) !important;
 }
