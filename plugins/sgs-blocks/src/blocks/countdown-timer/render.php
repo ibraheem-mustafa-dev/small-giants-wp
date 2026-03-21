@@ -11,8 +11,6 @@
 
 defined( 'ABSPATH' ) || exit;
 
-use Carbon\Carbon;
-
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 $target_date      = $attributes['targetDate'] ?? '';
@@ -28,21 +26,23 @@ $number_colour    = $attributes['numberColour'] ?? 'primary';
 $label_colour     = $attributes['labelColour'] ?? 'text-muted';
 $card_style       = $attributes['cardStyle'] ?? 'elevated';
 
-// Carbon-powered initial values for fixed target dates.
+// Calculate initial server-side values for fixed target dates using native PHP DateTime.
 $initial    = array( 'days' => 0, 'hours' => 0, 'minutes' => 0, 'seconds' => 0 );
 $server_ts  = 0;
 $is_expired = false;
 
 if ( ! $evergreen_mode && $target_date ) {
 	try {
-		$target    = Carbon::parse( $target_date, wp_timezone() );
-		$now       = Carbon::now( wp_timezone() );
-		$server_ts = $target->timestamp;
+		$tz     = wp_timezone();
+		$target = new \DateTime( $target_date, $tz );
+		$now    = new \DateTime( 'now', $tz );
 
-		if ( $target->isPast() ) {
+		$server_ts = $target->getTimestamp();
+
+		if ( $target <= $now ) {
 			$is_expired = true;
 		} else {
-			$total_seconds      = (int) $target->diffInSeconds( $now );
+			$total_seconds      = $target->getTimestamp() - $now->getTimestamp();
 			$initial['days']    = (int) floor( $total_seconds / 86400 );
 			$remaining          = $total_seconds % 86400;
 			$initial['hours']   = (int) floor( $remaining / 3600 );

@@ -54,6 +54,7 @@ $used_slugs = [];
  * @param array &$used_slugs Slugs already used (for deduplication).
  * @param array $levels      Heading levels to include.
  */
+if ( ! function_exists( 'sgs_toc_extract_headings' ) ) :
 function sgs_toc_extract_headings( array $blocks, array &$headings, array &$used_slugs, array $levels ): void {
 	foreach ( $blocks as $block ) {
 		if ( 'core/heading' === ( $block['blockName'] ?? '' ) ) {
@@ -109,6 +110,7 @@ function sgs_toc_extract_headings( array $blocks, array &$headings, array &$used
 		}
 	}
 }
+endif;
 
 sgs_toc_extract_headings( $blocks, $headings, $used_slugs, $heading_levels );
 
