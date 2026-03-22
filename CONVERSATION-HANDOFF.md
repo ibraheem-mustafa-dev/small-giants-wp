@@ -67,10 +67,14 @@ Read CONVERSATION-HANDOFF.md and CLAUDE.md for full context, then work through t
 | Skill | When to use |
 |-------|-------------|
 | `/superpowers:using-superpowers` | FIRST — before any response |
-| `/sgs-wp-engine` | Before any block or theme work |
-| `/superpowers:systematic-debugging` | Task 1 — debugging the font size override |
-| `/wp-block-themes` | Task 1 — understanding template part rendering pipeline |
-| `/research` | Task 1 — search for WP 6.9 template part block validation bugs |
+| `/sgs-wp-engine` | Before any block or theme work — routes to sub-skills below |
+| `/superpowers:systematic-debugging` | Task 1 — structured debugging of the font size override |
+| `/wp-block-themes` | Task 1 — template part rendering pipeline, style hierarchy, Global Styles |
+| `/wp-plugin-development` | Task 1 — tracing the render_block filter chain in functions.php |
+| `/wp-performance` | Task 1 — Server-Timing headers, profiling which filter modifies output |
+| `/wp-wpcli-and-ops` | Task 1 — WP_DEBUG_LOG setup, wp eval for targeted server-side tests |
+| `/wp-project-triage` | Task 1 — classify the issue (WP core bug vs theme bug vs config) |
+| `/research` | Task 1 — search WP Trac and GitHub for template part fontSize bugs |
 
 ## MCP Servers & Tools
 
