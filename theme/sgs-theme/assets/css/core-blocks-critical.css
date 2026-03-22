@@ -482,3 +482,103 @@ body.sgs-has-transparent-header .wp-site-blocks > :first-child {
 .has-global-padding > .wp-block-sgs-hero {
 	margin-inline: calc(-1 * var(--wp--preset--spacing--50, 1.5rem)) !important;
 }
+
+/* ─── SITE LOGO — MOBILE CONSTRAINT ─── */
+
+/*
+ * Prevent the logo from overflowing on small screens.
+ * The block attribute sets width:300px via inline style — override with
+ * max-width so the logo scales down proportionally without reflowing the header.
+ */
+@media (max-width: 480px) {
+	.wp-block-site-logo img {
+		max-width: 180px !important;
+	}
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+	.wp-block-site-logo img {
+		max-width: 220px !important;
+	}
+}
+
+/* ─── TOP BAR — MOBILE / TABLET SWAP ─── */
+
+/*
+ * On mobile/tablet (≤768px):
+ * - Hide the desktop phone+email pills
+ * - Hide the social links row
+ * - Show the two CTA buttons (Apply For Trade Account + Call)
+ *
+ * On desktop (≥769px):
+ * - Show pills + socials as normal
+ * - Hide the mobile CTA buttons
+ */
+@media (max-width: 768px) {
+	.sgs-top-bar-desktop-pills,
+	.sgs-header-top-bar .sgs-top-bar-socials {
+		display: none !important;
+	}
+
+	.sgs-top-bar-mobile-cta {
+		display: flex !important;
+		align-items: center;
+		gap: 8px;
+		width: 100%;
+	}
+}
+
+@media (min-width: 769px) {
+	.sgs-top-bar-mobile-cta {
+		display: none !important;
+	}
+}
+
+/* ─── TOP BAR MOBILE CTA BUTTONS ─── */
+
+/*
+ * Two compact pill buttons replacing phone/email/socials on mobile.
+ * Teal background already provided by the top bar group — buttons use white
+ * text and a semi-transparent border to lift off the background.
+ */
+.sgs-top-bar-mobile-cta__btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	background-color: rgba(255, 255, 255, 0.15);
+	color: var(--wp--preset--color--surface, #ffffff);
+	text-decoration: none;
+	font-size: 0.8125rem; /* 13px */
+	font-weight: 600;
+	line-height: 1.2;
+	padding: 8px 14px;
+	border-radius: 50px;
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	white-space: nowrap;
+	min-height: 44px;
+	transition: background-color 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sgs-top-bar-mobile-cta__btn:hover,
+.sgs-top-bar-mobile-cta__btn:focus {
+	background-color: rgba(255, 255, 255, 0.25);
+}
+
+.sgs-top-bar-mobile-cta__btn:focus-visible {
+	outline: 3px solid var(--wp--preset--color--surface, #ffffff);
+	outline-offset: 2px;
+}
+
+.sgs-top-bar-mobile-cta__btn svg {
+	width: 16px;
+	height: 16px;
+	flex-shrink: 0;
+}
+
+/* On very small screens, hide the "Apply For Trade Account" text label
+ * and show just the call button, to prevent overflow */
+@media (max-width: 360px) {
+	.sgs-top-bar-mobile-cta__btn:first-child {
+		display: none;
+	}
+}

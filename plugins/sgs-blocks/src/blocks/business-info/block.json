@@ -1,0 +1,69 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "sgs/business-info",
+    "version": "0.1.0",
+    "title": "Business Info",
+    "category": "sgs-content",
+    "description": "Display business details from Settings > Business Details.",
+    "keywords": [
+        "business",
+        "contact",
+        "phone",
+        "email",
+        "address",
+        "hours",
+        "social",
+        "copyright"
+    ],
+    "textdomain": "sgs-blocks",
+    "icon": "building",
+    "attributes": {
+        "type": {
+            "type": "string",
+            "default": "phone",
+            "enum": [
+                "phone",
+                "email",
+                "address",
+                "hours",
+                "socials",
+                "copyright",
+                "description",
+                "map"
+            ]
+        },
+        "showIcon": {
+            "type": "boolean",
+            "default": true
+        },
+        "linkPhone": {
+            "type": "boolean",
+            "default": true
+        },
+        "linkEmail": {
+            "type": "boolean",
+            "default": true
+        }
+    },
+    "supports": {
+        "html": false,
+        "anchor": true,
+        "color": {
+            "text": true,
+            "background": true,
+            "link": true
+        },
+        "typography": {
+            "fontSize": true,
+            "fontFamily": true
+        },
+        "spacing": {
+            "margin": true,
+            "padding": true
+        }
+    },
+    "render": "file:./render.php",
+    "editorScript": "file:./index.js",
+    "style": "file:./style-index.css"
+}

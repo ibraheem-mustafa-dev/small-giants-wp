@@ -5,8 +5,9 @@
 	<!-- wp:group {"style":{"spacing":{"padding":{"top":"8px","bottom":"8px","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"primary","layout":{"type":"flex","justifyContent":"space-between","flexWrap":"nowrap"},"metadata":{"name":"Top Bar"},"className":"sgs-header-top-bar"} -->
 	<div class="wp-block-group sgs-header-top-bar has-primary-background-color has-background" style="padding-top:8px;padding-right:var(--wp--preset--spacing--40);padding-bottom:8px;padding-left:var(--wp--preset--spacing--40)">
 
-		<!-- wp:group {"layout":{"type":"flex","flexWrap":"nowrap"},"style":{"spacing":{"blockGap":"var:preset|spacing|40"}}} -->
-		<div class="wp-block-group" style="gap:var(--wp--preset--spacing--40)">
+		<!-- Desktop left: phone + email pills -->
+		<!-- wp:group {"layout":{"type":"flex","flexWrap":"nowrap"},"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"className":"sgs-top-bar-desktop-pills"} -->
+		<div class="wp-block-group sgs-top-bar-desktop-pills" style="gap:var(--wp--preset--spacing--40)">
 			<!-- wp:paragraph {"style":{"elements":{"link":{"color":{"text":"var:preset|color|surface"}}},"typography":{"fontWeight":"600"}},"textColor":"surface","fontSize":"medium"} -->
 			<p class="has-surface-color has-text-color has-link-color has-medium-font-size" style="font-weight:600"><a href="tel:+441217714330" aria-label="Call us on 0121 771 4330">0121 771 4330</a></p>
 			<!-- /wp:paragraph -->
@@ -17,8 +18,26 @@
 		</div>
 		<!-- /wp:group -->
 
-		<!-- wp:social-links {"iconColor":"surface","iconColorValue":"#FFFFFF","size":"has-small-icon-size","className":"is-style-logos-only"} -->
-		<ul class="wp-block-social-links has-small-icon-size has-icon-color is-style-logos-only">
+		<!-- Mobile CTA buttons (hidden on desktop) -->
+		<!-- wp:html -->
+		<div class="sgs-top-bar-mobile-cta" aria-hidden="true">
+			<a href="/apply-for-trade-account/" class="sgs-top-bar-mobile-cta__btn">
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+					<path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" fill="currentColor"/>
+				</svg>
+				Apply For Trade Account
+			</a>
+			<a href="tel:+441217714330" class="sgs-top-bar-mobile-cta__btn sgs-top-bar-mobile-cta__btn--call" aria-label="Call us on 0121 771 4330">
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+					<path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" fill="currentColor"/>
+				</svg>
+				Call 0121 771 4330
+			</a>
+		</div>
+		<!-- /wp:html -->
+
+		<!-- wp:social-links {"iconColor":"surface","iconColorValue":"#FFFFFF","size":"has-small-icon-size","className":"is-style-logos-only sgs-top-bar-socials"} -->
+		<ul class="wp-block-social-links has-small-icon-size has-icon-color is-style-logos-only sgs-top-bar-socials">
 			<!-- wp:social-link {"url":"https://www.linkedin.com/company/indus-foods-ltd/","service":"linkedin"} /-->
 			<!-- wp:social-link {"url":"https://www.facebook.com/indusfoodsltd/","service":"facebook"} /-->
 			<!-- wp:social-link {"url":"https://g.page/r/CYLLa_01-rZvEAE/review","service":"google"} /-->
@@ -40,7 +59,7 @@
 
 			<!-- Mobile nav toggle button (hamburger) — only visible on mobile/tablet -->
 			<!-- wp:html -->
-			<button class="sgs-mobile-nav-toggle" aria-label="Open navigation menu" aria-expanded="false">
+			<button class="sgs-mobile-nav-toggle" aria-label="Open navigation menu" aria-expanded="false" aria-controls="sgs-mobile-nav-drawer">
 				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
 					<path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
 				</svg>
@@ -49,27 +68,75 @@
 
 			<!-- wp:navigation {"textColor":"text","layout":{"type":"flex","justifyContent":"right"},"style":{"typography":{"fontWeight":"600"},"spacing":{"blockGap":"var:preset|spacing|40"}},"fontSize":"medium"} /-->
 
-	
+
 		</div>
 		<!-- /wp:group -->
 
 	</div>
 	<!-- /wp:group -->
 
-	<!-- Mobile navigation drawer — off-canvas side panel -->
+	<!-- Mobile navigation drawer — full-screen overlay -->
 	<!-- wp:html -->
 	<div class="sgs-mobile-nav-drawer__backdrop"></div>
-	<nav class="sgs-mobile-nav-drawer" aria-label="Mobile navigation" aria-hidden="true">
+	<nav class="sgs-mobile-nav-drawer" id="sgs-mobile-nav-drawer" aria-label="Mobile navigation" aria-hidden="true">
+
+		<!-- Drawer header: close button -->
 		<div class="sgs-mobile-nav-drawer__header">
 			<button class="sgs-mobile-nav-drawer__close" aria-label="Close navigation menu">
-				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-					<path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+					<path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
 				</svg>
 			</button>
 		</div>
-		<div class="sgs-mobile-nav-drawer__content">
-			<!-- wp:navigation {"textColor":"surface","layout":{"type":"flex","orientation":"vertical"},"style":{"spacing":{"blockGap":"0"}},"fontSize":"medium"} /-->
+
+		<!-- CTA section: trade account button + email + phone icons -->
+		<div class="sgs-mobile-nav-drawer__cta">
+			<a href="/apply-for-trade-account/" class="sgs-mobile-nav-drawer__cta-btn">
+				Become A Trade Customer
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+					<path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+				</svg>
+			</a>
+			<a href="mailto:amir@indusfoodsltd.com" class="sgs-mobile-nav-drawer__icon-btn" aria-label="Email us at amir@indusfoodsltd.com">
+				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+					<path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" fill="currentColor"/>
+				</svg>
+			</a>
+			<a href="tel:+441217714330" class="sgs-mobile-nav-drawer__icon-btn" aria-label="Call us on 0121 771 4330">
+				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+					<path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" fill="currentColor"/>
+				</svg>
+			</a>
 		</div>
+
+		<!-- Nav items cloned here by JS -->
+		<div class="sgs-mobile-nav-drawer__content">
+		</div>
+
+		<!-- Social links -->
+		<div class="sgs-mobile-nav-drawer__socials">
+			<a href="https://www.linkedin.com/company/indus-foods-ltd/" class="sgs-mobile-nav-drawer__social-link sgs-mobile-nav-drawer__social-link--linkedin" aria-label="Follow us on LinkedIn" target="_blank" rel="noopener noreferrer">
+				<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+					<path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+				</svg>
+			</a>
+			<a href="https://www.facebook.com/indusfoodsltd/" class="sgs-mobile-nav-drawer__social-link sgs-mobile-nav-drawer__social-link--facebook" aria-label="Follow us on Facebook" target="_blank" rel="noopener noreferrer">
+				<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+					<path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+				</svg>
+			</a>
+			<a href="https://g.page/r/CYLLa_01-rZvEAE/review" class="sgs-mobile-nav-drawer__social-link sgs-mobile-nav-drawer__social-link--google" aria-label="Leave us a Google review" target="_blank" rel="noopener noreferrer">
+				<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+					<path d="M12.545 10.239v3.821h5.445c-.712 2.315-2.647 3.972-5.445 3.972a6.033 6.033 0 110-12.064c1.498 0 2.866.549 3.921 1.453l2.814-2.814A9.969 9.969 0 0012.545 2C7.021 2 2.543 6.477 2.543 12s4.478 10 10.002 10c8.396 0 10.249-7.85 9.426-11.748l-9.426-.013z"/>
+				</svg>
+			</a>
+			<a href="https://www.instagram.com/indusfoodsltd/" class="sgs-mobile-nav-drawer__social-link sgs-mobile-nav-drawer__social-link--instagram" aria-label="Follow us on Instagram" target="_blank" rel="noopener noreferrer">
+				<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+					<path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+				</svg>
+			</a>
+		</div>
+
 	</nav>
 	<!-- /wp:html -->
 
