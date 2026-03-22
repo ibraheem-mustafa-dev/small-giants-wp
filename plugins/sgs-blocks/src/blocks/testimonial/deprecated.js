@@ -190,4 +190,32 @@ const v1 = {
 	},
 };
 
-export default [ v1 ];
+/**
+ * v2 — catch-all for empty innerHTML (WP-CLI, block recovery).
+ *      save: () => null matches any stored innerHTML.
+ */
+const v2 = {
+	attributes: {
+		quote: { type: 'string', source: 'html', selector: '.sgs-testimonial__quote' },
+		name: { type: 'string', source: 'html', selector: '.sgs-testimonial__name' },
+		role: { type: 'string', source: 'html', selector: '.sgs-testimonial__role' },
+		avatar: { type: 'object' },
+		rating: { type: 'number', default: 0 },
+		style: { type: 'string', default: 'card' },
+		quoteColour: { type: 'string' },
+		nameColour: { type: 'string' },
+		nameFontSize: { type: 'string' },
+		roleColour: { type: 'string' },
+		ratingColour: { type: 'string', default: 'accent' },
+		reviewSource: { type: 'string', default: '' },
+		reviewDate: { type: 'string', default: '' },
+		hoverBackgroundColour: { type: 'string' },
+		hoverTextColour: { type: 'string' },
+		hoverBorderColour: { type: 'string' },
+		transitionDuration: { type: 'string', default: '300ms' },
+	},
+	save: () => null,
+	migrate: ( attributes ) => attributes,
+};
+
+export default [ v2, v1 ];

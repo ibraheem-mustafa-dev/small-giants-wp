@@ -2,17 +2,18 @@
     "$schema":  "https://schemas.wp.org/trunk/block.json",
     "apiVersion":  3,
     "name":  "sgs/brand-strip",
-    "version":  "0.1.0",
+    "version":  "0.2.0",
     "title":  "SGS Brand Strip",
     "category":  "sgs-content",
-    "description":  "Horizontal logo strip with optional infinite scroll animation and greyscale effect.",
+    "description":  "Horizontal logo strip with infinite marquee scroll, fade edges, direction control, and greyscale effect.",
     "keywords":  [
                      "brand",
                      "logo",
                      "partner",
                      "client",
                      "strip",
-                     "carousel"
+                     "carousel",
+                     "marquee"
                  ],
     "textdomain":  "sgs-blocks",
     "icon":  "images-alt2",
@@ -41,9 +42,7 @@
     "attributes":  {
                        "logos":  {
                                      "type":  "array",
-                                     "default":  [
-
-                                                 ]
+                                     "default":  []
                                  },
                        "scrolling":  {
                                          "type":  "boolean",
@@ -53,6 +52,18 @@
                                            "type":  "string",
                                            "default":  "medium"
                                        },
+                       "scrollDirection":  {
+                                              "type":  "string",
+                                              "default":  "left"
+                                          },
+                       "fadeEdges":  {
+                                        "type":  "boolean",
+                                        "default":  false
+                                    },
+                       "fadeWidth":  {
+                                        "type":  "number",
+                                        "default":  60
+                                    },
                        "greyscale":  {
                                          "type":  "boolean",
                                          "default":  true
@@ -89,6 +100,7 @@
     "editorScript":  "file:./index.js",
     "editorStyle":  "file:./index.css",
     "style":  "file:./style-index.css",
+    "viewScriptModule":  "file:./view.js",
     "render":  "file:./render.php",
     "example":  {
                     "attributes":  {

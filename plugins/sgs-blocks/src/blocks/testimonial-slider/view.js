@@ -244,10 +244,13 @@ sliders.forEach( ( slider ) => {
 			}
 		} );
 
-		/* Insert after the arrows container, or directly after the track */
-		const arrowsContainer = slider.querySelector( '.sgs-testimonial-slider__arrows' );
-		if ( arrowsContainer ) {
-			arrowsContainer.appendChild( pauseBtn );
+		/* Insert after the dots container (below the navigation dots).
+		 * Must NOT go inside .sgs-testimonial-slider__arrows — that container
+		 * uses position:absolute + space-between for exactly 2 items (prev/next).
+		 * Adding a 3rd item breaks the layout and overlaps the card text. */
+		const dotsContainer = slider.querySelector( '.sgs-testimonial-slider__dots' );
+		if ( dotsContainer ) {
+			dotsContainer.after( pauseBtn );
 		} else {
 			slider.appendChild( pauseBtn );
 		}

@@ -2,23 +2,39 @@
 
 .sgs-brand-strip {
 	overflow: hidden;
+	position: relative;
 	/*
-	 * Reserve vertical space equal to the default max logo height (48px) plus
-	 * the block's vertical padding. This prevents CLS when logo images load and
-	 * the track jumps from zero height to full height before images decode.
-	 * Actual height is driven by the images — min-height only catches the
-	 * brief moment before they load.
+	 * Reserve vertical space equal to the default max logo height plus
+	 * the block's vertical padding. Prevents CLS when logo images load.
 	 */
 	min-height: calc(var(--sgs-logo-max-height, 80px) + var(--wp--preset--spacing--50, 2rem) * 2);
 }
 
-/* ===== Track ===== */
+/* ===== Track — flex container for sets ===== */
 .sgs-brand-strip__track {
 	display: flex;
 	align-items: center;
 	gap: var(--wp--preset--spacing--50);
+}
+
+/* Static (non-scrolling) mode: wrap and centre */
+.sgs-brand-strip:not(.sgs-brand-strip--scrolling) .sgs-brand-strip__track {
 	flex-wrap: wrap;
 	justify-content: center;
+}
+
+/* ===== Set — one complete group of logos ===== */
+.sgs-brand-strip__set {
+	display: flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--50);
+	flex-shrink: 0;
+}
+
+/* When few logos, ensure the set fills at least half the viewport
+ * so the marquee has no visible gaps on wide screens. */
+.sgs-brand-strip--scrolling .sgs-brand-strip__set {
+	min-width: 50vw;
 }
 
 /* ===== Item ===== */
@@ -54,10 +70,26 @@
 	opacity: 1;
 }
 
-/* ===== Infinite scrolling ===== */
+/* ===== Infinite scrolling animation ===== */
+
+/*
+ * The animation runs on .sgs-brand-strip__track--ready, which is added
+ * by view.js AFTER clones are inserted. This prevents a flash of
+ * incorrect layout before JS measures and clones.
+ *
+ * translateX(-100%) moves exactly one set width. The gap correction
+ * ensures no stutter at the loop point (Ryan Mulligan pattern).
+ *
+ * Each .sgs-brand-strip__set has flex-shrink:0 so it maintains its
+ * intrinsic width. The track's total width = N sets * set-width + (N-1) gaps.
+ * Moving by one set width + one gap = seamless loop.
+ */
 .sgs-brand-strip--scrolling .sgs-brand-strip__track {
 	flex-wrap: nowrap;
 	justify-content: flex-start;
+}
+
+.sgs-brand-strip--scrolling .sgs-brand-strip__track--ready {
 	animation: sgs-brand-scroll var(--sgs-scroll-speed, 25s) linear infinite;
 }
 
@@ -66,12 +98,48 @@
 		transform: translateX(0);
 	}
 	100% {
-		transform: translateX(-50%);
+		/* Move by exactly one set width + one gap for seamless loop.
+		 * The set count determines what percentage of the track = one set.
+		 * With 2 sets: -50%, with 3 sets: -33.33%, etc.
+		 * JS sets --sgs-track-gap for the gap correction.
+		 * We use calc() to include the gap offset. */
+		transform: translateX(calc(-50% - var(--sgs-track-gap, 0px) / 2));
 	}
 }
 
-.sgs-brand-strip--scrolling:hover .sgs-brand-strip__track {
-	animation-play-state: paused;
+/* Reverse direction (right-to-left → right) */
+.sgs-brand-strip--reverse .sgs-brand-strip__track--ready {
+	animation-direction: reverse;
+}
+
+/* ===== Fade edges — gradient mask ===== */
+.sgs-brand-strip--fade::before,
+.sgs-brand-strip--fade::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: var(--sgs-fade-width, 60px);
+	z-index: 2;
+	pointer-events: none;
+}
+
+.sgs-brand-strip--fade::before {
+	left: 0;
+	background: linear-gradient(to right, var(--sgs-fade-bg, var(--wp--preset--color--surface, #fff)), transparent);
+}
+
+.sgs-brand-strip--fade::after {
+	right: 0;
+	background: linear-gradient(to left, var(--sgs-fade-bg, var(--wp--preset--color--surface, #fff)), transparent);
+}
+
+/* Match fade colour to block background if set */
+.sgs-brand-strip[style*="background-color"]::before {
+	background: linear-gradient(to right, var(--wp--custom--color--background, currentColor), transparent);
+}
+.sgs-brand-strip[style*="background-color"]::after {
+	background: linear-gradient(to left, var(--wp--custom--color--background, currentColor), transparent);
 }
 
 /* ===== Hover States ===== */
@@ -137,7 +205,7 @@
 
 /* ===== Reduced motion ===== */
 @media (prefers-reduced-motion: reduce) {
-	.sgs-brand-strip--scrolling .sgs-brand-strip__track {
+	.sgs-brand-strip--scrolling .sgs-brand-strip__track--ready {
 		animation: none;
 	}
 

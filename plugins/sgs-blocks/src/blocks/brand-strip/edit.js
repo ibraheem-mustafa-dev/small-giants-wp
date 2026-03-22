@@ -29,6 +29,17 @@ const SPEED_OPTIONS = [
 	{ label: __( 'Fast', 'sgs-blocks' ), value: 'fast' },
 ];
 
+const DIRECTION_OPTIONS = [
+	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
+	{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
+];
+
+const SPEED_MAP = {
+	slow: '40s',
+	medium: '25s',
+	fast: '15s',
+};
+
 function LogoEditor( { logo, index, onChange, onRemove } ) {
 	const update = ( key, value ) => {
 		onChange( { ...logo, [ key ]: value } );
@@ -137,6 +148,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		logos,
 		scrolling,
 		scrollSpeed,
+		scrollDirection,
+		fadeEdges,
+		fadeWidth,
 		greyscale,
 		maxHeight,
 		hoverBackgroundColour,
@@ -172,6 +186,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		'sgs-brand-strip',
 		greyscale ? 'sgs-brand-strip--greyscale' : '',
 		scrolling ? 'sgs-brand-strip--scrolling' : '',
+		scrollDirection === 'right' ? 'sgs-brand-strip--reverse' : '',
+		fadeEdges ? 'sgs-brand-strip--fade' : '',
 	]
 		.filter( Boolean )
 		.join( ' ' );
@@ -184,6 +200,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			'--sgs-hover-border': hoverBorderColour ? colourVar( hoverBorderColour ) : undefined,
 			'--sgs-transition-duration': transitionDuration ? `${ transitionDuration }ms` : undefined,
 			'--sgs-transition-easing': transitionEasing || undefined,
+			'--sgs-fade-width': fadeEdges ? `${ fadeWidth }px` : undefined,
 		},
 	} );
 
@@ -204,30 +221,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						min={ 24 }
 						max={ 120 }
-						__nextHasNoMarginBottom
-					/>
-					<TextControl
-						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
-						value={ transitionDuration }
-						onChange={ ( val ) =>
-							setAttributes( { transitionDuration: val } )
-						}
-						help={ __( 'Duration of the greyscale-to-colour hover transition in milliseconds. Default: 300.', 'sgs-blocks' ) }
-						__nextHasNoMarginBottom
-					/>
-					<SelectControl
-						label={ __( 'Transition easing', 'sgs-blocks' ) }
-						value={ transitionEasing }
-						options={ [
-							{ label: __( 'Ease', 'sgs-blocks' ), value: 'ease' },
-							{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
-							{ label: __( 'Ease out', 'sgs-blocks' ), value: 'ease-out' },
-							{ label: __( 'Ease in–out', 'sgs-blocks' ), value: 'ease-in-out' },
-							{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
-						] }
-						onChange={ ( val ) =>
-							setAttributes( { transitionEasing: val } )
-						}
 						__nextHasNoMarginBottom
 					/>
 					<ToggleControl
@@ -254,16 +247,81 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 					/>
 					{ scrolling && (
-						<SelectControl
-							label={ __( 'Scroll speed', 'sgs-blocks' ) }
-							value={ scrollSpeed }
-							options={ SPEED_OPTIONS }
+						<>
+							<SelectControl
+								label={ __( 'Scroll speed', 'sgs-blocks' ) }
+								value={ scrollSpeed }
+								options={ SPEED_OPTIONS }
+								onChange={ ( val ) =>
+									setAttributes( { scrollSpeed: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+							<SelectControl
+								label={ __( 'Scroll direction', 'sgs-blocks' ) }
+								value={ scrollDirection }
+								options={ DIRECTION_OPTIONS }
+								onChange={ ( val ) =>
+									setAttributes( { scrollDirection: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+						</>
+					) }
+					<ToggleControl
+						label={ __( 'Fade edges', 'sgs-blocks' ) }
+						help={ __(
+							'Gradient fade on left and right edges for a polished look.',
+							'sgs-blocks'
+						) }
+						checked={ fadeEdges }
+						onChange={ ( val ) =>
+							setAttributes( { fadeEdges: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					{ fadeEdges && (
+						<RangeControl
+							label={ __( 'Fade width (px)', 'sgs-blocks' ) }
+							value={ fadeWidth }
 							onChange={ ( val ) =>
-								setAttributes( { scrollSpeed: val } )
+								setAttributes( { fadeWidth: val } )
 							}
+							min={ 20 }
+							max={ 200 }
 							__nextHasNoMarginBottom
 						/>
 					) }
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Transitions', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<TextControl
+						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
+						value={ transitionDuration }
+						onChange={ ( val ) =>
+							setAttributes( { transitionDuration: val } )
+						}
+						help={ __( 'Duration of the greyscale-to-colour hover transition in milliseconds. Default: 300.', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+					/>
+					<SelectControl
+						label={ __( 'Transition easing', 'sgs-blocks' ) }
+						value={ transitionEasing }
+						options={ [
+							{ label: __( 'Ease', 'sgs-blocks' ), value: 'ease' },
+							{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
+							{ label: __( 'Ease out', 'sgs-blocks' ), value: 'ease-out' },
+							{ label: __( 'Ease in–out', 'sgs-blocks' ), value: 'ease-in-out' },
+							{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
+						] }
+						onChange={ ( val ) =>
+							setAttributes( { transitionEasing: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
 				</PanelBody>
 
 				<PanelBody
@@ -336,32 +394,28 @@ export default function Edit( { attributes, setAttributes } ) {
 						className="sgs-brand-strip__track"
 						style={ trackStyle }
 					>
-						{ logos.map( ( logo, i ) =>
-							logo.image?.url ? (
-								<div
-									key={ i }
-									className="sgs-brand-strip__item"
-								>
-									<img
-										src={ logo.image.url }
-										alt={ logo.alt || '' }
-										className="sgs-brand-strip__logo"
-										style={ {
-											maxHeight: `${ maxHeight }px`,
-										} }
-									/>
-								</div>
-							) : null
-						) }
+						<div className="sgs-brand-strip__set">
+							{ logos.map( ( logo, i ) =>
+								logo.image?.url ? (
+									<div
+										key={ i }
+										className="sgs-brand-strip__item"
+									>
+										<img
+											src={ logo.image.url }
+											alt={ logo.alt || '' }
+											className="sgs-brand-strip__logo"
+											style={ {
+												maxHeight: `${ maxHeight }px`,
+											} }
+										/>
+									</div>
+								) : null
+							) }
+						</div>
 					</div>
 				) }
 			</div>
 		</>
 	);
 }
-
-const SPEED_MAP = {
-	slow: '40s',
-	medium: '25s',
-	fast: '15s',
-};

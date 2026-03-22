@@ -64,13 +64,11 @@
                                    },
                        "headline":  {
                                         "type":  "string",
-                                        "source":  "html",
-                                        "selector":  ".sgs-hero__headline"
+                                        "default":  ""
                                     },
                        "subHeadline":  {
                                            "type":  "string",
-                                           "source":  "html",
-                                           "selector":  ".sgs-hero__subheadline"
+                                           "default":  ""
                                        },
                        "alignment":  {
                                          "type":  "string",

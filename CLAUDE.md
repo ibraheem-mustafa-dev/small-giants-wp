@@ -55,6 +55,21 @@ All components read from `theme.json` design tokens. Defaults are SGS branding (
 
 Fonts: Inter variable (body + headings, 48KB) — self-hosted WOFF2, no CDN. DM Serif Display + DM Sans available for client style variations.
 
+## Design-to-Ship Pipelines (Coming — Session Next-04)
+
+6 standardised pipelines are being designed for SGS work:
+1. **New build** — client brief → research → design system → blocks → QA → deploy
+2. **WP → SGS migration** — extract → replicate → visual diff → QA fix loop
+3. **Draft → SGS** — HTML/JS/image mockup → extract design → SGS blocks → visual comparison
+4. **Audit → redesign** — site-reviewer → SEO → gap-analysis → proposal with pricing
+5. **Client onboarding** — hosting → WP install → style variation → content migration
+6. **QA → deploy** — orchestrated QA chain → fix loop → deploy checklist
+
+Pipeline architecture at: `A:/.openclaw/rehab-project/Prompts/SESSION_NEXT_04_SECTION_A_SGS.md`
+Pipeline audit at: `A:/.openclaw/workspace/memory/research/2026-03-19-design-build-pipeline-audit.md`
+
+**Known reliability issues to fix:** corrupted images during migration, broken CSS, lost styles. Pipeline A2 includes hash verification, CSS comparison, and visual diff at 3 breakpoints.
+
 ## Agent Delegation
 
 **MANDATORY:** Delegate all heavy WordPress build work to the `wp-sgs-developer` agent — page builds, template creation, block configuration, theme customisation, plugin development, site migrations, fidelity comparisons. This rule applies across all WP projects and non-WP projects with WP integrations.
