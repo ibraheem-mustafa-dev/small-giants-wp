@@ -1,15 +1,17 @@
 /**
  * SGS Brand Strip — Runtime cloning for seamless infinite scroll.
  *
- * Architecture (react-fast-marquee / Ryan Mulligan pattern):
+ * How it works:
  * 1. PHP outputs logos once inside a single .sgs-brand-strip__set
- * 2. This script measures the set width vs container width after images load
- * 3. It clones the set the minimum number of times needed to fill 2x the container
- * 4. CSS @keyframes animates translateX(-100%) on each set — the gap correction
- *    ensures a seamless loop
+ * 2. This script waits for images to load, measures one set's pixel width
+ * 3. Clones the set enough times to fill the container + one off-screen buffer
+ * 4. Sets --sgs-scroll-distance to the exact pixel width of one set + gap
+ * 5. CSS @keyframes translates by that exact distance — seamless loop
  *
- * This runs on the GPU compositor thread (CSS animation), not the JS main thread.
- * Zero duplication in PHP. Smart duplication in JS based on actual rendered widths.
+ * Works regardless of logo count, container width, screen size, or nesting
+ * (columns, groups, sidebars). The pixel measurement makes it universal.
+ *
+ * Animation runs on the GPU compositor thread (CSS transform), not JS.
  *
  * Loaded as a viewScriptModule (ES module, frontend only).
  */
@@ -24,10 +26,14 @@ strips.forEach( ( strip ) => {
 		return;
 	}
 
+	// Respect prefers-reduced-motion — bail before any work.
+	if ( window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches ) {
+		return;
+	}
+
 	/**
-	 * Measure and clone after all images in the set have loaded.
-	 * Images may not have dimensions yet at DOMContentLoaded — we wait
-	 * for every <img> in the set to fire its load event.
+	 * Wait for all images in the set to load before measuring.
+	 * Images without dimensions at parse time would give wrong widths.
 	 */
 	function init() {
 		const images = originalSet.querySelectorAll( 'img' );
@@ -45,29 +51,31 @@ strips.forEach( ( strip ) => {
 		} );
 
 		if ( pending.length > 0 ) {
-			Promise.all( pending ).then( setupClones );
+			Promise.all( pending ).then( measure );
 		} else {
-			setupClones();
+			measure();
 		}
 	}
 
 	/**
-	 * Calculate how many clones are needed and insert them.
-	 * Formula: ceil(containerWidth / setWidth) + 1
-	 * The +1 ensures there is always a full set off-screen ready to scroll in.
+	 * Measure one set, clone to fill, set the scroll distance, start animation.
 	 */
-	function setupClones() {
+	function measure() {
 		const containerWidth = strip.offsetWidth;
-		const setWidth = originalSet.scrollWidth;
+		const gap = parseFloat( getComputedStyle( track ).gap ) || 0;
+		const setWidth = originalSet.getBoundingClientRect().width;
 
 		if ( setWidth === 0 ) {
 			return;
 		}
 
-		// How many total sets needed to fill the container + one full buffer.
-		const setsNeeded = Math.ceil( containerWidth / setWidth ) + 1;
+		// The distance the animation must travel for one seamless cycle:
+		// one full set width + one gap (the gap between this set and the next).
+		const scrollDistance = setWidth + gap;
 
-		// We already have 1 set (the original). Clone the remainder.
+		// How many total sets are needed to guarantee no visible empty space:
+		// enough to fill the container, plus one full off-screen buffer.
+		const setsNeeded = Math.ceil( containerWidth / setWidth ) + 1;
 		const clonesToAdd = Math.max( setsNeeded - 1, 1 );
 
 		for ( let i = 0; i < clonesToAdd; i++ ) {
@@ -76,12 +84,10 @@ strips.forEach( ( strip ) => {
 			track.appendChild( clone );
 		}
 
-		// Set the CSS custom property for the gap so the keyframes can correct for it.
-		const gap = parseFloat( getComputedStyle( track ).gap ) || 0;
-		track.style.setProperty( '--sgs-track-gap', `${ gap }px` );
+		// Tell the CSS keyframe exactly how far to move (pixels).
+		track.style.setProperty( '--sgs-scroll-distance', `${ scrollDistance }px` );
 
-		// Start the animation. We delay applying the animation class until clones
-		// are in place so the first paint is correct.
+		// Start animation only after clones are in place.
 		track.classList.add( 'sgs-brand-strip__track--ready' );
 	}
 
@@ -92,11 +98,6 @@ strips.forEach( ( strip ) => {
 	strip.addEventListener( 'mouseleave', () => {
 		track.style.animationPlayState = 'running';
 	} );
-
-	// Respect prefers-reduced-motion.
-	if ( window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches ) {
-		return; // Don't initialise animation at all.
-	}
 
 	init();
 } );

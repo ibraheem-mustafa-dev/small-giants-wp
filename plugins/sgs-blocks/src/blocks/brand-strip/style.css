@@ -98,12 +98,10 @@
 		transform: translateX(0);
 	}
 	100% {
-		/* Move by exactly one set width + one gap for seamless loop.
-		 * The set count determines what percentage of the track = one set.
-		 * With 2 sets: -50%, with 3 sets: -33.33%, etc.
-		 * JS sets --sgs-track-gap for the gap correction.
-		 * We use calc() to include the gap offset. */
-		transform: translateX(calc(-50% - var(--sgs-track-gap, 0px) / 2));
+		/* JS measures one set's pixel width + gap and sets --sgs-scroll-distance.
+		 * Moving by exactly that distance produces a seamless loop regardless of
+		 * logo count, container width, screen size, or nesting context. */
+		transform: translateX(calc(-1 * var(--sgs-scroll-distance)));
 	}
 }
 
