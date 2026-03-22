@@ -1,63 +1,59 @@
-# Session Handoff — 2026-03-22
+# Session Handoff — 2026-03-22 (Session 2)
 
 ## Completed This Session
-1. Added deprecated.js to 4 blocks (container, notice-banner, whatsapp-cta, testimonial) with save: () => null catch-all. Built, deployed, verified zero validation errors in editor.
-2. Fixed hero block headline bug: removed `source: html` from headline/subHeadline attributes in block.json (dynamic blocks can't use source:html since save returns null). Deployed, set attributes via wp.data.dispatch JS API, verified H1 renders on frontend.
-3. Fixed brand strip marquee: replaced hardcoded CSS translateX(-50%) with pixel-based --sgs-scroll-distance set by JS. Works regardless of logo count, container width, or nesting.
-4. Reverted footer damage from failed PHP str_replace approach. Recovered 4 invalid paragraph blocks via JS data API (replaceBlock with fresh paragraph + correct content). Copyright link now covers "Website by Small Giants Studio".
-5. Added PreToolUse hook `wp-content-guard.py` that blocks wp post update, wp eval-file, wp eval, wp_update_post, str_replace commands. Allows wp post get reads.
-6. Set attribution commit/pr to empty strings globally (no co-authored-by lines).
-7. Updated CLAUDE.md gotchas: never use source:html on dynamic blocks, never modify post_content via WP-CLI.
+1. Added deprecated.js to 4 blocks (container, notice-banner, whatsapp-cta, testimonial). Zero validation errors in editor.
+2. Fixed hero block: removed source:html from headline/subHeadline in block.json. Set attributes via wp.data.dispatch JS API. H1 renders on frontend.
+3. Fixed brand strip marquee: pixel-based --sgs-scroll-distance for universal seamless loop.
+4. Rewrote footer.html with real Indus Foods content (description, Quick Links, Contact, Opening Hours, Google Maps, Address, gold copyright, full credit link).
+5. Added PreToolUse hook wp-content-guard.py blocking WP-CLI content writes.
+6. Set attribution commit/pr to empty strings globally.
+7. Recovered invalid footer blocks via JS data API (replaceBlock with fresh paragraphs).
 
 ## Current State
-- **Branch:** main at `642d420`
+- **Branch:** main at `dcb5d81`
 - **Tests:** no test suite
 - **Build:** webpack compiles successfully
-- **Uncommitted changes:** none (untracked files from prior sessions remain)
+- **Uncommitted changes:** none
 - **LiteSpeed Cache:** DISABLED
 - **Cloudflare:** Developer mode ON
-- **Live URL:** https://palestine-lives.org — hero working, brand strip scrolling, footer content restored
+- **Live URL:** https://palestine-lives.org — hero working, footer has Indus content, brand strip scrolling
 
 ## Known Issues / Blockers
-- CRITICAL: Header template part (DB post 201) has block validation failures. Pills render at 12px instead of 18px, nav at 14px/500 instead of 20px/600. The block comments say fontSize:"medium" but WordPress regenerates HTML with wrong classes. The header.html file AND DB template both need rewriting from scratch.
-- CRITICAL: Footer template part (DB post 103) also has pre-existing invalid paragraphs (nested empty `<p></p>` wrapping content paragraphs). Copyright colour is white instead of gold (#E7D768).
-- The header and footer template files in `theme/sgs-theme/parts/` are outdated compared to the DB versions. The DB versions (post 201, 103) take precedence but are corrupted.
-- Google Maps embed loads but marker pin is not visible.
+- CRITICAL: Header pill paragraphs render at 12px (has-x-small-font-size) instead of 18px (has-medium-font-size). The DB content (post 219) has correct attributes and HTML, but WordPress 6.9 server-side block validation replaces the class at render time. Tried: file template, DB template, fontSize preset, explicit pixel style, JS data API — all produce the same wrong output. This is a WP core-level rendering issue in template parts.
+- CRITICAL: Navigation block renders at 14px/500 instead of 18px/600. Same root cause — WP block validation overriding saved attributes at render time in template part context.
+- Footer logo SVG returns 404 (IndusFoods_Animated_Logo_Horizontal_Multi_Shade-1.svg not on server).
+- Footer copyright gold colour renders but only on "Copyright" text, not the full line.
 
 ## Next Priorities (in order)
-1. Research best-in-class WordPress block theme headers and footers (Kadence, Flavor, Flavor theme). Rewrite header.html and footer.html from scratch to S-tier quality — proper block markup, correct classes, no nested tags. Delete DB overrides (posts 201, 103) so file versions take precedence.
-2. Fix remaining visual discrepancies: pill font sizes, nav font size/weight, copyright gold colour, Google Maps marker. All through the file-based templates, NOT DB.
-3. Run full design review comparing every element against reference at 1440px. Produce numbered discrepancy list for user approval before fixing.
-4. Complete block test page (post 208) with all 55 blocks.
+1. Debug and fix the WordPress 6.9 template part block validation issue. The server replaces has-medium-font-size with has-x-small-font-size during render. Check: render_block filters in functions.php, WP_Block_Supports, Global Styles layout pipeline, wp_get_layout_style(), and any filter that touches font-size classes specifically in template part context. Compare the HTML WordPress expects from paragraph save() vs what is stored. Use WP_DEBUG + SAVEQUERIES to trace the exact render pipeline.
+2. Fix nav font size and weight (same root cause as pills).
+3. Upload footer logo SVG to server. Fix copyright colour to apply to full text.
+4. Run full design review against reference site.
 5. Re-enable LiteSpeed Cache, turn off Cloudflare developer mode.
 
 ## Files Modified
 | File path | What changed |
 |-----------|-------------|
-| `plugins/sgs-blocks/src/blocks/hero/block.json` | Removed source:html from headline/subHeadline attributes |
-| `plugins/sgs-blocks/src/blocks/container/deprecated.js` | New — save: () => null catch-all |
-| `plugins/sgs-blocks/src/blocks/container/index.js` | Imports deprecated |
-| `plugins/sgs-blocks/src/blocks/container/save.js` | Stripped to minimal dynamic save |
-| `plugins/sgs-blocks/src/blocks/notice-banner/deprecated.js` | New — save: () => null catch-all |
-| `plugins/sgs-blocks/src/blocks/notice-banner/index.js` | Imports deprecated |
-| `plugins/sgs-blocks/src/blocks/whatsapp-cta/deprecated.js` | New — save: () => null catch-all |
-| `plugins/sgs-blocks/src/blocks/whatsapp-cta/index.js` | Imports deprecated |
-| `plugins/sgs-blocks/src/blocks/testimonial/deprecated.js` | Added v2 null-save catch-all |
-| `plugins/sgs-blocks/src/blocks/brand-strip/view.js` | Pixel-based scroll distance via --sgs-scroll-distance |
+| `plugins/sgs-blocks/src/blocks/hero/block.json` | Removed source:html from headline/subHeadline |
+| `plugins/sgs-blocks/src/blocks/container/deprecated.js` | New — save: () => null |
+| `plugins/sgs-blocks/src/blocks/notice-banner/deprecated.js` | New — save: () => null |
+| `plugins/sgs-blocks/src/blocks/whatsapp-cta/deprecated.js` | New — save: () => null |
+| `plugins/sgs-blocks/src/blocks/testimonial/deprecated.js` | Added v2 null-save |
+| `plugins/sgs-blocks/src/blocks/brand-strip/view.js` | Pixel-based scroll via --sgs-scroll-distance |
 | `plugins/sgs-blocks/src/blocks/brand-strip/style.css` | Keyframe uses var(--sgs-scroll-distance) |
-| `plugins/sgs-blocks/src/blocks/brand-strip/block.json` | Attribute updates |
-| `plugins/sgs-blocks/src/blocks/brand-strip/edit.js` | Editor overhaul |
-| `plugins/sgs-blocks/src/blocks/brand-strip/render.php` | Two-container architecture |
-| `plugins/sgs-blocks/CLAUDE.md` | Added source:html and post_content gotchas |
+| `theme/sgs-theme/parts/header.html` | Added has-link-color class to pills |
+| `theme/sgs-theme/parts/footer.html` | Full Indus Foods content rewrite |
+| `plugins/sgs-blocks/CLAUDE.md` | source:html and post_content gotchas |
 | `~/.claude/hooks/wp-content-guard.py` | New — blocks WP-CLI content writes |
-| `~/.claude/settings.json` | Added hook + attribution config |
+| `~/.claude/settings.json` | Hook + attribution config |
 
 ## Notes for Next Session
-- The root cause of header/footer rendering issues is that the DB template parts (posts 201, 103) have corrupted HTML from multiple sessions of WP-CLI manipulation and block recovery. The cleanest fix is to rewrite the file-based templates to S-tier quality, then delete the DB overrides with `wp post delete 201 --force` and `wp post delete 103 --force`.
-- For editing template part content, ALWAYS use the Site Editor + wp.data.dispatch JS API via Playwright. A hook now blocks WP-CLI content writes.
-- The Indus Foods gold colour is #E7D768 — NOT the `accent` token (which resolves to #F87A1F orange or #2C3E50 dark depending on context).
-- wp.data.dispatch('core/block-editor').updateBlockAttributes() + wp.data.dispatch('core/editor').savePost() is the proven pattern for content changes via Playwright.
-- After ANY content change, take a frontend screenshot and visually inspect before claiming done.
+- The root cause is NOT in the template files or DB content. Post 219 (DB header) has correct has-medium-font-size HTML. The PHP function do_blocks() on the raw content returns has-medium-font-size. But the full page render outputs has-x-small-font-size. Something in the WordPress template part rendering pipeline changes the class AFTER block parsing.
+- Check functions.php render_block filters: fix_has_text_color_override, ensure_nav_list_structure, specific_submenu_aria_labels, replace_current_year_token, fix_duotone_arg_count. One of these or a WP core filter may be the culprit.
+- The x-small preset is defined in theme.json at 12px. Something is selecting it as the default instead of medium.
+- For content edits, ALWAYS use the Site Editor + wp.data.dispatch JS API. A hook blocks WP-CLI content writes.
+- After ANY change, take a frontend screenshot and visually check before claiming done.
+- The gold colour for Indus Foods is #E7D768. The accent token resolves differently per context — use explicit hex.
 
 ## Next Session Prompt
 
@@ -72,60 +68,61 @@ Read CONVERSATION-HANDOFF.md and CLAUDE.md for full context, then work through t
 |-------|-------------|
 | `/superpowers:using-superpowers` | FIRST — before any response |
 | `/sgs-wp-engine` | Before any block or theme work |
-| `/wp-block-themes` | Task 1 — rewriting header.html and footer.html |
-| `/wp-block-development` | Task 1 — block markup standards |
-| `/research` | Task 1 — research best-in-class WP block theme headers/footers |
-| `/design-review` | Task 2 — full site comparison |
+| `/superpowers:systematic-debugging` | Task 1 — debugging the font size override |
+| `/wp-block-themes` | Task 1 — understanding template part rendering pipeline |
+| `/research` | Task 1 — search for WP 6.9 template part block validation bugs |
 
 ## MCP Servers & Tools
 
 | Tool | What to use it for |
 |------|-------------------|
-| Context7 | Fetch latest WordPress block theme docs, theme.json v3 reference, core/navigation block API |
-| Firecrawl | Research Kadence, flavor theme, developer.wordpress.org for header/footer patterns |
-| Playwright MCP | Screenshot comparisons, Site Editor interaction, DevTools CSS verification |
-| GitHub MCP | Commit and push after each completed task |
+| Context7 | Fetch WP 6.9 block rendering docs, WP_Block class, template part pipeline |
+| Firecrawl | Search WordPress Trac and GitHub issues for template part fontSize override bugs |
+| Playwright MCP | Frontend verification screenshots, DevTools CSS tracing |
 
 ## Agents to Delegate To
 
 | Agent | When |
 |-------|------|
-| `wp-sgs-developer` | Task 1 — write the header.html and footer.html files |
-| `design-reviewer` | Task 2 — full comparison list generation |
-| `test-and-explain` | After Task 1 — verify header/footer render correctly |
+| `wp-sgs-developer` | Task 2 — once root cause is found, apply fix and deploy |
+| `design-reviewer` | Task 3 — full comparison after font sizes are fixed |
 
 ## Research Approach
-1. Use Context7 to fetch current WordPress block theme documentation for template parts, core/navigation block, and theme.json typography
-2. Use Firecrawl to study Flavor theme (flavor-developer.flavortheme.com) header/footer patterns — they're the gold standard for block theme template parts
-3. Search for "WordPress block theme header template part best practices 2025 2026" and "core/navigation block fontSize fontWeight not applying"
-4. Check GitHub issues for WordPress/gutenberg regarding navigation block font size inheritance bugs
+1. Search WordPress Trac for "template part fontSize" or "block validation font size override"
+2. Search GitHub wordpress/gutenberg issues for "has-x-small-font-size" or "template part block validation"
+3. Use Context7 to read WP_Block_Supports and the template part rendering pipeline
+4. Check if render_block_core_template_part() applies its own layout/typography processing
+5. Enable WP_DEBUG_LOG on the server, add a temporary render_block filter to log what changes the paragraph HTML
 
 ---
 
-## Task 1: Rewrite Header and Footer Template Parts from Scratch
+## Task 1: Debug Template Part Font Size Override (CRITICAL)
 
-Research S-tier WordPress block theme headers and footers first. Then rewrite `theme/sgs-theme/parts/header.html` and `theme/sgs-theme/parts/footer.html` with clean, valid block markup. Delete the DB overrides (posts 201 and 103) so the file versions take precedence. Build and deploy. Take a screenshot at 1440px and verify:
-- Header pills at 18px/600 weight
-- Nav links at ~20px/600 weight matching reference
-- Copyright text in gold #E7D768
-- "Website by Small Giants Studio" fully linked
-- Google Maps showing marker
-- No empty paragraph gaps anywhere
+WordPress 6.9 is replacing has-medium-font-size with has-x-small-font-size during server-side rendering of template parts. The DB content is correct. do_blocks() on the raw content produces correct output. But the full page render changes the class.
 
-## Task 2: Full Design Review — Discrepancy List Only
+Debug approach:
+1. SSH to server, enable WP_DEBUG_LOG
+2. Add a temporary render_block filter that logs the paragraph block content before and after all other filters
+3. Check if the issue is in render_block_core_template_part() or in WP_Block_Supports
+4. Check if Global Styles layout CSS is overriding the class
+5. Check the theme's render_block filters in functions.php — especially fix_has_text_color_override
+6. Once root cause is found, fix it and verify with a frontend screenshot
 
-After Task 1, run a comprehensive design review comparing palestine-lives.org against the reference (lightsalmon-tarsier-683012.hostingersite.com) at 1440px. Check EVERY element: mega menu panels, button hover effects, image hover effects, service cards, testimonials, CTA strip, footer, nav, pills. Use DevTools computed styles.
+## Task 2: Fix Remaining Visual Issues
 
-Produce a NUMBERED discrepancy list. Present to user. Do NOT make changes — wait for approval.
+After Task 1, fix:
+- Navigation font size and weight
+- Footer logo SVG (upload to server)
+- Copyright gold colour on full text
+- Any other discrepancies found
 
-## Task 3: Complete Block Test Page
+## Task 3: Full Design Review
 
-Add ALL remaining blocks to test page (post ID 208). Currently has ~25 — needs all 55 including 14 form blocks.
+Compare every element at 1440px against reference. Produce numbered discrepancy list for user approval.
 
 ## Guardrails
-- A PreToolUse hook blocks wp post update, wp eval-file, wp eval, wp_update_post, str_replace via Bash. Use the Site Editor or JS data API instead.
-- LiteSpeed Cache is DISABLED — re-enable after Task 2
-- After ANY content change, take a frontend screenshot and visually inspect before claiming done
+- PreToolUse hook blocks wp post update, wp eval-file, wp eval, wp_update_post, str_replace
+- After ANY change, take a frontend screenshot and LOOK at it before claiming done
 - Do NOT add CSS to functions.php for font-size, font-weight, padding, or colours
-- Do NOT make design changes without user approval — produce the list, present it, wait
+- LiteSpeed Cache is DISABLED
 ~~~
