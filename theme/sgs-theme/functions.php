@@ -24,6 +24,9 @@ require_once __DIR__ . '/inc/colour-helpers.php';
 // Header behaviour system (sticky, transparent, smart-reveal, shrink).
 require_once __DIR__ . '/inc/class-header-behaviour.php';
 
+// Business details settings page (Settings > Business Details).
+require_once __DIR__ . '/inc/class-business-details.php';
+
 /**
  * Remove WordPress emoji scripts and styles.
  *
@@ -346,6 +349,12 @@ if ( ! defined( 'WPSEO_VERSION' ) && ! defined( 'RANK_MATH_VERSION' ) ) {
 function register_pattern_categories(): void {
 	register_block_pattern_category( 'sgs', [
 		'label' => __( 'SGS Theme', 'sgs-theme' ),
+	] );
+	register_block_pattern_category( 'sgs-headers', [
+		'label' => __( 'SGS Headers', 'sgs-theme' ),
+	] );
+	register_block_pattern_category( 'sgs-footers', [
+		'label' => __( 'SGS Footers', 'sgs-theme' ),
 	] );
 }
 add_action( 'init', __NAMESPACE__ . '\register_pattern_categories' );

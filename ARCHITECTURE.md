@@ -34,9 +34,11 @@ small-giants-wp/
 │   ├── styles/
 │   │   └── indus-foods.json        # Client style variation — overrides theme.json tokens
 │   ├── templates/                  # Full-page templates (index, page, single, etc.)
+│   ├── inc/
+│   │   └── class-business-details.php  # Settings > Business Details (phone, email, address, hours, socials)
 │   ├── parts/
-│   │   ├── header.html             # Header template part (nav block, logo, top bar)
-│   │   └── footer.html             # Footer template part
+│   │   ├── header.html             # Single canonical header (top bar, nav, mobile drawer, CTA buttons)
+│   │   └── footer.html             # Footer with sgs/business-info blocks (auto-populates from settings)
 │   ├── assets/
 │   │   ├── css/core-blocks.css     # Overrides for core WordPress blocks (nav, columns, etc.)
 │   │   ├── fonts/                  # Self-hosted WOFF2 font files
@@ -136,12 +138,20 @@ small-giants-wp/
 | `sgs/table-of-contents` | Auto-generates ToC from headings, scroll spy (currently broken) |
 | `sgs/whatsapp-cta` | Floating/inline WhatsApp CTA with Interactivity API |
 
-### Phase 2 (Planned)
+### Utility blocks
+| Block | Key capability |
+|---|---|
+| `sgs/business-info` | Dynamic block rendering business details from Settings > Business Details. 8 types: phone, email, address, hours, socials, copyright, description, map |
+
+### Phase 2 (Complete — 2026-02-26)
 | Block | Key capability |
 |---|---|
 | `sgs/post-grid` | Grid/list/masonry layouts, AJAX pagination + category filtering, vanilla ES module |
 | `sgs/gallery` | Image gallery with grid/masonry layouts + Interactivity API lightbox |
 | `sgs/tabs` | Horizontal/vertical tabs, InnerBlocks per tab, full ARIA (tablist/tab/tabpanel) |
+| `sgs/countdown-timer` | Date-based + evergreen, flip/simple variants |
+| `sgs/star-rating` | SVG stars, Schema.org/Rating |
+| `sgs/team-member` | Photo/name/role/bio/socials, Schema.org/Person |
 
 ### Form blocks (14 blocks)
 | Block | Notes |

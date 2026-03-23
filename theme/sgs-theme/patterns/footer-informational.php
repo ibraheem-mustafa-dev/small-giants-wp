@@ -1,3 +1,15 @@
+<?php
+/**
+ * Title: Footer — Informational (3-Column)
+ * Slug: sgs/footer-informational
+ * Categories: sgs-footers
+ * Block Types: core/template-part/footer
+ * Description: Three-column footer with business description, quick links, contact, hours, map, and address. Content auto-populates from Settings > Business Details.
+ *
+ * @package SGS\Theme
+ */
+?>
+
 <!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"0","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"footer-bg","layout":{"type":"constrained","wideSize":"1200px"},"metadata":{"name":"Site Footer"}} -->
 <div class="wp-block-group has-footer-bg-background-color has-background" style="padding-top:var(--wp--preset--spacing--60);padding-right:var(--wp--preset--spacing--40);padding-bottom:0;padding-left:var(--wp--preset--spacing--40)">
 
@@ -9,9 +21,9 @@
 		<div class="wp-block-column" style="flex-basis:35%">
 			<!-- wp:site-logo {"width":200,"shouldSyncIcon":true,"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}}} /-->
 
-			<!-- wp:sgs/business-info {"type":"description","textColor":"text-inverse","fontSize":"small","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}}} /-->
+			<!-- wp:sgs/business-info {"type":"description"} /-->
 
-			<!-- wp:sgs/business-info {"type":"socials","style":{"spacing":{"margin":{"top":"var:preset|spacing|30"}}}} /-->
+			<!-- wp:sgs/business-info {"type":"socials"} /-->
 		</div>
 		<!-- /wp:column -->
 
@@ -22,28 +34,7 @@
 			<h2 class="wp-block-heading has-surface-color has-text-color has-medium-font-size sgs-footer-label" style="font-weight:700;margin-bottom:var(--wp--preset--spacing--20)">Quick Links</h2>
 			<!-- /wp:heading -->
 
-			<!-- wp:list {"style":{"spacing":{"padding":{"left":"0"}},"typography":{"lineHeight":"2.2"}},"className":"is-style-no-bullets","fontSize":"small"} -->
-			<ul class="is-style-no-bullets has-small-font-size" style="padding-left:0;line-height:2.2">
-				<!-- wp:list-item -->
-				<li><a href="/certifications/">Certifications</a></li>
-				<!-- /wp:list-item -->
-				<!-- wp:list-item -->
-				<li><a href="/apply-for-trade-account/">Trade</a></li>
-				<!-- /wp:list-item -->
-				<!-- wp:list-item -->
-				<li><a href="/brands/">Brands</a></li>
-				<!-- /wp:list-item -->
-				<!-- wp:list-item -->
-				<li><a href="/delivery-logistics/">Delivery &amp; Logistics</a></li>
-				<!-- /wp:list-item -->
-				<!-- wp:list-item -->
-				<li><a href="/terms-conditions/">Terms &amp; Conditions</a></li>
-				<!-- /wp:list-item -->
-				<!-- wp:list-item -->
-				<li><a href="/blog/">Blog</a></li>
-				<!-- /wp:list-item -->
-			</ul>
-			<!-- /wp:list -->
+			<!-- wp:navigation {"textColor":"text-inverse","layout":{"type":"flex","orientation":"vertical"},"style":{"spacing":{"blockGap":"var:preset|spacing|10"},"typography":{"lineHeight":"2.2"}},"fontSize":"small","className":"sgs-footer-nav"} /-->
 
 			<!-- wp:heading {"level":3,"textColor":"surface","fontSize":"medium","className":"sgs-footer-label","style":{"typography":{"fontWeight":"700"},"spacing":{"margin":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|20"}}}} -->
 			<h3 class="wp-block-heading has-surface-color has-text-color has-medium-font-size sgs-footer-label" style="font-weight:700;margin-top:var(--wp--preset--spacing--40);margin-bottom:var(--wp--preset--spacing--20)">Contact</h3>
@@ -73,7 +64,7 @@
 
 			<!-- wp:buttons {"style":{"spacing":{"margin":{"top":"var:preset|spacing|30"}}}} -->
 			<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--30)"><!-- wp:button {"style":{"color":{"text":"#1E1E1E","background":"#E7D768"},"border":{"radius":"8px"}}} -->
-			<div class="wp-block-button"><a class="wp-block-button__link has-text-color has-background wp-element-button" href="https://maps.google.com/?cid=7952814055868010143" style="border-radius:8px;color:#1E1E1E;background-color:#E7D768">Get Directions &#8594;</a></div>
+			<div class="wp-block-button"><a class="wp-block-button__link has-text-color has-background wp-element-button" style="border-radius:8px;color:#1E1E1E;background-color:#E7D768">Get Directions &#8594;</a></div>
 			<!-- /wp:button --></div>
 			<!-- /wp:buttons -->
 		</div>
@@ -86,9 +77,7 @@
 	<!-- wp:group {"align":"wide","layout":{"type":"flex","justifyContent":"center"},"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"},"margin":{"top":"var:preset|spacing|50"}},"border":{"top":{"color":"var:preset|color|accent","width":"1px"}}}} -->
 	<div class="wp-block-group alignwide" style="border-top-color:var(--wp--preset--color--accent);border-top-width:1px;margin-top:var(--wp--preset--spacing--50);padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40)">
 
-		<!-- wp:html -->
-		<p class="has-small-font-size sgs-copyright" style="color:#E7D768">Copyright &#169; [current_year] Indus Foods Ltd | <a href="https://smallgiantsstudio.co.uk/" class="sgs-credit-link" style="color:#E7D768">Website by Small Giants Studio</a></p>
-		<!-- /wp:html -->
+		<!-- wp:sgs/business-info {"type":"copyright","fontSize":"small"} /-->
 
 	</div>
 	<!-- /wp:group -->
