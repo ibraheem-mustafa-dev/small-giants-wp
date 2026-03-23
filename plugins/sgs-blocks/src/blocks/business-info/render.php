@@ -227,9 +227,24 @@ switch ( $type ) {
 
 	// ── Map Embed ─────────────────────────────────────────────────────────────
 	case 'map':
-		$cid = get_option( 'sgs_business_maps_cid', '' );
-		if ( $cid && preg_match( '/^[0-9]+$/', $cid ) ) {
+		$name     = get_option( 'sgs_business_name', '' );
+		$street   = get_option( 'sgs_business_street', '' );
+		$city     = get_option( 'sgs_business_city', '' );
+		$postcode = get_option( 'sgs_business_postcode', '' );
+		$cid      = get_option( 'sgs_business_maps_cid', '' );
+
+		// Prefer search-based embed (shows pin, address panel, stars).
+		// Fall back to CID-based embed if no address is set.
+		$query_parts = array_filter( [ $name, $street, $city, $postcode ] );
+		if ( $query_parts ) {
+			$map_url = 'https://www.google.com/maps?q=' . rawurlencode( implode( ', ', $query_parts ) ) . '&output=embed';
+		} elseif ( $cid && preg_match( '/^[0-9]+$/', $cid ) ) {
 			$map_url = 'https://www.google.com/maps?cid=' . rawurlencode( $cid ) . '&output=embed';
+		} else {
+			$map_url = '';
+		}
+
+		if ( $map_url ) {
 			$html = sprintf(
 				'<div class="sgs-business-info sgs-business-map"><iframe src="%s" width="100%%" height="400" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="%s"></iframe></div>',
 				esc_url( $map_url ),

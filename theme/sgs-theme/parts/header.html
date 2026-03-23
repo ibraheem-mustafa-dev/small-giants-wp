@@ -5,16 +5,12 @@
 	<!-- wp:group {"style":{"spacing":{"padding":{"top":"8px","bottom":"8px","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"primary","layout":{"type":"flex","justifyContent":"space-between","flexWrap":"nowrap"},"metadata":{"name":"Top Bar"},"className":"sgs-header-top-bar"} -->
 	<div class="wp-block-group sgs-header-top-bar has-primary-background-color has-background" style="padding-top:8px;padding-right:var(--wp--preset--spacing--40);padding-bottom:8px;padding-left:var(--wp--preset--spacing--40)">
 
-		<!-- Desktop left: phone + email pills -->
+		<!-- Desktop left: phone + email pills (auto-populated from Business Details) -->
 		<!-- wp:group {"layout":{"type":"flex","flexWrap":"nowrap"},"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"className":"sgs-top-bar-desktop-pills"} -->
 		<div class="wp-block-group sgs-top-bar-desktop-pills" style="gap:var(--wp--preset--spacing--40)">
-			<!-- wp:paragraph {"style":{"elements":{"link":{"color":{"text":"var:preset|color|surface"}}},"typography":{"fontWeight":"600"}},"textColor":"surface","fontSize":"medium"} -->
-			<p class="has-surface-color has-text-color has-link-color has-medium-font-size" style="font-weight:600"><a href="tel:+441217714330" aria-label="Call us on 0121 771 4330">0121 771 4330</a></p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/business-info {"type":"phone","linkPhone":true,"showIcon":true,"textColor":"surface","fontSize":"medium","style":{"typography":{"fontWeight":"600"}}} /-->
 
-			<!-- wp:paragraph {"style":{"elements":{"link":{"color":{"text":"var:preset|color|surface"}}},"typography":{"fontWeight":"600"}},"textColor":"surface","fontSize":"medium"} -->
-			<p class="has-surface-color has-text-color has-link-color has-medium-font-size" style="font-weight:600"><a href="mailto:amir@indusfoodsltd.com" aria-label="Email amir@indusfoodsltd.com">amir@indusfoodsltd.com</a></p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/business-info {"type":"email","linkEmail":true,"showIcon":true,"textColor":"surface","fontSize":"medium","style":{"typography":{"fontWeight":"600"}}} /-->
 		</div>
 		<!-- /wp:group -->
 
@@ -36,8 +32,8 @@
 		</div>
 		<!-- /wp:html -->
 
-		<!-- wp:social-links {"iconColor":"surface","iconColorValue":"#FFFFFF","size":"has-small-icon-size","className":"is-style-logos-only sgs-top-bar-socials"} -->
-		<ul class="wp-block-social-links has-small-icon-size has-icon-color is-style-logos-only sgs-top-bar-socials">
+		<!-- wp:social-links {"iconColor":"surface","iconColorValue":"#FFFFFF","size":"has-normal-icon-size","className":"is-style-logos-only sgs-top-bar-socials"} -->
+		<ul class="wp-block-social-links has-normal-icon-size has-icon-color is-style-logos-only sgs-top-bar-socials">
 			<!-- wp:social-link {"url":"https://www.linkedin.com/company/indus-foods-ltd/","service":"linkedin"} /-->
 			<!-- wp:social-link {"url":"https://www.facebook.com/indusfoodsltd/","service":"facebook"} /-->
 			<!-- wp:social-link {"url":"https://g.page/r/CYLLa_01-rZvEAE/review","service":"google"} /-->
