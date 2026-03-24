@@ -1,137 +1,206 @@
-# Session Handoff — 2026-03-22 (Session 3)
+# Session Handoff — 2026-03-24 (Session 4)
 
 ## Completed This Session
-1. Fixed critical font-size bug: all 7 templates referenced `slug:"header-sticky"` (12px) instead of `slug:"header"` (18px). Changed slug in all templates. Not a WP core bug.
-2. Built Business Details settings page (`theme/sgs-theme/inc/class-business-details.php`) at Settings > Business Details. 16 fields: name, tagline, phone, email, address (4 fields), hours (7 days), 5 social URLs, WhatsApp, Maps CID.
-3. Built `sgs/business-info` dynamic block (`plugins/sgs-blocks/src/blocks/business-info/`) with 8 render types: phone, email, address, hours, socials, copyright, description, map. Uses `ServerSideRender` in editor, reads from `wp_options`.
-4. Redesigned mobile nav drawer from broken empty narrow panel to full-screen teal overlay with CTA button, email/phone icon circles, cloned nav items with gold dividers, submenu toggles, and coloured social icons.
-5. Added CTA-focused mobile top bar (Apply For Trade Account + Call buttons) replacing phone/email/socials at <=768px.
-6. Created 6 header/footer patterns: header-full, header-minimal, header-centred, footer-informational, footer-compact, footer-minimal. All use `sgs/business-info` blocks for auto-population.
-7. Built `header-editor-panel.js` for per-page header mode selection in the block editor sidebar.
-8. Rebuilt `footer.html` with `sgs/business-info` blocks — no more hardcoded Indus content. Quick Links remain as WP list block.
-9. Deleted 4 dead header variant files (header-sticky, transparent, shrink, minimal) + orphaned sticky-header.js.
-10. Uploaded Indus Foods logo SVG to server. Set all Business Details options via WP-CLI.
+1. Fixed 5 known issues from session 3 (Google Maps embed, mega-menu drawer alignment, social icons, header top bar business-info blocks, SVG logo). Merged PR #3 to main.
+2. Reverted regressions: restored footer square logo (WebP), fixed footer text sizes (small to medium/large), removed all underline-on-hover site-wide (10 files), fixed Get Directions button hover.
+3. Header polish: reduced nav padding, increased logo to 350px, coloured circle social icons (custom HTML replacing WP social-links), parent gold hover on dropdown/mega-menu, tablet breakpoint (769-1024px).
+4. Mobile polish: restyled CTA buttons (gold Apply + white Call, weight 700), increased logo size, shortened button text to fit 375px.
+5. Mega menu redesign: sectors panel (cream bg, teal gradient cards, fully clickable via CSS), brands panel (cream bg, logos at 80px, teal View All Brands button). Both with bolder uppercase titles.
+6. Nav CTA button: gold accent pill "Apply Now" with arrow, differentiated from teal nav links.
+7. Sticky header compression toggle: optional checkbox in Settings > SGS Header.
+8. Consistent button hover: removed conflicting scale(1.04) from functions.php, all buttons use translateY(-2px) + shadow + brightness(1.1).
+9. Mega menu trigger: explicit dark text colour, gold on expanded. Panel aligns with header bottom via JS.
+10. Nav fallback CSS: display:flex on .wp-block-navigation__container prevents collapse if WP core CSS 404s.
 
 ## Current State
-- **Branch:** `feature/header-footer-upgrade` at `2097d04`
+- **Branch:** `fix/header-footer-polish` at `6083b7b` (17 commits, not yet merged to main)
 - **Tests:** no test suite
 - **Build:** webpack compiles successfully
-- **Uncommitted changes:** none on this branch
-- **LiteSpeed Cache:** DISABLED
-- **Cloudflare:** Developer mode ON
-- **Live URL:** https://palestine-lives.org — header fixed (18px pills), mobile drawer working, footer rendering from settings
-- **PR:** https://github.com/ibraheem-mustafa-dev/small-giants-wp/pull/3
+- **Uncommitted changes:** lucide-icons.php (stash artifact from previous session)
+- **LiteSpeed Cache:** DISABLED for development
+- **Live URL:** https://palestine-lives.org — all session 4 changes deployed
 
 ## Known Issues / Blockers
-- Footer logo SVG renders at 0px because it lacks width/height attributes. Fix: add `width="3742" height="848"` to the SVG file, or use the `wp:site-logo` block which handles sizing via its own width attribute.
-- Google Maps embed shows world view — needs to use the Google Business Profile embed URL (with pin, address, star rating) instead of CID-based coordinate map.
-- Mega-menu items (Sectors, Brands) in the mobile drawer have slight alignment offset vs standard nav items. CSS fix needed for `.sgs-mega-menu__trigger` button alignment.
-- Footer social icons are small. Header social icons are small. Both need size increase.
-- Copyright in footer uses `wp:html` block to bypass WP's `has-text-color { color: var(--text) !important }` override. This is a workaround — the `[current_year]` token still works via the `replace_current_year_token` render_block filter.
-- DB-stored header template (post 219) was deleted by the mobile agent to let the file version serve. If the header is edited in the Site Editor, it will create a new DB entry which will override the file again.
-- Full design review (Phase 4) not completed this session.
+- Mobile nav drawer is hardcoded HTML + JS cloning — needs full rebuild as `sgs/mobile-nav` block. Current patchwork CSS has known issues (social icons at screen bottom, drawer bg same as page, submenus partially broken).
+- 7 mega menu template parts exist but only sectors/brands are redesigned. The other 5 (about, contact, products, resources, services) use placeholder content and inconsistent styling.
+- LiteSpeed must be re-enabled before going live. When re-enabled, clear CSS cache: `rm -rf wp-content/litespeed/css/*.css && wp litespeed-purge all`.
 
 ## Next Priorities (in order)
-1. Fix the 5 known issues above: SVG dimensions, Google Maps GBP embed, mega-menu drawer alignment, social icon sizes, then merge PR #3 to main.
-2. Full design review at 1440px, 768px, 375px comparing against the reference site. Use the `design-reviewer` agent. Produce a numbered discrepancy list and fix each item.
-3. Update header.html top bar to use `sgs/business-info` blocks for phone/email/socials (currently still hardcoded paragraphs). The mobile CTA buttons can stay as HTML since they're layout-specific.
-4. Re-enable LiteSpeed Cache and turn off Cloudflare developer mode after all visual fixes are complete.
-5. Run Lighthouse audit to check performance impact of the new JS (mobile-nav-drawer.js is now larger with nav cloning + submenu logic).
+1. Mega menu template system: research best-in-class designs, build 7 framework-level patterns using design tokens, with responsive behaviour across all breakpoints and rich block attributes. Include colour animation extension (see below).
+2. Mobile nav block: build `sgs/mobile-nav` as a proper SGS block with PHP walker, accordion submenus, style variants, and editor controls. Delete the hardcoded drawer.
+3. Colour animation extension: framework-level block extension (like the existing animation/hover extensions) that adds colour transition controls to ALL blocks — buttons, borders, text, backgrounds. Inspector panel with animation type (sweep, gradient shift, pulse, fade), duration, and colour targets. Available on every block via `supports`, not just mega menus. Can be built as part of the mega menu session since it directly benefits the mega menu cards and CTA buttons.
+4. Merge `fix/header-footer-polish` to main after tasks are complete and design-reviewed.
 
 ## Files Modified
 | File path | What changed |
 |-----------|-------------|
-| `theme/sgs-theme/templates/*.html` (7 files) | Slug `header-sticky` changed to `header` |
-| `theme/sgs-theme/parts/header.html` | Mobile CTA buttons, drawer restructured, sgs-top-bar classes added |
-| `theme/sgs-theme/parts/footer.html` | Rebuilt with sgs/business-info blocks, wp:html copyright |
-| `theme/sgs-theme/parts/header-sticky.html` | DELETED |
-| `theme/sgs-theme/parts/header-transparent.html` | DELETED |
-| `theme/sgs-theme/parts/header-shrink.html` | DELETED |
-| `theme/sgs-theme/parts/header-minimal.html` | DELETED |
-| `theme/sgs-theme/assets/css/mobile-nav-drawer.css` | Full rewrite: full-screen overlay, CTA section, gold dividers, submenu toggles, coloured socials |
-| `theme/sgs-theme/assets/js/mobile-nav-drawer.js` | Full rewrite: cloneDesktopNav, buildSubmenuToggles, event delegation |
-| `theme/sgs-theme/assets/css/core-blocks-critical.css` | Mobile top bar swap, logo constraint, CTA button styles |
-| `theme/sgs-theme/assets/js/header-editor-panel.js` | NEW: per-page header mode selector in editor sidebar |
-| `theme/sgs-theme/assets/js/sticky-header.js` | DELETED (orphaned) |
-| `theme/sgs-theme/inc/class-business-details.php` | NEW: Settings > Business Details page (16 fields) |
-| `theme/sgs-theme/functions.php` | Added require for class-business-details.php, registered sgs-headers/sgs-footers pattern categories |
-| `theme/sgs-theme/style.css` | Version bump 1.3.1 to 1.3.3 |
-| `theme/sgs-theme/patterns/footer-informational.php` | NEW: 3-column footer with business-info blocks |
-| `theme/sgs-theme/patterns/footer-compact.php` | NEW: 2-column compact footer |
-| `theme/sgs-theme/patterns/footer-minimal.php` | NEW: single-row copyright + socials |
-| `theme/sgs-theme/patterns/header-full.php` | NEW: top bar + nav header with business-info blocks |
-| `theme/sgs-theme/patterns/header-minimal.php` | NEW: logo + nav only |
-| `theme/sgs-theme/patterns/header-centred.php` | NEW: centred logo above, nav below |
-| `plugins/sgs-blocks/src/blocks/business-info/*` | NEW: block.json, render.php, edit.js, index.js, style.css |
-| `ARCHITECTURE.md` | Added business-info block, Phase 2 blocks, header/footer updates |
+| `theme/sgs-theme/parts/header.html` | Business-info blocks, social icons HTML, nav CTA button, logo width, nav padding |
+| `theme/sgs-theme/parts/footer.html` | Square logo, font sizes, bold links, gold socials |
+| `theme/sgs-theme/parts/mega-menu-sectors.html` | Cream bg, teal gradient cards, bolder title, clickable cards |
+| `theme/sgs-theme/parts/mega-menu-brands.html` | Cream bg, 80px logos, teal button, bolder title, alt text |
+| `theme/sgs-theme/assets/css/core-blocks-critical.css` | Social circles, parent gold hover, sticky compression, mobile CTA, tablet, nav fallback |
+| `theme/sgs-theme/assets/css/core-blocks.css` | No-underline hover, Get Directions fix, mega card CSS, brand logo hover |
+| `theme/sgs-theme/assets/css/mobile-nav-drawer.css` | Drawer bg, header gap, close button, CTA height, submenu override |
+| `theme/sgs-theme/functions.php` | Removed scale(1.04) button hover conflict |
+| `theme/sgs-theme/inc/class-header-behaviour.php` | Added sgs_header_compress_on_scroll toggle |
+| `theme/sgs-theme/style.css` | Version 1.3.4 to 1.3.6 |
+| `plugins/sgs-blocks/src/blocks/business-info/render.php` | Map: search-based URL with iwloc=near + z=15 |
+| `plugins/sgs-blocks/src/blocks/business-info/style.css` | Link hover: no underline, opacity shift |
+| `plugins/sgs-blocks/src/blocks/mega-menu/style.css` | Trigger gold on expanded, explicit text colour |
+| `plugins/sgs-blocks/src/blocks/mega-menu/view.js` | Panel aligns with header bottom, not trigger bottom |
+| `plugins/sgs-blocks/src/blocks/*/style.css` (8 files) | Removed text-decoration:underline from all hover rules |
 
 ## Notes for Next Session
-- The mobile drawer clones desktop nav via JS at page load. If the desktop nav changes (new pages added), the drawer updates automatically. No manual sync needed.
-- WP `has-text-color` class has `!important` in core CSS. Any block with custom text colour AND this class will have the colour overridden. Workaround: use `wp:html` block to avoid WP adding the class.
-- The footer's `[current_year]` token works because the `replace_current_year_token` render_block filter processes ALL blocks including `wp:html` blocks.
-- The Google Maps embed should use the GBP URL format that shows the business pin with address and star rating, not a generic coordinate map. The reference site shows this correctly.
-- Social icons need size increase in both header (top bar) and footer. The user wants to keep the hover effect but make the base icons larger.
+- The two next-session tasks (mega menu templates + mobile nav block) are independent and can run in parallel sessions. They modify different files and don't clash.
+- All 7 mega menu template parts are in `theme/sgs-theme/parts/mega-menu-*.html`. They are WP block template parts referenced by `menuTemplatePart` attribute on the `sgs/mega-menu` block.
+- The mobile drawer HTML is hardcoded in `theme/sgs-theme/parts/header.html` (lines 82-145) with CSS in `mobile-nav-drawer.css` and JS in `mobile-nav-drawer.js`. All three need replacing.
+- QA must check 1440px (desktop), 768px (tablet), AND 375px (mobile) — not just desktop and mobile.
+- LiteSpeed is disabled. After any CSS deploy during development, there is no cache to clear. Re-enable only before final verification.
 
-## Next Session Prompt
+## Next Session Prompt — Task A: Mega Menu Template System
 
 ~~~
 /using-superpowers
 
-Read CONVERSATION-HANDOFF.md and CLAUDE.md for full context, then work through these priorities:
+Read CONVERSATION-HANDOFF.md and CLAUDE.md for full context. This session builds the mega menu template system — 7 framework-level patterns that work across any SGS style variation.
 
 ## Skills to Invoke
 
 | Skill | When to use |
 |-------|-------------|
 | `/superpowers:using-superpowers` | FIRST — before any response |
-| `/sgs-wp-engine` | Before any block or theme work |
-| `/wp-block-themes` | Task 1 — template part CSS, social icon sizing |
-| `/wp-block-development` | Task 1 — if business-info block map type needs updating |
-| `/superpowers:verification-before-completion` | After each fix — screenshot verification |
+| `/sgs-wp-engine` | Load framework context, check existing blocks and patterns |
+| `/superpowers:brainstorming` | BEFORE any design work — explore layouts, research competitors |
+| `/research` | Research best mega menu designs from design libraries (Dribbble, Awwwards, real sites) |
+| `/gap-analysis` | Evaluate each template against competitors and best practices |
+| `/internal-debate` | Debate layout choices for each template type |
+| `/strategic-plan` | Plan the implementation order and dependencies |
+| `/frontend-design` | Design each template with production-grade quality |
+| `/ui-ux-pro-max` | Apply advanced UI/UX patterns to mega menu layouts |
+| `/interaction-design` | Design hover effects, transitions, micro-interactions |
+| `/critique` | Evaluate each template before finalising |
+| `/adapt` | Ensure responsive behaviour at 1440/768/375 and between |
+| `/delight` | Add polish — subtle animations, smart loading states |
+| `/wpds` | Use WordPress Design System patterns where applicable |
+| `/wp-block-themes` | Template part architecture, design tokens, style variations |
+| `/superpowers:verification-before-completion` | Screenshot verification at 1440/768/375 after each template |
+| `/sgs-update` | Update the SGS knowledge base DB after all templates are complete |
+| `/feature-dev:feature-dev` | Guided feature development with architecture focus |
 
 ## MCP Servers & Tools
 
 | Tool | What to use it for |
 |------|-------------------|
-| Playwright MCP | Screenshot verification at 375px, 768px, 1440px after each fix |
-| Firecrawl | Look up Google Maps GBP embed URL format |
+| Playwright MCP | Screenshot verification at 1440px, 768px, 375px after each template |
+| Firecrawl | Research mega menu designs from Dribbble, Awwwards, real competitor sites |
+| Context7 | Get current WordPress block theme docs for template parts and patterns |
 
 ## Agents to Delegate To
 
 | Agent | When |
 |-------|------|
-| `wp-sgs-developer` | Task 1 — apply the 5 fixes |
-| `design-reviewer` | Task 2 — full visual comparison at all breakpoints |
-| `test-and-explain` | After Task 1 — verify fixes in plain English |
+| `wp-sgs-developer` | Heavy template part and CSS development |
+| `design-reviewer` | After each template — compare quality at 3 breakpoints |
+| `test-and-explain` | After all templates — verify in plain English |
+
+## Research Approach
+1. Search Firecrawl for "best mega menu design 2025 2026" — collect 10+ examples
+2. Search for "mega menu WordPress Kadence Spectra GenerateBlocks" — competitor analysis
+3. Search design libraries (Dribbble, Behance) for "mega menu UI design"
+4. Run /gap-analysis on current 7 templates vs findings
+5. Run /internal-debate on layout choices per template type
 
 ---
 
-## Task 1: Fix 5 Known Issues
+## Task 1: Research and Design System
+Research best-in-class mega menus. Define a shared CSS class system (.sgs-mega-panel, .sgs-mega-card, .sgs-mega-title, etc.) using design tokens only. No hardcoded colours. Templates must auto-adapt to any style variation.
 
-Fix in order, deploy after each, screenshot to verify:
+## Task 2: Redesign All 7 Templates
+Build each template to be the best version of its layout type. Use design tokens for all colours, spacing, typography. Each template should have optional enhancements (background video/animation capability, featured image slots, icon options). Responsive at all breakpoints with fluid behaviour between them. Attributes should rival or exceed other SGS blocks.
 
-1. **SVG logo dimensions** — add `width="3742" height="848"` to the SVG file on the server, OR replace the `wp:image` block in footer.html with `wp:site-logo` which handles sizing.
-2. **Google Maps GBP embed** — update the `sgs/business-info` map type in render.php to use the Google Business Profile embed format (shows pin, address, stars). Search for the correct embed URL format.
-3. **Mega-menu drawer alignment** — fix `.sgs-mega-menu__trigger` button alignment in drawer CSS so it matches standard nav items.
-4. **Social icon sizes** — increase icon size in header top bar and footer. Keep hover effect.
-5. **Header top bar** — replace hardcoded phone/email paragraphs with `sgs/business-info` blocks (type="phone" and type="email").
-
-After all fixes: merge PR #3 to main.
-
-## Task 2: Full Design Review
-
-Delegate to `design-reviewer` agent. Compare at 1440px, 768px, 375px against reference (lightsalmon-tarsier-683012.hostingersite.com). Produce numbered discrepancy list. Fix each item.
-
-## Task 3: Re-enable Caching
-
-After all visual fixes:
-1. Re-enable LiteSpeed Cache: `ssh hd "cd ~/domains/palestine-lives.org/public_html && wp plugin activate litespeed-cache"`
-2. Turn off Cloudflare developer mode (Hostinger dashboard)
-3. Run Lighthouse audit via `performance-auditor` agent
+## Task 3: QA Loop
+Run /design-review at 1440/768/375. Fix every issue found. Repeat until all issues are resolved. Then run /sgs-update to update the knowledge base.
 
 ## Guardrails
-- PreToolUse hook blocks wp post update, wp eval-file, wp eval, wp_update_post
-- After ANY change, take a frontend screenshot and LOOK at it before claiming done
-- LiteSpeed Cache is DISABLED — no need to clear cache during fixes
-- The branch is `feature/header-footer-upgrade` — merge to main only after all fixes verified
+- After ANY change, screenshot at 1440, 768, and 375 and LOOK at it before claiming done
+- All colours must use design tokens (var(--wp--preset--color--*)), never hardcoded hex
+- Every template must work with at least 2 different style variations
+- LiteSpeed is DISABLED — no cache to clear during development
+- Branch: create `feat/mega-menu-templates` from main
+~~~
+
+## Next Session Prompt — Task B: Mobile Nav Block
+
+~~~
+/using-superpowers
+
+Read CONVERSATION-HANDOFF.md and CLAUDE.md for full context. This session builds `sgs/mobile-nav` as a proper SGS framework block, replacing the hardcoded mobile drawer.
+
+## Skills to Invoke
+
+| Skill | When to use |
+|-------|-------------|
+| `/superpowers:using-superpowers` | FIRST — before any response |
+| `/sgs-wp-engine` | Load framework context, check block architecture patterns |
+| `/superpowers:brainstorming` | BEFORE building — explore style variants, research competitors |
+| `/research` | Research best mobile nav patterns (off-canvas, overlay, accordion) |
+| `/gap-analysis` | Compare against Kadence/Spectra mobile menu builders |
+| `/internal-debate` | Debate architecture: block vs PHP component vs template part |
+| `/strategic-plan` | Plan implementation phases and dependencies |
+| `/feature-dev:feature-dev` | Guided feature development with architecture focus |
+| `/wp-block-development` | Block.json, render.php, view.js architecture |
+| `/wp-interactivity-api` | Consider Interactivity API for reactive accordion state |
+| `/frontend-design` | Design each style variant with production quality |
+| `/ui-ux-pro-max` | Advanced mobile UX patterns |
+| `/interaction-design` | Touch interactions, swipe gestures, accordion animations |
+| `/critique` | Evaluate each variant before finalising |
+| `/adapt` | Responsive at 375/768 with fluid behaviour between |
+| `/delight` | Smooth open/close transitions, satisfying micro-interactions |
+| `/superpowers:test-driven-development` | Build with tests where applicable |
+| `/superpowers:verification-before-completion` | Screenshot at 375/768 after each variant |
+| `/sgs-update` | Update the SGS knowledge base DB after block is complete |
+
+## MCP Servers & Tools
+
+| Tool | What to use it for |
+|------|-------------------|
+| Playwright MCP | Test mobile drawer at 375px and 768px, test interactions |
+| Firecrawl | Research mobile nav patterns from top mobile-first sites |
+| Context7 | WordPress Interactivity API docs, block development docs |
+
+## Agents to Delegate To
+
+| Agent | When |
+|-------|------|
+| `wp-sgs-developer` | Block PHP/JS/CSS development |
+| `design-reviewer` | After each variant — check at 375/768 |
+| `test-and-explain` | After block is complete — verify in plain English |
+
+## Research Approach
+1. Search for "best mobile navigation 2025 2026 UX patterns"
+2. Analyse how Kadence/Spectra handle mobile menus (builder approach vs templates)
+3. Search for "WordPress mobile menu block accordion" — existing solutions
+4. Run /gap-analysis on current drawer vs research findings
+
+---
+
+## Task 1: Architecture and Design
+Research best mobile nav patterns. Design the `sgs/mobile-nav` block architecture: block.json attributes, render.php with custom walker for accordion markup, style.css with 3+ style variants (full-screen overlay, slide-from-left, slide-from-right), view.js with Interactivity API for reactive state. Editor controls for bg colour, text colour, CTA toggle, social icons toggle.
+
+## Task 2: Build the Block
+Follow SGS block pattern: block.json, render.php, edit.js, style.css, view.js, index.js. Server-render the menu using wp_nav_menu() with a custom walker that outputs accordion-compatible HTML. Mega menu items auto-convert to expandable sections. No JS cloning of desktop nav.
+
+## Task 3: Delete the Old Drawer
+Remove hardcoded drawer HTML from header.html (lines 82-145). Remove mobile-nav-drawer.css and mobile-nav-drawer.js. Replace with the new block. Test at 375/768.
+
+## Task 4: QA Loop
+Run /design-review at 375 and 768. Fix every issue. Repeat until clean. Run /sgs-update.
+
+## Guardrails
+- After ANY change, screenshot at 1440, 768, and 375 and LOOK at it before claiming done
+- The block must be a proper SGS framework component — no hardcoded HTML, all configurable
+- Must support accordion submenus that push content down (not fly-out)
+- Mega menu items must render as expandable sections on mobile
+- LiteSpeed is DISABLED — no cache to clear during development
+- Branch: create `feat/mobile-nav-block` from main
 ~~~
