@@ -39,15 +39,17 @@ function repositionPanel( wrapper ) {
 		wrapper.classList.contains( 'sgs-mega-menu--layout-full-width' );
 
 	if ( isFullWidth ) {
-		// Set top to the bottom of the trigger element so the panel opens
-		// flush below the header bar, regardless of navigation alignment.
+		// Set top to the bottom of the full header element so the panel opens
+		// flush below the entire header bar, not just the trigger link.
+		const header = wrapper.closest( 'header' ) || wrapper.closest( '.wp-block-template-part' );
 		const trigger = wrapper.querySelector( '.sgs-mega-menu__trigger' );
-		if ( trigger ) {
-			const triggerRect = trigger.getBoundingClientRect();
+		const refEl = header || trigger;
+		if ( refEl ) {
+			const refRect = refEl.getBoundingClientRect();
 			// Include admin bar offset if present.
 			const adminBarEl = document.getElementById( 'wpadminbar' );
 			const adminBarHeight = adminBarEl ? adminBarEl.getBoundingClientRect().height : 0;
-			const topValue = triggerRect.bottom - adminBarHeight;
+			const topValue = refRect.bottom - adminBarHeight;
 			wrapper.style.setProperty( '--sgs-mm-fixed-top', `${ topValue }px` );
 		}
 		return;
