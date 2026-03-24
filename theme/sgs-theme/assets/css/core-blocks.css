@@ -538,3 +538,50 @@ footer .wp-block-paragraph a:hover,
 .wp-block-image:not(.brand-logo-tile):hover img {
 	transform: scale(1.05);
 }
+
+/* ─── MEGA MENU — SECTOR CARDS (fully clickable) ─── */
+
+/*
+ * Makes the entire sector card act as a clickable link.
+ * The card wraps a group with an <a> inside a paragraph at the bottom.
+ * CSS stretches the link to cover the full card area.
+ */
+.sgs-mega-card {
+	position: relative;
+	cursor: pointer;
+	transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
+	            box-shadow 200ms cubic-bezier(0.16, 1, 0.3, 1),
+	            filter 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sgs-mega-card:hover {
+	transform: translateY(-3px);
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+	filter: brightness(1.05);
+}
+
+/* Stretch the CTA link to cover the full card */
+.sgs-mega-card p:last-child a {
+	position: static;
+}
+
+.sgs-mega-card p:last-child a::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+}
+
+/* ─── MEGA MENU — BRAND LOGO TILES ─── */
+
+/*
+ * Hover effect for brand logo tiles in the brands mega menu.
+ */
+.sgs-mega-menu__panel .brand-logo-tile {
+	transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+.sgs-mega-menu__panel .brand-logo-tile:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
