@@ -576,43 +576,43 @@ body.sgs-has-transparent-header .wp-site-blocks > :first-child {
 /* ─── SOCIAL ICONS — COLOURED CIRCLES ON DESKTOP TOP BAR ─── */
 
 /*
- * Give the WP social-links in the top bar coloured circular backgrounds
- * matching the mobile drawer style. Brand colours per platform.
+ * Custom HTML social icons with coloured circle backgrounds matching
+ * the mobile drawer style. Brand colours per platform.
  */
-.sgs-top-bar-socials .wp-block-social-link {
+.sgs-top-bar-socials {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.sgs-top-bar-social {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
 	border-radius: 50%;
+	color: #ffffff;
+	text-decoration: none;
 	transition: transform 200ms ease, filter 200ms ease;
 }
 
-.sgs-top-bar-socials .wp-block-social-link:hover {
+.sgs-top-bar-social:hover {
 	transform: scale(1.15);
 	filter: brightness(1.2);
+	text-decoration: none;
+	color: #ffffff;
 }
 
-.sgs-top-bar-socials .wp-social-link-linkedin {
-	background-color: #0077b5 !important;
+.sgs-top-bar-social svg {
+	width: 16px;
+	height: 16px;
 }
 
-.sgs-top-bar-socials .wp-social-link-facebook {
-	background-color: #1877f2 !important;
-}
-
-.sgs-top-bar-socials .wp-social-link-google {
-	background-color: #ea4335 !important;
-}
-
-.sgs-top-bar-socials .wp-social-link-instagram {
-	background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888) !important;
-}
-
-.sgs-top-bar-socials .wp-block-social-link a {
-	padding: 6px !important;
-}
-
-.sgs-top-bar-socials .wp-block-social-link a svg {
-	width: 20px;
-	height: 20px;
-}
+.sgs-top-bar-social--linkedin { background-color: #0077b5; }
+.sgs-top-bar-social--facebook { background-color: #1877f2; }
+.sgs-top-bar-social--google { background-color: #ea4335; }
+.sgs-top-bar-social--instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
 
 /* ─── PARENT NAV GOLD HOVER ON DROPDOWN/MEGA-MENU OPEN ─── */
 
