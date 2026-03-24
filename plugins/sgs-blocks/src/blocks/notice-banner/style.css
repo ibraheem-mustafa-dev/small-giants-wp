@@ -66,7 +66,7 @@
 /* Links within text */
 .sgs-notice-banner__text a {
 	color: inherit;
-	text-decoration: underline;
+	text-decoration: none; opacity: 0.85;
 }
 
 .sgs-notice-banner__text a:hover {

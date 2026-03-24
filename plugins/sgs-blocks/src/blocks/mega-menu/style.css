@@ -352,7 +352,7 @@
 }
 
 .sgs-mega-menu-card__link:hover {
-	text-decoration: underline;
+	text-decoration: none; opacity: 0.85;
 }
 
 /* ── tabbed: horizontal tab bar + content area ───────────────── */
@@ -629,7 +629,7 @@
 .sgs-mega-menu__panel a:hover,
 .sgs-mega-menu__panel a:focus-visible {
 	color:           var(--wp--preset--color--primary, currentColor);
-	text-decoration: underline;
+	text-decoration: none; opacity: 0.85;
 }
 
 /* ── Nav items: icon + text links ─────────────────────────── */

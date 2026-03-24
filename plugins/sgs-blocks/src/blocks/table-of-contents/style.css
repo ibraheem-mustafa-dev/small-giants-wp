@@ -133,7 +133,7 @@
 
 .sgs-toc__link:hover,
 .sgs-toc__link:focus-visible {
-	text-decoration: underline;
+	text-decoration: none; opacity: 0.85;
 }
 
 .sgs-toc__link--active {

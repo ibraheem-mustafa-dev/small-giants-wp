@@ -53,7 +53,7 @@
 	background: none;
 	color: var(--wp--preset--color--primary, #333);
 	font-weight: 400;
-	text-decoration: underline;
+	text-decoration: none; opacity: 0.85;
 }
 
 .sgs-modal__trigger--text-link:hover {

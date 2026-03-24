@@ -395,7 +395,7 @@ select.sgs-form-field__input {
 
 .sgs-form-field__consent-text a {
 	color: var(--wp--preset--color--primary, #0f7e80);
-	text-decoration: underline;
+	text-decoration: none; opacity: 0.85;
 }
 
 /* ----------------------------------------------------------------
