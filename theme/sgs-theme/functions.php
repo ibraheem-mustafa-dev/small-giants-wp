@@ -918,6 +918,19 @@ footer.wp-block-template-part{margin-block-start:0!important}
 	border-color:#0A7EA8!important;
 }
 
+/* ── Header CTA — force dark text on gold bg ─────────────────────────────
+ * The nav CTA uses gold bg (#D8CA50) which triggers the colour inversion
+ * rules above, making text gold-on-gold (invisible). Force dark text. */
+.sgs-header-cta .wp-block-button__link,
+.sgs-header-cta .wp-block-button__link.has-text-color{
+	color:#1E1E1E!important;
+}
+.sgs-header-cta .wp-block-button__link:hover,
+.sgs-header-cta .wp-block-button__link.has-text-color:hover{
+	color:#FFFFFF!important;
+	background-color:#0A7EA8!important;
+}
+
 /* ── Top bar pill hover ───────────────────────────────────────────────────
  * Lift + shadow on hover for the compact pill buttons. */
 .sgs-header-top-bar a[href^='tel:'],

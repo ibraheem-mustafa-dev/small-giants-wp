@@ -399,8 +399,15 @@ body.sgs-has-transparent-header .wp-site-blocks > :first-child {
 
 /* ─── HEADER CTA ─── */
 
-/* Header CTA inherits standard button hover from .wp-block-button__link.
- * No override needed — uses the same translateY(-2px) + shadow + brightness. */
+/* Header CTA — force dark text on gold bg (WP has-text-color overrides inline colour) */
+.sgs-header-cta .wp-block-button__link {
+	color: #1E1E1E !important;
+}
+
+.sgs-header-cta .wp-block-button__link:hover {
+	color: #FFFFFF !important;
+	background-color: var(--wp--preset--color--primary, #0a7ea8) !important;
+}
 
 /* Hide header CTA on mobile and tablet — hamburger menu is sufficient */
 @media (max-width: 1023px) {
