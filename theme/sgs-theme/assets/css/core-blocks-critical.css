@@ -625,18 +625,18 @@ body.sgs-has-transparent-header .wp-site-blocks > :first-child {
 	color: var(--wp--preset--color--accent, #d8ca50) !important;
 }
 
-/* ─── STICKY HEADER — LOGO COMPRESSION ON SCROLL ─── */
+/* ─── STICKY HEADER — LOGO COMPRESSION ON SCROLL (OPTIONAL) ─── */
 
 /*
- * When the sticky/shrink header scrolls, compress the logo and reduce
- * padding for a more compact navigation bar.
+ * Only active when "Compress logo on scroll" is enabled in Settings > SGS Header.
+ * PHP adds .sgs-header-compress-on-scroll to <body> when the option is on.
  */
-header.wp-block-template-part.is-scrolled .wp-block-site-logo img {
+.sgs-header-compress-on-scroll header.wp-block-template-part.is-scrolled .wp-block-site-logo img {
 	max-height: 55px !important;
 	transition: max-height 0.3s ease;
 }
 
-header.wp-block-template-part:not(.is-scrolled) .wp-block-site-logo img {
+.sgs-header-compress-on-scroll header.wp-block-template-part:not(.is-scrolled) .wp-block-site-logo img {
 	transition: max-height 0.3s ease;
 }
 
