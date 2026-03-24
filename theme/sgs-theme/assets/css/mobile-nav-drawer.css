@@ -78,14 +78,16 @@
  * Thin row at the top containing only the close button, aligned right.
  * 44×44px touch target meets WCAG 2.2 AA requirements.
  */
+/* Fix #7: padding-top so close button doesn't touch top of screen */
 .sgs-mobile-nav-drawer__header {
 	display: flex;
 	justify-content: flex-end;
 	align-items: center;
-	padding: 0 var(--wp--preset--spacing--30, 1rem) 0 0;
+	padding: 0.75rem var(--wp--preset--spacing--30, 1rem) 0;
 	flex-shrink: 0;
 }
 
+/* Fix #3: white bg with dark icon to clearly differentiate from teal background */
 .sgs-mobile-nav-drawer__close {
 	width: 48px;
 	height: 48px;
@@ -94,20 +96,19 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	background: rgba(255, 255, 255, 0.15);
-	border: 2px solid rgba(255, 255, 255, 0.4);
-	color: var(--wp--preset--color--surface, #ffffff);
+	background: var(--wp--preset--color--surface, #ffffff);
+	border: none;
+	color: var(--wp--preset--color--primary, #0a7ea8);
 	cursor: pointer;
 	border-radius: 50%;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 	transition: background-color 200ms cubic-bezier(0.16, 1, 0.3, 1),
-	            border-color 200ms cubic-bezier(0.16, 1, 0.3, 1),
 	            transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .sgs-mobile-nav-drawer__close:hover,
 .sgs-mobile-nav-drawer__close:focus {
-	background-color: rgba(255, 255, 255, 0.25);
-	border-color: rgba(255, 255, 255, 0.6);
+	background-color: rgba(255, 255, 255, 0.9);
 	transform: scale(1.05);
 }
 
@@ -136,7 +137,7 @@
 	flex-shrink: 0;
 }
 
-/* Gold pill CTA button */
+/* Gold pill CTA button — same height as icon circles (48px) */
 .sgs-mobile-nav-drawer__cta-btn {
 	display: inline-flex;
 	align-items: center;
@@ -147,12 +148,12 @@
 	font-weight: 700;
 	font-size: var(--wp--preset--font-size--small, 0.875rem);
 	line-height: 1.2;
-	padding: 12px 20px;
+	padding: 0 20px;
+	height: 48px;
 	border-radius: 50px;
 	transition: background-color 200ms cubic-bezier(0.16, 1, 0.3, 1),
 	            transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
 	flex-shrink: 1;
-	min-height: 48px;
 }
 
 .sgs-mobile-nav-drawer__cta-btn:hover,
@@ -212,9 +213,9 @@
  * Container for the cloned desktop nav items.
  * Full-width links with gold bottom borders matching reference.
  */
+/* Content + socials scroll together, socials sit right below nav items */
 .sgs-mobile-nav-drawer__content {
-	flex: 1;
-	overflow-y: auto;
+	flex: 0 1 auto;
 }
 
 /* Nav container list reset */
@@ -431,7 +432,42 @@
 	transform: rotate(180deg);
 }
 
-/* Submenu container — collapsed by default */
+/* Fix #5: Force WP core submenus to stack vertically (not fly-out to side) */
+.sgs-mobile-nav-drawer__content .wp-block-navigation__submenu-container {
+	position: static !important;
+	width: 100% !important;
+	min-width: 0 !important;
+	max-width: 100% !important;
+	left: auto !important;
+	right: auto !important;
+	top: auto !important;
+	transform: none !important;
+	box-shadow: none !important;
+	border: none !important;
+	display: none;
+	flex-direction: column;
+	background-color: rgba(0, 0, 0, 0.15);
+	padding: 0;
+}
+
+/* Show submenu when parent is open/hovered */
+.sgs-mobile-nav-drawer__content .wp-block-navigation-item.has-child:hover > .wp-block-navigation__submenu-container,
+.sgs-mobile-nav-drawer__content .wp-block-navigation-item.has-child.is-open > .wp-block-navigation__submenu-container,
+.sgs-mobile-nav-drawer__content .wp-block-navigation__submenu-container.is-open {
+	display: flex;
+}
+
+/* Submenu links in WP core submenus */
+.sgs-mobile-nav-drawer__content .wp-block-navigation__submenu-container .wp-block-navigation-item__content {
+	min-height: 48px;
+	padding-left: calc(var(--wp--preset--spacing--30, 1rem) + 16px);
+	font-size: 0.9375rem;
+	font-weight: 500;
+	color: rgba(255, 255, 255, 0.85);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Custom drawer submenu — collapsed by default */
 .sgs-drawer-submenu {
 	display: none;
 	flex-direction: column;
@@ -479,10 +515,11 @@
  * Coloured social icon circles at the bottom of the drawer.
  * Matches reference: LinkedIn blue, Facebook blue, Google red, Instagram pink.
  */
+/* Fix #7: social icons sit below nav with padding, not stuck to screen bottom */
 .sgs-mobile-nav-drawer__socials {
 	display: flex;
 	align-items: center;
-	justify-content: center;
+	justify-content: flex-start;
 	gap: var(--wp--preset--spacing--20, 0.5rem);
 	padding: var(--wp--preset--spacing--40, 1.5rem) var(--wp--preset--spacing--30, 1rem);
 	flex-shrink: 0;
