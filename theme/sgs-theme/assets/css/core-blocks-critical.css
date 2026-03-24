@@ -384,15 +384,8 @@ body.sgs-has-transparent-header .wp-site-blocks > :first-child {
 
 /* ─── HEADER CTA ─── */
 
-.sgs-header-cta .wp-block-button__link {
-	transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
-	            box-shadow 200ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.sgs-header-cta .wp-block-button__link:hover {
-	transform: translateY(-1px);
-	box-shadow: var(--wp--preset--shadow--glow);
-}
+/* Header CTA inherits standard button hover from .wp-block-button__link.
+ * No override needed — uses the same translateY(-2px) + shadow + brightness. */
 
 /* Hide header CTA on mobile and tablet — hamburger menu is sufficient */
 @media (max-width: 1023px) {
@@ -658,8 +651,12 @@ body.sgs-has-transparent-header .wp-site-blocks > :first-child {
 	font-weight: 700;
 	font-size: 0.8125rem;
 	letter-spacing: 0.02em;
-	transition: background-color 200ms cubic-bezier(0.16, 1, 0.3, 1),
-	            transform 150ms ease;
+	/* Match primary button transition pattern */
+	transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
+	            box-shadow 200ms cubic-bezier(0.16, 1, 0.3, 1),
+	            background-color 200ms cubic-bezier(0.16, 1, 0.3, 1),
+	            color 200ms cubic-bezier(0.16, 1, 0.3, 1),
+	            filter 200ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .sgs-top-bar-mobile-cta__btn:first-child {
@@ -670,8 +667,9 @@ body.sgs-has-transparent-header .wp-site-blocks > :first-child {
 
 .sgs-top-bar-mobile-cta__btn:first-child:hover,
 .sgs-top-bar-mobile-cta__btn:first-child:focus {
-	background-color: var(--wp--preset--color--accent-light, #fee8d4);
-	transform: scale(1.02);
+	transform: translateY(-2px);
+	box-shadow: var(--wp--preset--shadow--md);
+	filter: brightness(1.1);
 }
 
 .sgs-top-bar-mobile-cta__btn:last-child {
@@ -680,10 +678,13 @@ body.sgs-has-transparent-header .wp-site-blocks > :first-child {
 	border: 2px solid var(--wp--preset--color--surface, #ffffff);
 }
 
+/* Outline pattern: fill on hover (same as outline button) */
 .sgs-top-bar-mobile-cta__btn:last-child:hover,
 .sgs-top-bar-mobile-cta__btn:last-child:focus {
-	background-color: rgba(255, 255, 255, 0.2);
-	transform: scale(1.02);
+	background-color: var(--wp--preset--color--surface, #ffffff);
+	color: var(--wp--preset--color--primary, #0a7ea8);
+	transform: translateY(-2px);
+	box-shadow: var(--wp--preset--shadow--md);
 }
 
 /* ─── MOBILE LOGO — LARGER ─── */
