@@ -80,6 +80,11 @@
 	outline-offset: 2px;
 }
 
+/* Active/expanded state — gold text to indicate which menu is open */
+.sgs-mega-menu__trigger[aria-expanded="true"] {
+	color: var(--wp--preset--color--accent, #d8ca50) !important;
+}
+
 /* Highlight variant */
 .sgs-mega-menu--highlight .sgs-mega-menu__trigger {
 	color:       var(--wp--preset--color--accent, currentColor);

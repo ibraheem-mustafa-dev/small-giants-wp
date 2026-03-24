@@ -490,17 +490,7 @@ body.sgs-has-transparent-header .wp-site-blocks > :first-child {
  * The block attribute sets width:300px via inline style — override with
  * max-width so the logo scales down proportionally without reflowing the header.
  */
-@media (max-width: 480px) {
-	.wp-block-site-logo img {
-		max-width: 180px !important;
-	}
-}
-
-@media (min-width: 481px) and (max-width: 768px) {
-	.wp-block-site-logo img {
-		max-width: 220px !important;
-	}
-}
+/* Mobile/tablet logo sizes moved to bottom of file */
 
 /* ─── TOP BAR — MOBILE / TABLET SWAP ─── */
 
@@ -580,5 +570,143 @@ body.sgs-has-transparent-header .wp-site-blocks > :first-child {
 @media (max-width: 360px) {
 	.sgs-top-bar-mobile-cta__btn:first-child {
 		display: none;
+	}
+}
+
+/* ─── SOCIAL ICONS — COLOURED CIRCLES ON DESKTOP TOP BAR ─── */
+
+/*
+ * Give the WP social-links in the top bar coloured circular backgrounds
+ * matching the mobile drawer style. Brand colours per platform.
+ */
+.sgs-top-bar-socials .wp-block-social-link {
+	border-radius: 50%;
+	transition: transform 200ms ease, filter 200ms ease;
+}
+
+.sgs-top-bar-socials .wp-block-social-link:hover {
+	transform: scale(1.15);
+	filter: brightness(1.2);
+}
+
+.sgs-top-bar-socials .wp-social-link-linkedin {
+	background-color: #0077b5 !important;
+}
+
+.sgs-top-bar-socials .wp-social-link-facebook {
+	background-color: #1877f2 !important;
+}
+
+.sgs-top-bar-socials .wp-social-link-google {
+	background-color: #ea4335 !important;
+}
+
+.sgs-top-bar-socials .wp-social-link-instagram {
+	background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888) !important;
+}
+
+.sgs-top-bar-socials .wp-block-social-link a {
+	padding: 6px !important;
+}
+
+.sgs-top-bar-socials .wp-block-social-link a svg {
+	width: 20px;
+	height: 20px;
+}
+
+/* ─── PARENT NAV GOLD HOVER ON DROPDOWN/MEGA-MENU OPEN ─── */
+
+/*
+ * When a submenu or mega-menu is open (hovered/expanded), the parent
+ * link turns gold to indicate which section the user is looking at.
+ */
+.wp-block-navigation-item.has-child:hover > .wp-block-navigation-item__content,
+.wp-block-navigation-item.has-child:focus-within > .wp-block-navigation-item__content {
+	color: var(--wp--preset--color--accent, #d8ca50) !important;
+}
+
+/* ─── STICKY HEADER — LOGO COMPRESSION ON SCROLL ─── */
+
+/*
+ * When the sticky/shrink header scrolls, compress the logo and reduce
+ * padding for a more compact navigation bar.
+ */
+header.wp-block-template-part.is-scrolled .wp-block-site-logo img {
+	max-height: 55px !important;
+	transition: max-height 0.3s ease;
+}
+
+header.wp-block-template-part:not(.is-scrolled) .wp-block-site-logo img {
+	transition: max-height 0.3s ease;
+}
+
+/* ─── MOBILE TOP BAR CTA — IMPROVED STYLING ─── */
+
+/*
+ * Apply button: gold background with dark text — stands out on teal.
+ * Call button: white-bordered pill — clear secondary action.
+ * Both: heavier weight, consistent size, proper hover animation.
+ */
+.sgs-top-bar-mobile-cta__btn {
+	font-weight: 700;
+	font-size: 0.8125rem;
+	letter-spacing: 0.02em;
+	transition: background-color 200ms cubic-bezier(0.16, 1, 0.3, 1),
+	            transform 150ms ease;
+}
+
+.sgs-top-bar-mobile-cta__btn:first-child {
+	background-color: var(--wp--preset--color--accent, #d8ca50);
+	color: var(--wp--preset--color--text, #1E1E1E);
+	border: 2px solid var(--wp--preset--color--accent, #d8ca50);
+}
+
+.sgs-top-bar-mobile-cta__btn:first-child:hover,
+.sgs-top-bar-mobile-cta__btn:first-child:focus {
+	background-color: var(--wp--preset--color--accent-light, #fee8d4);
+	transform: scale(1.02);
+}
+
+.sgs-top-bar-mobile-cta__btn:last-child {
+	background-color: transparent;
+	color: var(--wp--preset--color--surface, #ffffff);
+	border: 2px solid var(--wp--preset--color--surface, #ffffff);
+}
+
+.sgs-top-bar-mobile-cta__btn:last-child:hover,
+.sgs-top-bar-mobile-cta__btn:last-child:focus {
+	background-color: rgba(255, 255, 255, 0.2);
+	transform: scale(1.02);
+}
+
+/* ─── MOBILE LOGO — LARGER ─── */
+
+@media (max-width: 480px) {
+	.wp-block-site-logo img {
+		max-width: 220px !important;
+	}
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+	.wp-block-site-logo img {
+		max-width: 280px !important;
+	}
+}
+
+/* ─── TABLET BREAKPOINT ─── */
+
+@media (min-width: 769px) and (max-width: 1024px) {
+	.wp-block-site-logo img {
+		max-width: 250px !important;
+	}
+
+	.wp-block-navigation .wp-block-navigation-item .wp-block-navigation-item__content {
+		font-size: 0.9375rem;
+		padding: 4px 6px;
+	}
+
+	/* Tighten top bar pills on tablet */
+	.sgs-top-bar-desktop-pills .sgs-business-info-wrap {
+		font-size: 0.875rem;
 	}
 }

@@ -224,7 +224,14 @@ footer p a:hover,
 footer .wp-block-paragraph a:hover,
 .wp-block-template-part footer p a:hover {
 	color: var(--wp--preset--color--accent-light, #fee8d4) !important;
-	text-decoration: underline;
+	text-decoration: none;
+}
+
+/* Gold-background buttons: keep dark text on hover */
+.wp-block-button__link[style*="background-color:#E7D768"]:hover,
+.wp-block-button__link[style*="background-color: #E7D768"]:hover {
+	color: #1E1E1E !important;
+	text-decoration: none;
 }
 
 /* ─── NAV LINK HOVER SCALE — H18 ─── */

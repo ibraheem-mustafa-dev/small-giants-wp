@@ -82,7 +82,7 @@
 	display: flex;
 	justify-content: flex-end;
 	align-items: center;
-	padding: var(--wp--preset--spacing--20, 0.5rem) var(--wp--preset--spacing--30, 1rem);
+	padding: 0.25rem var(--wp--preset--spacing--30, 1rem);
 	flex-shrink: 0;
 }
 
