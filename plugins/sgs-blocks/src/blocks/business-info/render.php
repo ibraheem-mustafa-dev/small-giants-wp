@@ -237,7 +237,7 @@ switch ( $type ) {
 		// Fall back to CID-based embed if no address is set.
 		$query_parts = array_filter( [ $name, $street, $city, $postcode ] );
 		if ( $query_parts ) {
-			$map_url = 'https://www.google.com/maps?q=' . rawurlencode( implode( ', ', $query_parts ) ) . '&output=embed';
+			$map_url = 'https://maps.google.com/maps?q=' . rawurlencode( implode( ', ', $query_parts ) ) . '&z=15&hl=en&t=m&output=embed&iwloc=near';
 		} elseif ( $cid && preg_match( '/^[0-9]+$/', $cid ) ) {
 			$map_url = 'https://www.google.com/maps?cid=' . rawurlencode( $cid ) . '&output=embed';
 		} else {
