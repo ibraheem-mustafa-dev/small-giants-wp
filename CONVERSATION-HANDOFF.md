@@ -92,23 +92,22 @@ Read CONVERSATION-HANDOFF.md and CLAUDE.md for full context. This session builds
 | Tool | What to use it for |
 |------|-------------------|
 | Playwright MCP | Screenshot verification at 1440px, 768px, 375px after each template |
-| Firecrawl | Research mega menu designs from Dribbble, Awwwards, real competitor sites |
 | Context7 | Get current WordPress block theme docs for template parts and patterns |
 
 ## Agents to Delegate To
 
 | Agent | When |
 |-------|------|
+| `research-pipeline` | Mega menu design research — auto-selects tier, runs debate, produces findings |
 | `wp-sgs-developer` | Heavy template part and CSS development |
 | `design-reviewer` | After each template — compare quality at 3 breakpoints |
 | `test-and-explain` | After all templates — verify in plain English |
 
 ## Research Approach
-1. Search Firecrawl for "best mega menu design 2025 2026" — collect 10+ examples
-2. Search for "mega menu WordPress Kadence Spectra GenerateBlocks" — competitor analysis
-3. Search design libraries (Dribbble, Behance) for "mega menu UI design"
-4. Run /gap-analysis on current 7 templates vs findings
-5. Run /internal-debate on layout choices per template type
+1. Use `/research-buddies` — The Nerd finds bleeding-edge mega menu designs from community-validated sources (Dribbble, GitHub, Awwwards, real sites). The Practical One turns findings into SGS-applicable patterns.
+2. Run `/gap-analysis` on current 7 templates vs research findings
+3. Run `/internal-debate` on layout choices per template type
+4. Use `/deep-research` if any template type needs more than surface-level investigation (e.g. colour animation patterns, responsive mega menu best practices)
 
 ---
 
@@ -165,22 +164,21 @@ Read CONVERSATION-HANDOFF.md and CLAUDE.md for full context. This session builds
 | Tool | What to use it for |
 |------|-------------------|
 | Playwright MCP | Test mobile drawer at 375px and 768px, test interactions |
-| Firecrawl | Research mobile nav patterns from top mobile-first sites |
 | Context7 | WordPress Interactivity API docs, block development docs |
 
 ## Agents to Delegate To
 
 | Agent | When |
 |-------|------|
+| `research-pipeline` | Mobile nav UX research — auto-selects tier, produces actionable findings |
 | `wp-sgs-developer` | Block PHP/JS/CSS development |
 | `design-reviewer` | After each variant — check at 375/768 |
 | `test-and-explain` | After block is complete — verify in plain English |
 
 ## Research Approach
-1. Search for "best mobile navigation 2025 2026 UX patterns"
-2. Analyse how Kadence/Spectra handle mobile menus (builder approach vs templates)
-3. Search for "WordPress mobile menu block accordion" — existing solutions
-4. Run /gap-analysis on current drawer vs research findings
+1. Use `/research-buddies` — The Nerd finds best mobile nav patterns from community sources (GitHub, UX blogs, real mobile-first sites). The Practical One applies findings to SGS block architecture.
+2. Use `/light-research-team` for focused question: "How do Kadence/Spectra handle mobile menus — builder vs templates?"
+3. Run `/gap-analysis` on current hardcoded drawer vs research findings
 
 ---
 
