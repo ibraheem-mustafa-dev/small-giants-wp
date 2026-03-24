@@ -891,17 +891,10 @@ footer.wp-block-template-part{margin-block-start:0!important}
 .wp-block-button__link.has-text-color[style*='color:#FFFFFF']{color:#FFFFFF!important}
 .wp-block-button__link.has-text-color[style*='color:#ffffff']{color:#ffffff!important}
 
-/* ── Global button hover — scale + colour invert ──────────────────────────
- * All wp-block-button links get a consistent hover: slight scale lift,
- * inverted background/text colours. This is behavioural CSS — cannot be
- * set via theme.json :hover (only supports colour, not transform). */
-.wp-block-button__link{
-	transition:transform .2s ease,background-color .2s ease,color .2s ease,border-color .2s ease,box-shadow .2s ease;
-}
-.wp-block-button__link:hover{
-	transform:scale(1.04);
-	box-shadow:0 4px 12px rgba(0,0,0,0.15);
-}
+/* ── Button colour inversion on hover (Indus Foods style variation) ───────
+ * Transform/transition handled by core-blocks-critical.css — only colour
+ * rules here since they're client-specific and can't go in the base theme. */
+
 /* Teal button → gold bg, dark text on hover */
 .wp-block-button__link[style*='background-color:#0A7EA8']:hover,
 .wp-block-button__link[style*='background-color: #0A7EA8']:hover,

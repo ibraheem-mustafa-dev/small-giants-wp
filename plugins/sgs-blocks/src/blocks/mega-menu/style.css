@@ -60,7 +60,7 @@
 	font-family:     inherit;
 	font-size:       inherit;
 	font-weight:     500;
-	color:           inherit;
+	color:           var(--wp--preset--color--text, #1E1E1E);
 	background:      transparent;
 	border:          none;
 	cursor:          pointer;
