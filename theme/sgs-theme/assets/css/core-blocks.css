@@ -560,6 +560,18 @@ footer .wp-block-paragraph a:hover,
 	filter: brightness(1.05);
 }
 
+/*
+ * Fix: WP's .has-text-color { color: var(--text) !important } overrides .has-accent-color
+ * inside mega-menu sector cards. Since gold (#D8CA50) on teal fails WCAG AA (2.74:1),
+ * we use white (4.60:1) for accessible card text.
+ */
+.sgs-mega-card .has-text-color,
+.sgs-mega-card .has-accent-color,
+.sgs-mega-card p,
+.sgs-mega-card p a {
+	color: var(--wp--preset--color--surface, #ffffff) !important;
+}
+
 /* Stretch the CTA link to cover the full card */
 .sgs-mega-card p:last-child a {
 	position: static;
