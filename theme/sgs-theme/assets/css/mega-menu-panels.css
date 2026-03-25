@@ -17,11 +17,58 @@
    ========================================================================== */
 
 /**
- * Background only — padding is handled by .sgs-mega-menu__panel (2rem).
+ * Base panel — uses surface (white) by default, not surface-alt (grey).
+ * Individual templates override via WP block backgroundColor attribute
+ * to create visual differentiation:
+ *   - Card panels (sectors, products, brands): surface (white) — cards provide colour
+ *   - Warm panels (about, services): accent-light — heritage warmth
+ *   - Dark panels (contact, resources): primary-dark — bold conversion/hero
+ *
+ * Padding is handled by .sgs-mega-menu__panel (2rem).
  * Template parts set padding:0 inline to prevent double-padding.
  */
 .sgs-mega-panel {
-	background-color: var(--wp--preset--color--surface-alt, #f5f7f7);
+	background-color: var(--wp--preset--color--surface, #ffffff);
+}
+
+/**
+ * Dark panel variant — for conversion endpoints and hero panels.
+ * All child text forced to surface (white) for readability.
+ */
+.sgs-mega-panel--dark {
+	background-color: var(--wp--preset--color--primary-dark, #0a5b5d);
+	color: var(--wp--preset--color--surface, #fff);
+}
+
+.sgs-mega-panel--dark .sgs-mega-title {
+	color: var(--wp--preset--color--accent-light, #fee8d4) !important;
+}
+
+.sgs-mega-panel--dark p,
+.sgs-mega-panel--dark li,
+.sgs-mega-panel--dark a:not(.sgs-mega-cta) {
+	color: var(--wp--preset--color--surface, #fff) !important;
+}
+
+.sgs-mega-panel--dark .sgs-mega-cta {
+	background-color: var(--wp--preset--color--accent, #f87a1f);
+	color: var(--wp--preset--color--text, #1e1e1e) !important;
+}
+
+.sgs-mega-panel--dark .sgs-mega-cta:hover {
+	background-color: var(--wp--preset--color--surface, #fff);
+}
+
+.sgs-mega-panel--dark .sgs-mega-divider {
+	border-top-color: rgba(255, 255, 255, 0.15);
+}
+
+/**
+ * Warm panel variant — for heritage/story panels.
+ * Uses accent-light token which varies per style variation.
+ */
+.sgs-mega-panel--warm {
+	background-color: var(--wp--preset--color--accent-light, #fee8d4);
 }
 
 /* ==========================================================================
@@ -167,11 +214,13 @@
 	color: var(--wp--preset--color--text, #1e1e1e);
 }
 
-/* Surface cards keep their normal text colours */
+/* Surface cards keep their normal text colours — even inside dark panels */
 .sgs-mega-card--surface .has-text-color,
 .sgs-mega-card--surface p,
-.sgs-mega-card--surface p a {
-	color: inherit !important;
+.sgs-mega-card--surface p a,
+.sgs-mega-panel--dark .sgs-mega-card--surface p,
+.sgs-mega-panel--dark .sgs-mega-card--surface a:not(.sgs-mega-cta) {
+	color: var(--wp--preset--color--text, #1e1e1e) !important;
 }
 
 /**
