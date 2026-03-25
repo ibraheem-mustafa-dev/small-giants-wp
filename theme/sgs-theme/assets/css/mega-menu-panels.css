@@ -80,12 +80,18 @@
 /**
  * Consistent heading style across all mega menu panels.
  * Matches the existing sectors/brands bold uppercase treatment.
+ *
+ * Specificity note: the block editor applies has-small-font-size to heading blocks,
+ * which overrides font-size declared on .sgs-mega-title alone. The parent
+ * selectors increase specificity so the intended 18px size wins reliably.
  */
-.sgs-mega-title {
+.sgs-mega-title,
+.sgs-mega-panel .sgs-mega-title,
+.sgs-mega-menu__panel .sgs-mega-title {
 	font-weight: 800;
 	text-transform: uppercase;
 	letter-spacing: 0.06em;
-	font-size: var(--wp--preset--font-size--medium, 18px);
+	font-size: var(--wp--preset--font-size--medium, 18px) !important;
 	color: var(--wp--preset--color--text, #1e1e1e);
 	margin-bottom: var(--wp--preset--spacing--30);
 }
