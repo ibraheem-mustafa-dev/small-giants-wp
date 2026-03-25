@@ -1,137 +1,122 @@
-# Session Handoff — 2026-03-22 (Session 3)
+# Session Handoff — 2026-03-25 (Session 5)
 
 ## Completed This Session
-1. Fixed critical font-size bug: all 7 templates referenced `slug:"header-sticky"` (12px) instead of `slug:"header"` (18px). Changed slug in all templates. Not a WP core bug.
-2. Built Business Details settings page (`theme/sgs-theme/inc/class-business-details.php`) at Settings > Business Details. 16 fields: name, tagline, phone, email, address (4 fields), hours (7 days), 5 social URLs, WhatsApp, Maps CID.
-3. Built `sgs/business-info` dynamic block (`plugins/sgs-blocks/src/blocks/business-info/`) with 8 render types: phone, email, address, hours, socials, copyright, description, map. Uses `ServerSideRender` in editor, reads from `wp_options`.
-4. Redesigned mobile nav drawer from broken empty narrow panel to full-screen teal overlay with CTA button, email/phone icon circles, cloned nav items with gold dividers, submenu toggles, and coloured social icons.
-5. Added CTA-focused mobile top bar (Apply For Trade Account + Call buttons) replacing phone/email/socials at <=768px.
-6. Created 6 header/footer patterns: header-full, header-minimal, header-centred, footer-informational, footer-compact, footer-minimal. All use `sgs/business-info` blocks for auto-population.
-7. Built `header-editor-panel.js` for per-page header mode selection in the block editor sidebar.
-8. Rebuilt `footer.html` with `sgs/business-info` blocks — no more hardcoded Indus content. Quick Links remain as WP list block.
-9. Deleted 4 dead header variant files (header-sticky, transparent, shrink, minimal) + orphaned sticky-header.js.
-10. Uploaded Indus Foods logo SVG to server. Set all Business Details options via WP-CLI.
+1. Deep research on mega menu designs — 55+ sources from NNg, Baymard, Sysco, Brakes, ABF, Awwwards, navbar.gallery. Produced research-backed layout patterns for all 7 template types.
+2. Built shared CSS class system (`mega-menu-panels.css`, 17 classes) — `.sgs-mega-panel`, `--dark`, `--warm` variants, `.sgs-mega-card--gradient`, `.sgs-mega-card--surface`, `.sgs-mega-featured`, `.sgs-mega-title`, `.sgs-mega-logo-tile`, `.sgs-mega-cta`, `.sgs-mega-divider`. All via design tokens.
+3. Redesigned all 7 mega menu template parts with 3 distinct background treatments: white (card panels), accent-light (warm/heritage panels), primary-dark (conversion/hero panels).
+4. Migrated `.brand-logo-tile` from Indus-gated inline CSS to framework-level `.sgs-mega-logo-tile` class.
+5. Ran design critique using `/critique` + `/frontend-design` skills. Identified and partially addressed AI slop issues (uniform grey backgrounds, identical layouts, no emotional layer). Brand-coloured backgrounds were the primary fix.
+6. Fixed WCAG contrast failure on Services "Get a Quote" CTA (white on gold 1.68:1 changed to dark on gold 6.53:1).
+7. Fixed `.sgs-mega-title` CSS specificity — WP's `has-small-font-size` class was overriding the heading size. Added parent selectors + `!important`.
+8. Diagnosed and fixed Prettier format-on-save destroying WP block template parts. Added `[html].formatOnSave: false` to VS Code settings + `.prettierignore` in repo.
+9. Theme version bumped 1.3.4 to 1.4.0.
 
 ## Current State
-- **Branch:** `feature/header-footer-upgrade` at `2097d04`
+- **Branch:** `feat/mega-menu-templates` at `77404c7` (5 commits, PR #4 open)
 - **Tests:** no test suite
-- **Build:** webpack compiles successfully
-- **Uncommitted changes:** none on this branch
-- **LiteSpeed Cache:** DISABLED
-- **Cloudflare:** Developer mode ON
-- **Live URL:** https://palestine-lives.org — header fixed (18px pills), mobile drawer working, footer rendering from settings
-- **PR:** https://github.com/ibraheem-mustafa-dev/small-giants-wp/pull/3
+- **Build:** webpack not required (template HTML + CSS only)
+- **Uncommitted changes:** none
+- **LiteSpeed Cache:** DISABLED for development
+- **Live URL:** https://palestine-lives.org — session 5 changes deployed
+- **PR:** https://github.com/ibraheem-mustafa-dev/small-giants-wp/pull/4
 
 ## Known Issues / Blockers
-- Footer logo SVG renders at 0px because it lacks width/height attributes. Fix: add `width="3742" height="848"` to the SVG file, or use the `wp:site-logo` block which handles sizing via its own width attribute.
-- Google Maps embed shows world view — needs to use the Google Business Profile embed URL (with pin, address, star rating) instead of CID-based coordinate map.
-- Mega-menu items (Sectors, Brands) in the mobile drawer have slight alignment offset vs standard nav items. CSS fix needed for `.sgs-mega-menu__trigger` button alignment.
-- Footer social icons are small. Header social icons are small. Both need size increase.
-- Copyright in footer uses `wp:html` block to bypass WP's `has-text-color { color: var(--text) !important }` override. This is a workaround — the `[current_year]` token still works via the `replace_current_year_token` render_block filter.
-- DB-stored header template (post 219) was deleted by the mobile agent to let the file version serve. If the header is edited in the Site Editor, it will create a new DB entry which will override the file again.
-- Full design review (Phase 4) not completed this session.
+- Git history on the branch is messy — linter reverted files between writes and commits throughout the session. The server has the correct deployed state; the branch commits may have partial content. Consider squashing before merge.
+- Only Sectors and Brands panels tested in live mega menu dropdown (main branch header only has 2 triggers). Other 5 tested via temporary QA page only.
+- Products panel has placeholder image paths (`/wp-content/uploads/2025/01/placeholder.webp`) that show broken image icons. Need real images or remove images entirely.
+- Design critique flagged: typography has only 2 levels (heading vs body), About/Contact panels are content-light, Inter font everywhere.
+- `fix/header-footer-polish` branch (17 commits, not merged) has all 7 mega menu triggers in the nav. Must merge that first to test all panels live.
 
 ## Next Priorities (in order)
-1. Fix the 5 known issues above: SVG dimensions, Google Maps GBP embed, mega-menu drawer alignment, social icon sizes, then merge PR #3 to main.
-2. Full design review at 1440px, 768px, 375px comparing against the reference site. Use the `design-reviewer` agent. Produce a numbered discrepancy list and fix each item.
-3. Update header.html top bar to use `sgs/business-info` blocks for phone/email/socials (currently still hardcoded paragraphs). The mobile CTA buttons can stay as HTML since they're layout-specific.
-4. Re-enable LiteSpeed Cache and turn off Cloudflare developer mode after all visual fixes are complete.
-5. Run Lighthouse audit to check performance impact of the new JS (mobile-nav-drawer.js is now larger with nav cloning + submenu logic).
+1. Design iteration: address critique findings — add typographic middle layer (featured link titles at 16px/600), strengthen About panel with heritage stat/number, improve Contact panel content density, consider replacing broken product placeholder images with icon-only cards.
+2. After design iteration passes QA, customise Indus Foods-specific content for all 7 panels — real product images, real brand logos, real contact details, sector-specific copy.
+3. Merge `fix/header-footer-polish` to main first (prerequisite for live testing all 7 triggers), then merge `feat/mega-menu-templates`.
 
 ## Files Modified
 | File path | What changed |
 |-----------|-------------|
-| `theme/sgs-theme/templates/*.html` (7 files) | Slug `header-sticky` changed to `header` |
-| `theme/sgs-theme/parts/header.html` | Mobile CTA buttons, drawer restructured, sgs-top-bar classes added |
-| `theme/sgs-theme/parts/footer.html` | Rebuilt with sgs/business-info blocks, wp:html copyright |
-| `theme/sgs-theme/parts/header-sticky.html` | DELETED |
-| `theme/sgs-theme/parts/header-transparent.html` | DELETED |
-| `theme/sgs-theme/parts/header-shrink.html` | DELETED |
-| `theme/sgs-theme/parts/header-minimal.html` | DELETED |
-| `theme/sgs-theme/assets/css/mobile-nav-drawer.css` | Full rewrite: full-screen overlay, CTA section, gold dividers, submenu toggles, coloured socials |
-| `theme/sgs-theme/assets/js/mobile-nav-drawer.js` | Full rewrite: cloneDesktopNav, buildSubmenuToggles, event delegation |
-| `theme/sgs-theme/assets/css/core-blocks-critical.css` | Mobile top bar swap, logo constraint, CTA button styles |
-| `theme/sgs-theme/assets/js/header-editor-panel.js` | NEW: per-page header mode selector in editor sidebar |
-| `theme/sgs-theme/assets/js/sticky-header.js` | DELETED (orphaned) |
-| `theme/sgs-theme/inc/class-business-details.php` | NEW: Settings > Business Details page (16 fields) |
-| `theme/sgs-theme/functions.php` | Added require for class-business-details.php, registered sgs-headers/sgs-footers pattern categories |
-| `theme/sgs-theme/style.css` | Version bump 1.3.1 to 1.3.3 |
-| `theme/sgs-theme/patterns/footer-informational.php` | NEW: 3-column footer with business-info blocks |
-| `theme/sgs-theme/patterns/footer-compact.php` | NEW: 2-column compact footer |
-| `theme/sgs-theme/patterns/footer-minimal.php` | NEW: single-row copyright + socials |
-| `theme/sgs-theme/patterns/header-full.php` | NEW: top bar + nav header with business-info blocks |
-| `theme/sgs-theme/patterns/header-minimal.php` | NEW: logo + nav only |
-| `theme/sgs-theme/patterns/header-centred.php` | NEW: centred logo above, nav below |
-| `plugins/sgs-blocks/src/blocks/business-info/*` | NEW: block.json, render.php, edit.js, index.js, style.css |
-| `ARCHITECTURE.md` | Added business-info block, Phase 2 blocks, header/footer updates |
+| `theme/sgs-theme/assets/css/mega-menu-panels.css` | NEW — 17 shared CSS classes, 3 bg variants (white/warm/dark) |
+| `theme/sgs-theme/functions.php` | Enqueue mega-menu-panels.css, add to deferred array, add editor style, remove brand-logo-tile inline CSS |
+| `theme/sgs-theme/assets/css/core-blocks.css` | `.brand-logo-tile` renamed to `.sgs-mega-logo-tile` in image hover exclusion |
+| `theme/sgs-theme/style.css` | Version 1.3.4 to 1.4.0 |
+| `theme/sgs-theme/parts/mega-menu-sectors.html` | Token migration, sgs-mega-panel class, gradient via CSS class |
+| `theme/sgs-theme/parts/mega-menu-brands.html` | Token migration, sgs-mega-logo-tile rename, sgs-mega-panel |
+| `theme/sgs-theme/parts/mega-menu-products.html` | Full rewrite — gradient card grid replacing emoji placeholders |
+| `theme/sgs-theme/parts/mega-menu-services.html` | sgs-mega-panel--warm wrapper, accent-light bg, sgs-mega-cta |
+| `theme/sgs-theme/parts/mega-menu-resources.html` | Full rewrite — dark panel, 3-column Voiceflow layout |
+| `theme/sgs-theme/parts/mega-menu-about.html` | sgs-mega-panel--warm, accent-light bg, styled link list |
+| `theme/sgs-theme/parts/mega-menu-contact.html` | Dark panel, surface CTA card, proper Lucide icons |
+| `.prettierignore` | NEW — protects WP block template parts from Prettier |
 
 ## Notes for Next Session
-- The mobile drawer clones desktop nav via JS at page load. If the desktop nav changes (new pages added), the drawer updates automatically. No manual sync needed.
-- WP `has-text-color` class has `!important` in core CSS. Any block with custom text colour AND this class will have the colour overridden. Workaround: use `wp:html` block to avoid WP adding the class.
-- The footer's `[current_year]` token works because the `replace_current_year_token` render_block filter processes ALL blocks including `wp:html` blocks.
-- The Google Maps embed should use the GBP URL format that shows the business pin with address and star rating, not a generic coordinate map. The reference site shows this correctly.
-- Social icons need size increase in both header (top bar) and footer. The user wants to keep the hover effect but make the base icons larger.
+- Prettier format-on-save was destroying template parts all session. Fixed now via VS Code `[html].formatOnSave: false` + `.prettierignore`. If files still revert after writes, check VS Code extensions.
+- The `sgs-mega-panel--dark` CSS variant forces all child text to surface (white) via `!important`. The `.sgs-mega-card--surface` inside dark panels overrides back to dark text — this specificity layering is intentional.
+- WP block `backgroundColor` attribute in template parts outputs as inline `background-color` style, which beats the CSS class. The template's `backgroundColor` token IS the source of truth for panel colour, not the CSS class.
+- The design critique recommended different font choices beyond Inter. This is a theme.json level change and affects the entire site, not just mega menus. Consider for a future typography session.
+- Research findings saved in the plan file at `.claude/plans/calm-doodling-walrus.md` — includes the full NNg/Baymard research summary and per-template design patterns with source attribution.
 
 ## Next Session Prompt
 
 ~~~
 /using-superpowers
 
-Read CONVERSATION-HANDOFF.md and CLAUDE.md for full context, then work through these priorities:
+Read CONVERSATION-HANDOFF.md and CLAUDE.md for full context. This session has two phases: (1) design iteration on the 7 mega menu templates to address critique findings, then (2) Indus Foods content customisation.
 
 ## Skills to Invoke
 
 | Skill | When to use |
 |-------|-------------|
 | `/superpowers:using-superpowers` | FIRST — before any response |
-| `/sgs-wp-engine` | Before any block or theme work |
-| `/wp-block-themes` | Task 1 — template part CSS, social icon sizing |
-| `/wp-block-development` | Task 1 — if business-info block map type needs updating |
-| `/superpowers:verification-before-completion` | After each fix — screenshot verification |
+| `/sgs-wp-engine` | Load framework context, check existing blocks |
+| `/superpowers:brainstorming` | Before design iteration — explore typography and content improvements |
+| `/critique` | After each round of changes — evaluate improvement |
+| `/frontend-design` | Design quality and AI slop detection |
+| `/superpowers:verification-before-completion` | Screenshot verification at 1440px after each change |
+| `/superpowers:finishing-a-development-branch` | After all changes — merge strategy for both branches |
 
 ## MCP Servers & Tools
 
 | Tool | What to use it for |
 |------|-------------------|
-| Playwright MCP | Screenshot verification at 375px, 768px, 1440px after each fix |
-| Firecrawl | Look up Google Maps GBP embed URL format |
+| Playwright MCP | Screenshot verification at 1440px after each template change |
+| Context7 | WordPress block theme docs if needed for template part architecture |
 
 ## Agents to Delegate To
 
 | Agent | When |
 |-------|------|
-| `wp-sgs-developer` | Task 1 — apply the 5 fixes |
-| `design-reviewer` | Task 2 — full visual comparison at all breakpoints |
-| `test-and-explain` | After Task 1 — verify fixes in plain English |
+| `wp-sgs-developer` | Heavy template part editing and content customisation |
+| `design-reviewer` | After design iteration — formal visual QA at 3 breakpoints |
+| `test-and-explain` | After all changes — verify in plain English |
 
 ---
 
-## Task 1: Fix 5 Known Issues
+## Task 1: Design Iteration — Address Critique Findings
+The design critique identified 5 priority issues. Address these in the mega menu CSS and templates:
+1. Add typographic middle layer — featured link titles at ~16px/600 weight between 18px/800 headings and 14px body. Apply to About quick links, Resources article titles, Contact info.
+2. Strengthen About panel — add a heritage stat ("Since 1962" or "3 generations") as a prominent visual element, not buried in bullets.
+3. Improve Contact panel content density — add a map thumbnail or visual element to fill the sparse left column.
+4. Fix Products panel broken images — either replace placeholder.webp with icon-only cards (like Services pattern) or remove images entirely until real product photography exists.
+5. Add greyscale-to-colour hover effect on brand logo tiles — unifies disparate logos and adds micro-interaction.
 
-Fix in order, deploy after each, screenshot to verify:
+Deploy after each change, screenshot, evaluate. Iterate until the critique score improves from C+/B- to solid B+.
 
-1. **SVG logo dimensions** — add `width="3742" height="848"` to the SVG file on the server, OR replace the `wp:image` block in footer.html with `wp:site-logo` which handles sizing.
-2. **Google Maps GBP embed** — update the `sgs/business-info` map type in render.php to use the Google Business Profile embed format (shows pin, address, stars). Search for the correct embed URL format.
-3. **Mega-menu drawer alignment** — fix `.sgs-mega-menu__trigger` button alignment in drawer CSS so it matches standard nav items.
-4. **Social icon sizes** — increase icon size in header top bar and footer. Keep hover effect.
-5. **Header top bar** — replace hardcoded phone/email paragraphs with `sgs/business-info` blocks (type="phone" and type="email").
+## Task 2: Merge Branches
+Merge `fix/header-footer-polish` to main first, then rebase `feat/mega-menu-templates` onto updated main and merge. Test all 7 mega menu triggers live after merge.
 
-After all fixes: merge PR #3 to main.
-
-## Task 2: Full Design Review
-
-Delegate to `design-reviewer` agent. Compare at 1440px, 768px, 375px against reference (lightsalmon-tarsier-683012.hostingersite.com). Produce numbered discrepancy list. Fix each item.
-
-## Task 3: Re-enable Caching
-
-After all visual fixes:
-1. Re-enable LiteSpeed Cache: `ssh hd "cd ~/domains/palestine-lives.org/public_html && wp plugin activate litespeed-cache"`
-2. Turn off Cloudflare developer mode (Hostinger dashboard)
-3. Run Lighthouse audit via `performance-auditor` agent
+## Task 3: Indus Foods Content Customisation
+After framework templates are merged, create Indus Foods-specific content for each panel in the block editor or via WP-CLI:
+- Sectors: real Indus Foods sector images (already partially done from session 4)
+- Products: real product category images from uploads
+- Brands: replace placeholder logos with real brand partner logos
+- Contact: real Indus Foods phone, email, address, opening hours
+- About: real Indus Foods heritage copy (60 years, Birmingham, Balti Triangle)
+- Services/Resources: Indus-specific service descriptions and downloadable PDFs
 
 ## Guardrails
-- PreToolUse hook blocks wp post update, wp eval-file, wp eval, wp_update_post
-- After ANY change, take a frontend screenshot and LOOK at it before claiming done
-- LiteSpeed Cache is DISABLED — no need to clear cache during fixes
-- The branch is `feature/header-footer-upgrade` — merge to main only after all fixes verified
+- After ANY template change, screenshot at 1440px and LOOK at it before claiming done
+- All colours must use design tokens — never hardcoded hex
+- The `.prettierignore` protects template parts from Prettier. If files still revert after writes, check VS Code extensions
+- LiteSpeed is DISABLED — no cache to clear during development
+- Squash the mega-menu-templates branch before merging (messy history from linter reverts)
 ~~~
