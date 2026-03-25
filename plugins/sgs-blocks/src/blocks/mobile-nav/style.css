@@ -173,7 +173,7 @@
 	height: 48px;
 	border-radius: 50%;
 	border: none;
-	background: rgba(255, 255, 255, 0.15);
+	background: rgba(255, 255, 255, 0.15) !important; /* !important overrides WP core button reset */
 	color: inherit;
 	cursor: pointer;
 	transition: background 200ms ease;
@@ -366,7 +366,7 @@
 .sgs-mobile-nav__submenu {
 	list-style: none;
 	margin: 0;
-	padding: 0 0 0 var(--wp--preset--spacing--30, 1rem);
+	padding: 0 0 0 var(--wp--preset--spacing--40, 1.5rem);
 	overflow: hidden;
 	interpolate-size: allow-keywords;
 	height: 0;
@@ -639,6 +639,36 @@ body:has(.sgs-mobile-nav[data-desktop-burger="true"]) [popovertarget="sgs-mobile
 	.sgs-mobile-nav__item {
 		opacity: 1;
 		transform: none;
+	}
+}
+
+/* ─── Touch Active States ──────────────────────────────────────────────────── */
+/* Instant feedback on press (0ms in), gentle release (150ms out). */
+.sgs-mobile-nav__link,
+.sgs-mobile-nav__sublink,
+.sgs-mobile-nav__toggle,
+.sgs-mobile-nav__close,
+.sgs-mobile-nav__cta-btn,
+.sgs-mobile-nav__icon-btn,
+.sgs-mobile-nav__social-link {
+	-webkit-tap-highlight-color: transparent;
+}
+
+.sgs-mobile-nav__link:active,
+.sgs-mobile-nav__sublink:active,
+.sgs-mobile-nav__toggle:active {
+	background: rgba(255, 255, 255, 0.08);
+	transition: background 0ms;
+}
+
+/* ─── Touch-Sticky Hover Fix ───────────────────────────────────────────────── */
+/* On touch devices, :hover persists after tap — clear it so the accordion
+   toggle doesn't show a filled background box in the expanded state. */
+@media (hover: none) {
+	.sgs-mobile-nav__toggle:hover,
+	.sgs-mobile-nav__link:hover,
+	.sgs-mobile-nav__sublink:hover {
+		background: none;
 	}
 }
 
