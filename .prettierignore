@@ -1,0 +1,6 @@
+# WordPress block template parts — formatting breaks block comment syntax.
+# WP blocks serialise attributes as JSON inside HTML comments:
+#   <!-- wp:group {"backgroundColor":"surface","className":"sgs-mega-panel"} -->
+# Prettier reformats these comments, breaking the block parser.
+theme/sgs-theme/parts/*.html
+theme/sgs-theme/templates/*.html
