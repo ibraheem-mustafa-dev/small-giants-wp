@@ -1,0 +1,60 @@
+/**
+ * SGS Mobile Navigation — editor-only styles.
+ *
+ * Shows a placeholder card since the actual drawer can't render in the editor.
+ *
+ * @package SGS\Blocks
+ */
+
+.sgs-mobile-nav-editor {
+	padding: 0;
+}
+
+.sgs-mobile-nav-editor__card {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	padding: 20px 24px;
+	background: var(--wp--preset--color--surface-alt, #f5f7f7);
+	border: 1px dashed var(--wp--preset--color--primary, #0f7e80);
+	border-radius: 8px;
+}
+
+.sgs-mobile-nav-editor__icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 48px;
+	height: 48px;
+	border-radius: 8px;
+	background: var(--wp--preset--color--primary, #0f7e80);
+	color: #fff;
+	flex-shrink: 0;
+}
+
+.sgs-mobile-nav-editor__icon svg {
+	width: 24px;
+	height: 24px;
+}
+
+.sgs-mobile-nav-editor__info {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.sgs-mobile-nav-editor__info strong {
+	font-size: 14px;
+	color: var(--wp--preset--color--text, #1e1e1e);
+}
+
+.sgs-mobile-nav-editor__variant {
+	font-size: 13px;
+	color: var(--wp--preset--color--primary, #0f7e80);
+	font-weight: 500;
+}
+
+.sgs-mobile-nav-editor__note {
+	font-size: 12px;
+	color: var(--wp--preset--color--text-muted, #555);
+}

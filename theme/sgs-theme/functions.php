@@ -207,21 +207,7 @@ function enqueue_styles(): void {
 		true // Load in footer — runs after DOM is available.
 	);
 
-	// M17: off-canvas mobile navigation drawer.
-	wp_enqueue_style(
-		'sgs-mobile-nav-drawer',
-		get_theme_file_uri( 'assets/css/mobile-nav-drawer.css' ),
-		[],
-		$theme_version
-	);
-
-	wp_enqueue_script(
-		'sgs-mobile-nav-drawer',
-		get_theme_file_uri( 'assets/js/mobile-nav-drawer.js' ),
-		[],
-		$theme_version,
-		true // Load in footer — runs after DOM is available.
-	);
+	// Mobile navigation: sgs/mobile-nav block. CSS/JS loaded automatically via block.json.
 
 	// Header behaviour system — sticky, transparent, smart-reveal, shrink.
 	wp_enqueue_style(

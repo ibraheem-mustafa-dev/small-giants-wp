@@ -1,0 +1,93 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/mobile-nav",
+	"version": "1.0.1",
+	"title": "Mobile Navigation",
+	"category": "sgs-interactive",
+	"description": "Full-screen mobile navigation drawer with accordion submenus, spring-physics animation, and swipe-to-close. Reads menu items from the header navigation block automatically.",
+	"keywords": [ "mobile", "navigation", "drawer", "menu", "hamburger", "off-canvas" ],
+	"textdomain": "sgs-blocks",
+	"icon": "menu-alt3",
+	"supports": {
+		"html": false,
+		"anchor": true,
+		"multiple": false,
+		"color": {
+			"background": true,
+			"text": true
+		},
+		"spacing": {
+			"padding": true
+		}
+	},
+	"attributes": {
+		"variant": {
+			"type": "string",
+			"default": "overlay",
+			"enum": [ "overlay", "slide-left", "slide-right", "bottom-sheet" ]
+		},
+		"accentColour": {
+			"type": "string",
+			"default": "accent"
+		},
+		"dividerColour": {
+			"type": "string",
+			"default": "accent"
+		},
+		"showCta": {
+			"type": "boolean",
+			"default": true
+		},
+		"ctaText": {
+			"type": "string",
+			"default": ""
+		},
+		"ctaUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"showContactIcons": {
+			"type": "boolean",
+			"default": true
+		},
+		"showSocials": {
+			"type": "boolean",
+			"default": true
+		},
+		"socialStyle": {
+			"type": "string",
+			"default": "coloured",
+			"enum": [ "coloured", "plain", "outline" ]
+		},
+		"showSearch": {
+			"type": "boolean",
+			"default": false
+		},
+		"showAccountTray": {
+			"type": "boolean",
+			"default": false
+		},
+		"enableSwipe": {
+			"type": "boolean",
+			"default": true
+		},
+		"desktopHamburger": {
+			"type": "boolean",
+			"default": false
+		},
+		"staggerDelay": {
+			"type": "number",
+			"default": 40
+		},
+		"breakpoint": {
+			"type": "number",
+			"default": 1024
+		}
+	},
+	"render": "file:./render.php",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"viewScriptModule": "file:./view.js"
+}

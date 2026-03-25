@@ -435,9 +435,8 @@ body.sgs-has-transparent-header .wp-site-blocks > :first-child {
 }
 
 /*
- * Show/hide rules for the WP core nav toggle are in mobile-nav-drawer.css.
- * They were moved there to avoid a LiteSpeed CSS optimiser bug that incorrectly
- * merges adjacent max-width/min-width media blocks and drops the desktop hide rule.
+ * Show/hide rules for the WP core nav toggle now live in the sgs/mobile-nav
+ * block's style.css (style-index.css). The old mobile-nav-drawer.css is deleted.
  */
 
 /* ─── REDUCED MOTION — universal rule + critical overrides ─── */

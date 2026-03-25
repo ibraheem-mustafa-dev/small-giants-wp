@@ -51,7 +51,7 @@
 		 * (which includes off-canvas drawer elements with position:fixed
 		 * that inflate offsetHeight).
 		 */
-		var navRow = header.querySelector( '.wp-block-group:not([style*="display:none"]):not(.sgs-mobile-nav-drawer__backdrop):not(.sgs-mobile-nav-drawer)' );
+		var navRow = header.querySelector( '.wp-block-group:not([style*="display:none"]):not(.sgs-mobile-nav)' );
 		var height = navRow ? navRow.offsetHeight : header.offsetHeight;
 		document.documentElement.style.setProperty( '--sgs-header-height', height + 'px' );
 	}
