@@ -520,14 +520,14 @@ footer .wp-block-paragraph a:hover,
  * the scale so it doesn't spill outside the figure container.
  * Exemptions: brand strip logos (have their own greyscale/colour effect),
  * social icons, and avatars. */
-.wp-block-image:not(.brand-logo-tile) {
+.wp-block-image:not(.sgs-mega-logo-tile) {
 	overflow: hidden;
 }
 
-.wp-block-image:not(.brand-logo-tile) img {
+.wp-block-image:not(.sgs-mega-logo-tile) img {
 	transition: transform 0.35s ease;
 }
 
-.wp-block-image:not(.brand-logo-tile):hover img {
+.wp-block-image:not(.sgs-mega-logo-tile):hover img {
 	transform: scale(1.05);
 }

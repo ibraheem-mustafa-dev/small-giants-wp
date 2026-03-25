@@ -1,0 +1,397 @@
+/**
+ * Mega Menu Panel Styles
+ *
+ * Shared CSS class system for mega menu template part content.
+ * All colours use design tokens — panels auto-adapt to any style variation.
+ *
+ * Layout classes:    .sgs-mega-panel, --cards, --columns, --split, --split-reverse
+ * Card classes:      .sgs-mega-card, --gradient, --surface, --icon
+ * Content classes:   .sgs-mega-title, .sgs-mega-item, .sgs-mega-link-list
+ * Utility classes:   .sgs-mega-featured, .sgs-mega-logo-tile, .sgs-mega-cta, .sgs-mega-divider
+ *
+ * @package SGS\Theme
+ */
+
+/* ==========================================================================
+   Panel Base
+   ========================================================================== */
+
+/**
+ * Base panel — uses surface (white) by default, not surface-alt (grey).
+ * Individual templates override via WP block backgroundColor attribute
+ * to create visual differentiation:
+ *   - Card panels (sectors, products, brands): surface (white) — cards provide colour
+ *   - Warm panels (about, services): accent-light — heritage warmth
+ *   - Dark panels (contact, resources): primary-dark — bold conversion/hero
+ *
+ * Padding is handled by .sgs-mega-menu__panel (2rem).
+ * Template parts set padding:0 inline to prevent double-padding.
+ */
+.sgs-mega-panel {
+	background-color: var(--wp--preset--color--surface, #ffffff);
+}
+
+/**
+ * Dark panel variant — for conversion endpoints and hero panels.
+ * All child text forced to surface (white) for readability.
+ */
+.sgs-mega-panel--dark {
+	background-color: var(--wp--preset--color--primary-dark, #0a5b5d);
+	color: var(--wp--preset--color--surface, #fff);
+}
+
+.sgs-mega-panel--dark .sgs-mega-title {
+	color: var(--wp--preset--color--accent-light, #fee8d4) !important;
+}
+
+.sgs-mega-panel--dark p,
+.sgs-mega-panel--dark li,
+.sgs-mega-panel--dark a:not(.sgs-mega-cta) {
+	color: var(--wp--preset--color--surface, #fff) !important;
+}
+
+.sgs-mega-panel--dark .sgs-mega-cta {
+	background-color: var(--wp--preset--color--accent, #f87a1f);
+	color: var(--wp--preset--color--text, #1e1e1e) !important;
+}
+
+.sgs-mega-panel--dark .sgs-mega-cta:hover {
+	background-color: var(--wp--preset--color--surface, #fff);
+}
+
+.sgs-mega-panel--dark .sgs-mega-divider {
+	border-top-color: rgba(255, 255, 255, 0.15);
+}
+
+/**
+ * Warm panel variant — for heritage/story panels.
+ * Uses accent-light token which varies per style variation.
+ */
+.sgs-mega-panel--warm {
+	background-color: var(--wp--preset--color--accent-light, #fee8d4);
+}
+
+/* ==========================================================================
+   Panel Layout Variants
+   ========================================================================== */
+
+/**
+ * Card grid — equal columns, auto-fit for flexible count.
+ * Used by: Products, Sectors.
+ */
+.sgs-mega-panel--cards {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap: var(--wp--preset--spacing--30);
+}
+
+/**
+ * Multi-column flex — equal-width columns.
+ * Used by: Resources (3-col: featured, articles, downloads).
+ */
+.sgs-mega-panel--columns {
+	display: flex;
+	gap: var(--wp--preset--spacing--60);
+}
+
+.sgs-mega-panel--columns > * {
+	flex: 1;
+	min-width: 0;
+}
+
+/**
+ * Split layout — 60/40 (story left, links right).
+ * Used by: About, Brands.
+ * Source: ABF pattern (abf.co.uk).
+ */
+.sgs-mega-panel--split {
+	display: grid;
+	grid-template-columns: 3fr 2fr;
+	gap: var(--wp--preset--spacing--60);
+}
+
+/**
+ * Split reverse — 40/60 (info left, CTA right).
+ * Used by: Contact.
+ */
+.sgs-mega-panel--split-reverse {
+	display: grid;
+	grid-template-columns: 2fr 3fr;
+	gap: var(--wp--preset--spacing--60);
+}
+
+/* ==========================================================================
+   Section Title
+   ========================================================================== */
+
+/**
+ * Consistent heading style across all mega menu panels.
+ * Matches the existing sectors/brands bold uppercase treatment.
+ *
+ * Specificity note: the block editor applies has-small-font-size to heading blocks,
+ * which overrides font-size declared on .sgs-mega-title alone. The parent
+ * selectors increase specificity so the intended 18px size wins reliably.
+ */
+.sgs-mega-title,
+.sgs-mega-panel .sgs-mega-title,
+.sgs-mega-menu__panel .sgs-mega-title {
+	font-weight: 800;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	font-size: var(--wp--preset--font-size--medium, 18px) !important;
+	color: var(--wp--preset--color--text, #1e1e1e);
+	margin-bottom: var(--wp--preset--spacing--30);
+}
+
+/* ==========================================================================
+   Cards
+   Migrated from core-blocks.css — now the single source of truth.
+   ========================================================================== */
+
+/**
+ * Base card — relative positioning for link stretcher, hover lift.
+ * The card wraps a group with an <a> inside a paragraph at the bottom.
+ * CSS stretches the link to cover the full card area.
+ */
+.sgs-mega-card {
+	position: relative;
+	cursor: pointer;
+	transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
+	            box-shadow 200ms cubic-bezier(0.16, 1, 0.3, 1),
+	            filter 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sgs-mega-card:hover {
+	transform: translateY(-3px);
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+	filter: brightness(1.05);
+}
+
+/**
+ * Force all text inside cards to surface colour for WCAG AA contrast.
+ * Gold (#D8CA50) on teal fails WCAG AA (2.74:1), white passes (4.60:1).
+ */
+.sgs-mega-card .has-text-color,
+.sgs-mega-card .has-accent-color,
+.sgs-mega-card p,
+.sgs-mega-card p a {
+	color: var(--wp--preset--color--surface, #ffffff) !important;
+}
+
+/* Stretch the CTA link to cover the full card */
+.sgs-mega-card p:last-child a {
+	position: static;
+}
+
+.sgs-mega-card p:last-child a::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+}
+
+/**
+ * Gradient card — primary→primary-dark via design tokens.
+ * Replaces hardcoded rgb(10,126,168)→rgb(7,94,128) in template parts.
+ * Automatically adapts to any style variation's primary palette.
+ */
+.sgs-mega-card--gradient {
+	background: linear-gradient(
+		160deg,
+		var(--wp--preset--color--primary, #0f7e80) 0%,
+		var(--wp--preset--color--primary-dark, #0a5b5d) 100%
+	) !important;
+	color: var(--wp--preset--color--surface, #fff);
+}
+
+/**
+ * Surface card — white card with subtle border.
+ * Used by: Contact enquiry box.
+ */
+.sgs-mega-card--surface {
+	background-color: var(--wp--preset--color--surface, #fff);
+	border: 1px solid rgba(0, 0, 0, 0.08);
+	color: var(--wp--preset--color--text, #1e1e1e);
+}
+
+/* Surface cards keep their normal text colours — even inside dark panels */
+.sgs-mega-card--surface .has-text-color,
+.sgs-mega-card--surface p,
+.sgs-mega-card--surface p a,
+.sgs-mega-panel--dark .sgs-mega-card--surface p,
+.sgs-mega-panel--dark .sgs-mega-card--surface a:not(.sgs-mega-cta) {
+	color: var(--wp--preset--color--text, #1e1e1e) !important;
+}
+
+/**
+ * Icon card — card with coloured icon pill header.
+ * Source: Asana pattern (icon left, heading, description).
+ */
+.sgs-mega-card--icon .sgs-mega-card__icon {
+	width: 48px;
+	height: 48px;
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	background-color: var(--wp--preset--color--accent-light, #fee8d4);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: var(--wp--preset--spacing--20);
+}
+
+.sgs-mega-card--icon .sgs-mega-card__icon svg {
+	width: 24px;
+	height: 24px;
+	color: var(--wp--preset--color--primary, #0f7e80);
+}
+
+/* ==========================================================================
+   Content Components
+   ========================================================================== */
+
+/**
+ * Nav item with title + description — Hex.tech pattern.
+ * Gives B2B buyers enough context to click with confidence.
+ */
+.sgs-mega-item {
+	display: block;
+	margin-bottom: var(--wp--preset--spacing--20);
+}
+
+.sgs-mega-item__title {
+	font-weight: 600;
+	font-size: var(--wp--preset--font-size--small, 14px);
+	color: var(--wp--preset--color--text, #1e1e1e);
+	margin-bottom: 2px;
+}
+
+.sgs-mega-item__desc {
+	font-size: 0.8rem;
+	color: var(--wp--preset--color--text-muted, #555);
+	line-height: 1.4;
+}
+
+/**
+ * Styled link list — replaces bare <ul> in panels.
+ * No bullets, proper spacing, hover colour shift.
+ */
+.sgs-mega-link-list {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.sgs-mega-link-list li {
+	margin-bottom: var(--wp--preset--spacing--20);
+}
+
+.sgs-mega-link-list a {
+	font-size: var(--wp--preset--font-size--small, 14px);
+	font-weight: 500;
+	color: var(--wp--preset--color--text, #1e1e1e);
+	text-decoration: none;
+	transition: color var(--wp--custom--transition--fast, 0.15s ease);
+}
+
+.sgs-mega-link-list a:hover {
+	color: var(--wp--preset--color--primary, #0f7e80);
+}
+
+/* ==========================================================================
+   Featured Content Card
+   Source: Voiceflow pattern — one prominent card drives engagement.
+   ========================================================================== */
+
+.sgs-mega-featured {
+	background-color: var(--wp--preset--color--primary-dark, #0a5b5d);
+	color: var(--wp--preset--color--surface, #fff);
+	border-radius: var(--wp--custom--border-radius--large, 16px);
+	padding: var(--wp--preset--spacing--40);
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.sgs-mega-featured h4,
+.sgs-mega-featured p {
+	color: var(--wp--preset--color--surface, #fff) !important;
+}
+
+.sgs-mega-featured a {
+	color: var(--wp--preset--color--accent-light, #fee8d4) !important;
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.sgs-mega-featured a:hover {
+	text-decoration: underline;
+}
+
+/* ==========================================================================
+   Brand Logo Tile
+   Migrated from functions.php inline CSS — now framework-level, not Indus-gated.
+   ========================================================================== */
+
+.sgs-mega-logo-tile {
+	display: flex !important;
+	align-items: center;
+	justify-content: center;
+	width: 100px;
+	height: 60px;
+	padding: 8px 12px;
+	background: var(--wp--preset--color--surface, #fff);
+	border: 1px solid rgba(0, 0, 0, 0.08);
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	overflow: hidden;
+	transition: border-color var(--wp--custom--transition--fast, 0.15s ease),
+	            box-shadow var(--wp--custom--transition--fast, 0.15s ease),
+	            transform var(--wp--custom--transition--fast, 0.15s ease);
+}
+
+.sgs-mega-logo-tile:hover {
+	border-color: var(--wp--preset--color--primary, #0f7e80);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	transform: translateY(-2px);
+}
+
+.sgs-mega-logo-tile img,
+.sgs-mega-logo-tile .wp-block-image,
+.sgs-mega-logo-tile figure {
+	max-width: 100%;
+	max-height: 100%;
+	object-fit: contain;
+	margin: 0 !important;
+}
+
+/* ==========================================================================
+   CTA Button
+   ========================================================================== */
+
+.sgs-mega-cta {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5em;
+	padding: 10px 24px;
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	font-weight: 600;
+	font-size: var(--wp--preset--font-size--small, 14px);
+	text-decoration: none;
+	background-color: var(--wp--preset--color--primary, #0f7e80);
+	color: var(--wp--preset--color--surface, #fff) !important;
+	transition: background-color var(--wp--custom--transition--fast, 0.15s ease),
+	            transform var(--wp--custom--transition--fast, 0.15s ease);
+}
+
+.sgs-mega-cta:hover {
+	background-color: var(--wp--preset--color--primary-dark, #0a5b5d);
+	transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   Divider
+   ========================================================================== */
+
+.sgs-mega-divider {
+	border: none;
+	border-top: 1px solid rgba(0, 0, 0, 0.08);
+	margin: var(--wp--preset--spacing--30) 0;
+}
