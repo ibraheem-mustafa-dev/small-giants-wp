@@ -30,14 +30,23 @@ function init() {
 	// Set up link-click close.
 	setupLinkClickClose( drawer );
 
-	// Scroll lock on open/close.
+	// Scroll lock + exit animation easing.
 	if ( supportsPopover ) {
+		// beforetoggle fires before state change — set closing easing.
+		drawer.addEventListener( 'beforetoggle', ( e ) => {
+			if ( e.newState === 'closed' ) {
+				drawer.classList.add( 'is-closing' );
+			}
+		} );
+
 		drawer.addEventListener( 'toggle', ( e ) => {
 			if ( e.newState === 'open' ) {
+				drawer.classList.remove( 'is-closing' );
 				lockScroll();
 			} else {
 				unlockScroll();
 				returnFocus( trigger );
+				drawer.classList.remove( 'is-closing' );
 			}
 		} );
 	}

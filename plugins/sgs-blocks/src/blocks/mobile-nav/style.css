@@ -16,7 +16,7 @@
 .sgs-mobile-nav {
 	--sgs-mn-accent: var(--wp--preset--color--accent, #f87a1f);
 	--sgs-mn-divider: var(--wp--preset--color--accent, #f87a1f);
-	--sgs-mn-stagger: 40ms;
+	--sgs-mn-stagger: 25ms;
 	--sgs-mn-spring: linear(
 		0, 0.009, 0.036 2.1%, 0.142 4.3%, 0.332 7.0%,
 		0.58 10.2%, 0.714 12.2%, 0.827 14.4%, 0.916 16.8%,
@@ -135,6 +135,22 @@
 	transform: translateY(0);
 }
 
+/* ─── Exit Animation — snappier, no spring bounce on close ──────────────────── */
+.sgs-mobile-nav.is-closing {
+	transition:
+		transform 280ms cubic-bezier(0.4, 0, 1, 1),
+		opacity 200ms ease-in,
+		overlay 280ms allow-discrete,
+		display 280ms allow-discrete;
+}
+
+.sgs-mobile-nav.is-closing::backdrop {
+	transition:
+		opacity 200ms ease-in,
+		overlay 200ms allow-discrete,
+		display 200ms allow-discrete;
+}
+
 /* ─── @starting-style — entry animation from display:none ───────────────────── */
 @starting-style {
 	.sgs-mobile-nav--overlay:popover-open {
@@ -158,11 +174,27 @@
 	}
 }
 
+/* ─── Drag Handle — swipe affordance pill at top of drawer ─────────────────── */
+.sgs-mobile-nav__header::before {
+	content: "";
+	display: block;
+	width: 36px;
+	height: 4px;
+	background: rgba(255, 255, 255, 0.25);
+	border-radius: 2px;
+	position: absolute;
+	top: 10px;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
 /* ─── Drawer Header ─────────────────────────────────────────────────────────── */
 .sgs-mobile-nav__header {
 	display: flex;
 	justify-content: flex-end;
 	padding-bottom: var(--wp--preset--spacing--20, 0.5rem);
+	position: relative;
+	padding-top: 20px;
 }
 
 .sgs-mobile-nav__close {

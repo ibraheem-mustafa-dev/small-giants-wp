@@ -2,7 +2,7 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "sgs/mobile-nav",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"title": "Mobile Navigation",
 	"category": "sgs-interactive",
 	"description": "Full-screen mobile navigation drawer with accordion submenus, spring-physics animation, and swipe-to-close. Reads menu items from the header navigation block automatically.",
@@ -78,7 +78,7 @@
 		},
 		"staggerDelay": {
 			"type": "number",
-			"default": 40
+			"default": 25
 		},
 		"breakpoint": {
 			"type": "number",
