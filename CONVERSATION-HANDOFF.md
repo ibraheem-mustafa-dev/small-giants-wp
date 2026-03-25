@@ -1,122 +1,113 @@
-# Session Handoff — 2026-03-25 (Session 5)
+# Session Handoff — 2026-03-25 (Session 6)
 
 ## Completed This Session
-1. Deep research on mega menu designs — 55+ sources from NNg, Baymard, Sysco, Brakes, ABF, Awwwards, navbar.gallery. Produced research-backed layout patterns for all 7 template types.
-2. Built shared CSS class system (`mega-menu-panels.css`, 17 classes) — `.sgs-mega-panel`, `--dark`, `--warm` variants, `.sgs-mega-card--gradient`, `.sgs-mega-card--surface`, `.sgs-mega-featured`, `.sgs-mega-title`, `.sgs-mega-logo-tile`, `.sgs-mega-cta`, `.sgs-mega-divider`. All via design tokens.
-3. Redesigned all 7 mega menu template parts with 3 distinct background treatments: white (card panels), accent-light (warm/heritage panels), primary-dark (conversion/hero panels).
-4. Migrated `.brand-logo-tile` from Indus-gated inline CSS to framework-level `.sgs-mega-logo-tile` class.
-5. Ran design critique using `/critique` + `/frontend-design` skills. Identified and partially addressed AI slop issues (uniform grey backgrounds, identical layouts, no emotional layer). Brand-coloured backgrounds were the primary fix.
-6. Fixed WCAG contrast failure on Services "Get a Quote" CTA (white on gold 1.68:1 changed to dark on gold 6.53:1).
-7. Fixed `.sgs-mega-title` CSS specificity — WP's `has-small-font-size` class was overriding the heading size. Added parent selectors + `!important`.
-8. Diagnosed and fixed Prettier format-on-save destroying WP block template parts. Added `[html].formatOnSave: false` to VS Code settings + `.prettierignore` in repo.
-9. Theme version bumped 1.3.4 to 1.4.0.
+1. Built `sgs/mobile-nav` block — 8 source files + `SGS_Mobile_Nav_Renderer` class (614 lines). Replaces hardcoded drawer HTML. Server-renders accordion menu from header template part. Popover API, spring physics, swipe-to-close, 4 variants.
+2. Deployed and verified at 375/768/1440px. Fixed WP core nav visibility conflict (hamburger + desktop nav coexisting).
+3. Deleted old `mobile-nav-drawer.css` (635 lines) and `mobile-nav-drawer.js` (325 lines). Removed enqueues from `functions.php`.
+4. Ran 5-agent design review (critique, frontend-design, interaction-design, ui-ux-pro-max, design-reviewer). Consensus score: 68/100.
+5. Batch 1 fixes (6 issues): CTA text wrap, close button visibility, touch active states, sticky hover fix, submenu indent, accentColour default.
+6. Batch 2 fixes (3 issues): exit animation via `is-closing` class + `beforetoggle`, stagger reduced to 25ms, drag handle pill.
+7. Researched Kadence/Spectra mobile menu controls via GitHub source code. Kadence has ~170 attributes across 3 blocks. Neither exposes animation controls.
+8. Ran internal debate on attribute architecture. Convergence: tiered panels (simple toggles visible, colour/typography collapsed, animation advanced).
+9. User decision: "go deep — full control available, simplicity by default." Batch 3 needs a proper spec before implementation.
 
 ## Current State
-- **Branch:** `feat/mega-menu-templates` at `77404c7` (5 commits, PR #4 open)
+- **Branch:** `feat/mobile-nav-block` at `6d314b6` (5 commits, PR #5 open)
 - **Tests:** no test suite
-- **Build:** webpack not required (template HTML + CSS only)
-- **Uncommitted changes:** none
+- **Build:** webpack compiles successfully
+- **Uncommitted changes:** none (reverted incomplete Batch 3 PHP changes)
+- **Live URL:** https://palestine-lives.org — Batches 1+2 deployed. Estimated score: ~85/100.
 - **LiteSpeed Cache:** DISABLED for development
-- **Live URL:** https://palestine-lives.org — session 5 changes deployed
-- **PR:** https://github.com/ibraheem-mustafa-dev/small-giants-wp/pull/4
 
 ## Known Issues / Blockers
-- Git history on the branch is messy — linter reverted files between writes and commits throughout the session. The server has the correct deployed state; the branch commits may have partial content. Consider squashing before merge.
-- Only Sectors and Brands panels tested in live mega menu dropdown (main branch header only has 2 triggers). Other 5 tested via temporary QA page only.
-- Products panel has placeholder image paths (`/wp-content/uploads/2025/01/placeholder.webp`) that show broken image icons. Need real images or remove images entirely.
-- Design critique flagged: typography has only 2 levels (heading vs body), About/Contact panels are content-light, Inter font everywhere.
-- `fix/header-footer-polish` branch (17 commits, not merged) has all 7 mega menu triggers in the nav. Must merge that first to test all panels live.
+- Header template part shows through at the very top of the drawer (z-index layering). Design Reviewer flagged as critical — needs z-index bump to 10001.
+- Research-buddies agent may still be running — check `c:\Users\Bean\AppData\Local\Temp\claude\c--Users-Bean-Projects-small-giants-wp\757263a5-bee5-4455-ab98-2e2a88f13401\tasks\ad1ae678086bbaf57.output` for results.
+- The half-built Batch 3 PHP changes were reverted. The renderer, render.php, style.css, and block.json are clean at the Batch 2 state.
 
 ## Next Priorities (in order)
-1. Design iteration: address critique findings — add typographic middle layer (featured link titles at 16px/600), strengthen About panel with heritage stat/number, improve Contact panel content density, consider replacing broken product placeholder images with icon-only cards.
-2. After design iteration passes QA, customise Indus Foods-specific content for all 7 panels — real product images, real brand logos, real contact details, sector-specific copy.
-3. Merge `fix/header-footer-polish` to main first (prerequisite for live testing all 7 triggers), then merge `feat/mega-menu-templates`.
+1. Write the full attribute spec for `sgs/mobile-nav` Batch 3 — synthesise the Kadence research, debate convergence, and user direction ("full control, simple by default") into a design doc at `docs/superpowers/specs/`.
+2. Implement Batch 3 from the spec — new attributes in block.json, tiered inspector panels in edit.js, renderer updates in class-mobile-nav-renderer.php + render.php, CSS for new elements.
+3. Fix the z-index header bleed (quick CSS fix: z-index 10000 to 10001).
+4. Run `/sgs-update` to update the framework knowledge base with the new block.
+5. Merge PR #5 to main after all batches ship.
 
 ## Files Modified
 | File path | What changed |
 |-----------|-------------|
-| `theme/sgs-theme/assets/css/mega-menu-panels.css` | NEW — 17 shared CSS classes, 3 bg variants (white/warm/dark) |
-| `theme/sgs-theme/functions.php` | Enqueue mega-menu-panels.css, add to deferred array, add editor style, remove brand-logo-tile inline CSS |
-| `theme/sgs-theme/assets/css/core-blocks.css` | `.brand-logo-tile` renamed to `.sgs-mega-logo-tile` in image hover exclusion |
-| `theme/sgs-theme/style.css` | Version 1.3.4 to 1.4.0 |
-| `theme/sgs-theme/parts/mega-menu-sectors.html` | Token migration, sgs-mega-panel class, gradient via CSS class |
-| `theme/sgs-theme/parts/mega-menu-brands.html` | Token migration, sgs-mega-logo-tile rename, sgs-mega-panel |
-| `theme/sgs-theme/parts/mega-menu-products.html` | Full rewrite — gradient card grid replacing emoji placeholders |
-| `theme/sgs-theme/parts/mega-menu-services.html` | sgs-mega-panel--warm wrapper, accent-light bg, sgs-mega-cta |
-| `theme/sgs-theme/parts/mega-menu-resources.html` | Full rewrite — dark panel, 3-column Voiceflow layout |
-| `theme/sgs-theme/parts/mega-menu-about.html` | sgs-mega-panel--warm, accent-light bg, styled link list |
-| `theme/sgs-theme/parts/mega-menu-contact.html` | Dark panel, surface CTA card, proper Lucide icons |
-| `.prettierignore` | NEW — protects WP block template parts from Prettier |
+| `plugins/sgs-blocks/src/blocks/mobile-nav/*` | 8 new block source files (block.json, render.php, edit.js, save.js, style.css, view.js, editor.css, index.js) |
+| `plugins/sgs-blocks/includes/class-mobile-nav-renderer.php` | 614-line renderer: parses header template, extracts nav/mega-menu links, renders accordion HTML |
+| `theme/sgs-theme/parts/header.html` | Replaced 60+ lines hardcoded drawer with `wp:sgs/mobile-nav` block reference |
+| `theme/sgs-theme/functions.php` | Removed old drawer CSS/JS enqueues |
+| `theme/sgs-theme/assets/css/core-blocks-critical.css` | Updated comment pointing to new block CSS |
+| `theme/sgs-theme/assets/js/header-behaviour.js` | Updated selector for new block class |
+| `theme/sgs-theme/assets/css/mobile-nav-drawer.css` | DELETED (old hardcoded drawer CSS) |
+| `theme/sgs-theme/assets/js/mobile-nav-drawer.js` | DELETED (old hardcoded drawer JS) |
+| `ARCHITECTURE.md` | Added mobile-nav and mega-menu to block inventory |
 
 ## Notes for Next Session
-- Prettier format-on-save was destroying template parts all session. Fixed now via VS Code `[html].formatOnSave: false` + `.prettierignore`. If files still revert after writes, check VS Code extensions.
-- The `sgs-mega-panel--dark` CSS variant forces all child text to surface (white) via `!important`. The `.sgs-mega-card--surface` inside dark panels overrides back to dark text — this specificity layering is intentional.
-- WP block `backgroundColor` attribute in template parts outputs as inline `background-color` style, which beats the CSS class. The template's `backgroundColor` token IS the source of truth for panel colour, not the CSS class.
-- The design critique recommended different font choices beyond Inter. This is a theme.json level change and affects the entire site, not just mega menus. Consider for a future typography session.
-- Research findings saved in the plan file at `.claude/plans/calm-doodling-walrus.md` — includes the full NNg/Baymard research summary and per-template design patterns with source attribution.
+- Kadence splits mobile nav into 3 blocks (trigger, drawer, nav-link) with ~170 total attributes. SGS keeps it as 1 block — the renderer handles all zones. The spec must decide which Kadence attributes map to our single-block architecture.
+- The debate converged on tiered panels. User overrode the "minimal" position — wants full depth available but collapsed by default. Design principle: collapsed PanelBody groups in edit.js, smart defaults from design tokens.
+- Animation controls (type, duration, easing, stagger) are a genuine differentiator — neither Kadence nor Spectra expose these.
+- `desktopHamburger` attribute already exists and works — shows hamburger at all sizes. `breakpoint` attribute (default 1024) controls when hamburger appears.
+- Branch switching caused issues this session — `feat/mega-menu-templates` has stashed changes. Stay on `feat/mobile-nav-block`.
 
 ## Next Session Prompt
 
 ~~~
 /using-superpowers
 
-Read CONVERSATION-HANDOFF.md and CLAUDE.md for full context. This session has two phases: (1) design iteration on the 7 mega menu templates to address critique findings, then (2) Indus Foods content customisation.
+Read CONVERSATION-HANDOFF.md and CLAUDE.md for full context. This session writes the full attribute spec for `sgs/mobile-nav` Batch 3, then implements it.
 
 ## Skills to Invoke
 
 | Skill | When to use |
 |-------|-------------|
-| `/superpowers:using-superpowers` | FIRST — before any response |
-| `/sgs-wp-engine` | Load framework context, check existing blocks |
-| `/superpowers:brainstorming` | Before design iteration — explore typography and content improvements |
-| `/critique` | After each round of changes — evaluate improvement |
-| `/frontend-design` | Design quality and AI slop detection |
-| `/superpowers:verification-before-completion` | Screenshot verification at 1440px after each change |
-| `/superpowers:finishing-a-development-branch` | After all changes — merge strategy for both branches |
+| `/using-superpowers` | FIRST — before any response |
+| `/sgs-wp-engine` | Load framework context, check existing block patterns |
+| `/superpowers:brainstorming` | Resume the attribute design — user wants "full control, simple by default" |
+| `/strategic-plan` | Plan the implementation phases after spec is approved |
+| `/wp-block-development` | Block.json attributes, edit.js inspector panels, render.php |
+| `/superpowers:verification-before-completion` | Screenshot at 375/768 after each change |
 
 ## MCP Servers & Tools
 
 | Tool | What to use it for |
 |------|-------------------|
-| Playwright MCP | Screenshot verification at 1440px after each template change |
-| Context7 | WordPress block theme docs if needed for template part architecture |
+| Playwright MCP | Test drawer at 375px and 768px after each batch of changes |
+| Context7 | WordPress block API docs for inspector controls, PanelBody patterns |
 
 ## Agents to Delegate To
 
 | Agent | When |
 |-------|------|
-| `wp-sgs-developer` | Heavy template part editing and content customisation |
-| `design-reviewer` | After design iteration — formal visual QA at 3 breakpoints |
+| `wp-sgs-developer` | Heavy block development (edit.js inspector panels, render.php updates) |
+| `design-reviewer` | After implementation — verify at 375/768/1440 |
 | `test-and-explain` | After all changes — verify in plain English |
+
+## Research Already Done
+Kadence source code analysis complete. 3 blocks, ~170 attributes. Per-device responsive on everything. 3-state colours (normal/hover/active). Close button has full colour/size/border suite. Animation NOT exposed (our differentiator). Spectra uses core Navigation + Modal block — much less depth. Check research-buddies output file for additional findings.
+
+Debate convergence: tiered panels — structural toggles visible, colours collapsed, animation in advanced panel. User override: go deep but keep it organised.
 
 ---
 
-## Task 1: Design Iteration — Address Critique Findings
-The design critique identified 5 priority issues. Address these in the mega menu CSS and templates:
-1. Add typographic middle layer — featured link titles at ~16px/600 weight between 18px/800 headings and 14px body. Apply to About quick links, Resources article titles, Contact info.
-2. Strengthen About panel — add a heritage stat ("Since 1962" or "3 generations") as a prominent visual element, not buried in bullets.
-3. Improve Contact panel content density — add a map thumbnail or visual element to fill the sparse left column.
-4. Fix Products panel broken images — either replace placeholder.webp with icon-only cards (like Services pattern) or remove images entirely until real product photography exists.
-5. Add greyscale-to-colour hover effect on brand logo tiles — unifies disparate logos and adds micro-interaction.
+## Task 1: Write the Attribute Spec
+Synthesise the Kadence research + debate + user direction into `docs/superpowers/specs/2026-03-25-mobile-nav-attributes.md`. Cover every element: header (logo, close button), CTA zone (primary, secondary, contact shortcuts), nav links, accordion submenus, social icons, trust tagline, search, account tray. For each element: which attributes, which panel, defaults, visible or collapsed.
 
-Deploy after each change, screenshot, evaluate. Iterate until the critique score improves from C+/B- to solid B+.
+## Task 2: Implement block.json + edit.js
+Add all new attributes to block.json. Build tiered inspector panel in edit.js with collapsible PanelBody groups. Use DesignTokenPicker for colours.
 
-## Task 2: Merge Branches
-Merge `fix/header-footer-polish` to main first, then rebase `feat/mega-menu-templates` onto updated main and merge. Test all 7 mega menu triggers live after merge.
+## Task 3: Implement render.php + renderer + CSS
+Update SGS_Mobile_Nav_Renderer to use new attributes. Add CSS for new elements (logo, contact links with visible text, tagline, WhatsApp). Per-element CSS custom properties driven by attributes.
 
-## Task 3: Indus Foods Content Customisation
-After framework templates are merged, create Indus Foods-specific content for each panel in the block editor or via WP-CLI:
-- Sectors: real Indus Foods sector images (already partially done from session 4)
-- Products: real product category images from uploads
-- Brands: replace placeholder logos with real brand partner logos
-- Contact: real Indus Foods phone, email, address, opening hours
-- About: real Indus Foods heritage copy (60 years, Birmingham, Balti Triangle)
-- Services/Resources: Indus-specific service descriptions and downloadable PDFs
+## Task 4: QA and Ship
+Build, deploy, screenshot at 375/768/1440. Fix z-index header bleed. Run /sgs-update. Commit, push, update PR #5.
 
 ## Guardrails
-- After ANY template change, screenshot at 1440px and LOOK at it before claiming done
-- All colours must use design tokens — never hardcoded hex
-- The `.prettierignore` protects template parts from Prettier. If files still revert after writes, check VS Code extensions
-- LiteSpeed is DISABLED — no cache to clear during development
-- Squash the mega-menu-templates branch before merging (messy history from linter reverts)
+- `npm run build` must pass with zero errors before any deploy
+- Screenshot at 375, 768, and 1440 after EVERY change
+- All touch targets 44px+ (WCAG 2.2 AA)
+- All colour attributes use design tokens as defaults, never hardcoded hex
+- Block must work with NO attributes set (all defaults produce a usable drawer)
+- Branch: `feat/mobile-nav-block` — do NOT commit to main or other branches
 ~~~
