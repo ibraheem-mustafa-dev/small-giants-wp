@@ -54,6 +54,7 @@ function setup(): void {
 
 	add_editor_style( 'assets/css/core-blocks-critical.css' );
 	add_editor_style( 'assets/css/core-blocks.css' );
+	add_editor_style( 'assets/css/mega-menu-panels.css' );
 }
 add_action( 'after_setup_theme', __NAMESPACE__ . '\setup' );
 
@@ -207,7 +208,17 @@ function enqueue_styles(): void {
 		true // Load in footer — runs after DOM is available.
 	);
 
-	// Mobile navigation: sgs/mobile-nav block. CSS/JS loaded automatically via block.json.
+	// M17: mobile navigation is now the sgs/mobile-nav block.
+	// CSS and JS are loaded automatically via block.json (style-index.css + view.js).
+	// Old files: assets/css/mobile-nav-drawer.css, assets/js/mobile-nav-drawer.js — deleted.
+
+	// Mega menu panel content styles — shared class system for all 7 template parts.
+	wp_enqueue_style(
+		'sgs-mega-menu-panels',
+		get_theme_file_uri( 'assets/css/mega-menu-panels.css' ),
+		[ 'sgs-core-blocks-critical' ],
+		$theme_version
+	);
 
 	// Header behaviour system — sticky, transparent, smart-reveal, shrink.
 	wp_enqueue_style(
@@ -282,7 +293,7 @@ add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\enqueue_global_layout_fixes'
  * asynchronously without blocking first paint.
  */
 function defer_non_critical_css( string $tag, string $handle ): string {
-	$deferred = [ 'sgs-core-blocks', 'sgs-dark-mode', 'sgs-mobile-nav-drawer', 'sgs-utilities', 'sgs-extensions' ];
+	$deferred = [ 'sgs-core-blocks', 'sgs-dark-mode', 'sgs-utilities', 'sgs-extensions', 'sgs-mega-menu-panels' ];
 
 	if ( in_array( $handle, $deferred, true ) ) {
 		// Replace media="all" with media="print" and add onload swap.
@@ -579,46 +590,8 @@ function enqueue_style_variation_extras(): void {
 }
 ";
 
-		/*
-		 * Indus Foods — Brand logo tiles in the mega menu Brands panel.
-		 * Adds consistent tile sizing, white card backgrounds, and hover lift effect.
-		 * Scoped here because brand-logo-tile is used only in mega-menu-brands.html,
-		 * which is an Indus Foods-only template part.
-		 */
-		$css .= "
-/* ── Brand logo tiles (mega menu Brands panel) ──────────────────────────────
- * Each brand logo sits inside a white card tile with a border.
- * On hover the tile lifts slightly and the border highlights with primary teal.
- * display:flex !important overrides the core image block's inline-block default. */
-.brand-logo-tile{
-	display:flex!important;
-	align-items:center;
-	justify-content:center;
-	width:100px;
-	height:60px;
-	padding:8px 12px;
-	background:var(--wp--preset--color--surface,#fff);
-	border:1px solid rgba(0,0,0,.08);
-	border-radius:6px;
-	overflow:hidden;
-	transition:border-color .15s ease,box-shadow .15s ease,transform .15s ease;
-}
-.brand-logo-tile:hover{
-	border-color:var(--wp--preset--color--primary,#0f7e80);
-	box-shadow:0 2px 8px rgba(0,0,0,.1);
-	transform:translateY(-2px);
-}
-.brand-logo-tile img,
-.brand-logo-tile .wp-block-image,
-.brand-logo-tile figure{
-	max-width:100%;
-	max-height:100%;
-	width:auto;
-	height:auto;
-	object-fit:contain;
-	margin:0!important;
-}
-";
+		/* Brand logo tile CSS migrated to mega-menu-panels.css as .sgs-mega-logo-tile
+		 * — now framework-level, not Indus-gated. */
 
 		/*
 		 * Indus Foods — Desktop navigation link styles.
