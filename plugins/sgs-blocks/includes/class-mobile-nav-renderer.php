@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName -- legacy filename; renaming would break require_once references.
 /**
  * Mobile Navigation Renderer.
  *
@@ -32,14 +32,14 @@ class SGS_Mobile_Nav_Renderer {
 	 *
 	 * @var array
 	 */
-	private array $attributes = [];
+	private array $attributes = array();
 
 	/**
 	 * Constructor.
 	 *
 	 * @param array $attributes Block attributes.
 	 */
-	public function __construct( array $attributes = [] ) {
+	public function __construct( array $attributes = array() ) {
 		$this->attributes = $attributes;
 	}
 
@@ -97,17 +97,19 @@ class SGS_Mobile_Nav_Renderer {
 	 * @return array Parsed inner blocks from the navigation post.
 	 */
 	private function get_fallback_nav_blocks(): array {
-		$nav_posts = get_posts( [
-			'post_type'      => 'wp_navigation',
-			'posts_per_page' => 1,
-			'orderby'        => 'date',
-			'order'          => 'DESC',
-			'post_status'    => 'publish',
-			'no_found_rows'  => true,
-		] );
+		$nav_posts = get_posts(
+			array(
+				'post_type'      => 'wp_navigation',
+				'posts_per_page' => 1,
+				'orderby'        => 'date',
+				'order'          => 'DESC',
+				'post_status'    => 'publish',
+				'no_found_rows'  => true,
+			)
+		);
 
 		if ( empty( $nav_posts ) || empty( $nav_posts[0]->post_content ) ) {
-			return [];
+			return array();
 		}
 
 		return parse_blocks( $nav_posts[0]->post_content );
@@ -116,7 +118,7 @@ class SGS_Mobile_Nav_Renderer {
 	/**
 	 * Recursively find a block by name in a parsed blocks array.
 	 *
-	 * parse_blocks() is shallow — this walks innerBlocks at every level.
+	 * Parse_blocks() is shallow — this walks innerBlocks at every level.
 	 *
 	 * @param array  $blocks     Parsed blocks array.
 	 * @param string $block_name Block name to find (e.g. 'core/navigation').
@@ -217,7 +219,7 @@ class SGS_Mobile_Nav_Renderer {
 
 		// Build child links.
 		$children = '';
-		foreach ( ( $block['innerBlocks'] ?? [] ) as $child ) {
+		foreach ( ( $block['innerBlocks'] ?? array() ) as $child ) {
 			$child_name = $child['blockName'] ?? '';
 			if ( 'core/navigation-link' === $child_name ) {
 				$child_label = $child['attrs']['label'] ?? '';
@@ -331,6 +333,7 @@ class SGS_Mobile_Nav_Renderer {
 			esc_url( $url ),
 			wp_kses_post( $label ),
 			esc_attr( $id ),
+			// translators: %s: parent menu item label.
 			esc_attr( sprintf( __( 'Expand %s', 'sgs-blocks' ), wp_strip_all_tags( $label ) ) ),
 			$chevron_svg,
 			esc_attr( $id ),
@@ -378,20 +381,21 @@ class SGS_Mobile_Nav_Renderer {
 		);
 
 		if ( ! $template || empty( $template->content ) ) {
-			return [];
+			return array();
 		}
 
 		$html = do_blocks( $template->content );
 
 		if ( ! $html ) {
-			return [];
+			return array();
 		}
 
-		$links = [];
+		$links = array();
 
 		// Use DOMDocument for safe HTML parsing.
 		$doc = new \DOMDocument();
 		// Suppress HTML5 warnings, load as UTF-8.
+		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- DOMDocument generates unavoidable warnings for HTML5 elements.
 		@$doc->loadHTML(
 			'<html><head><meta charset="UTF-8"></head><body>' . $html . '</body></html>',
 			LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_NOERROR
@@ -401,7 +405,7 @@ class SGS_Mobile_Nav_Renderer {
 
 		foreach ( $anchors as $anchor ) {
 			$href = $anchor->getAttribute( 'href' );
-			$text = trim( $anchor->textContent );
+			$text = trim( $anchor->textContent ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- DOMDocument property, cannot be renamed.
 
 			// Skip empty or anchor-only links.
 			if ( ! $href || '#' === $href || ! $text ) {
@@ -418,10 +422,10 @@ class SGS_Mobile_Nav_Renderer {
 			}
 
 			if ( ! $already_added ) {
-				$links[] = [
+				$links[] = array(
 					'url'  => $href,
 					'text' => $text,
-				];
+				);
 			}
 		}
 
@@ -445,23 +449,97 @@ class SGS_Mobile_Nav_Renderer {
 		return $current === $target;
 	}
 
+	// ── Zone 1: Drawer Header ────────────────────────────────────────────────
+
 	/**
-	 * Render the CTA zone (Zone 1: Quick Actions).
+	 * Render the drawer header zone (logo + close button).
 	 *
-	 * Pulls CTA text/URL from block attributes with fallbacks,
-	 * and phone/email from Business Details settings.
+	 * Logo is sourced from get_custom_logo(). Falls back to site name as text
+	 * when no logo image is set. Close button style is controlled by the
+	 * closeButtonStyle attribute: "circle" (default), "square", or "plain".
 	 *
-	 * @return string HTML for the CTA section.
+	 * @return string HTML for the header zone.
+	 */
+	public function render_header(): string {
+		$show_logo       = $this->attributes['showLogo'] ?? true;
+		$logo_max_width  = absint( $this->attributes['logoMaxWidth'] ?? 120 );
+		$close_btn_style = $this->attributes['closeButtonStyle'] ?? 'circle';
+		$close_btn_size  = absint( $this->attributes['closeButtonSize'] ?? 48 );
+
+		// ── Logo zone ────────────────────────────────────────────────────────
+		$logo_html = '';
+		if ( $show_logo ) {
+			$logo_markup = get_custom_logo();
+
+			if ( $logo_markup ) {
+				// Wrap custom logo in a constrained container.
+				$logo_html = sprintf(
+					'<div class="sgs-mobile-nav__logo" style="max-width:%dpx">%s</div>',
+					$logo_max_width,
+					$logo_markup
+				);
+			} else {
+				// Fallback: site name as text.
+				$logo_html = sprintf(
+					'<div class="sgs-mobile-nav__logo" style="max-width:%dpx"><span class="sgs-mobile-nav__site-name">%s</span></div>',
+					$logo_max_width,
+					esc_html( get_bloginfo( 'name' ) )
+				);
+			}
+		}
+
+		// ── Close button ─────────────────────────────────────────────────────
+		// Build modifier class from style attribute.
+		$close_classes = 'sgs-mobile-nav__close';
+		if ( 'square' === $close_btn_style ) {
+			$close_classes .= ' sgs-mobile-nav__close--square';
+		} elseif ( 'plain' === $close_btn_style ) {
+			$close_classes .= ' sgs-mobile-nav__close--plain';
+		}
+		// "circle" is the default — no modifier needed.
+
+		$close_size_style = '';
+		if ( 48 !== $close_btn_size ) {
+			$close_size_style = sprintf( ' style="width:%1$dpx;height:%1$dpx"', $close_btn_size );
+		}
+
+		$close_svg = sgs_get_lucide_icon( 'x' );
+		$close_btn = sprintf(
+			'<button class="%s" type="button" aria-label="%s" popovertarget="sgs-mobile-nav" popovertargetaction="hide"%s>%s</button>',
+			esc_attr( $close_classes ),
+			esc_attr__( 'Close navigation menu', 'sgs-blocks' ),
+			$close_size_style,
+			$close_svg
+		);
+
+		return sprintf(
+			'<div class="sgs-mobile-nav__header">%s%s</div>',
+			$logo_html,
+			$close_btn
+		);
+	}
+
+	// ── Zone 4: CTA ──────────────────────────────────────────────────────────
+
+	/**
+	 * Render the CTA zone.
+	 *
+	 * Includes primary CTA button, optional secondary CTA, contact shortcuts
+	 * (icon-only or icon-text mode), and optional WhatsApp shortcut.
+	 *
+	 * @return string HTML for the CTA section, or empty string if showCta is false.
 	 */
 	public function render_cta_zone(): string {
 		if ( empty( $this->attributes['showCta'] ) ) {
 			return '';
 		}
 
-		$cta_text = $this->attributes['ctaText'] ?? '';
-		$cta_url  = $this->attributes['ctaUrl'] ?? '';
+		// ── Primary CTA ──────────────────────────────────────────────────────
+		$cta_text  = $this->attributes['ctaText'] ?? '';
+		$cta_url   = $this->attributes['ctaUrl'] ?? '';
+		$cta_icon  = $this->attributes['ctaIcon'] ?? 'arrow-right';
+		$cta_style = $this->attributes['ctaStyle'] ?? 'filled';
 
-		// Fallback to generic text if not set.
 		if ( ! $cta_text ) {
 			$cta_text = __( 'Apply Now', 'sgs-blocks' );
 		}
@@ -469,68 +547,254 @@ class SGS_Mobile_Nav_Renderer {
 			$cta_url = '/apply-for-trade-account/';
 		}
 
-		$arrow_svg = sgs_get_lucide_icon( 'arrow-right' );
+		$primary_icon_svg = sgs_get_lucide_icon( sanitize_html_class( $cta_icon ), 18 );
+		$primary_classes  = $this->build_cta_classes( 'sgs-mobile-nav__cta-btn', $cta_style );
 
-		$cta_btn = sprintf(
-			'<a href="%s" class="sgs-mobile-nav__cta-btn">%s %s</a>',
+		$primary_btn = sprintf(
+			'<a href="%s" class="%s">%s %s</a>',
 			esc_url( $cta_url ),
+			esc_attr( $primary_classes ),
 			esc_html( $cta_text ),
-			$arrow_svg
+			$primary_icon_svg
 		);
 
-		// Contact icons from Business Details.
-		$contact_icons = '';
-		if ( ! empty( $this->attributes['showContactIcons'] ) ) {
-			$phone = get_option( 'sgs_business_phone', '' );
-			$email = get_option( 'sgs_business_email', '' );
+		// ── Secondary CTA ─────────────────────────────────────────────────────
+		$secondary_btn = '';
+		if ( ! empty( $this->attributes['showSecondaryCta'] ) ) {
+			$secondary_btn = $this->render_secondary_cta();
+		}
 
+		// ── Contact shortcuts ─────────────────────────────────────────────────
+		$contact_html = '';
+		// Renamed: showContactIcons → showContactShortcuts. Support both for BC.
+		$show_contact = ! empty( $this->attributes['showContactShortcuts'] )
+			|| ! empty( $this->attributes['showContactIcons'] );
+
+		if ( $show_contact ) {
+			$contact_mode = $this->attributes['contactDisplayMode'] ?? 'icon-only';
+			if ( 'hidden' !== $contact_mode ) {
+				$contact_html = $this->render_contact_shortcuts( $contact_mode );
+			}
+		}
+
+		// ── WhatsApp shortcut ─────────────────────────────────────────────────
+		$whatsapp_html = '';
+		if ( ! empty( $this->attributes['showWhatsApp'] ) ) {
+			$whatsapp_html = $this->render_whatsapp();
+		}
+
+		return sprintf(
+			'<div class="sgs-mobile-nav__cta">%s%s%s%s</div>',
+			$primary_btn,
+			$secondary_btn,
+			$contact_html,
+			$whatsapp_html
+		);
+	}
+
+	/**
+	 * Render the secondary CTA button.
+	 *
+	 * Falls back to "Call Us" text and the Business Details phone number.
+	 *
+	 * @return string HTML for the secondary CTA button.
+	 */
+	private function render_secondary_cta(): string {
+		$text  = $this->attributes['secondaryCtaText'] ?? '';
+		$url   = $this->attributes['secondaryCtaUrl'] ?? '';
+		$icon  = $this->attributes['secondaryCtaIcon'] ?? 'phone';
+		$style = $this->attributes['secondaryCtaStyle'] ?? 'outline';
+
+		if ( ! $text ) {
+			$text = __( 'Call Us', 'sgs-blocks' );
+		}
+
+		// Fallback URL: tel: from Business Details.
+		if ( ! $url ) {
+			$phone = get_option( 'sgs_business_phone', '' );
+			if ( $phone ) {
+				$url = 'tel:' . preg_replace( '/[^+0-9]/', '', $phone );
+			}
+		}
+
+		if ( ! $url ) {
+			return '';
+		}
+
+		$icon_svg = sgs_get_lucide_icon( sanitize_html_class( $icon ), 18 );
+		$classes  = $this->build_cta_classes( 'sgs-mobile-nav__cta-btn sgs-mobile-nav__cta-btn--secondary', $style );
+
+		return sprintf(
+			'<a href="%s" class="%s">%s %s</a>',
+			esc_url( $url ),
+			esc_attr( $classes ),
+			esc_html( $text ),
+			$icon_svg
+		);
+	}
+
+	/**
+	 * Build CSS class string for a CTA button based on style variant.
+	 *
+	 * @param string $base  Base class string.
+	 * @param string $style Style variant: "filled", "outline", or "ghost".
+	 * @return string Full class string with style modifier appended.
+	 */
+	private function build_cta_classes( string $base, string $style ): string {
+		$allowed_styles = array( 'filled', 'outline', 'ghost' );
+		$style          = in_array( $style, $allowed_styles, true ) ? $style : 'filled';
+
+		// "filled" is the default — no modifier needed.
+		if ( 'filled' !== $style ) {
+			$base .= ' sgs-mobile-nav__cta-btn--' . $style;
+		}
+
+		return $base;
+	}
+
+	/**
+	 * Render contact shortcut buttons (phone + email).
+	 *
+	 * Supports two display modes:
+	 * - "icon-only": circular icon button (original behaviour).
+	 * - "icon-text": icon + visible phone number / email address as text.
+	 *
+	 * @param string $mode Display mode: "icon-only" or "icon-text".
+	 * @return string HTML for the contact shortcuts.
+	 */
+	private function render_contact_shortcuts( string $mode ): string {
+		$phone = get_option( 'sgs_business_phone', '' );
+		$email = get_option( 'sgs_business_email', '' );
+
+		$output = '';
+
+		if ( 'icon-text' === $mode ) {
+			// Render as inline row: icon + visible text label.
 			if ( $email ) {
-				$contact_icons .= sprintf(
+				// translators: %s: email address.
+				$email_label = sprintf( __( 'Email us at %s', 'sgs-blocks' ), $email );
+				$output     .= sprintf(
+					'<a href="mailto:%s" class="sgs-mobile-nav__icon-btn sgs-mobile-nav__icon-btn--text" aria-label="%s">' .
+						'%s<span class="sgs-mobile-nav__contact-text">%s</span>' .
+					'</a>',
+					esc_attr( $email ),
+					esc_attr( $email_label ),
+					sgs_get_lucide_icon( 'mail' ),
+					esc_html( $email )
+				);
+			}
+			if ( $phone ) {
+				// translators: %s: phone number.
+				$phone_label = sprintf( __( 'Call us on %s', 'sgs-blocks' ), $phone );
+				$output     .= sprintf(
+					'<a href="tel:%s" class="sgs-mobile-nav__icon-btn sgs-mobile-nav__icon-btn--text" aria-label="%s">' .
+						'%s<span class="sgs-mobile-nav__contact-text">%s</span>' .
+					'</a>',
+					esc_attr( preg_replace( '/[^+0-9]/', '', $phone ) ),
+					esc_attr( $phone_label ),
+					sgs_get_lucide_icon( 'phone' ),
+					esc_html( $phone )
+				);
+			}
+		} else {
+			// "icon-only" mode — original behaviour.
+			if ( $email ) {
+				// translators: %s: email address.
+				$email_label = sprintf( __( 'Email us at %s', 'sgs-blocks' ), $email );
+				$output     .= sprintf(
 					'<a href="mailto:%s" class="sgs-mobile-nav__icon-btn" aria-label="%s">%s</a>',
 					esc_attr( $email ),
-					esc_attr( sprintf( __( 'Email us at %s', 'sgs-blocks' ), $email ) ),
+					esc_attr( $email_label ),
 					sgs_get_lucide_icon( 'mail' )
 				);
 			}
 			if ( $phone ) {
-				$contact_icons .= sprintf(
+				// translators: %s: phone number.
+				$phone_label = sprintf( __( 'Call us on %s', 'sgs-blocks' ), $phone );
+				$output     .= sprintf(
 					'<a href="tel:%s" class="sgs-mobile-nav__icon-btn" aria-label="%s">%s</a>',
 					esc_attr( preg_replace( '/[^+0-9]/', '', $phone ) ),
-					esc_attr( sprintf( __( 'Call us on %s', 'sgs-blocks' ), $phone ) ),
+					esc_attr( $phone_label ),
 					sgs_get_lucide_icon( 'phone' )
 				);
 			}
 		}
 
-		return sprintf(
-			'<div class="sgs-mobile-nav__cta">%s%s</div>',
-			$cta_btn,
-			$contact_icons
-		);
+		return $output;
 	}
 
 	/**
-	 * Render the social icons zone (Zone 3: Trust).
+	 * Render the WhatsApp shortcut button.
+	 *
+	 * Links to wa.me/{number} using the WhatsApp number stored in
+	 * the sgs_social_whatsapp option (Business Details settings).
+	 *
+	 * @return string HTML for the WhatsApp button, or empty string if no number is set.
+	 */
+	private function render_whatsapp(): string {
+		$whatsapp_url = get_option( 'sgs_social_whatsapp', '' );
+
+		if ( ! $whatsapp_url ) {
+			return '';
+		}
+
+		// Support full URL (https://wa.me/...) or bare number — normalise to wa.me.
+		if ( ! preg_match( '/^https?:\/\//i', $whatsapp_url ) ) {
+			$number       = preg_replace( '/[^+0-9]/', '', $whatsapp_url );
+			$whatsapp_url = 'https://wa.me/' . $number;
+		}
+
+		return sprintf(
+			'<a href="%s" class="sgs-mobile-nav__whatsapp" target="_blank" rel="noopener noreferrer" aria-label="%s">%s</a>',
+			esc_url( $whatsapp_url ),
+			esc_attr__( 'Chat with us on WhatsApp', 'sgs-blocks' ),
+			sgs_get_lucide_icon( 'message-circle' )
+		);
+	}
+
+	// ── Zone 3: Social & Trust ────────────────────────────────────────────────
+
+	/**
+	 * Render the social icons zone.
 	 *
 	 * Pulls social URLs from Business Details settings.
+	 * Icon size is controlled by the socialIconSize attribute (px, min 44).
 	 *
-	 * @return string HTML for the social icons section.
+	 * @return string HTML for the social icons section, or empty string.
 	 */
 	public function render_socials_zone(): string {
 		if ( empty( $this->attributes['showSocials'] ) ) {
 			return '';
 		}
 
-		$social_map = [
-			'sgs_social_linkedin'  => [ 'icon' => 'linkedin',  'label' => 'LinkedIn'  ],
-			'sgs_social_facebook'  => [ 'icon' => 'facebook',  'label' => 'Facebook'  ],
-			'sgs_social_instagram' => [ 'icon' => 'instagram', 'label' => 'Instagram' ],
-			'sgs_social_google'    => [ 'icon' => 'star',      'label' => 'Google'    ],
-			'sgs_social_twitter'   => [ 'icon' => 'twitter',   'label' => 'X/Twitter' ],
-		];
+		$social_map = array(
+			'sgs_social_linkedin'  => array(
+				'icon'  => 'linkedin',
+				'label' => 'LinkedIn',
+			),
+			'sgs_social_facebook'  => array(
+				'icon'  => 'facebook',
+				'label' => 'Facebook',
+			),
+			'sgs_social_instagram' => array(
+				'icon'  => 'instagram',
+				'label' => 'Instagram',
+			),
+			'sgs_social_google'    => array(
+				'icon'  => 'star',
+				'label' => 'Google',
+			),
+			'sgs_social_twitter'   => array(
+				'icon'  => 'twitter',
+				'label' => 'X/Twitter',
+			),
+		);
 
-		$style = $this->attributes['socialStyle'] ?? 'coloured';
-		$items = '';
+		$style            = $this->attributes['socialStyle'] ?? 'coloured';
+		$social_icon_size = absint( $this->attributes['socialIconSize'] ?? 44 );
+		// Enforce WCAG 44px minimum touch target.
+		$social_icon_size = max( 44, $social_icon_size );
+		$items            = '';
 
 		foreach ( $social_map as $option_key => $meta ) {
 			$url = get_option( $option_key, '' );
@@ -540,12 +804,19 @@ class SGS_Mobile_Nav_Renderer {
 
 			$platform_class = sanitize_html_class( $meta['icon'] );
 
-			$items .= sprintf(
-				'<a href="%s" class="sgs-mobile-nav__social-link sgs-mobile-nav__social-link--%s" target="_blank" rel="noopener noreferrer" aria-label="%s">%s</a>',
+			// Only emit per-icon size style when overriding the default.
+			$size_style = ( 44 !== $social_icon_size )
+				? sprintf( ' style="width:%1$dpx;height:%1$dpx"', $social_icon_size )
+				: '';
+
+			// translators: %s: social platform name.
+			$social_label = sprintf( __( 'Follow us on %s', 'sgs-blocks' ), $meta['label'] );
+			$items       .= sprintf(
+				'<a href="%s" class="sgs-mobile-nav__social-link sgs-mobile-nav__social-link--%s" target="_blank" rel="noopener noreferrer" aria-label="%s"%s>%s</a>',
 				esc_url( $url ),
 				$platform_class,
-				/* translators: %s: social platform name */
-				esc_attr( sprintf( __( 'Follow us on %s', 'sgs-blocks' ), $meta['label'] ) ),
+				esc_attr( $social_label ),
+				$size_style,
 				sgs_get_lucide_icon( $meta['icon'] )
 			);
 		}
@@ -560,6 +831,37 @@ class SGS_Mobile_Nav_Renderer {
 			$items
 		);
 	}
+
+	/**
+	 * Render the trust tagline below the social icons.
+	 *
+	 * Falls back to the site tagline (get_bloginfo('description')) when
+	 * the taglineText attribute is empty.
+	 *
+	 * @return string HTML for the tagline paragraph, or empty string.
+	 */
+	public function render_tagline(): string {
+		if ( empty( $this->attributes['showTagline'] ) ) {
+			return '';
+		}
+
+		$text = $this->attributes['taglineText'] ?? '';
+
+		if ( ! $text ) {
+			$text = get_bloginfo( 'description' );
+		}
+
+		if ( ! $text ) {
+			return '';
+		}
+
+		return sprintf(
+			'<p class="sgs-mobile-nav__tagline">%s</p>',
+			esc_html( $text )
+		);
+	}
+
+	// ── Optional zones ────────────────────────────────────────────────────────
 
 	/**
 	 * Render the search bar (optional).
@@ -598,7 +900,7 @@ class SGS_Mobile_Nav_Renderer {
 		}
 
 		$user       = wp_get_current_user();
-		$first_name = $user->first_name ?: $user->display_name;
+		$first_name = $user->first_name ? $user->first_name : $user->display_name;
 
 		return sprintf(
 			'<div class="sgs-mobile-nav__account">' .

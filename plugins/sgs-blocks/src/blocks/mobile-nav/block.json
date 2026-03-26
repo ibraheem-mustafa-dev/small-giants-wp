@@ -2,7 +2,7 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "sgs/mobile-nav",
-	"version": "1.0.3",
+	"version": "2.0.0",
 	"title": "Mobile Navigation",
 	"category": "sgs-interactive",
 	"description": "Full-screen mobile navigation drawer with accordion submenus, spring-physics animation, and swipe-to-close. Reads menu items from the header navigation block automatically.",
@@ -47,7 +47,7 @@
 			"type": "string",
 			"default": ""
 		},
-		"showContactIcons": {
+		"showContactShortcuts": {
 			"type": "boolean",
 			"default": true
 		},
@@ -83,6 +83,201 @@
 		"breakpoint": {
 			"type": "number",
 			"default": 1024
+		},
+		"drawerWidth": {
+			"type": "number",
+			"default": 85
+		},
+		"drawerMaxWidth": {
+			"type": "number",
+			"default": 400
+		},
+		"drawerPosition": {
+			"type": "string",
+			"default": "top",
+			"enum": [ "top", "centre", "space-between" ]
+		},
+		"showLogo": {
+			"type": "boolean",
+			"default": true
+		},
+		"logoMaxWidth": {
+			"type": "number",
+			"default": 120
+		},
+		"closeButtonSize": {
+			"type": "number",
+			"default": 48
+		},
+		"closeButtonStyle": {
+			"type": "string",
+			"default": "circle",
+			"enum": [ "circle", "square", "plain" ]
+		},
+		"ctaIcon": {
+			"type": "string",
+			"default": "arrow-right"
+		},
+		"ctaStyle": {
+			"type": "string",
+			"default": "filled",
+			"enum": [ "filled", "outline", "ghost" ]
+		},
+		"showSecondaryCta": {
+			"type": "boolean",
+			"default": false
+		},
+		"secondaryCtaText": {
+			"type": "string",
+			"default": ""
+		},
+		"secondaryCtaUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"secondaryCtaIcon": {
+			"type": "string",
+			"default": "phone"
+		},
+		"secondaryCtaStyle": {
+			"type": "string",
+			"default": "outline",
+			"enum": [ "filled", "outline", "ghost" ]
+		},
+		"contactDisplayMode": {
+			"type": "string",
+			"default": "icon-only",
+			"enum": [ "icon-only", "icon-text", "hidden" ]
+		},
+		"showWhatsApp": {
+			"type": "boolean",
+			"default": false
+		},
+		"linkFontSize": {
+			"type": "string",
+			"default": "medium"
+		},
+		"linkFontSizeMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"linkFontWeight": {
+			"type": "string",
+			"default": "600",
+			"enum": [ "400", "500", "600", "700" ]
+		},
+		"sublinkFontSize": {
+			"type": "string",
+			"default": "small"
+		},
+		"sublinkFontSizeMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"showDividers": {
+			"type": "boolean",
+			"default": true
+		},
+		"submenuIndent": {
+			"type": "number",
+			"default": 24
+		},
+		"socialIconSize": {
+			"type": "number",
+			"default": 44
+		},
+		"showTagline": {
+			"type": "boolean",
+			"default": false
+		},
+		"taglineText": {
+			"type": "string",
+			"default": ""
+		},
+		"drawerBg": {
+			"type": "string",
+			"default": ""
+		},
+		"drawerText": {
+			"type": "string",
+			"default": ""
+		},
+		"drawerGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"closeButtonBg": {
+			"type": "string",
+			"default": ""
+		},
+		"closeButtonColour": {
+			"type": "string",
+			"default": ""
+		},
+		"ctaBg": {
+			"type": "string",
+			"default": ""
+		},
+		"ctaTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"ctaBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"secondaryCtaBg": {
+			"type": "string",
+			"default": ""
+		},
+		"secondaryCtaTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"linkColour": {
+			"type": "string",
+			"default": ""
+		},
+		"linkHoverColour": {
+			"type": "string",
+			"default": ""
+		},
+		"linkActiveColour": {
+			"type": "string",
+			"default": ""
+		},
+		"sublinkColour": {
+			"type": "string",
+			"default": ""
+		},
+		"sublinkHoverColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backdropColour": {
+			"type": "string",
+			"default": ""
+		},
+		"focusColour": {
+			"type": "string",
+			"default": ""
+		},
+		"animationDuration": {
+			"type": "number",
+			"default": 400
+		},
+		"animationEasing": {
+			"type": "string",
+			"default": "spring",
+			"enum": [ "spring", "ease", "ease-in-out", "linear" ]
+		},
+		"exitDuration": {
+			"type": "number",
+			"default": 280
+		},
+		"backdropOpacity": {
+			"type": "number",
+			"default": 60
 		}
 	},
 	"render": "file:./render.php",
