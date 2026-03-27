@@ -220,6 +220,14 @@ function enqueue_styles(): void {
 		$theme_version
 	);
 
+	// Mega menu panel hover effects and transitions.
+	wp_enqueue_style(
+		'sgs-mega-menu-panels',
+		get_theme_file_uri( 'assets/css/mega-menu-panels.css' ),
+		[],
+		$theme_version
+	);
+
 	// Header behaviour system — sticky, transparent, smart-reveal, shrink.
 	wp_enqueue_style(
 		'sgs-header-modes',

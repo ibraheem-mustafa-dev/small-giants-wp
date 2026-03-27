@@ -1,52 +1,64 @@
-<!-- wp:group {"backgroundColor":"accent-light","className":"sgs-mega-panel sgs-mega-panel--warm","style":{"spacing":{"padding":{"top":"0","bottom":"0","left":"0","right":"0"}}},"layout":{"type":"constrained","contentSize":"1200px"}} -->
-<div class="wp-block-group sgs-mega-panel sgs-mega-panel--warm has-accent-light-background-color has-background" style="padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
+<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|50","right":"var:preset|spacing|50"}}},"backgroundColor":"accent-light","layout":{"type":"constrained","contentSize":"1200px"}} -->
+<div class="wp-block-group has-accent-light-background-color has-background" style="padding-top:var(--wp--preset--spacing--50);padding-right:var(--wp--preset--spacing--50);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--50)">
 
-	<!-- wp:columns {"style":{"spacing":{"blockGap":{"top":"0","left":"var:preset|spacing|60"}}}} -->
+	<!-- wp:columns {"style":{"spacing":{"blockGap":{"top":"var:preset|spacing|40","left":"var:preset|spacing|60"}}}} -->
 	<div class="wp-block-columns">
 
 		<!-- wp:column {"width":"60%"} -->
 		<div class="wp-block-column" style="flex-basis:60%">
 
-			<!-- wp:heading {"level":4,"className":"sgs-mega-title","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}},"textColor":"text-muted","fontSize":"small"} -->
-			<h4 class="wp-block-heading sgs-mega-title has-text-muted-color has-text-color has-small-font-size" style="margin-bottom:var(--wp--preset--spacing--30)">About Us</h4>
+			<!-- wp:heading {"level":4,"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|20"}},"typography":{"textTransform":"uppercase","letterSpacing":"0.08em"}},"textColor":"text","fontSize":"small"} -->
+			<h4 class="wp-block-heading has-text-color has-small-font-size" style="margin-bottom:var(--wp--preset--spacing--20);text-transform:uppercase;letter-spacing:0.08em">About Us</h4>
 			<!-- /wp:heading -->
 
-			<!-- wp:paragraph {"textColor":"text-muted","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|40"}},"typography":{"fontSize":"0.875rem"}}} -->
-			<p class="has-text-muted-color has-text-color" style="margin-bottom:var(--wp--preset--spacing--40);font-size:0.875rem">A family-owned food distribution business with over 60 years of heritage. We bring authentic flavours from around the world to UK kitchens and actively support the businesses we serve.</p>
+			<!-- wp:heading {"level":3,"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}},"typography":{"fontSize":"1.25rem","fontWeight":"700"}},"textColor":"primary-dark"} -->
+			<h3 class="wp-block-heading has-primary-dark-color has-text-color" style="font-size:1.25rem;font-weight:700;margin-bottom:var(--wp--preset--spacing--30)">About Small Giants</h3>
+			<!-- /wp:heading -->
+
+			<!-- wp:paragraph {"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}},"typography":{"fontSize":"0.9rem"}}} -->
+			<p style="margin-bottom:var(--wp--preset--spacing--30);font-size:0.9rem">We're a family-owned food distribution company dedicated to bringing authentic flavours from around the world to UK kitchens.</p>
 			<!-- /wp:paragraph -->
 
-			<!-- wp:sgs/icon-list {"items":[{"text":"Family business since 1962","icon":"check"},{"text":"Certified halal &amp; organic products","icon":"check"},{"text":"Direct partnerships with global farmers","icon":"check"}]} /-->
+			<!-- wp:sgs/icon-list {"items":[{"text":"30+ years of industry experience","icon":"check"},{"text":"Certified organic \u0026 halal products","icon":"check"},{"text":"Direct partnerships with farmers","icon":"check"}]} /-->
 
-			<!-- wp:paragraph {"style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
-			<p style="margin-top:var(--wp--preset--spacing--40)"><a class="sgs-mega-cta" href="/about/">Our Story →</a></p>
-			<!-- /wp:paragraph -->
+			<!-- wp:buttons {"style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
+			<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--40)">
+				<!-- wp:button {"backgroundColor":"primary","textColor":"surface","style":{"border":{"radius":"8px"}}} -->
+				<div class="wp-block-button"><a class="wp-block-button__link has-surface-color has-primary-background-color has-text-color has-background wp-element-button" href="/about/" style="border-radius:8px">Our Story &rarr;</a></div>
+				<!-- /wp:button -->
+			</div>
+			<!-- /wp:buttons -->
 
 		</div>
 		<!-- /wp:column -->
 
-		<!-- wp:column {"width":"40%","style":{"border":{"left":{"color":"var:preset|color|text-muted","width":"1px"}},"spacing":{"padding":{"left":"var:preset|spacing|50"}}}} -->
-		<div class="wp-block-column" style="flex-basis:40%;border-left-color:var(--wp--preset--color--text-muted);border-left-width:1px;padding-left:var(--wp--preset--spacing--50)">
+		<!-- wp:column {"width":"40%","style":{"border":{"left":{"color":"var:preset|color|border-subtle","width":"1px"}},"spacing":{"padding":{"left":"var:preset|spacing|50"}}}} -->
+		<div class="wp-block-column" style="flex-basis:40%;border-left-color:var(--wp--preset--color--border-subtle);border-left-width:1px;padding-left:var(--wp--preset--spacing--50)">
 
-			<!-- wp:heading {"level":4,"className":"sgs-mega-title","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}},"textColor":"text-muted","fontSize":"small"} -->
-			<h4 class="wp-block-heading sgs-mega-title has-text-muted-color has-text-color has-small-font-size" style="margin-bottom:var(--wp--preset--spacing--30)">Quick Links</h4>
+			<!-- wp:heading {"level":4,"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}},"typography":{"textTransform":"uppercase","letterSpacing":"0.08em"}},"textColor":"text","fontSize":"small"} -->
+			<h4 class="wp-block-heading has-text-color has-small-font-size" style="margin-bottom:var(--wp--preset--spacing--30);text-transform:uppercase;letter-spacing:0.08em">Quick Links</h4>
 			<!-- /wp:heading -->
 
-			<!-- wp:list {"className":"sgs-mega-link-list","style":{"spacing":{"padding":{"left":"0"}}}} -->
-			<ul class="sgs-mega-link-list" style="padding-left:0">
+			<!-- wp:list {"style":{"spacing":{"padding":{"left":"var:preset|spacing|30"}},"typography":{"lineHeight":"2"}},"textColor":"primary-dark"} -->
+			<ul class="has-primary-dark-color has-text-color" style="padding-left:var(--wp--preset--spacing--30);line-height:2">
 				<!-- wp:list-item -->
-				<li><a href="/about/team/">Meet the Team</a></li>
+				<li><a href="#">Meet the Team</a></li>
 				<!-- /wp:list-item -->
+
 				<!-- wp:list-item -->
-				<li><a href="/sustainability/">Sustainability</a></li>
+				<li><a href="#">Sustainability Commitment</a></li>
 				<!-- /wp:list-item -->
+
 				<!-- wp:list-item -->
-				<li><a href="/about/awards/">Awards</a></li>
+				<li><a href="#">Awards &amp; Certifications</a></li>
 				<!-- /wp:list-item -->
+
 				<!-- wp:list-item -->
-				<li><a href="/careers/">Careers</a></li>
+				<li><a href="#">Careers</a></li>
 				<!-- /wp:list-item -->
+
 				<!-- wp:list-item -->
-				<li><a href="/press/">Press Kit</a></li>
+				<li><a href="#">Press Kit</a></li>
 				<!-- /wp:list-item -->
 			</ul>
 			<!-- /wp:list -->

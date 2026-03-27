@@ -1,28 +1,44 @@
-<!-- wp:group {"backgroundColor":"primary-dark","className":"sgs-mega-panel sgs-mega-panel--dark","style":{"spacing":{"padding":{"top":"0","bottom":"0","left":"0","right":"0"}}},"layout":{"type":"constrained","contentSize":"1200px"}} -->
-<div class="wp-block-group sgs-mega-panel sgs-mega-panel--dark has-primary-dark-background-color has-background" style="padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
+<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|50","right":"var:preset|spacing|50"}}},"backgroundColor":"primary-dark","textColor":"surface","layout":{"type":"constrained","contentSize":"1200px"}} -->
+<div class="wp-block-group has-surface-color has-primary-dark-background-color has-text-color has-background" style="padding-top:var(--wp--preset--spacing--50);padding-right:var(--wp--preset--spacing--50);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--50)">
 
-	<!-- wp:columns {"style":{"spacing":{"blockGap":{"top":"0","left":"var:preset|spacing|60"}}}} -->
+	<!-- wp:heading {"level":4,"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|40"}},"typography":{"textTransform":"uppercase","letterSpacing":"0.08em"}},"textColor":"text-inverse","fontSize":"small"} -->
+	<h4 class="wp-block-heading has-text-inverse-color has-text-color has-small-font-size" style="margin-bottom:var(--wp--preset--spacing--40);text-transform:uppercase;letter-spacing:0.08em">Get in Touch</h4>
+	<!-- /wp:heading -->
+
+	<!-- wp:columns {"style":{"spacing":{"blockGap":{"top":"var:preset|spacing|40","left":"var:preset|spacing|60"}}}} -->
 	<div class="wp-block-columns">
 
 		<!-- wp:column {"width":"40%"} -->
 		<div class="wp-block-column" style="flex-basis:40%">
 
-			<!-- wp:heading {"level":4,"className":"sgs-mega-title","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}},"textColor":"accent-light","fontSize":"small"} -->
-			<h4 class="wp-block-heading sgs-mega-title has-accent-light-color has-text-color has-small-font-size" style="margin-bottom:var(--wp--preset--spacing--30)">Contact</h4>
+			<!-- wp:heading {"level":4,"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}},"typography":{"fontSize":"1rem","fontWeight":"700"}},"textColor":"surface"} -->
+			<h4 class="wp-block-heading has-surface-color has-text-color" style="font-size:1rem;font-weight:700;margin-bottom:var(--wp--preset--spacing--30)">Contact Information</h4>
 			<!-- /wp:heading -->
 
-			<!-- wp:sgs/icon-list {"items":[{"text":"0121 523 7890","icon":"phone","url":"tel:01215237890"},{"text":"sales@indusfoods.co.uk","icon":"mail","url":"mailto:sales@indusfoods.co.uk"},{"text":"Smethwick, West Midlands","icon":"map-pin"}],"textColour":"surface"} /-->
+			<!-- wp:list {"style":{"spacing":{"padding":{"left":"0"}},"typography":{"lineHeight":"2.2","fontSize":"0.9rem"}},"textColor":"surface","className":"is-style-default"} -->
+			<ul class="is-style-default has-surface-color has-text-color" style="padding-left:0;line-height:2.2;font-size:0.9rem;list-style:none">
+				<!-- wp:list-item -->
+				<li>0800 123 4567</li>
+				<!-- /wp:list-item -->
+				<!-- wp:list-item -->
+				<li>hello@smallgiants.studio</li>
+				<!-- /wp:list-item -->
+				<!-- wp:list-item -->
+				<li>123 Trade Street, London</li>
+				<!-- /wp:list-item -->
+			</ul>
+			<!-- /wp:list -->
 
-			<!-- wp:group {"className":"sgs-mega-divider","style":{"spacing":{"margin":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}}} -->
-			<div class="wp-block-group sgs-mega-divider" style="margin-top:var(--wp--preset--spacing--40);margin-bottom:var(--wp--preset--spacing--40)"></div>
-			<!-- /wp:group -->
+			<!-- wp:separator {"style":{"spacing":{"margin":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|30"}}},"backgroundColor":"border-subtle","className":"is-style-wide"} -->
+			<hr class="wp-block-separator has-text-color has-border-subtle-background-color has-alpha-channel-opacity has-border-subtle-background-color has-background is-style-wide" style="margin-top:var(--wp--preset--spacing--30);margin-bottom:var(--wp--preset--spacing--30)"/>
+			<!-- /wp:separator -->
 
-			<!-- wp:heading {"level":4,"className":"sgs-mega-title","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|20"}}},"textColor":"accent-light","fontSize":"small"} -->
-			<h4 class="wp-block-heading sgs-mega-title has-accent-light-color has-text-color has-small-font-size" style="margin-bottom:var(--wp--preset--spacing--20)">Opening Hours</h4>
+			<!-- wp:heading {"level":4,"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|20"}},"typography":{"fontSize":"1rem","fontWeight":"700"}},"textColor":"surface"} -->
+			<h4 class="wp-block-heading has-surface-color has-text-color" style="font-size:1rem;font-weight:700;margin-bottom:var(--wp--preset--spacing--20)">Opening Hours</h4>
 			<!-- /wp:heading -->
 
-			<!-- wp:paragraph {"fontSize":"small","textColor":"surface"} -->
-			<p class="has-surface-color has-text-color has-small-font-size"><strong>Mon–Fri:</strong> 8am – 6pm<br><strong>Sat:</strong> 9am – 4pm<br><strong>Sun:</strong> Closed</p>
+			<!-- wp:paragraph {"style":{"typography":{"fontSize":"0.875rem","lineHeight":"2"}},"textColor":"text-inverse"} -->
+			<p class="has-text-inverse-color has-text-color" style="font-size:0.875rem;line-height:2;opacity:0.75"><strong style="color:var(--wp--preset--color--surface)">Mon-Fri:</strong> 8am - 6pm<br><strong style="color:var(--wp--preset--color--surface)">Sat:</strong> 9am - 4pm<br><strong style="color:var(--wp--preset--color--surface)">Sun:</strong> Closed</p>
 			<!-- /wp:paragraph -->
 
 		</div>
@@ -31,24 +47,28 @@
 		<!-- wp:column {"width":"60%"} -->
 		<div class="wp-block-column" style="flex-basis:60%">
 
-			<!-- wp:group {"className":"sgs-mega-card sgs-mega-card--surface","style":{"border":{"radius":"12px"},"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
-			<div class="wp-block-group sgs-mega-card sgs-mega-card--surface" style="border-radius:12px;padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
+			<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|50","right":"var:preset|spacing|50"}},"border":{"radius":"12px"}},"backgroundColor":"surface","textColor":"text","layout":{"type":"constrained"}} -->
+			<div class="wp-block-group has-text-color has-surface-background-color has-background" style="border-radius:12px;padding-top:var(--wp--preset--spacing--50);padding-right:var(--wp--preset--spacing--50);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--50)">
 
-				<!-- wp:heading {"level":4,"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|20"}},"typography":{"fontSize":"1.1rem","fontWeight":"700"}}} -->
-				<h4 class="wp-block-heading" style="margin-bottom:var(--wp--preset--spacing--20);font-size:1.1rem;font-weight:700">Quick Enquiry</h4>
+				<!-- wp:heading {"level":4,"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|20"}},"typography":{"fontSize":"1.1rem","fontWeight":"700"}},"textColor":"primary-dark"} -->
+				<h4 class="wp-block-heading has-primary-dark-color has-text-color" style="font-size:1.1rem;font-weight:700;margin-bottom:var(--wp--preset--spacing--20)">Quick Enquiry</h4>
 				<!-- /wp:heading -->
 
-				<!-- wp:paragraph {"textColor":"text-muted","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}},"typography":{"fontSize":"0.875rem"}}} -->
-				<p class="has-text-muted-color has-text-color" style="margin-bottom:var(--wp--preset--spacing--30);font-size:0.875rem">Need a quick answer? Our team typically responds within 24 hours.</p>
+				<!-- wp:paragraph {"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|40"}},"typography":{"fontSize":"0.875rem"}},"textColor":"text-muted"} -->
+				<p class="has-text-muted-color has-text-color" style="margin-bottom:var(--wp--preset--spacing--40);font-size:0.875rem">Need a quick answer? Our team typically responds within 24 hours.</p>
 				<!-- /wp:paragraph -->
 
-				<!-- wp:paragraph {"style":{"spacing":{"margin":{"bottom":"var:preset|spacing|30"}}}} -->
-				<p style="margin-bottom:var(--wp--preset--spacing--30)"><a class="sgs-mega-cta" href="/contact/">Send Message →</a></p>
-				<!-- /wp:paragraph -->
+				<!-- wp:buttons -->
+				<div class="wp-block-buttons">
+					<!-- wp:button {"backgroundColor":"accent","textColor":"text","width":100,"style":{"border":{"radius":"8px"}}} -->
+					<div class="wp-block-button has-custom-width wp-block-button__width-100"><a class="wp-block-button__link has-text-color has-accent-background-color has-text-color has-background wp-element-button" href="/contact/" style="border-radius:8px">Send Message &rarr;</a></div>
+					<!-- /wp:button -->
+				</div>
+				<!-- /wp:buttons -->
 
-				<!-- wp:group {"className":"sgs-mega-divider","style":{"spacing":{"margin":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|30"}}}} -->
-				<div class="wp-block-group sgs-mega-divider" style="margin-top:var(--wp--preset--spacing--30);margin-bottom:var(--wp--preset--spacing--30)"></div>
-				<!-- /wp:group -->
+				<!-- wp:separator {"style":{"spacing":{"margin":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|30"}}},"backgroundColor":"surface-alt","className":"is-style-wide"} -->
+				<hr class="wp-block-separator has-text-color has-surface-alt-background-color has-alpha-channel-opacity has-surface-alt-background-color has-background is-style-wide" style="margin-top:var(--wp--preset--spacing--30);margin-bottom:var(--wp--preset--spacing--30)"/>
+				<!-- /wp:separator -->
 
 				<!-- wp:sgs/whatsapp-cta {"buttonText":"WhatsApp Us","phoneNumber":"+447123456789","message":"Hello, I'd like to enquire about...","style":"filled"} /-->
 
