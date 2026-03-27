@@ -210,20 +210,41 @@ footer .wp-block-heading.has-text-inverse-color.has-text-color {
 /* ─── FOOTER LINK COLOUR — H5 ─── */
 
 /*
- * Footer phone and email links use the site's link colour (primary/teal).
- * On the dark footer background this gives only ~2.38:1 — WCAG AA failure.
- * Force to white (surface token) for all links within the footer template part.
+ * All footer links inherit the global link colour (teal #0a7ea8) which gives
+ * only 2.39:1 on the dark navy footer background (#2c3e50) — WCAG AA failure.
+ *
+ * This applies to:
+ *   - Paragraph links (phone, email in business-info)
+ *   - List item links (Quick Links column)
+ *   - Any other anchor inside the footer template part
+ *
+ * Solution: force all footer links to white (surface token, 14.26:1 on navy).
+ * Hover: accent-light (#e7d768) gives 7.49:1 on navy — still passes AA.
+ *
+ * The .has-footer-bg-background-color parent guard scopes this to the navy
+ * footer section only, so any light-background blocks rendered inside
+ * footer.html in future are not affected.
  */
+.has-footer-bg-background-color a,
 footer p a,
+footer li a,
 footer .wp-block-paragraph a,
-.wp-block-template-part footer p a {
+footer .wp-block-list a,
+.wp-block-template-part footer p a,
+.wp-block-template-part footer li a,
+.wp-block-template-part footer .wp-block-list a {
 	color: var(--wp--preset--color--surface, #ffffff) !important;
 }
 
+.has-footer-bg-background-color a:hover,
 footer p a:hover,
+footer li a:hover,
 footer .wp-block-paragraph a:hover,
-.wp-block-template-part footer p a:hover {
-	color: var(--wp--preset--color--accent-light, #fee8d4) !important;
+footer .wp-block-list a:hover,
+.wp-block-template-part footer p a:hover,
+.wp-block-template-part footer li a:hover,
+.wp-block-template-part footer .wp-block-list a:hover {
+	color: var(--wp--preset--color--accent-light, #e7d768) !important;
 	text-decoration: underline;
 }
 
@@ -374,7 +395,7 @@ footer .wp-block-paragraph a:hover,
 		grid-template-columns: 1fr 1fr !important;
 		gap: 15px !important;
 	}
-	
+
 	.wp-block-columns:has(.wp-block-column .sgs-icon-list) .wp-block-column {
 		width: 100% !important;
 		margin-left: 0 !important;

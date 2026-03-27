@@ -2,7 +2,7 @@
 /**
  * Auto-generated Lucide icon map — DO NOT EDIT.
  * Generated from lucide-static (1917 icons).
- * Last generated: 2026-03-27T09:37:20.063Z
+ * Last generated: 2026-03-27T14:02:25.505Z
  *
  * Auto-generated — exempt from 300-line limit. See scripts/generate-icons.js.
  *
