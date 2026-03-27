@@ -29,11 +29,11 @@ function field_open( array $attributes, string $type, string $extra_class = '' )
 	$width             = $attributes['width'] ?? 'full';
 	$conditional_field = $attributes['conditionalField'] ?? '';
 
-	$classes = [
+	$classes = array(
 		'sgs-form-field',
 		'sgs-form-field--' . esc_attr( $type ),
 		'sgs-form-field--' . esc_attr( $width ),
-	];
+	);
 
 	if ( ! empty( $extra_class ) ) {
 		$classes[] = esc_attr( $extra_class );
@@ -122,11 +122,23 @@ function field_close(): string {
 /**
  * Generate field ID from field name.
  *
- * @param string $field_name Field name attribute.
- * @return string Field ID (sgs-field-{name}).
+ * When fieldName is empty or produces an empty slug after sanitise_key(),
+ * falls back to wp_unique_id() so that every field on the page has a
+ * unique id attribute — preventing label-for mismatches on fields 2-N.
+ *
+ * @param string $field_name Field name attribute (may be empty).
+ * @return string Field ID (sgs-field-{slug} or sgs-field-{unique}).
  */
 function field_id( string $field_name ): string {
-	return 'sgs-field-' . sanitize_key( $field_name );
+	$slug = sanitize_key( $field_name );
+
+	if ( '' === $slug ) {
+		// No fieldName set — generate a unique, page-scoped ID so that each
+		// unconfigured field still gets its own id and matching label for="".
+		return wp_unique_id( 'sgs-field-' );
+	}
+
+	return 'sgs-field-' . $slug;
 }
 
 /**
@@ -148,10 +160,20 @@ function field_input_attrs( string $field_id, array $attributes ): string {
 	$required    = ! empty( $attributes['required'] );
 	$help_text   = $attributes['helpText'] ?? '';
 
-	$attrs = [
+	// Derive the submission key from fieldName when set, otherwise fall back to
+	// the field_id value (which is already unique per page) so that name="" is
+	// never empty — an empty name means the field is silently excluded from POST.
+	$field_slug = sanitize_key( $field_name );
+	if ( '' === $field_slug ) {
+		// field_id() prefixes with 'sgs-field-'; strip it to get the raw slug.
+		$field_slug = preg_replace( '/^sgs-field-/', '', $field_id );
+	}
+	$submission_name = 'sgs-field-' . $field_slug;
+
+	$attrs = array(
 		'id="' . esc_attr( $field_id ) . '"',
-		'name="' . esc_attr( $field_name ) . '"',
-	];
+		'name="' . esc_attr( $submission_name ) . '"',
+	);
 
 	if ( ! empty( $placeholder ) ) {
 		$attrs[] = 'placeholder="' . esc_attr( $placeholder ) . '"';
@@ -164,7 +186,7 @@ function field_input_attrs( string $field_id, array $attributes ): string {
 
 	// Always include the error element ID in aria-describedby so that screen readers
 	// announce inline validation messages when the field becomes invalid.
-	$described_by = [ esc_attr( $field_id ) . '-error' ];
+	$described_by = array( esc_attr( $field_id ) . '-error' );
 	if ( ! empty( $help_text ) ) {
 		$described_by[] = esc_attr( $field_id ) . '-help';
 	}

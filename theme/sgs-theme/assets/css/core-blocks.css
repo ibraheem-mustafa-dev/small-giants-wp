@@ -388,6 +388,30 @@ footer .wp-block-list a:hover,
 	transform: scale(1.1);
 }
 
+/* SERVICE CARDS: 2×2 GRID ON TABLET - H23 */
+/*
+ * WordPress core stacks wp:columns below 782px (flex-basis: 100% on each column).
+ * At tablet widths (600px–781px) the 4 service cards must show as a 2×2 grid.
+ * Selector targets columns inside the surface-background group that wraps
+ * "Our UK Wide Food Services" — applies on homepage and sector pages equally.
+ * Using display:grid overrides the flex stacking without touching the
+ * desktop flex layout (min-width: 782px+).
+ */
+@media (min-width: 600px) and (max-width: 781px) {
+	.has-surface-background-color > .wp-block-columns,
+	.has-surface-background-color .wp-block-columns:has(> .wp-block-column > .wp-block-group.has-background) {
+		display: grid !important;
+		grid-template-columns: 1fr 1fr !important;
+		flex-wrap: wrap !important;
+	}
+
+	.has-surface-background-color > .wp-block-columns > .wp-block-column,
+	.has-surface-background-color .wp-block-columns:has(> .wp-block-column > .wp-block-group.has-background) > .wp-block-column {
+		flex-basis: auto !important;
+		width: 100% !important;
+	}
+}
+
 /* MOBILE GRID FOR FEATURES - H22 */
 @media (max-width: 599px) {
 	.wp-block-columns:has(.wp-block-column .sgs-icon-list) {

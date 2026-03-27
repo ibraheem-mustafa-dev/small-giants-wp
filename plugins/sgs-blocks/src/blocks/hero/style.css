@@ -108,7 +108,8 @@
 
 /* Sub-headline */
 .sgs-hero__subheadline {
-	font-size: var(--wp--preset--font-size--large);
+	font-size: clamp(1.125rem, 2.5vw, var(--wp--preset--font-size--large));
+	font-weight: 500;
 	line-height: 1.5;
 	margin: 0 0 var(--wp--preset--spacing--40) 0;
 }

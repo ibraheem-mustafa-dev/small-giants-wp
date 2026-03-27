@@ -285,6 +285,11 @@ body .is-root-container > .wp-block {
 	letter-spacing: -0.01em;
 }
 
+h1, h2, h3, h4, h5, h6,
+.wp-block-heading {
+	text-wrap: balance;
+}
+
 /*
  * H1 line-height on mobile — the default theme.json value produces ~1.1
  * which is too tight when the heading wraps to two lines at 375px.
