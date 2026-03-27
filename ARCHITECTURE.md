@@ -153,6 +153,12 @@ small-giants-wp/
 | `sgs/star-rating` | SVG stars, Schema.org/Rating |
 | `sgs/team-member` | Photo/name/role/bio/socials, Schema.org/Person |
 
+### Interactive blocks
+| Block | Key capability |
+|---|---|
+| `sgs/mega-menu` | Desktop mega-menu with template part panels, Interactivity API triggers |
+| `sgs/mobile-nav` | Popover API mobile drawer with accordion submenus, spring animation, swipe-to-close. Server-renders nav from header template part via `SGS_Mobile_Nav_Renderer`. 4 variants (overlay, slide-left, slide-right, bottom-sheet). |
+
 ### Form blocks (14 blocks)
 | Block | Notes |
 |---|---|

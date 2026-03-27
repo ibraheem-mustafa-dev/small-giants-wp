@@ -1,0 +1,861 @@
+/**
+ * SGS Mobile Navigation — frontend styles.
+ *
+ * Progressive enhancement stack:
+ * 1. Popover API ::backdrop
+ * 2. Spring-physics easing via CSS linear()
+ * 3. Staggered item cascade via --i custom property
+ * 4. @starting-style entry animation
+ * 5. interpolate-size for height:auto accordion
+ * 6. prefers-reduced-motion kill switch
+ *
+ * @package SGS\Blocks
+ */
+
+/* ─── Custom Properties ─────────────────────────────────────────────────────── */
+.sgs-mobile-nav {
+	--sgs-mn-accent: var(--wp--preset--color--accent, #f87a1f);
+	--sgs-mn-divider: var(--wp--preset--color--accent, #f87a1f);
+	--sgs-mn-stagger: 25ms;
+	--sgs-mn-spring: linear(
+		0, 0.009, 0.036 2.1%, 0.142 4.3%, 0.332 7.0%,
+		0.58 10.2%, 0.714 12.2%, 0.827 14.4%, 0.916 16.8%,
+		0.968 19.2%, 1.001 21.9%, 1.021 25.1%, 1.026 29.0%,
+		1.018 33.6%, 1.005 39.1%, 0.998 46.0%, 1.0 54.9%, 1
+	);
+}
+
+/* ─── Popover API Foundation ────────────────────────────────────────────────── */
+
+/* The drawer itself — fixed full-screen by default */
+.sgs-mobile-nav {
+	position: fixed;
+	z-index: 10001;
+	max-width: 100vw;
+	box-sizing: border-box;
+	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
+	overscroll-behavior: contain;
+	background-color: var(--wp--preset--color--primary-dark, #075e80);
+	color: var(--wp--preset--color--surface, #fff);
+	border: none;
+	margin: 0;
+	padding: var(--wp--preset--spacing--40, 1.5rem);
+	transition:
+		transform 400ms var(--sgs-mn-spring),
+		opacity 300ms ease,
+		overlay 400ms allow-discrete,
+		display 400ms allow-discrete;
+}
+
+/* Backdrop via Popover API */
+.sgs-mobile-nav::backdrop {
+	background: rgba(0, 0, 0, 0.6);
+	opacity: 0;
+	transition:
+		opacity 300ms ease,
+		overlay 300ms allow-discrete,
+		display 300ms allow-discrete;
+}
+
+.sgs-mobile-nav:popover-open::backdrop {
+	opacity: 1;
+}
+
+/* Fallback for browsers without Popover API */
+.sgs-mobile-nav:not(:popover-open).is-open {
+	display: flex;
+}
+
+.sgs-mobile-nav__backdrop {
+	display: none;
+}
+
+.sgs-mobile-nav__backdrop.is-open {
+	display: block;
+	position: fixed;
+	inset: 0;
+	z-index: 9999;
+	background: rgba(0, 0, 0, 0.6);
+}
+
+/* ─── Variant: Overlay (full-screen, slides down) ───────────────────────────── */
+.sgs-mobile-nav--overlay {
+	inset: 0;
+	transform: translateY(-100%);
+}
+
+.sgs-mobile-nav--overlay:popover-open,
+.sgs-mobile-nav--overlay.is-open {
+	transform: translateY(0);
+}
+
+/* ─── Variant: Slide from Left ──────────────────────────────────────────────── */
+.sgs-mobile-nav--slide-left {
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: auto;
+	width: min(85vw, 400px);
+	transform: translateX(-100%);
+}
+
+.sgs-mobile-nav--slide-left:popover-open,
+.sgs-mobile-nav--slide-left.is-open {
+	transform: translateX(0);
+}
+
+/* ─── Variant: Slide from Right ─────────────────────────────────────────────── */
+.sgs-mobile-nav--slide-right {
+	top: 0;
+	bottom: 0;
+	right: 0;
+	left: auto;
+	width: min(85vw, 400px);
+	transform: translateX(100%);
+}
+
+.sgs-mobile-nav--slide-right:popover-open,
+.sgs-mobile-nav--slide-right.is-open {
+	transform: translateX(0);
+}
+
+/* ─── Variant: Bottom Sheet ─────────────────────────────────────────────────── */
+.sgs-mobile-nav--bottom-sheet {
+	top: auto;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	max-height: 85vh;
+	border-radius: 1rem 1rem 0 0;
+	transform: translateY(100%);
+}
+
+.sgs-mobile-nav--bottom-sheet:popover-open,
+.sgs-mobile-nav--bottom-sheet.is-open {
+	transform: translateY(0);
+}
+
+/* ─── Exit Animation — snappier, no spring bounce on close ──────────────────── */
+.sgs-mobile-nav.is-closing {
+	transition:
+		transform 280ms cubic-bezier(0.4, 0, 1, 1),
+		opacity 200ms ease-in,
+		overlay 280ms allow-discrete,
+		display 280ms allow-discrete;
+}
+
+.sgs-mobile-nav.is-closing::backdrop {
+	transition:
+		opacity 200ms ease-in,
+		overlay 200ms allow-discrete,
+		display 200ms allow-discrete;
+}
+
+/* ─── @starting-style — entry animation from display:none ───────────────────── */
+@starting-style {
+	.sgs-mobile-nav--overlay:popover-open {
+		transform: translateY(-100%);
+	}
+
+	.sgs-mobile-nav--slide-left:popover-open {
+		transform: translateX(-100%);
+	}
+
+	.sgs-mobile-nav--slide-right:popover-open {
+		transform: translateX(100%);
+	}
+
+	.sgs-mobile-nav--bottom-sheet:popover-open {
+		transform: translateY(100%);
+	}
+
+	.sgs-mobile-nav:popover-open::backdrop {
+		opacity: 0;
+	}
+}
+
+/* ─── Drag Handle — swipe affordance pill at top of drawer ─────────────────── */
+.sgs-mobile-nav__header::before {
+	content: "";
+	display: block;
+	width: 36px;
+	height: 4px;
+	background: rgba(255, 255, 255, 0.25);
+	border-radius: 2px;
+	position: absolute;
+	top: 10px;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+/* ─── Drawer Header ─────────────────────────────────────────────────────────── */
+.sgs-mobile-nav__header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding-bottom: var(--wp--preset--spacing--20, 0.5rem);
+	position: relative;
+	padding-top: 20px;
+	gap: 12px;
+}
+
+/* Logo in drawer header */
+.sgs-mobile-nav__logo {
+	display: block;
+	max-width: var(--sgs-mn-logo-width, 120px);
+	flex-shrink: 0;
+	overflow: hidden;
+}
+
+.sgs-mobile-nav__logo .custom-logo-link {
+	display: block;
+}
+
+.sgs-mobile-nav__logo .custom-logo,
+.sgs-mobile-nav__logo img {
+	display: block;
+	width: 100%;
+	height: auto;
+	max-width: var(--sgs-mn-logo-width, 120px);
+}
+
+.sgs-mobile-nav__logo--text {
+	color: inherit;
+	text-decoration: none;
+	font-size: var(--wp--preset--font-size--large, 1.25rem);
+	font-weight: 700;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.sgs-mobile-nav__close {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--sgs-mn-close-size, 48px);
+	height: var(--sgs-mn-close-size, 48px);
+	min-width: 44px;
+	min-height: 44px;
+	border-radius: 50%;
+	flex-shrink: 0;
+	border: none;
+	background: rgba(255, 255, 255, 0.15) !important; /* !important overrides WP core button reset */
+	color: inherit;
+	cursor: pointer;
+	transition: background 200ms ease;
+}
+
+.sgs-mobile-nav__close:hover,
+.sgs-mobile-nav__close:focus-visible {
+	background: rgba(255, 255, 255, 0.25);
+}
+
+.sgs-mobile-nav__close svg {
+	width: 20px;
+	height: 20px;
+}
+
+/* ─── Zone 1: CTA Section ───────────────────────────────────────────────────── */
+.sgs-mobile-nav__cta {
+	display: flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--20, 0.5rem);
+	padding-bottom: var(--wp--preset--spacing--30, 1rem);
+	border-bottom: 1px solid var(--sgs-mn-divider);
+	margin-bottom: var(--wp--preset--spacing--30, 1rem);
+}
+
+.sgs-mobile-nav__cta-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	flex: 1;
+	justify-content: center;
+	padding: 14px 24px;
+	border-radius: 50px;
+	background: var(--sgs-mn-accent);
+	color: var(--wp--preset--color--text, #1e1e1e);
+	font-weight: 700;
+	font-size: 0.9375rem;
+	text-decoration: none;
+	transition: filter 200ms ease, transform 200ms ease;
+	min-height: 48px;
+}
+
+.sgs-mobile-nav__cta-btn:hover,
+.sgs-mobile-nav__cta-btn:focus-visible {
+	filter: brightness(1.1);
+	transform: translateY(-1px);
+}
+
+.sgs-mobile-nav__cta-btn svg {
+	width: 16px;
+	height: 16px;
+	flex-shrink: 0;
+}
+
+.sgs-mobile-nav__icon-btn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 48px;
+	height: 48px;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.15);
+	color: inherit;
+	text-decoration: none;
+	flex-shrink: 0;
+	transition: background 200ms ease;
+}
+
+.sgs-mobile-nav__icon-btn:hover,
+.sgs-mobile-nav__icon-btn:focus-visible {
+	background: rgba(255, 255, 255, 0.25);
+}
+
+.sgs-mobile-nav__icon-btn svg {
+	width: 20px;
+	height: 20px;
+}
+
+/* ─── Zone 2: Navigation Menu ───────────────────────────────────────────────── */
+.sgs-mobile-nav__menu {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+/* Staggered cascade — items reveal with delay based on --i index set by PHP */
+.sgs-mobile-nav__item {
+	opacity: 0;
+	transform: translateX(-12px);
+	transition:
+		opacity 300ms ease,
+		transform 300ms var(--sgs-mn-spring);
+	transition-delay: calc(var(--sgs-mn-stagger) * var(--i, 0));
+}
+
+:is(.sgs-mobile-nav:popover-open, .sgs-mobile-nav.is-open) .sgs-mobile-nav__item {
+	opacity: 1;
+	transform: translateX(0);
+}
+
+/* Menu item link */
+.sgs-mobile-nav__link {
+	display: block;
+	padding: 14px 0;
+	color: inherit;
+	text-decoration: none;
+	font-size: 1.125rem;
+	font-weight: 600;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+	transition: color 200ms ease;
+	min-height: 48px;
+	display: flex;
+	align-items: center;
+}
+
+.sgs-mobile-nav__link:hover,
+.sgs-mobile-nav__link:focus-visible {
+	color: var(--sgs-mn-accent);
+}
+
+/* Current page indicator — animated line draw */
+.sgs-mobile-nav__item--current .sgs-mobile-nav__link {
+	color: var(--sgs-mn-accent);
+	position: relative;
+}
+
+.sgs-mobile-nav__item--current .sgs-mobile-nav__link::after {
+	content: "";
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	height: 2px;
+	background: var(--sgs-mn-accent);
+	clip-path: inset(0 100% 0 0);
+	transition: clip-path 400ms var(--sgs-mn-spring);
+	transition-delay: calc(var(--sgs-mn-stagger) * var(--i, 0) + 200ms);
+	width: 100%;
+}
+
+:is(.sgs-mobile-nav:popover-open, .sgs-mobile-nav.is-open) .sgs-mobile-nav__item--current .sgs-mobile-nav__link::after {
+	clip-path: inset(0 0% 0 0);
+}
+
+/* ─── Accordion Sub-menus ───────────────────────────────────────────────────── */
+.sgs-mobile-nav__item-row {
+	display: flex;
+	align-items: center;
+}
+
+.sgs-mobile-nav__item-row .sgs-mobile-nav__link {
+	flex: 1;
+}
+
+.sgs-mobile-nav__toggle {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 48px;
+	height: 48px;
+	border: none;
+	background: none;
+	color: inherit;
+	cursor: pointer;
+	flex-shrink: 0;
+	padding: 0;
+	transition: background 200ms ease;
+	border-radius: 8px;
+}
+
+.sgs-mobile-nav__toggle:hover,
+.sgs-mobile-nav__toggle:focus-visible {
+	background: rgba(255, 255, 255, 0.1);
+}
+
+.sgs-mobile-nav__chevron {
+	display: flex;
+	transition: transform 300ms var(--sgs-mn-spring);
+}
+
+.sgs-mobile-nav__chevron svg {
+	width: 20px;
+	height: 20px;
+}
+
+.sgs-mobile-nav__toggle[aria-expanded="true"] .sgs-mobile-nav__chevron {
+	transform: rotate(180deg);
+}
+
+/* Sub-menu list — interpolate-size for height:auto transition */
+.sgs-mobile-nav__submenu {
+	list-style: none;
+	margin: 0;
+	padding: 0 0 0 var(--wp--preset--spacing--40, 1.5rem);
+	overflow: hidden;
+	interpolate-size: allow-keywords;
+	height: 0;
+	opacity: 0;
+	transition:
+		height 350ms var(--sgs-mn-spring),
+		opacity 250ms ease;
+}
+
+.sgs-mobile-nav__submenu:not([hidden]) {
+	height: auto;
+	opacity: 1;
+}
+
+/* Fallback for browsers without interpolate-size */
+@supports not (interpolate-size: allow-keywords) {
+	.sgs-mobile-nav__submenu {
+		height: auto;
+		transition: opacity 250ms ease;
+	}
+
+	.sgs-mobile-nav__submenu[hidden] {
+		display: none;
+	}
+}
+
+.sgs-mobile-nav__subitem {
+	border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sgs-mobile-nav__sublink {
+	display: flex;
+	align-items: center;
+	padding: 10px 0;
+	color: rgba(255, 255, 255, 0.85);
+	text-decoration: none;
+	font-size: 1rem;
+	min-height: 44px;
+	transition: color 200ms ease;
+}
+
+.sgs-mobile-nav__sublink:hover,
+.sgs-mobile-nav__sublink:focus-visible {
+	color: var(--sgs-mn-accent);
+}
+
+/* "View All" link — slightly bolder */
+.sgs-mobile-nav__subitem--view-all .sgs-mobile-nav__sublink {
+	font-weight: 600;
+	color: var(--sgs-mn-accent);
+}
+
+/* ─── Zone 3: Social Icons ──────────────────────────────────────────────────── */
+.sgs-mobile-nav__socials {
+	display: flex;
+	justify-content: center;
+	gap: var(--wp--preset--spacing--20, 0.5rem);
+	padding-top: var(--wp--preset--spacing--30, 1rem);
+	margin-top: auto;
+}
+
+.sgs-mobile-nav__social-link {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	border-radius: 50%;
+	color: #fff;
+	text-decoration: none;
+	transition: transform 200ms ease, filter 200ms ease;
+}
+
+.sgs-mobile-nav__social-link:hover,
+.sgs-mobile-nav__social-link:focus-visible {
+	transform: scale(1.1);
+	filter: brightness(1.15);
+}
+
+.sgs-mobile-nav__social-link svg {
+	width: 20px;
+	height: 20px;
+}
+
+/* Coloured social icons */
+.sgs-mobile-nav__socials--coloured .sgs-mobile-nav__social-link--linkedin {
+	background: #0077b5;
+}
+
+.sgs-mobile-nav__socials--coloured .sgs-mobile-nav__social-link--facebook {
+	background: #1877f2;
+}
+
+.sgs-mobile-nav__socials--coloured .sgs-mobile-nav__social-link--instagram {
+	background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+}
+
+.sgs-mobile-nav__socials--coloured .sgs-mobile-nav__social-link--star {
+	background: #ea4335;
+}
+
+.sgs-mobile-nav__socials--coloured .sgs-mobile-nav__social-link--twitter {
+	background: #1da1f2;
+}
+
+/* Plain social icons */
+.sgs-mobile-nav__socials--plain .sgs-mobile-nav__social-link {
+	background: rgba(255, 255, 255, 0.15);
+}
+
+/* Outline social icons */
+.sgs-mobile-nav__socials--outline .sgs-mobile-nav__social-link {
+	background: transparent;
+	border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* ─── Search Bar ────────────────────────────────────────────────────────────── */
+.sgs-mobile-nav__search {
+	padding-bottom: var(--wp--preset--spacing--20, 0.5rem);
+}
+
+.sgs-mobile-nav__search form {
+	display: flex;
+	gap: 0;
+	background: rgba(255, 255, 255, 0.1);
+	border-radius: 8px;
+	overflow: hidden;
+}
+
+.sgs-mobile-nav__search-input {
+	flex: 1;
+	padding: 12px 16px;
+	border: none;
+	background: none;
+	color: inherit;
+	font-size: 1rem;
+	outline: none;
+	min-height: 48px;
+}
+
+.sgs-mobile-nav__search-input::placeholder {
+	color: rgba(255, 255, 255, 0.5);
+}
+
+.sgs-mobile-nav__search-btn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 48px;
+	height: 48px;
+	border: none;
+	background: none;
+	color: inherit;
+	cursor: pointer;
+}
+
+.sgs-mobile-nav__search-btn svg {
+	width: 20px;
+	height: 20px;
+}
+
+/* ─── Account Tray ──────────────────────────────────────────────────────────── */
+.sgs-mobile-nav__account {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: var(--wp--preset--spacing--20, 0.5rem) 0;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+	margin-bottom: var(--wp--preset--spacing--20, 0.5rem);
+}
+
+.sgs-mobile-nav__account-greeting {
+	font-weight: 600;
+}
+
+.sgs-mobile-nav__account-link {
+	color: var(--sgs-mn-accent);
+	text-decoration: none;
+	font-weight: 600;
+	font-size: 0.875rem;
+}
+
+/* ─── Body Scroll Lock ──────────────────────────────────────────────────────── */
+body.sgs-mobile-nav-open {
+	overflow: hidden;
+	padding-right: var(--sgs-scrollbar-width, 0px);
+}
+
+/* ─── Hamburger Button (stays in header, not part of this block) ────────────── */
+/* These styles target the trigger button wherever it lives */
+[popovertarget="sgs-mobile-nav"] {
+	display: none;
+}
+
+@media (max-width: 1023px) {
+	[popovertarget="sgs-mobile-nav"] {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 44px;
+		height: 44px;
+		border: none;
+		background: transparent;
+		color: var(--wp--preset--color--text, #1e1e1e);
+		cursor: pointer;
+		padding: 0;
+		border-radius: 8px;
+		transition: background 200ms ease;
+	}
+
+	[popovertarget="sgs-mobile-nav"]:hover,
+	[popovertarget="sgs-mobile-nav"]:focus-visible {
+		background: var(--wp--preset--color--surface-alt, #f5f7f7);
+	}
+}
+
+/* ─── Hide WP Core Navigation on Mobile/Tablet ──────────────────────────────── */
+/* When this block is active, it replaces WP core's responsive navigation.
+   Hide the desktop nav container and WP core's own responsive toggle below 1024px. */
+@media (max-width: 1023px) {
+	/* Hide the desktop navigation links container */
+	.wp-block-navigation .wp-block-navigation__container {
+		display: none !important;
+	}
+
+	/* Hide WordPress core's responsive open/close buttons (we use our own trigger) */
+	.wp-block-navigation__responsive-container-open,
+	.wp-block-navigation__responsive-container-close {
+		display: none !important;
+	}
+}
+
+/* Hide WP core's responsive toggle at desktop too — our block owns all toggle logic */
+@media (min-width: 1024px) {
+	.wp-block-navigation__responsive-container-open,
+	.wp-block-navigation__responsive-container-close {
+		display: none !important;
+	}
+}
+
+/* ─── Desktop Hamburger Mode ─────────────────────────────────────────────────── */
+/* When desktopHamburger is true, the hamburger trigger shows at ALL sizes
+   and the desktop wp:navigation hides. The data attribute is on the drawer,
+   but the CSS targets the trigger and desktop nav via general sibling selector. */
+.sgs-mobile-nav[data-desktop-burger="true"] ~ .wp-block-navigation,
+body:has(.sgs-mobile-nav[data-desktop-burger="true"]) .wp-block-navigation__container {
+	display: none !important;
+}
+
+body:has(.sgs-mobile-nav[data-desktop-burger="true"]) [popovertarget="sgs-mobile-nav"] {
+	display: flex !important;
+}
+
+/* ─── Reduced Motion ────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+	.sgs-mobile-nav,
+	.sgs-mobile-nav::backdrop,
+	.sgs-mobile-nav__item,
+	.sgs-mobile-nav__chevron,
+	.sgs-mobile-nav__submenu,
+	.sgs-mobile-nav__cta-btn,
+	.sgs-mobile-nav__close,
+	.sgs-mobile-nav__icon-btn,
+	.sgs-mobile-nav__social-link,
+	.sgs-mobile-nav__item--current .sgs-mobile-nav__link::after {
+		transition: none !important;
+		animation: none !important;
+	}
+
+	.sgs-mobile-nav__item {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+/* ─── Touch Active States ──────────────────────────────────────────────────── */
+/* Instant feedback on press (0ms in), gentle release (150ms out). */
+.sgs-mobile-nav__link,
+.sgs-mobile-nav__sublink,
+.sgs-mobile-nav__toggle,
+.sgs-mobile-nav__close,
+.sgs-mobile-nav__cta-btn,
+.sgs-mobile-nav__icon-btn,
+.sgs-mobile-nav__social-link {
+	-webkit-tap-highlight-color: transparent;
+}
+
+.sgs-mobile-nav__link:active,
+.sgs-mobile-nav__sublink:active,
+.sgs-mobile-nav__toggle:active {
+	background: rgba(255, 255, 255, 0.08);
+	transition: background 0ms;
+}
+
+/* ─── Touch-Sticky Hover Fix ───────────────────────────────────────────────── */
+/* On touch devices, :hover persists after tap — clear it so the accordion
+   toggle doesn't show a filled background box in the expanded state. */
+@media (hover: none) {
+	.sgs-mobile-nav__toggle:hover,
+	.sgs-mobile-nav__link:hover,
+	.sgs-mobile-nav__sublink:hover {
+		background: none;
+	}
+}
+
+/* ─── Focus Visible ─────────────────────────────────────────────────────────── */
+.sgs-mobile-nav :focus-visible {
+	outline: 2px solid var(--sgs-mn-accent);
+	outline-offset: 2px;
+}
+
+/* ─── Flex Layout ───────────────────────────────────────────────────────────── */
+/* Only apply flex when popover is open — plain display:flex would override
+   the UA stylesheet's display:none from the Popover API. */
+.sgs-mobile-nav:popover-open,
+.sgs-mobile-nav.is-open {
+	display: flex;
+	flex-direction: column;
+}
+
+.sgs-mobile-nav__menu {
+	flex: 1;
+}
+
+/* ─── Animation Presets ──────────────────────────────────────────────────────── */
+
+/* Spring-bouncy — higher overshoot for playful interactions */
+.sgs-mobile-nav {
+	--sgs-mn-spring-bouncy: linear(
+		0, 0.012 1.8%, 0.049 3.7%, 0.195 7.6%, 0.275 9.7%,
+		0.679 18.4%, 0.795 21.7%, 0.887 25.4%, 0.954 29.5%,
+		1.003 33.7%, 1.036 38.5%, 1.05 42.8%, 1.045 51%,
+		1.022 60.9%, 1.007 68.7%, 0.998 78.8%, 1
+	);
+}
+
+/* ─── Mega-Menu Card Layout ──────────────────────────────────────────────────── */
+
+/* Section heading — small caps label above cards */
+.sgs-mobile-nav__mega-heading {
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	opacity: 0.6;
+	padding: 8px 0 4px;
+	font-weight: 600;
+	list-style: none;
+}
+
+/* Card item container */
+.sgs-mobile-nav__mega-card {
+	list-style: none;
+}
+
+/* Card link — flex row: thumbnail left, text right */
+.sgs-mobile-nav__mega-card-link {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 10px 0;
+	text-decoration: none;
+	color: inherit;
+	border-radius: 6px;
+	transition: background 150ms ease;
+}
+
+.sgs-mobile-nav__mega-card-link:hover {
+	background: rgba(255, 255, 255, 0.06);
+}
+
+/* Thumbnail */
+.sgs-mobile-nav__mega-card-img {
+	width: 48px;
+	height: 48px;
+	border-radius: 8px;
+	object-fit: cover;
+	flex-shrink: 0;
+}
+
+/* Text block */
+.sgs-mobile-nav__mega-card-content {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}
+
+/* Card title */
+.sgs-mobile-nav__mega-card-title {
+	display: block;
+	font-weight: 600;
+	font-size: var(--sgs-mn-link-size, var(--wp--preset--font-size--medium, 1rem));
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+/* Card description */
+.sgs-mobile-nav__mega-card-desc {
+	display: -webkit-box;
+	display: block;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	opacity: 0.75;
+	margin-top: 2px;
+	line-height: 1.4;
+
+	/* Clamp to 2 lines */
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+/* ─── Backdrop Blur ──────────────────────────────────────────────────────────── */
+
+/* Popover API ::backdrop with optional blur */
+.sgs-mobile-nav::backdrop {
+	-webkit-backdrop-filter: blur(var(--sgs-mn-backdrop-blur, 0px));
+	backdrop-filter: blur(var(--sgs-mn-backdrop-blur, 0px));
+}
+
+/* Fallback backdrop element (older browsers without Popover API) */
+.sgs-mobile-nav__backdrop {
+	-webkit-backdrop-filter: blur(var(--sgs-mn-backdrop-blur, 0px));
+	backdrop-filter: blur(var(--sgs-mn-backdrop-blur, 0px));
+}

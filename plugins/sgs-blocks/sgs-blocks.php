@@ -75,6 +75,9 @@ require_once SGS_BLOCKS_PATH . 'includes/google-reviews-settings.php';
 require_once SGS_BLOCKS_PATH . 'includes/stripe-settings.php';
 Stripe_Settings::init();
 
+// Mobile nav block patterns (6 presets).
+require_once SGS_BLOCKS_PATH . 'includes/mobile-nav-patterns.php';
+
 // Register REST API endpoints.
 Forms\Form_REST_API::register();
 
