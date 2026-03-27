@@ -21,7 +21,7 @@ $trigger_background = $attributes['triggerBackground'] ?? '';
 $max_width          = $attributes['maxWidth'] ?? 'medium';
 $close_on_overlay   = $attributes['closeOnOverlay'] ?? true;
 $modal_background   = $attributes['modalBackground'] ?? 'white';
-$overlay_colour     = $attributes['overlayColour'] ?? '#000000';
+$overlay_colour     = sgs_colour_value( $attributes['overlayColour'] ?? 'text' );
 $overlay_opacity    = $attributes['overlayOpacity'] ?? 50;
 
 // Generate unique ID for this modal instance.
@@ -47,7 +47,7 @@ $dialog_style_attr = $dialog_styles ? ' style="' . implode( ';', $dialog_styles 
 // Backdrop styles will be set via CSS custom properties for the ::backdrop pseudo-element.
 $backdrop_vars = array();
 if ( $overlay_colour ) {
-	$backdrop_vars[] = '--sgs-modal-backdrop-colour:' . esc_attr( $overlay_colour );
+	$backdrop_vars[] = '--sgs-modal-backdrop-colour:' . $overlay_colour;
 }
 if ( $overlay_opacity ) {
 	$backdrop_vars[] = '--sgs-modal-backdrop-opacity:' . ( (float) $overlay_opacity / 100 );

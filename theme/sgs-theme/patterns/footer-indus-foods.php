@@ -85,29 +85,21 @@
 			<h6 class="wp-block-heading has-surface-color has-text-color has-small-font-size">Contact</h6>
 			<!-- /wp:heading -->
 
-			<!-- wp:paragraph {"textColor":"text-inverse","fontSize":"small"} -->
-			<p class="has-text-inverse-color has-text-color has-small-font-size">Call us: 0121 772 6677</p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/business-info {"type":"phone","textColor":"text-inverse","fontSize":"small"} /-->
 
-			<!-- wp:paragraph {"textColor":"text-inverse","fontSize":"small"} -->
-			<p class="has-text-inverse-color has-text-color has-small-font-size">Email: info@indusfoodsltd.com</p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/business-info {"type":"email","textColor":"text-inverse","fontSize":"small"} /-->
 
 			<!-- wp:heading {"level":6,"textColor":"surface","fontSize":"small","style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
 			<h6 class="wp-block-heading has-surface-color has-text-color has-small-font-size" style="margin-top:var(--wp--preset--spacing--40)">Opening Hours</h6>
 			<!-- /wp:heading -->
 
-			<!-- wp:paragraph {"textColor":"text-inverse","fontSize":"small","style":{"typography":{"lineHeight":"2"}}} -->
-			<p class="has-text-inverse-color has-text-color has-small-font-size" style="line-height:2">Monday - Thursday: 9am - 5pm<br>Friday: 9am - 1pm<br>Saturday: Closed<br>Sunday: Closed</p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/business-info {"type":"hours","textColor":"text-inverse","fontSize":"small"} /-->
 
 			<!-- wp:heading {"level":6,"textColor":"surface","fontSize":"small","style":{"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
 			<h6 class="wp-block-heading has-surface-color has-text-color has-small-font-size" style="margin-top:var(--wp--preset--spacing--40)">Address</h6>
 			<!-- /wp:heading -->
 
-			<!-- wp:paragraph {"textColor":"text-inverse","fontSize":"small"} -->
-			<p class="has-text-inverse-color has-text-color has-small-font-size">Stratford Street North<br>Sparkbrook, Birmingham<br>B11 1BU</p>
-			<!-- /wp:paragraph -->
+			<!-- wp:sgs/business-info {"type":"address","textColor":"text-inverse","fontSize":"small"} /-->
 		</div>
 		<!-- /wp:column -->
 

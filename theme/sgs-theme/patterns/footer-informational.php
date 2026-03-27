@@ -63,8 +63,8 @@
 			<!-- wp:sgs/business-info {"type":"address","textColor":"text-inverse","fontSize":"small"} /-->
 
 			<!-- wp:buttons {"style":{"spacing":{"margin":{"top":"var:preset|spacing|30"}}}} -->
-			<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--30)"><!-- wp:button {"style":{"color":{"text":"#1E1E1E","background":"#E7D768"},"border":{"radius":"8px"}}} -->
-			<div class="wp-block-button"><a class="wp-block-button__link has-text-color has-background wp-element-button" style="border-radius:8px;color:#1E1E1E;background-color:#E7D768">Get Directions &#8594;</a></div>
+			<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--30)"><!-- wp:button {"textColor":"text","backgroundColor":"accent","style":{"border":{"radius":"8px"}}} -->
+			<div class="wp-block-button"><a class="wp-block-button__link has-text-color has-background has-accent-background-color has-text-color wp-element-button" style="border-radius:8px">Get Directions &#8594;</a></div>
 			<!-- /wp:button --></div>
 			<!-- /wp:buttons -->
 		</div>

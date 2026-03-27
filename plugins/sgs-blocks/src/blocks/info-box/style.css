@@ -71,6 +71,21 @@
 	font-size: 32px;
 }
 
+/* Responsive icon sizes — driven by data attributes set in render.php.
+ * Using data attributes avoids per-block scoped <style> tags with hardcoded px values.
+ * Each size maps to the same dimensions defined above for the base classes. */
+@media (max-width: 1023px) {
+	.sgs-info-box[data-icon-size-tablet="small"] .sgs-info-box__icon { width: 40px; height: 40px; font-size: 16px; }
+	.sgs-info-box[data-icon-size-tablet="medium"] .sgs-info-box__icon { width: 52px; height: 52px; font-size: 24px; }
+	.sgs-info-box[data-icon-size-tablet="large"] .sgs-info-box__icon { width: 64px; height: 64px; font-size: 32px; }
+}
+
+@media (max-width: 599px) {
+	.sgs-info-box[data-icon-size-mobile="small"] .sgs-info-box__icon { width: 40px; height: 40px; font-size: 16px; }
+	.sgs-info-box[data-icon-size-mobile="medium"] .sgs-info-box__icon { width: 52px; height: 52px; font-size: 24px; }
+	.sgs-info-box[data-icon-size-mobile="large"] .sgs-info-box__icon { width: 64px; height: 64px; font-size: 32px; }
+}
+
 /* Heading */
 .sgs-info-box__heading {
 	font-size: var(--wp--preset--font-size--large);

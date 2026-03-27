@@ -18,7 +18,7 @@ $headline         = $attributes['headline'] ?? '';
 $sub_headline     = $attributes['subHeadline'] ?? '';
 $alignment        = $attributes['alignment'] ?? 'left';
 $bg_image         = $attributes['backgroundImage'] ?? null;
-$overlay_colour   = $attributes['overlayColour'] ?? '#1E1E1E';
+$overlay_colour   = sgs_colour_value( $attributes['overlayColour'] ?? 'text' );
 $overlay_opacity  = $attributes['overlayOpacity'] ?? 50;
 $split_image      = $attributes['splitImage'] ?? null;
 $bg_video         = $attributes['backgroundVideo'] ?? null;
@@ -131,7 +131,7 @@ $overlay_html = '';
 if ( ( ! $is_split && ! empty( $bg_image['url'] ) ) || $is_video || $is_svg_animated ) {
 	$overlay_style = sprintf(
 		'background-color:%s;opacity:%s',
-		esc_attr( $overlay_colour ),
+		$overlay_colour,
 		esc_attr( $overlay_opacity / 100 )
 	);
 	$overlay_html = '<span class="sgs-hero__overlay" style="' . $overlay_style . '" aria-hidden="true"></span>';

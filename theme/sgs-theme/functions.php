@@ -283,11 +283,6 @@ function enqueue_global_layout_fixes(): void {
 .wp-block-image:not(.brand-logo-tile){overflow:hidden}
 .wp-block-image:not(.brand-logo-tile) img{transition:transform .35s ease}
 .wp-block-image:not(.brand-logo-tile):hover img{transform:scale(1.05)}
-/* SGS: testimonials right-column image — fit to column height, no overflow.
- * The image should match the height of the testimonial carousel beside it,
- * not stretch the section. object-fit:contain keeps aspect ratio. */
-.wp-block-group[style*="#0A7EA8"] .wp-block-columns .wp-block-column:last-child .wp-block-image{margin:0}
-.wp-block-group[style*="#0A7EA8"] .wp-block-columns .wp-block-column:last-child .wp-block-image img{width:100%;height:auto;max-height:400px;object-fit:contain}
 ';
 	wp_add_inline_style( 'sgs-core-blocks-critical', $css );
 }
@@ -908,6 +903,13 @@ footer.wp-block-template-part{margin-block-start:0!important}
 	box-shadow:0 4px 12px rgba(0,0,0,0.2);
 	background-color:rgba(255,255,255,0.9);
 }
+
+/* ── Testimonials right-column image — contain to carousel height ────────────
+ * The image beside the testimonial carousel should match the carousel height,
+ * not stretch the section. Targets groups with the Indus Foods primary teal
+ * background inline style. object-fit:contain preserves aspect ratio. */
+.wp-block-group[style*='#0A7EA8'] .wp-block-columns .wp-block-column:last-child .wp-block-image{margin:0}
+.wp-block-group[style*='#0A7EA8'] .wp-block-columns .wp-block-column:last-child .wp-block-image img{width:100%;height:auto;max-height:400px;object-fit:contain}
 
 ";
 

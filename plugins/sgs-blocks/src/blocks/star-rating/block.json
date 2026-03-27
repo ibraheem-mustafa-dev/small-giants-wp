@@ -42,11 +42,11 @@
                                     },
                        "starColour":  {
                                           "type":  "string",
-                                          "default":  "#F5A623"
+                                          "default":  "accent"
                                       },
                        "emptyColour":  {
                                            "type":  "string",
-                                           "default":  "#E0E0E0"
+                                           "default":  "border-subtle"
                                        },
                        "label":  {
                                      "type":  "string",

@@ -79,7 +79,7 @@
                                            },
                        "overlayColour":  {
                                              "type":  "string",
-                                             "default":  "#1E1E1E"
+                                             "default":  "text"
                                          },
                        "overlayOpacity":  {
                                               "type":  "number",

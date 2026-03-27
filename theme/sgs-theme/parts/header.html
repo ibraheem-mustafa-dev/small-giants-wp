@@ -14,30 +14,23 @@
 		</div>
 		<!-- /wp:group -->
 
-		<!-- Mobile CTA buttons (hidden on desktop) -->
-		<!-- wp:html -->
-		<div class="sgs-top-bar-mobile-cta" aria-hidden="true">
-			<a href="/apply-for-trade-account/" class="sgs-top-bar-mobile-cta__btn">
-				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-					<path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" fill="currentColor"/>
-				</svg>
-				Apply For Trade Account
-			</a>
-			<a href="tel:+441217714330" class="sgs-top-bar-mobile-cta__btn sgs-top-bar-mobile-cta__btn--call" aria-label="Call us on 0121 771 4330">
-				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-					<path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" fill="currentColor"/>
-				</svg>
-				Call 0121 771 4330
-			</a>
+		<!-- Mobile CTA buttons (hidden on desktop, fully editable via block editor) -->
+		<!-- wp:group {"layout":{"type":"flex","flexWrap":"nowrap"},"className":"sgs-top-bar-mobile-cta"} -->
+		<div class="wp-block-group sgs-top-bar-mobile-cta">
+			<!-- wp:button {"textColor":"surface","className":"sgs-top-bar-mobile-cta__btn","style":{"border":{"radius":"50px"},"color":{"background":"rgba(255,255,255,0.15)"},"typography":{"fontSize":"0.8125rem","fontWeight":"600"},"spacing":{"padding":{"top":"8px","bottom":"8px","left":"14px","right":"14px"}}}} -->
+			<div class="wp-block-button sgs-top-bar-mobile-cta__btn"><a class="wp-block-button__link has-text-color has-surface-color has-background wp-element-button" href="#" style="border-radius:50px;background-color:rgba(255,255,255,0.15);font-size:0.8125rem;font-weight:600;padding-top:8px;padding-right:14px;padding-bottom:8px;padding-left:14px">Get Started</a></div>
+			<!-- /wp:button -->
+
+			<!-- wp:sgs/business-info {"type":"phone","linkPhone":true,"showIcon":true,"textColor":"surface","fontSize":"small","style":{"typography":{"fontWeight":"600"}},"className":"sgs-top-bar-mobile-cta__btn sgs-top-bar-mobile-cta__btn--call"} /-->
 		</div>
-		<!-- /wp:html -->
+		<!-- /wp:group -->
 
 		<!-- wp:social-links {"iconColor":"surface","iconColorValue":"#FFFFFF","size":"has-normal-icon-size","className":"is-style-logos-only sgs-top-bar-socials"} -->
 		<ul class="wp-block-social-links has-normal-icon-size has-icon-color is-style-logos-only sgs-top-bar-socials">
-			<!-- wp:social-link {"url":"https://www.linkedin.com/company/indus-foods-ltd/","service":"linkedin"} /-->
-			<!-- wp:social-link {"url":"https://www.facebook.com/indusfoodsltd/","service":"facebook"} /-->
-			<!-- wp:social-link {"url":"https://g.page/r/CYLLa_01-rZvEAE/review","service":"google"} /-->
-			<!-- wp:social-link {"url":"https://www.instagram.com/indusfoodsltd/","service":"instagram"} /-->
+			<!-- wp:social-link {"url":"","service":"linkedin"} /-->
+			<!-- wp:social-link {"url":"","service":"facebook"} /-->
+			<!-- wp:social-link {"url":"","service":"google"} /-->
+			<!-- wp:social-link {"url":"","service":"instagram"} /-->
 		</ul>
 		<!-- /wp:social-links -->
 
@@ -72,7 +65,7 @@
 	<!-- /wp:group -->
 
 	<!-- Mobile navigation drawer — SGS block with Popover API, spring animation, stagger cascade -->
-	<!-- wp:sgs/mobile-nav {"variant":"overlay","ctaText":"Apply for Trade","ctaUrl":"/apply-for-trade-account/"} /-->
+	<!-- wp:sgs/mobile-nav {"variant":"overlay","ctaText":"","ctaUrl":""} /-->
 
 </div>
 <!-- /wp:group -->

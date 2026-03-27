@@ -64,7 +64,7 @@
                                            },
                        "overlayColour":  {
                                              "type":  "string",
-                                             "default":  "#000000"
+                                             "default":  "text"
                                          },
                        "overlayOpacity":  {
                                               "type":  "number",

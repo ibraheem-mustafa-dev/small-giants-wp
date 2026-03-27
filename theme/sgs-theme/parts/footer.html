@@ -72,8 +72,8 @@
 			<!-- wp:sgs/business-info {"type":"address","textColor":"text-inverse","fontSize":"small"} /-->
 
 			<!-- wp:buttons {"style":{"spacing":{"margin":{"top":"var:preset|spacing|30"}}}} -->
-			<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--30)"><!-- wp:button {"style":{"color":{"text":"#1E1E1E","background":"#E7D768"},"border":{"radius":"8px"}}} -->
-			<div class="wp-block-button"><a class="wp-block-button__link has-text-color has-background wp-element-button" href="https://maps.google.com/?cid=7952814055868010143" style="border-radius:8px;color:#1E1E1E;background-color:#E7D768">Get Directions &#8594;</a></div>
+			<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--30)"><!-- wp:button {"textColor":"text","backgroundColor":"accent","style":{"border":{"radius":"8px"}}} -->
+			<div class="wp-block-button"><a class="wp-block-button__link has-text-color has-background has-accent-background-color has-text-color wp-element-button" href="#" style="border-radius:8px">Get Directions &#8594;</a></div>
 			<!-- /wp:button --></div>
 			<!-- /wp:buttons -->
 		</div>
@@ -86,9 +86,15 @@
 	<!-- wp:group {"align":"wide","layout":{"type":"flex","justifyContent":"center"},"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"},"margin":{"top":"var:preset|spacing|50"}},"border":{"top":{"color":"var:preset|color|accent","width":"1px"}}}} -->
 	<div class="wp-block-group alignwide" style="border-top-color:var(--wp--preset--color--accent);border-top-width:1px;margin-top:var(--wp--preset--spacing--50);padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40)">
 
-		<!-- wp:html -->
-		<p class="has-small-font-size sgs-copyright" style="color:#E7D768">Copyright &#169; [current_year] Indus Foods Ltd | <a href="https://smallgiantsstudio.co.uk/" class="sgs-credit-link" style="color:#E7D768">Website by Small Giants Studio</a></p>
-		<!-- /wp:html -->
+		<!-- wp:group {"layout":{"type":"flex","justifyContent":"center","flexWrap":"nowrap"},"style":{"spacing":{"blockGap":"8px"}}} -->
+		<div class="wp-block-group">
+			<!-- wp:sgs/business-info {"type":"copyright","textColor":"accent","fontSize":"small"} /-->
+
+			<!-- wp:paragraph {"textColor":"accent","fontSize":"small"} -->
+			<p class="has-accent-color has-text-color has-small-font-size">| <a href="https://smallgiantsstudio.co.uk/">Website by Small Giants Studio</a></p>
+			<!-- /wp:paragraph -->
+		</div>
+		<!-- /wp:group -->
 
 	</div>
 	<!-- /wp:group -->

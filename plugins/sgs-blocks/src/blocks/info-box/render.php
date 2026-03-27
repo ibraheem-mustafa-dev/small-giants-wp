@@ -58,33 +58,14 @@ if ( $hover_border_colour ) {
 	$wrapper_styles[] = '--sgs-hover-border:' . sgs_colour_value( $hover_border_colour );
 }
 
-// Icon size CSS dimensions map.
-$icon_size_map = array(
-	'small'  => array( 'wh' => '40px', 'fs' => '16px' ),
-	'medium' => array( 'wh' => '52px', 'fs' => '24px' ),
-	'large'  => array( 'wh' => '64px', 'fs' => '32px' ),
-);
-
-// Generate uid for responsive CSS scoping.
-$uid = 'sgs-ib-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
-
-// Build responsive icon size CSS.
-$responsive_css = '';
-if ( $icon_size_tablet && isset( $icon_size_map[ $icon_size_tablet ] ) ) {
-	$dims            = $icon_size_map[ $icon_size_tablet ];
-	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-info-box__icon{width:' . $dims['wh'] . ';height:' . $dims['wh'] . ';font-size:' . $dims['fs'] . '}}';
-}
-if ( $icon_size_mobile && isset( $icon_size_map[ $icon_size_mobile ] ) ) {
-	$dims            = $icon_size_map[ $icon_size_mobile ];
-	$responsive_css .= '@media (max-width:599px){.' . $uid . ' .sgs-info-box__icon{width:' . $dims['wh'] . ';height:' . $dims['wh'] . ';font-size:' . $dims['fs'] . '}}';
-}
+// Valid icon size slugs — used to sanitise tablet/mobile overrides.
+$valid_icon_sizes = array( 'small', 'medium', 'large' );
 
 // Build wrapper classes.
 $classes = array(
 	'sgs-info-box',
 	'sgs-info-box--' . esc_attr( $card_style ),
 	'sgs-info-box--hover-' . esc_attr( $hover_effect ),
-	$uid,
 );
 
 $wrapper_attr_args = array(
@@ -92,6 +73,14 @@ $wrapper_attr_args = array(
 );
 if ( $wrapper_styles ) {
 	$wrapper_attr_args['style'] = implode( ';', $wrapper_styles ) . ';';
+}
+// Responsive icon size overrides — consumed by CSS attribute selectors in style.css,
+// avoiding per-block scoped <style> tags with hardcoded pixel values.
+if ( $icon_size_tablet && in_array( $icon_size_tablet, $valid_icon_sizes, true ) ) {
+	$wrapper_attr_args['data-icon-size-tablet'] = $icon_size_tablet;
+}
+if ( $icon_size_mobile && in_array( $icon_size_mobile, $valid_icon_sizes, true ) ) {
+	$wrapper_attr_args['data-icon-size-mobile'] = $icon_size_mobile;
 }
 
 $wrapper_attributes = get_block_wrapper_attributes( $wrapper_attr_args );
@@ -159,11 +148,6 @@ if ( $link ) {
 		$target
 	);
 	$link_close = '</a>';
-}
-
-// Output responsive CSS if needed.
-if ( $responsive_css ) {
-	printf( '<style id="%s">%s</style>', esc_attr( $uid ), $responsive_css );
 }
 
 // Output.

@@ -11,11 +11,13 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+
 $rating        = (float) ( $attributes['rating'] ?? 5 );
 $max_rating    = (int) ( $attributes['maxRating'] ?? 5 );
 $star_size     = (int) ( $attributes['starSize'] ?? 24 );
-$star_colour   = esc_attr( $attributes['starColour'] ?? '#F5A623' );
-$empty_colour  = esc_attr( $attributes['emptyColour'] ?? '#E0E0E0' );
+$star_colour   = sgs_colour_value( $attributes['starColour'] ?? 'accent' );
+$empty_colour  = sgs_colour_value( $attributes['emptyColour'] ?? 'border-subtle' );
 $label         = $attributes['label'] ?? '';
 $show_numeric  = $attributes['showNumeric'] ?? false;
 $schema_enabled    = $attributes['schemaEnabled'] ?? true;
