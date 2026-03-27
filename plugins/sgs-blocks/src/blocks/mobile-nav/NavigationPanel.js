@@ -7,7 +7,8 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { SelectControl, ToggleControl, RangeControl } from '@wordpress/components';
+import { useState } from '@wordpress/element';
+import { SelectControl, ToggleControl, RangeControl, Button } from '@wordpress/components';
 
 const FONT_SIZE_OPTIONS = [
 	{ label: __( 'Extra Small', 'sgs-blocks' ), value: 'x-small' },
@@ -43,7 +44,11 @@ export default function NavigationPanel( { attributes, setAttributes } ) {
 		sublinkFontSizeMobile,
 		showDividers,
 		submenuIndent,
+		submenuIndentMobile,
+		submenuIndentTablet,
 	} = attributes;
+
+	const [ showIndentResponsive, setShowIndentResponsive ] = useState( false );
 
 	return (
 		<>
@@ -93,6 +98,46 @@ export default function NavigationPanel( { attributes, setAttributes } ) {
 				step={ 4 }
 				onChange={ ( value ) => setAttributes( { submenuIndent: value } ) }
 			/>
+			<Button
+				variant="tertiary"
+				isSmall
+				onClick={ () => setShowIndentResponsive( ( v ) => ! v ) }
+				style={ { marginBottom: '8px' } }
+			>
+				{ showIndentResponsive
+					? __( '- Hide responsive overrides', 'sgs-blocks' )
+					: __( '+ Responsive indent overrides', 'sgs-blocks' ) }
+			</Button>
+			{ showIndentResponsive && (
+				<>
+					<RangeControl
+						label={ __( 'Sub-menu Indent — Tablet (px)', 'sgs-blocks' ) }
+						help={ __( 'Override below 768px. Leave at 0 to use the base value.', 'sgs-blocks' ) }
+						value={ submenuIndentTablet === '' ? 0 : parseInt( submenuIndentTablet, 10 ) }
+						min={ 0 }
+						max={ 48 }
+						step={ 4 }
+						onChange={ ( value ) =>
+							setAttributes( {
+								submenuIndentTablet: value === 0 ? '' : String( value ),
+							} )
+						}
+					/>
+					<RangeControl
+						label={ __( 'Sub-menu Indent — Mobile (px)', 'sgs-blocks' ) }
+						help={ __( 'Override below 480px. Leave at 0 to use the base value.', 'sgs-blocks' ) }
+						value={ submenuIndentMobile === '' ? 0 : parseInt( submenuIndentMobile, 10 ) }
+						min={ 0 }
+						max={ 48 }
+						step={ 4 }
+						onChange={ ( value ) =>
+							setAttributes( {
+								submenuIndentMobile: value === 0 ? '' : String( value ),
+							} )
+						}
+					/>
+				</>
+			) }
 		</>
 	);
 }

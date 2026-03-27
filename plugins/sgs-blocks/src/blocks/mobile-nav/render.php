@@ -261,11 +261,15 @@ $menu_html    = $renderer->render_menu_items( $nav_blocks );
 $socials_html = $renderer->render_socials_zone();
 $tagline_html = $renderer->render_tagline();
 
-// ── Per-device font-size overrides ────────────────────────────────────────────
-// Only emit a <style> block when at least one mobile override is set.
+// ── Per-device responsive overrides ───────────────────────────────────────────
+// Only emit a <style> block when at least one override is set.
+// Mobile breakpoint  : max-width 480px (numeric) / 767px (font-size — existing pattern).
+// Tablet breakpoint  : max-width 768px.
 $mobile_style_tag = '';
 $mobile_vars      = array();
+$tablet_vars      = array();
 
+// Font-size mobile overrides (existing 767px breakpoint).
 if ( $link_font_size_mobile ) {
 	$mobile_vars[] = '--sgs-mn-link-size-mobile:' . sgs_font_size_value( sanitize_html_class( $link_font_size_mobile ) );
 }
@@ -273,11 +277,69 @@ if ( $sublink_font_size_mob ) {
 	$mobile_vars[] = '--sgs-mn-sublink-size-mobile:' . sgs_font_size_value( sanitize_html_class( $sublink_font_size_mob ) );
 }
 
-if ( $mobile_vars ) {
-	$mobile_style_tag = sprintf(
-		'<style>@media (max-width:767px){#sgs-mobile-nav{%s}}</style>',
-		esc_html( implode( ';', $mobile_vars ) )
-	);
+// Shared config for numeric responsive attributes.
+// Each entry: attr-key => [ CSS custom property, unit, min allowed, max allowed ].
+$responsive_attrs = array(
+	'drawerWidth'     => array( '--sgs-mn-width', '%', 1, 100 ),
+	'closeButtonSize' => array( '--sgs-mn-close-size', 'px', 44, 200 ),
+	'socialIconSize'  => array( '--sgs-mn-social-size', 'px', 20, 200 ),
+	'logoMaxWidth'    => array( '--sgs-mn-logo-width', 'px', 20, 600 ),
+	'submenuIndent'   => array( '--sgs-mn-indent', 'px', 0, 120 ),
+);
+
+foreach ( $responsive_attrs as $base => $cfg ) {
+	[ $prop, $unit, $min, $max ] = $cfg;
+
+	$raw_mobile = $attributes[ $base . 'Mobile' ] ?? '';
+	if ( '' !== $raw_mobile ) {
+		$val = (int) $raw_mobile;
+		if ( $val >= $min && $val <= $max ) {
+			$mobile_vars[] = $prop . ':' . $val . $unit;
+		}
+	}
+
+	$raw_tablet = $attributes[ $base . 'Tablet' ] ?? '';
+	if ( '' !== $raw_tablet ) {
+		$val = (int) $raw_tablet;
+		if ( $val >= $min && $val <= $max ) {
+			$tablet_vars[] = $prop . ':' . $val . $unit;
+		}
+	}
+}
+
+// Build the <style> tag — only when at least one override is present.
+// CSS content is constructed entirely from validated integers + hardcoded safe strings.
+if ( $mobile_vars || $tablet_vars ) {
+	$style_parts = array();
+
+	// Split mobile vars: font-size overrides use 767px, numeric use 480px.
+	$font_vars    = array();
+	$numeric_vars = array();
+
+	foreach ( $mobile_vars as $var ) {
+		$is_font = (
+			false !== strpos( $var, '--sgs-mn-link-size-mobile' ) ||
+			false !== strpos( $var, '--sgs-mn-sublink-size-mobile' )
+		);
+		if ( $is_font ) {
+			$font_vars[] = $var;
+		} else {
+			$numeric_vars[] = $var;
+		}
+	}
+
+	if ( $font_vars ) {
+		$style_parts[] = '@media (max-width:767px){#sgs-mobile-nav{' . implode( ';', $font_vars ) . '}}';
+	}
+	if ( $numeric_vars ) {
+		$style_parts[] = '@media (max-width:480px){#sgs-mobile-nav{' . implode( ';', $numeric_vars ) . '}}';
+	}
+	if ( $tablet_vars ) {
+		$style_parts[] = '@media (max-width:768px){#sgs-mobile-nav{' . implode( ';', $tablet_vars ) . '}}';
+	}
+
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS built from validated integers and hardcoded safe strings only.
+	$mobile_style_tag = '<style>' . implode( '', $style_parts ) . '</style>';
 }
 
 // ── Output ────────────────────────────────────────────────────────────────────

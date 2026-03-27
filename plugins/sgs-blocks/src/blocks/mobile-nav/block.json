@@ -29,7 +29,7 @@
 		},
 		"accentColour": {
 			"type": "string",
-			"default": "primary"
+			"default": "accent"
 		},
 		"dividerColour": {
 			"type": "string",
@@ -88,6 +88,14 @@
 			"type": "number",
 			"default": 85
 		},
+		"drawerWidthMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"drawerWidthTablet": {
+			"type": "string",
+			"default": ""
+		},
 		"drawerMaxWidth": {
 			"type": "number",
 			"default": 400
@@ -105,9 +113,25 @@
 			"type": "number",
 			"default": 120
 		},
+		"logoMaxWidthMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"logoMaxWidthTablet": {
+			"type": "string",
+			"default": ""
+		},
 		"closeButtonSize": {
 			"type": "number",
 			"default": 48
+		},
+		"closeButtonSizeMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"closeButtonSizeTablet": {
+			"type": "string",
+			"default": ""
 		},
 		"closeButtonStyle": {
 			"type": "string",
@@ -182,9 +206,25 @@
 			"type": "number",
 			"default": 24
 		},
+		"submenuIndentMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"submenuIndentTablet": {
+			"type": "string",
+			"default": ""
+		},
 		"socialIconSize": {
 			"type": "number",
 			"default": 44
+		},
+		"socialIconSizeMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"socialIconSizeTablet": {
+			"type": "string",
+			"default": ""
 		},
 		"showTagline": {
 			"type": "boolean",

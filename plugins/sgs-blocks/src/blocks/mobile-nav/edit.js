@@ -16,6 +16,7 @@
  */
 
 import { __ } from '@wordpress/i18n';
+import { useState } from '@wordpress/element';
 import { useBlockProps, InspectorControls, InnerBlocks } from '@wordpress/block-editor';
 import {
 	PanelBody,
@@ -23,6 +24,7 @@ import {
 	ToggleControl,
 	TextControl,
 	RangeControl,
+	Button,
 	__experimentalNumberControl as NumberControl,
 } from '@wordpress/components';
 import { DesignTokenPicker } from '../../components';
@@ -81,18 +83,27 @@ const SOCIAL_STYLE_OPTIONS = [
 	{ label: __( 'Outline Circles', 'sgs-blocks' ), value: 'outline' },
 ];
 
+// ── Fixed nav-line widths — no Math.random() to prevent re-render churn ──
+const NAV_LINE_WIDTHS = [ '70%', '55%', '80%', '45%', '60%' ];
+
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		// Layout
 		variant,
 		breakpoint,
 		drawerWidth,
+		drawerWidthMobile,
+		drawerWidthTablet,
 		drawerMaxWidth,
 		drawerPosition,
 		// Header
 		showLogo,
 		logoMaxWidth,
+		logoMaxWidthMobile,
+		logoMaxWidthTablet,
 		closeButtonSize,
+		closeButtonSizeMobile,
+		closeButtonSizeTablet,
 		closeButtonStyle,
 		// CTA
 		showCta,
@@ -111,11 +122,14 @@ export default function Edit( { attributes, setAttributes } ) {
 		showSocials,
 		socialStyle,
 		socialIconSize,
+		socialIconSizeMobile,
+		socialIconSizeTablet,
 		showTagline,
 		taglineText,
-		// Colours (existing tokens passed to picker)
+		// Colours (tokens passed to picker + used in preview)
 		accentColour,
 		dividerColour,
+		drawerBg,
 		// Advanced
 		enableSwipe,
 		showSearch,
@@ -123,9 +137,53 @@ export default function Edit( { attributes, setAttributes } ) {
 		desktopHamburger,
 	} = attributes;
 
+	// ── Responsive toggle state (editor-only, not block attributes) ──
+	const [ showDrawerWidthResponsive, setShowDrawerWidthResponsive ] = useState( false );
+	const [ showLogoResponsive, setShowLogoResponsive ] = useState( false );
+	const [ showCloseButtonResponsive, setShowCloseButtonResponsive ] = useState( false );
+	const [ showSocialSizeResponsive, setShowSocialSizeResponsive ] = useState( false );
+
 	const isSlideVariant = variant === 'slide-left' || variant === 'slide-right';
 
 	const blockProps = useBlockProps( { className: 'sgs-mobile-nav-editor' } );
+
+	// ── Preview colour helpers ────────────────────────────────────────────────
+	// Resolve a token slug to a CSS var reference for use in inline styles.
+	const tokenVar = ( slug, fallback ) =>
+		slug ? `var(--wp--preset--color--${ slug }, ${ fallback })` : fallback;
+
+	const drawerBgColour = tokenVar( drawerBg || 'primary-dark', '#075e80' );
+	const accentCssVar   = tokenVar( accentColour || 'accent', '#f87a1f' );
+
+	// CTA inline styles driven by ctaStyle attribute.
+	const ctaPreviewStyle = {
+		padding: '10px 20px',
+		borderRadius: '50px',
+		textAlign: 'center',
+		fontWeight: '600',
+		fontSize: '14px',
+		cursor: 'default',
+		background:
+			ctaStyle === 'filled' ? accentCssVar : 'transparent',
+		border:
+			ctaStyle === 'outline'
+				? `2px solid ${ accentCssVar }`
+				: ctaStyle === 'ghost'
+				? 'none'
+				: 'none',
+		color: ctaStyle === 'filled' ? '#fff' : accentCssVar,
+	};
+
+	// Close button border-radius driven by closeButtonStyle attribute.
+	const closeButtonRadius =
+		closeButtonStyle === 'circle'
+			? '50%'
+			: closeButtonStyle === 'square'
+			? '8px'
+			: '0';
+
+	const closeButtonBg =
+		closeButtonStyle === 'plain' ? 'transparent' : 'rgba(255,255,255,0.15)';
 
 	return (
 		<>
@@ -161,6 +219,46 @@ export default function Edit( { attributes, setAttributes } ) {
 								step={ 5 }
 								onChange={ ( value ) => setAttributes( { drawerWidth: value } ) }
 							/>
+							<Button
+								variant="tertiary"
+								isSmall
+								onClick={ () => setShowDrawerWidthResponsive( ( v ) => ! v ) }
+								style={ { marginBottom: '8px' } }
+							>
+								{ showDrawerWidthResponsive
+									? __( '- Hide responsive overrides', 'sgs-blocks' )
+									: __( '+ Responsive width overrides', 'sgs-blocks' ) }
+							</Button>
+							{ showDrawerWidthResponsive && (
+								<>
+									<RangeControl
+										label={ __( 'Drawer Width — Tablet (%)', 'sgs-blocks' ) }
+										help={ __( 'Override below 768px. Set to 60 to use base value.', 'sgs-blocks' ) }
+										value={ drawerWidthTablet === '' ? 60 : parseInt( drawerWidthTablet, 10 ) }
+										min={ 60 }
+										max={ 100 }
+										step={ 5 }
+										onChange={ ( value ) =>
+											setAttributes( {
+												drawerWidthTablet: value === 60 ? '' : String( value ),
+											} )
+										}
+									/>
+									<RangeControl
+										label={ __( 'Drawer Width — Mobile (%)', 'sgs-blocks' ) }
+										help={ __( 'Override below 480px. Set to 60 to use base value.', 'sgs-blocks' ) }
+										value={ drawerWidthMobile === '' ? 60 : parseInt( drawerWidthMobile, 10 ) }
+										min={ 60 }
+										max={ 100 }
+										step={ 5 }
+										onChange={ ( value ) =>
+											setAttributes( {
+												drawerWidthMobile: value === 60 ? '' : String( value ),
+											} )
+										}
+									/>
+								</>
+							) }
 							<NumberControl
 								label={ __( 'Max Width (px)', 'sgs-blocks' ) }
 								help={ __( 'Prevents the drawer exceeding this width on large viewports.', 'sgs-blocks' ) }
@@ -192,16 +290,60 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( value ) => setAttributes( { showLogo: value } ) }
 					/>
 					{ showLogo && (
-						<NumberControl
-							label={ __( 'Logo Max Width (px)', 'sgs-blocks' ) }
-							value={ logoMaxWidth }
-							min={ 60 }
-							max={ 300 }
-							step={ 10 }
-							onChange={ ( value ) =>
-								setAttributes( { logoMaxWidth: parseInt( value, 10 ) || 120 } )
-							}
-						/>
+						<>
+							<NumberControl
+								label={ __( 'Logo Max Width (px)', 'sgs-blocks' ) }
+								value={ logoMaxWidth }
+								min={ 60 }
+								max={ 300 }
+								step={ 10 }
+								onChange={ ( value ) =>
+									setAttributes( { logoMaxWidth: parseInt( value, 10 ) || 120 } )
+								}
+							/>
+							<Button
+								variant="tertiary"
+								isSmall
+								onClick={ () => setShowLogoResponsive( ( v ) => ! v ) }
+								style={ { marginBottom: '8px' } }
+							>
+								{ showLogoResponsive
+									? __( '- Hide responsive overrides', 'sgs-blocks' )
+									: __( '+ Responsive logo width overrides', 'sgs-blocks' ) }
+							</Button>
+							{ showLogoResponsive && (
+								<>
+									<NumberControl
+										label={ __( 'Logo Max Width — Tablet (px)', 'sgs-blocks' ) }
+										help={ __( 'Override below 768px. Leave blank to use base value.', 'sgs-blocks' ) }
+										value={ logoMaxWidthTablet }
+										min={ 40 }
+										max={ 300 }
+										step={ 10 }
+										placeholder="—"
+										onChange={ ( value ) =>
+											setAttributes( {
+												logoMaxWidthTablet: value === undefined || value === '' ? '' : String( parseInt( value, 10 ) || '' ),
+											} )
+										}
+									/>
+									<NumberControl
+										label={ __( 'Logo Max Width — Mobile (px)', 'sgs-blocks' ) }
+										help={ __( 'Override below 480px. Leave blank to use base value.', 'sgs-blocks' ) }
+										value={ logoMaxWidthMobile }
+										min={ 40 }
+										max={ 300 }
+										step={ 10 }
+										placeholder="—"
+										onChange={ ( value ) =>
+											setAttributes( {
+												logoMaxWidthMobile: value === undefined || value === '' ? '' : String( parseInt( value, 10 ) || '' ),
+											} )
+										}
+									/>
+								</>
+							) }
+						</>
 					) }
 					<NumberControl
 						label={ __( 'Close Button Size (px)', 'sgs-blocks' ) }
@@ -214,6 +356,48 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { closeButtonSize: Math.max( 44, parseInt( value, 10 ) || 48 ) } )
 						}
 					/>
+					<Button
+						variant="tertiary"
+						isSmall
+						onClick={ () => setShowCloseButtonResponsive( ( v ) => ! v ) }
+						style={ { marginBottom: '8px' } }
+					>
+						{ showCloseButtonResponsive
+							? __( '- Hide responsive overrides', 'sgs-blocks' )
+							: __( '+ Responsive close button overrides', 'sgs-blocks' ) }
+					</Button>
+					{ showCloseButtonResponsive && (
+						<>
+							<NumberControl
+								label={ __( 'Close Button Size — Tablet (px)', 'sgs-blocks' ) }
+								help={ __( 'Override below 768px. Leave blank to use base value.', 'sgs-blocks' ) }
+								value={ closeButtonSizeTablet }
+								min={ 44 }
+								max={ 80 }
+								step={ 2 }
+								placeholder="—"
+								onChange={ ( value ) =>
+									setAttributes( {
+										closeButtonSizeTablet: value === undefined || value === '' ? '' : String( Math.max( 44, parseInt( value, 10 ) || 44 ) ),
+									} )
+								}
+							/>
+							<NumberControl
+								label={ __( 'Close Button Size — Mobile (px)', 'sgs-blocks' ) }
+								help={ __( 'Override below 480px. Leave blank to use base value.', 'sgs-blocks' ) }
+								value={ closeButtonSizeMobile }
+								min={ 44 }
+								max={ 80 }
+								step={ 2 }
+								placeholder="—"
+								onChange={ ( value ) =>
+									setAttributes( {
+										closeButtonSizeMobile: value === undefined || value === '' ? '' : String( Math.max( 44, parseInt( value, 10 ) || 44 ) ),
+									} )
+								}
+							/>
+						</>
+					) }
 					<SelectControl
 						label={ __( 'Close Button Style', 'sgs-blocks' ) }
 						value={ closeButtonStyle }
@@ -303,7 +487,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 					<ToggleControl
 						label={ __( 'Show WhatsApp Button', 'sgs-blocks' ) }
-						help={ __( 'Number from Business Details → WhatsApp.', 'sgs-blocks' ) }
+						help={ __( 'Number from Business Details \u2192 WhatsApp.', 'sgs-blocks' ) }
 						checked={ showWhatsApp }
 						onChange={ ( value ) => setAttributes( { showWhatsApp: value } ) }
 					/>
@@ -350,6 +534,48 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( { socialIconSize: Math.max( 44, parseInt( value, 10 ) || 44 ) } )
 								}
 							/>
+							<Button
+								variant="tertiary"
+								isSmall
+								onClick={ () => setShowSocialSizeResponsive( ( v ) => ! v ) }
+								style={ { marginBottom: '8px' } }
+							>
+								{ showSocialSizeResponsive
+									? __( '- Hide responsive overrides', 'sgs-blocks' )
+									: __( '+ Responsive icon size overrides', 'sgs-blocks' ) }
+							</Button>
+							{ showSocialSizeResponsive && (
+								<>
+									<NumberControl
+										label={ __( 'Icon Size — Tablet (px)', 'sgs-blocks' ) }
+										help={ __( 'Override below 768px. Leave blank to use base value.', 'sgs-blocks' ) }
+										value={ socialIconSizeTablet }
+										min={ 44 }
+										max={ 80 }
+										step={ 2 }
+										placeholder="—"
+										onChange={ ( value ) =>
+											setAttributes( {
+												socialIconSizeTablet: value === undefined || value === '' ? '' : String( Math.max( 44, parseInt( value, 10 ) || 44 ) ),
+											} )
+										}
+									/>
+									<NumberControl
+										label={ __( 'Icon Size — Mobile (px)', 'sgs-blocks' ) }
+										help={ __( 'Override below 480px. Leave blank to use base value.', 'sgs-blocks' ) }
+										value={ socialIconSizeMobile }
+										min={ 44 }
+										max={ 80 }
+										step={ 2 }
+										placeholder="—"
+										onChange={ ( value ) =>
+											setAttributes( {
+												socialIconSizeMobile: value === undefined || value === '' ? '' : String( Math.max( 44, parseInt( value, 10 ) || 44 ) ),
+											} )
+										}
+									/>
+								</>
+							) }
 						</>
 					) }
 					<ToggleControl
@@ -432,40 +658,98 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			</InspectorControls>
 
-			{ /* ── Editor placeholder ────────────────────────────────────────── */ }
+			{ /* ── Editor canvas ───────────────────────────────────────────────── */ }
 			<div { ...blockProps }>
-				<div className="sgs-mobile-nav-editor__card">
-					<div className="sgs-mobile-nav-editor__icon">
-						<svg
-							width="24"
-							height="24"
-							viewBox="0 0 24 24"
-							fill="none"
-							xmlns="http://www.w3.org/2000/svg"
-							aria-hidden="true"
-						>
-							<path
-								d="M3 6h18M3 12h18M3 18h18"
-								stroke="currentColor"
-								strokeWidth="2"
-								strokeLinecap="round"
+
+				{ /* ── Drawer preview mockup ── */ }
+				<div
+					className="sgs-mobile-nav-preview"
+					style={ {
+						background: drawerBgColour,
+						color: 'white',
+						borderRadius: '12px',
+						padding: '20px',
+						minHeight: '300px',
+						display: 'flex',
+						flexDirection: 'column',
+						gap: '16px',
+						maxWidth: '320px',
+					} }
+					aria-hidden="true"
+				>
+					{ /* Zone 1: Header — logo placeholder + close button */ }
+					<div style={ { display: 'flex', justifyContent: 'space-between', alignItems: 'center' } }>
+						{ showLogo && (
+							<div
+								style={ {
+									width: ( logoMaxWidth || 120 ) + 'px',
+									maxWidth: '160px',
+									height: '24px',
+									background: 'rgba(255,255,255,0.25)',
+									borderRadius: '4px',
+								} }
 							/>
-						</svg>
+						) }
+						<div
+							style={ {
+								width: ( closeButtonSize || 48 ) + 'px',
+								height: ( closeButtonSize || 48 ) + 'px',
+								borderRadius: closeButtonRadius,
+								background: closeButtonBg,
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'center',
+								flexShrink: '0',
+								marginLeft: 'auto',
+							} }
+						>
+							<svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+								<path d="M1 1l12 12M13 1L1 13" stroke="white" strokeWidth="2" strokeLinecap="round" />
+							</svg>
+						</div>
 					</div>
-					<div className="sgs-mobile-nav-editor__info">
-						<strong>
-							{ __( 'Mobile Navigation', 'sgs-blocks' ) }
-						</strong>
-						<span className="sgs-mobile-nav-editor__variant">
-							{ VARIANT_OPTIONS.find( ( o ) => o.value === variant )?.label || variant }
-						</span>
-						<span className="sgs-mobile-nav-editor__note">
-							{ __( 'Menu items read automatically from header navigation.', 'sgs-blocks' ) }
-						</span>
+
+					{ /* Zone 2: CTA */ }
+					{ showCta && (
+						<div style={ ctaPreviewStyle }>
+							{ ctaText || __( 'Apply Now', 'sgs-blocks' ) }
+						</div>
+					) }
+
+					{ /* Zone 3: Nav lines */ }
+					<div style={ { flex: '1', display: 'flex', flexDirection: 'column', gap: '12px', paddingTop: '4px' } }>
+						{ NAV_LINE_WIDTHS.map( ( width, i ) => (
+							<div
+								key={ i }
+								style={ {
+									height: '16px',
+									background: 'rgba(255,255,255,0.18)',
+									borderRadius: '4px',
+									width,
+								} }
+							/>
+						) ) }
 					</div>
+
+					{ /* Zone 4: Social icon circles */ }
+					{ showSocials && (
+						<div style={ { display: 'flex', gap: '8px', justifyContent: 'center', paddingTop: '4px' } }>
+							{ [ 0, 1, 2, 3 ].map( ( i ) => (
+								<div
+									key={ i }
+									style={ {
+										width: '32px',
+										height: '32px',
+										borderRadius: '50%',
+										background: 'rgba(255,255,255,0.2)',
+									} }
+								/>
+							) ) }
+						</div>
+					) }
 				</div>
 
-				{ /* Custom content zone — drop blocks here to add promo content to the drawer */ }
+				{ /* ── Custom content zone — drop blocks here to add promo content to the drawer ── */ }
 				<div className="sgs-mobile-nav-editor__inner">
 					<p className="sgs-mobile-nav-editor__inner-label">
 						{ __( 'Custom drawer content (optional)', 'sgs-blocks' ) }

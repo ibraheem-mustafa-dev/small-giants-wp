@@ -58,3 +58,26 @@
 	font-size: 12px;
 	color: var(--wp--preset--color--text-muted, #555);
 }
+
+/* ── Drawer preview mockup ── */
+.sgs-mobile-nav-preview {
+	font-family: inherit;
+	transition: background 200ms ease;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+/* Inner content zone below the preview */
+.sgs-mobile-nav-editor__inner {
+	margin-top: 16px;
+	padding: 16px;
+	border: 1px dashed var(--wp--preset--color--primary, #0f7e80);
+	border-radius: 8px;
+}
+
+.sgs-mobile-nav-editor__inner-label {
+	margin: 0 0 8px;
+	font-size: 12px;
+	color: var(--wp--preset--color--text-muted, #555);
+	font-style: italic;
+}
