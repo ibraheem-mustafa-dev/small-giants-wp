@@ -285,6 +285,19 @@ body .is-root-container > .wp-block {
 	letter-spacing: -0.01em;
 }
 
+/*
+ * H1 line-height on mobile — the default theme.json value produces ~1.1
+ * which is too tight when the heading wraps to two lines at 375px.
+ * 1.2 gives comfortable breathing room without looking double-spaced.
+ */
+@media (max-width: 767px) {
+	h1.wp-block-heading,
+	.wp-block-sgs-hero h1,
+	.entry-content h1 {
+		line-height: 1.2;
+	}
+}
+
 /* ─── HEADER VARIANTS ─── */
 
 /*
@@ -556,7 +569,7 @@ body.sgs-has-transparent-header .wp-site-blocks > :first-child {
 /* The actual button link — override wp:button inline styles for responsive sizing */
 .sgs-top-bar-mobile-cta .wp-block-button__link {
 	white-space: nowrap;
-	font-size: clamp(0.6875rem, 2.5vw, 0.8125rem) !important;
+	font-size: clamp(0.875rem, 2.5vw, 0.9375rem) !important; /* min 14px — below 14px is too small to read comfortably */
 	padding: 8px clamp(8px, 2vw, 14px) !important;
 	min-height: 44px;
 	display: inline-flex;
