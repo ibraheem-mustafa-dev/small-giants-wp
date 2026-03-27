@@ -167,6 +167,7 @@ class SGS_Mobile_Nav_Renderer {
 					$html .= $this->render_home_link( $block );
 					break;
 				case 'sgs/mega-menu-item':
+				case 'sgs/mega-menu':
 					$html .= $this->render_mega_menu_item( $block );
 					break;
 				default:
@@ -281,7 +282,7 @@ class SGS_Mobile_Nav_Renderer {
 		$attrs   = $block['attrs'] ?? array();
 		$label   = $attrs['label'] ?? '';
 		$url     = $attrs['url'] ?? '';
-		$slug    = $attrs['templatePartSlug'] ?? '';
+		$slug    = $attrs['menuTemplatePart'] ?? $attrs['templatePartSlug'] ?? '';
 		$index   = $this->stagger_index++;
 		$item_id = 'sgs-mn-mega-' . $index;
 
