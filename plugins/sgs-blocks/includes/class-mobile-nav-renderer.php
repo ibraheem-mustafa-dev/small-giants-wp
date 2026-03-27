@@ -269,28 +269,45 @@ class SGS_Mobile_Nav_Renderer {
 	}
 
 	/**
-	 * Render a sgs/mega-menu-item as an accordion using extracted template part links.
+	 * Render a sgs/mega-menu-item as an accordion using structured template part content.
+	 *
+	 * Attempts rich card rendering first (heading + description + thumbnail).
+	 * Falls back to flat link list if no structured cards are found.
 	 *
 	 * @param array $block Parsed block array.
 	 * @return string HTML <li> element.
 	 */
 	public function render_mega_menu_item( array $block ): string {
-		$attrs    = $block['attrs'] ?? array();
-		$label    = $attrs['label'] ?? '';
-		$url      = $attrs['url'] ?? '';
-		$slug     = $attrs['templatePartSlug'] ?? '';
-		$index    = $this->stagger_index++;
-		$item_id  = 'sgs-mn-mega-' . $index;
-		$children = '';
+		$attrs   = $block['attrs'] ?? array();
+		$label   = $attrs['label'] ?? '';
+		$url     = $attrs['url'] ?? '';
+		$slug    = $attrs['templatePartSlug'] ?? '';
+		$index   = $this->stagger_index++;
+		$item_id = 'sgs-mn-mega-' . $index;
+
+		$children        = '';
+		$section_heading = '';
 
 		if ( $slug ) {
-			$links = $this->extract_links_from_template_part( $slug );
-			foreach ( $links as $link ) {
-				$children .= sprintf(
-					'<li class="sgs-mobile-nav__item"><a href="%s" class="sgs-mobile-nav__link">%s</a></li>',
-					esc_url( $link['href'] ),
-					esc_html( $link['text'] )
-				);
+			// Attempt structured card extraction first.
+			$structured = $this->extract_structured_content( $slug );
+
+			if ( ! empty( $structured['cards'] ) ) {
+				$section_heading = $structured['heading'];
+
+				foreach ( $structured['cards'] as $card ) {
+					$children .= $this->render_mega_card( $card );
+				}
+			} else {
+				// Fallback: flat link extraction for simpler template parts.
+				$links = $this->extract_links_from_template_part( $slug );
+				foreach ( $links as $link ) {
+					$children .= sprintf(
+						'<li class="sgs-mobile-nav__item"><a href="%s" class="sgs-mobile-nav__link">%s</a></li>',
+						esc_url( $link['href'] ),
+						esc_html( $link['text'] )
+					);
+				}
 			}
 		}
 
@@ -303,6 +320,7 @@ class SGS_Mobile_Nav_Renderer {
 			}
 		}
 
+		// "View All" link when the parent itself has a URL.
 		$view_all = '';
 		if ( $url ) {
 			$view_all = sprintf(
@@ -316,6 +334,15 @@ class SGS_Mobile_Nav_Renderer {
 			);
 		}
 
+		// Build the section heading HTML (only when present).
+		$heading_html = '';
+		if ( $section_heading ) {
+			$heading_html = sprintf(
+				'<li class="sgs-mobile-nav__mega-heading" role="presentation">%s</li>',
+				esc_html( $section_heading )
+			);
+		}
+
 		return sprintf(
 			'<li class="sgs-mobile-nav__item sgs-mobile-nav__item--has-children" style="--i:%d">
 				<div class="sgs-mobile-nav__item-row">
@@ -325,7 +352,7 @@ class SGS_Mobile_Nav_Renderer {
 					</button>
 				</div>
 				<ul id="%s" class="sgs-mobile-nav__submenu" hidden>
-					%s%s
+					%s%s%s
 				</ul>
 			</li>',
 			absint( $index ),
@@ -337,8 +364,63 @@ class SGS_Mobile_Nav_Renderer {
 			sprintf( esc_attr__( 'Toggle %s submenu', 'sgs-blocks' ), $label ),
 			sgs_get_lucide_icon( 'chevron-down' ),
 			esc_attr( $item_id ),
+			$heading_html,
 			$children,
 			$view_all
+		);
+	}
+
+	/**
+	 * Render a single mega-menu card as a compact mobile row.
+	 *
+	 * Produces: thumbnail (48×48) + title + description, all wrapped in a link.
+	 * Falls back gracefully when image or description are missing.
+	 *
+	 * @param array $card Card data: heading, description, image_src, image_alt, url, cta_text.
+	 * @return string HTML <li> element.
+	 */
+	private function render_mega_card( array $card ): string {
+		$url         = $card['url'] ?? '';
+		$heading     = $card['heading'] ?? '';
+		$description = $card['description'] ?? '';
+		$image_src   = $card['image_src'] ?? '';
+		$image_alt   = $card['image_alt'] ?? $heading;
+
+		if ( ! $url || ! $heading ) {
+			return '';
+		}
+
+		$img_html = '';
+		if ( $image_src ) {
+			$img_html = sprintf(
+				'<img src="%s" alt="%s" class="sgs-mobile-nav__mega-card-img" width="48" height="48" loading="lazy" />',
+				esc_url( $image_src ),
+				esc_attr( $image_alt )
+			);
+		}
+
+		$desc_html = '';
+		if ( $description ) {
+			$desc_html = sprintf(
+				'<span class="sgs-mobile-nav__mega-card-desc">%s</span>',
+				esc_html( $description )
+			);
+		}
+
+		return sprintf(
+			'<li class="sgs-mobile-nav__mega-card">
+				<a href="%s" class="sgs-mobile-nav__mega-card-link">
+					%s
+					<div class="sgs-mobile-nav__mega-card-content">
+						<span class="sgs-mobile-nav__mega-card-title">%s</span>
+						%s
+					</div>
+				</a>
+			</li>',
+			esc_url( $url ),
+			$img_html,
+			esc_html( $heading ),
+			$desc_html
 		);
 	}
 
@@ -365,9 +447,113 @@ class SGS_Mobile_Nav_Renderer {
 	// ── Template part link extraction ─────────────────────────────────────────
 
 	/**
+	 * Render a template part by slug and extract structured card content.
+	 *
+	 * Searches for groups with gradient backgrounds (the card pattern used in
+	 * mega-menu-sectors). Each card group yields: heading, description, image,
+	 * and link. Returns a structured array with an optional section heading.
+	 *
+	 * Falls back gracefully when no card groups are found — returns empty cards
+	 * so the caller can fall back to extract_links_from_template_part().
+	 *
+	 * @param string $slug Template part slug (e.g. 'mega-menu-sectors').
+	 * @return array {
+	 *     @type string $heading Section heading text (may be empty).
+	 *     @type array  $cards   Array of card arrays, each with keys:
+	 *                           heading, description, image_src, image_alt, url, cta_text.
+	 * }
+	 */
+	public function extract_structured_content( string $slug ): array {
+		$rendered = do_blocks( '<!-- wp:template-part {"slug":"' . esc_js( $slug ) . '"} /-->' );
+
+		if ( ! $rendered ) {
+			return array(
+				'heading' => '',
+				'cards'   => array(),
+			);
+		}
+
+		// Suppress libxml errors from complex block markup.
+		$prev = libxml_use_internal_errors( true );
+		$dom  = new DOMDocument();
+		$dom->loadHTML( '<?xml encoding="UTF-8"><html><body>' . $rendered . '</body></html>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD );
+		libxml_clear_errors();
+		libxml_use_internal_errors( $prev );
+
+		$xpath = new DOMXPath( $dom );
+
+		// ── Section heading — first h4 in the rendered output ──────────────────
+		$section_heading = '';
+		$h4_nodes        = $xpath->query( '//h4' );
+		if ( $h4_nodes && $h4_nodes->length > 0 ) {
+			$section_heading = trim( $h4_nodes->item( 0 )->textContent ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+		}
+
+		// ── Card groups — div.wp-block-group.has-background inside columns ─────
+		// Only match groups inside a column to avoid matching the outer wrapper group.
+		$card_nodes = $xpath->query(
+			'//div[contains(@class,"wp-block-column")]//div[contains(@class,"wp-block-group") and contains(@class,"has-background")]'
+		);
+
+		$cards = array();
+
+		if ( $card_nodes && $card_nodes->length > 0 ) {
+			foreach ( $card_nodes as $card_node ) {
+				$card = array(
+					'heading'     => '',
+					'description' => '',
+					'image_src'   => '',
+					'image_alt'   => '',
+					'url'         => '',
+					'cta_text'    => '',
+				);
+
+				// Heading — first h3 inside the card group.
+				$h3s = $xpath->query( './/h3', $card_node );
+				if ( $h3s && $h3s->length > 0 ) {
+					$card['heading'] = trim( $h3s->item( 0 )->textContent ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+				}
+
+				// Description — first p that does NOT contain an anchor (skip CTA paragraphs).
+				$paragraphs = $xpath->query( './/p[not(.//a)]', $card_node );
+				if ( $paragraphs && $paragraphs->length > 0 ) {
+					$card['description'] = trim( $paragraphs->item( 0 )->textContent ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+				}
+
+				// Image — first img inside the card.
+				$imgs = $xpath->query( './/img', $card_node );
+				if ( $imgs && $imgs->length > 0 ) {
+					$img               = $imgs->item( 0 );
+					$card['image_src'] = trim( $img->getAttribute( 'src' ) );
+					$card['image_alt'] = trim( $img->getAttribute( 'alt' ) );
+				}
+
+				// Link — first anchor inside the card. URL + CTA text.
+				$anchors = $xpath->query( './/a', $card_node );
+				if ( $anchors && $anchors->length > 0 ) {
+					$anchor           = $anchors->item( 0 );
+					$card['url']      = trim( $anchor->getAttribute( 'href' ) );
+					$card['cta_text'] = trim( $anchor->textContent ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+				}
+
+				// Only include cards that have at minimum a heading and a URL.
+				if ( $card['heading'] && $card['url'] ) {
+					$cards[] = $card;
+				}
+			}
+		}
+
+		return array(
+			'heading' => $section_heading,
+			'cards'   => $cards,
+		);
+	}
+
+	/**
 	 * Render a template part by slug and extract all <a> elements from the HTML.
 	 *
-	 * Uses DOMDocument so we get href + text without a regex.
+	 * Kept as a fallback for simple template parts that are just lists of links.
+	 * Used when extract_structured_content() returns no cards.
 	 *
 	 * @param string $slug Template part slug (e.g. 'mega-menu-sectors').
 	 * @return array Array of ['href' => string, 'text' => string] items.
@@ -385,6 +571,7 @@ class SGS_Mobile_Nav_Renderer {
 		$prev = libxml_use_internal_errors( true );
 		$dom  = new DOMDocument();
 		$dom->loadHTML( '<html><body>' . $rendered . '</body></html>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD );
+		libxml_clear_errors();
 		libxml_use_internal_errors( $prev );
 
 		$anchors = $dom->getElementsByTagName( 'a' );
@@ -441,11 +628,12 @@ class SGS_Mobile_Nav_Renderer {
 		if ( $show_logo ) {
 			$logo = get_custom_logo();
 			if ( $logo ) {
-				$logo_html = '<a href="' . esc_url( home_url( '/' ) ) . '" class="sgs-mobile-nav__logo-link">'
+				// get_custom_logo() returns a full <a><img></a> — wrap in a div, not another <a>.
+				$logo_html = '<div class="sgs-mobile-nav__logo">'
 					. wp_kses_post( $logo )
-					. '</a>';
+					. '</div>';
 			} else {
-				$logo_html = '<a href="' . esc_url( home_url( '/' ) ) . '" class="sgs-mobile-nav__logo-link sgs-mobile-nav__logo-link--text">'
+				$logo_html = '<a href="' . esc_url( home_url( '/' ) ) . '" class="sgs-mobile-nav__logo sgs-mobile-nav__logo--text">'
 					. esc_html( get_bloginfo( 'name' ) )
 					. '</a>';
 			}

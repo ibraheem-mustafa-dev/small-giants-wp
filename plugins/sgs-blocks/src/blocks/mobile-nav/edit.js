@@ -1,16 +1,16 @@
 /**
  * SGS Mobile Navigation — editor component.
  *
- * Shows a template selector above 8 inspector panels.
+ * Shows 8 inspector panels for the mobile navigation drawer.
  * An InnerBlocks area lets clients add custom content to the drawer
  * (promo banners, opening hours, notice banners, etc.).
  * The actual drawer renders on the frontend via render.php.
+ * Template presets are registered as block patterns (PHP), not in the editor.
  *
  * Panel helpers:
  *   NavigationPanel — Panel 4 (font sizes, weights, dividers)
- *   ColoursPanel    — Panel 6 (17 colour token pickers)
- *   AnimationPanel  — Panel 7 (timing, easing, stagger, backdrop)
- *   TemplateSelector — card grid above all panels
+ *   ColoursPanel    — Panel 6 (17 colour token pickers, grouped)
+ *   AnimationPanel  — Panel 7 (preset picker, stagger, backdrop)
  *
  * @package SGS\Blocks
  */
@@ -26,7 +26,6 @@ import {
 	__experimentalNumberControl as NumberControl,
 } from '@wordpress/components';
 import { DesignTokenPicker } from '../../components';
-import TemplateSelector from './TemplateSelector';
 import ColoursPanel from './ColoursPanel';
 import NavigationPanel from './NavigationPanel';
 import AnimationPanel from './AnimationPanel';
@@ -131,11 +130,6 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
-
-				{ /* ── Template Selector (always visible, above all panels) ── */ }
-				<div className="sgs-template-selector-wrap">
-					<TemplateSelector setAttributes={ setAttributes } />
-				</div>
 
 				{ /* ── Panel 1: Layout (initially open) ── */ }
 				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ true }>

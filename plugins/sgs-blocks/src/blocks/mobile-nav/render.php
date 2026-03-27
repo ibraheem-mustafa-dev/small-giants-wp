@@ -37,10 +37,49 @@ $drawer_width     = $attributes['drawerWidth'] ?? 85;
 $drawer_max_width = $attributes['drawerMaxWidth'] ?? 400;
 
 // Animation panel.
-$animation_duration = $attributes['animationDuration'] ?? 400;
-$animation_easing   = $attributes['animationEasing'] ?? 'spring';
-$exit_duration      = $attributes['exitDuration'] ?? 280;
-$backdrop_opacity   = $attributes['backdropOpacity'] ?? 60;
+$animation_preset = $attributes['animationPreset'] ?? 'spring';
+$backdrop_opacity = $attributes['backdropOpacity'] ?? 60;
+$backdrop_blur    = $attributes['backdropBlur'] ?? false;
+$backdrop_blur_px = $attributes['backdropBlurAmount'] ?? 8;
+
+// Resolve preset to timing values. Skip when "custom" is selected.
+if ( 'custom' !== $animation_preset ) {
+	$preset_map = array(
+		'snappy' => array(
+			'duration' => 280,
+			'easing'   => 'cubic-bezier(0.4, 0, 0.2, 1)',
+			'exit'     => 200,
+		),
+		'smooth' => array(
+			'duration' => 350,
+			'easing'   => 'ease-in-out',
+			'exit'     => 280,
+		),
+		'spring' => array(
+			'duration' => 400,
+			'easing'   => 'spring',
+			'exit'     => 280,
+		),
+		'bouncy' => array(
+			'duration' => 450,
+			'easing'   => 'spring-bouncy',
+			'exit'     => 320,
+		),
+		'none'   => array(
+			'duration' => 0,
+			'easing'   => 'linear',
+			'exit'     => 0,
+		),
+	);
+	$resolved           = $preset_map[ $animation_preset ] ?? $preset_map['spring'];
+	$animation_duration = $resolved['duration'];
+	$animation_easing   = $resolved['easing'];
+	$exit_duration      = $resolved['exit'];
+} else {
+	$animation_duration = $attributes['animationDuration'] ?? 400;
+	$animation_easing   = $attributes['animationEasing'] ?? 'spring';
+	$exit_duration      = $attributes['exitDuration'] ?? 280;
+}
 
 // Navigation panel.
 $link_font_size        = $attributes['linkFontSize'] ?? 'medium';
@@ -164,6 +203,11 @@ if ( $drawer_gradient ) {
 	if ( preg_match( '/^(linear|radial|conic)-gradient\s*\(/i', $drawer_gradient ) ) {
 		$css_vars[] = '--sgs-mn-gradient:' . $drawer_gradient;
 	}
+}
+
+// Backdrop blur — only emit when the feature is enabled.
+if ( $backdrop_blur ) {
+	$css_vars[] = '--sgs-mn-backdrop-blur:' . absint( $backdrop_blur_px ) . 'px';
 }
 
 $inline_style = implode( ';', $css_vars );
