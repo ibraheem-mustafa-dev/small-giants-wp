@@ -235,6 +235,7 @@ $wrapper_attrs = get_block_wrapper_attributes(
 		'class'               => implode( ' ', $classes ),
 		'popover'             => 'manual',
 		'role'                => 'dialog',
+		'aria-modal'          => 'true',
 		'aria-label'          => esc_attr__( 'Mobile navigation', 'sgs-blocks' ),
 		'style'               => $inline_style,
 		'data-variant'        => esc_attr( $variant ),

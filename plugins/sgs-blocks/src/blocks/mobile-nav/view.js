@@ -30,7 +30,10 @@ function init() {
 	// Set up link-click close.
 	setupLinkClickClose( drawer );
 
-	// Scroll lock + exit animation easing.
+	// Background element for inert management.
+	const siteBlocks = document.querySelector( '.wp-site-blocks' );
+
+	// Scroll lock + exit animation + a11y state management.
 	if ( supportsPopover ) {
 		// beforetoggle fires before state change — set closing easing.
 		drawer.addEventListener( 'beforetoggle', ( e ) => {
@@ -43,18 +46,53 @@ function init() {
 			if ( e.newState === 'open' ) {
 				drawer.classList.remove( 'is-closing' );
 				lockScroll();
+				// A11y: announce drawer state + trap screen readers.
+				if ( trigger ) {
+					trigger.setAttribute( 'aria-expanded', 'true' );
+				}
+				if ( siteBlocks ) {
+					siteBlocks.setAttribute( 'inert', '' );
+				}
+				// Move focus to close button.
+				const closeBtn = drawer.querySelector( '.sgs-mobile-nav__close' );
+				if ( closeBtn ) {
+					closeBtn.focus();
+				}
 			} else {
 				unlockScroll();
 				returnFocus( trigger );
 				drawer.classList.remove( 'is-closing' );
+				// A11y: reset state.
+				if ( trigger ) {
+					trigger.setAttribute( 'aria-expanded', 'false' );
+				}
+				if ( siteBlocks ) {
+					siteBlocks.removeAttribute( 'inert' );
+				}
 			}
 		} );
+
+		// ESC key handler — popover="manual" does not auto-dismiss.
+		document.addEventListener( 'keydown', ( e ) => {
+			if ( e.key === 'Escape' && drawer.matches( ':popover-open' ) ) {
+				drawer.hidePopover();
+			}
+		} );
+	}
+
+	// Set initial aria-expanded state on trigger.
+	if ( trigger && ! trigger.hasAttribute( 'aria-expanded' ) ) {
+		trigger.setAttribute( 'aria-expanded', 'false' );
+		trigger.setAttribute( 'aria-haspopup', 'dialog' );
 	}
 
 	// Swipe-to-close gesture.
 	if ( drawer.dataset.swipe === 'true' ) {
 		setupSwipe( drawer );
 	}
+
+	// Focus trap for modal accessibility
+	setupFocusTrap( drawer );
 
 	// Popover API fallback for older browsers.
 	if ( ! supportsPopover ) {
@@ -296,6 +334,47 @@ function returnFocus( trigger ) {
 	if ( trigger ) {
 		trigger.focus();
 	}
+}
+
+/**
+ * Set up focus trap for accessibility.
+ *
+ * @param {HTMLElement} drawer The drawer element.
+ */
+function setupFocusTrap( drawer ) {
+	drawer.addEventListener( 'keydown', ( e ) => {
+		if ( e.key !== 'Tab' ) {
+			return;
+		}
+
+		// Get all focusable elements
+		const focusables = Array.from(
+			drawer.querySelectorAll(
+				'a[href], button, input, textarea, select, details, [tabindex]:not([tabindex="-1"])'
+			)
+		).filter( el => ! el.hasAttribute( 'disabled' ) && ! el.closest( '[hidden]' ) );
+
+		if ( focusables.length === 0 ) {
+			return;
+		}
+
+		const firstFocusable = focusables[ 0 ];
+		const lastFocusable = focusables[ focusables.length - 1 ];
+
+		if ( e.shiftKey ) {
+			// Shift + Tab: if on first, cycle to last
+			if ( document.activeElement === firstFocusable ) {
+				e.preventDefault();
+				lastFocusable.focus();
+			}
+		} else {
+			// Tab: if on last, cycle to first
+			if ( document.activeElement === lastFocusable ) {
+				e.preventDefault();
+				firstFocusable.focus();
+			}
+		}
+	} );
 }
 
 /**

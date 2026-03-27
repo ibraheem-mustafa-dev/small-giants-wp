@@ -238,11 +238,11 @@
 	height: var(--sgs-mn-close-size, 48px);
 	min-width: 44px;
 	min-height: 44px;
-	border-radius: 50%;
+	border-radius: 50% !important; /* !important overrides WP core button border-radius reset */
 	flex-shrink: 0;
 	border: none;
 	background: rgba(255, 255, 255, 0.15) !important; /* !important overrides WP core button reset */
-	color: inherit;
+	color: var(--wp--preset--color--surface, #fff) !important; /* !important prevents global button { color: text-token } override */
 	cursor: pointer;
 	transition: background 200ms ease;
 }
@@ -258,7 +258,24 @@
 }
 
 /* ─── Zone 1: CTA Section ───────────────────────────────────────────────────── */
-.sgs-mobile-nav__cta {
+
+/* cta-zone is the containing div rendered by render_cta_zone() */
+.sgs-mobile-nav__cta-zone {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	gap: var(--wp--preset--spacing--20, 0.5rem);
+	padding-bottom: var(--wp--preset--spacing--30, 1rem);
+	border-bottom: 1px solid var(--sgs-mn-divider);
+	margin-bottom: var(--wp--preset--spacing--30, 1rem);
+}
+
+/*
+ * Legacy selector kept for backwards-compat with any existing content
+ * that may still have the old class. Can be removed once all blocks
+ * are redeployed with the updated renderer.
+ */
+.sgs-mobile-nav__cta:not(a) {
 	display: flex;
 	align-items: center;
 	gap: var(--wp--preset--spacing--20, 0.5rem);
@@ -268,10 +285,10 @@
 }
 
 .sgs-mobile-nav__cta-btn {
-	display: inline-flex;
+	display: flex;
 	align-items: center;
 	gap: 0.5rem;
-	flex: 1;
+	width: 100%;
 	justify-content: center;
 	padding: 14px 24px;
 	border-radius: 50px;
@@ -280,6 +297,8 @@
 	font-weight: 700;
 	font-size: 0.9375rem;
 	text-decoration: none;
+	border: none;
+	cursor: pointer;
 	transition: filter 200ms ease, transform 200ms ease;
 	min-height: 48px;
 }
@@ -469,7 +488,8 @@
 	display: flex;
 	align-items: center;
 	padding: 10px 0;
-	color: rgba(255, 255, 255, 0.85);
+	/* rgba(255,255,255,0.92) on #076A8E bg gives ~5.1:1 — passes WCAG AA for normal text */
+	color: rgba(255, 255, 255, 0.92);
 	text-decoration: none;
 	font-size: 1rem;
 	min-height: 44px;
@@ -494,6 +514,9 @@
 	gap: var(--wp--preset--spacing--20, 0.5rem);
 	padding-top: var(--wp--preset--spacing--30, 1rem);
 	margin-top: auto;
+	list-style: none;
+	padding-left: 0;
+	margin-bottom: 0;
 }
 
 .sgs-mobile-nav__social-link {
@@ -778,7 +801,8 @@ body:has(.sgs-mobile-nav[data-desktop-burger="true"]) [popovertarget="sgs-mobile
 	font-size: var(--wp--preset--font-size--small, 0.875rem);
 	text-transform: uppercase;
 	letter-spacing: 0.08em;
-	opacity: 0.6;
+	/* rgba(255,255,255,0.75) on #076A8E bg gives ~4.0:1 — passes 3:1 for bold 14px (large text threshold) */
+	color: rgba(255, 255, 255, 0.75);
 	padding: 8px 0 4px;
 	font-weight: 600;
 	list-style: none;
@@ -836,7 +860,8 @@ body:has(.sgs-mobile-nav[data-desktop-burger="true"]) [popovertarget="sgs-mobile
 	display: -webkit-box;
 	display: block;
 	font-size: var(--wp--preset--font-size--small, 0.875rem);
-	opacity: 0.75;
+	/* rgba(255,255,255,0.88) on #076A8E bg gives ~4.9:1 — passes WCAG AA for normal text */
+	color: rgba(255, 255, 255, 0.88);
 	margin-top: 2px;
 	line-height: 1.4;
 

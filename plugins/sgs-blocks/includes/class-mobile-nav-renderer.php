@@ -579,6 +579,25 @@ class SGS_Mobile_Nav_Renderer {
 		foreach ( $anchors as $anchor ) {
 			$href = trim( $anchor->getAttribute( 'href' ) );
 			$text = trim( $anchor->textContent ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- DOMNode::textContent is a PHP DOM API property, not our code.
+
+			// Fallback: If no text, try to find an img with alt text.
+			if ( ! $text ) {
+				$imgs = $anchor->getElementsByTagName( 'img' );
+				if ( $imgs->length > 0 ) {
+					$text = trim( $imgs->item( 0 )->getAttribute( 'alt' ) );
+				}
+			}
+
+			// Fallback: If still no text, extract a readable name from the URL.
+			if ( ! $text && $href && '#' !== $href ) {
+				$slug  = trim( wp_parse_url( $href, PHP_URL_PATH ) ?? '', '/' );
+				$parts = explode( '/', $slug );
+				$last  = end( $parts );
+				if ( $last ) {
+					$text = ucwords( str_replace( array( '-', '_' ), ' ', $last ) );
+				}
+			}
+
 			if ( $href && $text && '#' !== $href ) {
 				$links[] = array(
 					'href' => $href,
@@ -917,11 +936,10 @@ class SGS_Mobile_Nav_Renderer {
 				continue;
 			}
 			$items .= sprintf(
-				'<li class="sgs-mobile-nav__social-item"><a href="%s" target="_blank" rel="noopener noreferrer" aria-label="%s" class="sgs-mobile-nav__social-link sgs-mobile-nav__social-link--%s sgs-mobile-nav__social-link--%s">%s</a></li>',
+				'<li class="sgs-mobile-nav__social-item"><a href="%s" target="_blank" rel="noopener noreferrer" aria-label="%s" class="sgs-mobile-nav__social-link sgs-mobile-nav__social-link--%s">%s</a></li>',
 				esc_url( $url ),
 				esc_attr( $meta['label'] ),
 				sanitize_html_class( $meta['icon'] ),
-				sanitize_html_class( $style ),
 				sgs_get_lucide_icon( $meta['icon'] )
 			);
 		}
@@ -931,7 +949,8 @@ class SGS_Mobile_Nav_Renderer {
 		}
 
 		return sprintf(
-			'<ul class="sgs-mobile-nav__socials">%s</ul>',
+			'<ul class="sgs-mobile-nav__socials sgs-mobile-nav__socials--%s">%s</ul>',
+			sanitize_html_class( $style ),
 			$items
 		);
 	}
@@ -974,12 +993,12 @@ class SGS_Mobile_Nav_Renderer {
 	 * @return string Class string.
 	 */
 	private function build_cta_classes( string $style ): string {
-		$base = 'sgs-mobile-nav__cta wp-block-button__link';
+		$base = 'sgs-mobile-nav__cta-btn';
 		switch ( $style ) {
 			case 'outline':
-				return $base . ' sgs-mobile-nav__cta--outline';
+				return $base . ' sgs-mobile-nav__cta-btn--outline';
 			case 'ghost':
-				return $base . ' sgs-mobile-nav__cta--ghost';
+				return $base . ' sgs-mobile-nav__cta-btn--ghost';
 			default:
 				return $base;
 		}

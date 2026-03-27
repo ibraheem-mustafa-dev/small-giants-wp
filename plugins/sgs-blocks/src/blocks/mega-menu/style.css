@@ -549,7 +549,8 @@
 	right: auto;
 }
 
-.sgs-mega-menu--align-centre .sgs-mega-menu__panel {
+.sgs-mega-menu--align-centre .sgs-mega-menu__panel,
+.sgs-mega-menu--align-center .sgs-mega-menu__panel {
 	left:  50%;
 	right: auto;
 	--sgs-mm-tx:      -50%;
