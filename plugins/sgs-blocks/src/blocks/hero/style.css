@@ -253,6 +253,8 @@
 .sgs-hero--split .sgs-hero__badge--top-left     { top:    var(--wp--preset--spacing--40); left:  var(--wp--preset--spacing--30); }
 .sgs-hero--split .sgs-hero__badge--top-right    { top:    var(--wp--preset--spacing--40); right: var(--wp--preset--spacing--30); }
 
+/* "default" is an alias for "light" — white badge, dark text. */
+.sgs-hero__badge--default,
 .sgs-hero__badge--light {
 	background-color: var(--wp--preset--color--surface);
 	color: var(--wp--preset--color--text);

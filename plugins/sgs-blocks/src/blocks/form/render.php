@@ -112,9 +112,20 @@ $wrapper_attributes = get_block_wrapper_attributes(
 <div <?php echo $wrapper_attributes; ?>>
 
 	<?php if ( $is_multi_step ) : ?>
-		<div class="sgs-form__progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"<?php echo $progress_style_attr; ?>>
-			<div class="sgs-form__progress-bar" data-wp-style--width="state.progressWidth"></div>
-			<div class="sgs-form__progress-steps">
+		<div class="sgs-form__progress-wrapper">
+			<div
+				class="sgs-form__progress"
+				role="progressbar"
+				aria-label="<?php esc_attr_e( 'Form progress', 'sgs-blocks' ); ?>"
+				aria-valuenow="0"
+				aria-valuemin="0"
+				aria-valuemax="100"
+				data-wp-bind--aria-valuenow="state.progressPercent"
+				<?php echo $progress_style_attr; ?>
+			>
+				<div class="sgs-form__progress-bar" data-wp-style--width="state.progressWidth" aria-hidden="true"></div>
+			</div>
+			<nav class="sgs-form__progress-steps" aria-label="<?php esc_attr_e( 'Form steps', 'sgs-blocks' ); ?>">
 				<?php foreach ( $steps as $index => $step ) : ?>
 					<?php
 					$step_context = wp_json_encode( array( 'stepIndex' => $index ) );
@@ -132,7 +143,7 @@ $wrapper_attributes = get_block_wrapper_attributes(
 						<span class="sgs-form__progress-step-label"><?php echo esc_html( $step['label'] ); ?></span>
 					</button>
 				<?php endforeach; ?>
-			</div>
+			</nav>
 		</div>
 	<?php endif; ?>
 

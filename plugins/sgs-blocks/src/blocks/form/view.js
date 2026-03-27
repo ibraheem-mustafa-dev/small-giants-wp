@@ -26,6 +26,19 @@ const { state } = store( 'sgs/form', {
 		},
 
 		/**
+		 * Return progress as a plain integer (0–100) for aria-valuenow.
+		 *
+		 * @return {number} Integer percentage.
+		 */
+		get progressPercent() {
+			const ctx = getContext();
+			if ( ! ctx.isMultiStep || ctx.totalSteps === 0 ) {
+				return 0;
+			}
+			return Math.round( ( ( ctx.currentStep + 1 ) / ctx.totalSteps ) * 100 );
+		},
+
+		/**
 		 * Check if currently on first step.
 		 *
 		 * @return {boolean} True if on first step.
