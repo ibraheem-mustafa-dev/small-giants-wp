@@ -1,6 +1,6 @@
 # Architecture — SGS WordPress Framework
 
-> Last updated: 2026-02-21 | Status: Active Development (Phase 2 — Missing Blocks)
+> Last updated: 2026-03-28 | Status: Active Development (Phase 2 complete, architecture audit done)
 
 ## Overview
 
@@ -12,7 +12,7 @@ SGS is a standalone WordPress block theme and Gutenberg blocks plugin built by S
 |---|---|---|
 | CMS | WordPress 6.9.1 | Block theme, no classic editor |
 | Theme | `sgs-theme` (block theme) | theme.json v3, template parts, style variations per client |
-| Blocks plugin | `sgs-blocks` | 32 blocks (20 content/layout + 12 form) + 3 extensions, dynamic (server-rendered) |
+| Blocks plugin | `sgs-blocks` | 58 blocks (26 content/layout + 14 form + 7 interactive + 4 utility + 7 extensions), dynamic (server-rendered) |
 | Block build | `@wordpress/scripts` | `--experimental-modules` flag required for `viewScriptModule` |
 | Frontend JS | Interactivity API + vanilla ES modules | Interactivity API for stateful blocks; vanilla `viewScriptModule` for AJAX (Post Grid) |
 | Icons | Lucide (1900+ icons) | Pre-generated to `lucide-icons.php` via `scripts/generate-icons.js` |
