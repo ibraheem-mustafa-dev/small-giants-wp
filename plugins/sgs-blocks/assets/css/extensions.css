@@ -110,3 +110,84 @@
 		transition: none;
 	}
 }
+
+/* ===== Hover Image Zoom ===== */
+
+@media (prefers-reduced-motion: no-preference) {
+	.sgs-hover-image-zoom {
+		overflow: hidden;
+	}
+
+	.sgs-hover-image-zoom img {
+		transition: transform 0.5s ease;
+	}
+
+	.sgs-hover-image-zoom:hover img {
+		transform: scale(1.1);
+	}
+}
+
+/* ===== Hover Grayscale ===== */
+
+@media (prefers-reduced-motion: no-preference) {
+	.sgs-hover-grayscale {
+		filter: grayscale(100%);
+		transition: filter 0.5s;
+	}
+
+	.sgs-hover-grayscale:hover {
+		filter: grayscale(0);
+	}
+}
+
+/* ===== Underline Slide-in ===== */
+
+@media (prefers-reduced-motion: no-preference) {
+	.sgs-underline-slide {
+		position: relative;
+		display: inline-block;
+	}
+
+	.sgs-underline-slide::after {
+		content: '';
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		height: 2px;
+		background-color: currentColor;
+		transform: scaleX(0);
+		transform-origin: left center;
+		transition: transform 0.3s ease;
+	}
+
+	.sgs-underline-slide:hover::after {
+		transform: scaleX(1);
+	}
+}
+
+/* ===== Button Fill Animation ===== */
+
+@media (prefers-reduced-motion: no-preference) {
+	.sgs-button-fill {
+		position: relative;
+		overflow: hidden;
+		isolation: isolate;
+	}
+
+	.sgs-button-fill::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background-color: var(--sgs-button-fill-colour, currentColor);
+		opacity: 0.15;
+		transform: scaleX(0);
+		transform-origin: left center;
+		transition: transform 0.3s ease;
+		z-index: -1;
+	}
+
+	.sgs-button-fill:hover::before {
+		transform: scaleX(1);
+	}
+}

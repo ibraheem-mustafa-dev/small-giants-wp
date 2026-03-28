@@ -17,6 +17,8 @@ import {
 	PanelBody,
 	RangeControl,
 	SelectControl,
+	TextControl,
+	ToggleControl,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
@@ -35,6 +37,10 @@ const HOVER_ATTRS = {
 	sgsHoverScale: { type: 'number', default: 0 },
 	sgsHoverShadow: { type: 'string', default: '' },
 	sgsHoverDuration: { type: 'number', default: 300 },
+	sgsHoverImageZoom: { type: 'boolean', default: false },
+	sgsHoverGrayscale: { type: 'boolean', default: false },
+	sgsBlockLink: { type: 'string', default: '' },
+	sgsBlockLinkTarget: { type: 'boolean', default: false },
 };
 
 const SHADOW_OPTIONS = [
@@ -87,10 +93,11 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 			sgsHoverScale,
 			sgsHoverShadow,
 			sgsHoverDuration,
+			sgsHoverImageZoom,
+			sgsHoverGrayscale,
+			sgsBlockLink,
+			sgsBlockLinkTarget,
 		} = attributes;
-
-		const hasAnyHover = sgsHoverBgColour || sgsHoverTextColour ||
-			sgsHoverBorderColour || sgsHoverScale || sgsHoverShadow;
 
 		return (
 			<>
@@ -147,6 +154,41 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 							step={ 50 }
 							__nextHasNoMarginBottom
 						/>
+						<ToggleControl
+							label={ __( 'Image zoom on hover', 'sgs-blocks' ) }
+							help={ __( 'Zooms any child images when the block is hovered.', 'sgs-blocks' ) }
+							checked={ !! sgsHoverImageZoom }
+							onChange={ ( val ) => setAttributes( { sgsHoverImageZoom: val } ) }
+							__nextHasNoMarginBottom
+						/>
+						<ToggleControl
+							label={ __( 'Grayscale to colour on hover', 'sgs-blocks' ) }
+							help={ __( 'Renders the block in greyscale until hovered.', 'sgs-blocks' ) }
+							checked={ !! sgsHoverGrayscale }
+							onChange={ ( val ) => setAttributes( { sgsHoverGrayscale: val } ) }
+							__nextHasNoMarginBottom
+						/>
+					</PanelBody>
+					<PanelBody
+						title={ __( 'Block Link', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
+						<TextControl
+							label={ __( 'Link URL', 'sgs-blocks' ) }
+							help={ __( 'Wraps the entire block in a link.', 'sgs-blocks' ) }
+							value={ sgsBlockLink }
+							onChange={ ( val ) => setAttributes( { sgsBlockLink: val } ) }
+							type="url"
+							__nextHasNoMarginBottom
+						/>
+						{ sgsBlockLink && (
+							<ToggleControl
+								label={ __( 'Open in new tab', 'sgs-blocks' ) }
+								checked={ !! sgsBlockLinkTarget }
+								onChange={ ( val ) => setAttributes( { sgsBlockLinkTarget: val } ) }
+								__nextHasNoMarginBottom
+							/>
+						) }
 					</PanelBody>
 				</InspectorControls>
 			</>
@@ -173,17 +215,30 @@ addFilter(
 			sgsHoverBorderColour,
 			sgsHoverScale,
 			sgsHoverShadow,
-			sgsHoverDuration,
+			sgsHoverImageZoom,
+			sgsHoverGrayscale,
 		} = attributes;
 
 		const hasHover = sgsHoverBgColour || sgsHoverTextColour ||
 			sgsHoverBorderColour || sgsHoverScale || sgsHoverShadow;
 
-		if ( ! hasHover ) {
+		const extraClasses = [];
+
+		if ( hasHover ) {
+			extraClasses.push( 'sgs-has-hover' );
+		}
+		if ( sgsHoverImageZoom ) {
+			extraClasses.push( 'sgs-hover-image-zoom' );
+		}
+		if ( sgsHoverGrayscale ) {
+			extraClasses.push( 'sgs-hover-grayscale' );
+		}
+
+		if ( ! extraClasses.length ) {
 			return extraProps;
 		}
 
-		const classes = [ extraProps.className || '', 'sgs-has-hover' ]
+		const classes = [ extraProps.className || '', ...extraClasses ]
 			.filter( Boolean )
 			.join( ' ' );
 
