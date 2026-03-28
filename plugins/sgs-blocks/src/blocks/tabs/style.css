@@ -105,6 +105,7 @@
 
 /* ─── Style: Underline ──────────────────────────────────────────────────────── */
 
+/* Fallback for no-JS: box-shadow on the active tab (hidden when indicator is positioned via JS) */
 .sgs-tabs--style-underline .sgs-tabs__tab[aria-selected="true"],
 .sgs-tabs--style-underline .sgs-tabs__tab--active {
 	box-shadow: inset 0 -2px 0 var( --sgs-tab-active-indicator, var( --wp--preset--color--primary, currentColor ) );
@@ -113,6 +114,45 @@
 .sgs-tabs--vertical.sgs-tabs--style-underline .sgs-tabs__tab[aria-selected="true"],
 .sgs-tabs--vertical.sgs-tabs--style-underline .sgs-tabs__tab--active {
 	box-shadow: inset -2px 0 0 var( --sgs-tab-active-indicator, var( --wp--preset--color--primary, currentColor ) );
+}
+
+/* Sliding indicator — powered by CSS custom properties set via JS */
+.sgs-tabs--style-underline .sgs-tabs__nav {
+	position: relative;
+}
+
+.sgs-tabs--style-underline .sgs-tabs__nav::after {
+	content: '';
+	position: absolute;
+	bottom: 0;
+	left: var( --sgs-indicator-left, 0px );
+	width: var( --sgs-indicator-width, 0px );
+	height: 2px;
+	background: var( --sgs-tab-active-indicator, var( --wp--preset--color--primary, currentColor ) );
+	transition: left 200ms ease, width 200ms ease;
+	pointer-events: none;
+}
+
+/* Hide box-shadow fallback when JS has set the indicator position */
+.sgs-tabs--style-underline .sgs-tabs__nav[style*="--sgs-indicator-left"] .sgs-tabs__tab[aria-selected="true"],
+.sgs-tabs--style-underline .sgs-tabs__nav[style*="--sgs-indicator-left"] .sgs-tabs__tab--active {
+	box-shadow: none;
+}
+
+/* Vertical sliding indicator: top/height instead of left/width */
+.sgs-tabs--vertical.sgs-tabs--style-underline .sgs-tabs__nav::after {
+	bottom: auto;
+	left: auto;
+	right: 0;
+	top: var( --sgs-indicator-top, 0px );
+	width: 2px;
+	height: var( --sgs-indicator-height, 0px );
+	transition: top 200ms ease, height 200ms ease;
+}
+
+.sgs-tabs--vertical.sgs-tabs--style-underline .sgs-tabs__nav[style*="--sgs-indicator-top"] .sgs-tabs__tab[aria-selected="true"],
+.sgs-tabs--vertical.sgs-tabs--style-underline .sgs-tabs__nav[style*="--sgs-indicator-top"] .sgs-tabs__tab--active {
+	box-shadow: none;
 }
 
 /* ─── Style: Boxed ──────────────────────────────────────────────────────────── */
@@ -206,6 +246,17 @@
 		box-shadow: inset 0 -2px 0 var( --sgs-tab-active-indicator, var( --wp--preset--color--primary, currentColor ) );
 	}
 
+	/* Vertical indicator collapses to horizontal on small screens */
+	.sgs-tabs--vertical.sgs-tabs--style-underline .sgs-tabs__nav::after {
+		right: auto;
+		top: auto;
+		bottom: 0;
+		left: var( --sgs-indicator-left, 0px );
+		width: var( --sgs-indicator-width, 0px );
+		height: 2px;
+		transition: left 200ms ease, width 200ms ease;
+	}
+
 	.sgs-tabs--vertical.sgs-tabs--style-boxed .sgs-tabs__tab[aria-selected="true"],
 	.sgs-tabs--vertical.sgs-tabs--style-boxed .sgs-tabs__tab--active {
 		border-right-color: var( --sgs-panel-border );
@@ -219,6 +270,10 @@
 
 @media ( prefers-reduced-motion: reduce ) {
 	.sgs-tabs__tab {
+		transition: none;
+	}
+
+	.sgs-tabs--style-underline .sgs-tabs__nav::after {
 		transition: none;
 	}
 }

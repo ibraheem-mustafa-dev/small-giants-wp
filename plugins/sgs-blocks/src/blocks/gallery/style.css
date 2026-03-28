@@ -276,6 +276,30 @@
 	inset:    unset;
 }
 
+/* Caption reveal on hover — hidden by default, slides up on hover */
+.sgs-gallery--caption-reveal .sgs-gallery__caption {
+	opacity:    0;
+	transform:  translateY( 100% );
+	transition: opacity var( --sgs-transition-duration ) var( --sgs-transition-easing ),
+	            transform var( --sgs-transition-duration ) var( --sgs-transition-easing );
+}
+
+.sgs-gallery--caption-reveal .sgs-gallery__item:hover .sgs-gallery__caption,
+.sgs-gallery--caption-reveal .sgs-gallery__item:focus-within .sgs-gallery__caption {
+	opacity:   1;
+	transform: translateY( 0 );
+}
+
+/* Masonry reveal uses opacity only (captions are position:relative) */
+.sgs-gallery--caption-reveal.sgs-gallery--masonry .sgs-gallery__caption {
+	transform: none;
+}
+
+.sgs-gallery--caption-reveal.sgs-gallery--masonry .sgs-gallery__item:hover .sgs-gallery__caption,
+.sgs-gallery--caption-reveal.sgs-gallery--masonry .sgs-gallery__item:focus-within .sgs-gallery__caption {
+	transform: none;
+}
+
 /* ==========================================================================
    Lightbox modal
    ========================================================================== */
@@ -483,6 +507,10 @@
 
 	.sgs-gallery__item:hover {
 		transform: none;
+	}
+
+	.sgs-gallery--caption-reveal .sgs-gallery__caption {
+		transition: none;
 	}
 }
 

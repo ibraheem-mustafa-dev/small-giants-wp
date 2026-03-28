@@ -113,6 +113,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		aspectRatio,
 		enableLightbox,
 		showCaptions,
+		captionReveal,
 		captionColour,
 		captionBgColour,
 		hoverOverlayColour,
@@ -353,6 +354,15 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ set( 'showCaptions' ) }
 						__nextHasNoMarginBottom
 					/>
+					{ showCaptions && (
+						<ToggleControl
+							label={ __( 'Reveal caption on hover', 'sgs-blocks' ) }
+							checked={ captionReveal }
+							onChange={ set( 'captionReveal' ) }
+							help={ __( 'Caption slides up into view when the user hovers the image.', 'sgs-blocks' ) }
+							__nextHasNoMarginBottom
+						/>
+					) }
 					<SelectControl
 						label={ __( 'Image size', 'sgs-blocks' ) }
 						value={ imageSize }

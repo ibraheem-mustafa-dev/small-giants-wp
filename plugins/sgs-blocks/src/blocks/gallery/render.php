@@ -31,6 +31,7 @@ $gap             = absint( $attributes['gap'] ?? 16 );
 $aspect_ratio    = sanitize_text_field( $attributes['aspectRatio'] ?? '1/1' );
 $enable_lightbox = (bool) ( $attributes['enableLightbox'] ?? true );
 $show_captions   = (bool) ( $attributes['showCaptions'] ?? false );
+$caption_reveal  = (bool) ( $attributes['captionReveal'] ?? false );
 $image_size      = sanitize_key( $attributes['imageSize'] ?? 'large' );
 
 $hover_scale     = sanitize_text_field( $attributes['hoverScale'] ?? '' );
@@ -129,6 +130,7 @@ $wrapper_classes = implode( ' ', array_filter( [
 	$hover_shadow    ? 'sgs-has-hover'                 : '',
 	$hover_grayscale ? 'sgs-has-grayscale'             : '',
 	$stagger_delay   ? 'sgs-has-stagger'               : '',
+	( $show_captions && $caption_reveal ) ? 'sgs-gallery--caption-reveal' : '',
 ] ) );
 
 $wrapper_attrs_extra = [

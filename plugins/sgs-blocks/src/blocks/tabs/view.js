@@ -40,6 +40,30 @@ function initTabBlock( block ) {
 
 	const orientation = nav.getAttribute( 'aria-orientation' ) || 'horizontal';
 	const tabCount    = tabButtons.length;
+	const isVertical  = orientation === 'vertical';
+
+	/**
+	 * Update the sliding indicator CSS custom properties on the nav element
+	 * to match the position and size of the given tab button.
+	 *
+	 * For horizontal tabs: sets --sgs-indicator-left and --sgs-indicator-width.
+	 * For vertical tabs: sets --sgs-indicator-top and --sgs-indicator-height.
+	 *
+	 * @param {HTMLElement} activeBtn The currently active tab button.
+	 */
+	function updateIndicator( activeBtn ) {
+		if ( ! activeBtn ) {
+			return;
+		}
+
+		if ( isVertical ) {
+			nav.style.setProperty( '--sgs-indicator-top', activeBtn.offsetTop + 'px' );
+			nav.style.setProperty( '--sgs-indicator-height', activeBtn.offsetHeight + 'px' );
+		} else {
+			nav.style.setProperty( '--sgs-indicator-left', activeBtn.offsetLeft + 'px' );
+			nav.style.setProperty( '--sgs-indicator-width', activeBtn.offsetWidth + 'px' );
+		}
+	}
 
 	/**
 	 * Activate a tab by index.
@@ -70,6 +94,9 @@ function initTabBlock( block ) {
 				panel.setAttribute( 'hidden', '' );
 			}
 		} );
+
+		// Update sliding indicator position.
+		updateIndicator( tabButtons[ index ] );
 
 		if ( moveFocus ) {
 			tabButtons[ index ].focus();
@@ -148,6 +175,12 @@ function initTabBlock( block ) {
 		if ( matchIndex !== -1 ) {
 			activateTab( matchIndex, false, false );
 		}
+	}
+
+	// ─── Set initial indicator position ──────────────────────────────────
+	const initialActive = nav.querySelector( '[aria-selected="true"]' );
+	if ( initialActive ) {
+		updateIndicator( initialActive );
 	}
 }
 

@@ -133,6 +133,10 @@
       "type": "string",
       "default": "large"
     },
+    "captionReveal": {
+      "type": "boolean",
+      "default": false
+    },
     "hoverGrayscale": {
       "type": "boolean",
       "default": false
