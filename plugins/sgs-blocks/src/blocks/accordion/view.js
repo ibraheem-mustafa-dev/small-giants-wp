@@ -126,8 +126,12 @@ function openItem( details, content, wrapper, animatingItems ) {
 	content.style.height = '0px';
 	content.style.overflow = 'hidden';
 
+	const prefersReducedMotion = window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
+
 	requestAnimationFrame( () => {
-		content.style.transition = 'height 0.3s ease';
+		if ( ! prefersReducedMotion ) {
+			content.style.transition = 'height 0.3s ease';
+		}
 		content.style.height = height + 'px';
 
 		content.addEventListener(
@@ -140,6 +144,12 @@ function openItem( details, content, wrapper, animatingItems ) {
 			},
 			{ once: true }
 		);
+
+		if ( prefersReducedMotion ) {
+			content.style.height = '';
+			content.style.overflow = '';
+			animatingItems.delete( details );
+		}
 	} );
 }
 
@@ -160,8 +170,12 @@ function closeItem( details, content, wrapper, animatingItems ) {
 	content.style.height = height + 'px';
 	content.style.overflow = 'hidden';
 
+	const prefersReducedMotion = window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
+
 	requestAnimationFrame( () => {
-		content.style.transition = 'height 0.3s ease';
+		if ( ! prefersReducedMotion ) {
+			content.style.transition = 'height 0.3s ease';
+		}
 		content.style.height = '0px';
 
 		content.addEventListener(
@@ -175,6 +189,13 @@ function closeItem( details, content, wrapper, animatingItems ) {
 			},
 			{ once: true }
 		);
+
+		if ( prefersReducedMotion ) {
+			details.removeAttribute( 'open' );
+			content.style.height = '';
+			content.style.overflow = '';
+			animatingItems.delete( details );
+		}
 	} );
 }
 

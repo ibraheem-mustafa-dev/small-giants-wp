@@ -1015,6 +1015,7 @@
 .sgs-mega-menu__side-tab {
 	display:       flex;
 	align-items:   center;
+	min-height:    44px; /* WCAG 2.5.5 touch target */
 	padding:       0.625rem var(--wp--preset--spacing--40, 1rem);
 	font-family:   inherit;
 	font-size:     var(--wp--preset--font-size--small, 0.875rem);
@@ -1286,9 +1287,11 @@
 	appearance:  none;
 }
 
-.sgs-mega-menu__search-input:focus {
+.sgs-mega-menu__search-input:focus,
+.sgs-mega-menu__search-input:focus-visible {
 	border-color: var(--wp--preset--color--primary, currentColor);
-	box-shadow:   0 0 0 3px rgba(10, 126, 168, 0.15);
+	outline: 3px solid var(--sgs-focus-color, #076a8e);
+	outline-offset: -1px;
 }
 
 .sgs-mega-menu__search-input::placeholder {

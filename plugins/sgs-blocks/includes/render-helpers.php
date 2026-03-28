@@ -41,37 +41,160 @@ function sgs_is_css_colour( string $value ): bool {
 
 	// CSS named colour keywords (complete list per CSS Color Level 4).
 	$named_colours = array(
-		'aliceblue', 'antiquewhite', 'aqua', 'aquamarine', 'azure', 'beige',
-		'bisque', 'black', 'blanchedalmond', 'blue', 'blueviolet', 'brown',
-		'burlywood', 'cadetblue', 'chartreuse', 'chocolate', 'coral',
-		'cornflowerblue', 'cornsilk', 'crimson', 'cyan', 'darkblue',
-		'darkcyan', 'darkgoldenrod', 'darkgray', 'darkgreen', 'darkgrey',
-		'darkkhaki', 'darkmagenta', 'darkolivegreen', 'darkorange',
-		'darkorchid', 'darkred', 'darksalmon', 'darkseagreen', 'darkslateblue',
-		'darkslategray', 'darkslategrey', 'darkturquoise', 'darkviolet',
-		'deeppink', 'deepskyblue', 'dimgray', 'dimgrey', 'dodgerblue',
-		'firebrick', 'floralwhite', 'forestgreen', 'fuchsia', 'gainsboro',
-		'ghostwhite', 'gold', 'goldenrod', 'gray', 'green', 'greenyellow',
-		'grey', 'honeydew', 'hotpink', 'indianred', 'indigo', 'ivory',
-		'khaki', 'lavender', 'lavenderblush', 'lawngreen', 'lemonchiffon',
-		'lightblue', 'lightcoral', 'lightcyan', 'lightgoldenrodyellow',
-		'lightgray', 'lightgreen', 'lightgrey', 'lightpink', 'lightsalmon',
-		'lightseagreen', 'lightskyblue', 'lightslategray', 'lightslategrey',
-		'lightsteelblue', 'lightyellow', 'lime', 'limegreen', 'linen',
-		'magenta', 'maroon', 'mediumaquamarine', 'mediumblue', 'mediumorchid',
-		'mediumpurple', 'mediumseagreen', 'mediumslateblue', 'mediumspringgreen',
-		'mediumturquoise', 'mediumvioletred', 'midnightblue', 'mintcream',
-		'mistyrose', 'moccasin', 'navajowhite', 'navy', 'oldlace', 'olive',
-		'olivedrab', 'orange', 'orangered', 'orchid', 'palegoldenrod',
-		'palegreen', 'paleturquoise', 'palevioletred', 'papayawhip',
-		'peachpuff', 'peru', 'pink', 'plum', 'powderblue', 'purple', 'rebeccapurple',
-		'red', 'rosybrown', 'royalblue', 'saddlebrown', 'salmon', 'sandybrown',
-		'seagreen', 'seashell', 'sienna', 'silver', 'skyblue', 'slateblue',
-		'slategray', 'slategrey', 'snow', 'springgreen', 'steelblue', 'tan',
-		'teal', 'thistle', 'tomato', 'turquoise', 'violet', 'wheat', 'white',
-		'whitesmoke', 'yellow', 'yellowgreen',
+		'aliceblue',
+		'antiquewhite',
+		'aqua',
+		'aquamarine',
+		'azure',
+		'beige',
+		'bisque',
+		'black',
+		'blanchedalmond',
+		'blue',
+		'blueviolet',
+		'brown',
+		'burlywood',
+		'cadetblue',
+		'chartreuse',
+		'chocolate',
+		'coral',
+		'cornflowerblue',
+		'cornsilk',
+		'crimson',
+		'cyan',
+		'darkblue',
+		'darkcyan',
+		'darkgoldenrod',
+		'darkgray',
+		'darkgreen',
+		'darkgrey',
+		'darkkhaki',
+		'darkmagenta',
+		'darkolivegreen',
+		'darkorange',
+		'darkorchid',
+		'darkred',
+		'darksalmon',
+		'darkseagreen',
+		'darkslateblue',
+		'darkslategray',
+		'darkslategrey',
+		'darkturquoise',
+		'darkviolet',
+		'deeppink',
+		'deepskyblue',
+		'dimgray',
+		'dimgrey',
+		'dodgerblue',
+		'firebrick',
+		'floralwhite',
+		'forestgreen',
+		'fuchsia',
+		'gainsboro',
+		'ghostwhite',
+		'gold',
+		'goldenrod',
+		'gray',
+		'green',
+		'greenyellow',
+		'grey',
+		'honeydew',
+		'hotpink',
+		'indianred',
+		'indigo',
+		'ivory',
+		'khaki',
+		'lavender',
+		'lavenderblush',
+		'lawngreen',
+		'lemonchiffon',
+		'lightblue',
+		'lightcoral',
+		'lightcyan',
+		'lightgoldenrodyellow',
+		'lightgray',
+		'lightgreen',
+		'lightgrey',
+		'lightpink',
+		'lightsalmon',
+		'lightseagreen',
+		'lightskyblue',
+		'lightslategray',
+		'lightslategrey',
+		'lightsteelblue',
+		'lightyellow',
+		'lime',
+		'limegreen',
+		'linen',
+		'magenta',
+		'maroon',
+		'mediumaquamarine',
+		'mediumblue',
+		'mediumorchid',
+		'mediumpurple',
+		'mediumseagreen',
+		'mediumslateblue',
+		'mediumspringgreen',
+		'mediumturquoise',
+		'mediumvioletred',
+		'midnightblue',
+		'mintcream',
+		'mistyrose',
+		'moccasin',
+		'navajowhite',
+		'navy',
+		'oldlace',
+		'olive',
+		'olivedrab',
+		'orange',
+		'orangered',
+		'orchid',
+		'palegoldenrod',
+		'palegreen',
+		'paleturquoise',
+		'palevioletred',
+		'papayawhip',
+		'peachpuff',
+		'peru',
+		'pink',
+		'plum',
+		'powderblue',
+		'purple',
+		'rebeccapurple',
+		'red',
+		'rosybrown',
+		'royalblue',
+		'saddlebrown',
+		'salmon',
+		'sandybrown',
+		'seagreen',
+		'seashell',
+		'sienna',
+		'silver',
+		'skyblue',
+		'slateblue',
+		'slategray',
+		'slategrey',
+		'snow',
+		'springgreen',
+		'steelblue',
+		'tan',
+		'teal',
+		'thistle',
+		'tomato',
+		'turquoise',
+		'violet',
+		'wheat',
+		'white',
+		'whitesmoke',
+		'yellow',
+		'yellowgreen',
 		// Special keywords.
-		'transparent', 'currentcolor', 'inherit', 'initial', 'unset',
+		'transparent',
+		'currentcolor',
+		'inherit',
+		'initial',
+		'unset',
 	);
 
 	if ( in_array( strtolower( $value ), $named_colours, true ) ) {
@@ -141,6 +264,32 @@ function sgs_font_size_value( ?string $slug_or_value ): string {
 }
 
 /**
+ * Build CSS custom properties for transition duration and easing.
+ *
+ * Extracts transition attributes from a block and returns an array of
+ * CSS custom property strings. Used by 8+ blocks that share the same
+ * hover transition controls.
+ *
+ * @param array $attributes Block attributes containing transitionDuration and transitionEasing.
+ * @return array CSS custom property strings (e.g. '--sgs-transition-duration:300ms').
+ */
+function sgs_transition_vars( array $attributes ): array {
+	$styles = array();
+
+	$duration    = $attributes['transitionDuration'] ?? '';
+	$duration_ms = preg_replace( '/[^0-9]/', '', $duration );
+	$duration_ms = '' !== $duration_ms ? $duration_ms : '300';
+	$styles[]    = '--sgs-transition-duration:' . $duration_ms . 'ms';
+
+	$easing          = $attributes['transitionEasing'] ?? '';
+	$allowed_easings = array( 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'linear' );
+	$safe_easing     = in_array( $easing, $allowed_easings, true ) ? $easing : 'ease-in-out';
+	$styles[]        = '--sgs-transition-easing:' . $safe_easing;
+
+	return $styles;
+}
+
+/**
  * Output a responsive image tag with srcset when a valid attachment ID is available.
  *
  * Falls back to a plain <img> when the attachment ID is 0 or invalid (e.g. images
@@ -153,19 +302,19 @@ function sgs_font_size_value( ?string $slug_or_value ): string {
  * @param array  $attrs Extra HTML attributes (class, style, loading, etc.).
  * @return string HTML img tag.
  */
-function sgs_responsive_image( int $id, string $url, string $alt = '', string $size = 'large', array $attrs = [] ): string {
+function sgs_responsive_image( int $id, string $url, string $alt = '', string $size = 'large', array $attrs = array() ): string {
 	// Merge defaults.
 	$attrs = array_merge(
-		[
-			'loading' => 'lazy',
+		array(
+			'loading'  => 'lazy',
 			'decoding' => 'async',
-		],
+		),
 		$attrs
 	);
 
 	// Use wp_get_attachment_image when we have a real attachment ID.
 	if ( $id > 0 ) {
-		$image = wp_get_attachment_image( $id, $size, false, array_merge( $attrs, [ 'alt' => $alt ] ) );
+		$image = wp_get_attachment_image( $id, $size, false, array_merge( $attrs, array( 'alt' => $alt ) ) );
 		if ( $image ) {
 			return $image;
 		}

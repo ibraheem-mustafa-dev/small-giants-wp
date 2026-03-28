@@ -51,14 +51,15 @@ $hover_overlay_colour = $attributes['hoverOverlayColour'] ?? '';
 // -------------------------------------------------------------------------
 // Build inline CSS custom properties.
 // -------------------------------------------------------------------------
-$inline_styles_parts = [
-	'--sgs-columns-desktop:' . $columns,
-	'--sgs-columns-tablet:'  . $columns_tablet,
-	'--sgs-columns-mobile:'  . $columns_mobile,
-	'--sgs-gap:'             . $gap . 'px',
-	'--sgs-transition-duration:' . $trans_duration . 'ms',
-	'--sgs-transition-easing:'   . esc_attr( $trans_easing ),
-];
+$inline_styles_parts = array_merge(
+	array(
+		'--sgs-columns-desktop:' . $columns,
+		'--sgs-columns-tablet:'  . $columns_tablet,
+		'--sgs-columns-mobile:'  . $columns_mobile,
+		'--sgs-gap:'             . $gap . 'px',
+	),
+	sgs_transition_vars( $attributes )
+);
 
 if ( $hover_scale ) {
 	$inline_styles_parts[] = '--sgs-hover-scale:' . esc_attr( $hover_scale );

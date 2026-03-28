@@ -173,7 +173,7 @@ select.sgs-form-field__input {
 }
 
 .sgs-form-field__required {
-	color: var(--wp--preset--color--accent, #f87a1f);
+	color: var(--wp--preset--color--text, #1e1e1e);
 }
 
 /* ----------------------------------------------------------------
@@ -324,6 +324,12 @@ select.sgs-form-field__input {
 	cursor: pointer;
 	min-height: 44px;
 	z-index: 1;
+}
+
+.sgs-form-field__file-input:focus-visible + .sgs-form-field__file-label,
+.sgs-form-field__file-input:focus + .sgs-form-field__file-label {
+	outline: 3px solid var(--sgs-focus-color, #076a8e);
+	outline-offset: 2px;
 }
 
 .sgs-form-field__file-label {

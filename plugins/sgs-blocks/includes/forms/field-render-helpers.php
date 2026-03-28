@@ -85,7 +85,7 @@ function field_label( string $field_id, array $attributes ): string {
 		'<label for="%s" class="sgs-form-field__label">%s%s</label>',
 		esc_attr( $field_id ),
 		esc_html( $label ),
-		$required ? ' <span class="sgs-form-field__required">*</span>' : ''
+		$required ? ' <span class="sgs-form-field__required" aria-hidden="true">*</span><span class="sgs-sr-only">(required)</span>' : ''
 	);
 }
 

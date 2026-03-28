@@ -124,17 +124,18 @@ $card_params = [
 // -------------------------------------------------------------------------
 // Inline CSS custom properties on the wrapper.
 // -------------------------------------------------------------------------
-$inline_styles = implode( ';', array_filter( [
-	'--sgs-columns-desktop:' . $columns,
-	'--sgs-columns-tablet:' . $columns_tablet,
-	'--sgs-columns-mobile:' . $columns_mobile,
-	'--sgs-gap:' . $gap . 'px',
-	$card_bg ? '--sgs-card-bg:' . $card_bg : '',
-	$hover_scale ? '--sgs-hover-scale:' . esc_attr( $hover_scale ) : '',
-	$hover_shadow ? '--sgs-hover-shadow:' . esc_attr( $hover_shadow ) : '',
-	'--sgs-transition-duration:' . $trans_duration . 'ms',
-	'--sgs-transition-easing:' . esc_attr( $trans_easing ),
-] ) );
+$inline_styles = implode( ';', array_filter( array_merge(
+	array(
+		'--sgs-columns-desktop:' . $columns,
+		'--sgs-columns-tablet:' . $columns_tablet,
+		'--sgs-columns-mobile:' . $columns_mobile,
+		'--sgs-gap:' . $gap . 'px',
+		$card_bg ? '--sgs-card-bg:' . $card_bg : '',
+		$hover_scale ? '--sgs-hover-scale:' . esc_attr( $hover_scale ) : '',
+		$hover_shadow ? '--sgs-hover-shadow:' . esc_attr( $hover_shadow ) : '',
+	),
+	sgs_transition_vars( $attributes )
+) ) );
 
 // -------------------------------------------------------------------------
 // Build query data for view.js hydration (AJAX pagination/filtering).

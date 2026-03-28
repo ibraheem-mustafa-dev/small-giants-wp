@@ -46,17 +46,10 @@ $get_initials = function ( $name ) {
 $aria_live_region = 'polite';
 
 // Build custom property style string.
-$duration_ms         = preg_replace( '/[^0-9]/', '', $transition_duration );
-$duration_ms         = '' !== $duration_ms ? $duration_ms : '300';
-$allowed_easings     = array( 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'linear' );
-$safe_easing         = in_array( $transition_easing, $allowed_easings, true ) ? $transition_easing : 'ease-in-out';
-$allowed_effects     = array( 'none', 'lift', 'scale', 'glow' );
-$safe_hover_effect   = in_array( $hover_effect, $allowed_effects, true ) ? $hover_effect : 'none';
+$allowed_effects   = array( 'none', 'lift', 'scale', 'glow' );
+$safe_hover_effect = in_array( $hover_effect, $allowed_effects, true ) ? $hover_effect : 'none';
 
-$css_vars = array(
-	'--sgs-transition-duration:' . $duration_ms . 'ms',
-	'--sgs-transition-easing:' . $safe_easing,
-);
+$css_vars = sgs_transition_vars( $attributes );
 if ( $hover_bg_colour ) {
 	$css_vars[] = '--sgs-hover-bg:' . sgs_colour_value( $hover_bg_colour );
 }

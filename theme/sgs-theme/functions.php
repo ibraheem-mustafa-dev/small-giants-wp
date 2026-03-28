@@ -67,7 +67,6 @@ function setup(): void {
 
 	add_editor_style( 'assets/css/core-blocks-critical.css' );
 	add_editor_style( 'assets/css/core-blocks.css' );
-	add_editor_style( 'assets/css/mega-menu-panels.css' );
 }
 add_action( 'after_setup_theme', __NAMESPACE__ . '\setup' );
 
@@ -225,19 +224,11 @@ function enqueue_styles(): void {
 	// CSS and JS are loaded automatically via block.json (style-index.css + view.js).
 	// Old files: assets/css/mobile-nav-drawer.css, assets/js/mobile-nav-drawer.js — deleted.
 
-	// Mega menu panel content styles — shared class system for all 7 template parts.
+	// Mega menu panel styles — shared class system, hover effects, transitions.
 	wp_enqueue_style(
 		'sgs-mega-menu-panels',
 		get_theme_file_uri( 'assets/css/mega-menu-panels.css' ),
 		[ 'sgs-core-blocks-critical' ],
-		$theme_version
-	);
-
-	// Mega menu panel hover effects and transitions.
-	wp_enqueue_style(
-		'sgs-mega-menu-panels',
-		get_theme_file_uri( 'assets/css/mega-menu-panels.css' ),
-		[],
 		$theme_version
 	);
 

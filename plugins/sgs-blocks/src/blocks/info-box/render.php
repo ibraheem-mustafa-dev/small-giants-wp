@@ -40,13 +40,7 @@ $transition_easing       = $attributes['transitionEasing'] ?? 'ease-in-out';
 $wrapper_styles = array();
 
 // Transition custom properties — consumed by CSS vars on the block and its children.
-$duration_ms    = preg_replace( '/[^0-9]/', '', $transition_duration );
-$duration_ms    = '' !== $duration_ms ? $duration_ms : '300';
-$wrapper_styles[] = '--sgs-transition-duration:' . $duration_ms . 'ms';
-
-$allowed_easings  = array( 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'linear' );
-$safe_easing      = in_array( $transition_easing, $allowed_easings, true ) ? $transition_easing : 'ease-in-out';
-$wrapper_styles[] = '--sgs-transition-easing:' . $safe_easing;
+$wrapper_styles = array_merge( $wrapper_styles, sgs_transition_vars( $attributes ) );
 
 if ( $hover_background_colour ) {
 	$wrapper_styles[] = '--sgs-hover-bg:' . sgs_colour_value( $hover_background_colour );

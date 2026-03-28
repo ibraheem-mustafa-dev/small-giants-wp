@@ -44,10 +44,6 @@ $speed_map = array(
 $animation_speed = $speed_map[ $scroll_speed ] ?? '25s';
 
 // Sanitise values.
-$duration_ms       = preg_replace( '/[^0-9]/', '', $transition_duration );
-$duration_ms       = '' !== $duration_ms ? $duration_ms : '300';
-$allowed_easings   = array( 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'linear' );
-$safe_easing       = in_array( $transition_easing, $allowed_easings, true ) ? $transition_easing : 'ease-in-out';
 $allowed_effects   = array( 'none', 'lift', 'scale', 'glow' );
 $safe_hover_effect = in_array( $hover_effect, $allowed_effects, true ) ? $hover_effect : 'none';
 $safe_direction    = in_array( $scroll_direction, array( 'left', 'right' ), true ) ? $scroll_direction : 'left';
@@ -71,11 +67,12 @@ if ( 'none' !== $safe_hover_effect ) {
 }
 
 // Build CSS custom properties.
-$css_vars = array(
-	'--sgs-transition-duration:' . $duration_ms . 'ms',
-	'--sgs-transition-easing:' . $safe_easing,
-	'--sgs-scroll-speed:' . esc_attr( $animation_speed ),
-	'--sgs-logo-max-height:' . absint( $max_height ) . 'px',
+$css_vars = array_merge(
+	sgs_transition_vars( $attributes ),
+	array(
+		'--sgs-scroll-speed:' . esc_attr( $animation_speed ),
+		'--sgs-logo-max-height:' . absint( $max_height ) . 'px',
+	)
 );
 if ( $fade_edges ) {
 	$css_vars[] = '--sgs-fade-width:' . absint( $fade_width ) . 'px';
