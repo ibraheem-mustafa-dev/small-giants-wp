@@ -91,10 +91,24 @@ if ( ! empty( $background_image['url'] ) ) {
 }
 
 // Build headline styles.
-$headline_style_attr = '';
-if ( $headline_colour ) {
-	$headline_style_attr = ' style="color:' . sgs_colour_value( $headline_colour ) . '"';
-}
+$h_classes = array('sgs-cta-section__headline');
+$letter_spacing     = $attributes['letterSpacing'] ?? '';
+$text_transform     = $attributes['textTransform'] ?? '';
+$text_align_mobile  = $attributes['textAlignMobile'] ?? '';
+$text_align_tablet  = $attributes['textAlignTablet'] ?? '';
+$text_align_desktop = $attributes['textAlignDesktop'] ?? '';
+
+if ( $text_align_mobile ) { $h_classes[] = 'sgs-text-align-m-' . $text_align_mobile; }
+if ( $text_align_tablet ) { $h_classes[] = 'sgs-text-align-t-' . $text_align_tablet; }
+if ( $text_align_desktop ) { $h_classes[] = 'sgs-text-align-d-' . $text_align_desktop; }
+
+$h_styles = array();
+if ( $headline_colour ) { $h_styles[] = 'color:' . sgs_colour_value( $headline_colour ); }
+if ( $letter_spacing ) { $h_styles[] = 'letter-spacing:' . esc_attr($letter_spacing); }
+if ( $text_transform ) { $h_styles[] = 'text-transform:' . esc_attr($text_transform); }
+
+$headline_style_attr = $h_styles ? ' style="' . implode( ';', $h_styles ) . '"' : '';
+$headline_class_attr = ' class="' . esc_attr( implode( ' ', $h_classes ) ) . '"';
 
 // Build body styles.
 $body_styles = array();
@@ -172,9 +186,10 @@ if ( ! empty( $buttons ) ) {
 
 // Output.
 printf(
-	'<section %s>%s<div class="sgs-cta-section__content"><h2 class="sgs-cta-section__headline"%s>%s</h2><p class="sgs-cta-section__body"%s>%s</p>%s</div>%s</section>',
+	'<section %s>%s<div class="sgs-cta-section__content"><h2%s%s>%s</h2><p class="sgs-cta-section__body"%s>%s</p>%s</div>%s</section>',
 	$wrapper_attributes,
 	$overlay_html,
+	$headline_class_attr,
 	$headline_style_attr,
 	wp_kses_post( $headline ),
 	$body_style_attr,

@@ -110,6 +110,17 @@ if ( $icon_background_colour ) {
 $icon_style_attr = $icon_styles ? ' style="' . implode( ';', $icon_styles ) . '"' : '';
 
 // Build heading styles.
+$h_classes = array('sgs-info-box__heading');
+$letter_spacing     = $attributes['letterSpacing'] ?? '';
+$text_transform     = $attributes['textTransform'] ?? '';
+$text_align_mobile  = $attributes['textAlignMobile'] ?? '';
+$text_align_tablet  = $attributes['textAlignTablet'] ?? '';
+$text_align_desktop = $attributes['textAlignDesktop'] ?? '';
+
+if ( $text_align_mobile ) { $h_classes[] = 'sgs-text-align-m-' . $text_align_mobile; }
+if ( $text_align_tablet ) { $h_classes[] = 'sgs-text-align-t-' . $text_align_tablet; }
+if ( $text_align_desktop ) { $h_classes[] = 'sgs-text-align-d-' . $text_align_desktop; }
+
 $heading_styles = array();
 if ( $heading_colour ) {
 	$heading_styles[] = 'color:' . sgs_colour_value( $heading_colour );
@@ -117,7 +128,11 @@ if ( $heading_colour ) {
 if ( $heading_font_size ) {
 	$heading_styles[] = 'font-size:' . sgs_font_size_value( $heading_font_size );
 }
+if ( $letter_spacing ) { $heading_styles[] = 'letter-spacing:' . esc_attr($letter_spacing); }
+if ( $text_transform ) { $heading_styles[] = 'text-transform:' . esc_attr($text_transform); }
+
 $heading_style_attr = $heading_styles ? ' style="' . implode( ';', $heading_styles ) . '"' : '';
+$heading_class_attr = ' class="' . esc_attr( implode( ' ', $h_classes ) ) . '"';
 
 // Build description styles.
 $description_style_attr = '';
@@ -139,7 +154,8 @@ $icon_html = sprintf(
 
 // Build heading HTML.
 $heading_html = sprintf(
-	'<h3 class="sgs-info-box__heading"%s>%s</h3>',
+	'<h3%s%s>%s</h3>',
+	$heading_class_attr,
 	$heading_style_attr,
 	wp_kses_post( $heading )
 );

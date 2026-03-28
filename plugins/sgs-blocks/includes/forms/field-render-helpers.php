@@ -177,6 +177,9 @@ function field_input_attrs( string $field_id, array $attributes ): string {
 
 	if ( ! empty( $placeholder ) ) {
 		$attrs[] = 'placeholder="' . esc_attr( $placeholder ) . '"';
+	} else {
+		// Fallback empty space placeholder to enable CSS floating labels pattern via :not(:placeholder-shown).
+		$attrs[] = 'placeholder=" "';
 	}
 
 	if ( $required ) {

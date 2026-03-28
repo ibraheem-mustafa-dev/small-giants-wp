@@ -728,3 +728,72 @@ select.sgs-form-field__input {
 	border-color: #dc2626 !important;
 	box-shadow: 0 0 0 1px #dc2626;
 }
+
+/* ----------------------------------------------------------------
+   Floating Labels (Feature #148)
+   ---------------------------------------------------------------- */
+
+.sgs-form-field--text,
+.sgs-form-field--email,
+.sgs-form-field--phone,
+.sgs-form-field--number,
+.sgs-form-field--textarea {
+	position: relative;
+	padding-top: 1.5rem;
+}
+
+.sgs-form-field--text .sgs-form-field__label,
+.sgs-form-field--email .sgs-form-field__label,
+.sgs-form-field--phone .sgs-form-field__label,
+.sgs-form-field--number .sgs-form-field__label,
+.sgs-form-field--textarea .sgs-form-field__label {
+	position: absolute;
+	top: 2.3rem;
+	left: 1rem;
+	margin: 0;
+	color: var(--wp--preset--color--text-muted, #555);
+	pointer-events: none;
+	transition: all 0.2s ease-out;
+}
+
+.sgs-form-field--textarea .sgs-form-field__label {
+	top: 2.1rem;
+}
+
+.sgs-form-field--text:has(.sgs-form-field__input:focus) .sgs-form-field__label,
+.sgs-form-field--text:has(.sgs-form-field__input:not(:placeholder-shown)) .sgs-form-field__label,
+.sgs-form-field--email:has(.sgs-form-field__input:focus) .sgs-form-field__label,
+.sgs-form-field--email:has(.sgs-form-field__input:not(:placeholder-shown)) .sgs-form-field__label,
+.sgs-form-field--phone:has(.sgs-form-field__input:focus) .sgs-form-field__label,
+.sgs-form-field--phone:has(.sgs-form-field__input:not(:placeholder-shown)) .sgs-form-field__label,
+.sgs-form-field--number:has(.sgs-form-field__input:focus) .sgs-form-field__label,
+.sgs-form-field--number:has(.sgs-form-field__input:not(:placeholder-shown)) .sgs-form-field__label,
+.sgs-form-field--textarea:has(.sgs-form-field__input:focus) .sgs-form-field__label,
+.sgs-form-field--textarea:has(.sgs-form-field__input:not(:placeholder-shown)) .sgs-form-field__label {
+	top: 0;
+	left: 0;
+	font-size: 0.8125rem;
+	font-weight: 600;
+	color: var(--wp--preset--color--text, #1e1e1e);
+}
+
+.sgs-form-field--text:has(.sgs-form-field__input:focus) .sgs-form-field__label,
+.sgs-form-field--email:has(.sgs-form-field__input:focus) .sgs-form-field__label,
+.sgs-form-field--phone:has(.sgs-form-field__input:focus) .sgs-form-field__label,
+.sgs-form-field--number:has(.sgs-form-field__input:focus) .sgs-form-field__label,
+.sgs-form-field--textarea:has(.sgs-form-field__input:focus) .sgs-form-field__label {
+	color: var(--wp--preset--color--primary, #0f7e80);
+}
+
+.sgs-form-field--text .sgs-form-field__input:not(:focus)::placeholder,
+.sgs-form-field--email .sgs-form-field__input:not(:focus)::placeholder,
+.sgs-form-field--phone .sgs-form-field__input:not(:focus)::placeholder,
+.sgs-form-field--number .sgs-form-field__input:not(:focus)::placeholder,
+.sgs-form-field--textarea .sgs-form-field__input:not(:focus)::placeholder,
+.sgs-form-field--text .sgs-form-field__input:not(:focus)::-moz-placeholder,
+.sgs-form-field--email .sgs-form-field__input:not(:focus)::-moz-placeholder,
+.sgs-form-field--phone .sgs-form-field__input:not(:focus)::-moz-placeholder,
+.sgs-form-field--number .sgs-form-field__input:not(:focus)::-moz-placeholder,
+.sgs-form-field--textarea .sgs-form-field__input:not(:focus)::-moz-placeholder {
+	color: transparent;
+}

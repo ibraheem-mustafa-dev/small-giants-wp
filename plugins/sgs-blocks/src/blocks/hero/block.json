@@ -1,191 +1,209 @@
 {
-    "$schema":  "https://schemas.wp.org/trunk/block.json",
-    "apiVersion":  3,
-    "name":  "sgs/hero",
-    "version":  "0.1.0",
-    "title":  "SGS Hero",
-    "category":  "sgs-layout",
-    "description":  "Page hero section with headline, sub-headline, CTAs, and background image.",
-    "keywords":  [
-                     "hero",
-                     "banner",
-                     "header",
-                     "headline",
-                     "landing"
-                 ],
-    "textdomain":  "sgs-blocks",
-    "icon":  "cover-image",
-    "supports":  {
-                     "align":  [
-                                   "wide",
-                                   "full"
-                               ],
-                     "anchor":  true,
-                     "html":  false,
-                     "color":  {
-                                   "background":  true,
-                                   "text":  true,
-                                   "gradients":  true
-                               },
-                     "typography":  {
-                                        "fontSize":  true,
-                                        "lineHeight":  true,
-                                        "textAlign":  true,
-                                        "letterSpacing":  true,
-                                        "textTransform":  true,
-                                        "fontWeight":  true,
-                                        "fontStyle":  true
-                                    },
-                     "spacing":  {
-                                     "margin":  true,
-                                     "padding":  true
-                                 },
-                     "__experimentalBorder":  {
-                                                  "radius":  true,
-                                                  "width":  true,
-                                                  "color":  true,
-                                                  "style":  true
-                                              }
-                 },
-    "selectors":  {
-                      "root":  ".sgs-hero",
-                      "typography":  ".sgs-hero__headline"
-                  },
-    "attributes":  {
-                       "variant":  {
-                                       "type":  "string",
-                                       "default":  "standard",
-                                       "enum":  [
-                                                    "standard",
-                                                    "split",
-                                                    "video",
-                                                    "svg-animated"
-                                                ]
-                                   },
-                       "headline":  {
-                                        "type":  "string",
-                                        "default":  ""
-                                    },
-                       "subHeadline":  {
-                                           "type":  "string",
-                                           "default":  ""
-                                       },
-                       "alignment":  {
-                                         "type":  "string",
-                                         "default":  "left"
-                                     },
-                       "backgroundImage":  {
-                                               "type":  "object"
-                                           },
-                       "overlayColour":  {
-                                             "type":  "string",
-                                             "default":  "text"
-                                         },
-                       "overlayOpacity":  {
-                                              "type":  "number",
-                                              "default":  50
-                                          },
-                       "splitImage":  {
-                                          "type":  "object"
-                                      },
-                       "backgroundVideo":  {
-                                               "type":  "object"
-                                           },
-                       "svgContent":  {
-                                          "type":  "string"
-                                      },
-                       "minHeight":  {
-                                         "type":  "string",
-                                         "default":  ""
-                                     },
-                       "minHeightTablet":  {
-                                               "type":  "string",
-                                               "default":  ""
-                                           },
-                       "minHeightMobile":  {
-                                               "type":  "string",
-                                               "default":  "360px"
-                                           },
-                       "badges":  {
-                                      "type":  "array",
-                                      "default":  [
-
-                                                  ]
-                                  },
-                       "headlineColour":  {
-                                              "type":  "string"
-                                          },
-                       "subHeadlineFontSize":  {
-                                                   "type":  "string"
-                                               },
-                       "subHeadlineColour":  {
-                                                 "type":  "string"
-                                             },
-                       "ctaPrimaryText":  {
-                                              "type":  "string"
-                                          },
-                       "ctaPrimaryUrl":  {
-                                             "type":  "string"
-                                         },
-                       "ctaPrimaryStyle":  {
-                                               "type":  "string",
-                                               "default":  "accent"
-                                           },
-                       "ctaPrimaryColour":  {
-                                                "type":  "string"
-                                            },
-                       "ctaPrimaryBackground":  {
-                                                    "type":  "string"
-                                                },
-                       "ctaSecondaryText":  {
-                                                "type":  "string"
-                                            },
-                       "ctaSecondaryUrl":  {
-                                               "type":  "string"
-                                           },
-                       "ctaSecondaryStyle":  {
-                                                 "type":  "string",
-                                                 "default":  "outline"
-                                             },
-                       "ctaSecondaryColour":  {
-                                                  "type":  "string"
-                                              },
-                       "ctaSecondaryBackground":  {
-                                                      "type":  "string"
-                                                  },
-                       "hoverBackgroundColour":  {
-                                                     "type":  "string",
-                                                     "default":  ""
-                                                 },
-                       "hoverTextColour":  {
-                                               "type":  "string",
-                                               "default":  ""
-                                           },
-                       "hoverBorderColour":  {
-                                                 "type":  "string",
-                                                 "default":  ""
-                                             },
-                       "transitionDuration":  {
-                                                  "type":  "string",
-                                                  "default":  "300"
-                                              },
-                       "transitionEasing":  {
-                                                "type":  "string",
-                                                "default":  "ease-in-out"
-                                            }
-                   },
-    "render":  "file:./render.php",
-    "editorScript":  "file:./index.js",
-    "editorStyle":  "file:./index.css",
-    "style":  "file:./style-index.css",
-    "example":  {
-                    "attributes":  {
-                                       "variant":  "standard",
-                                       "headline":  "Premium Food Wholesale, Delivered Next Day",
-                                       "subHeadline":  "Supplying restaurants, retailers and caterers across the UK since 1962.",
-                                       "ctaPrimaryText":  "Request a Quote",
-                                       "ctaSecondaryText":  "Browse Products",
-                                       "alignment":  "left"
-                                   }
-                }
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "sgs/hero",
+  "version": "0.1.0",
+  "title": "SGS Hero",
+  "category": "sgs-layout",
+  "description": "Page hero section with headline, sub-headline, CTAs, and background image.",
+  "keywords": [
+    "hero",
+    "banner",
+    "header",
+    "headline",
+    "landing"
+  ],
+  "textdomain": "sgs-blocks",
+  "icon": "cover-image",
+  "supports": {
+    "align": [
+      "wide",
+      "full"
+    ],
+    "anchor": true,
+    "html": false,
+    "color": {
+      "background": true,
+      "text": true,
+      "gradients": true
+    },
+    "typography": {
+      "fontSize": true,
+      "lineHeight": true,
+      "textAlign": true,
+      "letterSpacing": true,
+      "textTransform": true,
+      "fontWeight": true,
+      "fontStyle": true
+    },
+    "spacing": {
+      "margin": true,
+      "padding": true
+    },
+    "__experimentalBorder": {
+      "radius": true,
+      "width": true,
+      "color": true,
+      "style": true
+    }
+  },
+  "selectors": {
+    "root": ".sgs-hero",
+    "typography": ".sgs-hero__headline"
+  },
+  "attributes": {
+    "variant": {
+      "type": "string",
+      "default": "standard",
+      "enum": [
+        "standard",
+        "split",
+        "video",
+        "svg-animated"
+      ]
+    },
+    "headline": {
+      "type": "string",
+      "default": ""
+    },
+    "subHeadline": {
+      "type": "string",
+      "default": ""
+    },
+    "alignment": {
+      "type": "string",
+      "default": "left"
+    },
+    "backgroundImage": {
+      "type": "object"
+    },
+    "overlayColour": {
+      "type": "string",
+      "default": "text"
+    },
+    "overlayOpacity": {
+      "type": "number",
+      "default": 50
+    },
+    "splitImage": {
+      "type": "object"
+    },
+    "backgroundVideo": {
+      "type": "object"
+    },
+    "svgContent": {
+      "type": "string"
+    },
+    "minHeight": {
+      "type": "string",
+      "default": ""
+    },
+    "minHeightTablet": {
+      "type": "string",
+      "default": ""
+    },
+    "minHeightMobile": {
+      "type": "string",
+      "default": "360px"
+    },
+    "badges": {
+      "type": "array",
+      "default": []
+    },
+    "headlineColour": {
+      "type": "string"
+    },
+    "subHeadlineFontSize": {
+      "type": "string"
+    },
+    "subHeadlineColour": {
+      "type": "string"
+    },
+    "ctaPrimaryText": {
+      "type": "string"
+    },
+    "ctaPrimaryUrl": {
+      "type": "string"
+    },
+    "ctaPrimaryStyle": {
+      "type": "string",
+      "default": "accent"
+    },
+    "ctaPrimaryColour": {
+      "type": "string"
+    },
+    "ctaPrimaryBackground": {
+      "type": "string"
+    },
+    "ctaSecondaryText": {
+      "type": "string"
+    },
+    "ctaSecondaryUrl": {
+      "type": "string"
+    },
+    "ctaSecondaryStyle": {
+      "type": "string",
+      "default": "outline"
+    },
+    "ctaSecondaryColour": {
+      "type": "string"
+    },
+    "ctaSecondaryBackground": {
+      "type": "string"
+    },
+    "hoverBackgroundColour": {
+      "type": "string",
+      "default": ""
+    },
+    "hoverTextColour": {
+      "type": "string",
+      "default": ""
+    },
+    "hoverBorderColour": {
+      "type": "string",
+      "default": ""
+    },
+    "transitionDuration": {
+      "type": "string",
+      "default": "300"
+    },
+    "transitionEasing": {
+      "type": "string",
+      "default": "ease-in-out"
+    },
+    "letterSpacing": {
+      "type": "string",
+      "default": ""
+    },
+    "textTransform": {
+      "type": "string",
+      "default": ""
+    },
+    "textAlignMobile": {
+      "type": "string",
+      "default": ""
+    },
+    "textAlignTablet": {
+      "type": "string",
+      "default": ""
+    },
+    "textAlignDesktop": {
+      "type": "string",
+      "default": ""
+    }
+  },
+  "render": "file:./render.php",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "example": {
+    "attributes": {
+      "variant": "standard",
+      "headline": "Premium Food Wholesale, Delivered Next Day",
+      "subHeadline": "Supplying restaurants, retailers and caterers across the UK since 1962.",
+      "ctaPrimaryText": "Request a Quote",
+      "ctaSecondaryText": "Browse Products",
+      "alignment": "left"
+    }
+  }
 }

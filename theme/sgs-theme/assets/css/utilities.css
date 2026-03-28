@@ -143,3 +143,68 @@ body.admin-bar html {
 .sgs-pb-60 { padding-bottom: var(--wp--preset--spacing--60); }
 .sgs-pb-70 { padding-bottom: var(--wp--preset--spacing--70); }
 .sgs-pb-80 { padding-bottom: var(--wp--preset--spacing--80); }
+
+/* ----------------------------------------------------------------
+   Responsive text alignment helpers (M16)
+   ---------------------------------------------------------------- */
+@media (max-width: 599px) {
+	.sgs-text-align-m-left { text-align: left !important; }
+	.sgs-text-align-m-center { text-align: center !important; }
+	.sgs-text-align-m-right { text-align: right !important; }
+}
+
+@media (min-width: 600px) and (max-width: 1023px) {
+	.sgs-text-align-t-left { text-align: left !important; }
+	.sgs-text-align-t-center { text-align: center !important; }
+	.sgs-text-align-t-right { text-align: right !important; }
+}
+
+@media (min-width: 1024px) {
+	.sgs-text-align-d-left { text-align: left !important; }
+	.sgs-text-align-d-center { text-align: center !important; }
+	.sgs-text-align-d-right { text-align: right !important; }
+}
+
+/* ----------------------------------------------------------------
+   Link Hover Animation Presets (#198)
+   ---------------------------------------------------------------- */
+.sgs-hover-underline-slide {
+	position: relative;
+	text-decoration: none;
+}
+.sgs-hover-underline-slide::after {
+	content: '';
+	position: absolute;
+	width: 100%;
+	transform: scaleX(0);
+	height: 2px;
+	bottom: -2px;
+	left: 0;
+	background-color: var(--sgs-link-hover-color, currentColor);
+	transform-origin: bottom right;
+	transition: transform 0.25s ease-out;
+}
+.sgs-hover-underline-slide:hover::after,
+.sgs-hover-underline-slide:focus-visible::after {
+	transform: scaleX(1);
+	transform-origin: bottom left;
+}
+
+.sgs-hover-underline-fade {
+	text-decoration: none;
+	border-bottom: 2px solid transparent;
+	transition: border-color 0.25s ease-in-out;
+}
+.sgs-hover-underline-fade:hover,
+.sgs-hover-underline-fade:focus-visible {
+	border-color: var(--sgs-link-hover-color, currentColor);
+}
+
+.sgs-hover-highlight-fill {
+	transition: background-color 0.25s ease-in-out, color 0.25s ease-in-out;
+}
+.sgs-hover-highlight-fill:hover,
+.sgs-hover-highlight-fill:focus-visible {
+	background-color: var(--sgs-link-hover-bg, var(--wp--preset--color--primary));
+	color: var(--sgs-link-hover-text, #fff);
+}

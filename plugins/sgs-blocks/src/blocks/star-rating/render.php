@@ -76,6 +76,7 @@ if ( $schema_enabled && $schema_item_name ) {
 				'@type'       => 'AggregateRating',
 				'ratingValue' => $rating,
 				'bestRating'  => $max_rating,
+				'worstRating' => 1,
 				'reviewCount' => $schema_review_count,
 			),
 		), JSON_UNESCAPED_SLASHES )

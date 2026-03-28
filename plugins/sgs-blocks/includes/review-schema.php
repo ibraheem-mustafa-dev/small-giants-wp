@@ -65,6 +65,7 @@ function add_review_schema( string $block_content, array $block ): string {
 			'@type'       => 'Rating',
 			'ratingValue' => $rating,
 			'bestRating'  => 5,
+			'worstRating' => 1,
 		];
 	}
 
