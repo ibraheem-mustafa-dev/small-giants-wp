@@ -62,6 +62,9 @@ require_once SGS_BLOCKS_PATH . 'includes/device-visibility.php';
 // Universal hover effects — server-side CSS variable injection.
 require_once SGS_BLOCKS_PATH . 'includes/hover-effects.php';
 
+// Animation attributes — server-side data-attribute injection for scroll reveals.
+require_once SGS_BLOCKS_PATH . 'includes/animation-attributes.php';
+
 // Custom CSS per block — server-side scoped <style> output.
 require_once SGS_BLOCKS_PATH . 'includes/custom-css.php';
 
