@@ -51,6 +51,30 @@
 	justify-content: center;
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	margin-bottom: var(--wp--preset--spacing--30);
+	transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Icon lifts on card hover — applies to every info-box instance */
+.sgs-info-box:hover .sgs-info-box__icon {
+	transform: translateY(-3px);
+}
+
+/* Icon scales in when scroll-reveal fires (works with sgsAnimation extension) */
+.sgs-info-box[data-sgs-animation] .sgs-info-box__icon {
+	transform: scale(0.8);
+	transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.15s;
+}
+
+.sgs-info-box[data-sgs-animation].sgs-animated .sgs-info-box__icon {
+	transform: scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-info-box__icon,
+	.sgs-info-box[data-sgs-animation] .sgs-info-box__icon {
+		transition: none !important;
+		transform: none !important;
+	}
 }
 
 .sgs-info-box__icon--small {

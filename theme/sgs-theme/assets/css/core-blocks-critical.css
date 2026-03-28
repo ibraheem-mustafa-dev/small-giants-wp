@@ -141,7 +141,7 @@ body .is-root-container > .wp-block {
 }
 
 .wp-block-button__link:active {
-	transform: translateY(0);
+	transform: translateY(0) scale(0.97);
 }
 
 .wp-block-button__link:focus-visible {
