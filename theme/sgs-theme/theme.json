@@ -100,18 +100,7 @@
 				{
 					"fontFamily": "Inter, system-ui, -apple-system, sans-serif",
 					"slug": "heading",
-					"name": "Heading",
-					"fontFace": [
-						{
-							"fontFamily": "Inter",
-							"fontWeight": "100 900",
-							"fontStyle": "normal",
-							"fontDisplay": "swap",
-							"src": [
-								"file:./assets/fonts/inter-variable-latin.woff2"
-							]
-						}
-					]
+					"name": "Heading"
 				},
 				{
 					"fontFamily": "'DM Serif Display', Georgia, serif",
@@ -217,7 +206,7 @@
 			"blockGap": true,
 			"margin": true,
 			"padding": true,
-			"customSpacingSize": true,
+			"customSpacingSize": false,
 			"spacingSizes": [
 				{
 					"slug": "10",

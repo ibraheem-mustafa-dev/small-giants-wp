@@ -45,6 +45,19 @@ function disable_emojis(): void {
 add_action( 'init', __NAMESPACE__ . '\disable_emojis' );
 
 /**
+ * Security response headers.
+ *
+ * CSP is configured at the server/CDN level (requires listing all third-party
+ * origins). These headers are safe to set unconditionally.
+ */
+add_filter( 'wp_headers', function ( array $headers ): array {
+	$headers['X-Content-Type-Options'] = 'nosniff';
+	$headers['X-Frame-Options']        = 'SAMEORIGIN';
+	$headers['Referrer-Policy']        = 'strict-origin-when-cross-origin';
+	return $headers;
+} );
+
+/**
  * Theme setup — register support for block features.
  */
 function setup(): void {

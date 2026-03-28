@@ -45,7 +45,7 @@ class Form_Upload {
 
 		// Validate MIME type.
 		$allowed_types = self::get_allowed_mime_types();
-		$file_type     = wp_check_filetype( $file['name'] );
+		$file_type     = wp_check_filetype_and_ext( $file['tmp_name'], $file['name'] );
 
 		if ( ! in_array( $file_type['type'], $allowed_types, true ) ) {
 			return new \WP_Error(

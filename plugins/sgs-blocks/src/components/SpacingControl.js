@@ -4,12 +4,12 @@
  * Presents a dropdown of the theme's spacing scale (XXS through XXXL)
  * so blocks use consistent spacing tokens rather than arbitrary values.
  */
-import { useSetting } from '@wordpress/block-editor';
+import { useSettings } from '@wordpress/block-editor';
 import { SelectControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
 export default function SpacingControl( { label, value, onChange } ) {
-	const spacingSizes = useSetting( 'spacing.spacingSizes' ) || [];
+	const [ spacingSizes ] = useSettings( 'spacing.spacingSizes' );
 
 	const options = [
 		{ label: __( 'None', 'sgs-blocks' ), value: '' },

@@ -1,11 +1,11 @@
 /**
  * Colour picker that reads the active theme.json palette.
  *
- * Uses useSetting() so it always reflects the current style variation.
+ * Uses useSettings() so it always reflects the current style variation.
  * Blocks never need to know the actual hex values — they get the
  * palette from the theme automatically.
  */
-import { useSetting } from '@wordpress/block-editor';
+import { useSettings } from '@wordpress/block-editor';
 import { ColorPalette, BaseControl } from '@wordpress/components';
 
 export default function DesignTokenPicker( {
@@ -14,7 +14,7 @@ export default function DesignTokenPicker( {
 	onChange,
 	clearable = true,
 } ) {
-	const colours = useSetting( 'color.palette' ) || [];
+	const [ colours ] = useSettings( 'color.palette' );
 
 	return (
 		<BaseControl label={ label } __nextHasNoMarginBottom>

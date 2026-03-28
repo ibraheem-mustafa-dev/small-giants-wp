@@ -1,7 +1,9 @@
 <!-- wp:template-part {"slug":"header","tagName":"header"} /-->
 
-<!-- wp:group {"tagName":"main","layout":{"type":"constrained"}} -->
-<main class="wp-block-group">
+<!-- wp:group {"tagName":"main","anchor":"main","layout":{"type":"constrained"}} -->
+<main class="wp-block-group" id="main">
+	<!-- wp:query-title {"type":"archive","style":{"spacing":{"margin":{"bottom":"var:preset|spacing|50"}}}} /-->
+
 	<!-- wp:query {"queryId":1,"query":{"perPage":10,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","inherit":true}} -->
 	<div class="wp-block-query">
 		<!-- wp:post-template -->

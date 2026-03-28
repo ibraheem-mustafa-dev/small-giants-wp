@@ -264,6 +264,9 @@ body .is-root-container > .wp-block {
 /* Top-level link base — padding and transition declaration */
 .wp-block-navigation .wp-block-navigation-item__content {
 	padding: 4px 8px;
+	min-height: 44px;
+	display: inline-flex;
+	align-items: center;
 	border-radius: var(--wp--custom--border-radius--small);
 	transition: color 200ms cubic-bezier(0.16, 1, 0.3, 1),
 	            background-color 200ms cubic-bezier(0.16, 1, 0.3, 1),
