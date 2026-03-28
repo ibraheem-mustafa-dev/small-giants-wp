@@ -40,11 +40,19 @@ echo field_open( $attributes, 'file' );
 echo field_label( $fid, $attributes );
 echo '<div class="sgs-form-field__file-zone">';
 
+// aria-describedby wires the error span and help text (when present) so that
+// screen readers announce inline validation messages for this field.
+$file_described_by = array( $fid . '-error' );
+if ( ! empty( $attributes['helpText'] ) ) {
+	$file_described_by[] = $fid . '-help';
+}
+
 printf(
-	'<input type="file" id="%s" name="%s" accept="%s" class="sgs-form-field__file-input" data-wp-on--change="actions.uploadFile"%s />',
+	'<input type="file" id="%s" name="%s" accept="%s" class="sgs-form-field__file-input" data-wp-on--change="actions.uploadFile" aria-describedby="%s"%s />',
 	esc_attr( $fid ),
 	esc_attr( $field_name ),
 	$accept,
+	esc_attr( implode( ' ', $file_described_by ) ),
 	$required ? ' required aria-required="true"' : ''
 );
 

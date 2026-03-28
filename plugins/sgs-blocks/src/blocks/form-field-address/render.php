@@ -81,12 +81,15 @@ foreach ( $fields as $field ) {
 		'country'  => 'country-name',
 	);
 
+	// Each sub-field references the parent error span so that screen readers
+	// announce the group-level validation message when any sub-field is invalid.
 	$input_attrs = sprintf(
-		'id="%s" name="%s" placeholder="%s" autocomplete="%s"',
+		'id="%s" name="%s" placeholder="%s" autocomplete="%s" aria-describedby="%s"',
 		esc_attr( $fid ),
 		esc_attr( $field_name ),
 		esc_attr( $placeholder ),
-		esc_attr( $autocomplete_map[ $field ] ?? 'off' )
+		esc_attr( $autocomplete_map[ $field ] ?? 'off' ),
+		esc_attr( $base_fid . '-error' )
 	);
 
 	if ( $is_required ) {
