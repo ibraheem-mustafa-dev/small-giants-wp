@@ -54,6 +54,21 @@ class Form_REST_API {
 							}
 							return true;
 						},
+						'sanitize_callback' => function ( $value ) {
+							if ( ! is_array( $value ) ) {
+								return [];
+							}
+							$sanitised = [];
+							foreach ( $value as $key => $field_value ) {
+								$safe_key = sanitize_key( $key );
+								if ( is_array( $field_value ) ) {
+									$sanitised[ $safe_key ] = array_map( 'sanitize_text_field', $field_value );
+								} else {
+									$sanitised[ $safe_key ] = sanitize_text_field( (string) $field_value );
+								}
+							}
+							return $sanitised;
+						},
 					],
 					'fileIds'  => [
 						'required' => false,

@@ -159,7 +159,7 @@ $wrapper_attributes = get_block_wrapper_attributes(
 			</div>
 		<?php endif; ?>
 
-		<?php echo $content; ?>
+		<?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- InnerBlocks output, pre-rendered and escaped by WordPress. ?>
 
 		<div class="sgs-form__actions">
 			<?php if ( $is_multi_step ) : ?>
