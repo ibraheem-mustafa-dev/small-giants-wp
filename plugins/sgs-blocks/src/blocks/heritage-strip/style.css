@@ -153,3 +153,21 @@
 		--sgs-image-max-height: 300px;
 	}
 }
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+	.sgs-heritage-strip,
+	.sgs-heritage-strip--hover-lift,
+	.sgs-heritage-strip--hover-scale,
+	.sgs-heritage-strip--hover-glow {
+		transition: none !important;
+	}
+
+	.sgs-heritage-strip--hover-lift:hover {
+		transform: none !important;
+	}
+
+	.sgs-heritage-strip--hover-scale:hover {
+		transform: none !important;
+	}
+}

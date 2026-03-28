@@ -317,7 +317,11 @@
 			}
 		},
 		"appearanceTools": true,
-		"useRootPaddingAwareAlignments": true
+		"useRootPaddingAwareAlignments": true,
+		"lightbox": {
+			"enabled": false,
+			"allowEditing": false
+		}
 	},
 	"styles": {
 		"color": {

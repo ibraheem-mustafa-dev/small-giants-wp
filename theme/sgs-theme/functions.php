@@ -1110,7 +1110,26 @@ function add_missing_image_dimensions( string $image, string $context, int $atta
 
 	// Only process if we have a valid attachment ID.
 	if ( $attachment_id > 0 ) {
-		$src_data = wp_get_attachment_image_src( $attachment_id, 'full' );
+		// Try to detect the size slug from the src URL (e.g. -300x200.jpg).
+		$size = 'full';
+		if ( preg_match( '/src=["\']([^"\']+)["\']/', $image, $src_match ) ) {
+			$url = $src_match[1];
+			if ( preg_match( '/-(\d+)x(\d+)\.[a-z]+$/i', $url ) ) {
+				// URL has WP size suffix — get the matching registered size.
+				$meta = wp_get_attachment_metadata( $attachment_id );
+				if ( ! empty( $meta['sizes'] ) ) {
+					$filename = wp_basename( $url );
+					foreach ( $meta['sizes'] as $slug => $data ) {
+						if ( $data['file'] === $filename ) {
+							$size = $slug;
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		$src_data = wp_get_attachment_image_src( $attachment_id, $size );
 		if ( $src_data && ! empty( $src_data[1] ) && ! empty( $src_data[2] ) ) {
 			$width  = (int) $src_data[1];
 			$height = (int) $src_data[2];

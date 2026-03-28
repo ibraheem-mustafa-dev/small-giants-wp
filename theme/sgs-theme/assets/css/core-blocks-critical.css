@@ -12,6 +12,11 @@
  * @package SGS\Theme
  */
 
+/* ─── SMOOTH SCROLL — replaces smooth-scroll.js (2.7KB saved) ─── */
+html {
+	scroll-behavior: smooth;
+}
+
 /* ─── FOCUS INDICATORS — WCAG 2.2 AA compliant (C5) ─── */
 
 /*
@@ -516,6 +521,10 @@ body.sgs-has-transparent-header .wp-site-blocks > :first-child {
 	}
 }
 
+/* LiteSpeed merge guard — do not remove this comment.
+   Adjacent media blocks with the same selector (.wp-block-site-logo img) get
+   merged by the LiteSpeed CSS optimiser, breaking breakpoint logic. */
+
 @media (min-width: 481px) and (max-width: 768px) {
 	.wp-block-site-logo img {
 		max-width: 220px !important;
@@ -547,6 +556,11 @@ body.sgs-has-transparent-header .wp-site-blocks > :first-child {
 		width: 100%;
 	}
 }
+
+/* LiteSpeed merge guard — do not remove this comment.
+   Adjacent media blocks sharing .sgs-top-bar-mobile-cta get merged by the
+   LiteSpeed CSS optimiser, collapsing the show/hide pair and breaking the
+   top bar swap between mobile and desktop. */
 
 @media (min-width: 769px) {
 	.sgs-top-bar-mobile-cta {

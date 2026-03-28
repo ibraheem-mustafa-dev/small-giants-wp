@@ -1,96 +1,98 @@
 {
-    "$schema":  "https://schemas.wp.org/trunk/block.json",
-    "apiVersion":  3,
-    "name":  "sgs/team-member",
-    "version":  "0.1.0",
-    "title":  "SGS Team Member",
-    "category":  "sgs-content",
-    "description":  "Team member card with photo, name, role, bio, and social links.",
-    "keywords":  [
-                     "team",
-                     "member",
-                     "staff",
-                     "person",
-                     "profile"
-                 ],
-    "textdomain":  "sgs-blocks",
-    "icon":  "admin-users",
-    "supports":  {
-                     "align":  false,
-                     "anchor":  true,
-                     "html":  false,
-                     "color":  {
-                                   "background":  true,
-                                   "text":  true
-                               },
-                     "typography":  {
-                                        "fontSize":  true,
-                                        "textAlign":  true
-                                    },
-                     "spacing":  {
-                                     "margin":  true,
-                                     "padding":  true
-                                 },
-                     "__experimentalBorder":  {
-                                                  "radius":  true,
-                                                  "width":  true,
-                                                  "color":  true,
-                                                  "style":  true
-                                              }
-                 },
-    "attributes":  {
-                       "photo":  {
-                                     "type":  "object"
-                                 },
-                       "name":  {
-                                    "type":  "string",
-                                    "default":  ""
-                                },
-                       "role":  {
-                                    "type":  "string",
-                                    "default":  ""
-                                },
-                       "bio":  {
-                                   "type":  "string",
-                                   "default":  ""
-                               },
-                       "socialLinks":  {
-                                           "type":  "array",
-                                           "default":  [
-
-                                                       ],
-                                           "items":  {
-                                                         "type":  "object"
-                                                     }
-                                       },
-                       "nameColour":  {
-                                          "type":  "string",
-                                          "default":  ""
-                                      },
-                       "roleColour":  {
-                                          "type":  "string",
-                                          "default":  "primary"
-                                      },
-                       "cardStyle":  {
-                                         "type":  "string",
-                                         "default":  "elevated"
-                                     },
-                       "photoShape":  {
-                                          "type":  "string",
-                                          "default":  "circle"
-                                      }
-                   },
-    "editorScript":  "file:./index.js",
-    "editorStyle":  "file:./index.css",
-    "style":  "file:./style-index.css",
-    "render":  "file:./render.php",
-    "example":  {
-                    "attributes":  {
-                                       "name":  "Sarah Mitchell",
-                                       "role":  "Head of Procurement",
-                                       "bio":  "Sarah has over 15 years of experience in food wholesale and leads our buying team.",
-                                       "photoShape":  "circle",
-                                       "cardStyle":  "elevated"
-                                   }
-                }
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/team-member",
+	"version": "0.1.0",
+	"title": "SGS Team Member",
+	"category": "sgs-content",
+	"description": "Team member card with photo, name, role, bio, and social links.",
+	"keywords": [
+		"team",
+		"member",
+		"staff",
+		"person",
+		"profile"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "admin-users",
+	"supports": {
+		"align": false,
+		"anchor": true,
+		"html": false,
+		"color": {
+			"background": true,
+			"text": true
+		},
+		"typography": {
+			"fontSize": true,
+			"textAlign": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true
+		}
+	},
+	"selectors": {
+		"root": ".wp-block-sgs-team-member",
+		"typography": ".sgs-team-member__name"
+	},
+	"attributes": {
+		"photo": {
+			"type": "object"
+		},
+		"name": {
+			"type": "string",
+			"default": ""
+		},
+		"role": {
+			"type": "string",
+			"default": ""
+		},
+		"bio": {
+			"type": "string",
+			"default": ""
+		},
+		"socialLinks": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "object"
+			}
+		},
+		"nameColour": {
+			"type": "string",
+			"default": ""
+		},
+		"roleColour": {
+			"type": "string",
+			"default": "primary"
+		},
+		"cardStyle": {
+			"type": "string",
+			"default": "elevated"
+		},
+		"photoShape": {
+			"type": "string",
+			"default": "circle"
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php",
+	"example": {
+		"attributes": {
+			"name": "Sarah Mitchell",
+			"role": "Head of Procurement",
+			"bio": "Sarah has over 15 years of experience in food wholesale and leads our buying team.",
+			"photoShape": "circle",
+			"cardStyle": "elevated"
+		}
+	}
 }

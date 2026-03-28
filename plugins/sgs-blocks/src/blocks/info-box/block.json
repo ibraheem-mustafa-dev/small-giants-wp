@@ -1,139 +1,143 @@
 {
-    "$schema":  "https://schemas.wp.org/trunk/block.json",
-    "apiVersion":  3,
-    "name":  "sgs/info-box",
-    "version":  "0.1.0",
-    "title":  "SGS Info Box",
-    "category":  "sgs-content",
-    "description":  "Feature or benefit card with icon, heading, and description.",
-    "keywords":  [
-                     "info",
-                     "feature",
-                     "card",
-                     "benefit",
-                     "box",
-                     "icon"
-                 ],
-    "textdomain":  "sgs-blocks",
-    "icon":  "info-outline",
-    "supports":  {
-                     "align":  false,
-                     "anchor":  true,
-                     "html":  false,
-                     "color":  {
-                                   "background":  true,
-                                   "text":  true,
-                                   "link":  true
-                               },
-                     "typography":  {
-                                        "fontSize":  true,
-                                        "lineHeight":  true,
-                                        "textAlign":  true,
-                                        "letterSpacing":  true,
-                                        "textTransform":  true,
-                                        "fontWeight":  true,
-                                        "fontStyle":  true
-                                    },
-                     "spacing":  {
-                                     "margin":  true,
-                                     "padding":  true
-                                 },
-                     "shadow":  true,
-                     "__experimentalBorder":  {
-                                                  "radius":  true,
-                                                  "width":  true,
-                                                  "color":  true,
-                                                  "style":  true
-                                              }
-                 },
-    "attributes":  {
-                       "icon":  {
-                                    "type":  "string",
-                                    "default":  "star-filled"
-                                },
-                       "heading":  {
-                                       "type":  "string",
-                                       "default":  ""
-                                   },
-                       "description":  {
-                                           "type":  "string",
-                                           "default":  ""
-                                       },
-                       "link":  {
-                                    "type":  "string"
-                                },
-                       "linkOpensNewTab":  {
-                                               "type":  "boolean",
-                                               "default":  false
-                                           },
-                       "iconColour":  {
-                                          "type":  "string",
-                                          "default":  "primary"
-                                      },
-                       "iconBackgroundColour":  {
-                                                    "type":  "string",
-                                                    "default":  "accent-light"
-                                                },
-                       "iconSize":  {
-                                        "type":  "string",
-                                        "default":  "medium"
-                                    },
-                       "iconSizeTablet":  {
-                                              "type":  "string",
-                                              "default":  ""
-                                          },
-                       "iconSizeMobile":  {
-                                              "type":  "string",
-                                              "default":  ""
-                                          },
-                       "headingColour":  {
-                                             "type":  "string"
-                                         },
-                       "headingFontSize":  {
-                                               "type":  "string"
-                                           },
-                       "descriptionColour":  {
-                                                 "type":  "string"
-                                             },
-                       "cardStyle":  {
-                                         "type":  "string",
-                                         "default":  "elevated"
-                                     },
-                       "hoverEffect":  {
-                                           "type":  "string",
-                                           "default":  "lift"
-                                       },
-                       "hoverBackgroundColour":  {
-                                                     "type":  "string",
-                                                     "default":  ""
-                                                 },
-                       "hoverTextColour":  {
-                                               "type":  "string",
-                                               "default":  ""
-                                           },
-                       "hoverBorderColour":  {
-                                                 "type":  "string",
-                                                 "default":  ""
-                                             },
-                       "transitionDuration":  {
-                                                  "type":  "string",
-                                                  "default":  "300"
-                                              },
-                       "transitionEasing":  {
-                                                "type":  "string",
-                                                "default":  "ease-in-out"
-                                            }
-                   },
-    "editorScript":  "file:./index.js",
-    "editorStyle":  "file:./index.css",
-    "style":  "file:./style-index.css",
-    "render":  "file:./render.php",
-    "example":  {
-                    "attributes":  {
-                                       "icon":  "truck",
-                                       "heading":  "Next-Day Delivery",
-                                       "description":  "Order before 2pm for guaranteed next-day delivery across mainland UK.",
-                                       "cardStyle":  "elevated"
-                                   }
-                }
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/info-box",
+	"version": "0.1.0",
+	"title": "SGS Info Box",
+	"category": "sgs-content",
+	"description": "Feature or benefit card with icon, heading, and description.",
+	"keywords": [
+		"info",
+		"feature",
+		"card",
+		"benefit",
+		"box",
+		"icon"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "info-outline",
+	"supports": {
+		"align": false,
+		"anchor": true,
+		"html": false,
+		"color": {
+			"background": true,
+			"text": true,
+			"link": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true,
+			"textAlign": true,
+			"letterSpacing": true,
+			"textTransform": true,
+			"fontWeight": true,
+			"fontStyle": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"shadow": true,
+		"__experimentalBorder": {
+			"radius": true,
+			"width": true,
+			"color": true,
+			"style": true
+		}
+	},
+	"selectors": {
+		"root": ".wp-block-sgs-info-box",
+		"typography": ".sgs-info-box__heading"
+	},
+	"attributes": {
+		"icon": {
+			"type": "string",
+			"default": "star-filled"
+		},
+		"heading": {
+			"type": "string",
+			"default": ""
+		},
+		"description": {
+			"type": "string",
+			"default": ""
+		},
+		"link": {
+			"type": "string"
+		},
+		"linkOpensNewTab": {
+			"type": "boolean",
+			"default": false
+		},
+		"iconColour": {
+			"type": "string",
+			"default": "primary"
+		},
+		"iconBackgroundColour": {
+			"type": "string",
+			"default": "accent-light"
+		},
+		"iconSize": {
+			"type": "string",
+			"default": "medium"
+		},
+		"iconSizeTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"iconSizeMobile": {
+			"type": "string",
+			"default": ""
+		},
+		"headingColour": {
+			"type": "string"
+		},
+		"headingFontSize": {
+			"type": "string"
+		},
+		"descriptionColour": {
+			"type": "string"
+		},
+		"cardStyle": {
+			"type": "string",
+			"default": "elevated"
+		},
+		"hoverEffect": {
+			"type": "string",
+			"default": "lift"
+		},
+		"hoverBackgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"hoverTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"hoverBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"transitionDuration": {
+			"type": "string",
+			"default": "300"
+		},
+		"transitionEasing": {
+			"type": "string",
+			"default": "ease-in-out"
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php",
+	"example": {
+		"attributes": {
+			"icon": "truck",
+			"heading": "Next-Day Delivery",
+			"description": "Order before 2pm for guaranteed next-day delivery across mainland UK.",
+			"cardStyle": "elevated"
+		}
+	}
 }

@@ -6,7 +6,14 @@
 	"title": "Mobile Navigation",
 	"category": "sgs-interactive",
 	"description": "Full-screen mobile navigation drawer with accordion submenus, spring-physics animation, and swipe-to-close. Reads menu items from the header navigation block automatically.",
-	"keywords": [ "mobile", "navigation", "drawer", "menu", "hamburger", "off-canvas" ],
+	"keywords": [
+		"mobile",
+		"navigation",
+		"drawer",
+		"menu",
+		"hamburger",
+		"off-canvas"
+	],
 	"textdomain": "sgs-blocks",
 	"icon": "menu-alt3",
 	"supports": {
@@ -21,11 +28,19 @@
 			"padding": true
 		}
 	},
+	"selectors": {
+		"root": ".wp-block-sgs-mobile-nav"
+	},
 	"attributes": {
 		"variant": {
 			"type": "string",
 			"default": "overlay",
-			"enum": [ "overlay", "slide-left", "slide-right", "bottom-sheet" ]
+			"enum": [
+				"overlay",
+				"slide-left",
+				"slide-right",
+				"bottom-sheet"
+			]
 		},
 		"accentColour": {
 			"type": "string",
@@ -58,7 +73,11 @@
 		"socialStyle": {
 			"type": "string",
 			"default": "coloured",
-			"enum": [ "coloured", "plain", "outline" ]
+			"enum": [
+				"coloured",
+				"plain",
+				"outline"
+			]
 		},
 		"showSearch": {
 			"type": "boolean",
@@ -103,7 +122,11 @@
 		"drawerPosition": {
 			"type": "string",
 			"default": "top",
-			"enum": [ "top", "centre", "space-between" ]
+			"enum": [
+				"top",
+				"centre",
+				"space-between"
+			]
 		},
 		"showLogo": {
 			"type": "boolean",
@@ -136,7 +159,11 @@
 		"closeButtonStyle": {
 			"type": "string",
 			"default": "circle",
-			"enum": [ "circle", "square", "plain" ]
+			"enum": [
+				"circle",
+				"square",
+				"plain"
+			]
 		},
 		"ctaIcon": {
 			"type": "string",
@@ -145,7 +172,11 @@
 		"ctaStyle": {
 			"type": "string",
 			"default": "filled",
-			"enum": [ "filled", "outline", "ghost" ]
+			"enum": [
+				"filled",
+				"outline",
+				"ghost"
+			]
 		},
 		"showSecondaryCta": {
 			"type": "boolean",
@@ -166,12 +197,20 @@
 		"secondaryCtaStyle": {
 			"type": "string",
 			"default": "outline",
-			"enum": [ "filled", "outline", "ghost" ]
+			"enum": [
+				"filled",
+				"outline",
+				"ghost"
+			]
 		},
 		"contactDisplayMode": {
 			"type": "string",
 			"default": "icon-only",
-			"enum": [ "icon-only", "icon-text", "hidden" ]
+			"enum": [
+				"icon-only",
+				"icon-text",
+				"hidden"
+			]
 		},
 		"showWhatsApp": {
 			"type": "boolean",
@@ -188,7 +227,12 @@
 		"linkFontWeight": {
 			"type": "string",
 			"default": "600",
-			"enum": [ "400", "500", "600", "700" ]
+			"enum": [
+				"400",
+				"500",
+				"600",
+				"700"
+			]
 		},
 		"sublinkFontSize": {
 			"type": "string",
@@ -305,7 +349,14 @@
 		"animationPreset": {
 			"type": "string",
 			"default": "spring",
-			"enum": [ "snappy", "smooth", "spring", "bouncy", "none", "custom" ]
+			"enum": [
+				"snappy",
+				"smooth",
+				"spring",
+				"bouncy",
+				"none",
+				"custom"
+			]
 		},
 		"animationDuration": {
 			"type": "number",
@@ -314,7 +365,12 @@
 		"animationEasing": {
 			"type": "string",
 			"default": "spring",
-			"enum": [ "spring", "ease", "ease-in-out", "linear" ]
+			"enum": [
+				"spring",
+				"ease",
+				"ease-in-out",
+				"linear"
+			]
 		},
 		"exitDuration": {
 			"type": "number",
