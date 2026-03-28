@@ -334,15 +334,50 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { headlineColour: val } )
 						}
 					/>
-					<SelectControl
+					<ResponsiveControl
 						label={ __( 'Sub-headline font size', 'sgs-blocks' ) }
-						value={ subHeadlineFontSize || '' }
-						options={ FONT_SIZE_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { subHeadlineFontSize: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
+					>
+						{ ( breakpoint ) => {
+							const attrMap = {
+								desktop: 'subHeadlineFontSize',
+								tablet: 'subHeadlineFontSizeTablet',
+								mobile: 'subHeadlineFontSizeMobile',
+							};
+							return (
+								<SelectControl
+									value={
+										attributes[
+											attrMap[ breakpoint ]
+										] || ''
+									}
+									options={
+										breakpoint === 'desktop'
+											? FONT_SIZE_OPTIONS
+											: [
+													{
+														label: __(
+															'Same as desktop',
+															'sgs-blocks'
+														),
+														value: '',
+													},
+													...FONT_SIZE_OPTIONS.filter(
+														( opt ) =>
+															opt.value !== ''
+													),
+												]
+									}
+									onChange={ ( val ) =>
+										setAttributes( {
+											[ attrMap[ breakpoint ] ]:
+												val,
+										} )
+									}
+									__nextHasNoMarginBottom
+								/>
+							);
+						} }
+					</ResponsiveControl>
 					<DesignTokenPicker
 						label={ __(
 							'Sub-headline colour',

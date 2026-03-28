@@ -153,13 +153,28 @@ export default function Edit( { attributes, setAttributes } ) {
 						</ResponsiveControl>
 					) }
 
-					<SpacingControl
+					<ResponsiveControl
 						label={ __( 'Gap', 'sgs-blocks' ) }
-						value={ gap }
-						onChange={ ( val ) =>
-							setAttributes( { gap: val } )
-						}
-					/>
+					>
+						{ ( breakpoint ) => {
+							const attrMap = {
+								desktop: 'gap',
+								tablet: 'gapTablet',
+								mobile: 'gapMobile',
+							};
+							const attr = attrMap[ breakpoint ];
+							return (
+								<SpacingControl
+									value={ attributes[ attr ] }
+									onChange={ ( val ) =>
+										setAttributes( {
+											[ attr ]: val,
+										} )
+									}
+								/>
+							);
+						} }
+					</ResponsiveControl>
 
 					<ToggleGroupControl
 						label={ __( 'Max width', 'sgs-blocks' ) }

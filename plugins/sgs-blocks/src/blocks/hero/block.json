@@ -116,6 +116,14 @@
     "subHeadlineFontSize": {
       "type": "string"
     },
+    "subHeadlineFontSizeTablet": {
+      "type": "string",
+      "default": ""
+    },
+    "subHeadlineFontSizeMobile": {
+      "type": "string",
+      "default": ""
+    },
     "subHeadlineColour": {
       "type": "string"
     },

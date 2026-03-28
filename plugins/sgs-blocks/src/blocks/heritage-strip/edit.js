@@ -19,7 +19,7 @@ const HOVER_EFFECT_OPTIONS = [
 	{ label: __( 'Scale', 'sgs-blocks' ), value: 'scale' },
 	{ label: __( 'Glow', 'sgs-blocks' ), value: 'glow' },
 ];
-import { DesignTokenPicker } from '../../components';
+import { DesignTokenPicker, ResponsiveControl } from '../../components';
 import { colourVar, fontSizeVar } from '../../utils';
 
 const LAYOUT_OPTIONS = [
@@ -204,18 +204,50 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { headlineColour: val } )
 						}
 					/>
-					<SelectControl
-						label={ __(
-							'Headline font size',
-							'sgs-blocks'
-						) }
-						value={ headlineFontSize || '' }
-						options={ FONT_SIZE_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { headlineFontSize: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
+					<ResponsiveControl
+						label={ __( 'Headline font size', 'sgs-blocks' ) }
+					>
+						{ ( breakpoint ) => {
+							const attrMap = {
+								desktop: 'headlineFontSize',
+								tablet: 'headlineFontSizeTablet',
+								mobile: 'headlineFontSizeMobile',
+							};
+							return (
+								<SelectControl
+									value={
+										attributes[
+											attrMap[ breakpoint ]
+										] || ''
+									}
+									options={
+										breakpoint === 'desktop'
+											? FONT_SIZE_OPTIONS
+											: [
+													{
+														label: __(
+															'Same as desktop',
+															'sgs-blocks'
+														),
+														value: '',
+													},
+													...FONT_SIZE_OPTIONS.filter(
+														( opt ) =>
+															opt.value !== ''
+													),
+												]
+									}
+									onChange={ ( val ) =>
+										setAttributes( {
+											[ attrMap[ breakpoint ] ]:
+												val,
+										} )
+									}
+									__nextHasNoMarginBottom
+								/>
+							);
+						} }
+					</ResponsiveControl>
 					<DesignTokenPicker
 						label={ __( 'Body colour', 'sgs-blocks' ) }
 						value={ bodyColour }
@@ -223,15 +255,50 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { bodyColour: val } )
 						}
 					/>
-					<SelectControl
+					<ResponsiveControl
 						label={ __( 'Body font size', 'sgs-blocks' ) }
-						value={ bodyFontSize || '' }
-						options={ FONT_SIZE_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { bodyFontSize: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
+					>
+						{ ( breakpoint ) => {
+							const attrMap = {
+								desktop: 'bodyFontSize',
+								tablet: 'bodyFontSizeTablet',
+								mobile: 'bodyFontSizeMobile',
+							};
+							return (
+								<SelectControl
+									value={
+										attributes[
+											attrMap[ breakpoint ]
+										] || ''
+									}
+									options={
+										breakpoint === 'desktop'
+											? FONT_SIZE_OPTIONS
+											: [
+													{
+														label: __(
+															'Same as desktop',
+															'sgs-blocks'
+														),
+														value: '',
+													},
+													...FONT_SIZE_OPTIONS.filter(
+														( opt ) =>
+															opt.value !== ''
+													),
+												]
+									}
+									onChange={ ( val ) =>
+										setAttributes( {
+											[ attrMap[ breakpoint ] ]:
+												val,
+										} )
+									}
+									__nextHasNoMarginBottom
+								/>
+							);
+						} }
+					</ResponsiveControl>
 				</PanelBody>
 
 				<PanelBody

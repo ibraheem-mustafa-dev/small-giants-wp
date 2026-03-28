@@ -148,6 +148,23 @@
 	box-shadow: 0 0 0 3px var(--wp--preset--color--primary, #0F7E80);
 }
 
+/* Responsive label font sizes — driven by data attributes set in save.js. */
+@media (max-width: 1023px) {
+	.sgs-trust-bar[data-label-fs-tablet="small"] .sgs-trust-bar__label { font-size: var(--wp--preset--font-size--small); }
+	.sgs-trust-bar[data-label-fs-tablet="medium"] .sgs-trust-bar__label { font-size: var(--wp--preset--font-size--medium); }
+	.sgs-trust-bar[data-label-fs-tablet="large"] .sgs-trust-bar__label { font-size: var(--wp--preset--font-size--large); }
+	.sgs-trust-bar[data-label-fs-tablet="x-large"] .sgs-trust-bar__label { font-size: var(--wp--preset--font-size--x-large); }
+	.sgs-trust-bar[data-label-fs-tablet="xx-large"] .sgs-trust-bar__label { font-size: var(--wp--preset--font-size--xx-large); }
+}
+
+@media (max-width: 599px) {
+	.sgs-trust-bar[data-label-fs-mobile="small"] .sgs-trust-bar__label { font-size: var(--wp--preset--font-size--small); }
+	.sgs-trust-bar[data-label-fs-mobile="medium"] .sgs-trust-bar__label { font-size: var(--wp--preset--font-size--medium); }
+	.sgs-trust-bar[data-label-fs-mobile="large"] .sgs-trust-bar__label { font-size: var(--wp--preset--font-size--large); }
+	.sgs-trust-bar[data-label-fs-mobile="x-large"] .sgs-trust-bar__label { font-size: var(--wp--preset--font-size--x-large); }
+	.sgs-trust-bar[data-label-fs-mobile="xx-large"] .sgs-trust-bar__label { font-size: var(--wp--preset--font-size--xx-large); }
+}
+
 /* ===== Responsive - 2x2 grid on mobile ===== */
 @media (max-width: 767px) {
 	.sgs-trust-bar {

@@ -207,15 +207,50 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { headingColour: val } )
 						}
 					/>
-					<SelectControl
+					<ResponsiveControl
 						label={ __( 'Heading font size', 'sgs-blocks' ) }
-						value={ headingFontSize || '' }
-						options={ FONT_SIZE_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { headingFontSize: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
+					>
+						{ ( breakpoint ) => {
+							const attrMap = {
+								desktop: 'headingFontSize',
+								tablet: 'headingFontSizeTablet',
+								mobile: 'headingFontSizeMobile',
+							};
+							return (
+								<SelectControl
+									value={
+										attributes[
+											attrMap[ breakpoint ]
+										] || ''
+									}
+									options={
+										breakpoint === 'desktop'
+											? FONT_SIZE_OPTIONS
+											: [
+													{
+														label: __(
+															'Same as desktop',
+															'sgs-blocks'
+														),
+														value: '',
+													},
+													...FONT_SIZE_OPTIONS.filter(
+														( opt ) =>
+															opt.value !== ''
+													),
+												]
+									}
+									onChange={ ( val ) =>
+										setAttributes( {
+											[ attrMap[ breakpoint ] ]:
+												val,
+										} )
+									}
+									__nextHasNoMarginBottom
+								/>
+							);
+						} }
+					</ResponsiveControl>
 					<DesignTokenPicker
 						label={ __(
 							'Description colour',

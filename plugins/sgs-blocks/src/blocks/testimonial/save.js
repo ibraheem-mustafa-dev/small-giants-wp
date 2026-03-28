@@ -32,6 +32,8 @@ export default function Save( { attributes } ) {
 		quoteColour,
 		nameColour,
 		nameFontSize,
+		nameFontSizeTablet,
+		nameFontSizeMobile,
 		roleColour,
 		ratingColour,
 		hoverBackgroundColour,
@@ -58,6 +60,15 @@ export default function Save( { attributes } ) {
 
 	const className = classNames.join( ' ' );
 
+	// Responsive name font-size data-attributes for CSS media query selectors.
+	const responsiveDataAttrs = {};
+	if ( nameFontSizeTablet ) {
+		responsiveDataAttrs[ 'data-name-fs-tablet' ] = nameFontSizeTablet;
+	}
+	if ( nameFontSizeMobile ) {
+		responsiveDataAttrs[ 'data-name-fs-mobile' ] = nameFontSizeMobile;
+	}
+
 	const blockProps = useBlockProps.save( {
 		className,
 		style: {
@@ -80,6 +91,7 @@ export default function Save( { attributes } ) {
 				: undefined,
 			'--sgs-stagger': staggerDelay ? `${ staggerDelay }ms` : undefined,
 		},
+		...responsiveDataAttrs,
 	} );
 
 	const quoteStyle = {

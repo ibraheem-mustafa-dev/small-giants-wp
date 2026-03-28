@@ -25,7 +25,9 @@ $icon_size               = $attributes['iconSize'] ?? 'medium';
 $icon_size_tablet        = $attributes['iconSizeTablet'] ?? '';
 $icon_size_mobile        = $attributes['iconSizeMobile'] ?? '';
 $heading_colour          = $attributes['headingColour'] ?? '';
-$heading_font_size       = $attributes['headingFontSize'] ?? '';
+$heading_font_size        = $attributes['headingFontSize'] ?? '';
+$heading_font_size_tablet = $attributes['headingFontSizeTablet'] ?? '';
+$heading_font_size_mobile = $attributes['headingFontSizeMobile'] ?? '';
 $description_colour      = $attributes['descriptionColour'] ?? '';
 $card_style              = $attributes['cardStyle'] ?? 'elevated';
 $hover_effect            = $attributes['hoverEffect'] ?? 'lift';
@@ -95,6 +97,15 @@ if ( $icon_size_tablet && in_array( $icon_size_tablet, $valid_icon_sizes, true )
 }
 if ( $icon_size_mobile && in_array( $icon_size_mobile, $valid_icon_sizes, true ) ) {
 	$wrapper_attr_args['data-icon-size-mobile'] = $icon_size_mobile;
+}
+
+// Responsive heading font size overrides — driven by data attributes, matched by CSS.
+$valid_font_sizes = array( 'small', 'medium', 'large', 'x-large', 'xx-large' );
+if ( $heading_font_size_tablet && in_array( $heading_font_size_tablet, $valid_font_sizes, true ) ) {
+	$wrapper_attr_args['data-heading-fs-tablet'] = $heading_font_size_tablet;
+}
+if ( $heading_font_size_mobile && in_array( $heading_font_size_mobile, $valid_font_sizes, true ) ) {
+	$wrapper_attr_args['data-heading-fs-mobile'] = $heading_font_size_mobile;
 }
 
 $wrapper_attributes = get_block_wrapper_attributes( $wrapper_attr_args );

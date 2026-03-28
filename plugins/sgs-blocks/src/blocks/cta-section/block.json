@@ -78,6 +78,14 @@
     "bodyFontSize": {
       "type": "string"
     },
+    "bodyFontSizeTablet": {
+      "type": "string",
+      "default": ""
+    },
+    "bodyFontSizeMobile": {
+      "type": "string",
+      "default": ""
+    },
     "buttonColour": {
       "type": "string"
     },

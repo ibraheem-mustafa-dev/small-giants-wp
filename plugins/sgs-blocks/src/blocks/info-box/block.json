@@ -96,6 +96,14 @@
     "headingFontSize": {
       "type": "string"
     },
+    "headingFontSizeTablet": {
+      "type": "string",
+      "default": ""
+    },
+    "headingFontSizeMobile": {
+      "type": "string",
+      "default": ""
+    },
     "descriptionColour": {
       "type": "string"
     },

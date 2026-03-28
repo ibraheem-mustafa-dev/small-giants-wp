@@ -33,6 +33,8 @@ export default function Save( { attributes } ) {
 		valueColour,
 		labelColour,
 		labelFontSize,
+		labelFontSizeTablet,
+		labelFontSizeMobile,
 		hoverBackgroundColour,
 		hoverTextColour,
 		hoverBorderColour,
@@ -48,9 +50,19 @@ export default function Save( { attributes } ) {
 		'--sgs-transition-easing': transitionEasing || undefined,
 	};
 
+	// Responsive label font-size data-attributes for CSS media query selectors.
+	const responsiveDataAttrs = {};
+	if ( labelFontSizeTablet ) {
+		responsiveDataAttrs[ 'data-label-fs-tablet' ] = labelFontSizeTablet;
+	}
+	if ( labelFontSizeMobile ) {
+		responsiveDataAttrs[ 'data-label-fs-mobile' ] = labelFontSizeMobile;
+	}
+
 	const blockProps = useBlockProps.save( {
 		className: 'sgs-trust-bar',
 		style: wrapperStyle,
+		...responsiveDataAttrs,
 	} );
 
 	const valueStyle = {

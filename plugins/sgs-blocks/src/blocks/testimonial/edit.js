@@ -13,7 +13,7 @@ import {
 	Button,
 	TextControl,
 } from '@wordpress/components';
-import { DesignTokenPicker } from '../../components';
+import { DesignTokenPicker, ResponsiveControl } from '../../components';
 import { colourVar, fontSizeVar } from '../../utils';
 
 const STYLE_OPTIONS = [
@@ -315,15 +315,50 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { nameColour: val } )
 						}
 					/>
-					<SelectControl
+					<ResponsiveControl
 						label={ __( 'Name font size', 'sgs-blocks' ) }
-						value={ nameFontSize || '' }
-						options={ FONT_SIZE_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { nameFontSize: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
+					>
+						{ ( breakpoint ) => {
+							const attrMap = {
+								desktop: 'nameFontSize',
+								tablet: 'nameFontSizeTablet',
+								mobile: 'nameFontSizeMobile',
+							};
+							return (
+								<SelectControl
+									value={
+										attributes[
+											attrMap[ breakpoint ]
+										] || ''
+									}
+									options={
+										breakpoint === 'desktop'
+											? FONT_SIZE_OPTIONS
+											: [
+													{
+														label: __(
+															'Same as desktop',
+															'sgs-blocks'
+														),
+														value: '',
+													},
+													...FONT_SIZE_OPTIONS.filter(
+														( opt ) =>
+															opt.value !== ''
+													),
+												]
+									}
+									onChange={ ( val ) =>
+										setAttributes( {
+											[ attrMap[ breakpoint ] ]:
+												val,
+										} )
+									}
+									__nextHasNoMarginBottom
+								/>
+							);
+						} }
+					</ResponsiveControl>
 					<DesignTokenPicker
 						label={ __( 'Role colour', 'sgs-blocks' ) }
 						value={ roleColour }

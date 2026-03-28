@@ -35,7 +35,9 @@ $cta_secondary_url  = $attributes['ctaSecondaryUrl'] ?? '';
 $cta_secondary_style = $attributes['ctaSecondaryStyle'] ?? 'outline';
 
 $headline_colour       = $attributes['headlineColour'] ?? '';
-$sub_headline_font_size = $attributes['subHeadlineFontSize'] ?? '';
+$sub_headline_font_size        = $attributes['subHeadlineFontSize'] ?? '';
+$sub_headline_font_size_tablet = $attributes['subHeadlineFontSizeTablet'] ?? '';
+$sub_headline_font_size_mobile = $attributes['subHeadlineFontSizeMobile'] ?? '';
 $sub_headline_colour   = $attributes['subHeadlineColour'] ?? '';
 $cta_primary_colour    = $attributes['ctaPrimaryColour'] ?? '';
 $cta_primary_bg        = $attributes['ctaPrimaryBackground'] ?? '';
@@ -81,13 +83,19 @@ if ( ! $is_split && ! $is_video && ! $is_svg_animated && ! empty( $bg_image['url
 // Generate a unique ID for responsive CSS scoping.
 $uid = 'sgs-hero-' . substr( md5( wp_json_encode( $attributes ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
 
-// Build responsive min-height CSS.
+// Build responsive CSS.
 $responsive_css = '';
 if ( $min_height_tablet ) {
 	$responsive_css .= '@media (max-width:1023px){.' . $uid . '{min-height:' . esc_attr( $min_height_tablet ) . '}}';
 }
 if ( $min_height_mobile ) {
 	$responsive_css .= '@media (max-width:599px){.' . $uid . '{min-height:' . esc_attr( $min_height_mobile ) . '}}';
+}
+if ( $sub_headline_font_size_tablet ) {
+	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__subheadline{font-size:' . sgs_font_size_value( $sub_headline_font_size_tablet ) . '}}';
+}
+if ( $sub_headline_font_size_mobile ) {
+	$responsive_css .= '@media (max-width:599px){.' . $uid . ' .sgs-hero__subheadline{font-size:' . sgs_font_size_value( $sub_headline_font_size_mobile ) . '}}';
 }
 
 // Build wrapper classes.

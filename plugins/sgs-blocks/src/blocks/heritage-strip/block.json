@@ -79,11 +79,27 @@
                        "headlineFontSize":  {
                                                 "type":  "string"
                                             },
+                       "headlineFontSizeTablet":  {
+                                                "type":  "string",
+                                                "default":  ""
+                                            },
+                       "headlineFontSizeMobile":  {
+                                                "type":  "string",
+                                                "default":  ""
+                                            },
                        "bodyColour":  {
                                           "type":  "string"
                                       },
                        "bodyFontSize":  {
                                             "type":  "string"
+                                        },
+                       "bodyFontSizeTablet":  {
+                                            "type":  "string",
+                                            "default":  ""
+                                        },
+                       "bodyFontSizeMobile":  {
+                                            "type":  "string",
+                                            "default":  ""
                                         },
                        "backgroundColour":  {
                                                 "type":  "string"

@@ -75,6 +75,14 @@
 			"type": "string",
 			"default": "40"
 		},
+		"gapTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"gapMobile": {
+			"type": "string",
+			"default": ""
+		},
 		"backgroundImage": {
 			"type": "object"
 		},

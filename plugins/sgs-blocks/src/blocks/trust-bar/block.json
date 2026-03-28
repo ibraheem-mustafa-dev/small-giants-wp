@@ -88,6 +88,14 @@
                        "labelFontSize":  {
                                              "type":  "string"
                                          },
+                       "labelFontSizeTablet":  {
+                                             "type":  "string",
+                                             "default":  ""
+                                         },
+                       "labelFontSizeMobile":  {
+                                             "type":  "string",
+                                             "default":  ""
+                                         },
                        "hoverBackgroundColour":  {
                                                      "type":  "string",
                                                      "default":  ""

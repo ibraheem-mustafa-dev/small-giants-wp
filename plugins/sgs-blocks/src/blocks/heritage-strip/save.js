@@ -10,8 +10,12 @@ export default function Save( { attributes } ) {
 		imageRight,
 		headlineColour,
 		headlineFontSize,
+		headlineFontSizeTablet,
+		headlineFontSizeMobile,
 		bodyColour,
 		bodyFontSize,
+		bodyFontSizeTablet,
+		bodyFontSizeMobile,
 		hoverBackgroundColour,
 		hoverTextColour,
 		hoverBorderColour,
@@ -39,7 +43,22 @@ export default function Save( { attributes } ) {
 		'--sgs-transition-easing': transitionEasing || undefined,
 	};
 
-	const blockProps = useBlockProps.save( { className, style: wrapperStyle } );
+	// Responsive font-size data-attributes for CSS media query selectors.
+	const dataAttrs = {};
+	if ( headlineFontSizeTablet ) {
+		dataAttrs[ 'data-headline-fs-tablet' ] = headlineFontSizeTablet;
+	}
+	if ( headlineFontSizeMobile ) {
+		dataAttrs[ 'data-headline-fs-mobile' ] = headlineFontSizeMobile;
+	}
+	if ( bodyFontSizeTablet ) {
+		dataAttrs[ 'data-body-fs-tablet' ] = bodyFontSizeTablet;
+	}
+	if ( bodyFontSizeMobile ) {
+		dataAttrs[ 'data-body-fs-mobile' ] = bodyFontSizeMobile;
+	}
+
+	const blockProps = useBlockProps.save( { className, style: wrapperStyle, ...dataAttrs } );
 
 	const headlineStyle = {
 		color: colourVar( headlineColour ) || undefined,

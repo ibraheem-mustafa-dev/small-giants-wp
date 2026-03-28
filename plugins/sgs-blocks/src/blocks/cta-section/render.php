@@ -21,6 +21,8 @@ $layout                  = $attributes['layout'] ?? 'centred';
 $headline_colour         = $attributes['headlineColour'] ?? '';
 $body_colour             = $attributes['bodyColour'] ?? '';
 $body_font_size          = $attributes['bodyFontSize'] ?? '';
+$body_font_size_tablet   = $attributes['bodyFontSizeTablet'] ?? '';
+$body_font_size_mobile   = $attributes['bodyFontSizeMobile'] ?? '';
 $button_colour           = $attributes['buttonColour'] ?? '';
 $button_background       = $attributes['buttonBackground'] ?? '';
 
@@ -71,6 +73,20 @@ $classes = array(
 	'sgs-cta-section',
 	'sgs-cta-section--' . esc_attr( $layout ),
 );
+
+// Build responsive body font-size CSS.
+$responsive_css = '';
+if ( $body_font_size_tablet || $body_font_size_mobile ) {
+	$uid = 'sgs-cta-' . substr( md5( wp_json_encode( $attributes ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
+	$classes[] = $uid;
+
+	if ( $body_font_size_tablet ) {
+		$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-cta-section__body{font-size:' . sgs_font_size_value( $body_font_size_tablet ) . '}}';
+	}
+	if ( $body_font_size_mobile ) {
+		$responsive_css .= '@media (max-width:599px){.' . $uid . ' .sgs-cta-section__body{font-size:' . sgs_font_size_value( $body_font_size_mobile ) . '}}';
+	}
+}
 
 $wrapper_attr_args = array(
 	'class' => implode( ' ', $classes ),
@@ -182,6 +198,11 @@ if ( ! empty( $buttons ) ) {
 		);
 	}
 	$buttons_html .= '</div>';
+}
+
+// Output responsive CSS if needed.
+if ( $responsive_css ) {
+	printf( '<style id="%s">%s</style>', esc_attr( $uid ), $responsive_css );
 }
 
 // Output.

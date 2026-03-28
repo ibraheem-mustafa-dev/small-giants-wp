@@ -85,6 +85,14 @@
     "nameFontSize": {
       "type": "string"
     },
+    "nameFontSizeTablet": {
+      "type": "string",
+      "default": ""
+    },
+    "nameFontSizeMobile": {
+      "type": "string",
+      "default": ""
+    },
     "roleColour": {
       "type": "string"
     },

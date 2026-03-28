@@ -21,6 +21,8 @@ $columns          = $attributes['columns'] ?? 2;
 $columns_mobile   = $attributes['columnsMobile'] ?? 1;
 $columns_tablet   = $attributes['columnsTablet'] ?? 2;
 $gap              = $attributes['gap'] ?? '40';
+$gap_tablet       = $attributes['gapTablet'] ?? '';
+$gap_mobile       = $attributes['gapMobile'] ?? '';
 $bg_image         = $attributes['backgroundImage'] ?? null;
 $overlay_colour   = $attributes['backgroundOverlayColour'] ?? '';
 $overlay_opacity  = $attributes['backgroundOverlayOpacity'] ?? 50;
@@ -137,14 +139,33 @@ if ( $shape_top || $shape_bottom ) {
 	$classes[] = 'sgs-container--has-shape-divider';
 }
 
-// Rebuild wrapper attributes if shapes added a class.
-if ( $shape_top || $shape_bottom ) {
+// Build responsive gap CSS.
+$responsive_css = '';
+if ( $gap_tablet || $gap_mobile ) {
+	$uid = 'sgs-container-' . substr( md5( wp_json_encode( $attributes ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
+	$classes[] = $uid;
+
+	if ( $gap_tablet ) {
+		$responsive_css .= '@media (max-width:1023px){.' . $uid . '{gap:var(--wp--preset--spacing--' . esc_attr( $gap_tablet ) . ')}}';
+	}
+	if ( $gap_mobile ) {
+		$responsive_css .= '@media (max-width:599px){.' . $uid . '{gap:var(--wp--preset--spacing--' . esc_attr( $gap_mobile ) . ')}}';
+	}
+}
+
+// Rebuild wrapper attributes if shapes added a class or responsive uid was added.
+if ( $shape_top || $shape_bottom || $responsive_css ) {
 	$wrapper_attributes = get_block_wrapper_attributes(
 		array(
 			'class' => implode( ' ', $classes ),
 			'style' => implode( ';', $styles ) . ';',
 		)
 	);
+}
+
+// Output responsive CSS if needed.
+if ( $responsive_css ) {
+	printf( '<style id="%s">%s</style>', esc_attr( $uid ), $responsive_css );
 }
 
 printf(
