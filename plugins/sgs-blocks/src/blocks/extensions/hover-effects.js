@@ -1,9 +1,10 @@
 /**
  * Universal Hover Effects extension.
  *
- * Adds hover colour, scale, shadow, and border controls to ALL blocks.
- * Outputs CSS custom properties as inline styles and a `.sgs-has-hover`
- * class that activates the hover CSS.
+ * Adds hover colour, scale, shadow, image zoom, grayscale, stagger delay,
+ * and block link controls to ALL blocks.
+ * Outputs CSS custom properties as inline styles and utility classes that
+ * activate the hover CSS.
  *
  * Server-side class injection handled by includes/hover-effects.php.
  *
@@ -17,8 +18,8 @@ import {
 	PanelBody,
 	RangeControl,
 	SelectControl,
-	TextControl,
 	ToggleControl,
+	TextControl,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
@@ -31,14 +32,25 @@ try {
 }
 
 const HOVER_ATTRS = {
+	// Colour overrides on hover.
 	sgsHoverBgColour: { type: 'string', default: '' },
 	sgsHoverTextColour: { type: 'string', default: '' },
 	sgsHoverBorderColour: { type: 'string', default: '' },
+	// Scale transform — fine-grained slider (0 = off; 105 = scale(1.05)).
 	sgsHoverScale: { type: 'number', default: 0 },
+	// Shadow elevation preset.
 	sgsHoverShadow: { type: 'string', default: '' },
+	// Transition timing.
 	sgsHoverDuration: { type: 'number', default: 300 },
+	// Named scale preset (none | 1.02 | 1.05 | 1.1).
+	sgsHoverScalePreset: { type: 'string', default: '' },
+	// Image zoom on hover.
 	sgsHoverImageZoom: { type: 'boolean', default: false },
+	// Stagger animation delay in ms (applied to direct children).
+	sgsStaggerDelay: { type: 'number', default: 0 },
+	// Grayscale-to-colour effect on images.
 	sgsHoverGrayscale: { type: 'boolean', default: false },
+	// Block link — wraps the whole block in an <a> tag.
 	sgsBlockLink: { type: 'string', default: '' },
 	sgsBlockLinkTarget: { type: 'boolean', default: false },
 };
@@ -51,6 +63,13 @@ const SHADOW_OPTIONS = [
 	{ label: __( 'Glow', 'sgs-blocks' ), value: 'glow' },
 ];
 
+const SCALE_PRESET_OPTIONS = [
+	{ label: __( 'None', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Subtle (1.02)', 'sgs-blocks' ), value: '1.02' },
+	{ label: __( 'Medium (1.05)', 'sgs-blocks' ), value: '1.05' },
+	{ label: __( 'Strong (1.1)', 'sgs-blocks' ), value: '1.1' },
+];
+
 /**
  * Add hover attributes to all blocks.
  */
@@ -59,7 +78,7 @@ addFilter(
 	'sgs/hover-effects/attributes',
 	( settings ) => {
 		const type = getBlockType( settings.name );
-		// Skip blocks that don't support className.
+		// Skip blocks that do not support className.
 		if ( type?.supports?.className === false ) {
 			return settings;
 		}
@@ -93,7 +112,9 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 			sgsHoverScale,
 			sgsHoverShadow,
 			sgsHoverDuration,
+			sgsHoverScalePreset,
 			sgsHoverImageZoom,
+			sgsStaggerDelay,
 			sgsHoverGrayscale,
 			sgsBlockLink,
 			sgsBlockLinkTarget,
@@ -128,9 +149,17 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 						) : (
 							<p>{ __( 'Colour controls not available.', 'sgs-blocks' ) }</p>
 						) }
+						<SelectControl
+							label={ __( 'Hover scale', 'sgs-blocks' ) }
+							help={ __( 'Scale the block up on hover using a preset value.', 'sgs-blocks' ) }
+							value={ sgsHoverScalePreset }
+							options={ SCALE_PRESET_OPTIONS }
+							onChange={ ( val ) => setAttributes( { sgsHoverScalePreset: val } ) }
+							__nextHasNoMarginBottom
+						/>
 						<RangeControl
-							label={ __( 'Hover scale (%)', 'sgs-blocks' ) }
-							help={ __( '0 = no scale. 105 = 5% larger.', 'sgs-blocks' ) }
+							label={ __( 'Hover scale (fine, %)', 'sgs-blocks' ) }
+							help={ __( '0 = no scale. 105 = 5% larger. Overrides preset above.', 'sgs-blocks' ) }
 							value={ sgsHoverScale }
 							onChange={ ( val ) => setAttributes( { sgsHoverScale: val } ) }
 							min={ 0 }
@@ -145,6 +174,18 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 							onChange={ ( val ) => setAttributes( { sgsHoverShadow: val } ) }
 							__nextHasNoMarginBottom
 						/>
+						<ToggleControl
+							label={ __( 'Zoom image on hover', 'sgs-blocks' ) }
+							help={ __( 'Gently scales any image inside the block when hovered.', 'sgs-blocks' ) }
+							checked={ sgsHoverImageZoom }
+							onChange={ ( val ) => setAttributes( { sgsHoverImageZoom: val } ) }
+						/>
+						<ToggleControl
+							label={ __( 'Grayscale to colour', 'sgs-blocks' ) }
+							help={ __( 'Desaturates images at rest; restores colour on hover.', 'sgs-blocks' ) }
+							checked={ sgsHoverGrayscale }
+							onChange={ ( val ) => setAttributes( { sgsHoverGrayscale: val } ) }
+						/>
 						<RangeControl
 							label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
 							value={ sgsHoverDuration }
@@ -154,18 +195,14 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 							step={ 50 }
 							__nextHasNoMarginBottom
 						/>
-						<ToggleControl
-							label={ __( 'Image zoom on hover', 'sgs-blocks' ) }
-							help={ __( 'Zooms any child images when the block is hovered.', 'sgs-blocks' ) }
-							checked={ !! sgsHoverImageZoom }
-							onChange={ ( val ) => setAttributes( { sgsHoverImageZoom: val } ) }
-							__nextHasNoMarginBottom
-						/>
-						<ToggleControl
-							label={ __( 'Grayscale to colour on hover', 'sgs-blocks' ) }
-							help={ __( 'Renders the block in greyscale until hovered.', 'sgs-blocks' ) }
-							checked={ !! sgsHoverGrayscale }
-							onChange={ ( val ) => setAttributes( { sgsHoverGrayscale: val } ) }
+						<RangeControl
+							label={ __( 'Child stagger delay (ms)', 'sgs-blocks' ) }
+							help={ __( 'Each direct child is delayed by a multiple of this value.', 'sgs-blocks' ) }
+							value={ sgsStaggerDelay }
+							onChange={ ( val ) => setAttributes( { sgsStaggerDelay: val } ) }
+							min={ 0 }
+							max={ 500 }
+							step={ 25 }
 							__nextHasNoMarginBottom
 						/>
 					</PanelBody>
@@ -175,18 +212,18 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 					>
 						<TextControl
 							label={ __( 'Link URL', 'sgs-blocks' ) }
-							help={ __( 'Wraps the entire block in a link.', 'sgs-blocks' ) }
+							help={ __( 'Wraps the entire block in a link. Leave empty to disable.', 'sgs-blocks' ) }
 							value={ sgsBlockLink }
-							onChange={ ( val ) => setAttributes( { sgsBlockLink: val } ) }
+							onChange={ ( val ) => setAttributes( { sgsBlockLink: val || '' } ) }
 							type="url"
+							placeholder="https://"
 							__nextHasNoMarginBottom
 						/>
 						{ sgsBlockLink && (
 							<ToggleControl
 								label={ __( 'Open in new tab', 'sgs-blocks' ) }
-								checked={ !! sgsBlockLinkTarget }
+								checked={ sgsBlockLinkTarget }
 								onChange={ ( val ) => setAttributes( { sgsBlockLinkTarget: val } ) }
-								__nextHasNoMarginBottom
 							/>
 						) }
 					</PanelBody>
@@ -215,36 +252,46 @@ addFilter(
 			sgsHoverBorderColour,
 			sgsHoverScale,
 			sgsHoverShadow,
+			sgsHoverScalePreset,
 			sgsHoverImageZoom,
+			sgsStaggerDelay,
 			sgsHoverGrayscale,
+			sgsBlockLink,
 		} = attributes;
 
-		const hasHover = sgsHoverBgColour || sgsHoverTextColour ||
-			sgsHoverBorderColour || sgsHoverScale || sgsHoverShadow;
+		const hasColourHover = sgsHoverBgColour || sgsHoverTextColour || sgsHoverBorderColour;
+		const hasScaleHover  = sgsHoverScale || sgsHoverScalePreset;
+		const hasShadowHover = sgsHoverShadow;
+		const hasHover       = hasColourHover || hasScaleHover || hasShadowHover;
 
-		const extraClasses = [];
+		const classNames = [ extraProps.className || '' ].filter( Boolean );
 
 		if ( hasHover ) {
-			extraClasses.push( 'sgs-has-hover' );
+			classNames.push( 'sgs-has-hover' );
+		}
+		if ( sgsHoverScalePreset ) {
+			classNames.push( 'sgs-has-hover-scale' );
 		}
 		if ( sgsHoverImageZoom ) {
-			extraClasses.push( 'sgs-hover-image-zoom' );
+			classNames.push( 'sgs-has-img-zoom' );
 		}
 		if ( sgsHoverGrayscale ) {
-			extraClasses.push( 'sgs-hover-grayscale' );
+			classNames.push( 'sgs-has-grayscale' );
+		}
+		if ( sgsStaggerDelay ) {
+			classNames.push( 'sgs-has-stagger' );
+		}
+		if ( sgsBlockLink ) {
+			classNames.push( 'sgs-has-block-link' );
 		}
 
-		if ( ! extraClasses.length ) {
+		if ( classNames.length === 0 && ! ( extraProps.className || '' ) ) {
 			return extraProps;
 		}
 
-		const classes = [ extraProps.className || '', ...extraClasses ]
-			.filter( Boolean )
-			.join( ' ' );
-
 		return {
 			...extraProps,
-			className: classes,
+			className: classNames.join( ' ' ).trim() || undefined,
 		};
 	}
 );

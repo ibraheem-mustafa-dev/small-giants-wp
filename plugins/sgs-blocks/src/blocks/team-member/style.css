@@ -115,6 +115,48 @@
 	outline-offset: 2px;
 }
 
+/* ===== Hover Scale (#87, #101) ===== */
+/* Applied via .sgs-has-hover-scale class set in render.php / hover-effects.php */
+
+@media (prefers-reduced-motion: no-preference) {
+	.sgs-team-member.sgs-has-hover-scale {
+		transition: transform var(--sgs-transition-duration, 300ms) var(--sgs-transition-easing, ease-in-out),
+		            box-shadow var(--sgs-transition-duration, 300ms) var(--sgs-transition-easing, ease-in-out);
+	}
+
+	.sgs-team-member.sgs-has-hover-scale:hover {
+		transform: scale(var(--sgs-hover-scale, 1.05));
+	}
+
+	/* Hover Shadow (#88, #102) */
+	.sgs-team-member.sgs-has-hover:hover {
+		box-shadow: var(--sgs-hover-shadow, none);
+	}
+
+	/* Hover Image Zoom (#90, #104) */
+	.sgs-team-member.sgs-has-img-zoom .sgs-team-member__photo {
+		overflow: hidden;
+	}
+
+	.sgs-team-member.sgs-has-img-zoom .sgs-team-member__photo img {
+		transition: transform 0.5s ease;
+	}
+
+	.sgs-team-member.sgs-has-img-zoom:hover .sgs-team-member__photo img {
+		transform: scale(1.1);
+	}
+
+	/* Grayscale to colour (#130) */
+	.sgs-team-member.sgs-has-grayscale .sgs-team-member__photo img {
+		filter: grayscale(100%);
+		transition: filter var(--sgs-transition-duration, 300ms) var(--sgs-transition-easing, ease-in-out);
+	}
+
+	.sgs-team-member.sgs-has-grayscale:hover .sgs-team-member__photo img {
+		filter: grayscale(0%);
+	}
+}
+
 @media (prefers-reduced-motion: reduce) {
 	.sgs-team-member,
 	.sgs-team-member__social-link {

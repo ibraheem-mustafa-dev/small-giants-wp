@@ -164,6 +164,52 @@
 	box-shadow: var(--wp--preset--shadow--lg);
 }
 
+/* ===== Hover Scale (#87, #101) ===== */
+
+@media (prefers-reduced-motion: no-preference) {
+	.sgs-card-grid.sgs-has-hover-scale .sgs-card-grid__item {
+		transition: transform var(--sgs-transition-duration, 300ms) var(--sgs-transition-easing, ease-in-out),
+		            box-shadow var(--sgs-transition-duration, 300ms) var(--sgs-transition-easing, ease-in-out);
+	}
+
+	.sgs-card-grid.sgs-has-hover-scale .sgs-card-grid__item:hover {
+		transform: scale(var(--sgs-hover-scale, 1.05));
+	}
+
+	/* Hover Shadow (#88, #102) */
+	.sgs-card-grid.sgs-has-hover .sgs-card-grid__item:hover {
+		box-shadow: var(--sgs-hover-shadow, none);
+	}
+
+	/* Hover Image Zoom (#90, #104) */
+	.sgs-card-grid.sgs-has-img-zoom .sgs-card-grid__item {
+		overflow: hidden;
+	}
+
+	.sgs-card-grid.sgs-has-img-zoom .sgs-card-grid__image {
+		transition: transform 0.5s ease;
+	}
+
+	.sgs-card-grid.sgs-has-img-zoom .sgs-card-grid__item:hover .sgs-card-grid__image {
+		transform: scale(1.1);
+	}
+
+	/* Grayscale to colour (#130) */
+	.sgs-card-grid.sgs-has-grayscale .sgs-card-grid__image {
+		filter: grayscale(100%);
+		transition: filter var(--sgs-transition-duration, 300ms) var(--sgs-transition-easing, ease-in-out);
+	}
+
+	.sgs-card-grid.sgs-has-grayscale .sgs-card-grid__item:hover .sgs-card-grid__image {
+		filter: grayscale(0%);
+	}
+
+	/* Stagger delay (#93) */
+	.sgs-card-grid.sgs-has-stagger .sgs-card-grid__item {
+		animation-delay: calc(var(--sgs-stagger, 0ms) * var(--sgs-item-index, 0));
+	}
+}
+
 /* Focus for linked items */
 a.sgs-card-grid__item:focus-visible {
 	outline: 2px solid var(--wp--preset--color--primary-dark, #076a8e);
@@ -245,19 +291,19 @@ a.sgs-card-grid__item:focus-visible {
 /* ===== Reduced Motion ===== */
 
 @media (prefers-reduced-motion: reduce) {
-	.sgs-card-grid__item {
-		transition: none;
-	}
-
+	.sgs-card-grid__item,
 	.sgs-card-grid__image {
 		transition: none;
 	}
 
-	.sgs-card-grid--hover-zoom .sgs-card-grid__item:hover .sgs-card-grid__image {
+	.sgs-card-grid--hover-zoom .sgs-card-grid__item:hover .sgs-card-grid__image,
+	.sgs-card-grid.sgs-has-img-zoom .sgs-card-grid__item:hover .sgs-card-grid__image,
+	.sgs-card-grid.sgs-has-hover-scale .sgs-card-grid__item:hover,
+	.sgs-card-grid--hover-lift .sgs-card-grid__item:hover {
 		transform: none;
 	}
 
-	.sgs-card-grid--hover-lift .sgs-card-grid__item:hover {
-		transform: none;
+	.sgs-card-grid.sgs-has-grayscale .sgs-card-grid__image {
+		filter: none;
 	}
 }

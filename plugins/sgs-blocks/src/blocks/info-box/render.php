@@ -35,6 +35,11 @@ $hover_text_colour       = $attributes['hoverTextColour'] ?? '';
 $hover_border_colour     = $attributes['hoverBorderColour'] ?? '';
 $transition_duration     = $attributes['transitionDuration'] ?? '300';
 $transition_easing       = $attributes['transitionEasing'] ?? 'ease-in-out';
+$hover_scale             = $attributes['hoverScale'] ?? '';
+$hover_shadow            = $attributes['hoverShadow'] ?? '';
+$block_link              = $attributes['blockLink'] ?? '';
+$block_link_target       = (bool) ( $attributes['blockLinkTarget'] ?? false );
+$hover_grayscale         = (bool) ( $attributes['hoverGrayscale'] ?? false );
 
 // Build wrapper styles.
 $wrapper_styles = array();
@@ -61,6 +66,21 @@ $classes = array(
 	'sgs-info-box--' . esc_attr( $card_style ),
 	'sgs-info-box--hover-' . esc_attr( $hover_effect ),
 );
+
+$allowed_scales  = array( '1.02', '1.05', '1.1' );
+$allowed_shadows = array( 'sm', 'md', 'lg', 'glow' );
+
+if ( $hover_scale && in_array( $hover_scale, $allowed_scales, true ) ) {
+	$wrapper_styles[] = '--sgs-hover-scale:' . esc_attr( $hover_scale );
+	$classes[]        = 'sgs-has-hover-scale';
+}
+if ( $hover_shadow && in_array( $hover_shadow, $allowed_shadows, true ) ) {
+	$wrapper_styles[] = '--sgs-hover-shadow:var(--wp--preset--shadow--' . esc_attr( $hover_shadow ) . ')';
+	$classes[]        = 'sgs-has-hover';
+}
+if ( $hover_grayscale ) {
+	$classes[] = 'sgs-has-grayscale';
+}
 
 $wrapper_attr_args = array(
 	'class' => implode( ' ', $classes ),
@@ -145,7 +165,7 @@ if ( $link ) {
 }
 
 // Output.
-printf(
+$inner_html = sprintf(
 	'<div %s>%s%s%s%s%s</div>',
 	$wrapper_attributes,
 	$link_open,
@@ -154,3 +174,18 @@ printf(
 	$description_html,
 	$link_close
 );
+
+// Block link -- wraps the entire block in an <a> tag.
+if ( $block_link ) {
+	$target_attr = $block_link_target
+		? ' target="_blank" rel="noopener noreferrer"'
+		: '';
+	printf(
+		'<a href="%s" class="sgs-block-link-wrapper"%s>%s</a>',
+		esc_url( $block_link ),
+		$target_attr,
+		$inner_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	);
+} else {
+	echo $inner_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+}

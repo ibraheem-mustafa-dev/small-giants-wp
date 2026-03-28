@@ -40,17 +40,23 @@ export default function Save( { attributes } ) {
 		hoverEffect,
 		transitionDuration,
 		transitionEasing,
+		hoverScale,
+		hoverShadow,
+		staggerDelay,
 	} = attributes;
 
-	const className = [
+	const classNames = [
 		'sgs-testimonial',
 		`sgs-testimonial--${ cardStyle }`,
 		hoverEffect && hoverEffect !== 'none'
 			? `sgs-testimonial--hover-${ hoverEffect }`
 			: '',
-	]
-		.filter( Boolean )
-		.join( ' ' );
+		hoverScale ? 'sgs-has-hover-scale' : '',
+		hoverShadow ? 'sgs-has-hover' : '',
+		staggerDelay ? 'sgs-has-stagger' : '',
+	].filter( Boolean );
+
+	const className = classNames.join( ' ' );
 
 	const blockProps = useBlockProps.save( {
 		className,
@@ -68,6 +74,11 @@ export default function Save( { attributes } ) {
 				? `${ transitionDuration }ms`
 				: undefined,
 			'--sgs-transition-easing': transitionEasing || undefined,
+			'--sgs-hover-scale': hoverScale || undefined,
+			'--sgs-hover-shadow': hoverShadow
+				? `var(--wp--preset--shadow--${ hoverShadow })`
+				: undefined,
+			'--sgs-stagger': staggerDelay ? `${ staggerDelay }ms` : undefined,
 		},
 	} );
 

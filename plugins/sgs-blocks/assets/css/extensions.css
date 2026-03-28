@@ -191,3 +191,110 @@
 		transform: scaleX(1);
 	}
 }
+
+/* ===== Micro-Interactions & Hover Effects (#115, #122, #125) ===== */
+
+@media (prefers-reduced-motion: no-preference) {
+	/* Underline slide-in on links (#115) */
+	/* Targets navigation links and generic text links within content */
+	.wp-block-navigation-item__content,
+	.sgs-text-link,
+	.entry-content p a,
+	.entry-content li a:not(.wp-block-button__link) {
+		position: relative;
+		text-decoration: none;
+	}
+
+	.wp-block-navigation-item__content::after,
+	.sgs-text-link::after,
+	.entry-content p a::after,
+	.entry-content li a:not(.wp-block-button__link)::after {
+		content: '';
+		position: absolute;
+		width: 100%;
+		height: 1px;
+		bottom: 0;
+		left: 0;
+		background-color: currentColor;
+		transform: scaleX(0);
+		transform-origin: bottom right;
+		transition: transform 0.3s ease;
+	}
+
+	.wp-block-navigation-item__content:hover::after,
+	.sgs-text-link:hover::after,
+	.entry-content p a:hover::after,
+	.entry-content li a:not(.wp-block-button__link):hover::after {
+		transform: scaleX(1);
+		transform-origin: bottom left;
+	}
+
+	/* Button fill animation (#122) */
+	.wp-block-button__link,
+	.sgs-cta-button {
+		position: relative;
+		overflow: hidden;
+		z-index: 1;
+		transition: color 0.3s ease;
+	}
+
+	.wp-block-button__link::before,
+	.sgs-cta-button::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background-color: var(--wp--preset--color--foreground, #1E1E1E);
+		z-index: -1;
+		transform: scaleX(0);
+		transform-origin: left;
+		transition: transform 0.3s ease;
+	}
+
+	.wp-block-button__link:hover::before,
+	.sgs-cta-button:hover::before {
+		transform: scaleX(1);
+	}
+
+	.wp-block-button__link:hover,
+	.sgs-cta-button:hover {
+		color: var(--wp--preset--color--background, #ffffff) !important;
+	}
+
+	/* Icon slide (#125) */
+	/* Targeting SVG icons inside buttons */
+	.wp-block-button__link svg,
+	.sgs-cta-button svg,
+	.wp-block-button__link i,
+	.sgs-cta-button i,
+	.wp-block-button__link .sgs-icon,
+	.sgs-cta-button .sgs-icon {
+		transition: transform 0.3s ease;
+	}
+
+	.wp-block-button__link:hover svg,
+	.sgs-cta-button:hover svg,
+	.wp-block-button__link:hover i,
+	.sgs-cta-button:hover i,
+	.wp-block-button__link:hover .sgs-icon,
+	.sgs-cta-button:hover .sgs-icon {
+		transform: translateX(4px);
+	}
+}
+
+/* Base style for Block Links wrapper */
+.sgs-block-link-wrapper {
+	display: block;
+	text-decoration: none;
+	color: inherit;
+	position: relative;
+	/* Ensures it behaves correctly when wrapping flex/grid items */
+	height: 100%;
+}
+
+.sgs-block-link-wrapper:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary, #076a8e);
+	outline-offset: 2px;
+}

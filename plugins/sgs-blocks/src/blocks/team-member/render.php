@@ -13,24 +13,59 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
-$photo        = $attributes['photo'] ?? null;
-$name         = $attributes['name'] ?? '';
-$role         = $attributes['role'] ?? '';
-$bio          = $attributes['bio'] ?? '';
-$social_links = $attributes['socialLinks'] ?? array();
-$name_colour  = $attributes['nameColour'] ?? '';
-$role_colour  = $attributes['roleColour'] ?? 'primary';
-$card_style   = $attributes['cardStyle'] ?? 'elevated';
-$photo_shape  = $attributes['photoShape'] ?? 'circle';
+$photo              = $attributes['photo'] ?? null;
+$name               = $attributes['name'] ?? '';
+$role               = $attributes['role'] ?? '';
+$bio                = $attributes['bio'] ?? '';
+$social_links       = $attributes['socialLinks'] ?? array();
+$name_colour        = $attributes['nameColour'] ?? '';
+$role_colour        = $attributes['roleColour'] ?? 'primary';
+$card_style         = $attributes['cardStyle'] ?? 'elevated';
+$photo_shape        = $attributes['photoShape'] ?? 'circle';
+$hover_scale        = $attributes['hoverScale'] ?? '';
+$hover_shadow       = $attributes['hoverShadow'] ?? '';
+$hover_img_zoom     = (bool) ( $attributes['hoverImageZoom'] ?? false );
+$hover_grayscale    = (bool) ( $attributes['hoverGrayscale'] ?? false );
+$transition_dur     = $attributes['transitionDuration'] ?? '300';
+$transition_easing  = $attributes['transitionEasing'] ?? 'ease-in-out';
+$block_link         = $attributes['blockLink'] ?? '';
+$block_link_target  = (bool) ( $attributes['blockLinkTarget'] ?? false );
 
 $classes = array(
 	'sgs-team-member',
 	'sgs-team-member--' . esc_attr( $card_style ),
 );
 
-$wrapper_attributes = get_block_wrapper_attributes( array(
+if ( $hover_img_zoom ) {
+	$classes[] = 'sgs-has-img-zoom';
+}
+if ( $hover_grayscale ) {
+	$classes[] = 'sgs-has-grayscale';
+}
+
+// Build inline CSS custom properties for transition and hover vars.
+$wrapper_styles = sgs_transition_vars( $attributes );
+
+$allowed_scales = array( '1.02', '1.05', '1.1' );
+if ( $hover_scale && in_array( $hover_scale, $allowed_scales, true ) ) {
+	$wrapper_styles[] = '--sgs-hover-scale:' . esc_attr( $hover_scale );
+	$classes[]        = 'sgs-has-hover-scale';
+}
+
+$allowed_shadows = array( 'sm', 'md', 'lg', 'glow' );
+if ( $hover_shadow && in_array( $hover_shadow, $allowed_shadows, true ) ) {
+	$wrapper_styles[] = '--sgs-hover-shadow:var(--wp--preset--shadow--' . esc_attr( $hover_shadow ) . ')';
+	$classes[]        = 'sgs-has-hover';
+}
+
+$wrapper_attr_args = array(
 	'class' => implode( ' ', $classes ),
-) );
+);
+if ( $wrapper_styles ) {
+	$wrapper_attr_args['style'] = implode( ';', $wrapper_styles ) . ';';
+}
+
+$wrapper_attributes = get_block_wrapper_attributes( $wrapper_attr_args );
 
 // Photo.
 $photo_html = '';
@@ -126,7 +161,7 @@ if ( $name ) {
 	);
 }
 
-printf(
+$inner_html = sprintf(
 	'<div %s>%s<div class="sgs-team-member__content">%s%s%s%s</div>%s</div>',
 	$wrapper_attributes,
 	$photo_html,
@@ -136,3 +171,18 @@ printf(
 	$social_html,
 	$schema_html
 );
+
+// Block link -- wraps the entire block in an <a> tag.
+if ( $block_link ) {
+	$target_attr = $block_link_target
+		? ' target="_blank" rel="noopener noreferrer"'
+		: '';
+	printf(
+		'<a href="%s" class="sgs-block-link-wrapper"%s>%s</a>',
+		esc_url( $block_link ),
+		$target_attr,
+		$inner_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	);
+} else {
+	echo $inner_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+}

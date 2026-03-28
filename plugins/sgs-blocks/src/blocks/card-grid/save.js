@@ -19,13 +19,35 @@ export default function Save( { attributes } ) {
 		hoverBorderColour,
 		transitionDuration,
 		transitionEasing,
+		hoverScale,
+		hoverShadow,
+		hoverImageZoom,
+		hoverGrayscale,
+		staggerDelay,
 	} = attributes;
 
-	const className = [
+	const classNames = [
 		'sgs-card-grid',
 		`sgs-card-grid--${ variant }`,
 		`sgs-card-grid--hover-${ hoverEffect }`,
-	].join( ' ' );
+	];
+	if ( hoverScale ) {
+		classNames.push( 'sgs-has-hover-scale' );
+	}
+	if ( hoverShadow ) {
+		classNames.push( 'sgs-has-hover' );
+	}
+	if ( hoverImageZoom ) {
+		classNames.push( 'sgs-has-img-zoom' );
+	}
+	if ( hoverGrayscale ) {
+		classNames.push( 'sgs-has-grayscale' );
+	}
+	if ( staggerDelay ) {
+		classNames.push( 'sgs-has-stagger' );
+	}
+
+	const className = classNames.join( ' ' );
 
 	const blockProps = useBlockProps.save( { className } );
 
@@ -40,6 +62,11 @@ export default function Save( { attributes } ) {
 		'--sgs-hover-border': colourVar( hoverBorderColour ) || undefined,
 		'--sgs-transition-duration': transitionDuration ? `${ transitionDuration }ms` : undefined,
 		'--sgs-transition-easing': transitionEasing || undefined,
+		'--sgs-hover-scale': hoverScale || undefined,
+		'--sgs-hover-shadow': hoverShadow
+			? `var(--wp--preset--shadow--${ hoverShadow })`
+			: undefined,
+		'--sgs-stagger': staggerDelay ? `${ staggerDelay }ms` : undefined,
 	};
 
 	const titleStyle = {
@@ -63,8 +90,12 @@ export default function Save( { attributes } ) {
 					? { href: item.link, className: 'sgs-card-grid__item' }
 					: { className: 'sgs-card-grid__item' };
 
+				const itemStyle = staggerDelay
+					? { '--sgs-item-index': index }
+					: {};
+
 				return (
-					<Tag key={ index } { ...linkProps }>
+					<Tag key={ index } { ...linkProps } style={ itemStyle }>
 						<div className="sgs-card-grid__image-wrap">
 							{ item.image?.url && (
 								<img

@@ -35,6 +35,9 @@ $image_size      = sanitize_key( $attributes['imageSize'] ?? 'large' );
 
 $hover_scale     = sanitize_text_field( $attributes['hoverScale'] ?? '' );
 $hover_img_zoom  = (bool) ( $attributes['hoverImageZoom'] ?? true );
+$hover_grayscale = (bool) ( $attributes['hoverGrayscale'] ?? false );
+$hover_shadow    = sanitize_key( $attributes['hoverShadow'] ?? '' );
+$stagger_delay   = absint( $attributes['staggerDelay'] ?? 0 );
 $trans_duration  = absint( $attributes['transitionDuration'] ?? 300 );
 $trans_easing    = sanitize_text_field( $attributes['transitionEasing'] ?? 'ease' );
 
@@ -63,6 +66,12 @@ $inline_styles_parts = array_merge(
 
 if ( $hover_scale ) {
 	$inline_styles_parts[] = '--sgs-hover-scale:' . esc_attr( $hover_scale );
+}
+if ( $hover_shadow ) {
+	$inline_styles_parts[] = '--sgs-hover-shadow:var(--wp--preset--shadow--' . esc_attr( $hover_shadow ) . ')';
+}
+if ( $stagger_delay > 0 ) {
+	$inline_styles_parts[] = '--sgs-stagger:' . absint( $stagger_delay ) . 'ms';
 }
 if ( $hover_overlay_colour ) {
 	$inline_styles_parts[] = '--sgs-hover-overlay:' . sgs_colour_value( $hover_overlay_colour );
@@ -117,6 +126,9 @@ $wrapper_classes = implode( ' ', array_filter( [
 	'sgs-gallery--' . $layout,
 	$enable_lightbox ? 'sgs-gallery--lightbox-enabled' : '',
 	$hover_img_zoom  ? 'sgs-gallery--zoom'             : '',
+	$hover_shadow    ? 'sgs-has-hover'                 : '',
+	$hover_grayscale ? 'sgs-has-grayscale'             : '',
+	$stagger_delay   ? 'sgs-has-stagger'               : '',
 ] ) );
 
 $wrapper_attrs_extra = [
@@ -150,10 +162,13 @@ $wrapper_attrs = get_block_wrapper_attributes( $wrapper_attrs_extra );
 				$img_alt     = esc_attr( wp_strip_all_tags( $img['alt'] ?? '' ) );
 				$img_caption = $show_captions ? esc_html( wp_strip_all_tags( $img['caption'] ?? '' ) ) : '';
 
-				// Determine the aspect-ratio inline style for this item.
+				// Determine the aspect-ratio and stagger delay inline style for this item.
 				$item_style = '';
 				if ( $aspect_ratio ) {
-					$item_style = 'aspect-ratio:' . esc_attr( $aspect_ratio ) . ';';
+					$item_style .= 'aspect-ratio:' . esc_attr( $aspect_ratio ) . ';';
+				}
+				if ( $stagger_delay > 0 ) {
+					$item_style .= '--sgs-item-index:' . $index . ';';
 				}
 
 				// Determine full-size URL for lightbox data attribute.

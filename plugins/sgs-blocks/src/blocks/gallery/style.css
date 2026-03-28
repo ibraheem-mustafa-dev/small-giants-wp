@@ -204,6 +204,27 @@
 	transform: scale( var( --sgs-hover-image-zoom, 1.05 ) );
 }
 
+/* Grayscale hover (#130) */
+.sgs-gallery.sgs-has-grayscale .sgs-gallery__img {
+	filter: grayscale(100%);
+	transition: filter var( --sgs-transition-duration ) var( --sgs-transition-easing );
+}
+
+.sgs-gallery.sgs-has-grayscale .sgs-gallery__item:hover .sgs-gallery__img,
+.sgs-gallery.sgs-has-grayscale .sgs-gallery__item:focus-within .sgs-gallery__img {
+	filter: grayscale(0%);
+}
+
+/* Hover Shadow (#88, #102) */
+.sgs-gallery.sgs-has-hover .sgs-gallery__item:hover {
+	box-shadow: var(--sgs-hover-shadow, none);
+}
+
+/* Stagger delay (#93) */
+.sgs-gallery.sgs-has-stagger .sgs-gallery__item {
+	animation-delay: calc(var(--sgs-stagger, 0ms) * var(--sgs-item-index, 0));
+}
+
 /* Card-level scale transform on hover */
 .sgs-gallery__item {
 	transition: transform var( --sgs-transition-duration ) var( --sgs-transition-easing );
@@ -464,3 +485,5 @@
 		transform: none;
 	}
 }
+
+

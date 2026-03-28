@@ -1,9 +1,19 @@
 <?php
 /**
- * Universal Hover Effects — server-side injection.
+ * Universal Hover Effects -- server-side injection.
  *
- * Adds CSS custom properties and the `.sgs-has-hover` class to
- * dynamically rendered blocks that have hover attributes set.
+ * Adds CSS custom properties and utility classes to dynamically rendered
+ * blocks that have hover attributes set.
+ *
+ * Handles:
+ * - sgsHoverBgColour / sgsHoverTextColour / sgsHoverBorderColour
+ * - sgsHoverScale (fine-grained %) + sgsHoverScalePreset (named)
+ * - sgsHoverShadow (sm/md/lg/glow)
+ * - sgsHoverDuration (ms)
+ * - sgsHoverImageZoom (boolean)
+ * - sgsStaggerDelay (ms per child)
+ * - sgsHoverGrayscale (boolean)
+ * - sgsBlockLink + sgsBlockLinkTarget (wraps output in <a>)
  *
  * @package SGS\Blocks
  */
@@ -13,10 +23,9 @@ namespace SGS\Blocks;
 defined( 'ABSPATH' ) || exit;
 
 add_filter( 'render_block', __NAMESPACE__ . '\\inject_hover_effects', 10, 2 );
-add_filter( 'render_block', __NAMESPACE__ . '\\inject_block_link', 20, 2 );
 
 /**
- * Inject hover CSS custom properties and class into block output.
+ * Inject hover CSS custom properties and classes into block output.
  *
  * @param string $block_content Rendered block HTML.
  * @param array  $block         Block data including attrs.
@@ -29,24 +38,37 @@ function inject_hover_effects( string $block_content, array $block ): string {
 
 	$attrs = $block['attrs'];
 
-	$hover_bg          = $attrs['sgsHoverBgColour'] ?? '';
-	$hover_text        = $attrs['sgsHoverTextColour'] ?? '';
-	$hover_border      = $attrs['sgsHoverBorderColour'] ?? '';
-	$hover_scale       = (int) ( $attrs['sgsHoverScale'] ?? 0 );
-	$hover_shadow      = $attrs['sgsHoverShadow'] ?? '';
-	$hover_dur         = (int) ( $attrs['sgsHoverDuration'] ?? 300 );
-	$hover_image_zoom  = ! empty( $attrs['sgsHoverImageZoom'] );
-	$hover_grayscale   = ! empty( $attrs['sgsHoverGrayscale'] );
+	$hover_bg           = $attrs['sgsHoverBgColour']     ?? '';
+	$hover_text         = $attrs['sgsHoverTextColour']   ?? '';
+	$hover_border       = $attrs['sgsHoverBorderColour'] ?? '';
+	$hover_scale        = (int) ( $attrs['sgsHoverScale'] ?? 0 );
+	$hover_scale_preset = $attrs['sgsHoverScalePreset']  ?? '';
+	$hover_shadow       = $attrs['sgsHoverShadow']       ?? '';
+	$hover_dur          = (int) ( $attrs['sgsHoverDuration'] ?? 300 );
+	$hover_img_zoom     = (bool) ( $attrs['sgsHoverImageZoom'] ?? false );
+	$stagger_delay      = (int) ( $attrs['sgsStaggerDelay'] ?? 0 );
+	$hover_grayscale    = (bool) ( $attrs['sgsHoverGrayscale'] ?? false );
+	$block_link         = $attrs['sgsBlockLink']         ?? '';
+	$block_link_target  = (bool) ( $attrs['sgsBlockLinkTarget'] ?? false );
 
-	$has_hover = $hover_bg || $hover_text || $hover_border || $hover_scale || $hover_shadow || $hover_image_zoom || $hover_grayscale;
+	$has_colour_hover   = $hover_bg || $hover_text || $hover_border;
+	$has_scale_hover    = $hover_scale || $hover_scale_preset;
+	$has_hover          = $has_colour_hover || $has_scale_hover || $hover_shadow;
 
-	if ( ! $has_hover ) {
+	// Bail early if nothing is set.
+	if (
+		! $has_hover &&
+		! $hover_img_zoom &&
+		! $stagger_delay &&
+		! $hover_grayscale &&
+		! $block_link
+	) {
 		return $block_content;
 	}
 
-	// Build CSS custom properties.
 	require_once __DIR__ . '/render-helpers.php';
 
+	// --- Build CSS custom properties. ---
 	$css_vars = [];
 	if ( $hover_bg ) {
 		$css_vars[] = '--sgs-hover-bg:' . \sgs_colour_value( $hover_bg );
@@ -57,42 +79,78 @@ function inject_hover_effects( string $block_content, array $block ): string {
 	if ( $hover_border ) {
 		$css_vars[] = '--sgs-hover-border:' . \sgs_colour_value( $hover_border );
 	}
+
+	// Fine-grained scale takes priority over named preset.
 	if ( $hover_scale ) {
-		$css_vars[] = '--sgs-hover-scale:' . ( $hover_scale / 100 );
+		$css_vars[] = '--sgs-hover-scale:' . number_format( $hover_scale / 100, 4 );
+	} elseif ( $hover_scale_preset ) {
+		$allowed_presets = [ '1.02', '1.05', '1.1' ];
+		if ( in_array( $hover_scale_preset, $allowed_presets, true ) ) {
+			$css_vars[] = '--sgs-hover-scale:' . esc_attr( $hover_scale_preset );
+		}
 	}
+
 	if ( $hover_shadow ) {
-		$css_vars[] = '--sgs-hover-shadow:var(--wp--preset--shadow--' . esc_attr( $hover_shadow ) . ')';
+		$allowed_shadows = [ 'sm', 'md', 'lg', 'glow' ];
+		if ( in_array( $hover_shadow, $allowed_shadows, true ) ) {
+			$css_vars[] = '--sgs-hover-shadow:var(--wp--preset--shadow--' . esc_attr( $hover_shadow ) . ')';
+		}
 	}
+
 	if ( $hover_dur !== 300 ) {
-		$css_vars[] = '--sgs-hover-duration:' . $hover_dur . 'ms';
+		$css_vars[] = '--sgs-hover-duration:' . absint( $hover_dur ) . 'ms';
 	}
 
-	$css_str = implode( ';', $css_vars );
-
-	// Build class list.
-	$extra_classes = [];
-	if ( $hover_bg || $hover_text || $hover_border || $hover_scale || $hover_shadow ) {
-		$extra_classes[] = 'sgs-has-hover';
+	if ( $stagger_delay > 0 ) {
+		$css_vars[] = '--sgs-stagger:' . absint( $stagger_delay ) . 'ms';
 	}
-	if ( $hover_image_zoom ) {
-		$extra_classes[] = 'sgs-hover-image-zoom';
+
+	// --- Build extra classes. ---
+	$add_classes = [];
+	if ( $has_hover ) {
+		$add_classes[] = 'sgs-has-hover';
+	}
+	if ( $hover_scale || $hover_scale_preset ) {
+		$add_classes[] = 'sgs-has-hover-scale';
+	}
+	if ( $hover_img_zoom ) {
+		$add_classes[] = 'sgs-has-img-zoom';
 	}
 	if ( $hover_grayscale ) {
-		$extra_classes[] = 'sgs-hover-grayscale';
+		$add_classes[] = 'sgs-has-grayscale';
+	}
+	if ( $stagger_delay > 0 ) {
+		$add_classes[] = 'sgs-has-stagger';
+	}
+	if ( $block_link ) {
+		$add_classes[] = 'sgs-has-block-link';
 	}
 
-	if ( ! empty( $extra_classes ) ) {
-		$classes_str = implode( ' ', $extra_classes ) . ' ';
-		$block_content = preg_replace(
-			'/^(<\w+\b[^>]*\bclass=["\'])/',
-			'$1' . $classes_str,
-			$block_content,
-			1
-		);
+	// --- Inject classes into the first tag. ---
+	if ( $add_classes ) {
+		$classes_str = implode( ' ', $add_classes );
+		// Append to existing class="..." attribute.
+		if ( preg_match( '/^(<\w+\b[^>]*\bclass=["\'])/', $block_content ) ) {
+			$block_content = preg_replace(
+				'/^(<\w+\b[^>]*\bclass=["\'])/',
+				'$1' . $classes_str . ' ',
+				$block_content,
+				1
+			);
+		} else {
+			// No class attribute yet; add one.
+			$block_content = preg_replace(
+				'/^(<\w+)(\b)/',
+				'$1 class="' . $classes_str . '"$2',
+				$block_content,
+				1
+			);
+		}
 	}
 
-	// Only inject CSS vars when there is something to inject.
-	if ( $css_str ) {
+	// --- Inject CSS custom properties into inline style. ---
+	if ( $css_vars ) {
+		$css_str = implode( ';', $css_vars );
 		if ( preg_match( '/^(<\w+\b[^>]*)\bstyle=["\']([^"\']*)["\']/', $block_content ) ) {
 			$block_content = preg_replace(
 				'/^(<\w+\b[^>]*)\bstyle=["\']([^"\']*)["\']/',
@@ -110,34 +168,18 @@ function inject_hover_effects( string $block_content, array $block ): string {
 		}
 	}
 
+	// --- Wrap in block link if set. ---
+	if ( $block_link ) {
+		$target_attr = $block_link_target
+			? ' target="_blank" rel="noopener noreferrer"'
+			: '';
+		$block_content = sprintf(
+			'<a href="%s" class="sgs-block-link-wrapper"%s>%s</a>',
+			esc_url( $block_link ),
+			$target_attr,
+			$block_content
+		);
+	}
+
 	return $block_content;
-}
-
-/**
- * Wrap a block in an anchor tag when sgsBlockLink is set.
- *
- * @param string $block_content Rendered block HTML.
- * @param array  $block         Block data including attrs.
- * @return string Modified block HTML.
- */
-function inject_block_link( string $block_content, array $block ): string {
-	if ( empty( $block['attrs']['sgsBlockLink'] ) ) {
-		return $block_content;
-	}
-
-	$url    = esc_url( $block['attrs']['sgsBlockLink'] );
-	$target = ! empty( $block['attrs']['sgsBlockLinkTarget'] ) ? '_blank' : '_self';
-	$rel    = '_blank' === $target ? ' rel="noopener noreferrer"' : '';
-
-	if ( ! $url ) {
-		return $block_content;
-	}
-
-	return sprintf(
-		'<a href="%s" target="%s"%s class="sgs-block-link-wrapper" style="display:contents;text-decoration:none;color:inherit;">%s</a>',
-		$url,
-		esc_attr( $target ),
-		$rel,
-		$block_content
-	);
 }

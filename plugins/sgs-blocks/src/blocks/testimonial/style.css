@@ -170,6 +170,24 @@
 	box-shadow: 0 0 0 3px var(--wp--preset--color--primary, #0F7E80);
 }
 
+/* ===== Hover Scale (#87, #101) ===== */
+
+@media (prefers-reduced-motion: no-preference) {
+	.sgs-testimonial.sgs-has-hover-scale {
+		transition: transform var(--sgs-transition-duration, 300ms) var(--sgs-transition-easing, ease-in-out),
+		            box-shadow var(--sgs-transition-duration, 300ms) var(--sgs-transition-easing, ease-in-out);
+	}
+
+	.sgs-testimonial.sgs-has-hover-scale:hover {
+		transform: scale(var(--sgs-hover-scale, 1.05));
+	}
+
+	/* Hover Shadow (#88, #102) */
+	.sgs-testimonial.sgs-has-hover:hover {
+		box-shadow: var(--sgs-hover-shadow, none);
+	}
+}
+
 /* ===== Reduced motion ===== */
 @media (prefers-reduced-motion: reduce) {
 	.sgs-testimonial,
@@ -178,7 +196,8 @@
 	}
 
 	.sgs-testimonial--hover-lift:hover,
-	.sgs-testimonial--hover-scale:hover {
+	.sgs-testimonial--hover-scale:hover,
+	.sgs-testimonial.sgs-has-hover-scale:hover {
 		transform: none;
 	}
 }

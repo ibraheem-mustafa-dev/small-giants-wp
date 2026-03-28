@@ -194,6 +194,34 @@
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 }
 
+/* ===== Hover Scale (#87, #101) ===== */
+
+@media (prefers-reduced-motion: no-preference) {
+	.sgs-info-box.sgs-has-hover-scale {
+		transition: transform var(--sgs-transition-duration, 300ms) var(--sgs-transition-easing, ease-in-out),
+		            box-shadow var(--sgs-transition-duration, 300ms) var(--sgs-transition-easing, ease-in-out);
+	}
+
+	.sgs-info-box.sgs-has-hover-scale:hover {
+		transform: scale(var(--sgs-hover-scale, 1.05));
+	}
+
+	/* Hover Shadow (#88, #102) */
+	.sgs-info-box.sgs-has-hover:hover {
+		box-shadow: var(--sgs-hover-shadow, none);
+	}
+
+	/* Grayscale to colour (#130) */
+	.sgs-info-box.sgs-has-grayscale img {
+		filter: grayscale(100%);
+		transition: filter var(--sgs-transition-duration, 300ms) var(--sgs-transition-easing, ease-in-out);
+	}
+
+	.sgs-info-box.sgs-has-grayscale:hover img {
+		filter: grayscale(0%);
+	}
+}
+
 /* ===== Reduced motion ===== */
 @media (prefers-reduced-motion: reduce) {
 	.sgs-info-box {

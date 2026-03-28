@@ -1,141 +1,159 @@
 {
-    "$schema":  "https://schemas.wp.org/trunk/block.json",
-    "apiVersion":  3,
-    "name":  "sgs/card-grid",
-    "version":  "0.1.0",
-    "title":  "SGS Card Grid",
-    "category":  "sgs-content",
-    "description":  "Flexible image and content grid with overlay and card variants.",
-    "keywords":  [
-                     "card",
-                     "grid",
-                     "image",
-                     "gallery",
-                     "product",
-                     "tiles"
-                 ],
-    "textdomain":  "sgs-blocks",
-    "icon":  "grid-view",
-    "supports":  {
-                     "align":  [
-                                   "wide",
-                                   "full"
-                               ],
-                     "anchor":  true,
-                     "html":  false,
-                     "color":  {
-                                   "background":  true,
-                                   "text":  true
-                               },
-                     "typography":  {
-                                        "fontSize":  true,
-                                        "lineHeight":  true,
-                                        "textAlign":  true,
-                                        "letterSpacing":  true,
-                                        "textTransform":  true,
-                                        "fontWeight":  true,
-                                        "fontStyle":  true
-                                    },
-                     "spacing":  {
-                                     "margin":  true,
-                                     "padding":  true
-                                 },
-                     "shadow":  true,
-                     "__experimentalBorder":  {
-                                                  "radius":  true,
-                                                  "width":  true,
-                                                  "color":  true,
-                                                  "style":  true
-                                              }
-                 },
-    "selectors":  {
-                      "root":  ".sgs-card-grid",
-                      "typography":  ".sgs-card-grid__title"
-                  },
-    "attributes":  {
-                       "variant":  {
-                                       "type":  "string",
-                                       "default":  "card"
-                                   },
-                       "items":  {
-                                     "type":  "array",
-                                     "default":  [
-
-                                                 ]
-                                 },
-                       "columns":  {
-                                       "type":  "number",
-                                       "default":  3
-                                   },
-                       "columnsMobile":  {
-                                             "type":  "number",
-                                             "default":  1
-                                         },
-                       "gap":  {
-                                   "type":  "string",
-                                   "default":  "30"
-                               },
-                       "aspectRatio":  {
-                                           "type":  "string",
-                                           "default":  "16/10"
-                                       },
-                       "hoverEffect":  {
-                                           "type":  "string",
-                                           "default":  "zoom"
-                                       },
-                       "columnsTablet":  {
-                                             "type":  "number",
-                                             "default":  2
-                                         },
-                       "overlayStyle":  {
-                                            "type":  "string",
-                                            "default":  "gradient"
-                                        },
-                       "titleColour":  {
-                                           "type":  "string"
-                                       },
-                       "subtitleColour":  {
-                                              "type":  "string"
-                                          },
-                       "hoverBackgroundColour":  {
-                                                     "type":  "string"
-                                                 },
-                       "hoverTextColour":  {
-                                               "type":  "string"
-                                           },
-                       "hoverBorderColour":  {
-                                                 "type":  "string"
-                                             },
-                       "transitionDuration":  {
-                                                  "type":  "string",
-                                                  "default":  "300"
-                                              },
-                       "transitionEasing":  {
-                                                "type":  "string",
-                                                "default":  "ease-in-out"
-                                            }
-                   },
-    "editorScript":  "file:./index.js",
-    "editorStyle":  "file:./index.css",
-    "style":  "file:./style-index.css",
-    "example":  {
-                    "attributes":  {
-                                       "variant":  "card",
-                                       "columns":  3,
-                                       "items":  [
-                                                     {
-                                                         "title":  "Fresh Produce",
-                                                         "subtitle":  "Farm-fresh vegetables and fruits"
-                                                     },
-                                                     {
-                                                         "title":  "Dairy \u0026 Eggs",
-                                                         "subtitle":  "Sourced from trusted local farms"
-                                                     },
-                                                     {
-                                                         "title":  "Bakery",
-                                                         "subtitle":  "Baked fresh every morning"
-                                                     }
-                                                 ]
-                                   }
-                }
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "sgs/card-grid",
+  "version": "0.1.0",
+  "title": "SGS Card Grid",
+  "category": "sgs-content",
+  "description": "Flexible image and content grid with overlay and card variants.",
+  "keywords": [
+    "card",
+    "grid",
+    "image",
+    "gallery",
+    "product",
+    "tiles"
+  ],
+  "textdomain": "sgs-blocks",
+  "icon": "grid-view",
+  "supports": {
+    "align": [
+      "wide",
+      "full"
+    ],
+    "anchor": true,
+    "html": false,
+    "color": {
+      "background": true,
+      "text": true
+    },
+    "typography": {
+      "fontSize": true,
+      "lineHeight": true,
+      "textAlign": true,
+      "letterSpacing": true,
+      "textTransform": true,
+      "fontWeight": true,
+      "fontStyle": true
+    },
+    "spacing": {
+      "margin": true,
+      "padding": true
+    },
+    "shadow": true,
+    "__experimentalBorder": {
+      "radius": true,
+      "width": true,
+      "color": true,
+      "style": true
+    }
+  },
+  "selectors": {
+    "root": ".sgs-card-grid",
+    "typography": ".sgs-card-grid__title"
+  },
+  "attributes": {
+    "variant": {
+      "type": "string",
+      "default": "card"
+    },
+    "items": {
+      "type": "array",
+      "default": []
+    },
+    "columns": {
+      "type": "number",
+      "default": 3
+    },
+    "columnsMobile": {
+      "type": "number",
+      "default": 1
+    },
+    "gap": {
+      "type": "string",
+      "default": "30"
+    },
+    "aspectRatio": {
+      "type": "string",
+      "default": "16/10"
+    },
+    "hoverEffect": {
+      "type": "string",
+      "default": "zoom"
+    },
+    "columnsTablet": {
+      "type": "number",
+      "default": 2
+    },
+    "overlayStyle": {
+      "type": "string",
+      "default": "gradient"
+    },
+    "titleColour": {
+      "type": "string"
+    },
+    "subtitleColour": {
+      "type": "string"
+    },
+    "hoverBackgroundColour": {
+      "type": "string"
+    },
+    "hoverTextColour": {
+      "type": "string"
+    },
+    "hoverBorderColour": {
+      "type": "string"
+    },
+    "transitionDuration": {
+      "type": "string",
+      "default": "300"
+    },
+    "transitionEasing": {
+      "type": "string",
+      "default": "ease-in-out"
+    },
+    "hoverScale": {
+      "type": "string",
+      "default": ""
+    },
+    "hoverShadow": {
+      "type": "string",
+      "default": ""
+    },
+    "hoverImageZoom": {
+      "type": "boolean",
+      "default": false
+    },
+    "hoverGrayscale": {
+      "type": "boolean",
+      "default": false
+    },
+    "staggerDelay": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "example": {
+    "attributes": {
+      "variant": "card",
+      "columns": 3,
+      "items": [
+        {
+          "title": "Fresh Produce",
+          "subtitle": "Farm-fresh vegetables and fruits"
+        },
+        {
+          "title": "Dairy & Eggs",
+          "subtitle": "Sourced from trusted local farms"
+        },
+        {
+          "title": "Bakery",
+          "subtitle": "Baked fresh every morning"
+        }
+      ]
+    }
+  }
 }
