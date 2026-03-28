@@ -232,30 +232,27 @@ function enqueue_styles(): void {
 		$theme_version
 	);
 
-	// Header behaviour system — sticky, transparent, smart-reveal, shrink.
-	wp_enqueue_style(
-		'sgs-header-modes',
-		get_theme_file_uri( 'assets/css/header-modes.css' ),
-		[ 'sgs-core-blocks-critical' ],
-		$theme_version
-	);
+	// Header behaviour system — only load when a non-static mode is configured.
+	$header_mode = get_option( 'sgs_header_mode', 'static' );
+	if ( 'static' !== $header_mode ) {
+		wp_enqueue_style(
+			'sgs-header-modes',
+			get_theme_file_uri( 'assets/css/header-modes.css' ),
+			[ 'sgs-core-blocks-critical' ],
+			$theme_version
+		);
 
-	wp_enqueue_script(
-		'sgs-header-behaviour',
-		get_theme_file_uri( 'assets/js/header-behaviour.js' ),
-		[],
-		$theme_version,
-		true // Load in footer — runs after DOM is available.
-	);
+		wp_enqueue_script(
+			'sgs-header-behaviour',
+			get_theme_file_uri( 'assets/js/header-behaviour.js' ),
+			[],
+			$theme_version,
+			true // Load in footer — runs after DOM is available.
+		);
+	}
 
-	// Smooth scroll for anchor links.
-	wp_enqueue_script(
-		'sgs-smooth-scroll',
-		get_theme_file_uri( 'assets/js/smooth-scroll.js' ),
-		[],
-		$theme_version,
-		true // Load in footer — runs after DOM is available.
-	);
+	// Smooth scroll now handled by CSS: html { scroll-behavior: smooth; }
+	// in core-blocks-critical.css. The JS file (2.7KB) is no longer needed.
 }
 add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\enqueue_styles' );
 
