@@ -97,7 +97,7 @@ $tab_count = count( $tabs );
 	<div
 		class="sgs-tabs__nav"
 		role="tablist"
-		aria-label="<?php esc_attr_e( 'Content tabs', 'sgs-blocks' ); ?>"
+		aria-label="<?php echo esc_attr( ! empty( $attributes['blockLabel'] ) ? $attributes['blockLabel'] : ( ! empty( $tabs[0]['label'] ) ? $tabs[0]['label'] : __( 'Content tabs', 'sgs-blocks' ) ) ); ?>"
 		aria-orientation="<?php echo esc_attr( $orientation ); ?>"
 	>
 		<?php foreach ( $tabs as $i => $tab ) :

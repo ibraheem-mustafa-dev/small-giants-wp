@@ -3,6 +3,8 @@
 <!-- wp:group {"tagName":"main","anchor":"main","layout":{"type":"constrained"}} -->
 <main class="wp-block-group" id="main">
 
+	<!-- wp:sgs/breadcrumbs /-->
+
 	<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|40"}}},"backgroundColor":"surface-alt","layout":{"type":"constrained"}} -->
 	<div class="wp-block-group has-surface-alt-background-color has-background" style="padding-top:var(--wp--preset--spacing--60);padding-bottom:var(--wp--preset--spacing--40)">
 		<!-- wp:query-title {"type":"archive"} /-->
@@ -17,8 +19,8 @@
 		<div class="wp-block-query">
 			<!-- wp:post-template {"layout":{"type":"grid","columnCount":3}} -->
 
-				<!-- wp:group {"style":{"spacing":{"padding":{"top":"0","bottom":"var:preset|spacing|40","left":"0","right":"0"}},"border":{"radius":"8px"}},"backgroundColor":"surface","layout":{"type":"default"},"className":"has-shadow-sm"} -->
-				<div class="wp-block-group has-surface-background-color has-background has-shadow-sm" style="border-radius:8px;padding-top:0;padding-right:0;padding-bottom:var(--wp--preset--spacing--40);padding-left:0">
+				<!-- wp:group {"tagName":"article","style":{"spacing":{"padding":{"top":"0","bottom":"var:preset|spacing|40","left":"0","right":"0"}},"border":{"radius":"8px"}},"backgroundColor":"surface","layout":{"type":"default"},"className":"has-shadow-sm"} -->
+				<article class="wp-block-group has-surface-background-color has-background has-shadow-sm" style="border-radius:8px;padding-top:0;padding-right:0;padding-bottom:var(--wp--preset--spacing--40);padding-left:0">
 					<!-- wp:post-featured-image {"isLink":true,"style":{"border":{"radius":{"topLeft":"8px","topRight":"8px"}}}} /-->
 					<!-- wp:group {"style":{"spacing":{"padding":{"left":"var:preset|spacing|30","right":"var:preset|spacing|30","top":"var:preset|spacing|30"}}},"layout":{"type":"default"}} -->
 					<div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--30)">
@@ -27,7 +29,7 @@
 						<!-- wp:post-excerpt {"moreText":"Read more","excerptLength":20} /-->
 					</div>
 					<!-- /wp:group -->
-				</div>
+				</article>
 				<!-- /wp:group -->
 
 			<!-- /wp:post-template -->

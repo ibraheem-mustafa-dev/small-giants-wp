@@ -598,6 +598,11 @@
 	min-height: 48px;
 }
 
+.sgs-mobile-nav__search-input:focus-visible {
+	outline: 3px solid var(--sgs-focus-color, #076a8e);
+	outline-offset: -3px;
+}
+
 .sgs-mobile-nav__search-input::placeholder {
 	color: rgba(255, 255, 255, 0.5);
 }

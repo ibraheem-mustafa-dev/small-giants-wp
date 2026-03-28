@@ -138,6 +138,7 @@ $wrapper_attributes = get_block_wrapper_attributes(
 						data-wp-class--sgs-form__progress-step--active="state.isStepActive"
 						data-wp-class--sgs-form__progress-step--completed="state.isStepCompleted"
 						aria-label="<?php echo esc_attr( sprintf( 'Go to %s', $step['label'] ) ); ?>"
+						data-wp-bind--aria-current="state.isStepActive"
 					>
 						<span class="sgs-form__progress-step-number"><?php echo absint( $index + 1 ); ?></span>
 						<span class="sgs-form__progress-step-label"><?php echo esc_html( $step['label'] ); ?></span>

@@ -428,7 +428,7 @@ body.sgs-has-transparent-header .wp-site-blocks > :first-child {
  * problem — only the wrapper div. We add the focus ring to the button inside.
  */
 .wp-block-navigation__responsive-close:focus-within {
-	outline: 2px solid var(--wp--preset--color--primary);
+	outline: 2px solid var(--sgs-focus-color, #076a8e);
 	outline-offset: 2px;
 }
 

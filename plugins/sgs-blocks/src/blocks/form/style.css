@@ -544,7 +544,7 @@ select.sgs-form-field__input {
 
 .sgs-form__button--accent:not([style*="background-color"]) {
 	background-color: var(--wp--preset--color--accent, #f87a1f);
-	color: #fff;
+	color: var(--wp--preset--color--text, #1e1e1e);
 }
 
 .sgs-form__button--success:not([style*="background-color"]) {
