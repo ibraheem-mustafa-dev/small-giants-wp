@@ -642,3 +642,59 @@ select.sgs-form-field__input {
 	outline: 2px solid #dc2626;
 	outline-offset: 2px;
 }
+
+/* ----------------------------------------------------------------
+   15. :user-invalid / :user-valid — post-interaction validation (#306)
+   ---------------------------------------------------------------- */
+
+/*
+ * :user-invalid and :user-valid only trigger AFTER the user has interacted
+ * with a field (typed, blurred, or submitted). This avoids the bad UX of
+ * showing red error states before the user has touched anything — unlike
+ * :invalid which fires immediately on page load for required empty fields.
+ *
+ * Browser support: Baseline 2023 (Chrome 119+, Firefox 88+, Safari 16.5+).
+ * Progressive enhancement: browsers without support fall back to the
+ * :invalid rule above.
+ *
+ * Icons are rendered via CSS background-image (inline SVG, no extra request).
+ * The background-position offset accounts for the icon on the right side.
+ */
+.sgs-form-field__input:user-invalid {
+	border-color: #dc2626;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23dc2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='8' x2='12' y2='12'/%3E%3Cline x1='12' y1='16' x2='12.01' y2='16'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: right 0.75rem center;
+	padding-right: 2.5rem;
+	box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+}
+
+.sgs-form-field__input:user-valid:not(:placeholder-shown) {
+	border-color: #2e7d4f;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%232e7d4f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: right 0.75rem center;
+	padding-right: 2.5rem;
+}
+
+/* Radio and checkbox user-invalid: outline the fieldset/label */
+.sgs-form-field__option input[type="radio"]:user-invalid,
+.sgs-form-field__option input[type="checkbox"]:user-invalid {
+	outline: 2px solid #dc2626;
+	outline-offset: 2px;
+}
+
+/* Textarea inherits the same rules via the shared input selector above */
+
+/* Accessible error message companion — shown via aria-describedby */
+.sgs-form-field__error-message {
+	display: none;
+	font-size: var(--wp--preset--font-size--x-small, 0.8125rem);
+	color: #dc2626;
+	margin-top: 0.25rem;
+}
+
+/* Show error message when the input is user-invalid */
+.sgs-form-field:has(.sgs-form-field__input:user-invalid) .sgs-form-field__error-message {
+	display: block;
+}

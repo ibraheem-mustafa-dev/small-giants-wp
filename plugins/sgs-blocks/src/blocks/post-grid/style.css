@@ -371,6 +371,56 @@
 }
 
 /* ==========================================================================
+   Staggered scroll-driven entry animation (#139, #146)
+   ========================================================================== */
+
+/*
+ * Post cards animate in sequentially as the grid scrolls into the viewport.
+ * Uses animation-timeline: view() (scroll-driven animations, Baseline 2024) —
+ * no Intersection Observer JS required.
+ *
+ * animation-range: entry 0% entry 30% plays the animation during the first
+ * 30% of the element's entry into the viewport.
+ *
+ * Progressive enhancement: browsers that do not support scroll-driven
+ * animations display cards statically — no broken layouts.
+ */
+@media ( prefers-reduced-motion: no-preference ) {
+	@supports ( animation-timeline: view() ) {
+		.sgs-post-grid__card {
+			animation: sgs-post-card-enter linear both;
+			animation-timeline: view();
+			animation-range: entry 0% entry 30%;
+		}
+
+		/* Stagger each card by 60ms per position */
+		.sgs-post-grid__inner > .sgs-post-grid__card:nth-child(1)  { animation-delay: calc(0  * 60ms); }
+		.sgs-post-grid__inner > .sgs-post-grid__card:nth-child(2)  { animation-delay: calc(1  * 60ms); }
+		.sgs-post-grid__inner > .sgs-post-grid__card:nth-child(3)  { animation-delay: calc(2  * 60ms); }
+		.sgs-post-grid__inner > .sgs-post-grid__card:nth-child(4)  { animation-delay: calc(3  * 60ms); }
+		.sgs-post-grid__inner > .sgs-post-grid__card:nth-child(5)  { animation-delay: calc(4  * 60ms); }
+		.sgs-post-grid__inner > .sgs-post-grid__card:nth-child(6)  { animation-delay: calc(5  * 60ms); }
+		.sgs-post-grid__inner > .sgs-post-grid__card:nth-child(7)  { animation-delay: calc(6  * 60ms); }
+		.sgs-post-grid__inner > .sgs-post-grid__card:nth-child(8)  { animation-delay: calc(7  * 60ms); }
+		.sgs-post-grid__inner > .sgs-post-grid__card:nth-child(9)  { animation-delay: calc(8  * 60ms); }
+		.sgs-post-grid__inner > .sgs-post-grid__card:nth-child(10) { animation-delay: calc(9  * 60ms); }
+		.sgs-post-grid__inner > .sgs-post-grid__card:nth-child(11) { animation-delay: calc(10 * 60ms); }
+		.sgs-post-grid__inner > .sgs-post-grid__card:nth-child(12) { animation-delay: calc(11 * 60ms); }
+	}
+}
+
+@keyframes sgs-post-card-enter {
+	from {
+		opacity: 0;
+		transform: translateY( 20px );
+	}
+	to {
+		opacity: 1;
+		transform: translateY( 0 );
+	}
+}
+
+/* ==========================================================================
    Filter buttons
    ========================================================================== */
 

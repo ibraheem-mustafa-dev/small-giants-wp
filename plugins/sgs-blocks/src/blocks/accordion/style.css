@@ -168,11 +168,44 @@
 	}
 }
 
+/* ─── @STARTING-STYLE ENTRY ANIMATION (#300) ─── */
+
+/*
+ * CSS-only entry animation for accordion panel expand.
+ *
+ * @starting-style defines the values the browser interpolates FROM when
+ * an element first enters the rendered tree — in this case when the
+ * <details> element receives the [open] attribute. No JS timing hacks needed.
+ *
+ * Browser support: Baseline 2024 (Chrome 117+, Firefox 129+, Safari 17.5+).
+ * Progressive enhancement: older browsers see an instant expand, not broken.
+ *
+ * Note: native <details> expand animation via interpolate-size is limited;
+ * we animate the content wrapper's opacity and transform only, which works
+ * reliably without setting height on the container.
+ */
+.sgs-accordion-item__content {
+	transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.sgs-accordion-item[open] > .sgs-accordion-item__content {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+@starting-style {
+	.sgs-accordion-item[open] > .sgs-accordion-item__content {
+		opacity: 0;
+		transform: translateY(-6px);
+	}
+}
+
 /* Respect reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
 	.sgs-accordion-item__header,
 	.sgs-accordion-item__icon,
-	.sgs-accordion-item[open] > .sgs-accordion-item__header .sgs-accordion-item__icon {
+	.sgs-accordion-item[open] > .sgs-accordion-item__header .sgs-accordion-item__icon,
+	.sgs-accordion-item__content {
 		transition: none !important;
 	}
 }

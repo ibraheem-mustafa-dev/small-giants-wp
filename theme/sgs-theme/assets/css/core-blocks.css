@@ -117,7 +117,9 @@
 }
 
 .sgs-footer-links a:hover {
-	color: var(--wp--preset--color--accent);
+	/* color-mix() tint: 85% accent + 15% black; fallback for older browsers */
+	color: color-mix(in srgb, var(--wp--preset--color--accent, #f87a1f) 85%, black);
+	color: var(--sgs-hover-accent, var(--wp--preset--color--accent, #f87a1f));
 }
 
 /* Footer navigation blocks — vertical link lists */
@@ -127,7 +129,9 @@
 }
 
 .sgs-footer-nav .wp-block-navigation-item__content:hover {
-	color: var(--wp--preset--color--accent);
+	/* color-mix() tint: 85% accent + 15% black; fallback for older browsers */
+	color: color-mix(in srgb, var(--wp--preset--color--accent, #f87a1f) 85%, black);
+	color: var(--sgs-hover-accent, var(--wp--preset--color--accent, #f87a1f));
 }
 
 .sgs-footer-nav .wp-block-navigation-item__content:focus-visible {

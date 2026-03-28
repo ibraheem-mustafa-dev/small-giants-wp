@@ -316,3 +316,94 @@ body.sgs-has-transparent-header .wp-site-blocks > :first-child {
 	}
 }
 
+/* ─── COLOUR-MIX HOVER TOKENS (#296) ─── */
+
+/*
+ * Defines computed hover tints using color-mix() so hardcoded dark fallback
+ * values are eliminated. 85% primary + 15% black gives a darker tint that
+ * works regardless of the active style variation's primary colour.
+ *
+ * Browser support: 92% (Baseline 2023). Older browsers fall back to the
+ * --wp--preset--color--primary or --secondary tokens — still functional,
+ * just without the tinted hover.
+ */
+:root {
+	--sgs-hover-primary: color-mix(in srgb, var(--wp--preset--color--primary, #0f7e80) 85%, black);
+	--sgs-hover-secondary: color-mix(in srgb, var(--wp--preset--color--secondary, #6c757d) 85%, black);
+	--sgs-hover-accent: color-mix(in srgb, var(--wp--preset--color--accent, #f87a1f) 85%, black);
+}
+
+/* ─── PREFERS-CONTRAST: MORE (#345) ─── */
+
+/*
+ * Provides enhanced contrast for users who have enabled the OS-level
+ * "Increase Contrast" / "More Contrast" accessibility setting.
+ *
+ * Targets:
+ *   - Borders: minimum 2px solid, no subtle/transparent variants
+ *   - Backgrounds: no gradients, no transparency
+ *   - Text shadows: removed (they reduce legibility at high contrast)
+ *   - Focus rings: thicker (4px)
+ *
+ * Browser support: 93%+ (Baseline 2022). Pure progressive enhancement —
+ * older browsers receive the standard styles unmodified.
+ */
+@media (prefers-contrast: more) {
+	/* Thicker, fully opaque focus ring */
+	:focus-visible {
+		outline-width: 4px !important;
+		outline-style: solid !important;
+		outline-color: var(--sgs-focus-color, #076a8e) !important;
+	}
+
+	/* Strip all gradient backgrounds — replace with solid surface colour */
+	.sgs-card-grid__overlay,
+	.sgs-post-grid__card--overlay .sgs-post-grid__content,
+	.sgs-post-grid__card--skeleton {
+		background: var(--wp--preset--color--text, #1e1e1e) !important;
+	}
+
+	/* Ensure borders are visible and at least 2px */
+	.sgs-accordion--bordered .sgs-accordion-item,
+	.sgs-accordion--flush .sgs-accordion-item,
+	.sgs-accordion--card .sgs-accordion-item,
+	.sgs-card-grid__item,
+	.sgs-form-field__input,
+	.sgs-form-tile,
+	.sgs-modal__dialog,
+	.wp-block-navigation .has-child .wp-block-navigation__submenu-container {
+		border: 2px solid currentColor !important;
+	}
+
+	/* No opacity reductions — everything must be fully visible */
+	.sgs-hero__overlay,
+	.sgs-modal__dialog::backdrop {
+		opacity: 0.85 !important;
+	}
+
+	/* Remove text-shadow decorations that reduce contrast */
+	* {
+		text-shadow: none !important;
+	}
+
+	/* Solid button backgrounds — no gradient overlays */
+	.wp-block-button__link,
+	.sgs-form__button,
+	.sgs-modal__trigger {
+		background-image: none !important;
+	}
+
+	/* Stronger link underline — always visible, not just on hover */
+	a {
+		text-decoration: underline;
+		text-decoration-thickness: 2px;
+	}
+
+	/* Remove box-shadow decorations that can blur perceived edges */
+	.sgs-accordion--card .sgs-accordion-item,
+	.sgs-modal__dialog,
+	.wp-block-navigation .has-child .wp-block-navigation__submenu-container {
+		box-shadow: none !important;
+	}
+}
+

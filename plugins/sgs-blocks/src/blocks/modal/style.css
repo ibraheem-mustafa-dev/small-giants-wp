@@ -35,7 +35,9 @@
 }
 
 .sgs-modal__trigger--primary:hover {
-	background-color: var(--wp--preset--color--primary-dark, #000);
+	/* color-mix() tint: 85% primary + 15% black — no hardcoded dark value needed */
+	background-color: color-mix(in srgb, var(--wp--preset--color--primary, #333) 85%, black);
+	background-color: var(--sgs-hover-primary, var(--wp--preset--color--primary-dark, #000));
 }
 
 .sgs-modal__trigger--secondary {
@@ -44,7 +46,9 @@
 }
 
 .sgs-modal__trigger--secondary:hover {
-	background-color: var(--wp--preset--color--secondary-dark, #5a6268);
+	/* color-mix() tint: 85% secondary + 15% black */
+	background-color: color-mix(in srgb, var(--wp--preset--color--secondary, #6c757d) 85%, black);
+	background-color: var(--sgs-hover-secondary, var(--wp--preset--color--secondary-dark, #5a6268));
 }
 
 .sgs-modal__trigger--text-link {
@@ -57,7 +61,9 @@
 }
 
 .sgs-modal__trigger--text-link:hover {
-	color: var(--wp--preset--color--primary-dark, #000);
+	/* color-mix() tint: 85% primary + 15% black */
+	color: color-mix(in srgb, var(--wp--preset--color--primary, #333) 85%, black);
+	color: var(--sgs-hover-primary, var(--wp--preset--color--primary-dark, #000));
 	text-decoration: none;
 }
 
@@ -168,5 +174,24 @@
 @media (min-width: 768px) {
 	.sgs-modal__inner {
 		padding: 3rem 3rem 2rem;
+	}
+}
+
+/* ─── REDUCED MOTION ─── */
+
+/*
+ * Respects the OS-level "Reduce Motion" preference.
+ * Dialog and backdrop transitions are disabled; the modal still opens/closes
+ * but without animation.
+ */
+@media (prefers-reduced-motion: reduce) {
+	.sgs-modal__dialog,
+	.sgs-modal__dialog::backdrop {
+		transition: none !important;
+	}
+
+	.sgs-modal__trigger,
+	.sgs-modal__close {
+		transition: none !important;
 	}
 }
