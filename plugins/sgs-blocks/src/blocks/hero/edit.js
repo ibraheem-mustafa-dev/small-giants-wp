@@ -300,34 +300,15 @@ export default function Edit( { attributes, setAttributes } ) {
 										]
 									}
 									options={ [
-										{
-											label: 'Auto (fit content)',
-											value: '',
-										},
-										{
-											label: '360px',
-											value: '360px',
-										},
-										{
-											label: '400px',
-											value: '400px',
-										},
-										{
-											label: '520px',
-											value: '520px',
-										},
-										{
-											label: '600px',
-											value: '600px',
-										},
-										{
-											label: '80vh',
-											value: '80vh',
-										},
-										{
-											label: '100vh',
-											value: '100vh',
-										},
+										{ label: __( 'Auto (fit content)', 'sgs-blocks' ), value: '' },
+										{ label: '50vh',  value: '50vh'  },
+										{ label: '75vh',  value: '75vh'  },
+										{ label: '80vh',  value: '80vh'  },
+										{ label: '100vh', value: '100vh' },
+										{ label: '360px', value: '360px' },
+										{ label: '400px', value: '400px' },
+										{ label: '520px', value: '520px' },
+										{ label: '600px', value: '600px' },
 									] }
 									onChange={ ( val ) =>
 										setAttributes( {

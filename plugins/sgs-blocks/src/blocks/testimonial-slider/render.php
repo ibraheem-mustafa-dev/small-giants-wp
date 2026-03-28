@@ -156,13 +156,14 @@ if ( ! empty( $testimonials ) ) {
 		}
 
 		// Build slide HTML.
+		// WCAG 2.2: role="group" + aria-roledescription="slide" + aria-label="N of Total"
+		// gives carousel slides a clear semantic identity for screen readers.
 		$slide_id = esc_attr( $slider_prefix ) . '-slide-' . $i;
 		$dot_id   = esc_attr( $slider_prefix ) . '-dot-' . $i;
 		$slides_html .= sprintf(
-			'<blockquote id="%s" class="sgs-testimonial-slider__slide sgs-testimonial-slider__slide--%s" role="tabpanel" aria-labelledby="%s" aria-label="Testimonial %d of %d">%s<p class="sgs-testimonial-slider__quote"%s>%s</p><footer class="sgs-testimonial-slider__footer">%s<div class="sgs-testimonial-slider__meta"><cite class="sgs-testimonial-slider__name"%s>%s</cite><span class="sgs-testimonial-slider__role"%s>%s</span></div></footer></blockquote>',
+			'<blockquote id="%s" class="sgs-testimonial-slider__slide sgs-testimonial-slider__slide--%s" role="group" aria-roledescription="slide" aria-label="%d of %d">%s<p class="sgs-testimonial-slider__quote"%s>%s</p><footer class="sgs-testimonial-slider__footer">%s<div class="sgs-testimonial-slider__meta"><cite class="sgs-testimonial-slider__name"%s>%s</cite><span class="sgs-testimonial-slider__role"%s>%s</span></div></footer></blockquote>',
 			$slide_id,
 			esc_attr( $card_style ),
-			$dot_id,
 			$i,
 			$total_testimonials,
 			$stars_html,
@@ -191,29 +192,31 @@ if ( $show_arrows && $total_testimonials > $slides_visible ) {
 // Build dots HTML (only if there are more testimonials than slides visible).
 $dots_html = '';
 if ( $show_dots && $total_testimonials > $slides_visible ) {
-	$dots_html = '<div class="sgs-testimonial-slider__dots" role="tablist" aria-label="Testimonial navigation">';
+	$dots_html = '<div class="sgs-testimonial-slider__dots" role="group" aria-label="' . esc_attr__( 'Testimonial navigation', 'sgs-blocks' ) . '">';
 	for ( $d = 1; $d <= $total_testimonials; $d++ ) {
 		$is_first    = ( 1 === $d );
 		$this_dot_id = esc_attr( $slider_prefix ) . '-dot-' . $d;
 		$controls_id = esc_attr( $slider_prefix ) . '-slide-' . $d;
 		$dots_html  .= sprintf(
-			'<button id="%s" class="sgs-testimonial-slider__dot%s" role="tab" aria-selected="%s" aria-controls="%s" aria-label="Go to testimonial %d" type="button"></button>',
+			'<button id="%s" class="sgs-testimonial-slider__dot%s" aria-current="%s" aria-controls="%s" aria-label="%s" type="button"></button>',
 			$this_dot_id,
 			$is_first ? ' sgs-testimonial-slider__dot--active' : '',
 			$is_first ? 'true' : 'false',
 			$controls_id,
-			$d
+			/* translators: %d = slide number */
+			esc_attr( sprintf( __( 'Go to testimonial %d', 'sgs-blocks' ), $d ) )
 		);
 	}
 	$dots_html .= '</div>';
 }
 
 // Output.
-// H10: role="region" + aria-label names the carousel landmark for screen readers.
-// aria-live="polite" announces when the active slide changes (view.js updates
-// aria-selected on dots). tabindex is omitted — keyboard nav is via dots/arrows.
+// WCAG 2.2 AA — carousel pattern (ARIA 1.2):
+// - Outer wrapper: role="region" + aria-roledescription="carousel" + aria-label names the landmark.
+// - Track has aria-live="polite" so slide changes are announced.
+// - Individual slides use role="group" + aria-label="N of Total" (set on render; view.js updates it on transition).
 printf(
-	'<div %s><div class="sgs-testimonial-slider__stage"><div class="sgs-testimonial-slider__track" role="region" aria-label="Customer Testimonials" aria-live="polite" tabindex="0"%s>%s</div>%s</div>%s</div>',
+	'<div %s role="region" aria-roledescription="carousel" aria-label="Customer Testimonials"><div class="sgs-testimonial-slider__stage"><div class="sgs-testimonial-slider__track" aria-live="polite" tabindex="0"%s>%s</div>%s</div>%s</div>',
 	$wrapper_attributes,
 	$track_style_attr,
 	$slides_html,

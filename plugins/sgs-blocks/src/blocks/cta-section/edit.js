@@ -28,6 +28,21 @@ const BUTTON_STYLE_OPTIONS = [
 	{ label: __( 'Outline', 'sgs-blocks' ), value: 'outline' },
 ];
 
+const BLOCK_BUTTON_STYLE_OPTIONS = [
+	{ label: __( 'Solid', 'sgs-blocks' ), value: 'solid' },
+	{ label: __( 'Outline', 'sgs-blocks' ), value: 'outline' },
+	{ label: __( 'Ghost', 'sgs-blocks' ), value: 'ghost' },
+	{ label: __( 'Gradient', 'sgs-blocks' ), value: 'gradient' },
+];
+
+const BUTTON_SIZE_OPTIONS = [
+	{ label: __( 'XS', 'sgs-blocks' ), value: 'xs' },
+	{ label: __( 'SM', 'sgs-blocks' ), value: 'sm' },
+	{ label: __( 'MD', 'sgs-blocks' ), value: 'md' },
+	{ label: __( 'LG', 'sgs-blocks' ), value: 'lg' },
+	{ label: __( 'XL', 'sgs-blocks' ), value: 'xl' },
+];
+
 const FONT_SIZE_OPTIONS = [
 	{ label: __( 'Default', 'sgs-blocks' ), value: '' },
 	{ label: __( 'Small', 'sgs-blocks' ), value: 'small' },
@@ -105,6 +120,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		bodyFontSize,
 		buttonColour,
 		buttonBackground,
+		buttonStyle,
+		buttonSize,
 		backgroundImage,
 		backgroundImageOpacity,
 		stats,
@@ -262,6 +279,25 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Buttons', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
+					<SelectControl
+						label={ __( 'Button variant', 'sgs-blocks' ) }
+						value={ buttonStyle || 'solid' }
+						options={ BLOCK_BUTTON_STYLE_OPTIONS }
+						onChange={ ( val ) =>
+							setAttributes( { buttonStyle: val } )
+						}
+						help={ __( 'Applied to all buttons. Per-button style overrides this.', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+					/>
+					<SelectControl
+						label={ __( 'Button size', 'sgs-blocks' ) }
+						value={ buttonSize || 'md' }
+						options={ BUTTON_SIZE_OPTIONS }
+						onChange={ ( val ) =>
+							setAttributes( { buttonSize: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
 					{ buttons.map( ( button, index ) => (
 						<ButtonEditor
 							key={ index }

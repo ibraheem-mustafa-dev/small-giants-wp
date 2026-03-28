@@ -156,29 +156,77 @@
 	font-size: 1.2em;
 }
 
-/* Button styles */
-.sgs-cta-section__btn--accent:not([style*="background"]) {
+/* ===== Button variants — block-level (#199) ===== */
+
+/* solid (default) */
+.sgs-cta-section__btn--solid:not([style*="background"]) {
 	background-color: var(--wp--preset--color--accent);
 }
-
-.sgs-cta-section__btn--accent:not([style*="color"]) {
+.sgs-cta-section__btn--solid:not([style*="color"]) {
 	color: var(--wp--preset--color--text, #1e1e1e);
 }
-
-.sgs-cta-section__btn--primary:not([style*="background"]) {
-	background-color: var(--wp--preset--color--primary);
+.sgs-cta-section__btn--solid:hover {
+	background-color: transparent;
+	color: var(--wp--preset--color--accent);
+	box-shadow: inset 0 0 0 2px var(--wp--preset--color--accent);
+	transform: translateY(-1px);
 }
 
-.sgs-cta-section__btn--primary:not([style*="color"]) {
-	color: var(--wp--preset--color--surface, #fff);
-}
-
+/* outline */
 .sgs-cta-section__btn--outline {
 	background-color: transparent;
 	border: 2px solid currentColor;
 }
-
 .sgs-cta-section__btn--outline:not([style*="color"]) {
+	color: var(--wp--preset--color--surface, #fff);
+}
+.sgs-cta-section__btn--outline:hover {
+	background-color: var(--wp--preset--color--primary);
+	color: var(--wp--preset--color--surface);
+	border-color: var(--wp--preset--color--primary);
+	transform: translateY(-1px);
+}
+
+/* ghost */
+.sgs-cta-section__btn--ghost {
+	background-color: transparent;
+	border: 1px solid transparent;
+}
+.sgs-cta-section__btn--ghost:not([style*="color"]) {
+	color: var(--wp--preset--color--surface, #fff);
+}
+.sgs-cta-section__btn--ghost:hover {
+	background-color: rgba( 255, 255, 255, 0.12 );
+	transform: translateY(-1px);
+}
+
+/* gradient */
+.sgs-cta-section__btn--gradient:not([style*="background"]) {
+	background: linear-gradient(
+		135deg,
+		var(--wp--preset--color--primary, #1A3A5C) 0%,
+		var(--wp--preset--color--accent, #E8B84B) 100%
+	);
+}
+.sgs-cta-section__btn--gradient:not([style*="color"]) {
+	color: var(--wp--preset--color--surface, #fff);
+}
+.sgs-cta-section__btn--gradient:hover {
+	opacity: 0.88;
+	transform: translateY(-1px);
+}
+
+/* Legacy per-button style variants (kept for backward compat) */
+.sgs-cta-section__btn--accent:not([style*="background"]) {
+	background-color: var(--wp--preset--color--accent);
+}
+.sgs-cta-section__btn--accent:not([style*="color"]) {
+	color: var(--wp--preset--color--text, #1e1e1e);
+}
+.sgs-cta-section__btn--primary:not([style*="background"]) {
+	background-color: var(--wp--preset--color--primary);
+}
+.sgs-cta-section__btn--primary:not([style*="color"]) {
 	color: var(--wp--preset--color--surface, #fff);
 }
 
@@ -189,17 +237,43 @@
 	box-shadow: inset 0 0 0 2px var(--wp--preset--color--accent);
 	transform: translateY(-1px);
 }
-
 .sgs-cta-section__btn--primary:hover {
 	background-color: var(--wp--preset--color--primary-dark);
 	transform: translateY(-1px);
 }
 
-.sgs-cta-section__btn--outline:hover {
-	background-color: var(--wp--preset--color--primary);
-	color: var(--wp--preset--color--surface);
-	border-color: var(--wp--preset--color--primary);
-	transform: translateY(-1px);
+/* ===== Button sizes (#200) ===== */
+
+.sgs-cta-section__btn--size-xs {
+	--sgs-btn-py: 0.25rem;
+	--sgs-btn-px: 0.75rem;
+	--sgs-btn-fs: var(--wp--preset--font-size--small, 0.8125rem);
+}
+.sgs-cta-section__btn--size-sm {
+	--sgs-btn-py: 0.375rem;
+	--sgs-btn-px: 1rem;
+	--sgs-btn-fs: var(--wp--preset--font-size--small, 0.875rem);
+}
+.sgs-cta-section__btn--size-md {
+	--sgs-btn-py: var(--wp--preset--spacing--20, 0.5rem);
+	--sgs-btn-px: var(--wp--preset--spacing--40, 1.25rem);
+	--sgs-btn-fs: var(--wp--preset--font-size--medium, 1rem);
+}
+.sgs-cta-section__btn--size-lg {
+	--sgs-btn-py: 0.75rem;
+	--sgs-btn-px: 1.75rem;
+	--sgs-btn-fs: var(--wp--preset--font-size--large, 1.125rem);
+}
+.sgs-cta-section__btn--size-xl {
+	--sgs-btn-py: 1rem;
+	--sgs-btn-px: 2.25rem;
+	--sgs-btn-fs: var(--wp--preset--font-size--x-large, 1.25rem);
+}
+
+/* Apply size custom properties to the button */
+.sgs-cta-section__btn[class*="--size-"] {
+	padding: var(--sgs-btn-py) var(--sgs-btn-px);
+	font-size: var(--sgs-btn-fs);
 }
 
 /* Focus */

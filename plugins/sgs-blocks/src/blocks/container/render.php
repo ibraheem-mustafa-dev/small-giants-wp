@@ -71,6 +71,11 @@ $classes = array(
 	'sgs-container--width-' . esc_attr( $max_width ),
 );
 
+// When a min-height is set, add flex-centring class (#48).
+if ( ! empty( $min_height ) ) {
+	$classes[] = 'sgs-container--has-min-height';
+}
+
 if ( 'grid' === $layout ) {
 	$classes[] = 'sgs-cols-' . absint( $columns );
 	if ( $columns_tablet ) {

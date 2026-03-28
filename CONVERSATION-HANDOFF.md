@@ -1,152 +1,128 @@
-# Session Handoff — 2026-03-27 (Session 9: Mega Menu Redesign + QA + Indus Customisation)
+# Session Handoff — 2026-03-28 (Session 10: Architecture Audit + 65 Fixes + Mega Menu Redesign)
 
 ## Completed This Session
 
-1. Redesigned all 7 mega menu template parts with 3-tier brand colour backgrounds: white (Sectors/Brands/Products), warm accent-light (Services/About), bold primary-dark (Resources/Contact). All via design tokens.
-2. Rebuilt Products panel — removed broken emoji placeholders, replaced with 4 clean text-based category cards (Spices, Rice, Pulses, Frozen).
-3. Fixed 4 WCAG critical contrast failures: gold card text (1.95:1 to ~9:1), Send Message button (1.68:1 to ~6.6:1), About quick links (3.06:1 to 6.45:1), Products Browse links (4.29:1 to ~5.2:1).
-4. Created `mega-menu-panels.css` with hover effects for sector cards, brand logos, and `prefers-reduced-motion` support. Enqueued in `functions.php`.
-5. Customised all panels for Indus Foods: heritage copy (since 1962), Birmingham address, BRC/SALSA/Halal certs, real sector links, trade account CTAs.
-6. Ran full gap-analysis: overall grade C+ (3.07/5). Persona scores: Amir 2.9, Sarah 3.1, Dave 3.4. Key weakness: 5/7 panels text-only.
-7. Ran design-reviewer agent: confirmed Contact panel strongest (A-), Sectors/Products solid (B/B+), Services/Resources weakest (C+/C).
-8. Verified all reported issues against live computed styles — confirmed 4 false alarms from reviews (fixes already deployed).
-9. Fixed brand logo alt text (7 empty to all populated), About link contrast (inline style override for WP link colour cascade).
-10. Dispatched 3 parallel Sonnet agents: Services CTA moved to top, Products MOQ subtitle added, Resources placeholder links replaced with clean CTA.
+1. Redesigned all 7 mega menu template parts with 3-tier background system (white/warm/dark), brand colour tokens, WCAG contrast fixes. Deployed to palestine-lives.org.
+2. Customised all mega menu panels for Indus Foods: heritage copy, Birmingham details, BRC/SALSA/Halal certs, trade account CTAs.
+3. Ran full gap-analysis on mega menu templates: C+ (3.07/5). 3 personas scored (Amir 2.9, Sarah 3.1, Dave 3.4).
+4. Ran 5-agent architecture audit (performance, accessibility, block architecture, SEO/security, competitive gap). 67 findings across all dimensions.
+5. Fixed 65 of 67 findings in 7 commits across 66+ files. Architecture grade C (2.67) to B (3.5).
+6. Critical CSS split: 21KB to 9.9KB (within 10KB budget). functions.php: 1,143 to 615 lines.
+7. Awwwards mega menu animation research: 8 patterns extracted with CSS/JS code (curtain, stagger, glass, clip-path, Stripe morph, image preview, indicator slide, Radix viewport).
+8. Deep research on mega menu visual content: Tier 2 (icons + featured image) is correct for B2B brochure sites.
+9. Updated projects.md: SGS 19% to 58%, Indus Foods 45% to 70%. Marked 16 completed phases, 6/8 remediation items done.
+10. Competitive gap analysis: SGS leads on forms/WhatsApp/reviews/mega-menu. Gaps: per-breakpoint spacing, dynamic content, design library modal.
 
 ## Current State
-- **Branch:** `main` at `4545ef0`
+- **Branch:** `main` at `3a2c43f`
 - **Tests:** No test suite
-- **Build:** `cd plugins/sgs-blocks && npm run build` passes
-- **Uncommitted changes:** None for mega menu work. Mobile-nav block.json modified from feature branch stash.
-- **Deploy:** All 7 templates deployed to palestine-lives.org
-- **Awwwards research:** Agent dispatched, output at `C:\Users\Bean\AppData\Local\Temp\claude\c--Users-Bean-Projects-small-giants-wp\02c600c4-9a53-400a-98bf-760d59b816df\tasks\a72b014d435a15ad3.output` — read this first in the next session.
+- **Build:** `cd plugins/sgs-blocks && npm run build` passes (zero errors)
+- **Uncommitted changes:** None on main. `feat/mobile-nav-block` has WIP attribute spec (stashed).
+- **Deploy:** All fixes deployed to palestine-lives.org. Caches cleared.
+- **Architecture grade:** B (3.5/5) — up from C (2.67/5)
 
 ## Known Issues / Blockers
 
-- Mega menu panels are template parts (static HTML). Next session must convert to an InnerBlocks container pattern so clients can edit content in the Site Editor.
-- 5/7 panels are text-only (no images). Research found Tier 2 (icons + one featured image per panel) is the correct approach. Products, About, Resources need image/icon slots.
-- The Awwwards research agent may still be running — check the output file for animation patterns and HTML to extract.
-- `feat/mobile-nav-block` branch has WIP attribute spec implementation (62 attrs, 8 panels) — separate track from mega menu.
+- functions.php still 615 lines (300 limit, but remaining code is core functions — further splitting is over-engineering)
+- 2 remaining audit findings: fetchpriority on hero images, i18n translation strings
+- `feat/mobile-nav-block` has stashed WIP (62 attrs, 8 panels) — separate track, depends on WP 7.0
 
 ## Next Priorities (in order)
 
-1. Read Awwwards research output. Extract animation CSS/HTML patterns for mega menu open/close, hover effects, and staggered reveals. Apply the best ones to the SGS mega menu system.
-2. Convert mega menu panels from static template parts to InnerBlocks containers. Register the 7 current layouts as block patterns (selectable quickstarts that clients can fully customise after insertion).
-3. Add image/icon placeholder slots to Products (category icons), About (heritage photo slot), and Resources (featured content card) patterns.
-4. Re-run gap-analysis after architectural changes — target B+ overall (3.5+/5).
-5. Continue mobile-nav attribute spec implementation on `feat/mobile-nav-block`.
+1. CODE-1: Add `sideImage` (MediaUpload) + `layout` ("full"|"split") attributes to testimonial-slider block. The Indus Foods review section needs this for the side image layout.
+2. CODE-2: Add per-button `borderColour`, `borderWidth`, `borderRadius` attributes to CTA section block.
+3. G8: Active/current page indicator on navigation links (CSS `:current` or `aria-current="page"`).
+4. Theme-level animation system: `register_block_style()` for curtain reveal, glass panel, stagger children on any Group/Columns/Cover block. One CSS file, editor sidebar selection.
+5. Mobile nav v2 Phase 1: Build `sgs/social-icons` + `sgs/mobile-nav-close` as standalone blocks.
 
 ## Files Modified
 
 | File | What changed |
 |------|-------------|
-| `theme/sgs-theme/parts/mega-menu-sectors.html` | Brand colour bg, gold card dark text fix, duplicate image fix |
-| `theme/sgs-theme/parts/mega-menu-brands.html` | Brand colour bg, alt text on 7 placeholder logos |
-| `theme/sgs-theme/parts/mega-menu-products.html` | Full rebuild: 4 category cards, MOQ subtitle, primary-dark links |
-| `theme/sgs-theme/parts/mega-menu-services.html` | Warm bg, Indus content, CTA moved to top, info-box descriptions |
-| `theme/sgs-theme/parts/mega-menu-resources.html` | Dark bg, trade resources CTA, BRC/Halal certs, delivery/MOQ links |
-| `theme/sgs-theme/parts/mega-menu-about.html` | Warm bg, Indus heritage copy, primary-dark link override, sector links |
-| `theme/sgs-theme/parts/mega-menu-contact.html` | Dark bg, Birmingham details, dark button text fix, opacity hierarchy |
-| `theme/sgs-theme/assets/css/mega-menu-panels.css` | New: hover effects, brand logo tiles, reduced-motion support |
-| `theme/sgs-theme/functions.php` | Enqueue mega-menu-panels.css |
+| `theme/sgs-theme/parts/mega-menu-*.html` (7 files) | Brand colour backgrounds, Indus Foods content, WCAG contrast fixes |
+| `theme/sgs-theme/assets/css/mega-menu-panels.css` | New shared CSS with hover effects, reduced-motion |
+| `theme/sgs-theme/assets/css/core-blocks-critical.css` | Split to 9.9KB, smooth scroll, focus fixes, LiteSpeed guards |
+| `theme/sgs-theme/assets/css/core-blocks.css` | Received 11KB of deferred rules from critical split |
+| `theme/sgs-theme/functions.php` | Security headers, conditional loading, Indus CSS extracted, duplicate enqueue removed |
+| `theme/sgs-theme/inc/style-variation-indus-foods.php` | New — 551 lines extracted from functions.php |
+| `theme/sgs-theme/inc/font-preloading.php` | New — 106 lines extracted from functions.php |
+| `theme/sgs-theme/theme.json` | Duplicate font removed, customSpacingSize false, lightbox disabled, contentSize 780px |
+| `theme/sgs-theme/templates/*.html` (7 files) | Skip link target id=main, breadcrumbs, archive article tags, blog H1 |
+| `theme/sgs-theme/parts/header.html` | Skip link added |
+| `theme/sgs-theme/parts/footer.html` | text-inverse to surface (contrast fix) |
+| `plugins/sgs-blocks/src/components/DesignTokenPicker.js` | useSetting to useSettings |
+| `plugins/sgs-blocks/src/components/SpacingControl.js` | useSetting to useSettings |
+| `plugins/sgs-blocks/includes/render-helpers.php` | sgs_transition_vars() helper added |
+| `plugins/sgs-blocks/includes/forms/class-form-upload.php` | wp_check_filetype_and_ext security fix |
+| `plugins/sgs-blocks/includes/forms/field-render-helpers.php` | Required asterisk sr-only + contrast fix |
+| `plugins/sgs-blocks/src/blocks/*/render.php` (7 files) | Transition boilerplate replaced with helper |
+| `plugins/sgs-blocks/src/blocks/*/block.json` (21 files) | Block Selectors API added |
+| `plugins/sgs-blocks/src/blocks/accordion/view.js` | prefers-reduced-motion check |
+| `plugins/sgs-blocks/src/blocks/form/style.css` | Button contrast, file upload focus |
+| `plugins/sgs-blocks/src/blocks/form/render.php` | aria-current on progress steps |
+| `plugins/sgs-blocks/src/blocks/tabs/render.php` | Dynamic aria-label from first tab |
+| `plugins/sgs-blocks/src/blocks/mega-menu/style.css` | Search input focus, side-tab 44px |
+| `plugins/sgs-blocks/src/blocks/mobile-nav/style.css` | Search input focus-visible |
+| `ARCHITECTURE.md` | Block count 32 to 58, status updated |
 
 ## Notes for Next Session
 
-- WP `textColor` on a list block does NOT cascade to `<a>` tags inside list items. Links inherit theme link colour. Fix: inline `style="color:var(--wp--preset--color--token)"` on each `<a>`, or use `elements.link.color` in the block comment (but this didn't work reliably with style variations).
-- The Indus Foods style variation overrides `text-inverse` to `#FFFFFF` (base SGS is `#C0D5D6`). This collapses hierarchy on dark panels where both titles and subtitles become white. Fix: `opacity:0.65` on subtitle paragraphs.
-- The gap-analysis graded this C+ with self-preference counteract applied. The accessibility floor (empty alt text) dragged the score down significantly — now fixed. Re-grading after the InnerBlocks conversion should yield B+.
-- Deep research found Indus Foods should use Tier 2 mega menus (icons + one featured block per panel, ~25-30% visual). Not Tier 3 (image-heavy, that's for e-commerce ordering platforms). Full research at the agent output path above.
-- Awwwards research was dispatched to find animation patterns (panel open/close, hover effects, staggered reveals) with extractable CSS/HTML. Read that output before implementing animations.
+- The testimonial-slider block currently has no `sideImage` or `layout` attribute. Adding these requires: block.json attrs, edit.js MediaUpload + layout toggle, render.php split layout rendering, style.css for the split variant. Follow the existing pattern in hero block which has a similar split-image layout.
+- The Awwwards animation research is at `c:/tmp/awwwards-mega-menu-research.md` — 8 patterns with extractable CSS/JS. Patterns 3 (curtain) + 5 (stagger) + 6 (glass) should be theme-level block style variations, not mega-menu-specific.
+- The `useSettings()` fix (plural) returns an array — destructure as `const [ colours ] = useSettings( 'color.palette' )` not `const colours = useSettings(...)`.
+- The `--exclude='src'` tar flag breaks vendor directories. Always use `--exclude='plugins/sgs-blocks/src'` (full path).
+- projects.md was updated this session (19% to 58% for SGS, 45% to 70% for Indus Foods). The competitive gap table is now in projects.md.
 
 ## Next Session Prompt
 
 ~~~
-Read CONVERSATION-HANDOFF.md and CLAUDE.md for full context. Two tracks: (1) mega menu architecture upgrade (InnerBlocks + patterns + animations), (2) mobile-nav attribute spec continuation.
-
-Read the Awwwards research output FIRST — it contains animation CSS/HTML to extract.
+Read CONVERSATION-HANDOFF.md and CLAUDE.md for full context. Three tasks: testimonial-slider upgrade, CTA border controls, then theme-level animation system.
 
 ## Skills to Invoke
 
 | Skill | When to use |
 |-------|-------------|
-| `/internal-debate` | Debate InnerBlocks vs template part architecture for mega menu panels |
-| `/gap-analysis` | Re-grade after InnerBlocks conversion |
-| `/skill-lifecycle` | If any skill/agent changes needed |
+| `/internal-debate` | Debate testimonial split layout approach (InnerBlocks vs attributes) |
+| `/gap-analysis` | Grade the testimonial block after changes |
+| `/skill-agent-pipeline` | If any skill/agent changes needed |
 | `/research` | Auto-route any questions during implementation |
-| `/strategic-plan` | Plan the InnerBlocks conversion order |
+| `/strategic-plan` | Plan the animation system architecture before building |
 | `/sgs-wp-engine` | Load framework context, check block patterns |
-| `/wp-block-development` | Block pattern registration, InnerBlocks, block.json |
-| `/wp-block-themes` | Template part architecture, pattern registration |
-| `/interactive-design` | Animation implementation from Awwwards research |
-| `/frontend-design` | Visual quality of pattern layouts |
-| `/critique` | Evaluate each pattern before finalising |
+| `/wp-block-development` | Block.json attributes, edit.js controls, render.php |
+| `/interactive-design` | Theme-level animation system (block style variations) |
+| `/frontend-design` | Visual quality of animation effects |
 
 ## MCP Servers & Tools
 
 | Tool | What to use it for |
 |------|-------------------|
-| Playwright MCP | Screenshot verification at 1440/768/375 after each change |
-| Context7 | WordPress block pattern API docs, InnerBlocks API |
-| wp-blockmarkup | Validate block markup in patterns |
+| Playwright MCP | Screenshot verification at 1440/768/375 after block changes |
+| Context7 | WordPress block API docs for MediaUpload, register_block_style |
+| wp-blockmarkup | Validate block.json schema after attribute additions |
 
 ## Agents to Delegate To
 
 | Agent | When |
 |-------|------|
-| `wp-sgs-developer` | Heavy PHP pattern registration, template part refactoring |
-| `design-reviewer` | After InnerBlocks conversion — compare all 7 at 3 breakpoints |
-| `test-and-explain` | After all changes — verify patterns work in Site Editor |
-
-## Research Approach
-1. Read Awwwards research output for animation patterns
-2. Extract the best 3-4 CSS animations (panel open, hover, stagger)
-3. Use /internal-debate to decide: should animations be in mega-menu-panels.css or in the mega-menu block's view.js?
+| `wp-sgs-developer` | Heavy block dev (testimonial-slider, CTA section attrs) |
+| `design-reviewer` | After testimonial split layout — verify at 3 breakpoints |
+| `test-and-explain` | After all changes — verify in plain English |
 
 ---
 
-## Task 1: Read Awwwards Research + Extract Animations
-Read the research output file. Identify the top 3-4 animation patterns. Extract the CSS/HTML. Decide where they belong in the SGS architecture (CSS file vs JS). Implement the animations in mega-menu-panels.css or the mega-menu block.
+## Task 1: Testimonial Slider — sideImage + layout attributes
+Read `plugins/sgs-blocks/src/blocks/testimonial-slider/`. Add `sideImage` (MediaUpload, attachment ID) and `layout` ("full"|"split") attributes. In split mode, the testimonial card shows a large image on one side (60%) and the quote/stars/attribution on the other (40%). Follow the hero block's split-image pattern. Update block.json, edit.js (MediaUpload + layout toggle), render.php (conditional split rendering), style.css (split layout CSS). Build and deploy.
 
-## Task 2: Convert Mega Menu to InnerBlocks Container + Block Patterns
-Convert the 7 template parts from static HTML to InnerBlocks containers. Register 7 block patterns in PHP (one per panel type). Patterns are insertable quickstarts — fully editable after insertion. Add image/icon placeholder slots to Products, About, Resources patterns.
+## Task 2: CTA Section — per-button border controls
+Read `plugins/sgs-blocks/src/blocks/cta-section/`. Add `buttonBorderColour` (DesignTokenPicker), `buttonBorderWidth` (number, px), `buttonBorderRadius` (number, px) attributes. Wire them in edit.js inspector + render.php inline styles. Build and deploy.
 
-## Task 3: QA + Re-Grade
-Deploy, screenshot at 1440/768/375. Run /gap-analysis targeting B+ (3.5+/5). Fix any issues. Run /design-review for final visual check.
-
-## Task 4: Mobile Nav Attribute Spec (if time)
-Switch to feat/mobile-nav-block. Continue implementation from where session 8 left off. Read the spec at docs/superpowers/specs/2026-03-25-mobile-nav-attributes.md.
+## Task 3: Theme-Level Animation System
+Read `c:/tmp/awwwards-mega-menu-research.md` for the 8 extracted patterns. Build a theme-level animation system using `register_block_style()` so clients can pick animations from the block editor sidebar. Create `theme/sgs-theme/assets/css/sgs-animations.css` with curtain reveal, glass panel, stagger children, clip-path variants. Register styles for Group, Columns, Cover blocks. Add a small JS file with IntersectionObserver to trigger animations on scroll. This makes animations a framework feature, not mega-menu-specific.
 
 ## Guardrails
-- `npm run build` must pass with zero errors before any deploy
-- Screenshot at 375, 768, and 1440 after EVERY change
-- All colours use design tokens, never hardcoded hex
-- Patterns must work with default SGS theme AND Indus Foods variation
-- Branch: mega menu work on `main`, mobile-nav on `feat/mobile-nav-block`
-
-## Available Tooling
-
-### Skills
-
-| Category | Skill | When to use |
-|----------|-------|-------------|
-| Framework | `/sgs-wp-engine` | Any SGS Framework work |
-| Blocks | `/wp-block-development` | Block patterns, InnerBlocks |
-| Themes | `/wp-block-themes` | Template parts, patterns, style variations |
-| Design | `/interactive-design` | Animations, micro-interactions |
-| Design Review | `/design-review` | Visual quality check |
-| Visual QA | `/visual-qa` | 8-layer SGS QA pipeline |
-
-### MCP Servers
-
-| Server | What it provides |
-|--------|-----------------|
-| Playwright | Browser automation, screenshots, DOM inspection |
-| Context7 | Up-to-date WordPress API docs |
-| wp-blockmarkup | Block markup validation |
-
-### CLI Tools
-
-| Tool | Command | What it does |
-|------|---------|-------------|
-| SGS DB | `python sgs-db.py <command>` | Query block attributes, tokens, stats |
+- `npm run build` must pass before any deploy
+- Screenshot at 375/768/1440 after testimonial split layout
+- All animation classes must respect `prefers-reduced-motion`
+- Branch: `main` for all work (these are framework features)
+- The tar deploy MUST use `--exclude='plugins/sgs-blocks/src'` not `--exclude='src'`
 ~~~

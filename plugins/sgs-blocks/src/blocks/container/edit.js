@@ -198,14 +198,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						label={ __( 'Min height', 'sgs-blocks' ) }
 						value={ minHeight || '' }
 						options={ [
-							{
-								label: __( 'Auto', 'sgs-blocks' ),
-								value: '',
-							},
+							{ label: __( 'Auto', 'sgs-blocks' ), value: '' },
+							{ label: '50vh', value: '50vh' },
+							{ label: '75vh', value: '75vh' },
+							{ label: '100vh', value: '100vh' },
 							{ label: '200px', value: '200px' },
 							{ label: '400px', value: '400px' },
 							{ label: '600px', value: '600px' },
-							{ label: '100vh', value: '100vh' },
 						] }
 						onChange={ ( val ) =>
 							setAttributes( { minHeight: val } )

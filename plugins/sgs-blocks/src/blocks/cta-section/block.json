@@ -100,6 +100,16 @@
 
                                                  ]
                                  },
+                       "buttonStyle":  {
+                                          "type":  "string",
+                                          "default":  "solid",
+                                          "enum":  [ "solid", "outline", "ghost", "gradient" ]
+                                      },
+                       "buttonSize":  {
+                                          "type":  "string",
+                                          "default":  "md",
+                                          "enum":  [ "xs", "sm", "md", "lg", "xl" ]
+                                      },
                        "hoverBackgroundColour":  {
                                                      "type":  "string",
                                                      "default":  ""

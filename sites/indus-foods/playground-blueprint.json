@@ -1,0 +1,33 @@
+{
+	"$schema": "https://playground.wordpress.net/blueprint-schema.json",
+	"steps": [
+		{
+			"step": "activateTheme",
+			"themeFolderName": "sgs-theme"
+		},
+		{
+			"step": "activatePlugin",
+			"pluginPath": "sgs-blocks/sgs-blocks.php"
+		},
+		{
+			"step": "login",
+			"username": "admin",
+			"password": "password"
+		},
+		{
+			"step": "setSiteOptions",
+			"options": {
+				"blogname": "Indus Foods",
+				"blogdescription": "Leading Indian Food & Drinks Wholesaler"
+			}
+		},
+		{
+			"step": "runPHP",
+			"code": "<?php require_once '/wordpress/wp-load.php'; $content = file_get_contents('/wordpress/wp-content/indus-site/homepage-content.html'); if (!$content) { $content = '<!-- wp:paragraph --><p>Homepage content failed to load.</p><!-- /wp:paragraph -->'; } $page_id = wp_insert_post(array('post_title' => 'Home', 'post_content' => $content, 'post_status' => 'publish', 'post_type' => 'page')); update_option('show_on_front', 'page'); update_option('page_on_front', $page_id); foreach(array('Food Service', 'Manufacturing', 'Retail', 'Wholesale', 'Apply For A Trade Account') as $title) { wp_insert_post(array('post_title' => $title, 'post_content' => '', 'post_status' => 'publish', 'post_type' => 'page')); }"
+		},
+		{
+			"step": "runPHP",
+			"code": "<?php require_once '/wordpress/wp-load.php'; set_theme_mod('active_theme_style', 'indus-foods');"
+		}
+	]
+}

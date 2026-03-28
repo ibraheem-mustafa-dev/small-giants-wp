@@ -23,6 +23,17 @@ $body_colour             = $attributes['bodyColour'] ?? '';
 $body_font_size          = $attributes['bodyFontSize'] ?? '';
 $button_colour           = $attributes['buttonColour'] ?? '';
 $button_background       = $attributes['buttonBackground'] ?? '';
+
+// Block-level button style variant and size (#199, #200).
+$allowed_button_styles = array( 'solid', 'outline', 'ghost', 'gradient', 'accent', 'primary' );
+$block_button_style    = in_array( $attributes['buttonStyle'] ?? '', $allowed_button_styles, true )
+	? sanitize_key( $attributes['buttonStyle'] )
+	: 'solid';
+
+$allowed_button_sizes  = array( 'xs', 'sm', 'md', 'lg', 'xl' );
+$block_button_size     = in_array( $attributes['buttonSize'] ?? '', $allowed_button_sizes, true )
+	? sanitize_key( $attributes['buttonSize'] )
+	: 'md';
 $background_image        = $attributes['backgroundImage'] ?? null;
 $background_image_opacity = $attributes['backgroundImageOpacity'] ?? 30;
 $stats                   = $attributes['stats'] ?? array();
@@ -143,10 +154,14 @@ if ( ! empty( $buttons ) ) {
 			);
 		}
 
+		// Use block-level style as default; per-button style overrides when explicitly set.
+		$effective_style = ! empty( $btn['style'] ) ? sanitize_key( $btn['style'] ) : $block_button_style;
+
 		$buttons_html .= sprintf(
-			'<a href="%s" class="sgs-cta-section__btn sgs-cta-section__btn--%s"%s>%s%s</a>',
+			'<a href="%s" class="sgs-cta-section__btn sgs-cta-section__btn--%s sgs-cta-section__btn--size-%s"%s>%s%s</a>',
 			esc_url( $btn_url ),
-			esc_attr( $btn_style ),
+			esc_attr( $effective_style ),
+			esc_attr( $block_button_size ),
 			$btn_style_attr,
 			$icon_html,
 			esc_html( $btn_text )

@@ -110,8 +110,26 @@ const { state } = store( 'sgs/form', {
 
 			fields.forEach( ( field ) => {
 				if ( ! field.checkValidity() ) {
+					// WCAG 2.2 SC 3.3.1 — mark field as invalid and populate error message.
+					field.setAttribute( 'aria-invalid', 'true' );
+					const errorId = field.id ? field.id + '-error' : null;
+					if ( errorId ) {
+						const errorEl = document.getElementById( errorId );
+						if ( errorEl ) {
+							errorEl.textContent = field.validationMessage || 'This field is required.';
+						}
+					}
 					field.reportValidity();
 					isValid = false;
+				} else {
+					field.removeAttribute( 'aria-invalid' );
+					const errorId = field.id ? field.id + '-error' : null;
+					if ( errorId ) {
+						const errorEl = document.getElementById( errorId );
+						if ( errorEl ) {
+							errorEl.textContent = '';
+						}
+					}
 				}
 			} );
 
@@ -197,8 +215,32 @@ const { state } = store( 'sgs/form', {
 				return;
 			}
 
-			// Validate entire form.
-			if ( ! formEl.checkValidity() ) {
+			// Validate entire form — mark invalid fields with aria-invalid + error message.
+			let formValid = true;
+			formEl.querySelectorAll( 'input, select, textarea' ).forEach( ( field ) => {
+				if ( ! field.checkValidity() ) {
+					field.setAttribute( 'aria-invalid', 'true' );
+					const errorId = field.id ? field.id + '-error' : null;
+					if ( errorId ) {
+						const errorEl = document.getElementById( errorId );
+						if ( errorEl ) {
+							errorEl.textContent = field.validationMessage || 'This field is required.';
+						}
+					}
+					formValid = false;
+				} else {
+					field.removeAttribute( 'aria-invalid' );
+					const errorId = field.id ? field.id + '-error' : null;
+					if ( errorId ) {
+						const errorEl = document.getElementById( errorId );
+						if ( errorEl ) {
+							errorEl.textContent = '';
+						}
+					}
+				}
+			} );
+
+			if ( ! formValid ) {
 				formEl.reportValidity();
 				return;
 			}
@@ -278,7 +320,14 @@ const { state } = store( 'sgs/form', {
 					);
 				}
 
-				// Success.
+				// Success — clear all aria-invalid + error messages.
+				formEl.querySelectorAll( '[aria-invalid]' ).forEach( ( field ) => {
+					field.removeAttribute( 'aria-invalid' );
+				} );
+				formEl.querySelectorAll( '.sgs-form-field__error' ).forEach( ( el ) => {
+					el.textContent = '';
+				} );
+
 				ctx.submitted = true;
 				ctx.submitting = false;
 

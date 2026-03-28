@@ -698,3 +698,33 @@ select.sgs-form-field__input {
 .sgs-form-field:has(.sgs-form-field__input:user-invalid) .sgs-form-field__error-message {
 	display: block;
 }
+
+/* ─── Inline error span (aria-describedby target — #275) ───
+ *
+ * .sgs-form-field__error is the element produced by field_error() in
+ * field-render-helpers.php. It is wired to each input via aria-describedby
+ * and has role="alert" + aria-live="polite".
+ *
+ * Empty by default (hidden). Populated by view.js on validation failure.
+ * Also shown when the CSS :user-invalid pseudo-class fires (native browser
+ * validation feedback before JS runs).
+ */
+.sgs-form-field__error {
+	display: block;
+	min-height: 1.2em; /* Reserve space so layout does not shift */
+	font-size: var(--wp--preset--font-size--x-small, 0.8125rem);
+	color: #dc2626;
+	margin-top: 0.25rem;
+}
+
+.sgs-form-field__error:empty {
+	min-height: 0;
+}
+
+/* aria-invalid visual indicator — red border on the field */
+.sgs-form-field__input[aria-invalid="true"],
+.sgs-form-field select[aria-invalid="true"],
+.sgs-form-field textarea[aria-invalid="true"] {
+	border-color: #dc2626 !important;
+	box-shadow: 0 0 0 1px #dc2626;
+}

@@ -5,6 +5,16 @@
 	box-sizing: border-box;
 }
 
+/* Min-height with flex-centering — when a vh/px min-height is applied via inline style,
+   the container centres its content vertically using flex. The class is added by render.php
+   whenever minHeight is non-empty. */
+.sgs-container--has-min-height {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
 .sgs-container__overlay {
 	position: absolute;
 	inset: 0;
