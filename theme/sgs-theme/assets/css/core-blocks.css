@@ -609,3 +609,345 @@ footer .wp-block-list a:hover,
 		transform: none !important;
 	}
 }
+
+/* ─── FIX: WP has-text-color override on buttons ─── */
+/*
+ * WordPress 6.9 global styles apply .has-text-color { color: var(--text) !important }
+ * which overrides inline color values on buttons with custom hex colours.
+ * We counteract this by resetting the specificity so the inline style wins.
+ * The double :where() wrapper brings specificity to (0,0,0) so any inline
+ * style attribute beats it without needing !important.
+ */
+:where(.wp-block-button__link.has-text-color) {
+	color: unset;
+}
+
+/* ─── PRIMARY BUTTON — explicit defaults ─── */
+/*
+ * WP's global styles generate .wp-element-button from the style variation's
+ * elements.button object. But when a user restores a "broken" block, the
+ * inline style attributes are stripped and only class-based styles apply.
+ * These rules ensure a button WITHOUT any inline attributes still looks right.
+ */
+.wp-block-button__link:not([style*="background"]):not(.has-background) {
+	background-color: var(--wp--preset--color--primary, #0a7ea8);
+	color: var(--wp--preset--color--surface, #ffffff);
+}
+
+/* ─── SECONDARY / OUTLINE BUTTON ─── */
+/*
+ * WP core registers the "Outline" button style (is-style-outline) but leaves
+ * its colours to the theme. We define it using the primary token so outline
+ * buttons always match the brand, even after a block restore.
+ */
+.wp-block-button.is-style-outline .wp-block-button__link {
+	background-color: transparent !important;
+	color: var(--wp--preset--color--primary, #0a7ea8) !important;
+	border: 2px solid currentColor !important;
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+}
+
+.wp-block-button.is-style-outline .wp-block-button__link:hover {
+	background-color: var(--wp--preset--color--primary, #0a7ea8) !important;
+	color: var(--wp--preset--color--surface, #ffffff) !important;
+	border-color: var(--wp--preset--color--primary, #0a7ea8) !important;
+}
+
+/* Outline on dark/primary backgrounds: flip to white */
+.has-primary-background-color .wp-block-button.is-style-outline .wp-block-button__link,
+.has-primary-dark-background-color .wp-block-button.is-style-outline .wp-block-button__link,
+.has-footer-bg-background-color .wp-block-button.is-style-outline .wp-block-button__link {
+	color: var(--wp--preset--color--surface, #ffffff) !important;
+	border-color: var(--wp--preset--color--surface, #ffffff) !important;
+}
+
+.has-primary-background-color .wp-block-button.is-style-outline .wp-block-button__link:hover,
+.has-primary-dark-background-color .wp-block-button.is-style-outline .wp-block-button__link:hover,
+.has-footer-bg-background-color .wp-block-button.is-style-outline .wp-block-button__link:hover {
+	background-color: var(--wp--preset--color--surface, #ffffff) !important;
+	color: var(--wp--preset--color--primary, #0a7ea8) !important;
+}
+
+/* ─── BUTTON TEXT COLOUR FIX ─── */
+
+/*
+ * The style variation's global heading colour rule sets .has-text-color to
+ * apply --text. This overrides explicitly-set .has-surface-color on buttons
+ * that have both classes. We target the specific case of a button with
+ * has-surface-color (white text) on a coloured background.
+ *
+ * Using .has-primary-background-color as the parent context keeps this
+ * scoped — we are not overriding button text colour globally.
+ */
+.wp-block-button__link.has-surface-color.has-text-color,
+.wp-block-button__link.has-text-inverse-color.has-text-color {
+	color: var(--wp--preset--color--surface, #ffffff) !important;
+}
+
+/* ─── BUTTON TEXT CONTRAST — H4 ─── */
+
+/*
+ * White text on the Indus Foods gold/accent (#d8ca50) fails WCAG AA at 1.68:1.
+ * When a button sits on an accent background, force text to dark (#2c3e50).
+ * Uses the footer-bg token which is #2c3e50 on Indus Foods.
+ */
+.wp-block-button__link.has-accent-background-color:not([style*="color"]) {
+	color: var(--wp--preset--color--text, #1e1e1e);
+}
+
+/* ─── HEADER CTA ─── */
+
+.sgs-header-cta .wp-block-button__link {
+	transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
+	            box-shadow 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sgs-header-cta .wp-block-button__link:hover {
+	transform: translateY(-1px);
+	box-shadow: var(--wp--preset--shadow--glow);
+}
+
+/* Hide header CTA on mobile and tablet — hamburger menu is sufficient */
+@media (max-width: 1023px) {
+	.sgs-header-cta {
+		display: none !important;
+	}
+}
+
+/* ─── NAV MOBILE CLOSE BUTTON — focus fix ─── */
+
+/*
+ * WordPress core sets outline:none on the nav close wrapper. We cannot edit
+ * core CSS so we override it here. The close BUTTON itself does not have this
+ * problem — only the wrapper div. We add the focus ring to the button inside.
+ */
+.wp-block-navigation__responsive-close:focus-within {
+	outline: 2px solid var(--sgs-focus-color, #076a8e);
+	outline-offset: 2px;
+}
+
+.wp-block-navigation__responsive-container-close:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary);
+	outline-offset: 2px;
+	border-radius: var(--wp--custom--border-radius--small, 4px);
+}
+
+/* ─── NAV HAMBURGER BUTTON — touch target ─── */
+
+/*
+ * The WordPress core hamburger SVG is 24×24. We enforce a 44px touch target
+ * via min-width/height. No !important at the base level so the desktop
+ * hide rule (below) can override without a specificity conflict.
+ */
+/* Touch target enforcement for WP core nav toggle */
+.wp-block-navigation__responsive-container-open {
+	min-width: 44px;
+	min-height: 44px;
+	align-items: center;
+	justify-content: center;
+}
+
+/* On mobile, ensure the hamburger icon colour is visible */
+@media (max-width: 767px) {
+	.wp-block-navigation__responsive-container-open svg {
+		fill: var(--wp--preset--color--text, #1e1e1e);
+	}
+}
+
+/*
+ * Show/hide rules for the WP core nav toggle now live in the sgs/mobile-nav
+ * block's style.css (style-index.css). The old mobile-nav-drawer.css is deleted.
+ */
+
+/* ─── REDUCED MOTION — universal rule + critical overrides ─── */
+
+/*
+ * Universal rule disables all animations and transitions for users who have
+ * requested reduced motion in their OS accessibility settings (WCAG 2.1 SC 2.3.3).
+ * scroll-behavior: auto prevents smooth-scroll from feeling disorienting.
+ *
+ * This rule is intentionally broad. Specific elements that must retain
+ * functional transitions (e.g. focus rings) are restored below.
+ */
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}
+
+/* ── Section gap fix: remove block-gap between full-width sections ────────
+ * WordPress constrained layout applies --wp--style--block-gap as margin-top
+ * to every child. alignfull sections should be flush — zero white strips
+ * between coloured section containers. */
+.wp-block-post-content > .alignfull,
+.entry-content > .alignfull {
+	margin-block-start: 0 !important;
+	margin-block-end: 0 !important;
+}
+
+/* Remove block-gap top margin from hero block specifically (not alignfull). */
+.wp-block-post-content > .wp-block-sgs-hero,
+.entry-content > .wp-block-sgs-hero {
+	margin-block-start: 0 !important;
+}
+
+/* Hero full-bleed: break out of constrained layout padding on wide viewports.
+ * Mirrors what WordPress does for alignfull but applied to the hero block. */
+.has-global-padding > .wp-block-sgs-hero {
+	margin-inline: calc(-1 * var(--wp--preset--spacing--50, 1.5rem)) !important;
+}
+
+/* ─── SITE LOGO — MOBILE CONSTRAINT ─── */
+
+/*
+ * Prevent the logo from overflowing on small screens.
+ * The block attribute sets width:300px via inline style — override with
+ * max-width so the logo scales down proportionally without reflowing the header.
+ */
+@media (max-width: 480px) {
+	.wp-block-site-logo img {
+		max-width: 180px !important;
+	}
+}
+
+/* LiteSpeed merge guard — do not remove this comment.
+   Adjacent media blocks with the same selector (.wp-block-site-logo img) get
+   merged by the LiteSpeed CSS optimiser, breaking breakpoint logic. */
+
+@media (min-width: 481px) and (max-width: 768px) {
+	.wp-block-site-logo img {
+		max-width: 220px !important;
+	}
+}
+
+/* ─── TOP BAR — MOBILE / TABLET SWAP ─── */
+
+/*
+ * On mobile/tablet (≤768px):
+ * - Hide the desktop phone+email pills
+ * - Hide the social links row
+ * - Show the two CTA buttons (Apply For Trade Account + Call)
+ *
+ * On desktop (≥769px):
+ * - Show pills + socials as normal
+ * - Hide the mobile CTA buttons
+ */
+@media (max-width: 768px) {
+	.sgs-top-bar-desktop-pills,
+	.sgs-header-top-bar .sgs-top-bar-socials {
+		display: none !important;
+	}
+
+	.sgs-top-bar-mobile-cta {
+		display: flex !important;
+		align-items: center;
+		gap: 8px;
+		width: 100%;
+	}
+}
+
+/* LiteSpeed merge guard — do not remove this comment.
+   Adjacent media blocks sharing .sgs-top-bar-mobile-cta get merged by the
+   LiteSpeed CSS optimiser, collapsing the show/hide pair and breaking the
+   top bar swap between mobile and desktop. */
+
+@media (min-width: 769px) {
+	.sgs-top-bar-mobile-cta {
+		display: none !important;
+	}
+}
+
+/* ─── TOP BAR MOBILE CTA BUTTONS ─── */
+
+/*
+ * Mobile topbar uses wp:button + sgs/business-info blocks inside a flex group.
+ * These styles ensure the children fit within the topbar at all widths.
+ * The flex container is .sgs-top-bar-mobile-cta (a wp:group with flexWrap:nowrap).
+ */
+
+/* All direct children shrink to fit */
+.sgs-top-bar-mobile-cta > * {
+	flex: 1 1 0;
+	min-width: 0;
+	overflow: hidden;
+}
+
+/* The wp:button wrapper needs no extra chrome */
+.sgs-top-bar-mobile-cta .wp-block-button {
+	margin: 0;
+}
+
+/* The actual button link — override wp:button inline styles for responsive sizing */
+.sgs-top-bar-mobile-cta .wp-block-button__link {
+	white-space: nowrap;
+	font-size: clamp(0.875rem, 2.5vw, 0.9375rem) !important; /* min 14px — below 14px is too small to read comfortably */
+	padding: 8px clamp(8px, 2vw, 14px) !important;
+	min-height: 44px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+/* The business-info phone block — style as a matching pill */
+.sgs-top-bar-mobile-cta .sgs-business-info-wrap {
+	background-color: rgba(255, 255, 255, 0.15);
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	border-radius: 50px;
+	padding: 8px clamp(8px, 2vw, 14px);
+	min-height: 44px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.sgs-top-bar-mobile-cta .sgs-business-info-wrap .sgs-business-info {
+	margin: 0;
+}
+
+.sgs-top-bar-mobile-cta .sgs-business-info__link {
+	white-space: nowrap;
+	font-size: clamp(0.6875rem, 2.5vw, 0.8125rem);
+	text-decoration: none;
+	color: inherit;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.sgs-top-bar-mobile-cta .sgs-business-info__icon svg {
+	width: 16px;
+	height: 16px;
+	flex-shrink: 0;
+}
+
+/* Hover state for both buttons */
+.sgs-top-bar-mobile-cta .wp-block-button__link:hover,
+.sgs-top-bar-mobile-cta .wp-block-button__link:focus,
+.sgs-top-bar-mobile-cta .sgs-business-info-wrap:hover {
+	background-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+/* On very small screens, phone button becomes icon-only */
+@media (max-width: 340px) {
+	.sgs-top-bar-mobile-cta .sgs-business-info__link span:not(.sgs-business-info__icon) {
+		display: none;
+	}
+
+	.sgs-top-bar-mobile-cta .sgs-business-info-wrap {
+		flex: 0 0 44px;
+		padding: 8px;
+		border-radius: 50%;
+	}
+
+	.sgs-top-bar-mobile-cta .sgs-business-info__icon svg {
+		width: 20px;
+		height: 20px;
+	}
+}
