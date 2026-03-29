@@ -1,6 +1,6 @@
 # Architecture — SGS WordPress Framework
 
-> Last updated: 2026-03-28 | Status: Active Development (Phase 2 complete, architecture audit done)
+> Last updated: 2026-03-29 | Status: Active Development (Phase 2 complete, animation extension rebuilt)
 
 ## Overview
 
@@ -61,7 +61,7 @@ small-giants-wp/
 │   │   │   ├── editor.css          # Editor-only styles
 │   │   │   ├── view.js             # Frontend Interactivity API module (interactive blocks)
 │   │   │   └── save.js             # Returns null (dynamic) or InnerBlocks.Content
-│   │   └── extensions/             # Block editor extensions (applied to all blocks)
+│   │   └── extensions/             # Block editor extensions (animation, visibility, hover, spacing, CSS, defaults)
 │   ├── build/                      # Compiled output — deployed to server
 │   ├── scripts/
 │   │   └── generate-icons.js       # Generates lucide-icons.php from lucide-react
@@ -107,7 +107,9 @@ small-giants-wp/
 
 11. **Per-device visibility via block extension, not separate templates** — WordPress block themes have one template part per name; per-device template routing does not exist. The correct pattern (matching Kadence/GenerateBlocks) is a Visibility panel extension applied to ALL blocks via `editor.BlockEdit` + a PHP `render_block` filter to ensure classes survive on core dynamic blocks. Clients build three layout groups inside one `header.html`, hiding each non-applicable group per breakpoint. The extension lives in `plugins/sgs-blocks/src/blocks/extensions/responsive-visibility.js` — the existing `sgs/*` scope guard must be removed to cover core blocks.
 
-12. **Logo switching uses `sgs/responsive-logo` block** — The core `site-logo` block only exposes one image. The correct approach is a custom `sgs/responsive-logo` block with two `MediaUpload` attributes (`desktopLogoId`, `mobileLogoId`). `render.php` uses `wp_get_attachment_image()` to output both images; CSS media queries show/hide the correct one per breakpoint. Stores attachment IDs (not URLs) so the block survives domain changes and CDN migrations.
+12. **Animation extension uses WordPress filter API, not block styles** — Scroll animations are a block extension (`src/blocks/extensions/animation.js`) applied to all 57 SGS blocks + 4 core blocks (group, columns, cover, image) via `blocks.registerBlockType` + `editor.BlockEdit` HOC + `render_block` PHP filter. Four attributes per block: `sgsAnimation` (15 types), `sgsAnimationDelay`, `sgsAnimationDuration`, `sgsAnimationEasing` (6 curves). CSS initial states are gated behind `.sgs-js` class (added by JS) + `prefers-reduced-motion: no-preference` media query for progressive enhancement. The `render_block` PHP filter uses `WP_HTML_Tag_Processor` to inject `data-sgs-animation` attributes on the root element. Frontend IntersectionObserver in `animation-observer.js` watches `[data-sgs-animation]` and adds `.sgs-animated`. Inner blocks (tab, accordion-item, form fields) are denylisted. This replaced a `register_block_style()` approach that was mutually exclusive with visual styles and only covered 4 blocks.
+
+13. **Logo switching uses `sgs/responsive-logo` block** — The core `site-logo` block only exposes one image. The correct approach is a custom `sgs/responsive-logo` block with two `MediaUpload` attributes (`desktopLogoId`, `mobileLogoId`). `render.php` uses `wp_get_attachment_image()` to output both images; CSS media queries show/hide the correct one per breakpoint. Stores attachment IDs (not URLs) so the block survives domain changes and CDN migrations.
 
 ## Block Inventory
 
@@ -122,8 +124,8 @@ small-giants-wp/
 |---|---|
 | `sgs/info-box` | Icon + heading + description card with 3 hover effects, optional link wrapper |
 | `sgs/card-grid` | Image grid with overlay/card variants, hover effects, responsive columns |
-| `sgs/cta-section` | Headline + body + button array, full layout/colour control |
-| `sgs/testimonial-slider` | CSS scroll-snap carousel with autoplay, dots, arrows, star ratings |
+| `sgs/cta-section` | Headline + body + button array, full layout/colour control, per-button border controls |
+| `sgs/testimonial-slider` | CSS scroll-snap carousel with autoplay, dots, arrows, star ratings. Split layout (60/40 grid with side image). |
 | `sgs/testimonial` | Individual testimonial card (used inside testimonial-slider) |
 | `sgs/brand-strip` | Infinite-scroll logo carousel, greyscale + hover reveal |
 | `sgs/accordion` + `sgs/accordion-item` | FAQ accordion using native `<details>`, FAQ Schema, Interactivity API |
@@ -207,15 +209,17 @@ N8N webhook triggered → notification sent (email/Slack/WhatsApp)
 
 ## Current Development Focus
 
-**Phase 2 — Missing Blocks (in progress)**
+**Phase 3 — Extensions + Polish (in progress)**
 
-Phase 1 is complete: device visibility extension (#35/#85), responsive header with mobile CTA hiding (#43), per-element hover state controls on 4 blocks (#86/#103). Phase 2 is now building the highest-impact missing blocks:
+Phase 2 blocks are complete (Post Grid, Gallery, Tabs, Countdown Timer, Star Rating, Team Member). Session 10 ran a 5-agent architecture audit and fixed 65 of 67 findings. Session 11 delivered:
 
-1. **Post Grid** (#63) — grid/list/masonry layouts, AJAX pagination + category filtering
-2. **Gallery + Lightbox** (#64) — grid/masonry + Interactivity API lightbox
-3. **Tabs** (#65) — horizontal/vertical, InnerBlocks per tab, full ARIA
+1. **Animation extension rebuilt** — from `register_block_style()` (4 core blocks, mutually exclusive) to proper block extension (57+ blocks, additive, per-instance control with 15 animations, 6 easing curves)
+2. **Testimonial slider split layout** — `sideImage` + `layout` attributes, 60/40 grid with responsive image
+3. **CTA section border controls** — `buttonBorderColour`, `buttonBorderWidth`, `buttonBorderRadius`
 
-The master feature audit (`docs/plans/2026-02-21-master-feature-audit.md`) tracks 354 features across the framework. Current score: 98/294 (33%). Target after Phase 2-3 completion: 213/294 (72%).
+**Next priorities:** Active page indicator on nav links, mobile nav v2, Indus Foods page builds.
+
+The master feature audit (`docs/plans/2026-02-21-master-feature-audit.md`) tracks 354 features across the framework.
 
 ## Known Technical Debt
 
@@ -227,7 +231,7 @@ The master feature audit (`docs/plans/2026-02-21-master-feature-audit.md`) track
 | Table of Contents broken | Medium | Root cause unknown since session 12. Regex heading detection may miss nested blocks. |
 | Accordion never browser-tested | Medium | Progressive enhancement also broken (`e.preventDefault()` at view.js:56 disables native `<details>`). |
 | Forms never end-to-end tested | High | REST endpoints built, submission never verified. |
-| Testimonial slider ARIA incomplete | Medium | Dots have `role="tab"` but missing `aria-controls`. Slides missing `role="tabpanel"`. |
+| ~~Testimonial slider ARIA incomplete~~ | ~~Medium~~ | Fixed in Session 10 — dots have `aria-controls`, slides have `role="group"` + `aria-roledescription="slide"`. |
 | `lucide-react` unused devDependency | Low | Adds ~1MB to node_modules. Remove from package.json. |
 | No `prestart` hook | Low | `npm start` on fresh clone won't have `lucide-icons.php`. |
 | DesignTokenPicker hex vs slug | Medium | Untested — `ColorPalette` returns hex but `colourVar()` expects slug. May cause colour breakage. |
@@ -254,25 +258,18 @@ The master feature audit (`docs/plans/2026-02-21-master-feature-audit.md`) track
 **Client test site (READ ONLY):** `https://lightsalmon-tarsier-683012.hostingersite.com`
 
 ```bash
-# 1. Build blocks plugin (required after any JS/CSS/PHP block change)
+# 1. Build blocks plugin
 cd plugins/sgs-blocks && npm run build
 
-# 2. Deploy blocks plugin
-scp -r plugins/sgs-blocks/sgs-blocks.php \
-        plugins/sgs-blocks/includes \
-        plugins/sgs-blocks/build \
-        plugins/sgs-blocks/assets \
-        hd:~/domains/palestine-lives.org/public_html/wp-content/plugins/sgs-blocks/
+# 2. Deploy via tar (scp -r creates nested dirs on Hostinger — always use tar)
+cd /path/to/small-giants-wp
+tar -cf sgs-deploy.tar --exclude='node_modules' --exclude='.git' --exclude='plugins/sgs-blocks/src' theme/sgs-theme plugins/sgs-blocks
+scp -P 65002 sgs-deploy.tar u945238940@141.136.39.73:sgs-deploy.tar
+ssh -p 65002 u945238940@141.136.39.73 'WP=domains/palestine-lives.org/public_html/wp-content && rm -rf $WP/themes/sgs-theme $WP/plugins/sgs-blocks && tar -xf sgs-deploy.tar && mv theme/sgs-theme $WP/themes/ && mv plugins/sgs-blocks $WP/plugins/ && rm -rf theme plugins sgs-deploy.tar'
+rm sgs-deploy.tar
 
-# 3. Deploy theme (required after any theme.json, functions.php, template, or asset change)
-scp -r theme/sgs-theme \
-        hd:~/domains/palestine-lives.org/public_html/wp-content/themes/
-
-# 4. Clear LiteSpeed cache (wp litespeed-purge is broken on this host)
-ssh hd "rm -rf ~/domains/palestine-lives.org/public_html/wp-content/litespeed/cache/*"
-
-# 5. Reset PHP OPcache after deploying PHP files (CLI reset is a separate pool — must use HTTP)
-ssh hd "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/palestine-lives.org/public_html/op-reset-tmp.php" && curl -s https://palestine-lives.org/op-reset-tmp.php && ssh hd "rm ~/domains/palestine-lives.org/public_html/op-reset-tmp.php"
+# 3. Reset OPcache + clear LiteSpeed (both page cache AND CSS optimiser)
+ssh -p 65002 u945238940@141.136.39.73 "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/palestine-lives.org/public_html/op-reset-tmp.php" && curl -s https://palestine-lives.org/op-reset-tmp.php && ssh -p 65002 u945238940@141.136.39.73 "rm ~/domains/palestine-lives.org/public_html/op-reset-tmp.php && rm -rf ~/domains/palestine-lives.org/public_html/wp-content/litespeed/cache/* ~/domains/palestine-lives.org/public_html/wp-content/litespeed/css/*.css"
 ```
 
 Run all commands from `C:\Users\Bean\Projects\small-giants-wp` (repo root).
