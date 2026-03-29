@@ -256,6 +256,9 @@ function enqueue_styles(): void {
 
 	// Smooth scroll now handled by CSS: html { scroll-behavior: smooth; }
 	// in core-blocks-critical.css. The JS file (2.7KB) is no longer needed.
+
+	// Animation system is now in sgs-blocks plugin (extensions.css + animation-observer.js).
+	// Old theme files (sgs-animations.css, sgs-animations.js) removed in Session 11.
 }
 add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\enqueue_styles' );
 
@@ -374,6 +377,10 @@ function register_block_styles(): void {
 		'name'  => 'ghost',
 		'label' => __( 'Ghost', 'sgs-theme' ),
 	] );
+
+	// Animation is now handled by the sgs-blocks plugin extension system
+	// (data-sgs-animation attributes via BlockEdit filter + render_block PHP).
+	// The old register_block_style() approach was removed in Session 11.
 }
 add_action( 'init', __NAMESPACE__ . '\register_block_styles' );
 

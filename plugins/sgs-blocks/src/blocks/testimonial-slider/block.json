@@ -51,6 +51,14 @@
                       "typography":  ".sgs-testimonial-slider__quote"
                   },
     "attributes":  {
+                       "layout":  {
+                                      "type":  "string",
+                                      "default":  "full",
+                                      "enum":  ["full", "split"]
+                                  },
+                       "sideImage":  {
+                                        "type":  "object"
+                                    },
                        "testimonials":  {
                                             "type":  "array",
                                             "default":  [

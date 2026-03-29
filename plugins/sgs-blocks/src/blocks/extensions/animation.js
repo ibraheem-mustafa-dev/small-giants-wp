@@ -13,8 +13,46 @@ import { PanelBody } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { AnimationControl } from '../../components';
 
+/**
+ * Core blocks that support the animation extension.
+ */
+const CORE_ANIMATION_BLOCKS = [
+	'core/group',
+	'core/columns',
+	'core/cover',
+	'core/image',
+];
+
+/**
+ * Inner/child blocks that should NOT show the animation panel.
+ * These are never scroll targets — only their parents are.
+ */
+const ANIMATION_DENYLIST = [
+	'sgs/tab',
+	'sgs/accordion-item',
+	'sgs/form-step',
+	'sgs/form-review',
+	'sgs/form-field-text',
+	'sgs/form-field-email',
+	'sgs/form-field-phone',
+	'sgs/form-field-textarea',
+	'sgs/form-field-checkbox',
+	'sgs/form-field-radio',
+	'sgs/form-field-select',
+	'sgs/form-field-tiles',
+	'sgs/form-field-file',
+	'sgs/form-field-consent',
+];
+
+function shouldHaveAnimation( name ) {
+	if ( ANIMATION_DENYLIST.includes( name ) ) {
+		return false;
+	}
+	return name.startsWith( 'sgs/' ) || CORE_ANIMATION_BLOCKS.includes( name );
+}
+
 function addAnimationAttributes( settings, name ) {
-	if ( ! name.startsWith( 'sgs/' ) ) {
+	if ( ! shouldHaveAnimation( name ) ) {
 		return settings;
 	}
 
@@ -25,6 +63,7 @@ function addAnimationAttributes( settings, name ) {
 			sgsAnimation: { type: 'string', default: 'none' },
 			sgsAnimationDelay: { type: 'string', default: '0' },
 			sgsAnimationDuration: { type: 'string', default: 'medium' },
+			sgsAnimationEasing: { type: 'string', default: 'ease' },
 		},
 	};
 }
@@ -37,7 +76,7 @@ addFilter(
 
 const withAnimationControls = createHigherOrderComponent( ( BlockEdit ) => {
 	return ( props ) => {
-		if ( ! props.name.startsWith( 'sgs/' ) ) {
+		if ( ! shouldHaveAnimation( props.name ) ) {
 			return <BlockEdit { ...props } />;
 		}
 
@@ -57,6 +96,9 @@ const withAnimationControls = createHigherOrderComponent( ( BlockEdit ) => {
 							animationDuration={
 								attributes.sgsAnimationDuration
 							}
+							animationEasing={
+								attributes.sgsAnimationEasing
+							}
 							onChangeAnimation={ ( val ) =>
 								setAttributes( { sgsAnimation: val } )
 							}
@@ -66,6 +108,11 @@ const withAnimationControls = createHigherOrderComponent( ( BlockEdit ) => {
 							onChangeDuration={ ( val ) =>
 								setAttributes( {
 									sgsAnimationDuration: val,
+								} )
+							}
+							onChangeEasing={ ( val ) =>
+								setAttributes( {
+									sgsAnimationEasing: val,
 								} )
 							}
 						/>
@@ -83,7 +130,7 @@ addFilter(
 );
 
 function addAnimationSaveProps( props, blockType, attributes ) {
-	if ( ! blockType.name.startsWith( 'sgs/' ) ) {
+	if ( ! shouldHaveAnimation( blockType.name ) ) {
 		return props;
 	}
 
@@ -94,6 +141,8 @@ function addAnimationSaveProps( props, blockType, attributes ) {
 			'data-sgs-animation-delay': attributes.sgsAnimationDelay || '0',
 			'data-sgs-animation-duration':
 				attributes.sgsAnimationDuration || 'medium',
+			'data-sgs-animation-easing':
+				attributes.sgsAnimationEasing || 'ease',
 		};
 	}
 

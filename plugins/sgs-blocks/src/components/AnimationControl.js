@@ -39,13 +39,24 @@ const DURATIONS = [
 	{ label: __( 'Slow (800ms)', 'sgs-blocks' ), value: 'slow' },
 ];
 
+const EASINGS = [
+	{ label: __( 'Ease', 'sgs-blocks' ), value: 'ease' },
+	{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
+	{ label: __( 'Ease out', 'sgs-blocks' ), value: 'ease-out' },
+	{ label: __( 'Ease in-out', 'sgs-blocks' ), value: 'ease-in-out' },
+	{ label: __( 'Decelerate', 'sgs-blocks' ), value: 'cubic-bezier(0.4, 0, 0.2, 1)' },
+	{ label: __( 'Accelerate', 'sgs-blocks' ), value: 'cubic-bezier(0.4, 0, 1, 1)' },
+];
+
 export default function AnimationControl( {
 	animation,
 	animationDelay,
 	animationDuration,
+	animationEasing,
 	onChangeAnimation,
 	onChangeDelay,
 	onChangeDuration,
+	onChangeEasing,
 } ) {
 	return (
 		<>
@@ -70,6 +81,13 @@ export default function AnimationControl( {
 						value={ animationDuration || 'medium' }
 						options={ DURATIONS }
 						onChange={ onChangeDuration }
+						__nextHasNoMarginBottom
+					/>
+					<SelectControl
+						label={ __( 'Easing', 'sgs-blocks' ) }
+						value={ animationEasing || 'ease' }
+						options={ EASINGS }
+						onChange={ onChangeEasing }
 						__nextHasNoMarginBottom
 					/>
 				</>

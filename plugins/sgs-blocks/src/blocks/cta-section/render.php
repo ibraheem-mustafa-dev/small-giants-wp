@@ -25,6 +25,9 @@ $body_font_size_tablet   = $attributes['bodyFontSizeTablet'] ?? '';
 $body_font_size_mobile   = $attributes['bodyFontSizeMobile'] ?? '';
 $button_colour           = $attributes['buttonColour'] ?? '';
 $button_background       = $attributes['buttonBackground'] ?? '';
+$button_border_colour    = $attributes['buttonBorderColour'] ?? '';
+$button_border_width     = $attributes['buttonBorderWidth'] ?? null;
+$button_border_radius    = $attributes['buttonBorderRadius'] ?? null;
 
 // Block-level button style variant and size (#199, #200).
 $allowed_button_styles = array( 'solid', 'outline', 'ghost', 'gradient', 'accent', 'primary' );
@@ -173,6 +176,19 @@ if ( ! empty( $buttons ) ) {
 		}
 		if ( $button_background ) {
 			$btn_styles[] = 'background-color:' . sgs_colour_value( $button_background );
+		}
+		if ( $button_border_colour ) {
+			$btn_styles[] = 'border-color:' . sgs_colour_value( $button_border_colour );
+			$btn_styles[] = 'border-style:solid';
+		}
+		if ( null !== $button_border_width ) {
+			$btn_styles[] = 'border-width:' . absint( $button_border_width ) . 'px';
+			if ( ! $button_border_colour ) {
+				$btn_styles[] = 'border-style:solid';
+			}
+		}
+		if ( null !== $button_border_radius ) {
+			$btn_styles[] = 'border-radius:' . absint( $button_border_radius ) . 'px';
 		}
 		$btn_style_attr = $btn_styles ? ' style="' . implode( ';', $btn_styles ) . '"' : '';
 

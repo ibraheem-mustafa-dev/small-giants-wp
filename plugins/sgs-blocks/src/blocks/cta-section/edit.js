@@ -122,6 +122,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		buttonBackground,
 		buttonStyle,
 		buttonSize,
+		buttonBorderColour,
+		buttonBorderWidth,
+		buttonBorderRadius,
 		backgroundImage,
 		backgroundImageOpacity,
 		stats,
@@ -164,6 +167,10 @@ export default function Edit( { attributes, setAttributes } ) {
 	const btnStyle = {
 		color: colourVar( buttonColour ) || undefined,
 		backgroundColor: colourVar( buttonBackground ) || undefined,
+		borderColor: colourVar( buttonBorderColour ) || undefined,
+		borderWidth: buttonBorderWidth ? `${ buttonBorderWidth }px` : undefined,
+		borderStyle: buttonBorderColour || buttonBorderWidth ? 'solid' : undefined,
+		borderRadius: buttonBorderRadius !== undefined && buttonBorderRadius !== null ? `${ buttonBorderRadius }px` : undefined,
 	};
 
 	const updateButton = ( index, updated ) => {
@@ -296,6 +303,35 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) =>
 							setAttributes( { buttonSize: val } )
 						}
+						__nextHasNoMarginBottom
+					/>
+					<DesignTokenPicker
+						label={ __( 'Button border colour', 'sgs-blocks' ) }
+						value={ buttonBorderColour }
+						onChange={ ( val ) =>
+							setAttributes( { buttonBorderColour: val } )
+						}
+					/>
+					<RangeControl
+						label={ __( 'Button border width (px)', 'sgs-blocks' ) }
+						value={ buttonBorderWidth ?? 0 }
+						onChange={ ( val ) =>
+							setAttributes( { buttonBorderWidth: val } )
+						}
+						min={ 0 }
+						max={ 10 }
+						step={ 1 }
+						__nextHasNoMarginBottom
+					/>
+					<RangeControl
+						label={ __( 'Button border radius (px)', 'sgs-blocks' ) }
+						value={ buttonBorderRadius ?? 8 }
+						onChange={ ( val ) =>
+							setAttributes( { buttonBorderRadius: val } )
+						}
+						min={ 0 }
+						max={ 50 }
+						step={ 1 }
 						__nextHasNoMarginBottom
 					/>
 					{ buttons.map( ( button, index ) => (

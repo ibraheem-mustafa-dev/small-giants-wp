@@ -15,6 +15,16 @@ import {
 	Button,
 } from '@wordpress/components';
 
+/**
+ * Conditionally wraps children in a <div> with className, or renders children directly.
+ */
+function MaybeWrap( { wrap, className, children } ) {
+	if ( wrap ) {
+		return <div className={ className }>{ children }</div>;
+	}
+	return <>{ children }</>;
+}
+
 const HOVER_EFFECT_OPTIONS = [
 	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
 	{ label: __( 'Lift', 'sgs-blocks' ), value: 'lift' },
@@ -31,6 +41,11 @@ const FONT_SIZE_OPTIONS = [
 	{ label: __( 'Large', 'sgs-blocks' ), value: 'large' },
 	{ label: __( 'XL', 'sgs-blocks' ), value: 'x-large' },
 	{ label: __( 'XXL', 'sgs-blocks' ), value: 'xx-large' },
+];
+
+const LAYOUT_OPTIONS = [
+	{ label: __( 'Full width', 'sgs-blocks' ), value: 'full' },
+	{ label: __( 'Split (image + slider)', 'sgs-blocks' ), value: 'split' },
 ];
 
 const STYLE_OPTIONS = [
@@ -182,6 +197,8 @@ function TestimonialEditor( { testimonial, index, onChange, onRemove } ) {
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
+		layout,
+		sideImage,
 		testimonials,
 		autoplay,
 		autoplaySpeed,
@@ -201,6 +218,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		transitionDuration,
 		transitionEasing,
 	} = attributes;
+
+	const isSplit = layout === 'split';
 
 	const updateTestimonial = ( index, updated ) => {
 		const next = [ ...testimonials ];
@@ -232,7 +251,8 @@ export default function Edit( { attributes, setAttributes } ) {
 	const className = [
 		'sgs-testimonial-slider',
 		`sgs-testimonial-slider--${ cardStyle }`,
-	].join( ' ' );
+		isSplit ? 'sgs-testimonial-slider--split' : '',
+	].filter( Boolean ).join( ' ' );
 
 	const blockProps = useBlockProps( {
 		className,
@@ -252,6 +272,85 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
+				<PanelBody
+					title={ __( 'Layout', 'sgs-blocks' ) }
+				>
+					<SelectControl
+						label={ __( 'Layout', 'sgs-blocks' ) }
+						value={ layout || 'full' }
+						options={ LAYOUT_OPTIONS }
+						onChange={ ( val ) =>
+							setAttributes( { layout: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+
+				{ isSplit && (
+					<PanelBody
+						title={ __( 'Side Image', 'sgs-blocks' ) }
+						initialOpen={ true }
+					>
+						<MediaUploadCheck>
+							<MediaUpload
+								onSelect={ ( media ) =>
+									setAttributes( {
+										sideImage: {
+											id: media.id,
+											url: media.url,
+											alt: media.alt,
+										},
+									} )
+								}
+								allowedTypes={ [ 'image' ] }
+								value={ sideImage?.id }
+								render={ ( { open } ) => (
+									<div>
+										{ sideImage?.url ? (
+											<>
+												<img
+													src={ sideImage.url }
+													alt=""
+													style={ {
+														maxWidth: '100%',
+														marginBottom: '8px',
+														borderRadius: '4px',
+													} }
+												/>
+												<Button
+													variant="secondary"
+													onClick={ () =>
+														setAttributes( {
+															sideImage:
+																undefined,
+														} )
+													}
+													isDestructive
+												>
+													{ __(
+														'Remove image',
+														'sgs-blocks'
+													) }
+												</Button>
+											</>
+										) : (
+											<Button
+												variant="secondary"
+												onClick={ open }
+											>
+												{ __(
+													'Select side image',
+													'sgs-blocks'
+												) }
+											</Button>
+										) }
+									</div>
+								) }
+							/>
+						</MediaUploadCheck>
+					</PanelBody>
+				) }
+
 				<PanelBody
 					title={ __( 'Slider Settings', 'sgs-blocks' ) }
 				>
@@ -445,6 +544,16 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
+				{ isSplit && sideImage?.url && (
+					<div className="sgs-testimonial-slider__side-image">
+						<img
+							src={ sideImage.url }
+							alt={ sideImage.alt || '' }
+							className="sgs-testimonial-slider__side-img"
+						/>
+					</div>
+				) }
+				<MaybeWrap wrap={ isSplit } className="sgs-testimonial-slider__slider-content">
 				{ testimonials.length === 0 ? (
 					<p className="sgs-testimonial-slider__empty">
 						{ __(
@@ -556,6 +665,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						) ) }
 					</div>
 				) }
+				</MaybeWrap>
 			</div>
 		</>
 	);

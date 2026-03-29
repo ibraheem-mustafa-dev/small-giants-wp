@@ -125,6 +125,15 @@
         "xl"
       ]
     },
+    "buttonBorderColour": {
+      "type": "string"
+    },
+    "buttonBorderWidth": {
+      "type": "number"
+    },
+    "buttonBorderRadius": {
+      "type": "number"
+    },
     "hoverBackgroundColour": {
       "type": "string",
       "default": ""

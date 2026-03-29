@@ -14,6 +14,8 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 // Extract attributes with defaults.
+$layout              = $attributes['layout'] ?? 'full';
+$side_image          = $attributes['sideImage'] ?? null;
 $testimonials        = $attributes['testimonials'] ?? array();
 $autoplay            = $attributes['autoplay'] ?? false;
 $autoplay_speed      = $attributes['autoplaySpeed'] ?? 5000;
@@ -62,10 +64,14 @@ if ( $hover_border_colour ) {
 $transition_style = implode( ';', $css_vars ) . ';';
 
 // Build wrapper classes.
+$is_split = 'split' === $layout;
 $classes = array(
 	'sgs-testimonial-slider',
 	'sgs-testimonial-slider--' . esc_attr( $card_style ),
 );
+if ( $is_split ) {
+	$classes[] = 'sgs-testimonial-slider--split';
+}
 if ( 'none' !== $safe_hover_effect ) {
 	$classes[] = 'sgs-testimonial-slider--hover-' . esc_attr( $safe_hover_effect );
 }
@@ -210,16 +216,41 @@ if ( $show_dots && $total_testimonials > $slides_visible ) {
 	$dots_html .= '</div>';
 }
 
+// Build side image HTML for split layout.
+$side_image_html = '';
+if ( $is_split && ! empty( $side_image['url'] ) ) {
+	$side_img_id  = ! empty( $side_image['id'] ) ? absint( $side_image['id'] ) : 0;
+	$side_img_tag = sgs_responsive_image( $side_img_id, $side_image['url'], $side_image['alt'] ?? '', 'large', array(
+		'class'   => 'sgs-testimonial-slider__side-img',
+		'loading' => 'lazy',
+	) );
+	$side_image_html = '<div class="sgs-testimonial-slider__side-image">' . $side_img_tag . '</div>';
+}
+
 // Output.
 // WCAG 2.2 AA — carousel pattern (ARIA 1.2):
 // - Outer wrapper: role="region" + aria-roledescription="carousel" + aria-label names the landmark.
 // - Track has aria-live="polite" so slide changes are announced.
 // - Individual slides use role="group" + aria-label="N of Total" (set on render; view.js updates it on transition).
-printf(
-	'<div %s role="region" aria-roledescription="carousel" aria-label="Customer Testimonials"><div class="sgs-testimonial-slider__stage"><div class="sgs-testimonial-slider__track" aria-live="polite" tabindex="0"%s>%s</div>%s</div>%s</div>',
-	$wrapper_attributes,
+$slider_inner = sprintf(
+	'<div class="sgs-testimonial-slider__stage"><div class="sgs-testimonial-slider__track" aria-live="polite" tabindex="0"%s>%s</div>%s</div>%s',
 	$track_style_attr,
 	$slides_html,
 	$arrows_html,
 	$dots_html
 );
+
+if ( $is_split ) {
+	printf(
+		'<div %s role="region" aria-roledescription="carousel" aria-label="Customer Testimonials">%s<div class="sgs-testimonial-slider__slider-content">%s</div></div>',
+		$wrapper_attributes,
+		$side_image_html,
+		$slider_inner
+	);
+} else {
+	printf(
+		'<div %s role="region" aria-roledescription="carousel" aria-label="Customer Testimonials">%s</div>',
+		$wrapper_attributes,
+		$slider_inner
+	);
+}

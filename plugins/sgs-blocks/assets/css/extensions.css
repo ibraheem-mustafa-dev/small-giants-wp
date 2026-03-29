@@ -1,36 +1,45 @@
 /* ===== SGS Animation Extension ===== */
+/*
+ * Progressive enhancement: initial hidden states gated behind .sgs-js on <html>.
+ * JS adds this class on load. Without JS, content stays visible.
+ * Also gated behind prefers-reduced-motion: no-preference.
+ */
 
-[data-sgs-animation] {
+@media (prefers-reduced-motion: no-preference) {
+
+.sgs-js [data-sgs-animation] {
 	opacity: 0;
 	transition-property: opacity, transform;
-	transition-timing-function: ease;
+	transition-timing-function: var(--sgs-anim-easing, ease);
 }
 
 /* Duration variants */
-[data-sgs-animation-duration="fast"] { transition-duration: 0.3s; }
-[data-sgs-animation-duration="medium"] { transition-duration: 0.5s; }
-[data-sgs-animation-duration="slow"] { transition-duration: 0.8s; }
+.sgs-js [data-sgs-animation-duration="fast"] { transition-duration: 0.3s; }
+.sgs-js [data-sgs-animation-duration="medium"] { transition-duration: 0.5s; }
+.sgs-js [data-sgs-animation-duration="slow"] { transition-duration: 0.8s; }
 
-/* Starting positions — M20: expanded from 5 to 14 animation types */
-[data-sgs-animation="fade-up"]    { transform: translateY(30px); }
-[data-sgs-animation="fade-down"]  { transform: translateY(-30px); }
-[data-sgs-animation="fade-in"]    { transform: none; }
-[data-sgs-animation="fade-left"]  { transform: translateX(30px); }
-[data-sgs-animation="fade-right"] { transform: translateX(-30px); }
-[data-sgs-animation="slide-up"]   { transform: translateY(30px); }
-[data-sgs-animation="slide-down"] { transform: translateY(-30px); }
-[data-sgs-animation="slide-left"] { transform: translateX(-30px); }
-[data-sgs-animation="slide-right"]{ transform: translateX(30px); }
-[data-sgs-animation="scale-in"]   { transform: scale(0.9); }
-[data-sgs-animation="scale-out"]  { transform: scale(1.1); }
-[data-sgs-animation="rotate-in"]  { transform: rotate(-10deg); }
-[data-sgs-animation="flip-in"]    { transform: perspective(600px) rotateX(30deg); }
-[data-sgs-animation="blur-in"]    { filter: blur(8px); transform: none; }
+/* Starting positions — 15 animation types */
+.sgs-js [data-sgs-animation="fade-up"]    { transform: translateY(30px); }
+.sgs-js [data-sgs-animation="fade-down"]  { transform: translateY(-30px); }
+.sgs-js [data-sgs-animation="fade-in"]    { transform: none; }
+.sgs-js [data-sgs-animation="fade-left"]  { transform: translateX(30px); }
+.sgs-js [data-sgs-animation="fade-right"] { transform: translateX(-30px); }
+.sgs-js [data-sgs-animation="slide-up"]   { transform: translateY(30px); }
+.sgs-js [data-sgs-animation="slide-down"] { transform: translateY(-30px); }
+.sgs-js [data-sgs-animation="slide-left"] { transform: translateX(-30px); }
+.sgs-js [data-sgs-animation="slide-right"]{ transform: translateX(30px); }
+.sgs-js [data-sgs-animation="scale-in"]   { transform: scale(0.9); }
+.sgs-js [data-sgs-animation="scale-out"]  { transform: scale(1.1); }
+.sgs-js [data-sgs-animation="rotate-in"]  { transform: rotate(-10deg); }
+.sgs-js [data-sgs-animation="flip-in"]    { transform: perspective(600px) rotateX(30deg); }
+.sgs-js [data-sgs-animation="blur-in"]    { filter: blur(8px); transform: none; }
 
 /* Additional transition property for blur-in */
-[data-sgs-animation="blur-in"] {
+.sgs-js [data-sgs-animation="blur-in"] {
 	transition-property: opacity, filter;
 }
+
+} /* end @media (prefers-reduced-motion: no-preference) */
 
 /* Animated state — added by IntersectionObserver */
 [data-sgs-animation].sgs-animated {
@@ -39,13 +48,13 @@
 	filter: none;
 }
 
-/* L4: Respect prefers-reduced-motion — skip ALL animation for users who prefer it */
+/* L4: Respect prefers-reduced-motion — skip ALL animation */
 @media (prefers-reduced-motion: reduce) {
 	[data-sgs-animation] {
-		opacity: 1;
-		transform: none;
-		filter: none;
-		transition: none;
+		opacity: 1 !important;
+		transform: none !important;
+		filter: none !important;
+		transition: none !important;
 	}
 }
 

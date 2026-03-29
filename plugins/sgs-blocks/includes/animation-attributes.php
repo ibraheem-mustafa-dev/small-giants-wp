@@ -29,9 +29,28 @@ add_filter( 'render_block', __NAMESPACE__ . '\\inject_animation_attributes', 10,
  * @param array  $block         The parsed block data including attrs.
  * @return string Modified block HTML with animation data attributes.
  */
+/**
+ * Core blocks that support the animation extension.
+ */
+const CORE_ANIMATION_BLOCKS = [
+	'core/group',
+	'core/columns',
+	'core/cover',
+	'core/image',
+];
+
 function inject_animation_attributes( string $block_content, array $block ): string {
-	// Only process SGS blocks.
-	if ( empty( $block['blockName'] ) || ! str_starts_with( $block['blockName'], 'sgs/' ) ) {
+	$block_name = $block['blockName'] ?? '';
+
+	// Process SGS blocks + supported core blocks.
+	if ( empty( $block_name ) ) {
+		return $block_content;
+	}
+
+	$is_sgs  = str_starts_with( $block_name, 'sgs/' );
+	$is_core = in_array( $block_name, CORE_ANIMATION_BLOCKS, true );
+
+	if ( ! $is_sgs && ! $is_core ) {
 		return $block_content;
 	}
 
@@ -50,6 +69,7 @@ function inject_animation_attributes( string $block_content, array $block ): str
 
 	$delay    = $attrs['sgsAnimationDelay'] ?? '0';
 	$duration = $attrs['sgsAnimationDuration'] ?? 'medium';
+	$easing   = $attrs['sgsAnimationEasing'] ?? 'ease';
 
 	// Use WP_HTML_Tag_Processor for safe attribute injection.
 	$processor = new \WP_HTML_Tag_Processor( $block_content );
@@ -60,6 +80,7 @@ function inject_animation_attributes( string $block_content, array $block ): str
 			$processor->set_attribute( 'data-sgs-animation', esc_attr( $animation ) );
 			$processor->set_attribute( 'data-sgs-animation-delay', esc_attr( $delay ) );
 			$processor->set_attribute( 'data-sgs-animation-duration', esc_attr( $duration ) );
+			$processor->set_attribute( 'data-sgs-animation-easing', esc_attr( $easing ) );
 		}
 
 		return $processor->get_updated_html();
