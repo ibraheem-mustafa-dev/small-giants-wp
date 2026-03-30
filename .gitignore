@@ -41,3 +41,36 @@ wp-content/uploads/
 sites/indus-foods/assets.zip
 lighthouse-report.json
 .playwright-mcp/
+
+# Site review screenshots (session artefacts, not source code)
+site-reviews/*.png
+site-reviews/*.jpg
+
+# Snooza Chair 3D model assets (too large for git — store externally)
+sites/snooza-chair/assets/meshroom-*/
+sites/snooza-chair/assets/models/
+sites/snooza-chair/assets/cropped-frames/
+sites/snooza-chair/assets/curated-cropped/
+sites/snooza-chair/assets/meshroom-masked/
+sites/snooza-chair/assets/video-scout/
+sites/snooza-chair/assets/product-images/
+
+# Extraction screenshots (regenerable via Playwright)
+sites/indus-foods/extraction/screenshots/
+
+# Session screenshot artefacts (stray directories)
+UsersBeanProjectssmall-giants-wp/
+
+# Large image files in repo root
+*.png
+*.jpg
+*.webp
+!theme/sgs-theme/**/*.png
+!theme/sgs-theme/**/*.jpg
+!theme/sgs-theme/**/*.webp
+!sites/indus-foods/mockups/**/*.png
+!sites/indus-foods/mockups/**/*.jpg
+!sites/indus-foods/assets/decorative-foods/**/*.png
+!sites/indus-foods/assets/decorative-foods/**/*.webp
+sites/snooza-chair/assets/Snooza Video.mp4
+*.mp4
