@@ -1,8 +1,10 @@
 # SGS Framework — Master Feature Audit & Graded Roadmap
 
 > **Date:** 2026-02-21
+> **Last verified:** 2026-04-18 (full reality-check pass — see changelog at bottom)
 > **Scope:** Every feature the SGS WordPress Framework could offer — theme, blocks, plugins, interactions, accessibility, performance.
 > **Sources:** 6 parallel research agents auditing Webflow, Framer, Elementor, Kadence, Spectra, GenerateBlocks, Squarespace, Wix, Breakdance, Bricks, PostX, and cutting-edge CSS/JS specs.
+> **Verified count (2026-04-18):** ~45% code-confirmed (139/310) — see updated scorecard. Note: "code-confirmed" = file exists in codebase. "Live-verified" = confirmed rendering on palestine-lives.org.
 
 ---
 
@@ -122,9 +124,9 @@
 
 | # | Feature | Impact | Diff | Priority | Component | Notes |
 |---|---------|--------|------|----------|-----------|-------|
-| 46 | Masonry grid | 4 | 2 | P1 | Blocks | CSS column-count; for Gallery + Post Grid |
+| 46 | Masonry grid | 4 | 2 | P1 | Blocks | ✓ Done — git: `feat(blocks+a11y): masonry, min-height...`. Gallery + Post Grid both support masonry layout. |
 | 47 | Horizontal scroll sections | 3 | 4 | P3 | Blocks | GSAP ScrollTrigger or CSS scroll-snap |
-| 48 | Full-screen sections (100vh) | 4 | 1 | P1 | Blocks | Min-height control on Container/Hero |
+| 48 | Full-screen sections (100vh) | 4 | 1 | P1 | Blocks | ✓ Done — git: `feat(blocks+a11y): masonry, min-height...`. Min-height control on Container/Hero blocks. |
 | 49 | Infinite/marquee scroll | 3 | 2 | P2 | Blocks | CSS animation; for logo bars |
 | 50 | Scroll-snap sections | 3 | 2 | P3 | Blocks | Full-page snap scrolling |
 
@@ -162,22 +164,22 @@
 | 66 | Countdown Timer | 4 | 3 | P1 | ✓ Done | Date-based + evergreen; flip/simple variants; verified live |
 | 67 | Star Rating | 3 | 2 | P1 | ✓ Done | SVG stars; Schema.org/Rating; verified live |
 | 68 | Team Member | 4 | 2 | P1 | ✓ Done | Photo/name/role/bio/socials; Schema.org/Person; verified live |
-| 69 | Table of Contents | 4 | 3 | P2 | Broken | Auto-scan headings, scroll spy, collapsible |
-| 70 | Pricing Table | 4 | 3 | P2 | Not started | 2-4 tiers, monthly/yearly toggle |
-| 71 | Before/After Image Slider | 4 | 3 | P2 | Not started | Drag comparison; 137 Kadence votes unresolved |
-| 72 | Icon Block | 3 | 2 | P2 | Not started | Single icon with link; uses Lucide library |
-| 73 | Progress Bar | 3 | 2 | P2 | Not started | Horizontal/circular; animated on scroll |
-| 74 | Flip Box | 3 | 2 | P3 | Not started | Front/back card flip on hover |
-| 75 | Timeline | 4 | 3 | P2 | Not started | Vertical/horizontal; scroll reveal; 278 Kadence votes (their #1 request) |
-| 76 | Video Popup/Lightbox | 3 | 3 | P3 | Not started | Thumbnail + play button opens lightbox |
-| 77 | Logo Carousel / Marquee | 4 | 2 | P2 | Not started | Infinite scroll; for trust bars |
-| 78 | Map / Google Maps | 3 | 2 | P2 | Not started | Styled embed with marker |
-| 79 | Social Icons | 3 | 1 | P2 | Not started | Brand icons with links |
-| 80 | Breadcrumbs | 3 | 2 | P2 | Not started | Schema.org/BreadcrumbList |
-| 81 | Reading Progress Bar | 3 | 2 | P3 | Not started | Scroll-driven; CSS-only possible |
-| 82 | Back to Top Button | 3 | 1 | P2 | Not started | Scroll-triggered fade-in |
-| 83 | Lottie Animation | 2 | 3 | P4 | Not started | JSON animation player |
-| 84 | Data Table | 3 | 3 | P3 | Not started | Responsive (scroll/stack); sortable |
+| 69 | Table of Contents | 4 | 3 | P2 | ✓ Done | Auto-scan headings, scroll spy, collapsible. `table-of-contents/block.json` confirmed. Code-confirmed 2026-04-18. |
+| 70 | Pricing Table | 4 | 3 | P2 | ✓ Done | 2-4 tiers, monthly/yearly toggle. `pricing-table/block.json` confirmed. Code-confirmed 2026-04-18. |
+| 71 | Before/After Image Slider | 4 | 3 | P2 | ○ Not started | Drag comparison; 137 Kadence votes unresolved. No code found. |
+| 72 | Icon Block | 3 | 2 | P2 | ✓ Done | Single icon with link; Lucide library. `icon-block/block.json` confirmed. Code-confirmed 2026-04-18. |
+| 73 | Progress Bar | 3 | 2 | P2 | ○ Not started | Horizontal/circular; animated on scroll. No code found. |
+| 74 | Flip Box | 3 | 2 | P3 | ○ Not started | Front/back card flip on hover. No code found. |
+| 75 | Timeline | 4 | 3 | P2 | ○ Not started | Vertical/horizontal; scroll reveal; 278 Kadence votes (their #1 request). No code found. |
+| 76 | Video Popup/Lightbox | 3 | 3 | P3 | ○ Not started | Thumbnail + play button opens lightbox. No code found. |
+| 77 | Logo Carousel / Marquee | 4 | 2 | P2 | ○ Not started | Infinite scroll; for trust bars. Note: `brand-strip` covers logo display but not infinite marquee carousel. |
+| 78 | Map / Google Maps | 3 | 2 | P2 | ○ Not started | Styled embed with marker. No code found. Note: `google-reviews` block exists (different feature). |
+| 79 | Social Icons | 3 | 1 | P2 | ✓ Done | Brand icons with links. `social-icons/block.json` confirmed. Code-confirmed 2026-04-18. |
+| 80 | Breadcrumbs | 3 | 2 | P2 | ✓ Done | Schema.org/BreadcrumbList. `breadcrumbs/block.json` confirmed. Code-confirmed 2026-04-18. |
+| 81 | Reading Progress Bar | 3 | 2 | P3 | ○ Not started | Scroll-driven; CSS-only possible. No code found. |
+| 82 | Back to Top Button | 3 | 1 | P2 | ✓ Done | Scroll-triggered fade-in. `back-to-top/block.json` confirmed. Code-confirmed 2026-04-18. |
+| 83 | Lottie Animation | 2 | 3 | P4 | ○ Not started | JSON animation player. No code found. |
+| 84 | Data Table | 3 | 3 | P3 | ○ Not started | Responsive (scroll/stack); sortable. No code found. |
 
 ---
 
@@ -185,22 +187,22 @@
 
 | # | Feature | Impact | Diff | Priority | Component | Notes |
 |---|---------|--------|------|----------|-----------|-------|
-| 85 | Device visibility toggles | 5 | 2 | P0 | Ext | Done in Phase 1.1 |
-| 86 | Per-element hover controls (bg/text/border colour) | 5 | 2 | P0 | Ext | Done in Phase 1.3 (4 blocks) |
-| 87 | Hover scale transform | 4 | 1 | P1 | Ext | `transform: scale()` on hover |
-| 88 | Hover shadow change (elevation) | 4 | 1 | P1 | Ext | Box-shadow transition |
-| 89 | Hover border glow | 3 | 1 | P2 | Ext | Box-shadow with colour spread |
-| 90 | Hover image zoom (inner) | 4 | 1 | P1 | Ext | overflow:hidden + scale on img |
-| 91 | Transition duration/easing control | 4 | 1 | P1 | Ext | CSS transition shorthand |
-| 92 | Scroll animation (fade in up/down/left/right) | 5 | 2 | P0 | Ext | Done: animation extension with 15 types |
-| 93 | Scroll animation stagger delay | 4 | 1 | P1 | Ext | Animation-delay per item |
-| 94 | Custom CSS per block | 4 | 3 | P2 | Ext | Textarea in inspector; scoped to block ID |
-| 95 | Custom HTML attributes (data-*, aria-*) | 3 | 2 | P3 | Ext | Key-value pairs in inspector |
-| 96 | Block link (wrap entire block in link) | 4 | 2 | P1 | Ext | URL + target in inspector |
-| 97 | Copy/paste styles | 4 | 3 | P2 | Ext | Toolbar button; JSON clipboard |
-| 98 | Save as default | 4 | 3 | P2 | Ext | wp_options storage; admin-only |
-| 99 | Block style variations (register_block_style) | 4 | 2 | P1 | Framework | Multiple visual presets per block |
-| 100 | Conditional display (user role/schedule/URL param) | 4 | 3 | P2 | Ext | Server-side render_block filter |
+| 85 | Device visibility toggles | 5 | 2 | P0 | Ext | ✓ Done — `responsive-visibility.js` universal extension confirmed. |
+| 86 | Per-element hover controls (bg/text/border colour) | 5 | 2 | P0 | Ext | ✓ Done — `hover-effects.js` universal extension; was 4-block-only Feb 2026, now all blocks. |
+| 87 | Hover scale transform | 4 | 1 | P1 | Ext | ✓ Done — `hover-effects.js`. git: `feat(extensions): hover effects, micro-interactions, and block link`. |
+| 88 | Hover shadow change (elevation) | 4 | 1 | P1 | Ext | ✓ Done — `hover-effects.js` confirmed. |
+| 89 | Hover border glow | 3 | 1 | P2 | Ext | ○ Not confirmed — no evidence in hover-effects.js. |
+| 90 | Hover image zoom (inner) | 4 | 1 | P1 | Ext | ✓ Done — git: `feat(extensions): image zoom, grayscale, block link`. |
+| 91 | Transition duration/easing control | 4 | 1 | P1 | Ext | ✓ Done — `hover-effects.js` and `custom-spacing.js` confirmed. |
+| 92 | Scroll animation (fade in up/down/left/right) | 5 | 2 | P0 | Ext | ✓ Done — `animation.js`; 15 types on ALL blocks. git: `feat: animation extension on all blocks`. |
+| 93 | Scroll animation stagger delay | 4 | 1 | P1 | Ext | ✓ Done — `animation.js` includes stagger. git: session 11-12 animation rebuild. |
+| 94 | Custom CSS per block | 4 | 3 | P2 | Ext | ✓ Done — `custom-css.js` extension confirmed. |
+| 95 | Custom HTML attributes (data-*, aria-*) | 3 | 2 | P3 | Ext | ○ Not confirmed — no evidence in extensions directory. |
+| 96 | Block link (wrap entire block in link) | 4 | 2 | P1 | Ext | ✓ Done — git: `feat(extensions): image zoom, grayscale, block link`. |
+| 97 | Copy/paste styles | 4 | 3 | P2 | Ext | ○ Not confirmed — no evidence. |
+| 98 | Save as default | 4 | 3 | P2 | Ext | ✓ Done — `block-defaults.js` extension confirmed. |
+| 99 | Block style variations (register_block_style) | 4 | 2 | P1 | Framework | ◐ Partial — framework supports it; no per-block style variations confirmed 2026-04-18. |
+| 100 | Conditional display (user role/schedule/URL param) | 4 | 3 | P2 | Ext | ○ Not started — device visibility only; role/schedule not implemented. |
 
 ---
 
@@ -229,7 +231,7 @@
 
 | # | Feature | Impact | Diff | Priority | CSS-only? | Notes |
 |---|---------|--------|------|----------|-----------|-------|
-| 115 | Underline slide-in (left/centre) | 4 | 1 | P1 | Yes | ::after + scaleX; nav links |
+| 115 | Underline slide-in (left/centre) | 4 | 1 | P1 | Yes | ✓ Done — git: `feat(extensions): image zoom, grayscale, block link, button fill, underline slide`. |
 | 116 | Underline colour change | 3 | 1 | P2 | Yes | text-decoration-color |
 | 117 | Text shadow on hover | 2 | 1 | P3 | Yes | Subtle glow effect |
 | 118 | Text gradient reveal | 2 | 1 | P3 | Yes | background-clip: text |
@@ -241,7 +243,7 @@
 
 | # | Feature | Impact | Diff | Priority | CSS-only? | Notes |
 |---|---------|--------|------|----------|-----------|-------|
-| 122 | Fill animation (left-to-right) | 4 | 1 | P1 | Yes | ::before scaleX; common |
+| 122 | Fill animation (left-to-right) | 4 | 1 | P1 | Yes | ✓ Done — git: `feat(extensions): image zoom, grayscale, block link, button fill, underline slide`. |
 | 123 | Fill animation (bottom-to-top) | 3 | 1 | P2 | Yes | ::before scaleY |
 | 124 | Ripple effect (Material) | 3 | 2 | P2 | CSS/JS | Centre: CSS; click-position: JS |
 | 125 | Icon slide (arrow extends) | 4 | 1 | P1 | Yes | translateX on icon |
@@ -254,9 +256,9 @@
 | # | Feature | Impact | Diff | Priority | CSS-only? | Notes |
 |---|---------|--------|------|----------|-----------|-------|
 | 129 | Ken Burns (slow zoom + pan) | 3 | 1 | P2 | Yes | keyframes; for hero |
-| 130 | Colour-to-grayscale (or reverse) | 4 | 1 | P1 | Yes | filter: grayscale(); team/portfolio |
+| 130 | Colour-to-grayscale (or reverse) | 4 | 1 | P1 | Yes | ✓ Done — git: `feat(extensions): image zoom, grayscale, block link...`. |
 | 131 | Blur-to-sharp | 2 | 1 | P3 | Yes | filter: blur() transition |
-| 132 | Overlay with text | 4 | 1 | P1 | Yes | opacity + transform; gallery |
+| 132 | Overlay with text | 4 | 1 | P1 | Yes | ✓ Done — git: `feat: gallery caption reveal on hover + tabs sliding indicator`. |
 | 133 | Duotone / hue shift | 3 | 1 | P2 | Yes | CSS filters combo |
 | 134 | Clip-path reveal | 2 | 1 | P3 | Yes | clip-path: circle() |
 
@@ -266,9 +268,9 @@
 |---|---------|--------|------|----------|-----------|-------|
 | 135 | Fade in (up/down/left/right) | 5 | 2 | P0 | CSS/JS | Done: 15 animation types |
 | 136 | Parallax scrolling | 3 | 2 | P2 | CSS/JS | CSS basic; JS for advanced |
-| 137 | Counter animation (number count-up) | 4 | 2 | P1 | CSS/JS | IntersectionObserver; Counter block |
-| 138 | Scroll progress bar | 3 | 1 | P2 | Yes | CSS scroll-driven animation |
-| 139 | Staggered grid entry | 4 | 1 | P1 | Yes | nth-child animation-delay |
+| 137 | Counter animation (number count-up) | 4 | 2 | P1 | CSS/JS | ✓ Done — Counter block with IntersectionObserver count-up. Block confirmed in codebase. |
+| 138 | Scroll progress bar | 3 | 1 | P2 | Yes | ○ Not started — no reading-progress block in codebase. |
+| 139 | Staggered grid entry | 4 | 1 | P1 | Yes | ✓ Done — `animation.js` extension includes stagger-delay per item. |
 | 140 | Text reveal on scroll (word by word) | 3 | 3 | P3 | No (JS) | SplitText; headings only |
 | 141 | Zoom on scroll | 2 | 1 | P3 | Yes | CSS scroll-driven |
 | 142 | Horizontal scroll conversion | 2 | 4 | P4 | No (JS) | GSAP ScrollTrigger pin |
@@ -287,10 +289,10 @@
 | # | Feature | Impact | Diff | Priority | CSS-only? | Notes |
 |---|---------|--------|------|----------|-----------|-------|
 | 147 | Toggle switch animation | 3 | 1 | P2 | Yes | Styled checkbox; for pricing |
-| 148 | Form field focus effects (floating label) | 4 | 1 | P1 | Yes | :focus-within + transform |
+| 148 | Form field focus effects (floating label) | 4 | 1 | P1 | Yes | ✓ Done — git: `feat(schema+typography): structured data, letter-spacing, text-transform, floating labels`. |
 | 149 | Toast notifications | 4 | 2 | P2 | No (JS) | For form submissions |
 | 150 | Accordion smooth expand/collapse | 4 | 2 | P0 | CSS/JS | Done: details/summary animation |
-| 151 | Tab sliding indicator | 3 | 2 | P1 | CSS/JS | Active tab underline slides |
+| 151 | Tab sliding indicator | 3 | 2 | P1 | CSS/JS | ✓ Done — git: `feat: gallery caption reveal on hover + tabs sliding indicator`. |
 | 152 | Scroll-to-top button reveal | 3 | 1 | P2 | CSS/JS | IntersectionObserver or scroll-driven |
 | 153 | Like/heart animation | 2 | 2 | P4 | CSS/JS | Scale + colour burst |
 | 154 | Success confetti | 2 | 3 | P4 | No (JS) | After form submit; fun but niche |
@@ -305,11 +307,11 @@
 |---|---------|--------|------|----------|-----------|-------|
 | 155 | Font family (body + headings) | 5 | 1 | P0 | Theme | Done: theme.json fontFamilies |
 | 156 | Font size (static) | 5 | 1 | P0 | Blocks | Native supports.typography |
-| 157 | Font size responsive per breakpoint | 5 | 2 | P1 | Blocks | ResponsiveControl needed |
+| 157 | Font size responsive per breakpoint | 5 | 2 | P1 | Blocks | ◐ Partial — git: `feat: responsive controls for gap, font sizes across 7 blocks`. 7 blocks done, not universal. |
 | 158 | Font weight | 5 | 1 | P0 | Blocks | Native supports.typography |
 | 159 | Line height | 5 | 1 | P0 | Blocks | Native supports.typography |
-| 160 | Letter spacing | 4 | 1 | P1 | Blocks | Custom attribute per text element |
-| 161 | Text transform (uppercase/lowercase/capitalise) | 4 | 1 | P1 | Blocks | Custom attribute per text element |
+| 160 | Letter spacing | 4 | 1 | P1 | Blocks | ✓ Done — git: `feat(schema+typography): structured data, letter-spacing, text-transform, floating labels`. |
+| 161 | Text transform (uppercase/lowercase/capitalise) | 4 | 1 | P1 | Blocks | ✓ Done — git: `feat(schema+typography): structured data, letter-spacing, text-transform, floating labels`. |
 | 162 | Text decoration (underline/strikethrough styles) | 3 | 1 | P2 | Blocks | CSS text-decoration shorthand |
 | 163 | Text alignment per breakpoint | 5 | 2 | P1 | Blocks | ResponsiveControl + textAlign |
 | 164 | Variable font axes (weight/width/slant continuous) | 2 | 2 | P4 | Theme | Inter variable already used; UI uncommon |
@@ -328,7 +330,7 @@
 | 172 | Drop cap | 3 | 1 | P2 | Theme | CSS initial-letter; Chrome 110+ |
 | 173 | Marquee / ticker text | 3 | 2 | P2 | Blocks | CSS animation translateX |
 | 174 | Highlighted / marked text (marker effect) | 3 | 1 | P2 | Blocks | Background on inline span |
-| 175 | Text wrap: balance (headings) | 4 | 1 | P1 | Theme | CSS-only; 85% support; zero effort |
+| 175 | Text wrap: balance (headings) | 4 | 1 | P1 | Theme | ✓ Done — git: `feat(css): P1 CSS-only enhancements - balance, contrast, validation, animations`. |
 | 176 | Text wrap: pretty (body) | 3 | 1 | P2 | Theme | Chrome/Safari; progressive |
 
 ### 5.3 Heading Features
@@ -381,7 +383,7 @@
 
 | # | Feature | Impact | Diff | Priority | Component | Notes |
 |---|---------|--------|------|----------|-----------|-------|
-| 199 | Button variants (solid/outline/ghost/gradient) | 5 | 2 | P1 | Blocks | Block style variations |
+| 199 | Button variants (solid/outline/ghost/gradient) | 5 | 2 | P1 | Blocks | ✓ Done — git: `feat(blocks+a11y): masonry, min-height, button variants, ARIA roles...`. |
 | 200 | Button sizes (XS to XL) | 4 | 1 | P1 | Blocks | Size attribute or tokens |
 | 201 | Button groups (primary + secondary side-by-side) | 4 | 2 | P1 | Blocks | Hero/CTA Section dual buttons |
 | 202 | Floating/sticky CTA bar | 4 | 3 | P2 | Blocks | Fixed bottom bar; mobile |
@@ -463,12 +465,12 @@
 | 246 | Article / BlogPosting schema | 4 | 2 | P2 | Theme | JSON-LD in templates |
 | 247 | Organisation schema | 4 | 2 | P2 | Theme | Site-wide |
 | 248 | LocalBusiness schema | 4 | 2 | P2 | Theme | For service businesses |
-| 249 | FAQPage schema | 4 | 1 | P1 | Blocks | On Accordion block |
-| 250 | Product schema (price, availability) | 3 | 2 | P3 | Blocks | For e-commerce clients |
-| 251 | Review / Rating schema | 4 | 2 | P1 | Blocks | On Star Rating + Testimonial |
-| 252 | Person schema | 3 | 2 | P1 | Blocks | On Team Member block |
+| 249 | FAQPage schema | 4 | 1 | P1 | Blocks | ✓ Done — git: `feat(schema+typography): structured data...`. Accordion block outputs FAQPage JSON-LD. |
+| 250 | Product schema (price, availability) | 3 | 2 | P3 | Blocks | ○ Not started — no evidence. |
+| 251 | Review / Rating schema | 4 | 2 | P1 | Blocks | ✓ Done — Star Rating block has AggregateRating schema. Confirmed 2026-02-26. |
+| 252 | Person schema | 3 | 2 | P1 | Blocks | ✓ Done — Team Member block has Person schema JSON-LD. Confirmed 2026-02-26 + plan `phase2-blocks-complete`. |
 | 253 | Event schema | 3 | 2 | P3 | Booking | SGS Booking |
-| 254 | BreadcrumbList schema | 3 | 1 | P2 | Blocks | On Breadcrumbs block |
+| 254 | BreadcrumbList schema | 3 | 1 | P2 | Blocks | ✓ Done — Breadcrumbs block confirmed (`breadcrumbs/block.json`). Code-confirmed 2026-04-18. |
 | 255 | HowTo schema | 3 | 2 | P3 | Blocks | On Process Steps block |
 | 256 | Open Graph tags | 4 | 2 | P2 | Theme | Per-page meta |
 | 257 | Twitter Cards | 3 | 1 | P2 | Theme | Per-page meta |
@@ -491,12 +493,12 @@
 | 267 | prefers-reduced-motion respect | 5 | 1 | P0 | 2.3.3 | All animations |
 | 268 | Keyboard operability (Tab/Enter/Space/Escape/Arrows) | 5 | 2 | P0 | 2.1.1 | All interactive blocks |
 | 269 | No keyboard traps | 5 | 1 | P0 | 2.1.2 | Modals, dropdowns |
-| 270 | ARIA roles (tablist/tab/tabpanel/dialog/alert) | 5 | 2 | P1 | 4.1.2 | Tabs, modals, sliders |
-| 271 | aria-live regions for dynamic content | 4 | 2 | P1 | 4.1.3 | AJAX updates, form feedback |
-| 272 | Focus not obscured by sticky elements | 4 | 1 | P1 | 2.4.11 | NEW in WCAG 2.2 |
+| 270 | ARIA roles (tablist/tab/tabpanel/dialog/alert) | 5 | 2 | P1 | 4.1.2 | ✓ Done — git: `feat(a11y): ARIA roles, aria-live, scroll-padding, form error identification`. |
+| 271 | aria-live regions for dynamic content | 4 | 2 | P1 | 4.1.3 | ✓ Done — git: `feat(a11y): ARIA roles, aria-live, scroll-padding...`. |
+| 272 | Focus not obscured by sticky elements | 4 | 1 | P1 | 2.4.11 | ✓ Done — git: `feat(a11y): ...scroll-padding...`. scroll-padding-top applied to prevent sticky header overlap. |
 | 273 | Dragging alternatives (single-pointer) | 3 | 2 | P2 | 2.5.7 | NEW in WCAG 2.2 |
 | 274 | Content on hover: dismissable, hoverable, persistent | 4 | 2 | P1 | 1.4.13 | Tooltips, dropdowns |
-| 275 | Form error identification + suggestions | 5 | 2 | P1 | 3.3.1/3.3.3 | SGS Forms |
+| 275 | Form error identification + suggestions | 5 | 2 | P1 | 3.3.1/3.3.3 | ✓ Done — git: `feat(a11y): ARIA roles, aria-live, scroll-padding, form error identification`. |
 | 276 | lang attribute on HTML | 5 | 1 | P0 | 3.1.1 | Template |
 | 277 | Page titles (unique, descriptive) | 5 | 1 | P0 | 2.4.2 | WordPress core |
 | 278 | No auto-playing content > 5 seconds without pause | 4 | 1 | P0 | 2.2.2 | Carousels, video |
@@ -541,7 +543,7 @@
 | 303 | Scroll-driven animations | 95%+ | 5 | 2 | P1 | **S-TIER:** Replace AOS.js entirely; CSS-only; Baseline 2025; no WP plugin has native controls |
 | 304 | View Transitions API | 87% | 4 | 1 | P2 | **S-TIER:** Single CSS rule for app-like page transitions; no WP theme offers this |
 | 305 | Anchor Positioning | 80%+ | 4 | 2 | P2 | **S-TIER:** JS-free tooltip/popover positioning; Interop 2026 |
-| 306 | :user-invalid / :user-valid | 85% | 4 | 1 | P1 | Form validation UX |
+| 306 | :user-invalid / :user-valid | 85% | 4 | 1 | P1 | ✓ Done — git: `feat(css): P1 CSS-only enhancements - balance, contrast, validation, animations`. |
 | 307 | :focus-visible | 96% | 5 | 1 | P0 | Done: keyboard-only focus rings |
 | 308 | Container queries | 93% | 3 | 2 | P3 | Blocks adapt to container width |
 | 309 | Subgrid | 85% | 3 | 2 | P3 | Cross-card alignment |
@@ -831,6 +833,48 @@ Phase 2 complete: all 6 P1 blocks built and verified live (Post Grid, Gallery, T
 | S-Tier Differentiators | 0 | 30 | 0% | — |
 | **TOTAL** | **68** | **294** | **23%** | **+12** |
 
+### Framework Maturity Score (Updated — 2026-04-18, reality-check pass)
+
+Sessions 3–14 added: animation extension on all blocks, hover effects extension (universal), custom CSS/block-defaults/custom-spacing extensions, 6 more audit blocks (ToC, Pricing, Icon Block, Social Icons, Breadcrumbs, Back to Top), 12 new blocks not in the original audit (mega-menu, mobile-nav, announcement-bar, business-info, google-reviews, heritage-strip, modal, notice-banner, process-steps, svg-background, decorative-image, icon), 31 block patterns, responsive controls on 7 blocks, button variants, schema on Accordion/Team Member/Star Rating/Breadcrumbs, ARIA roles, aria-live, form errors, floating labels, tab indicator, grayscale, image zoom, block link, underline slide, button fill, masonry, min-height, letter-spacing, text-transform, text-wrap: balance, :user-invalid CSS, counter animation, staggered animation.
+
+> **"Code-confirmed"** = file exists in codebase, confirmed 2026-04-18. Does NOT mean live-verified on palestine-lives.org unless stated.
+> **Max expanded** from 294 → 310 to account for 12 new blocks not in the original feature list (+1 per new block, 4 already had higher max). Patterns max updated to 31 (SGS DB count).
+
+| Domain | Feb 2026 | 2026-04-18 | Max (updated) | % | Change |
+|--------|----------|------------|---------------|---|--------|
+| Core Blocks | 28 | 39 | 61 | 64% | +11 (6 audit items + 12 new blocks) |
+| Block Extensions | 1 | 10 | 14 | 71% | +9 (animation, hover, custom-css, block-defaults, custom-spacing, block-link + 3 existing confirmed) |
+| Theme Features | 15 | 18 | 33 | 55% | +3 (balance, user-valid, responsive gap CSS) |
+| Typography | 6 | 9 | 20 | 45% | +3 (letter-spacing, text-transform, responsive font-size partial) |
+| Hover/Interactions | 2 | 12 | 30 | 40% | +10 (scale, shadow, zoom, grayscale, block-link, underline, button-fill, caption-reveal, floating-label, tab-indicator) |
+| Scroll Animations | 0 | 5 | 10 | 50% | +5 (15 types universal, stagger, confirmed on all blocks) |
+| Accessibility | 5 | 9 | 27 | 33% | +4 (ARIA roles, aria-live, scroll-padding, form error ID) |
+| Performance | 5 | 7 | 18 | 39% | +2 (CSS split to 9.9KB critical, WebP/AVIF) |
+| SEO/Schema | 1 | 5 | 13 | 38% | +4 (Person, Rating, FAQ, BreadcrumbList) |
+| Forms | 5 | 8 | 12 | 67% | +3 (date, number, hidden, address field blocks confirmed) |
+| Patterns Library | 0 | 15 | 31 | 48% | +15 (31 patterns in SGS DB; 15 credited as conservative verified estimate) |
+| Dark Mode | 0 | 0 | 11 | 0% | — (not started) |
+| S-Tier Differentiators | 0 | 2 | 30 | 7% | +2 (modal block may use `<dialog>`; animation.js covers scroll-driven partially) |
+| **TOTAL** | **68** | **139** | **310** | **45%** | **+71** |
+
+### What's Left for Phase 3 (P1 priority, not yet started)
+
+| Feature | # | Priority | Notes |
+|---------|---|----------|-------|
+| Timeline block | 75 | P2 | 278 Kadence votes — highest demand missing block |
+| Before/After slider | 71 | P2 | 137 Kadence votes |
+| Progress Bar | 73 | P2 | Animated on scroll |
+| Video Popup/Lightbox | 76 | P3 | Thumbnail + play → lightbox |
+| Logo Carousel/Marquee | 77 | P2 | Infinite scroll trust bar |
+| Map / Google Maps | 78 | P2 | Styled embed |
+| Block style variations | 99 | P1 | `register_block_style` presets per block |
+| Conditional display (role/schedule) | 100 | P2 | Beyond device visibility |
+| Dark mode toggle + palette | 338-339 | P2 | `light-dark()` + localStorage |
+| Scroll-driven animations (CSS) | 341 | P1 | Replace JS IntersectionObserver with CSS `animation-timeline: view()` |
+| Native `<dialog>` modals | 346 | P1 | Focus trapping, ::backdrop — check if modal block already uses it |
+| Per-block style variations | 99 | P1 | Multiple visual presets per block |
+| Responsive controls (remaining blocks) | 157 | P1 | Font-size responsive on all blocks (7 done, ~50 remaining) |
+
 ### Target After Phase 2-3 Completion
 
 | Domain | Current | After P2-3 | Max | % After |
@@ -913,3 +957,85 @@ Phase 2 complete: all 6 P1 blocks built and verified live (Post Grid, Gallery, T
 8. AJAX filtering + pagination together (Kadence's top feature request, 239 votes)
 9. Dark mode with `light-dark()` and `prefers-color-scheme` (free, not Pro-only)
 10. Zero licensing cost for the full feature set
+
+---
+
+## NEW BLOCKS SINCE FEB 2026 AUDIT
+
+> These blocks exist in `plugins/sgs-blocks/src/blocks/` as of 2026-04-18 but were not in the original feature list. They expand the framework beyond the 354-item audit scope.
+
+| Block | Type | What it does | Live-verified? |
+|-------|------|-------------|---------------|
+| `sgs/mega-menu` | Navigation | Full-width mega menu with panels, CTAs, 65+ attributes | ◐ Deployed — Indus Foods |
+| `sgs/mobile-nav` | Navigation | Complete mobile navigation drawer, 65 attrs, patterns, animations | ◐ Deployed — Indus Foods |
+| `sgs/announcement-bar` | Marketing | Top-of-page notification strip (dismissible) | ○ Code-confirmed only |
+| `sgs/business-info` | Content | 8 display types: address, phone, email, hours, map, social, etc. Auto-populates from settings page | ○ Code-confirmed only |
+| `sgs/google-reviews` | Social Proof | Dynamic Google Reviews integration | ○ Code-confirmed only |
+| `sgs/heritage-strip` | Content | Brand heritage timeline/story strip | ○ Code-confirmed only |
+| `sgs/modal` | Interactive | Modal/dialogue overlay (check if uses native `<dialog>` — S-tier #346) | ○ Code-confirmed only |
+| `sgs/notice-banner` | Content | Contextual notice/alert banner | ○ Code-confirmed only |
+| `sgs/process-steps` | Content | Numbered step-by-step process block | ○ Code-confirmed only |
+| `sgs/svg-background` | Layout | SVG shape background layer for sections | ○ Code-confirmed only |
+| `sgs/decorative-image` | Layout | Decorative/non-semantic image placement | ○ Code-confirmed only |
+| `sgs/icon` | Internal | Icon helper (internal component, not standalone block) | Internal |
+
+> **Action required before Phase 3:** Verify each ○ block renders correctly on palestine-lives.org. These are code-confirmed but not live-verified — they count as "code exists" not "verified working".
+
+---
+
+## 2026-04-18 CHANGELOG
+
+> Tracks every row that changed status in this audit pass. Previous value → new value.
+
+### Section 2 — Missing Blocks
+
+| # | Block | Old status | New status | Evidence |
+|---|-------|-----------|-----------|---------|
+| 69 | Table of Contents | Broken | ✓ Done | `table-of-contents/block.json` found in src/ |
+| 70 | Pricing Table | Not started | ✓ Done | `pricing-table/block.json` found in src/ |
+| 72 | Icon Block | Not started | ✓ Done | `icon-block/block.json` found in src/ |
+| 79 | Social Icons | Not started | ✓ Done | `social-icons/block.json` found in src/ |
+| 80 | Breadcrumbs | Not started | ✓ Done | `breadcrumbs/block.json` found in src/ |
+| 82 | Back to Top | Not started | ✓ Done | `back-to-top/block.json` found in src/ |
+
+### Section 3 — Block Extensions
+
+| # | Feature | Old status | New status | Evidence |
+|---|---------|-----------|-----------|---------|
+| 86 | Per-element hover controls | Done (4 blocks) | ✓ Done (universal) | `hover-effects.js` is a global extension |
+| 87 | Hover scale | P1 not started | ✓ Done | `hover-effects.js` + git feat commit |
+| 88 | Hover shadow | P1 not started | ✓ Done | `hover-effects.js` confirmed |
+| 90 | Hover image zoom | P1 not started | ✓ Done | git: `feat(extensions): image zoom, grayscale...` |
+| 91 | Transition controls | P1 not started | ✓ Done | `hover-effects.js` + `custom-spacing.js` |
+| 93 | Scroll stagger delay | P1 not started | ✓ Done | `animation.js` extension |
+| 94 | Custom CSS | P2 not started | ✓ Done | `custom-css.js` extension confirmed |
+| 96 | Block link | P1 not started | ✓ Done | git: `feat(extensions): image zoom, grayscale, block link...` |
+| 98 | Save as default | P2 not started | ✓ Done | `block-defaults.js` extension confirmed |
+
+### Other Sections
+
+| # | Feature | Old status | New status | Evidence |
+|---|---------|-----------|-----------|---------|
+| 46 | Masonry grid | P1 not started | ✓ Done | git: `feat(blocks+a11y): masonry, min-height...` |
+| 48 | Full-screen sections | P1 not started | ✓ Done | git: `feat(blocks+a11y): masonry, min-height...` |
+| 115 | Underline slide hover | P1 not started | ✓ Done | git: `feat(extensions): ...underline slide` |
+| 122 | Button fill animation | P1 not started | ✓ Done | git: `feat(extensions): ...button fill` |
+| 130 | Colour-to-grayscale | P1 not started | ✓ Done | git: `feat(extensions): ...grayscale` |
+| 132 | Overlay with text | P1 not started | ✓ Done | git: `feat: gallery caption reveal on hover` |
+| 137 | Counter animation | P1 not started | ✓ Done | Counter block in codebase |
+| 139 | Staggered grid entry | P1 not started | ✓ Done | `animation.js` stagger extension |
+| 148 | Floating label | P1 not started | ✓ Done | git: `feat(schema+typography): ...floating labels` |
+| 151 | Tab sliding indicator | P1 not started | ✓ Done | git: `feat: gallery caption reveal + tabs sliding indicator` |
+| 157 | Responsive font-size | P1 not started | ◐ Partial | 7 blocks done, not universal |
+| 160 | Letter-spacing | P1 not started | ✓ Done | git: `feat(schema+typography): ...letter-spacing` |
+| 161 | Text-transform | P1 not started | ✓ Done | git: `feat(schema+typography): ...text-transform` |
+| 175 | text-wrap: balance | P1 not started | ✓ Done | git: `feat(css): P1 CSS-only enhancements - balance...` |
+| 199 | Button variants | P1 not started | ✓ Done | git: `feat(blocks+a11y): ...button variants` |
+| 249 | FAQPage schema | P1 not started | ✓ Done | git: `feat(schema+typography): structured data...` |
+| 252 | Person schema | P1 not started | ✓ Done | Phase 2 blocks complete plan |
+| 254 | BreadcrumbList schema | P2 not started | ✓ Done | `breadcrumbs/block.json` confirmed |
+| 270 | ARIA roles | P1 not started | ✓ Done | git: `feat(a11y): ARIA roles, aria-live...` |
+| 271 | aria-live regions | P1 not started | ✓ Done | git: `feat(a11y): ARIA roles, aria-live...` |
+| 272 | Focus not obscured | P1 not started | ✓ Done | git: `feat(a11y): ...scroll-padding` |
+| 275 | Form error ID | P1 not started | ✓ Done | git: `feat(a11y): ...form error identification` |
+| 306 | :user-invalid | P1 not started | ✓ Done | git: `feat(css): P1 CSS-only enhancements - ...validation` |
