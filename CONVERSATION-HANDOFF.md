@@ -75,7 +75,7 @@ Read CONVERSATION-HANDOFF.md and CLAUDE.md for full context, then work through t
 | Tool | What to use it for |
 |------|-------------------|
 | `mcp__ide__getDiagnostics` | Backing tool for `/diagnostics` (VSCode Problems panel read) |
-| `mcp__plugin_context7_context7__get-library-docs` | Library API research during Fred audit if needed |
+| `/library-docs <library> "<query>"` (or `python ~/.claude/hooks/context7.py docs <libraryId> "<query>"`) | Library API research during Fred audit if needed — Context7 MCP retired 2026-04-18 |
 
 ## Agents to Delegate To
 

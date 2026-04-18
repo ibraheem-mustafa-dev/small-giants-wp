@@ -197,7 +197,7 @@ Use WordPress's built-in shadow support where possible:
 }
 ```
 
-This gives you the shadow picker in the editor for free. Check Context7 for current `shadow` support docs: `context7:resolve-library-id` → "WordPress block editor" → `context7:get-library-docs` with topic "shadow support".
+This gives you the shadow picker in the editor for free. Check `/library-docs` for current `shadow` support docs: `/library-docs "WordPress block editor" "shadow support"` (or `python ~/.claude/hooks/context7.py docs /wordpress/block-editor "shadow support"`). Context7 MCP retired 2026-04-18 — hook script is canonical.
 
 ### Priority 1 — Border Radius on All Content Blocks
 
