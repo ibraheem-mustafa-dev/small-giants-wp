@@ -1,114 +1,182 @@
 ## Where You Are
 
-Plan: `.claude/plans/` (no current_mission — this session continues the skill-system + code-review architecture tracks).
-Current phase: post-rewrite follow-up on research-check + Fred-as-pattern audit + deferred verify-setup command.
-Progress: research-check merge+rewrite shipped B (4.1) / 91% skillscore; 3 tasks queued below.
-Next task: Run Task 1 (research-check fix batch).
+**Date:** 2026-04-18 (session 14 close)
+**Branch:** `feat/diagnostics-lint-commands` (3 commits ahead of main) + PR #6 open + PR #7 open (feature-audit refresh from Sonnet session)
+**Current phase:** Phase 0 of the Tooling Audit complete. Phase 1 starts next.
+
+## USP + Motivation (don't skip — this is the WHY)
+
+**The unlock:** The tooling audit turns your skills from "a pile of 70+ tools" into **6 productised, chargeable services with end-to-end orchestrators** — the exact differentiator that lets you out-deliver Kadence/Spectra consultancies. Every missing orchestrator = manual-stitching Bean-time per client = margin leak.
+
+**Today's 6-pipeline status** (verified 2026-04-18):
+- **1 of 6 fully implemented:** WP→SGS migration (`/sgs-site-clone` IS the orchestrator)
+- **4 of 6 partial:** new build, audit→redesign, QA→deploy, draft→SGS (components exist, no orchestrator)
+- **1 of 6 NOT IMPLEMENTED:** **Client Onboarding** — the pipeline every new engagement needs. Biggest revenue-throttle.
+
+**Estimated impact of closing this:** ~60% Bean-time reduction per client engagement. That's the revenue unlock.
 
 ## Session Start
 
-Read `CONVERSATION-HANDOFF.md` and `CLAUDE.md` for full context, then work through these priorities.
+Read this prompt, then **autopilot loads `CLAUDE.md` + recent handoff + memory**. Before starting Phase 1:
+
+1. **Grep goal-statement docs first.** Bean flagged *"probs have better descriptions of my intended goals in your docs/memories"*. His 4 stated goals:
+   - Full research → design → build via AI
+   - Highly bespoke per client
+   - Optimal + accurate to client requests
+   - Minimal Bean involvement (just provide info)
+   Find the canonical version. Grep: `~/.claude/CLAUDE.md`, `~/.claude/rules/`, `~/.claude/memory/`, `~/.claude/strategic-objectives.json`, this project's CLAUDE.md, `A:/.openclaw/CLAUDE.md`. Surface what you find as the **audit acceptance criteria**.
+
+2. **Load Phase 0 outcomes** (so you don't redo checks):
+   - skillscore-check.py hook works correctly (tooling-ref was stale, fixed)
+   - All 4 deprecated MCPs are DISABLED (empty `mcpServers` in settings.json)
+   - `update-pipeline-state.py` deleted (dead passthrough)
+   - `/site-clone` renamed → `/clone-patterns` (sgs-site-clone anti-route updated, tooling-ref updated)
+   - 13 stale stashes dropped, backup at `docs/stashed-backup-2026-04-18.md`
+   - Feature audit refreshed via Sonnet (PR #7) — 45% verified (139/310), 30+ rows updated
 
 ## Skills to Invoke
 
-| Skill | When to use |
-|-------|-------------|
-| `/brainstorming` | Design-mode exploration during Fred-as-pattern audit |
-| `/gap-analysis` | Grade decision-synthesizer (if extracted) + re-grade research-check after fix batch |
-| `/lifecycle` | Start pipeline before SKILL.md edits — lifecycle-gate blocks direct writes |
-| `/research` | Auto-routes; `/research-check --tier extended` if Fred audit reveals conflicting signals |
-| `/strategic-plan` | If decision-synthesizer extraction grows past 3-file scope |
-| `/skill-writer` | research-check fix batch + any new skill creation |
-| `/skillscore` | After each SKILL.md edit — target 90%+ |
-| `/diagnostics` | Before commit — confirm no regressions |
-
-## MCP Servers & Tools
-
-| Tool | What to use it for |
-|------|-------------------|
-| `mcp__ide__getDiagnostics` | Backing tool for `/diagnostics` |
-| `mcp__plugin_context7_context7__get-library-docs` | Library research during Fred audit if needed |
-
-## Agents to Delegate To
-
-| Agent | When |
+| Skill | When |
 |-------|------|
-| `research-pipeline` | If Fred audit escalates beyond 5 skills |
+| `/autopilot` | FIRST — live skill router, ADHD support |
+| `/gap-analysis` | Per-item grading in Stage 1c (target_type varies: skill, agent, pipeline, custom) |
+| `/batch-gap-analysis` | Stage 1c — grade multiple items in one pass (per category, per layer) |
+| `/skillscore` | Every SKILL.md edit during Stage 1d (implement) |
+| `/project-consolidate` | Stage 1e — at end of Phase 1, collect docs, refocus project |
+| `/strategic-plan` | Stage 1f — plan tooling follow-ups + per-client phases |
+| `/phase-planner` | Stage 1f — break each phase into executable chunks |
+| `/brain-dump` | If Bean sends >30 words of unstructured refinement mid-session |
+| `/diagnostics` | Before any commit — read Problems panel |
+| `/lifecycle` | For any skill/agent/pipeline edit |
 
-## Task 1 — Research-check fix batch (~25 min, target 95%+)
+## Phase 1 — Revised Plan (per Bean 2026-04-18)
 
-Before any SKILL.md edit, create lifecycle-mode marker:
-```bash
-python -c "
-import sys,json; from pathlib import Path
-sys.path.insert(0, r'C:\Users\Bean\.claude\hooks')
-from session_utils import get_session_id
-sid = get_session_id()
-(Path.home()/'.claude'/f'.lifecycle-mode-{sid}.json').write_text(json.dumps({'session_id':sid,'mode':'edit'}))
-"
+**Scope is all tool types, NOT just skills.** Apply gap-analysis to: skills, agents, commands, hooks, CLIs, MCPs, plugins, pipelines, reference docs.
+
+**Size-order (bottom-up)** — can't grade a pipeline until every step inside it is graded:
+
+### Stage 1a — Section-by-section inventory sweep (reality check)
+
+For each section of `TOOLING-REFERENCE.md`:
+1. List every item in that category from the doc
+2. Grep the filesystem for that category (`ls ~/.agents/skills/`, `ls ~/.claude/commands/`, etc.)
+3. Produce a delta: `[+missing from doc]` / `[-retired but still in doc]` / `[✓ match]`
+4. Write reconciliation report to `docs/tooling-audit/2026-04-XX-inventory-reconciliation.md`
+
+**Output:** Accurate inventory per category, ready for Stage 1b.
+
+### Stage 1b — Sonnet parallel research agents (profile per item)
+
+Dispatch Sonnet agents **in size-order batches**:
+
+**Batch 1 — Simple implementation skills (leaves):** `/polish`, `/distill`, `/bolder`, `/quieter`, `/colourise`, `/delight`, `/harden`, `/clarify`, `/normalize`, `/extract`, `/onboard`, `/adapt`, `/optimise`, `/audit`, `/critique`, simple utility skills, simple commands, simple hooks
+**Batch 2 — Composite skills:** `/innovative-design`, `/interactive-design`, `/frontend-design`, `/ui-ux-pro-max`, `/superdesign`, `/design-ref`, `/design-review`, `/visual-qa`
+**Batch 3 — Research skills (already done in session 13 — just re-verify):** `/research-check`, `/research-buddies`, `/research-couple`, `/research-council`, `/deep-research`
+**Batch 4 — Pipeline skills:** `/sgs-site-clone`, `/animation-harvest`, `/research-pipeline`, `/sgs-extraction`
+**Batch 5 — Meta-orchestrators:** `/autopilot`, `/lifecycle`, `/wordpress-router`, `/innovative-design` router, `/seo` router, `/search`, `/research`
+**Batch 6 — Non-skill tools:** 10 WP CLIs, 40+ hooks, MCPs, plugins, agents, reference docs, OC pipelines
+
+**Sonnet dispatch prompt (one per batch):**
+
 ```
-Apply in order:
-- B#1 subagent-failure recovery paths (Stage 2+3: on_empty, on_error, on_refusal)
-- B#2 move default-tier agent prompts to `references/default-tier.md` (body < 200 lines)
-- B#3 `hooks/mode-declaration.py` + `hooks/persistence.py` PostToolUse stubs
-- C#6 `$OPENCLAW_DIR` validation in Stage 4
-- D#7 memory-entity `-N` suffix on same-day collision
-- Re-run skillscore + /gap-analysis; target 90%+ and B+ (4.0+).
+Invoke /autopilot. Working directory: c:/Users/Bean/Projects/small-giants-wp
 
-## Task 2 — Fred-as-pattern audit + optional extraction
+Task: Research each item in [BATCH] by reading the actual source file (SKILL.md / command.md / hook.py / etc.) and produce a structured profile per item.
 
-AUDIT these 5 skills for existing synthesis discipline matching Fred's revenue-model + kill-criterion format: `/strategic-plan`, `/brainstorming`, `/internal-debate`, `/research-couple`, `/research-buddies`.
+For each item produce:
+- main_purpose (1-2 sentences)
+- practical_applications (3-5 concrete use cases Bean would actually encounter)
+- usps (what makes this unique vs alternatives — named alternatives)
+- strengths (2-3 things it does well)
+- weaknesses (2-3 gaps, stale refs, missing controls)
+- synergies (tools it pairs with — specific examples)
+- anti_synergies (tools it overlaps or conflicts with — specific examples)
+- invocation_cost (tokens / time / Bean-attention / money)
+- coverage_of_bean_goals (which of the 4 goals it serves — research/design/build/autonomy — 0-5 per goal)
 
-Grep each SKILL.md for: "revenue", "kill criterion", "exit condition", "cost estimate", "synthesis", "make the call". If 3+ hits → "superior alternative exists" → SKIP extraction. If NO across all → extract `decision-synthesizer` skill. Ship at 90%+ from day one.
+Write output to docs/tooling-audit/batch-<N>-profiles.md as YAML-per-item (easy to diff + grade later).
 
-Bean's guard: "incredible setup that could level our thinking across the board **if our other skills don't already have a superior or specialised alternative**." Honour the guard.
+Size context: pre-Phase-1 inventory reconciliation is at docs/tooling-audit/2026-04-XX-inventory-reconciliation.md. Read that first to confirm the batch list.
 
-## Task 3 — Build `/verify-code-review-setup`
-
-Origin: deferred from 2026-04-16. Create `~/.claude/commands/verify-code-review-setup.md`. Runs each CLI against a known-bad file + checks each VSCode extension; reports PASS/FAIL grid:
-- `ruff` → `C:/Users/Bean/.local/bin/ruff.exe`
-- `stylelint` → `C:/Users/Bean/AppData/Roaming/npm/stylelint.cmd`
-- `semgrep` → `C:/Users/Bean/.local/bin/semgrep.exe`
-- `phpstan` → per-project `vendor/bin/phpstan`
-- SonarLint extension → `code --list-extensions | grep sonarlint`
-
-## Task 4 — Resolve stop-hook firing on reference files
-
-The grading-coverage stop hook has fired 9+ times on `.agents/skills/research-check/references/extended-tier.md` — a reference file covered by its parent skill's evaluation (research-check graded B 4.1 on 2026-04-17). Bean wants this resolved.
-
-Three options; pick one:
-
-**A. Grade the reference file in isolation** — treats it as its own artifact, adds a 4.xx entry to evaluation-history. Noisy but fastest. Risk: if we do this for every reference file in the library, history gets padded with micro-grades that dilute the signal.
-
-**B. Add an allowlist to the stop hook** — skip files under `references/` whose parent skill was graded within 7 days. Implementation:
-```python
-# In whichever hook runs the coverage check
-if path.parent.name == "references":
-    parent_skill = path.parent.parent.name
-    last_grade = get_last_grade_for(parent_skill)
-    if last_grade and (now - last_grade.timestamp).days < 7:
-        skip()
+Do NOT grade. Do NOT make keep/merge/delete recommendations. Profile only — Opus will grade in Stage 1c.
 ```
-Lives in the hook source, not prose. Closes the noise; accepts some risk that a drifted reference hides inside a passing parent grade.
 
-**B'.  Other direction — deepen parent grading** — when a skill is graded, the grader also walks every referenced file and checks consistency with the parent. More rigorous; more work per grade. Alternative if Bean wants stricter coverage.
+### Stage 1c — Decision table (4-lens audit on enriched profiles)
 
-**C. Do both** — allowlist + add a "reference integrity" sub-check in gap-analysis Step 4 for skill-type targets.
+Opus (main session) reads the Sonnet-produced profiles and applies:
+- **Lens 1: Redundancy** — which items do the same job?
+- **Lens 2: Inefficiency** — which items have stale refs, broken ENFORCER-guards, excess hooks, etc.?
+- **Lens 3: Gaps** — what's missing that would close a pipeline (especially the 4 missing orchestrators)?
+- **Lens 4: Forgotten pieces** — which valuable tools are never invoked?
+- **Lens 5 (system effect)** — does it reduce Bean-time or add load?
+- **Lens 6 (motivation — per correction 2026-04-18)** — does the item/result carry USP + specific goal-serving next action + % impact?
 
-Pick based on whether the stricter stance (catch reference drift) or the quieter stance (trust parent grading) matches how Bean wants skillscore to feel. My hunch: B is fine as a near-term fix; add the B' deepening when SSB Phase 7 pattern learning arrives and we have more signal about when references actually drift.
+Output: `docs/tooling-audit/2026-04-XX-decision-table.md` with per-item KEEP / MERGE / SPLIT / DELETE / NEW + rationale.
 
-## Task 5 — Commit triage + PR
+### Stage 1d — Implement decisions
 
-Branch `feat/diagnostics-lint-commands` has 1,717 uncommitted files across 3 sessions. Separate:
-- KEEP: `~/.claude/commands/`, `~/.agents/skills/research-check/`, `.claude/specs/`, `.claude/gap-analysis/reports/`
-- REVIEW: `plugins/sgs-blocks/composer.*` (legit PHPStan install)
-- EXCLUDE: `plugins/sgs-blocks/vendor/` (verify gitignore)
+Execute the decision table. Deletions, merges, scope fixes, new tool stubs. Every SKILL.md edit goes through skillscore → gap-analysis.
 
-Open PR against `main` with 3-session summary.
+### Stage 1e — `/project-consolidate`
+
+At end of Stage 1d, invoke `/project-consolidate` on this project to collect scattered docs, refocus the project around the new tooling structure.
+
+### Stage 1f — `/strategic-plan` + `/phase-planner`
+
+Plan:
+- Tooling follow-up work (orchestrators for the 4-5 missing pipelines)
+- **One phase per urgent client project** (5 projects — Bean to name them in the session)
+- **Structural monitoring plan:**
+  - Scheduled efficacy test (cron on the automation engine)
+  - Issue log with fix verification
+  - Recurrence detection = signal that the fix was wrong/insufficient
+  - No "Bean must remember to check" rules — all structural
+
+## Decisions already made
+
+| # | Decision | Source |
+|---|----------|--------|
+| 1 | Scope = all tool types, not just skills | Bean 2026-04-18 |
+| 2 | "35 skills" is not a constraint — drop from plan | Bean 2026-04-18 |
+| 3 | Bottom-up size-order processing | Bean 2026-04-18 |
+| 4 | End-state is system-level fitness test against 4 goals | Bean 2026-04-18 |
+| 5 | After audit: consolidate → strategic-plan + phase-planner | Bean 2026-04-18 |
+| 6 | Monitoring must be structural, not rule-based | Bean 2026-04-18 |
+| 7 | 6 chargeable pipelines are the productisation target | Bean 2026-04-18 |
+
+## Open threads parked
+
+| Thread | Where | Why parked |
+|--------|-------|------------|
+| Fred-as-pattern extraction (decision-synthesizer skill) | Noted in session 13 handoff | Park for SSB Phase 7 pattern-learning signal |
+| `/project-consolidate` to refocus this project | End of Phase 1 | Sequence — after tooling is clean |
+| Structural monitoring loop (cron + issue log + fix-verify) | `/phase-planner` output | Sequence — after consolidation |
+| 5 urgent client website projects (names TBD) | `/phase-planner` input | Bean to name them in session |
+| Live-test the 11 ○ code-confirmed-only blocks | Post-Phase-1 pre-Phase-3 | Verification against palestine-lives.org |
+
+## Open questions (not blocking Phase 1 start)
+
+1. How do we define "simple" for size-order? (Dependency count recommended — skills with zero `Invokes` entries are leaves.)
+2. Monitoring cadence — weekly scheduled cron, per-session gate, or per-commit?
+3. 5 urgent client projects — Bean names them at start of `/phase-planner` stage.
 
 ## Guardrails
 
-- Refresh lifecycle-mode marker before each protected-file edit (hook consumes per edit).
-- Don't commit `plugins/sgs-blocks/vendor/` without gitignore check.
-- Stop hook reminds about `extended-tier.md` grading — DEFER.
-- 10 stale git stashes (21-23d old, mobile-nav/mega-menu) — unrelated, leave for Bean to triage.
+- Auto mode default; still ask before any `git push` to main or any PR open/merge.
+- Refresh lifecycle marker before each protected-file edit.
+- Every SKILL.md edit must leave skillscore ≥ 80% OR revert.
+- Never regrade files under `references/` of recently-graded parent skills (gap-analysis-gate Option B handles this).
+- Motivation layer (6th lens) applies: every decision-table row, every phase plan item carries USP + specific action + % impact.
+
+## Not in scope for Phase 1
+
+- Implementing orchestrators for the 4 missing pipelines (that's Phase 2, planned by `/phase-planner`)
+- Client site builds (Phase 3+, planned by `/phase-planner`)
+- Blub/OC skill audits (separate track)
+- Subproject restructure beyond what /project-consolidate needs
+
+## If session opens fresh and auto-loads this
+
+Resume with: **"Starting Phase 1 Stage 1a — inventory reconciliation. Running grep-filesystem against TOOLING-REFERENCE.md sections to produce deltas. ETA: 20 min."**
+
+Then proceed.
