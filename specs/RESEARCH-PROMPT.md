@@ -126,7 +126,7 @@ For item 6 (audit), output the comparison tables and a prioritised list of gaps 
 ### Research Approach
 1. **Read all existing specs first** — `specs/00-OVERVIEW.md` through `specs/06-BUILD-ORDER.md` + all CLAUDE.md files
 2. **Use Firecrawl for ALL web research** — scrape competitor plugin pages, feature lists, changelogs, pricing pages, documentation
-3. **Use Context7 MCP** for WordPress block development docs, Interactivity API reference, REST API handbook
+3. **Use `/library-docs`** (or `python ~/.claude/hooks/context7.py docs <libraryId> "<query>"`) for WordPress block development docs, Interactivity API reference, REST API handbook — Context7 MCP retired 2026-04-18
 4. **Use GitHub MCP** (`plugin:github:github`) to search open-source implementations — mega menu repos, chatbot frameworks, review widgets
 5. **Search for customer complaints** on Reddit r/wordpress, WordPress.org plugin reviews (1-2 star), G2, Capterra, Trustpilot — specifically search:
    - "Elementor performance issues", "Elementor bloat", "Elementor lock-in"

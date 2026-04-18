@@ -484,7 +484,7 @@ These are specced but not prioritised for the current milestone:
 | design-reviewer agent | Visual QA after each phase |
 | test-and-explain agent | Testing completed work in plain English |
 | seo-auditor agent | Schema markup, meta tags, performance |
-| Context7 MCP | WordPress block editor docs, theme handbook |
+| `/library-docs` (hook: `~/.claude/hooks/context7.py`) | WordPress block editor docs, theme handbook — Context7 MCP retired 2026-04-18 |
 | GitHub MCP | PR creation, branch management |
 | Playwright MCP | Visual testing, screenshot comparison |
 | Chrome MCP | Live site inspection, DOM analysis |

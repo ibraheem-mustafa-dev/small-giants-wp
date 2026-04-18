@@ -1,0 +1,26 @@
+includes:
+  - vendor/szepeviktor/phpstan-wordpress/extension.neon
+
+parameters:
+  level: 5
+  paths:
+    - includes
+    - sgs-blocks.php
+
+  excludePaths:
+    - vendor
+    - node_modules
+    - build
+    - src
+
+  # WordPress project conventions — reduce noise on common patterns
+  ignoreErrors:
+    # WP hooks use variable callbacks — phpstan can't trace
+    - '#Call to an undefined function SGS\\\\Blocks\\\\.*#'
+    # WordPress globals and magic constants
+    - '#Variable \$wpdb might not be defined#'
+
+  # Performance — don't scan files on every edit
+  parallel:
+    jobSize: 20
+    maximumNumberOfProcesses: 4

@@ -74,3 +74,6 @@ UsersBeanProjectssmall-giants-wp/
 !sites/indus-foods/assets/decorative-foods/**/*.webp
 sites/snooza-chair/assets/Snooza Video.mp4
 *.mp4
+
+# Composer vendor dir — built locally, not tracked (PHPStan install 2026-04-17)
+plugins/sgs-blocks/vendor/
