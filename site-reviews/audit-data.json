@@ -1,0 +1,1839 @@
+{
+  "homepage": {
+    "screenshots": {
+      "mobile": "C:\\Users\\Bean\\Projects\\small-giants-wp\\site-reviews\\homepage-mobile.png",
+      "tablet": "C:\\Users\\Bean\\Projects\\small-giants-wp\\site-reviews\\homepage-tablet.png",
+      "desktop": "C:\\Users\\Bean\\Projects\\small-giants-wp\\site-reviews\\homepage-desktop.png"
+    },
+    "console": [],
+    "performance": {
+      "ttfb": 219,
+      "domContentLoaded": 484,
+      "fullLoad": 798,
+      "totalRequests": 43,
+      "totalTransferSize": 2445640,
+      "resourceBreakdown": {
+        "jpg": {
+          "count": 5,
+          "size": 357053
+        },
+        "woff2": {
+          "count": 2,
+          "size": 67296
+        },
+        "css": {
+          "count": 11,
+          "size": 28487
+        },
+        "js": {
+          "count": 10,
+          "size": 27072
+        },
+        "svg": {
+          "count": 2,
+          "size": 33886
+        },
+        "png": {
+          "count": 4,
+          "size": 1914084
+        },
+        "webp": {
+          "count": 8,
+          "size": 17762
+        },
+        "com/maps/embed": {
+          "count": 1,
+          "size": 0
+        }
+      },
+      "domSize": 737
+    },
+    "seo": {
+      "title": "Indus Foods Ltd – Leading Indian Food & Drinks Wholesaler Since 1962",
+      "titleLength": 68,
+      "metaDescription": "Indus Foods - Leading Indian food and drinks wholesaler since 1962. Over 6,000 SKUs, BRC and Halal certified, UK-wide delivery. Apply for a trade account today.",
+      "metaDescLength": 160,
+      "headings": {
+        "h1": {
+          "count": 1,
+          "texts": [
+            "Leading Indian Food & Drinks Wholesaler"
+          ]
+        },
+        "h2": {
+          "count": 6,
+          "texts": [
+            "Our Brands",
+            "Our UK Wide Food Services",
+            "Why Choose Indus Foods?",
+            "Our Partners Love Us!",
+            "What Are You Waiting For?",
+            "Quick Links"
+          ]
+        },
+        "h3": {
+          "count": 23,
+          "texts": [
+            "Food Service",
+            "Manufacturing",
+            "Retail",
+            "Wholesale",
+            "Food Service",
+            "Manufacturing",
+            "Retail",
+            "Wholesale",
+            "Food Service",
+            "Manufacturing",
+            "Retail",
+            "Wholesale",
+            "60+ Years Experience",
+            "Full Certifications",
+            "Reliable Delivery",
+            "Premium Quality",
+            "Family Values",
+            "5,000+ Products",
+            "Dedicated Support",
+            "White Labelling",
+            "Contact",
+            "Opening Hours",
+            "Address"
+          ]
+        },
+        "h4": {
+          "count": 6,
+          "texts": [
+            "We Serve",
+            "Our Brands",
+            "Own Brands",
+            "We Serve",
+            "Our Brands",
+            "Own Brands"
+          ]
+        },
+        "h5": {
+          "count": 0,
+          "texts": []
+        },
+        "h6": {
+          "count": 0,
+          "texts": []
+        }
+      },
+      "totalImages": 47,
+      "imagesWithoutAlt": 14,
+      "missingAltSrc": [
+        "logo-01-150x136-1.webp",
+        "logo-02-150x136-1.webp",
+        "logo-03-150x136-1.webp",
+        "logo-04-150x136-1.webp",
+        "logo-05-150x136-1.webp",
+        "logo-06-150x136-1.webp",
+        "logo-07.webp",
+        "logo-01-150x136-1.webp",
+        "logo-02-150x136-1.webp",
+        "logo-03-150x136-1.webp"
+      ],
+      "totalLinks": 98,
+      "internalLinks": 88,
+      "canonical": "https://palestine-lives.org/",
+      "ogTitle": null,
+      "ogDesc": null,
+      "ogImage": null,
+      "twitterCard": null,
+      "schemas": [],
+      "lang": "en-US"
+    },
+    "accessibility": {
+      "issues": [
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-01-150x13"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-02-150x13"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-03-150x13"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-04-150x13"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-05-150x13"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-06-150x13"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-07.webp\" "
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        }
+      ],
+      "hasSkipLink": true,
+      "landmarks": {
+        "main": true,
+        "nav": true,
+        "footer": true
+      },
+      "headingOrder": [
+        4,
+        3,
+        3,
+        3,
+        3,
+        4,
+        4,
+        4,
+        3,
+        3,
+        3,
+        3,
+        4,
+        4,
+        1,
+        2,
+        2,
+        3,
+        3,
+        3,
+        3,
+        2,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3
+      ]
+    },
+    "css": {
+      "body": {
+        "fontSize": "15.75px",
+        "lineHeight": "25.9875px",
+        "fontFamily": "\"Source Sans 3\", system-ui, sans-serif",
+        "color": "rgb(30, 30, 30)",
+        "letterSpacing": "normal",
+        "fontWeight": "600"
+      },
+      "h1": {
+        "fontSize": "56.25px",
+        "lineHeight": "61.875px",
+        "fontFamily": "Montserrat, system-ui, sans-serif",
+        "color": "rgb(44, 62, 80)",
+        "letterSpacing": "normal",
+        "fontWeight": "700"
+      },
+      "h2": {
+        "fontSize": "40.5px",
+        "lineHeight": "48.6px",
+        "fontFamily": "Montserrat, system-ui, sans-serif",
+        "color": "rgb(30, 30, 30)",
+        "letterSpacing": "-0.405px",
+        "fontWeight": "700"
+      },
+      "h3": {
+        "fontSize": "19.8px",
+        "lineHeight": "23.76px",
+        "fontFamily": "Montserrat, system-ui, sans-serif",
+        "color": "rgb(30, 30, 30)",
+        "letterSpacing": "-0.198px",
+        "fontWeight": "700"
+      },
+      "charMeasure": null,
+      "hoverRules": 92,
+      "textColours": [
+        "rgb(0, 0, 0)",
+        "rgb(30, 30, 30)",
+        "rgb(255, 255, 255)",
+        "rgb(10, 126, 168)",
+        "rgb(66, 66, 66)",
+        "rgb(44, 62, 80)"
+      ],
+      "bgColours": [
+        "rgb(255, 255, 255)",
+        "rgb(7, 106, 142)",
+        "rgb(10, 126, 168)",
+        "rgba(255, 255, 255, 0.15)",
+        "rgb(216, 202, 80)",
+        "rgba(0, 0, 0, 0.5)",
+        "rgb(44, 62, 80)"
+      ]
+    },
+    "security": {}
+  },
+  "food-service": {
+    "screenshots": {
+      "mobile": "C:\\Users\\Bean\\Projects\\small-giants-wp\\site-reviews\\food-service-mobile.png",
+      "tablet": "C:\\Users\\Bean\\Projects\\small-giants-wp\\site-reviews\\food-service-tablet.png",
+      "desktop": "C:\\Users\\Bean\\Projects\\small-giants-wp\\site-reviews\\food-service-desktop.png"
+    },
+    "console": [],
+    "performance": {
+      "ttfb": 153,
+      "domContentLoaded": 440,
+      "fullLoad": 791,
+      "totalRequests": 46,
+      "totalTransferSize": 2517864,
+      "resourceBreakdown": {
+        "png": {
+          "count": 3,
+          "size": 1657266
+        },
+        "woff2": {
+          "count": 2,
+          "size": 67296
+        },
+        "css": {
+          "count": 12,
+          "size": 30135
+        },
+        "js": {
+          "count": 10,
+          "size": 27072
+        },
+        "svg": {
+          "count": 2,
+          "size": 33886
+        },
+        "jpg": {
+          "count": 5,
+          "size": 357053
+        },
+        "webp": {
+          "count": 11,
+          "size": 345156
+        },
+        "com/maps/embed": {
+          "count": 1,
+          "size": 0
+        }
+      },
+      "domSize": 719
+    },
+    "seo": {
+      "title": "Food Service – Indus Foods Ltd",
+      "titleLength": 30,
+      "metaDescription": "Why Indus Foods Built around what your kitchen actually needs. We don't just deliver ingredients — we help food businesses run smoothly with consistent quality,...",
+      "metaDescLength": 163,
+      "headings": {
+        "h1": {
+          "count": 1,
+          "texts": [
+            "Your kitchen’s secret to authentic flavour, delivered on time, every time."
+          ]
+        },
+        "h2": {
+          "count": 7,
+          "texts": [
+            "Built around what your kitchen actually needs.",
+            "Everything your kitchen needs, under one account.",
+            "Open your trade account in four simple steps.",
+            "From our warehouse to your kitchen — fast.",
+            "Trusted by restaurants, caterers, and hotels across the UK.",
+            "Ready to partner with a wholesaler that treats you like family?",
+            "Quick Links"
+          ]
+        },
+        "h3": {
+          "count": 25,
+          "texts": [
+            "Food Service",
+            "Manufacturing",
+            "Retail",
+            "Wholesale",
+            "Food Service",
+            "Manufacturing",
+            "Retail",
+            "Wholesale",
+            "Consistent Quality for Menu Reliability",
+            "Catering-Size Packaging",
+            "Dedicated Account Manager",
+            "Flexible Delivery Schedules",
+            "Trade Pricing & Credit Facilities",
+            "Allergen & Nutritional Data",
+            "Spices & Seasonings",
+            "Rice & Grains",
+            "Pulses & Lentils",
+            "Frozen Foods",
+            "Next-Day Midlands",
+            "48hr Nationwide",
+            "Temperature Controlled",
+            "European Export",
+            "Contact",
+            "Opening Hours",
+            "Address"
+          ]
+        },
+        "h4": {
+          "count": 6,
+          "texts": [
+            "We Serve",
+            "Our Brands",
+            "Own Brands",
+            "We Serve",
+            "Our Brands",
+            "Own Brands"
+          ]
+        },
+        "h5": {
+          "count": 0,
+          "texts": []
+        },
+        "h6": {
+          "count": 0,
+          "texts": []
+        }
+      },
+      "totalImages": 40,
+      "imagesWithoutAlt": 14,
+      "missingAltSrc": [
+        "logo-01-150x136-1.webp",
+        "logo-02-150x136-1.webp",
+        "logo-03-150x136-1.webp",
+        "logo-04-150x136-1.webp",
+        "logo-05-150x136-1.webp",
+        "logo-06-150x136-1.webp",
+        "logo-07.webp",
+        "logo-01-150x136-1.webp",
+        "logo-02-150x136-1.webp",
+        "logo-03-150x136-1.webp"
+      ],
+      "totalLinks": 95,
+      "internalLinks": 85,
+      "canonical": "https://palestine-lives.org/food-service/",
+      "ogTitle": null,
+      "ogDesc": null,
+      "ogImage": null,
+      "twitterCard": null,
+      "schemas": [],
+      "lang": "en-US"
+    },
+    "accessibility": {
+      "issues": [
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-01-150x13"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-02-150x13"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-03-150x13"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-04-150x13"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-05-150x13"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-06-150x13"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-07.webp\" "
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        }
+      ],
+      "hasSkipLink": true,
+      "landmarks": {
+        "main": true,
+        "nav": true,
+        "footer": true
+      },
+      "headingOrder": [
+        4,
+        3,
+        3,
+        3,
+        3,
+        4,
+        4,
+        4,
+        3,
+        3,
+        3,
+        3,
+        4,
+        4,
+        1,
+        2,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        2,
+        3,
+        3,
+        3,
+        3,
+        2,
+        2,
+        3,
+        3,
+        3,
+        3,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3
+      ]
+    },
+    "css": {
+      "body": {
+        "fontSize": "15.75px",
+        "lineHeight": "25.9875px",
+        "fontFamily": "\"Source Sans 3\", system-ui, sans-serif",
+        "color": "rgb(30, 30, 30)",
+        "letterSpacing": "normal",
+        "fontWeight": "600"
+      },
+      "h1": {
+        "fontSize": "56.25px",
+        "lineHeight": "61.875px",
+        "fontFamily": "Montserrat, system-ui, sans-serif",
+        "color": "rgb(255, 255, 255)",
+        "letterSpacing": "normal",
+        "fontWeight": "700"
+      },
+      "h2": {
+        "fontSize": "27px",
+        "lineHeight": "32.4px",
+        "fontFamily": "Montserrat, system-ui, sans-serif",
+        "color": "rgb(30, 30, 30)",
+        "letterSpacing": "-0.27px",
+        "fontWeight": "700"
+      },
+      "h3": {
+        "fontSize": "19.8px",
+        "lineHeight": "23.76px",
+        "fontFamily": "Montserrat, system-ui, sans-serif",
+        "color": "rgb(30, 30, 30)",
+        "letterSpacing": "-0.198px",
+        "fontWeight": "700"
+      },
+      "charMeasure": null,
+      "hoverRules": 90,
+      "textColours": [
+        "rgb(0, 0, 0)",
+        "rgb(30, 30, 30)",
+        "rgb(255, 255, 255)",
+        "rgb(10, 126, 168)",
+        "rgb(66, 66, 66)",
+        "rgba(255, 255, 255, 0.85)",
+        "rgb(216, 202, 80)"
+      ],
+      "bgColours": [
+        "rgb(255, 255, 255)",
+        "rgb(7, 106, 142)",
+        "rgb(10, 126, 168)",
+        "rgba(255, 255, 255, 0.15)",
+        "rgb(216, 202, 80)",
+        "rgba(0, 0, 0, 0.5)",
+        "rgb(231, 215, 104)"
+      ]
+    },
+    "security": {}
+  },
+  "manufacturing": {
+    "screenshots": {
+      "mobile": "C:\\Users\\Bean\\Projects\\small-giants-wp\\site-reviews\\manufacturing-mobile.png",
+      "tablet": "C:\\Users\\Bean\\Projects\\small-giants-wp\\site-reviews\\manufacturing-tablet.png",
+      "desktop": "C:\\Users\\Bean\\Projects\\small-giants-wp\\site-reviews\\manufacturing-desktop.png"
+    },
+    "console": [],
+    "performance": {
+      "ttfb": 140,
+      "domContentLoaded": 352,
+      "fullLoad": 693,
+      "totalRequests": 45,
+      "totalTransferSize": 2273406,
+      "resourceBreakdown": {
+        "png": {
+          "count": 6,
+          "size": 1941724
+        },
+        "woff2": {
+          "count": 2,
+          "size": 67296
+        },
+        "css": {
+          "count": 12,
+          "size": 30135
+        },
+        "js": {
+          "count": 10,
+          "size": 27072
+        },
+        "com/maps/embed": {
+          "count": 1,
+          "size": 0
+        },
+        "svg": {
+          "count": 2,
+          "size": 33886
+        },
+        "jpg": {
+          "count": 4,
+          "size": 155531
+        },
+        "webp": {
+          "count": 8,
+          "size": 17762
+        }
+      },
+      "domSize": 724
+    },
+    "seo": {
+      "title": "Manufacturing – Indus Foods Ltd",
+      "titleLength": 31,
+      "metaDescription": "Why Indus Foods Built for manufacturers who can't afford inconsistency. Whether you need bulk spices by the tonne or private label packaging under your own...",
+      "metaDescLength": 158,
+      "headings": {
+        "h1": {
+          "count": 1,
+          "texts": [
+            "Consistent Quality. Every Batch. Every Time."
+          ]
+        },
+        "h2": {
+          "count": 7,
+          "texts": [
+            "Built for manufacturers who can’t afford inconsistency.",
+            "Bulk ingredients for your production line.",
+            "Open your trade account in four simple steps.",
+            "From our warehouse to your production line.",
+            "Trusted by manufacturers across the UK.",
+            "Ready to secure a reliable ingredient supply?",
+            "Quick Links"
+          ]
+        },
+        "h3": {
+          "count": 17,
+          "texts": [
+            "Food Service",
+            "Manufacturing",
+            "Retail",
+            "Wholesale",
+            "Food Service",
+            "Manufacturing",
+            "Retail",
+            "Wholesale",
+            "Technical Data Sheets & Traceability",
+            "On-Site Processing Since 1975",
+            "Private Label & Co-Packing",
+            "Bulk & Pallet Quantities",
+            "Quality Certifications",
+            "Custom Sourcing",
+            "Contact",
+            "Opening Hours",
+            "Address"
+          ]
+        },
+        "h4": {
+          "count": 14,
+          "texts": [
+            "We Serve",
+            "Our Brands",
+            "Own Brands",
+            "We Serve",
+            "Our Brands",
+            "Own Brands",
+            "Spices & Seasonings",
+            "Rice & Grains",
+            "Oils & Fats",
+            "Pulses & Lentils",
+            "Next-Day Midlands",
+            "48hr Nationwide",
+            "Temperature Controlled",
+            "European Export"
+          ]
+        },
+        "h5": {
+          "count": 0,
+          "texts": []
+        },
+        "h6": {
+          "count": 0,
+          "texts": []
+        }
+      },
+      "totalImages": 49,
+      "imagesWithoutAlt": 14,
+      "missingAltSrc": [
+        "logo-01-150x136-1.webp",
+        "logo-02-150x136-1.webp",
+        "logo-03-150x136-1.webp",
+        "logo-04-150x136-1.webp",
+        "logo-05-150x136-1.webp",
+        "logo-06-150x136-1.webp",
+        "logo-07.webp",
+        "logo-01-150x136-1.webp",
+        "logo-02-150x136-1.webp",
+        "logo-03-150x136-1.webp"
+      ],
+      "totalLinks": 95,
+      "internalLinks": 83,
+      "canonical": "https://palestine-lives.org/manufacturing/",
+      "ogTitle": null,
+      "ogDesc": null,
+      "ogImage": null,
+      "twitterCard": null,
+      "schemas": [],
+      "lang": "en-US"
+    },
+    "accessibility": {
+      "issues": [
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-01-150x13"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-02-150x13"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-03-150x13"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-04-150x13"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-05-150x13"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-06-150x13"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-07.webp\" "
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "warning",
+          "msg": "Heading hierarchy skip: H2 -> H4"
+        },
+        {
+          "type": "warning",
+          "msg": "Heading hierarchy skip: H2 -> H4"
+        }
+      ],
+      "hasSkipLink": true,
+      "landmarks": {
+        "main": true,
+        "nav": true,
+        "footer": true
+      },
+      "headingOrder": [
+        4,
+        3,
+        3,
+        3,
+        3,
+        4,
+        4,
+        4,
+        3,
+        3,
+        3,
+        3,
+        4,
+        4,
+        1,
+        2,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        2,
+        4,
+        4,
+        4,
+        4,
+        2,
+        2,
+        4,
+        4,
+        4,
+        4,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3
+      ]
+    },
+    "css": {
+      "body": {
+        "fontSize": "15.75px",
+        "lineHeight": "25.9875px",
+        "fontFamily": "\"Source Sans 3\", system-ui, sans-serif",
+        "color": "rgb(30, 30, 30)",
+        "letterSpacing": "normal",
+        "fontWeight": "600"
+      },
+      "h1": {
+        "fontSize": "56.25px",
+        "lineHeight": "61.875px",
+        "fontFamily": "Montserrat, system-ui, sans-serif",
+        "color": "rgb(255, 255, 255)",
+        "letterSpacing": "normal",
+        "fontWeight": "700"
+      },
+      "h2": {
+        "fontSize": "40.5px",
+        "lineHeight": "48.6px",
+        "fontFamily": "Montserrat, system-ui, sans-serif",
+        "color": "rgb(30, 30, 30)",
+        "letterSpacing": "-0.405px",
+        "fontWeight": "700"
+      },
+      "h3": {
+        "fontSize": "19.8px",
+        "lineHeight": "23.76px",
+        "fontFamily": "Montserrat, system-ui, sans-serif",
+        "color": "rgb(30, 30, 30)",
+        "letterSpacing": "-0.198px",
+        "fontWeight": "700"
+      },
+      "charMeasure": null,
+      "hoverRules": 98,
+      "textColours": [
+        "rgb(0, 0, 0)",
+        "rgb(30, 30, 30)",
+        "rgb(255, 255, 255)",
+        "rgb(10, 126, 168)",
+        "rgb(66, 66, 66)",
+        "rgb(216, 202, 80)"
+      ],
+      "bgColours": [
+        "rgb(255, 255, 255)",
+        "rgb(7, 106, 142)",
+        "rgb(10, 126, 168)",
+        "rgba(255, 255, 255, 0.15)",
+        "rgb(216, 202, 80)",
+        "rgba(0, 0, 0, 0.5)"
+      ]
+    },
+    "security": {}
+  },
+  "retail": {
+    "screenshots": {
+      "mobile": "C:\\Users\\Bean\\Projects\\small-giants-wp\\site-reviews\\retail-mobile.png",
+      "tablet": "C:\\Users\\Bean\\Projects\\small-giants-wp\\site-reviews\\retail-tablet.png",
+      "desktop": "C:\\Users\\Bean\\Projects\\small-giants-wp\\site-reviews\\retail-desktop.png"
+    },
+    "console": [],
+    "performance": {
+      "ttfb": 119,
+      "domContentLoaded": 432,
+      "fullLoad": 808,
+      "totalRequests": 45,
+      "totalTransferSize": 2273406,
+      "resourceBreakdown": {
+        "png": {
+          "count": 6,
+          "size": 1941724
+        },
+        "woff2": {
+          "count": 2,
+          "size": 67296
+        },
+        "css": {
+          "count": 12,
+          "size": 30135
+        },
+        "js": {
+          "count": 10,
+          "size": 27072
+        },
+        "svg": {
+          "count": 2,
+          "size": 33886
+        },
+        "jpg": {
+          "count": 4,
+          "size": 155531
+        },
+        "webp": {
+          "count": 8,
+          "size": 17762
+        },
+        "com/maps/embed": {
+          "count": 1,
+          "size": 0
+        }
+      },
+      "domSize": 704
+    },
+    "seo": {
+      "title": "Retail – Indus Foods Ltd",
+      "titleLength": 24,
+      "metaDescription": "Why Indus Foods Everything your shelves need to keep customers coming back. We know independent retail. Your customers want trusted brands, competitive prices, and full...",
+      "metaDescLength": 171,
+      "headings": {
+        "h1": {
+          "count": 1,
+          "texts": [
+            "Stock What Your Community Loves"
+          ]
+        },
+        "h2": {
+          "count": 7,
+          "texts": [
+            "Everything your shelves need to keep customers coming back.",
+            "Bestselling retail lines your customers already know.",
+            "Open your trade account in four simple steps.",
+            "Regular deliveries that keep your shelves full.",
+            "Trusted by independent retailers across the UK.",
+            "Ready to stock the brands your customers want?",
+            "Quick Links"
+          ]
+        },
+        "h3": {
+          "count": 17,
+          "texts": [
+            "Food Service",
+            "Manufacturing",
+            "Retail",
+            "Wholesale",
+            "Food Service",
+            "Manufacturing",
+            "Retail",
+            "Wholesale",
+            "Retail-Ready Packaging",
+            "Competitive Margins",
+            "Merchandising Support",
+            "Own-Label Options",
+            "Flexible Minimum Orders",
+            "Wide Range for Asian Grocery",
+            "Contact",
+            "Opening Hours",
+            "Address"
+          ]
+        },
+        "h4": {
+          "count": 12,
+          "texts": [
+            "We Serve",
+            "Our Brands",
+            "Own Brands",
+            "We Serve",
+            "Our Brands",
+            "Own Brands",
+            "Spices & Seasonings",
+            "Rice & Grains",
+            "Frozen Foods",
+            "Cleaning Products",
+            "Next-Day Midlands",
+            "48hr Nationwide"
+          ]
+        },
+        "h5": {
+          "count": 0,
+          "texts": []
+        },
+        "h6": {
+          "count": 0,
+          "texts": []
+        }
+      },
+      "totalImages": 49,
+      "imagesWithoutAlt": 14,
+      "missingAltSrc": [
+        "logo-01-150x136-1.webp",
+        "logo-02-150x136-1.webp",
+        "logo-03-150x136-1.webp",
+        "logo-04-150x136-1.webp",
+        "logo-05-150x136-1.webp",
+        "logo-06-150x136-1.webp",
+        "logo-07.webp",
+        "logo-01-150x136-1.webp",
+        "logo-02-150x136-1.webp",
+        "logo-03-150x136-1.webp"
+      ],
+      "totalLinks": 95,
+      "internalLinks": 83,
+      "canonical": "https://palestine-lives.org/retail/",
+      "ogTitle": null,
+      "ogDesc": null,
+      "ogImage": null,
+      "twitterCard": null,
+      "schemas": [],
+      "lang": "en-US"
+    },
+    "accessibility": {
+      "issues": [
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-01-150x13"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-02-150x13"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-03-150x13"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-04-150x13"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-05-150x13"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-06-150x13"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-07.webp\" "
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "warning",
+          "msg": "Heading hierarchy skip: H2 -> H4"
+        },
+        {
+          "type": "warning",
+          "msg": "Heading hierarchy skip: H2 -> H4"
+        }
+      ],
+      "hasSkipLink": true,
+      "landmarks": {
+        "main": true,
+        "nav": true,
+        "footer": true
+      },
+      "headingOrder": [
+        4,
+        3,
+        3,
+        3,
+        3,
+        4,
+        4,
+        4,
+        3,
+        3,
+        3,
+        3,
+        4,
+        4,
+        1,
+        2,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        2,
+        4,
+        4,
+        4,
+        4,
+        2,
+        2,
+        4,
+        4,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3
+      ]
+    },
+    "css": {
+      "body": {
+        "fontSize": "15.75px",
+        "lineHeight": "25.9875px",
+        "fontFamily": "\"Source Sans 3\", system-ui, sans-serif",
+        "color": "rgb(30, 30, 30)",
+        "letterSpacing": "normal",
+        "fontWeight": "600"
+      },
+      "h1": {
+        "fontSize": "56.25px",
+        "lineHeight": "61.875px",
+        "fontFamily": "Montserrat, system-ui, sans-serif",
+        "color": "rgb(255, 255, 255)",
+        "letterSpacing": "normal",
+        "fontWeight": "700"
+      },
+      "h2": {
+        "fontSize": "40.5px",
+        "lineHeight": "48.6px",
+        "fontFamily": "Montserrat, system-ui, sans-serif",
+        "color": "rgb(30, 30, 30)",
+        "letterSpacing": "-0.405px",
+        "fontWeight": "700"
+      },
+      "h3": {
+        "fontSize": "19.8px",
+        "lineHeight": "23.76px",
+        "fontFamily": "Montserrat, system-ui, sans-serif",
+        "color": "rgb(30, 30, 30)",
+        "letterSpacing": "-0.198px",
+        "fontWeight": "700"
+      },
+      "charMeasure": null,
+      "hoverRules": 98,
+      "textColours": [
+        "rgb(0, 0, 0)",
+        "rgb(30, 30, 30)",
+        "rgb(255, 255, 255)",
+        "rgb(10, 126, 168)",
+        "rgb(66, 66, 66)",
+        "rgb(216, 202, 80)"
+      ],
+      "bgColours": [
+        "rgb(255, 255, 255)",
+        "rgb(7, 106, 142)",
+        "rgb(10, 126, 168)",
+        "rgba(255, 255, 255, 0.15)",
+        "rgb(216, 202, 80)",
+        "rgba(0, 0, 0, 0.5)"
+      ]
+    },
+    "security": {}
+  },
+  "wholesale": {
+    "screenshots": {
+      "mobile": "C:\\Users\\Bean\\Projects\\small-giants-wp\\site-reviews\\wholesale-mobile.png",
+      "tablet": "C:\\Users\\Bean\\Projects\\small-giants-wp\\site-reviews\\wholesale-tablet.png",
+      "desktop": "C:\\Users\\Bean\\Projects\\small-giants-wp\\site-reviews\\wholesale-desktop.png"
+    },
+    "console": [],
+    "performance": {
+      "ttfb": 185,
+      "domContentLoaded": 456,
+      "fullLoad": 1224,
+      "totalRequests": 45,
+      "totalTransferSize": 2273406,
+      "resourceBreakdown": {
+        "png": {
+          "count": 6,
+          "size": 1941724
+        },
+        "woff2": {
+          "count": 2,
+          "size": 67296
+        },
+        "css": {
+          "count": 12,
+          "size": 30135
+        },
+        "js": {
+          "count": 10,
+          "size": 27072
+        },
+        "svg": {
+          "count": 2,
+          "size": 33886
+        },
+        "jpg": {
+          "count": 4,
+          "size": 155531
+        },
+        "webp": {
+          "count": 8,
+          "size": 17762
+        },
+        "com/maps/embed": {
+          "count": 1,
+          "size": 0
+        }
+      },
+      "domSize": 712
+    },
+    "seo": {
+      "title": "Wholesale – Indus Foods Ltd",
+      "titleLength": 27,
+      "metaDescription": "Why Indus Foods A sourcing partner, not just a supplier. We've been importing from 125+ countries for over 60 years. That network means better prices,...",
+      "metaDescLength": 153,
+      "headings": {
+        "h1": {
+          "count": 1,
+          "texts": [
+            "60 Years of Wholesale Expertise. One Trusted Partner."
+          ]
+        },
+        "h2": {
+          "count": 7,
+          "texts": [
+            "A sourcing partner, not just a supplier.",
+            "Volume supply across every category.",
+            "Open your trade account in four simple steps.",
+            "UK-wide distribution. European export since the 1970s.",
+            "Trusted by wholesalers and distributors.",
+            "Ready to access direct-import pricing?",
+            "Quick Links"
+          ]
+        },
+        "h3": {
+          "count": 17,
+          "texts": [
+            "Food Service",
+            "Manufacturing",
+            "Retail",
+            "Wholesale",
+            "Food Service",
+            "Manufacturing",
+            "Retail",
+            "Wholesale",
+            "Container & Pallet Pricing",
+            "Direct Import Sourcing",
+            "White-Label Capabilities",
+            "UK & EU Distribution",
+            "Volume-Based Tiered Discounts",
+            "Dedicated Account Management",
+            "Contact",
+            "Opening Hours",
+            "Address"
+          ]
+        },
+        "h4": {
+          "count": 14,
+          "texts": [
+            "We Serve",
+            "Our Brands",
+            "Own Brands",
+            "We Serve",
+            "Our Brands",
+            "Own Brands",
+            "Spices & Seasonings",
+            "Rice & Grains",
+            "Oils & Fats",
+            "Mixed Consignments",
+            "UK National",
+            "Ireland",
+            "Norway & Scandinavia",
+            "Southern Europe"
+          ]
+        },
+        "h5": {
+          "count": 0,
+          "texts": []
+        },
+        "h6": {
+          "count": 0,
+          "texts": []
+        }
+      },
+      "totalImages": 49,
+      "imagesWithoutAlt": 14,
+      "missingAltSrc": [
+        "logo-01-150x136-1.webp",
+        "logo-02-150x136-1.webp",
+        "logo-03-150x136-1.webp",
+        "logo-04-150x136-1.webp",
+        "logo-05-150x136-1.webp",
+        "logo-06-150x136-1.webp",
+        "logo-07.webp",
+        "logo-01-150x136-1.webp",
+        "logo-02-150x136-1.webp",
+        "logo-03-150x136-1.webp"
+      ],
+      "totalLinks": 95,
+      "internalLinks": 83,
+      "canonical": "https://palestine-lives.org/wholesale/",
+      "ogTitle": null,
+      "ogDesc": null,
+      "ogImage": null,
+      "twitterCard": null,
+      "schemas": [],
+      "lang": "en-US"
+    },
+    "accessibility": {
+      "issues": [
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-01-150x13"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-02-150x13"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-03-150x13"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-04-150x13"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-05-150x13"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-06-150x13"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-07.webp\" "
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "warning",
+          "msg": "Heading hierarchy skip: H2 -> H4"
+        },
+        {
+          "type": "warning",
+          "msg": "Heading hierarchy skip: H2 -> H4"
+        }
+      ],
+      "hasSkipLink": true,
+      "landmarks": {
+        "main": true,
+        "nav": true,
+        "footer": true
+      },
+      "headingOrder": [
+        4,
+        3,
+        3,
+        3,
+        3,
+        4,
+        4,
+        4,
+        3,
+        3,
+        3,
+        3,
+        4,
+        4,
+        1,
+        2,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        2,
+        4,
+        4,
+        4,
+        4,
+        2,
+        2,
+        4,
+        4,
+        4,
+        4,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3
+      ]
+    },
+    "css": {
+      "body": {
+        "fontSize": "15.75px",
+        "lineHeight": "25.9875px",
+        "fontFamily": "\"Source Sans 3\", system-ui, sans-serif",
+        "color": "rgb(30, 30, 30)",
+        "letterSpacing": "normal",
+        "fontWeight": "600"
+      },
+      "h1": {
+        "fontSize": "56.25px",
+        "lineHeight": "61.875px",
+        "fontFamily": "Montserrat, system-ui, sans-serif",
+        "color": "rgb(255, 255, 255)",
+        "letterSpacing": "normal",
+        "fontWeight": "700"
+      },
+      "h2": {
+        "fontSize": "40.5px",
+        "lineHeight": "48.6px",
+        "fontFamily": "Montserrat, system-ui, sans-serif",
+        "color": "rgb(30, 30, 30)",
+        "letterSpacing": "-0.405px",
+        "fontWeight": "700"
+      },
+      "h3": {
+        "fontSize": "19.8px",
+        "lineHeight": "23.76px",
+        "fontFamily": "Montserrat, system-ui, sans-serif",
+        "color": "rgb(30, 30, 30)",
+        "letterSpacing": "-0.198px",
+        "fontWeight": "700"
+      },
+      "charMeasure": null,
+      "hoverRules": 98,
+      "textColours": [
+        "rgb(0, 0, 0)",
+        "rgb(30, 30, 30)",
+        "rgb(255, 255, 255)",
+        "rgb(10, 126, 168)",
+        "rgb(66, 66, 66)",
+        "rgb(216, 202, 80)"
+      ],
+      "bgColours": [
+        "rgb(255, 255, 255)",
+        "rgb(7, 106, 142)",
+        "rgb(10, 126, 168)",
+        "rgba(255, 255, 255, 0.15)",
+        "rgb(216, 202, 80)",
+        "rgba(0, 0, 0, 0.5)"
+      ]
+    },
+    "security": {}
+  },
+  "contact": {
+    "screenshots": {
+      "mobile": "C:\\Users\\Bean\\Projects\\small-giants-wp\\site-reviews\\contact-mobile.png",
+      "tablet": "C:\\Users\\Bean\\Projects\\small-giants-wp\\site-reviews\\contact-tablet.png",
+      "desktop": "C:\\Users\\Bean\\Projects\\small-giants-wp\\site-reviews\\contact-desktop.png"
+    },
+    "console": [],
+    "performance": {
+      "ttfb": 123,
+      "domContentLoaded": 329,
+      "fullLoad": 733,
+      "totalRequests": 39,
+      "totalTransferSize": 1984312,
+      "resourceBreakdown": {
+        "woff2": {
+          "count": 2,
+          "size": 67296
+        },
+        "css": {
+          "count": 10,
+          "size": 26721
+        },
+        "js": {
+          "count": 9,
+          "size": 25850
+        },
+        "com/maps/embed": {
+          "count": 1,
+          "size": 0
+        },
+        "svg": {
+          "count": 2,
+          "size": 33886
+        },
+        "png": {
+          "count": 3,
+          "size": 1657266
+        },
+        "jpg": {
+          "count": 4,
+          "size": 155531
+        },
+        "webp": {
+          "count": 8,
+          "size": 17762
+        }
+      },
+      "domSize": 504
+    },
+    "seo": {
+      "title": "Contact – Indus Foods Ltd",
+      "titleLength": 25,
+      "metaDescription": "Contact page - content coming soon.",
+      "metaDescLength": 35,
+      "headings": {
+        "h1": {
+          "count": 0,
+          "texts": []
+        },
+        "h2": {
+          "count": 1,
+          "texts": [
+            "Quick Links"
+          ]
+        },
+        "h3": {
+          "count": 11,
+          "texts": [
+            "Food Service",
+            "Manufacturing",
+            "Retail",
+            "Wholesale",
+            "Food Service",
+            "Manufacturing",
+            "Retail",
+            "Wholesale",
+            "Contact",
+            "Opening Hours",
+            "Address"
+          ]
+        },
+        "h4": {
+          "count": 6,
+          "texts": [
+            "We Serve",
+            "Our Brands",
+            "Own Brands",
+            "We Serve",
+            "Our Brands",
+            "Own Brands"
+          ]
+        },
+        "h5": {
+          "count": 0,
+          "texts": []
+        },
+        "h6": {
+          "count": 0,
+          "texts": []
+        }
+      },
+      "totalImages": 34,
+      "imagesWithoutAlt": 14,
+      "missingAltSrc": [
+        "logo-01-150x136-1.webp",
+        "logo-02-150x136-1.webp",
+        "logo-03-150x136-1.webp",
+        "logo-04-150x136-1.webp",
+        "logo-05-150x136-1.webp",
+        "logo-06-150x136-1.webp",
+        "logo-07.webp",
+        "logo-01-150x136-1.webp",
+        "logo-02-150x136-1.webp",
+        "logo-03-150x136-1.webp"
+      ],
+      "totalLinks": 90,
+      "internalLinks": 80,
+      "canonical": "https://palestine-lives.org/contact/",
+      "ogTitle": null,
+      "ogDesc": null,
+      "ogImage": null,
+      "twitterCard": null,
+      "schemas": [],
+      "lang": "en-US"
+    },
+    "accessibility": {
+      "issues": [
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-01-150x13"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-02-150x13"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-03-150x13"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-04-150x13"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-05-150x13"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-06-150x13"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/logo-07.webp\" "
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        },
+        {
+          "type": "error",
+          "msg": "a without accessible text: <a href=\"/brands/\" tabindex=\"-1\"><img decoding=\"async\" src=\"/wp-content/uploads/indus-foods/2025/12/"
+        }
+      ],
+      "hasSkipLink": true,
+      "landmarks": {
+        "main": true,
+        "nav": true,
+        "footer": true
+      },
+      "headingOrder": [
+        4,
+        3,
+        3,
+        3,
+        3,
+        4,
+        4,
+        4,
+        3,
+        3,
+        3,
+        3,
+        4,
+        4,
+        2,
+        3,
+        3,
+        3
+      ]
+    },
+    "css": {
+      "body": {
+        "fontSize": "15.75px",
+        "lineHeight": "25.9875px",
+        "fontFamily": "\"Source Sans 3\", system-ui, sans-serif",
+        "color": "rgb(30, 30, 30)",
+        "letterSpacing": "normal",
+        "fontWeight": "600"
+      },
+      "h1": null,
+      "h2": {
+        "fontSize": "18px",
+        "lineHeight": "21.6px",
+        "fontFamily": "Montserrat, system-ui, sans-serif",
+        "color": "rgb(255, 255, 255)",
+        "letterSpacing": "0.9px",
+        "fontWeight": "700"
+      },
+      "h3": {
+        "fontSize": "19.8px",
+        "lineHeight": "23.76px",
+        "fontFamily": "Montserrat, system-ui, sans-serif",
+        "color": "rgb(30, 30, 30)",
+        "letterSpacing": "-0.198px",
+        "fontWeight": "700"
+      },
+      "charMeasure": null,
+      "hoverRules": 62,
+      "textColours": [
+        "rgb(0, 0, 0)",
+        "rgb(30, 30, 30)",
+        "rgb(255, 255, 255)",
+        "rgb(10, 126, 168)",
+        "rgb(66, 66, 66)",
+        "rgb(216, 202, 80)",
+        "rgb(232, 220, 160)"
+      ],
+      "bgColours": [
+        "rgb(255, 255, 255)",
+        "rgb(7, 106, 142)",
+        "rgb(10, 126, 168)",
+        "rgba(255, 255, 255, 0.15)",
+        "rgb(216, 202, 80)",
+        "rgba(0, 0, 0, 0.5)",
+        "rgb(44, 62, 80)"
+      ]
+    },
+    "security": {}
+  },
+  "_security": {
+    "headers": {
+      "strict-transport-security": "MISSING",
+      "x-content-type-options": "MISSING",
+      "x-frame-options": "MISSING",
+      "content-security-policy": "upgrade-insecure-requests",
+      "referrer-policy": "MISSING",
+      "permissions-policy": "MISSING"
+    },
+    "server": "cloudflare",
+    "contentEncoding": "zstd"
+  },
+  "_robots": {
+    "status": 200,
+    "content": "# As a condition of accessing this website, you agree to abide by the following\n# content signals:\n\n# (a)  If a Content-Signal = yes, you may collect content for the corresponding\n#      use.\n# (b)  If a Content-Signal = no, you may not collect content for the\n#      corresponding use.\n# (c)  If the website operator does not include a Content-Signal for a\n#      corresponding use, the website operator neither grants nor restricts\n#      permission via Content-Signal with respect to the corresponding use.\n\n# The content signals and their meanings are:\n\n# search:   building a search index and providing search results (e.g., returning\n#           hyperlinks and short excerpts from your website's contents). Search does not\n#           include providing AI-generated search summaries.\n# ai-input: inputting content into one or more AI models (e.g., retrieval\n#           augmented generation, grounding, or other real-time taking of content for\n#           generative AI search answers).\n# ai-train: training or fine-tuning AI models.\n\n# ANY RESTRICTIONS EXPRESSED VIA CONTENT SIGNALS ARE EXPRESS RESERVATIONS OF\n# RIGHTS UNDER ARTICLE 4 OF THE EUROPEAN UNION DIRECTIVE 2019/790 ON COPYRIGHT\n# AND RELATED RIGHTS IN THE DIGITAL SINGLE MARKET.\n\n# BEGIN Cloudflare Managed content\n\nUser-agent: *\nContent-Signal: search=yes,ai-train=no\nAllow: /\n\nUser-agent: Amazonbot\nDisallow: /\n\nUser-agent: Applebot-Extended\nDisallow: /\n\nUser-agent: Bytespider\nDisallow: /\n\nUser-agent: CCBot\nDisallow: /\n\nUser-agent: ClaudeBot\nDisallow: /\n\nUser-agent: Google-Extended\nDisallow: /\n\nUser-agent: GPTBot\nDisallow: /\n\nUser-agent: meta-externalagent\nDisallow: /\n\n# END Cloudflare Managed Content\n\nUser-agent: *\nDisallow: /wp-admin/\nAllow: /wp-admin/admin-ajax.php\n\nSitemap: https://palestine-lives.org/wp-sitemap.xml\n"
+  },
+  "_sitemap": {
+    "status": 200,
+    "contentLength": 1620
+  }
+}

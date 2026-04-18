@@ -1,0 +1,293 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ============================================================
+   Small Giants Studio — Editorial Design System
+   ============================================================ */
+
+:root {
+  /* Warm surfaces */
+  --color-surface-light: #F7F3EE;
+  --color-surface-light-alt: #EDE8E0;
+  --color-surface-dark: #1C1917;
+  --color-surface-dark-alt: #292524;
+
+  /* Ink */
+  --color-ink-primary: #1C1917;
+  --color-ink-secondary: #78716C;
+  --color-ink-on-dark: #F7F3EE;
+  --color-ink-on-dark-secondary: #A8A29E;
+
+  /* Accent — teal, used boldly */
+  --color-accent: #0D9488;
+  --color-accent-dark: #0F766E;
+  --color-accent-light: #2DD4BF;
+
+  /* Warm accent — amber, paired with teal */
+  --color-accent-warm: #D97706;
+  --color-accent-warm-light: #F59E0B;
+  --color-accent-warm-dark: #B45309;
+
+  /* Dark teal — for section backgrounds */
+  --color-surface-dark-teal: #0F4C4C;
+
+  /* Backward-compatible tokens used by Tailwind @theme */
+  --color-primary-900: #1C1917;
+  --color-primary-800: #292524;
+  --color-primary-700: #44403C;
+  --color-primary-600: #57534E;
+  --color-primary-500: #78716C;
+  --color-primary-400: #A8A29E;
+  --color-primary-300: #D6D3D1;
+  --color-primary-200: #E7E5E4;
+  --color-primary-100: #F5F5F4;
+  --color-primary-50: #F7F3EE;
+
+  /* Accent palette — teal mapped */
+  --color-accent-800: #065F5F;
+  --color-accent-700: #0F766E;
+  --color-accent-600: #0D9488;
+  --color-accent-500: #0D9488;
+  --color-accent-400: #2DD4BF;
+  --color-accent-300: #5EEAD4;
+  --color-accent-200: #99F6E4;
+  --color-accent-100: #CCFBF1;
+
+  /* Semantic tokens */
+  --color-background: #F7F3EE;
+  --color-surface: #F7F3EE;
+  --color-text-primary: #1C1917;
+  --color-text-secondary: #78716C;
+  --color-text-muted: #A8A29E;
+  --color-border: #D6D3D1;
+
+  /* Dark mode base colours */
+  --color-dark-bg: #1C1917;
+  --color-dark-surface: #292524;
+  --color-dark-border: #44403C;
+  --color-dark-text-primary: #F7F3EE;
+  --color-dark-text-secondary: #A8A29E;
+}
+
+@theme inline {
+  /* Colours */
+  --color-primary-900: var(--color-primary-900);
+  --color-primary-800: var(--color-primary-800);
+  --color-primary-700: var(--color-primary-700);
+  --color-primary-600: var(--color-primary-600);
+  --color-primary-500: var(--color-primary-500);
+  --color-primary-400: var(--color-primary-400);
+  --color-primary-300: var(--color-primary-300);
+  --color-primary-200: var(--color-primary-200);
+  --color-primary-100: var(--color-primary-100);
+  --color-primary-50: var(--color-primary-50);
+
+  --color-accent-800: var(--color-accent-800);
+  --color-accent-700: var(--color-accent-700);
+  --color-accent-600: var(--color-accent-600);
+  --color-accent-500: var(--color-accent-500);
+  --color-accent-400: var(--color-accent-400);
+  --color-accent-300: var(--color-accent-300);
+  --color-accent-200: var(--color-accent-200);
+  --color-accent-100: var(--color-accent-100);
+
+  --color-accent-warm: var(--color-accent-warm);
+  --color-accent-warm-light: var(--color-accent-warm-light);
+  --color-accent-warm-dark: var(--color-accent-warm-dark);
+
+  --color-text-primary: var(--color-text-primary);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-muted: var(--color-text-muted);
+  --color-background: var(--color-background);
+  --color-surface: var(--color-surface);
+  --color-border: var(--color-border);
+
+  /* Fonts */
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-display);
+}
+
+/* Dark mode — controlled by .dark class on <html> */
+html.dark {
+  --color-background: var(--color-dark-bg);
+  --color-surface: var(--color-dark-surface);
+  --color-border: var(--color-dark-border);
+  --color-text-primary: var(--color-dark-text-primary);
+  --color-text-secondary: var(--color-dark-text-secondary);
+  --color-text-muted: #78716C;
+
+  --color-primary-50: #292524;
+  --color-primary-100: #1C1917;
+  --color-primary-200: #44403C;
+
+  --color-accent-100: #1C2E2E;
+  --color-accent-200: #0D3D3D;
+  --color-accent-500: #0D9488;
+}
+
+/* ============================================================
+   Typography — Editorial hierarchy
+   ============================================================ */
+
+h1, h2, h3 {
+  font-family: var(--font-display, serif);
+  letter-spacing: -0.03em;
+}
+
+h1 {
+  font-size: clamp(3rem, 8vw, 8rem);
+  line-height: 0.95;
+  font-weight: 300;
+}
+
+h2 {
+  font-size: clamp(2rem, 4vw, 4rem);
+  line-height: 1.05;
+  font-weight: 300;
+}
+
+h3 {
+  font-size: clamp(1.25rem, 2vw, 1.75rem);
+  line-height: 1.2;
+  font-weight: 400;
+}
+
+/* ============================================================
+   Base styles
+   ============================================================ */
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans, ui-sans-serif, system-ui, sans-serif);
+}
+
+/* Grain texture overlay — subtle depth */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  opacity: 0.035;
+  pointer-events: none;
+  z-index: 9999;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
+/* Focus styles for accessibility */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Skip link for accessibility */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--color-surface-dark);
+  color: var(--color-ink-on-dark);
+  padding: 8px 16px;
+  z-index: 100;
+  transition: top 0.3s;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .scroll-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-surface-light-alt);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-ink-secondary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-ink-primary);
+}
+
+/* ============================================================
+   Editorial Components
+   ============================================================ */
+
+/* Animated text link underline */
+.editorial-link {
+  position: relative;
+  text-decoration: none;
+}
+
+.editorial-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background-color: currentColor;
+  transition: width 0.3s ease;
+}
+
+.editorial-link:hover::after,
+.editorial-link:focus-visible::after {
+  width: 100%;
+}
+
+/* Scroll reveal animation base class */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.scroll-reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scroll-reveal-scale {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.scroll-reveal-scale.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Stagger children */
+.stagger-children > .scroll-reveal:nth-child(1) { transition-delay: 0ms; }
+.stagger-children > .scroll-reveal:nth-child(2) { transition-delay: 100ms; }
+.stagger-children > .scroll-reveal:nth-child(3) { transition-delay: 200ms; }
+.stagger-children > .scroll-reveal:nth-child(4) { transition-delay: 300ms; }
+.stagger-children > .scroll-reveal:nth-child(5) { transition-delay: 400ms; }
+.stagger-children > .scroll-reveal:nth-child(6) { transition-delay: 500ms; }
+
+/* Horizontal rule — editorial style */
+.editorial-rule {
+  border: none;
+  height: 1px;
+  background: var(--color-border);
+}

@@ -1,0 +1,21 @@
+{
+  "name": "Small Giants Studio",
+  "short_name": "SGS",
+  "description": "Digital transformation for UK SMEs, charities, and social enterprises",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#FAFAFA",
+  "theme_color": "#1B6B6B",
+  "icons": [
+    {
+      "src": "/images/sgs-logo.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "/images/sgs-logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}

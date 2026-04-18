@@ -449,9 +449,9 @@ Located in `C:\Users\Bean\.claude\plugins\marketplaces\claude-plugins-official\p
 | Tool | Where | Purpose |
 |------|-------|---------|
 | `wp-cli` (`wp`) | SSH to remote WP sites, or local WP installs | All WP ops — search-replace, db export/import, plugin/theme management |
-| `phpcs` | `composer global`, also via `@wordpress/scripts` | PHP Coding Standards (WordPress ruleset) |
-| `phpstan` | Composer dev dep | PHP static analysis |
-| `composer` | Global | PHP package manager |
+| `phpcs` | `composer global`, also via `@wordpress/scripts` | PHP Coding Standards (WordPress ruleset). Wired into PostToolUse hook `wpcs-lint.py` — fires on every PHP edit |
+| `phpstan` | `plugins/sgs-blocks/vendor/bin/phpstan` (dev dep in `plugins/sgs-blocks/composer.json`) | PHP static analysis. Config: `plugins/sgs-blocks/phpstan.neon`, level 5, uses `szepeviktor/phpstan-wordpress` extension. Run: `cd plugins/sgs-blocks && vendor/bin/phpstan analyse` |
+| `composer` | Global | PHP package manager. Run `composer install` in `plugins/sgs-blocks/` to set up phpstan + phpunit dev deps |
 
 ### Frontend / build
 
