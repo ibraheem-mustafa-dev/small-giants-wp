@@ -33,6 +33,13 @@ function register_header_settings(): void {
 		'show_in_rest'      => true,
 	] );
 
+	// Compress logo on scroll (only relevant for sticky/shrink modes).
+	register_setting( 'sgs_header', 'sgs_header_compress_on_scroll', [
+		'type'              => 'boolean',
+		'default'           => false,
+		'sanitize_callback' => 'rest_sanitize_boolean',
+	] );
+
 	// Global top bar visibility.
 	register_setting( 'sgs_header', 'sgs_header_top_bar', [
 		'type'              => 'boolean',
@@ -216,6 +223,11 @@ function header_body_classes( array $classes ): array {
 		$classes = array_merge( $classes, $sgs_header_body_classes );
 	}
 
+	// Add body class for logo compression when enabled.
+	if ( (bool) get_option( 'sgs_header_compress_on_scroll', false ) ) {
+		$classes[] = 'sgs-header-compress-on-scroll';
+	}
+
 	return $classes;
 }
 add_filter( 'body_class', __NAMESPACE__ . '\header_body_classes' );
@@ -250,11 +262,15 @@ function render_header_settings_page(): void {
 		$top_bar = ! empty( $_POST['sgs_header_top_bar'] );
 		update_option( 'sgs_header_top_bar', $top_bar );
 
+		$compress = ! empty( $_POST['sgs_header_compress_on_scroll'] );
+		update_option( 'sgs_header_compress_on_scroll', $compress );
+
 		echo '<div class="updated"><p>' . esc_html__( 'Settings saved.', 'sgs-theme' ) . '</p></div>';
 	}
 
-	$current_mode    = get_option( 'sgs_header_mode', 'static' );
-	$current_top_bar = (bool) get_option( 'sgs_header_top_bar', true );
+	$current_mode     = get_option( 'sgs_header_mode', 'static' );
+	$current_top_bar  = (bool) get_option( 'sgs_header_top_bar', true );
+	$current_compress = (bool) get_option( 'sgs_header_compress_on_scroll', false );
 
 	$modes = [
 		'static'             => __( 'Static — scrolls with page', 'sgs-theme' ),
@@ -297,6 +313,18 @@ function render_header_settings_page(): void {
 						</label>
 						<p class="description">
 							<?php esc_html_e( 'The top bar is automatically hidden in transparent and transparent+sticky modes.', 'sgs-theme' ); ?>
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Logo Compression', 'sgs-theme' ); ?></th>
+					<td>
+						<label>
+							<input type="checkbox" name="sgs_header_compress_on_scroll" value="1" <?php checked( $current_compress ); ?>>
+							<?php esc_html_e( 'Compress logo and menu on scroll (sticky/shrink modes only)', 'sgs-theme' ); ?>
+						</label>
+						<p class="description">
+							<?php esc_html_e( 'When enabled, the logo shrinks and padding reduces as the user scrolls down.', 'sgs-theme' ); ?>
 						</p>
 					</td>
 				</tr>

@@ -314,7 +314,7 @@
 
 .sgs-post-grid__title a:hover,
 .sgs-post-grid__title a:focus-visible {
-	text-decoration: underline;
+	text-decoration: none; opacity: 0.85;
 }
 
 /* ==========================================================================
@@ -344,7 +344,7 @@
 
 .sgs-post-grid__readmore:hover,
 .sgs-post-grid__readmore:focus-visible {
-	text-decoration: underline;
+	text-decoration: none; opacity: 0.85;
 }
 
 /* ==========================================================================

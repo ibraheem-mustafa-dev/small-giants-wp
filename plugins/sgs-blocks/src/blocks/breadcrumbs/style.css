@@ -28,7 +28,7 @@
 
 .sgs-breadcrumbs__item a:hover {
 	color: var(--wp--preset--color--primary);
-	text-decoration: underline;
+	text-decoration: none; opacity: 0.85;
 }
 
 .sgs-breadcrumbs__item a:focus-visible {

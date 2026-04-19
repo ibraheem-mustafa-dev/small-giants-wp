@@ -105,6 +105,23 @@ body .is-root-container > .wp-block {
 	object-fit: contain;
 }
 
+/* ─── STICKY HEADER — LOGO COMPRESSION ON SCROLL (OPTIONAL) ─── */
+
+/*
+ * Only active when "Compress logo on scroll" is enabled in
+ * Settings > SGS Header. PHP adds .sgs-header-compress-on-scroll to <body>
+ * when the option is on. Relies on header-behaviour.js adding
+ * .is-scrolled to the header template-part on scroll.
+ */
+.sgs-header-compress-on-scroll header.wp-block-template-part.is-scrolled .wp-block-site-logo img {
+	max-height: 55px !important;
+	transition: max-height 0.3s ease;
+}
+
+.sgs-header-compress-on-scroll header.wp-block-template-part:not(.is-scrolled) .wp-block-site-logo img {
+	transition: max-height 0.3s ease;
+}
+
 /* Override inline width from block attributes */
 .sgs-header-sticky .wp-block-site-logo {
 	flex-shrink: 0;

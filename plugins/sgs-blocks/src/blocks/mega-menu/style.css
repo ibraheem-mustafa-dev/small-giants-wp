@@ -60,7 +60,7 @@
 	font-family:     inherit;
 	font-size:       inherit;
 	font-weight:     500;
-	color:           inherit;
+	color:           var(--wp--preset--color--text, #1E1E1E);
 	background:      transparent;
 	border:          none;
 	cursor:          pointer;
@@ -78,6 +78,11 @@
 .sgs-mega-menu__trigger:focus-visible {
 	outline:        2px solid var(--wp--preset--color--accent, currentColor);
 	outline-offset: 2px;
+}
+
+/* Active/expanded state — gold text to indicate which menu is open */
+.sgs-mega-menu__trigger[aria-expanded="true"] {
+	color: var(--wp--preset--color--accent, #d8ca50) !important;
 }
 
 /* Highlight variant */
@@ -347,7 +352,7 @@
 }
 
 .sgs-mega-menu-card__link:hover {
-	text-decoration: underline;
+	text-decoration: none; opacity: 0.85;
 }
 
 /* ── tabbed: horizontal tab bar + content area ───────────────── */
@@ -625,7 +630,7 @@
 .sgs-mega-menu__panel a:hover,
 .sgs-mega-menu__panel a:focus-visible {
 	color:           var(--wp--preset--color--primary, currentColor);
-	text-decoration: underline;
+	text-decoration: none; opacity: 0.85;
 }
 
 /* ── Nav items: icon + text links ─────────────────────────── */
