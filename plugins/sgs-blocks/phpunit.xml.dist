@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
+    bootstrap="tests/php/bootstrap.php"
+    cacheDirectory=".phpunit.cache"
+    displayDetailsOnTestsThatTriggerWarnings="true"
+    displayDetailsOnTestsThatTriggerDeprecations="true"
+    displayDetailsOnTestsThatTriggerErrors="true"
+    displayDetailsOnTestsThatTriggerNotices="true"
+    colors="true"
+>
+    <!--
+    ┌─────────────────────────────────────────────────────────────────────────┐
+    │  SGS Blocks — PHPUnit Configuration                                     │
+    │                                                                         │
+    │  Self-contained: NO WordPress installation required.                    │
+    │  Tests validate block.json contracts, PHP file structure, and the       │
+    │  form subsystem source files via static analysis.                       │
+    │                                                                         │
+    │  Run with:                                                              │
+    │    composer install                                                     │
+    │    vendor/bin/phpunit                                                   │
+    └─────────────────────────────────────────────────────────────────────────┘
+    -->
+
+    <!-- Test suites -->
+    <testsuites>
+        <testsuite name="SGS Blocks">
+            <directory>tests/php</directory>
+            <exclude>tests/php/bootstrap.php</exclude>
+        </testsuite>
+    </testsuites>
+
+    <!-- Code coverage source -->
+    <source>
+        <include>
+            <directory>includes</directory>
+            <file>sgs-blocks.php</file>
+        </include>
+        <exclude>
+            <directory>vendor</directory>
+            <directory>node_modules</directory>
+            <directory>build</directory>
+            <directory>tests</directory>
+        </exclude>
+    </source>
+
+    <!-- PHP INI settings for the test run -->
+    <php>
+        <ini name="display_errors" value="1" />
+        <ini name="error_reporting" value="-1" />
+    </php>
+</phpunit>
