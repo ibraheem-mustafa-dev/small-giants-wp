@@ -2,13 +2,13 @@
 
 ## Completed This Session
 
-1. **Phase 0 tooling-audit fixes (4 items)** — (a) `skillscore-check.py` "BROKEN" claim removed from 3 doc locations (hook has been returning accurate scores all session — proven by 10+ correct skillscore events); (b) MCP deprecation verified — 4 deprecated MCPs (`wp-blockmarkup`, `sgs-blockmarkup`, `wp-devdocs`, `a11y-accessibility`) confirmed DISABLED, ~6000 tokens/session savings real; (c) `update-pipeline-state.py` deleted (pure passthrough to missing `pipeline-enforcer.py`); (d) `/site-clone` command renamed to `/clone-patterns`, sgs-site-clone anti-route + TOOLING-REFERENCE.md updated, 85% skillscore.
+1. **Phase 0 tooling-audit fixes (4 items)** — (a) `skillscore-check.py` "BROKEN" claim removed from 3 doc locations (hook has been returning accurate scores all session — proven by 10+ correct skillscore events); (b) MCP deprecation verified — 4 deprecated MCPs (`wp-blockmarkup`, `sgs-blockmarkup`, `wp-devdocs`, `a11y-accessibility`) confirmed DISABLED, ~6000 tokens/session savings real; (c) `update-pipeline-state.py` deleted (pure passthrough to missing `pipeline-enforcer.py`); (d) `/site-clone` command renamed to `/clone-patterns`, build-website anti-route + TOOLING-REFERENCE.md updated, 85% skillscore.
 2. **Merged PR #7 to main** (squash) — session 13-14-15 tooling work + feature-audit reality pass (45% verified / 139 of 310). Branch `refresh/feature-audit-2026-04-18` deleted.
 3. **Closed PR #6** — superseded by #7 (same commits). Branch `feat/diagnostics-lint-commands` deleted.
 4. **Closed PR #4** — mega-menu templates superseded by direct commits on main (2-3 days newer: `mega-menu-panels.css` on main via `20d978c` on 2026-03-27 vs PR #4's 2026-03-25). Branch `feat/mega-menu-templates` deleted.
 5. **11-repo sweep** — committed 362 uncommitted files across all active repos. Pushed 10; `helpingdoctors.org` blocked because GitHub repo is archived.
 6. **Created `open-icd11` GitHub repo** (private) at github.com/ibraheem-mustafa-dev/open-icd11. Previously had no remote.
-7. **Answered 6-pipeline coverage question (revenue-critical)** — only **1 of 6** chargeable service pipelines is fully orchestrated (`/sgs-site-clone`). Others: new-build partial, draft→SGS reference-only, audit→redesign partial, **client-onboarding MISSING** (biggest revenue gap), QA→deploy partial (fix loop missing).
+7. **Answered 6-pipeline coverage question (revenue-critical)** — only **1 of 6** chargeable service pipelines is fully orchestrated (`/build-website`). Others: new-build partial, draft→SGS reference-only, audit→redesign partial, **client-onboarding MISSING** (biggest revenue gap), QA→deploy partial (fix loop missing).
 
 ## Current State
 
@@ -36,9 +36,9 @@
 
 | File path | What changed |
 |---|---|
-| `C:/Users/Bean/Projects/small-giants-wp/TOOLING-REFERENCE.md` | Skillscore "BROKEN" claim removed (3 spots); MCP deprecation verified + re-check command; `pipeline-enforcer.py` row updated to "intentionally absent, fails-open"; `/site-clone` row replaced with `/clone-patterns`; sgs-site-clone path corrected (`.claude/skills/` not `.agents/skills/`) |
+| `C:/Users/Bean/Projects/small-giants-wp/TOOLING-REFERENCE.md` | Skillscore "BROKEN" claim removed (3 spots); MCP deprecation verified + re-check command; `pipeline-enforcer.py` row updated to "intentionally absent, fails-open"; `/site-clone` row replaced with `/clone-patterns`; build-website path corrected (`.claude/skills/` not `.agents/skills/`) |
 | `C:/Users/Bean/.claude/commands/clone-patterns.md` | Renamed from `site-clone.md` |
-| `C:/Users/Bean/.claude/skills/sgs-site-clone/SKILL.md` | Anti-route updated + added `## When NOT to use` body section (pre-existing FATAL gap); skillscore 85% |
+| `C:/Users/Bean/.claude/skills/build-website/SKILL.md` | Anti-route updated + added `## When NOT to use` body section (pre-existing FATAL gap); skillscore 85% |
 | `C:/Users/Bean/.claude/hooks/update-pipeline-state.py` | Deleted — pure passthrough to missing `pipeline-enforcer.py` |
 | `C:/Users/Bean/Projects/small-giants-wp/NEXT-SESSION-PROMPT.md` | Rewritten: revised Phase 1 plan + USP/motivation layer + 6-pipeline coverage verdict + Sonnet batch dispatch template |
 | (Plus 11-repo sweep — 362 files across Openclaw Password Protector, booking-system, helpingdoctors.org, insight-graph, medinova, mosque-timetable, open-icd11, sgs-qr-generator, small-giants-studio, small-giants-wp, windowsagent) | Canonical `.claude/` scaffolding + session WIP committed per repo, one commit each |
@@ -114,10 +114,6 @@ Dispatch size-ordered Sonnet batches (simple implementation skills → composite
 ## Task 3 — Stage 1c 4-lens + 6-lens decision table
 
 Opus reads profiles, applies: Redundancy / Inefficiency / Gap / Forgotten (4 lenses) + System-effect + Motivation (6th lens). Output: `docs/tooling-audit/2026-04-19-decision-table.md` with KEEP / MERGE / SPLIT / DELETE / NEW per item + one-line rationale + motivation text (USP + action + % impact).
-
-## Task 4 — Resolve helpingdoctors.org archive
-
-One local commit `b55193a` blocked because the GitHub repo is archived. Ask Bean: unarchive (`gh repo edit ibraheem-mustafa-dev/helpingdoctors.org --archived=false`) or `git reset --hard HEAD~1` locally. 10-second decision, unblocks forever.
 
 ## Guardrails
 

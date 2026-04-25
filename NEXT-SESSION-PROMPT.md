@@ -1,3 +1,9 @@
+## New incoming work (2026-04-21)
+
+**Read `HANDOFF-FROM-SGS-STUDIO-2026-04-21.md` FIRST** — bundles 5 tasks (dual-mode optimisers, slim `/gap-analysis`, `/lifecycle` cascade, new `/qc` + `/qc-inline` skills) plus 3 low-effort fixes (autopilot patch, sgs-extraction 4 errors, frontend-design merge). Master spec at `docs/plans/2026-04-21-toolset-spec-from-sgs-studio-session.md`. Pre-existing Phase 1 Stage 1a content below is compatible — the tooling-audit framing still holds and the incoming work slots into Stage 1d onwards.
+
+---
+
 ## Where You Are
 
 Plan: `.claude/plans/sgs-skill-system-upgrade.md` (tooling-audit Phase 1 deferred from session 15).
@@ -11,7 +17,7 @@ Read `CONVERSATION-HANDOFF.md` first, then `CLAUDE.md`. Resume with "Starting Ph
 
 ## USP (motivation — read first)
 
-Tooling audit turns the skill library into **6 productised chargeable services with end-to-end orchestrators**. Today: 1 of 6 exists (`/sgs-site-clone`). Closing the other 5 = ~60% Bean-time reduction per client engagement. **This is the revenue unlock.**
+Tooling audit turns the skill library into **6 productised chargeable services with end-to-end orchestrators**. Today: 1 of 6 exists (`/build-website`). Closing the other 5 = ~60% Bean-time reduction per client engagement. **This is the revenue unlock.**
 
 ## Skills to Invoke
 
@@ -66,8 +72,8 @@ Goal: accurate inventory before any grading.
 Dispatch Sonnet batches in this order (bottom-up):
 1. Simple implementation skills (leaves) — `/polish`, `/distill`, `/bolder`, `/quieter`, `/colourise`, `/delight`, `/harden`, `/clarify`, `/normalize`, `/extract`, `/onboard`, `/adapt`, `/optimise`, `/audit`, `/critique`
 2. Composite skills — `/innovative-design`, `/interactive-design`, `/frontend-design`, `/ui-ux-pro-max`, `/superdesign`, `/design-ref`, `/design-review`, `/visual-qa`
-3. Research skills (re-verify) — `/research-check`, `/research-buddies`, `/research-couple`, `/research-council`, `/deep-research`
-4. Pipeline skills — `/sgs-site-clone`, `/animation-harvest`, `/research-pipeline`, `/sgs-extraction`
+3. Research skills (re-verify - very brief) — `/research-check`, `/research-buddies`, `/research-couple`, `/research-council`, `/deep-research`
+4. Pipeline skills — `/build-website`, `/animation-harvest`, `/research-pipeline`, `/sgs-extraction`
 5. Meta-orchestrators — `/autopilot`, `/lifecycle`, `/wordpress-router`, `/innovative-design` router, `/seo` router, `/search`, `/research`
 6. Non-skill tools — 10 WP CLIs, ~40 hooks, MCPs, plugins, agents, reference docs, OC pipelines
 
@@ -80,10 +86,6 @@ Opus reads profiles, applies: **Redundancy / Inefficiency / Gap / Forgotten** (4
 ## Task 4 — Stage 1d implement, 1e `/project-consolidate`, 1f `/strategic-plan` + `/phase-planner`
 
 Execute the decision table. End Phase 1 with consolidation + strategic plan covering: tooling follow-ups (orchestrators for 4-5 missing chargeable pipelines) + one phase per urgent client site (5 sites — Bean names them in session) + structural monitoring plan (cron + issue log + fix-verify + recurrence-detection).
-
-## Task 5 — Resolve helpingdoctors.org archive
-
-One local commit `b55193a` blocked because GitHub repo archived. Ask Bean: unarchive (`gh repo edit ibraheem-mustafa-dev/helpingdoctors.org --archived=false`) or `git reset --hard HEAD~1` locally. 10-second decision.
 
 ## Open Threads
 

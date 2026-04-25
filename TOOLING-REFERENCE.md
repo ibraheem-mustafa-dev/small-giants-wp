@@ -1,797 +1,904 @@
-# SGS / WordPress / Design / Design-Review — Full Tooling Reference
+# SGS WP / Design / Website Tooling — Audit Workbook
 
-**Purpose:** Single source of truth for every tool, skill, agent, script, hook, MCP server, plugin, CLI, and reference doc that supports WordPress, SGS Framework, design, and design review/analysis work.
+**Purpose:** Living audit of every tool that directly serves SGS WordPress, design, and website work, plus the select few code-quality tools used across those pipelines. Evolves in two phases:
 
-**Scope:** Only includes tools that are installed, working, and relevant to these four areas. Ambiguous or unverified items are flagged.
+1. **Audit phase (now):** For every in-scope tool, capture USP, optimisation level, usage modes, duplicates, gaps, improvements, and trim/expand verdict. Used to refine the toolset before it powers client engagements.
+2. **Reference phase (later):** Once the toolset has been refined, the audit collapses to a condensed one-line `name + when to use` reference.
 
-**Generated:** 2026-04-14 | **Maintained:** manually; re-run the audit when the skill roster changes
-
----
-
-## Table of Contents
-
-1. [Skills — WordPress Core](#skills--wordpress-core)
-2. [Skills — SGS Framework Specific](#skills--sgs-framework-specific)
-3. [Skills — Design & Aesthetic](#skills--design--aesthetic)
-4. [Skills — Design Review / QA / Analysis](#skills--design-review--qa--analysis)
-5. [Skills — Performance & Accessibility](#skills--performance--accessibility)
-6. [Skills — Browser Testing & Capture](#skills--browser-testing--capture)
-7. [Skills — Supporting (research, image, email, animation)](#skills--supporting)
-8. [Slash Commands](#slash-commands)
-9. [Agents (Custom Subagents)](#agents-custom-subagents)
-10. [Python Hooks & Scripts (`~/.claude/hooks/`)](#python-hooks--scripts)
-11. [SGS WP Engine Scripts (`~/.agents/skills/sgs-wp-engine/scripts/`)](#sgs-wp-engine-scripts)
-12. [PHP / Build Tooling (inside `small-giants-wp/`)](#php--build-tooling)
-13. [MCP Servers](#mcp-servers)
-14. [Claude Code Plugins](#claude-code-plugins)
-15. [CLI Tools (External Binaries)](#cli-tools-external-binaries)
-16. [Hooks Fired Automatically on WP/SGS Work](#hooks-fired-automatically)
-17. [Reference Docs & Knowledge Bases](#reference-docs--knowledge-bases)
+**Generated:** 2026-04-14 | **Rewritten for scope+audit format:** 2026-04-21 | **Maintained by:** `/sgs-update` + manual audit passes
 
 ---
 
-## Skills — WordPress Core
+## Scope
 
-All live in `C:\Users\Bean\.agents\skills\` (shared between CC and OC).
+**In scope** — tools directly involved in:
+- SGS WordPress Framework development (theme, blocks, plugins)
+- Design and aesthetic work (blocks, patterns, style variations, animations)
+- Website building and review (new builds, migrations, audits, QA, deploy)
+- Code quality and reliability for the above (select few — see §4)
+- Lifecycle tooling that keeps the toolset itself healthy
 
-| Skill | Purpose | When to use |
-|-------|---------|-------------|
-| `/wordpress-router` | Classifies any WP request and dispatches to the right specialist sub-skill | Start of any WP task where the specific skill isn't already obvious |
-| `/wp-project-triage` | Deterministic inspection of a WP repo (plugin / theme / block theme / WP core / full site) | First touch with an unfamiliar WP codebase |
-| `/wp-block-development` | Gutenberg block dev — `block.json`, attributes, serialisation, save/edit, deprecations | Building or editing custom blocks |
-| `/wp-block-themes` | `theme.json` (global settings/styles), templates, template parts, patterns, style variations | Block theme work, FSE, design token configuration |
-| `/wp-interactivity-api` | `data-wp-*` directives, `@wordpress/interactivity` store/state/actions | Interactive block behaviour (accordions, sliders, nav state) |
-| `/wp-plugin-development` | Plugin architecture, hooks, activation/deactivation/uninstall, Settings API, data storage | Building or modifying WP plugins |
-| `/wp-rest-api` | `register_rest_route`, controller classes, schema validation, auth | Custom REST endpoints |
-| `/wp-wpcli-and-ops` | WP-CLI commands — safe search-replace, db export/import, plugin/theme/user/content management | Any WP ops work, migrations, bulk changes |
-| `/wp-site-extraction` | Reverse-engineer live WP sites via SSH — design system, menus, blocks, CSS, header/footer structure | When you have SSH access and need the full site blueprint |
-| `/wp-performance` | Static code review (grep-based anti-patterns) + runtime profiling (WP-CLI profile/doctor, Query Monitor) | Performance investigation before or after deployment |
-| `/wp-abilities-api` | `wp_register_ability`, `wp_register_ability_category`, `/wp-json/wp-abilities/v1/*` | Bleeding-edge WP Abilities API work |
+**Internal vs external** — two separate sections:
+- **Internal** = tools *inside* an SGS pipeline, maintained by Bean
+- **External dependencies** = MCPs, CLIs, cloud APIs, plugins — maintained by others but load-bearing for SGS work
 
----
+**Out of scope — deliberately excluded:**
+- Personal / business tools: `/invoice-sgs`, `/grant-draft`, `/grant-track`, `/tub-applications`, `/youtube-publish`, `/yt-transcript`, `/whisper`, `/record`, `/linkedin`, `/morning`, `/status`, `/islamic-fact-checker`, ICD-10 MCP
+- Communication: `/telegram-history`, Telegram/Discord MCPs, Gmail/Calendar/Drive/Gamma MCPs
+- OS automation: `/windowsagent` suite
+- Cross-cutting research not used in design/website pipelines: `/deep-research`, `/research-council`, `/research-couple` (unless invoked specifically for design decisions — captured per-pipeline)
+- Meta code-quality not currently used: tools present on disk but not actually invoked during SGS work (flagged in audit with verdict: `DELETE from scope`)
 
-## Skills — SGS Framework Specific
-
-| Skill | Purpose | When to use |
-|-------|---------|-------------|
-| `/sgs-wp-engine` | Central authority for SGS blocks, theme, client onboarding, QA pipeline, mockup-to-blocks, pattern building. Has access to the 57-block / 822-attribute SQLite KB | Any SGS Framework task — block dev, theme customisation, client site setup, innovating new features |
-| `/sgs-site-clone` | 8-stage pipeline: URL → shipped SGS WordPress site. Three input modes: single URL, multi-source mix-and-match, discovery. Location: `C:/Users/Bean/.claude/skills/sgs-site-clone/` (corrected 2026-04-18 — doc previously said `.agents/skills/`) | Client website replication (WP or non-WP source) |
-| `/sgs-discover` | Gallery search across Awwwards / Siteinspire / Dribbble / Godly / CSS Design Awards | Finding reference sites before a client build |
-| `/sgs-extraction` | Capture full-page HTML, design tokens, DOM structure. Coordinates `html-capture.js` + `design-extract.py` + Gemini Vision | Pulling a design system out of any URL into the SGS DB |
-| `/sgs-email-branding` | Apply SGS brand tokens to email templates | Client email templates, newsletters, transactional emails |
-| `/sgs-update` | Re-scan SGS codebase and refresh the 619-attribute knowledge base DB | After changes to blocks, tokens, or patterns |
-| `/design-tokens` | Sync design tokens between SGS database and `theme.json` | Changing global colours/fonts/spacing in the framework |
-| `/wp-blocks` | Search WordPress + SGS blocks, schemas, attributes, markup, variations | Before building a new block — check if one already exists |
-| `/clone-patterns` | URL → SGS WP block-pattern PHP files (Gemini Vision + Playwright). Outputs one pattern per identified section (hero, features, testimonials, etc.). Renamed from `/site-clone` on 2026-04-18 for clarity. | Pattern-generation component of the `/sgs-site-clone` pipeline (used at Stage 5 — PATTERN GEN). Invoke standalone when you only need the pattern files without assembly/QA/deploy. |
+**What "ready for when I start using the system" means:** the toolset has to carry a live client engagement end-to-end without gaps, broken links, or duplicates. Every in-scope tool must earn its place.
 
 ---
 
-## Skills — Design & Aesthetic
+## How to read this doc
 
-All live in `~/.agents/skills/`. Most are routed via `/innovative-design` but each is also invokable directly.
+Each in-scope tool has a 7-point audit block:
 
-| Skill | Purpose | When to use |
-|-------|---------|-------------|
-| `/innovative-design` | Design quality router — classifies request and dispatches to the right sub-skill | Entry point when design request is unclear |
-| `/interactive-design` | Purposeful animations, micro-interactions, motion effects | Adding movement to a component or page |
-| `/frontend-design` | Production-grade frontend interfaces (avoids generic AI aesthetics) | Building distinctive UI from scratch |
-| `/ui-ux-pro-max` | 50 styles, 21 palettes, 50 font pairings, 20 charts, 9 stacks | Design system ideation, choosing a visual direction |
-| `/superdesign` | Typography hierarchy, OKLCH colour theory, spacing rhythm (4px base), animation micro-reference | Reference lookup while designing |
-| `/tailwind-design-system` | Tailwind CSS v4 design systems, tokens, responsive patterns | Tailwind-based projects |
-| `/style-replicator` | Extract and replicate design/style patterns | Matching an existing brand or reference design |
-| `/design-ref` | Two-pass design extraction (Playwright CSS + Gemini Vision) → `theme.json`-compatible output | Pulling design tokens from ANY URL with confidence scores |
-| `/teach-impeccable` | One-time setup to gather design context for a project and save to AI config | Project kickoff — establish design baseline |
-| `/adapt` | Adapt designs across screen sizes, devices, contexts, platforms | Responsive/multi-platform work |
-| `/bolder` | Amplify safe or boring designs to be more visually interesting | Design feels flat, needs punch |
-| `/quieter` | Tone down overly bold or visually aggressive designs | Design feels shouty, needs restraint |
-| `/colourise` | Add strategic colour to monochromatic features | Interface feels grey and dull |
-| `/delight` | Add moments of joy, personality, unexpected touches | Pre-ship polish — turn functional into memorable |
-| `/distill` | Strip designs to their essence, remove unnecessary complexity | Over-designed interface needs simplification |
-| `/extract` | Extract and consolidate reusable components, design tokens, patterns into a design system | Systematising a codebase's design decisions |
-| `/normalize` | Normalise design to match the design system, ensure consistency | Off-brand or inconsistent components |
-| `/onboard` | Design or improve onboarding flows, empty states, first-time UX | First-run experience work |
-| `/optimise` | Improve interface performance (loading, rendering, animations, images, bundle) | Performance feel-smoothness work |
-| `/polish` | Final quality pass — alignment, spacing, consistency, detail | Pre-ship polish |
-| `/harden` | Improve resilience — error handling, i18n, overflow, edge cases | Making interfaces robust |
-| `/clarify` | Improve UX copy, error messages, microcopy, labels | Copy feels unclear or jargon-heavy |
+```
+### /tool-name
+- **USP:** unique value nothing else provides
+- **Optimisation:** well-built / decent / rough / broken / [audit needed]
+- **Usage modes:** the different ways to invoke it
+- **Duplicates / overlaps:** other tools in the same space → keep / delete / merge / specialise
+- **Gaps:** what this tool should cover but doesn't
+- **Improvements:** features that would unlock more value
+- **Trim / expand verdict:** leave as-is / slim down / add features / consolidate
+```
+
+Where data is missing or uncertain, the block shows `[audit needed — Stage 1b]` for the pending Sonnet-batch pass. Bean's handoff plan (`NEXT-SESSION-PROMPT.md`) dispatches those batches in size order.
 
 ---
 
-## Skills — Design Review / QA / Analysis
+## Pipelines — what tools chain into what outcomes
 
-| Skill | Purpose | When to use |
-|-------|---------|-------------|
-| `/design-review` | Design review on any URL, screenshot, or HTML mockup. Checks visual quality, WCAG 2.2 AA, design system consistency | Any pre-ship design check |
-| `/visual-qa` | SGS 8-layer visual QA pipeline with Quick / Full / Compare modes | Production QA on an SGS site before deployment |
-| `/critique` | Evaluate design effectiveness (visual hierarchy, IA, emotional resonance) | "Is this design any good?" gut check with structure |
-| `/audit` | Comprehensive audit across accessibility, performance, theming, responsive design | Whole-interface quality sweep |
-| `/site-reviewer` | 9-layer audit pipeline for any URL (design + SEO + performance + a11y + security) | Universal website quality report for any client site |
-| `/gap-analysis` | Grade any target 0–5 with opportunity detection + S-grade screen | After building a skill/agent/pipeline/page — quality gate |
+Eight pipelines or standing workflows run on this toolset. Column 2 lists tools in sequence. Any tool not mapped to at least one pipeline is a candidate for `DELETE from scope`.
 
----
+| # | Pipeline | Sequence (tools invoked in order) |
+|---|----------|-----------------------------------|
+| 1 | **New client build** (brief → shipped site) | `/sgs-discover` → `/sgs-extraction` or `/design-ref` → `/sgs-wp-engine` → `/wp-block-themes` + `/wp-block-development` + `/interactive-design` → `/visual-qa` → `/deploy-check` → deploy |
+| 2 | **WP → SGS migration** (existing site replica) | `/wp-site-extraction` → `/sgs-extraction` → `/sgs-wp-engine` → `/wp-block-development` → `/design-review` → `/visual-qa` → `/deploy-check` |
+| 3 | **Draft → SGS** (HTML/JS/image mockup) | `/design-ref` → `/clone-patterns` → `/sgs-wp-engine` → `/wp-block-development` → `/design-review` → `/visual-qa` → `/deploy-check` |
+| 4 | **Audit → redesign proposal** | `/site-reviewer` → `/seo-audit` → `/wp-perf` → `/a11y-audit` → `/gap-analysis` → proposal doc |
+| 5 | **Client onboarding** (hosting → live WP) | `/cloudflare-toolkit` → `/vps-deploy` (or Hostinger via SSH) → `/wp-wpcli-and-ops` → style variation → content migration |
+| 6 | **QA → deploy** (orchestrated pre-ship) | `/visual-qa` → `/design-review` → `/wp-theme-check` → `/wp-perf-gate` → `/diagnostics` → `/lint` → `/deploy-check` → deploy |
+| 7 | **`/build-website` (productised 8-stage)** | URL → extract → patterns → blocks → QA → deploy. Single invocation wraps pipelines 2/3. |
+| 8 | **Block development (standing)** | `/wp-blocks` lookup → `/wp-block-development` → `/wp-hooks` → `/diagnostics` → `/lint` → `/visual-qa` (single-block mode) |
 
-## Skills — Performance & Accessibility
+**Standing workflows (not pipelines but recurring):**
+- **Debug a bug:** `/systematic-debugging` → `/diagnostics` → `/wp-performance` or browser MCP → `/verification-before-completion`
+- **Ship a framework update:** build → `/wp-theme-check` → `/gap-analysis` (on skill/agent if touched) → commit → deploy
+- **Lifecycle maintenance:** `/lifecycle` → `/skillscore` → `/gap-analysis` → `/docscore` (when editing skills/agents/pipelines)
 
-| Skill | Purpose | When to use |
-|-------|---------|-------------|
-| `/a11y-audit` | WCAG 2.2 AA audit on URL, HTML string, or colour contrast | Any accessibility check, pre-deploy or in-development |
-| `/accessibility-scan` | Comprehensive accessibility audit via axe-core integration | Deeper a11y audit than `a11y-audit` |
-| `/wp-perf` | Full-stack WP performance audit — backend (WP-CLI) + frontend (Core Web Vitals) | Performance investigation on a live WP site |
-| `/wp-perf-gate` | Performance regression gate — designed to wire into PreToolUse to block bad commits | Pre-deploy gate |
-| `/wp-theme-check` | Validate `theme.json` against a WP version — flags deprecated + v3-only features | Before pushing `theme.json` changes |
-| `/wp-scaffold` | Generate SGS-standards plugin skeleton with security, PHPStan, i18n | New plugin work |
-| `/wp-hooks` | Search, validate, inspect WP hooks from the 7,283-hook verified database | Before writing `add_action` / `add_filter` — verify the hook is real |
-| `/wp-hook-graph` | Map WP hook dependencies in a plugin — scan, visualise, validate | Understanding hook flow in a complex plugin |
+Tools currently **unmapped** to any pipeline (investigate during Stage 1b): `[TBD — listed after audit pass]`
 
 ---
 
-## Skills — Browser Testing & Capture
+## 1. Internal — WordPress Core Skills
 
-| Skill | Purpose | When to use |
-|-------|---------|-------------|
-| `/playwright` | Browser automation — navigate, screenshots, forms, a11y audits, page behaviour verification | All systematic browser work (multi-breakpoint, loops, structured output) |
-| `/screenshot` | Capture screens, windows, regions across platforms with the right tools | One-off screenshots — not multi-breakpoint systematic |
-| `/superpowers-chrome:browsing` | Persistent Chrome DevTools Protocol browser with auto-capture | Controlling an existing browser session, multi-tab work |
-| `/chrome-devtools-mcp:chrome-devtools` | Chrome DevTools via MCP — debugging, network inspection, Lighthouse, performance traces | Live browser debug, LCP optimisation, a11y debugging |
-| `/chrome-devtools-mcp:a11y-debugging` | Chrome DevTools-based a11y audit — semantic HTML, ARIA, keyboard | Deep a11y debug beyond axe-core |
-| `/chrome-devtools-mcp:debug-optimize-lcp` | Guided LCP debugging/optimisation with Chrome DevTools traces | Fixing specific LCP regressions |
-| `/chrome-devtools-mcp:troubleshooting` | DevTools connection/target issue troubleshooting | When Chrome DevTools MCP itself is misbehaving |
+Canonical location: `C:\Users\Bean\.agents\skills\<name>\`. All invocable via `/skill-name`.
 
----
+### `/wordpress-router`
+- **USP:** One entry point for any WP task — classifies the request and dispatches to the right specialist.
+- **Optimisation:** [audit needed — Stage 1b]
+- **Usage modes:** Direct invocation; auto-routed by `/autopilot` on WP-keyword messages.
+- **Duplicates / overlaps:** None — it's the router. Downstream specialists are the 10 skills below.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** [audit needed]
 
-## Skills — Supporting
+### `/wp-project-triage`
+- **USP:** Deterministic first-touch inspection of any WP repo (plugin / theme / block theme / core / full site).
+- **Optimisation:** [audit needed]
+- **Usage modes:** Run once per unfamiliar repo.
+- **Duplicates / overlaps:** Overlaps partly with `/wp-site-extraction` (repo vs live site). Different targets — keep both.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** [audit needed]
 
-| Skill | Purpose | When to use |
-|-------|---------|-------------|
-| `/image-optimiser` | Optimise images for web, apps, print. Convert to WebP/AVIF, compress | Before uploading media, after mockup export |
-| `/animation-harvest` | 8-stage pipeline: extract web animations → modular SGS framework extensions | Building the SGS animation library from web inspiration |
-| `/email-html-builder` | Build production email templates with semantic HTML/CSS (Gmail, Outlook, Apple Mail compatible) | Client emails, transactional templates, newsletters |
-| `/nano-banana-pro` / `/generate` | Nano Banana image generation via Gemini CLI — thumbnails, icons, diagrams, illustrations | Synthetic image generation for blog, YT, mockups |
-| `/deep-research` | High-stakes research — iterative depth, multi-angle cross-reading, 20+ sources | Design strategy decisions, competitor deep-dives |
-| `/research-buddies` | Cutting-edge + practical angles (The Nerd + The Practitioner) | Design pattern research with real-world validation |
-| `/research` | Entry point — auto-routes to the right research tier | Any research question, unclear which tier |
-| `/search` | Web search — auto-routes to Brave / Firecrawl / SerpAPI / Tavily | Web search that needs routing |
-| `/library-docs` | Fetch up-to-date library docs (replaces Context7 MCP) | WP/React/Playwright API lookups |
-| `/handoff` | Generate session handoff summary | End of session |
-| `/watch` | Process YouTube videos — learning or research | Turning video inspiration into text notes |
-| `/deploy-check` | Pre-deployment checklist for a WP site | Before pushing to staging/production |
-| `/deploy-nextjs` | Pre-deployment checklist for Next.js | Next.js project deploy |
+### `/wp-block-development`
+- **USP:** Authoritative guide for Gutenberg block dev — `block.json`, attributes, save/edit, serialisation, deprecations.
+- **Optimisation:** [audit needed]
+- **Usage modes:** Building new blocks; editing existing blocks; deprecation handling.
+- **Duplicates / overlaps:** None — the other block skills (`/wp-block-themes`, `/wp-interactivity-api`) cover adjacent but distinct areas.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** [audit needed]
 
----
+### `/wp-block-themes`
+- **USP:** `theme.json` authority + templates/patterns/style-variations specialist.
+- **Optimisation:** [audit needed]
+- **Usage modes:** Block theme development, FSE work, design-token configuration.
+- **Duplicates / overlaps:** None.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** [audit needed]
 
-## Slash Commands
+### `/wp-interactivity-api`
+- **USP:** `data-wp-*` directives, `@wordpress/interactivity` store/state/actions.
+- **Optimisation:** [audit needed]
+- **Usage modes:** Interactive blocks (accordions, sliders, nav state, lightboxes).
+- **Duplicates / overlaps:** None — but vanilla-JS block patterns might belong in `/wp-block-development` instead. Worth clarifying the boundary.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** [audit needed]
 
-Located in `C:\Users\Bean\.claude\commands\`. These are thin wrappers over skills — the distinction is that commands appear in the `/` menu. The skills table above already lists the main ones. Additional commands not yet covered:
+### `/wp-plugin-development`
+- **USP:** Plugin architecture, hooks, activation/deactivation/uninstall, Settings API, data storage, i18n, security.
+- **Optimisation:** [audit needed]
+- **Usage modes:** Building plugins (sgs-blocks, sgs-booking, sgs-client-notes, future).
+- **Duplicates / overlaps:** None.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** [audit needed]
 
-| Command | Path | Purpose |
-|---------|------|---------|
-| `/cerebras` | `cerebras.md` | Zero-cost LLM delegation via Cerebras (primary free model — Qwen-3-235b at 1,400 t/s) |
-| `/gemini`, `/gemini-flash`, `/gemini-pro` | `gemini*.md` | Gemini CLI delegation (1M context, zero or low cost) |
-| `/where-am-i` | `where-am-i.md` | Show position in the current project's plan |
-| `/update-architecture` | `update-architecture.md` | Update the project's living architecture doc |
-| `/review` | `review.md` | Code review for best practices |
-| `/dev` | `dev.md` | Development workflow — auto-detects phase |
-| `/status` | `status.md` | Live-verified cross-project portfolio dashboard |
-| `/morning` | `morning.md` | Daily planning ritual |
-| `/lifecycle` | `lifecycle.md` | Create/edit/audit/grade skills/agents/pipelines/commands/routers |
-| `/diagnostics` | `diagnostics.md` | Show VS Code Problems panel — all errors/warnings from every LSP and linter extension (TypeScript, ESLint, PHP LSP, Tailwind, Error Lens). Uses `mcp__ide__getDiagnostics`. Faster than running `tsc`/`eslint`/`phpcs` via Bash because the LSPs have already cached results. Pass a file path to scope. |
-| `/lint` | `lint.md` | Runs the correct CLI linter/formatter for the target file(s) with autofix. Routes by extension: eslint+prettier (JS/TS), prettier (JSON/MD/CSS), phpcbf+phpcs (PHP), ruff (Python). Pair with `/diagnostics` — the LSPs surface findings, this command applies fixes. |
+### `/wp-rest-api`
+- **USP:** `register_rest_route`, controller classes, schema validation, auth.
+- **Optimisation:** [audit needed]
+- **Usage modes:** Custom REST endpoints for blocks, forms, booking system.
+- **Duplicates / overlaps:** None.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** [audit needed]
 
-### VS Code Extension Capabilities
+### `/wp-wpcli-and-ops`
+- **USP:** WP-CLI safety patterns — search-replace, db export/import, plugin/theme/user/content management, multisite.
+- **Optimisation:** [audit needed]
+- **Usage modes:** Site migrations, bulk changes, debugging production state.
+- **Duplicates / overlaps:** None.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** [audit needed]
 
-Claude Code runs inside the Anthropic VS Code extension, which exposes a locked-down `ide` MCP server with exactly two model-visible tools:
+### `/wp-site-extraction`
+- **USP:** Reverse-engineer a live WP site via SSH — design system, menus, blocks, CSS, header/footer.
+- **Optimisation:** [audit needed]
+- **Usage modes:** Starting point of the WP → SGS migration pipeline (Pipeline 2).
+- **Duplicates / overlaps:** Partial overlap with `/sgs-extraction` (which works on any URL, not just WP via SSH). Specialise each — keep both.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** [audit needed]
 
-| Tool | What it does |
-|------|-------------|
-| `mcp__ide__getDiagnostics` | Returns the Problems panel — every error/warning from every language server and linter extension you have installed. Read-only. |
-| `mcp__ide__executeCode` | Runs Python in the active Jupyter notebook kernel (with manual confirmation each time). Jupyter-only. |
+### `/wp-performance`
+- **USP:** Static code review (grep-based anti-patterns) + runtime profiling (WP-CLI profile/doctor, Query Monitor).
+- **Optimisation:** [audit needed]
+- **Usage modes:** Pre-deploy static scan; post-deploy runtime profile.
+- **Duplicates / overlaps:** Overlaps with `/wp-perf` (which adds Core Web Vitals) and `/wp-perf-gate` (PreToolUse gate). **Investigate:** do we need three perf tools or can they merge?
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** Flag for consolidation decision.
 
-**Not exposed:** GitLens APIs, Prettier/ESLint fix triggers, Tailwind IntelliSense completions, extension-to-extension calls of any kind. Use `/lint` (CLI) when fixes are needed.
-
-**Also useful passively:** selection is auto-sent to Claude; `@file:L5-10` mentions with line ranges; diff-viewer for pending edits; autosave before reads/writes. All free, no config.
-
----
-
-## Agents (Custom Subagents)
-
-Located in `C:\Users\Bean\.claude\agents\`.
-
-### Critical — always consider first
-
-| Agent | Path | Purpose | When to delegate |
-|-------|------|---------|------------------|
-| `wp-sgs-developer` | `wp-sgs-developer.md` | All SGS WordPress work — blocks, theme, client sites, QA, mockup-to-WP | Any WP build task where the SGS framework is involved |
-| `design-reviewer` | `design-reviewer.md` | Visual quality, WCAG 2.2 AA, design system consistency, mockup-vs-build comparison | Pre-ship design gate, design handoff validation |
-| `site-reviewer` | `site-reviewer.md` | 9-layer universal site audit (any URL) | Auditing a client site or competitor site |
-| `performance-auditor` | `performance-auditor.md` | Next.js performance, Lighthouse, Core Web Vitals, bundle size | Next.js perf (for WP use `/wp-perf` skill) |
-
-### Design research / SEO support
-
-| Agent | Path | Purpose |
-|-------|------|---------|
-| `seo-visual` | `seo-visual.md` | Visual SEO and layout analysis |
-| `seo-auditor` | `seo-auditor.md` | SEO recommendations (read-only) |
-| `seo-technical` | `seo-technical.md` | Crawlability, indexability, Core Web Vitals for SEO |
-| `seo-performance` | `seo-performance.md` | SEO performance metrics |
-| `seo-schema` | `seo-schema.md` | Schema.org JSON-LD detection, validation, generation |
-| `seo-sitemap` | `seo-sitemap.md` | XML sitemap validation and generation |
-
-### Cost optimisation (delegate to cheaper models)
-
-| Agent | Path | Purpose |
-|-------|------|---------|
-| `gemini-analyser` | `gemini-analyser.md` | Structured analysis tasks → Gemini CLI (zero-cost, 1M context) |
-| `cerebras-agent` | `cerebras-agent/` | Zero-cost Qwen-3-235b via Cerebras for heavy-but-not-deep work |
-| `Explore` | Built-in | Fast codebase search (Haiku, read-only) |
-
-### Meta / lifecycle
-
-| Agent | Path | Purpose |
-|-------|------|---------|
-| `project-manager` | `project-manager.md` | Portfolio status, phase tracking, blocker alerts, agent routing |
-| `research-pipeline` | `research-pipeline.md` | Full research-to-decision pipeline |
-| `search-conversations` | `search-conversations.md` | Search past CC conversations for context |
-| `test-and-explain` | `test-and-explain.md` | Test completed work + explain results in plain English |
+### `/wp-abilities-api`
+- **USP:** Bleeding-edge WP Abilities API (`wp_register_ability`, `/wp-json/wp-abilities/v1/*`).
+- **Optimisation:** [audit needed]
+- **Usage modes:** Experimental work only.
+- **Duplicates / overlaps:** None.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** Potential `DELETE from scope` until Abilities API is GA — flag for decision.
 
 ---
 
-## Python Hooks & Scripts
+## 2. Internal — SGS Framework Skills
 
-Located in `C:\Users\Bean\.claude\hooks\`. Includes both **hook scripts** (fired by settings.json automation) and **utility scripts** (manually invoked).
+### `/sgs-wp-engine`
+- **USP:** Central authority for SGS Framework — blocks, theme, QA, mockup-to-blocks, client onboarding. SQLite KB with 619 attributes + 55 blocks + 25 tokens + 25 patterns.
+- **Optimisation:** Well-built (has the KB + 33 reference docs + 12 scripts per project CLAUDE.md).
+- **Usage modes:** Any SGS work starts here; KB queryable via `python sgs-db.py`.
+- **Duplicates / overlaps:** None — it's the framework anchor.
+- **Gaps:** [audit needed — does the KB stay fresh? Is `/sgs-update` reliably invoked?]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** Likely keep, maybe split ops scripts into separate skill.
 
-### WP-specific
+### `/build-website`
+- **USP:** Productised 8-stage pipeline — URL → shipped SGS site. Three input modes: single URL, multi-source mix, discovery.
+- **Optimisation:** Only productised pipeline of the six per handoff — **revenue unlock depends on the other five.**
+- **Usage modes:** Full client replication from existing site.
+- **Duplicates / overlaps:** Overlaps with `/clone-patterns` (its own stage 5). Correct containment — keep both.
+- **Gaps:** Known reliability issues from handoff: corrupted images, broken CSS, lost styles. Pipeline A2 includes hash verification + CSS comparison + visual diff at 3 breakpoints.
+- **Improvements:** Already scoped in master feature audit.
+- **Trim / expand verdict:** Keep + expand reliability layer.
 
-| Script | Type | Purpose |
-|--------|------|---------|
-| `wp-blocks.py` | CLI | Search/schema/attributes/markup/variations/validate/tokens/gaps/impact/weaknesses for blocks |
-| `wp-hook-graph.py` | CLI | Map WP hook dependencies in a plugin |
-| `wp-pattern-gen.py` | CLI | Generate WP block patterns from URL or mockup |
-| `wp-perf.py` | CLI | Full-stack WP performance audit |
-| `wp-perf-review.py` | PostToolUse hook | Scans PHP/JS edits for WP performance anti-patterns |
-| `wp-perf-gate.py` | CLI / hook | Performance regression gate |
-| `wp-scaffold.py` | CLI | Generate SGS-standards plugin skeleton |
-| `wp-theme-check.py` | CLI | Validate `theme.json` against WP version |
-| `wp-token-bridge.py` | CLI | Sync tokens between SGS DB and `theme.json` |
-| `wp-content-guard.py` | PreToolUse hook (Bash) | Protect WP content from accidental overwrites |
-| `wp-docs.py` | CLI | Generate WP documentation |
-| `wpcs-lint.py` | PostToolUse hook | WordPress Coding Standards linting (phpcs wrapper) |
-| `php-lint.py` | PostToolUse hook | PHP syntax + style lint |
+### `/sgs-discover`
+- **USP:** Search galleries (Awwwards, Siteinspire, Dribbble, Godly, CSS Design Awards).
+- **Optimisation:** [audit needed]
+- **Usage modes:** Reference-site discovery before a client build.
+- **Duplicates / overlaps:** None.
+- **Gaps:** [audit needed — does it cover animation galleries for `/animation-harvest`?]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** [audit needed]
 
-### SGS-specific
+### `/sgs-extraction`
+- **USP:** Any-URL design-system capture — HTML + tokens + DOM. Coordinates `html-capture.js` + `design-extract.py` + Gemini Vision.
+- **Optimisation:** [audit needed]
+- **Usage modes:** Stage 1 of Pipelines 1/2/3.
+- **Duplicates / overlaps:** `/design-ref` does similar two-pass extraction. **Investigate:** merge or specialise?
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** Flag for merge decision with `/design-ref`.
 
-| Script | Type | Purpose |
-|--------|------|---------|
-| `sgs-validate.py` | PostToolUse hook | SGS-specific validation (hardcoded colours, unescaped output, missing ARIA) |
+### `/sgs-email-branding`
+- **USP:** Apply SGS brand tokens to email templates.
+- **Optimisation:** [audit needed]
+- **Usage modes:** Client email templates, transactional emails, newsletters.
+- **Duplicates / overlaps:** Partial overlap with `/email-html-builder`. Different layers — keep.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** [audit needed]
 
-### Design extraction
+### `/sgs-update`
+- **USP:** Re-scan codebase and refresh the 619-attribute KB.
+- **Optimisation:** [audit needed — is it invoked reliably?]
+- **Usage modes:** After any changes to blocks, tokens, patterns.
+- **Duplicates / overlaps:** None.
+- **Gaps:** Not auto-fired on block edits — relies on manual invocation.
+- **Improvements:** Hook into PostToolUse for `plugins/sgs-blocks/**/*.{php,json}` edits.
+- **Trim / expand verdict:** Expand — auto-fire on block changes.
 
-| Script | Type | Purpose |
-|--------|------|---------|
-| `design-extract.py` | CLI | Extract design tokens, CSS, colours, fonts, spacing via Dembrandt + Gemini Vision |
-| `design-extract-gate.py` | PreToolUse hook | Gate before design extraction — validates inputs |
+### `/design-tokens`
+- **USP:** Sync design tokens between SGS database and `theme.json`.
+- **Optimisation:** [audit needed]
+- **Usage modes:** Changing global colours/fonts/spacing in the framework.
+- **Duplicates / overlaps:** Partial overlap with `/sgs-update` (which re-scans tokens) and `/wp-block-themes` (which writes theme.json). Clear boundary: this is the bidirectional sync.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** [audit needed]
 
-### Accessibility
+### `/wp-blocks` (CLI + skill)
+- **USP:** Search WordPress + SGS blocks, schemas, attributes, markup, variations. Backed by `wp-blocks.py` — replaced the `wp-blockmarkup` and `sgs-blockmarkup` MCP servers.
+- **Optimisation:** [audit needed]
+- **Usage modes:** Before building a new block — check if one exists.
+- **Duplicates / overlaps:** None, but data source overlaps with `/sgs-wp-engine` KB. Investigate consolidation.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** [audit needed]
 
-| Script | Type | Purpose |
-|--------|------|---------|
-| `a11y-audit.py` | CLI | WCAG 2.2 AA audit via Playwright + axe-core |
+### `/wp-docs` (CLI)
+- **USP:** WordPress hooks, docs, and API query CLI. Backed by `wp-docs.py` — replaced the `wp-devdocs` MCP server. Query any WP hook, filter, or API function offline.
+- **Optimisation:** [audit needed]
+- **Usage modes:** Before writing `add_action`/`add_filter`; before calling any WP API function.
+- **Duplicates / overlaps:** Adjacent to `/wp-hooks` (which inspects 7,283 hooks from a verified DB). Different layers — `/wp-docs` covers docs + API surface, `/wp-hooks` covers hook dependency graphs.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** [audit needed]
 
-### Skill/pipeline lifecycle
-
-| Script | Type | Purpose |
-|--------|------|---------|
-| `lifecycle-gate.py` | PreToolUse hook | Blocks direct edits to skill/agent/pipeline files unless pipeline active or lifecycle mode set |
-| `pipeline-enforcer.py` | CLI + Stop hook | **Intentionally absent** (2026-04-18). Other hooks guard references with `if ENFORCER.exists()` so behaviour fails-open. Rebuild when a concrete pipeline-state-tracking need re-emerges. |
-| `pipeline-stage-gate.py` | PreToolUse hook | Enforces pipeline stage ordering |
-| `pending-gap-analysis-gate.py` | PreToolUse hook | Blocks tool calls after skillscore pass until gap-analysis runs |
-| `pending-gap-analysis-writer.py` | PostToolUse hook | Creates "gap-analysis pending" marker |
-| `gap-analysis-gate.py` | PostToolUse Skill + Stop hook | Enforces gap-analysis completion. Option B (2026-04-17): auto-skips reference files under recently-graded parent skills |
-| `gap-analysis-clear.py` | PostToolUse Skill hook | Clears gap-analysis pending marker |
-| `grading-reminder-hook.py` | PostToolUse hook | Reminds to grade after edit |
-| `skillscore-check.py` | PostToolUse hook | Auto-runs skillscore on skill/agent edits. Fires `Skillscore: N% — passed/failed` as additionalContext. Fixed 2026-04-18 — the earlier "BROKEN" claim was stale; hook now returns accurate scores. |
-| `skill-outcome-logger.py` | PostToolUse hook | Logs skill use outcomes |
-| `track-skill-edits.py` | PostToolUse hook | Tracks skill edits for later grading |
-| `validate-pipeline-artifact.py` | CLI | Validate pipeline stage JSON artifacts (NEW 2026-04-08) |
-
-### Other hook/utility scripts (tangential to WP/design)
-
-`routing-correction.py`, `routing-log.py`, `session-init.py`, `session_utils.py`, `local-search.py`, `search.py`, `tg-cli.py`, `context7.py`, `knowledge-prefetch.py`, `brain-dump-hook.py`, `plain-english-check.py`, `parking-lot.py`, `proactive-next.py`, `working-memory.py`, `cc-oc-sync.py`, `sync-agent-skills.py`, `block-env.py`, `build-reminder.py`, `conversation-reader.py`, `research-saver.py`, `search-guard.py`, `delete-guard.sh`, `branch-guard.sh`, `auto-lint.py`, `prettier-format.sh`, `backup-claude-config.ps1`, `_register-adhd-hooks.py`
-
----
-
-## SGS WP Engine Scripts
-
-Located in `C:\Users\Bean\.agents\skills\sgs-wp-engine\scripts\`.
-
-### Python
-
-| Script | Purpose |
-|--------|---------|
-| `sgs-db.py` | Query the SGS Framework SQLite DB — blocks, tokens, patterns, hooks, impacts, gaps, weaknesses |
-| `create-db.py` | Initialise SGS Framework database |
-| `populate-db.py` | Populate database with block definitions from source |
-| `update-db.py` | Update database after schema changes |
-| `generate-patterns.py` | Generate WordPress block patterns programmatically |
-| `sgs-db-temp.py` | Staging/temporary version of `sgs-db.py` |
-| `touch-scan.ps1` | PowerShell scan (touchpoint detection) |
-
-### JavaScript (design-qa/)
-
-Located in `C:\Users\Bean\.agents\skills\sgs-wp-engine\scripts\design-qa\`.
-
-| Script | Purpose |
-|--------|---------|
-| `capture-states.js` | Capture interactive states (hover, focus, active) for visual comparison |
-| `element-extractor.js` | Extract individual elements with full computed styles |
-| `global-css-diff.js` | Compare global CSS between two sites |
-| `responsive-audit.js` | Audit responsive behaviour across breakpoints |
-| `responsive-screenshots.js` | Capture screenshots at 375 / 768 / 1440 |
-| `run-audit.js` | Execute the full design-QA pipeline |
-
-### MCP Server
-
-`C:\Users\Bean\.agents\skills\sgs-wp-engine\mcp\server.py` — FastMCP server for unified block queries (core WP + SGS blocks)
-
-### SGS Framework Database
-
-`C:\Users\Bean\.agents\skills\sgs-wp-engine\sgs-framework.db` — SQLite. 57 SGS blocks / 822 attributes / design tokens / patterns / hooks.
-
-Query via: `python C:/Users/Bean/.agents/skills/sgs-wp-engine/scripts/sgs-db.py <command>`
+### `/clone-patterns`
+- **USP:** URL → SGS WP block-pattern PHP files via Gemini Vision + Playwright. Core engine is `wp-pattern-gen.py`.
+- **Optimisation:** [audit needed]
+- **Usage modes:** Stage 5 of `/build-website`; standalone when only pattern files needed.
+- **Duplicates / overlaps:** None.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** [audit needed]
 
 ---
 
-## PHP / Build Tooling
+## 3. Internal — Design & Aesthetic
 
-Inside `C:\Users\Bean\Projects\small-giants-wp\`.
+### `/innovative-design`
+- **USP:** Design-quality router — dispatches to the right sub-skill (and loads `/ui-ux-pro-max` when option-generation is needed).
+- **Optimisation:** [audit needed]
+- **Usage modes:** Unclear design requests auto-route here.
+- **Duplicates / overlaps:** None — it's the router. Sub-skills are the 20+ below.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** [audit needed]
 
-### Theme (`theme/sgs-theme/`)
+### `/interactive-design`
+- **USP:** Animations, micro-interactions, motion effects with purposeful motion design.
+- **Optimisation:** [audit needed]
+- **Usage modes:** Adding movement to a block or page; works with `/animation-harvest` output.
+- **Duplicates / overlaps:** Partial overlap with `/animation-harvest` (harvest finds, interactive-design applies). Clear boundary.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** [audit needed]
 
-| File | Purpose |
-|------|---------|
-| `theme.json` | WP design tokens, settings, styles — single source of truth for colours/fonts/spacing/layout |
-| `composer.json` | PHP deps (no dev deps currently — linting inherited from `sgs-blocks`) |
+### `/frontend-design`
+- **USP:** Production-grade frontend UI that avoids generic AI aesthetics.
+- **Optimisation:** Shipped as a Claude Code plugin (not a local skill). Frontend-design-plugin.
+- **Usage modes:** Building distinctive UI from scratch.
+- **Duplicates / overlaps:** Sits above the palette tools (`/ui-ux-pro-max`, `/superdesign`). Clear boundary.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** [audit needed]
 
-### Blocks plugin (`plugins/sgs-blocks/`)
+### `/ui-ux-pro-max`
+- **USP:** Design intelligence DB — 50 styles, 21 palettes, 50 font pairings, 20 charts, 9 stacks.
+- **Optimisation:** [audit needed]
+- **Usage modes:** Picking a visual direction at project start.
+- **Duplicates / overlaps:** Adjacent to `/superdesign` (which is smaller reference lookup). Different depths — keep both.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** [audit needed]
 
-| File | Purpose |
-|------|---------|
-| `composer.json` | `php`, `league/csv`, `nesbot/carbon`, `spatie/color` |
-| `package.json` | Dev deps: `@wordpress/scripts`, `@wordpress/icons`, `lucide-static`. Scripts: `build`, `start`, `lint:js`, `lint:css`, `format` |
+### `/superdesign`
+- **USP:** Compact design quality rules — OKLCH colour theory, typography hierarchy, spacing rhythm (4px base), animation micro-syntax with exact timing values, shadow scale with opacity limits, aesthetic grading (A+ to D). Loaded as passive inline context by evaluation skills (`/gap-analysis`, `/design-review`, `/visual-qa`, `/critique`, `/site-reviewer`) — no query needed.
+- **Optimisation:** `user-invocable: false` — auto-loaded by evaluation skills, never invoked directly.
+- **Usage modes:** Passive — auto-loaded as evaluation context. Not manually invoked.
+- **Duplicates / overlaps:** `/ui-ux-pro-max` has 335 quality-rule rows (74 typography + 99 UX guidelines + 162 reasoning rules) that overlap in content, but the access pattern is completely different: `/ui-ux-pro-max` requires an active Python CLI query; superdesign loads instantly as inline context. They serve different pipeline moments.
+- **Gaps:** Rules are hand-curated, not DB-driven — can drift from `/ui-ux-pro-max` over time.
+- **Improvements:** Future path: `/ui-ux-pro-max` exports an `evaluation-rules.md` from its quality-rule rows that replaces this file. Until that export is built, keep superdesign as-is.
+- **Trim / expand verdict:** Keep as passive evaluation context. Do NOT merge into `/ui-ux-pro-max` until the export path exists.
 
-**Npm scripts you'll actually use:**
-- `npm run build` — compile blocks for production
-- `npm run start` — dev build with watch
-- `npm run lint:js` — JS lint
-- `npm run lint:css` — CSS lint
-- `npm run format` — Prettier format
+### `/tailwind-design-system`
+- **USP:** Tailwind CSS v4 design systems, tokens, responsive patterns.
+- **Optimisation:** [audit needed]
+- **Usage modes:** Tailwind-based projects (Next.js apps, not SGS WP).
+- **Duplicates / overlaps:** None.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** Mostly out of SGS WP pipeline — may only be needed for Next.js clients. Flag for scope decision.
 
-### Client sites (`sites/*/`)
+### `/style-replicator`
+- **USP:** Extract and replicate design/style patterns from a reference site.
+- **Optimisation:** [audit needed]
+- **Usage modes:** Matching an existing brand or reference.
+- **Duplicates / overlaps:** **Significant overlap with `/design-ref` and `/sgs-extraction`.** Decision needed: three tools do similar extraction — keep all, merge, or specialise?
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** **Flag for three-way merge/specialise decision.**
 
-| File | Purpose |
-|------|---------|
-| `theme.json` | Client-specific style variation (overrides SGS base tokens) |
-| `package.json` | Client-specific build (e.g. `sites/small-giants-studio-v2/`) |
-| `CLAUDE.md` | Client-specific development rules |
+### `/design-ref`
+- **USP:** Two-pass design extraction (Playwright CSS + Gemini Vision) → `theme.json`-compatible output with confidence scores.
+- **Optimisation:** Has structured output with confidence scoring — **best-optimised of the three extractors**.
+- **Usage modes:** Pulling design tokens from any URL.
+- **Duplicates / overlaps:** With `/sgs-extraction` and `/style-replicator`. This one has the richest output.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** **Likely becomes the canonical extractor — absorb from the other two.**
 
-### Top-level docs
+### `/teach-impeccable`
+- **USP:** One-time project setup to gather design context and save to AI config.
+- **Optimisation:** [audit needed]
+- **Usage modes:** Project kickoff.
+- **Duplicates / overlaps:** Partial with `/project-init` (out of scope). Clarify boundary.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** [audit needed]
 
-| File | Purpose |
-|------|---------|
-| `CLAUDE.md` | Framework-wide dev instructions — naming conventions, design tokens, branch discipline |
-| `ARCHITECTURE.md` | Architecture overview, block inventory, data flow |
-| `AUDIT-REPORT.md`, `M15-*.md` | Historical audits / fix reports |
+### `/adapt`, `/bolder`, `/quieter`, `/colourise`, `/delight`, `/distill`, `/extract`, `/normalize`, `/onboard`, `/optimise`, `/polish`, `/harden`, `/clarify`
 
----
+These 13 are modifier skills — each takes an existing design and adjusts one axis (louder, quieter, simpler, more joyful, etc.).
 
-## MCP Servers
-
-Registered in `C:\Users\Bean\AppData\Roaming\Claude\claude_desktop_config.json` (desktop) and via Claude Code plugins.
-
-### Claude Desktop MCPs (also available in CC where plugin-bridged)
-
-| Server | Purpose | Relevant to |
-|--------|---------|-------------|
-| `chrome-devtools` | Live Chrome browser — Lighthouse audits, performance traces, network inspection, a11y debug | Design review, perf, a11y |
-| `playwright` | Full browser automation — navigate, screenshot, evaluate, click, hover, resize, console | Design review, QA, visual testing |
-| `github` | PRs, issues, code search, branches, releases | Any GitHub work (SGS releases, client repos) |
-| `filesystem` | Scoped filesystem access (Desktop only by default) | Limited — CC has full FS |
-| `memory` | Knowledge graph memory | Cross-session memory (rarely used in WP work) |
-| `fetch` | Generic URL fetch (Python-based) | One-off URL fetches |
-| `sequential-thinking` | Structured reasoning chain | Rare — complex architectural debates |
-
-### CC Plugin-provided MCPs (via plugin system)
-
-| Server | Purpose | Relevant to |
-|--------|---------|-------------|
-| `context7` | Up-to-date library docs + code examples | WP / React / Playwright API lookups |
-| `firecrawl` | JS-rendered web scraping with clean markdown | Scraping gallery sites, Cloudflare-protected URLs |
-| `mintlify` | Mintlify docs search/query | Documentation work |
-
-### SGS-specific MCP (not currently running — needs startup)
-
-| Server | Purpose |
-|--------|---------|
-| `sgs-wp-engine/mcp/server.py` | FastMCP unified block queries (core WP + SGS) |
-
----
-
-## Claude Code Plugins
-
-Located in `C:\Users\Bean\.claude\plugins\marketplaces\claude-plugins-official\plugins\`.
-
-| Plugin | Provides | Relevant to |
-|--------|----------|-------------|
-| `chrome-devtools-mcp` | Chrome DevTools MCP + 4 skills (a11y-debugging, debug-lcp, troubleshooting, chrome-devtools) | Design review, perf, a11y |
-| `playwright` | Full browser MCP + `/playwright` skill | Visual testing, QA, multi-breakpoint screenshots |
-| `superpowers-chrome` | Persistent Chrome browser + `/browsing` skill | Interactive browser control with existing session |
-| `firecrawl` | `/firecrawl` + `/skill-gen` + MCP | Web scraping, doc → skill generation |
-| `context7` | MCP for library docs | WP/React API reference |
-| `github` | MCP for PR/issue/repo operations | SGS releases, client repo work |
-| `frontend-design` | `/frontend-design` skill | Production-grade UI building |
-| `nano-banana` | `/generate` skill | Image generation via Gemini |
-| `wordpress.com` | `/quick-build`, `/preview-designs`, `/site-specification` skills + WordPress.com Studio integration | WP.com projects (not used for SGS self-hosted) |
-| `commit-commands` | `/commit`, `/commit-push-pr`, `/clean_gone` | Git workflow on SGS repos |
-| `feature-dev` | `/feature-dev` + code-architect/explorer/reviewer subagents | Feature development with architectural thinking |
-| `code-review` | `/code-review` | PR review |
-| `optibot` | `/optibot` AI code review | Code review with pattern detection |
-| `mintlify` | Docs skill + MCP | Documentation |
-| `playground` | `/playground` — interactive single-file HTML playgrounds with live preview | Quick HTML prototypes |
-| `plugin-dev` | 7 skills for building Claude Code plugins | Meta-work — not WP |
-| `episodic-memory` | `/search-conversations`, `/remembering-conversations` | Finding past decisions |
-| `claude-md-management` | `/revise-claude-md`, `/claude-md-improver` | Maintaining CLAUDE.md files |
+- **USP (collective):** Surgical single-axis design modifications.
+- **Optimisation:** [audit needed — per skill]
+- **Usage modes:** Invoked after initial design is in place; chained by `/innovative-design` router.
+- **Duplicates / overlaps:** By design each one is different — BUT the 13 sit together and may deserve reorganisation (e.g. merge closely-adjacent pairs).
+  - `/bolder` ↔ `/quieter` — inverse pair, keep separate.
+  - `/optimise` vs `/polish` — both pre-ship; investigate overlap.
+  - `/distill` vs `/normalize` vs `/extract` — all simplifying, different cuts; investigate.
+- **Gaps:** No accessibility-specific modifier (`/accessible` would round out the set).
+- **Improvements:** Standardise interface across all 13 — currently inconsistent.
+- **Trim / expand verdict:** **Batch audit all 13 together in Stage 1b — decision pending.**
 
 ---
 
-## CLI Tools (External Binaries)
+## 4. Internal — Design Review, QA, Code Quality (select few)
 
-### WP & PHP
+### `/design-review`
+- **USP:** Review any URL / screenshot / HTML mockup for visual quality, WCAG 2.2 AA, design-system consistency, responsive behaviour, brand alignment.
+- **Optimisation:** [audit needed]
+- **Usage modes:** Pre-ship gate on any design work.
+- **Duplicates / overlaps:** With `/visual-qa` (SGS-specific) and `/critique` (subjective-only) and `/audit` (whole-interface sweep). Different layers — keep all.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** [audit needed]
 
-| Tool | Where | Purpose |
-|------|-------|---------|
-| `wp-cli` (`wp`) | SSH to remote WP sites, or local WP installs | All WP ops — search-replace, db export/import, plugin/theme management |
-| `phpcs` | `composer global`, also via `@wordpress/scripts` | PHP Coding Standards (WordPress ruleset). Wired into PostToolUse hook `wpcs-lint.py` — fires on every PHP edit |
-| `phpstan` | `plugins/sgs-blocks/vendor/bin/phpstan` (dev dep in `plugins/sgs-blocks/composer.json`) | PHP static analysis. Config: `plugins/sgs-blocks/phpstan.neon`, level 5, uses `szepeviktor/phpstan-wordpress` extension. Run: `cd plugins/sgs-blocks && vendor/bin/phpstan analyse` |
-| `composer` | Global | PHP package manager. Run `composer install` in `plugins/sgs-blocks/` to set up phpstan + phpunit dev deps |
+### `/visual-qa`
+- **USP:** SGS 8-layer visual QA pipeline with Quick / Full / Compare modes.
+- **Optimisation:** Tuned for SGS — uses the framework's scripts (responsive screenshots, element-extractor, global-css-diff, run-audit).
+- **Usage modes:** Production QA pre-deploy; `/compare` for A/B or migration.
+- **Duplicates / overlaps:** Superset of `/design-review` for SGS contexts. Keep both — `/design-review` for any project, `/visual-qa` for SGS.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** [audit needed]
 
-### Frontend / build
+### `/critique`
+- **USP:** Subjective design effectiveness — visual hierarchy, IA, emotional resonance.
+- **Optimisation:** [audit needed]
+- **Usage modes:** "Is this design any good?" gut check with structure.
+- **Duplicates / overlaps:** With `/design-review` (objective). Different — keep both.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** [audit needed]
 
-| Tool | Where | Purpose |
-|------|-------|---------|
-| `npm` / `node` | Global | JS tooling, @wordpress/scripts build |
-| `@wordpress/scripts` | npm devDep in `sgs-blocks` | Block build, dev server, lint |
-| `lucide-static` | npm devDep | Lucide icon assets |
+### `/audit`
+- **USP:** Whole-interface sweep — accessibility + performance + theming + responsive.
+- **Optimisation:** [audit needed]
+- **Usage modes:** Quarterly audits; after major refactors.
+- **Duplicates / overlaps:** With `/site-reviewer` (9-layer for any URL). Likely merge candidate — `/site-reviewer` is broader.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** **Flag for merge with `/site-reviewer`.**
 
-### Browser / visual
+### `/site-reviewer`
+- **USP:** 9-layer audit pipeline for any URL — design + SEO + performance + a11y + security + UX + content/trust.
+- **Optimisation:** [audit needed]
+- **Usage modes:** Pipeline 4 (audit → redesign). Universal review.
+- **Duplicates / overlaps:** Superset of `/audit`. Merge target.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** Keep as canonical; absorb `/audit`.
 
-| Tool | Where | Purpose |
-|------|-------|---------|
-| `playwright` (`npx playwright`) | Global + MCP | Multi-breakpoint testing, a11y runs, systematic browser automation. **Prefer CLI over MCP for loops/suites** |
-| `dembrandt` | Referenced in `design-extract.py` | CSS extraction + design token detection |
+### `/gap-analysis`
+- **USP:** Grade any target 0–5 with opportunity detection and S-grade screen.
+- **Optimisation:** Enforced via `gap-analysis-gate.py` hook after skillscore passes.
+- **Usage modes:** Mandatory post-skillscore step for any skill/agent/pipeline edit.
+- **Duplicates / overlaps:** None.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** Keep — infrastructure.
 
-### Image
+### `/a11y-audit` and `/accessibility-scan`
+- **USP:** WCAG 2.2 AA audit on URL / HTML / colour contrast (a11y-audit); deeper axe-core integration (accessibility-scan).
+- **Optimisation:** [audit needed]
+- **Usage modes:** Pre-deploy a11y gate.
+- **Duplicates / overlaps:** Direct overlap — **investigate merge.**
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** **Flag for merge.**
 
-| Tool | Where | Purpose |
-|------|-------|---------|
-| `sharp-cli` | Global npm | Image optimisation, format conversion (WebP/AVIF) |
-| ImageMagick | `C:\Program Files\ImageMagick-7.1.2-Q16-HDRI\` | Heavy image processing |
+### `/wp-perf`, `/wp-perf-gate`, `/wp-performance`
+- **USP (collective):** Full-stack WP performance — static (`wp-performance`), runtime (`wp-perf`), pre-commit gate (`wp-perf-gate`).
+- **Optimisation:** [audit needed — three tools is likely too many for one domain]
+- **Usage modes:** Dev / pre-deploy / in-production.
+- **Duplicates / overlaps:** Three tools, high overlap.
+- **Gaps:** [audit needed]
+- **Improvements:** Consolidate under a single `/wp-perf` with modes (`static`, `runtime`, `gate`).
+- **Trim / expand verdict:** **Flag for three-way consolidation.**
 
-### Skill quality
+### `/wp-theme-check`
+- **USP:** Validate `theme.json` against a WP version — deprecated + v3-only features.
+- **Optimisation:** [audit needed]
+- **Usage modes:** Before pushing `theme.json` changes.
+- **Duplicates / overlaps:** None.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** [audit needed]
 
-| Tool | Where | Purpose |
-|------|-------|---------|
-| `skillscore` (sgs-skillscore v2) | `C:\Users\Bean\bin\skillscore` (wraps `sgs-skillscore.py`) | Deterministic skill/agent/pipeline quality grading |
+### `/wp-scaffold`
+- **USP:** Generate SGS-standards plugin skeleton with security, PHPStan, i18n.
+- **Optimisation:** [audit needed]
+- **Usage modes:** New plugin work.
+- **Duplicates / overlaps:** None.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** [audit needed]
 
-### Git / GitHub
+### `/wp-hooks` and `/wp-hook-graph`
+- **USP:** Search/validate/inspect 7,283 WP hooks (wp-hooks); visualise dependency graph (wp-hook-graph).
+- **Optimisation:** wp-hooks has a verified DB — well-optimised.
+- **Usage modes:** Before writing `add_action` / `add_filter`; during complex-plugin analysis.
+- **Duplicates / overlaps:** None.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** [audit needed]
 
-| Tool | Where | Purpose |
-|------|-------|---------|
-| `gh` | Global | All GitHub ops — PRs, issues, releases, `gh api` |
-| `git` | Global | Version control |
+### Code quality (select few)
 
-### Search / research
+These are the code-quality tools that ARE actively used in SGS WP work. Anything not listed here is out of scope.
 
-| Tool | Where | Purpose |
-|------|-------|---------|
-| `firecrawl` | npm / plugin | Web scrape with JS rendering |
-| `search.py` | `~/.claude/hooks/search.py` | Unified search — auto-routes Brave/Firecrawl/SerpAPI/Tavily |
-| `local-search.py` | `~/.claude/hooks/local-search.py` | Local-first search across SGS DB + WP hooks + past corrections |
+| Tool | USP | Usage | Duplicate? | Verdict |
+|------|-----|-------|------------|---------|
+| `/diagnostics` | Read VS Code Problems panel via `mcp__ide__getDiagnostics` — all LSP/linter findings without re-running | Before every commit; after every code edit | None — LSP state is authoritative | Keep — infrastructure |
+| `/lint` | Routes file to correct CLI linter (eslint+prettier, phpcbf+phpcs, ruff) with autofix | After `/diagnostics` surfaces fixable issues | Pair with `/diagnostics` — clear split | Keep |
+| `/review` | Code review for best practices | Before merging branches, during PR prep | Overlaps with `pr-reviewer` agent. Investigate. | Flag for overlap check |
+| `/wp-perf-gate` | PreToolUse gate blocks commits with anti-patterns | Auto-fires on PHP/JS edits in SGS contexts | See perf consolidation above | Consolidate |
+| `systematic-debugging` skill | Force root-cause diagnosis before fix | Any bug | None | Keep |
+| `verification-before-completion` skill | Gate that forces verification before claiming done | Before marking any task complete | None | Keep — critical for Bean's autonomy trajectory |
+| `test-driven-development` skill | TDD rhythm for features and bugfixes | Feature/bugfix work | None | Keep but audit usage — is it actually invoked? |
+| `pr-reviewer` agent | Automated PR review with structured output | PR creation | Overlaps with `/review` | Flag for merge with `/review` |
+| `requesting-code-review` skill | Before merging, verify work meets requirements | Pre-merge self-check | None | Keep |
+| `receiving-code-review` skill | Handle incoming review feedback | When feedback arrives | None | Keep |
 
----
-
-## Hooks Fired Automatically
-
-From `C:\Users\Bean\.claude\settings.json`. These run without Claude triggering them — they enforce quality gates invisibly.
-
-### PreToolUse (block before action)
-
-| Matcher | Hook | What it does |
-|---------|------|--------------|
-| `.*` | `pending-gap-analysis-gate.py` | Blocks all tools when a "grade this skill" marker is pending |
-| `Write\|Edit` | `lifecycle-gate.py` | Blocks direct edits to skill/agent/pipeline files unless pipeline active or lifecycle mode |
-| `Skill` | `pipeline-stage-gate.py` | Enforces pipeline stage ordering |
-| `Bash` | `wp-content-guard.py` | Protects WP content from accidental overwrites |
-
-### PostToolUse (react after action)
-
-| Matcher | Hook | What it does |
-|---------|------|--------------|
-| `Bash` | `sync-agent-skills.py` | Sync skills between CC and OC after any Bash action |
-| `Skill` | `gap-analysis-gate.py` / `gap-analysis-clear.py` | Track gap-analysis runs, clear pending markers |
-| `Write\|Edit` | `sgs-validate.py` | SGS validation (hardcoded colours, unescaped output, missing ARIA) on SGS repo files |
-| `Write\|Edit` | `wp-perf-review.py` | WP performance anti-pattern scan on PHP/JS edits |
-| `Write\|Edit` | `skillscore-check.py` | Auto-skillscore on skill/agent .md edits. Reports accurate scores (was previously stuck at 30% — fixed 2026-04-18). |
-| `Write\|Edit` | `pending-gap-analysis-writer.py` | Write "grade this" marker after skill edits |
-| `Write\|Edit` | `skill-outcome-logger.py` | Log outcomes of skill use |
-| `Edit\|Write` | `track-skill-edits.py` | Track skill edit events for lifecycle |
-
-### Stop (session-end)
-
-| Matcher | Hook | What it does |
-|---------|------|--------------|
-| `*` | `gap-analysis-gate.py` | Check for ungraded skill edits before stop. Auto-skips reference files under parent skills graded within 7 days (Option B, 2026-04-17). |
-
-**Known hook bugs:**
-- `lifecycle-gate.py` — with multiple CC windows open, picks newest session marker by mtime → can block the pipeline's own session. Workaround: create `.lifecycle-mode-<sid>.json` manually.
-- `branch-guard.sh` — runs `git branch --show-current` in shell CWD, not target file's git repo. False positive when editing files in a different repo than the CWD (e.g. `A:/.openclaw/...` from `small-giants-wp/`). Workaround: route through `python3 - << EOF ... EOF` in Bash to bypass the pre-Edit check, or `cd` into the target repo first.
-
----
-
-## Reference Docs & Knowledge Bases
-
-### Project CLAUDE.md files (hierarchical)
-
-| File | Scope |
-|------|-------|
-| `C:\Users\Bean\.claude\CLAUDE.md` | Global — applies to every project. Philosophy, ADHD support, git workflow, tool roster |
-| `C:\Users\Bean\Projects\small-giants-wp\CLAUDE.md` | SGS framework-wide — naming conventions, hook prefix (`sgs_`), block namespace, branch discipline |
-| `C:\Users\Bean\Projects\small-giants-wp\sites\*\CLAUDE.md` | Per-client — site-specific rules, reference URLs, QA checklists |
-| `a:\.openclaw\CLAUDE.md` | OC runtime — shared between CC and OC sessions |
-
-### Rules (`C:\Users\Bean\.claude\rules\`)
-
-| Rule | What it enforces |
-|------|------------------|
-| `wp-project-tooling.md` | Required WP tooling section in every WP CLAUDE.md |
-| `uk-english.md` | British spelling across all output (colour, behaviour, organise) |
-| `code-quality.md` | PHP ≤300 lines, TS strict, zero `any`, no stubs, comprehensive fixes, security non-negotiables |
-| `no-coauthored-by.md` | Never add `Co-Authored-By: Claude` to commits |
-| `always-invoke-autopilot.md` | `/autopilot` at start of every session |
-
-### Skill references (for self-modification)
-
-| File | Purpose |
-|------|---------|
-| `~/.claude/skills/skill-writer/references/skill-anatomy.md` | Structure rules for SKILL.md — frontmatter, body, pipeline mode |
-| `~/.claude/skills/gap-analysis/references/report-template.md` | Mandatory gap-analysis report template |
-| `~/.claude/skills/gap-analysis/references/correction-ledger.md` | Past evaluation corrections to calibrate future grades |
-| `~/.agents/skills/shared-references/communication-standards.md` | Plain English + ADHD-friendly rules for all output |
-| `~/.agents/skills/shared-references/sgs-skillscore.py` | The actual skillscore v2 implementation (1,400 lines) |
-
-### SGS Framework knowledge base
-
-| File | Purpose |
-|------|---------|
-| `~/.agents/skills/sgs-wp-engine/sgs-framework.db` | SQLite — 57 blocks, 822 attributes, tokens, patterns, hooks |
-| `~/.agents/skills/sgs-wp-engine/references/design-compare.md` | Methodology for visual fidelity comparison |
-| `~/.agents/skills/sgs-wp-engine/references/design-compare-grades.md` | Grading rubric for design comparison (A+ to F) |
-| `~/.agents/skills/sgs-wp-engine/references/fidelity-comparator.md` | 6-phase visual fidelity comparison methodology |
-| `~/.agents/skills/sgs-wp-engine/references/visual-qa-pipeline.md` | 8-layer QA pipeline specification |
-| `~/.agents/skills/sgs-wp-engine/references/design-qa-rubric.yaml` | SGS aesthetics benchmark rubric (brand, typography, UX, layout) |
-| `~/.agents/skills/sgs-wp-engine/references/mockup-to-blocks.md` | HTML/JS mockup → SGS blocks conversion methodology |
-| `~/.agents/skills/sgs-wp-engine/references/pattern-generator.md` | WP pattern generation guide |
-| `~/.agents/skills/sgs-wp-engine/references/theme-development.md` | SGS theme development standards |
-| `~/.agents/skills/sgs-wp-engine/references/gutenberg-blocks.md` | Gutenberg block reference |
-| `~/.agents/skills/sgs-wp-engine/references/block-developer.md` | Custom block development guide |
-| `~/.agents/skills/sgs-wp-engine/references/admin-ux.md` | WP admin UX standards |
-| `~/.agents/skills/sgs-wp-engine/references/design-qa-prompts/` | Structured QA evaluation prompts (a11y, code, visual, ux, pm, global) |
-| `~/.agents/skills/sgs-wp-engine/references/brand.json` | SGS brand tokens (colours, fonts, spacing) |
-
-### Plans (current work)
-
-| File | Scope |
-|------|-------|
-| `C:\Users\Bean\.claude\plans\sgs-pipeline-architecture.md` | SGS pipeline architecture — 8 work units, current in-progress |
-| `C:\Users\Bean\.claude\plans\imperative-squishing-fairy.md` | Master OpenClaw rehab + upgrades plan |
-| `C:\Users\Bean\.claude\plans\prancy-yawning-cookie.md` | OC skill salvage + merge-into-shared plan |
-| `C:\Users\Bean\Projects\small-giants-wp\NEXT-SESSION-PROMPT.md` | Next-session handoff for SGS work |
-| `C:\Users\Bean\Projects\small-giants-wp\CONVERSATION-HANDOFF.md` | Last-session summary for SGS work |
-
-### Secrets
-
-| File | Purpose |
-|------|---------|
-| `A:\.openclaw\.secrets\wp-app-passwords.env` | WP app passwords for all live SGS client sites |
-| `A:\.openclaw\.env` | API keys (Brave, SerpAPI, Gemini, Firecrawl, Anthropic) |
+Out-of-scope code-quality tools (NOT loaded into SGS pipelines — delete reference from this doc): `using-git-worktrees`, `finishing-a-development-branch`, `vercel-react-best-practices` (except when working on Next.js client projects).
 
 ---
 
-## Custom WP CLI Suite (10 tools — replaces 4 MCPs + adds 7 novel capabilities)
+## 5. Internal — Browser Testing & Capture
 
-Built 2026-04-04 to reduce MCP schema-registration token cost. All live in `C:\Users\Bean\.claude\hooks\`. Saves ~6,000 tokens per session vs keeping the MCPs registered.
+### `/playwright`
+- **USP:** Scripted multi-step browser automation — navigate, screenshot, form fill, a11y audits, multi-breakpoint loops.
+- **Optimisation:** Prefer CLI over MCP for systematic runs per user rules.
+- **Usage modes:** Multi-breakpoint screenshot runs, accessibility audits, full QA test suites.
+- **Duplicates / overlaps:** With playwright MCP (one-off inline checks). Clear split.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** Keep — critical for visual-qa and site-reviewer.
 
-**Why CLIs over MCPs:** MCP tools register their full schema at conversation start, consuming tokens even when never invoked. CLIs consume zero tokens until you actually run them. The trade-off: you lose the auto-discoverable tool interface, but the WP skills reference these CLIs explicitly in their ## CLI Tools tables, so the cost is paid once per skill load rather than per conversation.
+### `/screenshot`
+- **USP:** Cross-platform screenshot utility.
+- **Optimisation:** [audit needed]
+- **Usage modes:** One-off captures (not systematic).
+- **Duplicates / overlaps:** Partial with `/playwright`. Different job — keep.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** [audit needed]
 
-### The 3 Direct MCP Replacements
+### `chrome-devtools-mcp` suite — `chrome-devtools`, `a11y-debugging`, `debug-optimize-lcp`, `troubleshooting`
+- **USP:** Live Chrome DevTools Protocol access — network, Lighthouse, performance traces, a11y debug, LCP optimisation.
+- **Optimisation:** [audit needed]
+- **Usage modes:** Runtime debugging; LCP optimisation; a11y tree inspection.
+- **Duplicates / overlaps:** With playwright MCP (different layer — Playwright automates, DevTools inspects).
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** Keep.
 
-| CLI | Replaces | Data source | Slash command |
-|-----|----------|-------------|---------------|
-| `wp-blocks.py` | `wp-blockmarkup` + `sgs-blockmarkup` MCPs | `~/.wp-blockmarkup-mcp/blocks.db` + `~/.agents/skills/sgs-wp-engine/sgs-framework.db` | `/wp-blocks` |
-| `wp-docs.py` | `wp-devdocs` MCP | `~/.wp-devdocs-mcp/hooks.db` (7,283 hooks / 1,150 docs / 523 APIs / 106 blocks) | `/wp-hooks` |
-| `a11y-audit.py` | `a11y-accessibility` MCP | Playwright + axe-core via CDN | `/a11y-audit` |
-
-### The 7 Novel Tools (new capabilities, not replacements)
-
-| CLI | Purpose | Slash command |
-|-----|---------|---------------|
-| `wp-perf.py` | Full-stack perf: WP-CLI backend + Lighthouse CWV + baseline/diff | `/wp-perf` |
-| `wp-hook-graph.py` | Hook dependency graph — scan / graph / validate (feeds Insight Graph product) | `/wp-hook-graph` |
-| `wp-scaffold.py` | SGS-standards plugin scaffold generator | `/wp-scaffold` |
-| `wp-token-bridge.py` | Design token sync (SGS DB ↔ `theme.json`) — competitive moat | `/design-tokens` |
-| `wp-theme-check.py` | `theme.json` version validator (v2/v3 feature mapping) | `/wp-theme-check` |
-| `wp-pattern-gen.py` | URL → sections → SGS block patterns. Uses Gemini 3 Flash Vision + Playwright (not Firecrawl) | Used by `/sgs-site-clone` Stage 5 (PATTERN GEN) and by the `/clone-patterns` command directly |
-| `wp-perf-gate.py` | PreToolUse hook — blocks git commits containing critical perf anti-patterns | `/wp-perf-gate` + hook |
-
-### Related MCP Replacement (separate from the 10)
-
-| CLI | Replaces | Note |
-|-----|----------|------|
-| `context7.py` | `/library-docs` command (Context7 MCP plugin retired 2026-04-18) | Fixed Git Bash MSYS path translation bug for `/org/repo` arguments |
-| `skillscore` (→ `sgs-skillscore.py`) | npm `skillscore@2.0.2` | Installed as global command 2026-04-08. 4-tier weighted (FATAL 30% / QUALITY 40% / ARCH 20% / HYGIENE 10%), 38 checks, type-aware thresholds |
-| `search.py` | multiple search MCPs | Unified router: Brave → Firecrawl → SerpAPI → Tavily |
-| `local-search.py` | — | Novel: local-first search across SGS DB + WP hooks + past corrections, before going to web |
-
-### Status of the Original 4 MCPs
-
-Verified 2026-04-18 — all four are DISABLED. `settings.json` has empty `mcpServers` for these, so the ~6,000 tokens/session savings is actually being realised.
-
-| MCP | Current status | Replaced by |
-|-----|---------------|-------------|
-| `wp-blockmarkup` | DISABLED ✓ | `wp-blocks.py` |
-| `sgs-blockmarkup` | DISABLED ✓ | `wp-blocks.py` |
-| `wp-devdocs` | DISABLED ✓ | `wp-docs.py` |
-| `a11y-accessibility` | DISABLED ✓ | `a11y-audit.py` |
-
-Re-check periodically if MCPs get re-registered by plugin updates — `python -c "import json; d=json.load(open(r'C:/Users/Bean/.claude/settings.json', encoding='utf-8')); print(list(d.get('mcpServers', {}).keys()))"`.
+### `/superpowers-chrome` / `browsing`
+- **USP:** Persistent Chrome CDP session with auto-capture (different MCP from chrome-devtools).
+- **Optimisation:** [audit needed]
+- **Usage modes:** Controlling existing browser sessions; multi-tab work.
+- **Duplicates / overlaps:** With chrome-devtools MCP.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** **Flag for overlap decision with chrome-devtools-mcp.**
 
 ---
 
-## OpenClaw (Blub) Pipelines & Flows
+## 6. Internal — Supporting (in-scope)
 
-OC is the always-on side of the stack. It has its own pipelines and automation flows — separate from Claude Code's lifecycle hooks, but often coordinating the same skills.
+### `/image-optimiser`
+- **USP:** Optimise images for web/app/print. WebP/AVIF conversion + compression + format selection.
+- **Optimisation:** [audit needed]
+- **Usage modes:** Pre-upload media processing; post-export from mockup.
+- **Duplicates / overlaps:** None — sharp-cli / ImageMagick are the external tools it wraps.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** [audit needed]
 
-### OC Lifecycle Pipelines
+### `/animation-harvest`
+- **USP:** 8-stage pipeline — extract web animations, modularise into reusable SGS framework components.
+- **Optimisation:** [audit needed]
+- **Usage modes:** Building the SGS animation library from inspiration.
+- **Duplicates / overlaps:** None — pairs with `/interactive-design` (harvest → apply).
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** [audit needed]
 
-Located in `a:\.openclaw\workspace\pipelines\`. These are structurally similar to CC pipelines but enforced by OC's gateway at runtime.
+### `/email-html-builder`
+- **USP:** Production email templates with semantic HTML/CSS compatible across Gmail / Outlook / Apple Mail / Yahoo / ProtonMail.
+- **Optimisation:** [audit needed]
+- **Usage modes:** Client emails; transactional; newsletters.
+- **Duplicates / overlaps:** With `/sgs-email-branding` (brand layer). Clear split — keep both.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** [audit needed]
 
-| Pipeline | Stages | Purpose | Relevant to |
-|----------|--------|---------|-------------|
-| `design-build.json` | 5 | Design-to-deploy pipeline for SGS WordPress sites — enforces the full chain from design extraction through deploy | SGS-theme, design, design-review |
-| `skill-lifecycle.json` | 5 | Full skill improvement cycle — audit → write → grade before/after → fix-loop | Meta (skill building) |
-| `agent-lifecycle.json` | 5 | Full agent improvement cycle — audit roster → assess perf → grade → fix-loop | Meta (agent building) |
-| `pipeline-lifecycle.json` | 6 | Pipeline creation/improvement cycle — enforces research + debate before writing | Meta (pipeline building) |
-| `handoff.json` | 5 | Session handoff pipeline — ensures all gates pass before handoff doc is written | Session management |
+### `/nano-banana-pro` (`/generate`)
+- **USP:** Gemini CLI image generation — thumbnails, icons, diagrams, patterns, illustrations.
+- **Optimisation:** [audit needed]
+- **Usage modes:** Generating assets without external images.
+- **Duplicates / overlaps:** None.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** [audit needed]
 
-**Key one for SGS:** `design-build.json` — this is the OC-side equivalent of `/sgs-site-clone` + `/visual-qa` stitched together with gate enforcement at each stage.
+### `/research`, `/search`, `/library-docs`
+- **USP:** Research entry point (auto-tiered) / unified web search / library-docs lookup.
+- **Optimisation:** [audit needed]
+- **Usage modes:** Any design/tech research during SGS work.
+- **Duplicates / overlaps:** Clear three-way split — research (tier selection), search (web), library-docs (Context7 replacement).
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** Keep all three.
 
-### OC Automation Flows (Blub Automation Engine)
+### `/handoff`
+- **USP:** Generate session handoff summary.
+- **Optimisation:** [audit needed]
+- **Usage modes:** End of every session.
+- **Duplicates / overlaps:** None.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** Keep — infrastructure.
 
-Located in `a:\.openclaw\workspace\automations\flows\`. 31 flows, replaces the old n8n workflows. Runs on OC's runner.py service at port 17891 (BlubRunner NSSM service).
-
-**Note for SGS:** most flows are personal/ops (prayer times, email, invoices, physio) — not directly WP/design work. But these are relevant:
-
-| Flow | Purpose | Relevant to |
-|------|---------|-------------|
-| `github-sync.json` / `github-reporting.json` | Sync GitHub activity, generate reports | SGS repo tracking |
-| `cc-oc-update-watcher.json` | Watch for Claude Code + OC updates | Stack hygiene |
-| `dashboard-heartbeat.json` | Keep Blub Dashboard (port 5050) alive | Any dashboard-fed work |
-| `memory-maintenance.json` | Nightly memory consolidation, blub.db maintenance | Knowledge pipeline health |
-| `invoice-*.json` (5 flows) | Invoice pipeline | `/invoice-sgs` skill integration |
-| `prayer-*.json` (9 flows) | Prayer times — double-fire incident lesson: one feature = one automation | Not WP, but relevant cross-stack rule |
-
-**Registry:** `a:\.openclaw\flows\registry.sqlite` tracks flow state.
-
-### OC Skills (shared where relevant)
-
-Located in `a:\.openclaw\workspace\skills\`. Most OC-only skills don't apply to SGS work. These ones do:
-
-| Skill | Purpose | Relevant to |
-|-------|---------|-------------|
-| `dev-workflow` | Development workflow orchestration | Any dev work |
-| `pr-reviewer` | PR review automation | SGS releases, client repos |
-| `cc-delegate` | Delegate OC → CC work | Cross-stack coordination |
-| `session-sync` | Sync session state between CC and OC | When working across both |
-| `screenshot` | OC screenshot utility | Visual capture from Blub sessions |
-| `evolver-blub` | Propose improvements from captured signals | Self-improvement (approval required) |
-| `openclaw-backup` / `openclaw-hardener` | OC ops | Maintaining OC itself |
-
-### OC Gateway & Services
-
-| Service | Type | Port | Purpose |
-|---------|------|------|---------|
-| BlubGateway | Scheduled Task | 18789 | Main OC gateway — routes messages from all channels |
-| BlubRunner | NSSM service | 17891 | Automation Engine runtime |
-| BlubDashboard | Scheduled Task | 5050 | Second Brain dashboard (Next.js 15) |
-| Cloudflared | NSSM service | - | Cloudflare tunnel for external access |
-
-**Source code:** `A:\src\openclaw\` (pnpm-linked). Updates via `git pull + pnpm install`. Don't edit here unless fixing upstream — edit `A:\.openclaw\` (runtime data) instead.
-
-### CC ↔ OC Coordination
-
-Hooks that keep the two in sync:
-
-| Hook | Direction | Purpose |
-|------|-----------|---------|
-| `cc-oc-sync.py` | both | Sync shared skills/agents between CC and OC |
-| `sync-agent-skills.py` | CC → shared | Propagate CC skill changes to `~/.agents/skills/` |
-| `session-sync` skill (OC) | OC → CC | Read CC session state into OC context |
+### `/deploy-check`, `/deploy-nextjs`
+- **USP:** Pre-deployment checklist — WP (deploy-check) / Next.js (deploy-nextjs).
+- **Optimisation:** [audit needed]
+- **Usage modes:** Before pushing to staging/production.
+- **Duplicates / overlaps:** None.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** Keep.
 
 ---
 
-## Workflow: Starting a New SGS Client Build
+## 7. Internal — Lifecycle (maintains the toolset itself)
 
-A recommended order of operations using this tooling:
+### `/lifecycle`
+- **USP:** Single entry point for create/edit/audit/grade of skills/agents/pipelines/commands/routers. Sub-skills (`skill-writer`, `agent-writer`, `pipeline-writer`, etc.) locked behind it.
+- **Optimisation:** Enforced by `lifecycle-gate.py` hook.
+- **Usage modes:** Any skill/agent/pipeline work.
+- **Duplicates / overlaps:** None — it's the router.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** Keep — infrastructure.
 
-1. `/sgs-discover` or `/research` — find reference sites
-2. `/design-ref` — extract design tokens from chosen reference
-3. `/sgs-wp-engine` — delegate via `wp-sgs-developer` agent to build site
-4. `/wp-blocks` (or `sgs-db.py search`) — check existing block coverage before building new
-5. `/wp-scaffold` — if new plugin/theme needed
-6. `/wp-theme-check` — validate `theme.json` changes
-7. `/visual-qa` — run 8-layer QA
-8. `/design-review` — visual/a11y/design system check via `design-reviewer` agent
-9. `/a11y-audit` — WCAG 2.2 AA
-10. `/wp-perf` — performance audit
-11. `/deploy-check` — pre-deploy checklist
-12. `/commit-push-pr` — ship
+### `/skillscore` (and `/docscore`)
+- **USP:** Structural validator for skills/agents/pipelines (skillscore) and project docs (docscore).
+- **Optimisation:** Auto-fires via PostToolUse hook after skill edits.
+- **Usage modes:** Post-edit gate; pre-merge check.
+- **Duplicates / overlaps:** None.
+- **Gaps:** Bean's 2026-04-11 lesson — skillscore pass ≠ content quality. Gap-analysis must follow.
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** Keep both.
+
+### `skill-writer`, `skill-auditor`, `skill-optimiser`, `skill-router-writer` (sub-skills, locked)
+- **USP:** Full skill lifecycle — create / audit / optimise / specialise-into-routers.
+- **Optimisation:** [audit needed]
+- **Usage modes:** Dispatched by `/lifecycle` only.
+- **Duplicates / overlaps:** None — different phases.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** Keep — infrastructure.
+
+### `agent-writer`, `agent-auditor`, `agent-optimiser` (sub-skills, locked)
+- Same as above but for agents.
+
+### `pipeline-writer`, `pipeline-optimiser`, `command-writer` (sub-skills, locked)
+- Same as above but for pipelines and slash commands.
+
+### `batch-gap-analysis`
+- **USP:** Grade multiple artefacts in one pass (needed for this audit's Stage 1c).
+- **Optimisation:** [audit needed]
+- **Usage modes:** Audit mode only.
+- **Duplicates / overlaps:** With `/gap-analysis` (single-target). Clear split.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** Keep.
+
+### `brainstorming`, `strategic-plan`, `phase-planner`, `subagent-driven-development`, `subagent-prompt`, `executing-plans`, `dispatching-parallel-agents`
+- **USP:** Process scaffolding for multi-step work — design decisions, roadmaps, phase execution, subagent dispatch.
+- **Optimisation:** [audit needed]
+- **Usage modes:** Any complex or multi-step task.
+- **Duplicates / overlaps:** Batch-audit this cluster in Stage 1b — likely 1–2 consolidations.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** **Batch-audit cluster.**
+
+### `research-check`, `research-buddies`, `research-pipeline` (agent)
+- **USP:** Research tiers — quick (check), cutting-edge + practical (buddies), orchestrated (pipeline).
+- **Optimisation:** [audit needed]
+- **Usage modes:** Called from `/research` router.
+- **Duplicates / overlaps:** `research-council` and `research-couple` deliberately excluded from scope (non-SGS use cases). Kept: check, buddies, pipeline.
+- **Gaps:** [audit needed]
+- **Improvements:** [audit needed]
+- **Trim / expand verdict:** [audit needed]
 
 ---
 
-## Functional Overlaps to Reconcile
+## 8. External Dependencies
 
-Identified 2026-04-15 during gap-analysis batch prep. Five pairs worth grading together rather than in isolation — the boundary decision often resolves the gaps themselves.
+These aren't Bean's tools — they're third-party MCPs, CLIs, APIs, and plugins the internal toolset depends on. They're tracked here because a breaking change in any of them breaks a pipeline stage.
 
-### Inside design sub-skills
+### MCP servers
 
-| Pair | What they share | Differentiation today | Decision needed |
-|------|-----------------|----------------------|-----------------|
-| `bolder` + `colourise` | Both amplify visual impact | Bolder covers all dimensions (scale, contrast, weight). Colourise is specifically hue. | Colourise stays as colour specialist of bolder, or colourise absorbs into bolder with a `--mode colour` flag |
-| `distill` + `quieter` | Both reduce visual intensity | Distill removes elements entirely. Quieter keeps them but dials down. | Keep boundary explicit (remove vs soften) or merge with a mode flag |
-| `audit` + `critique` | Both assess design quality | Audit = systematic checklist with severity. Critique = subjective design-director opinion. | Keep (objective vs subjective lens), differentiate explicitly, or merge |
-| `normalize` + `extract` | Both concern design-system alignment | Normalize = align TO existing system. Extract = pull patterns INTO a system. | Directions already clear — confirm disambiguation holds |
+| MCP | Provides | Load-bearing for |
+|-----|----------|-----------------|
+| `playwright` | Browser automation (navigate, screenshot, snapshot, click, type, evaluate, console messages, resize) | `/visual-qa`, `/design-review`, `/site-reviewer`, QA pipelines |
+| `chrome-devtools` | CDP — network, Lighthouse, performance traces, a11y tree | LCP debugging, performance audits |
+| `github` | PRs, issues, code search, releases | Deployment, PR workflow |
+| `firecrawl` | Scrape/search/crawl with clean markdown | `/search` fallback, `/research` |
+| `context7` (replaced by `/library-docs`) | Library docs + examples | Any library API lookup |
 
-### Skill vs agent duplication
+### Out-of-scope MCPs (installed but not used in SGS pipelines): Gmail, Google Calendar, Google Drive, Gamma, Discord, SerpAPI, ICD-10.
 
-| Pair | What they share | Likely resolution |
-|------|-----------------|-------------------|
-| `design-review` skill + `design-reviewer` agent | Both run design reviews on URLs/screenshots/mockups | Agent should wrap skill (thin-router), or delete one |
+### CLI tools
 
-### Agent scope overlap
+| Tool | Version | Role |
+|------|---------|------|
+| `gh` | 2.87.3 | All GitHub ops — PRs, releases, issues, `gh api` |
+| `wp` | via SSH on Hostinger | WP-CLI ops on live site (not locally installed — flagged in earlier scan) |
+| `playwright` | 1.58.2 | Global CLI (alternate to MCP) |
+| `phpcs` / `phpcbf` | via Composer | PHP linting + autofix (WordPress standards) |
+| `composer` | — | PHP package manager (in SGS plugin dev) |
+| `npm` / `node` | — | JS package manager / runtime (block builds) |
+| `ffmpeg` | via Chocolatey | Video processing (if YT pipeline is invoked) |
+| `sharp-cli` | via npm | Image processing backend for `/image-optimiser` |
+| ImageMagick | 7.1.2 | Alternative image processing |
+| `skillscore` | local wrapper | Skill/agent/pipeline validator |
 
-| Pair | What they share | Differentiation |
-|------|-----------------|-----------------|
-| `design-reviewer` agent + `site-reviewer` agent (design layer) | Both review visual quality | Site-reviewer is 9-layer (design + SEO + perf + a11y + security + UX + content + responsive + smoke). Design-reviewer is purely design — effectively one layer of site-reviewer. Should dispatch |
+### Cloud APIs (keys in `A:/.openclaw/.env` → migrated to `C:/Users/Bean/.openclaw/.env` per 2026-04-19 rule — verify)
 
-### Not-duplicates worth mentioning
+| API | Free tier | Used by |
+|-----|-----------|--------|
+| Brave Search | 1000/mo | `/search` (primary) |
+| Firecrawl | — | `/search`, `/research` |
+| Tavily | — | `/search`, `/research` |
+| SerpAPI | 100/mo | `/search` (fallback) |
+| Gemini (CLI + API) | free tier | `/nano-banana-pro`, Gemini Vision in extractors, `/gemini-analyser` |
+| Cerebras | free tier | `/cerebras` (Qwen-3-235b @ 1400 t/s) |
 
-- **`polish` + `normalize`** — touch adjacent territory but different phases. Polish = final pre-ship finish. Normalize = structural design-system compliance. Keep separate.
-- **`sgs-wp-engine` overlaps every WP skill** — intentional. SGS-specific authority layer on top of the WP skills.
-- **`wordpress-router` + `wp-project-triage`** — both classify WP repos but different phases (routing vs deep inspection). Keep separate.
-- **CSS/Tailwind stack:** `tailwind-design-system` and `interactive-design` share animation ground but different targets (Tailwind-specific vs framework-agnostic motion). Keep separate.
+### Claude Code plugins (in-scope only)
 
-### Batch grading recommendation
+Frontend-design, playground, nano-banana-pro, firecrawl, playwright, superpowers-chrome, chrome-devtools-mcp, commit-commands, feature-dev, code-simplifier, claude-md-management, typescript-lsp, php-lsp, elements-of-style, episodic-memory, security-guidance, github, supabase, bean-tools.
 
-For the 35-item gap-analysis pass: grade the 6 overlap batches above as single items, reducing effective evaluations from 35 to ~25-27. Reconcile-then-grade is cheaper than grade-then-reconcile. Boundary decisions often close `ecosystem_awareness` gaps in both members of the pair at once.
+### Auto-firing hooks (in-scope for SGS work)
+
+| Hook | Trigger | Action |
+|------|---------|--------|
+| `wpcs-lint.py` | PostToolUse on PHP edits | Runs phpcs with WP standards |
+| `wp-perf-review.py` | PostToolUse on PHP/JS edits | Scans for perf anti-patterns |
+| `sgs-validate.py` | PostToolUse on edits in SGS repo | SGS-specific validation |
+| `lifecycle-gate.py` | PreToolUse on skill/agent edits | Blocks direct edits outside `/lifecycle` |
+| `gap-analysis-gate.py` | Stop hook | Enforces grading |
+| `pipeline-stage-gate.py` | During lifecycle pipelines | Enforces stage ordering |
+| `skillscore-check.py` | PostToolUse on skill edits | Runs skillscore silently |
+| `sync-agent-skills.py` | PostToolUse | Syncs agents/skills cross-reference |
+| `skill-outcome-logger.py` | PostToolUse | Logs outcomes for skill-optimiser |
 
 ---
 
-## Known Gaps / Things Missing from the Stack
+## 9. Custom Subagents (in-scope)
 
-- ~~`skillscore-check.py` hook is broken — reports 30% regardless~~ **RESOLVED 2026-04-18** — hook returns accurate scores; the earlier claim was stale.
-- **No animation QA mode in `visual-qa`** — FPS / CLS / intersection observer measurement not yet implemented (flagged in 2026-04-08 audit).
-- **No "block extension mode" in `sgs-wp-engine`** — `animation-harvest` Stage 5 dispatches to a mode that doesn't exist yet.
-- **No "animation analysis mode" in `interactive-design`** — `animation-harvest` Stage 3 dispatches to a mode that doesn't exist yet.
-- **`pipeline_runs` table does not exist in `blub.db`** — `sgs-site-clone` REPORT section will fail on first completion.
-- **Playwright MCP lacks `record_video`** — `animation-harvest` Path B assumes video recording; redesign needed.
-- **`sgs-db.py add-animation` referenced but doesn't exist** — use `sgs-db.py sql` instead.
+| Agent | Speciality | Dispatch when |
+|-------|-----------|---------------|
+| `wp-sgs-developer` | All SGS WP build/QA work | ALWAYS for SGS heavy lifting (mandated by project CLAUDE.md) |
+| `design-reviewer` | Visual quality, WCAG 2.2 AA, design-system consistency | Pre-ship design reviews |
+| `site-reviewer` | Universal 9-layer site audit | Pipeline 4 (audit → redesign) |
+| `performance-auditor` | Next.js perf (not WP — use `/wp-performance` for WP) | Next.js client projects |
+| `research-pipeline` | Orchestrated research | Multi-source research questions |
+| `search-conversations` | Search past conversations | Finding prior decisions |
+| `test-and-explain` | Test results + plain-English explanation | After feature/fix work |
+| `gemini-analyser` | Zero-cost structured analysis | Bulk per-item profiling (Stage 1b of this audit) |
+| `cerebras-agent` | Zero-cost LLM delegation | Simple classification, bulk text tasks |
+| `Explore` (built-in Haiku) | Fast codebase search | Scoping unfamiliar code |
+| `Plan` (built-in) | Plan design in plan mode | Plan-phase only |
+| `general-purpose` | Complex multi-step tasks | Fallback for multi-tool work |
 
-These are tracked in `C:\Users\Bean\.claude\gap-analysis\reports\2026-04-08-pipeline-audit.md`.
+---
+
+## Appendix A — Tool-type flat list (alphabetical)
+
+### Skills (internal)
+`/a11y-audit`, `/accessibility-scan`, `/adapt`, `/animation-harvest`, `/audit`, `/batch-gap-analysis`, `/bolder`, `/brainstorming`, `/clarify`, `/clone-patterns`, `/colourise`, `/critique`, `/delight`, `/design-ref`, `/design-review`, `/design-tokens`, `/dispatching-parallel-agents`, `/distill`, `/email-html-builder`, `/executing-plans`, `/extract`, `/frontend-design`, `/gap-analysis`, `/handoff`, `/harden`, `/image-optimiser`, `/innovative-design`, `/interactive-design`, `/library-docs`, `/nano-banana-pro`, `/normalize`, `/onboard`, `/optimise`, `/phase-planner`, `/playwright`, `/polish`, `/quieter`, `/receiving-code-review`, `/requesting-code-review`, `/research`, `/research-buddies`, `/research-check`, `/screenshot`, `/search`, `/sgs-discover`, `/sgs-email-branding`, `/sgs-extraction`, `/build-website`, `/sgs-update`, `/sgs-wp-engine`, `/site-reviewer`, `/strategic-plan`, `/style-replicator`, `/subagent-driven-development`, `/subagent-prompt`, `/superdesign`, `/systematic-debugging`, `/tailwind-design-system`, `/teach-impeccable`, `/test-driven-development`, `/ui-ux-pro-max`, `/verification-before-completion`, `/visual-qa`, `/wp-abilities-api`, `/wp-block-development`, `/wp-block-themes`, `/wp-blocks`, `/wp-hooks`, `/wp-hook-graph`, `/wp-interactivity-api`, `/wp-perf`, `/wp-perf-gate`, `/wp-performance`, `/wp-plugin-development`, `/wp-project-triage`, `/wp-rest-api`, `/wp-scaffold`, `/wp-site-extraction`, `/wp-theme-check`, `/wp-wpcli-and-ops`, `/wordpress-router`
+
+### Slash commands (not covered by skills above)
+`/cerebras`, `/gemini`, `/gemini-flash`, `/gemini-pro`, `/diagnostics`, `/lint`, `/review`, `/dev`, `/lifecycle`, `/skillscore`, `/docscore`, `/deploy`, `/update-architecture`, `/where-am-i`, `/delegate`
+
+### Sub-skills (locked behind `/lifecycle`)
+`agent-auditor`, `agent-optimiser`, `agent-writer`, `command-writer`, `pipeline-optimiser`, `pipeline-writer`, `skill-auditor`, `skill-optimiser`, `skill-router-writer`, `skill-writer`
+
+### Agents (custom subagents)
+cerebras-agent, design-reviewer, gemini-analyser, performance-auditor, project-manager, research-pipeline, search-conversations, site-reviewer, test-and-explain, wp-sgs-developer
+
+### Deliberately excluded from scope
+See §Scope above for the full out-of-scope list. Audit passes do not touch these; they're tracked in the global portfolio, not here.
+
+---
+
+## Appendix B — Audit status dashboard
+
+| Section | Tools | Audit populated | [audit needed] blocks |
+|---------|-------|-----------------|---------------------|
+| 1. WP Core | 11 | 0 | 11 |
+| 2. SGS Framework | 9 | 2 | 7 |
+| 3. Design & Aesthetic | 22 | 4 | 18 |
+| 4. Design Review / QA / Code Quality | 17 | 3 | 14 |
+| 5. Browser | 6 | 1 | 5 |
+| 6. Supporting | 10 | 0 | 10 |
+| 7. Lifecycle | 13 | 3 | 10 |
+| 8. External deps | — | fully enumerated | — |
+| 9. Agents | 12 | fully enumerated | — |
+
+**Next action:** Stage 1b — dispatch Sonnet batches per handoff plan (bottom-up: simple implementation skills → composites → research → pipelines → meta-orchestrators). Each batch reads actual source files and populates the 7-point audit per tool.
+
+## Appendix C — Known duplicate/merge flags (surfaced during this rewrite)
+
+Rows pre-seeded for Stage 1c decision table. Each needs KEEP / MERGE / SPLIT / DELETE verdict.
+
+1. `/sgs-extraction` ↔ `/design-ref` ↔ `/style-replicator` — three design extractors. Likely: `/design-ref` absorbs the other two.
+2. `/wp-perf` ↔ `/wp-perf-gate` ↔ `/wp-performance` — three perf tools. Likely: one tool with `static` / `runtime` / `gate` modes.
+3. `/a11y-audit` ↔ `/accessibility-scan` — two a11y tools. Likely merge.
+4. `/audit` ↔ `/site-reviewer` — `site-reviewer` is the superset.
+5. `/review` (command) ↔ `pr-reviewer` (agent) — review tools, different layers; confirm or merge.
+6. `/superdesign` ↔ `/ui-ux-pro-max` — reference-lookup overlap; investigate.
+7. `/chrome-devtools-mcp` ↔ `/superpowers-chrome` — two CDP-based tools, overlap.
+8. The 13 modifier skills (`/adapt`, `/bolder`, `/quieter`, `/colourise`, `/delight`, `/distill`, `/extract`, `/normalize`, `/onboard`, `/optimise`, `/polish`, `/harden`, `/clarify`) — interface consistency + possible pair merges (distill / normalize / extract).
+9. Planning-process cluster (`/brainstorming`, `/strategic-plan`, `/phase-planner`, `/subagent-driven-development`, `/subagent-prompt`, `/executing-plans`, `/dispatching-parallel-agents`) — audit for 1–2 consolidations.
+
+## Appendix D — Known gaps (surfaced during this rewrite)
+
+1. **No auto-invoke of `/sgs-update`** on block edits — relies on manual invocation.
+2. **No accessibility-specific modifier** in the 13 design modifier skills — would round out the set.
+3. **No productised equivalent of `/build-website`** for the other 5 pipelines (new-build, draft→SGS, audit→redesign, client-onboarding, QA→deploy). This is the revenue unlock per handoff.
+4. **`/wp-abilities-api`** — maybe premature (Abilities API not GA). Scope decision.
+5. **Cloud-API key location** — migrated to `C:/Users/Bean/.openclaw/.env` per 2026-04-19 rule; verify no references still point at `A:/.openclaw/.env`.
+
+---
+
+## Appendix E — 2026-04-21 Recon Update (from small-giants-studio session)
+
+**Master spec:** see `docs/plans/2026-04-21-toolset-spec-from-sgs-studio-session.md` — 12-section spec with 13-pipeline architecture + effectiveness rubric + change/improve/add/subtract recommendations.
+
+**Deferred pipelines:** see `docs/plans/2026-04-21-non-essential-pipelines-deferred.md` — P8/P10/P11/P13 and their dependencies.
+
+### Confirmed facts (supersede `[audit needed]` blocks for these skills)
+
+| Skill/command | Confirmed scope | Verified status |
+|---|---|---|
+| `/innovative-design` | Tier 1 orchestrator, owns 19 sub-skills (Phase 0-5) | user-invocable:true |
+| `/interactive-design` | Tier 3, owned by /innovative-design | user-invocable:**false** (not user-facing) |
+| `/frontend-design` | Shared aesthetic reference loaded by modifiers — **absorb candidate** into /innovative-design/references/ | user-invocable:true but redundant |
+| `/ui-ux-pro-max` (= `/uimax`) | Cross-cutting queryable reference DB — **11,925+ rows, 16 stack CSVs**, NOT a sub-skill. Call at every design decision. | spine infrastructure |
+| `/superdesign` | Auto-loaded by evaluation skills — typography/OKLCH/spacing/animation reference | user-invocable:**false**, Tier 5 infrastructure |
+| `/style-replicator` | **VOICE/CONTENT skill, NOT design** — generates in Bean's authentic writing voice. Tooling-doc misclassification corrected. | reclassify to content domain |
+| `/design-ref` | Pipeline type (frontmatter). Two-pass CSS + Gemini Vision, theme.json-compatible output with confidence scores. Best-optimised of the 3 extractors for TOKENS | Tier 2 coordinator |
+| `/sgs-extraction` | Pipeline type. Captures HTML + DOM + **also tokens via design-extract.py**. Boundary per SKILL.md line 47: **"this skill captures, it does not interpret"** — capture-vs-interpret, not raw-vs-token | Tier 2 coordinator — 4 factual errors flagged (see captured lesson 151) |
+| `/visual-qa` | Pipeline type, **SGS-only** (frontmatter line 8: "for non-SGS use /design-review"). 8-layer mockup-vs-build QA | Tier 1 orchestrator |
+| `/design-review` | **Non-SGS** design audit (mirror of visual-qa scope-wise). 3-stage dispatcher to design-reviewer agent | Tier 2 coordinator (not full pipeline as this doc previously implied) |
+| `/site-reviewer` | Universal **9-layer site audit** (any URL/stack). Broader than design-review. NOT redundant with either design-review or visual-qa | Tier 1 orchestrator — keep |
+| `/animation-harvest` | Pipeline type (frontmatter line 3 confirmed: `type: pipeline`). 8 stages | Tier 1 orchestrator |
+| `/wp-site-extraction` | **user-invocable:false** (confirmed at lines 4+5, both spellings). SSH + WP-CLI internal only | Internal-only pipeline stage |
+| `/build-website` | Pipeline type. 8 stages dispatching to: sgs-discover (mode 3), wp-site-extraction OR design-ref (S1), seo-technical (S2), sgs-wp-engine (S3+S5), wp-pattern-gen.py (S4), visual-qa (S6), deploy-check (S7) | Tier 1 orchestrator — ONLY formalised revenue pipeline today |
+| `/seo` | Router owning **12** sub-skills (not 11 as CLAUDE.md implied): seo-audit, seo-page, seo-schema, seo-sitemap, seo-technical, seo-content, seo-images, seo-geo, seo-plan, seo-programmatic, seo-competitor-pages, seo-hreflang | Tier 1 router |
+| `/seo-audit` | Internally delegates to 6 specialists including **seo-performance + seo-visual** (undocumented sub-skills not in the router's 12 — possible additional SEO sub-skills exist) | Tier 2 coordinator, user-invocable:false |
+| `/clone-patterns` | Command wrapping wp-pattern-gen.py. URL → SGS block pattern PHP files. | Tier 3 implementation |
+| `/a11y-audit` | Command wrapping a11y-audit.py (Playwright + axe-core). Modes: test/html/contrast/rules | Tier 5 infrastructure |
+| `/deploy-check` | **Command, not skill** — pipeline-stage-gate.py enforcement bypassed at build-website Stage 7 | Tier 3 implementation |
+| `/design-tokens` | Command wrapping wp-token-bridge.py. **WP/SGS-specific** (not generic design tokens) — reclassify from design to WP domain | Tier 3 |
+| `/wordpress-router` | Router — calls detect_wp_project.mjs + dispatches to 6 WP specialist skills | Tier 5 infrastructure |
+
+### Confirmed pairings (CLI ↔ command)
+
+| CLI | Command | Notes |
+|---|---|---|
+| `wp-blocks.py` | `/wp-blocks` | ✓ |
+| `wp-docs.py` | `/wp-hooks` | **Bean's memory said /wp-docs — /wp-docs does NOT exist.** Correct pairing is wp-docs.py ↔ /wp-hooks |
+| `wp-hook-graph.py` | `/wp-hook-graph` | ✓ |
+| `wp-pattern-gen.py` | `/clone-patterns` + internal to build-website Stage 4 | No direct command (invoked by skill/pipeline) |
+| `wp-scaffold.py` | `/wp-scaffold` | **Plugin only** — no theme or block scaffold capability (doc implied wider scope) |
+| `wp-token-bridge.py` | `/design-tokens` | ✓ |
+| `wp-perf.py` | `/wp-perf` + `/wp-performance` skill | ✓ |
+| `wp-theme-check.py` | `/wp-theme-check` | ✓ |
+| `wpcs-lint.py` | **Auto-firing PostToolUse hook** (not CLI) | Not manually invocable |
+| `sgs-db.py` | `/sgs-db` + /sgs-wp-engine skill | Path: `C:/Users/Bean/.agents/skills/sgs-wp-engine/scripts/sgs-db.py` (not `.claude/skills/...`) |
+| `html-capture.js` | Internal to /sgs-extraction | Path: `C:/Users/Bean/.agents/skills/shared-references/html-capture.js` |
+| `design-extract.py` | Internal to /sgs-extraction + /design-ref | Path: `C:/Users/Bean/.claude/hooks/design-extract.py` |
+| `a11y-audit.py` | `/a11y-audit` command | Path: `C:/Users/Bean/.claude/hooks/a11y-audit.py` |
+| `context7.py` | `/library-docs` command | Path: `C:/Users/Bean/.claude/hooks/context7.py` |
+
+### Cross-batch systemic findings
+
+1. **Autopilot domain table missing 4 skills** (playwright, animation-harvest, sgs-discover, sgs-extraction). Systemic routing invisibility — trigger phrases in SKILL.md frontmatters are inert without autopilot registration. Patch batch required.
+2. **Documentation drift detected in sgs-extraction** (4 factual errors: hard-exit vs documented graceful fallback, wrong output filenames, Vision pass manual-not-automated, integration contract unimplemented). Captured as correction row 151: `gap-analysis-read-the-scripts-not-just-skill-md`.
+3. **Grade-cap arithmetic bug in /gap-analysis** — validator enforces 5 lenses but skill uses 6; `grade_cap_applied=null` despite FAIL lens verdicts in 4 of 5 evals this session. Fix required.
+4. **3 genuinely distinct extraction layers exist** (not redundant as tooling-doc earlier implied): sgs-extraction = raw HTML+DOM+a11y, design-ref = token interpretation, wp-site-extraction = WP server-side truth. Keep all three, clarify boundaries.
+
+### Decisions locked this session
+
+| Decision | Resolution |
+|---|---|
+| /frontend-design fate | **Absorb into /innovative-design/references/aesthetic-reference.md** — only used as shared reference by modifiers |
+| /style-replicator classification | **Move to content/voice domain** (not design) |
+| /design-tokens classification | **Move to WP/SGS domain** (wraps wp-token-bridge.py, not generic) |
+| sgs-extraction/design-ref/style-replicator "three redundant extractors" | **Not redundant — three layers**. Update tooling-doc overlap section |
+| /uimax role | **Cross-cutting queryable reference** called at every design decision; NOT a sub-skill of innovative-design |
+| Canonical rubric | **18-cell matrix (block/container/page × static/animation/interactivity/device-responsive/content+tone/flow+UX) + 3 output paths (uimax ingest / SGS theme / app delivery) + 5 end-goals + 6-lens system-effect check** — absorb into skill-optimiser + pipeline-optimiser as DESIGN mode |
+
+### Proposed new skills (not yet built)
+
+- `/qc` — delegated multi-model review panel with Sonnet/Cerebras/Gemini-Pro/Flash/Opus routing table + Cerebras chunk-loop pattern + brief-staging in project sandbox
+- `/qc-inline` — main-thread QC mirror with optional non-producer fan-out
+- `/scroll-animation-originator` — Chase Chapman workflow (fal.ai LTX-Video + Nano Banana 2)
+- `/brand-voice-replicator` — client-voice sibling to /style-replicator
+- `/app-block-library` — parked, SGS theme priority first
+
+### Proposed skill enhancements (not yet built)
+
+- `/skill-optimiser` — add DESIGN mode (pre-hoc rubric grading) alongside existing POST-USE performance mode. Auto-select on run-data presence.
+- `/pipeline-optimiser` — same dual-mode treatment
+- `/gap-analysis` — slim to non-skill target types (website/design/research/plan/custom); fix validator (6-lens enforcement, grade_cap_applied block, captured-lesson-151 HARD GATE)
+- `/sgs-extraction` — 4 factual error remediation
+- `/autopilot` — domain-table patch for 4 invisible skills
+- `/uimax` — ADD INGEST command (currently read-only; needs write-back from extractions)
+- `/sgs-db` — schema additions: `animations`, `sections_detected`, `block_opportunities`, `extraction_cache`
+
+---
+
+**End of 2026-04-21 recon update.** Full per-skill detail + reviewer JSONs at `C:/Users/Bean/.openclaw/workspace/memory/research/gap-analysis/2026-04-20-154111/`.
+
+---
+
+**End of audit workbook.** Next iteration: populate remaining `[audit needed]` blocks via Stage 1b Sonnet batches using the recon data above as verified seeds.
