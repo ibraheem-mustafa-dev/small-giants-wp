@@ -65,6 +65,10 @@
       "type": "array",
       "default": []
     },
+    "ribbon": {
+      "type": "string",
+      "default": ""
+    },
     "layout": {
       "type": "string",
       "default": "centred"

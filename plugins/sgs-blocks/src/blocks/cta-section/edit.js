@@ -114,6 +114,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		headline,
 		body,
 		buttons,
+		ribbon,
 		layout,
 		headlineColour,
 		bodyColour,
@@ -214,6 +215,18 @@ export default function Edit( { attributes, setAttributes } ) {
 						options={ LAYOUT_OPTIONS }
 						onChange={ ( val ) =>
 							setAttributes( { layout: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					<TextControl
+						label={ __( 'Ribbon label', 'sgs-blocks' ) }
+						help={ __(
+							'Optional floating badge shown top-right of the CTA box. Leave blank to hide.',
+							'sgs-blocks'
+						) }
+						value={ ribbon || '' }
+						onChange={ ( val ) =>
+							setAttributes( { ribbon: val } )
 						}
 						__nextHasNoMarginBottom
 					/>
@@ -493,6 +506,12 @@ export default function Edit( { attributes, setAttributes } ) {
 						} }
 						aria-hidden="true"
 					/>
+				) }
+
+				{ ribbon && (
+					<span className="sgs-cta-section__ribbon" aria-hidden="true">
+						{ ribbon }
+					</span>
 				) }
 
 				<div className="sgs-cta-section__content">

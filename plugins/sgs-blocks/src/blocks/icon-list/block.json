@@ -74,6 +74,10 @@
                                         "type":  "string",
                                         "default":  "medium"
                                     },
+                       "dividers":  {
+                                        "type":  "boolean",
+                                        "default":  false
+                                    },
                        "textColour":  {
                                           "type":  "string"
                                       },

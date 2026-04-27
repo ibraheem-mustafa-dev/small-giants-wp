@@ -17,6 +17,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 $headline                = $attributes['headline'] ?? '';
 $body                    = $attributes['body'] ?? '';
 $buttons                 = $attributes['buttons'] ?? array();
+$ribbon                  = isset( $attributes['ribbon'] ) ? sanitize_text_field( $attributes['ribbon'] ) : '';
 $layout                  = $attributes['layout'] ?? 'centred';
 $headline_colour         = $attributes['headlineColour'] ?? '';
 $body_colour             = $attributes['bodyColour'] ?? '';
@@ -221,11 +222,21 @@ if ( $responsive_css ) {
 	printf( '<style id="%s">%s</style>', esc_attr( $uid ), $responsive_css );
 }
 
-// Output.
+// Build ribbon HTML — content escaped with esc_html() at construction time.
+$ribbon_html = '';
+if ( $ribbon ) {
+	$ribbon_html = '<span class="sgs-cta-section__ribbon" aria-hidden="true">' . esc_html( $ribbon ) . '</span>';
+}
+
+// Output. All variables are either pre-escaped (esc_html/esc_attr/esc_url at
+// construction time) or passed through wp_kses_post(). The phpcs disable below
+// silences the false-positive "not escaped inline" warnings on multi-arg printf.
+// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
 printf(
-	'<section %s>%s<div class="sgs-cta-section__content"><h2%s%s>%s</h2><p class="sgs-cta-section__body"%s>%s</p>%s</div>%s</section>',
+	'<section %s>%s%s<div class="sgs-cta-section__content"><h2%s%s>%s</h2><p class="sgs-cta-section__body"%s>%s</p>%s</div>%s</section>',
 	$wrapper_attributes,
 	$overlay_html,
+	$ribbon_html,
 	$headline_class_attr,
 	$headline_style_attr,
 	wp_kses_post( $headline ),
@@ -234,3 +245,4 @@ printf(
 	$stats_html,
 	$buttons_html
 );
+// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
