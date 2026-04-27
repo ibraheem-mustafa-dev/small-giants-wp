@@ -121,4 +121,34 @@ const v1 = {
 	migrate: ( attributes ) => attributes,
 };
 
-export default [ v2, v1 ];
+/**
+ * v3 — catch-all null for blocks before icon/accentStroke attributes were added.
+ *      Allows the block editor to upgrade stored content without validation errors.
+ */
+const v3 = {
+	attributes: {
+		number:        { type: 'number', default: 0 },
+		prefix:        { type: 'string', default: '' },
+		suffix:        { type: 'string', default: '' },
+		label:         { type: 'string', source: 'html', selector: '.sgs-counter__label' },
+		duration:      { type: 'number', default: 2000 },
+		separator:     { type: 'boolean', default: true },
+		numberColour:  { type: 'string' },
+		labelColour:   { type: 'string' },
+		labelFontSize: { type: 'string' },
+	},
+	supports: {
+		align: false,
+		anchor: true,
+		html: false,
+		color: { background: true, text: true, link: true },
+		typography: { fontSize: true, lineHeight: true, textAlign: true },
+		spacing: { margin: true, padding: true },
+		__experimentalBorder: { color: true, radius: true, style: true, width: true },
+		interactivity: true,
+	},
+	save: () => null,
+	migrate: ( attributes ) => ( { ...attributes, icon: '', accentStroke: false } ),
+};
+
+export default [ v3, v2, v1 ];

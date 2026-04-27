@@ -26,9 +26,16 @@ export default function Save( { attributes } ) {
 		numberColour,
 		labelColour,
 		labelFontSize,
+		icon,
+		accentStroke,
 	} = attributes;
 
-	const blockProps = useBlockProps.save( { className: 'sgs-counter' } );
+	const className = [
+		'sgs-counter',
+		accentStroke ? 'sgs-counter--accent-stroke' : '',
+	].filter( Boolean ).join( ' ' );
+
+	const blockProps = useBlockProps.save( { className } );
 
 	const numberStyle = {
 		color: colourVar( numberColour ) || undefined,
@@ -44,6 +51,15 @@ export default function Save( { attributes } ) {
 
 	return (
 		<div { ...blockProps }>
+			{ /* Icon slot — rendered server-side via render.php for Lucide SVG output.
+			     The icon attribute is saved here as a data attribute so render.php can read it. */ }
+			{ icon && (
+				<span
+					className="sgs-counter__icon-placeholder"
+					data-icon={ icon }
+					aria-hidden="true"
+				/>
+			) }
 			<span className="sgs-sr-only">{ fullText }</span>
 			<span
 				className="sgs-counter__number"

@@ -23,13 +23,6 @@ const FONT_SIZE_OPTIONS = [
 	{ label: __( 'XXL', 'sgs-blocks' ), value: 'xx-large' },
 ];
 
-/**
- * Format a number with thousand separators for display in the editor.
- *
- * @param {number}  num       The number to format.
- * @param {boolean} separator Whether to add thousand separators.
- * @return {string} Formatted number string.
- */
 function formatNumber( num, separator ) {
 	if ( separator ) {
 		return num.toLocaleString( 'en-GB' );
@@ -48,9 +41,16 @@ export default function Edit( { attributes, setAttributes } ) {
 		numberColour,
 		labelColour,
 		labelFontSize,
+		icon,
+		accentStroke,
 	} = attributes;
 
-	const blockProps = useBlockProps( { className: 'sgs-counter' } );
+	const className = [
+		'sgs-counter',
+		accentStroke ? 'sgs-counter--accent-stroke' : '',
+	].filter( Boolean ).join( ' ' );
+
+	const blockProps = useBlockProps( { className } );
 
 	const numberStyle = {
 		color: colourVar( numberColour ) || undefined,
@@ -70,9 +70,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ String( number ) }
 						onChange={ ( val ) => {
 							const parsed = parseInt( val, 10 );
-							setAttributes( {
-								number: isNaN( parsed ) ? 0 : parsed,
-							} );
+							setAttributes( { number: isNaN( parsed ) ? 0 : parsed } );
 						} }
 						type="number"
 						__nextHasNoMarginBottom
@@ -80,38 +78,27 @@ export default function Edit( { attributes, setAttributes } ) {
 					<TextControl
 						label={ __( 'Prefix', 'sgs-blocks' ) }
 						value={ prefix }
-						onChange={ ( val ) =>
-							setAttributes( { prefix: val } )
-						}
+						onChange={ ( val ) => setAttributes( { prefix: val } ) }
 						placeholder={ __( 'e.g. £', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
 					/>
 					<TextControl
 						label={ __( 'Suffix', 'sgs-blocks' ) }
 						value={ suffix }
-						onChange={ ( val ) =>
-							setAttributes( { suffix: val } )
-						}
+						onChange={ ( val ) => setAttributes( { suffix: val } ) }
 						placeholder={ __( 'e.g. +, %, M', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
 					/>
 					<ToggleControl
 						label={ __( 'Thousand separator', 'sgs-blocks' ) }
 						checked={ separator }
-						onChange={ ( val ) =>
-							setAttributes( { separator: val } )
-						}
+						onChange={ ( val ) => setAttributes( { separator: val } ) }
 						__nextHasNoMarginBottom
 					/>
 					<RangeControl
-						label={ __(
-							'Animation duration (ms)',
-							'sgs-blocks'
-						) }
+						label={ __( 'Animation duration (ms)', 'sgs-blocks' ) }
 						value={ duration }
-						onChange={ ( val ) =>
-							setAttributes( { duration: val } )
-						}
+						onChange={ ( val ) => setAttributes( { duration: val } ) }
 						min={ 500 }
 						max={ 5000 }
 						step={ 100 }
@@ -119,41 +106,62 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				<PanelBody
-					title={ __( 'Text Styling', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
+				<PanelBody title={ __( 'Icon', 'sgs-blocks' ) } initialOpen={ false }>
+					<TextControl
+						label={ __( 'Lucide icon name', 'sgs-blocks' ) }
+						help={ __(
+							'Enter a Lucide icon slug (e.g. "star", "users", "bar-chart"). Icon renders on the frontend — not previewed in the editor.',
+							'sgs-blocks'
+						) }
+						value={ icon }
+						onChange={ ( val ) => setAttributes( { icon: val } ) }
+						placeholder="e.g. star"
+						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+
+				<PanelBody title={ __( 'Text Styling', 'sgs-blocks' ) } initialOpen={ false }>
 					<DesignTokenPicker
 						label={ __( 'Number colour', 'sgs-blocks' ) }
 						value={ numberColour }
-						onChange={ ( val ) =>
-							setAttributes( { numberColour: val } )
-						}
+						onChange={ ( val ) => setAttributes( { numberColour: val } ) }
 					/>
 					<DesignTokenPicker
 						label={ __( 'Label colour', 'sgs-blocks' ) }
 						value={ labelColour }
-						onChange={ ( val ) =>
-							setAttributes( { labelColour: val } )
-						}
+						onChange={ ( val ) => setAttributes( { labelColour: val } ) }
 					/>
 					<SelectControl
 						label={ __( 'Label font size', 'sgs-blocks' ) }
 						value={ labelFontSize || '' }
 						options={ FONT_SIZE_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { labelFontSize: val } )
-						}
+						onChange={ ( val ) => setAttributes( { labelFontSize: val } ) }
+						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+
+				<PanelBody title={ __( 'Decoration', 'sgs-blocks' ) } initialOpen={ false }>
+					<ToggleControl
+						label={ __( 'Accent underline stroke', 'sgs-blocks' ) }
+						help={ __( 'Adds a short coloured line beneath the number.', 'sgs-blocks' ) }
+						checked={ accentStroke }
+						onChange={ ( val ) => setAttributes( { accentStroke: val } ) }
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				<span
-					className="sgs-counter__number"
-					style={ numberStyle }
-				>
+				{ icon && (
+					<span
+						className="sgs-counter__icon-placeholder"
+						aria-hidden="true"
+						style={ { display: 'block', marginBottom: '8px', fontSize: '0.75rem', color: 'var(--wp--preset--color--text-muted)' } }
+					>
+						{ `[ Icon: ${ icon } ]` }
+					</span>
+				) }
+				<span className="sgs-counter__number" style={ numberStyle }>
 					{ prefix }
 					{ formatNumber( number, separator ) }
 					{ suffix }
@@ -162,9 +170,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					tagName="p"
 					className="sgs-counter__label"
 					value={ label }
-					onChange={ ( val ) =>
-						setAttributes( { label: val } )
-					}
+					onChange={ ( val ) => setAttributes( { label: val } ) }
 					placeholder={ __( 'Label text…', 'sgs-blocks' ) }
 					style={ labelStyle }
 				/>

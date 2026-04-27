@@ -79,7 +79,15 @@
                                        },
                        "labelFontSize":  {
                                              "type":  "string"
-                                         }
+                                         },
+                       "icon":  {
+                                    "type":  "string",
+                                    "default":  ""
+                                },
+                       "accentStroke":  {
+                                            "type":  "boolean",
+                                            "default":  false
+                                        }
                    },
     "editorScript":  "file:./index.js",
     "editorStyle":  "file:./index.css",

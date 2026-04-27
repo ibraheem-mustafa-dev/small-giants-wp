@@ -32,17 +32,38 @@
 	padding: var(--wp--preset--spacing--30) var(--wp--preset--spacing--20);
 }
 
-/* Number */
+/* Optional icon above number */
+.sgs-counter__icon {
+	display: block;
+	margin: 0 auto var(--wp--preset--spacing--20) auto;
+	width: 2rem;
+	height: 2rem;
+	color: var(--wp--preset--color--primary);
+}
+
+/* Number — larger fluid default */
 .sgs-counter__number {
 	display: block;
-	font-size: var(--wp--preset--font-size--xx-large, 3rem);
+	font-size: clamp(2.5rem, 6vw, 4rem);
 	font-weight: 700;
-	line-height: 1.1;
+	line-height: 1;
 	margin-bottom: var(--wp--preset--spacing--10);
+	position: relative;
 }
 
 .sgs-counter__number:not([style*="color"]) {
 	color: var(--wp--preset--color--primary);
+}
+
+/* Accent underline stroke (when accentStroke = true) */
+.sgs-counter--accent-stroke .sgs-counter__number::after {
+	content: '';
+	display: block;
+	width: 60px;
+	height: 3px;
+	margin: 0.35em auto 0;
+	border-radius: 2px;
+	background-color: var(--wp--preset--color--primary);
 }
 
 /* Label */
