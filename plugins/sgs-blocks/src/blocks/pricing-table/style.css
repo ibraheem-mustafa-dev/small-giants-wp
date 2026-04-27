@@ -226,10 +226,91 @@
 	background-color: var(--wp--preset--color--primary, #333);
 }
 
+/* Plan description */
+.sgs-pricing-table__description {
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	color: var(--wp--preset--color--text-muted, #666);
+	margin: 0.5rem 0 0;
+	line-height: 1.5;
+}
+
+/* Feature list — Lucide check icon variant */
+.sgs-pricing-table__feature {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.5rem;
+}
+
+.sgs-pricing-table__feature-icon {
+	flex-shrink: 0;
+	margin-top: 0.05em;
+	color: var(--wp--preset--color--accent, #d4a843);
+}
+
+/* Remove the legacy ::before checkmark when the SVG icon is present */
+.sgs-pricing-table__feature:has( .sgs-pricing-table__feature-icon )::before {
+	display: none;
+}
+
+/* ── Billing toggle ─────────────────────────────────────────────────────── */
+
+.sgs-pricing-table__toggle {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0;
+	margin-bottom: var(--wp--preset--spacing--40, 2rem);
+	position: relative;
+}
+
+/* Hide native radio inputs visually — keep accessible */
+.sgs-pricing-table__toggle-input {
+	position: absolute;
+	opacity: 0;
+	width: 0;
+	height: 0;
+	pointer-events: none;
+}
+
+.sgs-pricing-table__toggle-label {
+	position: relative;
+	z-index: 1;
+	padding: 0.5rem 1.25rem;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	font-weight: 500;
+	color: var(--wp--preset--color--text-muted, #555);
+	cursor: pointer;
+	border-radius: 999px;
+	transition: color 0.2s ease;
+	user-select: none;
+}
+
+/* Active label (when its paired input is checked) */
+.sgs-pricing-table__toggle-input:checked + .sgs-pricing-table__toggle-label {
+	color: var(--wp--preset--color--primary, #0f7e80);
+	font-weight: 700;
+}
+
+/* The sliding pill track */
+.sgs-pricing-table__toggle-track {
+	position: absolute;
+	inset: 0;
+	border: 2px solid var(--wp--preset--color--border-subtle, #ccc);
+	border-radius: 999px;
+	pointer-events: none;
+}
+
+/* Focus ring on inputs (keyboard nav) */
+.sgs-pricing-table__toggle-input:focus-visible + .sgs-pricing-table__toggle-label {
+	outline: 2px solid var(--wp--preset--color--primary, #0f7e80);
+	outline-offset: 2px;
+}
+
 /* Reduced motion — disable all transitions and the hover shadow shift. */
 @media (prefers-reduced-motion: reduce) {
 	.sgs-pricing-table__plan,
-	.sgs-pricing-table__cta {
+	.sgs-pricing-table__cta,
+	.sgs-pricing-table__toggle-label {
 		transition: none;
 	}
 }

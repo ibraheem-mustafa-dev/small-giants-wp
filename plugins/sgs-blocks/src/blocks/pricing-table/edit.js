@@ -38,6 +38,9 @@ const CTA_STYLE_OPTIONS = [
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		columns,
+		billingToggle,
+		billingToggleMonthlyLabel,
+		billingToggleYearlyLabel,
 		plans,
 		style,
 		titleColour,
@@ -140,6 +143,34 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 					/>
+					<ToggleControl
+						label={ __( 'Show monthly/yearly billing toggle', 'sgs-blocks' ) }
+						checked={ billingToggle }
+						onChange={ ( val ) =>
+							setAttributes( { billingToggle: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					{ billingToggle && (
+						<>
+							<TextControl
+								label={ __( 'Monthly label', 'sgs-blocks' ) }
+								value={ billingToggleMonthlyLabel }
+								onChange={ ( val ) =>
+									setAttributes( { billingToggleMonthlyLabel: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+							<TextControl
+								label={ __( 'Yearly label', 'sgs-blocks' ) }
+								value={ billingToggleYearlyLabel }
+								onChange={ ( val ) =>
+									setAttributes( { billingToggleYearlyLabel: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+						</>
+					) }
 				</PanelBody>
 
 				<PanelBody
@@ -292,7 +323,7 @@ export default function Edit( { attributes, setAttributes } ) {
 									<div className="sgs-pricing-table__price-wrapper">
 										<RichText
 											tagName="div"
-											className="sgs-pricing-table__price"
+											className="sgs-pricing-table__price sgs-pricing-table__price--monthly"
 											value={ plan.price }
 											onChange={ ( val ) =>
 												updatePlan(
@@ -302,7 +333,7 @@ export default function Edit( { attributes, setAttributes } ) {
 												)
 											}
 											placeholder={ __(
-												'£0.00',
+												'£0 /mo',
 												'sgs-blocks'
 											) }
 											style={ {
@@ -312,6 +343,30 @@ export default function Edit( { attributes, setAttributes } ) {
 													) || undefined,
 											} }
 										/>
+										{ billingToggle && (
+											<RichText
+												tagName="div"
+												className="sgs-pricing-table__price sgs-pricing-table__price--yearly"
+												value={ plan.priceYearly || '' }
+												onChange={ ( val ) =>
+													updatePlan(
+														planIndex,
+														'priceYearly',
+														val
+													)
+												}
+												placeholder={ __(
+													'£0 /yr',
+													'sgs-blocks'
+												) }
+												style={ {
+													color:
+														colourVar(
+															priceColour
+														) || undefined,
+												} }
+											/>
+										) }
 										<SelectControl
 											value={ plan.period }
 											options={ PERIOD_OPTIONS }
