@@ -200,6 +200,28 @@
 	}
 }
 
+/*
+ * Progressive enhancement: smooth block-size (height) transition on the
+ * <details> element itself. Requires interpolate-size on :root (Chrome 129+,
+ * Firefox 133+). The JS view.js animation remains as the reliable fallback
+ * for browsers that do not support this property.
+ */
+@supports (interpolate-size: allow-keywords) {
+	:root {
+		interpolate-size: allow-keywords;
+	}
+
+	.sgs-accordion-item {
+		transition: block-size 0.3s ease;
+	}
+
+	/* ::details-content is the pseudo-element for the hidden part of <details> */
+	.sgs-accordion-item::details-content {
+		transition: block-size 0.3s ease;
+		overflow: hidden;
+	}
+}
+
 /* Respect reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
 	.sgs-accordion-item__header,
