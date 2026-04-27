@@ -33,13 +33,13 @@ A single design-brain entry point (`/ui-ux-pro-max`) interrogates the brief (int
 |---|---|---|
 | **Two-Pass Blueprint Pipeline** (designer-before-router) | MetaGPT (Hong et al. 2023), v0.dev / Lovable / Galileo AI internals; HN Feb 2026 user report: *"v0 ends up paying for mistakes — buggy code because it didn't ask enough questions about the data schema"* | Production AI systems use intermediate JSON blueprint to prevent "premature token commitment" — model paints itself into a corner without a spatial anchor. Lovable's interview-mode is specifically winning on this point per r/SideProject Jan 2026. |
 | **`AskUserQuestion` + `context: fork` for the Designer interview**, NOT prose state-machine in SKILL.md | Anthropic skills docs (skill content lifecycle: loaded once, not re-read; competes with conversation pressure); Anthropic's own `feature-dev` plugin uses this exact pattern; neonwatty.com practitioner report | Prose `[CURRENT_STATE: 1_DISCOVERY]` directives drift after 3-4 turns under conversational pressure. Forked subagent context with no prior conversation history is the ONLY architecture that reliably enforces "refuse to propose until constraints filled" in Claude Code. |
-| **Archetype × Pricing-Tier → CSS tokens (deterministic mapping)** | Mark & Pearson "The Hero and the Outlaw" (Jung 12 archetypes); Mark Ritson pricing semiotics; NN/g eye-tracking; practitioner mapping matrix at marlostudios.co Feb 2026 | "Alike-but-unique" differentiation is programmable, not subjective. Premium = high whitespace + desaturated + serif. Mass-market = high saturation + dense + heavy sans-serif. Practitioners further refine via 80/20 hybrid blends to avoid pure-archetype clichés. |
+| **Archetype × Pricing-Tier → CSS tokens (deterministic mapping)** | Mark & Pearson "The Hero and the Outlaw" (Jung 12 archetypes); Mark Ritson pricing semiotics; Nielsen Norman Group (NN/g) eye-tracking; practitioner mapping matrix at marlostudios.co Feb 2026 | "Alike-but-unique" differentiation is programmable, not subjective. Premium = high whitespace + desaturated + serif. Mass-market = high saturation + dense + heavy sans-serif. Practitioners further refine via 80/20 hybrid blends to avoid pure-archetype clichés. |
 | **Core-Utility DOM Anchor** (top task drives spatial layout, aesthetics wrap) | JTBD (Christensen); Top Task Analysis (McGovern); NN/g eye-tracking | If a user comes to a site to use a calculator (the "Top Task"), forcing them past an aesthetic Hero causes friction. Required functionality must be the spatial anchor; aesthetics wrap around it. |
 | **Adversarial Triage Council with model heterogeneity** for design review | Mixture-of-Agents (Wang et al. 2024); ChatEval (Chan et al. 2023); Refute-or-Promote Report Apr 2026 (*"80+ agents unanimously endorsed a non-existent vulnerability"*) | Single LLM = sycophancy. Homogenous panels = bias collapse (empirically demonstrated). Diverse priors + different model providers per reviewer is mandatory, not optional. |
 | **Council as a Skill stage with main-thread Task calls**, NOT a PostToolUse hook | GitHub Issue anthropics/claude-code#34692: *"hooks do not fire for tool calls made by subagents"*; hooks are shell scripts that can't invoke `Task` tool | Three parallel Claude subagents triggered from a hook is not a supported pattern. Council must be invoked from main thread. |
 | **Pre-creation philosophy auto-load via PreToolUse `additionalContext`** | Verified file: `~/.claude/settings.json` lines 397-404 already wires PreToolUse on Skill matcher; Claude Code hooks docs confirm `additionalContext` JSON output enters model context before skill body | Hook returns `{"hookSpecificOutput": {"hookEventName": "PreToolUse", "additionalContext": "<philosophy>"}}` — this guarantees philosophy loads at design-creation time (the load-bearing gap today). |
 | **Progressive disclosure for the merged skill** (Level 1 / 2 / 3) | Anthropic skills docs: "Keep SKILL.md under 500 lines. Move detailed reference material to separate files." | A 6-mode monolith violates this. Mode-specific behaviour goes in `/references/modes/*.md` as Level 3 files loaded on demand per mode. |
-| **Self-improving DB writes only on client-validated outcomes** | Goodhart's law; Sentrux MCP precedent (r/vibecoding Mar 2026); Aesthetic Decay risk (Gemini-Flash community report) | Validation gate: rows append after client sign-off + 30-day no-revision window. Quarterly diversity audit checks DB variance hasn't collapsed. Prevents the brain from learning from its own taste. |
+| **Self-improving DB writes only on client-validated outcomes** | Goodhart's law; Sentrux Model Context Protocol (MCP) precedent (r/vibecoding Mar 2026); Aesthetic Decay risk (Gemini-Flash community report) | Validation gate: rows append after client sign-off + 30-day no-revision window. Quarterly diversity audit checks DB variance hasn't collapsed. Prevents the brain from learning from its own taste. |
 
 ---
 
@@ -78,7 +78,7 @@ ui-ux-pro-max/
 │   ├── ingest-aria-practices.py … (13 ingest scripts) # KEEP
 │   ├── modify.py                               # NEW — `uimax modify --mode <X>` CLI handler (replaces 8 modifier sub-skills)
 │   ├── designer.py                             # NEW — orchestrates designer modes A & B
-│   ├── council.py                              # NEW — Triage Council dispatcher (3-4 reviewers via Task tool from caller)
+│   ├── council.py                              # NEW — Triage Council dispatcher (4 reviewers via Task tool from caller)
 │   └── update-db.py / sync-skill-stats.py      # KEEP
 └── hooks/
     └── README.md                               # KEEP
@@ -130,7 +130,7 @@ Strict JSON conforming to `references/blueprint-schema.json`. Validated by `pipe
     "animation_curve": "cubic-bezier(0.22, 1, 0.36, 1) 800ms",
     "shadow_scale": "subtle (≤0.10 opacity)"
   },
-  "constraints": {"wcag": "2.2 AA", "stack": "Next.js 16", "performance_budget": "LCP <2.5s"},
+  "constraints": {"wcag": "2.2 AA", "stack": "Next.js 16", "performance_budget": "Largest Contentful Paint (LCP) <2.5s"},
   "model_from": ["url-1", "url-2"],
   "break_from": ["url-3 (industry default)"],
   "required_components": ["hero", "consultation-booking-widget", "credentials-band", "case-studies", "testimonials"],
@@ -509,7 +509,7 @@ Stage 7: deploy (existing)
 
 ### Phase 2 — Superdesign Consolidation (~1-2h, low risk)
 
-1. Create `philosophy_rules` table with seed data from superdesign structured content (typography pairings, OKLCH rules, spacing scale, animation timings, shadow scale, theme patterns, A+ to D grading criteria)
+1. Create `philosophy_rules` table with seed data from superdesign structured content (typography pairings, OKLCH (modern colour-space format) rules, spacing scale, animation timings, shadow scale, theme patterns, A+ to D grading criteria)
 2. Create `ui-ux-pro-max/references/superdesign-philosophy.md` with prose half
 3. Update `visual-qa/SUPERDESIGN.md` content to redirect to canonical reference (or delete duplicate, point at canonical)
 4. Update `site-reviewer/references/design-quality.md` similarly

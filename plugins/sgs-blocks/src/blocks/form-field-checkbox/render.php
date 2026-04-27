@@ -45,9 +45,17 @@ if ( ! empty( $label ) ) {
 }
 
 foreach ( $options as $i => $option ) {
+	// Normalise: handle both plain strings and {value, label} objects.
+	if ( is_string( $option ) ) {
+		$opt_value = $option;
+		$opt_label = $option;
+	} else {
+		$opt_value = $option['value'] ?? '';
+		$opt_label = $option['label'] ?? '';
+	}
 	$option_id = $fid . '-' . $i;
 	echo '<label class="sgs-form-field__option" for="' . esc_attr( $option_id ) . '">';
-	echo '<input type="checkbox" id="' . esc_attr( $option_id ) . '" name="' . $name . '" value="' . esc_attr( $option['value'] ?? '' ) . '"';
+	echo '<input type="checkbox" id="' . esc_attr( $option_id ) . '" name="' . $name . '" value="' . esc_attr( $opt_value ) . '"';
 	if ( $required ) {
 		echo ' required aria-required="true"';
 	}
@@ -56,7 +64,7 @@ foreach ( $options as $i => $option ) {
 		echo ' ' . $described_by_attr;
 	}
 	echo ' />';
-	echo '<span>' . esc_html( $option['label'] ?? '' ) . '</span>';
+	echo '<span>' . esc_html( $opt_label ) . '</span>';
 	echo '</label>';
 }
 

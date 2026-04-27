@@ -59,7 +59,9 @@ foreach ( $tiles as $i => $tile ) {
 	$tile_id = $fid . '-tile-' . $i;
 
 	echo '<label class="sgs-form-tile" for="' . esc_attr( $tile_id ) . '" data-wp-on--click="actions.toggleTile">';
-	echo '<input type="' . $input_type . '" id="' . esc_attr( $tile_id ) . '" name="' . $input_name . '" value="' . esc_attr( $tile['value'] ?? '' ) . '" class="sgs-form-tile__input"';
+	// Use value if set; fall back to label (slugified) so the input always has a meaningful value.
+	$tile_value = ! empty( $tile['value'] ) ? $tile['value'] : sanitize_title( $tile['label'] ?? '' );
+	echo '<input type="' . $input_type . '" id="' . esc_attr( $tile_id ) . '" name="' . $input_name . '" value="' . esc_attr( $tile_value ) . '" class="sgs-form-tile__input"';
 	if ( $required ) {
 		echo ' required aria-required="true"';
 	}

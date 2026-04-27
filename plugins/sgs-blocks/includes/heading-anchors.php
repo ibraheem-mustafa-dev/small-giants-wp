@@ -45,10 +45,19 @@ function inject_heading_anchor( string $block_content, array $block ): string {
 	static $checked_post_id = null;
 	static $used_slugs = [];
 
+	// Resolve the current post ID using multiple fallbacks to handle
+	// template-part rendering contexts where get_the_ID() may return 0.
 	$current_post_id = get_the_ID();
 	if ( ! $current_post_id ) {
 		global $post;
 		$current_post_id = $post->ID ?? 0;
+	}
+	// Last resort: queried object (reliable on singular pages outside the loop).
+	if ( ! $current_post_id ) {
+		$queried = get_queried_object();
+		if ( $queried instanceof \WP_Post ) {
+			$current_post_id = $queried->ID;
+		}
 	}
 
 	// Re-check if we're rendering a different post (e.g. archive pages).
