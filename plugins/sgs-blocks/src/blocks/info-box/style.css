@@ -254,3 +254,71 @@
 		transform: none;
 	}
 }
+
+/* ===== Icon Position layouts ===== */
+
+/* Top (default) — stacked vertically, nothing extra needed */
+.sgs-info-box--media-top {
+	display: block;
+}
+
+/* Left — icon/image on left, body content on right */
+.sgs-info-box--media-left {
+	display: flex;
+	flex-direction: row;
+	align-items: flex-start;
+	gap: var(--wp--preset--spacing--30, 1rem);
+}
+
+/* Right — icon/image on right, body content on left */
+.sgs-info-box--media-right {
+	display: flex;
+	flex-direction: row-reverse;
+	align-items: flex-start;
+	gap: var(--wp--preset--spacing--30, 1rem);
+}
+
+/* In left/right layouts the icon must not shrink */
+.sgs-info-box--media-left .sgs-info-box__icon,
+.sgs-info-box--media-right .sgs-info-box__icon {
+	flex-shrink: 0;
+	margin-bottom: 0;
+}
+
+/* Body fills remaining space in side layouts */
+.sgs-info-box--media-left .sgs-info-box__body,
+.sgs-info-box--media-right .sgs-info-box__body {
+	flex: 1;
+	min-width: 0;
+}
+
+/* Image media type */
+.sgs-info-box__image {
+	display: block;
+	width: 100%;
+	border-radius: var(--wp--custom--border-radius--small, 4px);
+	margin-bottom: var(--wp--preset--spacing--30);
+	object-fit: cover;
+}
+
+.sgs-info-box--media-left .sgs-info-box__image,
+.sgs-info-box--media-right .sgs-info-box__image {
+	width: 80px;
+	height: 80px;
+	object-fit: cover;
+	margin-bottom: 0;
+	flex-shrink: 0;
+}
+
+/* Collapse side layout to top on narrow viewports */
+@media (max-width: 599px) {
+	.sgs-info-box--media-left,
+	.sgs-info-box--media-right {
+		flex-direction: column;
+	}
+
+	.sgs-info-box--media-left .sgs-info-box__icon,
+	.sgs-info-box--media-right .sgs-info-box__icon {
+		margin-bottom: var(--wp--preset--spacing--20);
+	}
+}

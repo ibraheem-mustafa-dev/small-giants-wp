@@ -258,7 +258,17 @@ $wrapper_attrs = get_block_wrapper_attributes( [
 			wp_reset_postdata();
 		else :
 			?>
-			<p class="sgs-post-grid__empty"><?php esc_html_e( 'No posts found.', 'sgs-blocks' ); ?></p>
+			<div class="sgs-post-grid__empty" role="status">
+				<svg class="sgs-post-grid__empty-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+					<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+					<polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+					<line x1="16" y1="13" x2="8" y2="13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+					<line x1="16" y1="17" x2="8" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+					<polyline points="10 9 9 9 8 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+				</svg>
+				<h3 class="sgs-post-grid__empty-heading"><?php esc_html_e( 'No posts yet', 'sgs-blocks' ); ?></h3>
+				<p class="sgs-post-grid__empty-text"><?php esc_html_e( 'The selected category or filter has no published posts. Check back soon or try a different selection.', 'sgs-blocks' ); ?></p>
+			</div>
 		<?php endif; ?>
 	</div>
 

@@ -671,9 +671,32 @@
 .sgs-post-grid__empty,
 .sgs-post-grid__error {
 	grid-column: 1 / -1;
-	padding: 40px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 12px;
+	padding: 48px 24px;
 	text-align: center;
 	color: var( --wp--preset--color--text-muted, #555 );
+}
+
+.sgs-post-grid__empty-icon {
+	color: var( --wp--preset--color--border-subtle, #ccc );
+	flex-shrink: 0;
+}
+
+.sgs-post-grid__empty-heading {
+	font-size: var( --wp--preset--font-size--large, 1.25rem );
+	font-weight: 600;
+	margin: 0;
+	color: var( --wp--preset--color--text, #1e1e1e );
+}
+
+.sgs-post-grid__empty-text {
+	font-size: var( --wp--preset--font-size--small, 0.875rem );
+	margin: 0;
+	max-width: 36ch;
+	line-height: 1.5;
 }
 
 /* ==========================================================================

@@ -227,6 +227,47 @@ if ( $is_split && ! empty( $side_image['url'] ) ) {
 	$side_image_html = '<div class="sgs-testimonial-slider__side-image">' . $side_img_tag . '</div>';
 }
 
+// ─── Schema.org/Review array JSON-LD ───
+$schema_html = '';
+if ( ! empty( $testimonials ) ) {
+	$review_items = array();
+	foreach ( $testimonials as $testimonial ) {
+		$t_name   = wp_strip_all_tags( $testimonial['name'] ?? '' );
+		$t_quote  = wp_strip_all_tags( $testimonial['quote'] ?? '' );
+		$t_rating = absint( $testimonial['rating'] ?? 0 );
+
+		if ( empty( $t_name ) || empty( $t_quote ) ) {
+			continue;
+		}
+
+		$review = array(
+			'@type'      => 'Review',
+			'reviewBody' => $t_quote,
+			'author'     => array(
+				'@type' => 'Person',
+				'name'  => $t_name,
+			),
+		);
+
+		if ( $t_rating > 0 ) {
+			$review['reviewRating'] = array(
+				'@type'       => 'Rating',
+				'ratingValue' => $t_rating,
+				'bestRating'  => 5,
+			);
+		}
+
+		$review_items[] = $review;
+	}
+
+	if ( count( $review_items ) >= 1 ) {
+		$schema_html = sprintf(
+			'<script type="application/ld+json">%s</script>',
+			wp_json_encode( $review_items, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE )
+		);
+	}
+}
+
 // Output.
 // WCAG 2.2 AA — carousel pattern (ARIA 1.2):
 // - Outer wrapper: role="region" + aria-roledescription="carousel" + aria-label names the landmark.
@@ -242,15 +283,17 @@ $slider_inner = sprintf(
 
 if ( $is_split ) {
 	printf(
-		'<div %s role="region" aria-roledescription="carousel" aria-label="Customer Testimonials">%s<div class="sgs-testimonial-slider__slider-content">%s</div></div>',
+		'<div %s role="region" aria-roledescription="carousel" aria-label="Customer Testimonials">%s<div class="sgs-testimonial-slider__slider-content">%s</div></div>%s',
 		$wrapper_attributes,
 		$side_image_html,
-		$slider_inner
+		$slider_inner,
+		$schema_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — wp_json_encode() output inside a script tag; already sanitised above.
 	);
 } else {
 	printf(
-		'<div %s role="region" aria-roledescription="carousel" aria-label="Customer Testimonials">%s</div>',
+		'<div %s role="region" aria-roledescription="carousel" aria-label="Customer Testimonials">%s</div>%s',
 		$wrapper_attributes,
-		$slider_inner
+		$slider_inner,
+		$schema_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — wp_json_encode() output inside a script tag; already sanitised above.
 	);
 }

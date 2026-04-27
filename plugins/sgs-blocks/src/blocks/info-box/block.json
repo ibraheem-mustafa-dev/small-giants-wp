@@ -51,6 +51,19 @@
     "typography": ".sgs-info-box__heading"
   },
   "attributes": {
+    "mediaType": {
+      "type": "string",
+      "default": "icon",
+      "enum": [ "icon", "image" ]
+    },
+    "image": {
+      "type": "object"
+    },
+    "iconPosition": {
+      "type": "string",
+      "default": "top",
+      "enum": [ "top", "left", "right" ]
+    },
     "icon": {
       "type": "string",
       "default": "star-filled"

@@ -3,6 +3,8 @@ import {
 	useBlockProps,
 	InspectorControls,
 	RichText,
+	MediaUpload,
+	MediaUploadCheck,
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
@@ -10,6 +12,7 @@ import {
 	TextControl,
 	ToggleControl,
 	Icon,
+	Button,
 } from '@wordpress/components';
 import {
 	starFilled,
@@ -67,6 +70,17 @@ const ICON_SIZE_OPTIONS = [
 	{ label: __( 'Large', 'sgs-blocks' ), value: 'large' },
 ];
 
+const MEDIA_TYPE_OPTIONS = [
+	{ label: __( 'Icon', 'sgs-blocks' ), value: 'icon' },
+	{ label: __( 'Image', 'sgs-blocks' ), value: 'image' },
+];
+
+const ICON_POSITION_OPTIONS = [
+	{ label: __( 'Top', 'sgs-blocks' ), value: 'top' },
+	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
+	{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
+];
+
 const FONT_SIZE_OPTIONS = [
 	{ label: __( 'Default', 'sgs-blocks' ), value: '' },
 	{ label: __( 'Small', 'sgs-blocks' ), value: 'small' },
@@ -78,6 +92,9 @@ const FONT_SIZE_OPTIONS = [
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
+		mediaType,
+		image,
+		iconPosition,
 		icon,
 		heading,
 		description,
@@ -97,6 +114,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		'sgs-info-box',
 		`sgs-info-box--${ cardStyle }`,
 		`sgs-info-box--hover-${ hoverEffect }`,
+		`sgs-info-box--media-${ iconPosition }`,
 	].join( ' ' );
 
 	const blockProps = useBlockProps( { className } );
@@ -200,81 +218,169 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 
 				<PanelBody
-					title={ __( 'Icon', 'sgs-blocks' ) }
+					title={ __( 'Media', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
 					<SelectControl
-						label={ __( 'Icon', 'sgs-blocks' ) }
-						value={ icon }
-						options={ ICON_OPTIONS.map( ( opt ) => ( {
-							label: opt.label,
-							value: opt.value,
-						} ) ) }
+						label={ __( 'Media type', 'sgs-blocks' ) }
+						value={ mediaType }
+						options={ MEDIA_TYPE_OPTIONS }
 						onChange={ ( val ) =>
-							setAttributes( { icon: val } )
+							setAttributes( { mediaType: val } )
 						}
 						__nextHasNoMarginBottom
 					/>
-					<ResponsiveControl
-						label={ __( 'Icon size', 'sgs-blocks' ) }
-					>
-						{ ( breakpoint ) => {
-							const attrMap = {
-								desktop: 'iconSize',
-								tablet: 'iconSizeTablet',
-								mobile: 'iconSizeMobile',
-							};
-							return (
-								<SelectControl
-									value={
-										attributes[
-											attrMap[ breakpoint ]
-										] || ''
-									}
-									options={
-										breakpoint === 'desktop'
-											? ICON_SIZE_OPTIONS
-											: [
-													{
-														label: __(
-															'Same as desktop',
-															'sgs-blocks'
-														),
-														value: '',
-													},
-													...ICON_SIZE_OPTIONS,
-												]
-									}
-									onChange={ ( val ) =>
-										setAttributes( {
-											[ attrMap[ breakpoint ] ]:
-												val,
-										} )
-									}
-									__nextHasNoMarginBottom
-								/>
-							);
-						} }
-					</ResponsiveControl>
-					<DesignTokenPicker
-						label={ __( 'Icon colour', 'sgs-blocks' ) }
-						value={ iconColour }
+					<SelectControl
+						label={ __( 'Position', 'sgs-blocks' ) }
+						value={ iconPosition }
+						options={ ICON_POSITION_OPTIONS }
 						onChange={ ( val ) =>
-							setAttributes( { iconColour: val } )
+							setAttributes( { iconPosition: val } )
 						}
+						__nextHasNoMarginBottom
 					/>
-					<DesignTokenPicker
-						label={ __(
-							'Icon background colour',
-							'sgs-blocks'
-						) }
-						value={ iconBackgroundColour }
-						onChange={ ( val ) =>
-							setAttributes( {
-								iconBackgroundColour: val,
-							} )
-						}
-					/>
+					{ mediaType === 'image' ? (
+						<MediaUploadCheck>
+							<MediaUpload
+								onSelect={ ( media ) =>
+									setAttributes( {
+										image: {
+											id: media.id,
+											url: media.url,
+											alt: media.alt,
+											width: media.width,
+											height: media.height,
+										},
+									} )
+								}
+								allowedTypes={ [ 'image' ] }
+								value={ image?.id }
+								render={ ( { open } ) => (
+									<>
+										{ image?.url && (
+											<img
+												src={ image.url }
+												alt={ image.alt || '' }
+												style={ {
+													display: 'block',
+													maxWidth: '100%',
+													marginBottom: '8px',
+													borderRadius: '4px',
+												} }
+											/>
+										) }
+										<Button
+											variant="secondary"
+											onClick={ open }
+											style={ { marginBottom: '4px' } }
+										>
+											{ image?.url
+												? __(
+													'Replace image',
+													'sgs-blocks'
+												)
+												: __(
+													'Select image',
+													'sgs-blocks'
+												) }
+										</Button>
+										{ image?.url && (
+											<Button
+												variant="link"
+												isDestructive
+												onClick={ () =>
+													setAttributes( {
+														image: undefined,
+													} )
+												}
+												style={ { display: 'block' } }
+											>
+												{ __(
+													'Remove image',
+													'sgs-blocks'
+												) }
+											</Button>
+										) }
+									</>
+								) }
+							/>
+						</MediaUploadCheck>
+					) : (
+						<>
+							<SelectControl
+								label={ __( 'Icon', 'sgs-blocks' ) }
+								value={ icon }
+								options={ ICON_OPTIONS.map( ( opt ) => ( {
+									label: opt.label,
+									value: opt.value,
+								} ) ) }
+								onChange={ ( val ) =>
+									setAttributes( { icon: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+							<ResponsiveControl
+								label={ __( 'Icon size', 'sgs-blocks' ) }
+							>
+								{ ( breakpoint ) => {
+									const attrMap = {
+										desktop: 'iconSize',
+										tablet: 'iconSizeTablet',
+										mobile: 'iconSizeMobile',
+									};
+									return (
+										<SelectControl
+											value={
+												attributes[
+													attrMap[ breakpoint ]
+												] || ''
+											}
+											options={
+												breakpoint === 'desktop'
+													? ICON_SIZE_OPTIONS
+													: [
+															{
+																label: __(
+																	'Same as desktop',
+																	'sgs-blocks'
+																),
+																value: '',
+															},
+															...ICON_SIZE_OPTIONS,
+														]
+											}
+											onChange={ ( val ) =>
+												setAttributes( {
+													[ attrMap[ breakpoint ] ]:
+														val,
+												} )
+											}
+											__nextHasNoMarginBottom
+										/>
+									);
+								} }
+							</ResponsiveControl>
+							<DesignTokenPicker
+								label={ __( 'Icon colour', 'sgs-blocks' ) }
+								value={ iconColour }
+								onChange={ ( val ) =>
+									setAttributes( { iconColour: val } )
+								}
+							/>
+							<DesignTokenPicker
+								label={ __(
+									'Icon background colour',
+									'sgs-blocks'
+								) }
+								value={ iconBackgroundColour }
+								onChange={ ( val ) =>
+									setAttributes( {
+										iconBackgroundColour: val,
+									} )
+								}
+							/>
+						</>
+					) }
 				</PanelBody>
 
 				<PanelBody
@@ -302,41 +408,52 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				<div
-					className={ `sgs-info-box__icon sgs-info-box__icon--${ iconSize }` }
-					style={ iconStyle }
-				>
-					{ ICON_MAP[ icon ] && (
-						<Icon icon={ ICON_MAP[ icon ] } size={ 24 } />
-					) }
+				{ /* Media element — icon or image */ }
+				{ mediaType === 'image' && image?.url ? (
+					<img
+						src={ image.url }
+						alt={ image.alt || '' }
+						className="sgs-info-box__image"
+					/>
+				) : (
+					<div
+						className={ `sgs-info-box__icon sgs-info-box__icon--${ iconSize }` }
+						style={ iconStyle }
+					>
+						{ ICON_MAP[ icon ] && (
+							<Icon icon={ ICON_MAP[ icon ] } size={ 24 } />
+						) }
+					</div>
+				) }
+				<div className="sgs-info-box__body">
+					<RichText
+						tagName="h3"
+						className="sgs-info-box__heading"
+						value={ heading }
+						onChange={ ( val ) =>
+							setAttributes( { heading: val } )
+						}
+						placeholder={ __( 'Feature heading…', 'sgs-blocks' ) }
+						style={ {
+							color: colourVar( headingColour ) || undefined,
+							fontSize:
+								fontSizeVar( headingFontSize ) || undefined,
+						} }
+					/>
+					<RichText
+						tagName="p"
+						className="sgs-info-box__description"
+						value={ description }
+						onChange={ ( val ) =>
+							setAttributes( { description: val } )
+						}
+						placeholder={ __( 'Description…', 'sgs-blocks' ) }
+						style={ {
+							color:
+								colourVar( descriptionColour ) || undefined,
+						} }
+					/>
 				</div>
-				<RichText
-					tagName="h3"
-					className="sgs-info-box__heading"
-					value={ heading }
-					onChange={ ( val ) =>
-						setAttributes( { heading: val } )
-					}
-					placeholder={ __( 'Feature heading…', 'sgs-blocks' ) }
-					style={ {
-						color: colourVar( headingColour ) || undefined,
-						fontSize:
-							fontSizeVar( headingFontSize ) || undefined,
-					} }
-				/>
-				<RichText
-					tagName="p"
-					className="sgs-info-box__description"
-					value={ description }
-					onChange={ ( val ) =>
-						setAttributes( { description: val } )
-					}
-					placeholder={ __( 'Description…', 'sgs-blocks' ) }
-					style={ {
-						color:
-							colourVar( descriptionColour ) || undefined,
-					} }
-				/>
 			</div>
 		</>
 	);

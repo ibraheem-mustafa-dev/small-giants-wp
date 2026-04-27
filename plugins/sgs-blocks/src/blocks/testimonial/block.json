@@ -143,6 +143,10 @@
     "staggerDelay": {
       "type": "number",
       "default": 0
+    },
+    "schemaEnabled": {
+      "type": "boolean",
+      "default": false
     }
   },
   "editorScript": "file:./index.js",

@@ -14,6 +14,9 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 // Extract attributes with defaults.
+$media_type              = $attributes['mediaType'] ?? 'icon';
+$image                   = $attributes['image'] ?? null;
+$icon_position           = $attributes['iconPosition'] ?? 'top';
 $icon                    = $attributes['icon'] ?? 'star-filled';
 $heading                 = $attributes['heading'] ?? '';
 $description             = $attributes['description'] ?? '';
@@ -67,6 +70,7 @@ $classes = array(
 	'sgs-info-box',
 	'sgs-info-box--' . esc_attr( $card_style ),
 	'sgs-info-box--hover-' . esc_attr( $hover_effect ),
+	'sgs-info-box--media-' . esc_attr( $icon_position ),
 );
 
 $allowed_scales  = array( '1.02', '1.05', '1.1' );
@@ -151,17 +155,39 @@ if ( $description_colour ) {
 	$description_style_attr = ' style="color:' . sgs_colour_value( $description_colour ) . '"';
 }
 
-// Load Lucide icon from generated PHP map (1900+ icons).
-require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
-$icon_svg = sgs_get_lucide_icon( $icon );
+// Build media HTML (icon or image).
+if ( 'image' === $media_type && ! empty( $image['url'] ) ) {
+	$img_id    = ! empty( $image['id'] ) ? absint( $image['id'] ) : 0;
+	$img_attrs = array(
+		'class'    => 'sgs-info-box__image',
+		'loading'  => 'lazy',
+		'decoding' => 'async',
+	);
+	if ( ! empty( $image['width'] ) ) {
+		$img_attrs['width'] = absint( $image['width'] );
+	}
+	if ( ! empty( $image['height'] ) ) {
+		$img_attrs['height'] = absint( $image['height'] );
+	}
+	$icon_html = sgs_responsive_image(
+		$img_id,
+		$image['url'],
+		$image['alt'] ?? '',
+		'medium',
+		$img_attrs
+	);
+} else {
+	// Load Lucide icon from generated PHP map (1900+ icons).
+	require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
+	$icon_svg = sgs_get_lucide_icon( $icon );
 
-// Build icon HTML.
-$icon_html = sprintf(
-	'<span class="sgs-info-box__icon sgs-info-box__icon--%s"%s aria-hidden="true">%s</span>',
-	esc_attr( $icon_size ),
-	$icon_style_attr,
-	$icon_svg
-);
+	$icon_html = sprintf(
+		'<span class="sgs-info-box__icon sgs-info-box__icon--%s"%s aria-hidden="true">%s</span>',
+		esc_attr( $icon_size ),
+		$icon_style_attr,
+		$icon_svg
+	);
+}
 
 // Build heading HTML.
 $heading_html = sprintf(
@@ -191,14 +217,16 @@ if ( $link ) {
 	$link_close = '</a>';
 }
 
+// Wrap heading + description in body container for left/right layouts.
+$body_html = '<div class="sgs-info-box__body">' . $heading_html . $description_html . '</div>';
+
 // Output.
 $inner_html = sprintf(
-	'<div %s>%s%s%s%s%s</div>',
+	'<div %s>%s%s%s%s</div>',
 	$wrapper_attributes,
 	$link_open,
 	$icon_html,
-	$heading_html,
-	$description_html,
+	$body_html,
 	$link_close
 );
 

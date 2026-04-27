@@ -1,4 +1,5 @@
 import { useBlockProps, RichText } from '@wordpress/block-editor';
+import { RawHTML } from '@wordpress/element';
 import { colourVar, fontSizeVar } from '../../utils';
 
 /**
@@ -19,6 +20,19 @@ function getInitials( fullName ) {
 	return (
 		parts[ 0 ].charAt( 0 ) + parts[ parts.length - 1 ].charAt( 0 )
 	).toUpperCase();
+}
+
+/**
+ * Strip HTML tags from a string for use in JSON-LD text properties.
+ *
+ * @param {string} html Possibly HTML-containing string.
+ * @return {string} Plain text.
+ */
+function stripHtml( html ) {
+	if ( ! html ) {
+		return '';
+	}
+	return html.replace( /<[^>]+>/g, '' ).trim();
 }
 
 export default function Save( { attributes } ) {
@@ -45,6 +59,7 @@ export default function Save( { attributes } ) {
 		hoverScale,
 		hoverShadow,
 		staggerDelay,
+		schemaEnabled,
 	} = attributes;
 
 	const classNames = [
@@ -112,6 +127,7 @@ export default function Save( { attributes } ) {
 	};
 
 	return (
+		<>
 		<blockquote { ...blockProps }>
 			{ rating > 0 && (
 				<div
@@ -179,5 +195,29 @@ export default function Save( { attributes } ) {
 				</div>
 			</footer>
 		</blockquote>
+		{ schemaEnabled && name && ( () => {
+			const plainName = stripHtml( name );
+			const plainQuote = stripHtml( quote );
+			const schema = {
+				'@context': 'https://schema.org',
+				'@type': 'Review',
+				reviewBody: plainQuote,
+				author: {
+					'@type': 'Person',
+					name: plainName,
+				},
+			};
+			if ( rating > 0 ) {
+				schema.reviewRating = {
+					'@type': 'Rating',
+					ratingValue: rating,
+					bestRating: 5,
+				};
+			}
+			return (
+				<RawHTML>{ `<script type="application/ld+json">${ JSON.stringify( schema ) }</script>` }</RawHTML>
+			);
+		} )() }
+		</>
 	);
 }

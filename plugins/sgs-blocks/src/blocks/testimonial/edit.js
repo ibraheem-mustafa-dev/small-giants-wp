@@ -12,6 +12,7 @@ import {
 	RangeControl,
 	Button,
 	TextControl,
+	ToggleControl,
 } from '@wordpress/components';
 import { DesignTokenPicker, ResponsiveControl } from '../../components';
 import { colourVar, fontSizeVar } from '../../utils';
@@ -71,6 +72,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		hoverEffect,
 		transitionDuration,
 		transitionEasing,
+		schemaEnabled,
 	} = attributes;
 
 	const className = [
@@ -406,6 +408,24 @@ export default function Edit( { attributes, setAttributes } ) {
 							__nextHasNoMarginBottom
 						/>
 					) }
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'SEO Schema Markup', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ToggleControl
+						label={ __( 'Output schema.org/Review JSON-LD', 'sgs-blocks' ) }
+						help={ __(
+							'Adds structured data for this testimonial. Enable when the review author has given permission for their name to appear in search results.',
+							'sgs-blocks'
+						) }
+						checked={ schemaEnabled }
+						onChange={ ( val ) =>
+							setAttributes( { schemaEnabled: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
 				</PanelBody>
 			</InspectorControls>
 
