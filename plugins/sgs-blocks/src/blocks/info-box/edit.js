@@ -91,11 +91,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		descriptionColour,
 		cardStyle,
 		hoverEffect,
-		hoverBackgroundColour,
-		hoverTextColour,
-		hoverBorderColour,
-		transitionDuration,
-		transitionEasing,
 	} = attributes;
 
 	const className = [
@@ -104,13 +99,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		`sgs-info-box--hover-${ hoverEffect }`,
 	].join( ' ' );
 
-	const blockProps = useBlockProps( {
-		className,
-		style: {
-			'--sgs-transition-duration': transitionDuration ? `${ transitionDuration }ms` : undefined,
-			'--sgs-transition-easing': transitionEasing || undefined,
-		},
-	} );
+	const blockProps = useBlockProps( { className } );
 
 	const iconStyle = {
 		color: colourVar( iconColour ),
@@ -120,61 +109,6 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
-				<PanelBody
-					title={ __( 'Hover States', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<DesignTokenPicker
-						label={ __( 'Hover background', 'sgs-blocks' ) }
-						value={ hoverBackgroundColour }
-						onChange={ ( val ) =>
-							setAttributes( {
-								hoverBackgroundColour: val,
-							} )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __( 'Hover text', 'sgs-blocks' ) }
-						value={ hoverTextColour }
-						onChange={ ( val ) =>
-							setAttributes( { hoverTextColour: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __( 'Hover border', 'sgs-blocks' ) }
-						value={ hoverBorderColour }
-						onChange={ ( val ) =>
-							setAttributes( {
-								hoverBorderColour: val,
-							} )
-						}
-					/>
-					<TextControl
-						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
-						value={ transitionDuration }
-						onChange={ ( val ) =>
-							setAttributes( { transitionDuration: val } )
-						}
-						help={ __( 'Duration of all hover transitions in milliseconds. Default: 300.', 'sgs-blocks' ) }
-						__nextHasNoMarginBottom
-					/>
-					<SelectControl
-						label={ __( 'Transition easing', 'sgs-blocks' ) }
-						value={ transitionEasing }
-						options={ [
-							{ label: __( 'Ease', 'sgs-blocks' ), value: 'ease' },
-							{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
-							{ label: __( 'Ease out', 'sgs-blocks' ), value: 'ease-out' },
-							{ label: __( 'Ease in–out', 'sgs-blocks' ), value: 'ease-in-out' },
-							{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
-						] }
-						onChange={ ( val ) =>
-							setAttributes( { transitionEasing: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-				</PanelBody>
-
 				<PanelBody title={ __( 'Card Style', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Card style', 'sgs-blocks' ) }

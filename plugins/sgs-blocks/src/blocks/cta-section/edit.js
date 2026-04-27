@@ -128,11 +128,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		backgroundImage,
 		backgroundImageOpacity,
 		stats,
-		hoverBackgroundColour,
-		hoverTextColour,
-		hoverBorderColour,
-		transitionDuration,
-		transitionEasing,
 	} = attributes;
 
 	const className = [
@@ -140,10 +135,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		`sgs-cta-section--${ layout }`,
 	].join( ' ' );
 
-	const wrapperStyle = {
-		'--sgs-transition-duration': transitionDuration ? `${ transitionDuration }ms` : undefined,
-		'--sgs-transition-easing': transitionEasing || undefined,
-	};
+	const wrapperStyle = {};
 	if ( backgroundImage?.url ) {
 		wrapperStyle.backgroundImage = `url(${ backgroundImage.url })`;
 		wrapperStyle.backgroundSize = 'cover';
@@ -215,61 +207,6 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
-				<PanelBody
-					title={ __( 'Hover States', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<DesignTokenPicker
-						label={ __( 'Hover background', 'sgs-blocks' ) }
-						value={ hoverBackgroundColour }
-						onChange={ ( val ) =>
-							setAttributes( {
-								hoverBackgroundColour: val,
-							} )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __( 'Hover text', 'sgs-blocks' ) }
-						value={ hoverTextColour }
-						onChange={ ( val ) =>
-							setAttributes( { hoverTextColour: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __( 'Hover border', 'sgs-blocks' ) }
-						value={ hoverBorderColour }
-						onChange={ ( val ) =>
-							setAttributes( {
-								hoverBorderColour: val,
-							} )
-						}
-					/>
-					<TextControl
-						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
-						value={ transitionDuration }
-						onChange={ ( val ) =>
-							setAttributes( { transitionDuration: val } )
-						}
-						help={ __( 'Duration of all hover transitions in milliseconds. Default: 300.', 'sgs-blocks' ) }
-						__nextHasNoMarginBottom
-					/>
-					<SelectControl
-						label={ __( 'Transition easing', 'sgs-blocks' ) }
-						value={ transitionEasing }
-						options={ [
-							{ label: __( 'Ease', 'sgs-blocks' ), value: 'ease' },
-							{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
-							{ label: __( 'Ease out', 'sgs-blocks' ), value: 'ease-out' },
-							{ label: __( 'Ease in–out', 'sgs-blocks' ), value: 'ease-in-out' },
-							{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
-						] }
-						onChange={ ( val ) =>
-							setAttributes( { transitionEasing: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-				</PanelBody>
-
 				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Layout', 'sgs-blocks' ) }
