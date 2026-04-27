@@ -5,7 +5,14 @@ import {
 	RangeControl,
 	TextControl,
 	ToggleControl,
+	SelectControl,
 } from '@wordpress/components';
+
+const DISPLAY_MODE_OPTIONS = [
+	{ label: __( 'Stars only', 'sgs-blocks' ), value: 'stars-only' },
+	{ label: __( 'Stars + value (e.g. 4.8)', 'sgs-blocks' ), value: 'stars-with-value' },
+	{ label: __( 'Stars + value + count (e.g. 4.8 (127 reviews))', 'sgs-blocks' ), value: 'stars-with-value-and-count' },
+];
 
 function StarSVG( { filled, half, size, colour, emptyColour } ) {
 	const fill = filled ? colour : ( half ? `url(#sgs-star-half)` : emptyColour );
@@ -36,9 +43,12 @@ export default function Edit( { attributes, setAttributes } ) {
 		schemaEnabled,
 		schemaItemName,
 		schemaReviewCount,
+		displayMode,
 	} = attributes;
 
-	const blockProps = useBlockProps( { className: 'sgs-star-rating' } );
+	const blockProps = useBlockProps( {
+		className: `sgs-star-rating sgs-star-rating--${ displayMode }`,
+	} );
 
 	const stars = [];
 	for ( let i = 1; i <= maxRating; i++ ) {
@@ -55,6 +65,9 @@ export default function Edit( { attributes, setAttributes } ) {
 			/>
 		);
 	}
+
+	const showValue = displayMode === 'stars-with-value' || displayMode === 'stars-with-value-and-count';
+	const showCount = displayMode === 'stars-with-value-and-count';
 
 	return (
 		<>
@@ -102,6 +115,13 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 
 				<PanelBody title={ __( 'Display', 'sgs-blocks' ) } initialOpen={ false }>
+					<SelectControl
+						label={ __( 'Display mode', 'sgs-blocks' ) }
+						value={ displayMode }
+						options={ DISPLAY_MODE_OPTIONS }
+						onChange={ ( val ) => setAttributes( { displayMode: val } ) }
+						__nextHasNoMarginBottom
+					/>
 					<TextControl
 						label={ __( 'Label', 'sgs-blocks' ) }
 						value={ label }
@@ -109,7 +129,8 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 					/>
 					<ToggleControl
-						label={ __( 'Show numeric value', 'sgs-blocks' ) }
+						label={ __( 'Show numeric value (legacy)', 'sgs-blocks' ) }
+						help={ __( 'Use Display mode above instead.', 'sgs-blocks' ) }
 						checked={ showNumeric }
 						onChange={ ( val ) => setAttributes( { showNumeric: val } ) }
 						__nextHasNoMarginBottom
@@ -148,6 +169,16 @@ export default function Edit( { attributes, setAttributes } ) {
 				<div className="sgs-star-rating__stars" role="img" aria-label={ `${ rating } out of ${ maxRating } stars` }>
 					{ stars }
 				</div>
+				{ showValue && (
+					<span className="sgs-star-rating__value" aria-hidden="true">
+						{ rating.toFixed( 1 ) }
+					</span>
+				) }
+				{ showCount && schemaReviewCount > 0 && (
+					<span className="sgs-star-rating__count" aria-hidden="true">
+						{ `(${ schemaReviewCount.toLocaleString( 'en-GB' ) } ${ schemaReviewCount === 1 ? __( 'review', 'sgs-blocks' ) : __( 'reviews', 'sgs-blocks' ) })` }
+					</span>
+				) }
 				{ showNumeric && (
 					<span className="sgs-star-rating__numeric">{ rating }/{ maxRating }</span>
 				) }

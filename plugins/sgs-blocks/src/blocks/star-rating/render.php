@@ -13,31 +13,37 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
-$rating        = (float) ( $attributes['rating'] ?? 5 );
-$max_rating    = (int) ( $attributes['maxRating'] ?? 5 );
-$star_size     = (int) ( $attributes['starSize'] ?? 24 );
-$star_colour   = sgs_colour_value( $attributes['starColour'] ?? 'accent' );
-$empty_colour  = sgs_colour_value( $attributes['emptyColour'] ?? 'border-subtle' );
-$label         = $attributes['label'] ?? '';
-$show_numeric  = $attributes['showNumeric'] ?? false;
-$schema_enabled    = $attributes['schemaEnabled'] ?? true;
-$schema_item_name  = $attributes['schemaItemName'] ?? '';
+$rating              = (float) ( $attributes['rating'] ?? 5 );
+$max_rating          = (int) ( $attributes['maxRating'] ?? 5 );
+$star_size           = (int) ( $attributes['starSize'] ?? 24 );
+$star_colour         = sgs_colour_value( $attributes['starColour'] ?? 'accent' );
+$empty_colour        = sgs_colour_value( $attributes['emptyColour'] ?? 'border-subtle' );
+$label               = $attributes['label'] ?? '';
+$show_numeric        = $attributes['showNumeric'] ?? false;
+$schema_enabled      = $attributes['schemaEnabled'] ?? true;
+$schema_item_name    = $attributes['schemaItemName'] ?? '';
 $schema_review_count = (int) ( $attributes['schemaReviewCount'] ?? 1 );
 
+// displayMode: stars-only | stars-with-value | stars-with-value-and-count
+$allowed_display_modes = array( 'stars-only', 'stars-with-value', 'stars-with-value-and-count' );
+$display_mode          = in_array( $attributes['displayMode'] ?? 'stars-only', $allowed_display_modes, true )
+	? $attributes['displayMode']
+	: 'stars-only';
+
 $wrapper_attributes = get_block_wrapper_attributes( array(
-	'class' => 'sgs-star-rating',
+	'class' => 'sgs-star-rating sgs-star-rating--' . esc_attr( $display_mode ),
 ) );
 
 // Build star SVGs.
 $stars_html = '';
-$unique_id = wp_unique_id( 'sgs-star-' );
+$unique_id  = wp_unique_id( 'sgs-star-' );
 
 for ( $i = 1; $i <= $max_rating; $i++ ) {
 	if ( $i <= floor( $rating ) ) {
 		$fill = $star_colour;
 	} elseif ( $i === ceil( $rating ) && fmod( $rating, 1 ) >= 0.25 ) {
-		$grad_id = $unique_id . '-half-' . $i;
-		$fill = "url(#$grad_id)";
+		$grad_id    = $unique_id . '-half-' . $i;
+		$fill       = "url(#$grad_id)";
 		$stars_html .= sprintf(
 			'<svg width="%d" height="%d" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' .
 			'<defs><linearGradient id="%s"><stop offset="50%%" stop-color="%s"/><stop offset="50%%" stop-color="%s"/></linearGradient></defs>' .
@@ -63,6 +69,27 @@ $aria_label = sprintf(
 	$max_rating
 );
 
+// Build the numeric value string for display modes that show it.
+$numeric_html = '';
+if ( 'stars-with-value' === $display_mode || 'stars-with-value-and-count' === $display_mode ) {
+	$numeric_html = sprintf(
+		'<span class="sgs-star-rating__value" aria-hidden="true">%s</span>',
+		esc_html( number_format( $rating, 1 ) )
+	);
+}
+
+// Build the review count string for the full display mode.
+$count_html = '';
+if ( 'stars-with-value-and-count' === $display_mode && $schema_review_count > 0 ) {
+	$count_html = sprintf(
+		'<span class="sgs-star-rating__count" aria-hidden="true">(%s)</span>',
+		esc_html(
+			/* translators: %s: number of reviews */
+			sprintf( _n( '%s review', '%s reviews', $schema_review_count, 'sgs-blocks' ), number_format_i18n( $schema_review_count ) )
+		)
+	);
+}
+
 // Schema markup.
 $schema_html = '';
 if ( $schema_enabled && $schema_item_name ) {
@@ -84,15 +111,21 @@ if ( $schema_enabled && $schema_item_name ) {
 }
 
 ?>
-<div <?php echo $wrapper_attributes; ?>>
+<div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() is safe. ?>>
 	<div class="sgs-star-rating__stars" role="img" aria-label="<?php echo esc_attr( $aria_label ); ?>">
-		<?php echo $stars_html; ?>
+		<?php echo $stars_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from controlled SVG templates above. ?>
 	</div>
+	<?php if ( $numeric_html ) : ?>
+		<?php echo $numeric_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped above. ?>
+	<?php endif; ?>
+	<?php if ( $count_html ) : ?>
+		<?php echo $count_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped above. ?>
+	<?php endif; ?>
 	<?php if ( $show_numeric ) : ?>
 		<span class="sgs-star-rating__numeric"><?php echo esc_html( $rating . '/' . $max_rating ); ?></span>
 	<?php endif; ?>
 	<?php if ( $label ) : ?>
 		<span class="sgs-star-rating__label"><?php echo esc_html( $label ); ?></span>
 	<?php endif; ?>
-	<?php echo $schema_html; ?>
+	<?php echo $schema_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_json_encode output in script tag. ?>
 </div>

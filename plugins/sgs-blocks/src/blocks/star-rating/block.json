@@ -70,6 +70,11 @@
 		"schemaReviewCount": {
 			"type": "number",
 			"default": 1
+		},
+		"displayMode": {
+			"type": "string",
+			"default": "stars-only",
+			"enum": [ "stars-only", "stars-with-value", "stars-with-value-and-count" ]
 		}
 	},
 	"editorScript": "file:./index.js",
