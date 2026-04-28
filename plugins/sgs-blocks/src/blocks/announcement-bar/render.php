@@ -80,6 +80,7 @@ $wrapper_attributes = get_block_wrapper_attributes( [
 		'variant'             => $variant,
 		'countdownEndAction'  => $countdown_end_action,
 		'countdownEndMessage' => $countdown_end_message,
+		'blockId'             => wp_unique_id( 'sgs-announcement-' ),
 	] ),
 	'data-wp-class--is-dismissed' => 'context.isDismissed',
 	'data-wp-watch'        => 'callbacks.init',

@@ -77,6 +77,49 @@
 	min-width: 120px;
 }
 
+/* Icon above value */
+.sgs-trust-bar__icon {
+	display: block;
+	width: 20px;
+	height: 20px;
+	margin: 0 auto var(--wp--preset--spacing--10) auto;
+	flex-shrink: 0;
+}
+
+.sgs-trust-bar__icon svg {
+	width: 100%;
+	height: 100%;
+	stroke: currentColor;
+	fill: none;
+	stroke-width: 2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+/* Dividers between items */
+.sgs-trust-bar--dividers .sgs-trust-bar__item {
+	position: relative;
+}
+
+.sgs-trust-bar--dividers .sgs-trust-bar__item:not(:last-child)::after {
+	content: '';
+	position: absolute;
+	right: calc(var(--wp--preset--spacing--40, 1.5rem) / -2);
+	top: 50%;
+	transform: translateY(-50%);
+	width: 1px;
+	height: 60%;
+	background-color: currentColor;
+	opacity: 0.2;
+}
+
+@media (max-width: 767px) {
+	/* Hide dividers on mobile where items wrap to 2-col grid */
+	.sgs-trust-bar--dividers .sgs-trust-bar__item::after {
+		display: none;
+	}
+}
+
 /* Value / number */
 .sgs-trust-bar__value {
 	display: block;

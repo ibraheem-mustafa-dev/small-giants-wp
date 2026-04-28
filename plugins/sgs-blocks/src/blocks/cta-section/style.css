@@ -352,3 +352,47 @@
 	pointer-events: none;
 	z-index: 1;
 }
+
+/* ===== Gradient Background Presets ===== */
+/*
+ * Each preset applies a gradient using design tokens.
+ * The gradient overrides any solid background-color when the class is present.
+ * All gradients use CSS custom properties so they adapt to style variations.
+ */
+
+/* Primary fade — teal left, dark teal right */
+.sgs-cta-section--gradient-primary-fade {
+	background: linear-gradient(
+		135deg,
+		var(--wp--preset--color--primary, #0F7E80) 0%,
+		var(--wp--preset--color--primary-dark, #0A5B5D) 100%
+	) !important;
+}
+
+/* Accent glow — warm orange radial centre on dark teal */
+.sgs-cta-section--gradient-accent-glow {
+	background: radial-gradient(
+		ellipse at 60% 50%,
+		var(--wp--preset--color--accent-light, #FEE8D4) 0%,
+		var(--wp--preset--color--primary-dark, #0A5B5D) 70%
+	) !important;
+}
+
+/* Dark radial — near-black centre to primary-dark edge */
+.sgs-cta-section--gradient-dark-radial {
+	background: radial-gradient(
+		ellipse at center,
+		#0d2b2c 0%,
+		var(--wp--preset--color--primary-dark, #0A5B5D) 100%
+	) !important;
+}
+
+/* Mesh soft — subtle diagonal teal-to-surface */
+.sgs-cta-section--gradient-mesh-soft {
+	background: linear-gradient(
+		160deg,
+		var(--wp--preset--color--surface-alt, #F5F7F7) 0%,
+		var(--wp--preset--color--primary, #0F7E80) 50%,
+		var(--wp--preset--color--primary-dark, #0A5B5D) 100%
+	) !important;
+}

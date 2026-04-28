@@ -71,10 +71,24 @@
 	line-height: 1.6;
 	margin: 0 0 var(--wp--preset--spacing--30) 0;
 	font-style: italic;
+	position: relative;
 }
 
 .sgs-testimonial__quote:not([style*="color"]) {
 	color: var(--wp--preset--color--text, #1E1E1E);
+}
+
+/* Decorative opening quote mark */
+.sgs-testimonial__quote::before {
+	content: '\201C';
+	display: block;
+	font-size: 4rem;
+	line-height: 1;
+	font-style: normal;
+	font-weight: 700;
+	margin-bottom: calc(var(--wp--preset--spacing--10, 0.25rem) * -1);
+	color: var(--wp--preset--color--primary, #0F7E80);
+	opacity: 0.4;
 }
 
 /* ===== Footer ===== */

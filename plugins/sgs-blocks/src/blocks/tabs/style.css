@@ -220,6 +220,25 @@
 	display: none;
 }
 
+/* ─── Panel cross-fade transition ───────────────────────────────────────────── */
+
+/*
+ * When JS is active, it removes [hidden] and adds --active class.
+ * The opacity transition gives a smooth cross-fade between panels.
+ * Wrapped in prefers-reduced-motion so motion-sensitive users see an
+ * instant switch instead.
+ */
+@media ( prefers-reduced-motion: no-preference ) {
+	.sgs-tabs--js .sgs-tabs__panel {
+		opacity: 0;
+		transition: opacity 200ms ease;
+	}
+
+	.sgs-tabs--js .sgs-tabs__panel--active {
+		opacity: 1;
+	}
+}
+
 /* ─── Responsive: vertical collapses to horizontal on small screens ─────────── */
 
 @media ( max-width: 599px ) {

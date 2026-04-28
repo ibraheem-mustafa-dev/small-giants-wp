@@ -50,6 +50,11 @@ $hover_border_colour     = $attributes['hoverBorderColour'] ?? '';
 $transition_duration     = $attributes['transitionDuration'] ?? '300';
 $transition_easing       = $attributes['transitionEasing'] ?? 'ease-in-out';
 
+$allowed_gradient_presets = array( '', 'primary-fade', 'accent-glow', 'dark-radial', 'mesh-soft' );
+$gradient_preset          = in_array( $attributes['gradientPreset'] ?? '', $allowed_gradient_presets, true )
+	? sanitize_key( $attributes['gradientPreset'] ?? '' )
+	: '';
+
 // Build wrapper styles.
 $wrapper_styles = array();
 
@@ -77,6 +82,10 @@ $classes = array(
 	'sgs-cta-section',
 	'sgs-cta-section--' . esc_attr( $layout ),
 );
+
+if ( $gradient_preset ) {
+	$classes[] = 'sgs-cta-section--gradient-' . esc_attr( $gradient_preset );
+}
 
 // Build responsive body font-size CSS.
 $responsive_css = '';

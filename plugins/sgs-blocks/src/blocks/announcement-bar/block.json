@@ -80,7 +80,7 @@
 		},
 		"dismissible": {
 			"type": "boolean",
-			"default": true
+			"default": false
 		},
 		"closeBehaviour": {
 			"type": "string",

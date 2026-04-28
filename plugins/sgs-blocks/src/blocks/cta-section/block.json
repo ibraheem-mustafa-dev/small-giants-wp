@@ -138,6 +138,10 @@
     "buttonBorderRadius": {
       "type": "number"
     },
+    "gradientPreset": {
+      "type": "string",
+      "default": ""
+    },
     "hoverBackgroundColour": {
       "type": "string",
       "default": ""

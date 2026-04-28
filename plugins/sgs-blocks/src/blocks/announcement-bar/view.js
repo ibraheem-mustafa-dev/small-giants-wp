@@ -8,7 +8,7 @@
 
 import { store, getContext, getElement } from '@wordpress/interactivity';
 
-const STORAGE_KEY_PREFIX = 'sgs_announcement_dismissed_';
+const STORAGE_KEY_PREFIX = 'sgs-announcement-dismissed-';
 
 /** @type {Map<HTMLElement, number>} Track interval IDs per element for cleanup. */
 const activeIntervals = new Map();
@@ -38,13 +38,15 @@ store( 'sgs/announcement-bar', {
 			}
 
 			// Store dismissal based on close behaviour.
+			// Key is per-block-instance so multiple bars on one page work independently.
+			const instanceKey = STORAGE_KEY_PREFIX + ( ctx.blockId || 'default' );
 			if ( 'session' === ctx.closeBehaviour ) {
-				sessionStorage.setItem( STORAGE_KEY_PREFIX + 'session', '1' );
+				sessionStorage.setItem( instanceKey, '1' );
 			} else if ( 'persistent' === ctx.closeBehaviour ) {
 				const expiryDate = new Date();
 				expiryDate.setDate( expiryDate.getDate() + parseInt( ctx.cookieDays, 10 ) );
 				localStorage.setItem(
-					STORAGE_KEY_PREFIX + 'persistent',
+					instanceKey,
 					JSON.stringify( { dismissed: true, expiry: expiryDate.getTime() } )
 				);
 			}
@@ -57,14 +59,15 @@ store( 'sgs/announcement-bar', {
 		init() {
 			const ctx = getContext();
 
-			// Check if already dismissed.
+			// Check if already dismissed — use the same per-instance key.
+			const instanceKey = STORAGE_KEY_PREFIX + ( ctx.blockId || 'default' );
 			if ( 'session' === ctx.closeBehaviour ) {
-				if ( sessionStorage.getItem( STORAGE_KEY_PREFIX + 'session' ) ) {
+				if ( sessionStorage.getItem( instanceKey ) ) {
 					ctx.isDismissed = true;
 					return;
 				}
 			} else if ( 'persistent' === ctx.closeBehaviour ) {
-				const stored = localStorage.getItem( STORAGE_KEY_PREFIX + 'persistent' );
+				const stored = localStorage.getItem( instanceKey );
 				if ( stored ) {
 					try {
 						const data = JSON.parse( stored );
@@ -73,7 +76,7 @@ store( 'sgs/announcement-bar', {
 							return;
 						}
 						// Expired — clear it.
-						localStorage.removeItem( STORAGE_KEY_PREFIX + 'persistent' );
+						localStorage.removeItem( instanceKey );
 					} catch ( e ) {
 						// Invalid JSON — ignore.
 					}

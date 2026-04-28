@@ -125,10 +125,17 @@ export default function Edit({ attributes, setAttributes }) {
     buttonBorderRadius,
     backgroundImage,
     backgroundImageOpacity,
+    gradientPreset,
     stats,
   } = attributes;
 
-  const className = ["sgs-cta-section", `sgs-cta-section--${layout}`].join(" ");
+  const className = [
+    "sgs-cta-section",
+    `sgs-cta-section--${layout}`,
+    gradientPreset ? `sgs-cta-section--gradient-${gradientPreset}` : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   const wrapperStyle = {};
   if (backgroundImage?.url) {
@@ -278,9 +285,26 @@ export default function Edit({ attributes, setAttributes }) {
         </PanelBody>
 
         <PanelBody
-          title={__("Background Image", "sgs-blocks")}
+          title={__("Background", "sgs-blocks")}
           initialOpen={false}
         >
+          <SelectControl
+            label={__("Gradient preset", "sgs-blocks")}
+            value={gradientPreset || ""}
+            options={[
+              { label: __("None", "sgs-blocks"), value: "" },
+              { label: __("Primary fade", "sgs-blocks"), value: "primary-fade" },
+              { label: __("Accent glow", "sgs-blocks"), value: "accent-glow" },
+              { label: __("Dark radial", "sgs-blocks"), value: "dark-radial" },
+              { label: __("Mesh soft", "sgs-blocks"), value: "mesh-soft" },
+            ]}
+            onChange={(val) => setAttributes({ gradientPreset: val })}
+            help={__(
+              "Gradient overrides the solid background colour when set.",
+              "sgs-blocks",
+            )}
+            __nextHasNoMarginBottom
+          />
           <MediaUploadCheck>
             <MediaUpload
               onSelect={(media) =>

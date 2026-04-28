@@ -34,6 +34,9 @@ function initTabBlock( block ) {
 	const panels     = block.querySelectorAll( '.sgs-tabs__panel' );
 	const tabButtons = nav ? nav.querySelectorAll( '[role="tab"]' ) : [];
 
+	// Mark block as JS-enhanced for the cross-fade CSS hook.
+	block.classList.add( 'sgs-tabs--js' );
+
 	if ( ! nav || ! tabButtons.length || ! panels.length ) {
 		return;
 	}
@@ -90,7 +93,13 @@ function initTabBlock( block ) {
 		panels.forEach( ( panel, i ) => {
 			if ( i === index ) {
 				panel.removeAttribute( 'hidden' );
+				// Defer adding --active by one frame so the browser registers
+				// the display change before the opacity transition begins.
+				requestAnimationFrame( () => {
+					panel.classList.add( 'sgs-tabs__panel--active' );
+				} );
 			} else {
+				panel.classList.remove( 'sgs-tabs__panel--active' );
 				panel.setAttribute( 'hidden', '' );
 			}
 		} );
@@ -182,6 +191,15 @@ function initTabBlock( block ) {
 	if ( initialActive ) {
 		updateIndicator( initialActive );
 	}
+
+	// ─── Initialise active panel opacity ─────────────────────────────────
+	// The server renders the first panel without [hidden]. Add --active so
+	// the CSS fade-in rule shows it at full opacity from the start.
+	panels.forEach( ( panel ) => {
+		if ( ! panel.hasAttribute( 'hidden' ) ) {
+			panel.classList.add( 'sgs-tabs__panel--active' );
+		}
+	} );
 }
 
 // Initialise on DOM ready.

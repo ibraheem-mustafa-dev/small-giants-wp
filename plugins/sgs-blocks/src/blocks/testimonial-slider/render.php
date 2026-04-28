@@ -111,10 +111,12 @@ if ( ! empty( $testimonials ) ) {
 			if ( $rating_colour ) {
 				$rating_style_attr = ' style="color:' . sgs_colour_value( $rating_colour ) . '"';
 			}
-			$stars_html .= sprintf(
-				'<div class="sgs-testimonial-slider__stars"%s role="img" aria-label="%d out of 5 stars">',
+			/* translators: %d = star rating number, e.g. "4 out of 5 stars" */
+			$stars_aria_label = esc_attr( sprintf( __( '%d out of 5 stars', 'sgs-blocks' ), $rating ) );
+			$stars_html      .= sprintf(
+				'<div class="sgs-testimonial-slider__stars"%s role="img" aria-label="%s">',
 				$rating_style_attr,
-				$rating
+				$stars_aria_label
 			);
 			for ( $s = 1; $s <= 5; $s++ ) {
 				$stars_html .= $s <= $rating ? '<span aria-hidden="true">★</span>' : '<span aria-hidden="true">☆</span>';
@@ -164,10 +166,13 @@ if ( ! empty( $testimonials ) ) {
 		// Build slide HTML.
 		// WCAG 2.2: role="group" + aria-roledescription="slide" + aria-label="N of Total"
 		// gives carousel slides a clear semantic identity for screen readers.
-		$slide_id = esc_attr( $slider_prefix ) . '-slide-' . $i;
-		$dot_id   = esc_attr( $slider_prefix ) . '-dot-' . $i;
+		/* translators: 1: current slide number, 2: total number of slides */
+		$slide_label = esc_attr( sprintf( __( '%1$d of %2$d', 'sgs-blocks' ), $i, $total_testimonials ) );
+		$slide_id    = esc_attr( $slider_prefix ) . '-slide-' . $i;
+		$dot_id      = esc_attr( $slider_prefix ) . '-dot-' . $i;
+
 		$slides_html .= sprintf(
-			'<blockquote id="%s" class="sgs-testimonial-slider__slide sgs-testimonial-slider__slide--%s" role="group" aria-roledescription="slide" aria-label="%d of %d">%s<p class="sgs-testimonial-slider__quote"%s>%s</p><footer class="sgs-testimonial-slider__footer">%s<div class="sgs-testimonial-slider__meta"><cite class="sgs-testimonial-slider__name"%s>%s</cite><span class="sgs-testimonial-slider__role"%s>%s</span></div></footer></blockquote>',
+			'<blockquote id="%s" class="sgs-testimonial-slider__slide sgs-testimonial-slider__slide--%s" role="group" aria-roledescription="slide" aria-label="%s">%s<p class="sgs-testimonial-slider__quote"%s>%s</p><footer class="sgs-testimonial-slider__footer">%s<div class="sgs-testimonial-slider__meta"><cite class="sgs-testimonial-slider__name"%s>%s</cite><span class="sgs-testimonial-slider__role"%s>%s</span></div></footer></blockquote>',
 			$slide_id,
 			esc_attr( $card_style ),
 			$i,
@@ -190,8 +195,8 @@ if ( ! empty( $testimonials ) ) {
 $arrows_html = '';
 if ( $show_arrows && $total_testimonials > $slides_visible ) {
 	$arrows_html = '<div class="sgs-testimonial-slider__arrows">';
-	$arrows_html .= '<button class="sgs-testimonial-slider__arrow sgs-testimonial-slider__arrow--prev" aria-label="Previous testimonial" type="button"><span aria-hidden="true">‹</span></button>';
-	$arrows_html .= '<button class="sgs-testimonial-slider__arrow sgs-testimonial-slider__arrow--next" aria-label="Next testimonial" type="button"><span aria-hidden="true">›</span></button>';
+	$arrows_html .= '<button class="sgs-testimonial-slider__arrow sgs-testimonial-slider__arrow--prev" aria-label="' . esc_attr__( 'Previous testimonial', 'sgs-blocks' ) . '" type="button"><span aria-hidden="true">‹</span></button>';
+	$arrows_html .= '<button class="sgs-testimonial-slider__arrow sgs-testimonial-slider__arrow--next" aria-label="' . esc_attr__( 'Next testimonial', 'sgs-blocks' ) . '" type="button"><span aria-hidden="true">›</span></button>';
 	$arrows_html .= '</div>';
 }
 
@@ -283,16 +288,18 @@ $slider_inner = sprintf(
 
 if ( $is_split ) {
 	printf(
-		'<div %s role="region" aria-roledescription="carousel" aria-label="Customer Testimonials">%s<div class="sgs-testimonial-slider__slider-content">%s</div></div>%s',
+		'<div %s role="region" aria-roledescription="carousel" aria-label="%s">%s<div class="sgs-testimonial-slider__slider-content">%s</div></div>%s',
 		$wrapper_attributes,
+		esc_attr__( 'Customer Testimonials', 'sgs-blocks' ),
 		$side_image_html,
 		$slider_inner,
 		$schema_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — wp_json_encode() output inside a script tag; already sanitised above.
 	);
 } else {
 	printf(
-		'<div %s role="region" aria-roledescription="carousel" aria-label="Customer Testimonials">%s</div>%s',
+		'<div %s role="region" aria-roledescription="carousel" aria-label="%s">%s</div>%s',
 		$wrapper_attributes,
+		esc_attr__( 'Customer Testimonials', 'sgs-blocks' ),
 		$slider_inner,
 		$schema_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — wp_json_encode() output inside a script tag; already sanitised above.
 	);

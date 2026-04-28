@@ -30,6 +30,8 @@ export default function Save( { attributes } ) {
 	const {
 		items,
 		animated,
+		showItemIcons,
+		dividers,
 		valueColour,
 		labelColour,
 		labelFontSize,
@@ -59,8 +61,13 @@ export default function Save( { attributes } ) {
 		responsiveDataAttrs[ 'data-label-fs-mobile' ] = labelFontSizeMobile;
 	}
 
+	const wrapperClass = [
+		'sgs-trust-bar',
+		dividers ? 'sgs-trust-bar--dividers' : '',
+	].filter( Boolean ).join( ' ' );
+
 	const blockProps = useBlockProps.save( {
-		className: 'sgs-trust-bar',
+		className: wrapperClass,
 		style: wrapperStyle,
 		...responsiveDataAttrs,
 	} );
@@ -93,6 +100,13 @@ export default function Save( { attributes } ) {
 
 				return (
 					<div key={ index } className="sgs-trust-bar__item">
+						{ showItemIcons && item.icon && (
+							<span
+								className="sgs-trust-bar__icon"
+								data-icon={ item.icon }
+								aria-hidden="true"
+							/>
+						) }
 						<span className="sgs-sr-only">
 							{ item.value }{ item.suffix } { item.label }
 						</span>

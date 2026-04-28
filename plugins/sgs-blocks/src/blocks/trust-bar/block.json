@@ -59,22 +59,33 @@
                                                          "value":  "5,000",
                                                          "suffix":  "+",
                                                          "label":  "Businesses Served",
-                                                         "animated":  true
+                                                         "animated":  true,
+                                                         "icon":  ""
                                                      },
                                                      {
                                                          "value":  "60",
                                                          "suffix":  "+",
                                                          "label":  "Years Experience",
-                                                         "animated":  true
+                                                         "animated":  true,
+                                                         "icon":  ""
                                                      },
                                                      {
                                                          "value":  "Next-Day",
                                                          "suffix":  "",
                                                          "label":  "Delivery Available",
-                                                         "animated":  false
+                                                         "animated":  false,
+                                                         "icon":  ""
                                                      }
                                                  ]
                                  },
+                       "showItemIcons":  {
+                                             "type":  "boolean",
+                                             "default":  false
+                                         },
+                       "dividers":  {
+                                        "type":  "boolean",
+                                        "default":  false
+                                    },
                        "animated":  {
                                         "type":  "boolean",
                                         "default":  true

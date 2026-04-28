@@ -64,6 +64,14 @@ function ItemEditor( { item, onChange, onRemove } ) {
 				onChange={ ( val ) => update( 'label', val ) }
 				__nextHasNoMarginBottom
 			/>
+			<TextControl
+				label={ __( 'Icon (Lucide slug)', 'sgs-blocks' ) }
+				value={ item.icon || '' }
+				onChange={ ( val ) => update( 'icon', val ) }
+				placeholder={ __( 'e.g. star, users, truck', 'sgs-blocks' ) }
+				help={ __( 'Leave blank for no icon. Icon renders above the value.', 'sgs-blocks' ) }
+				__nextHasNoMarginBottom
+			/>
 			<ToggleControl
 				label={ __( 'Animate this item', 'sgs-blocks' ) }
 				checked={ item.animated !== false }
@@ -87,6 +95,8 @@ export default function Edit( { attributes, setAttributes } ) {
 	const {
 		items,
 		animated,
+		showItemIcons,
+		dividers,
 		valueColour,
 		labelColour,
 		labelFontSize,
@@ -98,8 +108,13 @@ export default function Edit( { attributes, setAttributes } ) {
 		transitionEasing,
 	} = attributes;
 
+	const wrapperClass = [
+		'sgs-trust-bar',
+		dividers ? 'sgs-trust-bar--dividers' : '',
+	].filter( Boolean ).join( ' ' );
+
 	const blockProps = useBlockProps( {
-		className: 'sgs-trust-bar',
+		className: wrapperClass,
 		style: {
 			'--sgs-hover-bg': hoverBackgroundColour ? colourVar( hoverBackgroundColour ) : undefined,
 			'--sgs-hover-text': hoverTextColour ? colourVar( hoverTextColour ) : undefined,
@@ -148,6 +163,24 @@ export default function Edit( { attributes, setAttributes } ) {
 		<>
 			<InspectorControls>
 				<PanelBody title={ __( 'Items', 'sgs-blocks' ) }>
+					<ToggleControl
+						label={ __( 'Show icons', 'sgs-blocks' ) }
+						checked={ showItemIcons }
+						onChange={ ( val ) =>
+							setAttributes( { showItemIcons: val } )
+						}
+						help={ __( 'When enabled, any Lucide icon set on each item renders above the value.', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+					/>
+					<ToggleControl
+						label={ __( 'Dividers between items', 'sgs-blocks' ) }
+						checked={ dividers }
+						onChange={ ( val ) =>
+							setAttributes( { dividers: val } )
+						}
+						help={ __( 'Adds a vertical divider line between each stat.', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+					/>
 					{ items.map( ( item, index ) => (
 						<ItemEditor
 							key={ index }
@@ -312,6 +345,20 @@ export default function Edit( { attributes, setAttributes } ) {
 			<div { ...blockProps }>
 				{ items.map( ( item, index ) => (
 					<div key={ index } className="sgs-trust-bar__item">
+						{ showItemIcons && item.icon && (
+							<span
+								className="sgs-trust-bar__icon-placeholder"
+								aria-hidden="true"
+								style={ {
+									display: 'block',
+									fontSize: '0.75rem',
+									color: 'var(--wp--preset--color--text-muted)',
+									marginBottom: '4px',
+								} }
+							>
+								{ `[ ${ item.icon } ]` }
+							</span>
+						) }
 						<span
 							className="sgs-trust-bar__value"
 							style={ valueStyle }

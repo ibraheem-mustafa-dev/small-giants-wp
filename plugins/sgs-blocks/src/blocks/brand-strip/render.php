@@ -37,8 +37,8 @@ $transition_easing   = $attributes['transitionEasing'] ?? 'ease-in-out';
 
 // Map scroll speed to CSS animation duration.
 $speed_map = array(
-	'slow'   => '40s',
-	'medium' => '25s',
+	'slow'   => '60s',
+	'medium' => '30s',
 	'fast'   => '15s',
 );
 $animation_speed = $speed_map[ $scroll_speed ] ?? '25s';

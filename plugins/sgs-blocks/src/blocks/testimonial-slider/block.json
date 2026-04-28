@@ -67,7 +67,7 @@
                                         },
                        "autoplay":  {
                                         "type":  "boolean",
-                                        "default":  false
+                                        "default":  true
                                     },
                        "autoplaySpeed":  {
                                              "type":  "number",
