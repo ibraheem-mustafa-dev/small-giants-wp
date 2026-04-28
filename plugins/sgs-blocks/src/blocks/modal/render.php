@@ -78,6 +78,7 @@ $wrapper_attributes = get_block_wrapper_attributes( $wrapper_args );
 		id="<?php echo esc_attr( $modal_id ); ?>"
 		class="sgs-modal__dialog sgs-modal__dialog--<?php echo esc_attr( $max_width ); ?>"
 		data-close-on-overlay="<?php echo $close_on_overlay ? 'true' : 'false'; ?>"
+		aria-labelledby="<?php echo esc_attr( $modal_id ); ?>-title"
 		<?php echo $dialog_style_attr; ?>
 	>
 		<button

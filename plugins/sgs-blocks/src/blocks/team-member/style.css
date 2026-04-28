@@ -115,6 +115,79 @@
 	outline-offset: 2px;
 }
 
+/* ===== Hover Overlay — bio slides up over photo on hover/focus ===== */
+
+.sgs-team-member__photo--has-overlay {
+	position: relative;
+	cursor: default;
+}
+
+.sgs-team-member__overlay {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: flex-end;
+	background: linear-gradient(
+		to top,
+		rgba(0, 0, 0, 0.75) 0%,
+		rgba(0, 0, 0, 0) 60%
+	);
+	border-radius: inherit;
+	opacity: 0;
+	transform: translateY(8px);
+	transition: opacity 0.3s ease, transform 0.3s ease;
+	overflow: hidden;
+}
+
+.sgs-team-member__overlay-bio {
+	padding: 0.75rem;
+	color: #ffffff;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	line-height: 1.5;
+	transform: translateY(20px);
+	transition: transform 0.3s ease;
+}
+
+/* Reveal on hover (pointer devices) */
+@media (prefers-reduced-motion: no-preference) {
+	.sgs-has-hover-overlay .sgs-team-member__photo--has-overlay:hover .sgs-team-member__overlay,
+	.sgs-has-hover-overlay .sgs-team-member__photo--has-overlay:focus .sgs-team-member__overlay,
+	.sgs-has-hover-overlay .sgs-team-member__photo--has-overlay:focus-within .sgs-team-member__overlay {
+		opacity: 1;
+		transform: translateY(0);
+	}
+
+	.sgs-has-hover-overlay .sgs-team-member__photo--has-overlay:hover .sgs-team-member__overlay-bio,
+	.sgs-has-hover-overlay .sgs-team-member__photo--has-overlay:focus .sgs-team-member__overlay-bio,
+	.sgs-has-hover-overlay .sgs-team-member__photo--has-overlay:focus-within .sgs-team-member__overlay-bio {
+		transform: translateY(0);
+	}
+}
+
+/* Reduced motion — show overlay statically on focus, no animation */
+@media (prefers-reduced-motion: reduce) {
+	.sgs-has-hover-overlay .sgs-team-member__photo--has-overlay:focus .sgs-team-member__overlay,
+	.sgs-has-hover-overlay .sgs-team-member__photo--has-overlay:focus-within .sgs-team-member__overlay {
+		opacity: 1;
+		transform: none;
+	}
+
+	.sgs-has-hover-overlay .sgs-team-member__photo--has-overlay:focus .sgs-team-member__overlay-bio,
+	.sgs-has-hover-overlay .sgs-team-member__photo--has-overlay:focus-within .sgs-team-member__overlay-bio {
+		transform: none;
+	}
+}
+
+/* Touch devices — tap toggles overlay via JS class */
+.sgs-has-hover-overlay .sgs-team-member__photo--has-overlay.is-overlay-active .sgs-team-member__overlay {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+.sgs-has-hover-overlay .sgs-team-member__photo--has-overlay.is-overlay-active .sgs-team-member__overlay-bio {
+	transform: translateY(0);
+}
+
 /* ===== Hover Scale (#87, #101) ===== */
 /* Applied via .sgs-has-hover-scale class set in render.php / hover-effects.php */
 

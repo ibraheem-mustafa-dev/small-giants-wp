@@ -61,6 +61,47 @@
 	color: var(--wp--preset--color--text-muted);
 }
 
+/* ── Ended state ──────────────────────────────────────────────────────────── */
+
+.sgs-countdown--ended .sgs-countdown__expired {
+	color: var(--wp--preset--color--text, #1e1e1e);
+}
+
+/* ── Flip digit animation ─────────────────────────────────────────────────── */
+
+/*
+ * Flip style: each digit card has a perspective container.
+ * When .sgs-countdown__number--flipping is added, the card rotates
+ * from 0° to -90° (first half) then the value is swapped and it
+ * rotates from 90° back to 0° (second half) via a CSS animation.
+ *
+ * Only active when prefers-reduced-motion is not set.
+ */
+
+@media (prefers-reduced-motion: no-preference) {
+	.sgs-countdown--digit-flip .sgs-countdown__unit {
+		perspective: 400px;
+	}
+
+	.sgs-countdown--digit-flip .sgs-countdown__number {
+		display: inline-block;
+		transition: transform 0.15s ease-in;
+		transform-origin: center bottom;
+		backface-visibility: hidden;
+	}
+
+	.sgs-countdown--digit-flip .sgs-countdown__number--flipping {
+		animation: sgs-flip-digit 0.3s ease-in-out;
+	}
+}
+
+@keyframes sgs-flip-digit {
+	0%   { transform: rotateX(0deg); }
+	49%  { transform: rotateX(-90deg); opacity: 0; }
+	50%  { transform: rotateX(90deg); opacity: 0; }
+	100% { transform: rotateX(0deg); opacity: 1; }
+}
+
 @media (max-width: 599px) {
 	.sgs-countdown__grid {
 		gap: var(--wp--preset--spacing--20);

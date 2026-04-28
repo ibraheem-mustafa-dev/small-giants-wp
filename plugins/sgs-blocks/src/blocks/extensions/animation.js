@@ -9,9 +9,28 @@
 import { addFilter } from '@wordpress/hooks';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { InspectorControls } from '@wordpress/block-editor';
-import { PanelBody } from '@wordpress/components';
+import { PanelBody, Notice } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { AnimationControl } from '../../components';
+
+/**
+ * Human-readable labels for each animation type.
+ * Used in the editor indicator badge.
+ */
+const ANIMATION_LABELS = {
+	'none':         __( 'None', 'sgs-blocks' ),
+	'fade-up':      __( 'Fade Up', 'sgs-blocks' ),
+	'fade-down':    __( 'Fade Down', 'sgs-blocks' ),
+	'fade-left':    __( 'Fade Left', 'sgs-blocks' ),
+	'fade-right':   __( 'Fade Right', 'sgs-blocks' ),
+	'fade-in':      __( 'Fade In', 'sgs-blocks' ),
+	'slide-up':     __( 'Slide Up', 'sgs-blocks' ),
+	'slide-down':   __( 'Slide Down', 'sgs-blocks' ),
+	'zoom-in':      __( 'Zoom In', 'sgs-blocks' ),
+	'zoom-out':     __( 'Zoom Out', 'sgs-blocks' ),
+	'flip-left':    __( 'Flip Left', 'sgs-blocks' ),
+	'flip-right':   __( 'Flip Right', 'sgs-blocks' ),
+};
 
 /**
  * Core blocks that support the animation extension.
@@ -82,6 +101,12 @@ const withAnimationControls = createHigherOrderComponent( ( BlockEdit ) => {
 
 		const { attributes, setAttributes } = props;
 
+		const hasAnimation =
+			attributes.sgsAnimation && attributes.sgsAnimation !== 'none';
+		const animationLabel =
+			ANIMATION_LABELS[ attributes.sgsAnimation ] ||
+			attributes.sgsAnimation;
+
 		return (
 			<>
 				<BlockEdit { ...props } />
@@ -90,6 +115,33 @@ const withAnimationControls = createHigherOrderComponent( ( BlockEdit ) => {
 						title={ __( 'Animation', 'sgs-blocks' ) }
 						initialOpen={ false }
 					>
+						{ hasAnimation && (
+							<Notice
+								status="info"
+								isDismissible={ false }
+								style={ { marginBottom: '12px' } }
+							>
+								{ __(
+									'Will animate on scroll: ',
+									'sgs-blocks'
+								) }
+								<strong>{ animationLabel }</strong>
+								{ attributes.sgsAnimationDelay &&
+									attributes.sgsAnimationDelay !== '0' && (
+										<>
+											{ ' — ' }
+											{ __(
+												'delay',
+												'sgs-blocks'
+											) }{ ' ' }
+											<strong>
+												{ attributes.sgsAnimationDelay }
+												ms
+											</strong>
+										</>
+									) }
+							</Notice>
+						) }
 						<AnimationControl
 							animation={ attributes.sgsAnimation }
 							animationDelay={ attributes.sgsAnimationDelay }

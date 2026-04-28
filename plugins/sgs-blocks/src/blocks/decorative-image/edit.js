@@ -33,6 +33,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		zIndex,
 		flipX,
 		parallaxStrength,
+		fadeOnScroll,
 		overflow,
 		positionXTablet,
 		positionYTablet,
@@ -178,6 +179,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						min={ 0 }
 						max={ 100 }
 						step={ 5 }
+						__nextHasNoMarginBottom
+					/>
+					<ToggleControl
+						label={ __( 'Fade on scroll', 'sgs-blocks' ) }
+						help={ __( 'Opacity fades to 0 as image scrolls past the top of the viewport. Disabled when "Reduce motion" is on.', 'sgs-blocks' ) }
+						checked={ fadeOnScroll }
+						onChange={ ( val ) => setAttributes( { fadeOnScroll: val } ) }
 						__nextHasNoMarginBottom
 					/>
 					<SelectControl

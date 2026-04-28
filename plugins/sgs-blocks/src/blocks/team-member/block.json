@@ -156,12 +156,17 @@
     "staggerDelay": {
       "type": "number",
       "default": 0
+    },
+    "hoverOverlay": {
+      "type": "boolean",
+      "default": false
     }
   },
   "editorScript": "file:./index.js",
   "editorStyle": "file:./index.css",
   "style": "file:./style-index.css",
   "render": "file:./render.php",
+  "viewScriptModule": "file:./view.js",
   "example": {
     "attributes": {
       "name": "Sarah Mitchell",

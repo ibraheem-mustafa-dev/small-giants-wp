@@ -18,7 +18,7 @@ import { addFilter } from '@wordpress/hooks';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { getBlockType } from '@wordpress/blocks';
 import { InspectorAdvancedControls } from '@wordpress/block-editor';
-import { ToggleControl, Icon } from '@wordpress/components';
+import { ToggleControl, Icon, Notice } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { mobile, tablet, desktop } from '@wordpress/icons';
 
@@ -92,6 +92,23 @@ const withVisibilityControls = createHigherOrderComponent( ( BlockEdit ) => {
 			return <BlockEdit { ...props } />;
 		}
 
+		// Build "Visible on" summary for the indicator badge.
+		const visibleOn = [];
+		if ( ! attributes.sgsHideOnMobile ) {
+			visibleOn.push( __( 'Mobile', 'sgs-blocks' ) );
+		}
+		if ( ! attributes.sgsHideOnTablet ) {
+			visibleOn.push( __( 'Tablet', 'sgs-blocks' ) );
+		}
+		if ( ! attributes.sgsHideOnDesktop ) {
+			visibleOn.push( __( 'Desktop', 'sgs-blocks' ) );
+		}
+
+		const hasRestriction =
+			attributes.sgsHideOnMobile ||
+			attributes.sgsHideOnTablet ||
+			attributes.sgsHideOnDesktop;
+
 		return (
 			<>
 				<BlockEdit { ...props } />
@@ -107,6 +124,22 @@ const withVisibilityControls = createHigherOrderComponent( ( BlockEdit ) => {
 					>
 						{ __( 'Device visibility', 'sgs-blocks' ) }
 					</p>
+
+					{ hasRestriction && (
+						<Notice
+							status="warning"
+							isDismissible={ false }
+							style={ { marginBottom: '12px' } }
+						>
+							{ __( 'Visible on: ', 'sgs-blocks' ) }
+							<strong>
+								{ visibleOn.length > 0
+									? visibleOn.join( ', ' )
+									: __( 'None (hidden everywhere)', 'sgs-blocks' ) }
+							</strong>
+						</Notice>
+					) }
+
 					<ToggleControl
 						label={
 							<>

@@ -30,6 +30,7 @@ $transition_dur     = $attributes['transitionDuration'] ?? '300';
 $transition_easing  = $attributes['transitionEasing'] ?? 'ease-in-out';
 $block_link         = $attributes['blockLink'] ?? '';
 $block_link_target  = (bool) ( $attributes['blockLinkTarget'] ?? false );
+$hover_overlay      = (bool) ( $attributes['hoverOverlay'] ?? false );
 
 $classes = array(
 	'sgs-team-member',
@@ -41,6 +42,9 @@ if ( $hover_img_zoom ) {
 }
 if ( $hover_grayscale ) {
 	$classes[] = 'sgs-has-grayscale';
+}
+if ( $hover_overlay ) {
+	$classes[] = 'sgs-has-hover-overlay';
 }
 
 // Build inline CSS custom properties for transition and hover vars.
@@ -70,15 +74,32 @@ $wrapper_attributes = get_block_wrapper_attributes( $wrapper_attr_args );
 // Photo.
 $photo_html = '';
 if ( ! empty( $photo['url'] ) ) {
-	$photo_id = ! empty( $photo['id'] ) ? absint( $photo['id'] ) : 0;
-	$photo_img = sgs_responsive_image( $photo_id, $photo['url'], $photo['alt'] ?? $name, 'medium', [
-		'loading' => 'lazy',
-	] );
-	$photo_html = sprintf(
-		'<div class="sgs-team-member__photo sgs-team-member__photo--%s">%s</div>',
-		esc_attr( $photo_shape ),
-		$photo_img
+	$photo_id  = ! empty( $photo['id'] ) ? absint( $photo['id'] ) : 0;
+	$photo_img = sgs_responsive_image(
+		$photo_id,
+		$photo['url'],
+		$photo['alt'] ?? $name,
+		'medium',
+		array( 'loading' => 'lazy' )
 	);
+
+	if ( $hover_overlay ) {
+		// When overlay is active, the bio slides up over the photo on hover/focus.
+		// The photo wrapper gets tabindex so keyboard users can trigger the overlay.
+		$photo_html = sprintf(
+			'<div class="sgs-team-member__photo sgs-team-member__photo--%s sgs-team-member__photo--has-overlay" tabindex="0" role="img" aria-label="%s">%s<div class="sgs-team-member__overlay" aria-hidden="true"><div class="sgs-team-member__overlay-bio">%s</div></div></div>',
+			esc_attr( $photo_shape ),
+			esc_attr( $name ),
+			$photo_img,
+			wp_kses_post( $bio )
+		);
+	} else {
+		$photo_html = sprintf(
+			'<div class="sgs-team-member__photo sgs-team-member__photo--%s">%s</div>',
+			esc_attr( $photo_shape ),
+			$photo_img
+		);
+	}
 }
 
 // Name.

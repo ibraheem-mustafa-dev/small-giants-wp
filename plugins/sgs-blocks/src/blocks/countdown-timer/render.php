@@ -25,6 +25,7 @@ $show_seconds     = $attributes['showSeconds'] ?? true;
 $number_colour    = $attributes['numberColour'] ?? 'primary';
 $label_colour     = $attributes['labelColour'] ?? 'text-muted';
 $card_style       = $attributes['cardStyle'] ?? 'elevated';
+$digit_style      = $attributes['digitStyle'] ?? 'simple';
 
 // Calculate initial server-side values for fixed target dates using native PHP DateTime.
 $initial    = array( 'days' => 0, 'hours' => 0, 'minutes' => 0, 'seconds' => 0 );
@@ -58,7 +59,12 @@ if ( ! $evergreen_mode && $target_date ) {
 $classes = array(
 	'sgs-countdown',
 	'sgs-countdown--' . esc_attr( $card_style ),
+	'sgs-countdown--digit-' . esc_attr( $digit_style ),
 );
+
+if ( $is_expired ) {
+	$classes[] = 'sgs-countdown--ended';
+}
 
 $wrapper_attributes = get_block_wrapper_attributes( array(
 	'class' => implode( ' ', $classes ),
@@ -77,6 +83,7 @@ if ( $server_ts ) {
 	$data_attrs .= ' data-server-ts="' . esc_attr( $server_ts ) . '"';
 }
 $data_attrs .= ' data-expired-message="' . esc_attr( $expired_message ) . '"';
+$data_attrs .= ' data-digit-style="' . esc_attr( $digit_style ) . '"';
 
 $units = array();
 if ( $show_days )    $units[] = array( 'class' => 'days',    'label' => __( 'Days', 'sgs-blocks' ) );

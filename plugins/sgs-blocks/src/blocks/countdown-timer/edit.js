@@ -18,6 +18,11 @@ const CARD_STYLES = [
 	{ label: __( 'Filled', 'sgs-blocks' ), value: 'filled' },
 ];
 
+const DIGIT_STYLES = [
+	{ label: __( 'Simple', 'sgs-blocks' ), value: 'simple' },
+	{ label: __( 'Flip', 'sgs-blocks' ), value: 'flip' },
+];
+
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		targetDate,
@@ -30,6 +35,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		showMinutes,
 		showSeconds,
 		cardStyle,
+		digitStyle,
 	} = attributes;
 
 	const className = [
@@ -127,6 +133,14 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ cardStyle }
 						options={ CARD_STYLES }
 						onChange={ ( val ) => setAttributes( { cardStyle: val } ) }
+						__nextHasNoMarginBottom
+					/>
+					<SelectControl
+						label={ __( 'Digit style', 'sgs-blocks' ) }
+						help={ __( 'Flip animates each digit when it changes. Disabled when "Reduce motion" is on.', 'sgs-blocks' ) }
+						value={ digitStyle }
+						options={ DIGIT_STYLES }
+						onChange={ ( val ) => setAttributes( { digitStyle: val } ) }
 						__nextHasNoMarginBottom
 					/>
 					<DesignTokenPicker

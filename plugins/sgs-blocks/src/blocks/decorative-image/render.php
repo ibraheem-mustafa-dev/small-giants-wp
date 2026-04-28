@@ -28,6 +28,7 @@ $opacity             = $attributes['opacity'] ?? 85;
 $z_index             = $attributes['zIndex'] ?? 1;
 $flip_x              = $attributes['flipX'] ?? false;
 $parallax_strength   = $attributes['parallaxStrength'] ?? 0;
+$fade_on_scroll      = (bool) ( $attributes['fadeOnScroll'] ?? false );
 $overflow            = $attributes['overflow'] ?? 'visible';
 
 // Responsive overrides.
@@ -86,6 +87,9 @@ $img_attrs = array(
 
 if ( $parallax_strength > 0 ) {
 	$img_attrs['data-parallax'] = esc_attr( $parallax_strength );
+}
+if ( $fade_on_scroll ) {
+	$img_attrs['data-fade-on-scroll'] = 'true';
 }
 if ( $hide_on_tablet ) {
 	$img_attrs['data-hide-tablet'] = 'true';

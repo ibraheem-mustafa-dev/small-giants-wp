@@ -74,9 +74,20 @@ function initModals() {
  * - Escape key handling (closes dialog)
  * - Backdrop styling via ::backdrop pseudo-element
  * - Accessibility with aria-modal implicit from showModal()
+ *
+ * Additionally we lock body scroll while the modal is open so the page
+ * beneath does not scroll when the user scrolls inside the dialog.
  */
 function openModal( dialog, closeButton ) {
 	dialog.showModal();
+
+	// Lock body scroll — save current position to restore on close.
+	const scrollY = window.scrollY;
+	document.body.style.overflow = 'hidden';
+	document.body.style.position = 'fixed';
+	document.body.style.top = `-${ scrollY }px`;
+	document.body.style.width = '100%';
+	dialog.dataset.scrollY = scrollY;
 
 	// Focus the close button (first focusable element).
 	if ( closeButton ) {
@@ -90,9 +101,18 @@ function openModal( dialog, closeButton ) {
 /**
  * Close a modal using native dialog.close().
  *
+ * Restores body scroll position after closing.
  * Native dialog automatically restores focus to the element that opened it.
  */
 function closeModal( dialog ) {
+	const scrollY = parseInt( dialog.dataset.scrollY || '0', 10 );
+
+	document.body.style.overflow = '';
+	document.body.style.position = '';
+	document.body.style.top = '';
+	document.body.style.width = '';
+	window.scrollTo( 0, scrollY );
+
 	dialog.close();
 }
 

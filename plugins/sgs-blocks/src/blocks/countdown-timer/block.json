@@ -97,6 +97,10 @@
 		"cardStyle": {
 			"type": "string",
 			"default": "elevated"
+		},
+		"digitStyle": {
+			"type": "string",
+			"default": "simple"
 		}
 	},
 	"editorScript": "file:./index.js",

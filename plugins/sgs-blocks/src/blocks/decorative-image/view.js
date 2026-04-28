@@ -8,30 +8,32 @@
  * @package SGS\Blocks
  */
 
-function initDecorativeImageParallax() {
+function initDecorativeImageEffects() {
 	// Check for reduced motion preference.
 	const prefersReducedMotion = window.matchMedia(
 		'(prefers-reduced-motion: reduce)'
 	).matches;
 
-	if ( prefersReducedMotion ) {
-		// Skip all parallax if user prefers reduced motion.
+	// Find images with parallax or fade-on-scroll enabled.
+	const parallaxImages = prefersReducedMotion
+		? []
+		: Array.from( document.querySelectorAll( '.sgs-decorative-image[data-parallax]' ) );
+
+	const fadeImages = prefersReducedMotion
+		? []
+		: Array.from( document.querySelectorAll( '.sgs-decorative-image[data-fade-on-scroll]' ) );
+
+	const activeImages = [ ...new Set( [ ...parallaxImages, ...fadeImages ] ) ];
+
+	if ( activeImages.length === 0 ) {
 		return;
 	}
 
-	// Find all decorative images with parallax enabled.
-	const parallaxImages = document.querySelectorAll(
-		'.sgs-decorative-image[data-parallax]'
-	);
-
-	if ( parallaxImages.length === 0 ) {
-		return;
-	}
-
-	// Track images currently in viewport.
+	// Track images currently in (or near) the viewport.
 	const visibleImages = new Set();
 
-	// Intersection Observer to track which images are in viewport.
+	// Intersection Observer — start slightly outside viewport so effects
+	// begin before the image is fully on-screen.
 	const observer = new IntersectionObserver(
 		( entries ) => {
 			entries.forEach( ( entry ) => {
@@ -43,46 +45,47 @@ function initDecorativeImageParallax() {
 			} );
 		},
 		{
-			rootMargin: '20% 0px', // Start parallax slightly before/after viewport.
+			rootMargin: '20% 0px',
 		}
 	);
 
-	// Observe all parallax images.
-	parallaxImages.forEach( ( img ) => {
-		observer.observe( img );
-	} );
+	activeImages.forEach( ( img ) => observer.observe( img ) );
 
-	// Parallax scroll handler using requestAnimationFrame.
+	// Combined scroll handler — parallax + fade in one rAF loop.
 	let ticking = false;
 
-	function applyParallax() {
+	function applyEffects() {
 		visibleImages.forEach( ( img ) => {
-			const parallaxStrength =
-				parseFloat( img.getAttribute( 'data-parallax' ) ) || 0;
-
-			if ( parallaxStrength === 0 ) {
-				return;
-			}
-
 			const rect = img.getBoundingClientRect();
 			const windowHeight = window.innerHeight;
 
-			// Calculate scroll progress through viewport (0 to 1).
+			// Scroll progress through the viewport: 0 (top of vp) → 1 (bottom of vp).
 			const scrollProgress =
 				( windowHeight - rect.top ) / ( windowHeight + rect.height );
 
-			// Parallax offset based on scroll progress and strength.
-			// Range: -parallaxStrength to +parallaxStrength pixels.
-			const offset = ( scrollProgress - 0.5 ) * parallaxStrength * 2;
+			// ── Parallax ──────────────────────────────────────────────────────────
+			const parallaxStrength =
+				parseFloat( img.getAttribute( 'data-parallax' ) ) || 0;
 
-			// Get existing transform and replace translateY.
-			const currentTransform = img.style.transform || '';
-			const baseTransform = currentTransform.replace(
-				/translateY\([^)]+\)/g,
-				''
-			);
+			if ( parallaxStrength !== 0 ) {
+				const offset = ( scrollProgress - 0.5 ) * parallaxStrength * 2;
+				const currentTransform = img.style.transform || '';
+				const baseTransform = currentTransform.replace(
+					/translateY\([^)]+\)/g,
+					''
+				);
+				img.style.transform =
+					`${ baseTransform } translateY(${ offset }px)`.trim();
+			}
 
-			img.style.transform = `${ baseTransform } translateY(${ offset }px)`.trim();
+			// ── Fade on scroll ────────────────────────────────────────────────────
+			// Opacity fades from 1 (element fully in viewport) to 0 (scrolled
+			// past the top of the viewport). Progress > 1 means element is above vp.
+			if ( img.hasAttribute( 'data-fade-on-scroll' ) ) {
+				// clamp: 1 when progress ≤ 0.7, fading out as it approaches 1.
+				const fadeOpacity = Math.max( 0, Math.min( 1, ( 1 - scrollProgress ) / 0.3 ) );
+				img.style.opacity = fadeOpacity;
+			}
 		} );
 
 		ticking = false;
@@ -90,23 +93,20 @@ function initDecorativeImageParallax() {
 
 	function onScroll() {
 		if ( ! ticking ) {
-			requestAnimationFrame( applyParallax );
+			requestAnimationFrame( applyEffects );
 			ticking = true;
 		}
 	}
 
 	window.addEventListener( 'scroll', onScroll, { passive: true } );
 
-	// Apply parallax on initial load.
-	applyParallax();
+	// Apply on initial load so above-the-fold images start correctly.
+	applyEffects();
 }
 
 // Initialise on DOM ready.
 if ( document.readyState === 'loading' ) {
-	document.addEventListener(
-		'DOMContentLoaded',
-		initDecorativeImageParallax
-	);
+	document.addEventListener( 'DOMContentLoaded', initDecorativeImageEffects );
 } else {
-	initDecorativeImageParallax();
+	initDecorativeImageEffects();
 }

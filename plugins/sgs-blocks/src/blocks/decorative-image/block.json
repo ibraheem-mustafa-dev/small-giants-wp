@@ -66,6 +66,10 @@
                                                 "type":  "number",
                                                 "default":  0
                                             },
+                       "fadeOnScroll":  {
+                                            "type":  "boolean",
+                                            "default":  false
+                                        },
                        "overflow":  {
                                         "type":  "string",
                                         "default":  "visible"

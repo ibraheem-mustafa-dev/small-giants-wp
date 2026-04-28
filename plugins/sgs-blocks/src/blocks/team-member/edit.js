@@ -10,6 +10,7 @@ import {
 	PanelBody,
 	SelectControl,
 	TextControl,
+	ToggleControl,
 	Button,
 	Flex,
 	FlexItem,
@@ -46,6 +47,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		roleColour,
 		cardStyle,
 		photoShape,
+		hoverOverlay,
 	} = attributes;
 
 	const className = [
@@ -88,6 +90,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ photoShape }
 						options={ PHOTO_SHAPES }
 						onChange={ ( val ) => setAttributes( { photoShape: val } ) }
+						__nextHasNoMarginBottom
+					/>
+					<ToggleControl
+						label={ __( 'Hover overlay (bio)', 'sgs-blocks' ) }
+						help={ __( 'Reveals the bio as a slide-up overlay on the photo when hovered or focused. On touch devices, tap the photo to toggle.', 'sgs-blocks' ) }
+						checked={ hoverOverlay }
+						onChange={ ( val ) => setAttributes( { hoverOverlay: val } ) }
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
