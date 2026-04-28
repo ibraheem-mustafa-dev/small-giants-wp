@@ -1,12 +1,18 @@
 /* ===== SGS Process Steps — Frontend + Editor ===== */
 
 .sgs-process-steps {
-	--sgs-step-number-size: 48px;
+	--sgs-step-number-size: 64px; /* up from 48px — Gemini A+ polish: more presence */
 	display: flex;
 	justify-content: space-between;
 	align-items: flex-start;
 	gap: var(--wp--preset--spacing--30);
 	padding: var(--wp--preset--spacing--40) 0;
+}
+
+@media (max-width: 599px) {
+	.sgs-process-steps {
+		--sgs-step-number-size: 52px; /* still bigger than old desktop, smaller for mobile */
+	}
 }
 
 /* Individual step */
@@ -25,11 +31,18 @@
 /* ===== Icon ===== */
 
 .sgs-process-steps__icon {
-	display: inline-block;
-	font-size: var(--wp--preset--font-size--x-large);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-size: var(--wp--preset--font-size--xx-large, 2.5rem);
 	line-height: 1;
 	margin-bottom: var(--wp--preset--spacing--20);
 	color: var(--wp--preset--color--primary);
+}
+
+.sgs-process-steps__icon svg {
+	width: 1em;
+	height: 1em;
 }
 
 /* ===== Number Badge ===== */
@@ -40,7 +53,7 @@
 	justify-content: center;
 	width: var(--sgs-step-number-size);
 	height: var(--sgs-step-number-size);
-	font-size: var(--wp--preset--font-size--large);
+	font-size: var(--wp--preset--font-size--x-large, 1.5rem); /* up from large — readable on the bigger circle */
 	font-weight: 700;
 	line-height: 1;
 	margin-bottom: var(--wp--preset--spacing--20);
