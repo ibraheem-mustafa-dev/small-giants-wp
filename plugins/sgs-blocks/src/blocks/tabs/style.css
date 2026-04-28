@@ -296,3 +296,48 @@
 		transition: none;
 	}
 }
+
+/* ─── Mobile: horizontal tabs become vertical stacked buttons below 600px ────
+   Tab triggers stack as full-width buttons with active state indication.
+   The active panel renders below as before — view.js already toggles aria-selected.
+   This solves the "horizontal tabs wrap awkwardly on mobile" issue without
+   restructuring the DOM into true accordion semantics.
+   ───────────────────────────────────────────────────────────────────────────── */
+@media ( max-width: 599px ) {
+	.sgs-tabs--horizontal .sgs-tabs__nav {
+		flex-direction: column;
+		gap: 0.25rem;
+		border-bottom: none;
+	}
+
+	.sgs-tabs--horizontal .sgs-tabs__tab {
+		display: block;
+		width: 100%;
+		text-align: left;
+		padding: 0.875rem 1rem;
+		border: 1px solid var( --sgs-panel-border, #e5e7eb );
+		border-radius: var( --wp--custom--border-radius--small, 4px );
+		background-color: var( --sgs-panel-bg, transparent );
+		font-weight: 600;
+		min-height: 44px;
+		position: relative;
+	}
+
+	.sgs-tabs--horizontal .sgs-tabs__tab[aria-selected="true"] {
+		background-color: var( --wp--preset--color--surface-alt, #f5f7f7 );
+		border-color: var( --wp--preset--color--primary, currentColor );
+		color: var( --wp--preset--color--primary, currentColor );
+	}
+
+	/* Hide the underline indicator at mobile — full-button styling carries the active state */
+	.sgs-tabs--horizontal.sgs-tabs--style-underline .sgs-tabs__nav::after {
+		display: none;
+	}
+
+	.sgs-tabs--horizontal .sgs-tabs__panel {
+		margin-top: 0.75rem;
+		padding: 1rem;
+		border: 1px solid var( --sgs-panel-border, #e5e7eb );
+		border-radius: var( --wp--custom--border-radius--small, 4px );
+	}
+}

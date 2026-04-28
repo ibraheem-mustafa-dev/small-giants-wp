@@ -133,6 +133,21 @@
 	flex-grow: 1;
 }
 
+/* Card section min-heights — keep titles, prices, descriptions visually
+   aligned across plans with different content lengths (e.g. "POA" vs "£99/mo"). */
+.sgs-pricing-table__plan-name {
+	min-height: 1.5em;
+}
+.sgs-pricing-table__price {
+	min-height: 3rem;
+	display: flex;
+	align-items: baseline;
+	flex-wrap: wrap;
+}
+.sgs-pricing-table__description {
+	min-height: 2.5em;
+}
+
 .sgs-pricing-table__feature {
 	position: relative;
 	padding: 0.75rem 0 0.75rem 2rem;
