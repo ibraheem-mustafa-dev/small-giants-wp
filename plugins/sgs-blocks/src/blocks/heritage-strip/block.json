@@ -127,7 +127,21 @@
                        "transitionEasing":  {
                                                 "type":  "string",
                                                 "default":  "ease-in-out"
-                                            }
+                                            },
+                       "badge":  {
+                                     "type":  "string",
+                                     "default":  ""
+                                 },
+                       "bgPattern":  {
+                                         "type":  "string",
+                                         "default":  "none",
+                                         "enum":  [
+                                                      "none",
+                                                      "dots",
+                                                      "diagonal-lines",
+                                                      "grid"
+                                                  ]
+                                     }
                    },
     "editorScript":  "file:./index.js",
     "editorStyle":  "file:./index.css",

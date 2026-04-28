@@ -150,6 +150,11 @@
 		"showArrows": {
 			"type": "boolean",
 			"default": true
+		},
+		"cardVariant": {
+			"type": "string",
+			"default": "default",
+			"enum": ["default", "compact"]
 		}
 	},
 	"editorScript": "file:./index.js",

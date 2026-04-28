@@ -14,6 +14,7 @@ import {
 	Button,
 	TextControl,
 	TextareaControl,
+	ToggleControl,
 	__experimentalToggleGroupControl as ToggleGroupControl,
 	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 } from '@wordpress/components';
@@ -139,6 +140,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		ctaSecondaryStyle,
 		ctaSecondaryColour,
 		ctaSecondaryBackground,
+		bgParallax,
+		bgKenBurns,
+		bgVideo,
+		bgVideoMobile,
 	} = attributes;
 
 	const isSplit = variant === 'split';
@@ -405,6 +410,112 @@ export default function Edit( { attributes, setAttributes } ) {
 						max={ 100 }
 						__nextHasNoMarginBottom
 					/>
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Background Effects', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ToggleControl
+						label={ __( 'Parallax scroll', 'sgs-blocks' ) }
+						help={ __(
+							'Background scrolls slower than content. Disabled automatically on touch devices.',
+							'sgs-blocks'
+						) }
+						checked={ !! bgParallax }
+						onChange={ ( val ) =>
+							setAttributes( { bgParallax: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					<ToggleControl
+						label={ __( 'Ken Burns animation', 'sgs-blocks' ) }
+						help={ __(
+							'Slow pan and zoom on the background image. Respects reduced-motion preference.',
+							'sgs-blocks'
+						) }
+						checked={ !! bgKenBurns }
+						onChange={ ( val ) =>
+							setAttributes( { bgKenBurns: val } )
+						}
+						__nextHasNoMarginBottom
+					/>
+					<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>
+						{ __( 'Background video (desktop)', 'sgs-blocks' ) }
+					</p>
+					<MediaUploadCheck>
+						<MediaUpload
+							onSelect={ ( media ) =>
+								setAttributes( {
+									bgVideo: { id: media.id, url: media.url },
+								} )
+							}
+							allowedTypes={ [ 'video' ] }
+							value={ bgVideo?.id }
+							render={ ( { open } ) => (
+								<div>
+									{ bgVideo?.url ? (
+										<>
+											<p style={ { fontSize: '12px', margin: '0 0 4px' } }>
+												{ bgVideo.url.split( '/' ).pop() }
+											</p>
+											<Button
+												variant="secondary"
+												isDestructive
+												onClick={ () =>
+													setAttributes( { bgVideo: undefined } )
+												}
+											>
+												{ __( 'Remove', 'sgs-blocks' ) }
+											</Button>
+										</>
+									) : (
+										<Button variant="secondary" onClick={ open }>
+											{ __( 'Select video', 'sgs-blocks' ) }
+										</Button>
+									) }
+								</div>
+							) }
+						/>
+					</MediaUploadCheck>
+					<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>
+						{ __( 'Background video (mobile)', 'sgs-blocks' ) }
+					</p>
+					<MediaUploadCheck>
+						<MediaUpload
+							onSelect={ ( media ) =>
+								setAttributes( {
+									bgVideoMobile: { id: media.id, url: media.url },
+								} )
+							}
+							allowedTypes={ [ 'video' ] }
+							value={ bgVideoMobile?.id }
+							render={ ( { open } ) => (
+								<div>
+									{ bgVideoMobile?.url ? (
+										<>
+											<p style={ { fontSize: '12px', margin: '0 0 4px' } }>
+												{ bgVideoMobile.url.split( '/' ).pop() }
+											</p>
+											<Button
+												variant="secondary"
+												isDestructive
+												onClick={ () =>
+													setAttributes( { bgVideoMobile: undefined } )
+												}
+											>
+												{ __( 'Remove', 'sgs-blocks' ) }
+											</Button>
+										</>
+									) : (
+										<Button variant="secondary" onClick={ open }>
+											{ __( 'Select mobile video', 'sgs-blocks' ) }
+										</Button>
+									) }
+								</div>
+							) }
+						/>
+					</MediaUploadCheck>
 				</PanelBody>
 
 				{ isSplit && (

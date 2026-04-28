@@ -15,13 +15,18 @@ $animation_type  = $attributes['animationType'] ?? 'none';
 $animation_speed = $attributes['animationSpeed'] ?? 'medium';
 $opacity         = $attributes['opacity'] ?? 100;
 $min_height      = $attributes['minHeight'] ?? '';
+$text_shadow     = ! empty( $attributes['textShadow'] );
 
-$wrapper_classes = [
+$wrapper_classes = array(
 	'sgs-svg-background',
 	'sgs-svg-background--' . $svg_position,
 	'sgs-svg-background--anim-' . $animation_type,
 	'sgs-svg-background--speed-' . $animation_speed,
-];
+);
+
+if ( $text_shadow ) {
+	$wrapper_classes[] = 'sgs-svg-background--text-shadow';
+}
 
 $wrapper_styles = [];
 

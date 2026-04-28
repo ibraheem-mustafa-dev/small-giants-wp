@@ -77,6 +77,53 @@
 	margin-bottom: 0;
 }
 
+/* ===== Badge ===== */
+
+.sgs-heritage-strip__badge {
+	display: inline-block;
+	padding: 0.25rem 0.75rem;
+	margin-bottom: var(--wp--preset--spacing--20, 0.5rem);
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--wp--preset--color--primary, #0F7E80);
+	background-color: var(--wp--preset--color--accent-light, #FEE8D4);
+	border-radius: var(--wp--custom--border-radius--small, 4px);
+}
+
+/* ===== Background Patterns ===== */
+
+/* Dots pattern */
+.sgs-heritage-strip--pattern-dots {
+	background-image: radial-gradient(
+		circle,
+		var(--wp--preset--color--border-subtle, rgba(0, 0, 0, 0.12)) 1px,
+		transparent 1px
+	);
+	background-size: 20px 20px;
+}
+
+/* Diagonal lines pattern */
+.sgs-heritage-strip--pattern-diagonal-lines {
+	background-image: repeating-linear-gradient(
+		45deg,
+		var(--wp--preset--color--border-subtle, rgba(0, 0, 0, 0.07)) 0,
+		var(--wp--preset--color--border-subtle, rgba(0, 0, 0, 0.07)) 1px,
+		transparent 0,
+		transparent 50%
+	);
+	background-size: 10px 10px;
+}
+
+/* Grid pattern */
+.sgs-heritage-strip--pattern-grid {
+	background-image:
+		linear-gradient(var(--wp--preset--color--border-subtle, rgba(0, 0, 0, 0.08)) 1px, transparent 1px),
+		linear-gradient(90deg, var(--wp--preset--color--border-subtle, rgba(0, 0, 0, 0.08)) 1px, transparent 1px);
+	background-size: 24px 24px;
+}
+
 /* ===== Placeholder (editor only) ===== */
 .sgs-heritage-strip__placeholder {
 	display: flex;

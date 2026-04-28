@@ -22,6 +22,8 @@ export default function Save( { attributes } ) {
 		hoverEffect,
 		transitionDuration,
 		transitionEasing,
+		badge,
+		bgPattern,
 	} = attributes;
 
 	const showLeftImage =
@@ -33,6 +35,7 @@ export default function Save( { attributes } ) {
 		'sgs-heritage-strip',
 		`sgs-heritage-strip--${ layout }`,
 		hoverEffect && hoverEffect !== 'none' ? `sgs-heritage-strip--hover-${ hoverEffect }` : '',
+		bgPattern && bgPattern !== 'none' ? `sgs-heritage-strip--pattern-${ bgPattern }` : '',
 	].filter( Boolean ).join( ' ' );
 
 	const wrapperStyle = {
@@ -84,6 +87,11 @@ export default function Save( { attributes } ) {
 			) }
 
 			<div className="sgs-heritage-strip__content">
+				{ badge && (
+					<span className="sgs-heritage-strip__badge">
+						{ badge }
+					</span>
+				) }
 				<RichText.Content
 					tagName="h2"
 					className="sgs-heritage-strip__headline"

@@ -13,6 +13,13 @@ import {
 	Button,
 } from '@wordpress/components';
 
+const BG_PATTERN_OPTIONS = [
+	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
+	{ label: __( 'Dots', 'sgs-blocks' ), value: 'dots' },
+	{ label: __( 'Diagonal lines', 'sgs-blocks' ), value: 'diagonal-lines' },
+	{ label: __( 'Grid', 'sgs-blocks' ), value: 'grid' },
+];
+
 const HOVER_EFFECT_OPTIONS = [
 	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
 	{ label: __( 'Lift', 'sgs-blocks' ), value: 'lift' },
@@ -118,6 +125,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		hoverEffect,
 		transitionDuration,
 		transitionEasing,
+		badge,
+		bgPattern,
 	} = attributes;
 
 	const showLeftImage =
@@ -129,6 +138,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		'sgs-heritage-strip',
 		`sgs-heritage-strip--${ layout }`,
 		hoverEffect && hoverEffect !== 'none' ? `sgs-heritage-strip--hover-${ hoverEffect }` : '',
+		bgPattern && bgPattern !== 'none' ? `sgs-heritage-strip--pattern-${ bgPattern }` : '',
 	].filter( Boolean ).join( ' ' );
 
 	const blockProps = useBlockProps( {
@@ -155,6 +165,26 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) =>
 							setAttributes( { layout: val } )
 						}
+						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Badge & Background', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<TextControl
+						label={ __( 'Badge text', 'sgs-blocks' ) }
+						value={ badge || '' }
+						onChange={ ( val ) => setAttributes( { badge: val } ) }
+						help={ __( 'Short label shown above the headline, e.g. "EST. 1962". Leave blank to hide.', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+					/>
+					<SelectControl
+						label={ __( 'Background pattern', 'sgs-blocks' ) }
+						value={ bgPattern || 'none' }
+						options={ BG_PATTERN_OPTIONS }
+						onChange={ ( val ) => setAttributes( { bgPattern: val } ) }
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
@@ -376,6 +406,11 @@ export default function Edit( { attributes, setAttributes } ) {
 				) }
 
 				<div className="sgs-heritage-strip__content">
+					{ badge && (
+						<span className="sgs-heritage-strip__badge">
+							{ badge }
+						</span>
+					) }
 					<RichText
 						tagName="h2"
 						className="sgs-heritage-strip__headline"

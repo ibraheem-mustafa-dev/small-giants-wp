@@ -74,6 +74,10 @@
 		"minHeight": {
 			"type": "string",
 			"default": ""
+		},
+		"textShadow": {
+			"type": "boolean",
+			"default": false
 		}
 	},
 	"providesContext": {},

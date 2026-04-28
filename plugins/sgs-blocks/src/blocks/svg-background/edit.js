@@ -17,6 +17,7 @@ import {
 	TextareaControl,
 	RangeControl,
 	TextControl,
+	ToggleControl,
 } from '@wordpress/components';
 
 export default function Edit( { attributes, setAttributes } ) {
@@ -27,6 +28,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		animationSpeed,
 		opacity,
 		minHeight,
+		textShadow,
 	} = attributes;
 
 	const blockProps = useBlockProps( {
@@ -109,6 +111,16 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ minHeight }
 						onChange={ ( value ) => setAttributes( { minHeight: value } ) }
 						help={ __( 'E.g., 400px or 50vh', 'sgs-blocks' ) }
+					/>
+					<ToggleControl
+						label={ __( 'Text shadow', 'sgs-blocks' ) }
+						help={ __(
+							'Adds a subtle shadow to inner text for readability over busy SVG backgrounds.',
+							'sgs-blocks'
+						) }
+						checked={ !! textShadow }
+						onChange={ ( val ) => setAttributes( { textShadow: val } ) }
+						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
 			</InspectorControls>

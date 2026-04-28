@@ -10,6 +10,7 @@ import {
 	SelectControl,
 	RangeControl,
 	Button,
+	TextControl,
 } from '@wordpress/components';
 import { DesignTokenPicker, ResponsiveControl } from '../../components';
 import { colourVar, spacingVar } from '../../utils';
@@ -175,7 +176,13 @@ export default function Edit( { attributes, setAttributes } ) {
 		hoverEffect,
 		titleColour,
 		subtitleColour,
+		source,
+		queryPostType,
+		queryPostsPerPage,
+		queryCategory,
 	} = attributes;
+
+	const isQueryMode = source === 'query';
 
 	const className = [
 		'sgs-card-grid',
@@ -232,6 +239,54 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
+				<PanelBody title={ __( 'Content Source', 'sgs-blocks' ) }>
+					<SelectControl
+						label={ __( 'Source', 'sgs-blocks' ) }
+						value={ source || 'manual' }
+						options={ [
+							{ label: __( 'Manual (custom items)', 'sgs-blocks' ), value: 'manual' },
+							{ label: __( 'Query (from posts)', 'sgs-blocks' ), value: 'query' },
+						] }
+						onChange={ ( val ) => setAttributes( { source: val } ) }
+						help={ isQueryMode
+							? __( 'Cards are pulled automatically from your posts.', 'sgs-blocks' )
+							: __( 'Add and arrange cards manually below.', 'sgs-blocks' )
+						}
+						__nextHasNoMarginBottom
+					/>
+					{ isQueryMode && (
+						<>
+							<SelectControl
+								label={ __( 'Post type', 'sgs-blocks' ) }
+								value={ queryPostType || 'post' }
+								options={ [
+									{ label: __( 'Posts', 'sgs-blocks' ), value: 'post' },
+									{ label: __( 'Pages', 'sgs-blocks' ), value: 'page' },
+								] }
+								onChange={ ( val ) => setAttributes( { queryPostType: val } ) }
+								__nextHasNoMarginBottom
+							/>
+							<RangeControl
+								label={ __( 'Number of cards', 'sgs-blocks' ) }
+								value={ queryPostsPerPage || 6 }
+								onChange={ ( val ) => setAttributes( { queryPostsPerPage: val } ) }
+								min={ 1 }
+								max={ 24 }
+								__nextHasNoMarginBottom
+							/>
+							<TextControl
+								label={ __( 'Category ID (optional)', 'sgs-blocks' ) }
+								value={ queryCategory ? String( queryCategory ) : '' }
+								onChange={ ( val ) => setAttributes( { queryCategory: parseInt( val, 10 ) || 0 } ) }
+								type="number"
+								help={ __( 'Filter by category ID. Leave 0 for all categories.', 'sgs-blocks' ) }
+								__nextHasNoMarginBottom
+							/>
+						</>
+					) }
+				</PanelBody>
+
+				{ ! isQueryMode && (
 				<PanelBody title={ __( 'Items', 'sgs-blocks' ) }>
 					{ items.map( ( item, index ) => (
 						<ItemEditor
@@ -248,6 +303,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						{ __( 'Add item', 'sgs-blocks' ) }
 					</Button>
 				</PanelBody>
+				) }
 
 				<PanelBody
 					title={ __( 'Grid Settings', 'sgs-blocks' ) }

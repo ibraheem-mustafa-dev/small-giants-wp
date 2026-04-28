@@ -12,6 +12,7 @@
 use SGS\Blocks\Google_Reviews_Settings;
 
 $variant            = $attributes['variant'] ?? 'grid';
+$card_variant       = $attributes['cardVariant'] ?? 'default';
 $place_id           = $attributes['placeId'] ?? Google_Reviews_Settings::get_settings()['place_id'] ?? '';
 $columns            = $attributes['columns'] ?? 3;
 $columns_tablet     = $attributes['columnsTablet'] ?? 2;
