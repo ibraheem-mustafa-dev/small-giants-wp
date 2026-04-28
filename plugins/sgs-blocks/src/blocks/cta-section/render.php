@@ -14,21 +14,21 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 // Extract attributes with defaults.
-$headline                = $attributes['headline'] ?? '';
-$body                    = $attributes['body'] ?? '';
-$buttons                 = $attributes['buttons'] ?? array();
-$ribbon                  = isset( $attributes['ribbon'] ) ? sanitize_text_field( $attributes['ribbon'] ) : '';
-$layout                  = $attributes['layout'] ?? 'centred';
-$headline_colour         = $attributes['headlineColour'] ?? '';
-$body_colour             = $attributes['bodyColour'] ?? '';
-$body_font_size          = $attributes['bodyFontSize'] ?? '';
-$body_font_size_tablet   = $attributes['bodyFontSizeTablet'] ?? '';
-$body_font_size_mobile   = $attributes['bodyFontSizeMobile'] ?? '';
-$button_colour           = $attributes['buttonColour'] ?? '';
-$button_background       = $attributes['buttonBackground'] ?? '';
-$button_border_colour    = $attributes['buttonBorderColour'] ?? '';
-$button_border_width     = $attributes['buttonBorderWidth'] ?? null;
-$button_border_radius    = $attributes['buttonBorderRadius'] ?? null;
+$headline              = $attributes['headline'] ?? '';
+$body                  = $attributes['body'] ?? '';
+$buttons               = $attributes['buttons'] ?? array();
+$ribbon                = isset( $attributes['ribbon'] ) ? sanitize_text_field( $attributes['ribbon'] ) : '';
+$layout                = $attributes['layout'] ?? 'centred';
+$headline_colour       = $attributes['headlineColour'] ?? '';
+$body_colour           = $attributes['bodyColour'] ?? '';
+$body_font_size        = $attributes['bodyFontSize'] ?? '';
+$body_font_size_tablet = $attributes['bodyFontSizeTablet'] ?? '';
+$body_font_size_mobile = $attributes['bodyFontSizeMobile'] ?? '';
+$button_colour         = $attributes['buttonColour'] ?? '';
+$button_background     = $attributes['buttonBackground'] ?? '';
+$button_border_colour  = $attributes['buttonBorderColour'] ?? '';
+$button_border_width   = $attributes['buttonBorderWidth'] ?? null;
+$button_border_radius  = $attributes['buttonBorderRadius'] ?? null;
 
 // Block-level button style variant and size (#199, #200).
 $allowed_button_styles = array( 'solid', 'outline', 'ghost', 'gradient', 'accent', 'primary' );
@@ -36,13 +36,13 @@ $block_button_style    = in_array( $attributes['buttonStyle'] ?? '', $allowed_bu
 	? sanitize_key( $attributes['buttonStyle'] )
 	: 'solid';
 
-$allowed_button_sizes  = array( 'xs', 'sm', 'md', 'lg', 'xl' );
-$block_button_size     = in_array( $attributes['buttonSize'] ?? '', $allowed_button_sizes, true )
+$allowed_button_sizes     = array( 'xs', 'sm', 'md', 'lg', 'xl' );
+$block_button_size        = in_array( $attributes['buttonSize'] ?? '', $allowed_button_sizes, true )
 	? sanitize_key( $attributes['buttonSize'] )
 	: 'md';
-$background_image        = $attributes['backgroundImage'] ?? null;
+$background_image         = $attributes['backgroundImage'] ?? null;
 $background_image_opacity = $attributes['backgroundImageOpacity'] ?? 30;
-$stats                   = $attributes['stats'] ?? array();
+$stats                    = $attributes['stats'] ?? array();
 
 $hover_background_colour = $attributes['hoverBackgroundColour'] ?? '';
 $hover_text_colour       = $attributes['hoverTextColour'] ?? '';
@@ -81,7 +81,7 @@ $classes = array(
 // Build responsive body font-size CSS.
 $responsive_css = '';
 if ( $body_font_size_tablet || $body_font_size_mobile ) {
-	$uid = 'sgs-cta-' . substr( md5( wp_json_encode( $attributes ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
+	$uid       = 'sgs-cta-' . substr( md5( wp_json_encode( $attributes ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
 	$classes[] = $uid;
 
 	if ( $body_font_size_tablet ) {
@@ -111,21 +111,27 @@ if ( ! empty( $background_image['url'] ) ) {
 }
 
 // Build headline styles.
-$h_classes = array('sgs-cta-section__headline');
+$h_classes          = array( 'sgs-cta-section__headline' );
 $letter_spacing     = $attributes['letterSpacing'] ?? '';
 $text_transform     = $attributes['textTransform'] ?? '';
 $text_align_mobile  = $attributes['textAlignMobile'] ?? '';
 $text_align_tablet  = $attributes['textAlignTablet'] ?? '';
 $text_align_desktop = $attributes['textAlignDesktop'] ?? '';
 
-if ( $text_align_mobile ) { $h_classes[] = 'sgs-text-align-m-' . $text_align_mobile; }
-if ( $text_align_tablet ) { $h_classes[] = 'sgs-text-align-t-' . $text_align_tablet; }
-if ( $text_align_desktop ) { $h_classes[] = 'sgs-text-align-d-' . $text_align_desktop; }
+if ( $text_align_mobile ) {
+	$h_classes[] = 'sgs-text-align-m-' . $text_align_mobile; }
+if ( $text_align_tablet ) {
+	$h_classes[] = 'sgs-text-align-t-' . $text_align_tablet; }
+if ( $text_align_desktop ) {
+	$h_classes[] = 'sgs-text-align-d-' . $text_align_desktop; }
 
 $h_styles = array();
-if ( $headline_colour ) { $h_styles[] = 'color:' . sgs_colour_value( $headline_colour ); }
-if ( $letter_spacing ) { $h_styles[] = 'letter-spacing:' . esc_attr($letter_spacing); }
-if ( $text_transform ) { $h_styles[] = 'text-transform:' . esc_attr($text_transform); }
+if ( $headline_colour ) {
+	$h_styles[] = 'color:' . sgs_colour_value( $headline_colour ); }
+if ( $letter_spacing ) {
+	$h_styles[] = 'letter-spacing:' . esc_attr( $letter_spacing ); }
+if ( $text_transform ) {
+	$h_styles[] = 'text-transform:' . esc_attr( $text_transform ); }
 
 $headline_style_attr = $h_styles ? ' style="' . implode( ';', $h_styles ) . '"' : '';
 $headline_class_attr = ' class="' . esc_attr( implode( ' ', $h_classes ) ) . '"';

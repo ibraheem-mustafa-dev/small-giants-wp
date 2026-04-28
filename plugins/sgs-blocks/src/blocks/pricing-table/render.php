@@ -17,36 +17,43 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 // ── Attributes ──────────────────────────────────────────────────────────────
-$columns             = absint( $attributes['columns'] ?? 3 );
-$billing_toggle      = (bool) ( $attributes['billingToggle'] ?? false );
-$toggle_monthly_lbl  = sanitize_text_field( $attributes['billingToggleMonthlyLabel'] ?? __( 'Monthly', 'sgs-blocks' ) );
-$toggle_yearly_lbl   = sanitize_text_field( $attributes['billingToggleYearlyLabel'] ?? __( 'Yearly', 'sgs-blocks' ) );
-$plans               = (array) ( $attributes['plans'] ?? array() );
-$style               = sanitize_key( $attributes['style'] ?? 'card' );
-$title_colour        = $attributes['titleColour'] ?? '';
-$price_colour        = $attributes['priceColour'] ?? '';
-$feature_colour      = $attributes['featureColour'] ?? '';
-$cta_style           = sanitize_key( $attributes['ctaStyle'] ?? 'accent' );
-$cta_colour          = $attributes['ctaColour'] ?? '';
-$cta_background      = $attributes['ctaBackground'] ?? '';
-$badge_text          = sanitize_text_field( $attributes['popularBadgeText'] ?? __( 'Popular', 'sgs-blocks' ) );
-$badge_colour        = $attributes['popularBadgeColour'] ?? 'white';
-$badge_background    = $attributes['popularBadgeBackground'] ?? 'accent';
+$columns            = absint( $attributes['columns'] ?? 3 );
+$billing_toggle     = (bool) ( $attributes['billingToggle'] ?? false );
+$toggle_monthly_lbl = sanitize_text_field( $attributes['billingToggleMonthlyLabel'] ?? __( 'Monthly', 'sgs-blocks' ) );
+$toggle_yearly_lbl  = sanitize_text_field( $attributes['billingToggleYearlyLabel'] ?? __( 'Yearly', 'sgs-blocks' ) );
+$plans              = (array) ( $attributes['plans'] ?? array() );
+$style              = sanitize_key( $attributes['style'] ?? 'card' );
+$title_colour       = $attributes['titleColour'] ?? '';
+$price_colour       = $attributes['priceColour'] ?? '';
+$feature_colour     = $attributes['featureColour'] ?? '';
+$cta_style          = sanitize_key( $attributes['ctaStyle'] ?? 'accent' );
+$cta_colour         = $attributes['ctaColour'] ?? '';
+$cta_background     = $attributes['ctaBackground'] ?? '';
+$badge_text         = sanitize_text_field( $attributes['popularBadgeText'] ?? __( 'Popular', 'sgs-blocks' ) );
+$badge_colour       = $attributes['popularBadgeColour'] ?? 'white';
+$badge_background   = $attributes['popularBadgeBackground'] ?? 'accent';
 
 // ── Unique block ID for billing toggle radio inputs ──────────────────────────
 $block_id = wp_unique_id( 'sgs-pricing-' );
 
 // ── Wrapper ──────────────────────────────────────────────────────────────────
-$classes = implode( ' ', array_filter( array(
-	'sgs-pricing-table',
-	'sgs-pricing-table--columns-' . $columns,
-	'sgs-pricing-table--' . esc_attr( $style ),
-	$billing_toggle ? 'sgs-pricing-table--has-toggle' : '',
-) ) );
+$classes = implode(
+	' ',
+	array_filter(
+		array(
+			'sgs-pricing-table',
+			'sgs-pricing-table--columns-' . $columns,
+			'sgs-pricing-table--' . esc_attr( $style ),
+			$billing_toggle ? 'sgs-pricing-table--has-toggle' : '',
+		)
+	)
+);
 
-$wrapper_attrs = get_block_wrapper_attributes( array(
-	'class' => $classes,
-) );
+$wrapper_attrs = get_block_wrapper_attributes(
+	array(
+		'class' => $classes,
+	)
+);
 
 // ── Helper: colour CSS value ─────────────────────────────────────────────────
 $colour_val = function ( $slug ) {
@@ -59,8 +66,8 @@ $colour_val = function ( $slug ) {
 // ── Build billing toggle HTML ────────────────────────────────────────────────
 $toggle_html = '';
 if ( $billing_toggle ) {
-	$monthly_id = esc_attr( $block_id ) . '-monthly';
-	$yearly_id  = esc_attr( $block_id ) . '-yearly';
+	$monthly_id  = esc_attr( $block_id ) . '-monthly';
+	$yearly_id   = esc_attr( $block_id ) . '-yearly';
 	$toggle_html = sprintf(
 		'<div class="sgs-pricing-table__toggle" role="group" aria-label="%s">' .
 			'<input type="radio" id="%s" name="%s" value="monthly" class="sgs-pricing-table__toggle-input" checked>' .
@@ -84,20 +91,25 @@ if ( $billing_toggle ) {
 // ── Build plan cards HTML ────────────────────────────────────────────────────
 $plans_html = '';
 foreach ( $plans as $plan ) {
-	$plan_name     = wp_strip_all_tags( $plan['name'] ?? '' );
-	$plan_price    = wp_strip_all_tags( $plan['price'] ?? '' );
-	$plan_price_yr = wp_strip_all_tags( $plan['priceYearly'] ?? '' );
-	$plan_period   = sanitize_key( $plan['period'] ?? 'monthly' );
-	$plan_desc     = wp_strip_all_tags( $plan['description'] ?? '' );
-	$plan_features = array_map( 'wp_strip_all_tags', (array) ( $plan['features'] ?? array() ) );
-	$plan_cta_text = sanitize_text_field( $plan['ctaText'] ?? __( 'Get started', 'sgs-blocks' ) );
-	$plan_cta_url  = esc_url( $plan['ctaUrl'] ?? '' );
+	$plan_name        = wp_strip_all_tags( $plan['name'] ?? '' );
+	$plan_price       = wp_strip_all_tags( $plan['price'] ?? '' );
+	$plan_price_yr    = wp_strip_all_tags( $plan['priceYearly'] ?? '' );
+	$plan_period      = sanitize_key( $plan['period'] ?? 'monthly' );
+	$plan_desc        = wp_strip_all_tags( $plan['description'] ?? '' );
+	$plan_features    = array_map( 'wp_strip_all_tags', (array) ( $plan['features'] ?? array() ) );
+	$plan_cta_text    = sanitize_text_field( $plan['ctaText'] ?? __( 'Get started', 'sgs-blocks' ) );
+	$plan_cta_url     = esc_url( $plan['ctaUrl'] ?? '' );
 	$plan_highlighted = (bool) ( $plan['highlighted'] ?? false );
 
-	$plan_classes = implode( ' ', array_filter( array(
-		'sgs-pricing-table__plan',
-		$plan_highlighted ? 'sgs-pricing-table__plan--highlighted' : '',
-	) ) );
+	$plan_classes = implode(
+		' ',
+		array_filter(
+			array(
+				'sgs-pricing-table__plan',
+				$plan_highlighted ? 'sgs-pricing-table__plan--highlighted' : '',
+			)
+		)
+	);
 
 	// Badge.
 	$badge_html = '';
@@ -119,11 +131,11 @@ foreach ( $plans as $plan ) {
 	// Price display — monthly and yearly spans, shown/hidden by JS toggle.
 	$price_style_attr = $price_colour ? ' style="color:' . $colour_val( $price_colour ) . '"' : '';
 	$period_labels    = array(
-		'monthly'  => __( '/mo', 'sgs-blocks' ),
-		'yearly'   => __( '/yr', 'sgs-blocks' ),
-		'one-off'  => '',
+		'monthly' => __( '/mo', 'sgs-blocks' ),
+		'yearly'  => __( '/yr', 'sgs-blocks' ),
+		'one-off' => '',
 	);
-	$period_label = $period_labels[ $plan_period ] ?? '';
+	$period_label     = $period_labels[ $plan_period ] ?? '';
 
 	$price_html = sprintf(
 		'<div class="sgs-pricing-table__price-wrapper">' .
@@ -162,8 +174,8 @@ foreach ( $plans as $plan ) {
 	}
 
 	// CTA button.
-	$cta_html     = '';
-	$cta_styles   = '';
+	$cta_html   = '';
+	$cta_styles = '';
 	if ( $cta_colour ) {
 		$cta_styles .= 'color:' . $colour_val( $cta_colour ) . ';';
 	}

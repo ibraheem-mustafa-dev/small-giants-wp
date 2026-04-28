@@ -16,18 +16,18 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 
-$title       = $attributes['title'] ?? '';
-$is_open     = ! empty( $attributes['isOpen'] );
-$style       = $block->context['sgs/accordionStyle'] ?? 'bordered';
-$icon_pos    = $block->context['sgs/accordionIconPosition'] ?? 'right';
-$header_col  = $block->context['sgs/accordionHeaderColour'] ?? '';
-$header_bg   = $block->context['sgs/accordionHeaderBackground'] ?? '';
-$icon_col    = $block->context['sgs/accordionIconColour'] ?? '';
-$open_icon   = sanitize_key( $block->context['sgs/accordionOpenIcon'] ?? 'chevron-down' );
-$close_icon  = sanitize_key( $block->context['sgs/accordionCloseIcon'] ?? 'chevron-up' );
+$title      = $attributes['title'] ?? '';
+$is_open    = ! empty( $attributes['isOpen'] );
+$style      = $block->context['sgs/accordionStyle'] ?? 'bordered';
+$icon_pos   = $block->context['sgs/accordionIconPosition'] ?? 'right';
+$header_col = $block->context['sgs/accordionHeaderColour'] ?? '';
+$header_bg  = $block->context['sgs/accordionHeaderBackground'] ?? '';
+$icon_col   = $block->context['sgs/accordionIconColour'] ?? '';
+$open_icon  = sanitize_key( $block->context['sgs/accordionOpenIcon'] ?? 'chevron-down' );
+$close_icon = sanitize_key( $block->context['sgs/accordionCloseIcon'] ?? 'chevron-up' );
 
 // Build inline styles for the header.
-$header_styles = [];
+$header_styles = array();
 if ( $header_col ) {
 	$header_styles[] = sprintf( 'color:var(--wp--preset--color--%s)', esc_attr( $header_col ) );
 }
@@ -42,10 +42,10 @@ if ( $icon_col ) {
 	$icon_style_attr = sprintf( ' style="color:var(--wp--preset--color--%s)"', esc_attr( $icon_col ) );
 }
 
-$classes = [
+$classes = array(
 	'sgs-accordion-item',
 	'sgs-accordion-item--' . esc_attr( $style ),
-];
+);
 
 // Retrieve Lucide SVGs for open and close states. Fall back to inline chevrons
 // if the icon name does not exist in the library (e.g. typo by the editor).
