@@ -112,6 +112,8 @@ function sgs_render_shape_divider( string $shape, string $colour, int $height, b
 
 	$position_class = 'sgs-shape-divider--' . esc_attr( $position );
 
+	$safe_colour = sgs_sanitise_colour( $colour );
+
 	return sprintf(
 		'<div class="sgs-shape-divider %s" style="height:%dpx;color:%s" aria-hidden="true">' .
 		'<svg viewBox="0 0 1200 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">' .
@@ -119,8 +121,57 @@ function sgs_render_shape_divider( string $shape, string $colour, int $height, b
 		'</svg></div>',
 		$position_class,
 		absint( $height ),
-		esc_attr( $colour ),
+		esc_attr( $safe_colour ),
 		esc_attr( $path ),
 		$transform
 	);
+}
+
+/**
+ * Validate a colour value against a strict allow-list of formats.
+ *
+ * Accepts: theme.json palette slugs (a-z, 0-9, -), CSS variables, hex (#rgb, #rrggbb, #rrggbbaa),
+ * rgb()/rgba(), hsl()/hsla(), oklch(), and the 'currentColor' / 'transparent' / 'inherit' keywords.
+ * Anything else (including raw text, malformed CSS, embedded quotes) returns empty string,
+ * which collapses to no inline colour — the block falls back to its CSS default.
+ *
+ * Defence-in-depth on top of esc_attr(): esc_attr only neutralises HTML entities; it does not
+ * prevent CSS-context attacks like style="color:red;background:url(javascript:alert(1))".
+ *
+ * @param string $colour Raw colour value from block attribute or settings.
+ * @return string Validated colour or empty string.
+ */
+function sgs_sanitise_colour( string $colour ): string {
+	$colour = trim( $colour );
+	if ( '' === $colour ) {
+		return '';
+	}
+
+	// Theme.json palette slug (e.g. "primary", "accent-light").
+	if ( preg_match( '/^[a-z][a-z0-9-]*$/i', $colour ) ) {
+		return 'var(--wp--preset--color--' . sanitize_key( $colour ) . ')';
+	}
+
+	// Already a CSS variable — pass through if shape is exactly var(--name).
+	if ( preg_match( '/^var\(--[a-z0-9-]+\)$/i', $colour ) ) {
+		return $colour;
+	}
+
+	// Hex: #rgb / #rgba / #rrggbb / #rrggbbaa.
+	if ( preg_match( '/^#([a-f0-9]{3,4}|[a-f0-9]{6}|[a-f0-9]{8})$/i', $colour ) ) {
+		return strtolower( $colour );
+	}
+
+	// Functional notations: rgb(), rgba(), hsl(), hsla(), oklch(), oklab().
+	if ( preg_match( '/^(rgb|rgba|hsl|hsla|oklch|oklab)\([0-9 .,%\/-]+\)$/i', $colour ) ) {
+		return $colour;
+	}
+
+	// Reserved keywords.
+	if ( in_array( strtolower( $colour ), array( 'currentcolor', 'transparent', 'inherit' ), true ) ) {
+		return strtolower( $colour );
+	}
+
+	// Anything else: reject.
+	return '';
 }
