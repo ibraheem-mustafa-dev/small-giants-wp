@@ -49,6 +49,11 @@
 			"type": "boolean",
 			"default": true
 		},
+		"toggleStyle": {
+			"type": "string",
+			"default": "text",
+			"enum": [ "text", "button" ]
+		},
 		"billingToggleMonthlyLabel": {
 			"type": "string",
 			"default": "Monthly"

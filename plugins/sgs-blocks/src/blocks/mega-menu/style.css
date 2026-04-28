@@ -1151,7 +1151,7 @@
 	justify-content: flex-end;
 	gap:            var(--wp--preset--spacing--30, 0.75rem);
 	padding:        var(--wp--preset--spacing--50, 1.5rem);
-	background:     var(--wp--preset--color--primary, #0a7ea8);
+	background:     var(--wp--preset--color--primary, #0F7E80);
 	color:          var(--wp--preset--color--text-inverse, #fff);
 	position:       relative;
 	overflow:       hidden;

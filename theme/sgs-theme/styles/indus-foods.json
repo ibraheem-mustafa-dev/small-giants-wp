@@ -41,6 +41,11 @@
 					"name": "Success"
 				},
 				{
+					"slug": "error",
+					"color": "#DC2626",
+					"name": "Error"
+				},
+				{
 					"slug": "whatsapp",
 					"color": "#25D366",
 					"name": "WhatsApp"
@@ -69,6 +74,11 @@
 					"slug": "text-inverse",
 					"color": "#FFFFFF",
 					"name": "Text Inverse"
+				},
+				{
+					"slug": "border-light",
+					"color": "#E5E7EB",
+					"name": "Border Light"
 				},
 				{
 					"slug": "footer-bg",

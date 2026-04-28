@@ -1,5 +1,13 @@
 # SGS Framework Completion Plan
 
+<!-- crosslinks-2026-04-29 -->
+> **Related plans (2026-04-29 cross-link pass):**
+> - Step 2 strategic plan + 5-client queue: [`2026-04-21-step2-strategic-plan.md`](2026-04-21-step2-strategic-plan.md)
+> - Active 5-phase rebuild that supersedes detailed framework sequencing: `~/.openclaw/.claude/subprojects/ssb/specs/2026-04-27-optimisation-toolkit-design.md`
+>
+> This doc is the live framework-completion roadmap. Phases 0-3 mostly DONE per 2026-04-28 self-update; Phase 4 (Indus Foods) + Phase 5 (polish, conditional visibility) remain.
+
+
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
 **Goal:** Complete the SGS WordPress Framework to match or exceed Kadence, Spectra, and GenerateBlocks in functionality, customisation depth, and client UX — then ship Indus Foods as the first production site.

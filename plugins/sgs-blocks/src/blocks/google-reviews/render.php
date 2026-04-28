@@ -36,15 +36,65 @@ $autoplay_speed     = $attributes['autoplaySpeed'] ?? 5000;
 $show_dots          = $attributes['showDots'] ?? true;
 $show_arrows        = $attributes['showArrows'] ?? true;
 
+// Placeholder reviews used when API key is not configured or API call fails.
+// These demonstrate the block's styling without requiring a Google Places API key.
+$dummy_reviews = array(
+	array(
+		'authorAttribution' => array(
+			'displayName' => 'Sarah Patel',
+			'photoUri'    => '',
+		),
+		'rating'            => 5,
+		'text'              => array(
+			'text' => 'Reliable supplier for over five years now. Consistent quality, excellent service, and their account team really understands our needs.',
+		),
+		'publishTime'       => gmdate( 'c', strtotime( '-6 months' ) ),
+	),
+	array(
+		'authorAttribution' => array(
+			'displayName' => 'James Wright',
+			'photoUri'    => '',
+		),
+		'rating'            => 5,
+		'text'              => array(
+			'text' => 'Excellent product range and fast delivery times. Competitive pricing for the quality. Always our first choice for catering supplies.',
+		),
+		'publishTime'       => gmdate( 'c', strtotime( '-3 months' ) ),
+	),
+	array(
+		'authorAttribution' => array(
+			'displayName' => 'Aisha Khan',
+			'photoUri'    => '',
+		),
+		'rating'            => 5,
+		'text'              => array(
+			'text' => 'Great trade prices and a genuinely helpful account team. They go the extra mile to support our business growth.',
+		),
+		'publishTime'       => gmdate( 'c', strtotime( '-1 month' ) ),
+	),
+);
+
 if ( empty( $place_id ) ) {
-	return '<p class="sgs-google-reviews__error">' . esc_html__( 'Google Reviews: No Place ID configured.', 'sgs-blocks' ) . '</p>';
-}
+	// No API key configured — use dummy content to showcase styling.
+	$data = [
+		'reviews'       => $dummy_reviews,
+		'rating'        => 4.9,
+		'userRatingCount' => 47,
+		'displayName'   => [ 'text' => __( 'Our Business', 'sgs-blocks' ) ],
+	];
+} else {
+	// Fetch reviews from API.
+	$data = Google_Reviews_Settings::fetch_reviews( $place_id );
 
-// Fetch reviews from API.
-$data = Google_Reviews_Settings::fetch_reviews( $place_id );
-
-if ( is_wp_error( $data ) ) {
-	return '<p class="sgs-google-reviews__error">' . esc_html( $data->get_error_message() ) . '</p>';
+	if ( is_wp_error( $data ) ) {
+		// API error — fall back to dummy content.
+		$data = [
+			'reviews'       => $dummy_reviews,
+			'rating'        => 4.9,
+			'userRatingCount' => 47,
+			'displayName'   => [ 'text' => __( 'Our Business', 'sgs-blocks' ) ],
+		];
+	}
 }
 
 $all_reviews   = $data['reviews'] ?? [];

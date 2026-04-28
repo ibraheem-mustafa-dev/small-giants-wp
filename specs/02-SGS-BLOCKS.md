@@ -979,10 +979,15 @@ All SGS blocks receive animation and interaction controls via the block extensio
 
 **Competitive context:** Elementor Pro offers 40+ entrance animations, parallax scroll, mouse effects, and 3D tilt. Motion.page offers scroll-linked timeline animations. Kadence Pro offers 12 entrance animations. SGS matches or exceeds these with a CSS-first approach that produces zero layout shift and respects `prefers-reduced-motion`.
 
+**Implementation status (as of 2026-04-28):**
+- Entrance animations: **16 of 16 spec'd built** (added `bounce-in`, `reveal-up` 2026-04-28)
+- Hover effects (universal extension): **7 of 8 built** — lift (via scale + shadow), scale, glow, border-accent, shadow-grow, colour-shift, tilt-3d. Missing: `border-accent` was per-block-only until 2026-04-28; now universal.
+- Scroll-linked: **1 of 3 built** — `sgsScrollProgress` CSS variable (global, exposes `--sgs-scroll-progress` 0-1 on documentElement). Still missing: `sgsParallax` (background + element variants) — TODO.
+
 #### Entrance Animations (scroll-triggered via IntersectionObserver)
 
 **Attributes (injected into all `sgs/*` blocks):**
-- `sgsAnimation` — none | fade-up | fade-down | fade-in | fade-left | fade-right | slide-up | slide-down | slide-left | slide-right | scale-in | scale-out | rotate-in | flip-in | blur-in (default: none)
+- `sgsAnimation` — none | fade-up | fade-down | fade-in | fade-left | fade-right | slide-up | slide-down | slide-left | slide-right | scale-in | scale-out | rotate-in | flip-in | blur-in | **bounce-in** | **reveal-up** (default: none) — 16 active types as of 2026-04-28
 - `sgsAnimationDelay` — 0 | 100 | 200 | 300 | 400 | 500 ms (default: 0)
 - `sgsAnimationDuration` — fast (300ms) | medium (500ms) | slow (800ms) | very-slow (1200ms) (default: medium)
 - `sgsAnimationStagger` — boolean (default: false — when true, direct children animate in sequence with incrementing delay)
@@ -1014,7 +1019,21 @@ All SGS blocks receive animation and interaction controls via the block extensio
 - `colour-shift` — background-colour transitions to a lighter/darker variant on `:hover`
 
 **JS-required effects (loaded only when used):**
-- `tilt-3d` — Perspective-based 3D tilt following mouse position. Uses `mousemove` event + `requestAnimationFrame`. `transform: perspective(1000px) rotateX({tiltY}deg) rotateY({tiltX}deg)`. Resets smoothly on `mouseleave`. < 1KB JS.
+- `tilt-3d` — **BUILT 2026-04-28**. Perspective-based 3D tilt following mouse position. Uses `mousemove` event + `requestAnimationFrame`. `transform: perspective(800px) rotateX({tiltY}deg) rotateY({tiltX}deg)` with MAX_TILT 6deg. Resets smoothly on `mouseleave`. Skips entirely when `prefers-reduced-motion: reduce`. ~30 lines vanilla JS at `assets/js/tilt-3d.js`. Enabled per-block via `sgsHoverTilt3D` boolean attribute.
+
+**Universal hover attributes registered by hover-effects.js (12 total as of 2026-04-28):**
+- `sgsHoverBgColour`, `sgsHoverTextColour`, `sgsHoverBorderColour` — colour shifts (3)
+- `sgsHoverScale`, `sgsHoverScalePreset` — scale (2, default 1.02)
+- `sgsHoverShadow` — shadow elevation (default 'medium')
+- `sgsHoverImageZoom` — inner image zoom on hover (default true on most blocks)
+- `sgsHoverGrayscale` — grayscale filter on hover
+- `sgsHoverBorderAccent` — border-accent line slides in from left on hover **(universal as of 2026-04-28)**
+- `sgsHoverTilt3D` — mouse-tracking 3D rotation **(BUILT 2026-04-28)**
+- `sgsHoverDuration` — transition duration ms (default 250)
+- `sgsStaggerDelay` — stagger delay for child animations
+- `sgsBlockLink`, `sgsBlockLinkTarget` — wrap entire block in link
+
+**26 blocks opted out of universal scale/shadow/image-zoom defaults** (announcement-bar, breadcrumbs, container, countdown-timer, counter, form, form-step, all 11 form-field-* blocks, hero, mega-menu, tabs, tab) — these blocks shouldn't lift or scale visually. Colour hovers and block-link still work on them.
 
 **Inner element hover effects (for specific blocks):**
 - Card Grid, Info Box, Card: already have per-block hover attributes
@@ -1089,6 +1108,54 @@ All blocks can be conditionally shown/hidden per breakpoint:
 - `hideOnMobile` — boolean
 - `hideOnTablet` — boolean
 - `hideOnDesktop` — boolean
+
+**Phase 5.1 (planned):** Extend with role-based, login-state, and schedule-based visibility conditions (server-side `render_block` filter — zero frontend cost).
+
+---
+
+### Block Defaults System (Phase 3.2 — Built 2026-04-28)
+
+Lets users save the currently-configured attributes of any SGS block as the default for new instances site-wide. Mirrors Kadence's "Configurable Defaults" UX.
+
+**Components:**
+- `Block_Defaults` PHP class (`includes/class-block-defaults.php`) — REST endpoints, option storage, editor injection, admin settings page
+- `block-defaults.js` JS extension (`src/blocks/extensions/block-defaults.js`) — adds "Save as Default" button to every SGS block's Advanced inspector panel; reads `window.sgsBlockDefaults` and merges saved values into block attribute schemas via `blocks.registerBlockType` filter
+
+**Flow:**
+1. User configures a block, opens Advanced panel, clicks "Save as Default"
+2. JS POSTs `{block, attributes}` to `/sgs-blocks/v1/defaults` (block name in body — WP REST routes can't have forward slashes in route parameters)
+3. PHP sanitises (strips internal WP attrs `lock`/`className`/`style`/`metadata`, deep-sanitises rest), stores in `wp_options['sgs_block_defaults']` (single JSON keyed by block name)
+4. On next editor load: `Block_Defaults::inject_defaults_script()` outputs `window.sgsBlockDefaults` before the extensions bundle via `wp_add_inline_script`
+5. JS extension's `blocks.registerBlockType` filter reads `window.sgsBlockDefaults[name]` and merges into each block's attribute defaults — synchronous, no extra REST roundtrip
+6. New block insertions inherit saved defaults automatically; existing instances unaffected
+
+**Admin page:** `Settings → SGS Block Defaults` lists all saved defaults with per-block "Reset" buttons + global "Reset all".
+
+**Permission:** `edit_theme_options` (same level as Customiser).
+
+**Storage format:** `{"sgs/hero": {"textAlign": "left", "minHeight": 600, ...}, "sgs/cta-section": {...}}` — JSON object, single option row.
+
+---
+
+### Floating UI (Customiser-driven, NOT blocks)
+
+Global floating UI elements (Back to Top button, Reading Progress bar) live in `Appearance → Customise → SGS Floating UI`, not as Gutenberg blocks. They render fixed-position regardless of placement, so the block model doesn't fit — clients would expect them to render at the drop point and be confused when they don't.
+
+**Architecture:**
+- Customiser registration: `theme/sgs-theme/inc/floating-ui-customiser.php` (16 settings across two sub-panels)
+- Frontend output: `theme/sgs-theme/inc/floating-ui-output.php` (hooks `wp_footer` priority 5, reads `theme_mod`s, outputs HTML conditionally based on `_enabled` flags)
+- Live preview JS: `theme/sgs-theme/assets/js/customiser-preview.js` (mutates CSS variables and toggles classes on the floating UI containers in real-time as Customiser controls change)
+- Settings stored as `theme_mod` (auto-scoped to active theme, separate per client)
+
+**Per-page override:** post meta `_sgs_hide_floating_ui` (array of slugs to hide). Editor sidebar meta box "SGS Floating UI Overrides" with checkboxes for each element.
+
+**Back to Top settings (7):** enabled, position (4 corners), show after px scrolled, shape (circle/pill/square), colour (palette slug), size px, icon (arrow-up/chevron-up/double-chevron-up).
+
+**Reading Progress settings (9):** enabled, mode (bar/countdown/both), position (top/bottom), target selector, words-per-minute (default 225), bar colour, bar height, post types to show on, show when finished.
+
+**Deprecated blocks:** `sgs/back-to-top` block remains for backward compat but renders empty — editor shows a deprecation notice pointing to Customiser. The `sgs/reading-progress` block was built but never deployed; its render.php now returns empty.
+
+**Why not a settings admin page:** Customiser has live preview — clients see button reposition / change colour as they drag sliders. Save-and-refresh on a settings page kills the design-iteration feel.
 
 ---
 

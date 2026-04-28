@@ -21,7 +21,7 @@
 }
 
 .sgs-breadcrumbs__item a {
-	color: var(--wp--preset--color--text-muted, #666);
+	color: var(--wp--preset--color--text-muted, #555555);
 	text-decoration: none;
 	transition: var(--wp--custom--transition--fast, 0.15s ease);
 }
@@ -43,7 +43,7 @@
 }
 
 .sgs-breadcrumbs__separator {
-	color: var(--wp--preset--color--text-muted, #999);
+	color: var(--wp--preset--color--text-muted, #555555);
 	user-select: none;
 }
 

@@ -15,6 +15,12 @@
  * - sgsHoverGrayscale (boolean)
  * - sgsBlockLink + sgsBlockLinkTarget (wraps output in <a>)
  *
+ * Default values (must mirror hover-effects.js HOVER_ATTRS + SCALE_SHADOW_SKIP_BLOCKS):
+ * - sgsHoverScalePreset : '1.02' ('' for skip-list blocks)
+ * - sgsHoverShadow      : 'md'   ('' for skip-list blocks)
+ * - sgsHoverImageZoom   : true   (false for skip-list blocks)
+ * - sgsHoverDuration    : 250 ms
+ *
  * @package SGS\Blocks
  */
 
@@ -32,35 +38,74 @@ add_filter( 'render_block', __NAMESPACE__ . '\\inject_hover_effects', 10, 2 );
  * @return string Modified block HTML.
  */
 function inject_hover_effects( string $block_content, array $block ): string {
-	if ( empty( $block['attrs'] ) ) {
-		return $block_content;
-	}
+	// Blocks that should not receive the default scale/shadow/image-zoom lift.
+	// Must mirror SCALE_SHADOW_SKIP_BLOCKS in hover-effects.js.
+	static $scale_shadow_skip = array(
+		'sgs/announcement-bar',
+		'sgs/back-to-top',
+		'sgs/breadcrumbs',
+		'sgs/container',
+		'sgs/countdown-timer',
+		'sgs/counter',
+		'sgs/form',
+		'sgs/form-step',
+		'sgs/form-field-address',
+		'sgs/form-field-checkbox',
+		'sgs/form-field-consent',
+		'sgs/form-field-date',
+		'sgs/form-field-email',
+		'sgs/form-field-file',
+		'sgs/form-field-hidden',
+		'sgs/form-field-number',
+		'sgs/form-field-phone',
+		'sgs/form-field-radio',
+		'sgs/form-field-select',
+		'sgs/form-field-text',
+		'sgs/form-field-textarea',
+		'sgs/form-field-tiles',
+		'sgs/hero',
+		'sgs/mega-menu',
+		'sgs/tabs',
+		'sgs/tab',
+	);
 
-	$attrs = $block['attrs'];
+	$block_name = $block['blockName'] ?? '';
+	$is_skip    = in_array( $block_name, $scale_shadow_skip, true );
 
-	$hover_bg           = $attrs['sgsHoverBgColour']     ?? '';
-	$hover_text         = $attrs['sgsHoverTextColour']   ?? '';
+	// Resolve per-block defaults — mirrors HOVER_ATTRS in hover-effects.js.
+	$default_scale_preset = $is_skip ? '' : '1.02';
+	$default_shadow       = $is_skip ? '' : 'md';
+	$default_img_zoom     = ! $is_skip;
+
+	$attrs = $block['attrs'] ?? array();
+
+	$hover_bg           = $attrs['sgsHoverBgColour'] ?? '';
+	$hover_text         = $attrs['sgsHoverTextColour'] ?? '';
 	$hover_border       = $attrs['sgsHoverBorderColour'] ?? '';
 	$hover_scale        = (int) ( $attrs['sgsHoverScale'] ?? 0 );
-	$hover_scale_preset = $attrs['sgsHoverScalePreset']  ?? '';
-	$hover_shadow       = $attrs['sgsHoverShadow']       ?? '';
-	$hover_dur          = (int) ( $attrs['sgsHoverDuration'] ?? 300 );
-	$hover_img_zoom     = (bool) ( $attrs['sgsHoverImageZoom'] ?? false );
+	$hover_scale_preset = $attrs['sgsHoverScalePreset'] ?? $default_scale_preset;
+	$hover_shadow       = $attrs['sgsHoverShadow'] ?? $default_shadow;
+	$hover_dur          = (int) ( $attrs['sgsHoverDuration'] ?? 250 );
+	$hover_img_zoom     = (bool) ( $attrs['sgsHoverImageZoom'] ?? $default_img_zoom );
 	$stagger_delay      = (int) ( $attrs['sgsStaggerDelay'] ?? 0 );
 	$hover_grayscale    = (bool) ( $attrs['sgsHoverGrayscale'] ?? false );
-	$block_link         = $attrs['sgsBlockLink']         ?? '';
+	$hover_border_acc   = (bool) ( $attrs['sgsHoverBorderAccent'] ?? false );
+	$hover_tilt_3d      = (bool) ( $attrs['sgsHoverTilt3D'] ?? false );
+	$block_link         = $attrs['sgsBlockLink'] ?? '';
 	$block_link_target  = (bool) ( $attrs['sgsBlockLinkTarget'] ?? false );
 
-	$has_colour_hover   = $hover_bg || $hover_text || $hover_border;
-	$has_scale_hover    = $hover_scale || $hover_scale_preset;
-	$has_hover          = $has_colour_hover || $has_scale_hover || $hover_shadow;
+	$has_colour_hover = $hover_bg || $hover_text || $hover_border;
+	$has_scale_hover  = $hover_scale || $hover_scale_preset;
+	$has_hover        = $has_colour_hover || $has_scale_hover || $hover_shadow;
 
-	// Bail early if nothing is set.
+	// Bail early if nothing is active (respects defaults above).
 	if (
 		! $has_hover &&
 		! $hover_img_zoom &&
 		! $stagger_delay &&
 		! $hover_grayscale &&
+		! $hover_border_acc &&
+		! $hover_tilt_3d &&
 		! $block_link
 	) {
 		return $block_content;
@@ -69,7 +114,7 @@ function inject_hover_effects( string $block_content, array $block ): string {
 	require_once __DIR__ . '/render-helpers.php';
 
 	// --- Build CSS custom properties. ---
-	$css_vars = [];
+	$css_vars = array();
 	if ( $hover_bg ) {
 		$css_vars[] = '--sgs-hover-bg:' . \sgs_colour_value( $hover_bg );
 	}
@@ -84,29 +129,29 @@ function inject_hover_effects( string $block_content, array $block ): string {
 	if ( $hover_scale ) {
 		$css_vars[] = '--sgs-hover-scale:' . number_format( $hover_scale / 100, 4 );
 	} elseif ( $hover_scale_preset ) {
-		$allowed_presets = [ '1.02', '1.05', '1.1' ];
+		$allowed_presets = array( '1.02', '1.05', '1.1' );
 		if ( in_array( $hover_scale_preset, $allowed_presets, true ) ) {
 			$css_vars[] = '--sgs-hover-scale:' . esc_attr( $hover_scale_preset );
 		}
 	}
 
 	if ( $hover_shadow ) {
-		$allowed_shadows = [ 'sm', 'md', 'lg', 'glow' ];
+		$allowed_shadows = array( 'sm', 'md', 'lg', 'glow' );
 		if ( in_array( $hover_shadow, $allowed_shadows, true ) ) {
 			$css_vars[] = '--sgs-hover-shadow:var(--wp--preset--shadow--' . esc_attr( $hover_shadow ) . ')';
 		}
 	}
 
-	if ( $hover_dur !== 300 ) {
-		$css_vars[] = '--sgs-hover-duration:' . absint( $hover_dur ) . 'ms';
-	}
+	// Always write duration — CSS fallback in .sgs-has-hover is 300ms,
+	// so our 250 ms default must be emitted to take effect.
+	$css_vars[] = '--sgs-hover-duration:' . absint( $hover_dur ) . 'ms';
 
 	if ( $stagger_delay > 0 ) {
 		$css_vars[] = '--sgs-stagger:' . absint( $stagger_delay ) . 'ms';
 	}
 
 	// --- Build extra classes. ---
-	$add_classes = [];
+	$add_classes = array();
 	if ( $has_hover ) {
 		$add_classes[] = 'sgs-has-hover';
 	}
@@ -118,6 +163,12 @@ function inject_hover_effects( string $block_content, array $block ): string {
 	}
 	if ( $hover_grayscale ) {
 		$add_classes[] = 'sgs-has-grayscale';
+	}
+	if ( $hover_border_acc ) {
+		$add_classes[] = 'sgs-has-border-accent';
+	}
+	if ( $hover_tilt_3d ) {
+		$add_classes[] = 'sgs-has-tilt-3d';
 	}
 	if ( $stagger_delay > 0 ) {
 		$add_classes[] = 'sgs-has-stagger';
@@ -170,7 +221,7 @@ function inject_hover_effects( string $block_content, array $block ): string {
 
 	// --- Wrap in block link if set. ---
 	if ( $block_link ) {
-		$target_attr = $block_link_target
+		$target_attr   = $block_link_target
 			? ' target="_blank" rel="noopener noreferrer"'
 			: '';
 		$block_content = sprintf(

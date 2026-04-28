@@ -19,6 +19,9 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 // ── Attributes ──────────────────────────────────────────────────────────────
 $columns            = absint( $attributes['columns'] ?? 3 );
 $billing_toggle     = (bool) ( $attributes['billingToggle'] ?? false );
+$toggle_style       = in_array( $attributes['toggleStyle'] ?? 'text', array( 'text', 'button' ), true )
+	? $attributes['toggleStyle']
+	: 'text';
 $toggle_monthly_lbl = sanitize_text_field( $attributes['billingToggleMonthlyLabel'] ?? __( 'Monthly', 'sgs-blocks' ) );
 $toggle_yearly_lbl  = sanitize_text_field( $attributes['billingToggleYearlyLabel'] ?? __( 'Yearly', 'sgs-blocks' ) );
 $plans              = (array) ( $attributes['plans'] ?? array() );
@@ -69,13 +72,14 @@ if ( $billing_toggle ) {
 	$monthly_id  = esc_attr( $block_id ) . '-monthly';
 	$yearly_id   = esc_attr( $block_id ) . '-yearly';
 	$toggle_html = sprintf(
-		'<div class="sgs-pricing-table__toggle" role="group" aria-label="%s">' .
+		'<div class="sgs-pricing-table__toggle sgs-pricing-table__toggle--style-%s" role="group" aria-label="%s">' .
 			'<input type="radio" id="%s" name="%s" value="monthly" class="sgs-pricing-table__toggle-input" checked>' .
 			'<label for="%s" class="sgs-pricing-table__toggle-label">%s</label>' .
 			'<input type="radio" id="%s" name="%s" value="yearly" class="sgs-pricing-table__toggle-input">' .
 			'<label for="%s" class="sgs-pricing-table__toggle-label">%s</label>' .
 			'<span class="sgs-pricing-table__toggle-track" aria-hidden="true"></span>' .
 		'</div>',
+		esc_attr( $toggle_style ),
 		esc_attr__( 'Billing period', 'sgs-blocks' ),
 		esc_attr( $monthly_id ),
 		esc_attr( $block_id ),

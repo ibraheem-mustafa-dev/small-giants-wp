@@ -28,6 +28,11 @@ const PERIOD_OPTIONS = [
 	{ label: __( 'One-off', 'sgs-blocks' ), value: 'one-off' },
 ];
 
+const TOGGLE_STYLE_OPTIONS = [
+	{ label: __( 'Text (bold + colour)', 'sgs-blocks' ), value: 'text' },
+	{ label: __( 'Button (filled / outline)', 'sgs-blocks' ), value: 'button' },
+];
+
 const CTA_STYLE_OPTIONS = [
 	{ label: __( 'Primary', 'sgs-blocks' ), value: 'primary' },
 	{ label: __( 'Secondary', 'sgs-blocks' ), value: 'secondary' },
@@ -39,6 +44,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const {
 		columns,
 		billingToggle,
+		toggleStyle,
 		billingToggleMonthlyLabel,
 		billingToggleYearlyLabel,
 		plans,
@@ -166,6 +172,15 @@ export default function Edit( { attributes, setAttributes } ) {
 								value={ billingToggleYearlyLabel }
 								onChange={ ( val ) =>
 									setAttributes( { billingToggleYearlyLabel: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+							<SelectControl
+								label={ __( 'Toggle style', 'sgs-blocks' ) }
+								value={ toggleStyle }
+								options={ TOGGLE_STYLE_OPTIONS }
+								onChange={ ( val ) =>
+									setAttributes( { toggleStyle: val } )
 								}
 								__nextHasNoMarginBottom
 							/>

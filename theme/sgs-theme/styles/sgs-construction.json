@@ -27,6 +27,11 @@
 					"name": "Accent Light"
 				},
 				{
+					"slug": "error",
+					"color": "#DC2626",
+					"name": "Error"
+				},
+				{
 					"slug": "surface",
 					"color": "#FFFFFF",
 					"name": "Surface (White)"
@@ -65,6 +70,11 @@
 					"slug": "border-subtle",
 					"color": "#E8700A",
 					"name": "Border Subtle (Orange)"
+				},
+				{
+					"slug": "border-light",
+					"color": "#E5E7EB",
+					"name": "Border Light"
 				}
 			]
 		},

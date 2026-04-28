@@ -72,3 +72,33 @@
 		transition: none;
 	}
 }
+
+/* Footer variation — plain icons, no background, light colour, hover accent
+ * Replicates the Astra footer social icon style from the reference site:
+ * 25px SVG, transparent bg, inherits footer text colour, accent on hover.
+ */
+.is-style-social-icons-footer.sgs-social-icons {
+	gap: 15px; /* matches lightsalmon reference: 7.5px margin each side */
+}
+
+.is-style-social-icons-footer .sgs-social-icons__item {
+	background: none;
+	border: none;
+	border-radius: 0;
+	padding: 0;
+	width: 25px;
+	height: 25px;
+	color: currentColor; /* inherits footer text colour */
+	transition: color 0.2s ease, transform 0.1s ease;
+}
+
+.is-style-social-icons-footer .sgs-social-icons__item svg {
+	width: 25px;
+	height: 25px;
+}
+
+.is-style-social-icons-footer .sgs-social-icons__item:hover {
+	color: var(--wp--preset--color--accent, #F87A1F);
+	opacity: 1;
+	transform: scale(1.1);
+}

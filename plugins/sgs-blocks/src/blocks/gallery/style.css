@@ -151,7 +151,7 @@
 }
 
 .sgs-gallery__dot--active {
-	background: var( --wp--preset--color--primary, #1A3A5C );
+	background: var( --wp--preset--color--primary, #0F7E80 );
 }
 
 /* ==========================================================================
@@ -204,6 +204,35 @@
 	transform: scale( var( --sgs-hover-image-zoom, 1.05 ) );
 }
 
+/* Lift — card lifts */
+.sgs-gallery--hover-lift .sgs-gallery__item:hover {
+	transform: translateY(-4px);
+	box-shadow: var(--wp--preset--shadow--lg);
+}
+
+/* Overlay Slide — slides up from bottom */
+.sgs-gallery--hover-overlay-slide .sgs-gallery__item {
+    position: relative;
+    overflow: hidden;
+}
+
+.sgs-gallery--hover-overlay-slide .sgs-gallery__overlay {
+    position: absolute;
+    inset: auto 0 0 0;
+    background: linear-gradient(to top, var(--wp--preset--color--text, #1e1e1e) 0%, transparent 100%);
+    color: var(--wp--preset--color--text-inverse, #fff);
+    padding: 1rem;
+    transform: translateY(100%);
+    transition: transform var(--sgs-transition-duration, 300ms) var(--sgs-transition-easing, ease);
+    pointer-events: none;
+    z-index: 2;
+}
+
+.sgs-gallery--hover-overlay-slide .sgs-gallery__item:hover .sgs-gallery__overlay,
+.sgs-gallery--hover-overlay-slide .sgs-gallery__item:focus-within .sgs-gallery__overlay {
+    transform: translateY(0);
+}
+
 /* Grayscale hover (#130) */
 .sgs-gallery.sgs-has-grayscale .sgs-gallery__img {
 	filter: grayscale(100%);
@@ -248,7 +277,7 @@
 }
 
 .sgs-gallery__item-btn:focus-visible {
-	outline:        2px solid var( --wp--preset--color--primary, #1A3A5C );
+	outline:        2px solid var( --wp--preset--color--primary, #0F7E80 );
 	outline-offset: 2px;
 }
 
@@ -533,6 +562,15 @@
 
 	.sgs-gallery--caption-reveal .sgs-gallery__caption {
 		transition: none;
+	}
+
+	.sgs-gallery--hover-overlay-slide .sgs-gallery__overlay {
+		transition: none;
+	}
+
+	.sgs-gallery--hover-overlay-slide .sgs-gallery__item:hover .sgs-gallery__overlay,
+	.sgs-gallery--hover-overlay-slide .sgs-gallery__item:focus-within .sgs-gallery__overlay {
+		transform: translateY( 0 );
 	}
 }
 

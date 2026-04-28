@@ -1,0 +1,79 @@
+/* ===== SGS Back to Top (Theme) ===== */
+
+.sgs-floating-ui--back-to-top {
+	position: fixed;
+	z-index: 999;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border: none;
+	padding: 0;
+	cursor: pointer;
+	box-shadow: var(--wp--preset--shadow--md);
+	transition: var(--wp--custom--transition--medium, 0.3s ease);
+	opacity: 1;
+	color: var(--wp--preset--color--surface);
+}
+
+.sgs-floating-ui--back-to-top[hidden] {
+	display: none;
+}
+
+.sgs-floating-ui--back-to-top:hover {
+	transform: translateY(-2px);
+	box-shadow: var(--wp--preset--shadow--lg);
+}
+
+.sgs-floating-ui--back-to-top:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary);
+	outline-offset: 2px;
+}
+
+.sgs-floating-ui--back-to-top svg {
+	width: 50%;
+	height: 50%;
+}
+
+/* Positions */
+.sgs-floating-ui--position-bottom-right {
+	bottom: 24px;
+	right: 24px;
+}
+
+.sgs-floating-ui--position-bottom-left {
+	bottom: 24px;
+	left: 24px;
+}
+
+.sgs-floating-ui--position-top-right {
+	top: 24px;
+	right: 24px;
+}
+
+.sgs-floating-ui--position-top-left {
+	top: 24px;
+	left: 24px;
+}
+
+/* Shapes */
+.sgs-floating-ui--shape-circle {
+	border-radius: 50%;
+}
+
+.sgs-floating-ui--shape-pill {
+	border-radius: 999px;
+}
+
+.sgs-floating-ui--shape-square {
+	border-radius: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-floating-ui--back-to-top {
+		transition: none;
+	}
+
+	.sgs-floating-ui--back-to-top:hover {
+		transform: none;
+	}
+}

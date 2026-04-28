@@ -290,8 +290,10 @@
 .sgs-pricing-table__toggle-label {
 	position: relative;
 	z-index: 1;
+	/* Font size matches body text — previously used --small which made labels
+	   visually smaller than the rest of the block. Fixed to --medium. */
 	padding: 0.5rem 1.25rem;
-	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	font-size: var(--wp--preset--font-size--medium, 1rem);
 	font-weight: 500;
 	color: var(--wp--preset--color--text-muted, #555);
 	cursor: pointer;
@@ -300,14 +302,16 @@
 	user-select: none;
 }
 
-/* Active label (when its paired input is checked) */
-.sgs-pricing-table__toggle-input:checked + .sgs-pricing-table__toggle-label {
+/* Active label — text style (default): bold + primary colour */
+.sgs-pricing-table__toggle--style-text
+	.sgs-pricing-table__toggle-input:checked
+	+ .sgs-pricing-table__toggle-label {
 	color: var(--wp--preset--color--primary, #0f7e80);
 	font-weight: 700;
 }
 
-/* The sliding pill track */
-.sgs-pricing-table__toggle-track {
+/* The sliding pill track — visible in text style only */
+.sgs-pricing-table__toggle--style-text .sgs-pricing-table__toggle-track {
 	position: absolute;
 	inset: 0;
 	border: 2px solid var(--wp--preset--color--border-subtle, #ccc);
@@ -315,7 +319,57 @@
 	pointer-events: none;
 }
 
-/* Focus ring on inputs (keyboard nav) */
+/* Button style — hide the track, style each label as a button */
+.sgs-pricing-table__toggle--style-button .sgs-pricing-table__toggle-track {
+	display: none;
+}
+
+.sgs-pricing-table__toggle--style-button {
+	gap: 0.5rem;
+}
+
+.sgs-pricing-table__toggle--style-button .sgs-pricing-table__toggle-label {
+	min-height: 44px; /* WCAG 2.2 SC 2.5.5 minimum touch target */
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.5rem 1.5rem;
+	border: 2px solid var(--wp--preset--color--primary, #0f7e80);
+	border-radius: var(--wp--custom--border-radius--small, 4px);
+	color: var(--wp--preset--color--primary, #0f7e80);
+	background-color: transparent;
+	font-weight: 600;
+	transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Active button: filled */
+.sgs-pricing-table__toggle--style-button
+	.sgs-pricing-table__toggle-input:checked
+	+ .sgs-pricing-table__toggle-label {
+	color: var(--wp--preset--color--white, #fff);
+	background-color: var(--wp--preset--color--primary, #0f7e80);
+	font-weight: 700;
+}
+
+/* Inactive button hover: light tint */
+.sgs-pricing-table__toggle--style-button
+	.sgs-pricing-table__toggle-label:hover {
+	background-color: color-mix(
+		in srgb,
+		var(--wp--preset--color--primary, #0f7e80) 10%,
+		transparent
+	);
+}
+
+/* Fallback for browsers without color-mix */
+@supports not (color: color-mix(in srgb, black 10%, transparent)) {
+	.sgs-pricing-table__toggle--style-button
+		.sgs-pricing-table__toggle-label:hover {
+		background-color: rgba(15, 126, 128, 0.1);
+	}
+}
+
+/* Focus ring on inputs (keyboard nav — both styles) */
 .sgs-pricing-table__toggle-input:focus-visible + .sgs-pricing-table__toggle-label {
 	outline: 2px solid var(--wp--preset--color--primary, #0f7e80);
 	outline-offset: 2px;

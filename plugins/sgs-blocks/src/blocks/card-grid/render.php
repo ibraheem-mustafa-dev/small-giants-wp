@@ -177,7 +177,7 @@ $subtitle_style = $subtitle_colour ? ' style="color:var(--wp--preset--color--' .
 						loading="lazy"
 					/>
 				<?php endif; ?>
-				<?php if ( 'overlay' === $variant ) : ?>
+				<?php if ( 'overlay' === $variant || 'overlay-slide' === $hover_effect ) : ?>
 					<div class="sgs-card-grid__overlay">
 						<?php if ( ! empty( $item['title'] ) ) : ?>
 							<span class="sgs-card-grid__title"<?php echo $title_style; ?>><?php echo esc_html( $item['title'] ); ?></span>

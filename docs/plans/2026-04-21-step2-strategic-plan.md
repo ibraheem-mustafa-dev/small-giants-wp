@@ -1,5 +1,16 @@
 # Step 2 Strategic Plan — Theme Completion + 5 Client Pipeline
 
+<!-- crosslinks-2026-04-29 -->
+> **Related plans (2026-04-29 cross-link pass):**
+> - Master tool inventory + 13 pipelines: [`2026-04-21-toolset-spec-from-sgs-studio-session.md`](2026-04-21-toolset-spec-from-sgs-studio-session.md)
+> - Pipelines deferred from critical path: [`2026-04-21-non-essential-pipelines-deferred.md`](2026-04-21-non-essential-pipelines-deferred.md)
+> - Phase 4 design-brain spec: [`2026-04-24-design-brain-architecture.md`](2026-04-24-design-brain-architecture.md)
+> - Live framework-completion roadmap: [`2026-02-21-framework-completion-plan.md`](2026-02-21-framework-completion-plan.md)
+> - Active 5-phase rebuild (Steps 3+4 of THIS plan): `~/.openclaw/.claude/subprojects/ssb/specs/2026-04-27-optimisation-toolkit-design.md`
+>
+> This doc is the **anchor** of the strategy stack — Step 2 of the 5-step master plan. Read this first when navigating the stack.
+
+
 **Generated:** 2026-04-21
 **Owner:** Bean Mustafa (QC/internal client only); delivery by `/wp-sgs-developer` + toolset
 **Master feature audit reference:** `docs/plans/2026-02-21-master-feature-audit.md` (last updated 2026-04-18)

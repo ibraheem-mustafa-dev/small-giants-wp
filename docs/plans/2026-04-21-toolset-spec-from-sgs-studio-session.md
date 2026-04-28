@@ -1,5 +1,15 @@
 # SGS Toolset Master Spec — 2026-04-21 handoff from small-giants-studio session
 
+<!-- crosslinks-2026-04-29 -->
+> **Related plans (2026-04-29 cross-link pass):**
+> - Step 2 strategic plan (anchor): [`2026-04-21-step2-strategic-plan.md`](2026-04-21-step2-strategic-plan.md)
+> - Pipelines deferred from critical path: [`2026-04-21-non-essential-pipelines-deferred.md`](2026-04-21-non-essential-pipelines-deferred.md)
+> - Phase 4 design-brain spec: [`2026-04-24-design-brain-architecture.md`](2026-04-24-design-brain-architecture.md)
+> - Active 5-phase rebuild: `~/.openclaw/.claude/subprojects/ssb/specs/2026-04-27-optimisation-toolkit-design.md`
+>
+> **Status update (2026-04-29):** 22 of the rubrics this spec recommended shipped on 2026-04-27/28 (capture-lesson, critique, qc, phase-planner, subagent-prompt, interactivity-capture, ethics-gate, /handoff, extract, harden, adapt, project-consolidate, autopilot, strategic-plan, architecture-doc, colourise, bolder, quieter, normalize, polish, distill, delight). The CHANGE/IMPROVE/ADD/SUBTRACT items remain the canonical action list for Phase 4 + future tooling work.
+
+
 **Source session:** `c--Users-Bean-Projects-small-giants-studio` 2026-04-20→21
 **Destination:** small-giants-wp Phase 1 tooling audit (sessions D/E/F pending)
 **Prepared by:** Opus main thread + 5 parallel Sonnet recon agents + 4-reviewer panels per skill

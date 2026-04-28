@@ -18,18 +18,23 @@ import { AnimationControl } from '../../components';
  * Used in the editor indicator badge.
  */
 const ANIMATION_LABELS = {
-	'none':         __( 'None', 'sgs-blocks' ),
-	'fade-up':      __( 'Fade Up', 'sgs-blocks' ),
-	'fade-down':    __( 'Fade Down', 'sgs-blocks' ),
-	'fade-left':    __( 'Fade Left', 'sgs-blocks' ),
-	'fade-right':   __( 'Fade Right', 'sgs-blocks' ),
-	'fade-in':      __( 'Fade In', 'sgs-blocks' ),
-	'slide-up':     __( 'Slide Up', 'sgs-blocks' ),
-	'slide-down':   __( 'Slide Down', 'sgs-blocks' ),
-	'zoom-in':      __( 'Zoom In', 'sgs-blocks' ),
-	'zoom-out':     __( 'Zoom Out', 'sgs-blocks' ),
-	'flip-left':    __( 'Flip Left', 'sgs-blocks' ),
-	'flip-right':   __( 'Flip Right', 'sgs-blocks' ),
+	'none':        __( 'None', 'sgs-blocks' ),
+	'fade-up':     __( 'Fade Up', 'sgs-blocks' ),
+	'fade-down':   __( 'Fade Down', 'sgs-blocks' ),
+	'fade-in':     __( 'Fade In', 'sgs-blocks' ),
+	'fade-left':   __( 'Fade Left', 'sgs-blocks' ),
+	'fade-right':  __( 'Fade Right', 'sgs-blocks' ),
+	'slide-up':    __( 'Slide Up', 'sgs-blocks' ),
+	'slide-down':  __( 'Slide Down', 'sgs-blocks' ),
+	'slide-left':  __( 'Slide Left', 'sgs-blocks' ),
+	'slide-right': __( 'Slide Right', 'sgs-blocks' ),
+	'scale-in':    __( 'Scale In', 'sgs-blocks' ),
+	'scale-out':   __( 'Scale Out', 'sgs-blocks' ),
+	'rotate-in':   __( 'Rotate In', 'sgs-blocks' ),
+	'flip-in':     __( 'Flip In', 'sgs-blocks' ),
+	'blur-in':     __( 'Blur In', 'sgs-blocks' ),
+	'bounce-in':   __( 'Bounce In', 'sgs-blocks' ),
+	'reveal-up':   __( 'Reveal Up', 'sgs-blocks' ),
 };
 
 /**

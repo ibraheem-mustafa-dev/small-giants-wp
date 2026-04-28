@@ -29,9 +29,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		linkLabel,
 	} = attributes;
 
+	const blockAlign = attributes.align || 'center';
 	const className = [
 		'sgs-icon',
 		backgroundShape !== 'none' && `sgs-icon--bg-${ backgroundShape }`,
+		`align${ blockAlign }`,
 	].filter( Boolean ).join( ' ' );
 
 	const style = {

@@ -62,7 +62,7 @@ const withSaveAsDefault = createHigherOrderComponent( ( BlockEdit ) => {
 			setStatus( 'saving' );
 			try {
 				await apiFetch( {
-					path: `/sgs-blocks/v1/defaults/${ name }`,
+					path: '/sgs-blocks/v1/defaults',
 					method: 'POST',
 					data: { block: name, attributes },
 				} );

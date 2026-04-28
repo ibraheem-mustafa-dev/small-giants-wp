@@ -204,8 +204,8 @@
 .sgs-cta-section__btn--gradient:not([style*="background"]) {
 	background: linear-gradient(
 		135deg,
-		var(--wp--preset--color--primary, #1A3A5C) 0%,
-		var(--wp--preset--color--accent, #E8B84B) 100%
+		var(--wp--preset--color--primary, #0F7E80) 0%,
+		var(--wp--preset--color--accent, #F87A1F) 100%
 	);
 }
 .sgs-cta-section__btn--gradient:not([style*="color"]) {

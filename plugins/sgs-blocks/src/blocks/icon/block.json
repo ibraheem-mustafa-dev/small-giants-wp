@@ -15,7 +15,7 @@
 	"textdomain": "sgs-blocks",
 	"icon": "heart",
 	"supports": {
-		"align": false,
+		"align": [ "center", "wide", "full" ],
 		"anchor": true,
 		"html": false,
 		"color": {
@@ -45,11 +45,11 @@
 		},
 		"backgroundColour": {
 			"type": "string",
-			"default": ""
+			"default": "surface-alt"
 		},
 		"backgroundShape": {
 			"type": "string",
-			"default": "none"
+			"default": "circle"
 		},
 		"link": {
 			"type": "string",
@@ -74,7 +74,7 @@
 			"size": 48,
 			"iconColour": "primary",
 			"backgroundShape": "circle",
-			"backgroundColour": "accent-light"
+			"backgroundColour": "surface-alt"
 		}
 	}
 }

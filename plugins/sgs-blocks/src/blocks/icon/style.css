@@ -1,5 +1,28 @@
 /* ===== SGS Icon ===== */
 
+.wp-block-sgs-icon {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+.wp-block-sgs-icon.aligncenter {
+	text-align: center;
+}
+
+.wp-block-sgs-icon.alignright {
+	text-align: right;
+}
+
+.wp-block-sgs-icon.alignleft {
+	text-align: left;
+}
+
+.wp-block-sgs-icon.alignwide,
+.wp-block-sgs-icon.alignfull {
+	display: flex;
+	justify-content: center;
+}
+
 .sgs-icon {
 	display: inline-flex;
 	align-items: center;

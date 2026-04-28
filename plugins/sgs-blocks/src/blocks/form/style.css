@@ -28,6 +28,14 @@
 	container-name: sgs-form;
 }
 
+/* Universal box-sizing for all form elements — prevents inputs/buttons/textareas
+   overflowing their parent when width:100% combines with padding/border. */
+.sgs-form *,
+.sgs-form *::before,
+.sgs-form *::after {
+	box-sizing: border-box;
+}
+
 .sgs-form__inner,
 .sgs-form-step {
 	display: grid;
@@ -139,7 +147,9 @@
    ---------------------------------------------------------------- */
 
 .sgs-form-field__input {
+	box-sizing: border-box;
 	width: 100%;
+	max-width: 100%;
 	padding: 0.75rem 1rem;
 	border: 1px solid var(--wp--preset--color--border-subtle, #ccc);
 	border-radius: var(--wp--custom--border-radius--small, 4px);
@@ -797,15 +807,17 @@ select.sgs-form-field__input {
 	color: var(--wp--preset--color--primary, #0f7e80);
 }
 
-.sgs-form-field--text .sgs-form-field__input:not(:focus)::placeholder,
-.sgs-form-field--email .sgs-form-field__input:not(:focus)::placeholder,
-.sgs-form-field--phone .sgs-form-field__input:not(:focus)::placeholder,
-.sgs-form-field--number .sgs-form-field__input:not(:focus)::placeholder,
-.sgs-form-field--textarea .sgs-form-field__input:not(:focus)::placeholder,
-.sgs-form-field--text .sgs-form-field__input:not(:focus)::-moz-placeholder,
-.sgs-form-field--email .sgs-form-field__input:not(:focus)::-moz-placeholder,
-.sgs-form-field--phone .sgs-form-field__input:not(:focus)::-moz-placeholder,
-.sgs-form-field--number .sgs-form-field__input:not(:focus)::-moz-placeholder,
-.sgs-form-field--textarea .sgs-form-field__input:not(:focus)::-moz-placeholder {
+/* Hide placeholder when label is in its "down" position (empty field, not focused).
+   Only hide when :placeholder-shown, so filled fields keep their label-up style. */
+.sgs-form-field--text .sgs-form-field__input:placeholder-shown:not(:focus)::placeholder,
+.sgs-form-field--email .sgs-form-field__input:placeholder-shown:not(:focus)::placeholder,
+.sgs-form-field--phone .sgs-form-field__input:placeholder-shown:not(:focus)::placeholder,
+.sgs-form-field--number .sgs-form-field__input:placeholder-shown:not(:focus)::placeholder,
+.sgs-form-field--textarea .sgs-form-field__input:placeholder-shown:not(:focus)::placeholder,
+.sgs-form-field--text .sgs-form-field__input:placeholder-shown:not(:focus)::-moz-placeholder,
+.sgs-form-field--email .sgs-form-field__input:placeholder-shown:not(:focus)::-moz-placeholder,
+.sgs-form-field--phone .sgs-form-field__input:placeholder-shown:not(:focus)::-moz-placeholder,
+.sgs-form-field--number .sgs-form-field__input:placeholder-shown:not(:focus)::-moz-placeholder,
+.sgs-form-field--textarea .sgs-form-field__input:placeholder-shown:not(:focus)::-moz-placeholder {
 	color: transparent;
 }

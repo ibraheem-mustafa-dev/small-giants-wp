@@ -1,6 +1,6 @@
 # Architecture — SGS WordPress Framework
 
-> Last updated: 2026-03-29 | Status: Active Development (Phase 2 complete, animation extension rebuilt)
+> Last updated: 2026-04-28 | Status: Active Development (Phase 3.2 complete, hover variant gaps closed, Floating UI architecture decided)
 
 ## Overview
 
@@ -12,7 +12,7 @@ SGS is a standalone WordPress block theme and Gutenberg blocks plugin built by S
 |---|---|---|
 | CMS | WordPress 6.9.1 | Block theme, no classic editor |
 | Theme | `sgs-theme` (block theme) | theme.json v3, template parts, style variations per client |
-| Blocks plugin | `sgs-blocks` | 58 blocks (26 content/layout + 14 form + 7 interactive + 4 utility + 7 extensions), dynamic (server-rendered) |
+| Blocks plugin | `sgs-blocks` | 57 blocks (26 content/layout + 14 form + 6 interactive + 4 utility + 7 extensions), dynamic (server-rendered). Block Defaults system (Phase 3.2) lets clients save current attribute values as defaults for new instances site-wide. |
 | Block build | `@wordpress/scripts` | `--experimental-modules` flag required for `viewScriptModule` |
 | Frontend JS | Interactivity API + vanilla ES modules | Interactivity API for stateful blocks; vanilla `viewScriptModule` for AJAX (Post Grid) |
 | Icons | Lucide (1900+ icons) | Pre-generated to `lucide-icons.php` via `scripts/generate-icons.js` |
@@ -97,7 +97,7 @@ small-giants-wp/
 
 6. **`sgs/container` is the universal layout primitive** — Used for all multi-column and section layouts. Supports `layout` (stack/grid/flex), `columns`, `columnsTablet`, `columnsMobile`, `gap`, `backgroundImage`, `minHeight`, `htmlTag`. Nesting containers inside containers is the correct pattern for complex layouts. Do NOT add bespoke layout attributes to content blocks.
 
-7. **Hover effects are CSS-class-driven, set by block attributes** — Phase 1.3 delivered per-element colour hover controls (bg/text/border) on 4 blocks. Phase 2 adds: scale transform, shadow elevation, image zoom (inner), transition duration/easing controls. The `hoverEffect` attribute (e.g. `"lift"`, `"border-accent"`, `"glow"`, `"none"`) maps to a BEM modifier class (`.sgs-info-box--hover-lift`). CSS for each variant lives in the block's `style.css`. All hover behaviour is fully editor-configurable — not just colour shifts, but transforms, shadows, and timing.
+7. **Hover effects: universal extension + per-block variants** — The hover-effects extension at `src/blocks/extensions/hover-effects.js` registers 12 universal hover attributes available on every SGS block: 3 colour shifts (bg/text/border), 2 scale (preset + numeric), shadow elevation, image zoom, grayscale, **border-accent** (line slides in on hover, added 2026-04-28), **tilt-3d** (mouse-tracking 3D rotation, added 2026-04-28), transition duration, stagger delay, and 2 block-link attributes. These are universal — no per-block opt-in needed. Sensible defaults applied to all SGS blocks (scale 1.02, shadow medium, image zoom on, duration 250ms) with 26 blocks opted out (announcement-bar, breadcrumbs, all form-fields, container, mega-menu, etc). On top of universal hovers, named per-block variants exist for blocks that need bespoke behaviour: Info Box (lift/border-accent/glow), Card Grid (zoom/lift/**overlay-slide**), Gallery (zoom/lift/**overlay-slide**), SVG Background (pulse/float/wave), Brand Strip (greyscale). Total interactive options across the framework: **33/36 spec'd** (3 remaining gaps: parallax extension, scroll-progress already shipped, border-accent universal already shipped).
 
 8. **WordPress Interactivity API for most frontend JS; Post Grid uses vanilla ES module** — No jQuery. Stateful interactive blocks (nav, slider, accordion, form steps) use `viewScriptModule` + `@wordpress/interactivity` store/state. Post Grid uses a vanilla ES module with `fetch()` for AJAX pagination — lighter weight, no state management needed. The `--experimental-modules` build flag is required for all `viewScriptModule` blocks.
 
@@ -107,7 +107,13 @@ small-giants-wp/
 
 11. **Per-device visibility via block extension, not separate templates** — WordPress block themes have one template part per name; per-device template routing does not exist. The correct pattern (matching Kadence/GenerateBlocks) is a Visibility panel extension applied to ALL blocks via `editor.BlockEdit` + a PHP `render_block` filter to ensure classes survive on core dynamic blocks. Clients build three layout groups inside one `header.html`, hiding each non-applicable group per breakpoint. The extension lives in `plugins/sgs-blocks/src/blocks/extensions/responsive-visibility.js` — the existing `sgs/*` scope guard must be removed to cover core blocks.
 
-12. **Animation extension uses WordPress filter API, not block styles** — Scroll animations are a block extension (`src/blocks/extensions/animation.js`) applied to all 57 SGS blocks + 4 core blocks (group, columns, cover, image) via `blocks.registerBlockType` + `editor.BlockEdit` HOC + `render_block` PHP filter. Four attributes per block: `sgsAnimation` (15 types), `sgsAnimationDelay`, `sgsAnimationDuration`, `sgsAnimationEasing` (6 curves). CSS initial states are gated behind `.sgs-js` class (added by JS) + `prefers-reduced-motion: no-preference` media query for progressive enhancement. The `render_block` PHP filter uses `WP_HTML_Tag_Processor` to inject `data-sgs-animation` attributes on the root element. Frontend IntersectionObserver in `animation-observer.js` watches `[data-sgs-animation]` and adds `.sgs-animated`. Inner blocks (tab, accordion-item, form fields) are denylisted. This replaced a `register_block_style()` approach that was mutually exclusive with visual styles and only covered 4 blocks.
+12. **Animation extension uses WordPress filter API, not block styles** — Scroll animations are a block extension (`src/blocks/extensions/animation.js`) applied to all 57 SGS blocks + 4 core blocks (group, columns, cover, image) via `blocks.registerBlockType` + `editor.BlockEdit` HOC + `render_block` PHP filter. Four attributes per block: `sgsAnimation` (**16 types** as of 2026-04-28: fade-up/down/left/right/in, slide-up/down, zoom/scale-in/out, flip-left/right, rotate-in, blur-in, bounce-in, reveal-up), `sgsAnimationDelay`, `sgsAnimationDuration`, `sgsAnimationEasing` (6 curves). CSS initial states are gated behind `.sgs-js` class + `prefers-reduced-motion: no-preference`. The `render_block` PHP filter uses `WP_HTML_Tag_Processor` to inject `data-sgs-animation` on the root element. Frontend IntersectionObserver in `animation-observer.js` watches `[data-sgs-animation]` and adds `.sgs-animated`. Inner blocks (tab, accordion-item, form fields) are denylisted.
+
+13. **Floating UI lives in the WordPress Customiser, not as blocks** — Back to Top, Reading Progress, and future floating chrome (cookie banner, chat widget) are configured at `Appearance → Customise → SGS Floating UI`. **Why Customiser, not a Settings admin page or blocks:** clients see changes (button position, colour, size, behaviour) update live in the preview as they drag sliders. A static admin page requires save-and-refresh. Blocks would render where placed in the post flow — wrong mental model for elements that float fixed-position regardless of placement. Settings stored as `theme_mod` (auto-scoped to active theme/style variation). Frontend output via `wp_footer` hook reading `get_theme_mod()`. Per-page override via post meta `_sgs_hide_floating_ui` (array of slugs to hide on a specific page). Existing `sgs/back-to-top` block is deprecated to a no-op (renders empty, editor shows deprecation notice pointing to Customiser) so legacy usage doesn't break.
+
+14. **Block Defaults System (Phase 3.2) — Save current values as site-wide defaults** — The `Block_Defaults` class registers a REST endpoint at `/sgs-blocks/v1/defaults` (POST/DELETE) that lets users save the currently-configured attributes of any SGS block as the default for new instances. Storage: single `wp_options` row `sgs_block_defaults` (JSON keyed by block name). The `block-defaults.js` extension adds a "Save as Default" button to every SGS block's Advanced inspector panel. On editor boot, `Block_Defaults::inject_defaults_script()` outputs `window.sgsBlockDefaults` before the extensions bundle, and the JS extension's `blocks.registerBlockType` filter merges saved defaults into each block's attribute schema before any block is registered — so new insertions inherit them automatically without an extra REST roundtrip. Admin page at `Settings → SGS Block Defaults` lists all saved defaults with per-block "Reset" buttons. Permission: `edit_theme_options`. Mirrors Kadence's "Configurable Defaults" UX. Replaces the failed initial design that put block names in URL paths (WP REST routes can't contain forward slashes — block name now passes via request body).
+
+15. **Palette tokens are mandatory for block colour defaults** — Every SGS block's default colour value must reference a palette token via either a slug (in block.json defaults) or `var(--wp--preset--color--X, #fallback)` pattern (in CSS/PHP). Bare hex defaults are forbidden because they don't switch when a client changes style variation. Brand colours (LinkedIn `#0A66C2`, Facebook, WhatsApp) are intentional exceptions documented as such. The palette includes `border-light` (`#E5E7EB`) and `error` (`#DC2626`) as canonical semantic slugs added 2026-04-28 to consolidate near-duplicate hex values previously used as bare fallbacks across form/google-reviews/whatsapp-cta CSS files.
 
 13. **Logo switching uses `sgs/responsive-logo` block** — The core `site-logo` block only exposes one image. The correct approach is a custom `sgs/responsive-logo` block with two `MediaUpload` attributes (`desktopLogoId`, `mobileLogoId`). `render.php` uses `wp_get_attachment_image()` to output both images; CSS media queries show/hide the correct one per breakpoint. Stores attachment IDs (not URLs) so the block survives domain changes and CDN migrations.
 
@@ -209,15 +215,32 @@ N8N webhook triggered → notification sent (email/Slack/WhatsApp)
 
 ## Current Development Focus
 
-**Phase 3 — Extensions + Polish (in progress)**
+**Phase 3 — Extensions + Polish (largely complete) → Phase 4 Indus Foods build (next)**
 
-Phase 2 blocks are complete (Post Grid, Gallery, Tabs, Countdown Timer, Star Rating, Team Member). Session 10 ran a 5-agent architecture audit and fixed 65 of 67 findings. Session 11 delivered:
+### 2026-04-28 session deliverables
 
-1. **Animation extension rebuilt** — from `register_block_style()` (4 core blocks, mutually exclusive) to proper block extension (57+ blocks, additive, per-instance control with 15 animations, 6 easing curves)
-2. **Testimonial slider split layout** — `sideImage` + `layout` attributes, 60/40 grid with responsive image
-3. **CTA section border controls** — `buttonBorderColour`, `buttonBorderWidth`, `buttonBorderRadius`
+1. **Phase 3.2 Global Defaults System** — `Block_Defaults` class + REST endpoint + admin page + editor injection. Live on production.
+2. **Hover variant gap closure** — added universal `border-accent` (line slides in on hover), `tilt-3d` (mouse-tracking 3D rotation), `sgsScrollProgress` CSS variable, `overlay-slide` named variant on Card Grid + Gallery. Total interactive options: 33/36 spec'd.
+3. **Animation extension** — `bounce-in` and `reveal-up` added (was 14, now **16 types** — exceeds spec target of 15).
+4. **Palette additions** — new `border-light` (#E5E7EB) and `error` (#DC2626) slugs in theme.json + all 7 style variations to consolidate previously-duplicated bare hex values.
+5. **Floating UI architecture** decided — Back to Top + Reading Progress will be Customiser-controlled (`Appearance → Customise → SGS Floating UI`), not blocks. Live-preview controls. Reading Progress block files repurposed; Back to Top block deprecated to no-op.
+6. **8 quality fixes** — form input box-sizing overflow, floating-label/placeholder overlap, Footer social icons style variation (matches lightsalmon reference), Google Reviews dummy fallback, Icon Block content-width + visible bg, Breadcrumbs contrast, populated all empty test page blocks, Pricing Table `toggleStyle` attribute (text/button).
+7. **Address lookup research** — `getAddress.io` selected for future `sgs/form-field-address` block (£20/yr 7,500 lookups, 20/day free, UK PAF data).
 
-**Next priorities:** Active page indicator on nav links, mobile nav v2, Indus Foods page builds.
+### Lessons captured to memory
+
+- **Parallel agents on shared files cause race conditions** — both `border-accent` and `tilt-3d` branches edited `hover-effects.js` + `hover-effects.php`; resulting orphan `}` on line 238 took the live site down. Sequentialise any branches that touch the same file.
+- **Gemini Flash on Windows can't run shell commands** — `npm run build`, `git status` etc all fail with "File not found". Don't include build steps in Gemini Flash prompts — run those manually.
+- **WP REST routes can't contain forward slashes in route parameters** — e.g. `/defaults/sgs/counter` won't match `/defaults/(?P<block>[a-z0-9\-\/]+)`. Pass dynamic IDs via request body instead.
+- **Hostinger error logs live at `~/.logs/error_log_<domain>`**, not `wp-content/debug.log` (often stale).
+- **Block colour defaults must reference palette tokens**, never bare hex — clients switch style variations and blocks need to follow.
+
+### Next priorities
+
+1. **Floating UI Customiser section** (in progress this session, Gemini Flash dispatched)
+2. **Phase 4 Indus Foods homepage fixes** — biggest remaining track
+3. **Phase 5.1 Conditional Visibility extension** — role/login/schedule conditions on Visibility extension
+4. **Spec doc updates** — sync 02-SGS-BLOCKS.md with new state
 
 The master feature audit (`docs/plans/2026-02-21-master-feature-audit.md`) tracks 354 features across the framework.
 

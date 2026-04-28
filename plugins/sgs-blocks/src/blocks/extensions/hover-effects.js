@@ -31,6 +31,40 @@ try {
 	DesignTokenPicker = null;
 }
 
+/**
+ * Blocks that should NOT receive the default scale/shadow/image-zoom lift.
+ * These are structural containers, bars, form elements, or data-display blocks
+ * where a hover lift looks wrong or misleading.
+ */
+const SCALE_SHADOW_SKIP_BLOCKS = new Set( [
+	'sgs/announcement-bar',
+	'sgs/back-to-top',
+	'sgs/breadcrumbs',
+	'sgs/container',
+	'sgs/countdown-timer',
+	'sgs/counter',
+	'sgs/form',
+	'sgs/form-step',
+	'sgs/form-field-address',
+	'sgs/form-field-checkbox',
+	'sgs/form-field-consent',
+	'sgs/form-field-date',
+	'sgs/form-field-email',
+	'sgs/form-field-file',
+	'sgs/form-field-hidden',
+	'sgs/form-field-number',
+	'sgs/form-field-phone',
+	'sgs/form-field-radio',
+	'sgs/form-field-select',
+	'sgs/form-field-text',
+	'sgs/form-field-textarea',
+	'sgs/form-field-tiles',
+	'sgs/hero',
+	'sgs/mega-menu',
+	'sgs/tabs',
+	'sgs/tab',
+] );
+
 const HOVER_ATTRS = {
 	// Colour overrides on hover.
 	sgsHoverBgColour: { type: 'string', default: '' },
@@ -38,18 +72,22 @@ const HOVER_ATTRS = {
 	sgsHoverBorderColour: { type: 'string', default: '' },
 	// Scale transform — fine-grained slider (0 = off; 105 = scale(1.05)).
 	sgsHoverScale: { type: 'number', default: 0 },
-	// Shadow elevation preset.
-	sgsHoverShadow: { type: 'string', default: '' },
-	// Transition timing.
-	sgsHoverDuration: { type: 'number', default: 300 },
-	// Named scale preset (none | 1.02 | 1.05 | 1.1).
-	sgsHoverScalePreset: { type: 'string', default: '' },
-	// Image zoom on hover.
-	sgsHoverImageZoom: { type: 'boolean', default: false },
+	// Shadow elevation preset — 'md' gives a subtle lift on card-like blocks.
+	sgsHoverShadow: { type: 'string', default: 'md' },
+	// Transition timing — 250 ms feels responsive without being abrupt.
+	sgsHoverDuration: { type: 'number', default: 250 },
+	// Named scale preset — '1.02' is barely perceptible but clearly intentional.
+	sgsHoverScalePreset: { type: 'string', default: '1.02' },
+	// Image zoom on hover — enabled by default for blocks that contain images.
+	sgsHoverImageZoom: { type: 'boolean', default: true },
 	// Stagger animation delay in ms (applied to direct children).
 	sgsStaggerDelay: { type: 'number', default: 0 },
 	// Grayscale-to-colour effect on images.
 	sgsHoverGrayscale: { type: 'boolean', default: false },
+	// Border accent line on hover.
+	sgsHoverBorderAccent: { type: 'boolean', default: false },
+	// Tilt 3D effect.
+	sgsHoverTilt3D: { type: 'boolean', default: false },
 	// Block link — wraps the whole block in an <a> tag.
 	sgsBlockLink: { type: 'string', default: '' },
 	sgsBlockLinkTarget: { type: 'boolean', default: false },
@@ -72,6 +110,10 @@ const SCALE_PRESET_OPTIONS = [
 
 /**
  * Add hover attributes to all blocks.
+ *
+ * Blocks in SCALE_SHADOW_SKIP_BLOCKS receive neutral defaults for scale,
+ * shadow, and image zoom so they don't appear interactive when they shouldn't.
+ * All other SGS blocks get subtle-lift defaults out of the box.
  */
 addFilter(
 	'blocks.registerBlockType',
@@ -83,11 +125,23 @@ addFilter(
 			return settings;
 		}
 
+		// Structural/form/layout blocks: keep scale, shadow, and image zoom off
+		// by default so they don't look interactive when they shouldn't.
+		const isSkipBlock = SCALE_SHADOW_SKIP_BLOCKS.has( settings.name );
+		const overrides = isSkipBlock
+			? {
+				sgsHoverScalePreset: { type: 'string', default: '' },
+				sgsHoverShadow:      { type: 'string', default: '' },
+				sgsHoverImageZoom:   { type: 'boolean', default: false },
+			}
+			: {};
+
 		return {
 			...settings,
 			attributes: {
 				...settings.attributes,
 				...HOVER_ATTRS,
+				...overrides,
 			},
 		};
 	}
@@ -116,6 +170,7 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 			sgsHoverImageZoom,
 			sgsStaggerDelay,
 			sgsHoverGrayscale,
+			sgsHoverBorderAccent,
 			sgsBlockLink,
 			sgsBlockLinkTarget,
 		} = attributes;
@@ -185,6 +240,12 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 							help={ __( 'Desaturates images at rest; restores colour on hover.', 'sgs-blocks' ) }
 							checked={ sgsHoverGrayscale }
 							onChange={ ( val ) => setAttributes( { sgsHoverGrayscale: val } ) }
+						/>
+						<ToggleControl
+							label={ __( 'Border accent line on hover', 'sgs-blocks' ) }
+							help={ __( 'Adds a coloured line at the bottom that scales in on hover.', 'sgs-blocks' ) }
+							checked={ sgsHoverBorderAccent }
+							onChange={ ( val ) => setAttributes( { sgsHoverBorderAccent: val } ) }
 						/>
 						<RangeControl
 							label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
@@ -256,6 +317,8 @@ addFilter(
 			sgsHoverImageZoom,
 			sgsStaggerDelay,
 			sgsHoverGrayscale,
+			sgsHoverBorderAccent,
+			sgsHoverTilt3D,
 			sgsBlockLink,
 		} = attributes;
 
@@ -277,6 +340,9 @@ addFilter(
 		}
 		if ( sgsHoverGrayscale ) {
 			classNames.push( 'sgs-has-grayscale' );
+		}
+		if ( sgsHoverBorderAccent ) {
+			classNames.push( 'sgs-has-border-accent' );
 		}
 		if ( sgsStaggerDelay ) {
 			classNames.push( 'sgs-has-stagger' );

@@ -18,7 +18,7 @@
 .sgs-js [data-sgs-animation-duration="medium"] { transition-duration: 0.5s; }
 .sgs-js [data-sgs-animation-duration="slow"] { transition-duration: 0.8s; }
 
-/* Starting positions — 15 animation types */
+/* Starting positions — 16 animation types */
 .sgs-js [data-sgs-animation="fade-up"]    { transform: translateY(30px); }
 .sgs-js [data-sgs-animation="fade-down"]  { transform: translateY(-30px); }
 .sgs-js [data-sgs-animation="fade-in"]    { transform: none; }
@@ -39,6 +39,29 @@
 	transition-property: opacity, filter;
 }
 
+/*
+ * bounce-in — element starts at scale 0.3 + opacity 0, springs to scale 1
+ * with an overshoot bounce via cubic-bezier(0.175, 0.885, 0.32, 1.275).
+ * Easing is hardcoded here to guarantee the overshoot regardless of the
+ * user's chosen easing setting — the bounce curve IS the effect.
+ */
+.sgs-js [data-sgs-animation="bounce-in"] {
+	transform: scale(0.3);
+	transition-property: opacity, transform;
+	transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/*
+ * reveal-up — content wipes upward into view using clip-path inset.
+ * GPU-composited (clip-path animates on the compositor thread in Chrome/Safari).
+ * No transform or opacity needed; the clip is the sole visual effect.
+ */
+.sgs-js [data-sgs-animation="reveal-up"] {
+	clip-path: inset(100% 0 0 0);
+	opacity: 1; /* Override the shared opacity:0 rule — clip handles the hide */
+	transition-property: clip-path;
+}
+
 } /* end @media (prefers-reduced-motion: no-preference) */
 
 /* Animated state — added by IntersectionObserver */
@@ -46,6 +69,7 @@
 	opacity: 1;
 	transform: none;
 	filter: none;
+	clip-path: none;
 }
 
 /* L4: Respect prefers-reduced-motion — skip ALL animation */
@@ -54,6 +78,7 @@
 		opacity: 1 !important;
 		transform: none !important;
 		filter: none !important;
+		clip-path: none !important;
 		transition: none !important;
 	}
 }
@@ -86,11 +111,11 @@
 /* --- Universal Hover Effects --- */
 
 .sgs-has-hover {
-	transition: background-color var(--sgs-hover-duration, 300ms) ease,
-	            color var(--sgs-hover-duration, 300ms) ease,
-	            border-color var(--sgs-hover-duration, 300ms) ease,
-	            transform var(--sgs-hover-duration, 300ms) ease,
-	            box-shadow var(--sgs-hover-duration, 300ms) ease;
+	transition: background-color var(--sgs-hover-duration, 250ms) ease,
+	            color var(--sgs-hover-duration, 250ms) ease,
+	            border-color var(--sgs-hover-duration, 250ms) ease,
+	            transform var(--sgs-hover-duration, 250ms) ease,
+	            box-shadow var(--sgs-hover-duration, 250ms) ease;
 }
 
 /* Only apply individual hover properties when the custom property is set */
@@ -116,6 +141,36 @@
 
 @media (prefers-reduced-motion: reduce) {
 	.sgs-has-hover {
+		transition: none;
+	}
+}
+
+/* ===== Border Accent Line ===== */
+
+.sgs-has-border-accent {
+	position: relative;
+}
+
+.sgs-has-border-accent::before {
+	content: '';
+	position: absolute;
+	inset: auto 0 0 0;
+	height: 3px;
+	background: var(--wp--preset--color--accent, #F87A1F);
+	transform: scaleX(0);
+	transform-origin: left;
+	transition: transform 250ms ease;
+	pointer-events: none;
+	z-index: 10;
+}
+
+.sgs-has-border-accent:hover::before,
+.sgs-has-border-accent:focus-within::before {
+	transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-has-border-accent::before {
 		transition: none;
 	}
 }
@@ -173,6 +228,14 @@
 	.sgs-underline-slide:hover::after {
 		transform: scaleX(1);
 	}
+}
+
+/* ===== 3D Tilt on Hover ===== */
+
+.sgs-has-tilt-3d {
+    transform-style: preserve-3d;
+    transition: transform 100ms ease-out;
+    will-change: transform;
 }
 
 /* ===== Button Fill Animation ===== */

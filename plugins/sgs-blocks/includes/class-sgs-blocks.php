@@ -22,12 +22,17 @@ final class SGS_Blocks {
 
 	private function __construct() {
 		add_action( 'init', [ $this, 'register_blocks' ] );
+		add_action( 'init', [ $this, 'register_block_styles' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_frontend_assets' ] );
 		add_action( 'enqueue_block_editor_assets', [ $this, 'enqueue_editor_extensions' ] );
 
 		// Post Grid REST endpoint for AJAX pagination and category filtering.
 		require_once SGS_BLOCKS_PATH . 'includes/class-post-grid-rest.php';
 		Post_Grid_REST::register();
+
+		// Global Block Defaults — REST API, editor injection, admin settings page.
+		require_once SGS_BLOCKS_PATH . 'includes/class-block-defaults.php';
+		Block_Defaults::register();
 	}
 
 	/**
@@ -125,6 +130,28 @@ final class SGS_Blocks {
 			);
 		}
 
+		$scroll_js = SGS_BLOCKS_PATH . 'assets/js/scroll-progress.js';
+		if ( file_exists( $scroll_js ) ) {
+			wp_enqueue_script(
+				'sgs-scroll-progress',
+				SGS_BLOCKS_URL . 'assets/js/scroll-progress.js',
+				[],
+				SGS_BLOCKS_VERSION,
+				true
+			);
+		}
+
+		$tilt_js = SGS_BLOCKS_PATH . 'assets/js/tilt-3d.js';
+		if ( file_exists( $tilt_js ) ) {
+			wp_enqueue_script(
+				'sgs-tilt-3d',
+				SGS_BLOCKS_URL . 'assets/js/tilt-3d.js',
+				[],
+				SGS_BLOCKS_VERSION,
+				true
+			);
+		}
+
 		// High-contrast mode baseline styles for all SGS blocks.
 		$contrast_file = SGS_BLOCKS_PATH . 'assets/css/contrast.css';
 		if ( file_exists( $contrast_file ) ) {
@@ -135,5 +162,22 @@ final class SGS_Blocks {
 				SGS_BLOCKS_VERSION
 			);
 		}
+	}
+
+	/**
+	 * Register block style variations for SGS blocks.
+	 *
+	 * Styles are registered here so the compiled block style-index.css
+	 * (which is enqueued automatically by register_block_type) loads the
+	 * scoped CSS for each variation without a separate stylesheet.
+	 */
+	public function register_block_styles(): void {
+		register_block_style(
+			'sgs/social-icons',
+			array(
+				'name'  => 'social-icons-footer',
+				'label' => __( 'Footer (plain, light)', 'sgs-blocks' ),
+			)
+		);
 	}
 }

@@ -1,76 +1,141 @@
-You are a senior WordPress block developer specialising in the SGS Framework, theme.json v3, and Gutenberg block development. Your focus this session is the SGS Framework Completion Plan — Phase 3.2 (Global Defaults), Phase 4 (Indus Foods build), and Phase 5.1 (Conditional Visibility extension).
+recommended_model: sonnet
+session_tag: small-giants-wp-2026-04-29-audit-then-tooling-rebuild
 
-Resume command: CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-04-28-framework-completion"
+You are continuing the SGS-WP optimisation-toolkit + tooling-rebuild design work from session 2026-04-27/28. Spec is at:
+- **Canonical:** `~/.openclaw/.claude/subprojects/ssb/specs/2026-04-27-optimisation-toolkit-design.md`
+- **Reference copy:** `~/Projects/small-giants-wp/.claude/specs/2026-04-27-optimisation-toolkit-design.md`
+
+22 skill rubrics finalised. Master plan structured in 5 phases (see Section 5 of spec).
+
+Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-04-29-audit-then-tooling-rebuild"`
 
 ## Where You Are
 
-Plan: `docs/plans/2026-02-21-framework-completion-plan.md`
-Current phase: Phase 3.2 Global Defaults System (Phase 0/1/2 done, Phase 3.1/3.3/3.4 done)
-Progress: ~70% — Phase 0/1/2 complete, Phase 3 mostly complete (3.2 outstanding), Phase 4/5 partial
-Next task: Implement "Save as default" action in block toolbar that stores attribute defaults in `sgs_block_defaults` option
+**Plan:** SGS-WP master plan Steps 3+4 (tooling rebuild) — 5 phases sequential
+**Current phase:** **Pre-Phase 1** — audit existing planning docs FIRST (cleans up the workspace before Phase 1 starts)
+**Progress:** 22/180 rubrics shipped (12% — the high-priority ones); spec design complete; Phase 1 not yet started
+**Next task:** Audit task below (Task 1) — must run BEFORE any Phase 1 work
 
-Read CONVERSATION-HANDOFF.md and CLAUDE.md for full context, then work through these priorities:
+---
+
+## TASK 1 (DO THIS FIRST — BEFORE ANYTHING ELSE)
+
+Audit the existing planning + spec docs in two folders to identify what's already captured in our current plan, what's done, what contradicts our plan, and what's outdated. Bean wants this before we move forward — no clean-up of old files until we know where we stand.
+
+### CRITICAL CONSTRAINTS
+- Do folders **SEQUENTIALLY** (folder 1 fully completed + QC'd BEFORE starting folder 2)
+- Read **EACH document IN FULL** — no skimming. The full read is non-negotiable per Bean. If a doc is >500 lines, read in chunks but cover every line.
+- Per document, classify content into 4 buckets:
+  - **A) "Already in our plan"** — covered by current spec / phasing
+  - **B) "Done"** — work already completed (note where the deliverable is)
+  - **C) "Contradicts"** — disagrees with current spec / phasing in a material way
+  - **D) "Outdated"** — superseded by newer decisions, no longer applicable
+- After each folder finishes, `/qc` the findings before presenting to Bean
+- Surface findings to Bean folder-by-folder, not all at once
+
+### Folder 1 (do first):
+`C:/Users/Bean/Projects/small-giants-wp/.claude/plans/`
+**Exclude:** anything inside `.claude/plans/archive/`
+
+### Folder 2 (do AFTER folder 1 + Bean approval):
+`C:/Users/Bean/Projects/small-giants-wp/docs/plans/`
+**Exclude:** anything inside `docs/plans/archive/`
+
+### Output per folder
+Write `audit-folder-N-2026-04-29.md` at the project root:
+- Document index (filename + 1-line summary of what each doc is about)
+- Per-document table: A/B/C/D classifications with quotes/line-refs
+- Cross-document patterns (multiple docs say X — clean up duplicates)
+- Recommended actions (which to delete, which to merge into spec, which to update in place)
+
+### QC step (before delivering folder 1 findings to Bean)
+Invoke `/qc` on the `audit-folder-1-2026-04-29.md` report itself. QC scenarios should check:
+- Did every doc actually get read in full? (Verify by quote density per doc — a doc cited fewer than 3× is suspect)
+- Are A/B/C/D classifications justified by quoted evidence?
+- Are there any docs the audit missed?
+
+Only proceed to folder 2 after Bean approves folder 1 findings.
+
+---
+
+## After Task 1 — return to Phase 1 of the spec
+
+`~/.openclaw/.claude/subprojects/ssb/specs/2026-04-27-optimisation-toolkit-design.md` — Section 5 (Phasing).
+
+### Phase 1a — Build optimisation-toolkit utilities
+
+Build in this order:
+1. `canary_split.py` (foundational — every other utility's "must improve" gate depends on it)
+2. In parallel: `dspy_signature.py`, `certainty_calc.py`, `few_shot_injector.py`
+
+Location: `~/.agents/skills/shared-references/optimisation-toolkit/`
+
+Each utility ships with: smoke test (`tests/smoke.py`, no LLM call required), API contract docstring, return shape consistent with adoption-gate validation.
+
+### Phase 1b — Update lifecycle + quality + QC skills (BLOCKING)
+
+Skills to update: `skill-optimiser`, `skill-writer`, `pipeline-optimiser`, `pipeline-writer`, `command-writer`, `gap-analysis`, `qc`, `qc-inline`.
+
+Each gets:
+- New rubric-loading methodology baked in (load `references/end-goal-rubric.md` at Stage 0; if missing, generate inline with user sign-off; gap-analysis lens 6 always uses a custom rubric)
+- Knowledge of toolkit utilities — explicit stage that considers which utilities fit what's being built/graded
+- Lifecycle skills especially: utility-fit stage during creation/edit
+
+**Method:** manual edit + cross-tier QC peer review (NOT self-apply). Bean's call (2026-04-28) — adding utility-awareness changes the skill's behaviour, needs external validation.
+
+---
 
 ## Skills to Invoke
 
 | Skill | When to use |
 |-------|-------------|
-| `/brainstorming` | ALWAYS — architectural choice between option-based vs per-user-meta defaults storage |
-| `/gap-analysis` | ALWAYS — grade Phase 3.2 deliverable before declaring complete |
-| `/lifecycle` | ALWAYS — start pipeline before any skill/agent edits |
-| `/research` | ALWAYS — auto-routes to research tier; for Phase 3.2 confirm Kadence Configurable Defaults UX pattern |
-| `/strategic-plan` | ALWAYS — sequence Phase 3.2 across edit.js (toolbar action) + plugin-side option store + block-insert merge |
-| `/sgs-wp-engine` | Query SGS DB for block schemas before adding default-storage attribute |
-| `/wp-block-development` | Authoring the Save-as-default toolbar action + the merge filter at insert time |
-| `/wp-plugin-development` | Settings page for "Reset all defaults" admin action |
-| `/visual-qa` | After Phase 4.0 — full QA pipeline on Indus Foods homepage |
+| `/autopilot` | FIRST — establishes routing + ADHD support for the session |
+| `/qc` | Mandatory after each audit folder (Task 1 step) |
+| `/skill-optimiser` | Phase 2a — per-skill optimisation pass on the 22 with rubrics |
+| `/lifecycle` | MANDATORY before any skill/agent/pipeline edit |
+| `/brainstorming` | If design questions surface during Phase 1b |
+| `/gap-analysis` | Mandatory in Phase 3 (3-level: system, pipeline, skill) |
+| `/handoff` | End of session |
+| `/research-check` | Quick verification when skill-design questions arise |
+| `/capture-lesson` | New rules surfaced in audit |
 
 ## MCP Servers & Tools
 
-| Tool | What to use it for |
-|------|-------------------|
-| `playwright` | Visual QA on Indus Foods homepage at 375/768/1440 + interactive state capture |
-| `github` | PR creation if Phase 4 work goes on a feature branch |
-| `/library-docs` | Latest WP `BlockToolbarMore` slot pattern for Save-as-default action |
-| `search.py` | Web research on Kadence Configurable Defaults implementation, Spectra Global Block Style |
+| Tool | What for |
+|------|----------|
+| `python ~/.claude/hooks/local-search.py "q"` | Memory recall before any new work |
+| `python ~/.claude/hooks/search.py "q"` | Web research for Phase 1b methodology decisions |
+| Direct sqlite3 on `blub.db` | Reading skill_registry, embeddings, gap-analysis history |
+| Gemini CLI (Flash + Pro) | Cross-tier QC peer review during Phase 1b updates |
 
 ## Agents to Delegate To
 
 | Agent | When |
 |-------|------|
-| `wp-sgs-developer` | Phase 3.2 implementation (toolbar action + filter + admin reset) |
-| `design-reviewer` | Phase 4.0 — visual QA of Indus Foods homepage against `sites/indus-foods/mockups/` |
-| `site-reviewer` | After Phase 4 — universal audit of palestine-lives.org full site |
-| `research-pipeline` | Kadence/Spectra global defaults UX research before Phase 3.2 design |
-
-## Research Approach
-
-1. `/research-check` — quick lookup of Kadence "Configurable Defaults" admin UI pattern (free feature)
-2. `/research-check --tier extended` — multi-angle compare to Spectra "Global Block Style" + GenerateBlocks "Global Styles"
-3. `python ~/.claude/hooks/search.py "kadence configurable defaults wordpress block toolbar"` for current implementation patterns
-4. `/library-docs` for `wp-data` selectors + `wp.blocks` filter usage (`blocks.getBlockAttributes`)
+| Sonnet (via `/delegate`) | Phase 1a utility build (mechanical), Phase 2b rubric drafts for remaining tools |
+| Opus (via `/delegate`) | Phase 1b lifecycle-skill updates (system-level work — switch session model) |
+| Cerebras / Gemini Flash | Cross-tier QC peer review during Phase 1b |
 
 ---
 
-## Task 1: Phase 3.2 — Global Defaults System
-Implement "Save as default" action in block toolbar (BlockToolbarMore slot) that captures the block's current attributes and stores them in `sgs_block_defaults` WP option keyed by block name. On block insert, merge stored defaults with the block's default attributes via `blocks.getBlockAttributes` filter. Add admin page (Settings → SGS Blocks Defaults) with per-block "Reset to default" action. Use `/wp-block-development` and `wp-sgs-developer` agent.
-
-## Task 2: Phase 4.0 — Indus Foods Homepage Fix
-Read `sites/indus-foods/outstanding-issues.md` for the full punch list. Fix all visual issues against `sites/indus-foods/mockups/`. Use `design-reviewer` agent for visual diff at 375/768/1440. Confirm via `/visual-qa` (8-layer QA pipeline) before sign-off.
-
-## Task 3: Phase 5.1 — Conditional Visibility Extension
-Extend the existing device-visibility extension with role-based, login-state-based, and schedule-based conditions. Server-side render_block filter (zero frontend cost). Add inspector controls for: Show only when logged in/out, Show only for roles (multi-select), Show after date, Show before date. Use `/wp-block-development` and `wp-sgs-developer`.
-
 ## Guardrails
 
-- Build verification: `cd plugins/sgs-blocks && npm run build` — must pass with zero warnings
-- Verification harness: `node C:/tmp/verify/run-checks.js https://palestine-lives.org/block-test/` — must remain 12/12
-- Editor block validation: open post 52 in editor, run `wp.data.select('core/block-editor').getBlocks()` and verify zero `isValid: false` blocks
-- Branch discipline: framework changes on `main`. Indus Foods page builds (Phase 4) on `feat/indus-foods-completion`
-- All colour values use `var(--wp--preset--color--X, #fallback)` — zero new bare hex
-- WCAG 2.2 AA on all visual changes (4.5:1 text contrast, 44px touch targets, focus rings)
-- UK English throughout
-- Never modify post_content via WP-CLI `wp post update` (blocked by hook) — use REST API via curl from server
-- Test page (post 52) is public and verified — do not break the 12/12 harness with new code
+- Phase 1b is BLOCKING — Phase 2 cannot start until lifecycle/qc/gap-analysis updated
+- Phase 2b triage filter — skip auxiliary tools that don't meaningfully affect end results
+- Phase 3a includes ordering/placement as third lens (alongside coverage + duplicates)
+- design-brain rebuild goes FIRST in Phase 4 — it gates all other pipeline rebuilds (Blueprint schema + Designer + Council must be production-ready first)
+- 22 rubrics are LOCKED — don't re-edit during this session unless an audit-task finding forces it
+- If `/uimax` INGEST writes are needed during Phase 1, note that command doesn't exist yet — defer to Phase 4 design-brain rebuild
+- Estimates default LOW per `time-estimates-default-low-not-high` rule (blub.db row 159)
 
-WP credentials: `Blub` admin user, app password in `C:/Users/Bean/.openclaw/.secrets/wp-app-passwords.env`.
+## Open Questions — ALL RESOLVED (2026-04-28)
+
+1. ~~Design-brain timing~~ → **Design-brain FIRST in Phase 4**, gates all other pipeline rebuilds
+2. ~~Steps 3+4 execution model~~ → **Sonnet subagent (draft rubric inline + gap-analysis) → Gemini Flash QC → Opus inline synthesises + presents to Bean.** 3a + 3d stay fully Opus. Parallelism cap: 3 Sonnet subagents. Phase 3 ~3h total.
+3. ~~Top-task template industries~~ → **Construction, B2B wholesale/trade, accountant, healthcare/dental (+ Snooza assistive-equipment sub-row), gifting ecommerce/wellness brand (Mama's Munches).** 100 seed rows at Phase 3 DB build time.
+
+---
+
+## After Phase 1 completes
+
+Move to Phase 2 of the spec (rubrics universe — optimise the 22, draft remaining tools with triage filter, draft 13 pipeline rubrics).

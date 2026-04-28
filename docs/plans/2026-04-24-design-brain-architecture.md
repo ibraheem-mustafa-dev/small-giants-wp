@@ -1,5 +1,15 @@
 # Design Brain Architecture — Spec
 
+<!-- crosslinks-2026-04-29 -->
+> **Related plans (2026-04-29 cross-link pass):**
+> - Step 2 strategic plan (anchor): [`2026-04-21-step2-strategic-plan.md`](2026-04-21-step2-strategic-plan.md)
+> - Master tool inventory + 13 pipelines: [`2026-04-21-toolset-spec-from-sgs-studio-session.md`](2026-04-21-toolset-spec-from-sgs-studio-session.md)
+> - Pipelines deferred: [`2026-04-21-non-essential-pipelines-deferred.md`](2026-04-21-non-essential-pipelines-deferred.md)
+> - Active 5-phase rebuild (this is its Phase 4): `~/.openclaw/.claude/subprojects/ssb/specs/2026-04-27-optimisation-toolkit-design.md`
+>
+> **Status (2026-04-29):** This is the active Phase 4 spec of the current optimisation-toolkit plan. Implementation pending. The 7 design-brain rubrics shipped 2026-04-27/28 (colourise, bolder, quieter, normalize, polish, distill, delight) carry frontmatter `phase_3_merge_target: ui-ux-pro-max design brain (uimax modify --mode <X>)` matching Section 3.5.1 of this doc. design-brain's own internal Phase 1-5 numbering is distinct from the optimisation-toolkit Phase 1-5; prefix references with "design-brain Phase X" to disambiguate.
+
+
 **Author:** Ibraheem Mustafa + Claude (Opus, max-effort multi-advisor research)
 **Date:** 2026-04-24
 **Status:** Approved direction; implementation pending

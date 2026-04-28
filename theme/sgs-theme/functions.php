@@ -643,3 +643,7 @@ function add_missing_image_dimensions( string $image, string $context, int $atta
 }
 add_filter( 'wp_content_img_tag', __NAMESPACE__ . '\add_missing_image_dimensions', 10, 3 );
 
+// SGS Floating UI — Customiser-controlled global elements (Back to Top, Reading Progress).
+require_once get_theme_file_path( 'inc/floating-ui-customiser.php' );
+require_once get_theme_file_path( 'inc/floating-ui-output.php' );
+

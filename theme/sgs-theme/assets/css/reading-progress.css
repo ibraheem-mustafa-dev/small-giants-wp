@@ -1,0 +1,88 @@
+/* ===== SGS Reading Progress (Theme) ===== */
+
+.sgs-floating-ui--reading-progress {
+	position: fixed;
+	left: 0;
+	right: 0;
+	z-index: 9999;
+	display: flex;
+	align-items: center;
+	pointer-events: none;
+}
+
+.sgs-floating-ui--pos-top {
+	top: 0;
+}
+
+.sgs-floating-ui--pos-bottom {
+	bottom: 0;
+}
+
+.sgs-reading-progress__track {
+	position: absolute;
+	left: 0;
+	right: 0;
+	height: var(--sgs-rp-bar-height, 4px);
+	background-color: color-mix(in srgb, var(--sgs-rp-bar-colour, var(--wp--preset--color--primary)) 20%, transparent);
+	overflow: hidden;
+}
+
+.sgs-floating-ui--mode-countdown .sgs-reading-progress__track {
+	display: none;
+}
+
+.sgs-reading-progress__fill {
+	height: 100%;
+	width: 0%;
+	background-color: var(--sgs-rp-bar-colour, var(--wp--preset--color--primary));
+	transition: width 100ms linear;
+	transform-origin: left center;
+}
+
+.sgs-reading-progress__countdown {
+	pointer-events: auto;
+	font-size: 0.75rem;
+	font-weight: 600;
+	line-height: 1;
+	white-space: nowrap;
+	color: var(--wp--preset--color--text, #1e1e1e);
+	background-color: var(--wp--preset--color--surface, #ffffff);
+	border: 1px solid color-mix(in srgb, var(--wp--preset--color--text, #1e1e1e) 15%, transparent);
+	border-radius: 999px;
+	padding: 4px 10px;
+	min-height: 44px;
+	display: inline-flex;
+	align-items: center;
+	position: absolute;
+	right: 16px;
+	top: 50%;
+	transform: translateY(-50%);
+	margin-top: calc(var(--sgs-rp-bar-height, 4px) * -1);
+}
+
+.sgs-floating-ui--mode-bar .sgs-reading-progress__countdown {
+	display: none;
+}
+
+.sgs-reading-progress--finished {
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 400ms ease;
+}
+
+@media (max-width: 479px) {
+	.sgs-reading-progress__countdown {
+		font-size: 0.6875rem;
+		padding: 4px 8px;
+		right: 8px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-reading-progress__fill {
+		transition: none;
+	}
+	.sgs-reading-progress--finished {
+		transition: none;
+	}
+}

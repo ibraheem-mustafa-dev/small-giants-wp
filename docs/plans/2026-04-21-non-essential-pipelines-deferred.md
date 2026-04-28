@@ -1,5 +1,12 @@
 # Non-essential pipelines — deferrable from small-giants-wp critical path
 
+<!-- crosslinks-2026-04-29 -->
+> **Related plans (2026-04-29 cross-link pass):**
+> - 13-pipeline catalogue (full): [`2026-04-21-toolset-spec-from-sgs-studio-session.md`](2026-04-21-toolset-spec-from-sgs-studio-session.md) Section 4
+> - Phase 4 design-brain rebuild (gates pipeline rebuilds): [`2026-04-24-design-brain-architecture.md`](2026-04-24-design-brain-architecture.md)
+> - Active 5-phase rebuild: `~/.openclaw/.claude/subprojects/ssb/specs/2026-04-27-optimisation-toolkit-design.md`
+
+
 **Purpose:** identify pipelines that can be built in parallel sessions or after the SGS-theme revenue core ships, without blocking small-giants-wp Phase 1 work.
 
 **Dependencies respected:** each deferred pipeline lists what it needs so it doesn't ship ahead of its prerequisites.

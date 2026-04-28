@@ -36,6 +36,7 @@ $image_size      = sanitize_key( $attributes['imageSize'] ?? 'large' );
 
 $hover_scale     = sanitize_text_field( $attributes['hoverScale'] ?? '' );
 $hover_img_zoom  = (bool) ( $attributes['hoverImageZoom'] ?? true );
+$hover_effect    = sanitize_key( $attributes['hoverEffect'] ?? 'zoom' );
 $hover_grayscale = (bool) ( $attributes['hoverGrayscale'] ?? false );
 $hover_shadow    = sanitize_key( $attributes['hoverShadow'] ?? '' );
 $stagger_delay   = absint( $attributes['staggerDelay'] ?? 0 );
@@ -125,6 +126,7 @@ $context_data = wp_json_encode( [
 $wrapper_classes = implode( ' ', array_filter( [
 	'sgs-gallery',
 	'sgs-gallery--' . $layout,
+	'sgs-gallery--hover-' . $hover_effect,
 	$enable_lightbox ? 'sgs-gallery--lightbox-enabled' : '',
 	$hover_img_zoom  ? 'sgs-gallery--zoom'             : '',
 	$hover_shadow    ? 'sgs-has-hover'                 : '',
@@ -233,6 +235,11 @@ $wrapper_attrs = get_block_wrapper_attributes( $wrapper_attrs_extra );
 								?>
 							</div>
 						</button>
+						<?php if ( 'overlay-slide' === $hover_effect && ( $img_alt || $img_caption ) ) : ?>
+							<div class="sgs-gallery__overlay">
+								<?php echo $img_caption ?: $img_alt; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+							</div>
+						<?php endif; ?>
 						<?php if ( $show_captions && $img_caption ) : ?>
 							<figcaption class="sgs-gallery__caption">
 								<?php echo $img_caption; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — already esc_html() above. ?>
@@ -272,6 +279,11 @@ $wrapper_attrs = get_block_wrapper_attributes( $wrapper_attrs_extra );
 							}
 							?>
 						</div>
+						<?php if ( 'overlay-slide' === $hover_effect && ( $img_alt || $img_caption ) ) : ?>
+							<div class="sgs-gallery__overlay">
+								<?php echo $img_caption ?: $img_alt; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+							</div>
+						<?php endif; ?>
 						<?php if ( $show_captions && $img_caption ) : ?>
 							<figcaption class="sgs-gallery__caption">
 								<?php echo $img_caption; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — already esc_html() above. ?>

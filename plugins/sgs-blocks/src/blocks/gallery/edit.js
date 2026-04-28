@@ -56,6 +56,13 @@ const EASING_OPTIONS = [
 	{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
 ];
 
+const HOVER_EFFECT_OPTIONS = [
+	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
+	{ label: __( 'Zoom', 'sgs-blocks' ), value: 'zoom' },
+	{ label: __( 'Lift', 'sgs-blocks' ), value: 'lift' },
+	{ label: __( 'Overlay Slide', 'sgs-blocks' ), value: 'overlay-slide' },
+];
+
 // -------------------------------------------------------------------------
 // Drag-to-reorder thumbnail strip
 // -------------------------------------------------------------------------
@@ -119,6 +126,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		hoverOverlayColour,
 		hoverScale,
 		hoverImageZoom,
+		hoverEffect,
 		transitionDuration,
 		transitionEasing,
 		carouselAutoplay,
@@ -212,7 +220,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	}
 
 	const blockProps = useBlockProps( {
-		className: `sgs-gallery sgs-gallery--${ layout }`,
+		className: `sgs-gallery sgs-gallery--${ layout } sgs-gallery--hover-${ hoverEffect }`,
 		style:     inlineStyles,
 	} );
 
@@ -393,6 +401,13 @@ export default function Edit( { attributes, setAttributes } ) {
 
 				{ /* Panel 5: Hover Effects */ }
 				<PanelBody title={ __( 'Hover Effects', 'sgs-blocks' ) } initialOpen={ false }>
+					<SelectControl
+						label={ __( 'Hover effect', 'sgs-blocks' ) }
+						value={ hoverEffect }
+						options={ HOVER_EFFECT_OPTIONS }
+						onChange={ set( 'hoverEffect' ) }
+						__nextHasNoMarginBottom
+					/>
 					<RangeControl
 						label={ __( 'Hover scale (card)', 'sgs-blocks' ) }
 						value={ parseFloat( hoverScale ) || 1 }

@@ -24,6 +24,8 @@ const ANIMATIONS = [
 	{ label: __( 'Rotate In', 'sgs-blocks' ), value: 'rotate-in' },
 	{ label: __( 'Flip In', 'sgs-blocks' ), value: 'flip-in' },
 	{ label: __( 'Blur In', 'sgs-blocks' ), value: 'blur-in' },
+	{ label: __( 'Bounce In', 'sgs-blocks' ), value: 'bounce-in' },
+	{ label: __( 'Reveal Up', 'sgs-blocks' ), value: 'reveal-up' },
 ];
 
 const DELAYS = [
