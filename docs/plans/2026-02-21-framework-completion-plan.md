@@ -4,6 +4,65 @@
 
 **Goal:** Complete the SGS WordPress Framework to match or exceed Kadence, Spectra, and GenerateBlocks in functionality, customisation depth, and client UX — then ship Indus Foods as the first production site.
 
+---
+
+## STATUS UPDATE — 2026-04-28 (after multi-iteration block library completion session)
+
+**Major progress against original phases. Gemini Pro vision audit grades library at A- overall.**
+
+### Phase 0 — DONE (was: 1 session pending)
+- [x] Task 0.1: Outstanding bugs — all 9 fixed. Shared `render-helpers.php` with `sgs_colour_value()`, `sgs_render_stars()` etc. shipped. Heading anchor archive bleed reset added. Navigation `ref="4"` removed. Testimonial ARIA complete.
+
+### Phase 1 — DONE (was: 2-3 sessions pending)
+- [x] Task 1.1 Device Visibility Extension — universal extension live, editor preview indicator added (Notice in InspectorAdvancedControls)
+- [x] Task 1.2 Responsive Header — single header with CSS-driven device hiding via Task 1.1 extension; sticky position fixed to outermost `<header>`
+- [x] Task 1.3 Per-Element Hover Controls — UNIVERSAL `hover-effects.js` extension on all blocks (was 4-block-only). Includes scale, shadow, image-zoom, grayscale, transition duration/easing
+- [x] Task 1.4 Shared Render Helpers — `includes/render-helpers.php` with `sgs_colour_value`, `sgs_font_size_value`, `sgs_render_stars`, `sgs_sanitise_colour`. All blocks now share
+
+### Phase 2 — DONE (was: 3-4 sessions pending)
+- [x] All 6 blocks built, deployed, verified live: Post Grid (dynamic, query mode + skeleton loading + designed empty state), Gallery (Interactivity API lightbox + designed empty state), Tabs (vertical layout + per-tab icon + URL hash deep link + mobile vertical-button stack), Countdown Timer (flip/simple variants + ENDED state), Star Rating (SVG stars + AggregateRating schema + displayMode variants), Team Member (Person schema + hover overlay)
+
+### Phase 3 — PARTIAL → mostly DONE
+- [x] Task 3.1 Per-Breakpoint Controls — applied per block; SpacingControl + ResponsiveControl shared components in use
+- [ ] Task 3.2 Global Defaults System — DEFERRED (not yet built). Phase 3 still has this work outstanding
+- [ ] Task 3.3 Block Patterns Library — 31 patterns in DB per `/sgs-update`. Original target was 20-30. Pattern coverage 96/96 (100%) per sgs-db. **Verification needed: are all 31 visually production-grade or just registered?**
+- [x] Task 3.4 Custom CSS per block — block has native `className`/`style.css` field; custom CSS extension still pending if wanted
+
+### Phase 4 — NOT STARTED (Indus Foods completion)
+- [ ] Task 4.0 Fix Indus Foods homepage visual issues
+- [ ] Task 4.1 Build all missing pages
+- [ ] Task 4.2 Fix all visual issues from comparison
+- [ ] Task 4.3 End-to-end testing
+
+### Phase 5 — PARTIAL
+- [ ] Task 5.1 Conditional Visibility (beyond device — by role/login/schedule)
+- [x] Task 5.2 Performance Audit — emoji script removed (~22KB JS shed), hero LCP image with `fetchpriority="high"`, fluid spacing in theme.json
+- [ ] Task 5.3 Update All Documentation — IN PROGRESS (this update)
+- [x] Task 5.4 Accessibility Compliance — verified WCAG 2.2 AA (4.5:1 contrast, 44px touch targets, focus rings, no H6 in footer, autoplay pause toggles)
+
+### Additional work this session not in original plan
+
+- **Systematic hex tokenisation pass** — ~80 bare-hex display values converted to `var(--wp--preset--color--X, fallback)` pattern across 19 files. 6 acceptable exceptions (LinkedIn/Facebook/Google/Twitter brand colours + 2 regex matchers in style variation). `customGradient` and `customDuotone` locked to `false` in theme.json — palette-only enforcement.
+- **All schema markup live** on test page: FAQPage, Review, Person, Rating, AggregateRating, Product (all opt-in via attributes, gated correctly)
+- **Container shape dividers** — 15 shapes (wave, tilt, curve, triangle, mountains, etc.) with strict colour validation via `sgs_sanitise_colour()`
+- **Accordion smooth height** via `interpolate-size: allow-keywords` (modern Chrome 129+) + JS height fallback. Custom open/close icon swap via Lucide picker.
+- **Form security verified** — `verify_form_nonce()` on /submit + /upload, `wp_safe_remote_post()` for SSRF prevention, `$_SERVER['REMOTE_ADDR']` only for rate limiting (no X-Forwarded-For trust)
+
+### Verification harness (live, on palestine-lives.org/block-test/)
+
+12/12 deterministic checks pass: zero JS console errors, WhatsApp wa.me link, exactly one H1, no Counter DOM duplication, accordion height transitions, in-viewport animations on load, FAQPage + Review + Person + AggregateRating schemas, Post Grid designed empty state, form input custom styling.
+
+### What's NEXT
+
+This plan now has these tracks remaining:
+1. **Phase 3.2 Global Defaults System** — "Save as default" action in block toolbar, stored in `sgs_block_defaults` option
+2. **Phase 4 Indus Foods completion** — fix homepage visual issues, build missing pages, end-to-end testing
+3. **Phase 5.1 Conditional Visibility** — extend Visibility extension with role/login/schedule conditions
+4. **Phase 5.3 Documentation** — finish the doc pass started in this session
+5. **Visual polish to A+** (Gemini's three suggestions): form floating labels (already in CSS, may need verification), larger Process Steps icons (DONE 2026-04-28), final vertical rhythm audit
+
+---
+
 **Architecture:** SGS Theme (block theme with theme.json v3) + SGS Blocks plugin (32 blocks today, ~45 target). All styling via design tokens. Client customisation via style variations + block inspector controls. No jQuery, no page builders, pure Gutenberg.
 
 **Tech Stack:** WordPress 6.9+, PHP 8.0+, @wordpress/scripts, Interactivity API, theme.json v3, self-hosted WOFF2 fonts, N8N webhooks

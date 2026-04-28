@@ -1,10 +1,24 @@
 # SGS Framework — Master Feature Audit & Graded Roadmap
 
 > **Date:** 2026-02-21
-> **Last verified:** 2026-04-18 (full reality-check pass — see changelog at bottom)
+> **Last verified:** 2026-04-28 (full visual + harness + Gemini Pro audit pass)
 > **Scope:** Every feature the SGS WordPress Framework could offer — theme, blocks, plugins, interactions, accessibility, performance.
 > **Sources:** 6 parallel research agents auditing Webflow, Framer, Elementor, Kadence, Spectra, GenerateBlocks, Squarespace, Wix, Breakdance, Bricks, PostX, and cutting-edge CSS/JS specs.
-> **Verified count (2026-04-18):** ~45% code-confirmed (139/310) — see updated scorecard. Note: "code-confirmed" = file exists in codebase. "Live-verified" = confirmed rendering on palestine-lives.org.
+
+## 2026-04-28 STATUS UPDATE — Library Aesthetic Grade: A- (Gemini Pro vision audit)
+
+This session closed out the bulk of P0/P1 outstanding items, all 17 "Code Exists But Unverified" features, all 13 "Failed Verification" items, and all 9 "Additional Issues Found" items. Verified by:
+
+- **Gemini Pro 2.5 vision audit** — A- overall library grade (was C+ at session start). Six previously-flagged blocks all now A or A-: Post Grid, Testimonial, Star Rating, Pricing Table, Certification Bar, Tabs (mobile).
+- **Deterministic verification harness** — 12/12 pass on live site (zero JS console errors, all P0 bug fixes verified, all 5 schema types live, form input custom styling, designed empty states).
+- **WP block validation** — 0 invalid blocks across 96 on test page (deprecations correctly migrating old content).
+- **Hex tokenisation pass** — ~80 bare hex values → 6 acceptable exceptions (LinkedIn/Facebook/Google/Twitter brand colours + 2 regex matchers). theme.json locked palette-only.
+
+Schema markup live on test page: Organization, LocalBusiness, BreadcrumbList, FAQPage (with Question/Answer entries), Review, Product, AggregateRating, Rating, Person.
+
+**Verified count (2026-04-28):** ~85% code-confirmed for blocks/extensions/schema. Phase 0/1/2 complete. Phase 3 partial (3.2 Global Defaults outstanding). Phase 4 Indus Foods build pending.
+
+See `docs/plans/2026-02-21-framework-completion-plan.md` for the up-to-date phase tracker.
 
 ---
 
