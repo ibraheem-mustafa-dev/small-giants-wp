@@ -152,6 +152,21 @@ final class SGS_Blocks {
 			);
 		}
 
+		$parallax_js = SGS_BLOCKS_PATH . 'assets/js/parallax.js';
+		if ( file_exists( $parallax_js ) ) {
+			wp_register_script(
+				'sgs-parallax',
+				SGS_BLOCKS_URL . 'assets/js/parallax.js',
+				array(),
+				SGS_BLOCKS_VERSION,
+				array(
+					'strategy'  => 'defer',
+					'in_footer' => true,
+				)
+			);
+			wp_enqueue_script( 'sgs-parallax' );
+		}
+
 		// High-contrast mode baseline styles for all SGS blocks.
 		$contrast_file = SGS_BLOCKS_PATH . 'assets/css/contrast.css';
 		if ( file_exists( $contrast_file ) ) {

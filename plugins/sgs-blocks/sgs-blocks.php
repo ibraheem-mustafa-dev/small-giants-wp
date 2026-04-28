@@ -71,6 +71,9 @@ require_once SGS_BLOCKS_PATH . 'includes/animation-attributes.php';
 // Custom CSS per block — server-side scoped <style> output.
 require_once SGS_BLOCKS_PATH . 'includes/custom-css.php';
 
+// Parallax scroll — server-side class, custom property, and data-attribute injection.
+require_once SGS_BLOCKS_PATH . 'includes/parallax.php';
+
 // Global block defaults — REST API for save/load per-block defaults.
 require_once SGS_BLOCKS_PATH . 'includes/block-defaults.php';
 

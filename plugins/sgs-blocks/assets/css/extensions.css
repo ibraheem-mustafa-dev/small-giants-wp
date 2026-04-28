@@ -370,3 +370,78 @@
 	outline: 2px solid var(--wp--preset--color--primary, #076a8e);
 	outline-offset: 2px;
 }
+
+/* ── Parallax extension ─────────────────────────────────────────────────── */
+
+/* Respect reduced motion — disable all parallax effects */
+@media (prefers-reduced-motion: reduce) {
+	.sgs-parallax-background,
+	.sgs-parallax-element {
+		animation: none !important;
+		background-attachment: scroll !important;
+		transform: none !important;
+	}
+}
+
+/*
+ * Background parallax
+ * Desktop: background-attachment: fixed gives a simple parallax feel with
+ * zero JS. iOS Safari does not support background-attachment: fixed inside
+ * scrollable containers — the @supports block below provides the SDA upgrade.
+ */
+.sgs-parallax-background {
+	background-attachment: fixed;
+	background-position: center;
+	background-size: cover;
+}
+
+/* iOS / mobile: disable fixed background (it freezes on iOS Safari) */
+@media (max-width: 1023px) {
+	.sgs-parallax-background {
+		background-attachment: scroll;
+	}
+}
+
+/* Modern browsers: CSS Scroll-Driven Animations (Chrome 115+, Firefox 135+) */
+@supports (animation-timeline: scroll()) {
+	@media (prefers-reduced-motion: no-preference) {
+		.sgs-parallax-background {
+			/* Override fixed-attachment with proper scroll-driven parallax */
+			background-attachment: scroll;
+			animation: sgs-parallax-bg linear both;
+			animation-timeline: scroll(root);
+		}
+
+		@keyframes sgs-parallax-bg {
+			from {
+				background-position-y: calc(
+					50% + var(--sgs-parallax-strength, 30) * 0.5px
+				);
+			}
+			to {
+				background-position-y: calc(
+					50% - var(--sgs-parallax-strength, 30) * 0.5px
+				);
+			}
+		}
+
+		.sgs-parallax-element {
+			animation: sgs-parallax-element linear both;
+			animation-timeline: scroll(root);
+		}
+
+		@keyframes sgs-parallax-element {
+			from {
+				transform: translateY(
+					calc(var(--sgs-parallax-strength, 30) * 0.5px)
+				);
+			}
+			to {
+				transform: translateY(
+					calc(var(--sgs-parallax-strength, 30) * -0.5px)
+				);
+			}
+		}
+	}
+}
+/* ── End parallax extension ─────────────────────────────────────────────── */
