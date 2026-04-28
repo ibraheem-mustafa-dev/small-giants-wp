@@ -2,96 +2,190 @@
 doc_type: handoff
 project: small-giants-wp
 last_updated: 2026-04-28
-session_date: 2026-04-27 → 2026-04-28 (optimisation-toolkit + tooling-rebuild design)
-recommended_model: sonnet (next session)
-session_tag: small-giants-wp-2026-04-28-optimisation-toolkit-spec
+session_date: 2026-04-28 (Phase 3.2 + hover gaps + Floating UI Customiser)
+recommended_model: sonnet
+session_tag: small-giants-wp-2026-04-28-framework-close
 ---
 
-# Session Handoff — 2026-04-28 (Optimisation-toolkit spec + 22 rubrics shipped)
+# Session Handoff — 2026-04-28
 
 ## Completed This Session
 
-1. **Cross-cutting optimisation-toolkit audit + classification** — 161 SKILL.md files classified across 5 parallel Sonnet+Pro batches. Multi-role audit data at `c:/Users/Bean/Projects/small-giants-wp/.scratch/skill-batches/all-skills-classified-v2.json` (155 unique skills with primary + secondary roles + qualification tags). 6 BRAINS confirmed: ui-ux-pro-max, superdesign, sgs-wp-engine, vercel-react-best-practices, marketing-skills, marketing-ideas.
-
-2. **22 end-goal rubrics drafted, reviewed, finalised** — every rubric uses end-result anchors (5/5 + 1/5), skill-specific criteria only, weights 1.0-1.5, mandatory Never Do (runtime/output anti-patterns), optional Lens 6 anchors. Frontmatter has target_type, target_path, last_reviewed, bean_signoff, domain.
-   - **3 pilots:** capture-lesson (8 criteria), critique (10 — phase_3_merge_target ui-ux-pro-max), qc (11 — global scope across artefact types)
-   - **5 high-confidence:** phase-planner (9), subagent-prompt (9), interactivity-capture (8), ethics-gate (8), /handoff command (9 — saved to `~/.claude/commands/.rubrics/handoff.md` to avoid auto-discovery as command)
-   - **7 medium:** extract (9), harden (8), adapt (8 — merge target), project-consolidate (9), autopilot (11 — 2 new criteria for failure_recognition_and_recovery + completion_loop_discipline), strategic-plan (9 — explicit estimate-defaults-LOW + dashboard sync), architecture-doc (8 — reconciled with industry-standard scope-narrowing post research-check)
-   - **7 design-brain spec input:** colourise, bolder (8 with motion criterion), quieter (with explicit easing/duration), normalize, polish, distill, delight — all at `small-giants-wp/.claude/specs/design-brain/<name>.rubric.md`, all flagged `phase_3_merge_target: ui-ux-pro-max design brain (uimax modify --mode <X>)`
-
-3. **5-phase tooling-rebuild structure designed.** Maps to Steps 3+4 of the SGS-WP 5-step master plan:
-   - Phase 1a — Build toolkit utilities (canary_split → 3 in parallel)
-   - Phase 1b — BLOCKING — update lifecycle + qc + gap-analysis skills (utility-aware, manual edit + cross-tier QC peer review, NOT self-apply)
-   - Phase 2a — Per-skill optimisation pass on the 22 with rubrics
-   - Phase 2b — Draft rubrics for remaining tooling with TRIAGE FILTER (skip auxiliary)
-   - Phase 2c — Draft end-goal rubrics for all 13 pipelines
-   - Phase 3 — Three-lens gap-analysis (coverage + duplicates + ordering/placement) at system + pipeline + critical-skill levels
-   - Phase 4 — Pipeline rebuild as ONE unit (design-brain goes FIRST — Blueprint schema + Designer + Council must ship before any other pipeline formalisation begins, as they insert as new stages into every other pipeline)
-   - Phase 5 — Track A framework + Track B 5 priority clients
-
-4. **Captured 3 global rules** (each shipped to all 3 persistence layers per the new 5-surface rule):
-   - `end-goal-rubric-per-skill-mandatory` (blub.db row 182) — every skill/pipeline/command must have `references/end-goal-rubric.md`; lens 6 always reads it
-   - `no-low-value-perfectionism-must-improve-results` (blub.db row 161) — every spec/design/rubric/format addition must justify with measurable improvement
-   - `capture-lesson-must-write-to-project-mistakes-and-lessons-files` (blub.db row 188) — capture-lesson now persists to 5 surfaces (workspace + CC auto-memory + blub.db + project mistakes.md OR lessons.md by category)
-
-5. **Reconciled architecture-doc rubric with industry-standard framing.** /research-check confirmed Bean's intuition: scope-narrowing (whole-system vs feature/component) is the canonical distinction — arc42 / C4 / IEEE 42010 / IEEE 1016 all agree. AS-IS vs TO-BE is a flavour attribute that applies to either. This specific skill is AS-IS-flavoured (empty-project HARD GATE + staleness detection + disk verification gates). C1 5/5 + Lens 6 anchors updated; 3 QC tweaks applied.
-
-6. **Design spec assembled** — full optimisation-toolkit + tooling-rebuild design at:
-   - **Canonical:** `~/.openclaw/.claude/subprojects/ssb/specs/2026-04-27-optimisation-toolkit-design.md`
-   - **Reference copy:** `~/Projects/small-giants-wp/.claude/specs/2026-04-27-optimisation-toolkit-design.md`
+1. **Phase 3.2 Global Defaults System** — `Block_Defaults` PHP class (REST endpoint, option storage, editor injection, admin page at Settings → SGS Block Defaults), `block-defaults.js` extension adds "Save as Default" button to every SGS block's Advanced inspector panel. Verified end-to-end: save → option persists → admin shows it → editor reload injects defaults via `blocks.registerBlockType` filter.
+2. **4 hover variant gap fixes** — `border-accent` lifted from per-block to universal hover-effects extension; `tilt-3d` mouse-tracking JS hover (`assets/js/tilt-3d.js`); `overlay-slide` named hoverEffect on Card Grid + Gallery; `sgsScrollProgress` CSS variable extension (`assets/js/scroll-progress.js`) exposes `--sgs-scroll-progress`, `--sgs-scroll-y`, `--sgs-scroll-direction` on documentElement.
+3. **Animation extension** expanded 11 → 16 types — added `bounce-in` (cubic-bezier overshoot) and `reveal-up` (clip-path wipe); synced `ANIMATION_LABELS` with `AnimationControl.js`.
+4. **Universal hover defaults** — sensible defaults across all SGS blocks (scale 1.02, shadow medium, image zoom on, duration 250ms). 26 blocks opted out (announcement-bar, breadcrumbs, all form-fields, container, mega-menu) where lift/scale would feel wrong. PHP layer updated so existing blocks pick up defaults without re-save.
+5. **8 audit-driven quality fixes** — form box-sizing border-box (38px overflow gone), floating-label vs placeholder overlap fix, footer social icons regression (new `social-icons-footer` style variation matching lightsalmon), Google Reviews dummy fallback, Icon Block content-width + visible bg, Breadcrumbs contrast (5.12:1 → 7.46:1), Pricing Table `toggleStyle` attribute, Modal block save() bug fix.
+6. **Palette token system** — added `border-light` (`#E5E7EB`) and `error` (`#DC2626`) slugs to theme.json + all 7 style variations; corrected 4 stale fallback hexes (gallery, cta-section, mega-menu).
+7. **SGS Floating UI Customiser** — `Appearance → Customise → SGS Floating UI` with 16 settings across Back to Top + Reading Progress sub-panels, live preview, post-meta override `_sgs_hide_floating_ui`. Old `sgs/back-to-top` block neutered to no-op with editor deprecation notice.
+8. **Documentation** — `ARCHITECTURE.md` decisions list grew to 15 entries (added Floating UI, Block Defaults, palette-token mandate); `specs/02-SGS-BLOCKS.md` got as-built status header, expanded animation list, full universal-hover-attribute list, new Block Defaults + Floating UI sections.
+9. **Indus Foods (Phase 4) extracted** — to `sites/indus-foods/.claude/plans/current_mission.md` with Phase 1–5 numbering. Phase 1 = pre-flight audit reconciling stale `outstanding-issues.md` against current live state (today's framework work likely auto-resolved several items).
+10. **Race-condition recovery** — parallel agents on `hover-effects.php` left an orphan `}` on line 238 that took the live site down briefly; PHP lint + targeted edit + redeploy recovered. Lesson captured to memory.
 
 ## Current State
 
-- **Branch:** N/A (small-giants-wp project work — git state unchanged this session; all work was in spec design + rubric files outside the project)
-- **Tests:** N/A (design work)
-- **Build:** N/A
-- **Live deploy:** N/A — Phase 1 of the rebuild has not started yet
+- **Branch:** main at 9665524
+- **Tests:** No unit suite — verification via Playwright + 12/12 deterministic harness on `/block-test/`
+- **Build:** Passes (webpack compiled successfully, zero warnings)
+- **Uncommitted changes:** `.scratch/` + `audit-folder-1-2026-04-29.md` + `audit-folder-2-2026-04-29.md` (working files, intentionally excluded)
+- **Live deploy:** `https://palestine-lives.org` — Phase 3.2 + all gap fixes + Floating UI Customiser shipped, no PHP errors in `~/.logs/error_log_palestine-lives_org`
+- **Plugin version:** sgs-blocks 0.1.1
+- **Framework completion plan:** still active at `docs/plans/2026-02-21-framework-completion-plan.md` — Bean wants to close + archive AFTER 5.1 ships next session, NOT before
 
 ## Known Issues / Blockers
 
-- **Phase 1b update of lifecycle/qc/gap-analysis skills is BLOCKING** Phase 2. Until those skills are utility-aware + rubric-loading-methodology-baked-in, the per-skill optimisation pass cannot use the new toolkit consistently.
-- **`/uimax` INGEST command does not exist** — design intelligence compounding can't start until Phase 4 design-brain rebuild builds it.
-- **4 invisible skills in autopilot domain table** — playwright, animation-harvest, sgs-discover, sgs-extraction. ~1h fix needed before Phase 1 starts.
-- **2 of 5 priority clients (Mama's Munches + CMX Group) have no `sites/<slug>/` dir** — run `/project-init` per client (Pipeline 12), ~30 min each.
-- **Hot-lead pressure** — CMX (proposal needed), Snooza/Ophir (live engagement), Indus Phase 2 (blocked on /quoter rebuild). May force re-decisioning if Phase 1+2 drag.
+- **`outstanding-issues.md` is stale** — written before today. Many items (hover mismatches, form bugs, footer social icons, breadcrumbs contrast, Pricing Table toggle, palette drift) likely auto-fixed by today's framework work. Indus Foods plan Phase 1 is the reconcile pass.
+- **Decorative Image `imageAlt` rendering bug** — alt attr empty even when set. Minor, separate from this session's scope.
+- **3 framework gaps still open:** Phase 5.1 Conditional Visibility (role/login/schedule), `sgsParallax` universal extension, framework-wide QC.
 
 ## Next Priorities (in order)
 
-1. **Audit existing planning docs FIRST** (Task 1 in NEXT-SESSION-PROMPT). Two folders, sequentially, full reads, QC each before moving on.
-2. **Phase 1a — toolkit utilities** (after audit). Parallel Sonnet subagents for canary_split → 3 utilities.
-3. **Phase 1b — lifecycle/qc/gap-analysis skill updates.** BLOCKING. Switch to Opus for system-level work.
-4. **Phase 2a-c — rubrics universe.** 22 optimised, remaining tooling spec'd with triage filter, all 13 pipelines spec'd.
+1. **Phase 5.1 Conditional Visibility extension** — extend the visibility extension with server-side `render_block` filter for non-CSS conditions: user logged in/out, user role, date range, days of week, URL param contains, referrer contains. Zero frontend cost.
+2. **`sgsParallax` universal extension** — `background` (background-attachment fixed with reduced-motion respect) + `element` (scroll-translate) variants. CSS Scroll-Driven Animations where supported, IntersectionObserver + rAF fallback otherwise.
+3. **Framework-wide QC sweep + close framework plan** — visual QA on `/block-test/`, deploy verification, mark `2026-02-21-framework-completion-plan.md` complete, move to `docs/plans/archive/`.
+4. **Update Indus Foods page-build status table** in `sites/indus-foods/CLAUDE.md` after Phase 1 audit reconciles outstanding-issues.
 
 ## Files Modified
 
-| File | What changed |
-|------|--------------|
-| 22 × `<skill>/references/end-goal-rubric.md` | New — finalised rubrics across `~/.agents/skills/` and `~/.claude/skills/` |
-| `~/.claude/commands/.rubrics/handoff.md` | New — /handoff command rubric in non-auto-discovery subfolder |
-| `~/Projects/small-giants-wp/.claude/specs/design-brain/` | New dir with 7 design-action rubrics (colourise, bolder, quieter, normalize, polish, distill, delight) |
-| `~/.openclaw/.claude/subprojects/ssb/specs/2026-04-27-optimisation-toolkit-design.md` | New — canonical design spec |
-| `~/Projects/small-giants-wp/.claude/specs/2026-04-27-optimisation-toolkit-design.md` | New — reference copy |
-| `c:/Users/Bean/Projects/small-giants-wp/.scratch/extracted-rubrics-2026-04-27.md` | New — extracted rubric data from 25 historical gap-analysis reports |
-| `c:/Users/Bean/Projects/small-giants-wp/.scratch/rubric-drafting-methodology.md` | New — methodology doc used by all 19 rubric-drafting subagents |
-| `c:/Users/Bean/Projects/small-giants-wp/.scratch/skill-batches/all-skills-classified-v2.json` | New — multi-role audit of 155 skills |
-| `~/.openclaw/workspace/memory/learning/2026-04-27-no-low-value-perfectionism.md` | New rule capture |
-| `~/.openclaw/workspace/memory/learning/2026-04-27-end-goal-rubric-per-skill-mandatory.md` | New rule capture |
-| `~/.openclaw/workspace/memory/learning/2026-04-27-capture-lesson-five-surface-persistence.md` | New rule capture |
-| `~/Projects/small-giants-wp/.claude/memory/handoffs/2026-04-21-framework-completion-handoff.md` | Archived previous session's handoff |
-| `~/Projects/small-giants-wp/.claude/memory/handoffs/2026-04-21-framework-completion-next-session-prompt.md` | Archived previous session's next-session-prompt |
+| File path | What changed |
+|---|---|
+| `ARCHITECTURE.md` | Date 2026-03-29 → 2026-04-28, block count 58 → 57, decisions #13 Floating UI / #14 Block Defaults / #15 palette tokens added; Current Development Focus rewritten |
+| `specs/02-SGS-BLOCKS.md` | As-built status, animation list (16 types), universal hover attribute list, Block Defaults + Floating UI sections |
+| `plugins/sgs-blocks/includes/class-block-defaults.php` | NEW — REST endpoint + option storage + admin page |
+| `plugins/sgs-blocks/includes/class-sgs-blocks.php` | Register Block_Defaults + style variations + Floating UI hooks |
+| `plugins/sgs-blocks/includes/hover-effects.php` | Server-side wrapper class injection for new attrs; orphan `}` bug fixed |
+| `plugins/sgs-blocks/src/blocks/extensions/{hover-effects,animation,block-defaults}.js` | New attrs + ToggleControls + animation labels + save-as-default flow |
+| `plugins/sgs-blocks/src/blocks/{card-grid,gallery}/{block.json,edit.js,render.php,style.css}` | overlay-slide hoverEffect variant |
+| `plugins/sgs-blocks/src/blocks/icon/{block.json,edit.js,render.php,style.css}` | Content-width alignment + visible default bg |
+| `plugins/sgs-blocks/src/blocks/pricing-table/{block.json,edit.js,render.php,style.css}` | toggleStyle attribute (text/button), font size match |
+| `plugins/sgs-blocks/src/blocks/{back-to-top,reading-progress}/{render.php,edit.js}` | Neutered to no-op with editor deprecation notice |
+| `plugins/sgs-blocks/src/blocks/google-reviews/render.php` | 3 dummy reviews when no API key |
+| `plugins/sgs-blocks/src/blocks/breadcrumbs/style.css` | text-muted token (7.46:1 contrast) |
+| `plugins/sgs-blocks/src/blocks/social-icons/style.css` | New is-style-social-icons-footer variation |
+| `plugins/sgs-blocks/src/blocks/form/style.css` | Universal box-sizing border-box + placeholder hide when label down |
+| `plugins/sgs-blocks/src/blocks/modal/index.js` | save() function + deprecation |
+| `plugins/sgs-blocks/assets/js/{tilt-3d,scroll-progress}.js` | NEW — universal extension scripts |
+| `plugins/sgs-blocks/assets/css/extensions.css` | border-accent + tilt-3d + scroll-progress base styles |
+| `theme/sgs-theme/inc/floating-ui-{customiser,output}.php` | NEW — Customiser registration + wp_footer renderer |
+| `theme/sgs-theme/assets/{js,css}/{back-to-top,reading-progress,customiser-preview}.*` | NEW — Floating UI assets |
+| `theme/sgs-theme/functions.php` | Require floating-ui-customiser + floating-ui-output |
+| `theme/sgs-theme/theme.json` + `styles/*.json` (×7) | Added border-light + error palette slugs |
+| `sites/indus-foods/.claude/plans/current_mission.md` | Phase 1–5 plan extracted from framework completion plan (Phase 1 = pre-flight audit) |
+| `~/.claude/projects/.../memory/` | New entries: feedback_palette_defaults_for_blocks, feedback_parallel_dispatch_shared_files, project_floating_ui_architecture |
 
 ## Notes for Next Session
 
-- **The audit task is non-negotiable per Bean** — full reads, QC between folders, no parallel processing of folders. If you're tempted to skim, don't.
-- **Phase 1b is BLOCKING** — don't try to start Phase 2 work even if "the rubrics are ready". The skills that grade them must be updated first or you'll bake current-flawed-grading into the optimised outputs.
-- **Phase 2b triage** — when drafting rubrics for the remaining ~158 tools, filter aggressively. Skip pure utilities (one-off CLI wrappers, dev diagnostics, internal-only tools) that don't affect client deliverables. Tag each kept rubric with which pipeline(s) it serves.
-- **Phase 3a includes ordering/placement as third lens** — not just coverage + duplicates. Per Bean's 2026-04-28 call: "changing when/where certain skills are used could make them much more impactful." Surface re-ordering candidates in addition to merge/delete candidates.
-- **Design-brain goes FIRST in Phase 4** — resolved 2026-04-28. Blueprint schema + Designer modes + Council must be production-ready before ANY other pipeline formalisation. The Blueprint JSON is a new stage that inserts into every other pipeline; rebuilding them before design-brain ships means doing them twice.
-- **Phase 3 execution model** — resolved 2026-04-28. Sonnet subagent (draft rubric inline + gap-analysis combined) → Gemini Flash QC → Opus inline synthesises + presents to Bean. 3a (system-level) + 3d (sign-off) stay fully Opus. Parallelism cap: 3 Sonnet subagents. Rubrics are built inline during the cycle — no separate Phase 2c pre-drafting pass needed.
-- **Top-task template industries** — resolved 2026-04-28. 5 confirmed: construction (CMX), B2B wholesale/trade (Indus Foods), accountant, healthcare/dental (Snooza as `assistive-equipment` sub-row — consultative/funded, NOT standard ecommerce), gifting ecommerce/wellness brand (Mama's Munches — occasion-driven, gifting + subscription, NOT generic shop-now). 100 seed rows at Phase 3 DB build time.
-- **Estimates default LOW** per the time-estimates rule. Don't pad rebuild work with software-dev calibration if it's mechanical or AI-heavy.
-- **The 22 rubrics are locked** — don't re-edit unless an audit-task finding forces it. Rubric quality has been calibrated; further tweaks risk perfectionism.
+- **Don't archive `2026-02-21-framework-completion-plan.md` yet** — Bean wants to mark it complete and move to `docs/plans/archive/` only after Phase 5.1 + sgsParallax + QC ship next session.
+- **WP-Customiser live preview is wired via postMessage transport** — JS at `theme/sgs-theme/assets/js/customiser-preview.js`. When adding new Floating UI controls, follow the pattern: `wp.customize('setting_id', value => …)` mutating CSS variables / classes directly on the floating UI containers.
+- **Gemini Flash on Windows can't run shell commands** — every branch's `npm run build` returned "File not found". Don't include build steps in Gemini Flash prompts; run manually after.
+- **Parallel agents on shared files = race condition** — branches editing `hover-effects.js` + `hover-effects.php` + `extensions.css` simultaneously left an orphan `}` that took the site down. Sequentialise or scope each branch to a different file. See `feedback_parallel_dispatch_shared_files.md`.
+- **WP REST routes can't have forward slashes in route parameters** — `/defaults/sgs/counter` won't match `/defaults/(?P<block>[a-z0-9\-\/]+)`. Pass dynamic IDs in request body.
+- **Hostinger live error log lives at `~/.logs/error_log_<domain>`**, not `wp-content/debug.log` (often months stale).
 
 ## Next Session Prompt
 
-See `NEXT-SESSION-PROMPT.md` at project root.
+~~~
+You are a senior WordPress block developer specialising in the SGS Framework, theme.json v3, and Gutenberg block extensions. Your focus this session is closing out the SGS Framework Completion Plan: Phase 5.1 Conditional Visibility extension, sgsParallax universal extension, then framework-wide QC and archival.
+
+Resume command: CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-04-28-framework-close"
+
+## Where You Are
+
+Plan: `docs/plans/2026-02-21-framework-completion-plan.md` (still active, NOT yet archived per Bean's instruction)
+Current phase: Phase 5.1 Conditional Visibility (only outstanding work besides sgsParallax + QC)
+Progress: ~95% complete — Phase 0–3 done, Phase 4 (Indus Foods) extracted, Phase 5.2/5.3/5.4 done
+Next task: Build Conditional Visibility extension (server-side render_block filter for role/login/schedule)
+
+Read CONVERSATION-HANDOFF.md and CLAUDE.md for full context, then work through these priorities:
+
+## Skills to Invoke
+
+| Skill | When to use |
+|-------|-------------|
+| `/brainstorming` | ALWAYS — architecture for Conditional Visibility (which conditions to expose, how to compose, SEO indexability impact) |
+| `/gap-analysis` | ALWAYS — grade Phase 5.1 + sgsParallax outputs before declaring complete |
+| `/lifecycle` | ALWAYS — start pipeline before any extension changes |
+| `/research` | ALWAYS — auto-routes; for 5.1 confirm Block Visibility plugin patterns + Kadence/Spectra conditional logic UX |
+| `/strategic-plan` | ALWAYS — sequence Phase 5.1 (extend visibility extension first, then UI controls) |
+| `/sgs-wp-engine` | Any SGS work — framework standards, gotchas, deploy sequence |
+| `/wp-block-development` | Visibility extension JS edits, attribute additions |
+| `/wp-rest-api` | If Conditional Visibility needs a REST helper for "current user role" checks in editor preview |
+| `/visual-qa` | Final framework-wide QC pass on `/block-test/` |
+| `/research-check --tier extended` | Multi-angle compare Block Visibility plugin + Kadence Pro Conditional Display + GenerateBlocks visibility |
+
+## MCP Servers & Tools
+
+| Tool | What to use it for |
+|------|-------------------|
+| `playwright` | Visual QA on `/block-test/`, verify Customiser live preview still works after extension additions |
+| `github` | PR creation if 5.1 work goes on a feature branch (recommend yes — bigger change) |
+| `/library-docs` | WP `render_block` filter API + `WP_HTML_Tag_Processor` for class injection |
+| `search.py` | Web research on Block Visibility / Kadence conditional display UX patterns |
+| `wp-blockmarkup` MCP | Validate new attribute schema in visibility extension |
+
+## Agents to Delegate To
+
+| Agent | When |
+|-------|------|
+| `wp-sgs-developer` | Phase 5.1 implementation + sgsParallax build |
+| `design-reviewer` | Visual QC of Customiser preview behaviour after changes land |
+| `site-reviewer` | Framework-wide audit before closing the completion plan |
+| `research-pipeline` | Conditional visibility competitor research before locking the design |
+
+## Research Approach
+
+1. `/research-check` — quick lookup of WordPress Block Visibility plugin's condition options (free version)
+2. `/research-check --tier extended` — multi-angle compare to Kadence Pro Conditional Display + GenerateBlocks Pro Visibility
+3. `python ~/.claude/hooks/search.py "wordpress block visibility plugin conditional display role schedule 2026"`
+4. `/library-docs` for `render_block` filter signature + `current_user_can` + `wp_get_current_user` server-side patterns
+
+---
+
+## Task 1: Phase 5.1 — Conditional Visibility Extension
+
+Extend `plugins/sgs-blocks/src/blocks/extensions/responsive-visibility.js` (or split into `conditional-visibility.js` if cleaner) with conditions beyond device:
+- `sgsConditionLoggedIn` — none / logged-in / logged-out
+- `sgsConditionUserRole` — array of role slugs (admin/editor/author/subscriber/contributor/custom)
+- `sgsConditionDateStart` / `sgsConditionDateEnd` — ISO date strings, render only inside this range
+- `sgsConditionDays` — array of weekday integers (0=Sunday) for "Tuesdays/Thursdays only" rules
+- `sgsConditionUrlParam` — string "key=value", show only when URL has this query param
+- `sgsConditionReferrer` — substring match against HTTP_REFERER
+
+Server-side: WP `render_block` filter that bails (returns empty string) when any condition fails. ZERO frontend cost.
+
+Editor: Inspector panel "Visibility Conditions" with controls per attribute. Editor preview should NOT bail — show a Notice "This block is conditionally hidden on the frontend (logged-in only)" so authors can still edit.
+
+Use `/wp-block-development` and `wp-sgs-developer` agent. Validate via `/gap-analysis` before deploy.
+
+## Task 2: sgsParallax Universal Extension
+
+Add a parallax extension to `plugins/sgs-blocks/src/blocks/extensions/`:
+- `sgsParallax` — none / background / element
+- `sgsParallaxStrength` — number 0–100 (default 30)
+
+CSS Scroll-Driven Animations (`animation-timeline: scroll()`) where supported (Chrome 115+, Firefox 135+); IntersectionObserver + requestAnimationFrame fallback at `assets/js/parallax.js` for older browsers. Background variant uses `background-attachment: fixed` with reduced-motion respect. Element variant translates the block on scroll.
+
+Use `/wp-block-development`, `/wp-interactivity-api` if needed for element parallax.
+
+## Task 3: Framework-Wide QC + Close Framework Plan
+
+After 5.1 + sgsParallax ship and pass /gap-analysis:
+1. Run `/visual-qa` 8-layer pipeline on `/block-test/` — confirm no regressions from today's race-condition recovery
+2. Lighthouse on the test page (Performance / Accessibility / Best Practices / SEO)
+3. If all green: mark `docs/plans/2026-02-21-framework-completion-plan.md` complete with closure note + final stats (block count, attribute count, animation types, hover variants)
+4. Move to `docs/plans/archive/2026-02-21-framework-completion-plan-complete.md`
+5. Then start a new framework plan if Bean wants — confirm with him first
+
+## Guardrails
+
+- Build verification: `cd plugins/sgs-blocks && npm run build` — must pass with zero warnings
+- Verification harness on `/block-test/` must remain green
+- All colour values use palette tokens — zero new bare hex (per `feedback_palette_defaults_for_blocks.md`)
+- WCAG 2.2 AA on all visual changes (4.5:1 text contrast, 44px touch targets, focus rings)
+- UK English throughout
+- DO NOT dispatch parallel agents on the same file — sequentialise or scope each to its own file (per `feedback_parallel_dispatch_shared_files.md`)
+- DO NOT modify post_content via WP-CLI — use REST API or Gutenberg JS data API
+- DO NOT archive `2026-02-21-framework-completion-plan.md` until 5.1 + sgsParallax + QC are all done
+
+WP credentials: Blub admin user, password `BlubAuto123!`, app password `zVQnIGUwsYL6fPr7mjOFUZpD`. Full record at `C:/Users/Bean/.openclaw/.secrets/credentials.yaml` under `wordpress.palestine_lives`.
+~~~

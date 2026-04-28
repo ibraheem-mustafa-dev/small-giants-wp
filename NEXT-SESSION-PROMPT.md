@@ -1,141 +1,106 @@
 recommended_model: sonnet
-session_tag: small-giants-wp-2026-04-29-audit-then-tooling-rebuild
+session_tag: small-giants-wp-2026-04-28-framework-close
 
-You are continuing the SGS-WP optimisation-toolkit + tooling-rebuild design work from session 2026-04-27/28. Spec is at:
-- **Canonical:** `~/.openclaw/.claude/subprojects/ssb/specs/2026-04-27-optimisation-toolkit-design.md`
-- **Reference copy:** `~/Projects/small-giants-wp/.claude/specs/2026-04-27-optimisation-toolkit-design.md`
+You are a senior WordPress block developer specialising in the SGS Framework, theme.json v3, and Gutenberg block extensions. Your focus this session is closing out the SGS Framework Completion Plan: Phase 5.1 Conditional Visibility extension, sgsParallax universal extension, then framework-wide QC and archival.
 
-22 skill rubrics finalised. Master plan structured in 5 phases (see Section 5 of spec).
-
-Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-04-29-audit-then-tooling-rebuild"`
+Resume command: CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-04-28-framework-close"
 
 ## Where You Are
 
-**Plan:** SGS-WP master plan Steps 3+4 (tooling rebuild) — 5 phases sequential
-**Current phase:** **Pre-Phase 1** — audit existing planning docs FIRST (cleans up the workspace before Phase 1 starts)
-**Progress:** 22/180 rubrics shipped (12% — the high-priority ones); spec design complete; Phase 1 not yet started
-**Next task:** Audit task below (Task 1) — must run BEFORE any Phase 1 work
+Plan: `docs/plans/2026-02-21-framework-completion-plan.md` (still active, NOT yet archived per Bean's instruction)
+Current phase: Phase 5.1 Conditional Visibility (only outstanding work besides sgsParallax + QC)
+Progress: ~95% complete — Phase 0–3 done, Phase 4 (Indus Foods) extracted to `sites/indus-foods/.claude/plans/current_mission.md`, Phase 5.2/5.3/5.4 done
+Next task: Build Conditional Visibility extension (server-side render_block filter for role/login/schedule)
 
----
-
-## TASK 1 (DO THIS FIRST — BEFORE ANYTHING ELSE)
-
-Audit the existing planning + spec docs in two folders to identify what's already captured in our current plan, what's done, what contradicts our plan, and what's outdated. Bean wants this before we move forward — no clean-up of old files until we know where we stand.
-
-### CRITICAL CONSTRAINTS
-- Do folders **SEQUENTIALLY** (folder 1 fully completed + QC'd BEFORE starting folder 2)
-- Read **EACH document IN FULL** — no skimming. The full read is non-negotiable per Bean. If a doc is >500 lines, read in chunks but cover every line.
-- Per document, classify content into 4 buckets:
-  - **A) "Already in our plan"** — covered by current spec / phasing
-  - **B) "Done"** — work already completed (note where the deliverable is)
-  - **C) "Contradicts"** — disagrees with current spec / phasing in a material way
-  - **D) "Outdated"** — superseded by newer decisions, no longer applicable
-- After each folder finishes, `/qc` the findings before presenting to Bean
-- Surface findings to Bean folder-by-folder, not all at once
-
-### Folder 1 (do first):
-`C:/Users/Bean/Projects/small-giants-wp/.claude/plans/`
-**Exclude:** anything inside `.claude/plans/archive/`
-
-### Folder 2 (do AFTER folder 1 + Bean approval):
-`C:/Users/Bean/Projects/small-giants-wp/docs/plans/`
-**Exclude:** anything inside `docs/plans/archive/`
-
-### Output per folder
-Write `audit-folder-N-2026-04-29.md` at the project root:
-- Document index (filename + 1-line summary of what each doc is about)
-- Per-document table: A/B/C/D classifications with quotes/line-refs
-- Cross-document patterns (multiple docs say X — clean up duplicates)
-- Recommended actions (which to delete, which to merge into spec, which to update in place)
-
-### QC step (before delivering folder 1 findings to Bean)
-Invoke `/qc` on the `audit-folder-1-2026-04-29.md` report itself. QC scenarios should check:
-- Did every doc actually get read in full? (Verify by quote density per doc — a doc cited fewer than 3× is suspect)
-- Are A/B/C/D classifications justified by quoted evidence?
-- Are there any docs the audit missed?
-
-Only proceed to folder 2 after Bean approves folder 1 findings.
-
----
-
-## After Task 1 — return to Phase 1 of the spec
-
-`~/.openclaw/.claude/subprojects/ssb/specs/2026-04-27-optimisation-toolkit-design.md` — Section 5 (Phasing).
-
-### Phase 1a — Build optimisation-toolkit utilities
-
-Build in this order:
-1. `canary_split.py` (foundational — every other utility's "must improve" gate depends on it)
-2. In parallel: `dspy_signature.py`, `certainty_calc.py`, `few_shot_injector.py`
-
-Location: `~/.agents/skills/shared-references/optimisation-toolkit/`
-
-Each utility ships with: smoke test (`tests/smoke.py`, no LLM call required), API contract docstring, return shape consistent with adoption-gate validation.
-
-### Phase 1b — Update lifecycle + quality + QC skills (BLOCKING)
-
-Skills to update: `skill-optimiser`, `skill-writer`, `pipeline-optimiser`, `pipeline-writer`, `command-writer`, `gap-analysis`, `qc`, `qc-inline`.
-
-Each gets:
-- New rubric-loading methodology baked in (load `references/end-goal-rubric.md` at Stage 0; if missing, generate inline with user sign-off; gap-analysis lens 6 always uses a custom rubric)
-- Knowledge of toolkit utilities — explicit stage that considers which utilities fit what's being built/graded
-- Lifecycle skills especially: utility-fit stage during creation/edit
-
-**Method:** manual edit + cross-tier QC peer review (NOT self-apply). Bean's call (2026-04-28) — adding utility-awareness changes the skill's behaviour, needs external validation.
-
----
+Read CONVERSATION-HANDOFF.md and CLAUDE.md for full context, then work through these priorities:
 
 ## Skills to Invoke
 
 | Skill | When to use |
 |-------|-------------|
-| `/autopilot` | FIRST — establishes routing + ADHD support for the session |
-| `/qc` | Mandatory after each audit folder (Task 1 step) |
-| `/skill-optimiser` | Phase 2a — per-skill optimisation pass on the 22 with rubrics |
-| `/lifecycle` | MANDATORY before any skill/agent/pipeline edit |
-| `/brainstorming` | If design questions surface during Phase 1b |
-| `/gap-analysis` | Mandatory in Phase 3 (3-level: system, pipeline, skill) |
-| `/handoff` | End of session |
-| `/research-check` | Quick verification when skill-design questions arise |
-| `/capture-lesson` | New rules surfaced in audit |
+| `/brainstorming` | ALWAYS — architecture for Conditional Visibility (which conditions to expose, how to compose, SEO indexability impact) |
+| `/gap-analysis` | ALWAYS — grade Phase 5.1 + sgsParallax outputs before declaring complete |
+| `/lifecycle` | ALWAYS — start pipeline before any extension changes |
+| `/research` | ALWAYS — auto-routes; for 5.1 confirm Block Visibility plugin patterns + Kadence/Spectra conditional logic UX |
+| `/strategic-plan` | ALWAYS — sequence Phase 5.1 (extend visibility extension first, then UI controls) |
+| `/sgs-wp-engine` | Any SGS work — framework standards, gotchas, deploy sequence |
+| `/wp-block-development` | Visibility extension JS edits, attribute additions |
+| `/wp-rest-api` | If Conditional Visibility needs a REST helper for "current user role" checks in editor preview |
+| `/visual-qa` | Final framework-wide QC pass on `/block-test/` |
+| `/research-check --tier extended` | Multi-angle compare Block Visibility plugin + Kadence Pro Conditional Display + GenerateBlocks visibility |
 
 ## MCP Servers & Tools
 
-| Tool | What for |
-|------|----------|
-| `python ~/.claude/hooks/local-search.py "q"` | Memory recall before any new work |
-| `python ~/.claude/hooks/search.py "q"` | Web research for Phase 1b methodology decisions |
-| Direct sqlite3 on `blub.db` | Reading skill_registry, embeddings, gap-analysis history |
-| Gemini CLI (Flash + Pro) | Cross-tier QC peer review during Phase 1b updates |
+| Tool | What to use it for |
+|------|-------------------|
+| `playwright` | Visual QA on `/block-test/`, verify Customiser live preview still works after extension additions |
+| `github` | PR creation if 5.1 work goes on a feature branch (recommend yes — bigger change) |
+| `/library-docs` | WP `render_block` filter API + `WP_HTML_Tag_Processor` for class injection |
+| `search.py` | Web research on Block Visibility / Kadence conditional display UX patterns |
+| `wp-blockmarkup` MCP | Validate new attribute schema in visibility extension |
 
 ## Agents to Delegate To
 
 | Agent | When |
 |-------|------|
-| Sonnet (via `/delegate`) | Phase 1a utility build (mechanical), Phase 2b rubric drafts for remaining tools |
-| Opus (via `/delegate`) | Phase 1b lifecycle-skill updates (system-level work — switch session model) |
-| Cerebras / Gemini Flash | Cross-tier QC peer review during Phase 1b |
+| `wp-sgs-developer` | Phase 5.1 implementation + sgsParallax build |
+| `design-reviewer` | Visual QC of Customiser preview behaviour after changes land |
+| `site-reviewer` | Framework-wide audit before closing the completion plan |
+| `research-pipeline` | Conditional visibility competitor research before locking the design |
+
+## Research Approach
+
+1. `/research-check` — quick lookup of WordPress Block Visibility plugin's condition options (free version)
+2. `/research-check --tier extended` — multi-angle compare to Kadence Pro Conditional Display + GenerateBlocks Pro Visibility
+3. `python ~/.claude/hooks/search.py "wordpress block visibility plugin conditional display role schedule 2026"`
+4. `/library-docs` for `render_block` filter signature + `current_user_can` + `wp_get_current_user` server-side patterns
 
 ---
+
+## Task 1: Phase 5.1 — Conditional Visibility Extension
+
+Extend `plugins/sgs-blocks/src/blocks/extensions/responsive-visibility.js` (or split into `conditional-visibility.js` if cleaner) with conditions beyond device:
+- `sgsConditionLoggedIn` — none / logged-in / logged-out
+- `sgsConditionUserRole` — array of role slugs (admin/editor/author/subscriber/contributor/custom)
+- `sgsConditionDateStart` / `sgsConditionDateEnd` — ISO date strings, render only inside this range
+- `sgsConditionDays` — array of weekday integers (0=Sunday) for "Tuesdays/Thursdays only" rules
+- `sgsConditionUrlParam` — string "key=value", show only when URL has this query param
+- `sgsConditionReferrer` — substring match against HTTP_REFERER
+
+Server-side: WP `render_block` filter that bails (returns empty string) when any condition fails. ZERO frontend cost.
+
+Editor: Inspector panel "Visibility Conditions" with controls per attribute. Editor preview should NOT bail — show a Notice "This block is conditionally hidden on the frontend (logged-in only)" so authors can still edit.
+
+Use `/wp-block-development` and `wp-sgs-developer` agent. Validate via `/gap-analysis` before deploy.
+
+## Task 2: sgsParallax Universal Extension
+
+Add a parallax extension to `plugins/sgs-blocks/src/blocks/extensions/`:
+- `sgsParallax` — none / background / element
+- `sgsParallaxStrength` — number 0–100 (default 30)
+
+CSS Scroll-Driven Animations (`animation-timeline: scroll()`) where supported (Chrome 115+, Firefox 135+); IntersectionObserver + requestAnimationFrame fallback at `assets/js/parallax.js` for older browsers. Background variant uses `background-attachment: fixed` with reduced-motion respect. Element variant translates the block on scroll.
+
+Use `/wp-block-development`, `/wp-interactivity-api` if needed for element parallax.
+
+## Task 3: Framework-Wide QC + Close Framework Plan
+
+After 5.1 + sgsParallax ship and pass /gap-analysis:
+1. Run `/visual-qa` 8-layer pipeline on `/block-test/` — confirm no regressions from today's race-condition recovery
+2. Lighthouse on the test page (Performance / Accessibility / Best Practices / SEO)
+3. If all green: mark `docs/plans/2026-02-21-framework-completion-plan.md` complete with closure note + final stats (block count, attribute count, animation types, hover variants)
+4. Move to `docs/plans/archive/2026-02-21-framework-completion-plan-complete.md`
+5. Then start a new framework plan if Bean wants — confirm with him first
 
 ## Guardrails
 
-- Phase 1b is BLOCKING — Phase 2 cannot start until lifecycle/qc/gap-analysis updated
-- Phase 2b triage filter — skip auxiliary tools that don't meaningfully affect end results
-- Phase 3a includes ordering/placement as third lens (alongside coverage + duplicates)
-- design-brain rebuild goes FIRST in Phase 4 — it gates all other pipeline rebuilds (Blueprint schema + Designer + Council must be production-ready first)
-- 22 rubrics are LOCKED — don't re-edit during this session unless an audit-task finding forces it
-- If `/uimax` INGEST writes are needed during Phase 1, note that command doesn't exist yet — defer to Phase 4 design-brain rebuild
-- Estimates default LOW per `time-estimates-default-low-not-high` rule (blub.db row 159)
+- Build verification: `cd plugins/sgs-blocks && npm run build` — must pass with zero warnings
+- Verification harness on `/block-test/` must remain green
+- All colour values use palette tokens — zero new bare hex (per `feedback_palette_defaults_for_blocks.md`)
+- WCAG 2.2 AA on all visual changes (4.5:1 text contrast, 44px touch targets, focus rings)
+- UK English throughout
+- DO NOT dispatch parallel agents on the same file — sequentialise or scope each to its own file (per `feedback_parallel_dispatch_shared_files.md`)
+- DO NOT modify post_content via WP-CLI — use REST API or Gutenberg JS data API
+- DO NOT archive `2026-02-21-framework-completion-plan.md` until 5.1 + sgsParallax + QC are all done
 
-## Open Questions — ALL RESOLVED (2026-04-28)
-
-1. ~~Design-brain timing~~ → **Design-brain FIRST in Phase 4**, gates all other pipeline rebuilds
-2. ~~Steps 3+4 execution model~~ → **Sonnet subagent (draft rubric inline + gap-analysis) → Gemini Flash QC → Opus inline synthesises + presents to Bean.** 3a + 3d stay fully Opus. Parallelism cap: 3 Sonnet subagents. Phase 3 ~3h total.
-3. ~~Top-task template industries~~ → **Construction, B2B wholesale/trade, accountant, healthcare/dental (+ Snooza assistive-equipment sub-row), gifting ecommerce/wellness brand (Mama's Munches).** 100 seed rows at Phase 3 DB build time.
-
----
-
-## After Phase 1 completes
-
-Move to Phase 2 of the spec (rubrics universe — optimise the 22, draft remaining tools with triage filter, draft 13 pipeline rubrics).
+WP credentials: Blub admin user, password `BlubAuto123!`, app password `zVQnIGUwsYL6fPr7mjOFUZpD`. Full record at `C:/Users/Bean/.openclaw/.secrets/credentials.yaml` under `wordpress.palestine_lives`.
