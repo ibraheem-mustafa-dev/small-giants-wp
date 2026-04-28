@@ -120,29 +120,50 @@ $wrapper_attributes = get_block_wrapper_attributes( [
 ] );
 
 /**
- * Render star rating — prefixed and guarded against redeclaration.
+ * Render SVG star rating.
+ *
+ * TODO: Replace with sgs_render_stars() from includes/render-helpers.php
+ * once Agent P ships the shared helper — this inline version can then be removed.
+ *
+ * Uses Lucide-compatible 5-point star SVG paths.
+ * Full stars are solid; half stars use a clip-path split; empty stars are outline only.
  *
  * @param float $star_rating Rating value (0-5).
  * @return string HTML for star rating.
  */
-if ( ! function_exists( 'sgs_render_stars' ) ) {
-	function sgs_render_stars( float $star_rating ): string {
-		$full_stars  = floor( $star_rating );
+if ( ! function_exists( 'sgs_render_stars_svg' ) ) {
+	function sgs_render_stars_svg( float $star_rating ): string {
+		$full_stars  = (int) floor( $star_rating );
 		$half_star   = ( $star_rating - $full_stars ) >= 0.5 ? 1 : 0;
 		$empty_stars = 5 - $full_stars - $half_star;
 
-		$html = '<div class="sgs-google-reviews__stars" aria-label="' . esc_attr( sprintf( __( '%s out of 5 stars', 'sgs-blocks' ), number_format( $star_rating, 1 ) ) ) . '">';
+		// SVG star path — standard 5-point polygon, 24×24 viewBox.
+		$star_path = 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z';
+
+		$label = esc_attr( sprintf(
+			/* translators: %s: rating number */
+			__( '%s out of 5 stars', 'sgs-blocks' ),
+			number_format( $star_rating, 1 )
+		) );
+
+		$html  = '<div class="sgs-google-reviews__stars" role="img" aria-label="' . $label . '">';
+		$uid   = wp_unique_id( 'star-half-' );
 
 		for ( $i = 0; $i < $full_stars; $i++ ) {
-			$html .= '<span class="sgs-google-reviews__star sgs-google-reviews__star--full" aria-hidden="true">&#9733;</span>';
+			$html .= '<svg class="sgs-google-reviews__star sgs-google-reviews__star--full" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="' . $star_path . '"/></svg>';
 		}
 
 		if ( $half_star ) {
-			$html .= '<span class="sgs-google-reviews__star sgs-google-reviews__star--half" aria-hidden="true">&#9733;</span>';
+			// Half star: left half filled, right half outline, achieved via clipPath.
+			$html .= '<svg class="sgs-google-reviews__star sgs-google-reviews__star--half" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">';
+			$html .= '<defs><clipPath id="' . esc_attr( $uid ) . '"><rect x="0" y="0" width="12" height="24"/></clipPath></defs>';
+			$html .= '<path class="sgs-google-reviews__star-outline" d="' . $star_path . '"/>';
+			$html .= '<path class="sgs-google-reviews__star-fill" d="' . $star_path . '" clip-path="url(#' . esc_attr( $uid ) . ')"/>';
+			$html .= '</svg>';
 		}
 
 		for ( $i = 0; $i < $empty_stars; $i++ ) {
-			$html .= '<span class="sgs-google-reviews__star sgs-google-reviews__star--empty" aria-hidden="true">&#9734;</span>';
+			$html .= '<svg class="sgs-google-reviews__star sgs-google-reviews__star--empty" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="' . $star_path . '"/></svg>';
 		}
 
 		$html .= '</div>';
@@ -169,7 +190,7 @@ $schema = [
 <div <?php echo $wrapper_attributes; ?>>
 	<?php if ( $show_aggregate && ! in_array( $variant, [ 'badge', 'floating-badge' ], true ) ) : ?>
 		<div class="sgs-google-reviews__aggregate">
-			<?php echo sgs_render_stars( $rating ); ?>
+			<?php echo sgs_render_stars_svg( $rating ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 			<div class="sgs-google-reviews__aggregate-text">
 				<strong><?php echo esc_html( number_format( $rating, 1 ) ); ?></strong>
 				<?php
@@ -190,7 +211,7 @@ $schema = [
 
 	<?php if ( in_array( $variant, [ 'badge', 'floating-badge' ], true ) ) : ?>
 		<div class="sgs-google-reviews__badge">
-			<?php echo sgs_render_stars( $rating ); ?>
+			<?php echo sgs_render_stars_svg( $rating ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 			<div class="sgs-google-reviews__badge-text">
 				<strong><?php echo esc_html( number_format( $rating, 1 ) ); ?></strong>
 				<span><?php echo esc_html( number_format( $rating_count ) ) . ' ' . esc_html__( 'reviews', 'sgs-blocks' ); ?></span>
@@ -243,7 +264,7 @@ $schema = [
 							<?php endif; ?>
 						</div>
 
-						<?php echo sgs_render_stars( $review_rating ); ?>
+						<?php echo sgs_render_stars_svg( $review_rating ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 
 						<?php if ( ! empty( $text ) ) : ?>
 							<p class="sgs-google-reviews__text"><?php echo esc_html( $text ); ?></p>
