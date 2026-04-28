@@ -32,6 +32,9 @@ const SHAPE_OPTIONS = [
 	{ label: __( 'Slant (Gentle)', 'sgs-blocks' ), value: 'slant-gentle' },
 	{ label: __( 'Mountains', 'sgs-blocks' ), value: 'mountains' },
 	{ label: __( 'Drops', 'sgs-blocks' ), value: 'drops' },
+	{ label: __( 'Tilt', 'sgs-blocks' ), value: 'tilt' },
+	{ label: __( 'Arrow', 'sgs-blocks' ), value: 'arrow' },
+	{ label: __( 'Split', 'sgs-blocks' ), value: 'split' },
 ];
 
 const LAYOUT_OPTIONS = [

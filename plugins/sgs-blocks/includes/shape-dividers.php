@@ -16,56 +16,68 @@ defined( 'ABSPATH' ) || exit;
  * @return array<string, array{label: string, path: string}>
  */
 function sgs_get_shape_dividers(): array {
-	return [
-		'wave' => [
+	return array(
+		'wave'                => array(
 			'label' => 'Wave',
 			'path'  => 'M0,40 C200,120 400,0 600,60 C800,120 1000,0 1200,40 L1200,120 L0,120 Z',
-		],
-		'wave-smooth' => [
+		),
+		'wave-smooth'         => array(
 			'label' => 'Wave (Smooth)',
 			'path'  => 'M0,60 Q300,120 600,60 Q900,0 1200,60 L1200,120 L0,120 Z',
-		],
-		'triangle' => [
+		),
+		'triangle'            => array(
 			'label' => 'Triangle',
 			'path'  => 'M0,120 L600,0 L1200,120 Z',
-		],
-		'triangle-asymmetric' => [
+		),
+		'triangle-asymmetric' => array(
 			'label' => 'Triangle (Asymmetric)',
 			'path'  => 'M0,120 L800,0 L1200,120 Z',
-		],
-		'curve' => [
+		),
+		'curve'               => array(
 			'label' => 'Curve',
 			'path'  => 'M0,120 Q600,0 1200,120 Z',
-		],
-		'curve-asymmetric' => [
+		),
+		'curve-asymmetric'    => array(
 			'label' => 'Curve (Asymmetric)',
 			'path'  => 'M0,120 C300,120 600,0 1200,80 L1200,120 Z',
-		],
-		'zigzag' => [
+		),
+		'zigzag'              => array(
 			'label' => 'Zigzag',
 			'path'  => 'M0,60 L100,20 L200,60 L300,20 L400,60 L500,20 L600,60 L700,20 L800,60 L900,20 L1000,60 L1100,20 L1200,60 L1200,120 L0,120 Z',
-		],
-		'cloud' => [
+		),
+		'cloud'               => array(
 			'label' => 'Cloud',
 			'path'  => 'M0,80 C50,40 100,60 150,40 C200,20 250,50 300,30 C350,10 400,50 450,30 C500,10 550,40 600,20 C650,0 700,40 750,20 C800,0 850,30 900,20 C950,10 1000,40 1050,30 C1100,20 1150,50 1200,40 L1200,120 L0,120 Z',
-		],
-		'slant' => [
+		),
+		'slant'               => array(
 			'label' => 'Slant',
 			'path'  => 'M0,120 L1200,0 L1200,120 Z',
-		],
-		'slant-gentle' => [
+		),
+		'slant-gentle'        => array(
 			'label' => 'Slant (Gentle)',
 			'path'  => 'M0,120 L1200,60 L1200,120 Z',
-		],
-		'mountains' => [
+		),
+		'mountains'           => array(
 			'label' => 'Mountains',
 			'path'  => 'M0,120 L200,40 L400,90 L600,20 L800,70 L1000,30 L1200,80 L1200,120 Z',
-		],
-		'drops' => [
+		),
+		'drops'               => array(
 			'label' => 'Drops',
 			'path'  => 'M0,80 C100,40 150,80 200,80 C250,80 300,40 400,80 C500,120 550,40 600,80 C650,120 700,40 800,80 C900,120 950,40 1000,80 C1050,120 1100,40 1200,80 L1200,120 L0,120 Z',
-		],
-	];
+		),
+		'tilt'                => array(
+			'label' => 'Tilt',
+			'path'  => 'M0,120 L1200,0 L1200,120 Z',
+		),
+		'arrow'               => array(
+			'label' => 'Arrow',
+			'path'  => 'M0,0 L600,120 L1200,0 L1200,120 L0,120 Z',
+		),
+		'split'               => array(
+			'label' => 'Split',
+			'path'  => 'M0,0 L600,80 L1200,0 L1200,120 L0,120 Z',
+		),
+	);
 }
 
 /**
@@ -88,7 +100,7 @@ function sgs_render_shape_divider( string $shape, string $colour, int $height, b
 
 	$path = $shapes[ $shape ]['path'];
 
-	$transform_parts = [];
+	$transform_parts = array();
 	if ( $flip ) {
 		$transform_parts[] = 'scaleX(-1)';
 	}
