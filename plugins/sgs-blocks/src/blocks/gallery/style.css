@@ -105,7 +105,7 @@
 	border:         none;
 	border-radius:  50%;
 	background:     rgba( 0, 0, 0, 0.55 );
-	color:          #ffffff;
+	color:          var( --wp--preset--color--text-inverse, #ffffff );
 	cursor:         pointer;
 	transition:     background var( --sgs-transition-duration ) var( --sgs-transition-easing );
 }
@@ -334,7 +334,7 @@
 	border:     none;
 	border-radius: 50%;
 	background: rgba( 255, 255, 255, 0.15 );
-	color:      #ffffff;
+	color:      var( --wp--preset--color--text-inverse, #ffffff );
 	cursor:     pointer;
 	transition: background 200ms ease;
 }
@@ -344,7 +344,7 @@
 }
 
 .sgs-gallery__lightbox-close:focus-visible {
-	outline:        2px solid #ffffff;
+	outline:        2px solid var( --wp--preset--color--text-inverse, #ffffff );
 	outline-offset: 2px;
 }
 
@@ -364,7 +364,7 @@
 	border:     none;
 	border-radius: 50%;
 	background: rgba( 255, 255, 255, 0.15 );
-	color:      #ffffff;
+	color:      var( --wp--preset--color--text-inverse, #ffffff );
 	cursor:     pointer;
 	transition: background 200ms ease;
 }
@@ -384,7 +384,7 @@
 
 .sgs-gallery__lightbox-prev:focus-visible,
 .sgs-gallery__lightbox-next:focus-visible {
-	outline:        2px solid #ffffff;
+	outline:        2px solid var( --wp--preset--color--text-inverse, #ffffff );
 	outline-offset: 2px;
 }
 

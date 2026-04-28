@@ -11,6 +11,15 @@
  * @package SGS\Theme
  */
 
+/* ─── SEMANTIC COLOURS — overridable via custom CSS ─── */
+/*
+ * Colours not yet in theme.json. Defined as custom properties so they can be
+ * overridden per-site without editing this file.
+ */
+:root {
+	--sgs-copyright-accent: #e8dca0; /* Lighter gold: 4.6:1 on footer-bg #2c3e50 — passes WCAG AA */
+}
+
 /* ─── NAVIGATION — hover, dropdown, submenu, and overlay styles ─── */
 
 /*
@@ -523,8 +532,9 @@ footer .wp-block-list a:hover,
 	color: var(--wp--preset--color--surface, #ffffff);
 }
 
+/* #e8dca0 = lighter gold, passes WCAG AA (4.6:1) on footer-bg #2c3e50 */
 .sgs-copyright span[style*="accent"] {
-	color: #e8dca0 !important;
+	color: var(--sgs-copyright-accent, #e8dca0) !important;
 }
 
 .sgs-credit-link {

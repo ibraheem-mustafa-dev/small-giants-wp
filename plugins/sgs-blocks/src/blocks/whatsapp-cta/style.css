@@ -121,9 +121,11 @@
 	}
 }
 
-/* ===== Warning (editor only) ===== */
+/* ===== Warning (editor only) — semantic error colour, intentionally not tokenised ===== */
+:root { --sgs-whatsapp-warning: #dc3545; }
+
 .sgs-whatsapp-cta__warning {
-	color: #dc3545;
+	color: var(--sgs-whatsapp-warning, #dc3545);
 	font-size: 12px;
 	margin: 4px 0 0;
 }

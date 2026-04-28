@@ -57,7 +57,7 @@
 
 /* H6: cite/name must be white on teal — yellow (#d8ca50) on teal gives 3.13:1, fail */
 .sgs-testimonial-slider__slide--featured .sgs-testimonial-slider__name:not([style*="color"]) {
-	color: var(--wp--preset--color--surface, #fff);
+	color: var(--wp--preset--color--text-inverse, #fff);
 }
 
 .sgs-testimonial-slider__slide--featured .sgs-testimonial-slider__role:not([style*="color"]) {
@@ -66,7 +66,7 @@
 
 .sgs-testimonial-slider__slide--featured .sgs-testimonial-slider__avatar-initials {
 	background-color: var(--wp--preset--color--accent, #F87A1F);
-	color: #fff;
+	color: var(--wp--preset--color--text-inverse, #fff);
 }
 
 /* ===== Stars ===== */
@@ -197,7 +197,7 @@
 
 .sgs-testimonial-slider__arrow:hover {
 	background: var(--wp--preset--color--primary, #0F7E80);
-	color: #fff;
+	color: var(--wp--preset--color--text-inverse, #fff);
 	border-color: var(--wp--preset--color--primary, #0F7E80);
 }
 
@@ -289,7 +289,7 @@
 
 .sgs-testimonial-slider__pause-btn:hover {
 	background: var(--wp--preset--color--primary, #0f7e80);
-	color: #fff;
+	color: var(--wp--preset--color--text-inverse, #fff);
 	border-color: var(--wp--preset--color--primary, #0f7e80);
 }
 
@@ -329,7 +329,7 @@
 
 .sgs-testimonial-slider--accent .sgs-testimonial-slider__avatar-initials {
 	background-color: var(--wp--preset--color--text, #1e1e1e);
-	color: var(--wp--preset--color--surface, #fff);
+	color: var(--wp--preset--color--text-inverse, #fff);
 }
 
 /* ===== Empty state (editor) ===== */

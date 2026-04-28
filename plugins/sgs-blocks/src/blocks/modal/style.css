@@ -8,7 +8,7 @@
 .sgs-modal {
 	--sgs-modal-z-index: 99999;
 	--sgs-modal-transition: 0.3s ease;
-	--sgs-modal-backdrop-colour: #000000;
+	--sgs-modal-backdrop-colour: var(--wp--preset--color--text, #000000);
 	--sgs-modal-backdrop-opacity: 0.5;
 }
 

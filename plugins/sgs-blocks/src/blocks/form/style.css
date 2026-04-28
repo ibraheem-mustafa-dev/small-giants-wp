@@ -4,7 +4,19 @@
  * Covers: field grid layout, inputs, labels, help text, tiles,
  * file upload, consent, progress bar, buttons, messages, review.
  * Mobile-first responsive. WCAG 2.2 AA focus states. 44px touch targets.
+ *
+ * Semantic state colours — not in theme.json yet; overridable via custom CSS.
+ * Third-party brand colours are intentional and must NOT be tokenised.
  */
+
+/* Semantic validation/state colours */
+:root {
+	--sgs-error-bg:      #fee2e2;
+	--sgs-error-text:    #991b1b;
+	--sgs-error-border:  #dc2626;
+	--sgs-error-border2: #fecaca;
+	--sgs-success-text:  #2e7d4f;
+}
 
 /* ----------------------------------------------------------------
    1. Form Layout — container-query-aware, mobile-first
@@ -286,7 +298,7 @@ select.sgs-form-field__input {
 	left: 7px;
 	width: 5px;
 	height: 9px;
-	border: solid #fff;
+	border: solid var(--wp--preset--color--text-inverse, #fff);
 	border-width: 0 2px 2px 0;
 	transform: rotate(45deg);
 }
@@ -370,7 +382,7 @@ select.sgs-form-field__input {
 }
 
 .sgs-form-file__error {
-	color: #991b1b;
+	color: var(--sgs-error-text, #991b1b);
 }
 
 /* ----------------------------------------------------------------
@@ -463,7 +475,7 @@ select.sgs-form-field__input {
 .sgs-form__progress-step--completed .sgs-form__progress-step-number {
 	border-color: var(--sgs-progress-colour, var(--wp--preset--color--primary, #0f7e80));
 	background-color: var(--sgs-progress-colour, var(--wp--preset--color--primary, #0f7e80));
-	color: #fff;
+	color: var(--wp--preset--color--text-inverse, #fff);
 }
 
 .sgs-form__progress-step-label {
@@ -539,7 +551,7 @@ select.sgs-form-field__input {
 
 .sgs-form__button--primary:not([style*="background-color"]) {
 	background-color: var(--wp--preset--color--primary, #0f7e80);
-	color: #fff;
+	color: var(--wp--preset--color--text-inverse, #fff);
 }
 
 .sgs-form__button--accent:not([style*="background-color"]) {
@@ -549,7 +561,7 @@ select.sgs-form-field__input {
 
 .sgs-form__button--success:not([style*="background-color"]) {
 	background-color: var(--wp--preset--color--success, #2e7d4f);
-	color: #fff;
+	color: var(--wp--preset--color--text-inverse, #fff);
 }
 
 .sgs-form__button--prev {
@@ -569,7 +581,7 @@ select.sgs-form-field__input {
 .sgs-form__message--success {
 	padding: 1.5rem;
 	background-color: var(--wp--preset--color--success, #2e7d4f);
-	color: #fff;
+	color: var(--wp--preset--color--text-inverse, #fff);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	text-align: center;
 	font-weight: 500;
@@ -577,10 +589,10 @@ select.sgs-form-field__input {
 
 .sgs-form__message--error {
 	padding: 1rem;
-	background-color: #fee2e2;
-	color: #991b1b;
+	background-color: var(--sgs-error-bg, #fee2e2);
+	color: var(--sgs-error-text, #991b1b);
 	border-radius: var(--wp--custom--border-radius--small, 4px);
-	border: 1px solid #fecaca;
+	border: 1px solid var(--sgs-error-border2, #fecaca);
 }
 
 /* ----------------------------------------------------------------
@@ -635,11 +647,11 @@ select.sgs-form-field__input {
    ---------------------------------------------------------------- */
 
 .sgs-form-field__input:invalid:not(:placeholder-shown):not(:focus) {
-	border-color: #dc2626;
+	border-color: var(--sgs-error-border, #dc2626);
 }
 
 .sgs-form-field__option input:invalid {
-	outline: 2px solid #dc2626;
+	outline: 2px solid var(--sgs-error-border, #dc2626);
 	outline-offset: 2px;
 }
 
@@ -661,7 +673,7 @@ select.sgs-form-field__input {
  * The background-position offset accounts for the icon on the right side.
  */
 .sgs-form-field__input:user-invalid {
-	border-color: #dc2626;
+	border-color: var(--sgs-error-border, #dc2626);
 	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23dc2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='8' x2='12' y2='12'/%3E%3Cline x1='12' y1='16' x2='12.01' y2='16'/%3E%3C/svg%3E");
 	background-repeat: no-repeat;
 	background-position: right 0.75rem center;
@@ -670,7 +682,7 @@ select.sgs-form-field__input {
 }
 
 .sgs-form-field__input:user-valid:not(:placeholder-shown) {
-	border-color: #2e7d4f;
+	border-color: var(--sgs-success-text, #2e7d4f);
 	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%232e7d4f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
 	background-repeat: no-repeat;
 	background-position: right 0.75rem center;
@@ -680,7 +692,7 @@ select.sgs-form-field__input {
 /* Radio and checkbox user-invalid: outline the fieldset/label */
 .sgs-form-field__option input[type="radio"]:user-invalid,
 .sgs-form-field__option input[type="checkbox"]:user-invalid {
-	outline: 2px solid #dc2626;
+	outline: 2px solid var(--sgs-error-border, #dc2626);
 	outline-offset: 2px;
 }
 
@@ -690,7 +702,7 @@ select.sgs-form-field__input {
 .sgs-form-field__error-message {
 	display: none;
 	font-size: var(--wp--preset--font-size--x-small, 0.8125rem);
-	color: #dc2626;
+	color: var(--sgs-error-border, #dc2626);
 	margin-top: 0.25rem;
 }
 
@@ -713,7 +725,7 @@ select.sgs-form-field__input {
 	display: block;
 	min-height: 1.2em; /* Reserve space so layout does not shift */
 	font-size: var(--wp--preset--font-size--x-small, 0.8125rem);
-	color: #dc2626;
+	color: var(--sgs-error-border, #dc2626);
 	margin-top: 0.25rem;
 }
 
@@ -725,8 +737,8 @@ select.sgs-form-field__input {
 .sgs-form-field__input[aria-invalid="true"],
 .sgs-form-field select[aria-invalid="true"],
 .sgs-form-field textarea[aria-invalid="true"] {
-	border-color: #dc2626 !important;
-	box-shadow: 0 0 0 1px #dc2626;
+	border-color: var(--sgs-error-border, #dc2626) !important;
+	box-shadow: 0 0 0 1px var(--sgs-error-border, #dc2626);
 }
 
 /* ----------------------------------------------------------------

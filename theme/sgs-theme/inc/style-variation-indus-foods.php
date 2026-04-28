@@ -7,6 +7,19 @@
  * Images referenced here live in assets/decorative-foods/ and are
  * resolved via get_theme_file_uri() so they work on any WP install.
  *
+ * Hex colour reference (Indus Foods variation palette):
+ *   #0a7ea8 / #0A7EA8  = var(--wp--preset--color--primary)   — teal
+ *   #d8ca50 / #D8CA50  = var(--wp--preset--color--accent)    — gold
+ *   #2c3e50 / #2C3E50  = var(--wp--preset--color--footer-bg) — dark navy
+ *   #ffffff / #FFFFFF  = var(--wp--preset--color--surface)   — white
+ *   #e7d768            = var(--wp--preset--color--accent-light) — light gold
+ *
+ * Many rules in this file use !important overrides against WordPress inline
+ * styles (style attributes). The var() fallback pattern is used where the
+ * CSS string supports PHP interpolation; the heredoc sections (<<<'CSS') are
+ * static strings where PHP vars cannot be interpolated — hex values there are
+ * intentional and match the variation tokens exactly.
+ *
  * @package SGS\Theme
  */
 
@@ -100,9 +113,9 @@ function enqueue_style_variation_extras(): void {
 .has-primary-background-color.wp-block-group a[href^='tel:'],
 .has-primary-background-color.wp-block-group a[href^='mailto:'] {
 	display:inline-flex;align-items:center;gap:6px;
-	background-color:#ffffff!important;
-	color:#0a7ea8!important;
-	border:3px solid #ffffff;
+	background-color:var(--wp--preset--color--surface,#ffffff)!important;
+	color:var(--wp--preset--color--primary,#0a7ea8)!important;
+	border:3px solid var(--wp--preset--color--surface,#ffffff);
 	border-radius:30px;padding:10px 20px;
 	min-height:44px;
 	transition:background-color .2s ease,color .2s ease;text-decoration:none;
@@ -111,7 +124,7 @@ function enqueue_style_variation_extras(): void {
 .has-primary-background-color.wp-block-group a[href^='tel:']:hover,
 .has-primary-background-color.wp-block-group a[href^='mailto:']:hover {
 	background-color:rgba(255,255,255,.9)!important;
-	color:#076a8e!important;
+	color:var(--wp--preset--color--primary-dark,#076a8e)!important;
 }
 /* ── Top bar height: reduce to ~54px (reference) ────────────────────────────
  * Top bar has 8px top/bottom padding giving ~68px total. Reduce to 5px for 54px. */
@@ -196,7 +209,7 @@ function enqueue_style_variation_extras(): void {
  * Overrides base theme's accent hover (core-blocks.css line 55) with Indus
  * Foods gold + dark text for better contrast on teal header background. */
 .wp-block-navigation .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content:hover,
-.wp-block-navigation .wp-block-navigation__container > .wp-block-page-list__item > a:hover{
+.wp-block-navigation .wp-block-navigation__container > .wp-block-page-list__item > a:hover {
 	background-color:var(--wp--preset--color--accent,#d8ca50)!important;
 	color:var(--wp--preset--color--text,#1e1e1e)!important;
 	border-radius:4px;
@@ -217,8 +230,8 @@ function enqueue_style_variation_extras(): void {
  * where white text fails WCAG AA (2.73:1). Gold-bg buttons use dark text
  * via H6 above. Other unscoped buttons get white on hover. */
 .wp-block-button__link:not(.has-accent-background-color):hover,
-.wp-element-button:not(.has-accent-background-color):hover{
-	color:var(--wp--preset--color--text-inverse,#FFF)!important;
+.wp-element-button:not(.has-accent-background-color):hover {
+	color:var(--wp--preset--color--text-inverse,#ffffff)!important;
 }
 ";
 
@@ -253,15 +266,15 @@ function enqueue_style_variation_extras(): void {
 	header .wp-block-navigation .wp-block-navigation__container > .wp-block-navigation-item.current-menu-item > a,
 	header .wp-block-navigation .wp-block-page-list__item.current-menu-item > a,
 	header .wp-block-navigation .wp-block-navigation-item__content[href='/'],
-	header .wp-block-navigation a.wp-block-navigation-item__content[href='/']{
+	header .wp-block-navigation a.wp-block-navigation-item__content[href='/'] {
 		background-color:var(--wp--preset--color--primary,#0a7ea8)!important;
-		color:var(--wp--preset--color--surface,#fff)!important;
+		color:var(--wp--preset--color--text-inverse,#ffffff)!important;
 		border-radius:4px;
 		padding:4px 16px!important;
 	}
 	/* Hover on non-active nav links */
 	header .wp-block-navigation .wp-block-navigation-item__content:hover,
-	header .wp-block-navigation .wp-block-navigation__container > .wp-block-navigation-item > a:hover{
+	header .wp-block-navigation .wp-block-navigation__container > .wp-block-navigation-item > a:hover {
 		background-color:var(--wp--preset--color--accent,#d8ca50)!important;
 		color:var(--wp--preset--color--text,#1e1e1e)!important;
 		border-radius:4px;
@@ -287,18 +300,18 @@ function enqueue_style_variation_extras(): void {
  * block attributes can set bg/text colour but not border or box-shadow.
  * Primary CTA: 3px solid gold border + shadow. Secondary: 3px solid white + shadow. */
 .sgs-hero__cta--accent{
-	border:3px solid #d8ca50!important;
+	border:3px solid var(--wp--preset--color--accent,#d8ca50)!important;
 	box-shadow:3px 8px 12px rgba(0,0,0,0.15)!important;
 	border-radius:10px!important;
 }
 .sgs-hero__cta:not(.sgs-hero__cta--accent){
-	border:3px solid #ffffff!important;
+	border:3px solid var(--wp--preset--color--surface,#ffffff)!important;
 	box-shadow:3px 8px 12px rgba(0,0,0,0.15)!important;
 	border-radius:10px!important;
 }
-/* ── Footer headings: gold colour #E7D768 ────────────────────────────────────
+/* ── Footer headings: gold colour ────────────────────────────────────────────
  * core-blocks.css forces .has-surface-color headings in footer to white.
- * Override for Indus Foods variation: headings should be gold #E7D768.
+ * Override for Indus Foods variation: headings should be accent-light gold.
  * Font size is set via Global Styles — no !important override needed. */
 footer .wp-block-heading.has-surface-color.has-text-color,
 footer .wp-block-heading.has-text-inverse-color.has-text-color,
@@ -306,7 +319,7 @@ footer .wp-block-heading.has-text-inverse-color.has-text-color,
 .wp-block-template-part footer .wp-block-heading.has-text-inverse-color.has-text-color,
 footer .sgs-footer-label,
 .wp-block-template-part footer .sgs-footer-label{
-	color:#e7d768!important;
+	color:var(--wp--preset--color--accent-light,#e7d768)!important;
 	text-transform:none!important;
 	letter-spacing:normal!important;
 }
@@ -343,18 +356,18 @@ footer .sgs-footer-label,
 /* Apply CTA (black bg, gold text → gold bg, dark text) */
 .sgs-hero__cta--accent:hover,
 .sgs-hero__cta--accent:focus{
-	background-color:#d8ca50!important;
-	color:#000000!important;
-	border-color:#000000!important;
+	background-color:var(--wp--preset--color--accent,#d8ca50)!important;
+	color:var(--wp--preset--color--text,#1e1e1e)!important;
+	border-color:var(--wp--preset--color--text,#1e1e1e)!important;
 	box-shadow:5px 20px 30px 9px rgba(0,0,0,0.15)!important;
 }
 
 /* Catalogue / secondary CTA (teal bg, white text → white bg, teal text) */
 .sgs-hero__cta:not(.sgs-hero__cta--accent):hover,
 .sgs-hero__cta:not(.sgs-hero__cta--accent):focus{
-	background-color:#ffffff!important;
-	color:#0a7ea8!important;
-	border-color:#0a7ea8!important;
+	background-color:var(--wp--preset--color--surface,#ffffff)!important;
+	color:var(--wp--preset--color--primary,#0a7ea8)!important;
+	border-color:var(--wp--preset--color--primary,#0a7ea8)!important;
 	box-shadow:5px 20px 30px 9px rgba(0,0,0,0.15)!important;
 }
 
@@ -461,13 +474,13 @@ footer .sgs-footer-label,
 	padding:var(--wp--preset--spacing--30);
 }
 .sgs-info-box:hover{
-	background-color:#2c3e50!important;
+	background-color:var(--wp--preset--color--surface-alt,#2c3e50)!important;
 	box-shadow:0 8px 24px rgba(0,0,0,0.15);
 	transform:translateY(-2px);
 }
 .sgs-info-box:hover .sgs-info-box__heading,
 .sgs-info-box:hover .sgs-info-box__description{
-	color:#ffffff!important;
+	color:var(--wp--preset--color--text-inverse,#ffffff)!important;
 }
 
 /* ── Footer margin — zero gap between last content section and footer ─────
@@ -500,23 +513,23 @@ footer.wp-block-template-part{margin-block-start:0!important}
 .wp-block-button__link[style*='background-color:#0A7EA8']:hover,
 .wp-block-button__link[style*='background-color: #0A7EA8']:hover,
 .wp-block-button__link.has-primary-background-color:hover{
-	background-color:#D8CA50!important;
-	color:#2C3E50!important;
-	border-color:#D8CA50!important;
+	background-color:var(--wp--preset--color--accent,#D8CA50)!important;
+	color:var(--wp--preset--color--text,#1e1e1e)!important;
+	border-color:var(--wp--preset--color--accent,#D8CA50)!important;
 }
 /* Black button → gold bg, dark text on hover */
 .wp-block-button__link[style*='background-color:#000000']:hover,
 .wp-block-button__link[style*='background-color: #000']:hover{
-	background-color:#D8CA50!important;
-	color:#2C3E50!important;
-	border-color:#2C3E50!important;
+	background-color:var(--wp--preset--color--accent,#D8CA50)!important;
+	color:var(--wp--preset--color--text,#1e1e1e)!important;
+	border-color:var(--wp--preset--color--text,#1e1e1e)!important;
 }
 /* Gold/accent button → teal bg, white text on hover */
 .wp-block-button__link.has-accent-background-color:hover,
 .wp-block-button__link[style*='background-color:#D8CA50']:hover{
-	background-color:#0A7EA8!important;
-	color:#FFFFFF!important;
-	border-color:#0A7EA8!important;
+	background-color:var(--wp--preset--color--primary,#0A7EA8)!important;
+	color:var(--wp--preset--color--text-inverse,#ffffff)!important;
+	border-color:var(--wp--preset--color--primary,#0A7EA8)!important;
 }
 
 /* ── Top bar pill hover ───────────────────────────────────────────────────

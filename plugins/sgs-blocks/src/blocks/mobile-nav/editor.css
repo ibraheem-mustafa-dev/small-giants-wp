@@ -28,7 +28,7 @@
 	height: 48px;
 	border-radius: 8px;
 	background: var(--wp--preset--color--primary, #0f7e80);
-	color: #fff;
+	color: var(--wp--preset--color--text-inverse, #fff);
 	flex-shrink: 0;
 }
 

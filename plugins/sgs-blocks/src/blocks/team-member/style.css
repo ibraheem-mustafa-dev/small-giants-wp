@@ -141,7 +141,7 @@
 
 .sgs-team-member__overlay-bio {
 	padding: 0.75rem;
-	color: #ffffff;
+	color: var(--wp--preset--color--text-inverse, #ffffff);
 	font-size: var(--wp--preset--font-size--small, 0.875rem);
 	line-height: 1.5;
 	transform: translateY(20px);

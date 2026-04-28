@@ -33,7 +33,7 @@
 }
 
 .sgs-testimonial--featured .sgs-testimonial__name:not([style*="color"]) {
-	color: #fff;
+	color: var(--wp--preset--color--text-inverse, #fff);
 }
 
 .sgs-testimonial--featured .sgs-testimonial__role:not([style*="color"]) {
@@ -42,7 +42,7 @@
 
 .sgs-testimonial--featured .sgs-testimonial__avatar-initials {
 	background-color: var(--wp--preset--color--accent, #F87A1F);
-	color: #fff;
+	color: var(--wp--preset--color--text-inverse, #fff);
 }
 
 /* ===== Stars ===== */

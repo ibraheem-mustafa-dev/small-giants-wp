@@ -526,7 +526,7 @@
 	width: 44px;
 	height: 44px;
 	border-radius: 50%;
-	color: #fff;
+	color: var(--wp--preset--color--text-inverse, #fff);
 	text-decoration: none;
 	transition: transform 200ms ease, filter 200ms ease;
 }
@@ -541,6 +541,13 @@
 	width: 20px;
 	height: 20px;
 }
+
+/*
+ * Third-party brand colours — INTENTIONAL, DO NOT TOKENISE.
+ * These are mandated by each platform's brand guidelines.
+ * LinkedIn: #0077b5 | Facebook: #1877f2 | Instagram: gradient
+ * Google/Gmail: #ea4335 | Twitter/X: #1da1f2
+ */
 
 /* Coloured social icons */
 .sgs-mobile-nav__socials--coloured .sgs-mobile-nav__social-link--linkedin {

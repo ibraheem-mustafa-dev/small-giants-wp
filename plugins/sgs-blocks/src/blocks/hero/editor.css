@@ -16,7 +16,7 @@
 /* Badge editor in sidebar */
 .sgs-hero-badge-editor {
 	padding: 12px;
-	border: 1px solid #ddd;
+	border: 1px solid var(--wp--preset--color--border-subtle, #ddd);
 	border-radius: 4px;
 	margin-bottom: 12px;
 }

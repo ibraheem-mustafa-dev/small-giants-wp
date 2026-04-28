@@ -1,8 +1,16 @@
 /**
  * Google Reviews — Frontend & Editor Styles
  *
+ * Semantic state colours — not in theme.json yet; overridable via custom CSS.
+ * Third-party brand colours are intentional and must NOT be tokenised.
+ *
  * @package SGS\Blocks
  */
+
+/* Semantic error colour for API failure notice */
+:root {
+	--sgs-reviews-error: #d00;
+}
 
 .sgs-google-reviews {
 	width: 100%;
@@ -11,8 +19,8 @@
 .sgs-google-reviews__error {
 	padding: 1rem;
 	background-color: rgba( 255, 0, 0, 0.1 );
-	border-left: 4px solid #d00;
-	color: #d00;
+	border-left: 4px solid var( --sgs-reviews-error, #d00 );
+	color: var( --sgs-reviews-error, #d00 );
 	font-weight: 600;
 }
 
@@ -234,7 +242,7 @@
 	height: 100%;
 	font-size: 0.9375rem;
 	font-weight: 700;
-	color: #fff;
+	color: var( --wp--preset--color--text-inverse, #fff );
 	background-color: var( --wp--preset--color--primary, #0f7e80 );
 	border-radius: 50%;
 }
@@ -360,7 +368,7 @@
 	min-height: 44px;
 	padding: 0.75rem 2rem;
 	background-color: var( --wp--preset--color--primary, #0f7e80 );
-	color: #fff;
+	color: var( --wp--preset--color--text-inverse, #fff );
 	text-decoration: none;
 	border-radius: var( --wp--custom--border-radius--medium, 8px );
 	font-weight: 600;
