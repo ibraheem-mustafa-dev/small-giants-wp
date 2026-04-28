@@ -14,6 +14,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
+
 $title       = $attributes['title'] ?? '';
 $is_open     = ! empty( $attributes['isOpen'] );
 $style       = $block->context['sgs/accordionStyle'] ?? 'bordered';
@@ -21,6 +23,8 @@ $icon_pos    = $block->context['sgs/accordionIconPosition'] ?? 'right';
 $header_col  = $block->context['sgs/accordionHeaderColour'] ?? '';
 $header_bg   = $block->context['sgs/accordionHeaderBackground'] ?? '';
 $icon_col    = $block->context['sgs/accordionIconColour'] ?? '';
+$open_icon   = sanitize_key( $block->context['sgs/accordionOpenIcon'] ?? 'chevron-down' );
+$close_icon  = sanitize_key( $block->context['sgs/accordionCloseIcon'] ?? 'chevron-up' );
 
 // Build inline styles for the header.
 $header_styles = [];
@@ -43,12 +47,25 @@ $classes = [
 	'sgs-accordion-item--' . esc_attr( $style ),
 ];
 
-$chevron_svg = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+// Retrieve Lucide SVGs for open and close states. Fall back to inline chevrons
+// if the icon name does not exist in the library (e.g. typo by the editor).
+$open_icon_svg  = sgs_get_lucide_icon( $open_icon );
+$close_icon_svg = sgs_get_lucide_icon( $close_icon );
+
+if ( ! $open_icon_svg ) {
+	$open_icon_svg = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+}
+if ( ! $close_icon_svg ) {
+	$close_icon_svg = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M18 15l-6-6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+}
 
 $icon_html = sprintf(
-	'<span class="sgs-accordion-item__icon"%s>%s</span>',
+	'<span class="sgs-accordion-item__icon-open" aria-hidden="true"%s>%s</span>' .
+	'<span class="sgs-accordion-item__icon-close" aria-hidden="true"%s>%s</span>',
 	$icon_style_attr,
-	$chevron_svg
+	$open_icon_svg,
+	$icon_style_attr,
+	$close_icon_svg
 );
 
 $open_attr = $is_open ? ' open' : '';

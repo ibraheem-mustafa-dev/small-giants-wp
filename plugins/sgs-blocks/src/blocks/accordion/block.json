@@ -75,6 +75,14 @@
 		},
 		"iconColour": {
 			"type": "string"
+		},
+		"openIcon": {
+			"type": "string",
+			"default": "chevron-down"
+		},
+		"closeIcon": {
+			"type": "string",
+			"default": "chevron-up"
 		}
 	},
 	"providesContext": {
@@ -82,7 +90,9 @@
 		"sgs/accordionIconPosition": "iconPosition",
 		"sgs/accordionHeaderColour": "headerColour",
 		"sgs/accordionHeaderBackground": "headerBackground",
-		"sgs/accordionIconColour": "iconColour"
+		"sgs/accordionIconColour": "iconColour",
+		"sgs/accordionOpenIcon": "openIcon",
+		"sgs/accordionCloseIcon": "closeIcon"
 	},
 	"allowedBlocks": [
 		"sgs/accordion-item"

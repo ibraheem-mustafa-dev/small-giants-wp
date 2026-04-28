@@ -27,7 +27,9 @@
                         "sgs/accordionIconPosition",
                         "sgs/accordionHeaderColour",
                         "sgs/accordionHeaderBackground",
-                        "sgs/accordionIconColour"
+                        "sgs/accordionIconColour",
+                        "sgs/accordionOpenIcon",
+                        "sgs/accordionCloseIcon"
                     ],
     "attributes":  {
                        "title":  {

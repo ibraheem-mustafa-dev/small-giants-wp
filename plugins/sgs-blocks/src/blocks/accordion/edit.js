@@ -7,6 +7,7 @@ import {
 import {
 	PanelBody,
 	SelectControl,
+	TextControl,
 	ToggleControl,
 	RangeControl,
 } from '@wordpress/components';
@@ -44,6 +45,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		headerColour,
 		headerBackground,
 		iconColour,
+		openIcon,
+		closeIcon,
 	} = attributes;
 
 	const className = [
@@ -79,6 +82,30 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) =>
 							setAttributes( { iconPosition: val } )
 						}
+						__nextHasNoMarginBottom
+					/>
+					<TextControl
+						label={ __( 'Open icon (Lucide name)', 'sgs-blocks' ) }
+						value={ openIcon }
+						onChange={ ( val ) =>
+							setAttributes( { openIcon: val } )
+						}
+						help={ __(
+							'Shown when the item is closed. e.g. chevron-down, plus, arrow-right',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+					/>
+					<TextControl
+						label={ __( 'Close icon (Lucide name)', 'sgs-blocks' ) }
+						value={ closeIcon }
+						onChange={ ( val ) =>
+							setAttributes( { closeIcon: val } )
+						}
+						help={ __(
+							'Shown when the item is open. e.g. chevron-up, minus, arrow-down',
+							'sgs-blocks'
+						) }
 						__nextHasNoMarginBottom
 					/>
 					<ToggleControl
