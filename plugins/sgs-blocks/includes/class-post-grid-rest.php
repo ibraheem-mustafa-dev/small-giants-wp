@@ -335,7 +335,7 @@ class Post_Grid_REST {
 		$card = '<article class="sgs-post-grid__card sgs-post-grid__card--' . esc_attr( $card_style ) . '">';
 
 		// --- Image section -----------------------------------------------
-		if ( $show_image && has_post_thumbnail( $post_id ) ) {
+		if ( $show_image ) {
 			$img_attrs = [
 				'class'   => 'sgs-post-grid__img',
 				'loading' => $img_loading,
@@ -345,12 +345,21 @@ class Post_Grid_REST {
 				$img_attrs['fetchpriority'] = 'high';
 			}
 
-			$card .= sprintf(
-				'<a href="%s" class="sgs-post-grid__image-link" tabindex="-1" aria-hidden="true"><div class="sgs-post-grid__image" style="aspect-ratio:%s">%s</div></a>',
-				$permalink,
-				esc_attr( $aspect_ratio ),
-				get_the_post_thumbnail( $post_id, $image_size, $img_attrs )
-			);
+			if ( has_post_thumbnail( $post_id ) ) {
+				$card .= sprintf(
+					'<a href="%s" class="sgs-post-grid__image-link" tabindex="-1" aria-hidden="true"><div class="sgs-post-grid__image" style="aspect-ratio:%s">%s</div></a>',
+					$permalink,
+					esc_attr( $aspect_ratio ),
+					get_the_post_thumbnail( $post_id, $image_size, $img_attrs )
+				);
+			} elseif ( 'minimal' !== $card_style ) {
+				// Placeholder shown for card/flat/overlay when no featured image is set.
+				$card .= sprintf(
+					'<a href="%s" class="sgs-post-grid__image-link" tabindex="-1" aria-hidden="true"><div class="sgs-post-grid__image sgs-post-grid__image--placeholder" style="aspect-ratio:%s"><div class="sgs-post-grid__image-placeholder"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" stroke="currentColor" stroke-width="1.5"/><circle cx="8.5" cy="8.5" r="1.5" stroke="currentColor" stroke-width="1.5"/><polyline points="21 15 16 10 5 21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div></a>',
+					$permalink,
+					esc_attr( $aspect_ratio )
+				);
+			}
 
 			// Category badge overlaid on image for card/overlay styles.
 			if ( $show_category && in_array( $card_style, [ 'card', 'overlay' ], true ) ) {

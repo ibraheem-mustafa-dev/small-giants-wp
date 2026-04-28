@@ -348,11 +348,54 @@
 }
 
 /* ==========================================================================
+   Card image placeholder (shown when post has no featured image)
+   ========================================================================== */
+
+.sgs-post-grid__image-placeholder {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	background: var( --wp--preset--color--surface-alt, #f5f7f7 );
+	color: var( --wp--preset--color--border-subtle, #c0c8cc );
+}
+
+.sgs-post-grid__image-placeholder svg {
+	display: block;
+	flex-shrink: 0;
+	opacity: 0.5;
+}
+
+/* ==========================================================================
    Hover effects (configurable via CSS custom properties from attributes)
    ========================================================================== */
 
-.sgs-post-grid__card:hover {
+/*
+ * Default lift: card/flat styles get a subtle translateY(-4px) lift plus
+ * shadow elevation on hover. This fires unconditionally — no attribute needed.
+ * GPU-composited via transform; no paint cost.
+ */
+.sgs-post-grid__card--card:hover,
+.sgs-post-grid__card--flat:hover {
+	transform: translateY( -4px );
+	box-shadow: 0 10px 24px rgba( 0, 0, 0, 0.10 );
+}
+
+/*
+ * Attribute-driven scale transform (--sgs-hover-scale defaults to 1 = no-op).
+ * Only fires when the attribute is explicitly set to something other than 1.
+ */
+.sgs-post-grid__card:has( ~ ) {
+	/* placeholder — actual scale applied below */
+}
+
+.sgs-post-grid__card[style*="--sgs-hover-scale"]:hover {
 	transform: scale( var( --sgs-hover-scale ) );
+}
+
+/* Attribute-driven shadow elevation */
+.sgs-post-grid__card[style*="--sgs-hover-shadow"]:hover {
 	box-shadow: var( --sgs-hover-shadow );
 }
 

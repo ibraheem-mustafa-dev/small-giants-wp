@@ -57,11 +57,17 @@
 }
 
 .sgs-testimonial__star {
-	font-size: 18px;
+	display: inline-flex;
+	align-items: center;
 	line-height: 1;
 }
 
-.sgs-testimonial__star--empty {
+.sgs-testimonial__star svg {
+	display: block;
+	flex-shrink: 0;
+}
+
+.sgs-testimonial__star--empty svg polygon {
 	opacity: 0.3;
 }
 

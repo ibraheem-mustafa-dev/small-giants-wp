@@ -136,19 +136,47 @@ export default function Save( { attributes } ) {
 					role="img"
 					aria-label={ `${ rating } out of 5 stars` }
 				>
-					{ Array.from( { length: 5 }, ( _, i ) => (
-						<span
-							key={ i }
-							className={ `sgs-testimonial__star ${
-								i < rating
-									? 'sgs-testimonial__star--filled'
+					{ Array.from( { length: 5 }, ( _, i ) => {
+						const filled = i < Math.floor( rating );
+						const half = ! filled && i < rating && ( rating % 1 ) >= 0.5;
+						const starClass = `sgs-testimonial__star ${
+							filled
+								? 'sgs-testimonial__star--filled'
+								: half
+									? 'sgs-testimonial__star--half'
 									: 'sgs-testimonial__star--empty'
-							}` }
-							aria-hidden="true"
-						>
-							{ i < rating ? '\u2605' : '\u2606' }
-						</span>
-					) ) }
+						}`;
+						if ( half ) {
+							const gradId = `sgs-th-${ i }`;
+							return (
+								<span key={ i } className={ starClass } aria-hidden="true">
+									<svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+										<defs>
+											<linearGradient id={ gradId }>
+												<stop offset="50%" stopColor="currentColor" />
+												<stop offset="50%" stopColor="currentColor" stopOpacity="0.2" />
+											</linearGradient>
+										</defs>
+										<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill={ `url(#${ gradId })` } />
+									</svg>
+								</span>
+							);
+						}
+						return (
+							<span key={ i } className={ starClass } aria-hidden="true">
+								<svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+									<polygon
+										points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+										fill={ filled ? 'currentColor' : 'none' }
+										stroke="currentColor"
+										strokeWidth={ filled ? '0' : '1.5' }
+										strokeLinecap="round"
+										strokeLinejoin="round"
+									/>
+								</svg>
+							</span>
+						);
+					} ) }
 				</div>
 			) }
 
