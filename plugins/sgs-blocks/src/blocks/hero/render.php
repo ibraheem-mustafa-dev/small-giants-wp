@@ -50,6 +50,12 @@ $hover_border_colour     = $attributes['hoverBorderColour'] ?? '';
 $transition_duration     = $attributes['transitionDuration'] ?? '300';
 $transition_easing       = $attributes['transitionEasing'] ?? 'ease-in-out';
 
+// Background effect attributes.
+$bg_parallax       = ! empty( $attributes['bgParallax'] );
+$bg_ken_burns      = ! empty( $attributes['bgKenBurns'] );
+$bg_video_attr     = $attributes['bgVideo'] ?? null;
+$bg_video_mobile   = $attributes['bgVideoMobile'] ?? null;
+
 $is_split        = 'split' === $variant;
 $is_video        = 'video' === $variant;
 $is_svg_animated = 'svg-animated' === $variant;
@@ -73,12 +79,10 @@ if ( $hover_border_colour ) {
 	$styles[] = '--sgs-hover-border:' . sgs_colour_value( $hover_border_colour );
 }
 
-if ( ! $is_split && ! $is_video && ! $is_svg_animated && ! empty( $bg_image['url'] ) ) {
-	$styles[] = 'background-image:url(' . esc_url( $bg_image['url'] ) . ')';
-	$styles[] = 'background-size:cover';
-	$styles[] = 'background-position:center';
-}
-
+// Standard variant: use <img> instead of CSS background-image so the browser can
+// discover the LCP resource early and apply fetchpriority="high".
+$has_standard_bg_image = ! $is_split && ! $is_video && ! $is_svg_animated
+	&& ! empty( $bg_image['url'] );
 
 // Generate a unique ID for responsive CSS scoping.
 $uid = 'sgs-hero-' . substr( md5( wp_json_encode( $attributes ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
@@ -106,6 +110,13 @@ $classes = array(
 	$uid,
 );
 
+if ( $bg_parallax ) {
+	$classes[] = 'sgs-hero--parallax';
+}
+if ( $bg_ken_burns ) {
+	$classes[] = 'sgs-hero--ken-burns';
+}
+
 $wrapper_attributes = get_block_wrapper_attributes(
 	array(
 		'class' => implode( ' ', $classes ),
@@ -114,11 +125,69 @@ $wrapper_attributes = get_block_wrapper_attributes(
 );
 
 // Build video background.
+// bgVideo / bgVideoMobile override the background image on their respective viewports.
+// These attributes work independently of the 'video' variant — any variant can have a video bg.
 $video_html = '';
-if ( $is_video && ! empty( $bg_video['url'] ) ) {
-	$video_html = sprintf(
-		'<video class="sgs-hero__video-bg" autoplay loop muted playsinline aria-hidden="true"><source src="%s" type="video/mp4"></video>',
-		esc_url( $bg_video['url'] )
+$has_variant_video = $is_video && ! empty( $bg_video['url'] );
+$has_attr_video    = ! empty( $bg_video_attr['url'] );
+
+if ( $has_variant_video || $has_attr_video ) {
+	$desktop_src = ! empty( $bg_video_attr['url'] ) ? $bg_video_attr['url'] : ( $bg_video['url'] ?? '' );
+	$mobile_src  = ! empty( $bg_video_mobile['url'] ) ? $bg_video_mobile['url'] : $desktop_src;
+
+	if ( $desktop_src === $mobile_src ) {
+		// Single source — no viewport switching needed.
+		$video_html = sprintf(
+			'<video class="sgs-hero__video-bg" autoplay loop muted playsinline aria-hidden="true">' .
+			'<source src="%s" type="video/mp4"></video>',
+			esc_url( $desktop_src )
+		);
+	} else {
+		// Two sources — JS swaps src based on viewport via data attributes.
+		$video_html = sprintf(
+			'<video class="sgs-hero__video-bg sgs-hero__video-bg--responsive" autoplay loop muted playsinline aria-hidden="true"' .
+			' data-src-desktop="%s" data-src-mobile="%s">' .
+			'<source src="%s" type="video/mp4"></video>',
+			esc_attr( $desktop_src ),
+			esc_attr( $mobile_src ),
+			esc_url( $desktop_src )
+		);
+	}
+}
+
+// Build standard background image element.
+// Using an <img> instead of CSS background-image lets the browser discover the LCP
+// resource early and apply fetchpriority="high". A static per-request counter ensures
+// only the first hero on a page gets the high-priority hint.
+$bg_img_html = '';
+if ( $has_standard_bg_image ) {
+	static $sgs_hero_count = 0;
+	$sgs_hero_count++;
+
+	$img_id         = ! empty( $bg_image['id'] ) ? absint( $bg_image['id'] ) : 0;
+	$fetch_priority = 1 === $sgs_hero_count ? 'high' : 'auto';
+	$loading        = 1 === $sgs_hero_count ? 'eager' : 'lazy';
+
+	$img_attrs = array(
+		'class'         => 'sgs-hero__bg-img',
+		'aria-hidden'   => 'true',
+		'fetchpriority' => $fetch_priority,
+		'loading'       => $loading,
+		'decoding'      => 1 === $sgs_hero_count ? 'sync' : 'async',
+		'alt'           => '',
+	);
+
+	if ( $bg_parallax ) {
+		$img_attrs['class'] .= ' sgs-hero__bg-img--parallax';
+	}
+
+	require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+	$bg_img_html = sgs_responsive_image(
+		$img_id,
+		$bg_image['url'],
+		'',
+		'full',
+		$img_attrs
 	);
 }
 
@@ -299,8 +368,9 @@ if ( $responsive_css ) {
 
 // Output.
 printf(
-	'<section %s>%s%s%s%s%s%s</section>',
+	'<section %s>%s%s%s%s%s%s%s</section>',
 	$wrapper_attributes,
+	$bg_img_html,
 	$video_html,
 	$svg_html,
 	$overlay_html,

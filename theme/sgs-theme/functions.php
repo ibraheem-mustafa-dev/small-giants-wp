@@ -44,6 +44,27 @@ function disable_emojis(): void {
 }
 add_action( 'init', __NAMESPACE__ . '\disable_emojis' );
 
+// Remove the emoji TinyMCE plugin (classic editor compatibility).
+add_filter(
+	'tiny_mce_plugins',
+	function ( array $plugins ): array {
+		return array_diff( $plugins, array( 'wpemoji' ) );
+	}
+);
+
+// Remove the s.w.org DNS prefetch hint emitted in <head>.
+add_filter(
+	'wp_resource_hints',
+	function ( array $urls, string $relation_type ): array {
+		if ( 'dns-prefetch' === $relation_type ) {
+			return array_diff( $urls, array( 'https://s.w.org' ) );
+		}
+		return $urls;
+	},
+	10,
+	2
+);
+
 /**
  * Security response headers.
  *
@@ -64,6 +85,8 @@ function setup(): void {
 	add_theme_support( 'wp-block-styles' );
 	add_theme_support( 'editor-styles' );
 	add_theme_support( 'responsive-embeds' );
+	// Enables the Site Icon / favicon field in WP Admin → Appearance → Customise.
+	add_theme_support( 'site-icon' );
 
 	add_editor_style( 'assets/css/core-blocks-critical.css' );
 	add_editor_style( 'assets/css/core-blocks.css' );

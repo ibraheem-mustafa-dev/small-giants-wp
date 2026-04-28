@@ -27,6 +27,22 @@
 	padding: var(--wp--preset--spacing--60) var(--wp--preset--spacing--40);
 }
 
+/* Background image (standard variant — <img> for LCP fetchpriority support) */
+.sgs-hero__bg-img {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: center;
+	pointer-events: none;
+}
+
+.sgs-hero__bg-img--parallax {
+	background-attachment: fixed;
+}
+
 /* Background video */
 .sgs-hero__video-bg {
 	position: absolute;
@@ -399,6 +415,67 @@
 		text-align: center;
 		box-sizing: border-box;
 	}
+}
+
+/* ===== Parallax Background ===== */
+
+/* Desktop: background-attachment:fixed is set inline by render.php when bgParallax is true.
+   Mobile: override to scroll (fixed bg looks broken on iOS/Android). */
+@media (max-width: 767px) {
+	.sgs-hero--parallax {
+		background-attachment: scroll;
+	}
+}
+
+/* Touch devices detected by JS — strips fixed attachment to prevent iOS jitter. */
+.sgs-hero--parallax.no-parallax {
+	background-attachment: scroll;
+}
+
+/* ===== Ken-Burns Background ===== */
+
+@keyframes sgs-ken-burns {
+	0%   { transform: scale(1)    translate(0, 0); }
+	33%  { transform: scale(1.06) translate(-1%, 0.5%); }
+	66%  { transform: scale(1.04) translate(1%, -0.5%); }
+	100% { transform: scale(1)    translate(0, 0); }
+}
+
+/* Ken-Burns requires a pseudo-element so the animation doesn't affect content position. */
+.sgs-hero--ken-burns {
+	isolation: isolate;
+}
+
+.sgs-hero--ken-burns::before {
+	content: '';
+	position: absolute;
+	inset: -5%;
+	z-index: 0;
+	background-image: inherit;
+	background-size: cover;
+	background-position: center;
+	will-change: transform;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.sgs-hero--ken-burns::before {
+		animation: sgs-ken-burns 20s ease-in-out infinite alternate;
+	}
+}
+
+/* When ken-burns is active, hide the parent's own background (pseudo-element has it). */
+.sgs-hero--ken-burns {
+	background-image: none !important;
+}
+
+/* Content must remain above the ken-burns pseudo-element. */
+.sgs-hero--ken-burns .sgs-hero__overlay,
+.sgs-hero--ken-burns .sgs-hero__content,
+.sgs-hero--ken-burns .sgs-hero__media,
+.sgs-hero--ken-burns .sgs-hero__badges,
+.sgs-hero--ken-burns .sgs-hero__ctas {
+	position: relative;
+	z-index: 1;
 }
 
 /* ===== Reduced Motion ===== */
