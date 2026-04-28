@@ -378,11 +378,12 @@
 	) !important;
 }
 
-/* Dark radial — near-black centre to primary-dark edge */
+/* Dark radial — text-colour centre to primary-dark edge.
+   Both stops use design tokens so the gradient themes correctly to client style variations. */
 .sgs-cta-section--gradient-dark-radial {
 	background: radial-gradient(
 		ellipse at center,
-		#0d2b2c 0%,
+		var(--wp--preset--color--text, #1E1E1E) 0%,
 		var(--wp--preset--color--primary-dark, #0A5B5D) 100%
 	) !important;
 }
