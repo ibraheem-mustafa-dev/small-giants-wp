@@ -59,6 +59,9 @@ require_once SGS_BLOCKS_PATH . 'includes/heading-anchors.php';
 // Device visibility — server-side class injection for show/hide per device.
 require_once SGS_BLOCKS_PATH . 'includes/device-visibility.php';
 
+// Conditional visibility — server-side block suppression by rules (login, date, etc).
+require_once SGS_BLOCKS_PATH . 'includes/conditional-visibility.php';
+
 // Universal hover effects — server-side CSS variable injection.
 require_once SGS_BLOCKS_PATH . 'includes/hover-effects.php';
 

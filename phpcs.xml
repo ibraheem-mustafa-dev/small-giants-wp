@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         name="SGS WordPress Framework"
+         xsi:noNamespaceSchemaLocation="https://schema.phpcodesniffer.com/phpcs.xsd">
+
+    <description>PHP_CodeSniffer ruleset for the SGS WordPress Framework (theme + blocks plugin).</description>
+
+    <!-- ── Scan targets ─────────────────────────────────────────────────── -->
+    <file>plugins/sgs-blocks</file>
+    <file>theme/sgs-theme</file>
+    <file>plugins/sgs-booking</file>
+    <file>plugins/sgs-client-notes</file>
+
+    <!-- ── Exclusions ───────────────────────────────────────────────────── -->
+    <!-- Compiled output — not source code -->
+    <exclude-pattern>*/build/*</exclude-pattern>
+    <!-- Composer + NPM dependencies -->
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+    <exclude-pattern>*/node_modules/*</exclude-pattern>
+    <!-- Auto-generated Lucide icon map (1963 lines, exempt per CLAUDE.md) -->
+    <exclude-pattern>*/includes/lucide-icons.php</exclude-pattern>
+    <!-- Minified assets -->
+    <exclude-pattern>*.min.js</exclude-pattern>
+    <exclude-pattern>*.min.css</exclude-pattern>
+
+    <!-- ── Ruleset ──────────────────────────────────────────────────────── -->
+    <!-- WordPress-Extra includes WordPress-Core + additional best-practice sniffs -->
+    <rule ref="WordPress-Extra">
+        <!--
+            PSR-4 namespacing (e.g. SGS\Blocks) means class files may not
+            follow the WordPress lowercase-hyphen naming exactly in some
+            contexts — suppress this sniff to avoid false positives.
+        -->
+        <exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
+        <exclude name="WordPress.Files.FileName.NotHyphenatedLowercase"/>
+    </rule>
+
+    <!-- Include inline doc-comment standards -->
+    <rule ref="WordPress-Docs"/>
+
+    <!-- ── WordPress environment config ────────────────────────────────── -->
+    <config name="minimum_wp_version" value="6.5"/>
+
+    <!-- ── Text domain validation ───────────────────────────────────────── -->
+    <rule ref="WordPress.WP.I18n">
+        <properties>
+            <property name="text_domain" type="array">
+                <element value="sgs-blocks"/>
+                <element value="sgs-theme"/>
+                <element value="sgs-booking"/>
+                <element value="sgs-client-notes"/>
+            </property>
+        </properties>
+    </rule>
+
+    <!-- ── Global prefix enforcement ────────────────────────────────────── -->
+    <!--
+        'sgs' is 3 chars — below WPCS's 4-char minimum — but it is the
+        established prefix for this entire framework and is specific enough
+        for a private codebase. Suppress ShortPrefixPassed only.
+    -->
+    <rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+        <exclude name="WordPress.NamingConventions.PrefixAllGlobals.ShortPrefixPassed"/>
+        <properties>
+            <property name="prefixes" type="array">
+                <element value="sgs"/>
+                <element value="SGS"/>
+                <element value="sgs_"/>
+            </property>
+        </properties>
+    </rule>
+
+    <!-- ── Performance ──────────────────────────────────────────────────── -->
+    <arg name="parallel" value="8"/>
+
+    <!-- Show progress and sniff codes in output -->
+    <arg value="ps"/>
+    <arg name="colors"/>
+
+    <!-- Report only errors and warnings (not info) -->
+    <arg name="report-width" value="120"/>
+
+</ruleset>
