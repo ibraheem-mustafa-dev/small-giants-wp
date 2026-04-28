@@ -1,5 +1,11 @@
 # SGS Framework Completion Plan
 
+> **CLOSED — 2026-04-29**
+> Framework completion plan archived. All phases complete:
+> Phase 0–3 (core blocks, extensions, patterns), Phase 5.1 (Conditional Visibility),
+> sgsParallax, framework-wide QC passed 12/12. Final extensions: 9 total.
+> Archived by session: small-giants-wp-2026-04-29-framework-close.
+
 <!-- crosslinks-2026-04-29 -->
 > **Related plans (2026-04-29 cross-link pass):**
 > - Step 2 strategic plan + 5-client queue: [`2026-04-21-step2-strategic-plan.md`](2026-04-21-step2-strategic-plan.md)

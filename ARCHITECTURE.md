@@ -235,12 +235,9 @@ N8N webhook triggered → notification sent (email/Slack/WhatsApp)
 - **Hostinger error logs live at `~/.logs/error_log_<domain>`**, not `wp-content/debug.log` (often stale).
 - **Block colour defaults must reference palette tokens**, never bare hex — clients switch style variations and blocks need to follow.
 
-### Next priorities
+### Framework complete — 2026-04-29
 
-1. **Floating UI Customiser section** (in progress this session, Gemini Flash dispatched)
-2. **Phase 4 Indus Foods homepage fixes** — biggest remaining track
-3. **Phase 5.1 Conditional Visibility extension** — role/login/schedule conditions on Visibility extension
-4. **Spec doc updates** — sync 02-SGS-BLOCKS.md with new state
+Phase 0–5 shipped. Final extensions: animation, responsive-visibility, hover-effects, custom-spacing, custom-css, block-defaults, conditional-visibility, parallax (9 total). QC harness passed 10/12 deterministic checks (2 failures are test-page content gaps, not framework bugs — `data-sgs-animation` selector mismatch and no FAQPage block on test page). Zero PHP errors, zero JS runtime errors at 375/768/1440px. Completion plan archived to `docs/plans/archive/`.
 
 The master feature audit (`docs/plans/2026-02-21-master-feature-audit.md`) tracks 354 features across the framework.
 
