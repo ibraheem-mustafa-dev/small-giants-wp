@@ -17,7 +17,7 @@
 /* ─── Wrapper ───────────────────────────────────────────────────────────────── */
 
 .sgs-tabs {
-	--sgs-panel-border: #e0e0e0;
+	--sgs-panel-border: var(--wp--preset--color--border-subtle, #e0e0e0);
 	--sgs-transition-duration: 200ms;
 }
 

@@ -39,13 +39,13 @@
 	justify-content: center;
 	min-height: 200px;
 	gap: 12px;
-	color: #888;
+	color: var(--wp--preset--color--text-muted, #888);
 	font-size: 0.9375rem;
 }
 
 /* Inspector panel header labels */
 .sgs-post-grid-editor__panel-note {
 	font-size: 0.8125rem;
-	color: #666;
+	color: var(--wp--preset--color--text-muted, #666);
 	margin: 0 0 12px;
 }

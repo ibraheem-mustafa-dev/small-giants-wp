@@ -341,7 +341,7 @@
 	top: -1px;
 	right: var(--wp--preset--spacing--40, 1.5rem);
 	background-color: var(--wp--preset--color--accent, #F87A1F);
-	color: #fff;
+	color: var(--wp--preset--color--text-inverse, #fff);
 	font-size: var(--wp--preset--font-size--x-small, 0.75rem);
 	font-weight: 700;
 	letter-spacing: 0.05em;
