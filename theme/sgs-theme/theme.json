@@ -6,22 +6,27 @@
       "palette": [
         {
           "slug": "primary",
-          "color": "#0F7E80",
+          "color": "#1F7A7A",
           "name": "Primary"
         },
         {
           "slug": "primary-dark",
-          "color": "#0A5B5D",
+          "color": "#0F4C4C",
           "name": "Primary Dark"
         },
         {
           "slug": "accent",
-          "color": "#F87A1F",
+          "color": "#F59E0B",
           "name": "Accent"
         },
         {
+          "slug": "accent-text",
+          "color": "#92400E",
+          "name": "Accent Text"
+        },
+        {
           "slug": "accent-light",
-          "color": "#FEE8D4",
+          "color": "#FEF3C7",
           "name": "Accent Light"
         },
         {
@@ -41,32 +46,32 @@
         },
         {
           "slug": "surface",
-          "color": "#FFFFFF",
+          "color": "#FAF9F6",
           "name": "Surface"
         },
         {
           "slug": "surface-alt",
-          "color": "#F5F7F7",
+          "color": "#F1F0EC",
           "name": "Surface Alt"
         },
         {
           "slug": "text",
-          "color": "#1E1E1E",
+          "color": "#1A202C",
           "name": "Text"
         },
         {
           "slug": "text-muted",
-          "color": "#555555",
+          "color": "#606D80",
           "name": "Text Muted"
         },
         {
           "slug": "text-inverse",
-          "color": "#C0D5D6",
+          "color": "#F1F5F9",
           "name": "Text Inverse"
         },
         {
           "slug": "border-subtle",
-          "color": "#0D5557",
+          "color": "#D4DBE5",
           "name": "Border Subtle"
         },
         {
@@ -76,7 +81,7 @@
         },
         {
           "slug": "footer-bg",
-          "color": "#0A5B5D",
+          "color": "#0F172A",
           "name": "Footer Background"
         }
       ],
