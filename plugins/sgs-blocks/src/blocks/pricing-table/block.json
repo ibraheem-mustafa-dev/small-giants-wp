@@ -47,7 +47,7 @@
 		},
 		"billingToggle": {
 			"type": "boolean",
-			"default": false
+			"default": true
 		},
 		"billingToggleMonthlyLabel": {
 			"type": "string",
