@@ -14,19 +14,23 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 // Extract attributes.
-$label              = $attributes['label'] ?? '';
-$url                = $attributes['url'] ?? '';
-$opens_in_new_tab   = $attributes['opensInNewTab'] ?? false;
-$menu_template_part = $attributes['menuTemplatePart'] ?? '';
-$panel_width        = $attributes['panelWidth'] ?? 'full';
-$panel_max_width    = $attributes['panelMaxWidth'] ?? '1200px';
-$panel_alignment    = $attributes['panelAlignment'] ?? 'left';
-$open_on            = $attributes['openOn'] ?? 'hover';
-$icon               = $attributes['icon'] ?? 'chevron-down';
-$icon_position      = $attributes['iconPosition'] ?? 'after';
-$highlight          = $attributes['highlight'] ?? false;
-$badge              = $attributes['badge'] ?? '';
-$badge_colour       = $attributes['badgeColour'] ?? 'accent';
+$label               = $attributes['label'] ?? '';
+$url                 = $attributes['url'] ?? '';
+$opens_in_new_tab    = $attributes['opensInNewTab'] ?? false;
+$menu_template_part  = $attributes['menuTemplatePart'] ?? '';
+$panel_width         = $attributes['panelWidth'] ?? 'full';
+$panel_max_width     = $attributes['panelMaxWidth'] ?? '1200px';
+$panel_alignment     = $attributes['panelAlignment'] ?? 'left';
+$open_on             = $attributes['openOn'] ?? 'hover';
+$icon                = $attributes['icon'] ?? 'chevron-down';
+$icon_position       = $attributes['iconPosition'] ?? 'after';
+$highlight           = $attributes['highlight'] ?? false;
+$badge               = $attributes['badge'] ?? '';
+$badge_colour        = $attributes['badgeColour'] ?? 'accent';
+$panel_bg_colour     = $attributes['panelBgColour'] ?? 'surface';
+$link_colour         = $attributes['linkColour'] ?? 'text';
+$link_hover_colour   = $attributes['linkHoverColour'] ?? 'primary';
+$link_hover_bg       = $attributes['linkHoverBgColour'] ?? 'surface-alt';
 
 // Generate unique menu ID per block instance.
 // wp_unique_id() is process-safe and persists across nested do_blocks() calls,
@@ -75,8 +79,15 @@ if ( 'hover' === $open_on ) {
 	$wrapper_attr['data-wp-on--mouseleave'] = 'actions.closeOnHover';
 }
 
-// Add custom styles for panel width if needed.
-$wrapper_styles = array();
+// Build wrapper CSS custom properties.
+// Colour vars drive trigger text, hover states, and panel background
+// so style.css never needs hardcoded palette values.
+$wrapper_styles = array(
+	'--sgs-mm-panel-bg:'        . sgs_colour_value( $panel_bg_colour ),
+	'--sgs-mm-link-colour:'     . sgs_colour_value( $link_colour ),
+	'--sgs-mm-link-hover:'      . sgs_colour_value( $link_hover_colour ),
+	'--sgs-mm-link-hover-bg:'   . sgs_colour_value( $link_hover_bg ),
+);
 if ( 'custom' === $panel_width && $panel_max_width ) {
 	$wrapper_styles[] = '--sgs-mega-menu-max-width:' . esc_attr( $panel_max_width );
 }

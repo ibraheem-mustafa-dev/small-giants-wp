@@ -22,6 +22,8 @@ $bg_shape     = $attributes['backgroundShape'] ?? 'none';
 $icon_link    = $attributes['link'] ?? '';
 $link_new_tab = $attributes['linkOpensNewTab'] ?? false;
 $link_label   = $attributes['linkLabel'] ?? '';
+$hover_colour = $attributes['hoverColour'] ?? 'accent-text';
+$hover_scale  = (float) ( $attributes['hoverScale'] ?? 1.1 );
 
 $classes = array( 'sgs-icon' );
 if ( 'none' !== $bg_shape ) {
@@ -37,6 +39,10 @@ if ( $icon_colour ) {
 if ( $bg_colour && 'none' !== $bg_shape ) {
 	$styles[] = 'background-color:' . sgs_colour_value( $bg_colour );
 }
+// Hover CSS custom properties consumed by style.css :hover rules.
+// FIX #15 — default accent-text (5.0:1) replaces accent (2.04:1 fail).
+$styles[] = '--sgs-icon-hover-colour:' . sgs_colour_value( $hover_colour );
+$styles[] = '--sgs-icon-hover-scale:' . round( $hover_scale, 3 );
 
 $align           = $block->attributes['align'] ?? 'center';
 $wrapper_classes = array_merge( $classes, array( "align$align" ) );

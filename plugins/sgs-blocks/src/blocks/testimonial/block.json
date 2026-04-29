@@ -52,18 +52,15 @@
   "attributes": {
     "quote": {
       "type": "string",
-      "source": "html",
-      "selector": ".sgs-testimonial__quote"
+      "default": ""
     },
     "name": {
       "type": "string",
-      "source": "html",
-      "selector": ".sgs-testimonial__name"
+      "default": ""
     },
     "role": {
       "type": "string",
-      "source": "html",
-      "selector": ".sgs-testimonial__role"
+      "default": ""
     },
     "avatar": {
       "type": "object"
@@ -147,7 +144,7 @@
       "type": "number",
       "default": 0
     },
-    "sgsAnimationType": {
+    "sgsAnimation": {
       "type": "string",
       "default": "fade-up"
     },

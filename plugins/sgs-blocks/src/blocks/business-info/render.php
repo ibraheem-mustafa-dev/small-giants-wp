@@ -27,10 +27,13 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 
-$type       = $attributes['type'] ?? 'phone';
-$show_icon  = ! empty( $attributes['showIcon'] );
-$link_phone = ! empty( $attributes['linkPhone'] );
-$link_email = ! empty( $attributes['linkEmail'] );
+$type         = $attributes['type'] ?? 'phone';
+$show_icon    = ! empty( $attributes['showIcon'] );
+$link_phone   = ! empty( $attributes['linkPhone'] );
+$link_email   = ! empty( $attributes['linkEmail'] );
+$icon_colour  = $attributes['iconColour'] ?? 'primary';
+$text_colour  = $attributes['textColour'] ?? 'text';
+$label_colour = $attributes['labelColour'] ?? 'text-muted';
 
 // Placeholder shown in the editor when data is missing.
 $placeholder = sprintf(
@@ -256,8 +259,16 @@ switch ( $type ) {
 		break;
 }
 
-$wrapper_attributes = get_block_wrapper_attributes( [
+// Emit colour CSS custom properties so style.css can consume them.
+$wrapper_styles = array(
+	'--sgs-bi-icon-colour:'  . sgs_colour_value( $icon_colour ),
+	'--sgs-bi-text-colour:'  . sgs_colour_value( $text_colour ),
+	'--sgs-bi-label-colour:' . sgs_colour_value( $label_colour ),
+);
+
+$wrapper_attributes = get_block_wrapper_attributes( array(
 	'class' => 'sgs-business-info-wrap sgs-business-info-wrap--' . esc_attr( $type ),
-] );
+	'style' => implode( ';', $wrapper_styles ) . ';',
+) );
 
 printf( '<div %s>%s</div>', $wrapper_attributes, $html );

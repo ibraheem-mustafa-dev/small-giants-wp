@@ -80,14 +80,22 @@ function addAnimationAttributes( settings, name ) {
 		return settings;
 	}
 
+	// Preserve per-block defaults declared in block.json.
+	// If a block explicitly sets a default (even '' or false), it wins over the
+	// extension fallback. Only undefined falls through to the extension default.
+	const existingAnimation = settings.attributes?.sgsAnimation?.default;
+	const existingDelay     = settings.attributes?.sgsAnimationDelay?.default;
+	const existingDuration  = settings.attributes?.sgsAnimationDuration?.default;
+	const existingEasing    = settings.attributes?.sgsAnimationEasing?.default;
+
 	return {
 		...settings,
 		attributes: {
 			...settings.attributes,
-			sgsAnimation: { type: 'string', default: 'none' },
-			sgsAnimationDelay: { type: 'string', default: '0' },
-			sgsAnimationDuration: { type: 'string', default: 'medium' },
-			sgsAnimationEasing: { type: 'string', default: 'default' },
+			sgsAnimation:         { type: 'string', default: existingAnimation     ?? 'none' },
+			sgsAnimationDelay:    { type: 'string', default: existingDelay         ?? '0' },
+			sgsAnimationDuration: { type: 'string', default: existingDuration      ?? 'medium' },
+			sgsAnimationEasing:   { type: 'string', default: existingEasing        ?? 'default' },
 		},
 	};
 }

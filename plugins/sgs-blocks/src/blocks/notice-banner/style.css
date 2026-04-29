@@ -26,9 +26,11 @@
 }
 
 /* ===== Variant: Warning ===== */
+/* Border uses accent-text (#92400E) not accent (#F87A1F) — accent on accent-light bg
+   fails contrast at 1.93:1. accent-text gives 6.37:1 against accent-light bg. */
 .sgs-notice-banner--warning {
-	--_banner-bg: var(--wp--preset--color--warning-bg, #FFFBEB);
-	--_banner-border: var(--wp--preset--color--warning-border, #F59E0B);
+	--_banner-bg: var(--wp--preset--color--accent-light, #FEE8D4);
+	--_banner-border: var(--wp--preset--color--accent-text, #92400E);
 	background-color: var(--_banner-bg);
 	border-left-color: var(--_banner-border);
 }

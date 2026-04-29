@@ -54,7 +54,10 @@
     "mediaType": {
       "type": "string",
       "default": "icon",
-      "enum": [ "icon", "image" ]
+      "enum": [
+        "icon",
+        "image"
+      ]
     },
     "image": {
       "type": "object"
@@ -62,7 +65,11 @@
     "iconPosition": {
       "type": "string",
       "default": "top",
-      "enum": [ "top", "left", "right" ]
+      "enum": [
+        "top",
+        "left",
+        "right"
+      ]
     },
     "icon": {
       "type": "string",
@@ -178,7 +185,7 @@
       "type": "number",
       "default": 0
     },
-    "sgsAnimationType": {
+    "sgsAnimation": {
       "type": "string",
       "default": "fade-up"
     },

@@ -165,6 +165,7 @@
 	overflow:    hidden;
 	border-radius: var( --sgs-item-radius );
 	margin:      0;
+	transition: transform var( --sgs-transition-duration ) var( --sgs-transition-easing );
 }
 
 /* Image wrap — contains the img and the hover overlay pseudo-element */
@@ -256,11 +257,6 @@
 	animation-delay: calc(var(--sgs-stagger, 0ms) * var(--sgs-item-index, 0));
 }
 
-/* Card-level scale transform on hover */
-.sgs-gallery__item {
-	transition: transform var( --sgs-transition-duration ) var( --sgs-transition-easing );
-}
-
 .sgs-gallery__item:hover {
 	transform: scale( var( --sgs-hover-scale, 1 ) );
 }
@@ -338,18 +334,25 @@
 }
 
 /* ==========================================================================
-   Lightbox modal
+   Lightbox modal — Group J spec
+   - Backdrop: primary-dark 90% opacity, fade medium
+   - Image: scale 0.9→1 + opacity, duration medium, easing ease-out
+   - Arrow nav: text-inverse on primary-dark 50% → primary-dark 80% hover, fast
+   - Caption: hidden in tile state, fades in inside lightbox, fast
    ========================================================================== */
 
 .sgs-gallery__lightbox {
 	position:        fixed;
 	inset:           0;
 	z-index:         100000;
-	background:      rgba( 0, 0, 0, 0.92 );
+	/* Backdrop: primary-dark at 90% opacity per spec */
+	background:      color-mix( in srgb, var( --wp--preset--color--primary-dark, #0A5B5D ) 90%, transparent );
 	display:         none; /* shown via --open class */
 	align-items:     center;
 	justify-content: center;
 	padding:         20px;
+	/* Backdrop fade: medium duration */
+	transition: opacity var( --wp--custom--duration--medium, 300ms ) var( --wp--custom--easing--ease-out, cubic-bezier(0.16, 1, 0.3, 1) );
 }
 
 .sgs-gallery__lightbox--open {
@@ -370,22 +373,26 @@
 	padding:    0;
 	border:     none;
 	border-radius: 50%;
-	background: rgba( 255, 255, 255, 0.15 );
+	/* primary-dark at 50% opacity for the close button (consistent with arrow nav) */
+	background: color-mix( in srgb, var( --wp--preset--color--primary-dark, #0A5B5D ) 50%, transparent );
 	color:      var( --wp--preset--color--text-inverse, #ffffff );
 	cursor:     pointer;
-	transition: background 200ms ease;
+	transition: background var( --wp--custom--duration--fast, 150ms ) var( --wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1) );
 }
 
 .sgs-gallery__lightbox-close:hover {
-	background: rgba( 255, 255, 255, 0.3 );
+	background: color-mix( in srgb, var( --wp--preset--color--primary-dark, #0A5B5D ) 80%, transparent );
 }
 
 .sgs-gallery__lightbox-close:focus-visible {
-	outline:        2px solid var( --wp--preset--color--text-inverse, #ffffff );
-	outline-offset: 2px;
+	outline: var( --wp--custom--focus-ring--width, 3px ) solid var( --wp--custom--focus-ring--color-primary, rgba(31, 122, 122, 0.4) );
+	outline-offset: var( --wp--custom--focus-ring--offset, 2px );
 }
 
-/* Prev/next navigation inside lightbox */
+/*
+ * Prev/next arrow nav inside lightbox.
+ * text-inverse icon on primary-dark 50% bg → primary-dark 80% on hover, fast.
+ */
 .sgs-gallery__lightbox-prev,
 .sgs-gallery__lightbox-next {
 	position:   absolute;
@@ -400,10 +407,10 @@
 	padding:    0;
 	border:     none;
 	border-radius: 50%;
-	background: rgba( 255, 255, 255, 0.15 );
+	background: color-mix( in srgb, var( --wp--preset--color--primary-dark, #0A5B5D ) 50%, transparent );
 	color:      var( --wp--preset--color--text-inverse, #ffffff );
 	cursor:     pointer;
-	transition: background 200ms ease;
+	transition: background var( --wp--custom--duration--fast, 150ms ) var( --wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1) );
 }
 
 .sgs-gallery__lightbox-prev {
@@ -416,13 +423,13 @@
 
 .sgs-gallery__lightbox-prev:hover,
 .sgs-gallery__lightbox-next:hover {
-	background: rgba( 255, 255, 255, 0.3 );
+	background: color-mix( in srgb, var( --wp--preset--color--primary-dark, #0A5B5D ) 80%, transparent );
 }
 
 .sgs-gallery__lightbox-prev:focus-visible,
 .sgs-gallery__lightbox-next:focus-visible {
-	outline:        2px solid var( --wp--preset--color--text-inverse, #ffffff );
-	outline-offset: 2px;
+	outline: var( --wp--custom--focus-ring--width, 3px ) solid var( --wp--custom--focus-ring--color-primary, rgba(31, 122, 122, 0.4) );
+	outline-offset: var( --wp--custom--focus-ring--offset, 2px );
 }
 
 /* Central image + caption container */
@@ -434,20 +441,44 @@
 	max-width:      90vw;
 }
 
+/*
+ * Lightbox image: scale 0.9→1 + opacity, duration medium, easing ease-out per spec.
+ * The .sgs-gallery__lightbox--open class is added by view.js when opening.
+ */
 .sgs-gallery__lightbox-img {
 	display:    block;
 	max-width:  90vw;
 	max-height: 80vh;
 	object-fit: contain;
 	border-radius: 4px;
+	opacity: 0;
+	transform: scale( 0.9 );
+	transition:
+		opacity   var( --wp--custom--duration--medium, 300ms ) var( --wp--custom--easing--ease-out, cubic-bezier(0.16, 1, 0.3, 1) ),
+		transform var( --wp--custom--duration--medium, 300ms ) var( --wp--custom--easing--ease-out, cubic-bezier(0.16, 1, 0.3, 1) );
 }
 
+.sgs-gallery__lightbox--open .sgs-gallery__lightbox-img {
+	opacity: 1;
+	transform: scale( 1 );
+}
+
+/*
+ * Caption: hidden in tile state (handled by .sgs-gallery__caption rules above),
+ * visible and fades in inside the lightbox. Duration: fast.
+ */
 .sgs-gallery__lightbox-caption {
 	margin:      0;
-	color:       rgba( 255, 255, 255, 0.85 );
+	color:       var( --wp--preset--color--text-inverse, #ffffff );
 	font-size:   0.9375rem;
 	text-align:  center;
 	max-width:   600px;
+	opacity: 0;
+	transition: opacity var( --wp--custom--duration--fast, 150ms ) var( --wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1) );
+}
+
+.sgs-gallery__lightbox--open .sgs-gallery__lightbox-caption {
+	opacity: 1;
 }
 
 .sgs-gallery__lightbox-counter {
@@ -553,10 +584,24 @@
 	.sgs-gallery__carousel-prev,
 	.sgs-gallery__carousel-next,
 	.sgs-gallery__dot,
+	.sgs-gallery__lightbox,
 	.sgs-gallery__lightbox-close,
 	.sgs-gallery__lightbox-prev,
-	.sgs-gallery__lightbox-next {
-		transition: none;
+	.sgs-gallery__lightbox-next,
+	.sgs-gallery__lightbox-img,
+	.sgs-gallery__lightbox-caption {
+		transition-duration: 0.01ms !important;
+		animation-duration: 0.01ms !important;
+	}
+
+	/* Ensure lightbox image is immediately visible without transform */
+	.sgs-gallery__lightbox-img {
+		opacity: 1 !important;
+		transform: none !important;
+	}
+
+	.sgs-gallery__lightbox-caption {
+		opacity: 1 !important;
 	}
 
 	.sgs-gallery--zoom .sgs-gallery__item:hover .sgs-gallery__img,

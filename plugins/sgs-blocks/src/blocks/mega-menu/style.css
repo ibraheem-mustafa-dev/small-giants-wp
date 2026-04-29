@@ -62,7 +62,7 @@
 	font-family:     inherit;
 	font-size:       inherit;
 	font-weight:     500;
-	color:           var(--wp--preset--color--text, #1E1E1E);
+	color:           var(--sgs-mm-link-colour, var(--wp--preset--color--text, #1e1e1e));
 	background:      transparent;
 	border:          none;
 	cursor:          pointer;
@@ -73,8 +73,8 @@
 
 .sgs-mega-menu__trigger:hover,
 .sgs-mega-menu__trigger:focus-visible {
-	color:            var(--wp--preset--color--primary, currentColor);
-	background-color: var(--wp--preset--color--surface-dark, rgba(0, 0, 0, 0.05));
+	color:            var(--sgs-mm-link-hover, var(--wp--preset--color--primary, currentColor));
+	background-color: var(--sgs-mm-link-hover-bg, var(--wp--preset--color--surface-alt, rgba(0, 0, 0, 0.05)));
 }
 
 .sgs-mega-menu__trigger:focus-visible {
@@ -142,7 +142,7 @@
 	min-width:        var(--sgs-mm-panel-min-width);
 	max-width:        min(900px, calc(100vw - 2rem)); /* prevent panel exceeding viewport */
 	padding:          var(--sgs-mm-panel-padding);
-	background-color: var(--wp--preset--color--surface, #fff);
+	background-color: var(--sgs-mm-panel-bg, var(--wp--preset--color--surface, #fff));
 	border-top:       3px solid var(--wp--preset--color--accent, currentColor);
 	box-shadow:       0 4px 24px rgba(0, 0, 0, 0.08),
 	                  0 0 0 1px rgba(0, 0, 0, 0.05);

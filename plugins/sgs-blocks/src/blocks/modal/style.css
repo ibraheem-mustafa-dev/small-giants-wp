@@ -7,9 +7,11 @@
 
 .sgs-modal {
 	--sgs-modal-z-index: 99999;
-	--sgs-modal-transition: 0.3s ease;
-	--sgs-modal-backdrop-colour: var(--wp--preset--color--text, #000000);
-	--sgs-modal-backdrop-opacity: 0.5;
+	/* Panel: medium duration + spring easing per Group J spec */
+	--sgs-modal-transition: var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--spring, cubic-bezier(0.34, 1.56, 0.64, 1));
+	/* Backdrop: primary-dark at 70% opacity per Group J spec (FIX #8) */
+	--sgs-modal-backdrop-colour: var(--wp--preset--color--primary-dark, #0A5B5D);
+	--sgs-modal-backdrop-opacity: 0.7;
 }
 
 /* Trigger button */
@@ -67,20 +69,24 @@
 	text-decoration: none;
 }
 
-/* Native dialog element */
+/* Native dialog element — panel: surface bg, scale 0.95→1 + opacity, spring easing per Group J spec */
 .sgs-modal__dialog {
 	position: fixed;
 	margin: auto;
 	padding: 0;
 	border: none;
-	background-color: var(--wp--preset--color--white, #fff);
+	background-color: var(--wp--preset--color--surface, #ffffff);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 	max-height: 90vh;
 	overflow-y: auto;
 	opacity: 0;
-	transform: scale(0.9);
-	transition: opacity var(--sgs-modal-transition), transform var(--sgs-modal-transition), overlay var(--sgs-modal-transition) allow-discrete, display var(--sgs-modal-transition) allow-discrete;
+	transform: scale(0.95);
+	transition:
+		opacity   var(--sgs-modal-transition),
+		transform var(--sgs-modal-transition),
+		overlay   var(--sgs-modal-transition) allow-discrete,
+		display   var(--sgs-modal-transition) allow-discrete;
 }
 
 /* Dialog opening animation */
@@ -93,7 +99,7 @@
 @starting-style {
 	.sgs-modal__dialog[open] {
 		opacity: 0;
-		transform: scale(0.9);
+		transform: scale(0.95);
 	}
 }
 
@@ -118,11 +124,14 @@
 	max-width: 95vw;
 }
 
-/* Backdrop (native dialog ::backdrop pseudo-element) */
+/* Backdrop: primary-dark 70% opacity, fade fast per Group J spec */
 .sgs-modal__dialog::backdrop {
 	background-color: var(--sgs-modal-backdrop-colour);
 	opacity: 0;
-	transition: opacity var(--sgs-modal-transition), overlay var(--sgs-modal-transition) allow-discrete, display var(--sgs-modal-transition) allow-discrete;
+	transition:
+		opacity var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1)),
+		overlay var(--sgs-modal-transition) allow-discrete,
+		display var(--sgs-modal-transition) allow-discrete;
 }
 
 .sgs-modal__dialog[open]::backdrop {
@@ -136,7 +145,12 @@
 	}
 }
 
-/* Close button — 2.75rem = 44px: WCAG 2.2 SC 2.5.5 touch target */
+/*
+ * Close button — 2.75rem = 44px: WCAG 2.2 SC 2.5.5 touch target.
+ * Idle: border-subtle bg (chip semantic, 12.0:1 with text icon — FIX #11).
+ * Hover: primary-dark bg + text-inverse icon (8.88:1 — FIX #5).
+ * Duration: fast (150ms) per Group J spec.
+ */
 .sgs-modal__close {
 	position: absolute;
 	top: 1rem;
@@ -150,15 +164,23 @@
 	padding: 0;
 	border: none;
 	border-radius: 50%;
-	background-color: var(--wp--preset--color--neutral-100, #f5f5f5);
-	color: var(--wp--preset--color--text, #333);
+	background-color: var(--wp--preset--color--border-subtle, #e0e0e0);
+	color: var(--wp--preset--color--text, #1e1e1e);
 	cursor: pointer;
-	transition: all 0.2s ease;
+	transition:
+		background-color var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1)),
+		color            var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1));
 }
 
 .sgs-modal__close:hover {
-	background-color: var(--wp--preset--color--neutral-200, #e5e5e5);
-	transform: rotate(90deg);
+	background-color: var(--wp--preset--color--primary-dark, #0A5B5D);
+	color: var(--wp--preset--color--text-inverse, #ffffff);
+}
+
+/* :focus-visible ring using SGS focus-ring tokens */
+.sgs-modal__close:focus-visible {
+	outline: var(--wp--custom--focus-ring--width, 3px) solid var(--wp--custom--focus-ring--color-primary, rgba(31, 122, 122, 0.4));
+	outline-offset: var(--wp--custom--focus-ring--offset, 2px);
 }
 
 .sgs-modal__close svg {
@@ -186,12 +208,10 @@
  */
 @media (prefers-reduced-motion: reduce) {
 	.sgs-modal__dialog,
-	.sgs-modal__dialog::backdrop {
-		transition: none !important;
-	}
-
+	.sgs-modal__dialog::backdrop,
 	.sgs-modal__trigger,
 	.sgs-modal__close {
-		transition: none !important;
+		transition-duration: 0.01ms !important;
+		animation-duration: 0.01ms !important;
 	}
 }

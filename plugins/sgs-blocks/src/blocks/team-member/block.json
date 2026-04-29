@@ -157,7 +157,7 @@
       "type": "number",
       "default": 80
     },
-    "sgsAnimationType": {
+    "sgsAnimation": {
       "type": "string",
       "default": "fade-up"
     },

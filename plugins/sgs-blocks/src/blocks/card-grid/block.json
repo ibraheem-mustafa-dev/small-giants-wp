@@ -135,7 +135,7 @@
       "type": "number",
       "default": 80
     },
-    "sgsAnimationType": {
+    "sgsAnimation": {
       "type": "string",
       "default": "fade-up"
     },
@@ -150,7 +150,10 @@
     "source": {
       "type": "string",
       "default": "manual",
-      "enum": ["manual", "query"]
+      "enum": [
+        "manual",
+        "query"
+      ]
     },
     "queryPostType": {
       "type": "string",

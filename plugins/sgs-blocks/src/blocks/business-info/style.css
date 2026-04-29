@@ -6,9 +6,15 @@
  */
 
 /* ── Wrapper ─────────────────────────────────────────────────────────────── */
+/*
+ * --sgs-bi-icon-colour  : emitted by render.php from the iconColour attribute (default: primary).
+ * --sgs-bi-text-colour  : emitted by render.php from the textColour attribute (default: text).
+ * --sgs-bi-label-colour : emitted by render.php from the labelColour attribute (default: text-muted).
+ */
 
 .sgs-business-info-wrap {
 	display: block;
+	color: var(--sgs-bi-text-colour, var(--wp--preset--color--text, #1e1e1e));
 }
 
 /* ── Inline elements with icons (phone, email, address) ─────────────────── */
@@ -26,6 +32,7 @@
 	align-items: center;
 	flex-shrink: 0;
 	line-height: 0;
+	color: var(--sgs-bi-icon-colour, var(--wp--preset--color--primary, #0f7e80));
 }
 
 .sgs-business-info__icon svg {
@@ -79,6 +86,7 @@
 .sgs-business-hours__day {
 	font-weight: 600;
 	min-width: 6em;
+	color: var(--sgs-bi-label-colour, var(--wp--preset--color--text-muted, #555555));
 }
 
 .sgs-business-hours__time {

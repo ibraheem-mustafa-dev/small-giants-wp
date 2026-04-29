@@ -29,12 +29,17 @@
 	box-sizing: border-box;
 }
 
-/* Card style */
+/* Card style — hover shadow-lift added per Group J spec (duration: medium) */
 .sgs-testimonial-slider__slide--card {
 	background: var(--wp--preset--color--surface, #fff);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	box-shadow: var(--wp--preset--shadow--md);
 	padding: var(--wp--preset--spacing--40);
+	transition: box-shadow var(--wp--custom--duration--medium, 300ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+.sgs-testimonial-slider__slide--card:hover {
+	box-shadow: var(--wp--preset--shadow--lg, 0 8px 24px rgba(0, 0, 0, 0.15));
 }
 
 /* Minimal style */
@@ -176,6 +181,11 @@
 	z-index: 2;
 }
 
+/*
+ * Arrow button: primary bg idle → primary-dark hover (scale 1.05) → depress + scale 0.99 active.
+ * Icon always text-inverse per Group J spec.
+ * Duration: fast (150ms), easing: default.
+ */
 .sgs-testimonial-slider__arrow {
 	pointer-events: all;
 	display: inline-flex;
@@ -184,26 +194,34 @@
 	width: 44px;
 	height: 44px;
 	border-radius: 50%;
-	border: 1px solid var(--wp--preset--color--border-subtle, #0D5557);
-	background: var(--wp--preset--color--surface, #fff);
-	color: var(--wp--preset--color--text, #1E1E1E);
+	border: none;
+	background: var(--wp--preset--color--primary, #0F7E80);
+	color: var(--wp--preset--color--text-inverse, #ffffff);
 	font-size: 24px;
 	line-height: 1;
 	cursor: pointer;
-	transition-duration: var(--sgs-transition-duration, 300ms);
-	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
-	transition-property: background-color, color, border-color;
+	transition:
+		background-color var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1)),
+		transform        var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1)),
+		box-shadow       var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1));
 }
 
 .sgs-testimonial-slider__arrow:hover {
-	background: var(--wp--preset--color--primary, #0F7E80);
-	color: var(--wp--preset--color--text-inverse, #fff);
-	border-color: var(--wp--preset--color--primary, #0F7E80);
+	background: var(--wp--preset--color--primary-dark, #0A5B5D);
+	transform: scale(1.05);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
+.sgs-testimonial-slider__arrow:active {
+	background: var(--wp--preset--color--primary-dark, #0A5B5D);
+	transform: scale(0.99);
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* :focus-visible using SGS focus-ring tokens */
 .sgs-testimonial-slider__arrow:focus-visible {
-	outline: 2px solid var(--wp--preset--color--primary-dark, #076a8e);
-	outline-offset: 3px;
+	outline: var(--wp--custom--focus-ring--width, 3px) solid var(--wp--custom--focus-ring--color-primary, rgba(31, 122, 122, 0.4));
+	outline-offset: var(--wp--custom--focus-ring--offset, 2px);
 }
 
 /* ===== Dots ===== */
@@ -240,26 +258,41 @@
 	transition: none;
 }
 
+/*
+ * Dot pseudo-element: border-subtle idle → primary hover scale 1.2 → primary-dark active scale 1.3.
+ * Easing: spring per Group J spec (fast duration).
+ */
 .sgs-testimonial-slider__dot::before {
 	content: '';
 	width: 10px;
 	height: 10px;
 	border-radius: 50%;
-	background: rgba(255, 255, 255, 0.5);
-	transition-duration: var(--sgs-transition-duration, 300ms);
-	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
-	transition-property: background-color, transform;
+	background: var(--wp--preset--color--border-subtle, #0D5557);
+	transition:
+		background-color var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--spring, cubic-bezier(0.34, 1.56, 0.64, 1)),
+		transform        var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--spring, cubic-bezier(0.34, 1.56, 0.64, 1));
 	pointer-events: none;
 }
 
-.sgs-testimonial-slider__dot--active::before {
-	background: var(--wp--preset--color--surface, #fff);
-	transform: scale(1.4);
+.sgs-testimonial-slider__dot:hover::before {
+	background: var(--wp--preset--color--primary, #0F7E80);
+	transform: scale(1.2);
 }
 
+.sgs-testimonial-slider__dot--active::before {
+	background: var(--wp--preset--color--primary, #0F7E80);
+	transform: scale(1.3);
+}
+
+.sgs-testimonial-slider__dot--active:hover::before {
+	background: var(--wp--preset--color--primary-dark, #0A5B5D);
+	transform: scale(1.3);
+}
+
+/* :focus-visible using SGS focus-ring tokens */
 .sgs-testimonial-slider__dot:focus-visible {
-	outline: 2px solid var(--wp--preset--color--primary-dark, #076a8e);
-	outline-offset: 2px;
+	outline: var(--wp--custom--focus-ring--width, 3px) solid var(--wp--custom--focus-ring--color-primary, rgba(31, 122, 122, 0.4));
+	outline-offset: var(--wp--custom--focus-ring--offset, 2px);
 }
 
 /* ===== Pause/Play button — WCAG 2.2.2 compliant ===== */
@@ -294,8 +327,8 @@
 }
 
 .sgs-testimonial-slider__pause-btn:focus-visible {
-	outline: 2px solid var(--wp--preset--color--primary-dark, #076a8e);
-	outline-offset: 3px;
+	outline: var(--wp--custom--focus-ring--width, 3px) solid var(--wp--custom--focus-ring--color-primary, rgba(31, 122, 122, 0.4));
+	outline-offset: var(--wp--custom--focus-ring--offset, 2px);
 }
 
 .sgs-testimonial-slider__pause-icon {
@@ -464,8 +497,21 @@
 
 	.sgs-testimonial-slider__arrow,
 	.sgs-testimonial-slider__dot,
-	.sgs-testimonial-slider__dot::before {
-		transition: none;
+	.sgs-testimonial-slider__dot::before,
+	.sgs-testimonial-slider__slide--card,
+	.sgs-testimonial-slider__pause-btn {
+		transition-duration: 0.01ms !important;
+		animation-duration: 0.01ms !important;
+	}
+
+	.sgs-testimonial-slider__arrow:hover,
+	.sgs-testimonial-slider__arrow:active {
+		transform: none !important;
+	}
+
+	.sgs-testimonial-slider__dot:hover::before,
+	.sgs-testimonial-slider__dot--active::before {
+		transform: none !important;
 	}
 }
 

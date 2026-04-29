@@ -12,7 +12,7 @@ function initModals() {
 	const triggers = document.querySelectorAll( '.sgs-modal__trigger' );
 
 	triggers.forEach( ( trigger ) => {
-		const modalId = trigger.getAttribute( 'data-modal-id' );
+		const modalId = trigger.dataset.modalId;
 		if ( ! modalId ) {
 			return;
 		}
@@ -23,8 +23,7 @@ function initModals() {
 		}
 
 		const closeButton = dialog.querySelector( '.sgs-modal__close' );
-		const closeOnOverlay =
-			dialog.getAttribute( 'data-close-on-overlay' ) === 'true';
+		const closeOnOverlay = dialog.dataset.closeOnOverlay === 'true';
 
 		// Open modal when trigger button is clicked.
 		trigger.addEventListener( 'click', () => {
@@ -69,11 +68,15 @@ function initModals() {
 /**
  * Open a modal using native dialog.showModal().
  *
- * Native dialog provides:
- * - Automatic focus trap (Tab cycles within dialog)
- * - Escape key handling (closes dialog)
+ * Native dialog provides a built-in focus trap — Tab and Shift+Tab cycle
+ * only through focusable elements inside the dialog while it is open.
+ * No manual focusin/focusout listener is required; the browser enforces
+ * this at the platform level when showModal() is used (WCAG 2.1 SC 2.1.2).
+ *
+ * Additional native behaviour:
+ * - Escape key closes the dialog (fires 'cancel' event)
  * - Backdrop styling via ::backdrop pseudo-element
- * - Accessibility with aria-modal implicit from showModal()
+ * - aria-modal="true" implied by showModal()
  *
  * Additionally we lock body scroll while the modal is open so the page
  * beneath does not scroll when the user scrolls inside the dialog.
@@ -105,7 +108,7 @@ function openModal( dialog, closeButton ) {
  * Native dialog automatically restores focus to the element that opened it.
  */
 function closeModal( dialog ) {
-	const scrollY = parseInt( dialog.dataset.scrollY || '0', 10 );
+	const scrollY = Number.parseInt( dialog.dataset.scrollY || '0', 10 );
 
 	document.body.style.overflow = '';
 	document.body.style.position = '';

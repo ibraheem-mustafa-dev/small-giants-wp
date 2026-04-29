@@ -9,6 +9,11 @@
 
 .sgs-accordion-item {
 	border: 0;
+	border-bottom: 1px solid var(--wp--preset--color--border-light, var(--wp--preset--color--border-subtle, #e0e0e0));
+}
+
+.sgs-accordion-item:last-child {
+	border-bottom: 0;
 }
 
 /* Remove native marker */
@@ -36,8 +41,11 @@
 	font-weight: 600;
 	font-size: 1rem;
 	line-height: 1.4;
-	transition: background-color 0.2s ease;
 	min-height: 44px; /* WCAG 2.2 AA touch target */
+	background-color: var(--wp--preset--color--surface, #ffffff);
+	transition:
+		background-color var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1)),
+		color            var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1));
 }
 
 .sgs-accordion-item__header:not([style*="color"]) {
@@ -45,7 +53,21 @@
 }
 
 .sgs-accordion-item__header:hover {
-	opacity: 0.85;
+	background-color: var(--wp--preset--color--surface-alt, #f5f7f7);
+	color: var(--wp--preset--color--primary, #0f7e80);
+}
+
+/* Open-state header */
+.sgs-accordion-item[open] > .sgs-accordion-item__header,
+.sgs-accordion-item[open] > summary > .sgs-accordion-item__header {
+	background-color: var(--wp--preset--color--surface-alt, #f5f7f7);
+	color: var(--wp--preset--color--primary, #0f7e80);
+}
+
+/* :focus-visible ring */
+.sgs-accordion-item__header:focus-visible {
+	outline: var(--wp--custom--focus-ring--width, 3px) solid var(--wp--custom--focus-ring--color-primary, rgba(31, 122, 122, 0.4));
+	outline-offset: var(--wp--custom--focus-ring--offset, 2px);
 }
 
 .sgs-accordion-item__title {
@@ -62,12 +84,51 @@
 	flex-shrink: 0;
 	width: 24px;
 	height: 24px;
-	transition: opacity 0.2s ease-in;
+	transition:
+		opacity var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1)),
+		color   var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1));
 }
 
 .sgs-accordion-item__icon-open:not([style*="color"]),
 .sgs-accordion-item__icon-close:not([style*="color"]) {
-	color: var(--wp--preset--color--primary, currentColor);
+	color: var(--wp--preset--color--text-muted, #555555);
+}
+
+/* Icon colour on header hover/open */
+.sgs-accordion-item__header:hover .sgs-accordion-item__icon-open,
+.sgs-accordion-item__header:hover .sgs-accordion-item__icon-close,
+.sgs-accordion-item[open] .sgs-accordion-item__icon-open,
+.sgs-accordion-item[open] .sgs-accordion-item__icon-close {
+	color: var(--wp--preset--color--primary, #0f7e80);
+}
+
+/* ─── CHEVRON variant — single icon that rotates ─── */
+
+/*
+ * When a block uses a single chevron icon (class: sgs-accordion-item__chevron)
+ * instead of separate open/close icon spans, we rotate it 180° on open.
+ * Rotation uses the medium duration + default easing per the audit spec.
+ */
+.sgs-accordion-item__chevron {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	width: 24px;
+	height: 24px;
+	color: var(--wp--preset--color--text-muted, #555555);
+	transition:
+		transform var(--wp--custom--duration--medium, 300ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1)),
+		color     var(--wp--custom--duration--fast, 150ms)   var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+.sgs-accordion-item[open] .sgs-accordion-item__chevron,
+.sgs-accordion-item__header:hover .sgs-accordion-item__chevron {
+	color: var(--wp--preset--color--primary, #0f7e80);
+}
+
+.sgs-accordion-item[open] .sgs-accordion-item__chevron {
+	transform: rotate(180deg);
 }
 
 /* ─── ICON SWAP — close state (default: item is closed) ─── */
@@ -187,12 +248,12 @@
  * Browser support: Baseline 2024 (Chrome 117+, Firefox 129+, Safari 17.5+).
  * Progressive enhancement: older browsers see an instant expand, not broken.
  *
- * Note: native <details> expand animation via interpolate-size is limited;
- * we animate the content wrapper's opacity and transform only, which works
- * reliably without setting height on the container.
+ * Duration: medium (300ms) + easing: default per Group J audit spec.
  */
 .sgs-accordion-item__content {
-	transition: opacity 0.25s ease, transform 0.25s ease;
+	transition:
+		opacity   var(--wp--custom--duration--medium, 300ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1)),
+		transform var(--wp--custom--duration--medium, 300ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1));
 }
 
 .sgs-accordion-item[open] > .sgs-accordion-item__content {
@@ -219,22 +280,29 @@
 	}
 
 	.sgs-accordion-item {
-		transition: block-size 0.3s ease;
+		transition: block-size var(--wp--custom--duration--medium, 300ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1));
 	}
 
 	/* ::details-content is the pseudo-element for the hidden part of <details> */
 	.sgs-accordion-item::details-content {
-		transition: block-size 0.3s ease;
+		transition: block-size var(--wp--custom--duration--medium, 300ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1));
 		overflow: hidden;
 	}
 }
 
-/* Respect reduced motion preference */
+/* ─── REDUCED MOTION ─── */
+
 @media (prefers-reduced-motion: reduce) {
 	.sgs-accordion-item__header,
 	.sgs-accordion-item__icon-open,
 	.sgs-accordion-item__icon-close,
+	.sgs-accordion-item__chevron,
 	.sgs-accordion-item__content {
-		transition: none !important;
+		transition-duration: 0.01ms !important;
+		animation-duration: 0.01ms !important;
+	}
+
+	.sgs-accordion-item[open] .sgs-accordion-item__chevron {
+		transform: none !important;
 	}
 }

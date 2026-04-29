@@ -59,13 +59,11 @@
                                   },
                        "headline":  {
                                         "type":  "string",
-                                        "source":  "html",
-                                        "selector":  ".sgs-heritage-strip__headline"
+                                        "default":  ""
                                     },
                        "body":  {
                                     "type":  "string",
-                                    "source":  "html",
-                                    "selector":  ".sgs-heritage-strip__body"
+                                    "default":  ""
                                 },
                        "imageLeft":  {
                                          "type":  "object"

@@ -13,12 +13,25 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$separator  = $attributes['separator'] ?? '/';
-$show_home  = $attributes['showHome'] ?? true;
-$home_label = $attributes['homeLabel'] ?? 'Home';
+require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+
+$separator        = $attributes['separator'] ?? '/';
+$show_home        = $attributes['showHome'] ?? true;
+$home_label       = $attributes['homeLabel'] ?? 'Home';
+$link_colour      = $attributes['linkColour'] ?? 'text-muted';
+$separator_colour = $attributes['separatorColour'] ?? 'text-muted';
+$current_colour   = $attributes['currentColour'] ?? 'text';
+
+// Emit colour CSS custom properties consumed by style.css.
+$wrapper_styles = array(
+	'--sgs-breadcrumbs-link-colour:'      . sgs_colour_value( $link_colour ),
+	'--sgs-breadcrumbs-separator-colour:' . sgs_colour_value( $separator_colour ),
+	'--sgs-breadcrumbs-current-colour:'   . sgs_colour_value( $current_colour ),
+);
 
 $wrapper_attributes = get_block_wrapper_attributes( array(
 	'class' => 'sgs-breadcrumbs',
+	'style' => implode( ';', $wrapper_styles ) . ';',
 ) );
 
 $crumbs = array();

@@ -80,26 +80,37 @@
 	min-height: 44px;
 	min-width: 44px;
 
-	color: var( --sgs-tab-text, inherit );
+	/* Idle: text-muted per Group J spec */
+	color: var( --sgs-tab-text, var( --wp--preset--color--text-muted, #555555 ) );
 
 	transition:
-		color var( --sgs-transition-duration ) ease,
-		background-color var( --sgs-transition-duration ) ease,
-		box-shadow var( --sgs-transition-duration ) ease;
+		color            var( --wp--custom--duration--fast, 150ms ) var( --wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1) ),
+		background-color var( --wp--custom--duration--fast, 150ms ) var( --wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1) ),
+		box-shadow       var( --wp--custom--duration--fast, 150ms ) var( --wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1) );
 }
 
+/*
+ * Hover: text shifts to `text` (not text-muted) AND underline appears.
+ * The underline is a non-colour signal required by WCAG 1.4.1 (FIX #14).
+ * We use text-decoration rather than box-shadow so it works on all style variants.
+ */
 .sgs-tabs__tab:hover {
-	background-color: var( --sgs-tab-hover-bg, rgba( 0, 0, 0, 0.05 ) );
+	color: var( --wp--preset--color--text, #1e1e1e );
+	text-decoration: underline;
+	background-color: transparent;
 }
 
+/* :focus-visible ring using SGS focus-ring tokens */
 .sgs-tabs__tab:focus-visible {
-	outline: 2px solid var( --wp--preset--color--primary, currentColor );
-	outline-offset: -2px;
+	outline: var( --wp--custom--focus-ring--width, 3px ) solid var( --wp--custom--focus-ring--color-primary, rgba(31, 122, 122, 0.4) );
+	outline-offset: var( --wp--custom--focus-ring--offset, 2px );
 }
 
+/* Active: primary colour, remove hover underline */
 .sgs-tabs__tab[aria-selected="true"],
 .sgs-tabs__tab--active {
-	color: var( --sgs-tab-active-text, var( --wp--preset--color--primary, inherit ) );
+	color: var( --sgs-tab-active-text, var( --wp--preset--color--primary, #0f7e80 ) );
+	text-decoration: none;
 	background-color: var( --sgs-tab-active-bg, transparent );
 }
 
@@ -128,8 +139,11 @@
 	left: var( --sgs-indicator-left, 0px );
 	width: var( --sgs-indicator-width, 0px );
 	height: 2px;
-	background: var( --sgs-tab-active-indicator, var( --wp--preset--color--primary, currentColor ) );
-	transition: left 200ms ease, width 200ms ease;
+	background: var( --sgs-tab-active-indicator, var( --wp--preset--color--primary, #0f7e80 ) );
+	/* left+width slide: medium duration, default easing per Group J spec */
+	transition:
+		left  var( --wp--custom--duration--medium, 300ms ) var( --wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1) ),
+		width var( --wp--custom--duration--medium, 300ms ) var( --wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1) );
 	pointer-events: none;
 }
 
@@ -147,7 +161,9 @@
 	top: var( --sgs-indicator-top, 0px );
 	width: 2px;
 	height: var( --sgs-indicator-height, 0px );
-	transition: top 200ms ease, height 200ms ease;
+	transition:
+		top    var( --wp--custom--duration--medium, 300ms ) var( --wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1) ),
+		height var( --wp--custom--duration--medium, 300ms ) var( --wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1) );
 }
 
 .sgs-tabs--vertical.sgs-tabs--style-underline .sgs-tabs__nav[style*="--sgs-indicator-top"] .sgs-tabs__tab[aria-selected="true"],
@@ -224,18 +240,21 @@
 
 /*
  * When JS is active, it removes [hidden] and adds --active class.
- * The opacity transition gives a smooth cross-fade between panels.
- * Wrapped in prefers-reduced-motion so motion-sensitive users see an
- * instant switch instead.
+ * The opacity + 4px translateY gives a smooth reveal per Group J spec.
+ * Duration: fast (150ms). Wrapped in prefers-reduced-motion guard.
  */
 @media ( prefers-reduced-motion: no-preference ) {
 	.sgs-tabs--js .sgs-tabs__panel {
 		opacity: 0;
-		transition: opacity 200ms ease;
+		transform: translateY(4px);
+		transition:
+			opacity   var( --wp--custom--duration--fast, 150ms ) var( --wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1) ),
+			transform var( --wp--custom--duration--fast, 150ms ) var( --wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1) );
 	}
 
 	.sgs-tabs--js .sgs-tabs__panel--active {
 		opacity: 1;
+		transform: translateY(0);
 	}
 }
 
@@ -273,7 +292,9 @@
 		left: var( --sgs-indicator-left, 0px );
 		width: var( --sgs-indicator-width, 0px );
 		height: 2px;
-		transition: left 200ms ease, width 200ms ease;
+		transition:
+			left  var( --wp--custom--duration--medium, 300ms ) var( --wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1) ),
+			width var( --wp--custom--duration--medium, 300ms ) var( --wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1) );
 	}
 
 	.sgs-tabs--vertical.sgs-tabs--style-boxed .sgs-tabs__tab[aria-selected="true"],
@@ -288,12 +309,15 @@
 /* ─── Reduced motion ────────────────────────────────────────────────────────── */
 
 @media ( prefers-reduced-motion: reduce ) {
-	.sgs-tabs__tab {
-		transition: none;
+	.sgs-tabs__tab,
+	.sgs-tabs--style-underline .sgs-tabs__nav::after,
+	.sgs-tabs--js .sgs-tabs__panel {
+		transition-duration: 0.01ms !important;
+		animation-duration: 0.01ms !important;
 	}
 
-	.sgs-tabs--style-underline .sgs-tabs__nav::after {
-		transition: none;
+	.sgs-tabs--js .sgs-tabs__panel {
+		transform: none !important;
 	}
 }
 

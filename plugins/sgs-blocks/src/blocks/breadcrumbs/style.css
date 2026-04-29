@@ -20,15 +20,23 @@
 	gap: var(--wp--preset--spacing--10, 4px);
 }
 
+/*
+ * --sgs-breadcrumbs-link-colour      : emitted by render.php (default: text-muted).
+ * --sgs-breadcrumbs-separator-colour : emitted by render.php (default: text-muted). FIX #12 —
+ *   previous hardcoded border-subtle gave 1.32:1 contrast; text-muted gives 4.99:1.
+ * --sgs-breadcrumbs-current-colour   : emitted by render.php (default: text).
+ */
+
 .sgs-breadcrumbs__item a {
-	color: var(--wp--preset--color--text-muted, #555555);
+	color: var(--sgs-breadcrumbs-link-colour, var(--wp--preset--color--text-muted, #555555));
 	text-decoration: none;
 	transition: var(--wp--custom--transition--fast, 0.15s ease);
 }
 
 .sgs-breadcrumbs__item a:hover {
 	color: var(--wp--preset--color--primary);
-	text-decoration: none; opacity: 0.85;
+	text-decoration: none;
+	opacity: 0.85;
 }
 
 .sgs-breadcrumbs__item a:focus-visible {
@@ -38,12 +46,12 @@
 }
 
 .sgs-breadcrumbs__item--current {
-	color: var(--wp--preset--color--text);
+	color: var(--sgs-breadcrumbs-current-colour, var(--wp--preset--color--text, #1e1e1e));
 	font-weight: 600;
 }
 
 .sgs-breadcrumbs__separator {
-	color: var(--wp--preset--color--text-muted, #555555);
+	color: var(--sgs-breadcrumbs-separator-colour, var(--wp--preset--color--text-muted, #555555));
 	user-select: none;
 }
 
