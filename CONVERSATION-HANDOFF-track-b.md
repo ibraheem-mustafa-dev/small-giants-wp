@@ -59,6 +59,16 @@ This is the **Track B** handoff focused on visual quality, button architecture, 
 | `plugins/sgs-blocks/src/blocks/form/style.css` | placeholder color: transparent unconditionally; revealed on focus |
 | `.claude/reports/session-2026-04-29-complaints-tracker.md` | 19 complaints / corrections, status-tracked |
 
+## Bean's clarifications (added after handoff first commit)
+
+- **Star icon location:** UNDER the `sgs/heritage-strip` block and ABOVE the `sgs/icon-list` block on the existing `/block-test/`. Likely an `sgs/icon` (single icon) configured with a star, rendering at left=0 outside content width. Inspect it directly — no need to scroll the whole page.
+- **Inline colour coverage scope:** ALL 57 blocks must show visible default colour mapping EXCEPT buttons. Buttons consume the registered `is-style-sgs-primary` / `is-style-sgs-secondary` block style variations (which read from theme.json + Customiser). Target: 0 non-button blocks without inline styles.
+- **Indus reference access — much faster paths than HTML extraction:**
+  1. **Best:** inspect the 2 hero buttons on the original Indus draft homepage live — they're already configured as primary + secondary. Use Playwright `getComputedStyle` on both.
+  2. WP backend login → Customiser → Buttons section reads directly from source.
+  3. Static HTML extraction (last resort).
+- **Credentials Bean has offered:** WP admin login, app password, WP-CLI access, Hostinger SSH for the original Indus draft (`lightsalmon-tarsier-683012.hostingersite.com`). Ask at session start — these aren't in the project CLAUDE.md.
+
 ## Notes for Next Session
 
 - **Theme deploy = direct scp.** The plugin-deploy tar method excludes `theme/`. Theme files (functions.php, assets/css/*.css, theme.json) need separate `scp -P 65002 -i ~/.ssh/id_ed25519 ...` commands. Two theme-file gaps caused real bugs this session — motion tokens never deployed for ~5 commits, button styles waited until last commit.

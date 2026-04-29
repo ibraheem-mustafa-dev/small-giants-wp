@@ -62,9 +62,31 @@ Use `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT slug, t
 
 ## Task 2: Locate the "star icon outside content width"
 
-Bean flagged: "icon block single icon has the star all the way on the left sitting outside the content width of the page". Not reproducible in the previous session's audit. Most likely candidates: a standalone `sgs/icon` or `sgs/icon-block` configured with a star icon, OR `sgs/star-rating` placed without container. After Task 1 rebuild, scroll the page at 1440 + 375 viewports and screenshot every section. If still can't reproduce, ask Bean for a direct screenshot pointing at the element.
+**Bean confirmed location: it was UNDER the `sgs/heritage-strip` block and ABOVE the `sgs/icon-list` block on the existing `/block-test/`.** Most likely an `sgs/icon` (single icon block) configured with a star icon, rendering at the absolute left edge outside content width. After Task 1 rebuild — OR before, by inspecting the existing page — find that specific block in the editor + frontend, debug why its wrapper isn't constrained to content width. Likely cause: the `sgs/icon` block's render.php / save.js outputs a wrapper without the `is-layout-constrained` class OR without inheriting parent's max-width.
 
-## Task 3: Re-audit inline colour coverage post-`d200a5b` deploy
+## Task 3: Inline colour coverage MUST be visible on ALL 57 blocks (except buttons)
+
+**Bean's directive:** "Default colour mapping to colour palette should be visible across all 57 blocks aside from the buttons which should be mapped to either the secondary or primary button style set in the customiser."
+
+Buttons exempted — they consume `is-style-sgs-primary` / `is-style-sgs-secondary` block style variations registered in `theme/sgs-theme/functions.php` (which read from theme.json `styles.elements.button` / Customiser overrides). All 56 other SGS blocks must show inline `style="color:..."` (or `--sgs-*-colour: var(--wp--preset--color--...)`) emission so the active palette visibly affects every block.
+
+Re-audit post-`d200a5b` deploy:
+```js
+() => {
+  const blocks = [...document.querySelectorAll('[class*="wp-block-sgs-"]')];
+  const seen = new Set();
+  const out = [];
+  blocks.forEach(b => {
+    const m = b.className.match(/wp-block-sgs-(\w[\w-]*)/);
+    if (!m || seen.has(m[1])) return;
+    seen.add(m[1]);
+    const styled = b.querySelectorAll('[style*="color:"], [style*="background-color:"], [style*="--sgs-"]').length;
+    out.push({ block: m[1], styled_descendants: styled });
+  });
+  return out.filter(r => r.styled_descendants === 0);
+}
+```
+Target: **0 blocks** without inline colour styles (excluding any pure-button block). For any with 0 styled descendants, fix render.php using the canonical pattern in `team-member/render.php`: `$colour = $attrs['xColour'] ?? '<slug>';` (slug fallback, NOT empty string).
 
 Target ≥ 25 of 30 blocks emitting inline styles. Run this Playwright eval:
 ```js
@@ -84,9 +106,18 @@ Target ≥ 25 of 30 blocks emitting inline styles. Run this Playwright eval:
 ```
 For any remaining 0-style blocks, fix render.php using the canonical pattern in `team-member/render.php`: `$colour = $attrs['xColour'] ?? '<slug>';` (slug fallback, NOT empty string).
 
-## Task 4: Resolve Astra colour indirection + verify button styles match Indus reference
+## Task 4: Match Indus reference button styles by direct inspection
 
-Read `sites/indus-foods/mockups/Indus Foods Ltd Homepage.html`. Find the `:root { ... }` block defining `--ast-global-color-0` through `--ast-global-color-7`. Map each to actual hex. Compare the rendered `wp-block-button` styling in the mockup vs SGS's new `is-style-sgs-primary`/`is-style-sgs-secondary` (registered in `theme/sgs-theme/functions.php`). Take side-by-side screenshots at 1440. Adjust `theme/sgs-theme/assets/css/core-blocks.css` if visual targets differ. Deploy via direct scp (NOT plugin tar — theme files are excluded from that path).
+**Bean's directive (much faster path):** "you have access to the mockup via WP backend login so you can literally just go on the customiser section and read the formatting directly from the source or you could inspect the 2 hero buttons on the homepage hero as they are primary and secondary."
+
+Three options ranked by speed:
+1. **(fastest) Inspect the 2 hero buttons live** — log into the original Indus draft (`https://lightsalmon-tarsier-683012.hostingersite.com/wp-admin/`; ask Bean for credentials at session start) OR view the rendered homepage at https://lightsalmon-tarsier-683012.hostingersite.com/. The hero has 2 buttons side-by-side: one primary, one secondary. Use Playwright `getComputedStyle` on each: bg, colour, border, border-radius, padding, font-size, font-weight, hover state. Capture exact values.
+2. **(medium) Read the Customiser** — the original Indus draft uses Astra theme; Customiser → Buttons section has primary/secondary button colour + style settings. Read directly from the source.
+3. **(slowest) Static HTML extraction** — `sites/indus-foods/mockups/Indus Foods Ltd Homepage.html` has the rendered HTML; map `--ast-global-color-*` indirection to hex.
+
+After capturing the spec from option 1 or 2, adjust `theme/sgs-theme/assets/css/core-blocks.css` `.wp-block-button.is-style-sgs-primary` and `.is-style-sgs-secondary` rules to match. Take side-by-side screenshots: Indus mockup hero buttons vs SGS button-test instances at 1440. Deploy via direct scp (theme files are excluded from plugin tar).
+
+**Credentials note:** the original Indus draft site (`lightsalmon-tarsier-683012.hostingersite.com`) credentials aren't in the project CLAUDE.md. Ask Bean at session start for: WP admin login OR app password OR Hostinger SSH access for that domain. Bean has offered all three.
 
 ## Task 5: Audit + remove redundant `*ButtonColour` attributes
 
