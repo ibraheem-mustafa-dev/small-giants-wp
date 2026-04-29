@@ -2,11 +2,16 @@
  * Universal Hover Effects extension.
  *
  * Adds hover colour, scale, shadow, image zoom, grayscale, stagger delay,
- * and block link controls to ALL blocks.
- * Outputs CSS custom properties as inline styles and utility classes that
- * activate the hover CSS.
+ * easing, duration, focus ring, and block link controls to ALL blocks.
  *
- * Server-side class injection handled by includes/hover-effects.php.
+ * Default model: ALL blocks start with EMPTY/FALSE defaults (no hover lift).
+ * A small opt-in list of card-like blocks gets subtle lift defaults.
+ *
+ * Class injection is handled server-side by includes/hover-effects.php via
+ * the render_block filter. A getSaveContent.extraProps filter here would
+ * bake classes into save() output, causing block validation failures
+ * whenever defaults change. PHP render-time injection is the correct path
+ * for both static and dynamic blocks.
  *
  * @package SGS\Blocks
  */
@@ -32,66 +37,58 @@ try {
 }
 
 /**
- * Blocks that should NOT receive the default scale/shadow/image-zoom lift.
- * These are structural containers, bars, form elements, or data-display blocks
- * where a hover lift looks wrong or misleading.
+ * Blocks that receive scale + shadow + image-zoom defaults by default.
+ * All other blocks default to empty/false so they don't look interactive.
+ *
+ * Special cases:
+ *   sgs/whatsapp-cta — scale + shadow only (no image zoom; no image present)
+ *   sgs/gallery      — image zoom only (no scale on tiles)
  */
-const SCALE_SHADOW_SKIP_BLOCKS = new Set( [
-	'sgs/announcement-bar',
-	'sgs/back-to-top',
-	'sgs/breadcrumbs',
-	'sgs/container',
-	'sgs/countdown-timer',
-	'sgs/counter',
-	'sgs/form',
-	'sgs/form-step',
-	'sgs/form-field-address',
-	'sgs/form-field-checkbox',
-	'sgs/form-field-consent',
-	'sgs/form-field-date',
-	'sgs/form-field-email',
-	'sgs/form-field-file',
-	'sgs/form-field-hidden',
-	'sgs/form-field-number',
-	'sgs/form-field-phone',
-	'sgs/form-field-radio',
-	'sgs/form-field-select',
-	'sgs/form-field-text',
-	'sgs/form-field-textarea',
-	'sgs/form-field-tiles',
-	'sgs/hero',
-	'sgs/mega-menu',
-	'sgs/tabs',
-	'sgs/tab',
+const SCALE_SHADOW_DEFAULT_BLOCKS = new Set( [
+	'sgs/card-grid',
+	'sgs/info-box',
+	'sgs/cta-section',
+	'sgs/team-member',
+	'sgs/pricing-table',
+	'sgs/post-grid',
+	'sgs/google-reviews',
+	'sgs/process-steps',
+	'sgs/icon-block',
+	// Special: scale + shadow but no image zoom.
+	'sgs/whatsapp-cta',
+	// Special: image zoom only, no scale.
+	'sgs/gallery',
 ] );
 
-const HOVER_ATTRS = {
-	// Colour overrides on hover.
-	sgsHoverBgColour: { type: 'string', default: '' },
-	sgsHoverTextColour: { type: 'string', default: '' },
-	sgsHoverBorderColour: { type: 'string', default: '' },
-	// Scale transform — fine-grained slider (0 = off; 105 = scale(1.05)).
-	sgsHoverScale: { type: 'number', default: 0 },
-	// Shadow elevation preset — 'md' gives a subtle lift on card-like blocks.
-	sgsHoverShadow: { type: 'string', default: 'md' },
-	// Transition timing — 250 ms feels responsive without being abrupt.
-	sgsHoverDuration: { type: 'number', default: 250 },
-	// Named scale preset — '1.02' is barely perceptible but clearly intentional.
-	sgsHoverScalePreset: { type: 'string', default: '1.02' },
-	// Image zoom on hover — enabled by default for blocks that contain images.
-	sgsHoverImageZoom: { type: 'boolean', default: true },
-	// Stagger animation delay in ms (applied to direct children).
-	sgsStaggerDelay: { type: 'number', default: 0 },
-	// Grayscale-to-colour effect on images.
-	sgsHoverGrayscale: { type: 'boolean', default: false },
-	// Border accent line on hover.
-	sgsHoverBorderAccent: { type: 'boolean', default: false },
-	// Tilt 3D effect.
-	sgsHoverTilt3D: { type: 'boolean', default: false },
-	// Block link — wraps the whole block in an <a> tag.
-	sgsBlockLink: { type: 'string', default: '' },
-	sgsBlockLinkTarget: { type: 'boolean', default: false },
-};
+// Blocks that get scale+shadow but explicitly NO image zoom.
+const NO_IMAGE_ZOOM_BLOCKS = new Set( [ 'sgs/whatsapp-cta' ] );
+
+// Blocks that get image zoom only (no scale, no shadow).
+const IMAGE_ZOOM_ONLY_BLOCKS = new Set( [ 'sgs/gallery' ] );
+
+/**
+ * Resolve per-block attribute defaults based on the opt-in lists above.
+ *
+ * @param {string} blockName Block name (e.g. 'sgs/card-grid').
+ * @return {{ scalePreset: string, shadow: string, imageZoom: boolean, focusRing: boolean }} Defaults.
+ */
+function resolveBlockDefaults( blockName ) {
+	const isOptIn         = SCALE_SHADOW_DEFAULT_BLOCKS.has( blockName );
+	const isNoZoom        = NO_IMAGE_ZOOM_BLOCKS.has( blockName );
+	const isImageZoomOnly = IMAGE_ZOOM_ONLY_BLOCKS.has( blockName );
+
+	if ( isImageZoomOnly ) {
+		return { scalePreset: '', shadow: '', imageZoom: true, focusRing: true };
+	}
+	if ( isNoZoom ) {
+		return { scalePreset: '1.02', shadow: 'md', imageZoom: false, focusRing: true };
+	}
+	if ( isOptIn ) {
+		return { scalePreset: '1.02', shadow: 'md', imageZoom: true, focusRing: true };
+	}
+	// All other blocks: default OFF.
+	return { scalePreset: '', shadow: '', imageZoom: false, focusRing: false };
+}
 
 const SHADOW_OPTIONS = [
 	{ label: __( 'None', 'sgs-blocks' ), value: '' },
@@ -109,11 +106,34 @@ const SCALE_PRESET_OPTIONS = [
 ];
 
 /**
+ * Duration options sourced from theme.json settings.custom.duration tokens.
+ * CSS custom property: var(--wp--custom--duration--{slug})
+ */
+const DURATION_OPTIONS = [
+	{ label: __( 'Instant (60ms)', 'sgs-blocks' ), value: 'instant' },
+	{ label: __( 'Fast (150ms)', 'sgs-blocks' ), value: 'fast' },
+	{ label: __( 'Medium (300ms)', 'sgs-blocks' ), value: 'medium' },
+	{ label: __( 'Slow (500ms)', 'sgs-blocks' ), value: 'slow' },
+	{ label: __( 'Extra slow (800ms)', 'sgs-blocks' ), value: 'extra-slow' },
+];
+
+/**
+ * Easing options sourced from theme.json settings.custom.easing tokens.
+ * CSS custom property: var(--wp--custom--easing--{slug})
+ */
+const EASING_OPTIONS = [
+	{ label: __( 'Default (Material)', 'sgs-blocks' ), value: 'default' },
+	{ label: __( 'Ease out', 'sgs-blocks' ), value: 'ease-out' },
+	{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
+	{ label: __( 'Spring', 'sgs-blocks' ), value: 'spring' },
+	{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
+];
+
+/**
  * Add hover attributes to all blocks.
  *
- * Blocks in SCALE_SHADOW_SKIP_BLOCKS receive neutral defaults for scale,
- * shadow, and image zoom so they don't appear interactive when they shouldn't.
- * All other SGS blocks get subtle-lift defaults out of the box.
+ * Per-block defaults are resolved from resolveBlockDefaults() so that
+ * the opt-in list gets subtle-lift defaults and everything else starts off.
  */
 addFilter(
 	'blocks.registerBlockType',
@@ -125,23 +145,41 @@ addFilter(
 			return settings;
 		}
 
-		// Structural/form/layout blocks: keep scale, shadow, and image zoom off
-		// by default so they don't look interactive when they shouldn't.
-		const isSkipBlock = SCALE_SHADOW_SKIP_BLOCKS.has( settings.name );
-		const overrides = isSkipBlock
-			? {
-				sgsHoverScalePreset: { type: 'string', default: '' },
-				sgsHoverShadow:      { type: 'string', default: '' },
-				sgsHoverImageZoom:   { type: 'boolean', default: false },
-			}
-			: {};
+		const defaults = resolveBlockDefaults( settings.name );
 
 		return {
 			...settings,
 			attributes: {
 				...settings.attributes,
-				...HOVER_ATTRS,
-				...overrides,
+				// Colour overrides on hover.
+				sgsHoverBgColour:     { type: 'string',  default: '' },
+				sgsHoverTextColour:   { type: 'string',  default: '' },
+				sgsHoverBorderColour: { type: 'string',  default: '' },
+				// Scale transform — fine-grained slider (0 = off).
+				sgsHoverScale:        { type: 'number',  default: 0 },
+				// Named scale preset — resolved from opt-in list.
+				sgsHoverScalePreset:  { type: 'string',  default: defaults.scalePreset },
+				// Shadow elevation preset — resolved from opt-in list.
+				sgsHoverShadow:       { type: 'string',  default: defaults.shadow },
+				// Duration slug — maps to var(--wp--custom--duration--{slug}).
+				sgsHoverDuration:     { type: 'string',  default: 'medium' },
+				// Easing slug — maps to var(--wp--custom--easing--{slug}).
+				sgsHoverEasing:       { type: 'string',  default: 'default' },
+				// Image zoom on hover — resolved from opt-in list.
+				sgsHoverImageZoom:    { type: 'boolean', default: defaults.imageZoom },
+				// Stagger animation delay in ms (applied to direct children).
+				sgsStaggerDelay:      { type: 'number',  default: 0 },
+				// Grayscale-to-colour effect on images.
+				sgsHoverGrayscale:    { type: 'boolean', default: false },
+				// Border accent line on hover.
+				sgsHoverBorderAccent: { type: 'boolean', default: false },
+				// 3D tilt effect.
+				sgsHoverTilt3D:       { type: 'boolean', default: false },
+				// Focus ring for keyboard navigation — enabled on opt-in blocks.
+				sgsFocusRing:         { type: 'boolean', default: defaults.focusRing },
+				// Block link — wraps the whole block in an <a> tag.
+				sgsBlockLink:         { type: 'string',  default: '' },
+				sgsBlockLinkTarget:   { type: 'boolean', default: false },
 			},
 		};
 	}
@@ -166,11 +204,13 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 			sgsHoverScale,
 			sgsHoverShadow,
 			sgsHoverDuration,
+			sgsHoverEasing,
 			sgsHoverScalePreset,
 			sgsHoverImageZoom,
 			sgsStaggerDelay,
 			sgsHoverGrayscale,
 			sgsHoverBorderAccent,
+			sgsFocusRing,
 			sgsBlockLink,
 			sgsBlockLinkTarget,
 		} = attributes;
@@ -247,13 +287,20 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 							checked={ sgsHoverBorderAccent }
 							onChange={ ( val ) => setAttributes( { sgsHoverBorderAccent: val } ) }
 						/>
-						<RangeControl
-							label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
+						<SelectControl
+							label={ __( 'Transition duration', 'sgs-blocks' ) }
+							help={ __( 'Speed of hover transitions. Sourced from brand motion tokens.', 'sgs-blocks' ) }
 							value={ sgsHoverDuration }
+							options={ DURATION_OPTIONS }
 							onChange={ ( val ) => setAttributes( { sgsHoverDuration: val } ) }
-							min={ 0 }
-							max={ 1000 }
-							step={ 50 }
+							__nextHasNoMarginBottom
+						/>
+						<SelectControl
+							label={ __( 'Transition easing', 'sgs-blocks' ) }
+							help={ __( 'Curve applied to hover transitions. Sourced from brand motion tokens.', 'sgs-blocks' ) }
+							value={ sgsHoverEasing }
+							options={ EASING_OPTIONS }
+							onChange={ ( val ) => setAttributes( { sgsHoverEasing: val } ) }
 							__nextHasNoMarginBottom
 						/>
 						<RangeControl
@@ -265,6 +312,12 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 							max={ 500 }
 							step={ 25 }
 							__nextHasNoMarginBottom
+						/>
+						<ToggleControl
+							label={ __( 'Show focus ring on keyboard focus', 'sgs-blocks' ) }
+							help={ __( 'Adds a visible focus ring (3px primary glow at 0.4 alpha) when keyboard-tabbed to. Recommended on for any clickable block.', 'sgs-blocks' ) }
+							checked={ sgsFocusRing }
+							onChange={ ( val ) => setAttributes( { sgsFocusRing: val } ) }
 						/>
 					</PanelBody>
 					<PanelBody
@@ -300,8 +353,8 @@ addFilter(
 	withHoverControls
 );
 
-// NOTE: hover class injection for static blocks is handled server-side by
-// includes/hover-effects.php via the render_block filter (priority 10).
-// A getSaveContent.extraProps filter here would add classes to save() output,
-// causing block validation failures whenever hover defaults changed.
-// PHP render-time injection is the correct architecture for all block types.
+// Class injection is handled server-side by includes/hover-effects.php via
+// the render_block filter. A getSaveContent.extraProps filter here would
+// bake classes into save() output, causing block validation failures
+// whenever defaults change. PHP render-time injection is the correct path
+// for both static and dynamic blocks.

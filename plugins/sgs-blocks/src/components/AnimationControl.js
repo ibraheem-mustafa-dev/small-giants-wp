@@ -35,19 +35,28 @@ const DELAYS = [
 	{ label: '300ms', value: '300' },
 ];
 
+/**
+ * Duration options reference theme.json motion tokens:
+ * settings.custom.duration.* — var(--wp--custom--duration--<value>)
+ */
 const DURATIONS = [
-	{ label: __( 'Fast (300ms)', 'sgs-blocks' ), value: 'fast' },
-	{ label: __( 'Medium (500ms)', 'sgs-blocks' ), value: 'medium' },
-	{ label: __( 'Slow (800ms)', 'sgs-blocks' ), value: 'slow' },
+	{ label: __( 'Instant (60ms)', 'sgs-blocks' ),     value: 'instant' },
+	{ label: __( 'Fast (150ms)', 'sgs-blocks' ),        value: 'fast' },
+	{ label: __( 'Medium (300ms)', 'sgs-blocks' ),      value: 'medium' },
+	{ label: __( 'Slow (500ms)', 'sgs-blocks' ),        value: 'slow' },
+	{ label: __( 'Extra slow (800ms)', 'sgs-blocks' ),  value: 'extra-slow' },
 ];
 
+/**
+ * Easing options reference theme.json motion tokens:
+ * settings.custom.easing.* — var(--wp--custom--easing--<value>)
+ */
 const EASINGS = [
-	{ label: __( 'Ease', 'sgs-blocks' ), value: 'ease' },
-	{ label: __( 'Ease in', 'sgs-blocks' ), value: 'ease-in' },
-	{ label: __( 'Ease out', 'sgs-blocks' ), value: 'ease-out' },
-	{ label: __( 'Ease in-out', 'sgs-blocks' ), value: 'ease-in-out' },
-	{ label: __( 'Decelerate', 'sgs-blocks' ), value: 'cubic-bezier(0.4, 0, 0.2, 1)' },
-	{ label: __( 'Accelerate', 'sgs-blocks' ), value: 'cubic-bezier(0.4, 0, 1, 1)' },
+	{ label: __( 'Default (Material)', 'sgs-blocks' ),  value: 'default' },
+	{ label: __( 'Ease out (snappy)', 'sgs-blocks' ),   value: 'ease-out' },
+	{ label: __( 'Ease in (gentle)', 'sgs-blocks' ),    value: 'ease-in' },
+	{ label: __( 'Spring (bouncy)', 'sgs-blocks' ),     value: 'spring' },
+	{ label: __( 'Linear (constant)', 'sgs-blocks' ),   value: 'linear' },
 ];
 
 export default function AnimationControl( {
@@ -87,7 +96,7 @@ export default function AnimationControl( {
 					/>
 					<SelectControl
 						label={ __( 'Easing', 'sgs-blocks' ) }
-						value={ animationEasing || 'ease' }
+						value={ animationEasing || 'default' }
 						options={ EASINGS }
 						onChange={ onChangeEasing }
 						__nextHasNoMarginBottom

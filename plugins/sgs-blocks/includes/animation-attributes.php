@@ -32,13 +32,23 @@ add_filter( 'render_block', __NAMESPACE__ . '\\inject_animation_attributes', 10,
 /**
  * Core blocks that support the animation extension.
  */
-const CORE_ANIMATION_BLOCKS = [
+const CORE_ANIMATION_BLOCKS = array(
 	'core/group',
 	'core/columns',
 	'core/cover',
 	'core/image',
-];
+);
 
+/**
+ * Inject scroll-reveal data attributes into rendered block HTML.
+ *
+ * Handles dynamic blocks (render.php) which bypass blocks.getSaveContent.extraProps.
+ * The frontend IntersectionObserver reads these attributes to trigger CSS transitions.
+ *
+ * @param string $block_content The rendered block HTML.
+ * @param array  $block         The parsed block data including attrs.
+ * @return string Modified block HTML with animation data attributes.
+ */
 function inject_animation_attributes( string $block_content, array $block ): string {
 	$block_name = $block['blockName'] ?? '';
 
@@ -59,7 +69,7 @@ function inject_animation_attributes( string $block_content, array $block ): str
 		return $block_content;
 	}
 
-	$attrs     = $block['attrs'] ?? [];
+	$attrs     = $block['attrs'] ?? array();
 	$animation = $attrs['sgsAnimation'] ?? 'none';
 
 	// Nothing to do if no animation set.
@@ -69,7 +79,7 @@ function inject_animation_attributes( string $block_content, array $block ): str
 
 	$delay    = $attrs['sgsAnimationDelay'] ?? '0';
 	$duration = $attrs['sgsAnimationDuration'] ?? 'medium';
-	$easing   = $attrs['sgsAnimationEasing'] ?? 'ease';
+	$easing   = $attrs['sgsAnimationEasing'] ?? 'default';
 
 	// Use WP_HTML_Tag_Processor for safe attribute injection.
 	$processor = new \WP_HTML_Tag_Processor( $block_content );

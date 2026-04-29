@@ -25,12 +25,36 @@
 		return;
 	}
 
+	/**
+	 * Resolve a token key to its theme.json CSS variable reference.
+	 *
+	 * Easing values are stored as token keys (e.g. 'ease-out', 'spring')
+	 * referencing theme.json settings.custom.easing.*.
+	 * The CSS variable path is: var(--wp--custom--easing--<key>).
+	 *
+	 * Known token keys — anything outside this set is treated as a raw
+	 * CSS value for backwards compatibility.
+	 *
+	 * @param {string} value Easing token key or raw CSS value.
+	 * @return {string} CSS variable reference or raw value.
+	 */
+	var EASING_TOKEN_KEYS = [ 'default', 'ease-out', 'ease-in', 'spring', 'linear' ];
+
+	function resolveEasing( value ) {
+		if ( ! value ) {
+			return 'var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1))';
+		}
+		if ( EASING_TOKEN_KEYS.indexOf( value ) !== -1 ) {
+			return 'var(--wp--custom--easing--' + value + ')';
+		}
+		// Backwards compatibility: raw CSS value stored before token migration.
+		return value;
+	}
+
 	// Set easing CSS custom property from data attribute on each element.
 	elements.forEach( function ( el ) {
-		const easing = el.dataset.sgsAnimationEasing;
-		if ( easing && easing !== 'ease' ) {
-			el.style.setProperty( '--sgs-anim-easing', easing );
-		}
+		var easing = el.dataset.sgsAnimationEasing;
+		el.style.setProperty( '--sgs-anim-easing', resolveEasing( easing ) );
 	} );
 
 	// Respect prefers-reduced-motion — show all immediately.

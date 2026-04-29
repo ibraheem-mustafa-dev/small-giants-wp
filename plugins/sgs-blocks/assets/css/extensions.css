@@ -10,13 +10,23 @@
 .sgs-js [data-sgs-animation] {
 	opacity: 0;
 	transition-property: opacity, transform;
-	transition-timing-function: var(--sgs-anim-easing, ease);
+	/*
+	 * Easing resolves from the token CSS variable set by animation-observer.js.
+	 * Fallback: Material Design standard curve (matches theme.json easing.default).
+	 */
+	transition-timing-function: var(--sgs-anim-easing, var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1)));
 }
 
-/* Duration variants */
-.sgs-js [data-sgs-animation-duration="fast"] { transition-duration: 0.3s; }
-.sgs-js [data-sgs-animation-duration="medium"] { transition-duration: 0.5s; }
-.sgs-js [data-sgs-animation-duration="slow"] { transition-duration: 0.8s; }
+/*
+ * Duration variants — resolved from theme.json motion tokens.
+ * CSS variable path: var(--wp--custom--duration--<key>)
+ * Fallback values match the token definitions in theme.json settings.custom.duration.
+ */
+.sgs-js [data-sgs-animation-duration="instant"] { transition-duration: var(--wp--custom--duration--instant,  60ms); }
+.sgs-js [data-sgs-animation-duration="fast"]    { transition-duration: var(--wp--custom--duration--fast,    150ms); }
+.sgs-js [data-sgs-animation-duration="medium"]  { transition-duration: var(--wp--custom--duration--medium,  300ms); }
+.sgs-js [data-sgs-animation-duration="slow"]    { transition-duration: var(--wp--custom--duration--slow,    500ms); }
+.sgs-js [data-sgs-animation-duration="extra-slow"] { transition-duration: var(--wp--custom--duration--extra-slow, 800ms); }
 
 /* Starting positions — 16 animation types */
 .sgs-js [data-sgs-animation="fade-up"]    { transform: translateY(30px); }
@@ -369,6 +379,18 @@
 .sgs-block-link-wrapper:focus-visible {
 	outline: 2px solid var(--wp--preset--color--primary, #076a8e);
 	outline-offset: 2px;
+}
+
+/* ===== Focus Ring Extension ===== */
+
+/*
+ * Applied via the sgsFocusRing attribute (boolean, default true on opt-in blocks).
+ * Uses :focus-visible so mouse users never see the ring — keyboard-only.
+ * Values reference theme.json settings.custom.focus-ring tokens.
+ */
+.sgs-has-focus-ring:focus-visible {
+	outline: var(--wp--custom--focus-ring--width, 3px) solid var(--wp--custom--focus-ring--color-primary, rgba(31, 122, 122, 0.4));
+	outline-offset: var(--wp--custom--focus-ring--offset, 2px);
 }
 
 /* ── Parallax extension ─────────────────────────────────────────────────── */

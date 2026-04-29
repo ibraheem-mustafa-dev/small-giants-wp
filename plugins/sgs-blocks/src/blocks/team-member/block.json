@@ -102,8 +102,8 @@
       "default": ""
     },
     "sgsHoverDuration": {
-      "type": "number",
-      "default": 300
+      "type": "string",
+      "default": "medium"
     },
     "sgsHoverImageZoom": {
       "type": "boolean",

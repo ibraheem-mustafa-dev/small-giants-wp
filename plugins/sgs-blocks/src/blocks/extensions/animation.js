@@ -87,7 +87,7 @@ function addAnimationAttributes( settings, name ) {
 			sgsAnimation: { type: 'string', default: 'none' },
 			sgsAnimationDelay: { type: 'string', default: '0' },
 			sgsAnimationDuration: { type: 'string', default: 'medium' },
-			sgsAnimationEasing: { type: 'string', default: 'ease' },
+			sgsAnimationEasing: { type: 'string', default: 'default' },
 		},
 	};
 }
@@ -199,7 +199,7 @@ function addAnimationSaveProps( props, blockType, attributes ) {
 			'data-sgs-animation-duration':
 				attributes.sgsAnimationDuration || 'medium',
 			'data-sgs-animation-easing':
-				attributes.sgsAnimationEasing || 'ease',
+				attributes.sgsAnimationEasing || 'default',
 		};
 	}
 
