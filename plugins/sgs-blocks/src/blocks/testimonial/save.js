@@ -64,7 +64,7 @@ export default function Save( { attributes } ) {
 
 	const classNames = [
 		'sgs-testimonial',
-		`sgs-testimonial--${ cardStyle }`,
+		cardStyle ? `sgs-testimonial--${ cardStyle }` : '',
 		hoverEffect && hoverEffect !== 'none'
 			? `sgs-testimonial--hover-${ hoverEffect }`
 			: '',
@@ -97,7 +97,9 @@ export default function Save( { attributes } ) {
 				? colourVar( hoverBorderColour )
 				: undefined,
 			'--sgs-transition-duration': transitionDuration
-				? `${ transitionDuration }ms`
+				? ( /ms$|s$/.test( String( transitionDuration ) )
+					? String( transitionDuration )
+					: `${ transitionDuration }ms` )
 				: undefined,
 			'--sgs-transition-easing': transitionEasing || undefined,
 			'--sgs-hover-scale': hoverScale || undefined,

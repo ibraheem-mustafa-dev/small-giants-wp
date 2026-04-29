@@ -12,6 +12,18 @@
  * v3 — unicode star characters (★/☆) replaced with inline SVG for proper
  *      rendering quality. All other attributes unchanged.
  *      Changed in: Visual audit remediation (SGS Gemini F-grade fix).
+ *
+ * v4 — save output before quote/name/role were changed from source:html to
+ *      plain JSON attributes. Inline SVG stars. JSON-LD schema block present.
+ *      Changed in: Branch R Wave 2 — source:html → no-source migration.
+ *
+ * v5 — earliest stored shape: empty <span> stars (no SVG, no unicode), no
+ *      inline colour styles on quote/name/role, no JSON-LD script block,
+ *      only --sgs-transition-duration in wrapper style (no --sgs-transition-easing),
+ *      class is sgs-testimonial--<style> without --undefined suffix.
+ *      This shape was produced when quoteColour/nameColour/roleColour had no
+ *      defaults (were undefined) so colourVar() returned falsy and styles were
+ *      omitted. Migrate sets the current colour defaults explicitly.
  */
 
 import { useBlockProps, RichText } from '@wordpress/block-editor';
@@ -524,4 +536,211 @@ const v4 = {
 	},
 };
 
-export default [ v4, v3, v2, v1 ];
+/**
+ * v5 — earliest stored shape. See header comment for full description.
+ *
+ * Discriminating features of this shape:
+ * — Stars: empty <span> elements, no child content (no SVG, no unicode)
+ * — Colours: NO inline style on quote <p>, name <cite>, or role <span>
+ * — Wrapper style: only --sgs-transition-duration (no --sgs-transition-easing,
+ *   no hover CSS vars, no stagger)
+ * — Wrapper class: sgs-testimonial--<style> only — no --undefined suffix
+ * — No <script type="application/ld+json"> after the blockquote
+ *
+ * The migrate() sets colour defaults that the current block.json requires so
+ * the block re-saves correctly after migration.
+ */
+const v5 = {
+	attributes: {
+		quote: {
+			type: 'string',
+			source: 'html',
+			selector: '.sgs-testimonial__quote',
+		},
+		name: {
+			type: 'string',
+			source: 'html',
+			selector: '.sgs-testimonial__name',
+		},
+		role: {
+			type: 'string',
+			source: 'html',
+			selector: '.sgs-testimonial__role',
+		},
+		avatar: {
+			type: 'object',
+		},
+		rating: {
+			type: 'number',
+			default: 0,
+		},
+		style: {
+			type: 'string',
+			default: 'card',
+		},
+		// Colour attributes had NO default in this era — undefined → no inline style.
+		quoteColour: {
+			type: 'string',
+		},
+		nameColour: {
+			type: 'string',
+		},
+		nameFontSize: {
+			type: 'string',
+		},
+		roleColour: {
+			type: 'string',
+		},
+		ratingColour: {
+			type: 'string',
+			default: 'accent',
+		},
+		reviewSource: {
+			type: 'string',
+			default: '',
+		},
+		reviewDate: {
+			type: 'string',
+			default: '',
+		},
+		// Transition duration was stored without easing in this era.
+		// Value was the raw number string '300' — the save appended 'ms'.
+		transitionDuration: {
+			type: 'string',
+			default: '300',
+		},
+	},
+
+	save( { attributes } ) {
+		const {
+			quote,
+			name,
+			role,
+			avatar,
+			rating,
+			style: cardStyle,
+			ratingColour,
+			transitionDuration,
+		} = attributes;
+
+		// Guard against undefined cardStyle to avoid --undefined class suffix.
+		const className = [
+			'sgs-testimonial',
+			cardStyle ? `sgs-testimonial--${ cardStyle }` : '',
+		].filter( Boolean ).join( ' ' );
+
+		const blockProps = useBlockProps.save( {
+			className,
+			style: {
+				// Only --sgs-transition-duration; no easing or hover vars.
+				'--sgs-transition-duration': transitionDuration
+					? `${ transitionDuration }ms`
+					: undefined,
+			},
+		} );
+
+		const starsStyle = {
+			color: colourVar( ratingColour ) || undefined,
+		};
+
+		return (
+			<blockquote { ...blockProps }>
+				{ rating > 0 && (
+					<div
+						className="sgs-testimonial__stars"
+						style={ starsStyle }
+						role="img"
+						aria-label={ `${ rating } out of 5 stars` }
+					>
+						{ Array.from( { length: 5 }, ( _, i ) => (
+							<span
+								key={ i }
+								className={ `sgs-testimonial__star ${
+									i < rating
+										? 'sgs-testimonial__star--filled'
+										: 'sgs-testimonial__star--empty'
+								}` }
+								aria-hidden="true"
+							/>
+						) ) }
+					</div>
+				) }
+
+				{ /* No inline colour style on quote — matches stored HTML */ }
+				<RichText.Content
+					tagName="p"
+					className="sgs-testimonial__quote"
+					value={ quote }
+				/>
+
+				<footer className="sgs-testimonial__footer">
+					<div className="sgs-testimonial__avatar">
+						{ avatar?.url ? (
+							<img
+								src={ avatar.url }
+								alt={ avatar.alt || '' }
+								className="sgs-testimonial__avatar-img"
+								loading="lazy"
+								width="48"
+								height="48"
+							/>
+						) : (
+							<span
+								className="sgs-testimonial__avatar-initials"
+								aria-hidden="true"
+							>
+								{ getInitials( name ) || '?' }
+							</span>
+						) }
+					</div>
+					<div className="sgs-testimonial__meta">
+						{ /* No inline colour styles on name/role — matches stored HTML */ }
+						<RichText.Content
+							tagName="cite"
+							className="sgs-testimonial__name"
+							value={ name }
+						/>
+						<RichText.Content
+							tagName="span"
+							className="sgs-testimonial__role"
+							value={ role }
+						/>
+					</div>
+				</footer>
+				{ /* No JSON-LD script — matches stored HTML */ }
+			</blockquote>
+		);
+	},
+
+	migrate( attributes ) {
+		// Promote sourced HTML attributes to JSON-stored strings.
+		// Set the colour defaults that current block.json requires so the block
+		// re-saves with correct inline styles after migration.
+		return {
+			...attributes,
+			quote: attributes.quote ?? '',
+			name: attributes.name ?? '',
+			role: attributes.role ?? '',
+			quoteColour: attributes.quoteColour ?? 'text',
+			nameColour: attributes.nameColour ?? 'primary',
+			roleColour: attributes.roleColour ?? 'text-muted',
+			// Supply defaults for all attributes added after this era.
+			nameFontSizeTablet: attributes.nameFontSizeTablet ?? '',
+			nameFontSizeMobile: attributes.nameFontSizeMobile ?? '',
+			hoverBackgroundColour: attributes.hoverBackgroundColour ?? '',
+			hoverTextColour: attributes.hoverTextColour ?? '',
+			hoverBorderColour: attributes.hoverBorderColour ?? '',
+			hoverEffect: attributes.hoverEffect ?? 'none',
+			transitionEasing: attributes.transitionEasing ?? 'ease-in-out',
+			hoverScale: attributes.hoverScale ?? '',
+			hoverShadow: attributes.hoverShadow ?? '',
+			staggerDelay: attributes.staggerDelay ?? 0,
+			sgsAnimation: attributes.sgsAnimation ?? 'fade-up',
+			sgsAnimationDuration: attributes.sgsAnimationDuration ?? 'medium',
+			sgsAnimationEasing: attributes.sgsAnimationEasing ?? 'default',
+			schemaEnabled: attributes.schemaEnabled ?? false,
+		};
+	},
+};
+
+export default [ v4, v3, v2, v1, v5 ];
