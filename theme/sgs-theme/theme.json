@@ -331,6 +331,26 @@
         "fast": "0.15s ease",
         "medium": "0.3s ease",
         "slow": "0.5s ease"
+      },
+      "duration": {
+        "instant": "60ms",
+        "fast": "150ms",
+        "medium": "300ms",
+        "slow": "500ms",
+        "extra-slow": "800ms"
+      },
+      "easing": {
+        "default": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "ease-out": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "ease-in": "cubic-bezier(0.4, 0, 1, 1)",
+        "spring": "cubic-bezier(0.34, 1.56, 0.64, 1)",
+        "linear": "linear"
+      },
+      "focus-ring": {
+        "width": "3px",
+        "offset": "2px",
+        "color-primary": "rgba(31, 122, 122, 0.4)",
+        "color-accent": "rgba(245, 158, 11, 0.4)"
       }
     },
     "appearanceTools": true,
