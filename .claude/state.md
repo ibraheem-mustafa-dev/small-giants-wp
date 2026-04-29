@@ -2,8 +2,8 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-current_phase: phase-1-foundations
-current_step: "Pre-execution — master plan just shipped via /strategic-plan; Phase 1 starts when /phase-planner is invoked on Phase 1"
+current_phase: framework-polish-extended
+current_step: "Extended polish push complete (10 commits 2026-04-29); single follow-up tracked: 5 static-block deprecations at plans/strategy/post-wave2-deprecations.md"
 last_updated: 2026-04-29
 blockers: []
 ---
@@ -14,30 +14,39 @@ blockers: []
 
 ## Where we are
 
-The project has just been consolidated into the canonical `.claude/` structure (2026-04-29). All scattered docs from `docs/`, `specs/`, and the project root have been moved or archived. The master plan covering Phases 1-5 of the optimisation-toolkit + tooling rebuild lives at `plans/master-plan.md`.
+Framework completion plan archived (`docs/plans/archive/2026-02-21-framework-completion-plan-complete.md`). Extended polish push following the close added significant architectural improvements.
 
-**Phase 1 (Foundations) has not started.** Next action: invoke `/phase-planner` on Phase 1 to generate `plans/phase-1-foundations.md` with step-level detail.
+**Today's commits (10 to `main`, 2026-04-29):**
+
+| Hash | What |
+|---|---|
+| `ce1853f` | Phase 5.1 Conditional Visibility extension (login/role/date/days/URL/referrer) |
+| `491a123` | sgsParallax universal extension (CSS Scroll-Driven Animations + IO/rAF fallback) |
+| `0cf1ba9` | Framework completion plan archived |
+| `7d10ae9` | theme.json palette swapped to SGS brand (#1F7A7A teal-green + #F59E0B amber) |
+| `618db29` | Motion + focus-ring tokens (`duration.*`, `easing.*`, `focus-ring.*`) |
+| `5c51fe7` | Project consolidation — 86 docs into canonical `.claude/` (PR #8) |
+| `33d0962` | Hover + animation: token-referenced controls, default-OFF model, validation 74→1 |
+| `18de7d5` | v2 colour audit table (slug-based, 9 contrast fixes, animation timing per row) |
+| `8fb5c45` | Wave 1: per-block colour + animation defaults across 39 blocks |
+| `743a7b4` | Wave 2: multi-part hovers + render.php plumbing + 3 issue fixes |
+
+Plus blub.db row 190 — lesson captured: "defaults need deliberate per-item judgement, not blanket".
+
+## Open follow-up
+
+Single tracked item: **5 static-block deprecations** for `certification-bar`, `counter`, `notice-banner`, `process-steps`, `testimonial`. Spec at `plans/strategy/post-wave2-deprecations.md`. ~90 min, fresh session shape. Without these, existing pages with these blocks show editor "unexpected content" errors after any deploy that includes the new colour/animation defaults. Frontend rendering unaffected.
 
 ## Active phase
 
-| Field | Value |
-|-------|-------|
-| Phase | Phase 1 — Foundations |
-| Source spec | `specs/2026-04-27-optimisation-toolkit-design.md` §5 Phase 1 |
-| Plan | `plans/master-plan.md` §7 (Phase 1 row) + §13 handoff block |
-| First action ≤ 5 min | `mkdir -p ~/.agents/skills/shared-references/optimisation-toolkit/tests && touch ~/.agents/skills/shared-references/optimisation-toolkit/canary_split.py` |
-| Critical-path units | P1.1a (4 toolkit utilities), P1.1b (8 lifecycle skill updates — BLOCKING for all of Phase 2) |
+Master plan Phase 1 (Foundations) is the next track once the deprecation follow-up closes. Spec at `plans/master-plan.md`.
 
 ## Subprojects
 
-See `subprojects.md` once populated. Currently: Indus Foods Phase 4 lives at `sites/indus-foods/.claude/` as a tracked subproject (out of scope for this master plan).
+- Indus Foods Phase 4 — `sites/indus-foods/.claude/`. Out of master-plan scope.
 
 ## Recent activity
 
-- **2026-04-29:** `/project-consolidate` ran — 51 file ops, 86 docs reorganised, master plan generated. R-items (12) closed across 5 sibling skills. Folder 1 + Folder 2 audits complete.
-- **2026-04-28:** Phase 3.2 Global Defaults System shipped + 4 hover variant gaps closed + Floating UI Customiser + 8 quality fixes (per archived handoff).
-- **2026-04-27/28:** 22 end-goal rubrics shipped (incl. 7 design-brain rubrics merge-targeted to ui-ux-pro-max).
-
-## Blockers
-
-None at the master-plan level. Hot-lead pressure flagged in master plan §3 (CMX, Snooza/Ophir, Indus Phase 2) but those are Track B items in Phase 5 — they don't block Phase 1.
+- **2026-04-29 (today):** 10-commit polish push covering palette swap, motion tokens, 57-block colour audit, Wave 1 (39-block defaults), Wave 2 (multi-part hovers + render.php plumbing).
+- **2026-04-29 (earlier):** Project consolidation (PR #8) — 86 docs into `.claude/`.
+- **2026-04-28:** Phase 3.2 Global Defaults System + Floating UI Customiser + 8 quality fixes.
