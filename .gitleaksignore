@@ -1,0 +1,5 @@
+# False positives — blub-second-brain-2026 is the hardcoded localhost-only
+# dev cookie for the local Blub dashboard at http://localhost:5050.
+# Not a real secret. Used throughout the system as a stable dev constant.
+.claude/memory/consolidated-2026-04-29/claude-HANDOFF-2026-04-15.md:generic-api-key:238
+.claude/plans/master-plan.md:generic-api-key:245
