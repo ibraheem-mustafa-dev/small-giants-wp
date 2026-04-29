@@ -61,13 +61,15 @@
             "default": true
         },
         "labelColour": {
-            "type": "string"
+            "type": "string",
+            "default": "text"
         },
         "labelFontSize": {
             "type": "string"
         },
         "backgroundColour": {
-            "type": "string"
+            "type": "string",
+            "default": "whatsapp"
         }
     },
     "editorScript": "file:./index.js",

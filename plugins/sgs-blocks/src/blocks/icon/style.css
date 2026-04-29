@@ -43,7 +43,8 @@
 }
 
 .sgs-icon__link:hover {
-	opacity: 0.8;
+	transform: scale(var(--sgs-icon-hover-scale, 1.1));
+	color: var(--sgs-icon-hover-colour, var(--wp--preset--color--accent-text));
 }
 
 .sgs-icon__link:focus-visible {

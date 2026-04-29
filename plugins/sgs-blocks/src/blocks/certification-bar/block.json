@@ -68,13 +68,15 @@
                                          "default":  "medium"
                                      },
                        "titleColour":  {
-                                           "type":  "string"
+                                           "type":  "string",
+                                           "default":  "text"
                                        },
                        "titleFontSize":  {
                                              "type":  "string"
                                          },
                        "labelColour":  {
-                                           "type":  "string"
+                                           "type":  "string",
+                                           "default":  "text-muted"
                                        },
                        "labelFontSize":  {
                                              "type":  "string"

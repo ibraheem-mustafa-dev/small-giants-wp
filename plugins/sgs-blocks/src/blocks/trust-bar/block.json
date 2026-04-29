@@ -91,10 +91,12 @@
                                         "default":  true
                                     },
                        "valueColour":  {
-                                           "type":  "string"
+                                           "type":  "string",
+                                           "default":  "primary"
                                        },
                        "labelColour":  {
-                                           "type":  "string"
+                                           "type":  "string",
+                                           "default":  "text"
                                        },
                        "labelFontSize":  {
                                              "type":  "string"

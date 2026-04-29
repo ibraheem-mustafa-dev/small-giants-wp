@@ -185,28 +185,35 @@
                                               "default":  "category"
                                           },
                        "titleColour":  {
-                                           "type":  "string"
+                                           "type":  "string",
+                                           "default":  "primary"
                                        },
                        "titleFontSize":  {
                                              "type":  "string"
                                          },
                        "excerptColour":  {
-                                             "type":  "string"
+                                             "type":  "string",
+                                             "default":  "text"
                                          },
                        "metaColour":  {
-                                          "type":  "string"
+                                          "type":  "string",
+                                          "default":  "text-muted"
                                       },
                        "categoryBadgeColour":  {
-                                                   "type":  "string"
+                                                   "type":  "string",
+                                                   "default":  "text-inverse"
                                                },
                        "categoryBadgeBgColour":  {
-                                                     "type":  "string"
+                                                     "type":  "string",
+                                                     "default":  "primary"
                                                  },
                        "readMoreColour":  {
-                                              "type":  "string"
+                                              "type":  "string",
+                                              "default":  "primary"
                                           },
                        "cardBgColour":  {
-                                            "type":  "string"
+                                            "type":  "string",
+                                            "default":  "surface"
                                         },
                        "hoverBackgroundColour":  {
                                                      "type":  "string"
@@ -252,6 +259,22 @@
                        "carouselShowArrows":  {
                                                   "type":  "boolean",
                                                   "default":  true
+                                              },
+                       "staggerDelay":  {
+                                            "type":  "number",
+                                            "default":  60
+                                        },
+                       "sgsAnimationType":  {
+                                                "type":  "string",
+                                                "default":  "fade-up"
+                                            },
+                       "sgsAnimationDuration":  {
+                                                    "type":  "string",
+                                                    "default":  "medium"
+                                                },
+                       "sgsAnimationEasing":  {
+                                                  "type":  "string",
+                                                  "default":  "ease-out"
                                               }
                    },
     "editorScript":  "file:./index.js",

@@ -62,7 +62,8 @@
                                        "default":  "info"
                                    },
                        "textColour":  {
-                                          "type":  "string"
+                                          "type":  "string",
+                                          "default": "text"
                                       },
                        "textFontSize":  {
                                             "type":  "string"

@@ -90,10 +90,12 @@
       "default": "gradient"
     },
     "titleColour": {
-      "type": "string"
+      "type": "string",
+      "default": "primary"
     },
     "subtitleColour": {
-      "type": "string"
+      "type": "string",
+      "default": "text"
     },
     "hoverBackgroundColour": {
       "type": "string"
@@ -102,7 +104,8 @@
       "type": "string"
     },
     "hoverBorderColour": {
-      "type": "string"
+      "type": "string",
+      "default": "primary"
     },
     "transitionDuration": {
       "type": "string",
@@ -130,7 +133,19 @@
     },
     "staggerDelay": {
       "type": "number",
-      "default": 0
+      "default": 80
+    },
+    "sgsAnimationType": {
+      "type": "string",
+      "default": "fade-up"
+    },
+    "sgsAnimationDuration": {
+      "type": "string",
+      "default": "medium"
+    },
+    "sgsAnimationEasing": {
+      "type": "string",
+      "default": "default"
     },
     "source": {
       "type": "string",

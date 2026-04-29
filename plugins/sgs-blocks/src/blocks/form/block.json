@@ -76,10 +76,12 @@
                                                 "default":  true
                                             },
                        "submitColour":  {
-                                            "type":  "string"
+                                            "type":  "string",
+                                            "default":  "text-inverse"
                                         },
                        "submitBackground":  {
-                                                "type":  "string"
+                                                "type":  "string",
+                                                "default":  "primary"
                                             },
                        "progressBarColour":  {
                                                  "type":  "string",

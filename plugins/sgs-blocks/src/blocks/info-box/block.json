@@ -104,7 +104,8 @@
       "default": ""
     },
     "headingColour": {
-      "type": "string"
+      "type": "string",
+      "default": "primary"
     },
     "headingFontSize": {
       "type": "string"
@@ -118,7 +119,8 @@
       "default": ""
     },
     "descriptionColour": {
-      "type": "string"
+      "type": "string",
+      "default": "text"
     },
     "cardStyle": {
       "type": "string",
@@ -175,6 +177,18 @@
     "staggerDelay": {
       "type": "number",
       "default": 0
+    },
+    "sgsAnimationType": {
+      "type": "string",
+      "default": "fade-up"
+    },
+    "sgsAnimationDuration": {
+      "type": "string",
+      "default": "medium"
+    },
+    "sgsAnimationEasing": {
+      "type": "string",
+      "default": "default"
     },
     "letterSpacing": {
       "type": "string",

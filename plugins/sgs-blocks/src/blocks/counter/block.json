@@ -72,10 +72,12 @@
                                          "default":  true
                                      },
                        "numberColour":  {
-                                            "type":  "string"
+                                            "type":  "string",
+                                            "default":  "primary"
                                         },
                        "labelColour":  {
-                                           "type":  "string"
+                                           "type":  "string",
+                                           "default":  "text-muted"
                                        },
                        "labelFontSize":  {
                                              "type":  "string"

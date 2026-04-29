@@ -93,13 +93,16 @@
       "default": false
     },
     "captionColour": {
-      "type": "string"
+      "type": "string",
+      "default": "text-inverse"
     },
     "captionBgColour": {
-      "type": "string"
+      "type": "string",
+      "default": "primary-dark"
     },
     "hoverOverlayColour": {
-      "type": "string"
+      "type": "string",
+      "default": "primary-dark"
     },
     "hoverScale": {
       "type": "string",
@@ -147,11 +150,23 @@
     },
     "staggerDelay": {
       "type": "number",
-      "default": 0
+      "default": 60
     },
     "hoverShadow": {
       "type": "string",
       "default": ""
+    },
+    "sgsAnimationType": {
+      "type": "string",
+      "default": "fade-in"
+    },
+    "sgsAnimationDuration": {
+      "type": "string",
+      "default": "medium"
+    },
+    "sgsAnimationEasing": {
+      "type": "string",
+      "default": "ease-out"
     }
   },
   "editorScript": "file:./index.js",

@@ -26,8 +26,10 @@
 	--sgs-hover-scale:           1;
 	--sgs-hover-overlay:         transparent;
 	--sgs-hover-image-zoom:      1.05;
-	--sgs-caption-colour:        var( --wp--preset--color--base, #ffffff );
-	--sgs-caption-bg:            rgba( 0, 0, 0, 0.55 );
+	--sgs-caption-colour:        var( --wp--preset--color--text-inverse, #ffffff );
+	/* Gradient overlay: transparent → primary-dark at 90% opacity covering bottom 40% of tile.
+	   Ensures caption text always has ≥85% opaque background at its position (FIX #7). */
+	--sgs-caption-bg:            linear-gradient( transparent, rgba( 15, 76, 76, 0.9 ) 40% );
 	--sgs-item-radius:           var( --wp--custom--border-radius--small, 4px );
 }
 
@@ -290,13 +292,19 @@
 	bottom:      0;
 	left:        0;
 	right:       0;
-	padding:     8px 12px;
+	/* Covers the bottom 40% of the tile so the gradient has room to
+	   transition from transparent to ≥85% opaque at the text position (FIX #7). */
+	height:      40%;
+	display:     flex;
+	align-items: flex-end;
+	padding:     0 12px 10px;
 	margin:      0;
 	background:  var( --sgs-caption-bg );
 	color:       var( --sgs-caption-colour );
 	font-size:   0.875rem;
 	line-height: 1.4;
 	text-align:  center;
+	justify-content: center;
 }
 
 /* Masonry captions are relative (not absolute) since items don't have fixed height */

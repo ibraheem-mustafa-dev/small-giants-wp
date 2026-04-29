@@ -81,16 +81,20 @@
                                            "default":  "circle"
                                        },
                        "numberColour":  {
-                                            "type":  "string"
+                                            "type":  "string",
+                                            "default":  "text-inverse"
                                         },
                        "numberBackground":  {
-                                                "type":  "string"
+                                                "type":  "string",
+                                                "default":  "primary"
                                             },
                        "titleColour":  {
-                                           "type":  "string"
+                                           "type":  "string",
+                                           "default":  "text"
                                        },
                        "descriptionColour":  {
-                                                 "type":  "string"
+                                                 "type":  "string",
+                                                 "default":  "text-muted"
                                              },
                        "hoverBackgroundColour":  {
                                                      "type":  "string",
@@ -115,7 +119,23 @@
                        "transitionEasing":  {
                                                 "type":  "string",
                                                 "default":  "ease-in-out"
-                                            }
+                                            },
+                       "sgsAnimationType":  {
+                                                "type":  "string",
+                                                "default":  "fade-up"
+                                            },
+                       "sgsAnimationDuration":  {
+                                                    "type":  "string",
+                                                    "default":  "medium"
+                                                },
+                       "sgsAnimationEasing":  {
+                                                  "type":  "string",
+                                                  "default":  "ease-out"
+                                              },
+                       "staggerDelay":  {
+                                            "type":  "number",
+                                            "default":  80
+                                        }
                    },
     "editorScript":  "file:./index.js",
     "editorStyle":  "file:./index.css",

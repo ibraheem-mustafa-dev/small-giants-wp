@@ -23,6 +23,7 @@
 
 .sgs-social-icons__item:hover {
 	color: var(--sgs-social-hover, currentColor);
+	transform: scale(1.1);
 }
 
 .sgs-social-icons__item:focus-visible {

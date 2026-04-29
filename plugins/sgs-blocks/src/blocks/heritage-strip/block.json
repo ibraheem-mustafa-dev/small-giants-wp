@@ -73,8 +73,17 @@
                        "imageRight":  {
                                           "type":  "object"
                                       },
+                       "backgroundColor": {
+                                              "type":  "string",
+                                              "default": "primary"
+                                          },
+                       "textColor": {
+                                        "type":  "string",
+                                        "default": "text-inverse"
+                                    },
                        "headlineColour":  {
-                                              "type":  "string"
+                                              "type":  "string",
+                                              "default": "text-inverse"
                                           },
                        "headlineFontSize":  {
                                                 "type":  "string"
@@ -88,7 +97,8 @@
                                                 "default":  ""
                                             },
                        "bodyColour":  {
-                                          "type":  "string"
+                                          "type":  "string",
+                                          "default": "text-inverse"
                                       },
                        "bodyFontSize":  {
                                             "type":  "string"

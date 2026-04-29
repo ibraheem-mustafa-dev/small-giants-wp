@@ -67,11 +67,11 @@
     },
     "nameColour": {
       "type": "string",
-      "default": ""
+      "default": "primary"
     },
     "roleColour": {
       "type": "string",
-      "default": "primary"
+      "default": "text-muted"
     },
     "cardStyle": {
       "type": "string",
@@ -155,7 +155,19 @@
     },
     "staggerDelay": {
       "type": "number",
-      "default": 0
+      "default": 80
+    },
+    "sgsAnimationType": {
+      "type": "string",
+      "default": "fade-up"
+    },
+    "sgsAnimationDuration": {
+      "type": "string",
+      "default": "medium"
+    },
+    "sgsAnimationEasing": {
+      "type": "string",
+      "default": "default"
     },
     "hoverOverlay": {
       "type": "boolean",

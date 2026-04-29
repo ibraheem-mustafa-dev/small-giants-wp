@@ -66,7 +66,7 @@
                                     },
                        "greyscale":  {
                                          "type":  "boolean",
-                                         "default":  true
+                                         "default":  false
                                      },
                        "maxHeight":  {
                                          "type":  "number",
@@ -105,7 +105,7 @@
     "example":  {
                     "attributes":  {
                                        "scrolling":  true,
-                                       "greyscale":  true,
+                                       "greyscale":  false,
                                        "maxHeight":  80
                                    }
                 }

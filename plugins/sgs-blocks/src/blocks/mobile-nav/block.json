@@ -280,11 +280,11 @@
 		},
 		"drawerBg": {
 			"type": "string",
-			"default": ""
+			"default": "surface"
 		},
 		"drawerText": {
 			"type": "string",
-			"default": ""
+			"default": "text"
 		},
 		"drawerGradient": {
 			"type": "string",
@@ -320,15 +320,15 @@
 		},
 		"linkColour": {
 			"type": "string",
-			"default": ""
+			"default": "text"
 		},
 		"linkHoverColour": {
 			"type": "string",
-			"default": ""
+			"default": "primary"
 		},
 		"linkActiveColour": {
 			"type": "string",
-			"default": ""
+			"default": "primary"
 		},
 		"sublinkColour": {
 			"type": "string",

@@ -129,11 +129,11 @@
 		},
 		"textColour": {
 			"type": "string",
-			"default": ""
+			"default": "text"
 		},
 		"backgroundColour": {
 			"type": "string",
-			"default": ""
+			"default": "surface"
 		},
 		"autoplay": {
 			"type": "boolean",
@@ -155,6 +155,22 @@
 			"type": "string",
 			"default": "default",
 			"enum": ["default", "compact"]
+		},
+		"sgsAnimationType": {
+			"type": "string",
+			"default": "fade-up"
+		},
+		"sgsAnimationDuration": {
+			"type": "string",
+			"default": "medium"
+		},
+		"sgsAnimationEasing": {
+			"type": "string",
+			"default": "ease-out"
+		},
+		"staggerDelay": {
+			"type": "number",
+			"default": 60
 		}
 	},
 	"editorScript": "file:./index.js",

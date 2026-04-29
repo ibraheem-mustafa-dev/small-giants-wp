@@ -44,7 +44,7 @@
 		},
 		"barColour": {
 			"type": "string",
-			"default": "primary"
+			"default": "accent"
 		},
 		"barHeight": {
 			"type": "number",
@@ -76,7 +76,7 @@
 		"attributes": {
 			"displayMode": "both",
 			"position": "top",
-			"barColour": "primary",
+			"barColour": "accent",
 			"barHeight": 4
 		}
 	}

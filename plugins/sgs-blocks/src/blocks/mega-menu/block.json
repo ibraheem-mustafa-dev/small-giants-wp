@@ -79,6 +79,22 @@
 		"badgeColour": {
 			"type": "string",
 			"default": "accent"
+		},
+		"panelBgColour": {
+			"type": "string",
+			"default": "surface"
+		},
+		"linkColour": {
+			"type": "string",
+			"default": "text"
+		},
+		"linkHoverColour": {
+			"type": "string",
+			"default": "primary"
+		},
+		"linkHoverBgColour": {
+			"type": "string",
+			"default": "surface-alt"
 		}
 	},
 	"render": "file:./render.php",

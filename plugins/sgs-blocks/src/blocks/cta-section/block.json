@@ -73,11 +73,21 @@
       "type": "string",
       "default": "centred"
     },
+    "backgroundColor": {
+      "type": "string",
+      "default": "accent"
+    },
+    "textColor": {
+      "type": "string",
+      "default": "text"
+    },
     "headlineColour": {
-      "type": "string"
+      "type": "string",
+      "default": "text"
     },
     "bodyColour": {
-      "type": "string"
+      "type": "string",
+      "default": "text"
     },
     "bodyFontSize": {
       "type": "string"
@@ -91,10 +101,12 @@
       "default": ""
     },
     "buttonColour": {
-      "type": "string"
+      "type": "string",
+      "default": "text-inverse"
     },
     "buttonBackground": {
-      "type": "string"
+      "type": "string",
+      "default": "primary-dark"
     },
     "backgroundImage": {
       "type": "object",

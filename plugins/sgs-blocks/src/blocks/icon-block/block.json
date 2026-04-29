@@ -67,6 +67,18 @@
 		"shape": {
 			"type": "string",
 			"default": "none"
+		},
+		"sgsAnimationType": {
+			"type": "string",
+			"default": "fade-up"
+		},
+		"sgsAnimationDuration": {
+			"type": "string",
+			"default": "medium"
+		},
+		"sgsAnimationEasing": {
+			"type": "string",
+			"default": "default"
 		}
 	},
 	"render": "file:./render.php",

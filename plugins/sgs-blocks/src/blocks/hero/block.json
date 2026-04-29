@@ -110,8 +110,17 @@
       "type": "array",
       "default": []
     },
+    "backgroundColor": {
+      "type": "string",
+      "default": "primary-dark"
+    },
+    "textColor": {
+      "type": "string",
+      "default": "text-inverse"
+    },
     "headlineColour": {
-      "type": "string"
+      "type": "string",
+      "default": "text-inverse"
     },
     "subHeadlineFontSize": {
       "type": "string"
@@ -125,7 +134,8 @@
       "default": ""
     },
     "subHeadlineColour": {
-      "type": "string"
+      "type": "string",
+      "default": "text-inverse"
     },
     "ctaPrimaryText": {
       "type": "string"

@@ -20,6 +20,16 @@
 	padding: var(--wp--preset--spacing--60) var(--wp--preset--spacing--40);
 }
 
+/* Default gradient background: primary-dark → primary (FIX #6 — start at primary-dark for safe
+   mid-gradient text contrast; overridden by any inline background-color/image from the editor). */
+.sgs-hero:not([style*="background-color"]):not([style*="background-image"]) {
+	background: linear-gradient(
+		135deg,
+		var(--wp--preset--color--primary-dark, #0A5B5D) 0%,
+		var(--wp--preset--color--primary, #0F7E80) 100%
+	);
+}
+
 /* Split variant — two columns */
 .sgs-hero--split {
 	flex-direction: row;

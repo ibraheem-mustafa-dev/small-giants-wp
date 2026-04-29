@@ -47,7 +47,7 @@
 		},
 		"backgroundColour": {
 			"type": "string",
-			"default": "primary"
+			"default": "primary-dark"
 		},
 		"textColour": {
 			"type": "string",

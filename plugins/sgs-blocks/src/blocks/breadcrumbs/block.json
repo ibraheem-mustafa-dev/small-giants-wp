@@ -49,6 +49,18 @@
 		"homeLabel": {
 			"type": "string",
 			"default": "Home"
+		},
+		"linkColour": {
+			"type": "string",
+			"default": "text-muted"
+		},
+		"separatorColour": {
+			"type": "string",
+			"default": "text-muted"
+		},
+		"currentColour": {
+			"type": "string",
+			"default": "text"
 		}
 	},
 	"editorScript": "file:./index.js",

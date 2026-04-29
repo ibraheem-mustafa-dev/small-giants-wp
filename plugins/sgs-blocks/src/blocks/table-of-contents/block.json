@@ -87,10 +87,12 @@
 			"default": "card"
 		},
 		"titleColour": {
-			"type": "string"
+			"type": "string",
+			"default": "text"
 		},
 		"linkColour": {
-			"type": "string"
+			"type": "string",
+			"default": "text-muted"
 		},
 		"activeLinkColour": {
 			"type": "string",

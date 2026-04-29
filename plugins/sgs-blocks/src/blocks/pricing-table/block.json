@@ -122,13 +122,16 @@
 			"default": "card"
 		},
 		"titleColour": {
-			"type": "string"
+			"type": "string",
+			"default": "text"
 		},
 		"priceColour": {
-			"type": "string"
+			"type": "string",
+			"default": "text"
 		},
 		"featureColour": {
-			"type": "string"
+			"type": "string",
+			"default": "text"
 		},
 		"ctaStyle": {
 			"type": "string",
@@ -146,11 +149,27 @@
 		},
 		"popularBadgeColour": {
 			"type": "string",
-			"default": "white"
+			"default": "text"
 		},
 		"popularBadgeBackground": {
 			"type": "string",
 			"default": "accent"
+		},
+		"sgsAnimationType": {
+			"type": "string",
+			"default": "slide-up"
+		},
+		"sgsAnimationDuration": {
+			"type": "string",
+			"default": "medium"
+		},
+		"sgsAnimationEasing": {
+			"type": "string",
+			"default": "default"
+		},
+		"staggerDelay": {
+			"type": "number",
+			"default": 100
 		}
 	},
 	"editorScript": "file:./index.js",

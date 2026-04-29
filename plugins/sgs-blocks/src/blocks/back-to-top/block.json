@@ -24,11 +24,11 @@
     "attributes":  {
                        "buttonColour":  {
                                             "type":  "string",
-                                            "default":  "primary"
+                                            "default":  "primary-dark"
                                         },
                        "iconColour":  {
                                           "type":  "string",
-                                          "default":  "surface"
+                                          "default":  "text-inverse"
                                       },
                        "position":  {
                                         "type":  "string",
@@ -55,7 +55,9 @@
     "example":  {
                     "attributes":  {
                                        "shape":  "circle",
-                                       "position":  "bottom-right"
+                                       "position":  "bottom-right",
+                                       "buttonColour":  "primary-dark",
+                                       "iconColour":  "text-inverse"
                                    }
                 }
 }

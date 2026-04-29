@@ -270,7 +270,9 @@ select.sgs-form-field__input {
 
 .sgs-form-tile--selected,
 .sgs-form-tile:has(input:checked) {
-	border-color: var(--wp--preset--color--accent, #f87a1f);
+	/* FIX #4: selected border uses accent-text (#7A6B00) not accent (#F87A1F).
+	   accent gives 1.93:1 contrast on accent-light bg; accent-text gives 6.37:1. */
+	border-color: var(--wp--preset--color--accent-text, #7a6b00);
 	background-color: var(--wp--preset--color--accent-light, #fee8d4);
 }
 
@@ -297,7 +299,8 @@ select.sgs-form-field__input {
 	right: 0.5rem;
 	width: 20px;
 	height: 20px;
-	background-color: var(--wp--preset--color--accent, #f87a1f);
+	/* FIX #4 extension: checkmark badge uses accent-text to match border. */
+	background-color: var(--wp--preset--color--accent-text, #7a6b00);
 	border-radius: 50%;
 }
 

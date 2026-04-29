@@ -77,10 +77,12 @@
       "default": "card"
     },
     "quoteColour": {
-      "type": "string"
+      "type": "string",
+      "default": "text"
     },
     "nameColour": {
-      "type": "string"
+      "type": "string",
+      "default": "primary"
     },
     "nameFontSize": {
       "type": "string"
@@ -94,7 +96,8 @@
       "default": ""
     },
     "roleColour": {
-      "type": "string"
+      "type": "string",
+      "default": "text-muted"
     },
     "ratingColour": {
       "type": "string",
@@ -143,6 +146,18 @@
     "staggerDelay": {
       "type": "number",
       "default": 0
+    },
+    "sgsAnimationType": {
+      "type": "string",
+      "default": "fade-up"
+    },
+    "sgsAnimationDuration": {
+      "type": "string",
+      "default": "medium"
+    },
+    "sgsAnimationEasing": {
+      "type": "string",
+      "default": "default"
     },
     "schemaEnabled": {
       "type": "boolean",
