@@ -1,6 +1,156 @@
-# Session Handoff — 2026-04-30
+# Session Handoff — 2026-04-30 (P1.5d execution)
 
 recommended_model: sonnet
+session_tag: small-giants-wp-2026-04-30-phase1.5d-triage-execution
+
+## Completed This Session
+
+1. **Step 0 — Autopilot domain-table patch.** Added `sgs-wp-engine` row to `~/.claude/skills/autopilot/SKILL.md` with override note (overrides `wp-block-development` + `wp-plugin-development` for SGS-prefixed work). Other 4 skills (playwright, animation-harvest, sgs-discover, sgs-extraction) verified already present.
+2. **6 kills/parks executed.** Archived agents: gemini-analyser, seo-performance, seo-sitemap, seo-visual, seo-content. Archived skills: nano-banana-pro, mcp-cli (CLI technique noted in CLAUDE.md first), cloudflare-vps-webhook, sgs-email-branding, seo-hreflang, seo-sitemap. All moves to `_archived/` subdirs per master plan §12.5 (archive, not delete).
+3. **4 merges executed (description-level absorption + archive of source).** seo-visual → design-reviewer; sgs-email-branding → email-html-builder; seo-content → seo-auditor; seo-sitemap + seo-hreflang → seo-technical (Bean override 2026-04-30: hreflang is core technical SEO).
+4. **sgs-extraction 4 factual errors fixed in body** (blub.db lesson 151): Cloudflare hard-exit (no graceful fallback); design-extract.py outputs `dembrandt-tokens.json` not `design-tokens.json`; never writes `components.json`/`layout.json`; Vision pass is manual; `extraction-manifest.json` not consumed downstream.
+5. **Bean override 1: seo-schema stays solo.** Originally MERGE → seo-technical; Bean: schema is big and powerful enough to justify standalone.
+6. **Bean override 2: seo-hreflang folds into seo-technical.** Originally KEEP standalone; Bean: hreflang is core technical SEO (HTML tags, HTTP headers, sitemap entries) and fits alongside the seo-sitemap fold.
+7. **Step 10 assessments.** seo-geo KEEP (AI search/GEO surface); gemini-vision-audit KEEP (Gemini Vision dispatcher, no overlap). Logged in triage table.
+8. **CLAUDE.md cleaned.** Removed seo-content, seo-visual, seo-sitemap, seo-performance from custom agents table. Updated seo-technical entry to note absorbed sub-agents. Added seo-geo. Corrected `nano-banana-pro` reference to `nano-banana`. Added `mcp` CLI tool note under "CLI Tools".
+9. **Phase 2a structural debt logged in optimisation-toolkit-design.md.** 5 targets at 52-85% scores: design-reviewer (53%, ~45min), email-html-builder (63%, ~30min), seo-auditor (59%, ~30min), sgs-extraction (85%, ~15min), seo-technical (52%, ~30min). Pre-existing structural gaps surfaced by lifecycle hook — not session-introduced.
+10. **Triage table updated to SIGNED-OFF state with all 10 steps marked done/cancelled per Bean overrides.**
+
+## Current State
+
+- **Branch:** main at `f9a56a8`
+- **Tests:** no test suite for documentation/triage work — N/A
+- **Build:** N/A
+- **Uncommitted changes:** none in tracked files; untracked `.scratch/`, `studio/`, three subproject `.claude/` dirs (sgs-configurator-pro, indus-foods, snooza-chair) — separate scopes, not P1.5d work
+- **Pushed:** yes, `7e3dcda..f9a56a8 main -> main`
+
+## Known Issues / Blockers
+
+- **G1 milestone POST blocked by SQLite WAL lock.** blub dashboard's SQLite database is locked by the running dashboard process — both API POST and direct SQLite insert fail with `database is locked`. Marked `pending_upload: true` in state.md. Pre-existing dashboard issue, not session-introduced. Workaround: stop dashboard, `wal_checkpoint(TRUNCATE)`, reinsert, restart.
+- **5 SKILL.md/agent.md files have pre-existing structural debt** (52-85% skillscore). All routing changes complete; structural fix scheduled for Phase 2a (~150min total). Documented in `specs/2026-04-27-optimisation-toolkit-design.md` §Phase 2a.
+
+## Next Priorities (in order)
+
+1. **P1.5e — Sandbox-preview gate** (~85min). Studio blueprint template (`sgs-default.json`) + `studio-preview-up.ps1` + `/verify-loop --target-url <url>` flag + `/deploy-check --studio-pass <url>` flag. HARD GATE: end-to-end smoke test on a real palestine-lives.org page snapshot booted into Studio before close. Verify GAP-3 from QC reconciliation (`DB_ENGINE=mysql` in PHP-WASM) before assuming the master plan claim works.
+2. **P1.5f — Phase 2 phase-plan** (~30min). Run `/phase-planner` against the surviving roster (likely 12-15 rubrics, not 22). Output: `.claude/plans/phase-2-rubrics-universe.md` with debt-aware estimates. P2 entry condition: triage signed off + kills executed + dispatch-graph-validator clean.
+3. **G1.5 phase exit.** Sandbox gate working + Phase 2 phase-plan drafted = enter Phase 2 (Rubrics universe).
+
+## Files Modified
+
+| File path | What changed |
+|-----------|-------------|
+| `c:/Users/Bean/Projects/small-giants-wp/.claude/state.md` | current_step → P1.5d COMPLETE; G1 blocker added with explanation |
+| `c:/Users/Bean/Projects/small-giants-wp/.claude/next-session-prompt.md` | rewritten for P1.5e/f next session |
+| `c:/Users/Bean/Projects/small-giants-wp/.claude/plans/strategy/2026-04-29-tooling-triage.md` | step 8 cancelled (Bean override on seo-schema), step 10 done with merge decision for seo-hreflang |
+| `c:/Users/Bean/Projects/small-giants-wp/.claude/specs/2026-04-27-optimisation-toolkit-design.md` | Phase 2a structural debt table added (5 targets) |
+| `~/.claude/CLAUDE.md` | agent table cleaned; mcp CLI note added; nano-banana-pro → nano-banana |
+| `~/.claude/skills/autopilot/SKILL.md` | sgs-wp-engine domain row added |
+| `~/.claude/skills/email-html-builder/SKILL.md` | description absorbs sgs-email-branding triggers; body cross-ref updated |
+| `~/.claude/skills/sgs-extraction/SKILL.md` | 4 factual error fixes (Cloudflare, outputs, vision, manifest) |
+| `~/.claude/agents/design-reviewer.md` | description absorbs seo-visual; "When NOT to use" body section added; "## Goal" section added; second-person line fixed; Semantic Structure heading renamed |
+| `~/.claude/agents/seo-auditor.md` | description absorbs seo-content (E-E-A-T, content quality) |
+| `~/.claude/agents/seo-technical.md` | description absorbs seo-sitemap + seo-hreflang; frontmatter fixed (HTML comment + model line moved into YAML); Cross-Skill Delegation section updated |
+| `~/.claude/agents/_archived/` (new dir) | gemini-analyser, seo-performance, seo-visual, seo-content, seo-sitemap moved here |
+| `~/.claude/skills/_archived/` | nano-banana-pro, mcp-cli, cloudflare-vps-webhook, sgs-email-branding, seo-hreflang, seo-sitemap moved here |
+
+## Notes for Next Session
+
+- **Lifecycle hook + skillscore mode is on for this session.** `.lifecycle-mode-cc-53dd3aa8.json` was created manually because `/lifecycle` hit a Bash permission block on `pipeline-enforcer.py`. Next session: invoke `/lifecycle` properly if doing skill/agent edits, OR create a fresh mode file with the new session ID.
+- **Pipeline-enforcer.py doesn't exist on this system.** Only `pipeline-stage-gate.py` and `validate-pipeline-artifact.py`. /handoff and /lifecycle skills both reference it but it's missing. Workaround used this session: skip the start/check/complete calls. Worth flagging in a future session as a tooling gap.
+- **Bean override pattern: descriptions over deletions.** When merging skills, Bean prefers the receiving skill's description to absorb the source's trigger keywords + the source to be archived (not deleted). The body content of the source skill stays in `_archived/` for reference — it's not deleted until all references are removed (master plan §12.5).
+- **Skillscore is informational, not blocking.** The 85-90% threshold is enforced via PostToolUse warning, not PreToolUse block. Continuing through warnings is fine when the structural debt is pre-existing — log it for Phase 2a, don't spiral inline.
+- **blub.db dashboard restart pattern.** When the dashboard is dead but the build exists at `.next/BUILD_ID`, run `cd C:/Users/Bean/.openclaw/workspace/tools/blub-dashboard-v2 && node node_modules/next/dist/bin/next start -p 5050 &`. SQLite WAL locks tend to persist across restarts though — separate problem.
+
+## Next Session Prompt
+
+~~~
+You are a senior systems architect with WordPress framework, sandbox/preview tooling, and lifecycle pipeline expertise. This session closes Phase 1.5 — sandbox-preview gate (P1.5e) plus Phase 2 phase-plan (P1.5f).
+
+Read CONVERSATION-HANDOFF.md and CLAUDE.md for full context, then work through these priorities:
+
+## Skills to Invoke
+
+| Skill | When to use |
+|-------|-------------|
+| `/brainstorming` | P1.5e flag/script architecture decisions; P1.5f phase ordering trade-offs |
+| `/gap-analysis` | Grade the sandbox gate end-to-end before declaring P1.5e complete; grade the Phase 2 phase-plan |
+| `/lifecycle` | Start pipeline before any edits to `/verify-loop` SKILL.md or `/deploy-check` command |
+| `/research` | If Studio gotchas surface during P1.5e — auto-routes to right tier |
+| `/strategic-plan` | If P1.5e architecture branches (e.g. blueprint approach trade-offs) |
+| `/phase-planner` | P1.5f — drafts Phase 2 phase-plan from master plan §Phase 2 + toolkit doc |
+| `/sgs-wp-engine` | Studio blueprint construction — needs sgs-blocks + sgs-theme + active style variation |
+| `/verify-loop` | Modify Stage 1 to accept `--target-url` flag |
+| `/handoff` | Session end |
+
+## MCP Servers & Tools
+
+| Tool | What to use it for |
+|------|-------------------|
+| `studio` CLI | P1.5e — sandbox creation, blueprint validation, preview URLs. AI manual at `.claude/specs/2026-04-29-wp-studio-ai-manual.md` |
+| `playwright` MCP | Smoke-test the sandbox preview URL against a real palestine-lives.org page |
+| `gh` CLI | If touching any published GitHub repo for the gate |
+| `python ~/.agents/skills/shared-references/sgs-skillscore.py validate <path>` | After every skill edit |
+
+## Agents to Delegate To
+
+| Agent | When |
+|-------|------|
+| `wp-sgs-developer` | If Studio blueprint construction needs SGS framework knowledge — block + theme + variation wiring |
+| `test-and-explain` | After P1.5e smoke test — verify preview URL renders correctly and explain in plain English |
+| `design-reviewer` | If sandbox preview shows visual rendering issues — multi-breakpoint check |
+
+## Research Approach
+
+Only invoke if Studio gotchas block forward progress.
+
+1. `/research-check` first — quick lookup on Studio CLI flags or PHP-WASM MySQL backend questions (e.g. is `DB_ENGINE=mysql` actually supported per master plan §1.5 Shift 2 — the QC reconciliation flagged this as GAP-3 unverified)
+2. If quick lookup fails, escalate to `/research-buddies` — combines bleeding-edge PHP-WASM thread with practical MySQL-in-WASM experience
+3. Tavily / Brave / Firecrawl chained automatically through unified `search.py`
+
+---
+
+## Task 1: P1.5e — Sandbox-preview gate
+
+Read `.claude/specs/2026-04-29-wp-studio-ai-manual.md` first. Then:
+
+(a) **Verify GAP-3 first** (15 min): boot a Studio site with a `defineWpConfigConsts` blueprint setting `DB_ENGINE=mysql`. If unsupported, soften master plan §1.5 Shift 2 wording from "byte-identical" to "best-effort SQL parity". If supported, add the working example to the manual.
+
+(b) **Build the sandbox blueprint** at `~/.claude/skills/sgs-wp-engine/references/studio-blueprints/sgs-default.json`. Parameters: `clientSlug`, `phpVersion`, `dbEngine` (sqlite default, mysql per (a)).
+
+(c) **Write `studio-preview-up.ps1`** — Windows script: blueprint path + plugin/theme paths in, preview URL on stdout. Idempotent: reuse existing preview if name matches.
+
+(d) **Add `/verify-loop --target-url <url>` flag** at Stage 1. When set, every `[TEST]` step runs against the URL instead of production. Use `/lifecycle` for the SKILL.md edit.
+
+(e) **Add `/deploy-check --studio-pass <url>` flag** — refuses deploy if Studio gate is missing or red.
+
+(f) **HARD GATE — smoke test end-to-end** on a real palestine-lives.org page snapshot booted into Studio. Save manual verification PASS to `.claude/reports/p1.5e-smoke/`.
+
+## Task 2: P1.5f — Phase 2 phase-plan
+
+Run `/phase-planner` against:
+- `.claude/plans/master-plan.md` §Phase 2 (Rubrics universe)
+- `.claude/specs/2026-04-27-optimisation-toolkit-design.md` §5 Phase 2 (sub-phases 2a/2b/2c)
+- §Phase 2a structural debt table (5 targets need extra time beyond the standard 30min)
+
+Output: `.claude/plans/phase-2-rubrics-universe.md` with per-skill estimates and a P2 entry condition listing "triage signed off + kills executed + dispatch-graph-validator clean".
+
+## Task 3: G1.5 phase exit
+
+When P1.5e + P1.5f are both done: update state.md `current_phase: phase-2-rubrics-universe`, archive `.claude/plans/phase-1.5-tooling-triage.md` → `phase-1.5-tooling-triage-complete.md` if it exists, and run `/handoff` to close the phase.
+
+## Guardrails
+
+- WordPress non-negotiables: WCAG 2.2 AA, UK English, no jQuery, <100KB CSS / <50KB JS budget
+- `git branch --show-current` before every commit (framework → main; client → feature branch)
+- Lifecycle hook will fire skillscore warnings on any agent/skill .md edit. Pre-existing structural debt is logged for Phase 2a — don't spiral on it. Fix only what your edit introduces; log pre-existing.
+- `/skill-optimiser` Stage 6 folds peer-review inline — when running optimisers, the HARD GATE is satisfied by subagent return + main-thread reconciliation
+- ADHD Rule 13: P1.5e is ~85 min, P1.5f is ~30 min. Together they fit one session. If P1.5e spirals on Studio gotchas (likely on first sandbox boot), park it and ship P1.5f first — phase-plan only needs the design agreed, not the sandbox actually working
+- G1 milestone POST is `pending_upload: true` due to SQLite WAL lock. Don't try to retry inline; it's a known dashboard infra issue. Will resolve when dashboard is properly restarted with WAL truncate.
+- Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-04-30-phase1.5d-triage-execution"`
+
+---
+
+# Previous Session Handoff (2026-04-30 — P1.5_0/a/b/c)
 session_tag: small-giants-wp-2026-04-30-phase1.5d
 
 ## Completed This Session

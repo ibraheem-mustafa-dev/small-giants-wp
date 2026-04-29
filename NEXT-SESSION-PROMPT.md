@@ -1,77 +1,73 @@
 recommended_model: sonnet
-session_tag: small-giants-wp-2026-04-30-phase1.5d
+session_tag: small-giants-wp-2026-04-30-phase1.5d-triage-execution
 
-You are a senior tooling architect for a Claude Code AI skill framework. Phase 1.5 triage is signed off — this session executes the decisions and wires up the sandbox-preview gate.
+You are a senior systems architect with WordPress framework, sandbox/preview tooling, and lifecycle pipeline expertise. This session closes Phase 1.5 — sandbox-preview gate (P1.5e) plus Phase 2 phase-plan (P1.5f).
+
+Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-04-30-phase1.5d-triage-execution"`
 
 ## Where You Are
 
 Plan: `.claude/plans/master-plan.md` §Phase 1.5
-Current phase: phase-1.5-tooling-triage (P1.5d + P1.5e + P1.5f remaining)
-Progress: P1.5_0 + P1.5a + P1.5b + P1.5c complete — 4/7 units done
-Next task: P1.5d Step 0 — autopilot domain-table patch (5 skills invisible to router)
+Current phase: phase-1.5-tooling-triage (P1.5d complete, P1.5e+f remaining)
+Progress: 4/6 deliverables in Phase 1.5 complete (P1.5_0, P1.5a, P1.5b, P1.5c, P1.5d done; P1.5e + P1.5f remaining)
+Next task: P1.5e — verify GAP-3 first (`DB_ENGINE=mysql` in PHP-WASM), then build the sandbox blueprint
 
-Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-04-30-phase1.5d"`
-
-## Context
-
-- Signed-off triage table: `.claude/plans/strategy/2026-04-29-tooling-triage.md` — read this first
-- Skill audit: `.claude/reports/2026-04-30-skill-audit.md`
-- Agent audit: `.claude/reports/2026-04-30-agent-audit.md`
-- WP Studio manual (patched): `.claude/specs/2026-04-29-wp-studio-ai-manual.md`
+Read CONVERSATION-HANDOFF.md and CLAUDE.md for full context, then work through these priorities:
 
 ## Skills to Invoke
 
 | Skill | When to use |
 |-------|-------------|
-| `/brainstorming` | Architectural decisions during P1.5e gate design |
-| `/gap-analysis` | Grade each merge result before marking complete |
-| `/lifecycle` | EVERY skill/agent kill, merge, or park — enforced by lifecycle gate |
-| `/research` | If Studio CLI or blueprint format needs verifying |
-| `/strategic-plan` | Before P1.5e if blueprint + verify-loop integration needs planning |
-| `/verify-loop` | P1.5e — modify Stage 1 to accept `--target-url` flag |
-| `/phase-planner` | P1.5f — draft Phase 2 phase-plan against surviving roster |
+| `/brainstorming` | P1.5e flag/script architecture decisions; P1.5f phase ordering trade-offs |
+| `/gap-analysis` | Grade the sandbox gate end-to-end before declaring P1.5e complete; grade Phase 2 phase-plan |
+| `/lifecycle` | Start pipeline before any edits to `/verify-loop` SKILL.md or `/deploy-check` command |
+| `/research` | If Studio gotchas surface during P1.5e — auto-routes to right tier |
+| `/strategic-plan` | If P1.5e architecture branches (e.g. blueprint approach trade-offs) |
+| `/phase-planner` | P1.5f — drafts Phase 2 phase-plan from master plan §Phase 2 + toolkit doc |
+| `/sgs-wp-engine` | Studio blueprint construction — needs sgs-blocks + sgs-theme + active style variation |
+| `/verify-loop` | Modify Stage 1 to accept `--target-url` flag |
 | `/handoff` | Session end |
 
 ## MCP Servers & Tools
 
 | Tool | What to use it for |
 |------|-------------------|
-| `studio` CLI | P1.5e — `studio site create --blueprint`, `studio preview create` |
-| `python ~/.agents/skills/shared-references/dispatch-graph-validator.py` | After every kill/merge — confirm no dead refs |
+| `studio` CLI | P1.5e — sandbox creation, blueprint validation, preview URLs. AI manual at `.claude/specs/2026-04-29-wp-studio-ai-manual.md` |
+| `playwright` MCP | Smoke-test the sandbox preview URL against a real palestine-lives.org page |
+| `gh` CLI | If touching any published GitHub repo for the gate |
 | `python ~/.agents/skills/shared-references/sgs-skillscore.py validate <path>` | After every skill edit |
 
 ## Agents to Delegate To
 
 | Agent | When |
 |-------|------|
-| Gemini Flash (`/gemini-flash`) | Zero-cost peer review of merge results — reliable |
-| Sonnet subagent (`Agent` tool, model: sonnet) | Second opinion on any merge touching routing logic |
+| `wp-sgs-developer` | If Studio blueprint construction needs SGS framework knowledge |
+| `test-and-explain` | After P1.5e smoke test — verify preview URL renders correctly |
+| `design-reviewer` | If sandbox preview shows visual rendering issues — multi-breakpoint check |
 
-## Task 1: P1.5d — Execute triage decisions
+---
 
-Read `.claude/plans/strategy/2026-04-29-tooling-triage.md` Section 5 (Execution order) and follow exactly:
-- **Step 0 first:** patch autopilot domain-classification table — add `playwright`, `animation-harvest`, `sgs-discover`, `sgs-extraction`, `sgs-wp-engine` with trigger keywords. `sgs-wp-engine` override note: supersedes `wp-block-development` / `wp-plugin-development` for all SGS-prefixed work.
-- **Quick assess first:** read SKILL.md for `seo-geo`, `seo-hreflang`, `gemini-vision-audit` — 2 min each. Decide keep/merge/park in-session.
-- **Run `/lifecycle` before any SKILL.md edit** — never bypass.
-- **Run `dispatch-graph-validator.py` after each step** — not in batch at the end.
-- **`sgs-extraction` stays standalone** — fix its 4 factual errors but do NOT merge into `build-website`.
+## Task 1: P1.5e — Sandbox-preview gate
 
-## Task 2: P1.5e — Sandbox-preview gate (parallel with P1.5d)
+(a) **Verify GAP-3 first** (15 min): boot a Studio site with `defineWpConfigConsts` blueprint setting `DB_ENGINE=mysql`. If unsupported, soften master plan §1.5 Shift 2 wording. If supported, add working example to manual.
+(b) **Build the sandbox blueprint** at `~/.claude/skills/sgs-wp-engine/references/studio-blueprints/sgs-default.json`. Parameters: `clientSlug`, `phpVersion`, `dbEngine`.
+(c) **Write `studio-preview-up.ps1`** — blueprint + plugin/theme paths in, preview URL on stdout. Idempotent.
+(d) **Add `/verify-loop --target-url <url>` flag** at Stage 1. Use `/lifecycle` for the SKILL.md edit.
+(e) **Add `/deploy-check --studio-pass <url>` flag** — refuses deploy if Studio gate is missing or red.
+(f) **HARD GATE — smoke test end-to-end** on a real palestine-lives.org page snapshot. Save PASS to `.claude/reports/p1.5e-smoke/`.
 
-Deliverables:
-1. `theme/sgs-theme/sgs-base.blueprint.json` — minimal SGS sandbox blueprint (SQLite only — no DB_ENGINE=mysql)
-2. `/verify-loop --target-url <url>` flag — Stage 1 URL-mode for Playwright assertions against Preview URLs
-3. `studio-preview-up.ps1` — helper: create site, import `.wpress`, start, create preview, print URL
-4. `deploy-check --studio-pass` flag — Studio preview as mandatory gate step
+## Task 2: P1.5f — Phase 2 phase-plan
 
-## Task 3: P1.5f — Draft Phase 2 phase-plan
+Run `/phase-planner` against `.claude/plans/master-plan.md` §Phase 2 + `.claude/specs/2026-04-27-optimisation-toolkit-design.md` §5 + Phase 2a structural debt table. Output: `.claude/plans/phase-2-rubrics-universe.md` with per-skill estimates accommodating debt, and a P2 entry condition.
 
-Run `/phase-planner` with surviving post-P1.5d roster + master plan §Phase 2. Write to `.claude/plans/phase-2-rubrics-universe.md`. Target: 12–15 rubrics. Phase exit = G1.5.
+## Task 3: G1.5 phase exit
+
+When P1.5e + P1.5f both done: update state.md `current_phase: phase-2-rubrics-universe`, archive phase-1.5 plan to `-complete.md` if exists, run `/handoff`.
 
 ## Guardrails
 
-- `git branch --show-current` before every commit — all work stays on `main`
-- `dispatch-graph-validator.py` after every kill/merge — not in batch
-- Do NOT merge `sgs-extraction` into `build-website`
-- Do NOT add `DB_ENGINE=mysql` to Studio blueprints (PHP-WASM is SQLite-only)
-- UK English, no jQuery, WCAG 2.2 AA
+- WordPress: WCAG 2.2 AA, UK English, no jQuery, <100KB CSS / <50KB JS
+- `git branch --show-current` before every commit (framework → main)
+- Lifecycle hook fires skillscore warnings on any agent/skill .md edit. Pre-existing structural debt is logged in optimisation-toolkit-design.md §Phase 2a — don't spiral on it. Fix only what your edit introduces.
+- ADHD Rule 13: P1.5e ~85 min, P1.5f ~30 min. Fit one session. If P1.5e spirals on Studio gotchas, park it and ship P1.5f first.
+- G1 milestone POST is `pending_upload: true` due to blub.db SQLite WAL lock. Pre-existing dashboard issue. Don't retry inline.
