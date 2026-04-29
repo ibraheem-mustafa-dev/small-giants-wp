@@ -8,6 +8,8 @@ Lessons that have fired repeatedly enough to be worth surfacing here. Living sou
 | Lesson | One-line summary | Detail |
 |--------|-----------------|--------|
 | `always-screenshot-verify` | MUST take a frontend screenshot and visually inspect it before saying any fix is complete — no excep | [feedback_always_screenshot_verify.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_always_screenshot_verify.md) |
+| `block-name-search-blindspot` | When a block name contains a parenthetical qualifier (e.g. "Icon Block (single icon)"), Claude's grep instinct breaks. Even when the name is the literal heading, Claude can fail to locate the file. Fix: search the heading verbatim including parens, then search core noun without qualifier as fallback. Capture as a TODO for the eventual ledger-tag system | _captured 2026-04-29 mid-Phase-1c session_ |
+| `verify-rendered-output-not-internal-metrics` | Internal metrics (function return value, DB row count, JSON shape, "tests passed", file-content read-back) never prove user-visible visual outcomes. Visual claims require live-DOM assertion: `getComputedStyle`, `getBoundingClientRect`, `element.style.cssText`, or screenshot AT a specific selector. /qc scoring 95/100 while user-visible bugs are everywhere is the failure signature | [feedback_verify_rendered_output_not_internal_metrics.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_verify_rendered_output_not_internal_metrics.md) (blub.db row 194) |
 | `block-validation-recovery` | When block attribute changes don't render on the frontend, check for block validation errors in the  | [feedback_block_validation_recovery.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_block_validation_recovery.md) |
 | `defaults-need-deliberate-judgement` | When setting defaults across a class of components (blocks, templates, fields, palette assignments), | [feedback_defaults_need_deliberate_judgement.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_defaults_need_deliberate_judgement.md) |
 | `design-session-2026-03-28` | Extensive design review and fixes session — user's specific dislikes, what was fixed, and what still | [feedback_design_session_2026_03_28.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_design_session_2026_03_28.md) |
@@ -23,6 +25,11 @@ Lessons that have fired repeatedly enough to be worth surfacing here. Living sou
 | `ship-skill-and-slash-command` | When a skill wraps a single canonical CLI invocation, ship BOTH the skill AND a slash command in ~/. | [feedback_ship_skill_and_slash_command.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_ship_skill_and_slash_command.md) |
 | `stage-files-via-tmp-not-bash-heredoc` | When writing Python scripts, markdown, regex content to a file via Bash, use the file-staged pattern | [feedback_stage_files_via_tmp_not_bash_heredoc.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_stage_files_via_tmp_not_bash_heredoc.md) |
 | `use-devtools-first` | When a CSS property isn't applying correctly, use Chrome DevTools or Playwright to check the Compute | [feedback_use_devtools_first.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_use_devtools_first.md) |
+| `verify-rendered-output-not-internal-metrics` | Before claiming any visual / CSS / layout / default-rendering work is done, capture a Playwright assertion on the live rendered DOM showing the user-visible value. Internal metrics (commits, builds, validations, contrast values, OPcache reset) prove inputs, never user-visible outcomes. blub.db row 194. | [feedback_verify_rendered_output_not_internal_metrics.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_verify_rendered_output_not_internal_metrics.md) |
+
+## Reference catalogues
+
+- **Common WordPress styling errors** — 21 specific failure patterns from the 2026-04-29 polish session, each with cause + proven fix: [`specs/common-wp-styling-errors.md`](specs/common-wp-styling-errors.md)
 
 ## How to add a lesson
 
