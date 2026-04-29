@@ -1,3 +1,138 @@
+# Session Handoff — 2026-04-30
+
+recommended_model: sonnet
+session_tag: small-giants-wp-2026-04-30-phase1.5d
+
+## Completed This Session
+
+1. **G1 POST cleared** — `g1-payload.json` was missing a `source` field; fixed and re-POSTed, knowledge id 13214. `state.md` blocker removed.
+2. **WP Studio AI manual patched (10 gaps)** — 3×S + 4×A + 3×B grade issues closed. Key fixes: removed fake `wp ai1wm export` CLI (paid extension), removed SQLite auto-translate claim, reframed `DB_ENGINE=mysql` as unimplementable in PHP-WASM, corrected tool count 22→24, re-ranked gotchas by frequency×impact, added SLA/latency table, forward-referenced `/verify-loop --target-url` as post-P1.5e.
+3. **Master plan §Phase 1.5 Shift 2 patched** — softened 4 overstatements: "byte-identical" → "rendered-DOM identical for `wp-content` scope", dropped circular community-alignment citations, acknowledged `/verify-loop` retrofit risk, promoted 10-preview cap + OAuth dep into strategic framing.
+4. **P1.5a — Skill + agent audits run in parallel** — 13 skills, 14 agents assessed. Reports at `.claude/reports/2026-04-30-skill-audit.md` and `.claude/reports/2026-04-30-agent-audit.md`.
+5. **P1.5b — Triage table built** at `.claude/plans/strategy/2026-04-29-tooling-triage.md` — 14 decisions covering kills, merges, parks, keeps.
+6. **P1.5c — Triage signed off** after cross-tier peer review (Sonnet + Gemini Flash + Opus; Gemini Pro 503). Three amendments applied: `sgs-extraction` kept standalone, `mcp-cli` parked not killed, autopilot patch promoted to Step 0. `seo-sitemap` parked (Bean uses Rank Math).
+
+## Current State
+
+- **Branch:** `main` at `268f140`
+- **Tests:** no test suite (session was docs/config only)
+- **Build:** n/a
+- **Uncommitted changes:** none — clean tree, pushed to remote
+
+## Known Issues / Blockers
+
+- `seo-geo`, `seo-hreflang`, `gemini-vision-audit` flagged as missing from triage — quick assess needed at start of P1.5d before executing merges
+- Gemini Pro 503 again (second consecutive session) — Gemini Flash is reliable; Pro is not right now
+- `sgs-wp-engine` + 4 other skills not visible to autopilot router — fix in Step 0 of P1.5d
+
+## Next Priorities (in order)
+
+1. **P1.5d — Execute triage decisions** per signed-off table. Step 0 first: autopilot domain-table patch (5 skills). Then parallel kills, sequential merges. Run `dispatch-graph-validator.py` after each step. Assess `seo-geo`, `seo-hreflang`, `gemini-vision-audit` in-session.
+2. **P1.5e — Sandbox-preview gate** — `sgs-base.blueprint.json`, `/verify-loop --target-url` flag, `studio-preview-up.ps1`, `deploy-check --studio-pass`. WP Studio manual is the reference doc.
+3. **P1.5f — Phase 2 phase-plan** — run `/phase-planner` against surviving roster post-P1.5d. Target: 12–15 rubrics. Phase exit gate G1.5.
+
+## Files Modified
+
+| File | What changed |
+|---|---|
+| `.claude/specs/2026-04-29-wp-studio-ai-manual.md` | 10 gaps patched (S/A/B grade) |
+| `.claude/plans/master-plan.md` | §Phase 1.5 Shift 2: 4 overstatements softened, tool count 22→24 |
+| `.claude/plans/strategy/2026-04-29-tooling-triage.md` | NEW — 14-decision triage table, signed off 2026-04-30 |
+| `.claude/reports/2026-04-30-skill-audit.md` | NEW — 13 skills assessed |
+| `.claude/reports/2026-04-30-agent-audit.md` | NEW — 14 agents assessed |
+| `.claude/state.md` | Phase step updated, G1 blocker cleared |
+| `.claude/reports/phase-1-end-to-end/.../g1-payload.json` | Source field added, POST succeeded |
+
+## Notes for Next Session
+
+- `sgs-extraction` stays standalone — it feeds `build-website`, `design-ref`, AND `animation-harvest`. Merging into any one breaks the other two silently.
+- Autopilot patch goes first so the router sees tools being validated during merge steps.
+- `mcp-cli` park: extract non-obvious technique docs to CLAUDE.md note before archiving.
+- Do NOT add `DB_ENGINE=mysql` to any Studio blueprint — PHP-WASM cannot host MySQL; SQLite is the only supported backend.
+- Gemini Pro consistently 503 — use Gemini Flash as zero-cost peer reviewer.
+
+## Next Session Prompt
+
+~~~
+recommended_model: sonnet
+session_tag: small-giants-wp-2026-04-30-phase1.5d
+
+You are a senior tooling architect for a Claude Code AI skill framework. Phase 1.5 triage is signed off — this session executes the decisions and wires up the sandbox-preview gate.
+
+## Where You Are
+
+Plan: `.claude/plans/master-plan.md` §Phase 1.5
+Current phase: phase-1.5-tooling-triage (P1.5d + P1.5e + P1.5f remaining)
+Progress: P1.5_0 + P1.5a + P1.5b + P1.5c complete (4/7 units done)
+Next task: P1.5d Step 0 — autopilot domain-table patch (5 skills invisible to router)
+
+Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-04-30-phase1.5d"`
+
+## Context
+
+Signed-off triage table: `.claude/plans/strategy/2026-04-29-tooling-triage.md` — read this first.
+Skill audit: `.claude/reports/2026-04-30-skill-audit.md`
+Agent audit: `.claude/reports/2026-04-30-agent-audit.md`
+WP Studio manual (patched): `.claude/specs/2026-04-29-wp-studio-ai-manual.md`
+
+## Skills to Invoke
+
+| Skill | When to use |
+|-------|-------------|
+| `/brainstorming` | Architectural decisions during P1.5e gate design |
+| `/gap-analysis` | Grade each merge result before marking complete |
+| `/lifecycle` | EVERY skill/agent kill, merge, or park — enforced by lifecycle gate |
+| `/research` | If Studio CLI or blueprint format needs verifying |
+| `/strategic-plan` | Before P1.5e if blueprint + verify-loop integration needs planning |
+| `/verify-loop` | P1.5e — modify Stage 1 to accept `--target-url` flag |
+| `/phase-planner` | P1.5f — draft Phase 2 phase-plan against surviving roster |
+| `/handoff` | Session end |
+
+## MCP Servers & Tools
+
+| Tool | What to use it for |
+|------|-------------------|
+| `studio` CLI | P1.5e — `studio site create --blueprint`, `studio preview create` |
+| `python ~/.agents/skills/shared-references/dispatch-graph-validator.py` | After every kill/merge — confirm no dead refs |
+| `python ~/.agents/skills/shared-references/sgs-skillscore.py validate <path>` | After every skill edit |
+
+## Agents to Delegate To
+
+| Agent | When |
+|-------|------|
+| Gemini Flash (`/gemini-flash`) | Zero-cost peer review of merge results — reliable this session |
+| Sonnet subagent (`Agent` tool, model: sonnet) | Second opinion on any merge touching routing logic |
+
+## Task 1: P1.5d — Execute triage decisions
+
+Read `.claude/plans/strategy/2026-04-29-tooling-triage.md` Section 5 (Execution order) and follow exactly:
+- **Step 0 first:** patch autopilot domain-classification table — add `playwright`, `animation-harvest`, `sgs-discover`, `sgs-extraction`, `sgs-wp-engine` with trigger keywords. `sgs-wp-engine` override note: it supersedes `wp-block-development` / `wp-plugin-development` for all SGS-prefixed work.
+- **Quick assess first:** read SKILL.md for `seo-geo`, `seo-hreflang`, `gemini-vision-audit` — 2 min each. Decide keep/merge/park in-session.
+- **Run `/lifecycle` before any SKILL.md edit** — lifecycle gate enforces this; never bypass.
+- **Run `dispatch-graph-validator.py` after each step** — not in batch at the end.
+- **`sgs-extraction` stays standalone** — fix its 4 factual errors but do NOT merge into `build-website`.
+
+## Task 2: P1.5e — Sandbox-preview gate (parallel with P1.5d)
+
+Deliverables:
+1. `theme/sgs-theme/sgs-base.blueprint.json` — minimal SGS sandbox blueprint (SQLite only — no DB_ENGINE=mysql)
+2. `/verify-loop --target-url <url>` flag — Stage 1 URL-mode for Playwright assertions against Preview URLs
+3. `studio-preview-up.ps1` — helper: create site, import `.wpress`, start, create preview, print URL
+4. `deploy-check --studio-pass` flag — Studio preview as mandatory gate step
+
+## Task 3: P1.5f — Draft Phase 2 phase-plan
+
+Run `/phase-planner` with input = surviving post-P1.5d roster + master plan §Phase 2. Write to `.claude/plans/phase-2-rubrics-universe.md`. Target: 12–15 rubrics. Phase exit = G1.5: triage executed + preview gate working + Phase 2 plan drafted.
+
+## Guardrails
+
+- `git branch --show-current` before every commit — all work stays on `main`
+- `dispatch-graph-validator.py` after every kill/merge — not in batch
+- Do NOT merge `sgs-extraction` into `build-website`
+- Do NOT add `DB_ENGINE=mysql` to Studio blueprints (PHP-WASM is SQLite-only)
+- UK English, no jQuery, WCAG 2.2 AA
+~~~
+
 ---
 recommended_model: sonnet
 session_tag: small-giants-wp-2026-04-29-phase1-plan
