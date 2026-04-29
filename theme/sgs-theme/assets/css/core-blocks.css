@@ -899,7 +899,9 @@ footer .wp-block-list a:hover,
 /* The actual button link — override wp:button inline styles for responsive sizing */
 .sgs-top-bar-mobile-cta .wp-block-button__link {
 	white-space: nowrap;
-	font-size: clamp(0.875rem, 2.5vw, 0.9375rem) !important; /* min 14px — below 14px is too small to read comfortably */
+	overflow: hidden;
+	text-overflow: ellipsis;
+	font-size: clamp(0.8125rem, 2.5vw, 0.9375rem) !important; /* clamp down to 13px on very small screens */
 	padding: 8px clamp(8px, 2vw, 14px) !important;
 	min-height: 44px;
 	display: inline-flex;

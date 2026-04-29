@@ -102,11 +102,11 @@ a.sgs-certification-bar__badge:focus-visible {
 	font-size: var(--wp--preset--font-size--large, 1.125rem);
 }
 
-/* Mobile: ensure badges stay legible */
+/* Mobile: ensure badges meet 44px touch target (WCAG 2.2 AA) */
 @media (max-width: 599px) {
 	.sgs-certification-bar--text-only .sgs-certification-bar__badge {
-		padding: 0.5rem 1rem;
-		min-height: 40px;
+		padding: 0.625rem 1rem;
+		min-height: 44px;
 	}
 }
 
