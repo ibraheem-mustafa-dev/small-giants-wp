@@ -457,13 +457,73 @@ footer .wp-block-list a:hover,
 	font-size: 32px;
 }
 
-/* ─── GHOST / OUTLINE BUTTON VARIANT — M16 ─── */
+/* ─── SGS BUTTON STYLE VARIATIONS ─── */
 
 /*
- * Adds a gold-border ghost button style for service section CTAs.
- * Used with the is-style-ghost class registered via PHP.
- * Accent border + transparent background + accent text.
+ * Three registered styles for core/button, available in the block Style
+ * dropdown. Registered via register_block_styles() in functions.php.
+ *
+ * sgs-primary  — solid teal, white text. For main CTAs on light backgrounds.
+ * sgs-secondary — teal outline, transparent bg. For secondary actions.
+ * sgs-accent   — gold/accent bg, dark text (WCAG AA on gold). Default style.
+ * ghost        — gold outline, transparent bg. Legacy — service card CTAs.
  */
+
+/* SGS Primary — solid teal */
+.wp-block-button.is-style-sgs-primary .wp-block-button__link {
+	background-color: var(--wp--preset--color--primary, #0a7ea8);
+	color: var(--wp--preset--color--text-inverse, #fff);
+	border: 2px solid transparent;
+	transition: background-color var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--default, ease);
+}
+
+.wp-block-button.is-style-sgs-primary .wp-block-button__link:hover {
+	background-color: var(--wp--preset--color--primary-dark, #075e80);
+}
+
+.wp-block-button.is-style-sgs-primary .wp-block-button__link:focus-visible {
+	outline: 3px solid var(--wp--custom--focus-ring--color-primary, rgba(31, 122, 122, 0.4));
+	outline-offset: 2px;
+}
+
+/* SGS Secondary — teal outline */
+.wp-block-button.is-style-sgs-secondary .wp-block-button__link {
+	background-color: transparent;
+	color: var(--wp--preset--color--primary, #0a7ea8);
+	border: 2px solid var(--wp--preset--color--primary, #0a7ea8);
+	transition: background-color var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--default, ease),
+	            color var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--default, ease);
+}
+
+.wp-block-button.is-style-sgs-secondary .wp-block-button__link:hover {
+	background-color: var(--wp--preset--color--primary, #0a7ea8);
+	color: var(--wp--preset--color--text-inverse, #fff);
+}
+
+.wp-block-button.is-style-sgs-secondary .wp-block-button__link:focus-visible {
+	outline: 3px solid var(--wp--custom--focus-ring--color-primary, rgba(31, 122, 122, 0.4));
+	outline-offset: 2px;
+}
+
+/* SGS Accent — gold bg, dark text (WCAG AA: 4.6:1 on #d8ca50) */
+.wp-block-button.is-style-sgs-accent .wp-block-button__link {
+	background-color: var(--wp--preset--color--accent, #d8ca50);
+	color: var(--wp--preset--color--text, #1e1e1e);
+	border: 2px solid transparent;
+	transition: background-color var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--default, ease);
+}
+
+.wp-block-button.is-style-sgs-accent .wp-block-button__link:hover {
+	background-color: var(--wp--preset--color--accent-dark, #a89e00);
+}
+
+.wp-block-button.is-style-sgs-accent .wp-block-button__link:focus-visible {
+	outline: 3px solid var(--wp--custom--focus-ring--color-primary, rgba(31, 122, 122, 0.4));
+	outline-offset: 2px;
+}
+
+/* Ghost (legacy M16) — gold border, transparent bg, gold text.
+   For service card CTAs on dark/teal backgrounds. */
 .wp-block-button.is-style-ghost .wp-block-button__link {
 	background: transparent !important;
 	border: 2px solid var(--wp--preset--color--accent, #d8ca50);

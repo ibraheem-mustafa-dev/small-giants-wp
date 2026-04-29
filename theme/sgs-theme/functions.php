@@ -396,9 +396,33 @@ add_action( 'init', __NAMESPACE__ . '\register_pattern_categories' );
  * background, gold text. CSS is in core-blocks.css under is-style-ghost.
  */
 function register_block_styles(): void {
+	// Ghost — gold border, transparent bg, gold text. For service card CTAs
+	// on dark/teal backgrounds. CSS in core-blocks.css under is-style-ghost.
 	register_block_style( 'core/button', [
 		'name'  => 'ghost',
-		'label' => __( 'Ghost', 'sgs-theme' ),
+		'label' => __( 'Ghost (Gold outline)', 'sgs-theme' ),
+	] );
+
+	// SGS Primary — solid teal, white text. For main CTAs on light backgrounds.
+	// CSS in core-blocks.css under is-style-sgs-primary.
+	register_block_style( 'core/button', [
+		'name'  => 'sgs-primary',
+		'label' => __( 'SGS Primary (Teal)', 'sgs-theme' ),
+	] );
+
+	// SGS Secondary — teal outline, transparent bg. For secondary actions.
+	// CSS in core-blocks.css under is-style-sgs-secondary.
+	register_block_style( 'core/button', [
+		'name'  => 'sgs-secondary',
+		'label' => __( 'SGS Secondary (Outline)', 'sgs-theme' ),
+	] );
+
+	// SGS Accent — gold/accent bg, dark text (WCAG AA on gold).
+	// Default style. CSS in core-blocks.css under is-style-sgs-accent.
+	register_block_style( 'core/button', [
+		'name'         => 'sgs-accent',
+		'label'        => __( 'SGS Accent (Gold)', 'sgs-theme' ),
+		'is_default'   => true,
 	] );
 
 	// Animation is now handled by the sgs-blocks plugin extension system

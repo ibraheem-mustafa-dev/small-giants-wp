@@ -48,10 +48,11 @@ $carousel_speed       = absint( $attributes['carouselSpeed'] ?? 5000 );
 $carousel_show_dots   = (bool) ( $attributes['carouselShowDots'] ?? true );
 $carousel_show_arrows = (bool) ( $attributes['carouselShowArrows'] ?? true );
 
-// Colour attributes.
-$caption_colour       = $attributes['captionColour']      ?? '';
-$caption_bg_colour    = $attributes['captionBgColour']    ?? '';
-$hover_overlay_colour = $attributes['hoverOverlayColour'] ?? '';
+// Colour attributes — fallbacks match block.json defaults so inline CSS vars
+// are always emitted even when the attribute is absent from stored post content.
+$caption_colour       = $attributes['captionColour']      ?? 'text-inverse';
+$caption_bg_colour    = $attributes['captionBgColour']    ?? 'primary-dark';
+$hover_overlay_colour = $attributes['hoverOverlayColour'] ?? 'primary-dark';
 
 // -------------------------------------------------------------------------
 // Build inline CSS custom properties.
@@ -75,15 +76,10 @@ if ( $hover_shadow ) {
 if ( $stagger_delay > 0 ) {
 	$inline_styles_parts[] = '--sgs-stagger:' . absint( $stagger_delay ) . 'ms';
 }
-if ( $hover_overlay_colour ) {
-	$inline_styles_parts[] = '--sgs-hover-overlay:' . sgs_colour_value( $hover_overlay_colour );
-}
-if ( $caption_colour ) {
-	$inline_styles_parts[] = '--sgs-caption-colour:' . sgs_colour_value( $caption_colour );
-}
-if ( $caption_bg_colour ) {
-	$inline_styles_parts[] = '--sgs-caption-bg:' . sgs_colour_value( $caption_bg_colour );
-}
+// Always emit colour CSS vars — fallbacks are set above so these are never empty.
+$inline_styles_parts[] = '--sgs-hover-overlay:' . sgs_colour_value( $hover_overlay_colour );
+$inline_styles_parts[] = '--sgs-caption-colour:' . sgs_colour_value( $caption_colour );
+$inline_styles_parts[] = '--sgs-caption-bg:' . sgs_colour_value( $caption_bg_colour );
 
 $inline_styles = implode( ';', $inline_styles_parts ) . ';';
 

@@ -66,8 +66,16 @@ if ( $dismissible && 'none' !== $close_behaviour ) {
 	$wrapper_classes[] = 'sgs-announcement-bar--dismissible';
 }
 
+// Emit CSS custom properties for colours not covered by WP has-*-color classes.
+// Background and text colours are handled by the has-*-color/has-*-background-color
+// classes above. Only the CTA colour needs an explicit var for the link element.
+require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+
+$sgs_ab_inline_style = '--sgs-ab-cta-colour:' . sgs_colour_value( $cta_colour ) . ';';
+
 $wrapper_attributes = get_block_wrapper_attributes( [
 	'class'                => implode( ' ', $wrapper_classes ),
+	'style'                => $sgs_ab_inline_style,
 	'data-wp-interactive'  => 'sgs/announcement-bar',
 	'data-wp-context'      => wp_json_encode( [
 		'isDismissed'         => false,

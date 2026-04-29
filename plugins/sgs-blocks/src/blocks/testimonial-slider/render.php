@@ -23,10 +23,11 @@ $show_dots           = $attributes['showDots'] ?? true;
 $show_arrows         = $attributes['showArrows'] ?? true;
 $slides_visible      = $attributes['slidesVisible'] ?? 1;
 $card_style          = $attributes['cardStyle'] ?? 'card';
-$quote_colour          = $attributes['quoteColour'] ?? '';
-$name_colour           = $attributes['nameColour'] ?? '';
+// Fallbacks match block.json defaults so inline styles are always emitted.
+$quote_colour          = $attributes['quoteColour'] ?? 'text';
+$name_colour           = $attributes['nameColour'] ?? 'primary';
 $name_font_size        = $attributes['nameFontSize'] ?? '';
-$role_colour           = $attributes['roleColour'] ?? '';
+$role_colour           = $attributes['roleColour'] ?? 'text-muted';
 $rating_colour         = $attributes['ratingColour'] ?? 'accent';
 $hover_bg_colour       = $attributes['hoverBackgroundColour'] ?? '';
 $hover_text_colour     = $attributes['hoverTextColour'] ?? '';

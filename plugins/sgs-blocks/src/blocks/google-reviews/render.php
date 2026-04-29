@@ -11,6 +11,8 @@
 
 use SGS\Blocks\Google_Reviews_Settings;
 
+require_once dirname( __FILE__, 4 ) . '/includes/render-helpers.php';
+
 $variant            = $attributes['variant'] ?? 'grid';
 $card_variant       = $attributes['cardVariant'] ?? 'default';
 $place_id           = $attributes['placeId'] ?? Google_Reviews_Settings::get_settings()['place_id'] ?? '';
@@ -158,8 +160,16 @@ $wrapper_classes = [
 	'sgs-google-reviews--cols-mobile-' . $columns_mobile,
 ];
 
+$sgs_gr_star   = sgs_colour_value( $star_colour ?? 'accent' );
+$sgs_gr_text   = sgs_colour_value( $attributes['textColour'] ?? 'text' );
+$sgs_gr_bg     = sgs_colour_value( $attributes['backgroundColour'] ?? 'surface' );
+$sgs_gr_inline = '--sgs-gr-star-colour:' . $sgs_gr_star . ';'
+	. '--sgs-gr-text-colour:' . $sgs_gr_text . ';'
+	. '--sgs-gr-bg-colour:' . $sgs_gr_bg . ';';
+
 $wrapper_attributes = get_block_wrapper_attributes( [
 	'class'               => implode( ' ', $wrapper_classes ),
+	'style'               => $sgs_gr_inline,
 	'data-wp-interactive' => 'sgs/google-reviews',
 	'data-wp-context'     => wp_json_encode( [
 		'autoplay'      => $autoplay,

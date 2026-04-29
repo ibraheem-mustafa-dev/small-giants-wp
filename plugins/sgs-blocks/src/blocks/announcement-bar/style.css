@@ -12,8 +12,20 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	padding: 0.75rem 1rem;
+	/* Vertical padding gives the bar breathing room.
+	   Horizontal padding is kept minimal — the inner __content
+	   wrapper constrains content to the container width with its
+	   own max-width + margin-inline: auto, mirroring other SGS
+	   strip blocks (announcement, top-bar, etc.). */
+	padding-block: 0.625rem;
+	padding-inline: var( --wp--preset--spacing--40, 1.25rem );
 	transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+@media ( min-width: 768px ) {
+	.sgs-announcement-bar {
+		padding-block: 0.875rem;
+	}
 }
 
 .sgs-announcement-bar--sticky {
@@ -204,7 +216,10 @@
 /* Mobile responsive. */
 @media ( max-width: 767px ) {
 	.sgs-announcement-bar {
-		padding: 0.5rem 3rem 0.5rem 0.75rem; /* Extra right padding for close button. */
+		/* Tight vertical padding on mobile. Extra right padding accommodates
+		   the dismiss button (2.75rem wide, absolute-positioned at right: 0.5rem). */
+		padding-block: 0.5rem;
+		padding-inline: 0.75rem 3rem;
 		min-height: auto;
 	}
 

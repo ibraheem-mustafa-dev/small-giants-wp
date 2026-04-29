@@ -69,16 +69,19 @@
 			]
 		},
 		"tabTextColour": {
-			"type": "string"
+			"type": "string",
+			"default": "text-muted"
 		},
 		"tabActiveTextColour": {
-			"type": "string"
+			"type": "string",
+			"default": "primary"
 		},
 		"tabActiveBgColour": {
 			"type": "string"
 		},
 		"tabActiveIndicatorColour": {
-			"type": "string"
+			"type": "string",
+			"default": "primary"
 		},
 		"tabHoverBgColour": {
 			"type": "string"
@@ -87,7 +90,8 @@
 			"type": "string"
 		},
 		"panelBorderColour": {
-			"type": "string"
+			"type": "string",
+			"default": "border-subtle"
 		},
 		"transitionDuration": {
 			"type": "number",

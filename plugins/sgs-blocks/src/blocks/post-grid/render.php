@@ -113,12 +113,12 @@ $card_params = [
 	'excerptLength'        => absint( $attributes['excerptLength'] ?? 20 ),
 	'imageSize'            => sanitize_key( $attributes['imageSize'] ?? 'medium_large' ),
 	'aspectRatio'          => sanitize_text_field( $attributes['aspectRatio'] ?? '16/10' ),
-	'titleColour'          => $attributes['titleColour'] ?? '',
-	'excerptColour'        => $attributes['excerptColour'] ?? '',
-	'metaColour'           => $attributes['metaColour'] ?? '',
-	'categoryBadgeColour'  => $attributes['categoryBadgeColour'] ?? '',
-	'categoryBadgeBgColour' => $attributes['categoryBadgeBgColour'] ?? '',
-	'readMoreColour'       => $attributes['readMoreColour'] ?? '',
+	'titleColour'          => $attributes['titleColour'] ?? 'primary',
+	'excerptColour'        => $attributes['excerptColour'] ?? 'text',
+	'metaColour'           => $attributes['metaColour'] ?? 'text-muted',
+	'categoryBadgeColour'  => $attributes['categoryBadgeColour'] ?? 'text-inverse',
+	'categoryBadgeBgColour' => $attributes['categoryBadgeBgColour'] ?? 'primary',
+	'readMoreColour'       => $attributes['readMoreColour'] ?? 'primary',
 ];
 
 // -------------------------------------------------------------------------

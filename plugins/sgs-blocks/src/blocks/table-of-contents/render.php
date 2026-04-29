@@ -26,8 +26,9 @@ $scroll_offset     = (int) ( $attributes['scrollOffset'] ?? 0 );
 $scroll_spy        = ! empty( $attributes['scrollSpy'] );
 $list_style        = $attributes['listStyle'] ?? 'numbered';
 $toc_style         = $attributes['style'] ?? 'card';
-$title_colour      = $attributes['titleColour'] ?? '';
-$link_colour       = $attributes['linkColour'] ?? '';
+// Fallbacks match block.json defaults so inline styles are always emitted.
+$title_colour      = $attributes['titleColour'] ?? 'text';
+$link_colour       = $attributes['linkColour'] ?? 'text-muted';
 $active_colour     = $attributes['activeLinkColour'] ?? 'primary';
 
 // ——— Parse headings from post content ———

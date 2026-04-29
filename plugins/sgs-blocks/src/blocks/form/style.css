@@ -810,17 +810,22 @@ select.sgs-form-field__input {
 	color: var(--wp--preset--color--primary, #0f7e80);
 }
 
-/* Hide placeholder when label is in its "down" position (empty field, not focused).
-   Only hide when :placeholder-shown, so filled fields keep their label-up style. */
-.sgs-form-field--text .sgs-form-field__input:placeholder-shown:not(:focus)::placeholder,
-.sgs-form-field--email .sgs-form-field__input:placeholder-shown:not(:focus)::placeholder,
-.sgs-form-field--phone .sgs-form-field__input:placeholder-shown:not(:focus)::placeholder,
-.sgs-form-field--number .sgs-form-field__input:placeholder-shown:not(:focus)::placeholder,
-.sgs-form-field--textarea .sgs-form-field__input:placeholder-shown:not(:focus)::placeholder,
-.sgs-form-field--text .sgs-form-field__input:placeholder-shown:not(:focus)::-moz-placeholder,
-.sgs-form-field--email .sgs-form-field__input:placeholder-shown:not(:focus)::-moz-placeholder,
-.sgs-form-field--phone .sgs-form-field__input:placeholder-shown:not(:focus)::-moz-placeholder,
-.sgs-form-field--number .sgs-form-field__input:placeholder-shown:not(:focus)::-moz-placeholder,
-.sgs-form-field--textarea .sgs-form-field__input:placeholder-shown:not(:focus)::-moz-placeholder {
+/* Floating-label placeholder management.
+   Strategy: hide placeholder by default on floating-label fields (label covers that space).
+   Show placeholder only when the field is focused (label has floated up). */
+.sgs-form-field--text .sgs-form-field__input::placeholder,
+.sgs-form-field--email .sgs-form-field__input::placeholder,
+.sgs-form-field--phone .sgs-form-field__input::placeholder,
+.sgs-form-field--number .sgs-form-field__input::placeholder,
+.sgs-form-field--textarea .sgs-form-field__input::placeholder {
 	color: transparent;
+	transition: color 150ms ease;
+}
+
+.sgs-form-field--text .sgs-form-field__input:focus::placeholder,
+.sgs-form-field--email .sgs-form-field__input:focus::placeholder,
+.sgs-form-field--phone .sgs-form-field__input:focus::placeholder,
+.sgs-form-field--number .sgs-form-field__input:focus::placeholder,
+.sgs-form-field--textarea .sgs-form-field__input:focus::placeholder {
+	color: var(--wp--preset--color--text-muted, #555);
 }
