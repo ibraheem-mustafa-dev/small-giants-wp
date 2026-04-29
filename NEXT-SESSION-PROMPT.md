@@ -1,117 +1,111 @@
 recommended_model: sonnet
-session_tag: small-giants-wp-2026-04-29-phase1c-verify-loop
+session_tag: small-giants-wp-2026-04-30-phase1.5-tooling-triage
 
-You are a senior systems architect. Execute Phase 1c — the final 3 steps of Phase 1 Foundations: build `/verify-loop` (Step 14a), run the end-to-end demo (Step 14b), POST G1 milestone + handoff (Step 15).
+You are a senior systems architect. Phase 1c (Foundations final wrap) is complete. Open this session in **Phase 1.5 — Tooling Triage + Sandbox-Preview Gate**.
 
-Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-04-29-phase1c-verify-loop"`
+Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-04-30-phase1.5-tooling-triage"`
 
-## Where You Are
+## Where you are
 
-Plan: `.claude/plans/phase-1-foundations.md`
-Current phase: Phase 1c (Step 14 + Step 15 of 15)
-Progress: 13/15 steps complete (Phase 1a + 1b done)
-Last commit (Phase 1b): `f9ce068` in `~/.agents` — wires optimisation toolkit into 8 lifecycle skills
-Next task: Step 14a — `/lifecycle` merge mode → build `/verify-loop` from `/test-driven-development` + `/verification-before-completion`
+- Plan: `.claude/plans/master-plan.md` §Phase 1.5 (NEW — added 2026-04-29)
+- State: `.claude/state.md` `current_phase: phase-1.5-tooling-triage`
+- Last completed: Phase 1c — `/verify-loop` shipped at A grade, end-to-end demo PASS, Verification Plan injected into `phase-1-foundations.md`, `/skill-optimiser` Stage 7 folded into Stage 6
+- Active blocker: G1 milestone POST pending (`BLUB_AUTH` env var not set when curl ran). Payload archived at `.claude/reports/phase-1-end-to-end/phase-1-end-to-end-2026-04-29-001/g1-payload.json`. **First action of this session: re-attempt the G1 POST.**
 
-## What's Already Done
+## What's already done (read for context, do not redo)
 
-**Phase 1a (commit c01b64f in ~/.agents):** 4 utilities at `~/.agents/skills/shared-references/optimisation_toolkit/` — canary_split, dspy_signature, certainty_calc, few_shot_injector. All 4 smoke tests pass (~3.8s total).
+| Output | Path |
+|---|---|
+| `/verify-loop` skill | `~/.claude/skills/verify-loop/SKILL.md` (skillscore 90%) |
+| `/verify-loop` rubric (signed off) | `~/.claude/skills/verify-loop/references/end-goal-rubric.md` (12 criteria, 9 Never Do) |
+| `/verify-loop` slash command | `~/.claude/commands/verify-loop.md` |
+| Phase 1c gap-analysis | `.claude/reports/phase-1-end-to-end/phase-1-end-to-end-2026-04-29-001/gap-analysis.md` (A grade 78.5/78.5) |
+| Phase 1c verdict | `.claude/reports/phase-1-end-to-end/phase-1-end-to-end-2026-04-29-001/verdict.md` (PASS) |
+| Backlog of Phase 2 candidates | `~/.claude/skills/verify-loop/references/backlog.md` |
+| AI-WP community research | `.claude/reports/2026-04-29-ai-wp-community-research.md` |
+| WP Studio vs Local Flywheel | `.claude/reports/2026-04-29-wp-studio-vs-local-flywheel.md` |
+| WP Studio AI Operating Manual | `.claude/specs/2026-04-29-wp-studio-ai-manual.md` |
+| WP Studio cross-tier QC reviews | `.claude/reports/phase-1c-wp-studio-qc/{cerebras,gemini-flash}-review.md` (read these BEFORE patching the manual) |
+| `/skill-optimiser` Stage 6 fold | `~/.claude/skills/skill-optimiser/SKILL.md` (Stage 7 collapsed into Stage 6 with cross-tier peer review HARD GATE folded inline; override path documented for "do not delegate" sessions) |
 
-**Phase 1b (commit f9ce068 in ~/.agents):** 8 lifecycle skills updated:
-- skill-writer / pipeline-writer / command-writer: rubric-gen sub-stage + Bean sign-off HARD GATE + skip-if-confirmed + literal approval-keyword detection
-- skill-optimiser / pipeline-optimiser: rubric-aware Stage 1 (read-or-generate) + Lens 6 input
-- gap-analysis: Lens 6 ALWAYS runs + 4-step fallback chain (confirmed → pending → draft-unconfirmed → 5-lens-only/grade-cap-C) + edge cases (silent-Bean timeout, malformed rubric)
-- qc / qc-inline: certainty_calc wired into Stage 3, ImportError → UNAVAILABLE, <50 → HOLD, schema parity (5-key dicts), `certainty_verdict` key for hand-off contract
+## Phase 1.5 deliverables (master plan §Phase 1.5)
 
-**Cross-tier QC reports archived:** `.claude/reports/phase-1-cross-tier-qc/20260429-084939/` — 9 reports (8 skills + 1 re-QC). Drift findings triaged + patched.
+Two interleaved tracks — triage (sequential) + sandbox-preview gate (parallel). **Patches to WP Studio docs come BEFORE P1.5a — see P1.5_0 below.**
 
-## Skills to Invoke
+| ID | Unit | Time | Deps |
+|----|------|-----|------|
+| **P1.5_0** | **Patch WP Studio QC findings (3 S-grade + 4 A-grade)** — see `.claude/reports/phase-1c-wp-studio-qc/reconciliation.md`. Includes verifying `DB_ENGINE=mysql` actually works in Studio's PHP-WASM runtime (the master-plan claim could be unimplementable if not). | 60-75 min | none |
+| **P1.5a** | `/skill-auditor` + `/agent-auditor` for overlap / duplicate / abandonment surface | 20 min | P1.5_0 |
+| **P1.5b** | Cross-reference deferred-pipelines doc + parking lots; produce triage table at `.claude/plans/strategy/2026-04-29-tooling-triage.md` | 30 min | P1.5a |
+| **P1.5c** | Bean sign-off on triage table (HARD GATE) | 15 min | P1.5b |
+| **P1.5d** | Execute kills + merges in parallel | 30-45 min | P1.5c |
+| **P1.5e** | Sandbox-preview gate: blueprint + `/verify-loop --target-url` flag + `studio-preview-up.ps1` + `deploy-check --studio-pass` flag | 85 min | P1.5_0 + runs PARALLEL to P1.5d |
+| **P1.5f** | `/phase-planner` to draft Phase 2 phase-plan against the surviving roster | 30 min | P1.5d |
 
-| Skill | When to use |
-|-------|-------------|
-| `/autopilot` | FIRST — always before any response |
-| `/lifecycle` | Step 14a — invoke in **merge mode** to combine /test-driven-development + /verification-before-completion → /verify-loop |
-| `/skill-optimiser` | Step 14b — run on `/verify-loop` (the new skill is the optimiser's target — exercises all 4 utilities + Lens 6 + certainty_calc) |
-| `/qc` + `/qc-inline` | Step 14b — fired during `/skill-optimiser`'s evidence pass, exercises certainty_calc Stage 3 |
-| `/verify-loop` | Step 14b self-demo — invoke on `phase-1-foundations.md` to verify it works as a tool |
-| `/handoff` | Step 15 — generate next-session-prompt for Phase 2 |
-| `/strategic-plan` | Read `.claude/plans/master-plan.md` §13 for Phase 2 handoff hint |
+**Phase exit (G1.5):** triage decisions logged + kills/merges executed + sandbox-preview gate working + Phase 2 phase-plan drafted.
+
+## Skills to invoke
+
+| Skill | When |
+|-------|------|
+| `/autopilot` | FIRST — every session |
+| `/skill-auditor` | P1.5a |
+| `/agent-auditor` | P1.5a (parallel with skill-auditor) |
+| `/lifecycle` | P1.5d (any kill/merge that touches a SKILL.md) |
+| `/verify-loop` | P1.5e — modify Stage 1 / classification to accept `--target-url` flag |
+| `/phase-planner` | P1.5f — input is the post-triage tool list |
+| `/handoff` | session end |
 
 ## Tools
 
 | Tool | What for |
 |------|----------|
-| `python ~/.agents/skills/shared-references/optimisation_toolkit/tests/smoke_*.py` | Re-run any utility smoke test |
-| `sqlite3 ~/.openclaw/workspace/data/blub.db` | few_shot_injector reads embeddings (Step 14b live exercise) |
-| `curl` | Step 15 G1 POST to `/api/knowledge` |
-| Sonnet via `/delegate` | If any sub-step diverges from inline-Opus reasoning |
-| Gemini Flash | Cross-tier QC peer review of /verify-loop after build (Decision 2 fallback if Cerebras stuck) — **note: today's session hit Gemini 503s repeatedly; if same, fall back to Cerebras at `python C:/Users/Bean/.claude/agents/cerebras-agent/agent.py --prompt "..." --cwd "..."`** |
+| `studio` CLI | P1.5e — sandbox creation, blueprint validation, preview URLs. AI manual at `.claude/specs/2026-04-29-wp-studio-ai-manual.md` |
+| `gh` CLI | If any tool kills end up touching a published GitHub repo |
+| `python ~/.agents/skills/shared-references/dispatch-graph-validator.py` | After every kill/merge to confirm no dead refs |
+| `python ~/.agents/skills/shared-references/sgs-skillscore.py validate <path>` | After every skill edit |
+| `curl` | G1 POST re-attempt at session start (`BLUB_AUTH` env var must be set) |
 
-## Step 14a — Build `/verify-loop` (merge mode)
+## First action (≤5 min, zero deps)
 
-Per plan §Step 14a, use `/lifecycle` in merge mode. Source skills:
-- `~/.claude/skills/test-driven-development/SKILL.md`
-- `~/.claude/skills/verification-before-completion/SKILL.md`
+1. Re-attempt G1 POST:
+   ```bash
+   curl -sf -X POST http://localhost:5050/api/knowledge \
+     -H "Cookie: blub_auth=$BLUB_AUTH" \
+     -H "Content-Type: application/json" \
+     -d @c:/Users/Bean/Projects/small-giants-wp/.claude/reports/phase-1-end-to-end/phase-1-end-to-end-2026-04-29-001/g1-payload.json
+   ```
+   If 2xx: clear the blocker in `.claude/state.md`. If still failing: keep `pending_upload: true` and proceed.
 
-Output skill: `~/.claude/skills/verify-loop/SKILL.md` + `~/.claude/commands/verify-loop.md`
+2. Read the two cross-tier QC reports written at end of last session:
+   - `.claude/reports/phase-1c-wp-studio-qc/cerebras-review.md`
+   - `.claude/reports/phase-1c-wp-studio-qc/gemini-flash-review.md`
 
-Spec for the merged skill (verbatim from plan):
-- STAGE 0 — Read context (active plan + current TodoWrite)
-- STAGE 1 — Classify verification per step (shell | visual Playwright | unit | API | file assertion)
-- STAGE 2 — Inject tests dual-surface (Verification Plan table appended to plan + `[TEST: <name>]` todos queued)
-- STAGE 3 — Per-step gate (auto-fix once on fail; HARD STOP + `[BLOCKED]` todo if still fail)
+   Reconcile any S/A-grade findings against the WP Studio AI manual + master plan §Phase 1.5 Shift 2 narrative. Patch as needed before P1.5e starts.
 
-The skill-writer's new rubric-gen Stage fires first — Bean sign-off needed on the rubric before /verify-loop SKILL.md body is drafted. Old skills marked for archival, NOT deleted (per plan §12.5).
-
-## Step 14b — End-to-end demo
-
-Run `/skill-optimiser` on `/verify-loop`. This exercises:
-- Stage 1 reads the rubric written in 14a
-- canary_split.py holds out 20% of /verify-loop's fixture set
-- few_shot_injector queries blub.db corrections for testing-pattern examples
-- ≥1 optimisation candidate is scored
-- gate fires (delta >= 0.05 OR "no change" with rationale — both PASS)
-- /qc fires at evidence pass; certainty_calc runs at Stage 3
-- Report archived to `.claude/reports/phase-1-end-to-end/<run_id>/`
-
-Then immediately invoke `/verify-loop` on `phase-1-foundations.md` (this plan). Should produce a Verification Plan table for each phase step + `[TEST]` todos.
-
-**verdict.md** must read PASS (utility-aware loop functioning) OR FAIL (where the loop broke). delta < 0.05 with the gate correctly refusing the candidate is also a PASS per Decision F.
-
-## Step 15 — G1 milestone POST + handoff
-
-POST to `/api/knowledge` per master plan §11.5:
-
-```bash
-curl -sf -X POST http://localhost:5050/api/knowledge \
-  -H "Cookie: blub_auth=$BLUB_AUTH" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "category": "pipeline-run",
-    "tags": ["phase-1-foundations", "P1.1b", "G1-PASS"],
-    "title": "Phase 1 exit: foundations",
-    "content": "4 utilities + 8 lifecycle skills + cross-tier QC clean + /verify-loop shipped + end-to-end demo PASS",
-    "metadata": {"run_id": "<run_id>", "phase": "1", "project_id": 14}
-  }'
-```
-
-`BLUB_AUTH` env var must be set; never commit the literal cookie (gitleaks blocks).
-
-Update `.claude/state.md` frontmatter: `current_phase: phase-2-rubrics-universe`. Run `/handoff` to write `next-session-prompt.md` pointing at master plan §13 Phase 2 handoff block.
+3. Then proceed to P1.5a (`/skill-auditor` + `/agent-auditor` in parallel).
 
 ## Guardrails
 
-- WordPress non-negotiables: WCAG 2.2 AA, UK English, no jQuery, <100KB CSS / <50KB JS (no WP work expected in 1c, but rule stays)
+- WordPress non-negotiables: WCAG 2.2 AA, UK English, no jQuery, <100KB CSS / <50KB JS budget
 - `git branch --show-current` before every commit (framework → main; client → feature branch)
-- Master plan §12.5 deletion-before-reference rule: archive old testing skills, do NOT delete yet
-- Smoke tests cannot make network calls (spec §4.4)
-- Cross-tier QC = different model family than the editor (today: Gemini Flash unstable, Cerebras Qwen 3 235B is the working alternate)
-- Decision F: gate firing at delta < 0.05 = utility working correctly = PASS
+- Master plan §12.5 deletion-before-reference rule still applies — archive (not delete) any tools the triage marks for kill until all references are removed
+- `/skill-optimiser` Stage 6 now folds peer-review inline — when running optimisers in P1.5d, the HARD GATE is satisfied by the subagent return + main-thread reconciliation. Override path documented for "do not delegate" sessions
 
-## Known issues from today's session
+## Phase 2 handoff hint
 
-1. **Gemini Flash 503s** were heavy. Use Cerebras as fallback (Decision 2 of plan).
-2. **gemini-analyser agent** was unavailable; direct CLI worked once retried.
-3. **`~/.claude/skills/` is a symlink to `~/.agents/skills/`** — commits land in `~/.agents` (master branch, no remote).
-4. **The `.claude/reports/phase-1-cross-tier-qc/20260429-084939/` directory** has 9 reports including 1 re-QC. Step 13 gate passed by Bean despite drift-minor verdicts on 5 reports — all were either false positives (prompt-mismatch / pre-existing content in diff) or real issues that were patched.
-5. **command-writer / qc / qc-inline** were untracked files in `~/.agents` before today; committed via `f9ce068`.
+Phase 1.5 ends by drafting the Phase 2 phase-plan (P1.5f). Phase 2 = "Rubrics universe" but sized against the surviving roster (likely 12-15 rubrics, not 22). Phase 2 entry condition: triage table signed off + kills executed + dispatch-graph-validator clean.
+
+## Known issues from last session
+
+1. **`few_shot_injector` API friction** — `inject(prompt, task_embedding)` requires pre-computed embedding. Phase 1.5 should add `inject_by_query()` wrapper to the toolkit. Logged in `~/.claude/skills/verify-loop/references/backlog.md` (G2).
+2. **blub.db dashboard** was unreachable during last session — `curl /api/knowledge?q=...` returned empty. blub.db file itself is at `~/.openclaw/workspace/tools/blub-dashboard-v2/data/blub.db`, NOT the default path the few_shot_injector hardcodes. Check dashboard service before running anything that depends on it.
+3. **Subagent Bash permissions blocked** — both Cerebras and Gemini Flash QC dispatches via subagent failed with "Bash denied". Cross-tier QC was run from main thread instead. Going forward: dispatch model-CLI work from main thread, not from subagents.
+4. **Gemini Pro 503s** were unreliable yesterday. Cerebras + Gemini Flash both worked from main thread.
+
+## Decisions captured during last session (already applied)
+
+- Phase 1.5 inserted between Phase 1 and Phase 2 (master plan §7 + state.md)
+- WP Studio sandbox-preview gate elevated from sub-step to strategic shift in master plan §2 + Phase 1.5 §Shift 2 narrative
+- `/skill-optimiser` Stage 7 folded into Stage 6 with override path for "do not delegate" sessions (Bean's design observation 2026-04-29)
+- Source skills `/test-driven-development` and `/verification-before-completion` marked for archival (NOT deleted) per master plan §12.5

@@ -1,0 +1,25 @@
+{
+  "url": "https://palestine-lives.org/block-test/",
+  "selector": null,
+  "timestamp": "2026-04-29T09:01:46.282Z",
+  "viewports": [
+    {
+      "viewport": "mobile",
+      "width": 375,
+      "height": 812,
+      "file": "c:\\Users\\Bean\\Projects\\small-giants-wp\\.claude\\reports\\visual-qa-2026-04-29\\screenshots\\mobile.png"
+    },
+    {
+      "viewport": "tablet",
+      "width": 768,
+      "height": 1024,
+      "file": "c:\\Users\\Bean\\Projects\\small-giants-wp\\.claude\\reports\\visual-qa-2026-04-29\\screenshots\\tablet.png"
+    },
+    {
+      "viewport": "desktop",
+      "width": 1280,
+      "height": 800,
+      "file": "c:\\Users\\Bean\\Projects\\small-giants-wp\\.claude\\reports\\visual-qa-2026-04-29\\screenshots\\desktop.png"
+    }
+  ]
+}

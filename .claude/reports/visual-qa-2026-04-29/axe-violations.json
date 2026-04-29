@@ -1,0 +1,112 @@
+{
+  "url": "https://palestine-lives.org/block-test/",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "tags": [
+    "wcag2aa"
+  ],
+  "violations": [
+    {
+      "id": "color-contrast",
+      "impact": "serious",
+      "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+      "help": "Elements must meet minimum color contrast ratio thresholds",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=axeAPI",
+      "tags": [
+        "cat.color",
+        "wcag2aa",
+        "wcag143",
+        "TTv5",
+        "TT13.c",
+        "EN-301-549",
+        "EN-9.1.4.3",
+        "ACT"
+      ],
+      "nodes": [
+        {
+          "html": "<span class=\"sgs-heritage-strip__badge\">Est. 1962</span>",
+          "target": [
+            ".sgs-heritage-strip__badge"
+          ],
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.13 (foreground color: #0a7ea8, background color: #e7d768, font size: 10.5pt (14px), font weight: bold). Expected contrast ratio of 4.5:1"
+        },
+        {
+          "html": "<button type=\"button\" class=\"sgs-pricing-table__cta sgs-pricing-table__cta--accent\">Get Started</button>",
+          "target": [
+            ".sgs-pricing-table__plan:nth-child(1) > .sgs-pricing-table__cta.sgs-pricing-table__cta--accent[type=\"button\"]"
+          ],
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.68 (foreground color: #ffffff, background color: #d8ca50, font size: 13.5pt (18px), font weight: normal). Expected contrast ratio of 4.5:1"
+        },
+        {
+          "html": "<button type=\"button\" class=\"sgs-pricing-table__cta sgs-pricing-table__cta--accent\">Apply Now</button>",
+          "target": [
+            ".sgs-pricing-table__plan--highlighted > .sgs-pricing-table__cta.sgs-pricing-table__cta--accent[type=\"button\"]"
+          ],
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.68 (foreground color: #ffffff, background color: #d8ca50, font size: 13.5pt (18px), font weight: normal). Expected contrast ratio of 4.5:1"
+        },
+        {
+          "html": "<button type=\"button\" class=\"sgs-pricing-table__cta sgs-pricing-table__cta--accent\">Contact Sales</button>",
+          "target": [
+            ".sgs-pricing-table__plan:nth-child(3) > .sgs-pricing-table__cta.sgs-pricing-table__cta--accent[type=\"button\"]"
+          ],
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.68 (foreground color: #ffffff, background color: #d8ca50, font size: 13.5pt (18px), font weight: normal). Expected contrast ratio of 4.5:1"
+        },
+        {
+          "html": "<dt class=\"sgs-business-hours__day\">Monday</dt>",
+          "target": [
+            ".sgs-business-hours__row:nth-child(1) > dt"
+          ],
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.09 (foreground color: #424242, background color: #2c3e50, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+        },
+        {
+          "html": "<dt class=\"sgs-business-hours__day\">Tuesday</dt>",
+          "target": [
+            ".sgs-business-hours__row:nth-child(2) > dt"
+          ],
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.09 (foreground color: #424242, background color: #2c3e50, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+        },
+        {
+          "html": "<dt class=\"sgs-business-hours__day\">Wednesday</dt>",
+          "target": [
+            ".sgs-business-hours__row:nth-child(3) > dt"
+          ],
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.09 (foreground color: #424242, background color: #2c3e50, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+        },
+        {
+          "html": "<dt class=\"sgs-business-hours__day\">Thursday</dt>",
+          "target": [
+            ".sgs-business-hours__row:nth-child(4) > dt"
+          ],
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.09 (foreground color: #424242, background color: #2c3e50, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+        },
+        {
+          "html": "<dt class=\"sgs-business-hours__day\">Friday</dt>",
+          "target": [
+            ".sgs-business-hours__row:nth-child(5) > dt"
+          ],
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.09 (foreground color: #424242, background color: #2c3e50, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+        },
+        {
+          "html": "<dt class=\"sgs-business-hours__day\">Saturday</dt>",
+          "target": [
+            ".sgs-business-hours__row:nth-child(6) > dt"
+          ],
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.09 (foreground color: #424242, background color: #2c3e50, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+        },
+        {
+          "html": "<dt class=\"sgs-business-hours__day\">Sunday</dt>",
+          "target": [
+            ".sgs-business-hours__row:nth-child(7) > dt"
+          ],
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.09 (foreground color: #424242, background color: #2c3e50, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+        }
+      ]
+    }
+  ],
+  "passes": 2,
+  "violations_count": 1,
+  "incomplete": 1,
+  "inapplicable": 1
+}

@@ -23,8 +23,9 @@ Ship the optimisation toolkit + tooling rebuild (Steps 3+4 of the SGS-WP 5-step 
 |-----------|---------------------------|
 | Revenue (Track B clients) | 5 clients shipped; gate to scaling SGS as a productised offering |
 | Tooling reliability (Track A) | 13 pipelines + 22+ optimised skills + new SQLite tables for cross-run intelligence |
+| **Pre-deploy verification (Phase 1.5 — adopted 2026-04-29)** | **WP Studio sandbox + HTTPS Preview Sites become the mandatory gate between local edits and tar-deploy. Closes the dominant failure mode where OPcache / LiteSpeed / block-validation gotchas surface only AFTER live deploy. Existing git → Hostinger pull deploy chain is preserved; Studio sits in front of it as a sandbox + verification layer, not a replacement. `/verify-loop` runs against the Preview URL before any tar-deploy fires. Strategic shift, not a tooling tweak — every other optimisation in this plan compounds on top of a gated deploy.** |
 | Autonomy (zero-QC delivery) | Council 4-reviewer pre-deploy gate replaces single-LLM design review; Designer Mode B autonomous research; validated-outcome ingestion |
-| Competitive moat | Self-improving design-brain DB; archetype × pricing-tier deterministic mapping |
+| Competitive moat | Self-improving design-brain DB; archetype × pricing-tier deterministic mapping; **sandbox-preview-gated deploy puts SGS ahead of every WP agency still running edit-on-live workflows** |
 
 ## 3. Constraints
 
@@ -80,6 +81,55 @@ Each unit follows the strategic-plan single-responsibility rule. ON-CRITICAL-PAT
 |----|------|--------------|--------|---------|----|
 | **P1.1a** | Build 4 toolkit utilities (canary_split, dspy_signature, certainty_calc, few_shot_injector) | `~/.agents/skills/shared-references/optimisation-toolkit/` | Spec §4 utility specs | 4 utility modules + smoke tests | YES |
 | **P1.1b** | Update 8 lifecycle/quality/QC skills to be utility-aware (BLOCKING gate) | 8 skill SKILL.md files | P1.1a | Updated skills + cross-tier QC peer-review evidence | YES |
+| **P1.1c** | Build `/verify-loop` (merge `/test-driven-development` + `/verification-before-completion`) + end-to-end demo + G1 milestone | `~/.claude/skills/verify-loop/` | P1.1b | /verify-loop shipped (skillscore 90%, gap-analysis A 78.5/78.5); end-to-end demo PASS (Decision F: gate refused premature optimisations); Verification Plan table on phase-1-foundations.md; G1 archived (curl pending — `BLUB_AUTH` unset, payload at `phase-1-end-to-end-2026-04-29-001/g1-payload.json`) | YES |
+
+### Phase 1.5 — Tooling Triage + Sandbox-Preview Gate (NEW — added 2026-04-29)
+
+**Two strategic shifts compressed into one phase. Both are load-bearing for everything downstream.**
+
+#### Shift 1 — Tooling triage before rubric universe
+
+Phase 2 originally went straight to "rubric universe — 22 skills". That assumes the existing roster is the right roster. Phase 4 ("Tooling rebuild") explicitly contemplates killing/merging/replacing tools. So Phase 2 risks rubricking tools Phase 4 will then archive — wasted Phase 2 work. Phase 1.5 prunes the saw before Phase 2 saws the tree.
+
+**Cost-benefit:** ~2–2.5 hours of triage. Likely shrinks Phase 2 from 22 → 12–15 rubrics. Saves 7–10 rubric-authoring sessions worth of time + reduces ledger noise. Cleaner Phase 4 input.
+
+#### Shift 2 — WP Studio sandbox + Preview-URL gate becomes the new pre-deploy floor
+
+This is the larger of the two shifts. Until 2026-04-29, the deploy path was: edit locally → tar + scp → palestine-lives.org / Hostinger client site → discover OPcache, LiteSpeed, block-validation, or default-rendering gotchas after the change is live → re-deploy. Every "claimed done, wasn't actually verified" failure pattern that drove the `/verify-loop` build (Phase 1c) traces back to this missing gate.
+
+WP Studio (Automattic, free, already installed) closes it. The new pipeline:
+
+```
+edit (VS Code) → WP Studio sandbox (Hostinger import via .wpress) → Studio Preview URL (free, hosted, HTTPS, 7-day) → /verify-loop runs Playwright assertions against the Preview URL → if PASS → existing git → Hostinger pull → live
+```
+
+Studio does NOT replace the deploy. It sits in front of it. The existing tar+scp / git+Hostinger-pull mechanism stays. What changes is that no live deploy fires until `/verify-loop` has run rendered-DOM assertions, screenshot diffs, and console-error checks against an HTTPS URL that is **rendered-DOM identical for the `wp-content` scope** (Studio Preview ships only `wp-content` — core, root files, and custom `wp-config.php` constants are NOT replicated; see manual gotcha #5).
+
+**Why this is large impact, not a tooling tweak:**
+
+1. **Compounds on Phase 5 client builds + Phase 4 tooling rebuild deploys.** Strongest impact on long-running deploys (clients, framework rollouts). Phase 2 rubric authoring is mostly local — gate adds little there. Phase 3 gap analysis benefits where findings touch deployable code. Honest framing: high-leverage on deploy-touching work, modest on local-only work.
+2. **It's the structural fix to the failure mode `/verify-loop` was built for** — at the per-deploy level. /verify-loop catches "claimed done not verified" at the per-step level; Studio Preview extends that to the per-deploy level. Integration risk noted: `/verify-loop` was originally designed for inline step verification, not Preview-URL gating — the `--target-url` flag in P1.5e is a retrofit and may surface assumption gaps in Stage 1 classification.
+3. **Sandbox-preview-before-promote is an emerging pattern in the WP-AI tooling space.** Studio itself is the canonical implementation. Other tools (Local by Flywheel's Live Links, Playground previews) cover narrower surfaces. SGS adopting Studio Preview is alignment with Studio's own pattern, not a multi-tool consensus claim — keep the framing humble.
+4. **Client-shareable HTTPS URL with caveats.** Studio's wp.build Preview Sites give a free, hosted, 7-day URL — but: (a) **10-preview cap per WP.com account** can block mid-deploy if other previews are live; (b) **WP.com OAuth dependency** means auth must be valid (2-week token) for `preview create`/`update` to succeed; (c) Preview ships only `wp-content`, not core. Within those limits: replaces "deploy live → Bean spots issues → redeploy" with "preview → Bean reviews → deploy clean". Indus Foods 2-week cycle becomes 7-day-renew-via-CLI, with a `preview list` check before each renewal.
+
+**Reference docs:**
+- AI Operating Manual: `.claude/specs/2026-04-29-wp-studio-ai-manual.md` — every CLI command, every MCP tool (24 Studio tools + 1 wpcom-mcp tool), Blueprint format, 5 standard workflows (Hostinger import, Preview URL, /verify-loop chaining, sandbox refresh, version-drift detection), 13 priority-ordered gotchas, Claude-specific anti-patterns.
+- Decision research: `.claude/reports/2026-04-29-wp-studio-vs-local-flywheel.md` — Studio chosen for HTTPS preview surface, Local kept as backup for MySQL / DB-heavy work.
+
+**Critical gotcha (Phase 1.5 must address):** Studio runs PHP-WASM, which **cannot host a native MySQL server** — it ships with the SQLite integration plugin and intercepts `wpdb` at runtime. Hostinger is MySQL. The original "blueprint MUST force `DB_ENGINE=mysql`" framing was unimplementable in Studio's runtime (verified against the Studio AI manual L10 + L332). Replacement: **best-effort SQL parity**. The blueprint must document SQLite-vs-MySQL drift surfaces (collation, GROUP BY semantics, REGEXP, fulltext indexes), and any DB-heavy regression check must run against Local by Flywheel (real MySQL) in addition to Studio. The `/verify-loop --target-url` Studio Preview gate covers rendered-DOM, screenshots, console errors — NOT SQL-flavour drift. SQL-flavour drift remains the user's responsibility, with Local-by-Flywheel as the tier-2 backstop.
+
+#### Phase 1.5 deliverable table
+
+| ID | Unit | Files / where | Inputs | Outputs | Critical |
+|----|------|--------------|--------|---------|----|
+| **P1.5a** | Run `/skill-auditor` + `/agent-auditor` for overlap / duplicate / abandonment surface | All skill + agent dirs | P1.1c | Audit reports — kill / merge / park / keep candidates | YES |
+| **P1.5b** | Cross-reference `plans/strategy/2026-04-21-non-essential-pipelines-deferred.md` and parking lots; produce a single triage table (kill / merge / park / keep, one row per tool) | `.claude/plans/strategy/2026-04-29-tooling-triage.md` (new) | P1.5a | Triage table | YES |
+| **P1.5c** | Bean sign-off on the triage table (HARD GATE — scope-shaping decision) | (chat) | P1.5b | Confirmed triage decisions | YES |
+| **P1.5d** | Execute kills (delete + redirect) + merges (parallel where safe) | Various skill/agent files | P1.5c | Surviving roster | YES |
+| **P1.5e** | Sandbox-preview gate setup — pin Studio version + create `sgs-base.blueprint.json` + Hostinger import flow doc + `/verify-loop --target-url` flag + `studio-preview-up.ps1` helper + `deploy-check` `--studio-pass` flag | `theme/sgs-theme/sgs-base.blueprint.json`, `CLAUDE.md` deploy section, `~/.claude/skills/verify-loop/SKILL.md`, `~/.claude/skills/deploy-check/` | WP Studio AI manual at `.claude/specs/2026-04-29-wp-studio-ai-manual.md` | Pre-deploy verification gate operational | NO (parallel to P1.5d) |
+| **P1.5f** | Run `/phase-planner` to draft Phase 2 phase-plan against the surviving roster (sized correctly post-triage) | `.claude/plans/phase-2-rubrics-universe.md` (new) | P1.5d | Phase 2 phase-plan ready | YES |
+
+**Phase exit (G1.5):** triage decisions logged + kills/merges executed + sandbox-preview gate working + Phase 2 phase-plan drafted.
 
 ### Phase 2 — Rubrics universe
 

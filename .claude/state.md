@@ -2,9 +2,9 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-current_phase: phase-1-foundations-1c
-current_step: "Phase 1a (toolkit) + 1b (8 skills wired) complete; Phase 1c = Step 14a (build /verify-loop merge), 14b (end-to-end demo on /verify-loop), 15 (G1 milestone POST). Fresh session for these per Rule 13."
-last_updated: 2026-04-29
+current_phase: phase-1.5-tooling-triage
+current_step: "P1.5_0 + P1.5a + P1.5b + P1.5c COMPLETE. WP Studio manual patched (10 gaps closed, 3 S-grade + 4 A-grade). Skill/agent audits run. Triage table signed off. P1.5d (kills/merges) next — execution order: Step 0 autopilot patch, then parallel kills, then sequential merges. P1.5e (sandbox-preview gate) and P1.5f (Phase 2 phase-plan) follow."
+last_updated: 2026-04-30
 blockers: []
 ---
 
