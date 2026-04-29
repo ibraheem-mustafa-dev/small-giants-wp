@@ -3,8 +3,8 @@ doc_type: state
 project: small-giants-wp
 project_id: 14
 current_phase: phase-1.5-tooling-triage
-current_step: "P1.5d COMPLETE 2026-04-30. Step 0 (autopilot patch) + 6 kills/parks + 4 merges + Step 10 assessments all done. Roster: 13→9 skills, 14→8 agents. Bean overrides applied: seo-schema stays solo; seo-hreflang folds into seo-technical. Structural debt logged in optimisation-toolkit-design.md §Phase 2a (4 targets at 52-85%). Next: P1.5e (sandbox-preview gate) + P1.5f (Phase 2 phase-plan)."
-last_updated: 2026-04-30
+current_step: "P1.5e COMPLETE 2026-05-01. Sandbox-preview gate shipped: sgs-default.json blueprint, studio-preview-up.ps1, /verify-loop --target-url flag (90%), /deploy-check --studio-pass skill (94%), smoke test PASS + GAP-3 resolved. P1.5f (Phase 2 phase-plan) remains — next session."
+last_updated: 2026-05-01
 blockers: []
 # G1 milestone POST resolved 2026-04-30 — knowledge id 13284 (after SQLite WAL checkpoint cleared the lock).
 # CC memory sync to knowledge API also complete: 22/22 files posted.
