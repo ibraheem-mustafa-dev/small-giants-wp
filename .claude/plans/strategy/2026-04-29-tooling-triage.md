@@ -51,7 +51,7 @@ sources:
 | **seo-performance** | KILL | Overlaps `seo-technical` (Core Web Vitals source inspection) + `performance-auditor` (Next.js focus). Not in CLAUDE.md Quick Reference. No unique surface. | MEDIUM | 5 min |
 | **seo-visual** | MERGE → `design-reviewer` | Identical screenshot protocol (375/768/1440px Playwright). design-reviewer is broader but already mandates visual analysis at all breakpoints. Merge: add `seo-visual` trigger keywords to design-reviewer's when-to-use description. | HIGH | 15 min |
 | **seo-content** | MERGE → `seo-auditor` (enhanced Content section) | Content quality (E-E-A-T, readability, keyword depth) is already in seo-auditor as a section. seo-content is a narrower post-publish variant of the same checks. Merge: expand seo-auditor's Content section with seo-content's methodology. | MEDIUM | 30 min |
-| **seo-schema** | MERGE → `seo-technical` (as `--schema` pass) | Narrow validation tool — fold into seo-technical as an optional schema validation pass triggered by classification keywords. | MEDIUM | 15 min |
+| **seo-schema** | KEEP standalone | Bean override 2026-04-30: schema is big and powerful enough to stay solo. Do NOT fold into seo-technical. | HIGH | 0 |
 | **seo-sitemap** | PARK | Bean gets sitemaps from SEO plugins (Rank Math etc.) — dedicated agent has near-zero use. Non-invocable (hidden behind router). Archive rather than spend time merging. | HIGH | 5 min |
 | **research-pipeline** | KEEP | Full research-to-decision orchestration. Active in CLAUDE.md. | — | — |
 | **project-manager** | KEEP | Portfolio PM with live git verification. Active. | — | — |
@@ -107,9 +107,12 @@ These are confirmed on strategic hold. No action in P1.5d.
 5. Merge `seo-visual` → `design-reviewer` (add seo-visual trigger keywords to when-to-use)
 6. Merge `sgs-email-branding` → `email-html-builder`
 7. Merge `seo-content` → `seo-auditor` (expand Content section)
-8. Fold `seo-schema` → `seo-technical` (as schema validation pass)
+8. ~~Fold `seo-schema` → `seo-technical`~~ — **CANCELLED** (Bean override 2026-04-30: seo-schema stays solo)
 9. Fix sgs-extraction 4 factual errors (keep standalone — do NOT merge)
-10. Assess `seo-geo`, `seo-hreflang`, `gemini-vision-audit` — quick read of each SKILL.md, decide keep/merge/park in-session
+10. ~~Assess `seo-geo`, `seo-hreflang`, `gemini-vision-audit`~~ — **DONE 2026-04-30**:
+   - `seo-geo` → **KEEP standalone**. AI search/GEO is a distinct fast-growing surface, no overlap with surviving roster.
+   - `seo-hreflang` → **MERGE → `seo-technical`** (Bean decision: hreflang is core technical SEO — HTML tags, HTTP headers, sitemap entries — fits naturally alongside seo-sitemap fold).
+   - `gemini-vision-audit` → **KEEP standalone**. Gemini Vision dispatcher; no overlap with design-reviewer (Playwright/manual) or `/visual-qa` (SGS-specific).
 
 **Run dispatch-graph-validator after each merge/kill:**
 ```bash
