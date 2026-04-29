@@ -2,8 +2,8 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-current_phase: framework-polish-extended
-current_step: "Extended polish push complete (10 commits 2026-04-29); single follow-up tracked: 5 static-block deprecations at plans/strategy/post-wave2-deprecations.md"
+current_phase: phase-1-foundations-1c
+current_step: "Phase 1a (toolkit) + 1b (8 skills wired) complete; Phase 1c = Step 14a (build /verify-loop merge), 14b (end-to-end demo on /verify-loop), 15 (G1 milestone POST). Fresh session for these per Rule 13."
 last_updated: 2026-04-29
 blockers: []
 ---
