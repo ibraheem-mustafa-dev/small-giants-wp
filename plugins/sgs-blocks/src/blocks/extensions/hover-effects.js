@@ -300,64 +300,8 @@ addFilter(
 	withHoverControls
 );
 
-/**
- * Add hover classes and CSS custom properties to saved content (static blocks).
- */
-addFilter(
-	'blocks.getSaveContent.extraProps',
-	'sgs/hover-effects/save-props',
-	( extraProps, blockType, attributes ) => {
-		const {
-			sgsHoverBgColour,
-			sgsHoverTextColour,
-			sgsHoverBorderColour,
-			sgsHoverScale,
-			sgsHoverShadow,
-			sgsHoverScalePreset,
-			sgsHoverImageZoom,
-			sgsStaggerDelay,
-			sgsHoverGrayscale,
-			sgsHoverBorderAccent,
-			sgsHoverTilt3D,
-			sgsBlockLink,
-		} = attributes;
-
-		const hasColourHover = sgsHoverBgColour || sgsHoverTextColour || sgsHoverBorderColour;
-		const hasScaleHover  = sgsHoverScale || sgsHoverScalePreset;
-		const hasShadowHover = sgsHoverShadow;
-		const hasHover       = hasColourHover || hasScaleHover || hasShadowHover;
-
-		const classNames = [ extraProps.className || '' ].filter( Boolean );
-
-		if ( hasHover ) {
-			classNames.push( 'sgs-has-hover' );
-		}
-		if ( sgsHoverScalePreset ) {
-			classNames.push( 'sgs-has-hover-scale' );
-		}
-		if ( sgsHoverImageZoom ) {
-			classNames.push( 'sgs-has-img-zoom' );
-		}
-		if ( sgsHoverGrayscale ) {
-			classNames.push( 'sgs-has-grayscale' );
-		}
-		if ( sgsHoverBorderAccent ) {
-			classNames.push( 'sgs-has-border-accent' );
-		}
-		if ( sgsStaggerDelay ) {
-			classNames.push( 'sgs-has-stagger' );
-		}
-		if ( sgsBlockLink ) {
-			classNames.push( 'sgs-has-block-link' );
-		}
-
-		if ( classNames.length === 0 && ! ( extraProps.className || '' ) ) {
-			return extraProps;
-		}
-
-		return {
-			...extraProps,
-			className: classNames.join( ' ' ).trim() || undefined,
-		};
-	}
-);
+// NOTE: hover class injection for static blocks is handled server-side by
+// includes/hover-effects.php via the render_block filter (priority 10).
+// A getSaveContent.extraProps filter here would add classes to save() output,
+// causing block validation failures whenever hover defaults changed.
+// PHP render-time injection is the correct architecture for all block types.

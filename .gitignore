@@ -16,8 +16,12 @@ desktop.ini
 *.swp
 *.swo
 
-# Claude Code local settings
-.claude/
+# Claude Code — track project canonical docs, ignore session-local state
+.claude/settings.local.json
+.claude/.session-active-*.json
+.claude/.lifecycle-mode-*.json
+.claude/*.js
+.claude/scratch/
 
 # Environment
 .env
