@@ -23,6 +23,9 @@ Then run these in parallel (read-only):
 | P1.5b (triage table) | DONE | `.claude/plans/strategy/2026-04-29-tooling-triage.md` |
 | P1.5c (Bean sign-off) | DONE | Status: SIGNED-OFF-2026-04-30 |
 | P1.5d (kills + merges) | **DONE 2026-04-30** | See "Roster after P1.5d" below |
+| G1 milestone POST | **DONE 2026-04-30** | knowledge id 13284 (after SQLite WAL checkpoint) |
+| CC memory sync to knowledge API | **DONE 2026-04-30** | 22/22 files posted |
+
 
 ### Roster after P1.5d
 
@@ -48,9 +51,9 @@ These were surfaced when the lifecycle hook fired during P1.5d edits. Pre-existi
 | `sgs-extraction` skill | 85% | ~15 min (just System Effect section + references/) |
 | `seo-technical` agent | 52% | ~30 min |
 
-## Active blocker (non-blocking)
+## Active blockers
 
-G1 milestone POST: blub dashboard's SQLite WAL is locked by the running dashboard process. Both API POST and direct SQLite insert fail with `database is locked`. `pending_upload: true` flag set. **Pre-existing dashboard issue**, not session-introduced. Doesn't block P1.5e/f. Workaround when needed: cleanly stop the dashboard, do a `wal_checkpoint(TRUNCATE)`, reinsert, restart.
+None. G1 milestone POST shipped 2026-04-30 (knowledge id 13284) after dashboard SQLite WAL was checkpointed. CC memory sync to knowledge API also complete (22/22 files posted).
 
 ## Phase 1.5 deliverables remaining
 
