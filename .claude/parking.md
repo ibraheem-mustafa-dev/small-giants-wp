@@ -95,3 +95,19 @@ See `.claude/plans/phase-2-rubrics-universe.md` G2.5 section. Triggered by Phase
 - Structural debt content fixes (3 agents): design-reviewer, seo-auditor, sgs-extraction
 - seo-technical content fixes (3 A-grade rubric gaps + ai-crawler-management opportunity)
 - 9 deletion-bound migration notes (Phase 4 design-brain DB schema dependency)
+
+## Embed `diagnose-blub-db-locks-not-park-on-timeout` rule into /autopilot + /handoff
+
+**Captured:** 2026-04-30 (blub.db row id 198, lesson file `2026-04-30-diagnose-blub-db-locks-not-park-on-timeout.md`)
+
+**Work:** Run `/lifecycle` against `/autopilot` and `/handoff` to embed the rule structurally so future sessions diagnose SQLite lock contention before parking localhost-API uploads.
+
+**Specifics:**
+- `/autopilot` — embed in `references/correction-capture.md` "dashboard-unreachable → mark pending_upload" branch. Add a one-line "diagnose DB layer first (port LISTENING + .db-wal sidecars + competing processes), retry once with ≥15s urllib timeout" before the park fallback.
+- `/handoff` — Stage 1 write reference rule. Light touch — just ensure handoff persistence steps don't silently fail on first transient timeout.
+
+**Trigger to resume:** next time `/lifecycle` is open for unrelated work, OR if the rule reviolates and a recurrence row appears on blub.db pattern_key `diagnose-blub-db-locks-not-park-on-timeout`.
+
+**Effort:** ~15 min combined (two surgical Stage edits + skillscore re-check at 90% threshold).
+
+**Spec:** workspace lesson at `C:/Users/Bean/.openclaw/workspace/memory/learning/2026-04-30-diagnose-blub-db-locks-not-park-on-timeout.md` is the source of truth.

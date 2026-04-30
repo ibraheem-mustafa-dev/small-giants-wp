@@ -446,6 +446,8 @@ proposal doc (now includes: current state, target Blueprint, gap to close, imple
 ```
 *Council folds into existing QA chain; standards-lane (a11y) gates hard, interpretation-lane debates and synthesises.*
 
+**Underlying tooling.** `/visual-qa`, `/wp-theme-check`, and `/wp-perf-gate` invoke WP Studio's MCP tools (`validate_blocks`, `need_for_speed`, `take_screenshot`, `rank_me_up`) against a local site instance. Studio CLI commands, MCP tool signatures, Blueprint format, import/export workflows, and gotchas: see [`../../specs/2026-04-29-wp-studio-ai-manual.md`](../../specs/2026-04-29-wp-studio-ai-manual.md) (operational manual, cross-reference added 2026-04-30).
+
 ### Pipeline 7 — `/build-website` (productised 8-stage)
 
 **Before:** URL → extract → patterns → blocks → QA → deploy.

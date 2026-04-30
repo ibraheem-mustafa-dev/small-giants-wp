@@ -55,7 +55,7 @@ Per-block comparison of the 25 SGS blocks against their closest equivalents in K
 | Headline customisation (colour, size) | Full | Full | Full | Full | Full |
 | Sub-headline customisation | Full | Full | Full | Full | Full |
 | CTA button (text + bg colour) | Full | Full | Full | Partial | Full |
-| Multiple CTA buttons | None (1 CTA) | Full (Buttons block) | Full (Buttons block) | Full | Full |
+| Multiple CTA buttons | Full (`ctaPrimary` + `ctaSecondary` with independent text/url/style/colour/hover) | Full (Buttons block) | Full (Buttons block) | Full | Full |
 | Overlay gradient | Full | Full | Full | Full | Full |
 | Parallax background | None | None | None | None | Pro |
 | Ken Burns effect | None | None | None | None | Pro |
@@ -79,9 +79,9 @@ Per-block comparison of the 25 SGS blocks against their closest equivalents in K
 | Image instead of icon | None | Full | Full | N/A | Full (Image Box widget) |
 | Link wrapper (entire box clickable) | None | Full | Full | N/A | Full |
 | Icon position (top/left/right) | None | Full | Full | N/A | Full |
-| Hover effects | None | Full (colour change) | Full | N/A | Full (extensive) |
+| Hover effects | Full (3 named variants — `lift`/`border-accent`/`glow` — plus universal hover extension: scale, shadow, image-zoom, colour shifts, transition controls) | Full (colour change) | Full | N/A | Full (extensive) |
 | Number badge (step indicator) | None | None | None | N/A | None |
-| **Gap** | Image support, entire-box link, icon position options, hover colour change |
+| **Gap** | Image support, entire-box link, icon position options. (Hover colour change closed 2026-04-30 — universal hover extension covers this.) |
 
 **Recommendation:** Add `mediaType` attribute (icon | image), `linkUrl` for entire-box clickability, and `iconPosition` (top | left | right). These are expected features that Kadence and Spectra both offer.
 

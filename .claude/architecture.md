@@ -21,7 +21,7 @@ SGS is a standalone WordPress block theme and Gutenberg blocks plugin built by S
 |---|---|---|
 | CMS | WordPress 6.9.1 | Block theme, no classic editor |
 | Theme | `sgs-theme` (block theme) | theme.json v3, template parts, style variations per client |
-| Blocks plugin | `sgs-blocks` | 57 blocks (26 content/layout + 14 form + 6 interactive + 4 utility + 7 extensions), dynamic (server-rendered). Block Defaults system (Phase 3.2) lets clients save current attribute values as defaults for new instances site-wide. |
+| Blocks plugin | `sgs-blocks` | 59 blocks (51 dynamic + 8 static), block extensions live in `src/blocks/extensions/`. Block Defaults system (Phase 3.2) lets clients save current attribute values as defaults for new instances site-wide. |
 | Block build | `@wordpress/scripts` | `--experimental-modules` flag required for `viewScriptModule` |
 | Frontend JS | Interactivity API + vanilla ES modules | Interactivity API for stateful blocks; vanilla `viewScriptModule` for AJAX (Post Grid) |
 | Icons | Lucide (1900+ icons) | Pre-generated to `lucide-icons.php` via `scripts/generate-icons.js` |
@@ -40,8 +40,9 @@ small-giants-wp/
 │   ├── theme.json                  # Design tokens — all colour/spacing/typography vars
 │   ├── style.css                   # Theme header ONLY (16 lines, no CSS rules)
 │   ├── functions.php               # Enqueues, variation-specific CSS via wp_add_inline_style()
-│   ├── styles/
-│   │   └── indus-foods.json        # Client style variation — overrides theme.json tokens
+│   ├── styles/                       # 8 client style variations (eye-care-ward-end, helping-doctors,
+│   │   ├── indus-foods.json          # indus-foods, mamas-munches, sgs-construction, sgs-healthcare,
+│   │   └── mamas-munches.json        # sgs-mosque, sgs-professional). mamas-munches.json added 2026-04-30.
 │   ├── templates/                  # Full-page templates (index, page, single, etc.)
 │   ├── inc/
 │   │   └── class-business-details.php  # Settings > Business Details (phone, email, address, hours, socials)
@@ -73,7 +74,9 @@ small-giants-wp/
 │   │   └── extensions/             # Block editor extensions (animation, visibility, hover, spacing, CSS, defaults)
 │   ├── build/                      # Compiled output — deployed to server
 │   ├── scripts/
-│   │   └── generate-icons.js       # Generates lucide-icons.php from lucide-react
+│   │   ├── generate-icons.js          # Generates lucide-icons.php from lucide-react
+│   │   └── audit-block-uniformity.py  # Pre-commit uniformity audit (added 2026-04-30):
+│   │                                  # checks viewScript/source:html/typography duplication/missing supports.color
 │   └── package.json                # Build scripts: `npm run build`, `npm run start`
 │
 ├── sites/
@@ -86,10 +89,17 @@ small-giants-wp/
 │       ├── notes/                  # Research docs, website analysis
 │       └── content/                # Page content drafts
 │
-├── specs/                          # Framework spec documents (00–09)
+├── .claude/
+│   ├── architecture.md             # This file (was repo-root ARCHITECTURE.md until 2026-04-29)
+│   ├── handoff.md                  # Session-to-session context (was CONVERSATION-HANDOFF.md)
+│   ├── specs/                      # Framework spec documents (00–10) + design-brain rubrics
+│   ├── plans/                      # Active plans + plans/strategy/ + plans/archive/
+│   ├── memory/                     # Archived handoffs + consolidation receipts
+│   └── reports/                    # Generated audit / QC / lifecycle reports
 ├── CLAUDE.md                       # Root dev instructions (this file is law)
-├── ARCHITECTURE.md                 # This file
-└── CONVERSATION-HANDOFF.md         # Session-to-session context handoff
+├── composer.json                   # Dev-only PHP stubs for IDE Intelephense
+├── composer.lock                   # Locks stub versions: wordpress-stubs v6.9.1, wp-cli-stubs v2.12.0
+└── vendor/                         # Composer install target — gitignored, not deployed
 ```
 
 ## Key Architectural Decisions
@@ -116,7 +126,7 @@ small-giants-wp/
 
 11. **Per-device visibility via block extension, not separate templates** — WordPress block themes have one template part per name; per-device template routing does not exist. The correct pattern (matching Kadence/GenerateBlocks) is a Visibility panel extension applied to ALL blocks via `editor.BlockEdit` + a PHP `render_block` filter to ensure classes survive on core dynamic blocks. Clients build three layout groups inside one `header.html`, hiding each non-applicable group per breakpoint. The extension lives in `plugins/sgs-blocks/src/blocks/extensions/responsive-visibility.js` — the existing `sgs/*` scope guard must be removed to cover core blocks.
 
-12. **Animation extension uses WordPress filter API, not block styles** — Scroll animations are a block extension (`src/blocks/extensions/animation.js`) applied to all 57 SGS blocks + 4 core blocks (group, columns, cover, image) via `blocks.registerBlockType` + `editor.BlockEdit` HOC + `render_block` PHP filter. Four attributes per block: `sgsAnimation` (**16 types** as of 2026-04-28: fade-up/down/left/right/in, slide-up/down, zoom/scale-in/out, flip-left/right, rotate-in, blur-in, bounce-in, reveal-up), `sgsAnimationDelay`, `sgsAnimationDuration`, `sgsAnimationEasing` (6 curves). CSS initial states are gated behind `.sgs-js` class + `prefers-reduced-motion: no-preference`. The `render_block` PHP filter uses `WP_HTML_Tag_Processor` to inject `data-sgs-animation` on the root element. Frontend IntersectionObserver in `animation-observer.js` watches `[data-sgs-animation]` and adds `.sgs-animated`. Inner blocks (tab, accordion-item, form fields) are denylisted.
+12. **Animation extension uses WordPress filter API, not block styles** — Scroll animations are a block extension (`src/blocks/extensions/animation.js`) applied to all 59 SGS blocks + 4 core blocks (group, columns, cover, image) via `blocks.registerBlockType` + `editor.BlockEdit` HOC + `render_block` PHP filter. Four attributes per block: `sgsAnimation` (**16 types** as of 2026-04-28: fade-up/down/left/right/in, slide-up/down, zoom/scale-in/out, flip-left/right, rotate-in, blur-in, bounce-in, reveal-up), `sgsAnimationDelay`, `sgsAnimationDuration`, `sgsAnimationEasing` (6 curves). CSS initial states are gated behind `.sgs-js` class + `prefers-reduced-motion: no-preference`. The `render_block` PHP filter uses `WP_HTML_Tag_Processor` to inject `data-sgs-animation` on the root element. Frontend IntersectionObserver in `animation-observer.js` watches `[data-sgs-animation]` and adds `.sgs-animated`. Inner blocks (tab, accordion-item, form fields) are denylisted.
 
 13. **Floating UI lives in the WordPress Customiser, not as blocks** — Back to Top, Reading Progress, and future floating chrome (cookie banner, chat widget) are configured at `Appearance → Customise → SGS Floating UI`. **Why Customiser, not a Settings admin page or blocks:** clients see changes (button position, colour, size, behaviour) update live in the preview as they drag sliders. A static admin page requires save-and-refresh. Blocks would render where placed in the post flow — wrong mental model for elements that float fixed-position regardless of placement. Settings stored as `theme_mod` (auto-scoped to active theme/style variation). Frontend output via `wp_footer` hook reading `get_theme_mod()`. Per-page override via post meta `_sgs_hide_floating_ui` (array of slugs to hide on a specific page). Existing `sgs/back-to-top` block is deprecated to a no-op (renders empty, editor shows deprecation notice pointing to Customiser) so legacy usage doesn't break.
 
@@ -125,6 +135,12 @@ small-giants-wp/
 15. **Palette tokens are mandatory for block colour defaults** — Every SGS block's default colour value must reference a palette token via either a slug (in block.json defaults) or `var(--wp--preset--color--X, #fallback)` pattern (in CSS/PHP). Bare hex defaults are forbidden because they don't switch when a client changes style variation. Brand colours (LinkedIn `#0A66C2`, Facebook, WhatsApp) are intentional exceptions documented as such. The palette includes `border-light` (`#E5E7EB`) and `error` (`#DC2626`) as canonical semantic slugs added 2026-04-28 to consolidate near-duplicate hex values previously used as bare fallbacks across form/google-reviews/whatsapp-cta CSS files.
 
 13. **Logo switching uses `sgs/responsive-logo` block** — The core `site-logo` block only exposes one image. The correct approach is a custom `sgs/responsive-logo` block with two `MediaUpload` attributes (`desktopLogoId`, `mobileLogoId`). `render.php` uses `wp_get_attachment_image()` to output both images; CSS media queries show/hide the correct one per breakpoint. Stores attachment IDs (not URLs) so the block survives domain changes and CDN migrations.
+
+16. **Block customisation standard (formalised 2026-04-30)** — Native `supports.color` for wrapper background + text colour. Native `supports.typography` with `selectors.typography` pointing to the primary text element (e.g. `.wp-block-sgs-hero .sgs-hero__headline`) for headline-level controls. Custom UK colour attrs (`headlineColour`, `iconColour`, `ctaColour`) ONLY for inner elements that need independent control from the wrapper. Three-attr responsive sets (`attrName` + `attrNameMobile` + `attrNameTablet`) where WP doesn't natively support responsive attrs. Selector naming: `.wp-block-sgs-{name}` for dynamic blocks (`selectors.root`), `.sgs-{name}` for static blocks. Enforced via `plugins/sgs-blocks/scripts/audit-block-uniformity.py` + git pre-commit hook (appends to existing gitleaks check; runs only when `block.json` files are staged).
+
+17. **PHP IDE stubs via Composer (dev-only)** — Project uses `php-stubs/wordpress-stubs` v6.9.1 (matches palestine-lives.org's WP version) and `php-stubs/wp-cli-stubs` v2.12.0 to give Intelephense accurate symbol resolution for WP core functions like `get_block_wrapper_attributes()`, `wp_unique_id()`, `esc_attr()`, `wp_kses_post()`. Installed to `vendor/` (gitignored). VS Code points Intelephense at the Composer-installed stubs via `intelephense.environment.includePaths` — overrides the bundled stubs which lag behind WP core. `composer.json` + `composer.lock` are committed; `vendor/` is not.
+
+18. **HTML mockup → SGS blocks compiler (researched 2026-04-30, in flight)** — Bean drafts pages in HTML/CSS in `sites/<client>/mockups/`. The compiler (forked from Verneaut's `html-to-gutenberg`) reads annotated HTML + a `block.config.json` sidecar and emits `block.json` + `render.php` + `edit.js` + `style.css` for SGS dynamic blocks. Annotation grammar: `data-sgs="name:type"` with 8 types (text/image/link/bool/array/innerblocks/business + colour-token via sidecar). AI annotator pre-step uses Anthropic structured output to add `data-sgs` attributes from plain HTML. Pattern mode (`--mode=pattern`) emits `register_block_pattern()` PHP. Ships as `/sgs-mockup-to-block` skill + slash command. Build estimate: 3.5–4 days. Research doc: `~/.openclaw/workspace/memory/research/2026-04-30-html-mockup-to-sgs-blocks.md`.
 
 ## Block Inventory
 
@@ -307,7 +323,7 @@ Run all commands from `C:\Users\Bean\Projects\small-giants-wp` (repo root).
 
 ## Framework Maturity
 
-The master feature audit at `docs/plans/2026-02-21-master-feature-audit.md` tracks 354 features across 13 domains (core blocks, extensions, theme, typography, hover/interactions, scroll animations, accessibility, performance, SEO/schema, forms, patterns, dark mode, S-tier differentiators). Current framework score: **98/294 (33%)**. Phase 2-3 target: **213/294 (72%)** — equivalent to Grade B, competitive with Kadence and GenerateBlocks. Full S-tier roadmap target: **266/294 (90%)** — Grade A, the most technically advanced WordPress block framework in existence.
+The master feature audit at `docs/plans/2026-02-21-master-feature-audit.md` tracks 354 features across 13 domains (core blocks, extensions, theme, typography, hover/interactions, scroll animations, accessibility, performance, SEO/schema, forms, patterns, dark mode, S-tier differentiators). The percentage scores in that document are a 2026-02-26 snapshot — directional, not current. Framework v1 shipped 2026-04-29 (Phases 0–5 complete). Refresh the audit before quoting any percentage.
 
 ---
 
