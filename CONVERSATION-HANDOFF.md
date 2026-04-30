@@ -1,192 +1,134 @@
 ---
 recommended_model: sonnet
-session_tag: small-giants-wp-2026-04-30-parallel-tracks
+session_tag: small-giants-wp-2026-04-30-mamas-munches-design-brief
 ---
 
-# Session Handoff — 2026-04-30 (parallel-tracks pivot)
+# Session Handoff — 2026-04-30 (Mama's Munches strategic brief + media pull)
 
-## Strategic context
+**Project:** small-giants-wp / **Track B client:** Mama's Munches (Zainab — Bean's sister)
+**Session focus:** lead research → opportunity audit → strategic brief v3.4 + WP media library pull. The earlier same-day handoff (Phase 2 rubrics-universe / SGS lifecycle stack) is preserved in git history at HEAD~1; that work is **deferred** until Mama's mockup ships.
 
-Earlier today's session shipped P1.5f close-out + lifecycle DRY refactor (Phase 2 plan v2, `/rubric-writer` skill, `/gap-analysis` improvements, Mama's Munches brand discovery). Mid-session pivot: Phase 2 rubrics universe at scale **PARKED** (over-engineering); revenue-first push activated. **Goal now: ship Track B clients in parallel; framework work runs alongside on a separate track.**
+## Completed This Session
 
-Mama's Munches just bootstrapped from the live site at https://mamasmunches.com/. Brand brief at [`sites/mamas-munches/CLAUDE.md`](sites/mamas-munches/CLAUDE.md).
-
-## Parallel tracks — pick one per session
-
-Each track is **self-contained** and uses different files, so up to 4 fresh sessions can run simultaneously without collision. Sessions pick by current priority + Bean's energy.
-
-### TIER 1 — Start NOW, no framework dependencies
-
-| # | Track | Status | First action | Sessions to first revenue |
-|---|-------|--------|-------------|---------------------------|
-| 1 | **CMX Group proposal** | No folder yet | Bootstrap `sites/cmx-group/` + ask Bean for client feedback notes + competitor URLs he has | 1–2 sessions to sent quote |
-| 2 | **Indus Foods Phase 2** | Active — `sites/indus-foods/CLAUDE.md` | Read `sites/indus-foods/CLAUDE.md` + `feature-gaps.md` + pick the highest-value remaining page or section. Phase 1 close at `bfe0e4e` | rolling — already-paying client |
-| 3 | **Mama's Munches design** | Brief done — `sites/mamas-munches/CLAUDE.md` | `/lead-research-assistant` for B2C+B2B strategy → `/sgs-discover` for design refs → `/ui-ux-pro-max` mockup (homepage + product page) | 2–3 sessions to mockup sign-off |
-| 4 | **Mosque Web Design** | Brand-new client (knowledge-context this session) | Ask Bean for brief + URL if existing site → bootstrap `sites/<slug>/` | TBD — needs Bean intake first |
-
-### TIER 2 — Quick framework unblockers (1–2 sessions, then unlock Track B)
-
-| # | Track | Unblocks | First action |
-|---|-------|----------|-------------|
-| 5 | **A4 `/quoter` rebuild** | CMX quote + Indus Phase 2 pricing | Read existing `~/.claude/skills/quoter/SKILL.md` → confirm current state → rebuild per master plan §A4 (4 sub-items: rebuild + 6-lens extract + delete sales-advisor + lead-research-assistant adapter) |
-| 6 | **A2 Responsive Extension** | SGS Studio v2 client | `cd plugins/sgs-blocks/src/extensions && mkdir -p responsive-extension && touch responsive-extension/index.js`; consolidate 11 P1 responsive items |
-| 7 | **A5 Dark-mode extension** | SGS Studio v2 client | `grep "data-theme" theme/sgs-theme/theme.json` for token baseline; build theme.json variation switching |
-
-### TIER 3 — Larger framework work (multi-session, defer until Tier 1 cash flowing)
-
-| # | Track | Unblocks | Estimated effort |
-|---|-------|----------|-----------------|
-| 8 | **A6 SGS Ecom Plugin Phase 1** | Mama's Munches go-live | 8–12 weeks. **⚠️ Scope expansion vs master plan §3.1: Mama's needs both Stripe AND PayPal.** Plan accordingly. |
-| 9 | **A7 Variant/Colour Picker block** | Snooza demo | 2–4 weeks |
-| 10 | **A8 3D Configurator block** | Snooza demo | 4–6 weeks. 3D assets at `sites/snooza-chair/assets/` |
-| 11 | **Phase 4 design-brain rebuild** | Compounding gain across all design / build work | Multi-week — see master plan §P4.4.1. Bean wants this; not pure parking, just sequenced after revenue |
+1. **Lead research v1 → v3.4** at [sites/mamas-munches/research/lead-research-2026-04-30.md](sites/mamas-munches/research/lead-research-2026-04-30.md) — 576 lines, full UK lactation cookie market intelligence + opportunity audit + strategic direction. Competitor pricing verified (Boobbix £12.49/10, TheMilkBooster £7.20–£40, Milk It Bakehouse £44/£88/£132 tiered, LactoMomma).
+2. **Brand thesis triangulated** across 3 independent sources (current research + Sonnet/Gemini opportunity audit + 2026-03-17 prior workspace research at `~/.openclaw/workspace/memory/research/2026-03-17-DEEP-mamas-munches.md`). Locked thesis: **halal-certified + thoughtful ingredients + Birmingham-handmade + mum-honest framing**. Brand stays universal-UK; Muslim community is a sales channel, not a brand identity.
+3. **Product architecture defined:** dual-range cookies — **Zookies** (Zainab's signature giant cookies, anchor £10 / 8-pack) + **Classics** (NEW regular-sized accessibility tier). Plus **£5 Trial Pack** (3 Classics, postage-incl), £15 Gift Box, £42 40-Day Care Bundle. Variant matrix: 7 fruits × 4 chocolates × 2 dietary, any combination (Model A).
+4. **Phase 2 product line scoped:** Traditional Postpartum Foods (Mama's Panjiri, Sonth Bites, Methi Ladoo) — actual traditional foods, nutritionally tuned (jaggery instead of refined sugar, controlled ghee, added flax). Sold under authentic names. NOT Phase 1 — Zainab hasn't made them yet.
+5. **Pricing ladder** with sensible volume-discount slopes (small-pack +20%, anchor 0%, mid −6%, volume −20%, max-volume −28%) — corrected from earlier linear extrapolation.
+6. **WP media library pulled:** 78 real assets (65 photos + 13 videos) at full resolution from `mamasmunches.com/wp-json/wp/v2/media` to [sites/mamas-munches/research/photography/wp-media-library/](sites/mamas-munches/research/photography/wp-media-library/). 81 Astra organic-shop-02 starter-template assets filtered to `_theme-junk/`.
+7. **Earlier IG photography pull** (low-res 311×311 thumbs) superseded by the WP media pull — full-res originals now available for mockup work.
 
 ## Current State
 
-- **Branch:** `main` at `37ba1ed`
-- **Tests:** n/a — lifecycle work + brand discovery this session
+- **Branch:** main at 2ffa02b
+- **Tests:** n/a (research / strategic brief, no code)
 - **Build:** n/a
-- **Uncommitted changes:** none in tracked paths (untracked: `.scratch/`, `studio/`, sub-project `.claude/` dirs are pre-existing)
-- **Pending blub.db POST:** `~/.claude/pending-uploads/2026-04-30-gap-analysis-eval.json` — retry next session
+- **Uncommitted changes:** sites/mamas-munches/.claude/, sites/mamas-munches/research/, NEXT-SESSION-PROMPT.md (rewritten), CONVERSATION-HANDOFF.md (this file)
 
 ## Known Issues / Blockers
 
-- blub.db locked at session end → recursive `/gap-analysis` evaluation queued for retry
-- `pipeline-enforcer.py` not present at `~/.claude/hooks/` — handoff gates ran without it
-- CMX Group has no folder; Mosque Web Design has no folder — both need first-session bootstrap
+- **Priority 0 unrun:** £5 demand-validation taste-test (Zainab DMs 5 mum-friends, 15 min). Single biggest unverified assumption — should run before any S1/S4 spend. Real-world action, not a Claude task.
+- **HFA vs HMC halal-cert fork:** brewer's yeast may need recipe reformulation for HMC. Decision required before applying.
+- **Zookie pack prices:** only 8-pack confirmed (£9.50 live, rebuild anchor £10). 4/12/20/40 prices extrapolated by discount logic — Zainab to confirm against her Tally form.
 
-## Files Modified This Session
+## Next Priorities (in order)
+
+1. **Generate the design brief** — homepage + product page mockup direction at 3 breakpoints (375 / 768 / 1440px). Inputs: v3.4 strategic brief + 78 product photos + brand assets at `sites/mamas-munches/research/brand/`.
+2. **Brief Zainab on the Priority 0 taste-test** — produce a one-pager she can act on in 15 min (WhatsApp script, questions, response log format).
+3. **Brief Zainab on the brewer's yeast halal-cert fork** — HFA-only-current-recipe vs HMC-compatible-reformulation. Recommend HFA-first sequence.
+4. **Apply visual / design Skills** — `/innovative-design`, `/sgs-discover`, `/ui-ux-pro-max` anchored to existing brand assets.
+5. **Phase 2 rubrics-universe work resumes** after Mama's mockup signs off. Restore prior context from git history (HEAD~1 NEXT-SESSION-PROMPT.md) or `.claude/state.md` (still flags `current_phase: phase-2-rubrics-universe`).
+
+## Files Modified
 
 | File path | What changed |
 |-----------|--------------|
-| `.claude/state.md` | `current_phase: phase-2-rubrics-universe` (will need updating to track-B once next session picks a track) |
-| `.claude/plans/phase-2-rubrics-universe.md` | v2 two-track restructure — now PARKED status; reference only |
-| `.claude/parking.md` | P-1 lifecycle edits marked complete; G2.5 catalogue |
-| `.claude/gap-analysis/reports/2026-04-30-seo-technical.md` | NEW — Lens 6 grade C |
-| `.claude/gap-analysis/reports/2026-04-30-gap-analysis-skill.md` | NEW — recursive grade C pre-edit |
-| `sites/mamas-munches/CLAUDE.md` | NEW — full brand brief |
-| `sites/mamas-munches/research/` | Desktop + mobile screenshots |
-| `sites/mamas-munches/research/brand/` | Logo PNG + WebP horizontal lockup |
-| `~/.claude/skills/gap-analysis/SKILL.md` | 8 edits — HARD-GATE rule + 4 A-grade + 3 B-grade + `/rubric-writer` delegation; 92% throughout |
-| `~/.claude/skills/gap-analysis/references/end-goal-rubric.md` | NEW — confirmed rubric (10 criteria) |
-| `~/.claude/skills/gap-analysis/references/optimisation-toolkit-wiring.md` | NEW — utility wiring decisions |
-| `~/.agents/skills/rubric-writer/` | NEW SKILL — single-source rubric drafting |
-| `~/.agents/skills/skill-writer/SKILL.md` | Stage 2 → invokes `/rubric-writer` |
-| `~/.claude/agents/seo-technical.md` | Structural pass — 52% → 86% |
-| `~/.claude/agents/.rubrics/seo-technical.md` | NEW — confirmed rubric |
-| `~/.claude/agents/cerebras-agent/agent.py` | Model `qwen-3-235b-a22b-instruct-2507` |
+| `sites/mamas-munches/research/lead-research-2026-04-30.md` | Full strategic brief — created v1 → patched v3.4 (576 lines) |
+| `sites/mamas-munches/.claude/plans/track-1-brand-design.md` | Track 1 phased plan (research → photography → mockup) |
+| `sites/mamas-munches/research/photography/wp-media-library/` | 78 real Mama's photos + videos from WP REST API |
+| `sites/mamas-munches/research/photography/wp-media-library/_theme-junk/` | 81 Astra starter-template assets moved out |
+| `sites/mamas-munches/research/photography/wp-media-library/INVENTORY.md` | Full media inventory by date / dimensions / alt text |
+| `sites/mamas-munches/research/photography/instagram/` + `live-site/` + `INVENTORY.md` | Earlier IG/live-site pull (low-res, superseded) |
+| `CONVERSATION-HANDOFF.md` | This file — rewritten for Mama's session |
+| `NEXT-SESSION-PROMPT.md` | Rewritten — Mama's design-brief prompt |
 
 ## Notes for Next Session
 
-- **Pick ONE track per session** — parallel sessions across different tracks is fine (different files, no collision). Don't multi-task within a single session.
-- **Mama's: do NOT read prior workspace research** on Bean's sister's business ideas (`~/.openclaw/workspace/memory/research/`) until fresh `/lead-research-assistant` run is complete — bias avoidance.
-- **WP Studio is the canonical dev sandbox now** (P1.5e shipped the gate). Use `~/.claude/skills/sgs-wp-engine/references/studio-blueprints/sgs-default.json` blueprint to spin up per-client sandboxes. Run `/verify-loop --target-url <studio-preview>` before any tar-deploy. MySQL parity testing on Local-by-Flywheel needed for ecom flows (Mama's, future Mama's-shape clients).
-- **/rubric-writer is the single source of truth for rubric drafting** — invoked by `/gap-analysis` Step 4.5 + `/skill-writer` Stage 2 + Phase 2 plan template. Stage 4 Stage QC + Stage 5 cross-turn pause baked in.
-- **C-grade calibration rule** embedded in `/gap-analysis` Step 4: C+ requires real-impact fix, NOT cosmetic compliance.
-- **Phase 2 rubrics universe at scale = PARKED.** Don't resume bulk rubric drafting until Track B has 2+ clients live. Lifecycle stack (`/gap-analysis`, `/rubric-writer`) used inline only when shipping client work surfaces a tooling gap.
-- **CMX + Mosque need first-session bootstrap.** Mirrors what we did for Mama's today: ask Bean for brief, scrape existing site if any, capture into `sites/<slug>/CLAUDE.md`.
+- **Brand framing rule:** universal-UK brand. NO Pakistani/Indian theming on website or brand identity. Halal cert is a quality signal, not a cultural badge. Phase 2 products like Mama's Panjiri sell under their authentic names without theming the brand around them — deli-selling-hummus logic.
+- **Mum-honest, not science-debunking:** the cookies DO help anecdotally (Bean's wife is one example). The 2023 RCT didn't measure population-level effect, but individual mums benefit. Position: *"many mums tell us it helps; we don't make medical claims"* — ASA-safe AND truthful.
+- **Family-recipe heritage is fabrication** — Zainab uses the Healthline lactation cookie recipe, not a passed-down family recipe. Honest framing is *inspired by*, never *inherited from*.
+- **Photography highlights:** `IMG_20260419_173547_107.webp` (1.1MB), `IMG_20260419_170745_421.webp` (880KB), `cookies-stacked.jpeg`, `cookies-on-bun-case.jpeg`, `Halimahs.jpeg`, `Lactation-Cookies-Reham.jpeg`, `aesthetic-pic.jpeg`. Plus 13 videos. AI-generated images at `live-site/ChatGPT-Image-*` flagged DO NOT SHIP.
+- **Phase 2 rubrics work not lost** — deferred. Resume context lives in git history (HEAD~1 NEXT-SESSION-PROMPT.md) and `.claude/state.md`.
 
 ## Next Session Prompt
 
 ~~~
-You are a senior tooling architect for Small Giants Studio's WordPress framework. You ship client websites under a strict quality-gate workflow (skillscore + gap-analysis + Stage QC peer-review) using the SGS Framework. The session is parallelisable — pick ONE track from the parallel-tracks list and ship it. Other tracks run in parallel sessions.
+You are a senior product designer specialising in WordPress block-based ecommerce sites and brand-led visual design. Your job this session: produce a concrete design brief for Mama's Munches' homepage and product page, ready for SGS block implementation.
 
-Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-04-30-parallel-tracks"`
+Read CONVERSATION-HANDOFF.md, sites/mamas-munches/CLAUDE.md, and sites/mamas-munches/research/lead-research-2026-04-30.md for full context, then work through these priorities.
 
-## First action — invoke `/autopilot`
+## Skills to Invoke
 
-Then ask Bean which track to pick (or read `CONVERSATION-HANDOFF.md` parallel-tracks list and recommend by Bean's energy + dependency status):
-
-| Track | Path | Why pick this |
-|-------|------|---------------|
-| 1 — CMX proposal | bootstrap `sites/cmx-group/` | Fastest sent quote (1–2 sessions) |
-| 2 — Indus Phase 2 | `sites/indus-foods/CLAUDE.md` | Already-paying client; rolling progress |
-| 3 — Mama's design | `sites/mamas-munches/CLAUDE.md` | Brand done, ready for `/lead-research-assistant` → `/ui-ux-pro-max` |
-| 4 — Mosque Web Design | bootstrap | Needs Bean intake first |
-| 5 — A4 `/quoter` rebuild | `~/.claude/skills/quoter/` | Unblocks CMX quote + Indus pricing in 1 session |
-| 6 — A2 Responsive Extension | `plugins/sgs-blocks/src/extensions/` | Unblocks SGS Studio v2 |
-| 7 — A5 Dark-mode extension | `theme/sgs-theme/theme.json` | Unblocks SGS Studio v2 dark mode |
-| 8 — A6 SGS Ecom Plugin | new `plugins/sgs-ecommerce/` | Long-haul; gates Mama's go-live (Stripe + PayPal) |
-| 9–10 — A7/A8 Snooza blocks | `plugins/sgs-blocks/src/blocks/` | Long-haul; gate Snooza demo |
-| 11 — Phase 4 design-brain | `~/.agents/skills/ui-ux-pro-max/` + `~/.claude/skills/innovative-design/` | Compounds across all design work; multi-week |
-
-## Skills to Invoke (load on demand per track)
-
-| Skill | Track that uses it |
-|-------|---|
-| `/lead-research-assistant` | Mama's (B2C+B2B strategy), CMX (client research), Mosque |
-| `/sgs-discover` | Mama's (design refs), CMX (mockup inspiration), Mosque |
-| `/ui-ux-pro-max` | Any design mockup work |
-| `/sgs-wp-engine` | All SGS WP work (canonical authority) |
-| `/wp-block-development` | Track A blocks (A6, A7, A8) + Indus pages |
-| `/gap-analysis` | Quality gate before delivery — Step 7.75 QC mandatory |
-| `/rubric-writer` | Any new rubric drafting (single source of truth) |
-| `/lifecycle` | Skill/agent/pipeline edits |
-| `/quoter` | After A4 rebuild — CMX + Indus pricing |
-| `/strategic-plan` | If a track surfaces multi-step work that needs planning |
+| Skill | When to use |
+|-------|-------------|
+| `/brainstorming` | Architectural / design strategy decisions during the brief |
+| `/gap-analysis` | Grade the design brief before delivery |
+| `/lifecycle` | Start pipeline before any skill/agent edits |
+| `/research` | Auto-routes for design-reference research |
+| `/strategic-plan` | Plan implementation order |
+| `/innovative-design` | Design direction — palette, typography, UX rules |
+| `/sgs-discover` | 3–5 reference sites in lactation / mum-care / artisan-bakery / gifting space |
+| `/ui-ux-pro-max` | Palette + typography + UX rules anchored to existing brand assets |
+| `/design-review` | Review the mockup direction once drafted |
+| `/handoff` | Session-end handoff |
 
 ## MCP Servers & Tools
 
-| Tool | Use |
-|------|-----|
-| `~/.claude/skills/sgs-wp-engine/scripts/studio-preview-up.ps1` | Spin up WP Studio sandbox per client using `sgs-default.json` blueprint |
-| `~/.claude/skills/verify-loop/SKILL.md` `--target-url` | Pre-deploy assertion against Studio Preview |
-| `~/.claude/skills/deploy-check/SKILL.md` `--studio-pass` | Final pre-tar-deploy gate |
-| `python ~/.agents/skills/shared-references/sgs-skillscore.py validate <path>` | Skillscore on every skill edit |
-| `playwright` MCP browser tools | Live-site recon (Mama's, CMX, Mosque); product photo pull |
-| `curl -X POST http://localhost:5050/api/knowledge` | blub.db POST (retry pending payload first) |
+| Tool | What to use it for |
+|------|-------------------|
+| Playwright (CLI preferred) | Multi-breakpoint screenshots (375/768/1440) of reference + competitor sites |
+| `python ~/.claude/hooks/search.py` | Reference site discovery + competitor visual analysis |
+| WP REST API | Already pulled — use `sites/mamas-munches/research/photography/wp-media-library/` |
 
 ## Agents to Delegate To
 
-| Agent | Track that uses it |
-|-------|---|
-| `wp-sgs-developer` | All WP build / migration / fidelity work — MANDATORY delegation |
-| `design-reviewer` | Visual quality checks at breakpoints; mockup review |
-| `site-reviewer` | Pre-launch audit on any client site before deploy |
-| `seo-auditor` | Pre-launch SEO check (post-content) |
-| `seo-technical` | Pre-launch technical SEO check |
-| `performance-auditor` | Next.js perf for SGS Studio v2 if staying Next.js side |
-| `research-pipeline` | Open-ended client research that needs adversarial debate |
+| Agent | When |
+|-------|------|
+| `design-reviewer` | Visual quality + WCAG 2.2 AA review of the design brief |
+| `wp-sgs-developer` | If translation to SGS blocks surfaces during brief writing |
+| `research-pipeline` | If reference site research needs structured findings |
 
-## Track-specific tooling
-
-**For Mama's design (Track 3):**
-- `/lead-research-assistant` first — DO NOT read prior workspace research before fresh run completes (bias avoidance)
-- Then `/sgs-discover` for ethnic / artisan / mum-targeted reference sites
-- Then `/ui-ux-pro-max` for homepage + product page mockup
-- Spin up WP Studio sandbox via `sgs-default.json` blueprint
-
-**For CMX proposal (Track 1):**
-- Ask Bean for: client feedback notes, competitor URLs, contact name/email
-- `/sgs-discover` for B2B reference matches
-- `/ui-ux-pro-max` for proposal mockup pages
-- `/quoter` (after A4 rebuild) for the quote doc
-
-**For Indus Phase 2 (Track 2):**
-- Read `sites/indus-foods/feature-gaps.md` and `sites/indus-foods/homepage-build-notes.md`
-- Use existing SGS blocks; no framework changes
-- Trade form (4-step) needs spec confirmation with Bean before build
-
-## Guardrails
-
-- `git branch --show-current` before every commit. Framework changes go to `main`. Client-specific work goes to `feat/<client>-*` branches per CLAUDE.md branch discipline rule
-- skillscore 90% threshold for skills, 85% for agents
-- WP Studio sandbox before any tar-deploy
-- C-grade calibration: C+ only for real-impact fixes
-- Cross-turn pause for any draft confirmation
-- `wp eval` blocked by pre-tool hook — read wp-config.php directly
-
-## Mama's-specific guardrails
-
-- DO NOT pull prior research from `~/.openclaw/workspace/memory/research/` until fresh `/lead-research-assistant` run completes
-- Variant model: 4 packs × 2 flavours × 3 toppings × 2 dietary = 48 SKUs (use WC variable product attributes, not 48 separate products)
-- Stripe AND PayPal both required (expands master plan §3.1 Phase 1 scope)
-- Subscription is Phase 2 ecom feature — flag for plan, don't build now
-- Gifting market is untapped audience expansion — design with this in mind even though primary is breastfeeding mums
-~~~
+## Research Approach
+Reference sites for the brief: search via `/sgs-discover` for handmade artisan bakery brands, postpartum / new-mum gift brands, warm-domestic UK food brands. NOT Pakistani/Indian-themed (universal-UK brand). Pull 5–8 reference URLs, capture homepage screenshots at 3 breakpoints via Playwright.
 
 ---
 
-# Session Handoff — 2026-04-30 (P1.5f close-out + lifecycle DRY refactor)
+## Task 1: Generate the design brief
 
-[Previous handoff content preserved below for history — see git log `37ba1ed` for full details]
+Build `sites/mamas-munches/.claude/plans/phase-3-design-brief.md`. Cover:
+- **Homepage** structure at 375/768/1440 — hero, trust signals, featured product, brand story, gift section, 40-Day Bundle CTA, trial-pack prominence, Send-to-Ward CTA in nav
+- **Product page** structure — variant selectors (fruit × chocolate × dietary × pack size), price ladder display, ingredient education, mum-honest framing copy, allergen disclaimer placement
+- **Palette** — derived from existing brand assets (`sites/mamas-munches/research/brand/`)
+- **Typography** — current site uses Inter + Work Sans; recommend keep or swap
+- **Photography direction** — which of the 78 full-res assets at `wp-media-library/` go where
+- **Voice draft** — *"We make nourishing food, with proper ingredients including some that have been used in postpartum recipes for centuries. Many mums tell us it helps. We won't promise medical results."*
+
+## Task 2: One-page Zainab brief — Priority 0 taste-test
+
+Produce `sites/mamas-munches/.claude/plans/zainab-priority-0-brief.md` — a 1-page brief Zainab can act on in 15 min. Include: WhatsApp script for the 5 mum-friends, list of questions to ask, simple format for logging responses.
+
+## Task 3: One-page Zainab brief — halal certification fork
+
+Produce `sites/mamas-munches/.claude/plans/zainab-halal-cert-fork.md` — explain HFA-only-current-recipe vs HMC-compatible-reformulation. Recommend HFA-first with HMC as parallel R&D. ~1 page.
+
+## Guardrails
+- Universal-UK brand identity — NO Pakistani/Indian theming on website, brand, or product names
+- Mum-honest framing — never *"they don't work"*, never medical claims; *"many mums tell us it helps"*
+- Halal cert is a quality signal, not cultural identity
+- Zookies = Mama's signature giant cookies (£10 / 8-pack anchor); Classics = new regular-size accessibility tier
+- 7 fruits × 4 chocolates × 2 dietary, any combination (Model A)
+- Phase 2 Traditional Foods (Panjiri, Sonth Bites, Methi Ladoo) = future product line, not Phase 1 mockup focus
+- £5 Trial Pack must be prominent on homepage — addresses real "too expensive" feedback
+- Photography: use `wp-media-library/` originals; AI-generated images at `live-site/ChatGPT-Image-*` flagged DO NOT SHIP
+- `git branch --show-current` before every commit — Mama's work goes to a feature branch, framework changes to main
+~~~
