@@ -1,8 +1,16 @@
 # Mama's Munches — Phase 3 Design Brief
-**Version:** 1.0 (2026-04-30)
-**Status:** Ready for mockup build
+**Version:** 1.1 (2026-04-30)
+**Status:** Mockup in progress (claude.ai) — locked decisions below
 **Inputs:** Strategic brief v3.4 + 78 WP media assets + brand assets + design guardrails
 **Outputs:** SGS block implementation guide for homepage + product page at 375 / 768 / 1440px
+
+## Locked decisions (do not re-open)
+
+| Decision | Chosen | Notes |
+|----------|--------|-------|
+| **Tagline** | "Real food for real mums" | Option 1 from §5. ASA-compliant. Final. |
+| **Mockup photography** | Unsplash stand-ins with HTML comments | Each `<img>` has a comment naming the `wp-media-library/` file to swap in on SGS implementation. |
+| **Halal badge** | Placeholder slot, `data-pending` attribute | Hidden by default. Toggle visible with one CSS rule change once HFA cert lands. Lives in trust bar (Section 2). |
 
 ---
 
