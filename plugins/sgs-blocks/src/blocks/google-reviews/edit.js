@@ -39,8 +39,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		theme,
 		cardStyle,
 		starColour,
-		textColour,
-		backgroundColour,
 		autoplay,
 		autoplaySpeed,
 		showDots,

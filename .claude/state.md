@@ -2,11 +2,11 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-current_phase: framework-polish
-current_step: "Block uniformity overhaul shipped + auto-generated reference + pre-commit audit + WordPress IDE stubs + 6 spec docs refreshed. 52 uncommitted files on feat/mamas-munches-strategic-brief at 079318f. Next: commit + deploy or build the HTML-to-blocks compiler (3.5-4 day Sonnet job, scoped 2026-04-30)."
-last_updated: 2026-04-30
+current_phase: html-recogniser
+current_step: "Architecture locked: recogniser-first (not transformer). SGS DB + core WP + WC blocks as fingerprint libraries. Dual-destination output (post_content + template parts). Gap detector with 4-tier classification. v1 acceptance: Mama's Munches homepage live on staging with visual diff < 5%. Build queued for autonomous overnight run."
+last_updated: 2026-05-01
 blockers: []
-recommended_model_next: sonnet
+recommended_model_next: opus
 ---
 
 # small-giants-wp — State Snapshot
@@ -15,37 +15,33 @@ recommended_model_next: sonnet
 
 ## Where we are
 
-Framework v1 shipped 2026-04-29. Today's afternoon session was a polish + infrastructure pass that hardened the block library against drift and made the docs self-maintaining.
+**Architecture session complete (2026-05-01).** HTML-to-blocks compiler reframed as **recogniser-first** after strategic brainstorm. ~85% of Mama's Munches homepage covered by existing SGS blocks (verified by Sonnet subagent). Transformer scaffolded but unused for v1. Next: autonomous overnight build of the recogniser + ship Mama's Munches homepage.
 
-**Today's afternoon work (2026-04-30, this session — uncommitted on feat/mamas-munches-strategic-brief):**
-
-| Track | Outcome |
+| Item | Status |
 |---|---|
-| Block uniformity overhaul | 13 blocks improved — `viewScript` → `viewScriptModule` on hero, `source:html` removed from mega-menu, typography duplication cleaned in hero/cta-section/info-box, full `supports.color` migration on announcement-bar + google-reviews (with backward-compat shim), supports.color added to back-to-top + mega-menu + reading-progress, selector naming standardised (`.wp-block-sgs-*` for all 28 dynamic blocks). |
-| Pre-commit audit | `plugins/sgs-blocks/scripts/audit-block-uniformity.py` + `.git/hooks/pre-commit` (appended to existing gitleaks check). Blocks regressions on every commit touching `block.json` files. |
-| Auto-generated block reference | `plugins/sgs-blocks/scripts/generate-block-reference.py` queries `sgs-framework.db` and emits `.claude/specs/02-SGS-BLOCKS-REFERENCE.md` (59 blocks, 941 attributes). Wired into `/sgs-update`. |
-| WordPress IDE stubs | `composer.json` + `vendor/php-stubs/wordpress-stubs` v6.9.1 + `vendor/php-stubs/wp-cli-stubs` v2.12.0. Intelephense `intelephense.environment.includePaths` configured in `.vscode/settings.json`. Eliminates Intelephense P1010 false positives across all SGS render.php files. |
-| Dead code removed | Both copies of `footer-indus-foods.php` deleted (one was a CLAUDE.md violation, the other referenced a non-existent block). Legacy `CONVERSATION-HANDOFF.md` + `NEXT-SESSION-PROMPT.md` re-deleted in favour of canonical `.claude/` layout. |
-| Doc audit + updates | 6 spec docs refreshed against codebase reality: `architecture.md` (block count, infrastructure, decisions 16–18), `01-SGS-THEME.md` (file structure, 8 style variations, 7 mega-menu parts, 29 patterns), `02-SGS-BLOCKS.md` (Container/Info Box dynamic correction + reference link), `06-BUILD-ORDER.md` (archived original + new current-state roadmap), `09-GOLD-STANDARD-AUDIT.md` (Hero CTAs + Info Box hover gap markers fixed), `common-wp-styling-errors.md` (5 new errors from today: H5 wp_kses_post wrapper, H6 dual colour collision, H7 typography duplication, C6 wp_strip_all_tags CSS, I4 viewScript regression). Toolkit design + design-brain architecture both gained wp-studio AI manual cross-references. `00-OVERVIEW.md` deleted (clashed with architecture.md). |
-| Research | HTML-to-blocks compiler scoped via `/research-buddies` panel — fork `html-to-gutenberg` (Verneaut) + add SGS-specific processors + AI annotator + `block.config.json` sidecar. 3.5–4 day build. Research at `~/.openclaw/workspace/memory/research/2026-04-30-html-mockup-to-sgs-blocks.md`. |
+| html-to-gutenberg architecture map | ✅ Done — Sonnet agent mapped 2,500 LOC, identified 7 SGS gaps |
+| AI annotator prototype | ✅ Done — 54 annotations on Mama's homepage in 10s. Script at `C:/tmp/sgs-annotator.py` |
+| SGS DB coverage check | ✅ Done — `sgs/trust-badges` + `sgs/notice-banner` confirmed in DB. 4 minor gaps catalogued. |
+| Architecture decision | ✅ Locked — recogniser primary, transformer fallback only |
+| `google-reviews` legacy UK colour attrs | ✅ Done — removed from block.json + edit.js, built + deployed |
+| Recogniser v1 build | ⏳ **Next session — autonomous overnight Opus run** |
+| Mama's Munches homepage live | ⏳ Bottlenecked on recogniser v1 |
+| SGS Ecom Plugin Phase 1 | ⏳ Queued AFTER homepage ships |
 
-**Earlier today (2026-04-30 morning, separate track):** gap-analysis B 3.9 → B 4.4 upgrade + 3 enforcement hooks. See previous handoff entry below for detail.
+## Open tracks (priority order)
 
-## Open follow-up
-
-- **52 uncommitted files** on `feat/mamas-munches-strategic-brief` from this session. Largest blocks: 11 block.json edits, 5 render.php edits, 6 spec doc refreshes, 2 new scripts, Composer stubs config, audit script + reference output.
-- **HTML-to-blocks compiler** — research complete, build not started. Sonnet-shaped 3.5–4 day work.
-- **announcement-bar / google-reviews legacy attrs** — `backgroundColour`/`textColour` (UK custom) kept as backward-compat fallback in render.php's `??` chain. Can be removed in a future major version after a content sweep.
-- **Static-block deprecations** (carried over from morning state) — `certification-bar`, `counter`, `notice-banner`, `process-steps`, `testimonial`. Spec at `plans/strategy/post-wave2-deprecations.md`. Not addressed this session.
-
-## Active phase
-
-Two parallel tracks open:
-
-1. **Ship today's polish** — commit the 52 changed files, build + deploy `sgs-blocks` to palestine-lives.org. Quick (<30 min).
-2. **HTML-to-blocks compiler** — 3.5–4 day Sonnet build. Highest leverage of the open initiatives. See `~/.openclaw/workspace/memory/research/2026-04-30-html-mockup-to-sgs-blocks.md` for the architecture.
+1. **Recogniser v1** — autonomous overnight Opus build. Target: Mama's Munches homepage live on staging by morning. Spec at `.claude/plans/recogniser-v1.md`.
+2. **SGS Ecom Plugin Phase 1** — `sgs/product-info`, `sgs/product-gallery`, `sgs/variant-pills`, `sgs/product-card`. WC integration (NOT replacement). 3-session shape: spec session + overnight Opus build + QA session. Unblocks Mama's product page.
+3. **Custom WC paid-extension replacements** — Bean wants in-house equivalents of WC Subscriptions / Memberships / Wholesale (paywalled, £600+/year). Scope: bounded per-extension. Roadmap item, not blocking.
 
 ## Subprojects
 
-- Indus Foods Phase 4 — `sites/indus-foods/.claude/`. Out of master-plan scope.
-- Mama's Munches — `sites/mamas-munches/.claude/`. New style variation `mamas-munches.json` shipped earlier this branch.
+- Indus Foods Phase 4 — `sites/indus-foods/.claude/`
+- Mama's Munches — `sites/mamas-munches/.claude/` — homepage queued for recogniser run
+
+## Decisions this session
+
+- **WC replacement: dropped from roadmap permanently.** A-tier path is complement (better SGS blocks on top of WC), not replacement. Captured in handoff Notes.
+- **SGS Ecom Plugin scope: UI/blocks layer on WC, not replacement.** Per master plan Phase 5 + Mama's gap analysis.
+- **WP Studio: deprecated.** Recogniser pipeline + GitHub deploy makes it redundant. Document in next session.
+- **Header/footer = template parts containing block markup** (FSE / industry A-tier). S-tier extension: also register as patterns + bind Business Details.

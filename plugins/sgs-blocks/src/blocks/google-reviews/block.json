@@ -132,14 +132,6 @@
       "type": "string",
       "default": "accent"
     },
-    "textColour": {
-      "type": "string",
-      "default": "text"
-    },
-    "backgroundColour": {
-      "type": "string",
-      "default": "surface"
-    },
     "autoplay": {
       "type": "boolean",
       "default": false
