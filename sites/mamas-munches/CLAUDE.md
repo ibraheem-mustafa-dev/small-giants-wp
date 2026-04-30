@@ -1,16 +1,39 @@
 # Mama's Munches — Client Site
 
-**Status:** Brand discovery captured from live site (2026-04-30) — ready for design phase
+**Status:** Brand discovery captured from live site + Bean answers (2026-04-30) — ready for design phase
 **Track:** B (revenue) — P5.B1 in master plan
 **Master-plan blocker:** SGS Ecommerce Plugin Phase 1 (catalogue + product page + Stripe one-off checkout). Brand + design can ship in parallel.
 **Live site:** https://mamasmunches.com/
 **Owner email:** Zainab@mamasmunches.com
-**Instagram:** [@mamasmunches](https://www.instagram.com/mamasmunches/)
+**Instagram:** [@mamasmunches](https://www.instagram.com/mamasmunches/) — high-quality product media here, pull next session
+**Tally form (current ordering):** https://tally.so/r/xXMQLk — manual flavour confirmation by Zainab; not sustainable
 **Trustpilot:** widget present (no reviews yet)
+**Stripe:** account exists — ready for plugin integration
+**Brand assets dropped:** `sites/mamas-munches/research/brand/` (PNG + WebP horizontal lockup)
 
 ## What they sell
 
-**Lactation cookies + bites** for breastfeeding mothers. Soft-baked oat cookies "crafted with wholesome ingredients" to support milk supply. Currently one product live: **Lactation Cookies (8-pack) at £9.50**, with packs of 20 and 40 mentioned in copy but not yet listed. Two product categories planned: **Cookies** and **Bites** (Bites category empty at scrape time).
+**Lactation cookies** in a range of flavours and milk types — currently the only product live. **Bites planned** as the next category. Bean's full description:
+
+### Current variant attributes (from Bean — actual live options)
+
+| Attribute | Options | Count |
+|-----------|---------|-------|
+| **Number in Pack** | 8 / 12 / 20 / 40 | 4 |
+| **Flavour** | Classic Oat / Chocolate | 2 |
+| **Topping** | Chocolate Chip / White Chocolate Chip / No Topping | 3 |
+| **Dietary Requirements** | Regular / Vegan | 2 |
+
+Total variant combinations: **4 × 2 × 3 × 2 = 48 SKUs** — manageable as WooCommerce variable product attributes.
+
+### Future expansion (mentioned but not yet live)
+
+- **Fruit flavour add-ins:** strawberry, blueberry, banana, others (likely extends the "Flavour" attribute)
+- **Allergy-friendly:** handled as on-request checkout note in Phase 1, not as a separate variant attribute
+- **Bites category:** energy balls / no-bake snacks — TBC scope with Zainab
+- **Subscription:** preset-length recurring delivery so mums get fresh cookies regularly (high-LTV play; Phase 2 ecom feature, not Phase 1)
+
+**Future product line:** bites (energy balls / no-bake snacks — TBC scope with Zainab).
 
 ## Brand story (verbatim from About page)
 
@@ -121,7 +144,9 @@ Per master plan §3.1 SGS Ecom Plugin Phase 1 + Mama's-specific needs:
 | Contact | Form + Instagram + email |
 | Privacy / Shipping / T&Cs | Placeholder fills (real legal copy later) |
 
-**Cuts (Phase 2 — not required for launch):** discount codes, subscription/recurring, abandoned cart, accounts beyond guest, per-variant inventory, shipping zones beyond UK flat-rate.
+**Cuts (Phase 2 — not required for launch):** discount codes, subscription/recurring (Bean wants preset-length subscriptions; promote to Phase 2 priority), abandoned cart, accounts beyond guest, per-variant inventory, shipping zones beyond UK flat-rate, gifting flow (gift messages, send-to-recipient, gift cards) — promote when gifting becomes priority audience.
+
+**⚠️ Phase 1 scope expansion vs master plan §3.1:** master plan specced Stripe only. Mama's needs **both Stripe AND PayPal**. Adds gateway-abstraction work to the SGS Ecom Plugin Phase 1 build — confirm with Bean before plugin scoping session whether to support both at launch or ship Stripe-only and add PayPal post-launch.
 
 ## Sign-off touchpoints (zero-QC promise)
 
@@ -140,17 +165,26 @@ Between those: zero human QC. Orders flow WP → Stripe → email confirmation �
 
 Track 1 can start next session — no blockers.
 
-## Open questions for Bean
+## Bean's answers (2026-04-30)
 
-1. **Founder name on the About page?** (Zainab presumed from email)
-2. **Logo source files?** (vector — SVG / AI / Figma)
-3. **Product photography?** Existing or to commission
-4. **Stripe account** — set up?
-5. **Launch deadline** — soft / hard / event-driven?
-6. **Allergen list** — confirm (oats, dairy, eggs, gluten, nuts)
-7. **Pack sizes coming next** — copy mentions 20 + 40 packs; confirm + price
-8. **Bites** — what are they? Energy balls / no-bake bites / etc?
-9. **Subscription interest** — Phase 2 candidate?
+| Q | Answer |
+|---|--------|
+| Founder name | Zainab (Bean's sister, presumed from email) |
+| Logo files | PNG + WebP horizontal lockup at `research/brand/`. SVG/vector source TBC |
+| Product photography | Mix — some AI, some real product photos. Live site + Instagram have usable assets. Pull next session via Playwright/curl |
+| Payments | **Both Stripe AND PayPal** set up ✅ — Phase 1 ecom plugin needs both gateways supported |
+| Launch | ASAP but quality-first — "happy to be convinced" on approach |
+| Allergens | TBC — needs FSA-compliant labelling for Phase 1 ship |
+| Reference sites | None — use `/ui-ux-pro-max` + `/sgs-discover` + research-result-driven design direction |
+| Subscription | YES — preset-length recurring delivery. Phase 2 ecom feature |
+| Audience | Currently mums (since brand not yet well-known); **gifting market is untapped** and worth designing for (baby showers, new-mum gifts, NHS/midwife-recommended gift baskets) |
+| B2B potential | TBC via `/lead-research-assistant` next session — strategy work for B2B + B2C |
+| Pricing | Not 100% confirmed — needs validation as part of B2C strategy |
+| Geography | UK only, bootstrapped |
+
+## Constraint for next-session research
+
+⚠️ **DO NOT** read prior workspace memory on Bean's sister's business ideas (in `~/.openclaw/workspace/memory/research/`) UNTIL fresh `/lead-research-assistant` run is complete. Reading the old research first biases the new run. The historical research is a reference check AFTER fresh independent research, not before.
 
 ## Folder structure
 
