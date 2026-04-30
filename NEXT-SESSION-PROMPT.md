@@ -1,79 +1,109 @@
 recommended_model: sonnet
-session_tag: small-giants-wp-2026-04-30-phase2-prep
+session_tag: small-giants-wp-2026-04-30-parallel-tracks
 
-You are a senior tooling architect for the SGS lifecycle stack. You ship measured improvements to skills, agents, and pipelines under a strict quality-gate workflow (skillscore + gap-analysis + Stage QC peer-review). Phase 2 (Rubrics Universe) is open — your job is to draft and confirm rubrics for 13 surviving skills + 50–60 surviving tools + 13 pipelines, all via `/rubric-writer` (single source of truth, built last session).
+You are a senior tooling architect for Small Giants Studio's WordPress framework. The session is parallelisable — pick ONE track from the parallel-tracks list below and ship it to its next concrete milestone. Other tracks can run in parallel sessions opened separately.
 
-Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-04-30-phase2-prep"`
-
-## Where You Are
-
-Plan: `.claude/plans/phase-2-rubrics-universe.md` (v2)
-Current phase: Phase 2 — Rubrics Universe
-Progress: 0/22 steps complete (G1.5 closed previous session)
-Next task: Retry pending blub.db POST → re-grade `/gap-analysis` → Phase 2 Track 1 Batch 1
+Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-04-30-parallel-tracks"`
 
 ## First action — invoke `/autopilot` before anything else
 
-Then read in parallel:
-1. `.claude/state.md` — confirm `current_phase: phase-2-rubrics-universe`
-2. `.claude/plans/phase-2-rubrics-universe.md` Steps 1–4 (Track 1 Batch 1)
-3. `.claude/parking.md` — P-1 marked complete; G2.5 catalogue
-4. `~/.agents/skills/rubric-writer/SKILL.md` — the new single-source rubric skill
-5. `~/.claude/skills/gap-analysis/references/end-goal-rubric.md` — confirmed reference rubric
+Then ask Bean which track to pick (or recommend by his energy + dependency status):
 
-## Skills to Invoke
+## Parallel tracks (pick one, run it to a milestone)
 
-| Skill | When to use |
-|-------|-------------|
-| `/brainstorming` | Architectural / strategy decisions during phase ordering |
-| `/gap-analysis` | Grade outputs before delivery (now with mandatory Step 7.75 QC stage + certainty_calc) |
-| `/lifecycle` | Start pipeline before any skill/agent/pipeline edit |
-| `/research` | Auto-routes to research tier |
-| `/strategic-plan` | If Phase 2 plan needs restructuring beyond `/phase-planner` |
-| `/rubric-writer` | Draft v2 rubrics for any target — invoked by Phase 2 batches and `/gap-analysis` Step 4.5 |
-| `/handoff` | Session-end handoff write |
-| `/subagent-driven-development` | Parallel batch dispatch (rubric drafts via `/rubric-writer` per target) |
-| `/dispatching-parallel-agents` | Stage QC peer-review panel (Gemini Flash + 2 Sonnet personas) |
+### TIER 1 — Start now, no framework dependencies (revenue-fast)
+
+| # | Track | Path / status | First action | Sessions to milestone |
+|---|-------|---------------|-------------|----------------------|
+| 1 | **CMX Group proposal** | No folder yet — bootstrap | Ask Bean for client feedback + competitor URLs; bootstrap `sites/cmx-group/CLAUDE.md`; live-site recon if URL exists | 1–2 sessions to sent quote |
+| 2 | **Indus Foods Phase 2** | Active — `sites/indus-foods/CLAUDE.md` | Read `sites/indus-foods/feature-gaps.md` + `homepage-build-notes.md`; pick highest-value remaining page or section | rolling — already-paying client |
+| 3 | **Mama's Munches design** | Brief done — `sites/mamas-munches/CLAUDE.md` | `/lead-research-assistant` for B2C+B2B strategy → `/sgs-discover` for design refs → `/ui-ux-pro-max` mockup | 2–3 sessions to mockup sign-off |
+| 4 | **Mosque Web Design** | Brand-new client (knowledge-context active) | Ask Bean for brief / live URL; bootstrap `sites/<slug>/` | TBD — needs Bean intake first |
+
+### TIER 2 — Quick framework unblockers (1–2 sessions, then unlock Tier 1)
+
+| # | Track | Unblocks | First action |
+|---|-------|----------|-------------|
+| 5 | **A4 `/quoter` rebuild** | CMX quote + Indus pricing | Read `~/.claude/skills/quoter/SKILL.md`; rebuild per master plan §A4 |
+| 6 | **A2 Responsive Extension** | SGS Studio v2 | `mkdir -p plugins/sgs-blocks/src/extensions/responsive-extension`; consolidate 11 P1 responsive items |
+| 7 | **A5 Dark-mode extension** | SGS Studio v2 dark | `grep "data-theme" theme/sgs-theme/theme.json`; build theme.json variation switching |
+
+### TIER 3 — Larger framework work (multi-session)
+
+| # | Track | Unblocks | Effort |
+|---|-------|----------|--------|
+| 8 | **A6 SGS Ecom Plugin Phase 1** | Mama's go-live | 8–12 weeks. ⚠️ Stripe AND PayPal required |
+| 9 | **A7 Variant/Colour Picker block** | Snooza demo | 2–4 weeks |
+| 10 | **A8 3D Configurator block** | Snooza demo | 4–6 weeks |
+| 11 | **Phase 4 design-brain rebuild** | Compounds across all design work | Multi-week — see master plan §P4.4.1 |
+
+## Skills to Invoke (load on demand per track)
+
+| Skill | Tracks |
+|-------|--------|
+| `/lead-research-assistant` | Mama's (B2C+B2B), CMX, Mosque |
+| `/sgs-discover` | Mama's, CMX, Mosque (design refs) |
+| `/ui-ux-pro-max` | Any design mockup work |
+| `/sgs-wp-engine` | All SGS WP work — canonical authority |
+| `/wp-block-development` | Track A blocks (A6/A7/A8) + Indus pages |
+| `/gap-analysis` | Quality gate — Step 7.75 QC mandatory |
+| `/rubric-writer` | Single source of truth for rubric drafting |
+| `/lifecycle` | Skill/agent/pipeline edits |
+| `/quoter` | After A4 rebuild — CMX + Indus pricing |
+| `/strategic-plan` | Multi-step work needing planning |
+| `/handoff` | Session-end |
 
 ## MCP Servers & Tools
 
-| Tool | What to use it for |
-|------|-------------------|
-| `python ~/.agents/skills/shared-references/sgs-skillscore.py validate <path>` | Skillscore on every skill edit; threshold 90% skill, 85% agent |
-| `python ~/.agents/skills/shared-references/dispatch-graph-validator.py` | Cross-skill reference validation |
-| `python ~/.claude/hooks/search.py "<query>"` | External research at gap-analysis Step 1.5 |
-| `~/.agents/skills/shared-references/optimisation-toolkit/certainty_calc.py` | Quantify reviewer agreement at Stage QC |
+| Tool | Use |
+|------|-----|
+| `~/.claude/skills/sgs-wp-engine/scripts/studio-preview-up.ps1` | Spin up WP Studio sandbox per client using `sgs-default.json` blueprint |
+| `/verify-loop --target-url <studio-preview>` | Pre-deploy assertion |
+| `/deploy-check --studio-pass` | Final pre-tar-deploy gate |
+| `python ~/.agents/skills/shared-references/sgs-skillscore.py validate <path>` | Skillscore (90% skills, 85% agents) |
+| `playwright` MCP browser tools | Live-site recon, product photo pull |
 | `curl -X POST http://localhost:5050/api/knowledge` | blub.db POST (retry pending payload first) |
 
 ## Agents to Delegate To
 
 | Agent | When |
 |-------|------|
-| `wp-sgs-developer` | If Phase 2 work surfaces WP-specific gaps |
-| `research-pipeline` | Drafting rubrics for unfamiliar / specialist tools in P2.2b triage |
+| `wp-sgs-developer` | All WP build / migration / fidelity work — MANDATORY delegation |
+| `design-reviewer` | Visual quality at breakpoints; mockup review |
+| `site-reviewer` | Pre-launch audit any client site |
+| `seo-auditor` + `seo-technical` | Pre-launch SEO checks |
+| `performance-auditor` | Next.js perf for SGS Studio v2 if staying Next.js |
+| `research-pipeline` | Open-ended client research with adversarial debate |
 
----
+## Track-specific guardrails
 
-## Task 1: Retry pending blub.db POST
+**Mama's Munches (Track 3):**
+- DO NOT pull prior workspace research from `~/.openclaw/workspace/memory/research/` until fresh `/lead-research-assistant` completes (bias avoidance)
+- Variant model: 4 packs × 2 flavours × 3 toppings × 2 dietary = 48 SKUs (WC variable product attributes, not 48 separate products)
+- Stripe AND PayPal both required (expands master plan §3.1 Phase 1)
+- Subscription is Phase 2 ecom feature — flag, don't build
+- Gifting market is untapped audience — design with this in mind
 
-Read `~/.claude/pending-uploads/2026-04-30-gap-analysis-eval.json`. Retry curl POST to `http://localhost:5050/api/knowledge`. Delete the pending-uploads file on success.
+**CMX Group (Track 1):**
+- Ask Bean for client feedback notes + competitor URLs he has
+- Quote blocked on A4 `/quoter` rebuild — start mockup first
 
-## Task 2: Re-grade `/gap-analysis` against confirmed rubric
+**Indus Foods (Track 2):**
+- Trade form (4-step) needs spec confirmation with Bean before build
+- Pricing doc blocked on A4 `/quoter` rebuild
 
-All 7 SKILL.md edits + certainty_calc wiring + `/rubric-writer` delegation landed last session. Re-run `/gap-analysis` on `~/.claude/skills/gap-analysis/SKILL.md` — the new Step 7.75 QC stage runs (dogfooding the rule it embedded). Expected lift: C (3.03) → A range. Update evaluation-history with new grade.
+## Universal guardrails
 
-## Task 3: Begin Phase 2 — Track 1 Batch 1
-
-Per `phase-2-rubrics-universe.md` Steps 2–4: dispatch 3 parallel Sonnet subagents via `/subagent-driven-development`. Each subagent invokes `/rubric-writer` for one target: `/capture-lesson`, `/qc`, `/phase-planner`. `/rubric-writer`'s Stage 4 Stage QC runs inside each invocation. Bean confirms each rubric in cross-turn pauses (Stage 5 HARD GATE — END THE TURN). After all 3 confirmed, dispatch optimiser passes (Step 4).
-
-Plan correction: 13 surviving (re-include `/interactivity-capture` which exists on disk).
-
-## Guardrails
-
-- `git branch --show-current` before every commit — framework changes go to `main`
-- skillscore 90% threshold for skills, 85% for agents — fix before proceeding
-- Stage QC mandatory (Step 7.75 / `/rubric-writer` Stage 4) — never skip
-- C-grade calibration: C+ only when fix has real impact, not for cosmetic gaps
-- Cross-turn pause when presenting any draft — never score same-turn
-- `/rubric-writer` is the single source of truth — don't inline-draft rubrics in any skill
+- `git branch --show-current` before commits. Framework → `main`. Client work → `feat/<client>-*`
+- WP Studio sandbox before any tar-deploy (canonical post-P1.5e workflow)
+- skillscore 90% skills / 85% agents — fix before proceeding
+- Stage QC mandatory in `/gap-analysis` Step 7.75 + `/rubric-writer` Stage 4
+- C-grade calibration: C+ only for real-impact fixes, not cosmetic
+- Cross-turn pause for any draft confirmation — never score same-turn
+- `/rubric-writer` is the single source of truth — don't inline-draft rubrics
 - `wp eval` blocked by pre-tool hook — read wp-config.php directly
+
+## Pending from previous session
+
+- **Retry blub.db POST:** `~/.claude/pending-uploads/2026-04-30-gap-analysis-eval.json` (curl POST to `/api/knowledge`, delete on success)
+- **Re-grade `/gap-analysis`** against confirmed rubric — all 7 SKILL.md edits + certainty_calc + `/rubric-writer` delegation landed; expect Lens 6 grade lift from C (3.03) → A range. Do this if you pick a lifecycle-adjacent track.
