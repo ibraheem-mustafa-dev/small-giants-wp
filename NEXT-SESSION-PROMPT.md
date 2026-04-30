@@ -1,84 +1,81 @@
 recommended_model: sonnet
-session_tag: small-giants-wp-2026-04-30-mamas-munches-design-brief
+session_tag: small-giants-wp-2026-04-30-mamas-munches-mockup
 
-You are a senior product designer specialising in WordPress block-based ecommerce sites and brand-led visual design. Your job this session: produce a concrete design brief for Mama's Munches' homepage and product page, ready for SGS block implementation.
+You are a senior product designer specialising in mobile-first ecommerce UI and brand-led visual design. Your job this session: build the homepage and product page mockups for Mama's Munches at 375/768/1440px, ready for Bean sign-off.
 
-Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-04-30-mamas-munches-design-brief"`
-
-## Where You Are
-
-Project: small-giants-wp / Track B client: Mama's Munches (Zainab — Bean's sister)
-Phase 1 strategic brief: complete (v3.4, 576 lines) at `sites/mamas-munches/research/lead-research-2026-04-30.md`
-Photography: 78 full-res assets pulled from WP at `sites/mamas-munches/research/photography/wp-media-library/`
-Next phase: design brief — homepage + product page mockup direction at 375/768/1440px
+Resume command: CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-04-30-mamas-munches-mockup"
 
 ## First action — invoke `/autopilot` before anything else
 
 Then read in parallel:
-1. `CONVERSATION-HANDOFF.md` — full session context + decisions
+1. `CONVERSATION-HANDOFF.md` — session context + decisions
 2. `sites/mamas-munches/CLAUDE.md` — brand brief
-3. `sites/mamas-munches/research/lead-research-2026-04-30.md` — strategic direction (focus on §1.2.5 product architecture, Phase 4 opportunities, Phase 5 top picks)
-4. `sites/mamas-munches/research/photography/wp-media-library/INVENTORY.md` — available photography
+3. `sites/mamas-munches/.claude/plans/phase-3-design-brief.md` — the full design spec to implement
+
+## Where You Are
+
+Plan: `sites/mamas-munches/.claude/plans/track-1-brand-design.md`
+Current phase: Phase 3 — Mockup build
+Progress: Phases 1 (research) + 2 (photography) complete — Phase 3 active
+Next task: Build homepage mockup HTML at 375/768/1440px
 
 ## Skills to Invoke
 
 | Skill | When to use |
 |-------|-------------|
-| `/brainstorming` | Architectural / design strategy decisions |
-| `/gap-analysis` | Grade the design brief before delivery |
-| `/lifecycle` | Start pipeline before any skill/agent edits |
-| `/research` | Auto-routes for reference research |
-| `/strategic-plan` | Implementation order |
-| `/innovative-design` | Design direction — palette, typography, UX rules |
-| `/sgs-discover` | 3–5 reference sites (artisan bakery / postpartum gift / warm-domestic UK food) |
-| `/ui-ux-pro-max` | Palette + typography + UX rules anchored to brand assets |
-| `/design-review` | Review the mockup direction once drafted |
-| `/handoff` | Session-end handoff |
+| `/brainstorming` | Design decisions — layout hierarchy, CTA copy, section order |
+| `/gap-analysis` | Grade mockups before presenting to Bean |
+| `/lifecycle` | Before any skill/agent/pipeline edits |
+| `/research` | Reference site lookups if needed |
+| `/strategic-plan` | Plan build order |
+| `/sgs-discover` | Run first — 3-5 reference sites (artisan bakery / postpartum gift / UK food) |
+| `/innovative-design` | Visual direction if stuck on layout or colour application |
+| `/playground` | Build live-preview HTML mockup (single-file) |
+| `/ui-ux-pro-max` | UX rules for variant selectors, mobile nav, trust signals |
 
 ## MCP Servers & Tools
 
 | Tool | What to use it for |
 |------|-------------------|
-| Playwright (CLI preferred) | Multi-breakpoint screenshots (375/768/1440) of reference + competitor sites |
-| `python ~/.claude/hooks/search.py` | Reference site discovery |
-| WP REST API | Already pulled — use `wp-media-library/` |
+| Playwright CLI | Screenshot mockups at 375/768/1440px for Bean review |
+| `sites/mamas-munches/research/photography/wp-media-library/` | All 78 product photography assets |
+| `sites/mamas-munches/research/brand/` | Logo assets |
 
 ## Agents to Delegate To
 
 | Agent | When |
 |-------|------|
-| `design-reviewer` | Visual quality + WCAG 2.2 AA review |
-| `wp-sgs-developer` | If translation to SGS blocks surfaces during brief writing |
-| `research-pipeline` | If reference research needs structured findings |
+| `design-reviewer` | WCAG 2.2 AA + visual quality review before presenting to Bean |
+| `wp-sgs-developer` | If SGS blocks translation surfaces during mockup build |
 
-## Tasks
+---
 
-### Task 1: Generate the design brief
+## Task 1: Reference sites (5 min)
 
-Build `sites/mamas-munches/.claude/plans/phase-3-design-brief.md`. Cover:
-- **Homepage** at 375/768/1440 — hero, trust signals, featured product, brand story, gift section, 40-Day Bundle CTA, £5 Trial Pack prominence, Send-to-Ward CTA in nav
-- **Product page** — variant selectors (fruit × chocolate × dietary × pack size), price ladder, ingredient education, mum-honest copy, allergen disclaimer
-- **Palette** — derived from `sites/mamas-munches/research/brand/`
-- **Typography** — current Inter + Work Sans; recommend keep or swap
-- **Photography placement** — which of the 78 assets go where
-- **Voice draft** baked in: *"We make nourishing food, with proper ingredients including some that have been used in postpartum recipes for centuries. Many mums tell us it helps. We won't promise medical results."*
+Run `/sgs-discover` with brief: "artisan bakery with gifting range, postpartum gift brand, warm domestic UK food brand. Mobile-first. Premium-approachable. Real photography." Capture 3-5 references to inform homepage layout.
 
-### Task 2: Zainab brief — Priority 0 demand-validation taste-test
+## Task 2: Homepage mockup
 
-`sites/mamas-munches/.claude/plans/zainab-priority-0-brief.md` — 1 page Zainab can act on in 15 min. WhatsApp script + questions + response log format.
+Build `sites/mamas-munches/mockups/homepage/index.html` using `/playground`. Follow `phase-3-design-brief.md` exactly:
+- Palette: coral `#E68A95`, cream `#FBF3DC`, soft pink `#F5C2C8`, yellow `#F5D050`, charcoal `#3A2E26`
+- Typography: Fraunces (headings, Google Fonts) + Inter (body)
+- Hero photo: `IMG_20260419_173547_107.webp` or `aesthetic-pic.jpeg`
+- Tagline: "Real food for real mums" (NOT "Boost your milk, bite by bite" — ASA non-compliant)
+- All 8 sections per brief §6
+- Screenshot at 375/768/1440px with Playwright CLI before presenting
 
-### Task 3: Zainab brief — halal cert fork
+## Task 3: Product page mockup
 
-`sites/mamas-munches/.claude/plans/zainab-halal-cert-fork.md` — HFA-only-current-recipe vs HMC-compatible-reformulation, with HFA-first recommendation. ~1 page.
+Build `sites/mamas-munches/mockups/product/index.html`:
+- Pill-style variant selectors (pack size / flavour / topping / dietary)
+- Price updates inline on pack size select
+- Ingredient education grid (4 galactagogues)
+- FSA-compliant allergen block — coral border, bold allergens
+- Mum-honest copy — no medical claims
 
 ## Guardrails
 
-- Universal-UK brand — NO Pakistani/Indian theming on website / brand / product names
-- Mum-honest: *"many mums tell us it helps; we don't make medical claims"* — never *"they don't work"*
-- Halal cert = quality signal, not cultural identity
-- Zookies (signature giant) anchor £10 / 8-pack; Classics (regular-size, new) £6 / 8-pack
-- 7 fruits × 4 chocolates × 2 dietary, any combination (Model A)
-- Phase 2 Traditional Foods (Panjiri, Sonth Bites, Methi Ladoo) = future, not Phase 1 mockup focus
-- £5 Trial Pack must be prominent — addresses real "too expensive" feedback
-- AI images at `live-site/ChatGPT-Image-*` flagged DO NOT SHIP
-- `git branch --show-current` before every commit — Mama's work to a feature branch
+- Universal-UK brand — no cultural theming on site
+- Photography from `wp-media-library/` only — never `ChatGPT-Image-*` files
+- WCAG 2.2 AA: run `design-reviewer` agent before marking done
+- `git branch --show-current` before commit — stay on `feat/mamas-munches-strategic-brief`
