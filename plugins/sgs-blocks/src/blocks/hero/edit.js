@@ -118,6 +118,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		variant,
 		headline,
 		subHeadline,
+		splitImageBleed,
+		ctaPrimaryHoverBackground,
+		ctaPrimaryHoverColour,
+		ctaSecondaryHoverBackground,
+		ctaSecondaryHoverColour,
 		alignment,
 		backgroundImage,
 		overlayColour,
@@ -579,6 +584,15 @@ export default function Edit( { attributes, setAttributes } ) {
 								) }
 							/>
 						</MediaUploadCheck>
+						<ToggleControl
+							label={ __( 'Image bleed to edge', 'sgs-blocks' ) }
+							help={ __( 'Removes border-radius and column padding so the photo fills flush to the container edge.', 'sgs-blocks' ) }
+							checked={ !! splitImageBleed }
+							onChange={ ( val ) =>
+								setAttributes( { splitImageBleed: val } )
+							}
+							__nextHasNoMarginBottom
+						/>
 					</PanelBody>
 				) }
 
@@ -764,6 +778,43 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( {
 								ctaSecondaryBackground: val,
 							} )
+						}
+					/>
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'CTA Hover Colours', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<p style={ { fontSize: '12px', color: '#757575', marginTop: 0 } }>
+						{ __( 'Override the default hover state for each button. Leave blank to use the built-in style.', 'sgs-blocks' ) }
+					</p>
+					<DesignTokenPicker
+						label={ __( 'Primary — hover background', 'sgs-blocks' ) }
+						value={ ctaPrimaryHoverBackground }
+						onChange={ ( val ) =>
+							setAttributes( { ctaPrimaryHoverBackground: val } )
+						}
+					/>
+					<DesignTokenPicker
+						label={ __( 'Primary — hover text colour', 'sgs-blocks' ) }
+						value={ ctaPrimaryHoverColour }
+						onChange={ ( val ) =>
+							setAttributes( { ctaPrimaryHoverColour: val } )
+						}
+					/>
+					<DesignTokenPicker
+						label={ __( 'Secondary — hover background', 'sgs-blocks' ) }
+						value={ ctaSecondaryHoverBackground }
+						onChange={ ( val ) =>
+							setAttributes( { ctaSecondaryHoverBackground: val } )
+						}
+					/>
+					<DesignTokenPicker
+						label={ __( 'Secondary — hover text colour', 'sgs-blocks' ) }
+						value={ ctaSecondaryHoverColour }
+						onChange={ ( val ) =>
+							setAttributes( { ctaSecondaryHoverColour: val } )
 						}
 					/>
 				</PanelBody>

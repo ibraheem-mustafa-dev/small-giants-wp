@@ -197,14 +197,6 @@
       "type": "string",
       "default": "default"
     },
-    "letterSpacing": {
-      "type": "string",
-      "default": ""
-    },
-    "textTransform": {
-      "type": "string",
-      "default": ""
-    },
     "textAlignMobile": {
       "type": "string",
       "default": ""

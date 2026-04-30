@@ -4,6 +4,8 @@
 
 A WordPress plugin providing a curated library of custom Gutenberg blocks purpose-built for Small Giants Studio client sites. Replaces Spectra Pro with blocks that produce clean, semantic markup, respect the SGS Theme design tokens, and render correctly across all breakpoints.
 
+> **Per-block attribute reference is auto-generated:** see [`02-SGS-BLOCKS-REFERENCE.md`](02-SGS-BLOCKS-REFERENCE.md). Regenerate via `python plugins/sgs-blocks/scripts/generate-block-reference.py`. **This file** (`02-SGS-BLOCKS.md`) covers architectural patterns, customisation standards, and build status — the live reference covers attribute detail.
+
 ---
 
 ## Plugin Structure
@@ -119,7 +121,7 @@ block-name/
 
 **Inner blocks:** Yes — accepts any blocks as children.
 
-**Render:** Static `save()` — outputs clean semantic HTML with CSS classes.
+**Render:** **Dynamic** — `render: file:./render.php`. Server-side rendering needed for layout/columns/gap responsive logic and `useInnerBlocksProps` integration. `save.js` returns `<InnerBlocks.Content />`.
 
 ---
 
@@ -179,7 +181,7 @@ block-name/
   - `border-accent` — accent-colour top border slides in via `::before` scaleX + card lifts
   - `glow` — accent-colour box-shadow glow on hover
 
-**Render:** Static `save()`.
+**Render:** **Dynamic** — `render: file:./render.php`. Server-side render handles icon SVG injection from the icon library, conditional link wrapper, and per-element colour token resolution. `save.js` returns `null`.
 
 ---
 
@@ -195,7 +197,7 @@ block-name/
 - `duration` — animation duration in ms (default: 2000)
 - `separator` — boolean (thousand separator)
 
-**Render:** Static `save()` with `viewScriptModule` for count-up animation.
+**Render:** **Static** — `save.js` returns serialised HTML with `RichText.Content` for label, plus `viewScriptModule` for count-up animation. `source:html` on the `label` attribute is correct here because it's a static block — RichText.Content writes innerHTML and the source reads it back.
 
 **Animation:** Uses Intersection Observer — only animates when scrolled into view. Falls back to showing the final number if JS is disabled.
 

@@ -46,7 +46,7 @@
     }
   },
   "selectors": {
-    "root": ".sgs-post-grid",
+    "root": ".wp-block-sgs-post-grid",
     "typography": ".sgs-post-grid__title"
   },
   "attributes": {

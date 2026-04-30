@@ -126,8 +126,6 @@ $icon_style_attr = $icon_styles ? ' style="' . implode( ';', $icon_styles ) . '"
 
 // Build heading styles.
 $h_classes = array('sgs-info-box__heading');
-$letter_spacing     = $attributes['letterSpacing'] ?? '';
-$text_transform     = $attributes['textTransform'] ?? '';
 $text_align_mobile  = $attributes['textAlignMobile'] ?? '';
 $text_align_tablet  = $attributes['textAlignTablet'] ?? '';
 $text_align_desktop = $attributes['textAlignDesktop'] ?? '';
@@ -143,9 +141,6 @@ if ( $heading_colour ) {
 if ( $heading_font_size ) {
 	$heading_styles[] = 'font-size:' . sgs_font_size_value( $heading_font_size );
 }
-if ( $letter_spacing ) { $heading_styles[] = 'letter-spacing:' . esc_attr($letter_spacing); }
-if ( $text_transform ) { $heading_styles[] = 'text-transform:' . esc_attr($text_transform); }
-
 $heading_style_attr = $heading_styles ? ' style="' . implode( ';', $heading_styles ) . '"' : '';
 $heading_class_attr = ' class="' . esc_attr( implode( ' ', $h_classes ) ) . '"';
 

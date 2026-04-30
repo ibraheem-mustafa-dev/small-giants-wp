@@ -2,12 +2,11 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-current_phase: phase-2-rubrics-universe
-current_step: "G1.5 CLOSED 2026-04-30. P1.5f COMPLETE: Phase 2 phase-plan written at .claude/plans/phase-2-rubrics-universe.md (16 steps, 5 QA gates, G2 gate). Entry condition: triage signed off + kills executed + dispatch-graph-validator clean + sandbox-preview gate green. Task 2 (Cerebras model ID fix) and Task 3 (seo-technical structural debt via /lifecycle) remain this session."
+current_phase: framework-polish
+current_step: "Block uniformity overhaul shipped + auto-generated reference + pre-commit audit + WordPress IDE stubs + 6 spec docs refreshed. 52 uncommitted files on feat/mamas-munches-strategic-brief at 079318f. Next: commit + deploy or build the HTML-to-blocks compiler (3.5-4 day Sonnet job, scoped 2026-04-30)."
 last_updated: 2026-04-30
 blockers: []
-# G1 milestone POST resolved 2026-04-30 — knowledge id 13284 (after SQLite WAL checkpoint cleared the lock).
-# CC memory sync to knowledge API also complete: 22/22 files posted.
+recommended_model_next: sonnet
 ---
 
 # small-giants-wp — State Snapshot
@@ -16,39 +15,37 @@ blockers: []
 
 ## Where we are
 
-Framework completion plan archived (`docs/plans/archive/2026-02-21-framework-completion-plan-complete.md`). Extended polish push following the close added significant architectural improvements.
+Framework v1 shipped 2026-04-29. Today's afternoon session was a polish + infrastructure pass that hardened the block library against drift and made the docs self-maintaining.
 
-**Today's commits (10 to `main`, 2026-04-29):**
+**Today's afternoon work (2026-04-30, this session — uncommitted on feat/mamas-munches-strategic-brief):**
 
-| Hash | What |
+| Track | Outcome |
 |---|---|
-| `ce1853f` | Phase 5.1 Conditional Visibility extension (login/role/date/days/URL/referrer) |
-| `491a123` | sgsParallax universal extension (CSS Scroll-Driven Animations + IO/rAF fallback) |
-| `0cf1ba9` | Framework completion plan archived |
-| `7d10ae9` | theme.json palette swapped to SGS brand (#1F7A7A teal-green + #F59E0B amber) |
-| `618db29` | Motion + focus-ring tokens (`duration.*`, `easing.*`, `focus-ring.*`) |
-| `5c51fe7` | Project consolidation — 86 docs into canonical `.claude/` (PR #8) |
-| `33d0962` | Hover + animation: token-referenced controls, default-OFF model, validation 74→1 |
-| `18de7d5` | v2 colour audit table (slug-based, 9 contrast fixes, animation timing per row) |
-| `8fb5c45` | Wave 1: per-block colour + animation defaults across 39 blocks |
-| `743a7b4` | Wave 2: multi-part hovers + render.php plumbing + 3 issue fixes |
+| Block uniformity overhaul | 13 blocks improved — `viewScript` → `viewScriptModule` on hero, `source:html` removed from mega-menu, typography duplication cleaned in hero/cta-section/info-box, full `supports.color` migration on announcement-bar + google-reviews (with backward-compat shim), supports.color added to back-to-top + mega-menu + reading-progress, selector naming standardised (`.wp-block-sgs-*` for all 28 dynamic blocks). |
+| Pre-commit audit | `plugins/sgs-blocks/scripts/audit-block-uniformity.py` + `.git/hooks/pre-commit` (appended to existing gitleaks check). Blocks regressions on every commit touching `block.json` files. |
+| Auto-generated block reference | `plugins/sgs-blocks/scripts/generate-block-reference.py` queries `sgs-framework.db` and emits `.claude/specs/02-SGS-BLOCKS-REFERENCE.md` (59 blocks, 941 attributes). Wired into `/sgs-update`. |
+| WordPress IDE stubs | `composer.json` + `vendor/php-stubs/wordpress-stubs` v6.9.1 + `vendor/php-stubs/wp-cli-stubs` v2.12.0. Intelephense `intelephense.environment.includePaths` configured in `.vscode/settings.json`. Eliminates Intelephense P1010 false positives across all SGS render.php files. |
+| Dead code removed | Both copies of `footer-indus-foods.php` deleted (one was a CLAUDE.md violation, the other referenced a non-existent block). Legacy `CONVERSATION-HANDOFF.md` + `NEXT-SESSION-PROMPT.md` re-deleted in favour of canonical `.claude/` layout. |
+| Doc audit + updates | 6 spec docs refreshed against codebase reality: `architecture.md` (block count, infrastructure, decisions 16–18), `01-SGS-THEME.md` (file structure, 8 style variations, 7 mega-menu parts, 29 patterns), `02-SGS-BLOCKS.md` (Container/Info Box dynamic correction + reference link), `06-BUILD-ORDER.md` (archived original + new current-state roadmap), `09-GOLD-STANDARD-AUDIT.md` (Hero CTAs + Info Box hover gap markers fixed), `common-wp-styling-errors.md` (5 new errors from today: H5 wp_kses_post wrapper, H6 dual colour collision, H7 typography duplication, C6 wp_strip_all_tags CSS, I4 viewScript regression). Toolkit design + design-brain architecture both gained wp-studio AI manual cross-references. `00-OVERVIEW.md` deleted (clashed with architecture.md). |
+| Research | HTML-to-blocks compiler scoped via `/research-buddies` panel — fork `html-to-gutenberg` (Verneaut) + add SGS-specific processors + AI annotator + `block.config.json` sidecar. 3.5–4 day build. Research at `~/.openclaw/workspace/memory/research/2026-04-30-html-mockup-to-sgs-blocks.md`. |
 
-Plus blub.db row 190 — lesson captured: "defaults need deliberate per-item judgement, not blanket".
+**Earlier today (2026-04-30 morning, separate track):** gap-analysis B 3.9 → B 4.4 upgrade + 3 enforcement hooks. See previous handoff entry below for detail.
 
 ## Open follow-up
 
-Single tracked item: **5 static-block deprecations** for `certification-bar`, `counter`, `notice-banner`, `process-steps`, `testimonial`. Spec at `plans/strategy/post-wave2-deprecations.md`. ~90 min, fresh session shape. Without these, existing pages with these blocks show editor "unexpected content" errors after any deploy that includes the new colour/animation defaults. Frontend rendering unaffected.
+- **52 uncommitted files** on `feat/mamas-munches-strategic-brief` from this session. Largest blocks: 11 block.json edits, 5 render.php edits, 6 spec doc refreshes, 2 new scripts, Composer stubs config, audit script + reference output.
+- **HTML-to-blocks compiler** — research complete, build not started. Sonnet-shaped 3.5–4 day work.
+- **announcement-bar / google-reviews legacy attrs** — `backgroundColour`/`textColour` (UK custom) kept as backward-compat fallback in render.php's `??` chain. Can be removed in a future major version after a content sweep.
+- **Static-block deprecations** (carried over from morning state) — `certification-bar`, `counter`, `notice-banner`, `process-steps`, `testimonial`. Spec at `plans/strategy/post-wave2-deprecations.md`. Not addressed this session.
 
 ## Active phase
 
-Master plan Phase 1 (Foundations) is the next track once the deprecation follow-up closes. Spec at `plans/master-plan.md`.
+Two parallel tracks open:
+
+1. **Ship today's polish** — commit the 52 changed files, build + deploy `sgs-blocks` to palestine-lives.org. Quick (<30 min).
+2. **HTML-to-blocks compiler** — 3.5–4 day Sonnet build. Highest leverage of the open initiatives. See `~/.openclaw/workspace/memory/research/2026-04-30-html-mockup-to-sgs-blocks.md` for the architecture.
 
 ## Subprojects
 
 - Indus Foods Phase 4 — `sites/indus-foods/.claude/`. Out of master-plan scope.
-
-## Recent activity
-
-- **2026-04-29 (today):** 10-commit polish push covering palette swap, motion tokens, 57-block colour audit, Wave 1 (39-block defaults), Wave 2 (multi-part hovers + render.php plumbing).
-- **2026-04-29 (earlier):** Project consolidation (PR #8) — 86 docs into `.claude/`.
-- **2026-04-28:** Phase 3.2 Global Defaults System + Floating UI Customiser + 8 quality fixes.
+- Mama's Munches — `sites/mamas-munches/.claude/`. New style variation `mamas-munches.json` shipped earlier this branch.

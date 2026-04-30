@@ -1,0 +1,1923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mama's Munches — Mockup Review (Homepage + Product Page)</title>
+<!--
+  Mama's Munches — Phase 3 Design Mockup
+  Built to brief v1.0 (2026-04-30)
+  Updated 2026-04-30: replaced Unsplash placeholders with real wp-media-library/ photos.
+  Doctype + UTF-8 meta added to fix mojibake (Â£ â€" â†') rendering.
+-->
+<style>
+  /* ============================================
+     DESIGN TOKENS
+     ============================================ */
+  :root {
+    /* Palette — per brief §2 */
+    --primary: #E68A95;
+    --primary-dark: #C56A7A;
+    --surface-pink: #F5C2C8;
+    --surface-cream: #FBF3DC;
+    --surface-alt: #FFF9F0;
+    --accent: #F5D050;
+    --accent-dark: #7A6500;
+    --text: #3A2E26;
+    --text-muted: #6B5C50;
+    --text-inverse: #FFFAF5;
+    --cookie-brown: #8B6F4E;
+    --success: #2E7D4F;
+    --border-subtle: #E8D5C0;
+    
+    /* Typography */
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter', -apple-system, sans-serif;
+  }
+
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-body);
+    color: var(--text);
+    background: #2a2a2a;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ============================================
+     CONTROL BAR — viewport + page switcher
+     ============================================ */
+  .control-bar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: #1a1a1a;
+    color: #fff;
+    padding: 12px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid #333;
+  }
+
+  .control-group {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+
+  .control-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-right: 8px;
+  }
+
+  .control-btn {
+    background: #333;
+    color: #fff;
+    border: 1px solid #444;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.15s;
+  }
+
+  .control-btn:hover { background: #444; }
+  .control-btn.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+  }
+
+  /* ============================================
+     VIEWPORT FRAME
+     ============================================ */
+  .viewport-stage {
+    padding: 24px;
+    display: flex;
+    justify-content: center;
+    overflow-x: auto;
+  }
+
+  .viewport-frame {
+    background: var(--surface-cream);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    transition: width 0.3s ease;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+
+  .viewport-frame.vw-375 { width: 375px; }
+  .viewport-frame.vw-768 { width: 768px; }
+  .viewport-frame.vw-1440 { width: 1440px; }
+
+  /* All design styling scoped to .mm so viewport changes work cleanly */
+  .mm {
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text);
+    background: var(--surface-cream);
+  }
+
+  .mm h1, .mm h2, .mm h3 {
+    font-family: var(--font-display);
+    color: var(--text);
+    line-height: 1.15;
+  }
+
+  .mm a { color: inherit; text-decoration: none; }
+  .mm img { max-width: 100%; display: block; }
+  .mm button { font-family: var(--font-body); cursor: pointer; }
+
+  /* ============================================
+     HEADER / NAV
+     ============================================ */
+  .mm-header {
+    background: var(--surface-cream);
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .mm-logo {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--primary-dark);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .mm-logo::before {
+    content: '';
+    width: 36px;
+    height: 36px;
+    background: var(--primary);
+    border-radius: 50%;
+    display: inline-block;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .mm-nav {
+    display: none;
+    gap: 28px;
+    align-items: center;
+  }
+
+  .mm-nav a {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+    transition: color 0.15s;
+  }
+
+  .mm-nav a:hover { color: var(--primary-dark); }
+
+  .mm-nav .nav-special {
+    color: var(--primary-dark);
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .mm-nav .nav-special::after {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+
+  .mm-header-icons {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .icon-btn {
+    background: none;
+    border: none;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text);
+    position: relative;
+    border-radius: 6px;
+    transition: background 0.15s;
+  }
+
+  .icon-btn:hover { background: var(--border-subtle); }
+
+  .cart-badge {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background: var(--primary);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Show desktop nav on viewports 768+ */
+  .vw-768 .mm-nav,
+  .vw-1440 .mm-nav { display: flex; }
+  .vw-768 .icon-hamburger,
+  .vw-1440 .icon-hamburger { display: none; }
+  .vw-1440 .mm-nav { gap: 32px; }
+
+  /* On 768 we trim the nav slightly */
+  .vw-768 .mm-nav { font-size: 14px; gap: 20px; }
+
+  /* ============================================
+     HERO
+     ============================================ */
+  .hero {
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Mobile: stacked, full-bleed image with copy overlay below */
+  .hero-image-wrap {
+    position: relative;
+    height: 380px;
+    overflow: hidden;
+    background: var(--surface-pink);
+  }
+
+  .hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hero-image-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(58,46,38,0) 40%, rgba(58,46,38,0.35) 100%);
+  }
+
+  .hero-content {
+    padding: 32px 24px 48px;
+    background: var(--surface-pink);
+  }
+
+  .hero h1 {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--text);
+  }
+
+  .hero-subhead {
+    font-size: 16px;
+    color: var(--text);
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+
+  .hero-cta-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* Tablet+ : two column */
+  .vw-768 .hero,
+  .vw-1440 .hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: stretch;
+    background: var(--surface-pink);
+  }
+
+  .vw-768 .hero-content,
+  .vw-1440 .hero-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 64px 48px;
+  }
+
+  .vw-1440 .hero-content {
+    padding: 96px 80px;
+  }
+
+  .vw-768 .hero-image-wrap,
+  .vw-1440 .hero-image-wrap {
+    height: auto;
+    min-height: 540px;
+  }
+
+  .vw-1440 .hero-image-wrap {
+    min-height: 640px;
+  }
+
+  .vw-768 .hero h1 { font-size: 44px; }
+  .vw-1440 .hero h1 { font-size: 56px; }
+
+  .vw-768 .hero-subhead,
+  .vw-1440 .hero-subhead { font-size: 18px; max-width: 480px; }
+
+  .vw-768 .hero-cta-group,
+  .vw-1440 .hero-cta-group { flex-direction: row; }
+
+  /* ============================================
+     BUTTONS
+     ============================================ */
+  .btn {
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 16px;
+    padding: 14px 28px;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+    min-height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-primary {
+    background: var(--primary-dark);
+    color: var(--text-inverse);
+  }
+  .btn-primary:hover { background: #a85567; }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text);
+    border-color: var(--text);
+  }
+  .btn-secondary:hover { background: var(--text); color: var(--text-inverse); }
+
+  .btn-block { width: 100%; }
+
+  /* ============================================
+     TRUST BAR
+     ============================================ */
+  .trust-bar {
+    background: var(--surface-pink);
+    padding: 32px 24px;
+    border-top: 1px solid rgba(58,46,38,0.08);
+  }
+
+  .trust-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px 16px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .trust-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 8px;
+  }
+
+  .trust-icon {
+    width: 44px;
+    height: 44px;
+    background: var(--text-inverse);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-dark);
+    flex-shrink: 0;
+  }
+
+  .trust-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .vw-768 .trust-grid,
+  .vw-1440 .trust-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .vw-1440 .trust-item { flex-direction: row; text-align: left; }
+  .vw-1440 .trust-label { font-size: 15px; }
+
+  /* ============================================
+     SECTION BASICS
+     ============================================ */
+  .section {
+    padding: 56px 24px;
+  }
+
+  .vw-768 .section { padding: 72px 48px; }
+  .vw-1440 .section { padding: 96px 80px; }
+
+  .section-alt { background: var(--surface-alt); }
+  .section-pink { background: var(--surface-pink); }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 40px;
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .section-header h2 {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  .section-header p {
+    color: var(--text-muted);
+    font-size: 16px;
+  }
+
+  .vw-768 .section-header h2 { font-size: 36px; }
+  .vw-1440 .section-header h2 { font-size: 40px; }
+  .vw-1440 .section-header p { font-size: 18px; }
+
+  .label-tag {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--primary-dark);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin-bottom: 12px;
+  }
+
+  /* ============================================
+     FEATURED PRODUCT
+     ============================================ */
+  .product-feature {
+    display: grid;
+    gap: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .vw-768 .product-feature,
+  .vw-1440 .product-feature {
+    grid-template-columns: 2fr 1fr;
+    gap: 32px;
+  }
+
+  .product-card {
+    background: var(--text-inverse);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .product-card-image {
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    background: var(--surface-pink);
+  }
+
+  .product-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .product-card-body {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .vw-1440 .product-card-body { padding: 32px; }
+
+  .product-card h3 {
+    font-size: 24px;
+    font-weight: 600;
+  }
+
+  .vw-1440 .product-card h3 { font-size: 28px; }
+
+  .product-card p { color: var(--text-muted); font-size: 15px; }
+
+  .pack-pills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .pack-pill {
+    background: transparent;
+    border: 1.5px solid var(--border-subtle);
+    color: var(--text);
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .pack-pill.active,
+  .pack-pill:hover {
+    background: var(--primary-dark);
+    color: var(--text-inverse);
+    border-color: var(--primary-dark);
+  }
+
+  .price-display {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  .price-display .price-main {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .price-display .price-meta {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .save-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--accent-dark);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .product-trial {
+    background: var(--surface-pink);
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .product-trial h3 {
+    font-size: 22px;
+    font-weight: 600;
+  }
+
+  .product-trial-price {
+    font-family: var(--font-display);
+    font-size: 40px;
+    font-weight: 600;
+  }
+
+  /* ============================================
+     BRAND STORY
+     ============================================ */
+  .story {
+    display: grid;
+    gap: 32px;
+    max-width: 1200px;
+    margin: 0 auto;
+    align-items: center;
+  }
+
+  .vw-768 .story,
+  .vw-1440 .story {
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+  }
+
+  .story-image {
+    aspect-ratio: 4/5;
+    overflow: hidden;
+    border-radius: 16px;
+    background: var(--surface-pink);
+    order: -1;
+  }
+
+  .vw-768 .story-image,
+  .vw-1440 .story-image { order: 0; }
+
+  .story-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .story-text h2 {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+
+  .vw-1440 .story-text h2 { font-size: 40px; }
+
+  .story-text p {
+    margin-bottom: 16px;
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  .vw-1440 .story-text p { font-size: 18px; }
+
+  .story-attribution {
+    font-family: var(--font-display);
+    font-style: italic;
+    color: var(--primary-dark);
+    font-weight: 500;
+    margin-top: 24px;
+  }
+
+  /* ============================================
+     INGREDIENT GRID
+     ============================================ */
+  .ing-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .vw-768 .ing-grid,
+  .vw-1440 .ing-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+
+  .ing-card {
+    background: var(--text-inverse);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 24px 20px;
+    text-align: center;
+  }
+
+  .ing-icon {
+    width: 56px;
+    height: 56px;
+    background: var(--surface-pink);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    color: var(--primary-dark);
+  }
+
+  .ing-card h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .ing-card p {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .ing-card .ing-note {
+    color: var(--accent-dark);
+    font-style: italic;
+    margin-top: 8px;
+    font-size: 12px;
+  }
+
+  .ing-footnote {
+    max-width: 720px;
+    margin: 32px auto 0;
+    text-align: center;
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  /* ============================================
+     GIFT SECTION
+     ============================================ */
+  .gift-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .vw-768 .gift-grid,
+  .vw-1440 .gift-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+
+  .gift-card {
+    background: var(--text-inverse);
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .gift-card-image {
+    aspect-ratio: 16/10;
+    background: var(--surface-pink);
+    overflow: hidden;
+  }
+
+  .gift-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .gift-card-body {
+    padding: 24px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .gift-card h3 { font-size: 22px; font-weight: 600; }
+
+  .gift-card .price-main {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 600;
+    margin-top: 8px;
+  }
+
+  .gift-card-body p { color: var(--text-muted); font-size: 15px; flex: 1; }
+
+  .send-to-ward {
+    text-align: center;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border-subtle);
+    max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .send-to-ward a {
+    color: var(--primary-dark);
+    font-weight: 600;
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 2px;
+  }
+
+  /* ============================================
+     SOCIAL PROOF
+     ============================================ */
+  .trustpilot-placeholder {
+    background: var(--text-inverse);
+    border: 1px dashed var(--border-subtle);
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    margin: 0 auto 32px;
+    max-width: 720px;
+    color: var(--text-muted);
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .trustpilot-stars {
+    display: inline-flex;
+    gap: 2px;
+    color: var(--accent);
+  }
+
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .vw-768 .testimonials-grid,
+  .vw-1440 .testimonials-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .vw-1440 .testimonials-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .testimonial {
+    background: var(--text-inverse);
+    border-radius: 16px;
+    padding: 28px 24px;
+    border: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .testimonial-stars {
+    color: var(--accent);
+    font-size: 18px;
+    letter-spacing: 2px;
+  }
+
+  .testimonial-text {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text);
+    flex: 1;
+  }
+
+  .testimonial-author {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .testimonial-author-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--surface-pink);
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  .testimonial-author-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+  .testimonial-author-name {
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .testimonial-author-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .insta-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 40px;
+    max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .vw-768 .insta-grid,
+  .vw-1440 .insta-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .insta-tile {
+    aspect-ratio: 1;
+    background: var(--surface-pink);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .insta-tile img { width: 100%; height: 100%; object-fit: cover; }
+
+  /* ============================================
+     FOOTER
+     ============================================ */
+  .footer {
+    background: var(--text);
+    color: var(--text-inverse);
+    padding: 48px 24px 32px;
+  }
+
+  .vw-768 .footer { padding: 64px 48px 32px; }
+  .vw-1440 .footer { padding: 80px 80px 40px; }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 32px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .vw-768 .footer-grid,
+  .vw-1440 .footer-grid {
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 48px;
+  }
+
+  .footer-col h4 {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--text-inverse);
+  }
+
+  .footer-col a, .footer-col p {
+    color: rgba(255, 250, 245, 0.75);
+    font-size: 14px;
+    display: block;
+    margin-bottom: 8px;
+    transition: color 0.15s;
+  }
+
+  .footer-col a:hover { color: var(--accent); }
+
+  .footer-logo {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--surface-pink);
+    margin-bottom: 12px;
+  }
+
+  .footer-social {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .footer-social a {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255,250,245,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0;
+  }
+
+  .footer-bottom {
+    max-width: 1200px;
+    margin: 32px auto 0;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255,250,245,0.15);
+    font-size: 12px;
+    color: rgba(255,250,245,0.5);
+    text-align: center;
+  }
+
+  /* ============================================
+     PRODUCT PAGE
+     ============================================ */
+  .pp-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 32px 24px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .vw-768 .pp-container { padding: 40px 48px; }
+  .vw-1440 .pp-container {
+    grid-template-columns: 1.1fr 1fr;
+    gap: 64px;
+    padding: 56px 80px;
+  }
+
+  /* Gallery */
+  .pp-gallery-main {
+    aspect-ratio: 1;
+    background: var(--surface-pink);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+
+  .pp-gallery-main img { width: 100%; height: 100%; object-fit: cover; }
+
+  .pp-gallery-thumbs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+
+  .pp-thumb {
+    aspect-ratio: 1;
+    background: var(--surface-pink);
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.15s;
+  }
+
+  .pp-thumb.active { border-color: var(--primary-dark); }
+  .pp-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+  /* Info column */
+  .pp-info h1 {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .vw-1440 .pp-info h1 { font-size: 36px; }
+
+  .pp-rating {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+
+  .pp-rating-stars { color: var(--accent); letter-spacing: 1px; font-size: 18px; }
+
+  .pp-selector-group {
+    margin-bottom: 24px;
+  }
+
+  .pp-selector-label {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 16px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .pp-selector-value {
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+
+  .pp-pills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .pp-pill {
+    background: transparent;
+    border: 1.5px solid var(--border-subtle);
+    color: var(--text);
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+  }
+
+  .pp-pill:hover { border-color: var(--primary-dark); }
+
+  .pp-pill.active {
+    background: var(--primary-dark);
+    color: var(--text-inverse);
+    border-color: var(--primary-dark);
+  }
+
+  .pp-pill.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    text-decoration: line-through;
+  }
+
+  .pp-pill .pill-savings {
+    background: var(--accent);
+    color: var(--accent-dark);
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+
+  .pp-pill.active .pill-savings {
+    background: var(--accent);
+    color: var(--accent-dark);
+  }
+
+  .pp-price-block {
+    background: var(--surface-alt);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 24px 0;
+    border: 1px solid var(--border-subtle);
+  }
+
+  .pp-price {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 4px;
+  }
+
+  .pp-price-main {
+    font-family: var(--font-display);
+    font-size: 36px;
+    font-weight: 600;
+  }
+
+  .pp-price-per {
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+
+  .pp-delivery-note {
+    font-size: 13px;
+    color: var(--success);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .pp-cta-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 24px;
+  }
+
+  /* Product page sub-sections */
+  .pp-section {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 24px 56px;
+  }
+  .vw-768 .pp-section { padding: 0 48px 64px; }
+  .vw-1440 .pp-section { padding: 0 80px 80px; }
+
+  .pp-section-title {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+
+  .vw-1440 .pp-section-title { font-size: 32px; }
+
+  .allergen-block {
+    background: var(--text-inverse);
+    border: 2px solid var(--primary);
+    border-radius: 16px;
+    padding: 24px;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .allergen-block h3 {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--primary-dark);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .allergen-block p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .allergen-block strong { font-weight: 700; }
+
+  .allergen-block .allergen-meta {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  /* Reduce hero height for product page (no hero on product page) */
+  .page-product .hero-image-wrap { display: none; }
+
+  /* Hidden state */
+  .hidden { display: none !important; }
+</style>
+
+<!-- ============================================
+     CONTROL BAR
+     ============================================ -->
+<div class="control-bar">
+  <div class="control-group">
+    <span class="control-label">Page</span>
+    <button class="control-btn active" data-page="home">Homepage</button>
+    <button class="control-btn" data-page="product">Product Page</button>
+  </div>
+  <div class="control-group">
+    <span class="control-label">Viewport</span>
+    <button class="control-btn" data-vw="375">375px Mobile</button>
+    <button class="control-btn" data-vw="768">768px Tablet</button>
+    <button class="control-btn active" data-vw="1440">1440px Desktop</button>
+  </div>
+</div>
+
+<!-- ============================================
+     VIEWPORT STAGE
+     ============================================ -->
+<div class="viewport-stage">
+  <div class="viewport-frame vw-1440" id="frame">
+    <div class="mm" id="page-content">
+      <!-- Content injected via JS for cleaner page swapping -->
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================
+   ICON LIBRARY (inline SVG, lucide-style)
+   ============================================ */
+const icons = {
+  cart: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>',
+  hamburger: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>',
+  home: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
+  check: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+  truck: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>',
+  star: '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+  oats: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M8 6c0-2 2-4 4-4M16 6c0-2-2-4-4-4M8 11c0-2 2-4 4-4M16 11c0-2-2-4-4-4M8 16c0-2 2-4 4-4M16 16c0-2-2-4-4-4"/></svg>',
+  yeast: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="8" r="2"/><circle cx="14" cy="6" r="2"/><circle cx="18" cy="13" r="2"/><circle cx="10" cy="14" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="14" cy="19" r="2"/></svg>',
+  flax: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="8" cy="10" rx="3" ry="5" transform="rotate(-30 8 10)"/><ellipse cx="16" cy="10" rx="3" ry="5" transform="rotate(30 16 10)"/><ellipse cx="12" cy="16" rx="3" ry="5"/></svg>',
+  fenugreek: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22V8M12 8C12 8 6 4 6 10c0 3 6 4 6 4M12 8c0 0 6-4 6 2 0 3-6 4-6 4M12 14c0 0 6-2 6 4 0 2-6 2-6 2M12 14c0 0-6-2-6 4 0 2 6 2 6 2"/></svg>',
+  insta: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37zM17.5 6.5h.01"/></svg>',
+  wa: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>'
+};
+
+/* Image placeholders — Unsplash with notes for actual assets */
+// Real Mama's Munches photography from sites/mamas-munches/research/photography/wp-media-library/
+// Path is relative to this HTML file's location (mockups/Claude App Design.../).
+const MEDIA = '../../research/photography/wp-media-library/';
+const IMG = {
+  hero:        MEDIA + 'IMG_20260419_173547_107.webp',  // 1536x1536 — desktop hero
+  productHero: MEDIA + 'cookies-stacked.jpeg',           // 1920x1080 — stack shot
+  productAlt1: MEDIA + 'cookies-on-bun-case.jpeg',       // 2048x1784 — bakery context
+  story:       MEDIA + 'Halimahs.jpeg',                  // 1920x1080 — person + product
+  process:     MEDIA + 'IMG-20260417-WA0029-scaled.jpeg',// 2560x1440 — baking
+  ingredient:  MEDIA + 'IMG-20260415-WA0017-scaled.jpeg',// 1440x2560 — closeup texture
+  closeup:     MEDIA + 'cookie-zoom.jpeg',               // 1080x1920 — closeup
+  reham:       MEDIA + 'Lactation-Cookies-Reham.jpeg',   // 2048x1560 — testimonial avatar
+  halimah:     MEDIA + 'Halimahs.jpeg',                  // 1920x1080 — testimonial avatar
+  mum3:        MEDIA + 'IMG_20260419_170343_518.jpg',    // 3rd mum portrait substitute
+  giftBox:     MEDIA + 'IMG-20260405-WA0000-scaled.jpeg',// 1440x2560 — lifestyle / gift
+  careBundle:  MEDIA + 'IMG_20260419_170745_421.webp',   // 2160x2160 — bundle-presentation
+  pp1:         MEDIA + 'cookies-stacked.jpeg',
+  pp2:         MEDIA + 'cookie-zoom.jpeg',
+  pp3:         MEDIA + 'aesthetic-pic.jpeg',
+  pp4:         MEDIA + 'IMG-20260417-WA0029-scaled.jpeg'
+};
+
+/* ============================================
+   HEADER (shared)
+   ============================================ */
+const headerHTML = `
+<header class="mm-header">
+  <a href="#" class="mm-logo">Mama's Munches</a>
+  <nav class="mm-nav">
+    <a href="#">Shop</a>
+    <a href="#">Our Story</a>
+    <a href="#" class="nav-special">Send to Ward</a>
+    <a href="#">Gift Ideas</a>
+    <a href="#">FAQs</a>
+  </nav>
+  <div class="mm-header-icons">
+    <button class="icon-btn" aria-label="Cart">
+      ${icons.cart}
+      <span class="cart-badge">2</span>
+    </button>
+    <button class="icon-btn icon-hamburger" aria-label="Menu">${icons.hamburger}</button>
+  </div>
+</header>
+`;
+
+/* ============================================
+   FOOTER (shared)
+   ============================================ */
+const footerHTML = `
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="footer-col">
+      <div class="footer-logo">Mama's Munches</div>
+      <p>Real food for real mums.</p>
+      <p>Birmingham, UK</p>
+      <p><a href="mailto:Zainab@mamasmunches.com">Zainab@mamasmunches.com</a></p>
+      <div class="footer-social">
+        <a href="#" aria-label="Instagram">${icons.insta}</a>
+        <a href="#" aria-label="WhatsApp">${icons.wa}</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Shop</h4>
+      <a href="#">About Us</a>
+      <a href="#">Contact</a>
+      <a href="#">FAQs</a>
+      <a href="#">Gift Ideas</a>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Shipping</a>
+      <a href="#">Terms &amp; Conditions</a>
+      <a href="#">Allergen Info</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    © 2026 Mama's Munches. Handmade with care in Birmingham.
+  </div>
+</footer>
+`;
+
+/* ============================================
+   HOMEPAGE
+   ============================================ */
+const homepageHTML = `
+${headerHTML}
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <span class="label-tag">Real food for real mums</span>
+    <h1>Made for the mum who needs it most</h1>
+    <p class="hero-subhead">Handmade lactation cookies from Birmingham. With proper galactagogue ingredients. No medical claims — just nourishment your body will thank you for.</p>
+    <div class="hero-cta-group">
+      <button class="btn btn-primary">Shop Zookies →</button>
+      <button class="btn btn-secondary">Try 3 for £5 →</button>
+    </div>
+  </div>
+  <div class="hero-image-wrap">
+    <!-- REPLACE: aesthetic-pic.jpeg (mobile portrait) / IMG_20260419_173547_107.webp (desktop) -->
+    <img src="${IMG.hero}" alt="Freshly baked lactation cookies" class="hero-image">
+    <div class="hero-image-overlay"></div>
+  </div>
+</section>
+
+<!-- TRUST BAR -->
+<section class="trust-bar">
+  <div class="trust-grid">
+    <div class="trust-item">
+      <div class="trust-icon">${icons.home}</div>
+      <span class="trust-label">Handmade in Birmingham</span>
+    </div>
+    <div class="trust-item">
+      <div class="trust-icon">${icons.check}</div>
+      <span class="trust-label">Registered Food Business</span>
+    </div>
+    <div class="trust-item">
+      <div class="trust-icon">${icons.truck}</div>
+      <span class="trust-label">Free UK Delivery Over £35</span>
+    </div>
+    <div class="trust-item">
+      <div class="trust-icon">${icons.star}</div>
+      <span class="trust-label">Loved by Breastfeeding Mums</span>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURED PRODUCT -->
+<section class="section">
+  <div class="section-header">
+    <span class="label-tag">Our signature</span>
+    <h2>Zookies — Our Giant Cookie</h2>
+    <p>One Zookie is a proper sized treat. Every one baked to order, same week.</p>
+  </div>
+  <div class="product-feature">
+    <div class="product-card">
+      <div class="product-card-image">
+        <!-- REPLACE: cookies-stacked.jpeg -->
+        <img src="${IMG.productHero}" alt="Stack of Zookies cookies">
+      </div>
+      <div class="product-card-body">
+        <h3>Mama's Munches Zookies</h3>
+        <p>Galactagogue ingredients. Baked fresh each week. No preservatives.</p>
+        <div>
+          <div class="pp-selector-label" style="margin-bottom:8px;">
+            <span>Pack size</span>
+          </div>
+          <div class="pack-pills">
+            <button class="pack-pill">4-pack</button>
+            <button class="pack-pill active">8-pack</button>
+            <button class="pack-pill">12-pack</button>
+            <button class="pack-pill">20-pack</button>
+            <button class="pack-pill">40-pack</button>
+          </div>
+        </div>
+        <div class="price-display">
+          <span class="price-main">£10.00</span>
+          <span class="price-meta">£1.25 per cookie</span>
+        </div>
+        <button class="btn btn-primary btn-block">Add to cart — £10</button>
+      </div>
+    </div>
+
+    <div class="product-trial">
+      <span class="label-tag">New here?</span>
+      <h3>Trial Pack</h3>
+      <p>Not sure? Try 3 Classics, postage included.</p>
+      <div class="product-trial-price">£5</div>
+      <button class="btn btn-primary">Try 3 for £5 →</button>
+    </div>
+  </div>
+</section>
+
+<!-- BRAND STORY -->
+<section class="section section-alt">
+  <div class="story">
+    <div class="story-text">
+      <span class="label-tag">Our story</span>
+      <h2>It started with a friend</h2>
+      <p>She was struggling with breastfeeding her newborn. We started making lactation cookies together — using oats, brewer's yeast, flaxseed, fenugreek. The same ingredients that have appeared in traditional postpartum foods from Pakistan to West Africa for generations.</p>
+      <p>They helped her. I was so grateful.</p>
+      <p>Now I make them for breastfeeding mums across the UK. Not because I can promise they'll work for every mum — I can't, and I won't. But because they're real food, with real ingredients, made with real care. And many mums tell me they helped.</p>
+      <p class="story-attribution">— Zainab, Founder</p>
+    </div>
+    <div class="story-image">
+      <!-- REPLACE: Halimahs.jpeg or Lactation-Cookies-Reham.jpeg -->
+      <img src="${IMG.story}" alt="Zainab in the kitchen">
+    </div>
+  </div>
+</section>
+
+<!-- INGREDIENT GRID -->
+<section class="section">
+  <div class="section-header">
+    <span class="label-tag">What's in them</span>
+    <h2>Real ingredients. Centuries of tradition.</h2>
+    <p>Four traditional galactagogues, used in postpartum recipes around the world.</p>
+  </div>
+  <div class="ing-grid">
+    <div class="ing-card">
+      <div class="ing-icon">${icons.oats}</div>
+      <h3>Oats</h3>
+      <p>Rich in iron. Used in postpartum foods across cultures for centuries.</p>
+    </div>
+    <div class="ing-card">
+      <div class="ing-icon">${icons.yeast}</div>
+      <h3>Brewer's Yeast</h3>
+      <p>B-vitamins and chromium. A traditional galactagogue.</p>
+    </div>
+    <div class="ing-card">
+      <div class="ing-icon">${icons.flax}</div>
+      <h3>Flaxseed</h3>
+      <p>Omega-3 fatty acids. Good for mum and baby.</p>
+    </div>
+    <div class="ing-card">
+      <div class="ing-icon">${icons.fenugreek}</div>
+      <h3>Fenugreek</h3>
+      <p>Traditional postpartum herb.</p>
+      <p class="ing-note">If your baby shows signs of GI sensitivity, speak to your midwife first.</p>
+    </div>
+  </div>
+  <p class="ing-footnote">We make nourishing food. We don't make medical claims. If you have specific concerns about lactation, your IBCLC or midwife is the right person to speak to.</p>
+</section>
+
+<!-- GIFT SECTION -->
+<section class="section section-pink">
+  <div class="section-header">
+    <span class="label-tag">Thoughtful gifting</span>
+    <h2>Gifts for new mums</h2>
+    <p>The gift she'll actually want. Sent direct, baked to order.</p>
+  </div>
+  <div class="gift-grid">
+    <div class="gift-card">
+      <div class="gift-card-image">
+        <!-- REPLACE: WhatsApp-Image-2026-01-12-at-18.32.32.jpeg or product gift box photo -->
+        <img src="${IMG.giftBox}" alt="New Baby Gift Box">
+      </div>
+      <div class="gift-card-body">
+        <h3>New Baby Gift Box</h3>
+        <p>The perfect gift for a new mum. A mix of Zookies and Classics in a gift box, ready to send.</p>
+        <span class="price-main">£15</span>
+        <button class="btn btn-primary">Send a gift box →</button>
+      </div>
+    </div>
+    <div class="gift-card">
+      <div class="gift-card-image">
+        <!-- REPLACE: process or bundle photo -->
+        <img src="${IMG.careBundle}" alt="40-Day Care Bundle">
+      </div>
+      <div class="gift-card-body">
+        <h3>40-Day Care Bundle</h3>
+        <p>Six weekly deliveries for the 40-day postnatal window. One of the most thoughtful gifts you can give.</p>
+        <span class="price-main">£42</span>
+        <button class="btn btn-primary">Gift the bundle →</button>
+      </div>
+    </div>
+  </div>
+  <div class="send-to-ward">
+    <p>Heading to the hospital? <a href="#">Ask us about Send to Ward delivery →</a></p>
+  </div>
+</section>
+
+<!-- SOCIAL PROOF -->
+<section class="section section-alt">
+  <div class="section-header">
+    <span class="label-tag">Mums who tried us</span>
+    <h2>Many mums tell us it helps</h2>
+  </div>
+
+  <div class="trustpilot-placeholder">
+    <span class="trustpilot-stars">${icons.star}${icons.star}${icons.star}${icons.star}${icons.star}</span>
+    <span>Trustpilot widget — review collection in progress</span>
+  </div>
+
+  <div class="testimonials-grid">
+    <div class="testimonial">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-text">"Honestly the nicest cookie I've had since giving birth. They feel like a treat but also like proper food. Bought a second box the same week."</p>
+      <div class="testimonial-author">
+        <div class="testimonial-author-avatar"><img src="${IMG.reham}" alt=""></div>
+        <div>
+          <div class="testimonial-author-name">Reham</div>
+          <div class="testimonial-author-meta">Birmingham · 8-pack customer</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-text">"My sister sent me these in the hospital and I cried. They got me through the first week. Now I send them to every new mum I know."</p>
+      <div class="testimonial-author">
+        <div class="testimonial-author-avatar"><img src="${IMG.halimah}" alt=""></div>
+        <div>
+          <div class="testimonial-author-name">Halimah</div>
+          <div class="testimonial-author-meta">Manchester · 40-Day Bundle</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-text">"I love that they don't promise miracles. Just good ingredients, made with care. They taste amazing, and that's enough for me to keep ordering."</p>
+      <div class="testimonial-author">
+        <div class="testimonial-author-avatar"><img src="${IMG.mum3}" alt=""></div>
+        <div>
+          <div class="testimonial-author-name">Aisha</div>
+          <div class="testimonial-author-meta">London · Trial Pack → 20-pack</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="insta-grid">
+    <div class="insta-tile"><img src="${IMG.productHero}" alt=""></div>
+    <div class="insta-tile"><img src="${IMG.process}" alt=""></div>
+    <div class="insta-tile"><img src="${IMG.closeup}" alt=""></div>
+    <div class="insta-tile"><img src="${IMG.productAlt1}" alt=""></div>
+    <div class="insta-tile"><img src="${IMG.ingredient}" alt=""></div>
+    <div class="insta-tile"><img src="${IMG.hero}" alt=""></div>
+  </div>
+</section>
+
+${footerHTML}
+`;
+
+/* ============================================
+   PRODUCT PAGE
+   ============================================ */
+const productPageHTML = `
+${headerHTML}
+
+<div class="pp-container">
+  <!-- GALLERY -->
+  <div class="pp-gallery">
+    <div class="pp-gallery-main">
+      <!-- REPLACE: cookies-stacked.jpeg -->
+      <img id="pp-main-img" src="${IMG.pp1}" alt="Mama's Munches Zookies">
+    </div>
+    <div class="pp-gallery-thumbs">
+      <button class="pp-thumb active" data-img="${IMG.pp1}">
+        <img src="${IMG.pp1}" alt="">
+      </button>
+      <button class="pp-thumb" data-img="${IMG.pp2}">
+        <img src="${IMG.pp2}" alt="">
+      </button>
+      <button class="pp-thumb" data-img="${IMG.pp3}">
+        <img src="${IMG.pp3}" alt="">
+      </button>
+      <button class="pp-thumb" data-img="${IMG.pp4}">
+        <img src="${IMG.pp4}" alt="">
+      </button>
+    </div>
+  </div>
+
+  <!-- INFO -->
+  <div class="pp-info">
+    <span class="label-tag">Freshly baked, made to order</span>
+    <h1>Mama's Munches Zookies</h1>
+    <div class="pp-rating">
+      <span class="pp-rating-stars">★★★★★</span>
+      <span>Reviews coming soon</span>
+    </div>
+
+    <p style="color:var(--text-muted); margin-bottom:24px; line-height:1.7;">
+      A Zookie is a proper-sized treat. Not a nibble — a real cookie, baked with the same galactagogue ingredients (oats, brewer's yeast, flaxseed, fenugreek) that appear in postpartum food traditions around the world.
+    </p>
+
+    <!-- Pack size -->
+    <div class="pp-selector-group">
+      <div class="pp-selector-label">
+        <span>Pack size</span>
+        <span class="pp-selector-value" id="val-pack">8-pack</span>
+      </div>
+      <div class="pp-pills" data-group="pack">
+        <button class="pp-pill" data-value="4" data-price="6">4</button>
+        <button class="pp-pill active" data-value="8" data-price="10">8</button>
+        <button class="pp-pill" data-value="12" data-price="14">12</button>
+        <button class="pp-pill" data-value="20" data-price="22">20 <span class="pill-savings">-12%</span></button>
+        <button class="pp-pill" data-value="40" data-price="36">40 <span class="pill-savings">-28%</span></button>
+      </div>
+    </div>
+
+    <!-- Flavour -->
+    <div class="pp-selector-group">
+      <div class="pp-selector-label">
+        <span>Flavour</span>
+        <span class="pp-selector-value" id="val-flavour">Classic Oat</span>
+      </div>
+      <div class="pp-pills" data-group="flavour">
+        <button class="pp-pill active" data-value="Classic Oat">Classic Oat</button>
+        <button class="pp-pill" data-value="Chocolate">Chocolate</button>
+        <button class="pp-pill" data-value="Berry">+ Add berry</button>
+      </div>
+    </div>
+
+    <!-- Topping -->
+    <div class="pp-selector-group">
+      <div class="pp-selector-label">
+        <span>Topping</span>
+        <span class="pp-selector-value" id="val-topping">Choc Chip</span>
+      </div>
+      <div class="pp-pills" data-group="topping">
+        <button class="pp-pill active" data-value="Choc Chip">Choc Chip</button>
+        <button class="pp-pill" data-value="White Choc" data-dairy="true">White Choc</button>
+        <button class="pp-pill" data-value="None">None</button>
+      </div>
+    </div>
+
+    <!-- Dietary -->
+    <div class="pp-selector-group">
+      <div class="pp-selector-label">
+        <span>Dietary</span>
+        <span class="pp-selector-value" id="val-dietary">Regular</span>
+      </div>
+      <div class="pp-pills" data-group="dietary">
+        <button class="pp-pill active" data-value="Regular">Regular</button>
+        <button class="pp-pill" data-value="Vegan">Vegan</button>
+      </div>
+    </div>
+
+    <!-- Price -->
+    <div class="pp-price-block">
+      <div class="pp-price">
+        <span class="pp-price-main" id="pp-price">£10.00</span>
+        <span class="pp-price-per" id="pp-per">£1.25 per cookie</span>
+      </div>
+      <div class="pp-delivery-note">
+        ${icons.truck}
+        Free UK delivery on orders over £35
+      </div>
+    </div>
+
+    <div class="pp-cta-group">
+      <button class="btn btn-primary btn-block" id="pp-cta">Add to cart — £10.00</button>
+      <button class="btn btn-secondary btn-block">Or try 3 Classics for £5 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- INGREDIENT EDUCATION (inline, same component) -->
+<section class="section section-alt">
+  <h2 class="pp-section-title">What's in them</h2>
+  <div class="ing-grid">
+    <div class="ing-card">
+      <div class="ing-icon">${icons.oats}</div>
+      <h3>Oats</h3>
+      <p>Rich in iron. Used in postpartum foods across cultures for centuries.</p>
+    </div>
+    <div class="ing-card">
+      <div class="ing-icon">${icons.yeast}</div>
+      <h3>Brewer's Yeast</h3>
+      <p>B-vitamins and chromium. A traditional galactagogue.</p>
+    </div>
+    <div class="ing-card">
+      <div class="ing-icon">${icons.flax}</div>
+      <h3>Flaxseed</h3>
+      <p>Omega-3 fatty acids. Good for mum and baby.</p>
+    </div>
+    <div class="ing-card">
+      <div class="ing-icon">${icons.fenugreek}</div>
+      <h3>Fenugreek</h3>
+      <p>Traditional postpartum herb.</p>
+      <p class="ing-note">If your baby shows signs of GI sensitivity, speak to your midwife first.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ALLERGEN BLOCK -->
+<section class="pp-section" style="padding-top:56px;">
+  <h2 class="pp-section-title">Allergen information</h2>
+  <div class="allergen-block">
+    <h3>${icons.check} Please read carefully</h3>
+    <p><strong>Contains:</strong> oats (gluten), eggs, milk, fenugreek (legume — may cross-react with peanut/soy allergies).</p>
+    <p><strong>Vegan variant:</strong> no eggs, no dairy.</p>
+    <p><strong>Made in a kitchen that handles tree nuts.</strong></p>
+    <div class="allergen-meta">
+      Many mums tell us our cookies helped them. We don't make medical claims — but we do make really good cookies. If you have specific concerns about lactation, your IBCLC or midwife is the right person to speak to.
+    </div>
+  </div>
+</section>
+
+${footerHTML}
+`;
+
+/* ============================================
+   STATE + RENDERING
+   ============================================ */
+const state = {
+  page: 'home',
+  vw: 1440,
+  product: {
+    pack: '8',
+    price: 10,
+    flavour: 'Classic Oat',
+    topping: 'Choc Chip',
+    dietary: 'Regular'
+  }
+};
+
+function render() {
+  const content = document.getElementById('page-content');
+  content.className = 'mm page-' + state.page;
+  content.innerHTML = state.page === 'home' ? homepageHTML : productPageHTML;
+
+  if (state.page === 'product') {
+    bindProductPage();
+  }
+}
+
+function setViewport(vw) {
+  state.vw = vw;
+  const frame = document.getElementById('frame');
+  frame.className = 'viewport-frame vw-' + vw;
+  document.querySelectorAll('[data-vw]').forEach(b => {
+    b.classList.toggle('active', b.dataset.vw == vw);
+  });
+}
+
+function setPage(page) {
+  state.page = page;
+  document.querySelectorAll('[data-page]').forEach(b => {
+    b.classList.toggle('active', b.dataset.page === page);
+  });
+  render();
+  // Scroll to top of viewport
+  document.querySelector('.viewport-stage').scrollTop = 0;
+}
+
+/* ============================================
+   PRODUCT PAGE INTERACTIONS
+   ============================================ */
+function bindProductPage() {
+  // Gallery thumbs
+  document.querySelectorAll('.pp-thumb').forEach(thumb => {
+    thumb.addEventListener('click', () => {
+      document.querySelectorAll('.pp-thumb').forEach(t => t.classList.remove('active'));
+      thumb.classList.add('active');
+      document.getElementById('pp-main-img').src = thumb.dataset.img;
+    });
+  });
+
+  // Selector pills
+  document.querySelectorAll('.pp-pills').forEach(group => {
+    const groupName = group.dataset.group;
+    group.querySelectorAll('.pp-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        if (pill.classList.contains('disabled')) return;
+        group.querySelectorAll('.pp-pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+
+        const value = pill.dataset.value;
+
+        if (groupName === 'pack') {
+          state.product.pack = value;
+          state.product.price = parseFloat(pill.dataset.price);
+          document.getElementById('val-pack').textContent = value + '-pack';
+        } else if (groupName === 'flavour') {
+          state.product.flavour = value;
+          document.getElementById('val-flavour').textContent = value;
+        } else if (groupName === 'topping') {
+          state.product.topping = value;
+          document.getElementById('val-topping').textContent = value;
+        } else if (groupName === 'dietary') {
+          state.product.dietary = value;
+          document.getElementById('val-dietary').textContent = value;
+          // Vegan disables dairy toppings
+          const toppingPills = document.querySelectorAll('[data-group="topping"] .pp-pill');
+          toppingPills.forEach(tp => {
+            if (tp.dataset.dairy === 'true') {
+              if (value === 'Vegan') {
+                tp.classList.add('disabled');
+                if (tp.classList.contains('active')) {
+                  tp.classList.remove('active');
+                  // Auto-select "Choc Chip"
+                  const fallback = document.querySelector('[data-group="topping"] [data-value="Choc Chip"]');
+                  if (fallback) {
+                    fallback.classList.add('active');
+                    state.product.topping = 'Choc Chip';
+                    document.getElementById('val-topping').textContent = 'Choc Chip';
+                  }
+                }
+              } else {
+                tp.classList.remove('disabled');
+              }
+            }
+          });
+        }
+
+        updatePrice();
+      });
+    });
+  });
+}
+
+function updatePrice() {
+  const price = state.product.price.toFixed(2);
+  const perCookie = (state.product.price / parseInt(state.product.pack)).toFixed(2);
+  document.getElementById('pp-price').textContent = '£' + price;
+  document.getElementById('pp-per').textContent = '£' + perCookie + ' per cookie';
+  document.getElementById('pp-cta').textContent = 'Add to cart — £' + price;
+}
+
+/* ============================================
+   CONTROL BAR LISTENERS
+   ============================================ */
+document.querySelectorAll('[data-vw]').forEach(btn => {
+  btn.addEventListener('click', () => setViewport(btn.dataset.vw));
+});
+
+document.querySelectorAll('[data-page]').forEach(btn => {
+  btn.addEventListener('click', () => setPage(btn.dataset.page));
+});
+
+// Initial render
+render();
+</script>

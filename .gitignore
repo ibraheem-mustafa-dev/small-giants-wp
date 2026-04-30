@@ -66,6 +66,11 @@ sites/indus-foods/extraction/screenshots/
 # Session screenshot artefacts (stray directories)
 UsersBeanProjectssmall-giants-wp/
 
+# Nested repos + ephemeral session state
+studio/
+.claude/scheduled_tasks.lock
+.scratch/
+
 # Large image files in repo root
 *.png
 *.jpg
@@ -82,3 +87,7 @@ sites/snooza-chair/assets/Snooza Video.mp4
 
 # Composer vendor dir — built locally, not tracked (PHPStan install 2026-04-17)
 plugins/sgs-blocks/vendor/
+
+# PHP Composer (dev-only — IDE stubs for Intelephense)
+vendor/
+composer.phar

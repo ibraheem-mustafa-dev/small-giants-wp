@@ -47,7 +47,7 @@
 		}
 	},
 	"selectors": {
-		"root": ".sgs-testimonial-slider",
+		"root": ".wp-block-sgs-testimonial-slider",
 		"typography": ".sgs-testimonial-slider__quote"
 	},
 	"attributes": {

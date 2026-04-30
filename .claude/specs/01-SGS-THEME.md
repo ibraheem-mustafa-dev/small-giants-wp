@@ -37,9 +37,14 @@ sgs-theme/
 │   │   ├── core-blocks.css      # Style overrides for WordPress core blocks
 │   │   └── utilities.css        # Utility classes (.sr-only, .container, etc.)
 │   ├── js/
-│   │   ├── scroll-to-top.js     # Scroll-to-top module
-│   │   ├── sticky-header.js     # Sticky header behaviour
-│   │   └── smooth-scroll.js     # Smooth anchor scrolling
+│   │   ├── back-to-top.js          # Back-to-top floating button
+│   │   ├── customiser-preview.js   # Live preview for Customiser controls
+│   │   ├── dark-mode.js            # Dark mode toggle + system preference
+│   │   ├── header-behaviour.js     # Header scroll behaviour (sticky, shrink, smart-reveal)
+│   │   ├── header-editor-panel.js  # Editor panel for per-page header overrides
+│   │   ├── nav-accessibility.js    # Keyboard nav + ARIA management for menus
+│   │   ├── reading-progress.js     # Reading progress bar
+│   │   └── smooth-scroll.js        # Smooth anchor scrolling
 │   ├── fonts/                   # Self-hosted font files (WOFF2)
 │   └── svg/                     # Reusable SVG assets (icons, decorative elements)
 │
@@ -53,26 +58,59 @@ sgs-theme/
 │   └── search.html              # Search results template
 │
 ├── parts/
-│   ├── header.html              # Site header (logo, nav, CTA button)
-│   ├── header-minimal.html      # Minimal header (logo only, for landing pages)
-│   ├── footer.html              # Site footer (columns, copyright, socials)
-│   ├── footer-minimal.html      # Minimal footer (for landing pages)
-│   └── sidebar.html             # Optional sidebar template part
+│   ├── header.html                 # Consolidated site header (logo, nav, CTA, mode controls)
+│   ├── footer.html                 # Site footer (columns, copyright, socials)
+│   ├── footer-minimal.html         # Minimal footer (for landing pages)
+│   ├── sidebar.html                # Optional sidebar template part
+│   ├── mega-menu-about.html        # Mega-menu panel: About
+│   ├── mega-menu-brands.html       # Mega-menu panel: Brands
+│   ├── mega-menu-contact.html      # Mega-menu panel: Contact
+│   ├── mega-menu-products.html     # Mega-menu panel: Products
+│   ├── mega-menu-resources.html    # Mega-menu panel: Resources
+│   ├── mega-menu-sectors.html      # Mega-menu panel: Sectors
+│   └── mega-menu-services.html     # Mega-menu panel: Services
 │
-├── patterns/
-│   ├── hero-standard.php        # Standard hero with headline, sub, CTA
-│   ├── hero-split.php           # Split hero (text left, image right)
-│   ├── hero-video.php           # Hero with background video/SVG animation
-│   ├── trust-bar.php            # Horizontal stats bar
-│   ├── cta-section.php          # Call-to-action section
-│   ├── footer-4-col.php         # 4-column footer layout
-│   └── ...                      # More patterns added per project need
+├── patterns/                       # 29 patterns total — categorised below
+│   ├── about-image-left.php
+│   ├── about-mission.php
+│   ├── about-stats.php
+│   ├── about-story.php
+│   ├── contact-form.php
+│   ├── contact-minimal.php
+│   ├── cta-banner.php
+│   ├── cta-centred.php
+│   ├── faq-section.php
+│   ├── footer-centred.php
+│   ├── footer-columns.php
+│   ├── footer-compact.php
+│   ├── footer-informational.php
+│   ├── footer-minimal.php
+│   ├── footer-simple.php
+│   ├── header-centred.php
+│   ├── header-full.php
+│   ├── header-minimal.php
+│   ├── hero-centred.php
+│   ├── hero-split.php
+│   ├── hero-video-background.php
+│   ├── pricing-columns.php
+│   ├── services-alternating.php
+│   ├── services-features.php
+│   ├── services-grid.php
+│   ├── stats-counter.php
+│   ├── team-section.php
+│   ├── testimonials-cards.php
+│   ├── testimonials-highlight.php
+│   └── testimonials-large.php
 │
-└── styles/
-    ├── indus-foods.json         # Indus Foods colour/font overrides
-    ├── dream-wedding.json       # Dream Wedding Pianist overrides
-    ├── workwear-now.json        # Workwear Now overrides
-    └── ...                      # One style variation per client site
+└── styles/                         # 8 style variations (no default.json — base theme.json is the default)
+    ├── eye-care-ward-end.json      # Eye Care Ward End — clinical/professional
+    ├── helping-doctors.json        # HelpingDoctors — green palette (committed 2026-03-11)
+    ├── indus-foods.json            # Indus Foods — teal/gold (Birmingham wholesaler)
+    ├── mamas-munches.json          # Mama's Munches — coral/cream/Fraunces (added 2026-04-30)
+    ├── sgs-construction.json       # Construction industry default
+    ├── sgs-healthcare.json         # Healthcare industry default
+    ├── sgs-mosque.json             # Mosque/community organisation default
+    └── sgs-professional.json       # Professional services default
 ```
 
 ---
@@ -269,7 +307,7 @@ Standard header with:
 - Site logo (left)
 - Navigation menu (centre or right, configurable via block settings)
 - CTA button (right, accent colour)
-- Sticky behaviour via `sticky-header.js` (adds `.is-scrolled` class for shrink/shadow effect)
+- Sticky behaviour via `header-behaviour.js` (adds `.is-scrolled` class for shrink/shadow effect; supports modes: static, sticky, transparent, transparent-sticky, smart-reveal, shrink, hidden — see legacy header-system-design spec for full mode reference)
 - Mobile: hamburger menu with slide-out drawer
 - Announcement bar slot above header (optional, toggled via customiser or block)
 

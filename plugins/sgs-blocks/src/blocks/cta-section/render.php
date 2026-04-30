@@ -121,8 +121,6 @@ if ( ! empty( $background_image['url'] ) ) {
 
 // Build headline styles.
 $h_classes          = array( 'sgs-cta-section__headline' );
-$letter_spacing     = $attributes['letterSpacing'] ?? '';
-$text_transform     = $attributes['textTransform'] ?? '';
 $text_align_mobile  = $attributes['textAlignMobile'] ?? '';
 $text_align_tablet  = $attributes['textAlignTablet'] ?? '';
 $text_align_desktop = $attributes['textAlignDesktop'] ?? '';
@@ -137,11 +135,6 @@ if ( $text_align_desktop ) {
 $h_styles = array();
 if ( $headline_colour ) {
 	$h_styles[] = 'color:' . sgs_colour_value( $headline_colour ); }
-if ( $letter_spacing ) {
-	$h_styles[] = 'letter-spacing:' . esc_attr( $letter_spacing ); }
-if ( $text_transform ) {
-	$h_styles[] = 'text-transform:' . esc_attr( $text_transform ); }
-
 $headline_style_attr = $h_styles ? ' style="' . implode( ';', $h_styles ) . '"' : '';
 $headline_class_attr = ' class="' . esc_attr( implode( ' ', $h_classes ) ) . '"';
 
@@ -234,7 +227,7 @@ if ( ! empty( $buttons ) ) {
 
 // Output responsive CSS if needed.
 if ( $responsive_css ) {
-	printf( '<style id="%s">%s</style>', esc_attr( $uid ), $responsive_css );
+	printf( '<style id="%s">%s</style>', esc_attr( $uid ), wp_strip_all_tags( $responsive_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS generated from sanitised block attributes.
 }
 
 // Build ribbon HTML — content escaped with esc_html() at construction time.

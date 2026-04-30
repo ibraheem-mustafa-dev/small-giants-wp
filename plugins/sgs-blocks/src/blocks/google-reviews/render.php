@@ -160,12 +160,11 @@ $wrapper_classes = [
 	'sgs-google-reviews--cols-mobile-' . $columns_mobile,
 ];
 
+// Migrated 2026-04-30: backgroundColour/textColour -> native backgroundColor/textColor (supports.color).
+// Wrapper background and text colour are now handled by the WP Color panel via get_block_wrapper_attributes().
+// Only the inner star colour remains as a custom CSS variable (targets SVG fill on inner elements).
 $sgs_gr_star   = sgs_colour_value( $star_colour ?? 'accent' );
-$sgs_gr_text   = sgs_colour_value( $attributes['textColour'] ?? 'text' );
-$sgs_gr_bg     = sgs_colour_value( $attributes['backgroundColour'] ?? 'surface' );
-$sgs_gr_inline = '--sgs-gr-star-colour:' . $sgs_gr_star . ';'
-	. '--sgs-gr-text-colour:' . $sgs_gr_text . ';'
-	. '--sgs-gr-bg-colour:' . $sgs_gr_bg . ';';
+$sgs_gr_inline = '--sgs-gr-star-colour:' . $sgs_gr_star . ';';
 
 $wrapper_attributes = get_block_wrapper_attributes( [
 	'class'               => implode( ' ', $wrapper_classes ),

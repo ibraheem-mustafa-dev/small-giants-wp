@@ -2,6 +2,9 @@
 /**
  * Announcement Bar — Server Render
  *
+ * Migrated 2026-04-30: backgroundColour/textColour -> native backgroundColor/textColor (supports.color).
+ * Backward-compat shim reads legacy UK attrs if native attrs are absent.
+ *
  * @package SGS\Blocks
  *
  * @param array    $attributes Block attributes.
@@ -9,10 +12,15 @@
  * @param WP_Block $block      Block instance.
  */
 
-$messages              = $attributes['messages'] ?? [ [ 'text' => '', 'ctaText' => '', 'ctaUrl' => '' ] ];
+// Backward-compat: existing posts may have UK-spelled attrs. Native attrs take precedence.
+$messages              = $attributes['messages'] ?? array(
+	array(
+		'text'    => '',
+		'ctaText' => '',
+		'ctaUrl'  => '',
+	),
+);
 $variant               = $attributes['variant'] ?? 'standard';
-$background_colour     = $attributes['backgroundColour'] ?? 'primary';
-$text_colour           = $attributes['textColour'] ?? 'text-inverse';
 $cta_style             = $attributes['ctaStyle'] ?? 'outline';
 $cta_colour            = $attributes['ctaColour'] ?? 'accent';
 $position              = $attributes['position'] ?? 'top';
@@ -34,8 +42,8 @@ $end_date              = $attributes['endDate'] ?? '';
 $icon                  = $attributes['icon'] ?? '';
 $font_size             = $attributes['fontSize'] ?? 'small';
 
-// Check scheduling.
-$now = current_time( 'timestamp' );
+// Check scheduling — use time() for a real UTC Unix timestamp.
+$now = time();
 
 if ( ! empty( $start_date ) && strtotime( $start_date ) > $now ) {
 	// Bar not yet active.
@@ -48,15 +56,15 @@ if ( ! empty( $end_date ) && strtotime( $end_date ) < $now ) {
 }
 
 // Build wrapper classes.
-$wrapper_classes = [
+// background-color and text-color classes are injected by get_block_wrapper_attributes()
+// via native supports.color — no manual has-*-color needed here.
+$wrapper_classes = array(
 	'sgs-announcement-bar',
 	'sgs-announcement-bar--' . $variant,
 	'sgs-announcement-bar--' . $position,
 	'sgs-announcement-bar--' . $rotation_type,
-	'has-' . $background_colour . '-background-color',
-	'has-' . $text_colour . '-color',
 	'has-' . $font_size . '-font-size',
-];
+);
 
 if ( $sticky ) {
 	$wrapper_classes[] = 'sgs-announcement-bar--sticky';
@@ -73,31 +81,35 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 $sgs_ab_inline_style = '--sgs-ab-cta-colour:' . sgs_colour_value( $cta_colour ) . ';';
 
-$wrapper_attributes = get_block_wrapper_attributes( [
-	'class'                => implode( ' ', $wrapper_classes ),
-	'style'                => $sgs_ab_inline_style,
-	'data-wp-interactive'  => 'sgs/announcement-bar',
-	'data-wp-context'      => wp_json_encode( [
-		'isDismissed'         => false,
-		'currentMessageIndex' => 0,
-		'countdownRemaining'  => 0,
-		'closeBehaviour'      => $close_behaviour,
-		'cookieDays'          => $cookie_days,
-		'targetDate'          => $target_date,
-		'rotationInterval'    => $rotation_interval,
-		'variant'             => $variant,
-		'countdownEndAction'  => $countdown_end_action,
-		'countdownEndMessage' => $countdown_end_message,
-		'blockId'             => wp_unique_id( 'sgs-announcement-' ),
-	] ),
-	'data-wp-class--is-dismissed' => 'context.isDismissed',
-	'data-wp-watch'        => 'callbacks.init',
-	'role'                 => 'alert',
-	'aria-live'            => 'polite',
-] );
+$wrapper_attributes = get_block_wrapper_attributes(
+	array(
+		'class'                       => implode( ' ', $wrapper_classes ),
+		'style'                       => $sgs_ab_inline_style,
+		'data-wp-interactive'         => 'sgs/announcement-bar',
+		'data-wp-context'             => wp_json_encode(
+			array(
+				'isDismissed'         => false,
+				'currentMessageIndex' => 0,
+				'countdownRemaining'  => 0,
+				'closeBehaviour'      => $close_behaviour,
+				'cookieDays'          => $cookie_days,
+				'targetDate'          => $target_date,
+				'rotationInterval'    => $rotation_interval,
+				'variant'             => $variant,
+				'countdownEndAction'  => $countdown_end_action,
+				'countdownEndMessage' => $countdown_end_message,
+				'blockId'             => wp_unique_id( 'sgs-announcement-' ),
+			)
+		),
+		'data-wp-class--is-dismissed' => 'context.isDismissed',
+		'data-wp-watch'               => 'callbacks.init',
+		'role'                        => 'alert',
+		'aria-live'                   => 'polite',
+	)
+);
 
 ?>
-<div <?php echo $wrapper_attributes; ?>>
+<div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() returns pre-escaped output. ?>>
 	<div class="sgs-announcement-bar__content">
 		<?php if ( ! empty( $icon ) ) : ?>
 			<span class="sgs-announcement-bar__icon" aria-hidden="true"><?php echo esc_html( $icon ); ?></span>

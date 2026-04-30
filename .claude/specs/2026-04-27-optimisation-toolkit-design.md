@@ -729,7 +729,13 @@ last_updated: YYYY-MM-DD
 
 The `all-skills-classified-v2.json` file was not present on disk at spec-assembly time (`C:/Users/Bean/Projects/small-giants-wp/.scratch/skill-batches/` directory does not exist). Audit outcomes documented in `state.md` (2026-04-27 current_step): 161 SKILL.md files classified via 5 parallel Gemini Pro CLI calls; 94 toolkit-qualifiers identified; 5 edge cases. 6 BRAIN-class skills: `ui-ux-pro-max`, `superdesign`, `sgs-wp-engine`, `vercel-react-best-practices`, `marketing-psychology`, `marketing-ideas`. `ui-ux-pro-max` already ships self-improvement (ingest path, 11,964 rows, 36 tables).
 
-### 10.4 SGS-WP planning docs informing Sections 5 and 7
+### 10.4 WP Studio operational reference
+
+The QA-to-deploy pipeline (Phase 4.2.5) and `/verify-loop` step budgeting both depend on WP Studio's MCP tools (`validate_blocks`, `need_for_speed`, `take_screenshot`, `rank_me_up`). Full CLI reference, MCP tool signatures, import/export workflows, Blueprint format, and gotchas:
+
+- [`.claude/specs/2026-04-29-wp-studio-ai-manual.md`](2026-04-29-wp-studio-ai-manual.md) — operational manual (added cross-reference 2026-04-30)
+
+### 10.5 SGS-WP planning docs informing Sections 5 and 7
 
 - `C:/Users/Bean/Projects/small-giants-wp/.claude/handoff.md` — 2026-04-28 session handoff with Track B client state
 - `C:/Users/Bean/.openclaw/workspace/code/small-giants-wp/CONVERSATION-HANDOFF.md` — framework completion plan status
@@ -737,7 +743,7 @@ The `all-skills-classified-v2.json` file was not present on disk at spec-assembl
 - `C:/Users/Bean/.openclaw/.claude/subprojects/ssb/state.md` — 2026-04-27 evening optimisation toolkit audit context
 - `C:/Users/Bean/.openclaw/.claude/subprojects/ssb/decisions.md` — all 2026-04-27 evening decisions on optimisation toolkit scope, patterns, and audit method
 
-### 10.5 Captured rules from blub.db
+### 10.6 Captured rules from blub.db
 
 | Rule                                                            | blub.db row | Pattern key                                                       |
 | --------------------------------------------------------------- | ----------- | ----------------------------------------------------------------- |

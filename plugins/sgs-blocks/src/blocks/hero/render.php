@@ -13,36 +13,36 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
-$variant          = $attributes['variant'] ?? 'standard';
-$headline         = $attributes['headline'] ?? '';
-$sub_headline     = $attributes['subHeadline'] ?? '';
-$alignment        = $attributes['alignment'] ?? 'left';
-$bg_image         = $attributes['backgroundImage'] ?? null;
-$overlay_colour   = sgs_colour_value( $attributes['overlayColour'] ?? 'text' );
-$overlay_opacity  = $attributes['overlayOpacity'] ?? 50;
-$split_image      = $attributes['splitImage'] ?? null;
-$bg_video         = $attributes['backgroundVideo'] ?? null;
-$svg_content      = $attributes['svgContent'] ?? '';
-$min_height        = $attributes['minHeight'] ?? '';
-$min_height_tablet = $attributes['minHeightTablet'] ?? '';
-$min_height_mobile = $attributes['minHeightMobile'] ?? '360px';
-$badges            = $attributes['badges'] ?? array();
-$cta_primary_text = $attributes['ctaPrimaryText'] ?? '';
-$cta_primary_url  = $attributes['ctaPrimaryUrl'] ?? '';
-$cta_primary_style = $attributes['ctaPrimaryStyle'] ?? 'accent';
-$cta_secondary_text = $attributes['ctaSecondaryText'] ?? '';
-$cta_secondary_url  = $attributes['ctaSecondaryUrl'] ?? '';
+$variant             = $attributes['variant'] ?? 'standard';
+$headline            = $attributes['headline'] ?? '';
+$sub_headline        = $attributes['subHeadline'] ?? '';
+$alignment           = $attributes['alignment'] ?? 'left';
+$bg_image            = $attributes['backgroundImage'] ?? null;
+$overlay_colour      = sgs_colour_value( $attributes['overlayColour'] ?? 'text' );
+$overlay_opacity     = $attributes['overlayOpacity'] ?? 50;
+$split_image         = $attributes['splitImage'] ?? null;
+$bg_video            = $attributes['backgroundVideo'] ?? null;
+$svg_content         = $attributes['svgContent'] ?? '';
+$min_height          = $attributes['minHeight'] ?? '';
+$min_height_tablet   = $attributes['minHeightTablet'] ?? '';
+$min_height_mobile   = $attributes['minHeightMobile'] ?? '360px';
+$badges              = $attributes['badges'] ?? array();
+$cta_primary_text    = $attributes['ctaPrimaryText'] ?? '';
+$cta_primary_url     = $attributes['ctaPrimaryUrl'] ?? '';
+$cta_primary_style   = $attributes['ctaPrimaryStyle'] ?? 'accent';
+$cta_secondary_text  = $attributes['ctaSecondaryText'] ?? '';
+$cta_secondary_url   = $attributes['ctaSecondaryUrl'] ?? '';
 $cta_secondary_style = $attributes['ctaSecondaryStyle'] ?? 'outline';
 
-$headline_colour       = $attributes['headlineColour'] ?? '';
+$headline_colour               = $attributes['headlineColour'] ?? '';
 $sub_headline_font_size        = $attributes['subHeadlineFontSize'] ?? '';
 $sub_headline_font_size_tablet = $attributes['subHeadlineFontSizeTablet'] ?? '';
 $sub_headline_font_size_mobile = $attributes['subHeadlineFontSizeMobile'] ?? '';
-$sub_headline_colour   = $attributes['subHeadlineColour'] ?? '';
-$cta_primary_colour    = $attributes['ctaPrimaryColour'] ?? '';
-$cta_primary_bg        = $attributes['ctaPrimaryBackground'] ?? '';
-$cta_secondary_colour  = $attributes['ctaSecondaryColour'] ?? '';
-$cta_secondary_bg      = $attributes['ctaSecondaryBackground'] ?? '';
+$sub_headline_colour           = $attributes['subHeadlineColour'] ?? '';
+$cta_primary_colour            = $attributes['ctaPrimaryColour'] ?? '';
+$cta_primary_bg                = $attributes['ctaPrimaryBackground'] ?? '';
+$cta_secondary_colour          = $attributes['ctaSecondaryColour'] ?? '';
+$cta_secondary_bg              = $attributes['ctaSecondaryBackground'] ?? '';
 
 $hover_background_colour = $attributes['hoverBackgroundColour'] ?? '';
 $hover_text_colour       = $attributes['hoverTextColour'] ?? '';
@@ -51,10 +51,19 @@ $transition_duration     = $attributes['transitionDuration'] ?? '300';
 $transition_easing       = $attributes['transitionEasing'] ?? 'ease-in-out';
 
 // Background effect attributes.
-$bg_parallax       = ! empty( $attributes['bgParallax'] );
-$bg_ken_burns      = ! empty( $attributes['bgKenBurns'] );
-$bg_video_attr     = $attributes['bgVideo'] ?? null;
-$bg_video_mobile   = $attributes['bgVideoMobile'] ?? null;
+$bg_parallax     = ! empty( $attributes['bgParallax'] );
+$bg_ken_burns    = ! empty( $attributes['bgKenBurns'] );
+$bg_video_attr   = $attributes['bgVideo'] ?? null;
+$bg_video_mobile = $attributes['bgVideoMobile'] ?? null;
+
+// Split-image bleed — removes border-radius and inner padding from the media column.
+$split_image_bleed = ! empty( $attributes['splitImageBleed'] );
+
+// Per-CTA hover colour overrides.
+$cta_primary_hover_bg       = $attributes['ctaPrimaryHoverBackground'] ?? '';
+$cta_primary_hover_colour   = $attributes['ctaPrimaryHoverColour'] ?? '';
+$cta_secondary_hover_bg     = $attributes['ctaSecondaryHoverBackground'] ?? '';
+$cta_secondary_hover_colour = $attributes['ctaSecondaryHoverColour'] ?? '';
 
 $is_split        = 'split' === $variant;
 $is_video        = 'video' === $variant;
@@ -77,6 +86,21 @@ if ( $hover_text_colour ) {
 }
 if ( $hover_border_colour ) {
 	$styles[] = '--sgs-hover-border:' . sgs_colour_value( $hover_border_colour );
+}
+
+// Per-CTA hover overrides — written as CSS custom properties so the CSS rule can
+// reference them without needing a unique selector per instance.
+if ( $cta_primary_hover_bg ) {
+	$styles[] = '--sgs-cta-pri-hover-bg:' . sgs_colour_value( $cta_primary_hover_bg );
+}
+if ( $cta_primary_hover_colour ) {
+	$styles[] = '--sgs-cta-pri-hover-colour:' . sgs_colour_value( $cta_primary_hover_colour );
+}
+if ( $cta_secondary_hover_bg ) {
+	$styles[] = '--sgs-cta-sec-hover-bg:' . sgs_colour_value( $cta_secondary_hover_bg );
+}
+if ( $cta_secondary_hover_colour ) {
+	$styles[] = '--sgs-cta-sec-hover-colour:' . sgs_colour_value( $cta_secondary_hover_colour );
 }
 
 // Standard variant: use <img> instead of CSS background-image so the browser can
@@ -116,6 +140,9 @@ if ( $bg_parallax ) {
 if ( $bg_ken_burns ) {
 	$classes[] = 'sgs-hero--ken-burns';
 }
+if ( $split_image_bleed ) {
+	$classes[] = 'sgs-hero--split-bleed';
+}
 
 $wrapper_attributes = get_block_wrapper_attributes(
 	array(
@@ -127,7 +154,7 @@ $wrapper_attributes = get_block_wrapper_attributes(
 // Build video background.
 // bgVideo / bgVideoMobile override the background image on their respective viewports.
 // These attributes work independently of the 'video' variant — any variant can have a video bg.
-$video_html = '';
+$video_html        = '';
 $has_variant_video = $is_video && ! empty( $bg_video['url'] );
 $has_attr_video    = ! empty( $bg_video_attr['url'] );
 
@@ -162,7 +189,7 @@ if ( $has_variant_video || $has_attr_video ) {
 $bg_img_html = '';
 if ( $has_standard_bg_image ) {
 	static $sgs_hero_count = 0;
-	$sgs_hero_count++;
+	++$sgs_hero_count;
 
 	$img_id         = ! empty( $bg_image['id'] ) ? absint( $bg_image['id'] ) : 0;
 	$fetch_priority = 1 === $sgs_hero_count ? 'high' : 'auto';
@@ -205,7 +232,7 @@ if ( ( ! $is_split && ! empty( $bg_image['url'] ) ) || $is_video || $is_svg_anim
 		$overlay_colour,
 		esc_attr( $overlay_opacity / 100 )
 	);
-	$overlay_html = '<span class="sgs-hero__overlay" style="' . $overlay_style . '" aria-hidden="true"></span>';
+	$overlay_html  = '<span class="sgs-hero__overlay" style="' . $overlay_style . '" aria-hidden="true"></span>';
 }
 
 // Build CTA buttons.
@@ -221,7 +248,7 @@ if ( $cta_primary_text || $cta_secondary_text ) {
 			$cta_pri_styles[] = 'background-color:' . sgs_colour_value( $cta_primary_bg );
 		}
 		$cta_pri_style_attr = $cta_pri_styles ? ' style="' . implode( ';', $cta_pri_styles ) . '"' : '';
-		$ctas_html .= sprintf(
+		$ctas_html         .= sprintf(
 			'<a href="%s" class="sgs-hero__cta sgs-hero__cta--%s"%s>%s</a>',
 			esc_url( $cta_primary_url ),
 			esc_attr( $cta_primary_style ),
@@ -238,7 +265,7 @@ if ( $cta_primary_text || $cta_secondary_text ) {
 			$cta_sec_styles[] = 'background-color:' . sgs_colour_value( $cta_secondary_bg );
 		}
 		$cta_sec_style_attr = $cta_sec_styles ? ' style="' . implode( ';', $cta_sec_styles ) . '"' : '';
-		$ctas_html .= sprintf(
+		$ctas_html         .= sprintf(
 			'<a href="%s" class="sgs-hero__cta sgs-hero__cta--%s"%s>%s</a>',
 			esc_url( $cta_secondary_url ),
 			esc_attr( $cta_secondary_style ),
@@ -279,22 +306,21 @@ if ( ! empty( $badges ) ) {
 // Build content area.
 $content_html = '<div class="sgs-hero__content">';
 if ( $headline ) {
-	$h_classes = array('sgs-hero__headline');
-	$letter_spacing     = $attributes['letterSpacing'] ?? '';
-	$text_transform     = $attributes['textTransform'] ?? '';
+	$h_classes          = array( 'sgs-hero__headline' );
 	$text_align_mobile  = $attributes['textAlignMobile'] ?? '';
 	$text_align_tablet  = $attributes['textAlignTablet'] ?? '';
 	$text_align_desktop = $attributes['textAlignDesktop'] ?? '';
 
-	if ( $text_align_mobile ) { $h_classes[] = 'sgs-text-align-m-' . $text_align_mobile; }
-	if ( $text_align_tablet ) { $h_classes[] = 'sgs-text-align-t-' . $text_align_tablet; }
-	if ( $text_align_desktop ) { $h_classes[] = 'sgs-text-align-d-' . $text_align_desktop; }
+	if ( $text_align_mobile ) {
+		$h_classes[] = 'sgs-text-align-m-' . $text_align_mobile; }
+	if ( $text_align_tablet ) {
+		$h_classes[] = 'sgs-text-align-t-' . $text_align_tablet; }
+	if ( $text_align_desktop ) {
+		$h_classes[] = 'sgs-text-align-d-' . $text_align_desktop; }
 
 	$h_styles = array();
-	if ( $headline_colour ) { $h_styles[] = 'color:' . sgs_colour_value( $headline_colour ); }
-	if ( $letter_spacing ) { $h_styles[] = 'letter-spacing:' . esc_attr($letter_spacing); }
-	if ( $text_transform ) { $h_styles[] = 'text-transform:' . esc_attr($text_transform); }
-
+	if ( $headline_colour ) {
+		$h_styles[] = 'color:' . sgs_colour_value( $headline_colour ); }
 	$headline_style_attr = $h_styles ? ' style="' . implode( ';', $h_styles ) . '"' : '';
 	$headline_class_attr = ' class="' . esc_attr( implode( ' ', $h_classes ) ) . '"';
 
@@ -309,7 +335,7 @@ if ( $sub_headline ) {
 		$sub_styles[] = 'font-size:' . sgs_font_size_value( $sub_headline_font_size );
 	}
 	$sub_style_attr = $sub_styles ? ' style="' . implode( ';', $sub_styles ) . '"' : '';
-	$content_html .= '<p class="sgs-hero__subheadline"' . $sub_style_attr . '>' . wp_kses_post( $sub_headline ) . '</p>';
+	$content_html  .= '<p class="sgs-hero__subheadline"' . $sub_style_attr . '>' . wp_kses_post( $sub_headline ) . '</p>';
 }
 $content_html .= $ctas_html;
 $content_html .= '</div>';
@@ -319,12 +345,12 @@ $media_html = '';
 if ( $is_split && ! empty( $split_image['url'] ) ) {
 	// H13/H14: use responsive image helper for srcset + explicit dimensions.
 	$img_id    = ! empty( $split_image['id'] ) ? absint( $split_image['id'] ) : 0;
-	$img_attrs = [
+	$img_attrs = array(
 		'class'         => 'sgs-hero__split-image',
 		'loading'       => 'eager',
 		'decoding'      => 'async',
 		'fetchpriority' => 'high',
-	];
+	);
 	if ( ! empty( $split_image['width'] ) ) {
 		$img_attrs['width'] = absint( $split_image['width'] );
 	}
@@ -343,13 +369,20 @@ if ( $is_split && ! empty( $split_image['url'] ) ) {
 		if ( $resolve_id > 0 ) {
 			$src_data = wp_get_attachment_image_src( $resolve_id, 'large' );
 			if ( $src_data && ! empty( $src_data[1] ) && ! empty( $src_data[2] ) ) {
-				$img_attrs['width']  = $img_attrs['width']  ?? (int) $src_data[1];
+				$img_attrs['width']  = $img_attrs['width'] ?? (int) $src_data[1];
 				$img_attrs['height'] = $img_attrs['height'] ?? (int) $src_data[2];
 			}
 		}
 	}
 
-	$media_html = '<div class="sgs-hero__media">';
+	$media_class = 'sgs-hero__media';
+	if ( $split_image_bleed ) {
+		$media_class .= ' sgs-hero__media--bleed';
+		// Also remove the border-radius on the image itself.
+		$img_attrs['class'] .= ' sgs-hero__split-image--bleed';
+	}
+
+	$media_html  = '<div class="' . esc_attr( $media_class ) . '">';
 	$media_html .= sgs_responsive_image(
 		$img_id,
 		$split_image['url'],
@@ -363,10 +396,11 @@ if ( $is_split && ! empty( $split_image['url'] ) ) {
 
 // Output responsive CSS if needed.
 if ( $responsive_css ) {
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $responsive_css built from esc_attr() values only.
 	printf( '<style id="%s">%s</style>', esc_attr( $uid ), $responsive_css );
 }
 
-// Output.
+// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- $wrapper_attributes from WP core; all HTML strings built with esc_url/esc_html/esc_attr above.
 printf(
 	'<section %s>%s%s%s%s%s%s%s</section>',
 	$wrapper_attributes,
@@ -378,3 +412,4 @@ printf(
 	$media_html,
 	! $is_split ? $badges_html : ''
 );
+// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
