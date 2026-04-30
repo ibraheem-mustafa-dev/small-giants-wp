@@ -5,7 +5,7 @@
 > `plugins/sgs-blocks/scripts/generate-block-reference.py`.
 > Refresh: `python plugins/sgs-blocks/scripts/generate-block-reference.py`.
 
-**Last generated:** 2026-04-30T19:45:15
+**Last generated:** 2026-04-30T20:04:11
 
 **For architectural patterns, customisation standards, and build status, see [`02-SGS-BLOCKS.md`](02-SGS-BLOCKS.md).** This file is the per-block attribute/supports/selector reference only.
 
@@ -139,7 +139,7 @@ Page hero section with headline, sub-headline, CTAs, and background image.
 
 | Element | Selector |
 |---------|----------|
-| `root` | `.sgs-hero` |
+| `root` | `.wp-block-sgs-hero` |
 | `typography` | `.sgs-hero__headline` |
 
 ---
@@ -313,7 +313,7 @@ Flexible image and content grid with overlay and card variants.
 
 | Element | Selector |
 |---------|----------|
-| `root` | `.sgs-card-grid` |
+| `root` | `.wp-block-sgs-card-grid` |
 | `typography` | `.sgs-card-grid__title` |
 
 ---
@@ -437,7 +437,7 @@ Call-to-action section with headline, supporting text, and buttons.
 
 | Element | Selector |
 |---------|----------|
-| `root` | `.sgs-cta-section` |
+| `root` | `.wp-block-sgs-cta-section` |
 | `typography` | `.sgs-cta-section__headline` |
 
 ---
@@ -578,7 +578,7 @@ Display Google Business Profile reviews with aggregate ratings and schema.org ma
 | `variant` | `string (enum)` | `"grid"` | — |
 
 **Supports:**
-- `align` (["wide", "full"]), `anchor`, `className`, `html` (false), `interactivity`
+- `align` (["wide", "full"]), `anchor`, `className`, `color` ({"background": true, "text"...), `html` (false), `interactivity`
 
 **Selectors:**
 
@@ -729,7 +729,7 @@ List with custom icons or checkmarks per item.
 
 | Element | Selector |
 |---------|----------|
-| `root` | `.sgs-icon-list` |
+| `root` | `.wp-block-sgs-icon-list` |
 | `typography` | `.sgs-icon-list__text` |
 
 ---
@@ -899,7 +899,7 @@ Display posts in grid, list, masonry, or carousel layouts with AJAX filtering an
 
 | Element | Selector |
 |---------|----------|
-| `root` | `.sgs-post-grid` |
+| `root` | `.wp-block-sgs-post-grid` |
 | `typography` | `.sgs-post-grid__title` |
 
 ---
@@ -1235,7 +1235,7 @@ Carousel of testimonials with CSS scroll-snap and optional autoplay.
 
 | Element | Selector |
 |---------|----------|
-| `root` | `.sgs-testimonial-slider` |
+| `root` | `.wp-block-sgs-testimonial-slider` |
 | `typography` | `.sgs-testimonial-slider__quote` |
 
 ---
@@ -1267,7 +1267,7 @@ Icon-in-circle badge row for trust signals. Supports a per-badge pending flag to
 
 | Element | Selector |
 |---------|----------|
-| `root` | `.sgs-trust-badges` |
+| `root` | `.wp-block-sgs-trust-badges` |
 | `typography` | `.sgs-trust-badges__label` |
 
 ---
@@ -1858,10 +1858,11 @@ _SGS Announcement Bar_
 
 Dismissible top-of-page banner for announcements, promotions, and time-sensitive messages with countdown timer and message rotation.
 
-**Attributes** (24):
+**Attributes** (26):
 
 | Name | Type | Default | Responsive |
 |------|------|---------|------------|
+| `backgroundColor` | `string` | `—` | — |
 | `backgroundColour` | `string` | `"primary-dark"` | — |
 | `closeBehaviour` | `string (enum)` | `"session"` | — |
 | `cookieDays` | `number` | `7` | — |
@@ -1884,11 +1885,12 @@ Dismissible top-of-page banner for announcements, promotions, and time-sensitive
 | `startDate` | `string` | `""` | — |
 | `sticky` | `boolean` | `true` | — |
 | `targetDate` | `string` | `""` | — |
+| `textColor` | `string` | `—` | — |
 | `textColour` | `string` | `"text-inverse"` | — |
 | `variant` | `string (enum)` | `"standard"` | — |
 
 **Supports:**
-- `align` (false), `anchor`, `className`, `customClassName` (false), `html` (false)
+- `align` (false), `anchor`, `className`, `color` ({"background": true, "text"...), `customClassName` (false), `html` (false)
 
 **Selectors:**
 
@@ -1918,7 +1920,7 @@ Floating button that appears when the user scrolls down, smoothly returning them
 | `size` | `number` | `48` | — |
 
 **Supports:**
-- `align` (false), `anchor`, `html` (false), `multiple` (false)
+- `align` (false), `anchor`, `color` ({"background": true, "text"...), `html` (false), `multiple` (false)
 
 ---
 
@@ -1975,7 +1977,7 @@ Block-based mega menu with template part dropdowns. Works inside Navigation bloc
 | `highlight` | `boolean` | `false` | — |
 | `icon` | `string` | `"chevron-down"` | — |
 | `iconPosition` | `string` | `"after"` | — |
-| `label` | `string` | `—` | — |
+| `label` | `string` | `""` | — |
 | `linkColour` | `string` | `"text"` | — |
 | `linkHoverBgColour` | `string` | `"surface-alt"` | — |
 | `linkHoverColour` | `string` | `"primary"` | — |
@@ -1989,7 +1991,7 @@ Block-based mega menu with template part dropdowns. Works inside Navigation bloc
 | `url` | `string` | `—` | — |
 
 **Supports:**
-- `align` (false), `anchor` (false), `html` (false), `interactivity`, `reusable` (false)
+- `align` (false), `anchor` (false), `color` ({"background": true, "text"...), `html` (false), `interactivity`, `reusable` (false)
 
 **Selectors:**
 
@@ -2152,7 +2154,7 @@ Displays a reading-progress bar and/or countdown at the top or bottom of the vie
 | `wpm` | `number` | `225` | — |
 
 **Supports:**
-- `align` (false), `anchor`, `customClassName` (false), `html` (false), `multiple` (false)
+- `align` (false), `anchor`, `color` ({"background": true, "text"...), `customClassName` (false), `html` (false), `multiple` (false)
 
 ---
 
@@ -2213,4 +2215,4 @@ Tabbed content with horizontal or vertical layout, full ARIA support, and deep l
 - **Total blocks:** 59
 - **Dynamic (render.php):** 50
 - **Static (save.js):** 9
-- **Total attributes:** 941
+- **Total attributes:** 943
