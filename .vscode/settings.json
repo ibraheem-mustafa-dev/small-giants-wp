@@ -5,10 +5,17 @@
   },
 
   // ── PHP / Intelephense ────────────────────────────────────────────────────
-  // Include WordPress built-in stubs so Intelephense resolves all WP global
-  // functions (add_filter, is_admin, wp_date, etc.) without false P1010 errors.
-  // This list = Intelephense defaults + "wordpress".
+  // WordPress + WP-CLI symbol resolution for Intelephense.
+  // Strategy: project-level stubs in vendor/php-stubs/ override Intelephense's
+  // bundled "wordpress" stub. Bundled stubs lag behind WP core (e.g. miss
+  // get_block_wrapper_attributes, wp_unique_id, modern block-editor APIs).
+  // Composer-installed stubs match WP 6.9.1 (same as palestine-lives.org).
+  // Run `php composer.phar update` periodically to refresh.
   "intelephense.environment.phpVersion": "8.2.0",
+  "intelephense.environment.includePaths": [
+    "vendor/php-stubs/wordpress-stubs",
+    "vendor/php-stubs/wp-cli-stubs"
+  ],
   "intelephense.stubs": [
     "apache",
     "bcmath",
