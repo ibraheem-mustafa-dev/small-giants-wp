@@ -1,73 +1,79 @@
 recommended_model: sonnet
-session_tag: small-giants-wp-2026-04-30-phase1.5d-triage-execution
+session_tag: small-giants-wp-2026-04-30-phase2-prep
 
-You are a senior systems architect with WordPress framework, sandbox/preview tooling, and lifecycle pipeline expertise. This session closes Phase 1.5 — sandbox-preview gate (P1.5e) plus Phase 2 phase-plan (P1.5f).
+You are a senior tooling architect for the SGS lifecycle stack. You ship measured improvements to skills, agents, and pipelines under a strict quality-gate workflow (skillscore + gap-analysis + Stage QC peer-review). Phase 2 (Rubrics Universe) is open — your job is to draft and confirm rubrics for 13 surviving skills + 50–60 surviving tools + 13 pipelines, all via `/rubric-writer` (single source of truth, built last session).
 
-Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-04-30-phase1.5d-triage-execution"`
+Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-04-30-phase2-prep"`
 
 ## Where You Are
 
-Plan: `.claude/plans/master-plan.md` §Phase 1.5
-Current phase: phase-1.5-tooling-triage (P1.5d complete, P1.5e+f remaining)
-Progress: 4/6 deliverables in Phase 1.5 complete (P1.5_0, P1.5a, P1.5b, P1.5c, P1.5d done; P1.5e + P1.5f remaining)
-Next task: P1.5e — verify GAP-3 first (`DB_ENGINE=mysql` in PHP-WASM), then build the sandbox blueprint
+Plan: `.claude/plans/phase-2-rubrics-universe.md` (v2)
+Current phase: Phase 2 — Rubrics Universe
+Progress: 0/22 steps complete (G1.5 closed previous session)
+Next task: Retry pending blub.db POST → re-grade `/gap-analysis` → Phase 2 Track 1 Batch 1
 
-Read CONVERSATION-HANDOFF.md and CLAUDE.md for full context, then work through these priorities:
+## First action — invoke `/autopilot` before anything else
+
+Then read in parallel:
+1. `.claude/state.md` — confirm `current_phase: phase-2-rubrics-universe`
+2. `.claude/plans/phase-2-rubrics-universe.md` Steps 1–4 (Track 1 Batch 1)
+3. `.claude/parking.md` — P-1 marked complete; G2.5 catalogue
+4. `~/.agents/skills/rubric-writer/SKILL.md` — the new single-source rubric skill
+5. `~/.claude/skills/gap-analysis/references/end-goal-rubric.md` — confirmed reference rubric
 
 ## Skills to Invoke
 
 | Skill | When to use |
 |-------|-------------|
-| `/brainstorming` | P1.5e flag/script architecture decisions; P1.5f phase ordering trade-offs |
-| `/gap-analysis` | Grade the sandbox gate end-to-end before declaring P1.5e complete; grade Phase 2 phase-plan |
-| `/lifecycle` | Start pipeline before any edits to `/verify-loop` SKILL.md or `/deploy-check` command |
-| `/research` | If Studio gotchas surface during P1.5e — auto-routes to right tier |
-| `/strategic-plan` | If P1.5e architecture branches (e.g. blueprint approach trade-offs) |
-| `/phase-planner` | P1.5f — drafts Phase 2 phase-plan from master plan §Phase 2 + toolkit doc |
-| `/sgs-wp-engine` | Studio blueprint construction — needs sgs-blocks + sgs-theme + active style variation |
-| `/verify-loop` | Modify Stage 1 to accept `--target-url` flag |
-| `/handoff` | Session end |
+| `/brainstorming` | Architectural / strategy decisions during phase ordering |
+| `/gap-analysis` | Grade outputs before delivery (now with mandatory Step 7.75 QC stage + certainty_calc) |
+| `/lifecycle` | Start pipeline before any skill/agent/pipeline edit |
+| `/research` | Auto-routes to research tier |
+| `/strategic-plan` | If Phase 2 plan needs restructuring beyond `/phase-planner` |
+| `/rubric-writer` | Draft v2 rubrics for any target — invoked by Phase 2 batches and `/gap-analysis` Step 4.5 |
+| `/handoff` | Session-end handoff write |
+| `/subagent-driven-development` | Parallel batch dispatch (rubric drafts via `/rubric-writer` per target) |
+| `/dispatching-parallel-agents` | Stage QC peer-review panel (Gemini Flash + 2 Sonnet personas) |
 
 ## MCP Servers & Tools
 
 | Tool | What to use it for |
 |------|-------------------|
-| `studio` CLI | P1.5e — sandbox creation, blueprint validation, preview URLs. AI manual at `.claude/specs/2026-04-29-wp-studio-ai-manual.md` |
-| `playwright` MCP | Smoke-test the sandbox preview URL against a real palestine-lives.org page |
-| `gh` CLI | If touching any published GitHub repo for the gate |
-| `python ~/.agents/skills/shared-references/sgs-skillscore.py validate <path>` | After every skill edit |
+| `python ~/.agents/skills/shared-references/sgs-skillscore.py validate <path>` | Skillscore on every skill edit; threshold 90% skill, 85% agent |
+| `python ~/.agents/skills/shared-references/dispatch-graph-validator.py` | Cross-skill reference validation |
+| `python ~/.claude/hooks/search.py "<query>"` | External research at gap-analysis Step 1.5 |
+| `~/.agents/skills/shared-references/optimisation-toolkit/certainty_calc.py` | Quantify reviewer agreement at Stage QC |
+| `curl -X POST http://localhost:5050/api/knowledge` | blub.db POST (retry pending payload first) |
 
 ## Agents to Delegate To
 
 | Agent | When |
 |-------|------|
-| `wp-sgs-developer` | If Studio blueprint construction needs SGS framework knowledge |
-| `test-and-explain` | After P1.5e smoke test — verify preview URL renders correctly |
-| `design-reviewer` | If sandbox preview shows visual rendering issues — multi-breakpoint check |
+| `wp-sgs-developer` | If Phase 2 work surfaces WP-specific gaps |
+| `research-pipeline` | Drafting rubrics for unfamiliar / specialist tools in P2.2b triage |
 
 ---
 
-## Task 1: P1.5e — Sandbox-preview gate
+## Task 1: Retry pending blub.db POST
 
-(a) **Verify GAP-3 first** (15 min): boot a Studio site with `defineWpConfigConsts` blueprint setting `DB_ENGINE=mysql`. If unsupported, soften master plan §1.5 Shift 2 wording. If supported, add working example to manual.
-(b) **Build the sandbox blueprint** at `~/.claude/skills/sgs-wp-engine/references/studio-blueprints/sgs-default.json`. Parameters: `clientSlug`, `phpVersion`, `dbEngine`.
-(c) **Write `studio-preview-up.ps1`** — blueprint + plugin/theme paths in, preview URL on stdout. Idempotent.
-(d) **Add `/verify-loop --target-url <url>` flag** at Stage 1. Use `/lifecycle` for the SKILL.md edit.
-(e) **Add `/deploy-check --studio-pass <url>` flag** — refuses deploy if Studio gate is missing or red.
-(f) **HARD GATE — smoke test end-to-end** on a real palestine-lives.org page snapshot. Save PASS to `.claude/reports/p1.5e-smoke/`.
+Read `~/.claude/pending-uploads/2026-04-30-gap-analysis-eval.json`. Retry curl POST to `http://localhost:5050/api/knowledge`. Delete the pending-uploads file on success.
 
-## Task 2: P1.5f — Phase 2 phase-plan
+## Task 2: Re-grade `/gap-analysis` against confirmed rubric
 
-Run `/phase-planner` against `.claude/plans/master-plan.md` §Phase 2 + `.claude/specs/2026-04-27-optimisation-toolkit-design.md` §5 + Phase 2a structural debt table. Output: `.claude/plans/phase-2-rubrics-universe.md` with per-skill estimates accommodating debt, and a P2 entry condition.
+All 7 SKILL.md edits + certainty_calc wiring + `/rubric-writer` delegation landed last session. Re-run `/gap-analysis` on `~/.claude/skills/gap-analysis/SKILL.md` — the new Step 7.75 QC stage runs (dogfooding the rule it embedded). Expected lift: C (3.03) → A range. Update evaluation-history with new grade.
 
-## Task 3: G1.5 phase exit
+## Task 3: Begin Phase 2 — Track 1 Batch 1
 
-When P1.5e + P1.5f both done: update state.md `current_phase: phase-2-rubrics-universe`, archive phase-1.5 plan to `-complete.md` if exists, run `/handoff`.
+Per `phase-2-rubrics-universe.md` Steps 2–4: dispatch 3 parallel Sonnet subagents via `/subagent-driven-development`. Each subagent invokes `/rubric-writer` for one target: `/capture-lesson`, `/qc`, `/phase-planner`. `/rubric-writer`'s Stage 4 Stage QC runs inside each invocation. Bean confirms each rubric in cross-turn pauses (Stage 5 HARD GATE — END THE TURN). After all 3 confirmed, dispatch optimiser passes (Step 4).
+
+Plan correction: 13 surviving (re-include `/interactivity-capture` which exists on disk).
 
 ## Guardrails
 
-- WordPress: WCAG 2.2 AA, UK English, no jQuery, <100KB CSS / <50KB JS
-- `git branch --show-current` before every commit (framework → main)
-- Lifecycle hook fires skillscore warnings on any agent/skill .md edit. Pre-existing structural debt is logged in optimisation-toolkit-design.md §Phase 2a — don't spiral on it. Fix only what your edit introduces.
-- ADHD Rule 13: P1.5e ~85 min, P1.5f ~30 min. Fit one session. If P1.5e spirals on Studio gotchas, park it and ship P1.5f first.
-- G1 milestone POST is `pending_upload: true` due to blub.db SQLite WAL lock. Pre-existing dashboard issue. Don't retry inline.
+- `git branch --show-current` before every commit — framework changes go to `main`
+- skillscore 90% threshold for skills, 85% for agents — fix before proceeding
+- Stage QC mandatory (Step 7.75 / `/rubric-writer` Stage 4) — never skip
+- C-grade calibration: C+ only when fix has real impact, not for cosmetic gaps
+- Cross-turn pause when presenting any draft — never score same-turn
+- `/rubric-writer` is the single source of truth — don't inline-draft rubrics in any skill
+- `wp eval` blocked by pre-tool hook — read wp-config.php directly

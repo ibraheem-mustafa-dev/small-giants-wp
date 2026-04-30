@@ -106,16 +106,21 @@ These depend on the tooling spec being finalised. Drafting and confirming the ru
 
 ---
 
-## Stage QC pattern (used in every rubric-draft step)
+## Rubric drafting — single-source orchestration via /rubric-writer
 
-After every rubric is drafted by `/skill-writer` (or its rubric-only mode), invoke a peer-review panel via `/dispatching-parallel-agents` BEFORE presenting to Bean for confirmation:
+**Built 2026-04-30** — every rubric-draft step in this plan calls `/rubric-writer` (`~/.agents/skills/rubric-writer/SKILL.md`) rather than dispatching an inline prompt template. This is the structural deduplication of rubric-drafting logic across `/gap-analysis` Step 4.5, `/skill-writer` Stage 2, and Phase 2 batches — one implementation, three callers, one Stage QC pattern, one cross-turn confirmation HARD GATE.
 
-- 1 × Gemini Flash — fast triangulation, breadth on framing-rule violations
-- 2 × Sonnet personas — practitioner perspective + skill-evaluation-framework perspective
-- Reviewers' job: critique against spec §2.3 end-result framing rule, anchor pair quality, weight balance, missing criteria, frontmatter completeness
-- Output: deduplicated findings list, surfaced inline to Bean BEFORE rubric is saved with `bean_signoff: confirmed`
+`/rubric-writer` runs internally:
+1. **Stage 1** — resolve target type (skill / agent / command / pipeline) and canonical save path
+2. **Stage 2** — read target source file(s)
+3. **Stage 3** — draft v2 rubric per spec §2.1 (frontmatter) + §2.2 (criteria + Never Do + optional Lens 6 Anchors) + §2.3 (world-state anchors)
+4. **Stage 4** — 3-reviewer Stage QC peer-review (1 Gemini Flash + 2 Sonnet personas) + `certainty_calc.score()` to quantify reviewer agreement
+5. **Stage 5** — present to Bean, **END THE TURN** (HARD GATE — no same-turn save)
+6. **Stage 6** — save on Bean's next-turn confirm with `bean_signoff: confirmed`
 
-Pattern rationale: today's seo-technical run validated this — 3 reviewers caught 6/12 anchors violating §2.3 plus 3 missing criteria that would have shipped without review. Cost: ~30s wall-clock per QC pass when run in parallel. ROI: avoids embedding bad rubrics that Phase 3 grades against.
+For Phase 2 batch dispatch: `/subagent-driven-development` invokes `/rubric-writer` per target. Stage QC's reviewer panel runs inside each `/rubric-writer` invocation, so the batch's rubrics each get reviewed without a separate batch-level QC.
+
+Pattern rationale: today's seo-technical run validated the Stage QC panel — 3 reviewers caught 6/12 anchors violating §2.3 plus 3 missing criteria that would have shipped without review. Cost: ~30s wall-clock per QC pass. ROI: avoids embedding bad rubrics that Phase 3 grades against.
 
 ---
 
@@ -155,16 +160,18 @@ Step 2 — Track 1 Batch 1: rubric drafts (3 skills, parallel)
   Deps:        Step 1 complete
   Marker:      (none)
   Time:        15 min wall-clock
-  Tooling:     /subagent-driven-development, Read, Write
-  On-Fail:     Subagent timeout → run inline for that skill
+  Tooling:     /subagent-driven-development → /rubric-writer (Stage QC + cross-turn pause built in)
+  On-Fail:     Subagent timeout → invoke /rubric-writer inline for that skill
   Prompt:      |
-    Draft a v2-format end-goal rubric for [SKILL_NAME] at [SKILL_PATH].
-    Read the existing SKILL.md and any existing rubric for context.
-    Output: <skill-dir>/references/end-goal-rubric.md.
-    Follow spec §2.1 (frontmatter), §2.2 (End-Goal Criteria + Never Do + Lens 6 Anchors), §2.3 (world-state anchors).
-    Anchors must describe world-state AFTER success/failure, NOT process steps.
-    Use bean_signoff: pending. Do NOT write confirmed — Bean confirms after QC.
-    Report: rubric path, criterion count, weight pool sum.
+    Invoke /rubric-writer with target = [SKILL_NAME] at [SKILL_PATH].
+    /rubric-writer handles:
+      - Stage 1: resolve canonical save path (<skill-dir>/references/end-goal-rubric.md for skills)
+      - Stage 2: read existing SKILL.md + any existing rubric
+      - Stage 3: draft v2-format rubric per spec §2.1–§2.3 (world-state anchors)
+      - Stage 4: 3-reviewer Stage QC + certainty_calc
+      - Stage 5: present to Bean — END THE TURN (HARD GATE)
+      - Stage 6: save with bean_signoff: confirmed on next-turn confirm
+    Report back: rubric path, criterion count, weight pool sum, certainty score, Stage QC findings count.
   Test:
     Happy:       All 3 rubrics present, ≥6 criteria each, world-state anchors
     Edge:        Existing rubric exists → enhance to v2 format, don't discard content
