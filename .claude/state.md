@@ -2,9 +2,9 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-current_phase: phase-1.5-tooling-triage
-current_step: "P1.5e COMPLETE 2026-05-01. Sandbox-preview gate shipped: sgs-default.json blueprint, studio-preview-up.ps1, /verify-loop --target-url flag (90%), /deploy-check --studio-pass skill (94%), smoke test PASS + GAP-3 resolved. P1.5f (Phase 2 phase-plan) remains — next session."
-last_updated: 2026-05-01
+current_phase: phase-2-rubrics-universe
+current_step: "G1.5 CLOSED 2026-04-30. P1.5f COMPLETE: Phase 2 phase-plan written at .claude/plans/phase-2-rubrics-universe.md (16 steps, 5 QA gates, G2 gate). Entry condition: triage signed off + kills executed + dispatch-graph-validator clean + sandbox-preview gate green. Task 2 (Cerebras model ID fix) and Task 3 (seo-technical structural debt via /lifecycle) remain this session."
+last_updated: 2026-04-30
 blockers: []
 # G1 milestone POST resolved 2026-04-30 — knowledge id 13284 (after SQLite WAL checkpoint cleared the lock).
 # CC memory sync to knowledge API also complete: 22/22 files posted.
