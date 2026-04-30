@@ -49,7 +49,7 @@
     }
   },
   "selectors": {
-    "root": ".sgs-cta-section",
+    "root": ".wp-block-sgs-cta-section",
     "typography": ".sgs-cta-section__headline"
   },
   "attributes": {
@@ -173,14 +173,6 @@
     "transitionEasing": {
       "type": "string",
       "default": "ease-in-out"
-    },
-    "letterSpacing": {
-      "type": "string",
-      "default": ""
-    },
-    "textTransform": {
-      "type": "string",
-      "default": ""
     },
     "textAlignMobile": {
       "type": "string",

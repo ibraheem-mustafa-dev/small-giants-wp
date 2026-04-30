@@ -39,7 +39,7 @@
     }
   },
   "selectors": {
-    "root": ".sgs-trust-badges",
+    "root": ".wp-block-sgs-trust-badges",
     "typography": ".sgs-trust-badges__label"
   },
   "attributes": {

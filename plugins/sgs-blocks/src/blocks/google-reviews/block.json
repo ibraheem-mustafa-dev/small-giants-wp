@@ -22,7 +22,12 @@
     "anchor": true,
     "className": true,
     "html": false,
-    "interactivity": true
+    "interactivity": true,
+    "color": {
+      "background": true,
+      "text": true,
+      "gradients": false
+    }
   },
   "selectors": {
     "root": ".wp-block-sgs-google-reviews"

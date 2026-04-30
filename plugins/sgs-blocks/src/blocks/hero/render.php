@@ -307,8 +307,6 @@ if ( ! empty( $badges ) ) {
 $content_html = '<div class="sgs-hero__content">';
 if ( $headline ) {
 	$h_classes          = array( 'sgs-hero__headline' );
-	$letter_spacing     = $attributes['letterSpacing'] ?? '';
-	$text_transform     = $attributes['textTransform'] ?? '';
 	$text_align_mobile  = $attributes['textAlignMobile'] ?? '';
 	$text_align_tablet  = $attributes['textAlignTablet'] ?? '';
 	$text_align_desktop = $attributes['textAlignDesktop'] ?? '';
@@ -323,11 +321,6 @@ if ( $headline ) {
 	$h_styles = array();
 	if ( $headline_colour ) {
 		$h_styles[] = 'color:' . sgs_colour_value( $headline_colour ); }
-	if ( $letter_spacing ) {
-		$h_styles[] = 'letter-spacing:' . esc_attr( $letter_spacing ); }
-	if ( $text_transform ) {
-		$h_styles[] = 'text-transform:' . esc_attr( $text_transform ); }
-
 	$headline_style_attr = $h_styles ? ' style="' . implode( ';', $h_styles ) . '"' : '';
 	$headline_class_attr = ' class="' . esc_attr( implode( ' ', $h_classes ) ) . '"';
 

@@ -49,7 +49,7 @@
     }
   },
   "selectors": {
-    "root": ".sgs-card-grid",
+    "root": ".wp-block-sgs-card-grid",
     "typography": ".sgs-card-grid__title"
   },
   "attributes": {

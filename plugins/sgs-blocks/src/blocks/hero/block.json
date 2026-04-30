@@ -48,7 +48,7 @@
     }
   },
   "selectors": {
-    "root": ".sgs-hero",
+    "root": ".wp-block-sgs-hero",
     "typography": ".sgs-hero__headline"
   },
   "attributes": {
@@ -189,14 +189,6 @@
       "type": "string",
       "default": "ease-in-out"
     },
-    "letterSpacing": {
-      "type": "string",
-      "default": ""
-    },
-    "textTransform": {
-      "type": "string",
-      "default": ""
-    },
     "textAlignMobile": {
       "type": "string",
       "default": ""
@@ -248,7 +240,7 @@
   "editorScript": "file:./index.js",
   "editorStyle": "file:./index.css",
   "style": "file:./style-index.css",
-  "viewScript": "file:./view.js",
+  "viewScriptModule": "file:./view.js",
   "example": {
     "attributes": {
       "variant": "standard",
