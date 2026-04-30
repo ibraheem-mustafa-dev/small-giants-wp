@@ -222,6 +222,26 @@
     },
     "bgVideoMobile": {
       "type": "object"
+    },
+    "splitImageBleed": {
+      "type": "boolean",
+      "default": false
+    },
+    "ctaPrimaryHoverBackground": {
+      "type": "string",
+      "default": ""
+    },
+    "ctaPrimaryHoverColour": {
+      "type": "string",
+      "default": ""
+    },
+    "ctaSecondaryHoverBackground": {
+      "type": "string",
+      "default": ""
+    },
+    "ctaSecondaryHoverColour": {
+      "type": "string",
+      "default": ""
     }
   },
   "render": "file:./render.php",

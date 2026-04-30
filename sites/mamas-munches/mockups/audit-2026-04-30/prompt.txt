@@ -1,0 +1,167 @@
+You are a senior product designer auditing a set of mockup screenshots for visual quality, brand alignment, and pre-client-sign-off readiness.
+
+CLIENT CONTEXT
+==============
+Mama's Munches is a UK postpartum lactation cookie brand. Owner: Zainab. Audience:
+  - Primary: breastfeeding mums browsing on phones at 10pm after settling babies
+  - Secondary: gifting buyers (baby showers, new-mum gifts, NHS midwife referrals)
+
+BRAND PRINCIPLES (constraints, not aspirations)
+================================================
+1. Trust before conversion — story, origin, ingredients, trust signals come before CTAs
+2. Mum-honest voice — never imply physiological supply effects. Canonical line: "We make nourishing food, with proper ingredients including some that have been used in postpartum recipes for centuries. Many mums tell us it helps. We won't promise medical results."
+3. Universal-UK brand — no Pakistani/Indian theming on the website. Halal cert is a quiet quality signal, not a cultural badge.
+4. Mobile-first — 375px is the primary design surface
+5. Premium-approachable — generous whitespace, real product photography, warm typography. Not corporate. Not discount.
+
+PALETTE
+=======
+  --primary       #E68A95  coral pink — heading text, CTAs, active states
+  --primary-dark  #C56A7A  hover/pressed
+  --surface-pink  #F5C2C8  hero band, feature backgrounds
+  --surface-cream #FBF3DC  page background
+  --surface-alt   #FFF9F0  alternate sections
+  --accent        #F5D050  warm yellow — energy moments, star ratings
+  --text          #3A2E26  choc-chip charcoal — body copy
+  --text-muted    #6B5C50  secondary copy
+  --border        #E8D5C0  warm beige
+
+TYPOGRAPHY
+==========
+  Headings: Fraunces (variable serif, warm, optical-size)
+  Body:     Inter (sans, 400-600 weights)
+  H1 desktop: 56px / mobile: 36px, weight 700
+  H2 desktop: 40px / mobile: 28px, weight 600
+  Body:       18px / 16px, weight 400
+
+PAGES BEING AUDITED
+====================
+1. Homepage @ 375px  (mobile)
+2. Homepage @ 768px  (tablet)
+3. Homepage @ 1440px (desktop)
+4. Product page @ 375px
+5. Product page @ 1440px
+
+HOMEPAGE SECTION ORDER (per spec)
+==================================
+1. Hero (full-bleed photo + headline + subhead + 2 CTAs)
+2. Trust signals bar (4 badges: Handmade in Birmingham / Registered Food Business / Free UK Delivery £35+ / Loved by Breastfeeding Mums)
+3. Featured product (Zookies + Trial Pack £5)
+4. Brand story (Zainab founder text + Halimahs photo)
+5. Ingredient education (Oats / Brewer's Yeast / Flaxseed / Fenugreek 4-grid)
+6. Gift section (New Baby Gift Box £15 + 40-Day Care Bundle £42)
+7. Social proof (Trustpilot widget + 3 testimonials)
+8. Footer (3-column: brand / shop / legal)
+
+PRODUCT PAGE
+=============
+- Photo gallery (main + 4 thumbs)
+- Product info: name + 5-star rating + description
+- Variant pills: Pack size (8/12/20/40 with "Best value" on 40-pack), Flavour (Classic Oat/Chocolate), Topping (Choc Chip/White Choc/None), Dietary (Regular/Vegan)
+- Vegan disables White Choc topping
+- Price block (£10.00 default, updates on pack click)
+- Add to Cart CTA
+- Trial Pack upsell link
+- Trust micro-signals (4 inline)
+- Ingredient education (4-grid)
+- Allergen block (FSA-compliant: bold allergens, coral border)
+- 3 testimonial cards
+- Condensed footer
+
+WHAT TO ASSESS (rank in this order)
+====================================
+
+A. VISUAL HIERARCHY
+   - Does the hero earn the user's attention before the CTAs?
+   - Is the eye guided naturally section-to-section?
+   - Are H1 / H2 / H3 weights and sizes giving correct emphasis?
+   - Any section that fights for attention with another?
+
+B. SPACING + RHYTHM
+   - Generous whitespace as spec'd? Or feels cramped?
+   - Section padding consistent? Vertical rhythm even?
+   - Card padding consistent across product cards / gift cards / ingredient cards / testimonials?
+
+C. PHOTO CROPS + TREATMENT
+   - Hero photos — composition, focal point, do they read as "fresh-baked, handmade"?
+   - Product card photos — do they sell the product?
+   - Brand story photo — does it earn trust?
+   - Any photo that looks awkward, cropped wrong, or off-brand?
+   - The hero on desktop shows a gift-wrapped basket with a card. Does this read as "fresh-baked cookies" or "gift delivery"?
+
+D. TYPOGRAPHIC WEIGHT + COLOUR
+   - Are font sizes correctly hierarchical?
+   - Any text that feels too thin / too heavy for its role?
+   - Coral text on cream — flag any normal text that looks low-contrast even if technically passing
+   - Number / price typography — does it feel "premium-approachable" not "discount"?
+
+E. BRAND ALIGNMENT
+   - Premium-approachable feel? Or veering corporate / discount / template?
+   - Universal-UK — any unintended cultural theming?
+   - Mum-honest voice — any copy that feels too clinical, too clever, or implies medical claims?
+   - Gift section + Send to Ward — does the gifting positioning come through?
+
+F. WHAT LOOKS "OFF"
+   - Any element that feels like a beta build (placeholder text, awkward buttons, weird shadows, mis-aligned grids)
+   - Any cross-page inconsistency between homepage and product page
+   - Anything a senior designer would flag in a hand-off review
+
+KNOWN ISSUES (don't re-flag, but check the fixes look right)
+=============================================================
+- Logo image embeds the OLD non-compliant tagline "BOOST YOUR MILK, BITE BY BITE" — flag if visible in screenshots and confirm whether it's legible enough to need urgent replacement before launch
+- WCAG contrast was just remediated (CTAs were previously white-on-coral, now dark-on-coral). If the buttons look "less punchy" than expected, that's the trade-off — flag it but understand the constraint
+
+OUTPUT FORMAT (write to file)
+==============================
+Write a markdown audit to: c:/Users/Bean/Projects/small-giants-wp/sites/mamas-munches/mockups/audit-2026-04-30/audit.md
+
+Structure:
+  # Mama's Munches Mockup Visual Audit — 2026-04-30
+
+  **Model:** gemini-3.1-pro-preview
+  **Screenshots:** 5 (homepage 375/768/1440, product 375/1440)
+  **Source:** Static mockup files at sites/mamas-munches/mockups/
+
+  ## Per-page findings
+
+  ### Homepage @ 375px
+  **Summary:** [one sentence overall impression]
+  **Strengths:** [3 bullets]
+  **Polish items:** [3 bullets, ranked by impact]
+  **One concern:** [single most important spec-fidelity concern]
+
+  [...repeat for each of the 5 viewports...]
+
+  ## Cross-cutting audit
+
+  ### Brand alignment
+  ### Visual hierarchy across pages
+  ### Spacing rhythm
+  ### Photography assessment
+  ### Typographic system
+  ### Mum-honest voice (reading copy from screenshots)
+  ### What looks "off" (cross-cutting)
+
+  ## Final verdict
+
+  **Grade:** [S / A / B / C / D]
+
+  ### Top 10 polish items, ranked by impact
+  1. ...
+
+  ### Three things to preserve
+  1. ...
+
+  ### Sign-off recommendation
+  [Ready / Ready with caveats / Hold for fixes — and why]
+
+UK SPELLING THROUGHOUT. NO EM DASHES. Real, opinionated, senior-designer voice. This is going to a client (Bean, who is launching the brand for his sister Zainab). He needs to know what he's about to show her.
+
+Read all 5 images at:
+  c:/Users/Bean/Projects/small-giants-wp/sites/mamas-munches/mockups/screenshots/homepage-375-v2.png
+  c:/Users/Bean/Projects/small-giants-wp/sites/mamas-munches/mockups/screenshots/homepage-768-v2.png
+  c:/Users/Bean/Projects/small-giants-wp/sites/mamas-munches/mockups/screenshots/homepage-1440-v2.png
+  c:/Users/Bean/Projects/small-giants-wp/sites/mamas-munches/mockups/screenshots/product-375-v2.png
+  c:/Users/Bean/Projects/small-giants-wp/sites/mamas-munches/mockups/screenshots/product-1440-v2.png
+
+Then write the full audit to the path specified above using write_file.

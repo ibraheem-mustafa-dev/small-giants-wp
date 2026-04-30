@@ -1,0 +1,97 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "sgs/trust-badges",
+  "version": "0.1.0",
+  "title": "SGS Trust Badges",
+  "category": "sgs-content",
+  "description": "Icon-in-circle badge row for trust signals. Supports a per-badge pending flag to hide placeholder items until they are ready to display.",
+  "keywords": [
+    "trust",
+    "badges",
+    "icons",
+    "certifications",
+    "features"
+  ],
+  "textdomain": "sgs-blocks",
+  "icon": "awards",
+  "supports": {
+    "align": [
+      "wide",
+      "full"
+    ],
+    "anchor": true,
+    "html": false,
+    "color": {
+      "background": true,
+      "text": false,
+      "gradients": false
+    },
+    "spacing": {
+      "margin": true,
+      "padding": true
+    },
+    "__experimentalBorder": {
+      "radius": true,
+      "width": false,
+      "color": false,
+      "style": false
+    }
+  },
+  "selectors": {
+    "root": ".sgs-trust-badges",
+    "typography": ".sgs-trust-badges__label"
+  },
+  "attributes": {
+    "items": {
+      "type": "array",
+      "default": [
+        { "icon": "home", "label": "Handmade in Birmingham", "pending": false },
+        { "icon": "check", "label": "Registered Food Business", "pending": false },
+        { "icon": "truck", "label": "Free UK Delivery Over £35", "pending": false },
+        { "icon": "star", "label": "Loved by Breastfeeding Mums", "pending": false }
+      ]
+    },
+    "iconCircleSize": {
+      "type": "number",
+      "default": 44
+    },
+    "iconCircleBackground": {
+      "type": "string",
+      "default": "surface"
+    },
+    "iconColour": {
+      "type": "string",
+      "default": "primary-dark"
+    },
+    "textColour": {
+      "type": "string",
+      "default": "text"
+    },
+    "columns": {
+      "type": "number",
+      "default": 4
+    },
+    "gap": {
+      "type": "string",
+      "default": "20"
+    },
+    "showPendingInEditor": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "render": "file:./render.php",
+  "editorScript": "file:./index.js",
+  "style": "file:./style-index.css",
+  "example": {
+    "attributes": {
+      "items": [
+        { "icon": "home", "label": "Handmade in Birmingham", "pending": false },
+        { "icon": "check", "label": "Registered Food Business", "pending": false },
+        { "icon": "truck", "label": "Free UK Delivery Over £35", "pending": false },
+        { "icon": "star", "label": "Loved by Breastfeeding Mums", "pending": false }
+      ]
+    }
+  }
+}

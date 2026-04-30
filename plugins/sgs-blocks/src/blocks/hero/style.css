@@ -271,6 +271,52 @@
 	border-radius: var(--wp--custom--border-radius--large, 16px);
 }
 
+/* ── Split image bleed modifier ──
+ * When splitImageBleed is true the media column fills flush to the container
+ * edge — no padding, no border-radius on the image. The block-level padding
+ * is removed only on the media side by using a negative margin trick so the
+ * content column retains its breathing room. */
+.sgs-hero--split-bleed {
+	padding-right: 0;
+}
+
+.sgs-hero--split-bleed .sgs-hero__media--bleed {
+	margin-right: calc( -1 * var(--wp--preset--spacing--40, 2rem) );
+	max-width: calc(50% + var(--wp--preset--spacing--40, 2rem));
+}
+
+.sgs-hero__split-image--bleed {
+	border-radius: 0;
+	max-height: none;
+	height: 100%;
+	aspect-ratio: auto;
+}
+
+/* ── Per-CTA hover overrides ──
+ * When ctaPrimaryHoverBackground / ctaPrimaryHoverColour are set by the editor
+ * they are written as CSS custom properties on the block wrapper. These rules
+ * consume those properties to override the default hover state. The
+ * [style*="--sgs-cta-pri-hover-bg"] guard means the rule only activates when
+ * the attribute has actually been set — zero cost on blocks that don't use it. */
+.sgs-hero[style*="--sgs-cta-pri-hover-bg"] .sgs-hero__cta-primary:hover,
+.sgs-hero[style*="--sgs-cta-pri-hover-bg"] .sgs-hero__cta--accent:hover,
+.sgs-hero[style*="--sgs-cta-pri-hover-bg"] .sgs-hero__cta--primary:hover {
+	background-color: var(--sgs-cta-pri-hover-bg) !important;
+	color: var(--sgs-cta-pri-hover-colour, inherit) !important;
+	border-color: var(--sgs-cta-pri-hover-bg) !important;
+	box-shadow: none !important;
+}
+
+.sgs-hero[style*="--sgs-cta-sec-hover-bg"] .sgs-hero__cta-secondary:hover,
+.sgs-hero[style*="--sgs-cta-sec-hover-bg"] .sgs-hero__cta--outline:hover,
+.sgs-hero[style*="--sgs-cta-sec-hover-bg"] .sgs-hero__cta--custom:hover {
+	background-color: var(--sgs-cta-sec-hover-bg) !important;
+	color: var(--sgs-cta-sec-hover-colour, inherit) !important;
+	border-color: var(--sgs-cta-sec-hover-bg) !important;
+	box-shadow: none !important;
+	filter: none !important;
+}
+
 /* Badges — container */
 .sgs-hero__badges {
 	position: absolute;

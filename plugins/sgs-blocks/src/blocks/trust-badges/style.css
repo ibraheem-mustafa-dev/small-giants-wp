@@ -1,0 +1,83 @@
+/* ===== SGS Trust Badges — Frontend styles ===== */
+
+.sgs-trust-badges {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: var(--sgs-trust-badges-gap, var(--wp--preset--spacing--20));
+	box-sizing: border-box;
+}
+
+/* Hide pending items on the frontend — `hidden` attribute does this natively,
+   but we belt-and-brace with CSS in case a browser or plugin strips the attribute. */
+.sgs-trust-badges__badge[hidden],
+.sgs-trust-badges__badge[data-pending="true"] {
+	display: none;
+}
+
+.sgs-trust-badges__badge {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+/* Icon circle */
+.sgs-trust-badges__circle {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	width: var(--sgs-trust-badge-circle-size, 44px);
+	height: var(--sgs-trust-badge-circle-size, 44px);
+	border-radius: 50%;
+	background-color: var(--sgs-trust-badge-circle-bg, var(--wp--preset--color--surface, #ffffff));
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.sgs-trust-badges__circle svg {
+	width: calc(var(--sgs-trust-badge-circle-size, 44px) * 0.45);
+	height: calc(var(--sgs-trust-badge-circle-size, 44px) * 0.45);
+	color: var(--sgs-trust-badge-icon-colour, var(--wp--preset--color--primary-dark, #0A5B5D));
+	stroke: currentColor;
+	stroke-width: 1.8;
+	fill: none;
+	display: block;
+}
+
+/* Label */
+.sgs-trust-badges__label {
+	font-size: clamp(0.75rem, 1.2vw, 0.875rem);
+	font-weight: 500;
+	line-height: 1.35;
+	color: var(--sgs-trust-badge-text-colour, var(--wp--preset--color--text, #1E1E1E));
+}
+
+/* ── Responsive breakpoints ── */
+
+/* 4-column at 600px+ */
+@media (min-width: 600px) {
+	.sgs-trust-badges {
+		grid-template-columns: repeat(4, 1fr);
+	}
+}
+
+/* Respect editor `columns` attribute — override via CSS var on the element */
+@media (min-width: 600px) {
+	.sgs-trust-badges[data-columns="2"] { grid-template-columns: repeat(2, 1fr); }
+	.sgs-trust-badges[data-columns="3"] { grid-template-columns: repeat(3, 1fr); }
+	.sgs-trust-badges[data-columns="5"] { grid-template-columns: repeat(5, 1fr); }
+	.sgs-trust-badges[data-columns="6"] { grid-template-columns: repeat(6, 1fr); }
+}
+
+/* Label size bump at 1024px */
+@media (min-width: 1024px) {
+	.sgs-trust-badges__label {
+		font-size: 0.875rem;
+	}
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+	.sgs-trust-badges__badge {
+		transition: none;
+	}
+}
