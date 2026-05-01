@@ -234,6 +234,80 @@ const DISMISS_ICON = (
 );
 
 /**
+ * v3 — Wave 1 save shape with inline colour on <p>, no link span.
+ * Matches posts saved after textColour: "text" default but before
+ * linkText/linkUrl attributes were introduced.
+ * migrate() passes attributes through; new linkText/linkUrl pick up
+ * their block.json defaults ("") automatically.
+ */
+const v3 = {
+	attributes: {
+		icon:         { type: 'string', default: 'info' },
+		text:         { type: 'string', source: 'html', selector: '.sgs-notice-banner__text' },
+		variant:      { type: 'string', default: 'info' },
+		textColour:   { type: 'string', default: 'text' },
+		textFontSize: { type: 'string' },
+		dismissible:  { type: 'boolean', default: false },
+	},
+	supports: {
+		align: [ 'wide', 'full' ],
+		anchor: true,
+		html: false,
+		color: { background: false, text: false },
+		typography: { fontSize: true, lineHeight: true, textAlign: true },
+		spacing: { margin: true, padding: true },
+		__experimentalBorder: { radius: true, width: true, color: true, style: true },
+	},
+	save( { attributes } ) {
+		const { icon, text, variant, textColour, textFontSize, dismissible } = attributes;
+
+		const className = [
+			'sgs-notice-banner',
+			`sgs-notice-banner--${ variant }`,
+			dismissible ? 'sgs-notice-banner--dismissible' : '',
+		]
+			.filter( Boolean )
+			.join( ' ' );
+
+		const blockProps = useBlockProps.save( { className } );
+
+		const textStyle = {
+			color: colourVar( textColour ) || undefined,
+			fontSize: fontSizeVar( textFontSize ) || undefined,
+		};
+
+		const iconKey = icon === 'none' ? 'none' : variant || icon;
+		const iconSvg = VARIANT_ICONS[ iconKey ] || VARIANT_ICONS[ icon ] || null;
+
+		return (
+			<div { ...blockProps } role="note">
+				{ iconSvg && (
+					<span className="sgs-notice-banner__icon">{ iconSvg }</span>
+				) }
+				<RichText.Content
+					tagName="p"
+					className="sgs-notice-banner__text"
+					value={ text }
+					style={ textStyle }
+				/>
+				{ dismissible && (
+					<button
+						type="button"
+						className="sgs-notice-banner__dismiss"
+						aria-label="Dismiss"
+					>
+						{ DISMISS_ICON }
+					</button>
+				) }
+			</div>
+		);
+	},
+	migrate( attributes ) {
+		return { ...attributes, linkText: '', linkUrl: '' };
+	},
+};
+
+/**
  * v2 — full structural save without inline colour on <p>.
  * Matches posts saved before Wave 1 added textColour: "text" default.
  */
@@ -302,7 +376,8 @@ const v2 = {
 	migrate( attributes ) {
 		// Pass all attributes through unchanged. textColour picks up its
 		// block.json default ("text") automatically for the new save shape.
-		return { ...attributes };
+		// linkText/linkUrl default to empty strings.
+		return { ...attributes, linkText: '', linkUrl: '' };
 	},
 };
 
@@ -328,7 +403,7 @@ const v1 = {
 		__experimentalBorder: { radius: true, width: true, color: true, style: true },
 	},
 	save: () => null,
-	migrate: ( attributes ) => attributes,
+	migrate: ( attributes ) => ( { ...attributes, linkText: '', linkUrl: '' } ),
 };
 
-export default [ v2, v1 ];
+export default [ v3, v2, v1 ];

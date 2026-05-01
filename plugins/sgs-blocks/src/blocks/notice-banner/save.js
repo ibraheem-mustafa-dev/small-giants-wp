@@ -221,8 +221,16 @@ const DISMISS_ICON = (
 );
 
 export default function Save({ attributes }) {
-  const { icon, text, variant, textColour, textFontSize, dismissible } =
-    attributes;
+  const {
+    icon,
+    text,
+    variant,
+    textColour,
+    textFontSize,
+    dismissible,
+    linkText,
+    linkUrl,
+  } = attributes;
 
   const className = [
     "sgs-notice-banner",
@@ -243,6 +251,8 @@ export default function Save({ attributes }) {
   const iconKey = icon === "none" ? "none" : variant || icon;
   const iconSvg = VARIANT_ICONS[iconKey] || VARIANT_ICONS[icon] || null;
 
+  const hasLink = !!(linkText && linkUrl);
+
   return (
     <div {...blockProps} role="note">
       {iconSvg && <span className="sgs-notice-banner__icon">{iconSvg}</span>}
@@ -252,6 +262,13 @@ export default function Save({ attributes }) {
         value={text}
         style={textStyle}
       />
+      {hasLink && (
+        <span className="sgs-notice-banner__link">
+          <a href={linkUrl} className="sgs-notice-banner__link-anchor">
+            {linkText}
+          </a>
+        </span>
+      )}
       {dismissible && (
         <button
           type="button"

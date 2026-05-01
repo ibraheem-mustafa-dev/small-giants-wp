@@ -71,7 +71,15 @@
                        "dismissible":  {
                                            "type":  "boolean",
                                            "default":  false
-                                       }
+                                       },
+                       "linkText":  {
+                                        "type":  "string",
+                                        "default":  ""
+                                    },
+                       "linkUrl":  {
+                                       "type":  "string",
+                                       "default":  ""
+                                   }
                    },
     "editorScript":  "file:./index.js",
     "editorStyle":  "file:./index.css",

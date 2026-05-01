@@ -7,6 +7,7 @@ import {
 import {
 	PanelBody,
 	SelectControl,
+	TextControl,
 } from '@wordpress/components';
 import { DesignTokenPicker } from '../../components';
 import { colourVar, fontSizeVar } from '../../utils';
@@ -56,6 +57,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		variant,
 		textColour,
 		textFontSize,
+		linkText,
+		linkUrl,
 	} = attributes;
 
 	const className = [
@@ -110,6 +113,35 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Link', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<TextControl
+						label={ __( 'Link text', 'sgs-blocks' ) }
+						value={ linkText || '' }
+						onChange={ ( val ) =>
+							setAttributes( { linkText: val } )
+						}
+						help={ __(
+							'Optional. Appears at the end of the banner.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<TextControl
+						label={ __( 'Link URL', 'sgs-blocks' ) }
+						type="url"
+						value={ linkUrl || '' }
+						onChange={ ( val ) =>
+							setAttributes( { linkUrl: val } )
+						}
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				</PanelBody>
 			</InspectorControls>
 
 			<div { ...blockProps } role="note">
@@ -137,6 +169,16 @@ export default function Edit( { attributes, setAttributes } ) {
 						fontSize: fontSizeVar( textFontSize ) || undefined,
 					} }
 				/>
+				{ linkText && linkUrl && (
+					<span className="sgs-notice-banner__link">
+						<a
+							href={ linkUrl }
+							className="sgs-notice-banner__link-anchor"
+						>
+							{ linkText }
+						</a>
+					</span>
+				) }
 			</div>
 		</>
 	);
