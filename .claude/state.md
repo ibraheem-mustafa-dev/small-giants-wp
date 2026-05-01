@@ -2,10 +2,10 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-current_phase: framework-rendering-fidelity
-current_step: "Recogniser v1 pipeline complete + deployed twice (palestine-lives + sandybrown). PR #10 has 16 commits. Visual diff vs mockup: 48–52% — dominated by framework-rendering issues (core/heading + core/paragraph inside core/group invisible; sgs/feature-grid + sgs/testimonial render empty; sgs/hero missing bg image extraction; default sgs-theme footer carries Indus-shaped placeholders). Recogniser produces valid block markup; framework rendering is now the bottleneck."
+current_phase: header-footer-universal-audit
+current_step: "Block validation root-cause SHIPPED (commit fd4eab4). 3 fictitious blocks (sgs/header, sgs/footer, sgs/feature-grid) replaced with real WP blocks; core block content moved from JSON attrs to innerHTML; missing lucide-icons.php require fixed. Sandybrown homepage now renders end-to-end with zero validation errors (page 8 = front page). Header/footer architecture lesson captured: per-client .html files are wrong; one universal header.html + footer.html should drive all clients via style variations + WP global settings. Next phase: audit header.html + footer.html, strip Indus-specific content (top bar, trade CTA, social links), make universal."
 last_updated: 2026-05-01
-blockers: ["framework-rendering-prevents-visual-diff-target"]
+blockers: []
 recommended_model_next: sonnet
 ---
 
@@ -45,3 +45,4 @@ recommended_model_next: sonnet
 - **SGS Ecom Plugin scope: UI/blocks layer on WC, not replacement.** Per master plan Phase 5 + Mama's gap analysis.
 - **WP Studio: deprecated.** Recogniser pipeline + GitHub deploy makes it redundant. Document in next session.
 - **Header/footer = template parts containing block markup** (FSE / industry A-tier). S-tier extension: also register as patterns + bind Business Details.
+- **NEW 2026-05-01 lesson:** ONE universal `header.html` + `footer.html`, never per-client `.html` files. All client variation flows from style variation JSON + WP global settings (logo, nav menu, business details) + the block editor for bespoke arrangements. Patterns are insert-and-edit convenience, not structural conformity. Captured: blub.db row 204; feedback file `feedback_header-footer-universal-not-per-client.md`.
