@@ -111,3 +111,22 @@ See `.claude/plans/phase-2-rubrics-universe.md` G2.5 section. Triggered by Phase
 **Effort:** ~15 min combined (two surgical Stage edits + skillscore re-check at 90% threshold).
 
 **Spec:** workspace lesson at `C:/Users/Bean/.openclaw/workspace/memory/learning/2026-04-30-diagnose-blub-db-locks-not-park-on-timeout.md` is the source of truth.
+
+---
+
+## P-3 — Block-validation canonicalisation property in build-pipeline rubrics
+
+**Captured:** 2026-05-01 (during P4 rubric draft session, parallel-session handoff at `.claude/handoff.md` flagged the recogniser-deploy validation regression).
+
+**Work:** If the canonicalisation issue persists after Layer A + Layer B land on the recogniser branch (handoff Tasks 2–4 + Step 11 propagation), bake the canonicalisation property into the rubrics for P1 (greenfield), P2 (WP→SGS migration), P3 (Draft→SGS), P6 (QA→deploy), and P7 (/build-website). For P4 (audit→proposal), only relevant when an optional homepage proof is built — extend criterion 4 to add "and proof renders in WP editor with zero validation errors" to the 5/5 anchor.
+
+**Why parked:** Layer B (auto-block-recovery JS bundled into sgs-blocks) plus Layer A (build-time `@wordpress/blocks` parse+serialize gate before `wp post create`) — once both ship — should structurally eliminate the validation-error class from synthesised-markup pipelines. If the three-layer defence works, the rubrics don't need to grade what infrastructure already prevents. Bean's call: don't pre-bake into rubrics; revisit only if the issue recurs after the recogniser fix lands.
+
+**Trigger to resume:**
+- Sandybrown homepage shows a validation regression after the canonicaliser ships
+- OR a different build-pipeline (P1/P2/P3/P7) ships a deploy with visible-content gaps traceable to the same `feedback_block_validation_recovery.md` pattern
+- OR the canonical-block-markup pattern (handoff Step 11) is shipped and validated end-to-end — at which point this parking entry can be CLOSED rather than acted on
+
+**Effort if triggered:** ~10 min per rubric (5 rubrics × dedicated criterion + Never Do entry per rubric) ≈ 50 min total.
+
+**Spec:** handoff at `.claude/handoff.md` Known Issue #1 + Task 2 (Layers A/B/C) + Step 11 (lateral propagation across five applications). Lesson file `~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_block_validation_recovery.md`. Common-WP-styling-errors row B4.
