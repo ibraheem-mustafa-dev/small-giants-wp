@@ -179,6 +179,33 @@ The two-layer source/deploy model from the previous handoff still holds: `audit-
 
 **Why this beats the Playwright approach the previous handoff proposed:** Playwright recovery is deploy-time (per-page admin login + editor automation, slow, flaky, requires maintained credentials). Canonicalisation is build-time (pure local Node, idempotent, scriptable, no admin context). Bean's safety hook is also satisfied — no `wp eval-file` post_content writes, no direct DB modification, the markup just IS canonical from birth.
 
+### Conditional Step 11 — Propagate the canonical pattern across all five lateral applications (RUN ONLY IF Step 4 quick verification passes)
+
+The same canonicalise-at-build pattern fixes five problem areas, not just the recogniser. **If the Step 4 verification on sandybrown shows zero validation errors,** propagate the pattern to every doc + spec + skill that touches one of these workflows so it's locked in across the framework, not rediscovered next time:
+
+**Five lateral applications (one pattern, one doc update each):**
+
+| # | Application | Canonical doc to update |
+|---|---|---|
+| 1 | `/wp-site-extraction` skill — Astra/Spectra/Squarespace site → SGS replication | `~/.claude/skills/wp-site-extraction/SKILL.md` (add a "Canonicalisation gate" section requiring Layer A on extracted block markup before it hits `wp post create`) |
+| 2 | AI page generation — any future "describe a page, build it" feature | `.claude/architecture.md` (add a "Synthesised content invariants" section noting any future synthesiser MUST emit through Layer A) |
+| 3 | Bulk client onboarding (Wix / Squarespace / hand-coded HTML → SGS) | Same `wp-site-extraction` skill + a new bullet in `.claude/architecture.md` under client-onboarding flow |
+| 4 | SGS block plugin updates that change `save()` shape | `plugins/sgs-blocks/CLAUDE.md` (note that any save.js shape change requires the matching deprecation AND that Layer B's auto-recovery JS is the runtime safety net) |
+| 5 | Pattern library imports — synced patterns + reusable blocks pushed via WP-CLI | `theme/sgs-theme/CLAUDE.md` patterns section + add Layer A to any pattern-import script under `tools/` |
+
+**Cross-cutting docs that need the unifying frame** (regardless of which application surfaced first):
+- `.claude/mistakes.md` — extend the `block-validation-recovery` row to enumerate the five lateral applications so future sessions see the full coverage, not just the recogniser context.
+- `.claude/specs/common-wp-styling-errors.md` row B4 — reframe from "recogniser-specific" to "any synthesised-markup pipeline"; reference the five applications.
+- `~/.claude/skills/autopilot/references/correction-ledger.md` — append a correction noting "synthesised block markup must always pass Layer A canonicalisation"; this is what autopilot reads at Stage 0 step 2 to adjust before classifying tasks. Without this, the next session that hits "I'm writing a script that builds block markup" might re-derive the failure from scratch.
+- `~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_synth_markup_canonicalise_at_build.md` — NEW auto-memory entry capturing the canonical pattern (referenced earlier in step 9 — make sure this gets created, not just edited into the existing block-validation-recovery file). Title and description should make it triggerable on any future synthesised-markup work.
+- `~/.claude/projects/.../memory/MEMORY.md` index — add a one-line entry pointing at the new feedback file under "Critical Behavioural Rules".
+
+**Architecture-level entry:** `.claude/architecture.md` should grow a short "Synthesised content lifecycle" section that documents the source → build → deploy → runtime layer model. This is the cross-cutting frame the five applications inherit from.
+
+**Order of operations for Step 11:** do a single grep to confirm where each application is currently mentioned in the codebase (`rg -l "wp-site-extraction\|AI page generation\|client onboarding\|pattern import"` etc.), then update each with a 1-2 sentence reference back to the canonical pattern in `specs/common-wp-styling-errors.md` B4. Don't duplicate the full explanation; link to it. Then commit `docs(propagation): canonical-block-markup pattern enumerated across five lateral applications` and push.
+
+**Skip Step 11 if Step 4 verification fails** — propagating a pattern that hasn't been validated wastes coverage across the framework. If verification fails, surface the specific edge case (which static block, what attribute, what diff) and re-research before propagation.
+
 ## Task 3: Add hero backgroundImage extraction
 
 Edit `tools/recogniser/prompts/recogniser-prompt.md`. Add an Example showing `<section class="hero">` containing `<picture>` / `<img>` → `extracted_attrs.backgroundImage = { url, id: null, alt }`. Re-extract just the hero via one `claude -p` call against the hero HTML fragment from the mockup. Manually patch `reports/recogniser-decisions-2026-05-01.json` with the result. SCP the hero photo to sandybrown's uploads dir; rewrite the URL in page content. Re-emit Modules 5 + 6.
@@ -209,6 +236,7 @@ After Tasks 2–4 ship: tar deploy → OPcache reset → `wp post create` (or up
 - Sandybrown homepage shows ingredient titles + descriptions, hero background image, gift cards, and testimonials all visible
 - Playwright diff < 20% at all 3 viewports (informational target)
 - PR #10 updated with new screenshots + diff numbers
+- **If Step 4 verification passes:** Step 11 (lateral-application propagation) shipped — all five applications + cross-cutting docs updated; correction ledger entry added; new auto-memory feedback file written and indexed in MEMORY.md
 - Morning handoff written via `/handoff`
 ~~~
 
