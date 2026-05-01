@@ -18,18 +18,55 @@ ACTIVE_VARIATION: {variation_slug}     # e.g. mamas-munches
 FINGERPRINT_CATALOGUE: {fingerprint_json}
 ```
 
+## Important: input HTML is a RAW MOCKUP, not WP-rendered output
+
+The HTML you receive is a hand-coded mockup. It will NOT contain SGS
+CSS class names like `sgs-hero__headline` or `sgs-header__inner` --
+those are added later by the SGS block render. Do NOT downgrade a
+match to `partial` just because expected SGS classes are missing.
+
+Match by SEMANTIC STRUCTURE and CONTENT SLOTS, not by class names.
+Examples:
+- A `<header>` with a logo, nav links, and a cart icon = full match
+  for `sgs/header`, even if classes are `header-inner` / `nav-link`.
+- A `<section>` with H1 + sub-headline + 2 CTAs = full match for
+  `sgs/hero` even if it has no `sgs-hero` classes.
+- Three or four cards each with an icon + heading + paragraph =
+  full match for `sgs/feature-grid`.
+
 ## Match-tier definitions
 
-- **full** (≥ 95%) — every required feature of the candidate block is
-  satisfied by the HTML; emit `extracted_attrs` only.
+- **full** (≥ 95%) — every required CONTENT slot of the candidate
+  block is present in the HTML (headline, sub-headline, CTAs for hero;
+  card array for feature-grid; etc.). Missing CSS classes do NOT count
+  as a gap. Emit `extracted_attrs` only. Use this tier whenever the
+  semantic content matches the block, even if the mockup uses
+  different CSS class names.
+  **Be generous with `full`.** A small visual treatment difference
+  (eyebrow label position, mobile stacking variant, decorative
+  background flourish) is NOT a content-slot gap — it's styling that
+  belongs in the variation CSS. If every CONTENT slot is filled,
+  emit `full` even if the visual treatment differs from the SGS
+  default. Only emit `partial` when an actual content slot is
+  unsupported (e.g. notice-banner has no link slot but mockup has a
+  link, or icon-block has no emoji support but mockup uses emoji).
 - **partial** (80–95%) — block covers the layout but is missing 1–3
-  features (a slot, a control, a hover). Emit `extracted_attrs` AND a
-  `gap` object with the missing features and a `recommended_path`.
+  CONTENT-LEVEL features (an extra slot the block doesn't yet support,
+  a behaviour like mobile-portrait-stack, a hover effect not in the
+  block). Emit `extracted_attrs` AND a `gap` object with the missing
+  features and a `recommended_path`. Reserve `partial` for genuine
+  feature gaps, not class-name differences.
 - **fallback** (< 80% on SGS, but core WP / WC covers it) — emit a core
   or WC block. Only use SGS if it's a genuine fit.
 - **deferred** — section depends on a feature not yet built (e.g. an
   ecom block deferred to SGS Ecom Plugin Phase 1). Emit a
   `placeholder_block` with a TODO comment in `attrs.note`.
+  ONLY use this tier when the section contains explicit ecom content
+  (price with currency, add-to-cart button, variant selector, stock
+  status). A generic gift / product CTA section that just shows a
+  product image, headline, paragraph, and "shop now" button is NOT
+  deferred — emit it as `sgs/cta` (full or partial) or core blocks.
+  Maximum ONE deferred section per page in normal cases.
 
 ## Gap classification (when tier=partial)
 
@@ -160,10 +197,33 @@ Output:
 
 1. Always return ONE JSON object. No prose, no fences.
 2. Confidence is a float 0–1 to two decimals.
-3. Prefer SGS blocks over core when both fit.
-4. Prefer core over a partial SGS match if the gap classification is
-   `new-block` (don't invent SGS blocks during the run).
-5. NEVER emit `sgs/heritage-strip` for a generic brand-story section.
+3. **Prefer SGS blocks over core whenever the section's semantic intent
+   matches an existing SGS block, even if the mockup uses different CSS
+   class names.** The fingerprint catalogue's `class_includes_any` is a
+   hint, not a hard requirement — match by SEMANTIC ROLE first
+   (header → sgs/header, footer → sgs/footer, testimonial grid →
+   sgs/testimonial, icon/feature grid → sgs/feature-grid, hero →
+   sgs/hero, banner with icon → sgs/notice-banner). Tier=partial with
+   `gap.classification` of `client-css` or `extend-base` is the
+   correct emission for these — DO NOT downgrade to core/group.
+4. Only fall back to core blocks when the section is genuinely a
+   generic layout primitive (columns + paragraph, group of arbitrary
+   content, etc.) with no SGS equivalent.
+5. Use `new-block` gap classification ONLY when no SGS block covers
+   even 60% of the section's intent. A section that needs a missing
+   slot or a small layout tweak on an existing SGS block is
+   `extend-base`, not `new-block`.
+6. NEVER emit `sgs/heritage-strip` for a generic brand-story section.
    Heritage-strip is a four-decade timeline only.
-6. Emoji icons: emit `iconType: "emoji"` on `sgs/icon-block` rather than
-   wrapping in `core/paragraph`.
+7. Emoji icons: emit `iconType: "emoji"` on `sgs/icon-block` rather
+   than wrapping in `core/paragraph`.
+
+## Quick reference -- common SGS blocks for Mama's-style mockups
+
+- `sgs/header` -- any page-level <header>
+- `sgs/footer` -- any page-level <footer> with link columns + tagline
+- `sgs/hero` -- any first-screen heading + sub-headline + CTA(s)
+- `sgs/testimonial` -- 2-4 column quote/avatar/rating cards
+- `sgs/feature-grid` -- 2-6 column icon + heading + paragraph cards
+- `sgs/notice-banner` -- single-row icon + message strip (incl. trust bars)
+- `sgs/icon-block` -- single icon with optional label/link
