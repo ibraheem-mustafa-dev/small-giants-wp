@@ -119,6 +119,43 @@ Output:
 }
 ```
 
+### Example — trust badges (full match)
+
+Input: a horizontal row of four icon+label pairs — each pair is an SVG
+glyph (house, tick, truck, star) inside a circular badge with a short
+label beside it. No headline, no description, no CTA. Class signature
+includes `trust-bar` / `trust-badge` / `trust-icon-circle`.
+
+This is `sgs/trust-badges`, NOT `sgs/notice-banner` (single-row strip),
+`sgs/feature-grid` (icon + heading + paragraph cards), or `sgs/icon-block`
+(single icon). Map each SVG to its Lucide name by intent: house/home
+glyph → `home`, check/tick → `check`, truck/lorry → `truck`, star →
+`star`, shield → `shield`, award/medal → `award`, heart → `heart`,
+leaf → `leaf`. If an SVG doesn't obviously map to a Lucide icon, use
+`badge-check` as the safe default.
+
+Output:
+```json
+{
+  "section_id": "trust-bar",
+  "match": {
+    "block_name": "sgs/trust-badges",
+    "confidence": 0.96,
+    "tier": "full",
+    "extracted_attrs": {
+      "columns": 4,
+      "items": [
+        {"icon": "home", "label": "Handmade in Birmingham", "pending": false},
+        {"icon": "check", "label": "Registered Food Business", "pending": false},
+        {"icon": "truck", "label": "Free UK Delivery Over £35", "pending": false},
+        {"icon": "star", "label": "Loved by Breastfeeding Mums", "pending": false}
+      ]
+    },
+    "inner_blocks": []
+  }
+}
+```
+
 ### Example B — partial match (extend-base)
 
 Input: a notice banner with a right-aligned link slot.
@@ -217,6 +254,18 @@ Output:
    Heritage-strip is a four-decade timeline only.
 7. Emoji icons: emit `iconType: "emoji"` on `sgs/icon-block` rather
    than wrapping in `core/paragraph`.
+8. **Trust badges row** — when a section is a horizontal row of 3+
+   icon+label pairs (SVG icons or emoji icons) with no headline,
+   description, or CTA, match `sgs/trust-badges` with `tier=full`.
+   Extract each pair into the `items` array as
+   `{icon, label, pending: false}`. Map common SVG iconography to
+   Lucide names by intent: a house/home glyph → `"home"`, a check/tick
+   → `"check"`, a truck/lorry → `"truck"`, a star → `"star"`, a shield
+   → `"shield"`, an award/medal → `"award"`, a heart → `"heart"`, a
+   leaf → `"leaf"`. If the SVG doesn't obviously map to a Lucide icon,
+   use `"badge-check"` as the safe default. Do NOT route trust-badge
+   patterns to `sgs/notice-banner`, `sgs/feature-grid`, or
+   `sgs/icon-block`.
 
 ## Quick reference -- common SGS blocks for Mama's-style mockups
 
@@ -225,5 +274,6 @@ Output:
 - `sgs/hero` -- any first-screen heading + sub-headline + CTA(s)
 - `sgs/testimonial` -- 2-4 column quote/avatar/rating cards
 - `sgs/feature-grid` -- 2-6 column icon + heading + paragraph cards
-- `sgs/notice-banner` -- single-row icon + message strip (incl. trust bars)
+- `sgs/notice-banner` -- single-row icon + message strip (single message, NOT trust bars)
+- `sgs/trust-badges` -- horizontal row of 3+ icon+label pairs (trust-bar sections)
 - `sgs/icon-block` -- single icon with optional label/link

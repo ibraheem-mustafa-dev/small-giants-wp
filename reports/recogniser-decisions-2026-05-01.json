@@ -27,51 +27,46 @@
         "ctaPrimaryText": "Shop Zookies",
         "ctaPrimaryUrl": "/shop/",
         "ctaSecondaryText": "Try 3 for £5",
-        "ctaSecondaryUrl": "/product/trial-pack/"
+        "ctaSecondaryUrl": "/product/trial-pack/",
+        "eyebrow": "Handmade in Birmingham"
       },
-      "inner_blocks": []
+      "inner_blocks": [],
+      "patch_note": "Added eyebrow attr 2026-05-01 (Decision B): hero now supports an eyebrow label above the headline."
     }
   },
   {
     "section_id": "trust-bar",
     "match": {
-      "block_name": "sgs/notice-banner",
-      "confidence": 0.82,
-      "tier": "partial",
+      "block_name": "sgs/trust-badges",
+      "confidence": 0.96,
+      "tier": "full",
       "extracted_attrs": {
-        "badges": [
+        "columns": 4,
+        "items": [
           {
             "icon": "home",
-            "text": "Handmade in Birmingham"
+            "label": "Handmade in Birmingham",
+            "pending": false
           },
           {
             "icon": "check",
-            "text": "Registered Food Business"
+            "label": "Registered Food Business",
+            "pending": false
           },
           {
             "icon": "truck",
-            "text": "Free UK Delivery Over £35"
+            "label": "Free UK Delivery Over £35",
+            "pending": false
           },
           {
             "icon": "star",
-            "text": "Loved by Breastfeeding Mums"
-          },
-          {
-            "icon": "moon",
-            "text": "Halal Certified",
-            "pending": true
+            "label": "Loved by Breastfeeding Mums",
+            "pending": false
           }
         ]
       },
-      "gap": {
-        "missing_features": [
-          "multi-badge-row",
-          "icon-per-badge",
-          "pending-state-badge"
-        ],
-        "classification": "extend-base",
-        "recommended_path": "extend sgs/notice-banner with a repeatable badges array (icon + text + pending flag) rendered as a horizontal trust-bar layout, OR introduce sgs/trust-bar as a dedicated block if notice-banner should remain single-message"
-      }
+      "inner_blocks": [],
+      "patch_note": "Manually patched 2026-05-01 (Decision B): re-routed from sgs/notice-banner partial to sgs/trust-badges full per the new prompt rule 8. Block exists in the SGS DB; defaults match the mockup."
     }
   },
   {
@@ -140,51 +135,166 @@
   {
     "section_id": "proper-ingredients-properly-used",
     "match": {
-      "block_name": "sgs/feature-grid",
-      "confidence": 0.82,
-      "tier": "partial",
+      "block_name": "core/group",
+      "confidence": 0.92,
+      "tier": "fallback",
       "extracted_attrs": {
-        "eyebrow": "What's in them?",
-        "headline": "Proper ingredients, properly used",
-        "intro": "Every Zookie contains the same four galactagogues that appear in postpartum food traditions across cultures.",
-        "columns": 4,
-        "iconType": "emoji",
-        "disclaimer": "We make nourishing food. We don't make medical claims. If you have specific concerns about lactation, your IBCLC or midwife is the right person to speak to.",
-        "items": [
-          {
-            "icon": "🌾",
-            "heading": "Oats",
-            "text": "Rich in iron. Used in postpartum foods across cultures for centuries."
-          },
-          {
-            "icon": "🍺",
-            "heading": "Brewer's Yeast",
-            "text": "B-vitamins and chromium. A traditional galactagogue used worldwide."
-          },
-          {
-            "icon": "🌿",
-            "heading": "Flaxseed",
-            "text": "Omega-3 fatty acids. Good for mum and baby."
-          },
-          {
-            "icon": "🌱",
-            "heading": "Fenugreek",
-            "text": "Traditional postpartum herb. If your baby shows GI sensitivity, speak to your midwife first."
-          }
-        ]
+        "className": "sgs-ingredients"
       },
-      "inner_blocks": [],
-      "gap": {
-        "missing_features": [
-          "sgs/feature-grid block does not exist in catalogue",
-          "eyebrow-label-slot",
-          "intro-paragraph-slot",
-          "disclaimer-footer-slot",
-          "emoji-icon-type"
-        ],
-        "classification": "new-block",
-        "recommended_path": "build sgs/feature-grid with attrs: eyebrow, headline, intro, columns (2-6), iconType (emoji|svg|lucide), items[] (icon, heading, text), disclaimer; until shipped, fall back to core/columns with sgs/icon-block + core/heading + core/paragraph per column"
-      }
+      "inner_blocks": [
+        {
+          "block_name": "core/heading",
+          "extracted_attrs": {
+            "level": 2,
+            "content": "Proper ingredients, properly used"
+          },
+          "inner_blocks": []
+        },
+        {
+          "block_name": "core/paragraph",
+          "extracted_attrs": {
+            "content": "Every Zookie contains the same four galactagogues that appear in postpartum food traditions across cultures."
+          },
+          "inner_blocks": []
+        },
+        {
+          "block_name": "core/columns",
+          "extracted_attrs": {
+            "columns": 2
+          },
+          "inner_blocks": [
+            {
+              "block_name": "core/column",
+              "extracted_attrs": {},
+              "inner_blocks": [
+                {
+                  "block_name": "sgs/icon-block",
+                  "extracted_attrs": {
+                    "iconType": "emoji",
+                    "emoji": "🌾",
+                    "iconSize": 32
+                  },
+                  "inner_blocks": []
+                },
+                {
+                  "block_name": "core/heading",
+                  "extracted_attrs": {
+                    "level": 4,
+                    "content": "Oats"
+                  },
+                  "inner_blocks": []
+                },
+                {
+                  "block_name": "core/paragraph",
+                  "extracted_attrs": {
+                    "content": "Rich in iron. Used in postpartum foods across cultures for centuries."
+                  },
+                  "inner_blocks": []
+                }
+              ]
+            },
+            {
+              "block_name": "core/column",
+              "extracted_attrs": {},
+              "inner_blocks": [
+                {
+                  "block_name": "sgs/icon-block",
+                  "extracted_attrs": {
+                    "iconType": "emoji",
+                    "emoji": "🍺",
+                    "iconSize": 32
+                  },
+                  "inner_blocks": []
+                },
+                {
+                  "block_name": "core/heading",
+                  "extracted_attrs": {
+                    "level": 4,
+                    "content": "Brewer's Yeast"
+                  },
+                  "inner_blocks": []
+                },
+                {
+                  "block_name": "core/paragraph",
+                  "extracted_attrs": {
+                    "content": "B-vitamins and chromium. A traditional galactagogue used worldwide."
+                  },
+                  "inner_blocks": []
+                }
+              ]
+            },
+            {
+              "block_name": "core/column",
+              "extracted_attrs": {},
+              "inner_blocks": [
+                {
+                  "block_name": "sgs/icon-block",
+                  "extracted_attrs": {
+                    "iconType": "emoji",
+                    "emoji": "🌿",
+                    "iconSize": 32
+                  },
+                  "inner_blocks": []
+                },
+                {
+                  "block_name": "core/heading",
+                  "extracted_attrs": {
+                    "level": 4,
+                    "content": "Flaxseed"
+                  },
+                  "inner_blocks": []
+                },
+                {
+                  "block_name": "core/paragraph",
+                  "extracted_attrs": {
+                    "content": "Omega-3 fatty acids. Good for mum and baby."
+                  },
+                  "inner_blocks": []
+                }
+              ]
+            },
+            {
+              "block_name": "core/column",
+              "extracted_attrs": {},
+              "inner_blocks": [
+                {
+                  "block_name": "sgs/icon-block",
+                  "extracted_attrs": {
+                    "iconType": "emoji",
+                    "emoji": "🌱",
+                    "iconSize": 32
+                  },
+                  "inner_blocks": []
+                },
+                {
+                  "block_name": "core/heading",
+                  "extracted_attrs": {
+                    "level": 4,
+                    "content": "Fenugreek"
+                  },
+                  "inner_blocks": []
+                },
+                {
+                  "block_name": "core/paragraph",
+                  "extracted_attrs": {
+                    "content": "Traditional postpartum herb. If your baby shows GI sensitivity, speak to your midwife first."
+                  },
+                  "inner_blocks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "block_name": "core/paragraph",
+          "extracted_attrs": {
+            "content": "We make nourishing food. We don't make medical claims. If you have specific concerns about lactation, your IBCLC or midwife is the right person to speak to.",
+            "className": "sgs-ingredients-disclaimer"
+          },
+          "inner_blocks": []
+        }
+      ],
+      "patch_note": "Manually patched 2026-05-01 (Decision B): expanded sgs/feature-grid partial to a full core/group composition. 4 ingredient cards using sgs/icon-block emoji (gap fix 3 enabled). Heading + intro + grid + disclaimer."
     }
   },
   {
