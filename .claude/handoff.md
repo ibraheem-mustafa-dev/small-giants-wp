@@ -2,113 +2,165 @@
 doc_type: handoff
 project: small-giants-wp
 project_id: 14
-session_date: 2026-04-30
-session_tag: small-giants-wp-2026-04-30-block-uniformity-polish
-next_session: html-to-blocks-compiler-OR-deploy
-recommended_model_next: sonnet
-last_updated: 2026-04-30
+session_date: 2026-05-01
+session_tag: small-giants-wp-2026-05-01-recogniser-architecture
+recommended_model: opus
 ---
 
-# Session Handoff — 2026-04-30 afternoon: SGS block uniformity overhaul + spec refresh + auto-generated reference
+# Session Handoff — 2026-05-01
 
 ## Completed This Session
 
-1. **Block uniformity audit + 13 fixes** — Wrote a Python audit script that scans all 59 SGS blocks for non-uniformity. Found and fixed: `viewScript` → `viewScriptModule` on hero (last legacy holdout); `source:html` removed from `mega-menu` `label` attr (silent bug on dynamic blocks); duplicate `letterSpacing`/`textTransform` custom attrs removed from hero/cta-section/info-box (covered by `supports.typography` + Block Selectors API); full `supports.color` migration on announcement-bar + google-reviews with backward-compat shim; `supports.color` added to back-to-top, mega-menu, reading-progress; selector naming standardised (`.wp-block-sgs-*` canonical for all 28 dynamic blocks, 7 outliers fixed).
-2. **Pre-commit hook** — `plugins/sgs-blocks/scripts/audit-block-uniformity.py` saved permanently. Wired into `.git/hooks/pre-commit` (appended to existing gitleaks check) so it only fires when `block.json` files are staged. Blocks future uniformity regressions structurally.
-3. **Auto-generated block reference** — `plugins/sgs-blocks/scripts/generate-block-reference.py` queries `sgs-framework.db` and emits `.claude/specs/02-SGS-BLOCKS-REFERENCE.md` (59 blocks, 941 attributes, grouped by category, full per-block tables). Wired into `/sgs-update` so it regenerates whenever the DB is re-indexed.
-4. **WordPress + WP-CLI IDE stubs via Composer** — `composer.json` + `composer.lock` at repo root install `php-stubs/wordpress-stubs` v6.9.1 (matches palestine-lives.org WP version) and `php-stubs/wp-cli-stubs` v2.12.0 to `vendor/` (gitignored). Intelephense `intelephense.environment.includePaths` set in `.vscode/settings.json`. Eliminates the universal P1010 false positives on `esc_attr`, `wp_kses_post`, `get_block_wrapper_attributes`, etc. across all render.php files. User must reload VS Code window once for it to take effect.
-5. **6-doc spec audit + updates** — `architecture.md` (block count 57→59, maturity score replaced with directional reference, infrastructure additions, 3 new architectural decisions); `01-SGS-THEME.md` (real file structure, 29 patterns, 8 style variations including `mamas-munches.json`, 7 mega-menu parts); `02-SGS-BLOCKS.md` (Container + Info Box dynamic-not-static correction + auto-reference link); `06-BUILD-ORDER.md` (original archived to `plans/archive/`, replaced with current-state roadmap); `09-GOLD-STANDARD-AUDIT.md` (Hero CTAs + Info Box hover gap markers closed); `common-wp-styling-errors.md` (5 new entries from today's catches). Toolkit design + design-brain architecture each gained wp-studio AI manual cross-references. `00-OVERVIEW.md` deleted by user (clashed with architecture.md).
-6. **Dead code removed** — Both copies of `footer-indus-foods.php` deleted (framework copy was a CLAUDE.md violation; client override referenced non-existent `sgs/site-info` block). Legacy `CONVERSATION-HANDOFF.md` + `NEXT-SESSION-PROMPT.md` deleted in favour of canonical `.claude/` layout.
-7. **Research-buddies panel scoped HTML-to-blocks compiler** — 9-agent panel (Sonnet + Opus + Haiku) produced full architecture: fork `html-to-gutenberg` (Verneaut), add 3 SGS-specific processors, AI annotator pre-step, `block.config.json` sidecar, `--mode=pattern` flag. Build estimate 3.5–4 days, ships as `/sgs-mockup-to-block` skill + slash command. Full research at `~/.openclaw/workspace/memory/research/2026-04-30-html-mockup-to-sgs-blocks.md`.
-8. **QC panel verification** — Dispatched Sonnet + Gemini Flash + Gemini Pro + Cerebras to verify the block uniformity work. Sonnet (primary) caught 2 critical issues (announcement-bar + google-reviews dual-class collision when adding `supports.color`) which were then fully migrated inline. Gemini Pro 503'd as the QC skill predicted. Cerebras queue-saturated mid-run.
+1. **Verified Track C status** — discovered the 5 static-block deprecations (`certification-bar`, `counter`, `notice-banner`, `process-steps`, `testimonial`) were already shipped on 2026-04-29 (`7d4fd52`) and deployed via Track A PR #9. Updated stale state.md.
+2. **Removed legacy UK colour attrs from `sgs/google-reviews`** — `textColour`/`backgroundColour` removed from block.json + destructured-but-unused references cleaned in edit.js. Native `supports.color` already handles the work. Built + deployed.
+3. **Track B Day 1 — done in 30 minutes via parallel Sonnet agents** (vs original "1 day" estimate). Mapped `jverneaut/html-to-gutenberg` (2,500 LOC, 7 SGS gaps catalogued) AND prototyped working AI annotator (54 annotations on Mama's homepage in 10s).
+4. **Verified Mama's Munches DB coverage** — Sonnet agent confirmed 85% of homepage covered by existing SGS blocks. The 2 blocks Bean remembered building (`sgs/trust-badges`, `sgs/notice-banner`) are confirmed in DB. 4 minor gap-fixes catalogued.
+5. **Architecture pivot: recogniser-first, transformer fallback only.** Reframed the entire approach. Recogniser matches HTML to existing blocks via 3 fingerprint libraries (SGS DB → core WP → WooCommerce). Transformer scaffolded but not built for v1.
+6. **WC replacement decision: dropped permanently.** SGS Ecom Plugin scope locked as UI/blocks layer ON TOP of WC (not replacement). Aligns with master plan Phase 5 + Mama's gap analysis.
+7. **Wrote recogniser v1 spec** at `.claude/plans/recogniser-v1.md` — 6 modules, 4 gap fixes, self-QC gates between every module, acceptance criteria, dispatch strategy with parallel Sonnet/Cerebras agents.
+8. **Updated `.claude/state.md`** — phase shifted to `html-recogniser`, all decisions captured.
 
 ## Current State
 
-- **Branch:** `feat/mamas-munches-strategic-brief` at `079318f`
-- **Tests:** No formal test suite. Pre-commit audit passes (`audit-block-uniformity.py` exits 0). Block reference regenerates cleanly (59 blocks, 941 attributes).
-- **Build:** Not run this session. `npm run build` needed before deploy.
-- **Uncommitted changes:** 52 files (38 modified + 14 new). See "Files Modified" below for the breakdown.
-- **Live site:** palestine-lives.org runs framework v1; today's polish has not been deployed yet.
+- **Branch:** `main` at `99d701d`
+- **Tests:** no test suite (WordPress block plugin)
+- **Build:** passes — `npm run build` clean
+- **Uncommitted changes:** none in framework files. Subproject scaffolds in `sites/` are untracked but out-of-scope.
+- **Deploy status:** palestine-lives.org current. Framework changes in `99d701d` are doc/spec only — no rebuild required.
 
 ## Known Issues / Blockers
 
-- **52 uncommitted files** require a commit-and-push before further work on this branch.
-- **VS Code reload required** for the new Intelephense stubs to take effect (one-time, user action).
-- **Cerebras free-tier queue** is unreliable for time-sensitive tasks — stalled twice this session. `/delegate` routing flagged this; future code-gen tasks with `time_sensitivity: high` should bypass Cerebras.
+None. The autonomous run has everything it needs.
 
 ## Next Priorities (in order)
 
-1. **Decide commit strategy + ship today's polish** — 52 files is a large diff. Either one feature branch commit or split into logical chunks (block fixes, audit infrastructure, doc refresh, Composer stubs). Then build (`cd plugins/sgs-blocks && npm run build`) and deploy to palestine-lives.org via the tar method in CLAUDE.md.
-2. **Build the HTML-to-blocks compiler** — 3.5–4 day Sonnet job. Highest leverage of the open work. Architecture fully scoped in the 2026-04-30 research doc. Day 1 should prototype the AI annotator + Hero block end-to-end in parallel to de-risk timing assumptions.
-3. **Static-block deprecations** (carried over from morning state) — `certification-bar`, `counter`, `notice-banner`, `process-steps`, `testimonial`. Spec at `plans/strategy/post-wave2-deprecations.md`. Without these, existing pages with these blocks show "unexpected content" editor errors after deploys including the new defaults. ~90 min, fresh session.
-4. **announcement-bar / google-reviews legacy attr cleanup** — backward-compat shim is in render.php for `backgroundColour`/`textColour` UK names. After a content sweep confirming no posts still use them, remove the shim and the dead attrs. Future major-version task.
+1. **Recogniser v1 — autonomous overnight build** to spec at `.claude/plans/recogniser-v1.md`. Branch `feat/recogniser-v1` from `main`. Acceptance: Mama's Munches homepage live on staging at `/mamas-munches-homepage-test/` with Playwright visual diff < 5% at 375/768/1440px.
+2. **SGS Ecom Plugin Phase 1** — `sgs/product-info`, `sgs/product-gallery`, `sgs/variant-pills`, `sgs/product-card`. Queued AFTER homepage ships. 3-session shape: spec + overnight Opus build + QA. Unblocks Mama's product page.
+3. **Custom WC paid-extension replacements** — Subscriptions, Memberships, Wholesale (£600+/year saved per client). Bounded scope per extension. Roadmap, not blocking.
 
 ## Files Modified
 
-| Path | What changed |
+| File | What changed |
 |---|---|
-| `.claude/architecture.md` | Block count 57→59, maturity score directional reference, 3 new architectural decisions (#16 customisation standard, #17 PHP IDE stubs, #18 HTML→blocks compiler), directory tree fixed |
-| `.claude/handoff.md` (this file) | Refreshed for this session |
-| `.claude/next-session-prompt.md` | Rewritten for next session priorities |
-| `.claude/parking.md` | Pre-existing modifications |
-| `.claude/plans/strategy/2026-04-24-design-brain-architecture.md` | Pipeline 6 — added wp-studio MCP tools cross-reference |
-| `.claude/specs/01-SGS-THEME.md` | File-structure tree updated to match disk reality |
-| `.claude/specs/02-SGS-BLOCKS.md` | Container + Info Box render type corrected; pointer to auto-generated reference |
-| `.claude/specs/02-SGS-BLOCKS-REFERENCE.md` | NEW — auto-generated, 2,216 lines |
-| `.claude/specs/06-BUILD-ORDER.md` | Replaced — original archived, new current-state roadmap |
-| `.claude/specs/09-GOLD-STANDARD-AUDIT.md` | Hero CTAs + Info Box hover gap markers updated |
-| `.claude/specs/2026-04-27-optimisation-toolkit-design.md` | New 10.4 wp-studio cross-reference; renumbered 10.5/10.6 |
-| `.claude/specs/common-wp-styling-errors.md` | 5 new errors (H5/H6/H7/C6/I4) + B2 enhancement |
-| `.claude/specs/00-OVERVIEW.md` | DELETED by user (clashed with architecture.md) |
-| `.claude/plans/archive/2026-04-30-archived-06-build-order.md` | NEW — archived original 06 |
-| `.gitignore` | `vendor/` + `composer.phar` added |
-| `.vscode/settings.json` | `intelephense.environment.includePaths` for Composer stubs |
-| `composer.json` + `composer.lock` | NEW — dev-only WP stubs |
-| `~/.claude/commands/sgs-update.md` | Chains generate-block-reference.py after update-db.py |
-| `plugins/sgs-blocks/src/blocks/announcement-bar/{block.json,render.php}` | Full migration to native `supports.color` + backward-compat shim |
-| `plugins/sgs-blocks/src/blocks/google-reviews/{block.json,render.php}` | Same — `--sgs-gr-text/bg-colour` CSS vars dropped, `--sgs-gr-star-colour` retained for inner element |
-| `plugins/sgs-blocks/src/blocks/hero/{block.json,render.php}` | viewScript → viewScriptModule; letterSpacing + textTransform custom attrs removed |
-| `plugins/sgs-blocks/src/blocks/cta-section/{block.json,render.php}` | Typography deduplication; `wp_strip_all_tags` + phpcs:ignore on `$responsive_css` |
-| `plugins/sgs-blocks/src/blocks/info-box/{block.json,render.php}` | Typography deduplication |
-| `plugins/sgs-blocks/src/blocks/mega-menu/block.json` | source:html bug fixed on `label`; `supports.color` added |
-| `plugins/sgs-blocks/src/blocks/back-to-top/block.json` | `supports.color` added |
-| `plugins/sgs-blocks/src/blocks/reading-progress/block.json` | `supports.color` added |
-| `plugins/sgs-blocks/src/blocks/{card-grid,icon-list,post-grid,testimonial-slider,trust-badges}/block.json` | Selector naming standardised to `.wp-block-sgs-*` |
-| `plugins/sgs-blocks/scripts/audit-block-uniformity.py` | NEW |
-| `plugins/sgs-blocks/scripts/generate-block-reference.py` | NEW |
-| `.git/hooks/pre-commit` | Extended to run uniformity audit when block.json staged |
-| `theme/sgs-theme/patterns/footer-indus-foods.php` | DELETED — framework violation |
-| `sites/indus-foods/theme-overrides/patterns/footer-indus-foods.php` | DELETED — referenced non-existent block |
+| `.claude/state.md` | Phase shifted to `html-recogniser`. Track C marked done. Architecture decisions captured. |
+| `.claude/plans/recogniser-v1.md` | NEW — full autonomous-build spec (6 modules, 4 gap fixes, self-QC gates) |
+| `plugins/sgs-blocks/src/blocks/google-reviews/block.json` | Removed `textColour` + `backgroundColour` attrs |
+| `plugins/sgs-blocks/src/blocks/google-reviews/edit.js` | Removed unused destructure of removed attrs |
 
 ## Notes for Next Session
 
-- **The audit script is the long-term win.** Today's individual fixes mattered, but the script catches every form of non-uniformity in 0.5 s. Wired into the pre-commit hook = future blocks can't ship with viewScript / source:html / typography duplication / missing supports.color.
-- **The auto-generated reference replaces a class of doc-drift forever.** `02-SGS-BLOCKS.md` covers patterns and standards; `02-SGS-BLOCKS-REFERENCE.md` covers per-block detail and is regenerated from the DB on `/sgs-update`. No more 29-block-missing audits.
-- **Cerebras corruption pattern (third occurrence today).** Cerebras-generated scripts have failed twice with literal `n` characters where newlines should be — heredoc/string-literal corruption. Captured in blub.db corrections (`feedback_stage_files_via_tmp_not_bash_heredoc`). For code generation in production paths, escalate past Cerebras to Sonnet or write inline.
-- **`/delegate` routing decisions worked but logged failures.** Cerebras was the right cost choice on paper for the script-gen task; in practice the queue stall + corruption made fallback faster. Worth setting `time_sensitivity: high` on similar small-but-time-pressed tasks to skip Cerebras directly.
-- **The HTML-to-blocks compiler is buildable now.** 9 research agents converged on the architecture. The fork target (`jverneaut/html-to-gutenberg`) is verified — its `<server-block>` mode already does dynamic render.php. The 40% gap is SGS-specific attribute richness (colour tokens, responsive variants, hover behaviour) — three new processor files of ~100 lines each.
+- **Bean is asleep during the autonomous run.** Self-QC gates between every module are mandatory — never proceed past a failing gate. Stop conditions in spec; surface to `reports/recogniser-v1-blockers.md`.
+- **WP Studio deprecated.** Recogniser pipeline + GitHub deploy makes it redundant.
+- **Anthropic API credits exhausted on `.openclaw/.env` keys.** AI annotator must use Claude CLI (subscription credit), NOT direct SDK. Annotator script at `C:/tmp/sgs-annotator.py` currently falls back to Gemini Flash via OpenRouter — rewrite to shell out to `claude -p` instead.
+- **`/cerebras` agent now uses Qwen 3 235B** (`qwen-3-235b-a22b-instruct-2507`), not ZAI GLM 4.7. Stale doc fixed at `~/.claude/commands/cerebras.md`.
+- **Mama's featured product section deferred** — recogniser maps it to a placeholder. Real implementation waits for SGS Ecom Plugin Phase 1.
 
----
+## Next Session Prompt
 
-# Session Handoff — 2026-04-30 morning: gap-analysis B 3.9 → B 4.4 upgrade + lesson capture
+~~~
+recommended_model: opus
+session_tag: small-giants-wp-2026-05-01-recogniser-autonomous-build
 
-## What shipped this session
+You are a senior WordPress block architect specialising in the SGS Framework, autonomous multi-agent code generation, and Gutenberg block compilation pipelines. You are running in fully autonomous mode — Bean is asleep — and you must self-QC every gate before proceeding.
 
-| Output | Path | State |
-|---|---|---|
-| `gap-analysis-floor-check.py` hook | `~/.claude/hooks/gap-analysis-floor-check.py` | NEW; 3-fixture self-test passes; registered in `settings.json` PostToolUse Write\|Edit |
-| `gap-analysis-backlog-write.py` hook | `~/.claude/hooks/gap-analysis-backlog-write.py` | NEW; 5-case self-test passes |
-| `gap-analysis-qc-dispatch.py` hook | `~/.claude/hooks/gap-analysis-qc-dispatch.py` | NEW; 8-case self-test passes |
-| `gap_analysis_report_parser.py` shared | `~/.claude/hooks/gap_analysis_report_parser.py` | NEW |
-| `/gap-analysis` Tier B schema edits | `~/.claude/skills/gap-analysis/SKILL.md` | 5 fields + rec #2 `calibration_applied` per criterion |
-| `/gap-analysis` backlog file | `~/.claude/skills/gap-analysis/references/backlog.md` | NEW; 6 open B/C/D items |
-| Tier-C re-grade run 3 report | `~/.claude/gap-analysis/reports/2026-04-30-gap-analysis-skill-3.md` | B 4.4 (raw 4.37); Lens 4 PARTIAL; QC verdict REVIEW certainty 62 |
-| Lesson: blub knowledge POST unicode | `~/.openclaw/workspace/memory/learning/2026-04-30-blub-knowledge-post-unicode-substitution.md` | NEW |
+Resume command: CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-01-recogniser-autonomous-build"
 
-## Decisions captured
+Read `.claude/handoff.md`, `.claude/state.md`, `.claude/plans/recogniser-v1.md`, and `CLAUDE.md`. The recogniser-v1.md spec is your source of truth — execute against it end-to-end.
 
-1. **Stop the A-promotion chase.** Hooks are durable infrastructure (worth keeping); the recursive A-chase is a perfectionism trap. Decision: ship hooks + rec #2 schema field, defer recs #1, #3-8 to a parking-lot.
-2. **Lens 4 PARTIAL is honest.** Three previously prose-only enforcement points gained hooks. C-grade calibration discipline remains prose-only. PARTIAL not PASS.
-3. **QC peer-review caught self-preference.** Initial scoring had C6/C10 at 4.5; Sonnet reviewers amended to 4.3 because qc-dispatch validates schema shape but not reviewer independence.
-4. **Hooks dogfooded on first live use.** First Write of the run-3 report was rejected by both backlog-write (wording mismatch) and qc-dispatch (qc_review missing). Both fixed; report wrote on second attempt.
-5. **Blub knowledge-API unicode hang.** `/api/knowledge` POST hung 20+ s on em-dash; ASCII-substituted version posted in <1 s. Lesson captured at recurrence pattern_key `diagnose-blub-db-locks-not-park-on-timeout`.
+## Skills to Invoke
+
+| Skill | When to use |
+|-------|-------------|
+| `/brainstorming` | If a design decision surfaces mid-build that wasn't pre-decided in the spec |
+| `/gap-analysis` | After each module ships — grade output against acceptance criteria before next module |
+| `/lifecycle` | If any new skill / agent / pipeline needs creating during the build |
+| `/research` | If undocumented WP / WC / html-to-gutenberg behaviour is hit |
+| `/strategic-plan` | If the spec needs reorganising mid-build (only if absolutely necessary) |
+| `/dispatching-parallel-agents` | MANDATORY — Modules 1, 2, 4, 5, 6 dispatch in parallel. The 4 gap fixes dispatch in parallel. |
+| `/subagent-driven-development` | MANDATORY — Each module follows implementer + spec-reviewer + quality-reviewer |
+| `/delegate` | MANDATORY — Per branch BEFORE dispatch to pick model + fallback chain |
+| `/cerebras` | Module 1 (Section Detector) + Module 5 (Serialiser) — small mechanical work, fits Qwen 3 235B budget |
+| `/gemini-flash` | Visual diff at end (1M context for screenshot analysis) + Cerebras queue fallback |
+| `/deploy-check` | Pre-deploy checklist before pushing the homepage to staging |
+
+## MCP Servers & Tools
+
+| Tool | What to use it for |
+|------|-------------------|
+| Playwright MCP | Visual diff at 375/768/1440px between mockup screenshots and live staging page |
+| GitHub MCP | Open PR after final commit |
+| `sgs-db.py` CLI | Build fingerprint catalogue: `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py stats` then per-block lookups |
+| Claude CLI | AI recogniser shells out to `claude -p --print "<prompt>" --output-format json` per section (subscription credit, NOT API key) |
+
+## Agents to Delegate To
+
+| Agent | When |
+|------|------|
+| `wp-sgs-developer` | All SGS framework modifications (4 gap fixes touch SGS block source files) |
+| `feature-dev:code-architect` | If spec ambiguity surfaces — design within spec boundaries only |
+| `feature-dev:code-reviewer` | After each module ships — review for bugs/security before marking gate passed |
+| `test-and-explain` | After end-to-end run — produce plain-English status report |
+
+## Model Routing (per `/delegate` table)
+
+- **Sonnet** — primary for module implementations (~100-300 lines mechanical+architectural per module)
+- **Haiku** — fingerprint catalogue assembly (mechanical SGS DB queries), simple validation passes
+- **Cerebras (Qwen 3 235B)** — Module 1 (Section Detector) + Module 5 (Serialiser). Free tier first, fallback to Gemini Flash on queue stall.
+- **Gemini Flash** — Visual diff calculation (1M context for screenshots) + Cerebras fallback
+- **Opus (this session)** — orchestration only. Do NOT do module implementation in main thread — dispatch every module to a subagent.
+
+## Tasks (execute in order)
+
+### Task 1 — Branch + Scaffold
+Create `feat/recogniser-v1` from `main` at `99d701d`. Scaffold `tools/recogniser/` directory + empty module files per spec. Commit "scaffold(recogniser): module skeleton".
+
+### Task 2 — Modules 1+2 in parallel (Cerebras + Sonnet)
+Dispatch Module 1 (Section Detector) to Cerebras and Module 2 (Fingerprint Indexer) to Sonnet IN PARALLEL via `/dispatching-parallel-agents`. Run self-QC gates from spec. Commit each separately. Do NOT proceed until both gates pass.
+
+### Task 3 — Module 3 (Recogniser, Sonnet, sequential)
+Dispatch Module 3 to Sonnet — depends on Modules 1+2. Cold-prompt at `tools/recogniser/prompts/recogniser-prompt.md`. Self-QC gate (≥6 full match, ≤4 partial, ≤1 deferred). Commit.
+
+### Task 4 — Modules 4+5+6 in parallel (Sonnet + Cerebras + Sonnet)
+Dispatch Modules 4, 5, 6 IN PARALLEL. Module 5 (Serialiser) to Cerebras. Modules 4 + 6 to Sonnet. Self-QC gates per module. Commit each.
+
+### Task 5 — 4 Gap Fixes in parallel (Sonnet x4)
+Dispatch all 4 gap fixes IN PARALLEL — they touch different files. Each its own commit. Hero CSS, notice-banner extend-base, icon-block emoji support, brand-story routing-prompt example.
+
+### Task 6 — End-to-end run + visual diff
+Run recogniser against `sites/mamas-munches/mockups/homepage/index.html`. Output: serialised block markup + template parts + patterns. Deploy to staging at `/mamas-munches-homepage-test/`. Playwright visual diff at 3 breakpoints via Gemini Flash. Iterate until <5% delta. Write `reports/recogniser-v1-qc.md`.
+
+### Task 7 — PR + Handoff
+Open PR to `main` with summary table of commits + gate results + visual diff stats. Update `.claude/state.md`. Run `/handoff` for morning handoff.
+
+## Self-QC Protocol (mandatory)
+
+Between every module:
+1. Read the module's gate from `.claude/plans/recogniser-v1.md`
+2. Verify acceptance criteria (numerical thresholds, file existence, command success)
+3. If gate fails: iterate, do NOT proceed
+4. If iteration count exceeds 3 attempts on a single module: STOP, write to `reports/recogniser-v1-blockers.md`, mark session paused
+
+If ANY stop condition fires (per spec): halt the run, do NOT mark complete.
+
+## Guardrails
+
+- **Branch discipline** — all framework changes go to `feat/recogniser-v1`, never `main`. Pre-commit hook will fire if you try.
+- **Never modify post_content via WP-CLI on the live site** — recogniser writes to a NEW staging post via `wp post create`.
+- **Stop deployments at staging** — do NOT promote to production. Bean reviews in the morning.
+- **Anthropic SDK keys exhausted** — annotator + recogniser MUST use Claude CLI (subscription).
+- **Cerebras has 5–30 min queue stall risk** — `/delegate` fallback chain is Cerebras → Gemini Flash → Sonnet.
+- **Build artifacts** — `npm run build` after every block source change. Deploy via tar method per CLAUDE.md (NOT `scp -r`).
+- **OPcache reset via HTTP** — CLI reset is a separate pool. Use HTTP method per CLAUDE.md.
+- **LiteSpeed cache** — clear both page cache AND CSS optimiser cache after deploy.
+
+## Acceptance — Session marks itself done ONLY when ALL true
+
+1. All 6 modules shipped + gates passed
+2. All 4 gap fixes shipped + tested
+3. Recogniser end-to-end on Mama's homepage produces complete WP page
+4. Page deployed to staging at `/mamas-munches-homepage-test/`
+5. Playwright visual diff < 5% at 375/768/1440px
+6. Reports written: `reports/recogniser-run-YYYY-MM-DD.md` + `reports/recogniser-v1-qc.md`
+7. PR opened to `main` with summary
+8. Morning handoff written for Bean
+~~~
