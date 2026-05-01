@@ -1,0 +1,30 @@
+.sgs-mobile-nav-toggle {
+	align-items: center;
+	background: transparent;
+	border: none;
+	color: inherit;
+	cursor: pointer;
+	display: none;
+	justify-content: center;
+	line-height: 0;
+	padding: 8px;
+}
+
+/* Show on tablet/mobile only — hidden on desktop */
+@media (max-width: 782px) {
+	.sgs-mobile-nav-toggle {
+		display: inline-flex;
+	}
+}
+
+/* Editor: always visible so it's editable on any viewport */
+.editor-styles-wrapper .sgs-mobile-nav-toggle {
+	display: inline-flex;
+}
+
+/* Focus state for keyboard users */
+.sgs-mobile-nav-toggle:focus-visible {
+	outline: 2px solid currentColor;
+	outline-offset: 2px;
+	border-radius: 4px;
+}

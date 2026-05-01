@@ -1,0 +1,46 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "sgs/mobile-nav-toggle",
+  "version": "1.0.0",
+  "title": "Mobile Nav Toggle",
+  "category": "sgs-layout",
+  "description": "Hamburger button that opens the mobile navigation drawer.",
+  "keywords": [
+    "hamburger",
+    "menu",
+    "toggle",
+    "mobile",
+    "navigation"
+  ],
+  "textdomain": "sgs-blocks",
+  "icon": "menu",
+  "supports": {
+    "html": false,
+    "color": {
+      "text": true,
+      "background": false
+    },
+    "spacing": {
+      "padding": true,
+      "margin": true
+    }
+  },
+  "attributes": {
+    "iconSize": {
+      "type": "number",
+      "default": 24
+    },
+    "ariaLabel": {
+      "type": "string",
+      "default": "Open navigation menu"
+    },
+    "popoverTarget": {
+      "type": "string",
+      "default": "sgs-mobile-nav"
+    }
+  },
+  "editorScript": "file:./index.js",
+  "style": "file:./style.css",
+  "render": "file:./render.php"
+}
