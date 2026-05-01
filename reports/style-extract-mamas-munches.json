@@ -1,0 +1,617 @@
+{
+  "variation": "mamas-munches",
+  "colour_tokens": [
+    {
+      "hex": "#3a2e26",
+      "token": "text",
+      "delta_e": 0.0,
+      "css_uses": [
+        "background",
+        "border-color",
+        "box-shadow",
+        "color",
+        "outline"
+      ]
+    },
+    {
+      "hex": "#e68a95",
+      "token": "primary",
+      "delta_e": 0.0,
+      "css_uses": [
+        "background",
+        "border",
+        "border-color",
+        "color"
+      ]
+    },
+    {
+      "hex": "#f5d050",
+      "token": "accent",
+      "delta_e": 0.0,
+      "css_uses": [
+        "background",
+        "border",
+        "box-shadow",
+        "color"
+      ]
+    },
+    {
+      "hex": "#c56a7a",
+      "token": "primary-dark",
+      "delta_e": 0.0,
+      "css_uses": [
+        "border-color",
+        "color",
+        "stroke"
+      ]
+    },
+    {
+      "hex": "#e8d5c0",
+      "token": "border-subtle",
+      "delta_e": 0.0,
+      "css_uses": [
+        "border",
+        "border-bottom",
+        "border-color"
+      ]
+    },
+    {
+      "hex": "#fffaf5",
+      "token": "text-inverse",
+      "delta_e": 0.0,
+      "css_uses": [
+        "background",
+        "border-top",
+        "color"
+      ]
+    },
+    {
+      "hex": "#6b5c50",
+      "token": "text-muted",
+      "delta_e": 0.0,
+      "css_uses": [
+        "color"
+      ]
+    },
+    {
+      "hex": "#f5c2c8",
+      "token": "surface-pink",
+      "delta_e": 0.0,
+      "css_uses": [
+        "background"
+      ]
+    },
+    {
+      "hex": "#fbf3dc",
+      "token": "surface",
+      "delta_e": 0.0,
+      "css_uses": [
+        "background"
+      ]
+    },
+    {
+      "hex": "#fff9f0",
+      "token": "surface-alt",
+      "delta_e": 0.0,
+      "css_uses": [
+        "background"
+      ]
+    }
+  ],
+  "spacing_tokens": [
+    {
+      "px": 4.0,
+      "rem": 0.25,
+      "token": "10",
+      "fluid": false,
+      "css_uses": [
+        "gap",
+        "margin-bottom",
+        "margin-top",
+        "padding"
+      ]
+    },
+    {
+      "px": 5.0,
+      "rem": 0.3125,
+      "token": "10",
+      "fluid": false,
+      "css_uses": [
+        "gap"
+      ]
+    },
+    {
+      "px": 6.0,
+      "rem": 0.375,
+      "token": "10",
+      "fluid": false,
+      "css_uses": [
+        "gap",
+        "margin-bottom",
+        "padding"
+      ]
+    },
+    {
+      "px": 7.0,
+      "rem": 0.4375,
+      "token": "20",
+      "fluid": false,
+      "css_uses": [
+        "gap",
+        "padding"
+      ]
+    },
+    {
+      "px": 8.0,
+      "rem": 0.5,
+      "token": "20",
+      "fluid": false,
+      "css_uses": [
+        "gap",
+        "margin-bottom",
+        "padding"
+      ]
+    },
+    {
+      "px": 9.0,
+      "rem": 0.5625,
+      "token": "20",
+      "fluid": false,
+      "css_uses": [
+        "gap"
+      ]
+    },
+    {
+      "px": 10.0,
+      "rem": 0.625,
+      "token": "20",
+      "fluid": false,
+      "css_uses": [
+        "gap",
+        "margin-bottom",
+        "padding"
+      ]
+    },
+    {
+      "px": 14.0,
+      "rem": 0.875,
+      "token": "30",
+      "fluid": true,
+      "css_uses": [
+        "gap",
+        "margin-bottom",
+        "margin-top",
+        "padding"
+      ]
+    },
+    {
+      "px": 16.0,
+      "rem": 1.0,
+      "token": "30",
+      "fluid": true,
+      "css_uses": [
+        "gap",
+        "margin-bottom",
+        "padding"
+      ]
+    },
+    {
+      "px": 18.0,
+      "rem": 1.125,
+      "token": "30",
+      "fluid": true,
+      "css_uses": [
+        "padding"
+      ]
+    },
+    {
+      "px": 22.0,
+      "rem": 1.375,
+      "token": "40",
+      "fluid": true,
+      "css_uses": [
+        "padding"
+      ]
+    },
+    {
+      "px": 24.0,
+      "rem": 1.5,
+      "token": "40",
+      "fluid": true,
+      "css_uses": [
+        "margin-bottom",
+        "padding"
+      ]
+    },
+    {
+      "px": 32.0,
+      "rem": 2.0,
+      "token": "50",
+      "fluid": true,
+      "css_uses": [
+        "gap",
+        "margin-bottom"
+      ]
+    },
+    {
+      "px": 48.0,
+      "rem": 3.0,
+      "token": "60",
+      "fluid": true,
+      "css_uses": [
+        "padding"
+      ]
+    }
+  ],
+  "spacing_misses": [
+    {
+      "px": 20.0,
+      "rem": 1.25,
+      "css_uses": [
+        "margin-bottom",
+        "padding",
+        "padding-top"
+      ]
+    },
+    {
+      "px": 12.0,
+      "rem": 0.75,
+      "css_uses": [
+        "gap",
+        "margin-bottom",
+        "padding"
+      ]
+    },
+    {
+      "px": 28.0,
+      "rem": 1.75,
+      "css_uses": [
+        "margin-bottom",
+        "padding"
+      ]
+    },
+    {
+      "px": 40.0,
+      "rem": 2.5,
+      "css_uses": [
+        "margin-bottom",
+        "padding"
+      ]
+    },
+    {
+      "px": 56.0,
+      "rem": 3.5,
+      "css_uses": [
+        "gap",
+        "padding"
+      ]
+    },
+    {
+      "px": 72.0,
+      "rem": 4.5,
+      "css_uses": [
+        "padding"
+      ]
+    },
+    {
+      "px": 64.0,
+      "rem": 4.0,
+      "css_uses": [
+        "padding"
+      ]
+    },
+    {
+      "px": 13.0,
+      "rem": 0.8125,
+      "css_uses": [
+        "padding"
+      ]
+    },
+    {
+      "px": 36.0,
+      "rem": 2.25,
+      "css_uses": [
+        "gap",
+        "margin"
+      ]
+    },
+    {
+      "px": 52.0,
+      "rem": 3.25,
+      "css_uses": [
+        "padding"
+      ]
+    }
+  ],
+  "typography": {
+    "font_families": [
+      {
+        "css_value": "'Inter', sans-serif",
+        "token": "body",
+        "uses": [
+          ".btn",
+          ".cart-btn",
+          ".footer-col h5",
+          ".pill",
+          "body"
+        ]
+      },
+      {
+        "css_value": "'Fraunces', serif",
+        "token": "heading",
+        "uses": [
+          ".gift-card .gift-price",
+          ".ingredient-card h4",
+          ".price",
+          "h1"
+        ]
+      }
+    ],
+    "font_sizes": [
+      {
+        "px": 11.0,
+        "rem": 0.6875,
+        "token": "x-small",
+        "uses": [
+          ".cart-badge",
+          ".footer-col h5",
+          ".gift-tag",
+          ".trial-tag"
+        ]
+      },
+      {
+        "px": 12.0,
+        "rem": 0.75,
+        "token": "x-small",
+        "uses": [
+          ".section-label"
+        ]
+      },
+      {
+        "px": 13.0,
+        "rem": 0.8125,
+        "token": "x-small",
+        "uses": [
+          ".footer-bottom",
+          ".footer-meta",
+          ".footer-social a",
+          ".ingredient-card p",
+          ".pill",
+          ".price-note",
+          ".testimonial-author",
+          ".tp-logo",
+          ".tp-text",
+          ".trust-text"
+        ]
+      },
+      {
+        "px": 14.0,
+        "rem": 0.875,
+        "token": "small",
+        "uses": [
+          ".btn-ghost",
+          ".cart-btn",
+          ".desktop-nav a",
+          ".footer-col ul li a",
+          ".footer-tagline",
+          ".gift-card .gift-desc",
+          ".ingredients-disclaimer",
+          ".product-desc",
+          ".send-to-ward-bar a",
+          ".send-to-ward-bar p",
+          ".testimonial-text",
+          ".trust-text"
+        ]
+      },
+      {
+        "px": 15.0,
+        "rem": 0.9375,
+        "token": "small",
+        "uses": [
+          ".btn",
+          ".desktop-nav a",
+          ".testimonial-stars",
+          "blockquote footer"
+        ]
+      },
+      {
+        "px": 16.0,
+        "rem": 1.0,
+        "token": "small",
+        "uses": [
+          ".featured-product .section-intro",
+          ".gift-section .section-sub",
+          ".hero-content .hero-sub",
+          ".ingredients .section-intro",
+          ".social-proof .section-sub"
+        ]
+      },
+      {
+        "px": 17.0,
+        "rem": 1.0625,
+        "token": "medium",
+        "uses": [
+          "blockquote p"
+        ]
+      },
+      {
+        "px": 18.0,
+        "rem": 1.125,
+        "token": "medium",
+        "uses": [
+          ".hero-copy .hero-sub"
+        ]
+      },
+      {
+        "px": 19.0,
+        "rem": 1.1875,
+        "token": "medium",
+        "uses": [
+          ".ingredient-card h4"
+        ]
+      },
+      {
+        "px": 20.0,
+        "rem": 1.25,
+        "token": "large",
+        "uses": [
+          ".product-card h3",
+          ".tp-stars"
+        ]
+      },
+      {
+        "px": 22.0,
+        "rem": 1.375,
+        "token": "large",
+        "uses": [
+          ".gift-card h3"
+        ]
+      },
+      {
+        "px": 28.0,
+        "rem": 1.75,
+        "token": null,
+        "uses": [
+          ".brand-story-text h2",
+          ".featured-product h2",
+          ".gift-section h2",
+          ".ingredients h2",
+          ".price",
+          ".social-proof h2"
+        ]
+      },
+      {
+        "px": 30.0,
+        "rem": 1.875,
+        "token": null,
+        "uses": [
+          ".gift-card .gift-price"
+        ]
+      },
+      {
+        "px": 32.0,
+        "rem": 2.0,
+        "token": null,
+        "uses": [
+          ".ingredient-icon"
+        ]
+      },
+      {
+        "px": 34.0,
+        "rem": 2.125,
+        "token": "xx-large",
+        "uses": [
+          ".hero-content h1"
+        ]
+      },
+      {
+        "px": 36.0,
+        "rem": 2.25,
+        "token": "xx-large",
+        "uses": [
+          ".brand-story-text h2",
+          ".featured-product h2",
+          ".gift-section h2",
+          ".ingredients h2",
+          ".social-proof h2"
+        ]
+      },
+      {
+        "px": 46.0,
+        "rem": 2.875,
+        "token": null,
+        "uses": [
+          ".hero-copy h1"
+        ]
+      },
+      {
+        "px": 58.0,
+        "rem": 3.625,
+        "token": null,
+        "uses": [
+          ".hero-copy h1"
+        ]
+      }
+    ]
+  },
+  "hover": [
+    {
+      "selector": ".btn-primary:hover",
+      "rules": {
+        "background": "#3A2E26",
+        "color": "#FFFAF5",
+        "border-color": "#3A2E26"
+      }
+    },
+    {
+      "selector": ".btn-secondary:hover",
+      "rules": {
+        "background": "#3A2E26",
+        "color": "#FFFAF5",
+        "border-color": "#3A2E26"
+      }
+    },
+    {
+      "selector": ".btn-ghost:hover",
+      "rules": {
+        "border-color": "#E68A95",
+        "background": "#F5C2C8"
+      }
+    },
+    {
+      "selector": ".desktop-nav a:hover",
+      "rules": {
+        "background": "#F5C2C8"
+      }
+    },
+    {
+      "selector": ".nav-featured:hover",
+      "rules": {
+        "background": "#E68A95 !important",
+        "color": "#3A2E26 !important",
+        "box-shadow": "inset 0 -2px 0 #F5D050"
+      }
+    },
+    {
+      "selector": ".pill:hover:not(.active)",
+      "rules": {
+        "border-color": "#C56A7A"
+      }
+    },
+    {
+      "selector": ".send-to-ward-bar a:hover",
+      "rules": {
+        "text-decoration": "underline"
+      }
+    },
+    {
+      "selector": ".footer-meta a:hover",
+      "rules": {
+        "color": "#E68A95"
+      }
+    },
+    {
+      "selector": ".footer-social a:hover",
+      "rules": {
+        "background": "rgba(255,250,245,0.15)"
+      }
+    },
+    {
+      "selector": ".footer-col ul li a:hover",
+      "rules": {
+        "color": "#E68A95"
+      }
+    }
+  ],
+  "misses": [
+    {
+      "hex": "#00b67a",
+      "nearest": "success",
+      "delta_e": 26.14,
+      "reason": "too far",
+      "css_uses": [
+        "color"
+      ]
+    }
+  ]
+}
