@@ -136,7 +136,22 @@ Notes:
 
 ## 4 Gap Fixes
 
-(Pending — Task 5 dispatch.)
+| # | Gap | Classification | Files | Commit | Status |
+|---|-----|----------------|-------|--------|--------|
+| 1 | Hero label + mobile portrait-stack | client-css | `theme/sgs-theme/styles/mamas-munches.json` | `71a7196` | ✅ |
+| 2 | Notice-banner right-link slot | extend-base | `plugins/sgs-blocks/src/blocks/notice-banner/{block.json,edit.js,save.js,deprecated.js}` | `1b455d7` | ✅ |
+| 3 | Icon-block emoji support | extend-base | `plugins/sgs-blocks/src/blocks/icon-block/{block.json,edit.js,render.php}` | `2370d5a` | ✅ |
+| 4 | Brand-story routing → core blocks | recogniser-decision | `tools/recogniser/prompts/recogniser-prompt.md` (Example C + rule 5) | `17027b7` | ✅ |
+
+**Notes:**
+- Gap 4 was already addressed in the Module 3 prompt template (Example C + rule 5: "NEVER emit `sgs/heritage-strip` for a generic brand-story section"). Module 3's run on Mama's homepage emitted `core/columns fallback 0.90` for `a-story-that-started-with-a-friend` — confirms the routing fix is working.
+- Gap 1 deviation noted at fix-time: base `sgs/hero` render.php does not currently emit `.sgs-hero__label`. CSS is forward-compatible. For visual diff at Task 6, eyebrow content can be inserted via custom HTML adjacent to the hero or a follow-up framework change.
+- Gap 2 added a v3 deprecation reproducing the pre-fix save output. Existing notice-banner blocks on production will not error after deploy.
+- Gap 3 required no deprecation (icon-block save returns null; fully dynamic).
+- Webpack 5.105.2 build clean after all three source-code changes.
+
+**Carry-over for Task 6 (end-to-end deploy):**
+The recogniser run that produced `reports/recogniser-decisions-2026-05-01.json` ran BEFORE gap fixes 2 + 3 were applied. The trust-bar `sgs/notice-banner` partial decision and ingredients/gift `sgs/feature-grid` partials don't have the new attributes (`linkText`, `linkUrl`, `iconType: emoji`) populated. Either re-run the recogniser (1 hour) OR patch the decisions JSON manually with the mockup-derived values before deploy. Manual patch chosen — faster, deterministic, attribute values clearly visible in the mockup.
 
 ## Final — Visual Diff
 
