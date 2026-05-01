@@ -1,0 +1,75 @@
+You are an independent visual QA auditor. Your job: compare the LIVE implementation against the APPROVED MOCKUP draft and produce a structured fidelity audit. UK English. No em dashes.
+
+Context: Mama's Munches is a UK lactation cookies brand (D2C, mum-targeted). The mockup at sites/mamas-munches/mockups/homepage/index.html is the approved design direction. The live site at https://sandybrown-nightingale-600381.hostingersite.com/ runs the SGS WordPress theme with the mamas-munches.json style variation.
+
+Brand palette (from mockup):
+- Primary coral pink: #E68A95
+- Soft pink (hero band): #F5C2C8
+- Cream surface: #FBF3DC
+- Warm yellow accent: #F5D050
+- Cookie brown: #8B6F4E
+- Choc-chip charcoal: #3A2E26
+
+Screenshots to compare (read every one):
+1. reports/visual-diff/sandybrown-vs-mockup-2026-05-01/screenshots/mockup-desktop-1440.png  (the APPROVED draft, desktop)
+2. reports/visual-diff/sandybrown-vs-mockup-2026-05-01/screenshots/mockup-mobile-375.png    (the APPROVED draft, mobile)
+3. reports/visual-diff/sandybrown-vs-mockup-2026-05-01/screenshots/live-desktop-1440.png    (LIVE built site, desktop)
+4. reports/visual-diff/sandybrown-vs-mockup-2026-05-01/screenshots/live-mobile-375.png      (LIVE built site, mobile)
+
+Write the full audit markdown via write_file to:
+  reports/visual-diff/sandybrown-vs-mockup-2026-05-01/audit.md
+
+Required output sections:
+
+# Sandybrown vs Mockup — Visual Fidelity Audit
+- Date: 2026-05-01
+- Model: gemini-3.1-pro-preview
+- Verdict: <S/A/B/C/D/F> with one-line summary
+
+## Header
+Compare logo placement, nav items, primary CTA, cart icon, mobile toggle.
+
+## Hero section
+Compare colour palette, headline copy, CTA buttons, image/decoration, layout.
+
+## Trust signals row
+What is shown, how, where.
+
+## Product feature section ("Zookies")
+Does the live have it? How does it render vs mockup?
+
+## Story section ("A story that started with a friend")
+Layout, imagery, typography fidelity.
+
+## Ingredients grid ("Proper ingredients, properly used")
+Card design, colours, icons.
+
+## Gift section ("A gift she'll actually use")
+Card design, layout.
+
+## Testimonials / Trustpilot
+Present? Same layout?
+
+## Footer
+Layout match, colour palette match, content match, placeholder pollution.
+
+## Cross-cutting findings
+- Palette drift (live uses teal #0F7E80 which is the SGS default, mockup uses coral #E68A95 — is the mamas-munches style variation activated?)
+- Typography drift
+- Spacing/rhythm drift
+- Mobile-specific issues
+- Placeholder pollution (e.g. "Set in Settings > Business Details" strings)
+
+## Top 10 polish items, ranked
+For each: severity (P0/P1/P2), location, current state, target state, fix-effort estimate.
+
+## What to preserve
+3 things the live site got right and should not be touched.
+
+## Final verdict
+- Overall fidelity score: NN/100
+- Grade: S/A/B/C/D/F
+- Ship-ready? yes/no
+- Estimated effort to reach 90% fidelity (sessions, low estimate)
+
+Be specific. Reference what you actually see. Quote pixel-level differences where possible. Do not invent claims. If something is not visible in the screenshot, say so.
