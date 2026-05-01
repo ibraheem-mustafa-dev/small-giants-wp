@@ -14,6 +14,7 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 $variant             = $attributes['variant'] ?? 'standard';
+$eyebrow             = $attributes['eyebrow'] ?? '';
 $headline            = $attributes['headline'] ?? '';
 $sub_headline        = $attributes['subHeadline'] ?? '';
 $alignment           = $attributes['alignment'] ?? 'left';
@@ -305,6 +306,9 @@ if ( ! empty( $badges ) ) {
 
 // Build content area.
 $content_html = '<div class="sgs-hero__content">';
+if ( '' !== trim( wp_strip_all_tags( $eyebrow ) ) ) {
+	$content_html .= '<span class="sgs-hero__label">' . wp_kses_post( $eyebrow ) . '</span>';
+}
 if ( $headline ) {
 	$h_classes          = array( 'sgs-hero__headline' );
 	$text_align_mobile  = $attributes['textAlignMobile'] ?? '';

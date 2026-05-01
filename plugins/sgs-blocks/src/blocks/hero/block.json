@@ -62,6 +62,10 @@
         "svg-animated"
       ]
     },
+    "eyebrow": {
+      "type": "string",
+      "default": ""
+    },
     "headline": {
       "type": "string",
       "default": ""

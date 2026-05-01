@@ -116,6 +116,7 @@ const FONT_SIZE_OPTIONS = [
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		variant,
+		eyebrow,
 		headline,
 		subHeadline,
 		splitImageBleed,
@@ -884,6 +885,19 @@ export default function Edit( { attributes, setAttributes } ) {
 				) }
 
 				<div className="sgs-hero__content">
+					<RichText
+						tagName="span"
+						className="sgs-hero__label"
+						value={ eyebrow }
+						onChange={ ( val ) =>
+							setAttributes( { eyebrow: val } )
+						}
+						placeholder={ __(
+							'Add eyebrow label…',
+							'sgs-blocks'
+						) }
+						allowedFormats={ [ 'core/bold', 'core/italic' ] }
+					/>
 					<RichText
 						tagName="h1"
 						className="sgs-hero__headline"
