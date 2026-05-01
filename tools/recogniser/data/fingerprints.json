@@ -1,0 +1,1782 @@
+{
+  "core/button": {
+    "attr_extractors": [
+      {
+        "attr": "text",
+        "extract": "text",
+        "selector": "a, .wp-block-button__link"
+      },
+      {
+        "attr": "url",
+        "extract": "href",
+        "selector": "a, .wp-block-button__link"
+      }
+    ],
+    "block_name": "core/button",
+    "block_type": "static",
+    "category": "core",
+    "optional_features": [
+      "style",
+      "url"
+    ],
+    "required_features": [
+      "button-text"
+    ],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "wp-block-button"
+      ],
+      "tag": "div"
+    },
+    "source": "core"
+  },
+  "core/buttons": {
+    "attr_extractors": [],
+    "block_name": "core/buttons",
+    "block_type": "static",
+    "category": "core",
+    "optional_features": [
+      "alignment"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "wp-block-buttons"
+      ],
+      "tag": "div"
+    },
+    "source": "core"
+  },
+  "core/column": {
+    "attr_extractors": [],
+    "block_name": "core/column",
+    "block_type": "static",
+    "category": "core",
+    "optional_features": [
+      "width"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "wp-block-column"
+      ],
+      "tag": "div"
+    },
+    "source": "core"
+  },
+  "core/columns": {
+    "attr_extractors": [],
+    "block_name": "core/columns",
+    "block_type": "static",
+    "category": "core",
+    "optional_features": [
+      "stack-on-mobile"
+    ],
+    "required_features": [
+      "columns"
+    ],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "wp-block-columns"
+      ],
+      "tag": "div"
+    },
+    "source": "core"
+  },
+  "core/group": {
+    "attr_extractors": [],
+    "block_name": "core/group",
+    "block_type": "static",
+    "category": "core",
+    "optional_features": [
+      "layout",
+      "background"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "wp-block-group"
+      ],
+      "tag": "div"
+    },
+    "source": "core"
+  },
+  "core/heading": {
+    "attr_extractors": [
+      {
+        "attr": "content",
+        "extract": "text",
+        "selector": "h1, h2, h3, h4, h5, h6"
+      }
+    ],
+    "block_name": "core/heading",
+    "block_type": "static",
+    "category": "core",
+    "optional_features": [
+      "level",
+      "alignment"
+    ],
+    "required_features": [
+      "heading-text"
+    ],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "wp-block-heading"
+      ],
+      "tag": "h2"
+    },
+    "source": "core"
+  },
+  "core/image": {
+    "attr_extractors": [
+      {
+        "attr": "url",
+        "extract": "src",
+        "selector": "img"
+      },
+      {
+        "attr": "alt",
+        "extract": "alt",
+        "selector": "img"
+      },
+      {
+        "attr": "caption",
+        "extract": "text",
+        "selector": "figcaption"
+      }
+    ],
+    "block_name": "core/image",
+    "block_type": "static",
+    "category": "core",
+    "optional_features": [
+      "caption",
+      "link"
+    ],
+    "required_features": [
+      "image-src"
+    ],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "wp-block-image"
+      ],
+      "tag": "figure"
+    },
+    "source": "core"
+  },
+  "core/list": {
+    "attr_extractors": [],
+    "block_name": "core/list",
+    "block_type": "static",
+    "category": "core",
+    "optional_features": [
+      "ordered",
+      "reversed"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "wp-block-list"
+      ],
+      "tag": "ul"
+    },
+    "source": "core"
+  },
+  "core/list-item": {
+    "attr_extractors": [
+      {
+        "attr": "content",
+        "extract": "text",
+        "selector": "li"
+      }
+    ],
+    "block_name": "core/list-item",
+    "block_type": "static",
+    "category": "core",
+    "optional_features": [],
+    "required_features": [
+      "text"
+    ],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "wp-block-list-item"
+      ],
+      "tag": "li"
+    },
+    "source": "core"
+  },
+  "core/navigation": {
+    "attr_extractors": [],
+    "block_name": "core/navigation",
+    "block_type": "static",
+    "category": "core",
+    "optional_features": [
+      "overlay-menu",
+      "submenus"
+    ],
+    "required_features": [
+      "nav-items"
+    ],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "wp-block-navigation"
+      ],
+      "tag": "nav"
+    },
+    "source": "core"
+  },
+  "core/paragraph": {
+    "attr_extractors": [
+      {
+        "attr": "content",
+        "extract": "text",
+        "selector": "p"
+      }
+    ],
+    "block_name": "core/paragraph",
+    "block_type": "static",
+    "category": "core",
+    "optional_features": [
+      "alignment",
+      "drop-cap"
+    ],
+    "required_features": [
+      "text"
+    ],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "wp-block-paragraph"
+      ],
+      "tag": "p"
+    },
+    "source": "core"
+  },
+  "core/quote": {
+    "attr_extractors": [
+      {
+        "attr": "value",
+        "extract": "text",
+        "selector": "p"
+      },
+      {
+        "attr": "citation",
+        "extract": "text",
+        "selector": "cite"
+      }
+    ],
+    "block_name": "core/quote",
+    "block_type": "static",
+    "category": "core",
+    "optional_features": [
+      "citation"
+    ],
+    "required_features": [
+      "quote-text"
+    ],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "wp-block-quote"
+      ],
+      "tag": "blockquote"
+    },
+    "source": "core"
+  },
+  "core/separator": {
+    "attr_extractors": [],
+    "block_name": "core/separator",
+    "block_type": "static",
+    "category": "core",
+    "optional_features": [
+      "style"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "wp-block-separator"
+      ],
+      "tag": "hr"
+    },
+    "source": "core"
+  },
+  "core/spacer": {
+    "attr_extractors": [],
+    "block_name": "core/spacer",
+    "block_type": "static",
+    "category": "core",
+    "optional_features": [
+      "height"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "wp-block-spacer"
+      ],
+      "tag": "div"
+    },
+    "source": "core"
+  },
+  "sgs/accordion": {
+    "attr_extractors": [],
+    "block_name": "sgs/accordion",
+    "block_type": "dynamic",
+    "category": "sgs-interactive",
+    "optional_features": [
+      "colour"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-accordion",
+        "wp-block-sgs-accordion"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/accordion-item": {
+    "attr_extractors": [
+      {
+        "attr": "title",
+        "extract": "text",
+        "selector": ".sgs-accordion-item__title"
+      }
+    ],
+    "block_name": "sgs/accordion-item",
+    "block_type": "dynamic",
+    "category": "sgs-interactive",
+    "optional_features": [],
+    "required_features": [
+      "title"
+    ],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-accordion-item",
+        "wp-block-sgs-accordion-item"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/announcement-bar": {
+    "attr_extractors": [],
+    "block_name": "sgs/announcement-bar",
+    "block_type": "dynamic",
+    "category": "sgs-interactive",
+    "optional_features": [
+      "colour",
+      "background-colour"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-announcement-bar",
+        "wp-block-sgs-announcement-bar"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/back-to-top": {
+    "attr_extractors": [],
+    "block_name": "sgs/back-to-top",
+    "block_type": "dynamic",
+    "category": "sgs-interactive",
+    "optional_features": [
+      "colour"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-back-to-top",
+        "wp-block-sgs-back-to-top"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/brand-strip": {
+    "attr_extractors": [],
+    "block_name": "sgs/brand-strip",
+    "block_type": "dynamic",
+    "category": "sgs-content",
+    "optional_features": [
+      "hover",
+      "transition"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-brand-strip",
+        "wp-block-sgs-brand-strip"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/breadcrumbs": {
+    "attr_extractors": [],
+    "block_name": "sgs/breadcrumbs",
+    "block_type": "dynamic",
+    "category": "sgs-content",
+    "optional_features": [
+      "colour"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-breadcrumbs",
+        "wp-block-sgs-breadcrumbs"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/business-info": {
+    "attr_extractors": [],
+    "block_name": "sgs/business-info",
+    "block_type": "dynamic",
+    "category": "sgs-content",
+    "optional_features": [
+      "colour"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-business-info",
+        "wp-block-sgs-business-info"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/card-grid": {
+    "attr_extractors": [],
+    "block_name": "sgs/card-grid",
+    "block_type": "dynamic",
+    "category": "sgs-content",
+    "optional_features": [
+      "hover",
+      "overlay",
+      "colour",
+      "transition"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-card-grid",
+        "wp-block-sgs-card-grid"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/certification-bar": {
+    "attr_extractors": [
+      {
+        "attr": "title",
+        "extract": "text",
+        "selector": ".sgs-certification-bar__title"
+      }
+    ],
+    "block_name": "sgs/certification-bar",
+    "block_type": "static",
+    "category": "sgs-content",
+    "optional_features": [
+      "colour",
+      "typography"
+    ],
+    "required_features": [
+      "title"
+    ],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-certification-bar",
+        "wp-block-sgs-certification-bar"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/container": {
+    "attr_extractors": [],
+    "block_name": "sgs/container",
+    "block_type": "dynamic",
+    "category": "sgs-layout",
+    "optional_features": [
+      "background-image",
+      "colour",
+      "min-height"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-container",
+        "wp-block-sgs-container"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/countdown-timer": {
+    "attr_extractors": [],
+    "block_name": "sgs/countdown-timer",
+    "block_type": "dynamic",
+    "category": "sgs-interactive",
+    "optional_features": [
+      "colour"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-countdown-timer",
+        "wp-block-sgs-countdown-timer"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/counter": {
+    "attr_extractors": [
+      {
+        "attr": "label",
+        "extract": "text",
+        "selector": ".sgs-counter__label"
+      }
+    ],
+    "block_name": "sgs/counter",
+    "block_type": "static",
+    "category": "sgs-content",
+    "optional_features": [
+      "colour",
+      "typography"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-counter",
+        "wp-block-sgs-counter"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/cta-section": {
+    "attr_extractors": [
+      {
+        "attr": "headline",
+        "extract": "text",
+        "selector": ".sgs-cta-section__headline, h1, h2"
+      }
+    ],
+    "block_name": "sgs/cta-section",
+    "block_type": "dynamic",
+    "category": "sgs-content",
+    "optional_features": [
+      "typography",
+      "background-colour",
+      "colour",
+      "background-image",
+      "hover",
+      "transition",
+      "alignment"
+    ],
+    "required_features": [
+      "headline"
+    ],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-cta-section",
+        "wp-block-sgs-cta-section"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/decorative-image": {
+    "attr_extractors": [],
+    "block_name": "sgs/decorative-image",
+    "block_type": "dynamic",
+    "category": "sgs-content",
+    "optional_features": [],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-decorative-image",
+        "wp-block-sgs-decorative-image"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/form": {
+    "attr_extractors": [],
+    "block_name": "sgs/form",
+    "block_type": "dynamic",
+    "category": "sgs-forms",
+    "optional_features": [
+      "colour"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-form",
+        "wp-block-sgs-form"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/form-field-address": {
+    "attr_extractors": [
+      {
+        "attr": "label",
+        "extract": "text",
+        "selector": ".sgs-form-field-address__label"
+      }
+    ],
+    "block_name": "sgs/form-field-address",
+    "block_type": "dynamic",
+    "category": "sgs-forms",
+    "optional_features": [],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-form-field-address",
+        "wp-block-sgs-form-field-address"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/form-field-checkbox": {
+    "attr_extractors": [
+      {
+        "attr": "label",
+        "extract": "text",
+        "selector": ".sgs-form-field-checkbox__label"
+      }
+    ],
+    "block_name": "sgs/form-field-checkbox",
+    "block_type": "dynamic",
+    "category": "sgs-forms",
+    "optional_features": [],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-form-field-checkbox",
+        "wp-block-sgs-form-field-checkbox"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/form-field-consent": {
+    "attr_extractors": [
+      {
+        "attr": "label",
+        "extract": "text",
+        "selector": ".sgs-form-field-consent__label"
+      }
+    ],
+    "block_name": "sgs/form-field-consent",
+    "block_type": "dynamic",
+    "category": "sgs-forms",
+    "optional_features": [],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-form-field-consent",
+        "wp-block-sgs-form-field-consent"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/form-field-date": {
+    "attr_extractors": [
+      {
+        "attr": "label",
+        "extract": "text",
+        "selector": ".sgs-form-field-date__label"
+      }
+    ],
+    "block_name": "sgs/form-field-date",
+    "block_type": "dynamic",
+    "category": "sgs-forms",
+    "optional_features": [],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-form-field-date",
+        "wp-block-sgs-form-field-date"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/form-field-email": {
+    "attr_extractors": [
+      {
+        "attr": "label",
+        "extract": "text",
+        "selector": ".sgs-form-field-email__label"
+      }
+    ],
+    "block_name": "sgs/form-field-email",
+    "block_type": "dynamic",
+    "category": "sgs-forms",
+    "optional_features": [],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-form-field-email",
+        "wp-block-sgs-form-field-email"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/form-field-file": {
+    "attr_extractors": [
+      {
+        "attr": "label",
+        "extract": "text",
+        "selector": ".sgs-form-field-file__label"
+      }
+    ],
+    "block_name": "sgs/form-field-file",
+    "block_type": "dynamic",
+    "category": "sgs-forms",
+    "optional_features": [],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-form-field-file",
+        "wp-block-sgs-form-field-file"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/form-field-hidden": {
+    "attr_extractors": [],
+    "block_name": "sgs/form-field-hidden",
+    "block_type": "dynamic",
+    "category": "sgs-forms",
+    "optional_features": [],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-form-field-hidden",
+        "wp-block-sgs-form-field-hidden"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/form-field-number": {
+    "attr_extractors": [
+      {
+        "attr": "label",
+        "extract": "text",
+        "selector": ".sgs-form-field-number__label"
+      }
+    ],
+    "block_name": "sgs/form-field-number",
+    "block_type": "dynamic",
+    "category": "sgs-forms",
+    "optional_features": [],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-form-field-number",
+        "wp-block-sgs-form-field-number"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/form-field-phone": {
+    "attr_extractors": [
+      {
+        "attr": "label",
+        "extract": "text",
+        "selector": ".sgs-form-field-phone__label"
+      }
+    ],
+    "block_name": "sgs/form-field-phone",
+    "block_type": "dynamic",
+    "category": "sgs-forms",
+    "optional_features": [],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-form-field-phone",
+        "wp-block-sgs-form-field-phone"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/form-field-radio": {
+    "attr_extractors": [
+      {
+        "attr": "label",
+        "extract": "text",
+        "selector": ".sgs-form-field-radio__label"
+      }
+    ],
+    "block_name": "sgs/form-field-radio",
+    "block_type": "dynamic",
+    "category": "sgs-forms",
+    "optional_features": [],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-form-field-radio",
+        "wp-block-sgs-form-field-radio"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/form-field-select": {
+    "attr_extractors": [
+      {
+        "attr": "label",
+        "extract": "text",
+        "selector": ".sgs-form-field-select__label"
+      }
+    ],
+    "block_name": "sgs/form-field-select",
+    "block_type": "dynamic",
+    "category": "sgs-forms",
+    "optional_features": [],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-form-field-select",
+        "wp-block-sgs-form-field-select"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/form-field-text": {
+    "attr_extractors": [
+      {
+        "attr": "label",
+        "extract": "text",
+        "selector": ".sgs-form-field-text__label"
+      }
+    ],
+    "block_name": "sgs/form-field-text",
+    "block_type": "dynamic",
+    "category": "sgs-forms",
+    "optional_features": [],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-form-field-text",
+        "wp-block-sgs-form-field-text"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/form-field-textarea": {
+    "attr_extractors": [
+      {
+        "attr": "label",
+        "extract": "text",
+        "selector": ".sgs-form-field-textarea__label"
+      }
+    ],
+    "block_name": "sgs/form-field-textarea",
+    "block_type": "dynamic",
+    "category": "sgs-forms",
+    "optional_features": [],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-form-field-textarea",
+        "wp-block-sgs-form-field-textarea"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/form-field-tiles": {
+    "attr_extractors": [
+      {
+        "attr": "label",
+        "extract": "text",
+        "selector": ".sgs-form-field-tiles__label"
+      }
+    ],
+    "block_name": "sgs/form-field-tiles",
+    "block_type": "dynamic",
+    "category": "sgs-forms",
+    "optional_features": [],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-form-field-tiles",
+        "wp-block-sgs-form-field-tiles"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/form-review": {
+    "attr_extractors": [
+      {
+        "attr": "heading",
+        "extract": "text",
+        "selector": ".sgs-form-review__heading"
+      }
+    ],
+    "block_name": "sgs/form-review",
+    "block_type": "dynamic",
+    "category": "sgs-forms",
+    "optional_features": [],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-form-review",
+        "wp-block-sgs-form-review"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/form-step": {
+    "attr_extractors": [
+      {
+        "attr": "label",
+        "extract": "text",
+        "selector": ".sgs-form-step__label"
+      }
+    ],
+    "block_name": "sgs/form-step",
+    "block_type": "dynamic",
+    "category": "sgs-forms",
+    "optional_features": [],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-form-step",
+        "wp-block-sgs-form-step"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/gallery": {
+    "attr_extractors": [],
+    "block_name": "sgs/gallery",
+    "block_type": "dynamic",
+    "category": "sgs-content",
+    "optional_features": [
+      "hover",
+      "colour",
+      "transition"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-gallery",
+        "wp-block-sgs-gallery"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/google-reviews": {
+    "attr_extractors": [],
+    "block_name": "sgs/google-reviews",
+    "block_type": "dynamic",
+    "category": "sgs-content",
+    "optional_features": [
+      "colour"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-google-reviews",
+        "wp-block-sgs-google-reviews"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/heritage-strip": {
+    "attr_extractors": [
+      {
+        "attr": "headline",
+        "extract": "text",
+        "selector": ".sgs-heritage-strip__headline, h1, h2"
+      }
+    ],
+    "block_name": "sgs/heritage-strip",
+    "block_type": "static",
+    "category": "sgs-content",
+    "optional_features": [
+      "background-colour",
+      "colour",
+      "typography",
+      "hover",
+      "transition"
+    ],
+    "required_features": [
+      "headline"
+    ],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-heritage-strip",
+        "wp-block-sgs-heritage-strip"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/hero": {
+    "attr_extractors": [
+      {
+        "attr": "headline",
+        "extract": "text",
+        "selector": ".sgs-hero__headline, h1, h2"
+      },
+      {
+        "attr": "subHeadline",
+        "extract": "text",
+        "selector": ".sgs-hero__sub-headline, p"
+      },
+      {
+        "attr": "ctaPrimaryText",
+        "extract": "text",
+        "selector": ".sgs-hero__cta--primary"
+      },
+      {
+        "attr": "ctaPrimaryUrl",
+        "extract": "href",
+        "selector": ".sgs-hero__cta--primary"
+      },
+      {
+        "attr": "ctaSecondaryText",
+        "extract": "text",
+        "selector": ".sgs-hero__cta--secondary"
+      },
+      {
+        "attr": "ctaSecondaryUrl",
+        "extract": "href",
+        "selector": ".sgs-hero__cta--secondary"
+      }
+    ],
+    "block_name": "sgs/hero",
+    "block_type": "dynamic",
+    "category": "sgs-layout",
+    "optional_features": [
+      "typography",
+      "alignment",
+      "background-image",
+      "overlay",
+      "split-image",
+      "background-video",
+      "svg",
+      "min-height",
+      "badges",
+      "background-colour",
+      "colour",
+      "hover",
+      "transition",
+      "parallax",
+      "ken-burns"
+    ],
+    "required_features": [
+      "headline",
+      "sub-headline",
+      "primary-cta",
+      "secondary-cta"
+    ],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-hero",
+        "wp-block-sgs-hero"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/icon": {
+    "attr_extractors": [],
+    "block_name": "sgs/icon",
+    "block_type": "dynamic",
+    "category": "sgs-content",
+    "optional_features": [
+      "colour",
+      "hover"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-icon",
+        "wp-block-sgs-icon"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/icon-block": {
+    "attr_extractors": [],
+    "block_name": "sgs/icon-block",
+    "block_type": "dynamic",
+    "category": "sgs-content",
+    "optional_features": [
+      "colour"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-icon-block",
+        "wp-block-sgs-icon-block"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/icon-list": {
+    "attr_extractors": [],
+    "block_name": "sgs/icon-list",
+    "block_type": "dynamic",
+    "category": "sgs-content",
+    "optional_features": [
+      "colour"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-icon-list",
+        "wp-block-sgs-icon-list"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/info-box": {
+    "attr_extractors": [
+      {
+        "attr": "heading",
+        "extract": "text",
+        "selector": ".sgs-info-box__heading"
+      },
+      {
+        "attr": "description",
+        "extract": "text",
+        "selector": ".sgs-info-box__description"
+      }
+    ],
+    "block_name": "sgs/info-box",
+    "block_type": "dynamic",
+    "category": "sgs-content",
+    "optional_features": [
+      "typography",
+      "colour",
+      "hover",
+      "transition",
+      "alignment"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-info-box",
+        "wp-block-sgs-info-box"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/mega-menu": {
+    "attr_extractors": [
+      {
+        "attr": "label",
+        "extract": "text",
+        "selector": ".sgs-mega-menu__label"
+      }
+    ],
+    "block_name": "sgs/mega-menu",
+    "block_type": "dynamic",
+    "category": "sgs-interactive",
+    "optional_features": [
+      "colour",
+      "hover"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-mega-menu",
+        "wp-block-sgs-mega-menu"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/mobile-nav": {
+    "attr_extractors": [
+      {
+        "attr": "ctaText",
+        "extract": "text",
+        "selector": ".sgs-mobile-nav__cta--primary"
+      },
+      {
+        "attr": "ctaUrl",
+        "extract": "href",
+        "selector": ".sgs-mobile-nav__cta--primary"
+      }
+    ],
+    "block_name": "sgs/mobile-nav",
+    "block_type": "dynamic",
+    "category": "sgs-interactive",
+    "optional_features": [
+      "colour",
+      "typography",
+      "hover"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-mobile-nav",
+        "wp-block-sgs-mobile-nav"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/modal": {
+    "attr_extractors": [],
+    "block_name": "sgs/modal",
+    "block_type": "dynamic",
+    "category": "sgs-interactive",
+    "optional_features": [
+      "colour",
+      "overlay"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-modal",
+        "wp-block-sgs-modal"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/notice-banner": {
+    "attr_extractors": [
+      {
+        "attr": "text",
+        "extract": "text",
+        "selector": ".sgs-notice-banner__text"
+      }
+    ],
+    "block_name": "sgs/notice-banner",
+    "block_type": "static",
+    "category": "sgs-content",
+    "optional_features": [
+      "colour",
+      "typography"
+    ],
+    "required_features": [
+      "text"
+    ],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-notice-banner",
+        "wp-block-sgs-notice-banner"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/post-grid": {
+    "attr_extractors": [],
+    "block_name": "sgs/post-grid",
+    "block_type": "dynamic",
+    "category": "sgs-content",
+    "optional_features": [
+      "colour",
+      "typography",
+      "hover",
+      "transition"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-post-grid",
+        "wp-block-sgs-post-grid"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/pricing-table": {
+    "attr_extractors": [],
+    "block_name": "sgs/pricing-table",
+    "block_type": "dynamic",
+    "category": "sgs-content",
+    "optional_features": [
+      "colour"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-pricing-table",
+        "wp-block-sgs-pricing-table"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/process-steps": {
+    "attr_extractors": [],
+    "block_name": "sgs/process-steps",
+    "block_type": "static",
+    "category": "sgs-content",
+    "optional_features": [
+      "colour",
+      "hover",
+      "transition"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-process-steps",
+        "wp-block-sgs-process-steps"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/reading-progress": {
+    "attr_extractors": [],
+    "block_name": "sgs/reading-progress",
+    "block_type": "dynamic",
+    "category": "sgs-interactive",
+    "optional_features": [
+      "colour"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-reading-progress",
+        "wp-block-sgs-reading-progress"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/social-icons": {
+    "attr_extractors": [],
+    "block_name": "sgs/social-icons",
+    "block_type": "dynamic",
+    "category": "sgs-content",
+    "optional_features": [
+      "colour",
+      "hover"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-social-icons",
+        "wp-block-sgs-social-icons"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/star-rating": {
+    "attr_extractors": [
+      {
+        "attr": "label",
+        "extract": "text",
+        "selector": ".sgs-star-rating__label"
+      }
+    ],
+    "block_name": "sgs/star-rating",
+    "block_type": "dynamic",
+    "category": "sgs-content",
+    "optional_features": [
+      "colour"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-star-rating",
+        "wp-block-sgs-star-rating"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/svg-background": {
+    "attr_extractors": [],
+    "block_name": "sgs/svg-background",
+    "block_type": "dynamic",
+    "category": "sgs-layout",
+    "optional_features": [
+      "svg",
+      "min-height"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-svg-background",
+        "wp-block-sgs-svg-background"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/tab": {
+    "attr_extractors": [
+      {
+        "attr": "label",
+        "extract": "text",
+        "selector": ".sgs-tab__label"
+      }
+    ],
+    "block_name": "sgs/tab",
+    "block_type": "static",
+    "category": "sgs-interactive",
+    "optional_features": [],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-tab",
+        "wp-block-sgs-tab"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/table-of-contents": {
+    "attr_extractors": [
+      {
+        "attr": "title",
+        "extract": "text",
+        "selector": ".sgs-table-of-contents__title"
+      }
+    ],
+    "block_name": "sgs/table-of-contents",
+    "block_type": "dynamic",
+    "category": "sgs-content",
+    "optional_features": [
+      "colour"
+    ],
+    "required_features": [
+      "title"
+    ],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-table-of-contents",
+        "wp-block-sgs-table-of-contents"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/tabs": {
+    "attr_extractors": [],
+    "block_name": "sgs/tabs",
+    "block_type": "dynamic",
+    "category": "sgs-interactive",
+    "optional_features": [
+      "colour",
+      "hover",
+      "transition"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-tabs",
+        "wp-block-sgs-tabs"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/team-member": {
+    "attr_extractors": [
+      {
+        "attr": "name",
+        "extract": "text",
+        "selector": ".sgs-team-member__name"
+      },
+      {
+        "attr": "role",
+        "extract": "text",
+        "selector": ".sgs-team-member__role"
+      }
+    ],
+    "block_name": "sgs/team-member",
+    "block_type": "dynamic",
+    "category": "sgs-content",
+    "optional_features": [
+      "colour",
+      "hover",
+      "transition"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-team-member",
+        "wp-block-sgs-team-member"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/testimonial": {
+    "attr_extractors": [
+      {
+        "attr": "quote",
+        "extract": "text",
+        "selector": ".sgs-testimonial__quote"
+      },
+      {
+        "attr": "name",
+        "extract": "text",
+        "selector": ".sgs-testimonial__name"
+      },
+      {
+        "attr": "role",
+        "extract": "text",
+        "selector": ".sgs-testimonial__role"
+      }
+    ],
+    "block_name": "sgs/testimonial",
+    "block_type": "static",
+    "category": "sgs-content",
+    "optional_features": [
+      "colour",
+      "typography",
+      "hover",
+      "transition"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-testimonial",
+        "wp-block-sgs-testimonial"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/testimonial-slider": {
+    "attr_extractors": [],
+    "block_name": "sgs/testimonial-slider",
+    "block_type": "dynamic",
+    "category": "sgs-content",
+    "optional_features": [
+      "colour",
+      "typography",
+      "hover",
+      "transition"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-testimonial-slider",
+        "wp-block-sgs-testimonial-slider"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/trust-badges": {
+    "attr_extractors": [],
+    "block_name": "sgs/trust-badges",
+    "block_type": "dynamic",
+    "category": "sgs-content",
+    "optional_features": [
+      "colour"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-trust-badges",
+        "wp-block-sgs-trust-badges"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/trust-bar": {
+    "attr_extractors": [],
+    "block_name": "sgs/trust-bar",
+    "block_type": "static",
+    "category": "sgs-content",
+    "optional_features": [
+      "colour",
+      "typography",
+      "hover",
+      "transition"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-trust-bar",
+        "wp-block-sgs-trust-bar"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "sgs/whatsapp-cta": {
+    "attr_extractors": [
+      {
+        "attr": "label",
+        "extract": "text",
+        "selector": ".sgs-whatsapp-cta__label"
+      }
+    ],
+    "block_name": "sgs/whatsapp-cta",
+    "block_type": "static",
+    "category": "sgs-content",
+    "optional_features": [
+      "colour",
+      "typography"
+    ],
+    "required_features": [],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "sgs-whatsapp-cta",
+        "wp-block-sgs-whatsapp-cta"
+      ],
+      "tag": "section"
+    },
+    "source": "sgs"
+  },
+  "woocommerce/add-to-cart-form": {
+    "attr_extractors": [
+      {
+        "attr": "buttonText",
+        "extract": "text",
+        "selector": "button[type=submit]"
+      }
+    ],
+    "block_name": "woocommerce/add-to-cart-form",
+    "block_type": "dynamic",
+    "category": "woocommerce",
+    "optional_features": [
+      "quantity-selector",
+      "variations"
+    ],
+    "required_features": [
+      "add-to-cart-button"
+    ],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "wp-block-woocommerce-add-to-cart-form"
+      ],
+      "tag": "form"
+    },
+    "source": "wc"
+  },
+  "woocommerce/cart": {
+    "attr_extractors": [],
+    "block_name": "woocommerce/cart",
+    "block_type": "dynamic",
+    "category": "woocommerce",
+    "optional_features": [
+      "coupon",
+      "shipping-calculator",
+      "cross-sells"
+    ],
+    "required_features": [
+      "cart-items"
+    ],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "wp-block-woocommerce-cart"
+      ],
+      "tag": "div"
+    },
+    "source": "wc"
+  },
+  "woocommerce/checkout": {
+    "attr_extractors": [],
+    "block_name": "woocommerce/checkout",
+    "block_type": "dynamic",
+    "category": "woocommerce",
+    "optional_features": [
+      "coupon",
+      "order-notes",
+      "express-payments"
+    ],
+    "required_features": [
+      "checkout-form"
+    ],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "wp-block-woocommerce-checkout"
+      ],
+      "tag": "div"
+    },
+    "source": "wc"
+  },
+  "woocommerce/product-collection": {
+    "attr_extractors": [],
+    "block_name": "woocommerce/product-collection",
+    "block_type": "dynamic",
+    "category": "woocommerce",
+    "optional_features": [
+      "pagination",
+      "filters",
+      "sort"
+    ],
+    "required_features": [
+      "product-grid"
+    ],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "wp-block-woocommerce-product-collection"
+      ],
+      "tag": "div"
+    },
+    "source": "wc"
+  },
+  "woocommerce/single-product": {
+    "attr_extractors": [
+      {
+        "attr": "title",
+        "extract": "text",
+        "selector": ".product_title"
+      },
+      {
+        "attr": "price",
+        "extract": "text",
+        "selector": ".price"
+      }
+    ],
+    "block_name": "woocommerce/single-product",
+    "block_type": "dynamic",
+    "category": "woocommerce",
+    "optional_features": [
+      "gallery",
+      "tabs",
+      "related-products"
+    ],
+    "required_features": [
+      "product-title",
+      "product-price"
+    ],
+    "required_html_pattern": {
+      "class_includes_any": [
+        "wp-block-woocommerce-single-product"
+      ],
+      "tag": "div"
+    },
+    "source": "wc"
+  }
+}
