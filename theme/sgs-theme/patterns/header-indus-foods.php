@@ -1,3 +1,15 @@
+<?php
+/**
+ * Title: Indus Foods Header
+ * Slug: sgs-theme/header-indus-foods
+ * Categories: header
+ * Block Types: core/template-part/header
+ * Inserter: yes
+ *
+ * @package sgs-theme
+ */
+
+?>
 <!-- wp:html -->
 <a class="skip-link" href="#main">Skip to main content</a>
 <!-- /wp:html -->
@@ -9,7 +21,6 @@
 	<!-- wp:group {"style":{"spacing":{"padding":{"top":"8px","bottom":"8px","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"primary","layout":{"type":"flex","justifyContent":"space-between","flexWrap":"nowrap"},"metadata":{"name":"Top Bar"},"className":"sgs-header-top-bar"} -->
 	<div class="wp-block-group sgs-header-top-bar has-primary-background-color has-background" style="padding-top:8px;padding-right:var(--wp--preset--spacing--40);padding-bottom:8px;padding-left:var(--wp--preset--spacing--40)">
 
-		<!-- Desktop left: phone + email pills (auto-populated from Business Details) -->
 		<!-- wp:group {"layout":{"type":"flex","flexWrap":"nowrap"},"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"className":"sgs-top-bar-desktop-pills"} -->
 		<div class="wp-block-group sgs-top-bar-desktop-pills" style="gap:var(--wp--preset--spacing--40)">
 			<!-- wp:sgs/business-info {"type":"phone","linkPhone":true,"showIcon":true,"textColor":"surface","fontSize":"medium","style":{"typography":{"fontWeight":"600"}}} /-->
@@ -18,18 +29,24 @@
 		</div>
 		<!-- /wp:group -->
 
-		<!-- Mobile CTA buttons (hidden on desktop, fully editable via block editor) -->
 		<!-- wp:group {"layout":{"type":"flex","flexWrap":"nowrap"},"className":"sgs-top-bar-mobile-cta"} -->
 		<div class="wp-block-group sgs-top-bar-mobile-cta">
 			<!-- wp:button {"textColor":"primary-dark","backgroundColor":"surface","className":"sgs-top-bar-mobile-cta__btn","style":{"border":{"radius":"50px"},"typography":{"fontSize":"0.8125rem","fontWeight":"600"},"spacing":{"padding":{"top":"8px","bottom":"8px","left":"14px","right":"14px"}}}} -->
-			<div class="wp-block-button sgs-top-bar-mobile-cta__btn"><a class="wp-block-button__link has-text-color has-primary-dark-color has-background has-surface-background-color wp-element-button" href="/contact/" style="border-radius:50px;font-size:0.8125rem;font-weight:600;padding-top:8px;padding-right:14px;padding-bottom:8px;padding-left:14px">Get in Touch</a></div>
+			<div class="wp-block-button sgs-top-bar-mobile-cta__btn"><a class="wp-block-button__link has-text-color has-primary-dark-color has-background has-surface-background-color wp-element-button" href="/apply-for-trade-account/" style="border-radius:50px;font-size:0.8125rem;font-weight:600;padding-top:8px;padding-right:14px;padding-bottom:8px;padding-left:14px">Apply For Trade Account</a></div>
 			<!-- /wp:button -->
 
 			<!-- wp:sgs/business-info {"type":"phone","linkPhone":true,"showIcon":true,"textColor":"surface","fontSize":"small","style":{"typography":{"fontWeight":"600"}},"className":"sgs-top-bar-mobile-cta__btn sgs-top-bar-mobile-cta__btn--call"} /-->
 		</div>
 		<!-- /wp:group -->
 
-		<!-- wp:sgs/business-info {"type":"socials","className":"sgs-top-bar-socials"} /-->
+		<!-- wp:social-links {"iconColor":"surface","iconColorValue":"#FFFFFF","size":"has-normal-icon-size","className":"is-style-logos-only sgs-top-bar-socials"} -->
+		<ul class="wp-block-social-links has-normal-icon-size has-icon-color is-style-logos-only sgs-top-bar-socials">
+			<!-- wp:social-link {"url":"https://www.linkedin.com/company/indus-foods-ltd/","service":"linkedin"} /-->
+			<!-- wp:social-link {"url":"https://www.facebook.com/indusfoodsltd/","service":"facebook"} /-->
+			<!-- wp:social-link {"url":"https://g.page/r/CYLLa_01-rZvEAE/review","service":"google"} /-->
+			<!-- wp:social-link {"url":"https://www.instagram.com/indusfoodsltd/","service":"instagram"} /-->
+		</ul>
+		<!-- /wp:social-links -->
 
 	</div>
 	<!-- /wp:group -->
@@ -43,7 +60,6 @@
 		<!-- wp:group {"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"right"},"metadata":{"name":"Navigation and CTA"}} -->
 		<div class="wp-block-group">
 
-			<!-- Mobile nav toggle button (hamburger) — triggers Popover API drawer -->
 			<!-- wp:html -->
 			<button class="sgs-mobile-nav-toggle" popovertarget="sgs-mobile-nav" aria-label="Open navigation menu">
 				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -54,15 +70,13 @@
 
 			<!-- wp:navigation {"textColor":"text","layout":{"type":"flex","justifyContent":"right"},"style":{"typography":{"fontWeight":"600"},"spacing":{"blockGap":"var:preset|spacing|40"}},"fontSize":"medium"} /-->
 
-
 		</div>
 		<!-- /wp:group -->
 
 	</div>
 	<!-- /wp:group -->
 
-	<!-- Mobile navigation drawer — SGS block with Popover API, spring animation, stagger cascade -->
-	<!-- wp:sgs/mobile-nav {"variant":"overlay"} /-->
+	<!-- wp:sgs/mobile-nav {"variant":"overlay","ctaText":"Apply for Trade","ctaUrl":"/apply-for-trade-account/"} /-->
 
 </div>
 <!-- /wp:group -->

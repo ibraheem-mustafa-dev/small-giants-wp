@@ -1,0 +1,47 @@
+<?php
+/**
+ * Title: Mamas Munches Header
+ * Slug: sgs-theme/header-mamas-munches
+ * Categories: header
+ * Block Types: core/template-part/header
+ * Inserter: yes
+ *
+ * @package sgs-theme
+ */
+
+?>
+<!-- wp:html -->
+<a class="skip-link" href="#main">Skip to main content</a>
+<!-- /wp:html -->
+
+<!-- wp:group {"style":{"spacing":{"padding":{"top":"0","bottom":"0","left":"0","right":"0"}}},"backgroundColor":"surface","layout":{"type":"default"},"metadata":{"name":"Site Header"}} -->
+<div class="wp-block-group has-surface-background-color has-background" style="padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
+
+	<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|30","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"layout":{"type":"flex","justifyContent":"space-between","flexWrap":"nowrap"},"metadata":{"name":"Main Navigation"}} -->
+	<div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--40)">
+
+		<!-- wp:site-logo {"width":180,"shouldSyncIcon":true} /-->
+
+		<!-- wp:group {"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"right"},"metadata":{"name":"Navigation and CTA"}} -->
+		<div class="wp-block-group">
+
+			<!-- wp:html -->
+			<button class="sgs-mobile-nav-toggle" popovertarget="sgs-mobile-nav" aria-label="Open navigation menu">
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+					<path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+				</svg>
+			</button>
+			<!-- /wp:html -->
+
+			<!-- wp:navigation {"textColor":"text","layout":{"type":"flex","justifyContent":"right"},"style":{"typography":{"fontWeight":"600"},"spacing":{"blockGap":"var:preset|spacing|40"}},"fontSize":"medium"} /-->
+
+		</div>
+		<!-- /wp:group -->
+
+	</div>
+	<!-- /wp:group -->
+
+	<!-- wp:sgs/mobile-nav {"variant":"overlay"} /-->
+
+</div>
+<!-- /wp:group -->

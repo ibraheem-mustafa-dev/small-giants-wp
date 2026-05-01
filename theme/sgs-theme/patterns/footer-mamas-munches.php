@@ -1,0 +1,71 @@
+<?php
+/**
+ * Title: Mamas Munches Footer
+ * Slug: sgs-theme/footer-mamas-munches
+ * Categories: footer
+ * Block Types: core/template-part/footer
+ * Inserter: yes
+ *
+ * @package sgs-theme
+ */
+
+?>
+<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"primary","layout":{"type":"constrained"},"metadata":{"name":"Site Footer"}} -->
+<div class="wp-block-group has-primary-background-color has-background" style="padding-top:var(--wp--preset--spacing--60);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
+
+	<!-- wp:columns {"isStackedOnMobile":true} -->
+	<div class="wp-block-columns is-layout-flex">
+
+		<!-- wp:column {"width":"40%"} -->
+		<div class="wp-block-column" style="flex-basis:40%">
+
+			<!-- wp:site-logo {"width":150,"shouldSyncIcon":true} /-->
+
+			<!-- wp:paragraph {"textColor":"text-inverse"} -->
+			<p class="has-text-inverse-color has-text-color">Real food for real mums. Handmade in Birmingham with care.</p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:paragraph {"textColor":"text-inverse","style":{"typography":{"fontSize":"0.875rem"}}} -->
+			<p class="has-text-inverse-color has-text-color" style="font-size:0.875rem">Birmingham, UK &nbsp;·&nbsp; <a href="mailto:Zainab@mamasmunches.com">Zainab@mamasmunches.com</a></p>
+			<!-- /wp:paragraph -->
+
+		</div>
+		<!-- /wp:column -->
+
+		<!-- wp:column {"width":"30%"} -->
+		<div class="wp-block-column" style="flex-basis:30%">
+
+			<!-- wp:heading {"level":3,"textColor":"text-inverse","style":{"typography":{"fontWeight":"700"}}} -->
+			<h3 class="wp-block-heading has-text-inverse-color has-text-color" style="font-weight:700">Shop</h3>
+			<!-- /wp:heading -->
+
+			<!-- wp:paragraph {"textColor":"text-inverse","style":{"typography":{"fontSize":"0.875rem"}}} -->
+			<p class="has-text-inverse-color has-text-color" style="font-size:0.875rem"><a href="/shop/">All Products</a><br><a href="/product/zookies/">Zookies</a><br><a href="/product/trial-pack/">Trial Pack (£5)</a><br><a href="/gift-ideas/">Gift Ideas</a><br><a href="/send-to-ward/">Send to Ward</a><br><a href="/about/">Our Story</a><br><a href="/faqs/">FAQs</a></p>
+			<!-- /wp:paragraph -->
+
+		</div>
+		<!-- /wp:column -->
+
+		<!-- wp:column {"width":"30%"} -->
+		<div class="wp-block-column" style="flex-basis:30%">
+
+			<!-- wp:heading {"level":3,"textColor":"text-inverse","style":{"typography":{"fontWeight":"700"}}} -->
+			<h3 class="wp-block-heading has-text-inverse-color has-text-color" style="font-weight:700">Information</h3>
+			<!-- /wp:heading -->
+
+			<!-- wp:paragraph {"textColor":"text-inverse","style":{"typography":{"fontSize":"0.875rem"}}} -->
+			<p class="has-text-inverse-color has-text-color" style="font-size:0.875rem"><a href="/privacy-policy/">Privacy Policy</a><br><a href="/shipping/">Shipping Info</a><br><a href="/terms/">Terms &amp; Conditions</a><br><a href="/allergens/">Allergen Information</a><br><a href="/contact/">Contact Us</a></p>
+			<!-- /wp:paragraph -->
+
+		</div>
+		<!-- /wp:column -->
+
+	</div>
+	<!-- /wp:columns -->
+
+	<!-- wp:paragraph {"textColor":"text-inverse","align":"center","style":{"typography":{"fontSize":"0.8rem"},"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
+	<p class="has-text-inverse-color has-text-color has-text-align-center" style="font-size:0.8rem;margin-top:var(--wp--preset--spacing--40)">&#169; 2026 Mama&#39;s Munches. Registered Food Business, Birmingham.</p>
+	<!-- /wp:paragraph -->
+
+</div>
+<!-- /wp:group -->

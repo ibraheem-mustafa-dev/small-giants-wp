@@ -1,3 +1,15 @@
+<?php
+/**
+ * Title: Indus Foods Footer
+ * Slug: sgs-theme/footer-indus-foods
+ * Categories: footer
+ * Block Types: core/template-part/footer
+ * Inserter: yes
+ *
+ * @package sgs-theme
+ */
+
+?>
 <!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"0","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"footer-bg","layout":{"type":"constrained","wideSize":"1200px"},"metadata":{"name":"Site Footer"}} -->
 <div class="wp-block-group has-footer-bg-background-color has-background" style="padding-top:var(--wp--preset--spacing--60);padding-right:var(--wp--preset--spacing--40);padding-bottom:0;padding-left:var(--wp--preset--spacing--40)">
 
@@ -25,25 +37,22 @@
 			<!-- wp:list {"style":{"spacing":{"padding":{"left":"0"}},"typography":{"lineHeight":"2.2"}},"className":"is-style-no-bullets","fontSize":"small"} -->
 			<ul class="is-style-no-bullets has-small-font-size" style="padding-left:0;line-height:2.2">
 				<!-- wp:list-item -->
-				<li><a href="/">Home</a></li>
+				<li><a href="/certifications/">Certifications</a></li>
 				<!-- /wp:list-item -->
 				<!-- wp:list-item -->
-				<li><a href="/about/">About</a></li>
+				<li><a href="/apply-for-trade-account/">Trade</a></li>
 				<!-- /wp:list-item -->
 				<!-- wp:list-item -->
-				<li><a href="/services/">Services</a></li>
+				<li><a href="/brands/">Brands</a></li>
+				<!-- /wp:list-item -->
+				<!-- wp:list-item -->
+				<li><a href="/delivery-logistics/">Delivery &amp; Logistics</a></li>
+				<!-- /wp:list-item -->
+				<!-- wp:list-item -->
+				<li><a href="/terms-conditions/">Terms &amp; Conditions</a></li>
 				<!-- /wp:list-item -->
 				<!-- wp:list-item -->
 				<li><a href="/blog/">Blog</a></li>
-				<!-- /wp:list-item -->
-				<!-- wp:list-item -->
-				<li><a href="/contact/">Contact</a></li>
-				<!-- /wp:list-item -->
-				<!-- wp:list-item -->
-				<li><a href="/privacy-policy/">Privacy Policy</a></li>
-				<!-- /wp:list-item -->
-				<!-- wp:list-item -->
-				<li><a href="/terms/">Terms &amp; Conditions</a></li>
 				<!-- /wp:list-item -->
 			</ul>
 			<!-- /wp:list -->
@@ -76,7 +85,7 @@
 
 			<!-- wp:buttons {"style":{"spacing":{"margin":{"top":"var:preset|spacing|30"}}}} -->
 			<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--30)"><!-- wp:button {"textColor":"text","backgroundColor":"accent","style":{"border":{"radius":"8px"}}} -->
-			<div class="wp-block-button"><a class="wp-block-button__link has-text-color has-background has-accent-background-color has-text-color wp-element-button" href="/contact/" style="border-radius:8px">Get Directions &#8594;</a></div>
+			<div class="wp-block-button"><a class="wp-block-button__link has-text-color has-background has-accent-background-color has-text-color wp-element-button" href="https://maps.google.com/?cid=7952814055868010143" style="border-radius:8px">Get Directions &#8594;</a></div>
 			<!-- /wp:button --></div>
 			<!-- /wp:buttons -->
 		</div>
