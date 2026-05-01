@@ -36,6 +36,15 @@
     "root": ".wp-block-sgs-icon-block"
   },
   "attributes": {
+    "iconType": {
+      "type": "string",
+      "enum": [ "lucide", "emoji" ],
+      "default": "lucide"
+    },
+    "emoji": {
+      "type": "string",
+      "default": ""
+    },
     "icon": {
       "type": "string",
       "default": "star"

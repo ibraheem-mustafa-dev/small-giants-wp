@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, TextControl, RangeControl, SelectControl, ToggleControl } from '@wordpress/components';
+import { PanelBody, TextControl, RangeControl, SelectControl, ToggleControl, RadioControl } from '@wordpress/components';
 import { DesignTokenPicker } from '../../components';
 import { colourVar } from '../../utils';
 
@@ -11,8 +11,13 @@ const SHAPE_OPTIONS = [
 	{ label: __( 'Square', 'sgs-blocks' ), value: 'square' },
 ];
 
+const ICON_TYPE_OPTIONS = [
+	{ label: __( 'Lucide', 'sgs-blocks' ), value: 'lucide' },
+	{ label: __( 'Emoji', 'sgs-blocks' ), value: 'emoji' },
+];
+
 export default function Edit( { attributes, setAttributes } ) {
-	const { icon, iconColour, iconSize, backgroundColour, link, linkLabel, linkOpensNewTab, shape } = attributes;
+	const { iconType = 'lucide', emoji = '', icon, iconColour, iconSize, backgroundColour, link, linkLabel, linkOpensNewTab, shape } = attributes;
 
 	const style = {
 		color: colourVar( iconColour ) || undefined,
@@ -26,7 +31,23 @@ export default function Edit( { attributes, setAttributes } ) {
 		<>
 			<InspectorControls>
 				<PanelBody title={ __( 'Icon Settings', 'sgs-blocks' ) }>
-					<TextControl label={ __( 'Icon name (Lucide)', 'sgs-blocks' ) } value={ icon } onChange={ ( val ) => setAttributes( { icon: val } ) } help={ __( 'Enter a Lucide icon name, e.g. star, heart, mail, phone', 'sgs-blocks' ) } __nextHasNoMarginBottom />
+					<RadioControl
+						label={ __( 'Icon source', 'sgs-blocks' ) }
+						selected={ iconType }
+						options={ ICON_TYPE_OPTIONS }
+						onChange={ ( val ) => setAttributes( { iconType: val } ) }
+					/>
+					{ iconType === 'emoji' ? (
+						<TextControl
+							label={ __( 'Emoji', 'sgs-blocks' ) }
+							value={ emoji }
+							onChange={ ( val ) => setAttributes( { emoji: val } ) }
+							help={ __( 'Paste any single emoji character.', 'sgs-blocks' ) }
+							__nextHasNoMarginBottom
+						/>
+					) : (
+						<TextControl label={ __( 'Icon name (Lucide)', 'sgs-blocks' ) } value={ icon } onChange={ ( val ) => setAttributes( { icon: val } ) } help={ __( 'Enter a Lucide icon name, e.g. star, heart, mail, phone', 'sgs-blocks' ) } __nextHasNoMarginBottom />
+					) }
 					<RangeControl label={ __( 'Size (px)', 'sgs-blocks' ) } value={ iconSize } onChange={ ( val ) => setAttributes( { iconSize: val } ) } min={ 16 } max={ 128 } __nextHasNoMarginBottom />
 					<SelectControl label={ __( 'Shape', 'sgs-blocks' ) } value={ shape } options={ SHAPE_OPTIONS } onChange={ ( val ) => setAttributes( { shape: val } ) } __nextHasNoMarginBottom />
 				</PanelBody>
@@ -51,7 +72,18 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 			</InspectorControls>
 			<div { ...blockProps }>
-				<span className="sgs-icon-block__icon" aria-hidden="true" dangerouslySetInnerHTML={ { __html: `<svg width="${ iconSize }" height="${ iconSize }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>` } } />
+				{ iconType === 'emoji' && emoji ? (
+					<span
+						className="sgs-icon-block__emoji"
+						role="img"
+						aria-label={ __( 'Selected emoji', 'sgs-blocks' ) }
+						style={ { fontSize: iconSize + 'px', lineHeight: 1 } }
+					>
+						{ emoji }
+					</span>
+				) : (
+					<span className="sgs-icon-block__icon" aria-hidden="true" dangerouslySetInnerHTML={ { __html: `<svg width="${ iconSize }" height="${ iconSize }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>` } } />
+				) }
 			</div>
 		</>
 	);

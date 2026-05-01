@@ -14,6 +14,8 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 
+$icon_type         = $attributes['iconType'] ?? 'lucide';
+$emoji             = $attributes['emoji'] ?? '';
 $icon              = $attributes['icon'] ?? 'star';
 $icon_colour       = $attributes['iconColour'] ?? 'primary';
 $icon_size         = (int) ( $attributes['iconSize'] ?? 48 );
@@ -42,12 +44,20 @@ $wrapper = get_block_wrapper_attributes( [
 	'style' => implode( ';', $styles ) . ';',
 ] );
 
-$icon_svg = sgs_get_lucide_icon( $icon );
+if ( 'emoji' === $icon_type && '' !== $emoji ) {
+	$inner = sprintf(
+		'<span class="sgs-icon-block__emoji" role="img" aria-hidden="true" style="font-size:%dpx;line-height:1;">%s</span>',
+		$icon_size,
+		esc_html( $emoji )
+	);
+} else {
+	$icon_svg = sgs_get_lucide_icon( $icon );
 
-$inner = sprintf(
-	'<span class="sgs-icon-block__icon" aria-hidden="true">%s</span>',
-	$icon_svg
-);
+	$inner = sprintf(
+		'<span class="sgs-icon-block__icon" aria-hidden="true">%s</span>',
+		$icon_svg
+	);
+}
 
 if ( $link ) {
 	$target = $link_new_tab ? ' target="_blank" rel="noopener noreferrer"' : '';
