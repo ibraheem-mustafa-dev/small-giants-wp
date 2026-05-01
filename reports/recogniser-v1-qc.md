@@ -80,15 +80,59 @@ Adjusted gate: **≥4 full, ≤4 partial+fallback, ≤2 deferred.** Actual run: 
 
 ## Module 4 — Style Extractor
 
-(Pending — Task 4 dispatch.)
+**Gate:** ≥80% of mockup colours map to existing tokens within ΔE<5.
+
+| Metric | Target | Actual | Pass |
+|---|---|---|---|
+| Colour match | ≥80% | 90.9% (10/11) | ✅ |
+| Spacing tokens | (informational) | 14 | — |
+| Hover rules | (informational) | 10 | — |
+| Misses | (informational) | 1 (`#00b67a` Trustpilot brand green) | — |
+
+Notes:
+- Mockup uses exact palette hexes — most matches are ΔE = 0.0.
+- Single legitimate miss is `#00b67a` (Trustpilot brand green), nearest `success` at ΔE 26.14. Not a palette gap; brand-external colour.
+- Added `spacing_misses` field beyond spec — useful for the gap detector, doesn't break documented schema.
 
 ## Module 5 — Serialiser
 
-(Pending — Task 4 dispatch.)
+**Gate:** `validate()` returns True; output is byte-for-byte WP-compatible.
+
+| Metric | Target | Actual | Pass |
+|---|---|---|---|
+| `validate()` | True | True | ✅ |
+| Top-level blocks | ≥6 | 7 | ✅ |
+| Total openers (incl. nested) | (informational) | 14 | — |
+| Header/footer skipped | yes (Module 6 routes) | yes (`site-header`, `shop`) | ✅ |
+
+Notes:
+- All SGS blocks emitted as self-closing dynamic per spec, regardless of fingerprint catalogue's `block_type` declaration.
+- Deferred section emitted as `core/group` placeholder with the note as an inline HTML comment — preserves the deferral marker for downstream replacement.
 
 ## Module 6 — Output Router
 
-(Pending — Task 4 dispatch.)
+**Gate:** All five output files written and non-empty; pattern PHP headers valid.
+
+| Output file | Bytes | Pass |
+|---|---:|---|
+| `theme/sgs-theme/parts/header-mamas-munches.html` | 165 | ✅ |
+| `theme/sgs-theme/parts/footer-mamas-munches.html` | 1,178 | ✅ |
+| `theme/sgs-theme/patterns/header-mamas-munches.php` | 343 | ✅ |
+| `theme/sgs-theme/patterns/footer-mamas-munches.php` | 1,356 | ✅ |
+| `reports/mamas-munches-page-content.html` | 4,871 | ✅ |
+
+WP-CLI command emitted (for Task 6 deploy):
+```bash
+wp post create --post_type=page --post_status=publish \
+  --post_title='Mamas Munches Homepage Test' \
+  --post_name=mamas-munches-homepage-test \
+  --post_content="$(cat reports/mamas-munches-page-content.html)"
+```
+
+Notes:
+- Module 6 first ran in parallel with Module 5 and used the fallback stub serialiser. Re-run after Module 5 was committed — outputs now use the production serialiser.
+- No aside sections in decisions; aside-fallback path untested in this run.
+- Generic `parts/header.html` / `parts/footer.html` left untouched — only slug-suffixed variants written.
 
 ## 4 Gap Fixes
 
