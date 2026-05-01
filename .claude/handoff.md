@@ -134,27 +134,50 @@ Use `/research-check` for WP-conventions questions: `parse_blocks()` + `serializ
 
 Open `https://sandybrown-nightingale-600381.hostingersite.com/wp-admin/post.php?post=5&action=edit` (use Playwright; admin user is `Claude`, password is whatever `wp core install` set during the previous session — reset via `ssh -p 65002 ... wp user update Claude --user_pass=NEWPASS` if you need to). Screenshot the editor and note which blocks show "Block contains unexpected or invalid content." Save the screenshot to `reports/visual-diff/editor-validation-errors.png`. Click "Attempt Block Recovery" on the first invalid block, save, and reload the frontend. Does ingredient content appear? If yes, diagnosis confirmed.
 
-## Task 2: Add a deploy-time validation guard for synthesised post_content (new defence layer)
+## Task 2: Add a build-time canonicalisation step + runtime safety net (per 2026-05-01 research-buddies finding)
 
-This is BOTH the fix for this session's symptom AND the procedural guard so the issue never recurs (Bean explicit ask).
+**Diagnosis updated post-handoff (research at `reports/research/2026-05-01-block-validation-prevention-canonical-pattern.md`).** The Playwright-recovery approach this section originally proposed is the wrong layer — it's a deploy-time fix to a build-time problem. The canonical pattern used by every major block plugin is build-time canonicalisation + runtime safety net.
 
-**Existing source-level guard:** `plugins/sgs-blocks/scripts/audit-block-uniformity.py` runs as a pre-commit hook when any `block.json` is staged. It catches static-block source bugs (missing deprecations, `source: html` on dynamic blocks, etc.). It is correct and stays unchanged.
+**Existing source-level guard:** `plugins/sgs-blocks/scripts/audit-block-uniformity.py` runs as a pre-commit hook when any `block.json` is staged. It catches static-block source bugs. It stays unchanged.
 
-**New deploy-level guard required.** The audit hook fires on local `block.json` edits — it can't see WP-CLI calls that write synthesised `post_content` to a remote DB. The recogniser pipeline (and any future importer / migration script) operates at a layer the source audit doesn't reach. The next session must add a deploy-time defence:
+**New layers required (three of them, additive):**
 
-**IMPORTANT — hook signal caught during this handoff write:** the project has a guard that blocks Bash commands containing the post_content-evaluation pattern (`wp eval-file` against post_content), with the message *"Never modify post_content directly. Use the Site Editor or `wp.data.dispatch()` via Playwright instead."* That's a stronger directive than the round-trip pattern in `specs/common-wp-styling-errors.md` B4. The canonical fix is therefore **Playwright-driven Site Editor recovery**, not server-side parse/reserialize.
+### Layer A — Build-time canonicalisation (the actual fix)
 
-After `/brainstorming` (decide: implement inside Module 6, as a new Module 7, as a post-deploy hook, as a `/deploy-check` rule, OR as a hybrid), build a guard with this preferred shape:
+Before any `wp post create`, run `@wordpress/blocks` parse+serialize as a Node step on the recogniser's serialised markup. This is the same JS code the editor uses internally; running it locally produces canonical markup the editor accepts on first open, with zero validation errors.
 
-1. Write `tools/recogniser/playwright/recover-blocks.js` — Playwright script that opens `/wp-admin/post.php?post=$ID&action=edit`, waits for the editor, runs `wp.data.dispatch('core/block-editor').replaceBlocks(...)` (or scripts the per-block "Attempt Block Recovery" via `wp.data.select('core/block-editor').getBlocks()` + `attemptValidation()` per the @wordpress/blocks API), then `wp.data.dispatch('core/editor').savePost()`. WordPress's editor logic regenerates correct save HTML from attributes, and the save persists through the normal flow — no direct DB writes.
-2. Write `tools/recogniser/playwright/verify-no-validation-errors.js` — opens the editor, asserts zero ".block-editor-warning" elements present, and zero `wp.data.select('core').isResolving` issues. Fails loud if any block shows the invalid-content warning.
-3. Update Module 6 (`tools/recogniser/output_router.py`) so its emitted deploy sequence is now: `wp post create --porcelain` → `node tools/recogniser/playwright/recover-blocks.js --post-id=$ID --site=$URL --user=$USER --password=$PASS` → `node tools/recogniser/playwright/verify-no-validation-errors.js --post-id=$ID`. The third step is a **hard gate** — non-zero exit aborts the deploy.
-4. Update `/deploy-check` (or add a new SGS-deploy-check rule) so any deploy that includes synthesised post_content runs the Playwright recovery + verify automatically.
-5. Update `specs/common-wp-styling-errors.md` B4 to note the canonical fix is Playwright-driven Site Editor recovery (NOT server-side parse/reserialize, which is blocked by the project's post_content guard); reference the implementation files.
-6. Capture the prevention pattern itself in a new auto-memory entry `feedback_synth_markup_must_roundtrip.md` so it survives across sessions and surfaces in MEMORY.md. Include the hook-signal context — explain WHY the server-side approach is blocked (single source of truth = the editor flow).
-7. **Decide the layer relationship explicitly:** the deploy-time guard is *additive* to `audit-block-uniformity.py`, not a replacement. Document the two-layer model (source-time audit + deploy-time Playwright recovery + verify) in the deploy-check skill so future sessions don't accidentally collapse the layers or remove either one.
+1. Add `@wordpress/blocks` to `plugins/sgs-blocks/package.json` if not already a transitive dep.
+2. Write `tools/recogniser/node/canonicalise-blocks.js`:
+   ```js
+   #!/usr/bin/env node
+   const { parse, serialize } = require('@wordpress/blocks');
+   const fs = require('fs');
+   const raw = fs.readFileSync(process.argv[2] || '/dev/stdin', 'utf8');
+   process.stdout.write(serialize(parse(raw)));
+   ```
+3. Update `tools/recogniser/output_router.py` to pipe its `mamas-munches-page-content.html` through `node tools/recogniser/node/canonicalise-blocks.js` before emitting the WP-CLI command. Output goes into the file SCP'd up + read by `wp post create --post_content="$(cat ~/page-content.html)"`.
+4. **Quick verification** (Bean's first move next session, ~10 min): run the canonicaliser on the existing `reports/mamas-munches-page-content.html`, diff old-vs-new, then create one test page on sandybrown and open in the editor. Zero validation errors confirms the assumption (~95% confidence per Round 1 research). If edge cases remain, Layer B catches them.
 
-If `/brainstorming` surfaces a strong reason to use the server-side parse/reserialize pattern despite the hook block (e.g. the hook is overly broad), surface it to Bean for review — don't silently bypass with `--no-verify` or rephrasing to evade the guard.
+### Layer B — Runtime safety net
+
+Install `auto-block-recovery` (https://wordpress.org/plugins/auto-block-recovery/) on every SGS client site, or fork its ~100 lines of JS into the sgs-blocks plugin directly (Spectra's pattern — see `brainstormforce/wp-spectra/blocks-config/uagb-controls/autoBlockRecovery.js`). It silently runs `createBlock(name, attrs, innerBlocks)` on every editor load, throwing away stale stored HTML and rebuilding from attributes. Lossless as long as attributes are the source of truth.
+
+5. Decide via `/brainstorming`: bundle `auto-block-recovery` as a recommended plugin in the SGS deploy-check, OR fork the recovery JS into sgs-blocks (preferred — fewer dependencies, controllable). If fork: drop the JS into `plugins/sgs-blocks/src/auto-recovery/index.js`, register it as an editor asset via `enqueue_block_editor_assets`.
+
+### Layer C — Long-term structural
+
+6. Audit all 59 SGS blocks via `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py block sgs/<name>` (or query the DB directly). Flag any block where `block_type = 'static'` AND `save.js` returns non-null markup. Convert each to `save: () => null` + `render.php`, with a deprecation entry covering the old save shape. Eliminates the entire class of validation errors caused by future SGS plugin updates.
+
+### Documentation + procedural guard
+
+7. Update `specs/common-wp-styling-errors.md` B4 to reflect the three-layer pattern (the current entry already mentions Playwright as a fallback; correct it to reflect Layer A as the canonical fix and Layer B as the safety net).
+8. Update `.claude/mistakes.md` `block-validation-recovery` row similarly.
+9. Capture the canonical pattern as `feedback_synth_markup_canonicalise_at_build.md` in auto-memory so future sessions surface it via MEMORY.md.
+10. Add a `/deploy-check` rule: if a deploy invokes `wp post create --post_content`, the upstream content MUST have been piped through `canonicalise-blocks.js`. Verify by checking the output file's hash against a build manifest, OR by running the canonicaliser as a no-op (idempotent — second run = same output) before deploy and aborting if the diff is non-empty.
+
+The two-layer source/deploy model from the previous handoff still holds: `audit-block-uniformity.py` (source-time) + canonicalise-blocks.js (build-time) + auto-recovery JS (runtime) = three layers of defence, all additive.
+
+**Why this beats the Playwright approach the previous handoff proposed:** Playwright recovery is deploy-time (per-page admin login + editor automation, slow, flaky, requires maintained credentials). Canonicalisation is build-time (pure local Node, idempotent, scriptable, no admin context). Bean's safety hook is also satisfied — no `wp eval-file` post_content writes, no direct DB modification, the markup just IS canonical from birth.
 
 ## Task 3: Add hero backgroundImage extraction
 
