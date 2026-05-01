@@ -2,10 +2,10 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-current_phase: html-recogniser
-current_step: "Recogniser v1 Tasks 1-5 shipped on feat/recogniser-v1 (PR #10). Pipeline functional end-to-end on Mama's mockup; 3 source-code gap fixes applied + 1 prompt fix; webpack clean. Task 6 (deploy + visual diff) paused at the auto-mode safety guardrail — needs Bean's morning decision (A/B/C) per reports/recogniser-v1-blockers.md."
+current_phase: framework-rendering-fidelity
+current_step: "Recogniser v1 pipeline complete + deployed twice (palestine-lives + sandybrown). PR #10 has 16 commits. Visual diff vs mockup: 48–52% — dominated by framework-rendering issues (core/heading + core/paragraph inside core/group invisible; sgs/feature-grid + sgs/testimonial render empty; sgs/hero missing bg image extraction; default sgs-theme footer carries Indus-shaped placeholders). Recogniser produces valid block markup; framework rendering is now the bottleneck."
 last_updated: 2026-05-01
-blockers: ["task-6-deploy-needs-explicit-bean-approval"]
+blockers: ["framework-rendering-prevents-visual-diff-target"]
 recommended_model_next: sonnet
 ---
 
