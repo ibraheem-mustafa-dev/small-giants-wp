@@ -1,0 +1,577 @@
+[
+  {
+    "section_id": "site-header",
+    "match": {
+      "block_name": "sgs/header",
+      "confidence": 0.94,
+      "tier": "full",
+      "extracted_attrs": {
+        "logo": "../../research/brand/Mamas-Munches-Horizontal-Logo-2-305x102.webp",
+        "logoAlt": "Mama's Munches",
+        "showCart": true,
+        "mobileToggle": true
+      },
+      "inner_blocks": [],
+      "patch_note": "Manually patched by orchestrator: original run hit a JSON parse error and was salvaged as deferred. Section unambiguously matches sgs/header (logo + nav + cart icon)."
+    }
+  },
+  {
+    "section_id": "made-for-the-mum-who-needs-it-most",
+    "match": {
+      "block_name": "sgs/hero",
+      "confidence": 0.96,
+      "tier": "full",
+      "extracted_attrs": {
+        "headline": "Made for the mum who needs it most",
+        "subHeadline": "Handmade lactation cookies with proper galactagogue ingredients. No medical claims — just nourishment your body will thank you for.",
+        "ctaPrimaryText": "Shop Zookies",
+        "ctaPrimaryUrl": "/shop/",
+        "ctaSecondaryText": "Try 3 for £5",
+        "ctaSecondaryUrl": "/product/trial-pack/",
+        "eyebrow": "Handmade in Birmingham"
+      },
+      "inner_blocks": [],
+      "patch_note": "Added eyebrow attr 2026-05-01 (Decision B): hero now supports an eyebrow label above the headline."
+    }
+  },
+  {
+    "section_id": "trust-bar",
+    "match": {
+      "block_name": "sgs/trust-badges",
+      "confidence": 0.96,
+      "tier": "full",
+      "extracted_attrs": {
+        "columns": 4,
+        "items": [
+          {
+            "icon": "home",
+            "label": "Handmade in Birmingham",
+            "pending": false
+          },
+          {
+            "icon": "check",
+            "label": "Registered Food Business",
+            "pending": false
+          },
+          {
+            "icon": "truck",
+            "label": "Free UK Delivery Over £35",
+            "pending": false
+          },
+          {
+            "icon": "star",
+            "label": "Loved by Breastfeeding Mums",
+            "pending": false
+          }
+        ]
+      },
+      "inner_blocks": [],
+      "patch_note": "Manually patched 2026-05-01 (Decision B): re-routed from sgs/notice-banner partial to sgs/trust-badges full per the new prompt rule 8. Block exists in the SGS DB; defaults match the mockup."
+    }
+  },
+  {
+    "section_id": "zookies-our-signature-giant-cookie",
+    "semantic_role": "main",
+    "match": {
+      "block_name": "core/group",
+      "confidence": 1.0,
+      "tier": "full",
+      "extracted_attrs": {
+        "className": "featured-product"
+      },
+      "inner_blocks": [
+        {
+          "block_name": "core/paragraph",
+          "extracted_attrs": {
+            "className": "section-label",
+            "content": "Our signature"
+          },
+          "inner_blocks": []
+        },
+        {
+          "block_name": "core/heading",
+          "extracted_attrs": {
+            "level": 2,
+            "content": "Zookies — Our Signature Giant Cookie"
+          },
+          "inner_blocks": []
+        },
+        {
+          "block_name": "core/paragraph",
+          "extracted_attrs": {
+            "className": "section-intro",
+            "content": "One Zookie is a proper sized treat. Every one baked to order, same week."
+          },
+          "inner_blocks": []
+        },
+        {
+          "block_name": "core/columns",
+          "extracted_attrs": {
+            "className": "product-cards"
+          },
+          "inner_blocks": [
+            {
+              "block_name": "core/column",
+              "extracted_attrs": {},
+              "inner_blocks": [
+                {
+                  "block_name": "sgs/product-card",
+                  "extracted_attrs": {
+                    "image": "/wp-content/uploads/cookies-stacked.jpeg",
+                    "imageAlt": "Stack of Mama's Munches Zookies lactation cookies",
+                    "productName": "Mama's Munches Zookies",
+                    "description": "Baked fresh every week and posted the same day. Oats, brewer's yeast, flaxseed, fenugreek — no shortcuts, no preservatives.",
+                    "variantStyle": "standard",
+                    "packSizes": [
+                      {
+                        "label": "8-pack",
+                        "selected": true
+                      },
+                      {
+                        "label": "12-pack",
+                        "selected": false
+                      },
+                      {
+                        "label": "20-pack",
+                        "selected": false
+                      },
+                      {
+                        "label": "40-pack",
+                        "selected": false
+                      }
+                    ],
+                    "priceLarge": "£10.00",
+                    "priceNote": "8-pack · Free delivery over £35",
+                    "ctaText": "Add to Cart — £10",
+                    "ctaUrl": "/product/zookies/"
+                  },
+                  "inner_blocks": []
+                }
+              ]
+            },
+            {
+              "block_name": "core/column",
+              "extracted_attrs": {},
+              "inner_blocks": [
+                {
+                  "block_name": "sgs/product-card",
+                  "extracted_attrs": {
+                    "image": "/wp-content/uploads/cookies-on-bun-case.jpeg",
+                    "imageAlt": "Mama's Munches cookies in a bakery display",
+                    "productName": "The Trial Pack",
+                    "description": "Not sure yet? Try 3 Classic Zookies and see what all the mums are talking about. Postage included.",
+                    "variantStyle": "trial",
+                    "trialTag": "New? Start here",
+                    "packSizes": [],
+                    "priceLarge": "£5.00",
+                    "priceNote": "3 Classic Zookies · postage included",
+                    "ctaText": "Try 3 for £5",
+                    "ctaUrl": "/product/trial-pack/"
+                  },
+                  "inner_blocks": []
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "patch_note": "Manually patched 2026-05-01: replaced deferred placeholder with sgs/product-card x2 (Zookies standard + Trial Pack). Pricing from lead-research-2026-04-30.md section 1.2. Static visual clone — cart wiring deferred to ecom plugin."
+    }
+  },
+  {
+    "section_id": "a-story-that-started-with-a-friend",
+    "match": {
+      "block_name": "core/columns",
+      "confidence": 0.9,
+      "tier": "fallback",
+      "extracted_attrs": {
+        "columns": 2
+      },
+      "inner_blocks": [
+        {
+          "block_name": "core/column",
+          "inner_blocks": [
+            {
+              "block_name": "core/image",
+              "extracted_attrs": {
+                "url": "../../research/photography/wp-media-library/Halimahs.jpeg",
+                "alt": "A mum smiling and holding Mama's Munches cookies"
+              }
+            }
+          ]
+        },
+        {
+          "block_name": "core/column",
+          "inner_blocks": [
+            {
+              "block_name": "core/heading",
+              "extracted_attrs": {
+                "level": 2,
+                "content": "A story that started with a friend"
+              }
+            },
+            {
+              "block_name": "core/quote",
+              "extracted_attrs": {
+                "value": "She was struggling with breastfeeding her newborn. We started making lactation cookies together — using oats, brewer's yeast, flaxseed, fenugreek. The same ingredients that have appeared in traditional postpartum foods from Pakistan to West Africa for generations.\n\nThey helped her. I was so grateful.\n\nNow I make them for breastfeeding mums across the UK. Not because I can promise they'll work for every mum — I can't, and I won't. But because they're real food, with real ingredients, made with real care. And many mums tell me they helped.",
+                "citation": "Zainab, Founder of Mama's Munches"
+              }
+            },
+            {
+              "block_name": "core/button",
+              "extracted_attrs": {
+                "text": "Read the full story →",
+                "url": "/about/"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "section_id": "proper-ingredients-properly-used",
+    "match": {
+      "block_name": "core/group",
+      "confidence": 0.92,
+      "tier": "fallback",
+      "extracted_attrs": {
+        "className": "sgs-ingredients"
+      },
+      "inner_blocks": [
+        {
+          "block_name": "core/heading",
+          "extracted_attrs": {
+            "level": 2,
+            "content": "Proper ingredients, properly used"
+          },
+          "inner_blocks": []
+        },
+        {
+          "block_name": "core/paragraph",
+          "extracted_attrs": {
+            "content": "Every Zookie contains the same four galactagogues that appear in postpartum food traditions across cultures."
+          },
+          "inner_blocks": []
+        },
+        {
+          "block_name": "core/columns",
+          "extracted_attrs": {
+            "columns": 2
+          },
+          "inner_blocks": [
+            {
+              "block_name": "core/column",
+              "extracted_attrs": {},
+              "inner_blocks": [
+                {
+                  "block_name": "sgs/icon-block",
+                  "extracted_attrs": {
+                    "iconType": "emoji",
+                    "emoji": "🌾",
+                    "iconSize": 32
+                  },
+                  "inner_blocks": []
+                },
+                {
+                  "block_name": "core/heading",
+                  "extracted_attrs": {
+                    "level": 4,
+                    "content": "Oats"
+                  },
+                  "inner_blocks": []
+                },
+                {
+                  "block_name": "core/paragraph",
+                  "extracted_attrs": {
+                    "content": "Rich in iron. Used in postpartum foods across cultures for centuries."
+                  },
+                  "inner_blocks": []
+                }
+              ]
+            },
+            {
+              "block_name": "core/column",
+              "extracted_attrs": {},
+              "inner_blocks": [
+                {
+                  "block_name": "sgs/icon-block",
+                  "extracted_attrs": {
+                    "iconType": "emoji",
+                    "emoji": "🍺",
+                    "iconSize": 32
+                  },
+                  "inner_blocks": []
+                },
+                {
+                  "block_name": "core/heading",
+                  "extracted_attrs": {
+                    "level": 4,
+                    "content": "Brewer's Yeast"
+                  },
+                  "inner_blocks": []
+                },
+                {
+                  "block_name": "core/paragraph",
+                  "extracted_attrs": {
+                    "content": "B-vitamins and chromium. A traditional galactagogue used worldwide."
+                  },
+                  "inner_blocks": []
+                }
+              ]
+            },
+            {
+              "block_name": "core/column",
+              "extracted_attrs": {},
+              "inner_blocks": [
+                {
+                  "block_name": "sgs/icon-block",
+                  "extracted_attrs": {
+                    "iconType": "emoji",
+                    "emoji": "🌿",
+                    "iconSize": 32
+                  },
+                  "inner_blocks": []
+                },
+                {
+                  "block_name": "core/heading",
+                  "extracted_attrs": {
+                    "level": 4,
+                    "content": "Flaxseed"
+                  },
+                  "inner_blocks": []
+                },
+                {
+                  "block_name": "core/paragraph",
+                  "extracted_attrs": {
+                    "content": "Omega-3 fatty acids. Good for mum and baby."
+                  },
+                  "inner_blocks": []
+                }
+              ]
+            },
+            {
+              "block_name": "core/column",
+              "extracted_attrs": {},
+              "inner_blocks": [
+                {
+                  "block_name": "sgs/icon-block",
+                  "extracted_attrs": {
+                    "iconType": "emoji",
+                    "emoji": "🌱",
+                    "iconSize": 32
+                  },
+                  "inner_blocks": []
+                },
+                {
+                  "block_name": "core/heading",
+                  "extracted_attrs": {
+                    "level": 4,
+                    "content": "Fenugreek"
+                  },
+                  "inner_blocks": []
+                },
+                {
+                  "block_name": "core/paragraph",
+                  "extracted_attrs": {
+                    "content": "Traditional postpartum herb. If your baby shows GI sensitivity, speak to your midwife first."
+                  },
+                  "inner_blocks": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "block_name": "core/paragraph",
+          "extracted_attrs": {
+            "content": "We make nourishing food. We don't make medical claims. If you have specific concerns about lactation, your IBCLC or midwife is the right person to speak to.",
+            "className": "sgs-ingredients-disclaimer"
+          },
+          "inner_blocks": []
+        }
+      ],
+      "patch_note": "Manually patched 2026-05-01 (Decision B): expanded sgs/feature-grid partial to a full core/group composition. 4 ingredient cards using sgs/icon-block emoji (gap fix 3 enabled). Heading + intro + grid + disclaimer."
+    }
+  },
+  {
+    "section_id": "a-gift-she-ll-actually-use",
+    "match": {
+      "block_name": "sgs/feature-grid",
+      "confidence": 0.82,
+      "tier": "partial",
+      "extracted_attrs": {
+        "eyebrow": "Give the gift of nourishment",
+        "headline": "A gift she'll actually use",
+        "subHeadline": "For baby showers, new arrivals, and the mums who deserve a treat.",
+        "columns": 2,
+        "cards": [
+          {
+            "tag": "Gift idea",
+            "heading": "New Baby Gift Box",
+            "description": "The perfect gift for a new mum. A mix of Zookies and Classics in a gift box, ready to send.",
+            "price": "£15",
+            "ctaText": "Shop Gift Box",
+            "ctaUrl": "/product/gift-box/"
+          },
+          {
+            "tag": "Most thoughtful",
+            "heading": "40-Day Care Bundle",
+            "description": "Six weekly deliveries for the 40-day postnatal window. One of the most thoughtful gifts you can give a new mum.",
+            "price": "£42",
+            "ctaText": "Shop Bundle",
+            "ctaUrl": "/product/40-day-bundle/"
+          }
+        ]
+      },
+      "inner_blocks": [
+        {
+          "block_name": "sgs/notice-banner",
+          "extracted_attrs": {
+            "icon": "emoji",
+            "iconValue": "🏥",
+            "text": "Heading to hospital? Ask us about our Send to Ward delivery.",
+            "linkText": "Find out more →",
+            "linkUrl": "/send-to-ward/"
+          }
+        }
+      ],
+      "gap": {
+        "missing_features": [
+          "per-card-tag-eyebrow",
+          "per-card-price",
+          "per-card-cta-button",
+          "trailing-notice-bar-slot"
+        ],
+        "classification": "extend-base",
+        "recommended_path": "extend sgs/feature-grid card schema with tag, price, ctaText, ctaUrl attributes; render price above CTA. Notice bar already covered by appending sgs/notice-banner with linkText/linkUrl (already a known extend-base gap on notice-banner)."
+      }
+    }
+  },
+  {
+    "section_id": "what-mums-are-saying",
+    "match": {
+      "block_name": "sgs/testimonial",
+      "confidence": 0.95,
+      "tier": "full",
+      "extracted_attrs": {
+        "heading": "What mums are saying",
+        "subheading": "Real feedback from real mums — nothing fabricated.",
+        "columns": 3,
+        "showRating": true,
+        "layout": "card",
+        "testimonials": [
+          {
+            "quote": "I was sceptical but honestly these have made such a difference. My supply picked up within a few days. And they actually taste amazing.",
+            "name": "Reham",
+            "role": "London",
+            "rating": 5
+          },
+          {
+            "quote": "Bought these for my best friend who was really struggling. She was in tears when they arrived — said they were the loveliest gift. And they did help.",
+            "name": "Sarah M.",
+            "role": "Manchester",
+            "rating": 5
+          },
+          {
+            "quote": "Zainab is so responsive and lovely. The cookies arrived quickly and my daughter (new mum) absolutely loved them. Will order again and again.",
+            "name": "Halimah",
+            "role": "Birmingham",
+            "rating": 5
+          }
+        ]
+      },
+      "inner_blocks": []
+    }
+  },
+  {
+    "section_id": "shop",
+    "match": {
+      "block_name": "sgs/footer",
+      "confidence": 0.94,
+      "tier": "full",
+      "extracted_attrs": {
+        "logoUrl": "../../research/brand/Mamas-Munches-Horizontal-Logo-2-305x102.webp",
+        "logoAlt": "Mama's Munches",
+        "tagline": "Real food for real mums. Handmade in Birmingham with care.",
+        "location": "Birmingham, UK",
+        "email": "Zainab@mamasmunches.com",
+        "socialLinks": [
+          {
+            "platform": "instagram",
+            "url": "https://www.instagram.com/mamasmunches/",
+            "label": "Instagram"
+          },
+          {
+            "platform": "whatsapp",
+            "url": "/contact/",
+            "label": "WhatsApp"
+          }
+        ],
+        "columns": [
+          {
+            "heading": "Shop",
+            "links": [
+              {
+                "text": "All Products",
+                "url": "/shop/"
+              },
+              {
+                "text": "Zookies",
+                "url": "/product/zookies/"
+              },
+              {
+                "text": "Trial Pack (£5)",
+                "url": "/product/trial-pack/"
+              },
+              {
+                "text": "Gift Ideas",
+                "url": "/gift-ideas/"
+              },
+              {
+                "text": "Send to Ward",
+                "url": "/send-to-ward/"
+              },
+              {
+                "text": "Our Story",
+                "url": "/about/"
+              },
+              {
+                "text": "FAQs",
+                "url": "/faqs/"
+              }
+            ]
+          },
+          {
+            "heading": "Information",
+            "links": [
+              {
+                "text": "Privacy Policy",
+                "url": "/privacy-policy/"
+              },
+              {
+                "text": "Shipping Info",
+                "url": "/shipping/"
+              },
+              {
+                "text": "Terms & Conditions",
+                "url": "/terms/"
+              },
+              {
+                "text": "Allergen Information",
+                "url": "/allergens/"
+              },
+              {
+                "text": "Contact Us",
+                "url": "/contact/"
+              }
+            ]
+          }
+        ],
+        "copyright": "© 2026 Mama's Munches. Registered Food Business, Birmingham.",
+        "bottomNote": "Made with love for breastfeeding mums 🍪"
+      },
+      "inner_blocks": []
+    }
+  }
+]

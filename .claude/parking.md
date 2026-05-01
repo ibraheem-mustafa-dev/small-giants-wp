@@ -1,12 +1,34 @@
 ---
 doc_type: parking
 project: small-giants-wp
-last_updated: 2026-04-30
+last_updated: 2026-05-01
 ---
 
 # Parking — deferred work with named triggers
 
 Items parked here have a clear next-step but aren't urgent. Each entry has: the work, the trigger to resume, the spec, and rough effort.
+
+## P-4 — Trustpilot 4-review scrape (Mama's Munches)
+
+**Status:** Subagent attempt blocked by Trustpilot anti-bot. Inline Playwright not yet tried.
+
+**Trigger to resume:** Mid-design-clone session, when the testimonials section is reached top-down.
+
+**What:** Capture the 4 real reviews from `https://uk.trustpilot.com/review/mamasmunches.com` — quote, first name, star rating, date — into `sites/mamas-munches/research/trustpilot-reviews.json`. Then either render as static `sgs/testimonial` cards (matching mockup design) and add the free Trustpilot Mini widget for the live star count, or skip and use the placeholder testimonials already in `reports/mamas-munches-page-content.html`.
+
+**Method:** Use the inline Playwright MCP browser (already authenticated, no anti-bot has blocked us mid-session). If still blocked, fall back to manual paste from a logged-in browser tab.
+
+**Effort:** 15-20 min once Playwright reaches the page.
+
+## P-5 — Deploy `sgs/feature-grid` block to sandybrown
+
+**Status:** Block exists in local build; not on the sandybrown server. Caused a `core/missing` placeholder for the gift section when the recogniser-generated page content was applied to homepage post 8 on 2026-05-01.
+
+**Trigger to resume:** When the gift section is reached in the top-down clone.
+
+**What:** `scp plugins/sgs-blocks/build/blocks/feature-grid/* hd:~/domains/sandybrown-nightingale-600381.hostingersite.com/public_html/wp-content/plugins/sgs-blocks/build/blocks/feature-grid/`. Reset OPcache + LiteSpeed CSS cache after.
+
+**Effort:** 5 min.
 
 ## ~~P-1 — `/gap-analysis` SKILL.md edits~~ — COMPLETED 2026-04-30
 

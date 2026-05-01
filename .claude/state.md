@@ -2,11 +2,11 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-current_phase: html-recogniser
-current_step: "Architecture locked: recogniser-first (not transformer). SGS DB + core WP + WC blocks as fingerprint libraries. Dual-destination output (post_content + template parts). Gap detector with 4-tier classification. v1 acceptance: Mama's Munches homepage live on staging with visual diff < 5%. Build queued for autonomous overnight run."
+current_phase: mamas-munches-design-clone
+current_step: "Recogniser pipeline merged to main + new sgs/product-card block built + deployed. One-shot auto-clone reached ~65% fidelity but Bean rejected — wants exact likeness. Next session: deliberate top-to-bottom rebuild starting with the header. WooCommerce installed on sandybrown — shop + products available."
 last_updated: 2026-05-01
 blockers: []
-recommended_model_next: opus
+recommended_model_next: sonnet
 ---
 
 # small-giants-wp — State Snapshot

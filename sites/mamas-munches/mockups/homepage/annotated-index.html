@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Mama's Munches — Real Food for Real Mums</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..900&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<style>
+    /* ── Design tokens ─────────────────────── */
+    :root {
+      --primary:       #E68A95;
+      --primary-dark:  #C56A7A;
+      --surface-pink:  #F5C2C8;
+      --surface-cream: #FBF3DC;
+      --surface-alt:   #FFF9F0;
+      --accent:        #F5D050;
+      --accent-dark:   #7A6500;
+      --text:          #3A2E26;
+      --text-muted:    #6B5C50;
+      --text-inverse:  #FFFAF5;
+      --cookie-brown:  #8B6F4E;
+      --success:       #2E7D4F;
+      --border:        #E8D5C0;
+    }
+
+    /* ── Reset ─────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-font-smoothing: antialiased; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--surface-cream);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    h1, h2, h3 { font-family: 'Fraunces', serif; line-height: 1.2; }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+
+    /* ── Utilities ─────────────────────────── */
+    .container { max-width: 1280px; margin: 0 auto; padding: 0 20px; }
+
+    .section-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text);
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    /* ── Buttons (WCAG: dark text on coral, invert on hover) ─ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 15px;
+      padding: 14px 24px;
+      border-radius: 10px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      min-height: 48px;
+      text-align: center;
+      transition: background 0.18s, color 0.18s, border-color 0.18s;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: var(--text);
+      border-color: var(--primary);
+    }
+    .btn-primary:hover {
+      background: var(--text);
+      color: var(--text-inverse);
+      border-color: var(--text);
+    }
+    .btn-secondary {
+      background: transparent;
+      color: var(--text);
+      border-color: var(--primary);
+    }
+    .btn-secondary:hover {
+      background: var(--text);
+      color: var(--text-inverse);
+      border-color: var(--text);
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border-color: var(--border);
+      font-size: 14px;
+      padding: 10px 18px;
+      min-height: 44px;
+    }
+    .btn-ghost:hover { border-color: var(--primary); background: var(--surface-pink); }
+
+    /* ── Skip link (WCAG 2.4.1) ─────────────────────── */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: var(--text);
+      color: var(--text-inverse);
+      padding: 12px 20px;
+      z-index: 9999;
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 0 0 8px 0;
+    }
+    .skip-link:focus {
+      left: 0;
+    }
+
+    /* ── Reduced motion preference ──────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    /* ── Focus visibility ───────────────────────────── */
+    *:focus-visible {
+      outline: 2px solid var(--text);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+
+
+    /* ══════════════════════════════════════════
+       HEADER
+    ══════════════════════════════════════════ */
+    .site-header {
+      background: var(--surface-cream);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      max-width: 1280px;
+      margin: 0 auto;
+      gap: 16px;
+    }
+    .site-logo img { height: 44px; width: auto; }
+    .header-right { display: flex; align-items: center; gap: 12px; }
+
+    .cart-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      padding: 8px 10px;
+      border-radius: 8px;
+      min-height: 44px;
+      min-width: 44px;
+      justify-content: center;
+    }
+    .cart-badge {
+      background: var(--primary);
+      color: var(--text-inverse);
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .hamburger-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      min-height: 44px;
+      min-width: 44px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      align-items: center;
+    }
+    .hamburger-btn span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+    }
+    .desktop-nav { display: none; }
+
+    @media (min-width: 768px) {
+      .hamburger-btn { display: none; }
+      .desktop-nav {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        flex: 1;
+        justify-content: center;
+      }
+      .desktop-nav a {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text);
+        padding: 10px 14px;
+        border-radius: 8px;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+        transition: background 0.18s;
+      }
+      .desktop-nav a:hover { background: var(--surface-pink); }
+      .nav-featured {
+        background: var(--primary) !important;
+        color: var(--text) !important;
+        font-weight: 600 !important;
+      }
+      .nav-featured:hover { background: var(--primary) !important; color: var(--text) !important; box-shadow: inset 0 -2px 0 var(--accent); }
+    }
+    @media (min-width: 1024px) {
+      .desktop-nav a { font-size: 15px; padding: 10px 16px; }
+    }
+
+
+    /* ══════════════════════════════════════════
+       HERO
+    ══════════════════════════════════════════ */
+    .hero { background: var(--surface-pink); overflow: hidden; }
+
+    /* Mobile layout: portrait photo stacked above content */
+    .hero-mobile {}
+    .hero-mobile-img {
+      width: 100%;
+      height: 340px;
+      object-fit: cover;
+      object-position: center 20%;
+      display: block;
+    }
+    .hero-content {
+      padding: 28px 20px 40px;
+      background: var(--surface-pink);
+    }
+    .hero-content h1 {
+      font-size: 34px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 14px;
+      letter-spacing: -0.5px;
+    }
+    .hero-content .hero-sub {
+      font-size: 16px;
+      color: var(--text);
+      margin-bottom: 24px;
+      line-height: 1.65;
+    }
+    .hero-ctas { display: flex; flex-direction: column; gap: 10px; }
+
+    /* Tablet / desktop: two-column grid */
+    .hero-desktop { display: none; }
+
+    @media (min-width: 768px) {
+      .hero-mobile { display: none; }
+      .hero-desktop {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        min-height: 520px;
+      }
+      .hero-copy {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 56px 48px;
+        background: var(--surface-pink);
+      }
+      .hero-copy h1 {
+        font-size: 46px;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 16px;
+        letter-spacing: -1px;
+      }
+      .hero-copy .hero-sub {
+        font-size: 18px;
+        color: var(--text);
+        margin-bottom: 28px;
+        max-width: 420px;
+        line-height: 1.65;
+      }
+      .hero-copy .hero-ctas { flex-direction: row; gap: 12px; }
+      .hero-photo { overflow: hidden; }
+      .hero-photo img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+    }
+    @media (min-width: 1280px) {
+      .hero-copy { padding: 72px 64px; }
+      .hero-copy h1 { font-size: 58px; }
+    }
+
+
+    /* ══════════════════════════════════════════
+       TRUST BAR (icon-in-white-circle on pink)
+    ══════════════════════════════════════════ */
+    .trust-bar {
+      background: var(--surface-pink);
+      padding: 22px 20px;
+    }
+    .trust-bar-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px 12px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .trust-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .trust-badge[hidden],
+    .trust-badge[data-pending="true"] { display: none; }
+    .trust-icon-circle {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 1px 2px rgba(58,46,38,0.06);
+    }
+    .trust-icon-circle svg {
+      width: 20px;
+      height: 20px;
+      stroke: var(--primary-dark);
+      stroke-width: 1.8;
+      fill: none;
+    }
+    .trust-text {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.35;
+    }
+    @media (min-width: 600px) {
+      .trust-bar-inner { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (min-width: 1024px) {
+      .trust-bar-inner.has-halal { grid-template-columns: repeat(5, 1fr); }
+      .trust-text { font-size: 14px; }
+    }
+
+
+    /* ══════════════════════════════════════════
+       FEATURED PRODUCT
+    ══════════════════════════════════════════ */
+    .featured-product { padding: 56px 20px; background: var(--surface-cream); }
+    .featured-product-inner { max-width: 1040px; margin: 0 auto; }
+    .featured-product h2 {
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .featured-product .section-intro {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+    .product-cards { display: grid; grid-template-columns: 1fr; gap: 16px; }
+
+    .product-card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+    }
+    .product-card-img { width: 100%; height: 220px; object-fit: cover; }
+    .product-card-body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
+    .product-card h3 {
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .product-desc { font-size: 14px; color: var(--text-muted); margin-bottom: 16px; flex: 1; line-height: 1.55; }
+
+    .pill-group { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 16px; }
+    .pill {
+      background: var(--surface-cream);
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 13px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      transition: all 0.15s;
+      line-height: 1;
+    }
+    .pill.active {
+      border-color: var(--primary);
+      background: rgba(230,138,149,0.1);
+      color: var(--text);
+    }
+    .pill:hover:not(.active) { border-color: var(--primary-dark); }
+
+    .price-row { display: flex; align-items: baseline; gap: 10px; margin-bottom: 14px; }
+    .price { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 700; color: var(--text); }
+    .price-note { font-size: 13px; color: var(--text-muted); }
+
+    .trial-card {
+      border: 2px dashed var(--accent);
+      background: linear-gradient(135deg, rgba(245,208,80,0.08) 0%, rgba(230,138,149,0.06) 100%);
+    }
+    .trial-tag {
+      display: inline-flex;
+      align-items: center;
+      background: var(--accent);
+      color: var(--text);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    @media (min-width: 768px) {
+      .product-cards { grid-template-columns: 5fr 3fr; }
+      .featured-product h2 { font-size: 36px; }
+    }
+
+
+    /* ══════════════════════════════════════════
+       BRAND STORY
+    ══════════════════════════════════════════ */
+    .brand-story { background: var(--surface-alt); padding: 64px 20px; }
+    .brand-story-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+    .brand-story-photo {
+      width: 100%;
+      max-height: 380px;
+      object-fit: cover;
+      border-radius: 16px;
+      order: -1;
+    }
+    .brand-story-text h2 { font-size: 28px; font-weight: 600; color: var(--text); margin-bottom: 20px; }
+
+    blockquote { font-style: italic; }
+    blockquote p { font-size: 17px; color: var(--text-muted); line-height: 1.75; margin-bottom: 16px; }
+    blockquote footer {
+      font-style: normal;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--primary-dark);
+      margin-top: 4px;
+    }
+
+    @media (min-width: 768px) {
+      .brand-story-inner { flex-direction: row; align-items: center; gap: 56px; }
+      .brand-story-photo {
+        order: 2;
+        width: 40%;
+        min-width: 280px;
+        flex-shrink: 0;
+        max-height: 440px;
+        height: 440px;
+      }
+      .brand-story-text { flex: 1; }
+      .brand-story-text h2 { font-size: 36px; }
+    }
+
+
+    /* ══════════════════════════════════════════
+       INGREDIENT EDUCATION
+    ══════════════════════════════════════════ */
+    .ingredients { background: var(--surface-cream); padding: 64px 20px; }
+    .ingredients-inner { max-width: 960px; margin: 0 auto; text-align: center; }
+    .ingredients h2 { font-size: 28px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+    .ingredients .section-intro {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin: 0 auto 36px;
+      max-width: 540px;
+    }
+    .ingredients-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+    .ingredient-card {
+      background: white;
+      border-radius: 12px;
+      padding: 22px 16px;
+      border: 1px solid var(--border);
+    }
+    .ingredient-icon { font-size: 32px; margin-bottom: 10px; }
+    .ingredient-card h4 {
+      font-family: 'Fraunces', serif;
+      font-size: 19px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .ingredient-card p { font-size: 13px; color: var(--text-muted); line-height: 1.55; }
+    .ingredients-disclaimer {
+      font-size: 14px;
+      color: var(--text-muted);
+      font-style: italic;
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 16px 20px;
+      background: white;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      line-height: 1.55;
+    }
+
+    @media (min-width: 600px) {
+      .ingredients-grid { grid-template-columns: repeat(4, 1fr); }
+      .ingredients h2 { font-size: 36px; }
+    }
+
+
+    /* ══════════════════════════════════════════
+       GIFT SECTION
+    ══════════════════════════════════════════ */
+    .gift-section { background: var(--surface-pink); padding: 64px 20px; }
+    .gift-inner { max-width: 960px; margin: 0 auto; }
+    .gift-section h2 { font-size: 28px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+    .gift-section .section-sub { font-size: 16px; color: var(--text); margin-bottom: 32px; }
+    .gift-cards { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 20px; }
+    .gift-card {
+      background: white;
+      border-radius: 16px;
+      padding: 28px 24px;
+      border: 1px solid var(--border);
+    }
+    .gift-tag {
+      display: inline-block;
+      background: var(--surface-pink);
+      color: var(--primary-dark);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .gift-card h3 { font-size: 22px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+    .gift-card .gift-desc { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.6; }
+    .gift-card .gift-price {
+      font-family: 'Fraunces', serif;
+      font-size: 30px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    .send-to-ward-bar {
+      background: white;
+      border: 1px solid var(--primary);
+      border-radius: 10px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .send-to-ward-bar p { font-size: 14px; color: var(--text); font-weight: 500; }
+    .send-to-ward-bar a { font-size: 14px; font-weight: 600; color: var(--primary-dark); white-space: nowrap; min-height: 44px; display: inline-flex; align-items: center; padding: 6px 0; }
+    .send-to-ward-bar a:hover { text-decoration: underline; }
+
+    @media (min-width: 640px) {
+      .gift-cards { grid-template-columns: 1fr 1fr; }
+      .gift-section h2 { font-size: 36px; }
+    }
+
+
+    /* ══════════════════════════════════════════
+       SOCIAL PROOF
+    ══════════════════════════════════════════ */
+    .social-proof { background: var(--surface-alt); padding: 64px 20px; }
+    .social-proof-inner { max-width: 960px; margin: 0 auto; }
+    .social-proof h2 {
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+      text-align: center;
+    }
+    .social-proof .section-sub {
+      font-size: 16px;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .trustpilot-bar {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+    .tp-logo { font-size: 13px; font-weight: 700; color: #00B67A; }
+    .tp-stars { font-size: 20px; color: #00B67A; }
+    .tp-text { font-size: 13px; color: var(--text-muted); }
+
+    .testimonials-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    .testimonial {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid var(--border);
+    }
+    .testimonial-stars { color: var(--accent); font-size: 15px; margin-bottom: 8px; }
+    .testimonial-text { font-size: 14px; color: var(--text-muted); line-height: 1.65; font-style: italic; margin-bottom: 12px; }
+    .testimonial-author { font-size: 13px; font-weight: 600; color: var(--text); }
+
+    @media (min-width: 640px) {
+      .testimonials-grid { grid-template-columns: repeat(3, 1fr); }
+      .social-proof h2 { font-size: 36px; }
+    }
+
+
+    /* ══════════════════════════════════════════
+       FOOTER
+    ══════════════════════════════════════════ */
+    .site-footer { background: var(--text); color: var(--text-inverse); padding: 52px 20px 24px; }
+    .footer-inner { max-width: 1000px; margin: 0 auto; }
+    .footer-grid { display: grid; grid-template-columns: 1fr; gap: 36px; margin-bottom: 40px; }
+
+    .footer-logo { height: 36px; width: auto; margin-bottom: 12px; filter: brightness(0) invert(1); }
+    .footer-tagline { font-size: 14px; color: rgba(255,250,245,0.65); margin-bottom: 8px; line-height: 1.5; }
+    .footer-meta { font-size: 13px; color: rgba(255,250,245,0.5); margin-bottom: 4px; }
+    .footer-meta a { color: rgba(255,250,245,0.75); }
+    .footer-meta a:hover { color: var(--primary); }
+
+    .footer-social { display: flex; gap: 8px; margin-top: 14px; }
+    .footer-social a {
+      background: rgba(255,250,245,0.08);
+      color: var(--text-inverse);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.18s;
+    }
+    .footer-social a:hover { background: rgba(255,250,245,0.15); }
+
+    .footer-col h5 {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: rgba(255,250,245,0.4);
+      margin-bottom: 14px;
+    }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+    .footer-col ul li a { font-size: 14px; color: rgba(255,250,245,0.75); transition: color 0.18s; }
+    .footer-col ul li a:hover { color: var(--primary); }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255,250,245,0.1);
+      padding-top: 20px;
+      font-size: 13px;
+      color: rgba(255,250,245,0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    @media (min-width: 768px) {
+      .footer-grid { grid-template-columns: 2fr 1fr 1fr; }
+      .footer-bottom { flex-direction: row; justify-content: space-between; }
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<!-- ══════════════════════════════════════════
+     HEADER
+══════════════════════════════════════════ -->
+<header class="site-header" role="banner">
+<div class="header-inner">
+<a aria-label="Mama's Munches — Home" class="site-logo" href="/">
+<img alt="Mama's Munches" data-sgs="logo:image" height="61" src="../../research/brand/Mamas-Munches-Horizontal-Logo-2-305x102.webp" width="183"/>
+</a>
+<nav aria-label="Main navigation" class="desktop-nav">
+<a href="/shop/">Shop</a>
+<a href="/about/">Our Story</a>
+<a class="nav-featured" href="/send-to-ward/">Send to Ward ★</a>
+<a href="/gift-ideas/">Gift Ideas</a>
+<a href="/faqs/">FAQs</a>
+</nav>
+<div class="header-right">
+<a aria-label="Cart — 0 items" class="cart-btn" href="/cart/">
+<svg aria-hidden="true" fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20">
+<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+<line x1="3" x2="21" y1="6" y2="6"></line>
+<path d="M16 10a4 4 0 0 1-8 0"></path>
+</svg>
+<span aria-hidden="true" class="cart-badge" data-sgs="badgeText">0</span>
+</a>
+<button aria-controls="mobile-nav" aria-expanded="false" aria-label="Open navigation menu" class="hamburger-btn">
+<span></span><span></span><span></span>
+</button>
+</div>
+</div>
+</header>
+<main id="main-content">
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+<section aria-labelledby="hero-h1" class="hero">
+<!-- Mobile layout -->
+<div class="hero-mobile">
+<img alt="Freshly baked Mama's Munches lactation cookies on a warm background" class="hero-mobile-img" data-sgs="heroImage:image" height="1080" loading="eager" src="../../research/photography/wp-media-library/aesthetic-pic.jpeg" width="1080"/>
+<div class="hero-content">
+<span class="section-label" data-sgs="sectionLabel">Handmade in Birmingham</span>
+<h1 data-sgs="headline" id="hero-h1">Made for the mum who needs it most</h1>
+<p class="hero-sub" data-sgs="bodyText">Handmade lactation cookies with proper galactagogue ingredients. No medical claims — just nourishment your body will thank you for.</p>
+<div class="hero-ctas">
+<a class="btn btn-primary" data-sgs="ctaUrl:link" href="/shop/">Shop Zookies</a>
+<a class="btn btn-secondary" data-sgs="ctaUrl:link" href="/product/trial-pack/">Try 3 for £5</a>
+</div>
+</div>
+</div>
+<!-- Desktop layout (tablet+) -->
+<div class="hero-desktop">
+<div class="hero-copy">
+<span class="section-label" data-sgs="sectionLabel">Handmade in Birmingham</span>
+<h1 data-sgs="headline" style="font-family:'Fraunces',serif;font-size:52px;font-weight:700;color:var(--text);line-height:1.15;margin-bottom:16px;letter-spacing:-1px;">
+        Made for the mum<br/>who needs it most
+      </h1>
+<p class="hero-sub" data-sgs="bodyText" style="font-size:18px;color:var(--text);margin-bottom:28px;max-width:420px;line-height:1.65;">
+        Handmade lactation cookies with proper galactagogue ingredients. No medical claims — just nourishment your body will thank you for.
+      </p>
+<div class="hero-ctas">
+<a class="btn btn-primary" data-sgs="ctaUrl:link" href="/shop/">Shop Zookies</a>
+<a class="btn btn-secondary" data-sgs="ctaUrl:link" href="/product/trial-pack/">Try 3 for £5</a>
+</div>
+</div>
+<div class="hero-photo">
+<img alt="Close-up of Mama's Munches Zookies — real ingredients, baked fresh" data-sgs="heroImage:image" height="1536" loading="eager" src="../../research/photography/wp-media-library/IMG_20260419_173547_107.webp" width="1536"/>
+</div>
+</div>
+</section>
+<!-- ══════════════════════════════════════════
+     TRUST BAR
+══════════════════════════════════════════ -->
+<section aria-label="Why choose Mama's Munches" class="trust-bar">
+<div class="trust-bar-inner">
+<div class="trust-badge">
+<span aria-hidden="true" class="trust-icon-circle">
+<svg viewbox="0 0 24 24"><path d="m3 12 9-9 9 9"></path><path d="M5 10v10a1 1 0 0 0 1 1h3v-6h6v6h3a1 1 0 0 0 1-1V10"></path></svg>
+</span>
+<span class="trust-text" data-sgs="badgeText">Handmade in Birmingham</span>
+</div>
+<div class="trust-badge">
+<span aria-hidden="true" class="trust-icon-circle">
+<svg viewbox="0 0 24 24"><path d="M20 6 9 17l-5-5"></path></svg>
+</span>
+<span class="trust-text" data-sgs="badgeText">Registered Food Business</span>
+</div>
+<div class="trust-badge">
+<span aria-hidden="true" class="trust-icon-circle">
+<svg viewbox="0 0 24 24"><rect height="13" width="15" x="1" y="3"></rect><path d="m16 8 5 2v5h-5z"></path><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+</span>
+<span class="trust-text" data-sgs="badgeText">Free UK Delivery Over £35</span>
+</div>
+<div class="trust-badge">
+<span aria-hidden="true" class="trust-icon-circle">
+<svg fill="currentColor" stroke="none" style="fill: var(--primary-dark);" viewbox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+</span>
+<span class="trust-text" data-sgs="badgeText">Loved by Breastfeeding Mums</span>
+</div>
+<!-- Halal cert placeholder — flip data-pending to "false" + remove hidden when cert lands -->
+<div class="trust-badge halal-pending" data-pending="true" hidden="">
+<span aria-hidden="true" class="trust-icon-circle">
+<svg viewbox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+</span>
+<span class="trust-text" data-sgs="badgeText">Halal Certified</span>
+</div>
+</div>
+</section>
+<!-- ══════════════════════════════════════════
+     FEATURED PRODUCT
+══════════════════════════════════════════ -->
+<section aria-labelledby="product-h2" class="featured-product">
+<div class="featured-product-inner">
+<span class="section-label" data-sgs="sectionLabel">Our signature</span>
+<h2 data-sgs="headline" id="product-h2">Zookies — Our Signature Giant Cookie</h2>
+<p class="section-intro" data-sgs="bodyText">One Zookie is a proper sized treat. Every one baked to order, same week.</p>
+<div class="product-cards">
+<!-- Main product -->
+<div class="product-card">
+<img alt="Stack of Mama's Munches Zookies lactation cookies" class="product-card-img" data-sgs="cardImage:image" height="1080" loading="lazy" src="../../research/photography/wp-media-library/cookies-stacked.jpeg" width="1920"/>
+<div class="product-card-body">
+<h3 data-sgs="subHeadline">Mama's Munches Zookies</h3>
+<p class="product-desc" data-sgs="bodyText">Baked fresh every week and posted the same day. Oats, brewer's yeast, flaxseed, fenugreek — no shortcuts, no preservatives.</p>
+<div aria-label="Choose pack size" class="pill-group" role="group">
+<button aria-pressed="false" class="pill" type="button">8-pack</button>
+<button aria-pressed="true" class="pill active" type="button">12-pack</button>
+<button aria-pressed="false" class="pill" type="button">20-pack</button>
+<button aria-pressed="false" class="pill" type="button">40-pack</button>
+</div>
+<div class="price-row">
+<span class="price" data-sgs="price">£10.00</span>
+<span class="price-note" data-sgs="badgeText">8-pack · Free delivery over £35</span>
+</div>
+<a class="btn btn-primary" data-sgs="ctaUrl:link" href="/product/zookies/">Add to Cart — £10</a>
+</div>
+</div>
+<!-- Trial pack -->
+<div class="product-card trial-card">
+<img alt="Mama's Munches cookies in a bakery display" class="product-card-img" data-sgs="cardImage:image" height="1784" loading="lazy" src="../../research/photography/wp-media-library/cookies-on-bun-case.jpeg" width="2048"/>
+<div class="product-card-body">
+<div class="trial-tag" data-sgs="badgeText">New? Start here</div>
+<h3 data-sgs="subHeadline">The Trial Pack</h3>
+<p class="product-desc" data-sgs="bodyText">Not sure yet? Try 3 Classic Zookies and see what all the mums are talking about. Postage included.</p>
+<div class="price-row">
+<span class="price" data-sgs="price">£5.00</span>
+<span class="price-note" data-sgs="badgeText">3 Classic Zookies · postage included</span>
+</div>
+<a class="btn btn-secondary" data-sgs="ctaUrl:link" href="/product/trial-pack/">Try 3 for £5</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ══════════════════════════════════════════
+     BRAND STORY
+══════════════════════════════════════════ -->
+<section aria-labelledby="story-h2" class="brand-story">
+<div class="brand-story-inner">
+<img alt="A mum smiling and holding Mama's Munches cookies" class="brand-story-photo" data-sgs="heroImage:image" height="1080" loading="lazy" src="../../research/photography/wp-media-library/Halimahs.jpeg" width="1920"/>
+<div class="brand-story-text">
+<h2 data-sgs="headline" id="story-h2">A story that started with a friend</h2>
+<blockquote>
+<p data-sgs="testimonialText">She was struggling with breastfeeding her newborn. We started making lactation cookies together — using oats, brewer's yeast, flaxseed, fenugreek. The same ingredients that have appeared in traditional postpartum foods from Pakistan to West Africa for generations.</p>
+<p data-sgs="testimonialText">They helped her. I was so grateful.</p>
+<p data-sgs="testimonialText">Now I make them for breastfeeding mums across the UK. Not because I can promise they'll work for every mum — I can't, and I won't. But because they're real food, with real ingredients, made with real care. And many mums tell me they helped.</p>
+<footer data-sgs="testimonialAuthor">— Zainab, Founder of Mama's Munches</footer>
+</blockquote>
+<br/>
+<a class="btn btn-ghost" data-sgs="ctaUrl:link" href="/about/" style="margin-top:8px;">Read the full story →</a>
+</div>
+</div>
+</section>
+<!-- ══════════════════════════════════════════
+     INGREDIENT EDUCATION
+══════════════════════════════════════════ -->
+<section aria-labelledby="ingr-h2" class="ingredients">
+<div class="ingredients-inner">
+<span class="section-label" data-sgs="sectionLabel">What's in them?</span>
+<h2 data-sgs="headline" id="ingr-h2">Proper ingredients, properly used</h2>
+<p class="section-intro" data-sgs="bodyText">Every Zookie contains the same four galactagogues that appear in postpartum food traditions across cultures.</p>
+<div class="ingredients-grid">
+<div class="ingredient-card">
+<div aria-hidden="true" class="ingredient-icon">🌾</div>
+<h4 data-sgs="subHeadline">Oats</h4>
+<p data-sgs="bodyText">Rich in iron. Used in postpartum foods across cultures for centuries.</p>
+</div>
+<div class="ingredient-card">
+<div aria-hidden="true" class="ingredient-icon">🍺</div>
+<h4 data-sgs="subHeadline">Brewer's Yeast</h4>
+<p data-sgs="bodyText">B-vitamins and chromium. A traditional galactagogue used worldwide.</p>
+</div>
+<div class="ingredient-card">
+<div aria-hidden="true" class="ingredient-icon">🌿</div>
+<h4 data-sgs="subHeadline">Flaxseed</h4>
+<p data-sgs="bodyText">Omega-3 fatty acids. Good for mum and baby.</p>
+</div>
+<div class="ingredient-card">
+<div aria-hidden="true" class="ingredient-icon">🌱</div>
+<h4 data-sgs="subHeadline">Fenugreek</h4>
+<p data-sgs="bodyText">Traditional postpartum herb. If your baby shows GI sensitivity, speak to your midwife first.</p>
+</div>
+</div>
+<p class="ingredients-disclaimer" data-sgs="bodyText">We make nourishing food. We don't make medical claims. If you have specific concerns about lactation, your IBCLC or midwife is the right person to speak to.</p>
+</div>
+</section>
+<!-- ══════════════════════════════════════════
+     GIFT SECTION
+══════════════════════════════════════════ -->
+<section aria-labelledby="gift-h2" class="gift-section">
+<div class="gift-inner">
+<span class="section-label" data-sgs="sectionLabel">Give the gift of nourishment</span>
+<h2 data-sgs="headline" id="gift-h2">A gift she'll actually use</h2>
+<p class="section-sub" data-sgs="subHeadline">For baby showers, new arrivals, and the mums who deserve a treat.</p>
+<div class="gift-cards">
+<div class="gift-card">
+<span class="gift-tag" data-sgs="badgeText">Gift idea</span>
+<h3 data-sgs="subHeadline">New Baby Gift Box</h3>
+<p class="gift-desc" data-sgs="bodyText">The perfect gift for a new mum. A mix of Zookies and Classics in a gift box, ready to send.</p>
+<div class="gift-price" data-sgs="price">£15</div>
+<a class="btn btn-primary" data-sgs="ctaUrl:link" href="/product/gift-box/">Shop Gift Box</a>
+</div>
+<div class="gift-card">
+<span class="gift-tag" data-sgs="badgeText">Most thoughtful</span>
+<h3 data-sgs="subHeadline">40-Day Care Bundle</h3>
+<p class="gift-desc" data-sgs="bodyText">Six weekly deliveries for the 40-day postnatal window. One of the most thoughtful gifts you can give a new mum.</p>
+<div class="gift-price" data-sgs="price">£42</div>
+<a class="btn btn-primary" data-sgs="ctaUrl:link" href="/product/40-day-bundle/">Shop Bundle</a>
+</div>
+</div>
+<div class="send-to-ward-bar">
+<p data-sgs="bodyText">🏥 Heading to hospital? Ask us about our Send to Ward delivery.</p>
+<a data-sgs="ctaUrl:link" href="/send-to-ward/">Find out more →</a>
+</div>
+</div>
+</section>
+<!-- ══════════════════════════════════════════
+     SOCIAL PROOF
+══════════════════════════════════════════ -->
+<section aria-labelledby="reviews-h2" class="social-proof">
+<div class="social-proof-inner">
+<h2 data-sgs="headline" id="reviews-h2">What mums are saying</h2>
+<p class="section-sub" data-sgs="subHeadline">Real feedback from real mums — nothing fabricated.</p>
+<div aria-label="Trustpilot rating" class="trustpilot-bar">
+<span class="tp-logo">★ Trustpilot</span>
+<span aria-label="5 stars" class="tp-stars">★★★★★</span>
+<span class="tp-text" data-sgs="bodyText">Leave us a review — help other mums find us</span>
+</div>
+<div class="testimonials-grid">
+<article class="testimonial">
+<div aria-label="5 stars" class="testimonial-stars">★★★★★</div>
+<p class="testimonial-text" data-sgs="testimonialText">"I was sceptical but honestly these have made such a difference. My supply picked up within a few days. And they actually taste amazing."</p>
+<p class="testimonial-author" data-sgs="testimonialAuthor">Reham, London</p>
+</article>
+<article class="testimonial">
+<div aria-label="5 stars" class="testimonial-stars">★★★★★</div>
+<p class="testimonial-text" data-sgs="testimonialText">"Bought these for my best friend who was really struggling. She was in tears when they arrived — said they were the loveliest gift. And they did help."</p>
+<p class="testimonial-author" data-sgs="testimonialAuthor">Sarah M., Manchester</p>
+</article>
+<article class="testimonial">
+<div aria-label="5 stars" class="testimonial-stars">★★★★★</div>
+<p class="testimonial-text" data-sgs="testimonialText">"Zainab is so responsive and lovely. The cookies arrived quickly and my daughter (new mum) absolutely loved them. Will order again and again."</p>
+<p class="testimonial-author" data-sgs="testimonialAuthor">Halimah, Birmingham</p>
+</article>
+</div>
+</div>
+</section>
+</main>
+<!-- ══════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════ -->
+<footer class="site-footer" role="contentinfo">
+<div class="footer-inner">
+<div class="footer-grid">
+<div class="footer-brand">
+<img alt="Mama's Munches" class="footer-logo" data-sgs="logo:image" height="51" loading="lazy" src="../../research/brand/Mamas-Munches-Horizontal-Logo-2-305x102.webp" width="152"/>
+<p class="footer-tagline" data-sgs="bodyText">Real food for real mums.<br/>Handmade in Birmingham with care.</p>
+<p class="footer-meta" data-sgs="address:business">Birmingham, UK</p>
+<p class="footer-meta"><a data-sgs="email:business" href="mailto:Zainab@mamasmunches.com">Zainab@mamasmunches.com</a></p>
+<div class="footer-social">
+<a aria-label="Follow Mama's Munches on Instagram" href="https://www.instagram.com/mamasmunches/">
+<svg aria-hidden="true" fill="none" height="15" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="15">
+<rect height="20" rx="5" ry="5" width="20" x="2" y="2"></rect>
+<circle cx="12" cy="12" r="4"></circle>
+<circle cx="17.5" cy="6.5" fill="currentColor" r="1" stroke="none"></circle>
+</svg>
+            Instagram
+          </a>
+<a aria-label="Contact via WhatsApp" href="/contact/">
+<svg aria-hidden="true" fill="none" height="15" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="15">
+<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+</svg>
+            WhatsApp
+          </a>
+</div>
+</div>
+<div class="footer-col">
+<h5 data-sgs="headline">Shop</h5>
+<ul>
+<li><a href="/shop/">All Products</a></li>
+<li><a href="/product/zookies/">Zookies</a></li>
+<li><a href="/product/trial-pack/">Trial Pack (£5)</a></li>
+<li><a href="/gift-ideas/">Gift Ideas</a></li>
+<li><a href="/send-to-ward/">Send to Ward</a></li>
+<li><a href="/about/">Our Story</a></li>
+<li><a href="/faqs/">FAQs</a></li>
+</ul>
+</div>
+<div class="footer-col">
+<h5 data-sgs="headline">Information</h5>
+<ul>
+<li><a href="/privacy-policy/">Privacy Policy</a></li>
+<li><a href="/shipping/">Shipping Info</a></li>
+<li><a href="/terms/">Terms &amp; Conditions</a></li>
+<li><a href="/allergens/">Allergen Information</a></li>
+<li><a href="/contact/">Contact Us</a></li>
+</ul>
+</div>
+</div>
+<div class="footer-bottom">
+<span>© 2026 Mama's Munches. Registered Food Business, Birmingham.</span>
+<span>Made with love for breastfeeding mums 🍪</span>
+</div>
+</div>
+</footer>
+</body>
+</html>

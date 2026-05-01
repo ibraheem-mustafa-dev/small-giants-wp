@@ -1,5 +1,13 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-04-29
+**Last updated:** 2026-05-01
+
+## 2026-05-01 — auto-clone is structurally sound but visually insufficient
+
+The recogniser pipeline produced valid block markup for the Mama's Munches homepage and the page rendered without errors. Activating the `mamas-munches` style variation lifted fidelity from ~12/100 to ~65/100. Bean's verdict: still not close enough to be an "exact likeness" of the draft.
+
+**Lesson:** programmatic translation captures structure + tokens but misses the design choices that live in the gap between block defaults and mockup-specific styling — section banding, card containers, decorative frames, exact spacing rhythm, custom hover states. For client-facing visual clones the auto-pipeline gets to ~65/100; the last 35 points need a deliberate top-to-bottom rebuild section by section.
+
+**How to apply:** for site clones, run the recogniser to get the structural skeleton + token mapping, then walk the design top-to-bottom matching the mockup section by section. Do not declare done from a one-shot auto-output.
 
 Lessons that have fired repeatedly enough to be worth surfacing here. Living source: CC auto-memory at `~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_*.md` — this file is a curated index. Click through for full detail per lesson.
 
