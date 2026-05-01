@@ -3,10 +3,10 @@ doc_type: state
 project: small-giants-wp
 project_id: 14
 current_phase: html-recogniser
-current_step: "Architecture locked: recogniser-first (not transformer). SGS DB + core WP + WC blocks as fingerprint libraries. Dual-destination output (post_content + template parts). Gap detector with 4-tier classification. v1 acceptance: Mama's Munches homepage live on staging with visual diff < 5%. Build queued for autonomous overnight run."
+current_step: "Recogniser v1 Tasks 1-5 shipped on feat/recogniser-v1 (PR #10). Pipeline functional end-to-end on Mama's mockup; 3 source-code gap fixes applied + 1 prompt fix; webpack clean. Task 6 (deploy + visual diff) paused at the auto-mode safety guardrail — needs Bean's morning decision (A/B/C) per reports/recogniser-v1-blockers.md."
 last_updated: 2026-05-01
-blockers: []
-recommended_model_next: opus
+blockers: ["task-6-deploy-needs-explicit-bean-approval"]
+recommended_model_next: sonnet
 ---
 
 # small-giants-wp — State Snapshot
