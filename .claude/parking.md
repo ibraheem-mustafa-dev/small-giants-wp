@@ -20,15 +20,19 @@ Items parked here have a clear next-step but aren't urgent. Each entry has: the 
 
 **Effort:** 15-20 min once Playwright reaches the page.
 
-## P-5 — Deploy `sgs/feature-grid` block to sandybrown
+## P-5 — `sgs/feature-grid` block does not exist (recogniser hallucination)
 
-**Status:** Block exists in local build; not on the sandybrown server. Caused a `core/missing` placeholder for the gift section when the recogniser-generated page content was applied to homepage post 8 on 2026-05-01.
+**Status:** Recogniser prompt routes the gift section to `sgs/feature-grid` (see `tools/recogniser/prompts/recogniser-prompt.md`), and the LLM duly generated `<!-- wp:sgs/feature-grid ... /-->` markup. The block does NOT exist in `plugins/sgs-blocks/src/blocks/` — it was never built. On the live page the gift section renders as `core/missing`.
+
+**Two options:**
+
+A. **Build the block.** 2-3 column card grid with image/icon + heading + price + CTA per card, plus an `eyebrow` + `headline` + `subHeadline` for the section header, plus an inner `notice-banner` slot (the "Heading to hospital? Send to Ward" callout). ~45 min.
+
+B. **Re-route the recogniser to `sgs/card-grid`** (which DOES exist per CLAUDE.md). Edit the prompt + re-run on Mama's mockup gift section. ~20 min.
 
 **Trigger to resume:** When the gift section is reached in the top-down clone.
 
-**What:** `scp plugins/sgs-blocks/build/blocks/feature-grid/* hd:~/domains/sandybrown-nightingale-600381.hostingersite.com/public_html/wp-content/plugins/sgs-blocks/build/blocks/feature-grid/`. Reset OPcache + LiteSpeed CSS cache after.
-
-**Effort:** 5 min.
+**Recommended:** Option A — `sgs/feature-grid` is a useful block in its own right, the recogniser already names it correctly across multiple prompts, and the structural intent (cards + price + CTA) is more product-like than the existing `sgs/card-grid`. Build it once, reuse for all clients.
 
 ## ~~P-1 — `/gap-analysis` SKILL.md edits~~ — COMPLETED 2026-04-30
 

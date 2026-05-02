@@ -68,9 +68,9 @@ Open `sites/mamas-munches/mockups/homepage/index.html` lines 723-756 next to the
 
 Use Playwright + `wp.data.dispatch` to apply changes (the `wp-content-guard.py` PreToolUse hook blocks `wp post update --post_content` directly). Run `design-reviewer` agent after to verify match.
 
-## Task 2: Deploy `sgs/feature-grid` to sandybrown
+## Task 2: Build `sgs/feature-grid` block (recogniser-required)
 
-Quick 5-min scp (parking P-5). Block files at `plugins/sgs-blocks/build/blocks/feature-grid/`. Reset OPcache + LiteSpeed CSS cache after. Removes the `core/missing` placeholder in the gift section.
+The recogniser prompt routes the gift section + several other patterns to `sgs/feature-grid`, but the block doesn't exist yet (parking P-5). Build it before reaching the gift section. Spec: 2-3 column card grid with `image|icon` + `heading` + `price` + `ctaText/Url` per card, plus section-level `eyebrow` + `headline` + `subHeadline`, and an inner slot for `sgs/notice-banner` (the "Heading to hospital? Send to Ward" callout). Use the existing `sgs/card-grid` as a template. ~45 min.
 
 ## Task 3: Hero, trust bar, featured product, story, ingredients, gift, testimonials, footer
 
