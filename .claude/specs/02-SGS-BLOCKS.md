@@ -18,8 +18,10 @@ sgs-blocks/
 │
 ├── src/
 │   ├── blocks/
+│   │   ├── button/               # ★ Canonical SGS button (atomic) — replaces all uses of core/button. See specs/11-SGS-BUTTON-ARCHITECTURE.md
+│   │   ├── multi-button/         # ★ Button container (accepts 0..N sgs/button via InnerBlocks). Replaces core/buttons inside SGS composite blocks
 │   │   ├── container/            # Layout container (flexbox/grid)
-│   │   ├── hero/                 # Hero section (multiple variants)
+│   │   ├── hero/                 # Hero section (multiple variants) — refactor to InnerBlocks composition queued (spec 11)
 │   │   ├── info-box/             # Info/feature card
 │   │   ├── counter/              # Animated statistic counter
 │   │   ├── trust-bar/            # Horizontal stats strip
@@ -71,6 +73,25 @@ sgs-blocks/
 ```
 
 ---
+
+## Button architecture (sgs/button + sgs/multi-button)
+
+Decided 2026-05-03 — full spec at [`11-SGS-BUTTON-ARCHITECTURE.md`](11-SGS-BUTTON-ARCHITECTURE.md). Summary:
+
+- **`sgs/button`** is the canonical button block. Replaces all uses of `core/button` inside SGS blocks. 87 attributes (full surface — see spec 11 §8 comparison vs Spectra/Kadence/Stackable/core).
+- **`sgs/multi-button`** is the container. Accepts 0..N `sgs/button` instances via InnerBlocks (restricted to children of type `sgs/button`). Per-breakpoint layout direction + gap + alignment.
+- **Composition pattern:** every composite block that renders CTAs (`sgs/hero`, `sgs/cta-section`, `sgs/product-card`, `sgs/feature-grid`, etc.) exposes an InnerBlocks slot whose default template is `sgs/multi-button` containing 2 `sgs/button` instances. **NEW SGS BLOCKS WITH CTAs MUST USE THIS PATTERN** — never render CTAs internally via per-block `ctaPrimary*` attributes.
+- **Preset binding** via `inheritStyle: 'primary' | 'secondary' | 'outline' | 'custom'` reads from `wp_options.sgs_button_presets`, mirrored to `theme.json` `settings.custom.buttonPresets`. Three editing paths (Settings page, Site Editor block-style-variations, theme.json) write the same backing store.
+- **Existing CTA-rendering blocks** (sgs/hero etc.) are refactored to InnerBlocks composition with deprecation paths preserving existing post content. See spec 11 §5.
+
+## Pipeline / extraction
+
+Mockup HTML → SGS block markup pipeline at [`12-DRAFT-TO-SGS-PIPELINE.md`](12-DRAFT-TO-SGS-PIPELINE.md). Key rules:
+
+- Fingerprints auto-derived from `block.json` — never hand-written. Adding an attribute to a block automatically grows the recogniser's coverage.
+- Pull all CSS every run, classify into block-attribute / universal-handled / one-time-custom. No silent loss.
+- Forward-only emission. WP itself owns canonical serialisation (via composition + native render functions).
+- Composition emitter outputs `sgs/multi-button` + `sgs/button` markup for any CTA pattern detected.
 
 ## Block Specifications
 
