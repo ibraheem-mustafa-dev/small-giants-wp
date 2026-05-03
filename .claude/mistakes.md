@@ -1,5 +1,35 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-01
+**Last updated:** 2026-05-03
+
+## 2026-05-03 — extension-via-binding is the wrong shape for shared block features (composition wins)
+
+I proposed a "Match Style" dropdown extension that would attach to every CTA-rendering block (sgs/hero, sgs/cta-section, sgs/product-card, etc.) and bind their internal CTAs to global Primary/Secondary presets. Bean called this "dumb" and was right.
+
+**Why it was wrong:** the extension shape forced every parent block to render CTAs internally, then needed JS+PHP to inject the binding control into each, then needed the parent block's render to consume the bound preset. Maintenance: every time preset behaviour changes, every parent block needs touching.
+
+**The right shape:** composition. The CTA on a hero is literally an `sgs/button` block placed inside (via InnerBlocks). The preset binding lives once — on `sgs/button` itself. Every instance everywhere inherits it free. Mirrors how core/buttons + core/button compose. Bean named the second piece `sgs/multi-button` (the container).
+
+**Why this matters generally:** when "feature X needs to be available on N different blocks", the temptation is to write a block extension that injects controls into all of them. But if X is itself a block-shaped concept (button, image, link, icon), the right move is to make X its own block and have other blocks accept it via InnerBlocks. Extensions are right for cross-cutting concerns (animation, visibility) where the feature has no natural block representation.
+
+**How to apply:** before reaching for a block extension, ask "is this feature a block?" If yes, build the block, use InnerBlocks composition. Extensions only when the feature is NOT a block.
+
+## 2026-05-03 — fingerprints must be auto-derived from block.json, never hand-written
+
+The recogniser shipped with hand-written fingerprints. sgs/hero declares 48 attributes in block.json but the fingerprint only extracted 6 (12% coverage). The missing 42 included `splitImage` (the right-side hero image) and every responsive variant — the silent bug Bean spotted earlier where the live hero rendered with no image.
+
+**Why hand-written is wrong:** the schema is already the source of truth. Hand-writing a subset is duplicate work that drifts immediately. New attributes added to block.json don't flow through unless someone remembers.
+
+**The fix:** every fingerprint must be auto-generated from the block's block.json. For each declared attribute, an extractor entry exists by default — even if the extractor body is `TODO`, the slot is present so the extractor cannot silently skip it. Coverage is enforced by code, not by remembering.
+
+**How to apply:** any new SGS block automatically gets a recogniser fingerprint scaffold from its block.json. Heuristics fill in the deterministic extractors (text, link, image, colour-from-CSS-rule, etc.). Anything not deterministic flags as TODO and surfaces in the extractor's coverage report.
+
+## 2026-05-03 — pull all CSS every time during extraction, classify after
+
+I started selective in the v2 extractor — only pulling CSS rules whose attributes I knew how to map. Bean's directive: pull all CSS every time, then categorise into block-attribute / universal / custom. Selective pulling means quietly losing design intent.
+
+**Why this matters:** the universe of CSS in a mockup is bounded; the universe of "design intent we'll think to look for" is open. Pulling everything and classifying after is the only way to guarantee no silent gaps.
+
+**How to apply:** v2 extractor harvests every CSS rule whose selector matches an element in the section (BS4 native selector engine). For each rule's declarations, classify: maps-to-block-attribute (go to block) / universal-already-handled (ignore) / one-time-custom-CSS (emit as scoped style). 0% silent loss.
 
 ## 2026-05-01 — auto-clone is structurally sound but visually insufficient
 

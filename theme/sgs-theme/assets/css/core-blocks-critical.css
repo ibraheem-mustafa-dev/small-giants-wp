@@ -12,6 +12,39 @@
  * @package SGS\Theme
  */
 
+/* ─── UNIVERSAL FOUNDATIONS (apply across all client sites) ─── */
+
+/* Modern box-sizing default — padding/border included in width.
+   Required for layout fidelity to mockups that measure dimensions
+   inclusive of padding/border. 2026-05-03 alignment. */
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+/* Image defaults — prevents overflow inside containers and matches
+   mockup expectations (mockups assume images fill their slot). */
+img {
+	max-width: 100%;
+	height: auto;
+	display: block;
+}
+
+/* Universal reduced-motion rule (WP/MDN canonical pattern, ref:
+   wordpress.org/support accessibility guidance, MDN media query docs).
+   Replaces piecemeal per-block reduced-motion rules. */
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}
+
 /* ─── SMOOTH SCROLL — replaces smooth-scroll.js (2.7KB saved) ─── */
 html {
 	scroll-behavior: smooth;

@@ -67,13 +67,3 @@
 .sgs-floating-ui--shape-square {
 	border-radius: 0;
 }
-
-@media (prefers-reduced-motion: reduce) {
-	.sgs-floating-ui--back-to-top {
-		transition: none;
-	}
-
-	.sgs-floating-ui--back-to-top:hover {
-		transform: none;
-	}
-}

@@ -2,9 +2,9 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-current_phase: mamas-munches-design-clone
-current_step: "Recogniser pipeline merged to main + new sgs/product-card block built + deployed. One-shot auto-clone reached ~65% fidelity but Bean rejected — wants exact likeness. Next session: deliberate top-to-bottom rebuild starting with the header. WooCommerce installed on sandybrown — shop + products available."
-last_updated: 2026-05-01
+current_phase: sgs-button-architecture
+current_step: "Hero perfect-clone deferred behind a button-architecture rebuild. Bean settled the architecture: build sgs/button (canonical SGS button block, replaces all uses of core/button) + sgs/multi-button (container, accepts 0..N sgs/button via InnerBlocks) + button-presets settings page (primary/secondary, with hover states) + theme.json mirror for consistency. Existing CTA-rendering blocks (sgs/hero, sgs/cta-section, sgs/product-card) refactor to expose an InnerBlocks slot accepting sgs/multi-button rather than rendering CTAs internally. Universal CSS fixes (box-sizing, img defaults, prefers-reduced-motion canonical rule) and Mama's typography alignment landed this session. Competitor button research (Spectra/Kadence/GenerateBlocks/Stackable) running in background to inform the spec before build."
+last_updated: 2026-05-03
 blockers: []
 recommended_model_next: sonnet
 ---
@@ -15,7 +15,7 @@ recommended_model_next: sonnet
 
 ## Where we are
 
-**Architecture session complete (2026-05-01).** HTML-to-blocks compiler reframed as **recogniser-first** after strategic brainstorm. ~85% of Mama's Munches homepage covered by existing SGS blocks (verified by Sonnet subagent). Transformer scaffolded but unused for v1. Next: autonomous overnight build of the recogniser + ship Mama's Munches homepage.
+**Architecture pivot (2026-05-03).** Hero perfect-clone investigation surfaced that the recogniser's current attribute coverage is 12% of declared block surface, and the deeper issue is button architecture. Bean decided: don't extend `core/button`, build `sgs/button` from scratch (like Spectra) and a wrapping `sgs/multi-button` container; existing composite blocks (sgs/hero etc.) refactor to compose buttons via InnerBlocks rather than rendering them internally. Settings page + theme.json mirror provide the "Primary / Secondary" preset binding. Estimated 10–13h focused session. Competitor button research running in parallel to lock the attribute spec before build.
 
 | Item | Status |
 |---|---|
@@ -30,9 +30,11 @@ recommended_model_next: sonnet
 
 ## Open tracks (priority order)
 
-1. **Recogniser v1** — autonomous overnight Opus build. Target: Mama's Munches homepage live on staging by morning. Spec at `.claude/plans/recogniser-v1.md`.
-2. **SGS Ecom Plugin Phase 1** — `sgs/product-info`, `sgs/product-gallery`, `sgs/variant-pills`, `sgs/product-card`. WC integration (NOT replacement). 3-session shape: spec session + overnight Opus build + QA session. Unblocks Mama's product page.
-3. **Custom WC paid-extension replacements** — Bean wants in-house equivalents of WC Subscriptions / Memberships / Wholesale (paywalled, £600+/year). Scope: bounded per-extension. Roadmap item, not blocking.
+1. **SGS Button architecture build** — next focused session. Build sgs/button + sgs/multi-button + button-presets settings page + theme.json mirror + refactor sgs/hero / sgs/cta-section / sgs/product-card to use InnerBlocks composition. Spec written this session at `sites/mamas-munches/.claude/plans/sgs-button-spec.md` after competitor research lands. ~10–13h.
+2. **Mama's Munches design clone** — top-down section-by-section rebuild. Blocked behind button architecture (hero + featured-product + gift-section all need the new buttons first). Resume after track 1 ships.
+3. **Recogniser v2 (auto-extraction with all-CSS harvest)** — `tools/recogniser-v2/extract.py` prototyped this session. Pulls all CSS for a section, maps to block attributes, emits remainder as scoped custom CSS. Hero gives 17 attributes extracted, 27 CSS rules harvested with classification (~11 new block attrs needed, 16 universals/block-handled, 0 one-time custom). Pending: extend to other blocks once block schemas stabilise post-button-rebuild.
+4. **SGS Ecom Plugin Phase 1** — `sgs/product-info`, `sgs/product-gallery`, `sgs/variant-pills`. WC integration (NOT replacement). Unblocks Mama's product page. Queued after homepage clone ships.
+5. **Custom WC paid-extension replacements** — Bean wants in-house equivalents of WC Subscriptions / Memberships / Wholesale. Bounded per-extension. Roadmap item, not blocking.
 
 ## Subprojects
 
@@ -45,3 +47,24 @@ recommended_model_next: sonnet
 - **SGS Ecom Plugin scope: UI/blocks layer on WC, not replacement.** Per master plan Phase 5 + Mama's gap analysis.
 - **WP Studio: deprecated.** Recogniser pipeline + GitHub deploy makes it redundant. Document in next session.
 - **Header/footer = template parts containing block markup** (FSE / industry A-tier). S-tier extension: also register as patterns + bind Business Details.
+
+## Decisions 2026-05-03 (this session)
+
+- **Build sgs/button instead of extending core/button.** Spectra/Kadence pattern. Full ownership of attribute surface, not constrained by core block limits. Becomes the canonical button across all SGS patterns and composite blocks.
+- **sgs/multi-button container, not per-block CTA-binding extension.** WordPress-native composition (mirrors core/buttons + core/button pair). 0..N children, per-breakpoint layout overrides, default template auto-includes 2 sample buttons. Replaces my earlier "Match Style dropdown extension" idea — composition wins on every axis (one source of truth, no extension code, flexible button count, native UX).
+- **Settings page primary, theme.json mirror, Site Editor secondary.** Three editing paths, all writing to the same backing store. Settings page (cloned from Business Details admin) is the user-friendly primary. theme.json provides version-controlled per-client setup. Site Editor block-style-variations panel lives there for power users.
+- **Universal CSS foundations apply across all clients.** box-sizing border-box, img max-width 100%, canonical prefers-reduced-motion rule — all live in core-blocks-critical.css, applied 2026-05-03. Removed 4 redundant per-block reduced-motion blocks at the same time.
+- **Mama's variation focus-visible deliberately differs from framework default.** Site-specific 2px solid var(--text) with border-radius 4px. Framework default keeps 3px. Per-site CSS lives in `styles.css` field of the variation JSON.
+- **Block coverage rule for the recogniser:** every fingerprint MUST be auto-derived from `block.json` so attribute extraction can never silently skip declared attributes. Hand-written fingerprints are the bug behind the 12% coverage problem on sgs/hero. Build into recogniser-v2.
+- **All CSS pulled every time during recogniser extraction.** Not selective. Decisions about what's a block-attribute vs universal-handled vs custom is part of classification, not extraction. Rule emerged from "did we extract all the CSS?" thread.
+
+## Universal CSS foundations applied this session
+
+| Rule | File | Applies to |
+|------|------|-----------|
+| `* { box-sizing: border-box; }` | core-blocks-critical.css line 23 | All client sites |
+| `img { max-width: 100%; height: auto; display: block; }` | core-blocks-critical.css line 28 | All client sites |
+| Canonical `@media (prefers-reduced-motion: reduce)` rule | core-blocks-critical.css line 37 | All client sites |
+| 4× redundant prefers-reduced-motion blocks REMOVED | core-blocks.css + back-to-top.css | Cleanup |
+| h1/h2/h3 lineHeight 1.2 + mockup-aligned letter-spacing | mamas-munches.json | Mama's only |
+| Mockup-faithful focus-visible CSS | mamas-munches.json `styles.css` | Mama's only |

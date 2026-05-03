@@ -1,8 +1,59 @@
 ---
 doc_type: parking
 project: small-giants-wp
-last_updated: 2026-05-01
+last_updated: 2026-05-03
 ---
+
+## P-6 — Image controls block extension
+
+**Status:** Designed in 2026-05-03 session, deferred until after the button architecture build.
+
+**Trigger to resume:** After the button architecture session ships, before the gift-section / featured-product visual clone.
+
+**What:** New extension at `plugins/sgs-blocks/src/extensions/image-controls/` adding to any block declaring `supports.sgs.imageControls: true`:
+- `objectPosition` (e.g. `center 20%` like mockup hero-mobile-img)
+- `maxWidth` per-instance override
+- `height` per-breakpoint (mobile / tablet / desktop)
+
+Apply to `core/image` (via filter), `sgs/hero` (splitImage), `sgs/gallery`, `sgs/decorative-image`, `sgs/card-grid`, `sgs/product-card`, etc. Add a CLAUDE.md rule: "every new SGS block that renders an `<img>` MUST declare `supports.sgs.imageControls: true`".
+
+**Effort:** ~2–3h.
+
+## P-7 — sgs/icon vs sgs/icon-block duplicate cleanup
+
+**Status:** Found 2026-05-03 during competitor button research. Two blocks doing the same job.
+
+| `sgs/icon` (10 attrs) | `sgs/icon-block` (11 attrs) |
+|------------------------|------------------------------|
+| icon, size, iconColour, backgroundColour, backgroundShape, link, linkOpensNewTab, linkLabel, hoverColour, hoverScale | icon, iconColour, iconSize, backgroundColour, link, linkLabel, linkOpensNewTab, shape, sgsAnimation, sgsAnimationDuration |
+
+Both are `sgs-content`, both render Lucide icons with optional link. `icon-block` has animation; `icon` has hover scale + colour.
+
+**Trigger to resume:** During next QC pass or when one is needed in a new pattern.
+
+**What:** Pick canonical (likely `sgs/icon-block` since it has animation), migrate `sgs/icon` instances via deprecation, retire `sgs/icon`. Audit codebase for similar dupes (run a check across every block.json — group by description + supports + attribute overlap).
+
+**Effort:** ~1h investigation + 30min deprecation/migration code.
+
+## P-8 — Reduced-motion rules in dark-mode.css / header-modes.css / reading-progress.css
+
+**Status:** 3 files outside the scope of the 2026-05-03 cleanup still carry their own scoped reduced-motion rules. With the new universal rule in core-blocks-critical.css, they may now be redundant.
+
+**Trigger to resume:** Next CSS audit / refactor session.
+
+**What:** Verify whether the new universal `* { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important }` covers the cases each scoped block was handling. If yes, remove. If they're handling additional non-animation properties (e.g. transform, scroll-behavior), keep but verify they don't conflict.
+
+**Effort:** ~30min audit + 10min cleanup.
+
+## P-9 — Recogniser-v2 generalisation beyond hero
+
+**Status:** Hero extractor working at `tools/recogniser-v2/extract.py` (2026-05-03). Tested only on hero.
+
+**Trigger to resume:** Once button architecture lands and we move to the next mockup section (trust-bar / featured-product / etc.).
+
+**What:** Extend the per-block extractor pattern to other SGS blocks. Auto-generate the per-block scaffold from block.json so adding a new extractor is one PR. Wire up the LLM fallback path for unknown patterns. Build the "block coverage gate" reporter.
+
+**Effort:** ~4–6h once we have ≥3 blocks done as templates.
 
 # Parking — deferred work with named triggers
 

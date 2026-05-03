@@ -206,20 +206,6 @@ footer .wp-block-heading.has-text-inverse-color.has-text-color {
 	margin-bottom: var(--wp--preset--spacing--20);
 }
 
-/* ─── REDUCED MOTION — non-critical transitions ─── */
-
-/*
- * Covers footer links and submenu animations declared in this file.
- * Critical reduced-motion rules (buttons, nav base) are in
- * core-blocks-critical.css.
- */
-@media (prefers-reduced-motion: reduce) {
-	.sgs-footer-links a,
-	.sgs-footer-nav .wp-block-navigation-item__content {
-		transition: none;
-	}
-}
-
 /* ─── FOOTER LINK COLOUR — H5 ─── */
 
 /*
@@ -304,12 +290,6 @@ footer .wp-block-list a:hover,
 	transition: opacity 200ms cubic-bezier(0.16, 1, 0.3, 1),
 	            transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
 	            visibility 0s linear 0s;
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.wp-block-navigation .wp-block-navigation__submenu-container {
-		transition: none;
-	}
 }
 
 /* ─── SOCIAL ICON BRAND COLOURS ON HOVER — H21 ─── */
@@ -676,14 +656,6 @@ footer .wp-block-list a:hover,
 	transform: scale(1.06);
 }
 
-@media (prefers-reduced-motion: reduce) {
-	.wp-block-column > .wp-block-group.has-background,
-	.wp-block-column > .wp-block-group.has-background .wp-block-image img {
-		transition: none !important;
-		transform: none !important;
-	}
-}
-
 /* ─── FIX: WP has-text-color override on buttons ─── */
 /*
  * WordPress 6.9 global styles apply .has-text-color { color: var(--text) !important }
@@ -832,27 +804,6 @@ footer .wp-block-list a:hover,
  * Show/hide rules for the WP core nav toggle now live in the sgs/mobile-nav
  * block's style.css (style-index.css). The old mobile-nav-drawer.css is deleted.
  */
-
-/* ─── REDUCED MOTION — universal rule + critical overrides ─── */
-
-/*
- * Universal rule disables all animations and transitions for users who have
- * requested reduced motion in their OS accessibility settings (WCAG 2.1 SC 2.3.3).
- * scroll-behavior: auto prevents smooth-scroll from feeling disorienting.
- *
- * This rule is intentionally broad. Specific elements that must retain
- * functional transitions (e.g. focus rings) are restored below.
- */
-@media (prefers-reduced-motion: reduce) {
-	*,
-	*::before,
-	*::after {
-		animation-duration: 0.01ms !important;
-		animation-iteration-count: 1 !important;
-		transition-duration: 0.01ms !important;
-		scroll-behavior: auto !important;
-	}
-}
 
 /* ── Section gap fix: remove block-gap between full-width sections ────────
  * WordPress constrained layout applies --wp--style--block-gap as margin-top
