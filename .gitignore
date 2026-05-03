@@ -91,3 +91,4 @@ plugins/sgs-blocks/vendor/
 # PHP Composer (dev-only — IDE stubs for Intelephense)
 vendor/
 composer.phar
+tools/**/__pycache__/
