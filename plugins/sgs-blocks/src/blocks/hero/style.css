@@ -157,11 +157,14 @@
  * pre-commit STOP GATE (.git/hooks/pre-commit).
  */
 
-/* Headline */
+/* Headline — line-height intentionally NOT set here so the active style
+ * variation's elements.h1.typography.lineHeight wins (V3 fix from
+ * hero-poc-qc-2026-05-04.md — hardcoded 1.1 was beating Mama's 1.15 by
+ * specificity). Per framework rule: typography defaults flow from theme.json,
+ * not from block CSS. */
 .sgs-hero__headline {
 	font-size: var(--wp--preset--font-size--hero);
 	font-weight: 700;
-	line-height: 1.1;
 	margin: 0 0 var(--wp--preset--spacing--30) 0;
 }
 
