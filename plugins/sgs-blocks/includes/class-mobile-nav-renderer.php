@@ -10,6 +10,9 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// Load Lucide icon helper — used in render_header(), CTAs, contact shortcuts, social links.
+require_once __DIR__ . '/lucide-icons.php';
+
 /**
  * Renders all zones of the sgs/mobile-nav drawer.
  */

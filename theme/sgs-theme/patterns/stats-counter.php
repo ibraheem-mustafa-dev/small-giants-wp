@@ -1,6 +1,6 @@
 <?php
 /**
- * Title: Stats — Counter Section
+ * Title: Stats - Counter Section
  * Slug: sgs/stats-counter
  * Categories: sgs
  * Description: Four-column statistics section using the SGS Counter block for animated number counting.
@@ -17,25 +17,25 @@
 
 		<!-- wp:column -->
 		<div class="wp-block-column">
-			<!-- wp:sgs/counter {"target":150,"suffix":"+","label":"Projects Completed","numberColour":"surface","labelColour":"text-inverse","align":"centre"} /-->
+			<!-- wp:sgs/counter {"number":150,"suffix":"+","label":"Projects Completed","numberColour":"surface","labelColour":"text-inverse"} /-->
 		</div>
 		<!-- /wp:column -->
 
 		<!-- wp:column -->
 		<div class="wp-block-column">
-			<!-- wp:sgs/counter {"target":98,"suffix":"%","label":"Client Satisfaction","numberColour":"surface","labelColour":"text-inverse","align":"centre"} /-->
+			<!-- wp:sgs/counter {"number":98,"suffix":"%","label":"Client Satisfaction","numberColour":"surface","labelColour":"text-inverse"} /-->
 		</div>
 		<!-- /wp:column -->
 
 		<!-- wp:column -->
 		<div class="wp-block-column">
-			<!-- wp:sgs/counter {"target":10,"suffix":"+","label":"Years Experience","numberColour":"surface","labelColour":"text-inverse","align":"centre"} /-->
+			<!-- wp:sgs/counter {"number":10,"suffix":"+","label":"Years Experience","numberColour":"surface","labelColour":"text-inverse"} /-->
 		</div>
 		<!-- /wp:column -->
 
 		<!-- wp:column -->
 		<div class="wp-block-column">
-			<!-- wp:sgs/counter {"target":24,"suffix":"/7","label":"Support Available","numberColour":"surface","labelColour":"text-inverse","align":"centre"} /-->
+			<!-- wp:sgs/counter {"number":24,"suffix":"/7","label":"Support Available","numberColour":"surface","labelColour":"text-inverse"} /-->
 		</div>
 		<!-- /wp:column -->
 
