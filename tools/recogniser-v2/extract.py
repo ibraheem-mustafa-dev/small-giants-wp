@@ -8,7 +8,7 @@ Takes:
 
 Returns:
   - extracted attributes dict
-  - WP block-comment markup string
+  - WP block-comment markup string (nested InnerBlocks when present)
   - coverage report (extracted / defaulted / flagged)
 
 Usage:
@@ -28,6 +28,89 @@ from bs4 import BeautifulSoup
 
 
 REPO = Path(__file__).resolve().parents[2]
+
+# ---------------------------------------------------------------------------
+# CSS selectors that are universally handled by the SGS framework or are
+# pure resets / normalisation. Declarations matched against these selectors
+# are consumed (marked) but NOT emitted as scoped custom CSS.
+# ---------------------------------------------------------------------------
+UNIVERSAL_HANDLED_SELECTORS = frozenset({
+    # Global resets
+    '*, *::before, *::after',
+    '*',
+    'img',
+    'a',
+    # Typography reset
+    'h1, h2, h3',
+    'h1, h2, h3, h4, h5, h6',
+    # Reduced-motion (framework owns this)
+    # (matched by prefix in is_universal_handled — see below)
+
+    # Mockup-structural classes that map entirely to block attributes.
+    # These selectors carry design data that is consumed by attribute
+    # extraction; their declarations must NEVER be emitted as scoped CSS
+    # because the SGS block renders entirely different class names.
+    '.hero',
+    '.hero-desktop',
+    '.hero-mobile',
+    '.hero-mobile-img',
+    '.hero-content',
+    '.hero-content h1',
+    '.hero-content .hero-sub',
+    '.hero-copy',
+    '.hero-copy h1',
+    '.hero-copy .hero-sub',
+    '.hero-copy .hero-ctas',
+    '.hero-ctas',
+    '.hero-photo',
+    '.hero-photo img',
+    '.btn-primary',
+    '.btn-primary:hover',
+    '.btn-secondary',
+    '.btn-secondary:hover',
+    '.btn',
+    '.btn-ghost',
+    '.btn-ghost:hover',
+    '.section-label',
+})
+
+# Mockup-class selectors that appear inside @media blocks — matched by
+# the bare selector after stripping the @media prefix.
+UNIVERSAL_HANDLED_BARE = frozenset({
+    '.hero-mobile',
+    '.hero-desktop',
+    '.hero-copy',
+    '.hero-copy h1',
+    '.hero-copy .hero-sub',
+    '.hero-copy .hero-ctas',
+    '.hero-photo',
+    '.hero-photo img',
+})
+
+
+def is_universal_handled(selector_key: str) -> bool:
+    """Return True if this CSS rule is a framework default, reset, or
+    mockup-structural class whose declarations are consumed by attribute
+    extraction and must never be emitted as scoped custom CSS.
+    """
+    # Strip @media prefix to get the bare selector
+    bare = _strip_media_prefix(selector_key).strip()
+
+    # Exact matches (with or without @media prefix)
+    if bare in UNIVERSAL_HANDLED_SELECTORS:
+        return True
+    if bare in UNIVERSAL_HANDLED_BARE:
+        return True
+
+    # Reduced-motion media query — framework CSS owns this
+    if 'prefers-reduced-motion' in selector_key:
+        return True
+
+    # focus-visible reset
+    if 'focus-visible' in bare:
+        return True
+
+    return False
 
 
 def load_block_schema(block_name: str) -> dict:
@@ -141,7 +224,7 @@ def img_object(el, *selectors, media_map=None):
 
 
 # ---- Per-block extractors ----
-# Each block has an `extractors` map: attr_name → callable(section_el, ctx) → value | None
+# Each block has an `extractors` map: attr_name -> callable(section_el, ctx) -> value | None
 # Returning None means "leave as default / not in mockup".
 
 def _strip_media_prefix(selector_key: str) -> str:
@@ -216,13 +299,23 @@ def emit_scoped_custom_css(section_anchor: str, rules: dict[str, dict[str, str]]
                             consumed_rules: set, consumed_decls: dict[str, set]) -> str:
     """Emit CSS rules that weren't mapped to block attributes, scoped to the block's anchor.
 
+    Skips:
+      - fully consumed rules
+      - universally-handled selectors (framework resets, mockup-structural classes)
+
     `consumed_rules`: full rule keys that were entirely absorbed by attribute mapping.
     `consumed_decls`: per-rule-key set of declaration property names that were absorbed.
     """
     chunks = []
     for key, decls in rules.items():
+        # Skip fully consumed rules
         if key in consumed_rules:
             continue
+
+        # Skip universally-handled selectors (resets + mockup-structural classes)
+        if is_universal_handled(key):
+            continue
+
         used = consumed_decls.get(key, set())
         remaining = {p: v for p, v in decls.items() if p not in used}
         if not remaining:
@@ -233,8 +326,41 @@ def emit_scoped_custom_css(section_anchor: str, rules: dict[str, dict[str, str]]
     return '\n'.join(chunks)
 
 
-def extract_hero(section, ctx):
-    """sgs/hero — Approach B implementation for the hero block."""
+def _parse_padding_shorthand(value: str) -> tuple[int | None, int | None, int | None, int | None]:
+    """Parse a CSS padding shorthand (e.g. '28px 20px 40px') into (top, right, bottom, left).
+    Returns None for components that could not be parsed as px integers.
+    """
+    parts = value.strip().split()
+    def _px(v: str) -> int | None:
+        v = v.strip()
+        if v.endswith('px'):
+            try:
+                return int(float(v[:-2]))
+            except ValueError:
+                return None
+        return None
+
+    if len(parts) == 1:
+        v = _px(parts[0])
+        return v, v, v, v
+    elif len(parts) == 2:
+        tb, lr = _px(parts[0]), _px(parts[1])
+        return tb, lr, tb, lr
+    elif len(parts) == 3:
+        t, lr, b = _px(parts[0]), _px(parts[1]), _px(parts[2])
+        return t, lr, b, lr
+    elif len(parts) == 4:
+        return _px(parts[0]), _px(parts[1]), _px(parts[2]), _px(parts[3])
+    return None, None, None, None
+
+
+def extract_hero(section, ctx) -> tuple[dict, list]:
+    """sgs/hero — Approach B implementation for the hero block.
+
+    Returns (attributes_dict, inner_blocks_list).
+    inner_blocks contains the sgs/multi-button + sgs/button structure
+    replacing the deprecated flat ctaPrimary*/ctaSecondary* attributes.
+    """
     out = {}
     consumed_rules: set = set()
     consumed_decls: dict[str, set] = {}
@@ -247,7 +373,9 @@ def extract_hero(section, ctx):
 
     media_map = ctx.get('media_map', {})
 
-    # Variant: split if mockup has both .hero-desktop AND .hero-photo, else standard
+    # -----------------------------------------------------------------------
+    # VARIANT
+    # -----------------------------------------------------------------------
     has_desktop = section.select_one('.hero-desktop')
     has_photo = section.select_one('.hero-photo')
     if has_desktop and has_photo:
@@ -255,10 +383,12 @@ def extract_hero(section, ctx):
     else:
         out['variant'] = 'standard'
 
+    # -----------------------------------------------------------------------
+    # TEXT CONTENT
+    # -----------------------------------------------------------------------
     # Headline — prefer desktop layout's h1 since it has the canonical line-break
     h_desktop = section.select_one('.hero-desktop h1') or section.select_one('h1')
     if h_desktop:
-        # Preserve <br> as newline-collapsed whitespace; for block attribute we just need text
         out['headline'] = h_desktop.get_text(' ', strip=True)
 
     # Sub-headline
@@ -266,22 +396,17 @@ def extract_hero(section, ctx):
     if sub:
         out['subHeadline'] = sub.get_text(strip=True)
 
-    # CTAs
-    primary = section.select_one('.hero-desktop .btn-primary') or section.select_one('.btn-primary')
-    if primary:
-        out['ctaPrimaryText'] = primary.get_text(strip=True)
-        href = primary.get('href')
-        if href:
-            out['ctaPrimaryUrl'] = href
+    # Label / eyebrow
+    label_el = (
+        section.select_one('.hero-desktop .section-label')
+        or section.select_one('.section-label')
+    )
+    if label_el:
+        out['label'] = label_el.get_text(strip=True)
 
-    secondary = section.select_one('.hero-desktop .btn-secondary') or section.select_one('.btn-secondary')
-    if secondary:
-        out['ctaSecondaryText'] = secondary.get_text(strip=True)
-        href = secondary.get('href')
-        if href:
-            out['ctaSecondaryUrl'] = href
-
-    # Split image — resolve via media_map to sandybrown URL + media ID
+    # -----------------------------------------------------------------------
+    # SPLIT IMAGE
+    # -----------------------------------------------------------------------
     if out['variant'] == 'split':
         img = (
             img_object(section, '.hero-photo img', media_map=media_map)
@@ -290,10 +415,20 @@ def extract_hero(section, ctx):
         if img:
             out['splitImage'] = img
 
-    # Background colour from CSS rule on .hero
+        # Mobile image (stacked above content on mobile)
+        mobile_img = img_object(section, '.hero-mobile img', '.hero-mobile-img', media_map=media_map)
+        if mobile_img:
+            out['splitImageMobile'] = mobile_img
+
+    # -----------------------------------------------------------------------
+    # CSS RULES
+    # -----------------------------------------------------------------------
     rules = ctx.get('css_rules', {})
     section_rules = ctx.get('section_css', rules)
 
+    # -----------------------------------------------------------------------
+    # BACKGROUND COLOUR
+    # -----------------------------------------------------------------------
     if '.hero' in section_rules:
         bg = section_rules['.hero'].get('background', '').strip()
         if bg:
@@ -301,9 +436,12 @@ def extract_hero(section, ctx):
             if slug:
                 out['backgroundColor'] = slug
                 mark('.hero', 'background')
-        # 'overflow: hidden' is a layout side-effect — not block-attribute material; leave to custom CSS
+        # overflow: hidden is a layout side-effect — skip as block attr; mark consumed
+        mark('.hero', 'overflow')
 
-    # Text colour — desktop h1 wins
+    # -----------------------------------------------------------------------
+    # TEXT / HEADLINE COLOUR
+    # -----------------------------------------------------------------------
     for selector in ['.hero-copy h1', '.hero-content h1']:
         if selector in section_rules:
             col = section_rules[selector].get('color', '').strip()
@@ -315,7 +453,9 @@ def extract_hero(section, ctx):
                     mark(selector, 'color')
                 break
 
-    # Sub-headline colour + font sizes per breakpoint
+    # -----------------------------------------------------------------------
+    # SUB-HEADLINE COLOUR + TYPOGRAPHY
+    # -----------------------------------------------------------------------
     for selector in ['.hero-copy .hero-sub', '.hero-content .hero-sub']:
         if selector in section_rules:
             col = section_rules[selector].get('color', '').strip()
@@ -328,53 +468,420 @@ def extract_hero(section, ctx):
 
     # Sub-headline font size (mobile = .hero-content .hero-sub)
     if '.hero-content .hero-sub' in section_rules:
-        fs = section_rules['.hero-content .hero-sub'].get('font-size', '').strip()
+        decls = section_rules['.hero-content .hero-sub']
+        fs = decls.get('font-size', '').strip()
         if fs:
             out['subHeadlineFontSizeMobile'] = fs
             mark('.hero-content .hero-sub', 'font-size')
+        lh = decls.get('line-height', '').strip()
+        if lh:
+            try:
+                out['subHeadlineLineHeight'] = float(lh)
+                out['subHeadlineLineHeightUnit'] = 'em'
+                mark('.hero-content .hero-sub', 'line-height')
+            except ValueError:
+                pass
+        # margin-bottom: handled by SGS hero spacing; mark consumed
+        mark('.hero-content .hero-sub', 'margin-bottom')
 
-    # Sub-headline font size (tablet+ = .hero-copy .hero-sub) — base + tablet
-    if '.hero-copy .hero-sub' in section_rules:
-        fs = section_rules['.hero-copy .hero-sub'].get('font-size', '').strip()
+    # Sub-headline font size + line-height (tablet+ = .hero-copy .hero-sub)
+    media_key_sub_768 = next(
+        (k for k in section_rules
+         if '@media' in k and '768px' in k and '.hero-copy .hero-sub' in k),
+        None
+    )
+    sub_decls_desktop = section_rules.get(media_key_sub_768 or '', {})
+    # Fall back to non-media rule if no @media rule exists
+    if not sub_decls_desktop:
+        sub_decls_desktop = section_rules.get('.hero-copy .hero-sub', {})
+    if sub_decls_desktop:
+        fs = sub_decls_desktop.get('font-size', '').strip()
         if fs:
             out['subHeadlineFontSize'] = fs
-            mark('.hero-copy .hero-sub', 'font-size')
+            if media_key_sub_768:
+                mark(media_key_sub_768, 'font-size')
+            else:
+                mark('.hero-copy .hero-sub', 'font-size')
+        mw = sub_decls_desktop.get('max-width', '').strip()
+        if mw and mw.endswith('px'):
+            try:
+                out['subHeadlineMaxWidth'] = int(float(mw[:-2]))
+                if media_key_sub_768:
+                    mark(media_key_sub_768, 'max-width')
+                else:
+                    mark('.hero-copy .hero-sub', 'max-width')
+            except ValueError:
+                pass
+        lh = sub_decls_desktop.get('line-height', '').strip()
+        if lh and 'subHeadlineLineHeight' not in out:
+            try:
+                out['subHeadlineLineHeight'] = float(lh)
+                out['subHeadlineLineHeightUnit'] = 'em'
+                if media_key_sub_768:
+                    mark(media_key_sub_768, 'line-height')
+                else:
+                    mark('.hero-copy .hero-sub', 'line-height')
+            except ValueError:
+                pass
+        # margin-bottom: no block attr; mark consumed
+        if media_key_sub_768:
+            mark(media_key_sub_768, 'margin-bottom')
+        else:
+            mark('.hero-copy .hero-sub', 'margin-bottom')
 
-    # Min-height from .hero-desktop in @media (min-width: 768px)
-    media_key_768 = next((k for k in section_rules if '@media' in k and '768px' in k and '.hero-desktop' in k and 'min-height' in section_rules[k]), None)
+    # -----------------------------------------------------------------------
+    # HEADLINE FONT SIZES PER BREAKPOINT
+    # -----------------------------------------------------------------------
+    # Mobile: .hero-content h1
+    if '.hero-content h1' in section_rules:
+        decls = section_rules['.hero-content h1']
+        fs = decls.get('font-size', '').strip()
+        if fs and fs.endswith('px'):
+            try:
+                out['headlineFontSizeMobile'] = int(float(fs[:-2]))
+                mark('.hero-content h1', 'font-size')
+            except ValueError:
+                pass
+        # font-weight, letter-spacing, margin-bottom — variation's h1 rule handles these
+        mark('.hero-content h1', 'font-weight', 'margin-bottom', 'letter-spacing')
+
+    # Desktop: .hero-copy h1 inside @media (min-width: 768px)
+    media_key_h1_768 = next(
+        (k for k in section_rules
+         if '@media' in k and '768px' in k and '.hero-copy h1' in k),
+        None
+    )
+    if media_key_h1_768:
+        decls = section_rules[media_key_h1_768]
+        fs = decls.get('font-size', '').strip()
+        if fs and fs.endswith('px'):
+            try:
+                out['headlineFontSizeDesktop'] = int(float(fs[:-2]))
+                mark(media_key_h1_768, 'font-size')
+            except ValueError:
+                pass
+        # font-weight, margin-bottom, letter-spacing — variation handles; mark consumed
+        mark(media_key_h1_768, 'font-weight', 'margin-bottom', 'letter-spacing', 'color')
+
+    # 1280px breakpoint h1 — no block attribute tier for "large desktop"; mark consumed
+    media_key_h1_1280 = next(
+        (k for k in section_rules
+         if '@media' in k and '1280px' in k and '.hero-copy h1' in k),
+        None
+    )
+    if media_key_h1_1280:
+        mark(media_key_h1_1280, 'font-size')
+
+    # -----------------------------------------------------------------------
+    # MIN-HEIGHT
+    # -----------------------------------------------------------------------
+    media_key_768 = next(
+        (k for k in section_rules
+         if '@media' in k and '768px' in k and '.hero-desktop' in k
+         and 'min-height' in section_rules[k]),
+        None
+    )
     if media_key_768:
         mh = section_rules[media_key_768].get('min-height', '').strip()
         if mh:
             out['minHeight'] = mh
             mark(media_key_768, 'min-height')
 
-    # CTA styles — block uses ctaPrimaryStyle enum: accent | primary | outline | custom
-    btn_primary = section_rules.get('.btn-primary', {})
-    if 'background' in btn_primary:
-        slug = ctx['css_var_to_slug'].get(_normalise_var(btn_primary['background']))
-        if slug == 'accent':
-            out['ctaPrimaryStyle'] = 'accent'
-        elif slug == 'primary':
-            out['ctaPrimaryStyle'] = 'primary'
-        # Mark the whole .btn-primary rule as consumed (block applies its own CTA styling per ctaPrimaryStyle)
-        consumed_rules.add('.btn-primary')
+    # -----------------------------------------------------------------------
+    # LAYOUT GRID — splitColumnRatio
+    # -----------------------------------------------------------------------
+    # .hero-desktop inside @media (min-width: 768px): grid-template-columns
+    media_key_grid = next(
+        (k for k in section_rules
+         if '@media' in k and '768px' in k and '.hero-desktop' in k
+         and 'grid-template-columns' in section_rules.get(k, {})),
+        None
+    )
+    if media_key_grid:
+        cols = section_rules[media_key_grid].get('grid-template-columns', '').strip()
+        if cols:
+            out['splitColumnRatio'] = cols
+            mark(media_key_grid, 'grid-template-columns', 'display')
+    else:
+        # Check non-media .hero-desktop rule
+        if '.hero-desktop' in section_rules:
+            cols = section_rules['.hero-desktop'].get('grid-template-columns', '').strip()
+            if cols:
+                out['splitColumnRatio'] = cols
+            mark('.hero-desktop', 'display', 'grid-template-columns')
 
-    btn_secondary = section_rules.get('.btn-secondary', {})
-    if btn_secondary:
-        # outline style fits btn-secondary semantics
-        out['ctaSecondaryStyle'] = 'outline'
-        consumed_rules.add('.btn-secondary')
+    # Mark .hero-desktop non-media rule as consumed (display:none is mobile-only and
+    # handled by the split variant's responsive layout)
+    if '.hero-desktop' in section_rules:
+        mark('.hero-desktop', 'display')
 
-    # Anchor for scoping any unmapped CSS
+    # -----------------------------------------------------------------------
+    # VERTICAL ALIGNMENT
+    # -----------------------------------------------------------------------
+    # .hero-copy inside @media (min-width: 768px): justify-content: center
+    media_key_copy = next(
+        (k for k in section_rules
+         if '@media' in k and '768px' in k and k.endswith('.hero-copy')),
+        None
+    )
+    if media_key_copy:
+        decls = section_rules[media_key_copy]
+        jc = decls.get('justify-content', '').strip()
+        if jc == 'center':
+            out['verticalAlignment'] = 'center'
+        elif jc in ('flex-start', 'start'):
+            out['verticalAlignment'] = 'top'
+        elif jc in ('flex-end', 'end'):
+            out['verticalAlignment'] = 'bottom'
+        # display, flex-direction, background are structural — mark consumed
+        mark(media_key_copy, 'display', 'flex-direction', 'justify-content', 'background')
+
+    # -----------------------------------------------------------------------
+    # CONTENT PADDING
+    # -----------------------------------------------------------------------
+    # Desktop: .hero-copy padding inside @media (min-width: 768px)
+    if media_key_copy:
+        decls = section_rules[media_key_copy]
+        pad = decls.get('padding', '').strip()
+        if pad:
+            t, r, b, l = _parse_padding_shorthand(pad)
+            if t is not None:
+                out['contentPaddingTop'] = t
+            if r is not None:
+                out['contentPaddingRight'] = r
+            if b is not None:
+                out['contentPaddingBottom'] = b
+            if l is not None:
+                out['contentPaddingLeft'] = l
+            mark(media_key_copy, 'padding')
+
+    # 1280px: .hero-copy padding
+    media_key_copy_1280 = next(
+        (k for k in section_rules
+         if '@media' in k and '1280px' in k and '.hero-copy' in k
+         and 'padding' in section_rules.get(k, {})),
+        None
+    )
+    if media_key_copy_1280:
+        # No "large desktop" attribute tier; mark consumed to avoid scoped CSS emission
+        mark(media_key_copy_1280, 'padding')
+
+    # Mobile: .hero-content padding
+    if '.hero-content' in section_rules:
+        decls = section_rules['.hero-content']
+        pad = decls.get('padding', '').strip()
+        if pad:
+            t, r, b, l = _parse_padding_shorthand(pad)
+            if t is not None:
+                out['contentPaddingTopMobile'] = t
+            if r is not None:
+                out['contentPaddingRightMobile'] = r
+            if b is not None:
+                out['contentPaddingBottomMobile'] = b
+            if l is not None:
+                out['contentPaddingLeftMobile'] = l
+            mark('.hero-content', 'padding')
+        # background on .hero-content is same as .hero bg; mark consumed
+        mark('.hero-content', 'background')
+
+    # -----------------------------------------------------------------------
+    # IMAGE CONTROLS
+    # -----------------------------------------------------------------------
+    # .hero-photo img — object-fit, object-position
+    media_key_photo_img = next(
+        (k for k in section_rules
+         if '@media' in k and '768px' in k and '.hero-photo img' in k),
+        None
+    )
+    photo_img_decls = (
+        section_rules.get(media_key_photo_img, {})
+        or section_rules.get('.hero-photo img', {})
+    )
+    if photo_img_decls:
+        fit = photo_img_decls.get('object-fit', '').strip()
+        if fit:
+            out['imageObjectFit'] = fit
+        pos = photo_img_decls.get('object-position', '').strip()
+        if pos:
+            out['imageObjectPosition'] = pos
+        if media_key_photo_img:
+            mark(media_key_photo_img, 'width', 'height', 'object-fit', 'object-position')
+        if '.hero-photo img' in section_rules:
+            mark('.hero-photo img', 'width', 'height', 'object-fit', 'object-position')
+
+    # .hero-photo container — overflow: hidden is framework default; mark consumed
+    media_key_photo = next(
+        (k for k in section_rules
+         if '@media' in k and '768px' in k and k.endswith('.hero-photo')),
+        None
+    )
+    if media_key_photo:
+        mark(media_key_photo, 'overflow')
+    if '.hero-photo' in section_rules:
+        mark('.hero-photo', 'overflow')
+
+    # Mobile image: .hero-mobile-img
+    if '.hero-mobile-img' in section_rules:
+        decls = section_rules['.hero-mobile-img']
+        h = decls.get('height', '').strip()
+        if h and h.endswith('px'):
+            try:
+                out['splitImageMobileHeight'] = int(float(h[:-2]))
+            except ValueError:
+                pass
+        op = decls.get('object-position', '').strip()
+        if op:
+            out['splitImageMobileObjectPosition'] = op
+        # object-fit already captured from desktop rule; mark all consumed
+        mark('.hero-mobile-img', 'width', 'height', 'object-fit', 'object-position', 'display')
+
+    # -----------------------------------------------------------------------
+    # LABEL (EYEBROW) TYPOGRAPHY
+    # -----------------------------------------------------------------------
+    label_sel = '.section-label'
+    if label_sel in section_rules:
+        decls = section_rules[label_sel]
+
+        fs = decls.get('font-size', '').strip()
+        if fs and fs.endswith('px'):
+            try:
+                out['labelFontSize'] = int(float(fs[:-2]))
+                out['labelFontSizeUnit'] = 'px'
+            except ValueError:
+                pass
+
+        fw = decls.get('font-weight', '').strip()
+        if fw:
+            out['labelFontWeight'] = fw
+
+        ls = decls.get('letter-spacing', '').strip()
+        if ls and ls.endswith('px'):
+            try:
+                out['labelLetterSpacing'] = float(ls[:-2])
+                out['labelLetterSpacingUnit'] = 'px'
+            except ValueError:
+                pass
+
+        tt = decls.get('text-transform', '').strip()
+        if tt:
+            out['labelTextTransform'] = tt
+
+        col = decls.get('color', '').strip()
+        if col:
+            slug = ctx['css_var_to_slug'].get(_normalise_var(col))
+            if slug:
+                out['labelColour'] = slug
+
+        mb = decls.get('margin-bottom', '').strip()
+        if mb and mb.endswith('px'):
+            try:
+                out['labelMarginBottom'] = int(float(mb[:-2]))
+                out['labelMarginBottomUnit'] = 'px'
+            except ValueError:
+                pass
+
+        # display: block is framework default for the label element; mark consumed
+        mark(label_sel, 'font-size', 'font-weight', 'letter-spacing', 'text-transform',
+             'color', 'margin-bottom', 'display')
+
+    # -----------------------------------------------------------------------
+    # .hero-content h1 — font-family handled by variation; mark remaining props consumed
+    # -----------------------------------------------------------------------
+    if '.hero-content h1' in section_rules:
+        # Only font-size was captured above; remaining props are variation-handled
+        mark('.hero-content h1', 'font-family', 'line-height', 'color')
+
+    # -----------------------------------------------------------------------
+    # ANCHOR
+    # -----------------------------------------------------------------------
     out['anchor'] = 'sgs-hero-1'
 
+    # -----------------------------------------------------------------------
+    # INNER BLOCKS — sgs/multi-button + sgs/button
+    # (Replaces deprecated ctaPrimary*/ctaSecondary* flat attributes)
+    # -----------------------------------------------------------------------
+    button_blocks = []
+
+    primary = (
+        section.select_one('.hero-desktop .btn-primary')
+        or section.select_one('.btn-primary')
+    )
+    if primary:
+        btn_attrs: dict = {
+            'label': primary.get_text(strip=True),
+            'inheritStyle': 'primary',
+            'linkTarget': '_self',
+        }
+        href = primary.get('href')
+        if href:
+            btn_attrs['url'] = href
+        button_blocks.append({
+            'name': 'sgs/button',
+            'attributes': btn_attrs,
+            'inner_blocks': [],
+        })
+
+    secondary = (
+        section.select_one('.hero-desktop .btn-secondary')
+        or section.select_one('.btn-secondary')
+    )
+    if secondary:
+        btn_attrs = {
+            'label': secondary.get_text(strip=True),
+            'inheritStyle': 'secondary',
+            'linkTarget': '_self',
+        }
+        href = secondary.get('href')
+        if href:
+            btn_attrs['url'] = href
+        button_blocks.append({
+            'name': 'sgs/button',
+            'attributes': btn_attrs,
+            'inner_blocks': [],
+        })
+
+    inner_blocks = []
+    if button_blocks:
+        inner_blocks = [
+            {
+                'name': 'sgs/multi-button',
+                'attributes': {
+                    'direction': 'row',
+                    'directionMobile': 'column',
+                    'gap': 12,
+                    'gapMobile': 10,
+                },
+                'inner_blocks': button_blocks,
+            }
+        ]
+
+    # Mark .btn-primary and .btn-secondary as fully consumed
+    # (the block applies its own button styling via the InnerBlocks architecture)
+    consumed_rules.add('.btn-primary')
+    consumed_rules.add('.btn-secondary')
+    consumed_rules.add('.btn')
+    # .hero-ctas layout now handled by sgs/multi-button attributes
+    if '.hero-ctas' in section_rules:
+        consumed_rules.add('.hero-ctas')
+    media_key_ctas = next(
+        (k for k in section_rules
+         if '@media' in k and '768px' in k and '.hero-copy .hero-ctas' in k),
+        None
+    )
+    if media_key_ctas:
+        consumed_rules.add(media_key_ctas)
+
+    # -----------------------------------------------------------------------
+    # INTERNAL BOOKKEEPING (stripped before serialisation)
+    # -----------------------------------------------------------------------
     out['_consumed_rules'] = consumed_rules
     out['_consumed_decls'] = consumed_decls
-    return out
+
+    return out, inner_blocks
 
 
 def _normalise_var(v: str) -> str:
-    """Normalise 'var(--surface-pink)' or 'var(--text)' → '--surface-pink' / '--text'."""
+    """Normalise 'var(--surface-pink)' or 'var(--text)' -> '--surface-pink' / '--text'."""
     m = re.search(r'var\((--[a-z-]+)\)', v)
     return m.group(1) if m else v.strip().lstrip('#').lower()
 
@@ -398,14 +905,48 @@ def build_css_var_to_slug(html: str) -> dict[str, str]:
     return out
 
 
-# ---- Block markup serialiser (forward-only; canonical via WP later if needed) ----
+# ---- Block markup serialiser ----
 
-def serialize_block(block_name: str, attributes: dict) -> str:
-    """Emit a self-closing block-comment for a dynamic block: <!-- wp:NAME {ATTRS} /-->.
-    For dynamic blocks (sgs/hero is dynamic) this is canonical because save() returns null.
+def serialize_block(block_name: str, attributes: dict,
+                    inner_blocks: list | None = None) -> str:
+    """Serialise a block into WP block-comment markup.
+
+    When inner_blocks is None or empty: emit a self-closing comment
+      (correct for dynamic blocks with no InnerBlocks slot).
+
+    When inner_blocks has entries: emit an opening comment, a div wrapper,
+      recursively serialised inner blocks, then a closing comment.
+      This is required for blocks whose save() returns <InnerBlocks.Content />
+      (e.g. sgs/hero, sgs/multi-button) so the WP serialiser can round-trip
+      the InnerBlocks tree through post_content.
     """
+    # Build the slug used in HTML class names: sgs/hero -> sgs-hero
+    name_slug = block_name.replace('/', '-').replace('_', '-')
+
     attrs_json = json.dumps(attributes, separators=(',', ':'), ensure_ascii=False)
-    return f'<!-- wp:{block_name} {attrs_json} /-->'
+
+    if not inner_blocks:
+        return f'<!-- wp:{block_name} {attrs_json} /-->'
+
+    # Opening comment
+    lines = [f'<!-- wp:{block_name} {attrs_json} -->']
+    # Wrapper div (required for InnerBlocks serialisation round-trip)
+    lines.append(f'<div class="wp-block-{name_slug}">')
+    # Recurse
+    for ib in inner_blocks:
+        child = serialize_block(
+            ib['name'],
+            ib.get('attributes', {}),
+            ib.get('inner_blocks') or None,
+        )
+        # Indent each line of the child block by 2 spaces
+        for line in child.splitlines():
+            lines.append(f'  {line}')
+    lines.append(f'</div>')
+    # Closing comment
+    lines.append(f'<!-- /wp:{block_name} -->')
+
+    return '\n'.join(lines)
 
 
 # ---- Coverage report ----
@@ -472,7 +1013,13 @@ def main():
     section_css = collect_section_css(section, css_rules)
     ctx['section_css'] = section_css
 
-    extracted = extractor(section, ctx)
+    # Run the extractor — returns (attrs, inner_blocks) tuple
+    result = extractor(section, ctx)
+    if isinstance(result, tuple):
+        extracted, inner_blocks = result
+    else:
+        # Future-proof: single-value return from non-hero extractors
+        extracted, inner_blocks = result, []
 
     # Compute remainder: rules / declarations not consumed by attribute mapping
     consumed_rules = set(extracted.pop('_consumed_rules', set()))
@@ -481,36 +1028,59 @@ def main():
     extracted.setdefault('anchor', anchor)
     custom_css = emit_scoped_custom_css(anchor, section_css, consumed_rules, consumed_decls)
     if custom_css:
-        # SGS hero block doesn't have a customCSS attribute. We attach via wp:html block
-        # as a scoped <style> sibling. For the markup output we emit as a separate block.
         extracted['_pending_custom_css'] = custom_css
 
-    markup = serialize_block(args.block, {k: v for k, v in extracted.items() if not k.startswith('_')})
+    # Build clean attributes (no internal keys)
+    clean_attrs = {k: v for k, v in extracted.items() if not k.startswith('_')}
+
+    # Serialise: hero is a dynamic block with InnerBlocks, so use nested serialisation
+    markup = serialize_block(args.block, clean_attrs, inner_blocks or None)
 
     if extracted.get('_pending_custom_css'):
         css = extracted['_pending_custom_css']
-        # Emit a wp:html block carrying the scoped style after the hero block
         markup += '\n\n<!-- wp:html -->\n<style>\n' + css + '\n</style>\n<!-- /wp:html -->'
 
-    coverage = coverage_report(schema, {k: v for k, v in extracted.items() if not k.startswith('_')})
+    coverage = coverage_report(schema, clean_attrs)
     coverage['css_rules_total'] = len(section_css)
-    coverage['css_rules_via_attrs'] = len(consumed_rules)
-    coverage['css_rules_remainder'] = len(section_css) - len(consumed_rules)
+    coverage['css_rules_absorbed'] = len(consumed_rules)
+    coverage['css_rules_universal_handled'] = sum(
+        1 for k in section_css
+        if k not in consumed_rules and is_universal_handled(k)
+    )
+    remainder_keys = [
+        k for k in section_css
+        if k not in consumed_rules and not is_universal_handled(k)
+    ]
+    coverage['css_rules_scoped_custom'] = len(remainder_keys)
 
     print('=== EXTRACTED ATTRIBUTES ===')
-    for k, v in sorted(extracted.items()):
+    for k, v in sorted(clean_attrs.items()):
         v_s = json.dumps(v, ensure_ascii=False) if isinstance(v, (dict, list)) else str(v)
         if len(v_s) > 80:
             v_s = v_s[:77] + '...'
-        print(f'  {k:25}  {v_s}')
+        print(f'  {k:35}  {v_s}')
+
+    print()
+    print('=== INNER BLOCKS ===')
+    if inner_blocks:
+        def _describe(blocks, indent=0):
+            for b in blocks:
+                prefix = '  ' * indent
+                attrs_short = {k: v for k, v in b.get('attributes', {}).items()}
+                print(f'{prefix}  {b["name"]} {attrs_short}')
+                _describe(b.get('inner_blocks', []), indent + 1)
+        _describe(inner_blocks)
+    else:
+        print('  (none)')
 
     print()
     print('=== COVERAGE ===')
-    print(f"  Block attributes declared:  {coverage['declared']}")
-    print(f"  Block attributes extracted: {coverage['extracted']} ({coverage['coverage_pct']}%)")
-    print(f"  CSS rules harvested:        {coverage['css_rules_total']}")
-    print(f"  CSS rules absorbed via attrs: {coverage['css_rules_via_attrs']}")
-    print(f"  CSS rules emitted as custom: {coverage['css_rules_remainder']}")
+    print(f"  Block attributes declared:    {coverage['declared']}")
+    print(f"  Block attributes extracted:   {coverage['extracted']} ({coverage['coverage_pct']}%)")
+    print(f"  CSS rules harvested:          {coverage['css_rules_total']}")
+    print(f"  CSS rules absorbed via attrs: {coverage['css_rules_absorbed']}")
+    print(f"  CSS rules universal-handled:  {coverage['css_rules_universal_handled']}")
+    print(f"  CSS rules scoped-custom:      {coverage['css_rules_scoped_custom']}")
     print(f"  Not extracted ({len(coverage['not_extracted'])}):")
     for a in coverage['not_extracted']:
         print(f'    - {a}')
