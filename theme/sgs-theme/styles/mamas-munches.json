@@ -112,6 +112,38 @@
 					]
 				}
 			]
+		},
+		"custom": {
+			"buttonPresets": {
+				"primary": {
+					"background": "var(--wp--preset--color--primary)",
+					"text": "var(--wp--preset--color--text)",
+					"border": "var(--wp--preset--color--primary)",
+					"border-width": "2px",
+					"border-radius": "24px",
+					"padding": "14px 28px 14px 28px",
+					"font-size": "15px",
+					"font-weight": "600",
+					"min-height": "48px",
+					"hover-background": "var(--wp--preset--color--text)",
+					"hover-text": "var(--wp--preset--color--text-inverse)",
+					"hover-border": "var(--wp--preset--color--text)"
+				},
+				"secondary": {
+					"background": "transparent",
+					"text": "var(--wp--preset--color--text)",
+					"border": "var(--wp--preset--color--primary)",
+					"border-width": "2px",
+					"border-radius": "24px",
+					"padding": "14px 28px 14px 28px",
+					"font-size": "15px",
+					"font-weight": "600",
+					"min-height": "48px",
+					"hover-background": "var(--wp--preset--color--text)",
+					"hover-text": "var(--wp--preset--color--text-inverse)",
+					"hover-border": "var(--wp--preset--color--text)"
+				}
+			}
 		}
 	},
 	"styles": {

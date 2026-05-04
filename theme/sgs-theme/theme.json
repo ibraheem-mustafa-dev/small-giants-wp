@@ -321,6 +321,36 @@
       ]
     },
     "custom": {
+      "buttonPresets": {
+        "primary": {
+          "background": "var(--wp--preset--color--primary)",
+          "text": "#ffffff",
+          "border": "var(--wp--preset--color--primary)",
+          "border-width": "2px",
+          "border-radius": "8px",
+          "padding": "12px 24px 12px 24px",
+          "font-size": "15px",
+          "font-weight": "600",
+          "min-height": "48px",
+          "hover-background": "var(--wp--preset--color--text)",
+          "hover-text": "#ffffff",
+          "hover-border": "var(--wp--preset--color--text)"
+        },
+        "secondary": {
+          "background": "transparent",
+          "text": "var(--wp--preset--color--primary)",
+          "border": "var(--wp--preset--color--primary)",
+          "border-width": "2px",
+          "border-radius": "8px",
+          "padding": "12px 24px 12px 24px",
+          "font-size": "15px",
+          "font-weight": "600",
+          "min-height": "48px",
+          "hover-background": "var(--wp--preset--color--primary)",
+          "hover-text": "#ffffff",
+          "hover-border": "var(--wp--preset--color--primary)"
+        }
+      },
       "borderRadius": {
         "small": "4px",
         "medium": "8px",
