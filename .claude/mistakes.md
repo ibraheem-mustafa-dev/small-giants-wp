@@ -1,5 +1,22 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-03
+**Last updated:** 2026-05-04
+
+## 2026-05-04 — dynamic blocks with InnerBlocks slots MUST `save: () => <InnerBlocks.Content />`, never null
+
+Three SGS blocks (`sgs/product-card`, `sgs/cta-section`, `sgs/info-box`) had `save: () => null` while declaring `<InnerBlocks>` slots in their edit components. The editor showed the migrated InnerBlocks structure correctly in memory after a deprecated.js migrate() ran, but **a save round-trip emitted only the parent block** with no inner blocks in `post_content`. Hero already had the correct pattern (returns `<InnerBlocks.Content />`), which is why hero's CTAs persisted to DB but product-card / cta-section / info-box did not — until the next editor reload silently re-ran migrate() in memory only, masking the bug across sessions.
+
+**Why null-save drops InnerBlocks:** `save: () => null` tells WordPress "this block produces no markup". The serializer reads that literally and drops the InnerBlocks tree entirely. Render.php drives the frontend output, but the serializer to `post_content` still needs the marker that says "include the InnerBlocks here." Without it, only the parent block comment + attributes survive a save.
+
+**The fix:** for any dynamic block with an InnerBlocks slot, `save()` MUST return `<InnerBlocks.Content />`. Render.php still owns 100% of frontend output; save's only job here is to emit the InnerBlocks marker that round-trips through `post_content`.
+
+```js
+import { InnerBlocks } from '@wordpress/block-editor';
+export default function Save() {
+    return <InnerBlocks.Content />;
+}
+```
+
+**How to apply:** any new SGS dynamic block declaring an InnerBlocks slot in `edit.js` must have a matching `<InnerBlocks.Content />` save. Add a sniff to the SGS uniformity audit that flags `save: () => null` whenever the matching edit.js has `<InnerBlocks>` or `useInnerBlocksProps`. Documented as B4 in `.claude/specs/common-wp-styling-errors.md` and as a Gotcha in `plugins/sgs-blocks/CLAUDE.md`.
 
 ## 2026-05-03 — extension-via-binding is the wrong shape for shared block features (composition wins)
 

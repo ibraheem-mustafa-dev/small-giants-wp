@@ -1,7 +1,7 @@
 ---
 doc_type: parking
 project: small-giants-wp
-last_updated: 2026-05-03
+last_updated: 2026-05-04
 ---
 
 ## P-6 — Image controls block extension
@@ -19,21 +19,9 @@ Apply to `core/image` (via filter), `sgs/hero` (splitImage), `sgs/gallery`, `sgs
 
 **Effort:** ~2–3h.
 
-## P-7 — sgs/icon vs sgs/icon-block duplicate cleanup
+## ~~P-7 — sgs/icon vs sgs/icon-block duplicate cleanup~~ — COMPLETED 2026-05-04
 
-**Status:** Found 2026-05-03 during competitor button research. Two blocks doing the same job.
-
-| `sgs/icon` (10 attrs) | `sgs/icon-block` (11 attrs) |
-|------------------------|------------------------------|
-| icon, size, iconColour, backgroundColour, backgroundShape, link, linkOpensNewTab, linkLabel, hoverColour, hoverScale | icon, iconColour, iconSize, backgroundColour, link, linkLabel, linkOpensNewTab, shape, sgsAnimation, sgsAnimationDuration |
-
-Both are `sgs-content`, both render Lucide icons with optional link. `icon-block` has animation; `icon` has hover scale + colour.
-
-**Trigger to resume:** During next QC pass or when one is needed in a new pattern.
-
-**What:** Pick canonical (likely `sgs/icon-block` since it has animation), migrate `sgs/icon` instances via deprecation, retire `sgs/icon`. Audit codebase for similar dupes (run a check across every block.json — group by description + supports + attribute overlap).
-
-**Effort:** ~1h investigation + 30min deprecation/migration code.
+**Resolution:** `sgs/icon` chosen as canonical (had hover scale, hover colour, alignment support). `sgs/icon-block` hidden from inserter via `supports.inserter: false`, `deprecated.js` added so existing posts continue to render. `hover-effects.js` extension's `SCALE_SHADOW_DEFAULT_BLOCKS` opt-in set updated to reference `sgs/icon` instead of `sgs/icon-block`. Animation behaviour previously unique to icon-block was redundant — already provided by the universal hover-effects extension. Decision was **opposite to original recommendation** because the per-block animation attrs on icon-block were duplicating cross-cutting extension behaviour.
 
 ## P-8 — Reduced-motion rules in dark-mode.css / header-modes.css / reading-progress.css
 
@@ -47,13 +35,13 @@ Both are `sgs-content`, both render Lucide icons with optional link. `icon-block
 
 ## P-9 — Recogniser-v2 generalisation beyond hero
 
-**Status:** Hero extractor working at `tools/recogniser-v2/extract.py` (2026-05-03). Tested only on hero.
+**Status:** UNBLOCKED 2026-05-04. Button architecture (spec 11) shipped; composition emitter now has `sgs/multi-button` + `sgs/button` to target. Ingredients pattern (spec 12 §7 mockup target #5) shipped as the first new pattern. Block coverage gap audit completed — 53 blocks classified by extractability tier, top 10 ready for auto-extraction, 23 medium-confidence, 2 hard blocks (form-field-file 31%, post-grid 56% borderline).
 
-**Trigger to resume:** Once button architecture lands and we move to the next mockup section (trust-bar / featured-product / etc.).
+**Trigger to resume:** After the manual hero perfect-clone PoC validates the approach end-to-end (one mockup section through extraction → emission → visual diff). Then generalise.
 
-**What:** Extend the per-block extractor pattern to other SGS blocks. Auto-generate the per-block scaffold from block.json so adding a new extractor is one PR. Wire up the LLM fallback path for unknown patterns. Build the "block coverage gate" reporter.
+**What:** Extend the per-block extractor pattern to other SGS blocks. Auto-generate the per-block scaffold from block.json so adding a new extractor is one PR. Wire up the LLM fallback path for unknown patterns. Build the "block coverage gate" reporter. Phase V2.1-V2.5 from spec 12.
 
-**Effort:** ~4–6h once we have ≥3 blocks done as templates.
+**Effort:** ~12-15h spread across 2-3 sessions.
 
 # Parking — deferred work with named triggers
 
@@ -71,7 +59,13 @@ Items parked here have a clear next-step but aren't urgent. Each entry has: the 
 
 **Effort:** 15-20 min once Playwright reaches the page.
 
-## P-5 — `sgs/feature-grid` block does not exist (recogniser hallucination)
+## ~~P-5 — `sgs/feature-grid` block~~ — COMPLETED 2026-05-04
+
+**Resolution:** Built as a new SGS block in this session (Option A from the original parking entry). Container restricted to `sgs/info-box` children. Two layout modes: `auto-flex` (CSS Grid auto-fill — Bean's preferred default) and `fixed-columns` (explicit per-breakpoint count). Ingredients pattern uses fixed-columns mode (4 desktop / 2 tablet / 1 mobile). Original spec content kept below for reference.
+
+---
+
+## P-5 (original) — `sgs/feature-grid` block does not exist (recogniser hallucination)
 
 **Status:** Recogniser prompt routes the gift section to `sgs/feature-grid` (see `tools/recogniser/prompts/recogniser-prompt.md`), and the LLM duly generated `<!-- wp:sgs/feature-grid ... /-->` markup. The block does NOT exist in `plugins/sgs-blocks/src/blocks/` — it was never built. On the live page the gift section renders as `core/missing`.
 

@@ -2,9 +2,9 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-current_phase: sgs-button-architecture
-current_step: "Hero perfect-clone deferred behind a button-architecture rebuild. Bean settled the architecture: build sgs/button (canonical SGS button block, replaces all uses of core/button) + sgs/multi-button (container, accepts 0..N sgs/button via InnerBlocks) + button-presets settings page (primary/secondary, with hover states) + theme.json mirror for consistency. Existing CTA-rendering blocks (sgs/hero, sgs/cta-section, sgs/product-card) refactor to expose an InnerBlocks slot accepting sgs/multi-button rather than rendering CTAs internally. Universal CSS fixes (box-sizing, img defaults, prefers-reduced-motion canonical rule) and Mama's typography alignment landed this session. Competitor button research (Spectra/Kadence/GenerateBlocks/Stackable) running in background to inform the spec before build."
-last_updated: 2026-05-03
+current_phase: mamas-homepage-clone
+current_step: "Button architecture (spec 11) shipped 2026-05-04. sgs/button + sgs/multi-button + button presets admin + theme.json mirror landed and deployed to sandybrown. Composite block refactors (sgs/hero, sgs/cta-section, sgs/product-card) replaced hand-coded CTAs with InnerBlocks composition + deprecation paths. Info-box rebuilt with 5 reorderable elements; sgs/feature-grid container built; ingredients pattern registered. Migration sweep ran on pages 5 and 8 — Hero CTAs now persisted as InnerBlocks. 7 commits pushed to main. Next: hero perfect-clone proof of concept on sandybrown post 8 — pixel-faithful match against the Mama's homepage mockup, starting with the hero (image, layout, buttons, container/wrapper). Recogniser-v2 generalisation (P-9) unblocked but deferred behind the manual hero clone PoC."
+last_updated: 2026-05-04
 blockers: []
 recommended_model_next: sonnet
 ---
@@ -15,56 +15,49 @@ recommended_model_next: sonnet
 
 ## Where we are
 
-**Architecture pivot (2026-05-03).** Hero perfect-clone investigation surfaced that the recogniser's current attribute coverage is 12% of declared block surface, and the deeper issue is button architecture. Bean decided: don't extend `core/button`, build `sgs/button` from scratch (like Spectra) and a wrapping `sgs/multi-button` container; existing composite blocks (sgs/hero etc.) refactor to compose buttons via InnerBlocks rather than rendering them internally. Settings page + theme.json mirror provide the "Primary / Secondary" preset binding. Estimated 10–13h focused session. Competitor button research running in parallel to lock the attribute spec before build.
+**Button architecture shipped (2026-05-04).** Spec 11 landed end-to-end on sandybrown. Plus 7 downstream items Bean added mid-session: info-box upgrade (5 toggleable reorderable elements), sgs/feature-grid container, ingredients pattern, icon dedup, back-to-top inserter hide, whatsapp render.php + brand icon SVG, block coverage gap audit (53 blocks). Migration sweep ran on existing posts 5 and 8 — content migrated to InnerBlocks structure but with placeholder labels (the deprecation eligibility check failed on the original CTA attrs, so InnerBlocks template defaults fired). Bean accepted: content authoring is needed for the perfect clone.
 
 | Item | Status |
 |---|---|
-| html-to-gutenberg architecture map | ✅ Done — Sonnet agent mapped 2,500 LOC, identified 7 SGS gaps |
-| AI annotator prototype | ✅ Done — 54 annotations on Mama's homepage in 10s. Script at `C:/tmp/sgs-annotator.py` |
-| SGS DB coverage check | ✅ Done — `sgs/trust-badges` + `sgs/notice-banner` confirmed in DB. 4 minor gaps catalogued. |
-| Architecture decision | ✅ Locked — recogniser primary, transformer fallback only |
-| `google-reviews` legacy UK colour attrs | ✅ Done — removed from block.json + edit.js, built + deployed |
-| Recogniser v1 build | ⏳ **Next session — autonomous overnight Opus run** |
-| Mama's Munches homepage live | ⏳ Bottlenecked on recogniser v1 |
-| SGS Ecom Plugin Phase 1 | ⏳ Queued AFTER homepage ships |
+| Spec 11 — sgs/button (87 attrs) | ✅ Built, deployed, tested |
+| Spec 11 — sgs/multi-button container | ✅ Built, deployed |
+| Spec 11 — Button Presets admin (Settings → SGS Button Presets) | ✅ Built, deployed; defaults emit CSS custom properties on wp_head + admin_head |
+| Spec 11 — theme.json mirror + Mama's preset values | ✅ |
+| Spec 11 — sgs/hero / cta-section / product-card refactor to InnerBlocks | ✅ + deprecation paths + 5 hero responsive typography attrs + product-card variantStyle:'gift' |
+| sgs/info-box 5-element rebuild | ✅ Built, deployed (showMedia/Title/Subtitle/Text/Button + elementOrder + media supports icon/emoji/image) |
+| sgs/feature-grid container | ✅ Built, deployed (auto-flex default + fixed-columns mode) |
+| Ingredients section pattern | ✅ Registered at `theme/sgs-theme/patterns/ingredients-section.php` |
+| sgs/icon-block deprecated, sgs/icon canonical | ✅ icon-block hidden from inserter; deprecated.js added; hover-effects.js extension references sgs/icon |
+| sgs/back-to-top hidden from inserter | ✅ Customiser-only |
+| sgs/whatsapp-cta — render.php + inserter SVG | ✅ Block was producing zero frontend output; now functional. Inserter icon swapped from cramped scribble to official WhatsApp brand SVG |
+| Mobile-nav-renderer require fix | ✅ Plus stats-counter pattern attribute name fix |
+| Block coverage gap audit (53 blocks) | ✅ Recogniser-v2 input data captured; full report in agent transcript |
+| Migration sweep on pages 5 and 8 | ✅ InnerBlocks persisted (after fixing the dynamic-block save: () => null bug — see mistakes.md and specs/common-wp-styling-errors.md B4) |
 
 ## Open tracks (priority order)
 
-1. **SGS Button architecture build** — next focused session. Build sgs/button + sgs/multi-button + button-presets settings page + theme.json mirror + refactor sgs/hero / sgs/cta-section / sgs/product-card to use InnerBlocks composition. Spec written this session at `sites/mamas-munches/.claude/plans/sgs-button-spec.md` after competitor research lands. ~10–13h.
-2. **Mama's Munches design clone** — top-down section-by-section rebuild. Blocked behind button architecture (hero + featured-product + gift-section all need the new buttons first). Resume after track 1 ships.
-3. **Recogniser v2 (auto-extraction with all-CSS harvest)** — `tools/recogniser-v2/extract.py` prototyped this session. Pulls all CSS for a section, maps to block attributes, emits remainder as scoped custom CSS. Hero gives 17 attributes extracted, 27 CSS rules harvested with classification (~11 new block attrs needed, 16 universals/block-handled, 0 one-time custom). Pending: extend to other blocks once block schemas stabilise post-button-rebuild.
-4. **SGS Ecom Plugin Phase 1** — `sgs/product-info`, `sgs/product-gallery`, `sgs/variant-pills`. WC integration (NOT replacement). Unblocks Mama's product page. Queued after homepage clone ships.
-5. **Custom WC paid-extension replacements** — Bean wants in-house equivalents of WC Subscriptions / Memberships / Wholesale. Bounded per-extension. Roadmap item, not blocking.
+1. **Mama's homepage hero perfect clone — proof of concept.** Pixel-faithful clone of the hero banner on sandybrown post 8 against the mockup at `sites/mamas-munches/mockups/homepage/index.html`. Includes container check (background colour + padding inheritance), exact image + screenspace match at desktop and mobile, all CTAs and inner content. Use the recogniser-v2 fingerprint + mapping path before manual edits — get the transfer-script proof working on the hero before extending. Next session priority.
+2. **Mama's homepage section-by-section clone** (post hero PoC). Trust bar, featured product, brand story, ingredients, gift section, social proof, footer. Each section follows the same pattern: read mockup → check container → extract → emit blocks → visual diff.
+3. **Recogniser-v2 generalisation** (parking P-9). Now unblocked since composition emitter has sgs/multi-button + sgs/button to target. Phase V2.1-V2.5 from spec 12. Likely runs after the hero PoC validates the approach.
+4. **SGS Ecom Plugin Phase 1** — `sgs/product-info`, `sgs/product-gallery`, `sgs/variant-pills`. WC integration (NOT replacement). Queued after homepage clone ships.
+5. **Migration label preservation investigation.** Hero CTAs migrated structurally but with InnerBlocks template defaults instead of original CTA text. Deprecation eligibility check likely failed. ~30 min to diagnose.
 
 ## Subprojects
 
+- Mama's Munches — `sites/mamas-munches/.claude/` — homepage clone is the active workstream
 - Indus Foods Phase 4 — `sites/indus-foods/.claude/`
-- Mama's Munches — `sites/mamas-munches/.claude/` — homepage queued for recogniser run
 
-## Decisions this session
+## Decisions 2026-05-04 (this session)
 
-- **WC replacement: dropped from roadmap permanently.** A-tier path is complement (better SGS blocks on top of WC), not replacement. Captured in handoff Notes.
-- **SGS Ecom Plugin scope: UI/blocks layer on WC, not replacement.** Per master plan Phase 5 + Mama's gap analysis.
-- **WP Studio: deprecated.** Recogniser pipeline + GitHub deploy makes it redundant. Document in next session.
-- **Header/footer = template parts containing block markup** (FSE / industry A-tier). S-tier extension: also register as patterns + bind Business Details.
+- **InnerBlocks.Content save pattern is mandatory for dynamic blocks with InnerBlocks slots.** `save: () => null` causes WordPress to drop InnerBlocks during serialization. Hero already had it right; product-card / cta-section / info-box did not. All four now aligned. Captured as B4 in `.claude/specs/common-wp-styling-errors.md` and as a new gotcha in `plugins/sgs-blocks/CLAUDE.md`.
+- **Gift sections are block patterns, not new blocks.** `sgs/product-card` got `variantStyle: 'gift'` enum value; gift sections compose multiple product-cards via a pattern (similar to ingredients-section). Avoids block proliferation.
+- **Ingredients section is a block pattern, not a hand-coded layout.** Title + intro + 4-column feature-grid (4 emoji-led info-boxes) + sgs/notice-banner disclaimer. Insertable from the WP pattern picker.
+- **info-box is now element-flexible, not fixed-shape.** 5 toggleable reorderable elements (media/title/subtitle/text/button). Replaces the prior fixed heading + description + image + icon shape. Backward compatible via deprecated.js.
+- **sgs/feature-grid layout default is auto-flex (CSS Grid auto-fill).** Bean's preferred default — naturally responsive, wraps automatically when items don't fit. Fixed-columns mode available for cases needing strict per-breakpoint control (e.g. ingredients pattern uses 4-up explicit on desktop).
+- **WhatsApp CTA inserter icon uses the official WhatsApp brand SVG.** The previous hand-drawn approximation was cramped and ugly. Single-path official mark, `fill="currentColor"`, picks up SGS teal automatically.
 
-## Decisions 2026-05-03 (this session)
+## Patterns and conventions captured this session
 
-- **Build sgs/button instead of extending core/button.** Spectra/Kadence pattern. Full ownership of attribute surface, not constrained by core block limits. Becomes the canonical button across all SGS patterns and composite blocks.
-- **sgs/multi-button container, not per-block CTA-binding extension.** WordPress-native composition (mirrors core/buttons + core/button pair). 0..N children, per-breakpoint layout overrides, default template auto-includes 2 sample buttons. Replaces my earlier "Match Style dropdown extension" idea — composition wins on every axis (one source of truth, no extension code, flexible button count, native UX).
-- **Settings page primary, theme.json mirror, Site Editor secondary.** Three editing paths, all writing to the same backing store. Settings page (cloned from Business Details admin) is the user-friendly primary. theme.json provides version-controlled per-client setup. Site Editor block-style-variations panel lives there for power users.
-- **Universal CSS foundations apply across all clients.** box-sizing border-box, img max-width 100%, canonical prefers-reduced-motion rule — all live in core-blocks-critical.css, applied 2026-05-03. Removed 4 redundant per-block reduced-motion blocks at the same time.
-- **Mama's variation focus-visible deliberately differs from framework default.** Site-specific 2px solid var(--text) with border-radius 4px. Framework default keeps 3px. Per-site CSS lives in `styles.css` field of the variation JSON.
-- **Block coverage rule for the recogniser:** every fingerprint MUST be auto-derived from `block.json` so attribute extraction can never silently skip declared attributes. Hand-written fingerprints are the bug behind the 12% coverage problem on sgs/hero. Build into recogniser-v2.
-- **All CSS pulled every time during recogniser extraction.** Not selective. Decisions about what's a block-attribute vs universal-handled vs custom is part of classification, not extraction. Rule emerged from "did we extract all the CSS?" thread.
-
-## Universal CSS foundations applied this session
-
-| Rule | File | Applies to |
-|------|------|-----------|
-| `* { box-sizing: border-box; }` | core-blocks-critical.css line 23 | All client sites |
-| `img { max-width: 100%; height: auto; display: block; }` | core-blocks-critical.css line 28 | All client sites |
-| Canonical `@media (prefers-reduced-motion: reduce)` rule | core-blocks-critical.css line 37 | All client sites |
-| 4× redundant prefers-reduced-motion blocks REMOVED | core-blocks.css + back-to-top.css | Cleanup |
-| h1/h2/h3 lineHeight 1.2 + mockup-aligned letter-spacing | mamas-munches.json | Mama's only |
-| Mockup-faithful focus-visible CSS | mamas-munches.json `styles.css` | Mama's only |
+- Dynamic blocks with InnerBlocks: `save()` MUST return `<InnerBlocks.Content />`, never `null` (B4 in styling errors catalogue).
+- Block presets via theme.json `settings.custom.<name>`: auto-emits CSS custom properties at `--wp--custom--<name>--<key>`. Use this for any site-wide configurable block defaults (button presets is the first example; could extend to card presets, hero presets etc.).
+- Per-breakpoint layout in containers: prefer CSS Grid `auto-fill` with `minmax()` over explicit columns whenever the design intent is "fit as many as possible per row". Falls back gracefully on small screens. Fixed-columns mode only when the design demands strict counts.

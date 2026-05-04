@@ -154,14 +154,17 @@ small-giants-wp/
 | Block | Key capability |
 |---|---|
 | `sgs/container` | Universal layout wrapper — stack/grid/flex, 3-breakpoint responsive, nested containers |
-| `sgs/hero` | Full-width hero with bg image, overlay, split image, badge array, two CTAs |
+| `sgs/hero` | Full-width hero with bg image, overlay, split image, badge array. **CTAs via InnerBlocks (sgs/multi-button + sgs/button)** since 2026-05-04. 5 per-breakpoint typography attrs (headlineFontSizeDesktop/Tablet/Mobile, subHeadlineMaxWidth, splitImageMobileHeight). |
+| `sgs/feature-grid` | **NEW 2026-05-04.** Container restricted to `sgs/info-box` children. Two layout modes: `auto-flex` (CSS Grid auto-fill, naturally responsive) and `fixed-columns` (explicit per-breakpoint count). |
+| `sgs/multi-button` | **NEW 2026-05-04.** Container restricted to `sgs/button` children. Per-breakpoint direction/gap/wrap/alignment. |
 
 ### Content blocks
 | Block | Key capability |
 |---|---|
-| `sgs/info-box` | Icon + heading + description card with 3 hover effects, optional link wrapper |
+| `sgs/info-box` | **REBUILT 2026-05-04.** 5 toggleable, reorderable elements: media (icon/emoji/image), title, subtitle, text, button (sgs/multi-button InnerBlocks). `elementOrder` array drives display order; each element has `show*` boolean. |
+| `sgs/button` | **NEW 2026-05-04.** 87-attribute canonical button. `inheritStyle` (primary/secondary/outline/custom) binds to theme.json preset values via CSS custom properties. Lucide icon support, per-breakpoint typography/padding/margin, hover states. Replaces all uses of `core/button` inside SGS blocks. |
 | `sgs/card-grid` | Image grid with overlay/card variants, hover effects, responsive columns |
-| `sgs/cta-section` | Headline + body + button array, full layout/colour control, per-button border controls |
+| `sgs/cta-section` | Headline + body + **CTAs via InnerBlocks (sgs/multi-button + sgs/button) since 2026-05-04**, full layout/colour control. Old `buttons[]` array still in schema for legacy migration. |
 | `sgs/testimonial-slider` | CSS scroll-snap carousel with autoplay, dots, arrows, star ratings. Split layout (60/40 grid with side image). |
 | `sgs/testimonial` | Individual testimonial card (used inside testimonial-slider) |
 | `sgs/brand-strip` | Infinite-scroll logo carousel, greyscale + hover reveal |

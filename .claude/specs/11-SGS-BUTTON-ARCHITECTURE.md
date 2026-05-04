@@ -1,6 +1,6 @@
 # SGS Button Architecture
 
-**Status:** Spec'd 2026-05-03 — ready for implementation in next session.
+**Status:** ✅ SHIPPED 2026-05-04 to sandybrown. Spec'd 2026-05-03. All sections implemented end-to-end. Built blocks: `sgs/button` (87 attrs) + `sgs/multi-button` (container). Built admin: Settings → SGS Button Presets. theme.json mirror landed. Composite block refactors (sgs/hero, sgs/cta-section, sgs/product-card) replaced hand-coded CTAs with InnerBlocks composition + deprecation paths. **Critical correctness fix discovered during deployment:** dynamic blocks with InnerBlocks slots MUST `save: () => <InnerBlocks.Content />` — see B4 in `common-wp-styling-errors.md`. Original spec retained below for reference. Live URL: https://sandybrown-nightingale-600381.hostingersite.com/
 **Implements:** sgs/button (canonical button block) + sgs/multi-button (container) + button presets settings page + theme.json mirror + refactor of existing CTA-rendering blocks to InnerBlocks composition.
 **Replaces:** all uses of `core/button` inside SGS blocks. Hand-coded CTA rendering inside `sgs/hero`, `sgs/cta-section`, `sgs/product-card`, `sgs/feature-grid`.
 **Builds on:** competitor research (Spectra, Kadence, GenerateBlocks, Stackable, core/button) — see Section 8 below.
