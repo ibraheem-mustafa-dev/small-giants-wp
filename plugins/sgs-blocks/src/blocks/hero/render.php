@@ -21,6 +21,9 @@ $bg_image            = $attributes['backgroundImage'] ?? null;
 $overlay_colour      = sgs_colour_value( $attributes['overlayColour'] ?? 'text' );
 $overlay_opacity     = $attributes['overlayOpacity'] ?? 50;
 $split_image         = $attributes['splitImage'] ?? null;
+$split_image_mobile  = $attributes['splitImageMobile'] ?? null;
+$split_image_mobile_object_position = $attributes['splitImageMobileObjectPosition'] ?? 'center 20%';
+$label               = $attributes['label'] ?? '';
 $bg_video            = $attributes['backgroundVideo'] ?? null;
 $svg_content         = $attributes['svgContent'] ?? '';
 $min_height          = $attributes['minHeight'] ?? '';
@@ -72,6 +75,134 @@ $cta_primary_hover_colour   = $attributes['ctaPrimaryHoverColour'] ?? '';
 $cta_secondary_hover_bg     = $attributes['ctaSecondaryHoverBackground'] ?? '';
 $cta_secondary_hover_colour = $attributes['ctaSecondaryHoverColour'] ?? '';
 
+// ── Phase 1: Image display attributes ──────────────────────────────────────
+$image_object_fit      = $attributes['imageObjectFit'] ?? 'cover';
+$image_object_position = $attributes['imageObjectPosition'] ?? 'center center';
+
+$image_width        = $attributes['imageWidth'] ?? null;
+$image_width_tablet = $attributes['imageWidthTablet'] ?? null;
+$image_width_mobile = $attributes['imageWidthMobile'] ?? null;
+$image_width_unit   = $attributes['imageWidthUnit'] ?? '%';
+
+$image_height        = $attributes['imageHeight'] ?? null;
+$image_height_tablet = $attributes['imageHeightTablet'] ?? null;
+$image_height_mobile = $attributes['imageHeightMobile'] ?? null;
+$image_height_unit   = $attributes['imageHeightUnit'] ?? 'px';
+
+// Image border radius (per-corner, per-breakpoint).
+$image_br_tl        = $attributes['imageBorderRadiusTL'] ?? 0;
+$image_br_tr        = $attributes['imageBorderRadiusTR'] ?? 0;
+$image_br_br        = $attributes['imageBorderRadiusBR'] ?? 0;
+$image_br_bl        = $attributes['imageBorderRadiusBL'] ?? 0;
+$image_br_tab_tl    = $attributes['imageBorderRadiusTabletTL'] ?? null;
+$image_br_tab_tr    = $attributes['imageBorderRadiusTabletTR'] ?? null;
+$image_br_tab_br    = $attributes['imageBorderRadiusTabletBR'] ?? null;
+$image_br_tab_bl    = $attributes['imageBorderRadiusTabletBL'] ?? null;
+$image_br_mob_tl    = $attributes['imageBorderRadiusMobileTL'] ?? null;
+$image_br_mob_tr    = $attributes['imageBorderRadiusMobileTR'] ?? null;
+$image_br_mob_br    = $attributes['imageBorderRadiusMobileBR'] ?? null;
+$image_br_mob_bl    = $attributes['imageBorderRadiusMobileBL'] ?? null;
+$image_br_unit      = $attributes['imageBorderRadiusUnit'] ?? 'px';
+
+// Image border.
+$image_border_style       = $attributes['imageBorderStyle'] ?? 'none';
+$image_border_width_top   = $attributes['imageBorderWidthTop'] ?? 0;
+$image_border_width_right = $attributes['imageBorderWidthRight'] ?? 0;
+$image_border_width_bot   = $attributes['imageBorderWidthBottom'] ?? 0;
+$image_border_width_left  = $attributes['imageBorderWidthLeft'] ?? 0;
+$image_border_width_unit  = $attributes['imageBorderWidthUnit'] ?? 'px';
+$image_border_colour      = $attributes['imageBorderColour'] ?? '';
+
+// imagePadding — inner padding on the <img> element itself.
+$image_pad_top      = $attributes['imagePaddingTop'] ?? 0;
+$image_pad_right    = $attributes['imagePaddingRight'] ?? 0;
+$image_pad_bottom   = $attributes['imagePaddingBottom'] ?? 0;
+$image_pad_left     = $attributes['imagePaddingLeft'] ?? 0;
+$image_pad_tab_top  = $attributes['imagePaddingTopTablet'] ?? null;
+$image_pad_tab_right = $attributes['imagePaddingRightTablet'] ?? null;
+$image_pad_tab_bot  = $attributes['imagePaddingBottomTablet'] ?? null;
+$image_pad_tab_left = $attributes['imagePaddingLeftTablet'] ?? null;
+$image_pad_mob_top  = $attributes['imagePaddingTopMobile'] ?? null;
+$image_pad_mob_right = $attributes['imagePaddingRightMobile'] ?? null;
+$image_pad_mob_bot  = $attributes['imagePaddingBottomMobile'] ?? null;
+$image_pad_mob_left = $attributes['imagePaddingLeftMobile'] ?? null;
+$image_pad_unit     = $attributes['imagePaddingUnit'] ?? 'px';
+
+// mediaPadding — outer padding on the .sgs-hero__media wrapper.
+$media_bg_colour    = $attributes['mediaBackgroundColour'] ?? '';
+$media_pad_top      = $attributes['mediaPaddingTop'] ?? null;
+$media_pad_right    = $attributes['mediaPaddingRight'] ?? null;
+$media_pad_bottom   = $attributes['mediaPaddingBottom'] ?? null;
+$media_pad_left     = $attributes['mediaPaddingLeft'] ?? null;
+$media_pad_tab_top  = $attributes['mediaPaddingTopTablet'] ?? null;
+$media_pad_tab_right = $attributes['mediaPaddingRightTablet'] ?? null;
+$media_pad_tab_bot  = $attributes['mediaPaddingBottomTablet'] ?? null;
+$media_pad_tab_left = $attributes['mediaPaddingLeftTablet'] ?? null;
+$media_pad_mob_top  = $attributes['mediaPaddingTopMobile'] ?? null;
+$media_pad_mob_right = $attributes['mediaPaddingRightMobile'] ?? null;
+$media_pad_mob_bot  = $attributes['mediaPaddingBottomMobile'] ?? null;
+$media_pad_mob_left = $attributes['mediaPaddingLeftMobile'] ?? null;
+$media_pad_unit     = $attributes['mediaPaddingUnit'] ?? 'px';
+
+// contentPadding — padding on the .sgs-hero__content wrapper.
+$content_pad_top      = $attributes['contentPaddingTop'] ?? null;
+$content_pad_right    = $attributes['contentPaddingRight'] ?? null;
+$content_pad_bottom   = $attributes['contentPaddingBottom'] ?? null;
+$content_pad_left     = $attributes['contentPaddingLeft'] ?? null;
+$content_pad_tab_top  = $attributes['contentPaddingTopTablet'] ?? null;
+$content_pad_tab_right = $attributes['contentPaddingRightTablet'] ?? null;
+$content_pad_tab_bot  = $attributes['contentPaddingBottomTablet'] ?? null;
+$content_pad_tab_left = $attributes['contentPaddingLeftTablet'] ?? null;
+$content_pad_mob_top  = $attributes['contentPaddingTopMobile'] ?? null;
+$content_pad_mob_right = $attributes['contentPaddingRightMobile'] ?? null;
+$content_pad_mob_bot  = $attributes['contentPaddingBottomMobile'] ?? null;
+$content_pad_mob_left = $attributes['contentPaddingLeftMobile'] ?? null;
+$content_pad_unit     = $attributes['contentPaddingUnit'] ?? 'px';
+
+// Sub-headline typography (new Phase 1 attributes).
+$sub_headline_font_family      = $attributes['subHeadlineFontFamily'] ?? '';
+$sub_headline_font_weight      = $attributes['subHeadlineFontWeight'] ?? '';
+$sub_headline_line_height      = $attributes['subHeadlineLineHeight'] ?? null;
+$sub_headline_lh_unit          = $attributes['subHeadlineLineHeightUnit'] ?? 'em';
+$sub_headline_letter_spacing   = $attributes['subHeadlineLetterSpacing'] ?? null;
+$sub_headline_ls_unit          = $attributes['subHeadlineLetterSpacingUnit'] ?? 'px';
+$sub_headline_text_transform   = $attributes['subHeadlineTextTransform'] ?? '';
+$sub_headline_text_decoration  = $attributes['subHeadlineTextDecoration'] ?? '';
+
+// Label (eyebrow) typography.
+$label_font_family     = $attributes['labelFontFamily'] ?? '';
+$label_font_size       = $attributes['labelFontSize'] ?? null;
+$label_font_size_tab   = $attributes['labelFontSizeTablet'] ?? null;
+$label_font_size_mob   = $attributes['labelFontSizeMobile'] ?? null;
+$label_font_size_unit  = $attributes['labelFontSizeUnit'] ?? 'px';
+$label_font_weight     = $attributes['labelFontWeight'] ?? '600';
+$label_line_height     = $attributes['labelLineHeight'] ?? 1.2;
+$label_lh_unit         = $attributes['labelLineHeightUnit'] ?? 'em';
+$label_letter_spacing  = $attributes['labelLetterSpacing'] ?? null;
+$label_ls_unit         = $attributes['labelLetterSpacingUnit'] ?? 'em';
+$label_text_transform  = $attributes['labelTextTransform'] ?? 'uppercase';
+$label_text_decoration = $attributes['labelTextDecoration'] ?? '';
+$label_colour          = $attributes['labelColour'] ?? '';
+$label_margin_bottom   = $attributes['labelMarginBottom'] ?? 8;
+$label_mb_unit         = $attributes['labelMarginBottomUnit'] ?? 'px';
+
+// Layout grid (split variant).
+$split_col_ratio        = $attributes['splitColumnRatio'] ?? '1fr 1fr';
+$split_col_ratio_tablet = $attributes['splitColumnRatioTablet'] ?? '';
+$split_col_ratio_mobile = $attributes['splitColumnRatioMobile'] ?? '';
+$split_gap              = $attributes['splitGap'] ?? 0;
+$split_gap_tablet       = $attributes['splitGapTablet'] ?? null;
+$split_gap_mobile       = $attributes['splitGapMobile'] ?? null;
+$split_gap_unit         = $attributes['splitGapUnit'] ?? 'px';
+$split_order_mobile     = $attributes['splitContentOrderMobile'] ?? 'media-first';
+
+// Vertical alignment and content max-width.
+$vertical_alignment      = $attributes['verticalAlignment'] ?? 'center';
+$content_max_width       = $attributes['contentMaxWidth'] ?? null;
+$content_max_width_tab   = $attributes['contentMaxWidthTablet'] ?? null;
+$content_max_width_mob   = $attributes['contentMaxWidthMobile'] ?? null;
+$content_max_width_unit  = $attributes['contentMaxWidthUnit'] ?? 'px';
+
 $is_split        = 'split' === $variant;
 $is_video        = 'video' === $variant;
 $is_svg_animated = 'svg-animated' === $variant;
@@ -110,6 +241,16 @@ if ( $cta_secondary_hover_colour ) {
 	$styles[] = '--sgs-cta-sec-hover-colour:' . sgs_colour_value( $cta_secondary_hover_colour );
 }
 
+// Split variant: replace the default flex layout with CSS Grid.
+if ( $is_split ) {
+	// Allowlist the ratio string: only fr, px, %, numbers, spaces, auto, calc() permitted.
+	$safe_ratio = preg_match( '/^[\d.\s%a-zA-Z()+\-*\/]+$/', $split_col_ratio ) ? $split_col_ratio : '1fr 1fr';
+	$styles[]   = 'display:grid';
+	$styles[]   = 'grid-template-columns:' . $safe_ratio;
+	$gap_val    = null !== $split_gap ? absint( $split_gap ) . esc_attr( $split_gap_unit ) : '0px';
+	$styles[]   = 'gap:' . $gap_val;
+}
+
 // Standard variant: use <img> instead of CSS background-image so the browser can
 // discover the LCP resource early and apply fetchpriority="high".
 $has_standard_bg_image = ! $is_split && ! $is_video && ! $is_svg_animated
@@ -118,19 +259,19 @@ $has_standard_bg_image = ! $is_split && ! $is_video && ! $is_svg_animated
 // Generate a unique ID for responsive CSS scoping.
 $uid = 'sgs-hero-' . substr( md5( wp_json_encode( $attributes ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
 
-// Build responsive CSS.
+// ── Responsive CSS builder ──────────────────────────────────────────────────
 $responsive_css = '';
 if ( $min_height_tablet ) {
 	$responsive_css .= '@media (max-width:1023px){.' . $uid . '{min-height:' . esc_attr( $min_height_tablet ) . '}}';
 }
 if ( $min_height_mobile ) {
-	$responsive_css .= '@media (max-width:599px){.' . $uid . '{min-height:' . esc_attr( $min_height_mobile ) . '}}';
+	$responsive_css .= '@media (max-width:767px){.' . $uid . '{min-height:' . esc_attr( $min_height_mobile ) . '}}';
 }
 if ( $sub_headline_font_size_tablet ) {
 	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__subheadline{font-size:' . sgs_font_size_value( $sub_headline_font_size_tablet ) . '}}';
 }
 if ( $sub_headline_font_size_mobile ) {
-	$responsive_css .= '@media (max-width:599px){.' . $uid . ' .sgs-hero__subheadline{font-size:' . sgs_font_size_value( $sub_headline_font_size_mobile ) . '}}';
+	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__subheadline{font-size:' . sgs_font_size_value( $sub_headline_font_size_mobile ) . '}}';
 }
 
 // Per-breakpoint headline font size.
@@ -141,7 +282,7 @@ if ( $headline_font_size_tablet ) {
 	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__headline{font-size:' . absint( $headline_font_size_tablet ) . 'px}}';
 }
 if ( $headline_font_size_mobile ) {
-	$responsive_css .= '@media (max-width:599px){.' . $uid . ' .sgs-hero__headline{font-size:' . absint( $headline_font_size_mobile ) . 'px}}';
+	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__headline{font-size:' . absint( $headline_font_size_mobile ) . 'px}}';
 }
 
 // Sub-headline max-width.
@@ -151,7 +292,146 @@ if ( $sub_headline_max_width ) {
 
 // Split image mobile height.
 if ( $split_image_mobile_height ) {
-	$responsive_css .= '@media (max-width:599px){.' . $uid . ' .sgs-hero__split-image{height:' . absint( $split_image_mobile_height ) . 'px;object-fit:cover}}';
+	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-image{height:' . absint( $split_image_mobile_height ) . 'px;object-fit:cover}}';
+}
+
+// ── Split variant: tablet/mobile grid overrides ────────────────────────────
+if ( $is_split ) {
+	// Tablet grid-template-columns override.
+	if ( $split_col_ratio_tablet ) {
+		$safe_ratio_tab = preg_match( '/^[\d.\s%a-zA-Z()+\-*\/]+$/', $split_col_ratio_tablet ) ? $split_col_ratio_tablet : '';
+		if ( $safe_ratio_tab ) {
+			$responsive_css .= '@media (max-width:1023px){.' . $uid . '{grid-template-columns:' . $safe_ratio_tab . '}}';
+		}
+	}
+	// Mobile grid-template-columns override. When splitColumnRatioMobile is
+	// empty, default to single-column stacking (1fr) — the desktop ratio
+	// inline-style would otherwise force two-column layout at mobile widths.
+	$ratio_mob = $split_col_ratio_mobile;
+	if ( ! $ratio_mob ) {
+		$ratio_mob = '1fr';
+	}
+	$safe_ratio_mob = preg_match( '/^[\d.\s%a-zA-Z()+\-*\/]+$/', $ratio_mob ) ? $ratio_mob : '';
+	if ( $safe_ratio_mob ) {
+		// !important required to override the inline style="grid-template-columns:..."
+		// emitted on the section element (line ~249). Without it the desktop ratio
+		// would persist at mobile widths because inline > external CSS specificity.
+		$responsive_css .= '@media (max-width:767px){.' . $uid . '{grid-template-columns:' . $safe_ratio_mob . ' !important}}';
+	}
+	// Tablet gap override.
+	if ( null !== $split_gap_tablet ) {
+		$responsive_css .= '@media (max-width:1023px){.' . $uid . '{gap:' . absint( $split_gap_tablet ) . esc_attr( $split_gap_unit ) . '}}';
+	}
+	// Mobile gap override.
+	if ( null !== $split_gap_mobile ) {
+		$responsive_css .= '@media (max-width:767px){.' . $uid . '{gap:' . absint( $split_gap_mobile ) . esc_attr( $split_gap_unit ) . '}}';
+	}
+	// Mobile column order.
+	if ( 'content-first' === $split_order_mobile ) {
+		$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__content{order:1}.' . $uid . ' .sgs-hero__media{order:2}}';
+	} else {
+		// media-first (default).
+		$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__media{order:1}.' . $uid . ' .sgs-hero__content{order:2}}';
+	}
+}
+
+// ── imagePadding: tablet / mobile overrides (on the <img> element) ─────────
+$img_pad_desktop_has_value = ( $image_pad_top > 0 || $image_pad_right > 0 || $image_pad_bottom > 0 || $image_pad_left > 0 );
+if ( null !== $image_pad_tab_top || null !== $image_pad_tab_right || null !== $image_pad_tab_bot || null !== $image_pad_tab_left ) {
+	$tab_pt = null !== $image_pad_tab_top ? absint( $image_pad_tab_top ) : absint( $image_pad_top );
+	$tab_pr = null !== $image_pad_tab_right ? absint( $image_pad_tab_right ) : absint( $image_pad_right );
+	$tab_pb = null !== $image_pad_tab_bot ? absint( $image_pad_tab_bot ) : absint( $image_pad_bottom );
+	$tab_pl = null !== $image_pad_tab_left ? absint( $image_pad_tab_left ) : absint( $image_pad_left );
+	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__split-image{padding:' . $tab_pt . esc_attr( $image_pad_unit ) . ' ' . $tab_pr . esc_attr( $image_pad_unit ) . ' ' . $tab_pb . esc_attr( $image_pad_unit ) . ' ' . $tab_pl . esc_attr( $image_pad_unit ) . '}}';
+}
+if ( null !== $image_pad_mob_top || null !== $image_pad_mob_right || null !== $image_pad_mob_bot || null !== $image_pad_mob_left ) {
+	$mob_pt = null !== $image_pad_mob_top ? absint( $image_pad_mob_top ) : absint( $image_pad_top );
+	$mob_pr = null !== $image_pad_mob_right ? absint( $image_pad_mob_right ) : absint( $image_pad_right );
+	$mob_pb = null !== $image_pad_mob_bot ? absint( $image_pad_mob_bot ) : absint( $image_pad_bottom );
+	$mob_pl = null !== $image_pad_mob_left ? absint( $image_pad_mob_left ) : absint( $image_pad_left );
+	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-image{padding:' . $mob_pt . esc_attr( $image_pad_unit ) . ' ' . $mob_pr . esc_attr( $image_pad_unit ) . ' ' . $mob_pb . esc_attr( $image_pad_unit ) . ' ' . $mob_pl . esc_attr( $image_pad_unit ) . '}}';
+}
+
+// ── imageBorderRadius: tablet / mobile overrides ───────────────────────────
+$br_tab_has = ( null !== $image_br_tab_tl || null !== $image_br_tab_tr || null !== $image_br_tab_br || null !== $image_br_tab_bl );
+if ( $br_tab_has ) {
+	$tab_tl = null !== $image_br_tab_tl ? absint( $image_br_tab_tl ) : absint( $image_br_tl );
+	$tab_tr = null !== $image_br_tab_tr ? absint( $image_br_tab_tr ) : absint( $image_br_tr );
+	$tab_br = null !== $image_br_tab_br ? absint( $image_br_tab_br ) : absint( $image_br_br );
+	$tab_bl = null !== $image_br_tab_bl ? absint( $image_br_tab_bl ) : absint( $image_br_bl );
+	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__split-image{border-radius:' . $tab_tl . esc_attr( $image_br_unit ) . ' ' . $tab_tr . esc_attr( $image_br_unit ) . ' ' . $tab_br . esc_attr( $image_br_unit ) . ' ' . $tab_bl . esc_attr( $image_br_unit ) . '}}';
+}
+$br_mob_has = ( null !== $image_br_mob_tl || null !== $image_br_mob_tr || null !== $image_br_mob_br || null !== $image_br_mob_bl );
+if ( $br_mob_has ) {
+	$mob_tl = null !== $image_br_mob_tl ? absint( $image_br_mob_tl ) : absint( $image_br_tl );
+	$mob_tr = null !== $image_br_mob_tr ? absint( $image_br_mob_tr ) : absint( $image_br_tr );
+	$mob_br = null !== $image_br_mob_br ? absint( $image_br_mob_br ) : absint( $image_br_br );
+	$mob_bl = null !== $image_br_mob_bl ? absint( $image_br_mob_bl ) : absint( $image_br_bl );
+	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-image{border-radius:' . $mob_tl . esc_attr( $image_br_unit ) . ' ' . $mob_tr . esc_attr( $image_br_unit ) . ' ' . $mob_br . esc_attr( $image_br_unit ) . ' ' . $mob_bl . esc_attr( $image_br_unit ) . '}}';
+}
+
+// ── imageWidth / imageHeight: tablet / mobile overrides (custom fit only) ──
+if ( 'custom' === $image_object_fit ) {
+	if ( null !== $image_width_tablet ) {
+		$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__split-image{width:' . absint( $image_width_tablet ) . esc_attr( $image_width_unit ) . '}}';
+	}
+	if ( null !== $image_width_mobile ) {
+		$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-image{width:' . absint( $image_width_mobile ) . esc_attr( $image_width_unit ) . '}}';
+	}
+	if ( null !== $image_height_tablet ) {
+		$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__split-image{height:' . absint( $image_height_tablet ) . esc_attr( $image_height_unit ) . '}}';
+	}
+	if ( null !== $image_height_mobile ) {
+		$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-image{height:' . absint( $image_height_mobile ) . esc_attr( $image_height_unit ) . '}}';
+	}
+}
+
+// ── mediaPadding: tablet / mobile overrides (on .sgs-hero__media) ──────────
+if ( null !== $media_pad_tab_top || null !== $media_pad_tab_right || null !== $media_pad_tab_bot || null !== $media_pad_tab_left ) {
+	$tab_mpt = null !== $media_pad_tab_top ? absint( $media_pad_tab_top ) : ( null !== $media_pad_top ? absint( $media_pad_top ) : 0 );
+	$tab_mpr = null !== $media_pad_tab_right ? absint( $media_pad_tab_right ) : ( null !== $media_pad_right ? absint( $media_pad_right ) : 0 );
+	$tab_mpb = null !== $media_pad_tab_bot ? absint( $media_pad_tab_bot ) : ( null !== $media_pad_bottom ? absint( $media_pad_bottom ) : 0 );
+	$tab_mpl = null !== $media_pad_tab_left ? absint( $media_pad_tab_left ) : ( null !== $media_pad_left ? absint( $media_pad_left ) : 0 );
+	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__media{padding:' . $tab_mpt . esc_attr( $media_pad_unit ) . ' ' . $tab_mpr . esc_attr( $media_pad_unit ) . ' ' . $tab_mpb . esc_attr( $media_pad_unit ) . ' ' . $tab_mpl . esc_attr( $media_pad_unit ) . '}}';
+}
+if ( null !== $media_pad_mob_top || null !== $media_pad_mob_right || null !== $media_pad_mob_bot || null !== $media_pad_mob_left ) {
+	$mob_mpt = null !== $media_pad_mob_top ? absint( $media_pad_mob_top ) : ( null !== $media_pad_top ? absint( $media_pad_top ) : 0 );
+	$mob_mpr = null !== $media_pad_mob_right ? absint( $media_pad_mob_right ) : ( null !== $media_pad_right ? absint( $media_pad_right ) : 0 );
+	$mob_mpb = null !== $media_pad_mob_bot ? absint( $media_pad_mob_bot ) : ( null !== $media_pad_bottom ? absint( $media_pad_bottom ) : 0 );
+	$mob_mpl = null !== $media_pad_mob_left ? absint( $media_pad_mob_left ) : ( null !== $media_pad_left ? absint( $media_pad_left ) : 0 );
+	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__media{padding:' . $mob_mpt . esc_attr( $media_pad_unit ) . ' ' . $mob_mpr . esc_attr( $media_pad_unit ) . ' ' . $mob_mpb . esc_attr( $media_pad_unit ) . ' ' . $mob_mpl . esc_attr( $media_pad_unit ) . '}}';
+}
+
+// ── contentPadding: tablet / mobile overrides ──────────────────────────────
+if ( null !== $content_pad_tab_top || null !== $content_pad_tab_right || null !== $content_pad_tab_bot || null !== $content_pad_tab_left ) {
+	$tab_cpt = null !== $content_pad_tab_top ? absint( $content_pad_tab_top ) : ( null !== $content_pad_top ? absint( $content_pad_top ) : 0 );
+	$tab_cpr = null !== $content_pad_tab_right ? absint( $content_pad_tab_right ) : ( null !== $content_pad_right ? absint( $content_pad_right ) : 0 );
+	$tab_cpb = null !== $content_pad_tab_bot ? absint( $content_pad_tab_bot ) : ( null !== $content_pad_bottom ? absint( $content_pad_bottom ) : 0 );
+	$tab_cpl = null !== $content_pad_tab_left ? absint( $content_pad_tab_left ) : ( null !== $content_pad_left ? absint( $content_pad_left ) : 0 );
+	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__content{padding:' . $tab_cpt . esc_attr( $content_pad_unit ) . ' ' . $tab_cpr . esc_attr( $content_pad_unit ) . ' ' . $tab_cpb . esc_attr( $content_pad_unit ) . ' ' . $tab_cpl . esc_attr( $content_pad_unit ) . '}}';
+}
+if ( null !== $content_pad_mob_top || null !== $content_pad_mob_right || null !== $content_pad_mob_bot || null !== $content_pad_mob_left ) {
+	$mob_cpt = null !== $content_pad_mob_top ? absint( $content_pad_mob_top ) : ( null !== $content_pad_top ? absint( $content_pad_top ) : 0 );
+	$mob_cpr = null !== $content_pad_mob_right ? absint( $content_pad_mob_right ) : ( null !== $content_pad_right ? absint( $content_pad_right ) : 0 );
+	$mob_cpb = null !== $content_pad_mob_bot ? absint( $content_pad_mob_bot ) : ( null !== $content_pad_bottom ? absint( $content_pad_bottom ) : 0 );
+	$mob_cpl = null !== $content_pad_mob_left ? absint( $content_pad_mob_left ) : ( null !== $content_pad_left ? absint( $content_pad_left ) : 0 );
+	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__content{padding:' . $mob_cpt . esc_attr( $content_pad_unit ) . ' ' . $mob_cpr . esc_attr( $content_pad_unit ) . ' ' . $mob_cpb . esc_attr( $content_pad_unit ) . ' ' . $mob_cpl . esc_attr( $content_pad_unit ) . '}}';
+}
+
+// ── contentMaxWidth: tablet / mobile overrides ─────────────────────────────
+if ( null !== $content_max_width_tab ) {
+	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__content{max-width:' . absint( $content_max_width_tab ) . esc_attr( $content_max_width_unit ) . '}}';
+}
+if ( null !== $content_max_width_mob ) {
+	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__content{max-width:' . absint( $content_max_width_mob ) . esc_attr( $content_max_width_unit ) . '}}';
+}
+
+// ── labelFontSize: tablet / mobile overrides ───────────────────────────────
+if ( null !== $label_font_size_tab ) {
+	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__label{font-size:' . absint( $label_font_size_tab ) . esc_attr( $label_font_size_unit ) . '}}';
+}
+if ( null !== $label_font_size_mob ) {
+	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__label{font-size:' . absint( $label_font_size_mob ) . esc_attr( $label_font_size_unit ) . '}}';
 }
 
 // Build wrapper classes.
@@ -260,7 +540,7 @@ if ( ( ! $is_split && ! empty( $bg_image['url'] ) ) || $is_video || $is_svg_anim
 		$overlay_colour,
 		esc_attr( $overlay_opacity / 100 )
 	);
-	$overlay_html  = '<span class="sgs-hero__overlay" style="' . $overlay_style . '" aria-hidden="true"></span>';
+	$overlay_html  = '<span class="sgs-hero__overlay" style="' . esc_attr( $overlay_style ) . '" aria-hidden="true"></span>';
 }
 
 // CTA buttons are now rendered via sgs/multi-button + sgs/button InnerBlocks.
@@ -294,8 +574,74 @@ if ( ! empty( $badges ) ) {
 	}
 }
 
-// Build content area.
-$content_html = '<div class="sgs-hero__content">';
+// ── Build label (eyebrow) inline styles ────────────────────────────────────
+$label_styles = array();
+if ( $label_font_family ) {
+	// Resolve as a theme.json preset slug or pass through if it contains spaces (custom family).
+	$label_styles[] = 'font-family:var(--wp--preset--font-family--' . esc_attr( preg_replace( '/[^a-z0-9-]/', '', strtolower( $label_font_family ) ) ) . ')';
+}
+if ( null !== $label_font_size ) {
+	$label_styles[] = 'font-size:' . absint( $label_font_size ) . esc_attr( $label_font_size_unit );
+}
+if ( $label_font_weight ) {
+	$label_styles[] = 'font-weight:' . esc_attr( $label_font_weight );
+}
+if ( null !== $label_line_height ) {
+	$label_styles[] = 'line-height:' . esc_attr( (string) $label_line_height ) . esc_attr( $label_lh_unit );
+}
+if ( null !== $label_letter_spacing ) {
+	$label_styles[] = 'letter-spacing:' . esc_attr( (string) $label_letter_spacing ) . esc_attr( $label_ls_unit );
+}
+if ( $label_text_transform ) {
+	$allowed_transforms = array( 'none', 'uppercase', 'lowercase', 'capitalize', 'inherit', 'initial' );
+	if ( in_array( $label_text_transform, $allowed_transforms, true ) ) {
+		$label_styles[] = 'text-transform:' . $label_text_transform;
+	}
+}
+if ( $label_text_decoration ) {
+	$allowed_decorations = array( 'none', 'underline', 'overline', 'line-through', 'inherit', 'initial' );
+	if ( in_array( $label_text_decoration, $allowed_decorations, true ) ) {
+		$label_styles[] = 'text-decoration:' . $label_text_decoration;
+	}
+}
+if ( $label_colour ) {
+	$label_styles[] = 'color:' . sgs_colour_value( $label_colour );
+}
+if ( null !== $label_margin_bottom ) {
+	$label_styles[] = 'margin-bottom:' . absint( $label_margin_bottom ) . esc_attr( $label_mb_unit );
+}
+$label_style_attr = $label_styles ? ' style="' . implode( ';', $label_styles ) . '"' : '';
+
+// ── Build content area ─────────────────────────────────────────────────────
+// Vertical alignment: top → flex-start, center → center, bottom → flex-end.
+$v_align_map = array(
+	'top'    => 'flex-start',
+	'center' => 'center',
+	'bottom' => 'flex-end',
+);
+$justify_content = $v_align_map[ $vertical_alignment ] ?? 'center';
+
+$content_styles = array(
+	'display:flex',
+	'flex-direction:column',
+	'justify-content:' . $justify_content,
+);
+if ( null !== $content_pad_top || null !== $content_pad_right || null !== $content_pad_bottom || null !== $content_pad_left ) {
+	$cpt = null !== $content_pad_top ? absint( $content_pad_top ) : 0;
+	$cpr = null !== $content_pad_right ? absint( $content_pad_right ) : 0;
+	$cpb = null !== $content_pad_bottom ? absint( $content_pad_bottom ) : 0;
+	$cpl = null !== $content_pad_left ? absint( $content_pad_left ) : 0;
+	$content_styles[] = 'padding:' . $cpt . esc_attr( $content_pad_unit ) . ' ' . $cpr . esc_attr( $content_pad_unit ) . ' ' . $cpb . esc_attr( $content_pad_unit ) . ' ' . $cpl . esc_attr( $content_pad_unit );
+}
+if ( null !== $content_max_width ) {
+	$content_styles[] = 'max-width:' . absint( $content_max_width ) . esc_attr( $content_max_width_unit );
+}
+$content_style_attr = ' style="' . implode( ';', $content_styles ) . '"';
+
+$content_html = '<div class="sgs-hero__content"' . $content_style_attr . '>';
+if ( $label ) {
+	$content_html .= '<span class="sgs-hero__label"' . $label_style_attr . '>' . esc_html( $label ) . '</span>';
+}
 if ( $headline ) {
 	$h_classes          = array( 'sgs-hero__headline' );
 	$text_align_mobile  = $attributes['textAlignMobile'] ?? '';
@@ -328,6 +674,31 @@ if ( $sub_headline ) {
 	if ( $sub_headline_max_width ) {
 		$sub_styles[] = 'max-width:' . absint( $sub_headline_max_width ) . 'px';
 	}
+	// Phase 1: Sub-headline typography extensions.
+	if ( $sub_headline_font_family ) {
+		$sub_styles[] = 'font-family:var(--wp--preset--font-family--' . esc_attr( preg_replace( '/[^a-z0-9-]/', '', strtolower( $sub_headline_font_family ) ) ) . ')';
+	}
+	if ( $sub_headline_font_weight ) {
+		$sub_styles[] = 'font-weight:' . esc_attr( $sub_headline_font_weight );
+	}
+	if ( null !== $sub_headline_line_height ) {
+		$sub_styles[] = 'line-height:' . esc_attr( (string) $sub_headline_line_height ) . esc_attr( $sub_headline_lh_unit );
+	}
+	if ( null !== $sub_headline_letter_spacing ) {
+		$sub_styles[] = 'letter-spacing:' . esc_attr( (string) $sub_headline_letter_spacing ) . esc_attr( $sub_headline_ls_unit );
+	}
+	if ( $sub_headline_text_transform ) {
+		$allowed_transforms = array( 'none', 'uppercase', 'lowercase', 'capitalize', 'inherit', 'initial' );
+		if ( in_array( $sub_headline_text_transform, $allowed_transforms, true ) ) {
+			$sub_styles[] = 'text-transform:' . $sub_headline_text_transform;
+		}
+	}
+	if ( $sub_headline_text_decoration ) {
+		$allowed_decorations = array( 'none', 'underline', 'overline', 'line-through', 'inherit', 'initial' );
+		if ( in_array( $sub_headline_text_decoration, $allowed_decorations, true ) ) {
+			$sub_styles[] = 'text-decoration:' . $sub_headline_text_decoration;
+		}
+	}
 	$sub_style_attr = $sub_styles ? ' style="' . implode( ';', $sub_styles ) . '"' : '';
 	$content_html  .= '<p class="sgs-hero__subheadline"' . $sub_style_attr . '>' . wp_kses_post( $sub_headline ) . '</p>';
 }
@@ -335,16 +706,59 @@ if ( $sub_headline ) {
 $content_html .= '<div class="sgs-hero__ctas">' . $content . '</div>';
 $content_html .= '</div>';
 
-// Build split media area.
+// ── Build split media area ─────────────────────────────────────────────────
 $media_html = '';
 if ( $is_split && ! empty( $split_image['url'] ) ) {
 	// H13/H14: use responsive image helper for srcset + explicit dimensions.
 	$img_id    = ! empty( $split_image['id'] ) ? absint( $split_image['id'] ) : 0;
+
+	// ── Build <img> inline styles ────────────────────────────────────────
+	$img_styles = array();
+
+	// object-fit.
+	if ( 'custom' !== $image_object_fit ) {
+		$allowed_fits = array( 'fill', 'contain', 'cover', 'match-height', 'match-width', 'none' );
+		$safe_fit     = in_array( $image_object_fit, $allowed_fits, true ) ? $image_object_fit : 'cover';
+		$img_styles[] = 'object-fit:' . $safe_fit;
+	} else {
+		// Custom: explicit width + height control.
+		if ( null !== $image_width ) {
+			$img_styles[] = 'width:' . absint( $image_width ) . esc_attr( $image_width_unit );
+		}
+		if ( null !== $image_height ) {
+			$img_styles[] = 'height:' . absint( $image_height ) . esc_attr( $image_height_unit );
+		}
+	}
+
+	// object-position.
+	$img_styles[] = 'object-position:' . esc_attr( $image_object_position );
+
+	// border-radius (desktop).
+	$img_styles[] = 'border-radius:' . absint( $image_br_tl ) . esc_attr( $image_br_unit ) . ' ' . absint( $image_br_tr ) . esc_attr( $image_br_unit ) . ' ' . absint( $image_br_br ) . esc_attr( $image_br_unit ) . ' ' . absint( $image_br_bl ) . esc_attr( $image_br_unit );
+
+	// border — only emit when style is not none OR any width > 0.
+	$border_has_width = ( $image_border_width_top > 0 || $image_border_width_right > 0 || $image_border_width_bot > 0 || $image_border_width_left > 0 );
+	if ( 'none' !== $image_border_style || $border_has_width ) {
+		$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
+		$safe_border_style     = in_array( $image_border_style, $allowed_border_styles, true ) ? $image_border_style : 'solid';
+		$img_styles[]          = 'border-style:' . $safe_border_style;
+		$img_styles[]          = 'border-width:' . absint( $image_border_width_top ) . esc_attr( $image_border_width_unit ) . ' ' . absint( $image_border_width_right ) . esc_attr( $image_border_width_unit ) . ' ' . absint( $image_border_width_bot ) . esc_attr( $image_border_width_unit ) . ' ' . absint( $image_border_width_left ) . esc_attr( $image_border_width_unit );
+		if ( $image_border_colour ) {
+			$img_styles[] = 'border-color:' . sgs_colour_value( $image_border_colour );
+		}
+	}
+
+	// imagePadding — inner padding on the <img> element.
+	if ( $image_pad_top > 0 || $image_pad_right > 0 || $image_pad_bottom > 0 || $image_pad_left > 0 ) {
+		$img_styles[] = 'padding:' . absint( $image_pad_top ) . esc_attr( $image_pad_unit ) . ' ' . absint( $image_pad_right ) . esc_attr( $image_pad_unit ) . ' ' . absint( $image_pad_bottom ) . esc_attr( $image_pad_unit ) . ' ' . absint( $image_pad_left ) . esc_attr( $image_pad_unit );
+	}
+
 	$img_attrs = array(
 		'class'         => 'sgs-hero__split-image',
 		'loading'       => 'eager',
 		'decoding'      => 'async',
 		'fetchpriority' => 'high',
+		'style'         => implode( ';', $img_styles ) . ';',
 	);
 	if ( ! empty( $split_image['width'] ) ) {
 		$img_attrs['width'] = absint( $split_image['width'] );
@@ -377,7 +791,55 @@ if ( $is_split && ! empty( $split_image['url'] ) ) {
 		$img_attrs['class'] .= ' sgs-hero__split-image--bleed';
 	}
 
-	$media_html  = '<div class="' . esc_attr( $media_class ) . '">';
+	// ── Build .sgs-hero__media wrapper inline styles ──────────────────────
+	$media_styles = array();
+	if ( $media_bg_colour ) {
+		$media_styles[] = 'background-color:' . sgs_colour_value( $media_bg_colour );
+	}
+	// mediaPadding — outer padding on .sgs-hero__media wrapper (desktop).
+	if ( null !== $media_pad_top || null !== $media_pad_right || null !== $media_pad_bottom || null !== $media_pad_left ) {
+		$mpt            = null !== $media_pad_top ? absint( $media_pad_top ) : 0;
+		$mpr            = null !== $media_pad_right ? absint( $media_pad_right ) : 0;
+		$mpb            = null !== $media_pad_bottom ? absint( $media_pad_bottom ) : 0;
+		$mpl            = null !== $media_pad_left ? absint( $media_pad_left ) : 0;
+		$media_styles[] = 'padding:' . $mpt . esc_attr( $media_pad_unit ) . ' ' . $mpr . esc_attr( $media_pad_unit ) . ' ' . $mpb . esc_attr( $media_pad_unit ) . ' ' . $mpl . esc_attr( $media_pad_unit );
+	}
+	$media_style_attr = $media_styles ? ' style="' . implode( ';', $media_styles ) . '"' : '';
+
+	$media_html = '<div class="' . esc_attr( $media_class ) . '"' . $media_style_attr . '>';
+
+	// If a separate mobile image is set, emit BOTH images and let CSS toggle by breakpoint.
+	if ( ! empty( $split_image_mobile['url'] ) ) {
+		$mobile_img_id    = ! empty( $split_image_mobile['id'] ) ? absint( $split_image_mobile['id'] ) : 0;
+		$mobile_img_attrs = array(
+			'class'         => 'sgs-hero__split-image sgs-hero__split-image--mobile',
+			'loading'       => 'eager',
+			'decoding'      => 'async',
+			'fetchpriority' => 'high',
+			'style'         => 'object-position:' . esc_attr( $split_image_mobile_object_position ) . ';',
+		);
+		if ( ! empty( $split_image_mobile['width'] ) ) {
+			$mobile_img_attrs['width'] = absint( $split_image_mobile['width'] );
+		}
+		if ( ! empty( $split_image_mobile['height'] ) ) {
+			$mobile_img_attrs['height'] = absint( $split_image_mobile['height'] );
+		}
+		$media_html .= sgs_responsive_image(
+			$mobile_img_id,
+			$split_image_mobile['url'],
+			$split_image_mobile['alt'] ?? '',
+			'large',
+			$mobile_img_attrs
+		);
+
+		// Mark the desktop image so CSS can hide it on mobile when both are present.
+		$img_attrs['class'] .= ' sgs-hero__split-image--desktop';
+
+		// Append the breakpoint-toggle CSS to the responsive_css output.
+		$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-image--desktop{display:none}}';
+		$responsive_css .= '@media (min-width:768px){.' . $uid . ' .sgs-hero__split-image--mobile{display:none}}';
+	}
+
 	$media_html .= sgs_responsive_image(
 		$img_id,
 		$split_image['url'],

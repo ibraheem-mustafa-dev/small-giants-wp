@@ -1,0 +1,99 @@
+/**
+ * SGS Button frontend styles.
+ * Preset variant colours come from theme.json custom.buttonPresets via
+ * --wp--custom--button-presets--<variant>--<key> CSS custom properties.
+ */
+
+.sgs-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	font-family: inherit;
+	font-weight: 600;
+	font-size: 15px;
+	line-height: 1.2;
+	padding: 14px 24px;
+	border: 2px solid transparent;
+	border-radius: 10px;
+	min-height: 48px;
+	text-align: center;
+	text-decoration: none;
+	cursor: pointer;
+	white-space: nowrap;
+	transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+	-webkit-appearance: none;
+	appearance: none;
+}
+
+.sgs-button:hover,
+.sgs-button:focus-visible {
+	text-decoration: none;
+}
+
+/* Width modifiers */
+.sgs-button-wrapper--full,
+.sgs-button-wrapper--full .sgs-button {
+	width: 100%;
+}
+
+/* Preset variants — colour values arrive via theme.json custom properties.
+ * Style variation overrides (e.g. mamas-munches) supply !important rules
+ * to win against per-element link-colour rules from the variation. */
+.sgs-button.is-style-primary {
+	background-color: var(--wp--custom--button-presets--primary--background, var(--wp--preset--color--primary));
+	color: var(--wp--custom--button-presets--primary--text, #ffffff);
+	border-color: var(--wp--custom--button-presets--primary--border, var(--wp--preset--color--primary));
+}
+
+.sgs-button.is-style-primary:hover,
+.sgs-button.is-style-primary:focus-visible {
+	background-color: var(--wp--custom--button-presets--primary--hover-background, var(--wp--preset--color--text));
+	color: var(--wp--custom--button-presets--primary--hover-text, #ffffff);
+	border-color: var(--wp--custom--button-presets--primary--hover-border, var(--wp--preset--color--text));
+}
+
+.sgs-button.is-style-secondary {
+	background-color: var(--wp--custom--button-presets--secondary--background, transparent);
+	color: var(--wp--custom--button-presets--secondary--text, var(--wp--preset--color--primary));
+	border-color: var(--wp--custom--button-presets--secondary--border, var(--wp--preset--color--primary));
+}
+
+.sgs-button.is-style-secondary:hover,
+.sgs-button.is-style-secondary:focus-visible {
+	background-color: var(--wp--custom--button-presets--secondary--hover-background, var(--wp--preset--color--primary));
+	color: var(--wp--custom--button-presets--secondary--hover-text, #ffffff);
+	border-color: var(--wp--custom--button-presets--secondary--hover-border, var(--wp--preset--color--primary));
+}
+
+.sgs-button.is-style-outline {
+	background-color: transparent;
+	color: var(--wp--preset--color--primary);
+	border-color: var(--wp--preset--color--primary);
+}
+
+.sgs-button.is-style-outline:hover,
+.sgs-button.is-style-outline:focus-visible {
+	background-color: var(--wp--preset--color--primary);
+	color: #ffffff;
+}
+
+/* Icon alignment */
+.sgs-button__icon {
+	display: inline-flex;
+	align-items: center;
+	flex-shrink: 0;
+}
+
+.sgs-button__icon svg {
+	width: 1em;
+	height: 1em;
+	display: block;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+	.sgs-button {
+		transition: none;
+	}
+}
