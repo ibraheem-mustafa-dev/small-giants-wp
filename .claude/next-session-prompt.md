@@ -1,93 +1,121 @@
 recommended_model: sonnet
-session_tag: small-giants-wp-2026-05-05-deploy-and-finish-hero
+session_tag: small-giants-wp-2026-05-05-deferred-hero-fixes
 
 Invoke `/autopilot` before doing anything else.
 
-You are continuing the SGS WordPress hero perfect-clone work. Last session (2026-05-04) shipped the QC harness, three deterministic prevention scripts, and 5 of 8 priority hero fixes in source code. The blocker was deployment: the hero PoC test page lives on a sandybrown Hostinger account where there are no SSH credentials, and WP's theme JSON DB cache holds stale values that file-level edits don't invalidate.
+You are continuing the SGS WordPress hero perfect-clone work. Last session (2026-05-04) shipped the QC harness, three deterministic prevention scripts, and 5 of 8 priority hero fixes — verified live on sandybrown. Multi-frame audit shows 0 first-paint defects. Visual fidelity moved from ~50% → ~80%. To hit ≥95% pass criterion: implement the deferred F1/F2 margin attributes + R1/R2 recogniser improvements (~70 min total, well-spec'd).
 
-This session must close the perfect-clone goal: 0 Major defects, ≤ 2 Important, ≥ 95% visual fidelity, all three audits (measured / Gemini Vision / multi-frame) agreeing PASS at 1440 + 375.
-
-Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-05-deploy-and-finish-hero"`
+Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-05-deferred-hero-fixes"`
 
 ## Read first (in this order)
 
-1. `.claude/handoff.md` — last session summary (what shipped, what didn't, why)
-2. `tools/qc-prevention/sandybrown-deployment-blocker.md` — 4 resolution paths in preference order, ranked
-3. `tools/qc-prevention/F1-F2-margin-attrs.md` — implementation sketch for headline/subheadline margin-bottom attributes
-4. `tools/qc-prevention/R1-R2-recogniser-extraction.md` — recogniser inline-style + 1280+ tier fix sketch
-5. `reports/hero-poc-qc-2026-05-04.md` — the 13-delta measured QC (still authoritative until re-run)
+1. `.claude/handoff.md` — last session summary (5 fixes verified live, deployment cracked)
+2. `reports/visual-diff/hero-2026-05-04.md` — measurement evidence + STOP GATE compliance + remaining defects
+3. `tools/qc-prevention/F1-F2-margin-attrs.md` — full implementation sketch for margin attrs
+4. `tools/qc-prevention/R1-R2-recogniser-extraction.md` — full implementation sketch for recogniser
+5. `reports/hero-poc-qc-2026-05-04.md` — original 13-delta measured QC (still authoritative for deltas not yet fixed)
 
 ## Where you are
 
-- Branch: `main`, commit `6b50465` is HEAD
-- 5 of 8 hero fixes are in source code (M1 animation removal, F4 mobile padding !important, F5 max-width leak, V3 h1 lineHeight)
-- 3 prevention scripts are armed: `scripts/css-pattern-audit.js`, `scripts/render-mobile-override-audit.js`, `.git/hooks/pre-commit` STOP GATE
-- 1 new QC harness ready: `node tools/multi-frame-qa/capture.js`
-- The 5 source fixes are NOT visible on sandybrown yet — deployment unblocked is the prerequisite for any verification
+- Branch: `main`, head `c7093ae` pushed
+- 5 of 8 priority hero fixes verified live on sandybrown (V1, V2, M1, F4, F5, V3 — the V3 covers both h1 lineHeight and the .sgs-hero__headline inheritance fix)
+- 3 prevention scripts armed (CSS pattern audit, render.php audit, pre-commit STOP GATE)
+- The deployment procedure is now documented end-to-end (handoff.md "deployment lesson" section) — variation changes need a `wp_global_styles` post reset+reapply via REST API
+- SSH to sandybrown is the SAME credentials as palestine-lives (`u945238940@141.136.39.73:65002`, `~/.ssh/id_ed25519`, domain path `domains/sandybrown-nightingale-600381.hostingersite.com/public_html/`)
 
 ## Tasks (in order)
 
-### Task 1 — Resolve deployment to sandybrown (~30 min, top priority)
+### Task 1 — Implement F1/F2 margin-bottom attributes (~25 min)
 
-Read `tools/qc-prevention/sandybrown-deployment-blocker.md`. Pick one of the 4 paths. In rough order of preference:
+Per `tools/qc-prevention/F1-F2-margin-attrs.md`. Adds 4 attributes:
+- `headlineMarginBottom`, `headlineMarginBottomMobile`
+- `subHeadlineMarginBottom`, `subHeadlineMarginBottomMobile`
 
-a. **Get SSH credentials from Bean.** Ask: "I need the SSH host/port/user for sandybrown-nightingale-600381.hostingersite.com (or the Hostinger hPanel login for that account). Without it I can't deploy theme files." Then deploy via the standard tar method (see framework CLAUDE.md). After deploy: `wp theme activate sgs-theme && wp litespeed-purge all && rm -rf wp-content/litespeed/css/*.css`.
+Wires through:
+1. `plugins/sgs-blocks/src/blocks/hero/block.json` — attribute declarations
+2. `plugins/sgs-blocks/src/blocks/hero/render.php` — emit as scoped @media CSS rules with !important on mobile (per the F4 pattern — see `scripts/render-mobile-override-audit.js`)
+3. `plugins/sgs-blocks/src/blocks/hero/edit.js` — ResponsiveControl in inspector under Typography panel (mirror existing `headlineFontSize` pattern)
 
-b. **Move V1/V2 fix to base theme.json.** Change `theme/sgs-theme/theme.json` `settings.custom.buttonPresets.primary.text` from `"#ffffff"` to a palette token like `"var(--wp--preset--color--text-inverse)"`. This is a framework-correct change (eliminates the bare-hex default, which violates the palette-tokens-not-bare-hex rule). Then redeploy.
+Solves I2/I4/M3/M4 from the original 23-defect list (4 typography rhythm misses).
 
-c. **Site Editor save trick.** Log into WP admin → Appearance → Editor → make any global styles change and save. This forces WP to regenerate the theme.json CSS cache. Combine with LiteSpeed purge.
+After implementing: `npm run build` (from plugins/sgs-blocks/), then run `node scripts/render-mobile-override-audit.js --block hero` to check no new mobile-cascade defects introduced. Then re-extract Mama's hero with the recogniser (Task 2 will improve this) and deploy.
 
-d. **CSS override in variation's `css` field.** Document only — actual deployment still requires path A or C above.
+### Task 2 — Implement R1/R2 recogniser improvements (~45 min)
 
-**Verification gate for Task 1:** `getComputedStyle(document.querySelector('.sgs-button.is-style-primary')).color` MUST return `rgb(58, 46, 38)` (charcoal `#3A2E26`) on the live page. Use the Playwright MCP tools to confirm. Don't proceed to Task 2 until this is true.
+Per `tools/qc-prevention/R1-R2-recogniser-extraction.md`. Switch `tools/recogniser-v2/extract.py` to use Playwright `getComputedStyle()` at 1440px viewport for all desktop measurements. This single move fixes:
+- **R1** — inline `style="..."` attribute extraction (the mockup's `style="font-size:52px"` etc. are silently dropped right now)
+- **R2** — `@media (min-width: 1280px)` tier (currently dropped because recogniser only handles base/tablet/mobile)
+- **R3** — computed-vs-declared cascade (currently extracts CSS-rule values, not browser-resolved values)
 
-### Task 2 — Re-run multi-frame QC on the deployed site (~10 min)
+Implementation sketch is in the TODO file. The key change: use Playwright async API to load the mockup, navigate at 1440px viewport, and read `getComputedStyle(el)` for every fingerprinted selector. Map computed pixel values back to block attributes.
+
+Solves C3 (52px headline), C4 (72/64 padding), I5 (1.6 label line-height) from the original 23-defect list.
+
+### Task 3 — Re-extract Mama's hero + redeploy (~10 min)
 
 ```bash
-node tools/multi-frame-qa/capture.js --url "https://sandybrown-nightingale-600381.hostingersite.com/?page_id=29" --out tools/multi-frame-qa/runs/sgs-after-deploy --viewports "375,1440" --selector "section.sgs-hero"
+python tools/recogniser-v2/extract.py \
+  --mockup sites/mamas-munches/mockups/homepage/index.html \
+  --section "section.hero" \
+  --block sgs/hero \
+  --media-map sites/mamas-munches/research/sandybrown-media-map.json \
+  --out sites/mamas-munches/research/sandybrown-hero-extracted-v3.json
 ```
 
-Inspect `tools/multi-frame-qa/runs/sgs-after-deploy/1440px-snapshots.json` for `computedAnimationName`. Should be `"none"` for `.sgs-hero__split-image`, `.sgs-hero__ctas`, `.sgs-hero__subheadline`, `.sgs-hero__headline`. Also confirm at frame 0ms, all four elements have `isVisible: true`. If yes — M1 is dead.
+Inspect the output. Confirm `headlineFontSize: 52`, `contentPaddingTop: 72`, `contentPaddingRight: 64`, `labelLineHeight: 1.6` (the exact values that were missing pre-R1/R2).
 
-### Task 3 — Run all three audits, agree on PASS (~25 min)
+Use the extracted attrs to update post 29 on sandybrown via Playwright + the WP block editor (via wp.data.dispatch — NOT direct post_content edits, the hook blocks that).
 
-Pass criterion: 0 Major, ≤ 2 Important, ≥ 95% visual fidelity, all three audits agree.
+Then deploy theme + plugin via the standard tar method, run the wp_global_styles reset + reapply procedure (see handoff.md "deployment lesson"), and verify live.
+
+### Task 4 — Run all three audits, agree on PASS (~25 min)
 
 ```bash
-# Measured QC — re-create reports/hero-poc-qc-2026-05-05.md following the format of the 2026-05-04 file
-# Use Playwright to capture computed styles at 1440 + 375 and compare to mockup values
+# Multi-frame
+node tools/multi-frame-qa/capture.js \
+  --url "https://sandybrown-nightingale-600381.hostingersite.com/?page_id=29&fresh=$(date +%s)" \
+  --out tools/multi-frame-qa/runs/sgs-final \
+  --viewports "375,1440" \
+  --selector "section.sgs-hero"
+
+# Measured QC — re-create reports/hero-poc-qc-2026-05-05.md following the
+# 2026-05-04 file's structure. Use Playwright browser_evaluate to capture
+# computed styles at 1440 and 375 viewports for every QC delta from
+# the original report. Compare to mockup served via
+# python -m http.server 8765 from sites/mamas-munches/mockups/homepage/.
 
 # Gemini Pro Vision audit
-gemini --model gemini-3.1-pro-preview ... (see /gemini-vision-audit skill)
-
-# Multi-frame audit (already done in Task 2)
+gemini --model gemini-3.1-pro-preview ... (see /gemini-vision-audit skill — the
+script handles the screenshot capture and prompt construction)
 ```
 
-Confirm all three say PASS in the same row before declaring victory. If any disagree, find the gap, fix, re-run.
+Pass criterion: 0 Major defects, ≤ 2 Important, visual-fidelity ≥ 95%, all three audits agree.
 
-### Task 4 — Implement F1/F2 if time allows (~25 min)
+### Task 5 — Write the final visual-diff report + commit (~10 min)
 
-Per `tools/qc-prevention/F1-F2-margin-attrs.md`. Adds 4 attributes: `headlineMarginBottom`, `headlineMarginBottomMobile`, `subHeadlineMarginBottom`, `subHeadlineMarginBottomMobile`. Wires through block.json + render.php + edit.js. Solves I2, I4, M3, M4 from the 23-defect list.
-
-After implementing: re-run the recogniser to populate, redeploy, re-audit. Aim for ≥ 95%.
-
-### Task 5 — R1/R2 if Task 4 lands cleanly (~45 min)
-
-Per `tools/qc-prevention/R1-R2-recogniser-extraction.md`. Switch `tools/recogniser-v2/extract.py` to Playwright `getComputedStyle()` at 1440px. Fixes inline-style extraction, 1280+ tier extraction, and computed-vs-declared cascade in one move.
-
-### Task 6 — Write the visual-diff report and trip the STOP GATE (~10 min)
-
-Once all audits PASS, write `reports/visual-diff/hero-2026-05-05.md` containing:
-```
+Create `reports/visual-diff/hero-2026-05-05.md` with:
+```yaml
+---
 verdict: PASS
 first_paint_capture_passed: true
+block: sgs/hero
+date: 2026-05-05
+test_url: https://sandybrown-nightingale-600381.hostingersite.com/?page_id=29
+viewports_tested: [375, 1440]
+---
 ```
 
-Plus the audit summary. This satisfies the pre-commit STOP GATE and certifies the hero perfect-clone done. Commit + push.
+Plus the audit summary (mirror the structure of `reports/visual-diff/hero-2026-05-04.md`). Commit Task 1-2 source code + the report — the STOP GATE will accept it because the report exists and has `verdict: PASS`.
 
-### Task 7 — Handoff (~10 min)
+If pre-commit hook isn't already installed on this clone (it's per-clone, not committed), reinstall it from the previous session's commit history or recreate it from the spec in `handoff.md`.
 
-Run `/handoff`. Next-session prompt should be either: (a) the next mockup section (trust-bar / heritage-strip / etc.) per `sites/mamas-munches/mockups/homepage/index.html`, OR (b) the visual-qa skill update to incorporate the multi-frame harness as a standard layer (close the N1/N4 blind spots in the skill itself).
+### Task 6 — Mark hero PoC done, update projects.md, /handoff (~10 min)
+
+Run `/handoff`. Next-session prompt should be either:
+- (a) The next mockup section build — likely the trust-bar in `sites/mamas-munches/mockups/homepage/index.html` lines 314-380
+- (b) `/visual-qa` skill upgrade to bake in the multi-frame harness as a default L1.5 (closes N1/N4 blind spots permanently in the SGS workflow)
+
+Recommendation: (b) first — closes the methodology gap so future block work is protected by default. (a) is normal feature work that doesn't need a special session.
 
 ## Skills to invoke
 
@@ -95,36 +123,37 @@ Run `/handoff`. Next-session prompt should be either: (a) the next mockup sectio
 |-------|------|
 | `/autopilot` | FIRST |
 | `/sgs-wp-engine` | Throughout — all SGS WP work |
-| `/subagent-driven-development` | Tasks 4-5 — implementer + spec + quality review per fix |
-| `/visual-qa` | Task 3 standard QC — but the M1/N4 blind spots STILL exist in the skill itself; flag them in the run report |
-| `/gemini-vision-audit` | Task 3 vision audit |
+| `/subagent-driven-development` | Tasks 1-2 — implementer + spec + quality review per fix |
+| `/visual-qa` | Task 4 standard QC — flag the M1/N4 blind spots in the run report (still present) |
+| `/gemini-vision-audit` | Task 4 vision audit |
 | `/handoff` | End |
 
 ## MCP servers + CLI
 
 | Tool | Use |
 |------|-----|
-| `mcp__plugin_playwright_playwright__browser_evaluate` | Verify deployed CSS custom properties (Task 1 gate) |
-| `mcp__plugin_playwright_playwright__browser_navigate` | Live site verification |
-| `node tools/multi-frame-qa/capture.js` | Task 2 multi-frame audit |
-| `node scripts/css-pattern-audit.js` | Pre-commit + sanity check |
-| `node scripts/render-mobile-override-audit.js` | Sanity check on render.php changes |
-| `gemini --model gemini-3.1-pro-preview` | Task 3 vision audit |
+| `mcp__plugin_playwright_playwright__browser_evaluate` | Live verification at every step |
+| `mcp__plugin_playwright_playwright__browser_navigate` | Site editor for wp_global_styles reapplication |
+| `node tools/multi-frame-qa/capture.js` | Task 4 multi-frame audit |
+| `node scripts/css-pattern-audit.js` | Pre-commit + sanity checks |
+| `node scripts/render-mobile-override-audit.js` | Sanity check on render.php changes (Task 1) |
+| `gemini --model gemini-3.1-pro-preview` | Task 4 vision audit |
 | `phpcs --standard=WordPress` | After any PHP change |
-| `python tools/recogniser-v2/extract.py` | Task 5 (after R1/R2 implementation) |
+| `python tools/recogniser-v2/extract.py` | Task 2-3 |
+| `ssh -i ~/.ssh/id_ed25519 -p 65002 u945238940@141.136.39.73` | Server access for deploy |
 
 ## Constraints
 
-- **Do NOT proceed past Task 1 until the deployment gate is verified live.** Use Playwright `browser_evaluate` to confirm `--wp--custom--button-presets--primary--text` is the charcoal palette token (not `#ffffff`). Stop and ask Bean if you can't get past this — do not grind on cache-busting tricks for more than 15 minutes (last session burned 20+ minutes here, see ADHD Rule 13).
-- **Do NOT mark any task complete on the basis of internal metrics** (commits, builds, validations passing). Visual claims need rendered-DOM proof. See `mistakes.md` top entry.
-- **Do NOT bypass the STOP GATE on real block code commits.** Task 6 satisfies it correctly. Use `--no-verify` only for the QC harness bootstrap commit (already done last session) and for genuinely non-visual changes (block.json metadata-only, PHP logic only).
-- **Branch discipline**: framework changes go to `main`. If touching only Mama's variation or sites/mamas-munches/, can branch as `fix/mamas-hero-fidelity` and merge after audit. Run `git branch --show-current` before every commit.
+- **The wp_global_styles reset+reapply procedure is mandatory after any variation change.** Don't skip it. See handoff.md "deployment lesson". Without it, file changes don't propagate to the live site.
+- **Do NOT use `wp eval` or `wp post update`** for global styles — both are blocked by the WP content guard hook (correctly). Use the REST API via Playwright instead. The exact code worked last session — copy it.
+- **Visual claims need rendered-DOM proof.** Use `browser_evaluate` to capture computed styles. Don't claim a fix works because the source code looks right. The `feedback_verify_rendered_output_not_internal_metrics` lesson keeps firing — keep applying it.
+- **Branch discipline**: framework changes go to `main`. Run `git branch --show-current` before every commit.
 
 ## Success criteria for the session
 
-1. Sandybrown deployment path unblocked (one of 4 options chosen + verified live)
-2. The 5 source fixes from last session visible on sandybrown (verified via Playwright `browser_evaluate`)
-3. Multi-frame audit shows 0 first-paint defects (M1 dead)
-4. Three independent audits all agree PASS at 1440 + 375
-5. `reports/visual-diff/hero-2026-05-05.md` written with `verdict: PASS` AND `first_paint_capture_passed: true`
-6. Handoff written for the next mockup section OR the visual-qa skill upgrade
+1. F1/F2 implemented end-to-end (block.json + render.php + edit.js + build green)
+2. R1/R2 implemented in recogniser (Playwright-based extraction, validated against Mama's hero with computed styles matching mockup)
+3. Re-deploy verified live: headline 52px, content padding 72/64, label line-height 1.6 (the previously-missed values)
+4. All three audits agree PASS at 1440 + 375 (0 Major, ≤2 Important, ≥95% fidelity)
+5. `reports/visual-diff/hero-2026-05-05.md` written with PASS verdict, STOP GATE accepts the commit
+6. Hero PoC marked complete; handoff written for either next mockup section or /visual-qa skill upgrade
