@@ -2,6 +2,7 @@ import { __ } from '@wordpress/i18n';
 import {
 	useBlockProps,
 	InspectorControls,
+	InnerBlocks,
 	MediaUpload,
 	MediaUploadCheck,
 	RichText,
@@ -15,11 +16,19 @@ import {
 	TextControl,
 	TextareaControl,
 	ToggleControl,
+	Notice,
 	__experimentalToggleGroupControl as ToggleGroupControl,
 	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 } from '@wordpress/components';
 import { DesignTokenPicker, ResponsiveControl } from '../../components';
 import { colourVar, fontSizeVar } from '../../utils';
+
+const CTA_TEMPLATE = [
+	[ 'sgs/multi-button', {}, [
+		[ 'sgs/button', { inheritStyle: 'primary', label: 'Primary Action' } ],
+		[ 'sgs/button', { inheritStyle: 'secondary', label: 'Secondary Action' } ],
+	] ],
+];
 
 const VARIANT_OPTIONS = [
 	{ label: __( 'Standard', 'sgs-blocks' ), value: 'standard' },
@@ -119,10 +128,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		headline,
 		subHeadline,
 		splitImageBleed,
-		ctaPrimaryHoverBackground,
-		ctaPrimaryHoverColour,
-		ctaSecondaryHoverBackground,
-		ctaSecondaryHoverColour,
 		alignment,
 		backgroundImage,
 		overlayColour,
@@ -133,18 +138,13 @@ export default function Edit( { attributes, setAttributes } ) {
 		minHeight,
 		badges,
 		headlineColour,
+		headlineFontSizeDesktop,
+		headlineFontSizeTablet,
+		headlineFontSizeMobile,
 		subHeadlineFontSize,
 		subHeadlineColour,
-		ctaPrimaryText,
-		ctaPrimaryUrl,
-		ctaPrimaryStyle,
-		ctaPrimaryColour,
-		ctaPrimaryBackground,
-		ctaSecondaryText,
-		ctaSecondaryUrl,
-		ctaSecondaryStyle,
-		ctaSecondaryColour,
-		ctaSecondaryBackground,
+		subHeadlineMaxWidth,
+		splitImageMobileHeight,
 		bgParallax,
 		bgKenBurns,
 		bgVideo,
@@ -335,6 +335,64 @@ export default function Edit( { attributes, setAttributes } ) {
 							setAttributes( { subHeadlineColour: val } )
 						}
 					/>
+					<RangeControl
+						label={ __( 'Sub-headline max width (px)', 'sgs-blocks' ) }
+						help={ __( 'Limits sub-headline width for readability. 0 = no limit.', 'sgs-blocks' ) }
+						value={ subHeadlineMaxWidth || 0 }
+						onChange={ ( val ) =>
+							setAttributes( { subHeadlineMaxWidth: val || null } )
+						}
+						min={ 0 }
+						max={ 1200 }
+						step={ 10 }
+						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Headline Font Size', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ResponsiveControl
+						label={ __( 'Headline font size (px)', 'sgs-blocks' ) }
+					>
+						{ ( breakpoint ) => {
+							const attrMap = {
+								desktop: 'headlineFontSizeDesktop',
+								tablet: 'headlineFontSizeTablet',
+								mobile: 'headlineFontSizeMobile',
+							};
+							return (
+								<RangeControl
+									value={ attributes[ attrMap[ breakpoint ] ] || 0 }
+									onChange={ ( val ) =>
+										setAttributes( {
+											[ attrMap[ breakpoint ] ]: val || null,
+										} )
+									}
+									min={ 0 }
+									max={ 120 }
+									step={ 1 }
+									help={ __( '0 = inherit from theme', 'sgs-blocks' ) }
+									__nextHasNoMarginBottom
+								/>
+							);
+						} }
+					</ResponsiveControl>
+					{ isSplit && (
+						<RangeControl
+							label={ __( 'Split image mobile height (px)', 'sgs-blocks' ) }
+							help={ __( 'Fixed height for the split image on mobile screens. 0 = auto.', 'sgs-blocks' ) }
+							value={ splitImageMobileHeight || 0 }
+							onChange={ ( val ) =>
+								setAttributes( { splitImageMobileHeight: val || null } )
+							}
+							min={ 0 }
+							max={ 600 }
+							step={ 10 }
+							__nextHasNoMarginBottom
+						/>
+					) }
 				</PanelBody>
 
 				<PanelBody
@@ -681,142 +739,12 @@ export default function Edit( { attributes, setAttributes } ) {
 				) }
 
 				<PanelBody
-					title={ __( 'Primary CTA', 'sgs-blocks' ) }
+					title={ __( 'CTA Buttons', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<TextControl
-						label={ __( 'Button text', 'sgs-blocks' ) }
-						value={ ctaPrimaryText || '' }
-						onChange={ ( val ) =>
-							setAttributes( { ctaPrimaryText: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					<TextControl
-						label={ __( 'Button URL', 'sgs-blocks' ) }
-						value={ ctaPrimaryUrl || '' }
-						onChange={ ( val ) =>
-							setAttributes( { ctaPrimaryUrl: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					<SelectControl
-						label={ __( 'Button style', 'sgs-blocks' ) }
-						value={ ctaPrimaryStyle }
-						options={ CTA_STYLE_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { ctaPrimaryStyle: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					<DesignTokenPicker
-						label={ __( 'Text colour', 'sgs-blocks' ) }
-						value={ ctaPrimaryColour }
-						onChange={ ( val ) =>
-							setAttributes( { ctaPrimaryColour: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __(
-							'Background colour',
-							'sgs-blocks'
-						) }
-						value={ ctaPrimaryBackground }
-						onChange={ ( val ) =>
-							setAttributes( {
-								ctaPrimaryBackground: val,
-							} )
-						}
-					/>
-				</PanelBody>
-
-				<PanelBody
-					title={ __( 'Secondary CTA', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<TextControl
-						label={ __( 'Button text', 'sgs-blocks' ) }
-						value={ ctaSecondaryText || '' }
-						onChange={ ( val ) =>
-							setAttributes( { ctaSecondaryText: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					<TextControl
-						label={ __( 'Button URL', 'sgs-blocks' ) }
-						value={ ctaSecondaryUrl || '' }
-						onChange={ ( val ) =>
-							setAttributes( { ctaSecondaryUrl: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					<SelectControl
-						label={ __( 'Button style', 'sgs-blocks' ) }
-						value={ ctaSecondaryStyle }
-						options={ CTA_STYLE_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { ctaSecondaryStyle: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					<DesignTokenPicker
-						label={ __( 'Text colour', 'sgs-blocks' ) }
-						value={ ctaSecondaryColour }
-						onChange={ ( val ) =>
-							setAttributes( {
-								ctaSecondaryColour: val,
-							} )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __(
-							'Background colour',
-							'sgs-blocks'
-						) }
-						value={ ctaSecondaryBackground }
-						onChange={ ( val ) =>
-							setAttributes( {
-								ctaSecondaryBackground: val,
-							} )
-						}
-					/>
-				</PanelBody>
-
-				<PanelBody
-					title={ __( 'CTA Hover Colours', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<p style={ { fontSize: '12px', color: '#757575', marginTop: 0 } }>
-						{ __( 'Override the default hover state for each button. Leave blank to use the built-in style.', 'sgs-blocks' ) }
-					</p>
-					<DesignTokenPicker
-						label={ __( 'Primary — hover background', 'sgs-blocks' ) }
-						value={ ctaPrimaryHoverBackground }
-						onChange={ ( val ) =>
-							setAttributes( { ctaPrimaryHoverBackground: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __( 'Primary — hover text colour', 'sgs-blocks' ) }
-						value={ ctaPrimaryHoverColour }
-						onChange={ ( val ) =>
-							setAttributes( { ctaPrimaryHoverColour: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __( 'Secondary — hover background', 'sgs-blocks' ) }
-						value={ ctaSecondaryHoverBackground }
-						onChange={ ( val ) =>
-							setAttributes( { ctaSecondaryHoverBackground: val } )
-						}
-					/>
-					<DesignTokenPicker
-						label={ __( 'Secondary — hover text colour', 'sgs-blocks' ) }
-						value={ ctaSecondaryHoverColour }
-						onChange={ ( val ) =>
-							setAttributes( { ctaSecondaryHoverColour: val } )
-						}
-					/>
+					<Notice status="info" isDismissible={ false }>
+						{ __( 'Buttons are now managed using the SGS Button Group block inside the hero. Click on a button in the editor to configure its style, colour, and link.', 'sgs-blocks' ) }
+					</Notice>
 				</PanelBody>
 
 				<PanelBody
@@ -916,41 +844,18 @@ export default function Edit( { attributes, setAttributes } ) {
 							fontSize:
 								fontSizeVar( subHeadlineFontSize ) ||
 								undefined,
+							maxWidth: subHeadlineMaxWidth
+								? subHeadlineMaxWidth + 'px'
+								: undefined,
 						} }
 					/>
 
 					<div className="sgs-hero__ctas">
-						{ ctaPrimaryText && (
-							<span
-								className={ `sgs-hero__cta sgs-hero__cta--${ ctaPrimaryStyle }` }
-								style={ {
-									color:
-										colourVar( ctaPrimaryColour ) ||
-										undefined,
-									backgroundColor:
-										colourVar( ctaPrimaryBackground ) ||
-										undefined,
-								} }
-							>
-								{ ctaPrimaryText }
-							</span>
-						) }
-						{ ctaSecondaryText && (
-							<span
-								className={ `sgs-hero__cta sgs-hero__cta--${ ctaSecondaryStyle }` }
-								style={ {
-									color:
-										colourVar( ctaSecondaryColour ) ||
-										undefined,
-									backgroundColor:
-										colourVar(
-											ctaSecondaryBackground
-										) || undefined,
-								} }
-							>
-								{ ctaSecondaryText }
-							</span>
-						) }
+						<InnerBlocks
+							template={ CTA_TEMPLATE }
+							templateLock={ false }
+							allowedBlocks={ [ 'sgs/multi-button' ] }
+						/>
 					</div>
 				</div>
 

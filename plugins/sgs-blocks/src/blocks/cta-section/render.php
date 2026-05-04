@@ -14,32 +14,15 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 // Extract attributes with defaults.
-$headline              = $attributes['headline'] ?? '';
-$body                  = $attributes['body'] ?? '';
-$buttons               = $attributes['buttons'] ?? array();
-$ribbon                = isset( $attributes['ribbon'] ) ? sanitize_text_field( $attributes['ribbon'] ) : '';
-$layout                = $attributes['layout'] ?? 'centred';
-$headline_colour       = $attributes['headlineColour'] ?? '';
-$body_colour           = $attributes['bodyColour'] ?? '';
-$body_font_size        = $attributes['bodyFontSize'] ?? '';
-$body_font_size_tablet = $attributes['bodyFontSizeTablet'] ?? '';
-$body_font_size_mobile = $attributes['bodyFontSizeMobile'] ?? '';
-$button_colour         = $attributes['buttonColour'] ?? '';
-$button_background     = $attributes['buttonBackground'] ?? '';
-$button_border_colour  = $attributes['buttonBorderColour'] ?? '';
-$button_border_width   = $attributes['buttonBorderWidth'] ?? null;
-$button_border_radius  = $attributes['buttonBorderRadius'] ?? null;
-
-// Block-level button style variant and size (#199, #200).
-$allowed_button_styles = array( 'solid', 'outline', 'ghost', 'gradient', 'accent', 'primary' );
-$block_button_style    = in_array( $attributes['buttonStyle'] ?? '', $allowed_button_styles, true )
-	? sanitize_key( $attributes['buttonStyle'] )
-	: 'solid';
-
-$allowed_button_sizes     = array( 'xs', 'sm', 'md', 'lg', 'xl' );
-$block_button_size        = in_array( $attributes['buttonSize'] ?? '', $allowed_button_sizes, true )
-	? sanitize_key( $attributes['buttonSize'] )
-	: 'md';
+$headline                 = $attributes['headline'] ?? '';
+$body                     = $attributes['body'] ?? '';
+$ribbon                   = isset( $attributes['ribbon'] ) ? sanitize_text_field( $attributes['ribbon'] ) : '';
+$layout                   = $attributes['layout'] ?? 'centred';
+$headline_colour          = $attributes['headlineColour'] ?? '';
+$body_colour              = $attributes['bodyColour'] ?? '';
+$body_font_size           = $attributes['bodyFontSize'] ?? '';
+$body_font_size_tablet    = $attributes['bodyFontSizeTablet'] ?? '';
+$body_font_size_mobile    = $attributes['bodyFontSizeMobile'] ?? '';
 $background_image         = $attributes['backgroundImage'] ?? null;
 $background_image_opacity = $attributes['backgroundImageOpacity'] ?? 30;
 $stats                    = $attributes['stats'] ?? array();
@@ -165,65 +148,10 @@ if ( ! empty( $stats ) ) {
 	$stats_html .= '</div>';
 }
 
-// Build buttons HTML.
-$buttons_html = '';
-if ( ! empty( $buttons ) ) {
-	$buttons_html .= '<div class="sgs-cta-section__buttons">';
-	foreach ( $buttons as $btn ) {
-		$btn_text  = $btn['text'] ?? '';
-		$btn_url   = $btn['url'] ?? '';
-		$btn_style = $btn['style'] ?? 'accent';
-		$btn_icon  = $btn['icon'] ?? '';
-
-		if ( ! $btn_text || ! $btn_url ) {
-			continue;
-		}
-
-		$btn_styles = array();
-		if ( $button_colour ) {
-			$btn_styles[] = 'color:' . sgs_colour_value( $button_colour );
-		}
-		if ( $button_background ) {
-			$btn_styles[] = 'background-color:' . sgs_colour_value( $button_background );
-		}
-		if ( $button_border_colour ) {
-			$btn_styles[] = 'border-color:' . sgs_colour_value( $button_border_colour );
-			$btn_styles[] = 'border-style:solid';
-		}
-		if ( null !== $button_border_width ) {
-			$btn_styles[] = 'border-width:' . absint( $button_border_width ) . 'px';
-			if ( ! $button_border_colour ) {
-				$btn_styles[] = 'border-style:solid';
-			}
-		}
-		if ( null !== $button_border_radius ) {
-			$btn_styles[] = 'border-radius:' . absint( $button_border_radius ) . 'px';
-		}
-		$btn_style_attr = $btn_styles ? ' style="' . implode( ';', $btn_styles ) . '"' : '';
-
-		$icon_html = '';
-		if ( $btn_icon ) {
-			$icon_html = sprintf(
-				'<span class="sgs-cta-section__btn-icon" aria-hidden="true">%s</span>',
-				esc_html( $btn_icon )
-			);
-		}
-
-		// Use block-level style as default; per-button style overrides when explicitly set.
-		$effective_style = ! empty( $btn['style'] ) ? sanitize_key( $btn['style'] ) : $block_button_style;
-
-		$buttons_html .= sprintf(
-			'<a href="%s" class="sgs-cta-section__btn sgs-cta-section__btn--%s sgs-cta-section__btn--size-%s"%s>%s%s</a>',
-			esc_url( $btn_url ),
-			esc_attr( $effective_style ),
-			esc_attr( $block_button_size ),
-			$btn_style_attr,
-			$icon_html,
-			esc_html( $btn_text )
-		);
-	}
-	$buttons_html .= '</div>';
-}
+// Buttons are now rendered via sgs/multi-button + sgs/button InnerBlocks.
+// $content is passed by WordPress and contains the rendered InnerBlocks output.
+// Legacy buttons array attribute is handled by deprecated.js migration.
+$buttons_html = '<div class="sgs-cta-section__buttons">' . $content . '</div>';
 
 // Output responsive CSS if needed.
 if ( $responsive_css ) {

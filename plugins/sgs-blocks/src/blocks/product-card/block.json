@@ -45,7 +45,7 @@
     "variantStyle": {
       "type": "string",
       "default": "standard",
-      "enum": ["standard", "trial"]
+      "enum": ["standard", "trial", "gift"]
     },
     "trialTag": {
       "type": "string",
@@ -75,6 +75,7 @@
   "editorScript": "file:./index.js",
   "style": "file:./style.css",
   "render": "file:./render.php",
+  "allowedBlocks": ["sgs/multi-button", "sgs/button"],
   "example": {
     "attributes": {
       "productName": "Mama's Munches Zookies",

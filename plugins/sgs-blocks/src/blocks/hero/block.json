@@ -234,6 +234,26 @@
     "ctaSecondaryHoverColour": {
       "type": "string",
       "default": ""
+    },
+    "headlineFontSizeDesktop": {
+      "type": "number",
+      "default": null
+    },
+    "headlineFontSizeTablet": {
+      "type": "number",
+      "default": null
+    },
+    "headlineFontSizeMobile": {
+      "type": "number",
+      "default": null
+    },
+    "subHeadlineMaxWidth": {
+      "type": "number",
+      "default": null
+    },
+    "splitImageMobileHeight": {
+      "type": "number",
+      "default": null
     }
   },
   "render": "file:./render.php",

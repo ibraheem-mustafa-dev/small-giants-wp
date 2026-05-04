@@ -1,7 +1,27 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls, MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
-import { PanelBody, TextControl, TextareaControl, SelectControl, Button, ToggleControl } from '@wordpress/components';
+import {
+	useBlockProps,
+	InspectorControls,
+	InnerBlocks,
+	MediaUpload,
+	MediaUploadCheck,
+} from '@wordpress/block-editor';
+import {
+	PanelBody,
+	TextControl,
+	TextareaControl,
+	SelectControl,
+	Button,
+	ToggleControl,
+	Notice,
+} from '@wordpress/components';
 import { Fragment } from '@wordpress/element';
+
+const CTA_TEMPLATE = [
+	[ 'sgs/multi-button', {}, [
+		[ 'sgs/button', { inheritStyle: 'primary', label: 'Shop Now' } ],
+	] ],
+];
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
@@ -14,8 +34,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		packSizes,
 		priceLarge,
 		priceNote,
-		ctaText,
-		ctaUrl,
 	} = attributes;
 
 	const isTrial = variantStyle === 'trial';
@@ -26,9 +44,9 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const updatePackSize = ( idx, key, value ) => {
 		const next = packSizes.map( ( p, i ) => ( i === idx ? { ...p, [ key ]: value } : p ) );
-		// only one selected at a time
-		if ( key === 'selected' && value ) {
-			next.forEach( ( p, i ) => { if ( i !== idx ) p.selected = false; } );
+		// Only one selected at a time.
+		if ( 'selected' === key && value ) {
+			next.forEach( ( p, i ) => { if ( i !== idx ) { p.selected = false; } } );
 		}
 		setAttributes( { packSizes: next } );
 	};
@@ -122,7 +140,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					</PanelBody>
 				) }
 
-				<PanelBody title={ __( 'Price + CTA', 'sgs-blocks' ) } initialOpen={ false }>
+				<PanelBody title={ __( 'Price', 'sgs-blocks' ) } initialOpen={ false }>
 					<TextControl
 						label={ __( 'Price (large)', 'sgs-blocks' ) }
 						value={ priceLarge }
@@ -135,18 +153,12 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( v ) => setAttributes( { priceNote: v } ) }
 						__nextHasNoMarginBottom
 					/>
-					<TextControl
-						label={ __( 'CTA text', 'sgs-blocks' ) }
-						value={ ctaText }
-						onChange={ ( v ) => setAttributes( { ctaText: v } ) }
-						__nextHasNoMarginBottom
-					/>
-					<TextControl
-						label={ __( 'CTA URL', 'sgs-blocks' ) }
-						value={ ctaUrl }
-						onChange={ ( v ) => setAttributes( { ctaUrl: v } ) }
-						__nextHasNoMarginBottom
-					/>
+				</PanelBody>
+
+				<PanelBody title={ __( 'CTA Button', 'sgs-blocks' ) } initialOpen={ false }>
+					<Notice status="info" isDismissible={ false }>
+						{ __( 'The CTA button is now managed using the SGS Button Group block inside the card. Click on the button in the editor to configure its label, style, and link.', 'sgs-blocks' ) }
+					</Notice>
 				</PanelBody>
 			</InspectorControls>
 
@@ -159,7 +171,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{ productName && <h3>{ productName }</h3> }
 					{ description && <p className="product-desc">{ description }</p> }
 					{ ! isTrial && packSizes.length > 0 && (
-						<div className="pill-group" role="group" aria-label="Choose pack size">
+						<div className="pill-group" role="group" aria-label={ __( 'Choose pack size', 'sgs-blocks' ) }>
 							{ packSizes.map( ( p, idx ) => (
 								<button
 									key={ idx }
@@ -178,11 +190,11 @@ export default function Edit( { attributes, setAttributes } ) {
 							{ priceNote && <span className="price-note">{ priceNote }</span> }
 						</div>
 					) }
-					{ ctaText && (
-						<a href={ ctaUrl || '#' } className={ `btn ${ isTrial ? 'btn-secondary' : 'btn-primary' }` }>
-							{ ctaText }
-						</a>
-					) }
+					<InnerBlocks
+						template={ CTA_TEMPLATE }
+						templateLock={ false }
+						allowedBlocks={ [ 'sgs/multi-button' ] }
+					/>
 				</div>
 			</div>
 		</Fragment>

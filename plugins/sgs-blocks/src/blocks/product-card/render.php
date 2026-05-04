@@ -29,8 +29,7 @@ $trial_tag     = $attributes['trialTag'] ?? '';
 $pack_sizes    = $attributes['packSizes'] ?? array();
 $price_large   = $attributes['priceLarge'] ?? '';
 $price_note    = $attributes['priceNote'] ?? '';
-$cta_text      = $attributes['ctaText'] ?? '';
-$cta_url       = $attributes['ctaUrl'] ?? '';
+// ctaText and ctaUrl are deprecated. CTA is now rendered via sgs/multi-button InnerBlocks ($content).
 
 $is_trial = 'trial' === $variant_style;
 
@@ -95,13 +94,10 @@ ob_start();
 			</div>
 		<?php endif; ?>
 		<?php
-		if ( $cta_text ) :
-			$btn_class = $is_trial ? 'btn btn-secondary' : 'btn btn-primary';
-			?>
-			<a href="<?php echo esc_url( $cta_url ? $cta_url : '#' ); ?>" class="<?php echo esc_attr( $btn_class ); ?>">
-				<?php echo esc_html( $cta_text ); ?>
-			</a>
-		<?php endif; ?>
+		// CTA button rendered via sgs/multi-button + sgs/button InnerBlocks.
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $content from WP core InnerBlocks rendering.
+		echo $content;
+		?>
 	</div>
 </div>
 <?php

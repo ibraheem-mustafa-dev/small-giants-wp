@@ -2,6 +2,7 @@ import { __ } from "@wordpress/i18n";
 import {
   useBlockProps,
   InspectorControls,
+  InnerBlocks,
   RichText,
   MediaUpload,
   MediaUploadCheck,
@@ -12,35 +13,22 @@ import {
   TextControl,
   Button,
   RangeControl,
+  Notice,
 } from "@wordpress/components";
 import { DesignTokenPicker, ResponsiveControl } from "../../components";
 import { colourVar, fontSizeVar } from "../../utils";
+
+const CTA_TEMPLATE = [
+  [ "sgs/multi-button", {}, [
+    [ "sgs/button", { inheritStyle: "primary", label: "Primary Action" } ],
+    [ "sgs/button", { inheritStyle: "secondary", label: "Secondary Action" } ],
+  ] ],
+];
 
 const LAYOUT_OPTIONS = [
   { label: __("Centred", "sgs-blocks"), value: "centred" },
   { label: __("Left-aligned", "sgs-blocks"), value: "left" },
   { label: __("Split", "sgs-blocks"), value: "split" },
-];
-
-const BUTTON_STYLE_OPTIONS = [
-  { label: __("Accent", "sgs-blocks"), value: "accent" },
-  { label: __("Primary", "sgs-blocks"), value: "primary" },
-  { label: __("Outline", "sgs-blocks"), value: "outline" },
-];
-
-const BLOCK_BUTTON_STYLE_OPTIONS = [
-  { label: __("Solid", "sgs-blocks"), value: "solid" },
-  { label: __("Outline", "sgs-blocks"), value: "outline" },
-  { label: __("Ghost", "sgs-blocks"), value: "ghost" },
-  { label: __("Gradient", "sgs-blocks"), value: "gradient" },
-];
-
-const BUTTON_SIZE_OPTIONS = [
-  { label: __("XS", "sgs-blocks"), value: "xs" },
-  { label: __("SM", "sgs-blocks"), value: "sm" },
-  { label: __("MD", "sgs-blocks"), value: "md" },
-  { label: __("LG", "sgs-blocks"), value: "lg" },
-  { label: __("XL", "sgs-blocks"), value: "xl" },
 ];
 
 const FONT_SIZE_OPTIONS = [
@@ -51,78 +39,15 @@ const FONT_SIZE_OPTIONS = [
   { label: __("XL", "sgs-blocks"), value: "x-large" },
 ];
 
-function ButtonEditor({ button, onChange, onRemove }) {
-  const update = (key, value) => {
-    onChange({ ...button, [key]: value });
-  };
-
-  return (
-    <div
-      style={{
-        padding: "12px",
-        border: "1px solid #ddd",
-        borderRadius: "4px",
-        marginBottom: "12px",
-      }}
-    >
-      <TextControl
-        label={__("Button text", "sgs-blocks")}
-        value={button.text || ""}
-        onChange={(val) => update("text", val)}
-        __nextHasNoMarginBottom
-      />
-      <TextControl
-        label={__("URL", "sgs-blocks")}
-        value={button.url || ""}
-        onChange={(val) => update("url", val)}
-        type="url"
-        __nextHasNoMarginBottom
-      />
-      <SelectControl
-        label={__("Style", "sgs-blocks")}
-        value={button.style || "accent"}
-        options={BUTTON_STYLE_OPTIONS}
-        onChange={(val) => update("style", val)}
-        __nextHasNoMarginBottom
-      />
-      <TextControl
-        label={__("Icon (optional)", "sgs-blocks")}
-        value={button.icon || ""}
-        onChange={(val) => update("icon", val)}
-        placeholder="dashicon-name or emoji"
-        help={__("Optional icon before button text", "sgs-blocks")}
-        __nextHasNoMarginBottom
-      />
-      <Button
-        variant="secondary"
-        isDestructive
-        onClick={onRemove}
-        size="small"
-        style={{ marginTop: "8px" }}
-      >
-        {__("Remove button", "sgs-blocks")}
-      </Button>
-    </div>
-  );
-}
-
 export default function Edit({ attributes, setAttributes }) {
   const {
     headline,
     body,
-    buttons,
     ribbon,
     layout,
     headlineColour,
     bodyColour,
     bodyFontSize,
-    buttonColour,
-    buttonBackground,
-    buttonStyle,
-    buttonSize,
-    buttonBorderColour,
-    buttonBorderWidth,
-    buttonBorderRadius,
     backgroundImage,
     backgroundImageOpacity,
     gradientPreset,
@@ -156,36 +81,6 @@ export default function Edit({ attributes, setAttributes }) {
   const bodyStyle = {
     color: colourVar(bodyColour) || undefined,
     fontSize: fontSizeVar(bodyFontSize) || undefined,
-  };
-
-  const btnStyle = {
-    color: colourVar(buttonColour) || undefined,
-    backgroundColor: colourVar(buttonBackground) || undefined,
-    borderColor: colourVar(buttonBorderColour) || undefined,
-    borderWidth: buttonBorderWidth ? `${buttonBorderWidth}px` : undefined,
-    borderStyle: buttonBorderColour || buttonBorderWidth ? "solid" : undefined,
-    borderRadius:
-      buttonBorderRadius !== undefined && buttonBorderRadius !== null
-        ? `${buttonBorderRadius}px`
-        : undefined,
-  };
-
-  const updateButton = (index, updated) => {
-    const newButtons = [...buttons];
-    newButtons[index] = updated;
-    setAttributes({ buttons: newButtons });
-  };
-
-  const removeButton = (index) => {
-    setAttributes({
-      buttons: buttons.filter((_, i) => i !== index),
-    });
-  };
-
-  const addButton = () => {
-    setAttributes({
-      buttons: [...buttons, { text: "", url: "", style: "accent", icon: "" }],
-    });
   };
 
   const addStat = () => {
@@ -230,58 +125,9 @@ export default function Edit({ attributes, setAttributes }) {
         </PanelBody>
 
         <PanelBody title={__("Buttons", "sgs-blocks")} initialOpen={false}>
-          <SelectControl
-            label={__("Button variant", "sgs-blocks")}
-            value={buttonStyle || "solid"}
-            options={BLOCK_BUTTON_STYLE_OPTIONS}
-            onChange={(val) => setAttributes({ buttonStyle: val })}
-            help={__(
-              "Applied to all buttons. Per-button style overrides this.",
-              "sgs-blocks",
-            )}
-            __nextHasNoMarginBottom
-          />
-          <SelectControl
-            label={__("Button size", "sgs-blocks")}
-            value={buttonSize || "md"}
-            options={BUTTON_SIZE_OPTIONS}
-            onChange={(val) => setAttributes({ buttonSize: val })}
-            __nextHasNoMarginBottom
-          />
-          <DesignTokenPicker
-            label={__("Button border colour", "sgs-blocks")}
-            value={buttonBorderColour}
-            onChange={(val) => setAttributes({ buttonBorderColour: val })}
-          />
-          <RangeControl
-            label={__("Button border width (px)", "sgs-blocks")}
-            value={buttonBorderWidth ?? 0}
-            onChange={(val) => setAttributes({ buttonBorderWidth: val })}
-            min={0}
-            max={10}
-            step={1}
-            __nextHasNoMarginBottom
-          />
-          <RangeControl
-            label={__("Button border radius (px)", "sgs-blocks")}
-            value={buttonBorderRadius ?? 8}
-            onChange={(val) => setAttributes({ buttonBorderRadius: val })}
-            min={0}
-            max={50}
-            step={1}
-            __nextHasNoMarginBottom
-          />
-          {buttons.map((button, index) => (
-            <ButtonEditor
-              key={index}
-              button={button}
-              onChange={(updated) => updateButton(index, updated)}
-              onRemove={() => removeButton(index)}
-            />
-          ))}
-          <Button variant="secondary" onClick={addButton}>
-            {__("Add button", "sgs-blocks")}
-          </Button>
+          <Notice status="info" isDismissible={false}>
+            {__("Buttons are now managed using the SGS Button Group block inside the CTA section. Click on a button in the editor to configure its style, colour, and link.", "sgs-blocks")}
+          </Notice>
         </PanelBody>
 
         <PanelBody
@@ -444,16 +290,6 @@ export default function Edit({ attributes, setAttributes }) {
               );
             }}
           </ResponsiveControl>
-          <DesignTokenPicker
-            label={__("Button text colour", "sgs-blocks")}
-            value={buttonColour}
-            onChange={(val) => setAttributes({ buttonColour: val })}
-          />
-          <DesignTokenPicker
-            label={__("Button background colour", "sgs-blocks")}
-            value={buttonBackground}
-            onChange={(val) => setAttributes({ buttonBackground: val })}
-          />
         </PanelBody>
       </InspectorControls>
 
@@ -504,31 +340,13 @@ export default function Edit({ attributes, setAttributes }) {
           </div>
         )}
 
-        {buttons.length > 0 && (
-          <div className="sgs-cta-section__buttons">
-            {buttons.map((btn, index) =>
-              btn.text ? (
-                <span
-                  key={index}
-                  className={`sgs-cta-section__btn sgs-cta-section__btn--${
-                    btn.style || "accent"
-                  }`}
-                  style={btnStyle}
-                >
-                  {btn.icon && (
-                    <span
-                      className="sgs-cta-section__btn-icon"
-                      aria-hidden="true"
-                    >
-                      {btn.icon}
-                    </span>
-                  )}
-                  {btn.text}
-                </span>
-              ) : null,
-            )}
-          </div>
-        )}
+        <div className="sgs-cta-section__buttons">
+          <InnerBlocks
+            template={CTA_TEMPLATE}
+            templateLock={false}
+            allowedBlocks={["sgs/multi-button"]}
+          />
+        </div>
       </div>
     </>
   );

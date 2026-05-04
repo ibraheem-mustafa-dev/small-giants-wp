@@ -44,6 +44,13 @@ $cta_primary_bg                = $attributes['ctaPrimaryBackground'] ?? '';
 $cta_secondary_colour          = $attributes['ctaSecondaryColour'] ?? '';
 $cta_secondary_bg              = $attributes['ctaSecondaryBackground'] ?? '';
 
+// Per-breakpoint typography controls (new in v2).
+$headline_font_size_desktop = $attributes['headlineFontSizeDesktop'] ?? null;
+$headline_font_size_tablet  = $attributes['headlineFontSizeTablet'] ?? null;
+$headline_font_size_mobile  = $attributes['headlineFontSizeMobile'] ?? null;
+$sub_headline_max_width     = $attributes['subHeadlineMaxWidth'] ?? null;
+$split_image_mobile_height  = $attributes['splitImageMobileHeight'] ?? null;
+
 $hover_background_colour = $attributes['hoverBackgroundColour'] ?? '';
 $hover_text_colour       = $attributes['hoverTextColour'] ?? '';
 $hover_border_colour     = $attributes['hoverBorderColour'] ?? '';
@@ -124,6 +131,27 @@ if ( $sub_headline_font_size_tablet ) {
 }
 if ( $sub_headline_font_size_mobile ) {
 	$responsive_css .= '@media (max-width:599px){.' . $uid . ' .sgs-hero__subheadline{font-size:' . sgs_font_size_value( $sub_headline_font_size_mobile ) . '}}';
+}
+
+// Per-breakpoint headline font size.
+if ( $headline_font_size_desktop ) {
+	$responsive_css .= '.' . $uid . ' .sgs-hero__headline{font-size:' . absint( $headline_font_size_desktop ) . 'px}';
+}
+if ( $headline_font_size_tablet ) {
+	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__headline{font-size:' . absint( $headline_font_size_tablet ) . 'px}}';
+}
+if ( $headline_font_size_mobile ) {
+	$responsive_css .= '@media (max-width:599px){.' . $uid . ' .sgs-hero__headline{font-size:' . absint( $headline_font_size_mobile ) . 'px}}';
+}
+
+// Sub-headline max-width.
+if ( $sub_headline_max_width ) {
+	$responsive_css .= '.' . $uid . ' .sgs-hero__subheadline{max-width:' . absint( $sub_headline_max_width ) . 'px}';
+}
+
+// Split image mobile height.
+if ( $split_image_mobile_height ) {
+	$responsive_css .= '@media (max-width:599px){.' . $uid . ' .sgs-hero__split-image{height:' . absint( $split_image_mobile_height ) . 'px;object-fit:cover}}';
 }
 
 // Build wrapper classes.
@@ -235,46 +263,9 @@ if ( ( ! $is_split && ! empty( $bg_image['url'] ) ) || $is_video || $is_svg_anim
 	$overlay_html  = '<span class="sgs-hero__overlay" style="' . $overlay_style . '" aria-hidden="true"></span>';
 }
 
-// Build CTA buttons.
-$ctas_html = '';
-if ( $cta_primary_text || $cta_secondary_text ) {
-	$ctas_html .= '<div class="sgs-hero__ctas">';
-	if ( $cta_primary_text ) {
-		$cta_pri_styles = array();
-		if ( $cta_primary_colour ) {
-			$cta_pri_styles[] = 'color:' . sgs_colour_value( $cta_primary_colour );
-		}
-		if ( $cta_primary_bg ) {
-			$cta_pri_styles[] = 'background-color:' . sgs_colour_value( $cta_primary_bg );
-		}
-		$cta_pri_style_attr = $cta_pri_styles ? ' style="' . implode( ';', $cta_pri_styles ) . '"' : '';
-		$ctas_html         .= sprintf(
-			'<a href="%s" class="sgs-hero__cta sgs-hero__cta--%s"%s>%s</a>',
-			esc_url( $cta_primary_url ),
-			esc_attr( $cta_primary_style ),
-			$cta_pri_style_attr,
-			esc_html( $cta_primary_text )
-		);
-	}
-	if ( $cta_secondary_text ) {
-		$cta_sec_styles = array();
-		if ( $cta_secondary_colour ) {
-			$cta_sec_styles[] = 'color:' . sgs_colour_value( $cta_secondary_colour );
-		}
-		if ( $cta_secondary_bg ) {
-			$cta_sec_styles[] = 'background-color:' . sgs_colour_value( $cta_secondary_bg );
-		}
-		$cta_sec_style_attr = $cta_sec_styles ? ' style="' . implode( ';', $cta_sec_styles ) . '"' : '';
-		$ctas_html         .= sprintf(
-			'<a href="%s" class="sgs-hero__cta sgs-hero__cta--%s"%s>%s</a>',
-			esc_url( $cta_secondary_url ),
-			esc_attr( $cta_secondary_style ),
-			$cta_sec_style_attr,
-			esc_html( $cta_secondary_text )
-		);
-	}
-	$ctas_html .= '</div>';
-}
+// CTA buttons are now rendered via sgs/multi-button + sgs/button InnerBlocks.
+// $content is passed by WordPress and contains the rendered InnerBlocks output.
+// Legacy ctaPrimary* / ctaSecondary* attributes are handled by deprecated.js migration.
 
 // Build badges.
 $badges_html = '';
@@ -334,10 +325,14 @@ if ( $sub_headline ) {
 	if ( $sub_headline_font_size ) {
 		$sub_styles[] = 'font-size:' . sgs_font_size_value( $sub_headline_font_size );
 	}
+	if ( $sub_headline_max_width ) {
+		$sub_styles[] = 'max-width:' . absint( $sub_headline_max_width ) . 'px';
+	}
 	$sub_style_attr = $sub_styles ? ' style="' . implode( ';', $sub_styles ) . '"' : '';
 	$content_html  .= '<p class="sgs-hero__subheadline"' . $sub_style_attr . '>' . wp_kses_post( $sub_headline ) . '</p>';
 }
-$content_html .= $ctas_html;
+// InnerBlocks output (sgs/multi-button + sgs/button) rendered by WordPress.
+$content_html .= '<div class="sgs-hero__ctas">' . $content . '</div>';
 $content_html .= '</div>';
 
 // Build split media area.

@@ -1,12 +1,151 @@
-import { useBlockProps, RichText } from '@wordpress/block-editor';
+import { useBlockProps, RichText, InnerBlocks } from '@wordpress/block-editor';
 import { colourVar, fontSizeVar } from '../../utils';
 
 /**
- * V1 deprecation: static save with full HTML output.
+ * Deprecated versions of the SGS CTA Section block.
  *
- * Migrates to dynamic render (save returns null) — render.php
- * now handles all frontend output. Attributes are preserved
- * in the block comment delimiter JSON.
+ * v1 — Static save with full HTML output. Buttons rendered as <a> tags from
+ *      the buttons array attribute. No InnerBlocks.
+ *
+ * v2 — Dynamic save (returns null). Buttons array attribute still present.
+ *      render.php built button HTML server-side. No InnerBlocks.
+ *      Migrates buttons array to sgs/multi-button + sgs/button InnerBlocks.
+ *
+ * v3 (current) — Dynamic save (returns null). Buttons are InnerBlocks via
+ *      sgs/multi-button. $content variable used in render.php.
+ */
+
+/**
+ * Full attribute snapshot for v1 and v2 (buttons array era).
+ */
+const BUTTONS_ERA_ATTRIBUTES = {
+	headline: { type: 'string', default: '' },
+	body: { type: 'string', default: '' },
+	buttons: { type: 'array', default: [] },
+	ribbon: { type: 'string', default: '' },
+	layout: { type: 'string', default: 'centred' },
+	backgroundColor: { type: 'string', default: 'accent' },
+	textColor: { type: 'string', default: 'text' },
+	headlineColour: { type: 'string', default: 'text' },
+	bodyColour: { type: 'string', default: 'text' },
+	bodyFontSize: { type: 'string' },
+	bodyFontSizeTablet: { type: 'string', default: '' },
+	bodyFontSizeMobile: { type: 'string', default: '' },
+	buttonColour: { type: 'string', default: 'text-inverse' },
+	buttonBackground: { type: 'string', default: 'primary-dark' },
+	backgroundImage: { type: 'object', default: null },
+	backgroundImageOpacity: { type: 'number', default: 30 },
+	stats: { type: 'array', default: [] },
+	buttonStyle: {
+		type: 'string',
+		default: 'solid',
+		enum: [ 'solid', 'outline', 'ghost', 'gradient' ],
+	},
+	buttonSize: {
+		type: 'string',
+		default: 'md',
+		enum: [ 'xs', 'sm', 'md', 'lg', 'xl' ],
+	},
+	buttonBorderColour: { type: 'string' },
+	buttonBorderWidth: { type: 'number' },
+	buttonBorderRadius: { type: 'number' },
+	gradientPreset: { type: 'string', default: '' },
+	hoverBackgroundColour: { type: 'string', default: '' },
+	hoverTextColour: { type: 'string', default: '' },
+	hoverBorderColour: { type: 'string', default: '' },
+	transitionDuration: { type: 'string', default: '300' },
+	transitionEasing: { type: 'string', default: 'ease-in-out' },
+	textAlignMobile: { type: 'string', default: '' },
+	textAlignTablet: { type: 'string', default: '' },
+	textAlignDesktop: { type: 'string', default: '' },
+};
+
+/**
+ * Build InnerBlocks structure from the legacy buttons array.
+ *
+ * @param {Array} buttons Legacy buttons array from block attributes.
+ * @return {Array} Array of [ blockName, blockAttrs, innerBlocks ] tuples.
+ */
+function buildInnerBlocksFromButtons( buttons ) {
+	if ( ! buttons || ! buttons.length ) {
+		return [];
+	}
+
+	const buttonBlocks = buttons
+		.filter( ( btn ) => btn.text )
+		.map( ( btn, index ) => [
+			'sgs/button',
+			{
+				inheritStyle: index === 0 ? 'primary' : 'secondary',
+				label: btn.text || '',
+				url: btn.url || '',
+				linkTarget: '_self',
+			},
+			[],
+		] );
+
+	if ( ! buttonBlocks.length ) {
+		return [];
+	}
+
+	return [ [ 'sgs/multi-button', {}, buttonBlocks ] ];
+}
+
+/**
+ * v2 — Dynamic save (returns null). render.php built button HTML from
+ * the buttons array attribute. Migrates to InnerBlocks composition.
+ */
+const v2 = {
+	attributes: BUTTONS_ERA_ATTRIBUTES,
+	supports: {
+		align: [ 'wide', 'full' ],
+		anchor: true,
+		html: false,
+		color: { background: true, text: true, gradients: true },
+		typography: {
+			fontSize: true,
+			lineHeight: true,
+			textAlign: true,
+			letterSpacing: true,
+			textTransform: true,
+			fontWeight: true,
+			fontStyle: true,
+		},
+		spacing: { margin: true, padding: true },
+		shadow: true,
+		__experimentalBorder: {
+			radius: true,
+			width: true,
+			color: true,
+			style: true,
+		},
+	},
+	save() {
+		return null;
+	},
+	migrate( attributes ) {
+		const {
+			buttons,
+			buttonColour,
+			buttonBackground,
+			buttonStyle,
+			buttonSize,
+			buttonBorderColour,
+			buttonBorderWidth,
+			buttonBorderRadius,
+			...newAttributes
+		} = attributes;
+
+		return [
+			newAttributes,
+			buildInnerBlocksFromButtons( buttons ),
+		];
+	},
+};
+
+/**
+ * v1 — Static save with full HTML output. Earliest version of the block.
+ * headline/body stored as source:html, buttons rendered as <a> tags.
  */
 const v1 = {
 	attributes: {
@@ -118,8 +257,18 @@ const v1 = {
 		);
 	},
 	migrate( attributes ) {
-		return attributes;
+		const {
+			buttons,
+			buttonColour,
+			buttonBackground,
+			...newAttributes
+		} = attributes;
+
+		return [
+			newAttributes,
+			buildInnerBlocksFromButtons( buttons ),
+		];
 	},
 };
 
-export default [ v1 ];
+export default [ v2, v1 ];
