@@ -104,6 +104,35 @@ Run `/handoff`. Document any deprecation issues, any unexpected migration logic 
 - Universal CSS foundations from 2026-05-03 are committed but NOT YET DEPLOYED. Deploy them in this session along with the new blocks (single tar deploy).
 - After every PHP deploy: clear LiteSpeed cache + OPcache reset via HTTP (CLI is a different pool — confirmed in CLAUDE.md gotchas).
 
+## Other findings from the prep session — context only, NOT this session's scope
+
+The following came up during the 2026-05-03 prep session. They are NOT this session's work, but the implementer should KNOW about them so a refactor doesn't paint over a known issue. Each is parked or will be parked.
+
+| # | Finding | Decision needed (eventually) | Park ID |
+|---|---------|------------------------------|---------|
+| 1 | sgs/hero needs per-breakpoint headline font size attrs (`headlineFontSizeMobile/Tablet/Desktop`), `splitImageMobileHeight`, `subHeadlineMaxWidth` — 5 new attrs from the hero CSS audit. Question: hero-only block.json additions, OR a typography extension across all blocks with text. | Decide before next mockup section (trust-bar, brand-story) since each will surface the same need | P-10 |
+| 2 | Ingredients section in the Mama's mockup has a full-width disclaimer paragraph BELOW the 4-cell ingredient grid — the container is two rows, not just the grid. This shapes the eventual `sgs/feature-grid` build (P-5). | When sgs/feature-grid is built | P-5 (extend) |
+| 3 | Featured-product container in Mama's mockup is 2/3 + 1/3 column split (main Zookies card 2/3 width, Trial Pack 1/3 with callout). Quantity picker routes to product page (since flavours/toppings need picking — can't add to basket directly). | When refactoring sgs/product-card to InnerBlocks composition | P-5 (sibling) |
+| 4 | Gift-section gift packages are "products formatted differently". Decision: extend sgs/product-card with `variantStyle: gift` OR build new sgs/gift-card block. | Before building the gift section | new park |
+| 5 | Block coverage gap audit: cross-cutting task. For every SGS block, list every attribute declared in block.json vs what the recogniser would extract today. Recogniser v2 must auto-derive fingerprints from block.json, so this audit informs the v2 generalisation work. | Before recogniser v2 ships | P-9 |
+| 6 | DB-write of canonical block markup is verified safe for dynamic-block-heavy posts (2026-05-02 test, byte-perfect round-trip). Need a documented decision rule: when DB-write vs Playwright + `wp.data.dispatch`. | Document in CLAUDE.md once we've used it 2-3 times | new park |
+
+## Mockup section → SGS block mapping (for the post-architecture clone session)
+
+This table is the input for the FOLLOWING session (hero perfect-clone + remaining sections). NOT this session's work, but useful context for the refactor in Task 2D so the deprecation paths preserve forward compatibility:
+
+| Mamas mockup container | Maps to | Notes |
+|-----------------------|---------|-------|
+| `site-header` | universal `header.html` template part + sgs/business-info auto-populated nav/cart | already in shape |
+| `hero` | sgs/hero (split variant) + sgs/multi-button slot for 2 CTAs | refactor target this session |
+| `trust-bar` | sgs/trust-bar OR sgs/trust-badges (4-cell on pink band) | clone-session work |
+| `featured-product` | sgs/multi-button or core/columns container + 2× sgs/product-card | clone-session work |
+| `brand-story` | sgs/info-box OR core/columns with text + image | clone-session work |
+| `ingredients` | sgs/feature-grid (4-cell) + full-width paragraph for disclaimer (P-5 covers feature-grid build) | clone-session work |
+| `gift-section` | sgs/feature-grid (or sgs/product-card gift variant — see finding #4) | clone-session work |
+| `social-proof` | Trustpilot Mini widget + 3× sgs/testimonial cards (Bean's hybrid choice) | clone-session work |
+| `site-footer` | universal `footer.html` template part + sgs/business-info | already in shape |
+
 ## Success criteria
 
 This session is done when:
