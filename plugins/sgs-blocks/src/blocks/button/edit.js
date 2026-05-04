@@ -103,6 +103,11 @@ export default function Edit( { attributes, setAttributes } ) {
 		customWidth,
 		customWidthUnit,
 		minHeight,
+		minHeightUnit,
+		minHeightTablet,
+		minHeightTabletUnit,
+		minHeightMobile,
+		minHeightMobileUnit,
 		icon,
 		iconPosition,
 		iconSize,
@@ -367,14 +372,57 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						</HStack>
 					) }
-					<TextControl
-						label={ __( 'Min height (px)', 'sgs-blocks' ) }
-						value={ minHeight || '' }
-						type="number"
-						onChange={ ( val ) => setAttributes( { minHeight: val ? Number( val ) : null } ) }
-						help={ __( 'Minimum 44px enforced for WCAG touch target compliance.', 'sgs-blocks' ) }
-						__nextHasNoMarginBottom
-					/>
+					<p style={ { fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', margin: '8px 0 4px' } }>{ __( 'Min height', 'sgs-blocks' ) }</p>
+					<HStack spacing={ 2 }>
+						<TextControl
+							label={ __( 'Desktop', 'sgs-blocks' ) }
+							value={ minHeight || '' }
+							type="number"
+							onChange={ ( val ) => setAttributes( { minHeight: val ? Number( val ) : null } ) }
+							__nextHasNoMarginBottom
+						/>
+						<SelectControl
+							label={ __( 'Unit', 'sgs-blocks' ) }
+							value={ minHeightUnit }
+							options={ SIZE_UNIT_OPTIONS }
+							onChange={ ( val ) => setAttributes( { minHeightUnit: val } ) }
+							__nextHasNoMarginBottom
+						/>
+					</HStack>
+					<HStack spacing={ 2 } style={ { marginTop: '8px' } }>
+						<TextControl
+							label={ __( 'Tablet', 'sgs-blocks' ) }
+							value={ minHeightTablet || '' }
+							type="number"
+							onChange={ ( val ) => setAttributes( { minHeightTablet: val ? Number( val ) : null } ) }
+							help={ __( '≤1023px', 'sgs-blocks' ) }
+							__nextHasNoMarginBottom
+						/>
+						<SelectControl
+							label={ __( 'Unit', 'sgs-blocks' ) }
+							value={ minHeightTabletUnit }
+							options={ SIZE_UNIT_OPTIONS }
+							onChange={ ( val ) => setAttributes( { minHeightTabletUnit: val } ) }
+							__nextHasNoMarginBottom
+						/>
+					</HStack>
+					<HStack spacing={ 2 } style={ { marginTop: '8px' } }>
+						<TextControl
+							label={ __( 'Mobile', 'sgs-blocks' ) }
+							value={ minHeightMobile || '' }
+							type="number"
+							onChange={ ( val ) => setAttributes( { minHeightMobile: val ? Number( val ) : null } ) }
+							help={ __( '≤767px', 'sgs-blocks' ) }
+							__nextHasNoMarginBottom
+						/>
+						<SelectControl
+							label={ __( 'Unit', 'sgs-blocks' ) }
+							value={ minHeightMobileUnit }
+							options={ SIZE_UNIT_OPTIONS }
+							onChange={ ( val ) => setAttributes( { minHeightMobileUnit: val } ) }
+							__nextHasNoMarginBottom
+						/>
+					</HStack>
 				</PanelBody>
 
 				{ /* Typography — custom mode only */ }

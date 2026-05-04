@@ -1,5 +1,43 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-04 (later)
+**Last updated:** 2026-05-04 (even later)
+
+## 2026-05-04 — wp_global_styles post is the actual cache layer; editing variation files alone never propagates
+
+Editing `theme/sgs-theme/styles/<variation>.json` and deploying it to a server does NOT make the changes visible on the live site. WordPress merges base `theme.json` + the active variation file at first load and stores the merged result in a `wp_global_styles` post (post type `wp_global_styles`, one post per active theme). Future page renders read the cached merge from this post — NOT from the variation file. Cache flushes (`wp cache flush`, `wp transient delete --all`, LiteSpeed purge) do NOT reach this post because it's regular post content, not a transient or object cache entry.
+
+**Symptom**: variation file on disk has `text: "var(--wp--preset--color--text)"` but the live page shows `--wp--custom--button-presets--primary--text: #ffffff` (the BASE theme.json value). 30+ minutes of trying transient flushes / theme switches / OPcache resets / LiteSpeed purges produces zero change. The deployed file is correct; the rendered CSS is wrong.
+
+**The procedure that actually works** (verified 2026-05-04 on sandybrown):
+
+1. SCP the theme + plugin tar to the server, extract to `wp-content/`
+2. Reset the `wp_global_styles` post via REST API: `POST /wp-json/wp/v2/global-styles/{id}` with body `{settings:{},styles:{}}` — this clears the cached merge
+3. Re-apply the active variation: `GET /wp-json/wp/v2/global-styles/themes/<theme-slug>/variations` → find the active variation by title → POST its full `settings` + `styles` back into the global-styles post
+4. `wp cache flush` + `wp transient delete --all` + `rm -rf wp-content/litespeed/css/*.css wp-content/litespeed/cache/*`
+5. OPcache reset via HTTP fetch of a temp `op-reset-tmp.php`
+
+Steps 2 + 3 require Playwright (the `wp-content-guard.py` hook blocks `wp post update` and `wp eval` — correctly so, this is the right way). Use the WP admin login + `window.wpApiSettings.nonce` + `fetch` with `X-WP-Nonce`.
+
+**Why this is structural, not edge-case**: this is how WordPress's Global Styles system works by design. User customizations in the Site Editor write to this post. Variation file edits made server-side bypass the Site Editor and so don't refresh the post. Any deployment of variation-level changes (colours, typography, custom properties) hits this exact path.
+
+**How to apply going forward**:
+- ALL deploy procedures that touch theme.json or any `styles/<variation>.json` MUST run the reset+reapply procedure as the final step. Add to `/deploy` skill, `deploy-check`, and any deploy automation.
+- Never "deploy + test" a variation change — always "deploy + reset+reapply + flush + test".
+- Captured as Section O in `.claude/specs/common-wp-styling-errors.md` with full reproducible procedure.
+
+## 2026-05-04 — Fraunces font failed to load silently; computed font-family says correct value, browser uses fallback
+
+The Mama's variation declared Fraunces as the heading font with src pointing at `https://fonts.gstatic.com/s/fraunces/...woff2`. The CDN load **failed silently** (HTTP error or CSP block — `document.fonts` showed `status: "error"`). The browser fell back to DM Serif Display (next in the font stack). `getComputedStyle()` still reported `font-family: "Fraunces, ..."` because that's the declared value — but the actually-rendered font was DIFFERENT.
+
+This is the SAME defect class as M1 (computed style says X, rendered output is Y). No `getComputedStyle` check would catch it because the cascade resolved correctly — the resource load is what failed.
+
+**The detection rule**:
+- Use `document.fonts` to enumerate loaded fonts and check `status === 'loaded'` (not `'error'` / `'loading'` / `'unloaded'`) for every font declared in `theme.json` `settings.typography.fontFamilies`.
+- Add this check to `tools/multi-frame-qa/capture.js` AND the new `scripts/mockup-parity-validator.js` so it can never ship silently again.
+
+**The architectural rule**:
+- Per the SGS framework: NO external CDN for fonts. Self-host all fonts in `theme/sgs-theme/assets/fonts/<family>/`. The Mama's variation pointing at `gstatic.com` violated this; the violation produced a real visual defect.
+- Variation `settings.typography.fontFamilies[].fontFace[].src` MUST resolve to a local file path (e.g. `file:./assets/fonts/fraunces/Fraunces[opsz,wght].woff2`).
+- Add a static-analysis check (`scripts/font-source-audit.js` or extend `css-pattern-audit.js`) that flags `https://` in any `theme.json` font src.
 
 ## 2026-05-04 — single-frame post-load screenshots miss first-paint defects (the invisible hero image bug)
 

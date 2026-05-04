@@ -86,11 +86,11 @@
 					"fontFace": [
 						{
 							"fontFamily": "Fraunces",
-							"fontWeight": "300 900",
+							"fontWeight": "100 900",
 							"fontStyle": "normal",
 							"fontDisplay": "swap",
 							"src": [
-								"https://fonts.gstatic.com/s/fraunces/v36/6NUu8FOgNbSMuT4z3uQTcceFmfgM92t8KAQbaHUZTvkQQF7lvi0.woff2"
+								"file:./assets/fonts/fraunces/Fraunces[opsz,wght].woff2"
 							]
 						}
 					]

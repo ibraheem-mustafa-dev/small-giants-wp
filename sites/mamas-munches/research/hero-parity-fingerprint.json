@@ -1,0 +1,9 @@
+{
+  "section.hero": "section.sgs-hero",
+  ".hero-content h1, .hero-copy h1": ".sgs-hero__headline",
+  ".hero-content .hero-sub, .hero-copy .hero-sub": ".sgs-hero__subheadline",
+  ".hero-content .section-label, .hero-copy .section-label": ".sgs-hero__label",
+  ".hero-content, .hero-copy": ".sgs-hero__content",
+  ".btn.btn-primary": ".sgs-button.is-style-primary",
+  ".btn.btn-secondary": ".sgs-button.is-style-secondary"
+}

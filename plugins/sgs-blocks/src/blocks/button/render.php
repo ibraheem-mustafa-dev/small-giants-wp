@@ -44,6 +44,8 @@ $width_type        = isset( $attributes['widthType'] ) ? sanitize_text_field( $a
 $custom_width      = isset( $attributes['customWidth'] ) && null !== $attributes['customWidth'] ? absint( $attributes['customWidth'] ) : null;
 $custom_width_unit = isset( $attributes['customWidthUnit'] ) && '%' === $attributes['customWidthUnit'] ? '%' : 'px';
 $min_height        = isset( $attributes['minHeight'] ) && null !== $attributes['minHeight'] ? absint( $attributes['minHeight'] ) : null;
+$min_height_tab    = isset( $attributes['minHeightTablet'] ) && null !== $attributes['minHeightTablet'] ? absint( $attributes['minHeightTablet'] ) : null;
+$min_height_mob    = isset( $attributes['minHeightMobile'] ) && null !== $attributes['minHeightMobile'] ? absint( $attributes['minHeightMobile'] ) : null;
 
 // Spacing.
 $padding_unit = isset( $attributes['paddingUnit'] ) ? sanitize_text_field( $attributes['paddingUnit'] ) : 'px';
@@ -52,6 +54,14 @@ $margin_unit  = isset( $attributes['marginUnit'] ) ? sanitize_text_field( $attri
 $allowed_units = array( 'px', 'em', 'rem', '%' );
 $padding_unit  = in_array( $padding_unit, $allowed_units, true ) ? $padding_unit : 'px';
 $margin_unit   = in_array( $margin_unit, $allowed_units, true ) ? $margin_unit : 'px';
+
+// Min-height units — validated after $allowed_units is declared.
+$min_height_unit  = isset( $attributes['minHeightUnit'] ) ? sanitize_text_field( $attributes['minHeightUnit'] ) : 'px';
+$min_height_unit  = in_array( $min_height_unit, $allowed_units, true ) ? $min_height_unit : 'px';
+$min_height_tab_u = isset( $attributes['minHeightTabletUnit'] ) ? sanitize_text_field( $attributes['minHeightTabletUnit'] ) : 'px';
+$min_height_tab_u = in_array( $min_height_tab_u, $allowed_units, true ) ? $min_height_tab_u : 'px';
+$min_height_mob_u = isset( $attributes['minHeightMobileUnit'] ) ? sanitize_text_field( $attributes['minHeightMobileUnit'] ) : 'px';
+$min_height_mob_u = in_array( $min_height_mob_u, $allowed_units, true ) ? $min_height_mob_u : 'px';
 
 $padding_top    = isset( $attributes['paddingTop'] ) && null !== $attributes['paddingTop'] ? (float) $attributes['paddingTop'] : null;
 $padding_right  = isset( $attributes['paddingRight'] ) && null !== $attributes['paddingRight'] ? (float) $attributes['paddingRight'] : null;
@@ -250,7 +260,7 @@ if ( 'custom' === $width_type && $custom_width ) {
 
 // Min height (overrides default 44px if higher is set).
 if ( $min_height ) {
-	$inline_styles[] = "min-height:{$min_height}px";
+	$inline_styles[] = "min-height:{$min_height}{$min_height_unit}";
 }
 
 // Icon gap as CSS custom property (consumed by style.css flexbox gap).
@@ -402,6 +412,16 @@ if ( null !== $icon_size_tab ) {
 // Mobile icon size.
 if ( null !== $icon_size_mob ) {
 	$scoped_css_parts[] = "@media(max-width:767px){#{$uid} .sgs-button{--sgs-btn-icon-size:{$icon_size_mob}px;}}";
+}
+
+// Tablet min-height — !important required to beat the desktop inline style on the same element (F4 pattern).
+if ( null !== $min_height_tab ) {
+	$scoped_css_parts[] = "@media(max-width:1023px){#{$uid} .sgs-button{min-height:{$min_height_tab}{$min_height_tab_u} !important;}}";
+}
+
+// Mobile min-height — !important required to beat the desktop inline style on the same element (F4 pattern).
+if ( null !== $min_height_mob ) {
+	$scoped_css_parts[] = "@media(max-width:767px){#{$uid} .sgs-button{min-height:{$min_height_mob}{$min_height_mob_u} !important;}}";
 }
 
 // ---------------------------------------------------------------------------

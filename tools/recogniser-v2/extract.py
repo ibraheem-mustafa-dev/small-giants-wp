@@ -1,21 +1,39 @@
 """
 Recogniser v2 — Approach B: per-section attribute extractor.
 
+Now powered by Playwright's `getComputedStyle()` for cascade-correct extraction.
+Solves R1 (inline-style extraction), R2 (1280+ tier extraction), R3 (computed-vs-
+declared cascade) by letting the browser resolve the cascade for us. Inherited
+properties (e.g. line-height inherited from body), inline `style="..."` attrs,
+and `@media (min-width: 1280px)` tiers are all handled correctly.
+
 Takes:
   - mockup HTML (with embedded <style>)
   - section selector (e.g. 'section.hero')
   - target block name (e.g. 'sgs/hero')
+  - viewport width (default 1440 — desktop tier)
 
 Returns:
   - extracted attributes dict
   - WP block-comment markup string (nested InnerBlocks when present)
   - coverage report (extracted / defaulted / flagged)
+  - font-load report (any fonts in `document.fonts` with status != 'loaded')
 
 Usage:
-  python tools/recogniser-v2/extract.py \
-    --mockup sites/mamas-munches/mockups/homepage/index.html \
-    --section "section.hero" \
-    --block sgs/hero
+  python tools/recogniser-v2/extract.py \\
+    --mockup sites/mamas-munches/mockups/homepage/index.html \\
+    --section "section.hero" \\
+    --block sgs/hero \\
+    --media-map sites/mamas-munches/research/sandybrown-media-map.json \\
+    --out sites/mamas-munches/research/sandybrown-hero-extracted-v3.json
+
+Install:
+  pip install playwright beautifulsoup4
+  playwright install chromium
+
+Auto-derivation: `block.json` attributes ending in Mobile / Tablet / Desktop
+are reported in the coverage summary so the extractor's responsibility surface
+is visible per the L2 lesson.
 """
 import argparse
 import json
@@ -28,6 +46,368 @@ from bs4 import BeautifulSoup
 
 
 REPO = Path(__file__).resolve().parents[2]
+
+
+# ---------------------------------------------------------------------------
+# Playwright-based computed-style extraction.
+#
+# For each fingerprinted selector inside the target section, we capture
+# `window.getComputedStyle()` at three viewports: desktop (1440), tablet (768),
+# mobile (375). The browser resolves the full cascade — inline styles, var()
+# refs, inheritance, @media (min-width:1280px) tiers — so values are always
+# correct regardless of where they were declared.
+#
+# The fingerprint is the set of selectors whose computed values map to block
+# attributes. For sgs/hero, this is the headline / sub / label / hero-copy /
+# hero-photo elements. The mapping table below names the (selector, css-prop,
+# attribute, transform) tuples. Adding a new selector or property requires
+# only adding a row here — block.json attribute auto-derivation keeps the
+# coverage report honest.
+# ---------------------------------------------------------------------------
+
+def _px_to_int(v: str):
+    """Parse '52px' or '52' -> 52 (int). Returns None if non-numeric."""
+    if v is None:
+        return None
+    s = str(v).strip()
+    if s.endswith('px'):
+        s = s[:-2]
+    try:
+        return int(round(float(s)))
+    except (ValueError, TypeError):
+        return None
+
+
+def _px_to_float(v: str):
+    if v is None:
+        return None
+    s = str(v).strip()
+    if s.endswith('px'):
+        s = s[:-2]
+    try:
+        return float(s)
+    except (ValueError, TypeError):
+        return None
+
+
+def _line_height_to_em(value: str, font_size_px: float | None):
+    """Convert a computed line-height to em (unitless ratio).
+
+    Browser computes line-height as either 'normal' or a px value. To map back
+    to a unitless multiplier we divide by the element's font-size in px.
+    """
+    if value is None or value == 'normal' or font_size_px in (None, 0):
+        return None
+    px = _px_to_float(value)
+    if px is None:
+        return None
+    return round(px / font_size_px, 3)
+
+
+# Per-block fingerprint: (selector, viewport, props-of-interest).
+# Viewports are: 'desktop' (1440), 'tablet' (768), 'mobile' (375).
+# We capture at all three for every selector — the per-block extractor decides
+# which viewport's value maps to which attribute.
+HERO_FINGERPRINT_SELECTORS = [
+    '.hero',
+    '.hero-copy',
+    '.hero-copy h1',
+    '.hero-copy .hero-sub',
+    '.hero-content',
+    '.hero-content h1',
+    '.hero-content .hero-sub',
+    '.hero-photo',
+    '.hero-photo img',
+    '.hero-mobile-img',
+    '.section-label',
+]
+
+FINGERPRINTS = {
+    'sgs/hero': HERO_FINGERPRINT_SELECTORS,
+}
+
+# Properties we always read for any fingerprinted element. Any property the
+# browser computes can be added here without touching the JS (it's enumerated).
+WATCHED_CSS_PROPS = [
+    'fontFamily', 'fontSize', 'fontWeight', 'fontStyle',
+    'lineHeight', 'letterSpacing', 'textTransform', 'textDecoration', 'textAlign',
+    'color', 'backgroundColor', 'backgroundImage',
+    'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft',
+    'marginTop', 'marginRight', 'marginBottom', 'marginLeft',
+    'width', 'height', 'minHeight', 'maxWidth',
+    'display', 'flexDirection', 'justifyContent', 'alignItems',
+    'gridTemplateColumns', 'gap',
+    'objectFit', 'objectPosition',
+    'borderRadius', 'borderTopLeftRadius', 'borderTopRightRadius',
+    'borderBottomRightRadius', 'borderBottomLeftRadius',
+    'overflow',
+]
+
+VIEWPORTS = {
+    'desktop': (1440, 900),
+    'tablet':  (768, 1024),
+    'mobile':  (375, 812),
+}
+
+
+def extract_computed_styles(mockup_path: Path, selectors: list,
+                            check_fonts: bool = True) -> tuple[dict, list]:
+    """Load the mockup in Chromium at three viewports and capture computed styles.
+
+    Returns (computed, font_report) where:
+      computed = {
+        'desktop': {selector: {prop: value, ...}, ...},
+        'tablet':  {...},
+        'mobile':  {...},
+      }
+      font_report = [{'family': 'Fraunces', 'status': 'loaded', 'weight': '700'}, ...]
+    """
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        print('WARNING: playwright not installed — skipping computed-style extraction.', file=sys.stderr)
+        print('         pip install playwright && playwright install chromium', file=sys.stderr)
+        return {}, []
+
+    file_url = 'file:///' + str(mockup_path.resolve()).replace('\\', '/')
+    computed: dict = {vp: {} for vp in VIEWPORTS}
+    font_report: list = []
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch()
+        try:
+            for vp_name, (w, h) in VIEWPORTS.items():
+                context = browser.new_context(viewport={'width': w, 'height': h})
+                page = context.new_page()
+                page.goto(file_url, wait_until='networkidle')
+                # Give web fonts a moment to settle
+                try:
+                    page.evaluate('document.fonts && document.fonts.ready')
+                    page.wait_for_function('document.fonts.status === "loaded"', timeout=3000)
+                except Exception:
+                    pass  # not fatal — we'll report status below
+
+                for sel in selectors:
+                    js = """
+                        (args) => {
+                            const [sel, props] = args;
+                            const el = document.querySelector(sel);
+                            if (!el) return null;
+                            const cs = window.getComputedStyle(el);
+                            const out = {};
+                            for (const p of props) out[p] = cs[p];
+                            // Capture inline style attribute as-is (for diagnostics)
+                            out._inlineStyle = el.getAttribute('style') || '';
+                            return out;
+                        }
+                    """
+                    try:
+                        result = page.evaluate(js, [sel, WATCHED_CSS_PROPS])
+                    except Exception as e:
+                        result = None
+                        print(f'  [warn] computed-style query failed for {sel}: {e}', file=sys.stderr)
+                    if result:
+                        computed[vp_name][sel] = result
+
+                # Font-load enumeration (only on desktop pass — same for all viewports)
+                if check_fonts and vp_name == 'desktop':
+                    try:
+                        # Dedupe by (family, weight, style) and prefer the BEST
+                        # status seen (loaded > loading > unloaded > error).
+                        # The FontFace iterator can yield the same face multiple
+                        # times as it transitions states.
+                        font_report = page.evaluate("""
+                            () => {
+                                if (!document.fonts) return [];
+                                const seen = new Map();
+                                const rank = { loaded: 4, loading: 3, unloaded: 2, error: 1 };
+                                for (const f of document.fonts) {
+                                    const key = `${f.family}|${f.weight}|${f.style}`;
+                                    const prev = seen.get(key);
+                                    const cur = { family: f.family, weight: f.weight, style: f.style, status: f.status };
+                                    if (!prev || rank[cur.status] > rank[prev.status]) {
+                                        seen.set(key, cur);
+                                    }
+                                }
+                                return [...seen.values()];
+                            }
+                        """)
+                    except Exception:
+                        font_report = []
+
+                context.close()
+        finally:
+            browser.close()
+
+    return computed, font_report
+
+
+def _get(computed: dict, viewport: str, sel: str, prop: str):
+    """Safe getter into the computed-styles dict."""
+    return ((computed.get(viewport) or {}).get(sel) or {}).get(prop)
+
+
+def apply_computed_overrides_hero(out: dict, computed: dict, css_var_to_slug: dict):
+    """Use Playwright computed styles to override / fill CSS-rule-derived values.
+
+    Solves the four 2026-05-04 QC defects:
+      C3 headlineFontSize — picks up @1280+ tier + inline 52px
+      C4 contentPaddingTop / Right — picks up @1280+ 72/64
+      I3 subHeadlineFontWeight — was missing; now read from computed
+      I5 labelLineHeight — picks up inherited 1.6 from body
+
+    Computed values are authoritative because the browser has resolved the
+    full cascade (inline styles, @media tiers, var() refs, inheritance).
+    """
+    if not computed:
+        return
+
+    # ---- HEADLINE (h1) ----
+    # Mockup has TWO h1s: .hero-content h1 (mobile-only layout) and
+    # .hero-copy h1 (desktop-only layout). Both are present in DOM at every
+    # viewport — only `display: none` differs. So we always read from the
+    # "right" element per viewport.
+    desktop_h1_sel = '.hero-copy h1'
+    mobile_h1_sel = '.hero-content h1'
+
+    fs = _px_to_int(_get(computed, 'desktop', desktop_h1_sel, 'fontSize'))
+    if fs:
+        out['headlineFontSizeDesktop'] = fs
+    fs = _px_to_int(_get(computed, 'tablet', desktop_h1_sel, 'fontSize'))
+    if fs:
+        out['headlineFontSizeTablet'] = fs
+    fs = _px_to_int(_get(computed, 'mobile', mobile_h1_sel, 'fontSize'))
+    if fs:
+        out['headlineFontSizeMobile'] = fs
+
+    # ---- HERO-COPY PADDING (desktop) ----
+    pad_top = _px_to_int(_get(computed, 'desktop', '.hero-copy', 'paddingTop'))
+    pad_right = _px_to_int(_get(computed, 'desktop', '.hero-copy', 'paddingRight'))
+    pad_bottom = _px_to_int(_get(computed, 'desktop', '.hero-copy', 'paddingBottom'))
+    pad_left = _px_to_int(_get(computed, 'desktop', '.hero-copy', 'paddingLeft'))
+    if pad_top is not None: out['contentPaddingTop'] = pad_top
+    if pad_right is not None: out['contentPaddingRight'] = pad_right
+    if pad_bottom is not None: out['contentPaddingBottom'] = pad_bottom
+    if pad_left is not None: out['contentPaddingLeft'] = pad_left
+
+    # Tablet padding (.hero-copy at 768)
+    tpad = _get(computed, 'tablet', '.hero-copy', 'paddingTop')
+    if tpad:
+        out['contentPaddingTopTablet'] = _px_to_int(tpad)
+        out['contentPaddingRightTablet'] = _px_to_int(_get(computed, 'tablet', '.hero-copy', 'paddingRight'))
+        out['contentPaddingBottomTablet'] = _px_to_int(_get(computed, 'tablet', '.hero-copy', 'paddingBottom'))
+        out['contentPaddingLeftTablet'] = _px_to_int(_get(computed, 'tablet', '.hero-copy', 'paddingLeft'))
+
+    # Mobile padding from .hero-content
+    mpad = _get(computed, 'mobile', '.hero-content', 'paddingTop')
+    if mpad:
+        out['contentPaddingTopMobile'] = _px_to_int(mpad)
+        out['contentPaddingRightMobile'] = _px_to_int(_get(computed, 'mobile', '.hero-content', 'paddingRight'))
+        out['contentPaddingBottomMobile'] = _px_to_int(_get(computed, 'mobile', '.hero-content', 'paddingBottom'))
+        out['contentPaddingLeftMobile'] = _px_to_int(_get(computed, 'mobile', '.hero-content', 'paddingLeft'))
+
+    # ---- SUB-HEADLINE ----
+    sub_desktop = '.hero-copy .hero-sub'
+    sub_mobile = '.hero-content .hero-sub'
+
+    sub_fs_d = _get(computed, 'desktop', sub_desktop, 'fontSize')
+    if sub_fs_d:
+        out['subHeadlineFontSize'] = sub_fs_d  # keep px string per existing schema
+
+    sub_fs_t = _get(computed, 'tablet', sub_desktop, 'fontSize')
+    if sub_fs_t and sub_fs_t != sub_fs_d:
+        out['subHeadlineFontSizeTablet'] = sub_fs_t
+
+    sub_fs_m = _get(computed, 'mobile', sub_mobile, 'fontSize')
+    if sub_fs_m:
+        out['subHeadlineFontSizeMobile'] = sub_fs_m
+
+    # font-weight (computed is always a number string e.g. '400')
+    fw = _get(computed, 'desktop', sub_desktop, 'fontWeight')
+    if fw:
+        out['subHeadlineFontWeight'] = str(fw)
+
+    # line-height — convert px back to em via divide-by-fontSize
+    lh_px = _get(computed, 'desktop', sub_desktop, 'lineHeight')
+    fs_px = _px_to_float(_get(computed, 'desktop', sub_desktop, 'fontSize'))
+    em = _line_height_to_em(lh_px, fs_px)
+    if em is not None:
+        out['subHeadlineLineHeight'] = em
+        out['subHeadlineLineHeightUnit'] = 'em'
+
+    # max-width
+    mw_d = _get(computed, 'desktop', sub_desktop, 'maxWidth')
+    if mw_d and mw_d != 'none':
+        mw = _px_to_int(mw_d)
+        if mw:
+            out['subHeadlineMaxWidth'] = mw
+
+    # ---- LABEL ----
+    label_sel = '.section-label'
+    fs = _px_to_int(_get(computed, 'desktop', label_sel, 'fontSize'))
+    if fs:
+        out['labelFontSize'] = fs
+        out['labelFontSizeUnit'] = 'px'
+
+    fw = _get(computed, 'desktop', label_sel, 'fontWeight')
+    if fw:
+        out['labelFontWeight'] = str(fw)
+
+    # Letter-spacing
+    ls = _get(computed, 'desktop', label_sel, 'letterSpacing')
+    if ls and ls != 'normal':
+        ls_px = _px_to_float(ls)
+        if ls_px is not None:
+            out['labelLetterSpacing'] = round(ls_px, 2)
+            out['labelLetterSpacingUnit'] = 'px'
+
+    tt = _get(computed, 'desktop', label_sel, 'textTransform')
+    if tt and tt != 'none':
+        out['labelTextTransform'] = tt
+
+    # line-height — solves I5 (inherited 1.6 from body)
+    lh_px = _get(computed, 'desktop', label_sel, 'lineHeight')
+    fs_px = _px_to_float(_get(computed, 'desktop', label_sel, 'fontSize'))
+    em = _line_height_to_em(lh_px, fs_px)
+    if em is not None:
+        out['labelLineHeight'] = em
+        out['labelLineHeightUnit'] = 'em'
+
+    # margin-bottom
+    mb = _px_to_int(_get(computed, 'desktop', label_sel, 'marginBottom'))
+    if mb is not None and mb > 0:
+        out['labelMarginBottom'] = mb
+        out['labelMarginBottomUnit'] = 'px'
+
+    # ---- HERO-PHOTO IMG ----
+    fit = _get(computed, 'desktop', '.hero-photo img', 'objectFit')
+    if fit and fit != 'fill':
+        out['imageObjectFit'] = fit
+    pos = _get(computed, 'desktop', '.hero-photo img', 'objectPosition')
+    if pos:
+        out['imageObjectPosition'] = pos
+
+    # ---- BACKGROUND COLOUR (resolve var() to slug if mappable) ----
+    # Computed color comes back as 'rgb(...)'. We can only map it back to a
+    # palette slug if the CSS rule-parsed slug already resolved it. Skip
+    # override for backgroundColor — leave the rule-parser's slug in place.
+
+
+def auto_derive_responsive_attrs(schema: dict) -> dict:
+    """Inspect block.json attributes for Mobile/Tablet/Desktop suffixes.
+
+    Returns {base_attr: ['Mobile', 'Tablet', 'Desktop']} for reporting.
+    Per the L2 lesson — make our extraction surface visible vs declared.
+    """
+    attrs = schema.get('attributes', {})
+    bases: dict = {}
+    for name in attrs:
+        for suffix in ('Mobile', 'Tablet', 'Desktop'):
+            if name.endswith(suffix):
+                base = name[:-len(suffix)]
+                bases.setdefault(base, []).append(suffix)
+                break
+    return bases
 
 # ---------------------------------------------------------------------------
 # CSS selectors that are universally handled by the SGS framework or are
@@ -977,9 +1357,20 @@ def main():
     p.add_argument('--mockup', required=True)
     p.add_argument('--section', required=True, help='CSS selector for the section in mockup')
     p.add_argument('--block', required=True, help='Target block name e.g. sgs/hero')
-    p.add_argument('--out', help='Optional: write resulting block markup to this file')
+    p.add_argument('--out', help='Optional: write resulting block markup OR JSON to this file (.json -> structured output)')
     p.add_argument('--media-map', help='Optional JSON file mapping mockup filenames to {id, url}')
+    p.add_argument('--viewport', type=int, default=1440,
+                   help='Desktop viewport width in px (default 1440)')
+    p.add_argument('--check-fonts', dest='check_fonts', action='store_true', default=True,
+                   help='Enumerate document.fonts and warn on unloaded/error (default true)')
+    p.add_argument('--no-check-fonts', dest='check_fonts', action='store_false')
+    p.add_argument('--no-playwright', action='store_true',
+                   help='Skip computed-style extraction (BS4-only legacy mode)')
     args = p.parse_args()
+
+    # Allow viewport override of the desktop tier
+    if args.viewport and args.viewport != 1440:
+        VIEWPORTS['desktop'] = (args.viewport, 900)
 
     html = Path(args.mockup).read_text(encoding='utf-8')
     soup = BeautifulSoup(html, 'html.parser')
@@ -1020,6 +1411,19 @@ def main():
     else:
         # Future-proof: single-value return from non-hero extractors
         extracted, inner_blocks = result, []
+
+    # ---- Playwright computed-style override pass ----
+    computed: dict = {}
+    font_report: list = []
+    if not args.no_playwright:
+        fingerprint = FINGERPRINTS.get(args.block, [])
+        if fingerprint:
+            print(f'Loading mockup in Chromium across {len(VIEWPORTS)} viewports...', file=sys.stderr)
+            computed, font_report = extract_computed_styles(
+                Path(args.mockup), fingerprint, check_fonts=args.check_fonts,
+            )
+            if args.block == 'sgs/hero':
+                apply_computed_overrides_hero(extracted, computed, css_var_map)
 
     # Compute remainder: rules / declarations not consumed by attribute mapping
     consumed_rules = set(extracted.pop('_consumed_rules', set()))
@@ -1085,13 +1489,80 @@ def main():
     for a in coverage['not_extracted']:
         print(f'    - {a}')
 
+    # ---- Font-load report ----
+    print()
+    print('=== FONT LOAD REPORT ===')
+    if font_report:
+        loaded = [f for f in font_report if f.get('status') == 'loaded']
+        failed = [f for f in font_report if f.get('status') in ('error', 'unloaded')]
+        for f in font_report:
+            marker = 'OK' if f.get('status') == 'loaded' else 'WARN'
+            print(f"  [{marker}] {f.get('family'):20} weight={f.get('weight'):8} style={f.get('style'):8} status={f.get('status')}")
+        if failed:
+            print(f'  WARNING: {len(failed)} font face(s) failed to load — visual fidelity will drift.')
+        else:
+            print(f'  All {len(loaded)} font face(s) loaded successfully.')
+    elif args.no_playwright:
+        print('  (skipped — --no-playwright)')
+    else:
+        print('  (no fonts enumerated)')
+
+    # ---- Auto-derived responsive attribute summary (L2) ----
+    responsive_bases = auto_derive_responsive_attrs(schema)
+    print()
+    print('=== RESPONSIVE ATTRIBUTE COVERAGE (auto-derived from block.json) ===')
+    extracted_keys = set(clean_attrs.keys())
+    auto_covered = 0
+    auto_total = 0
+    for base, suffixes in sorted(responsive_bases.items()):
+        for suffix in suffixes:
+            auto_total += 1
+            attr_name = base + suffix
+            if attr_name in extracted_keys:
+                auto_covered += 1
+    print(f'  Responsive variants declared: {auto_total}')
+    print(f'  Responsive variants extracted: {auto_covered} ({round(auto_covered/auto_total*100, 1) if auto_total else 0}%)')
+
+    # ---- Summary line (per spec) ----
+    fonts_total = len(font_report)
+    fonts_loaded = sum(1 for f in font_report if f.get('status') == 'loaded')
+    print()
+    print(f'SUMMARY: Extracted {coverage["extracted"]} of {coverage["declared"]} declared attributes '
+          f'({coverage["declared"]} from block.json), {fonts_total} fonts checked '
+          f'({fonts_loaded} loaded successfully)')
+
     print()
     print('=== BLOCK MARKUP ===')
     print(markup)
 
     if args.out:
-        Path(args.out).write_text(markup, encoding='utf-8')
-        print(f'\nWrote: {args.out}')
+        out_path = Path(args.out)
+        if out_path.suffix.lower() == '.json':
+            payload = {
+                'block_name': args.block,
+                'attributes': clean_attrs,
+                'inner_blocks': inner_blocks,
+                'markup': markup,
+                'coverage': {
+                    'declared': coverage['declared'],
+                    'extracted': coverage['extracted'],
+                    'coverage_pct': coverage['coverage_pct'],
+                    'not_extracted': coverage['not_extracted'],
+                    'css_rules_total': coverage['css_rules_total'],
+                    'css_rules_absorbed': coverage['css_rules_absorbed'],
+                    'css_rules_universal_handled': coverage['css_rules_universal_handled'],
+                    'css_rules_scoped_custom': coverage['css_rules_scoped_custom'],
+                    'responsive_variants_declared': auto_total,
+                    'responsive_variants_extracted': auto_covered,
+                },
+                'fonts': font_report,
+                'computed_styles': computed,  # full per-viewport readings for diffing
+            }
+            out_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding='utf-8')
+            print(f'\nWrote JSON: {args.out}')
+        else:
+            out_path.write_text(markup, encoding='utf-8')
+            print(f'\nWrote markup: {args.out}')
 
 
 if __name__ == '__main__':
