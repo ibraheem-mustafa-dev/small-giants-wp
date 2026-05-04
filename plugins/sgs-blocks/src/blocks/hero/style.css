@@ -98,10 +98,13 @@
 .sgs-hero__content {
 	position: relative;
 	z-index: 1;
-	max-width: var(--wp--style--global--content-size, 680px);
 	display: flex;
 	flex-direction: column;
 }
+/* No default max-width — heroes are full-bleed by default. To constrain,
+ * use the contentMaxWidth block attribute (emitted as inline style by
+ * render.php). Removing the global content-size default fixes F5 from
+ * hero-poc-qc-2026-05-04.md (~780px leak from base SGS theme.json). */
 
 /* Eyebrow label (above headline). Style variations may override. */
 .sgs-hero__label {
@@ -140,34 +143,19 @@
 }
 
 /* ─── Hero entrance choreography ───
- * Staggered fade-up: headline (0ms) → subheadline (120ms) → CTAs (240ms) → image (360ms).
- * Uses @keyframes so it plays once on page load. No JS needed.
- * Reduced motion: instant, no animation. */
-@keyframes sgs-hero-enter {
-	from { opacity: 0; transform: translateY(20px); }
-	to   { opacity: 1; transform: translateY(0); }
-}
-
-.sgs-hero__headline,
-.sgs-hero__subheadline,
-.sgs-hero__ctas,
-.sgs-hero__split-image {
-	animation: sgs-hero-enter 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.sgs-hero__headline    { animation-delay: 0ms; }
-.sgs-hero__subheadline { animation-delay: 120ms; }
-.sgs-hero__ctas        { animation-delay: 240ms; }
-.sgs-hero__split-image { animation-delay: 360ms; }
-
-@media (prefers-reduced-motion: reduce) {
-	.sgs-hero__headline,
-	.sgs-hero__subheadline,
-	.sgs-hero__ctas,
-	.sgs-hero__split-image {
-		animation: none;
-	}
-}
+ * REMOVED 2026-05-04: animation-fill-mode:both + non-zero animation-delay made
+ * elements invisible during the delay window at first paint (M1 defect, see
+ * .claude/specs/common-wp-styling-errors.md and .claude/mistakes.md).
+ *
+ * Per the architectural rule: entrance animations must be opt-in per-instance
+ * block attributes (enableEntranceAnimation: boolean, default false), not
+ * hardcoded global CSS. To re-enable for a specific hero instance, add an
+ * `enableEntranceAnimation` attribute to block.json + matching render.php
+ * conditional class + scoped CSS gated on `.sgs-hero--with-entrance`.
+ *
+ * Validated via the new CSS pattern audit (scripts/css-pattern-audit.js) and
+ * pre-commit STOP GATE (.git/hooks/pre-commit).
+ */
 
 /* Headline */
 .sgs-hero__headline {

@@ -168,7 +168,7 @@
 				"typography": {
 					"fontFamily": "var:preset|font-family|heading",
 					"fontWeight": "700",
-					"lineHeight": "1.2",
+					"lineHeight": "1.15",
 					"letterSpacing": "-0.022em"
 				}
 			},
