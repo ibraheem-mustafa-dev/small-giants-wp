@@ -53,7 +53,7 @@ const SCALE_SHADOW_DEFAULT_BLOCKS = new Set( [
 	'sgs/post-grid',
 	'sgs/google-reviews',
 	'sgs/process-steps',
-	'sgs/icon-block',
+	'sgs/icon',
 	// Special: scale + shadow but no image zoom.
 	'sgs/whatsapp-cta',
 	// Special: image zoom only, no scale.

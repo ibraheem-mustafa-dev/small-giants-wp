@@ -5,7 +5,7 @@
   "version": "0.1.0",
   "title": "SGS Back to Top",
   "category": "sgs-interactive",
-  "description": "Floating button that appears when the user scrolls down, smoothly returning them to the top of the page. Configurable position, size, shape, and colour.",
+  "description": "Deprecated — use Customiser → Floating UI → Back to Top instead.",
   "keywords": [
     "back",
     "top",
@@ -16,6 +16,7 @@
   "textdomain": "sgs-blocks",
   "icon": "arrow-up-alt",
   "supports": {
+    "inserter": false,
     "align": false,
     "anchor": true,
     "html": false,
