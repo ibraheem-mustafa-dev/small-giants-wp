@@ -62,6 +62,59 @@ const COLOUR_PROPS = new Set([
     'borderBottomColor', 'borderLeftColor',
 ]);
 
+// CSS keyword-equivalence pairs — values browsers resolve to identical layout.
+// Consulted ONLY for the same property; never cross-property.
+const KEYWORD_EQUIVALENCES = {
+    textAlign: [['start', 'left'], ['end', 'right']], // assumes LTR pages
+    minWidth: [['0px', 'auto']],
+    minHeight: [['0px', 'auto']],
+    maxWidth: [['none', 'none']],
+    maxHeight: [['none', 'none']],
+};
+
+function isKeywordEquivalent(prop, a, b) {
+    const pairs = KEYWORD_EQUIVALENCES[prop];
+    if (!pairs) return false;
+    const av = String(a == null ? '' : a).trim().toLowerCase();
+    const bv = String(b == null ? '' : b).trim().toLowerCase();
+    if (av === bv) return true;
+    for (const [x, y] of pairs) {
+        if ((av === x && bv === y) || (av === y && bv === x)) return true;
+    }
+    return false;
+}
+
+// Parse a fontFamily computed value into an ordered list of family names.
+// "Inter, system-ui, -apple-system, sans-serif" -> ["Inter","system-ui","-apple-system","sans-serif"]
+function parseFontFamilyList(val) {
+    if (!val) return [];
+    return String(val).split(',').map(s => {
+        let t = s.trim();
+        if ((t.startsWith('"') && t.endsWith('"')) || (t.startsWith("'") && t.endsWith("'"))) {
+            t = t.slice(1, -1);
+        }
+        return t.toLowerCase();
+    }).filter(Boolean);
+}
+
+// Returns true if both fontFamily values resolve to the same primary family
+// AND that family is loaded on both sides per document.fonts.
+function isFontFamilyEquivalent(mockupVal, sgsVal, mockupFonts, sgsFonts) {
+    const mList = parseFontFamilyList(mockupVal);
+    const sList = parseFontFamilyList(sgsVal);
+    if (mList.length === 0 || sList.length === 0) return false;
+    if (mList[0] !== sList[0]) return false;
+    const primary = mList[0];
+    const familyLoaded = (fontInfo, name) => {
+        if (!fontInfo || !fontInfo.fonts) return false;
+        return fontInfo.fonts.some(f => {
+            const fam = String(f.family || '').toLowerCase().replace(/^["']|["']$/g, '');
+            return fam === name && (f.status === 'loaded' || f.status === 'unloaded');
+        });
+    };
+    return familyLoaded(mockupFonts, primary) && familyLoaded(sgsFonts, primary);
+}
+
 // Severity classification
 function classifySeverity(prop, mockup, sgs, deltaPx, deltaPct) {
     if (COLOUR_PROPS.has(prop)) return 'Major';
@@ -126,10 +179,22 @@ function normaliseValue(prop, val) {
 
 // Compare a single property. Returns null if equal-within-threshold, else a
 // delta record.
-function compareProperty(prop, mockupVal, sgsVal) {
+//
+// Optional `ctx` carries side-band data:
+//   { mockupFonts, sgsFonts } — used for fontFamily fallback-stack equivalence.
+function compareProperty(prop, mockupVal, sgsVal, ctx) {
     const m = normaliseValue(prop, mockupVal);
     const s = normaliseValue(prop, sgsVal);
     if (m === s) return null;
+
+    // Filter 3 — CSS keyword-equivalence (e.g. start↔left, 0px↔auto).
+    if (isKeywordEquivalent(prop, m, s)) return null;
+
+    // Filter 2 — fontFamily fallback-stack equivalence.
+    // Identical primary family + family loaded on both sides = no delta.
+    if (prop === 'fontFamily' && ctx) {
+        if (isFontFamilyEquivalent(m, s, ctx.mockupFonts, ctx.sgsFonts)) return null;
+    }
 
     // Pixel-tolerant compare
     if (PIXEL_PROPS.has(prop)) {
@@ -163,12 +228,52 @@ function compareProperty(prop, mockupVal, sgsVal) {
 }
 
 // Run inside the page: capture computed styles for one selector + font info.
+//
+// Filter 1 — picks the first VISIBLE match of `selector`.
+// An element is considered visible if every ancestor (and itself) has:
+//   - display !== 'none'
+//   - visibility !== 'hidden'
+//   - getBoundingClientRect().width > 0 (catches collapsed-to-zero cases)
+//
+// Why: the mockup has variants like .hero-mobile (display:none@1440) +
+// .hero-desktop (display:none@375). A single fingerprint key may match both
+// (e.g. ".hero-content h1, .hero-copy h1"); querySelector returns the first
+// in DOM order, which can be the hidden one. Walk the list and pick the
+// first that's actually rendered.
 async function captureForSelector(page, selector) {
     return page.evaluate(({ sel, watched }) => {
-        const el = document.querySelector(sel);
-        if (!el) return { found: false };
-        const cs = window.getComputedStyle(el);
-        const out = { found: true, classes: Array.from(el.classList).join(' '), tagName: el.tagName.toLowerCase() };
+        function isElementVisible(el) {
+            if (!el) return false;
+            // Element nodes only
+            if (el.nodeType !== 1) return false;
+            // getBoundingClientRect width > 0 (zero-size elements aren't visible)
+            try {
+                const rect = el.getBoundingClientRect();
+                if (rect.width <= 0 || rect.height <= 0) return false;
+            } catch (_) { /* ignore */ }
+            // Walk up the ancestor chain (incl. self) checking display/visibility.
+            let node = el;
+            while (node && node.nodeType === 1) {
+                const cs = window.getComputedStyle(node);
+                if (cs.display === 'none') return false;
+                if (cs.visibility === 'hidden') return false;
+                node = node.parentElement;
+            }
+            return true;
+        }
+        const all = document.querySelectorAll(sel);
+        let chosen = null;
+        for (const candidate of all) {
+            if (isElementVisible(candidate)) { chosen = candidate; break; }
+        }
+        if (!chosen) return { found: false, totalMatches: all.length };
+        const cs = window.getComputedStyle(chosen);
+        const out = {
+            found: true,
+            totalMatches: all.length,
+            classes: Array.from(chosen.classList).join(' '),
+            tagName: chosen.tagName.toLowerCase(),
+        };
         for (const prop of watched) {
             out[prop] = cs[prop];
         }
@@ -226,16 +331,23 @@ async function captureSide(browser, url, viewport, fingerprint, label) {
 }
 
 function summariseFonts(fontInfo) {
+    // 'unloaded' = lazy (browser hasn't needed this weight yet) — NOT a failure.
+    // 'loading' = mid-flight at capture; treat as informational, not a failure.
+    // 'error' = the only true failure (font failed to fetch / parse).
     const loaded = fontInfo.fonts.filter(f => f.status === 'loaded');
     const failed = fontInfo.fonts.filter(f => f.status === 'error');
-    const stuck = fontInfo.fonts.filter(f => f.status === 'loading' || f.status === 'unloaded');
+    const lazy = fontInfo.fonts.filter(f => f.status === 'unloaded');
+    const loading = fontInfo.fonts.filter(f => f.status === 'loading');
     return {
         total: fontInfo.fonts.length,
         loaded: loaded.length,
         failed: failed.length,
-        stuck: stuck.length,
+        lazy: lazy.length,
+        loading: loading.length,
+        // Kept for backward-compatible report shape:
+        stuck: failed.length,
         failedFamilies: failed.map(f => `${f.family} ${f.weight} ${f.style}`),
-        stuckFamilies: stuck.map(f => `${f.family} ${f.weight} ${f.style}`),
+        stuckFamilies: failed.map(f => `${f.family} ${f.weight} ${f.style}`),
     };
 }
 
@@ -278,8 +390,12 @@ function buildJsonReport({ mockupUrl, sgsUrl, viewports, fingerprint, results })
                 continue;
             }
 
+            const ctx = {
+                mockupFonts: mockupSide.fonts,
+                sgsFonts: sgsSide.fonts,
+            };
             for (const prop of WATCHED) {
-                const delta = compareProperty(prop, m[prop], s[prop]);
+                const delta = compareProperty(prop, m[prop], s[prop], ctx);
                 if (delta) {
                     allDeltas.push({
                         viewport: v,
@@ -292,11 +408,13 @@ function buildJsonReport({ mockupUrl, sgsUrl, viewports, fingerprint, results })
         }
     }
 
-    // Font failures count as deltas
+    // Only 'error' status counts as a font-loading failure. 'unloaded' is lazy
+    // (e.g. unused weight variants) and 'loading' is mid-flight; neither is
+    // a defect.
     let fontsLoaded = true;
     for (const v of viewports) {
-        if (fontReport.mockup[v].failed > 0 || fontReport.mockup[v].stuck > 0) fontsLoaded = false;
-        if (fontReport.sgs[v].failed > 0 || fontReport.sgs[v].stuck > 0) fontsLoaded = false;
+        if (fontReport.mockup[v].failed > 0) fontsLoaded = false;
+        if (fontReport.sgs[v].failed > 0) fontsLoaded = false;
     }
 
     const verdict = (allDeltas.length === 0 && fontsLoaded) ? 'PASS' : 'FAIL';
@@ -347,12 +465,10 @@ function renderMarkdown(report) {
         const m = report.font_report.mockup[v];
         const s = report.font_report.sgs[v];
         lines.push(`### ${v}px`);
-        lines.push(`- Mockup: ${m.loaded}/${m.total} loaded, ${m.failed} failed, ${m.stuck} stuck`);
+        lines.push(`- Mockup: ${m.loaded}/${m.total} loaded, ${m.failed} failed, ${m.lazy || 0} lazy/unused`);
         if (m.failedFamilies.length) lines.push(`  - Failed: ${m.failedFamilies.join('; ')}`);
-        if (m.stuckFamilies.length) lines.push(`  - Stuck: ${m.stuckFamilies.join('; ')}`);
-        lines.push(`- SGS: ${s.loaded}/${s.total} loaded, ${s.failed} failed, ${s.stuck} stuck`);
+        lines.push(`- SGS: ${s.loaded}/${s.total} loaded, ${s.failed} failed, ${s.lazy || 0} lazy/unused`);
         if (s.failedFamilies.length) lines.push(`  - Failed: ${s.failedFamilies.join('; ')}`);
-        if (s.stuckFamilies.length) lines.push(`  - Stuck: ${s.stuckFamilies.join('; ')}`);
     }
     lines.push('');
     lines.push('## Deltas by viewport');

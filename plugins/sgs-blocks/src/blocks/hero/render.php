@@ -52,6 +52,12 @@ $headline_font_size_desktop = $attributes['headlineFontSizeDesktop'] ?? null;
 $headline_font_size_tablet  = $attributes['headlineFontSizeTablet'] ?? null;
 $headline_font_size_mobile  = $attributes['headlineFontSizeMobile'] ?? null;
 $sub_headline_max_width     = $attributes['subHeadlineMaxWidth'] ?? null;
+
+// Margin-bottom controls for headline and sub-headline (F1/F2).
+$headline_margin_bottom        = $attributes['headlineMarginBottom'] ?? null;
+$headline_margin_bottom_mobile = $attributes['headlineMarginBottomMobile'] ?? null;
+$sub_headline_margin_bottom        = $attributes['subHeadlineMarginBottom'] ?? null;
+$sub_headline_margin_bottom_mobile = $attributes['subHeadlineMarginBottomMobile'] ?? null;
 $split_image_mobile_height  = $attributes['splitImageMobileHeight'] ?? null;
 
 $hover_background_colour = $attributes['hoverBackgroundColour'] ?? '';
@@ -283,6 +289,22 @@ if ( $headline_font_size_tablet ) {
 }
 if ( $headline_font_size_mobile ) {
 	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__headline{font-size:' . absint( $headline_font_size_mobile ) . 'px}}';
+}
+
+// ── Margin-bottom: headline + sub-headline (F1/F2) ─────────────────────────
+// Desktop base rules — no @media wrapper, no !important.
+if ( null !== $headline_margin_bottom ) {
+	$responsive_css .= '.' . $uid . ' .sgs-hero__headline{margin-bottom:' . absint( $headline_margin_bottom ) . 'px}';
+}
+if ( null !== $sub_headline_margin_bottom ) {
+	$responsive_css .= '.' . $uid . ' .sgs-hero__subheadline{margin-bottom:' . absint( $sub_headline_margin_bottom ) . 'px}';
+}
+// Mobile overrides — !important required to beat inline styles (F4 pattern).
+if ( null !== $headline_margin_bottom_mobile ) {
+	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__headline{margin-bottom:' . absint( $headline_margin_bottom_mobile ) . 'px !important}}';
+}
+if ( null !== $sub_headline_margin_bottom_mobile ) {
+	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__subheadline{margin-bottom:' . absint( $sub_headline_margin_bottom_mobile ) . 'px !important}}';
 }
 
 // Sub-headline max-width.

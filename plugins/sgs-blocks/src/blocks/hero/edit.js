@@ -248,9 +248,13 @@ export default function Edit( { attributes, setAttributes } ) {
 		headlineFontSizeDesktop,
 		headlineFontSizeTablet,
 		headlineFontSizeMobile,
+		headlineMarginBottom,
+		headlineMarginBottomMobile,
 		subHeadlineFontSize,
 		subHeadlineColour,
 		subHeadlineMaxWidth,
+		subHeadlineMarginBottom,
+		subHeadlineMarginBottomMobile,
 		splitImageMobileHeight,
 		bgParallax,
 		bgKenBurns,
@@ -572,6 +576,60 @@ export default function Edit( { attributes, setAttributes } ) {
 							__nextHasNoMarginBottom
 						/>
 					) }
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Margin Bottom', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<RangeControl
+						label={ __( 'Headline margin bottom — desktop (px)', 'sgs-blocks' ) }
+						help={ __( '0 = inherit from theme.', 'sgs-blocks' ) }
+						value={ headlineMarginBottom || 0 }
+						onChange={ ( val ) =>
+							setAttributes( { headlineMarginBottom: val || null } )
+						}
+						min={ 0 }
+						max={ 120 }
+						step={ 1 }
+						__nextHasNoMarginBottom
+					/>
+					<RangeControl
+						label={ __( 'Headline margin bottom — mobile (px)', 'sgs-blocks' ) }
+						help={ __( '0 = inherit from theme.', 'sgs-blocks' ) }
+						value={ headlineMarginBottomMobile || 0 }
+						onChange={ ( val ) =>
+							setAttributes( { headlineMarginBottomMobile: val || null } )
+						}
+						min={ 0 }
+						max={ 120 }
+						step={ 1 }
+						__nextHasNoMarginBottom
+					/>
+					<RangeControl
+						label={ __( 'Subheadline margin bottom — desktop (px)', 'sgs-blocks' ) }
+						help={ __( '0 = inherit from theme.', 'sgs-blocks' ) }
+						value={ subHeadlineMarginBottom || 0 }
+						onChange={ ( val ) =>
+							setAttributes( { subHeadlineMarginBottom: val || null } )
+						}
+						min={ 0 }
+						max={ 120 }
+						step={ 1 }
+						__nextHasNoMarginBottom
+					/>
+					<RangeControl
+						label={ __( 'Subheadline margin bottom — mobile (px)', 'sgs-blocks' ) }
+						help={ __( '0 = inherit from theme.', 'sgs-blocks' ) }
+						value={ subHeadlineMarginBottomMobile || 0 }
+						onChange={ ( val ) =>
+							setAttributes( { subHeadlineMarginBottomMobile: val || null } )
+						}
+						min={ 0 }
+						max={ 120 }
+						step={ 1 }
+						__nextHasNoMarginBottom
+					/>
 				</PanelBody>
 
 				<PanelBody
