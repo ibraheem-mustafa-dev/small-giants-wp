@@ -2,8 +2,8 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-current_phase: mamas-homepage-clone
-current_step: "Button architecture (spec 11) shipped 2026-05-04. sgs/button + sgs/multi-button + button presets admin + theme.json mirror landed and deployed to sandybrown. Composite block refactors (sgs/hero, sgs/cta-section, sgs/product-card) replaced hand-coded CTAs with InnerBlocks composition + deprecation paths. Info-box rebuilt with 5 reorderable elements; sgs/feature-grid container built; ingredients pattern registered. Migration sweep ran on pages 5 and 8 — Hero CTAs now persisted as InnerBlocks. 7 commits pushed to main. Next: hero perfect-clone proof of concept on sandybrown post 8 — pixel-faithful match against the Mama's homepage mockup, starting with the hero (image, layout, buttons, container/wrapper). Recogniser-v2 generalisation (P-9) unblocked but deferred behind the manual hero clone PoC."
+current_phase: hero-clone-fidelity-fixes
+current_step: "Hero PoC ran 2026-05-04 — declared structural success, then proper QC (measured + Gemini Pro Vision + Bean's live observation) revealed the clone is NOT pixel-faithful. 23 distinct defects catalogued in reports/hero-poc-qc-2026-05-04.md + reports/gemini-vision-audit-2026-05-04/audit.md. Most critical: hero image invisible for 0-960ms on every page load via a hardcoded entrance animation (animation-fill-mode:both + animation-delay:360ms in style.css). Both QC passes missed this because both sampled screenshots after the animation completed. Captured the methodology gaps as M1-M4 + N1-N5 in common-wp-styling-errors.md. Next session: multi-frame screenshot QC (0/200/500/1000/3000ms) at 1440 + 375 to find any other first-paint defects, then deterministic-script methodology updates so each issue class can never recur. Also fix the 23 catalogued defects."
 last_updated: 2026-05-04
 blockers: []
 recommended_model_next: sonnet

@@ -1,5 +1,33 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-04
+**Last updated:** 2026-05-04 (later)
+
+## 2026-05-04 — single-frame post-load screenshots miss first-paint defects (the invisible hero image bug)
+
+The hero PoC shipped with a CSS entrance animation (`animation: sgs-hero-enter ... both; animation-delay: 360ms`) that made the hero image **invisible during the first 0-960ms of every page load**. Two QC passes (measured + Gemini Pro Vision) both gave clean reports because both sampled screenshots after the animation completed. Bean caught the bug live in his own browser.
+
+**Why both QCs missed it:** they treated `getComputedStyle().opacity = 1` and a single post-load screenshot as redundant confirmation. They're not redundant — they answer different questions, and they can disagree. The disagreement IS the bug signature for paint-state defects.
+
+**The methodology rule:**
+
+1. Take screenshots at MULTIPLE times after navigation (0ms, 200ms, 500ms, 1000ms, 3000ms), not one. Diff frames against each other to find any element whose visibility shifts.
+2. Run DOM measurement at the SAME EARLY moment (≤300ms after nav). If `getComputedStyle()` says visible AND screenshot says invisible → paint-state defect → flag.
+3. NEVER trust "all measurements pass + screenshot passes" if both were sampled late. Late samples both confirm the end-state, neither tests first-paint.
+
+**The architectural rule:**
+
+CSS entrance animations are a per-instance choice. Hardcoding `animation: ... both; animation-delay: 360ms` on a structural element (like `.sgs-hero__split-image`) makes invisibility the default first-paint state for every visitor on every page load. This violates the no-hardcoding rule. Animations belong as opt-in block attributes (`enableEntranceAnimation: boolean default false`), not as global CSS rules in `style.css`.
+
+**The process rule:**
+
+The `sgs-wp-engine` Phase 3 STOP GATE (design-reviewer + zero criticals before deploy) is non-negotiable. Bypassing it because "the structure looks complete" produces this exact class of bug. Make it a git hook that refuses commits without a passing visual-diff report.
+
+**Fix:**
+1. Remove the broken animation OR rebuild as opt-in attribute (planned next session)
+2. Add multi-frame capture script (`tools/multi-frame-qa/capture.js`)
+3. Add static-analysis grep to L8 visual-qa for `animation-fill-mode: both` + `animation-delay > 0ms`
+4. Add commit hook enforcing the STOP GATE
+
+Captured as M1, M2, M3, M4 in `.claude/specs/common-wp-styling-errors.md` and N1-N5 (visual-qa blind spots).
 
 ## 2026-05-04 — dynamic blocks with InnerBlocks slots MUST `save: () => <InnerBlocks.Content />`, never null
 

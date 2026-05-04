@@ -1,142 +1,133 @@
 recommended_model: sonnet
-session_tag: small-giants-wp-2026-05-05-mamas-homepage-clone
+session_tag: small-giants-wp-2026-05-05-hero-fidelity-fixes-and-qc-methodology
 
 Invoke `/autopilot` before doing anything else.
 
-You are a senior SGS WordPress framework developer cloning the Mama's Munches mockup pixel-faithfully into the live sandybrown site (post 8). The button architecture, info-box upgrade, feature-grid, and ingredients pattern all shipped 2026-05-04 — they're ready to use. This session is content authoring + visual fidelity work, not framework work.
+You are continuing the SGS WordPress hero clone fidelity work. Previous session shipped infrastructure (button architecture, hero Phase 1 attribute completeness, recogniser-v2 update, info-box rebuild, feature-grid container) but the hero clone PoC failed pixel-faithfulness — 23 catalogued defects, the most critical of which is an entrance-animation paint bug that makes the hero image invisible during the first ~1s of every page load.
 
-Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-05-mamas-homepage-clone"`
+Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-05-hero-fidelity-fixes-and-qc-methodology"`
 
-Read `.claude/handoff.md` and `CLAUDE.md` for full context. Then read the mockup at `sites/mamas-munches/mockups/homepage/index.html` — that's the visual target. Reference the design-extract data in `sites/mamas-munches/research/` if useful.
+## Read first (in this order)
 
-## Where You Are
+1. `.claude/handoff.md` — last session summary
+2. `reports/hero-poc-qc-2026-05-04.md` — measured QC (13 deltas)
+3. `reports/gemini-vision-audit-2026-05-04/audit.md` — Gemini Pro Vision audit (verdict: 65%, Grade D)
+4. `.claude/specs/common-wp-styling-errors.md` Section M (paint defects M1-M4) + Section N (visual-qa blind spots N1-N5)
+5. `.claude/mistakes.md` top entry — single-frame post-load screenshots miss first-paint defects
 
-The previous session shipped:
-- sgs/button (87 attrs) + sgs/multi-button container
-- Button presets at Settings → SGS Button Presets (with Mama's coral pink + charcoal-text outline values already set in mamas-munches.json)
-- sgs/info-box rebuilt with 5 toggleable reorderable elements (icon/emoji/image · title · subtitle · text · button)
-- sgs/feature-grid container (auto-flex default + fixed-columns mode)
-- ingredients-section block pattern (4-column emoji-led feature-grid + disclaimer notice-banner)
-- Hero/cta-section/product-card refactored to InnerBlocks composition with deprecations
-- WhatsApp CTA fully functional (render.php was missing, now created); inserter icon now official WhatsApp logo
-- Icon-block deprecated; back-to-top hidden from inserter
+## Where you are
 
-What didn't quite land that this session needs to fix:
-- Hero CTAs render with placeholder labels ("Primary Action"/"Secondary Action") — original CTA text wasn't preserved through deprecation. Re-author manually.
-- Product-card images point to `/wp-content/uploads/cookies-stacked.jpeg` which doesn't exist. Re-pick images from media library (IDs 21-25 are uploaded).
-- Existing ingredient info-boxes still have `icon: 'star'` instead of emojis. Replace existing ingredients block with the new ingredients pattern from the inserter, OR edit each info-box's media field to mediaType:emoji.
-
-## Sandybrown live URL
-
-https://sandybrown-nightingale-600381.hostingersite.com/
-
-WP admin: /wp-admin
-Login: Claude / MigrationSweep2026! (TEMPORARY — reset on first session opening)
-Or use REST app password: `WP_USER_MAMAS` / `WP_APP_PWD_MAMAS` from `~/.openclaw/.secrets/wp-app-passwords.env`
-
-## Pages to clone
-
-- **Post 8: Mamas Munches Homepage** — primary target. Already has the migrated structure but needs content fidelity work.
-- **Post 5: Mamas Munches Homepage Test** — secondary target, may be retired after post 8 lands.
+- Hero PoC test page: sandybrown post 29 — `https://sandybrown-nightingale-600381.hostingersite.com/?page_id=29`
+- Mockup: `sites/mamas-munches/mockups/homepage/index.html` lines 245-313
+- Hero block: `plugins/sgs-blocks/src/blocks/hero/` — 162 attributes, ~106 from Phase 1 last session
+- Recogniser-v2: `tools/recogniser-v2/extract.py` — emits 42/162 attrs deterministically + InnerBlocks composition
+- 23 defects catalogued. The single most critical: entrance animation hides hero image for 0-960ms.
 
 ## Tasks (in order)
 
-### Task 1 — Reset Claude password (~1 min)
+### Task 1 — Multi-frame QC capture script (~45min)
 
-```bash
-ssh hd 'cd ~/domains/sandybrown-nightingale-600381.hostingersite.com/public_html && wp user update Claude --user_pass="<new password>"'
-```
+Build `tools/multi-frame-qa/capture.js` (Node + Playwright). Inputs: target URL, output dir, viewports (375 + 1440 default). Behaviour:
 
-Set whatever password you want — current "MigrationSweep2026!" was temporary.
+1. Navigate to URL
+2. **Without** `waitUntil: load` — capture frames at 0ms, 200ms, 500ms, 1000ms, 3000ms after navigation start
+3. At each frame: take a viewport screenshot of the hero element AND a JS snapshot via `page.evaluate` of every visible-attribute (`opacity`, `display`, `visibility`, `transform`, `getBoundingClientRect()`) on every direct DOM child of `section.sgs-hero`
+4. Output: 5 PNGs per viewport + 5 JSON snapshots per viewport + a diff summary listing every element whose `opacity * computed-visible-area` shifts across frames
 
-### Task 2 — Open the mockup + sandybrown side-by-side (~5 min)
+Run it on the sandybrown hero PoC. Then run on the mockup served via `python -m http.server 8765` from `sites/mamas-munches/mockups/homepage/`.
 
-Use Playwright to open both:
-- Tab 1: https://sandybrown-nightingale-600381.hostingersite.com/?page_id=8
-- Tab 2: file:///C:/Users/Bean/Projects/small-giants-wp/sites/mamas-munches/mockups/homepage/index.html
+Diff the two against each other. Any element on SGS that's invisible at frame N but visible on the mockup at the same frame N is a first-paint defect.
 
-Take screenshots at 1440 and 375 of both. Diff section by section. Record gaps in a checklist.
+### Task 2 — Find any further first-paint defects beyond the known image-animation bug (~30min)
 
-### Task 3 — Hero re-authoring (~30 min)
+Inspect the multi-frame capture output. Look for:
+- Any other element with delayed visibility (subtitle, eyebrow, headings, buttons, images)
+- Any layout shift between frames (CLS — element jumping position)
+- Any width/height that changes mid-animation
+- Any element stuck in a transition that never completes
 
-Open page 8 in the editor. The hero block already has the InnerBlocks slot with two buttons (currently labelled "Primary Action"/"Secondary Action"). Replace those with the mockup's actual CTA labels (look at `.btn-primary` and `.btn-secondary` text in the mockup HTML).
+Document each finding with frame number it appears at + screenshot evidence + DOM measurement at that frame.
 
-Set the headline + sub-headline to match. Use the new responsive typography attrs:
-- `headlineFontSizeDesktop` — match the mockup's hero h1 size
-- `headlineFontSizeMobile` — match the mockup's mobile h1 size
-- `subHeadlineMaxWidth` — match the mockup's sub-headline column width
-- `splitImageMobileHeight` — if hero is split layout
+### Task 3 — Deterministic methodology updates (~1.5h)
 
-### Task 4 — Product cards re-authoring (~30 min)
+For each of the 23 catalogued defects + any new ones from Task 2, decide a deterministic prevention path. Default to script-level checks where possible. Agent-level (LLM judgement) only as last resort. The decision tree per defect:
 
-Open page 8. For each product-card (Zookies + Trial Pack):
-1. Re-pick the image from the media library (IDs 21-25 — pick the matching mockup image)
-2. Update the InnerBlocks button label to match the mockup's CTA text (likely "Shop Now" or similar)
-3. Verify variantStyle is set correctly (standard for Zookies, trial for Trial Pack)
+a. Can a static analysis check (grep / AST / schema) catch this pattern at commit time? Build a `scripts/css-pattern-audit.js` or similar.
+b. Can a Playwright/Node script catch it deterministically? Build it into multi-frame-qa or a sibling script.
+c. Can a hook enforce the STOP GATE so it can't be bypassed? Build the hook.
+d. Only if all three are no — flag for agent-level review with a specific prompt template.
 
-### Task 5 — Ingredients section (~15 min)
+Specific known items to address:
+- **M1 (entrance animation paint bug)** — script: grep style.css for `animation-fill-mode: both` + non-zero `animation-delay`. Hook: PreCommit hook fails on match unless overridden.
+- **N4 (L7c animation-qa not in standard pipeline)** — script: detect `animation:` rules in any block's style.css OR `*Animation*` attributes in block.json, force-include L7c in standard `--mode full` runs.
+- **R1 (recogniser misses inline styles)** — script: extend extractor to merge `getComputedStyle()` via Playwright when a mockup HTML element has both CSS rule + inline style. Treat inline style as override.
+- **R2 (recogniser misses 1280+ tier)** — script: add a `largeDesktop` breakpoint tier to recogniser AND block.json schema (per-breakpoint attrs at large-desktop level).
+- **F4 (render.php inline style beats @media mobile override)** — applies to content padding the same way it applied to splitColumnRatio. Script: scan render.php for any `style[]=` emission that has a corresponding `@media (max-width:...)` mobile override and ensure the mobile rule has `!important` OR the desktop is moved into a `@media (min-width:768px)` scoped CSS rule.
+- **P1 / M4 (Phase 3 STOP GATE bypass)** — git hook on `.git/hooks/pre-commit`: if any file under `plugins/sgs-blocks/src/blocks/<name>/` is staged, require `reports/visual-diff/<name>-<ISO-date>.md` exists and contains `verdict: PASS` AND `first_paint_capture_passed: true`.
 
-The mockup ingredients section has 4 emoji items (🌾 oats, 🍯 honey, 🥥 coconut, 🌰 seeds — or whatever the actual mockup uses). The new ingredients pattern is in the inserter as "Ingredients Section". Either:
-- Delete the existing ingredients group and insert the pattern, then customise text per item
-- OR edit each existing info-box: change `mediaType` to `emoji` and set `mediaEmoji` to the right character
+Implement at least 3 of these (the most critical) before time runs out. Document the rest with TODO files in `tools/qc-prevention/<defect-id>.md` so a future session can pick them up.
 
-### Task 6 — Brand story / quote / footer fidelity (~30 min)
+### Task 4 — Apply the catalogued fixes (~2h)
 
-Walk the rest of the page section by section. Use sgs/info-box, sgs/cta-section, sgs/testimonial, sgs/notice-banner, sgs/feature-grid as needed. Reference the mockup directly — don't invent layouts.
+Now that the prevention scripts exist, fix the 23 catalogued defects. Use the subagent-driven-development pattern: implementer + spec review + quality review per task.
 
-### Task 7 — Visual diff at 1440 and 375 (~20 min)
+Priority order (by impact-per-effort):
+1. Mama's variation buttonPresets text colours (V1, V2, V3) — 1 JSON edit, fixes C1+C2+M6 contrast failures
+2. Remove the broken hero entrance animation (M1) — 1 CSS rule edit, fixes the most critical paint bug
+3. Render.php content-padding mobile override (F4 / M1, M2) — add `!important` to mobile @media rules
+4. Mama's variation `elements.h1.lineHeight: 1.15` (V3) — 1 JSON value
+5. `.sgs-hero__content max-width: 780px` leak (F5) — find and remove from style.css
+6. Add `subHeadlineMarginBottom*` + `headlineMarginBottom*` block attributes (F1, F2)
+7. Recogniser inline-style + 1280+ tier extraction (R1, R2) — biggest recogniser fix
+8. Multi-button desktop direction not winning — investigate root cause, fix
 
-After all sections are re-authored:
-1. Save page 8
-2. View frontend at 1440 → compare to mockup → list gaps
-3. Resize to 375 → compare → list gaps
-4. Run `design-reviewer` agent if gaps remain
+After each fix, run multi-frame-qa to verify the defect is gone.
 
-### Task 8 — Commit + handoff (~10 min)
+### Task 5 — Re-run QC (~30min)
 
-If you made any framework code changes (shouldn't — this is content work), commit them. Otherwise just verify on sandybrown, run `/handoff`, write the next-session prompt.
+After Tasks 3 + 4: re-run measured QC + Gemini Pro Vision audit + multi-frame-qa.
 
-## Skills to Invoke
+Pass criterion: 0 Major defects, ≤ 2 Important, visual-fidelity ≥ 95%, first-paint capture verifies hero image is visible at every frame from 0ms onwards.
+
+Only mark Task 5 complete when all three audits agree on PASS.
+
+### Task 6 — Handoff (~15min)
+
+Run `/handoff`. Write next-session prompt for the actual hero perfect-clone (image content match, full visual fidelity at all 3 breakpoints) OR the next mockup section (trust-bar) depending on where you land.
+
+## Skills to invoke
 
 | Skill | When |
 |-------|------|
 | `/autopilot` | FIRST |
-| `/sgs-wp-engine` | All SGS work |
-| `/wp-block-themes` | If theme.json or style variation tweaks needed |
-| `/wp-block-development` | If block edits needed (likely none) |
-| `/visual-qa` | After Task 7 — full pipeline |
-| `/handoff` | End of session |
+| `/sgs-wp-engine` | Throughout — all SGS WP work |
+| `/subagent-driven-development` | Task 4 — implementer + spec + quality review per fix |
+| `/test-driven-development` | Within each subagent task — visual diff is the test |
+| `/visual-qa` | Task 5 standard QC pass — but call out the M1/N4 known blind spots in the report |
+| `/gemini-vision-audit` | Task 5 vision pass |
+| `/handoff` | End |
 
-## MCP Servers & Tools
+## MCP servers + CLI
 
-| Tool | What for |
-|------|---------|
-| `mcp__plugin_playwright_playwright__*` | Open editor on page 8, drive content changes via `wp.data.dispatch`, capture screenshots |
-| `mcp__plugin_chrome-devtools-mcp__*` | If Playwright struggles — use Chrome DevTools for layout debugging |
-| `mcp__wp-blockmarkup` | Validate block markup if hand-crafting any post_content |
+| Tool | Use |
+|------|-----|
+| `mcp__plugin_playwright_playwright__*` | Multi-frame screenshot capture (Task 1) |
+| `gemini --model gemini-3.1-pro-preview` | Vision audit (Task 5) |
+| `phpcs --standard=WordPress` | Per fix |
+| `python tools/recogniser-v2/extract.py` | Re-run after fixing R1/R2 |
 
-## Agents to Delegate To
+## Constraints
 
-| Agent | When |
-|-------|------|
-| `wp-sgs-developer` | If structural framework changes surface (shouldn't this session) |
-| `design-reviewer` | After Task 7 — automated mockup-to-live diff |
+- Do NOT skip the multi-frame capture step. The whole point of the next session is to upgrade the QC harness so first-paint defects can never ship again.
+- Do NOT mark Task 5 complete without all three audits agreeing PASS.
+- Do NOT default to LLM judgement for defect prevention when a script-level check is possible. Bean's directive: deterministic-via-script first, agent only as last resort.
+- Branch discipline: framework changes go to `main`. If touching only Mama's variation, can branch as `fix/mamas-hero-fidelity` and merge after audit.
 
-## Guardrails
+## Success criteria for the session
 
-- Don't modify the framework code. This session is content authoring. If a real framework gap surfaces (e.g. an info-box element option that's missing), park it and continue.
-- Don't modify post_content directly via wp-cli or PHP — use Playwright + `wp.data.dispatch('core/block-editor')`. The PreToolUse hook blocks `wp eval` for safety.
-- All sgs/button instances use `inheritStyle: 'primary'` or `'secondary'` — DO NOT switch to `inheritStyle: 'custom'` and start setting per-button colours. The Mama's preset values already match the mockup.
-- Use the existing media library IDs 21-25 for hero/product-card images — don't re-upload.
-- Branch discipline: this is client content (Mama's), so work on a feature branch like `feat/mamas-homepage-clone`, not main. The framework changes from 2026-05-04 are already on main.
-
-## Success criteria
-
-This session is done when:
-
-1. Sandybrown post 8 visually matches the mockup at 1440 and 375 (within reasonable fidelity — typography, colours, spacing, content)
-2. All hero CTAs, product-card CTAs use the correct labels from the mockup
-3. Product-card images load (no broken alt text)
-4. Ingredients section uses emojis (not star icons)
-5. design-reviewer agent reports no critical visual gaps
-6. handoff.md updated for the next session (likely the recogniser-v2 generalisation per parking P-9, or migrating page 8 patterns to other Mama's pages)
+1. `tools/multi-frame-qa/capture.js` exists and runs deterministically
+2. ≥3 defect-prevention scripts exist (CSS pattern audit, render.php inline-vs-media check, git pre-commit STOP GATE)
+3. The 8 highest-priority catalogued defects fixed
+4. Three independent audits (measured / vision / multi-frame) all agree PASS at 1440 + 375
+5. Methodology updates committed to `tools/qc-prevention/` with one TODO per remaining unfixed prevention script
+6. Handoff written for the next session
