@@ -1,7 +1,10 @@
+import { InnerBlocks } from '@wordpress/block-editor';
+
 /**
- * Dynamic block — render.php handles all frontend output.
- * Save returns null so block validation never fails.
+ * Dynamic block — render.php handles frontend output.
+ * Save returns <InnerBlocks.Content /> so WordPress persists the
+ * sgs/multi-button + sgs/button InnerBlocks slot to post_content.
  */
 export default function Save() {
-	return null;
+	return <InnerBlocks.Content />;
 }
