@@ -5,7 +5,7 @@
 > `plugins/sgs-blocks/scripts/generate-block-reference.py`.
 > Refresh: `python plugins/sgs-blocks/scripts/generate-block-reference.py`.
 
-**Last generated:** 2026-04-30T20:04:11
+**Last generated:** 2026-05-04T17:03:30
 
 **For architectural patterns, customisation standards, and build status, see [`02-SGS-BLOCKS.md`](02-SGS-BLOCKS.md).** This file is the per-block attribute/supports/selector reference only.
 
@@ -13,8 +13,8 @@
 
 ## Contents
 
-- [Layout](#layout) (3 blocks)
-- [Content](#content) (28 blocks)
+- [Layout](#layout) (5 blocks)
+- [Content](#content) (31 blocks)
 - [Forms](#forms) (17 blocks)
 - [Interactive](#interactive) (11 blocks)
 
@@ -70,6 +70,35 @@ Flexible layout wrapper â€” the fundamental building block for all page sec
 
 ---
 
+### `sgs/feature-grid`
+_SGS Feature Grid_
+
+**Type:** Dynamic
+
+A responsive grid container for SGS Info Boxes. Default: auto-fill flexbox wrap, 4-up on desktop, stacked on mobile.
+
+**Attributes** (12):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `alignItems` | `string` | `"stretch"` | — |
+| `columnsDesktop` | `number` | `4` | — |
+| `columnsMobile` | `number` | `1` | — |
+| `columnsTablet` | `number` | `2` | — |
+| `gap` | `number` | `24` | Yes |
+| `gapMobile` | `number` | `16` | — |
+| `gapTablet` | `number` | `—` | — |
+| `gapUnit` | `string` | `"px"` | — |
+| `justifyItems` | `string` | `"stretch"` | — |
+| `layoutMode` | `string` | `"auto-flex"` | — |
+| `minItemWidth` | `number` | `240` | — |
+| `minItemWidthUnit` | `string` | `"px"` | — |
+
+**Supports:**
+- `align` (["wide", "full"]), `anchor`, `color` ({"background": true, "text"...), `customClassName`, `html` (false), `spacing` ({"margin": true, "padding":...)
+
+---
+
 ### `sgs/hero`
 _SGS Hero_
 
@@ -77,7 +106,7 @@ _SGS Hero_
 
 Page hero section with headline, sub-headline, CTAs, and background image.
 
-**Attributes** (50):
+**Attributes** (164):
 
 | Name | Type | Default | Responsive |
 |------|------|---------|------------|
@@ -90,6 +119,23 @@ Page hero section with headline, sub-headline, CTAs, and background image.
 | `bgParallax` | `boolean` | `false` | — |
 | `bgVideo` | `object` | `—` | Yes |
 | `bgVideoMobile` | `object` | `—` | — |
+| `contentMaxWidth` | `number` | `—` | Yes |
+| `contentMaxWidthMobile` | `number` | `—` | — |
+| `contentMaxWidthTablet` | `number` | `—` | — |
+| `contentMaxWidthUnit` | `string` | `"px"` | — |
+| `contentPaddingBottom` | `number` | `—` | Yes |
+| `contentPaddingBottomMobile` | `number` | `—` | — |
+| `contentPaddingBottomTablet` | `number` | `—` | — |
+| `contentPaddingLeft` | `number` | `—` | Yes |
+| `contentPaddingLeftMobile` | `number` | `—` | — |
+| `contentPaddingLeftTablet` | `number` | `—` | — |
+| `contentPaddingRight` | `number` | `—` | Yes |
+| `contentPaddingRightMobile` | `number` | `—` | — |
+| `contentPaddingRightTablet` | `number` | `—` | — |
+| `contentPaddingTop` | `number` | `—` | Yes |
+| `contentPaddingTopMobile` | `number` | `—` | — |
+| `contentPaddingTopTablet` | `number` | `—` | — |
+| `contentPaddingUnit` | `string` | `"px"` | — |
 | `ctaPrimaryBackground` | `string` | `—` | — |
 | `ctaPrimaryColour` | `string` | `—` | — |
 | `ctaPrimaryHoverBackground` | `string` | `""` | — |
@@ -106,22 +152,118 @@ Page hero section with headline, sub-headline, CTAs, and background image.
 | `ctaSecondaryUrl` | `string` | `—` | — |
 | `headline` | `string` | `""` | — |
 | `headlineColour` | `string` | `"text-inverse"` | — |
+| `headlineFontSizeDesktop` | `number` | `—` | — |
+| `headlineFontSizeMobile` | `number` | `—` | — |
+| `headlineFontSizeTablet` | `number` | `—` | — |
 | `hoverBackgroundColour` | `string` | `""` | — |
 | `hoverBorderColour` | `string` | `""` | — |
 | `hoverTextColour` | `string` | `""` | — |
+| `imageBorderColour` | `string` | `""` | — |
+| `imageBorderRadiusBL` | `number` | `0` | — |
+| `imageBorderRadiusBR` | `number` | `0` | — |
+| `imageBorderRadiusMobileBL` | `number` | `—` | — |
+| `imageBorderRadiusMobileBR` | `number` | `—` | — |
+| `imageBorderRadiusMobileTL` | `number` | `—` | — |
+| `imageBorderRadiusMobileTR` | `number` | `—` | — |
+| `imageBorderRadiusTL` | `number` | `0` | — |
+| `imageBorderRadiusTR` | `number` | `0` | — |
+| `imageBorderRadiusTabletBL` | `number` | `—` | — |
+| `imageBorderRadiusTabletBR` | `number` | `—` | — |
+| `imageBorderRadiusTabletTL` | `number` | `—` | — |
+| `imageBorderRadiusTabletTR` | `number` | `—` | — |
+| `imageBorderRadiusUnit` | `string` | `"px"` | — |
+| `imageBorderStyle` | `string` | `"none"` | — |
+| `imageBorderWidthBottom` | `number` | `0` | — |
+| `imageBorderWidthLeft` | `number` | `0` | — |
+| `imageBorderWidthRight` | `number` | `0` | — |
+| `imageBorderWidthTop` | `number` | `0` | — |
+| `imageBorderWidthUnit` | `string` | `"px"` | — |
+| `imageHeight` | `number` | `—` | Yes |
+| `imageHeightMobile` | `number` | `—` | — |
+| `imageHeightTablet` | `number` | `—` | — |
+| `imageHeightUnit` | `string` | `"px"` | — |
+| `imageObjectFit` | `string` | `"cover"` | — |
+| `imageObjectPosition` | `string` | `"center center"` | — |
+| `imagePaddingBottom` | `number` | `0` | Yes |
+| `imagePaddingBottomMobile` | `number` | `—` | — |
+| `imagePaddingBottomTablet` | `number` | `—` | — |
+| `imagePaddingLeft` | `number` | `0` | Yes |
+| `imagePaddingLeftMobile` | `number` | `—` | — |
+| `imagePaddingLeftTablet` | `number` | `—` | — |
+| `imagePaddingRight` | `number` | `0` | Yes |
+| `imagePaddingRightMobile` | `number` | `—` | — |
+| `imagePaddingRightTablet` | `number` | `—` | — |
+| `imagePaddingTop` | `number` | `0` | Yes |
+| `imagePaddingTopMobile` | `number` | `—` | — |
+| `imagePaddingTopTablet` | `number` | `—` | — |
+| `imagePaddingUnit` | `string` | `"px"` | — |
+| `imageWidth` | `number` | `—` | Yes |
+| `imageWidthMobile` | `number` | `—` | — |
+| `imageWidthTablet` | `number` | `—` | — |
+| `imageWidthUnit` | `string` | `"%"` | — |
+| `label` | `string` | `""` | — |
+| `labelColour` | `string` | `""` | — |
+| `labelFontFamily` | `string` | `""` | — |
+| `labelFontSize` | `number` | `—` | Yes |
+| `labelFontSizeMobile` | `number` | `—` | — |
+| `labelFontSizeTablet` | `number` | `—` | — |
+| `labelFontSizeUnit` | `string` | `"px"` | — |
+| `labelFontWeight` | `string` | `"600"` | — |
+| `labelLetterSpacing` | `number` | `—` | — |
+| `labelLetterSpacingUnit` | `string` | `"em"` | — |
+| `labelLineHeight` | `number` | `1.2` | — |
+| `labelLineHeightUnit` | `string` | `"em"` | — |
+| `labelMarginBottom` | `number` | `8` | — |
+| `labelMarginBottomUnit` | `string` | `"px"` | — |
+| `labelTextDecoration` | `string` | `""` | — |
+| `labelTextTransform` | `string` | `"uppercase"` | — |
 | `letterSpacing` | `string` | `""` | — |
+| `mediaBackgroundColour` | `string` | `""` | — |
+| `mediaPaddingBottom` | `number` | `—` | Yes |
+| `mediaPaddingBottomMobile` | `number` | `—` | — |
+| `mediaPaddingBottomTablet` | `number` | `—` | — |
+| `mediaPaddingLeft` | `number` | `—` | Yes |
+| `mediaPaddingLeftMobile` | `number` | `—` | — |
+| `mediaPaddingLeftTablet` | `number` | `—` | — |
+| `mediaPaddingRight` | `number` | `—` | Yes |
+| `mediaPaddingRightMobile` | `number` | `—` | — |
+| `mediaPaddingRightTablet` | `number` | `—` | — |
+| `mediaPaddingTop` | `number` | `—` | Yes |
+| `mediaPaddingTopMobile` | `number` | `—` | — |
+| `mediaPaddingTopTablet` | `number` | `—` | — |
+| `mediaPaddingUnit` | `string` | `"px"` | — |
 | `minHeight` | `string` | `""` | Yes |
 | `minHeightMobile` | `string` | `"360px"` | — |
 | `minHeightTablet` | `string` | `""` | — |
 | `overlayColour` | `string` | `"text"` | — |
 | `overlayOpacity` | `number` | `50` | — |
-| `splitImage` | `object` | `—` | — |
+| `splitColumnRatio` | `string` | `"1fr 1fr"` | Yes |
+| `splitColumnRatioMobile` | `string` | `""` | — |
+| `splitColumnRatioTablet` | `string` | `""` | — |
+| `splitContentOrderMobile` | `string` | `"media-first"` | — |
+| `splitGap` | `number` | `0` | Yes |
+| `splitGapMobile` | `number` | `—` | — |
+| `splitGapTablet` | `number` | `—` | — |
+| `splitGapUnit` | `string` | `"px"` | — |
+| `splitImage` | `object` | `—` | Yes |
 | `splitImageBleed` | `boolean` | `false` | — |
+| `splitImageMobile` | `object` | `—` | — |
+| `splitImageMobileHeight` | `number` | `—` | — |
+| `splitImageMobileObjectPosition` | `string` | `"center 20%"` | — |
 | `subHeadline` | `string` | `""` | — |
 | `subHeadlineColour` | `string` | `"text-inverse"` | — |
+| `subHeadlineFontFamily` | `string` | `""` | — |
 | `subHeadlineFontSize` | `string` | `—` | Yes |
 | `subHeadlineFontSizeMobile` | `string` | `""` | — |
 | `subHeadlineFontSizeTablet` | `string` | `""` | — |
+| `subHeadlineFontWeight` | `string` | `""` | — |
+| `subHeadlineLetterSpacing` | `number` | `—` | — |
+| `subHeadlineLetterSpacingUnit` | `string` | `"px"` | — |
+| `subHeadlineLineHeight` | `number` | `—` | — |
+| `subHeadlineLineHeightUnit` | `string` | `"em"` | — |
+| `subHeadlineMaxWidth` | `number` | `—` | — |
+| `subHeadlineTextDecoration` | `string` | `""` | — |
+| `subHeadlineTextTransform` | `string` | `""` | — |
 | `svgContent` | `string` | `—` | — |
 | `textAlignDesktop` | `string` | `""` | — |
 | `textAlignMobile` | `string` | `""` | — |
@@ -131,6 +273,7 @@ Page hero section with headline, sub-headline, CTAs, and background image.
 | `transitionDuration` | `string` | `"300"` | — |
 | `transitionEasing` | `string` | `"ease-in-out"` | — |
 | `variant` | `string (enum)` | `"standard"` | — |
+| `verticalAlignment` | `string` | `"center"` | — |
 
 **Supports:**
 - `__experimentalBorder` ({"radius": true, "width": t...), `align` (["wide", "full"]), `anchor`, `color` ({"background": true, "text"...), `html` (false), `spacing` ({"margin": true, "padding":...), `typography` ({"fontSize": true, "lineHei...)
@@ -139,8 +282,40 @@ Page hero section with headline, sub-headline, CTAs, and background image.
 
 | Element | Selector |
 |---------|----------|
+| `border` | `.wp-block-sgs-hero` |
+| `color.background` | `.wp-block-sgs-hero` |
+| `color.text` | `.wp-block-sgs-hero` |
 | `root` | `.wp-block-sgs-hero` |
-| `typography` | `.sgs-hero__headline` |
+| `spacing.margin` | `.wp-block-sgs-hero` |
+| `spacing.padding` | `.wp-block-sgs-hero` |
+| `typography.fontFamily` | `.sgs-hero__headline` |
+| `typography.fontSize` | `.sgs-hero__headline` |
+| `typography.fontWeight` | `.sgs-hero__headline` |
+| `typography.letterSpacing` | `.sgs-hero__headline` |
+| `typography.lineHeight` | `.sgs-hero__headline` |
+| `typography.root` | `.sgs-hero__headline` |
+| `typography.textDecoration` | `.sgs-hero__headline` |
+| `typography.textTransform` | `.sgs-hero__headline` |
+
+---
+
+### `sgs/mobile-nav-toggle`
+_Mobile Nav Toggle_
+
+**Type:** Dynamic
+
+Hamburger button that opens the mobile navigation drawer.
+
+**Attributes** (3):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `ariaLabel` | `string` | `"Open navigation menu"` | — |
+| `iconSize` | `number` | `24` | — |
+| `popoverTarget` | `string` | `"sgs-mobile-nav"` | — |
+
+**Supports:**
+- `color` ({"text": true, "background"...), `html` (false), `spacing` ({"padding": true, "margin":...)
 
 ---
 
@@ -263,6 +438,121 @@ Display business details from Settings > Business Details.
 | Element | Selector |
 |---------|----------|
 | `root` | `.wp-block-sgs-business-info` |
+
+---
+
+### `sgs/button`
+_SGS Button_
+
+**Type:** Dynamic
+
+A highly-configurable button with preset binding, icon support, hover states, and per-breakpoint controls.
+
+**Attributes** (98):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `anchor` | `string` | `""` | — |
+| `ariaLabel` | `string` | `""` | — |
+| `borderRadiusBL` | `number` | `—` | — |
+| `borderRadiusBR` | `number` | `—` | — |
+| `borderRadiusMobileBL` | `number` | `—` | — |
+| `borderRadiusMobileBR` | `number` | `—` | — |
+| `borderRadiusMobileTL` | `number` | `—` | — |
+| `borderRadiusMobileTR` | `number` | `—` | — |
+| `borderRadiusTL` | `number` | `—` | — |
+| `borderRadiusTR` | `number` | `—` | — |
+| `borderRadiusTabletBL` | `number` | `—` | — |
+| `borderRadiusTabletBR` | `number` | `—` | — |
+| `borderRadiusTabletTL` | `number` | `—` | — |
+| `borderRadiusTabletTR` | `number` | `—` | — |
+| `borderRadiusUnit` | `string` | `"px"` | — |
+| `borderStyle` | `string` | `"solid"` | — |
+| `borderWidthBottom` | `number` | `—` | — |
+| `borderWidthLeft` | `number` | `—` | — |
+| `borderWidthRight` | `number` | `—` | — |
+| `borderWidthTop` | `number` | `—` | — |
+| `borderWidthUnit` | `string` | `"px"` | — |
+| `boxShadow` | `object` | `{"colour": "", "hOffset": 0, "vOffset...` | — |
+| `boxShadowHover` | `object` | `{"colour": "", "hOffset": 0, "vOffset...` | — |
+| `className` | `string` | `""` | — |
+| `colourBackground` | `string` | `""` | — |
+| `colourBackgroundHover` | `string` | `""` | — |
+| `colourBorder` | `string` | `""` | — |
+| `colourBorderHover` | `string` | `""` | — |
+| `colourText` | `string` | `""` | — |
+| `colourTextHover` | `string` | `""` | — |
+| `customWidth` | `number` | `—` | — |
+| `customWidthUnit` | `string` | `"px"` | — |
+| `download` | `boolean` | `false` | — |
+| `fontFamily` | `string` | `""` | — |
+| `fontSize` | `number` | `—` | Yes |
+| `fontSizeMobile` | `number` | `—` | — |
+| `fontSizeTablet` | `number` | `—` | — |
+| `fontSizeUnit` | `string` | `"px"` | — |
+| `fontStyle` | `string` | `"normal"` | — |
+| `fontWeight` | `string` | `""` | — |
+| `hoverScale` | `number` | `1.0` | — |
+| `icon` | `string` | `""` | — |
+| `iconColour` | `string` | `""` | — |
+| `iconColourHover` | `string` | `""` | — |
+| `iconGap` | `number` | `8` | — |
+| `iconPosition` | `string` | `"after"` | — |
+| `iconSize` | `number` | `—` | Yes |
+| `iconSizeMobile` | `number` | `—` | — |
+| `iconSizeTablet` | `number` | `—` | — |
+| `iconTitle` | `string` | `""` | — |
+| `inheritStyle` | `string` | `"primary"` | — |
+| `isSubmit` | `boolean` | `false` | — |
+| `label` | `string` | `"Click Here"` | — |
+| `letterSpacing` | `number` | `—` | Yes |
+| `letterSpacingMobile` | `number` | `—` | — |
+| `letterSpacingTablet` | `number` | `—` | — |
+| `letterSpacingUnit` | `string` | `"px"` | — |
+| `lineHeight` | `number` | `—` | Yes |
+| `lineHeightMobile` | `number` | `—` | — |
+| `lineHeightTablet` | `number` | `—` | — |
+| `lineHeightUnit` | `string` | `"em"` | — |
+| `linkTarget` | `string` | `"_self"` | — |
+| `marginBottom` | `number` | `—` | Yes |
+| `marginBottomMobile` | `number` | `—` | — |
+| `marginBottomTablet` | `number` | `—` | — |
+| `marginLeft` | `number` | `—` | Yes |
+| `marginLeftMobile` | `number` | `—` | — |
+| `marginLeftTablet` | `number` | `—` | — |
+| `marginRight` | `number` | `—` | Yes |
+| `marginRightMobile` | `number` | `—` | — |
+| `marginRightTablet` | `number` | `—` | — |
+| `marginTop` | `number` | `—` | Yes |
+| `marginTopMobile` | `number` | `—` | — |
+| `marginTopTablet` | `number` | `—` | — |
+| `marginUnit` | `string` | `"px"` | — |
+| `minHeight` | `number` | `—` | — |
+| `minHeightUnit` | `string` | `"px"` | — |
+| `paddingBottom` | `number` | `—` | Yes |
+| `paddingBottomMobile` | `number` | `—` | — |
+| `paddingBottomTablet` | `number` | `—` | — |
+| `paddingLeft` | `number` | `—` | Yes |
+| `paddingLeftMobile` | `number` | `—` | — |
+| `paddingLeftTablet` | `number` | `—` | — |
+| `paddingRight` | `number` | `—` | Yes |
+| `paddingRightMobile` | `number` | `—` | — |
+| `paddingRightTablet` | `number` | `—` | — |
+| `paddingTop` | `number` | `—` | Yes |
+| `paddingTopMobile` | `number` | `—` | — |
+| `paddingTopTablet` | `number` | `—` | — |
+| `paddingUnit` | `string` | `"px"` | — |
+| `rel` | `string` | `""` | — |
+| `tagName` | `string` | `"a"` | — |
+| `textDecoration` | `string` | `""` | — |
+| `textTransform` | `string` | `""` | — |
+| `transitionDuration` | `number` | `300` | — |
+| `transitionEasing` | `string` | `"ease"` | — |
+| `url` | `string` | `""` | — |
+| `widthType` | `string` | `"fit"` | — |
+
+**Supports:**
+- `anchor`, `color` ({"background": true, "text"...), `customClassName`, `html` (false), `spacing` ({"margin": true, "padding":...)
 
 ---
 
@@ -674,7 +964,7 @@ _SGS Icon Block_
 
 **Type:** Dynamic
 
-Standalone SVG icon from the Lucide icon set with size, colour, background shape, and optional link. Use inside info boxes, lists, or feature grids.
+DEPRECATED — use sgs/icon instead. Kept registered so existing posts continue to parse. Hidden from the block inserter.
 
 **Attributes** (11):
 
@@ -693,7 +983,7 @@ Standalone SVG icon from the Lucide icon set with size, colour, background shape
 | `shape` | `string` | `"none"` | — |
 
 **Supports:**
-- `__experimentalBorder` ({"radius": true, "width": t...), `align` (false), `anchor`, `color` ({"background": true}), `html` (false), `spacing` ({"margin": true, "padding":...)
+- `__experimentalBorder` ({"radius": true, "width": t...), `align` (false), `anchor`, `color` ({"background": true}), `html` (false), `inserter` (false), `spacing` ({"margin": true, "padding":...)
 
 **Selectors:**
 
@@ -739,9 +1029,9 @@ _SGS Info Box_
 
 **Type:** Dynamic
 
-Feature or benefit card with icon, heading, and description.
+Feature or benefit card with 5 toggleable, reorderable elements: media, title, subtitle, text, and button.
 
-**Attributes** (40):
+**Attributes** (52):
 
 | Name | Type | Default | Responsive |
 |------|------|---------|------------|
@@ -750,6 +1040,7 @@ Feature or benefit card with icon, heading, and description.
 | `cardStyle` | `string` | `"elevated"` | — |
 | `description` | `string` | `""` | — |
 | `descriptionColour` | `string` | `"text"` | — |
+| `elementOrder` | `array` | `["media", "title", "subtitle", "text"...` | — |
 | `heading` | `string` | `""` | — |
 | `headingColour` | `string` | `"primary"` | — |
 | `headingFontSize` | `string` | `—` | Yes |
@@ -774,11 +1065,22 @@ Feature or benefit card with icon, heading, and description.
 | `letterSpacing` | `string` | `""` | — |
 | `link` | `string` | `—` | — |
 | `linkOpensNewTab` | `boolean` | `false` | — |
+| `mediaEmoji` | `string` | `""` | — |
 | `mediaType` | `string (enum)` | `"icon"` | — |
 | `sgsAnimation` | `string` | `"fade-up"` | — |
 | `sgsAnimationDuration` | `string` | `"medium"` | — |
 | `sgsAnimationEasing` | `string` | `"default"` | — |
+| `showButton` | `boolean` | `false` | — |
+| `showMedia` | `boolean` | `true` | — |
+| `showSubtitle` | `boolean` | `false` | — |
+| `showText` | `boolean` | `true` | — |
+| `showTitle` | `boolean` | `true` | — |
 | `staggerDelay` | `number` | `0` | — |
+| `subtitle` | `string` | `""` | — |
+| `subtitleColour` | `string` | `""` | — |
+| `subtitleFontSize` | `string` | `""` | Yes |
+| `subtitleFontSizeMobile` | `string` | `""` | — |
+| `subtitleFontSizeTablet` | `string` | `""` | — |
 | `textAlignDesktop` | `string` | `""` | — |
 | `textAlignMobile` | `string` | `""` | — |
 | `textAlignTablet` | `string` | `""` | — |
@@ -795,6 +1097,37 @@ Feature or benefit card with icon, heading, and description.
 |---------|----------|
 | `root` | `.wp-block-sgs-info-box` |
 | `typography` | `.sgs-info-box__heading` |
+
+---
+
+### `sgs/multi-button`
+_SGS Button Group_
+
+**Type:** Dynamic
+
+A flexible container for one or more SGS Buttons. Provides per-breakpoint layout, gap, alignment, and wrap controls.
+
+**Attributes** (14):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `alignItems` | `string` | `"center"` | — |
+| `direction` | `string` | `"row"` | Yes |
+| `directionMobile` | `string` | `"column"` | — |
+| `directionTablet` | `string` | `""` | — |
+| `gap` | `number` | `12` | Yes |
+| `gapMobile` | `number` | `8` | — |
+| `gapTablet` | `number` | `—` | — |
+| `gapUnit` | `string` | `"px"` | — |
+| `justifyContent` | `string` | `"flex-start"` | Yes |
+| `justifyContentMobile` | `string` | `""` | — |
+| `justifyContentTablet` | `string` | `""` | — |
+| `wrap` | `string` | `"wrap"` | Yes |
+| `wrapMobile` | `string` | `"wrap"` | — |
+| `wrapTablet` | `string` | `""` | — |
+
+**Supports:**
+- `anchor`, `customClassName`, `html` (false)
 
 ---
 
@@ -986,6 +1319,34 @@ Horizontal timeline showing a multi-step process.
 |---------|----------|
 | `root` | `.sgs-process-steps` |
 | `typography` | `.sgs-process-steps__title` |
+
+---
+
+### `sgs/product-card`
+_Product Card_
+
+**Type:** Dynamic
+
+Static product card with pack-size variant pills, price and CTA. Pure visual block — does not yet wire to cart. Pair the standard variant with the trial variant for the canonical 'main + trial' two-up layout.
+
+**Attributes** (11):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `ctaText` | `string` | `""` | — |
+| `ctaUrl` | `string` | `""` | — |
+| `description` | `string` | `""` | — |
+| `image` | `string` | `""` | — |
+| `imageAlt` | `string` | `""` | — |
+| `packSizes` | `array` | `[]` | — |
+| `priceLarge` | `string` | `""` | — |
+| `priceNote` | `string` | `""` | — |
+| `productName` | `string` | `""` | — |
+| `trialTag` | `string` | `""` | — |
+| `variantStyle` | `string (enum)` | `"standard"` | — |
+
+**Supports:**
+- `align` (false), `html` (false), `spacing` ({"margin": true, "padding":...)
 
 ---
 
@@ -1314,7 +1675,7 @@ Horizontal strip of key stats and trust signals with animated number counters. G
 ### `sgs/whatsapp-cta`
 _SGS WhatsApp CTA_
 
-**Type:** Static
+**Type:** Dynamic
 
 WhatsApp integration with floating button, inline CTA, or banner variants.
 
@@ -1906,7 +2267,7 @@ _SGS Back to Top_
 
 **Type:** Dynamic
 
-Floating button that appears when the user scrolls down, smoothly returning them to the top of the page. Configurable position, size, shape, and colour.
+Deprecated — use Customiser → Floating UI → Back to Top instead.
 
 **Attributes** (6):
 
@@ -1920,7 +2281,7 @@ Floating button that appears when the user scrolls down, smoothly returning them
 | `size` | `number` | `48` | — |
 
 **Supports:**
-- `align` (false), `anchor`, `color` ({"background": true, "text"...), `html` (false), `multiple` (false)
+- `align` (false), `anchor`, `color` ({"background": true, "text"...), `html` (false), `inserter` (false), `multiple` (false)
 
 ---
 
@@ -2212,7 +2573,7 @@ Tabbed content with horizontal or vertical layout, full ARIA support, and deep l
 
 ## Stats
 
-- **Total blocks:** 59
-- **Dynamic (render.php):** 50
-- **Static (save.js):** 9
-- **Total attributes:** 943
+- **Total blocks:** 64
+- **Dynamic (render.php):** 56
+- **Static (save.js):** 8
+- **Total attributes:** 1207
