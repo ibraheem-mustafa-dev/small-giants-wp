@@ -5,7 +5,7 @@
   "version": "0.1.0",
   "title": "SGS Info Box",
   "category": "sgs-content",
-  "description": "Feature or benefit card with icon, heading, and description.",
+  "description": "Feature or benefit card with 5 toggleable, reorderable elements: media, title, subtitle, text, and button.",
   "keywords": [
     "info",
     "feature",
@@ -51,14 +51,31 @@
     "typography": ".sgs-info-box__heading"
   },
   "attributes": {
+    "showMedia": { "type": "boolean", "default": true },
+    "showTitle": { "type": "boolean", "default": true },
+    "showSubtitle": { "type": "boolean", "default": false },
+    "showText": { "type": "boolean", "default": true },
+    "showButton": { "type": "boolean", "default": false },
+    "elementOrder": {
+      "type": "array",
+      "default": [ "media", "title", "subtitle", "text", "button" ],
+      "items": { "type": "string" }
+    },
     "mediaType": {
       "type": "string",
       "default": "icon",
       "enum": [
         "icon",
+        "emoji",
         "image"
       ]
     },
+    "mediaEmoji": { "type": "string", "default": "" },
+    "subtitle": { "type": "string", "default": "" },
+    "subtitleColour": { "type": "string", "default": "" },
+    "subtitleFontSize": { "type": "string", "default": "" },
+    "subtitleFontSizeTablet": { "type": "string", "default": "" },
+    "subtitleFontSizeMobile": { "type": "string", "default": "" },
     "image": {
       "type": "object"
     },

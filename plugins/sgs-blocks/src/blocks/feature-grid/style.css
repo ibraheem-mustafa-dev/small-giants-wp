@@ -1,0 +1,21 @@
+/**
+ * Feature Grid — frontend styles.
+ *
+ * Provides the default layout for auto-flex mode.
+ * Instance-specific overrides (columns, gap, min-width) are
+ * injected as scoped <style> tags by render.php.
+ */
+
+.sgs-feature-grid {
+	display: grid;
+	gap: 24px;
+}
+
+.sgs-feature-grid--auto-flex {
+	grid-template-columns: repeat( auto-fill, minmax( 240px, 1fr ) );
+}
+
+/* Ensure children fill their grid cell so cards align in rows */
+.sgs-feature-grid > * {
+	min-width: 0;
+}

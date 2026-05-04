@@ -1,0 +1,20 @@
+/**
+ * Feature Grid — editor-only styles.
+ *
+ * Mirrors the frontend layout so the editor preview is accurate.
+ * The inline style built by buildGridStyle() in edit.js handles
+ * live updates as the user adjusts controls.
+ */
+
+.sgs-feature-grid {
+	display: grid;
+	gap: 24px;
+}
+
+.sgs-feature-grid--auto-flex {
+	grid-template-columns: repeat( auto-fill, minmax( 240px, 1fr ) );
+}
+
+.sgs-feature-grid > * {
+	min-width: 0;
+}

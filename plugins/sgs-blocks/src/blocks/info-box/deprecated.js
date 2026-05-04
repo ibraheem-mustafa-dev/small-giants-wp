@@ -133,8 +133,99 @@ const v1 = {
 		return <div { ...blockProps }>{ cardContent }</div>;
 	},
 	migrate( attributes ) {
+		// V1 → V2: static save → dynamic render, no structural change needed.
 		return attributes;
 	},
 };
 
-export default [ v1 ];
+/**
+ * V2 deprecation: dynamic block (save returns null) without element-order
+ * attributes (showMedia, showTitle, showSubtitle, showText, showButton,
+ * elementOrder, mediaEmoji, subtitle, subtitleColour, subtitleFontSize*).
+ *
+ * Migrates to V3 which adds the 5-element toggle + reorder system.
+ */
+const v2 = {
+	attributes: {
+		mediaType: {
+			type: 'string',
+			default: 'icon',
+			enum: [ 'icon', 'image' ],
+		},
+		image: { type: 'object' },
+		iconPosition: {
+			type: 'string',
+			default: 'top',
+			enum: [ 'top', 'left', 'right' ],
+		},
+		icon: { type: 'string', default: 'star-filled' },
+		heading: { type: 'string', default: '' },
+		description: { type: 'string', default: '' },
+		link: { type: 'string' },
+		linkOpensNewTab: { type: 'boolean', default: false },
+		iconColour: { type: 'string', default: 'primary' },
+		iconBackgroundColour: { type: 'string', default: 'accent-light' },
+		iconSize: { type: 'string', default: 'medium' },
+		iconSizeTablet: { type: 'string', default: '' },
+		iconSizeMobile: { type: 'string', default: '' },
+		headingColour: { type: 'string', default: 'primary' },
+		headingFontSize: { type: 'string' },
+		headingFontSizeTablet: { type: 'string', default: '' },
+		headingFontSizeMobile: { type: 'string', default: '' },
+		descriptionColour: { type: 'string', default: 'text' },
+		cardStyle: { type: 'string', default: 'elevated' },
+		hoverEffect: { type: 'string', default: 'lift' },
+		hoverBackgroundColour: { type: 'string', default: '' },
+		hoverTextColour: { type: 'string', default: '' },
+		hoverBorderColour: { type: 'string', default: '' },
+		transitionDuration: { type: 'string', default: '300' },
+		transitionEasing: { type: 'string', default: 'ease-in-out' },
+		hoverScale: { type: 'string', default: '' },
+		hoverShadow: { type: 'string', default: '' },
+		blockLink: { type: 'string', default: '' },
+		blockLinkTarget: { type: 'boolean', default: false },
+		hoverGrayscale: { type: 'boolean', default: false },
+		hoverImageZoom: { type: 'boolean', default: false },
+		staggerDelay: { type: 'number', default: 0 },
+		sgsAnimation: { type: 'string', default: 'fade-up' },
+		sgsAnimationDuration: { type: 'string', default: 'medium' },
+		sgsAnimationEasing: { type: 'string', default: 'default' },
+		textAlignMobile: { type: 'string', default: '' },
+		textAlignTablet: { type: 'string', default: '' },
+		textAlignDesktop: { type: 'string', default: '' },
+	},
+	save() {
+		// Dynamic block — save was always null.
+		return null;
+	},
+	migrate( attributes ) {
+		// Derive sensible toggle defaults from what was actually set.
+		const hasMedia = !! ( attributes.icon || attributes.image?.url );
+		const hasTitle = !! attributes.heading;
+		const hasText  = !! attributes.description;
+		const hasLink  = !! attributes.link;
+
+		return {
+			...attributes,
+			// New toggle attributes.
+			showMedia:    hasMedia,
+			showTitle:    hasTitle,
+			showSubtitle: false,
+			showText:     hasText,
+			showButton:   false, // old link stays in the `link` attr; button slot starts empty.
+			// New element order.
+			elementOrder: [ 'media', 'title', 'subtitle', 'text', 'button' ],
+			// Extend mediaType enum to include 'emoji' (value was 'icon' or 'image').
+			mediaType:    attributes.mediaType === 'image' ? 'image' : 'icon',
+			// New attributes not previously present.
+			mediaEmoji:            '',
+			subtitle:              '',
+			subtitleColour:        '',
+			subtitleFontSize:      '',
+			subtitleFontSizeTablet: '',
+			subtitleFontSizeMobile: '',
+		};
+	},
+};
+
+export default [ v2, v1 ];
