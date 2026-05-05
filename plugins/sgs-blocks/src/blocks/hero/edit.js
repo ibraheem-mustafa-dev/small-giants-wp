@@ -329,6 +329,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		contentMaxWidthTablet,
 		contentMaxWidthMobile,
 		contentMaxWidthUnit,
+		// H-8 — CTA gap.
+		ctaGapUnit,
 	} = attributes;
 
 	const isCustomRatio = ! COLUMN_RATIO_PRESETS.some(
@@ -1107,6 +1109,24 @@ export default function Edit( { attributes, setAttributes } ) {
 					<Notice status="info" isDismissible={ false }>
 						{ __( 'Buttons are now managed using the SGS Button Group block inside the hero. Click on a button in the editor to configure its style, colour, and link.', 'sgs-blocks' ) }
 					</Notice>
+					<RRangeControl
+						label={ __( 'Button gap', 'sgs-blocks' ) }
+						attrDesktop="ctaGap"
+						attrTablet="ctaGapTablet"
+						attrMobile="ctaGapMobile"
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						min={ 0 }
+						max={ 80 }
+						step={ 1 }
+					/>
+					<SelectControl
+						label={ __( 'Gap unit', 'sgs-blocks' ) }
+						value={ ctaGapUnit }
+						options={ UNIT_PX_PCT }
+						onChange={ ( val ) => setAttributes( { ctaGapUnit: val } ) }
+						__nextHasNoMarginBottom
+					/>
 				</PanelBody>
 
 				{/* ── 8. Badges ── */}

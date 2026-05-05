@@ -1,5 +1,21 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-05 (Wave 6 close-out)
+**Last updated:** 2026-05-06 (H-8/H-9/H-10 close-out)
+
+## 2026-05-06 — background shorthand audit + ctaGap recogniser blind spot + pseudo-element/parent-chain measurement
+
+**Problem:** Three related gaps closed in one session:
+- H-8: Hero block.json had no `ctaGap*` attributes — recogniser couldn't extract `.hero-ctas { gap: X }` because there was no destination attribute. Gap rule was silently dropped.
+- H-9: Multiple framework block CSS files used `background: linear-gradient(...)` shorthand without `:not(.has-background)` guard — the shorthand resets `background-color`, painting over user's palette colours invisibly.
+- H-10: `mockup-parity-validator.js` wasn't measuring `::before`/`::after` pseudo-elements or walking parent chain for `filter`/`mixBlendMode`/`backdropFilter`/`opacity` — entire class of "computed says X, painted Y" bugs was invisible to the validator.
+
+**Why my QC missed it:** The recogniser only extracts values to named attributes — no destination = silent drop. The CSS audit didn't cross-check shorthand vs longhand. The validator measured elements but not their rendering context.
+
+**Rules captured:**
+- Every child container with layout CSS (flex gap, justify-content) needs a named block attribute as destination.
+- `background:` shorthand ALWAYS becomes `background-image:` in framework default rules. `:not(.has-background)` ALWAYS on default background rules that apply to the block wrapper.
+- Validator WATCHED set must include pseudo-elements (`::before`/`::after`) and parent chain filters.
+
+**How to apply:** Before declaring a recogniser extraction complete, verify every CSS rule with a numeric/positional value maps to a block.json attribute. Before declaring CSS QC done, run `scripts/css-pattern-audit.js`. Before declaring visual parity, check validator output includes `parent_chain_effect` warnings.
 
 ## 2026-05-05 — described the recogniser as a section-to-block mapper (it isn't — it's a section-to-pattern mapper)
 

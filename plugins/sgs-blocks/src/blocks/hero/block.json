@@ -415,7 +415,13 @@
     "headlineMarginBottom": { "type": "number", "default": null },
     "headlineMarginBottomMobile": { "type": "number", "default": null },
     "subHeadlineMarginBottom": { "type": "number", "default": null },
-    "subHeadlineMarginBottomMobile": { "type": "number", "default": null }
+    "subHeadlineMarginBottomMobile": { "type": "number", "default": null },
+
+    "_comment_ctaGap": "Gap between CTA buttons in the .sgs-hero__ctas flex container. Extracted from mockup .hero-ctas { gap: 12px } (desktop) and .hero-ctas { gap: 10px } (mobile).",
+    "ctaGap": { "type": "integer", "default": 12 },
+    "ctaGapMobile": { "type": "integer", "default": 10 },
+    "ctaGapTablet": { "type": "integer" },
+    "ctaGapUnit": { "type": "string", "default": "px" }
   },
   "render": "file:./render.php",
   "editorScript": "file:./index.js",

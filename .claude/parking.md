@@ -323,7 +323,11 @@ Wave 2E: Built `scripts/wp-update-block-attrs.js` (385 lines). Wraps the createB
 
 **Resume trigger:** Opus session.
 
-## H-8 — Hero block missing `ctaGap*` attribute + recogniser blind spot for child-flex-gap
+## ~~H-8 — Hero block missing `ctaGap*` attribute + recogniser blind spot for child-flex-gap~~ — RESOLVED 2026-05-06
+
+4 attrs added to `block.json` (`ctaGap` default 12, `ctaGapMobile` default 10, `ctaGapTablet`, `ctaGapUnit`). Wired through `render.php` as scoped CSS on `.sgs-hero__ctas` with `!important` on tablet/mobile (F4 pattern). `ResponsiveControl` + `SelectControl` added to Buttons panel in `edit.js`. v5 deprecation added to `deprecated.js` (no migrate function needed — defaults match mockup values). Cascade audit findings reported in close-out report.
+
+## H-8 (ORIGINAL) — Hero block missing `ctaGap*` attribute + recogniser blind spot for child-flex-gap
 
 **Captured:** 2026-05-05 (Q1 from Bean's session-end questions: "was the button padding I added found in the draft and why wasn't it added initially?")
 
@@ -348,7 +352,11 @@ Hero block.json has `splitGap`/`splitGapTablet`/`splitGapMobile` for the OUTER g
 
 **Resume trigger:** Opus session — fold into H-1 inspector reorganisation.
 
-## H-9 — Framework `background: linear-gradient(...)` shorthand patterns need audit (Section R bug)
+## ~~H-9 — Framework `background: linear-gradient(...)` shorthand patterns need audit (Section R bug)~~ — RESOLVED 2026-05-06
+
+Grep found 15 `background:` shorthand matches across 8 blocks. Analysis: 12 were inner child/pseudo-element rules (no `.has-background` guard needed). 3 were block-level or wrapper-proximate rules requiring fix: `cta-section/style.css` — button gradient + 4 variant preset rules converted to `background-image:` + `:not(.has-background)` guard; `post-grid/style.css` — skeleton shimmer converted to `background-image:`. `css-pattern-audit.js` extended with `checkBackgroundShorthand()` function to prevent re-introduction (H-10a).
+
+## H-9 (ORIGINAL) — Framework `background: linear-gradient(...)` shorthand patterns need audit (Section R bug)
 
 **Captured:** 2026-05-05 (Section R — gradient masking the user's backgroundColor on hero)
 
@@ -370,7 +378,11 @@ Hero fixed in 2026-05-05 commit (replaced `background:` with `background-image:`
 
 **Resume trigger:** Opus session.
 
-## H-10 — Cascade Section R defects into prevention scripts
+## ~~H-10 — Cascade Section R defects into prevention scripts~~ — RESOLVED 2026-05-06
+
+10a: `scripts/css-pattern-audit.js` extended with `checkBackgroundShorthand()` — greps all block CSS for `background:` shorthand with gradient/url, classifies by block-wrapper vs inner-element, exits code 1 on R4 (block-wrapper without `:not(.has-background)` guard). 10b: `mockup-parity-validator.js` gains pseudo-element measurement — `::before`/`::after` computed styles captured when `content !== 'none'`, surfaced as `sgs_pseudo_before`/`sgs_pseudo_after` on deltas. 10c: parent-chain filter walker added — walks to `<body>` checking `filter`, `mixBlendMode`, `backdropFilter`, `opacity`; flags `parent_chain_effect` on delta + auto-sets `requires_screenshot_review: true`.
+
+## H-10 (ORIGINAL) — Cascade Section R defects into prevention scripts
 
 **Captured:** 2026-05-05 (Section R)
 

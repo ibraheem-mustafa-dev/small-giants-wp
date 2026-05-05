@@ -326,6 +326,27 @@ function compareProperty(prop, mockupVal, sgsVal, ctx) {
 // (e.g. ".hero-content h1, .hero-copy h1"); querySelector returns the first
 // in DOM order, which can be the hidden one. Walk the list and pick the
 // first that's actually rendered.
+//
+// H-10b — Pseudo-element measurement (Section R3, 2026-05-06):
+// For each measured element, also capture ::before and ::after computed styles.
+// If their `content` is not 'none', their background* + color properties are
+// added to the output under `pseudo_before` and `pseudo_after` keys. The
+// downstream delta report includes these so the classifier cannot dismiss a
+// "backgroundColor matches" result when a ::before overlay is painting over it.
+//
+// H-10c — Parent-chain filter walker (Section R2, 2026-05-06):
+// After measuring an element, walk its parent chain to <body>. If any parent
+// has a non-default filter, mixBlendMode, backdropFilter, or opacity < 1,
+// capture it under `parent_chain_effects`. The classifier must not dismiss
+// colour deltas without checking this field first.
+//
+// Test fixture: place a `filter: hue-rotate(60deg)` on a parent element over a
+// known-coloured child. The validator should flag the parent_chain_effect with
+// the parent's selector and filter value. Example:
+//   <div class="parent" style="filter: hue-rotate(60deg)">
+//     <div class="child" style="background-color: #F5C2C8"></div>
+//   </div>
+// Expected output: parent_chain_effects: ["div.parent: filter=hue-rotate(60deg)"]
 async function captureForSelector(page, selector) {
     return page.evaluate(({ sel, watched }) => {
         function isElementVisible(el) {
@@ -363,6 +384,56 @@ async function captureForSelector(page, selector) {
         for (const prop of watched) {
             out[prop] = cs[prop];
         }
+
+        // H-10b — Pseudo-element measurement (Section R3).
+        // Capture ::before and ::after if their content is not 'none'.
+        const pseudoProps = [
+            'content', 'display',
+            'backgroundColor', 'backgroundImage', 'backgroundSize', 'backgroundPosition',
+            'color', 'opacity', 'filter', 'mixBlendMode',
+        ];
+        try {
+            const bcs = window.getComputedStyle(chosen, '::before');
+            if (bcs.content && bcs.content !== 'none' && bcs.content !== '') {
+                const pseudo = {};
+                for (const p of pseudoProps) pseudo[p] = bcs[p];
+                out.pseudo_before = pseudo;
+            }
+        } catch (_) { /* pseudo-element measurement not supported */ }
+        try {
+            const acs = window.getComputedStyle(chosen, '::after');
+            if (acs.content && acs.content !== 'none' && acs.content !== '') {
+                const pseudo = {};
+                for (const p of pseudoProps) pseudo[p] = acs[p];
+                out.pseudo_after = pseudo;
+            }
+        } catch (_) { /* pseudo-element measurement not supported */ }
+
+        // H-10c — Parent-chain filter walker (Section R2).
+        // Walk parent chain to <body> checking for non-default visual transforms
+        // that would alter the rendered appearance of the measured element without
+        // changing its own computed style values.
+        const parentChainEffects = [];
+        let node = chosen.parentElement;
+        while (node && node !== document.body && node.nodeType === 1) {
+            const pcs = window.getComputedStyle(node);
+            const effects = [];
+            if (pcs.filter && pcs.filter !== 'none') effects.push(`filter=${pcs.filter}`);
+            if (pcs.mixBlendMode && pcs.mixBlendMode !== 'normal') effects.push(`mixBlendMode=${pcs.mixBlendMode}`);
+            if (pcs.backdropFilter && pcs.backdropFilter !== 'none') effects.push(`backdropFilter=${pcs.backdropFilter}`);
+            if (pcs.opacity && parseFloat(pcs.opacity) < 1) effects.push(`opacity=${pcs.opacity}`);
+            if (effects.length > 0) {
+                // Describe the parent element by its tag + first class (if any)
+                const tag = node.tagName.toLowerCase();
+                const cls = node.classList.length ? '.' + Array.from(node.classList).slice(0, 2).join('.') : '';
+                parentChainEffects.push(`${tag}${cls}: ${effects.join(', ')}`);
+            }
+            node = node.parentElement;
+        }
+        if (parentChainEffects.length > 0) {
+            out.parent_chain_effects = parentChainEffects;
+        }
+
         return out;
     }, { sel: selector, watched: WATCHED });
 }
@@ -496,6 +567,23 @@ function buildJsonReport({ mockupUrl, sgsUrl, viewports, fingerprint, results })
                     // Q1-Q4 classifier-trap flag — see Section Q in
                     // .claude/specs/common-wp-styling-errors.md.
                     enriched.requires_screenshot_review = requiresScreenshotReview(enriched);
+
+                    // H-10b — Attach pseudo-element data from SGS side if present.
+                    // When a ::before or ::after paints over the element, colour deltas
+                    // cannot be dismissed without accounting for the pseudo-element (Section R3).
+                    if (s.pseudo_before) enriched.sgs_pseudo_before = s.pseudo_before;
+                    if (s.pseudo_after) enriched.sgs_pseudo_after = s.pseudo_after;
+                    if (m.pseudo_before) enriched.mockup_pseudo_before = m.pseudo_before;
+                    if (m.pseudo_after) enriched.mockup_pseudo_after = m.pseudo_after;
+
+                    // H-10c — Attach parent-chain effects from SGS side if present.
+                    // If any parent has filter/mixBlendMode/backdropFilter/opacity < 1,
+                    // the rendered colour of this element differs from its computed style (Section R2).
+                    if (s.parent_chain_effects) {
+                        enriched.parent_chain_effect = `rendered-colour-may-differ-from-computed: ${s.parent_chain_effects.join(' | ')}`;
+                        enriched.requires_screenshot_review = true; // Always flag — parent filter changes rendered output.
+                    }
+
                     allDeltas.push(enriched);
                 }
             }

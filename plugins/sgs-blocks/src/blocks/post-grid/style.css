@@ -683,7 +683,8 @@
    ========================================================================== */
 
 .sgs-post-grid__card--skeleton {
-	background: linear-gradient( 90deg, var( --wp--preset--color--surface-alt, #f0f0f0 ) 25%, var( --wp--preset--color--border-subtle, #e0e0e0 ) 50%, var( --wp--preset--color--surface-alt, #f0f0f0 ) 75% );
+	/* background-image (not shorthand) preserves background-color cascade (Section R, H-9) */
+	background-image: linear-gradient( 90deg, var( --wp--preset--color--surface-alt, #f0f0f0 ) 25%, var( --wp--preset--color--border-subtle, #e0e0e0 ) 50%, var( --wp--preset--color--surface-alt, #f0f0f0 ) 75% );
 	background-size: 200% 100%;
 	animation: sgs-shimmer 1.5s infinite;
 	border-radius: var( --sgs-card-radius );

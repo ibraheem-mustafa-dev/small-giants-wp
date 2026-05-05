@@ -138,6 +138,138 @@ function buildInnerBlocksFromCtas( attributes ) {
 }
 
 /**
+ * v5 — Schema before ctaGap* attributes were introduced (2026-05-06, H-8).
+ * New attributes (ctaGap, ctaGapMobile, ctaGapTablet, ctaGapUnit) all have
+ * defaults matching the mockup values, so existing posts render correctly
+ * without a migrate() function — WordPress merges missing attrs against
+ * block.json defaults automatically.
+ *
+ * No save() change — still <InnerBlocks.Content />.
+ */
+const v5 = {
+	attributes: {
+		...SHARED_ATTRIBUTES_V3,
+		// Phase 1 attributes present before H-8 (additive with null/defaults).
+		splitMedia: { type: 'object', default: null },
+		imageObjectFit: { type: 'string', default: 'cover' },
+		imageObjectPosition: { type: 'string', default: 'center center' },
+		imageWidth: { type: 'number', default: null },
+		imageWidthTablet: { type: 'number', default: null },
+		imageWidthMobile: { type: 'number', default: null },
+		imageWidthUnit: { type: 'string', default: '%' },
+		imageHeight: { type: 'number', default: null },
+		imageHeightTablet: { type: 'number', default: null },
+		imageHeightMobile: { type: 'number', default: null },
+		imageHeightUnit: { type: 'string', default: 'px' },
+		imageBorderRadiusTL: { type: 'number', default: 0 },
+		imageBorderRadiusTR: { type: 'number', default: 0 },
+		imageBorderRadiusBR: { type: 'number', default: 0 },
+		imageBorderRadiusBL: { type: 'number', default: 0 },
+		imageBorderRadiusTabletTL: { type: 'number', default: null },
+		imageBorderRadiusTabletTR: { type: 'number', default: null },
+		imageBorderRadiusTabletBR: { type: 'number', default: null },
+		imageBorderRadiusTabletBL: { type: 'number', default: null },
+		imageBorderRadiusMobileTL: { type: 'number', default: null },
+		imageBorderRadiusMobileTR: { type: 'number', default: null },
+		imageBorderRadiusMobileBR: { type: 'number', default: null },
+		imageBorderRadiusMobileBL: { type: 'number', default: null },
+		imageBorderRadiusUnit: { type: 'string', default: 'px' },
+		imageBorderStyle: { type: 'string', default: 'none' },
+		imageBorderWidthTop: { type: 'number', default: 0 },
+		imageBorderWidthRight: { type: 'number', default: 0 },
+		imageBorderWidthBottom: { type: 'number', default: 0 },
+		imageBorderWidthLeft: { type: 'number', default: 0 },
+		imageBorderWidthUnit: { type: 'string', default: 'px' },
+		imageBorderColour: { type: 'string', default: '' },
+		imagePaddingTop: { type: 'number', default: 0 },
+		imagePaddingRight: { type: 'number', default: 0 },
+		imagePaddingBottom: { type: 'number', default: 0 },
+		imagePaddingLeft: { type: 'number', default: 0 },
+		imagePaddingTopTablet: { type: 'number', default: null },
+		imagePaddingRightTablet: { type: 'number', default: null },
+		imagePaddingBottomTablet: { type: 'number', default: null },
+		imagePaddingLeftTablet: { type: 'number', default: null },
+		imagePaddingTopMobile: { type: 'number', default: null },
+		imagePaddingRightMobile: { type: 'number', default: null },
+		imagePaddingBottomMobile: { type: 'number', default: null },
+		imagePaddingLeftMobile: { type: 'number', default: null },
+		imagePaddingUnit: { type: 'string', default: 'px' },
+		mediaBackgroundColour: { type: 'string', default: '' },
+		contentPaddingTop: { type: 'number', default: null },
+		contentPaddingRight: { type: 'number', default: null },
+		contentPaddingBottom: { type: 'number', default: null },
+		contentPaddingLeft: { type: 'number', default: null },
+		contentPaddingTopTablet: { type: 'number', default: null },
+		contentPaddingRightTablet: { type: 'number', default: null },
+		contentPaddingBottomTablet: { type: 'number', default: null },
+		contentPaddingLeftTablet: { type: 'number', default: null },
+		contentPaddingTopMobile: { type: 'number', default: null },
+		contentPaddingRightMobile: { type: 'number', default: null },
+		contentPaddingBottomMobile: { type: 'number', default: null },
+		contentPaddingLeftMobile: { type: 'number', default: null },
+		contentPaddingUnit: { type: 'string', default: 'px' },
+		mediaPaddingTop: { type: 'number', default: null },
+		mediaPaddingRight: { type: 'number', default: null },
+		mediaPaddingBottom: { type: 'number', default: null },
+		mediaPaddingLeft: { type: 'number', default: null },
+		mediaPaddingTopTablet: { type: 'number', default: null },
+		mediaPaddingRightTablet: { type: 'number', default: null },
+		mediaPaddingBottomTablet: { type: 'number', default: null },
+		mediaPaddingLeftTablet: { type: 'number', default: null },
+		mediaPaddingTopMobile: { type: 'number', default: null },
+		mediaPaddingRightMobile: { type: 'number', default: null },
+		mediaPaddingBottomMobile: { type: 'number', default: null },
+		mediaPaddingLeftMobile: { type: 'number', default: null },
+		mediaPaddingUnit: { type: 'string', default: 'px' },
+		subHeadlineFontFamily: { type: 'string', default: '' },
+		subHeadlineFontWeight: { type: 'string', default: '' },
+		subHeadlineLineHeight: { type: 'number', default: null },
+		subHeadlineLineHeightUnit: { type: 'string', default: 'em' },
+		subHeadlineLetterSpacing: { type: 'number', default: null },
+		subHeadlineLetterSpacingUnit: { type: 'string', default: 'px' },
+		subHeadlineTextTransform: { type: 'string', default: '' },
+		subHeadlineTextDecoration: { type: 'string', default: '' },
+		labelFontFamily: { type: 'string', default: '' },
+		labelFontSize: { type: 'number', default: null },
+		labelFontSizeTablet: { type: 'number', default: null },
+		labelFontSizeMobile: { type: 'number', default: null },
+		labelFontSizeUnit: { type: 'string', default: 'px' },
+		labelFontWeight: { type: 'string', default: '600' },
+		labelLineHeight: { type: 'number', default: 1.2 },
+		labelLineHeightUnit: { type: 'string', default: 'em' },
+		labelLetterSpacing: { type: 'number', default: null },
+		labelLetterSpacingUnit: { type: 'string', default: 'em' },
+		labelTextTransform: { type: 'string', default: 'uppercase' },
+		labelTextDecoration: { type: 'string', default: '' },
+		labelColour: { type: 'string', default: '' },
+		labelMarginBottom: { type: 'number', default: 8 },
+		labelMarginBottomUnit: { type: 'string', default: 'px' },
+		splitColumnRatio: { type: 'string', default: '1fr 1fr' },
+		splitColumnRatioTablet: { type: 'string', default: '' },
+		splitColumnRatioMobile: { type: 'string', default: '' },
+		splitGap: { type: 'number', default: 0 },
+		splitGapTablet: { type: 'number', default: null },
+		splitGapMobile: { type: 'number', default: null },
+		splitGapUnit: { type: 'string', default: 'px' },
+		splitContentOrderMobile: { type: 'string', default: 'media-first' },
+		verticalAlignment: { type: 'string', default: 'center' },
+		contentMaxWidth: { type: 'number', default: null },
+		contentMaxWidthTablet: { type: 'number', default: null },
+		contentMaxWidthMobile: { type: 'number', default: null },
+		contentMaxWidthUnit: { type: 'string', default: 'px' },
+		headlineMarginBottom: { type: 'number', default: null },
+		headlineMarginBottomMobile: { type: 'number', default: null },
+		subHeadlineMarginBottom: { type: 'number', default: null },
+		subHeadlineMarginBottomMobile: { type: 'number', default: null },
+		// Note: ctaGap* attrs deliberately absent — their absence is what
+		// triggers a match against this deprecation for pre-H-8 posts.
+	},
+	save() {
+		return <InnerBlocks.Content />;
+	},
+};
+
+/**
  * v4 — Schema before splitMedia was introduced (2026-05-05). The block
  * accepted only an image via splitImage. Migrate legacy splitImage objects
  * into the unified splitMedia slot so the new render path works on existing
@@ -247,4 +379,4 @@ const v1 = {
 	},
 };
 
-export default [ v4, v3, v2, v1 ];
+export default [ v5, v4, v3, v2, v1 ];

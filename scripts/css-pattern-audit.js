@@ -269,6 +269,110 @@ function auditFileFast(filePath, content) {
     return violations;
 }
 
+/**
+ * H-10a — Background shorthand audit (Section R, 2026-05-06).
+ *
+ * Greps for `background: linear-gradient(...)` or `background: url(...)` in
+ * any rule. For each match, checks whether the enclosing selector includes
+ * `:not(.has-background)`.
+ *
+ * Why this matters: `background:` shorthand resets ALL background sub-properties
+ * including `background-color`. When WordPress applies a palette colour via the
+ * `.has-*-background-color` class (NOT via inline style), the shorthand silently
+ * paints over it. The `:not(.has-background)` guard prevents this — WordPress
+ * adds `.has-background` to ANY block that has a background colour or gradient set
+ * via the editor. See common-wp-styling-errors.md Section R (R4) and H-9.
+ *
+ * Exemptions (NOT block-wrapper rules — cannot receive .has-background):
+ *   - Rules on pseudo-elements (::before, ::after)
+ *   - Rules on child elements inside the block (overlay divs, caption overlays, etc.)
+ *   - Rules on state classes where the shorthand is the intentional state display
+ *     (e.g. skeleton shimmer — `background:` should be `background-image:` but cannot
+ *      receive `.has-background` since the skeleton class is never on the block wrapper)
+ *
+ * The audit flags ALL shorthand matches for human review; severity is `error` for
+ * block-wrapper selectors (those without `::`, `__`, or specific inner-element tokens).
+ */
+function checkBackgroundShorthand(cssContent, filePath) {
+    const violations = [];
+    const lines = cssContent.split('\n');
+
+    // Regex to find `background:` property with a gradient or url value.
+    // Matches both single-line and the start of a multi-line declaration.
+    const bgShorthandRe = /^\s*background\s*:\s*(linear-gradient|radial-gradient|url\s*\()/i;
+
+    // Walk lines looking for the pattern, then back-track to find the enclosing selector.
+    for (let i = 0; i < lines.length; i++) {
+        if (!bgShorthandRe.test(lines[i])) continue;
+
+        // Back-track to find selector (look up to 20 lines for an opening `{`)
+        let selector = '(unknown)';
+        for (let k = i - 1; k >= Math.max(0, i - 20); k--) {
+            const t = lines[k].trim();
+            if (t.endsWith('{')) {
+                selector = t.replace(/\s*\{.*$/, '').trim();
+                break;
+            }
+            if (t && !t.startsWith('//') && !t.startsWith('*') && !t.startsWith('/*') && !t.startsWith('@') && t.includes('{')) {
+                selector = t.replace(/\s*\{.*$/, '').trim();
+                break;
+            }
+        }
+
+        const hasGuard = selector.includes(':not(.has-background)');
+
+        // Classify: is this a block-wrapper rule or an inner-element rule?
+        // Inner-element signals: BEM `__` element separator, `::before`/`::after`,
+        // known inner-element class fragments.
+        const isInnerElement =
+            selector.includes('::before') ||
+            selector.includes('::after') ||
+            selector.includes('__') ||      // BEM element
+            /--skeleton|--shimmer|--overlay|--fade|--caption/.test(selector);
+
+        if (hasGuard) {
+            // Guard present — verify the shorthand is also converted to background-image.
+            // Still flag if `background:` shorthand is used (should be `background-image:`).
+            violations.push({
+                type: 'R4-background-shorthand-longhand',
+                severity: 'WARNING',
+                file: filePath,
+                line: i + 1,
+                selector,
+                value: lines[i].trim(),
+                message: `Selector '${selector}' has :not(.has-background) guard (good) but uses 'background:' shorthand — prefer 'background-image:' to avoid resetting background-color (Section R, H-9).`,
+                fix: "Replace 'background:' with 'background-image:' for the gradient/image value.",
+            });
+        } else if (isInnerElement) {
+            // Inner element — no .has-background possible. Flag for shorthand→longhand conversion only.
+            violations.push({
+                type: 'R4-background-shorthand-inner',
+                severity: 'WARNING',
+                file: filePath,
+                line: i + 1,
+                selector,
+                value: lines[i].trim(),
+                message: `Inner-element selector '${selector}' uses 'background:' shorthand. Convert to 'background-image:' to avoid resetting background-color (Section R, H-9). No :not(.has-background) guard needed (inner element cannot receive the WP class).`,
+                fix: "Replace 'background:' with 'background-image:'.",
+            });
+        } else {
+            // Block-wrapper rule without guard — this IS the R4 defect pattern.
+            violations.push({
+                type: 'R4-background-shorthand-missing-has-background-guard',
+                severity: 'CRITICAL',
+                file: filePath,
+                line: i + 1,
+                selector,
+                value: lines[i].trim(),
+                message: `background shorthand without :not(.has-background) guard in ${filePath}:${i + 1} — will paint over user palette colours. Selector: '${selector}'. WordPress applies palette colours via .has-*-background-color class (NOT inline style), so :not([style*="background-color"]) alone does not prevent this.`,
+                fix: "Add :not(.has-background) to selector AND replace 'background:' with 'background-image:'.",
+            });
+        }
+    }
+
+    return violations;
+}
+
 function auditFile(filePath) {
     if (!fs.existsSync(filePath)) return [];
     const content = fs.readFileSync(filePath, 'utf8');
@@ -276,10 +380,12 @@ function auditFile(filePath) {
     const fastViolations = auditFileFast(filePath, content);
     // Per-block structural checks
     const blockViolations = parseCSSAnimations(content, filePath);
+    // H-10a — background shorthand audit (Section R)
+    const bgViolations = checkBackgroundShorthand(content, filePath);
     // Merge, deduplicate by type+line
     const seen = new Set(fastViolations.map(v => `${v.type}:${v.line}`));
     const merged = [...fastViolations];
-    for (const v of blockViolations) {
+    for (const v of [...blockViolations, ...bgViolations]) {
         const key = `${v.type}:${v.line}`;
         if (!seen.has(key)) { seen.add(key); merged.push(v); }
     }

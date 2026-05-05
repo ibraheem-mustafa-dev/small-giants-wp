@@ -212,6 +212,27 @@ Framework block CSS using `background:` shorthand to set a default has a high ri
 .sgs-hero:not(.has-background) { background-image: linear-gradient(...); }
 ```
 
+### R5 — `:not(.has-background)` requirement on all framework default background rules
+
+**Pattern:** A framework block CSS default uses `background-image: linear-gradient(...)` or `background: url(...)` on a selector that includes `:not([style*="background-color"])` but NOT `:not(.has-background)`.
+
+**Effect:** WordPress applies palette colours via `.has-X-background-color` class — NOT via inline style. So `:not([style*="background-color"])` does NOT catch WP palette assignments. The gradient/image paints over the user's palette colour invisibly.
+
+**Fix:** ALWAYS include BOTH exclusions on any framework default background rule that targets the block wrapper:
+- `:not([style*="background-color"])` — catches inline style overrides
+- `:not(.has-background)` — catches WP class-based palette colours
+
+Also: always use `background-image:` not `background:` shorthand for gradient/image defaults. The shorthand resets `background-color`, compounding the issue.
+
+**Detection:** `scripts/css-pattern-audit.js` — run after any block CSS change. Exit code 1 if any R4 (block-wrapper without guard) violations found.
+
+**Exemptions (no guard needed — cannot receive `.has-background`):**
+- Pseudo-element rules (`::before`, `::after`) — the WP class is on the element, not its pseudo-elements
+- Inner child element rules (BEM `__` elements, overlay divs, caption containers)
+- State-specific rules (skeleton shimmer, `--loading` variants) — always convert shorthand to `background-image:` regardless
+
+**Captured:** 2026-05-06 (H-9 audit). Fixed in `cta-section/style.css` (gradient preset rules + button gradient) and `post-grid/style.css` (skeleton shimmer).
+
 ## How to add an entry
 
 1. Hit a real WordPress styling failure in a session.

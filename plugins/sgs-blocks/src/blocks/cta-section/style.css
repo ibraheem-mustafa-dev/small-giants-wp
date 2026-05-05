@@ -200,9 +200,9 @@
 	transform: translateY(-1px);
 }
 
-/* gradient */
+/* gradient — background-image (not shorthand) so background-color is not reset */
 .sgs-cta-section__btn--gradient:not([style*="background"]) {
-	background: linear-gradient(
+	background-image: linear-gradient(
 		135deg,
 		var(--wp--preset--color--primary, #0F7E80) 0%,
 		var(--wp--preset--color--accent, #F87A1F) 100%
@@ -360,9 +360,10 @@
  * All gradients use CSS custom properties so they adapt to style variations.
  */
 
-/* Primary fade — teal left, dark teal right */
-.sgs-cta-section--gradient-primary-fade {
-	background: linear-gradient(
+/* Primary fade — teal left, dark teal right.
+   background-image (not shorthand) avoids resetting background-color (Section R, H-9). */
+.sgs-cta-section--gradient-primary-fade:not(.has-background) {
+	background-image: linear-gradient(
 		135deg,
 		var(--wp--preset--color--primary, #0F7E80) 0%,
 		var(--wp--preset--color--primary-dark, #0A5B5D) 100%
@@ -370,8 +371,8 @@
 }
 
 /* Accent glow — warm orange radial centre on dark teal */
-.sgs-cta-section--gradient-accent-glow {
-	background: radial-gradient(
+.sgs-cta-section--gradient-accent-glow:not(.has-background) {
+	background-image: radial-gradient(
 		ellipse at 60% 50%,
 		var(--wp--preset--color--accent-light, #FEE8D4) 0%,
 		var(--wp--preset--color--primary-dark, #0A5B5D) 70%
@@ -380,8 +381,8 @@
 
 /* Dark radial — text-colour centre to primary-dark edge.
    Both stops use design tokens so the gradient themes correctly to client style variations. */
-.sgs-cta-section--gradient-dark-radial {
-	background: radial-gradient(
+.sgs-cta-section--gradient-dark-radial:not(.has-background) {
+	background-image: radial-gradient(
 		ellipse at center,
 		var(--wp--preset--color--text, #1E1E1E) 0%,
 		var(--wp--preset--color--primary-dark, #0A5B5D) 100%
@@ -389,8 +390,8 @@
 }
 
 /* Mesh soft — subtle diagonal teal-to-surface */
-.sgs-cta-section--gradient-mesh-soft {
-	background: linear-gradient(
+.sgs-cta-section--gradient-mesh-soft:not(.has-background) {
+	background-image: linear-gradient(
 		160deg,
 		var(--wp--preset--color--surface-alt, #F5F7F7) 0%,
 		var(--wp--preset--color--primary, #0F7E80) 50%,

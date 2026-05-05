@@ -215,6 +215,15 @@ $label_colour          = $attributes['labelColour'] ?? '';
 $label_margin_bottom   = $attributes['labelMarginBottom'] ?? 8;
 $label_mb_unit         = $attributes['labelMarginBottomUnit'] ?? 'px';
 
+// CTA gap — gap between buttons inside .sgs-hero__ctas flex container.
+$cta_gap        = isset( $attributes['ctaGap'] ) ? absint( $attributes['ctaGap'] ) : 12;
+$cta_gap_mobile = isset( $attributes['ctaGapMobile'] ) ? absint( $attributes['ctaGapMobile'] ) : 10;
+$cta_gap_tablet = isset( $attributes['ctaGapTablet'] ) ? absint( $attributes['ctaGapTablet'] ) : null;
+$cta_gap_unit   = isset( $attributes['ctaGapUnit'] ) ? $attributes['ctaGapUnit'] : 'px';
+
+// Validate unit.
+$cta_gap_unit = in_array( $cta_gap_unit, array( 'px', 'rem', 'em', '%', 'vw' ), true ) ? $cta_gap_unit : 'px';
+
 // Layout grid (split variant).
 $split_col_ratio        = $attributes['splitColumnRatio'] ?? '1fr 1fr';
 $split_col_ratio_tablet = $attributes['splitColumnRatioTablet'] ?? '';
@@ -472,6 +481,15 @@ if ( null !== $content_max_width_tab ) {
 if ( null !== $content_max_width_mob ) {
 	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__content{max-width:' . absint( $content_max_width_mob ) . esc_attr( $content_max_width_unit ) . '}}';
 }
+
+// ── ctaGap: gap between CTA buttons in .sgs-hero__ctas (F4 pattern) ────────
+// Desktop gap is the base value. Mobile uses !important to beat the
+// desktop value when the stack collapses to column on small screens.
+$responsive_css .= '.' . $uid . ' .sgs-hero__ctas{gap:' . $cta_gap . esc_attr( $cta_gap_unit ) . '}';
+if ( null !== $cta_gap_tablet ) {
+	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__ctas{gap:' . absint( $cta_gap_tablet ) . esc_attr( $cta_gap_unit ) . ' !important}}';
+}
+$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__ctas{gap:' . $cta_gap_mobile . esc_attr( $cta_gap_unit ) . ' !important}}';
 
 // ── labelFontSize: tablet / mobile overrides ───────────────────────────────
 if ( null !== $label_font_size_tab ) {
