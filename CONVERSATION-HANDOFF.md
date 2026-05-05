@@ -1,127 +1,147 @@
 ---
-recommended_model: sonnet
-session_tag: small-giants-wp-2026-05-04-hero-poc-and-qc-failure
+recommended_model: opus
+session_tag: small-giants-wp-2026-05-05-framework-qc-hardening
+session_date: 2026-05-05
 ---
 
-# Session Handoff — 2026-05-04
+# Session Handoff — 2026-05-05
 
 ## Completed This Session
-1. Hero block Phase 1 attribute completeness — 106 new attrs (image controls, padding, native typography selectors, layout grid, vertical alignment). 162 total attrs on `sgs/hero`. Implementer + spec review + quality review pattern.
-2. Recogniser-v2 update (`tools/recogniser-v2/extract.py`) — InnerBlocks composition emission, ~80 new extractors, universal-handled CSS classifier. Coverage 42/162 attrs on Mama's hero (up from 17). Zero scoped wp:html.
-3. Button block style.css + editor.css created (was missing entirely from src/).
-4. Mama's variation buttonPresets `!important` overrides.
-5. SGS framework DB refresh + per-block reference markdown regenerated (64 blocks / 1207 attrs).
-6. Three audit reports captured: measured QC, Gemini Pro Vision audit, Bean's live observation. All three converged: hero PoC NOT pixel-faithful.
-7. 23 distinct defects catalogued + new methodology gaps captured as styling-errors M1-M4 + N1-N5.
+
+1. **Closed the 3-day hero perfect-clone sequence** end-to-end on sandybrown post 29 — every measurable mockup property matches live (typography, padding, margins, animation, font-loading, button colours, line-heights). 11 commits across the sequence; this session shipped 5 (`6459d75` → `491e4f4`).
+2. **Found and fixed the framework gradient bug masking user-set backgroundColor** — `plugins/sgs-blocks/src/blocks/hero/style.css` line 25's `:not([style*="background-color"])` exclusion didn't catch WP's `.has-*-background-color` class-based colour. Result: gradient `#C56A7A → #E68A95` painted over the correct `#F5C2C8`. Visible 18.5% colour error, masked by `getComputedStyle().backgroundColor` returning the underlying value. Fix added `:not(.has-background)` + switched `background:` shorthand to `background-image:`.
+3. **Captured the lesson durably** to all 3 persistence layers (workspace, CC auto-memory + MEMORY.md, blub.db row 207) under pattern_key `extend-measurement-set-when-human-eye-disputes`. Sibling rule of `verify-rendered-output-not-internal-metrics` (id 194).
+4. **Extended `scripts/mockup-parity-validator.js` WATCHED set** — added `backgroundImage`, `backgroundSize`, `backgroundPosition`, `backgroundRepeat`, `filter`, `mixBlendMode`, `backdropFilter`. Catches the R1-R4 patterns going forward.
+5. **Built `scripts/colour-parity-audit.js`** (NEW) — automates Bean's "extract draft colours and diff against variation JSON" question. Verdict on Mama's: PASS, 10 colours matched, 0 deltas.
+6. **Captured Sections Q + R to common-wp-styling-errors.md** — 9 measurement-trap and classifier-trap patterns. Section Q binding rule: no screenshot evidence = severity stays at validator level. Section R: 4 measurement traps (R1 backgroundImage, R2 parent filters, R3 pseudo-elements, R4 WP class-based bg).
+7. **Visual-QA skill upgraded via /lifecycle** — B (4.18 / 92%) → A (~4.36 / 96%); ecosystem refs (G3), Quick mode worked example (H1), extracted run-checklist.md (H2), backlog.md (G8).
+8. **3 visible mid-session bugs fixed live** — mobile button gap (10px), desktop full-bleed instance-level fix (`.page-id-29` zeroing of `.entry-content` padding), buttons inline at desktop.
+9. **10 hardening gaps captured in parking.md as H-1 through H-10** — each self-contained spec for the Opus session.
+10. **Bean's eye caught visible defects the validator's classifier dismissed** — incident driving the entire Sections Q + R + new pattern_key 207 lesson capture.
 
 ## Current State
-- **Branch:** `main` at `be0daa5`
-- **Tests:** no test suite
-- **Build:** webpack passes; WPCS 0 errors
-- **Uncommitted changes:** none from this session
-- **Live deploy:** sandybrown post 29 — hero image invisible during first ~1s of every page load (entrance animation paint bug)
+
+- **Branch:** `main` at `491e4f4`
+- **Tests:** no test suite (WP framework); `phpcs --standard=WordPress` 0 errors; `npm run build` clean
+- **Build:** webpack compiled successfully; 0 critical via `css-pattern-audit.js` across 170 CSS files
+- **Uncommitted changes:** stale-from-prior-sessions noise only (lucide-icons.php auto-timestamp, .gitignore, gemini-vision-audit reports); nothing this session
+- **Live deploy:** sandybrown post 29 — gradient gone, all measurable properties match mockup
 
 ## Known Issues / Blockers
-- 23 catalogued visual-fidelity defects. Full inventory: `reports/hero-poc-qc-2026-05-04.md` and `reports/gemini-vision-audit-2026-05-04/audit.md`.
-- The `/visual-qa` skill itself has the same blind spot (no first-paint capture) — would have signed off the broken hero. Captured in `common-wp-styling-errors.md` Section N.
-- Phase 3 STOP GATE bypassed this session — needs git-hook enforcement.
+
+- **15px Windows scrollbar gap on hero right edge** (H-7 in parking — needs framework full-bleed pattern replacement using JS-set viewport-width, OR accept-and-document)
+- **Bean perceives pink shade as "wrong" in some lighting** even with mockup-CSS-perfect parity (H-4 brand-source PNG sampling deferred)
 
 ## Next Priorities (in order)
-1. Build `tools/multi-frame-qa/capture.js` — multi-frame screenshot capture (0/200/500/1000/3000ms) at 1440 + 375. Highest-leverage action.
-2. Run multi-frame QC. Find any first-paint defects beyond the known image-animation bug.
-3. Build deterministic prevention scripts per defect class (CSS pattern audit, render.php inline-vs-media checker, git pre-commit STOP GATE). Script-level first; agent only as last resort.
-4. Apply the 23 catalogued fixes via subagent-driven-development.
-5. Re-run all three audits. Pass criterion: 0 Major, ≤2 Important, ≥95% visual fidelity, first-paint capture clean.
+
+1. **H-5 (CRITICAL) — classifier human-eye gate** — `scripts/screenshot-diff-helper.js` + `requires_screenshot_review` flag in parity validator + bake Section Q rule into `/visual-qa` via /lifecycle. The single biggest QC reliability gap.
+2. **H-9 — audit framework gradient shorthand patterns** across all SGS blocks (extends Section R fix beyond hero).
+3. **H-7 — replace negative-margin full-bleed pattern** with viewport-aware solution (Mac + Windows + mobile tested).
+4. **H-1 + H-2 — hero block inspector reorganisation** by element (Container, Eyebrow, Headline, Subheadline, Image, Badges, Buttons) + image/media padding clarity. Pattern propagates to all blocks.
+5. **H-3 + H-4 + H-6 + H-8 + H-10** — remaining hardening gaps per parking.md.
 
 ## Files Modified
+
 | File path | What changed |
-|-----------|--------------|
-| `plugins/sgs-blocks/src/blocks/hero/{block.json,render.php,edit.js,style.css,deprecated.js}` | Phase 1 attribute completeness wired end-to-end |
-| `plugins/sgs-blocks/src/blocks/button/{style.css,editor.css,index.js}` | Created missing CSS + imports |
-| `tools/recogniser-v2/extract.py` | InnerBlocks emission + ~80 new extractors + universal-handled classifier |
-| `theme/sgs-theme/styles/mamas-munches.json` | buttonPresets `!important` overrides |
-| `.claude/specs/02-SGS-BLOCKS-REFERENCE.md` | Regenerated from refreshed DB |
-| `.claude/specs/common-wp-styling-errors.md` | Section M (M1-M4 paint defects) + Section N (N1-N5 visual-qa pipeline gaps) |
-| `.claude/state.md`, `.claude/mistakes.md`, `.claude/handoff.md`, `.claude/next-session-prompt.md` | Session-end docs |
-| `reports/hero-poc-qc-2026-05-04.md` | Measured QC (13 deltas) |
-| `reports/gemini-vision-audit-2026-05-04/{audit.md,screenshots/}` | Gemini Pro Vision audit (Grade D, 65%) |
+|---|---|
+| `plugins/sgs-blocks/src/blocks/hero/style.css` | Added `:not(.has-background)` to gradient exclusion + `background:` → `background-image:` |
+| `scripts/mockup-parity-validator.js` | Extended WATCHED with backgroundImage / filter / mixBlendMode + 7 family members |
+| `scripts/colour-parity-audit.js` | NEW — automates mockup `:root` vars vs variation palette diff |
+| `.claude/specs/common-wp-styling-errors.md` | Sections Q (4 classifier traps) + R (4 measurement traps) |
+| `.claude/mistakes.md` | Top 2 entries: gradient masks bg + classifier-trap |
+| `.claude/parking.md` | H-1 through H-10 |
+| `.claude/state.md` | phase=framework-qc-hardening, recommended_model_next=opus |
+| `.claude/handoff.md` + `.claude/next-session-prompt.md` | Long-form versions of this handoff |
+| `~/.openclaw/workspace/memory/learning/2026-05-05-extend-measurement-set-when-human-eye-disputes.md` | NEW lesson |
+| `~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_extend_measurement_set_when_human_eye_disputes.md` + MEMORY.md | NEW CC auto-memory + index |
+| blub.db row 207 | NEW correction `extend-measurement-set-when-human-eye-disputes` |
 
 ## Notes for Next Session
-- Hero entrance animation (`animation-fill-mode: both` + `animation-delay: 360ms`) on `.sgs-hero__split-image` in `style.css` lines 144-170 hides the image during the broken window. Highest-impact visible defect.
-- Mama's variation buttonPresets text colours wrong — primary should be charcoal not `#ffffff`. WCAG 2.5:1 contrast failure.
-- WP admin: Claude / `MigrationSweep2026!` (still temporary).
-- Recogniser command with sandybrown image IDs: `python tools/recogniser-v2/extract.py --mockup sites/mamas-munches/mockups/homepage/index.html --section "section.hero" --block sgs/hero --media-map sites/mamas-munches/research/sandybrown-media-map.json`
+
+- **The wp_global_styles reset+reapply is mandatory after any variation file change.** Use `node scripts/global-styles-reset.js --site sandybrown-nightingale-600381.hostingersite.com --theme sgs-theme --variation mamas-munches`.
+- **Use `wp.blocks.createBlock + replaceBlock` for post attribute updates**, NOT `updateBlockAttributes` (silently rejected on blocks with save.js validation errors). H-6 packages this.
+- **Pre-commit STOP GATE works** — accepts commits when `reports/visual-diff/<block>-<date>.md` has `verdict: PASS` AND `first_paint_capture_passed: true`.
+- **SSH to sandybrown** is the same as palestine-lives: `u945238940@141.136.39.73:65002`, `~/.ssh/id_ed25519`, domain `domains/sandybrown-nightingale-600381.hostingersite.com/public_html/`. WP admin: `Claude` / `MigrationSweep2026!`.
+- **The binding rule for Opus session** (blub.db 207): when measurements say match but Bean says wrong, extend until pixel-level evidence agrees.
 
 ## Next Session Prompt
 
 ~~~
-You are a senior SGS WordPress developer specialising in visual-fidelity QC harness design and deterministic CSS-pattern detection. Previous session shipped real infrastructure but the hero clone PoC failed pixel-faithfulness. Both automated QC layers (measured + Gemini Pro Vision) gave it a clean bill of health; Bean caught the showstopper bug live in his own browser. Your job: upgrade the QC harness so this class of bug can never ship again, then fix the 23 catalogued defects, then prove the clone is pixel-faithful with three independent audits.
+You are a senior WordPress framework engineer specialising in QC infrastructure, prevention scripts, and structural enforcement of measurement methodology — closing every gap captured in the past 3 days of hero perfect-clone work.
 
-Resume command: CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-04-hero-poc-and-qc-failure"
+Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-05-framework-qc-hardening"`
 
-Read CONVERSATION-HANDOFF.md, .claude/handoff.md, reports/hero-poc-qc-2026-05-04.md, reports/gemini-vision-audit-2026-05-04/audit.md, and `.claude/specs/common-wp-styling-errors.md` Sections M + N.
+Read CONVERSATION-HANDOFF.md and `.claude/handoff.md` for full context, then work through these priorities:
 
 ## Skills to Invoke
 
-| Skill | When |
-|-------|------|
-| `/brainstorming` | Designing the multi-frame capture algorithm + prevention-script architecture |
-| `/gap-analysis` | Grade the new QC harness against M1-M4 + N1-N5 catalogue before shipping |
-| `/lifecycle` | Any skill or pipeline edit (visual-qa updates flow through this) |
-| `/research` | If multi-frame approach needs Playwright API research |
-| `/strategic-plan` | Plan the build order for QC harness + prevention scripts before coding |
-| `/sgs-wp-engine` | All SGS WordPress block work |
-| `/visual-qa` | Re-run after fixes |
-| `/gemini-vision-audit` | Independent vision pass after fixes |
-| `/subagent-driven-development` | Implementer + spec + quality review per fix |
-| `/handoff` | End of session |
+| Skill | When to use |
+|-------|-------------|
+| `/brainstorming` | Architectural calls — H-3 video schema, H-7 full-bleed pattern, H-5 screenshot-diff helper API |
+| `/gap-analysis` | Grade `/visual-qa` skill after embedding Section Q binding rule (H-5c) |
+| `/lifecycle` | MANDATORY for any skill/agent edit — H-5c, and inspector reorg if framework-pattern emerges |
+| `/research` | Auto-routes — `/research-check` for viewport-width-without-scrollbar techniques (H-7) |
+| `/strategic-plan` | Plan implementation order across H-1 through H-10 before writing code |
+| `/sgs-wp-engine` | All SGS WP work |
+| `/subagent-driven-development` | Tasks with multiple file paths — H-1+H-2, H-3, H-9 |
+| `/dispatching-parallel-agents` | H-5a + H-5b + H-7 — independent file paths |
+| `/visual-qa` | After H-5 lands, use the upgraded skill with binding screenshot-evidence rule |
 
 ## MCP Servers & Tools
 
-| Tool | What for |
-|------|----------|
-| `mcp__plugin_playwright_playwright__*` | Multi-frame screenshot + DOM measurement at each frame |
-| `gemini --model gemini-3.1-pro-preview` | Vision audit dispatch (post-fix) |
-| `python tools/recogniser-v2/extract.py` | Re-run after R1/R2 fixes |
-| `phpcs --standard=WordPress` | Per fix |
+| Tool | What to use it for |
+|------|-------------------|
+| `mcp__plugin_playwright_playwright__*` | Browser automation; canvas pixel sampling for measurement-vs-eye disputes (NOT measurement-of-record) |
+| `node tools/multi-frame-qa/capture.js` | First-paint defect detection at 0/200/500/1000/3000ms |
+| `node scripts/mockup-parity-validator.js` | Computed-style diff (now with backgroundImage + filter + mixBlendMode in WATCHED) |
+| `node scripts/colour-parity-audit.js` | Automated mockup vs variation colour diff |
+| `node scripts/css-pattern-audit.js` | M1 first-paint defect prevention |
+| `node scripts/render-mobile-override-audit.js` | F4 inline-vs-mobile-override prevention |
+| `node scripts/font-source-audit.js` | O2 external CDN font src prevention |
+| `node scripts/global-styles-reset.js` | Variation deploy automation |
+| `python tools/recogniser-v2/extract.py` | Re-extract on mockup changes |
 
 ## Agents to Delegate To
 
 | Agent | When |
 |-------|------|
-| `wp-sgs-developer` | All SGS WordPress block fixes |
-| `design-reviewer` | After fixes — automated mockup-to-live diff |
-| `feature-dev:code-reviewer` | Spec compliance + quality review per fix |
+| `wp-sgs-developer` | All SGS WP work — H-1, H-2, H-3, H-7, H-8, H-9 |
+| `feature-dev:code-architect` | H-3 video-everywhere schema design (cross-cutting feature) |
+| `general-purpose` | H-5 screenshot-diff helper script + H-6 replaceBlock helper |
 
-## WordPress tooling reference
+## Tooling reference (WordPress)
 
-| Skill | Use |
-|-------|-----|
-| `/sgs-wp-engine` | All SGS block dev, theme, client work |
-| `/wp-block-development` | Per-block specifics |
-| `/wp-block-themes` | theme.json + style variations |
+See `~/.claude/rules/wp-project-tooling.md` for the full SGS WordPress tooling tables. All apply.
 
-## Tasks
+## Where You Are
 
-1. **`tools/multi-frame-qa/capture.js`** — Node + Playwright. Capture at 0/200/500/1000/3000ms after navigation, NO `waitUntil:'load'`. Element-target screenshot of `section.sgs-hero` + JS DOM snapshot at each frame. Output: 5 PNGs + 5 JSON per viewport + diff summary. Run at 1440 + 375.
-2. **Run multi-frame QC** against sandybrown post 29 + Mama's mockup. Document any first-paint defects beyond the known image bug.
-3. **Build prevention scripts** (≥3 minimum):
-   - M1: `scripts/css-pattern-audit.js` — grep `animation-fill-mode: both` + non-zero delay; PreCommit hook fails on match
-   - N4: visual-qa L7c auto-include when block style.css has `animation:` rules
-   - R1: recogniser extracts inline `style=""` via `getComputedStyle()`
-   - R2: recogniser handles `@media (min-width: 1280px)` tier
-   - F4: render.php scan for inline-style without `!important` on mobile @media override
-   - P1: Git pre-commit hook enforcing Phase 3 STOP GATE
-4. **Apply the 23 catalogued fixes** via subagent-driven flow. Priority: V1/V2 (button text colours) → M1 (remove broken animation) → F4 (mobile override) → V3 (h1 line-height) → F5 (max-width leak) → F1/F2 (margin attrs) → R1/R2 (recogniser).
-5. **Re-run all three audits.** Pass = 0 Major, ≤2 Important, ≥95% fidelity, first-paint clean across all frames.
-6. **Handoff** — write next-session prompt for trust-bar (next mockup section) if hero passes, else remaining hero items.
+Plan: `.claude/parking.md` — 10 H-entries (H-1 through H-10) form the Opus-session backlog.
+Current phase: `framework-qc-hardening`
+Progress: 0/10 H-entries complete; ~6 hours estimated total work.
+Next task: **Task 1 — H-5 classifier human-eye gate** (most critical; blocks reliable QC across all future client clones).
+
+---
+
+## Task 1 — H-5: Classifier human-eye gate (~55 min) CRITICAL
+Build `scripts/screenshot-diff-helper.js` (mockup vs SGS image comparison + pixel-diff heatmap), add `requires_screenshot_review: true` flag to parity validator for any Q1-Q4 / R1-R4 pattern delta, bake Section Q binding rule into `/visual-qa` skill via /lifecycle. Use `/dispatching-parallel-agents` — sub-tasks touch independent files.
+
+## Task 2 — H-7: Negative-margin full-bleed pattern replacement (~45 min)
+Replace `margin: 0 -24px` with viewport-aware solution (`width: 100vw + calc(50% - 50vw)` OR JS-set `--viewport-width` to handle Windows scrollbar). Test Mac + Windows + mobile + multi-template-padding scenarios.
+
+## Task 3 — H-1 + H-2: Hero block inspector reorganisation (~75 min)
+Reorganise edit.js panels by element (Container / Eyebrow / Headline / Subheadline / Image / Badges / Buttons) instead of by CSS-rule. Address `imagePadding` vs `mediaPadding` redundancy with renamed labels + help text. Pattern propagates framework-wide.
+
+## Task 4 — H-9: Audit framework gradient shorthand patterns (~30-60 min)
+Grep all `plugins/sgs-blocks/src/blocks/*/style.css` for `background: linear-gradient` or `background: url(`. For each: ensure `:not(.has-background)` exclusion + switch `background:` shorthand to `background-image:`. Extends Section R fix beyond hero.
+
+## Task 5 — H-8 + H-3 + H-4 + H-6 + H-10
+Remaining gaps per `.claude/parking.md`. H-3 (video-everywhere) is the largest — build foundation + hero proof, defer 11 blocks. H-4 (brand pink) needs Bean decision (5 min). Others mechanical (~45-90 min total).
 
 ## Guardrails
 
-- Do NOT skip multi-frame capture (Task 1) — the harness upgrade is the whole point of next session.
-- Do NOT mark Task 5 complete without all three audits agreeing PASS.
-- Deterministic script-level prevention first; agent-level last resort.
-- Branch: framework → main; client-only → feat branch.
-- WP-CLI: never `wp eval` (hook blocks); never modify post_content directly.
-- Test the entrance-animation fix first — highest-impact visible defect.
+- Run `node scripts/css-pattern-audit.js` and `node scripts/font-source-audit.js` before any commit.
+- Pre-commit STOP GATE blocks block-src commits without passing `reports/visual-diff/<block>-<date>.md`.
+- Use `node scripts/global-styles-reset.js` after every variation JSON change.
+- Don't dismiss any parity-validator delta as "structural noise" without screenshot evidence (Section Q binding rule).
+- For block-attr changes on existing posts: use `wp.blocks.createBlock + replaceBlock` (never `updateBlockAttributes`).
 ~~~

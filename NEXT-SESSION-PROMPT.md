@@ -1,78 +1,86 @@
-recommended_model: sonnet
-session_tag: small-giants-wp-2026-05-04-hero-poc-and-qc-failure
+recommended_model: opus
+session_tag: small-giants-wp-2026-05-05-framework-qc-hardening
 
-You are a senior SGS WordPress developer specialising in visual-fidelity QC harness design and deterministic CSS-pattern detection. Previous session shipped real infrastructure but the hero clone PoC failed pixel-faithfulness — and worse, both automated QC layers (measured + Gemini Pro Vision) gave it a clean bill of health. The user caught the showstopper bug live in his own browser. Your job: upgrade the QC harness so this class of bug can never ship again, then fix the 23 catalogued defects, then prove the clone is pixel-faithful with three independent audits.
+You are a senior WordPress framework engineer specialising in QC infrastructure, prevention scripts, and structural enforcement of measurement methodology — closing every gap captured in the past 3 days of hero perfect-clone work.
 
-Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-04-hero-poc-and-qc-failure"`
+Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-05-framework-qc-hardening"`
 
-Read CONVERSATION-HANDOFF.md and `.claude/handoff.md` for full context, plus:
-- `reports/hero-poc-qc-2026-05-04.md` (measured QC, 13 deltas)
-- `reports/gemini-vision-audit-2026-05-04/audit.md` (Grade D, 65%)
-- `.claude/specs/common-wp-styling-errors.md` Sections M + N (paint defects + visual-qa pipeline gaps)
-
-## Where You Are
-
-Plan: hero-clone fidelity fixes + QC methodology upgrade
-Current phase: hero-clone-fidelity-fixes
-Progress: PoC structurally complete, visually FAIL (~50% fidelity, Grade D)
-Next task: Build `tools/multi-frame-qa/capture.js` — multi-frame screenshot harness
+Read CONVERSATION-HANDOFF.md and `.claude/handoff.md` for full context, then work through these priorities.
 
 ## Skills to Invoke
 
-| Skill | When |
-|-------|------|
-| `/brainstorming` | Multi-frame capture algorithm + prevention-script architecture |
-| `/gap-analysis` | Grade the new QC harness before shipping |
-| `/lifecycle` | Any visual-qa skill update |
-| `/research` | If multi-frame approach needs Playwright API research |
-| `/strategic-plan` | Plan QC harness + prevention scripts before coding |
-| `/sgs-wp-engine` | All SGS WordPress block work |
-| `/visual-qa` + `/gemini-vision-audit` | Post-fix re-run |
-| `/subagent-driven-development` | Implementer + spec + quality review per fix |
-| `/handoff` | End of session |
+| Skill | When to use |
+|-------|-------------|
+| `/brainstorming` | Architectural calls — H-3 video schema, H-7 full-bleed pattern, H-5 screenshot-diff helper API |
+| `/gap-analysis` | Grade `/visual-qa` skill after embedding Section Q binding rule (H-5c) |
+| `/lifecycle` | MANDATORY for any skill/agent edit — H-5c, and inspector reorg if framework-pattern emerges |
+| `/research` | Auto-routes — `/research-check` for viewport-width-without-scrollbar techniques (H-7) |
+| `/strategic-plan` | Plan implementation order across H-1 through H-10 before writing code |
+| `/sgs-wp-engine` | All SGS WP work |
+| `/subagent-driven-development` | Tasks with multiple file paths — H-1+H-2, H-3, H-9 |
+| `/dispatching-parallel-agents` | H-5a + H-5b + H-7 — independent file paths |
+| `/visual-qa` | After H-5 lands, use the upgraded skill with binding screenshot-evidence rule |
 
-## MCP & Tools
+## MCP Servers & Tools
 
-| Tool | Use |
-|------|-----|
-| `mcp__plugin_playwright_playwright__*` | Multi-frame capture + DOM measurement |
-| `gemini --model gemini-3.1-pro-preview` | Post-fix vision audit |
-| `python tools/recogniser-v2/extract.py` | Re-run after R1/R2 fixes |
-| `phpcs --standard=WordPress` | Per fix |
+| Tool | What to use it for |
+|------|-------------------|
+| `mcp__plugin_playwright_playwright__*` | Browser automation; canvas pixel sampling for measurement-vs-eye disputes (NOT measurement-of-record) |
+| `node tools/multi-frame-qa/capture.js` | First-paint defect detection at 0/200/500/1000/3000ms |
+| `node scripts/mockup-parity-validator.js` | Computed-style diff (now with backgroundImage + filter + mixBlendMode in WATCHED) |
+| `node scripts/colour-parity-audit.js` | Automated mockup vs variation colour diff |
+| `node scripts/css-pattern-audit.js` | M1 first-paint defect prevention |
+| `node scripts/render-mobile-override-audit.js` | F4 inline-vs-mobile-override prevention |
+| `node scripts/font-source-audit.js` | O2 external CDN font src prevention |
+| `node scripts/global-styles-reset.js` | Variation deploy automation |
+| `python tools/recogniser-v2/extract.py` | Re-extract on mockup changes |
 
-## Agents
+## Agents to Delegate To
 
 | Agent | When |
 |-------|------|
-| `wp-sgs-developer` | All SGS WordPress block fixes |
-| `design-reviewer` | Post-fix mockup-to-live diff |
-| `feature-dev:code-reviewer` | Spec + quality review per fix |
+| `wp-sgs-developer` | All SGS WP work — H-1, H-2, H-3, H-7, H-8, H-9 |
+| `feature-dev:code-architect` | H-3 video-everywhere schema design (cross-cutting feature) |
+| `general-purpose` | H-5 screenshot-diff helper script + H-6 replaceBlock helper |
 
-## Tasks (in order)
+## Tooling reference (WordPress)
 
-1. **Build `tools/multi-frame-qa/capture.js`** — Node + Playwright. Capture frames at 0/200/500/1000/3000ms after navigation start, NO `waitUntil:'load'`. Element-target screenshot of `section.sgs-hero` + JS DOM snapshot (opacity/display/visibility/transform/getBoundingClientRect on every direct child) at each frame. Output: 5 PNGs + 5 JSONs per viewport + diff summary. Run at 1440 + 375.
+See `~/.claude/rules/wp-project-tooling.md` for the full SGS WordPress tooling tables. All apply.
 
-2. **Run multi-frame QC** against sandybrown post 29 + Mama's mockup (served via `python -m http.server 8765`). Document any first-paint defects.
+## Where You Are
 
-3. **Build ≥3 prevention scripts** (script-level first, agent only as last resort):
-   - M1: `scripts/css-pattern-audit.js` grep `animation-fill-mode: both` + non-zero delay → PreCommit fails
-   - N4: visual-qa L7c auto-include when block has `animation:` rules
-   - R1: recogniser extracts inline `style=""` via Playwright `getComputedStyle()`
-   - R2: recogniser handles `@media (min-width: 1280px)` tier
-   - F4: render.php scan for inline-style without `!important` on mobile @media override
-   - P1: Git pre-commit hook enforcing Phase 3 STOP GATE
+Plan: `.claude/parking.md` — 10 H-entries (H-1 through H-10) form the Opus-session backlog.
+Current phase: `framework-qc-hardening`
+Progress: 0/10 H-entries complete; ~6 hours estimated total work.
+Next task: **Task 1 — H-5 classifier human-eye gate** (most critical; blocks reliable QC across all future client clones).
 
-4. **Apply 23 catalogued fixes** via subagent-driven flow. Priority: V1/V2 (button text colours) → M1 (remove broken animation) → F4 (mobile override) → V3 (h1 line-height) → F5 (max-width leak) → F1/F2 (margin attrs) → R1/R2 (recogniser).
+---
 
-5. **Re-run all three audits.** Pass = 0 Major, ≤2 Important, ≥95% fidelity, first-paint capture clean.
+## Task 1 — H-5: Classifier human-eye gate (~55 min) CRITICAL
 
-6. **Handoff** — write next-session prompt (likely trust-bar section if hero passes).
+Build `scripts/screenshot-diff-helper.js` (mockup vs SGS image comparison + pixel-diff heatmap, uses `pixelmatch` npm package or `sharp` + manual diff). Add `requires_screenshot_review: true` flag to parity validator for any Q1-Q4 / R1-R4 pattern delta. Bake Section Q binding rule into `/visual-qa` skill via /lifecycle. Use `/dispatching-parallel-agents` — sub-tasks touch independent files.
+
+## Task 2 — H-7: Negative-margin full-bleed pattern replacement (~45 min)
+
+Replace `margin: 0 -24px` with viewport-aware solution. Two candidates: `width: 100vw + margin-left: calc(50% - 50vw)` (causes 15px scrollbar overflow on Windows), OR JS-set `--viewport-width: ${document.documentElement.clientWidth}px` updated on resize (excludes scrollbar). Test Mac + Windows + mobile + multi-template-padding scenarios.
+
+## Task 3 — H-1 + H-2: Hero block inspector reorganisation (~75 min)
+
+Reorganise `plugins/sgs-blocks/src/blocks/hero/edit.js` panels by element (Container / Eyebrow / Headline / Subheadline / Image / Badges / Buttons) instead of by CSS-rule (current "Margin Bottom" panel etc.). Address `imagePadding` vs `mediaPadding` redundancy with renamed labels + help text. Pattern propagates framework-wide — document the convention.
+
+## Task 4 — H-9: Audit framework gradient shorthand patterns (~30-60 min)
+
+Grep all `plugins/sgs-blocks/src/blocks/*/style.css` for `background: linear-gradient` or `background: url(`. For each match: ensure `:not(.has-background)` exclusion + switch `background:` shorthand to `background-image:` (specific, doesn't reset other props). Extends Section R fix beyond hero.
+
+## Task 5 — H-3 + H-4 + H-6 + H-8 + H-10 (remaining gaps)
+
+Per `.claude/parking.md`. H-3 (video-everywhere-image foundation) is the largest single piece — build `MediaPicker` component + `sgs_render_media` helper + hero block as proof, defer remaining 11 blocks. H-4 (brand pink validation via Python PIL sampling) needs Bean decision after sampling — 5 min decision call. H-6 (`scripts/wp-update-block-attrs.js` replaceBlock helper). H-8 (hero `ctaGap*` block attribute). H-10 (cascade Section R into prevention scripts).
 
 ## Guardrails
 
-- Do NOT skip Task 1. The harness upgrade is the whole point.
-- Do NOT mark Task 5 complete without all three audits agreeing PASS.
-- Default to deterministic script-level prevention.
-- Test entrance-animation fix first — highest-impact visible defect.
-- Branch: framework → main; client-only → feat branch.
-- WP-CLI: never `wp eval`; never modify post_content directly.
+- Run `node scripts/css-pattern-audit.js` and `node scripts/font-source-audit.js` before any commit.
+- Pre-commit STOP GATE blocks block-src commits without passing `reports/visual-diff/<block>-<date>.md`.
+- Use `node scripts/global-styles-reset.js` after every variation JSON change.
+- Don't dismiss any parity-validator delta as "structural noise" without screenshot evidence (Section Q binding rule + blub.db pattern_key 207).
+- For block-attr changes on existing posts: use `wp.blocks.createBlock + replaceBlock` (never `updateBlockAttributes` — silently rejected on blocks with save.js validation errors).
+- SSH to sandybrown: `u945238940@141.136.39.73:65002`, `~/.ssh/id_ed25519`. WP admin: `Claude` / `MigrationSweep2026!`.
