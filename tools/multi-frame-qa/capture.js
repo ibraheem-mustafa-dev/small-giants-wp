@@ -8,7 +8,22 @@
  *
  * Usage:
  *   node capture.js --url <url> --out <dir> [--viewports 375,1440] [--selector section.sgs-hero]
+ *   node capture.js --url <url> --out <dir> --selector-strategy auto-detect --block sgs/trust-bar
  *   node capture.js --diff <run-a-dir> <run-b-dir> --out <diff-dir>
+ *   node capture.js --list-blocks
+ *   node capture.js --help
+ *
+ * Flags:
+ *   --url <url>                  Page URL to capture
+ *   --out <dir>                  Output directory for screenshots + snapshots
+ *   --viewports <list>           Comma-separated viewport widths (default: 375,1440)
+ *   --selector <css>             CSS selector(s) to measure. Takes precedence over --selector-strategy.
+ *   --selector-strategy <mode>   "auto-detect" derives selectors from --block name
+ *   --block <namespace/name>     Block name (e.g. sgs/hero) — required with --selector-strategy auto-detect
+ *   --label <name>               Optional label for run
+ *   --diff <runA> <runB>         Diff mode — produce diff-report.md/json from two runs
+ *   --list-blocks                Print all blocks discovered under plugins/sgs-blocks/build/blocks/
+ *   --help                       Show this help text
  *
  * Why this exists (M1/M2/M3 from common-wp-styling-errors.md):
  *   Standard single-frame post-load screenshots miss time-bound defects.
@@ -26,16 +41,80 @@ const DEFAULT_VIEWPORTS = [375, 1440];
 const DEFAULT_SELECTOR = 'section.sgs-hero, .wp-block-sgs-hero, body';
 
 function parseArgs(argv) {
-    const args = { viewports: DEFAULT_VIEWPORTS, selector: DEFAULT_SELECTOR, diff: false };
+    const args = { viewports: DEFAULT_VIEWPORTS, selector: null, diff: false, help: false, listBlocks: false };
+    let selectorExplicit = false;
     for (let i = 2; i < argv.length; i++) {
         if (argv[i] === '--url') args.url = argv[++i];
         else if (argv[i] === '--out') args.out = argv[++i];
         else if (argv[i] === '--viewports') args.viewports = argv[++i].split(',').map(Number);
-        else if (argv[i] === '--selector') args.selector = argv[++i];
+        else if (argv[i] === '--selector') { args.selector = argv[++i]; selectorExplicit = true; }
+        else if (argv[i] === '--selector-strategy') args.selectorStrategy = argv[++i];
+        else if (argv[i] === '--block') args.block = argv[++i];
         else if (argv[i] === '--diff') { args.diff = true; args.runA = argv[++i]; args.runB = argv[++i]; }
         else if (argv[i] === '--label') args.label = argv[++i];
+        else if (argv[i] === '--list-blocks') args.listBlocks = true;
+        else if (argv[i] === '--help' || argv[i] === '-h') args.help = true;
     }
+    args._selectorExplicit = selectorExplicit;
+    if (!args.selector) args.selector = DEFAULT_SELECTOR;
     return args;
+}
+
+const BLOCKS_BUILD_DIR = path.resolve(__dirname, '..', '..', 'plugins', 'sgs-blocks', 'build', 'blocks');
+
+function discoverBlocks() {
+    if (!fs.existsSync(BLOCKS_BUILD_DIR)) return [];
+    const entries = fs.readdirSync(BLOCKS_BUILD_DIR, { withFileTypes: true });
+    const blocks = [];
+    for (const ent of entries) {
+        if (!ent.isDirectory()) continue;
+        const blockJsonPath = path.join(BLOCKS_BUILD_DIR, ent.name, 'block.json');
+        if (!fs.existsSync(blockJsonPath)) continue;
+        try {
+            const meta = JSON.parse(fs.readFileSync(blockJsonPath, 'utf8'));
+            if (meta && meta.name) {
+                blocks.push({ name: meta.name, dir: ent.name, title: meta.title || '' });
+            }
+        } catch (_) { /* skip malformed */ }
+    }
+    return blocks.sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function listBlocks() {
+    const blocks = discoverBlocks();
+    if (!blocks.length) {
+        console.error(`No blocks found under ${BLOCKS_BUILD_DIR}`);
+        console.error('Run `npm run build` in plugins/sgs-blocks first.');
+        process.exit(1);
+    }
+    console.log(`Found ${blocks.length} block(s) under plugins/sgs-blocks/build/blocks/:\n`);
+    for (const b of blocks) {
+        console.log(`  ${b.name.padEnd(36)} ${b.title}`);
+    }
+}
+
+/**
+ * Derive a multi-selector string from a block name.
+ *   sgs/trust-bar → ".wp-block-sgs-trust-bar, .sgs-trust-bar, section.sgs-trust-bar, body"
+ */
+function autoDetectSelector(blockName) {
+    if (!blockName || typeof blockName !== 'string' || !blockName.includes('/')) {
+        throw new Error(`Invalid --block "${blockName}". Expected namespace/name (e.g. sgs/hero).`);
+    }
+    const [ns, name] = blockName.split('/');
+    const dashed = `${ns}-${name}`;
+    const candidates = [
+        `.wp-block-${dashed}`,
+        `.sgs-${name}`,
+        `section.sgs-${name}`,
+        'body',
+    ];
+    return candidates.join(', ');
+}
+
+function showHelp() {
+    const headerEnd = require('fs').readFileSync(__filename, 'utf8').split('*/')[0] + '*/';
+    console.log(headerEnd);
 }
 
 async function measureVisibility(page, selector) {
@@ -364,6 +443,35 @@ async function runDiff(args) {
 
 async function main() {
     const args = parseArgs(process.argv);
+
+    if (args.help) {
+        showHelp();
+        return;
+    }
+
+    if (args.listBlocks) {
+        listBlocks();
+        return;
+    }
+
+    // Resolve --selector-strategy auto-detect (only when --selector not explicitly set)
+    if (args.selectorStrategy === 'auto-detect' && !args._selectorExplicit) {
+        if (!args.block) {
+            console.error('--selector-strategy auto-detect requires --block <namespace/name> (e.g. --block sgs/hero)');
+            console.error('Run `node capture.js --list-blocks` to see available blocks.');
+            process.exit(1);
+        }
+        try {
+            args.selector = autoDetectSelector(args.block);
+            console.log(`[auto-detect] block ${args.block} → selector "${args.selector}"`);
+        } catch (e) {
+            console.error(e.message);
+            process.exit(1);
+        }
+    } else if (args.selectorStrategy && args.selectorStrategy !== 'auto-detect') {
+        console.error(`Unknown --selector-strategy "${args.selectorStrategy}". Supported: auto-detect`);
+        process.exit(1);
+    }
 
     if (args.diff) {
         await runDiff(args);
