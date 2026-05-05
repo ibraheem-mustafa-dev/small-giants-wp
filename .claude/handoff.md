@@ -174,6 +174,19 @@ The Wave 2C full-bleed framework fix has NOT been deployed or verified across Ma
 - **For pixel-diff classifier checks:** mandatory before any severity reduction — `node scripts/screenshot-diff-helper.js --mockup <url> --sgs <url> --selector <css-selector>` (Hard Rule 10)
 - **For brand validation on new clients:** `python scripts/brand-palette-sampler.py --client <slug> --brand-dir sites/<slug>/research/brand --mockup-css <html-or-css-path> --output sites/<slug>/research/brand-palette.json`
 
+## Wave 6 — Smell signal investigations + deploy verify (post-QC)
+
+After the inline `/qc-inline` sweep flagged 3 smell signals + 1 deferred deploy action:
+
+| # | Action | Outcome |
+|---|---|---|
+| Smell 1 | brand-strip block.json missing provenance comment | Fixed inline — `_comment_logos_media` string added next to `logos` attribute |
+| Smell 2 | testimonial v6 isEligible too broad (fired on any post without authorMedia) | Fixed via Sonnet — guard now `attributes.avatar?.url && !attributes.authorMedia`; risk assessment confirms no remaining edge cases |
+| Smell 3 | gallery deviation undocumented in migration recipe | Fixed inline — strong "DO NOT fix this" note added on row 8 explaining the multi-MediaUpload + resolveGalleryMedia trade-off |
+| Action 4 | Deploy + cross-breakpoint verify | **PASS on sandybrown post 29** — 3 breakpoints (375/768/1440), 0 console errors, hero `backgroundColor #F5C2C8` confirmed, `backgroundImage: none` (no gradient overpaint), `width: 1440px` = full viewport, multi-frame M1 NOT detected. Two non-blocking findings: `global-styles-reset` partial fail (REST endpoint unresolvable; mitigated via tar deploy + OPcache reset; visual evidence confirms variation rendering); cached `WP_APP_PWD_MAMAS` was bound to wrong account — subagent generated fresh app password via WP-CLI. |
+
+Deploy artefacts at `reports/wave-6-deploy-verify/` (3 breakpoint screenshots + 5 multi-frame captures + parity report).
+
 ## Session reflection
 
 Three threads converged this session:
