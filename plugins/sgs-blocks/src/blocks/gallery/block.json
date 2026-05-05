@@ -44,6 +44,13 @@
     "root": ".wp-block-sgs-gallery"
   },
   "attributes": {
+    "mediaItems": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "object"
+      }
+    },
     "images": {
       "type": "array",
       "default": [],

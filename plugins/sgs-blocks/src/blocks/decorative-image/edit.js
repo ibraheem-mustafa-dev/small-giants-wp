@@ -2,17 +2,15 @@ import { __ } from '@wordpress/i18n';
 import {
 	useBlockProps,
 	InspectorControls,
-	MediaUpload,
-	MediaUploadCheck,
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
 	RangeControl,
 	ToggleControl,
-	Button,
 	SelectControl,
 } from '@wordpress/components';
 import { ResponsiveControl } from '../../components';
+import MediaPicker from '../../components/MediaPicker';
 
 const OVERFLOW_OPTIONS = [
 	{ label: __( 'Visible', 'sgs-blocks' ), value: 'visible' },
@@ -21,6 +19,7 @@ const OVERFLOW_OPTIONS = [
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
+		decorMedia,
 		imageId,
 		imageUrl,
 		imageAlt,
@@ -51,17 +50,34 @@ export default function Edit( { attributes, setAttributes } ) {
 		className: 'sgs-decorative-image-editor',
 	} );
 
-	const onSelectImage = ( media ) => {
+	// Hydrate from new decorMedia first; fall back to legacy imageUrl for
+	// posts that have not yet round-tripped through the editor migration.
+	const effectiveMedia =
+		decorMedia ||
+		( imageUrl
+			? {
+					url: imageUrl,
+					type: 'image',
+					id: imageId || 0,
+					alt: imageAlt || '',
+					mime: 'image/jpeg',
+			  }
+			: null );
+
+	const onSelectMedia = ( media ) => {
 		setAttributes( {
-			imageId: media.id,
-			imageUrl: media.url,
-			imageAlt: media.alt || '',
+			decorMedia: media,
+			// Mirror to legacy attrs so existing render path / older code keeps working.
+			imageId: media && media.type === 'image' ? media.id : undefined,
+			imageUrl: media && media.type === 'image' ? media.url : '',
+			imageAlt: media && media.type === 'image' ? media.alt || '' : '',
 		} );
 	};
 
-	const onRemoveImage = () => {
+	const onRemoveMedia = () => {
 		setAttributes( {
-			imageId: null,
+			decorMedia: null,
+			imageId: undefined,
 			imageUrl: '',
 			imageAlt: '',
 		} );
@@ -354,60 +370,58 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				{ ! imageUrl ? (
-					<MediaUploadCheck>
-						<MediaUpload
-							onSelect={ onSelectImage }
-							allowedTypes={ [ 'image' ] }
-							value={ imageId }
-							render={ ( { open } ) => (
-								<div className="sgs-decorative-image-editor__placeholder">
-									<Button onClick={ open } variant="primary">
-										{ __( 'Select Decorative Image', 'sgs-blocks' ) }
-									</Button>
-									<p className="sgs-decorative-image-editor__help">
-										{ __(
-											'Decorative images float absolutely over sections with optional parallax effects.',
-											'sgs-blocks'
-										) }
-									</p>
-								</div>
+				{ ! effectiveMedia ? (
+					<div className="sgs-decorative-image-editor__placeholder">
+						<MediaPicker
+							value={ null }
+							onChange={ onSelectMedia }
+							onRemove={ onRemoveMedia }
+							label={ __( 'Select Decorative Media', 'sgs-blocks' ) }
+							instructionsImage={ __(
+								'Decorative images or videos float absolutely over sections with optional parallax effects.',
+								'sgs-blocks'
 							) }
 						/>
-					</MediaUploadCheck>
+					</div>
 				) : (
 					<div className="sgs-decorative-image-editor__preview-wrapper">
 						<div
 							className="sgs-decorative-image-editor__preview-container"
 							style={ { position: 'relative', minHeight: '400px' } }
 						>
-							<img
-								src={ imageUrl }
-								alt={ imageAlt || __( 'Decorative image preview', 'sgs-blocks' ) }
-								className="sgs-decorative-image-editor__preview"
-								style={ previewStyles }
-							/>
+							{ effectiveMedia.type === 'video' ? (
+								<video
+									src={ effectiveMedia.url }
+									autoPlay
+									muted
+									loop
+									playsInline
+									className="sgs-decorative-image-editor__preview"
+									style={ previewStyles }
+								/>
+							) : (
+								<img
+									src={ effectiveMedia.url }
+									alt={
+										effectiveMedia.alt ||
+										__( 'Decorative image preview', 'sgs-blocks' )
+									}
+									className="sgs-decorative-image-editor__preview"
+									style={ previewStyles }
+								/>
+							) }
 						</div>
 						<div className="sgs-decorative-image-editor__actions">
-							<MediaUploadCheck>
-								<MediaUpload
-									onSelect={ onSelectImage }
-									allowedTypes={ [ 'image' ] }
-									value={ imageId }
-									render={ ( { open } ) => (
-										<Button onClick={ open } variant="secondary">
-											{ __( 'Replace Image', 'sgs-blocks' ) }
-										</Button>
-									) }
-								/>
-								<Button
-									onClick={ onRemoveImage }
-									variant="secondary"
-									isDestructive
-								>
-									{ __( 'Remove Image', 'sgs-blocks' ) }
-								</Button>
-							</MediaUploadCheck>
+							<MediaPicker
+								value={ effectiveMedia }
+								onChange={ onSelectMedia }
+								onRemove={ onRemoveMedia }
+								label={ __( 'Replace Media', 'sgs-blocks' ) }
+								instructionsImage={ __(
+									'Choose an image or video for this decorative slot.',
+									'sgs-blocks'
+								) }
+							/>
 						</div>
 					</div>
 				) }

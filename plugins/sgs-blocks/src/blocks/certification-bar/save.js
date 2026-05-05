@@ -32,12 +32,14 @@ export default function Save( { attributes } ) {
 	};
 
 	const renderBadge = ( item, i ) => {
+		const mediaUrl = item.media?.url || item.image?.url || '';
+		const mediaAlt = item.media?.alt || item.label || '';
 		const badgeContent = (
 			<>
-				{ badgeStyle !== 'text-only' && item.image?.url && (
+				{ badgeStyle !== 'text-only' && mediaUrl && (
 					<img
-						src={ item.image.url }
-						alt={ item.label || '' }
+						src={ mediaUrl }
+						alt={ mediaAlt }
 						className="sgs-certification-bar__badge-img"
 						loading="lazy"
 					/>

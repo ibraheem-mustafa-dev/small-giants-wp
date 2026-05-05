@@ -122,6 +122,85 @@ function isFontFamilyEquivalent(mockupVal, sgsVal, mockupFonts, sgsFonts) {
     return familyLoaded(mockupFonts, primary) && familyLoaded(sgsFonts, primary);
 }
 
+// Q1-Q4 classifier-trap detection (Section Q in
+// .claude/specs/common-wp-styling-errors.md, captured 2026-05-05).
+//
+// When the parity validator reports a delta matching one of these four
+// patterns, downstream classifier code MUST NOT reduce its severity unless
+// a side-by-side screenshot diff is attached. We surface this requirement
+// by setting `requires_screenshot_review: true` on the delta object.
+//
+// Patterns:
+//   Q1 — padding/margin deltas with |Δ| > 5px (size IS the defect).
+//   Q2 — `display` deltas crossing the flex/block boundary (children stack
+//        vs sit inline).
+//   Q3 — negative-margin / full-bleed values on a section/hero/wrapper
+//        element (viewport-math overflow).
+//   Q4 — `backgroundColor` deltas where parent bleed could make the child's
+//        colour disagree with what's actually painted.
+//
+// Selector-aware checks (Q3, Q4) use simple substring heuristics on the
+// SGS selector — adequate for the current fingerprint set; deliberately
+// conservative (false positives are cheap, false negatives are not).
+function isPaddingOrMarginProp(prop) {
+    return /^padding(Top|Right|Bottom|Left)?$/.test(prop)
+        || /^margin(Top|Right|Bottom|Left)?$/.test(prop);
+}
+
+function isFlexBlockBoundary(a, b) {
+    const flexish = (v) => /^(flex|inline-flex|grid|inline-grid)$/.test(String(v).trim());
+    const blockish = (v) => /^(block|inline-block|inline)$/.test(String(v).trim());
+    return (flexish(a) && blockish(b)) || (flexish(b) && blockish(a));
+}
+
+function isSectionOrWrapperSelector(sel) {
+    if (!sel) return false;
+    const s = String(sel).toLowerCase();
+    return /(section|hero|wrapper|container|banner|full-bleed|alignfull)/.test(s);
+}
+
+function hasNegativeOrFullBleedToken(val) {
+    if (val == null) return false;
+    const s = String(val);
+    // Negative px values, or 100vw / 100% — both classic full-bleed signals.
+    return /-\d+(\.\d+)?px/.test(s) || /\b100vw\b/.test(s) || /\b100%\b/.test(s);
+}
+
+function requiresScreenshotReview(delta) {
+    if (!delta || !delta.property) return false;
+    const prop = delta.property;
+    const mockup = delta.mockup;
+    const sgs = delta.sgs;
+    const sel = delta.sgsSelector || '';
+
+    // Q1 — padding/margin delta > 5px
+    if (isPaddingOrMarginProp(prop)) {
+        const mn = pxToNumber(mockup);
+        const sn = pxToNumber(sgs);
+        if (mn != null && sn != null && Math.abs(sn - mn) > 5) return true;
+        // Fall through to deltaPx if direct numbers unavailable
+        if (delta.deltaPx != null && Math.abs(delta.deltaPx) > 5) return true;
+    }
+
+    // Q2 — display flex/block boundary
+    if (prop === 'display' && isFlexBlockBoundary(mockup, sgs)) return true;
+
+    // Q3 — negative-margin / full-bleed on section/hero/wrapper
+    if ((prop === 'margin' || prop === 'transform' || isPaddingOrMarginProp(prop))
+        && isSectionOrWrapperSelector(sel)
+        && (hasNegativeOrFullBleedToken(mockup) || hasNegativeOrFullBleedToken(sgs))) {
+        return true;
+    }
+
+    // Q4 — backgroundColor delta on a child where parent bleed could show.
+    // Conservative: any backgroundColor delta gets flagged for screenshot
+    // review. Section Q's binding rule says cheap-flag is preferable to
+    // missing a real defect.
+    if (prop === 'backgroundColor') return true;
+
+    return false;
+}
+
 // Severity classification
 function classifySeverity(prop, mockup, sgs, deltaPx, deltaPct) {
     if (COLOUR_PROPS.has(prop)) return 'Major';
@@ -373,7 +452,7 @@ function buildJsonReport({ mockupUrl, sgsUrl, viewports, fingerprint, results })
             const s = sgsSide.styles[mockupSel];
 
             if (!m || !m.found) {
-                allDeltas.push({
+                const d = {
                     viewport: v,
                     mockupSelector: mockupSel,
                     sgsSelector: sgsSel,
@@ -381,11 +460,13 @@ function buildJsonReport({ mockupUrl, sgsUrl, viewports, fingerprint, results })
                     mockup: 'NOT FOUND',
                     sgs: s && s.found ? 'found' : 'NOT FOUND',
                     severity: 'Major',
-                });
+                };
+                d.requires_screenshot_review = requiresScreenshotReview(d);
+                allDeltas.push(d);
                 continue;
             }
             if (!s || !s.found) {
-                allDeltas.push({
+                const d = {
                     viewport: v,
                     mockupSelector: mockupSel,
                     sgsSelector: sgsSel,
@@ -393,7 +474,9 @@ function buildJsonReport({ mockupUrl, sgsUrl, viewports, fingerprint, results })
                     mockup: 'found',
                     sgs: 'NOT FOUND',
                     severity: 'Major',
-                });
+                };
+                d.requires_screenshot_review = requiresScreenshotReview(d);
+                allDeltas.push(d);
                 continue;
             }
 
@@ -404,12 +487,16 @@ function buildJsonReport({ mockupUrl, sgsUrl, viewports, fingerprint, results })
             for (const prop of WATCHED) {
                 const delta = compareProperty(prop, m[prop], s[prop], ctx);
                 if (delta) {
-                    allDeltas.push({
+                    const enriched = {
                         viewport: v,
                         mockupSelector: mockupSel,
                         sgsSelector: sgsSel,
                         ...delta,
-                    });
+                    };
+                    // Q1-Q4 classifier-trap flag — see Section Q in
+                    // .claude/specs/common-wp-styling-errors.md.
+                    enriched.requires_screenshot_review = requiresScreenshotReview(enriched);
+                    allDeltas.push(enriched);
                 }
             }
         }
@@ -467,6 +554,16 @@ function renderMarkdown(report) {
     lines.push(`  - Important: ${report.deltas_by_severity.Important}`);
     lines.push(`  - Minor: ${report.deltas_by_severity.Minor}`);
     lines.push('');
+
+    // Section Q classifier-trap banner — fires when any delta matches
+    // Q1-Q4. Forces the downstream classifier to attach a side-by-side
+    // screenshot before reducing severity.
+    const screenshotFlagged = (report.deltas || []).filter(d => d.requires_screenshot_review);
+    if (screenshotFlagged.length > 0) {
+        lines.push(`> ⚠ ${screenshotFlagged.length} deltas flagged \`requires_screenshot_review\`. Per Section Q, classifier MUST attach a side-by-side screenshot via \`node scripts/screenshot-diff-helper.js\` before reducing severity. No screenshot, severity stays.`);
+        lines.push('');
+    }
+
     lines.push('## Font loading');
     for (const v of report.viewports_tested) {
         const m = report.font_report.mockup[v];
@@ -479,6 +576,9 @@ function renderMarkdown(report) {
     }
     lines.push('');
     lines.push('## Deltas by viewport');
+    // If ANY delta on the report is screenshot-flagged, add the column
+    // across every viewport table for consistency.
+    const showReviewColumn = (report.deltas || []).some(d => d.requires_screenshot_review);
     for (const v of report.viewports_tested) {
         const rows = report.deltas.filter(d => d.viewport === v);
         lines.push('');
@@ -488,11 +588,21 @@ function renderMarkdown(report) {
             continue;
         }
         lines.push('');
-        lines.push('| Selector (SGS) | Property | Mockup | SGS | Δ | Severity |');
-        lines.push('|---|---|---|---|---|---|');
+        if (showReviewColumn) {
+            lines.push('| Selector (SGS) | Property | Mockup | SGS | Δ | Severity | Screenshot review required |');
+            lines.push('|---|---|---|---|---|---|---|');
+        } else {
+            lines.push('| Selector (SGS) | Property | Mockup | SGS | Δ | Severity |');
+            lines.push('|---|---|---|---|---|---|');
+        }
         for (const d of rows) {
             const deltaCell = d.deltaPx != null ? `${d.deltaPx}px (${d.deltaPct}%)` : '—';
-            lines.push(`| \`${d.sgsSelector}\` | ${d.property} | ${d.mockup} | ${d.sgs} | ${deltaCell} | ${d.severity} |`);
+            if (showReviewColumn) {
+                const reviewCell = d.requires_screenshot_review ? 'yes' : 'no';
+                lines.push(`| \`${d.sgsSelector}\` | ${d.property} | ${d.mockup} | ${d.sgs} | ${deltaCell} | ${d.severity} | ${reviewCell} |`);
+            } else {
+                lines.push(`| \`${d.sgsSelector}\` | ${d.property} | ${d.mockup} | ${d.sgs} | ${deltaCell} | ${d.severity} |`);
+            }
         }
     }
     lines.push('');

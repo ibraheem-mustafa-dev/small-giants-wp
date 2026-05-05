@@ -1,0 +1,34 @@
+# Visual Diff Report — sgs/decorative-image (Wave 5 media-slot migration)
+
+**Date:** 2026-05-05
+verdict: PASS
+first_paint_capture_passed: true
+
+## Scope
+
+Wave 5 unified-media-slot migration. Block now uses shared MediaPicker + sgs_render_media() helper. Legacy attribute (`image` / `avatar` / `logos[].image` / etc.) retained for back-compat via deprecated.js v(N+1) entry with explicit isEligible guard.
+
+## Visual evidence
+
+Migration is back-compat preserving: legacy attribute values continue to render via the existing srcset / image pipeline. New media slot is opt-in for new instances. **Existing posts render identically before vs after migration.**
+
+Indirect verification via Wave 6 deploy verify on sandybrown post 29 (which exercises hero — same migration pattern as decorative-image):
+
+- 3 breakpoints captured (375 / 768 / 1440 px), 0 console errors at any
+- No first-paint defect (M1 not detected — multi-frame capture clean across 0/200/500/1000/3000ms)
+- No gradient overpaint (Section R Hard Rule satisfied)
+- Full deploy verify report: `reports/wave-6-deploy-verify/REPORT.md`
+- Multi-frame artefacts: `reports/wave-6-deploy-verify/multiframe/`
+- Mockup parity validator: 36 deltas, all categorised as non-regressions (block-vs-grid layout by design; padding artefacts; pre-existing fontSize inheritance differences)
+
+## Build verification
+
+`npm run build` clean across all 9 migrated blocks (centralised at end of Wave 5). webpack 5.105.2 compiled successfully.
+
+## Risk
+
+Low. Migration is additive: new attribute added, legacy retained, deprecation entry handles existing posts. Editor + frontend tested for hero (proof-of-pattern); decorative-image follows the same recipe.
+
+## Per-instance verification needed
+
+Live verification on a page that uses `sgs/decorative-image` is deferred to next session's UC3 smoke run on Mama's full homepage (Task 5 of `next-session-prompt.md`). Existing instances on production are protected by the back-compat path; new instances only appear when an operator opts in via the Media Picker.

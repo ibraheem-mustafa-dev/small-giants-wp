@@ -183,7 +183,11 @@ See `.claude/plans/phase-2-rubrics-universe.md` G2.5 section. Triggered by Phase
 
 **Spec:** workspace lesson at `C:/Users/Bean/.openclaw/workspace/memory/learning/2026-04-30-diagnose-blub-db-locks-not-park-on-timeout.md` is the source of truth.
 
-## H-1 — Hero block inspector: reorganise by element, not by CSS-rule
+## ~~H-1 — Hero block inspector: reorganise by element~~ — RESOLVED 2026-05-05
+
+Wave 3A: 21 panels → 10 element-grouped (Container / Eyebrow / Headline / Subheadline / Image / Background Video / SVG Background / Buttons / Badges / variant). All attributes preserved. Build clean. Pattern documented for cascade across remaining 23 blocks (deferred — UX polish, not the cloning-skill priority).
+
+## H-1 — Hero block inspector: reorganise by element, not by CSS-rule (ORIGINAL)
 
 **Captured:** 2026-05-05 (Bean: "I absolutely hate the way you've sorted the block settings for the hero block")
 
@@ -209,7 +213,11 @@ See `.claude/plans/phase-2-rubrics-universe.md` G2.5 section. Triggered by Phase
 
 **Resume trigger:** next session (Opus, dedicated to closing all visual-qa + framework gaps).
 
-## H-2 — `imagePadding` vs `mediaPadding` redundancy on hero block
+## ~~H-2 — imagePadding vs mediaPadding redundancy~~ — RESOLVED 2026-05-05
+
+Wave 3A: Inspector labels clarified to "Inner padding (around the image element itself)" + "Outer padding (around the whole media wrapper)" plus HelpText explaining the structural difference. Attribute names unchanged for back-compat. Folded into the Image panel of the new element-grouped layout.
+
+## H-2 — `imagePadding` vs `mediaPadding` redundancy on hero block (ORIGINAL)
 
 **Captured:** 2026-05-05 (Bean noticed both options exist)
 
@@ -226,7 +234,11 @@ See `.claude/plans/phase-2-rubrics-universe.md` G2.5 section. Triggered by Phase
 
 **Resume trigger:** Opus session — fold into H-1 inspector reorganisation.
 
-## H-3 — Video-everywhere-image feature
+## ~~H-3 — Video-everywhere-image feature~~ — RESOLVED 2026-05-05
+
+Wave 3B + 3C + Wave 5: Shared `MediaPicker.js` (198 lines) + `sgs_render_media()` PHP helper + migration recipe at `tools/qc-prevention/media-slot-migration.md` (188 lines). Hero migrated as proof (Wave 3C). 8 of remaining 11 blocks migrated in Wave 5 parallel sweep (info-box, card-grid, testimonial, decorative-image, brand-strip, certification-bar, gallery, team-member, cta-section). 2 NO-OP (feature-grid container, process-steps text-only). Centralised npm run build clean. Wave 6 deploy verify PASS. Logo-only blocks use `allowedTypes={['image']}`. Gallery deviation flagged in recipe (multi-MediaUpload + resolveGalleryMedia normalisation).
+
+## H-3 — Video-everywhere-image feature (ORIGINAL)
 
 **Captured:** 2026-05-05 (Bean: "we should be able to use a video wherever we can insert an image")
 
@@ -245,7 +257,11 @@ See `.claude/plans/phase-2-rubrics-universe.md` G2.5 section. Triggered by Phase
 
 **Resume trigger:** Opus session OR a dedicated framework feature session. Has cross-cutting impact — needs design review before implementation.
 
-## H-4 — Brand-source pink shade may not match mockup HTML brief
+## ~~H-4 — Brand-source pink shade vs mockup brief~~ — RESOLVED 2026-05-05
+
+Wave 2D: Built `scripts/brand-palette-sampler.py` (~200 lines, PIL k-means + CIE Delta-E 2000). Ran on Mama's brand assets. **Finding: `--surface-pink #F5C2C8` (the disputed shade) has zero anchor in the brand source — it's a designer-invented light tint.** Brand DOES use `#E68A95` primary pink (verified ΔE 2.7 against logo). Brand has a warm peach/tan family the mockup ignored: `#FAC47E`, `#E3B78B`, `#DAAA92`, `#BE7B52`. Bean approved adding the warm tones to Mama's variation palette as additive `surface-peach` / `surface-cream-warm` / `border-warm` / `cookie-brown-warm`. Surface-pink left as-is (Bean didn't request replacement). Script is reusable for every future client onboard.
+
+## H-4 — Brand-source pink shade may not match mockup HTML brief (ORIGINAL)
 
 **Captured:** 2026-05-05 (Bean reported pink shade looks wrong; investigation showed live SGS exactly matches mockup HTML brief CSS variables but Bean's eye still says wrong)
 
@@ -265,7 +281,11 @@ If Bean's eye still says "wrong shade," the most likely cause is the **mockup HT
 
 **Resume trigger:** Opus session. May change other Mama's brand colours (cookie-brown, accent-yellow, charcoal) if brand source uses different shades.
 
-## H-5 — Mockup parity validator structural false-positive classifier needs human-eye gate
+## ~~H-5 — Classifier human-eye gate~~ — RESOLVED 2026-05-05
+
+Wave 2A + 2B + 3D: Built `scripts/screenshot-diff-helper.js` (560 lines, pixelmatch + composite + heatmap + dominant-colour histogram + 6 exit codes). Added `requires_screenshot_review` flag to `mockup-parity-validator.js` (+109 lines, Q1-Q4 helpers, Section Q banner, conditional column). Baked Hard Rule 10 into `~/.claude/skills/visual-qa/SKILL.md` via /lifecycle Mode A (skillscore 95% A) — no severity reduction without screenshot evidence; deltas tagged `requires_screenshot_review: true` cannot be dismissed at all without pixel evidence.
+
+## H-5 — Mockup parity validator structural false-positive classifier needs human-eye gate (ORIGINAL)
 
 **Captured:** 2026-05-05 (the "55 deltas dismissed as structural noise" incident — see mistakes.md top entry)
 
@@ -282,7 +302,11 @@ If Bean's eye still says "wrong shade," the most likely cause is the **mockup HT
 
 **Resume trigger:** Opus session — this is the single biggest QC reliability gap.
 
-## H-6 — Block validation errors silently reject `updateBlockAttributes`
+## ~~H-6 — replaceBlock helper packaged~~ — RESOLVED 2026-05-05
+
+Wave 2E: Built `scripts/wp-update-block-attrs.js` (385 lines). Wraps the createBlock+replaceBlock workaround as canonical attr-update path. Auth via `WP_USER` + `WP_APP_PASSWORD` env vars matching `global-styles-reset.js` pattern. Handles auth failure / post-not-found / no-match / save-failed / REST-mismatch with distinct exit codes. `--dry-run` and `--all-instances` flags. REST verification confirms attrs persisted. Operator-friendly "When to use" comment header.
+
+## H-6 — Block validation errors silently reject `updateBlockAttributes` (ORIGINAL)
 
 **Captured:** 2026-05-04 (caught during post 29 attribute updates)
 
@@ -360,7 +384,11 @@ Hero fixed in 2026-05-05 commit (replaced `background:` with `background-image:`
 
 **Resume trigger:** Opus session — fold into H-5 (classifier human-eye gate) work.
 
-## H-7 — Negative-margin full-bleed framework pattern needs replacement
+## ~~H-7 — Full-bleed pattern replacement~~ — RESOLVED 2026-05-05
+
+Wave 2C: Replaced negative-margin full-bleed (`margin: 0 -24px`) with viewport-aware `var(--viewport-width, 100vw)` calc-based margins. Added `theme/sgs-theme/assets/js/viewport-width.js` (50 lines, IIFE, debounced resize listener) — sets `--viewport-width` on `:root` to `document.documentElement.clientWidth` (excludes scrollbar on Windows). Fallback to `100vw` when JS unavailable. Removed Mama's `.page-id-29` instance-level overrides — framework now handles full-bleed for every hero instance. Wave 6 deploy verify confirmed: hero `width: 1440px` at desktop, no horizontal overflow, no Section R gradient overpaint. Pattern doc at `tools/qc-prevention/full-bleed-pattern-replacement.md`.
+
+## H-7 — Negative-margin full-bleed framework pattern needs replacement (ORIGINAL)
 
 **Captured:** 2026-05-05 (Fix 4 from hero-audit-2026-05-05; instance-level workaround applied for Mama's, framework still uses fragile pattern)
 

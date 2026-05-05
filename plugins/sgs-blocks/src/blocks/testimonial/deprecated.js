@@ -743,4 +743,195 @@ const v5 = {
 	},
 };
 
-export default [ v4, v3, v2, v1, v5 ];
+/**
+ * v6 — final static-save shape immediately before the unified media-slot
+ *      migration on 2026-05-05 (Gap H-3). The block was converted from a
+ *      static block (save returns JSX) to a dynamic block (save returns
+ *      null, render.php emits the HTML) so the testimonial author photo
+ *      could be wired through the shared MediaPicker + sgs_render_media
+ *      pipeline. v6's save output matches the JSX produced by the static
+ *      save.js that shipped just before this migration. The migrate()
+ *      lifts the legacy `avatar` object into the new `authorMedia` shape.
+ */
+function stripHtmlV6( html ) {
+	if ( ! html ) return '';
+	return html.replace( /<[^>]+>/g, '' ).trim();
+}
+
+const v6 = {
+	attributes: {
+		quote: { type: 'string', default: '' },
+		name: { type: 'string', default: '' },
+		role: { type: 'string', default: '' },
+		avatar: { type: 'object' },
+		rating: { type: 'number', default: 0 },
+		style: { type: 'string', default: 'card' },
+		quoteColour: { type: 'string', default: 'text' },
+		nameColour: { type: 'string', default: 'primary' },
+		nameFontSize: { type: 'string' },
+		nameFontSizeTablet: { type: 'string', default: '' },
+		nameFontSizeMobile: { type: 'string', default: '' },
+		roleColour: { type: 'string', default: 'text-muted' },
+		ratingColour: { type: 'string', default: 'accent' },
+		reviewSource: { type: 'string', default: '' },
+		reviewDate: { type: 'string', default: '' },
+		hoverBackgroundColour: { type: 'string', default: '' },
+		hoverTextColour: { type: 'string', default: '' },
+		hoverBorderColour: { type: 'string', default: '' },
+		hoverEffect: { type: 'string', default: 'none' },
+		transitionDuration: { type: 'string', default: '300' },
+		transitionEasing: { type: 'string', default: 'ease-in-out' },
+		hoverScale: { type: 'string', default: '' },
+		hoverShadow: { type: 'string', default: '' },
+		staggerDelay: { type: 'number', default: 0 },
+		sgsAnimation: { type: 'string', default: 'fade-up' },
+		sgsAnimationDuration: { type: 'string', default: 'medium' },
+		sgsAnimationEasing: { type: 'string', default: 'default' },
+		schemaEnabled: { type: 'boolean', default: false },
+	},
+
+	isEligible( attributes ) {
+		// Fire ONLY when the post carries pre-migration legacy avatar content
+		// AND has not yet been migrated to authorMedia. This avoids matching:
+		//   – posts with no avatar at all (nothing to migrate; the dynamic
+		//     save: () => null already handles them correctly)
+		//   – posts already round-tripped to authorMedia
+		//   – posts where an operator has intentionally cleared authorMedia
+		//     without ever having had a legacy avatar.
+		return !! (
+			attributes &&
+			attributes.avatar &&
+			attributes.avatar.url &&
+			! attributes.authorMedia
+		);
+	},
+
+	save( { attributes } ) {
+		const {
+			quote, name, role, avatar, rating,
+			style: cardStyle,
+			quoteColour, nameColour, nameFontSize,
+			nameFontSizeTablet, nameFontSizeMobile,
+			roleColour, ratingColour,
+			hoverBackgroundColour, hoverTextColour, hoverBorderColour,
+			hoverEffect, transitionDuration, transitionEasing,
+			hoverScale, hoverShadow, staggerDelay, schemaEnabled,
+		} = attributes;
+
+		const classNames = [
+			'sgs-testimonial',
+			cardStyle ? `sgs-testimonial--${ cardStyle }` : '',
+			hoverEffect && hoverEffect !== 'none' ? `sgs-testimonial--hover-${ hoverEffect }` : '',
+			hoverScale ? 'sgs-has-hover-scale' : '',
+			hoverShadow ? 'sgs-has-hover' : '',
+			staggerDelay ? 'sgs-has-stagger' : '',
+		].filter( Boolean );
+
+		const responsiveDataAttrs = {};
+		if ( nameFontSizeTablet ) responsiveDataAttrs[ 'data-name-fs-tablet' ] = nameFontSizeTablet;
+		if ( nameFontSizeMobile ) responsiveDataAttrs[ 'data-name-fs-mobile' ] = nameFontSizeMobile;
+
+		const blockProps = useBlockProps.save( {
+			className: classNames.join( ' ' ),
+			style: {
+				'--sgs-hover-bg': hoverBackgroundColour ? colourVar( hoverBackgroundColour ) : undefined,
+				'--sgs-hover-text': hoverTextColour ? colourVar( hoverTextColour ) : undefined,
+				'--sgs-hover-border': hoverBorderColour ? colourVar( hoverBorderColour ) : undefined,
+				'--sgs-transition-duration': transitionDuration
+					? ( /ms$|s$/.test( String( transitionDuration ) ) ? String( transitionDuration ) : `${ transitionDuration }ms` )
+					: undefined,
+				'--sgs-transition-easing': transitionEasing || undefined,
+				'--sgs-hover-scale': hoverScale || undefined,
+				'--sgs-hover-shadow': hoverShadow ? `var(--wp--preset--shadow--${ hoverShadow })` : undefined,
+				'--sgs-stagger': staggerDelay ? `${ staggerDelay }ms` : undefined,
+			},
+			...responsiveDataAttrs,
+		} );
+
+		const plainName = stripHtmlV6( name );
+		const plainQuote = stripHtmlV6( quote );
+
+		return (
+			<>
+			<blockquote { ...blockProps }>
+				{ rating > 0 && (
+					<div className="sgs-testimonial__stars" style={ { color: colourVar( ratingColour ) || undefined } } role="img" aria-label={ `${ rating } out of 5 stars` }>
+						{ Array.from( { length: 5 }, ( _, i ) => {
+							const filled = i < Math.floor( rating );
+							const half = ! filled && i < rating && ( rating % 1 ) >= 0.5;
+							const starClass = `sgs-testimonial__star ${ filled ? 'sgs-testimonial__star--filled' : half ? 'sgs-testimonial__star--half' : 'sgs-testimonial__star--empty' }`;
+							if ( half ) {
+								const gradId = `sgs-th-${ i }`;
+								return (
+									<span key={ i } className={ starClass } aria-hidden="true">
+										<svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+											<defs>
+												<linearGradient id={ gradId }>
+													<stop offset="50%" stopColor="currentColor" />
+													<stop offset="50%" stopColor="currentColor" stopOpacity="0.2" />
+												</linearGradient>
+											</defs>
+											<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill={ `url(#${ gradId })` } />
+										</svg>
+									</span>
+								);
+							}
+							return (
+								<span key={ i } className={ starClass } aria-hidden="true">
+									<svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+										<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill={ filled ? 'currentColor' : 'none' } stroke="currentColor" strokeWidth={ filled ? '0' : '1.5' } strokeLinecap="round" strokeLinejoin="round" />
+									</svg>
+								</span>
+							);
+						} ) }
+					</div>
+				) }
+				<RichText.Content tagName="p" className="sgs-testimonial__quote" value={ quote } style={ { color: colourVar( quoteColour ) || undefined } } />
+				<footer className="sgs-testimonial__footer">
+					<div className="sgs-testimonial__avatar">
+						{ avatar?.url ? (
+							<img src={ avatar.url } alt={ avatar.alt || '' } className="sgs-testimonial__avatar-img" loading="lazy" width="48" height="48" />
+						) : (
+							<span className="sgs-testimonial__avatar-initials" aria-hidden="true">{ getInitials( name ) || '?' }</span>
+						) }
+					</div>
+					<div className="sgs-testimonial__meta">
+						<RichText.Content tagName="cite" className="sgs-testimonial__name" value={ name } style={ { color: colourVar( nameColour ) || undefined, fontSize: fontSizeVar( nameFontSize ) || undefined } } />
+						<RichText.Content tagName="span" className="sgs-testimonial__role" value={ role } style={ { color: colourVar( roleColour ) || undefined } } />
+					</div>
+				</footer>
+			</blockquote>
+			{ schemaEnabled && name && ( () => {
+				const schema = {
+					'@context': 'https://schema.org',
+					'@type': 'Review',
+					reviewBody: plainQuote,
+					author: { '@type': 'Person', name: plainName },
+				};
+				if ( rating > 0 ) {
+					schema.reviewRating = { '@type': 'Rating', ratingValue: rating, bestRating: 5 };
+				}
+				return ( <RawHTML>{ `<script type="application/ld+json">${ JSON.stringify( schema ) }</script>` }</RawHTML> );
+			} )() }
+			</>
+		);
+	},
+
+	migrate( attributes ) {
+		// Lift the legacy avatar object into the unified authorMedia shape so
+		// the new dynamic render.php can hand it off to sgs_render_media().
+		const next = { ...attributes };
+		if ( ! next.authorMedia && attributes.avatar && attributes.avatar.url ) {
+			next.authorMedia = {
+				url: attributes.avatar.url,
+				type: 'image',
+				id: attributes.avatar.id || 0,
+				alt: attributes.avatar.alt || '',
+				mime: 'image/jpeg',
+			};
+		}
+		return next;
+	},
+};
+
+export default [ v6, v4, v3, v2, v1, v5 ];

@@ -1,0 +1,329 @@
+{
+  "client": "mamas-munches",
+  "sampled_at": "2026-05-05T18:56:56.423934Z",
+  "delta_metric": "CIE Delta-E 2000",
+  "images": [
+    "Mama's Munches Logo Transparent With Words.png",
+    "Mamas-Munches-Horizontal-Logo-2-305x102.webp"
+  ],
+  "brand_clusters": [
+    {
+      "rgb": [
+        244,
+        125,
+        130
+      ],
+      "hex": "#F47D82",
+      "pct": 42.03,
+      "image": "Mama's Munches Logo Transparent With Words.png",
+      "closest_mockup_var": "--primary",
+      "closest_mockup_hex": "#E68A95",
+      "delta": 5.44,
+      "verdict": "WARN"
+    },
+    {
+      "rgb": [
+        252,
+        218,
+        94
+      ],
+      "hex": "#FCDA5E",
+      "pct": 18.18,
+      "image": "Mama's Munches Logo Transparent With Words.png",
+      "closest_mockup_var": "--accent",
+      "closest_mockup_hex": "#F5D050",
+      "delta": 2.36,
+      "verdict": "PASS"
+    },
+    {
+      "rgb": [
+        227,
+        183,
+        139
+      ],
+      "hex": "#E3B78B",
+      "pct": 15.48,
+      "image": "Mama's Munches Logo Transparent With Words.png",
+      "closest_mockup_var": "--border",
+      "closest_mockup_hex": "#E8D5C0",
+      "delta": 10.88,
+      "verdict": "WARN"
+    },
+    {
+      "rgb": [
+        190,
+        123,
+        82
+      ],
+      "hex": "#BE7B52",
+      "pct": 15.33,
+      "image": "Mama's Munches Logo Transparent With Words.png",
+      "closest_mockup_var": "--cookie-brown",
+      "closest_mockup_hex": "#8B6F4E",
+      "delta": 13.41,
+      "verdict": "WARN"
+    },
+    {
+      "rgb": [
+        250,
+        191,
+        115
+      ],
+      "hex": "#FABF73",
+      "pct": 3.48,
+      "image": "Mama's Munches Logo Transparent With Words.png",
+      "closest_mockup_var": "--accent",
+      "closest_mockup_hex": "#F5D050",
+      "delta": 11.7,
+      "verdict": "WARN"
+    },
+    {
+      "rgb": [
+        107,
+        67,
+        43
+      ],
+      "hex": "#6B432B",
+      "pct": 2.21,
+      "image": "Mama's Munches Logo Transparent With Words.png",
+      "closest_mockup_var": "--text-muted",
+      "closest_mockup_hex": "#6B5C50",
+      "delta": 12.1,
+      "verdict": "WARN"
+    },
+    {
+      "rgb": [
+        229,
+        133,
+        138
+      ],
+      "hex": "#E5858A",
+      "pct": 23.53,
+      "image": "Mamas-Munches-Horizontal-Logo-2-305x102.webp",
+      "closest_mockup_var": "--primary",
+      "closest_mockup_hex": "#E68A95",
+      "delta": 2.7,
+      "verdict": "PASS"
+    },
+    {
+      "rgb": [
+        229,
+        148,
+        157
+      ],
+      "hex": "#E5949D",
+      "pct": 18.16,
+      "image": "Mamas-Munches-Horizontal-Logo-2-305x102.webp",
+      "closest_mockup_var": "--primary",
+      "closest_mockup_hex": "#E68A95",
+      "delta": 2.59,
+      "verdict": "PASS"
+    },
+    {
+      "rgb": [
+        250,
+        196,
+        126
+      ],
+      "hex": "#FAC47E",
+      "pct": 15.83,
+      "image": "Mamas-Munches-Horizontal-Logo-2-305x102.webp",
+      "closest_mockup_var": "--accent",
+      "closest_mockup_hex": "#F5D050",
+      "delta": 11.51,
+      "verdict": "WARN"
+    },
+    {
+      "rgb": [
+        218,
+        170,
+        146
+      ],
+      "hex": "#DAAA92",
+      "pct": 12.23,
+      "image": "Mamas-Munches-Horizontal-Logo-2-305x102.webp",
+      "closest_mockup_var": "--border",
+      "closest_mockup_hex": "#E8D5C0",
+      "delta": 13.56,
+      "verdict": "WARN"
+    },
+    {
+      "rgb": [
+        181,
+        120,
+        87
+      ],
+      "hex": "#B57857",
+      "pct": 11.54,
+      "image": "Mamas-Munches-Horizontal-Logo-2-305x102.webp",
+      "closest_mockup_var": "--cookie-brown",
+      "closest_mockup_hex": "#8B6F4E",
+      "delta": 12.04,
+      "verdict": "WARN"
+    },
+    {
+      "rgb": [
+        229,
+        162,
+        128
+      ],
+      "hex": "#E5A280",
+      "pct": 10.01,
+      "image": "Mamas-Munches-Horizontal-Logo-2-305x102.webp",
+      "closest_mockup_var": "--border",
+      "closest_mockup_hex": "#E8D5C0",
+      "delta": 16.72,
+      "verdict": "FAIL"
+    },
+    {
+      "rgb": [
+        243,
+        181,
+        133
+      ],
+      "hex": "#F3B585",
+      "pct": 7.18,
+      "image": "Mamas-Munches-Horizontal-Logo-2-305x102.webp",
+      "closest_mockup_var": "--border",
+      "closest_mockup_hex": "#E8D5C0",
+      "delta": 13.53,
+      "verdict": "WARN"
+    }
+  ],
+  "mockup_palette": {
+    "--primary": "#E68A95",
+    "--primary-dark": "#C56A7A",
+    "--surface-pink": "#F5C2C8",
+    "--surface-cream": "#FBF3DC",
+    "--surface-alt": "#FFF9F0",
+    "--accent": "#F5D050",
+    "--accent-dark": "#7A6500",
+    "--text": "#3A2E26",
+    "--text-muted": "#6B5C50",
+    "--text-inverse": "#FFFAF5",
+    "--cookie-brown": "#8B6F4E",
+    "--success": "#2E7D4F",
+    "--border": "#E8D5C0"
+  },
+  "comparisons": [
+    {
+      "image": "Mama's Munches Logo Transparent With Words.png",
+      "brand_hex": "#F47D82",
+      "brand_pct": 42.03,
+      "mockup_var": "--primary",
+      "mockup_hex": "#E68A95",
+      "delta": 5.44,
+      "verdict": "WARN"
+    },
+    {
+      "image": "Mama's Munches Logo Transparent With Words.png",
+      "brand_hex": "#FCDA5E",
+      "brand_pct": 18.18,
+      "mockup_var": "--accent",
+      "mockup_hex": "#F5D050",
+      "delta": 2.36,
+      "verdict": "PASS"
+    },
+    {
+      "image": "Mama's Munches Logo Transparent With Words.png",
+      "brand_hex": "#E3B78B",
+      "brand_pct": 15.48,
+      "mockup_var": "--border",
+      "mockup_hex": "#E8D5C0",
+      "delta": 10.88,
+      "verdict": "WARN"
+    },
+    {
+      "image": "Mama's Munches Logo Transparent With Words.png",
+      "brand_hex": "#BE7B52",
+      "brand_pct": 15.33,
+      "mockup_var": "--cookie-brown",
+      "mockup_hex": "#8B6F4E",
+      "delta": 13.41,
+      "verdict": "WARN"
+    },
+    {
+      "image": "Mama's Munches Logo Transparent With Words.png",
+      "brand_hex": "#FABF73",
+      "brand_pct": 3.48,
+      "mockup_var": "--accent",
+      "mockup_hex": "#F5D050",
+      "delta": 11.7,
+      "verdict": "WARN"
+    },
+    {
+      "image": "Mama's Munches Logo Transparent With Words.png",
+      "brand_hex": "#6B432B",
+      "brand_pct": 2.21,
+      "mockup_var": "--text-muted",
+      "mockup_hex": "#6B5C50",
+      "delta": 12.1,
+      "verdict": "WARN"
+    },
+    {
+      "image": "Mamas-Munches-Horizontal-Logo-2-305x102.webp",
+      "brand_hex": "#E5858A",
+      "brand_pct": 23.53,
+      "mockup_var": "--primary",
+      "mockup_hex": "#E68A95",
+      "delta": 2.7,
+      "verdict": "PASS"
+    },
+    {
+      "image": "Mamas-Munches-Horizontal-Logo-2-305x102.webp",
+      "brand_hex": "#E5949D",
+      "brand_pct": 18.16,
+      "mockup_var": "--primary",
+      "mockup_hex": "#E68A95",
+      "delta": 2.59,
+      "verdict": "PASS"
+    },
+    {
+      "image": "Mamas-Munches-Horizontal-Logo-2-305x102.webp",
+      "brand_hex": "#FAC47E",
+      "brand_pct": 15.83,
+      "mockup_var": "--accent",
+      "mockup_hex": "#F5D050",
+      "delta": 11.51,
+      "verdict": "WARN"
+    },
+    {
+      "image": "Mamas-Munches-Horizontal-Logo-2-305x102.webp",
+      "brand_hex": "#DAAA92",
+      "brand_pct": 12.23,
+      "mockup_var": "--border",
+      "mockup_hex": "#E8D5C0",
+      "delta": 13.56,
+      "verdict": "WARN"
+    },
+    {
+      "image": "Mamas-Munches-Horizontal-Logo-2-305x102.webp",
+      "brand_hex": "#B57857",
+      "brand_pct": 11.54,
+      "mockup_var": "--cookie-brown",
+      "mockup_hex": "#8B6F4E",
+      "delta": 12.04,
+      "verdict": "WARN"
+    },
+    {
+      "image": "Mamas-Munches-Horizontal-Logo-2-305x102.webp",
+      "brand_hex": "#E5A280",
+      "brand_pct": 10.01,
+      "mockup_var": "--border",
+      "mockup_hex": "#E8D5C0",
+      "delta": 16.72,
+      "verdict": "FAIL"
+    },
+    {
+      "image": "Mamas-Munches-Horizontal-Logo-2-305x102.webp",
+      "brand_hex": "#F3B585",
+      "brand_pct": 7.18,
+      "mockup_var": "--border",
+      "mockup_hex": "#E8D5C0",
+      "delta": 13.53,
+      "verdict": "WARN"
+    }
+  ],
+  "overall_verdict": "FAIL",
+  "summary": "Brand source colours diverge from the mockup brief. Worst delta 16.72 between brand #E5A280 and mockup #E8D5C0 (--border)."
+}

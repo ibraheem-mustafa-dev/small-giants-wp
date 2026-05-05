@@ -14,6 +14,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+
 $source             = $attributes['source'] ?? 'manual';
 $variant            = $attributes['variant'] ?? 'card';
 $items              = $attributes['items'] ?? array();
@@ -166,10 +168,27 @@ $subtitle_style = $subtitle_colour ? ' style="color:var(--wp--preset--color--' .
 		$tag        = $has_link ? 'a' : 'div';
 		$link_attr  = $has_link ? ' href="' . esc_url( $item['link'] ) . '"' : '';
 		$item_style = $stagger_delay ? ' style="--sgs-item-index:' . absint( $index ) . '"' : '';
+
+		// Unified media slot (added 2026-05-05). When only the legacy
+		// $item['image'] is set, synthesise a media object so the shared
+		// sgs_render_media() helper can emit the right tag for video too.
+		$item_media = $item['media'] ?? null;
+		if ( empty( $item_media ) && ! empty( $item['image']['url'] ) ) {
+			$item_media = array(
+				'url'  => $item['image']['url'],
+				'type' => 'image',
+				'id'   => isset( $item['image']['id'] ) ? absint( $item['image']['id'] ) : 0,
+				'alt'  => isset( $item['image']['alt'] ) ? (string) $item['image']['alt'] : '',
+				'mime' => 'image/jpeg',
+			);
+		}
+		$media_html = ! empty( $item_media ) ? sgs_render_media( $item_media, 'sgs/card-grid' ) : '';
 	?>
 		<<?php echo esc_attr( $tag ); ?> class="sgs-card-grid__item"<?php echo $link_attr; ?><?php echo $item_style; ?>>
 			<div class="sgs-card-grid__image-wrap">
-				<?php if ( ! empty( $item['image']['url'] ) ) : ?>
+				<?php if ( '' !== $media_html ) : ?>
+					<?php echo $media_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside sgs_render_media(). ?>
+				<?php elseif ( ! empty( $item['image']['url'] ) ) : ?>
 					<img
 						src="<?php echo esc_url( $item['image']['url'] ); ?>"
 						alt="<?php echo esc_attr( $item['image']['alt'] ?? '' ); ?>"

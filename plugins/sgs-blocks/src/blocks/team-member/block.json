@@ -43,6 +43,10 @@
     "typography": ".sgs-team-member__name"
   },
   "attributes": {
+    "memberMedia": {
+      "type": "object",
+      "default": null
+    },
     "photo": {
       "type": "object"
     },

@@ -2,8 +2,6 @@ import { __ } from '@wordpress/i18n';
 import {
 	useBlockProps,
 	InspectorControls,
-	MediaUpload,
-	MediaUploadCheck,
 	RichText,
 } from '@wordpress/block-editor';
 import {
@@ -13,6 +11,7 @@ import {
 	Button,
 } from '@wordpress/components';
 import { DesignTokenPicker } from '../../components';
+import MediaPicker from '../../components/MediaPicker';
 import { colourVar, fontSizeVar } from '../../utils';
 
 const FONT_SIZE_OPTIONS = [
@@ -58,62 +57,31 @@ function BadgeEditor( { item, index, badgeStyle, onChange, onRemove } ) {
 			</p>
 
 			{ badgeStyle !== 'text-only' && (
-				<MediaUploadCheck>
-					<MediaUpload
-						onSelect={ ( media ) =>
-							update( 'image', {
-								id: media.id,
-								url: media.url,
-								alt: media.alt,
-							} )
+				<MediaPicker
+					value={ item.media || null }
+					onChange={ ( media ) => {
+						const next = { ...item, media };
+						// Clear legacy `image` key once a new media is picked
+						// so the unified shape is the single source of truth.
+						if ( next.image ) {
+							next.image = undefined;
 						}
-						allowedTypes={ [ 'image' ] }
-						value={ item.image?.id }
-						render={ ( { open } ) => (
-							<div style={ { marginBottom: '8px' } }>
-								{ item.image?.url ? (
-									<>
-										<img
-											src={ item.image.url }
-											alt=""
-											style={ {
-												maxWidth: '64px',
-												maxHeight: '48px',
-												objectFit: 'contain',
-												display: 'block',
-												marginBottom: '4px',
-											} }
-										/>
-										<Button
-											variant="link"
-											isDestructive
-											onClick={ () =>
-												update( 'image', undefined )
-											}
-											size="small"
-										>
-											{ __(
-												'Remove image',
-												'sgs-blocks'
-											) }
-										</Button>
-									</>
-								) : (
-									<Button
-										variant="secondary"
-										onClick={ open }
-										size="small"
-									>
-										{ __(
-											'Select badge image',
-											'sgs-blocks'
-										) }
-									</Button>
-								) }
-							</div>
-						) }
-					/>
-				</MediaUploadCheck>
+						onChange( next );
+					} }
+					onRemove={ () =>
+						onChange( {
+							...item,
+							media: null,
+							image: undefined,
+						} )
+					}
+					allowedTypes={ [ 'image' ] }
+					label={ __( 'Select badge image', 'sgs-blocks' ) }
+					instructionsImage={ __(
+						'Choose a certification badge image',
+						'sgs-blocks'
+					) }
+				/>
 			) }
 
 			{ badgeStyle !== 'image-only' && (
@@ -299,16 +267,21 @@ export default function Edit( { attributes, setAttributes } ) {
 					</p>
 				) : (
 					<div className="sgs-certification-bar__badges">
-						{ items.map( ( item, i ) => (
+						{ items.map( ( item, i ) => {
+							const mediaUrl =
+								item.media?.url || item.image?.url || '';
+							const mediaAlt =
+								item.media?.alt || item.label || '';
+							return (
 							<div
 								key={ i }
 								className="sgs-certification-bar__badge"
 							>
 								{ badgeStyle !== 'text-only' &&
-									item.image?.url && (
+									mediaUrl && (
 										<img
-											src={ item.image.url }
-											alt={ item.label || '' }
+											src={ mediaUrl }
+											alt={ mediaAlt }
 											className="sgs-certification-bar__badge-img"
 										/>
 									) }
@@ -331,7 +304,8 @@ export default function Edit( { attributes, setAttributes } ) {
 										</span>
 									) }
 							</div>
-						) ) }
+							);
+						} ) }
 					</div>
 				) }
 			</div>

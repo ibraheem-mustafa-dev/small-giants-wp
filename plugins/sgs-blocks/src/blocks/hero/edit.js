@@ -20,6 +20,7 @@ import {
 	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 } from '@wordpress/components';
 import { DesignTokenPicker, ResponsiveControl } from '../../components';
+import MediaPicker from '../../components/MediaPicker';
 import { colourVar, fontSizeVar } from '../../utils';
 
 // ── Phase 1 constant options ─────────────────────────────────────────────────
@@ -240,6 +241,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		overlayColour,
 		overlayOpacity,
 		splitImage,
+		splitMedia,
 		backgroundVideo,
 		svgContent,
 		minHeight,
@@ -384,6 +386,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
+				{/* ── 1. Hero Settings (variant only) ── */}
 				<PanelBody title={ __( 'Hero Settings', 'sgs-blocks' ) }>
 					<SelectControl
 						label={ __( 'Variant', 'sgs-blocks' ) }
@@ -394,7 +397,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 					/>
+				</PanelBody>
 
+				{/* ── 2. Container / Entire Block ── */}
+				<PanelBody title={ __( 'Container / Entire Block', 'sgs-blocks' ) } initialOpen={ false }>
 					<ToggleGroupControl
 						label={ __( 'Text alignment', 'sgs-blocks' ) }
 						value={ alignment }
@@ -412,6 +418,14 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						) ) }
 					</ToggleGroupControl>
+
+					<SelectControl
+						label={ __( 'Vertical alignment', 'sgs-blocks' ) }
+						value={ verticalAlignment }
+						options={ VERTICAL_ALIGN_OPTIONS }
+						onChange={ ( val ) => setAttributes( { verticalAlignment: val } ) }
+						__nextHasNoMarginBottom
+					/>
 
 					<ResponsiveControl
 						label={ __( 'Min height', 'sgs-blocks' ) }
@@ -451,12 +465,71 @@ export default function Edit( { attributes, setAttributes } ) {
 							);
 						} }
 					</ResponsiveControl>
+
+					<RRangeControl label={ __( 'Content max-width', 'sgs-blocks' ) } attrDesktop="contentMaxWidth" attrTablet="contentMaxWidthTablet" attrMobile="contentMaxWidthMobile" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 1400 } step={ 10 } />
+					<SelectControl label={ __( 'Max-width unit', 'sgs-blocks' ) } value={ contentMaxWidthUnit } options={ UNIT_PX_PCT } onChange={ ( val ) => setAttributes( { contentMaxWidthUnit: val } ) } __nextHasNoMarginBottom />
+
+					<DesignTokenPicker label={ __( 'Media background colour', 'sgs-blocks' ) } value={ mediaBackgroundColour } onChange={ ( val ) => setAttributes( { mediaBackgroundColour: val } ) } />
+
+					<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Content padding', 'sgs-blocks' ) }</p>
+					<RRangeControl label={ __( 'Top', 'sgs-blocks' ) } attrDesktop="contentPaddingTop" attrTablet="contentPaddingTopTablet" attrMobile="contentPaddingTopMobile" attributes={ attributes } setAttributes={ setAttributes } />
+					<RRangeControl label={ __( 'Right', 'sgs-blocks' ) } attrDesktop="contentPaddingRight" attrTablet="contentPaddingRightTablet" attrMobile="contentPaddingRightMobile" attributes={ attributes } setAttributes={ setAttributes } />
+					<RRangeControl label={ __( 'Bottom', 'sgs-blocks' ) } attrDesktop="contentPaddingBottom" attrTablet="contentPaddingBottomTablet" attrMobile="contentPaddingBottomMobile" attributes={ attributes } setAttributes={ setAttributes } />
+					<RRangeControl label={ __( 'Left', 'sgs-blocks' ) } attrDesktop="contentPaddingLeft" attrTablet="contentPaddingLeftTablet" attrMobile="contentPaddingLeftMobile" attributes={ attributes } setAttributes={ setAttributes } />
+					<SelectControl label={ __( 'Padding unit', 'sgs-blocks' ) } value={ contentPaddingUnit } options={ UNIT_PX_PCT } onChange={ ( val ) => setAttributes( { contentPaddingUnit: val } ) } __nextHasNoMarginBottom />
+
+					{ isSplit && (
+						<>
+							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Split layout grid', 'sgs-blocks' ) }</p>
+							<SelectControl
+								label={ __( 'Column ratio (desktop)', 'sgs-blocks' ) }
+								value={ isCustomRatio ? 'custom' : splitColumnRatio }
+								options={ COLUMN_RATIO_PRESETS }
+								onChange={ ( val ) => { if ( val !== 'custom' ) { setAttributes( { splitColumnRatio: val } ); } } }
+								__nextHasNoMarginBottom
+							/>
+							{ isCustomRatio && (
+								<TextControl label={ __( 'Custom ratio', 'sgs-blocks' ) } help={ __( 'CSS grid-template-columns (e.g. "3fr 2fr").', 'sgs-blocks' ) } value={ splitColumnRatio } onChange={ ( val ) => setAttributes( { splitColumnRatio: val } ) } __nextHasNoMarginBottom />
+							) }
+							<TextControl label={ __( 'Column ratio tablet', 'sgs-blocks' ) } help={ __( 'Blank = inherit desktop.', 'sgs-blocks' ) } value={ splitColumnRatioTablet || '' } onChange={ ( val ) => setAttributes( { splitColumnRatioTablet: val } ) } __nextHasNoMarginBottom />
+							<TextControl label={ __( 'Column ratio mobile', 'sgs-blocks' ) } help={ __( 'Blank = stack columns.', 'sgs-blocks' ) } value={ splitColumnRatioMobile || '' } onChange={ ( val ) => setAttributes( { splitColumnRatioMobile: val } ) } __nextHasNoMarginBottom />
+							<RRangeControl label={ __( 'Column gap', 'sgs-blocks' ) } attrDesktop="splitGap" attrTablet="splitGapTablet" attrMobile="splitGapMobile" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 200 } step={ 1 } />
+							<SelectControl label={ __( 'Gap unit', 'sgs-blocks' ) } value={ splitGapUnit } options={ UNIT_PX_PCT } onChange={ ( val ) => setAttributes( { splitGapUnit: val } ) } __nextHasNoMarginBottom />
+							<SelectControl label={ __( 'Mobile column order', 'sgs-blocks' ) } value={ splitContentOrderMobile } options={ MOBILE_ORDER_OPTIONS } onChange={ ( val ) => setAttributes( { splitContentOrderMobile: val } ) } __nextHasNoMarginBottom />
+							<ToggleControl
+								label={ __( 'Image bleed to edge', 'sgs-blocks' ) }
+								help={ __( 'Removes border-radius and column padding so the photo fills flush to the container edge.', 'sgs-blocks' ) }
+								checked={ !! splitImageBleed }
+								onChange={ ( val ) =>
+									setAttributes( { splitImageBleed: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+						</>
+					) }
 				</PanelBody>
 
-				<PanelBody
-					title={ __( 'Text Styling', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
+				{/* ── 3. Eyebrow Label (only when label is set) ── */}
+				{ hasLabel && (
+					<PanelBody title={ __( 'Eyebrow Label', 'sgs-blocks' ) } initialOpen={ false }>
+						<DesignTokenPicker label={ __( 'Colour', 'sgs-blocks' ) } value={ labelColour } onChange={ ( val ) => setAttributes( { labelColour: val } ) } />
+						<RRangeControl label={ __( 'Font size', 'sgs-blocks' ) } attrDesktop="labelFontSize" attrTablet="labelFontSizeTablet" attrMobile="labelFontSizeMobile" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 72 } step={ 1 } />
+						<SelectControl label={ __( 'Font size unit', 'sgs-blocks' ) } value={ labelFontSizeUnit || 'px' } options={ UNIT_PX_EM_REM } onChange={ ( val ) => setAttributes( { labelFontSizeUnit: val } ) } __nextHasNoMarginBottom />
+						<TextControl label={ __( 'Font family slug', 'sgs-blocks' ) } help={ __( 'theme.json slug e.g. "montserrat". Blank = inherit.', 'sgs-blocks' ) } value={ labelFontFamily || '' } onChange={ ( val ) => setAttributes( { labelFontFamily: val } ) } __nextHasNoMarginBottom />
+						<SelectControl label={ __( 'Font weight', 'sgs-blocks' ) } value={ labelFontWeight || '600' } options={ FONT_WEIGHT_OPTIONS } onChange={ ( val ) => setAttributes( { labelFontWeight: val } ) } __nextHasNoMarginBottom />
+						<RangeControl label={ __( 'Line height', 'sgs-blocks' ) } value={ labelLineHeight || 0 } onChange={ ( val ) => setAttributes( { labelLineHeight: val || null } ) } min={ 0 } max={ 4 } step={ 0.05 } __nextHasNoMarginBottom />
+						<SelectControl label={ __( 'Line height unit', 'sgs-blocks' ) } value={ labelLineHeightUnit || 'em' } options={ UNIT_EM_PX } onChange={ ( val ) => setAttributes( { labelLineHeightUnit: val } ) } __nextHasNoMarginBottom />
+						<RangeControl label={ __( 'Letter spacing', 'sgs-blocks' ) } value={ labelLetterSpacing || 0 } onChange={ ( val ) => setAttributes( { labelLetterSpacing: val || null } ) } min={ -5 } max={ 20 } step={ 0.01 } __nextHasNoMarginBottom />
+						<SelectControl label={ __( 'Letter spacing unit', 'sgs-blocks' ) } value={ labelLetterSpacingUnit || 'em' } options={ UNIT_EM_PX } onChange={ ( val ) => setAttributes( { labelLetterSpacingUnit: val } ) } __nextHasNoMarginBottom />
+						<SelectControl label={ __( 'Text transform', 'sgs-blocks' ) } value={ labelTextTransform || 'uppercase' } options={ TEXT_TRANSFORM_OPTIONS } onChange={ ( val ) => setAttributes( { labelTextTransform: val } ) } __nextHasNoMarginBottom />
+						<SelectControl label={ __( 'Text decoration', 'sgs-blocks' ) } value={ labelTextDecoration || '' } options={ TEXT_DECORATION_OPTIONS } onChange={ ( val ) => setAttributes( { labelTextDecoration: val } ) } __nextHasNoMarginBottom />
+						<RangeControl label={ __( 'Margin bottom', 'sgs-blocks' ) } value={ labelMarginBottom || 0 } onChange={ ( val ) => setAttributes( { labelMarginBottom: val } ) } min={ 0 } max={ 80 } step={ 1 } __nextHasNoMarginBottom />
+						<SelectControl label={ __( 'Margin bottom unit', 'sgs-blocks' ) } value={ labelMarginBottomUnit || 'px' } options={ UNIT_PX_EM_REM } onChange={ ( val ) => setAttributes( { labelMarginBottomUnit: val } ) } __nextHasNoMarginBottom />
+					</PanelBody>
+				) }
+
+				{/* ── 4. Headline (h1) ── */}
+				<PanelBody title={ __( 'Headline (h1)', 'sgs-blocks' ) } initialOpen={ false }>
 					<DesignTokenPicker
 						label={ __( 'Headline colour', 'sgs-blocks' ) }
 						value={ headlineColour }
@@ -465,7 +538,68 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 					/>
 					<ResponsiveControl
-						label={ __( 'Sub-headline font size', 'sgs-blocks' ) }
+						label={ __( 'Headline font size (px)', 'sgs-blocks' ) }
+					>
+						{ ( breakpoint ) => {
+							const attrMap = {
+								desktop: 'headlineFontSizeDesktop',
+								tablet: 'headlineFontSizeTablet',
+								mobile: 'headlineFontSizeMobile',
+							};
+							return (
+								<RangeControl
+									value={ attributes[ attrMap[ breakpoint ] ] || 0 }
+									onChange={ ( val ) =>
+										setAttributes( {
+											[ attrMap[ breakpoint ] ]: val || null,
+										} )
+									}
+									min={ 0 }
+									max={ 120 }
+									step={ 1 }
+									help={ __( '0 = inherit from theme', 'sgs-blocks' ) }
+									__nextHasNoMarginBottom
+								/>
+							);
+						} }
+					</ResponsiveControl>
+					<RangeControl
+						label={ __( 'Margin bottom — desktop (px)', 'sgs-blocks' ) }
+						help={ __( '0 = inherit from theme.', 'sgs-blocks' ) }
+						value={ headlineMarginBottom || 0 }
+						onChange={ ( val ) =>
+							setAttributes( { headlineMarginBottom: val || null } )
+						}
+						min={ 0 }
+						max={ 120 }
+						step={ 1 }
+						__nextHasNoMarginBottom
+					/>
+					<RangeControl
+						label={ __( 'Margin bottom — mobile (px)', 'sgs-blocks' ) }
+						help={ __( '0 = inherit from theme.', 'sgs-blocks' ) }
+						value={ headlineMarginBottomMobile || 0 }
+						onChange={ ( val ) =>
+							setAttributes( { headlineMarginBottomMobile: val || null } )
+						}
+						min={ 0 }
+						max={ 120 }
+						step={ 1 }
+						__nextHasNoMarginBottom
+					/>
+				</PanelBody>
+
+				{/* ── 5. Subheadline ── */}
+				<PanelBody title={ __( 'Subheadline', 'sgs-blocks' ) } initialOpen={ false }>
+					<DesignTokenPicker
+						label={ __( 'Colour', 'sgs-blocks' ) }
+						value={ subHeadlineColour }
+						onChange={ ( val ) =>
+							setAttributes( { subHeadlineColour: val } )
+						}
+					/>
+					<ResponsiveControl
+						label={ __( 'Font size', 'sgs-blocks' ) }
 					>
 						{ ( breakpoint ) => {
 							const attrMap = {
@@ -508,18 +642,16 @@ export default function Edit( { attributes, setAttributes } ) {
 							);
 						} }
 					</ResponsiveControl>
-					<DesignTokenPicker
-						label={ __(
-							'Sub-headline colour',
-							'sgs-blocks'
-						) }
-						value={ subHeadlineColour }
-						onChange={ ( val ) =>
-							setAttributes( { subHeadlineColour: val } )
-						}
-					/>
+					<TextControl label={ __( 'Font family slug', 'sgs-blocks' ) } help={ __( 'theme.json slug e.g. "montserrat". Blank = inherit.', 'sgs-blocks' ) } value={ subHeadlineFontFamily || '' } onChange={ ( val ) => setAttributes( { subHeadlineFontFamily: val } ) } __nextHasNoMarginBottom />
+					<SelectControl label={ __( 'Font weight', 'sgs-blocks' ) } value={ subHeadlineFontWeight || '' } options={ FONT_WEIGHT_OPTIONS } onChange={ ( val ) => setAttributes( { subHeadlineFontWeight: val } ) } __nextHasNoMarginBottom />
+					<RangeControl label={ __( 'Line height', 'sgs-blocks' ) } value={ subHeadlineLineHeight || 0 } onChange={ ( val ) => setAttributes( { subHeadlineLineHeight: val || null } ) } min={ 0 } max={ 4 } step={ 0.05 } __nextHasNoMarginBottom />
+					<SelectControl label={ __( 'Line height unit', 'sgs-blocks' ) } value={ subHeadlineLineHeightUnit || 'em' } options={ UNIT_EM_PX } onChange={ ( val ) => setAttributes( { subHeadlineLineHeightUnit: val } ) } __nextHasNoMarginBottom />
+					<RangeControl label={ __( 'Letter spacing', 'sgs-blocks' ) } value={ subHeadlineLetterSpacing || 0 } onChange={ ( val ) => setAttributes( { subHeadlineLetterSpacing: val || null } ) } min={ -5 } max={ 20 } step={ 0.01 } __nextHasNoMarginBottom />
+					<SelectControl label={ __( 'Letter spacing unit', 'sgs-blocks' ) } value={ subHeadlineLetterSpacingUnit || 'px' } options={ UNIT_PX_EM_REM } onChange={ ( val ) => setAttributes( { subHeadlineLetterSpacingUnit: val } ) } __nextHasNoMarginBottom />
+					<SelectControl label={ __( 'Text transform', 'sgs-blocks' ) } value={ subHeadlineTextTransform || '' } options={ TEXT_TRANSFORM_OPTIONS } onChange={ ( val ) => setAttributes( { subHeadlineTextTransform: val } ) } __nextHasNoMarginBottom />
+					<SelectControl label={ __( 'Text decoration', 'sgs-blocks' ) } value={ subHeadlineTextDecoration || '' } options={ TEXT_DECORATION_OPTIONS } onChange={ ( val ) => setAttributes( { subHeadlineTextDecoration: val } ) } __nextHasNoMarginBottom />
 					<RangeControl
-						label={ __( 'Sub-headline max width (px)', 'sgs-blocks' ) }
+						label={ __( 'Max width (px)', 'sgs-blocks' ) }
 						help={ __( 'Limits sub-headline width for readability. 0 = no limit.', 'sgs-blocks' ) }
 						value={ subHeadlineMaxWidth || 0 }
 						onChange={ ( val ) =>
@@ -530,84 +662,8 @@ export default function Edit( { attributes, setAttributes } ) {
 						step={ 10 }
 						__nextHasNoMarginBottom
 					/>
-				</PanelBody>
-
-				<PanelBody
-					title={ __( 'Headline Font Size', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ResponsiveControl
-						label={ __( 'Headline font size (px)', 'sgs-blocks' ) }
-					>
-						{ ( breakpoint ) => {
-							const attrMap = {
-								desktop: 'headlineFontSizeDesktop',
-								tablet: 'headlineFontSizeTablet',
-								mobile: 'headlineFontSizeMobile',
-							};
-							return (
-								<RangeControl
-									value={ attributes[ attrMap[ breakpoint ] ] || 0 }
-									onChange={ ( val ) =>
-										setAttributes( {
-											[ attrMap[ breakpoint ] ]: val || null,
-										} )
-									}
-									min={ 0 }
-									max={ 120 }
-									step={ 1 }
-									help={ __( '0 = inherit from theme', 'sgs-blocks' ) }
-									__nextHasNoMarginBottom
-								/>
-							);
-						} }
-					</ResponsiveControl>
-					{ isSplit && (
-						<RangeControl
-							label={ __( 'Split image mobile height (px)', 'sgs-blocks' ) }
-							help={ __( 'Fixed height for the split image on mobile screens. 0 = auto.', 'sgs-blocks' ) }
-							value={ splitImageMobileHeight || 0 }
-							onChange={ ( val ) =>
-								setAttributes( { splitImageMobileHeight: val || null } )
-							}
-							min={ 0 }
-							max={ 600 }
-							step={ 10 }
-							__nextHasNoMarginBottom
-						/>
-					) }
-				</PanelBody>
-
-				<PanelBody
-					title={ __( 'Margin Bottom', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
 					<RangeControl
-						label={ __( 'Headline margin bottom — desktop (px)', 'sgs-blocks' ) }
-						help={ __( '0 = inherit from theme.', 'sgs-blocks' ) }
-						value={ headlineMarginBottom || 0 }
-						onChange={ ( val ) =>
-							setAttributes( { headlineMarginBottom: val || null } )
-						}
-						min={ 0 }
-						max={ 120 }
-						step={ 1 }
-						__nextHasNoMarginBottom
-					/>
-					<RangeControl
-						label={ __( 'Headline margin bottom — mobile (px)', 'sgs-blocks' ) }
-						help={ __( '0 = inherit from theme.', 'sgs-blocks' ) }
-						value={ headlineMarginBottomMobile || 0 }
-						onChange={ ( val ) =>
-							setAttributes( { headlineMarginBottomMobile: val || null } )
-						}
-						min={ 0 }
-						max={ 120 }
-						step={ 1 }
-						__nextHasNoMarginBottom
-					/>
-					<RangeControl
-						label={ __( 'Subheadline margin bottom — desktop (px)', 'sgs-blocks' ) }
+						label={ __( 'Margin bottom — desktop (px)', 'sgs-blocks' ) }
 						help={ __( '0 = inherit from theme.', 'sgs-blocks' ) }
 						value={ subHeadlineMarginBottom || 0 }
 						onChange={ ( val ) =>
@@ -619,7 +675,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 					/>
 					<RangeControl
-						label={ __( 'Subheadline margin bottom — mobile (px)', 'sgs-blocks' ) }
+						label={ __( 'Margin bottom — mobile (px)', 'sgs-blocks' ) }
 						help={ __( '0 = inherit from theme.', 'sgs-blocks' ) }
 						value={ subHeadlineMarginBottomMobile || 0 }
 						onChange={ ( val ) =>
@@ -632,265 +688,298 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				<PanelBody
-					title={ __( 'Background', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<MediaUploadCheck>
-						<MediaUpload
-							onSelect={ ( media ) =>
-								setAttributes( {
-									backgroundImage: {
-										id: media.id,
-										url: media.url,
-										alt: media.alt,
-									},
-								} )
-							}
-							allowedTypes={ [ 'image' ] }
-							value={ backgroundImage?.id }
-							render={ ( { open } ) => (
-								<div>
-									{ backgroundImage?.url ? (
-										<>
-											<img
-												src={ backgroundImage.url }
-												alt=""
-												style={ {
-													maxWidth: '100%',
-													marginBottom: '8px',
-												} }
-											/>
-											<Button
-												variant="secondary"
-												onClick={ () =>
-													setAttributes( {
-														backgroundImage:
-															undefined,
-													} )
-												}
-												isDestructive
-											>
-												{ __(
-													'Remove image',
-													'sgs-blocks'
-												) }
-											</Button>
-										</>
-									) : (
-										<Button
-											variant="secondary"
-											onClick={ open }
-										>
-											{ __(
-												'Select background image',
-												'sgs-blocks'
-											) }
-										</Button>
-									) }
-								</div>
-							) }
-						/>
-					</MediaUploadCheck>
-
-					<DesignTokenPicker
-						label={ __( 'Overlay colour', 'sgs-blocks' ) }
-						value={ overlayColour }
-						onChange={ ( val ) =>
-							setAttributes( { overlayColour: val } )
-						}
-					/>
-					<RangeControl
-						label={ __( 'Overlay opacity (%)', 'sgs-blocks' ) }
-						value={ overlayOpacity }
-						onChange={ ( val ) =>
-							setAttributes( { overlayOpacity: val } )
-						}
-						min={ 0 }
-						max={ 100 }
-						__nextHasNoMarginBottom
-					/>
-				</PanelBody>
-
-				<PanelBody
-					title={ __( 'Background Effects', 'sgs-blocks' ) }
-					initialOpen={ false }
-				>
-					<ToggleControl
-						label={ __( 'Parallax scroll', 'sgs-blocks' ) }
-						help={ __(
-							'Background scrolls slower than content. Disabled automatically on touch devices.',
-							'sgs-blocks'
-						) }
-						checked={ !! bgParallax }
-						onChange={ ( val ) =>
-							setAttributes( { bgParallax: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					<ToggleControl
-						label={ __( 'Ken Burns animation', 'sgs-blocks' ) }
-						help={ __(
-							'Slow pan and zoom on the background image. Respects reduced-motion preference.',
-							'sgs-blocks'
-						) }
-						checked={ !! bgKenBurns }
-						onChange={ ( val ) =>
-							setAttributes( { bgKenBurns: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>
-						{ __( 'Background video (desktop)', 'sgs-blocks' ) }
-					</p>
-					<MediaUploadCheck>
-						<MediaUpload
-							onSelect={ ( media ) =>
-								setAttributes( {
-									bgVideo: { id: media.id, url: media.url },
-								} )
-							}
-							allowedTypes={ [ 'video' ] }
-							value={ bgVideo?.id }
-							render={ ( { open } ) => (
-								<div>
-									{ bgVideo?.url ? (
-										<>
-											<p style={ { fontSize: '12px', margin: '0 0 4px' } }>
-												{ bgVideo.url.split( '/' ).pop() }
-											</p>
-											<Button
-												variant="secondary"
-												isDestructive
-												onClick={ () =>
-													setAttributes( { bgVideo: undefined } )
-												}
-											>
-												{ __( 'Remove', 'sgs-blocks' ) }
-											</Button>
-										</>
-									) : (
-										<Button variant="secondary" onClick={ open }>
-											{ __( 'Select video', 'sgs-blocks' ) }
-										</Button>
-									) }
-								</div>
-							) }
-						/>
-					</MediaUploadCheck>
-					<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>
-						{ __( 'Background video (mobile)', 'sgs-blocks' ) }
-					</p>
-					<MediaUploadCheck>
-						<MediaUpload
-							onSelect={ ( media ) =>
-								setAttributes( {
-									bgVideoMobile: { id: media.id, url: media.url },
-								} )
-							}
-							allowedTypes={ [ 'video' ] }
-							value={ bgVideoMobile?.id }
-							render={ ( { open } ) => (
-								<div>
-									{ bgVideoMobile?.url ? (
-										<>
-											<p style={ { fontSize: '12px', margin: '0 0 4px' } }>
-												{ bgVideoMobile.url.split( '/' ).pop() }
-											</p>
-											<Button
-												variant="secondary"
-												isDestructive
-												onClick={ () =>
-													setAttributes( { bgVideoMobile: undefined } )
-												}
-											>
-												{ __( 'Remove', 'sgs-blocks' ) }
-											</Button>
-										</>
-									) : (
-										<Button variant="secondary" onClick={ open }>
-											{ __( 'Select mobile video', 'sgs-blocks' ) }
-										</Button>
-									) }
-								</div>
-							) }
-						/>
-					</MediaUploadCheck>
-				</PanelBody>
-
-				{ isSplit && (
-					<PanelBody
-						title={ __( 'Split Image', 'sgs-blocks' ) }
-						initialOpen={ false }
-					>
-						<MediaUploadCheck>
-							<MediaUpload
-								onSelect={ ( media ) =>
-									setAttributes( {
-										splitImage: {
-											id: media.id,
-											url: media.url,
-											alt: media.alt,
-										},
-									} )
-								}
-								allowedTypes={ [ 'image' ] }
-								value={ splitImage?.id }
-								render={ ( { open } ) => (
-									<div>
-										{ splitImage?.url ? (
-											<>
-												<img
-													src={ splitImage.url }
-													alt=""
-													style={ {
-														maxWidth: '100%',
-														marginBottom: '8px',
-													} }
-												/>
+				{/* ── 6. Image (background + split) ── */}
+				<PanelBody title={ __( 'Image', 'sgs-blocks' ) } initialOpen={ false }>
+					{ ! isSplit && ! isVideo && ! isSvgAnimated && (
+						<>
+							<p style={ { fontWeight: 600, margin: '0 0 4px' } }>{ __( 'Background image', 'sgs-blocks' ) }</p>
+							<MediaUploadCheck>
+								<MediaUpload
+									onSelect={ ( media ) =>
+										setAttributes( {
+											backgroundImage: {
+												id: media.id,
+												url: media.url,
+												alt: media.alt,
+											},
+										} )
+									}
+									allowedTypes={ [ 'image' ] }
+									value={ backgroundImage?.id }
+									render={ ( { open } ) => (
+										<div>
+											{ backgroundImage?.url ? (
+												<>
+													<img
+														src={ backgroundImage.url }
+														alt=""
+														style={ {
+															maxWidth: '100%',
+															marginBottom: '8px',
+														} }
+													/>
+													<Button
+														variant="secondary"
+														onClick={ () =>
+															setAttributes( {
+																backgroundImage:
+																	undefined,
+															} )
+														}
+														isDestructive
+													>
+														{ __(
+															'Remove image',
+															'sgs-blocks'
+														) }
+													</Button>
+												</>
+											) : (
 												<Button
 													variant="secondary"
-													onClick={ () =>
-														setAttributes( {
-															splitImage:
-																undefined,
-														} )
-													}
-													isDestructive
+													onClick={ open }
 												>
 													{ __(
-														'Remove image',
+														'Select background image',
 														'sgs-blocks'
 													) }
 												</Button>
-											</>
-										) : (
-											<Button
-												variant="secondary"
-												onClick={ open }
-											>
-												{ __(
-													'Select split image',
-													'sgs-blocks'
-												) }
-											</Button>
-										) }
-									</div>
-								) }
-							/>
-						</MediaUploadCheck>
-						<ToggleControl
-							label={ __( 'Image bleed to edge', 'sgs-blocks' ) }
-							help={ __( 'Removes border-radius and column padding so the photo fills flush to the container edge.', 'sgs-blocks' ) }
-							checked={ !! splitImageBleed }
-							onChange={ ( val ) =>
-								setAttributes( { splitImageBleed: val } )
-							}
-							__nextHasNoMarginBottom
-						/>
-					</PanelBody>
-				) }
+											) }
+										</div>
+									) }
+								/>
+							</MediaUploadCheck>
 
+							<DesignTokenPicker
+								label={ __( 'Overlay colour', 'sgs-blocks' ) }
+								value={ overlayColour }
+								onChange={ ( val ) =>
+									setAttributes( { overlayColour: val } )
+								}
+							/>
+							<RangeControl
+								label={ __( 'Overlay opacity (%)', 'sgs-blocks' ) }
+								value={ overlayOpacity }
+								onChange={ ( val ) =>
+									setAttributes( { overlayOpacity: val } )
+								}
+								min={ 0 }
+								max={ 100 }
+								__nextHasNoMarginBottom
+							/>
+						</>
+					) }
+
+					{ isSplit && (
+						<>
+							<p style={ { fontWeight: 600, margin: '0 0 4px' } }>{ __( 'Split media source', 'sgs-blocks' ) }</p>
+							<MediaPicker
+								value={
+									splitMedia ||
+									( splitImage?.url
+										? {
+												url: splitImage.url,
+												type: 'image',
+												id: splitImage.id || 0,
+												alt: splitImage.alt || '',
+												mime: '',
+										  }
+										: null )
+								}
+								onChange={ ( media ) =>
+									setAttributes( {
+										splitMedia: media,
+										splitImage:
+											media && media.type === 'image'
+												? {
+														id: media.id,
+														url: media.url,
+														alt: media.alt,
+												  }
+												: undefined,
+									} )
+								}
+								onRemove={ () =>
+									setAttributes( {
+										splitMedia: null,
+										splitImage: undefined,
+									} )
+								}
+								label={ __( 'Select hero media', 'sgs-blocks' ) }
+								instructionsImage={ __( 'Choose an image or video for the hero', 'sgs-blocks' ) }
+							/>
+							<RangeControl
+								label={ __( 'Split image mobile height (px)', 'sgs-blocks' ) }
+								help={ __( 'Fixed height for the split image on mobile screens. 0 = auto.', 'sgs-blocks' ) }
+								value={ splitImageMobileHeight || 0 }
+								onChange={ ( val ) =>
+									setAttributes( { splitImageMobileHeight: val || null } )
+								}
+								min={ 0 }
+								max={ 600 }
+								step={ 10 }
+								__nextHasNoMarginBottom
+							/>
+
+							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Display', 'sgs-blocks' ) }</p>
+							<SelectControl label={ __( 'Object fit', 'sgs-blocks' ) } value={ imageObjectFit } options={ IMAGE_FIT_OPTIONS } onChange={ ( val ) => setAttributes( { imageObjectFit: val } ) } __nextHasNoMarginBottom />
+							<TextControl label={ __( 'Object position', 'sgs-blocks' ) } help={ __( 'CSS object-position (e.g. "center 20%").', 'sgs-blocks' ) } value={ imageObjectPosition || 'center center' } onChange={ ( val ) => setAttributes( { imageObjectPosition: val } ) } __nextHasNoMarginBottom />
+							{ imageObjectFit === 'custom' && (
+								<>
+									<p style={ { fontWeight: 600, margin: '12px 0 4px' } }>{ __( 'Custom dimensions', 'sgs-blocks' ) }</p>
+									<RRangeControl label={ __( 'Width', 'sgs-blocks' ) } attrDesktop="imageWidth" attrTablet="imageWidthTablet" attrMobile="imageWidthMobile" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 1200 } step={ 1 } />
+									<SelectControl label={ __( 'Width unit', 'sgs-blocks' ) } value={ imageWidthUnit } options={ UNIT_PX_PCT } onChange={ ( val ) => setAttributes( { imageWidthUnit: val } ) } __nextHasNoMarginBottom />
+									<RRangeControl label={ __( 'Height', 'sgs-blocks' ) } attrDesktop="imageHeight" attrTablet="imageHeightTablet" attrMobile="imageHeightMobile" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 1200 } step={ 1 } />
+									<SelectControl label={ __( 'Height unit', 'sgs-blocks' ) } value={ imageHeightUnit } options={ UNIT_PX_PCT } onChange={ ( val ) => setAttributes( { imageHeightUnit: val } ) } __nextHasNoMarginBottom />
+								</>
+							) }
+
+							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Border radius', 'sgs-blocks' ) }</p>
+							<RRangeControl label={ __( 'Top-left', 'sgs-blocks' ) } attrDesktop="imageBorderRadiusTL" attrTablet="imageBorderRadiusTabletTL" attrMobile="imageBorderRadiusMobileTL" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 200 } step={ 1 } nullOnZero={ false } />
+							<RRangeControl label={ __( 'Top-right', 'sgs-blocks' ) } attrDesktop="imageBorderRadiusTR" attrTablet="imageBorderRadiusTabletTR" attrMobile="imageBorderRadiusMobileTR" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 200 } step={ 1 } nullOnZero={ false } />
+							<RRangeControl label={ __( 'Bottom-right', 'sgs-blocks' ) } attrDesktop="imageBorderRadiusBR" attrTablet="imageBorderRadiusTabletBR" attrMobile="imageBorderRadiusMobileBR" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 200 } step={ 1 } nullOnZero={ false } />
+							<RRangeControl label={ __( 'Bottom-left', 'sgs-blocks' ) } attrDesktop="imageBorderRadiusBL" attrTablet="imageBorderRadiusTabletBL" attrMobile="imageBorderRadiusMobileBL" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 200 } step={ 1 } nullOnZero={ false } />
+							<SelectControl label={ __( 'Border radius unit', 'sgs-blocks' ) } value={ imageBorderRadiusUnit } options={ UNIT_PX_PCT } onChange={ ( val ) => setAttributes( { imageBorderRadiusUnit: val } ) } __nextHasNoMarginBottom />
+
+							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Border', 'sgs-blocks' ) }</p>
+							<SelectControl label={ __( 'Border style', 'sgs-blocks' ) } value={ imageBorderStyle } options={ BORDER_STYLE_OPTIONS } onChange={ ( val ) => setAttributes( { imageBorderStyle: val } ) } __nextHasNoMarginBottom />
+							{ imageBorderStyle !== 'none' && (
+								<>
+									<RangeControl label={ __( 'Border top', 'sgs-blocks' ) } value={ imageBorderWidthTop || 0 } onChange={ ( val ) => setAttributes( { imageBorderWidthTop: val } ) } min={ 0 } max={ 20 } step={ 1 } __nextHasNoMarginBottom />
+									<RangeControl label={ __( 'Border right', 'sgs-blocks' ) } value={ imageBorderWidthRight || 0 } onChange={ ( val ) => setAttributes( { imageBorderWidthRight: val } ) } min={ 0 } max={ 20 } step={ 1 } __nextHasNoMarginBottom />
+									<RangeControl label={ __( 'Border bottom', 'sgs-blocks' ) } value={ imageBorderWidthBottom || 0 } onChange={ ( val ) => setAttributes( { imageBorderWidthBottom: val } ) } min={ 0 } max={ 20 } step={ 1 } __nextHasNoMarginBottom />
+									<RangeControl label={ __( 'Border left', 'sgs-blocks' ) } value={ imageBorderWidthLeft || 0 } onChange={ ( val ) => setAttributes( { imageBorderWidthLeft: val } ) } min={ 0 } max={ 20 } step={ 1 } __nextHasNoMarginBottom />
+									<SelectControl label={ __( 'Border width unit', 'sgs-blocks' ) } value={ imageBorderWidthUnit } options={ UNIT_PX_EM_REM } onChange={ ( val ) => setAttributes( { imageBorderWidthUnit: val } ) } __nextHasNoMarginBottom />
+									<DesignTokenPicker label={ __( 'Border colour', 'sgs-blocks' ) } value={ imageBorderColour } onChange={ ( val ) => setAttributes( { imageBorderColour: val } ) } />
+								</>
+							) }
+
+							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Inner padding (around the image element itself)', 'sgs-blocks' ) }</p>
+							<p style={ { fontSize: '12px', color: '#757575', margin: '0 0 8px' } }>{ __( 'Affects the gap between the image and the wrapper border.', 'sgs-blocks' ) }</p>
+							<RRangeControl label={ __( 'Top', 'sgs-blocks' ) } attrDesktop="imagePaddingTop" attrTablet="imagePaddingTopTablet" attrMobile="imagePaddingTopMobile" attributes={ attributes } setAttributes={ setAttributes } />
+							<RRangeControl label={ __( 'Right', 'sgs-blocks' ) } attrDesktop="imagePaddingRight" attrTablet="imagePaddingRightTablet" attrMobile="imagePaddingRightMobile" attributes={ attributes } setAttributes={ setAttributes } />
+							<RRangeControl label={ __( 'Bottom', 'sgs-blocks' ) } attrDesktop="imagePaddingBottom" attrTablet="imagePaddingBottomTablet" attrMobile="imagePaddingBottomMobile" attributes={ attributes } setAttributes={ setAttributes } />
+							<RRangeControl label={ __( 'Left', 'sgs-blocks' ) } attrDesktop="imagePaddingLeft" attrTablet="imagePaddingLeftTablet" attrMobile="imagePaddingLeftMobile" attributes={ attributes } setAttributes={ setAttributes } />
+							<SelectControl label={ __( 'Inner padding unit', 'sgs-blocks' ) } value={ imagePaddingUnit } options={ UNIT_PX_PCT } onChange={ ( val ) => setAttributes( { imagePaddingUnit: val } ) } __nextHasNoMarginBottom />
+
+							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Outer padding (around the whole media wrapper)', 'sgs-blocks' ) }</p>
+							<p style={ { fontSize: '12px', color: '#757575', margin: '0 0 8px' } }>{ __( 'Affects the gap between the wrapper and the surrounding section.', 'sgs-blocks' ) }</p>
+							<RRangeControl label={ __( 'Top', 'sgs-blocks' ) } attrDesktop="mediaPaddingTop" attrTablet="mediaPaddingTopTablet" attrMobile="mediaPaddingTopMobile" attributes={ attributes } setAttributes={ setAttributes } />
+							<RRangeControl label={ __( 'Right', 'sgs-blocks' ) } attrDesktop="mediaPaddingRight" attrTablet="mediaPaddingRightTablet" attrMobile="mediaPaddingRightMobile" attributes={ attributes } setAttributes={ setAttributes } />
+							<RRangeControl label={ __( 'Bottom', 'sgs-blocks' ) } attrDesktop="mediaPaddingBottom" attrTablet="mediaPaddingBottomTablet" attrMobile="mediaPaddingBottomMobile" attributes={ attributes } setAttributes={ setAttributes } />
+							<RRangeControl label={ __( 'Left', 'sgs-blocks' ) } attrDesktop="mediaPaddingLeft" attrTablet="mediaPaddingLeftTablet" attrMobile="mediaPaddingLeftMobile" attributes={ attributes } setAttributes={ setAttributes } />
+							<SelectControl label={ __( 'Outer padding unit', 'sgs-blocks' ) } value={ mediaPaddingUnit } options={ UNIT_PX_PCT } onChange={ ( val ) => setAttributes( { mediaPaddingUnit: val } ) } __nextHasNoMarginBottom />
+						</>
+					) }
+
+					{ ! isSplit && ! isVideo && ! isSvgAnimated && (
+						<>
+							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>{ __( 'Background effects', 'sgs-blocks' ) }</p>
+							<ToggleControl
+								label={ __( 'Parallax scroll', 'sgs-blocks' ) }
+								help={ __(
+									'Background scrolls slower than content. Disabled automatically on touch devices.',
+									'sgs-blocks'
+								) }
+								checked={ !! bgParallax }
+								onChange={ ( val ) =>
+									setAttributes( { bgParallax: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+							<ToggleControl
+								label={ __( 'Ken Burns animation', 'sgs-blocks' ) }
+								help={ __(
+									'Slow pan and zoom on the background image. Respects reduced-motion preference.',
+									'sgs-blocks'
+								) }
+								checked={ !! bgKenBurns }
+								onChange={ ( val ) =>
+									setAttributes( { bgKenBurns: val } )
+								}
+								__nextHasNoMarginBottom
+							/>
+							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>
+								{ __( 'Background video (desktop)', 'sgs-blocks' ) }
+							</p>
+							<MediaUploadCheck>
+								<MediaUpload
+									onSelect={ ( media ) =>
+										setAttributes( {
+											bgVideo: { id: media.id, url: media.url },
+										} )
+									}
+									allowedTypes={ [ 'video' ] }
+									value={ bgVideo?.id }
+									render={ ( { open } ) => (
+										<div>
+											{ bgVideo?.url ? (
+												<>
+													<p style={ { fontSize: '12px', margin: '0 0 4px' } }>
+														{ bgVideo.url.split( '/' ).pop() }
+													</p>
+													<Button
+														variant="secondary"
+														isDestructive
+														onClick={ () =>
+															setAttributes( { bgVideo: undefined } )
+														}
+													>
+														{ __( 'Remove', 'sgs-blocks' ) }
+													</Button>
+												</>
+											) : (
+												<Button variant="secondary" onClick={ open }>
+													{ __( 'Select video', 'sgs-blocks' ) }
+												</Button>
+											) }
+										</div>
+									) }
+								/>
+							</MediaUploadCheck>
+							<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>
+								{ __( 'Background video (mobile)', 'sgs-blocks' ) }
+							</p>
+							<MediaUploadCheck>
+								<MediaUpload
+									onSelect={ ( media ) =>
+										setAttributes( {
+											bgVideoMobile: { id: media.id, url: media.url },
+										} )
+									}
+									allowedTypes={ [ 'video' ] }
+									value={ bgVideoMobile?.id }
+									render={ ( { open } ) => (
+										<div>
+											{ bgVideoMobile?.url ? (
+												<>
+													<p style={ { fontSize: '12px', margin: '0 0 4px' } }>
+														{ bgVideoMobile.url.split( '/' ).pop() }
+													</p>
+													<Button
+														variant="secondary"
+														isDestructive
+														onClick={ () =>
+															setAttributes( { bgVideoMobile: undefined } )
+														}
+													>
+														{ __( 'Remove', 'sgs-blocks' ) }
+													</Button>
+												</>
+											) : (
+												<Button variant="secondary" onClick={ open }>
+													{ __( 'Select mobile video', 'sgs-blocks' ) }
+												</Button>
+											) }
+										</div>
+									) }
+								/>
+							</MediaUploadCheck>
+						</>
+					) }
+				</PanelBody>
+
+				{/* ── Video Background (video variant only) ── */}
 				{ isVideo && (
 					<PanelBody
 						title={ __( 'Background Video', 'sgs-blocks' ) }
@@ -951,9 +1040,27 @@ export default function Edit( { attributes, setAttributes } ) {
 								) }
 							/>
 						</MediaUploadCheck>
+						<DesignTokenPicker
+							label={ __( 'Overlay colour', 'sgs-blocks' ) }
+							value={ overlayColour }
+							onChange={ ( val ) =>
+								setAttributes( { overlayColour: val } )
+							}
+						/>
+						<RangeControl
+							label={ __( 'Overlay opacity (%)', 'sgs-blocks' ) }
+							value={ overlayOpacity }
+							onChange={ ( val ) =>
+								setAttributes( { overlayOpacity: val } )
+							}
+							min={ 0 }
+							max={ 100 }
+							__nextHasNoMarginBottom
+						/>
 					</PanelBody>
 				) }
 
+				{/* ── SVG Background (svg-animated variant only) ── */}
 				{ isSvgAnimated && (
 					<PanelBody
 						title={ __( 'SVG Background', 'sgs-blocks' ) }
@@ -972,149 +1079,29 @@ export default function Edit( { attributes, setAttributes } ) {
 							) }
 							__nextHasNoMarginBottom
 						/>
-					</PanelBody>
-				) }
-
-				{/* ── Wrapper ── */}
-				<PanelBody title={ __( 'Wrapper', 'sgs-blocks' ) } initialOpen={ false }>
-					<SelectControl label={ __( 'Vertical alignment', 'sgs-blocks' ) } value={ verticalAlignment } options={ VERTICAL_ALIGN_OPTIONS } onChange={ ( val ) => setAttributes( { verticalAlignment: val } ) } __nextHasNoMarginBottom />
-					<RRangeControl label={ __( 'Content max-width', 'sgs-blocks' ) } attrDesktop="contentMaxWidth" attrTablet="contentMaxWidthTablet" attrMobile="contentMaxWidthMobile" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 1400 } step={ 10 } />
-					<SelectControl label={ __( 'Max-width unit', 'sgs-blocks' ) } value={ contentMaxWidthUnit } options={ UNIT_PX_PCT } onChange={ ( val ) => setAttributes( { contentMaxWidthUnit: val } ) } __nextHasNoMarginBottom />
-					<DesignTokenPicker label={ __( 'Media background colour', 'sgs-blocks' ) } value={ mediaBackgroundColour } onChange={ ( val ) => setAttributes( { mediaBackgroundColour: val } ) } />
-				</PanelBody>
-
-				{/* ── Content Padding ── */}
-				<PanelBody title={ __( 'Content Padding', 'sgs-blocks' ) } initialOpen={ false }>
-					<RRangeControl label={ __( 'Top', 'sgs-blocks' ) } attrDesktop="contentPaddingTop" attrTablet="contentPaddingTopTablet" attrMobile="contentPaddingTopMobile" attributes={ attributes } setAttributes={ setAttributes } />
-					<RRangeControl label={ __( 'Right', 'sgs-blocks' ) } attrDesktop="contentPaddingRight" attrTablet="contentPaddingRightTablet" attrMobile="contentPaddingRightMobile" attributes={ attributes } setAttributes={ setAttributes } />
-					<RRangeControl label={ __( 'Bottom', 'sgs-blocks' ) } attrDesktop="contentPaddingBottom" attrTablet="contentPaddingBottomTablet" attrMobile="contentPaddingBottomMobile" attributes={ attributes } setAttributes={ setAttributes } />
-					<RRangeControl label={ __( 'Left', 'sgs-blocks' ) } attrDesktop="contentPaddingLeft" attrTablet="contentPaddingLeftTablet" attrMobile="contentPaddingLeftMobile" attributes={ attributes } setAttributes={ setAttributes } />
-					<SelectControl label={ __( 'Unit', 'sgs-blocks' ) } value={ contentPaddingUnit } options={ UNIT_PX_PCT } onChange={ ( val ) => setAttributes( { contentPaddingUnit: val } ) } __nextHasNoMarginBottom />
-				</PanelBody>
-
-				{/* ── Sub-headline Typography ── */}
-				<PanelBody title={ __( 'Sub-headline Typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<TextControl label={ __( 'Font family slug', 'sgs-blocks' ) } help={ __( 'theme.json slug e.g. "montserrat". Blank = inherit.', 'sgs-blocks' ) } value={ subHeadlineFontFamily || '' } onChange={ ( val ) => setAttributes( { subHeadlineFontFamily: val } ) } __nextHasNoMarginBottom />
-					<SelectControl label={ __( 'Font weight', 'sgs-blocks' ) } value={ subHeadlineFontWeight || '' } options={ FONT_WEIGHT_OPTIONS } onChange={ ( val ) => setAttributes( { subHeadlineFontWeight: val } ) } __nextHasNoMarginBottom />
-					<RangeControl label={ __( 'Line height', 'sgs-blocks' ) } value={ subHeadlineLineHeight || 0 } onChange={ ( val ) => setAttributes( { subHeadlineLineHeight: val || null } ) } min={ 0 } max={ 4 } step={ 0.05 } __nextHasNoMarginBottom />
-					<SelectControl label={ __( 'Line height unit', 'sgs-blocks' ) } value={ subHeadlineLineHeightUnit || 'em' } options={ UNIT_EM_PX } onChange={ ( val ) => setAttributes( { subHeadlineLineHeightUnit: val } ) } __nextHasNoMarginBottom />
-					<RangeControl label={ __( 'Letter spacing', 'sgs-blocks' ) } value={ subHeadlineLetterSpacing || 0 } onChange={ ( val ) => setAttributes( { subHeadlineLetterSpacing: val || null } ) } min={ -5 } max={ 20 } step={ 0.01 } __nextHasNoMarginBottom />
-					<SelectControl label={ __( 'Letter spacing unit', 'sgs-blocks' ) } value={ subHeadlineLetterSpacingUnit || 'px' } options={ UNIT_PX_EM_REM } onChange={ ( val ) => setAttributes( { subHeadlineLetterSpacingUnit: val } ) } __nextHasNoMarginBottom />
-					<SelectControl label={ __( 'Text transform', 'sgs-blocks' ) } value={ subHeadlineTextTransform || '' } options={ TEXT_TRANSFORM_OPTIONS } onChange={ ( val ) => setAttributes( { subHeadlineTextTransform: val } ) } __nextHasNoMarginBottom />
-					<SelectControl label={ __( 'Text decoration', 'sgs-blocks' ) } value={ subHeadlineTextDecoration || '' } options={ TEXT_DECORATION_OPTIONS } onChange={ ( val ) => setAttributes( { subHeadlineTextDecoration: val } ) } __nextHasNoMarginBottom />
-				</PanelBody>
-
-				{/* ── Eyebrow Typography (only when label is set) ── */}
-				{ hasLabel && (
-					<PanelBody title={ __( 'Eyebrow Typography', 'sgs-blocks' ) } initialOpen={ false }>
-						<TextControl label={ __( 'Font family slug', 'sgs-blocks' ) } help={ __( 'theme.json slug e.g. "montserrat". Blank = inherit.', 'sgs-blocks' ) } value={ labelFontFamily || '' } onChange={ ( val ) => setAttributes( { labelFontFamily: val } ) } __nextHasNoMarginBottom />
-						<RRangeControl label={ __( 'Font size', 'sgs-blocks' ) } attrDesktop="labelFontSize" attrTablet="labelFontSizeTablet" attrMobile="labelFontSizeMobile" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 72 } step={ 1 } />
-						<SelectControl label={ __( 'Font size unit', 'sgs-blocks' ) } value={ labelFontSizeUnit || 'px' } options={ UNIT_PX_EM_REM } onChange={ ( val ) => setAttributes( { labelFontSizeUnit: val } ) } __nextHasNoMarginBottom />
-						<SelectControl label={ __( 'Font weight', 'sgs-blocks' ) } value={ labelFontWeight || '600' } options={ FONT_WEIGHT_OPTIONS } onChange={ ( val ) => setAttributes( { labelFontWeight: val } ) } __nextHasNoMarginBottom />
-						<RangeControl label={ __( 'Line height', 'sgs-blocks' ) } value={ labelLineHeight || 0 } onChange={ ( val ) => setAttributes( { labelLineHeight: val || null } ) } min={ 0 } max={ 4 } step={ 0.05 } __nextHasNoMarginBottom />
-						<SelectControl label={ __( 'Line height unit', 'sgs-blocks' ) } value={ labelLineHeightUnit || 'em' } options={ UNIT_EM_PX } onChange={ ( val ) => setAttributes( { labelLineHeightUnit: val } ) } __nextHasNoMarginBottom />
-						<RangeControl label={ __( 'Letter spacing', 'sgs-blocks' ) } value={ labelLetterSpacing || 0 } onChange={ ( val ) => setAttributes( { labelLetterSpacing: val || null } ) } min={ -5 } max={ 20 } step={ 0.01 } __nextHasNoMarginBottom />
-						<SelectControl label={ __( 'Letter spacing unit', 'sgs-blocks' ) } value={ labelLetterSpacingUnit || 'em' } options={ UNIT_EM_PX } onChange={ ( val ) => setAttributes( { labelLetterSpacingUnit: val } ) } __nextHasNoMarginBottom />
-						<SelectControl label={ __( 'Text transform', 'sgs-blocks' ) } value={ labelTextTransform || 'uppercase' } options={ TEXT_TRANSFORM_OPTIONS } onChange={ ( val ) => setAttributes( { labelTextTransform: val } ) } __nextHasNoMarginBottom />
-						<SelectControl label={ __( 'Text decoration', 'sgs-blocks' ) } value={ labelTextDecoration || '' } options={ TEXT_DECORATION_OPTIONS } onChange={ ( val ) => setAttributes( { labelTextDecoration: val } ) } __nextHasNoMarginBottom />
-						<DesignTokenPicker label={ __( 'Colour', 'sgs-blocks' ) } value={ labelColour } onChange={ ( val ) => setAttributes( { labelColour: val } ) } />
-						<RangeControl label={ __( 'Margin bottom', 'sgs-blocks' ) } value={ labelMarginBottom || 0 } onChange={ ( val ) => setAttributes( { labelMarginBottom: val } ) } min={ 0 } max={ 80 } step={ 1 } __nextHasNoMarginBottom />
-						<SelectControl label={ __( 'Margin bottom unit', 'sgs-blocks' ) } value={ labelMarginBottomUnit || 'px' } options={ UNIT_PX_EM_REM } onChange={ ( val ) => setAttributes( { labelMarginBottomUnit: val } ) } __nextHasNoMarginBottom />
-					</PanelBody>
-				) }
-
-				{/* ── Image Display (split only) ── */}
-				{ isSplit && (
-					<PanelBody title={ __( 'Image Display', 'sgs-blocks' ) } initialOpen={ false }>
-						<SelectControl label={ __( 'Object fit', 'sgs-blocks' ) } value={ imageObjectFit } options={ IMAGE_FIT_OPTIONS } onChange={ ( val ) => setAttributes( { imageObjectFit: val } ) } __nextHasNoMarginBottom />
-						<TextControl label={ __( 'Object position', 'sgs-blocks' ) } help={ __( 'CSS object-position (e.g. "center 20%").', 'sgs-blocks' ) } value={ imageObjectPosition || 'center center' } onChange={ ( val ) => setAttributes( { imageObjectPosition: val } ) } __nextHasNoMarginBottom />
-						{ imageObjectFit === 'custom' && (
-							<>
-								<p style={ { fontWeight: 600, margin: '12px 0 4px' } }>{ __( 'Custom dimensions', 'sgs-blocks' ) }</p>
-								<RRangeControl label={ __( 'Width', 'sgs-blocks' ) } attrDesktop="imageWidth" attrTablet="imageWidthTablet" attrMobile="imageWidthMobile" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 1200 } step={ 1 } />
-								<SelectControl label={ __( 'Width unit', 'sgs-blocks' ) } value={ imageWidthUnit } options={ UNIT_PX_PCT } onChange={ ( val ) => setAttributes( { imageWidthUnit: val } ) } __nextHasNoMarginBottom />
-								<RRangeControl label={ __( 'Height', 'sgs-blocks' ) } attrDesktop="imageHeight" attrTablet="imageHeightTablet" attrMobile="imageHeightMobile" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 1200 } step={ 1 } />
-								<SelectControl label={ __( 'Height unit', 'sgs-blocks' ) } value={ imageHeightUnit } options={ UNIT_PX_PCT } onChange={ ( val ) => setAttributes( { imageHeightUnit: val } ) } __nextHasNoMarginBottom />
-							</>
-						) }
-					</PanelBody>
-				) }
-
-				{/* ── Image Border Radius (split only) ── */}
-				{ isSplit && (
-					<PanelBody title={ __( 'Image Border Radius', 'sgs-blocks' ) } initialOpen={ false }>
-						<RRangeControl label={ __( 'Top-left', 'sgs-blocks' ) } attrDesktop="imageBorderRadiusTL" attrTablet="imageBorderRadiusTabletTL" attrMobile="imageBorderRadiusMobileTL" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 200 } step={ 1 } nullOnZero={ false } />
-						<RRangeControl label={ __( 'Top-right', 'sgs-blocks' ) } attrDesktop="imageBorderRadiusTR" attrTablet="imageBorderRadiusTabletTR" attrMobile="imageBorderRadiusMobileTR" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 200 } step={ 1 } nullOnZero={ false } />
-						<RRangeControl label={ __( 'Bottom-right', 'sgs-blocks' ) } attrDesktop="imageBorderRadiusBR" attrTablet="imageBorderRadiusTabletBR" attrMobile="imageBorderRadiusMobileBR" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 200 } step={ 1 } nullOnZero={ false } />
-						<RRangeControl label={ __( 'Bottom-left', 'sgs-blocks' ) } attrDesktop="imageBorderRadiusBL" attrTablet="imageBorderRadiusTabletBL" attrMobile="imageBorderRadiusMobileBL" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 200 } step={ 1 } nullOnZero={ false } />
-						<SelectControl label={ __( 'Unit', 'sgs-blocks' ) } value={ imageBorderRadiusUnit } options={ UNIT_PX_PCT } onChange={ ( val ) => setAttributes( { imageBorderRadiusUnit: val } ) } __nextHasNoMarginBottom />
-					</PanelBody>
-				) }
-
-				{/* ── Image Border (split only) ── */}
-				{ isSplit && (
-					<PanelBody title={ __( 'Image Border', 'sgs-blocks' ) } initialOpen={ false }>
-						<SelectControl label={ __( 'Border style', 'sgs-blocks' ) } value={ imageBorderStyle } options={ BORDER_STYLE_OPTIONS } onChange={ ( val ) => setAttributes( { imageBorderStyle: val } ) } __nextHasNoMarginBottom />
-						{ imageBorderStyle !== 'none' && (
-							<>
-								<RangeControl label={ __( 'Top', 'sgs-blocks' ) } value={ imageBorderWidthTop || 0 } onChange={ ( val ) => setAttributes( { imageBorderWidthTop: val } ) } min={ 0 } max={ 20 } step={ 1 } __nextHasNoMarginBottom />
-								<RangeControl label={ __( 'Right', 'sgs-blocks' ) } value={ imageBorderWidthRight || 0 } onChange={ ( val ) => setAttributes( { imageBorderWidthRight: val } ) } min={ 0 } max={ 20 } step={ 1 } __nextHasNoMarginBottom />
-								<RangeControl label={ __( 'Bottom', 'sgs-blocks' ) } value={ imageBorderWidthBottom || 0 } onChange={ ( val ) => setAttributes( { imageBorderWidthBottom: val } ) } min={ 0 } max={ 20 } step={ 1 } __nextHasNoMarginBottom />
-								<RangeControl label={ __( 'Left', 'sgs-blocks' ) } value={ imageBorderWidthLeft || 0 } onChange={ ( val ) => setAttributes( { imageBorderWidthLeft: val } ) } min={ 0 } max={ 20 } step={ 1 } __nextHasNoMarginBottom />
-								<SelectControl label={ __( 'Width unit', 'sgs-blocks' ) } value={ imageBorderWidthUnit } options={ UNIT_PX_EM_REM } onChange={ ( val ) => setAttributes( { imageBorderWidthUnit: val } ) } __nextHasNoMarginBottom />
-								<DesignTokenPicker label={ __( 'Border colour', 'sgs-blocks' ) } value={ imageBorderColour } onChange={ ( val ) => setAttributes( { imageBorderColour: val } ) } />
-							</>
-						) }
-					</PanelBody>
-				) }
-
-				{/* ── Image Padding (split only) ── */}
-				{ isSplit && (
-					<PanelBody title={ __( 'Image Padding', 'sgs-blocks' ) } initialOpen={ false }>
-						<p style={ { fontSize: '12px', color: '#757575', margin: '0 0 8px' } }>{ __( 'Padding on the img element itself (inside its border).', 'sgs-blocks' ) }</p>
-						<RRangeControl label={ __( 'Top', 'sgs-blocks' ) } attrDesktop="imagePaddingTop" attrTablet="imagePaddingTopTablet" attrMobile="imagePaddingTopMobile" attributes={ attributes } setAttributes={ setAttributes } />
-						<RRangeControl label={ __( 'Right', 'sgs-blocks' ) } attrDesktop="imagePaddingRight" attrTablet="imagePaddingRightTablet" attrMobile="imagePaddingRightMobile" attributes={ attributes } setAttributes={ setAttributes } />
-						<RRangeControl label={ __( 'Bottom', 'sgs-blocks' ) } attrDesktop="imagePaddingBottom" attrTablet="imagePaddingBottomTablet" attrMobile="imagePaddingBottomMobile" attributes={ attributes } setAttributes={ setAttributes } />
-						<RRangeControl label={ __( 'Left', 'sgs-blocks' ) } attrDesktop="imagePaddingLeft" attrTablet="imagePaddingLeftTablet" attrMobile="imagePaddingLeftMobile" attributes={ attributes } setAttributes={ setAttributes } />
-						<SelectControl label={ __( 'Unit', 'sgs-blocks' ) } value={ imagePaddingUnit } options={ UNIT_PX_PCT } onChange={ ( val ) => setAttributes( { imagePaddingUnit: val } ) } __nextHasNoMarginBottom />
-					</PanelBody>
-				) }
-
-				{/* ── Media Padding (split only) ── */}
-				{ isSplit && (
-					<PanelBody title={ __( 'Media Padding', 'sgs-blocks' ) } initialOpen={ false }>
-						<p style={ { fontSize: '12px', color: '#757575', margin: '0 0 8px' } }>{ __( 'Outer padding on the media wrapper.', 'sgs-blocks' ) }</p>
-						<RRangeControl label={ __( 'Top', 'sgs-blocks' ) } attrDesktop="mediaPaddingTop" attrTablet="mediaPaddingTopTablet" attrMobile="mediaPaddingTopMobile" attributes={ attributes } setAttributes={ setAttributes } />
-						<RRangeControl label={ __( 'Right', 'sgs-blocks' ) } attrDesktop="mediaPaddingRight" attrTablet="mediaPaddingRightTablet" attrMobile="mediaPaddingRightMobile" attributes={ attributes } setAttributes={ setAttributes } />
-						<RRangeControl label={ __( 'Bottom', 'sgs-blocks' ) } attrDesktop="mediaPaddingBottom" attrTablet="mediaPaddingBottomTablet" attrMobile="mediaPaddingBottomMobile" attributes={ attributes } setAttributes={ setAttributes } />
-						<RRangeControl label={ __( 'Left', 'sgs-blocks' ) } attrDesktop="mediaPaddingLeft" attrTablet="mediaPaddingLeftTablet" attrMobile="mediaPaddingLeftMobile" attributes={ attributes } setAttributes={ setAttributes } />
-						<SelectControl label={ __( 'Unit', 'sgs-blocks' ) } value={ mediaPaddingUnit } options={ UNIT_PX_PCT } onChange={ ( val ) => setAttributes( { mediaPaddingUnit: val } ) } __nextHasNoMarginBottom />
-					</PanelBody>
-				) }
-
-				{/* ── Layout Grid (split only) ── */}
-				{ isSplit && (
-					<PanelBody title={ __( 'Layout Grid', 'sgs-blocks' ) } initialOpen={ false }>
-						<SelectControl
-							label={ __( 'Column ratio (desktop)', 'sgs-blocks' ) }
-							value={ isCustomRatio ? 'custom' : splitColumnRatio }
-							options={ COLUMN_RATIO_PRESETS }
-							onChange={ ( val ) => { if ( val !== 'custom' ) { setAttributes( { splitColumnRatio: val } ); } } }
+						<DesignTokenPicker
+							label={ __( 'Overlay colour', 'sgs-blocks' ) }
+							value={ overlayColour }
+							onChange={ ( val ) =>
+								setAttributes( { overlayColour: val } )
+							}
+						/>
+						<RangeControl
+							label={ __( 'Overlay opacity (%)', 'sgs-blocks' ) }
+							value={ overlayOpacity }
+							onChange={ ( val ) =>
+								setAttributes( { overlayOpacity: val } )
+							}
+							min={ 0 }
+							max={ 100 }
 							__nextHasNoMarginBottom
 						/>
-						{ isCustomRatio && (
-							<TextControl label={ __( 'Custom ratio', 'sgs-blocks' ) } help={ __( 'CSS grid-template-columns (e.g. "3fr 2fr").', 'sgs-blocks' ) } value={ splitColumnRatio } onChange={ ( val ) => setAttributes( { splitColumnRatio: val } ) } __nextHasNoMarginBottom />
-						) }
-						<TextControl label={ __( 'Column ratio tablet', 'sgs-blocks' ) } help={ __( 'Blank = inherit desktop.', 'sgs-blocks' ) } value={ splitColumnRatioTablet || '' } onChange={ ( val ) => setAttributes( { splitColumnRatioTablet: val } ) } __nextHasNoMarginBottom />
-						<TextControl label={ __( 'Column ratio mobile', 'sgs-blocks' ) } help={ __( 'Blank = stack columns.', 'sgs-blocks' ) } value={ splitColumnRatioMobile || '' } onChange={ ( val ) => setAttributes( { splitColumnRatioMobile: val } ) } __nextHasNoMarginBottom />
-						<RRangeControl label={ __( 'Column gap', 'sgs-blocks' ) } attrDesktop="splitGap" attrTablet="splitGapTablet" attrMobile="splitGapMobile" attributes={ attributes } setAttributes={ setAttributes } min={ 0 } max={ 200 } step={ 1 } />
-						<SelectControl label={ __( 'Gap unit', 'sgs-blocks' ) } value={ splitGapUnit } options={ UNIT_PX_PCT } onChange={ ( val ) => setAttributes( { splitGapUnit: val } ) } __nextHasNoMarginBottom />
-						<SelectControl label={ __( 'Mobile column order', 'sgs-blocks' ) } value={ splitContentOrderMobile } options={ MOBILE_ORDER_OPTIONS } onChange={ ( val ) => setAttributes( { splitContentOrderMobile: val } ) } __nextHasNoMarginBottom />
 					</PanelBody>
 				) }
 
+				{/* ── 7. Buttons ── */}
 				<PanelBody
-					title={ __( 'CTA Buttons', 'sgs-blocks' ) }
+					title={ __( 'Buttons', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
 					<Notice status="info" isDismissible={ false }>
@@ -1122,6 +1109,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					</Notice>
 				</PanelBody>
 
+				{/* ── 8. Badges ── */}
 				<PanelBody
 					title={ __( 'Badges', 'sgs-blocks' ) }
 					initialOpen={ false }
@@ -1234,13 +1222,24 @@ export default function Edit( { attributes, setAttributes } ) {
 					</div>
 				</div>
 
-				{ isSplit && splitImage?.url && (
+				{ isSplit && ( splitMedia?.url || splitImage?.url ) && (
 					<div className="sgs-hero__media">
-						<img
-							src={ splitImage.url }
-							alt={ splitImage.alt || '' }
-							className="sgs-hero__split-image"
-						/>
+						{ splitMedia?.type === 'video' ? (
+							<video
+								src={ splitMedia.url }
+								className="sgs-hero__split-image"
+								autoPlay
+								muted
+								loop
+								playsInline
+							/>
+						) : (
+							<img
+								src={ splitMedia?.url || splitImage?.url }
+								alt={ splitMedia?.alt || splitImage?.alt || '' }
+								className="sgs-hero__split-image"
+							/>
+						) }
 						{ badges.length > 0 &&
 							badges.map( ( badge, index ) => (
 								<div

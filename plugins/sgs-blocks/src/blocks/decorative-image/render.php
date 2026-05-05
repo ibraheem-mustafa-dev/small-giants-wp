@@ -19,6 +19,29 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 // Extract attributes with defaults.
 $image_id            = $attributes['imageId'] ?? null;
 $image_url           = $attributes['imageUrl'] ?? '';
+$image_alt           = $attributes['imageAlt'] ?? '';
+
+// decorMedia (added 2026-05-05) is the unified image-or-video slot. For
+// back-compat, when only the legacy imageUrl is set, synthesise a decorMedia
+// object so downstream rendering can use sgs_render_media() for video while
+// keeping the rich image pipeline (srcset via sgs_responsive_image) for images.
+$decor_media         = $attributes['decorMedia'] ?? null;
+if ( empty( $decor_media ) && ! empty( $image_url ) ) {
+	$decor_media = array(
+		'url'  => $image_url,
+		'type' => 'image',
+		'id'   => $image_id ? absint( $image_id ) : 0,
+		'alt'  => (string) $image_alt,
+		'mime' => 'image/jpeg',
+	);
+}
+// When decorMedia carries an image and the legacy imageUrl is empty, hydrate
+// the legacy fields so the existing srcset/responsive pipeline still runs.
+if ( empty( $image_url ) && ! empty( $decor_media['url'] ) && 'image' === ( $decor_media['type'] ?? 'image' ) ) {
+	$image_url = (string) $decor_media['url'];
+	$image_id  = isset( $decor_media['id'] ) ? absint( $decor_media['id'] ) : 0;
+	$image_alt = isset( $decor_media['alt'] ) ? (string) $decor_media['alt'] : '';
+}
 $position_x          = $attributes['positionX'] ?? 50;
 $position_y          = $attributes['positionY'] ?? 50;
 $width               = $attributes['width'] ?? 200;
@@ -44,8 +67,8 @@ $width_mobile        = $attributes['widthMobile'] ?? null;
 $rotation_mobile     = $attributes['rotationMobile'] ?? null;
 $hide_on_mobile      = $attributes['hideOnMobile'] ?? false;
 
-// Don't render if no image.
-if ( ! $image_url ) {
+// Don't render if no media.
+if ( empty( $decor_media['url'] ) && ! $image_url ) {
 	return;
 }
 
@@ -125,7 +148,45 @@ if ( null !== $rotation_mobile ) {
 	$img_attrs['data-rotation-mobile'] = esc_attr( $rotation_mobile );
 }
 
-// Render using sgs_responsive_image helper — all attributes escaped via $img_attrs.
+// Video branch: when decorMedia is a video, defer to sgs_render_media() and
+// wrap it in a positioned span so the existing position/transform/data-*
+// pipeline (parallax, fade, hide-on-*, responsive overrides) still applies.
+$is_video = ! empty( $decor_media ) && isset( $decor_media['type'] ) && 'video' === $decor_media['type'];
+
+if ( $is_video ) {
+	$video_html = sgs_render_media( $decor_media, 'sgs/decorative-image' );
+	if ( '' === $video_html ) {
+		return;
+	}
+
+	// Build wrapper attributes mirroring the image data-* pipeline.
+	$wrapper_attrs = array(
+		'class'       => 'sgs-decorative-image sgs-decorative-image--video',
+		'style'       => $style_attr,
+		'aria-hidden' => 'true',
+		'role'        => 'presentation',
+	);
+	foreach ( $img_attrs as $key => $val ) {
+		if ( 0 === strpos( $key, 'data-' ) ) {
+			$wrapper_attrs[ $key ] = $val;
+		}
+	}
+
+	$wrapper_attr_strs = array();
+	foreach ( $wrapper_attrs as $key => $val ) {
+		$wrapper_attr_strs[] = sprintf( '%s="%s"', esc_attr( $key ), esc_attr( $val ) );
+	}
+
+	printf(
+		'<span %1$s>%2$s</span>',
+		implode( ' ', $wrapper_attr_strs ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- each attr already escaped above.
+		$video_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_render_media() escapes attributes internally.
+	);
+	return;
+}
+
+// Image branch: render using sgs_responsive_image helper — all attributes
+// escaped via $img_attrs.
 echo sgs_responsive_image(
 	$image_id ? absint( $image_id ) : 0,
 	$image_url,

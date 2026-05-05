@@ -1,187 +1,191 @@
 recommended_model: opus
-session_tag: small-giants-wp-2026-05-06-framework-qc-hardening
+session_tag: small-giants-wp-2026-05-06-cloning-skill-design
 
 Invoke `/autopilot` before doing anything else.
 
-You are running a **dedicated framework QC hardening session on Opus** to close every gap captured this past 3-day hero perfect-clone sequence. The hero PoC is DONE (verified live on sandybrown post 29 — every measurable property matches mockup). What remains is structural debt + UX issues + one binding lesson where Bean's eye caught visible defects that the validator had dismissed as "structural noise."
+You are running a **dedicated cloning-pipeline design session on Opus**. Mission: design and build a new independent SGS cloning skill **scoped to HTML drafts → WP only** (Use Case 3). Other use cases — Use Case 1 (LLM design generation) and Use Case 2 (competitor harvest) — are explicitly out of scope until UC3 hits 100% on first try. "100%" excludes irrelevant BS gaps that don't change real outcomes.
 
-The mission this session: **make the SGS QC pipeline reliable enough that scripts never fail silently and QC catches every visible defect Bean's eye does.** No more classifier-trap incidents.
+QA work is OUT of scope. The session AFTER this one is the QA session.
 
-Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-06-framework-qc-hardening"`
+Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-06-cloning-skill-design"`
 
 ## Read first (in this order)
 
-1. `.claude/handoff.md` — last session summary (3-day hero sequence, what's done, what's deferred)
-2. `.claude/parking.md` H-1 through H-7 — your **session backlog**. Each entry is a self-contained spec.
-3. `.claude/mistakes.md` top section — the classifier-trap lesson (Bean's eye saw 4 visible defects in 55 deltas the classifier dismissed)
-4. `.claude/specs/common-wp-styling-errors.md` Sections M, N, O, P, Q — defect taxonomy this session has built up
-5. `reports/visual-diff/hero-audit-2026-05-05.md` — the visual audit that confirmed validator > classifier
-6. `~/.claude/skills/visual-qa/SKILL.md` + `references/*.md` — the skill you'll be hardening (currently B 92% / A 96%; gaps in backlog)
+1. `.claude/handoff.md` — last session summary (Waves 1-5 closed; everything still on `main`)
+2. `.claude/specs/cloning-skill-salvage-matrix-2026-05-05.md` — **READ THE TOP "REVISIONS" SECTION FIRST** (the v1 below is superseded)
+3. `.claude/specs/pattern-dedup-classify-mechanics-2026-05-05.md` — **READ THE TOP "REVISIONS" SECTION FIRST** (the v1 below is superseded)
+4. `.claude/mistakes.md` top sections — captured rules the pipeline must enforce structurally
+5. `~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/MEMORY.md` — pattern-not-block rule (row 209) + every behavioural rule
+6. `.claude/specs/common-wp-styling-errors.md` — Sections M, N, O, P, Q, R defect taxonomy
 
 ## Where you are
 
-- Branch: `main`, head `22df0a6` pushed
-- Hero PoC complete and live on sandybrown post 29
-- 7 hardening tasks captured in parking.md as H-1 through H-7
-- Visual-QA skill at A grade (with H-5 binding rule attached)
-- 4 prevention scripts armed: css-pattern-audit, render-mobile-override-audit, font-source-audit, mockup-parity-validator
-- Pre-commit STOP GATE working (tripped + passed cleanly multiple times)
-- Multi-frame harness, recogniser v3, global-styles-reset script all operational
+- Branch: `main`, Wave 1-5 work pushed
+- Hero PoC live on sandybrown post 29
+- Hero block + 7 other blocks (info-box, card-grid, testimonial, decorative-image, brand-strip, certification-bar, gallery, team-member, cta-section) migrated to unified `*Media` slot pattern via shared `MediaPicker` + `sgs_render_media()` — webpack build clean
+- 2 blocks NO-OP (feature-grid is a pure container; process-steps is text-only)
+- `sgs-wp-engine` skill A 95% / B 3.73 (rubric confirmed)
+- `visual-qa` skill A- 95% / B 4.30 (Lens 6 cap until QA session)
+- LiteSpeed plugin gone from both test sites
+- Hostinger MCP loaded; plugin/theme deploy RED (no excludes filter, keep tar+scp)
+- Pre-commit STOP GATE verified parsing `verdict: PASS` + `first_paint_capture_passed: true`
+- Pattern-not-block rule embedded in sgs-wp-engine Hard Rule 6 (blub.db row 209)
 
-## Tasks (in order — Opus session, ~4-6 hours total)
+## Bean's 5 corrections that drove this session's scope
 
-### Task 1 — H-5 first: Classifier human-eye gate (~55 min) — CRITICAL
+1. **uimax extends existing tables** (`block-pattern`, `component`, `colour-palette`, `wcag-friendly`, `icons`) — NOT a new instance table. Add categories: industry / mood / style. Add platforms: PHP / HTML / CSS / WP / Tailwind / Bootstrap / Astro / Next.js / etc. (uimax doesn't currently cover the SGS stack but covers plenty of others.)
+2. **sgs-db single table, fingerprint is the headline column.** No licensing column ("absurdly stupid — you can't license a web design"). `source` column = `idea` / `draft` / competitor URL string only.
+3. **HTML drafts only, first.** Don't dilute on UC1 (LLM design gen) or UC2 (competitor harvest).
+4. **`block_compositions` (0 rows) and `wp-pattern-gen.py` are good starts** — extend, don't replace.
+5. **Don't use `/sgs-update` for dedup queries** — its sole role is updating. Use `/sgs-db` (extended subcommand) or a new script.
 
-This is the single biggest QC reliability gap. The 2026-05-04 classifier wrongly dismissed real defects. Fix structurally so it never recurs.
+## Open questions Bean must answer at session start (3 total — down from 8)
 
-**1a. Build `scripts/screenshot-diff-helper.js` (~30 min)** — takes mockup + SGS URLs + viewport + selector, outputs:
-- Side-by-side composite PNG (mockup left, SGS right, both at same scale)
-- Pixel-diff heatmap PNG (red = mismatch, alpha by intensity)
-- JSON: pixel-mismatch percentage, dominant-colour deltas, max-region-size
-- Use `pixelmatch` npm package (already idiomatic for this) OR sharp + manual diff
+**Q1 — Skill name?** Options: `/clone`, `/site-clone`, `/sgs-clone`, `/draft-to-wp` (since UC3 is the only mode), or keep `/build-website` slug and overwrite the body.
 
-**1b. Add `requires_screenshot_review: true` flag to mockup-parity-validator.js (~10 min)** — for any delta in the Q1-Q4 patterns (padding/margin >5px, display:flex/block on container with multiple children, negative-margin, backgroundColor child-vs-parent), set the flag. Operator + skill MUST review screenshot before reducing severity.
+**Q2 — Pattern registration scope?** Every clone auto-registers, OR draft → human-confirm → register batch-promote?
 
-**1c. Bake Section Q rule into `~/.claude/skills/visual-qa/SKILL.md` programmatically via /lifecycle (~15 min)** — currently the rule is in common-wp-styling-errors.md (docs). Move into the skill's L9 layer description as an enforceable check: "Before reducing any delta severity, run `node scripts/screenshot-diff-helper.js` and attach output. No screenshot output, severity stays."
+**Q3 — uimax existing schema confirmation.** At session start, run `.schema` on the actual uimax DB and confirm exactly which tables get the new industry / mood / style / platform columns. Bean's recall covered block-pattern / component / colour-palette / wcag-friendly / icons — verify others.
 
-### Task 2 — H-7: Replace negative-margin full-bleed pattern (~45 min)
+(Q4-Q8 from the prior version of this prompt are deferred — LLM design gen, Hostinger MCP scope, IP wall, Layer 2 risk, commit policy. None apply until UC3 lands.)
 
-`plugins/sgs-blocks/src/blocks/hero/style.css` currently has `section.sgs-hero { margin: 0 -24px }` which only works if parent padding is exactly 24px. Replace with viewport-aware full-bleed:
+## Tasks (after Q1-Q3 are answered)
 
-```css
-section.sgs-hero {
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
-  max-width: none;
-  /* On Windows, 100vw includes 15px scrollbar — guard with overflow-x:hidden on body if needed */
-}
-```
+### Task 1 — `/lifecycle` Mode A on the new skill
 
-Test on:
-1. Mac (no scrollbar)
-2. Windows (15px scrollbar — the problem case)
-3. Mobile 375px
-4. Pages with custom wrapper padding (default 8px) AND 24px AND 0px
+- Set lifecycle session state with target = `~/.claude/skills/<skill-name>/SKILL.md`
+- Stage 1: Read every source mentioned above (specs, mistakes, MEMORY.md, common-wp-styling-errors)
+- Stage 2: Invoke `skill-writer` to draft the new SKILL.md based on the salvage matrix REVISIONS section + Bean's Q1-Q3 answers
+- Stage 3: Run `gap-analysis` — Lens 6 will fire because no rubric exists → draft inline (matches sgs-wp-engine precedent) OR invoke `/rubric-writer`
+- Stage 4-5: Fix-loop until score ≥ B with all selected gaps closed
+- Stage 6: Done — record before/after grades
 
-If `100vw` causes scrollbar overflow, fall back to JS-set `--viewport-width` CSS custom property updated on resize. Add to `theme/sgs-theme/assets/js/viewport-width.js` — use `document.documentElement.clientWidth` (excludes scrollbar).
+### Task 2 — Schema additions (simplified)
 
-After fix, remove the page-id-29 instance-level override from `mamas-munches.json` — it should no longer be needed.
+#### `sgs-db` patterns table (single table, fingerprint-keyed)
 
-### Task 3 — H-1 + H-2 — Hero block inspector reorganisation (~75 min)
+Create `scripts/migrations/sgs-db-cloning-2026-05-06.sql`. Add columns to existing `patterns` table:
 
-Per parking.md H-1, reorganise the hero block's inspector panels by element, not by CSS-rule. Use /subagent-driven-development for this.
+| Column | Type | Notes |
+|---|---|---|
+| `category` | TEXT | hero / footer / trust-bar / FAQ / contact / pricing-table / etc. |
+| `industry` | TEXT | food / healthcare / retail / etc. |
+| `mood` | TEXT | warm-friendly / premium-minimal / etc. |
+| `style` | TEXT | classic / modern / brutalist / etc. |
+| `content_shape` | TEXT | single-column / split / grid / carousel / accordion / tabs |
+| `fingerprint` | TEXT NOT NULL UNIQUE | **the dedup key** |
+| `source` | TEXT | `idea` / `draft` / `<competitor URL>` (later) |
+| `block_composition` | JSON | which SGS blocks the pattern is built from |
+| `file_path` | TEXT | `plugins/sgs-blocks/patterns/<slug>/` |
+| `parent_pattern_id` | INTEGER FK NULL | for variants |
+| `perceptual_hash` | TEXT NULL | populated for later, not yet a decision input |
 
-**3a. Audit current panels (~10 min)** — read `plugins/sgs-blocks/src/blocks/hero/edit.js`, list every `<PanelBody>` and which attributes it controls. Compare against H-1's preferred organisation (Container, Eyebrow, Headline, Subheadline, Image, Badges, Buttons).
+Resurrect `block_compositions` (currently 0 rows) — confirm its existing schema is suitable; the cloning pipeline becomes its first writer.
 
-**3b. Rewrite edit.js inspector (~50 min)** — single agent. Move attributes into element-grouped panels. Preserve all existing controls (don't remove any). Use `useInnerBlocksProps` patterns where appropriate.
+#### uimax extensions
 
-**3c. Address H-2 image/media padding inline (~15 min)** — in the new "Image" panel, either:
-- Rename: `imagePadding*` → "Inner padding (on the image element)", `mediaPadding*` → "Outer padding (on the media wrapper)"
-- OR add help text via `<HelpText>` describing what each does
+Create `scripts/migrations/uimax-cloning-2026-05-06.sql`. After confirming the actual uimax schema (Q3), add to every classifiable existing table:
+- `industry`, `mood`, `style` (open enum text columns)
+- `platform` / `language` (or join to a new `platforms` table covering PHP / HTML / CSS / JS / WordPress / Tailwind / Bootstrap / Astro / Next.js / Eleventy / Hugo / etc.)
 
-**3d. Verify** — load post 29 in WP admin via Playwright. Inspect that all controls still appear and saving still produces correct render. Build clean, no regressions.
+Backfill existing 5,598 rows with sensible defaults — LLM-classified with operator confirmation.
 
-### Task 4 — H-6: replaceBlock helper script (~50 min)
+### Task 3 — Three new scripts
 
-Per parking.md H-6, package the `wp.blocks.createBlock + replaceBlock` workaround as a reusable script:
+Build in parallel via `/subagent-driven-development` or `/dispatching-parallel-agents`:
 
-`scripts/wp-update-block-attrs.js` — takes (post-id, block-name, new-attrs-json) and:
-1. Logs into WP via env-var auth (same pattern as global-styles-reset.js)
-2. Navigates to post edit screen via Playwright
-3. Finds block by name (recursive into innerBlocks)
-4. Calls `wp.blocks.createBlock` + `replaceBlock` to bypass save.js validation
-5. Awaits save completion + verifies via REST API that post_content reflects new attrs
-6. Reports success/failure with exit code
+1. **`scripts/pattern-fingerprint.py`** — given pattern HTML + CSS, produces `fingerprint = sha256(normalised_html + sorted_css_var_dump)`. `normalised_html` strips whitespace, sorts attribute order, lowercases tags, drops comments + content text. Optional: emit perceptual hash too (column exists for later use).
+2. **`scripts/pattern-classify.py`** — given a pattern artefact + extracted styles, runs the simplified classification: auto-derive `content_shape` from DOM structure (deterministic); LLM-suggest `category` + `industry` + `mood` + `style` with operator confirmation gate.
+3. **`scripts/pattern-register.py`** — given a passed-dedup classified pattern, runs the 6-step registration:
+   1. Compute fingerprint
+   2. SQL `SELECT id FROM patterns WHERE fingerprint = ?` — if hit, log "duplicate of pattern N" and exit
+   3. Auto-derive `content_shape` + `block_composition`
+   4. LLM-suggest classification; operator confirms
+   5. Write pattern files via extended `wp-pattern-gen.py` to `plugins/sgs-blocks/patterns/<slug>/` + `pattern.meta.json` sidecar
+   6. INSERT into `patterns` + linked rows into `block_compositions`. Then call `/sgs-update` to refresh DB scan.
 
-Fold into the visual-qa skill as a deploy step: after any source-block-attrs change, the skill auto-runs this script to apply attrs without manual operator orchestration.
+### Task 4 — `/sgs-db` extension subcommands
 
-### Task 5 — H-3: Video-everywhere-image foundation (~90 min)
+Extend `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py` with:
+- `fingerprint <hash>` — returns matching pattern row or "no match"
+- `patterns-by-category <name>` — list patterns
+- `patterns-by-industry <name>` — list patterns
+- `patterns-by-fingerprint-prefix <prefix>` — fuzzy lookup for variant detection
 
-Per parking.md H-3, this is a multi-block feature. Don't try to do all 12 affected blocks this session — build the foundation + 1 proof block (hero):
+### Task 5 — UC3 smoke run
 
-**5a. Shared `MediaPicker` component (~30 min)** — `plugins/sgs-blocks/src/components/MediaPicker.js`. Wraps `MediaUpload` from `@wordpress/block-editor`. Accepts both image + video mime types. Returns `{ url, type ('image'|'video'), id, alt, mime }`.
+Take Mama's Munches HTML mockup folder → full clone pipeline → live URL on **sandybrown post 30** (NOT 29 — keep hero PoC intact).
 
-**5b. Render helper (~20 min)** — `plugins/sgs-blocks/includes/render-helpers.php` add `sgs_render_media($attrs, $context = 'block-name')` that emits `<img>` for images and `<video autoplay loop muted playsinline>` for videos.
+Verify:
+- Every section in the mockup has a corresponding pattern artefact registered
+- Every captured rule from `.claude/mistakes.md` has a structural enforcement point (text-only enforcement = known gap)
+- `mockup-parity-validator.js` passes (all flagged Q1-Q4 deltas have `screenshot-diff-helper.js` evidence per Hard Rule 10)
+- Page renders without first-paint defects (multi-frame capture clean)
 
-**5c. Migrate hero block as proof (~30 min)** — replace `splitImage` (image-only) with `splitMedia` (media-slot accepting image OR video). Add deprecation for backward compat. Update edit.js to use `MediaPicker`.
+### Task 6 — Handoff for QA-focused session
 
-**5d. Document the migration pattern (~10 min)** — write `tools/qc-prevention/media-slot-migration.md` so subsequent block migrations follow the same recipe.
+Once cloning skill is built and UC3 smoke-tested, write `/handoff` for the QA-focused session that picks up:
+- visual-qa rubric drafting (lifts the C-cap)
+- Full-page autonomy worked example for sgs-wp-engine
+- Recurrence-rate tracker
+- Automated screenshot-helper integration test
+- Chrome DevTools MCP wiring (3 new scripts already speced)
+- Body progressive disclosure for sgs-wp-engine (430 → <300 lines)
 
-Defer migrating the other 11 blocks to a separate session — too much scope for one go.
+## Success criteria
 
-### Task 6 — H-4: Brand-source pink shade validation (~30 min)
+1. New cloning skill exists with confirmed `bean_signoff: confirmed` rubric
+2. Skillscore ≥ 90% A
+3. Gap-analysis B grade or above
+4. UC3 smoke run produces a deployed Mama's homepage at pattern fidelity on sandybrown post 30
+5. sgs-db schema migration applied; fingerprint column populated for at least 5 patterns
+6. uimax classification columns added to existing tables; 10+ rows reclassified as proof
+7. Three new scripts (fingerprint, classify, register) shipped + smoke-tested
+8. `/sgs-db` extended with fingerprint subcommand; verified working
+9. The 13+ captured rules from `.claude/mistakes.md` all have structural enforcement points in the new skill
+10. `/handoff` for QA-focused session-after-this saved to `.claude/next-session-prompt.md`
 
-Per parking.md H-4, sample dominant colours from `sites/mamas-munches/research/brand/`:
-1. Use Python PIL: open the PNG, get the dominant pink pixel cluster (e.g. via k-means clustering on the colour distribution)
-2. Compare to mockup `--surface-pink: #F5C2C8` and `--primary: #E68A95`
-3. If the brand source uses different pinks, decide with Bean: update Mama's variation to match brand, OR keep it matching the mockup brief
-
-If brand differs, also sample: cookie-brown, accent-yellow, charcoal — full palette validation, not just the 2 pinks.
-
-### Task 7 — Re-audit + close out (~30 min)
-
-After all 6 tasks landed:
-
-1. Run `/visual-qa --mode full` on the hero — confirm 0 visible defects with the new screenshot-helper integration
-2. Run `node scripts/mockup-parity-validator.js` — confirm any flagged "structural noise" deltas now have `requires_screenshot_review` flag enabled, classifier walks through them
-3. Verify hero block inspector is reorganised and operator-tested
-4. Verify replaceBlock helper works end-to-end
-5. Verify video-on-hero proof works (upload a 5MB sample video, set as splitMedia, verify renders correctly)
-6. Write `reports/visual-diff/hero-2026-05-06-final.md` with `verdict: PASS` if all 7 tasks closed
-
-### Task 8 — /handoff for next-next session (~15 min)
-
-If the framework hardening lands cleanly, the next-next session moves to **trust-bar / heritage-strip / next mockup section**. Write that as the next prompt. If anything didn't land (e.g. Task 5 needed more time), defer to the next-next session.
-
-## Skills + tools to use
+## Skills + tools
 
 | Skill | When |
 |---|---|
 | `/autopilot` | FIRST |
 | `/sgs-wp-engine` | Throughout |
-| `/subagent-driven-development` | Tasks 3 + 4 + 5 — multiple file paths, parallelisable in places |
-| `/dispatching-parallel-agents` | Tasks 1a + 1b are independent file paths (helper script vs validator flag); Task 2 + Task 6 have no overlap |
-| `/wp-block-development` | Task 3 (edit.js reorg) + Task 5 (block schema migration) |
-| `/lifecycle` | Task 1c (skill update — gated, mandatory) |
-| `/visual-qa` | Task 7 final audit |
-| `/handoff` | Task 8 |
+| `/lifecycle` | Task 1 |
+| `skill-writer` | Auto-invoked by /lifecycle Stage 2 |
+| `gap-analysis` | Auto-invoked by /lifecycle Stage 3 |
+| `rubric-writer` | Lens 6 trigger |
+| `/subagent-driven-development` | Tasks 2-4 — parallel mechanical work |
+| `/dispatching-parallel-agents` | Task 3 — three independent script builds |
+| `/wp-block-development` | Sub-skill if any block-level work needed |
+| `/visual-qa` | DO NOT invoke this session — declare as future Invoked Skill in the new SKILL.md |
 
 | Tool | Use |
 |---|---|
-| `node tools/multi-frame-qa/capture.js` | First-paint capture (already operational) |
-| `node scripts/mockup-parity-validator.js` | Computed-style diff (Task 1b: add requires_screenshot_review flag) |
-| `node scripts/css-pattern-audit.js` | M1 prevention (already operational) |
-| `node scripts/render-mobile-override-audit.js` | F4 prevention (already operational) |
-| `node scripts/font-source-audit.js` | O2 prevention (already operational) |
-| `node scripts/global-styles-reset.js` | Variation deploy (already operational) |
-| `node scripts/screenshot-diff-helper.js` | NEW (Task 1a) |
-| `node scripts/wp-update-block-attrs.js` | NEW (Task 4) |
-| `python tools/recogniser-v2/extract.py` | Re-extract if mockup changes |
-| `mcp__plugin_playwright_playwright__*` | Browser automation (NOT for measurement-of-record per P1) |
+| `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py <command>` | Query SGS DB |
+| `python ~/.agents/skills/ui-ux-pro-max/scripts/search.py "query"` | Query uimax DB |
+| `node tools/multi-frame-qa/capture.js` | First-paint capture |
+| `node scripts/mockup-parity-validator.js` | Computed-style diff with Q1-Q4 flag |
+| `node scripts/screenshot-diff-helper.js` | **Mandatory before reducing classifier severity (Hard Rule 10)** |
+| `node scripts/global-styles-reset.js` | Variation deploy |
+| `node scripts/wp-update-block-attrs.js` | Apply block attributes |
+| `python scripts/brand-palette-sampler.py` | Validate every client's brand source |
+| `python ~/.claude/hooks/wp-pattern-gen.py` | Existing pattern writer — extend for cloning |
+| Playwright MCP | Browser automation |
 | SSH `u945238940@141.136.39.73:65002` | Server access |
+| Hostinger MCP `hosting_listWebsitesV1` | Read-only verify deploy targets |
 
 ## Constraints
 
-- **Use Opus for the heavy thinking, dispatch Sonnet subagents for mechanical implementation.** Each task above is well-spec'd — Sonnet can execute. Opus's role is orchestration + design decisions on H-3 (video) + H-4 (brand-pink-vs-mockup) where there's a real call to make.
-- **Bake every fix into the QC pipeline structurally** — not as docs that need to be remembered. If it's not a script that runs automatically, it doesn't count.
-- **Time-estimate default LOW** — these are quoted optimistic. Live-calibrate downward as steps finish faster.
-- **Per-instance fixes (variation CSS) only when framework fixes are blocked.** Tasks 2 + 5 are framework-level — the right scope.
-- **Pre-commit STOP GATE will catch any block-src commit without a passing visual-diff report.** Write reports as you go.
-- **`wp_global_styles` reset+reapply is mandatory after any variation change.** Use `node scripts/global-styles-reset.js` (Task 4 may extend its capabilities).
-- **Don't dismiss any parity-validator delta as 'structural noise' without screenshot evidence.** That's the binding rule from this session.
-
-## Success criteria for the session
-
-1. Tasks 1, 2, 4, 7, 8 complete (H-5, H-7, H-6, audit, handoff)
-2. Task 3 (H-1 + H-2 inspector reorg) complete on hero; pattern documented for cascade to other blocks
-3. Task 5 (H-3 video) foundation + hero proof complete; remaining 11 blocks deferred
-4. Task 6 (H-4 brand pink) decided with Bean
-5. Hero re-audit shows 0 visible defects with the new screenshot-helper integration; classifier-trap pattern can't recur
-6. All 7 H-entries in parking.md moved to Resolved (or have a dated next-session deferred note)
-7. Pre-commit STOP GATE accepts the final commit
-8. Handoff written for next-next session (trust-bar OR continued framework work depending on what landed)
+- **Use Opus for orchestration; dispatch Sonnet subagents for mechanical work**
+- **Bake every captured rule structurally** — text-only counts as a known gap, not a pass
+- **Time-estimate default LOW**
+- **Only HTML drafts** — UC1 + UC2 are deferred. Don't build for them.
+- **Pre-commit STOP GATE will catch any block-src commit without a passing visual-diff report**
+- **wp_global_styles reset+reapply mandatory after any variation change**
+- **Never dismiss a parity-validator delta as "structural noise" without screenshot-diff evidence** (Hard Rule 10 binding from previous session)
+- **Patterns are per CLASS, not per CLONE** — Hard Rule 6. The recogniser operates at pattern boundaries; single-block emission is the inner step.
 
 ## Why this matters
 
-Bean is launching a business. The hero PoC took 3 days because of recurring QC failures. With this hardening session, future client clones (Mama's full homepage, Indus Foods, HelpingDoctors, Workwear Now, etc.) should hit ~99% on the first pass without iteration. The cumulative ROI of these 6 hours is measured in tens of hours saved across future client work.
+Bean is launching a business. The hero PoC took 3 days because the SGS team didn't yet have a coherent cloning pipeline. The previous session built every component AND migrated 9 blocks to the unified media-slot pattern. This session puts everything together for HTML drafts. With UC3 at 100% on first try, every future client mockup → live URL hits 30 min (single page) or under 1 hour (full website). The pattern library compounds — every clone makes the next clone faster. UC1 (LLM design gen) and UC2 (competitor harvest) come later; they extend a working UC3 rather than diluting its first-try-quality target.

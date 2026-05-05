@@ -11,8 +11,13 @@ import { colourVar, fontSizeVar } from '../../utils';
  *      render.php built button HTML server-side. No InnerBlocks.
  *      Migrates buttons array to sgs/multi-button + sgs/button InnerBlocks.
  *
- * v3 (current) — Dynamic save (returns null). Buttons are InnerBlocks via
- *      sgs/multi-button. $content variable used in render.php.
+ * v3 — Dynamic save (returns null). Buttons are InnerBlocks via
+ *      sgs/multi-button. backgroundImage was image-only.
+ *
+ * v4 (current) — Schema before backgroundMedia was introduced (2026-05-05).
+ *      Migrate legacy backgroundImage objects into the unified backgroundMedia
+ *      slot so existing posts open without "unexpected content" warnings.
+ *      backgroundImage is preserved as a back-compat denormalised fallback.
  */
 
 /**
@@ -271,4 +276,110 @@ const v1 = {
 	},
 };
 
-export default [ v2, v1 ];
+/**
+ * v3 — Pre-backgroundMedia schema. Same attributes as the current block but
+ * without the unified backgroundMedia slot. Save still returns null (dynamic
+ * render via render.php). Migrates a legacy backgroundImage object into the
+ * new backgroundMedia slot when present.
+ */
+const V3_ATTRIBUTES = {
+	headline: { type: 'string', default: '' },
+	body: { type: 'string', default: '' },
+	buttons: { type: 'array', default: [] },
+	ribbon: { type: 'string', default: '' },
+	layout: { type: 'string', default: 'centred' },
+	backgroundColor: { type: 'string', default: 'accent' },
+	textColor: { type: 'string', default: 'text' },
+	headlineColour: { type: 'string', default: 'text' },
+	bodyColour: { type: 'string', default: 'text' },
+	bodyFontSize: { type: 'string' },
+	bodyFontSizeTablet: { type: 'string', default: '' },
+	bodyFontSizeMobile: { type: 'string', default: '' },
+	buttonColour: { type: 'string', default: 'text-inverse' },
+	buttonBackground: { type: 'string', default: 'primary-dark' },
+	backgroundImage: { type: 'object', default: null },
+	backgroundImageOpacity: { type: 'number', default: 30 },
+	stats: { type: 'array', default: [] },
+	buttonStyle: {
+		type: 'string',
+		default: 'solid',
+		enum: [ 'solid', 'outline', 'ghost', 'gradient' ],
+	},
+	buttonSize: {
+		type: 'string',
+		default: 'md',
+		enum: [ 'xs', 'sm', 'md', 'lg', 'xl' ],
+	},
+	buttonBorderColour: { type: 'string' },
+	buttonBorderWidth: { type: 'number' },
+	buttonBorderRadius: { type: 'number' },
+	gradientPreset: { type: 'string', default: '' },
+	hoverBackgroundColour: { type: 'string', default: '' },
+	hoverTextColour: { type: 'string', default: '' },
+	hoverBorderColour: { type: 'string', default: '' },
+	transitionDuration: { type: 'string', default: '300' },
+	transitionEasing: { type: 'string', default: 'ease-in-out' },
+	textAlignMobile: { type: 'string', default: '' },
+	textAlignTablet: { type: 'string', default: '' },
+	textAlignDesktop: { type: 'string', default: '' },
+};
+
+const v3 = {
+	attributes: V3_ATTRIBUTES,
+	supports: {
+		align: [ 'wide', 'full' ],
+		anchor: true,
+		html: false,
+		color: { background: true, text: true, gradients: true },
+		typography: {
+			fontSize: true,
+			lineHeight: true,
+			textAlign: true,
+			letterSpacing: true,
+			textTransform: true,
+			fontWeight: true,
+			fontStyle: true,
+		},
+		spacing: { margin: true, padding: true },
+		shadow: true,
+		__experimentalBorder: {
+			radius: true,
+			width: true,
+			color: true,
+			style: true,
+		},
+	},
+	save() {
+		return null;
+	},
+	isEligible( attributes ) {
+		// Only run when a legacy backgroundImage exists and backgroundMedia
+		// has not yet been populated — prevents re-running on already-migrated
+		// posts.
+		return !! (
+			attributes &&
+			attributes.backgroundImage &&
+			attributes.backgroundImage.url &&
+			! attributes.backgroundMedia
+		);
+	},
+	migrate( attributes ) {
+		const next = { ...attributes };
+		if (
+			attributes.backgroundImage &&
+			attributes.backgroundImage.url &&
+			! attributes.backgroundMedia
+		) {
+			next.backgroundMedia = {
+				url: attributes.backgroundImage.url,
+				type: 'image',
+				id: attributes.backgroundImage.id || 0,
+				alt: attributes.backgroundImage.alt || '',
+				mime: 'image/jpeg',
+			};
+		}
+		return next;
+	},
+};
+
+export default [ v3, v2, v1 ];

@@ -94,40 +94,48 @@ $wrapper_attributes = get_block_wrapper_attributes(
 	)
 );
 
-// Build logo items HTML (single set — JS handles cloning at runtime).
+/*
+ * Build logo items HTML (single set — JS handles cloning at runtime).
+ * Each logo entry is migrated to the unified media-slot shape:
+ *   { media: { url, type:'image', id, alt, mime, width, height }, alt, linkUrl }
+ * Legacy entries ({ image: { url, ... }, url: linkUrl }) are read inline as a
+ * safety net for posts that have not yet round-tripped through the editor.
+ */
 $logos_html = '';
 if ( ! empty( $logos ) ) {
 	foreach ( $logos as $logo ) {
-		$logo_url = '';
-		if ( isset( $logo['image']['url'] ) ) {
-			$logo_url = $logo['image']['url'];
-		} elseif ( isset( $logo['url'] ) ) {
-			$logo_url = $logo['url'];
+		$media = isset( $logo['media'] ) && is_array( $logo['media'] ) ? $logo['media'] : null;
+
+		// Backward-compat: lift legacy { image: {...} } shape to media.
+		if ( null === $media && isset( $logo['image'] ) && is_array( $logo['image'] ) ) {
+			$legacy = $logo['image'];
+			$media  = array(
+				'url'    => $legacy['url'] ?? '',
+				'type'   => 'image',
+				'id'     => isset( $legacy['id'] ) ? absint( $legacy['id'] ) : 0,
+				'alt'    => $logo['alt'] ?? ( $legacy['alt'] ?? '' ),
+				'mime'   => '',
+				'width'  => isset( $legacy['width'] ) ? absint( $legacy['width'] ) : 0,
+				'height' => isset( $legacy['height'] ) ? absint( $legacy['height'] ) : 0,
+			);
 		}
 
-		$logo_alt = $logo['alt'] ?? '';
-
-		if ( ! $logo_url ) {
+		if ( null === $media || empty( $media['url'] ) ) {
 			continue;
 		}
 
-		$logo_id    = isset( $logo['id'] ) ? absint( $logo['id'] ) : ( isset( $logo['image']['id'] ) ? absint( $logo['image']['id'] ) : 0 );
-		$logo_attrs = [
-			'class'   => 'sgs-brand-strip__logo',
-			'loading' => 'lazy',
-			'style'   => 'max-height:' . absint( $max_height ) . 'px',
-		];
-		$logo_w = isset( $logo['image']['width'] ) ? absint( $logo['image']['width'] ) : 0;
-		$logo_h = isset( $logo['image']['height'] ) ? absint( $logo['image']['height'] ) : 0;
-		if ( $logo_w ) {
-			$logo_attrs['width'] = $logo_w;
+		// Operator alt text overrides media alt when set.
+		if ( ! empty( $logo['alt'] ) ) {
+			$media['alt'] = $logo['alt'];
 		}
-		if ( $logo_h ) {
-			$logo_attrs['height'] = $logo_h;
+
+		$logo_html = sgs_render_media( $media, 'sgs/brand-strip' );
+		if ( '' === $logo_html ) {
+			continue;
 		}
 
 		$logos_html .= '<div class="sgs-brand-strip__item">';
-		$logos_html .= sgs_responsive_image( $logo_id, $logo_url, $logo_alt, 'medium', $logo_attrs );
+		$logos_html .= $logo_html;
 		$logos_html .= '</div>';
 	}
 }

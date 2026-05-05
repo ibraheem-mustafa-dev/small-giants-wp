@@ -16,6 +16,13 @@
     "vendor/php-stubs/wordpress-stubs",
     "vendor/php-stubs/wp-cli-stubs"
   ],
+  // Silence P1010 false positives on WordPress core functions called from inside
+  // a `namespace SGS\Theme;` block. PHP's global-fallback resolution makes calls
+  // like `add_action(...)` work at runtime, but intelephense doesn't always apply
+  // the fallback even with stubs loaded — so it flags every WP core call as
+  // "Undefined function 'SGS\Theme\add_action'". Stubs still drive autocomplete
+  // and signature help; only the noisy diagnostic is silenced.
+  "intelephense.diagnostics.undefinedFunctions": false,
   "intelephense.stubs": [
     "apache",
     "bcmath",

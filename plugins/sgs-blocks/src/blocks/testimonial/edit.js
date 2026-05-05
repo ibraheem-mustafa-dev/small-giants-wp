@@ -2,19 +2,17 @@ import { __ } from '@wordpress/i18n';
 import {
 	useBlockProps,
 	InspectorControls,
-	MediaUpload,
-	MediaUploadCheck,
 	RichText,
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
 	SelectControl,
 	RangeControl,
-	Button,
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
 import { DesignTokenPicker, ResponsiveControl } from '../../components';
+import MediaPicker from '../../components/MediaPicker';
 import { colourVar, fontSizeVar } from '../../utils';
 
 const STYLE_OPTIONS = [
@@ -57,6 +55,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		name,
 		role,
 		avatar,
+		authorMedia,
 		rating,
 		style: cardStyle,
 		quoteColour,
@@ -241,62 +240,40 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Avatar', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<MediaUploadCheck>
-						<MediaUpload
-							onSelect={ ( media ) =>
-								setAttributes( {
-									avatar: {
+					<MediaPicker
+						value={ authorMedia || ( avatar?.url ? {
+							url: avatar.url,
+							type: 'image',
+							id: avatar.id || 0,
+							alt: avatar.alt || '',
+							mime: 'image/jpeg',
+						} : null ) }
+						onChange={ ( media ) =>
+							setAttributes( {
+								authorMedia: media,
+								// Mirror to legacy avatar so existing CSS / fallback render paths still work.
+								avatar: media
+									? {
 										id: media.id,
 										url: media.url,
 										alt: media.alt,
-									},
-								} )
-							}
-							allowedTypes={ [ 'image' ] }
-							value={ avatar?.id }
-							render={ ( { open } ) => (
-								<div>
-									{ avatar?.url ? (
-										<>
-											<img
-												src={ avatar.url }
-												alt=""
-												style={ {
-													maxWidth: '80px',
-													borderRadius: '50%',
-													marginBottom: '8px',
-												} }
-											/>
-											<Button
-												variant="secondary"
-												onClick={ () =>
-													setAttributes( {
-														avatar: undefined,
-													} )
-												}
-												isDestructive
-											>
-												{ __(
-													'Remove avatar',
-													'sgs-blocks'
-												) }
-											</Button>
-										</>
-									) : (
-										<Button
-											variant="secondary"
-											onClick={ open }
-										>
-											{ __(
-												'Select avatar',
-												'sgs-blocks'
-											) }
-										</Button>
-									) }
-								</div>
-							) }
-						/>
-					</MediaUploadCheck>
+									}
+									: undefined,
+							} )
+						}
+						onRemove={ () =>
+							setAttributes( {
+								authorMedia: null,
+								avatar: undefined,
+							} )
+						}
+						allowedTypes={ [ 'image' ] }
+						label={ __( 'Select author photo', 'sgs-blocks' ) }
+						instructionsImage={ __(
+							'Choose an image for the testimonial author',
+							'sgs-blocks'
+						) }
+					/>
 				</PanelBody>
 
 				<PanelBody

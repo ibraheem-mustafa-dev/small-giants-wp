@@ -1,6 +1,12 @@
 /**
  * Card Grid deprecations.
  *
+ * V2 (FRONT — newest first): pre-media-slot schema (2026-05-05). Each item
+ * accepted only an `image` object. v2 lifts each item's legacy `image` into
+ * the new unified `media` slot so existing posts open without "unexpected
+ * content" warnings. `image` is preserved on each item as a back-compat
+ * denormalised fallback (matches hero v4 pattern).
+ *
  * V1: original static save output, before the block was converted to
  * server-side rendering (render.php). Blocks saved with the old static
  * HTML are migrated by returning the attributes unchanged; WordPress
@@ -8,6 +14,75 @@
  */
 import { useBlockProps } from '@wordpress/block-editor';
 import { colourVar, spacingVar } from '../../utils';
+
+const v2 = {
+	attributes: {
+		variant:               { type: 'string', default: 'card' },
+		items:                 { type: 'array',  default: [] },
+		columns:               { type: 'number', default: 3 },
+		columnsMobile:         { type: 'number', default: 1 },
+		gap:                   { type: 'string', default: '30' },
+		aspectRatio:           { type: 'string', default: '16/10' },
+		hoverEffect:           { type: 'string', default: 'zoom' },
+		columnsTablet:         { type: 'number', default: 2 },
+		overlayStyle:          { type: 'string', default: 'gradient' },
+		titleColour:           { type: 'string', default: 'primary' },
+		subtitleColour:        { type: 'string', default: 'text' },
+		hoverBackgroundColour: { type: 'string' },
+		hoverTextColour:       { type: 'string' },
+		hoverBorderColour:     { type: 'string', default: 'primary' },
+		transitionDuration:    { type: 'string', default: '300' },
+		transitionEasing:      { type: 'string', default: 'ease-in-out' },
+		hoverScale:            { type: 'string', default: '' },
+		hoverShadow:           { type: 'string', default: '' },
+		hoverImageZoom:        { type: 'boolean', default: false },
+		hoverGrayscale:        { type: 'boolean', default: false },
+		staggerDelay:          { type: 'number', default: 80 },
+		sgsAnimation:          { type: 'string', default: 'fade-up' },
+		sgsAnimationDuration:  { type: 'string', default: 'medium' },
+		sgsAnimationEasing:    { type: 'string', default: 'default' },
+		source:                { type: 'string', default: 'manual', enum: [ 'manual', 'query' ] },
+		queryPostType:         { type: 'string', default: 'post' },
+		queryPostsPerPage:     { type: 'number', default: 6 },
+		queryCategory:         { type: 'number', default: 0 },
+	},
+	save() {
+		// Block is server-side rendered — save returns null (matches current).
+		return null;
+	},
+	isEligible( attributes ) {
+		// Only run when at least one item still has a legacy `image` and has
+		// not yet been populated with `media` — prevents re-running on
+		// already-migrated posts.
+		if ( ! attributes || ! Array.isArray( attributes.items ) ) {
+			return false;
+		}
+		return attributes.items.some(
+			( it ) => it && it.image && it.image.url && ! it.media
+		);
+	},
+	migrate( attributes ) {
+		const nextItems = ( attributes.items || [] ).map( ( it ) => {
+			if ( ! it ) {
+				return it;
+			}
+			if ( it.image && it.image.url && ! it.media ) {
+				return {
+					...it,
+					media: {
+						url: it.image.url,
+						type: 'image',
+						id: it.image.id || 0,
+						alt: it.image.alt || '',
+						mime: 'image/jpeg',
+					},
+				};
+			}
+			return it;
+		} );
+		return { ...attributes, items: nextItems };
+	},
+};
 
 const v1 = {
 	attributes: {
@@ -150,4 +225,4 @@ const v1 = {
 	},
 };
 
-export default [ v1 ];
+export default [ v2, v1 ];

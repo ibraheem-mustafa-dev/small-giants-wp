@@ -24,7 +24,27 @@ $body_font_size           = $attributes['bodyFontSize'] ?? '';
 $body_font_size_tablet    = $attributes['bodyFontSizeTablet'] ?? '';
 $body_font_size_mobile    = $attributes['bodyFontSizeMobile'] ?? '';
 $background_image         = $attributes['backgroundImage'] ?? null;
+$background_media         = $attributes['backgroundMedia'] ?? null;
 $background_image_opacity = $attributes['backgroundImageOpacity'] ?? 30;
+
+// Resolve the active media: prefer the unified backgroundMedia slot, otherwise
+// synthesise from the legacy backgroundImage object so existing posts that have
+// not yet round-tripped through the editor still render the same asset.
+$resolved_media = null;
+if ( ! empty( $background_media ) && is_array( $background_media ) && ! empty( $background_media['url'] ) ) {
+	$resolved_media = $background_media;
+} elseif ( ! empty( $background_image ) && is_array( $background_image ) && ! empty( $background_image['url'] ) ) {
+	$resolved_media = array(
+		'url'  => $background_image['url'],
+		'type' => 'image',
+		'id'   => $background_image['id'] ?? 0,
+		'alt'  => $background_image['alt'] ?? '',
+		'mime' => 'image/jpeg',
+	);
+}
+
+$has_image_bg = $resolved_media && ( $resolved_media['type'] ?? 'image' ) === 'image';
+$has_video_bg = $resolved_media && ( $resolved_media['type'] ?? 'image' ) === 'video';
 $stats                    = $attributes['stats'] ?? array();
 
 $hover_background_colour = $attributes['hoverBackgroundColour'] ?? '';
@@ -54,8 +74,10 @@ if ( $hover_border_colour ) {
 	$wrapper_styles[] = '--sgs-hover-border:' . sgs_colour_value( $hover_border_colour );
 }
 
-if ( ! empty( $background_image['url'] ) ) {
-	$wrapper_styles[] = 'background-image:url(' . esc_url( $background_image['url'] ) . ')';
+if ( $has_image_bg ) {
+	// Image backgrounds keep using a CSS background-image so the existing
+	// overlay + text layering continues to work without layout changes.
+	$wrapper_styles[] = 'background-image:url(' . esc_url( $resolved_media['url'] ) . ')';
 	$wrapper_styles[] = 'background-size:cover';
 	$wrapper_styles[] = 'background-position:center';
 }
@@ -93,9 +115,31 @@ if ( $wrapper_styles ) {
 
 $wrapper_attributes = get_block_wrapper_attributes( $wrapper_attr_args );
 
-// Build background overlay.
+// Build background media (video) + overlay.
+$media_html = '';
+if ( $has_video_bg ) {
+	$video_attrs = array_merge(
+		$resolved_media,
+		array(
+			'video_options' => array(
+				'autoplay'    => true,
+				'loop'        => true,
+				'muted'       => true,
+				'playsinline' => true,
+				'controls'    => false,
+			),
+		)
+	);
+	// sgs_render_media() emits a <video class="sgs-media sgs-media--video sgs-media--sgs-cta-section">.
+	// Wrap so the video sits behind the content + overlay without affecting layout.
+	$rendered_video = sgs_render_media( $video_attrs, 'sgs/cta-section' );
+	if ( '' !== $rendered_video ) {
+		$media_html = '<div class="sgs-cta-section__bg-media" aria-hidden="true">' . $rendered_video . '</div>';
+	}
+}
+
 $overlay_html = '';
-if ( ! empty( $background_image['url'] ) ) {
+if ( $resolved_media ) {
 	$overlay_html = sprintf(
 		'<span class="sgs-cta-section__overlay" style="opacity:%s" aria-hidden="true"></span>',
 		esc_attr( $background_image_opacity / 100 )
@@ -169,8 +213,9 @@ if ( $ribbon ) {
 // silences the false-positive "not escaped inline" warnings on multi-arg printf.
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
 printf(
-	'<section %s>%s%s<div class="sgs-cta-section__content"><h2%s%s>%s</h2><p class="sgs-cta-section__body"%s>%s</p>%s</div>%s</section>',
+	'<section %s>%s%s%s<div class="sgs-cta-section__content"><h2%s%s>%s</h2><p class="sgs-cta-section__body"%s>%s</p>%s</div>%s</section>',
 	$wrapper_attributes,
+	$media_html,
 	$overlay_html,
 	$ribbon_html,
 	$headline_class_attr,

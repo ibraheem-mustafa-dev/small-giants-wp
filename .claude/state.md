@@ -2,8 +2,8 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-current_phase: framework-qc-hardening
-current_step: "Hero PoC closed end-to-end on sandybrown post 29 (commits 6b50465 → 491e4f4). Final session pass found framework gradient bug masking user-set backgroundColor (R1-R4 patterns added to common-wp-styling-errors.md Section R + new lesson 'extend-measurement-set-when-human-eye-disputes' captured to all 3 layers — workspace, CC auto-memory, blub.db row 207). 5 prevention scripts now armed: css-pattern-audit, render-mobile-override-audit, font-source-audit, mockup-parity-validator (extended with backgroundImage+filter+mixBlendMode), colour-parity-audit (NEW). global-styles-reset + multi-frame-qa harness + recogniser v3 + visual-qa skill (A grade). 10 architecture/UX gaps captured in parking.md as H-1 through H-10. NEXT SESSION (Opus): dedicated to closing every captured gap so scripts never fail again and QC catches what Bean's eye does. Most critical: H-5 classifier human-eye gate (binding rule + screenshot-diff helper)."
+current_phase: cloning-pipeline-design
+current_step: "Framework-qc-hardening phase CLOSED. All 7 H-entries (H-1 through H-7) closed structurally: hero inspector reorganised (21 panels → 10 element-grouped); MediaPicker + sgs_render_media foundation; hero migrated to splitMedia (image OR video); 8 other blocks migrated in parallel sweep (info-box, card-grid, testimonial, decorative-image, brand-strip, certification-bar, gallery, team-member, cta-section); 2 NO-OP verified (feature-grid container, process-steps text-only); pattern-not-block lesson captured + embedded as Hard Rule 6 in sgs-wp-engine (blub.db row 209); visual-qa Hard Rule 10 (classifier severity reduction requires screenshot evidence); screenshot-diff-helper.js + wp-update-block-attrs.js + brand-palette-sampler.py shipped; Hostinger MCP integrated (RED on plugin/theme deploy — keep tar+scp); LiteSpeed plugin removed both test sites; intelephense P1010 silenced. Wave 6 deploy verify PASS on sandybrown post 29 — 3 breakpoints, 0 console errors, no gradient overpaint, full-bleed verified, M1 NOT detected. NEXT SESSION (Opus): build the new independent SGS cloning skill scoped to HTML drafts only (Use Case 3) — 3 open questions, 6 tasks. UC1 LLM design gen + UC2 competitor harvest deferred until UC3 hits 100% on first try."
 last_updated: 2026-05-05
 blockers: []
 recommended_model_next: opus
@@ -15,7 +15,7 @@ recommended_model_next: opus
 
 ## Where we are
 
-**Button architecture shipped (2026-05-04).** Spec 11 landed end-to-end on sandybrown. Plus 7 downstream items Bean added mid-session: info-box upgrade (5 toggleable reorderable elements), sgs/feature-grid container, ingredients pattern, icon dedup, back-to-top inserter hide, whatsapp render.php + brand icon SVG, block coverage gap audit (53 blocks). Migration sweep ran on existing posts 5 and 8 — content migrated to InnerBlocks structure but with placeholder labels (the deprecation eligibility check failed on the original CTA attrs, so InnerBlocks template defaults fired). Bean accepted: content authoring is needed for the perfect clone.
+**Framework-qc-hardening phase CLOSED (2026-05-05).** All 7 H-entries from the previous handoff plus 3 captured-mid-session ones closed structurally. The framework now has the full toolchain to clone HTML mockups deterministically: pattern-not-block recogniser framing (Hard Rule 6); 9 blocks migrated to unified MediaPicker + sgs_render_media slot (image OR video); pixel-diff classifier gate (Hard Rule 10 + screenshot-diff-helper); brand-palette validation per client; viewport-aware full-bleed; replaceBlock helper bypassing block-validation rejection. 2 lifecycle Mode A runs (sgs-wp-engine + visual-qa, both A skillscore). Cloning-pipeline prep specs revised after Bean's 5 corrections: HTML-drafts-only first, single sgs-db patterns table with fingerprint as headline, uimax extends existing tables (industry/mood/style + platforms), no licensing complexity. Wave 6 deploy verify PASS on sandybrown post 29.
 
 | Item | Status |
 |---|---|
@@ -36,18 +36,30 @@ recommended_model_next: opus
 
 ## Open tracks (priority order)
 
-1. **Mama's homepage hero perfect clone — proof of concept.** Pixel-faithful clone of the hero banner on sandybrown post 8 against the mockup at `sites/mamas-munches/mockups/homepage/index.html`. Includes container check (background colour + padding inheritance), exact image + screenspace match at desktop and mobile, all CTAs and inner content. Use the recogniser-v2 fingerprint + mapping path before manual edits — get the transfer-script proof working on the hero before extending. Next session priority.
-2. **Mama's homepage section-by-section clone** (post hero PoC). Trust bar, featured product, brand story, ingredients, gift section, social proof, footer. Each section follows the same pattern: read mockup → check container → extract → emit blocks → visual diff.
-3. **Recogniser-v2 generalisation** (parking P-9). Now unblocked since composition emitter has sgs/multi-button + sgs/button to target. Phase V2.1-V2.5 from spec 12. Likely runs after the hero PoC validates the approach.
-4. **SGS Ecom Plugin Phase 1** — `sgs/product-info`, `sgs/product-gallery`, `sgs/variant-pills`. WC integration (NOT replacement). Queued after homepage clone ships.
-5. **Migration label preservation investigation.** Hero CTAs migrated structurally but with InnerBlocks template defaults instead of original CTA text. Deprecation eligibility check likely failed. ~30 min to diagnose.
+1. **Build the new SGS cloning skill — HTML drafts only.** Independent super-pipeline absorbing the keep-worthy parts of /build-website + /clone-patterns + /design-tokens + /design-ref + /sgs-extraction. Scope limited to Use Case 3 (HTML mockup → live WP site) until 100% on first try. Specs at `.claude/specs/cloning-skill-salvage-matrix-2026-05-05.md` + `.claude/specs/pattern-dedup-classify-mechanics-2026-05-05.md` (read REVISIONS sections first). 3 open questions + 6 tasks queued in `next-session-prompt.md`.
+2. **QA-focused session-after-next.** Visual-qa rubric drafting (lifts C-cap), recurrence-rate tracker, automated screenshot-helper integration test, Chrome DevTools MCP wiring (3 new scripts speced at `.claude/specs/chrome-devtools-stage-8-integration.md`).
+3. **Mama's homepage section-by-section clone** (after cloning skill ships). Trust bar, featured product, brand story, ingredients, gift section, social proof, footer. UC3 smoke run on Mama's full homepage is Task 5 of next session.
+4. **Use Case 1 (LLM design generation) + Use Case 2 (competitor harvest)** — deferred until UC3 hits 100%.
+5. **SGS Ecom Plugin Phase 1** — `sgs/product-info`, `sgs/product-gallery`, `sgs/variant-pills`. WC integration (NOT replacement). Queued after cloning skill + first Mama's full clone ships.
 
 ## Subprojects
 
 - Mama's Munches — `sites/mamas-munches/.claude/` — homepage clone is the active workstream
 - Indus Foods Phase 4 — `sites/indus-foods/.claude/`
 
-## Decisions 2026-05-04 (this session)
+## Decisions 2026-05-05 (this session)
+
+- **Mockup classes/sections map to PATTERNS, not single blocks** (blub.db row 209). A class is a section/container holding 1+ blocks. Recogniser operates at pattern boundaries; single-block emission is the inner step. Embedded as Hard Rule 6 in sgs-wp-engine SKILL.md. Every clone contributes pattern artefacts to a compounding library — strategic asset that becomes the SGS competitive moat.
+- **Classifier severity reduction requires screenshot evidence (Section Q binding rule).** Visual-qa Hard Rule 10: no severity reduction without `screenshot-diff-helper.js` output. Validator deltas tagged `requires_screenshot_review: true` (Q1-Q4 patterns) cannot be dismissed at all without pixel evidence.
+- **Cloning pipeline scope: HTML drafts only first.** UC1 LLM design gen + UC2 competitor harvest are deferred until UC3 hits 100% on first try. "Don't dilute efforts."
+- **sgs-db single patterns table — no licensing complexity.** Fingerprint is the headline column. `source` field = `idea` / `draft` / competitor URL. No separate `clone_observations` / `external_patterns` table.
+- **uimax extends existing tables (block-pattern, component, colour-palette, wcag-friendly, icons), not new instance tables.** Add categories: industry / mood / style. Add platforms: PHP / HTML / CSS / JS / WordPress / Tailwind / Bootstrap / Astro / Next.js / etc.
+- **Hostinger MCP plugin/theme deploy RED — keep tar+scp.** No exclusion filter; would upload node_modules / src / .git. Static-website preview path still viable for UC1 mockup hosting (not in scope yet). Read-only tools (DNS, list-websites, subdomains) usable now.
+- **LiteSpeed plugin deleted from both test sites.** `wp litespeed-purge` no longer required during dev/staging deploys. Production sites should still check `wp plugin list | grep litespeed` before deploying production changes.
+- **9 blocks migrated to unified `*Media` slot pattern.** Hero is the proof; info-box/card-grid/testimonial/decorative-image/brand-strip/certification-bar/gallery/team-member/cta-section follow. Logo-only blocks use `allowedTypes={['image']}`. Gallery deviation: keeps multi-MediaUpload for batch UX, normalises output to media-slot shape via `resolveGalleryMedia()` resolver — documented in migration recipe.
+- **Pre-commit STOP GATE verified** parsing `verdict: PASS` AND `first_paint_capture_passed: true` (3-condition check). Gap SO-1 was a false alarm.
+
+## Decisions 2026-05-04 (previous session)
 
 - **InnerBlocks.Content save pattern is mandatory for dynamic blocks with InnerBlocks slots.** `save: () => null` causes WordPress to drop InnerBlocks during serialization. Hero already had it right; product-card / cta-section / info-box did not. All four now aligned. Captured as B4 in `.claude/specs/common-wp-styling-errors.md` and as a new gotcha in `plugins/sgs-blocks/CLAUDE.md`.
 - **Gift sections are block patterns, not new blocks.** `sgs/product-card` got `variantStyle: 'gift'` enum value; gift sections compose multiple product-cards via a pattern (similar to ingredients-section). Avoids block proliferation.

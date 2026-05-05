@@ -109,8 +109,40 @@ function GalleryThumbnail( { image, index, onRemove, onDragStart, onDragOver, on
 // Main edit component
 // -------------------------------------------------------------------------
 
+/**
+ * Resolve a WordPress media library object to the SGS unified media-slot shape.
+ *
+ * Mirrors the resolver inside src/components/MediaPicker.js. Used here because
+ * gallery uses a multi-select MediaUpload (better UX for batch add) rather
+ * than one MediaPicker per slot — but we still emit the media-slot shape so
+ * sgs_render_media() can consume each item server-side.
+ *
+ * @param {Object} media       WP media object from MediaUpload onSelect.
+ * @param {string} preferSize  Preferred image size slug (large, medium, etc.).
+ * @return {Object}            Unified media-slot shape with extra gallery fields.
+ */
+function resolveGalleryMedia( media, preferSize ) {
+	const mime = media?.mime || media?.mime_type || '';
+	const type = mime.startsWith( 'video/' ) ? 'video' : 'image';
+	const url  = type === 'image'
+		? ( media.sizes?.[ preferSize ]?.url || media.sizes?.large?.url || media.url )
+		: media.url;
+	return {
+		id:      media.id || 0,
+		url,
+		type,
+		alt:     media.alt || '',
+		mime,
+		caption: media.caption || '',
+		fullUrl: media.sizes?.full?.url || media.url,
+		width:   media.width  || 0,
+		height:  media.height || 0,
+	};
+}
+
 export default function Edit( { attributes, setAttributes } ) {
 	const {
+		mediaItems,
 		images,
 		layout,
 		columns,
@@ -138,6 +170,11 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const set = ( key ) => ( value ) => setAttributes( { [ key ]: value } );
 
+	// Use the new unified mediaItems if present, otherwise fall back to legacy
+	// images. The deprecation migrates on load, so this fallback only fires
+	// for posts that have not yet round-tripped through the editor.
+	const items = ( mediaItems && mediaItems.length ) ? mediaItems : ( images || [] );
+
 	// Drag-to-reorder state.
 	const dragSourceIndex = useRef( null );
 
@@ -160,40 +197,35 @@ export default function Edit( { attributes, setAttributes } ) {
 		if ( sourceIndex === null || sourceIndex === targetIndex ) {
 			return;
 		}
-		const newImages = [ ...images ];
-		const [ moved ] = newImages.splice( sourceIndex, 1 );
-		newImages.splice( targetIndex, 0, moved );
-		setAttributes( { images: newImages } );
+		const next = [ ...items ];
+		const [ moved ] = next.splice( sourceIndex, 1 );
+		next.splice( targetIndex, 0, moved );
+		// Always write to the new attribute and clear the legacy one so we do
+		// not maintain two sources of truth post-migration.
+		setAttributes( { mediaItems: next, images: [] } );
 		dragSourceIndex.current = null;
 	};
 
 	/**
-	 * Remove a single image from the gallery.
+	 * Remove a single item from the gallery.
 	 *
 	 * @param {number} index Index to remove.
 	 */
 	const removeImage = ( index ) => {
-		const newImages = images.filter( ( _, i ) => i !== index );
-		setAttributes( { images: newImages } );
+		const next = items.filter( ( _, i ) => i !== index );
+		setAttributes( { mediaItems: next, images: [] } );
 	};
 
 	/**
-	 * Handle image selection from MediaUpload.
-	 * Maps WordPress media objects to our compact image data structure.
+	 * Handle media selection from MediaUpload.
+	 * Maps WordPress media objects to the unified SGS media-slot shape so
+	 * sgs_render_media() can render either an <img> or <video> per item.
 	 *
 	 * @param {Object[]} selectedMedia Array of WP media objects.
 	 */
 	const onSelectImages = ( selectedMedia ) => {
-		const mapped = selectedMedia.map( ( media ) => ( {
-			id:      media.id,
-			url:     media.sizes?.[ imageSize ]?.url || media.sizes?.large?.url || media.url,
-			fullUrl: media.sizes?.full?.url || media.url,
-			alt:     media.alt || '',
-			caption: media.caption || '',
-			width:   media.width  || 0,
-			height:  media.height || 0,
-		} ) );
-		setAttributes( { images: mapped } );
+		const mapped = selectedMedia.map( ( media ) => resolveGalleryMedia( media, imageSize ) );
+		setAttributes( { mediaItems: mapped, images: [] } );
 	};
 
 	// Wrapper inline styles — CSS custom properties for layout.
@@ -247,13 +279,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						{ __( 'Select multiple images from the Media Library. Drag thumbnails to reorder.', 'sgs-blocks' ) }
 					</p>
 
-					{ images.length > 0 && (
+					{ items.length > 0 && (
 						<div
 							className="sgs-gallery-editor__thumbs"
 							role="list"
-							aria-label={ __( 'Gallery images', 'sgs-blocks' ) }
+							aria-label={ __( 'Gallery items', 'sgs-blocks' ) }
 						>
-							{ images.map( ( image, index ) => (
+							{ items.map( ( image, index ) => (
 								<GalleryThumbnail
 									key={ image.id || index }
 									image={ image }
@@ -270,29 +302,29 @@ export default function Edit( { attributes, setAttributes } ) {
 					<MediaUploadCheck>
 						<MediaUpload
 							onSelect={ onSelectImages }
-							allowedTypes={ [ 'image' ] }
+							allowedTypes={ [ 'image', 'video' ] }
 							multiple={ true }
 							gallery={ true }
-							value={ images.map( ( img ) => img.id ) }
+							value={ items.map( ( item ) => item.id ).filter( Boolean ) }
 							render={ ( { open } ) => (
 								<Button
 									onClick={ open }
 									variant="secondary"
 									className="sgs-gallery-editor__media-btn"
 								>
-									{ images.length > 0
+									{ items.length > 0
 										? __( 'Edit gallery', 'sgs-blocks' )
-										: __( 'Add images', 'sgs-blocks' ) }
+										: __( 'Add media', 'sgs-blocks' ) }
 								</Button>
 							) }
 						/>
 					</MediaUploadCheck>
 
-					{ images.length > 0 && (
+					{ items.length > 0 && (
 						<p className="sgs-gallery-editor__panel-note" style={ { marginTop: '8px' } }>
-							{ images.length }{ ' ' }{ images.length === 1
-								? __( 'image selected', 'sgs-blocks' )
-								: __( 'images selected', 'sgs-blocks' ) }
+							{ items.length }{ ' ' }{ items.length === 1
+								? __( 'item selected', 'sgs-blocks' )
+								: __( 'items selected', 'sgs-blocks' ) }
 						</p>
 					) }
 				</PanelBody>
@@ -483,13 +515,13 @@ export default function Edit( { attributes, setAttributes } ) {
 			     Live preview canvas
 			     ============================================================ */ }
 			<div { ...blockProps }>
-				{ images.length === 0 && (
+				{ items.length === 0 && (
 					<div className="sgs-gallery-editor__placeholder">
-						<p>{ __( 'No images selected. Use the "Images" panel in the sidebar to add photos.', 'sgs-blocks' ) }</p>
+						<p>{ __( 'No media selected. Use the "Images" panel in the sidebar to add photos or videos.', 'sgs-blocks' ) }</p>
 						<MediaUploadCheck>
 							<MediaUpload
 								onSelect={ onSelectImages }
-								allowedTypes={ [ 'image' ] }
+								allowedTypes={ [ 'image', 'video' ] }
 								multiple={ true }
 								gallery={ true }
 								value={ [] }
@@ -499,7 +531,7 @@ export default function Edit( { attributes, setAttributes } ) {
 										variant="primary"
 										className="sgs-gallery-editor__media-btn"
 									>
-										{ __( 'Add images', 'sgs-blocks' ) }
+										{ __( 'Add media', 'sgs-blocks' ) }
 									</Button>
 								) }
 							/>
@@ -507,36 +539,50 @@ export default function Edit( { attributes, setAttributes } ) {
 					</div>
 				) }
 
-				{ images.length > 0 && (
+				{ items.length > 0 && (
 					<div
 						className="sgs-gallery__grid"
 						style={ previewGridStyle }
 					>
-						{ images.map( ( image, index ) => (
-							<figure
-								key={ image.id || index }
-								className="sgs-gallery__item"
-								style={ aspectRatio ? { '--sgs-aspect-ratio': aspectRatio } : {} }
-							>
-								<div className="sgs-gallery__img-wrap">
-									<img
-										src={ image.url }
-										alt={ image.alt || '' }
-										className="sgs-gallery__img"
-										loading="lazy"
-										style={ aspectRatio
-											? { aspectRatio, objectFit: 'cover', width: '100%', display: 'block' }
-											: { width: '100%', display: 'block' }
-										}
-									/>
-								</div>
-								{ showCaptions && image.caption && (
-									<figcaption className="sgs-gallery__caption">
-										{ image.caption }
-									</figcaption>
-								) }
-							</figure>
-						) ) }
+						{ items.map( ( item, index ) => {
+							const isVideo = item.type === 'video' || ( item.mime && item.mime.startsWith( 'video/' ) );
+							const wrapStyle = aspectRatio
+								? { aspectRatio, objectFit: 'cover', width: '100%', display: 'block' }
+								: { width: '100%', display: 'block' };
+							return (
+								<figure
+									key={ item.id || index }
+									className="sgs-gallery__item"
+									style={ aspectRatio ? { '--sgs-aspect-ratio': aspectRatio } : {} }
+								>
+									<div className="sgs-gallery__img-wrap">
+										{ isVideo ? (
+											<video
+												src={ item.url }
+												className="sgs-gallery__img"
+												muted
+												loop
+												playsInline
+												style={ wrapStyle }
+											/>
+										) : (
+											<img
+												src={ item.url }
+												alt={ item.alt || '' }
+												className="sgs-gallery__img"
+												loading="lazy"
+												style={ wrapStyle }
+											/>
+										) }
+									</div>
+									{ showCaptions && item.caption && (
+										<figcaption className="sgs-gallery__caption">
+											{ item.caption }
+										</figcaption>
+									) }
+								</figure>
+							);
+						} ) }
 					</div>
 				) }
 			</div>

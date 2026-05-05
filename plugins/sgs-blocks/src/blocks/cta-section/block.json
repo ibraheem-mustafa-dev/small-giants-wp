@@ -112,6 +112,11 @@
       "type": "object",
       "default": null
     },
+    "_comment_backgroundMedia": "Migrated 2026-05-05 — backgroundImage retained for deprecation. New instances should use backgroundMedia (accepts image OR video).",
+    "backgroundMedia": {
+      "type": "object",
+      "default": null
+    },
     "backgroundImageOpacity": {
       "type": "number",
       "default": 30

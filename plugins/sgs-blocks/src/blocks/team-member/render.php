@@ -13,7 +13,27 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
+$member_media       = $attributes['memberMedia'] ?? null;
 $photo              = $attributes['photo'] ?? null;
+
+// Synthesise a unified media shape: prefer memberMedia, fall back to legacy photo.
+if ( empty( $member_media['url'] ) && ! empty( $photo['url'] ) ) {
+	$member_media = array(
+		'url'  => $photo['url'],
+		'type' => 'image',
+		'id'   => ! empty( $photo['id'] ) ? absint( $photo['id'] ) : 0,
+		'alt'  => $photo['alt'] ?? '',
+		'mime' => 'image/jpeg',
+	);
+}
+
+// Schema.org needs a plain image URL — derive from whichever shape we have.
+$schema_image_url = '';
+if ( ! empty( $member_media['url'] ) ) {
+	$schema_image_url = $member_media['url'];
+} elseif ( ! empty( $photo['url'] ) ) {
+	$schema_image_url = $photo['url'];
+}
 $name               = $attributes['name'] ?? '';
 $role               = $attributes['role'] ?? '';
 $bio                = $attributes['bio'] ?? '';
@@ -71,18 +91,19 @@ if ( $wrapper_styles ) {
 
 $wrapper_attributes = get_block_wrapper_attributes( $wrapper_attr_args );
 
-// Photo.
+// Photo (image-only — headshot). Render via the unified media helper.
 $photo_html = '';
-if ( ! empty( $photo['url'] ) ) {
-	$photo_id  = ! empty( $photo['id'] ) ? absint( $photo['id'] ) : 0;
-	$photo_img = sgs_responsive_image(
-		$photo_id,
-		$photo['url'],
-		$photo['alt'] ?? $name,
-		'medium',
-		array( 'loading' => 'lazy' )
-	);
+$photo_img  = '';
+if ( ! empty( $member_media['url'] ) ) {
+	// Ensure alt text falls back to the member name when not set on the media.
+	$media_for_render = $member_media;
+	if ( empty( $media_for_render['alt'] ) ) {
+		$media_for_render['alt'] = $name;
+	}
+	$photo_img = sgs_render_media( $media_for_render, 'sgs/team-member' );
+}
 
+if ( '' !== $photo_img ) {
 	if ( $hover_overlay ) {
 		// When overlay is active, the bio slides up over the photo on hover/focus.
 		// The photo wrapper gets tabindex so keyboard users can trigger the overlay.
@@ -163,8 +184,8 @@ if ( $name ) {
 	if ( $bio ) {
 		$schema['description'] = wp_strip_all_tags( $bio );
 	}
-	if ( ! empty( $photo['url'] ) ) {
-		$schema['image'] = $photo['url'];
+	if ( $schema_image_url ) {
+		$schema['image'] = $schema_image_url;
 	}
 	// Map social link URLs to sameAs (exclude email links).
 	$same_as = array();

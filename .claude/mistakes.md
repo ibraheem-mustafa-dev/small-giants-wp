@@ -1,5 +1,21 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-05 (later)
+**Last updated:** 2026-05-05 (Wave 6 close-out)
+
+## 2026-05-05 — described the recogniser as a section-to-block mapper (it isn't — it's a section-to-pattern mapper)
+
+While explaining the SGS clone pipeline in plain English, I framed the recogniser stage as "match each mockup section to one of our blocks" — implying 1:1 class-to-block mapping. Bean stopped to correct it: a class on the mockup is a section/container (header, footer, mega menu, gift section, hero, etc.) and maps to a PATTERN — a composite that may contain one or many blocks underneath.
+
+This had been the wrong framing in earlier explanations and underpinned the 2026-05-04 `sgs/feature-grid` hallucination (recogniser tried to invent a mega-block instead of recognising a pattern that needed 1+ blocks underneath).
+
+**The rule (captured as blub.db row 209 + embedded as Hard Rule 6 in `~/.claude/skills/sgs-wp-engine/SKILL.md`):**
+
+> Mockup classes/sections map to PATTERNS, not single blocks. A pattern is a composite container — header, footer, mega menu, hero, or any registered group of blocks. The recogniser operates at pattern boundaries; single-block emission is the inner step. Composite blocks like `sgs/hero` and `sgs/cta-section` are pattern-shaped from the mockup's perspective even though registered as single blocks. If no existing pattern fits, the gap is a NEW PATTERN, not a missing block.
+
+**Strategic bonus:** every clone produces pattern artefacts registered under `plugins/sgs-blocks/patterns/<client-slug>-<intent>` — the library compounds across clients as a strategic revenue asset. Confirmed S-grade dimension for sgs-wp-engine.
+
+**How to apply:** at every recogniser stage, treat each top-level class/section as a PATTERN lookup. Match against existing patterns first; if no fit, the gap is a new pattern. Use the word "pattern" as the noun for recogniser output in all docs/prompts. Use "block" only for the inner population step.
+
+
 
 ## 2026-05-05 — `getComputedStyle().backgroundColor` lied about the rendered hero pink because a framework gradient was painting over it
 

@@ -228,4 +228,111 @@ const v2 = {
 	},
 };
 
-export default [ v2, v1 ];
+/**
+ * V3 deprecation: schema before boxMedia was introduced (2026-05-05). The
+ * block accepted only an image via the legacy `image` object attribute.
+ * v3 migrates legacy image objects into the unified boxMedia slot so existing
+ * posts open without "unexpected content" warnings. The legacy `image`
+ * attribute is preserved as a back-compat denormalised fallback.
+ */
+const v3 = {
+	attributes: {
+		showMedia: { type: 'boolean', default: true },
+		showTitle: { type: 'boolean', default: true },
+		showSubtitle: { type: 'boolean', default: false },
+		showText: { type: 'boolean', default: true },
+		showButton: { type: 'boolean', default: false },
+		elementOrder: {
+			type: 'array',
+			default: [ 'media', 'title', 'subtitle', 'text', 'button' ],
+			items: { type: 'string' },
+		},
+		mediaType: {
+			type: 'string',
+			default: 'icon',
+			enum: [ 'icon', 'emoji', 'image' ],
+		},
+		mediaEmoji: { type: 'string', default: '' },
+		subtitle: { type: 'string', default: '' },
+		subtitleColour: { type: 'string', default: '' },
+		subtitleFontSize: { type: 'string', default: '' },
+		subtitleFontSizeTablet: { type: 'string', default: '' },
+		subtitleFontSizeMobile: { type: 'string', default: '' },
+		image: { type: 'object' },
+		iconPosition: {
+			type: 'string',
+			default: 'top',
+			enum: [ 'top', 'left', 'right' ],
+		},
+		icon: { type: 'string', default: 'star-filled' },
+		heading: { type: 'string', default: '' },
+		description: { type: 'string', default: '' },
+		link: { type: 'string' },
+		linkOpensNewTab: { type: 'boolean', default: false },
+		iconColour: { type: 'string', default: 'primary' },
+		iconBackgroundColour: { type: 'string', default: 'accent-light' },
+		iconSize: { type: 'string', default: 'medium' },
+		iconSizeTablet: { type: 'string', default: '' },
+		iconSizeMobile: { type: 'string', default: '' },
+		headingColour: { type: 'string', default: 'primary' },
+		headingFontSize: { type: 'string' },
+		headingFontSizeTablet: { type: 'string', default: '' },
+		headingFontSizeMobile: { type: 'string', default: '' },
+		descriptionColour: { type: 'string', default: 'text' },
+		cardStyle: { type: 'string', default: 'elevated' },
+		hoverEffect: { type: 'string', default: 'lift' },
+		hoverBackgroundColour: { type: 'string', default: '' },
+		hoverTextColour: { type: 'string', default: '' },
+		hoverBorderColour: { type: 'string', default: '' },
+		transitionDuration: { type: 'string', default: '300' },
+		transitionEasing: { type: 'string', default: 'ease-in-out' },
+		hoverScale: { type: 'string', default: '' },
+		hoverShadow: { type: 'string', default: '' },
+		blockLink: { type: 'string', default: '' },
+		blockLinkTarget: { type: 'boolean', default: false },
+		hoverGrayscale: { type: 'boolean', default: false },
+		hoverImageZoom: { type: 'boolean', default: false },
+		staggerDelay: { type: 'number', default: 0 },
+		sgsAnimation: { type: 'string', default: 'fade-up' },
+		sgsAnimationDuration: { type: 'string', default: 'medium' },
+		sgsAnimationEasing: { type: 'string', default: 'default' },
+		textAlignMobile: { type: 'string', default: '' },
+		textAlignTablet: { type: 'string', default: '' },
+		textAlignDesktop: { type: 'string', default: '' },
+	},
+	save() {
+		// Dynamic block — save was always null.
+		return null;
+	},
+	isEligible( attributes ) {
+		// Only run when a legacy image object exists and boxMedia has not yet
+		// been populated — prevents re-running on already-migrated posts.
+		return !! (
+			attributes &&
+			attributes.image &&
+			attributes.image.url &&
+			! attributes.boxMedia
+		);
+	},
+	migrate( attributes ) {
+		const next = { ...attributes };
+		if (
+			attributes.image &&
+			attributes.image.url &&
+			! attributes.boxMedia
+		) {
+			next.boxMedia = {
+				url:    attributes.image.url,
+				type:   'image',
+				id:     attributes.image.id || 0,
+				alt:    attributes.image.alt || '',
+				mime:   'image/jpeg',
+				width:  attributes.image.width || 0,
+				height: attributes.image.height || 0,
+			};
+		}
+		return next;
+	},
+};
+
+export default [ v3, v2, v1 ];

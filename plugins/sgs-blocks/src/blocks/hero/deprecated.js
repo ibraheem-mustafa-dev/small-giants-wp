@@ -3,10 +3,15 @@ import { InnerBlocks } from '@wordpress/block-editor';
 /**
  * Deprecated versions of the SGS Hero block.
  *
- * v3 (FRONT — newest first) — Added Phase 1 attribute surface (image controls,
- *      inner padding, sub-headline/label typography, layout grid). No save()
- *      change — still <InnerBlocks.Content />. Attributes are purely additive
- *      with null/default values, so no migration function is required.
+ * v4 (FRONT — newest first) — Schema before splitMedia was introduced
+ *      (2026-05-05). The block accepted only an image via splitImage. v4
+ *      migrates legacy splitImage objects into the new splitMedia unified
+ *      slot so existing posts open without "unexpected content" warnings.
+ *
+ * v3 — Added Phase 1 attribute surface (image controls, inner padding,
+ *      sub-headline/label typography, layout grid). No save() change — still
+ *      <InnerBlocks.Content />. Attributes are purely additive with
+ *      null/default values, so no migration function is required.
  *
  * v2 — Save returned <InnerBlocks.Content /> but lacked the 5 new typography
  *      attributes (headlineFontSizeDesktop, headlineFontSizeTablet,
@@ -133,6 +138,48 @@ function buildInnerBlocksFromCtas( attributes ) {
 }
 
 /**
+ * v4 — Schema before splitMedia was introduced (2026-05-05). The block
+ * accepted only an image via splitImage. Migrate legacy splitImage objects
+ * into the unified splitMedia slot so the new render path works on existing
+ * posts. splitImage is preserved as a back-compat denormalised fallback.
+ *
+ * Attribute set is treated as a superset that does NOT yet include
+ * splitMedia. WordPress will only invoke this deprecation on posts whose
+ * stored attributes match (i.e. splitMedia missing).
+ */
+const v4 = {
+	attributes: {
+		...SHARED_ATTRIBUTES_V3,
+		// Note: every Phase 1 attribute landed after v3 is additive with a
+		// null/default — WordPress merges them against block.json defaults
+		// when validating against this deprecation. Listing them here is
+		// not required for deprecation match; the migrate() below is the
+		// load-bearing piece.
+	},
+	save() {
+		return <InnerBlocks.Content />;
+	},
+	isEligible( attributes ) {
+		// Only run when a legacy splitImage exists and splitMedia has not
+		// yet been populated — prevents re-running on already-migrated posts.
+		return !! ( attributes && attributes.splitImage && attributes.splitImage.url && ! attributes.splitMedia );
+	},
+	migrate( attributes ) {
+		const next = { ...attributes };
+		if ( attributes.splitImage && attributes.splitImage.url && ! attributes.splitMedia ) {
+			next.splitMedia = {
+				url: attributes.splitImage.url,
+				type: 'image',
+				id: attributes.splitImage.id || 0,
+				alt: attributes.splitImage.alt || '',
+				mime: 'image/jpeg',
+			};
+		}
+		return next;
+	},
+};
+
+/**
  * v3 — Pre-Phase-1 schema. Save still returns <InnerBlocks.Content />.
  * All Phase 1 attributes are additive with null/default values — no migration
  * function is required; WordPress merges missing attrs against block.json defaults.
@@ -200,4 +247,4 @@ const v1 = {
 	},
 };
 
-export default [ v3, v2, v1 ];
+export default [ v4, v3, v2, v1 ];

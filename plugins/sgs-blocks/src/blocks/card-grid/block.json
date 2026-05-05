@@ -57,6 +57,7 @@
       "type": "string",
       "default": "card"
     },
+    "_comment_items_media": "Migrated 2026-05-05 — each item gains a unified `media` slot (image OR video). Legacy `image` retained on items for deprecation back-compat. New instances should write `media` via MediaPicker.",
     "items": {
       "type": "array",
       "default": []

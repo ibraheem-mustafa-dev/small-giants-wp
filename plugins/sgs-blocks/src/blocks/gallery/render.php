@@ -22,7 +22,12 @@ require_once dirname( __FILE__, 4 ) . '/includes/render-helpers.php';
 // -------------------------------------------------------------------------
 // Normalise attributes with safe defaults.
 // -------------------------------------------------------------------------
-$images          = (array) ( $attributes['images'] ?? [] );
+// Prefer the new unified mediaItems attribute. Fall back to the legacy
+// `images` array (pre-media-slot migration) so posts that have not yet
+// round-tripped through the editor still render correctly.
+$media_items_raw = (array) ( $attributes['mediaItems'] ?? [] );
+$legacy_images   = (array) ( $attributes['images'] ?? [] );
+$images          = ! empty( $media_items_raw ) ? $media_items_raw : $legacy_images;
 $layout          = sanitize_key( $attributes['layout'] ?? 'grid' );
 $columns         = absint( $attributes['columns'] ?? 3 );
 $columns_tablet  = absint( $attributes['columnsTablet'] ?? 2 );
@@ -89,24 +94,30 @@ $inline_styles = implode( ';', $inline_styles_parts ) . ';';
 // -------------------------------------------------------------------------
 $context_images = [];
 foreach ( $images as $img ) {
-	$img_id  = absint( $img['id'] ?? 0 );
+	$img_id   = absint( $img['id'] ?? 0 );
+	$img_type = isset( $img['type'] ) ? sanitize_key( $img['type'] ) : 'image';
 	$full_url = '';
 
-	if ( $img_id ) {
+	if ( $img_id && 'image' === $img_type ) {
 		// Prefer the attachment's full-size URL from WordPress metadata.
 		$full_src = wp_get_attachment_image_src( $img_id, 'full' );
 		$full_url = $full_src ? esc_url( $full_src[0] ) : '';
 	}
 
-	// Fall back to the stored fullUrl if the attachment no longer exists.
+	// Fall back to the stored fullUrl / url if the attachment no longer exists,
+	// or if this item is a video (always use the direct file URL).
 	if ( ! $full_url && ! empty( $img['fullUrl'] ) ) {
 		$full_url = esc_url( $img['fullUrl'] );
+	}
+	if ( ! $full_url && ! empty( $img['url'] ) ) {
+		$full_url = esc_url( $img['url'] );
 	}
 
 	$context_images[] = [
 		'fullUrl' => $full_url,
 		'alt'     => esc_attr( wp_strip_all_tags( $img['alt'] ?? '' ) ),
 		'caption' => esc_html( wp_strip_all_tags( $img['caption'] ?? '' ) ),
+		'type'    => $img_type,
 	];
 }
 
@@ -167,8 +178,19 @@ $wrapper_attrs = get_block_wrapper_attributes( $wrapper_attrs_extra );
 		else :
 			foreach ( $images as $index => $img ) :
 				$img_id      = absint( $img['id'] ?? 0 );
+				$img_type    = isset( $img['type'] ) ? sanitize_key( $img['type'] ) : 'image';
 				$img_alt     = esc_attr( wp_strip_all_tags( $img['alt'] ?? '' ) );
 				$img_caption = $show_captions ? esc_html( wp_strip_all_tags( $img['caption'] ?? '' ) ) : '';
+
+				// Build the unified media-slot shape for sgs_render_media().
+				$item_media = [
+					'url'  => $img['url'] ?? '',
+					'type' => $img_type,
+					'id'   => $img_id,
+					'alt'  => $img['alt'] ?? '',
+					'mime' => $img['mime'] ?? '',
+				];
+				$item_html = sgs_render_media( $item_media, 'sgs/gallery' );
 
 				// Determine the aspect-ratio and stagger delay inline style for this item.
 				$item_style = '';
@@ -208,7 +230,9 @@ $wrapper_attrs = get_block_wrapper_attributes( $wrapper_attrs_extra );
 						>
 							<div class="sgs-gallery__img-wrap">
 								<?php
-								if ( $img_id ) {
+								if ( 'image' === $img_type && $img_id ) {
+									// Prefer wp_get_attachment_image() for images with attachment IDs —
+									// it emits srcset, the requested size, and lazy-loading natively.
 									echo wp_get_attachment_image(
 										$img_id,
 										$image_size,
@@ -218,15 +242,10 @@ $wrapper_attrs = get_block_wrapper_attributes( $wrapper_attrs_extra );
 											'loading' => $index < 4 ? 'eager' : 'lazy',
 										]
 									); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — wp_get_attachment_image() is safe.
-								} elseif ( ! empty( $img['url'] ) ) {
-									?>
-									<img
-										src="<?php echo esc_url( $img['url'] ); ?>"
-										alt="<?php echo esc_attr( $img_alt ); ?>"
-										class="sgs-gallery__img"
-										loading="<?php echo $index < 4 ? 'eager' : 'lazy'; ?>"
-									/>
-									<?php
+								} else {
+									// Video items, or images without an attachment ID, render via the
+									// shared media-slot helper — emits <img> or <video> as needed.
+									echo $item_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — sgs_render_media() escapes internally.
 								}
 								?>
 							</div>
@@ -253,7 +272,7 @@ $wrapper_attrs = get_block_wrapper_attributes( $wrapper_attrs_extra );
 					>
 						<div class="sgs-gallery__img-wrap">
 							<?php
-							if ( $img_id ) {
+							if ( 'image' === $img_type && $img_id ) {
 								echo wp_get_attachment_image(
 									$img_id,
 									$image_size,
@@ -263,15 +282,8 @@ $wrapper_attrs = get_block_wrapper_attributes( $wrapper_attrs_extra );
 										'loading' => $index < 4 ? 'eager' : 'lazy',
 									]
 								); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — wp_get_attachment_image() is safe.
-							} elseif ( ! empty( $img['url'] ) ) {
-								?>
-								<img
-									src="<?php echo esc_url( $img['url'] ); ?>"
-									alt="<?php echo esc_attr( $img_alt ); ?>"
-									class="sgs-gallery__img"
-									loading="<?php echo $index < 4 ? 'eager' : 'lazy'; ?>"
-								/>
-								<?php
+							} else {
+								echo $item_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — sgs_render_media() escapes internally.
 							}
 							?>
 						</div>

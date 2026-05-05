@@ -412,3 +412,132 @@ function sgs_render_stars( float $rating, int $best_rating = 5, int $size = 20, 
 
 	return $stars_html;
 }
+
+if ( ! function_exists( 'sgs_render_media' ) ) {
+	/**
+	 * Render an image or video from a unified SGS media-slot attribute.
+	 *
+	 * Used by any block that accepts both image and video in the same slot
+	 * (Gap H-3 — "video everywhere image works"). Pairs with the JS
+	 * MediaPicker component which produces the attribute shape this helper
+	 * consumes.
+	 *
+	 * Expected $attrs shape:
+	 *   - url           string  Asset URL (required — empty string => silent return).
+	 *   - type          string  'image' | 'video'.
+	 *   - alt           string  Alt text (image) or aria-label (video). Optional.
+	 *   - id            int     Attachment ID (0 = external). Optional.
+	 *   - mobile_url    string  Optional mobile-specific source (image only — emits <picture>).
+	 *   - video_options array   Optional override for video flags. Keys:
+	 *       autoplay (bool, default true)
+	 *       loop     (bool, default true)
+	 *       muted    (bool, default true)
+	 *       controls (bool, default false)
+	 *       playsinline (bool, default true)
+	 *
+	 * For images: emits a lazy-loaded <img> (or <picture> with mobile source).
+	 * For videos: emits a <video> with safe defaults — autoplay, loop, muted,
+	 * playsinline so the asset autoplays on mobile without a sound prompt.
+	 * Empty url returns an empty string so the caller can render a fallback.
+	 *
+	 * @param array  $attrs   Media attributes (see shape above).
+	 * @param string $context Block name for class scoping (e.g. 'sgs/hero').
+	 * @return string HTML string, or '' if no url is provided.
+	 */
+	function sgs_render_media( $attrs, $context = '' ) {
+		if ( empty( $attrs ) || ! is_array( $attrs ) ) {
+			return '';
+		}
+
+		$url = isset( $attrs['url'] ) ? trim( (string) $attrs['url'] ) : '';
+		if ( '' === $url ) {
+			return '';
+		}
+
+		$type = isset( $attrs['type'] ) ? (string) $attrs['type'] : 'image';
+		$alt  = isset( $attrs['alt'] ) ? (string) $attrs['alt'] : '';
+
+		// Build a CSS-safe context slug for the class hook.
+		$context_slug = preg_replace( '/[^a-z0-9-]/', '-', strtolower( (string) $context ) );
+		$context_slug = trim( $context_slug, '-' );
+		$context_cls  = '' !== $context_slug ? ' sgs-media--' . $context_slug : '';
+
+		if ( 'video' === $type ) {
+			$opts_in = isset( $attrs['video_options'] ) && is_array( $attrs['video_options'] )
+				? $attrs['video_options']
+				: array();
+			$opts = array_merge(
+				array(
+					'autoplay'    => true,
+					'loop'        => true,
+					'muted'       => true,
+					'controls'    => false,
+					'playsinline' => true,
+				),
+				$opts_in
+			);
+
+			$flags = '';
+			if ( ! empty( $opts['autoplay'] ) ) {
+				$flags .= ' autoplay';
+			}
+			if ( ! empty( $opts['loop'] ) ) {
+				$flags .= ' loop';
+			}
+			if ( ! empty( $opts['muted'] ) ) {
+				$flags .= ' muted';
+			}
+			if ( ! empty( $opts['playsinline'] ) ) {
+				$flags .= ' playsinline';
+			}
+			if ( ! empty( $opts['controls'] ) ) {
+				$flags .= ' controls';
+			}
+
+			// Resolve MIME from extension fallback if not explicit.
+			$mime = isset( $attrs['mime'] ) && $attrs['mime'] ? (string) $attrs['mime'] : '';
+			if ( '' === $mime ) {
+				$ext  = strtolower( pathinfo( wp_parse_url( $url, PHP_URL_PATH ) ?? '', PATHINFO_EXTENSION ) );
+				$map  = array(
+					'mp4'  => 'video/mp4',
+					'webm' => 'video/webm',
+					'ogv'  => 'video/ogg',
+					'mov'  => 'video/quicktime',
+				);
+				$mime = isset( $map[ $ext ] ) ? $map[ $ext ] : 'video/mp4';
+			}
+
+			$aria = '' !== $alt ? $alt : esc_attr__( 'Background video', 'sgs-blocks' );
+
+			return sprintf(
+				'<video class="sgs-media sgs-media--video%s"%s aria-label="%s"><source src="%s" type="%s"></video>',
+				esc_attr( $context_cls ),
+				$flags,
+				esc_attr( $aria ),
+				esc_url( $url ),
+				esc_attr( $mime )
+			);
+		}
+
+		// Image branch.
+		$mobile_url = isset( $attrs['mobile_url'] ) ? trim( (string) $attrs['mobile_url'] ) : '';
+		$img_class  = 'sgs-media sgs-media--image' . $context_cls;
+		$img_tag    = sprintf(
+			'<img src="%s" alt="%s" class="%s" loading="lazy" decoding="async" />',
+			esc_url( $url ),
+			esc_attr( $alt ),
+			esc_attr( $img_class )
+		);
+
+		if ( '' !== $mobile_url ) {
+			return sprintf(
+				'<picture class="sgs-media-picture%s"><source media="(max-width: 767px)" srcset="%s" />%s</picture>',
+				esc_attr( $context_cls ),
+				esc_url( $mobile_url ),
+				$img_tag
+			);
+		}
+
+		return $img_tag;
+	}
+}

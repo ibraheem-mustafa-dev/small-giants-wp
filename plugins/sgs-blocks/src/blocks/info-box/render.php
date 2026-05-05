@@ -33,6 +33,30 @@ if ( ! function_exists( 'sgs_info_box_render_media' ) ) {
 		$icon_bg_colour = isset( $attrs['iconBackgroundColour'] ) ? $attrs['iconBackgroundColour'] : 'accent-light';
 		$media_emoji    = isset( $attrs['mediaEmoji'] ) ? $attrs['mediaEmoji'] : '';
 		$image          = isset( $attrs['image'] ) ? $attrs['image'] : null;
+		// boxMedia (added 2026-05-05) is the unified image-or-video slot. For
+		// back-compat, when only the legacy image is set, synthesise a
+		// boxMedia object so the video branch can use sgs_render_media().
+		$box_media      = isset( $attrs['boxMedia'] ) ? $attrs['boxMedia'] : null;
+		if ( empty( $box_media ) && ! empty( $image['url'] ) ) {
+			$box_media = array(
+				'url'  => $image['url'],
+				'type' => 'image',
+				'id'   => isset( $image['id'] ) ? absint( $image['id'] ) : 0,
+				'alt'  => isset( $image['alt'] ) ? (string) $image['alt'] : '',
+				'mime' => 'image/jpeg',
+			);
+		}
+		// When boxMedia carries an image and the legacy image is empty,
+		// hydrate image so the existing srcset/responsive pipeline still runs.
+		if ( empty( $image['url'] ) && ! empty( $box_media['url'] ) && 'image' === ( isset( $box_media['type'] ) ? $box_media['type'] : 'image' ) ) {
+			$image = array(
+				'url'    => $box_media['url'],
+				'id'     => isset( $box_media['id'] ) ? absint( $box_media['id'] ) : 0,
+				'alt'    => isset( $box_media['alt'] ) ? (string) $box_media['alt'] : '',
+				'width'  => isset( $box_media['width'] ) ? absint( $box_media['width'] ) : 0,
+				'height' => isset( $box_media['height'] ) ? absint( $box_media['height'] ) : 0,
+			);
+		}
 
 		$icon_style_parts = array();
 		if ( $icon_colour ) {
@@ -45,21 +69,27 @@ if ( ! function_exists( 'sgs_info_box_render_media' ) ) {
 			? ' style="' . esc_attr( implode( ';', $icon_style_parts ) ) . '"'
 			: '';
 
-		if ( 'image' === $media_type && ! empty( $image['url'] ) ) {
-			$img_id    = ! empty( $image['id'] ) ? absint( $image['id'] ) : 0;
-			$img_attrs = array(
-				'class'    => 'sgs-info-box__image',
-				'loading'  => 'lazy',
-				'decoding' => 'async',
-			);
-			if ( ! empty( $image['width'] ) ) {
-				$img_attrs['width'] = absint( $image['width'] );
+		if ( 'image' === $media_type ) {
+			// Video branch: when boxMedia is a video, defer to sgs_render_media().
+			if ( ! empty( $box_media['url'] ) && 'video' === ( isset( $box_media['type'] ) ? $box_media['type'] : 'image' ) ) {
+				return sgs_render_media( $box_media, 'sgs/info-box' );
 			}
-			if ( ! empty( $image['height'] ) ) {
-				$img_attrs['height'] = absint( $image['height'] );
+			if ( ! empty( $image['url'] ) ) {
+				$img_id    = ! empty( $image['id'] ) ? absint( $image['id'] ) : 0;
+				$img_attrs = array(
+					'class'    => 'sgs-info-box__image',
+					'loading'  => 'lazy',
+					'decoding' => 'async',
+				);
+				if ( ! empty( $image['width'] ) ) {
+					$img_attrs['width'] = absint( $image['width'] );
+				}
+				if ( ! empty( $image['height'] ) ) {
+					$img_attrs['height'] = absint( $image['height'] );
+				}
+				$img_alt = isset( $image['alt'] ) ? $image['alt'] : '';
+				return sgs_responsive_image( $img_id, $image['url'], $img_alt, 'medium', $img_attrs );
 			}
-			$img_alt = isset( $image['alt'] ) ? $image['alt'] : '';
-			return sgs_responsive_image( $img_id, $image['url'], $img_alt, 'medium', $img_attrs );
 		}
 
 		if ( 'emoji' === $media_type ) {

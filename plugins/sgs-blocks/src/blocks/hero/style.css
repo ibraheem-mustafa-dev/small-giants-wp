@@ -11,6 +11,23 @@
 	transition-property: background-color, color, border-color;
 }
 
+/* ── Full-bleed (viewport-aware) ──
+ * Hero breaks out of any constrained parent (`.has-global-padding`, custom
+ * page templates with arbitrary side padding, etc.) and fills the visible
+ * viewport edge-to-edge. Replaces the legacy negative-margin pattern which
+ * silently failed when parent padding ≠ 24px.
+ *
+ * `var(--viewport-width, 100vw)` — `100vw` is the safe default for Mac and
+ * mobile (no persistent scrollbar). On Windows desktop, `viewport-width.js`
+ * overrides with `document.documentElement.clientWidth` to exclude the
+ * scrollbar and prevent 15px horizontal overflow. */
+section.sgs-hero {
+	width: var(--viewport-width, 100vw);
+	margin-left: calc((100% - var(--viewport-width, 100vw)) / 2);
+	margin-right: calc((100% - var(--viewport-width, 100vw)) / 2);
+	max-width: none;
+}
+
 /* Standard variant — text over background */
 .sgs-hero--standard,
 .sgs-hero--video,

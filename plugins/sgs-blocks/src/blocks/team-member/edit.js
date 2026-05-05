@@ -2,8 +2,6 @@ import { __ } from '@wordpress/i18n';
 import {
 	useBlockProps,
 	InspectorControls,
-	MediaUpload,
-	MediaUploadCheck,
 	RichText,
 } from '@wordpress/block-editor';
 import {
@@ -17,6 +15,7 @@ import {
 	FlexBlock,
 } from '@wordpress/components';
 import { DesignTokenPicker } from '../../components';
+import MediaPicker from '../../components/MediaPicker';
 import { colourVar } from '../../utils';
 
 const CARD_STYLES = [
@@ -38,6 +37,7 @@ const SOCIAL_PLATFORMS = [
 
 export default function Edit( { attributes, setAttributes } ) {
 	const {
+		memberMedia,
 		photo,
 		name,
 		role,
@@ -49,6 +49,32 @@ export default function Edit( { attributes, setAttributes } ) {
 		photoShape,
 		hoverOverlay,
 	} = attributes;
+
+	// Hydrate from new memberMedia first, fall back to legacy photo.
+	const activeMedia = ( memberMedia && memberMedia.url )
+		? memberMedia
+		: ( photo && photo.url
+			? {
+				url: photo.url,
+				type: 'image',
+				id: photo.id || 0,
+				alt: photo.alt || '',
+				mime: 'image/jpeg',
+			}
+			: null
+		);
+
+	const handleMediaChange = ( media ) => {
+		if ( ! media ) {
+			setAttributes( { memberMedia: null, photo: undefined } );
+			return;
+		}
+		setAttributes( {
+			memberMedia: media,
+			// Mirror to legacy attr so older render paths / schema markup keep working.
+			photo: { id: media.id, url: media.url, alt: media.alt },
+		} );
+	};
 
 	const className = [
 		'sgs-team-member',
@@ -151,22 +177,14 @@ export default function Edit( { attributes, setAttributes } ) {
 
 			<div { ...blockProps }>
 				<div className={ `sgs-team-member__photo sgs-team-member__photo--${ photoShape }` }>
-					<MediaUploadCheck>
-						<MediaUpload
-							onSelect={ ( media ) => setAttributes( { photo: { id: media.id, url: media.url, alt: media.alt } } ) }
-							allowedTypes={ [ 'image' ] }
-							value={ photo?.id }
-							render={ ( { open } ) => (
-								photo?.url ? (
-									<img src={ photo.url } alt={ photo.alt || name } onClick={ open } style={ { cursor: 'pointer' } } />
-								) : (
-									<Button onClick={ open } variant="secondary" className="sgs-team-member__photo-placeholder">
-										{ __( 'Select photo', 'sgs-blocks' ) }
-									</Button>
-								)
-							) }
-						/>
-					</MediaUploadCheck>
+					<MediaPicker
+						value={ activeMedia }
+						onChange={ handleMediaChange }
+						onRemove={ () => setAttributes( { memberMedia: null, photo: undefined } ) }
+						allowedTypes={ [ 'image' ] }
+						label={ __( 'Select photo', 'sgs-blocks' ) }
+						instructionsImage={ __( 'Choose a headshot photo for this team member', 'sgs-blocks' ) }
+					/>
 				</div>
 				<RichText
 					tagName="h3"

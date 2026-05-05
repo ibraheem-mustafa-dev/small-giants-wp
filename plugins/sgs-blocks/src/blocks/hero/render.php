@@ -21,6 +21,29 @@ $bg_image            = $attributes['backgroundImage'] ?? null;
 $overlay_colour      = sgs_colour_value( $attributes['overlayColour'] ?? 'text' );
 $overlay_opacity     = $attributes['overlayOpacity'] ?? 50;
 $split_image         = $attributes['splitImage'] ?? null;
+// splitMedia (added 2026-05-05) is the unified image-or-video slot. For
+// back-compat, when only the legacy splitImage is set, synthesise a
+// splitMedia object so downstream rendering can use sgs_render_media() for
+// video while keeping the rich image pipeline unchanged for images.
+$split_media         = $attributes['splitMedia'] ?? null;
+if ( empty( $split_media ) && ! empty( $split_image['url'] ) ) {
+	$split_media = array(
+		'url'  => $split_image['url'],
+		'type' => 'image',
+		'id'   => isset( $split_image['id'] ) ? absint( $split_image['id'] ) : 0,
+		'alt'  => isset( $split_image['alt'] ) ? (string) $split_image['alt'] : '',
+		'mime' => 'image/jpeg',
+	);
+}
+// When splitMedia carries an image and the legacy splitImage is empty,
+// hydrate splitImage so the existing srcset/responsive pipeline still runs.
+if ( empty( $split_image['url'] ) && ! empty( $split_media['url'] ) && 'image' === ( $split_media['type'] ?? 'image' ) ) {
+	$split_image = array(
+		'url' => $split_media['url'],
+		'id'  => isset( $split_media['id'] ) ? absint( $split_media['id'] ) : 0,
+		'alt' => isset( $split_media['alt'] ) ? (string) $split_media['alt'] : '',
+	);
+}
 $split_image_mobile  = $attributes['splitImageMobile'] ?? null;
 $split_image_mobile_object_position = $attributes['splitImageMobileObjectPosition'] ?? 'center 20%';
 $label               = $attributes['label'] ?? '';
@@ -732,7 +755,19 @@ $content_html .= '</div>';
 
 // ── Build split media area ─────────────────────────────────────────────────
 $media_html = '';
-if ( $is_split && ! empty( $split_image['url'] ) ) {
+// Video branch: when splitMedia is a video, defer to sgs_render_media() and skip
+// the image pipeline entirely. The image branch below preserves the existing
+// srcset / responsive handling for images (legacy splitImage path).
+if ( $is_split && ! empty( $split_media ) && isset( $split_media['type'] ) && 'video' === $split_media['type'] && ! empty( $split_media['url'] ) ) {
+	$media_class = 'sgs-hero__media';
+	if ( $split_image_bleed ) {
+		$media_class .= ' sgs-hero__media--bleed';
+	}
+	$media_html  = '<div class="' . esc_attr( $media_class ) . '">';
+	$media_html .= sgs_render_media( $split_media, 'sgs/hero' );
+	$media_html .= $badges_html;
+	$media_html .= '</div>';
+} elseif ( $is_split && ! empty( $split_image['url'] ) ) {
 	// H13/H14: use responsive image helper for srcset + explicit dimensions.
 	$img_id    = ! empty( $split_image['id'] ) ? absint( $split_image['id'] ) : 0;
 

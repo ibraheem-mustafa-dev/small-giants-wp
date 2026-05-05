@@ -40,6 +40,7 @@
                                               }
                  },
     "attributes":  {
+                       "_comment_logos_media":  "Migrated 2026-05-05 — each logo entry uses the unified media-slot shape { url, type: 'image', id, alt, mime } via shared MediaPicker (image-only). Legacy { image: {...} } shape retained on existing posts via deprecated.js v2 migrate. New instances write the unified shape. allowedTypes={ [ 'image' ] } enforces no video on logos.",
                        "logos":  {
                                      "type":  "array",
                                      "default":  []

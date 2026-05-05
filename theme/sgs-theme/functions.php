@@ -246,6 +246,23 @@ function enqueue_styles(): void {
 		true // Load in footer — runs after DOM is available.
 	);
 
+	/*
+	 * Viewport width helper — sets --viewport-width on :root excluding the
+	 * Windows scrollbar. Hero full-bleed rule uses var(--viewport-width, 100vw)
+	 * so the JS value wins on Windows desktop; mobile / Mac fall back to 100vw.
+	 * Deferred — no DOM dependency before parse.
+	 */
+	wp_enqueue_script(
+		'sgs-viewport-width',
+		get_theme_file_uri( 'assets/js/viewport-width.js' ),
+		[],
+		$theme_version,
+		[
+			'in_footer' => false,
+			'strategy'  => 'defer',
+		]
+	);
+
 	// M17: mobile navigation is now the sgs/mobile-nav block.
 	// CSS and JS are loaded automatically via block.json (style-index.css + view.js).
 	// Old files: assets/css/mobile-nav-drawer.css, assets/js/mobile-nav-drawer.js — deleted.
@@ -303,10 +320,8 @@ function enqueue_global_layout_fixes(): void {
 .wp-block-post-content>.alignfull,.entry-content>.alignfull{margin-block-start:0!important;margin-block-end:0!important}
 /* SGS: hero margin — hero is not alignfull so needs explicit zero top-margin */
 .wp-block-post-content>.wp-block-sgs-hero,.entry-content>.wp-block-sgs-hero{margin-block-start:0!important}
-/* SGS: hero full-bleed — break hero out of constrained layout side padding.
- * Uses --wp--style--root--padding-right (the actual global padding value WP applies
- * to has-global-padding containers) instead of spacing-50 which was mismatched. */
-.has-global-padding>.wp-block-sgs-hero{margin-inline:calc(-1 * var(--wp--style--root--padding-right,18px))!important;width:calc(100% + 2 * var(--wp--style--root--padding-right,18px))!important;max-width:none!important}
+/* SGS: hero full-bleed is now handled in plugins/sgs-blocks/src/blocks/hero/style.css
+ * via viewport-aware width: var(--viewport-width, 100vw). No inline override needed. */
 /* SGS: hero bottom margin — zero to prevent white strip between hero and next section */
 .wp-block-post-content>.wp-block-sgs-hero,.entry-content>.wp-block-sgs-hero{margin-block-end:0!important}
 /* SGS: site-wide image hover scale — subtle zoom on content images */

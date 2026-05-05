@@ -2,8 +2,6 @@ import { __ } from '@wordpress/i18n';
 import {
 	useBlockProps,
 	InspectorControls,
-	MediaUpload,
-	MediaUploadCheck,
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
@@ -14,6 +12,7 @@ import {
 	Button,
 } from '@wordpress/components';
 import { DesignTokenPicker } from '../../components';
+import MediaPicker from '../../components/MediaPicker';
 import { colourVar } from '../../utils';
 
 const HOVER_EFFECT_OPTIONS = [
@@ -58,62 +57,25 @@ function LogoEditor( { logo, index, onChange, onRemove } ) {
 				{ logo.alt ? ` — ${ logo.alt }` : '' }
 			</p>
 
-			<MediaUploadCheck>
-				<MediaUpload
-					onSelect={ ( media ) => {
-						update( 'image', {
-							id: media.id,
-							url: media.url,
-							alt: media.alt,
-						} );
-						if ( ! logo.alt && media.alt ) {
-							update( 'alt', media.alt );
-						}
-					} }
-					allowedTypes={ [ 'image' ] }
-					value={ logo.image?.id }
-					render={ ( { open } ) => (
-						<div style={ { marginBottom: '8px' } }>
-							{ logo.image?.url ? (
-								<>
-									<img
-										src={ logo.image.url }
-										alt=""
-										style={ {
-											maxWidth: '100px',
-											maxHeight: '48px',
-											objectFit: 'contain',
-											display: 'block',
-											marginBottom: '4px',
-										} }
-									/>
-									<Button
-										variant="link"
-										isDestructive
-										onClick={ () =>
-											update( 'image', undefined )
-										}
-										size="small"
-									>
-										{ __( 'Remove', 'sgs-blocks' ) }
-									</Button>
-								</>
-							) : (
-								<Button
-									variant="secondary"
-									onClick={ open }
-									size="small"
-								>
-									{ __(
-										'Select logo',
-										'sgs-blocks'
-									) }
-								</Button>
-							) }
-						</div>
-					) }
-				/>
-			</MediaUploadCheck>
+			<MediaPicker
+				value={ logo.media || null }
+				onChange={ ( media ) => {
+					const next = { ...logo, media };
+					if ( ! logo.alt && media && media.alt ) {
+						next.alt = media.alt;
+					}
+					onChange( next );
+				} }
+				onRemove={ () =>
+					onChange( { ...logo, media: null } )
+				}
+				allowedTypes={ [ 'image' ] }
+				label={ __( 'Select logo', 'sgs-blocks' ) }
+				instructionsImage={ __(
+					'Choose a logo image',
+					'sgs-blocks'
+				) }
+			/>
 
 			<TextControl
 				label={ __( 'Alt text', 'sgs-blocks' ) }
@@ -124,8 +86,8 @@ function LogoEditor( { logo, index, onChange, onRemove } ) {
 
 			<TextControl
 				label={ __( 'Link URL (optional)', 'sgs-blocks' ) }
-				value={ logo.url || '' }
-				onChange={ ( val ) => update( 'url', val ) }
+				value={ logo.linkUrl || '' }
+				onChange={ ( val ) => update( 'linkUrl', val ) }
 				type="url"
 				__nextHasNoMarginBottom
 			/>
@@ -177,7 +139,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		setAttributes( {
 			logos: [
 				...logos,
-				{ image: undefined, alt: '', url: '' },
+				{ media: null, alt: '', linkUrl: '' },
 			],
 		} );
 	};
@@ -395,14 +357,21 @@ export default function Edit( { attributes, setAttributes } ) {
 						style={ trackStyle }
 					>
 						<div className="sgs-brand-strip__set">
-							{ logos.map( ( logo, i ) =>
-								logo.image?.url ? (
+							{ logos.map( ( logo, i ) => {
+								const mediaUrl =
+									logo.media?.url ||
+									logo.image?.url ||
+									'';
+								if ( ! mediaUrl ) {
+									return null;
+								}
+								return (
 									<div
 										key={ i }
 										className="sgs-brand-strip__item"
 									>
 										<img
-											src={ logo.image.url }
+											src={ mediaUrl }
 											alt={ logo.alt || '' }
 											className="sgs-brand-strip__logo"
 											style={ {
@@ -410,8 +379,8 @@ export default function Edit( { attributes, setAttributes } ) {
 											} }
 										/>
 									</div>
-								) : null
-							) }
+								);
+							} ) }
 						</div>
 					</div>
 				) }

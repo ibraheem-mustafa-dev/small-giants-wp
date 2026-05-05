@@ -2,8 +2,6 @@ import { __ } from '@wordpress/i18n';
 import {
 	useBlockProps,
 	InspectorControls,
-	MediaUpload,
-	MediaUploadCheck,
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
@@ -13,6 +11,7 @@ import {
 	TextControl,
 } from '@wordpress/components';
 import { DesignTokenPicker, ResponsiveControl } from '../../components';
+import MediaPicker from '../../components/MediaPicker';
 import { colourVar, spacingVar } from '../../utils';
 
 const VARIANT_OPTIONS = [
@@ -67,55 +66,43 @@ function ItemEditor( { item, index, onChange, onRemove } ) {
 			<p style={ { margin: '0 0 8px', fontWeight: 600 } }>
 				{ __( 'Item', 'sgs-blocks' ) } { index + 1 }
 			</p>
-			<MediaUploadCheck>
-				<MediaUpload
-					onSelect={ ( media ) =>
-						update( 'image', {
-							id: media.id,
-							url: media.url,
-							alt: media.alt || '',
-						} )
+			<div style={ { marginBottom: '8px' } }>
+				<MediaPicker
+					value={ item.media || ( item.image?.url ? {
+						url: item.image.url,
+						type: 'image',
+						id: item.image.id || 0,
+						alt: item.image.alt || '',
+						mime: 'image/jpeg',
+					} : null ) }
+					onChange={ ( media ) => {
+						// Persist to new unified slot AND keep legacy `image`
+						// hydrated when the picked media is an image — the
+						// existing render path / overlay still reads from it
+						// during the deprecation window.
+						const next = { ...item, media };
+						if ( media && media.type === 'image' ) {
+							next.image = {
+								id: media.id || 0,
+								url: media.url,
+								alt: media.alt || '',
+							};
+						} else if ( media && media.type === 'video' ) {
+							// Clear legacy image to avoid double-render.
+							next.image = undefined;
+						}
+						onChange( next );
+					} }
+					onRemove={ () =>
+						onChange( { ...item, media: null, image: undefined } )
 					}
-					allowedTypes={ [ 'image' ] }
-					value={ item.image?.id }
-					render={ ( { open } ) => (
-						<div style={ { marginBottom: '8px' } }>
-							{ item.image?.url ? (
-								<>
-									<img
-										src={ item.image.url }
-										alt=""
-										style={ {
-											maxWidth: '100%',
-											height: 'auto',
-											marginBottom: '4px',
-											borderRadius: '4px',
-										} }
-									/>
-									<Button
-										variant="link"
-										isDestructive
-										onClick={ () =>
-											update( 'image', undefined )
-										}
-										size="small"
-									>
-										{ __( 'Remove', 'sgs-blocks' ) }
-									</Button>
-								</>
-							) : (
-								<Button
-									variant="secondary"
-									onClick={ open }
-									size="small"
-								>
-									{ __( 'Select image', 'sgs-blocks' ) }
-								</Button>
-							) }
-						</div>
+					label={ __( 'Select card media', 'sgs-blocks' ) }
+					instructionsImage={ __(
+						'Choose an image or video for this card',
+						'sgs-blocks'
 					) }
 				/>
-			</MediaUploadCheck>
+			</div>
 			<TextControl
 				label={ __( 'Title', 'sgs-blocks' ) }
 				value={ item.title || '' }
@@ -226,6 +213,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			items: [
 				...items,
 				{
+					media: null,
 					image: undefined,
 					title: '',
 					subtitle: '',

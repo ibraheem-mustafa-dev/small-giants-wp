@@ -3,8 +3,6 @@ import {
 	useBlockProps,
 	InspectorControls,
 	RichText,
-	MediaUpload,
-	MediaUploadCheck,
 	useInnerBlocksProps,
 } from '@wordpress/block-editor';
 import {
@@ -32,6 +30,7 @@ import {
 	megaphone,
 } from '@wordpress/icons';
 import { DesignTokenPicker, ResponsiveControl } from '../../components';
+import MediaPicker from '../../components/MediaPicker';
 import { colourVar, fontSizeVar } from '../../utils';
 
 const ICON_OPTIONS = [
@@ -123,6 +122,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		mediaType,
 		mediaEmoji,
 		image,
+		boxMedia,
 		iconPosition,
 		icon,
 		heading,
@@ -199,15 +199,40 @@ export default function Edit( { attributes, setAttributes } ) {
 
 		switch ( id ) {
 			case 'media':
-				if ( 'image' === mediaType && image?.url ) {
-					return (
-						<img
-							key="media"
-							src={ image.url }
-							alt={ image.alt || '' }
-							className="sgs-info-box__image"
-						/>
-					);
+				if ( 'image' === mediaType ) {
+					// Prefer the unified boxMedia slot; fall back to legacy image.
+					const previewMedia =
+						boxMedia ||
+						( image?.url
+							? {
+									url: image.url,
+									type: 'image',
+									alt: image.alt || '',
+							  }
+							: null );
+					if ( previewMedia?.url && 'video' === previewMedia.type ) {
+						return (
+							<video
+								key="media"
+								src={ previewMedia.url }
+								className="sgs-info-box__image"
+								autoPlay
+								muted
+								loop
+								playsInline
+							/>
+						);
+					}
+					if ( previewMedia?.url ) {
+						return (
+							<img
+								key="media"
+								src={ previewMedia.url }
+								alt={ previewMedia.alt || '' }
+								className="sgs-info-box__image"
+							/>
+						);
+					}
 				}
 				if ( 'emoji' === mediaType ) {
 					return (
@@ -421,71 +446,48 @@ export default function Edit( { attributes, setAttributes } ) {
 							__nextHasNoMarginBottom
 						/>
 						{ 'image' === mediaType && (
-							<MediaUploadCheck>
-								<MediaUpload
-									onSelect={ ( media ) =>
-										setAttributes( {
-											image: {
-												id:     media.id,
-												url:    media.url,
-												alt:    media.alt,
-												width:  media.width,
-												height: media.height,
-											},
-										} )
-									}
-									allowedTypes={ [ 'image' ] }
-									value={ image?.id }
-									render={ ( { open } ) => (
-										<>
-											{ image?.url && (
-												<img
-													src={ image.url }
-													alt={ image.alt || '' }
-													style={ {
-														display:       'block',
-														maxWidth:      '100%',
-														marginBottom:  '8px',
-														borderRadius:  '4px',
-													} }
-												/>
-											) }
-											<Button
-												variant="secondary"
-												onClick={ open }
-												style={ { marginBottom: '4px' } }
-											>
-												{ image?.url
-													? __(
-														'Replace image',
-														'sgs-blocks'
-													)
-													: __(
-														'Select image',
-														'sgs-blocks'
-													) }
-											</Button>
-											{ image?.url && (
-												<Button
-													variant="link"
-													isDestructive
-													onClick={ () =>
-														setAttributes( {
-															image: undefined,
-														} )
-													}
-													style={ { display: 'block' } }
-												>
-													{ __(
-														'Remove image',
-														'sgs-blocks'
-													) }
-												</Button>
-											) }
-										</>
-									) }
-								/>
-							</MediaUploadCheck>
+							<MediaPicker
+								value={
+									boxMedia ||
+									( image?.url
+										? {
+												url:    image.url,
+												type:   'image',
+												id:     image.id || 0,
+												alt:    image.alt || '',
+												mime:   '',
+												width:  image.width,
+												height: image.height,
+										  }
+										: null )
+								}
+								onChange={ ( media ) =>
+									setAttributes( {
+										boxMedia: media,
+										image:
+											media && media.type === 'image'
+												? {
+														id:     media.id,
+														url:    media.url,
+														alt:    media.alt,
+														width:  media.width,
+														height: media.height,
+												  }
+												: undefined,
+									} )
+								}
+								onRemove={ () =>
+									setAttributes( {
+										boxMedia: null,
+										image:    undefined,
+									} )
+								}
+								label={ __( 'Select info box media', 'sgs-blocks' ) }
+								instructionsImage={ __(
+									'Choose an image or video for this info box',
+									'sgs-blocks'
+								) }
+							/>
 						) }
 						{ 'emoji' === mediaType && (
 							<TextControl

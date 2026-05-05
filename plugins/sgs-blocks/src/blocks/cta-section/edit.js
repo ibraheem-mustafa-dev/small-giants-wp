@@ -4,8 +4,6 @@ import {
   InspectorControls,
   InnerBlocks,
   RichText,
-  MediaUpload,
-  MediaUploadCheck,
 } from "@wordpress/block-editor";
 import {
   PanelBody,
@@ -16,6 +14,7 @@ import {
   Notice,
 } from "@wordpress/components";
 import { DesignTokenPicker, ResponsiveControl } from "../../components";
+import MediaPicker from "../../components/MediaPicker";
 import { colourVar, fontSizeVar } from "../../utils";
 
 const CTA_TEMPLATE = [
@@ -49,10 +48,26 @@ export default function Edit({ attributes, setAttributes }) {
     bodyColour,
     bodyFontSize,
     backgroundImage,
+    backgroundMedia,
     backgroundImageOpacity,
     gradientPreset,
     stats,
   } = attributes;
+
+  // Hydrate the active media from the new unified slot first, falling back to
+  // the legacy backgroundImage object for posts that have not yet round-tripped
+  // through the editor.
+  const activeMedia = backgroundMedia && backgroundMedia.url
+    ? backgroundMedia
+    : ( backgroundImage && backgroundImage.url
+        ? {
+            url: backgroundImage.url,
+            type: 'image',
+            id: backgroundImage.id || 0,
+            alt: backgroundImage.alt || '',
+            mime: 'image/jpeg',
+          }
+        : null );
 
   const className = [
     "sgs-cta-section",
@@ -63,8 +78,8 @@ export default function Edit({ attributes, setAttributes }) {
     .join(" ");
 
   const wrapperStyle = {};
-  if (backgroundImage?.url) {
-    wrapperStyle.backgroundImage = `url(${backgroundImage.url})`;
+  if (activeMedia && activeMedia.type === 'image' && activeMedia.url) {
+    wrapperStyle.backgroundImage = `url(${activeMedia.url})`;
     wrapperStyle.backgroundSize = "cover";
     wrapperStyle.backgroundPosition = "center";
   }
@@ -151,52 +166,42 @@ export default function Edit({ attributes, setAttributes }) {
             )}
             __nextHasNoMarginBottom
           />
-          <MediaUploadCheck>
-            <MediaUpload
-              onSelect={(media) =>
+          <MediaPicker
+            value={activeMedia}
+            onChange={(media) => {
+              // Write the unified slot. Mirror image-only selections into the
+              // legacy attribute so older render paths (and any back-compat
+              // consumer) still see the same URL until they migrate.
+              if (media && media.type === 'image') {
                 setAttributes({
+                  backgroundMedia: media,
                   backgroundImage: {
                     id: media.id,
                     url: media.url,
                     alt: media.alt,
                   },
-                })
+                });
+              } else {
+                // Video (or null) — clear the legacy image attribute so the
+                // legacy <img>/CSS background path does not double-render.
+                setAttributes({
+                  backgroundMedia: media,
+                  backgroundImage: null,
+                });
               }
-              allowedTypes={["image"]}
-              value={backgroundImage?.id}
-              render={({ open }) => (
-                <div>
-                  {backgroundImage?.url ? (
-                    <>
-                      <img
-                        src={backgroundImage.url}
-                        alt=""
-                        style={{
-                          maxWidth: "100%",
-                          marginBottom: "8px",
-                        }}
-                      />
-                      <Button
-                        variant="secondary"
-                        onClick={() =>
-                          setAttributes({
-                            backgroundImage: undefined,
-                          })
-                        }
-                        isDestructive
-                      >
-                        {__("Remove image", "sgs-blocks")}
-                      </Button>
-                    </>
-                  ) : (
-                    <Button variant="secondary" onClick={open}>
-                      {__("Select background image", "sgs-blocks")}
-                    </Button>
-                  )}
-                </div>
-              )}
-            />
-          </MediaUploadCheck>
+            }}
+            onRemove={() =>
+              setAttributes({
+                backgroundMedia: null,
+                backgroundImage: null,
+              })
+            }
+            label={__("Select background media", "sgs-blocks")}
+            instructionsImage={__(
+              "Choose an image or video for the CTA background",
+              "sgs-blocks",
+            )}
+          />
           <RangeControl
             label={__("Image opacity (%)", "sgs-blocks")}
             value={backgroundImageOpacity}
@@ -294,7 +299,18 @@ export default function Edit({ attributes, setAttributes }) {
       </InspectorControls>
 
       <div {...blockProps}>
-        {backgroundImage?.url && (
+        {activeMedia && activeMedia.type === 'video' && activeMedia.url && (
+          <video
+            className="sgs-cta-section__bg-video"
+            src={activeMedia.url}
+            autoPlay
+            muted
+            loop
+            playsInline
+            aria-hidden="true"
+          />
+        )}
+        {activeMedia && activeMedia.url && (
           <span
             className="sgs-cta-section__overlay"
             style={{

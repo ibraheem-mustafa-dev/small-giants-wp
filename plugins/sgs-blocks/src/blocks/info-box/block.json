@@ -79,6 +79,11 @@
     "image": {
       "type": "object"
     },
+    "_comment_boxMedia": "Migrated 2026-05-05 — image retained for deprecation. New instances should use boxMedia (unified image-or-video slot).",
+    "boxMedia": {
+      "type": "object",
+      "default": null
+    },
     "iconPosition": {
       "type": "string",
       "default": "top",
