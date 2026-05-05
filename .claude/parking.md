@@ -299,6 +299,67 @@ If Bean's eye still says "wrong shade," the most likely cause is the **mockup HT
 
 **Resume trigger:** Opus session.
 
+## H-8 — Hero block missing `ctaGap*` attribute + recogniser blind spot for child-flex-gap
+
+**Captured:** 2026-05-05 (Q1 from Bean's session-end questions: "was the button padding I added found in the draft and why wasn't it added initially?")
+
+**Problem:** Mockup HTML brief has explicit gap values for the CTA button container:
+- Mobile (default): `.hero-ctas { display: flex; flex-direction: column; gap: 10px; }` (line 273)
+- Desktop (`.hero-copy .hero-ctas`): `flex-direction: row; gap: 12px` (line 306)
+
+Hero block.json has `splitGap`/`splitGapTablet`/`splitGapMobile` for the OUTER grid columns (image+content), but NO attribute for the CTA gap. So:
+1. Recogniser couldn't extract the value to a block attribute (no destination)
+2. The "universal-handled CSS classifier" should have kept the rule as scoped variation CSS but didn't (recogniser blind spot)
+3. Net: the gap rule was silently dropped from the extraction
+
+**Fix needed (Opus session):**
+
+1. Add 4 attributes to hero block.json: `ctaGap`, `ctaGapMobile`, `ctaGapTablet`, `ctaGapUnit` (default: 12px desktop, 10px mobile)
+2. Wire through render.php as scoped CSS rule with `!important` on mobile (F4 pattern)
+3. Add ResponsiveControl to edit.js inspector under "Buttons" panel (per H-1 reorganisation)
+4. Update recogniser-v2 mapping to extract `.hero-ctas { gap: X }` to the new `ctaGap` attribute
+5. Audit other SGS blocks for similar "child container layout" attribute gaps (process-steps, info-box, etc.)
+
+**Effort:** ~25 min for hero block (block.json + render.php + edit.js + recogniser mapping). ~1 hr to audit + extend other blocks.
+
+**Resume trigger:** Opus session — fold into H-1 inspector reorganisation.
+
+## H-9 — Framework `background: linear-gradient(...)` shorthand patterns need audit (Section R bug)
+
+**Captured:** 2026-05-05 (Section R — gradient masking the user's backgroundColor on hero)
+
+**Problem:** Multiple framework block CSS files use `background: linear-gradient(...)` shorthand as a default. The shorthand sets `background-image` AND resets `background-color`. When combined with a `:not([style*="background-color"])` exclusion that doesn't catch WP's `.has-*-background-color` class-based colour application, the gradient paints over user-set colours invisibly.
+
+Hero fixed in 2026-05-05 commit (replaced `background:` with `background-image:` + added `:not(.has-background)` to exclusion).
+
+**Audit needed (Opus session):**
+
+1. Grep all `plugins/sgs-blocks/src/blocks/*/style.css` for `background:\s*linear-gradient` and `background:\s*url(`
+2. For each match, check if the rule has `:not([style*="background-color"])` exclusion AND `:not(.has-background)` clause
+3. If missing `:not(.has-background)`, fix it
+4. Convert `background:` shorthand to `background-image:` to avoid resetting other background properties
+5. Test each affected block against a `.has-background` instance to confirm fix
+
+**Affected blocks (suspected):** any block with a "default visual" that uses gradient/image — testimonial, info-box, cta-section, hero (fixed), product-card, possibly more.
+
+**Effort:** ~10 min audit + ~5 min per block fix; total ~30-60 min depending on count.
+
+**Resume trigger:** Opus session.
+
+## H-10 — Cascade Section R defects into prevention scripts
+
+**Captured:** 2026-05-05 (Section R)
+
+**Problem:** The classifier's structural-noise dismissal pattern + `getComputedStyle().backgroundColor`-only check caused real visible defects to ship. `mockup-parity-validator.js` WATCHED set has been extended (commit pending) but related defect classes need their own prevention scripts:
+
+1. **CSS pattern audit:** flag any framework block CSS using `background: linear-gradient(...)` or `background: url(...)` that doesn't include `:not(.has-background)` in its selector.
+2. **Pseudo-element measurement:** when running `mockup-parity-validator.js`, also measure `getComputedStyle(el, '::before')` and `(el, '::after')` for any element with `content !== 'none'`.
+3. **Filter / mix-blend-mode walker:** when measuring an element, also walk its parent chain for non-default `filter`, `mixBlendMode`, `backdropFilter`, `opacity` — flag as "rendered-colour-may-differ-from-computed".
+
+**Effort:** ~15 min for CSS pattern audit extension; ~30 min for pseudo-element measurement; ~10 min for parent-filter walker. Total ~55 min.
+
+**Resume trigger:** Opus session — fold into H-5 (classifier human-eye gate) work.
+
 ## H-7 — Negative-margin full-bleed framework pattern needs replacement
 
 **Captured:** 2026-05-05 (Fix 4 from hero-audit-2026-05-05; instance-level workaround applied for Mama's, framework still uses fragile pattern)

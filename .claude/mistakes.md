@@ -1,5 +1,36 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-05
+**Last updated:** 2026-05-05 (later)
+
+## 2026-05-05 — `getComputedStyle().backgroundColor` lied about the rendered hero pink because a framework gradient was painting over it
+
+Bean reported the hero pink looked "wrong" on the frontend. I measured `getComputedStyle(hero).backgroundColor === 'rgb(245, 194, 200)'` (which is `#F5C2C8`, the correct mockup value) and confidently told Bean the colours match.
+
+I was wrong. The actual rendered pixel at the hero centre on the live page was `#C76C7C` — a darker, more saturated rose. An 18.5% colour-distance error that no `getComputedStyle()` query caught.
+
+**Root cause:** `plugins/sgs-blocks/src/blocks/hero/style.css` had a framework default rule:
+
+```css
+.sgs-hero:not([style*="background-color"]):not([style*="background-image"]) {
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+}
+```
+
+Bean's hero set its background colour via WP's `.has-surface-pink-background-color` class (palette-driven), NOT via inline style. The `:not([style*="background-color"])` selector only excludes inline-style overrides, not class-based ones. So the gradient rule MATCHED + painted over the user-set colour. `backgroundColor` was queryable as `#F5C2C8` (the underlying value) while `backgroundImage` was the gradient that the user actually saw.
+
+**Why my QC missed it:**
+1. `mockup-parity-validator.js`'s WATCHED array didn't include `backgroundImage`. It only watched `backgroundColor`.
+2. I dismissed Bean's "wrong colour" report based on `getComputedStyle().backgroundColor` matching mockup. I never checked `backgroundImage`.
+3. I asked Bean to compare the colours visually instead of automating the comparison.
+
+**Three rules captured:**
+
+1. **QC pipeline must watch the full background property family**, not just `backgroundColor`. Added to `mockup-parity-validator.js` WATCHED array: `backgroundImage`, `backgroundSize`, `backgroundPosition`, `backgroundRepeat`, plus `filter`, `mixBlendMode`, `backdropFilter`. (See common-wp-styling-errors.md Section R.)
+2. **Framework default rules using `background:` shorthand** silently overwrite user-set `background-color` when triggered by class-based exclusion gaps. Use `background-image:` specifically (not the shorthand) for any default-painting framework rule. Update `.sgs-block:not(...)` exclusions to also `:not(.has-background)`.
+3. **Don't ask the human to do the comparison work the script can do.** When Bean asks "can't you just extract the colours and diff them?" the answer is yes; build the script. Did so: `scripts/colour-parity-audit.js` — extracts `:root` CSS variables from mockup, palette+custom from variation JSON, diffs them. Verdict: PASS for Mama's (10 colours matched, 0 deltas).
+
+**The bigger meta-lesson:** when the human eye says "wrong" and the measurement says "right", the measurement is incomplete. Find the missing measurement before declaring the human wrong.
+
+## 2026-05-05 — parity validator deltas dismissed as "structural noise" turned out to be 4 visible defects
 
 ## 2026-05-05 — parity validator deltas dismissed as "structural noise" turned out to be 4 visible defects
 

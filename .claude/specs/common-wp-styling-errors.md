@@ -175,6 +175,43 @@ When the parity validator reports any of Q1-Q4, the classifier may NOT reduce se
 
 No screenshot evidence = severity stays at validator's level. This rule lives in `~/.claude/skills/visual-qa/SKILL.md` (added 2026-05-05).
 
+## R. Computed-style measurement traps that hide visual defects (2026-05-05 hero gradient incident)
+
+These are 4 patterns where `getComputedStyle()` reports values that match the mockup but the actual rendered pixels do NOT match. Caught when Bean saw the hero rendering a darker rose pink than the mockup despite all my measurements showing identical RGB. Root cause: framework `:not([style*="background-color"])` rule painting a `linear-gradient` `background-image` over a correctly-set `backgroundColor` — but only `backgroundColor` was in the QC measurement set.
+
+| # | Pattern | Why getComputedStyle lies | How to detect |
+|---|---------|---------------------------|---------------|
+| R1 | Element has correct `backgroundColor` but a `backgroundImage` (gradient/image) painted over it. `getComputedStyle().backgroundColor` returns the underlying colour. The user sees the gradient. | The two are independent CSS properties. `background:` shorthand sets both. Querying only `backgroundColor` misses the overlay. **Caught 2026-05-05** — `.sgs-hero` framework rule `background: linear-gradient(135deg, var(--primary-dark), var(--primary))` painted over `.has-surface-pink-background-color`'s `#F5C2C8` pink. | QC pipeline + parity validator MUST include `backgroundImage`, `backgroundSize`, `backgroundPosition`, `backgroundRepeat` in the watched property set. Added to `scripts/mockup-parity-validator.js` WATCHED array 2026-05-05. |
+| R2 | Element has correct values but a CSS `filter` (blur, brightness, sepia, hue-rotate) on a parent transforms the rendered colour. | `getComputedStyle()` doesn't traverse parent filters. The element's RGB looks right but the painted pixels are filtered. | Walk the parent chain from the element to body checking `getComputedStyle(parent).filter !== 'none'`. Same for `mixBlendMode`, `backdropFilter`, `opacity < 1`. Added to validator's WATCHED set. |
+| R3 | Pseudo-element `::before` or `::after` paints over the element. | `getComputedStyle(el)` doesn't include pseudo-elements. Use `getComputedStyle(el, '::before')` and `(el, '::after')` to check. | When measuring an element's visible appearance, also check `::before` and `::after` for non-empty `content` + paint properties. Add to QC pipeline. |
+| R4 | WP class `.has-<colour>-background-color` (added by editor when user picks a palette colour) sets background-color via class selector. Framework `.sgs-block:not([style*="background-color"])` exclusion rule MISSES this because the class doesn't put the colour in the inline `style` attribute. | The `:not([style*="background-color"])` selector only excludes inline styles. WP's class-based colour application bypasses this exclusion. Framework gradient rule fires + paints over. | Update framework rules: `.sgs-block:not([style*="background-color"]):not([style*="background-image"]):not(.has-background)` — `.has-background` is the canonical WP class added whenever ANY background colour or gradient is set on a block. Fixed for hero 2026-05-05 (commit pending). Audit other blocks for same pattern. |
+
+### The detection rule (binding)
+
+QC pipelines (multi-frame capture, mockup parity validator, manual visual-qa) MUST measure ALL of these properties on every visible element, not just `backgroundColor`:
+
+- `backgroundColor`, `backgroundImage`, `backgroundSize`, `backgroundPosition`, `backgroundRepeat`
+- `filter`, `mixBlendMode`, `backdropFilter`, `opacity`
+- `::before` and `::after` `content` + `background*` + `color`
+
+Without these, computed-style measurements WILL silently miss visible defects. The 2026-05-05 incident showed `getComputedStyle().backgroundColor === 'rgb(245, 194, 200)'` while the actual visible colour was `#C76C7C` — an `18.5%` colour-distance error invisible to the QC pipeline.
+
+### The classifier rule (extended from Section Q)
+
+Section Q's binding rule (screenshot evidence required to dismiss validator deltas) NOW also requires checking the R1-R4 patterns. The "the computed value matches" defence is invalid unless the screenshot evidence shows the visible pixels match too.
+
+### The cross-property cascade rule
+
+Framework block CSS using `background:` shorthand to set a default has a high risk of R1: `background:` resets ALL background properties including `background-color`. Prefer `background-image:` (specific) over `background:` (shorthand) for default styling so client-set `background-color` isn't reset.
+
+```css
+/* RISKY — background shorthand resets background-color */
+.sgs-hero:not(.has-background) { background: linear-gradient(...); }
+
+/* SAFE — background-image only, leaves background-color alone */
+.sgs-hero:not(.has-background) { background-image: linear-gradient(...); }
+```
+
 ## How to add an entry
 
 1. Hit a real WordPress styling failure in a session.

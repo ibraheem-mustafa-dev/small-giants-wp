@@ -41,6 +41,13 @@ const WATCHED = [
     // Visual
     'color', 'backgroundColor', 'borderColor', 'borderTopColor', 'borderRightColor',
     'borderBottomColor', 'borderLeftColor', 'borderWidth', 'borderRadius', 'opacity',
+    // Background-image: catches gradient/image overlays that paint over backgroundColor
+    // (Section R bug — 2026-05-05 hero gradient masking the surface-pink). getComputedStyle
+    // returns 'none' for unset OR the full url(...)/linear-gradient(...) string when set.
+    'backgroundImage', 'backgroundSize', 'backgroundPosition', 'backgroundRepeat',
+    // CSS filter / blend / backdrop — visual transformations that change rendered colour
+    // without changing backgroundColor. (Captured 2026-05-05 — see Section R.)
+    'filter', 'mixBlendMode', 'backdropFilter',
     // Layout
     'display', 'flexDirection', 'gap', 'justifyContent', 'alignItems', 'gridTemplateColumns',
     // Animation (M1 class — common-wp-styling-errors Section M)

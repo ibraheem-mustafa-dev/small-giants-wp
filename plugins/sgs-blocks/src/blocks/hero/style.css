@@ -21,9 +21,14 @@
 }
 
 /* Default gradient background: primary-dark → primary (FIX #6 — start at primary-dark for safe
-   mid-gradient text contrast; overridden by any inline background-color/image from the editor). */
-.sgs-hero:not([style*="background-color"]):not([style*="background-image"]) {
-	background: linear-gradient(
+   mid-gradient text contrast; overridden by any inline background-color/image OR by WP's
+   .has-background class which is added when the editor sets a backgroundColor attribute via
+   palette / has-*-background-color classes — without this exclusion, the gradient paints OVER
+   the user's chosen background-color value).
+   2026-05-05 fix: added :not(.has-background) — Q3 root cause, see common-wp-styling-errors.md
+   Section R. Also use background-image (not background shorthand) so we don't reset other props. */
+.sgs-hero:not([style*="background-color"]):not([style*="background-image"]):not(.has-background) {
+	background-image: linear-gradient(
 		135deg,
 		var(--wp--preset--color--primary-dark, #0A5B5D) 0%,
 		var(--wp--preset--color--primary, #0F7E80) 100%
