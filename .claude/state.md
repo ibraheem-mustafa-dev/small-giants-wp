@@ -2,11 +2,11 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-current_phase: hero-clone-fidelity-fixes
-current_step: "Hero PoC ran 2026-05-04 — declared structural success, then proper QC (measured + Gemini Pro Vision + Bean's live observation) revealed the clone is NOT pixel-faithful. 23 distinct defects catalogued in reports/hero-poc-qc-2026-05-04.md + reports/gemini-vision-audit-2026-05-04/audit.md. Most critical: hero image invisible for 0-960ms on every page load via a hardcoded entrance animation (animation-fill-mode:both + animation-delay:360ms in style.css). Both QC passes missed this because both sampled screenshots after the animation completed. Captured the methodology gaps as M1-M4 + N1-N5 in common-wp-styling-errors.md. Next session: multi-frame screenshot QC (0/200/500/1000/3000ms) at 1440 + 375 to find any other first-paint defects, then deterministic-script methodology updates so each issue class can never recur. Also fix the 23 catalogued defects."
-last_updated: 2026-05-04
+current_phase: framework-qc-hardening
+current_step: "Hero PoC closed end-to-end on sandybrown post 29 (commits 6b50465 → 22df0a6). All 13 originally-measured QC defects fixed and verified live. Multi-frame harness + 4 prevention scripts + mockup parity validator + global-styles-reset script + visual-qa skill upgrade (B 92% → A 96%) all shipped. 4 visible bugs caught by Bean's eye that the validator's classifier had wrongly dismissed as 'structural noise' — fixed and lesson captured (mistakes.md top + common-wp-styling-errors.md Section Q binding rule). Live state at https://sandybrown-nightingale-600381.hostingersite.com/?page_id=29 matches mockup at every measurable property. 7 architecture/UX gaps captured in parking.md as H-1 through H-7 — all targeted at next session: inspector reorg by element, image/media padding redundancy, video-everywhere feature, brand-source pink validation, classifier-trap structural enforcement, block-validation replaceBlock workaround, framework full-bleed pattern replacement. NEXT SESSION (Opus): dedicated to closing every captured gap so scripts never fail again and QC catches what Bean's eye does."
+last_updated: 2026-05-05
 blockers: []
-recommended_model_next: sonnet
+recommended_model_next: opus
 ---
 
 # small-giants-wp — State Snapshot

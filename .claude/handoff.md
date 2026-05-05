@@ -2,138 +2,139 @@
 doc_type: handoff
 project: small-giants-wp
 project_id: 14
-session_date: 2026-05-04
-recommended_model: sonnet
-session_tag: small-giants-wp-2026-05-05-finish-hero-and-trust-bar
+session_date: 2026-05-05
+recommended_model: opus
+session_tag: small-giants-wp-2026-05-06-framework-qc-hardening
 ---
 
-# Session Handoff — 2026-05-04 (hero ~99%, QC infrastructure complete, parity validator + recogniser v3 shipped)
+# Session Handoff — 2026-05-05 (hero perfect-clone closed; 7 hardening gaps captured for Opus session)
 
 ## Headline
 
-The hero PoC is at **~99% visual fidelity, end-to-end verified live on sandybrown post 29**. Every defect from the original 13-delta measured QC is fixed and live. Fraunces font now loads correctly (was failing silently). The QC harness is now genuinely robust against silent regressions: 3 prevention scripts + 1 multi-frame capture + 1 mockup parity validator + 1 pre-commit STOP GATE that's been tripped and passed cleanly twice.
+Three days of work closed: hero PoC is **end-to-end verified live on sandybrown post 29** with every measurable mockup property matched. Multi-frame QC harness, mockup parity validator, recogniser v3, global-styles-reset script, visual-qa skill upgrade (B 92% → A 96%), 4 prevention scripts + pre-commit STOP GATE all shipped. Bean caught 4 visible defects via human-eye comparison that the validator's classifier had wrongly dismissed as "structural noise" — those are fixed AND the lesson is captured as a binding rule.
 
-The remaining ~1% is split between (a) ~6 real but minor defects (F1/F2 mobile margin attrs + button line-height) — ~30 min next session, and (b) ~120 false-positives in the parity validator output that need filter rules added (display:none ancestors, fontFamily fallback equivalence, CSS-keyword-equivalents) — ~30 min next session.
+7 architecture/UX/structural gaps captured for next session: inspector reorganisation, image/media padding redundancy, video-everywhere feature, brand-source pink validation, classifier-trap structural enforcement, block-validation replaceBlock workaround, framework full-bleed pattern replacement.
 
-## Completed this session (everything)
+**Next session is Opus, dedicated to closing every gap so QC catches what Bean's eye does and scripts never fail silently.**
 
-### Recogniser v3 (R1/R2/R3 fully solved)
-`tools/recogniser-v2/extract.py` — Playwright `getComputedStyle()` at 1440 viewport. Auto-derives from `block.json` (no hand-written fingerprints). Enumerates `document.fonts` to flag silent-font-load failures. Coverage: 50/162 attrs auto-extracted on Mama's hero. All 4 specific extraction targets confirmed correct: headline 52px, padding 72/64, sub fontWeight 400, label lineHeight 1.6.
+## Sessions completed in this 3-day sequence
 
-### Mockup parity validator (NEW canonical QC tool)
-`scripts/mockup-parity-validator.js`. Loads mockup + SGS in fresh Chromium (no cookies = no admin bar P1). Diffs computed styles for every fingerprinted selector at all viewports. Asserts every declared font has `document.fonts.status === 'loaded'`. JSON + Markdown reports. Exit code 1 on FAIL.
+| Day | Headline | Commits |
+|-----|----------|---------|
+| 2026-05-04 part 1 | Hero PoC declared "structural success" + measured QC + Gemini Vision + Bean's live observation found 23 defects + invisible-image-on-load bug | 6b50465 (multi-frame harness + 3 prevention scripts + 5 hero fixes) |
+| 2026-05-04 part 2 | wp_global_styles cache lesson + Fraunces silent font-load lesson + variation deploy procedure cracked | c7093ae, 1a0057b (recogniser v3 + parity validator + B2 + B4 + lessons) |
+| 2026-05-05 part 1 | F1/F2 margin attrs + button line-height + parity validator filters | b784af4, b9e3bda (final mobile parity fixes) |
+| 2026-05-05 part 2 | Visual-qa skill upgrade via /lifecycle (B 92% → A) + global-styles-reset.js + capture.js auto-detect | 6459d75, b9cf0b8 |
+| 2026-05-05 part 3 | Bean's eye caught 4 visible defects validator dismissed as "structural noise" — classifier-trap lesson captured (Section Q binding rule) + 3 visible fixes shipped | 239980e, 37e0db9 |
+| 2026-05-05 part 4 | Final 2 visible bugs (mobile button gap + desktop full-bleed instance) + 7 H-entries captured in parking | 22df0a6 |
 
-### Font source audit (NEW)
-`scripts/font-source-audit.js`. Catches `https://` in any theme.json fontFace src. Prevents the silent-CDN-failure class of bug. Currently 0 critical violations.
+Total commits to main: 11 over 3 sessions. Hero is now closed.
 
-### B2 — sgs/button responsive min-height
-4 new attrs (Tablet + Mobile + units), render.php emits @media rules with `!important` per F4, edit.js desktop/tablet/mobile inspector triad. Build clean, WPCS clean, render-mobile-override-audit clean. Visual-diff report: `reports/visual-diff/button-2026-05-04.md`.
+## Live verification (sandybrown post 29)
 
-### B4 — Fraunces self-hosted
-`theme/sgs-theme/assets/fonts/fraunces/Fraunces[opsz,wght].woff2` (67KB). `mamas-munches.json` `src` now `file:./assets/fonts/fraunces/...`. Live `document.fonts` status confirmed `loaded` (was `error` from gstatic.com).
-
-### Block attribute updates on post 29 (live verification)
-Used Playwright + WP block editor + `wp.blocks.createBlock` + `wp.data.dispatch.replaceBlock` — bypasses the block validation error that was silently rejecting `updateBlockAttributes`. Saved to DB:
-- `headlineFontSizeDesktop: 52` (was 46)
-- `subHeadlineFontWeight: '400'` (was empty)
-- `labelLineHeight: 1.6` (was 1.2)
-- `contentPaddingTop/Bottom: 72`, `contentPaddingRight/Left: 64` (was 56 / 48)
-- `subHeadlineFontSizeMobile: '16px'` (was empty — desktop 18px was bleeding to mobile)
-
-### Lessons captured (durable, propagated)
-`mistakes.md` top section:
-1. `wp_global_styles` cache — file edits don't propagate without REST API reset+reapply procedure (full procedure documented)
-2. Fraunces silent-font-load — computed font-family lies; `document.fonts` enumeration is the truth
-
-`common-wp-styling-errors.md`:
-- Section O (4 entries): wp_global_styles cache, font CDN silent failure, CSS-specificity beats theme.json typography defaults, deeply-nested settings.custom merge gotcha
-- Section P (1 entry): canonical QC tool MUST be fresh-Chromium scripts, not authenticated MCP playwright (P1 — admin bar offsets)
-
-### Deployment procedure validated end-to-end
-```
-1. SCP theme + plugin tar to server, extract under wp-content/
-2. Reset wp_global_styles via REST: POST {settings:{},styles:{}}
-3. Re-apply variation via REST: GET variations, POST full settings+styles
-4. wp cache flush + wp transient delete --all + LiteSpeed CSS dir clear
-5. OPcache reset via HTTP fetch of temp PHP file
-6. For block-attr changes on existing posts: use wp.blocks.createBlock +
-   wp.data.dispatch('core/block-editor').replaceBlock to bypass save.js
-   validation that rejects updateBlockAttributes silently
-```
-
-### Commits this session (pushed to main)
-- `6b50465` — multi-frame harness + 3 prevention scripts + first round of fixes
-- `c7093ae` — line-height inheritance + variation buttonPresets palette tokens
-- `01cd649` — mid-session handoff
-- `1a0057b` — recogniser v3 + parity validator + B2 + B4 + lessons + final state
-
-## Live verification (sandybrown post 29 at 1440px)
+**Every measurable property matches mockup:**
 
 | Property | Mockup | SGS now | Status |
 |---|---|---|---|
+| Hero background | rgb(245, 194, 200) #F5C2C8 | matches exactly | ✅ |
+| Primary button bg | rgb(230, 138, 149) #E68A95 | matches exactly | ✅ |
+| Primary button text | charcoal #3A2E26 | matches exactly | ✅ |
+| Secondary button border | rgb(230, 138, 149) | matches exactly | ✅ |
 | Headline font-size | 52px | 52px | ✅ |
 | Headline line-height | 59.8px (1.15) | 59.8px | ✅ |
-| Subheadline font-size | 18px | 18px | ✅ |
+| Headline margin-bottom | 16px / 14px (mob) | 16 / 14 | ✅ |
+| Subheadline font-size | 18px / 16px (mob) | 18 / 16 | ✅ |
 | Subheadline font-weight | 400 | 400 | ✅ |
+| Subheadline margin-bottom | 28px / 24px (mob) | 28 / 24 | ✅ |
 | Label line-height | 19.2px (1.6) | 19.2px | ✅ |
-| Content padding | 72px 64px | 72px 64px | ✅ |
-| Content max-width | none | none | ✅ |
-| Split-image animation | none | none | ✅ |
-| Primary button text | charcoal | charcoal | ✅ |
-| Secondary button text | charcoal | charcoal | ✅ |
+| Content padding | 72px 64px | 72 / 64 | ✅ |
+| Buttons inline @ 1440 | side-by-side | inline ✓ | ✅ |
+| Buttons stacked @ 375 | column with 10px gap | column 10px gap | ✅ |
+| Hero image full-bleed | reaches viewport edge | x=0, right=1425 (matches .entry-content full width) | ✅ |
+| Hero entrance animation | none | none (M1 dead) | ✅ |
 | Fraunces document.fonts | loaded | loaded | ✅ |
-| Inter document.fonts | loaded | loaded | ✅ |
+| WP page-title leak | hidden | hidden | ✅ |
 
-## Outstanding for next session
+## QC infrastructure shipped this sequence
 
-### Real defects (~30 min)
-1. **F1/F2 — sub/headline marginBottomMobile attrs** (`tools/qc-prevention/F1-F2-margin-attrs.md`). 25 min. Solves 2 mobile margin defects.
-2. **Button line-height 1.6 vs 1.2** — adjust button preset's CSS line-height. ~5 min.
+| Tool / Skill | Purpose |
+|---|---|
+| `tools/multi-frame-qa/capture.js` | First-paint defect detection at 0/200/500/1000/3000ms; auto-detect selector flag |
+| `scripts/css-pattern-audit.js` | M1 critical (animation-fill-mode:both + delay) |
+| `scripts/render-mobile-override-audit.js` | F4 (inline desktop beats mobile @media without !important) |
+| `scripts/font-source-audit.js` | O2 (external CDN font src in theme.json) |
+| `scripts/mockup-parity-validator.js` | Computed-style diff between mockup + SGS at all viewports + document.fonts assertion |
+| `scripts/global-styles-reset.js` | 7-step automation of post-deploy reset+reapply+cache+OPcache reset |
+| `tools/recogniser-v2/extract.py` | Playwright getComputedStyle extraction; auto-derives from block.json |
+| `.git/hooks/pre-commit` (SGS Visual QC STOP GATE) | Blocks block-src commits without passing visual-diff report |
+| `~/.claude/skills/visual-qa/` | 9-layer pipeline incl. L9 mockup parity validator (A grade) |
 
-### Parity validator false-positive reduction (~30 min)
-The validator currently reports 128 deltas, but ~120 are noise:
-- Skip elements in `display:none` ancestors (catches the "wrong viewport variant" issue where mockup `.hero-content h1` returns mobile element when validator captures at 1440)
-- Treat `fontFamily` "same primary family, different fallback stack" as Minor not Major
-- Treat CSS-keyword-equivalents as no-delta: `textAlign: start ↔ left`, `minWidth/Height: 0 ↔ auto`, `display: block` (and ancestors) when the visual output is the same
-- Drop the "stuck font" warning for `unloaded` status (that just means the weight isn't in use yet — not actually stuck)
+## Lessons captured (durable, bound into specs + skill)
 
-After these filter rules: validator reports ~6 deltas instead of 128. Real defect signal becomes legible.
+1. **Multi-frame screenshots are mandatory** — single post-load screenshot misses M1-class first-paint defects (mistakes.md, common-wp-styling-errors.md M1-M4 + N1-N5)
+2. **wp_global_styles is the actual cache layer** — file changes don't propagate without REST API reset+reapply (Section O1)
+3. **Webfont silent failures need document.fonts assertion** — `getComputedStyle().fontFamily` lies (Section O2)
+4. **CSS specificity beats theme.json typography** — block CSS must NOT hardcode element typography (Section O3)
+5. **Variation `var(--wp--custom--*)` deeply-nested merge can fail** — use direct palette tokens (Section O4)
+6. **Authenticated Playwright context shows admin-bar offsets** — canonical QC tools are fresh-Chromium scripts (Section P1)
+7. **Validator deltas dismissed as "structural noise" need screenshot evidence** — Bean's eye saw 4 visible defects in 55 deltas the classifier dismissed (Section Q + binding classifier rule). This is the most important lesson — see mistakes.md top entry.
 
-### Future framework upgrades (low priority, defer until needed)
-- Recogniser block-aware extraction for Button block attrs (currently extracts hero only — fingerprint scaffolding works for any block but each new block needs its parity-fingerprint mapping)
-- A `/qc-hero` skill or `/qc <block>` skill that wraps multi-frame + parity + measured-QC into one canonical run
+## Outstanding gaps (parking.md H-1 through H-7)
 
-## Skills + tools snapshot
+All targeted at next session (Opus, dedicated framework hardening):
 
-| Skill | Purpose | Updated this session? |
-|---|---|---|
-| `/sgs-wp-engine` | All SGS WP work | No |
-| `/visual-qa` | 8-layer pipeline | Still has M1/N4 blind spots — multi-frame harness exists but isn't wired in yet |
-| `/subagent-driven-development` | Implementer + 2-stage review | Used 4× this session in parallel |
-| `/handoff` | End of session | Used now |
+| # | Gap | Effort | Priority |
+|---|-----|--------|----------|
+| H-5 | Classifier human-eye gate (screenshot-diff helper + requires_screenshot_review flag + bake Section Q into skill) | ~55 min | **CRITICAL** — the single biggest QC reliability gap |
+| H-7 | Replace negative-margin full-bleed framework pattern with viewport-aware solution | ~45 min | High — currently each client variation needs manual override |
+| H-1 + H-2 | Hero block inspector reorganised by element (Container, Eyebrow, Headline, Subheadline, Image, Badges, Buttons) instead of by CSS-rule. Image vs media padding redundancy clarified. | ~75 min | High — Bean's repeated UX complaint |
+| H-6 | replaceBlock helper script (`scripts/wp-update-block-attrs.js`) — bake the block-validation workaround | ~50 min | Medium |
+| H-3 | Video-everywhere-image foundation (MediaPicker component + render helper + hero proof) | ~90 min | Medium-Large — multi-block feature |
+| H-4 | Brand-source pink shade validation (sample brand PNG vs mockup pinks) | ~30 min | Low — may not be a real defect, Bean to confirm |
 
-| Tool | Purpose | New this session? |
-|---|---|---|
-| `tools/multi-frame-qa/capture.js` | First-paint capture | (last session) |
-| `scripts/css-pattern-audit.js` | M1 prevention | (last session) |
-| `scripts/render-mobile-override-audit.js` | F4 prevention | (last session) |
-| `scripts/mockup-parity-validator.js` | Computed-style diff mockup ↔ SGS | **NEW this session** |
-| `scripts/font-source-audit.js` | Block external CDN fonts | **NEW this session** |
-| `tools/recogniser-v2/extract.py` | Playwright getComputedStyle extraction | **Upgraded this session (R1/R2/R3 solved)** |
-| `.git/hooks/pre-commit` | SGS Visual QC STOP GATE | Tripped + passed cleanly 2× this session |
+## Files shipped this sequence
+
+### Tools / Scripts (live):
+- `tools/multi-frame-qa/capture.js` — multi-frame capture (~390 lines)
+- `tools/recogniser-v2/extract.py` — Playwright extraction upgrade
+- `scripts/css-pattern-audit.js` — M1 audit (~300 lines)
+- `scripts/render-mobile-override-audit.js` — F4 audit (~230 lines)
+- `scripts/font-source-audit.js` — O2 audit (~80 lines)
+- `scripts/mockup-parity-validator.js` — L9 parity (~410 lines, with 4 filters)
+- `scripts/global-styles-reset.js` — O1 automation (~480 lines, 7 steps)
+
+### Hero block (framework + variation):
+- `plugins/sgs-blocks/src/blocks/hero/{block.json, render.php, edit.js, style.css}` — F1/F2 margin attrs + animation removal + max-width leak fix
+- `plugins/sgs-blocks/src/blocks/button/{block.json, render.php, edit.js}` — minHeight responsive variants
+- `theme/sgs-theme/styles/mamas-munches.json` — palette + variation CSS overrides (button colours, line-height, mobile gap, full-bleed page-id-29 instance)
+- `theme/sgs-theme/assets/fonts/fraunces/Fraunces[opsz,wght].woff2` — self-hosted Fraunces (67KB)
+
+### Visual-QA skill upgrade:
+- `~/.claude/skills/visual-qa/SKILL.md` — Step 0.5 references global-styles-reset; 9-layer pipeline; L9 mockup parity
+- `~/.claude/skills/visual-qa/references/{worked-example-report.md, layer-details.md, run-checklist.md, backlog.md}` — full operator docs
+
+### Documentation:
+- `.claude/mistakes.md` — top sections: classifier-trap, wp_global_styles cache, Fraunces silent font-load, single-frame screenshots
+- `.claude/specs/common-wp-styling-errors.md` — Sections M, N, O, P, Q (5 new sections, ~25 defect types)
+- `.claude/parking.md` — H-1 through H-7 next-session backlog
+- `.claude/state.md` — phase = framework-qc-hardening
+- `reports/visual-diff/hero-{2026-05-04, 2026-05-04-final, 2026-05-05, 2026-05-05-v2, hero-audit-2026-05-05}.md` — visual diff history
+- `reports/parity/hero-*.md` + `.json` — parity validator runs
+- `tools/qc-prevention/{F1-F2-margin-attrs, R1-R2-recogniser-extraction, sandybrown-deployment-blocker, full-bleed-pattern-replacement, media-slot-migration}.md` — TODO/spec files
 
 ## Notes for next session
 
-- **The wp_global_styles reset+reapply is mandatory after any variation change.** Documented in mistakes.md + common-wp-styling-errors.md Section O. The procedure works but is fragile — should be encoded as a `/sgs-deploy` post-deploy step.
-- **Block validation errors silently reject `updateBlockAttributes`.** Use `replaceBlock` with `createBlock` instead. Documented in this handoff for future ref.
-- **The button line-height fix needs a NEW visual-diff report** (`reports/visual-diff/button-2026-05-05.md`) before commit because the STOP GATE will block any change to `plugins/sgs-blocks/src/blocks/button/`.
-- SSH credentials for sandybrown are the same as palestine-lives: `u945238940@141.136.39.73:65002` with `~/.ssh/id_ed25519`.
-- Hero PoC test page: post 29 at https://sandybrown-nightingale-600381.hostingersite.com/?page_id=29
-- Mockup: serve via `python -m http.server 8765` from `sites/mamas-munches/mockups/homepage/`
-- WP admin: `Claude` / `MigrationSweep2026!` (still temporary)
+- **SSH:** `ssh -i ~/.ssh/id_ed25519 -p 65002 u945238940@141.136.39.73`. Domain: `domains/sandybrown-nightingale-600381.hostingersite.com/public_html/`
+- **WP admin:** `Claude` / `MigrationSweep2026!` (Mama's). The shared WP app password for REST API is in `~/.openclaw/.secrets/wp-app-passwords.env` as `WP_APP_PWD_MAMAS` (current value may need rotation per H-4 / H-6 verifications)
+- **Hero PoC test page:** sandybrown post 29 — `https://sandybrown-nightingale-600381.hostingersite.com/?page_id=29`
+- **Mockup:** `python -m http.server 8765` from `sites/mamas-munches/mockups/homepage/`, then `http://localhost:8765/index.html`
+- **For variation deploys:** `node scripts/global-styles-reset.js --site sandybrown-nightingale-600381.hostingersite.com --theme sgs-theme --variation mamas-munches` (will need `WP_USER` + `WP_APP_PASSWORD` env vars)
+- **For block-attr changes on existing posts:** use Playwright + `wp.blocks.createBlock` + `wp.data.dispatch.replaceBlock` (NOT `updateBlockAttributes` — silently rejected when block has save.js validation error). Will be packaged as `scripts/wp-update-block-attrs.js` per H-6.
 
 ## Session reflection
 
-The QC harness is now durable. Every defect class from the past two sessions has a static analysis script + a runtime check + a documented lesson + a propagation path into the pre-commit gate. The hero is at human-perceptible parity with the mockup. The structural infrastructure work that was 80% of this session and the previous one means future client clones will hit ~99% on the first pass without iteration — that was Bean's explicit ask, and it's now achievable.
+The hero PoC is closed. The QC infrastructure is durable. The framework gaps are captured.
 
-The remaining 1% gap is a known finite list: F1/F2 attrs, button line-height, parity validator false-positive filters. None of them require new design decisions or research. Each is well-spec'd. Total ~60 min for the perfect-clone close-out + the validator becoming truly useful for future blocks.
+The biggest learning: **automated parity measurements are reliable; classifier passes that reduce severity without screenshot evidence are NOT reliable.** The 2026-05-04 classifier confidently called 50+ deltas "structural noise" and was wrong on at least 4 of them. Bean's eye was the better validator.
+
+The Opus session's mission: bake that lesson into the pipeline structurally so the classifier can never repeat the mistake. Combined with the other 6 hardening tasks, the next 6 hours of focused Opus work should produce a QC pipeline reliable enough for every future client clone to hit 99% on the first pass.

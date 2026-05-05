@@ -182,3 +182,141 @@ See `.claude/plans/phase-2-rubrics-universe.md` G2.5 section. Triggered by Phase
 **Effort:** ~15 min combined (two surgical Stage edits + skillscore re-check at 90% threshold).
 
 **Spec:** workspace lesson at `C:/Users/Bean/.openclaw/workspace/memory/learning/2026-04-30-diagnose-blub-db-locks-not-park-on-timeout.md` is the source of truth.
+
+## H-1 — Hero block inspector: reorganise by element, not by CSS-rule
+
+**Captured:** 2026-05-05 (Bean: "I absolutely hate the way you've sorted the block settings for the hero block")
+
+**Problem:** The hero block's `edit.js` inspector currently has panels organised by CSS-rule type (e.g. "Margin Bottom", "Font Size") with sibling controls for headline+subheadline lumped together inside each panel. This forces the operator to scroll across multiple panels to configure a single element.
+
+**Bean's preferred organisation:**
+
+| Panel | Controls |
+|---|---|
+| Container / Entire Block | min-height, padding (all sides + breakpoints), background colour, max-width, full-bleed toggle, layout variant, alignment |
+| Eyebrow Label | text, colour, font-size (all 3 viewports), font-weight, letter-spacing, line-height, margin-bottom, transform |
+| Headline (h1) | text, colour, font-size (3vp), font-weight, line-height, letter-spacing, margin-bottom (desktop + mobile) |
+| Subheadline | text, colour, font-size (3vp), font-weight, line-height, max-width, margin-bottom (desktop + mobile) |
+| Image (split + bg) | source, alt, mobile-source override, object-fit, object-position, padding, border, border-radius, height (3vp), full-bleed bleed, ken-burns, parallax |
+| Badges (if used) | repeater of badge content + style |
+| Buttons (group) | layout direction, gap, alignment — but individual button styling (colour, hover, shape) stays inside each `sgs/button` InnerBlock |
+
+**Scope:** affects `plugins/sgs-blocks/src/blocks/hero/edit.js` (only). block.json attributes stay where they are — only the inspector ordering changes. No deprecation needed (no save.js change).
+
+**Bigger pattern:** this reorganisation should propagate across ALL SGS blocks. Default panel structure: Container → Element 1 → Element 2 → ... → Behaviour. Bean wants this to be a framework-wide convention, not a hero-only fix.
+
+**Effort:** ~45 min for hero alone; ~3-4 hr to cascade across all 24 content/layout blocks + 14 form blocks. Stage as: hero first (proof-of-pattern), then audit all blocks, then bulk-rewrite.
+
+**Resume trigger:** next session (Opus, dedicated to closing all visual-qa + framework gaps).
+
+## H-2 — `imagePadding` vs `mediaPadding` redundancy on hero block
+
+**Captured:** 2026-05-05 (Bean noticed both options exist)
+
+**Problem:** Hero block has BOTH `imagePadding*` (inner padding on the `<img>` element itself) AND `mediaPadding*` (outer padding on the `.sgs-hero__media` wrapper). They're not the same thing structurally but the two control names + sibling positioning in the inspector make them confusing — operator can't tell which one to use without reading the rendered DOM.
+
+**Possible resolutions** (decide next session):
+1. Rename for clarity: `imageInnerPadding` + `mediaWrapperPadding` (or similar) — descriptive labels in inspector, attribute names follow
+2. Merge into one: most clients only need one of them; deprecate `imagePadding*` and rely on `mediaPadding*` + image's natural sizing
+3. Document both clearly in the inspector with help text explaining the difference (cheapest fix; least value)
+
+**Effort:** ~15 min for option 3 (help text); ~30 min for option 1 (rename + deprecation); ~1 hr for option 2 (merge + migration).
+
+**Audit needed first:** are there other blocks with this same dual-padding pattern (image-element vs wrapper)? If yes, the framework-level fix is to standardise the pattern.
+
+**Resume trigger:** Opus session — fold into H-1 inspector reorganisation.
+
+## H-3 — Video-everywhere-image feature
+
+**Captured:** 2026-05-05 (Bean: "we should be able to use a video wherever we can insert an image")
+
+**Problem:** SGS blocks currently support image as media but not video as a generic substitute. Hero has `bgVideo` and `splitImage` separately; no unified "media slot" abstraction. Means: every block that takes an image needs a parallel video attribute or has to be retro-fitted.
+
+**Proposed design:**
+
+1. New shared "media slot" concept: any attribute that accepts an image accepts a video too (mp4 / webm). The block detects mime-type and renders appropriately (`<img>` for images, `<video autoplay loop muted playsinline>` for videos by default — controls + sound configurable per instance).
+2. New shared component (`MediaPicker` extending `MediaUpload`) that handles both image + video selection from the WP media library
+3. Schema change: image attributes migrate to `mediaUrl` + `mediaType` (image | video) + `mediaSource` (uploaded id | external url) — backward-compatible deprecation
+4. Render.php helper `sgs_render_media($attrs)` that emits the correct tag with the right attributes
+
+**Affected blocks:** hero, info-box, card-grid, testimonial, decorative-image, brand-strip, certification-bar, gallery, all media-bearing blocks (~12)
+
+**Effort:** ~2-3 hr for the shared component + schema + helper + 1 block (hero) as proof. ~1 hr per additional block to migrate.
+
+**Resume trigger:** Opus session OR a dedicated framework feature session. Has cross-cutting impact — needs design review before implementation.
+
+## H-4 — Brand-source pink shade may not match mockup HTML brief
+
+**Captured:** 2026-05-05 (Bean reported pink shade looks wrong; investigation showed live SGS exactly matches mockup HTML brief CSS variables but Bean's eye still says wrong)
+
+**Problem:** Live SGS hero background renders `rgb(245, 194, 200)` = `#F5C2C8` (matches mockup `--surface-pink`). Live primary button renders `rgb(230, 138, 149)` = `#E68A95` (matches mockup `--primary`). Both exact matches to the HTML brief.
+
+If Bean's eye still says "wrong shade," the most likely cause is the **mockup HTML brief itself doesn't use the same pinks as the brand source assets** at `sites/mamas-munches/research/brand/`:
+- `Mama's Munches Logo Transparent With Words.png`
+- `Mamas-Munches-Horizontal-Logo-2-305x102.webp`
+
+**Action needed next session:**
+1. Sample dominant colours from the brand PNG/WebP files (use Python PIL or Node sharp to extract palette)
+2. Compare to mockup `--surface-pink` and `--primary`
+3. If brand differs from brief, decide: (a) update Mama's variation to match brand (deviates from HTML brief), or (b) keep variation matching brief (Bean's eye wrong / brief is canonical), or (c) update the brief to match brand
+4. Once decided, sync mamas-munches.json palette accordingly
+
+**Effort:** ~15 min for sampling + comparison + decision; ~5 min for variation update if needed.
+
+**Resume trigger:** Opus session. May change other Mama's brand colours (cookie-brown, accent-yellow, charcoal) if brand source uses different shades.
+
+## H-5 — Mockup parity validator structural false-positive classifier needs human-eye gate
+
+**Captured:** 2026-05-05 (the "55 deltas dismissed as structural noise" incident — see mistakes.md top entry)
+
+**Problem:** The validator reports computed-style deltas. The CLASSIFIER (manual or automated) decides which are real defects vs structural noise. In 2026-05-04 we wrongly dismissed ~42 of 55 deltas as "structural" without screenshot evidence. Bean's eye caught 4 visible Major defects in the dismissed pile.
+
+**Captured rule (binding):** `.claude/specs/common-wp-styling-errors.md` Section Q — classifier MUST attach side-by-side screenshot evidence before reducing severity below validator's reported severity. No screenshot = severity stays.
+
+**Open work:**
+1. Bake this rule into `~/.claude/skills/visual-qa/SKILL.md` programmatically (currently it's docs-only)
+2. Build an automated screenshot-comparison helper: takes mockup + SGS at viewport + selector → outputs side-by-side image + pixel-diff heatmap. Operator confirms or escalates
+3. The parity validator could output the candidate-noise deltas with a `requires_screenshot_review: true` flag so the classifier never auto-skips them
+
+**Effort:** ~30 min for the screenshot-helper script + ~15 min to bake the rule into visual-qa skill + ~10 min to add the validator flag
+
+**Resume trigger:** Opus session — this is the single biggest QC reliability gap.
+
+## H-6 — Block validation errors silently reject `updateBlockAttributes`
+
+**Captured:** 2026-05-04 (caught during post 29 attribute updates)
+
+**Problem:** When a block instance's stored `post_content` HTML doesn't match what the current `save.js` would produce, WordPress flags it as "invalid block content" and silently rejects subsequent `wp.data.dispatch.updateBlockAttributes` calls. The editor state appears to update but the save round-trip drops the changes. Took ~30 min to diagnose mid-session.
+
+**Workaround discovered:** use `wp.blocks.createBlock(name, attrs, innerBlocks)` + `replaceBlock(clientId, fresh)` instead of `updateBlockAttributes`. The fresh block bypasses validation.
+
+**Open work:**
+1. Bake the workaround into a helper script: `scripts/wp-update-block-attrs.js` that takes (post-id, block-name, attrs) and uses replaceBlock by default
+2. Add a check in the visual-qa skill's deploy step: after any source-block-attrs change, verify the live `post_content` reflects the change before declaring done
+3. Document the behaviour as a Section R in common-wp-styling-errors.md (block validation patterns)
+
+**Effort:** ~30 min for the helper script + ~10 min for the skill check + ~10 min for the docs
+
+**Resume trigger:** Opus session.
+
+## H-7 — Negative-margin full-bleed framework pattern needs replacement
+
+**Captured:** 2026-05-05 (Fix 4 from hero-audit-2026-05-05; instance-level workaround applied for Mama's, framework still uses fragile pattern)
+
+**Problem:** Hero block's `style.css` uses `section.sgs-hero { margin: 0 -24px }` to fake full-bleed beyond the wrapper. Math only works if the parent's content-area padding is exactly 24px. On the test page template (and likely any non-default template) the parent has 16px or 0 padding — leaving 8-16px gap on each side.
+
+**Fixed for Mama's via variation CSS** (commit 22df0a6): `.page-id-29 .entry-content.wp-block-post-content { padding-left: 0; padding-right: 0 } .page-id-29 section.sgs-hero { width: 100%; margin: 0 }`. This is per-instance — every page-id needs its own override.
+
+**Framework-level fix needed:** replace the negative-margin pattern in `plugins/sgs-blocks/src/blocks/hero/style.css` with a robust full-bleed:
+```css
+section.sgs-hero { width: 100vw; margin-left: calc(50% - 50vw); margin-right: 0; max-width: none; }
+```
+Note: `100vw` includes scrollbar width so this can cause 15px overflow on Windows. Alternative: a JS-based viewport-width measurement that excludes scrollbar, applied via CSS custom property.
+
+**Affected:** all SGS hero instances, all clients. Currently each client's variation needs to manually neutralise the negative margins.
+
+**Effort:** ~30 min framework fix + verification across multiple test environments (Mac no-scrollbar, Windows with scrollbar, mobile)
+
+**Spec:** `tools/qc-prevention/full-bleed-pattern-replacement.md` (still open)
+
+**Resume trigger:** Opus session — framework hero rebuild.
