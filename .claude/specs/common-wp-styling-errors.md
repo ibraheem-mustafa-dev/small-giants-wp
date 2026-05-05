@@ -155,6 +155,26 @@
 |---|-------|----------------|-------------|
 | P1 | QC measurements made via authenticated WP admin Playwright session show ~16px column-width / margin offsets vs the mockup. | The WP admin bar reserves 32px when logged in, shifting all viewport measurements. The QC was inadvertently run logged in; the offsets were attributed to "framework leak" or "container margin" but were actually the admin bar. | **Canonical QC tool = `tools/multi-frame-qa/capture.js` + `scripts/mockup-parity-validator.js`** (both launch fresh Chromium with no cookies). NEVER use `mcp__plugin_playwright_playwright__browser_evaluate` for measurement-of-record — it shares the active session. Document this rule in capture.js header + parity-validator header + `/qc` skill so it's enforced by tooling discoverability, not human discipline. |
 
+## Q. Parity-validator delta dismissal patterns that hide visible defects (2026-05-05 hero re-audit)
+
+These are 4 classifier-trap patterns where computed-style deltas LOOK structural but produce visible visual defects. If your QC pass dismisses any of them as "noise", you MUST attach a screenshot at the affected viewport showing the visual output is identical — otherwise treat as a real defect.
+
+| # | Pattern | Why it's not noise | How to detect |
+|---|---------|-------------------|---------------|
+| Q1 | `padding`/`margin` deltas >5px on a section/wrapper element ("structural — mockup wrapper has no padding, SGS does") | Padding > 5px is visible. The size IS the defect. Mockup `padding: 0` vs SGS `padding: 36px 16px` produces 72px of vertical dead space above + below the visible content. Bean's eye catches this immediately. | Compare the rendered hero `getBoundingClientRect().height` to mockup. Difference > 10px = visible defect. |
+| Q2 | `display: flex` vs `block` on a CTA/button container ("default behaviour same") | Default flex direction is `row`; default block stacks. If the children are themselves `display: block` wrappers (e.g. `.wp-block-sgs-button-wrapper`), flex-row arrangement gets broken into stacked behaviour. Buttons stack vertically when they should sit side-by-side. | Compare rendered position of children: `getBoundingClientRect().x` should differ across siblings (inline) or `.y` should differ (stacked). If validator reports `display` delta on a parent with multiple children, capture screenshot of the children — don't trust the "default behaviour" claim. |
+| Q3 | Negative-margin full-bleed pattern (`margin: 0 -24px`) ("intentional pattern, structural") | Negative margins overflow only correctly if the parent's positive padding matches the negative margin. If they don't, content overflows or undersizes by the difference. SGS pattern was `margin: 0 -24px` against a parent with 8px padding = 16px overflow each side. Visible at edges. | Check the rendered rect's `x` against `0` (or expected). If x is negative beyond the negative margin, OR if width > viewport, you have edge overflow. Audit the parent's padding before declaring the pattern correct. |
+| Q4 | `backgroundColor` delta on a child where parent has the same colour ("inherits visually") | Only safe to dismiss if the child element COVERS the parent at all viewports + states. Edge gaps (rounded corners on parent, child padding < parent height, scrolling reveal) cause the parent's colour to show through differently than expected. | Take a full-page screenshot. Inspect every edge of the affected element at 2-3 viewports. If the parent colour shows ANYWHERE around the child where the mockup has the child's colour — defect. |
+
+### The classifier rule (binding)
+
+When the parity validator reports any of Q1-Q4, the classifier may NOT reduce severity below the validator's reported severity unless they attach:
+
+1. A side-by-side screenshot at the affected viewport (mockup + SGS, same crop, same scale)
+2. A 1-line description of why the pixel output is identical despite the computed-style delta
+
+No screenshot evidence = severity stays at validator's level. This rule lives in `~/.claude/skills/visual-qa/SKILL.md` (added 2026-05-05).
+
 ## How to add an entry
 
 1. Hit a real WordPress styling failure in a session.

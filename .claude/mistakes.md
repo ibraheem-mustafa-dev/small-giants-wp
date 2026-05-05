@@ -1,5 +1,37 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-04 (even later)
+**Last updated:** 2026-05-05
+
+## 2026-05-05 — parity validator deltas dismissed as "structural noise" turned out to be 4 visible defects
+
+Mid-session 2026-05-04 the parity validator reported 55 deltas after the hero perfect-clone fixes landed. I (the classifier) categorised ~50 of them as "structural false positives — same visual output, different DOM organisation" and declared `verdict: PASS`. Bean looked at the live page and HTML brief side-by-side and saw obvious visible differences. A re-audit (visual-qa run with side-by-side screenshots) confirmed Bean was right: **at least 4 of the dismissed delta categories produced visible Major defects**:
+
+1. **Buttons stacking vertically at desktop** instead of inline (the most visible defect — `.sgs-hero__ctas` flex container + block-level `.wp-block-sgs-button-wrapper` children = column behaviour).
+2. **WP page-title block leaks above the hero** (~96px of Fraunces text where mockup has nothing) — the test page template includes a Post Title block.
+3. **`section.sgs-hero` 36px padding + 520px min-height** producing dead pink bands above and below the image and content panel — hero rendered 49px taller than mockup with visible empty space.
+4. **Negative-margin full-bleed pattern (`margin: 0 -24px`) over-shoots viewport** by 8-16px on each side — content area is 32px narrower than mockup at 375.
+
+The validator's measurements (padding deltas, margin deltas, display deltas) were ALL accurate. My classification "but the visual output is the same" was wrong because I didn't actually look at side-by-side screenshots. I trusted the abstract pattern ("structural difference, same visual") without ground-truth verification.
+
+**The methodology rule:**
+
+A computed-style delta is NEVER "structural noise" without screenshot evidence to back the claim. Specifically:
+
+1. Padding/margin/min-height deltas of >5px ARE visible. Don't dismiss them by category.
+2. `display: flex` vs `block` deltas ARE visible when they change child arrangement (column vs row, inline vs stacked). Don't dismiss "same intent" without checking the actual rendered position.
+3. Negative-margin full-bleed deltas ARE visible on the right/left edges when viewport math doesn't match. Don't assume "100vw is 100vw" — verify the rendered rect.
+4. Background-color deltas ARE NOT noise unless you've confirmed the parent is the same colour AND the child fully covers the parent. Otherwise the underlying colour might bleed at edges.
+
+**The process rule:**
+
+Classifier passes that turn validator FAILs into PASS verdicts MUST include a side-by-side screenshot grid as evidence. No screenshot, no dismissal. Bake into the visual-qa skill: "if classifier reduces severity below the validator's reported severity, the classifier MUST attach a screenshot at the affected viewport showing the visual output is identical."
+
+**The tooling rule:**
+
+The mockup parity validator's filters added in the previous session (visibility-aware selector, fontFamily fallback equivalence, CSS keyword equivalents) are correct AS FILTERS — they catch cases that are genuinely equivalent. But the post-filter delta count is the floor, not the ceiling. **Do not subtract further deltas without screenshot evidence.** The "55 → 4 visible defects" gap in this incident was 100% on the human classifier, 0% on the validator.
+
+**Captured as Section Q in `.claude/specs/common-wp-styling-errors.md`** with the 4 specific defect types + how to detect each.
+
+## 2026-05-04 — wp_global_styles post is the actual cache layer; editing variation files alone never propagates
 
 ## 2026-05-04 — wp_global_styles post is the actual cache layer; editing variation files alone never propagates
 
