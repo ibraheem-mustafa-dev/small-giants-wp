@@ -274,10 +274,10 @@ if ( $min_height_mobile ) {
 	$responsive_css .= '@media (max-width:767px){.' . $uid . '{min-height:' . esc_attr( $min_height_mobile ) . '}}';
 }
 if ( $sub_headline_font_size_tablet ) {
-	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__subheadline{font-size:' . sgs_font_size_value( $sub_headline_font_size_tablet ) . '}}';
+	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__subheadline{font-size:' . sgs_font_size_value( $sub_headline_font_size_tablet ) . ' !important}}';
 }
 if ( $sub_headline_font_size_mobile ) {
-	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__subheadline{font-size:' . sgs_font_size_value( $sub_headline_font_size_mobile ) . '}}';
+	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__subheadline{font-size:' . sgs_font_size_value( $sub_headline_font_size_mobile ) . ' !important}}';
 }
 
 // Per-breakpoint headline font size.
