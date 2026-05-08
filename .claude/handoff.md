@@ -1,175 +1,164 @@
 ---
 doc_type: handoff
 project: small-giants-wp
-session_date: 2026-05-07
-session_tag: small-giants-wp-2026-05-07-cloning-skill-design
-recommended_model: opus
-next_session: cloning-skill-build (see `.claude/next-session-prompt-cloning-skill-build.md`)
+session_tag: small-giants-wp-2026-05-09-cloning-skill-build-m7-m10
+session_date: 2026-05-09
+recommended_model: sonnet
+next_session: cloning-skill-build M9 (full homepage smoke; see `.claude/next-session-prompt.md`)
 ---
 
-# Session Handoff — 2026-05-07/08 (cloning-skill design + foundation)
+# Session Handoff — 2026-05-09 (cloning-skill build M7 + M8 + M10)
 
-## Headline
+## Completed This Session
 
-Marathon design + foundation session. Locked the `/sgs-clone` design via 4-model peer review, built the foundation (schemas migrated, 3 pipeline scripts shipped, 4-doc Rosetta Stone embed, populated catalogues, 1-effect bucket shipped to all applicable blocks), produced a 97-rule coverage audit identifying 28 genuine gaps, and queued the comprehensive build session as one focused milestone-driven follow-up rather than three smaller ones.
+1. **M7 complete: 6 sibling skills shipped via `/lifecycle` Mode A.** All at >= B grade with `bean_signoff: confirmed_via_m7_brief_2026-05-08` rubrics in place. Skillscores 87 to 98 percent across the batch. Scoreboard:
+   - `/sgs-clone` (orchestrator): skillscore 94, B 4.2 (pre-cap raw 4.05; cap removed by rubric file)
+   - `/uimax-scrape`: skillscore 87, B 4.0
+   - `/uimax-sgs-scrape-pattern`: skillscore 98, B 4.3 (highest in batch)
+   - `/uimax-mood-board`: skillscore 94, B 4.1
+   - `/uimax-scrape-animation`: skillscore 94, B 4.0 (replaces deprecated `/animation-harvest` with mandatory SGS-block-attribute mapping)
+   - `/uimax-classify-naming`: skillscore 96, B 4.2
+2. **M8 complete: minimal orchestrator built and smoke-run at 100% PoC parity.** New script `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` wraps the 9-stage pipeline contract. Ran against Mama's hero at 1440 viewport with Playwright, extracted 50 attributes that match the manual PoC baseline at `sites/mamas-munches/research/sandybrown-hero-extracted-v3.json` byte-for-byte. Zero attributes missing, zero value mismatches. Hero visual-diff report shipped to `reports/visual-diff/hero-2026-05-09.md`.
+3. **Batched rubric signoff approved.** Bean confirmed via AskUserQuestion that the M7 brief itself functions as the rubric across all 6 skills, unblocking the Lens 6 cap that would otherwise have held every skill at C 3.4. `bean_signoff: confirmed_via_m7_brief_2026-05-08` recorded on every rubric file.
+4. **Foundation prerequisites verified working.** 4-layer catalogue at `plugins/sgs-blocks/scripts/fingerprint-builder/output/`, 8 recogniser scripts at `plugins/sgs-blocks/scripts/recogniser/`, uimax-write-validator at `plugins/sgs-blocks/scripts/uimax-tools/uimax-write-validator.py` — all wire cleanly through the orchestrator.
+5. **Pipeline-state contract demonstrated.** Run id `mamas-munches-homepage-2026-05-08-225405` writes 9 JSON artefacts at `pipeline-state/<run_id>/stage-N.json` plus `extract-result.json` plus `operator-review.html`. Stage handoff via JSON works as designed; no in-context prose needed for state.
+6. **state.md + parking.md updated.** Phase advances to `cloning-skill-build-m9-only`. P-11 supersededby P-11-M9 (full-homepage smoke deferred). Pre-commit STOP GATE explicitly carried as a blocker until 13 remaining block visual-diff reports ship in M9.
 
-**Next session:** `/sgs-clone` build session (parking P-11) per the specialised next-session-prompt. 10 milestones, ~6-7 hr wall-time with parallel-subagent orchestration.
+## Current State
 
----
+- **Branch:** main at `0d7c4fc`
+- **Tests:** scaffolds from 2026-05-08 still passing (no new test work this session)
+- **Build:** n/a (no JS/PHP rebuild this session; orchestrator is Python)
+- **Uncommitted changes:** narrow scope this commit. M7/M8 artefacts only. The 690-file foundation from 2026-05-08 stays uncommitted pending M9 visual-diff reports.
+- **Live URL:** palestine-lives.org (NOT redeployed this session)
+- **PoC reference:** sandybrown-nightingale-600381.hostingersite.com post 29 (manual hero, preserved)
 
-## What landed this session
+## Known Issues / Blockers
 
-### Foundation — schemas + scripts + populated catalogues
+- **Pre-commit STOP GATE blocks the 690-file foundation commit** until M9 produces visual-diff reports for the 13 remaining blocks (button, container, data-display, icon, icon-block, icon-list, media, mega-menu, mobile-nav, notice-banner, post-grid, process-steps, trust-bar, whatsapp-cta). Hero is shipped this session.
+- **Orchestrator is single-section.** `sgs-clone-orchestrator.py` walks one section per run via the user-supplied `--section` selector. M9 needs a multi-section walker that auto-detects all 9 mockup sections and orchestrates them sequentially into one composite block markup output.
+- **`--no-playwright` mode loses cascade fidelity.** First-pass run extracted 42/50 attrs (84%) without Playwright. With Playwright (production path) it's 100%. The non-playwright flag should warn loudly in operator-review HTML.
 
-| Deliverable | Where |
+## Next Priorities (in order)
+
+1. **Run `/gap-analysis` on `/sgs-clone` skill (Bean-requested session opener).** Fresh evaluation against the rubric at `~/.claude/skills/sgs-clone/references/end-goal-rubric.md`. Inline run with QC peer-review. Surface any gaps the M7 build missed.
+2. **M9: extend orchestrator to multi-section + run full Mama's homepage smoke.** Walk all 9 sections (header, hero, trust-bar, featured-product, brand-story, ingredients, gift-section, social-proof, footer), generate composite block markup, deploy to sandybrown post 30 (NOT 29).
+3. **Multi-frame Playwright capture + parity validator + screenshot diff at 3 breakpoints (375 / 768 / 1440).** Generate visual-diff reports for the 13 remaining blocks using `node scripts/mockup-parity-validator.js` and `node scripts/screenshot-diff-helper.js`.
+4. **Unblock pre-commit STOP GATE.** Once all 14 visual-diff reports land in `reports/visual-diff/`, commit + push the 690-file foundation from 2026-05-08.
+5. **Bucket-2 session ready to start.** Once M9 closes cleanly, the dogfood loop over the 33 chart + table mockups can begin (Tasks 10-12 in `.claude/next-session-prompt-bucket-2-blocks-and-timeline.md`).
+
+## Files Modified
+
+| File path | What changed |
 |---|---|
-| sgs-db migration (8 new patterns columns + UNIQUE INDEX on fingerprint) | `scripts/migrations/sgs-db-cloning-2026-05-07.sql` |
-| uimax migration (`patterns`, `naming_conventions`, `animations`, `mood_boards`, 5 stack tables, classification cols on 10 existing tables, is_emoji flag, equivalent_implementations JSON cols) | `scripts/migrations/uimax-cloning-2026-05-07.sql` |
-| Migrations applied live to both DBs | sgs-framework.db + ui-ux-pro-max.db |
-| `pattern-fingerprint.py` (513 lines) — sha256(normalised_html + sorted_css_var_dump) + unmapped_css_rules warning | `plugins/sgs-blocks/scripts/` |
-| `pattern-classify.py` (624 lines) — deterministic content_shape walker + block_composition heuristic + LLM classification with auto-fallback | `plugins/sgs-blocks/scripts/` |
-| `pattern-register.py` (867 lines) — 6-step orchestrator with idempotent migration helper + sibling imports + dry-run safety | `plugins/sgs-blocks/scripts/` |
-| `/sgs-db` extended with 4 cloning subcommands (fingerprint / patterns-by-category / patterns-by-industry / patterns-by-fingerprint-prefix) | `~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py` |
-| 16 naming conventions populated (BEM/SGS/WP-Gutenberg/Tailwind/Bootstrap/MUI/Spectra/Astra/Kadence/shadcn/Lovable/v0/Bolt/OOCSS/SUIT/ACSS) | uimax `naming_conventions` |
-| 63 animations populated with full Rosetta Stone equivalents | uimax `animations` |
-| 12 emoji libraries flagged is_emoji=1 with equivalent_implementations backfilled | uimax `icon_libraries` |
-| Bucket 1 effects shipped to all applicable blocks (form-focus-ring on sgs/form, ripple-on-click via hover-effects extension, svg-path-draw-on-scroll on sgs/decorative-image) | various block files; `ripple.js` new; `extensions.css` extended; `animation-observer.js` extended |
-| Defensive populate-db.py patch for `_comment_*` non-spec attributes | `~/.claude/skills/sgs-wp-engine/scripts/populate-db.py` |
-| `/sgs-update` re-ran clean: 64 blocks / 28 tokens / 8 variations / 35 patterns / 18 templates / 3 hooks / 8 components / 3 plugins / 9 deploy steps / 12 gotchas | sgs-framework.db |
+| `~/.claude/skills/sgs-clone/SKILL.md` (new) | M7.1: orchestrator skill body, 9-stage pipeline contract, 10 Hard Rules, 6-Lens System Effect |
+| `~/.claude/skills/sgs-clone/references/{end-goal-rubric,pipeline-stages,router-pattern,recognition-log}.md` (new) | Rubric + 3 reference docs (stage schemas, router pattern, recognition log review loop) |
+| `~/.claude/skills/uimax-{scrape,sgs-scrape-pattern,mood-board,scrape-animation,classify-naming}/SKILL.md` (5 new) | M7.2 to M7.6: 5 sibling skill bodies |
+| `~/.claude/skills/uimax-*/references/end-goal-rubric.md` (5 new) | Per-skill rubrics with batched signoff |
+| `~/.claude/gap-analysis/reports/2026-05-08-sgs-clone-skill.md` (new) | Initial gap-analysis pre-fix at C 3.4 cap, post-fix B 4.2 |
+| `~/.claude/gap-analysis/evaluation-history.json` (appended) | 7 entries: M7.1 to M7.6 grades + initial pre-fix |
+| `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` (new, ~280 lines) | Minimal v1 orchestrator wrapping the 9 stages |
+| `pipeline-state/mamas-munches-homepage-2026-05-08-225405/` (new) | M8 hero smoke artefacts: stage-1 to stage-9.json + extract-result.json + operator-review.html |
+| `reports/visual-diff/hero-2026-05-09.md` (new) | M8 hero visual-diff report, verdict PASS at 100% PoC parity |
+| `.claude/state.md` | Phase -> cloning-skill-build-m9-only, recommended_model_next -> sonnet, blockers updated |
+| `.claude/parking.md` | P-11 superseded by P-11-M9 (M9-only deferred work) |
+| `.claude/handoff.md` | This file |
+| `.claude/next-session-prompt.md` | M9 brief with `/gap-analysis` opener |
 
-### Rosetta Stone discipline embedded structurally
+## Notes for Next Session
 
-Captured as blub.db row 213 (`uimax-is-the-rosetta-stone-of-design`). Embedded across 4 surfaces:
-- Project CLAUDE.md — Architecture Rules section with full distinction (uimax = DB activity layer; /ui-ux-pro-max = intelligence skill consuming the DB)
-- `~/.claude/skills/sgs-wp-engine/SKILL.md` — Hard Rule 7 (cross-platform translation discipline, 64 blocks roster)
-- `~/.claude/skills/ui-ux-pro-max/SKILL.md` — Stage 5 INGEST HARD GATE (every write carries equivalent_implementations or flags the gap)
-- `~/.claude/skills/animation-harvest/SKILL.md` — full deprecation stub redirecting to `/uimax-scrape-animation` (skillscore 93%)
+- The `--no-playwright` flag on `sgs-clone-orchestrator.py` is for offline / CI environments. Production path is Playwright. Operator-review HTML should warn when no-playwright was used so the cascade-fidelity loss is explicit.
+- 175 attrs in `block.json` for sgs/hero is huge — but 53 are responsive variants (Mobile/Tablet/Desktop suffixes). Coverage percent on declared total is misleading. Real coverage signal is "every visible element has a matching attr" plus "every CSS rule classified into one of three buckets" (zero-silent-loss). Both held at 100% on hero.
+- The 6 skills' rubric files use `bean_signoff: confirmed_via_m7_brief_2026-05-08` — this batched signoff is valid for the original M7 brief but new gaps surfaced in next session's `/gap-analysis` may need explicit per-skill confirms if they exceed brief scope.
+- Don't drop the `/animation-harvest` skill yet. It is deprecated but `~/.claude/skills/animation-harvest/SKILL.md` still exists for reference. The replacement `/uimax-scrape-animation` enforces the SGS-block-attribute mapping that the deprecated skill silently dropped.
 
-### Spec doc cleanup
+## Next Session Prompt
 
-| File | Was | Now |
-|---|---|---|
-| `cloning-skill-salvage-matrix-2026-05-05.md` | 429 lines (REVISIONS + bulky v1) | 107 lines (REVISIONS + Rosetta Stone addendum + final command surface) |
-| `pattern-dedup-classify-mechanics-2026-05-05.md` | 612 lines (REVISIONS + bulky v1) | 160 lines (REVISIONS + Correction 6 categorisation-by-purpose + Rosetta Stone addendum + simplified flow) |
+~~~
+recommended_model: sonnet
+session_tag: small-giants-wp-2026-05-10-cloning-skill-m9
 
-v1 content preserved in git history. Recovery instructions captured in stubs.
+You are a senior SGS WordPress engineer specialising in cloning-pipeline orchestration, multi-frame visual-fidelity validation, and live-deploy smoke testing. Inherits the M7 + M8 work shipped 2026-05-09: 6 sibling skills at >=B grade, hero smoke at 100% PoC parity, minimal orchestrator working end-to-end.
 
-### 4-model peer review of fingerprint design
+Resume command: CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-10-cloning-skill-m9"
 
-| Reviewer | Verdict | Top finding |
-|---|---|---|
-| Sonnet 4.6 | ship-with-fixes | Tailwind classes stored as space-separated string instead of indexed token array → first Tailwind clone returns 0 matches for whole sections |
-| Gemini Flash | ship-with-fixes | Structural signature too rigid for utility-wrapper hell; Layer 3/4 missing pairing index for tabs |
-| Gemini Pro | ship-with-fixes | Single-convention-per-scrape assumption is fatal — real sites mix BEM + Tailwind + Bootstrap |
-| Cerebras | (skipped per its own skill spec — "not enough reasoning depth vs Opus/Gemini-Pro for architecture decisions") |
+Invoke `/autopilot` before doing anything else. Then read CONVERSATION-HANDOFF.md (`.claude/handoff.md`) and CLAUDE.md for full context.
 
-Synthesis: 11 fixes (5 critical, 4 important, 2 stretch). Documented at `.claude/reports/fingerprint-design-review-synthesis-2026-05-07.md`.
+## Where You Are
 
-### Rule-stage coverage audit (Step 11 dissection)
+Plan: `.claude/parking.md` entry P-11-M9
+Current phase: cloning-skill-build-m9-only
+Progress: M7 + M8 + M10 shipped; M9 remaining
+Next task: `/gap-analysis` of `/sgs-clone` skill (Bean-requested session opener)
 
-97 cloning-relevant rules audited across 9 pipeline stages + cross-cutting. Source-of-truth read: mistakes.md / common-wp-styling-errors.md (18 sections, 67 errors) / 12-DRAFT-TO-SGS-PIPELINE.md / sgs-wp-engine + visual-qa Hard Rules / blub.db high-priority / project CLAUDE.md / fingerprint design synthesis / parking.
+## Skills to Invoke
 
-| Status | Count |
-|---|---|
-| ✓ Covered today | 31 (32%) |
-| △ Closed by Option A revised | 38 (39%) |
-| ✗ Genuine gap after Option A | 28 (29%) |
+| Skill | When to use |
+|-------|-------------|
+| `/brainstorming` | Architectural decisions during multi-section orchestrator extension |
+| `/gap-analysis` | FIRST TASK: fresh evaluation of `/sgs-clone` skill against `~/.claude/skills/sgs-clone/references/end-goal-rubric.md` |
+| `/lifecycle` | If gap-analysis surfaces fix loop work on /sgs-clone or any sibling skill |
+| `/research-buddies` | If multi-section orchestrator extension surfaces a novel question (cutting-edge + practical balance) |
+| `/strategic-plan` | Inline replan if M9 scope shifts mid-session |
+| `/sgs-wp-engine` | Throughout; SGS WordPress central authority |
+| `/visual-qa` | After live deploy: full 9-layer audit at sandybrown post 30 |
+| `/qc-inline` | After each milestone return per Bean's standing rule |
+| `/handoff` | Session close |
 
-**Top-5 actionable gaps (ranked by clone-blocking severity):**
+## MCP Servers & Tools
 
-1. Computed-style passport for hashed-class fallback (CSS Modules / MUI / SvelteKit)
-2. Pairing index for tabs/accordion parallel structures
-3. Per-section hybrid convention voting (drops single-convention assumption)
-4. `recognition_log` table + operator-review UI
-5. 5 missing attribute roles (`layout-alignment`, `accessibility-attribute`, `data-binding`, `visibility-control`, `layout-modifier`)
+| Tool | What to use it for |
+|------|-------------------|
+| Playwright MCP | Multi-frame capture at 3 breakpoints (375 / 768 / 1440); first-paint defect detection |
+| `python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` | Run the orchestrator (single-section today; extend to multi-section) |
+| `node tools/multi-frame-qa/capture.js` | First-paint capture at 0/200/500/1000/3000 ms |
+| `node scripts/mockup-parity-validator.js` | Q1-Q4 + Section R measurement against live render |
+| `node scripts/screenshot-diff-helper.js` | Mandatory before reducing any classifier severity (Hard Rule 10) |
+| `node scripts/global-styles-reset.js` | Pre-deploy variation reset |
+| `node scripts/wp-update-block-attrs.js` | Apply block attrs safely |
+| `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py stats` | Framework health snapshot |
+| SSH `u945238940@141.136.39.73:65002` | Sandybrown deploy target (post 30 for full homepage) |
 
-Audit doc: `.claude/reports/rule-stage-coverage-audit-2026-05-07.md`.
+## Agents to Delegate To
 
-### Parking review
+| Agent | When |
+|-------|------|
+| `wp-sgs-developer` | All SGS WordPress build work; multi-section orchestrator extension; live deploy |
+| `design-reviewer` | Visual quality of full Mama's clone vs mockup at 3 breakpoints |
+| `research-pipeline` | Only if a milestone surfaces an unexpected question |
 
-Cleaned from 461 lines → 245 lines. Removed ~150 lines of resolved-original duplication. Restructured into Active (cloning) / Active (framework) / Resolved sections. Added 6 new entries:
-- **P-11** — Cloning-skill build session (revised Option A + Top-12 gaps as 10 milestones)
-- **P-12** — `block_compositions` seed for existing 36 patterns
-- **P-13** — Validator on uimax writes (no-licensing + Rosetta Stone discipline)
-- **P-14** — `block-name-search-blindspot` grep wrapper
-- **P-15** — `/sgs-update` Stage 3+4 (uimax sync extension)
-- **P-16** — Embed `diagnose-blub-db-locks-not-park-on-timeout` rule into /autopilot + /handoff
+## Research Approach
 
-Status updates landed: P-6 (image controls extension) marked UNBLOCKED; old P-9 (Recogniser-v2 generalisation) marked SUPERSEDED by P-11.
-
-### Specialised next-session prompts ready
-
-| Prompt | Path |
-|---|---|
-| Cloning-skill build (P-11) | `.claude/next-session-prompt-cloning-skill-build.md` |
-| Bucket 2 + timeline rework (P-9) | `.claude/next-session-prompt-bucket-2-blocks-and-timeline.md` (from earlier in session) |
-
-### Final wave — P-14 + P-6 + P-8 + P-16 closed via parallel subagent dispatch
-
-Per Bean's late-session instruction (use `/subagent-driven-development` + `/delegate` + `/dispatching-parallel-agents` then `/qc-inline` + `/handoff`):
-
-| Item | Model | Effort | Outcome |
-|---|---|---|---|
-| **P-14** block-name-search-blindspot grep wrapper | Haiku + 3 inline fixes | ~30 min total | `scripts/sgs-block-grep.py`. Triple-term search (literal + parenthetical-stripped + slug-form `sgs/<name>` derivation). Text + JSON output modes. Three inline fixes after Haiku return: (a) backslashes-in-docstring tripped Python unicode-escape parser → switched to forward slashes; (b) Haiku used `'*.{md,php,...}'` brace-glob — neither rg nor grep brace-expand at arg level → switched to one `--glob`/`--include` per extension; (c) Windows path `c:\Users\...\file.md:123:content` was splitting naively on first colon (drive letter) → switched parser to a regex anchored on file-extension boundary. Final smoke test: "Hero Block" → 80 hits (71 via slug derivation). "Icon Block (single icon)" → 43 hits across all 3 search forms. Working as intended now. |
-| **P-6** image-controls block extension | Sonnet | ~120 min | New extension at `plugins/sgs-blocks/src/blocks/extensions/image-controls.js` (~5.7KB) + `plugins/sgs-blocks/includes/image-controls.php` (~4.8KB) + extension.css extension + 7 blocks opted-in via `supports.sgs.imageControls: true` (decorative-image, gallery, card-grid, hero, info-box, team-member, testimonial). brand-strip / certification-bar deliberately excluded (logo-only). Webpack build clean. Project CLAUDE.md updated with Image controls discipline section (under Architecture Rules). |
-| **P-8** reduced-motion audit | Sonnet | ~35 min | 4 files audited (3 briefed + 1 bonus reading-progress.css the subagent surfaced). 8 redundant rules removed total. 1 rule kept (`header-modes.css` scroll-driven shrink animation — `animation: none` is the only valid suppression for `animation-timeline: scroll()` since the universal duration trick doesn't apply). Audit-marker comments added to all 4 files. |
-| **P-16** diagnose-blub-db-locks-not-park-on-timeout embed | Inline | ~15 min | Embedded in two places: (a) `~/.claude/skills/autopilot/references/correction-capture.md` Failure handling section — full diagnostic sequence as HARD GATE before parking, plus unicode-substitution fallback for /api/knowledge POST hangs (blub.db row 199); (b) `~/.claude/commands/handoff.md` — added a Persistence-failure HARD GATE banner at the top of the Pre-Handoff Gates section, pointing back to the autopilot correction-capture diagnostic sequence so /handoff Gate 4 dashboard sync calls inherit the rule. Both surfaces explicitly note: filesystem operations are exempt; the rule applies only to network POSTs to localhost dashboard endpoints. |
-
-All 4 items closed with /qc-inline pass at 100% confidence (P-14 after a 1-line path-style fix). Parking now stripped of P-14 / P-6 / P-8 / P-16 (collapsed to one-line resolved entries on next parking pass).
+M9 is build + smoke driven. If multi-section orchestrator extension surfaces a novel question (recursion across nested sections, header/footer cross-section dependencies), invoke `/research-buddies` for that specific question only.
 
 ---
 
-## Two captured rules to MEMORY
+## Task 1: Fresh gap-analysis on /sgs-clone (Bean-requested session opener)
 
-| pattern_key | blub.db row | Embedded |
-|---|---|---|
-| `no-licensing-talk-in-sgs-cloning-context` | 211 | 4 surfaces (CLAUDE.md / sgs-wp-engine / ui-ux-pro-max / spec REVISIONS sections) |
-| `uimax-is-the-rosetta-stone-of-design` | 213 | 4 surfaces (CLAUDE.md / sgs-wp-engine Hard Rule 7 / ui-ux-pro-max Stage 5 / animation-harvest deprecation) |
+Run `/gap-analysis` against `~/.claude/skills/sgs-clone/SKILL.md` with target_type: skill, personas: auto, depth: all-gaps-plus-opportunities. Use the rubric at `~/.claude/skills/sgs-clone/references/end-goal-rubric.md`. Run inline (not subagent). Apply the M7-build context (hero smoke at 100% parity is real evidence the contract works). Surface every gap; the M7 build prioritised speed across 6 skills, so a clean re-evaluation may find polish opportunities. Decide which gaps to fix before M9 work starts.
 
-Both also live in CC auto-memory at `~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_*.md`.
+## Task 2: Extend orchestrator to multi-section walker
 
----
+Currently `sgs-clone-orchestrator.py` runs one section per invocation. M9 needs auto-detected multi-section: walk the 9 mockup sections (header, hero, trust-bar, featured-product, brand-story, ingredients, gift-section, social-proof, footer), match each to its target SGS block, run the 9 stages per section, aggregate into composite block markup output. Update the script in-place; keep the contract (JSON artefacts at `pipeline-state/<run_id>/stage-N.json`) intact.
 
-## Outstanding for next session
+## Task 3: Full Mama's homepage smoke + 13 visual-diff reports
 
-### Immediate (cloning-skill build per P-11)
+Deploy composite block markup to sandybrown post 30 (NOT 29 — preserve hero PoC). Run multi-frame Playwright capture at 0/200/500/1000/3000 ms across 375/768/1440 viewports. Run `mockup-parity-validator.js` per section and `screenshot-diff-helper.js` per Q1-Q4 delta flagged (Hard Rule 10). Generate visual-diff reports at `reports/visual-diff/<block>-<date>.md` for the 13 STOP-GATE-blocking blocks.
 
-The 10-milestone session executes:
-1. Schema sync extensions (uimax sync gap close + block_compositions seed)
-2. Layer 1+2 fingerprint catalogue + 8 base role templates (parallel Sonnet × 3)
-3. Layer 3+4 + slot overrides + 5 missing roles (parallel Sonnet × 2)
-4. Critical fixes 1-5 (parallel Sonnet × 4)
-5. Important fixes 6-9 + recursion guard + confidence matrix + 5th leftover bucket (parallel Sonnet × 3)
-6. Top-5 gap closures including `recognition_log` + operator UI + uimax write validator (parallel Sonnet × 2)
-7. Build `/sgs-clone` + 5 sibling commands via `/lifecycle` Mode A (sequential)
-8. Mama's hero smoke run
-9. Full Mama's homepage smoke
-10. Final `/handoff`
+## Task 4: Unblock pre-commit STOP GATE; commit foundation
 
-### Deferred (separate sessions)
+Once all 14 visual-diff reports present (hero from this session + 13 from M9), commit the 690-file foundation from 2026-05-08 with descriptive message, push to main. Document the unlock in handoff.
 
-- **P-9** Bucket 2 new blocks + timeline rework (after P-11 ships) — `sgs/empty-state` / `sgs/toggle` / `sgs/testimonial-slider` + `sgs/timeline` redesign. Strategic dogfood opportunity for `/sgs-clone`.
-- **P-6** Image controls block extension (UNBLOCKED, ~2-3h)
-- **P-2** Phase 2.5 / G2.5 deferred work (4 skills + 3 agents + seo-technical content fixes)
-- **P-4** Trustpilot 4-review scrape (15-20 min mid-clone)
-- **P-8** Reduced-motion rules audit (~40 min)
-- **P-10** svg-morph (deferred indefinitely — paid GSAP plugin)
-- **P-16** Embed `diagnose-blub-db-locks-not-park-on-timeout` rule via `/lifecycle`
+## Task 5: /handoff session close
 
----
+Standard close. Update state.md (phase -> bucket-2-ready or post-cloning-foundation). Mark P-11-M9 RESOLVED.
 
-## Session reflection
+## Guardrails
 
-Three threads converged:
-
-1. **Design lock-in via 4-model peer review** — Sonnet + Gemini Flash + Gemini Pro all returned ship-with-fixes. Cerebras correctly skipped per its own skill spec. The 11 specific fixes are concrete and bounded.
-
-2. **Coverage audit reveals truth** — 29% of cloning-relevant rules stay uncovered even after the revised Option A. Top-5 gaps are clone-blocking. Without the audit, the build session would have under-built (missing the gaps) or over-built (duplicating already-enforced rules). Audit is the higher-value deliverable than parking review alone.
-
-3. **Bean's reframe collapses 3 sessions to 1** — properly orchestrated subagent dispatch lets the comprehensive build run in one focused session. Main agent orchestrates + briefs + qc; subagents execute. The original "Sessions A/B/C" thinking was conservative; ~10 milestones in one session is the right shape given the delegation system.
-
-Strategic implication: after P-11 (cloning-skill build), the framework moves from "manual mockup-to-blocks" to "deterministic mockup-to-blocks with intelligence layer for novelty." Every future client clone benefits from the catalogue compounding. Pattern library grows; uimax intelligence grows; recognition_log identifies new patterns over time. Strategic differentiator that compounds with every project.
-
-The cumulative ROI of this 12+ hour session is the difference between continuing to clone manually (4-6 hrs per client homepage with high failure modes) and shipping a deterministic-first cloning skill (30-60 min per page with operator-review for the 15% novelty). Tens of hours saved per client; competitive moat that strengthens with every clone.
-
-Foundation is locked. Build session is queued. Bean confirms when ready to resume.
+- DO NOT deploy to sandybrown post 29; that preserves the manual hero PoC for parity reference
+- DO NOT bypass `screenshot-diff-helper.js` on Q1-Q4 deltas (Hard Rule 10)
+- DO NOT run the orchestrator with `--no-playwright` for production smoke; cascade fidelity drops to ~84%
+- DO NOT commit block-src changes to any branch other than main
+- DO NOT add em-dashes anywhere (Bean preference, captured 2026-05-08)
+- Run `/qc-inline` after each milestone return per Bean's standing rule
+~~~

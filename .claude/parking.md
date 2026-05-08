@@ -12,26 +12,40 @@ Items here have a clear next-step but aren't urgent. Each entry: the work, the t
 
 ## Active items (cloning pipeline focus)
 
-### P-11 — Cloning-skill build session (revised Option A + Top-12 gaps)
+### P-11-M9 — Full Mama's homepage smoke + STOP-GATE-unblock (M9 deferred from M7-M10 session)
 
-**Captured:** 2026-05-08 (rule-stage coverage audit + 4-model peer review of fingerprint design)
+**Captured:** 2026-05-09 (M7-M10 session close)
 
-**What:** Single comprehensive session executing 10 milestones — schema sync, 4-layer fingerprint catalogue, role templates, critical fixes 1-5, important fixes 6-9, top-5 gaps, computed-style passport, Mama's hero smoke, full Mama's homepage smoke, handoff. Heavy parallel-subagent orchestration; main agent is orchestrator + QC.
+**Status update 2026-05-09 session:** M7 + M8 COMPLETE.
+- M7: 6 sibling skills shipped via /lifecycle Mode A, all >=B grade. Skill scoreboard at evaluation-history.json. Rubric files all carry `bean_signoff: confirmed_via_m7_brief_2026-05-08`.
+- M8: minimal orchestrator at plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py. Hero smoke at 100% PoC parity (50/50 attrs match manual baseline). Visual-diff report at reports/visual-diff/hero-2026-05-09.md.
+- M9: deferred to next session (this entry).
+- M10: handoff + narrow commit (M7/M8 artefacts only) shipped this session. Foundation commit blocked.
 
-**Why this exists:** the 4-model peer review identified 11 fixes needed atop the original design. The rule-stage coverage audit identified 28 genuine gaps remaining after Option A. Top-5 gaps are clone-blocking. Combined into one session via subagent orchestration rather than three separate sessions.
+**What's left (M9 only):**
+- Multi-section orchestrator extension to walk all 9 sections of Mama's homepage in one run (the current orchestrator is single-section)
+- Live deploy of full homepage to sandybrown post 30 (NOT 29 — preserves the manual hero PoC reference)
+- Multi-frame Playwright capture at 0/200/500/1000/3000 ms across 375/768/1440 viewports
+- mockup-parity-validator.js per section
+- screenshot-diff-helper.js per Q1-Q4 delta flagged
+- 13 remaining block visual-diff reports written to reports/visual-diff/<block>-<date>.md (button, container, data-display, icon, icon-block, icon-list, media, mega-menu, mobile-nav, notice-banner, post-grid, process-steps, trust-bar, whatsapp-cta)
+- Pre-commit STOP GATE unblocks once all 14 visual-diff reports present (hero + 13 listed)
+- 690-file foundation commit lands (currently uncommitted on main since 2026-05-08)
+- Bucket-2 session unblocks for Tasks 10-12 dogfood loop
 
-**Source docs:**
-- `.claude/reports/rule-stage-coverage-audit-2026-05-07.md` — 97 rules audited; 28 genuine gaps + Top-12 ranked
-- `.claude/reports/fingerprint-design-review-synthesis-2026-05-07.md` — 11 review findings
-- `.claude/reports/fingerprint-design-review-brief-2026-05-07.md` — design brief used by reviewers
+**Source docs (still relevant for M7-M10):**
+- `.claude/handoff.md` — 2026-05-08 mega-session digest (M1-M6 completed work + framework state)
+- `.claude/reports/rule-stage-coverage-audit-2026-05-07.md` — 97 rules audited; Top-5 closed in Wave 4
+- `.claude/reports/fingerprint-design-review-synthesis-2026-05-07.md` — 11 review findings; critical fixes 5/5 PASS
+- `.claude/specs/12-DRAFT-TO-SGS-PIPELINE.md` — canonical 9-stage pipeline spec
 - `.claude/specs/cloning-skill-salvage-matrix-2026-05-05.md` REVISIONS section
 - `.claude/specs/pattern-dedup-classify-mechanics-2026-05-05.md` REVISIONS section
 
-**Specialised next-session-prompt:** `.claude/next-session-prompt-cloning-skill-build.md` (created 2026-05-08).
+**Canonical next-session-prompt:** `.claude/next-session-prompt.md` — full M7-M10 task brief with skills/MCP/agents tables.
 
-**Effort:** ~6-7 hours wall-time (~3-4 hours main-thread active + ~3 hours parallel subagent work).
+**Effort:** ~3 hours wall-time remaining (M7 sequential + M8/M9 main-thread + M10 close).
 
-**Resume trigger:** when Bean has a focused window for the build session.
+**Resume trigger:** when Bean has a focused window for the M7-M10 build session.
 
 ---
 
@@ -145,8 +159,119 @@ See `.claude/plans/phase-2-rubrics-universe.md` G2.5 section. Triggered by Phase
 
 ---
 
+### P-17 — Shared universal icon picker component (framework-wide upgrade)
+
+**Captured:** 2026-05-08 (during sgs/icon-list expansion review)
+
+**What:** Every SGS block that exposes an icon picker control hardcodes its own ~8-item dropdown. Meanwhile the framework actually supports a much richer icon universe: **Lucide (1,963 SVG icons)** + **emojis treated as icons** (uimax `icon_libraries` has 12 emoji families flagged `is_emoji=1` with full Rosetta Stone equivalents) + any **other icon sets installed** (Heroicons, Phosphor, Tabler, Font Awesome — registerable via a future `sgs_register_icon_set` hook). Operators editing `sgs/icon-list`, `sgs/icon`, `sgs/icon-block`, `sgs/info-box`, `sgs/process-steps`, `sgs/multi-button`, `sgs/whatsapp-cta`, `sgs/notice-banner`, `sgs/trust-bar`, etc. all see different tiny dropdowns and never reach any of the broader universe.
+
+**Why this matters strategically:** every clone we do that uses an icon-rich design (services pages, feature grids, process steps, food/restaurant menus) currently risks the operator picking "the closest of 8" instead of "the right icon out of thousands". Recogniser quality also suffers — it can't propose accurate icon mappings if the editor can't render them. Branded emoji-as-marker is a real client request (food sites, lifestyle brands, kids/education sites) that SGS structurally supports today but no operator can actually reach via the UI.
+
+**Spec — universal `<IconPicker>` component (NOT lucide-specific):**
+
+1. **New shared component:** `plugins/sgs-blocks/src/components/IconPicker.js`
+   - **Source-agnostic interface** — accepts a `value` shaped as `{ source: 'lucide' | 'emoji' | 'heroicons' | '<custom>', value: '<icon-id-or-glyph>' }` and emits the same shape via `onChange`
+   - **Source switcher tabs** at top: Lucide / Emoji / [other registered sets] / Recent / Favourites
+   - **Search field** (debounced ~150ms) — searches across the active source by name + tag list. Cross-source search optional (toggle: "Search all sources").
+   - **Virtual-scrolling grid** (`react-window` or equivalent) — only renders visible cells. Critical for Lucide (1,963 icons) and the emoji set (~3,500 standard Unicode emojis).
+   - **Category sidebar per source:**
+     - Lucide: commerce / food / transport / nature / interface / arrows / weather / health / etc.
+     - Emoji: smileys / animals / food / activities / travel / objects / symbols / flags
+     - Other sets: whatever taxonomy the set declares
+   - **Favourites** — pinned icons saved per-site in `wp_options` (max 36, mixed sources).
+   - **Recently used** — last 16 used in this editor session (sessionStorage).
+   - **Selected preview** at the top with the source label so operator knows what's picked.
+   - **Keyboard navigation** (arrow keys + Enter) and 44×44 touch targets per WCAG.
+
+2. **Icon-set registry** (PHP + JS):
+   - PHP-side: `sgs_register_icon_set( $args )` — params: `slug`, `label`, `icons` (array of `{id, name, tags, category, svg_or_glyph}`), `kind` (`'svg'` / `'emoji'` / `'font-icon'`)
+   - JS-side: `wp.hooks.applyFilters('sgs.icon-picker.sources', defaultSources)` — third-party plugins can extend
+   - Built-in registrations:
+     - `lucide` (kind=svg) — sourced from existing `includes/lucide-icons.php` (regenerated with tag/category metadata if missing)
+     - `emoji-keycap`, `emoji-people`, `emoji-food`, etc. (12 families, kind=emoji) — sourced from uimax `icon_libraries WHERE is_emoji=1`
+     - Future: heroicons / phosphor / tabler — opt-in installs
+
+3. **Render-side handling** — the `value` shape carries `source` so the renderer knows whether to:
+   - For `source: 'lucide'` → output inline SVG via `sgs_get_lucide_icon()` (existing path)
+   - For `source: 'emoji'` → output the glyph directly (needs `aria-label` from the icon's name for screen readers)
+   - For `source: '<custom>'` → look up the registered renderer for that set
+   
+   Render helper: new `sgs_render_icon( $value )` in `includes/render-helpers.php` that switches on source and returns the right HTML.
+
+4. **Migration path** — every block currently exposing an icon-picker control:
+   - `sgs/icon-list` (single icon + per-item icon + pattern entries)
+   - `sgs/icon`
+   - `sgs/icon-block`
+   - `sgs/info-box`
+   - `sgs/process-steps`
+   - `sgs/multi-button` (icon-before-label / icon-after-label)
+   - `sgs/whatsapp-cta` (icon override)
+   - `sgs/notice-banner` (state icon)
+   - `sgs/trust-bar` (per-item icon)
+   - `sgs/social-icons` (already partially solves this for social platforms — keep as-is OR fold in)
+   - any block that hardcodes its own icon dropdown
+   
+   Replace each block's bespoke dropdown with `<IconPicker value={...} onChange={...} />`. **Schema change:** existing string-typed icon attributes (e.g. `icon: 'check'`) need migration to the object shape (`{ source: 'lucide', value: 'check' }`). Each migration carries a deprecation that maps old string values to the lucide source. ~15-20 min per block including build verification + deprecation.
+
+5. **Lucide registry expansion** — `includes/lucide-icons.php` is auto-generated. If the current file doesn't carry tag/category metadata, regenerate with metadata included. Confirm the generator script during work.
+
+6. **Emoji registry** — already in uimax. Build a one-time importer that pulls `uimax.icon_libraries WHERE is_emoji=1` plus the standard Unicode emoji set into a JSON manifest at `includes/emoji-icons.json` for the picker to consume offline.
+
+7. **Performance budget** — virtual-scrolling means only rendered cells eat DOM. The full Lucide SVG payload should NOT be loaded on editor mount; lazy-fetch chunks (e.g. by category) on demand. Emoji glyphs are essentially free (single Unicode characters). Render `<svg>` inline only for visible Lucide cells (~20-40 × ~1KB each = ~30KB DOM at any time).
+
+**Effort:** ~3-4 hrs for the shared component + source-registry + emoji import + Lucide metadata regen. ~15-20 minutes per migrated block × ~10 blocks = ~3-4 hrs migration including deprecations. Total **~6-8 hrs realistic** (revised up from initial 4-6 estimate to reflect the broader scope).
+
+**Resume trigger:** standalone session (not a blocker for any active path). Could run before bucket-2 (so the 3 new bucket-2 blocks land using IconPicker from day one) or after bucket-2 (so existing blocks get the upgrade once and bucket-2 ships without it).
+
+**Why this slipped:** original sgs/icon-list spec asked for 8 icons; nobody widened the universe since. Caught 2026-05-08 when the icon-list expansion subagent reported "Editor icon library limited to 8 editor presets" as a known limitation. Bean immediately surfaced the broader missing-functionality (emoji-as-icons + other registered sets) — captured fully here in this revised entry.
+
+---
+
+### P-19 — Broader saved-defaults system audit + WP-native migration
+
+**Captured:** 2026-05-08 (during icon-list 3-mode design review)
+
+**What:** SGS has a saved-defaults system (`includes/class-block-defaults.php` + `withSaveAsDefault` HOC + the 2026-05-08 unified slot-aware routes added by Fixes-1+2) that lets operators save block-attribute snapshots as site-wide defaults. Bean's insight 2026-05-08: this DUPLICATES WordPress's native Site Editor → Styles → Blocks panel (`wp_global_styles` overlay on theme.json) for visual styling, and the use cases the SGS system covered are mostly handled better by WP-native mechanisms.
+
+The icon-list refactor (2026-05-08) removes saved-defaults usage from icon-list specifically and replaces it with a sessionStorage `useLastUsedAttributes` hook + 5 block patterns. The broader system stays in place because OTHER blocks may still use `withSaveAsDefault` — auditing + migrating each is out of scope for the icon-list refactor.
+
+**Spec:**
+
+1. **Audit (~30 min):**
+   - Grep `plugins/sgs-blocks/src/blocks/` for `withSaveAsDefault` usage — list every consumer
+   - Grep for `<BlockDefaultsPanel>` direct usage — should be 0 after icon-list refactor
+   - For each consumer, classify what's being saved:
+     - **Visual only** (colour, typography, spacing, border) → migrate to native WP Site Editor → Styles → Blocks panel; delete saved-defaults usage
+     - **Structural** (mode, type, behaviour switches) → replace with `useLastUsedAttributes` sessionStorage hook + canonical block patterns
+     - **Mixed** → split: visual goes native, structural goes sessionStorage + patterns
+
+2. **Per-block migration (~10-20 min each):** remove HOC wrap; for visual no further action; for structural, import `useLastUsedAttributes` + register 3-5 patterns; add deprecation if attribute schema changed.
+
+3. **Once all consumers migrated:**
+   - Delete `withSaveAsDefault` HOC from `extensions/block-defaults.js`
+   - Delete `<BlockDefaultsPanel>` shared component
+   - Delete the slot-aware REST routes (`/block-defaults/{block}?slot=...`)
+   - Delete the legacy single-slot routes (`/defaults` body-param + `/defaults/{block}` orphan)
+   - Drop `class-block-defaults.php` entirely (or keep as a stub for one release cycle if read-time fallback needed)
+
+4. **Documentation:** update CLAUDE.md to capture the model — visual styling = WP Global Styles, structural starting-state = block patterns, per-operator memory = sessionStorage, per-instance customisation = inspector. Project-wide design principle so new blocks don't reintroduce parallel saved-defaults infrastructure.
+
+**Effort:** Audit ~30 min. Per-block migration ~10-20 min × N consumers. Cleanup ~30 min. Total likely 3-6 hours depending on N.
+
+**Resume trigger:** framework polish pass; not blocking any active work; could fold into bucket-2 or its own session.
+
+**Why this matters:** every parallel system the framework maintains is ongoing maintenance cost. WordPress Global Styles is well-understood by operators (it's where they already go) and well-maintained by core. Centralising on it reduces SGS surface area and makes the framework feel native to WordPress rather than "yet another plugin with its own conventions."
+
+---
+
+---
+
 
 ## Resolved items (kept as one-line audit trail)
+
+- **~~P-17 — Universal IconPicker component~~** — COMPLETED 2026-05-08. Source-agnostic `<IconPicker>` shipped (Lucide + emoji + extensible via `sgs_register_icon_set` PHP hook + `sgs.icon-picker.sources` JS filter). 9 blocks migrated via P-17b/c (icon-list, icon, icon-block, info-box, process-steps, button, whatsapp-cta, notice-banner, trust-bar). `sgs_render_icon($value)` PHP helper added.
+- **~~P-18 — Nested sub-points for sgs/icon-list~~** — COMPLETED 2026-05-08. Tree-shaped items[] with recursive render, MAX_DEPTH=4, `subMode='inherit'` auto-derives sub-marker from parent (parent ordered numbers → children ordered letters). Indent/outdent buttons + Add sub-item action. v6 deprecation chain wraps existing flat data.
+- **~~P-19 — Saved-defaults system audit + WP-native migration~~** — COMPLETED 2026-05-08. System fully retired (was global filter, not per-block). Deleted `extensions/block-defaults.js`, `class-block-defaults.php`, `block-defaults.php`. CLAUDE.md (project + plugin) embeds the four-channel canonical model: Visual = WP Global Styles / Structural = block patterns / Per-operator memory = sessionStorage / Per-instance = inspector. 25 new structural patterns added across 8 high-leverage blocks.
 
 - **~~P-6 — Image controls block extension~~** — COMPLETED 2026-05-08. New extension at `plugins/sgs-blocks/src/blocks/extensions/image-controls.{js,php}` + extensions.css extension. 7 blocks opted in via `supports.sgs.imageControls: true` (decorative-image / gallery / card-grid / hero / info-box / team-member / testimonial). Webpack clean. Project CLAUDE.md updated with Image controls discipline rule.
 - **~~P-8 — Reduced-motion rules audit~~** — COMPLETED 2026-05-08. 8 redundant rules removed across 4 files (1 bonus file surfaced). 1 rule kept (header-modes scroll-driven shrink animation — `animation-timeline: scroll()` ignores duration; `animation: none` is the only valid suppression).

@@ -1,73 +1,81 @@
-recommended_model: opus
+recommended_model: sonnet
+session_tag: small-giants-wp-2026-05-10-cloning-skill-m9
 
-You are a senior cloning-pipeline architect specialising in deterministic HTML→WordPress block translation, multi-platform design tokenisation, and parallel-subagent orchestration. The next session executes parking entry P-11 — the comprehensive `/sgs-clone` build via 10-milestone subagent orchestration.
+You are a senior SGS WordPress engineer specialising in cloning-pipeline orchestration, multi-frame visual-fidelity validation, and live-deploy smoke testing. Inherits the M7 + M8 work shipped 2026-05-09: 6 sibling skills at >=B grade, hero smoke at 100% PoC parity, minimal orchestrator working end-to-end.
+
+Resume command: CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-10-cloning-skill-m9"
+
+Invoke `/autopilot` before doing anything else. Then read `.claude/handoff.md` and `CLAUDE.md` for full context.
 
 ## Where You Are
 
-Plan: `.claude/next-session-prompt-cloning-skill-build.md` (10 milestones, ~6-7 hr wall-time)
-Current phase: cloning-skill-build (P-11)
-Progress: 0/10 milestones complete — foundation locked from 2026-05-07/08 session
-Next task: Milestone 1 — Schema sync extensions (uimax sync gap close + block_compositions seed)
-
-Read `CONVERSATION-HANDOFF.md` and `CLAUDE.md` for full context, then `.claude/next-session-prompt-cloning-skill-build.md` for the milestone-by-milestone plan with subagent dispatch specs.
+Plan: `.claude/parking.md` entry P-11-M9
+Current phase: cloning-skill-build-m9-only
+Progress: M7 + M8 + M10 shipped; M9 remaining
+Next task (Bean-specified opener): `/gap-analysis` of `/sgs-clone` skill
 
 ## Skills to Invoke
 
 | Skill | When to use |
-|---|---|
-| `/brainstorming` | Architectural decisions during Top-5 gap closures (Milestone 6) |
-| `/gap-analysis` | Grade `/sgs-clone` skill body before delivery (Milestone 7 — folded into /lifecycle Stage 3) |
-| `/lifecycle` | Milestone 7 — build /sgs-clone + 5 sibling commands (Mode A) |
-| `/research` | Auto-routes if any gap surfaces unexpected complexity |
-| `/strategic-plan` | Already done; invoke only if scope drift mid-session |
-| `/sgs-wp-engine` | Throughout — central authority for SGS WordPress |
-| `/qc-inline` | After every milestone return — Bean's standing rule |
-| `/dispatching-parallel-agents` | Milestones 1-6 |
-| `/subagent-prompt` + `/delegate` | Each subagent dispatch needs a tight cold prompt + model pick |
-| `/visual-qa` | Milestones 8-9 — full 9-layer QA pipeline |
+|-------|-------------|
+| `/brainstorming` | Multi-section orchestrator architectural decisions |
+| `/gap-analysis` | FIRST TASK: fresh evaluation of `/sgs-clone` skill against `~/.claude/skills/sgs-clone/references/end-goal-rubric.md` |
+| `/lifecycle` | If gap-analysis surfaces fix loop work |
+| `/research-buddies` | Novel orchestrator extension questions only |
+| `/strategic-plan` | Inline replan if M9 scope shifts |
+| `/sgs-wp-engine` | SGS WordPress central authority |
+| `/visual-qa` | Full 9-layer audit at sandybrown post 30 after deploy |
+| `/qc-inline` | After each milestone return (standing rule) |
+| `/handoff` | Session close |
 
 ## MCP Servers & Tools
 
-| Tool | What to use it for |
-|---|---|
-| Playwright MCP | Milestones 8-9 — Mama's hero + full homepage smoke runs |
-| `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py <command>` | Query SGS DB (fingerprint subcommands shipped 2026-05-07) |
-| `python ~/.agents/skills/ui-ux-pro-max/scripts/search.py "<query>"` | Query uimax DB |
-| `node tools/multi-frame-qa/capture.js` | First-paint capture (Milestones 8-9) |
-| `node scripts/mockup-parity-validator.js` | Computed-style diff with Q1-Q4 + Section R measurement |
-| `node scripts/screenshot-diff-helper.js` | **Mandatory before reducing classifier severity (Hard Rule 10)** |
+| Tool | Use for |
+|------|---------|
+| Playwright MCP | Multi-frame capture at 375/768/1440; first-paint defect detection |
+| `python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` | The orchestrator (extend to multi-section) |
+| `node tools/multi-frame-qa/capture.js` | First-paint capture at 0/200/500/1000/3000 ms |
+| `node scripts/mockup-parity-validator.js` | Q1-Q4 + Section R measurement |
+| `node scripts/screenshot-diff-helper.js` | Mandatory before any classifier severity reduction (Hard Rule 10) |
+| `node scripts/global-styles-reset.js` | Pre-deploy variation reset |
+| `node scripts/wp-update-block-attrs.js` | Apply block attrs safely |
+| SSH `u945238940@141.136.39.73:65002` | Sandybrown deploy target (post 30 only; post 29 preserves manual hero PoC) |
 
 ## Agents to Delegate To
 
 | Agent | When |
-|---|---|
-| `wp-sgs-developer` | Throughout — all SGS WordPress build work |
-| `design-reviewer` | Milestones 8-9 — visual quality of Mama's clone vs mockup |
-| `research-pipeline` | If a milestone surfaces an unexpected question |
+|-------|------|
+| `wp-sgs-developer` | All SGS build + multi-section orchestrator + live deploy |
+| `design-reviewer` | Visual quality vs mockup at 3 breakpoints |
+| `research-pipeline` | Only if novel question surfaces |
 
----
+## Tasks
 
-## Task 1: Milestones 1-3 — Foundation (~3 hrs parallel-subagent)
+### Task 1: Fresh `/gap-analysis` on `/sgs-clone` skill (FIRST, Bean-requested)
 
-Schema sync extensions + Layer 1+2 fingerprint catalogue + 8 base role templates + Layer 3+4 + 5 missing roles. Heavy parallel Cerebras + Sonnet × 3-5 dispatch per milestone. /qc-inline after each return.
+Run `/gap-analysis` inline (not subagent) against `~/.claude/skills/sgs-clone/SKILL.md` with target_type: skill, personas: auto, depth: all-gaps-plus-opportunities. Use the rubric file. Apply the M7-build context (hero smoke at 100% PoC parity is real evidence the contract works). Surface every gap; the M7 build prioritised throughput across 6 skills so a clean re-evaluation may find polish opportunities. Bean decides which gaps to fix before M9 work starts.
 
-## Task 2: Milestones 4-6 — Critical fixes + Top-5 gap closures (~4 hrs parallel)
+### Task 2: Extend orchestrator to multi-section walker
 
-5 critical fixes from peer review + 4 important fixes + Top-5 gap closures (computed-style passport, pairing index, per-section convention voting, recognition_log + operator UI, 5 missing roles).
+`sgs-clone-orchestrator.py` runs one section per invocation today. Extend to auto-detected multi-section: walk the 9 mockup sections (header, hero, trust-bar, featured-product, brand-story, ingredients, gift-section, social-proof, footer), match each to its target SGS block, run the 9 stages per section, aggregate into composite block markup output. Keep the JSON-artefact contract intact at `pipeline-state/<run_id>/stage-N.json`.
 
-## Task 3: Milestones 7-10 — Skill build + smoke + handoff (~3 hrs)
+### Task 3: Full Mama's homepage smoke + 13 visual-diff reports
 
-Build `/sgs-clone` + 5 sibling commands via `/lifecycle` Mode A (≥B grade required). Mama's hero smoke. Full Mama's homepage smoke deployed to sandybrown post 30. Final `/handoff`.
+Deploy composite block markup to sandybrown post 30 (NOT 29). Multi-frame Playwright capture at 375/768/1440. `mockup-parity-validator.js` per section. `screenshot-diff-helper.js` per Q1-Q4 delta (Hard Rule 10 mandatory). Generate visual-diff reports at `reports/visual-diff/<block>-<date>.md` for the 13 STOP-GATE-blocking blocks: button, container, data-display, icon, icon-block, icon-list, media, mega-menu, mobile-nav, notice-banner, post-grid, process-steps, trust-bar, whatsapp-cta.
+
+### Task 4: Unblock pre-commit STOP GATE + foundation commit
+
+All 14 visual-diff reports present, then commit the 690-file foundation from 2026-05-08 with descriptive message, push to main. Document the unlock in handoff.
+
+### Task 5: `/handoff` session close
+
+Phase advance to bucket-2-ready. Mark P-11-M9 RESOLVED.
 
 ## Guardrails
 
-- Use Opus for orchestration; Sonnet/Cerebras subagents for mechanical work
-- Cerebras free tier rate-limits on concurrent calls — sequence Cerebras work, parallelise across DIFFERENT model branches
-- Hard Rule 6 — patterns are per CLASS, not per CLONE
-- Hard Rule 7 — every uimax write carries cross-platform equivalents or flags the gap (Rosetta Stone discipline, blub.db row 213)
-- Hard Rule 10 — never reduce classifier severity without screenshot-diff evidence
-- blub.db row 211 — no licensing language in cloning context (source taxonomy is `idea` / `draft` / `<URL>`)
-- Pre-commit STOP GATE catches block-src commits without passing visual-diff
-- wp_global_styles reset+reapply mandatory after any variation change
-
-Success criteria: Mama's homepage cloned to sandybrown post 30 with ≥85% pattern fidelity; `/sgs-clone` skill at ≥B grade; recognition_log capturing leftovers for review; uimax sync gap closed.
+- DO NOT deploy to sandybrown post 29 (preserves manual hero PoC reference)
+- DO NOT bypass `screenshot-diff-helper.js` on Q1-Q4 deltas (Hard Rule 10)
+- DO NOT run orchestrator with `--no-playwright` for production smoke
+- DO NOT commit block-src changes to any branch other than main
+- DO NOT use em-dashes anywhere (Bean preference)
+- Run `/qc-inline` after each milestone return

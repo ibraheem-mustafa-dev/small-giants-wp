@@ -2,11 +2,11 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-current_phase: cloning-skill-build
-current_step: "Foundation locked 2026-05-07/08. Schemas migrated (sgs-db + uimax). 3 pipeline scripts shipped (fingerprint / classify / register). uimax populated with 16 naming conventions, 63 animations, 12 emoji libraries flagged with Rosetta Stone equivalents. Bucket 1 effects shipped to all applicable blocks. Image controls extension shipped (P-6 closed). Reduced-motion audit complete (P-8 closed, 8 redundant rules removed). block-name-search-blindspot grep wrapper shipped (P-14 closed). diagnose-blub-db-locks rule embedded in /autopilot + /handoff (P-16 closed). Rosetta Stone discipline embedded across 4 docs. 4-model peer review of fingerprint design produced 11 fixes (5 critical, 4 important, 2 stretch). Rule-stage coverage audit identified 28 genuine gaps after Option A; Top-5 are clone-blocking. NEXT SESSION (Opus): execute parking entry P-11 — /sgs-clone build via 10-milestone subagent orchestration. ~6-7 hr wall-time. Includes Mama's homepage smoke run as the test."
-last_updated: 2026-05-08
-blockers: []
-recommended_model_next: opus
+current_phase: cloning-skill-build-m9-only
+current_step: "M7 + M8 COMPLETE 2026-05-09. M7: 6 sibling skills shipped via /lifecycle Mode A, all >=B grade (sgs-clone B 4.2 / uimax-scrape B 4.0 / uimax-sgs-scrape-pattern B 4.3 / uimax-mood-board B 4.1 / uimax-scrape-animation B 4.0 / uimax-classify-naming B 4.2). All 6 carry rubric files signed off via M7 batch (bean_signoff: confirmed_via_m7_brief_2026-05-08). M8: minimal orchestrator built at plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py wrapping the 9-stage pipeline. Hero smoke run at 100 PERCENT PoC parity (50/50 attrs match sandybrown-hero-extracted-v3.json byte-for-byte at 1440 desktop viewport with Playwright cascade resolution). Visual-diff report shipped at reports/visual-diff/hero-2026-05-09.md. M9 deferred (full homepage live deploy + 3-breakpoint Playwright capture + 13 remaining block visual-diff reports). M10 ships handoff + narrow commit (M7/M8 artefacts only). NEXT SESSION (Sonnet): M9 — full Mama's homepage smoke to sandybrown post 30, generate 13 remaining visual-diff reports, unblock pre-commit STOP GATE for the 690-file foundation commit."
+last_updated: 2026-05-09
+blockers: ["Pre-commit STOP GATE blocks 690-file foundation commit until 13 remaining block visual-diff reports land in M9: button, container, data-display, icon, icon-block, icon-list, media, mega-menu, mobile-nav, notice-banner, post-grid, process-steps, trust-bar, whatsapp-cta"]
+recommended_model_next: sonnet
 ---
 
 # small-giants-wp — State Snapshot
@@ -33,11 +33,11 @@ recommended_model_next: opus
 | Reduced-motion CSS audit (P-8) | ✅ 8 redundant rules removed across 4 files |
 | block-name-search-blindspot grep wrapper (P-14) | ✅ `scripts/sgs-block-grep.py` triple-term search |
 | diagnose-blub-db-locks rule embed (P-16) | ✅ /autopilot correction-capture + /handoff Pre-Handoff Gates |
-| Specialised next-session-prompt for P-11 | ✅ `.claude/next-session-prompt-cloning-skill-build.md` |
+| Canonical next-session-prompt for P-11 M7-M10 | ✅ `.claude/next-session-prompt.md` (M1-M6 shipped 2026-05-08; M7-M10 remaining) |
 
 ## Open tracks (priority order)
 
-1. **Cloning-skill build session (P-11)** — 10 milestones in one session via subagent orchestration. Schema sync extensions + Layer 1+2 fingerprints + Layer 3+4 + 5 critical fixes + 4 important fixes + Top-5 gap closures + 6 skill files via /lifecycle + Mama's hero smoke + full homepage smoke + handoff. ~6-7 hr wall-time. Anchored by the rule-stage coverage audit + 4-model design review synthesis.
+1. **Cloning-skill build session (P-11) M7-M10** — M1-M6 COMPLETE 2026-05-08 (4-layer catalogue + 8 recogniser scripts + recognition_log table + framework gaps closed). M7-M10 remaining: build /sgs-clone + 5 sibling commands via /lifecycle Mode A → Mama's hero smoke → full homepage smoke → /handoff + commit foundation. ~3 hr wall-time remaining. Canonical prompt at `.claude/next-session-prompt.md`.
 2. **Bucket 2 + timeline rework (P-9)** — `sgs/empty-state` + `sgs/toggle` + `sgs/testimonial-slider` + timeline rework. After P-11 ships. Specialised prompt at `.claude/next-session-prompt-bucket-2-blocks-and-timeline.md`. Strategic dogfood opportunity — design HTML mockups first, run /sgs-clone on each.
 3. **Phase 2.5 / G2.5 deferred work (P-2)** — independent track for skills/agents tooling.
 4. **Mid-clone tasks (P-4 Trustpilot scrape)** — 15-20 min when testimonials section reached.
