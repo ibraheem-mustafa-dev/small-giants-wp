@@ -125,10 +125,5 @@
 	display: block;
 }
 
-/* ─── Reduced motion ─── */
-
-@media (prefers-reduced-motion: reduce) {
-	.sgs-dark-mode-toggle {
-		transition: none;
-	}
-}
+/* Reduced-motion audit 2026-05-08: 1 redundant rule removed; 0 kept */
+/* transition-duration is covered by the universal rule in core-blocks-critical.css */

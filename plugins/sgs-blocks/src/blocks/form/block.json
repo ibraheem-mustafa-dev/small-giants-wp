@@ -106,6 +106,22 @@
 		"paymentDescription": {
 			"type": "string",
 			"default": ""
+		},
+		"formFocusRingColour": {
+			"type": "string",
+			"default": "primary"
+		},
+		"formFocusRingWidth": {
+			"type": "number",
+			"default": 2
+		},
+		"formFocusRingOpacity": {
+			"type": "number",
+			"default": 40
+		},
+		"formFocusRingOffset": {
+			"type": "number",
+			"default": 2
 		}
 	},
 	"providesContext": {

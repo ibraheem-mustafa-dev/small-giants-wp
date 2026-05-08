@@ -193,6 +193,32 @@ No block feature is complete until it has full block editor UI controls. Clients
 
 WP-CLI is used by the developer (Claude Code) during setup, debugging, and deployment. It is **never** something clients interact with. Do not design features that require WP-CLI for normal operation. Document WP-CLI commands in CLAUDE.md files, not in user-facing documentation.
 
+### Rosetta Stone discipline (uimax cross-platform translation layer)
+
+uimax is the **cross-platform translation layer** for SGS. Every uimax row that describes a design artefact (pattern, component, animation, naming convention, design token) MUST carry equivalent-name mappings across SGS blocks, vanilla HTML/CSS draft expressions, Bootstrap, shadcn/Radix, Tailwind utility composition, React generic, and AI-builder outputs (Lovable / v0 / Bolt where relevant).
+
+Any tool that feeds uimax — `/sgs-clone` plus its sibling commands `/uimax-scrape`, `/uimax-sgs-scrape-pattern`, `/uimax-mood-board`, `/uimax-scrape-animation`, `/uimax-classify-naming` — MUST also emit the SGS-block translation. If an artefact has no SGS equivalent, flag it as a **gap candidate** (new-SGS-block suggestion) — never silently drop the translation.
+
+**Distinction:** `uimax` (the abbreviation) refers to the DB / data activity layer (write/read/query/ingest). `/ui-ux-pro-max` is the intelligence skill that USES the DB for recommendations and judgement. The `/uimax-*` slash commands are pure DB activity. `/sgs-clone` orchestrates them; calls `/ui-ux-pro-max` only when judgement is needed (style picks, classification confirmations).
+
+`/animation-harvest` standalone form is the anti-pattern (captures animations without writing to uimax with SGS-block-attribute mapping). Replaced by `/uimax-scrape-animation` 2026-05-07. Captured 2026-05-06 as blub.db row 213.
+
+### Image controls discipline
+
+Every new SGS block that renders an `<img>` MUST declare `"imageControls": true` inside `supports.sgs` in its block.json so the universal image-controls extension applies to it automatically. Example:
+
+```json
+"supports": {
+    "sgs": { "imageControls": true }
+}
+```
+
+If a block deliberately wants no image-position / max-width / height controls (e.g. logos in brand-strip or certification-bar), document the omission either in the block's own CLAUDE.md or in its block.json `description` field.
+
+This prevents the silent gap where a new block ships with images but no per-instance `objectPosition` / `maxWidth` / `height` controls — captured 2026-05-08 (parking P-6 implementation).
+
+**Opted-in blocks (as of 2026-05-08):** `sgs/decorative-image`, `sgs/gallery`, `sgs/card-grid`, `sgs/hero`, `sgs/info-box`, `sgs/team-member`, `sgs/testimonial`.
+
 ### Style variation architecture
 
 Style variation-specific CSS (decorative images, client-specific hover effects, custom gradients, etc.) must **never** go in the base `style.css`. The correct pattern:
@@ -250,6 +276,8 @@ Never use absolute server paths or hard-coded `/wp-content/...` URLs in CSS, PHP
 
 ## Deploy Commands
 
+> **LiteSpeed Cache plugin deleted from test sites 2026-05-05.** No LiteSpeed purge needed during dev/staging deploys to palestine-lives.org or sandybrown-nightingale-600381.hostingersite.com. Production sites may still need it — check `wp plugin list | grep litespeed` per site before deploying production changes. Hostinger's hPanel edge cache still applies (purge via hPanel if needed).
+
 ```bash
 # Build blocks plugin
 cd plugins/sgs-blocks && npm run build
@@ -264,11 +292,12 @@ rm sgs-deploy.tar
 # Deploy single files (for quick patches)
 scp -P 65002 -i ~/.ssh/id_ed25519 path/to/file u945238940@141.136.39.73:domains/palestine-lives.org/public_html/wp-content/path/to/file
 
-# Clear LiteSpeed page cache
+# Clear LiteSpeed page cache — Only required if LiteSpeed plugin is active on the target site
+# (Removed from palestine-lives.org and sandybrown-nightingale-600381.hostingersite.com on 2026-05-05.)
 ssh hd "cd ~/domains/palestine-lives.org/public_html && wp litespeed-purge all"
-# Also clear the CSS/JS optimiser cache (separate from page cache — must do both after CSS deploys)
+# Also clear the CSS/JS optimiser cache — Only required if LiteSpeed plugin is active
 ssh hd "rm -rf ~/domains/palestine-lives.org/public_html/wp-content/litespeed/css/*.css"
-# Purge a single URL (must pass full URL with https://)
+# Purge a single URL — Only required if LiteSpeed plugin is active
 ssh hd "cd ~/domains/palestine-lives.org/public_html && wp litespeed-purge url https://palestine-lives.org/page-slug/"
 
 # Reset PHP OPcache after deploying PHP files (CLI reset is a SEPARATE pool — must use HTTP)

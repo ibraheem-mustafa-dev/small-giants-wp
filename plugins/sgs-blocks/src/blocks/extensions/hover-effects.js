@@ -180,6 +180,10 @@ addFilter(
 				// Block link — wraps the whole block in an <a> tag.
 				sgsBlockLink:         { type: 'string',  default: '' },
 				sgsBlockLinkTarget:   { type: 'boolean', default: false },
+				// Click ripple — radial scale animation from click coordinates.
+				sgsClickEffect:       { type: 'string',  default: 'none' },
+				sgsClickRippleColour: { type: 'string',  default: '' },
+				sgsClickRippleDuration: { type: 'number', default: 600 },
 			},
 		};
 	}
@@ -213,6 +217,9 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 			sgsFocusRing,
 			sgsBlockLink,
 			sgsBlockLinkTarget,
+			sgsClickEffect,
+			sgsClickRippleColour,
+			sgsClickRippleDuration,
 		} = attributes;
 
 		return (
@@ -339,6 +346,43 @@ const withHoverControls = createHigherOrderComponent( ( BlockEdit ) => {
 								checked={ sgsBlockLinkTarget }
 								onChange={ ( val ) => setAttributes( { sgsBlockLinkTarget: val } ) }
 							/>
+						) }
+					</PanelBody>
+					<PanelBody
+						title={ __( 'Click Effects', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
+						<SelectControl
+							label={ __( 'Click effect', 'sgs-blocks' ) }
+							help={ __( 'Ripple: a radial wave radiates from the click point.', 'sgs-blocks' ) }
+							value={ sgsClickEffect }
+							options={ [
+								{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
+								{ label: __( 'Ripple', 'sgs-blocks' ), value: 'ripple' },
+							] }
+							onChange={ ( val ) => setAttributes( { sgsClickEffect: val } ) }
+							__nextHasNoMarginBottom
+						/>
+						{ sgsClickEffect === 'ripple' && (
+							<>
+								{ DesignTokenPicker ? (
+									<DesignTokenPicker
+										label={ __( 'Ripple colour', 'sgs-blocks' ) }
+										help={ __( 'Leave empty to use currentColour at 30% opacity.', 'sgs-blocks' ) }
+										value={ sgsClickRippleColour }
+										onChange={ ( val ) => setAttributes( { sgsClickRippleColour: val || '' } ) }
+									/>
+								) : null }
+								<RangeControl
+									label={ __( 'Ripple duration (ms)', 'sgs-blocks' ) }
+									value={ sgsClickRippleDuration }
+									onChange={ ( val ) => setAttributes( { sgsClickRippleDuration: val } ) }
+									min={ 200 }
+									max={ 1200 }
+									step={ 50 }
+									__nextHasNoMarginBottom
+								/>
+							</>
 						) }
 					</PanelBody>
 				</InspectorControls>

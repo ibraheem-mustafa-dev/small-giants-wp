@@ -2,9 +2,9 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-current_phase: cloning-pipeline-design
-current_step: "Framework-qc-hardening phase CLOSED. All 7 H-entries (H-1 through H-7) closed structurally: hero inspector reorganised (21 panels → 10 element-grouped); MediaPicker + sgs_render_media foundation; hero migrated to splitMedia (image OR video); 8 other blocks migrated in parallel sweep (info-box, card-grid, testimonial, decorative-image, brand-strip, certification-bar, gallery, team-member, cta-section); 2 NO-OP verified (feature-grid container, process-steps text-only); pattern-not-block lesson captured + embedded as Hard Rule 6 in sgs-wp-engine (blub.db row 209); visual-qa Hard Rule 10 (classifier severity reduction requires screenshot evidence); screenshot-diff-helper.js + wp-update-block-attrs.js + brand-palette-sampler.py shipped; Hostinger MCP integrated (RED on plugin/theme deploy — keep tar+scp); LiteSpeed plugin removed both test sites; intelephense P1010 silenced. Wave 6 deploy verify PASS on sandybrown post 29 — 3 breakpoints, 0 console errors, no gradient overpaint, full-bleed verified, M1 NOT detected. NEXT SESSION (Opus): build the new independent SGS cloning skill scoped to HTML drafts only (Use Case 3) — 3 open questions, 6 tasks. UC1 LLM design gen + UC2 competitor harvest deferred until UC3 hits 100% on first try."
-last_updated: 2026-05-05
+current_phase: cloning-skill-build
+current_step: "Foundation locked 2026-05-07/08. Schemas migrated (sgs-db + uimax). 3 pipeline scripts shipped (fingerprint / classify / register). uimax populated with 16 naming conventions, 63 animations, 12 emoji libraries flagged with Rosetta Stone equivalents. Bucket 1 effects shipped to all applicable blocks. Image controls extension shipped (P-6 closed). Reduced-motion audit complete (P-8 closed, 8 redundant rules removed). block-name-search-blindspot grep wrapper shipped (P-14 closed). diagnose-blub-db-locks rule embedded in /autopilot + /handoff (P-16 closed). Rosetta Stone discipline embedded across 4 docs. 4-model peer review of fingerprint design produced 11 fixes (5 critical, 4 important, 2 stretch). Rule-stage coverage audit identified 28 genuine gaps after Option A; Top-5 are clone-blocking. NEXT SESSION (Opus): execute parking entry P-11 — /sgs-clone build via 10-milestone subagent orchestration. ~6-7 hr wall-time. Includes Mama's homepage smoke run as the test."
+last_updated: 2026-05-08
 blockers: []
 recommended_model_next: opus
 ---
@@ -15,61 +15,44 @@ recommended_model_next: opus
 
 ## Where we are
 
-**Framework-qc-hardening phase CLOSED (2026-05-05).** All 7 H-entries from the previous handoff plus 3 captured-mid-session ones closed structurally. The framework now has the full toolchain to clone HTML mockups deterministically: pattern-not-block recogniser framing (Hard Rule 6); 9 blocks migrated to unified MediaPicker + sgs_render_media slot (image OR video); pixel-diff classifier gate (Hard Rule 10 + screenshot-diff-helper); brand-palette validation per client; viewport-aware full-bleed; replaceBlock helper bypassing block-validation rejection. 2 lifecycle Mode A runs (sgs-wp-engine + visual-qa, both A skillscore). Cloning-pipeline prep specs revised after Bean's 5 corrections: HTML-drafts-only first, single sgs-db patterns table with fingerprint as headline, uimax extends existing tables (industry/mood/style + platforms), no licensing complexity. Wave 6 deploy verify PASS on sandybrown post 29.
+**Cloning-pipeline foundation phase CLOSED (2026-05-07/08).** Two-day marathon design + foundation session. Locked the `/sgs-clone` design via 4-model peer review (Sonnet + Gemini Flash + Gemini Pro all returned ship-with-fixes). Built the foundation: schemas migrated, 3 pipeline scripts shipped, 4-doc Rosetta Stone embed, populated catalogues, Bucket 1 effects shipped to all applicable blocks. Image controls extension built. Reduced-motion CSS audit complete. Block-name grep wrapper built and tested. Diagnose-blub-db-locks rule embedded in /autopilot and /handoff. Produced 97-rule coverage audit identifying 28 genuine gaps. Queued the comprehensive `/sgs-clone` build session as one focused 10-milestone session (parking P-11) rather than three smaller ones — Bean's reframe given the subagent-orchestration system.
 
 | Item | Status |
 |---|---|
-| Spec 11 — sgs/button (87 attrs) | ✅ Built, deployed, tested |
-| Spec 11 — sgs/multi-button container | ✅ Built, deployed |
-| Spec 11 — Button Presets admin (Settings → SGS Button Presets) | ✅ Built, deployed; defaults emit CSS custom properties on wp_head + admin_head |
-| Spec 11 — theme.json mirror + Mama's preset values | ✅ |
-| Spec 11 — sgs/hero / cta-section / product-card refactor to InnerBlocks | ✅ + deprecation paths + 5 hero responsive typography attrs + product-card variantStyle:'gift' |
-| sgs/info-box 5-element rebuild | ✅ Built, deployed (showMedia/Title/Subtitle/Text/Button + elementOrder + media supports icon/emoji/image) |
-| sgs/feature-grid container | ✅ Built, deployed (auto-flex default + fixed-columns mode) |
-| Ingredients section pattern | ✅ Registered at `theme/sgs-theme/patterns/ingredients-section.php` |
-| sgs/icon-block deprecated, sgs/icon canonical | ✅ icon-block hidden from inserter; deprecated.js added; hover-effects.js extension references sgs/icon |
-| sgs/back-to-top hidden from inserter | ✅ Customiser-only |
-| sgs/whatsapp-cta — render.php + inserter SVG | ✅ Block was producing zero frontend output; now functional. Inserter icon swapped from cramped scribble to official WhatsApp brand SVG |
-| Mobile-nav-renderer require fix | ✅ Plus stats-counter pattern attribute name fix |
-| Block coverage gap audit (53 blocks) | ✅ Recogniser-v2 input data captured; full report in agent transcript |
-| Migration sweep on pages 5 and 8 | ✅ InnerBlocks persisted (after fixing the dynamic-block save: () => null bug — see mistakes.md and specs/common-wp-styling-errors.md B4) |
+| Schema migrations (sgs-db + uimax) | ✅ Applied to live DBs |
+| 3 pipeline scripts (fingerprint / classify / register) | ✅ Shipped to `plugins/sgs-blocks/scripts/` |
+| /sgs-db extension subcommands | ✅ 4 new subcommands added |
+| uimax catalogues (16 naming conventions / 63 animations / 12 emoji + Rosetta Stone) | ✅ Populated |
+| Bucket 1 effects (form-focus-ring / ripple / svg-path-draw) | ✅ Shipped to all applicable blocks |
+| Rosetta Stone discipline embedded | ✅ 4 surfaces (CLAUDE.md + sgs-wp-engine + ui-ux-pro-max + animation-harvest deprecation stub) |
+| 2 spec docs pruned (cloning-skill + pattern-dedup) | ✅ ~75% line reduction; v1 in git history |
+| 4-model fingerprint design review | ✅ 11 fixes identified |
+| Rule-stage coverage audit | ✅ 97 rules audited, 28 gaps surfaced, Top-12 ranked |
+| Parking review | ✅ 461→245 lines; 6 new entries (P-11 through P-16) |
+| Image controls block extension (P-6) | ✅ Shipped + 7 blocks opted-in |
+| Reduced-motion CSS audit (P-8) | ✅ 8 redundant rules removed across 4 files |
+| block-name-search-blindspot grep wrapper (P-14) | ✅ `scripts/sgs-block-grep.py` triple-term search |
+| diagnose-blub-db-locks rule embed (P-16) | ✅ /autopilot correction-capture + /handoff Pre-Handoff Gates |
+| Specialised next-session-prompt for P-11 | ✅ `.claude/next-session-prompt-cloning-skill-build.md` |
 
 ## Open tracks (priority order)
 
-1. **Build the new SGS cloning skill — HTML drafts only.** Independent super-pipeline absorbing the keep-worthy parts of /build-website + /clone-patterns + /design-tokens + /design-ref + /sgs-extraction. Scope limited to Use Case 3 (HTML mockup → live WP site) until 100% on first try. Specs at `.claude/specs/cloning-skill-salvage-matrix-2026-05-05.md` + `.claude/specs/pattern-dedup-classify-mechanics-2026-05-05.md` (read REVISIONS sections first). 3 open questions + 6 tasks queued in `next-session-prompt.md`.
-2. **QA-focused session-after-next.** Visual-qa rubric drafting (lifts C-cap), recurrence-rate tracker, automated screenshot-helper integration test, Chrome DevTools MCP wiring (3 new scripts speced at `.claude/specs/chrome-devtools-stage-8-integration.md`).
-3. **Mama's homepage section-by-section clone** (after cloning skill ships). Trust bar, featured product, brand story, ingredients, gift section, social proof, footer. UC3 smoke run on Mama's full homepage is Task 5 of next session.
-4. **Use Case 1 (LLM design generation) + Use Case 2 (competitor harvest)** — deferred until UC3 hits 100%.
-5. **SGS Ecom Plugin Phase 1** — `sgs/product-info`, `sgs/product-gallery`, `sgs/variant-pills`. WC integration (NOT replacement). Queued after cloning skill + first Mama's full clone ships.
+1. **Cloning-skill build session (P-11)** — 10 milestones in one session via subagent orchestration. Schema sync extensions + Layer 1+2 fingerprints + Layer 3+4 + 5 critical fixes + 4 important fixes + Top-5 gap closures + 6 skill files via /lifecycle + Mama's hero smoke + full homepage smoke + handoff. ~6-7 hr wall-time. Anchored by the rule-stage coverage audit + 4-model design review synthesis.
+2. **Bucket 2 + timeline rework (P-9)** — `sgs/empty-state` + `sgs/toggle` + `sgs/testimonial-slider` + timeline rework. After P-11 ships. Specialised prompt at `.claude/next-session-prompt-bucket-2-blocks-and-timeline.md`. Strategic dogfood opportunity — design HTML mockups first, run /sgs-clone on each.
+3. **Phase 2.5 / G2.5 deferred work (P-2)** — independent track for skills/agents tooling.
+4. **Mid-clone tasks (P-4 Trustpilot scrape)** — 15-20 min when testimonials section reached.
 
 ## Subprojects
 
-- Mama's Munches — `sites/mamas-munches/.claude/` — homepage clone is the active workstream
+- Mama's Munches — `sites/mamas-munches/.claude/` — homepage clone is the active workstream (executed during P-11 Milestone 9)
 - Indus Foods Phase 4 — `sites/indus-foods/.claude/`
 
-## Decisions 2026-05-05 (this session)
+## Decisions 2026-05-07/08
 
-- **Mockup classes/sections map to PATTERNS, not single blocks** (blub.db row 209). A class is a section/container holding 1+ blocks. Recogniser operates at pattern boundaries; single-block emission is the inner step. Embedded as Hard Rule 6 in sgs-wp-engine SKILL.md. Every clone contributes pattern artefacts to a compounding library — strategic asset that becomes the SGS competitive moat.
-- **Classifier severity reduction requires screenshot evidence (Section Q binding rule).** Visual-qa Hard Rule 10: no severity reduction without `screenshot-diff-helper.js` output. Validator deltas tagged `requires_screenshot_review: true` (Q1-Q4 patterns) cannot be dismissed at all without pixel evidence.
-- **Cloning pipeline scope: HTML drafts only first.** UC1 LLM design gen + UC2 competitor harvest are deferred until UC3 hits 100% on first try. "Don't dilute efforts."
-- **sgs-db single patterns table — no licensing complexity.** Fingerprint is the headline column. `source` field = `idea` / `draft` / competitor URL. No separate `clone_observations` / `external_patterns` table.
-- **uimax extends existing tables (block-pattern, component, colour-palette, wcag-friendly, icons), not new instance tables.** Add categories: industry / mood / style. Add platforms: PHP / HTML / CSS / JS / WordPress / Tailwind / Bootstrap / Astro / Next.js / etc.
-- **Hostinger MCP plugin/theme deploy RED — keep tar+scp.** No exclusion filter; would upload node_modules / src / .git. Static-website preview path still viable for UC1 mockup hosting (not in scope yet). Read-only tools (DNS, list-websites, subdomains) usable now.
-- **LiteSpeed plugin deleted from both test sites.** `wp litespeed-purge` no longer required during dev/staging deploys. Production sites should still check `wp plugin list | grep litespeed` before deploying production changes.
-- **9 blocks migrated to unified `*Media` slot pattern.** Hero is the proof; info-box/card-grid/testimonial/decorative-image/brand-strip/certification-bar/gallery/team-member/cta-section follow. Logo-only blocks use `allowedTypes={['image']}`. Gallery deviation: keeps multi-MediaUpload for batch UX, normalises output to media-slot shape via `resolveGalleryMedia()` resolver — documented in migration recipe.
-- **Pre-commit STOP GATE verified** parsing `verdict: PASS` AND `first_paint_capture_passed: true` (3-condition check). Gap SO-1 was a false alarm.
-
-## Decisions 2026-05-04 (previous session)
-
-- **InnerBlocks.Content save pattern is mandatory for dynamic blocks with InnerBlocks slots.** `save: () => null` causes WordPress to drop InnerBlocks during serialization. Hero already had it right; product-card / cta-section / info-box did not. All four now aligned. Captured as B4 in `.claude/specs/common-wp-styling-errors.md` and as a new gotcha in `plugins/sgs-blocks/CLAUDE.md`.
-- **Gift sections are block patterns, not new blocks.** `sgs/product-card` got `variantStyle: 'gift'` enum value; gift sections compose multiple product-cards via a pattern (similar to ingredients-section). Avoids block proliferation.
-- **Ingredients section is a block pattern, not a hand-coded layout.** Title + intro + 4-column feature-grid (4 emoji-led info-boxes) + sgs/notice-banner disclaimer. Insertable from the WP pattern picker.
-- **info-box is now element-flexible, not fixed-shape.** 5 toggleable reorderable elements (media/title/subtitle/text/button). Replaces the prior fixed heading + description + image + icon shape. Backward compatible via deprecated.js.
-- **sgs/feature-grid layout default is auto-flex (CSS Grid auto-fill).** Bean's preferred default — naturally responsive, wraps automatically when items don't fit. Fixed-columns mode available for cases needing strict per-breakpoint control (e.g. ingredients pattern uses 4-up explicit on desktop).
-- **WhatsApp CTA inserter icon uses the official WhatsApp brand SVG.** The previous hand-drawn approximation was cramped and ugly. Single-path official mark, `fill="currentColor"`, picks up SGS teal automatically.
-
-## Patterns and conventions captured this session
-
-- Dynamic blocks with InnerBlocks: `save()` MUST return `<InnerBlocks.Content />`, never `null` (B4 in styling errors catalogue).
-- Block presets via theme.json `settings.custom.<name>`: auto-emits CSS custom properties at `--wp--custom--<name>--<key>`. Use this for any site-wide configurable block defaults (button presets is the first example; could extend to card presets, hero presets etc.).
-- Per-breakpoint layout in containers: prefer CSS Grid `auto-fill` with `minmax()` over explicit columns whenever the design intent is "fit as many as possible per row". Falls back gracefully on small screens. Fixed-columns mode only when the design demands strict counts.
+- **Rosetta Stone discipline (blub.db row 213).** uimax is the cross-platform translation layer — every artefact row carries equivalents across SGS / vanilla HTML/CSS / Bootstrap / shadcn / Tailwind / React / AI-builder outputs. Every tool that feeds uimax must emit the SGS-block translation or flag the gap. Embedded as Hard Rule 7 in sgs-wp-engine; HARD GATE in /ui-ux-pro-max Stage 5 INGEST; deprecation stub on /animation-harvest pointing to /uimax-scrape-animation.
+- **No-licensing rule (blub.db row 211).** Source taxonomy in cloning context is `idea` / `draft` / `<URL>` only. No license / provenance / IP-firewall columns.
+- **Pattern categorisation by purpose, not client (Correction 6).** Mama's hero auto-registers to `Heroes` category alongside Indus's hero. Pollution prevention via design-token-only patterns + placeholder copy. No `_inbox` staging area.
+- **Bidirectional `platform_equivalents` with `extract` + `generate` halves.** Scrape direction is primary; generation is secondary. Reverse-indexed lookup table built at /sgs-update sync time.
+- **Four-layer fingerprint with recursive Layer 4.** Atomic blocks fill Layers 1+2; composite blocks fill all 4. Inner blocks reference children by slug — children carry their own fingerprints. Slot overrides capture parent-imposed defaults (e.g. preset binding pattern).
+- **Cerebras NOT used for design review** per its own skill spec ("not enough reasoning depth vs Opus/Gemini-Pro for architecture decisions"). Sonnet + Gemini Flash + Gemini Pro is the right panel.
+- **Comprehensive build session over three smaller ones** (Bean's reframe). Subagent orchestration collapses Sessions A/B/C into one 10-milestone session. Main agent orchestrates + briefs + qc-inlines; subagents execute mechanical work in parallel.

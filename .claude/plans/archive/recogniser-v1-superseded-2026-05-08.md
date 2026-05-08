@@ -2,12 +2,34 @@
 doc_type: plan
 plan_name: recogniser-v1
 project: small-giants-wp
-status: ready-for-autonomous-build
-mode: overnight-autonomous
+status: SUPERSEDED-2026-05-08
+superseded_by: .claude/next-session-prompt-cloning-skill-build.md (parking P-11)
 acceptance_target: mama's-munches-homepage-live-on-staging
 recommended_model: opus
 last_updated: 2026-05-01
 ---
+
+# ⚠ SUPERSEDED 2026-05-08
+
+This v1 plan is replaced by the comprehensive `/sgs-clone` build session at `.claude/next-session-prompt-cloning-skill-build.md` (parking entry P-11).
+
+The v1 spec assumed:
+- Single-shot autonomous overnight build (no design review or audit pass)
+- 6-module architecture with hand-written fingerprints
+- A v1 recogniser at `tools/recogniser/`
+
+What's changed since this plan was written 2026-05-01:
+- Recogniser v2 spec at `.claude/specs/12-DRAFT-TO-SGS-PIPELINE.md` replaces v1's hand-written-fingerprint approach with auto-derived-from-block.json scaffolding
+- 4-layer fingerprint design (envelope / attributes / internal-elements / inner-blocks) replaces v1's flat fingerprint structure
+- 4-model peer review identified 11 critical+important fixes the v1 design didn't anticipate
+- Rule-stage coverage audit identified 28 genuine gaps after Option A revised; Top-5 are clone-blocking
+- Subagent-orchestration system collapses what would have been 3 sessions into 1 focused 10-milestone session
+
+The v2 build runs through `next-session-prompt-cloning-skill-build.md` not this v1 plan. v1 is preserved here for archival reference; do not execute.
+
+---
+
+## ORIGINAL v1 PLAN BELOW — superseded but preserved for context
 
 # Recogniser v1 — Build Spec (Autonomous Overnight)
 

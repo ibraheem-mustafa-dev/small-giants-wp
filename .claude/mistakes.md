@@ -1,5 +1,72 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-06 (H-8/H-9/H-10 close-out)
+**Last updated:** 2026-05-08 (Rosetta Stone discipline + no-licensing rule + design-review-driven 11-fix synthesis)
+
+## 2026-05-07 — uimax is the Rosetta Stone of design (Bean's reframe of the cross-platform translation principle)
+
+**Captured as blub.db row 213, embedded across 4 surfaces** (project CLAUDE.md, sgs-wp-engine SKILL.md Hard Rule 7, ui-ux-pro-max SKILL.md Stage 5 INGEST HARD GATE, animation-harvest deprecation stub).
+
+Bean's framing: "The Rosetta Stone point is what I was thinking of but I didn't think you'd understand." uimax is the **cross-platform translation layer** — every artefact row carries equivalent-name mappings across SGS / vanilla HTML+CSS / Bootstrap / shadcn / Tailwind / React generic / AI-builder outputs (Lovable / v0 / Bolt). A design expressed in any one platform should pass through to look + function identically on any other.
+
+**Rule:** every tool that writes to uimax MUST populate the SGS-block equivalent OR flag the gap as a new-SGS-block-candidate. Tools that produce SGS-blind output are anti-pattern (e.g. `/animation-harvest` standalone — captured animations to a standalone format without SGS-block-attribute mapping → deprecated 2026-05-07, replaced by `/uimax-scrape-animation`).
+
+**How to apply:** when designing schemas for uimax tables (`patterns`, `component_libraries`, `animations`, `naming_conventions`, `design_tokens`), include `equivalent_implementations` as a JSON column or per-platform fields. When dispatching a subagent that touches uimax, the prompt MUST require populating the SGS-block equivalent or surfacing a "no SGS equivalent — gap candidate" flag. Never silently drop the translation.
+
+**Strategic implication:** uimax compounds in value with every clone because each row's translation set multiplies the utility. Pattern library + animation library + naming-convention library all become genuinely cross-platform, not WP-only. Differentiator vs commercial design DBs.
+
+## 2026-05-06 — Never raise licensing / IP / copyright in SGS cloning, pattern-library, or uimax contexts
+
+**Captured as blub.db row 211, embedded across 4 surfaces** (project CLAUDE.md no-licensing block, sgs-wp-engine SKILL.md, both spec REVISIONS sections, both spec recovery stubs).
+
+Bean rejected this twice in the same session. First in `cloning-skill-salvage-matrix-2026-05-05.md` REVISIONS: *"the licensing thing is absurdly stupid, you can't license a web design or pattern of web components."* Then again 2026-05-06: *"Already told you not to mention licensing again."*
+
+**Rule:** web designs and component patterns are not licenseable artifacts in the way I had been treating them. Treating them as IP-managed inflates schemas, builds firewalls that don't need to exist, and signals to Bean that I'm reasoning from a wrong frame. The cloning pipeline only needs to know **where a pattern came from** — not who owns it.
+
+The entire `source` taxonomy is `idea` / `draft` / `<URL>`. No `license`, `provenance_license`, `source_license`, or "IP firewall" columns. No separate `clone_observations` table justified by IP risk.
+
+**How to apply:** when designing schemas for `patterns`, `block_compositions`, uimax tables, or any cloning artefact, do not propose licensing/copyright/provenance-IP columns. When framing competitor patterns, never use IP-risk / redistribution-risk language. If a future spec genuinely needs copyright thinking (e.g. paid stock image asset attribution), surface it as **attribution** (asset-level), not **licensing** (pattern-level), and ask Bean first. Self-check trigger phrases: "license", "IP", "copyright", "provenance", "redistribution", "firewall between", "promotion path", "external_patterns".
+
+## 2026-05-08 — 4-model peer review found 11 fixes the design needed before first clone
+
+The fingerprint design was internally peer-reviewed via 3 models (Sonnet 4.6, Gemini Flash, Gemini Pro 3.1; Cerebras was correctly skipped per its own skill spec — "not enough reasoning depth vs Opus/Gemini-Pro for architecture decisions"). All three returned **ship-with-fixes**.
+
+**The 11 fixes:**
+
+5 critical (block first real clone):
+1. Tailwind classes stored as space-separated string instead of indexed token array → first Tailwind clone returns 0 matches for whole sections
+2. Structural signature `child_shape` is free-text, not a parseable typed schema
+3. Single-convention-per-scrape assumption is fatal — real sites mix BEM + Tailwind + Bootstrap on different sections
+4. Hashed/minified class names break the reverse index entirely (CSS Modules, MUI hash JIT, SvelteKit)
+5. Extract rules need `search_scope` field — `gap-{n}` often lives on a parent/child of the conceptually-correct element
+
+4 important (catches major edge cases):
+6. Eight roles insufficient — missing `layout-alignment`, `accessibility-attribute`, `data-binding`, `visibility-control`, `layout-modifier`
+7. Four leftover buckets insufficient — need 5th: "structural mismatch / orphan"
+8. Recursion guard required: `max_depth: 12` + `visited_nodes` Set
+9. Confidence scoring undefined — class collisions need weighted disambiguation matrix
+
+2 stretch (defer):
+10. Spatial / computed-layout signal as corroborating evidence (Locofy/Stackbit pattern)
+11. AST-tree-diff alternative architecture — defer indefinitely
+
+**The lesson:** design-the-feature in isolation will under-build for the messy 80% of real-world inputs. A 4-model peer review of the design BEFORE building catches at least 11 fixes. Cost: ~30 min wall-time per reviewer, all parallel. Value: avoids a half-finished clone-skill rebuild after first real-clone failure.
+
+**How to apply:** for any new substantial-skill design, run a peer-review panel (Sonnet practical + Gemini Flash gap-scan + Gemini Pro deep-reasoning + ecosystem) BEFORE the build session. Synthesise findings into a delta list. Ship the delta as part of the build, not after.
+
+## 2026-05-08 — Rule-stage coverage audit: 28 genuine gaps remain even after Option A revised
+
+Walked every cloning-relevant captured rule (97 total) across 9 pipeline stages + cross-cutting. Source-of-truth read across mistakes.md / common-wp-styling-errors.md / 12-DRAFT-TO-SGS-PIPELINE.md / sgs-wp-engine + visual-qa Hard Rules / blub.db high-priority / project CLAUDE.md / fingerprint design synthesis / parking.
+
+| Status | Count |
+|---|---|
+| ✓ Covered today | 31 (32%) |
+| △ Closed by Option A revised | 38 (39%) |
+| ✗ Genuine gap after Option A | 28 (29%) |
+
+**The lesson:** even a comprehensive design plus 11 review fixes leaves ~30% of captured rules uncovered. Without the audit, the build session would have under-built (missing the gaps) or over-built (duplicating already-enforced rules). The audit is the higher-value deliverable than parking review alone.
+
+**How to apply:** before any substantial pipeline build, do the dissection pass — assign every captured rule to a stage with covered/partial/gap status. Top-12 ranked gaps become the next-session targets. Without this step, the pipeline ships with silent gaps that surface in the first real run.
+
+
 
 ## 2026-05-06 — background shorthand audit + ctaGap recogniser blind spot + pseudo-element/parent-chain measurement
 

@@ -1,86 +1,73 @@
 recommended_model: opus
-session_tag: small-giants-wp-2026-05-05-framework-qc-hardening
 
-You are a senior WordPress framework engineer specialising in QC infrastructure, prevention scripts, and structural enforcement of measurement methodology — closing every gap captured in the past 3 days of hero perfect-clone work.
+You are a senior cloning-pipeline architect specialising in deterministic HTML→WordPress block translation, multi-platform design tokenisation, and parallel-subagent orchestration. The next session executes parking entry P-11 — the comprehensive `/sgs-clone` build via 10-milestone subagent orchestration.
 
-Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-05-framework-qc-hardening"`
+## Where You Are
 
-Read CONVERSATION-HANDOFF.md and `.claude/handoff.md` for full context, then work through these priorities.
+Plan: `.claude/next-session-prompt-cloning-skill-build.md` (10 milestones, ~6-7 hr wall-time)
+Current phase: cloning-skill-build (P-11)
+Progress: 0/10 milestones complete — foundation locked from 2026-05-07/08 session
+Next task: Milestone 1 — Schema sync extensions (uimax sync gap close + block_compositions seed)
+
+Read `CONVERSATION-HANDOFF.md` and `CLAUDE.md` for full context, then `.claude/next-session-prompt-cloning-skill-build.md` for the milestone-by-milestone plan with subagent dispatch specs.
 
 ## Skills to Invoke
 
 | Skill | When to use |
-|-------|-------------|
-| `/brainstorming` | Architectural calls — H-3 video schema, H-7 full-bleed pattern, H-5 screenshot-diff helper API |
-| `/gap-analysis` | Grade `/visual-qa` skill after embedding Section Q binding rule (H-5c) |
-| `/lifecycle` | MANDATORY for any skill/agent edit — H-5c, and inspector reorg if framework-pattern emerges |
-| `/research` | Auto-routes — `/research-check` for viewport-width-without-scrollbar techniques (H-7) |
-| `/strategic-plan` | Plan implementation order across H-1 through H-10 before writing code |
-| `/sgs-wp-engine` | All SGS WP work |
-| `/subagent-driven-development` | Tasks with multiple file paths — H-1+H-2, H-3, H-9 |
-| `/dispatching-parallel-agents` | H-5a + H-5b + H-7 — independent file paths |
-| `/visual-qa` | After H-5 lands, use the upgraded skill with binding screenshot-evidence rule |
+|---|---|
+| `/brainstorming` | Architectural decisions during Top-5 gap closures (Milestone 6) |
+| `/gap-analysis` | Grade `/sgs-clone` skill body before delivery (Milestone 7 — folded into /lifecycle Stage 3) |
+| `/lifecycle` | Milestone 7 — build /sgs-clone + 5 sibling commands (Mode A) |
+| `/research` | Auto-routes if any gap surfaces unexpected complexity |
+| `/strategic-plan` | Already done; invoke only if scope drift mid-session |
+| `/sgs-wp-engine` | Throughout — central authority for SGS WordPress |
+| `/qc-inline` | After every milestone return — Bean's standing rule |
+| `/dispatching-parallel-agents` | Milestones 1-6 |
+| `/subagent-prompt` + `/delegate` | Each subagent dispatch needs a tight cold prompt + model pick |
+| `/visual-qa` | Milestones 8-9 — full 9-layer QA pipeline |
 
 ## MCP Servers & Tools
 
 | Tool | What to use it for |
-|------|-------------------|
-| `mcp__plugin_playwright_playwright__*` | Browser automation; canvas pixel sampling for measurement-vs-eye disputes (NOT measurement-of-record) |
-| `node tools/multi-frame-qa/capture.js` | First-paint defect detection at 0/200/500/1000/3000ms |
-| `node scripts/mockup-parity-validator.js` | Computed-style diff (now with backgroundImage + filter + mixBlendMode in WATCHED) |
-| `node scripts/colour-parity-audit.js` | Automated mockup vs variation colour diff |
-| `node scripts/css-pattern-audit.js` | M1 first-paint defect prevention |
-| `node scripts/render-mobile-override-audit.js` | F4 inline-vs-mobile-override prevention |
-| `node scripts/font-source-audit.js` | O2 external CDN font src prevention |
-| `node scripts/global-styles-reset.js` | Variation deploy automation |
-| `python tools/recogniser-v2/extract.py` | Re-extract on mockup changes |
+|---|---|
+| Playwright MCP | Milestones 8-9 — Mama's hero + full homepage smoke runs |
+| `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py <command>` | Query SGS DB (fingerprint subcommands shipped 2026-05-07) |
+| `python ~/.agents/skills/ui-ux-pro-max/scripts/search.py "<query>"` | Query uimax DB |
+| `node tools/multi-frame-qa/capture.js` | First-paint capture (Milestones 8-9) |
+| `node scripts/mockup-parity-validator.js` | Computed-style diff with Q1-Q4 + Section R measurement |
+| `node scripts/screenshot-diff-helper.js` | **Mandatory before reducing classifier severity (Hard Rule 10)** |
 
 ## Agents to Delegate To
 
 | Agent | When |
-|-------|------|
-| `wp-sgs-developer` | All SGS WP work — H-1, H-2, H-3, H-7, H-8, H-9 |
-| `feature-dev:code-architect` | H-3 video-everywhere schema design (cross-cutting feature) |
-| `general-purpose` | H-5 screenshot-diff helper script + H-6 replaceBlock helper |
-
-## Tooling reference (WordPress)
-
-See `~/.claude/rules/wp-project-tooling.md` for the full SGS WordPress tooling tables. All apply.
-
-## Where You Are
-
-Plan: `.claude/parking.md` — 10 H-entries (H-1 through H-10) form the Opus-session backlog.
-Current phase: `framework-qc-hardening`
-Progress: 0/10 H-entries complete; ~6 hours estimated total work.
-Next task: **Task 1 — H-5 classifier human-eye gate** (most critical; blocks reliable QC across all future client clones).
+|---|---|
+| `wp-sgs-developer` | Throughout — all SGS WordPress build work |
+| `design-reviewer` | Milestones 8-9 — visual quality of Mama's clone vs mockup |
+| `research-pipeline` | If a milestone surfaces an unexpected question |
 
 ---
 
-## Task 1 — H-5: Classifier human-eye gate (~55 min) CRITICAL
+## Task 1: Milestones 1-3 — Foundation (~3 hrs parallel-subagent)
 
-Build `scripts/screenshot-diff-helper.js` (mockup vs SGS image comparison + pixel-diff heatmap, uses `pixelmatch` npm package or `sharp` + manual diff). Add `requires_screenshot_review: true` flag to parity validator for any Q1-Q4 / R1-R4 pattern delta. Bake Section Q binding rule into `/visual-qa` skill via /lifecycle. Use `/dispatching-parallel-agents` — sub-tasks touch independent files.
+Schema sync extensions + Layer 1+2 fingerprint catalogue + 8 base role templates + Layer 3+4 + 5 missing roles. Heavy parallel Cerebras + Sonnet × 3-5 dispatch per milestone. /qc-inline after each return.
 
-## Task 2 — H-7: Negative-margin full-bleed pattern replacement (~45 min)
+## Task 2: Milestones 4-6 — Critical fixes + Top-5 gap closures (~4 hrs parallel)
 
-Replace `margin: 0 -24px` with viewport-aware solution. Two candidates: `width: 100vw + margin-left: calc(50% - 50vw)` (causes 15px scrollbar overflow on Windows), OR JS-set `--viewport-width: ${document.documentElement.clientWidth}px` updated on resize (excludes scrollbar). Test Mac + Windows + mobile + multi-template-padding scenarios.
+5 critical fixes from peer review + 4 important fixes + Top-5 gap closures (computed-style passport, pairing index, per-section convention voting, recognition_log + operator UI, 5 missing roles).
 
-## Task 3 — H-1 + H-2: Hero block inspector reorganisation (~75 min)
+## Task 3: Milestones 7-10 — Skill build + smoke + handoff (~3 hrs)
 
-Reorganise `plugins/sgs-blocks/src/blocks/hero/edit.js` panels by element (Container / Eyebrow / Headline / Subheadline / Image / Badges / Buttons) instead of by CSS-rule (current "Margin Bottom" panel etc.). Address `imagePadding` vs `mediaPadding` redundancy with renamed labels + help text. Pattern propagates framework-wide — document the convention.
-
-## Task 4 — H-9: Audit framework gradient shorthand patterns (~30-60 min)
-
-Grep all `plugins/sgs-blocks/src/blocks/*/style.css` for `background: linear-gradient` or `background: url(`. For each match: ensure `:not(.has-background)` exclusion + switch `background:` shorthand to `background-image:` (specific, doesn't reset other props). Extends Section R fix beyond hero.
-
-## Task 5 — H-3 + H-4 + H-6 + H-8 + H-10 (remaining gaps)
-
-Per `.claude/parking.md`. H-3 (video-everywhere-image foundation) is the largest single piece — build `MediaPicker` component + `sgs_render_media` helper + hero block as proof, defer remaining 11 blocks. H-4 (brand pink validation via Python PIL sampling) needs Bean decision after sampling — 5 min decision call. H-6 (`scripts/wp-update-block-attrs.js` replaceBlock helper). H-8 (hero `ctaGap*` block attribute). H-10 (cascade Section R into prevention scripts).
+Build `/sgs-clone` + 5 sibling commands via `/lifecycle` Mode A (≥B grade required). Mama's hero smoke. Full Mama's homepage smoke deployed to sandybrown post 30. Final `/handoff`.
 
 ## Guardrails
 
-- Run `node scripts/css-pattern-audit.js` and `node scripts/font-source-audit.js` before any commit.
-- Pre-commit STOP GATE blocks block-src commits without passing `reports/visual-diff/<block>-<date>.md`.
-- Use `node scripts/global-styles-reset.js` after every variation JSON change.
-- Don't dismiss any parity-validator delta as "structural noise" without screenshot evidence (Section Q binding rule + blub.db pattern_key 207).
-- For block-attr changes on existing posts: use `wp.blocks.createBlock + replaceBlock` (never `updateBlockAttributes` — silently rejected on blocks with save.js validation errors).
-- SSH to sandybrown: `u945238940@141.136.39.73:65002`, `~/.ssh/id_ed25519`. WP admin: `Claude` / `MigrationSweep2026!`.
+- Use Opus for orchestration; Sonnet/Cerebras subagents for mechanical work
+- Cerebras free tier rate-limits on concurrent calls — sequence Cerebras work, parallelise across DIFFERENT model branches
+- Hard Rule 6 — patterns are per CLASS, not per CLONE
+- Hard Rule 7 — every uimax write carries cross-platform equivalents or flags the gap (Rosetta Stone discipline, blub.db row 213)
+- Hard Rule 10 — never reduce classifier severity without screenshot-diff evidence
+- blub.db row 211 — no licensing language in cloning context (source taxonomy is `idea` / `draft` / `<URL>`)
+- Pre-commit STOP GATE catches block-src commits without passing visual-diff
+- wp_global_styles reset+reapply mandatory after any variation change
+
+Success criteria: Mama's homepage cloned to sandybrown post 30 with ≥85% pattern fidelity; `/sgs-clone` skill at ≥B grade; recognition_log capturing leftovers for review; uimax sync gap closed.

@@ -160,15 +160,20 @@ header.wp-block-template-part.sgs-header-smart-reveal:not(.sgs-header-hidden).is
 
 /* ─── REDUCED MOTION ─── */
 
+/* Reduced-motion audit 2026-05-08: 3 redundant rules removed; 1 kept */
 @media (prefers-reduced-motion: reduce) {
-	header.wp-block-template-part,
-	header.wp-block-template-part.sgs-header-transparent-sticky,
-	header.wp-block-template-part.sgs-header-smart-reveal {
-		transition: none !important;
-		animation: none !important;
-	}
+	/*
+	 * transition: none and animation: none on standard header elements are
+	 * covered by the universal rule in core-blocks-critical.css
+	 * (animation-duration: 0.01ms + transition-duration: 0.01ms).
+	 *
+	 * The shrink rule is kept because it uses a scroll-driven animation
+	 * (animation-timeline: scroll()). The universal rule cuts animation-duration
+	 * to near-zero but cannot cancel a scroll-driven timeline — animation: none
+	 * is required to fully suppress it.
+	 */
 
-	/* Disable shrink animation */
+	/* keeps non-default scroll-driven animation behaviour beyond core-blocks-critical.css universal */
 	header.wp-block-template-part.sgs-header-shrink {
 		animation: none !important;
 	}

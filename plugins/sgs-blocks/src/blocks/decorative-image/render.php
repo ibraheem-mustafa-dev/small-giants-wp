@@ -53,6 +53,13 @@ $flip_x              = $attributes['flipX'] ?? false;
 $parallax_strength   = $attributes['parallaxStrength'] ?? 0;
 $fade_on_scroll      = (bool) ( $attributes['fadeOnScroll'] ?? false );
 $overflow            = $attributes['overflow'] ?? 'visible';
+$path_draw           = (bool) ( $attributes['pathDrawOnScroll'] ?? false );
+$path_draw_duration  = absint( $attributes['pathDrawDurationMs'] ?? 1500 );
+$path_draw_offset    = absint( $attributes['pathDrawTriggerOffset'] ?? 20 );
+$allowed_easings     = array( 'ease-out', 'ease-in-out', 'linear' );
+$path_draw_easing    = in_array( $attributes['pathDrawEasing'] ?? 'ease-out', $allowed_easings, true )
+	? $attributes['pathDrawEasing']
+	: 'ease-out';
 
 // Responsive overrides.
 $position_x_tablet   = $attributes['positionXTablet'] ?? null;
@@ -113,6 +120,12 @@ if ( $parallax_strength > 0 ) {
 }
 if ( $fade_on_scroll ) {
 	$img_attrs['data-fade-on-scroll'] = 'true';
+}
+if ( $path_draw ) {
+	$img_attrs['data-sgs-path-draw']          = 'true';
+	$img_attrs['data-sgs-path-draw-duration'] = esc_attr( $path_draw_duration );
+	$img_attrs['data-sgs-path-draw-offset']   = esc_attr( $path_draw_offset );
+	$img_attrs['data-sgs-path-draw-easing']   = esc_attr( $path_draw_easing );
 }
 if ( $hide_on_tablet ) {
 	$img_attrs['data-hide-tablet'] = 'true';

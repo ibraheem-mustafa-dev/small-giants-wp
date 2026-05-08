@@ -160,3 +160,129 @@
 		}
 	}
 } )();
+
+/**
+ * SVG Path Draw on Scroll
+ *
+ * When an element with [data-sgs-path-draw="true"] scrolls into view,
+ * find all <path> children, measure their total length via getTotalLength(),
+ * set stroke-dasharray + stroke-dashoffset to that length (hiding the stroke),
+ * then transition stroke-dashoffset to 0 (drawing the stroke).
+ *
+ * Data attributes read from the host element:
+ *   data-sgs-path-draw-duration  — ms (default 1500)
+ *   data-sgs-path-draw-offset    — threshold 0-80 as integer % (default 20 → 0.2)
+ *   data-sgs-path-draw-easing    — CSS easing string (default ease-out)
+ *
+ * Progressive enhancement: fails silently if SVG/IntersectionObserver unavailable.
+ * Respects prefers-reduced-motion — draws immediately without animation.
+ */
+( function () {
+	'use strict';
+
+	var drawElements = document.querySelectorAll( '[data-sgs-path-draw="true"]' );
+	if ( ! drawElements.length || typeof IntersectionObserver === 'undefined' ) {
+		return;
+	}
+
+	var prefersReducedMotion = globalThis.matchMedia &&
+		globalThis.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
+
+	/**
+	 * Initialise stroke-dasharray on all <path> children of an SVG element.
+	 *
+	 * @param {Element} el   Host element (img or inline SVG wrapper).
+	 * @param {string}  easing   CSS easing string.
+	 * @param {number}  duration Animation duration in ms.
+	 */
+	function initPaths( el, easing, duration ) {
+		// Support both inline <svg> and <img> loading an SVG (inline only — img src SVGs
+		// are cross-origin and cannot be queried). Find the nearest <svg> in the DOM tree.
+		var svg = el.tagName.toLowerCase() === 'svg' ? el : el.querySelector( 'svg' );
+		if ( ! svg ) {
+			return;
+		}
+
+		var paths = svg.querySelectorAll( 'path' );
+		if ( ! paths.length ) {
+			return;
+		}
+
+		paths.forEach( function ( path ) {
+			var length = path.getTotalLength();
+			if ( ! length ) {
+				return;
+			}
+			path.style.strokeDasharray  = length;
+			path.style.strokeDashoffset = length;
+
+			if ( ! prefersReducedMotion ) {
+				path.style.transition = 'stroke-dashoffset ' + duration + 'ms ' + easing;
+			}
+		} );
+
+		// Store paths for the draw trigger.
+		el._sgsPaths = paths;
+	}
+
+	/**
+	 * Trigger the draw animation — set stroke-dashoffset to 0 on all paths.
+	 *
+	 * @param {Element} el Host element.
+	 */
+	function drawPaths( el ) {
+		if ( ! el._sgsPaths ) {
+			return;
+		}
+		el._sgsPaths.forEach( function ( path ) {
+			path.style.strokeDashoffset = 0;
+		} );
+	}
+
+	var drawObserver = new IntersectionObserver(
+		function ( entries ) {
+			entries.forEach( function ( entry ) {
+				if ( ! entry.isIntersecting ) {
+					return;
+				}
+				drawPaths( entry.target );
+				drawObserver.unobserve( entry.target );
+			} );
+		},
+		{ threshold: 0 } // threshold overridden per-element via rootMargin below
+	);
+
+	drawElements.forEach( function ( el ) {
+		var duration  = parseInt( el.dataset.sgsPathDrawDuration  || '1500', 10 );
+		var offsetPct = parseInt( el.dataset.sgsPathDrawOffset    || '20', 10 );
+		var easing    = el.dataset.sgsPathDrawEasing || 'ease-out';
+
+		// Clamp offset to 0-80.
+		offsetPct = Math.max( 0, Math.min( 80, offsetPct ) );
+
+		initPaths( el, easing, duration );
+
+		if ( prefersReducedMotion ) {
+			// Draw immediately without waiting for scroll.
+			drawPaths( el );
+			return;
+		}
+
+		// Create a per-element observer with the configured threshold.
+		// IntersectionObserver threshold is 0-1; attribute is 0-80 integer %.
+		var threshold = offsetPct / 100;
+		var elObserver = new IntersectionObserver(
+			function ( entries ) {
+				entries.forEach( function ( entry ) {
+					if ( entry.isIntersecting ) {
+						drawPaths( entry.target );
+						elObserver.unobserve( entry.target );
+					}
+				} );
+			},
+			{ threshold: threshold }
+		);
+
+		elObserver.observe( el );
+	} );
+} )();

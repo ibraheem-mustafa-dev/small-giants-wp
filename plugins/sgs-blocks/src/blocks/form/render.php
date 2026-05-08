@@ -46,6 +46,12 @@ $is_multi_step  = $total_steps > 1;
 $require_login  = $attributes['requireLogin'] ?? false;
 $rate_limit     = absint( $attributes['rateLimit'] ?? 5 );
 
+// Focus ring attributes — editor-controllable, keyboard-only (:focus-visible).
+$focus_ring_colour  = $attributes['formFocusRingColour'] ?? 'primary';
+$focus_ring_width   = absint( $attributes['formFocusRingWidth'] ?? 2 );
+$focus_ring_opacity = absint( $attributes['formFocusRingOpacity'] ?? 40 );
+$focus_ring_offset  = absint( $attributes['formFocusRingOffset'] ?? 2 );
+
 // Cache form configuration server-side so the submit handler can enforce
 // requireLogin and per-form rateLimit without trusting client data.
 // Transient lasts 24 hours; re-cached on every page render.
@@ -98,9 +104,18 @@ if ( $progress_colour ) {
 	$progress_style_attr = ' style="--sgs-progress-colour:' . sgs_colour_value( $progress_colour ) . '"';
 }
 
+// Build focus ring CSS custom properties for :focus-visible on form inputs.
+// Opacity attribute is stored as 0-100 integer; CSS needs 0-1 decimal.
+// absint() sanitises every value before interpolation.
+$focus_ring_css_vars = '--sgs-focus-ring-width:' . absint( $focus_ring_width ) . 'px'
+	. ';--sgs-focus-ring-colour:' . esc_attr( sgs_colour_value( $focus_ring_colour ) )
+	. ';--sgs-focus-ring-opacity:' . esc_attr( strval( round( absint( $focus_ring_opacity ) / 100, 2 ) ) )
+	. ';--sgs-focus-ring-offset:' . absint( $focus_ring_offset ) . 'px';
+
 $wrapper_attributes = get_block_wrapper_attributes(
 	array(
 		'class'                     => 'sgs-form',
+		'style'                     => $focus_ring_css_vars,
 		'data-wp-interactive'       => 'sgs/form',
 		'data-wp-context'           => wp_json_encode( $context ),
 		'data-form-id'              => esc_attr( $form_id ),

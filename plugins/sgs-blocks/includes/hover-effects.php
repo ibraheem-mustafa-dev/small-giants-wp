@@ -128,10 +128,14 @@ function inject_hover_effects( string $block_content, array $block ): string {
 	$hover_grayscale    = (bool) ( $attrs['sgsHoverGrayscale'] ?? false );
 	$hover_border_acc   = (bool) ( $attrs['sgsHoverBorderAccent'] ?? false );
 	$hover_tilt_3d      = (bool) ( $attrs['sgsHoverTilt3D'] ?? false );
-	$focus_ring         = (bool) ( $attrs['sgsFocusRing'] ?? $defaults['focus_ring'] );
-	$block_link         = $attrs['sgsBlockLink'] ?? '';
-	$block_link_target  = (bool) ( $attrs['sgsBlockLinkTarget'] ?? false );
+	$focus_ring            = (bool) ( $attrs['sgsFocusRing'] ?? $defaults['focus_ring'] );
+	$block_link            = $attrs['sgsBlockLink'] ?? '';
+	$block_link_target     = (bool) ( $attrs['sgsBlockLinkTarget'] ?? false );
+	$click_effect          = $attrs['sgsClickEffect'] ?? 'none';
+	$click_ripple_colour   = $attrs['sgsClickRippleColour'] ?? '';
+	$click_ripple_duration = absint( $attrs['sgsClickRippleDuration'] ?? 600 );
 
+	$has_ripple       = 'ripple' === $click_effect;
 	$has_colour_hover = $hover_bg || $hover_text || $hover_border;
 	$has_scale_hover  = $hover_scale || $hover_scale_preset;
 	$has_hover        = $has_colour_hover || $has_scale_hover || $hover_shadow;
@@ -145,7 +149,8 @@ function inject_hover_effects( string $block_content, array $block ): string {
 		! $hover_border_acc &&
 		! $hover_tilt_3d &&
 		! $focus_ring &&
-		! $block_link
+		! $block_link &&
+		! $has_ripple
 	) {
 		return $block_content;
 	}
@@ -202,6 +207,17 @@ function inject_hover_effects( string $block_content, array $block ): string {
 		$css_vars[] = '--sgs-stagger:' . absint( $stagger_delay ) . 'ms';
 	}
 
+	if ( $has_ripple ) {
+		// Ripple colour: editor token if set, otherwise currentColour at 30% alpha via color-mix().
+		// color-mix() is a safe CSS literal; sgs_colour_value() sanitises the token branch.
+		if ( $click_ripple_colour ) {
+			$css_vars[] = '--sgs-ripple-colour:' . \sgs_colour_value( $click_ripple_colour );
+		} else {
+			$css_vars[] = '--sgs-ripple-colour:color-mix(in srgb, currentColor 30%, transparent)';
+		}
+		$css_vars[] = '--sgs-ripple-duration:' . absint( $click_ripple_duration ) . 'ms';
+	}
+
 	// --- Build extra classes. ---
 	$add_classes = array();
 
@@ -231,6 +247,9 @@ function inject_hover_effects( string $block_content, array $block ): string {
 	}
 	if ( $block_link ) {
 		$add_classes[] = 'sgs-has-block-link';
+	}
+	if ( $has_ripple ) {
+		$add_classes[] = 'sgs-has-click-ripple';
 	}
 
 	// --- Inject classes into the first tag. ---

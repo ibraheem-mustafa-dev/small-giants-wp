@@ -33,6 +33,9 @@ final class SGS_Blocks {
 		// Global Block Defaults — REST API, editor injection, admin settings page.
 		require_once SGS_BLOCKS_PATH . 'includes/class-block-defaults.php';
 		Block_Defaults::register();
+
+		// Image Controls extension — objectPosition / maxWidth / per-breakpoint height.
+		require_once SGS_BLOCKS_PATH . 'includes/image-controls.php';
 	}
 
 	/**
@@ -146,6 +149,17 @@ final class SGS_Blocks {
 			wp_enqueue_script(
 				'sgs-tilt-3d',
 				SGS_BLOCKS_URL . 'assets/js/tilt-3d.js',
+				[],
+				SGS_BLOCKS_VERSION,
+				true
+			);
+		}
+
+		$ripple_js = SGS_BLOCKS_PATH . 'assets/js/ripple.js';
+		if ( file_exists( $ripple_js ) ) {
+			wp_enqueue_script(
+				'sgs-ripple',
+				SGS_BLOCKS_URL . 'assets/js/ripple.js',
 				[],
 				SGS_BLOCKS_VERSION,
 				true

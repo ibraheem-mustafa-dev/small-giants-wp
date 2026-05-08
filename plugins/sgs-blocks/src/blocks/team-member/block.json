@@ -1,195 +1,198 @@
 {
-  "$schema": "https://schemas.wp.org/trunk/block.json",
-  "apiVersion": 3,
-  "name": "sgs/team-member",
-  "version": "0.1.0",
-  "title": "SGS Team Member",
-  "category": "sgs-content",
-  "description": "Team member card with photo, name, role, bio, and social links.",
-  "keywords": [
-    "team",
-    "member",
-    "staff",
-    "person",
-    "profile"
-  ],
-  "textdomain": "sgs-blocks",
-  "icon": "admin-users",
-  "supports": {
-    "align": false,
-    "anchor": true,
-    "html": false,
-    "color": {
-      "background": true,
-      "text": true
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "sgs/team-member",
+    "version": "0.1.0",
+    "title": "SGS Team Member",
+    "category": "sgs-content",
+    "description": "Team member card with photo, name, role, bio, and social links.",
+    "keywords": [
+        "team",
+        "member",
+        "staff",
+        "person",
+        "profile"
+    ],
+    "textdomain": "sgs-blocks",
+    "icon": "admin-users",
+    "supports": {
+        "align": false,
+        "anchor": true,
+        "html": false,
+        "color": {
+            "background": true,
+            "text": true
+        },
+        "typography": {
+            "fontSize": true,
+            "textAlign": true
+        },
+        "spacing": {
+            "margin": true,
+            "padding": true
+        },
+        "__experimentalBorder": {
+            "radius": true,
+            "width": true,
+            "color": true,
+            "style": true
+        },
+        "sgs": {
+            "imageControls": true
+        }
     },
-    "typography": {
-      "fontSize": true,
-      "textAlign": true
+    "selectors": {
+        "root": ".wp-block-sgs-team-member",
+        "typography": ".sgs-team-member__name"
     },
-    "spacing": {
-      "margin": true,
-      "padding": true
-    },
-    "__experimentalBorder": {
-      "radius": true,
-      "width": true,
-      "color": true,
-      "style": true
-    }
-  },
-  "selectors": {
-    "root": ".wp-block-sgs-team-member",
-    "typography": ".sgs-team-member__name"
-  },
-  "attributes": {
-    "memberMedia": {
-      "type": "object",
-      "default": null
-    },
-    "photo": {
-      "type": "object"
-    },
-    "name": {
-      "type": "string",
-      "default": ""
-    },
-    "role": {
-      "type": "string",
-      "default": ""
-    },
-    "bio": {
-      "type": "string",
-      "default": ""
-    },
-    "socialLinks": {
-      "type": "array",
-      "default": [],
-      "items": {
-        "type": "object"
-      }
-    },
-    "nameColour": {
-      "type": "string",
-      "default": "primary"
-    },
-    "roleColour": {
-      "type": "string",
-      "default": "text-muted"
-    },
-    "cardStyle": {
-      "type": "string",
-      "default": "elevated"
-    },
-    "photoShape": {
-      "type": "string",
-      "default": "circle"
-    },
-    "sgsHoverBgColour": {
-      "type": "string",
-      "default": ""
-    },
-    "sgsHoverTextColour": {
-      "type": "string",
-      "default": ""
-    },
-    "sgsHoverBorderColour": {
-      "type": "string",
-      "default": ""
-    },
-    "sgsHoverScale": {
-      "type": "number",
-      "default": 0
-    },
-    "sgsHoverShadow": {
-      "type": "string",
-      "default": ""
-    },
-    "sgsHoverDuration": {
-      "type": "string",
-      "default": "medium"
-    },
-    "sgsHoverImageZoom": {
-      "type": "boolean",
-      "default": false
-    },
-    "sgsHoverGrayscale": {
-      "type": "boolean",
-      "default": false
-    },
-    "sgsBlockLink": {
-      "type": "string",
-      "default": ""
-    },
-    "sgsBlockLinkTarget": {
-      "type": "boolean",
-      "default": false
-    },
-    "hoverScale": {
-      "type": "string",
-      "default": ""
-    },
-    "hoverShadow": {
-      "type": "string",
-      "default": ""
-    },
-    "hoverImageZoom": {
-      "type": "boolean",
-      "default": false
-    },
-    "hoverGrayscale": {
-      "type": "boolean",
-      "default": false
-    },
-    "transitionDuration": {
-      "type": "string",
-      "default": "300"
-    },
-    "transitionEasing": {
-      "type": "string",
-      "default": "ease-in-out"
-    },
-    "blockLink": {
-      "type": "string",
-      "default": ""
-    },
-    "blockLinkTarget": {
-      "type": "boolean",
-      "default": false
-    },
-    "staggerDelay": {
-      "type": "number",
-      "default": 80
-    },
-    "sgsAnimation": {
-      "type": "string",
-      "default": "fade-up"
-    },
-    "sgsAnimationDuration": {
-      "type": "string",
-      "default": "medium"
-    },
-    "sgsAnimationEasing": {
-      "type": "string",
-      "default": "default"
-    },
-    "hoverOverlay": {
-      "type": "boolean",
-      "default": false
-    }
-  },
-  "editorScript": "file:./index.js",
-  "editorStyle": "file:./index.css",
-  "style": "file:./style-index.css",
-  "render": "file:./render.php",
-  "viewScriptModule": "file:./view.js",
-  "example": {
     "attributes": {
-      "name": "Sarah Mitchell",
-      "role": "Head of Procurement",
-      "bio": "Sarah has over 15 years of experience in food wholesale and leads our buying team.",
-      "photoShape": "circle",
-      "cardStyle": "elevated"
+        "memberMedia": {
+            "type": "object",
+            "default": null
+        },
+        "photo": {
+            "type": "object"
+        },
+        "name": {
+            "type": "string",
+            "default": ""
+        },
+        "role": {
+            "type": "string",
+            "default": ""
+        },
+        "bio": {
+            "type": "string",
+            "default": ""
+        },
+        "socialLinks": {
+            "type": "array",
+            "default": [],
+            "items": {
+                "type": "object"
+            }
+        },
+        "nameColour": {
+            "type": "string",
+            "default": "primary"
+        },
+        "roleColour": {
+            "type": "string",
+            "default": "text-muted"
+        },
+        "cardStyle": {
+            "type": "string",
+            "default": "elevated"
+        },
+        "photoShape": {
+            "type": "string",
+            "default": "circle"
+        },
+        "sgsHoverBgColour": {
+            "type": "string",
+            "default": ""
+        },
+        "sgsHoverTextColour": {
+            "type": "string",
+            "default": ""
+        },
+        "sgsHoverBorderColour": {
+            "type": "string",
+            "default": ""
+        },
+        "sgsHoverScale": {
+            "type": "number",
+            "default": 0
+        },
+        "sgsHoverShadow": {
+            "type": "string",
+            "default": ""
+        },
+        "sgsHoverDuration": {
+            "type": "string",
+            "default": "medium"
+        },
+        "sgsHoverImageZoom": {
+            "type": "boolean",
+            "default": false
+        },
+        "sgsHoverGrayscale": {
+            "type": "boolean",
+            "default": false
+        },
+        "sgsBlockLink": {
+            "type": "string",
+            "default": ""
+        },
+        "sgsBlockLinkTarget": {
+            "type": "boolean",
+            "default": false
+        },
+        "hoverScale": {
+            "type": "string",
+            "default": ""
+        },
+        "hoverShadow": {
+            "type": "string",
+            "default": ""
+        },
+        "hoverImageZoom": {
+            "type": "boolean",
+            "default": false
+        },
+        "hoverGrayscale": {
+            "type": "boolean",
+            "default": false
+        },
+        "transitionDuration": {
+            "type": "string",
+            "default": "300"
+        },
+        "transitionEasing": {
+            "type": "string",
+            "default": "ease-in-out"
+        },
+        "blockLink": {
+            "type": "string",
+            "default": ""
+        },
+        "blockLinkTarget": {
+            "type": "boolean",
+            "default": false
+        },
+        "staggerDelay": {
+            "type": "number",
+            "default": 80
+        },
+        "sgsAnimation": {
+            "type": "string",
+            "default": "fade-up"
+        },
+        "sgsAnimationDuration": {
+            "type": "string",
+            "default": "medium"
+        },
+        "sgsAnimationEasing": {
+            "type": "string",
+            "default": "default"
+        },
+        "hoverOverlay": {
+            "type": "boolean",
+            "default": false
+        }
+    },
+    "editorScript": "file:./index.js",
+    "editorStyle": "file:./index.css",
+    "style": "file:./style-index.css",
+    "render": "file:./render.php",
+    "viewScriptModule": "file:./view.js",
+    "example": {
+        "attributes": {
+            "name": "Sarah Mitchell",
+            "role": "Head of Procurement",
+            "bio": "Sarah has over 15 years of experience in food wholesale and leads our buying team.",
+            "photoShape": "circle",
+            "cardStyle": "elevated"
+        }
     }
-  }
 }

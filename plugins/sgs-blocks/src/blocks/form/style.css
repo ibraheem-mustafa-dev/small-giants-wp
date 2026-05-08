@@ -162,10 +162,18 @@
 	min-height: 44px;
 }
 
-.sgs-form-field__input:focus {
-	outline: 2px solid var(--wp--preset--color--primary, #0f7e80);
-	outline-offset: 2px;
-	border-color: var(--wp--preset--color--primary, #0f7e80);
+.sgs-form-field__input:focus-visible {
+	outline: var(--sgs-focus-ring-width, 2px) solid var(--sgs-focus-ring-colour, var(--wp--preset--color--primary, #0f7e80));
+	outline-offset: var(--sgs-focus-ring-offset, 2px);
+	border-color: var(--sgs-focus-ring-colour, var(--wp--preset--color--primary, #0f7e80));
+	opacity: var(--sgs-focus-ring-opacity, 1);
+}
+
+/* Fallback for browsers that don't support :focus-visible — still shows ring on :focus */
+.sgs-form-field__input:focus:not(:focus-visible) {
+	outline: var(--sgs-focus-ring-width, 2px) solid var(--sgs-focus-ring-colour, var(--wp--preset--color--primary, #0f7e80));
+	outline-offset: var(--sgs-focus-ring-offset, 2px);
+	border-color: var(--sgs-focus-ring-colour, var(--wp--preset--color--primary, #0f7e80));
 }
 
 .sgs-form-field__input::placeholder {

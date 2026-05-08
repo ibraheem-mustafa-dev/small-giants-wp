@@ -78,11 +78,5 @@
 	}
 }
 
-@media (prefers-reduced-motion: reduce) {
-	.sgs-reading-progress__fill {
-		transition: none;
-	}
-	.sgs-reading-progress--finished {
-		transition: none;
-	}
-}
+/* Reduced-motion audit 2026-05-08: 2 redundant rules removed; 0 kept */
+/* transition-duration is covered by the universal rule in core-blocks-critical.css */

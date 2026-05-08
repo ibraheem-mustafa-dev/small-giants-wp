@@ -366,6 +366,42 @@
 	}
 }
 
+/* ===== Click Ripple ===== */
+
+/*
+ * Radial ripple from click coordinates.
+ * JS (ripple.js) sets --ripple-x / --ripple-y and toggles .is-rippling.
+ * Respects prefers-reduced-motion — effect is skipped entirely.
+ */
+@media (prefers-reduced-motion: no-preference) {
+	.sgs-has-click-ripple {
+		position: relative;
+		overflow: hidden;
+	}
+
+	.sgs-has-click-ripple::after {
+		content: '';
+		position: absolute;
+		border-radius: 50%;
+		pointer-events: none;
+		width: 4px;
+		height: 4px;
+		left: var(--ripple-x, 50%);
+		top: var(--ripple-y, 50%);
+		transform: translate(-50%, -50%) scale(0);
+		background: var(--sgs-ripple-colour, color-mix(in srgb, currentColor 30%, transparent));
+		opacity: 1;
+		transition:
+			transform var(--sgs-ripple-duration, 600ms) ease-out,
+			opacity var(--sgs-ripple-duration, 600ms) ease-out;
+	}
+
+	.sgs-has-click-ripple.is-rippling::after {
+		transform: translate(-50%, -50%) scale(var(--ripple-scale, 200));
+		opacity: 0;
+	}
+}
+
 /* Base style for Block Links wrapper */
 .sgs-block-link-wrapper {
 	display: block;
@@ -467,3 +503,64 @@
 	}
 }
 /* ── End parallax extension ─────────────────────────────────────────────── */
+
+/* ===== Image Controls Extension ===== */
+
+/*
+ * Applied when a block declares supports.sgs.imageControls: true and has
+ * one or more image-control attributes set. PHP (image-controls.php) injects
+ * the class sgs-has-image-controls and the corresponding CSS custom properties
+ * (--sgs-object-position, --sgs-max-width, --sgs-height-desktop, etc.).
+ *
+ * The inner-image selectors cover the most common SGS image markup shapes:
+ *   - Direct <img> child (decorative-image, info-box media slot)
+ *   - .wp-block-image > img (core image block inside an SGS block)
+ *   - figure > img (team-member, testimonial avatar)
+ */
+
+.sgs-has-image-controls > img,
+.sgs-has-image-controls .wp-block-image > img,
+.sgs-has-image-controls figure > img {
+	object-position: var(--sgs-object-position, center center);
+	max-width: var(--sgs-max-width, 100%);
+}
+
+/* Desktop height (also the base for tablet/mobile fallbacks). */
+.sgs-has-image-controls[style*="--sgs-height-desktop"] > img,
+.sgs-has-image-controls[style*="--sgs-height-desktop"] .wp-block-image > img,
+.sgs-has-image-controls[style*="--sgs-height-desktop"] figure > img {
+	height: var(--sgs-height-desktop, auto);
+}
+
+/* Tablet height — falls back to desktop value when not set. */
+@media (min-width: 769px) and (max-width: 1024px) {
+	.sgs-has-image-controls > img,
+	.sgs-has-image-controls .wp-block-image > img,
+	.sgs-has-image-controls figure > img {
+		height: var(--sgs-height-tablet, var(--sgs-height-desktop, auto));
+	}
+}
+
+/* Mobile height — falls back to desktop value when not set. */
+@media (max-width: 768px) {
+	.sgs-has-image-controls > img,
+	.sgs-has-image-controls .wp-block-image > img,
+	.sgs-has-image-controls figure > img {
+		height: var(--sgs-height-mobile, var(--sgs-height-desktop, auto));
+	}
+}
+
+/* ===== SVG Path Draw on Scroll ===== */
+
+/*
+ * Applied to <path> elements inside SVGs hosted in .sgs-decorative-image
+ * blocks with data-sgs-path-draw="true". The JS (animation-observer.js)
+ * sets stroke-dasharray/stroke-dashoffset and the transition via inline
+ * styles — this block only supplies the reduced-motion safety net.
+ */
+@media (prefers-reduced-motion: reduce) {
+	[data-sgs-path-draw="true"] path {
+		stroke-dashoffset: 0 !important;
+		transition: none !important;
+	}
+}

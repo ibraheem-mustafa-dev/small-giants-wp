@@ -6,6 +6,7 @@ import {
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
+	RangeControl,
 	TextControl,
 	TextareaControl,
 	SelectControl,
@@ -33,6 +34,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		submitColour,
 		submitBackground,
 		progressBarColour,
+		formFocusRingColour,
+		formFocusRingWidth,
+		formFocusRingOpacity,
+		formFocusRingOffset,
 	} = attributes;
 
 	// Auto-generate formId from clientId on first insert.
@@ -205,6 +210,55 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						onChange={ ( value ) =>
 							setAttributes( { progressBarColour: value } )
 						}
+					/>
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Focus State', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<DesignTokenPicker
+						label={ __( 'Focus ring colour', 'sgs-blocks' ) }
+						value={ formFocusRingColour }
+						onChange={ ( value ) =>
+							setAttributes( { formFocusRingColour: value || 'primary' } )
+						}
+					/>
+					<RangeControl
+						label={ __( 'Focus ring width (px)', 'sgs-blocks' ) }
+						help={ __( 'Outline width in pixels when an input is keyboard-focused.', 'sgs-blocks' ) }
+						value={ formFocusRingWidth }
+						onChange={ ( value ) =>
+							setAttributes( { formFocusRingWidth: value } )
+						}
+						min={ 1 }
+						max={ 6 }
+						step={ 1 }
+						__nextHasNoMarginBottom
+					/>
+					<RangeControl
+						label={ __( 'Focus ring opacity (%)', 'sgs-blocks' ) }
+						help={ __( '100 = fully opaque, 40 = subtle glow (recommended).', 'sgs-blocks' ) }
+						value={ formFocusRingOpacity }
+						onChange={ ( value ) =>
+							setAttributes( { formFocusRingOpacity: value } )
+						}
+						min={ 10 }
+						max={ 100 }
+						step={ 5 }
+						__nextHasNoMarginBottom
+					/>
+					<RangeControl
+						label={ __( 'Focus ring offset (px)', 'sgs-blocks' ) }
+						help={ __( 'Gap between input edge and focus ring.', 'sgs-blocks' ) }
+						value={ formFocusRingOffset }
+						onChange={ ( value ) =>
+							setAttributes( { formFocusRingOffset: value } )
+						}
+						min={ 0 }
+						max={ 8 }
+						step={ 1 }
+						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
 			</InspectorControls>

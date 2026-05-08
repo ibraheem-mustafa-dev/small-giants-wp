@@ -1,182 +1,185 @@
 {
-  "$schema": "https://schemas.wp.org/trunk/block.json",
-  "apiVersion": 3,
-  "name": "sgs/testimonial",
-  "version": "0.1.0",
-  "title": "SGS Testimonial",
-  "category": "sgs-content",
-  "description": "Single testimonial card with quote, name, role, optional avatar, and star rating.",
-  "keywords": [
-    "testimonial",
-    "review",
-    "quote",
-    "feedback",
-    "rating"
-  ],
-  "textdomain": "sgs-blocks",
-  "icon": "format-quote",
-  "supports": {
-    "align": false,
-    "anchor": true,
-    "html": false,
-    "color": {
-      "background": true,
-      "text": true,
-      "link": true
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "sgs/testimonial",
+    "version": "0.1.0",
+    "title": "SGS Testimonial",
+    "category": "sgs-content",
+    "description": "Single testimonial card with quote, name, role, optional avatar, and star rating.",
+    "keywords": [
+        "testimonial",
+        "review",
+        "quote",
+        "feedback",
+        "rating"
+    ],
+    "textdomain": "sgs-blocks",
+    "icon": "format-quote",
+    "supports": {
+        "align": false,
+        "anchor": true,
+        "html": false,
+        "color": {
+            "background": true,
+            "text": true,
+            "link": true
+        },
+        "typography": {
+            "fontSize": true,
+            "lineHeight": true,
+            "textAlign": true,
+            "letterSpacing": true,
+            "textTransform": true,
+            "fontWeight": true,
+            "fontStyle": true
+        },
+        "spacing": {
+            "margin": true,
+            "padding": true
+        },
+        "shadow": true,
+        "__experimentalBorder": {
+            "radius": true,
+            "width": true,
+            "color": true,
+            "style": true
+        },
+        "sgs": {
+            "imageControls": true
+        }
     },
-    "typography": {
-      "fontSize": true,
-      "lineHeight": true,
-      "textAlign": true,
-      "letterSpacing": true,
-      "textTransform": true,
-      "fontWeight": true,
-      "fontStyle": true
+    "selectors": {
+        "root": ".sgs-testimonial",
+        "typography": ".sgs-testimonial__quote"
     },
-    "spacing": {
-      "margin": true,
-      "padding": true
-    },
-    "shadow": true,
-    "__experimentalBorder": {
-      "radius": true,
-      "width": true,
-      "color": true,
-      "style": true
-    }
-  },
-  "selectors": {
-    "root": ".sgs-testimonial",
-    "typography": ".sgs-testimonial__quote"
-  },
-  "attributes": {
-    "quote": {
-      "type": "string",
-      "default": ""
-    },
-    "name": {
-      "type": "string",
-      "default": ""
-    },
-    "role": {
-      "type": "string",
-      "default": ""
-    },
-    "avatar": {
-      "type": "object"
-    },
-    "_comment_authorMedia": "Migrated 2026-05-05 (Gap H-3) — avatar retained for deprecation. New instances should use authorMedia. Image-only by convention (a video makes no semantic sense for a testimonial author photo).",
-    "authorMedia": {
-      "type": "object",
-      "default": null
-    },
-    "rating": {
-      "type": "number",
-      "default": 0
-    },
-    "style": {
-      "type": "string",
-      "default": "card"
-    },
-    "quoteColour": {
-      "type": "string",
-      "default": "text"
-    },
-    "nameColour": {
-      "type": "string",
-      "default": "primary"
-    },
-    "nameFontSize": {
-      "type": "string"
-    },
-    "nameFontSizeTablet": {
-      "type": "string",
-      "default": ""
-    },
-    "nameFontSizeMobile": {
-      "type": "string",
-      "default": ""
-    },
-    "roleColour": {
-      "type": "string",
-      "default": "text-muted"
-    },
-    "ratingColour": {
-      "type": "string",
-      "default": "accent"
-    },
-    "reviewSource": {
-      "type": "string",
-      "default": ""
-    },
-    "reviewDate": {
-      "type": "string",
-      "default": ""
-    },
-    "hoverBackgroundColour": {
-      "type": "string",
-      "default": ""
-    },
-    "hoverTextColour": {
-      "type": "string",
-      "default": ""
-    },
-    "hoverBorderColour": {
-      "type": "string",
-      "default": ""
-    },
-    "hoverEffect": {
-      "type": "string",
-      "default": "none"
-    },
-    "transitionDuration": {
-      "type": "string",
-      "default": "300"
-    },
-    "transitionEasing": {
-      "type": "string",
-      "default": "ease-in-out"
-    },
-    "hoverScale": {
-      "type": "string",
-      "default": ""
-    },
-    "hoverShadow": {
-      "type": "string",
-      "default": ""
-    },
-    "staggerDelay": {
-      "type": "number",
-      "default": 0
-    },
-    "sgsAnimation": {
-      "type": "string",
-      "default": "fade-up"
-    },
-    "sgsAnimationDuration": {
-      "type": "string",
-      "default": "medium"
-    },
-    "sgsAnimationEasing": {
-      "type": "string",
-      "default": "default"
-    },
-    "schemaEnabled": {
-      "type": "boolean",
-      "default": false
-    }
-  },
-  "render": "file:./render.php",
-  "editorScript": "file:./index.js",
-  "editorStyle": "file:./index.css",
-  "style": "file:./style-index.css",
-  "example": {
     "attributes": {
-      "quote": "The quality and reliability of SGS has been outstanding. Next-day delivery keeps our kitchen running smoothly.",
-      "name": "James Thornton",
-      "role": "Head Chef, The Grand Hotel",
-      "rating": 5,
-      "style": "card"
+        "quote": {
+            "type": "string",
+            "default": ""
+        },
+        "name": {
+            "type": "string",
+            "default": ""
+        },
+        "role": {
+            "type": "string",
+            "default": ""
+        },
+        "avatar": {
+            "type": "object"
+        },
+        "_comment_authorMedia": "Migrated 2026-05-05 (Gap H-3) — avatar retained for deprecation. New instances should use authorMedia. Image-only by convention (a video makes no semantic sense for a testimonial author photo).",
+        "authorMedia": {
+            "type": "object",
+            "default": null
+        },
+        "rating": {
+            "type": "number",
+            "default": 0
+        },
+        "style": {
+            "type": "string",
+            "default": "card"
+        },
+        "quoteColour": {
+            "type": "string",
+            "default": "text"
+        },
+        "nameColour": {
+            "type": "string",
+            "default": "primary"
+        },
+        "nameFontSize": {
+            "type": "string"
+        },
+        "nameFontSizeTablet": {
+            "type": "string",
+            "default": ""
+        },
+        "nameFontSizeMobile": {
+            "type": "string",
+            "default": ""
+        },
+        "roleColour": {
+            "type": "string",
+            "default": "text-muted"
+        },
+        "ratingColour": {
+            "type": "string",
+            "default": "accent"
+        },
+        "reviewSource": {
+            "type": "string",
+            "default": ""
+        },
+        "reviewDate": {
+            "type": "string",
+            "default": ""
+        },
+        "hoverBackgroundColour": {
+            "type": "string",
+            "default": ""
+        },
+        "hoverTextColour": {
+            "type": "string",
+            "default": ""
+        },
+        "hoverBorderColour": {
+            "type": "string",
+            "default": ""
+        },
+        "hoverEffect": {
+            "type": "string",
+            "default": "none"
+        },
+        "transitionDuration": {
+            "type": "string",
+            "default": "300"
+        },
+        "transitionEasing": {
+            "type": "string",
+            "default": "ease-in-out"
+        },
+        "hoverScale": {
+            "type": "string",
+            "default": ""
+        },
+        "hoverShadow": {
+            "type": "string",
+            "default": ""
+        },
+        "staggerDelay": {
+            "type": "number",
+            "default": 0
+        },
+        "sgsAnimation": {
+            "type": "string",
+            "default": "fade-up"
+        },
+        "sgsAnimationDuration": {
+            "type": "string",
+            "default": "medium"
+        },
+        "sgsAnimationEasing": {
+            "type": "string",
+            "default": "default"
+        },
+        "schemaEnabled": {
+            "type": "boolean",
+            "default": false
+        }
+    },
+    "render": "file:./render.php",
+    "editorScript": "file:./index.js",
+    "editorStyle": "file:./index.css",
+    "style": "file:./style-index.css",
+    "example": {
+        "attributes": {
+            "quote": "The quality and reliability of SGS has been outstanding. Next-day delivery keeps our kitchen running smoothly.",
+            "name": "James Thornton",
+            "role": "Head Chef, The Grand Hotel",
+            "rating": 5,
+            "style": "card"
+        }
     }
-  }
 }
