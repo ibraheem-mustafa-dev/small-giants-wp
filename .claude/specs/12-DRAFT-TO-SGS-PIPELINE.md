@@ -139,19 +139,27 @@ These were committed to `main`. They are **superseded** by v2 output but kept fo
 
 The v1 tooling at `tools/recogniser/` stays in repo as reference but is **not used going forward**. New extractor work happens in `tools/recogniser-v2/`.
 
-## 6. v2 status
+## 6. v2 status (updated 2026-05-09)
+
+**Headline:** orchestrator shipped, all 9 stages working end-to-end via `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py`. Hero smoke run against Mama's mockup matches the manual PoC at 100% parity (50/50 attrs byte-identical). Single-section today; multi-section walker is M9.
 
 | Component | Status | Notes |
 |-----------|--------|-------|
-| 1. Boundary detector | Prototyped | `tools/recogniser-v2/extract.py` for hero only. Generalise per parking P-9. |
-| 2. Block-type matcher | Not started | Class-name → role lookup table needed. |
-| 3. Schema scaffold generator | Not started | Auto-derive from block.json. |
-| 4. Heuristic extractors | Hero only | text/link/image working; icon/colour-from-CSS working for hero. |
-| 5. All-CSS harvester | Working | BS4 native selectors + recursive @media parsing. Tested on hero (29 rules harvested). |
-| 6. CSS classifier | Manual on hero | Classified 27 rules into 11 block-attr / 16 universal / 0 one-time during 2026-05-03 session. Need automation. |
-| 7. Composition emitter | Blocked | Depends on spec 11 (SGS Button Architecture) shipping. |
-| 8. WP serialiser | Working for dynamic blocks | Static-block edge cases deferred. |
-| 9. Coverage report | Prototype | extract.py outputs basic counts. Needs TODO-attribute surfacing for the gate logic. |
+| 0. Orchestrator (overall driver) | **Shipped 2026-05-09** | `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` (~280 lines). Wraps stages 1-9 + writes JSON artefacts at `pipeline-state/<run_id>/stage-N.json`. Single-section per invocation. |
+| 1. Boundary detector | Working (single section) | User-supplied `--section` selector. Auto-detection of all 9 sections is M9 work. |
+| 2. Block-type matcher | Working (user-supplied) | `--block` argument. Class-name lookup + DOM-shape autodetect is M9 polish. |
+| 3. Schema scaffold (slot list) | **Working** | Auto-derived from `block.json`. Hero produces 175 slots, 50 extracted (28.6% slot-coverage; 100% on visible elements). |
+| 4. Heuristic extractors | **Working** | `tools/recogniser-v2/extract.py` Playwright-based. text/link/image/icon all working. Hero verified at 100% PoC parity. |
+| 5. All-CSS harvester | **Working** | BS4 native selectors + recursive @media parsing + Playwright cascade resolution at 1440 desktop. Hero: 29 rules harvested. |
+| 6. CSS classifier | **Working** | 5 absorbed into block attrs / 24 universal-handled / 0 scoped custom on hero. Zero-silent-loss invariant verified (5+24+0 = 29 = 100%). |
+| 7. Composition emitter | Working (sgs/multi-button + sgs/button) | InnerBlocks composition pattern works for hero CTAs. Spec 11 button architecture in place. |
+| 8. WP serialiser | **Working** | Dynamic block markup emitted per spec. Static-block edge cases use `wp.blocks.serialize()` Node sidecar (not yet exercised on real client work). |
+| 9. Coverage report + operator-review HTML | **Working** | `simple_html_review_report.py` produces operator-review HTML. JSON artefacts persist to `pipeline-state/<run_id>/`. |
+| +DEPLOY tail stage | M9 | Tar plus scp plus extract; OPcache reset; LiteSpeed dual-purge. Target: sandybrown homepage (overwrite) per Bean instruction 2026-05-09. |
+| +PARITY tail stage | M9 | Multi-frame capture at 0/200/500/1000/3000ms across 375/768/1440. Mockup-parity-validator + screenshot-diff-helper (Hard Rule 10). |
+| +REGISTER tail stage | M9 | `/uimax-sgs-scrape-pattern` + `/uimax-scrape-animation` + `/sgs-update`. Cross-DB atomic writes per spec. |
+
+**Verified 2026-05-08/09:** spec 12 contract is executable. Hero clone byte-matches the manual PoC. `/sgs-clone` SKILL.md (at `~/.claude/skills/sgs-clone/`) plus the 5 sibling skills (`/uimax-scrape`, `/uimax-sgs-scrape-pattern`, `/uimax-mood-board`, `/uimax-scrape-animation`, `/uimax-classify-naming`) document the contract. All 6 skills graded >=B with rubric files signed off via batched M7-brief signoff.
 
 ## 7. Test mockup status
 
@@ -162,7 +170,7 @@ The Mama's Munches homepage mockup at `sites/mamas-munches/mockups/homepage/inde
 - BEM-ish kebab-case naming consistent across sections (mockup naming convention is itself a class-name → block-role lookup)
 - Mobile-first CSS with 768px and 1280px breakpoints
 
-Hero section already exercised. Eight remaining sections to be processed once spec 11 lands and the v2 generalisation work begins.
+Hero section verified 2026-05-09 at 100% manual-PoC parity via the new orchestrator. Eight remaining sections to be processed in M9 (next session) once the orchestrator's multi-section walker extension lands. Spec 11 button architecture is shipped.
 
 ## 8. Mockup naming conventions (input contract)
 
