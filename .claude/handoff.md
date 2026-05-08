@@ -143,7 +143,7 @@ Currently `sgs-clone-orchestrator.py` runs one section per invocation. M9 needs 
 
 ## Task 3: Full Mama's homepage smoke + 13 visual-diff reports
 
-Deploy composite block markup to sandybrown post 30 (NOT 29 — preserve hero PoC). Run multi-frame Playwright capture at 0/200/500/1000/3000 ms across 375/768/1440 viewports. Run `mockup-parity-validator.js` per section and `screenshot-diff-helper.js` per Q1-Q4 delta flagged (Hard Rule 10). Generate visual-diff reports at `reports/visual-diff/<block>-<date>.md` for the 13 STOP-GATE-blocking blocks.
+Deploy composite block markup OVERWRITING the sandybrown homepage (Bean instruction 2026-05-09 — deploy target is the live homepage, not a sibling post). Snapshot current `post_content` first for rollback. Sandybrown post 29 stays preserved as the manual hero PoC reference. Run multi-frame Playwright capture at 0/200/500/1000/3000 ms across 375/768/1440 viewports. Run `mockup-parity-validator.js` per section and `screenshot-diff-helper.js` per Q1-Q4 delta flagged (Hard Rule 10). Generate visual-diff reports at `reports/visual-diff/<block>-<date>.md` for the 13 STOP-GATE-blocking blocks.
 
 ## Task 4: Unblock pre-commit STOP GATE; commit foundation
 
@@ -155,7 +155,8 @@ Standard close. Update state.md (phase -> bucket-2-ready or post-cloning-foundat
 
 ## Guardrails
 
-- DO NOT deploy to sandybrown post 29; that preserves the manual hero PoC for parity reference
+- DO NOT delete or overwrite sandybrown post 29; that preserves the manual hero PoC for parity reference
+- M9 deploy target IS the sandybrown homepage (overwrite). Snapshot post_content first for rollback. Bean instruction 2026-05-09
 - DO NOT bypass `screenshot-diff-helper.js` on Q1-Q4 deltas (Hard Rule 10)
 - DO NOT run the orchestrator with `--no-playwright` for production smoke; cascade fidelity drops to ~84%
 - DO NOT commit block-src changes to any branch other than main

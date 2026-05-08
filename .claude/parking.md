@@ -24,7 +24,7 @@ Items here have a clear next-step but aren't urgent. Each entry: the work, the t
 
 **What's left (M9 only):**
 - Multi-section orchestrator extension to walk all 9 sections of Mama's homepage in one run (the current orchestrator is single-section)
-- Live deploy of full homepage to sandybrown post 30 (NOT 29 — preserves the manual hero PoC reference)
+- Live deploy OVERWRITING the sandybrown homepage (Bean instruction 2026-05-09 — deploy target is the live homepage post, not a sibling post). Snapshot existing `post_content` first for rollback. Post 29 stays preserved as manual hero PoC reference.
 - Multi-frame Playwright capture at 0/200/500/1000/3000 ms across 375/768/1440 viewports
 - mockup-parity-validator.js per section
 - screenshot-diff-helper.js per Q1-Q4 delta flagged

@@ -61,7 +61,9 @@ Run `/gap-analysis` inline (not subagent) against `~/.claude/skills/sgs-clone/SK
 
 ### Task 3: Full Mama's homepage smoke + 13 visual-diff reports
 
-Deploy composite block markup to sandybrown post 30 (NOT 29). Multi-frame Playwright capture at 375/768/1440. `mockup-parity-validator.js` per section. `screenshot-diff-helper.js` per Q1-Q4 delta (Hard Rule 10 mandatory). Generate visual-diff reports at `reports/visual-diff/<block>-<date>.md` for the 13 STOP-GATE-blocking blocks: button, container, data-display, icon, icon-block, icon-list, media, mega-menu, mobile-nav, notice-banner, post-grid, process-steps, trust-bar, whatsapp-cta.
+Deploy composite block markup OVERWRITING THE SANDYBROWN HOMEPAGE (the page set as Settings -> Reading -> "Your homepage". Bean's instruction 2026-05-09: deploy goes to the homepage itself, not a sibling post). Sandybrown post 29 (the manual hero PoC) is preserved as a separate post for parity reference; do not delete it. Multi-frame Playwright capture at 375/768/1440. `mockup-parity-validator.js` per section. `screenshot-diff-helper.js` per Q1-Q4 delta (Hard Rule 10 mandatory). Generate visual-diff reports at `reports/visual-diff/<block>-<date>.md` for the 13 STOP-GATE-blocking blocks: button, container, data-display, icon, icon-block, icon-list, media, mega-menu, mobile-nav, notice-banner, post-grid, process-steps, trust-bar, whatsapp-cta.
+
+Pre-deploy steps: (a) snapshot the current homepage post content via `wp post get <home-id> --field=post_content` for rollback, (b) run `node scripts/global-styles-reset.js` to ensure variation cleanly applies, (c) `wp_global_styles` reset+reapply per project CLAUDE.md.
 
 ### Task 4: Unblock pre-commit STOP GATE + foundation commit
 
@@ -73,7 +75,8 @@ Phase advance to bucket-2-ready. Mark P-11-M9 RESOLVED.
 
 ## Guardrails
 
-- DO NOT deploy to sandybrown post 29 (preserves manual hero PoC reference)
+- DO NOT delete or overwrite sandybrown post 29 (preserves manual hero PoC reference)
+- DO snapshot the current homepage `post_content` BEFORE overwrite for rollback
 - DO NOT bypass `screenshot-diff-helper.js` on Q1-Q4 deltas (Hard Rule 10)
 - DO NOT run orchestrator with `--no-playwright` for production smoke
 - DO NOT commit block-src changes to any branch other than main
