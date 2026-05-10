@@ -18,11 +18,11 @@ End-state where Bean's drafts are deterministically clone-able by `/sgs-clone` (
 
 | # | Phase | Status | Est min | File |
 |---|---|---|---|---|
-| 1 | Foundation - capture lesson + Spec 13 + living docs + uimax flag | pending | 60 | `plans/phase-1-foundation.md` |
-| 2 | DB cleanup audit - sgs-framework + uimax-pro-max | pending | 30-45 | `plans/phase-2-db-cleanup-audit.md` |
-| 3 | Rename /style-replicator → /bean-voice-replicator | pending | 30 | `plans/phase-3-skill-rename.md` |
-| 4 | Bulk convention propagation across ~48 skill surfaces (B2-B9) | pending | 150-180 | `plans/phase-4-bulk-propagation.md` |
-| 5 | Cross-platform parking entries | pending | 20 | `plans/phase-5-cross-platform-parking.md` |
+| 1 | Foundation - capture lesson + Spec 13 + living docs + uimax flag | complete | 60 | `plans/phase-1-foundation-complete.md` |
+| 2 | DB cleanup audit - sgs-framework + uimax-pro-max | complete | 30-45 | `plans/phase-2-db-cleanup-audit-complete.md` |
+| 3 | Rename /style-replicator → /bean-voice-replicator | complete | 30 | `plans/phase-3-skill-rename-complete.md` |
+| 4 | Bulk convention propagation across ~48 skill surfaces (B2-B9) | in-progress | 150-180 | `plans/phase-4-bulk-propagation.md` (B2 done 2026-05-10; B3-B9 pending) |
+| 5 | Cross-platform parking entries | complete | 20 | `plans/phase-5-cross-platform-parking-complete.md` |
 | 6 | Mama's mockup migration to SGS-BEM | pending | 30-45 | `plans/phase-6-mockup-migration.md` |
 | 7 | Orchestrator rewire (stages 1-2-9 hardcoded shortcuts) | pending | 90-150 | `plans/phase-7-orchestrator-rewire.md` |
 | 8 | Pipeline validation (all 9 Mama's sections + critical fixes) + live deploy + eyes-on review | pending | 180-240 | `plans/phase-8-validation-and-deploy.md` |

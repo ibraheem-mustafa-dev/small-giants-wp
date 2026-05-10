@@ -2,13 +2,12 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-current_phase: cloning-pipeline-naming-convention-coverage
-current_step: "M9 redo in progress. Architectural correction landed: per-block attribute_mappings was the WRONG target; full naming-convention coverage in role-templates.json is the RIGHT target. Pre-flights all clean. extract.py stripped (1569 → 647 LOC, /qc-inline PASS). slot-filler.py v1 ships at 1116 LOC with 8/14 pytest tests passing. Hero parity at 9/50 — gated on adding 7 missing platforms (Spectra, Astra, Kadence, OOCSS, SUIT, Atomic, Kebab-semantic) to role-templates.json. After that, generic dispatch handles all 66 SGS blocks + any of 16 conventions. Spec 12 fully rewritten to reflect corrected architecture. Next session (Opus): convention-coverage rebuild + slot-filler element_id patch + validate hero 50/50 + live deploy."
-last_updated: 2026-05-10 (convention-rollout plan locked; 9 plan files at .claude/plan.md + .claude/plans/phase-1..8.md; QC 100/100; em-dashes 173->0; ready for Phase 1 execution)
+current_phase: convention-rollout-phase-4-bulk-propagation
+current_step: "Phase 4 Batch B2 complete: 5/5 design-generation skills (/ui-ux-pro-max, /innovative-design, /frontend-design, /superdesign, /sgs-discover) received Spec 13 reference inline. Surgical-edit constraint held — max delta +2.9% (under 5% over-reach threshold per KJC #1). Batches B3-B9 (~43 surfaces) pending; recommended next-session model: sonnet. Plan KJC #1 Option C in effect: B5 inline (substantive incl /sgs-clone Stage 0 gate); B3/B4/B6/B7/B8/B9 parallel-subagent. Partial summary at .claude/reports/phase-4-propagation-summary-2026-05-10.md."
+last_updated: 2026-05-10 (Phase 4 B2 shipped on Opus; plan.md table refreshed with phase 1/2/3/5 = complete, 4 = in-progress; commit 5a2ed4bd on main)
 blockers:
-  - "role-templates.json has 7 of 16 platforms populated. Mama's mockup uses kebab-semantic class style which none of the 7 cover. Slot-filler can extract content (text/images/links) but not CSS-token attrs (padding/font-size/colour) until the missing platforms ship. Parallelisable via 7 Sonnet subagents in ~45 min wall-clock."
-  - "Orchestrator stages 1-2-9 still hardcoded shortcuts. Stage 1 uses regex grep + DEFAULT_SECTION_MAP (should call per-section-convention-voter.py). Stage 2 hardcodes block_name (should call confidence-matrix.score_candidates). Stage 9 emits thin inline HTML (should call leftover-bucket-router + write recognition_log + call simple_html_review_report.py). Subagent-shaped wiring task, ~90-150 min."
-recommended_model_next: opus
+  - "frontend-design and superdesign are reference-style mini-docs graded against full-skill criteria by sgs-skillscore (49% F and 55% D respectively post-Phase-4 surgical edit). Bean confirmed do-not-restructure: rubric mismatch is a separate concern for a future skillscore tier or skill-type classifier. Spec 13 reference is correctly present in both."
+recommended_model_next: sonnet
 ---
 
 # small-giants-wp — State Snapshot

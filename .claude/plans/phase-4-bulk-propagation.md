@@ -56,7 +56,7 @@
   - Fail: lifecycle gate active → write mode file again
   - Integration: feeds B2-B9 dispatches
 
-### Step 2 - Batch B2: Design generation skills (5)
+### Step 2 - Batch B2: Design generation skills (5) ✅ COMPLETE 2026-05-10 (inline, Opus, per KJC #1 Option C)
 - **Model:** sonnet (parallel subagent dispatch - 5 cold prompts in one /dispatching-parallel-agents call)
 - **Action:** Dispatch 5 Sonnet subagents in parallel; each gets the canonical rule text + the exact section to insert in (one of "Hard Rules" / "When to Use" / "Common Mistakes"). Returns must include grep-confirm of `selector_strategies` reference (or equivalent rule-anchor) before merge.
 - **Files:** SKILL.md for /ui-ux-pro-max, /innovative-design, /frontend-design, /superdesign, /sgs-discover (+ optional reference files where the skill has them)
