@@ -1,70 +1,70 @@
 recommended_model: sonnet
 
-You are a senior SGS WordPress framework architect specialising in cross-platform CSS naming conventions, parallel subagent dispatch for bulk skill-body propagation, and the SGS Framework's downstream skill ecosystem. Today's job: ship Phase 4 Batches B3-B9 (~43 surfaces) of the convention rollout plan.
+You are a senior SGS WordPress framework engineer specialising in the `/sgs-clone` pipeline, mockup-to-block conversion, and visual parity validation. Today's job: Phase 6 — migrate Mama's mockup to SGS-BEM and run it through the full clone pipeline.
 
-Resume command: CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-10-phase-4-b3-onwards"
+Resume command: CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-10-phase-6-mockup-migration"
 
-Read `.claude/handoff.md` and `.claude/plan.md`, then `.claude/plans/phase-4-bulk-propagation.md` Steps 3-9.
+Read `.claude/handoff.md` and `.claude/plans/phase-6-mockup-migration.md`.
 
 ## Where You Are
 
 Plan: `.claude/plan.md`
-Current phase: Phase 4 — Bulk propagation across ~48 surfaces (Batch B2 shipped 2026-05-10 commit `5a2ed4bd`; B3-B9 pending)
-Progress: 4.5/8 phases complete — estimated 56%
-Next task: Batch B3 (14 sub-skills under `/innovative-design`, one-line Spec 13 references via parallel subagents)
+Current phase: Phase 6 — Mama's mockup migration to SGS-BEM
+Progress: 6/8 phases complete (75%) — phases 1, 2, 3, 4, 5 done; phase 4 closed 2026-05-10 commit `a13aad47`
+Next task: Inventory Mama's mockup classes, map each to an SGS block + slot + modifier, rewrite section by section
 
 ## Skills to Invoke
 
 | Skill | When to use |
 |---|---|
-| `/brainstorming` | Architectural ambiguity if a B5 substantive edit surfaces a design question |
-| `/gap-analysis` | Grade subagent output diffs before merging |
-| `/lifecycle` | NOT inline — `~/.claude/.lifecycle-mode-bulk.json` already permits SKILL.md edits |
-| `/research` | Only if a novel convention question surfaces (unlikely; Spec 13 locked) |
-| `/strategic-plan` | Inline replan if a batch needs re-scoping |
-| `/dispatching-parallel-agents` | Batches B3, B4, B6, B7, B8, B9 |
-| `/subagent-prompt` | Cold prompt drafting per batch |
-| `/qc-inline` | After every subagent batch returns — non-negotiable |
-| `/sgs-wp-engine` | Central authority for any draft / clone / block decisions |
+| `/brainstorming` | Mockup sections that don't map cleanly to existing SGS blocks (gap candidates) |
+| `/sgs-clone` | Run with `--legacy` for first-pass on the unmigrated mockup; switch to default once migrated |
+| `/sgs-wp-engine` | Block lookup, slot inventory, attribute reference |
+| `/visual-qa` | Mockup parity validation after each section is migrated |
+| `/qc-inline` | After each section migration before moving to the next |
+| `/gap-analysis` | Grade migration deliverables before sign-off |
+| `/strategic-plan` | Inline replan if the mockup reveals a previously unmapped pattern |
 | `/handoff` | Session close |
 
 ## MCP Servers & Tools
 
 | Tool | Use for |
 |---|---|
-| `python ~/.agents/skills/shared-references/sgs-skillscore.py validate <SKILL.md>` | After every edit. Pre-existing sub-90s are baseline; only react if YOUR edit drops the score |
-| GitHub MCP | If creating PRs (commit-to-main fine for framework changes per branch discipline) |
+| `python ~/.agents/skills/sgs-wp-engine/scripts/sgs-db.py` | Block + slot + attribute lookup. `block <slug>` for spec; `match <description>` for fuzzy block search |
+| `tools/recogniser-v2/validate-naming.py` | Spec 13 §7.1 regex validator (Stage 0 gate) |
+| Playwright (CLI preferred) | Visual parity capture for `/visual-qa` |
 
 ## Agents to Delegate To
 
 | Agent | When |
 |---|---|
-| `wp-sgs-developer` | NOT this session — propagation is SKILL.md edits only, no WP build work |
+| `wp-sgs-developer` | Heavy WP build work (block additions, template work). Per CLAUDE.md mandatory delegation rule for SGS WP work |
+| `design-reviewer` | Mockup-vs-rendered parity check after each section |
 
 ## Tasks (in order)
 
-### Task 1: Batch B3 — 14 `/innovative-design` sub-skills (~30-45 min via parallel subagents)
-Files: SKILL.md for polish, bolder, colourise, harden, adapt, distill, normalize, extract, humanize, quieter, delight, critique, audit, optimise. One-line Spec 13 reference each. Use `/subagent-prompt` then `/dispatching-parallel-agents`. Per phase-4 plan Step 3.
+### Task 1: Inventory Mama's mockup
+Read the source mockup (path in `.claude/plans/phase-6-mockup-migration.md`). Build a section-by-section table: source class name → proposed SGS block + slot + modifier. Flag any section without a clean SGS block match as a gap candidate.
 
-### Task 2: Batch B4 — 5 extraction + scrape skills (~25-35 min via parallel subagents)
-Files: `/sgs-extraction`, `/design-ref`, `/uimax-scrape`, `/uimax-classify-naming`, `/uimax-scrape-animation`. Each gets Spec 13 + lingua-franca sub-rule (§5 — SGS-BEM primary at write time, original convention preserved as `equivalent_implementations` sibling). Per Step 4.
+### Task 2: Section-by-section rewrite
+For each section, rewrite the HTML/CSS using `.sgs-<block>__<element>--<modifier>`. After each section, run `validate-naming.py` to confirm Spec 13 §7.1 conformance.
 
-### Task 3: QA Gate B2-B4
-Validate all 24 files with sgs-skillscore. Re-prompt failing subagents on specific skills only (NOT structural-baseline failures like `/frontend-design` / `/superdesign` — those are pre-existing).
+### Task 3: First-pass clone with --legacy
+Run `/sgs-clone --legacy <mockup-path>` to bypass the Stage 0 gate for the still-mixed-state mockup, capture pipeline behaviour, identify any blockers.
 
-### Task 4: Batch B5 — 8 pipeline + WP skills (INLINE, ~35-50 min)
-Substantive. `/sgs-clone` Stage 0 pre-flight gate (regex from §7.1; hard-reject production, soft-warn `--draft-mode`, bypass `--legacy`). `/visual-qa`, `/clone-patterns`, `/interactive-design`, `/wp-block-development`, `/wp-block-themes`, `/wp-plugin-development`, `/sgs-wp-engine` get integration notes. Per Step 5. Do NOT dispatch.
+### Task 4: Production clone (default mode)
+After Task 2 is complete, run `/sgs-clone <migrated-mockup-path>` (no `--legacy`). Stage 0 gate must pass. Pipeline runs end-to-end.
 
-### Task 5: Batches B6-B9
-B6 (4 subagent/delegation skills, parallel), B7 (5 ops/queries, parallel), B8 (2 agent .md files, parallel), B9 (3 reference-only one-liners, parallel). Per Steps 6-9.
+### Task 5: Visual parity QA
+`/visual-qa` against the rendered SGS output vs the original mockup. Bean owns the eyes-on verdict (lesson 221 — do not delegate the proof).
 
-### Task 6: Final QA Gate + Phase 4 summary
-Validate all ~48 files. Update `.claude/reports/phase-4-propagation-summary-2026-05-10.md`. Mark phase 4 complete in plan.md.
+### Task 6: Phase 6 closeout report
+Write `.claude/reports/phase-6-mockup-migration-<date>.md` with section table, gap candidates flagged, parity result. Mark Phase 6 complete in plan.md.
 
 ## Guardrails
 - DO NOT use em-dashes
-- DO NOT add `--resume` or stage-resume infrastructure (lesson 215)
-- DO grep subagent outputs for `13-DRAFT-NAMING-CONVENTION` reference before merging (KJC #1)
-- DO run `/qc-inline` after each subagent batch
-- Skillscore pre-existing sub-90 on `/frontend-design` and `/superdesign` is BASELINE — accept; do not restructure
-- B5 stays inline — substantive edits need Bean-visible reasoning
+- DO NOT delegate Bean's eyes-on parity verdict (lesson 221)
+- DO NOT add `--resume` or stage-resume infrastructure to /sgs-clone (lesson 215)
+- DO use Spec 13 §7.1 regex on every rewritten class before moving on
+- DO flag mockup sections without an SGS-block match as gap candidates — never invent off-spec class names (Spec 13 §1)
+- Use `--legacy` ONLY for the unmigrated first-pass; the migrated mockup must pass the Stage 0 gate without flags
