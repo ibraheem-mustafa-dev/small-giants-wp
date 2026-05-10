@@ -1,5 +1,36 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-08 (Rosetta Stone discipline + no-licensing rule + design-review-driven 11-fix synthesis)
+**Last updated:** 2026-05-09 (one lesson captured this session — operator owns proof of unproven systems)
+
+## 2026-05-09 — Don't delegate the test of unproven work (blub.db row 221, area=revenue-sgs)
+
+**The rule:** The operator must witness the rendered output of an unproven system's first live test. Never delegate the proof step itself to a subagent. Never write fallback options in an agent brief that allow the proof to be skipped. Never accept an agent's text report ("post updated, zero console errors") as evidence. Open the URL with own eyes BEFORE claiming success.
+
+**Incident:** M9 milestone of the SGS cloning pipeline. M9's headline deliverable was proving the new multi-section orchestrator works end-to-end on a real live page (Mama's Munches homepage on sandybrown). Orchestrator was unproven — built same session. Operator extended the orchestrator inline, then delegated the deploy + Playwright + 13 visual-diff reports to wp-sgs-developer with the wording: *"If full multi-section deploy is not feasible in this session, a hero-only homepage deploy (matching post 29 PoC) is acceptable for M9. The key deliverable is the 13 visual-diff reports."* The agent took the fallback path, deployed only the M8 hero markup, returned "Post 8 updated, zero console errors". Operator read the report and went to commit. Never opened the URL. Claimed M9 shipped. When Bean asked to check, opened the URL and found: hero+footer with massive empty gap, debug WordPress nav, empty Opening Hours and Address fields, orphaned Get Directions button, and per Bean the hero is not even a perfect clone of post 29.
+
+**Two stacked failures:**
+1. **Fallback in the agent brief gutted the test.** Writing "hero-only is acceptable" gave the agent permission to skip the actual proof. The 13 reports were a gate-passing requirement, NOT the proof — calling them "the key deliverable" inverted what mattered.
+2. **Trusted agent's text report as evidence.** "Post updated, zero console errors" are inputs, not proof of correct rendering. Should have opened the URL before any commit.
+
+**Extends:** `verify-rendered-output-not-internal-metrics` (blub.db row 194, captured 2026-04-29) across the agent-delegation boundary. The parent rule fires when claiming work done in main thread without checking rendered DOM. This rule fires when claiming work done based on a subagent's narrative without checking rendered DOM.
+
+**Process change:** Auto-recovery script `C:/Users/Bean/.claude/hooks/blub-db-unlock.py` shipped + `correction-capture.md` and `capture-lesson` SKILL.md updated to make blub.db POST recovery a default reflex (no diagnosis turn required). The recovery script handles the abandoned `.tmp-<uuid>` sidecar pattern that masked the M9-session POST hangs. See updated protocol at `~/.claude/skills/autopilot/references/correction-capture.md`.
+
+## 2026-05-10 — Five lessons captured during pre-M9 lifecycle batch (blub.db ids 215-218, 220)
+
+### 1. No `--resume` flags or stage-resume infrastructure inside skills/scripts/pipelines (id 215)
+Sessions are atomic from the operator side. Bean does not run `--resume <run_id>`. Fresh session = fresh start with the prompt + referenced files. Trigger phrases for self-check: "resume support", "--resume flag", "continue from stage", "session-resume", "partial run continuation", "stage handler retry semantics". The handoff.md + next-session-prompt.md flow is the ONLY session-bridging mechanism — it operates BETWEEN sessions, not BETWEEN pipeline runs within a session. Captured after `/gap-analysis` recommended adding `--resume` to `/sgs-clone` Tool Bindings — Bean: "I genuinely hate this. It's completely useless."
+
+### 2. C-grade gaps must pass the impact litmus, not rubric pedantry (id 216)
+Before scoring a gap C (2.5)+, ask literally: "If this naming/structure/format issue gets fixed, what specific outcome changes?" If the answer is "the prose looks more like a config file" or "the rubric anchor is satisfied" — the gap is NOT C. It's D. Test: would an automated downstream tool ACTUALLY consume the missing element today (not hypothetically)? Captured after I scored `/sgs-clone` strategic-alignment at 3.5 for missing strategic-objective IDs that no automated tool consumes — Bean: "Is it optimal to have these references in the skill.md file or a waste/distraction?" The IDs were database-key clutter, not motivation.
+
+### 3. Verify "production path uses X" by grepping the actual script (id 217)
+Before claiming "production path uses X" / "the production runtime is X" in any analysis: open the actual production script and grep for X. Confirm whether X is the runtime, a dependency, an optional sub-step, or a deprecated reference. Handoffs and skill bodies use "production path" loosely — don't propagate without verifying. Captured after I claimed "M8 production path = Playwright" in a `/sgs-clone` gap-analysis. Bean: "I thought we replaced a lot of our playwright use with chrome dev tools CLI / MCP and pretty much all of the production was completed via python scripts." Bean was right — production = Python pipeline (`sgs-clone-orchestrator.py`); Playwright is one Stage 4/5 sub-step.
+
+### 4. Analysis skills must run /search--local first AND /qc-inline last before shipping (id 218)
+Any skill that produces gaps, scores, opportunities, recommendations, proposals, or evaluative findings MUST run two gates: (1) `/search--local` before scoring to load current state; (2) `/qc-inline` after producing findings to fact-check the assumptions each finding rests on. Skip either and analysis ships built on stale architecture, ungrepped scripts, or untested premises. **Now baked structurally into `/gap-analysis` Step 1.5 (HARD GATE) and Step 7.6 (HARD GATE)** so future runs auto-enforce. Captured after a `/sgs-clone` gap-analysis shipped 6 gaps where 4 rested on wrong assumptions.
+
+### 5. Broaden the search before declaring a spec or schema "wrong" (id 220)
+When a spec references a data structure that the obvious place doesn't have, search at least 4 places BEFORE concluding: (1) the owning skill's own `data/`/`references/`/`scripts/` folders; (2) related skills (read their SKILL.md); (3) glob across `~/.agents/` and `~/.claude/`; (4) re-read project CLAUDE.md. For uimax specifically: data lives at `~/.agents/skills/ui-ux-pro-max/data/*.csv` and `~/.agents/skills/ui-ux-pro-max/scripts/ui-ux-pro-max.db` — NOT in `sgs-framework.db`. Captured after I declared P-15 schema-mismatched while the answer was in a CSV folder I never opened — Bean: "You are 100% wrong. How did you even search for it because you could have found it through `/uimax` or `/ui-ux-pro-max` or the file itself!"
 
 ## 2026-05-07 — uimax is the Rosetta Stone of design (Bean's reframe of the cross-platform translation principle)
 

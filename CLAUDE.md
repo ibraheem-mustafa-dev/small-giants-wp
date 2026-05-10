@@ -113,7 +113,7 @@ This rule exists because framework fixes shipped on a feature branch pollute his
 
 The `sgs-wp-engine` skill is the central authority. Invoke it for any SGS work. It provides:
 
-- **SQLite knowledge base** — 55 blocks, 619 attributes, 25 design tokens, 25 patterns
+- **SQLite knowledge base** — 66 blocks, 619+ attributes, 25 design tokens, 36 patterns (block_compositions table seeded 2026-05-10)
 - **33 reference docs** — migration methodology, design-compare tool, QA pipeline, marketing playbook, brand.json, Indus comparison data, and more
 - **12 scripts** — 6 design QA JS scripts, sgs-db.py, touch-scan, pattern generator, DB tools
 
@@ -124,6 +124,27 @@ python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py block sgs/hero # Block d
 python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py match "pricing" # Find best block
 python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py context indus-foods # Load client
 ```
+
+### `/sgs-update` — 4 stages (updated 2026-05-10)
+
+`/sgs-update` runs four stages in sequence:
+1. Re-scan codebase + update sgs-framework.db (`update-db.py`)
+2. Regenerate `.claude/specs/02-SGS-BLOCKS-REFERENCE.md` from the DB
+3. Mirror sgs-blocks → uimax `~/.agents/skills/ui-ux-pro-max/data/component-libraries.csv` so `/ui-ux-pro-max` (the design brain) sees current SGS blocks alongside Radix UI Primitives, Headless UI, etc.
+4. Scan `animations.is_gap_candidate=1` rows + emit markdown report at `reports/uimax-gap-candidates-<date>.md`
+
+Stage 3+4 implemented in `plugins/sgs-blocks/scripts/uimax-tools/sgs-update-uimax-sync.py` (idempotent). On first run Stage 4 migrates the `animations` table schema with 5 columns (`is_gap_candidate`, `gap_reason`, `sgs_block`, `sgs_animation_attribute`, `equivalent_implementations`).
+
+### `plugins/sgs-blocks/scripts/uimax-tools/` — write-side helpers
+
+| File | Role |
+|---|---|
+| `uimax-write-validator.py` | Pre-write validator. Rejects rows 211 (no licensing) + 213 (Rosetta Stone equivalent_implementations.sgs_block). |
+| `uimax_write.py` | Python helper module — atomic validate-then-write. Single chokepoint so future write code can't accidentally skip the validator. |
+| `seed-block-compositions.py` | One-shot seed script for sgs-framework.db `block_compositions` table (idempotent). |
+| `sgs-update-uimax-sync.py` | Stage 3+4 sync called by `/sgs-update`. |
+
+Full README at `plugins/sgs-blocks/scripts/uimax-tools/README.md`.
 
 ## Site Migration
 
@@ -202,6 +223,17 @@ Any tool that feeds uimax — `/sgs-clone` plus its sibling commands `/uimax-scr
 **Distinction:** `uimax` (the abbreviation) refers to the DB / data activity layer (write/read/query/ingest). `/ui-ux-pro-max` is the intelligence skill that USES the DB for recommendations and judgement. The `/uimax-*` slash commands are pure DB activity. `/sgs-clone` orchestrates them; calls `/ui-ux-pro-max` only when judgement is needed (style picks, classification confirmations).
 
 `/animation-harvest` standalone form is the anti-pattern (captures animations without writing to uimax with SGS-block-attribute mapping). Replaced by `/uimax-scrape-animation` 2026-05-07. Captured 2026-05-06 as blub.db row 213.
+
+### Saved-defaults model (canonical)
+
+Operator-facing defaults split across four WordPress-native channels. Do NOT reintroduce any parallel saved-defaults infrastructure (no `withSaveAsDefault` HOC, no `<BlockDefaultsPanel>`, no `wp_options`-backed defaults store).
+
+1. **Visual styling defaults** (colour / typography / spacing / border / shadow / hover / animation tokens) live in the Site Editor Styles panel. Backed by `wp_global_styles` overlaying `theme.json`.
+2. **Structural starting state** (mode / layout / variant / columns / behaviour switches) lives in block patterns at `plugins/sgs-blocks/includes/block-patterns.php`. Reachable from the inserter pattern library.
+3. **Per-operator memory across one editor session** uses the `useLastUsedAttributes` sessionStorage hook (`plugins/sgs-blocks/src/components/useLastUsedAttributes.js`). Browser-scoped, no server round-trip. Opt-in per block.
+4. **Per-instance customisation** lives in block inspector controls.
+
+The retired saved-defaults system was removed 2026-05-08 (audit + migration at `.claude/reports/saved-defaults-audit-2026-05-08.md`).
 
 ### Image controls discipline
 
