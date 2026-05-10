@@ -2,11 +2,11 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-current_phase: convention-rollout-phase-4-bulk-propagation
-current_step: "Phase 4 Batch B2 complete: 5/5 design-generation skills (/ui-ux-pro-max, /innovative-design, /frontend-design, /superdesign, /sgs-discover) received Spec 13 reference inline. Surgical-edit constraint held — max delta +2.9% (under 5% over-reach threshold per KJC #1). Batches B3-B9 (~43 surfaces) pending; recommended next-session model: sonnet. Plan KJC #1 Option C in effect: B5 inline (substantive incl /sgs-clone Stage 0 gate); B3/B4/B6/B7/B8/B9 parallel-subagent. Partial summary at .claude/reports/phase-4-propagation-summary-2026-05-10.md."
-last_updated: 2026-05-10 (Phase 4 B2 shipped on Opus; plan.md table refreshed with phase 1/2/3/5 = complete, 4 = in-progress; commit 5a2ed4bd on main)
+current_phase: convention-rollout-phase-6-mockup-migration
+current_step: "Phases 1-5 + Phase 4 complete (6 of 8). Phase 4 propagated Spec 13 to 45 surfaces in one Opus session via batch insert script (5 in B2 inline + 40 in B3-B9 via Python helper). All 45 files have Spec 13 path + SGS-BEM Convention H2 + blub.db row 236 marker. 0 regressions from passing to failing. Max gain +2.9% (under 5% over-reach trigger). Largest drop sgs-clone -3.6 (94.0->90.4 from longer Stage 0 gate template, still passing). Next: Phase 6 Mama's mockup migration to SGS-BEM (use /sgs-clone --legacy for first-pass bypass)."
+last_updated: 2026-05-10 (Phase 4 fully complete on Opus; 45 surfaces propagated; report at .claude/reports/phase-4-propagation-summary-2026-05-10.md)
 blockers:
-  - "frontend-design and superdesign are reference-style mini-docs graded against full-skill criteria by sgs-skillscore (49% F and 55% D respectively post-Phase-4 surgical edit). Bean confirmed do-not-restructure: rubric mismatch is a separate concern for a future skillscore tier or skill-type classifier. Spec 13 reference is correctly present in both."
+  - "Skillscore rubric mismatch: command files (~/.claude/commands/*.md), agent files (~/.claude/agents/*.md), and reference-style mini-skills (polish, bolder, colourise, distill, etc.) are graded against full-skill criteria. 24 of 45 Phase 4 files sit below 90% for this reason - all pre-existing baseline noise, not caused by Phase 4 edits. Future fix: add skill-type classifier to sgs-skillscore."
 recommended_model_next: sonnet
 ---
 
