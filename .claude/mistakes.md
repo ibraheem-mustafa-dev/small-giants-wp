@@ -1,5 +1,37 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-10 (canonical-convention lesson captured — Bean-controlled drafts MUST use SGS-prefixed BEM)
+**Last updated:** 2026-05-10 (two new lessons added this session — class-pattern depth + cite-without-verify)
+
+## 2026-05-10 — Classes in mockups map to PATTERNS, not single blocks (CC memory: feedback_classes_map_to_patterns_not_blocks.md)
+
+**The rule:** When migrating a mockup to SGS-BEM, most semantic class names operate at the **PATTERN level**, not the block level. Header, footer, featured-product, ingredients, brand-story, gift-section, social-proof are all PATTERNS composed of multiple blocks. Only composite single-block sections (like `sgs/hero`) collapse to one block. Inner classes follow their corresponding block's slug; inner elements without a dedicated block use the parent pattern's namespace.
+
+**Incident:** Phase 6 mockup migration inventory. I surfaced 4 decisions to Bean treating header / footer / featured-product / section-headings as block-level questions when they were pattern-level. Bean: *"classes are equivalent to patterns, not blocks (aside from only the composite block sgs-hero)... we already do have header and footer patterns saved in the theme"*. He also flagged `ingredient-card` as separate `sgs/info-box` instances inside a `sgs/feature-grid` — exactly matching the existing `ingredients-section` pattern. I had asked a redundant question about it.
+
+**Process rule attached:** Never defer with a placeholder or "future session" note when a new block / pattern / attribute is needed during clone-pipeline migration. The Rosetta Stone + scripts make new blocks near-zero-effort. If a script is missing, write it; if intelligence/decision is needed, do it inline with Bean.
+
+**Pre-flight check before assuming a section is a gap candidate:**
+1. Cross-reference `theme/sgs-theme/patterns/*.php` for an existing pattern
+2. Run `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py match "<keyword>"` (note: sgs-db match returns template parts first; check the full output for block hits)
+3. Check `plugins/sgs-blocks/build/<slug>/block.json` if a block is suspected
+
+## 2026-05-10 — Don't cite specifics from prior-session notes without grepping the source
+
+**The rule:** Don't propagate specifics from a previous session's notes (state.md, handoff.md, plan files) into a new handoff or recommendation without verifying they still hold against the current code. Notes are point-in-time snapshots; code drifts between sessions.
+
+**Incident:** During the Phase 6 handoff write, I lifted text from the previous session's state.md blockers list into the Phase 7 next-session-prompt:
+> "Stage 1 uses regex grep + DEFAULT_SECTION_MAP. Stage 2 hardcodes block_name. Stage 9 emits thin inline HTML."
+
+Bean: *"how do you already know what stages to rewire?"* — caught the cite-without-verify. I had not opened any of the actual scripts to confirm the descriptions were still accurate, nor confirmed that the 4 named dispatcher modules (`per-section-convention-voter.py`, `confidence-matrix`, `leftover-bucket-router`, `simple_html_review_report.py`) exist on disk as named.
+
+**Why this matters:** propagating stale specifics into a handoff means the next session inherits possibly-wrong context. The next-session-prompt's Task 1 should be framed as "discover current state" when specifics haven't been verified, not as a directive based on stale notes.
+
+**Stacks on top of:**
+- Lesson 194 — verify rendered output, not internal metrics
+- Lesson 220 — broaden search before declaring a spec wrong
+- Lesson 221 — don't delegate the test of unproven work
+- Lesson 226 — verify production path by grepping the script
+
+**How to apply:** When writing a handoff or recommending an approach based on documented project state, either (a) grep / open the named files to confirm they exist and match the description, OR (b) frame the next-session task as "verify current state matches this note before acting", not as a directive based on the note. For the Phase 7 next-session-prompt left this session, the Task 1 wording ("inspect orchestrator + 3 dispatchers... note exact call signatures") already accommodates discovery — but only by accident; the surrounding context still presumes the state.md description is accurate.
 
 ## 2026-05-10 — Bean-controlled drafts use SGS-prefixed BEM (blub.db row 236, area=revenue-sgs)
 
