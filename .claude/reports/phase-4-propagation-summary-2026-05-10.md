@@ -66,9 +66,37 @@ Across all 40 B3-B9 edits, no positive delta exceeded +2.9%. No subagent (or in 
 
 Both drops are within surgical-edit tolerance (under 5% in either direction).
 
+## Bespoke integration notes (follow-up pass, same session)
+
+The first pass shipped a generic Template C to B5 (excluding `/sgs-clone`), B7, and Template D unioned across both B8 agents. The plan called for **per-skill integration notes** anchoring Spec 13 to the actual mechanism each skill uses. A follow-up Python helper (`.claude/scratch/phase-4-bespoke-integration-notes.py`, idempotent) added a `**Integration in this skill:**` paragraph immediately before the canonical reference line in 25 surfaces, and split the B8 union template into per-agent rules:
+
+| Surface | Bespoke note (gist) |
+|---|---|
+| B3 ×14 (polish, bolder, colourise, harden, adapt, distill, normalize, extract, humanize, quieter, delight, critique, audit, optimise) | Routed via `/innovative-design`; conform to its SGS-BEM rule before downstream pipelines |
+| B5 sgs-wp-engine | Block-builds, QA pipeline, pattern emission map class-name parts back to block.json — non-Spec-13 is a framework-correctness failure |
+| B5 visual-qa | Mockup-parity-validator selector queries assume SGS-BEM on both sides; non-conformance causes silent parity failures |
+| B5 clone-patterns | Cloned patterns inherit from source draft; pattern library promotion blocked on Spec 13 conformance |
+| B5 interactive-design | Animation/interaction selectors target Spec 13 class names; CSS/JS keys off canonical class structure |
+| B5 wp-block-development | block.json attribute values drive the modifier segment; slot ids become the element segment |
+| B5 wp-block-themes | Style variations register as `--<modifier>`; theme.json palette/spacing slugs feed modifier segments |
+| B5 wp-plugin-development | Plugins emitting blocks MUST register block.json attributes aligned with Spec 13 modifier values |
+| B7 sgs-update | Stage 1 populates `is_canonical_for_sgs_drafts`; Stage 3 mirrors SGS blocks with the flag |
+| B7 wp-blocks | Block search returns Spec 13 slot ids + block.json attribute values |
+| B7 sgs-db | Naming-convention queries MUST filter `WHERE is_canonical_for_sgs_drafts=1` |
+| B7 dev | Build/deploy phases that emit class names MUST validate Spec 13 conformance pre-deploy |
+| B8 wp-sgs-developer | Build-time correctness rule: every block-render class name resolves to (slug, slot, attribute); flag gap candidates instead of ad-hoc classes |
+| B8 design-reviewer | Non-conforming class names = fail criterion for design review; refuse to certify visual parity until convention is applied |
+
+Verification:
+```
+B3+B5+B7 surfaces with Integration marker: 25 / 25
+B8 split: wp-sgs-developer "fail criterion" count = 0 (expected 0)
+B8 split: design-reviewer "fail criterion" count = 1 (expected ≥1)
+```
+
 ## Cross-references locked across the framework
 
-After Phase 4, every Bean-controlled skill, agent, and command that emits or accepts class names carries an explicit pointer to Spec 13. Future sessions cannot silently drift to ad-hoc-semantic class naming without violating a documented rule. The `/sgs-clone` Stage 0 pre-flight gate, the lingua-franca-conversion sub-rule for live scrapes, and the cold-prompt requirement for dispatch skills are now propagation-complete.
+After Phase 4, every Bean-controlled skill, agent, and command that emits or accepts class names carries an explicit pointer to Spec 13 AND a per-skill integration note describing how the rule plugs into that skill's mechanism. Future sessions reading any of these surfaces immediately see (a) the rule, (b) where the rule applies in this skill, and (c) the canonical spec to consult for full detail. The `/sgs-clone` Stage 0 pre-flight gate, the lingua-franca-conversion sub-rule for live scrapes, the cold-prompt requirement for dispatch skills, and the per-agent enforcement rules are now propagation-complete.
 
 ## Next phases (per master plan `.claude/plan.md`)
 
