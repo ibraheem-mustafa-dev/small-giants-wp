@@ -1,5 +1,15 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-09 (one lesson captured this session — operator owns proof of unproven systems)
+**Last updated:** 2026-05-10 (canonical-convention lesson captured — Bean-controlled drafts MUST use SGS-prefixed BEM)
+
+## 2026-05-10 — Bean-controlled drafts use SGS-prefixed BEM (blub.db row 236, area=revenue-sgs)
+
+**The rule:** Every Bean-controlled draft (mockup, sketch, hand-coded HTML produced in-house) MUST use `.sgs-<block>__<element>--<modifier>`. The `/sgs-clone` Stage 0 pre-flight gate hard-rejects non-conforming drafts on production runs. With `--draft-mode` the gate downgrades to a soft lint warning. Live scrapes (sites Bean does NOT control) use lingua-franca-conversion at recognition time: `/uimax-*` skills convert source-convention class names to SGS-BEM as primary at write time, preserving original convention as a sibling row in `equivalent_implementations`. Existing pre-rule drafts use `--legacy` flag for one-off bypass.
+
+**Why:** drafts and rendered SGS share class-name space; literal slug match (`.sgs-hero` → `sgs/hero`) collapses the 9-stage pipeline from probabilistic-with-fallback to deterministic for Bean-authored drafts. The naming-convention coverage gap that surfaced repeatedly in M9 redo was misdiagnosed as "add 7 more platform translation rules" when the actual fix is to constrain the source side. Probabilistic recognition stays only where Bean does NOT control source naming (live scrapes).
+
+**Canonical reference:** `.claude/specs/13-DRAFT-NAMING-CONVENTION.md`. Workspace lesson: `C:/Users/Bean/.openclaw/workspace/memory/learning/2026-05-10-bean-drafts-use-sgs-prefixed-bem-naming.md`. Convention rollout plan: `.claude/plan.md` + 8 phase files at `.claude/plans/phase-1..8.md`.
+
+
 
 ## 2026-05-09 — Don't delegate the test of unproven work (blub.db row 221, area=revenue-sgs)
 

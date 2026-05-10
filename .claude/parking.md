@@ -303,3 +303,55 @@ The icon-list refactor (2026-05-08) removes saved-defaults usage from icon-list 
 - **~~H-8 — Hero ctaGap attribute + recogniser blind spot~~** — RESOLVED 2026-05-06. 4 attrs added (ctaGap + responsive variants). v5 deprecation. Recogniser fix folded into Section R prevention scripts.
 - **~~H-9 — Background shorthand audit~~** — RESOLVED 2026-05-06. 3 of 15 matches required fixing (cta-section + post-grid). `css-pattern-audit.js` extended.
 - **~~H-10 — Cascade Section R defects into prevention scripts~~** — RESOLVED 2026-05-06. Background shorthand audit, pseudo-element measurement, parent-chain filter walker — all shipped.
+
+---
+
+## Cross-platform emit pathway (deferred until M9 production-stable)
+
+The Rosetta Stone discipline (Hard Rule 7) + SGS-prefixed BEM convention (Spec 13) make cross-platform output structurally feasible. The parking entries below capture the work without committing to it now. Trigger condition for ALL three: M9 production-stable + at least 3 successful clones banked + a client/market opportunity that justifies the per-platform engineering pass.
+
+### P-CP-1 — `/sgs-emit` (cross-platform component emitter)
+
+**What it does:** Read a `/sgs-clone` result (composition + filled slots + recognised SGS blocks) and emit equivalent component code for non-WP platforms. Targets in priority order: React (web SPA), React Native (mobile), Flutter (mobile), SwiftUI (iOS native), Web Components (framework-agnostic). Emit pathway uses `role-templates.json` direction:generate entries plus uimax `equivalent_implementations` payloads to map SGS blocks to platform-idiomatic components.
+
+**Trigger:** Vague — client request for non-WP platform. Specific named use cases as recognition aids: Bean & Tub mobile app (RN); Indus Foods mobile reskin (RN or Flutter); any SGS Studio v2 mobile component. Soak ~3 months after M9 production-stable.
+
+**Effort estimate:** ~8-12 hours initial scaffold + ~4-6 hours per platform target for first smoke test.
+
+**Source materials:**
+- uimax `stack_*` tables (Angular, Astro, Flutter, HTML/Tailwind, Jetpack Compose, Laravel, Next.js, Nuxt, React, React Native, shadcn, Svelte, SwiftUI, Three.js, Vue — 49–60 rows each)
+- `role-templates.json` direction:generate entries (post-Phase 4)
+- uimax `equivalent_implementations` payloads on every artefact (Rosetta Stone)
+- Spec 13 (`.claude/specs/13-DRAFT-NAMING-CONVENTION.md`) — SGS-BEM is what makes cross-platform structural alignment feasible at all
+
+**Dependencies:** M9 production-stable (so the clone pipeline is reliable before we extend it); ≥3 successful clones banked (test data); Phase 4 propagation complete (so `/sgs-clone` body honours Spec 13 lingua-franca rule).
+
+### P-CP-2 — Style translation (theme.json → React/Flutter/SwiftUI styles)
+
+**What it does:** Read `theme.json` palette + spacing + typography tokens (or uimax `design_tokens` table directly) and emit equivalent style objects for: React (CSS-in-JS objects, styled-components ThemeProvider props, Tailwind config), Flutter (`ThemeData` + per-component overrides), SwiftUI (custom modifier extensions on `View`), Web Components (CSS custom property block). Honours DTCG token format already in uimax.
+
+**Trigger:** Vague — P-CP-1 in flight OR client request for style-only port (e.g. design system migration). Specific named: HelpingDoctors EHR app theme port from web to mobile.
+
+**Effort estimate:** ~6-8 hours per target platform.
+
+**Source materials:**
+- uimax `design_tokens` table — 5,164 DTCG-format rows as of 2026-05-10
+- Rosetta Stone payloads on token rows
+- `theme.json` v3 (per-client style variations in `theme/sgs-theme/styles/`)
+
+**Dependencies:** Not strictly required after P-CP-1 but synergistic — emit + translate ship together for full app-component parity. Deferred until M9 production-stable.
+
+### P-CP-3 — Animation translation (uimax animations → React-spring / Flutter / SwiftUI)
+
+**What it does:** Translate CSS keyframe animations captured in uimax `animations` table to: React-spring config (`useSpring` calls + `config` objects), Flutter `AnimationController` + `Tween` setups, SwiftUI `.animation()` and `withAnimation { }` form. Reads via `equivalent_implementations` Rosetta Stone payloads on each animation row.
+
+**Trigger:** Vague — P-CP-1 + P-CP-2 in flight, animation-rich app port requested. Specific named: Bean & Tub mobile splash/transitions; HelpingDoctors EHR loading states.
+
+**Effort estimate:** ~4-6 hours per platform target.
+
+**Source materials:**
+- uimax `animations` table — 63 rows (post 2026-05-10 5-column migration: `is_gap_candidate`, `gap_reason`, `sgs_block`, `sgs_animation_attribute`, `equivalent_implementations`)
+- Rosetta Stone payloads on animation rows
+
+**Dependencies:** `animations` table needs ≥30 cross-platform-mapped rows (current 63 rows, but mapping coverage to verify before emit work begins). M9 will surface more animations via `/uimax-scrape-animation` runs. Cross-link to P-CP-1 and P-CP-2.
+

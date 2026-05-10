@@ -21,6 +21,8 @@ recommended_model_next: opus
 
 **M7 + M8 + M10 closed (2026-05-09).** 6 sibling skills + minimal orchestrator + hero smoke at 100% PoC parity. M9 deferred.
 
+**Convention rollout in progress (2026-05-10 — this session).** Phase 1 of the convention rollout plan (`.claude/plan.md` + `.claude/plans/phase-1..8.md`) is executing. Canonical reference for the SGS-prefixed BEM convention: **`.claude/specs/13-DRAFT-NAMING-CONVENTION.md`** (locked 2026-05-10, blub.db row 236). All Bean-controlled drafts MUST conform; live scrapes use lingua-franca-conversion. Phase 1 = capture lesson + Spec 13 + lifecycle bulk-mode + 6 living docs + uimax `is_canonical_for_sgs_drafts` flag.
+
 **M9 redo in progress (2026-05-09 evening + 2026-05-10 — this session).** Major architectural progress + correction:
 
 | Item | Status |

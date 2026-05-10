@@ -15,7 +15,7 @@ This file is the entry point for the working area — what's where, in canonical
 | Mistakes | `mistakes.md` | Recurring lessons (sourced from CC auto-memory feedback files) |
 | Last session | `handoff.md` | Most recent session summary |
 | Next session | `next-session-prompt.md` | Pre-written kick-off for the next session |
-| Specs | `specs/` | Block + framework specs (00-10) + optimisation-toolkit + design-brain rubrics |
+| Specs | `specs/` | Block + framework specs (00-13) + optimisation-toolkit + design-brain rubrics. **Spec 13 (`.claude/specs/13-DRAFT-NAMING-CONVENTION.md`) is the canonical SGS-prefixed BEM convention for all Bean-controlled drafts** (locked 2026-05-10, blub.db row 236). |
 | Active plans | `plans/` | Master plan + per-phase plans (`/strategic-plan` + `/phase-planner` outputs) |
 | Strategy docs | `plans/strategy/` | Cross-cutting strategy (Step 2, toolset spec, design-brain, deferred pipelines) |
 | Archived plans | `plans/archive/` | Completed or superseded plans |

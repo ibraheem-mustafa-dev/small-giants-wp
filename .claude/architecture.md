@@ -15,6 +15,8 @@
 
 SGS is a standalone WordPress block theme and Gutenberg blocks plugin built by Small Giants Studio. It competes directly with Kadence, Spectra, and GenerateBlocks — every block must be fully configurable by non-technical clients through the block editor alone. The framework is client-agnostic; Indus Foods is the first client and acts as the proving ground, but every architectural decision must hold for any business type.
 
+**Draft naming convention (canonical):** All Bean-controlled drafts (mockups, sketches, hand-coded HTML produced in-house) MUST use SGS-prefixed BEM (`.sgs-<block>__<element>--<modifier>`). Canonical reference: **`.claude/specs/13-DRAFT-NAMING-CONVENTION.md`** (locked 2026-05-10). Live scrapes use lingua-franca-conversion at recognition time. The 9-stage `/sgs-clone` pipeline collapses from probabilistic to deterministic for Bean-authored drafts under this convention.
+
 ## Stack
 
 | Layer | Technology | Notes |
