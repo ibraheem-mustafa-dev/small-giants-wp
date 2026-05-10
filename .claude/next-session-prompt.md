@@ -1,84 +1,78 @@
-recommended_model: sonnet
-session_tag: small-giants-wp-2026-05-10-cloning-skill-m9
+recommended_model: opus
 
-You are a senior SGS WordPress engineer specialising in cloning-pipeline orchestration, multi-frame visual-fidelity validation, and live-deploy smoke testing. Inherits the M7 + M8 work shipped 2026-05-09: 6 sibling skills at >=B grade, hero smoke at 100% PoC parity, minimal orchestrator working end-to-end.
+You are a senior SGS WordPress framework architect specialising in cross-platform CSS naming conventions, deterministic clone-pipeline design, and the SGS Framework's downstream skill ecosystem. Today's job: ship Phase 1 of the convention rollout plan and as much of Phases 2/3/5 as fits the session.
 
-Resume command: CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-10-cloning-skill-m9"
-
-Invoke `/autopilot` before doing anything else. Then read `.claude/handoff.md` and `CLAUDE.md` for full context.
+Read `.claude/handoff.md` and `.claude/plan.md` for full context, then work through these priorities.
 
 ## Where You Are
 
-Plan: `.claude/parking.md` entry P-11-M9
-Current phase: cloning-skill-build-m9-only
-Progress: M7 + M8 + M10 shipped; M9 remaining
-Next task (Bean-specified opener): `/gap-analysis` of `/sgs-clone` skill
+Plan: `.claude/plan.md`
+Current phase: Phase 1 - Foundation (capture lesson + Spec 13 + living docs + uimax flag)
+Progress: 0/8 phases complete - estimated 0%
+Next task: Capture `bean-drafts-use-sgs-prefixed-bem-naming` lesson via `/capture-lesson`
 
 ## Skills to Invoke
 
 | Skill | When to use |
-|-------|-------------|
-| `/brainstorming` | Multi-section orchestrator architectural decisions |
-| `/gap-analysis` | FIRST TASK: fresh evaluation of `/sgs-clone` skill against `~/.claude/skills/sgs-clone/references/end-goal-rubric.md` |
-| `/lifecycle` | If gap-analysis surfaces fix loop work |
-| `/research-buddies` | Novel orchestrator extension questions only |
-| `/strategic-plan` | Inline replan if M9 scope shifts |
+|---|---|
+| `/brainstorming` | Architectural questions during Phase 4 propagation if ambiguity surfaces |
+| `/gap-analysis` | Grade Phase 4 subagent output diffs before merging |
+| `/lifecycle` | NOT inline this session - use bulk-edit mode file (Phase 1 Step 2) instead |
+| `/research` | If novel naming-convention questions surface in Phase 2 audit |
+| `/strategic-plan` | Inline replan if plan scope shifts mid-session |
+| `/capture-lesson` | Phase 1 Step 1 (FIRST task) |
 | `/sgs-wp-engine` | SGS WordPress central authority |
-| `/visual-qa` | Full 9-layer audit at sandybrown post 30 after deploy |
-| `/qc-inline` | After each milestone return (standing rule) |
+| `/uimax` | Query naming_conventions table after Phase 1 Step 5 |
+| `/dispatching-parallel-agents` | Phase 4 batch dispatches |
+| `/subagent-prompt` | Phase 4 cold prompt drafting |
+| `/qc-inline` | After every Phase 4 subagent batch returns |
+| `/qc` | Phase 8 final validation pass (much later) |
 | `/handoff` | Session close |
 
 ## MCP Servers & Tools
 
 | Tool | Use for |
-|------|---------|
-| Playwright MCP | Multi-frame capture at 375/768/1440; first-paint defect detection |
-| `python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` | The orchestrator (extend to multi-section) |
-| `node tools/multi-frame-qa/capture.js` | First-paint capture at 0/200/500/1000/3000 ms |
-| `node scripts/mockup-parity-validator.js` | Q1-Q4 + Section R measurement |
-| `node scripts/screenshot-diff-helper.js` | Mandatory before any classifier severity reduction (Hard Rule 10) |
-| `node scripts/global-styles-reset.js` | Pre-deploy variation reset |
-| `node scripts/wp-update-block-attrs.js` | Apply block attrs safely |
-| SSH `u945238940@141.136.39.73:65002` | Sandybrown deploy target (post 30 only; post 29 preserves manual hero PoC) |
+|---|---|
+| `python ~/.agents/skills/ui-ux-pro-max/scripts/update-db.py regenerate-csvs` | After ANY uimax DB write |
+| `python plugins/sgs-blocks/scripts/uimax-tools/uimax_write.py` | Atomic validate-then-write |
+| `python ~/.agents/skills/shared-references/sgs-skillscore.py validate <path>` | After every Phase 4 skill edit |
+| `python C:/Users/Bean/.claude/hooks/blub-db-unlock.py` | If POST hangs during Phase 1 Step 1 |
+| Playwright MCP / Chrome DevTools MCP | Phase 6 visual diff (later) |
 
 ## Agents to Delegate To
 
 | Agent | When |
-|-------|------|
-| `wp-sgs-developer` | All SGS build + multi-section orchestrator + live deploy |
-| `design-reviewer` | Visual quality vs mockup at 3 breakpoints |
-| `research-pipeline` | Only if novel question surfaces |
+|---|---|
+| `wp-sgs-developer` | Phase 6 mockup rewrite + Phase 8 deploy mechanics |
+| `design-reviewer` | Phase 8 capture comparison images (Bean keeps verdict per lesson 221) |
 
-## Tasks
+NEVER write a fallback option in any agent brief that lets the proof step be skipped.
 
-### Task 1: Fresh `/gap-analysis` on `/sgs-clone` skill (FIRST, Bean-requested)
+## Tasks (in order)
 
-Run `/gap-analysis` inline (not subagent) against `~/.claude/skills/sgs-clone/SKILL.md` with target_type: skill, personas: auto, depth: all-gaps-plus-opportunities. Use the rubric file. Apply the M7-build context (hero smoke at 100% PoC parity is real evidence the contract works). Surface every gap; the M7 build prioritised throughput across 6 skills so a clean re-evaluation may find polish opportunities. Bean decides which gaps to fix before M9 work starts.
+### Task 1: Phase 1 Foundation (~60 min)
+Read `.claude/plans/phase-1-foundation.md`. Execute steps 1-6 sequentially. KJCs: confirm `.sgs-` prefix; decide validation enforcement (recommend C: hard pre-flight + soft `--draft-mode`).
 
-### Task 2: Extend orchestrator to multi-section walker
+### Task 2: Phase 2 DB Cleanup Audit (~30-45 min)
+Read `.claude/plans/phase-2-db-cleanup-audit.md`. Audit sgs-framework.db + uimax-pro-max.db. Surface drop list; Bean approves; apply + regenerate-csvs.
 
-`sgs-clone-orchestrator.py` runs one section per invocation today. Extend to auto-detected multi-section: walk the 9 mockup sections (header, hero, trust-bar, featured-product, brand-story, ingredients, gift-section, social-proof, footer), match each to its target SGS block, run the 9 stages per section, aggregate into composite block markup output. Keep the JSON-artefact contract intact at `pipeline-state/<run_id>/stage-N.json`.
+### Task 3: Phase 3 Skill Rename (~30 min)
+Read `.claude/plans/phase-3-skill-rename.md`. Rename `/style-replicator` -> `/bean-voice-replicator`. Update references. Skillscore v2 ≥90%.
 
-### Task 3: Full Mama's homepage smoke + 13 visual-diff reports
+### Task 4: Phase 5 Cross-Platform Parking (~20 min)
+Read `.claude/plans/phase-5-cross-platform-parking.md`. Add P-CP-1/2/3 to `.claude/parking.md` + decision to `.claude/decisions.md`.
 
-Deploy composite block markup OVERWRITING THE SANDYBROWN HOMEPAGE (the page set as Settings -> Reading -> "Your homepage". Bean's instruction 2026-05-09: deploy goes to the homepage itself, not a sibling post). Sandybrown post 29 (the manual hero PoC) is preserved as a separate post for parity reference; do not delete it. Multi-frame Playwright capture at 375/768/1440. `mockup-parity-validator.js` per section. `screenshot-diff-helper.js` per Q1-Q4 delta (Hard Rule 10 mandatory). Generate visual-diff reports at `reports/visual-diff/<block>-<date>.md` for the 13 STOP-GATE-blocking blocks: button, container, data-display, icon, icon-block, icon-list, media, mega-menu, mobile-nav, notice-banner, post-grid, process-steps, trust-bar, whatsapp-cta.
-
-Pre-deploy steps: (a) snapshot the current homepage post content via `wp post get <home-id> --field=post_content` for rollback, (b) run `node scripts/global-styles-reset.js` to ensure variation cleanly applies, (c) `wp_global_styles` reset+reapply per project CLAUDE.md.
-
-### Task 4: Unblock pre-commit STOP GATE + foundation commit
-
-All 14 visual-diff reports present, then commit the 690-file foundation from 2026-05-08 with descriptive message, push to main. Document the unlock in handoff.
-
-### Task 5: `/handoff` session close
-
-Phase advance to bucket-2-ready. Mark P-11-M9 RESOLVED.
+### Task 5: (Optional) Begin Phase 4 Bulk Propagation
+If 2-3 hours of context budget remain after Tasks 1-4, begin Phase 4 B2 (5 design generation skills). Otherwise defer.
 
 ## Guardrails
 
-- DO NOT delete or overwrite sandybrown post 29 (preserves manual hero PoC reference)
-- DO snapshot the current homepage `post_content` BEFORE overwrite for rollback
-- DO NOT bypass `screenshot-diff-helper.js` on Q1-Q4 deltas (Hard Rule 10)
-- DO NOT run orchestrator with `--no-playwright` for production smoke
-- DO NOT commit block-src changes to any branch other than main
-- DO NOT use em-dashes anywhere (Bean preference)
-- Run `/qc-inline` after each milestone return
+- DO write to `.claude/` not project root
+- DO NOT use em-dashes anywhere (lesson from this session: 173 fixed; do not regress)
+- DO NOT add `--resume` flags or stage-resume infra (lesson 215)
+- DO NOT regress to per-block hand-coding in slot-filler.py
+- DO use `uimax_write.py` for any uimax DB write (Hard Rule 7)
+- DO run `update-db.py regenerate-csvs` after any uimax DB write (architectural invariant)
+- DO grep subagent outputs for required field references before merging (Phase 4 KJC #1)
+- DO open URLs with own eyes on M9 proof step (Phase 8, lesson 221)
+- DO run `/qc-inline` after each Phase 4 subagent batch
