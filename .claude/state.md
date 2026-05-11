@@ -2,9 +2,9 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-current_phase: convention-rollout-phase-8-validation-and-deploy
-current_step: "Phase 7 + sgs/trustpilot-reviews block + Trustpilot Sync infrastructure all shipped 2026-05-11 (commits 7ac627cf + c6bd4980 + 06df2807). Sync proven end-to-end on sandybrown: 4 Mama's reviews captured via Browserless `/content?token=` (Bearer rejected — captured as blub.db row 238), JSON-LD parser harvests standalone Review entities from @graph reference pattern, smoke-test page flipped to dataSource:synced, frontend renders the 4 live reviewers. Weekly WP-cron registered. Operator self-serve setup procedure inline on Settings > SGS Trustpilot Sync. Mid-session /sgs-update Stage 3 surfaced two missing scripts (uimax-write-validator.py + seed-block-compositions.py); rebuilt to the README contract + smoke-tested (validator 6/6 cases, seed idempotency proven) in commit d27b41d0. Stage 3+4 now runs cleanly: 67 SGS blocks synced, 1 new uimax row (sgs/trustpilot-reviews), 46 CSVs regenerated, 0 animation gap candidates. Orchestrator multi-section patches still UNCOMMITTED (voter walks into <main> + stage 4-8 per-boundary loop) — pending Commit A. Next: commit Commit A; optionally consolidate to tools/recogniser-v3 (Commit B); then Phase 8 visual parity validation + live deploy + Bean eyes-on review."
-last_updated: 2026-05-11 (Phase 7 + trustpilot block (c6bd4980) + trustpilot sync infra (06df2807) + doc-update sweep (e1af00db) + uimax-tools validator/seed restore (d27b41d0); /sgs-update Stage 3+4 unblocked end-to-end; reports at .claude/reports/phase-7-orchestrator-rewire-2026-05-11.md, reports/visual-diff/trustpilot-reviews-2026-05-11.md, reports/visual-diff/trustpilot-sync-2026-05-11.md, reports/uimax-gap-candidates-2026-05-11.md)
+current_phase: spec-14-phase-2-schema-migrations
+current_step: "Spec 14 (autonomous draft-to-clone pipeline) v2.1 approved 2026-05-11 after 2 QC rounds (6/6 GO-WITH-CHANGES). Phase 1 closed same day: doc reconciliation (architecture.md L151 + state.md + /sgs-clone SKILL.md across 9 references — all annotated to spec 14 build status); 9 static-block golden snapshots captured at tests/golden/static-block-snapshots/ (6 pure-static + 3 hybrid; sourced from sgs-db blocks.type + save.js inspection, NOT v1 fingerprints which is frozen/stale); FR18 decisions logged (3 retired, 1 built at P10 lightweight). Companion docs: .claude/specs/14-CLONING-PIPELINE-CATALOGUE.md (spec), .claude/cloning-pipeline-flow.md (visual ref), .claude/plans/phase-1-doc-recon-and-snapshots.md (executed plan). Next: P2 schema migrations (FR7 add is_gap_candidate column to uimax component_libraries; FR8 create attribute_gap_candidates + functionality_gap_candidates tables with status field). ~30 min."
+last_updated: 2026-05-11 (Spec 14 v2.1 approved + Phase 1 closed; doc reconciliation + 9 snapshots + FR18 decisions; companion docs at .claude/specs/14-* + .claude/cloning-pipeline-flow.md + .claude/plans/phase-1-*.md)
 blockers:
   - "Skillscore rubric mismatch: command files (~/.claude/commands/*.md), agent files (~/.claude/agents/*.md), and reference-style mini-skills (polish, bolder, colourise, distill, etc.) are graded against full-skill criteria. 24 of 45 Phase 4 files sit below 90% for this reason - all pre-existing baseline noise, not caused by Phase 4 edits. Future fix: add skill-type classifier to sgs-skillscore."
 recommended_model_next: sonnet
@@ -49,7 +49,7 @@ recommended_model_next: sonnet
    - Patch slot-filler.py with `attr_name_to_element_id` derivation (~60-90 min inline)
    - Validate hero parity 50/50 (~60-120 min )
    - Validate other 8 Mama's sections produce non-empty filled_slots
-   - Run critical-fix-verification.py gate (must PASS 5/5)
+   - Run critical-fix-verification.py gate (built per spec 14 P10 as lightweight acceptance harness — 5 canonical-mutation-boundary checks: no root theme.json mutation, no canonical-block files mutated outside FR21 commit, no licensing strings in uimax writes, idempotency re-run produces no new gap rows, staging dir empty post-success)
    - Rewire orchestrator: replace stages 1-2-9 hardcoded shortcuts with subprocess calls into recogniser scripts (~90-150 min)
    - Live deploy on sandybrown homepage with eyes-on review at all 3 breakpoints
 2. **Bucket 2 + timeline rework (P-9)** — after M9 ships

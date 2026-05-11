@@ -452,3 +452,17 @@ The Rosetta Stone discipline (Hard Rule 7) + SGS-prefixed BEM convention (Spec 1
 
 **Dependencies:** `animations` table needs ≥30 cross-platform-mapped rows (current 63 rows, but mapping coverage to verify before emit work begins). M9 will surface more animations via `/uimax-scrape-animation` runs. Cross-link to P-CP-1 and P-CP-2.
 
+---
+
+## Retired (spec 14 FR18, 2026-05-11)
+
+Navigation aid: when a future session greps for these script names, this entry points back to the decisions log.
+
+- `heuristic-fallback-builder.py` — RETIRED. Function absorbed by Layer 2 role-templates per-attribute strategies (spec 14 FR2). See `.claude/decisions.md` 2026-05-11 entry.
+- `computed-style-passport.py` — RETIRED. Replaced by Playwright runtime probe in spec 14 FR3. See `.claude/decisions.md` 2026-05-11 entry.
+
+NOT retired (built per spec 14 — listed here so future greps don't mistakenly retire them):
+
+- `recursion-guard.py` — built in P2 as ~50-LOC standalone module. Original "RETIRE" framing was a fabrication caught by Bean 2026-05-11; reverted to BUILD.
+- `critical-fix-verification.py` — built in P10 as ~45-min lightweight acceptance harness (5 canonical-mutation-boundary checks).
+

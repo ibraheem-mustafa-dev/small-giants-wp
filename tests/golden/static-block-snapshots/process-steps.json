@@ -1,0 +1,130 @@
+{
+  "block_slug": "sgs/process-steps",
+  "captured_at": "2026-05-11T18:52:56.305413Z",
+  "classification": "pure-static",
+  "attributes": {
+    "steps": {
+      "type": "array",
+      "default": [
+        {
+          "number": "1",
+          "title": "First Step",
+          "description": "Description of the first step."
+        },
+        {
+          "number": "2",
+          "title": "Second Step",
+          "description": "Description of the second step."
+        },
+        {
+          "number": "3",
+          "title": "Third Step",
+          "description": "Description of the third step."
+        }
+      ]
+    },
+    "connectorStyle": {
+      "type": "string",
+      "default": "line"
+    },
+    "numberStyle": {
+      "type": "string",
+      "default": "circle"
+    },
+    "numberColour": {
+      "type": "string",
+      "default": "text-inverse"
+    },
+    "numberBackground": {
+      "type": "string",
+      "default": "primary"
+    },
+    "titleColour": {
+      "type": "string",
+      "default": "text"
+    },
+    "descriptionColour": {
+      "type": "string",
+      "default": "text-muted"
+    },
+    "hoverBackgroundColour": {
+      "type": "string",
+      "default": ""
+    },
+    "hoverTextColour": {
+      "type": "string",
+      "default": ""
+    },
+    "hoverBorderColour": {
+      "type": "string",
+      "default": ""
+    },
+    "hoverEffect": {
+      "type": "string",
+      "default": "none"
+    },
+    "transitionDuration": {
+      "type": "string",
+      "default": "300"
+    },
+    "transitionEasing": {
+      "type": "string",
+      "default": "ease-in-out"
+    },
+    "sgsAnimation": {
+      "type": "string",
+      "default": "fade-up"
+    },
+    "sgsAnimationDuration": {
+      "type": "string",
+      "default": "medium"
+    },
+    "sgsAnimationEasing": {
+      "type": "string",
+      "default": "ease-out"
+    },
+    "staggerDelay": {
+      "type": "number",
+      "default": 80
+    }
+  },
+  "attribute_defaults_payload": {
+    "steps": [
+      {
+        "number": "1",
+        "title": "First Step",
+        "description": "Description of the first step."
+      },
+      {
+        "number": "2",
+        "title": "Second Step",
+        "description": "Description of the second step."
+      },
+      {
+        "number": "3",
+        "title": "Third Step",
+        "description": "Description of the third step."
+      }
+    ],
+    "connectorStyle": "line",
+    "numberStyle": "circle",
+    "numberColour": "text-inverse",
+    "numberBackground": "primary",
+    "titleColour": "text",
+    "descriptionColour": "text-muted",
+    "hoverBackgroundColour": "",
+    "hoverTextColour": "",
+    "hoverBorderColour": "",
+    "hoverEffect": "none",
+    "transitionDuration": "300",
+    "transitionEasing": "ease-in-out",
+    "sgsAnimation": "fade-up",
+    "sgsAnimationDuration": "medium",
+    "sgsAnimationEasing": "ease-out",
+    "staggerDelay": 80
+  },
+  "source_save": "import { useBlockProps } from '@wordpress/block-editor';\nimport { colourVar } from '../../utils';\n\nexport default function Save( { attributes } ) {\n\tconst {\n\t\tsteps,\n\t\tconnectorStyle,\n\t\tnumberStyle,\n\t\tnumberColour,\n\t\tnumberBackground,\n\t\ttitleColour,\n\t\tdescriptionColour,\n\t\thoverBackgroundColour,\n\t\thoverTextColour,\n\t\thoverBorderColour,\n\t\thoverEffect,\n\t\ttransitionDuration,\n\t\ttransitionEasing,\n\t} = attributes;\n\n\tconst className = [\n\t\t'sgs-process-steps',\n\t\t`sgs-process-steps--connector-${ connectorStyle }`,\n\t\t`sgs-process-steps--number-${ numberStyle }`,\n\t\thoverEffect && hoverEffect !== 'none' ? `sgs-process-steps--hover-${ hoverEffect }` : '',\n\t].filter( Boolean ).join( ' ' );\n\n\tconst wrapperStyle = {\n\t\t'--sgs-hover-bg': hoverBackgroundColour ? colourVar( hoverBackgroundColour ) : undefined,\n\t\t'--sgs-hover-text': hoverTextColour ? colourVar( hoverTextColour ) : undefined,\n\t\t'--sgs-hover-border': hoverBorderColour ? colourVar( hoverBorderColour ) : undefined,\n\t\t'--sgs-transition-duration': transitionDuration ? `${ transitionDuration }ms` : undefined,\n\t\t'--sgs-transition-easing': transitionEasing || undefined,\n\t};\n\n\tconst blockProps = useBlockProps.save( { className, style: wrapperStyle } );\n\n\tconst numStyle = {\n\t\tcolor: colourVar( numberColour ) || undefined,\n\t\tbackgroundColor: colourVar( numberBackground ) || undefined,\n\t};\n\n\tconst titleStyle = {\n\t\tcolor: colourVar( titleColour ) || undefined,\n\t};\n\n\tconst descStyle = {\n\t\tcolor: colourVar( descriptionColour ) || undefined,\n\t};\n\n\treturn (\n\t\t<div { ...blockProps }>\n\t\t\t{ steps.map( ( step, index ) => (\n\t\t\t\t<div key={ index } className=\"sgs-process-steps__step\">\n\t\t\t\t\t{ step.icon && (\n\t\t\t\t\t\t<span\n\t\t\t\t\t\t\tclassName=\"sgs-process-steps__icon\"\n\t\t\t\t\t\t\taria-hidden=\"true\"\n\t\t\t\t\t\t\tdata-icon={ step.icon }\n\t\t\t\t\t\t>\n\t\t\t\t\t\t\t{ step.icon }\n\t\t\t\t\t\t</span>\n\t\t\t\t\t) }\n\t\t\t\t\t{ numberStyle !== 'none' && (\n\t\t\t\t\t\t<span\n\t\t\t\t\t\t\tclassName=\"sgs-process-steps__number\"\n\t\t\t\t\t\t\tstyle={ numStyle }\n\t\t\t\t\t\t\taria-hidden=\"true\"\n\t\t\t\t\t\t>\n\t\t\t\t\t\t\t{ step.number || index + 1 }\n\t\t\t\t\t\t</span>\n\t\t\t\t\t) }\n\t\t\t\t\t<h3 className=\"sgs-process-steps__title\" style={ titleStyle }>\n\t\t\t\t\t\t{ step.title }\n\t\t\t\t\t</h3>\n\t\t\t\t\t{ step.description && (\n\t\t\t\t\t\t<p\n\t\t\t\t\t\t\tclassName=\"sgs-process-steps__description\"\n\t\t\t\t\t\t\tstyle={ descStyle }\n\t\t\t\t\t\t>\n\t\t\t\t\t\t\t{ step.description }\n\t\t\t\t\t\t</p>\n\t\t\t\t\t) }\n\t\t\t\t</div>\n\t\t\t) ) }\n\t\t</div>\n\t);\n}\n",
+  "compiled_save_reference": "plugins/sgs-blocks/build/process-steps/index.js (NOT BUILT \u2014 run `npm run build` to generate)",
+  "example_markup": "<!-- wp:sgs/process-steps {\"steps\":[{\"number\":\"1\",\"title\":\"First Step\",\"description\":\"Description of the first step.\"},{\"number\":\"2\",\"title\":\"Second Step\",\"description\":\"Description of the second step.\"},{\"number\":\"3\",\"title\":\"Third Step\",\"description\":\"Description of the third step.\"}],\"connectorStyle\":\"line\",\"numberStyle\":\"circle\",\"numberColour\":\"text-inverse\",\"numberBackground\":\"primary\",\"titleColour\":\"text\",\"descriptionColour\":\"text-muted\",\"hoverBackgroundColour\":\"\",\"hoverTextColour\":\"\",\"hoverBorderColour\":\"\",\"hoverEffect\":\"none\",\"transitionDuration\":\"300\",\"transitionEasing\":\"ease-in-out\",\"sgsAnimation\":\"fade-up\",\"sgsAnimationDuration\":\"medium\",\"sgsAnimationEasing\":\"ease-out\",\"staggerDelay\":80} -->\n[block inner content placeholder]\n<!-- /wp:sgs/process-steps -->",
+  "deprecation_notes": "pure-static block: deprecated.js save function must reproduce this source_save verbatim"
+}

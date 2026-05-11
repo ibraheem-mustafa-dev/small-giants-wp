@@ -1,0 +1,66 @@
+{
+  "block_slug": "sgs/counter",
+  "captured_at": "2026-05-11T18:52:56.305413Z",
+  "classification": "pure-static",
+  "attributes": {
+    "number": {
+      "type": "number",
+      "default": 0
+    },
+    "prefix": {
+      "type": "string",
+      "default": ""
+    },
+    "suffix": {
+      "type": "string",
+      "default": ""
+    },
+    "label": {
+      "type": "string",
+      "source": "html",
+      "selector": ".sgs-counter__label"
+    },
+    "duration": {
+      "type": "number",
+      "default": 2000
+    },
+    "separator": {
+      "type": "boolean",
+      "default": true
+    },
+    "numberColour": {
+      "type": "string",
+      "default": "primary"
+    },
+    "labelColour": {
+      "type": "string",
+      "default": "text-muted"
+    },
+    "labelFontSize": {
+      "type": "string"
+    },
+    "icon": {
+      "type": "string",
+      "default": ""
+    },
+    "accentStroke": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "attribute_defaults_payload": {
+    "number": 0,
+    "prefix": "",
+    "suffix": "",
+    "duration": 2000,
+    "separator": true,
+    "numberColour": "primary",
+    "labelColour": "text-muted",
+    "icon": "",
+    "accentStroke": false
+  },
+  "source_save": "import { useBlockProps, RichText } from '@wordpress/block-editor';\nimport { colourVar, fontSizeVar } from '../../utils';\n\n/**\n * Format a number with thousand separators.\n *\n * @param {number}  num       The number to format.\n * @param {boolean} separator Whether to add thousand separators.\n * @return {string} Formatted number string.\n */\nfunction formatNumber( num, separator ) {\n\tif ( separator ) {\n\t\treturn num.toLocaleString( 'en-GB' );\n\t}\n\treturn String( num );\n}\n\nexport default function Save( { attributes } ) {\n\tconst {\n\t\tnumber,\n\t\tprefix,\n\t\tsuffix,\n\t\tlabel,\n\t\tduration,\n\t\tseparator,\n\t\tnumberColour,\n\t\tlabelColour,\n\t\tlabelFontSize,\n\t\ticon,\n\t\taccentStroke,\n\t} = attributes;\n\n\tconst className = [\n\t\t'sgs-counter',\n\t\taccentStroke ? 'sgs-counter--accent-stroke' : '',\n\t].filter( Boolean ).join( ' ' );\n\n\tconst blockProps = useBlockProps.save( { className } );\n\n\tconst numberStyle = {\n\t\tcolor: colourVar( numberColour ) || undefined,\n\t};\n\n\tconst labelStyle = {\n\t\tcolor: colourVar( labelColour ) || undefined,\n\t\tfontSize: fontSizeVar( labelFontSize ) || undefined,\n\t};\n\n\tconst formattedNumber = formatNumber( number, separator );\n\tconst fullText = `${ prefix || '' }${ formattedNumber }${ suffix || '' } ${ label }`;\n\n\treturn (\n\t\t<div { ...blockProps }>\n\t\t\t{ /* Icon slot \u2014 rendered server-side via render.php for Lucide SVG output.\n\t\t\t     The icon attribute is saved here as a data attribute so render.php can read it. */ }\n\t\t\t{ icon && (\n\t\t\t\t<span\n\t\t\t\t\tclassName=\"sgs-counter__icon-placeholder\"\n\t\t\t\t\tdata-icon={ icon }\n\t\t\t\t\taria-hidden=\"true\"\n\t\t\t\t/>\n\t\t\t) }\n\t\t\t<span className=\"sgs-sr-only\">{ fullText }</span>\n\t\t\t<span\n\t\t\t\tclassName=\"sgs-counter__number\"\n\t\t\t\tstyle={ numberStyle }\n\t\t\t\tdata-target={ number }\n\t\t\t\tdata-duration={ duration }\n\t\t\t\tdata-separator={ separator ? 'true' : 'false' }\n\t\t\t\tdata-prefix={ prefix || undefined }\n\t\t\t\tdata-suffix={ suffix || undefined }\n\t\t\t\taria-hidden=\"true\"\n\t\t\t>\n\t\t\t\t{ prefix }\n\t\t\t\t{ formattedNumber }\n\t\t\t\t{ suffix }\n\t\t\t</span>\n\t\t\t<RichText.Content\n\t\t\t\ttagName=\"p\"\n\t\t\t\tclassName=\"sgs-counter__label\"\n\t\t\t\tvalue={ label }\n\t\t\t\tstyle={ labelStyle }\n\t\t\t\taria-hidden=\"true\"\n\t\t\t/>\n\t\t</div>\n\t);\n}\n",
+  "compiled_save_reference": "plugins/sgs-blocks/build/counter/index.js (NOT BUILT \u2014 run `npm run build` to generate)",
+  "example_markup": "<!-- wp:sgs/counter {\"number\":0,\"prefix\":\"\",\"suffix\":\"\",\"duration\":2000,\"separator\":true,\"numberColour\":\"primary\",\"labelColour\":\"text-muted\",\"icon\":\"\",\"accentStroke\":false} -->\n[block inner content placeholder]\n<!-- /wp:sgs/counter -->",
+  "deprecation_notes": "pure-static block: deprecated.js save function must reproduce this source_save verbatim"
+}

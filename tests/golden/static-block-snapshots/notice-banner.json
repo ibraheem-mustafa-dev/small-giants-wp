@@ -1,0 +1,41 @@
+{
+  "block_slug": "sgs/notice-banner",
+  "captured_at": "2026-05-11T18:52:56.305413Z",
+  "classification": "pure-static",
+  "attributes": {
+    "icon": {
+      "type": "string",
+      "default": "info"
+    },
+    "text": {
+      "type": "string",
+      "source": "html",
+      "selector": ".sgs-notice-banner__text"
+    },
+    "variant": {
+      "type": "string",
+      "default": "info"
+    },
+    "textColour": {
+      "type": "string",
+      "default": "text"
+    },
+    "textFontSize": {
+      "type": "string"
+    },
+    "dismissible": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "attribute_defaults_payload": {
+    "icon": "info",
+    "variant": "info",
+    "textColour": "text",
+    "dismissible": false
+  },
+  "source_save": "import { useBlockProps, RichText } from \"@wordpress/block-editor\";\nimport { colourVar, fontSizeVar } from \"../../utils\";\n\n/**\n * Lucide-style SVG icons for each notice variant.\n * All icons: 20x20, stroke-based, aria-hidden.\n */\nconst VARIANT_ICONS = {\n  info: (\n    <svg\n      width=\"20\"\n      height=\"20\"\n      viewBox=\"0 0 24 24\"\n      fill=\"none\"\n      aria-hidden=\"true\"\n      focusable=\"false\"\n      xmlns=\"http://www.w3.org/2000/svg\"\n    >\n      <circle\n        cx=\"12\"\n        cy=\"12\"\n        r=\"10\"\n        stroke=\"currentColor\"\n        strokeWidth=\"2\"\n        strokeLinecap=\"round\"\n        strokeLinejoin=\"round\"\n      />\n      <line\n        x1=\"12\"\n        y1=\"8\"\n        x2=\"12\"\n        y2=\"8.01\"\n        stroke=\"currentColor\"\n        strokeWidth=\"2.5\"\n        strokeLinecap=\"round\"\n      />\n      <line\n        x1=\"12\"\n        y1=\"12\"\n        x2=\"12\"\n        y2=\"16\"\n        stroke=\"currentColor\"\n        strokeWidth=\"2\"\n        strokeLinecap=\"round\"\n      />\n    </svg>\n  ),\n  success: (\n    <svg\n      width=\"20\"\n      height=\"20\"\n      viewBox=\"0 0 24 24\"\n      fill=\"none\"\n      aria-hidden=\"true\"\n      focusable=\"false\"\n      xmlns=\"http://www.w3.org/2000/svg\"\n    >\n      <path\n        d=\"M22 11.08V12a10 10 0 1 1-5.93-9.14\"\n        stroke=\"currentColor\"\n        strokeWidth=\"2\"\n        strokeLinecap=\"round\"\n        strokeLinejoin=\"round\"\n      />\n      <polyline\n        points=\"22 4 12 14.01 9 11.01\"\n        stroke=\"currentColor\"\n        strokeWidth=\"2\"\n        strokeLinecap=\"round\"\n        strokeLinejoin=\"round\"\n      />\n    </svg>\n  ),\n  warning: (\n    <svg\n      width=\"20\"\n      height=\"20\"\n      viewBox=\"0 0 24 24\"\n      fill=\"none\"\n      aria-hidden=\"true\"\n      focusable=\"false\"\n      xmlns=\"http://www.w3.org/2000/svg\"\n    >\n      <path\n        d=\"M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z\"\n        stroke=\"currentColor\"\n        strokeWidth=\"2\"\n        strokeLinecap=\"round\"\n        strokeLinejoin=\"round\"\n      />\n      <line\n        x1=\"12\"\n        y1=\"9\"\n        x2=\"12\"\n        y2=\"13\"\n        stroke=\"currentColor\"\n        strokeWidth=\"2\"\n        strokeLinecap=\"round\"\n      />\n      <line\n        x1=\"12\"\n        y1=\"17\"\n        x2=\"12.01\"\n        y2=\"17\"\n        stroke=\"currentColor\"\n        strokeWidth=\"2.5\"\n        strokeLinecap=\"round\"\n      />\n    </svg>\n  ),\n  error: (\n    <svg\n      width=\"20\"\n      height=\"20\"\n      viewBox=\"0 0 24 24\"\n      fill=\"none\"\n      aria-hidden=\"true\"\n      focusable=\"false\"\n      xmlns=\"http://www.w3.org/2000/svg\"\n    >\n      <circle\n        cx=\"12\"\n        cy=\"12\"\n        r=\"10\"\n        stroke=\"currentColor\"\n        strokeWidth=\"2\"\n        strokeLinecap=\"round\"\n        strokeLinejoin=\"round\"\n      />\n      <line\n        x1=\"15\"\n        y1=\"9\"\n        x2=\"9\"\n        y2=\"15\"\n        stroke=\"currentColor\"\n        strokeWidth=\"2\"\n        strokeLinecap=\"round\"\n      />\n      <line\n        x1=\"9\"\n        y1=\"9\"\n        x2=\"15\"\n        y2=\"15\"\n        stroke=\"currentColor\"\n        strokeWidth=\"2\"\n        strokeLinecap=\"round\"\n      />\n    </svg>\n  ),\n  accent: (\n    <svg\n      width=\"20\"\n      height=\"20\"\n      viewBox=\"0 0 24 24\"\n      fill=\"none\"\n      aria-hidden=\"true\"\n      focusable=\"false\"\n      xmlns=\"http://www.w3.org/2000/svg\"\n    >\n      <circle\n        cx=\"12\"\n        cy=\"12\"\n        r=\"10\"\n        stroke=\"currentColor\"\n        strokeWidth=\"2\"\n        strokeLinecap=\"round\"\n        strokeLinejoin=\"round\"\n      />\n      <line\n        x1=\"12\"\n        y1=\"8\"\n        x2=\"12\"\n        y2=\"8.01\"\n        stroke=\"currentColor\"\n        strokeWidth=\"2.5\"\n        strokeLinecap=\"round\"\n      />\n      <line\n        x1=\"12\"\n        y1=\"12\"\n        x2=\"12\"\n        y2=\"16\"\n        stroke=\"currentColor\"\n        strokeWidth=\"2\"\n        strokeLinecap=\"round\"\n      />\n    </svg>\n  ),\n  none: null,\n};\n\nconst DISMISS_ICON = (\n  <svg\n    width=\"16\"\n    height=\"16\"\n    viewBox=\"0 0 24 24\"\n    fill=\"none\"\n    aria-hidden=\"true\"\n    focusable=\"false\"\n    xmlns=\"http://www.w3.org/2000/svg\"\n  >\n    <line\n      x1=\"18\"\n      y1=\"6\"\n      x2=\"6\"\n      y2=\"18\"\n      stroke=\"currentColor\"\n      strokeWidth=\"2\"\n      strokeLinecap=\"round\"\n    />\n    <line\n      x1=\"6\"\n      y1=\"6\"\n      x2=\"18\"\n      y2=\"18\"\n      stroke=\"currentColor\"\n      strokeWidth=\"2\"\n      strokeLinecap=\"round\"\n    />\n  </svg>\n);\n\nexport default function Save({ attributes }) {\n  const { icon, text, variant, textColour, textFontSize, dismissible } =\n    attributes;\n\n  const className = [\n    \"sgs-notice-banner\",\n    `sgs-notice-banner--${variant}`,\n    dismissible ? \"sgs-notice-banner--dismissible\" : \"\",\n  ]\n    .filter(Boolean)\n    .join(\" \");\n\n  const blockProps = useBlockProps.save({ className });\n\n  const textStyle = {\n    color: colourVar(textColour) || undefined,\n    fontSize: fontSizeVar(textFontSize) || undefined,\n  };\n\n  // Use the variant SVG icon; fall back to the explicit icon selector if needed.\n  const iconKey = icon === \"none\" ? \"none\" : variant || icon;\n  const iconSvg = VARIANT_ICONS[iconKey] || VARIANT_ICONS[icon] || null;\n\n  return (\n    <div {...blockProps} role=\"note\">\n      {iconSvg && <span className=\"sgs-notice-banner__icon\">{iconSvg}</span>}\n      <RichText.Content\n        tagName=\"p\"\n        className=\"sgs-notice-banner__text\"\n        value={text}\n        style={textStyle}\n      />\n      {dismissible && (\n        <button\n          type=\"button\"\n          className=\"sgs-notice-banner__dismiss\"\n          aria-label=\"Dismiss\"\n        >\n          {DISMISS_ICON}\n        </button>\n      )}\n    </div>\n  );\n}\n",
+  "compiled_save_reference": "plugins/sgs-blocks/build/notice-banner/index.js (NOT BUILT \u2014 run `npm run build` to generate)",
+  "example_markup": "<!-- wp:sgs/notice-banner {\"icon\":\"info\",\"variant\":\"info\",\"textColour\":\"text\",\"dismissible\":false} -->\n[block inner content placeholder]\n<!-- /wp:sgs/notice-banner -->",
+  "deprecation_notes": "pure-static block: deprecated.js save function must reproduce this source_save verbatim"
+}

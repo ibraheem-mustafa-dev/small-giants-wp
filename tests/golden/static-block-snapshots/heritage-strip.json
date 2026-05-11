@@ -1,0 +1,129 @@
+{
+  "block_slug": "sgs/heritage-strip",
+  "captured_at": "2026-05-11T18:52:56.305413Z",
+  "classification": "pure-static",
+  "attributes": {
+    "layout": {
+      "type": "string",
+      "default": "image-text-image"
+    },
+    "headline": {
+      "type": "string",
+      "default": ""
+    },
+    "body": {
+      "type": "string",
+      "default": ""
+    },
+    "imageLeft": {
+      "type": "object"
+    },
+    "imageRight": {
+      "type": "object"
+    },
+    "backgroundColor": {
+      "type": "string",
+      "default": "primary"
+    },
+    "textColor": {
+      "type": "string",
+      "default": "text-inverse"
+    },
+    "headlineColour": {
+      "type": "string",
+      "default": "text-inverse"
+    },
+    "headlineFontSize": {
+      "type": "string"
+    },
+    "headlineFontSizeTablet": {
+      "type": "string",
+      "default": ""
+    },
+    "headlineFontSizeMobile": {
+      "type": "string",
+      "default": ""
+    },
+    "bodyColour": {
+      "type": "string",
+      "default": "text-inverse"
+    },
+    "bodyFontSize": {
+      "type": "string"
+    },
+    "bodyFontSizeTablet": {
+      "type": "string",
+      "default": ""
+    },
+    "bodyFontSizeMobile": {
+      "type": "string",
+      "default": ""
+    },
+    "backgroundColour": {
+      "type": "string"
+    },
+    "hoverBackgroundColour": {
+      "type": "string",
+      "default": ""
+    },
+    "hoverTextColour": {
+      "type": "string",
+      "default": ""
+    },
+    "hoverBorderColour": {
+      "type": "string",
+      "default": ""
+    },
+    "hoverEffect": {
+      "type": "string",
+      "default": "none"
+    },
+    "transitionDuration": {
+      "type": "string",
+      "default": "300"
+    },
+    "transitionEasing": {
+      "type": "string",
+      "default": "ease-in-out"
+    },
+    "badge": {
+      "type": "string",
+      "default": ""
+    },
+    "bgPattern": {
+      "type": "string",
+      "default": "none",
+      "enum": [
+        "none",
+        "dots",
+        "diagonal-lines",
+        "grid"
+      ]
+    }
+  },
+  "attribute_defaults_payload": {
+    "layout": "image-text-image",
+    "headline": "",
+    "body": "",
+    "backgroundColor": "primary",
+    "textColor": "text-inverse",
+    "headlineColour": "text-inverse",
+    "headlineFontSizeTablet": "",
+    "headlineFontSizeMobile": "",
+    "bodyColour": "text-inverse",
+    "bodyFontSizeTablet": "",
+    "bodyFontSizeMobile": "",
+    "hoverBackgroundColour": "",
+    "hoverTextColour": "",
+    "hoverBorderColour": "",
+    "hoverEffect": "none",
+    "transitionDuration": "300",
+    "transitionEasing": "ease-in-out",
+    "badge": "",
+    "bgPattern": "none"
+  },
+  "source_save": "import { useBlockProps, RichText } from '@wordpress/block-editor';\nimport { colourVar, fontSizeVar } from '../../utils';\n\nexport default function Save( { attributes } ) {\n\tconst {\n\t\tlayout,\n\t\theadline,\n\t\tbody,\n\t\timageLeft,\n\t\timageRight,\n\t\theadlineColour,\n\t\theadlineFontSize,\n\t\theadlineFontSizeTablet,\n\t\theadlineFontSizeMobile,\n\t\tbodyColour,\n\t\tbodyFontSize,\n\t\tbodyFontSizeTablet,\n\t\tbodyFontSizeMobile,\n\t\thoverBackgroundColour,\n\t\thoverTextColour,\n\t\thoverBorderColour,\n\t\thoverEffect,\n\t\ttransitionDuration,\n\t\ttransitionEasing,\n\t\tbadge,\n\t\tbgPattern,\n\t} = attributes;\n\n\tconst showLeftImage =\n\t\tlayout === 'image-text-image' || layout === 'image-text';\n\tconst showRightImage =\n\t\tlayout === 'image-text-image' || layout === 'text-image';\n\n\tconst className = [\n\t\t'sgs-heritage-strip',\n\t\t`sgs-heritage-strip--${ layout }`,\n\t\thoverEffect && hoverEffect !== 'none' ? `sgs-heritage-strip--hover-${ hoverEffect }` : '',\n\t\tbgPattern && bgPattern !== 'none' ? `sgs-heritage-strip--pattern-${ bgPattern }` : '',\n\t].filter( Boolean ).join( ' ' );\n\n\tconst wrapperStyle = {\n\t\t'--sgs-hover-bg': hoverBackgroundColour ? colourVar( hoverBackgroundColour ) : undefined,\n\t\t'--sgs-hover-text': hoverTextColour ? colourVar( hoverTextColour ) : undefined,\n\t\t'--sgs-hover-border': hoverBorderColour ? colourVar( hoverBorderColour ) : undefined,\n\t\t'--sgs-transition-duration': transitionDuration ? `${ transitionDuration }ms` : undefined,\n\t\t'--sgs-transition-easing': transitionEasing || undefined,\n\t};\n\n\t// Responsive font-size data-attributes for CSS media query selectors.\n\tconst dataAttrs = {};\n\tif ( headlineFontSizeTablet ) {\n\t\tdataAttrs[ 'data-headline-fs-tablet' ] = headlineFontSizeTablet;\n\t}\n\tif ( headlineFontSizeMobile ) {\n\t\tdataAttrs[ 'data-headline-fs-mobile' ] = headlineFontSizeMobile;\n\t}\n\tif ( bodyFontSizeTablet ) {\n\t\tdataAttrs[ 'data-body-fs-tablet' ] = bodyFontSizeTablet;\n\t}\n\tif ( bodyFontSizeMobile ) {\n\t\tdataAttrs[ 'data-body-fs-mobile' ] = bodyFontSizeMobile;\n\t}\n\n\tconst blockProps = useBlockProps.save( { className, style: wrapperStyle, ...dataAttrs } );\n\n\tconst headlineStyle = {\n\t\tcolor: colourVar( headlineColour ) || undefined,\n\t\tfontSize: fontSizeVar( headlineFontSize ) || undefined,\n\t};\n\n\tconst bodyStyle = {\n\t\tcolor: colourVar( bodyColour ) || undefined,\n\t\tfontSize: fontSizeVar( bodyFontSize ) || undefined,\n\t};\n\n\treturn (\n\t\t<section { ...blockProps }>\n\t\t\t{ showLeftImage && imageLeft?.url && (\n\t\t\t\t<div className=\"sgs-heritage-strip__image sgs-heritage-strip__image--left\">\n\t\t\t\t\t<img\n\t\t\t\t\t\tsrc={ imageLeft.url }\n\t\t\t\t\t\talt={ imageLeft.alt || '' }\n\t\t\t\t\t\tclassName=\"sgs-heritage-strip__img\"\n\t\t\t\t\t\tloading=\"lazy\"\n\t\t\t\t\t/>\n\t\t\t\t</div>\n\t\t\t) }\n\n\t\t\t<div className=\"sgs-heritage-strip__content\">\n\t\t\t\t{ badge && (\n\t\t\t\t\t<span className=\"sgs-heritage-strip__badge\">\n\t\t\t\t\t\t{ badge }\n\t\t\t\t\t</span>\n\t\t\t\t) }\n\t\t\t\t<RichText.Content\n\t\t\t\t\ttagName=\"h2\"\n\t\t\t\t\tclassName=\"sgs-heritage-strip__headline\"\n\t\t\t\t\tvalue={ headline }\n\t\t\t\t\tstyle={ headlineStyle }\n\t\t\t\t/>\n\t\t\t\t<RichText.Content\n\t\t\t\t\ttagName=\"div\"\n\t\t\t\t\tclassName=\"sgs-heritage-strip__body\"\n\t\t\t\t\tvalue={ body }\n\t\t\t\t\tstyle={ bodyStyle }\n\t\t\t\t/>\n\t\t\t</div>\n\n\t\t\t{ showRightImage && imageRight?.url && (\n\t\t\t\t<div className=\"sgs-heritage-strip__image sgs-heritage-strip__image--right\">\n\t\t\t\t\t<img\n\t\t\t\t\t\tsrc={ imageRight.url }\n\t\t\t\t\t\talt={ imageRight.alt || '' }\n\t\t\t\t\t\tclassName=\"sgs-heritage-strip__img\"\n\t\t\t\t\t\tloading=\"lazy\"\n\t\t\t\t\t/>\n\t\t\t\t</div>\n\t\t\t) }\n\t\t</section>\n\t);\n}\n",
+  "compiled_save_reference": "plugins/sgs-blocks/build/heritage-strip/index.js (NOT BUILT \u2014 run `npm run build` to generate)",
+  "example_markup": "<!-- wp:sgs/heritage-strip {\"layout\":\"image-text-image\",\"headline\":\"\",\"body\":\"\",\"backgroundColor\":\"primary\",\"textColor\":\"text-inverse\",\"headlineColour\":\"text-inverse\",\"headlineFontSizeTablet\":\"\",\"headlineFontSizeMobile\":\"\",\"bodyColour\":\"text-inverse\",\"bodyFontSizeTablet\":\"\",\"bodyFontSizeMobile\":\"\",\"hoverBackgroundColour\":\"\",\"hoverTextColour\":\"\",\"hoverBorderColour\":\"\",\"hoverEffect\":\"none\",\"transitionDuration\":\"300\",\"transitionEasing\":\"ease-in-out\",\"badge\":\"\",\"bgPattern\":\"none\"} -->\n[block inner content placeholder]\n<!-- /wp:sgs/heritage-strip -->",
+  "deprecation_notes": "pure-static block: deprecated.js save function must reproduce this source_save verbatim"
+}

@@ -1,0 +1,73 @@
+{
+  "block_slug": "sgs/feature-grid",
+  "captured_at": "2026-05-11T18:52:56.305413Z",
+  "classification": "hybrid",
+  "attributes": {
+    "layoutMode": {
+      "type": "string",
+      "default": "auto-flex"
+    },
+    "columnsDesktop": {
+      "type": "number",
+      "default": 4
+    },
+    "columnsTablet": {
+      "type": "number",
+      "default": 2
+    },
+    "columnsMobile": {
+      "type": "number",
+      "default": 1
+    },
+    "minItemWidth": {
+      "type": "number",
+      "default": 240
+    },
+    "minItemWidthUnit": {
+      "type": "string",
+      "default": "px"
+    },
+    "gap": {
+      "type": "number",
+      "default": 24
+    },
+    "gapTablet": {
+      "type": "number",
+      "default": null
+    },
+    "gapMobile": {
+      "type": "number",
+      "default": 16
+    },
+    "gapUnit": {
+      "type": "string",
+      "default": "px"
+    },
+    "alignItems": {
+      "type": "string",
+      "default": "stretch"
+    },
+    "justifyItems": {
+      "type": "string",
+      "default": "stretch"
+    }
+  },
+  "attribute_defaults_payload": {
+    "layoutMode": "auto-flex",
+    "columnsDesktop": 4,
+    "columnsTablet": 2,
+    "columnsMobile": 1,
+    "minItemWidth": 240,
+    "minItemWidthUnit": "px",
+    "gap": 24,
+    "gapTablet": null,
+    "gapMobile": 16,
+    "gapUnit": "px",
+    "alignItems": "stretch",
+    "justifyItems": "stretch"
+  },
+  "source_save": "import { useBlockProps, InnerBlocks } from '@wordpress/block-editor';\n\nexport default function save() {\n\treturn (\n\t\t<div { ...useBlockProps.save() }>\n\t\t\t<InnerBlocks.Content />\n\t\t</div>\n\t);\n}\n",
+  "compiled_save_reference": "plugins/sgs-blocks/build/feature-grid/index.js (NOT BUILT \u2014 run `npm run build` to generate)",
+  "example_markup": "<!-- wp:sgs/feature-grid {\"layoutMode\":\"auto-flex\",\"columnsDesktop\":4,\"columnsTablet\":2,\"columnsMobile\":1,\"minItemWidth\":240,\"minItemWidthUnit\":\"px\",\"gap\":24,\"gapTablet\":null,\"gapMobile\":16,\"gapUnit\":\"px\",\"alignItems\":\"stretch\",\"justifyItems\":\"stretch\"} -->\n[block inner content placeholder]\n<!-- /wp:sgs/feature-grid -->",
+  "deprecation_notes": "hybrid block: deprecated.js save function must reproduce the wrapper + <InnerBlocks.Content /> marker exactly"
+}

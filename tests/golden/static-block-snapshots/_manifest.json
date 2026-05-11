@@ -1,0 +1,122 @@
+{
+  "generated_at": "2026-05-11T18:55:38.270174Z",
+  "authoritative_source": "sgs-framework.db blocks.type (maintained by /sgs-update Stage 1)",
+  "augmenting_source": "plugins/sgs-blocks/src/blocks/<slug>/save.js direct inspection (catches hybrid blocks classified as dynamic by sgs-db but emitting serialised wrapper)",
+  "rejected_source": {
+    "path": "tools/recogniser/data/fingerprints.json",
+    "reason": "frozen v1-recogniser artifact; block_type field stale (testimonial + whatsapp-cta migrated to dynamic 2026-05-05 but FP not updated; tab classification incorrect; feature-grid + multi-button not in FP at all). No script maintains it."
+  },
+  "fr12_semantic": "snapshot-needed = save.js returns non-null JSX (whether sgs_db marks block static or dynamic)",
+  "static_blocks": [
+    "sgs/certification-bar",
+    "sgs/counter",
+    "sgs/feature-grid",
+    "sgs/heritage-strip",
+    "sgs/mobile-nav",
+    "sgs/multi-button",
+    "sgs/notice-banner",
+    "sgs/process-steps",
+    "sgs/trust-bar"
+  ],
+  "classification": {
+    "sgs/certification-bar": {
+      "snapshot_kind": "pure-static",
+      "sgs_db_type": "static",
+      "save_behaviour": "pure-static (save emits JSX content)",
+      "reason_for_snapshot": "save.js returns non-null JSX; WP serialises this for post_content validation"
+    },
+    "sgs/counter": {
+      "snapshot_kind": "pure-static",
+      "sgs_db_type": "static",
+      "save_behaviour": "pure-static (save emits JSX content)",
+      "reason_for_snapshot": "save.js returns non-null JSX; WP serialises this for post_content validation"
+    },
+    "sgs/feature-grid": {
+      "snapshot_kind": "hybrid",
+      "sgs_db_type": "dynamic",
+      "save_behaviour": "hybrid (save emits wrapper + InnerBlocks marker)",
+      "reason_for_snapshot": "save.js returns non-null JSX; WP serialises this for post_content validation"
+    },
+    "sgs/heritage-strip": {
+      "snapshot_kind": "pure-static",
+      "sgs_db_type": "static",
+      "save_behaviour": "pure-static (save emits JSX content)",
+      "reason_for_snapshot": "save.js returns non-null JSX; WP serialises this for post_content validation"
+    },
+    "sgs/mobile-nav": {
+      "snapshot_kind": "hybrid",
+      "sgs_db_type": "dynamic",
+      "save_behaviour": "hybrid (save emits wrapper + InnerBlocks marker)",
+      "reason_for_snapshot": "save.js returns non-null JSX; WP serialises this for post_content validation"
+    },
+    "sgs/multi-button": {
+      "snapshot_kind": "hybrid",
+      "sgs_db_type": "dynamic",
+      "save_behaviour": "hybrid (save emits wrapper + InnerBlocks marker)",
+      "reason_for_snapshot": "save.js returns non-null JSX; WP serialises this for post_content validation"
+    },
+    "sgs/notice-banner": {
+      "snapshot_kind": "pure-static",
+      "sgs_db_type": "static",
+      "save_behaviour": "pure-static (save emits JSX content)",
+      "reason_for_snapshot": "save.js returns non-null JSX; WP serialises this for post_content validation"
+    },
+    "sgs/process-steps": {
+      "snapshot_kind": "pure-static",
+      "sgs_db_type": "static",
+      "save_behaviour": "pure-static (save emits JSX content)",
+      "reason_for_snapshot": "save.js returns non-null JSX; WP serialises this for post_content validation"
+    },
+    "sgs/trust-bar": {
+      "snapshot_kind": "pure-static",
+      "sgs_db_type": "static",
+      "save_behaviour": "pure-static (save emits JSX content)",
+      "reason_for_snapshot": "save.js returns non-null JSX; WP serialises this for post_content validation"
+    }
+  },
+  "snapshot_count": 9,
+  "no_snapshot_notes": {
+    "sgs/accordion-item": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/back-to-top": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/brand-strip": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/breadcrumbs": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/business-info": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/button": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/card-grid": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/countdown-timer": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/form-field-address": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/form-field-checkbox": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/form-field-consent": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/form-field-date": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/form-field-email": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/form-field-file": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/form-field-hidden": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/form-field-number": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/form-field-phone": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/form-field-radio": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/form-field-select": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/form-field-text": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/form-field-textarea": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/form-field-tiles": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/form-review": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/gallery": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/icon": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/icon-block": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/icon-list": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/mega-menu": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/mobile-nav-toggle": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/modal": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/post-grid": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/pricing-table": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/reading-progress": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/social-icons": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/star-rating": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/tab": "No snapshot needed: save returns null (sgs_db_type=static)",
+    "sgs/table-of-contents": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/team-member": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/testimonial": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/testimonial-slider": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/trust-badges": "No snapshot needed: save returns null (sgs_db_type=dynamic)",
+    "sgs/whatsapp-cta": "No snapshot needed: save returns null (sgs_db_type=dynamic)"
+  }
+}

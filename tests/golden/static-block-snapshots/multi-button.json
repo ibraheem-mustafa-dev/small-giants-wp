@@ -1,0 +1,83 @@
+{
+  "block_slug": "sgs/multi-button",
+  "captured_at": "2026-05-11T18:52:56.305413Z",
+  "classification": "hybrid",
+  "attributes": {
+    "direction": {
+      "type": "string",
+      "default": "row"
+    },
+    "directionTablet": {
+      "type": "string",
+      "default": ""
+    },
+    "directionMobile": {
+      "type": "string",
+      "default": "column"
+    },
+    "gap": {
+      "type": "number",
+      "default": 12
+    },
+    "gapTablet": {
+      "type": "number",
+      "default": null
+    },
+    "gapMobile": {
+      "type": "number",
+      "default": 8
+    },
+    "gapUnit": {
+      "type": "string",
+      "default": "px"
+    },
+    "justifyContent": {
+      "type": "string",
+      "default": "flex-start"
+    },
+    "justifyContentTablet": {
+      "type": "string",
+      "default": ""
+    },
+    "justifyContentMobile": {
+      "type": "string",
+      "default": ""
+    },
+    "wrap": {
+      "type": "string",
+      "default": "wrap"
+    },
+    "wrapTablet": {
+      "type": "string",
+      "default": ""
+    },
+    "wrapMobile": {
+      "type": "string",
+      "default": "wrap"
+    },
+    "alignItems": {
+      "type": "string",
+      "default": "center"
+    }
+  },
+  "attribute_defaults_payload": {
+    "direction": "row",
+    "directionTablet": "",
+    "directionMobile": "column",
+    "gap": 12,
+    "gapTablet": null,
+    "gapMobile": 8,
+    "gapUnit": "px",
+    "justifyContent": "flex-start",
+    "justifyContentTablet": "",
+    "justifyContentMobile": "",
+    "wrap": "wrap",
+    "wrapTablet": "",
+    "wrapMobile": "wrap",
+    "alignItems": "center"
+  },
+  "source_save": "import { useBlockProps, InnerBlocks } from '@wordpress/block-editor';\n\n/**\n * Dynamic block \u2014 render.php handles frontend output.\n * Save stores the InnerBlocks content inside a wrapper div for\n * correct block serialisation and validation.\n */\nexport default function save() {\n\treturn (\n\t\t<div { ...useBlockProps.save() }>\n\t\t\t<InnerBlocks.Content />\n\t\t</div>\n\t);\n}\n",
+  "compiled_save_reference": "plugins/sgs-blocks/build/multi-button/index.js (NOT BUILT \u2014 run `npm run build` to generate)",
+  "example_markup": "<!-- wp:sgs/multi-button {\"direction\":\"row\",\"directionTablet\":\"\",\"directionMobile\":\"column\",\"gap\":12,\"gapTablet\":null,\"gapMobile\":8,\"gapUnit\":\"px\",\"justifyContent\":\"flex-start\",\"justifyContentTablet\":\"\",\"justifyContentMobile\":\"\",\"wrap\":\"wrap\",\"wrapTablet\":\"\",\"wrapMobile\":\"wrap\",\"alignItems\":\"center\"} -->\n[block inner content placeholder]\n<!-- /wp:sgs/multi-button -->",
+  "deprecation_notes": "hybrid block: deprecated.js save function must reproduce the wrapper + <InnerBlocks.Content /> marker exactly"
+}

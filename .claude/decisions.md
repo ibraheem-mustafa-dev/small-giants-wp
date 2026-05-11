@@ -110,3 +110,34 @@ Append-only. Most-recent first.
 **KJC #1:** `.sgs-` prefix chosen over `.draft-` / `.dft-` because drafts and rendered SGS share class-name space; literal slug match (`.sgs-hero` → `sgs/hero`) is unambiguous.
 
 **KJC #2:** Hybrid validation enforcement chosen (Option C): hard pre-flight gate on production runs + soft lint warning under `--draft-mode`. Hard-only blocks rapid iteration; soft-only lets non-conforming drafts back into the pipeline.
+
+---
+
+## 2026-05-11 — Spec 14 FR18 missing-recogniser-script decisions
+
+Closes the long-pending question on 4 scripts referenced in `/sgs-clone` SKILL.md tool bindings + state.md + architecture.md but never built. Forensic audit (git log --all across every branch) confirmed none of the 4 has ever been committed.
+
+**Decision per script:**
+
+- **`heuristic-fallback-builder.py` → RETIRE.** The rule-of-thumb fallback role is absorbed by the Layer 2 role-templates per-attribute extraction strategies (spec 14 FR2). The script was a v1 design that pre-dated the role taxonomy; no separate fallback builder needed.
+
+- **`computed-style-passport.py` → RETIRE.** Replaced by the Playwright runtime probe explicitly documented in spec 14 FR3's PHP-analysis fallback clause. The "passport" metaphor is preserved (runtime cascade-resolved values when static analysis can't reach), just delivered via Playwright not a bespoke script.
+
+- **`recursion-guard.py` → BUILD as standalone script** (revised 2026-05-11 after Bean caught a fabrication). Original entry claimed "recursion safety is enforced inline in `sgs-clone-orchestrator.py` via the existing max_depth check" — `grep` confirmed no such check exists anywhere in the orchestrator or recogniser scripts. That was the second fabrication this phase (after critical-fix-verification's "broader scope" framing). Corrected decision: build as ~50-LOC standalone Python module at `plugins/sgs-blocks/scripts/recogniser/recursion-guard.py`, imported by `sgs-clone-orchestrator.py` + recogniser scripts that walk the DOM. Default `max_depth=12` + `visited_nodes` set. Fully deterministic — same inputs, same exit; raises a typed exception on depth overflow. Slated for spec 14 P2 alongside FR7-FR8 schema (~30-45 min added to P2). Matches `/sgs-clone` skill's original Hard Rule 4 reference to a separate script. **Process lesson:** grep before claiming code exists, not after Bean catches.
+
+- **`critical-fix-verification.py` → BUILD as P10 lightweight acceptance harness.** ~45 min (was originally estimated at ~2 hr — trimmed per P1 KJC2 evidence audit). Scope: 5 git-diff + filesystem assertions covering the canonical-mutation boundary:
+  1. No root `theme/sgs-theme/theme.json` mutation
+  2. No canonical-block files (`plugins/sgs-blocks/src/blocks/<slug>/`) mutated outside FR21 commit
+  3. No licensing strings in any uimax write since the run started
+  4. Idempotency re-run produces no new gap-candidate rows
+  5. `pipeline-state/<run-id>/staging/` empty after FR21 PASS branch completes
+
+  These 5 catch failure modes other gates miss (FR32 pre-commit chain + visual-qa + uimax-write-validator cover the other 10 spec-14 hard constraints).
+
+**Process rule attached:** when a doc references a script that doesn't exist on disk, treat the doc claim as suspect until `git log --all` confirms commit history. Pattern repeated three times in this project (Phase 7, Phase 8, this audit) — captured in `mistakes.md`.
+
+**KJC #1 — Snapshot format for FR12 deprecation source-of-truth:** JSON with `source_save` verbatim + `compiled_save_reference` path (not inlined binary). Reasoning: compiled bundles churn every build; inlining produces instant staleness. Path reference + git history is the safer audit trail.
+
+**KJC #2 — critical-fix-verification.py scope (revised after Bean challenge):** lightweight 5-check harness, not the original "broader scope" framing. Justification: forensic audit found no documented original broader scope; the original framing was a fabrication. The 5 checks selected because the other 10 spec-14 hard constraints are already enforced elsewhere (uimax-write-validator for Rosetta Stone + no-licensing; argparse for `--resume`; editor convention for em-dashes; FR20 mutex for builds; etc.).
+
+**Source-of-truth note (additional finding):** v1 fingerprints data at `tools/recogniser/data/fingerprints.json` is FROZEN — no script maintains it. `block_type` field is stale (testimonial + whatsapp-cta migrated to dynamic 2026-05-05; tab + feature-grid + multi-button mis-classified or missing). `sgs-framework.db` `blocks.type` is the authoritative source for static/dynamic, maintained by `/sgs-update` Stage 1. uimax `component_libraries` carries design-intelligence axes (mood/style/industry/cross-platform equivalents) but no static/dynamic field. Spec 14 references updated to point at sgs-db.

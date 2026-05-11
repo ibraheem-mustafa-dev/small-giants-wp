@@ -1,0 +1,444 @@
+{
+  "block_slug": "sgs/mobile-nav",
+  "captured_at": "2026-05-11T18:52:56.305413Z",
+  "classification": "hybrid",
+  "attributes": {
+    "variant": {
+      "type": "string",
+      "default": "overlay",
+      "enum": [
+        "overlay",
+        "slide-left",
+        "slide-right",
+        "bottom-sheet"
+      ]
+    },
+    "accentColour": {
+      "type": "string",
+      "default": "accent"
+    },
+    "dividerColour": {
+      "type": "string",
+      "default": "surface-alt"
+    },
+    "showCta": {
+      "type": "boolean",
+      "default": true
+    },
+    "ctaText": {
+      "type": "string",
+      "default": ""
+    },
+    "ctaUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "showContactShortcuts": {
+      "type": "boolean",
+      "default": true
+    },
+    "showSocials": {
+      "type": "boolean",
+      "default": true
+    },
+    "socialStyle": {
+      "type": "string",
+      "default": "coloured",
+      "enum": [
+        "coloured",
+        "plain",
+        "outline"
+      ]
+    },
+    "showSearch": {
+      "type": "boolean",
+      "default": false
+    },
+    "showAccountTray": {
+      "type": "boolean",
+      "default": false
+    },
+    "enableSwipe": {
+      "type": "boolean",
+      "default": true
+    },
+    "desktopHamburger": {
+      "type": "boolean",
+      "default": false
+    },
+    "staggerDelay": {
+      "type": "number",
+      "default": 25
+    },
+    "breakpoint": {
+      "type": "number",
+      "default": 1024
+    },
+    "drawerWidth": {
+      "type": "number",
+      "default": 85
+    },
+    "drawerWidthMobile": {
+      "type": "string",
+      "default": ""
+    },
+    "drawerWidthTablet": {
+      "type": "string",
+      "default": ""
+    },
+    "drawerMaxWidth": {
+      "type": "number",
+      "default": 400
+    },
+    "drawerPosition": {
+      "type": "string",
+      "default": "top",
+      "enum": [
+        "top",
+        "centre",
+        "space-between"
+      ]
+    },
+    "showLogo": {
+      "type": "boolean",
+      "default": true
+    },
+    "logoMaxWidth": {
+      "type": "number",
+      "default": 120
+    },
+    "logoMaxWidthMobile": {
+      "type": "string",
+      "default": ""
+    },
+    "logoMaxWidthTablet": {
+      "type": "string",
+      "default": ""
+    },
+    "closeButtonSize": {
+      "type": "number",
+      "default": 48
+    },
+    "closeButtonSizeMobile": {
+      "type": "string",
+      "default": ""
+    },
+    "closeButtonSizeTablet": {
+      "type": "string",
+      "default": ""
+    },
+    "closeButtonStyle": {
+      "type": "string",
+      "default": "circle",
+      "enum": [
+        "circle",
+        "square",
+        "plain"
+      ]
+    },
+    "ctaIcon": {
+      "type": "string",
+      "default": "arrow-right"
+    },
+    "ctaStyle": {
+      "type": "string",
+      "default": "filled",
+      "enum": [
+        "filled",
+        "outline",
+        "ghost"
+      ]
+    },
+    "showSecondaryCta": {
+      "type": "boolean",
+      "default": false
+    },
+    "secondaryCtaText": {
+      "type": "string",
+      "default": ""
+    },
+    "secondaryCtaUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "secondaryCtaIcon": {
+      "type": "string",
+      "default": "phone"
+    },
+    "secondaryCtaStyle": {
+      "type": "string",
+      "default": "outline",
+      "enum": [
+        "filled",
+        "outline",
+        "ghost"
+      ]
+    },
+    "contactDisplayMode": {
+      "type": "string",
+      "default": "icon-only",
+      "enum": [
+        "icon-only",
+        "icon-text",
+        "hidden"
+      ]
+    },
+    "showWhatsApp": {
+      "type": "boolean",
+      "default": false
+    },
+    "linkFontSize": {
+      "type": "string",
+      "default": "medium"
+    },
+    "linkFontSizeMobile": {
+      "type": "string",
+      "default": ""
+    },
+    "linkFontWeight": {
+      "type": "string",
+      "default": "600",
+      "enum": [
+        "400",
+        "500",
+        "600",
+        "700"
+      ]
+    },
+    "sublinkFontSize": {
+      "type": "string",
+      "default": "small"
+    },
+    "sublinkFontSizeMobile": {
+      "type": "string",
+      "default": ""
+    },
+    "showDividers": {
+      "type": "boolean",
+      "default": true
+    },
+    "submenuIndent": {
+      "type": "number",
+      "default": 24
+    },
+    "submenuIndentMobile": {
+      "type": "string",
+      "default": ""
+    },
+    "submenuIndentTablet": {
+      "type": "string",
+      "default": ""
+    },
+    "socialIconSize": {
+      "type": "number",
+      "default": 44
+    },
+    "socialIconSizeMobile": {
+      "type": "string",
+      "default": ""
+    },
+    "socialIconSizeTablet": {
+      "type": "string",
+      "default": ""
+    },
+    "showTagline": {
+      "type": "boolean",
+      "default": false
+    },
+    "taglineText": {
+      "type": "string",
+      "default": ""
+    },
+    "drawerBg": {
+      "type": "string",
+      "default": "surface"
+    },
+    "drawerText": {
+      "type": "string",
+      "default": "text"
+    },
+    "drawerGradient": {
+      "type": "string",
+      "default": ""
+    },
+    "closeButtonBg": {
+      "type": "string",
+      "default": ""
+    },
+    "closeButtonColour": {
+      "type": "string",
+      "default": ""
+    },
+    "ctaBg": {
+      "type": "string",
+      "default": ""
+    },
+    "ctaTextColour": {
+      "type": "string",
+      "default": ""
+    },
+    "ctaBorderColour": {
+      "type": "string",
+      "default": ""
+    },
+    "secondaryCtaBg": {
+      "type": "string",
+      "default": ""
+    },
+    "secondaryCtaTextColour": {
+      "type": "string",
+      "default": ""
+    },
+    "linkColour": {
+      "type": "string",
+      "default": "text"
+    },
+    "linkHoverColour": {
+      "type": "string",
+      "default": "primary"
+    },
+    "linkActiveColour": {
+      "type": "string",
+      "default": "primary"
+    },
+    "sublinkColour": {
+      "type": "string",
+      "default": ""
+    },
+    "sublinkHoverColour": {
+      "type": "string",
+      "default": ""
+    },
+    "backdropColour": {
+      "type": "string",
+      "default": ""
+    },
+    "focusColour": {
+      "type": "string",
+      "default": ""
+    },
+    "animationPreset": {
+      "type": "string",
+      "default": "spring",
+      "enum": [
+        "snappy",
+        "smooth",
+        "spring",
+        "bouncy",
+        "none",
+        "custom"
+      ]
+    },
+    "animationDuration": {
+      "type": "number",
+      "default": 400
+    },
+    "animationEasing": {
+      "type": "string",
+      "default": "spring",
+      "enum": [
+        "spring",
+        "ease",
+        "ease-in-out",
+        "linear"
+      ]
+    },
+    "exitDuration": {
+      "type": "number",
+      "default": 280
+    },
+    "backdropOpacity": {
+      "type": "number",
+      "default": 60
+    },
+    "backdropBlur": {
+      "type": "boolean",
+      "default": false
+    },
+    "backdropBlurAmount": {
+      "type": "number",
+      "default": 8
+    }
+  },
+  "attribute_defaults_payload": {
+    "variant": "overlay",
+    "accentColour": "accent",
+    "dividerColour": "surface-alt",
+    "showCta": true,
+    "ctaText": "",
+    "ctaUrl": "",
+    "showContactShortcuts": true,
+    "showSocials": true,
+    "socialStyle": "coloured",
+    "showSearch": false,
+    "showAccountTray": false,
+    "enableSwipe": true,
+    "desktopHamburger": false,
+    "staggerDelay": 25,
+    "breakpoint": 1024,
+    "drawerWidth": 85,
+    "drawerWidthMobile": "",
+    "drawerWidthTablet": "",
+    "drawerMaxWidth": 400,
+    "drawerPosition": "top",
+    "showLogo": true,
+    "logoMaxWidth": 120,
+    "logoMaxWidthMobile": "",
+    "logoMaxWidthTablet": "",
+    "closeButtonSize": 48,
+    "closeButtonSizeMobile": "",
+    "closeButtonSizeTablet": "",
+    "closeButtonStyle": "circle",
+    "ctaIcon": "arrow-right",
+    "ctaStyle": "filled",
+    "showSecondaryCta": false,
+    "secondaryCtaText": "",
+    "secondaryCtaUrl": "",
+    "secondaryCtaIcon": "phone",
+    "secondaryCtaStyle": "outline",
+    "contactDisplayMode": "icon-only",
+    "showWhatsApp": false,
+    "linkFontSize": "medium",
+    "linkFontSizeMobile": "",
+    "linkFontWeight": "600",
+    "sublinkFontSize": "small",
+    "sublinkFontSizeMobile": "",
+    "showDividers": true,
+    "submenuIndent": 24,
+    "submenuIndentMobile": "",
+    "submenuIndentTablet": "",
+    "socialIconSize": 44,
+    "socialIconSizeMobile": "",
+    "socialIconSizeTablet": "",
+    "showTagline": false,
+    "taglineText": "",
+    "drawerBg": "surface",
+    "drawerText": "text",
+    "drawerGradient": "",
+    "closeButtonBg": "",
+    "closeButtonColour": "",
+    "ctaBg": "",
+    "ctaTextColour": "",
+    "ctaBorderColour": "",
+    "secondaryCtaBg": "",
+    "secondaryCtaTextColour": "",
+    "linkColour": "text",
+    "linkHoverColour": "primary",
+    "linkActiveColour": "primary",
+    "sublinkColour": "",
+    "sublinkHoverColour": "",
+    "backdropColour": "",
+    "focusColour": "",
+    "animationPreset": "spring",
+    "animationDuration": 400,
+    "animationEasing": "spring",
+    "exitDuration": 280,
+    "backdropOpacity": 60,
+    "backdropBlur": false,
+    "backdropBlurAmount": 8
+  },
+  "source_save": "/**\n * SGS Mobile Navigation \u2014 save function.\n *\n * Hybrid block: server-rendered zones + InnerBlocks for custom content.\n * render.php handles all server-rendered output and places $content\n * (the serialised inner blocks HTML) in the custom content zone between\n * the navigation and social zones.\n *\n * @package SGS\\Blocks\n */\n\nimport { useBlockProps, InnerBlocks } from '@wordpress/block-editor';\n\nexport default function save() {\n\treturn (\n\t\t<div { ...useBlockProps.save() }>\n\t\t\t<InnerBlocks.Content />\n\t\t</div>\n\t);\n}\n",
+  "compiled_save_reference": "plugins/sgs-blocks/build/mobile-nav/index.js (NOT BUILT \u2014 run `npm run build` to generate)",
+  "example_markup": "<!-- wp:sgs/mobile-nav {\"variant\":\"overlay\",\"accentColour\":\"accent\",\"dividerColour\":\"surface-alt\",\"showCta\":true,\"ctaText\":\"\",\"ctaUrl\":\"\",\"showContactShortcuts\":true,\"showSocials\":true,\"socialStyle\":\"coloured\",\"showSearch\":false,\"showAccountTray\":false,\"enableSwipe\":true,\"desktopHamburger\":false,\"staggerDelay\":25,\"breakpoint\":1024,\"drawerWidth\":85,\"drawerWidthMobile\":\"\",\"drawerWidthTablet\":\"\",\"drawerMaxWidth\":400,\"drawerPosition\":\"top\",\"showLogo\":true,\"logoMaxWidth\":120,\"logoMaxWidthMobile\":\"\",\"logoMaxWidthTablet\":\"\",\"closeButtonSize\":48,\"closeButtonSizeMobile\":\"\",\"closeButtonSizeTablet\":\"\",\"closeButtonStyle\":\"circle\",\"ctaIcon\":\"arrow-right\",\"ctaStyle\":\"filled\",\"showSecondaryCta\":false,\"secondaryCtaText\":\"\",\"secondaryCtaUrl\":\"\",\"secondaryCtaIcon\":\"phone\",\"secondaryCtaStyle\":\"outline\",\"contactDisplayMode\":\"icon-only\",\"showWhatsApp\":false,\"linkFontSize\":\"medium\",\"linkFontSizeMobile\":\"\",\"linkFontWeight\":\"600\",\"sublinkFontSize\":\"small\",\"sublinkFontSizeMobile\":\"\",\"showDividers\":true,\"submenuIndent\":24,\"submenuIndentMobile\":\"\",\"submenuIndentTablet\":\"\",\"socialIconSize\":44,\"socialIconSizeMobile\":\"\",\"socialIconSizeTablet\":\"\",\"showTagline\":false,\"taglineText\":\"\",\"drawerBg\":\"surface\",\"drawerText\":\"text\",\"drawerGradient\":\"\",\"closeButtonBg\":\"\",\"closeButtonColour\":\"\",\"ctaBg\":\"\",\"ctaTextColour\":\"\",\"ctaBorderColour\":\"\",\"secondaryCtaBg\":\"\",\"secondaryCtaTextColour\":\"\",\"linkColour\":\"text\",\"linkHoverColour\":\"primary\",\"linkActiveColour\":\"primary\",\"sublinkColour\":\"\",\"sublinkHoverColour\":\"\",\"backdropColour\":\"\",\"focusColour\":\"\",\"animationPreset\":\"spring\",\"animationDuration\":400,\"animationEasing\":\"spring\",\"exitDuration\":280,\"backdropOpacity\":60,\"backdropBlur\":false,\"backdropBlurAmount\":8} -->\n[block inner content placeholder]\n<!-- /wp:sgs/mobile-nav -->",
+  "deprecation_notes": "hybrid block: deprecated.js save function must reproduce the wrapper + <InnerBlocks.Content /> marker exactly"
+}
