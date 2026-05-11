@@ -165,7 +165,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ dataSource }
 						options={ DATA_SOURCE_OPTIONS }
 						onChange={ ( value ) => setAttributes( { dataSource: value } ) }
-						help={ __( 'Synced reads reviews from the SGS Trustpilot Sync settings (configurable in next-session build).', 'sgs-blocks' ) }
+						help={ __( 'Synced reads from wp_options[sgs_trustpilot_data], populated by Settings > SGS Trustpilot Sync.', 'sgs-blocks' ) }
 					/>
 					<TextControl
 						label={ __( 'Trustpilot business URL', 'sgs-blocks' ) }

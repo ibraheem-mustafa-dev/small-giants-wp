@@ -83,6 +83,15 @@ require_once SGS_BLOCKS_PATH . 'includes/google-reviews-settings.php';
 // Trustpilot Reviews shared helpers (score label, asset URL, relative date).
 require_once SGS_BLOCKS_PATH . 'includes/trustpilot-helpers.php';
 
+// Trustpilot Sync — admin settings, REST endpoint, WP-cron, scrape logic.
+require_once SGS_BLOCKS_PATH . 'includes/trustpilot/class-trustpilot-sync.php';
+require_once SGS_BLOCKS_PATH . 'includes/trustpilot/class-trustpilot-rest.php';
+require_once SGS_BLOCKS_PATH . 'includes/trustpilot/class-trustpilot-cron.php';
+require_once SGS_BLOCKS_PATH . 'includes/trustpilot/class-trustpilot-settings.php';
+Trustpilot\Trustpilot_REST::register();
+Trustpilot\Trustpilot_Cron::register();
+Trustpilot\Trustpilot_Settings::register();
+
 // Stripe payment settings and PaymentIntent AJAX handler.
 require_once SGS_BLOCKS_PATH . 'includes/stripe-settings.php';
 Stripe_Settings::init();
