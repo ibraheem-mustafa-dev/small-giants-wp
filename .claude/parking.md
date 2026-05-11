@@ -466,3 +466,64 @@ NOT retired (built per spec 14 — listed here so future greps don't mistakenly 
 - `recursion-guard.py` — built in P2 as ~50-LOC standalone module. Original "RETIRE" framing was a fabrication caught by Bean 2026-05-11; reverted to BUILD.
 - `critical-fix-verification.py` — built in P10 as ~45-min lightweight acceptance harness (5 canonical-mutation-boundary checks).
 
+## Planned blocks — design intent captured 2026-05-11
+
+These blocks were registered in sgs-framework.db on 2026-05-08 with the wrong status (`built` instead of `planned`) and zero implementation. They are NOT ghost rows — they're future features Bean wants. Restored 2026-05-11 with `status='planned'`.
+
+### sgs/media (planned)
+
+Single content block for placing an image OR video with Schema.org markup and alt text.
+
+- Supports image (Media Library + external URL) and video (local upload + embed code + external URL).
+- Schema.org: emits `ImageObject` for images, `VideoObject` (with `thumbnailUrl`, `uploadDate`, `duration`, `contentUrl`) for videos.
+- Alt text + caption + credit fields.
+- Replaces ad-hoc `<img>` + `<video>` placement across multiple existing blocks (hero, gallery, decorative-image) — over time those would consume `sgs/media` as an inner block.
+
+### sgs/data-display (planned, parent container)
+
+Parent block + sub-block roster for data visualisation. Same parent/child pattern as `core/buttons` → `core/button`.
+
+- Data source on PARENT: choose between internal source (WP custom post type, ACF repeater, REST endpoint, CSV upload) or external (URL to JSON / CSV).
+- Each sub-block selects which subset of the parent's data to render + per-sub-block styling.
+
+**Sub-block roster (to be split out):**
+
+| Slug | Type |
+|---|---|
+| `sgs/data-table-basic` | Basic data table |
+| `sgs/data-table-comparison` | Comparison / feature matrix |
+| `sgs/data-table-pricing` | (NOTE: `sgs/pricing-table` already exists — decide if this merges or stays separate) |
+| `sgs/chart-bar` | Bar chart |
+| `sgs/chart-column` | Column chart |
+| `sgs/chart-line` | Line chart |
+| `sgs/chart-area` | Area chart |
+| `sgs/chart-pie` | Pie chart |
+| `sgs/chart-donut` | Donut chart |
+| `sgs/chart-scatter` | Scatter plot |
+| `sgs/chart-bubble` | Bubble chart |
+| `sgs/chart-radar` | Radar / spider chart |
+| `sgs/chart-radial-bar` | Radial bar |
+| `sgs/chart-treemap` | Treemap |
+| `sgs/chart-heatmap` | Heatmap |
+| `sgs/chart-candlestick` | Candlestick (finance) |
+| `sgs/chart-boxplot` | Box plot |
+| `sgs/chart-funnel` | Funnel |
+| `sgs/chart-waterfall` | Waterfall |
+| `sgs/chart-gauge` | Gauge |
+| `sgs/chart-sankey` | Sankey diagram |
+| `sgs/chart-sparkline` | Sparkline (inline mini chart) |
+
+Bean said "all 20+ chart types" — list above is the typical taxonomy, pruned to the most useful. Confirm before building.
+
+**Open questions before implementation can start:**
+
+1. **Chart library** — likely Vega-Lite (the uimax DB already has 626 Vega-Lite chart templates, which aligns with Bean's "20+ chart types" comment). Chart.js / Apache ECharts / Recharts are alternatives. Vega-Lite is the strongest pick: declarative, theme-able, accessible.
+2. **Internal data sources** — preferred mechanism? Custom post type, ACF repeater, REST endpoint, or CSV upload? Probably need all four with adapters.
+3. **Table vs pricing-table** — does `sgs/pricing-table` (already built) become a sub-block of `sgs/data-display`, or stay separate as a special-case block?
+4. **Schema.org for charts** — emit `Dataset` markup on parent + `MeasureValue` per data point? (Important for SEO.)
+
+These blocks remain `status='planned'` in sgs-framework.db until implementation begins. They appear in the Layer 3 catalogue with `block_json_path: null` and a `block-json-missing` gap entry — that's correct, the catalogue accurately reflects "registered but not built".
+
+### Process correction captured
+
+Lesson logged for autopilot/episodic memory: **Don't delete DB rows based on a "ghost row" verdict without first asking the operator.** Zero references in commits/handoffs/specs is necessary but NOT sufficient evidence — the operator may be holding the design intent in their head with no written trail yet. Future "ghost row" investigations must surface to operator with the deletion proposal before executing.

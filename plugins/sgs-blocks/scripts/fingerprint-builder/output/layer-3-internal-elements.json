@@ -1,5 +1,5 @@
 {
-  "block_count": 65,
+  "block_count": 67,
   "blocks": {
     "sgs/accordion": {
       "_render_php_anchors": [],
@@ -2944,6 +2944,23 @@
       ],
       "unmapped_slot_count": 0,
       "wrapper_class": ".wp-block-sgs-cta-section"
+    },
+    "sgs/data-display": {
+      "block_json_path": null,
+      "block_slug": "sgs/data-display",
+      "derivation_notes": {},
+      "gaps": [
+        {
+          "expected_at": "C:\\Users\\Bean/Projects/small-giants-wp\\plugins/sgs-blocks/src/blocks\\data-display\\block.json",
+          "kind": "block-json-missing"
+        }
+      ],
+      "optional_features": [],
+      "render_php_present": false,
+      "required_features": [],
+      "save_js_present": false,
+      "slots": [],
+      "wrapper_class": ".wp-block-sgs-data-display"
     },
     "sgs/decorative-image": {
       "_render_php_anchors": [],
@@ -8526,6 +8543,23 @@
       ],
       "unmapped_slot_count": 0,
       "wrapper_class": ".wp-block-sgs-info-box"
+    },
+    "sgs/media": {
+      "block_json_path": null,
+      "block_slug": "sgs/media",
+      "derivation_notes": {},
+      "gaps": [
+        {
+          "expected_at": "C:\\Users\\Bean/Projects/small-giants-wp\\plugins/sgs-blocks/src/blocks\\media\\block.json",
+          "kind": "block-json-missing"
+        }
+      ],
+      "optional_features": [],
+      "render_php_present": false,
+      "required_features": [],
+      "save_js_present": false,
+      "slots": [],
+      "wrapper_class": ".wp-block-sgs-media"
     },
     "sgs/mega-menu": {
       "_render_php_anchors": [

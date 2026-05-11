@@ -52,11 +52,11 @@ def f4():
     assert n >= 13, f'Got {n}, want >= 13'
 
 
-@check('Layer 3 block count == 65 (was 67, 2 ghost rows removed post-P3)')
+@check('Layer 3 block count == 67 (65 built + 2 planned: sgs/media, sgs/data-display)')
 def f5():
     d = json.load(open(os.path.join(OUT, 'layer-3-internal-elements.json'), encoding='utf-8'))
     n = d['block_count']
-    assert n == 65, f'Got {n}, want 65'
+    assert n == 67, f'Got {n}, want 67'
 
 
 @check('Zero unmapped slots (every slot has a dispatch role)')
