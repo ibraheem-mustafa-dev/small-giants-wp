@@ -2,9 +2,9 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-current_phase: spec-14-phase-3-catalogue-build
-current_step: "Spec 14 P1 + P2 shipped 2026-05-11 (commits f467bc72 + 15f4d6cf). P2 closed: uimax `component_libraries.is_gap_candidate` column added (FR7); `attribute_gap_candidates` + `functionality_gap_candidates` tables created with `status` lifecycle (FR8); `recursion-guard.py` shipped (P2 FR18 — 140 LOC standalone module, self-test 3/3 PASS). All P3-P10 phase plans committed at `.claude/plans/`; QC fleet run on plans surfaced 1 NO-GO + 5 GO-WITH-CHANGES; 12 critical fixes applied inline before P2 commit (rsync --delete catastrophe → per-file additive merge; P4||P8 collision serialised; visual-qa threshold config; P10 recursive deadlock → SQL query; pipeline-state cleanup; DB stale-pending recovery; recursion-guard wired into P3; media orphan cleanup on FAIL; P3 file_path verification; P4 golden file via live server). Plans are execution-ready for cold-session pickup. Next: P3 catalogue build (FR1 Layer 4 + FR2 Layer 2 role-templates + FR4 Layer 1 envelopes + FR3 Layer 3 slot lists + FR26 semantic features). Estimated 5-6 hr. Plan at .claude/plans/phase-3-catalogue-build.md."
-last_updated: 2026-05-11 (P2 schema + recursion-guard shipped 15f4d6cf; plans QC'd; 12 critical fixes applied; ready for P3 cold-start)
+current_phase: spec-14-phase-4-extract-refactor
+current_step: "Spec 14 P1 + P2 + P3 shipped 2026-05-11. P3 commits: e0f26ec5 (catalogue ship) + 10819cbb (gap close: zero unmapped slots via 3-layer classifier) + 833fed21 (restore sgs/media + sgs/data-display as status=planned). QA gate 9/9 PASS. Catalogue at plugins/sgs-blocks/scripts/fingerprint-builder/output/: 36 Layer 1 envelopes, 20 Layer 2 roles, 67 Layer 3 blocks (65 built + 2 planned), 37 Layer 4 compositions. Idempotent re-runner at build-catalogue.py --check. Next: P4 extract.py refactor — plan at .claude/plans/phase-4-extract-refactor.md."
+last_updated: 2026-05-11 (P3 shipped 833fed21; ghost-row restore + design intent captured in parking.md; ready for P4 cold-start)
 blockers:
   - "Skillscore rubric mismatch: command files (~/.claude/commands/*.md), agent files (~/.claude/agents/*.md), and reference-style mini-skills (polish, bolder, colourise, distill, etc.) are graded against full-skill criteria. 24 of 45 Phase 4 files sit below 90% for this reason - all pre-existing baseline noise, not caused by Phase 4 edits. Future fix: add skill-type classifier to sgs-skillscore."
 recommended_model_next: sonnet
