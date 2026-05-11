@@ -1,0 +1,296 @@
+{
+  "envelope_count": 36,
+  "envelopes": {
+    "sgs-theme/footer-indus-foods": {
+      "category": "footer",
+      "confidence": 1.0,
+      "industry": null,
+      "pattern_slug": "sgs-theme/footer-indus-foods",
+      "title": "Indus Foods Footer",
+      "wrapper_class": ".sgs-theme-footer-indus-foods"
+    },
+    "sgs-theme/footer-mamas-munches": {
+      "category": "footer",
+      "confidence": 1.0,
+      "industry": null,
+      "pattern_slug": "sgs-theme/footer-mamas-munches",
+      "title": "Mamas Munches Footer",
+      "wrapper_class": ".sgs-theme-footer-mamas-munches"
+    },
+    "sgs-theme/header-indus-foods": {
+      "category": "header",
+      "confidence": 1.0,
+      "industry": null,
+      "pattern_slug": "sgs-theme/header-indus-foods",
+      "title": "Indus Foods Header",
+      "wrapper_class": ".sgs-theme-header-indus-foods"
+    },
+    "sgs-theme/header-mamas-munches": {
+      "category": "header",
+      "confidence": 1.0,
+      "industry": null,
+      "pattern_slug": "sgs-theme/header-mamas-munches",
+      "title": "Mamas Munches Header",
+      "wrapper_class": ".sgs-theme-header-mamas-munches"
+    },
+    "sgs/about-image-left": {
+      "category": "sgs",
+      "confidence": 1.0,
+      "industry": null,
+      "pattern_slug": "sgs/about-image-left",
+      "title": "About — Image Left",
+      "wrapper_class": ".sgs-about-image-left"
+    },
+    "sgs/about-mission": {
+      "category": "sgs",
+      "confidence": 1.0,
+      "industry": null,
+      "pattern_slug": "sgs/about-mission",
+      "title": "About — Mission & Values",
+      "wrapper_class": ".sgs-about-mission"
+    },
+    "sgs/about-stats": {
+      "category": "sgs",
+      "confidence": 1.0,
+      "industry": null,
+      "pattern_slug": "sgs/about-stats",
+      "title": "About — With Stats",
+      "wrapper_class": ".sgs-about-stats"
+    },
+    "sgs/about-story": {
+      "category": "sgs",
+      "confidence": 1.0,
+      "industry": null,
+      "pattern_slug": "sgs/about-story",
+      "title": "About — Our Story",
+      "wrapper_class": ".sgs-about-story"
+    },
+    "sgs/contact-form": {
+      "category": "sgs",
+      "confidence": 1.0,
+      "industry": null,
+      "pattern_slug": "sgs/contact-form",
+      "title": "Contact — Form & Info",
+      "wrapper_class": ".sgs-contact-form"
+    },
+    "sgs/contact-minimal": {
+      "category": "sgs",
+      "confidence": 1.0,
+      "industry": null,
+      "pattern_slug": "sgs/contact-minimal",
+      "title": "Contact — Minimal",
+      "wrapper_class": ".sgs-contact-minimal"
+    },
+    "sgs/cta-banner": {
+      "category": "sgs",
+      "confidence": 1.0,
+      "industry": null,
+      "pattern_slug": "sgs/cta-banner",
+      "title": "CTA — Banner",
+      "wrapper_class": ".sgs-cta-banner"
+    },
+    "sgs/cta-centred": {
+      "category": "sgs",
+      "confidence": 1.0,
+      "industry": null,
+      "pattern_slug": "sgs/cta-centred",
+      "title": "CTA — Centred",
+      "wrapper_class": ".sgs-cta-centred"
+    },
+    "sgs/faq-section": {
+      "category": "sgs",
+      "confidence": 1.0,
+      "industry": null,
+      "pattern_slug": "sgs/faq-section",
+      "title": "FAQ — Accordion",
+      "wrapper_class": ".sgs-faq-section"
+    },
+    "sgs/footer-centred": {
+      "category": "sgs",
+      "confidence": 1.0,
+      "industry": null,
+      "pattern_slug": "sgs/footer-centred",
+      "title": "Footer — Centred",
+      "wrapper_class": ".sgs-footer-centred"
+    },
+    "sgs/footer-columns": {
+      "category": "sgs",
+      "confidence": 1.0,
+      "industry": null,
+      "pattern_slug": "sgs/footer-columns",
+      "title": "Footer — Multi-Column",
+      "wrapper_class": ".sgs-footer-columns"
+    },
+    "sgs/footer-compact": {
+      "category": "sgs-footers",
+      "confidence": 1.0,
+      "industry": null,
+      "pattern_slug": "sgs/footer-compact",
+      "title": "Footer — Compact (2-Column)",
+      "wrapper_class": ".sgs-footer-compact"
+    },
+    "sgs/footer-indus-foods": {
+      "category": "sgs",
+      "confidence": 1.0,
+      "industry": null,
+      "pattern_slug": "sgs/footer-indus-foods",
+      "title": "Footer — Indus Foods",
+      "wrapper_class": ".sgs-footer-indus-foods"
+    },
+    "sgs/footer-informational": {
+      "category": "sgs-footers",
+      "confidence": 1.0,
+      "industry": null,
+      "pattern_slug": "sgs/footer-informational",
+      "title": "Footer — Informational (3-Column)",
+      "wrapper_class": ".sgs-footer-informational"
+    },
+    "sgs/footer-minimal": {
+      "category": "sgs-footers",
+      "confidence": 1.0,
+      "industry": null,
+      "pattern_slug": "sgs/footer-minimal",
+      "title": "Footer — Minimal",
+      "wrapper_class": ".sgs-footer-minimal"
+    },
+    "sgs/footer-simple": {
+      "category": "sgs",
+      "confidence": 1.0,
+      "industry": null,
+      "pattern_slug": "sgs/footer-simple",
+      "title": "Footer — Simple",
+      "wrapper_class": ".sgs-footer-simple"
+    },
+    "sgs/header-centred": {
+      "category": "sgs-headers",
+      "confidence": 1.0,
+      "industry": null,
+      "pattern_slug": "sgs/header-centred",
+      "title": "Header — Centred Logo",
+      "wrapper_class": ".sgs-header-centred"
+    },
+    "sgs/header-full": {
+      "category": "sgs-headers",
+      "confidence": 1.0,
+      "industry": null,
+      "pattern_slug": "sgs/header-full",
+      "title": "Header — Full (Top Bar + Navigation)",
+      "wrapper_class": ".sgs-header-full"
+    },
+    "sgs/header-minimal": {
+      "category": "sgs-headers",
+      "confidence": 1.0,
+      "industry": null,
+      "pattern_slug": "sgs/header-minimal",
+      "title": "Header — Minimal (Logo + Navigation)",
+      "wrapper_class": ".sgs-header-minimal"
+    },
+    "sgs/hero-centred": {
+      "category": "sgs",
+      "confidence": 1.0,
+      "industry": null,
+      "pattern_slug": "sgs/hero-centred",
+      "title": "Hero — Centred",
+      "wrapper_class": ".sgs-hero-centred"
+    },
+    "sgs/hero-split": {
+      "category": "sgs",
+      "confidence": 1.0,
+      "industry": null,
+      "pattern_slug": "sgs/hero-split",
+      "title": "Hero — Split (Image Right)",
+      "wrapper_class": ".sgs-hero-split"
+    },
+    "sgs/hero-video-background": {
+      "category": "sgs",
+      "confidence": 1.0,
+      "industry": null,
+      "pattern_slug": "sgs/hero-video-background",
+      "title": "Hero — Video Background",
+      "wrapper_class": ".sgs-hero-video-background"
+    },
+    "sgs/ingredients-section": {
+      "category": "sgs",
+      "confidence": 1.0,
+      "industry": null,
+      "pattern_slug": "sgs/ingredients-section",
+      "title": "Ingredients Section",
+      "wrapper_class": ".sgs-ingredients-section"
+    },
+    "sgs/pricing-columns": {
+      "category": "sgs",
+      "confidence": 1.0,
+      "industry": null,
+      "pattern_slug": "sgs/pricing-columns",
+      "title": "Pricing — Three Columns",
+      "wrapper_class": ".sgs-pricing-columns"
+    },
+    "sgs/services-alternating": {
+      "category": "sgs",
+      "confidence": 1.0,
+      "industry": null,
+      "pattern_slug": "sgs/services-alternating",
+      "title": "Services — Alternating Rows",
+      "wrapper_class": ".sgs-services-alternating"
+    },
+    "sgs/services-features": {
+      "category": "sgs",
+      "confidence": 1.0,
+      "industry": null,
+      "pattern_slug": "sgs/services-features",
+      "title": "Features — Icon Grid",
+      "wrapper_class": ".sgs-services-features"
+    },
+    "sgs/services-grid": {
+      "category": "sgs",
+      "confidence": 1.0,
+      "industry": null,
+      "pattern_slug": "sgs/services-grid",
+      "title": "Services — Feature Grid",
+      "wrapper_class": ".sgs-services-grid"
+    },
+    "sgs/stats-counter": {
+      "category": "sgs",
+      "confidence": 1.0,
+      "industry": null,
+      "pattern_slug": "sgs/stats-counter",
+      "title": "Stats - Counter Section",
+      "wrapper_class": ".sgs-stats-counter"
+    },
+    "sgs/team-section": {
+      "category": "sgs",
+      "confidence": 1.0,
+      "industry": null,
+      "pattern_slug": "sgs/team-section",
+      "title": "Team — Grid",
+      "wrapper_class": ".sgs-team-section"
+    },
+    "sgs/testimonials-cards": {
+      "category": "sgs",
+      "confidence": 1.0,
+      "industry": null,
+      "pattern_slug": "sgs/testimonials-cards",
+      "title": "Testimonials — Cards",
+      "wrapper_class": ".sgs-testimonials-cards"
+    },
+    "sgs/testimonials-highlight": {
+      "category": "sgs",
+      "confidence": 1.0,
+      "industry": null,
+      "pattern_slug": "sgs/testimonials-highlight",
+      "title": "Testimonials — Single Highlight",
+      "wrapper_class": ".sgs-testimonials-highlight"
+    },
+    "sgs/testimonials-large": {
+      "category": "sgs",
+      "confidence": 1.0,
+      "industry": null,
+      "pattern_slug": "sgs/testimonials-large",
+      "title": "Testimonials — Large Quote",
+      "wrapper_class": ".sgs-testimonials-large"
+    }
+  },
+  "generated_at": "phase-3-initial-build",
+  "schema_version": 1,
+  "source": "sgs-framework.db patterns table"
+}

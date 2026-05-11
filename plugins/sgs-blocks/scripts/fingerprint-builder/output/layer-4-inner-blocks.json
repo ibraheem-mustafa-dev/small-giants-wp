@@ -1,0 +1,2510 @@
+{
+  "entries": [
+    {
+      "block_slugs": [
+        "group",
+        "columns",
+        "column",
+        "site-logo",
+        "sgs/business-info",
+        "sgs/business-info",
+        "column",
+        "heading",
+        "list",
+        "list-item",
+        "list-item",
+        "list-item",
+        "list-item",
+        "list-item",
+        "list-item",
+        "heading",
+        "sgs/business-info",
+        "sgs/business-info",
+        "heading",
+        "sgs/business-info",
+        "column",
+        "sgs/business-info",
+        "heading",
+        "sgs/business-info",
+        "buttons",
+        "button",
+        "group",
+        "group",
+        "sgs/business-info",
+        "paragraph"
+      ],
+      "composition_id": 143,
+      "composition_name": "Indus Foods Footer",
+      "description": null,
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<div class=\"group\"></div>\n<div class=\"columns\"></div>\n<div class=\"column\"></div>\n<div class=\"site-logo\"></div>\n<div class=\"sgs-business-info\"></div>\n<div class=\"sgs-business-info\"></div>\n<div class=\"column\"></div>\n<div class=\"heading\"></div>\n<div class=\"list\"></div>\n<div class=\"list-item\"></div>\n<div class=\"list-item\"></div>\n<div class=\"list-item\"></div>\n<div class=\"list-item\"></div>\n<div class=\"list-item\"></div>\n<div class=\"list-item\"></div>\n<div class=\"heading\"></div>\n<div class=\"sgs-business-info\"></div>\n<div class=\"sgs-business-info\"></div>\n<div class=\"heading\"></div>\n<div class=\"sgs-business-info\"></div>\n<div class=\"column\"></div>\n<div class=\"sgs-business-info\"></div>\n<div class=\"heading\"></div>\n<div class=\"sgs-business-info\"></div>\n<div class=\"buttons\"></div>\n<div class=\"button\"></div>\n<div class=\"group\"></div>\n<div class=\"group\"></div>\n<div class=\"sgs-business-info\"></div>\n<div class=\"paragraph\"></div>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "group",
+            "columns",
+            "column",
+            "site-logo",
+            "sgs/business-info",
+            "sgs/business-info",
+            "column",
+            "heading",
+            "list",
+            "list-item",
+            "list-item",
+            "list-item",
+            "list-item",
+            "list-item",
+            "list-item",
+            "heading",
+            "sgs/business-info",
+            "sgs/business-info",
+            "heading",
+            "sgs/business-info",
+            "column",
+            "sgs/business-info",
+            "heading",
+            "sgs/business-info",
+            "buttons",
+            "button",
+            "group",
+            "group",
+            "sgs/business-info",
+            "paragraph"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": null,
+      "pattern_slug": "sgs-theme/footer-indus-foods"
+    },
+    {
+      "block_slugs": [
+        "group",
+        "columns",
+        "column",
+        "site-logo",
+        "paragraph",
+        "paragraph",
+        "column",
+        "heading",
+        "paragraph",
+        "column",
+        "heading",
+        "paragraph",
+        "paragraph"
+      ],
+      "composition_id": 145,
+      "composition_name": "Mamas Munches Footer",
+      "description": null,
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<div class=\"group\"></div>\n<div class=\"columns\"></div>\n<div class=\"column\"></div>\n<div class=\"site-logo\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"column\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"column\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"paragraph\"></div>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "group",
+            "columns",
+            "column",
+            "site-logo",
+            "paragraph",
+            "paragraph",
+            "column",
+            "heading",
+            "paragraph",
+            "column",
+            "heading",
+            "paragraph",
+            "paragraph"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": null,
+      "pattern_slug": "sgs-theme/footer-mamas-munches"
+    },
+    {
+      "block_slugs": [
+        "html",
+        "group",
+        "group",
+        "group",
+        "sgs/business-info",
+        "sgs/business-info",
+        "group",
+        "button",
+        "sgs/business-info",
+        "social-links",
+        "social-link",
+        "social-link",
+        "social-link",
+        "social-link",
+        "group",
+        "site-logo",
+        "group",
+        "sgs/mobile-nav-toggle",
+        "navigation",
+        "sgs/mobile-nav"
+      ],
+      "composition_id": 150,
+      "composition_name": "Indus Foods Header",
+      "description": null,
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<div class=\"html\"></div>\n<div class=\"group\"></div>\n<div class=\"group\"></div>\n<div class=\"group\"></div>\n<div class=\"sgs-business-info\"></div>\n<div class=\"sgs-business-info\"></div>\n<div class=\"group\"></div>\n<div class=\"button\"></div>\n<div class=\"sgs-business-info\"></div>\n<div class=\"social-links\"></div>\n<div class=\"social-link\"></div>\n<div class=\"social-link\"></div>\n<div class=\"social-link\"></div>\n<div class=\"social-link\"></div>\n<div class=\"group\"></div>\n<div class=\"site-logo\"></div>\n<div class=\"group\"></div>\n<div class=\"sgs-mobile-nav-toggle\"></div>\n<div class=\"navigation\"></div>\n<div class=\"sgs-mobile-nav\"></div>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "html",
+            "group",
+            "group",
+            "group",
+            "sgs/business-info",
+            "sgs/business-info",
+            "group",
+            "button",
+            "sgs/business-info",
+            "social-links",
+            "social-link",
+            "social-link",
+            "social-link",
+            "social-link",
+            "group",
+            "site-logo",
+            "group",
+            "sgs/mobile-nav-toggle",
+            "navigation",
+            "sgs/mobile-nav"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": null,
+      "pattern_slug": "sgs-theme/header-indus-foods"
+    },
+    {
+      "block_slugs": [
+        "html",
+        "group",
+        "group",
+        "site-logo",
+        "group",
+        "sgs/mobile-nav-toggle",
+        "navigation",
+        "sgs/mobile-nav"
+      ],
+      "composition_id": 151,
+      "composition_name": "Mamas Munches Header",
+      "description": null,
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<div class=\"html\"></div>\n<div class=\"group\"></div>\n<div class=\"group\"></div>\n<div class=\"site-logo\"></div>\n<div class=\"group\"></div>\n<div class=\"sgs-mobile-nav-toggle\"></div>\n<div class=\"navigation\"></div>\n<div class=\"sgs-mobile-nav\"></div>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "html",
+            "group",
+            "group",
+            "site-logo",
+            "group",
+            "sgs/mobile-nav-toggle",
+            "navigation",
+            "sgs/mobile-nav"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": null,
+      "pattern_slug": "sgs-theme/header-mamas-munches"
+    },
+    {
+      "block_slugs": [
+        "group",
+        "columns",
+        "column",
+        "image",
+        "column",
+        "paragraph",
+        "heading",
+        "paragraph",
+        "paragraph",
+        "buttons",
+        "button"
+      ],
+      "composition_id": 131,
+      "composition_name": "About — Image Left",
+      "description": null,
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<div class=\"group\"></div>\n<div class=\"columns\"></div>\n<div class=\"column\"></div>\n<div class=\"image\"></div>\n<div class=\"column\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"buttons\"></div>\n<div class=\"button\"></div>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "group",
+            "columns",
+            "column",
+            "image",
+            "column",
+            "paragraph",
+            "heading",
+            "paragraph",
+            "paragraph",
+            "buttons",
+            "button"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": null,
+      "pattern_slug": "sgs/about-image-left"
+    },
+    {
+      "block_slugs": [
+        "group",
+        "paragraph",
+        "heading",
+        "paragraph",
+        "columns",
+        "column",
+        "heading",
+        "paragraph",
+        "column",
+        "heading",
+        "paragraph",
+        "column",
+        "heading",
+        "paragraph"
+      ],
+      "composition_id": 132,
+      "composition_name": "About — Mission & Values",
+      "description": null,
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<div class=\"group\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"columns\"></div>\n<div class=\"column\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"column\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"column\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "group",
+            "paragraph",
+            "heading",
+            "paragraph",
+            "columns",
+            "column",
+            "heading",
+            "paragraph",
+            "column",
+            "heading",
+            "paragraph",
+            "column",
+            "heading",
+            "paragraph"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": null,
+      "pattern_slug": "sgs/about-mission"
+    },
+    {
+      "block_slugs": [
+        "group",
+        "paragraph",
+        "heading",
+        "paragraph",
+        "columns",
+        "column",
+        "heading",
+        "paragraph",
+        "column",
+        "heading",
+        "paragraph",
+        "column",
+        "heading",
+        "paragraph"
+      ],
+      "composition_id": 133,
+      "composition_name": "About — With Stats",
+      "description": null,
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<div class=\"group\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"columns\"></div>\n<div class=\"column\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"column\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"column\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "group",
+            "paragraph",
+            "heading",
+            "paragraph",
+            "columns",
+            "column",
+            "heading",
+            "paragraph",
+            "column",
+            "heading",
+            "paragraph",
+            "column",
+            "heading",
+            "paragraph"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": null,
+      "pattern_slug": "sgs/about-stats"
+    },
+    {
+      "block_slugs": [
+        "group",
+        "columns",
+        "column",
+        "image",
+        "column",
+        "paragraph",
+        "heading",
+        "paragraph",
+        "paragraph",
+        "buttons",
+        "button"
+      ],
+      "composition_id": 134,
+      "composition_name": "About — Our Story",
+      "description": null,
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<div class=\"group\"></div>\n<div class=\"columns\"></div>\n<div class=\"column\"></div>\n<div class=\"image\"></div>\n<div class=\"column\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"buttons\"></div>\n<div class=\"button\"></div>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "group",
+            "columns",
+            "column",
+            "image",
+            "column",
+            "paragraph",
+            "heading",
+            "paragraph",
+            "paragraph",
+            "buttons",
+            "button"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": null,
+      "pattern_slug": "sgs/about-story"
+    },
+    {
+      "block_slugs": [
+        "group",
+        "heading",
+        "columns",
+        "column",
+        "paragraph",
+        "group",
+        "paragraph",
+        "column",
+        "heading",
+        "paragraph",
+        "paragraph",
+        "paragraph",
+        "heading",
+        "paragraph"
+      ],
+      "composition_id": 135,
+      "composition_name": "Contact — Form & Info",
+      "description": null,
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<div class=\"group\"></div>\n<div class=\"heading\"></div>\n<div class=\"columns\"></div>\n<div class=\"column\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"group\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"column\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "group",
+            "heading",
+            "columns",
+            "column",
+            "paragraph",
+            "group",
+            "paragraph",
+            "column",
+            "heading",
+            "paragraph",
+            "paragraph",
+            "paragraph",
+            "heading",
+            "paragraph"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": null,
+      "pattern_slug": "sgs/contact-form"
+    },
+    {
+      "block_slugs": [
+        "group",
+        "heading",
+        "paragraph",
+        "buttons",
+        "button",
+        "button"
+      ],
+      "composition_id": 136,
+      "composition_name": "Contact — Minimal",
+      "description": null,
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<div class=\"group\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"buttons\"></div>\n<div class=\"button\"></div>\n<div class=\"button\"></div>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "group",
+            "heading",
+            "paragraph",
+            "buttons",
+            "button",
+            "button"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": null,
+      "pattern_slug": "sgs/contact-minimal"
+    },
+    {
+      "block_slugs": [
+        "group",
+        "columns",
+        "column",
+        "heading",
+        "paragraph",
+        "column",
+        "buttons",
+        "button"
+      ],
+      "composition_id": 137,
+      "composition_name": "CTA — Banner",
+      "description": null,
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<div class=\"group\"></div>\n<div class=\"columns\"></div>\n<div class=\"column\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"column\"></div>\n<div class=\"buttons\"></div>\n<div class=\"button\"></div>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "group",
+            "columns",
+            "column",
+            "heading",
+            "paragraph",
+            "column",
+            "buttons",
+            "button"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": null,
+      "pattern_slug": "sgs/cta-banner"
+    },
+    {
+      "block_slugs": [
+        "group",
+        "heading",
+        "paragraph",
+        "buttons",
+        "button",
+        "button"
+      ],
+      "composition_id": 138,
+      "composition_name": "CTA — Centred",
+      "description": null,
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<div class=\"group\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"buttons\"></div>\n<div class=\"button\"></div>\n<div class=\"button\"></div>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "group",
+            "heading",
+            "paragraph",
+            "buttons",
+            "button",
+            "button"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": null,
+      "pattern_slug": "sgs/cta-centred"
+    },
+    {
+      "block_slugs": [
+        "group",
+        "heading",
+        "details",
+        "paragraph",
+        "details",
+        "paragraph",
+        "details",
+        "paragraph",
+        "details",
+        "paragraph",
+        "details",
+        "paragraph"
+      ],
+      "composition_id": 139,
+      "composition_name": "FAQ — Accordion",
+      "description": null,
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<div class=\"group\"></div>\n<div class=\"heading\"></div>\n<div class=\"details\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"details\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"details\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"details\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"details\"></div>\n<div class=\"paragraph\"></div>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "group",
+            "heading",
+            "details",
+            "paragraph",
+            "details",
+            "paragraph",
+            "details",
+            "paragraph",
+            "details",
+            "paragraph",
+            "details",
+            "paragraph"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": null,
+      "pattern_slug": "sgs/faq-section"
+    },
+    {
+      "block_slugs": [
+        "group",
+        "heading",
+        "paragraph",
+        "group",
+        "paragraph",
+        "paragraph",
+        "paragraph",
+        "paragraph",
+        "paragraph",
+        "separator",
+        "paragraph"
+      ],
+      "composition_id": 140,
+      "composition_name": "Footer — Centred",
+      "description": null,
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<div class=\"group\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"group\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"separator\"></div>\n<div class=\"paragraph\"></div>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "group",
+            "heading",
+            "paragraph",
+            "group",
+            "paragraph",
+            "paragraph",
+            "paragraph",
+            "paragraph",
+            "paragraph",
+            "separator",
+            "paragraph"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": null,
+      "pattern_slug": "sgs/footer-centred"
+    },
+    {
+      "block_slugs": [
+        "group",
+        "columns",
+        "column",
+        "heading",
+        "paragraph",
+        "column",
+        "heading",
+        "list",
+        "list-item",
+        "list-item",
+        "list-item",
+        "list-item",
+        "column",
+        "heading",
+        "list",
+        "list-item",
+        "list-item",
+        "list-item",
+        "list-item",
+        "column",
+        "heading",
+        "paragraph",
+        "buttons",
+        "button",
+        "separator",
+        "paragraph"
+      ],
+      "composition_id": 141,
+      "composition_name": "Footer — Multi-Column",
+      "description": null,
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<div class=\"group\"></div>\n<div class=\"columns\"></div>\n<div class=\"column\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"column\"></div>\n<div class=\"heading\"></div>\n<div class=\"list\"></div>\n<div class=\"list-item\"></div>\n<div class=\"list-item\"></div>\n<div class=\"list-item\"></div>\n<div class=\"list-item\"></div>\n<div class=\"column\"></div>\n<div class=\"heading\"></div>\n<div class=\"list\"></div>\n<div class=\"list-item\"></div>\n<div class=\"list-item\"></div>\n<div class=\"list-item\"></div>\n<div class=\"list-item\"></div>\n<div class=\"column\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"buttons\"></div>\n<div class=\"button\"></div>\n<div class=\"separator\"></div>\n<div class=\"paragraph\"></div>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "group",
+            "columns",
+            "column",
+            "heading",
+            "paragraph",
+            "column",
+            "heading",
+            "list",
+            "list-item",
+            "list-item",
+            "list-item",
+            "list-item",
+            "column",
+            "heading",
+            "list",
+            "list-item",
+            "list-item",
+            "list-item",
+            "list-item",
+            "column",
+            "heading",
+            "paragraph",
+            "buttons",
+            "button",
+            "separator",
+            "paragraph"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": null,
+      "pattern_slug": "sgs/footer-columns"
+    },
+    {
+      "block_slugs": [
+        "group",
+        "columns",
+        "column",
+        "site-logo",
+        "sgs/business-info",
+        "column",
+        "heading",
+        "sgs/business-info",
+        "sgs/business-info",
+        "sgs/business-info",
+        "sgs/business-info",
+        "group",
+        "sgs/business-info"
+      ],
+      "composition_id": 142,
+      "composition_name": "Footer — Compact (2-Column)",
+      "description": null,
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<div class=\"group\"></div>\n<div class=\"columns\"></div>\n<div class=\"column\"></div>\n<div class=\"site-logo\"></div>\n<div class=\"sgs-business-info\"></div>\n<div class=\"column\"></div>\n<div class=\"heading\"></div>\n<div class=\"sgs-business-info\"></div>\n<div class=\"sgs-business-info\"></div>\n<div class=\"sgs-business-info\"></div>\n<div class=\"sgs-business-info\"></div>\n<div class=\"group\"></div>\n<div class=\"sgs-business-info\"></div>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "group",
+            "columns",
+            "column",
+            "site-logo",
+            "sgs/business-info",
+            "column",
+            "heading",
+            "sgs/business-info",
+            "sgs/business-info",
+            "sgs/business-info",
+            "sgs/business-info",
+            "group",
+            "sgs/business-info"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": null,
+      "pattern_slug": "sgs/footer-compact"
+    },
+    {
+      "block_slugs": [
+        "group",
+        "columns",
+        "column",
+        "site-logo",
+        "sgs/business-info",
+        "sgs/business-info",
+        "column",
+        "heading",
+        "list",
+        "list-item",
+        "list-item",
+        "list-item",
+        "list-item",
+        "list-item",
+        "list-item",
+        "heading",
+        "sgs/business-info",
+        "sgs/business-info",
+        "heading",
+        "sgs/business-info",
+        "column",
+        "sgs/business-info",
+        "heading",
+        "sgs/business-info",
+        "buttons",
+        "button",
+        "group",
+        "group",
+        "sgs/business-info",
+        "paragraph"
+      ],
+      "composition_id": 1,
+      "composition_name": "Footer — Indus Foods",
+      "description": "Four-column footer with Indus Foods content, navigation, and copyright.",
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<div class=\"group\"></div>\n<div class=\"columns\"></div>\n<div class=\"column\"></div>\n<div class=\"site-logo\"></div>\n<div class=\"sgs-business-info\"></div>\n<div class=\"sgs-business-info\"></div>\n<div class=\"column\"></div>\n<div class=\"heading\"></div>\n<div class=\"list\"></div>\n<div class=\"list-item\"></div>\n<div class=\"list-item\"></div>\n<div class=\"list-item\"></div>\n<div class=\"list-item\"></div>\n<div class=\"list-item\"></div>\n<div class=\"list-item\"></div>\n<div class=\"heading\"></div>\n<div class=\"sgs-business-info\"></div>\n<div class=\"sgs-business-info\"></div>\n<div class=\"heading\"></div>\n<div class=\"sgs-business-info\"></div>\n<div class=\"column\"></div>\n<div class=\"sgs-business-info\"></div>\n<div class=\"heading\"></div>\n<div class=\"sgs-business-info\"></div>\n<div class=\"buttons\"></div>\n<div class=\"button\"></div>\n<div class=\"group\"></div>\n<div class=\"group\"></div>\n<div class=\"sgs-business-info\"></div>\n<div class=\"paragraph\"></div>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "group",
+            "columns",
+            "column",
+            "site-logo",
+            "sgs/business-info",
+            "sgs/business-info",
+            "column",
+            "heading",
+            "list",
+            "list-item",
+            "list-item",
+            "list-item",
+            "list-item",
+            "list-item",
+            "list-item",
+            "heading",
+            "sgs/business-info",
+            "sgs/business-info",
+            "heading",
+            "sgs/business-info",
+            "column",
+            "sgs/business-info",
+            "heading",
+            "sgs/business-info",
+            "buttons",
+            "button",
+            "group",
+            "group",
+            "sgs/business-info",
+            "paragraph"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": "sgs",
+      "pattern_slug": "sgs/footer-indus-foods"
+    },
+    {
+      "block_slugs": [
+        "group",
+        "columns",
+        "column",
+        "site-logo",
+        "sgs/business-info",
+        "sgs/business-info",
+        "column",
+        "heading",
+        "navigation",
+        "heading",
+        "sgs/business-info",
+        "sgs/business-info",
+        "heading",
+        "sgs/business-info",
+        "column",
+        "sgs/business-info",
+        "heading",
+        "sgs/business-info",
+        "buttons",
+        "button",
+        "group",
+        "sgs/business-info"
+      ],
+      "composition_id": 144,
+      "composition_name": "Footer — Informational (3-Column)",
+      "description": null,
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<div class=\"group\"></div>\n<div class=\"columns\"></div>\n<div class=\"column\"></div>\n<div class=\"site-logo\"></div>\n<div class=\"sgs-business-info\"></div>\n<div class=\"sgs-business-info\"></div>\n<div class=\"column\"></div>\n<div class=\"heading\"></div>\n<div class=\"navigation\"></div>\n<div class=\"heading\"></div>\n<div class=\"sgs-business-info\"></div>\n<div class=\"sgs-business-info\"></div>\n<div class=\"heading\"></div>\n<div class=\"sgs-business-info\"></div>\n<div class=\"column\"></div>\n<div class=\"sgs-business-info\"></div>\n<div class=\"heading\"></div>\n<div class=\"sgs-business-info\"></div>\n<div class=\"buttons\"></div>\n<div class=\"button\"></div>\n<div class=\"group\"></div>\n<div class=\"sgs-business-info\"></div>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "group",
+            "columns",
+            "column",
+            "site-logo",
+            "sgs/business-info",
+            "sgs/business-info",
+            "column",
+            "heading",
+            "navigation",
+            "heading",
+            "sgs/business-info",
+            "sgs/business-info",
+            "heading",
+            "sgs/business-info",
+            "column",
+            "sgs/business-info",
+            "heading",
+            "sgs/business-info",
+            "buttons",
+            "button",
+            "group",
+            "sgs/business-info"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": null,
+      "pattern_slug": "sgs/footer-informational"
+    },
+    {
+      "block_slugs": [
+        "group",
+        "group",
+        "sgs/business-info",
+        "sgs/business-info"
+      ],
+      "composition_id": 146,
+      "composition_name": "Footer — Minimal",
+      "description": null,
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<div class=\"group\"></div>\n<div class=\"group\"></div>\n<div class=\"sgs-business-info\"></div>\n<div class=\"sgs-business-info\"></div>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "group",
+            "group",
+            "sgs/business-info",
+            "sgs/business-info"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": null,
+      "pattern_slug": "sgs/footer-minimal"
+    },
+    {
+      "block_slugs": [
+        "group",
+        "group",
+        "paragraph",
+        "paragraph"
+      ],
+      "composition_id": 147,
+      "composition_name": "Footer — Simple",
+      "description": null,
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<div class=\"group\"></div>\n<div class=\"group\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"paragraph\"></div>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "group",
+            "group",
+            "paragraph",
+            "paragraph"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": null,
+      "pattern_slug": "sgs/footer-simple"
+    },
+    {
+      "block_slugs": [
+        "group",
+        "group",
+        "site-logo",
+        "group",
+        "navigation"
+      ],
+      "composition_id": 148,
+      "composition_name": "Header — Centred Logo",
+      "description": null,
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<div class=\"group\"></div>\n<div class=\"group\"></div>\n<div class=\"site-logo\"></div>\n<div class=\"group\"></div>\n<div class=\"navigation\"></div>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "group",
+            "group",
+            "site-logo",
+            "group",
+            "navigation"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": null,
+      "pattern_slug": "sgs/header-centred"
+    },
+    {
+      "block_slugs": [
+        "group",
+        "group",
+        "group",
+        "sgs/business-info",
+        "sgs/business-info",
+        "sgs/business-info",
+        "group",
+        "site-logo",
+        "navigation"
+      ],
+      "composition_id": 149,
+      "composition_name": "Header — Full (Top Bar + Navigation)",
+      "description": null,
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<div class=\"group\"></div>\n<div class=\"group\"></div>\n<div class=\"group\"></div>\n<div class=\"sgs-business-info\"></div>\n<div class=\"sgs-business-info\"></div>\n<div class=\"sgs-business-info\"></div>\n<div class=\"group\"></div>\n<div class=\"site-logo\"></div>\n<div class=\"navigation\"></div>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "group",
+            "group",
+            "group",
+            "sgs/business-info",
+            "sgs/business-info",
+            "sgs/business-info",
+            "group",
+            "site-logo",
+            "navigation"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": null,
+      "pattern_slug": "sgs/header-full"
+    },
+    {
+      "block_slugs": [
+        "sgs/business-info",
+        "sgs/mobile-nav-toggle",
+        "sgs/mobile-nav"
+      ],
+      "composition_id": 167,
+      "composition_name": "Indus Foods Header",
+      "description": "",
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<div class=\"sgs-business-info\"></div>\n<div class=\"sgs-mobile-nav-toggle\"></div>\n<div class=\"sgs-mobile-nav\"></div>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "sgs/business-info",
+            "sgs/mobile-nav-toggle",
+            "sgs/mobile-nav"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": null,
+      "pattern_slug": "sgs/header-indus-foods"
+    },
+    {
+      "block_slugs": [
+        "sgs/mobile-nav-toggle",
+        "sgs/mobile-nav"
+      ],
+      "composition_id": 168,
+      "composition_name": "Mamas Munches Header",
+      "description": "",
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<div class=\"sgs-mobile-nav-toggle\"></div>\n<div class=\"sgs-mobile-nav\"></div>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "sgs/mobile-nav-toggle",
+            "sgs/mobile-nav"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": null,
+      "pattern_slug": "sgs/header-mamas-munches"
+    },
+    {
+      "block_slugs": [
+        "group",
+        "group",
+        "site-logo",
+        "navigation"
+      ],
+      "composition_id": 152,
+      "composition_name": "Header — Minimal (Logo + Navigation)",
+      "description": null,
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<div class=\"group\"></div>\n<div class=\"group\"></div>\n<div class=\"site-logo\"></div>\n<div class=\"navigation\"></div>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "group",
+            "group",
+            "site-logo",
+            "navigation"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": null,
+      "pattern_slug": "sgs/header-minimal"
+    },
+    {
+      "block_slugs": [
+        "sgs/hero"
+      ],
+      "composition_id": 153,
+      "composition_name": "Hero — Centred",
+      "description": null,
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<section class=\"sgs-hero\"></section>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "sgs/hero"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": null,
+      "pattern_slug": "sgs/hero-centred"
+    },
+    {
+      "block_slugs": [
+        "sgs/hero"
+      ],
+      "composition_id": 154,
+      "composition_name": "Hero — Split (Image Right)",
+      "description": null,
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<section class=\"sgs-hero\"></section>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "sgs/hero"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": null,
+      "pattern_slug": "sgs/hero-split"
+    },
+    {
+      "block_slugs": [
+        "cover",
+        "group",
+        "heading",
+        "paragraph",
+        "buttons",
+        "button"
+      ],
+      "composition_id": 155,
+      "composition_name": "Hero — Video Background",
+      "description": null,
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<div class=\"cover\"></div>\n<div class=\"group\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"buttons\"></div>\n<div class=\"button\"></div>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "cover",
+            "group",
+            "heading",
+            "paragraph",
+            "buttons",
+            "button"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": null,
+      "pattern_slug": "sgs/hero-video-background"
+    },
+    {
+      "block_slugs": [
+        "group",
+        "heading",
+        "paragraph",
+        "sgs/feature-grid",
+        "sgs/info-box",
+        "sgs/info-box",
+        "sgs/info-box",
+        "sgs/info-box",
+        "sgs/notice-banner"
+      ],
+      "composition_id": 156,
+      "composition_name": "Ingredients Section",
+      "description": null,
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<div class=\"group\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"sgs-feature-grid\"></div>\n<div class=\"sgs-info-box\"></div>\n<div class=\"sgs-info-box\"></div>\n<div class=\"sgs-info-box\"></div>\n<div class=\"sgs-info-box\"></div>\n<div class=\"sgs-notice-banner\"></div>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "group",
+            "heading",
+            "paragraph",
+            "sgs/feature-grid",
+            "sgs/info-box",
+            "sgs/info-box",
+            "sgs/info-box",
+            "sgs/info-box",
+            "sgs/notice-banner"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": null,
+      "pattern_slug": "sgs/ingredients-section"
+    },
+    {
+      "block_slugs": [
+        "group",
+        "heading",
+        "columns",
+        "column",
+        "group",
+        "heading",
+        "paragraph",
+        "paragraph",
+        "separator",
+        "list",
+        "list-item",
+        "list-item",
+        "list-item",
+        "list-item",
+        "buttons",
+        "button",
+        "column",
+        "group",
+        "paragraph",
+        "heading",
+        "paragraph",
+        "paragraph",
+        "separator",
+        "list",
+        "list-item",
+        "list-item",
+        "list-item",
+        "list-item",
+        "list-item",
+        "buttons",
+        "button",
+        "column",
+        "group",
+        "heading",
+        "paragraph",
+        "paragraph",
+        "separator",
+        "list",
+        "list-item",
+        "list-item",
+        "list-item",
+        "list-item",
+        "list-item",
+        "buttons",
+        "button"
+      ],
+      "composition_id": 157,
+      "composition_name": "Pricing — Three Columns",
+      "description": null,
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<div class=\"group\"></div>\n<div class=\"heading\"></div>\n<div class=\"columns\"></div>\n<div class=\"column\"></div>\n<div class=\"group\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"separator\"></div>\n<div class=\"list\"></div>\n<div class=\"list-item\"></div>\n<div class=\"list-item\"></div>\n<div class=\"list-item\"></div>\n<div class=\"list-item\"></div>\n<div class=\"buttons\"></div>\n<div class=\"button\"></div>\n<div class=\"column\"></div>\n<div class=\"group\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"separator\"></div>\n<div class=\"list\"></div>\n<div class=\"list-item\"></div>\n<div class=\"list-item\"></div>\n<div class=\"list-item\"></div>\n<div class=\"list-item\"></div>\n<div class=\"list-item\"></div>\n<div class=\"buttons\"></div>\n<div class=\"button\"></div>\n<div class=\"column\"></div>\n<div class=\"group\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"separator\"></div>\n<div class=\"list\"></div>\n<div class=\"list-item\"></div>\n<div class=\"list-item\"></div>\n<div class=\"list-item\"></div>\n<div class=\"list-item\"></div>\n<div class=\"list-item\"></div>\n<div class=\"buttons\"></div>\n<div class=\"button\"></div>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "group",
+            "heading",
+            "columns",
+            "column",
+            "group",
+            "heading",
+            "paragraph",
+            "paragraph",
+            "separator",
+            "list",
+            "list-item",
+            "list-item",
+            "list-item",
+            "list-item",
+            "buttons",
+            "button",
+            "column",
+            "group",
+            "paragraph",
+            "heading",
+            "paragraph",
+            "paragraph",
+            "separator",
+            "list",
+            "list-item",
+            "list-item",
+            "list-item",
+            "list-item",
+            "list-item",
+            "buttons",
+            "button",
+            "column",
+            "group",
+            "heading",
+            "paragraph",
+            "paragraph",
+            "separator",
+            "list",
+            "list-item",
+            "list-item",
+            "list-item",
+            "list-item",
+            "list-item",
+            "buttons",
+            "button"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": null,
+      "pattern_slug": "sgs/pricing-columns"
+    },
+    {
+      "block_slugs": [
+        "group",
+        "heading",
+        "columns",
+        "column",
+        "heading",
+        "paragraph",
+        "column",
+        "image",
+        "columns",
+        "column",
+        "image",
+        "column",
+        "heading",
+        "paragraph"
+      ],
+      "composition_id": 158,
+      "composition_name": "Services — Alternating Rows",
+      "description": null,
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<div class=\"group\"></div>\n<div class=\"heading\"></div>\n<div class=\"columns\"></div>\n<div class=\"column\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"column\"></div>\n<div class=\"image\"></div>\n<div class=\"columns\"></div>\n<div class=\"column\"></div>\n<div class=\"image\"></div>\n<div class=\"column\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "group",
+            "heading",
+            "columns",
+            "column",
+            "heading",
+            "paragraph",
+            "column",
+            "image",
+            "columns",
+            "column",
+            "image",
+            "column",
+            "heading",
+            "paragraph"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": null,
+      "pattern_slug": "sgs/services-alternating"
+    },
+    {
+      "block_slugs": [
+        "group",
+        "heading",
+        "columns",
+        "column",
+        "heading",
+        "heading",
+        "paragraph",
+        "column",
+        "heading",
+        "heading",
+        "paragraph",
+        "column",
+        "heading",
+        "heading",
+        "paragraph",
+        "column",
+        "heading",
+        "heading",
+        "paragraph"
+      ],
+      "composition_id": 159,
+      "composition_name": "Features — Icon Grid",
+      "description": null,
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<div class=\"group\"></div>\n<div class=\"heading\"></div>\n<div class=\"columns\"></div>\n<div class=\"column\"></div>\n<div class=\"heading\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"column\"></div>\n<div class=\"heading\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"column\"></div>\n<div class=\"heading\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"column\"></div>\n<div class=\"heading\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "group",
+            "heading",
+            "columns",
+            "column",
+            "heading",
+            "heading",
+            "paragraph",
+            "column",
+            "heading",
+            "heading",
+            "paragraph",
+            "column",
+            "heading",
+            "heading",
+            "paragraph",
+            "column",
+            "heading",
+            "heading",
+            "paragraph"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": null,
+      "pattern_slug": "sgs/services-features"
+    },
+    {
+      "block_slugs": [
+        "group",
+        "heading",
+        "paragraph",
+        "columns",
+        "column",
+        "group",
+        "heading",
+        "paragraph",
+        "column",
+        "group",
+        "heading",
+        "paragraph",
+        "column",
+        "group",
+        "heading",
+        "paragraph"
+      ],
+      "composition_id": 160,
+      "composition_name": "Services — Feature Grid",
+      "description": null,
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<div class=\"group\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"columns\"></div>\n<div class=\"column\"></div>\n<div class=\"group\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"column\"></div>\n<div class=\"group\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"column\"></div>\n<div class=\"group\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "group",
+            "heading",
+            "paragraph",
+            "columns",
+            "column",
+            "group",
+            "heading",
+            "paragraph",
+            "column",
+            "group",
+            "heading",
+            "paragraph",
+            "column",
+            "group",
+            "heading",
+            "paragraph"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": null,
+      "pattern_slug": "sgs/services-grid"
+    },
+    {
+      "block_slugs": [
+        "group",
+        "columns",
+        "column",
+        "sgs/counter",
+        "column",
+        "sgs/counter",
+        "column",
+        "sgs/counter",
+        "column",
+        "sgs/counter"
+      ],
+      "composition_id": 161,
+      "composition_name": "Stats - Counter Section",
+      "description": null,
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<div class=\"group\"></div>\n<div class=\"columns\"></div>\n<div class=\"column\"></div>\n<div class=\"sgs-counter\"></div>\n<div class=\"column\"></div>\n<div class=\"sgs-counter\"></div>\n<div class=\"column\"></div>\n<div class=\"sgs-counter\"></div>\n<div class=\"column\"></div>\n<div class=\"sgs-counter\"></div>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "group",
+            "columns",
+            "column",
+            "sgs/counter",
+            "column",
+            "sgs/counter",
+            "column",
+            "sgs/counter",
+            "column",
+            "sgs/counter"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": null,
+      "pattern_slug": "sgs/stats-counter"
+    },
+    {
+      "block_slugs": [
+        "group",
+        "heading",
+        "paragraph",
+        "columns",
+        "column",
+        "group",
+        "image",
+        "heading",
+        "paragraph",
+        "paragraph",
+        "column",
+        "group",
+        "image",
+        "heading",
+        "paragraph",
+        "paragraph",
+        "column",
+        "group",
+        "image",
+        "heading",
+        "paragraph",
+        "paragraph"
+      ],
+      "composition_id": 162,
+      "composition_name": "Team — Grid",
+      "description": null,
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<div class=\"group\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"columns\"></div>\n<div class=\"column\"></div>\n<div class=\"group\"></div>\n<div class=\"image\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"column\"></div>\n<div class=\"group\"></div>\n<div class=\"image\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"column\"></div>\n<div class=\"group\"></div>\n<div class=\"image\"></div>\n<div class=\"heading\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"paragraph\"></div>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "group",
+            "heading",
+            "paragraph",
+            "columns",
+            "column",
+            "group",
+            "image",
+            "heading",
+            "paragraph",
+            "paragraph",
+            "column",
+            "group",
+            "image",
+            "heading",
+            "paragraph",
+            "paragraph",
+            "column",
+            "group",
+            "image",
+            "heading",
+            "paragraph",
+            "paragraph"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": null,
+      "pattern_slug": "sgs/team-section"
+    },
+    {
+      "block_slugs": [
+        "group",
+        "heading",
+        "columns",
+        "column",
+        "group",
+        "paragraph",
+        "paragraph",
+        "paragraph",
+        "paragraph",
+        "column",
+        "group",
+        "paragraph",
+        "paragraph",
+        "paragraph",
+        "paragraph",
+        "column",
+        "group",
+        "paragraph",
+        "paragraph",
+        "paragraph",
+        "paragraph"
+      ],
+      "composition_id": 163,
+      "composition_name": "Testimonials — Cards",
+      "description": null,
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<div class=\"group\"></div>\n<div class=\"heading\"></div>\n<div class=\"columns\"></div>\n<div class=\"column\"></div>\n<div class=\"group\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"column\"></div>\n<div class=\"group\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"column\"></div>\n<div class=\"group\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"paragraph\"></div>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "group",
+            "heading",
+            "columns",
+            "column",
+            "group",
+            "paragraph",
+            "paragraph",
+            "paragraph",
+            "paragraph",
+            "column",
+            "group",
+            "paragraph",
+            "paragraph",
+            "paragraph",
+            "paragraph",
+            "column",
+            "group",
+            "paragraph",
+            "paragraph",
+            "paragraph",
+            "paragraph"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": null,
+      "pattern_slug": "sgs/testimonials-cards"
+    },
+    {
+      "block_slugs": [
+        "group",
+        "paragraph",
+        "paragraph",
+        "paragraph",
+        "paragraph"
+      ],
+      "composition_id": 164,
+      "composition_name": "Testimonials — Single Highlight",
+      "description": null,
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<div class=\"group\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"paragraph\"></div>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "group",
+            "paragraph",
+            "paragraph",
+            "paragraph",
+            "paragraph"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": null,
+      "pattern_slug": "sgs/testimonials-highlight"
+    },
+    {
+      "block_slugs": [
+        "group",
+        "paragraph",
+        "paragraph"
+      ],
+      "composition_id": 165,
+      "composition_name": "Testimonials — Large Quote",
+      "description": null,
+      "equivalent_implementations": {
+        "bootstrap": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "html_css": {
+          "is_gap_candidate": false,
+          "markup": "<div class=\"group\"></div>\n<div class=\"paragraph\"></div>\n<div class=\"paragraph\"></div>"
+        },
+        "react_generic": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "sgs": {
+          "block_slugs": [
+            "group",
+            "paragraph",
+            "paragraph"
+          ],
+          "is_gap_candidate": false
+        },
+        "shadcn": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        },
+        "tailwind": {
+          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
+          "is_gap_candidate": true,
+          "markup": null
+        }
+      },
+      "industry": null,
+      "page_type": null,
+      "pattern_slug": "sgs/testimonials-large"
+    }
+  ],
+  "entry_count": 38,
+  "generated_at": "phase-3-initial-build",
+  "schema_version": 1,
+  "source": "sgs-framework.db block_compositions table"
+}

@@ -1,0 +1,322 @@
+{
+  "generated_at": "phase-3-initial-build",
+  "source": "hand-authored per spec 14 FR2 + migrated from ATTR_TO_CSS in pattern-fingerprint.py",
+  "schema_version": 1,
+  "schema_notes": "Each role describes how to recognise and extract a single semantic concept (e.g. a text colour, a spacing token). extract.py (P4) reads this as its dispatch table: given a (block, attribute) pair, look up the attribute's role, then use selector_strategy + value_extractor to read the live value off the rendered DOM. Cross-platform recipe is the Rosetta Stone mapping for cloning to non-SGS targets.",
+  "role_count": 20,
+  "roles": {
+    "colour-text": {
+      "description": "A colour applied to text content via the CSS `color` property.",
+      "selector_strategy": "bem-element",
+      "value_extractor": "computed_color",
+      "css_property": "color",
+      "applies_to_attribute_names": ["colourText", "textColor", "color"],
+      "cross_platform_recipe": {
+        "sgs": "DesignTokenPicker -> attribute -> render.php inlines style=\"color:{var}\"",
+        "html_css": "<element style=\"color: <value>;\">",
+        "tailwind": "text-<token> (e.g. text-primary, text-[#0F7E80])",
+        "bootstrap": "text-<utility> (text-primary, text-body) or inline style",
+        "shadcn": "className=\"text-<token>\" via design-tokens.css custom properties",
+        "react_generic": "style={{ color: '<value>' }}"
+      }
+    },
+    "colour-bg": {
+      "description": "A colour applied to an element's background via background-color.",
+      "selector_strategy": "bem-element",
+      "value_extractor": "computed_bg_color_family",
+      "value_extractor_notes": "MUST read backgroundColor + backgroundImage + filter + mixBlendMode + parent chain — per rule extend-measurement-set-when-human-eye-disputes.",
+      "css_property": "background-color",
+      "applies_to_attribute_names": ["colourBackground", "backgroundColor", "bgColor"],
+      "cross_platform_recipe": {
+        "sgs": "DesignTokenPicker -> attribute -> render.php inlines style=\"background-color:{var}\"",
+        "html_css": "<element style=\"background-color: <value>;\">",
+        "tailwind": "bg-<token> (e.g. bg-primary, bg-[#0F7E80])",
+        "bootstrap": "bg-<utility> (bg-primary, bg-light) or inline style",
+        "shadcn": "className=\"bg-<token>\"",
+        "react_generic": "style={{ backgroundColor: '<value>' }}"
+      }
+    },
+    "colour-border": {
+      "description": "A colour applied to an element's border via border-color.",
+      "selector_strategy": "bem-element",
+      "value_extractor": "computed_color",
+      "css_property": "border-color",
+      "applies_to_attribute_names": ["colourBorder", "borderColor"],
+      "cross_platform_recipe": {
+        "sgs": "DesignTokenPicker -> attribute -> render.php inlines style=\"border-color:{var}\"",
+        "html_css": "<element style=\"border-color: <value>;\">",
+        "tailwind": "border-<token>",
+        "bootstrap": "border-<utility> or inline style",
+        "shadcn": "className=\"border-<token>\"",
+        "react_generic": "style={{ borderColor: '<value>' }}"
+      }
+    },
+    "colour-gradient": {
+      "description": "A linear or radial gradient applied as background-image.",
+      "selector_strategy": "bem-element",
+      "value_extractor": "computed_background_image",
+      "value_extractor_notes": "Reads background-image not background-color. Captured as standalone role because gradients sit on the BG-image axis, not the BG-color axis — measurement-extension rule.",
+      "css_property": "background-image",
+      "applies_to_attribute_names": ["gradient", "backgroundGradient"],
+      "cross_platform_recipe": {
+        "sgs": "Gradient control -> style.background = `linear-gradient(...)`",
+        "html_css": "<element style=\"background-image: linear-gradient(<stops>);\">",
+        "tailwind": "bg-gradient-to-<dir> from-<colour> to-<colour>",
+        "bootstrap": "bg-gradient (utility) + inline style for stops",
+        "shadcn": "Tailwind gradient utilities + custom colour vars",
+        "react_generic": "style={{ backgroundImage: 'linear-gradient(...)' }}"
+      }
+    },
+    "number-css-px": {
+      "description": "An integer CSS length in pixels (border-width, font-size when not token-based, etc).",
+      "selector_strategy": "bem-element",
+      "value_extractor": "computed_px_int",
+      "css_property": null,
+      "applies_to_attribute_names": ["borderWidth", "width", "height", "minHeight", "maxWidth"],
+      "cross_platform_recipe": {
+        "sgs": "NumberControl -> style.<prop> = `Npx`",
+        "html_css": "<element style=\"<prop>: Npx;\">",
+        "tailwind": "w-N or h-N (Tailwind spacing scale) or arbitrary [Npx]",
+        "bootstrap": "Bootstrap sizing utilities (w-25, w-50) — limited to common values",
+        "shadcn": "className=\"w-N\" via Tailwind",
+        "react_generic": "style={{ <prop>: 'Npx' }}"
+      }
+    },
+    "number-css-percent": {
+      "description": "A percentage CSS length.",
+      "selector_strategy": "bem-element",
+      "value_extractor": "computed_percent",
+      "css_property": null,
+      "applies_to_attribute_names": ["widthPercent"],
+      "cross_platform_recipe": {
+        "sgs": "NumberControl -> style.<prop> = `N%`",
+        "html_css": "<element style=\"<prop>: N%;\">",
+        "tailwind": "w-1/2 w-1/3 etc. or [N%] arbitrary",
+        "bootstrap": "w-25 w-50 w-75 w-100",
+        "shadcn": "Tailwind fractions",
+        "react_generic": "style={{ <prop>: 'N%' }}"
+      }
+    },
+    "spacing-token": {
+      "description": "A spacing value from theme.json spacingSizes (e.g. var:preset|spacing|40).",
+      "selector_strategy": "bem-element",
+      "value_extractor": "computed_px_int",
+      "value_extractor_notes": "Live DOM holds the resolved px; reverse-map to nearest theme.json token when serialising back to SGS.",
+      "css_property": null,
+      "applies_to_attribute_names": [
+        "gap", "gapMobile", "gapTablet",
+        "padding", "paddingTop", "paddingRight", "paddingBottom", "paddingLeft",
+        "margin", "marginTop", "marginRight", "marginBottom", "marginLeft"
+      ],
+      "cross_platform_recipe": {
+        "sgs": "spacingVar('40') -> var(--wp--preset--spacing--40)",
+        "html_css": "<element style=\"<prop>: <Npx | Nrem>;\">",
+        "tailwind": "p-N m-N gap-N (Tailwind scale) or arbitrary [Npx]",
+        "bootstrap": "p-N m-N (Bootstrap spacing scale 0-5)",
+        "shadcn": "Tailwind spacing scale",
+        "react_generic": "style={{ padding: 'Npx' }}"
+      }
+    },
+    "shadow-preset": {
+      "description": "A box-shadow value from theme.json shadow presets.",
+      "selector_strategy": "bem-element",
+      "value_extractor": "computed_box_shadow",
+      "css_property": "box-shadow",
+      "applies_to_attribute_names": ["boxShadow", "shadow", "hoverShadow"],
+      "cross_platform_recipe": {
+        "sgs": "shadowVar('medium') -> var(--wp--preset--shadow--medium)",
+        "html_css": "<element style=\"box-shadow: <css-shadow-value>;\">",
+        "tailwind": "shadow-sm shadow-md shadow-lg shadow-xl shadow-2xl",
+        "bootstrap": "shadow shadow-sm shadow-lg",
+        "shadcn": "Tailwind shadow utilities",
+        "react_generic": "style={{ boxShadow: '<value>' }}"
+      }
+    },
+    "font-family-preset": {
+      "description": "A font-family value from theme.json typography.fontFamilies.",
+      "selector_strategy": "bem-element",
+      "value_extractor": "computed_font_family",
+      "css_property": "font-family",
+      "applies_to_attribute_names": ["fontFamily"],
+      "cross_platform_recipe": {
+        "sgs": "FontFamilyControl -> style.fontFamily = `var(--wp--preset--font-family--inter)`",
+        "html_css": "<element style=\"font-family: '<stack>';\">",
+        "tailwind": "font-sans font-serif font-mono (or theme-defined font-display)",
+        "bootstrap": "font-monospace (limited utility set; usually CSS variables)",
+        "shadcn": "Tailwind font utilities + design-tokens.css",
+        "react_generic": "style={{ fontFamily: '<stack>' }}"
+      }
+    },
+    "font-size-preset": {
+      "description": "A font-size from theme.json typography.fontSizes (e.g. medium, large, x-large).",
+      "selector_strategy": "bem-element",
+      "value_extractor": "computed_px_int",
+      "css_property": "font-size",
+      "applies_to_attribute_names": ["fontSize"],
+      "cross_platform_recipe": {
+        "sgs": "fontSizeVar('large') -> var(--wp--preset--font-size--large)",
+        "html_css": "<element style=\"font-size: <Npx | Nrem | clamp(...)>;\">",
+        "tailwind": "text-sm text-base text-lg text-xl text-2xl text-3xl",
+        "bootstrap": "fs-1 .. fs-6 utilities",
+        "shadcn": "Tailwind text utilities",
+        "react_generic": "style={{ fontSize: 'Nrem' }}"
+      }
+    },
+    "border-radius-token": {
+      "description": "A border-radius value, often from theme.json custom.borderRadius tokens.",
+      "selector_strategy": "bem-element",
+      "value_extractor": "computed_px_int",
+      "css_property": "border-radius",
+      "applies_to_attribute_names": ["borderRadius"],
+      "cross_platform_recipe": {
+        "sgs": "borderRadiusVar('medium') -> var(--wp--custom--border-radius--medium)",
+        "html_css": "<element style=\"border-radius: <value>;\">",
+        "tailwind": "rounded rounded-md rounded-lg rounded-xl rounded-full",
+        "bootstrap": "rounded rounded-1 .. rounded-5 rounded-pill rounded-circle",
+        "shadcn": "Tailwind rounded utilities",
+        "react_generic": "style={{ borderRadius: 'Npx' }}"
+      }
+    },
+    "transition-preset": {
+      "description": "A CSS transition duration + easing token.",
+      "selector_strategy": "bem-element",
+      "value_extractor": "computed_transition",
+      "css_property": "transition",
+      "applies_to_attribute_names": ["transitionDuration", "transitionEasing"],
+      "cross_platform_recipe": {
+        "sgs": "transitionVar('fast') -> var(--wp--custom--transition--fast)",
+        "html_css": "<element style=\"transition: <prop> <duration> <easing>;\">",
+        "tailwind": "transition transition-colors transition-transform duration-N ease-in-out",
+        "bootstrap": "(no built-in transition utilities; use CSS variables)",
+        "shadcn": "Tailwind transition utilities",
+        "react_generic": "style={{ transition: 'all 300ms ease' }}"
+      }
+    },
+    "image-object": {
+      "description": "An image attachment (id + url + alt + width + height + sizes).",
+      "selector_strategy": "dom-query",
+      "value_extractor": "image_object",
+      "value_extractor_notes": "Reads <img src=...>, <img srcset=...>, <img alt=...>. Source attribute typically named image, mediaUrl, etc.",
+      "css_property": null,
+      "applies_to_attribute_names": ["image", "mediaUrl", "imageId", "imageAlt", "imageUrl", "backgroundImage"],
+      "cross_platform_recipe": {
+        "sgs": "MediaUpload -> attribute -> render.php outputs <img>",
+        "html_css": "<img src=\"<url>\" alt=\"<alt>\" width=\"<w>\" height=\"<h>\">",
+        "tailwind": "Same <img> tag; styling via classes",
+        "bootstrap": "<img class=\"img-fluid\" src=...>",
+        "shadcn": "<img> or Next.js <Image> with fill / sizes props",
+        "react_generic": "<img src={url} alt={alt} />"
+      }
+    },
+    "link-href": {
+      "description": "A URL associated with a link element.",
+      "selector_strategy": "dom-query",
+      "value_extractor": "attr_href",
+      "css_property": null,
+      "applies_to_attribute_names": ["url", "linkUrl", "href", "buttonUrl", "ctaUrl"],
+      "cross_platform_recipe": {
+        "sgs": "URLInput -> attribute -> render.php outputs <a href=...>",
+        "html_css": "<a href=\"<url>\">",
+        "tailwind": "<a href=...> (no utility needed)",
+        "bootstrap": "<a href=...>",
+        "shadcn": "<Link href=...> (Next.js) or <a href=...>",
+        "react_generic": "<a href={url}> or <Link to={url}>"
+      }
+    },
+    "text-content": {
+      "description": "Plain text inside an element. Reads textContent, not innerHTML.",
+      "selector_strategy": "bem-element",
+      "value_extractor": "text_content",
+      "css_property": null,
+      "applies_to_attribute_names": ["text", "title", "subtitle", "label", "buttonText", "ctaText"],
+      "cross_platform_recipe": {
+        "sgs": "PlainText / TextControl -> attribute -> render.php echoes via esc_html()",
+        "html_css": "<element>...text...</element>",
+        "tailwind": "<element>...text...</element>",
+        "bootstrap": "<element>...text...</element>",
+        "shadcn": "<element>{text}</element>",
+        "react_generic": "<element>{text}</element>"
+      }
+    },
+    "richtext-content": {
+      "description": "Rich text (HTML allowed) inside an element. May contain strong, anchor, em, etc. tags.",
+      "selector_strategy": "bem-element",
+      "value_extractor": "richtext_html",
+      "value_extractor_notes": "Reads innerHTML; allowed tags constrained by wp_kses() on the WP side. When rehydrating in React-generic targets, run through a sanitiser (DOMPurify) before any client-side render-as-HTML path.",
+      "css_property": null,
+      "applies_to_attribute_names": ["headline", "subHeadline", "description", "richTextContent"],
+      "cross_platform_recipe": {
+        "sgs": "RichText component -> attribute -> render.php echoes via wp_kses_post()",
+        "html_css": "<element>...html...</element>",
+        "tailwind": "<element>...html...</element>",
+        "bootstrap": "<element>...html...</element>",
+        "shadcn": "Sanitise html via DOMPurify -> render as React node",
+        "react_generic": "Sanitise html via DOMPurify before rendering"
+      }
+    },
+    "enum-class-probe": {
+      "description": "An attribute that controls the presence of one class out of a fixed enum (e.g. layout=grid|list|masonry -> class is-grid|is-list|is-masonry).",
+      "selector_strategy": "bem-element-modifier",
+      "value_extractor": "enum_class_probe",
+      "value_extractor_notes": "Probe the element's classList for any of the known modifier classes; map class -> enum value.",
+      "css_property": null,
+      "applies_to_attribute_names": ["layout", "variant", "style", "alignment"],
+      "cross_platform_recipe": {
+        "sgs": "SelectControl -> attribute -> render.php adds is-<value> class",
+        "html_css": "<element class=\"<base> is-<variant>\">",
+        "tailwind": "Conditional classes via clsx() / template literal",
+        "bootstrap": "Modifier classes (card-horizontal, nav-tabs)",
+        "shadcn": "cva() variants",
+        "react_generic": "className={`base is-${variant}`}"
+      }
+    },
+    "boolean-visibility": {
+      "description": "A boolean attribute controlling whether an element exists in the DOM.",
+      "selector_strategy": "dom-query",
+      "value_extractor": "boolean_visibility",
+      "value_extractor_notes": "Probe with querySelector — element present == true; absent == false. Distinct from display:none which is a CSS-level hide.",
+      "css_property": null,
+      "applies_to_attribute_names": ["showImage", "showButton", "showSubtitle", "showLightbox"],
+      "cross_platform_recipe": {
+        "sgs": "ToggleControl -> attribute -> render.php gates output with if ($attr)",
+        "html_css": "Element present or absent (server-side conditional)",
+        "tailwind": "Conditional render: {flag && <element />}",
+        "bootstrap": "Conditional render or .d-none utility",
+        "shadcn": "Conditional render",
+        "react_generic": "{flag && <element />}"
+      }
+    },
+    "select-from-enum": {
+      "description": "Same as enum-class-probe but the value is materialised as a data-attribute, not a class.",
+      "selector_strategy": "dom-query",
+      "value_extractor": "attr_data",
+      "value_extractor_notes": "Probe element.dataset['<name>']. Used when the value drives JS behaviour rather than CSS.",
+      "css_property": null,
+      "applies_to_attribute_names": ["animation", "scrollEffect", "lightboxStyle"],
+      "cross_platform_recipe": {
+        "sgs": "SelectControl -> attribute -> render.php outputs data-<name>=\"<value>\"",
+        "html_css": "<element data-<name>=\"<value>\">",
+        "tailwind": "data-[<name>=<value>]:utility selectors (Tailwind 3.2+)",
+        "bootstrap": "<element data-bs-<name>=\"<value>\">",
+        "shadcn": "<element data-<name>={value}>",
+        "react_generic": "<element data-<name>={value}>"
+      }
+    },
+    "query-descriptor": {
+      "description": "A structured query — typically for post-grid / query-loop blocks (post type, taxonomy, limit, orderby).",
+      "selector_strategy": "parent-walk",
+      "value_extractor": "query_descriptor",
+      "value_extractor_notes": "Reads server-side query attributes (postType, postsPerPage, taxQuery) from the rendered list; reverse-engineers by inspecting <article class=\"post-id-N type-Y term-Z\"> markers.",
+      "css_property": null,
+      "applies_to_attribute_names": ["query", "postType", "postsPerPage", "categories", "orderBy"],
+      "cross_platform_recipe": {
+        "sgs": "QueryControls -> attribute -> render.php runs WP_Query",
+        "html_css": "Server-rendered list (no client-side query)",
+        "tailwind": "Server-rendered or fetched via API + map() in React",
+        "bootstrap": "Server-rendered list",
+        "shadcn": "Fetched via API -> map() -> <Card />",
+        "react_generic": "useQuery() -> map() -> component"
+      }
+    }
+  }
+}
