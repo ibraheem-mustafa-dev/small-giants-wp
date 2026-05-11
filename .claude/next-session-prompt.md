@@ -1,66 +1,102 @@
-recommended_model: sonnet
+---
+doc_type: next-session-prompt
+project: small-giants-wp
+last_updated: 2026-05-11
+recommended_model_next: opus
+---
 
-You are a senior SGS WordPress framework engineer specialising in the `/sgs-clone` pipeline orchestration, dispatcher modules (per-section-convention-voter, confidence-matrix, leftover-bucket-router), and deterministic stage wiring. Today's job: Phase 7 — rewire the orchestrator stages 1-2-9 from hardcoded shortcuts to proper dispatcher calls.
+# Next Session Prompt -- small-giants-wp
 
-Resume command: CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-10-phase-7-orchestrator"
+You are picking up from the 2026-05-11 session that shipped Phase 7 + the `sgs/trustpilot-reviews` block + an orchestrator multi-section run on Mama's mockup. The orchestrator plumbing is complete; the critical-path blocker for Phase 8 ship is `tools/recogniser-v2/extract.py` working for sgs/hero only.
 
-Read `.claude/handoff.md`, `.claude/state.md`, and `.claude/plans/phase-7-orchestrator-rewire.md` first.
+Invoke `/autopilot` before doing anything else.
 
-## Where You Are
+Read `.claude/handoff.md` + `.claude/state.md` + `.claude/plan.md` + `.claude/parking.md` first to understand the full picture.
 
-Plan: `.claude/plan.md`
-Current phase: Phase 7 — Orchestrator rewire (stages 1-2-9 hardcoded shortcuts in `/sgs-clone`)
-Progress: 7/8 phases complete — estimated 87.5%
-Next task: Read the current orchestrator and 3 dispatchers (per-section-convention-voter, confidence-matrix, leftover-bucket-router) before refactoring. Identify exact call signatures.
+## Where you are
 
-## Skills to Invoke
+- The pipeline runs end-to-end across all 9 Mama's sections (orchestrator multi-section verified)
+- The `sgs/trustpilot-reviews` block is shipped + live on sandybrown at `/trustpilot-smoke-test-2/`
+- Two systemic SGS bugs were caught + fixed today (image-controls.php namespace fatal; block style.css enqueue gap across all 48 blocks)
+- Phase 7 + trustpilot block commits: `7ac627cf` + `c6bd4980`
+- Three tracks open in priority order below
 
-| Skill | When to use |
+## The blocker reframe
+
+Earlier today I documented `extract.py` generalisation as "Phase 9 backlog". Bean caught the misframing: **a Phase 8 live deploy is meaningless if 8 of 9 Mama sections render empty.** extract.py generalisation IS the remaining Phase 8 work. Until it lands, the orchestrator produces structurally valid block markup with no inner content.
+
+## Three tracks in order
+
+### Track 1 (5 min) -- Commit the orchestrator multi-section patches
+
+Two uncommitted patches sit in:
+- `plugins/sgs-blocks/scripts/recogniser/per-section-convention-voter.py` -- `auto_detect_sections` walks into `<main>` (was finding 3 of 9 sections, now finds all 9)
+- `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` -- stage 4-8 loops per-boundary in `--auto-section` mode (was hard-fataling on `args.section=None`)
+
+Both tested. Commit + push to main as `feat(orchestrator): multi-section walker`. **Do not include sgs-blocks.php in this commit** -- the parallel Trustpilot Sync session owns that file's current changes.
+
+### Track 2 (4-6 hours focused) -- extract.py generalisation
+
+The critical-path Phase 8 work. Documented in `parking.md` P-EXTRACT-GENERALISE. Extend `tools/recogniser-v2/extract.py` in-place so it works for any SGS block, not just sgs/hero.
+
+**Suggested approach:**
+
+1. **Architecture peer review FIRST** (30 min). Per the 2026-05-08 pattern that caught 11 fixes before the first real clone: dispatch 3 parallel reviewers (Sonnet practical, Gemini Flash gap-scan, Cerebras qwen ecosystem) against a one-page design brief for the generalised extractor. Synthesise findings. Build the delta.
+
+2. **Build the convention-driven extractor.** Per-attribute-type strategies:
+   - `string` / `RichText`: extract `textContent` of `.sgs-<block>__<element>` selector
+   - `image` / media: extract `src` + alt + width/height from `<img>` inside the selector
+   - `colour`: read computed `color` / `backgroundColor` of the selector
+   - `spacing` / numeric CSS: read computed style + parse to int
+   - `link` / URL: read `href` from `<a>` inside the selector
+   - `icon`: read SVG content or icon name from data attributes
+   - Fallback: keep existing hero hardcoded extractors as a per-block override
+
+3. **Wire role-templates catalogue.** For each block in `plugins/sgs-blocks/src/blocks/*/block.json`, derive default selector-strategy + value-extractor per attribute. Hand-override per block when the convention doesn't fit.
+
+4. **Smoke test on Mama's mockup.** Run the orchestrator with `--auto-section` AND Playwright on. Expect ~30-50 attrs per section, not 0.
+
+5. **Visual diff report** at `reports/visual-diff/extract-generalisation-2026-05-11.md` -- compare output before + after on 3 sample sections (hero, trust-bar, ingredients-section).
+
+### Track 3 (20-30 min, blocked on Track 1) -- Consolidate to `tools/recogniser-v3/`
+
+Documented in `parking.md` P-RECOG-V3. Move orchestrator + 4 dispatcher scripts + extract.py into a single `tools/recogniser-v3/` directory with underscore-style names. Update path references in spec 12, skill bodies, state.md. Then a cleanup commit deletes `tools/recogniser/` (v1) and `tools/recogniser-v2/`.
+
+### Track 4 (3-4 hr, parallel-ready, no overlap with 1-3) -- Trustpilot Sync infrastructure
+
+The parallel session's domain. Already partially in flight: 3 of 4 sync class files exist at `plugins/sgs-blocks/includes/trustpilot/` (cron, rest, settings -- missing core sync class), admin JS at `plugins/sgs-blocks/assets/admin/`, sgs-blocks.php wired. Full brief in `.claude/handoff.md` "Next Session Prompt" section.
+
+## Skills to invoke
+
+| Skill | When |
 |---|---|
-| `/brainstorming` | If dispatcher signatures don't match orchestrator expectations |
-| `/gap-analysis` | Grade refactor before merge |
-| `/lifecycle` | NOT needed unless adding new skills |
-| `/research` | Unlikely — internal modules only |
-| `/strategic-plan` | Inline replan if Phase 7 reveals broader rewire scope |
-| `/sgs-clone` | The target pipeline |
-| `/sgs-wp-engine` | Block/pattern lookup if pattern creation surfaces |
-| `/qc-inline` | After each stage rewire |
+| `/autopilot` | FIRST -- session routing + ADHD support |
+| `/sgs-wp-engine` | All SGS framework work |
+| `/research-buddies` or `/research-council` | Track 2 step 1 -- 4-model architecture peer review |
+| `/sgs-clone` | The pipeline target |
+| `/qc-inline` | After each chunk lands |
 | `/handoff` | Session close |
 
-## MCP Servers & Tools
+## MCP / tools
 
 | Tool | Use for |
 |---|---|
-| `python ~/.agents/skills/shared-references/sgs-skillscore.py validate` | Validate any skill edits |
-| Playwright | Visual parity check after running the rewired pipeline on Mama's mockup |
-| GitHub MCP | If creating PRs (commit-to-main fine per branch discipline) |
+| Playwright MCP | extract.py uses Playwright for cascade-resolved CSS values; tests against Mama's mockup |
+| SSH `u945238940@141.136.39.73:65002` | Deploy + verify on sandybrown |
+| `~/.agents/skills/shared-references/` | Optimisation toolkit / certainty calc references |
 
-## Agents to Delegate To
+## Don't
 
-| Agent | When |
-|---|---|
-| `wp-sgs-developer` | NOT this session — Phase 7 is dispatcher wiring, not WP build |
+- Don't include `plugins/sgs-blocks/sgs-blocks.php` in Track 1's commit (the parallel Trustpilot Sync session owns the current changes)
+- Don't trust plan files or state.md claims without grepping the named scripts in git (lesson: 2026-05-11 Phase 8 plan referenced 7 fictional files; 2026-05-10 Phase 7 plan did the same with 4)
+- Don't delegate eyes-on proof of unproven systems to subagents (lesson 221)
+- Don't reorganise files mid-deploy. Commit working state first (Track 1), then reorganise (Track 3)
+- Don't build extract.py generalisation without a peer review first (lesson from 2026-05-08 fingerprint design review: caught 11 fixes before first clone)
 
-## Tasks (in order)
+## Done-when (for the entire Phase 8 arc)
 
-### Task 1: Inspect orchestrator + 3 dispatchers (~15-20 min)
-Read `/sgs-clone` skill body. Locate orchestrator script (likely `tools/recogniser-v2/` or `plugins/sgs-blocks/scripts/recogniser/`). Read stage 1 (regex grep + `DEFAULT_SECTION_MAP`), stage 2 (hardcoded `block_name`), stage 9 (inline HTML emit). Then read: `per-section-convention-voter.py`, `confidence-matrix.score_candidates`, `leftover-bucket-router`, `simple_html_review_report.py`. Note call signatures + return shapes.
-
-### Task 2: Stage 1 rewire — call per-section-convention-voter (~20-30 min)
-Replace regex grep + `DEFAULT_SECTION_MAP` shortcut with `per-section-convention-voter.py` call. Preserve return shape. Smoke-test on Mama's renamed mockup (Stage 0 gate should pass; no `--legacy` needed because mockup is now Spec-13-conforming).
-
-### Task 3: Stage 2 rewire — call confidence-matrix.score_candidates (~20-30 min)
-Replace hardcoded `block_name` with `confidence-matrix.score_candidates`. Each section's top-scored block becomes the block name. Smoke-test.
-
-### Task 4: Stage 9 rewire — call leftover-bucket-router + simple_html_review_report (~25-35 min)
-Replace inline HTML emit: write recognition_log + call leftover-bucket-router + call simple_html_review_report.py. End-to-end smoke-test on Mama's mockup. Capture coverage report.
-
-### Task 5: Phase 7 closeout (~15 min)
-Write `.claude/reports/phase-7-orchestrator-rewire-<date>.md`. Mark Phase 7 complete in plan.md. Advance state.md to Phase 8.
-
-## Guardrails
-- DO NOT use em-dashes
-- DO NOT add `--resume` or stage-resume infrastructure (lesson 215)
-- DO NOT delegate the eyes-on proof step to a subagent (lesson 221) — Bean reviews the pipeline output
-- Mama's mockup is now Spec-13-conforming — Stage 0 gate MUST pass without `--legacy`. If it doesn't, something broke.
-- Classes map to PATTERNS not blocks at section level (lesson captured 2026-05-10) — check `theme/sgs-theme/patterns/*.php` before assuming a missing block
+- [ ] Track 1 committed
+- [ ] Track 2 extract.py generalised; all 9 Mama sections produce non-empty attributes; visual diff report PASS
+- [ ] Phase 8 plan's remaining steps run: global-styles-reset, tar+scp deploy, OPcache reset, `wp post update`, multi-frame capture, mockup-parity-validator + screenshot-diff
+- [ ] Bean opens https://sandybrown-nightingale-600381.hostingersite.com/ at 375 / 768 / 1440 and confirms PASS (lesson 221, no agent fallback)
+- [ ] P-11-M9 marked RESOLVED in parking.md; state.md advances past convention-rollout phase

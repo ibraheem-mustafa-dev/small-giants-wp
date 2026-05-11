@@ -1,12 +1,65 @@
 ---
 doc_type: parking
 project: small-giants-wp
-last_updated: 2026-05-10
+last_updated: 2026-05-11
 ---
 
 # Parking — deferred work with named triggers
 
 Items here have a clear next-step but aren't urgent. Each entry: the work, the trigger to resume, the spec, and rough effort. Resolved items are kept as one-line summaries (no ORIGINAL retention to keep the file scannable).
+
+## New 2026-05-11
+
+### P-TP-SYNC — Trustpilot review sync infrastructure (3-4 hr, parallel-session ready)
+
+**What:** Build the WP-side infrastructure that auto-syncs Trustpilot reviews into wp_options['sgs_trustpilot_data'] which the existing `sgs/trustpilot-reviews` block already reads when dataSource=synced. Components:
+- WP Admin settings page (Settings -> SGS Trustpilot Sync) with Business URL, Off/Weekly/Daily, Browserless endpoint config, "Sync now" button, activity log
+- `POST /wp-json/sgs/v1/trustpilot-sync` REST endpoint
+- WP-cron registration on setting save (weekly/daily)
+- Browserless.io free-tier integration (6 hours/month free, ample for one weekly scrape per site)
+- Telegram failure alert via `~/.claude/hooks/tg-cli.py`
+
+**Trigger:** Parallel session ready (Bean has the full prompt in chat scrollback for the 2026-05-11 trustpilot-block session). Self-contained brief.
+
+**Spec:** Files at `plugins/sgs-blocks/includes/trustpilot/` -- class-trustpilot-settings.php, class-trustpilot-sync.php, class-trustpilot-cron.php, class-trustpilot-rest.php. JS at `plugins/sgs-blocks/assets/admin/trustpilot-sync.js`. Schema for sgs_trustpilot_data matches `sites/mamas-munches/research/trustpilot-reviews.json` shape.
+
+**Effort:** 3-4 hours focused. Done-when: Sync-now button updates wp_options within 30s, weekly cron registered, block re-reads on next render, Telegram alerts on failure, visual-diff verdict PASS, commit on main.
+
+### P-RECOG-V3 — Consolidate recogniser scripts to tools/recogniser-v3/ (20-30 min)
+
+**What:** Move the active pipeline code into a single canonical location:
+- `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` -> `tools/recogniser-v3/orchestrator.py`
+- `plugins/sgs-blocks/scripts/recogniser/per-section-convention-voter.py` -> `tools/recogniser-v3/voter.py`
+- `plugins/sgs-blocks/scripts/recogniser/confidence-matrix.py` -> `tools/recogniser-v3/confidence_matrix.py` (underscore so importable normally)
+- `plugins/sgs-blocks/scripts/recogniser/leftover-bucket-router.py` -> `tools/recogniser-v3/leftover_bucket_router.py`
+- `plugins/sgs-blocks/scripts/recogniser/simple_html_review_report.py` -> `tools/recogniser-v3/review_renderer.py`
+- `tools/recogniser-v2/extract.py` -> `tools/recogniser-v3/extract.py`
+
+Also write `tools/recogniser-v3/README.md` with pipeline diagram + Spec 12 link.
+
+**Trigger:** After Commit A (orchestrator multi-section patches) lands. Two-commit sequence: Commit B does the move, Commit C deletes `tools/recogniser/` and `tools/recogniser-v2/` once a clean orchestrator run confirms nothing else references them.
+
+**Spec:** All path references in orchestrator (VOTER_SCRIPT, MATRIX_SCRIPT, ROUTER_SCRIPT, REVIEW_SCRIPT, extract.py path) need updating. Skill bodies that mention these paths need updating (/sgs-clone). Spec 12 file inventory section needs refresh. state.md current_step needs path update.
+
+**Effort:** 20-30 min including a smoke-test rerun.
+
+### P-EXTRACT-GENERALISE — extract.py beyond hero (Phase 8 critical-path blocker; was misframed as Phase 9)
+
+**What:** `tools/recogniser-v2/extract.py` currently has hardcoded attribute mappings only for sgs/hero. On the 2026-05-11 multi-section orchestrator run, 8 of 9 sections produced empty `attributes` for this reason. **Phase 8 CANNOT ship a meaningful Mama's clone without this work** -- a deploy with 8 empty sections isn't a clone.
+
+**Reframe (2026-05-11):** Bean caught the misframing. Earlier docs put this as "Phase 9 backlog, no fixed trigger". The honest read: extract.py generalisation IS THE remaining Phase 8 work. Until it lands, the orchestrator produces structurally valid block markup with empty inner content. Phase 8 visual parity validation + live deploy + eyes-on review all depend on this.
+
+**Spec:** Extend `extract.py` in-place (don't build a separate slot-filler.py -- previous planning's misdirection). Needs:
+- Convention-driven extractors that match SGS-BEM `__element--modifier` selectors against block.json attribute names (already have Stage 3 schema)
+- Per-attribute-type strategies: text from RichText / src from `<img>` / colour from computed style / spacing from CSS custom properties / icon name from SVG / link href from `<a>`
+- Playwright cascade resolution for CSS-driven attributes (already in extract.py for hero; generalise the pattern)
+- Role-templates catalogue defining selector-strategy + value-extractor + fallback-strategy per attribute type
+- Per-platform translation rules for the lingua-franca conversion (Spec 13) when source class names aren't SGS-BEM
+
+**Recommended sequence:** Do a 4-model peer review of the architecture FIRST (per the 2026-05-08 pattern that caught 11 fixes before the first real clone), then build. Estimated 4-6 hours focused + 30 min peer review.
+
+**Trigger:** Next active session that can commit to a 4-6 hour focused window. This unblocks Phase 8 visual parity + deploy + eyes-on review.
+
 
 ## New 2026-05-10 — Phase 6 + audit follow-through
 
@@ -65,6 +118,12 @@ Items here have a clear next-step but aren't urgent. Each entry: the work, the t
 - **P-13** uimax-write-validator integration → validator script confirmed already enforcing rows 211 + 213; 5/5 `/uimax-*` skills mandate validator calls; new `plugins/sgs-blocks/scripts/uimax-tools/uimax_write.py` Python helper provides atomic validate-then-write. QC PASS.
 - **P-15** `/sgs-update` Stage 3+4 → REWRITTEN late-session per Bean's catch: DB is now canonical, CSVs are regenerated mirrors. New `regenerate-csvs` subcommand on `~/.agents/skills/ui-ux-pro-max/scripts/update-db.py` mirrors all 46 DB tables → CSV. `sgs-update-uimax-sync.py` Stage 3 writes SGS blocks to uimax DB via `uimax_write.py` validate chain (skip-if-exists preserves existing Rosetta Stone), then subprocess-calls `update-db.py regenerate-csvs`. Round-trip safe (regen → compile-sqlite → regen) verified by `/qc` 5/5 PASS. Closes the silent-data-loss vector across all uimax tables.
 - **P-4** Trustpilot scrape (Mama's Munches) → 4/4 reviews captured to `sites/mamas-munches/research/trustpilot-reviews.json`. QC PASS.
+
+## Resolved 2026-05-11
+- **P-Trustpilot block** → `sgs/trustpilot-reviews` block shipped at `plugins/sgs-blocks/src/blocks/trustpilot-reviews/`. Looping carousel, white pill header, theme-inherited typography, hover scale + theme-primary-coloured border, clickable Trustpilot logo, Schema.org JSON-LD, inline + synced + placeholder data sources. Live on sandybrown at /trustpilot-smoke-test-2/. Commit `c6bd4980`. Visual diff report at `reports/visual-diff/trustpilot-reviews-2026-05-11.md`.
+- **P-Orchestrator multi-section walker** → Voter `auto_detect_sections` walks into `<main>`; stage 4-8 loops per-boundary in `--auto-section` mode. End-to-end run on Mama's: 9 sections processed, 212 slots scaffolded, 213 leftover entries persisted to recognition_log. Patches uncommitted but tested -- pending Commit A.
+- **P-Style.css enqueue gap (systemic)** → wp-scripts emits `style-index.css` but `register_block_type_from_metadata` looks for `style.css`. New `plugins/sgs-blocks/scripts/copy-built-styles.js` postbuild step copies for all 48 blocks (96 files copied first run). Wired in `package.json`. Resolves the silent CSS-not-enqueued issue affecting every SGS block since the build pipeline was set up.
+- **P-image-controls.php namespace fatal** → Line 45 `WP_Block_Type_Registry` was resolving as `SGS\Blocks\WP_Block_Type_Registry`. Added leading backslash. Was fatalling on every block render the first time `inject_image_controls` fired (silent until I created a draft on sandybrown today).
 - **Dashboard `/api/learning` POST UPDATE bug** → Subagent D applied COALESCE-based patch to `~/.openclaw/workspace/tools/blub-dashboard-v2/src/app/api/learning/route.ts`; `/rebuild-dashboard` ran (PID 64452 → 16720); patch active; row 69 modernisation re-POSTed and confirmed; test row 219 archived.
 
 ---

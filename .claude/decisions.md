@@ -2,6 +2,41 @@
 
 Append-only. Most-recent first.
 
+## 2026-05-11 — Trustpilot review display: self-render block, not official widget or scraper plugin
+
+**Decision:** Build `sgs/trustpilot-reviews` as a first-party block that reads captured reviews from block attributes (inline mode) or wp_options (synced mode). Do NOT use Trustpilot's official WP plugin (free tier only allows Review Collector, not display widgets), and do NOT use third-party scraper plugins (Better Business Reviews, Trustindex, etc.). The maintenance dependency + TOS grey area exceeds the win.
+
+**Why:** Trustpilot's free plan paywalls all display widgets (Carousel, Slider, Grid, etc.) via the plugin. Bean verified by toggling "Only included with your plan" on business.trustpilot.com -- only Review Collector available. Scraper plugins work but introduce a maintenance dependency that compounds across every SGS client, and Senja's documented "almost ban" incident (per the research-buddies session) shows enforcement DOES happen when auto-sync triggers Trustpilot's bot detection. First-party block keeps brand identity locked (green stars + Verified badge + clickable Trustpilot logo) while letting typography inherit the host theme.
+
+**Applied:** Block at `plugins/sgs-blocks/src/blocks/trustpilot-reviews/`, shipped commit c6bd4980. Smoke-tested live on sandybrown at /trustpilot-smoke-test-2/. Sync infrastructure parked at P-TP-SYNC for a parallel session.
+
+## 2026-05-11 — Brand-fix + theme-inherit split for embedded third-party widgets
+
+**Decision:** For any "third-party recognition widget" block (Trustpilot, Google Reviews, future Yelp/TripAdvisor), the visual treatment splits into:
+- **Locked brand identity** (NOT exposed as attributes): platform logo, brand colour for stars + badges, verified-badge mark
+- **Theme-inherited typography**: font-family + colour + base font-size inherit from the host theme via `var(--wp--preset--font-family--body)` and CSS `color: inherit`
+- **Border + scale hover effects** use `var(--wp--preset--color--primary, <brand-fallback>)` so each site's primary token tints the interaction
+
+**Why:** Cards that hardcode their palette feel like a foreign embed. Cards that fully match the theme lose their trust-signal recognition. The split lets the cards live in the host site while preserving the recognition signals.
+
+**Applied:** `sgs/trustpilot-reviews` block CSS. Mama's variation primary `#E68A95` (pink) verified as the hover border colour via Playwright `browser_hover` + computed-style probe.
+
+## 2026-05-11 — Deterministic SGS-BEM voter over probabilistic AI matcher (Spec 12 v3 architecture)
+
+**Decision:** The recogniser pipeline's Stage 1 voter does literal slug match on SGS-BEM class names (`.sgs-<block>` -> `sgs/<block>` at confidence 1.0). Falls back to Spec 12 §8 lookup table for legacy kebab-semantic mockups. No AI in the matching step. The v1 recogniser at `tools/recogniser/` (which shelled out to Claude CLI per section) is deprecated.
+
+**Why:** Phase 6 made all Bean-controlled drafts SGS-BEM-conforming. With that constraint upstream, recognition becomes a string operation, not a classification problem. Cheaper (no per-section LLM call), faster (no subprocess overhead), more deterministic (same input -> same output). Probabilistic matching only fires for live scrapes where source naming is not Bean-controlled.
+
+**Applied:** `plugins/sgs-blocks/scripts/recogniser/per-section-convention-voter.py` shipped commit 7ac627cf. End-to-end verified on Mama's mockup 2026-05-11: 9/9 sections matched at confidence 0.75-1.0 with no AI calls.
+
+## 2026-05-11 — Default subtitle off; default columns 3/2/1
+
+**Decision:** The sgs/trustpilot-reviews block defaults `showSubtitle: false` (no "Showing our latest reviews" line) and `columns: 3 / 2 / 1` (not 4/2/1 as initially shipped). Both visual-debt decisions Bean caught during the v5/v6 iterations.
+
+**Why:** The subtitle reads as filler text that adds no information. The 3/2/1 spacing matches Trustpilot's actual Carousel widget grid and gives cards enough breathing room at desktop. 4-up at 1440 made the cards too dense.
+
+**Applied:** block.json defaults updated commit c6bd4980. Existing test page on sandybrown updated via REST to match.
+
 ## 2026-05-10 — Mockup-migration pattern-slug convention: short form (Option A)
 
 **Decision:** When a mockup section maps to a PATTERN (not a single block), the SGS-BEM `<block>` placeholder uses the short pattern slug. Example: `.sgs-header__inner`, not `.sgs-header-mamas-munches__inner`. Client-variant context lives in the file path (`sites/<client>/mockups/...`), not repeated in every class name. Composite blocks like `sgs/hero` keep their block slug verbatim (`.sgs-hero__copy`).

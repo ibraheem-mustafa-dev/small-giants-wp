@@ -25,7 +25,7 @@ End-state where Bean's drafts are deterministically clone-able by `/sgs-clone` (
 | 5 | Cross-platform parking entries | complete | 20 | `plans/phase-5-cross-platform-parking-complete.md` |
 | 6 | Mama's mockup migration to SGS-BEM | complete | 30-45 | `plans/phase-6-mockup-migration-complete.md` (shipped 2026-05-10; report at `.claude/reports/phase-6-mockup-migration-2026-05-10.md`) |
 | 7 | Orchestrator rewire (stages 1-2-9 hardcoded shortcuts) | complete | 90-150 | `plans/phase-7-orchestrator-rewire-complete.md` (shipped 2026-05-11; report at `.claude/reports/phase-7-orchestrator-rewire-2026-05-11.md`) |
-| 8 | Pipeline validation (all 9 Mama's sections + critical fixes) + live deploy + eyes-on review | pending | 180-240 | `plans/phase-8-validation-and-deploy.md` |
+| 8 | Pipeline validation (all 9 Mama's sections + critical fixes) + live deploy + eyes-on review | in progress | 240-360 | `plans/phase-8-validation-and-deploy.md` (rewritten 2026-05-11 against actual disk state; original referenced 6 fictional dependencies. Capture step DONE: sgs/trustpilot-reviews block shipped commit `c6bd4980`; orchestrator multi-section run verified end-to-end on Mama's (9 boundaries, 212 slots, 213 leftover entries persisted to recognition_log). **Critical-path blocker discovered 2026-05-11:** `tools/recogniser-v2/extract.py` works for sgs/hero only -- 8 of 9 Mama sections produce empty attributes. extract.py generalisation IS Phase 8 work (was misframed as Phase 9). See P-EXTRACT-GENERALISE. Remaining after that: visual parity validation, live deploy, Bean eyes-on review at 3 breakpoints.) |
 
 ## Session boundaries
 

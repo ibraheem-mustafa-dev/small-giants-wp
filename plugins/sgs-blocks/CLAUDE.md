@@ -84,7 +84,7 @@ rm sgs-deploy.tar
 
 ## Block Build Status
 
-### Content/Layout Blocks (24 built)
+### Content/Layout Blocks (25 built)
 
 | Block | Status |
 |---|---|
@@ -106,6 +106,8 @@ rm sgs-deploy.tar
 | WhatsApp CTA | Deployed |
 | Accordion + Accordion Item | Deployed |
 | Table of Contents | Deployed (broken — needs debugging) |
+| Google Reviews | Deployed |
+| Trustpilot Reviews | Deployed (2026-05-11 — looping carousel, white pill header, theme-inherited typography, hover scale + theme-primary border, Schema.org JSON-LD) |
 | Pricing Table | Built (L14, needs build + deploy) |
 | Modal | Built (L14, needs build + deploy) |
 | Decorative Image | Built (L14, needs build + deploy) |

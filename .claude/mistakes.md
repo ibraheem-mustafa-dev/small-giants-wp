@@ -1,5 +1,42 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-10 (two new lessons added this session — class-pattern depth + cite-without-verify)
+**Last updated:** 2026-05-11 (three new lessons added — style.css build-naming gotcha, namespaced-class fatal, plan-references-fictional-files repeat)
+
+## 2026-05-11 — @wordpress/scripts emits style-index.css; register_block_type wants style.css
+
+**The rule:** When a block.json manifests `"style": "file:./style.css"`, WordPress's `register_block_type_from_metadata` looks for a file named LITERALLY `style.css` at the block.json's path. But @wordpress/scripts compiles per-block frontend stylesheets to `style-index.css` per its webpack convention. If you don't bridge the gap, WP silently fails to enqueue the per-block stylesheet -- no error, no warning, just no CSS.
+
+**Incident:** On the 2026-05-11 Trustpilot block smoke test, the cards stacked vertically instead of horizontally because the CSS didn't load. Diagnostic showed `styleSheetLoaded: false` for the trustpilot stylesheet despite the file existing on disk (as `style-index.css`). After copying `style-index.css` -> `style.css` on the server, the page picked up the CSS instantly and rendered the carousel correctly.
+
+**Impact systemic:** EVERY existing SGS block had this gap. Their CSS was silently not being enqueued. Most blocks looked OK because their styles also lived in the universal `extensions.css` and `contrast.css`. The Trustpilot block's scoped styling (carousel, white pill header, hover border) had no fallback, so the gap surfaced.
+
+**Fix:** `plugins/sgs-blocks/scripts/copy-built-styles.js` -- new postbuild step that copies `style-index.css` -> `style.css` (and `style-index-rtl.css` -> `style-rtl.css`) for every block. Wired in `package.json` postbuild script. First run copied 96 files across all 48 SGS blocks. Idempotent: skips when destination is newer than source.
+
+**How to apply:** Any new WP plugin using @wordpress/scripts to compile per-block frontend stylesheets needs this bridge. Add the postbuild copy script BEFORE the first block needs scoped CSS that doesn't have a fallback, otherwise the bug stays silent.
+
+## 2026-05-11 — Unprefixed global classes in namespaced PHP files = silent fatal on first render
+
+**The rule:** When a PHP file declares `namespace SGS\Blocks;`, any reference to a global class (`WP_Block_Type_Registry`, `WP_Error`, `WP_REST_Response`, etc.) MUST be prefixed with a leading backslash (`\WP_Block_Type_Registry`). Otherwise PHP resolves the name as `SGS\Blocks\WP_Block_Type_Registry` (which doesn't exist) and fatals when the class is dereferenced.
+
+**Incident:** On the 2026-05-11 Trustpilot block smoke test, the WP REST endpoint to create a page returned `Uncaught Error: Class "SGS\Blocks\WP_Block_Type_Registry" not found in includes/image-controls.php:45`. The bug had been on `main` since commit `0d7c4fc8` (2026-05-10) but had not triggered because the filter `inject_image_controls` only fires when a block with `supports.sgs.imageControls` renders. The first new page render with such a block hit it.
+
+**Fix:** `includes/image-controls.php:45` changed `WP_Block_Type_Registry::get_instance()` to `\WP_Block_Type_Registry::get_instance()`. Comprehensive grep across all namespaced files in `plugins/sgs-blocks/includes/` confirmed only this one instance.
+
+**How to apply:** Any new file under `plugins/sgs-blocks/includes/` that declares `namespace SGS\Blocks;` AND references a WordPress core class must use the `\` prefix. Run `grep -rE "[^\\\\](WP_REST_|WP_Error|WP_Block|WP_Hook|WP_Post|WP_Query)" plugins/sgs-blocks/includes/` periodically to catch regressions. The rule should be added to the SGS WP coding standards reference.
+
+## 2026-05-11 — Plan referencing fictional files: the pattern repeats; structural mitigation needed
+
+**The rule:** The Phase 7 incident (next-session-prompt cited 4 dispatcher scripts that didn't exist) repeated 1 phase later: the Phase 8 plan referenced 7 files (slot-filler.py, test_slot_filler.py, hero-baseline.json, critical-fix-verification.py, role-templates.json, layer-3-internal-elements.json, trustpilot-reviews.json) -- only ONE existed. State.md ALSO claimed slot-filler.py was "1116 LOC, 8/14 tests pass" when no slot-filler.py had ever been committed to git.
+
+**Incident:** When Bean asked Phase 8 questions, I started planning around files I had not grep-verified. The original Phase 8 plan baked in 7 fictional dependencies and would have wasted a session trying to wire them. Caught only because Bean's earlier audit-instinct showed up: "do the audit". Plan was rewritten against actual disk state.
+
+**Two structural mitigations:**
+1. **Plan files must pass an "all named scripts exist" gate** before they're marked actionable. Before a plan can be referenced in a next-session-prompt, a deterministic check: `for each filename mentioned in the plan, does it exist in git OR is it in the same plan's deliverables list?` This is exactly the kind of check that belongs in a pre-commit hook.
+2. **State.md cannot claim work "shipped" without a commit hash.** Any line in state.md that says "X.py v1 (1116 LOC, N/M tests pass)" must cite a commit. If the work didn't get committed, state.md should say "designed but not landed" or similar.
+
+**How to apply:** Build the plan-file dependency-existence check as a pre-commit hook (or a manual `python check-plan-files.py` script). State.md gets a periodic audit: for any line that names a script or claims a quantitative deliverable (LOC count, test count), the commit must exist in git history -- if it doesn't, rewrite the line to reflect reality.
+
+**Stacks on top of:** lesson 217 (verify production path by grepping), lesson 218 (analysis skills run /search--local + /qc-inline), the 2026-05-10 cite-without-verify capture. Three repeated instances of the same pattern in 4 weeks. Structural enforcement (Rule 10) is overdue.
+
 
 ## 2026-05-10 — Classes in mockups map to PATTERNS, not single blocks (CC memory: feedback_classes_map_to_patterns_not_blocks.md)
 

@@ -226,46 +226,120 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path) -> dict:
         write_artefact(run_dir, 4, "extract-harvest-classify-compose-serialise", "failed", output, started, errors, [])
         return output
 
-    top = matches[0]
-    target_block = top["block_name"]
-    section_selector = args.section
-    cmd = [
-        sys.executable,
-        str(REPO / "tools" / "recogniser-v2" / "extract.py"),
-        "--mockup", str(args.mockup),
-        "--section", section_selector,
-        "--block", target_block,
-        "--out", str(extract_out),
-    ]
-    if args.media_map:
-        cmd.extend(["--media-map", str(args.media_map)])
-    if args.viewport:
-        cmd.extend(["--viewport", str(args.viewport)])
-    if args.no_playwright:
-        cmd.append("--no-playwright")
+    # Determine the boundary list to extract from. In single-section mode
+    # (--section) just run once for that selector. In --auto-section mode
+    # loop every matched boundary so multi-section pipelines work end-to-end.
+    # Boundary selectors come from the voter; if missing fall back to the
+    # CLI --section arg.
+    boundary_path = run_dir / "voter.json"
+    boundary_dict = json.loads(boundary_path.read_text(encoding="utf-8")) if boundary_path.exists() else {}
+    boundaries_by_id = {b["boundary_id"]: b for b in boundary_dict.get("boundaries", [])}
 
-    proc = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8")
-    errors: list[str] = []
-    warnings: list[str] = []
-    if proc.returncode != 0:
-        errors.append(f"extract.py exited {proc.returncode}")
-        errors.append((proc.stderr or "no stderr")[:1000])
-    extracted = {}
-    if extract_out.exists():
-        try:
-            extracted = json.loads(extract_out.read_text(encoding="utf-8"))
-        except json.JSONDecodeError as e:
-            warnings.append(f"extract-result.json malformed: {e}")
+    aggregate_attributes: dict = {}
+    aggregate_markup_parts: list[str] = []
+    aggregate_coverage: dict = {}
+    aggregate_errors: list[str] = []
+    aggregate_warnings: list[str] = []
+    per_section_results: list[dict] = []
+
+    for m in matches:
+        boundary_id = m["boundary_id"]
+        target_block = m["block_name"]
+        boundary = boundaries_by_id.get(boundary_id, {})
+        section_selector = boundary.get("selector") or args.section
+        if not section_selector:
+            aggregate_warnings.append(f"{boundary_id}: no selector resolved; skipping")
+            continue
+
+        # Skip extract entirely when the matched block is the deferred core/group
+        # fallback -- the section is in the leftover bucket already and extract.py
+        # has no real target.
+        if target_block == "core/group" or m.get("confidence", 0) == 0:
+            aggregate_warnings.append(f"{boundary_id}: deferred fallback, skipping extract")
+            per_section_results.append({
+                "boundary_id": boundary_id,
+                "section_id": m.get("section_id"),
+                "selector": section_selector,
+                "block_name": target_block,
+                "status": "skipped-deferred",
+                "extracted_attributes": {},
+                "block_markup": "",
+            })
+            continue
+
+        per_section_out = run_dir / f"extract-{boundary_id}.json"
+        cmd = [
+            sys.executable,
+            str(REPO / "tools" / "recogniser-v2" / "extract.py"),
+            "--mockup", str(args.mockup),
+            "--section", section_selector,
+            "--block", target_block,
+            "--out", str(per_section_out),
+        ]
+        if args.media_map:
+            cmd.extend(["--media-map", str(args.media_map)])
+        if args.viewport:
+            cmd.extend(["--viewport", str(args.viewport)])
+        if args.no_playwright:
+            cmd.append("--no-playwright")
+
+        proc = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8")
+        section_status = "complete"
+        section_attrs: dict = {}
+        section_markup = ""
+        section_coverage: dict = {}
+        if proc.returncode != 0:
+            aggregate_errors.append(f"{boundary_id} ({section_selector} -> {target_block}): extract.py exit {proc.returncode}: {(proc.stderr or '')[:300]}")
+            section_status = "failed"
+        elif per_section_out.exists():
+            try:
+                extracted = json.loads(per_section_out.read_text(encoding="utf-8"))
+                section_attrs = extracted.get("attributes") or {}
+                section_markup = extracted.get("markup") or ""
+                section_coverage = extracted.get("coverage") or {}
+            except json.JSONDecodeError as e:
+                aggregate_warnings.append(f"{boundary_id}: extract result malformed: {e}")
+                section_status = "warning"
+
+        per_section_results.append({
+            "boundary_id": boundary_id,
+            "section_id": m.get("section_id"),
+            "selector": section_selector,
+            "block_name": target_block,
+            "status": section_status,
+            "extract_path": str(per_section_out),
+            "extracted_attributes": section_attrs,
+            "block_markup": section_markup,
+        })
+
+        # Aggregate attributes prefixed with section_id so multi-section
+        # results do not collide on the same attribute name (e.g. headline).
+        section_id = m.get("section_id") or boundary_id
+        for k, v in section_attrs.items():
+            aggregate_attributes[f"{section_id}.{k}"] = v
+        if section_markup:
+            aggregate_markup_parts.append(section_markup)
+        if section_coverage:
+            aggregate_coverage[section_id] = section_coverage
+
+    # Also write a single legacy extract-result.json so existing tooling
+    # that expects one file still finds something.
+    legacy_payload = {
+        "attributes": aggregate_attributes,
+        "markup": "\n\n".join(aggregate_markup_parts),
+        "coverage": aggregate_coverage,
+    }
+    extract_out.write_text(json.dumps(legacy_payload, indent=2, ensure_ascii=False), encoding="utf-8")
 
     output = {
         "extract_result_path": str(extract_out),
-        "extracted_attributes": extracted.get("attributes") or {},
-        "block_markup": extracted.get("markup") or "",
-        "coverage": extracted.get("coverage") or {},
-        "stdout_tail": (proc.stdout or "")[-2000:],
+        "extracted_attributes": aggregate_attributes,
+        "block_markup": "\n\n".join(aggregate_markup_parts),
+        "coverage": aggregate_coverage,
+        "per_section_results": per_section_results,
     }
-    status = "complete" if not errors else "failed"
-    write_artefact(run_dir, 4, "extract-harvest-classify-compose-serialise", status, output, started, errors, warnings)
+    status = "complete" if not aggregate_errors else "failed"
+    write_artefact(run_dir, 4, "extract-harvest-classify-compose-serialise", status, output, started, aggregate_errors, aggregate_warnings)
     return output
 
 

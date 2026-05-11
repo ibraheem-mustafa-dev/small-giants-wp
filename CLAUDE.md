@@ -150,9 +150,9 @@ Full README at `plugins/sgs-blocks/scripts/uimax-tools/README.md`.
 
 The primary client onboarding workflow. Takes any existing website and replicates it using SGS blocks — everything through editor attributes, zero hardcoding. Methodology at `~/.claude/skills/sgs-wp-engine/references/fidelity-comparator.md`.
 
-## Framework Stats (as of 2026-03-17)
+## Framework Stats (as of 2026-05-11)
 
-- **55 blocks** (26 content, 14 forms, 7 interactive, 4 layout, 4 extensions)
+- **57 blocks** (25 content, 14 forms, 7 interactive, 4 layout, 4 extensions, 2 review-source -- google-reviews + trustpilot-reviews; trustpilot-reviews added 2026-05-11)
 - **619 block attributes** — all controllable via editor sidebar
 - **7 style variations** — indus-foods, helping-doctors, healthcare, construction, professional, mosque, eye-care
 - **25 patterns**, 25 design tokens, 22 theme templates/parts

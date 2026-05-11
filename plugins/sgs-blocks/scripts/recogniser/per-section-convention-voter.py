@@ -205,29 +205,51 @@ def find_section_node(soup: BeautifulSoup, selector: str) -> Tag | None:
 
 
 def auto_detect_sections(soup: BeautifulSoup) -> list[tuple[Tag, str]]:
-    """Walk the page top-down, return (node, selector) for each top-level section."""
+    """Walk the page top-down, return (node, selector) for every top-level
+    landmark section.
+
+    Treats `<main>` (and any other landmark whose role is to contain inner
+    sections rather than be the section itself) as a transparent container:
+    the inner `<section>` children get promoted to top-level boundaries.
+    This matches the canonical SGS mockup shape -- body > header + main + footer
+    where main wraps the 7 content sections (hero, trust-bar, featured-product,
+    heritage-strip, ingredients-section, gift-section, social-proof).
+    """
     out: list[tuple[Tag, str]] = []
     body = soup.body or soup
+
+    # Tags that are landmark CONTAINERS rather than themselves leaf sections.
+    # When we hit one, we walk into it for child sections rather than
+    # treating it as a single section.
+    transparent_containers = {"main", "article"}
+
+    def emit_section(node: Tag) -> None:
+        classes = collect_class_signature(node)
+        selector = f"{node.name}.{classes[0]}" if classes else node.name
+        out.append((node, selector))
+
     for child in body.find_all(recursive=False):
         if not isinstance(child, Tag):
             continue
-        if child.name in SECTION_TAGS:
-            classes = collect_class_signature(child)
-            if classes:
-                selector = f"{child.name}.{classes[0]}"
+        if child.name in transparent_containers:
+            # Promote inner section-tag children to top-level boundaries.
+            inner_sections = [
+                c for c in child.find_all(recursive=False)
+                if isinstance(c, Tag) and c.name in SECTION_TAGS
+            ]
+            if inner_sections:
+                for inner in inner_sections:
+                    emit_section(inner)
             else:
-                selector = child.name
-            out.append((child, selector))
-    # If body had no direct section children, walk one level deeper -- common
-    # when the mockup wraps everything in <div class="page">.
+                # No inner sections -- treat the container itself as a section.
+                emit_section(child)
+        elif child.name in SECTION_TAGS:
+            emit_section(child)
+
+    # Fallback: if body had no direct landmark children, walk deeper.
     if not out and body:
         for child in body.find_all(SECTION_TAGS, recursive=True):
-            classes = collect_class_signature(child)
-            if classes:
-                selector = f"{child.name}.{classes[0]}"
-            else:
-                selector = child.name
-            out.append((child, selector))
+            emit_section(child)
     return out
 
 
