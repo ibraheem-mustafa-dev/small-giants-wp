@@ -110,7 +110,9 @@ def _build_sgs_payload(slug: str, title: str, description: str) -> dict:
         "summary": summary,
         "wai_aria_url": "",
         "framework": "WordPress (Gutenberg)",
-        "license": "GPL-2.0+",
+        # No "license" field — row 211 (no licensing language in uimax/cloning context).
+        # SGS Blocks are GPL-2.0+ as a project, tracked in the plugin header and theme
+        # metadata, not on every component_libraries row.
         "source_url": (
             "https://github.com/Ibraheem-Mustafa/small-giants-wp/tree/main/"
             f"plugins/sgs-blocks/src/blocks/{short_slug}"
