@@ -1,12 +1,12 @@
 ---
 doc_type: handoff
 project: small-giants-wp
-session_tag: small-giants-wp-2026-05-11-trustpilot-block
+session_tag: small-giants-wp-2026-05-11-trustpilot-block-and-sync
 session_date: 2026-05-11
 recommended_model_next: sonnet
 ---
 
-# Session Handoff — 2026-05-11 (Trustpilot block + orchestrator multi-section)
+# Session Handoff — 2026-05-11 (Trustpilot block + sync infrastructure + orchestrator multi-section)
 
 ## Completed This Session
 
@@ -29,12 +29,23 @@ recommended_model_next: sonnet
 
 7. **End-to-end orchestrator run verdict on Mama's:** 9 boundaries detected (all 9 mockup sections), voter primary convention = sgs-prefixed-bem on all 9, confidence-matrix correctly identified 3 registered blocks (sgs/hero, sgs/trust-bar, sgs/heritage-strip at conf 1.0) and 6 unregistered slugs (sgs/header, sgs/footer, sgs/featured-product, sgs/ingredients-section, sgs/gift-section, sgs/social-proof at conf 0.75). Stage 3 scaffolded 212 slots across the registered blocks. Stage 4-8 succeeded only for hero (extract.py is hero-specific); other 8 sections produce structurally valid empty markup. Stage 9 routed 212 extraction_failed + 1 animation_unclassified entries; 213 rows persisted to uimax recognition_log.
 
+8. **Trustpilot Sync infrastructure SHIPPED** (the same-day continuation of #3). 4 backend classes under `plugins/sgs-blocks/includes/trustpilot/` (Trustpilot_Sync, Trustpilot_REST, Trustpilot_Cron, Trustpilot_Settings) + admin JS at `assets/admin/trustpilot-sync.js`. Settings page at WP Admin > Settings > SGS Trustpilot Sync (Business URL, Off/Weekly/Daily auto-sync, Browserless endpoint + key with AES-256-CBC encryption keyed off `wp_salt('auth')`, Sync-now button, activity log of last 5 attempts). REST endpoint `POST /wp-json/sgs/v1/trustpilot-sync` (manage_options gated). WP-cron hook `sgs_trustpilot_sync_event` reschedules from the settings sanitiser. JSON-LD parser harvests standalone `Review` entities from `@graph` (Trustpilot's reference pattern — `LocalBusiness.review[]` holds `@id` pointers, not inline entities; the parser was initially built for inline-only and dropped all 4 reviews on first run, fix landed mid-session). Commit `06df2807`. Visual diff at `reports/visual-diff/trustpilot-sync-2026-05-11.md`.
+
+9. **Trustpilot Sync end-to-end proven on sandybrown.** Settings configured (Mama's URL + Browserless creds), Sync-now triggered: 4 reviews captured in ~3.5s, TrustScore 4.0 "Great", names and bodies match the reference JSON. The smoke-test-2 page block flipped from `dataSource: inline` to `synced` via REST API (app password `S8nBoJ4jyw9Hsuv782LBUFPy` for user `Claude`, name `trustpilot-wire-2026-05-11` — revoke when no longer needed). Frontend at `/trustpilot-smoke-test-2/` now renders the synced reviews; placeholder names (Steve/Thomas/Wendy/April) confirmed absent, real names (R B, mariahzaini, Halimah Nawaz, Mrs MIM) confirmed present.
+
+10. **Browserless `?token=` discovery captured as architectural lesson.** Spec called for `Authorization: Bearer` but Browserless `/content` rejects Bearer with HTTP 500 — only `?token=` query string works. Different Browserless endpoints have different auth conventions (`chrome/bql` accepts Bearer). Lesson saved to all three memory layers (workspace `learning/2026-05-11-sgs-trustpilot-sync-via-browserless-working-setup.md`, CC auto-memory `feedback_sgs_trustpilot_browserless_setup.md`, blub.db row 238).
+
+11. **Telegram failure-alert scope dropped.** Initially in the sync spec but reconsidered mid-build — activity log + `last_sync_status` badge on the settings page is the only failure surface needed for a weekly job. Captured as decision in `.claude/decisions.md`.
+
+12. **Doc-update sweep across living docs** (commit `e1af00db`). P-TP-SYNC closed in parking, new decision logged, state bumped, next-session prompt's Track 4 marked SHIPPED, plugins/sgs-blocks/CLAUDE.md gained a Backend Integrations section, sites/mamas-munches/CLAUDE.md updated (4 reviews live, not "no reviews yet"), phase-8 plan Trustpilot checkbox marked done.
+
 ## Current State
 
-- **Branch:** main at `c6bd4980`
-- **Tests:** orchestrator end-to-end run on Mama's PASSED structurally (9/9 sections processed, no crashes); extract.py works only for hero (the known slot-filler.py gap from Phase 9 backlog)
-- **Build:** `npm run build` plus new postbuild step writes both style-index.css + style.css for all 48 SGS blocks
-- **Uncommitted changes:** orchestrator multi-section patches (voter walks into `<main>` + stage 4-8 per-boundary loop). To commit as "A" before any v3 reorg.
+- **Branch:** main at `e1af00db` (Trustpilot sync ship `06df2807` + doc-update sweep `e1af00db`)
+- **Tests:** orchestrator end-to-end run on Mama's PASSED structurally (9/9 sections processed, no crashes); extract.py works only for hero (the known slot-filler.py gap from Phase 9 backlog). Trustpilot Sync end-to-end PASSED on sandybrown (4 reviews captured, parser handles `@graph` reference pattern correctly, frontend renders synced data).
+- **Build:** `npm run build` plus the postbuild step writes both style-index.css + style.css for all 48 SGS blocks
+- **Uncommitted changes:** orchestrator multi-section patches still pending (voter walks into `<main>` + stage 4-8 per-boundary loop). To commit as "A" before any v3 reorg.
+- **Live on sandybrown:** `/trustpilot-smoke-test-2/` block now `dataSource: synced` reading from `wp_options[sgs_trustpilot_data]` populated by the new sync. Weekly auto-sync registered (`sgs_trustpilot_sync_event`).
 
 ## Known Issues / Outstanding Work
 
@@ -49,20 +60,20 @@ recommended_model_next: sonnet
 - Update all path references in skill bodies + Spec 12 + state.md
 - v1 (`tools/recogniser/`) gets deleted in a separate cleanup commit after a clean reorg run
 
-**2. Trustpilot Sync infrastructure** (3-4 hours, parallel-session ready):
-- WP plugin admin settings page (Settings -> SGS Trustpilot Sync)
-- Auto-sync toggle (Off / Weekly / Daily) wired to WP-cron
-- "Sync now" button calling a new REST endpoint
-- Browserless.io free-tier integration for the actual headless scrape
-- Writes wp_options['sgs_trustpilot_data'] which the existing block already reads when dataSource=synced
-- Telegram alert on sync failure via tg-cli.py
-- See the parallel-session prompt Bean has in the chat scrollback (also saved here for reference -- see "Next Session Prompt" below)
+**2. Trustpilot Sync infrastructure** (SHIPPED 2026-05-11, commit `06df2807`):
+- WP plugin admin settings page (Settings -> SGS Trustpilot Sync) — done
+- Auto-sync toggle (Off / Weekly / Daily) wired to WP-cron — done (`sgs_trustpilot_sync_event`)
+- "Sync now" button calling a new REST endpoint — done (`POST /wp-json/sgs/v1/trustpilot-sync`)
+- Browserless.io free-tier integration — done (`?token=` auth, NOT Bearer; key encrypted AES-256-CBC at rest)
+- Writes `wp_options[sgs_trustpilot_data]` which the existing block reads when `dataSource: synced` — done, proven on sandybrown
+- Telegram alert dropped from scope — settings page activity log + last_sync_status is the operator failure surface
+- End-to-end proof: sandybrown smoke-test-2 renders 4 live Mama's reviews via the synced path. Setup procedure documented inline on the settings page for any future SGS site.
 
 ## Next Priorities (in order)
 
-1. Commit the orchestrator multi-section patches (Commit A)
+1. Commit the orchestrator multi-section patches (Commit A) — still pending
 2. Either inline or in fresh session: tools/recogniser-v3 reorg (Commit B), then optionally delete tools/recogniser/ (Commit C)
-3. In parallel session: Trustpilot sync infrastructure
+3. ~~In parallel session: Trustpilot sync infrastructure~~ — DONE 2026-05-11 (`06df2807`)
 4. Phase 8 remaining work: visual parity validation, live deploy with the orchestrator output, eyes-on review at 3 breakpoints (Bean owns this per lesson 221)
 
 ## Files Modified This Session
@@ -79,22 +90,30 @@ recommended_model_next: sonnet
 | `plugins/sgs-blocks/scripts/recogniser/per-section-convention-voter.py` | Patched to walk into `<main>` (uncommitted) |
 | `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` | Stage 4-8 loops per-boundary in auto-section mode (uncommitted) |
 | `sites/mamas-munches/research/trustpilot-reviews.json` | NEW — 4 captured reviews + TrustScore + label + average |
-| `.claude/plans/phase-8-validation-and-deploy.md` | Rewritten against actual disk state (the original referenced 6 fictional dependencies) |
+| `.claude/plans/phase-8-validation-and-deploy.md` | Rewritten against actual disk state (the original referenced 6 fictional dependencies); Trustpilot scrape checkbox now `[x]` |
 | `.claude/handoff.md` | This file |
-| `.claude/state.md` | Advanced to reflect trustpilot block shipped + orchestrator multi-section verified |
-| `.claude/parking.md` | New entries P-13 (sync infra), P-14 (v3 reorg); P-4 marked resolved |
-| `.claude/decisions.md` | Key decisions from this session (Trustpilot self-render path, theme-inherited typography, deterministic voter, etc.) |
-| `.claude/mistakes.md` | 3 new lessons (style.css naming gotcha, image-controls namespace, plan-referencing-fictional-files repeat) |
-| `reports/visual-diff/trustpilot-reviews-2026-05-11.md` + `reports/visual-diff/trustpilot-smoke-2026-05-11/*.png` | Visual diff report + 6 iterations of screenshots at 3 breakpoints each |
+| `.claude/state.md` | Advanced to reflect trustpilot block + sync + orchestrator multi-section verified |
+| `.claude/parking.md` | P-TP-SYNC closed + moved to Resolved 2026-05-11; P-RECOG-V3 still parked; P-4 (review scrape) resolved earlier |
+| `.claude/decisions.md` | Key decisions from this session (Trustpilot self-render path, Browserless `?token=` auth + settings-page-only failure surface, theme-inherited typography, deterministic voter, etc.) |
+| `.claude/mistakes.md` | 3 new lessons (style.css naming gotcha, image-controls namespace, plan-referencing-fictional-files repeat). Browserless `?token=` lesson lives in workspace `learning/`, CC auto-memory feedback, and blub.db row 238 — not duplicated here. |
+| `plugins/sgs-blocks/includes/trustpilot/` | NEW — 4 classes: Trustpilot_Sync (Browserless POST + JSON-LD parse + wp_options write + AES-256-CBC token encryption), Trustpilot_REST (POST /wp-json/sgs/v1/trustpilot-sync), Trustpilot_Cron (sgs_trustpilot_sync_event weekly/daily), Trustpilot_Settings (admin UI + activity log + setup checklist + Browserless signup link) |
+| `plugins/sgs-blocks/assets/admin/trustpilot-sync.js` | NEW — Sync-now button via wp.apiFetch + X-WP-Nonce |
+| `plugins/sgs-blocks/sgs-blocks.php` | require_once + register the 4 trustpilot classes |
+| `plugins/sgs-blocks/src/blocks/trustpilot-reviews/edit.js` | Help text on Data source select corrected ("Synced reads from wp_options[sgs_trustpilot_data], populated by Settings > SGS Trustpilot Sync") |
+| `plugins/sgs-blocks/CLAUDE.md` | New Backend Integrations section (Google Reviews + Trustpilot Sync rows + detail block) |
+| `sites/mamas-munches/CLAUDE.md` | 3 outdated "no Trustpilot reviews yet" lines reframed (4 live reviews + sync ready for migration) |
+| `C:/Users/Bean/.openclaw/.env` | NEW `BROWSERLESS_API_KEY` + `BROWSERLESS_ENDPOINT` entries (out-of-repo) |
+| `reports/visual-diff/trustpilot-reviews-2026-05-11.md` + `trustpilot-smoke-2026-05-11/*.png` | Visual diff report for the block (earlier in session) |
+| `reports/visual-diff/trustpilot-sync-2026-05-11.md` | Visual diff report for the sync infrastructure ship (verdict: PASS) |
 
 ## Notes for Next Session
 
-- Mama's site only has user "Claude" on sandybrown. App passwords on sandybrown today: `deploy-verify`, `claude-api-session`, plus session ones I created today (tp-smoke-*). These can be revoked when no longer needed.
+- Mama's site only has user "Claude" on sandybrown. App passwords on sandybrown today: `deploy-verify`, `claude-api-session`, session ones from the block work (`tp-smoke-*`), plus `trustpilot-wire-2026-05-11` (`S8nBoJ4jyw9Hsuv782LBUFPy`) created during the sync wire-up. Revoke when no longer needed.
+- Browserless free tier API key is in `C:/Users/Bean/.openclaw/.env` (`BROWSERLESS_API_KEY` + `BROWSERLESS_ENDPOINT`). 6 hours/month free tier, ample for one weekly scrape per site. Account is admin@ibraheemmustafa.com.
+- For any new SGS site that wants Trustpilot reviews: install plugin -> Settings > SGS Trustpilot Sync -> paste Trustpilot URL + Browserless endpoint + key -> click Sync now -> insert block with `dataSource: synced`. Setup checklist appears inline on the settings page.
 - The orchestrator's stage 4-8 multi-section run produces composite markup as `pipeline-state/<run_id>/extract.json`. Most sections produce empty `attributes` because extract.py is hero-specific. Don't treat this as a regression; it's the known slot-filler.py gap (Phase 9 work).
 - The sgs/trustpilot-reviews block is the answer for the `section.sgs-social-proof` boundary in Mama's mockup. To wire it as the target for the orchestrator's stage 7 composition emit, the confidence-matrix needs either a lookup-table entry for "social-proof -> sgs/trustpilot-reviews" OR the pattern catalogue needs an entry. Not strictly blocking — the section gets routed to leftover-bucket cleanly today.
 
 ## Next Session Prompt
 
-See chat scrollback for the parallel-session prompt for the Trustpilot Sync infrastructure work. It's a self-contained brief covering settings page + WP-cron + REST endpoint + Browserless integration + Telegram failure alert + smoke test. Estimated 3-4 hours focused.
-
-Inline next-session continuation (for someone picking up where this session ended): commit the orchestrator multi-section patches first as "Commit A". Then either do the tools/recogniser-v3 reorg inline OR park it. Then resume Phase 8 visual-parity-validation + deploy work using the orchestrator output now that multi-section runs cleanly.
+Inline next-session continuation: commit the orchestrator multi-section patches first as "Commit A" (still pending). Then either do the tools/recogniser-v3 reorg inline OR park it. Then resume Phase 8 visual-parity-validation + deploy work using the orchestrator output now that multi-section runs cleanly. Trustpilot Sync is done — no further build work there.

@@ -23,7 +23,7 @@ SGS is a standalone WordPress block theme and Gutenberg blocks plugin built by S
 |---|---|---|
 | CMS | WordPress 6.9.1 | Block theme, no classic editor |
 | Theme | `sgs-theme` (block theme) | theme.json v3, template parts, style variations per client |
-| Blocks plugin | `sgs-blocks` | 59 blocks (51 dynamic + 8 static), block extensions live in `src/blocks/extensions/`. Block Defaults system (Phase 3.2) lets clients save current attribute values as defaults for new instances site-wide. |
+| Blocks plugin | `sgs-blocks` | 67 blocks (60 dynamic + 7 static, per `02-SGS-BLOCKS-REFERENCE.md` 2026-05-11). Block extensions live in `src/blocks/extensions/`. Block Defaults system (Phase 3.2) lets clients save current attribute values as defaults for new instances site-wide. Backend integrations live alongside the blocks at `includes/`: Google Reviews (Places API + transient cache) and Trustpilot Sync (Browserless `/content` + JSON-LD parser + WP-cron). |
 | Block build | `@wordpress/scripts` | `--experimental-modules` flag required for `viewScriptModule` |
 | Frontend JS | Interactivity API + vanilla ES modules | Interactivity API for stateful blocks; vanilla `viewScriptModule` for AJAX (Post Grid) |
 | Icons | Lucide (1900+ icons) | Pre-generated to `lucide-icons.php` via `scripts/generate-icons.js` |
@@ -1334,7 +1334,8 @@ Sessions 3–14 added: animation extension on all blocks, hover effects extensio
 | `sgs/mobile-nav` | Navigation | Complete mobile navigation drawer, 65 attrs, patterns, animations | ◐ Deployed — Indus Foods |
 | `sgs/announcement-bar` | Marketing | Top-of-page notification strip (dismissible) | ○ Code-confirmed only |
 | `sgs/business-info` | Content | 8 display types: address, phone, email, hours, map, social, etc. Auto-populates from settings page | ○ Code-confirmed only |
-| `sgs/google-reviews` | Social Proof | Dynamic Google Reviews integration | ○ Code-confirmed only |
+| `sgs/google-reviews` | Social Proof | Dynamic Google Reviews integration | ◐ Deployed (palestine-lives + sandybrown) |
+| `sgs/trustpilot-reviews` | Social Proof | Trustpilot review display: carousel/grid/list/badge variants; inline/synced/placeholder data sources; brand identity locked, typography theme-inherited; Schema.org JSON-LD. Sync infrastructure at `includes/trustpilot/` (Browserless `?token=` auth + JSON-LD parser + WP-cron `sgs_trustpilot_sync_event`). | ✅ Deployed + live-verified on sandybrown 2026-05-11 |
 | `sgs/heritage-strip` | Content | Brand heritage timeline/story strip | ○ Code-confirmed only |
 | `sgs/modal` | Interactive | Modal/dialogue overlay (check if uses native `<dialog>` — S-tier #346) | ○ Code-confirmed only |
 | `sgs/notice-banner` | Content | Contextual notice/alert banner | ○ Code-confirmed only |

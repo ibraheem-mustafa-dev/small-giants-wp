@@ -5,7 +5,7 @@
 > `plugins/sgs-blocks/scripts/generate-block-reference.py`.
 > Refresh: `python plugins/sgs-blocks/scripts/generate-block-reference.py`.
 
-**Last generated:** 2026-05-04T17:03:30
+**Last generated:** 2026-05-11T13:12:47
 
 **For architectural patterns, customisation standards, and build status, see [`02-SGS-BLOCKS.md`](02-SGS-BLOCKS.md).** This file is the per-block attribute/supports/selector reference only.
 
@@ -14,7 +14,7 @@
 ## Contents
 
 - [Layout](#layout) (5 blocks)
-- [Content](#content) (31 blocks)
+- [Content](#content) (34 blocks)
 - [Forms](#forms) (17 blocks)
 - [Interactive](#interactive) (11 blocks)
 
@@ -29,11 +29,12 @@ _SGS Container_
 
 Flexible layout wrapper â€” the fundamental building block for all page sections.
 
-**Attributes** (25):
+**Attributes** (26):
 
 | Name | Type | Default | Responsive |
 |------|------|---------|------------|
 | `backgroundImage` | `object` | `—` | — |
+| `backgroundMedia` | `object` | `—` | — |
 | `backgroundOverlayColour` | `string` | `—` | — |
 | `backgroundOverlayOpacity` | `number` | `50` | — |
 | `columns` | `number` | `2` | Yes |
@@ -106,13 +107,14 @@ _SGS Hero_
 
 Page hero section with headline, sub-headline, CTAs, and background image.
 
-**Attributes** (164):
+**Attributes** (174):
 
 | Name | Type | Default | Responsive |
 |------|------|---------|------------|
 | `alignment` | `string` | `"left"` | — |
 | `backgroundColor` | `string` | `"primary-dark"` | — |
 | `backgroundImage` | `object` | `—` | — |
+| `backgroundMedia` | `object` | `—` | — |
 | `backgroundVideo` | `object` | `—` | — |
 | `badges` | `array` | `[]` | — |
 | `bgKenBurns` | `boolean` | `false` | — |
@@ -136,6 +138,10 @@ Page hero section with headline, sub-headline, CTAs, and background image.
 | `contentPaddingTopMobile` | `number` | `—` | — |
 | `contentPaddingTopTablet` | `number` | `—` | — |
 | `contentPaddingUnit` | `string` | `"px"` | — |
+| `ctaGap` | `integer` | `12` | Yes |
+| `ctaGapMobile` | `integer` | `10` | — |
+| `ctaGapTablet` | `integer` | `—` | — |
+| `ctaGapUnit` | `string` | `"px"` | — |
 | `ctaPrimaryBackground` | `string` | `—` | — |
 | `ctaPrimaryColour` | `string` | `—` | — |
 | `ctaPrimaryHoverBackground` | `string` | `""` | — |
@@ -155,6 +161,8 @@ Page hero section with headline, sub-headline, CTAs, and background image.
 | `headlineFontSizeDesktop` | `number` | `—` | — |
 | `headlineFontSizeMobile` | `number` | `—` | — |
 | `headlineFontSizeTablet` | `number` | `—` | — |
+| `headlineMarginBottom` | `number` | `—` | Yes |
+| `headlineMarginBottomMobile` | `number` | `—` | — |
 | `hoverBackgroundColour` | `string` | `""` | — |
 | `hoverBorderColour` | `string` | `""` | — |
 | `hoverTextColour` | `string` | `""` | — |
@@ -250,6 +258,7 @@ Page hero section with headline, sub-headline, CTAs, and background image.
 | `splitImageMobile` | `object` | `—` | — |
 | `splitImageMobileHeight` | `number` | `—` | — |
 | `splitImageMobileObjectPosition` | `string` | `"center 20%"` | — |
+| `splitMedia` | `object` | `—` | — |
 | `subHeadline` | `string` | `""` | — |
 | `subHeadlineColour` | `string` | `"text-inverse"` | — |
 | `subHeadlineFontFamily` | `string` | `""` | — |
@@ -261,6 +270,8 @@ Page hero section with headline, sub-headline, CTAs, and background image.
 | `subHeadlineLetterSpacingUnit` | `string` | `"px"` | — |
 | `subHeadlineLineHeight` | `number` | `—` | — |
 | `subHeadlineLineHeightUnit` | `string` | `"em"` | — |
+| `subHeadlineMarginBottom` | `number` | `—` | Yes |
+| `subHeadlineMarginBottomMobile` | `number` | `—` | — |
 | `subHeadlineMaxWidth` | `number` | `—` | — |
 | `subHeadlineTextDecoration` | `string` | `""` | — |
 | `subHeadlineTextTransform` | `string` | `""` | — |
@@ -276,7 +287,7 @@ Page hero section with headline, sub-headline, CTAs, and background image.
 | `verticalAlignment` | `string` | `"center"` | — |
 
 **Supports:**
-- `__experimentalBorder` ({"radius": true, "width": t...), `align` (["wide", "full"]), `anchor`, `color` ({"background": true, "text"...), `html` (false), `spacing` ({"margin": true, "padding":...), `typography` ({"fontSize": true, "lineHei...)
+- `__experimentalBorder` ({"radius": true, "width": t...), `align` (["wide", "full"]), `anchor`, `color` ({"background": true, "text"...), `html` (false), `sgs` ({"imageControls": true}), `spacing` ({"margin": true, "padding":...), `typography` ({"fontSize": true, "lineHei...)
 
 **Selectors:**
 
@@ -448,7 +459,7 @@ _SGS Button_
 
 A highly-configurable button with preset binding, icon support, hover states, and per-breakpoint controls.
 
-**Attributes** (98):
+**Attributes** (103):
 
 | Name | Type | Default | Responsive |
 |------|------|---------|------------|
@@ -502,6 +513,7 @@ A highly-configurable button with preset binding, icon support, hover states, an
 | `iconSizeMobile` | `number` | `—` | — |
 | `iconSizeTablet` | `number` | `—` | — |
 | `iconTitle` | `string` | `""` | — |
+| `iconValue` | `object` | `{"source": "", "value": "", "label": ""}` | — |
 | `inheritStyle` | `string` | `"primary"` | — |
 | `isSubmit` | `boolean` | `false` | — |
 | `label` | `string` | `"Click Here"` | — |
@@ -527,7 +539,11 @@ A highly-configurable button with preset binding, icon support, hover states, an
 | `marginTopMobile` | `number` | `—` | — |
 | `marginTopTablet` | `number` | `—` | — |
 | `marginUnit` | `string` | `"px"` | — |
-| `minHeight` | `number` | `—` | — |
+| `minHeight` | `number` | `—` | Yes |
+| `minHeightMobile` | `number` | `—` | — |
+| `minHeightMobileUnit` | `string` | `"px"` | — |
+| `minHeightTablet` | `number` | `—` | — |
+| `minHeightTabletUnit` | `string` | `"px"` | — |
 | `minHeightUnit` | `string` | `"px"` | — |
 | `paddingBottom` | `number` | `—` | Yes |
 | `paddingBottomMobile` | `number` | `—` | — |
@@ -597,7 +613,7 @@ Flexible image and content grid with overlay and card variants.
 | `variant` | `string` | `"card"` | — |
 
 **Supports:**
-- `__experimentalBorder` ({"radius": true, "width": t...), `align` (["wide", "full"]), `anchor`, `color` ({"background": true, "text"...), `html` (false), `shadow`, `spacing` ({"margin": true, "padding":...), `typography` ({"fontSize": true, "lineHei...)
+- `__experimentalBorder` ({"radius": true, "width": t...), `align` (["wide", "full"]), `anchor`, `color` ({"background": true, "text"...), `html` (false), `sgs` ({"imageControls": true}), `shadow`, `spacing` ({"margin": true, "padding":...), `typography` ({"fontSize": true, "lineHei...)
 
 **Selectors:**
 
@@ -682,13 +698,14 @@ _SGS CTA Section_
 
 Call-to-action section with headline, supporting text, and buttons.
 
-**Attributes** (33):
+**Attributes** (34):
 
 | Name | Type | Default | Responsive |
 |------|------|---------|------------|
 | `backgroundColor` | `string` | `"accent"` | — |
 | `backgroundImage` | `object` | `—` | — |
 | `backgroundImageOpacity` | `number` | `30` | — |
+| `backgroundMedia` | `object` | `—` | — |
 | `body` | `string` | `""` | — |
 | `bodyColour` | `string` | `"text"` | — |
 | `bodyFontSize` | `string` | `—` | Yes |
@@ -732,6 +749,28 @@ Call-to-action section with headline, supporting text, and buttons.
 
 ---
 
+### `sgs/data-display`
+_SGS Data Display_
+
+**Type:** Dynamic
+
+Container for visualisation sub-blocks driven by a shared SGS data source.
+
+**Attributes** (5):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `defaultDataSourceId` | `number` | `0` | — |
+| `displayDescription` | `string` | `""` | — |
+| `displayTitle` | `string` | `""` | — |
+| `layout` | `string (enum)` | `"single"` | — |
+| `refreshOverride` | `string (enum)` | `"inherit"` | — |
+
+**Supports:**
+- `__experimentalBorder` ({"radius": true, "width": t...), `align` (["wide", "full"]), `anchor`, `color` ({"background": true, "text"...), `html` (false), `spacing` ({"margin": true, "padding":...), `typography` ({"fontSize": true, "lineHei...)
+
+---
+
 ### `sgs/decorative-image`
 _SGS Decorative Image_
 
@@ -739,10 +778,11 @@ _SGS Decorative Image_
 
 Absolute-positioned decorative image that floats freely over sections. Used for organic, editorial-style design with optional parallax scroll effects.
 
-**Attributes** (24):
+**Attributes** (29):
 
 | Name | Type | Default | Responsive |
 |------|------|---------|------------|
+| `decorMedia` | `object` | `—` | — |
 | `fadeOnScroll` | `boolean` | `false` | — |
 | `flipX` | `boolean` | `false` | — |
 | `hideOnMobile` | `boolean` | `false` | — |
@@ -754,6 +794,10 @@ Absolute-positioned decorative image that floats freely over sections. Used for 
 | `opacity` | `number` | `85` | — |
 | `overflow` | `string` | `"visible"` | — |
 | `parallaxStrength` | `number` | `0` | — |
+| `pathDrawDurationMs` | `number` | `1500` | — |
+| `pathDrawEasing` | `string` | `"ease-out"` | — |
+| `pathDrawOnScroll` | `boolean` | `false` | — |
+| `pathDrawTriggerOffset` | `number` | `20` | — |
 | `positionX` | `number` | `50` | Yes |
 | `positionXMobile` | `number` | `—` | — |
 | `positionXTablet` | `number` | `—` | — |
@@ -769,7 +813,7 @@ Absolute-positioned decorative image that floats freely over sections. Used for 
 | `zIndex` | `number` | `1` | — |
 
 **Supports:**
-- `anchor`, `html` (false)
+- `anchor`, `html` (false), `sgs` ({"imageControls": true})
 
 ---
 
@@ -780,7 +824,7 @@ _SGS Image Gallery_
 
 Image gallery with grid, masonry, and carousel layouts plus lightbox viewing.
 
-**Attributes** (29):
+**Attributes** (30):
 
 | Name | Type | Default | Responsive |
 |------|------|---------|------------|
@@ -806,6 +850,7 @@ Image gallery with grid, masonry, and carousel layouts plus lightbox viewing.
 | `imageSize` | `string` | `"large"` | — |
 | `images` | `array` | `[]` | — |
 | `layout` | `string (enum)` | `"grid"` | — |
+| `mediaItems` | `array` | `[]` | — |
 | `sgsAnimation` | `string` | `"fade-in"` | — |
 | `sgsAnimationDuration` | `string` | `"medium"` | — |
 | `sgsAnimationEasing` | `string` | `"ease-out"` | — |
@@ -815,7 +860,7 @@ Image gallery with grid, masonry, and carousel layouts plus lightbox viewing.
 | `transitionEasing` | `string` | `"ease"` | — |
 
 **Supports:**
-- `__experimentalBorder` ({"radius": true, "width": t...), `align` (["wide", "full"]), `anchor`, `color` ({"background": true, "text"...), `html` (false), `interactivity`, `spacing` ({"margin": true, "padding":...)
+- `__experimentalBorder` ({"radius": true, "width": t...), `align` (["wide", "full"]), `anchor`, `color` ({"background": true, "text"...), `html` (false), `interactivity`, `sgs` ({"imageControls": true}), `spacing` ({"margin": true, "padding":...)
 
 **Selectors:**
 
@@ -933,7 +978,7 @@ _SGS Icon_
 
 Standalone SVG icon with size, colour, background, and optional link.
 
-**Attributes** (10):
+**Attributes** (11):
 
 | Name | Type | Default | Responsive |
 |------|------|---------|------------|
@@ -943,6 +988,7 @@ Standalone SVG icon with size, colour, background, and optional link.
 | `hoverScale` | `number` | `1.1` | — |
 | `icon` | `string` | `"star"` | — |
 | `iconColour` | `string` | `"primary"` | — |
+| `iconValue` | `object` | `—` | — |
 | `link` | `string` | `""` | — |
 | `linkLabel` | `string` | `""` | — |
 | `linkOpensNewTab` | `boolean` | `false` | — |
@@ -966,7 +1012,7 @@ _SGS Icon Block_
 
 DEPRECATED — use sgs/icon instead. Kept registered so existing posts continue to parse. Hidden from the block inserter.
 
-**Attributes** (11):
+**Attributes** (12):
 
 | Name | Type | Default | Responsive |
 |------|------|---------|------------|
@@ -974,6 +1020,7 @@ DEPRECATED — use sgs/icon instead. Kept registered so existing posts continue 
 | `icon` | `string` | `"star"` | — |
 | `iconColour` | `string` | `"primary"` | — |
 | `iconSize` | `number` | `48` | — |
+| `iconValue` | `object` | `—` | — |
 | `link` | `string` | `""` | — |
 | `linkLabel` | `string` | `""` | — |
 | `linkOpensNewTab` | `boolean` | `false` | — |
@@ -1000,16 +1047,32 @@ _SGS Icon List_
 
 List with custom icons or checkmarks per item.
 
-**Attributes** (7):
+**Attributes** (23):
 
 | Name | Type | Default | Responsive |
 |------|------|---------|------------|
+| `bulletChar` | `string` | `"\u2022"` | — |
 | `dividers` | `boolean` | `false` | — |
+| `emojiChar` | `string` | `"\ud83d\udd25"` | — |
 | `gap` | `string` | `"20"` | — |
 | `icon` | `string` | `"check"` | — |
 | `iconColour` | `string` | `"primary"` | — |
 | `iconSize` | `string` | `"medium"` | — |
 | `items` | `array` | `[{"icon": "check", "text": "First lis...` | — |
+| `letterCase` | `string` | `"upper"` | — |
+| `markerPattern` | `array` | `[{"type": "icon", "value": "check"}]` | — |
+| `markerType` | `string` | `"icon"` | — |
+| `mode` | `string` | `"normal"` | — |
+| `numberStyle` | `string` | `"arabic"` | — |
+| `subBulletChar` | `string` | `"\u25e6"` | — |
+| `subEmojiChar` | `string` | `"\ud83d\udd38"` | — |
+| `subIcon` | `string` | `"dot"` | — |
+| `subIndent` | `number` | `24` | — |
+| `subLetterCase` | `string` | `"lower"` | — |
+| `subMarkerPattern` | `array` | `[{"type": "icon", "value": "dot"}]` | — |
+| `subMarkerType` | `string` | `"inherit"` | — |
+| `subMode` | `string` | `"inherit"` | — |
+| `subNumberStyle` | `string` | `"arabic"` | — |
 | `textColour` | `string` | `"text"` | — |
 
 **Supports:**
@@ -1031,12 +1094,13 @@ _SGS Info Box_
 
 Feature or benefit card with 5 toggleable, reorderable elements: media, title, subtitle, text, and button.
 
-**Attributes** (52):
+**Attributes** (54):
 
 | Name | Type | Default | Responsive |
 |------|------|---------|------------|
 | `blockLink` | `string` | `""` | — |
 | `blockLinkTarget` | `boolean` | `false` | — |
+| `boxMedia` | `object` | `—` | — |
 | `cardStyle` | `string` | `"elevated"` | — |
 | `description` | `string` | `""` | — |
 | `descriptionColour` | `string` | `"text"` | — |
@@ -1061,6 +1125,7 @@ Feature or benefit card with 5 toggleable, reorderable elements: media, title, s
 | `iconSize` | `string` | `"medium"` | Yes |
 | `iconSizeMobile` | `string` | `""` | — |
 | `iconSizeTablet` | `string` | `""` | — |
+| `iconValue` | `object` | `—` | — |
 | `image` | `object` | `—` | — |
 | `letterSpacing` | `string` | `""` | — |
 | `link` | `string` | `—` | — |
@@ -1089,7 +1154,7 @@ Feature or benefit card with 5 toggleable, reorderable elements: media, title, s
 | `transitionEasing` | `string` | `"ease-in-out"` | — |
 
 **Supports:**
-- `__experimentalBorder` ({"radius": true, "width": t...), `align` (false), `anchor`, `color` ({"background": true, "text"...), `html` (false), `shadow`, `spacing` ({"margin": true, "padding":...), `typography` ({"fontSize": true, "lineHei...)
+- `__experimentalBorder` ({"radius": true, "width": t...), `align` (false), `anchor`, `color` ({"background": true, "text"...), `html` (false), `sgs` ({"imageControls": true}), `shadow`, `spacing` ({"margin": true, "padding":...), `typography` ({"fontSize": true, "lineHei...)
 
 **Selectors:**
 
@@ -1097,6 +1162,66 @@ Feature or benefit card with 5 toggleable, reorderable elements: media, title, s
 |---------|----------|
 | `root` | `.wp-block-sgs-info-box` |
 | `typography` | `.sgs-info-box__heading` |
+
+---
+
+### `sgs/media`
+_SGS Media_
+
+**Type:** Dynamic
+
+Absolute-positioned decorative image or video that floats freely over sections. Used for organic, editorial-style design with optional parallax scroll effects. Accepts images or local/embedded videos.
+
+**Attributes** (43):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `decorMedia` | `object` | `—` | — |
+| `fadeOnScroll` | `boolean` | `false` | — |
+| `flipX` | `boolean` | `false` | — |
+| `hideOnMobile` | `boolean` | `false` | — |
+| `hideOnTablet` | `boolean` | `false` | — |
+| `imageAlt` | `string` | `""` | — |
+| `imageId` | `number` | `—` | — |
+| `imageUrl` | `string` | `—` | — |
+| `maxWidthPercent` | `number` | `20` | — |
+| `mediaType` | `string` | `"image"` | — |
+| `opacity` | `number` | `85` | — |
+| `overflow` | `string` | `"visible"` | — |
+| `parallaxStrength` | `number` | `0` | — |
+| `pathDrawDurationMs` | `number` | `1500` | — |
+| `pathDrawEasing` | `string` | `"ease-out"` | — |
+| `pathDrawOnScroll` | `boolean` | `false` | — |
+| `pathDrawTriggerOffset` | `number` | `20` | — |
+| `playbackMode` | `string` | `"autoplay-no-ui"` | — |
+| `positionX` | `number` | `50` | Yes |
+| `positionXMobile` | `number` | `—` | — |
+| `positionXTablet` | `number` | `—` | — |
+| `positionY` | `number` | `50` | Yes |
+| `positionYMobile` | `number` | `—` | — |
+| `positionYTablet` | `number` | `—` | — |
+| `rotation` | `number` | `0` | Yes |
+| `rotationMobile` | `number` | `—` | — |
+| `rotationTablet` | `number` | `—` | — |
+| `videoAlt` | `string` | `""` | — |
+| `videoAttachmentId` | `number` | `0` | — |
+| `videoAutoplay` | `boolean` | `true` | — |
+| `videoControls` | `boolean` | `false` | — |
+| `videoLazyLoad` | `boolean` | `true` | — |
+| `videoLoop` | `boolean` | `true` | — |
+| `videoMuted` | `boolean` | `true` | — |
+| `videoPosterAttachmentId` | `number` | `0` | — |
+| `videoPosterUrl` | `string` | `""` | — |
+| `videoSchema` | `boolean` | `true` | — |
+| `videoSource` | `string` | `"local"` | — |
+| `videoUrl` | `string` | `""` | — |
+| `width` | `number` | `200` | Yes |
+| `widthMobile` | `number` | `—` | — |
+| `widthTablet` | `number` | `—` | — |
+| `zIndex` | `number` | `1` | — |
+
+**Supports:**
+- `anchor`, `html` (false), `sgs` ({"mediaControls": true})
 
 ---
 
@@ -1138,10 +1263,11 @@ _SGS Notice Banner_
 
 Inline informational banner for contextual messages like minimum order values, delivery terms, or promotional notices.
 
-**Attributes** (6):
+**Attributes** (7):
 
 | Name | Type | Default | Responsive |
 |------|------|---------|------------|
+| `customIcon` | `object` | `{"source": "", "value": "", "label": ""}` | — |
 | `dismissible` | `boolean` | `false` | — |
 | `icon` | `string` | `"info"` | — |
 | `text` | `string` | `—` | — |
@@ -1168,11 +1294,12 @@ _SGS Post Grid_
 
 Display posts in grid, list, masonry, or carousel layouts with AJAX filtering and pagination.
 
-**Attributes** (52):
+**Attributes** (58):
 
 | Name | Type | Default | Responsive |
 |------|------|---------|------------|
 | `aspectRatio` | `string` | `"16/10"` | — |
+| `author` | `number` | `0` | — |
 | `cardBgColour` | `string` | `"surface"` | — |
 | `cardStyle` | `string (enum)` | `"card"` | — |
 | `carouselAutoplay` | `boolean` | `false` | — |
@@ -1187,6 +1314,7 @@ Display posts in grid, list, masonry, or carousel layouts with AJAX filtering an
 | `columnsTablet` | `number` | `2` | — |
 | `excerptColour` | `string` | `"text"` | — |
 | `excerptLength` | `number` | `20` | — |
+| `exclude` | `array` | `[]` | — |
 | `excludeCurrent` | `boolean` | `true` | — |
 | `filterTaxonomy` | `string` | `"category"` | — |
 | `gap` | `string` | `"30"` | — |
@@ -1197,8 +1325,10 @@ Display posts in grid, list, masonry, or carousel layouts with AJAX filtering an
 | `hoverShadow` | `string` | `""` | — |
 | `hoverTextColour` | `string` | `—` | — |
 | `imageSize` | `string` | `"medium_large"` | — |
+| `inherit` | `boolean` | `false` | — |
 | `layout` | `string (enum)` | `"grid"` | — |
 | `metaColour` | `string` | `"text-muted"` | — |
+| `namespace` | `string` | `""` | — |
 | `offset` | `number` | `0` | — |
 | `order` | `string` | `"desc"` | — |
 | `orderBy` | `string` | `"date"` | — |
@@ -1207,6 +1337,7 @@ Display posts in grid, list, masonry, or carousel layouts with AJAX filtering an
 | `postsPerPage` | `number` | `6` | — |
 | `readMoreColour` | `string` | `"primary"` | — |
 | `readMoreText` | `string` | `"Read more"` | — |
+| `search` | `string` | `""` | — |
 | `sgsAnimation` | `string` | `"fade-up"` | — |
 | `sgsAnimationDuration` | `string` | `"medium"` | — |
 | `sgsAnimationEasing` | `string` | `"ease-out"` | — |
@@ -1220,6 +1351,7 @@ Display posts in grid, list, masonry, or carousel layouts with AJAX filtering an
 | `showTitle` | `boolean` | `true` | — |
 | `staggerDelay` | `number` | `60` | — |
 | `tags` | `array` | `[]` | — |
+| `taxQuery` | `object` | `{}` | — |
 | `titleColour` | `string` | `"primary"` | — |
 | `titleFontSize` | `string` | `—` | — |
 | `transitionDuration` | `string` | `"300"` | — |
@@ -1456,7 +1588,7 @@ _SGS Team Member_
 
 Team member card with photo, name, role, bio, and social links.
 
-**Attributes** (32):
+**Attributes** (33):
 
 | Name | Type | Default | Responsive |
 |------|------|---------|------------|
@@ -1469,6 +1601,7 @@ Team member card with photo, name, role, bio, and social links.
 | `hoverOverlay` | `boolean` | `false` | — |
 | `hoverScale` | `string` | `""` | — |
 | `hoverShadow` | `string` | `""` | — |
+| `memberMedia` | `object` | `—` | — |
 | `name` | `string` | `""` | — |
 | `nameColour` | `string` | `"primary"` | — |
 | `photo` | `object` | `—` | — |
@@ -1494,7 +1627,7 @@ Team member card with photo, name, role, bio, and social links.
 | `transitionEasing` | `string` | `"ease-in-out"` | — |
 
 **Supports:**
-- `__experimentalBorder` ({"radius": true, "width": t...), `align` (false), `anchor`, `color` ({"background": true, "text"...), `html` (false), `spacing` ({"margin": true, "padding":...), `typography` ({"fontSize": true, "textAli...)
+- `__experimentalBorder` ({"radius": true, "width": t...), `align` (false), `anchor`, `color` ({"background": true, "text"...), `html` (false), `sgs` ({"imageControls": true}), `spacing` ({"margin": true, "padding":...), `typography` ({"fontSize": true, "textAli...)
 
 **Selectors:**
 
@@ -1508,14 +1641,15 @@ Team member card with photo, name, role, bio, and social links.
 ### `sgs/testimonial`
 _SGS Testimonial_
 
-**Type:** Static
+**Type:** Dynamic
 
 Single testimonial card with quote, name, role, optional avatar, and star rating.
 
-**Attributes** (28):
+**Attributes** (29):
 
 | Name | Type | Default | Responsive |
 |------|------|---------|------------|
+| `authorMedia` | `object` | `—` | — |
 | `avatar` | `object` | `—` | — |
 | `hoverBackgroundColour` | `string` | `""` | — |
 | `hoverBorderColour` | `string` | `""` | — |
@@ -1546,7 +1680,7 @@ Single testimonial card with quote, name, role, optional avatar, and star rating
 | `transitionEasing` | `string` | `"ease-in-out"` | — |
 
 **Supports:**
-- `__experimentalBorder` ({"radius": true, "width": t...), `align` (false), `anchor`, `color` ({"background": true, "text"...), `html` (false), `shadow`, `spacing` ({"margin": true, "padding":...), `typography` ({"fontSize": true, "lineHei...)
+- `__experimentalBorder` ({"radius": true, "width": t...), `align` (false), `anchor`, `color` ({"background": true, "text"...), `html` (false), `sgs` ({"imageControls": true}), `shadow`, `spacing` ({"margin": true, "padding":...), `typography` ({"fontSize": true, "lineHei...)
 
 **Selectors:**
 
@@ -1672,6 +1806,58 @@ Horizontal strip of key stats and trust signals with animated number counters. G
 
 ---
 
+### `sgs/trustpilot-reviews`
+_SGS Trustpilot Reviews_
+
+**Type:** Dynamic
+
+Display Trustpilot reviews in the official Trustpilot visual style. Reviews can be entered manually or synced from a Trustpilot business profile (sync available in next-session build).
+
+**Attributes** (29):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `autoplay` | `boolean` | `false` | — |
+| `autoplaySpeed` | `number` | `5000` | — |
+| `businessUnitUrl` | `string` | `""` | — |
+| `cardStyle` | `string (enum)` | `"elevated"` | — |
+| `columns` | `number` | `3` | Yes |
+| `columnsMobile` | `number` | `1` | — |
+| `columnsTablet` | `number` | `2` | — |
+| `dataSource` | `string (enum)` | `"inline"` | — |
+| `reviews` | `array` | `[]` | — |
+| `reviewsAverage` | `number` | `0` | — |
+| `sgsAnimation` | `string` | `"fade-up"` | — |
+| `sgsAnimationDuration` | `string` | `"medium"` | — |
+| `sgsAnimationEasing` | `string` | `"ease-out"` | — |
+| `showArrows` | `boolean` | `true` | — |
+| `showAuthor` | `boolean` | `true` | — |
+| `showDate` | `boolean` | `true` | — |
+| `showDots` | `boolean` | `false` | — |
+| `showSchema` | `boolean` | `true` | — |
+| `showSourceHeader` | `boolean` | `true` | — |
+| `showSubtitle` | `boolean` | `false` | — |
+| `showTrustpilotLogo` | `boolean` | `true` | — |
+| `showVerifiedBadge` | `boolean` | `true` | — |
+| `staggerDelay` | `number` | `60` | — |
+| `subtitleText` | `string` | `"Showing our latest reviews"` | — |
+| `theme` | `string (enum)` | `"light"` | — |
+| `totalReviews` | `number` | `0` | — |
+| `trustScore` | `number` | `0` | — |
+| `trustScoreLabel` | `string` | `""` | — |
+| `variant` | `string (enum)` | `"carousel"` | — |
+
+**Supports:**
+- `align` (["wide", "full"]), `anchor`, `className`, `color` ({"background": true, "text"...), `html` (false), `interactivity`, `sgs` ({"imageControls": false})
+
+**Selectors:**
+
+| Element | Selector |
+|---------|----------|
+| `root` | `.wp-block-sgs-trustpilot-reviews` |
+
+---
+
 ### `sgs/whatsapp-cta`
 _SGS WhatsApp CTA_
 
@@ -1679,11 +1865,12 @@ _SGS WhatsApp CTA_
 
 WhatsApp integration with floating button, inline CTA, or banner variants.
 
-**Attributes** (9):
+**Attributes** (10):
 
 | Name | Type | Default | Responsive |
 |------|------|---------|------------|
 | `backgroundColour` | `string` | `"whatsapp"` | — |
+| `iconOverride` | `object` | `{"source": "", "value": "", "label": ""}` | — |
 | `label` | `string` | `""` | — |
 | `labelColour` | `string` | `"text"` | — |
 | `labelFontSize` | `string` | `—` | — |
@@ -1714,10 +1901,14 @@ _SGS Form_
 
 Form wrapper with multi-step support, validation, and N8N webhook notifications.
 
-**Attributes** (16):
+**Attributes** (20):
 
 | Name | Type | Default | Responsive |
 |------|------|---------|------------|
+| `formFocusRingColour` | `string` | `"primary"` | — |
+| `formFocusRingOffset` | `number` | `2` | — |
+| `formFocusRingOpacity` | `number` | `40` | — |
+| `formFocusRingWidth` | `number` | `2` | — |
 | `formId` | `string` | `""` | — |
 | `formName` | `string` | `""` | — |
 | `honeypot` | `boolean` | `true` | — |
@@ -2329,10 +2520,11 @@ _SGS Mega Menu_
 
 Block-based mega menu with template part dropdowns. Works inside Navigation block.
 
-**Attributes** (17):
+**Attributes** (18):
 
 | Name | Type | Default | Responsive |
 |------|------|---------|------------|
+| `ariaLabel` | `string` | `""` | — |
 | `badge` | `string` | `—` | — |
 | `badgeColour` | `string` | `"accent"` | — |
 | `highlight` | `boolean` | `false` | — |
@@ -2369,7 +2561,7 @@ _Mobile Navigation_
 
 Full-screen mobile navigation drawer with accordion submenus, spring-physics animation, and swipe-to-close. Reads menu items from the header navigation block automatically.
 
-**Attributes** (76):
+**Attributes** (77):
 
 | Name | Type | Default | Responsive |
 |------|------|---------|------------|
@@ -2377,6 +2569,7 @@ Full-screen mobile navigation drawer with accordion submenus, spring-physics ani
 | `animationDuration` | `number` | `400` | — |
 | `animationEasing` | `string (enum)` | `"spring"` | — |
 | `animationPreset` | `string (enum)` | `"spring"` | — |
+| `ariaLabel` | `string` | `""` | — |
 | `backdropBlur` | `boolean` | `false` | — |
 | `backdropBlurAmount` | `number` | `8` | — |
 | `backdropColour` | `string` | `""` | — |
@@ -2573,7 +2766,7 @@ Tabbed content with horizontal or vertical layout, full ARIA support, and deep l
 
 ## Stats
 
-- **Total blocks:** 64
-- **Dynamic (render.php):** 56
-- **Static (save.js):** 8
-- **Total attributes:** 1207
+- **Total blocks:** 67
+- **Dynamic (render.php):** 60
+- **Static (save.js):** 7
+- **Total attributes:** 1343

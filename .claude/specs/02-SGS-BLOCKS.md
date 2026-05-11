@@ -984,6 +984,90 @@ const { state } = store( 'sgs/mega-menu', {
 
 ---
 
+### 26. Trustpilot Reviews (`sgs/trustpilot-reviews`)
+
+**Replaces:** Trustpilot's own WordPress plugin (free tier blocks all display widgets), Better Business Reviews, Trustindex, ReviewsOnMyWebsite.
+
+**Purpose:** Display Trustpilot reviews + TrustScore on the WP site. Self-hosted data (no third-party widget injection, no `<iframe>`, no off-site script). Schema.org JSON-LD output for SEO rich snippets. Brand identity locked (green stars, Verified badge, clickable Trustpilot logo) while typography inherits the host theme via `var(--wp--preset--font-family--body)` and `color: inherit`. Border + scale hover effects use `var(--wp--preset--color--primary)` so each site's primary token tints the interaction.
+
+**Competitive edge:** Trustpilot's free plan paywalls every display widget via their plugin — you only get the Review Collector. Scraper plugins introduce maintenance dependencies + TOS grey area + documented "almost ban" incidents (per the research-buddies session that informed this design). First-party SGS block + dedicated sync infrastructure (block #26 + Backend Integration below) keeps brand identity locked while letting the cards live in the host site visually.
+
+**Variants:**
+- `carousel` — Looping horizontal carousel (next on last wraps to first) — DEFAULT
+- `grid` — Responsive CSS Grid (3 / 2 / 1 default columns)
+- `list` — Vertical stacked
+- `badge` — Compact aggregate TrustScore badge
+- `floating-badge` — Fixed-position TrustScore badge
+
+**Attributes (~50 total — see auto-generated `02-SGS-BLOCKS-REFERENCE.md` for the full schema):**
+- `variant` — carousel | grid | list | badge | floating-badge (default: carousel)
+- `dataSource` — inline | synced | placeholder (default: placeholder for editor preview; `synced` reads from `wp_options[sgs_trustpilot_data]` populated by the SGS Trustpilot Sync infrastructure)
+- `businessUnitUrl` — string (Trustpilot business URL, e.g. `https://uk.trustpilot.com/review/example.com`)
+- `reviews` — array of `{ author, rating, datePublished, reviewBody, isVerified, title? }` (used in `inline` mode only)
+- `trustScore` — float 0-5 (auto-derived from synced data)
+- `trustScoreLabel` — Excellent | Great | Good | Average | Poor | Bad (derived via `sgs_trustpilot_score_label()`)
+- `totalReviews` — integer
+- `reviewsAverage` — float (mean of visible review ratings)
+- `columns` / `columnsTablet` / `columnsMobile` — defaults 3 / 2 / 1
+- `showSourceHeader` — boolean (white pill tablet header with logo + score + label + count)
+- `showSubtitle` — boolean (default: false — "Showing our latest reviews" suppressed by default)
+- `showTrustpilotLogo` — boolean (default: true — clickable, links to source_url)
+- `showVerifiedBadge` — boolean
+- `showDate` — boolean (relative time via `sgs_trustpilot_relative_date()`)
+- `showAuthor` — boolean
+- `showSchema` — boolean (Schema.org JSON-LD emission, default: true)
+- `theme` — light | dark (default: light)
+- `cardStyle` — flat | bordered | elevated (default: elevated)
+- `autoplay` / `autoplaySpeed` / `showDots` / `showArrows` — carousel controls
+
+**Backend Integration — SGS Trustpilot Sync (shipped 2026-05-11 commit `06df2807`):**
+- Admin page at WP Admin > Settings > SGS Trustpilot Sync — Business URL, Off / Weekly / Daily auto-sync, Browser provider (SGS shared service placeholder OR custom Browserless endpoint), Sync-now button, last_sync_status badge, activity log of last 5 sync attempts, inline setup checklist + Browserless signup link.
+- 4 backend classes at `plugins/sgs-blocks/includes/trustpilot/`:
+  - `Trustpilot_Sync` — Browserless POST, JSON-LD parser, AES-256-CBC token encryption (`wp_salt('auth')` keyed, same pattern as `sgs/google-reviews`)
+  - `Trustpilot_REST` — `POST /wp-json/sgs/v1/trustpilot-sync`, `manage_options` gated, single entry for both Sync-now and cron
+  - `Trustpilot_Cron` — `sgs_trustpilot_sync_event` weekly/daily, registered from the settings sanitiser
+  - `Trustpilot_Settings` — Settings API page with options group `sgs_trustpilot_sync_group`
+- Sync-now JS at `plugins/sgs-blocks/assets/admin/trustpilot-sync.js` — wp.apiFetch + X-WP-Nonce
+- Schema written to `wp_options[sgs_trustpilot_data]` matches the reference at `sites/mamas-munches/research/trustpilot-reviews.json`:
+  ```
+  { source_url, captured_at, trust_score, trust_score_label, reviews_average,
+    review_count, reviews: [{ author, rating, datePublished, reviewBody, isVerified }, ...] }
+  ```
+
+**Browserless integration:**
+- Endpoint: `https://production-sfo.browserless.io/content` (REST API; the `/scrape` and BrowserQL endpoints are not used)
+- Auth: `?token=<key>` query string — `Authorization: Bearer` returns HTTP 500 on this endpoint (captured as architectural lesson, blub.db row 238)
+- Request: POST `{ url: <trustpilot-url>, waitForTimeout: 3000 }`
+- Returns rendered HTML (~845KB for a low-traffic page)
+- Free tier: 6 hours/month, ample for one weekly scrape per site
+- Direct `wp_remote_get` fallback exists but Trustpilot returns HTTP 403 on server-side fetches without a real browser
+
+**JSON-LD parsing:**
+- Trustpilot embeds review data in `<script type="application/ld+json">` blocks with an `@graph` array of mixed entity types
+- `LocalBusiness.review[]` holds `{ "@id": "..." }` pointers, NOT inline review entities
+- Standalone `Review` entities live as siblings in `@graph`
+- Parser harvests standalone `Review` entities directly (initial implementation only walked the LocalBusiness pointer array and dropped all reviews — fix landed mid-build)
+
+**Schema.org Markup:**
+Same as Google Reviews — emits `LocalBusiness` with `aggregateRating` + nested `Review` entities. Output as `<script type="application/ld+json">` in render.php — enables Google rich snippets.
+
+**Render:** Dynamic `render.php` reads from block attributes (inline) or `wp_options` (synced) or falls back to placeholder demo content for editor preview. Carousel variant uses `viewScriptModule` for the looping scroll behaviour + prefers-reduced-motion respect.
+
+**Operator self-serve setup:**
+1. Install plugin + theme.
+2. Visit Settings > SGS Trustpilot Sync.
+3. Paste Trustpilot business URL.
+4. Pick Weekly auto-sync.
+5. Sign up at https://www.browserless.io/sign-up (free tier), pick REST APIs, copy API key.
+6. Set provider to "Use my own Browserless instance", paste endpoint + key.
+7. Save -> weekly cron registers automatically.
+8. Click Sync now -> wp_options populates in ~3 seconds.
+9. Insert the block anywhere with `dataSource: synced`.
+
+**Visual proof:** Live on sandybrown at `/trustpilot-smoke-test-2/`. Mama's 4 reviews (TrustScore 4.0 "Great") render via the synced path. Visual diff reports: `reports/visual-diff/trustpilot-reviews-2026-05-11.md` (block) + `reports/visual-diff/trustpilot-sync-2026-05-11.md` (sync infrastructure).
+
+---
+
 ## Shared Features Across All Blocks
 
 ### Responsive Controls

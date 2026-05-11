@@ -150,12 +150,12 @@ Full README at `plugins/sgs-blocks/scripts/uimax-tools/README.md`.
 
 The primary client onboarding workflow. Takes any existing website and replicates it using SGS blocks — everything through editor attributes, zero hardcoding. Methodology at `~/.claude/skills/sgs-wp-engine/references/fidelity-comparator.md`.
 
-## Framework Stats (as of 2026-05-11)
+## Framework Stats (as of 2026-05-11, post /sgs-update full rescan)
 
-- **57 blocks** (25 content, 14 forms, 7 interactive, 4 layout, 4 extensions, 2 review-source -- google-reviews + trustpilot-reviews; trustpilot-reviews added 2026-05-11)
-- **619 block attributes** — all controllable via editor sidebar
-- **7 style variations** — indus-foods, helping-doctors, healthcare, construction, professional, mosque, eye-care
-- **25 patterns**, 25 design tokens, 22 theme templates/parts
+- **67 blocks** total (60 dynamic + 7 static per `02-SGS-BLOCKS-REFERENCE.md`). Includes 2 review-source blocks — google-reviews + trustpilot-reviews. Trustpilot Sync backend infrastructure (Settings > SGS Trustpilot Sync) shipped 2026-05-11 commit `06df2807`.
+- **1343 block attributes** — all controllable via editor sidebar
+- **8 style variations** — indus-foods, helping-doctors, healthcare, construction, professional, mosque, eye-care, mamas-munches (added 2026-04-30)
+- **35 patterns**, 28 design tokens, 22 theme templates/parts (DB scan 2026-05-11)
 - **Competitive analysis:** `~/.claude/specs/2026-03-17-wp-competitive-analysis.md`
 
 ## Spec Documents
