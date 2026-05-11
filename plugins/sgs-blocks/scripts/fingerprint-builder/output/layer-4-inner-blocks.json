@@ -1533,51 +1533,6 @@
     },
     {
       "block_slugs": [
-        "sgs/mobile-nav-toggle",
-        "sgs/mobile-nav"
-      ],
-      "composition_id": 168,
-      "composition_name": "Mamas Munches Header",
-      "description": "",
-      "equivalent_implementations": {
-        "bootstrap": {
-          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
-          "is_gap_candidate": true,
-          "markup": null
-        },
-        "html_css": {
-          "is_gap_candidate": false,
-          "markup": "<div class=\"sgs-mobile-nav-toggle\"></div>\n<div class=\"sgs-mobile-nav\"></div>"
-        },
-        "react_generic": {
-          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
-          "is_gap_candidate": true,
-          "markup": null
-        },
-        "sgs": {
-          "block_slugs": [
-            "sgs/mobile-nav-toggle",
-            "sgs/mobile-nav"
-          ],
-          "is_gap_candidate": false
-        },
-        "shadcn": {
-          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
-          "is_gap_candidate": true,
-          "markup": null
-        },
-        "tailwind": {
-          "gap_reason": "not-yet-mapped; surface via /uimax-sgs-scrape-pattern",
-          "is_gap_candidate": true,
-          "markup": null
-        }
-      },
-      "industry": null,
-      "page_type": null,
-      "pattern_slug": "sgs/header-mamas-munches"
-    },
-    {
-      "block_slugs": [
         "group",
         "group",
         "site-logo",
@@ -2503,7 +2458,7 @@
       "pattern_slug": "sgs/testimonials-large"
     }
   ],
-  "entry_count": 38,
+  "entry_count": 37,
   "generated_at": "phase-3-initial-build",
   "schema_version": 1,
   "source": "sgs-framework.db block_compositions table"

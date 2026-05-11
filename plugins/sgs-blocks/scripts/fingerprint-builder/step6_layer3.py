@@ -212,16 +212,146 @@ SUFFIX_ROLE_RULES.extend(EXTRA_SUFFIX_RULES)
 
 _BREAKPOINT_RE = re.compile(r'(Mobile|Tablet|Desktop)$')
 
+# Exact-name matches for standalone attributes (no camelCase prefix).
+# Captures the top frequency unmapped patterns from real block.json data.
+EXACT_NAME_ROLES: dict[str, str] = {
+    # Form-field configuration
+    'placeholder':       'text-content',
+    'helpText':          'text-content',
+    'required':          'boolean-visibility',
+    'conditionalField':  'enum-class-probe',
+    'conditionalOperator': 'enum-class-probe',
+    'conditionalValue':  'text-content',
+    'fieldName':         'text-content',
+    'errorMessage':      'text-content',
+    'options':           'query-descriptor',
+    'allowedTypes':      'enum-class-probe',
+    # Layout / structure
+    'columns':           'number-css-px',
+    'rows':              'number-css-px',
+    'items':             'query-descriptor',
+    'count':             'number-css-px',
+    'gap':               'spacing-token',
+    'separator':         'boolean-visibility',
+    'shape':             'enum-class-probe',
+    'size':              'enum-class-probe',
+    'aspectRatio':       'enum-class-probe',
+    'position':          'enum-class-probe',
+    'alignItems':        'enum-class-probe',
+    'justifyContent':    'enum-class-probe',
+    'flexDirection':     'enum-class-probe',
+    'gridTemplateColumns': 'enum-class-probe',
+    'verticalAlignment': 'enum-class-probe',
+    # Visual / media
+    'icon':              'text-content',
+    'iconSize':          'number-css-px',
+    'iconName':          'text-content',
+    'opacity':           'number-css-percent',
+    'avatar':            'image-object',
+    'image':             'image-object',
+    'video':             'image-object',
+    'svg':               'text-content',
+    'svgContent':        'richtext-content',
+    'backdropBlur':      'boolean-visibility',
+    'backdropBlurAmount': 'number-css-px',
+    'backdropOpacity':   'number-css-percent',
+    'badges':            'query-descriptor',
+    'badge':             'text-content',
+    'backgroundImage':   'image-object',
+    'backgroundMedia':   'image-object',
+    'backgroundVideo':   'image-object',
+    'backgroundShape':   'enum-class-probe',
+    'backgroundOverlayOpacity': 'number-css-percent',
+    'backgroundImageOpacity': 'number-css-percent',
+    'overlayColour':     'colour-bg',
+    'overlayOpacity':    'number-css-percent',
+    # Hover effects
+    'hoverImageZoom':    'boolean-visibility',
+    'hoverGrayscale':    'boolean-visibility',
+    'hoverScale':        'number-css-percent',
+    # Animation
+    'animation':         'select-from-enum',
+    'animationType':     'select-from-enum',
+    'animationPreset':   'select-from-enum',
+    'animationDuration': 'transition-preset',
+    'animationEasing':   'transition-preset',
+    'animationSpeed':    'transition-preset',
+    'staggerDelay':      'transition-preset',
+    'scrollEffect':      'select-from-enum',
+    # Content + links
+    'link':              'link-href',
+    'url':               'link-href',
+    'linkOpensNewTab':   'boolean-visibility',
+    'blockLinkTarget':   'enum-class-probe',
+    'body':              'richtext-content',
+    'heading':           'text-content',
+    'subheading':        'text-content',
+    'description':       'richtext-content',
+    'caption':           'text-content',
+    'content':           'richtext-content',
+    'text':              'text-content',
+    'title':             'text-content',
+    'subtitle':          'text-content',
+    'label':             'text-content',
+    'name':              'text-content',
+    'role':              'text-content',
+    'bio':               'richtext-content',
+    'author':            'text-content',
+    'date':              'text-content',
+    # Carousel / behaviour toggles
+    'autoplay':          'boolean-visibility',
+    'autoplaySpeed':     'transition-preset',
+    'dismissible':       'boolean-visibility',
+    'carouselShowArrows': 'boolean-visibility',
+    'carouselShowDots':   'boolean-visibility',
+    'showLightbox':      'boolean-visibility',
+    # Pricing / variants
+    'billingToggle':     'boolean-visibility',
+    'tier':              'enum-class-probe',
+    'price':             'text-content',
+    # Misc
+    'anchor':            'text-content',
+    'tag':               'enum-class-probe',
+    'tagName':           'enum-class-probe',
+    'level':             'enum-class-probe',
+    'order':             'enum-class-probe',
+    'direction':         'enum-class-probe',
+    'variant':           'enum-class-probe',
+    'style':             'enum-class-probe',
+    'layout':            'enum-class-probe',
+    'alignment':         'enum-class-probe',
+    'accentStroke':      'colour-text',
+}
+
+
+# Type-based fallback — every attribute should have at least a type-derived role
+# so P4 extract.py has a dispatch instruction. Block-specific custom attributes
+# get one of these defaults; P4 may override per-block where the default is wrong.
+TYPE_FALLBACK_ROLES: dict[str, str] = {
+    'string':  'text-content',
+    'number':  'number-css-px',
+    'integer': 'number-css-px',
+    'boolean': 'boolean-visibility',
+    'array':   'query-descriptor',
+    'object':  'query-descriptor',
+}
+
 
 def classify_role_by_suffix(attr_name: str) -> str | None:
     """Match a known suffix. Strip Mobile/Tablet/Desktop first so the base
     suffix (FontSize, Padding, etc.) is reachable for the rule table.
     """
-    base = _BREAKPOINT_RE.sub('', attr_name) or attr_name
+    # 1. Exact-name match (handles helpText, placeholder, columns, icon, etc.)
+    base_breakpointless = _BREAKPOINT_RE.sub('', attr_name) or attr_name
+    if attr_name in EXACT_NAME_ROLES:
+        return EXACT_NAME_ROLES[attr_name]
+    if base_breakpointless in EXACT_NAME_ROLES:
+        return EXACT_NAME_ROLES[base_breakpointless]
+    # 2. Camel-case suffix match
     for suffix, role in SUFFIX_ROLE_RULES:
-        if base.endswith(suffix):
+        if base_breakpointless.endswith(suffix):
             return role
-    # Boolean prefix fallback: is*/has*/show*/hide*/enable*/disable*/allow*
+    # 3. Boolean prefix fallback
     BOOL_PREFIXES = ('is', 'has', 'show', 'hide', 'enable', 'disable', 'allow', 'auto')
     for pref in BOOL_PREFIXES:
         if attr_name.startswith(pref) and len(attr_name) > len(pref):
@@ -343,10 +473,24 @@ def build_block_entry(
             continue  # `_comment_*` placeholders in block.json
         attr_meta = attrs[attr_name] or {}
         role = role_lookup.get(attr_name)
+        role_source = 'role-templates-exact' if role else None
         if role is None:
-            # Suffix-pattern classifier (covers `headlineColour`, `xxxFontSize`,
-            # `xxxPaddingTop`, etc. via known CSS-property tokens in the tail).
+            # Exact-name + suffix-pattern + boolean-prefix classifier
             role = classify_role_by_suffix(attr_name)
+            if role:
+                role_source = 'suffix-classifier'
+        # Type-based fallback so every slot has a dispatch role for P4 extract.py
+        type_fallback_role = None
+        if role is None:
+            attr_type = attr_meta.get('type')
+            if isinstance(attr_type, str):
+                type_fallback_role = TYPE_FALLBACK_ROLES.get(attr_type)
+            elif isinstance(attr_type, list) and attr_type:
+                # `type: ["string", "number"]` etc — take first
+                type_fallback_role = TYPE_FALLBACK_ROLES.get(attr_type[0])
+            role = type_fallback_role
+            if role:
+                role_source = 'type-fallback'
 
         # Rule (a) — explicit selectors map in block.json
         if attr_name in explicit_selectors_map and isinstance(explicit_selectors_map[attr_name], str):
@@ -364,6 +508,7 @@ def build_block_entry(
             'selector': selector,
             'derivation': derivation,
             'role': role,
+            'role_source': role_source,
             'attribute_type': attr_meta.get('type'),
             'attribute_default': attr_meta.get('default'),
         }
@@ -464,7 +609,8 @@ def main() -> int:
     print(f'  total slots:      {total_slots}')
     print(f'  unmapped slots:   {total_unmapped}')
     print(f'  blocks missing block.json: {len(missing_bj)} {missing_bj}')
-    print(f'  role coverage:    {dict((k or "__unmapped__"), v) if False else {(k or "__unmapped__"): v for k, v in role_coverage.items()}}')
+    role_summary = {(k or '__unmapped__'): v for k, v in role_coverage.items()}
+    print(f'  role coverage:    {role_summary}')
     return 0
 
 

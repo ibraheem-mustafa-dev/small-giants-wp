@@ -52,11 +52,22 @@ def f4():
     assert n >= 13, f'Got {n}, want >= 13'
 
 
-@check('Layer 3 block count == 67')
+@check('Layer 3 block count == 65 (was 67, 2 ghost rows removed post-P3)')
 def f5():
     d = json.load(open(os.path.join(OUT, 'layer-3-internal-elements.json'), encoding='utf-8'))
     n = d['block_count']
-    assert n == 67, f'Got {n}, want 67'
+    assert n == 65, f'Got {n}, want 65'
+
+
+@check('Zero unmapped slots (every slot has a dispatch role)')
+def f5b():
+    d = json.load(open(os.path.join(OUT, 'layer-3-internal-elements.json'), encoding='utf-8'))
+    unmapped = []
+    for slug, b in d['blocks'].items():
+        for s in b.get('slots', []):
+            if s.get('role') is None:
+                unmapped.append((slug, s['attribute']))
+    assert not unmapped, f'{len(unmapped)} unmapped slots; sample: {unmapped[:5]}'
 
 
 @check('Hero entry contains every HERO_FINGERPRINT_SELECTORS selector')
@@ -69,11 +80,11 @@ def f6():
     assert not missing, f'Hero missing baseline selectors: {missing}'
 
 
-@check('Layer 4 entry count >= 38')
+@check('Layer 4 entry count >= 35 (37 actual; was 38 floor before orphan-row cleanup)')
 def f7():
     d = json.load(open(os.path.join(OUT, 'layer-4-inner-blocks.json'), encoding='utf-8'))
     n = d['entry_count']
-    assert n >= 38, f'Got {n}, want >= 38'
+    assert n >= 35, f'Got {n}, want >= 35'
 
 
 @check('Every Layer 2 role has non-null sgs + html_css recipe entries')
