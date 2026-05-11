@@ -31,19 +31,21 @@ ROLE_TEMPLATES = os.path.join(OUT_DIR, 'role-templates.json')
 
 GENERATED_AT = 'phase-3-initial-build'
 
-# Hero regression baseline — must match tools/recogniser-v2/extract.py exactly
+# Hero regression baseline — MUST match tools/recogniser-v2/extract.py exactly.
+# Updated 2026-05-11 (spec 14 P4): synced to SGS-prefixed BEM after spec 13 P6
+# migrated Mama's mockup to .sgs-hero / .sgs-hero__copy / etc.
 HERO_FINGERPRINT_SELECTORS = [
-    '.hero',
-    '.hero-copy',
-    '.hero-copy h1',
-    '.hero-copy .hero-sub',
-    '.hero-content',
-    '.hero-content h1',
-    '.hero-content .hero-sub',
-    '.hero-photo',
-    '.hero-photo img',
-    '.hero-mobile-img',
-    '.section-label',
+    '.sgs-hero',
+    '.sgs-hero__copy',
+    '.sgs-hero__copy h1',
+    '.sgs-hero__copy .sgs-hero__sub',
+    '.sgs-hero__content',
+    '.sgs-hero__content h1',
+    '.sgs-hero__content .sgs-hero__sub',
+    '.sgs-hero__image',
+    '.sgs-hero__image img',
+    '.sgs-hero__image--mobile',
+    '.sgs-section-heading__label',
 ]
 
 
@@ -538,20 +540,20 @@ def hero_entry_override(role_lookup: dict[str, str], v1_fp: dict[str, dict]) -> 
     """
     base = build_block_entry('sgs/hero', role_lookup, v1_fp)
 
-    # Source-side fingerprint anchors (regression baseline).
-    # Role mapping inferred from spec 14 + HERO_FINGERPRINT_SELECTORS semantics.
+    # Source-side fingerprint anchors (regression baseline). SGS-prefixed BEM
+    # per spec 13 P6 mockup migration (2026-05-10).
     source_slots = [
-        {'selector': '.hero',                       'role': 'colour-bg',        'maps_to_attribute': 'backgroundColor',  'kind': 'source-anchor'},
-        {'selector': '.hero-copy',                  'role': 'spacing-token',    'maps_to_attribute': 'contentPaddingTop','kind': 'source-anchor'},
-        {'selector': '.hero-copy h1',               'role': 'richtext-content', 'maps_to_attribute': 'headline',         'kind': 'source-anchor'},
-        {'selector': '.hero-copy .hero-sub',        'role': 'richtext-content', 'maps_to_attribute': 'subHeadline',      'kind': 'source-anchor'},
-        {'selector': '.hero-content',               'role': 'spacing-token',    'maps_to_attribute': 'contentPaddingTop','kind': 'source-anchor'},
-        {'selector': '.hero-content h1',            'role': 'richtext-content', 'maps_to_attribute': 'headline',         'kind': 'source-anchor'},
-        {'selector': '.hero-content .hero-sub',    'role': 'richtext-content', 'maps_to_attribute': 'subHeadline',      'kind': 'source-anchor'},
-        {'selector': '.hero-photo',                 'role': 'image-object',     'maps_to_attribute': 'backgroundImage',  'kind': 'source-anchor'},
-        {'selector': '.hero-photo img',             'role': 'image-object',     'maps_to_attribute': 'backgroundImage',  'kind': 'source-anchor'},
-        {'selector': '.hero-mobile-img',            'role': 'image-object',     'maps_to_attribute': 'splitImageMobile', 'kind': 'source-anchor'},
-        {'selector': '.section-label',              'role': 'text-content',     'maps_to_attribute': 'label',            'kind': 'source-anchor'},
+        {'selector': '.sgs-hero',                                'role': 'colour-bg',        'maps_to_attribute': 'backgroundColor',  'kind': 'source-anchor'},
+        {'selector': '.sgs-hero__copy',                          'role': 'spacing-token',    'maps_to_attribute': 'contentPaddingTop','kind': 'source-anchor'},
+        {'selector': '.sgs-hero__copy h1',                       'role': 'richtext-content', 'maps_to_attribute': 'headline',         'kind': 'source-anchor'},
+        {'selector': '.sgs-hero__copy .sgs-hero__sub',           'role': 'richtext-content', 'maps_to_attribute': 'subHeadline',      'kind': 'source-anchor'},
+        {'selector': '.sgs-hero__content',                       'role': 'spacing-token',    'maps_to_attribute': 'contentPaddingTop','kind': 'source-anchor'},
+        {'selector': '.sgs-hero__content h1',                    'role': 'richtext-content', 'maps_to_attribute': 'headline',         'kind': 'source-anchor'},
+        {'selector': '.sgs-hero__content .sgs-hero__sub',        'role': 'richtext-content', 'maps_to_attribute': 'subHeadline',      'kind': 'source-anchor'},
+        {'selector': '.sgs-hero__image',                         'role': 'image-object',     'maps_to_attribute': 'backgroundImage',  'kind': 'source-anchor'},
+        {'selector': '.sgs-hero__image img',                     'role': 'image-object',     'maps_to_attribute': 'backgroundImage',  'kind': 'source-anchor'},
+        {'selector': '.sgs-hero__image--mobile',                 'role': 'image-object',     'maps_to_attribute': 'splitImageMobile', 'kind': 'source-anchor'},
+        {'selector': '.sgs-section-heading__label',              'role': 'text-content',     'maps_to_attribute': 'label',            'kind': 'source-anchor'},
     ]
 
     # Sanity: every selector in HERO_FINGERPRINT_SELECTORS appears in source_slots

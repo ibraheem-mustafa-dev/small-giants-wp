@@ -6080,17 +6080,17 @@
       "regression_baseline": {
         "name": "HERO_FINGERPRINT_SELECTORS",
         "selectors": [
-          ".hero",
-          ".hero-copy",
-          ".hero-copy h1",
-          ".hero-copy .hero-sub",
-          ".hero-content",
-          ".hero-content h1",
-          ".hero-content .hero-sub",
-          ".hero-photo",
-          ".hero-photo img",
-          ".hero-mobile-img",
-          ".section-label"
+          ".sgs-hero",
+          ".sgs-hero__copy",
+          ".sgs-hero__copy h1",
+          ".sgs-hero__copy .sgs-hero__sub",
+          ".sgs-hero__content",
+          ".sgs-hero__content h1",
+          ".sgs-hero__content .sgs-hero__sub",
+          ".sgs-hero__image",
+          ".sgs-hero__image img",
+          ".sgs-hero__image--mobile",
+          ".sgs-section-heading__label"
         ],
         "source": "tools/recogniser-v2/extract.py:111"
       },
@@ -7649,67 +7649,67 @@
           "kind": "source-anchor",
           "maps_to_attribute": "backgroundColor",
           "role": "colour-bg",
-          "selector": ".hero"
+          "selector": ".sgs-hero"
         },
         {
           "kind": "source-anchor",
           "maps_to_attribute": "contentPaddingTop",
           "role": "spacing-token",
-          "selector": ".hero-copy"
+          "selector": ".sgs-hero__copy"
         },
         {
           "kind": "source-anchor",
           "maps_to_attribute": "headline",
           "role": "richtext-content",
-          "selector": ".hero-copy h1"
+          "selector": ".sgs-hero__copy h1"
         },
         {
           "kind": "source-anchor",
           "maps_to_attribute": "subHeadline",
           "role": "richtext-content",
-          "selector": ".hero-copy .hero-sub"
+          "selector": ".sgs-hero__copy .sgs-hero__sub"
         },
         {
           "kind": "source-anchor",
           "maps_to_attribute": "contentPaddingTop",
           "role": "spacing-token",
-          "selector": ".hero-content"
+          "selector": ".sgs-hero__content"
         },
         {
           "kind": "source-anchor",
           "maps_to_attribute": "headline",
           "role": "richtext-content",
-          "selector": ".hero-content h1"
+          "selector": ".sgs-hero__content h1"
         },
         {
           "kind": "source-anchor",
           "maps_to_attribute": "subHeadline",
           "role": "richtext-content",
-          "selector": ".hero-content .hero-sub"
+          "selector": ".sgs-hero__content .sgs-hero__sub"
         },
         {
           "kind": "source-anchor",
           "maps_to_attribute": "backgroundImage",
           "role": "image-object",
-          "selector": ".hero-photo"
+          "selector": ".sgs-hero__image"
         },
         {
           "kind": "source-anchor",
           "maps_to_attribute": "backgroundImage",
           "role": "image-object",
-          "selector": ".hero-photo img"
+          "selector": ".sgs-hero__image img"
         },
         {
           "kind": "source-anchor",
           "maps_to_attribute": "splitImageMobile",
           "role": "image-object",
-          "selector": ".hero-mobile-img"
+          "selector": ".sgs-hero__image--mobile"
         },
         {
           "kind": "source-anchor",
           "maps_to_attribute": "label",
           "role": "text-content",
-          "selector": ".section-label"
+          "selector": ".sgs-section-heading__label"
         }
       ],
       "unmapped_slot_count": 0,
