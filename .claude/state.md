@@ -47,7 +47,7 @@ recommended_model_next: sonnet
    - Add Kebab-semantic to uimax `naming_conventions` (~20 min)
    - Add 7 missing platforms to role-templates.json (~45 min wall-clock via 7 parallel Sonnet subagents)
    - Patch slot-filler.py with `attr_name_to_element_id` derivation (~60-90 min inline)
-   - Validate hero parity 50/50 (~60-120 min iteration)
+   - Validate hero parity 50/50 (~60-120 min )
    - Validate other 8 Mama's sections produce non-empty filled_slots
    - Run critical-fix-verification.py gate (must PASS 5/5)
    - Rewire orchestrator: replace stages 1-2-9 hardcoded shortcuts with subprocess calls into recogniser scripts (~90-150 min)
@@ -55,7 +55,7 @@ recommended_model_next: sonnet
 2. **Bucket 2 + timeline rework (P-9)** — after M9 ships
 3. **Phase 2.5 / G2.5 deferred work (P-2)**
 4. **Dashboard route.ts rebuild + row 69 re-POST + test row 219 cleanup**
-
+iteration
 ## Subprojects
 
 - Mama's Munches — `sites/mamas-munches/.claude/` — homepage clone is the active workstream

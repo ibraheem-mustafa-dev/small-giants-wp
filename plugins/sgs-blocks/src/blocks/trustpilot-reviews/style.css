@@ -1,0 +1,430 @@
+/**
+ * SGS Trustpilot Reviews -- frontend + editor styles.
+ *
+ * Trustpilot brand palette is fixed (green + black/white) by design;
+ * theme.json tokens drive only layout spacing, not brand visual identity.
+ */
+
+.wp-block-sgs-trustpilot-reviews {
+	/* Trustpilot brand colours are fixed (locked visual identity).
+	   Text colour + font-family inherit from the site's theme so cards
+	   blend naturally with the host design. */
+	--sgs-tp-green: #00B67A;
+	--sgs-tp-text-muted: currentColor;
+	--sgs-tp-card-bg: #F4F4F4;
+	--sgs-tp-card-border: #E4E4E4;
+	--sgs-tp-radius: 8px;
+	--sgs-tp-card-gap: 1rem;
+	--sgs-tp-cols: 3;
+	--sgs-tp-cols-tablet: 2;
+	--sgs-tp-cols-mobile: 1;
+
+	/* font-family + color inherit from the theme; no override at the block level. */
+}
+
+.sgs-trustpilot-reviews--theme-dark.wp-block-sgs-trustpilot-reviews {
+	--sgs-tp-card-bg: #1E1E1E;
+	--sgs-tp-card-border: #2A2A2A;
+}
+
+/* ── Header (white pill / tablet around Great → Trustpilot logo) ──────── */
+
+.sgs-trustpilot-reviews__header {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	flex-wrap: wrap;
+	justify-content: center;
+	margin: 0 auto 1rem;
+	padding: 0.6rem 1.25rem;
+	background: #fff;
+	border-radius: 999px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.04);
+	color: #1A1A1A;
+	transition: transform 220ms ease, box-shadow 220ms ease;
+}
+
+.sgs-trustpilot-reviews__header:hover {
+	transform: scale(1.03);
+	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+/* Center the pill within its container */
+.sgs-trustpilot-reviews {
+	text-align: center;
+}
+.sgs-trustpilot-reviews__viewport,
+.sgs-trustpilot-reviews__track {
+	text-align: left;
+}
+
+.sgs-trustpilot-reviews__label {
+	font-size: 1.25rem;
+	font-weight: 700;
+	line-height: 1;
+	color: inherit;
+}
+
+.sgs-trustpilot-reviews__header-stars {
+	display: inline-block;
+	height: 24px;
+	width: auto;
+	vertical-align: middle;
+}
+
+.sgs-trustpilot-reviews__aggregate {
+	font-size: 0.95rem;
+	color: inherit;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+	flex-wrap: wrap;
+}
+
+.sgs-trustpilot-reviews__count-link {
+	color: inherit;
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+
+.sgs-trustpilot-reviews__count-link:hover,
+.sgs-trustpilot-reviews__count-link:focus-visible {
+	color: var(--sgs-tp-green);
+}
+
+.sgs-trustpilot-reviews__header-logo {
+	height: 22px;
+	width: auto;
+	vertical-align: middle;
+}
+
+.sgs-trustpilot-reviews__header-logo-link {
+	display: inline-flex;
+	align-items: center;
+	border-radius: 4px;
+}
+
+.sgs-trustpilot-reviews__header-logo-link:focus-visible {
+	outline: 2px solid var(--sgs-tp-green);
+	outline-offset: 2px;
+}
+
+.sgs-trustpilot-reviews__on {
+	/* Inside the white pill -- match its dark text, no muting. */
+	color: inherit;
+}
+
+.sgs-trustpilot-reviews__subtitle {
+	font-size: 0.9rem;
+	text-align: center;
+	margin: 0 0 1.25rem;
+}
+
+/* ── Viewport + track ───────────────────────────────────────────────────── */
+
+.sgs-trustpilot-reviews__viewport {
+	position: relative;
+	width: 100%;
+}
+
+/* Carousel: reserve a 56px gutter on each side so the arrows sit outside
+   the card track rather than overlapping it. Hidden on mobile (no arrows). */
+.sgs-trustpilot-reviews--carousel .sgs-trustpilot-reviews__viewport,
+.sgs-trustpilot-reviews--mini-carousel .sgs-trustpilot-reviews__viewport {
+	padding: 0 56px;
+}
+
+@media (max-width: 768px) {
+	.sgs-trustpilot-reviews--carousel .sgs-trustpilot-reviews__viewport,
+	.sgs-trustpilot-reviews--mini-carousel .sgs-trustpilot-reviews__viewport {
+		padding: 0;
+	}
+}
+
+.sgs-trustpilot-reviews__track {
+	display: grid;
+	gap: var(--sgs-tp-card-gap);
+	grid-template-columns: repeat(var(--sgs-tp-cols-mobile), minmax(0, 1fr));
+	align-items: start;
+}
+
+@media (min-width: 768px) {
+	.sgs-trustpilot-reviews__track {
+		grid-template-columns: repeat(var(--sgs-tp-cols-tablet), minmax(0, 1fr));
+	}
+}
+
+@media (min-width: 1024px) {
+	.sgs-trustpilot-reviews__track {
+		grid-template-columns: repeat(var(--sgs-tp-cols), minmax(0, 1fr));
+	}
+}
+
+/* Carousel variant: horizontal scroll-snap track */
+.sgs-trustpilot-reviews--carousel .sgs-trustpilot-reviews__track,
+.sgs-trustpilot-reviews--mini-carousel .sgs-trustpilot-reviews__track {
+	display: flex;
+	overflow-x: auto;
+	scroll-snap-type: x mandatory;
+	scroll-behavior: smooth;
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+	gap: var(--sgs-tp-card-gap);
+	padding: 0 0 0.5rem;
+	align-items: flex-start;
+}
+
+.sgs-trustpilot-reviews--carousel .sgs-trustpilot-reviews__track::-webkit-scrollbar,
+.sgs-trustpilot-reviews--mini-carousel .sgs-trustpilot-reviews__track::-webkit-scrollbar {
+	display: none;
+}
+
+.sgs-trustpilot-reviews--carousel .sgs-trustpilot-reviews__card,
+.sgs-trustpilot-reviews--mini-carousel .sgs-trustpilot-reviews__card {
+	flex: 0 0 calc((100% - (var(--sgs-tp-cols-mobile) - 1) * var(--sgs-tp-card-gap)) / var(--sgs-tp-cols-mobile));
+	scroll-snap-align: start;
+}
+
+@media (min-width: 768px) {
+	.sgs-trustpilot-reviews--carousel .sgs-trustpilot-reviews__card,
+	.sgs-trustpilot-reviews--mini-carousel .sgs-trustpilot-reviews__card {
+		flex: 0 0 calc((100% - (var(--sgs-tp-cols-tablet) - 1) * var(--sgs-tp-card-gap)) / var(--sgs-tp-cols-tablet));
+	}
+}
+
+@media (min-width: 1024px) {
+	.sgs-trustpilot-reviews--carousel .sgs-trustpilot-reviews__card,
+	.sgs-trustpilot-reviews--mini-carousel .sgs-trustpilot-reviews__card {
+		flex: 0 0 calc((100% - (var(--sgs-tp-cols) - 1) * var(--sgs-tp-card-gap)) / var(--sgs-tp-cols));
+	}
+}
+
+/* List variant: vertical stack */
+.sgs-trustpilot-reviews--list .sgs-trustpilot-reviews__track {
+	grid-template-columns: 1fr;
+}
+
+/* ── Cards ──────────────────────────────────────────────────────────────── */
+
+.sgs-trustpilot-reviews__card {
+	background: var(--sgs-tp-card-bg);
+	color: inherit;
+	border-radius: var(--sgs-tp-radius);
+	padding: 1rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	border: 2px solid transparent;
+	transition: transform 240ms ease, border-color 240ms ease, box-shadow 240ms ease;
+	/* Cards size to their own content -- short reviews stay short,
+	   long reviews extend naturally. The track aligns to flex-start
+	   so cards do not stretch to match the tallest sibling. */
+}
+
+/* Hover state. Selectors include the card-style modifiers to win
+   specificity over the per-style box-shadow rules. */
+.sgs-trustpilot-reviews__card:hover,
+.sgs-trustpilot-reviews--card-elevated .sgs-trustpilot-reviews__card:hover,
+.sgs-trustpilot-reviews--card-bordered .sgs-trustpilot-reviews__card:hover,
+.sgs-trustpilot-reviews--card-flat .sgs-trustpilot-reviews__card:hover {
+	/* Border colour prefers the host site's primary token (Mama's = pink,
+	   Indus Foods = teal, etc.), falls back to Trustpilot green when no
+	   theme primary is defined. Slight scale + lift to invite the click. */
+	transform: scale(1.02);
+	border-color: var(--wp--preset--color--primary, var(--sgs-tp-green));
+	box-shadow: 0 6px 18px rgba(0, 0, 0, 0.10);
+	z-index: 1;
+}
+
+.sgs-trustpilot-reviews--card-bordered .sgs-trustpilot-reviews__card {
+	border: 1px solid var(--sgs-tp-card-border);
+}
+
+.sgs-trustpilot-reviews--card-elevated .sgs-trustpilot-reviews__card {
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.sgs-trustpilot-reviews--card-flat .sgs-trustpilot-reviews__card {
+	background: transparent;
+	padding: 1rem 0;
+	border-bottom: 1px solid var(--sgs-tp-card-border);
+	border-radius: 0;
+}
+
+.sgs-trustpilot-reviews__card-header {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	flex-wrap: wrap;
+}
+
+.sgs-trustpilot-reviews__card-stars {
+	height: 24px;
+	width: auto;
+	display: block;
+}
+
+.sgs-trustpilot-reviews__verified {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+	color: inherit; opacity: 0.7;
+	font-size: 0.85rem;
+}
+
+.sgs-trustpilot-reviews__verified-icon {
+	width: 16px;
+	height: 16px;
+	display: block;
+}
+
+.sgs-trustpilot-reviews__card-title {
+	font-size: 1em;
+	font-weight: 700;
+	line-height: 1.3;
+	margin: 0;
+	color: inherit;
+}
+
+.sgs-trustpilot-reviews__card-body {
+	font-size: 0.95em;
+	line-height: 1.5;
+	margin: 0;
+	color: inherit;
+	/* font-size in em so cards scale with the host site's body type;
+	   no line-clamp + no flex-grow so the card wraps its own content. */
+}
+
+.sgs-trustpilot-reviews__card-body p {
+	margin: 0 0 0.5em;
+}
+
+.sgs-trustpilot-reviews__card-body p:last-child {
+	margin-bottom: 0;
+}
+
+.sgs-trustpilot-reviews__card-meta {
+	font-size: 0.9em;
+	color: inherit;
+	margin-top: 0.25em;
+}
+
+.sgs-trustpilot-reviews__card-author {
+	font-weight: 700;
+	color: inherit;
+}
+
+.sgs-trustpilot-reviews__card-sep,
+.sgs-trustpilot-reviews__card-date {
+	color: inherit;
+}
+
+/* ── Carousel arrows + dots ─────────────────────────────────────────────── */
+
+.sgs-trustpilot-reviews__arrow {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 44px;
+	height: 44px;
+	border-radius: 50%;
+	border: 1px solid var(--sgs-tp-card-border);
+	background: var(--sgs-tp-card-bg);
+	color: inherit;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 2;
+	transition: background-color 200ms ease, border-color 200ms ease;
+}
+
+.sgs-trustpilot-reviews__arrow:hover,
+.sgs-trustpilot-reviews__arrow:focus-visible {
+	background: var(--sgs-tp-green);
+	color: #fff;
+	border-color: var(--sgs-tp-green);
+}
+
+.sgs-trustpilot-reviews__arrow:focus-visible {
+	outline: 2px solid var(--sgs-tp-green);
+	outline-offset: 2px;
+}
+
+.sgs-trustpilot-reviews__arrow--prev {
+	left: 0;
+}
+
+.sgs-trustpilot-reviews__arrow--next {
+	right: 0;
+}
+
+/* Mobile: hide arrows; touch users swipe the carousel naturally.
+   Avoids the arrow overlapping card text on narrow viewports. */
+@media (max-width: 768px) {
+	.sgs-trustpilot-reviews__arrow {
+		display: none;
+	}
+}
+
+.sgs-trustpilot-reviews__dots {
+	display: flex;
+	justify-content: center;
+	gap: 0.5rem;
+	margin-top: 1rem;
+}
+
+.sgs-trustpilot-reviews__dot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	border: none;
+	background: var(--sgs-tp-card-border);
+	cursor: pointer;
+	padding: 0;
+	transition: background-color 200ms ease, transform 200ms ease;
+}
+
+.sgs-trustpilot-reviews__dot:hover {
+	background: currentColor;
+	opacity: 0.6;
+}
+
+.sgs-trustpilot-reviews__dot.is-active {
+	background: var(--sgs-tp-green);
+	transform: scale(1.2);
+}
+
+.sgs-trustpilot-reviews__dot:focus-visible {
+	outline: 2px solid var(--sgs-tp-green);
+	outline-offset: 2px;
+}
+
+/* ── Mini variant: compact aggregate-only bar ───────────────────────────── */
+
+.sgs-trustpilot-reviews--mini .sgs-trustpilot-reviews__track,
+.sgs-trustpilot-reviews--mini .sgs-trustpilot-reviews__subtitle {
+	display: none;
+}
+
+.sgs-trustpilot-reviews--mini .sgs-trustpilot-reviews__header {
+	margin-bottom: 0;
+	justify-content: flex-start;
+}
+
+/* ── Reduced motion ─────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-trustpilot-reviews__track,
+	.sgs-trustpilot-reviews__arrow,
+	.sgs-trustpilot-reviews__dot,
+	.sgs-trustpilot-reviews__header,
+	.sgs-trustpilot-reviews__card {
+		transition: none !important;
+		scroll-behavior: auto !important;
+	}
+	.sgs-trustpilot-reviews__header:hover,
+	.sgs-trustpilot-reviews__card:hover {
+		transform: none !important;
+	}
+}

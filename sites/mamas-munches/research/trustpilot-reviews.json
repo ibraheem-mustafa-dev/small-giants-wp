@@ -1,0 +1,35 @@
+{
+  "source_url": "https://uk.trustpilot.com/review/mamasmunches.com",
+  "captured_at": "2026-05-11T08:11:18Z",
+  "capture_method": "Playwright MCP + JSON-LD extraction",
+  "trust_score": 4.0,
+  "trust_score_label": "Great",
+  "reviews_average": 5.0,
+  "review_count": 4,
+  "reviews": [
+    {
+      "author": "R B",
+      "rating": 5,
+      "datePublished": "2026-02-03T11:53:46.000Z",
+      "reviewBody": "The cookies were soo delicious and filling! I have nearly finished half the box and I only bought them two days ago! I  think these will be great for Ramadan if I decide to fast to help keep my milk supply up! "
+    },
+    {
+      "author": "mariahzaini",
+      "rating": 5,
+      "datePublished": "2026-01-24T19:41:38.000Z",
+      "reviewBody": "Sweet, soft oat cookies that are seriously addictive—and perfect for a lactating mum who’s constantly hungry. I say this from experience: these were my go-to snack from the early postpartum days right through to a year later. The cookies are generously sized, so one was usually enough to keep me full. I also genuinely felt they helped support my milk production. Will definitely order more!! "
+    },
+    {
+      "author": "Halimah Nawaz",
+      "rating": 5,
+      "datePublished": "2026-01-14T15:30:20.000Z",
+      "reviewBody": "Amazing cookies! These cookies taste incredible and helped boost my milk supply. I was sure I would have to stop breastfeeding because my supply was declining but these cookies helped me to increase my supply and I was able to continue to breastfeed for another few months until I decided to stop myself"
+    },
+    {
+      "author": "Mrs MIM",
+      "rating": 5,
+      "datePublished": "2026-01-13T22:40:41.000Z",
+      "reviewBody": "I was gifted these lactation cookies right after giving birth, and honestly they were amazing. Not only were they so delicious, but I genuinely noticed a difference in my milk supply while eating them. They were such a comforting treat during those early postpartum days and made me feel really supported as a new mum. You can tell they’re made with care and love. I’d highly recommend them to any breastfeeding mum 🤍"
+    }
+  ]
+}

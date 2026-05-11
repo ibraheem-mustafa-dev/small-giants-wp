@@ -1,0 +1,192 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "sgs/trustpilot-reviews",
+  "title": "SGS Trustpilot Reviews",
+  "category": "sgs-content",
+  "description": "Display Trustpilot reviews in the official Trustpilot visual style. Reviews can be entered manually or synced from a Trustpilot business profile (sync available in next-session build).",
+  "keywords": [
+    "reviews",
+    "trustpilot",
+    "testimonials",
+    "ratings",
+    "stars"
+  ],
+  "icon": "star-filled",
+  "textdomain": "sgs-blocks",
+  "supports": {
+    "align": [
+      "wide",
+      "full"
+    ],
+    "anchor": true,
+    "className": true,
+    "html": false,
+    "interactivity": true,
+    "color": {
+      "background": true,
+      "text": true,
+      "gradients": false
+    },
+    "sgs": {
+      "imageControls": false
+    }
+  },
+  "selectors": {
+    "root": ".wp-block-sgs-trustpilot-reviews"
+  },
+  "attributes": {
+    "variant": {
+      "type": "string",
+      "default": "carousel",
+      "enum": [
+        "carousel",
+        "grid",
+        "list",
+        "mini",
+        "mini-carousel"
+      ]
+    },
+    "dataSource": {
+      "type": "string",
+      "default": "inline",
+      "enum": [
+        "inline",
+        "synced",
+        "placeholder"
+      ]
+    },
+    "businessUnitUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "reviews": {
+      "type": "array",
+      "default": []
+    },
+    "trustScore": {
+      "type": "number",
+      "default": 0
+    },
+    "trustScoreLabel": {
+      "type": "string",
+      "default": ""
+    },
+    "totalReviews": {
+      "type": "number",
+      "default": 0
+    },
+    "reviewsAverage": {
+      "type": "number",
+      "default": 0
+    },
+    "showSourceHeader": {
+      "type": "boolean",
+      "default": true
+    },
+    "showSubtitle": {
+      "type": "boolean",
+      "default": false
+    },
+    "subtitleText": {
+      "type": "string",
+      "default": "Showing our latest reviews"
+    },
+    "showTrustpilotLogo": {
+      "type": "boolean",
+      "default": true
+    },
+    "showVerifiedBadge": {
+      "type": "boolean",
+      "default": true
+    },
+    "showDate": {
+      "type": "boolean",
+      "default": true
+    },
+    "showAuthor": {
+      "type": "boolean",
+      "default": true
+    },
+    "showSchema": {
+      "type": "boolean",
+      "default": true
+    },
+    "columns": {
+      "type": "number",
+      "default": 3
+    },
+    "columnsTablet": {
+      "type": "number",
+      "default": 2
+    },
+    "columnsMobile": {
+      "type": "number",
+      "default": 1
+    },
+    "theme": {
+      "type": "string",
+      "default": "light",
+      "enum": [
+        "light",
+        "dark"
+      ]
+    },
+    "cardStyle": {
+      "type": "string",
+      "default": "elevated",
+      "enum": [
+        "flat",
+        "bordered",
+        "elevated"
+      ]
+    },
+    "autoplay": {
+      "type": "boolean",
+      "default": false
+    },
+    "autoplaySpeed": {
+      "type": "number",
+      "default": 5000
+    },
+    "showDots": {
+      "type": "boolean",
+      "default": false
+    },
+    "showArrows": {
+      "type": "boolean",
+      "default": true
+    },
+    "sgsAnimation": {
+      "type": "string",
+      "default": "fade-up"
+    },
+    "sgsAnimationDuration": {
+      "type": "string",
+      "default": "medium"
+    },
+    "sgsAnimationEasing": {
+      "type": "string",
+      "default": "ease-out"
+    },
+    "staggerDelay": {
+      "type": "number",
+      "default": 60
+    }
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./editor.css",
+  "style": "file:./style.css",
+  "viewScriptModule": "file:./view.js",
+  "render": "file:./render.php",
+  "example": {
+    "attributes": {
+      "variant": "carousel",
+      "trustScore": 4.6,
+      "trustScoreLabel": "Excellent",
+      "totalReviews": 250,
+      "dataSource": "placeholder",
+      "showSourceHeader": true
+    }
+  }
+}

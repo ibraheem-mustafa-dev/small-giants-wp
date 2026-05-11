@@ -7,6 +7,7 @@
 		"prebuild": "node scripts/generate-icons.js",
 		"prestart": "node scripts/generate-icons.js",
 		"build": "wp-scripts build --experimental-modules --webpack-copy-php",
+		"postbuild": "node scripts/copy-built-styles.js",
 		"start": "wp-scripts start --experimental-modules --webpack-copy-php",
 		"lint:js": "wp-scripts lint-js src/",
 		"lint:css": "wp-scripts lint-style src/",

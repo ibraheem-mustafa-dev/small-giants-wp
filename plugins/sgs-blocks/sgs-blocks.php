@@ -80,6 +80,9 @@ require_once SGS_BLOCKS_PATH . 'includes/block-defaults.php';
 // Google Reviews settings and API integration.
 require_once SGS_BLOCKS_PATH . 'includes/google-reviews-settings.php';
 
+// Trustpilot Reviews shared helpers (score label, asset URL, relative date).
+require_once SGS_BLOCKS_PATH . 'includes/trustpilot-helpers.php';
+
 // Stripe payment settings and PaymentIntent AJAX handler.
 require_once SGS_BLOCKS_PATH . 'includes/stripe-settings.php';
 Stripe_Settings::init();

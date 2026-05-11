@@ -1,0 +1,44 @@
+/**
+ * Trustpilot Reviews -- Editor-Only Styles
+ *
+ * @package SGS\Blocks
+ */
+
+/* Tighten the editor preview wrapper so the ServerSideRender placeholder
+   inherits the same Trustpilot-card spacing as the frontend. */
+.wp-block-sgs-trustpilot-reviews .sgs-trustpilot-reviews__arrow {
+	pointer-events: none;
+}
+
+/* Inspector helper styling for the inline reviews repeater. */
+.sgs-trustpilot-reviews-editor__review-row {
+	background: rgba( 0, 0, 0, 0.03 );
+	border-radius: 6px;
+	padding: 0.75rem;
+	margin-bottom: 0.75rem;
+}
+
+.sgs-trustpilot-reviews-editor__review-row + .sgs-trustpilot-reviews-editor__review-row {
+	margin-top: 0;
+}
+
+.sgs-trustpilot-reviews-editor__row-actions {
+	display: flex;
+	gap: 0.5rem;
+	margin-top: 0.5rem;
+}
+
+.sgs-trustpilot-reviews-editor__import-area {
+	background: rgba( 0, 0, 0, 0.02 );
+	border: 1px dashed rgba( 0, 0, 0, 0.2 );
+	border-radius: 6px;
+	padding: 0.75rem;
+	margin-top: 0.5rem;
+}
+
+.sgs-trustpilot-reviews-editor__import-area textarea {
+	width: 100%;
+	font-family: var( --wp-block-editor-monospace, monospace );
+	font-size: 11px;
+	min-height: 80px;
+}

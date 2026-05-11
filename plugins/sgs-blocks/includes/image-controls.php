@@ -42,7 +42,7 @@ function inject_image_controls( string $block_content, array $block ): string {
 	}
 
 	// Check the block type's supports for sgs.imageControls.
-	$block_type = WP_Block_Type_Registry::get_instance()->get_registered( $block_name );
+	$block_type = \WP_Block_Type_Registry::get_instance()->get_registered( $block_name );
 
 	if ( null === $block_type ) {
 		return $block_content;
