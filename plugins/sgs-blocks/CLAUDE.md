@@ -107,7 +107,7 @@ rm sgs-deploy.tar
 | Accordion + Accordion Item | Deployed |
 | Table of Contents | Deployed (broken — needs debugging) |
 | Google Reviews | Deployed |
-| Trustpilot Reviews | Deployed (2026-05-11 — looping carousel, white pill header, theme-inherited typography, hover scale + theme-primary border, Schema.org JSON-LD) |
+| Trustpilot Reviews | Deployed (2026-05-11 — looping carousel, white pill header, theme-inherited typography, hover scale + theme-primary border, Schema.org JSON-LD). Sync infrastructure shipped 2026-05-11 commit `06df2807` — see Backend Integrations below. |
 | Pricing Table | Built (L14, needs build + deploy) |
 | Modal | Built (L14, needs build + deploy) |
 | Decorative Image | Built (L14, needs build + deploy) |
@@ -130,6 +130,22 @@ rm sgs-deploy.tar
 | Responsive Visibility (device show/hide) | Deployed |
 | Hover State Controls (bg/text/border colour) | Deployed (4 blocks: Info Box, Card Grid, CTA Section, Hero) |
 | Off-Canvas Mobile Nav (M17) | Built (needs build + deploy) |
+
+### Backend Integrations
+
+| Integration | Settings page | Option key (read by) | Auto-sync | Status |
+|---|---|---|---|---|
+| Google Reviews | Settings > SGS Google Reviews | `sgs_google_reviews_settings` (sgs/google-reviews block) | Cache TTL (1-168h transient) | Deployed |
+| Trustpilot Sync | Settings > SGS Trustpilot Sync | `sgs_trustpilot_data` (sgs/trustpilot-reviews block, `dataSource: synced`) | WP-cron `sgs_trustpilot_sync_event` weekly/daily | Deployed (2026-05-11, commit `06df2807`) |
+
+**Trustpilot Sync notes:**
+- Backend at `includes/trustpilot/` — 4 classes (Trustpilot_Sync, Trustpilot_REST, Trustpilot_Cron, Trustpilot_Settings)
+- Admin JS at `assets/admin/trustpilot-sync.js` (Sync-now button via wp.apiFetch + X-WP-Nonce)
+- REST endpoint `POST /wp-json/sgs/v1/trustpilot-sync` (manage_options gated)
+- Browserless `/content` REST endpoint — `?token=<key>` auth (NOT `Authorization: Bearer` — that returns HTTP 500 on this endpoint). Key encrypted AES-256-CBC at rest, keyed off `wp_salt('auth')`.
+- JSON-LD parser harvests standalone `Review` entities from `@graph` (Trustpilot's reference pattern — `LocalBusiness.review[]` holds `@id` pointers, not inline entities)
+- Activity log (last 5 attempts) + `last_sync_status` badge on settings page = operator failure surface. No Telegram/n8n side channel.
+- Lesson: `~/.openclaw/workspace/memory/learning/2026-05-11-sgs-trustpilot-sync-via-browserless-working-setup.md` and blub.db row 238
 
 ### Phase 2 — Not Started (P1 priority)
 

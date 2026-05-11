@@ -7,7 +7,7 @@
 **Owner email:** Zainab@mamasmunches.com
 **Instagram:** [@mamasmunches](https://www.instagram.com/mamasmunches/) — high-quality product media here, pull next session
 **Tally form (current ordering):** https://tally.so/r/xXMQLk — manual flavour confirmation by Zainab; not sustainable
-**Trustpilot:** widget present (no reviews yet)
+**Trustpilot:** 4 real 5-star reviews live at https://uk.trustpilot.com/review/mamasmunches.com (TrustScore 4.0, "Great"). SGS Trustpilot Sync infrastructure shipped (commit `06df2807`) — paste the URL into Settings > SGS Trustpilot Sync on the migrated WP site, the `sgs/trustpilot-reviews` block in `synced` mode renders them automatically. Weekly cron keeps fresh.
 **Stripe:** account exists — ready for plugin integration
 **Brand assets dropped:** `sites/mamas-munches/research/brand/` (PNG + WebP horizontal lockup)
 
@@ -81,7 +81,7 @@ Bean to drop logo source files into `sites/mamas-munches/research/brand/`.
 - "Free UK Delivery Over £35" 🚚
 - "Loved by Breastfeeding Mums" ⭐
 - 20% off first purchase promo
-- Trustpilot widget (empty — could become a discovery quick-win)
+- Trustpilot reviews now visible on Trustpilot itself (4 × 5-star, TrustScore 4.0) — SGS Trustpilot Sync block + WP-cron infrastructure shipped 2026-05-11 commit `06df2807`; will render on the migrated SGS site via the same wp_option the smoke-test page on sandybrown already reads
 
 ## Current site stack (what they're rebuilding away from)
 
@@ -126,7 +126,7 @@ This is a real revenue blocker — target users (mums) browse on phones late eve
 - ❌ Lactation cookie ingredient education (galactagogues — oats, brewer's yeast, flaxseed) — content gap; mums research before buying
 - ❌ Subscription option (high-LTV play for repeat lactation supplements)
 - ❌ Allergen labelling visible on product page
-- ❌ Trustpilot has no reviews — first-buyer flow should ask for one
+- ✅ Trustpilot has 4 × 5-star reviews live (TrustScore 4.0, "Great") — first-buyer flow should still ask for one to keep volume growing; SGS Trustpilot Sync now renders these on the SGS site automatically
 
 ## MVP scope for SGS rebuild (Phase 1 — minimum to ship)
 

@@ -10,21 +10,6 @@ Items here have a clear next-step but aren't urgent. Each entry: the work, the t
 
 ## New 2026-05-11
 
-### P-TP-SYNC — Trustpilot review sync infrastructure (3-4 hr, parallel-session ready)
-
-**What:** Build the WP-side infrastructure that auto-syncs Trustpilot reviews into wp_options['sgs_trustpilot_data'] which the existing `sgs/trustpilot-reviews` block already reads when dataSource=synced. Components:
-- WP Admin settings page (Settings -> SGS Trustpilot Sync) with Business URL, Off/Weekly/Daily, Browserless endpoint config, "Sync now" button, activity log
-- `POST /wp-json/sgs/v1/trustpilot-sync` REST endpoint
-- WP-cron registration on setting save (weekly/daily)
-- Browserless.io free-tier integration (6 hours/month free, ample for one weekly scrape per site)
-- Telegram failure alert via `~/.claude/hooks/tg-cli.py`
-
-**Trigger:** Parallel session ready (Bean has the full prompt in chat scrollback for the 2026-05-11 trustpilot-block session). Self-contained brief.
-
-**Spec:** Files at `plugins/sgs-blocks/includes/trustpilot/` -- class-trustpilot-settings.php, class-trustpilot-sync.php, class-trustpilot-cron.php, class-trustpilot-rest.php. JS at `plugins/sgs-blocks/assets/admin/trustpilot-sync.js`. Schema for sgs_trustpilot_data matches `sites/mamas-munches/research/trustpilot-reviews.json` shape.
-
-**Effort:** 3-4 hours focused. Done-when: Sync-now button updates wp_options within 30s, weekly cron registered, block re-reads on next render, Telegram alerts on failure, visual-diff verdict PASS, commit on main.
-
 ### P-RECOG-V3 — Consolidate recogniser scripts to tools/recogniser-v3/ (20-30 min)
 
 **What:** Move the active pipeline code into a single canonical location:
@@ -120,6 +105,7 @@ Also write `tools/recogniser-v3/README.md` with pipeline diagram + Spec 12 link.
 - **P-4** Trustpilot scrape (Mama's Munches) → 4/4 reviews captured to `sites/mamas-munches/research/trustpilot-reviews.json`. QC PASS.
 
 ## Resolved 2026-05-11
+- **P-TP-SYNC** → Trustpilot review sync infrastructure shipped. 4 classes under `plugins/sgs-blocks/includes/trustpilot/` (Trustpilot_Sync, Trustpilot_REST, Trustpilot_Cron, Trustpilot_Settings), admin JS at `assets/admin/trustpilot-sync.js`. Settings -> SGS Trustpilot Sync page with Browserless creds (AES-256-CBC encrypted at rest), weekly/daily WP-cron (`sgs_trustpilot_sync_event`), Sync-now button via `POST /wp-json/sgs/v1/trustpilot-sync`. JSON-LD parser harvests standalone Review entities from `@graph` (Trustpilot's reference pattern). Browserless `/content` uses `?token=` not Bearer (HTTP 500 on Bearer — captured as lesson, blub.db row 238). Telegram alerts dropped — settings page activity log + last_sync_status is the operator failure surface. End-to-end proven on sandybrown: 4 Mama's reviews captured (TrustScore 4.0 "Great"), smoke-test-2 page flipped to `dataSource: synced` and renders the live reviews. Commit `06df2807`. Visual diff at `reports/visual-diff/trustpilot-sync-2026-05-11.md`.
 - **P-Trustpilot block** → `sgs/trustpilot-reviews` block shipped at `plugins/sgs-blocks/src/blocks/trustpilot-reviews/`. Looping carousel, white pill header, theme-inherited typography, hover scale + theme-primary-coloured border, clickable Trustpilot logo, Schema.org JSON-LD, inline + synced + placeholder data sources. Live on sandybrown at /trustpilot-smoke-test-2/. Commit `c6bd4980`. Visual diff report at `reports/visual-diff/trustpilot-reviews-2026-05-11.md`.
 - **P-Orchestrator multi-section walker** → Voter `auto_detect_sections` walks into `<main>`; stage 4-8 loops per-boundary in `--auto-section` mode. End-to-end run on Mama's: 9 sections processed, 212 slots scaffolded, 213 leftover entries persisted to recognition_log. Patches uncommitted but tested -- pending Commit A.
 - **P-Style.css enqueue gap (systemic)** → wp-scripts emits `style-index.css` but `register_block_type_from_metadata` looks for `style.css`. New `plugins/sgs-blocks/scripts/copy-built-styles.js` postbuild step copies for all 48 blocks (96 files copied first run). Wired in `package.json`. Resolves the silent CSS-not-enqueued issue affecting every SGS block since the build pipeline was set up.

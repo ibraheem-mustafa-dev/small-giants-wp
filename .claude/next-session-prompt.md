@@ -62,9 +62,9 @@ The critical-path Phase 8 work. Documented in `parking.md` P-EXTRACT-GENERALISE.
 
 Documented in `parking.md` P-RECOG-V3. Move orchestrator + 4 dispatcher scripts + extract.py into a single `tools/recogniser-v3/` directory with underscore-style names. Update path references in spec 12, skill bodies, state.md. Then a cleanup commit deletes `tools/recogniser/` (v1) and `tools/recogniser-v2/`.
 
-### Track 4 (3-4 hr, parallel-ready, no overlap with 1-3) -- Trustpilot Sync infrastructure
+### Track 4 -- Trustpilot Sync infrastructure (SHIPPED 2026-05-11, commit `06df2807`)
 
-The parallel session's domain. Already partially in flight: 3 of 4 sync class files exist at `plugins/sgs-blocks/includes/trustpilot/` (cron, rest, settings -- missing core sync class), admin JS at `plugins/sgs-blocks/assets/admin/`, sgs-blocks.php wired. Full brief in `.claude/handoff.md` "Next Session Prompt" section.
+Complete. 4 classes at `plugins/sgs-blocks/includes/trustpilot/`, admin JS at `plugins/sgs-blocks/assets/admin/trustpilot-sync.js`, settings page at WP Admin > Settings > SGS Trustpilot Sync. Weekly WP-cron, Sync-now button, JSON-LD parser, AES-256-CBC token encryption, Browserless `?token=` auth. End-to-end proven on sandybrown: smoke-test-2 page now `dataSource: synced` rendering live Mama's reviews. Visual diff at `reports/visual-diff/trustpilot-sync-2026-05-11.md`. Setup procedure documented inline on the settings page for any future SGS site.
 
 ## Skills to invoke
 
@@ -87,7 +87,7 @@ The parallel session's domain. Already partially in flight: 3 of 4 sync class fi
 
 ## Don't
 
-- Don't include `plugins/sgs-blocks/sgs-blocks.php` in Track 1's commit (the parallel Trustpilot Sync session owns the current changes)
+- Don't include `plugins/sgs-blocks/sgs-blocks.php` in Track 1's commit IF Track 1 is run after the orchestrator patches that have not yet committed — that file is currently up to date on main with the Trustpilot Sync changes (commit `06df2807`)
 - Don't trust plan files or state.md claims without grepping the named scripts in git (lesson: 2026-05-11 Phase 8 plan referenced 7 fictional files; 2026-05-10 Phase 7 plan did the same with 4)
 - Don't delegate eyes-on proof of unproven systems to subagents (lesson 221)
 - Don't reorganise files mid-deploy. Commit working state first (Track 1), then reorganise (Track 3)

@@ -9,7 +9,7 @@
 
 ## Phase success criteria (done when)
 
-- [ ] Trustpilot reviews captured to `sites/mamas-munches/research/trustpilot-reviews.json` (4 reviews, real text)
+- [x] Trustpilot reviews captured to `sites/mamas-munches/research/trustpilot-reviews.json` (4 reviews, real text) — completed 2026-05-11 via Playwright MCP; the SGS Trustpilot Sync infrastructure shipped same day (commit `06df2807`) now keeps this live via wp_options[sgs_trustpilot_data] on any SGS site
 - [ ] Full `sgs-clone-orchestrator.py --auto-section` run on Mama's mockup produces composite markup for all 9 sections
 - [ ] Per-section coverage extracted from each `stage-9.json`; framework_gap_candidates aggregated to one report
 - [ ] sandybrown homepage `post_content` snapshot saved for rollback

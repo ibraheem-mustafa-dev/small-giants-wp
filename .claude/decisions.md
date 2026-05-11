@@ -2,13 +2,21 @@
 
 Append-only. Most-recent first.
 
+## 2026-05-11 — Trustpilot sync: Browserless `?token=` auth, settings-page-only failure surface
+
+**Decision:** The Trustpilot sync writer fetches rendered HTML via Browserless.io `/content` REST endpoint, parses JSON-LD, and writes to `wp_options['sgs_trustpilot_data']`. Auth is `?token=<key>` query string, NOT `Authorization: Bearer` (Browserless `/content` rejects Bearer with HTTP 500). The Browserless API key is AES-256-CBC encrypted at rest (keyed off `wp_salt('auth')`), the same pattern `Google_Reviews_Settings` uses. The failure surface is the settings page (activity log of last 5 syncs + `last_sync_status` badge) — no Telegram, no n8n, no parallel notification channel.
+
+**Why:** (1) Trustpilot blocks direct server-side fetches with HTTP 403; a real-browser proxy is required, and Browserless free tier (6 hours/month) covers a weekly sync per site comfortably. (2) Bearer auth was the original spec but live curl-test against Browserless proved it doesn't work on the `/content` endpoint — different Browserless endpoints have different auth conventions (`chrome/bql` accepts Bearer). (3) Telegram alerts were initially in scope but the activity log already surfaces failures on the next admin page load; a weekly job doesn't warrant a parallel paging channel. Bean called the Telegram addition out mid-build and the scope dropped.
+
+**Applied:** Shipped commit `06df2807`. 4 classes at `plugins/sgs-blocks/includes/trustpilot/`. JSON-LD parser handles Trustpilot's `@graph` reference pattern (standalone `Review` entities, `LocalBusiness.review[]` as `@id` pointers — parser harvests the standalone entities directly). End-to-end proven on sandybrown: 4 Mama's reviews captured, smoke-test page flipped to `dataSource: synced` and renders live. Lesson captured as blub.db row 238 (`sgs-trustpilot-sync-browserless-content-needs-query-token`).
+
 ## 2026-05-11 — Trustpilot review display: self-render block, not official widget or scraper plugin
 
 **Decision:** Build `sgs/trustpilot-reviews` as a first-party block that reads captured reviews from block attributes (inline mode) or wp_options (synced mode). Do NOT use Trustpilot's official WP plugin (free tier only allows Review Collector, not display widgets), and do NOT use third-party scraper plugins (Better Business Reviews, Trustindex, etc.). The maintenance dependency + TOS grey area exceeds the win.
 
 **Why:** Trustpilot's free plan paywalls all display widgets (Carousel, Slider, Grid, etc.) via the plugin. Bean verified by toggling "Only included with your plan" on business.trustpilot.com -- only Review Collector available. Scraper plugins work but introduce a maintenance dependency that compounds across every SGS client, and Senja's documented "almost ban" incident (per the research-buddies session) shows enforcement DOES happen when auto-sync triggers Trustpilot's bot detection. First-party block keeps brand identity locked (green stars + Verified badge + clickable Trustpilot logo) while letting typography inherit the host theme.
 
-**Applied:** Block at `plugins/sgs-blocks/src/blocks/trustpilot-reviews/`, shipped commit c6bd4980. Smoke-tested live on sandybrown at /trustpilot-smoke-test-2/. Sync infrastructure parked at P-TP-SYNC for a parallel session.
+**Applied:** Block at `plugins/sgs-blocks/src/blocks/trustpilot-reviews/`, shipped commit c6bd4980. Smoke-tested live on sandybrown at /trustpilot-smoke-test-2/. Sync infrastructure shipped 2026-05-11 commit `06df2807` — see decision above.
 
 ## 2026-05-11 — Brand-fix + theme-inherit split for embedded third-party widgets
 
