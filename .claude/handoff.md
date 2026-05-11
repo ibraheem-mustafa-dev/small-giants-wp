@@ -1,119 +1,97 @@
 ---
 doc_type: handoff
 project: small-giants-wp
-session_tag: small-giants-wp-2026-05-11-trustpilot-block-and-sync
+session_tag: small-giants-wp-2026-05-11-spec14-plans-and-p1-p2
 session_date: 2026-05-11
-recommended_model_next: sonnet
+recommended_model_next: opus (P3 starts with architectural fanout dispatch)
 ---
 
-# Session Handoff — 2026-05-11 (Trustpilot block + sync infrastructure + orchestrator multi-section)
+# Session Handoff — 2026-05-11 (Spec 14 approved + P1/P2 shipped + P3-P10 plans QC'd)
 
 ## Completed This Session
 
-1. **Phase 7 orchestrator rewire** built and shipped (4 dispatcher scripts at `plugins/sgs-blocks/scripts/recogniser/` -- per-section-convention-voter, confidence-matrix, leftover-bucket-router, simple_html_review_report). Discovered + handled the cite-without-verify case: the scripts referenced in the Phase 7 plan didn't exist; I built them from scratch matching Spec 12. Commit `7ac627cf`.
+1. **Spec 14 v2.1 APPROVED** at `.claude/specs/14-CLONING-PIPELINE-CATALOGUE.md` (744 lines, 34 FRs). Two QC rounds (6 reviewers each), 14+ critical fixes folded in. Both NO-GO verdicts from round 1 closed. Title: "SGS Cloning Pipeline — Autonomous Draft-to-WordPress Conversion".
 
-2. **Trustpilot reviews captured** via Playwright MCP -- 4 reviews, TrustScore 4.0, label "Great", reviews_average 5.0. Saved at `sites/mamas-munches/research/trustpilot-reviews.json`. The AWS WAF challenge resolves in ~6s with any real-browser MCP tool; curl is hard-blocked.
+2. **Flow chart** at `.claude/cloning-pipeline-flow.md` — one-page visual for cold-session orientation.
 
-3. **`sgs/trustpilot-reviews` block shipped** at `plugins/sgs-blocks/src/blocks/trustpilot-reviews/`. Mirrors sgs/google-reviews shape. Features: 5 layout variants, default 3/2/1 columns, looping carousel (next on last wraps to first), white pill tablet header, theme-inherited typography, hover-scale + theme-primary-coloured border on cards (Mama's pink #E68A95 verified), clickable Trustpilot logo, Schema.org JSON-LD emission, prefers-reduced-motion respected. Inline + synced + placeholder data sources. Commit `c6bd4980`.
+3. **Phase 1 shipped** (commit `f467bc72`):
+   - Reconciled architecture.md L151 + state.md L52 + /sgs-clone SKILL.md (9 references) against disk reality
+   - Captured 9 static-block golden snapshots at `tests/golden/static-block-snapshots/` (6 pure-static + 3 hybrid; sgs-db as authoritative source, NOT v1 fingerprints which is frozen/stale)
+   - FR18 decisions: 2 scripts retired (heuristic-fallback-builder, computed-style-passport), 2 built later (recursion-guard at P2, critical-fix-verification at P10)
+   - Process lesson: 3 fabrications caught this session (critical-fix "broader scope" framing; recursion-guard "inline / existing"; v1 fingerprints data treated as authoritative). Captured in mistakes.md + decisions.md.
 
-4. **Two systemic SGS bugs caught + fixed:**
-   - `includes/image-controls.php:45` — `WP_Block_Type_Registry` resolving as `SGS\Blocks\WP_Block_Type_Registry` in namespaced scope. Was fatalling on every block render the first time `inject_image_controls` fired. Added leading backslash. Silent fatal that had been on main since `0d7c4fc8` (May 10) but not triggered because the filter only fires when rendering a block with `supports.sgs.imageControls`.
-   - `style-index.css` -> `style.css` naming gap — wp-scripts emits `style-index.css` per block but `register_block_type_from_metadata` looks for `style.css` literally per the block.json manifest. WordPress was silently not enqueueing ANY SGS block's scoped CSS. New `scripts/copy-built-styles.js` postbuild step copies for all 48 blocks (96 files on first run). Hooked via `package.json` postbuild script.
+4. **Phase 2 shipped** (commit `15f4d6cf`):
+   - uimax `component_libraries.is_gap_candidate` column added (FR7) — 211 rows default 0
+   - `attribute_gap_candidates` + `functionality_gap_candidates` tables created with `status` lifecycle (FR8)
+   - `plugins/sgs-blocks/scripts/recogniser/recursion-guard.py` shipped (140 LOC; self-test 3/3 PASS)
+   - uimax DB backup at `~/.agents/skills/ui-ux-pro-max/scripts/ui-ux-pro-max.db.bak-spec14-p2`
 
-5. **Trustpilot brand assets** downloaded from Trustpilot's CDN (logo black + white, 9 half-star SVGs from 1.0 through 5.0, Verified shield). Saved at `plugins/sgs-blocks/assets/brand/trustpilot/`. Free + permitted use when linking back to the business profile.
+5. **P3-P10 phase plans committed** at `.claude/plans/` (10 files, ~2,400 lines total):
+   - master-spec14-build-plan.md (cross-phase view + parallelisation + risks)
+   - phase-2-schema-and-recursion-guard.md (executed)
+   - phase-3-catalogue-build.md, phase-4-extract-refactor.md, phase-5-gap-detection.md, phase-6-staged-scaffolding.md, phase-7-lingua-franca.md, phase-8-wp-integration-wiring.md, phase-9-autonomy-and-visual-qa.md, phase-10-acceptance-harness.md
 
-6. **Orchestrator multi-section run** on Mama's mockup. Two patches applied to make it work:
-   - Voter `auto_detect_sections` now walks into `<main>` (was treating it as a leaf -> only finding 3 of 9 boundaries; now finds all 9).
-   - Stage 4-8 loops per boundary in `--auto-section` mode (was hard-fataling on `args.section=None`; now iterates `match.matches[]`, falls back to deferred-skip for `core/group` matches).
-   These patches are NOT YET COMMITTED -- a "Commit A" pending in the v3 reorg sequence below.
-
-7. **End-to-end orchestrator run verdict on Mama's:** 9 boundaries detected (all 9 mockup sections), voter primary convention = sgs-prefixed-bem on all 9, confidence-matrix correctly identified 3 registered blocks (sgs/hero, sgs/trust-bar, sgs/heritage-strip at conf 1.0) and 6 unregistered slugs (sgs/header, sgs/footer, sgs/featured-product, sgs/ingredients-section, sgs/gift-section, sgs/social-proof at conf 0.75). Stage 3 scaffolded 212 slots across the registered blocks. Stage 4-8 succeeded only for hero (extract.py is hero-specific); other 8 sections produce structurally valid empty markup. Stage 9 routed 212 extraction_failed + 1 animation_unclassified entries; 213 rows persisted to uimax recognition_log.
-
-8. **Trustpilot Sync infrastructure SHIPPED** (the same-day continuation of #3). 4 backend classes under `plugins/sgs-blocks/includes/trustpilot/` (Trustpilot_Sync, Trustpilot_REST, Trustpilot_Cron, Trustpilot_Settings) + admin JS at `assets/admin/trustpilot-sync.js`. Settings page at WP Admin > Settings > SGS Trustpilot Sync (Business URL, Off/Weekly/Daily auto-sync, Browserless endpoint + key with AES-256-CBC encryption keyed off `wp_salt('auth')`, Sync-now button, activity log of last 5 attempts). REST endpoint `POST /wp-json/sgs/v1/trustpilot-sync` (manage_options gated). WP-cron hook `sgs_trustpilot_sync_event` reschedules from the settings sanitiser. JSON-LD parser harvests standalone `Review` entities from `@graph` (Trustpilot's reference pattern — `LocalBusiness.review[]` holds `@id` pointers, not inline entities; the parser was initially built for inline-only and dropped all 4 reviews on first run, fix landed mid-session). Commit `06df2807`. Visual diff at `reports/visual-diff/trustpilot-sync-2026-05-11.md`.
-
-9. **Trustpilot Sync end-to-end proven on sandybrown.** Settings configured (Mama's URL + Browserless creds), Sync-now triggered: 4 reviews captured in ~3.5s, TrustScore 4.0 "Great", names and bodies match the reference JSON. The smoke-test-2 page block flipped from `dataSource: inline` to `synced` via REST API (app password `S8nBoJ4jyw9Hsuv782LBUFPy` for user `Claude`, name `trustpilot-wire-2026-05-11` — revoke when no longer needed). Frontend at `/trustpilot-smoke-test-2/` now renders the synced reviews; placeholder names (Steve/Thomas/Wendy/April) confirmed absent, real names (R B, mariahzaini, Halimah Nawaz, Mrs MIM) confirmed present.
-
-10. **Browserless `?token=` discovery captured as architectural lesson.** Spec called for `Authorization: Bearer` but Browserless `/content` rejects Bearer with HTTP 500 — only `?token=` query string works. Different Browserless endpoints have different auth conventions (`chrome/bql` accepts Bearer). Lesson saved to all three memory layers (workspace `learning/2026-05-11-sgs-trustpilot-sync-via-browserless-working-setup.md`, CC auto-memory `feedback_sgs_trustpilot_browserless_setup.md`, blub.db row 238).
-
-11. **Telegram failure-alert scope dropped.** Initially in the sync spec but reconsidered mid-build — activity log + `last_sync_status` badge on the settings page is the only failure surface needed for a weekly job. Captured as decision in `.claude/decisions.md`.
-
-12. **Doc-update sweep across living docs** (commit `e1af00db`). P-TP-SYNC closed in parking, new decision logged, state bumped, next-session prompt's Track 4 marked SHIPPED, plugins/sgs-blocks/CLAUDE.md gained a Backend Integrations section, sites/mamas-munches/CLAUDE.md updated (4 reviews live, not "no reviews yet"), phase-8 plan Trustpilot checkbox marked done.
+6. **QC fleet on plans** (6 reviewers — Sonnet practical / Sonnet adversarial / Sonnet ecosystem / Haiku clarity / Gemini Flash / Gemini Pro): 0 unconditional GO, 1 NO-GO (Sonnet adversarial), 5 GO-WITH-CHANGES. **12 critical fixes applied inline before P2 commit:**
+   - **rsync `--delete` catastrophe** (would wipe canonical framework) → per-file additive merge in P9 FR21
+   - P4 || P8 parallel collision on extract.py → serialised in master dep map
+   - P5 || P7 collision on orchestrator → serialised
+   - Visual-qa threshold undefined → P9 Step 0 adds `visual_qa_config.json`
+   - P10 idempotency check recursive deadlock → SQL query instead
+   - Pipeline-state bloat at 50 clones → 30-day archive policy in FR15 pre-flight
+   - P2 `__init__.py` race → verify existence (confirmed shipped phase 7)
+   - DB pending-row leak on crash → stale-pending recovery (>24h → discarded) at pre-flight
+   - P3 recursion-guard not wired → added to Step 6 DOM walk
+   - Media orphan on visual-qa FAIL → cleanup attachments on FAIL branch
+   - P3 file_path may be NULL → pre-flight resolves all paths
+   - P4 golden file via file:// → local HTTP server for accurate cascade
 
 ## Current State
 
-- **Branch:** main at `e1af00db` (Trustpilot sync ship `06df2807` + doc-update sweep `e1af00db`)
-- **Tests:** orchestrator end-to-end run on Mama's PASSED structurally (9/9 sections processed, no crashes); extract.py works only for hero (the known slot-filler.py gap from Phase 9 backlog). Trustpilot Sync end-to-end PASSED on sandybrown (4 reviews captured, parser handles `@graph` reference pattern correctly, frontend renders synced data).
-- **Build:** `npm run build` plus the postbuild step writes both style-index.css + style.css for all 48 SGS blocks
-- **Uncommitted changes:** orchestrator multi-section patches still pending (voter walks into `<main>` + stage 4-8 per-boundary loop). To commit as "A" before any v3 reorg.
-- **Live on sandybrown:** `/trustpilot-smoke-test-2/` block now `dataSource: synced` reading from `wp_options[sgs_trustpilot_data]` populated by the new sync. Weekly auto-sync registered (`sgs_trustpilot_sync_event`).
+- **Branch:** main at `15f4d6cf`
+- **Tests:** P1 QA gates PASS; P2 QA gates PASS; recursion-guard self-test 3/3
+- **uimax schema:** migrated and backed up; 211 component_libraries rows have new column at default 0
+- **Plans committed:** 10 plan files at `.claude/plans/` — execution-ready for cold-session pickup
 
-## Known Issues / Outstanding Work
+## Next Priorities
 
-### To commit next
-- Orchestrator multi-section patches in `plugins/sgs-blocks/scripts/recogniser/per-section-convention-voter.py` and `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py`
+1. **P3 — 4-layer catalogue build** (~5-6 hr). Plan at `.claude/plans/phase-3-catalogue-build.md`. Largest single phase; embarrassingly parallel via Step 6's 8-batch Sonnet fanout across 67 blocks.
+2. P4 — extract.py refactor (~3-4 hr). Depends on P3.
+3. P5 — gap detection (~2 hr). Depends on P3; can parallel with P4.
+4. P6 — staged scaffolding (~6-8 hr; 4 sub-phases). Depends on P3, P4, P5.
+5. P7 — lingua-franca conversion (~2 hr). After P5.
+6. P8 — WP integration wiring (~4-5 hr). After P4.
+7. P9 — autonomy + visual-qa gate (~3-4 hr). After P6 + P7 + P8.
+8. P10 — acceptance harness (~45 min). After P9.
 
-### Two parallel work tracks
-
-**1. `tools/recogniser-v3/` consolidation** (a 20-30 min reorg, gated on Commit A landing):
-- Move sgs-clone-orchestrator.py + the 4 dispatcher scripts + recogniser-v2/extract.py into a single `tools/recogniser-v3/` directory
-- Rename underscore-style so they're directly importable (e.g. `confidence_matrix.py` not `confidence-matrix.py`)
-- Update all path references in skill bodies + Spec 12 + state.md
-- v1 (`tools/recogniser/`) gets deleted in a separate cleanup commit after a clean reorg run
-
-**2. Trustpilot Sync infrastructure** (SHIPPED 2026-05-11, commit `06df2807`):
-- WP plugin admin settings page (Settings -> SGS Trustpilot Sync) — done
-- Auto-sync toggle (Off / Weekly / Daily) wired to WP-cron — done (`sgs_trustpilot_sync_event`)
-- "Sync now" button calling a new REST endpoint — done (`POST /wp-json/sgs/v1/trustpilot-sync`)
-- Browserless.io free-tier integration — done (`?token=` auth, NOT Bearer; key encrypted AES-256-CBC at rest)
-- Writes `wp_options[sgs_trustpilot_data]` which the existing block reads when `dataSource: synced` — done, proven on sandybrown
-- Telegram alert dropped from scope — settings page activity log + last_sync_status is the operator failure surface
-- End-to-end proof: sandybrown smoke-test-2 renders 4 live Mama's reviews via the synced path. Setup procedure documented inline on the settings page for any future SGS site.
-
-## Next Priorities (in order)
-
-1. Commit the orchestrator multi-section patches (Commit A) — still pending
-2. Either inline or in fresh session: tools/recogniser-v3 reorg (Commit B), then optionally delete tools/recogniser/ (Commit C)
-3. ~~In parallel session: Trustpilot sync infrastructure~~ — DONE 2026-05-11 (`06df2807`)
-4. Phase 8 remaining work: visual parity validation, live deploy with the orchestrator output, eyes-on review at 3 breakpoints (Bean owns this per lesson 221)
+Total remaining: 22-28 hr across multiple sessions.
 
 ## Files Modified This Session
 
 | File | What changed |
 |---|---|
-| `plugins/sgs-blocks/src/blocks/trustpilot-reviews/` | NEW — block.json, edit.js, save.js (null), index.js, view.js (looping carousel), render.php, style.css, editor.css |
-| `plugins/sgs-blocks/includes/trustpilot-helpers.php` | NEW — score-label helper, asset URL helper, stars URL helper, relative-date helper |
-| `plugins/sgs-blocks/includes/image-controls.php` | FIX — global-class namespace resolution |
-| `plugins/sgs-blocks/scripts/copy-built-styles.js` | NEW — postbuild step that fixes block style.css naming for all 48 blocks |
-| `plugins/sgs-blocks/package.json` | NEW postbuild script hook |
-| `plugins/sgs-blocks/sgs-blocks.php` | Includes trustpilot-helpers + recogniser dispatchers |
-| `plugins/sgs-blocks/assets/brand/trustpilot/` | NEW — official Trustpilot logo + 9 star SVGs + Verified shield |
-| `plugins/sgs-blocks/scripts/recogniser/per-section-convention-voter.py` | Patched to walk into `<main>` (uncommitted) |
-| `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` | Stage 4-8 loops per-boundary in auto-section mode (uncommitted) |
-| `sites/mamas-munches/research/trustpilot-reviews.json` | NEW — 4 captured reviews + TrustScore + label + average |
-| `.claude/plans/phase-8-validation-and-deploy.md` | Rewritten against actual disk state (the original referenced 6 fictional dependencies); Trustpilot scrape checkbox now `[x]` |
-| `.claude/handoff.md` | This file |
-| `.claude/state.md` | Advanced to reflect trustpilot block + sync + orchestrator multi-section verified |
-| `.claude/parking.md` | P-TP-SYNC closed + moved to Resolved 2026-05-11; P-RECOG-V3 still parked; P-4 (review scrape) resolved earlier |
-| `.claude/decisions.md` | Key decisions from this session (Trustpilot self-render path, Browserless `?token=` auth + settings-page-only failure surface, theme-inherited typography, deterministic voter, etc.) |
-| `.claude/mistakes.md` | 3 new lessons (style.css naming gotcha, image-controls namespace, plan-referencing-fictional-files repeat). Browserless `?token=` lesson lives in workspace `learning/`, CC auto-memory feedback, and blub.db row 238 — not duplicated here. |
-| `plugins/sgs-blocks/includes/trustpilot/` | NEW — 4 classes: Trustpilot_Sync (Browserless POST + JSON-LD parse + wp_options write + AES-256-CBC token encryption), Trustpilot_REST (POST /wp-json/sgs/v1/trustpilot-sync), Trustpilot_Cron (sgs_trustpilot_sync_event weekly/daily), Trustpilot_Settings (admin UI + activity log + setup checklist + Browserless signup link) |
-| `plugins/sgs-blocks/assets/admin/trustpilot-sync.js` | NEW — Sync-now button via wp.apiFetch + X-WP-Nonce |
-| `plugins/sgs-blocks/sgs-blocks.php` | require_once + register the 4 trustpilot classes |
-| `plugins/sgs-blocks/src/blocks/trustpilot-reviews/edit.js` | Help text on Data source select corrected ("Synced reads from wp_options[sgs_trustpilot_data], populated by Settings > SGS Trustpilot Sync") |
-| `plugins/sgs-blocks/CLAUDE.md` | New Backend Integrations section (Google Reviews + Trustpilot Sync rows + detail block) |
-| `sites/mamas-munches/CLAUDE.md` | 3 outdated "no Trustpilot reviews yet" lines reframed (4 live reviews + sync ready for migration) |
-| `C:/Users/Bean/.openclaw/.env` | NEW `BROWSERLESS_API_KEY` + `BROWSERLESS_ENDPOINT` entries (out-of-repo) |
-| `reports/visual-diff/trustpilot-reviews-2026-05-11.md` + `trustpilot-smoke-2026-05-11/*.png` | Visual diff report for the block (earlier in session) |
-| `reports/visual-diff/trustpilot-sync-2026-05-11.md` | Visual diff report for the sync infrastructure ship (verdict: PASS) |
+| `.claude/specs/14-CLONING-PIPELINE-CATALOGUE.md` | New; v2.1 approved; 744 lines |
+| `.claude/cloning-pipeline-flow.md` | New; one-page visual ref |
+| `.claude/plans/master-spec14-build-plan.md` | New |
+| `.claude/plans/phase-1-doc-recon-and-snapshots.md` | New; executed |
+| `.claude/plans/phase-2-...md` through `phase-10-...md` | New (9 plans) |
+| `.claude/architecture.md` L151 | Reconciled (foundation-toolkit false claim removed) |
+| `.claude/state.md` | current_phase advanced to spec-14-phase-3-catalogue-build |
+| `.claude/decisions.md` | FR18 decisions + scopes + revisions logged |
+| `.claude/parking.md` | Retired-scripts navigation entry added |
+| `~/.claude/skills/sgs-clone/SKILL.md` | 9 references reconciled (outside repo) |
+| `tests/golden/static-block-snapshots/` | 9 snapshot files + _manifest.json |
+| `plugins/sgs-blocks/scripts/recogniser/recursion-guard.py` | New (140 LOC); self-test 3/3 PASS |
+| uimax DB at `~/.agents/skills/ui-ux-pro-max/scripts/ui-ux-pro-max.db` | Migrated; backup at `.bak-spec14-p2` |
 
 ## Notes for Next Session
 
-- Mama's site only has user "Claude" on sandybrown. App passwords on sandybrown today: `deploy-verify`, `claude-api-session`, session ones from the block work (`tp-smoke-*`), plus `trustpilot-wire-2026-05-11` (`S8nBoJ4jyw9Hsuv782LBUFPy`) created during the sync wire-up. Revoke when no longer needed.
-- Browserless free tier API key is in `C:/Users/Bean/.openclaw/.env` (`BROWSERLESS_API_KEY` + `BROWSERLESS_ENDPOINT`). 6 hours/month free tier, ample for one weekly scrape per site. Account is admin@ibraheemmustafa.com.
-- For any new SGS site that wants Trustpilot reviews: install plugin -> Settings > SGS Trustpilot Sync -> paste Trustpilot URL + Browserless endpoint + key -> click Sync now -> insert block with `dataSource: synced`. Setup checklist appears inline on the settings page.
-- The orchestrator's stage 4-8 multi-section run produces composite markup as `pipeline-state/<run_id>/extract.json`. Most sections produce empty `attributes` because extract.py is hero-specific. Don't treat this as a regression; it's the known slot-filler.py gap (Phase 9 work).
-- The sgs/trustpilot-reviews block is the answer for the `section.sgs-social-proof` boundary in Mama's mockup. To wire it as the target for the orchestrator's stage 7 composition emit, the confidence-matrix needs either a lookup-table entry for "social-proof -> sgs/trustpilot-reviews" OR the pattern catalogue needs an entry. Not strictly blocking — the section gets routed to leftover-bucket cleanly today.
+- Plans are written for cold-session pickup — read `master-spec14-build-plan.md` + `phase-3-catalogue-build.md` and execute Steps 1-9 sequentially. Each step has all required fields.
+- Step 6's fanout pattern: 8 parallel Sonnet subagents, ~8 blocks each, using `/subagent-prompt` to write the cold prompts. Don't try to do all 67 blocks inline — that's 67× the work.
+- v1 fingerprints data (`tools/recogniser/data/fingerprints.json`) is FROZEN and stale; sgs-db is authoritative. Use v1 for `required_features` / `optional_features` semantic markers only.
+- Hero baseline lives at `HERO_FINGERPRINT_SELECTORS` in `tools/recogniser-v2/extract.py`. P3 Step 7 verifies hero Layer 3 entry is a superset of this constant.
+- P4 captures the golden hero extraction baseline BEFORE the refactor; that's a separate `tests/golden/hero-extraction-baseline.json` file (don't confuse with the static-block snapshots from P1).
+- Process lesson: grep before claiming code exists. Caught three fabrications this session.
 
 ## Next Session Prompt
 
-Inline next-session continuation: commit the orchestrator multi-section patches first as "Commit A" (still pending). Then either do the tools/recogniser-v3 reorg inline OR park it. Then resume Phase 8 visual-parity-validation + deploy work using the orchestrator output now that multi-section runs cleanly. Trustpilot Sync is done — no further build work there.
+Loaded at `.claude/next-session-prompt.md` — opens directly onto P3 with the cold-start orientation list + invoke checklist + done-when criteria.
