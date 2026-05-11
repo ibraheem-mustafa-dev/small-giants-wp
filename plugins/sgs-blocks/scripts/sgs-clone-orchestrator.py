@@ -1,20 +1,26 @@
 #!/usr/bin/env python3
 """
-sgs-clone orchestrator (minimal v1).
+sgs-clone orchestrator (Phase 7 rewire).
 
 Drives the 9-stage Draft-to-SGS pipeline against an HTML+CSS mockup folder.
-Wraps the existing recogniser-v2 extractor + recogniser scripts + writes
+Wraps the recogniser dispatcher scripts + recogniser-v2 extractor + writes
 JSON artefacts at pipeline-state/<run_id>/stage-N.json.
 
-This is the v1 thin orchestrator that ships M7 + M8 of the cloning-skill build
-session. Hero-only by default; multi-section + tail stages (+DEPLOY +PARITY
-+REGISTER) follow in subsequent sessions.
+Phase 7 (2026-05-11) rewired stages 1, 2, 9 from hardcoded shortcuts to
+real dispatcher calls:
+
+  Stage 1: subprocess -> recogniser/per-section-convention-voter.py
+  Stage 2: import       recogniser/confidence-matrix.py:score_candidates
+  Stage 9: subprocess -> recogniser/leftover-bucket-router.py
+           sqlite INSERT into uimax recognition_log (soft-fail)
+           subprocess -> recogniser/simple_html_review_report.py
+
+Stages 3 (slot list from block.json) and 4-8 (extract.py harvest) unchanged.
 
 Usage:
   python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py \\
     --mockup sites/mamas-munches/mockups/homepage/index.html \\
-    --section "section.hero" \\
-    --block sgs/hero \\
+    --section "section.sgs-hero" \\
     --client mamas-munches \\
     --page homepage \\
     --media-map sites/mamas-munches/research/sandybrown-media-map.json
@@ -22,15 +28,27 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
+import os
+import sqlite3
 import subprocess
 import sys
+import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8")
 
 REPO = Path(__file__).resolve().parents[3]
+RECOGNISER_DIR = Path(__file__).resolve().parent / "recogniser"
+
+VOTER_SCRIPT = RECOGNISER_DIR / "per-section-convention-voter.py"
+MATRIX_SCRIPT = RECOGNISER_DIR / "confidence-matrix.py"
+ROUTER_SCRIPT = RECOGNISER_DIR / "leftover-bucket-router.py"
+REVIEW_SCRIPT = RECOGNISER_DIR / "simple_html_review_report.py"
+
+UIMAX_DB = Path(os.path.expanduser("~/.agents/skills/ui-ux-pro-max/scripts/ui-ux-pro-max.db"))
 
 
 def now_iso() -> str:
@@ -59,78 +77,164 @@ def write_artefact(run_dir: Path, stage_n: int, stage_name: str, status: str, ou
     return path
 
 
-def stage_1_boundary(mockup_path: Path, section_selector: str, run_dir: Path) -> dict:
-    """BOUNDARY — minimal v1: trust the user-provided --section selector."""
+def _load_module_from_path(module_name: str, path: Path):
+    """Import a python file whose name contains hyphens (e.g. confidence-matrix.py)."""
+    spec = importlib.util.spec_from_file_location(module_name, path)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"Could not load module from {path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+# Lazy-import the confidence-matrix module on first call.
+_confidence_matrix_mod = None
+
+
+def confidence_matrix():
+    global _confidence_matrix_mod
+    if _confidence_matrix_mod is None:
+        _confidence_matrix_mod = _load_module_from_path("sgs_confidence_matrix", MATRIX_SCRIPT)
+    return _confidence_matrix_mod
+
+
+# ---------------------------------------------------------------------------
+# Stage 1 -- BOUNDARY (dispatcher: per-section-convention-voter.py)
+# ---------------------------------------------------------------------------
+
+def stage_1_boundary(mockup_path: Path, section_selector: str, auto_section: bool, run_dir: Path) -> dict:
+    """Stage 1 -- delegate to per-section-convention-voter.py via subprocess."""
     started = now_iso()
-    output = {
-        "boundaries": [
-            {
-                "boundary_id": "b1",
-                "selector": section_selector,
-                "semantic_role_hint": section_selector.split(".")[-1] if "." in section_selector else section_selector,
-                "convention_per_section": "custom-bem-ish",
-                "fallback_strategy": "class-match",
-            }
-        ],
-        "convention_summary": {"primary": "custom-bem-ish", "secondary": [], "mixed_sections_count": 0},
-    }
-    write_artefact(run_dir, 1, "boundary", "complete", output, started, [], [])
-    return output
-
-
-def stage_2_match(boundary_output: dict, target_block: str, run_dir: Path) -> dict:
-    started = now_iso()
-    output = {
-        "matches": [
-            {
-                "boundary_id": "b1",
-                "block_name": target_block,
-                "confidence": 0.95,
-                "alternatives": [],
-                "ranked_candidates": [
-                    {"block_name": target_block, "confidence": 0.95, "tie_breaker": "user-supplied"}
-                ],
-            }
-        ]
-    }
-    write_artefact(run_dir, 2, "match", "complete", output, started, [], [])
-    return output
-
-
-def stage_3_slot_list(target_block: str, run_dir: Path) -> dict:
-    started = now_iso()
-    block_slug = target_block.split("/")[-1]
-    block_json_path = REPO / "plugins" / "sgs-blocks" / "src" / "blocks" / block_slug / "block.json"
-    warnings = []
-    slots = []
-    if block_json_path.exists():
-        block_json = json.loads(block_json_path.read_text(encoding="utf-8"))
-        for attr_name, attr_def in (block_json.get("attributes") or {}).items():
-            default_val = attr_def.get("default") if isinstance(attr_def, dict) else None
-            slots.append({
-                "slot_name": attr_name,
-                "attribute_role": "auto-derived",
-                "default": default_val,
-                "search_scope": "self",
-            })
+    voter_out = run_dir / "voter.json"
+    cmd = [
+        sys.executable, str(VOTER_SCRIPT),
+        "--mockup", str(mockup_path),
+        "--out", str(voter_out),
+    ]
+    if auto_section:
+        cmd.append("--auto-section")
     else:
-        warnings.append(f"block.json not found at {block_json_path}")
+        cmd.extend(["--section", section_selector])
 
-    output = {"slot_lists": {"b1": {"block_name": target_block, "slots": slots}}, "version_drift_warnings": warnings}
+    proc = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8")
+    errors: list[str] = []
+    warnings: list[str] = []
+    output: dict = {}
+    if proc.returncode != 0:
+        errors.append(f"voter exited {proc.returncode}: {(proc.stderr or '')[:500]}")
+    elif voter_out.exists():
+        output = json.loads(voter_out.read_text(encoding="utf-8"))
+    else:
+        errors.append("voter completed but voter.json was not written")
+
+    status = "complete" if not errors else "failed"
+    write_artefact(run_dir, 1, "boundary", status, output, started, errors, warnings)
+    return output
+
+
+# ---------------------------------------------------------------------------
+# Stage 2 -- MATCH (dispatcher: confidence-matrix.score_candidates importable)
+# ---------------------------------------------------------------------------
+
+def stage_2_match(boundary_output: dict, run_dir: Path) -> dict:
+    """Stage 2 -- import confidence-matrix.score_candidates and rank candidates per boundary."""
+    started = now_iso()
+    errors: list[str] = []
+    warnings: list[str] = []
+
+    try:
+        cm = confidence_matrix()
+        registered = cm.discover_registered_blocks()
+        matches: list[dict] = []
+        for boundary in boundary_output.get("boundaries", []):
+            ranked = cm.score_candidates(boundary, registered)
+            top = ranked[0] if ranked else {"block_name": "core/group", "confidence": 0.0, "tie_breaker": "deferred-no-match"}
+            matches.append({
+                "boundary_id": boundary["boundary_id"],
+                "section_id": boundary.get("section_id"),
+                "block_name": top["block_name"],
+                "confidence": top["confidence"],
+                "alternatives": ranked[1:],
+                "ranked_candidates": ranked,
+            })
+        output = {"matches": matches}
+    except Exception as exc:  # noqa: BLE001 -- top-level safety; capture and continue
+        errors.append(f"confidence-matrix import/run failed: {exc}")
+        output = {"matches": []}
+
+    status = "complete" if not errors else "failed"
+    write_artefact(run_dir, 2, "match", status, output, started, errors, warnings)
+    return output
+
+
+# ---------------------------------------------------------------------------
+# Stage 3 -- SLOT LIST (unchanged; reads block.json directly)
+# ---------------------------------------------------------------------------
+
+def stage_3_slot_list(match_output: dict, run_dir: Path) -> dict:
+    """Stage 3 -- build the slot scaffold from each matched block's block.json."""
+    started = now_iso()
+    warnings: list[str] = []
+    slot_lists: dict[str, dict] = {}
+
+    for m in match_output.get("matches", []):
+        boundary_id = m["boundary_id"]
+        block_name = m["block_name"]
+        section_id = m.get("section_id")
+        slug = block_name.split("/")[-1] if "/" in block_name else block_name
+        block_json_path = REPO / "plugins" / "sgs-blocks" / "src" / "blocks" / slug / "block.json"
+        slots: list[dict] = []
+        if block_json_path.exists():
+            block_json = json.loads(block_json_path.read_text(encoding="utf-8"))
+            for attr_name, attr_def in (block_json.get("attributes") or {}).items():
+                default_val = attr_def.get("default") if isinstance(attr_def, dict) else None
+                slots.append({
+                    "slot_name": attr_name,
+                    "attribute_role": "auto-derived",
+                    "default": default_val,
+                    "search_scope": "self",
+                })
+        else:
+            warnings.append(f"block.json not found at {block_json_path}")
+        slot_lists[boundary_id] = {
+            "block_name": block_name,
+            "section_id": section_id,
+            "slots": slots,
+        }
+
+    output = {"slot_lists": slot_lists, "version_drift_warnings": warnings}
     write_artefact(run_dir, 3, "slot-list", "complete" if not warnings else "warning", output, started, [], warnings)
     return output
 
 
-def stage_4_5_6_7_8_extract(args, run_dir: Path) -> dict:
-    """EXTRACT through SERIALISE via existing tools/recogniser-v2/extract.py."""
+# ---------------------------------------------------------------------------
+# Stage 4-8 -- EXTRACT through SERIALISE (unchanged; calls extract.py)
+# ---------------------------------------------------------------------------
+
+def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path) -> dict:
+    """Stage 4-8 -- delegate to tools/recogniser-v2/extract.py (single-section v1)."""
     started = now_iso()
     extract_out = run_dir / "extract-result.json"
+
+    # The current extract.py runs on a single section per invocation. For
+    # multi-section mode we use the first match; multi-section walking is
+    # Phase 8 scope (extract.py needs a per-boundary loop).
+    matches = match_output.get("matches", [])
+    if not matches:
+        errors = ["no matches from stage 2 -- nothing to extract"]
+        output = {"extract_result_path": "", "extracted_attributes": {}, "block_markup": "", "coverage": {}}
+        write_artefact(run_dir, 4, "extract-harvest-classify-compose-serialise", "failed", output, started, errors, [])
+        return output
+
+    top = matches[0]
+    target_block = top["block_name"]
+    section_selector = args.section
     cmd = [
         sys.executable,
         str(REPO / "tools" / "recogniser-v2" / "extract.py"),
         "--mockup", str(args.mockup),
-        "--section", args.section,
-        "--block", args.block,
+        "--section", section_selector,
+        "--block", target_block,
         "--out", str(extract_out),
     ]
     if args.media_map:
@@ -141,11 +245,11 @@ def stage_4_5_6_7_8_extract(args, run_dir: Path) -> dict:
         cmd.append("--no-playwright")
 
     proc = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8")
-    errors = []
-    warnings = []
+    errors: list[str] = []
+    warnings: list[str] = []
     if proc.returncode != 0:
         errors.append(f"extract.py exited {proc.returncode}")
-        errors.append(proc.stderr[:1000] if proc.stderr else "no stderr")
+        errors.append((proc.stderr or "no stderr")[:1000])
     extracted = {}
     if extract_out.exists():
         try:
@@ -165,84 +269,170 @@ def stage_4_5_6_7_8_extract(args, run_dir: Path) -> dict:
     return output
 
 
+# ---------------------------------------------------------------------------
+# Stage 9 -- REPORT (dispatcher: leftover-bucket-router + recognition_log + simple_html_review_report)
+# ---------------------------------------------------------------------------
+
+def insert_recognition_log(run_id: str, buckets_output: dict) -> tuple[int, list[str]]:
+    """INSERT one row per leftover entry into uimax recognition_log table.
+
+    Soft-fail: any DB error logs a warning and returns the count of rows
+    actually inserted. recognition_log is a learning surface, not a runtime
+    gate, so DB unavailability does not block a clone that otherwise succeeded.
+    """
+    warnings: list[str] = []
+    if not UIMAX_DB.exists():
+        warnings.append(f"uimax DB not found at {UIMAX_DB}; recognition_log INSERT skipped")
+        return 0, warnings
+
+    leftover_buckets = buckets_output.get("leftover_buckets", {})
+    if not any(leftover_buckets.values()):
+        return 0, warnings
+
+    rows_inserted = 0
+    try:
+        con = sqlite3.connect(str(UIMAX_DB), timeout=10.0)
+        cur = con.cursor()
+        now = now_iso()
+        for bucket_type, items in leftover_buckets.items():
+            for item in items:
+                rid = str(uuid.uuid4())
+                selector = item.get("selector") or item.get("section_id") or item.get("slot") or ""
+                surrounding = json.dumps(item, ensure_ascii=False)[:1000]
+                severity = "low"
+                if bucket_type in ("unrecognised_section", "structural_mismatch_or_orphan"):
+                    severity = "medium"
+                proposed_action = "review-and-confirm"
+                if bucket_type == "extraction_failed":
+                    proposed_action = "improve-extractor-or-fill-manually"
+                elif bucket_type == "unrecognised_class":
+                    proposed_action = "register-as-new-block-or-pattern"
+                cur.execute(
+                    """INSERT INTO recognition_log
+                       (id, clone_run_id, bucket_type, selector, surrounding_dom,
+                        frequency, severity, proposed_action, operator_decision,
+                        operator_notes, new_pattern_id, created_at, decided_at)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                    (rid, run_id, bucket_type, str(selector)[:500], surrounding,
+                     "1", severity, proposed_action, None, None, None, now, None),
+                )
+                rows_inserted += 1
+        con.commit()
+        con.close()
+    except sqlite3.Error as exc:
+        warnings.append(f"recognition_log INSERT soft-failed: {exc}")
+
+    return rows_inserted, warnings
+
+
 def stage_9_report(boundary: dict, match: dict, slot_list: dict, extract: dict, run_dir: Path) -> dict:
+    """Stage 9 -- route leftovers + INSERT recognition_log + render review HTML."""
     started = now_iso()
-    coverage = extract.get("coverage") or {}
-    extracted_attrs = extract.get("extracted_attributes") or {}
-    slots = (slot_list.get("slot_lists") or {}).get("b1", {}).get("slots") or []
-    open_slots = [s["slot_name"] for s in slots if s["slot_name"] not in extracted_attrs]
-    coverage_percent = round((len(extracted_attrs) / max(len(slots), 1)) * 100, 1)
+    errors: list[str] = []
+    warnings: list[str] = []
 
-    leftover_buckets = {
-        "unrecognised_class": [],
-        "unrecognised_section": [],
-        "extraction_failed": [{"slot": name, "reason": "no value extracted"} for name in open_slots],
-        "animation_unclassified": [],
-        "structural_mismatch_or_orphan": [],
-    }
+    # 9a. Run leftover-bucket-router via subprocess (writes its own JSON).
+    buckets_path = run_dir / "leftover-buckets.json"
+    boundary_path = run_dir / "stage-1.json"
+    match_path = run_dir / "stage-2.json"
+    slot_list_path = run_dir / "stage-3.json"
+    extract_path = run_dir / "stage-4.json"
 
+    # Router consumes the *output* sub-dicts, so write standalone copies.
+    boundary_copy = run_dir / "voter.json"  # already written by stage 1
+    match_copy = run_dir / "match.json"
+    slot_list_copy = run_dir / "slot-list.json"
+    extract_copy = run_dir / "extract.json"
+    match_copy.write_text(json.dumps(match, indent=2, ensure_ascii=False), encoding="utf-8")
+    slot_list_copy.write_text(json.dumps(slot_list, indent=2, ensure_ascii=False), encoding="utf-8")
+    extract_copy.write_text(json.dumps(extract, indent=2, ensure_ascii=False), encoding="utf-8")
+
+    cmd_router = [
+        sys.executable, str(ROUTER_SCRIPT),
+        "--boundary", str(boundary_copy),
+        "--match", str(match_copy),
+        "--slot-list", str(slot_list_copy),
+        "--extract", str(extract_copy),
+        "--out", str(buckets_path),
+    ]
+    proc = subprocess.run(cmd_router, capture_output=True, text=True, encoding="utf-8")
+    buckets_output: dict = {"leftover_buckets": {}, "totals": {}, "total_count": 0}
+    if proc.returncode != 0:
+        errors.append(f"leftover-bucket-router exited {proc.returncode}: {(proc.stderr or '')[:500]}")
+    elif buckets_path.exists():
+        buckets_output = json.loads(buckets_path.read_text(encoding="utf-8"))
+    else:
+        warnings.append("router completed without writing leftover-buckets.json")
+
+    # 9b. INSERT into recognition_log (soft-fail).
+    rows_inserted, log_warnings = insert_recognition_log(run_dir.name, buckets_output)
+    warnings.extend(log_warnings)
+
+    # 9c. Render operator-review HTML via simple_html_review_report subprocess.
     review_html_path = run_dir / "operator-review.html"
-    review_html_path.write_text(_render_review_html(run_dir.name, boundary, match, coverage_percent, extracted_attrs, open_slots, leftover_buckets), encoding="utf-8")
+    cmd_review = [
+        sys.executable, str(REVIEW_SCRIPT),
+        "--boundary", str(boundary_copy),
+        "--match", str(match_copy),
+        "--slot-list", str(slot_list_copy),
+        "--extract", str(extract_copy),
+        "--buckets", str(buckets_path),
+        "--run-id", run_dir.name,
+        "--out", str(review_html_path),
+    ]
+    proc_review = subprocess.run(cmd_review, capture_output=True, text=True, encoding="utf-8")
+    if proc_review.returncode != 0:
+        errors.append(f"simple_html_review_report exited {proc_review.returncode}: {(proc_review.stderr or '')[:500]}")
+
+    # 9d. Coverage roll-up.
+    extracted_attrs = (extract or {}).get("extracted_attributes") or {}
+    slot_lists = (slot_list or {}).get("slot_lists") or {}
+    coverage_by_boundary: dict[str, dict] = {}
+    for boundary_id, scaffold in slot_lists.items():
+        slots = scaffold.get("slots", [])
+        open_slots = [s["slot_name"] for s in slots if s["slot_name"] not in extracted_attrs]
+        attrs_total = len(slots)
+        attrs_extracted = attrs_total - len(open_slots) if attrs_total else 0
+        pct = round((attrs_extracted / attrs_total * 100), 1) if attrs_total else 0.0
+        coverage_by_boundary[boundary_id] = {
+            "attrs_extracted": attrs_extracted,
+            "attrs_total": attrs_total,
+            "coverage_percent": pct,
+            "open_slots": open_slots,
+        }
 
     output = {
-        "coverage": {"b1": {"attrs_extracted": len(extracted_attrs), "attrs_total": len(slots), "coverage_percent": coverage_percent, "open_slots": open_slots}},
-        "leftover_buckets": leftover_buckets,
+        "coverage": coverage_by_boundary,
+        "leftover_buckets": buckets_output.get("leftover_buckets", {}),
+        "leftover_totals": buckets_output.get("totals", {}),
+        "leftover_total_count": buckets_output.get("total_count", 0),
+        "recognition_log_rows_inserted": rows_inserted,
         "operator_review_html_path": str(review_html_path),
     }
-    write_artefact(run_dir, 9, "report", "complete", output, started, [], [])
+    status = "complete" if not errors else "failed"
+    write_artefact(run_dir, 9, "report", status, output, started, errors, warnings)
     return output
 
 
-def _render_review_html(run_id: str, boundary: dict, match: dict, coverage_percent: float, extracted_attrs: dict, open_slots: list, leftover_buckets: dict) -> str:
-    open_rows = "".join(f"<li>{s}</li>" for s in open_slots) or "<li>None</li>"
-    extracted_rows = "".join(f"<tr><td>{k}</td><td><code>{json.dumps(v, ensure_ascii=False)[:200]}</code></td></tr>" for k, v in extracted_attrs.items())
-    bucket_rows = "".join(f"<li><strong>{name}:</strong> {len(items)} entries</li>" for name, items in leftover_buckets.items())
-    return f"""<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>Operator Review {run_id}</title>
-  <style>
-    body {{ font-family: system-ui, sans-serif; max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }}
-    table {{ width: 100%; border-collapse: collapse; margin: 1rem 0; }}
-    th, td {{ text-align: left; padding: 0.5rem; border-bottom: 1px solid #ddd; }}
-    code {{ font-size: 0.85em; background: #f3f3f3; padding: 0 0.3em; }}
-    .stat {{ background: #f8f8f8; padding: 1rem; border-radius: 6px; margin: 1rem 0; }}
-    .pass {{ color: #2E7D4F; font-weight: 600; }}
-    .warn {{ color: #C56A7A; font-weight: 600; }}
-  </style>
-</head>
-<body>
-  <h1>Operator Review</h1>
-  <p><strong>Run id:</strong> <code>{run_id}</code></p>
-  <p><strong>Boundary:</strong> {boundary.get('boundaries', [{}])[0].get('selector', 'n/a')}</p>
-  <p><strong>Block matched:</strong> {match.get('matches', [{}])[0].get('block_name', 'n/a')} (confidence {match.get('matches', [{}])[0].get('confidence', 0)})</p>
-  <div class="stat">
-    <p><strong>Coverage:</strong> <span class="{'pass' if coverage_percent >= 80 else 'warn'}">{coverage_percent}%</span></p>
-    <p><strong>Extracted:</strong> {len(extracted_attrs)} attrs</p>
-    <p><strong>Open slots:</strong> {len(open_slots)}</p>
-  </div>
-  <h2>Extracted attributes</h2>
-  <table><thead><tr><th>Attribute</th><th>Value</th></tr></thead><tbody>{extracted_rows}</tbody></table>
-  <h2>Open slots (TODO)</h2>
-  <ul>{open_rows}</ul>
-  <h2>Leftover buckets</h2>
-  <ul>{bucket_rows}</ul>
-</body>
-</html>"""
-
+# ---------------------------------------------------------------------------
+# Driver
+# ---------------------------------------------------------------------------
 
 def main():
-    parser = argparse.ArgumentParser(description="sgs-clone orchestrator (minimal v1)")
+    parser = argparse.ArgumentParser(description="sgs-clone orchestrator (Phase 7 rewire)")
     parser.add_argument("--mockup", type=Path, required=True)
-    parser.add_argument("--section", type=str, required=True)
-    parser.add_argument("--block", type=str, required=True)
+    parser.add_argument("--section", type=str, default=None, help="CSS selector for a single section")
+    parser.add_argument("--auto-section", action="store_true", help="Auto-detect all top-level sections (Phase 8 forward)")
+    parser.add_argument("--block", type=str, default=None, help="(deprecated; ignored when voter present) target block slug")
     parser.add_argument("--client", type=str, required=True)
     parser.add_argument("--page", type=str, required=True)
     parser.add_argument("--media-map", type=Path, default=None)
     parser.add_argument("--viewport", type=int, default=1440)
     parser.add_argument("--no-playwright", action="store_true")
     args = parser.parse_args()
+
+    if not args.section and not args.auto_section:
+        sys.exit("ERROR: provide --section <selector> or --auto-section")
 
     run_id = make_run_id(args.client, args.page)
     run_dir = REPO / "pipeline-state" / run_id
@@ -251,22 +441,29 @@ def main():
     print(f"[orchestrator] run_id={run_id}")
     print(f"[orchestrator] run_dir={run_dir}")
 
-    boundary = stage_1_boundary(args.mockup, args.section, run_dir)
-    print(f"[stage-1] boundary detected: {boundary['boundaries'][0]['selector']}")
+    boundary = stage_1_boundary(args.mockup, args.section or "", args.auto_section, run_dir)
+    bcount = len(boundary.get("boundaries", []))
+    primary_conv = (boundary.get("convention_summary") or {}).get("primary", "?")
+    print(f"[stage-1] voter: {bcount} boundaries, primary convention={primary_conv}")
 
-    match = stage_2_match(boundary, args.block, run_dir)
-    print(f"[stage-2] matched block: {match['matches'][0]['block_name']} confidence={match['matches'][0]['confidence']}")
+    match = stage_2_match(boundary, run_dir)
+    if match.get("matches"):
+        top = match["matches"][0]
+        print(f"[stage-2] confidence-matrix top: {top['block_name']} (conf={top['confidence']:.2f}) across {len(match['matches'])} sections")
+    else:
+        print("[stage-2] confidence-matrix produced no matches")
 
-    slot_list = stage_3_slot_list(args.block, run_dir)
-    slot_count = len((slot_list.get('slot_lists') or {}).get('b1', {}).get('slots') or [])
-    print(f"[stage-3] slot list generated: {slot_count} slots from block.json")
+    slot_list = stage_3_slot_list(match, run_dir)
+    slot_count = sum(len(v.get("slots", [])) for v in slot_list.get("slot_lists", {}).values())
+    print(f"[stage-3] slot list: {slot_count} slots across {len(slot_list.get('slot_lists', {}))} sections")
 
-    extract_out = stage_4_5_6_7_8_extract(args, run_dir)
-    extracted_count = len(extract_out.get('extracted_attributes') or {})
-    print(f"[stage-4-8] extract+harvest+classify+compose+serialise: {extracted_count} attrs extracted")
+    extract_out = stage_4_5_6_7_8_extract(args, match, run_dir)
+    extracted_count = len(extract_out.get("extracted_attributes") or {})
+    print(f"[stage-4-8] extract: {extracted_count} attrs extracted")
 
     report = stage_9_report(boundary, match, slot_list, extract_out, run_dir)
-    print(f"[stage-9] coverage: {report['coverage']['b1']['coverage_percent']}% extracted, {len(report['coverage']['b1']['open_slots'])} open slots")
+    print(f"[stage-9] leftover entries: {report['leftover_total_count']} across {sum(1 for v in report['leftover_totals'].values() if v > 0)} buckets")
+    print(f"[stage-9] recognition_log rows inserted: {report['recognition_log_rows_inserted']}")
     print(f"[stage-9] operator-review: {report['operator_review_html_path']}")
     print(f"[orchestrator] DONE. Artefacts in {run_dir}")
 

@@ -92,3 +92,10 @@ plugins/sgs-blocks/vendor/
 vendor/
 composer.phar
 tools/**/__pycache__/
+
+# Pipeline run-time artefacts (sgs-clone-orchestrator output)
+pipeline-state/
+
+# Python bytecode caches
+**/__pycache__/
+*.pyc
