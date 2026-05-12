@@ -5,7 +5,7 @@
 > `plugins/sgs-blocks/scripts/generate-block-reference.py`.
 > Refresh: `python plugins/sgs-blocks/scripts/generate-block-reference.py`.
 
-**Last generated:** 2026-05-11T13:12:47
+**Last generated:** 2026-05-12T16:29:47
 
 **For architectural patterns, customisation standards, and build status, see [`02-SGS-BLOCKS.md`](02-SGS-BLOCKS.md).** This file is the per-block attribute/supports/selector reference only.
 
@@ -754,7 +754,7 @@ _SGS Data Display_
 
 **Type:** Dynamic
 
-Container for visualisation sub-blocks driven by a shared SGS data source.
+Parent container block for data visualisation sub-blocks (charts + tables). Data source assignment lives on the parent (internal WP source OR external URL/API); per-sub-block controls choose which subset of data to render + visual styling. Same parent/child pattern as core/buttons -> core/button. Sub-blocks to follow: sgs/data-table-* (several table types) + sgs/chart-* (20+ chart types, likely Vega-Lite-backed given the 626 chart templates already in uimax).
 
 **Attributes** (5):
 
@@ -1170,7 +1170,7 @@ _SGS Media_
 
 **Type:** Dynamic
 
-Absolute-positioned decorative image or video that floats freely over sections. Used for organic, editorial-style design with optional parallax scroll effects. Accepts images or local/embedded videos.
+Single content block for placing an image OR video with Schema.org markup (ImageObject / VideoObject) and alt text. Supports both Media Library and external URLs. Replaces ad-hoc <img> + <video> placement across blocks.
 
 **Attributes** (43):
 
@@ -2763,6 +2763,118 @@ Tabbed content with horizontal or vertical layout, full ARIA support, and deep l
 | `root` | `.wp-block-sgs-tabs` |
 
 ---
+
+## Canonical Vocabulary
+
+Source of truth for SGS attribute decomposition (Spec 15 §3.3). Regenerated from `slot_synonyms`, `property_suffixes`, and `modifier_suffixes` in `sgs-framework.db`. Used by `/sgs-update` Stage 4 (canonical assignment) and Stage 9 (drift validator).
+
+### Slot Synonyms
+
+| Canonical slot | Aliases | HTML tag | Description |
+|---|---|---|---|
+| `alt` | [] | — | Image alt text |
+| `avatar` | ["portrait", "profile", "authorImage"] | img | Person portrait |
+| `backgroundMedia` | ["backgroundImage", "backgroundVideo", "bgImage", "bgVideo", "heroImage"] | — | Background polymorphic |
+| `badge` | ["pill"] | span | Decorative badge / pill |
+| `button` | ["cta", "ctaPrimary", "primaryCta", "primaryButton"] | a | Primary CTA / button |
+| `buttonSecondary` | ["ctaSecondary", "secondaryCta", "secondaryButton"] | a | Secondary CTA / button |
+| `caption` | [] | figcaption | Image caption |
+| `date` | ["datetime", "timestamp"] | time | Date |
+| `heading` | ["title", "headline", "name"] | h1 | Primary heading |
+| `icon` | ["symbol", "glyph"] | svg | Iconography |
+| `items` | [] | ul | Repeating list of items |
+| `label` | ["eyebrow", "kicker", "tag"] | span | Pre-heading label |
+| `link` | ["url", "href", "anchor"] | a | Link target URL |
+| `media` | ["image", "photo", "picture", "video", "embed"] | img | Polymorphic image/video slot |
+| `options` | [] | select | Form-field selection options |
+| `price` | ["cost", "amount"] | span | Price |
+| `rating` | ["stars", "score"] | span | Star rating |
+| `separator` | ["divider", "rule"] | hr | Visual divider |
+| `subheading` | ["subtitle", "subHeadline", "sub"] | h2 | Sub-heading |
+| `text` | ["body", "description", "content", "caption", "copy"] | p | Paragraph body |
+
+_Total: 20 canonical slots._
+
+### Property Suffixes
+
+| Suffix | Role | CSS property | Token-matched | Token source |
+|---|---|---|---|---|
+| `Alignment` | behaviour | — | no | — |
+| `AspectRatio` | layout | aspect-ratio | yes | — |
+| `Background` | color | background-color | yes | palette |
+| `BackgroundColor` | color | background-color | yes | palette |
+| `BackgroundColour` | color | background-color | yes | palette |
+| `BorderColor` | color | border-color | yes | palette |
+| `BorderColour` | color | border-color | yes | palette |
+| `BorderRadius` | visual | border-radius | yes | — |
+| `BorderStyle` | visual | border-style | yes | — |
+| `BorderWidth` | visual | border-width | yes | — |
+| `BoxShadow` | visual | box-shadow | yes | shadow.presets |
+| `Color` | color | color | yes | palette |
+| `Colour` | color | color | yes | palette |
+| `ErrorMessage` | behaviour | — | no | — |
+| `FontFamily` | typography | font-family | yes | fontFamilies |
+| `FontSize` | typography | font-size | yes | fontSizes |
+| `FontWeight` | typography | font-weight | yes | — |
+| `Foreground` | color | color | yes | palette |
+| `Gap` | layout | gap | yes | spacingSizes |
+| `Height` | layout | height | yes | — |
+| `HelpText` | behaviour | — | no | — |
+| `Href` | content | — | no | — |
+| `Layout` | layout | — | yes | — |
+| `LetterSpacing` | typography | letter-spacing | yes | — |
+| `LineHeight` | typography | line-height | yes | — |
+| `Link` | content | — | no | — |
+| `Margin` | layout | margin | yes | spacingSizes |
+| `MaxHeight` | layout | max-height | yes | — |
+| `MaxWidth` | layout | max-width | yes | — |
+| `MinHeight` | layout | min-height | yes | — |
+| `MinWidth` | layout | min-width | yes | — |
+| `ObjectFit` | visual | object-fit | yes | — |
+| `ObjectPosition` | visual | object-position | yes | — |
+| `Opacity` | visual | opacity | yes | — |
+| `Padding` | layout | padding | yes | spacingSizes |
+| `Placeholder` | behaviour | — | no | — |
+| `Required` | behaviour | — | no | — |
+| `Shadow` | color | box-shadow | yes | shadow.presets |
+| `Stroke` | color | stroke | yes | palette |
+| `Style` | behaviour | — | no | — |
+| `TextAlign` | typography | text-align | yes | — |
+| `TextColor` | color | color | yes | palette |
+| `TextColour` | color | color | yes | palette |
+| `TextDecoration` | typography | text-decoration | yes | — |
+| `TextTransform` | typography | text-transform | yes | — |
+| `Url` | content | — | no | — |
+| `Variant` | behaviour | — | no | — |
+| `Width` | layout | width | yes | — |
+
+_Total: 48 property suffixes._
+
+### Modifier Suffixes
+
+| Suffix | Kind | Notes |
+|---|---|---|
+| `Desktop` | breakpoint |  |
+| `Mobile` | breakpoint |  |
+| `Tablet` | breakpoint |  |
+| `BL` | corner |  |
+| `BR` | corner |  |
+| `TL` | corner |  |
+| `TR` | corner |  |
+| `Bottom` | side |  |
+| `Left` | side |  |
+| `Right` | side |  |
+| `Top` | side |  |
+| `Active` | state |  |
+| `Disabled` | state |  |
+| `Focus` | state |  |
+| `Hover` | state |  |
+| `Unit` | unit |  |
+| `Primary` | variant |  |
+| `Secondary` | variant |  |
+| `Tertiary` | variant |  |
+
+_Total: 19 modifier suffixes._
 
 ## Stats
 

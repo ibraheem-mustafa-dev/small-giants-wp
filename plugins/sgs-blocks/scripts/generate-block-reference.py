@@ -171,6 +171,80 @@ def category_sort_key(cat):
     return (1, cat or "")
 
 
+def render_canonical_vocabulary(conn):
+    """Spec 15 §3.3 — append canonical vocabulary appendix to the reference doc.
+
+    Three sections: slot synonyms (content identity), property suffixes
+    (CSS role), modifier suffixes (breakpoint / state / scope). Each table
+    is regenerated from the DB so the appendix never drifts from the
+    canonical source.
+    """
+    lines = []
+    lines.append("## Canonical Vocabulary")
+    lines.append("")
+    lines.append(
+        "Source of truth for SGS attribute decomposition (Spec 15 §3.3). "
+        "Regenerated from `slot_synonyms`, `property_suffixes`, and `modifier_suffixes` "
+        "in `sgs-framework.db`. Used by `/sgs-update` Stage 4 (canonical assignment) "
+        "and Stage 9 (drift validator)."
+    )
+    lines.append("")
+
+    # Slot synonyms — content-identity slot vocab
+    slot_rows = list(conn.execute(
+        "SELECT canonical_slot, aliases, html_semantic_tag, description "
+        "FROM slot_synonyms ORDER BY canonical_slot"
+    ))
+    lines.append("### Slot Synonyms")
+    lines.append("")
+    lines.append("| Canonical slot | Aliases | HTML tag | Description |")
+    lines.append("|---|---|---|---|")
+    for canonical, aliases, html_tag, desc in slot_rows:
+        aliases_str = (aliases or "").replace("|", "\\|")
+        lines.append(
+            f"| `{canonical}` | {aliases_str} | "
+            f"{html_tag or '—'} | {(desc or '').replace('|', '\\|')} |"
+        )
+    lines.append("")
+    lines.append(f"_Total: {len(slot_rows)} canonical slots._")
+    lines.append("")
+
+    # Property suffixes — CSS role vocab
+    prop_rows = list(conn.execute(
+        "SELECT suffix, role, css_property, is_token_matched, token_source "
+        "FROM property_suffixes ORDER BY suffix"
+    ))
+    lines.append("### Property Suffixes")
+    lines.append("")
+    lines.append("| Suffix | Role | CSS property | Token-matched | Token source |")
+    lines.append("|---|---|---|---|---|")
+    for suffix, role, css_prop, is_token, token_src in prop_rows:
+        lines.append(
+            f"| `{suffix}` | {role or '—'} | "
+            f"{css_prop or '—'} | {'yes' if is_token else 'no'} | "
+            f"{token_src or '—'} |"
+        )
+    lines.append("")
+    lines.append(f"_Total: {len(prop_rows)} property suffixes._")
+    lines.append("")
+
+    # Modifier suffixes — breakpoint / state / scope vocab
+    mod_rows = list(conn.execute(
+        "SELECT suffix, kind, notes FROM modifier_suffixes ORDER BY kind, suffix"
+    ))
+    lines.append("### Modifier Suffixes")
+    lines.append("")
+    lines.append("| Suffix | Kind | Notes |")
+    lines.append("|---|---|---|")
+    for suffix, kind, notes in mod_rows:
+        lines.append(f"| `{suffix}` | {kind or '—'} | {(notes or '').replace('|', '\\|')} |")
+    lines.append("")
+    lines.append(f"_Total: {len(mod_rows)} modifier suffixes._")
+    lines.append("")
+
+    return lines
+
+
 def generate(db_path, output_path):
     if not db_path.exists():
         print("ERROR: DB not found at " + str(db_path), file=sys.stderr)
@@ -230,6 +304,8 @@ def generate(db_path, output_path):
             out.append("")
             for block_row in by_category[cat]:
                 out.extend(render_block(conn, block_row))
+
+        out.extend(render_canonical_vocabulary(conn))
 
         out.append("## Stats")
         out.append("")
