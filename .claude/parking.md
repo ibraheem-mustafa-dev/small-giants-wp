@@ -8,6 +8,43 @@ last_updated: 2026-05-12
 
 Items here have a clear next-step but aren't urgent. Each entry: the work, the trigger to resume, the spec, and rough effort. Resolved items are kept as one-line summaries (no ORIGINAL retention to keep the file scannable).
 
+## New 2026-05-12 (evening) — Spec 15 Phase 4.5 follow-ups
+
+### P-S15-STYLEVAR-GEN — Auto-generate style variations from uimax font_pairings + colour palettes (~60-90 min)
+
+**What:** uimax has 57 font_pairings + 269 colour palettes + UX reasoning rows curated by industry / mood / product type. Build a generator that picks a `font_pairing` + a `palette` from uimax, emits a complete `theme/sgs-theme/styles/<slug>.json` style variation. Used to bulk-create 20+ "starter looks" (e.g. `restaurant-warm`, `legal-conservative`, `tech-minimal`) so new clients pick a starting point rather than starting from blank.
+
+**Trigger (primary, added 2026-05-12 operator framing):** Step 1 of the draft-design process for every new client — generate 3-5 candidate style variations from uimax pairings appropriate to the client's industry/mood, then test draft designs against each. Pick the favoured one to anchor the rest of the work. This converts uimax pairings from a passive reference into an active part of the pipeline.
+
+**Trigger (secondary):** When the operator wants a richer style-variation library OR as a one-off "seed 20 starter looks" task.
+
+**Approach:**
+- Script at `plugins/sgs-blocks/scripts/build-style-variations.py`
+- Query uimax for a `font_pairings` row + matching `colors` palette row (joined on industry/mood)
+- Emit JSON matching the schema of existing variations (`mamas-munches.json` etc.)
+- One row pair = one variation. Idempotent on slug.
+- Optional: pull recommended typography sizes + UX rule defaults from uimax `ux_guidelines` for the variation's `styles.elements.h1/h2/p` defaults.
+
+**Spec ref:** Not in any spec — captured from operator request 2026-05-12. Sits **after Phase 6** per operator framing 2026-05-12 (cross-platform output extension lands first; the pickers + generator are the operator-facing layer that builds on top).
+
+**Why parked until after Phase 6:** Phase 4.5 ships token-discovery infrastructure (single-draft → single-variation flow). Phase 5 is E2E clone. Phase 6 is cross-platform output. The style-variation generator becomes meaningful when all three are in place — at that point, "pick a style → drop a draft → clone to SGS → optionally emit to other platforms" is a coherent pipeline. Doing the generator earlier would build it before its consumers exist.
+
+### P-S15-PAIRINGS-PICKER — Site Editor SlotFill panel for browsing uimax pairings (~4-6 hr)
+
+**What:** A "Browse Pairings" custom panel inside the WordPress Site Editor's Styles section. Operator browses font_pairings + colour palettes from uimax via REST endpoint backed by the uimax DB. Preview live in the editor; "Apply" writes the selected pair to the active style variation.
+
+**Trigger:** After P-S15-STYLEVAR-GEN ships AND operator has 20+ starter looks to validate the picker UX. Don't build the picker before there's content worth picking.
+
+**Approach:**
+- Register a SlotFill via `@wordpress/edit-site` (or `wp.plugins.registerPlugin` if SlotFill API doesn't fit).
+- REST endpoint `sgs-blocks/v1/uimax/pairings` reading from the uimax DB.
+- Preview component renders font samples + palette swatches.
+- Apply writes to `wp_global_styles` via `core/edit-site` data store.
+
+**Spec ref:** Not in any spec yet. Phase 6+ feature.
+
+**Why parked:** Phase 4.5 scope is convention + token discovery. Custom Site Editor UI is a separate cycle of work with its own QA gates.
+
 ## New 2026-05-12 — Spec 15 Phase 1 QC panel deferrals
 
 ### P-S15-F3 — Decide root-level structural attr handling (~30 min in Phase 2)

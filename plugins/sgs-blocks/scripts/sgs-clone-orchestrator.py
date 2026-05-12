@@ -42,11 +42,178 @@ sys.stdout.reconfigure(encoding="utf-8")
 
 REPO = Path(__file__).resolve().parents[3]
 RECOGNISER_DIR = Path(__file__).resolve().parent / "recogniser"
+LINTS_DIR = Path(__file__).resolve().parent / "lints"
 
 VOTER_SCRIPT = RECOGNISER_DIR / "per-section-convention-voter.py"
 MATRIX_SCRIPT = RECOGNISER_DIR / "confidence-matrix.py"
 ROUTER_SCRIPT = RECOGNISER_DIR / "leftover-bucket-router.py"
 REVIEW_SCRIPT = RECOGNISER_DIR / "simple_html_review_report.py"
+
+
+def _load_lint_module(filename: str, attr_name: str):
+    """Load a lint module by file path (hyphenated dir name blocks normal import)."""
+    spec = importlib.util.spec_from_file_location(attr_name, LINTS_DIR / filename)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"Cannot load {filename} from {LINTS_DIR}")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[attr_name] = module  # required for dataclass module resolution
+    spec.loader.exec_module(module)
+    return module
+
+
+def stage_0_1_bem_lint(mockup: Path, mode: str, run_dir: Path) -> dict:
+    """Stage 0.1 — SGS-BEM compliance lint on the draft HTML.
+
+    Mode behaviour:
+      strict — halts on any violation
+      draft  — logs warnings, continues
+      legacy — bypassed
+    """
+    if mode == "legacy":
+        print("[stage-0.1] BEM lint: legacy bypass")
+        return {"mode": mode, "violations": [], "passed": True, "bypassed": True}
+
+    bem = _load_lint_module("bem-lint.py", "bem_lint")
+    result = bem.lint_html_file(mockup, mode=mode)
+    violations = [
+        {
+            "line": v.line,
+            "col": v.col,
+            "class_token": v.token,
+            "source_label": v.source_label,
+            "message": v.message,
+        }
+        for v in result.violations
+    ]
+    out = {
+        "mode": mode,
+        "total_classes_checked": result.total_classes_checked,
+        "violations": violations,
+        "passed": result.passed,
+        "exit_code": result.exit_code,
+    }
+    (run_dir / "stage-0.1-bem-lint.json").write_text(json.dumps(out, indent=2), encoding="utf-8")
+
+    if mode == "draft":
+        level = "warning"
+    elif violations:
+        level = "error"
+    else:
+        level = "ok"
+    print(f"[stage-0.1] BEM lint ({mode}): {len(violations)} violations across {result.total_classes_checked} classes [{level}]")
+    for v in violations[:5]:
+        print(f"  {v['source_label']}:{v['line']}:{v['col']}: {v['message']}")
+    if len(violations) > 5:
+        print(f"  ... and {len(violations) - 5} more")
+
+    if mode == "strict" and violations:
+        sys.exit(f"[stage-0.1] STRICT mode halt: {len(violations)} BEM violations. Re-run with --mode draft to continue.")
+    return out
+
+
+def _client_variation_path(client: str | None) -> Path | None:
+    """Resolve the client style variation JSON path, or None if not present."""
+    if not client:
+        return None
+    path = REPO / "theme" / "sgs-theme" / "styles" / f"{client}.json"
+    return path if path.exists() else None
+
+
+def stage_0_5_token_lint(mockup: Path, mode: str, run_dir: Path,
+                         no_new_tokens: bool = False,
+                         client: str | None = None) -> dict:
+    """Stage 0.5 — token-usage lint on inline styles in the draft HTML.
+
+    In additive mode (default, Phase 4.5+), discovered non-token values become
+    NewTokenCandidate entries in a TokenWritePlan rather than violations. The
+    write-plan is persisted as JSON for downstream stages to apply against the
+    client's style variation.
+
+    When ``no_new_tokens=True``, falls back to the legacy LintResult shim with
+    strict-or-warn verdict semantics (per Spec 15 §9 modes).
+    """
+    if mode == "legacy":
+        print("[stage-0.5] token lint: legacy bypass")
+        return {"mode": mode, "candidates": [], "passed": True, "bypassed": True}
+
+    tok = _load_lint_module("token-lint.py", "token_lint")
+    variation = _client_variation_path(client)
+    variation_paths = [variation] if variation else None
+    if variation:
+        print(f"[stage-0.5] overlay variation: {variation.relative_to(REPO)}")
+    result = tok.lint_html_inline_styles(
+        mockup, mode=mode, no_new_tokens=no_new_tokens, variation_paths=variation_paths,
+    )
+
+    if no_new_tokens:
+        # Legacy LintResult shim — preserve old verdict surface
+        violations = [
+            {
+                "line": v.line,
+                "col": v.col,
+                "property": v.property,
+                "raw_value": v.raw_value,
+                "nearest_token": v.nearest_token,
+                "confidence": v.confidence,
+                "flag": v.flag,
+                "source_label": v.source_label,
+            }
+            for v in result.violations
+        ]
+        out = {
+            "mode": mode,
+            "additive": False,
+            "total_declarations_checked": result.total_declarations_checked,
+            "violations": violations,
+            "passed": result.passed,
+            "exit_code": result.exit_code,
+        }
+        (run_dir / "stage-0.5-token-lint.json").write_text(json.dumps(out, indent=2), encoding="utf-8")
+
+        if mode == "draft":
+            level = "warning"
+        elif violations:
+            level = "error"
+        else:
+            level = "ok"
+        print(f"[stage-0.5] token lint ({mode}, no-new-tokens): {len(violations)} violations across {result.total_declarations_checked} declarations [{level}]")
+        for v in violations[:5]:
+            print(f"  {v['source_label']}:{v['line']}:{v['col']}: {v['flag']} {v['property']}='{v['raw_value']}' -> {v['nearest_token']} (conf={v['confidence']})")
+        if mode == "strict" and violations:
+            sys.exit(f"[stage-0.5] STRICT mode halt: {len(violations)} token violations. Re-run with --mode draft or drop --no-new-tokens to continue.")
+        return out
+
+    # Additive mode (TokenWritePlan)
+    candidates = [
+        {
+            "token_class": c.token_class,
+            "proposed_slug": c.proposed_slug,
+            "raw_value": c.raw_value,
+            "occurrences": [
+                {"line": o.line, "col": o.col, "source_label": o.source_label, "property": o.css_property}
+                for o in c.occurrences
+            ],
+        }
+        for c in result.new_tokens
+    ]
+    out = {
+        "mode": mode,
+        "additive": True,
+        "total_declarations_checked": result.total_declarations_checked,
+        "new_tokens": candidates,
+        "passed": result.passed,
+        "summary": result.summary,
+    }
+    (run_dir / "stage-0.5-token-lint.json").write_text(json.dumps(out, indent=2), encoding="utf-8")
+
+    print(f"[stage-0.5] token lint ({mode}, additive): {len(candidates)} new-token candidates across {result.total_declarations_checked} declarations")
+    for c in candidates[:5]:
+        first = c["occurrences"][0] if c["occurrences"] else {}
+        loc = f"{first.get('source_label','?')}:{first.get('line','?')}:{first.get('col','?')}"
+        print(f"  {loc}: [{c['token_class']}] slug='{c['proposed_slug']}' value='{c['raw_value']}' ({len(c['occurrences'])}x)")
+    if len(candidates) > 5:
+        print(f"  ... and {len(candidates) - 5} more")
+    return out
 
 UIMAX_DB = Path(os.path.expanduser("~/.agents/skills/ui-ux-pro-max/scripts/ui-ux-pro-max.db"))
 
@@ -503,6 +670,12 @@ def main():
     parser.add_argument("--media-map", type=Path, default=None)
     parser.add_argument("--viewport", type=int, default=1440)
     parser.add_argument("--no-playwright", action="store_true")
+    parser.add_argument(
+        "--mode",
+        choices=("strict", "draft", "legacy"),
+        default="strict",
+        help="Stage 0.1/0.5 QA mode: strict halts on violations, draft warns, legacy bypasses",
+    )
     args = parser.parse_args()
 
     if not args.section and not args.auto_section:
@@ -514,6 +687,10 @@ def main():
 
     print(f"[orchestrator] run_id={run_id}")
     print(f"[orchestrator] run_dir={run_dir}")
+    print(f"[orchestrator] mode={args.mode}")
+
+    stage_0_1_bem_lint(args.mockup, args.mode, run_dir)
+    stage_0_5_token_lint(args.mockup, args.mode, run_dir, client=args.client)
 
     boundary = stage_1_boundary(args.mockup, args.section or "", args.auto_section, run_dir)
     bcount = len(boundary.get("boundaries", []))
