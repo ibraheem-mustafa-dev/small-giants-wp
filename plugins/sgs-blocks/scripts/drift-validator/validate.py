@@ -10,6 +10,8 @@ A violation is one of:
   - canonical_slot is set but is not in slot_synonyms.canonical_slot
   - role is set but is not in property_suffixes.role
   - derived_selector is set but does not start with `.sgs-` (BEM root)
+  - attr_name has a trailing CamelCase modifier token (e.g. Foozle) that is
+    NOT a known modifier_suffix (Mobile, Tablet, Desktop, Hover, etc.)
 
 Reads only — never writes. Idempotent.
 
@@ -44,33 +46,114 @@ DB_PATH = Path(
 )
 
 
-def load_vocabulary(conn: sqlite3.Connection) -> tuple[set[str], set[str]]:
+import json
+import re
+
+# Trailing CamelCase token after the stem — e.g. `headingMobile` → `Mobile`.
+_TRAILING_MODIFIER_RE = re.compile(r'([A-Z][a-z]+)$')
+
+# Role taxonomy source — role-templates.json defines the dispatch table.
+# Anything outside this set in block_attributes.role is drift.
+_ROLE_TEMPLATES_PATH = (
+    Path(__file__).resolve().parents[3]
+    / 'tools' / 'recogniser-v2' / 'data' / 'role-templates.json'
+)
+
+
+def load_role_taxonomy() -> set[str]:
+    if not _ROLE_TEMPLATES_PATH.exists():
+        return set()
+    rt = json.loads(_ROLE_TEMPLATES_PATH.read_text(encoding='utf-8'))
+    roles = rt.get('roles')
+    if isinstance(roles, dict):
+        return set(roles.keys())
+    if isinstance(roles, list):
+        return set(roles)
+    return set()
+
+
+def load_vocabulary(conn: sqlite3.Connection) -> tuple[set[str], set[str], set[str], set[str]]:
     slot_set = {r[0] for r in conn.execute("SELECT canonical_slot FROM slot_synonyms")}
-    role_set = {r[0] for r in conn.execute("SELECT DISTINCT role FROM property_suffixes WHERE role IS NOT NULL")}
-    return slot_set, role_set
+    role_set = load_role_taxonomy()
+    property_suffix_set = {r[0] for r in conn.execute("SELECT suffix FROM property_suffixes")}
+    modifier_suffix_set = {r[0] for r in conn.execute("SELECT suffix FROM modifier_suffixes")}
+    return slot_set, role_set, property_suffix_set, modifier_suffix_set
+
+
+def _peel_longest_suffix(name: str, suffix_set: set[str]) -> str | None:
+    """Return the longest suffix from *suffix_set* that *name* ends with.
+
+    property_suffixes contains compound tokens like `FontSize` (not `Size`),
+    so the peel must match greedily by longest-suffix wins, not single
+    CamelCase token.
+    """
+    matches = [s for s in suffix_set if name.endswith(s) and len(name) > len(s)]
+    if not matches:
+        return None
+    return max(matches, key=len)
+
+
+def detect_unknown_modifier(
+    attr_name: str,
+    canonical_slot: str | None,
+    property_suffix_set: set[str],
+    modifier_suffix_set: set[str],
+) -> str | None:
+    """Spec 15 §6 Stage 9 modifier check.
+
+    Only fires when canonical_slot is set (strongest signal that the attr was
+    successfully decomposed by Stage 4). For un-canonicalised attrs, gap
+    detection is the right surface, not drift.
+
+    Decomposition order (matches assign-canonical.py): peel longest known
+    modifier_suffix → then peel longest known property_suffix → then check
+    the remaining trailing CamelCase token. If a CamelCase token still
+    trails after the peels AND it's in neither vocab, flag it as drift.
+    """
+    if canonical_slot is None:
+        return None
+    remaining = attr_name
+    mod = _peel_longest_suffix(remaining, modifier_suffix_set)
+    if mod:
+        remaining = remaining[: -len(mod)]
+    prop = _peel_longest_suffix(remaining, property_suffix_set)
+    if prop:
+        remaining = remaining[: -len(prop)]
+    m = _TRAILING_MODIFIER_RE.search(remaining)
+    if not m:
+        return None
+    token = m.group(1)
+    if token in property_suffix_set or token in modifier_suffix_set:
+        return None
+    # Don't flag the slot itself
+    if remaining == canonical_slot:
+        return None
+    return token
 
 
 def validate(conn: sqlite3.Connection) -> list[tuple[str, str, str]]:
-    slot_set, role_set = load_vocabulary(conn)
+    slot_set, role_set, prop_set, mod_set = load_vocabulary(conn)
     violations: list[tuple[str, str, str]] = []
 
     rows = conn.execute(
         """
         SELECT block_slug, attr_name, canonical_slot, role, derived_selector
         FROM block_attributes
-        WHERE canonical_slot IS NOT NULL
-           OR role IS NOT NULL
-           OR derived_selector IS NOT NULL
         """
     ).fetchall()
 
     for block_slug, attr_name, canonical_slot, role, derived_selector in rows:
         if canonical_slot is not None and canonical_slot not in slot_set:
             violations.append((block_slug, attr_name, f"unknown canonical_slot '{canonical_slot}'"))
-        if role is not None and role not in role_set:
+        if role is not None and role_set and role not in role_set:
             violations.append((block_slug, attr_name, f"unknown role '{role}'"))
         if derived_selector is not None and not derived_selector.startswith(".sgs-"):
             violations.append((block_slug, attr_name, f"derived_selector '{derived_selector}' does not start with .sgs-"))
+        unknown_modifier = detect_unknown_modifier(
+            attr_name, canonical_slot, prop_set, mod_set
+        )
+        if unknown_modifier is not None:
+            violations.append((block_slug, attr_name, f"unknown modifier '{unknown_modifier}'"))
 
     return violations
 

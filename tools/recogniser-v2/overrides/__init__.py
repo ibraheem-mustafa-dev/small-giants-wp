@@ -4,6 +4,14 @@ to the generic role-based extraction path.
 Currently only hero has an override; other blocks may gain overrides as
 extraction quality demands it (e.g. complex inner-block trees, bespoke
 inheritance rules).
+
+Spec 15 Phase 3 step 3.2 (hero override deletion) is DEFERRED: standalone
+convention-path verify produced 35-attr regression on hero — content-identity
+attrs (label / variant / splitImage / headlineColour / subHeadline*) that
+the override uniquely produces. The convention path needs deeper
+content-extraction strategies in role-templates.json before hero can run
+override-free. Tracked for Phase 3 follow-up after Phase 3.8 gap
+remediation expands the role taxonomy.
 """
 from __future__ import annotations
 from typing import Any

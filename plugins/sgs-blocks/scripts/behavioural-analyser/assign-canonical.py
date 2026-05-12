@@ -328,9 +328,18 @@ def run() -> None:
     # Ensure gap candidates table exists
     ensure_gap_table(conn)
 
-    # Fetch all block_attributes rows
+    # Fetch un-touched block_attributes rows only (Phase 3 §3.7 + §3.8
+    # incremental-safety: never overwrite any of canonical_slot / role /
+    # derived_selector values that earlier runs or backfills have already
+    # populated. To force re-canonicalisation, clear those columns
+    # explicitly via SQL.).
     cur = conn.cursor()
-    cur.execute("SELECT id, block_slug, attr_name FROM block_attributes")
+    cur.execute(
+        "SELECT id, block_slug, attr_name FROM block_attributes "
+        "WHERE canonical_slot IS NULL "
+        "AND role IS NULL "
+        "AND derived_selector IS NULL"
+    )
     rows = cur.fetchall()
 
     total = len(rows)

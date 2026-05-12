@@ -1,14 +1,23 @@
 """
-Recogniser v2 — Spec 14 P4 catalogue-driven dispatcher.
+Recogniser v2 — Spec 15 §6-driven dispatcher.
 
-After P4 the extractor is no longer hero-hardcoded. The dispatcher:
+After Spec 15 Phase 3 the extractor reads the canonical slot list straight
+from sgs-framework.db (`block_attributes.canonical_slot / role /
+derived_selector`, populated by `/sgs-update` Stages 3 + 4). The
+4-layer JSON catalogue that Spec 14 produced is retired (moved to
+`.claude/scratch/retired-by-spec-15-p3/fingerprint-builder/`).
 
-  1. Reads the Layer 3 entry for the target block from the spec 14 catalogue
-     (`plugins/sgs-blocks/scripts/fingerprint-builder/output/layer-3-internal-elements.json`).
-  2. Resolves a per-block override (currently only `sgs/hero`) — if registered,
-     the override owns extraction for the attributes it lists.
-  3. For each remaining slot, looks up the slot's Layer 2 role and dispatches
-     to the matching generic strategy in `extract_strategies.py`.
+The dispatcher:
+
+  1. Reads the slot list for the target block via `load_layer3()` —
+     a sgs-framework.db query that returns the legacy Layer 3 dict shape.
+  2. Resolves a per-block override (currently only `sgs/hero` — deletion
+     DEFERRED until convention-path content-identity strategies mature).
+     If registered, the override owns extraction for the attributes it lists.
+  3. For each remaining slot, looks up the slot's role and dispatches to the
+     matching generic strategy in `extract_strategies.py`. Role taxonomy
+     lives in the hand-authored `tools/recogniser-v2/data/role-templates.json`
+     (not in sgs-db — no block-derivable equivalent).
 
 Output shape is unchanged for backwards compatibility with downstream
 serialisation; extracted attribute values are still raw scalars / dicts.
@@ -52,7 +61,8 @@ import extract_strategies
 
 
 REPO = Path(__file__).resolve().parents[2]
-CATALOGUE = REPO / 'plugins' / 'sgs-blocks' / 'scripts' / 'fingerprint-builder' / 'output'
+# CATALOGUE path retired Spec 15 Phase 3 step 3.3 — Layer 1/3/4 catalogue data
+# now lives in sgs-framework.db. Role templates live at tools/recogniser-v2/data/.
 
 # Properties we always read for any fingerprinted element. Any property the
 # browser computes can be added here without touching the JS (it's enumerated).
@@ -166,20 +176,60 @@ def extract_computed_styles(mockup_path: Path, selectors: list,
 _LAYER3_CACHE: dict | None = None
 _ROLE_TEMPLATES_CACHE: dict | None = None
 
+# Spec 15 §6: per-block slot lists come from sgs-framework.db block_attributes
+# (canonical_slot / role / derived_selector). Role templates remain
+# hand-authored cross-platform recipes at tools/recogniser-v2/data/.
+import os
+import sqlite3
+
+_SGS_DB_PATH = Path(
+    os.environ.get(
+        'SGS_FRAMEWORK_DB',
+        str(Path.home() / '.claude/skills/sgs-wp-engine/sgs-framework.db'),
+    )
+)
+_ROLE_TEMPLATES_PATH = Path(__file__).resolve().parent / 'data' / 'role-templates.json'
+
 
 def load_layer3() -> dict:
+    """Build Layer 3 dict from sgs-db block_attributes (Spec 15 §6 Stage 4 data).
+
+    Returned shape mirrors the legacy JSON catalogue so downstream call sites
+    are unaffected: { "blocks": { "<slug>": { "slots": [
+        {"attribute": str, "role": str|None, "selector": str|None}, ...
+    ] } } }
+    """
     global _LAYER3_CACHE
-    if _LAYER3_CACHE is None:
-        path = CATALOGUE / 'layer-3-internal-elements.json'
-        _LAYER3_CACHE = json.loads(path.read_text(encoding='utf-8'))
+    if _LAYER3_CACHE is not None:
+        return _LAYER3_CACHE
+    if not _SGS_DB_PATH.exists():
+        raise FileNotFoundError(f'sgs-framework.db not found at {_SGS_DB_PATH}')
+    conn = sqlite3.connect(str(_SGS_DB_PATH))
+    try:
+        rows = conn.execute(
+            '''SELECT block_slug, attr_name, role, derived_selector
+               FROM block_attributes
+               ORDER BY block_slug, attr_name'''
+        ).fetchall()
+    finally:
+        conn.close()
+    blocks: dict = {}
+    for block_slug, attr_name, role, selector in rows:
+        blocks.setdefault(block_slug, {'slots': []})['slots'].append({
+            'attribute': attr_name,
+            'role': role,
+            'selector': selector,
+        })
+    _LAYER3_CACHE = {'blocks': blocks}
     return _LAYER3_CACHE
 
 
 def load_role_templates() -> dict:
+    """Hand-authored role→extraction-recipe table. Not in sgs-db (no
+    block-derivable equivalent). Loaded from tools/recogniser-v2/data/."""
     global _ROLE_TEMPLATES_CACHE
     if _ROLE_TEMPLATES_CACHE is None:
-        path = CATALOGUE / 'role-templates.json'
-        _ROLE_TEMPLATES_CACHE = json.loads(path.read_text(encoding='utf-8'))
+        _ROLE_TEMPLATES_CACHE = json.loads(_ROLE_TEMPLATES_PATH.read_text(encoding='utf-8'))
     return _ROLE_TEMPLATES_CACHE
 
 

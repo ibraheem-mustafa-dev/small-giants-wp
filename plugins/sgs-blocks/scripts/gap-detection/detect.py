@@ -26,6 +26,7 @@ UK English in all comments and output.
 from __future__ import annotations
 
 import os
+import re
 import sqlite3
 import sys
 from pathlib import Path
@@ -39,6 +40,46 @@ DB_PATH = Path(
     )
 )
 
+_TRAILING_CAMEL_RE = re.compile(r'[A-Z][a-z]+$')
+
+
+def _peel_longest_suffix(name: str, suffix_set: set[str]) -> str | None:
+    """Return the longest suffix in *suffix_set* that *name* ends with."""
+    matches = [s for s in suffix_set if name.endswith(s) and len(name) > len(s)]
+    if not matches:
+        return None
+    return max(matches, key=len)
+
+
+def decompose_stem(attr_name: str, conn: sqlite3.Connection) -> str:
+    """Decompose *attr_name* into its slot stem per Spec 15 §3.3.
+
+    Peels the longest known modifier_suffix, then the longest known
+    property_suffix, then strips any remaining single trailing CamelCase
+    token. Returns the lowercased remaining stem. Falls back to the full
+    attr_name (lowercased) if no decomposition applies.
+    """
+    mods = {r[0] for r in conn.execute('SELECT suffix FROM modifier_suffixes')}
+    props = {r[0] for r in conn.execute('SELECT suffix FROM property_suffixes')}
+    remaining = attr_name
+    # Per Spec 15 §3.3 + assign-canonical.py:
+    # Step 1 — repeatedly peel modifier suffixes from the right
+    # Step 2 — peel ONE property suffix (longest match)
+    # Step 3 — remainder is the slot stem
+    while True:
+        mod = _peel_longest_suffix(remaining, mods)
+        if not mod:
+            break
+        remaining = remaining[: -len(mod)]
+    prop = _peel_longest_suffix(remaining, props)
+    if prop:
+        remaining = remaining[: -len(prop)]
+    if remaining and remaining != attr_name and remaining[0].isupper():
+        remaining = remaining[0].lower() + remaining[1:]
+    if not remaining:
+        remaining = attr_name
+    return remaining
+
 
 def table_exists(conn: sqlite3.Connection, name: str) -> bool:
     return conn.execute(
@@ -47,7 +88,11 @@ def table_exists(conn: sqlite3.Connection, name: str) -> bool:
 
 
 def detect_unresolved_attrs(conn: sqlite3.Connection) -> int:
-    """Stage candidates for attributes with NULL canonical_slot."""
+    """Stage candidates for attributes with NULL canonical_slot.
+
+    Stem is decomposed via the vocab tables (Spec 15 §3.3) — the operator
+    review queue then groups by stem, surfacing repeated unresolved roots.
+    """
     cur = conn.execute(
         """
         SELECT ba.block_slug, ba.attr_name
@@ -58,9 +103,13 @@ def detect_unresolved_attrs(conn: sqlite3.Connection) -> int:
           AND gc.id IS NULL
         """
     )
-    new_rows = [(slug, attr, attr, 'new-canonical-slot-needed') for slug, attr in cur.fetchall()]
-    if not new_rows:
+    pending = cur.fetchall()
+    if not pending:
         return 0
+    new_rows = [
+        (slug, attr, decompose_stem(attr, conn), 'new-canonical-slot-needed')
+        for slug, attr in pending
+    ]
     conn.executemany(
         """
         INSERT INTO attribute_gap_candidates
@@ -87,9 +136,13 @@ def detect_recognition_failures(conn: sqlite3.Connection) -> int:
           AND gc.id IS NULL
         """
     )
-    new_rows = [(slug, attr, attr, 'extraction-failed-in-clone') for slug, attr in cur.fetchall()]
-    if not new_rows:
+    pending = cur.fetchall()
+    if not pending:
         return 0
+    new_rows = [
+        (slug, attr, decompose_stem(attr, conn), 'extraction-failed-in-clone')
+        for slug, attr in pending
+    ]
     conn.executemany(
         """
         INSERT INTO attribute_gap_candidates
