@@ -2,9 +2,9 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-current_phase: spec-15-phase-1-foundation
-current_step: "Spec 15 ratified 2026-05-12. Unified architecture for the deterministic draft-to-SGS converter + QA pipeline. Absorbs Specs 12 + 13 + 14 (originals at .claude/scratch/absorbed/). Multi-rater QC v0.2: Sonnet pass/96, Haiku pass/98, Gemini Flash partial/100 (weak literal-naming dissent). Spec 14 P1-P4 shipped (commits f467bc72 + 15f4d6cf + e0f26ec5 + 10819cbb + 833fed21 + 8e2e427a) — counted as already-delivered work toward Spec 15 Phases 1-3. Next: Spec 15 Phase 1 — Foundation (behavioural analyser + slot_synonyms/property_suffixes/modifier_suffixes vocab tables + token value-matcher + default-inheritance lookup). Plan at .claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md §11."
-last_updated: 2026-05-12 (Spec 15 v0.2 ratified + absorbed specs moved to scratch; ready for Phase 1 cold-start)
+current_phase: spec-15-phase-2-sgs-update-unified
+current_step: "Phase 1 — Foundation SHIPPED on main (commit 2581b1d5, PR #14 merged 2026-05-12). 3 vocab tables seeded (slot_synonyms 20 / property_suffixes 48 / modifier_suffixes 19); block_attributes extended +6 cols; static analyser at 74.1% output_signature coverage; canonical assignment populated 320 content-identity slots + 1023 gap candidates; value-matcher + inheritance lookup green; 17/17 pytest; 3-rater QC panel verdict applied (Haiku ship, Sonnet + Gemini Flash fix-before-ship — concrete fixes applied + F3/F4 deferred to Phase 2 per panel consensus). Spec §11 success criteria updated to reflect content-identity-only slot vocab. Next: Phase 2 — /sgs-update unified (~2 hr). Wire behavioural analyser + canonical assignment into /sgs-update as Stage 3 + 4; add Stage 9 drift validator + Stage 10 gap detection; regenerate 02-SGS-BLOCKS-REFERENCE.md with canonical vocab appendix; idempotency test. Plan at .claude/plans/spec-15-master-execution-plan.md §Phase 2."
+last_updated: 2026-05-12 (Phase 1 closed; advancing to Phase 2)
 blockers:
   - "Skillscore rubric mismatch: command files (~/.claude/commands/*.md), agent files (~/.claude/agents/*.md), and reference-style mini-skills (polish, bolder, colourise, distill, etc.) are graded against full-skill criteria. 24 of 45 Phase 4 files sit below 90% for this reason - all pre-existing baseline noise, not caused by Phase 4 edits. Future fix: add skill-type classifier to sgs-skillscore."
 recommended_model_next: sonnet
