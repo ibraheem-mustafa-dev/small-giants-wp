@@ -9,7 +9,9 @@ drifted away from the canonical vocabulary.
 A violation is one of:
   - canonical_slot is set but is not in slot_synonyms.canonical_slot
   - role is set but is not in property_suffixes.role
-  - derived_selector is set but does not start with `.sgs-` (BEM root)
+  - derived_selector is set but does not start with `.sgs-` or
+    `.wp-block-sgs-` (both forms are valid — `.sgs-` is the BEM root,
+    `.wp-block-sgs-` is the WordPress-generated wrapper class)
   - attr_name has a trailing CamelCase modifier token (e.g. Foozle) that is
     NOT a known modifier_suffix (Mobile, Tablet, Desktop, Hover, etc.)
 
@@ -55,7 +57,7 @@ _TRAILING_MODIFIER_RE = re.compile(r'([A-Z][a-z]+)$')
 # Role taxonomy source — role-templates.json defines the dispatch table.
 # Anything outside this set in block_attributes.role is drift.
 _ROLE_TEMPLATES_PATH = (
-    Path(__file__).resolve().parents[3]
+    Path(__file__).resolve().parents[4]
     / 'tools' / 'recogniser-v2' / 'data' / 'role-templates.json'
 )
 
@@ -147,8 +149,11 @@ def validate(conn: sqlite3.Connection) -> list[tuple[str, str, str]]:
             violations.append((block_slug, attr_name, f"unknown canonical_slot '{canonical_slot}'"))
         if role is not None and role_set and role not in role_set:
             violations.append((block_slug, attr_name, f"unknown role '{role}'"))
-        if derived_selector is not None and not derived_selector.startswith(".sgs-"):
-            violations.append((block_slug, attr_name, f"derived_selector '{derived_selector}' does not start with .sgs-"))
+        if derived_selector is not None and not (
+            derived_selector.startswith(".sgs-")
+            or derived_selector.startswith(".wp-block-sgs-")
+        ):
+            violations.append((block_slug, attr_name, f"derived_selector '{derived_selector}' does not start with .sgs- or .wp-block-sgs-"))
         unknown_modifier = detect_unknown_modifier(
             attr_name, canonical_slot, prop_set, mod_set
         )

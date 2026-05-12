@@ -165,12 +165,20 @@ def main() -> int:
     py = sys.executable
     assign_script = REPO_ROOT / 'plugins' / 'sgs-blocks' / 'scripts' / 'behavioural-analyser' / 'assign-canonical.py'
     print(f'Re-running assign-canonical with extended vocabulary...')
-    subprocess.run([py, str(assign_script)], check=False, cwd=str(REPO_ROOT))
+    try:
+        subprocess.run([py, str(assign_script)], check=True, cwd=str(REPO_ROOT))
+    except subprocess.CalledProcessError as e:
+        print(f'ERROR: subprocess failed for {assign_script} (exit code {e.returncode})', file=sys.stderr)
+        raise
 
     # Re-run gap detection so newly-canonicalised attrs leave the queue
     detect_script = REPO_ROOT / 'plugins' / 'sgs-blocks' / 'scripts' / 'gap-detection' / 'detect.py'
     print(f'Re-running gap detection...')
-    subprocess.run([py, str(detect_script)], check=False, cwd=str(REPO_ROOT))
+    try:
+        subprocess.run([py, str(detect_script)], check=True, cwd=str(REPO_ROOT))
+    except subprocess.CalledProcessError as e:
+        print(f'ERROR: subprocess failed for {detect_script} (exit code {e.returncode})', file=sys.stderr)
+        raise
 
     # Re-open conn (assign-canonical may have committed)
     conn.close()

@@ -51,7 +51,18 @@ def _peel_longest_suffix(name: str, suffix_set: set[str]) -> str | None:
     return max(matches, key=len)
 
 
-def decompose_stem(attr_name: str, conn: sqlite3.Connection) -> str:
+def load_vocab(conn: sqlite3.Connection) -> tuple[set[str], set[str]]:
+    """Load modifier_suffixes and property_suffixes vocabulary sets once.
+
+    Returns (modifier_set, property_set) for use with decompose_stem.
+    Splitting load from decompose avoids O(n²) DB queries inside loops.
+    """
+    mods = {r[0] for r in conn.execute('SELECT suffix FROM modifier_suffixes')}
+    props = {r[0] for r in conn.execute('SELECT suffix FROM property_suffixes')}
+    return mods, props
+
+
+def decompose_stem(attr_name: str, modifier_set: set[str], property_set: set[str]) -> str:
     """Decompose *attr_name* into its slot stem per Spec 15 §3.3.
 
     Peels the longest known modifier_suffix, then the longest known
@@ -59,8 +70,8 @@ def decompose_stem(attr_name: str, conn: sqlite3.Connection) -> str:
     token. Returns the lowercased remaining stem. Falls back to the full
     attr_name (lowercased) if no decomposition applies.
     """
-    mods = {r[0] for r in conn.execute('SELECT suffix FROM modifier_suffixes')}
-    props = {r[0] for r in conn.execute('SELECT suffix FROM property_suffixes')}
+    mods = modifier_set
+    props = property_set
     remaining = attr_name
     # Per Spec 15 §3.3 + assign-canonical.py:
     # Step 1 — repeatedly peel modifier suffixes from the right
@@ -106,8 +117,9 @@ def detect_unresolved_attrs(conn: sqlite3.Connection) -> int:
     pending = cur.fetchall()
     if not pending:
         return 0
+    modifier_set, property_set = load_vocab(conn)
     new_rows = [
-        (slug, attr, decompose_stem(attr, conn), 'new-canonical-slot-needed')
+        (slug, attr, decompose_stem(attr, modifier_set, property_set), 'new-canonical-slot-needed')
         for slug, attr in pending
     ]
     conn.executemany(
@@ -139,8 +151,9 @@ def detect_recognition_failures(conn: sqlite3.Connection) -> int:
     pending = cur.fetchall()
     if not pending:
         return 0
+    modifier_set, property_set = load_vocab(conn)
     new_rows = [
-        (slug, attr, decompose_stem(attr, conn), 'extraction-failed-in-clone')
+        (slug, attr, decompose_stem(attr, modifier_set, property_set), 'extraction-failed-in-clone')
         for slug, attr in pending
     ]
     conn.executemany(
