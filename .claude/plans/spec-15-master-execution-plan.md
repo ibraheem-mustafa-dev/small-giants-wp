@@ -207,120 +207,18 @@ echo "Session start: $(date -Iseconds)" > .claude/scratch/spec-15-session-log.tx
 
 ## Phase 5 — Clone pipeline E2E (~8 hr — absorbs Spec 14 P5–P10)
 
-**Goal:** `/sgs-clone` runs end-to-end on Mama's mockup with ≥90% block attribute coverage + ≤1% visual parity diff. Six sub-phases mirror Spec 14's P5–P10.
+**See dedicated plan:** `.claude/plans/phase-5-clone-pipeline-e2e.md` — 248 lines, 6 sub-phases (5a Gap detection · 5b Staged scaffolding · 5c Lingua-franca · 5d WP integration wiring · 5e Autonomy + visual QA · 5f Acceptance harness), 38 dispatch steps with per-step `/qc-inline` verification, sub-phase multi-rater QC gates.
 
-### Sub-phase 5a — Gap detection (~1 hr)
+**Why a separate file:** Phase 5 is the largest phase (~8–10 hr, the actual clone-pipeline E2E delivery) and the absorbed Spec 14 P5–P10 content needed Spec-15-aware rewriting (DB-driven canonical_slot, 1% visual parity, /qc-inline rule baked into every step). Compressing it into table rows here would defeat the autonomy-execution discipline. Phases 1–4 stay inline because they have fewer steps.
 
-**Source plan (absorbed):** `.claude/plans/phase-5-gap-detection.md`.
+**Goal:** `/sgs-clone` runs end-to-end on a Bean-controlled draft with ≥ 90% block attribute coverage + ≤ 1% visual parity diff at 3 viewports + 5/5 critical-fix-verification checks green.
 
-**Entry preconditions** (verify before dispatching 5a.1):
-- Spec 14 FR9 + FR10 wired (verifiable: `extract_strategies.py` exists at `tools/recogniser-v2/`)
-- `plugins/sgs-blocks/scripts/recogniser/leftover-bucket-router.py` exists (Spec 14 P1/P7 ship)
-- Layer 2 role-templates DATA migrated to `property_suffixes` table (Phase 1 output)
-- `attribute_gap_candidates` + `functionality_gap_candidates` uimax tables exist (Spec 14 P2 ship)
-- `recursion-guard.py` available at `plugins/sgs-blocks/scripts/recogniser/recursion-guard.py`
+**Entry preconditions** (sub-phase 5a entry — full per-sub-phase preconditions in the dedicated plan):
+- Phases 1–4 shipped on origin/main
+- Session timer running (`.claude/scratch/spec-15-session-start.txt` exists)
+- Mama's mockup ready at `sites/mamas-munches/mockups/homepage/index.html`
 
-| # | Step | Model | Time | Notes |
-|---|---|---|---:|---|
-| 5a.1 | Gap detection wiring into `/sgs-clone` Stage 9 | **Sonnet** | 30 min | Consumes recognition_log (385 rows) + attribute_gap_candidates. Reads each `extraction_failed` bucket and classifies. **/qc-inline:** dispatch on a known recognition_log row; confirm correct classification + write to attribute_gap_candidates. |
-| 5a.2 | Operator-review interface for surfaced gaps | **Sonnet** | 20 min | Markdown output with `proposed_action` column + `decided_at` timestamp. **/qc-inline:** run on a populated gap_candidates table; confirm markdown renders correctly + each row has all required columns. |
-| 5a.3 | Commit + QC sub-phase | **Inline + Gemini Flash ×3** | 10 min | `feat(spec-15-p5-gap-detection): wire gap detection + operator review`. 3-rater /qc on the sub-phase deliverable. |
-
-### Sub-phase 5b — Staged scaffolding (~1.5 hr)
-
-**Source plan (absorbed):** `.claude/plans/phase-6-staged-scaffolding.md`.
-
-**Entry preconditions** (verify before dispatching 5b.1):
-- Spec 14 FR11/12/13/14/19/20 referenced + understood (read Spec 15 §7)
-- P1 static-block snapshots exist at `tests/golden/static-block-snapshots/` (9 JSON files, Spec 14 P1 ship)
-- Phase 3 catalogue retired (canonical_slot in sgs-db) — verify via Sub-phase 5a entry
-- `/sgs-db impact` + `/wp-blocks validate` + `/wp-hook-graph validate` CLI tools available
-- WP REST API credentials in `~/.openclaw/.env` (for FR19 media sideload)
-
-| # | Step | Model | Time | Notes |
-|---|---|---|---:|---|
-| 5b.1 | Staged-output directory + file-naming pattern | **Sonnet** | 20 min | Pattern: `pipeline-state/sgs-clone/<run-id>/stage-N-*.json`. **/qc-inline:** create a dummy run; confirm dir layout + file naming match. |
-| 5b.2 | Per-stage artifact validator | **Sonnet** | 30 min | JSON schema validation between stages (similar pattern to existing `validate-pipeline-artifact.py`). **/qc-inline:** feed validator a malformed stage artifact; confirm it rejects. Feed valid artifact; confirm it accepts. |
-| 5b.3 | Confirm no `--resume` flag in /sgs-clone | **Inline** (architectural reaffirm per blub.db row 224) | 5 min | `grep -nE 'resume\|--resume' tools/recogniser-v2/*.py plugins/sgs-blocks/scripts/orchestrator/*.py` — expect zero hits. **/qc-inline:** if any found, surface as architectural violation. |
-| 5b.4 | Build mutex + media sideloader + pattern auto-scaffold | **Sonnet** | 35 min | Sub-phase P6a from absorbed plan. Mutex prevents parallel /sgs-update + /sgs-clone (FR20). Media sideloader uploads attachments via WP REST. **/qc-inline:** run mutex test (try to start two concurrent clones — second should block). Test media sideloader with a known image. |
-| 5b.5 | Commit + QC sub-phase | **Inline + Gemini Flash ×3** | 15 min | `feat(spec-15-p5-staged-scaffolding): staged artefacts + validator + mutex + sideloader`. 3-rater /qc. |
-
-### Sub-phase 5c — Lingua-franca (~1.5 hr)
-
-**Source plan (absorbed):** `.claude/plans/phase-7-lingua-franca.md`.
-
-**Entry preconditions** (verify before dispatching 5c.1):
-- Spec 14 FR6 referenced (read Spec 15 §8.1 absorbed text)
-- uimax `naming_conventions` table populated (16 rows; query: `SELECT COUNT(*) FROM naming_conventions` = 16)
-- `/uimax-classify-naming` skill exists at `~/.claude/skills/uimax-classify-naming/`
-- Property suffixes table (Phase 1 output) populated
-
-| # | Step | Model | Time | Notes |
-|---|---|---|---:|---|
-| 5c.1 | `/uimax-sgs-scrape-pattern` lingua-franca conversion logic | **Sonnet** | 45 min | Convert source-convention classes (BEM-bare, Tailwind utility, Bootstrap) to SGS-BEM primary; store source as sibling in `equivalent_implementations`. Per spec §8.1. **/qc-inline:** feed 3 source examples (one BEM-bare `.hero-copy`, one Tailwind `flex items-center`, one Bootstrap `.btn-primary`); confirm each converts correctly + source preserved in equivalent_implementations. |
-| 5c.2 | Round-trip test (BEM-bare → SGS-BEM → BEM-bare) | **Sonnet** | 20 min | Verify lossless conversion. **/qc-inline:** automate round-trip on 5 known patterns; assert byte-identical recovery. |
-| 5c.3 | Commit + QC sub-phase | **Inline + Gemini Flash ×3** | 15 min | `feat(spec-15-p5-lingua-franca): SGS-BEM as primary + source preserved`. 3-rater /qc. |
-
-### Sub-phase 5d — WP integration wiring (~1.5 hr)
-
-**Source plan (absorbed):** `.claude/plans/phase-8-wp-integration-wiring.md`.
-
-**Entry preconditions** (verify before dispatching 5d.1):
-- Spec 14 FR22/23/24/25/27/28/30/34 understood (read Spec 15 §10 FR table)
-- Phase 3 catalogue retired (canonical_slot in sgs-db) — sub-phase 5a entry verified this
-- Phase 1 token value-matcher + default-inheritance available — call sites need both
-- `/wp-blocks` + `/wp-theme-check` CLI tools available
-- SSH access to palestine-lives.org confirmed (Hostinger key at `~/.ssh/id_ed25519`)
-
-| # | Step | Model | Time | Notes |
-|---|---|---|---:|---|
-| 5d.1 | Token surface inventory capture | **Inline** | 10 min | Run `/wp-theme-check presets theme/sgs-theme/theme.json --json > pipeline-state/p8-token-inventory.json`. **/qc-inline:** confirm JSON parses + contains expected palette/spacing/font-size token slugs. |
-| 5d.2 | Block markup serialisation (FR12) | **Sonnet** | 30 min | Output WP block-comment markup with InnerBlocks. Builds on existing `serialize_block()` from Spec 14 P3. **/qc-inline:** serialise a synthesised sgs/hero with known attrs; parse the output with `wp.blocks.parse` via Playwright; confirm round-trip. |
-| 5d.3 | WP-CLI deployment helper | **Sonnet** | 30 min | Push generated post_content to live site via `wp eval-file` + `scp` (the working pattern from CLAUDE.md). **/qc-inline:** dry-run with `--dry-run` flag; confirm command sequence matches established deploy pattern. NEVER push to production without explicit go. |
-| 5d.4 | Commit + QC sub-phase | **Inline + Gemini Flash ×3** | 15 min | `feat(spec-15-p5-wp-integration): block serialisation + wp-cli deploy helper`. 3-rater /qc. |
-
-### Sub-phase 5e — Autonomy + visual QA (~2 hr)
-
-**Source plan (absorbed):** `.claude/plans/phase-9-autonomy-and-visual-qa.md`.
-
-**Entry preconditions** (verify before dispatching 5e.1):
-- Spec 14 FR15/16/21/31/32/33 referenced (read Spec 15 §10 FR table)
-- Sub-phase 5b staged-output dir exists (`pipeline-state/sgs-clone/<run-id>/`)
-- `/visual-qa` skill available at `~/.claude/skills/visual-qa/`
-- Playwright installed + chromium browser ready (`playwright install chromium`)
-- Deploy infrastructure (tar/scp) working — test with a known good deploy first
-
-| # | Step | Model | Time | Notes |
-|---|---|---|---:|---|
-| 5e.0 | Define `visual_qa_config.json` thresholds | **Sonnet** | 15 min | Per absorbed plan Step 0. Author `tools/recogniser-v2/visual_qa_config.json` with: pass_threshold (1%), surface_threshold (0.5%), viewports [375, 768, 1440], scope (full-page vs section). **/qc-inline:** schema validate the JSON; assert all 4 fields present with correct types. |
-| 5e.1 | Playwright visual parity QA (Stage 8) | **Sonnet** (CLI script) | 45 min | Multi-breakpoint screenshot capture + diff. Tolerance from `visual_qa_config.json` (Spec 15 §7 / §9: 1% pass; 0.5–1% regions surfaced). **/qc-inline:** run against Mama's mockup pre-deploy; capture screenshots; assert 3 viewport PNGs written; assert diff JSON produced. |
-| 5e.2 | Visual diff thumbnails for operator review | **Sonnet** | 30 min | Generate side-by-side PNG diffs for surfaced regions. **/qc-inline:** force a deliberate diff (modify 1 pixel); confirm thumbnail generation; confirm thumbnail format is human-readable side-by-side. |
-| 5e.3 | Autonomy gate — auto-proceed past Stage 8 if diff < 1% AND no critical errors | **Sonnet** | 20 min | Reduces operator decision frequency. **/qc-inline:** test 4 scenarios — diff 0.3% no errors (auto-proceed), diff 0.8% no errors (surface for review but proceed), diff 1.2% (halt), diff 0.5% with console error (halt). |
-| 5e.4 | Commit + QC sub-phase | **Inline + Gemini Flash ×3** | 15 min | `feat(spec-15-p5-visual-qa): playwright parity + diff thumbnails + autonomy gate`. 3-rater /qc. |
-
-### Sub-phase 5f — Acceptance harness (~30 min)
-
-**Source plan (absorbed):** `.claude/plans/phase-10-acceptance-harness.md`.
-
-**Entry preconditions** (verify before dispatching 5f.1):
-- Sub-phases 5a-5e shipped on origin/main (all `feat(spec-15-p5-*)` commits visible)
-- Spec 14 FR18 + P1 KJC2 understood (`grep "FR18\|KJC2" .claude/decisions.md` — should return the 5 named checks)
-- sgs-framework.db + uimax accessible
-
-| # | Step | Model | Time | Notes |
-|---|---|---|---:|---|
-| 5f.1 | `critical-fix-verification.py` — 5 canonical-mutation-boundary checks | **Cerebras** (bounded scoped script) | 25 min | Per Spec 14 FR18 P1 KJC2 decision. Five checks: (1) no root `theme.json` mutation outside spec 15 §4.7 channels, (2) no canonical-block files mutated outside FR21 commit, (3) no licensing strings in uimax writes, (4) `/sgs-update` idempotency green (re-run produces 0 diffs), (5) `pipeline-state/<run-id>/` staging dir empty post-success. **/qc-inline:** run harness against current main branch; all 5 should pass. Deliberately mutate `theme.json` non-trivially; rerun; check 1 should fail. Restore. |
-| 5f.2 | Run harness E2E against Mama's mockup | **Inline** | 30 min | Full /sgs-clone E2E run on `sites/mamas-munches/mockups/homepage/index.html`. Target: ≥90% block attr coverage + ≤1% visual parity diff at 3 breakpoints. **/qc-inline:** capture coverage numbers per section + visual diff %; surface to operator if below thresholds; do not auto-pass without ≥90% / ≤1%. |
-| 5f.3 | Commit + Phase 5 final QC | **Inline + Gemini Flash ×3** | 30 min | `feat(spec-15-p5-acceptance-harness): 5-check harness + E2E Mama's clone`. 3-rater /qc against the entire Phase 5 deliverable (all 6 sub-phases together). Gate: ≥2 of 3 raters pass/ship + 5/5 harness checks green + E2E target met. |
-
-**Phase 5 success criteria:**
-- [ ] All 6 sub-phases shipped on origin/main
-- [ ] `/sgs-clone` runs E2E on Mama's mockup with ≥90% block attribute coverage
-- [ ] Visual parity ≤1% pixel diff at 3 viewports (regions > 0.5% surfaced as thumbnails)
-- [ ] Operator interface surfaces ambiguous cases
-- [ ] Acceptance harness 5/5 checks green
-
----
+**Phase 5 acceptance:** sub-phases 5a–5f shipped on origin/main + E2E run hits all three thresholds + multi-rater /qc on full deliverable returns ≥ 2/3 pass/ship + `deliverable.md` readable by Bean. Then handoff to Phase 6 (cross-platform output extension).
 
 ## Ready-to-dispatch prompts for Phase 1 (concrete, paste-and-go)
 

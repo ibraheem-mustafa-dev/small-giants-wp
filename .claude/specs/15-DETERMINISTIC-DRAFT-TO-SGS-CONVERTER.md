@@ -823,7 +823,8 @@ Every file, script, data source, table, plan doc, and skill mentioned in Spec 15
 
 | File | Status | Notes |
 |---|---|---|
-| `spec-15-master-execution-plan.md` | ACTIVE | Truth doc for Phases 1-5 execution. |
+| `spec-15-master-execution-plan.md` | ACTIVE | Orchestrator + global rules + Phases 1–4 inline detail. Phase 5 is a TOC stub pointing at the dedicated file below. |
+| `phase-5-clone-pipeline-e2e.md` | ACTIVE | Dedicated Phase 5 plan — 6 sub-phases (5a–5f), 38 dispatch steps, per-step `/qc-inline` verification, sub-phase multi-rater QC gates. Absorbs former Spec 14 P5–P10 content rewritten against Spec 15 architecture (DB-driven canonical_slot, 1% visual parity tolerance, gap-detection via /sgs-update Stage 10). |
 | `phase-1-doc-recon-and-snapshots.md` | REFERENCE | Spec 14 P1 — shipped (commit `f467bc72`). Kept as commit-history anchor for `feat(p1)` references. |
 | `phase-2-schema-and-recursion-guard.md` | REFERENCE | Spec 14 P2 — shipped (commit `15f4d6cf`). Kept as commit-history anchor for `feat(p2)`. |
 | `phase-3-catalogue-build.md` | REFERENCE | Spec 14 P3 — shipped (commits `e0f26ec5` + `10819cbb` + `833fed21`). Kept as commit-history anchor for `feat(p3)`. |
