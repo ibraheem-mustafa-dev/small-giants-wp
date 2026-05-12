@@ -224,9 +224,9 @@ echo "Session start: $(date -Iseconds)" > .claude/scratch/spec-15-session-log.tx
 
 ---
 
-## Phase 4 — Draft convention enforcement (~3 hr)
+## Phase 4 — Draft convention enforcement + long-tail close (~4 hr)
 
-**Goal:** Stage 0.1 BEM lint + Stage 0.5 token-usage lint in `/sgs-clone`. Pre-commit hook for drafts. `/ui-ux-pro-max` updated (primary draft-design skill) + `/innovative-design` updated (design-toolbox router that dispatches to it).
+**Goal:** Stage 0.1 BEM lint + Stage 0.5 token-usage lint in `/sgs-clone`. Pre-commit hook for drafts. `/ui-ux-pro-max` updated (primary draft-design skill) + `/innovative-design` updated (design-toolbox router that dispatches to it). **Plus close the remaining 37 long-tail gap candidates** identified by Phase 3.5 fanout (per-block exotic attrs that need design judgement) **and re-check** whether new Phase 4 lint surface findings retro-actively close any current gaps.
 
 | # | Step | Model | Time | Notes |
 |---|---|---|---:|---|
@@ -237,6 +237,8 @@ echo "Session start: $(date -Iseconds)" > .claude/scratch/spec-15-session-log.tx
 | 4.5a | Update `/ui-ux-pro-max` skill description — primary draft-design skill must emit SGS-BEM + theme.json tokens | **Inline** (skill authoring is strategic) | 15 min | Update `~/.agents/skills/ui-ux-pro-max/SKILL.md`. Add hard rule + reference Spec 15 §3 + §8. **/qc-inline:** read updated SKILL.md; confirm new rule visible in description (so autopilot picks it up); test by invoking /ui-ux-pro-max with a sample brief and check output classes for SGS-BEM compliance. |
 | 4.5b | Update `/innovative-design` skill description — design-toolbox router must propagate the SGS-BEM + token requirement to its draft-design dispatch targets | **Inline** | 10 min | Update `~/.claude/skills/innovative-design/SKILL.md`. Add note that /ui-ux-pro-max is the primary draft-design dispatch target and the SGS-BEM + token requirement applies. **/qc-inline:** read updated SKILL.md; confirm reference to /ui-ux-pro-max + Spec 15 §3 + §8. |
 | 4.6 | Test against Mama's mockup (should pass since spec 13 P6 migrated it) | **Inline** (Playwright + scripted) | 15 min | Run lints; expect zero violations on Mama's mockup. **/qc-inline:** capture lint output; assert violation count = 0. If non-zero: surface real finding (spec 13 P6 may have left residual drift). |
+| 4.6a | **Long-tail gap closeout — 37 exotic per-block attrs.** Walk the residual queue (`SELECT block_slug, attr_name FROM attribute_gap_candidates WHERE proposed_action='new-canonical-slot-needed'`). Examples: `sgs/hero.splitColumnRatio`, `sgs/mobile-nav.submenuIndent`, `sgs/form.formFocusRing*`. For each, propose either (a) canonical_slot + role using existing or one new slot, OR (b) flag as `instance-data-not-canonicalisable` if genuinely per-instance config. | **Inline** (small, design-judgement work) | 30 min | Goal: drop the gap-canonicalisable queue from 37 to ≤10 (target ≥98% canonicalised overall). **/qc-inline:** post-decision, run drift validator (expect 0) + hero `--verify-against` (expect PASS). |
+| 4.6b | **Lint-feedback retro-canonicalisation.** Once BEM + token lints fire on Mama's mockup, they may surface NEW patterns that retro-actively map to gap candidates. Walk the lint output for `gap-candidate flagged` lines; cross-reference against `attribute_gap_candidates`; canonicalise any matches. | **Inline** | 15 min | Closes the loop: lint findings inform canonicalisation, not just the other way round. **/qc-inline:** count canonicalised before + after; report delta. |
 | 4.7 | Phase 4 QC | **Sonnet + Haiku + Gemini Flash panel** + Inline | 15 min | 3-rater /qc panel BEFORE commit. Scenarios: lints reject malformed BEM, accept compliant; token lint snaps known values; pre-commit hook fires; `/ui-ux-pro-max` updated + tested (draft output SGS-BEM compliant); `/innovative-design` router updated; Mama's mockup passes with 0 violations. Gate: ≥2 of 3 raters pass/ship. Apply Sonnet-flagged fixes inline before advancing. |
 | 4.8 | Commit + push + open PR (`feat/spec-15-p4-convention-enforcement`) | **Inline** | 5 min | Single clean commit reflecting the post-QC state. Pre-commit: no `.bak` files. |
 
@@ -246,7 +248,9 @@ echo "Session start: $(date -Iseconds)" > .claude/scratch/spec-15-session-log.tx
 - [ ] `/ui-ux-pro-max` skill updated + draft output verified SGS-BEM + token compliant (primary draft-design skill)
 - [ ] `/innovative-design` skill updated to flag the requirement at dispatch (design-toolbox router)
 - [ ] Mama's mockup passes lints with zero violations
-- [ ] Commit `feat(spec-15-p4): draft convention enforcement gates` on origin/main
+- [ ] Long-tail gap queue drops from 37 to ≤10 (target ≥98% canonicalised across 1343 attrs)
+- [ ] Lint-feedback retro-canonicalisation pass run on Mama's mockup output
+- [ ] Commit `feat(spec-15-p4): draft convention enforcement gates + long-tail close` on origin/main
 
 ---
 

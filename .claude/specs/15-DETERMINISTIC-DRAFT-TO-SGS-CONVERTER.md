@@ -461,6 +461,10 @@ For Phase 6 (extension), `/library-docs` (Context7-backed) pulls platform vocabu
 
 Re-running `/sgs-update` is idempotent. Output report summarises: blocks scanned, attrs populated, synonyms detected, drift violations, gap candidates surfaced.
 
+### 6.1 Role taxonomy — `css-var-bridge` (added Phase 3.5)
+
+Spec §7.1 originally described 20 roles in `tools/recogniser-v2/data/role-templates.json`. Phase 3.5 added a 21st role: **`css-var-bridge`** — modelling the CSS-variable indirection pattern where an attribute value lands in a CSS custom property (e.g. `--sgs-mn-icon-size: 24px`) that a later CSS rule consumes via `var(...)`. Used by `sgs/mobile-nav` for 46 of its 52 attrs; its `value_extractor: computed_var_value` directs extract.py to read the CSS-variable declaration rather than the computed style on the styled element. The CSS-variable name itself encodes the value type (px / colour / percent), so type info isn't lost despite the role-level abstraction.
+
 ---
 
 ## 7. Converter Pipeline (L4)

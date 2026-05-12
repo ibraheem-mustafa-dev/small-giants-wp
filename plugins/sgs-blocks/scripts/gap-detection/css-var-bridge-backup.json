@@ -1,0 +1,237 @@
+{
+  "applied_on": "2026-05-12",
+  "spec": "Spec 15 Phase 3.5 follow-up \u2014 css-var-bridge application",
+  "source_render_php": "plugins/sgs-blocks/src/blocks/mobile-nav/render.php (lines 102-210)",
+  "rows": [
+    {
+      "id": 28363,
+      "attr_name": "accentColour",
+      "original_role": "colour-text"
+    },
+    {
+      "id": 28431,
+      "attr_name": "animationDuration",
+      "original_role": "transition-preset"
+    },
+    {
+      "id": 28435,
+      "attr_name": "backdropBlur",
+      "original_role": "boolean-visibility"
+    },
+    {
+      "id": 28436,
+      "attr_name": "backdropBlurAmount",
+      "original_role": "number-css-px"
+    },
+    {
+      "id": 28428,
+      "attr_name": "backdropColour",
+      "original_role": "colour-bg"
+    },
+    {
+      "id": 28434,
+      "attr_name": "backdropOpacity",
+      "original_role": "number-css-percent"
+    },
+    {
+      "id": 28416,
+      "attr_name": "closeButtonBg",
+      "original_role": "colour-bg"
+    },
+    {
+      "id": 28417,
+      "attr_name": "closeButtonColour",
+      "original_role": "colour-text"
+    },
+    {
+      "id": 28386,
+      "attr_name": "closeButtonSize",
+      "original_role": "number-css-px"
+    },
+    {
+      "id": 28387,
+      "attr_name": "closeButtonSizeMobile",
+      "original_role": "number-css-px"
+    },
+    {
+      "id": 28388,
+      "attr_name": "closeButtonSizeTablet",
+      "original_role": "number-css-px"
+    },
+    {
+      "id": 28418,
+      "attr_name": "ctaBg",
+      "original_role": "text-content"
+    },
+    {
+      "id": 28420,
+      "attr_name": "ctaBorderColour",
+      "original_role": "colour-border"
+    },
+    {
+      "id": 28419,
+      "attr_name": "ctaTextColour",
+      "original_role": "colour-text"
+    },
+    {
+      "id": 28364,
+      "attr_name": "dividerColour",
+      "original_role": "colour-text"
+    },
+    {
+      "id": 28413,
+      "attr_name": "drawerBg",
+      "original_role": "text-content"
+    },
+    {
+      "id": 28415,
+      "attr_name": "drawerGradient",
+      "original_role": "text-content"
+    },
+    {
+      "id": 28380,
+      "attr_name": "drawerMaxWidth",
+      "original_role": "number-css-px"
+    },
+    {
+      "id": 28414,
+      "attr_name": "drawerText",
+      "original_role": "colour-text"
+    },
+    {
+      "id": 28377,
+      "attr_name": "drawerWidth",
+      "original_role": "number-css-px"
+    },
+    {
+      "id": 28378,
+      "attr_name": "drawerWidthMobile",
+      "original_role": "number-css-px"
+    },
+    {
+      "id": 28379,
+      "attr_name": "drawerWidthTablet",
+      "original_role": "number-css-px"
+    },
+    {
+      "id": 28433,
+      "attr_name": "exitDuration",
+      "original_role": "transition-preset"
+    },
+    {
+      "id": 28429,
+      "attr_name": "focusColour",
+      "original_role": "colour-border"
+    },
+    {
+      "id": 28425,
+      "attr_name": "linkActiveColour",
+      "original_role": "colour-text"
+    },
+    {
+      "id": 28423,
+      "attr_name": "linkColour",
+      "original_role": "colour-text"
+    },
+    {
+      "id": 28399,
+      "attr_name": "linkFontSize",
+      "original_role": "font-size-preset"
+    },
+    {
+      "id": 28400,
+      "attr_name": "linkFontSizeMobile",
+      "original_role": "font-size-preset"
+    },
+    {
+      "id": 28401,
+      "attr_name": "linkFontWeight",
+      "original_role": "enum-class-probe"
+    },
+    {
+      "id": 28424,
+      "attr_name": "linkHoverColour",
+      "original_role": "colour-text"
+    },
+    {
+      "id": 28383,
+      "attr_name": "logoMaxWidth",
+      "original_role": "number-css-px"
+    },
+    {
+      "id": 28384,
+      "attr_name": "logoMaxWidthMobile",
+      "original_role": "number-css-px"
+    },
+    {
+      "id": 28385,
+      "attr_name": "logoMaxWidthTablet",
+      "original_role": "number-css-px"
+    },
+    {
+      "id": 28421,
+      "attr_name": "secondaryCtaBg",
+      "original_role": "text-content"
+    },
+    {
+      "id": 28422,
+      "attr_name": "secondaryCtaTextColour",
+      "original_role": "colour-text"
+    },
+    {
+      "id": 28408,
+      "attr_name": "socialIconSize",
+      "original_role": "number-css-px"
+    },
+    {
+      "id": 28409,
+      "attr_name": "socialIconSizeMobile",
+      "original_role": "number-css-px"
+    },
+    {
+      "id": 28410,
+      "attr_name": "socialIconSizeTablet",
+      "original_role": "number-css-px"
+    },
+    {
+      "id": 28375,
+      "attr_name": "staggerDelay",
+      "original_role": "transition-preset"
+    },
+    {
+      "id": 28426,
+      "attr_name": "sublinkColour",
+      "original_role": "colour-text"
+    },
+    {
+      "id": 28402,
+      "attr_name": "sublinkFontSize",
+      "original_role": "font-size-preset"
+    },
+    {
+      "id": 28403,
+      "attr_name": "sublinkFontSizeMobile",
+      "original_role": "font-size-preset"
+    },
+    {
+      "id": 28427,
+      "attr_name": "sublinkHoverColour",
+      "original_role": "colour-text"
+    },
+    {
+      "id": 28405,
+      "attr_name": "submenuIndent",
+      "original_role": "number-css-px"
+    },
+    {
+      "id": 28406,
+      "attr_name": "submenuIndentMobile",
+      "original_role": "text-content"
+    },
+    {
+      "id": 28407,
+      "attr_name": "submenuIndentTablet",
+      "original_role": "text-content"
+    }
+  ]
+}
