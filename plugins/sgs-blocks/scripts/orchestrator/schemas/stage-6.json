@@ -1,0 +1,13 @@
+{
+  "stage": 6,
+  "name": "attribute_staging",
+  "description": "Stage 6 attribute staged-application: pending attribute changes per block instance",
+  "required_top_level": ["run_id", "changes"],
+  "field_types": {
+    "run_id": "str",
+    "changes": "list"
+  },
+  "list_item_required": {
+    "changes": ["id", "block_slug", "attr_name", "new_value", "status", "staged_at"]
+  }
+}

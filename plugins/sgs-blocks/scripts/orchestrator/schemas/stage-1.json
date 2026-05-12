@@ -1,0 +1,12 @@
+{
+  "stage": 1,
+  "name": "boundary",
+  "description": "Stage 1 boundary detection: per-section boundaries with class signatures",
+  "required_top_level": ["boundaries"],
+  "field_types": {
+    "boundaries": "list"
+  },
+  "list_item_required": {
+    "boundaries": ["section_id", "selector"]
+  }
+}

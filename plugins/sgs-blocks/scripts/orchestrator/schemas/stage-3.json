@@ -1,0 +1,12 @@
+{
+  "stage": 3,
+  "name": "slot_list",
+  "description": "Stage 3 slot list: declared slot scaffolds per matched section",
+  "required_top_level": ["slot_lists"],
+  "field_types": {
+    "slot_lists": "dict"
+  },
+  "dict_value_required": {
+    "slot_lists": ["section_id", "slots"]
+  }
+}

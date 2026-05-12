@@ -1,0 +1,16 @@
+{
+  "stage": 7,
+  "name": "functionality_bulk",
+  "description": "Stage 7 functionality bulk-apply job: atomic apply across instance_ids",
+  "required_top_level": [
+    "run_id", "block_slug", "new_attribute", "new_value",
+    "instance_ids", "status", "staged_at"
+  ],
+  "field_types": {
+    "run_id": "str",
+    "block_slug": "str",
+    "new_attribute": "str",
+    "instance_ids": "list",
+    "status": "str"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "stage": 2,
+  "name": "match",
+  "description": "Stage 2 block matching: per-section block candidate + confidence",
+  "required_top_level": ["matches"],
+  "field_types": {
+    "matches": "list"
+  },
+  "list_item_required": {
+    "matches": ["section_id", "block_name", "confidence"]
+  }
+}

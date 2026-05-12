@@ -1,0 +1,9 @@
+{
+  "stage": 4,
+  "name": "extract",
+  "description": "Stage 4 extract: filled-slot attributes + per-block coverage",
+  "required_top_level": ["extracted_attributes"],
+  "field_types": {
+    "extracted_attributes": "dict"
+  }
+}
