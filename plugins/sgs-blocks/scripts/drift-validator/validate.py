@@ -130,6 +130,12 @@ def detect_unknown_modifier(
     """
     if canonical_slot is None:
         return None
+    # `options` is the catch-all behaviour-flag bucket — decomposition
+    # isn't semantically meaningful (showSchema / showAuthor / paymentEnabled
+    # legitimately don't peel into recognisable suffix structure). Skip
+    # modifier-drift check for options-slotted attrs.
+    if canonical_slot == "options":
+        return None
     remaining = attr_name
     mod = _peel_longest_suffix(remaining, modifier_suffix_set)
     if mod:
@@ -143,14 +149,26 @@ def detect_unknown_modifier(
     token = m.group(1)
     if token in property_suffix_set or token in modifier_suffix_set:
         return None
-    # Don't flag the slot itself or any of its aliases
+    # Only flag the trailing token as drift IF removing it leaves the
+    # canonical_slot (or one of its aliases) standing. Otherwise the attr
+    # is a compound noun like `phoneNumber` / `iconLabel` where the
+    # trailing token is part of the stem, not a missing suffix.
     accepted_forms = alias_map.get(canonical_slot, {canonical_slot})
-    if remaining in accepted_forms:
+    accepted_lower = {a.lower() for a in accepted_forms}
+    # First: check if remaining (with trailing token still attached) is
+    # an alias — this handles cases like `subHeadline` accepted as
+    # `subheading`.
+    if remaining in accepted_forms or remaining.lower() in accepted_lower:
         return None
-    # Case-insensitive fallback (vocab is camelCase; aliases may be lower)
-    if remaining.lower() in {a.lower() for a in accepted_forms}:
-        return None
-    return token
+    # Second: check if stripping the trailing token reveals the slot —
+    # signalling a suspected unknown suffix on a known slot stem.
+    stem_without_trailing = remaining[: m.start()]
+    if stem_without_trailing and stem_without_trailing[0].isupper():
+        stem_without_trailing = stem_without_trailing[0].lower() + stem_without_trailing[1:]
+    if stem_without_trailing in accepted_forms or stem_without_trailing.lower() in accepted_lower:
+        return token
+    # Compound noun (remaining stem is unrelated to the slot) — not drift.
+    return None
 
 
 def validate(conn: sqlite3.Connection) -> list[tuple[str, str, str]]:

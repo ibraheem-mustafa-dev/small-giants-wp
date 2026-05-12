@@ -3,14 +3,18 @@
   "source": "hand-authored per spec 14 FR2 + migrated from ATTR_TO_CSS in pattern-fingerprint.py",
   "schema_version": 1,
   "schema_notes": "Each role describes how to recognise and extract a single semantic concept (e.g. a text colour, a spacing token). extract.py (P4) reads this as its dispatch table: given a (block, attribute) pair, look up the attribute's role, then use selector_strategy + value_extractor to read the live value off the rendered DOM. Cross-platform recipe is the Rosetta Stone mapping for cloning to non-SGS targets.",
-  "role_count": 20,
+  "role_count": 21,
   "roles": {
     "colour-text": {
       "description": "A colour applied to text content via the CSS `color` property.",
       "selector_strategy": "bem-element",
       "value_extractor": "computed_color",
       "css_property": "color",
-      "applies_to_attribute_names": ["colourText", "textColor", "color"],
+      "applies_to_attribute_names": [
+        "colourText",
+        "textColor",
+        "color"
+      ],
       "cross_platform_recipe": {
         "sgs": "DesignTokenPicker -> attribute -> render.php inlines style=\"color:{var}\"",
         "html_css": "<element style=\"color: <value>;\">",
@@ -26,7 +30,11 @@
       "value_extractor": "computed_bg_color_family",
       "value_extractor_notes": "MUST read backgroundColor + backgroundImage + filter + mixBlendMode + parent chain — per rule extend-measurement-set-when-human-eye-disputes.",
       "css_property": "background-color",
-      "applies_to_attribute_names": ["colourBackground", "backgroundColor", "bgColor"],
+      "applies_to_attribute_names": [
+        "colourBackground",
+        "backgroundColor",
+        "bgColor"
+      ],
       "cross_platform_recipe": {
         "sgs": "DesignTokenPicker -> attribute -> render.php inlines style=\"background-color:{var}\"",
         "html_css": "<element style=\"background-color: <value>;\">",
@@ -41,7 +49,10 @@
       "selector_strategy": "bem-element",
       "value_extractor": "computed_color",
       "css_property": "border-color",
-      "applies_to_attribute_names": ["colourBorder", "borderColor"],
+      "applies_to_attribute_names": [
+        "colourBorder",
+        "borderColor"
+      ],
       "cross_platform_recipe": {
         "sgs": "DesignTokenPicker -> attribute -> render.php inlines style=\"border-color:{var}\"",
         "html_css": "<element style=\"border-color: <value>;\">",
@@ -57,7 +68,10 @@
       "value_extractor": "computed_background_image",
       "value_extractor_notes": "Reads background-image not background-color. Captured as standalone role because gradients sit on the BG-image axis, not the BG-color axis — measurement-extension rule.",
       "css_property": "background-image",
-      "applies_to_attribute_names": ["gradient", "backgroundGradient"],
+      "applies_to_attribute_names": [
+        "gradient",
+        "backgroundGradient"
+      ],
       "cross_platform_recipe": {
         "sgs": "Gradient control -> style.background = `linear-gradient(...)`",
         "html_css": "<element style=\"background-image: linear-gradient(<stops>);\">",
@@ -72,7 +86,13 @@
       "selector_strategy": "bem-element",
       "value_extractor": "computed_px_int",
       "css_property": null,
-      "applies_to_attribute_names": ["borderWidth", "width", "height", "minHeight", "maxWidth"],
+      "applies_to_attribute_names": [
+        "borderWidth",
+        "width",
+        "height",
+        "minHeight",
+        "maxWidth"
+      ],
       "cross_platform_recipe": {
         "sgs": "NumberControl -> style.<prop> = `Npx`",
         "html_css": "<element style=\"<prop>: Npx;\">",
@@ -87,7 +107,9 @@
       "selector_strategy": "bem-element",
       "value_extractor": "computed_percent",
       "css_property": null,
-      "applies_to_attribute_names": ["widthPercent"],
+      "applies_to_attribute_names": [
+        "widthPercent"
+      ],
       "cross_platform_recipe": {
         "sgs": "NumberControl -> style.<prop> = `N%`",
         "html_css": "<element style=\"<prop>: N%;\">",
@@ -104,9 +126,19 @@
       "value_extractor_notes": "Live DOM holds the resolved px; reverse-map to nearest theme.json token when serialising back to SGS.",
       "css_property": null,
       "applies_to_attribute_names": [
-        "gap", "gapMobile", "gapTablet",
-        "padding", "paddingTop", "paddingRight", "paddingBottom", "paddingLeft",
-        "margin", "marginTop", "marginRight", "marginBottom", "marginLeft"
+        "gap",
+        "gapMobile",
+        "gapTablet",
+        "padding",
+        "paddingTop",
+        "paddingRight",
+        "paddingBottom",
+        "paddingLeft",
+        "margin",
+        "marginTop",
+        "marginRight",
+        "marginBottom",
+        "marginLeft"
       ],
       "cross_platform_recipe": {
         "sgs": "spacingVar('40') -> var(--wp--preset--spacing--40)",
@@ -122,7 +154,11 @@
       "selector_strategy": "bem-element",
       "value_extractor": "computed_box_shadow",
       "css_property": "box-shadow",
-      "applies_to_attribute_names": ["boxShadow", "shadow", "hoverShadow"],
+      "applies_to_attribute_names": [
+        "boxShadow",
+        "shadow",
+        "hoverShadow"
+      ],
       "cross_platform_recipe": {
         "sgs": "shadowVar('medium') -> var(--wp--preset--shadow--medium)",
         "html_css": "<element style=\"box-shadow: <css-shadow-value>;\">",
@@ -137,7 +173,9 @@
       "selector_strategy": "bem-element",
       "value_extractor": "computed_font_family",
       "css_property": "font-family",
-      "applies_to_attribute_names": ["fontFamily"],
+      "applies_to_attribute_names": [
+        "fontFamily"
+      ],
       "cross_platform_recipe": {
         "sgs": "FontFamilyControl -> style.fontFamily = `var(--wp--preset--font-family--inter)`",
         "html_css": "<element style=\"font-family: '<stack>';\">",
@@ -152,7 +190,9 @@
       "selector_strategy": "bem-element",
       "value_extractor": "computed_px_int",
       "css_property": "font-size",
-      "applies_to_attribute_names": ["fontSize"],
+      "applies_to_attribute_names": [
+        "fontSize"
+      ],
       "cross_platform_recipe": {
         "sgs": "fontSizeVar('large') -> var(--wp--preset--font-size--large)",
         "html_css": "<element style=\"font-size: <Npx | Nrem | clamp(...)>;\">",
@@ -167,7 +207,9 @@
       "selector_strategy": "bem-element",
       "value_extractor": "computed_px_int",
       "css_property": "border-radius",
-      "applies_to_attribute_names": ["borderRadius"],
+      "applies_to_attribute_names": [
+        "borderRadius"
+      ],
       "cross_platform_recipe": {
         "sgs": "borderRadiusVar('medium') -> var(--wp--custom--border-radius--medium)",
         "html_css": "<element style=\"border-radius: <value>;\">",
@@ -182,7 +224,10 @@
       "selector_strategy": "bem-element",
       "value_extractor": "computed_transition",
       "css_property": "transition",
-      "applies_to_attribute_names": ["transitionDuration", "transitionEasing"],
+      "applies_to_attribute_names": [
+        "transitionDuration",
+        "transitionEasing"
+      ],
       "cross_platform_recipe": {
         "sgs": "transitionVar('fast') -> var(--wp--custom--transition--fast)",
         "html_css": "<element style=\"transition: <prop> <duration> <easing>;\">",
@@ -198,7 +243,14 @@
       "value_extractor": "image_object",
       "value_extractor_notes": "Reads <img src=...>, <img srcset=...>, <img alt=...>. Source attribute typically named image, mediaUrl, etc.",
       "css_property": null,
-      "applies_to_attribute_names": ["image", "mediaUrl", "imageId", "imageAlt", "imageUrl", "backgroundImage"],
+      "applies_to_attribute_names": [
+        "image",
+        "mediaUrl",
+        "imageId",
+        "imageAlt",
+        "imageUrl",
+        "backgroundImage"
+      ],
       "cross_platform_recipe": {
         "sgs": "MediaUpload -> attribute -> render.php outputs <img>",
         "html_css": "<img src=\"<url>\" alt=\"<alt>\" width=\"<w>\" height=\"<h>\">",
@@ -213,7 +265,13 @@
       "selector_strategy": "dom-query",
       "value_extractor": "attr_href",
       "css_property": null,
-      "applies_to_attribute_names": ["url", "linkUrl", "href", "buttonUrl", "ctaUrl"],
+      "applies_to_attribute_names": [
+        "url",
+        "linkUrl",
+        "href",
+        "buttonUrl",
+        "ctaUrl"
+      ],
       "cross_platform_recipe": {
         "sgs": "URLInput -> attribute -> render.php outputs <a href=...>",
         "html_css": "<a href=\"<url>\">",
@@ -228,7 +286,14 @@
       "selector_strategy": "bem-element",
       "value_extractor": "text_content",
       "css_property": null,
-      "applies_to_attribute_names": ["text", "title", "subtitle", "label", "buttonText", "ctaText"],
+      "applies_to_attribute_names": [
+        "text",
+        "title",
+        "subtitle",
+        "label",
+        "buttonText",
+        "ctaText"
+      ],
       "cross_platform_recipe": {
         "sgs": "PlainText / TextControl -> attribute -> render.php echoes via esc_html()",
         "html_css": "<element>...text...</element>",
@@ -244,7 +309,12 @@
       "value_extractor": "richtext_html",
       "value_extractor_notes": "Reads innerHTML; allowed tags constrained by wp_kses() on the WP side. When rehydrating in React-generic targets, run through a sanitiser (DOMPurify) before any client-side render-as-HTML path.",
       "css_property": null,
-      "applies_to_attribute_names": ["headline", "subHeadline", "description", "richTextContent"],
+      "applies_to_attribute_names": [
+        "headline",
+        "subHeadline",
+        "description",
+        "richTextContent"
+      ],
       "cross_platform_recipe": {
         "sgs": "RichText component -> attribute -> render.php echoes via wp_kses_post()",
         "html_css": "<element>...html...</element>",
@@ -260,7 +330,12 @@
       "value_extractor": "enum_class_probe",
       "value_extractor_notes": "Probe the element's classList for any of the known modifier classes; map class -> enum value.",
       "css_property": null,
-      "applies_to_attribute_names": ["layout", "variant", "style", "alignment"],
+      "applies_to_attribute_names": [
+        "layout",
+        "variant",
+        "style",
+        "alignment"
+      ],
       "cross_platform_recipe": {
         "sgs": "SelectControl -> attribute -> render.php adds is-<value> class",
         "html_css": "<element class=\"<base> is-<variant>\">",
@@ -276,7 +351,12 @@
       "value_extractor": "boolean_visibility",
       "value_extractor_notes": "Probe with querySelector — element present == true; absent == false. Distinct from display:none which is a CSS-level hide.",
       "css_property": null,
-      "applies_to_attribute_names": ["showImage", "showButton", "showSubtitle", "showLightbox"],
+      "applies_to_attribute_names": [
+        "showImage",
+        "showButton",
+        "showSubtitle",
+        "showLightbox"
+      ],
       "cross_platform_recipe": {
         "sgs": "ToggleControl -> attribute -> render.php gates output with if ($attr)",
         "html_css": "Element present or absent (server-side conditional)",
@@ -292,7 +372,11 @@
       "value_extractor": "attr_data",
       "value_extractor_notes": "Probe element.dataset['<name>']. Used when the value drives JS behaviour rather than CSS.",
       "css_property": null,
-      "applies_to_attribute_names": ["animation", "scrollEffect", "lightboxStyle"],
+      "applies_to_attribute_names": [
+        "animation",
+        "scrollEffect",
+        "lightboxStyle"
+      ],
       "cross_platform_recipe": {
         "sgs": "SelectControl -> attribute -> render.php outputs data-<name>=\"<value>\"",
         "html_css": "<element data-<name>=\"<value>\">",
@@ -308,7 +392,13 @@
       "value_extractor": "query_descriptor",
       "value_extractor_notes": "Reads server-side query attributes (postType, postsPerPage, taxQuery) from the rendered list; reverse-engineers by inspecting <article class=\"post-id-N type-Y term-Z\"> markers.",
       "css_property": null,
-      "applies_to_attribute_names": ["query", "postType", "postsPerPage", "categories", "orderBy"],
+      "applies_to_attribute_names": [
+        "query",
+        "postType",
+        "postsPerPage",
+        "categories",
+        "orderBy"
+      ],
       "cross_platform_recipe": {
         "sgs": "QueryControls -> attribute -> render.php runs WP_Query",
         "html_css": "Server-rendered list (no client-side query)",
@@ -317,6 +407,23 @@
         "shadcn": "Fetched via API -> map() -> <Card />",
         "react_generic": "useQuery() -> map() -> component"
       }
+    },
+    "css-var-bridge": {
+      "description": "Attribute value lands in a CSS custom property (CSS variable) which a later CSS rule consumes via var(...). One-hop indirection. Used by blocks like mobile-nav whose render.php builds a --sgs-mn-* variable map.",
+      "selector_strategy": "css-var-declaration",
+      "value_extractor": "computed_var_value",
+      "css_property": null,
+      "css_variable_pattern": "--sgs-<block-short-slug>-<token>",
+      "applies_to_attribute_names": [],
+      "cross_platform_recipe": {
+        "sgs": "render.php builds css_vars[] with --sgs-<slug>-<token> entries; style.css reads via var(...)",
+        "html_css": "<element style=\"--token: <value>\"> consumed by .selector { property: var(--token); }",
+        "tailwind": "Use arbitrary-value with custom property: [--token:<value>] then className uses [property:var(--token)]",
+        "bootstrap": "CSS-variable-driven utilities (Bootstrap 5.3+) — :root { --bs-token: <value>; }",
+        "shadcn": "globals.css :root { --token: <value>; } + Tailwind theme.extend.colors with HSL var()",
+        "react_generic": "inline style={{ \"--token\": value }} + child consumes via var()"
+      },
+      "notes": "Added Phase 3.5 follow-up per B2 render.php mining of sgs/mobile-nav. Used when value flows VALUE -> --css-var -> property:var(--css-var) rather than VALUE -> property directly."
     }
   }
 }
