@@ -101,6 +101,14 @@ On halt: write a stop-note to `.claude/scratch/spec-15-session-{date}-stop.md` s
 
 **Goal:** Behavioural analyser, three new vocabulary tables, block_attributes extended, token value-matcher, default-inheritance lookup. Everything every later phase depends on.
 
+**Step 0 (MANDATORY before Step 1.1):** Initialise session timer per Verification Discipline Rule 3. Without this the per-step time-exceeded check (SC6) is structurally unenforceable.
+
+```bash
+mkdir -p .claude/scratch
+date +%s > .claude/scratch/spec-15-session-start.txt
+echo "Session start: $(date -Iseconds)" > .claude/scratch/spec-15-session-log.txt
+```
+
 | # | Step | Model | Time | Subagent prompt template |
 |---|---|---|---:|---|
 | 1.1 | DB schema migration — `CREATE TABLE slot_synonyms / property_suffixes / modifier_suffixes` + `ALTER TABLE block_attributes ADD 6 columns` | **Cerebras** (deterministic SQL, single file) | 15 min | Create `~/.claude/skills/sgs-wp-engine/scripts/migrate-spec-15-p1.py`. Run idempotent ALTER + CREATE per spec 15 §4.3-4.6. Add a `schema_version` row to sgs-framework.db. Output: SQL applied + verification print. **Post-dispatch `/qc-inline`:** query `PRAGMA table_info` for each new table + the extended `block_attributes`; confirm columns + types match spec §4.3-4.6 exactly. Re-run script; confirm zero changes (idempotency). |
@@ -511,7 +519,14 @@ Project conventions: as in Prompt 1.3. No mocking of the strategies themselves �
 
 ## Generic subagent prompt templates (for Phases 2-5 dispatches)
 
-These are templates with placeholders. For Phase 1, the concrete prompts above are paste-and-go; for Phases 2-5, fill these templates against the specific step.
+For each Phase 2-5 dispatch, **invoke `/subagent-prompt` first** with the step description as input. The skill produces a self-contained cold prompt (6-section base template: Role / Task / Context / Instructions / Output / Criteria, plus a 7th "Key Judgement Calls" section for high-stakes work). It will:
+
+- Pull the relevant spec section references
+- Embed real file paths from the asset inventory (Spec 15 §12E)
+- Include project conventions (UK English, no mocking, etc.)
+- Enforce the dispatch-justification gate (refuses to write a prompt for inline work)
+
+The fallback templates below are for when `/subagent-prompt` is unavailable.
 
 ### Template A — Sonnet code-gen with file context
 

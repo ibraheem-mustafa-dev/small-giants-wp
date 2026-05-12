@@ -15,6 +15,16 @@ This session executes **Spec 15 Phase 1 — Foundation** (~6 hr): three new voca
 
 `/autopilot` — establishes routing + ADHD support for the whole session.
 
+## Step 0 — Initialise session timer (MANDATORY before any dispatch)
+
+```bash
+mkdir -p .claude/scratch
+date +%s > .claude/scratch/spec-15-session-start.txt
+echo "Session start: $(date -Iseconds)" > .claude/scratch/spec-15-session-log.txt
+```
+
+This is the prerequisite for Rule 3 SC6 (step-exceeds-3×-estimate halt condition). Without it, autonomous timing checks degrade to subjective.
+
 ## Cold-start reads (~10 min)
 
 1. **`.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md`** — full architecture spec. Focus on §3 (convention rules), §5 (mapping layer / rosetta stone), §11 (phase plan), §12E (asset inventory + lifecycle).
