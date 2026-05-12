@@ -82,7 +82,7 @@ The absorbed Spec 14 P5–P10 plans assumed a different mapping layer. Critical 
 - 9 static-block snapshots exist at `tests/golden/static-block-snapshots/` (Spec 14 P1 ship; `ls tests/golden/static-block-snapshots/*.json | wc -l` returns ≥ 9)
 - Phase 3 catalogue retired (sub-phase 5a verified; canonical_slot in sgs-db)
 - `/sgs-db impact` + `/wp-blocks validate` + `/wp-hook-graph validate` CLI tools available (verify: `ls ~/.claude/commands/sgs-db.md ~/.claude/hooks/wp-blocks.py ~/.claude/hooks/wp-hook-graph.py` returns 3 files)
-- WP REST API credentials in `~/.openclaw/.env` (for FR19 media sideload; verify: `grep -c "WP_REST_USER\|WP_REST_APP_PASSWORD" ~/.openclaw/.env` returns ≥ 1)
+- WP REST API credentials in `~/.openclaw/.env` (for the media sideloader at 5b.5; verify: `grep -c "WP_REST_USER\|WP_REST_APP_PASSWORD" ~/.openclaw/.env` returns ≥ 1)
 - `pipeline-state/` directory writable (verify: `mkdir -p pipeline-state/spec-15-p5b-test && rmdir pipeline-state/spec-15-p5b-test`)
 - **Note for 5b.2:** the pattern reference is `~/.claude/hooks/validate-pipeline-artifact.py` (existing /qc pipeline validator — read it to understand the JSON-schema validation idiom)
 
@@ -196,7 +196,7 @@ The absorbed Spec 14 P5–P10 plans assumed a different mapping layer. Critical 
 | 5e.3 | Staged-merge orchestrator (the keystone — Spec 15 FR21 no-canonical-mutation discipline) | **Sonnet** | 35 min | The big one. Walks all staged stage-N JSON artefacts in pipeline-state/<run_id>/, validates each, applies in order, rolls back atomically on any failure. Writes a `merge-log.md` audit trail. **`/qc-inline`:** simulate a 9-stage run; halt mid-stage 5 with synthetic error; assert orchestrator rolls back stages 1–4 cleanly + staging dir empty + log records the failure. |
 | 5e.4 | Visual-QA auto-invoke + bundle (writes results back to Spec 15 FR16 recognition_log) | **Sonnet** | 25 min | After staged-merge, auto-invoke `/visual-qa` with the `visual_qa_config.json` thresholds. Capture screenshots at 3 viewports + bundle to `pipeline-state/<run_id>/visual-qa-bundle.zip`. Side-by-side diff thumbnails for any region > 0.5%. **`/qc-inline`:** run on Mama's mockup post-deploy; assert 6 screenshots (3 viewports × 2 sides) + diff JSON + thumbnails for surfaced regions. |
 | 5e.5 | Autonomy gate — auto-proceed past Stage 8 | **Sonnet** | 20 min | Decision logic: visual-QA diff ≤ 1% AND zero console errors AND zero failed pre-flights → auto-proceed (no operator gate). Otherwise → surface to operator. **`/qc-inline`:** test 4 scenarios — (a) 0.3% diff + clean: auto-proceed; (b) 0.8% diff + clean: proceed but surface; (c) 1.2% diff: halt; (d) 0.5% diff + console error: halt. Assert correct gate outcome each. |
-| 5e.6 | Auto-invoke `/sgs-update` on PASS (uses Spec 15 FR33 extended stages) | **Sonnet** | 15 min | After successful staged-merge + visual-QA PASS, auto-run `/sgs-update` so sgs-framework.db reflects any new blocks/attrs scaffolded during the clone (FR14 atomic-block creates). **`/qc-inline`:** run a clone that scaffolds a new block; assert post-clone `/sgs-update` populates the new block row in sgs-framework.db.blocks. |
+| 5e.6 | Auto-invoke `/sgs-update` on PASS (uses Spec 15 FR33 extended stages) | **Sonnet** | 15 min | After successful staged-merge + visual-QA PASS, auto-run `/sgs-update` so sgs-framework.db reflects any new blocks/attrs scaffolded during the clone (5b.8 atomic-block scaffold output). **`/qc-inline`:** run a clone that scaffolds a new block; assert post-clone `/sgs-update` populates the new block row in sgs-framework.db.blocks. |
 | 5e.7 | Deliverable bundle output | **Sonnet** | 15 min | Final output: `pipeline-state/<run_id>/deliverable.md` summarising the run — what shipped, coverage %, visual-QA result, gap candidates surfaced, links to all artefacts. **`/qc-inline`:** open the .md; assert all sections present + links resolve + readable by a non-technical operator. |
 | 5e.8 | Wire pre-flight + staged-merge + auto-update into orchestrator `main()` | **Sonnet** | 20 min | Final wiring. The orchestrator's main entry point now drives: pre-flight → stages 1–9 → staged-merge → visual-QA → autonomy gate → auto-update → deliverable. **`/qc-inline`:** read main(); confirm the 7-step call sequence; run end-to-end smoke test (mocked stages) to verify wiring. |
 | 5e.9 | Commit + sub-phase QC | **Inline + Haiku + Sonnet + Gemini Flash panel** | 20 min | Branch `feat/spec-15-p5e-visual-qa`. Commit `feat(spec-15-p5e-visual-qa): pre-flight + staged-merge + visual-qa + autonomy gate + auto-update`. Multi-rater /qc. |
@@ -215,7 +215,7 @@ The absorbed Spec 14 P5–P10 plans assumed a different mapping layer. Critical 
 
 ## Sub-phase 5f — Acceptance harness (~30 min)
 
-**Goal:** The 5-check critical-fix-verification per Spec 14 FR18 P1 KJC2. Final acceptance gate before Phase 5 declares done.
+**Goal:** The 5-check critical-fix-verification per Spec 15 FR18 P1 KJC2. Final acceptance gate before Phase 5 declares done.
 
 **Entry preconditions:**
 - **Spec 15 FRs that apply:** FR18 (recogniser script lifecycle + P1 KJC2 5-check harness scope), FR21 (no canonical mutation outside designated FRs)
