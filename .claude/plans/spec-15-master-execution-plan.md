@@ -24,9 +24,67 @@ Synced phase-by-phase build plan for the unified architecture defined in `.claud
 | **Gemini Pro** | EXCLUDED currently per /delegate canon (503 retry loop). Skip until upstream fix. |
 | **Strategic work stays inline** | gap analysis, synthesis, spec rewrites, research decisions, strategic planning — never delegated. |
 | **/delegate before every dispatch** | Skill-tool call returns model + fallback chain + requires block. Honour returned answer. |
-| **Pre-commit QC after every phase** | Multi-rater panel (Haiku + Sonnet + Gemini Flash) via /qc. Phase 5 sub-phases each get their own QC. |
 | **Branch discipline** | Per CLAUDE.md: framework work (touches plugins/sgs-blocks, theme/sgs-theme, tools/) → feature branch `feat/spec-15-pN-...` + PR. Small fixes → main. |
 | **Time estimates low** | Per global rule `time-estimates-default-low`. Quote smallest plausible figure. Recalibrate downward when steps finish 3× faster. |
+
+## Verification discipline (CRITICAL — autonomous execution rule)
+
+The session runs without Bean's input between checkpoints. The blast radius of a bad subagent step compounds. Therefore:
+
+### Rule 1 — Subagent reports are claims, not evidence
+
+> **Never trust a subagent's "I did X and it works" report. After every subagent dispatch, run `/qc-inline` on the actual artefact (file contents, DB row state, test stdout, screenshot) before marking the step complete.**
+
+Examples of independent verification per dispatch type:
+
+| Subagent dispatch produced | /qc-inline verification |
+|---|---|
+| Cerebras SQL migration | `python -c "import sqlite3; …"` actually queries the table; confirms columns exist + row counts match expected |
+| Sonnet wrote a Python module | Read the file. Run its self-test inline. Run a Bean-side smoke test against real data. |
+| Sonnet wrote a parser | Feed it 3 real input files. Confirm outputs structurally + content-wise match the spec. |
+| Cerebras bulk INSERTs | Re-query the table; confirm row counts; spot-check 3 random rows against source data. |
+| Sonnet wrote unit tests | Run pytest inline. Verify exit code 0. Read the test output to confirm tests actually exercise the right code paths (not just smoke). |
+
+If `/qc-inline` finds the subagent's claim doesn't match reality: STOP. Do not advance to the next step. Fix the gap (re-dispatch with refined prompt, or take over inline) before continuing.
+
+### Rule 2 — Inline work gets multi-rater QC before phase advance
+
+> **At the end of every phase, run the full multi-rater `/qc` panel (Haiku + Sonnet + Gemini Flash) against the phase deliverable. Need pass/ship verdict from at least 2 of 3 raters before opening the phase PR or marking complete.**
+
+This catches what one rater (the main thread) misses. Documented this session — Spec 15 v0.1 went from `pass/100` (main-thread-only) to `partial/88` (Sonnet) to `pass/96` (Sonnet, post-fix). The first single-rater score was overconfident.
+
+Cross-model panel composition:
+- **Haiku** — fast, lower-rigour sanity check
+- **Sonnet** — deepest critic (catches what others miss; this was the one who found the v0.1 issues)
+- **Gemini Flash** — third independent rater (free, 1M context; literal-naming bias is a known feature, not a bug)
+- Exclude Gemini Pro (503 retry issue)
+- Don't include main-thread (biased toward what it wrote)
+
+If the panel finds real issues (≥2 raters agree on a fail): treat as Sonnet-found-real-issues. Apply fixes; re-run the panel; repeat until clean.
+
+### Rule 3 — Stop conditions (halt + surface to Bean)
+
+The session keeps moving autonomously UNTIL:
+
+1. **Subagent verification fails irrecoverably** (same dispatch fails 2 times with refined prompts) — halt; surface the artefact + error to Bean
+2. **Multi-rater QC returns fail/hold from 2+ raters** — halt; surface fail reasons; fix or escalate
+3. **Architectural decision needed** (e.g. an attribute name doesn't decompose cleanly + needs a new canonical entry) — halt; surface the case + recommendation; wait for Bean's call
+4. **Destructive operation on shared state** (live DB write outside expected path, force-push, deleting a file not in the inventory) — halt; surface intent; wait for explicit go
+5. **Pipeline state corruption** (sgs-framework.db lock, /sgs-update partial run that left mixed state) — halt; surface diagnostic; recover before continuing
+6. **Phase exceeds 2× estimated wall time** — halt; surface scope vs reality; Bean decides continue / pivot / park
+
+On halt: write a stop-note to `.claude/scratch/spec-15-session-{date}-stop.md` summarising why and what's needed to unblock. Continue with anything that's orthogonal in the meantime.
+
+### Rule 4 — Recovery paths per dispatch type
+
+| Failure mode | Recovery |
+|---|---|
+| Subagent returns no output / errors out | Retry once with refined prompt (more context, smaller scope). If second attempt fails, take over inline. |
+| Cerebras hits 12-tool-round ceiling | Task was too big — split into 2 dispatches OR move to Sonnet. |
+| Gemini Flash returns malformed JSON | Re-prompt with explicit JSON-only instruction. If second attempt malformed, count as a vote of "unable to render verdict" — treat as absent rater in the panel. |
+| `/qc-inline` discovers structural mismatch (wrong selector, wrong column type, etc.) | Surface the actual vs expected gap; re-dispatch with the diff embedded in the prompt. |
+| Multi-rater QC dissent — 1 rater partial, 2 pass | Sonnet's reading wins on the dissent; apply Sonnet's fixes; re-run panel. |
+| Test suite green but Bean's eye disputes the output | Per blub.db row 207 `extend-measurement-set-when-human-eye-disputes` — extend measurement set OR pixel-sample before declaring user wrong. |
 
 ## Phase 1 — Foundation (~6 hr)
 
@@ -34,15 +92,15 @@ Synced phase-by-phase build plan for the unified architecture defined in `.claud
 
 | # | Step | Model | Time | Subagent prompt template |
 |---|---|---|---:|---|
-| 1.1 | DB schema migration — `CREATE TABLE slot_synonyms / property_suffixes / modifier_suffixes` + `ALTER TABLE block_attributes ADD 6 columns` | **Cerebras** (deterministic SQL, single file) | 15 min | Create `~/.claude/skills/sgs-wp-engine/scripts/migrate-spec-15-p1.py`. Run idempotent ALTER + CREATE per spec 15 §4.3-4.6. Add a `schema_version` row to sgs-framework.db. Output: SQL applied + verification print. |
-| 1.2 | Seed `slot_synonyms` (20 rows) + `property_suffixes` (32 rows) + `modifier_suffixes` (16 rows) | **Cerebras** (rote insert from spec §3.4–3.6) | 15 min | Bulk INSERT scripted from spec §3.4 / §3.5 / §3.6 tables verbatim. Idempotent via ON CONFLICT. |
-| 1.3 | **Static analyser** — `render.php` + `save.js` parser → per-attribute `output_signature` | **Sonnet** (code-gen with judgement) | 60 min | Create `plugins/sgs-blocks/scripts/behavioural-analyser/extract-signatures.py`. For each of 65 blocks: parse render.php (regex for `echo` + `esc_*` + class context) AND save.js (regex for JSX `<element className="...">{attrs.X}</element>` patterns). Emit per-attribute signature JSON matching spec §5.3 schema. Output: `output_signature` column populated on every `block_attributes` row + a per-block coverage report. |
-| 1.4 | Backfill `canonical_slot` + `role` + `derived_selector` for all 1343 attrs | **Sonnet** (deterministic logic, decompose name + lookup synonym table) | 30 min | Create `plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py`. For each attr: decompose name per spec §3.3 template; look up slot in slot_synonyms; assign role from property_suffixes; derive selector from spec §5.2 formula. Special-case: also ingest seed from v1 `tools/recogniser/data/fingerprints.json` `attr_extractors` where present (10 blocks have rich entries). UPDATE block_attributes. |
-| 1.5 | **Token value-matcher** — ΔE2000 colour + percent-deviation spacing | **Sonnet** (numerical implementation, library use) | 45 min | Create `plugins/sgs-blocks/scripts/value-matcher/match.py`. Functions: `snap_color(hex, palette)`, `snap_spacing(px, scale)`, `snap_font_size(px, scale)`, `snap_shadow(value, presets)`. ΔE2000 via `colormath` lib (`pip install colormath`). Confidence tiers per spec §5.4. Self-tests: red/orange snap test, 32px spacing snap test, etc. |
-| 1.6 | **Default-inheritance lookup** against `theme.json` `styles.elements` / `styles.blocks` | **Sonnet** (theme.json parser + precedence logic) | 30 min | Create `plugins/sgs-blocks/scripts/value-matcher/inheritance.py`. Function: `inherits_global_default(block_slug, slot, value)`. Reads `theme/sgs-theme/theme.json` via WP-style resolution. Precedence per spec §5.4 + FR35: blocks > elements > root. Self-test: hero h1 colour matches `styles.elements.h1.color`. |
-| 1.7 | Unit tests for 1.3 / 1.4 / 1.5 / 1.6 | **Sonnet** (test authoring) | 30 min | Pytest suite at `plugins/sgs-blocks/scripts/tests/test_behavioural_analyser.py`. Coverage: at least 1 happy-path + 1 edge case per function. Target: all green. |
-| 1.8 | Commit + push (feature branch `feat/spec-15-p1-foundation`) | **Inline** | 5 min | git checkout -b feat/spec-15-p1-foundation; commit msg per spec; push; gh pr create. |
-| 1.9 | **Phase 1 QC** — multi-rater panel | **Gemini Flash ×3 (persona_panel)** + Inline synthesis | 15 min | /qc on the Phase 1 deliverables. Scenarios: schema migration applied cleanly, vocab tables populated, every attr has canonical_slot + role + derived_selector, value-matcher self-tests green, default-inheritance precedence correct. Confirm: zero attrs with NULL canonical_slot (drift validator passes). |
+| 1.1 | DB schema migration — `CREATE TABLE slot_synonyms / property_suffixes / modifier_suffixes` + `ALTER TABLE block_attributes ADD 6 columns` | **Cerebras** (deterministic SQL, single file) | 15 min | Create `~/.claude/skills/sgs-wp-engine/scripts/migrate-spec-15-p1.py`. Run idempotent ALTER + CREATE per spec 15 §4.3-4.6. Add a `schema_version` row to sgs-framework.db. Output: SQL applied + verification print. **Post-dispatch `/qc-inline`:** query `PRAGMA table_info` for each new table + the extended `block_attributes`; confirm columns + types match spec §4.3-4.6 exactly. Re-run script; confirm zero changes (idempotency). |
+| 1.2 | Seed `slot_synonyms` (20 rows) + `property_suffixes` (32 rows) + `modifier_suffixes` (16 rows) | **Cerebras** (rote insert from spec §3.4–3.6) | 15 min | Bulk INSERT scripted from spec §3.4 / §3.5 / §3.6 tables verbatim. Idempotent via ON CONFLICT. **Post-dispatch `/qc-inline`:** `SELECT COUNT(*)` from each — expect 20 / 32 / 16. Spot-check 3 random rows per table against the spec to confirm no transcription errors. Re-run; confirm row counts unchanged. |
+| 1.3 | **Static analyser** — `render.php` + `save.js` parser → per-attribute `output_signature` | **Sonnet** (code-gen with judgement) | 60 min | Create `plugins/sgs-blocks/scripts/behavioural-analyser/extract-signatures.py`. For each of 65 blocks: parse render.php (regex for `echo` + `esc_*` + class context) AND save.js (regex for JSX `<element className="...">{attrs.X}</element>` patterns). Emit per-attribute signature JSON matching spec §5.3 schema. Output: `output_signature` column populated on every `block_attributes` row + a per-block coverage report. **Post-dispatch `/qc-inline`:** Pick 3 well-known blocks (hero, info-box, trust-bar). For each, read its actual render.php, manually identify the expected output_signature for one attribute, query the DB for what the analyser wrote, diff. Also count: `SELECT COUNT(*) FROM block_attributes WHERE output_signature IS NULL` — should be < 5% (some attrs may legitimately not have a render path). |
+| 1.4 | Backfill `canonical_slot` + `role` + `derived_selector` for all 1343 attrs | **Sonnet** (deterministic logic, decompose name + lookup synonym table) | 30 min | Create `plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py`. For each attr: decompose name per spec §3.3 template; look up slot in slot_synonyms; assign role from property_suffixes; derive selector from spec §5.2 formula. Special-case: also ingest seed from v1 `tools/recogniser/data/fingerprints.json` `attr_extractors` where present (10 blocks have rich entries). UPDATE block_attributes. **Post-dispatch `/qc-inline`:** `SELECT COUNT(*) FROM block_attributes WHERE canonical_slot IS NULL` — expect 0. Pick 5 random attrs across different blocks; verify each canonical_slot + role + derived_selector matches what the spec §3.3 + §5.2 rules would produce by hand. Run `audit-attr-vocabulary-v2.py`; confirm zero drift violations after canonical assignment. |
+| 1.5 | **Token value-matcher** — ΔE2000 colour + percent-deviation spacing | **Sonnet** (numerical implementation, library use) | 45 min | Create `plugins/sgs-blocks/scripts/value-matcher/match.py`. Functions: `snap_color(hex, palette)`, `snap_spacing(px, scale)`, `snap_font_size(px, scale)`, `snap_shadow(value, presets)`. ΔE2000 via `colormath` lib (`pip install colormath`). Confidence tiers per spec §5.4. Self-tests: red/orange snap test, 32px spacing snap test, etc. **Post-dispatch `/qc-inline`:** Don't trust the self-tests alone. Inline run: 5 colour inputs (3 should snap to primary/accent/text; 2 should flag as gap candidates because they're far from any token); verify confidence values are in correct tiers (1.0 / 0.85 / 0.6); verify gap candidates return `(raw_value, 0.0)`. Same drill for spacing + font-size. |
+| 1.6 | **Default-inheritance lookup** against `theme.json` `styles.elements` / `styles.blocks` | **Sonnet** (theme.json parser + precedence logic) | 30 min | Create `plugins/sgs-blocks/scripts/value-matcher/inheritance.py`. Function: `inherits_global_default(block_slug, slot, value)`. Reads `theme/sgs-theme/theme.json` via WP-style resolution. Precedence per spec §5.4 + FR35: blocks > elements > root. Self-test: hero h1 colour matches `styles.elements.h1.color`. **Post-dispatch `/qc-inline`:** Construct a deliberate precedence test where `styles.elements.h1.color = primary` but `styles.blocks.sgs/hero.heading.color = accent`. Confirm the function returns "use accent" (blocks override elements). Then test the reverse: only `styles.elements.h1.color = primary` defined, no block override — confirm "use primary". Then test root fallback. |
+| 1.7 | Unit tests for 1.3 / 1.4 / 1.5 / 1.6 | **Sonnet** (test authoring) | 30 min | Pytest suite at `plugins/sgs-blocks/scripts/tests/test_behavioural_analyser.py`. Coverage: at least 1 happy-path + 1 edge case per function. Target: all green. **Post-dispatch `/qc-inline`:** Run pytest with `-v --cov` flags. Verify exit code 0 AND coverage ≥ 80% on the modules from steps 1.3-1.6. Read test output to confirm tests actually exercise the documented behaviours (not just smoke). |
+| 1.8 | Commit + push (feature branch `feat/spec-15-p1-foundation`) | **Inline** | 5 min | git checkout -b feat/spec-15-p1-foundation; commit msg per spec; push; gh pr create. Pre-commit: verify no `.bak` files, no secrets, no oversized binaries staged. |
+| 1.9 | **Phase 1 QC — multi-rater panel** | **Gemini Flash ×3 (persona_panel) + Sonnet subagent + Haiku subagent** + Inline synthesis | 20 min | Dispatch the 3-rater panel via `/qc` against the Phase 1 deliverable. Each rater reads the migration + analyser + value-matcher code + the populated DB state. Scenarios: schema applied cleanly (PRAGMA matches spec), 3 vocab tables seeded (counts match), every block_attributes row has canonical_slot populated, value-matcher self-tests pass, default-inheritance precedence test green, unit-test coverage ≥80%, drift validator zero violations. **Gate to advance:** ≥2 of 3 raters return `pass/ship`. If Sonnet (the strict critic) returns `partial`, treat its concerns as real; apply fixes; re-run the panel until clean. |
 
 **Phase 1 success criteria** (also in spec §11):
 - [ ] 3 new vocab tables exist + seeded
@@ -55,6 +113,8 @@ Synced phase-by-phase build plan for the unified architecture defined in `.claud
 **Phase 1 dispatch summary:** 2× Cerebras (SQL), 5× Sonnet (code), 1× inline (commit), 1× Gemini Flash panel (QC). Total estimated subagent cost: ~$0.10 (Cerebras + Gemini Flash are free; Sonnet steps ~$0.05 each).
 
 ---
+
+**Note on Phases 2–5:** the per-step `/qc-inline` discipline shown in Phase 1's "Notes" column applies identically to every dispatch in Phases 2–5. Verification is mandatory before advancing — even where the per-step notes don't spell it out explicitly. The "Verification discipline" section above is the source of truth; the Phase 1 detail is the worked example for how to apply it.
 
 ## Phase 2 — /sgs-update unified (~2 hr)
 
