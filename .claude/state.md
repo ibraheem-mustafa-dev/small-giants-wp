@@ -2,9 +2,9 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-current_phase: spec-14-phase-4-extract-refactor
-current_step: "Spec 14 P1 + P2 + P3 shipped 2026-05-11. P3 commits: e0f26ec5 (catalogue ship) + 10819cbb (gap close: zero unmapped slots via 3-layer classifier) + 833fed21 (restore sgs/media + sgs/data-display as status=planned). QA gate 9/9 PASS. Catalogue at plugins/sgs-blocks/scripts/fingerprint-builder/output/: 36 Layer 1 envelopes, 20 Layer 2 roles, 67 Layer 3 blocks (65 built + 2 planned), 37 Layer 4 compositions. Idempotent re-runner at build-catalogue.py --check. Next: P4 extract.py refactor — plan at .claude/plans/phase-4-extract-refactor.md."
-last_updated: 2026-05-11 (P3 shipped 833fed21; ghost-row restore + design intent captured in parking.md; ready for P4 cold-start)
+current_phase: spec-15-phase-1-foundation
+current_step: "Spec 15 ratified 2026-05-12. Unified architecture for the deterministic draft-to-SGS converter + QA pipeline. Absorbs Specs 12 + 13 + 14 (originals at .claude/scratch/absorbed/). Multi-rater QC v0.2: Sonnet pass/96, Haiku pass/98, Gemini Flash partial/100 (weak literal-naming dissent). Spec 14 P1-P4 shipped (commits f467bc72 + 15f4d6cf + e0f26ec5 + 10819cbb + 833fed21 + 8e2e427a) — counted as already-delivered work toward Spec 15 Phases 1-3. Next: Spec 15 Phase 1 — Foundation (behavioural analyser + slot_synonyms/property_suffixes/modifier_suffixes vocab tables + token value-matcher + default-inheritance lookup). Plan at .claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md §11."
+last_updated: 2026-05-12 (Spec 15 v0.2 ratified + absorbed specs moved to scratch; ready for Phase 1 cold-start)
 blockers:
   - "Skillscore rubric mismatch: command files (~/.claude/commands/*.md), agent files (~/.claude/agents/*.md), and reference-style mini-skills (polish, bolder, colourise, distill, etc.) are graded against full-skill criteria. 24 of 45 Phase 4 files sit below 90% for this reason - all pre-existing baseline noise, not caused by Phase 4 edits. Future fix: add skill-type classifier to sgs-skillscore."
 recommended_model_next: sonnet

@@ -1,3 +1,9 @@
+> **ABSORBED BY SPEC 15** — see `.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md`.
+> Preserved here for commit-message history continuity. Do not author new work against this doc.
+> All content + rules carried forward to Spec 15 (v0.2, 2026-05-12).
+
+---
+
 # Draft-to-SGS-WP Pipeline (Recogniser v2)
 
 **Status:** Architecture locked 2026-05-03. Hero extractor prototyped at `tools/recogniser-v2/extract.py`. Generalisation to other blocks is parking item P-9.

@@ -1,82 +1,103 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-last_updated: 2026-05-11
-recommended_model_next: opus (P3 starts; P3 step 6 fans out to Sonnet subagents — Opus parent dispatches)
+last_updated: 2026-05-12
+recommended_model_next: opus (architectural judgement at phase boundaries; per-step dispatch to Sonnet / Cerebras / Gemini Flash per the execution plan)
 ---
 
-# Next Session Prompt — Spec 14 P3 (catalogue build)
+# Next Session — Spec 15 Phase 1 (Foundation)
 
-You are picking up from the 2026-05-11 session that shipped:
-- **Spec 14 v2.1 approved** (autonomous draft-to-WordPress-clone pipeline)
-- **P1 executed** (commit `f467bc72`) — doc reconciliation + 9 static-block snapshots + FR18 decisions
-- **P2 executed** (commit `15f4d6cf`) — uimax schema migrations + `recursion-guard.py` module
-- **All P3-P10 phase plans committed + QC'd** with 12 critical fixes applied
+Spec 15 ratified and migrated. Specs 12 / 13 / 14 absorbed into `.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md` (originals at `.claude/scratch/absorbed/`).
 
-The plans are the script. P3 plan at `.claude/plans/phase-3-catalogue-build.md` is detailed enough to execute cold.
+This session executes **Spec 15 Phase 1 — Foundation** (~6 hr): three new vocabulary tables, `block_attributes` extension, behavioural static analyser, token value-matcher, default-inheritance lookup.
 
-Invoke `/autopilot` before doing anything else.
+## Invoke first
 
-## Read first (cold-start orientation, ~5 min)
+`/autopilot` — establishes routing + ADHD support for the whole session.
 
-1. `.claude/cloning-pipeline-flow.md` — one-page visual of the whole pipeline (60-sec read)
-2. `.claude/specs/14-CLONING-PIPELINE-CATALOGUE.md` Section 2.5 (build-status inventory) + FR1-FR4 + FR26 (P3 scope)
-3. `.claude/plans/master-spec14-build-plan.md` — cross-phase view + parallelisation map
-4. `.claude/plans/phase-3-catalogue-build.md` — THE EXECUTION SCRIPT for this session
+## Cold-start reads (~10 min)
 
-## What you're doing in this session
+1. **`.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md`** — full architecture spec. Focus on §3 (convention rules), §5 (mapping layer / rosetta stone), §11 (phase plan), §12E (asset inventory + lifecycle).
+2. **`.claude/plans/spec-15-master-execution-plan.md`** — phase-by-phase build plan with model assignments + subagent prompt templates.
+3. **`.claude/state.md`** — current_phase = `spec-15-phase-1-foundation`.
 
-**Phase 3 — 4-layer catalogue build, ~5-6 hr.** Build the Rosetta Stone SGS column:
-- Layer 1 envelopes (one row per pattern wrapper)
-- Layer 4 inner-blocks (populate sgs-db `block_compositions` for 38 empty patterns)
-- Layer 3 internal-elements (per-block slot list — 67 blocks; embarrassingly parallel via 8-batch fanout)
-- Layer 2 role-templates (13-20 role taxonomy; consume existing `ATTR_TO_CSS` dict)
-- Hand-author hero entry to match `HERO_FINGERPRINT_SELECTORS` (regression baseline for P4)
+## What's already shipped (context — don't redo)
 
-Steps 1-9 in `.claude/plans/phase-3-catalogue-build.md`. Each step has Model / Action / Files / Outcome / Time / Cold-Entry / Test layers + dispatch prompts where applicable.
+- Spec 14 P1 doc reconciliation + 9 static-block snapshots + FR18 decisions (commit `f467bc72`)
+- Spec 14 P2 uimax schema migrations + recursion-guard module (commit `15f4d6cf`)
+- Spec 14 P3 4-layer catalogue (commits `e0f26ec5` + `10819cbb` + `833fed21`)
+- Spec 14 P4 extract.py refactor + hero override (commit `8e2e427a`)
+- Spec 15 ratified v0.2 with multi-rater QC + 6 Bean decisions locked + 4 post-QC fixes applied (commits this session)
+- Spec migration: 12/13/14 + master-spec14-build-plan.md → `.claude/scratch/absorbed/`
+- Asset inventory + lifecycle of every relevant file added to Spec 15 §12E
 
-## Key fixes already baked into the P3 plan (don't re-decide)
+## Phase 1 — step-by-step
 
-- Step 3 has file_path pre-flight verification (if >5 patterns NULL → halt)
-- Step 6 wraps per-block DOM walk in `RecursionGuard(max_depth=12)` from P2's module
-- Step 6 fans out to 8 parallel Sonnet subagents (~8 blocks each)
-- Step 7 verifies hero entry against `HERO_FINGERPRINT_SELECTORS` bit-exactly
-- Layer 4 cross-platform `equivalent_implementations`: emit `null` + `is_gap_candidate=true` for Bootstrap/Tailwind/shadcn (surface via future `/uimax-sgs-scrape-pattern` runs)
+Per the master plan §Phase 1. Steps 1.1 through 1.9. Each step has a model assignment + estimated time + ready-to-dispatch subagent prompt template (in the master plan).
+
+| Step | Description | Model | Time |
+|---|---|---|---:|
+| 1.1 | DB schema migration — 3 CREATE TABLE + 6 ALTER COLUMN | Cerebras | 15 min |
+| 1.2 | Seed vocab tables (20 + 32 + 16 rows) | Cerebras | 15 min |
+| 1.3 | Static analyser (render.php + save.js parser → output_signature) | Sonnet | 60 min |
+| 1.4 | Backfill canonical_slot + role + derived_selector for 1343 attrs | Sonnet | 30 min |
+| 1.5 | Token value-matcher (ΔE2000 + spacing/font) | Sonnet | 45 min |
+| 1.6 | Default-inheritance lookup against theme.json styles.* | Sonnet | 30 min |
+| 1.7 | Unit tests for 1.3 / 1.4 / 1.5 / 1.6 | Sonnet | 30 min |
+| 1.8 | Commit + push (branch `feat/spec-15-p1-foundation`) | Inline | 5 min |
+| 1.9 | Phase 1 QC — multi-rater panel (Haiku + Sonnet + Gemini Flash) | Gemini Flash + Inline | 15 min |
+
+Use `/delegate` before each dispatch.
 
 ## Skills to invoke
 
 | Skill | When |
 |---|---|
-| `/autopilot` | First — session routing + ADHD support |
-| `/sgs-wp-engine` | Any SGS framework lookups |
-| `/sgs-db` | Query `patterns` + `block_compositions` |
-| `/uimax` | Query `naming_conventions` for role taxonomy alignment |
-| `/dispatching-parallel-agents` | Step 6 fanout (8 subagents, 8-block batches) |
-| `/subagent-prompt` | Write the cold prompts for each Step 6 subagent |
-| `/qc-inline` | Smoke check on a few subagent outputs before merging all 8 batches |
+| `/autopilot` | First — routing + ADHD support |
+| `/delegate` | Before every Agent dispatch — returns model + fallback chain |
+| `/subagent-prompt` | Pre-write cold prompts when complex dispatches needed |
+| `/sgs-db` | Inspect sgs-framework.db during steps 1.1-1.4 |
+| `/wp-blocks` | Query block.json schemas during step 1.3 |
+| `/uimax` | Query uimax design_tokens / animations / naming_conventions |
+| `/qc` | Phase 1 QC at step 1.9 (multi-rater panel) |
 | `/handoff` | Session close |
+
+## Tooling reference
+
+| Tool | Purpose |
+|---|---|
+| Python 3.13 + sqlite3 stdlib | DB migrations + queries |
+| `colormath` library | ΔE2000 colour-distance calc (`pip install colormath`) |
+| BeautifulSoup | render.php parsing in static analyser |
+| Playwright | Default-inheritance verification |
+| Pytest | Unit tests at step 1.7 |
+| `gh pr create` | Phase 1 feature-branch PR |
 
 ## Hard constraints (always)
 
-- No canonical mutation outside FR21 — P3 only writes to `plugins/sgs-blocks/scripts/fingerprint-builder/output/` + sgs-db `block_compositions` updates
+- UK English in code + comments + docs
+- No emojis unless asked
+- No mocking in tests
+- No `--resume` flags in pipelines (per blub.db lesson)
 - No em-dashes in pipeline output
-- No fabrication — grep before claiming code exists (process lesson from 2026-05-11)
-- Per-platform Rosetta Stone: every Layer 2/3/4 row carries `equivalent_implementations` (null + is_gap_candidate where not yet mapped)
+- Per-rater QC verdict before any "ship" claim
+- Branch discipline: framework work → feature branch + PR; small fixes → main
+- `/delegate` before every Agent dispatch
 
 ## Don't
 
-- Don't re-plan P3 — the plan is QC'd and locked. Halt at a step's On-Fail clause if reality diverges; surface to operator
-- Don't run /sgs-clone end-to-end yet — P3 unblocks P4-P5; full pipeline doesn't work until P9 ships
-- Don't skip the hero baseline check in Step 7 — it's the regression contract that P4 relies on
-- Don't trust v1 fingerprints `block_type` field — it's frozen/stale; sgs-db is authoritative (lesson from P1)
+- Don't rewrite Spec 15 — it's APPROVED. Use it as-is.
+- Don't re-derive selectors from convention guesses — Phase 1 populates the DB authoritatively from static analysis.
+- Don't delete `tools/recogniser/data/fingerprints.json` — it's Phase 1's seed data (DATA-SOURCE per spec §12E inventory).
+- Don't delete `overrides/hero.py` yet — Phase 3 territory, only after canonical-slot data validates against the regression baseline.
+- Don't merge to main without Phase QC panel ship verdict.
 
-## Done-when (this session)
+## Done-when (session)
 
-- [ ] P3 plan steps 1-9 executed
-- [ ] `plugins/sgs-blocks/scripts/fingerprint-builder/output/` directory contains 5 JSON files
-- [ ] sgs-db `block_compositions` has ≥38 rows with non-empty `block_slugs`
-- [ ] Hero entry in `layer-3-internal-elements.json` is a superset of `HERO_FINGERPRINT_SELECTORS`
-- [ ] QA gate (Step 8) PASS
-- [ ] Commit on origin/main: `feat(p3): 4-layer catalogue shipped`
-
-After P3 ships, the next session picks up P4 (extract.py refactor) — plan at `.claude/plans/phase-4-extract-refactor.md`.
+- [ ] Phase 1 commit `feat(spec-15-p1): foundation — vocabulary tables + behavioural analyser` shipped on origin/main (after PR merge)
+- [ ] Multi-rater QC panel returns pass/ship verdict
+- [ ] `block_attributes` has 6 new columns populated for all 1343 rows
+- [ ] 3 new vocab tables exist + seeded (slot_synonyms 20, property_suffixes 32, modifier_suffixes 16)
+- [ ] Token value-matcher + default-inheritance lookup self-tests green
+- [ ] `.claude/state.md` advanced to `spec-15-phase-2-sgs-update-unified`
+- [ ] Handoff written for next session (Phase 2 cold-start)

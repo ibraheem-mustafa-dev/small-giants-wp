@@ -1,3 +1,9 @@
+> **ABSORBED BY SPEC 15** — see `.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md`.
+> Preserved here for commit-message history continuity. Do not author new work against this doc.
+> All content + rules carried forward to Spec 15 (v0.2, 2026-05-12).
+
+---
+
 ---
 doc_type: spec
 spec_id: 14

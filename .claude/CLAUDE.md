@@ -15,7 +15,7 @@ This file is the entry point for the working area — what's where, in canonical
 | Mistakes | `mistakes.md` | Recurring lessons (sourced from CC auto-memory feedback files) |
 | Last session | `handoff.md` | Most recent session summary |
 | Next session | `next-session-prompt.md` | Pre-written kick-off for the next session |
-| Specs | `specs/` | Block + framework specs (00-13) + optimisation-toolkit + design-brain rubrics. **Spec 13 (`.claude/specs/13-DRAFT-NAMING-CONVENTION.md`) is the canonical SGS-prefixed BEM convention for all Bean-controlled drafts** (locked 2026-05-10, blub.db row 236). |
+| Specs | `specs/` | Block + framework specs (00-11) + optimisation-toolkit + design-brain rubrics. **Spec 15 (`.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md`) is the unified architecture for the deterministic draft-to-SGS converter + QA pipeline** (locked 2026-05-12, absorbs Specs 12+13+14 — originals at `.claude/scratch/absorbed/`). |
 | Active plans | `plans/` | Master plan + per-phase plans (`/strategic-plan` + `/phase-planner` outputs) |
 | Strategy docs | `plans/strategy/` | Cross-cutting strategy (Step 2, toolset spec, design-brain, deferred pipelines) |
 | Archived plans | `plans/archive/` | Completed or superseded plans |
