@@ -224,7 +224,64 @@ echo "Session start: $(date -Iseconds)" > .claude/scratch/spec-15-session-log.tx
 
 ---
 
-## Phase 4 — Draft convention enforcement + long-tail close (~4 hr)
+## Phase 4 + 4.5 — Draft convention enforcement + additive token discovery — ✅ SHIPPED 2026-05-12
+
+**Actual wall time: ~3 hr inline + ~7 min parallel subagent fanout (Sonnet ×2 background, Cerebras inline drift fix).** Shipped as 4 commits on origin/main:
+- `8599faf3` Phase 4 — BEM lint + token lint (additive default) + orchestrator Stage 0.1/0.5 + pre-commit hook + parking
+- `55a6d73e` Phase 4.5 — Font Library scaffold + Mama's variation token writes + report
+- `3c2c07b7` Phase 4.5 fixes — Sonnet QC panel's 3 deferred concerns (shorthand line/col, border routing, gzip .htaccess)
+- `a9b9b1c3` Phase 4.5 polish — variation fallback log + parser-aware column tracking
+
+**Phase 4 actuals vs estimate:**
+
+| Step | Estimate | Actual | Notes |
+|---|---:|---:|---|
+| 4.1 BEM lint (Sonnet) | 30 min | ~4 min | All 5 self-tests pass; 0/149 violations on Mama's mockup |
+| 4.2 Token lint v1 (Sonnet) | 30 min | ~12 min | 8 self-tests; bigger than expected because Bean pivoted to additive mode mid-step |
+| 4.3 Wire to orchestrator (inline) | 20 min | ~5 min | 3 modes verified; dataclass-module sys.modules fix needed |
+| 4.4 Pre-commit hook (Cerebras → inline) | 15 min | ~3 min | Cerebras-eligible but trivial enough to do inline |
+| 4.5a/b Skill updates (inline) | 25 min | ~6 min | /ui-ux-pro-max + /innovative-design SKILL.md updates |
+| 4.6a Long-tail close 37 (inline) | 30 min | ~5 min | 7 new slots + 11 boolean-visibility + 11 instance-data-flag → queue 37→0 |
+| Drift role-registry fix (inline) | — | ~2 min | Realised mid-execution: 4.6a wrote invalid roles; fixed inline |
+| 4.5 Additive rewrite (Sonnet B/G) | — | ~13 min | Parallel with Font Library (Sonnet A); +3 caveats flagged |
+| 4.5 Font Library scaffold (Sonnet A) | — | ~3 min | 1,923-font manifest + PHP class + plugin wiring |
+| 4.6e Width routing + variation overlay (inline) | — | ~10 min | Routes max-width to settings.custom.maxWidth.*; merge_variation function |
+| 4.6f Apply Mama tokens (inline) | — | ~3 min | spacing-28 + narrow-420 written; Fraunces deduped |
+| 4.7 3-rater QC (Sonnet + Haiku parallel) | 15 min | ~6 min | Haiku ship 92%; Sonnet fix-then-ship with 2 blockers |
+| Ship-blocker fixes (inline) | — | ~8 min | v.class_token bug + --variation CLI |
+| Polish items from /qc-inline (inline) | — | ~12 min | Variation fallback log + parser-aware column tracking |
+| Commits + push | 5 min | ~3 min | 4 commits direct-to-main per always-merge-to-main rule |
+
+**Lessons fed forward to Phase 5:**
+- Parallel Sonnet fanout (Font Library + token-lint rewrite) on independent file targets cuts ~30 min wall time. Use for any 2-3-way fanout in Phase 5 sub-phases.
+- Multi-rater QC panel BEFORE commit (per qc-before-commit rule) caught 2 real ship-blockers that the main-thread inline checks missed. Honour Sonnet "fix-then-ship" verdicts unconditionally.
+- Bean's mid-phase architectural pivot (snap → additive) was the right call: cloning preserves intentional bespoke detail. Locked as design principle for Phase 5+.
+- The 5-tuple parser change (adding value_col_offset) was a precision upgrade triggered by the /qc-inline polish pass — small surface, big diagnostic clarity win.
+- Sonnet's strict-critic rater is worth its weight; without it the v.class_token AttributeError + missing --variation CLI flag would have shipped broken to a real workflow.
+
+**Phase 4 + 4.5 deliverable inventory:**
+- `plugins/sgs-blocks/scripts/lints/bem-lint.py` (NEW, 498 LOC) — SGS-BEM compliance lint, 3 modes, exemptions for WP core + Tailwind, 5 self-tests
+- `plugins/sgs-blocks/scripts/lints/token-lint.py` (NEW, ~1900 LOC) — additive token discovery, `TokenWritePlan`/`apply_write_plan()`, variation overlay, max-width matcher, border-shorthand handler, 11 self-tests
+- `plugins/sgs-blocks/scripts/lints/__init__.py` (NEW)
+- `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` (MODIFIED) — Stage 0.1 + 0.5 wiring with 3 modes, client variation auto-resolution + explicit fallback log
+- `plugins/sgs-blocks/includes/class-font-collection.php` (NEW) — registers WP 6.5+ Font Library collection, guarded
+- `plugins/sgs-blocks/scripts/build-font-collection.py` (NEW, 309 LOC) — idempotent manifest builder from uimax google_fonts
+- `plugins/sgs-blocks/assets/font-collections/google-fonts.json` (NEW, 2.5 MB) — 1,923 fonts, 5 categories
+- `plugins/sgs-blocks/assets/font-collections/.htaccess` (NEW) — gzip + 30-day cache directives
+- `plugins/sgs-blocks/sgs-blocks.php` (MODIFIED) — 3-line Font_Collection wiring
+- `theme/sgs-theme/styles/mamas-munches.json` (MODIFIED) — spacing-28 + narrow-420 tokens written
+- `.git/hooks/pre-commit` (live hook, not versioned) — Stage 0.1/0.5 section appended; `SGS_LINT_STRICT=1` env var upgrades to strict
+- `.claude/parking.md` (MODIFIED) — P-S15-STYLEVAR-GEN + P-S15-PAIRINGS-PICKER
+- `.claude/reports/phase-4-5-token-discovery-2026-05-12.md` (NEW) — phase report
+
+**Separate-repo work:**
+- `~/.claude/skills/sgs-wp-engine/sgs-framework.db` — slot_synonyms +7, 26 block_attributes canonicalised, 11 mobile-nav show* re-roled to boolean-visibility, gap queue 37 → 0
+- `~/.agents/skills/ui-ux-pro-max/SKILL.md` — HARD RULE added for SGS-BEM + theme.json tokens
+- `~/.claude/skills/innovative-design/SKILL.md` — routing role clarified, propagation rule added
+
+---
+
+## Phase 4 — Draft convention enforcement + long-tail close (~4 hr) — original spec, preserved for reference
 
 **Goal:** Stage 0.1 BEM lint + Stage 0.5 token-usage lint in `/sgs-clone`. Pre-commit hook for drafts. `/ui-ux-pro-max` updated (primary draft-design skill) + `/innovative-design` updated (design-toolbox router that dispatches to it). **Plus close the remaining 37 long-tail gap candidates** identified by Phase 3.5 fanout (per-block exotic attrs that need design judgement) **and re-check** whether new Phase 4 lint surface findings retro-actively close any current gaps.
 

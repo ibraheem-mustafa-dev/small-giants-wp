@@ -4,7 +4,7 @@ spec_id: 15
 spec_version: 0.2
 project: small-giants-wp
 title: Deterministic Draft-to-SGS Converter + QA Pipeline — Unified Architecture
-status: APPROVED — Bean locked decisions + post-QC fixes applied 2026-05-12
+status: APPROVED — Phases 1, 2, 3, 3.5, 4, 4.5 SHIPPED on origin/main; Phase 5 next
 session_date: 2026-05-12
 authors: Bean + Claude (Opus 4.7)
 absorbs: ['.claude/scratch/absorbed/12-DRAFT-TO-SGS-PIPELINE.md', '.claude/scratch/absorbed/13-DRAFT-NAMING-CONVENTION.md', '.claude/scratch/absorbed/14-CLONING-PIPELINE-CATALOGUE.md']
@@ -591,8 +591,8 @@ Absorbs Spec 14 FR1–FR26 and adds FR27–FR40 for canonicalisation work.
 | **FR35** | 1 | Default-inheritance check against `styles.elements` / `styles.blocks` (WP precedence: blocks > elements > root) |
 | **FR36** | 3 | Polymorphic media slot (image OR video object schema, type discriminator) + WP block deprecation for existing image-only attrs |
 | **FR37** | 6 | Cross-platform output via composition (no per-attribute storage by default) |
-| **FR38** | 4 | Stage 0.1 BEM lint + Stage 0.5 token-usage lint in `/sgs-clone` |
-| **FR39** | 4 | Pre-commit hook enforces Stage 0.1 + 0.5 on `sites/*/mockups/` files |
+| **FR38** | 4 ✅ | Stage 0.1 BEM lint + Stage 0.5 token-usage lint in `/sgs-clone` (shipped 8599faf3) |
+| **FR39** | 4 ✅ | Pre-commit hook enforces Stage 0.1 + 0.5 on `sites/*/mockups/` files (shipped 8599faf3) |
 | **FR40** | 3 | Hero override deletion after Phase 3 (extract.py no longer needs `overrides/hero.py`) |
 
 ---
@@ -636,17 +636,42 @@ Six phases. Each phase ships an isolated commit + verifiable improvement. Earlie
 - Trust-bar + heritage-strip extraction coverage measurably improves
 - Commit: `feat(spec-15-p3): catalogue + extractor rewire to canonical slots`
 
-### Phase 4 — Draft convention enforcement (~3-4 hr)
+### Phase 4 — Draft convention enforcement — ✅ SHIPPED 2026-05-12
 
-**Output:** Stage 0.1 BEM lint + Stage 0.5 token-usage lint in `/sgs-clone`. Pre-commit hook for `sites/*/mockups/`. `/ui-ux-pro-max` (primary draft-design skill) updated to emit compliant drafts; `/innovative-design` (design-toolbox router) updated to propagate the requirement to its dispatch targets.
+**Output:** Stage 0.1 BEM lint + Stage 0.5 token-usage lint (additive mode) in `/sgs-clone` orchestrator with three modes (strict / draft / legacy). Pre-commit hook fires on `sites/*/mockups/*.{html,htm,css}` with auto-resolution of the client style variation overlay. `/ui-ux-pro-max` (primary draft-design skill) + `/innovative-design` (design-toolbox router) SKILL.md files updated. 37 long-tail gap candidates closed (queue → 0; 7 new canonical slots added: header, feature, bar, star, tab, quote, role; 11 mobile-nav `show*` collapsed to `boolean-visibility`; 11 attrs flagged `instance-data-not-canonicalisable`).
 
-**Success criteria:**
-- `/sgs-clone --draft-mode` reports BEM + token violations as warnings
-- `/sgs-clone --strict` rejects non-compliant drafts
-- Pre-commit hook fires on any change to a mockup file under `sites/*/mockups/`
-- `/ui-ux-pro-max` skill description updated; draft output verified to use SGS-BEM + theme.json tokens (primary draft-design skill)
-- `/innovative-design` skill description updated to flag SGS-BEM + token requirement when routing to draft-design dispatch targets (design-toolbox role)
-- Commit: `feat(spec-15-p4): draft convention enforcement gates`
+**Success criteria — all met:**
+- ✅ `/sgs-clone --draft-mode` reports BEM + token violations as warnings (3-mode handler in orchestrator Stage 0.1 + 0.5)
+- ✅ `/sgs-clone --strict` rejects non-compliant drafts (BEM violations halt at Stage 0.1; token violations halt at Stage 0.5 in `--no-new-tokens` mode)
+- ✅ Pre-commit hook (`.git/hooks/pre-commit`) fires on `sites/*/mockups/*.{html,htm,css}` — warning by default, `SGS_LINT_STRICT=1` upgrades to hard gate. Auto-resolves the client variation from the staged path.
+- ✅ `/ui-ux-pro-max` skill description updated with HARD RULE for SGS-BEM + theme.json tokens; draft output verified compliant
+- ✅ `/innovative-design` updated to propagate the requirement to dispatch targets + resolved the prior "DB-only" framing
+- ✅ Drift validator 0/1343 violations; hero `--verify-against tests/golden/hero-extraction-baseline.json` PASS preserved end-to-end
+- ✅ Commit: `feat(spec-15-p4): draft convention enforcement gates + long-tail close` (8599faf3)
+
+### Phase 4.5 — Additive token discovery + Font Library — ✅ SHIPPED 2026-05-12
+
+**Why a sub-phase:** during Phase 4 review the operator framed cloning as *preserving intentional bespoke detail* — small differences ARE the design. The original Phase 4 plan's snap-to-nearest token philosophy was inverted: non-token values are real designer choices that should be REGISTERED as new tokens in the client's style variation, not snapped away. Phase 4.5 ships this additive infrastructure on top of Phase 4's gates so the signal layer + the fix layer arrive together.
+
+**Output:**
+- `token-lint.py` becomes additive by default: returns `TokenWritePlan` with `NewTokenCandidate` rows instead of `LintResult` with violations. `apply_write_plan(plan, variation_path)` writes discovered tokens to a client style variation JSON (palette, spacingSizes, fontFamilies, fontSizes, shadowPresets, custom.maxWidth.*). Legacy verdict mode preserved via `--no-new-tokens`.
+- `max-width` / `min-width` route to a dedicated `_snap_max_width()` matcher against `settings.layout.contentSize` + `wideSize` + `settings.custom.maxWidth.*` (exact match; no fuzzy tolerance). They no longer false-fail against the spacing scale.
+- Variation overlay via `variation_paths` kwarg + `--variation` CLI flag merges client tokens on top of base theme.json so existing client tokens never resurface as candidates.
+- `border` / `outline` / `border-block-*` / `border-inline-*` shorthand routing: walks each word, snaps lengths to spacing and colour-like tokens to colour, ignores style keywords.
+- Shorthand line/col precision: parser captures the exact value column offset (handles whitespace variation around the colon); each shorthand part gets its own Occurrence with pixel-accurate position.
+- Font Library scaffold: `wp_register_font_collection( 'sgs-google-fonts', … )` registers the full uimax `google_fonts` catalogue (1,923 entries) as browsable in the editor's Manage Fonts modal with ZERO frontend enqueue cost (theme.json fontFamilies untouched). Manifest at `plugins/sgs-blocks/assets/font-collections/google-fonts.json`; gzip + 30-day cache via .htaccess.
+- First real use of additive discovery: Mama's mockup → 2 new tokens written to `theme/sgs-theme/styles/mamas-munches.json` (spacingSizes slug `28` = 28px; `custom.maxWidth.narrow-420` = 420px). Fraunces correctly deduped against existing slug `heading`. Post-apply re-discovery: 0 candidates. Idempotent re-apply: 0 added.
+
+**Architectural principle (captured to auto-memory):** Cloning preserves intentional bespoke detail. Non-token values become NEW tokens in the client variation, not snaps to the nearest scale entry. The base `theme.json` stays lean; the client variation absorbs the bespoke differences. Operator-facing layered overrides remain WP-native: theme.json (registry) → style variation (client defaults) → block.json (block defaults) → inline (per-instance).
+
+**Commits:**
+- ✅ `feat(spec-15-p4.5): Font Library collection + first additive token discovery on Mama's mockup` (55a6d73e)
+- ✅ `fix(spec-15-p4.5): close Sonnet QC panel's 3 deferred concerns` (3c2c07b7) — shorthand line/col precision, border shorthand routing, gzip .htaccess
+- ✅ `fix(spec-15-p4.5): two QC-inline polish items — variation fallback log + exact column tracking` (a9b9b1c3) — Stage 0.5 logs explicit fallback when variation missing; parser-aware column offset replaces `len(prop) + 2` heuristic
+
+**Follow-ups parked (post-Phase-6):**
+- **P-S15-STYLEVAR-GEN** — Auto-generate style variations from uimax font_pairings + colour palettes (framed as Step 1 of every future draft-design cycle per operator 2026-05-12)
+- **P-S15-PAIRINGS-PICKER** — Site Editor SlotFill panel for browsing uimax pairings (post-STYLEVAR-GEN)
 
 ### Phase 5 — Clone pipeline E2E (~8-10 hr)
 

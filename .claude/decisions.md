@@ -2,6 +2,18 @@
 
 Append-only. Most-recent first.
 
+## 2026-05-12 — Spec 15 Phase 4.5: cloning preserves intentional bespoke detail (additive token discovery)
+
+**Decision:** The `/sgs-clone` token lint defaults to ADDITIVE mode — non-token CSS values become `NewTokenCandidate` rows in a `TokenWritePlan` and are written to the client's style variation JSON, NOT snapped to the nearest registered token. Verdict mode (the original "snap or fail" behaviour) is preserved as an opt-in `--no-new-tokens` flag for back-compat. Base `theme.json` stays lean; the client variation absorbs bespoke differences. Layered overrides, WP-native: theme.json (registry) → style variation (client defaults) → block.json (block defaults) → inline (per-instance).
+
+**Why:** Bean's framing during Phase 4 review: *"We're cloning, the whole point is these small differences are all intentional and adds to the bespoke nature and feel of the websites."* A `margin-bottom: 28px` between two registered spacing tokens isn't a designer mistake — it's deliberate. The original snap-to-nearest mode inverted the goal of cloning.
+
+**Why max-width gets its own route:** Container widths (420px) don't fit on the spacing scale. They belong in `settings.layout.contentSize` / `wideSize` or `settings.custom.maxWidth.<slug>`. Routing max-width through snap_spacing produces false-positive gap candidates against the wrong vocabulary.
+
+**Why the full font catalogue via Font Library collection, not theme.json:** Adding 1,923 fonts to `theme.json` `settings.typography.fontFamilies` would enqueue every entry on every page (WP Core issue #39332). `wp_register_font_collection( 'sgs-google-fonts', … )` makes all fonts browsable in Manage Fonts modal with zero frontend cost.
+
+**Applied:** Commits `8599faf3`, `55a6d73e`, `3c2c07b7`, `a9b9b1c3`. Lesson captured at `memory/feedback_cloning_preserves_intentional_bespoke_detail.md` + indexed in MEMORY.md. Spec 15 §3, §5.4, §8, §9 updated.
+
 ## 2026-05-12 — Spec 15 Phase 1: slot vocab is content-identity only; structural attrs flag as gap candidates
 
 **Decision:** The v1 `slot_synonyms` vocabulary (20 canonicals: heading, text, button, media, label, etc.) is scoped to content-identity slots only. Root-level structural attributes (padding, gap, hover, transition, columns, layout-mode, etc.) legitimately resolve to `canonical_slot = NULL` and are flagged as gap candidates in `attribute_gap_candidates`. The Phase 2 drift validator will decide whether to introduce a `__root__` pseudo-slot for structural cohesion or accept NULL as the canonical state.
