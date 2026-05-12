@@ -601,10 +601,10 @@ Six phases. Each phase ships an isolated commit + verifiable improvement. Earlie
 **Output:** Behavioural analyser, vocabulary tables, slot/role/selector assignments populated, value-matcher, default-inheritance lookup.
 
 **Success criteria:**
-- `slot_synonyms`, `property_suffixes`, `modifier_suffixes` tables created + seeded
+- `slot_synonyms` (20 rows), `property_suffixes` (48 rows — body-literal incl. UK+US variants), `modifier_suffixes` (19 rows — body-literal across 6 kinds) tables created + seeded
 - `block_attributes` schema extended with 6 new columns
-- Static analyser parses 100% of render.php + save.js files, emits per-attribute signature
-- Every attribute in `block_attributes` has `canonical_slot` + `role` + `derived_selector` populated
+- Static analyser parses 100% of render.php + save.js files, emits per-attribute `output_signature` where statically detectable (target: ≥70% of attrs; remaining NULL are design-shape CSS values that flow through PHP interpolation rather than `esc_*()` calls — these are gap candidates for Phase 2 PHP-AST refinement)
+- Content-identity attributes have `canonical_slot` + `role` + `derived_selector` populated. Root-level structural attributes (padding, gap, hover, transition, etc.) legitimately have `canonical_slot = NULL` because the v1 slot vocabulary is content-identity only; these rows are flagged as gap candidates in `attribute_gap_candidates`. Phase 2 drift validator decides whether to add a `__root__` pseudo-slot or accept NULL.
 - Token value-matcher handles colours (ΔE2000) + spacing + font-sizes + shadows
 - Default-inheritance lookup function works against theme.json/styles.json
 - Commit: `feat(spec-15-p1): foundation — vocabulary tables + behavioural analyser`
