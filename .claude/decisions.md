@@ -2,6 +2,14 @@
 
 Append-only. Most-recent first.
 
+## 2026-05-12 — Spec 15 Phase 1: slot vocab is content-identity only; structural attrs flag as gap candidates
+
+**Decision:** The v1 `slot_synonyms` vocabulary (20 canonicals: heading, text, button, media, label, etc.) is scoped to content-identity slots only. Root-level structural attributes (padding, gap, hover, transition, columns, layout-mode, etc.) legitimately resolve to `canonical_slot = NULL` and are flagged as gap candidates in `attribute_gap_candidates`. The Phase 2 drift validator will decide whether to introduce a `__root__` pseudo-slot for structural cohesion or accept NULL as the canonical state.
+
+**Why:** The 3-rater QC panel for Phase 1 (Haiku ship; Sonnet partial; Gemini Flash partial) consensus was to defer F3 (canonical_slot at 23.8%) and F4 (output_signature at 74.1%) to Phase 2. Sonnet's strict reading: the spec §11 wording "every attribute populated" was an aspirational target written before the slot vocabulary was scoped to content. Updating §11 to reflect the as-built scope avoids a false audit trail. Output_signature gap (300 NULL design-shape attrs) needs a PHP AST parser — that's Phase 2 gap-detection territory, not Phase 1 polish.
+
+**How to apply:** Phase 2 drift validator (`/sgs-update` Stage 9) MUST handle NULL `canonical_slot` as a valid state for structural attrs. Phase 2 gap detection (Stage 10) MUST write the 1023 existing structural gap candidates + 300 signature-coverage gaps to `attribute_gap_candidates` without flagging them as drift violations. Spec §11 updated 2026-05-12 commit `2581b1d5`.
+
 ## 2026-05-11 — Trustpilot sync: Browserless `?token=` auth, settings-page-only failure surface
 
 **Decision:** The Trustpilot sync writer fetches rendered HTML via Browserless.io `/content` REST endpoint, parses JSON-LD, and writes to `wp_options['sgs_trustpilot_data']`. Auth is `?token=<key>` query string, NOT `Authorization: Bearer` (Browserless `/content` rejects Bearer with HTTP 500). The Browserless API key is AES-256-CBC encrypted at rest (keyed off `wp_salt('auth')`), the same pattern `Google_Reviews_Settings` uses. The failure surface is the settings page (activity log of last 5 syncs + `last_sync_status` badge) — no Telegram, no n8n, no parallel notification channel.

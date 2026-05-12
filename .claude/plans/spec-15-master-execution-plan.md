@@ -26,6 +26,7 @@ Synced phase-by-phase build plan for the unified architecture defined in `.claud
 | **/delegate before every dispatch** | Skill-tool call returns model + fallback chain + requires block. Honour returned answer. |
 | **Branch discipline** | Per CLAUDE.md: framework work (touches plugins/sgs-blocks, theme/sgs-theme, tools/) → feature branch `feat/spec-15-pN-...` + PR. Small fixes → main. |
 | **Time estimates low** | Per global rule `time-estimates-default-low`. Quote smallest plausible figure. Recalibrate downward when steps finish 3× faster. |
+| **QC before commit** | Multi-rater QC panel runs BEFORE the commit step, not after. The panel exists to gate the commit; finding fixes post-merge means a second cleanup commit + stale audit trail. Build → /qc-inline per dispatch → multi-rater panel → apply panel fixes inline (re-run panel if diff is material) → commit + push + PR. Captured 2026-05-12 after Phase 1 shipped with the inverse ordering and produced a two-commit PR. |
 
 ## Verification discipline (CRITICAL — autonomous execution rule)
 
@@ -97,7 +98,40 @@ On halt: write a stop-note to `.claude/scratch/spec-15-session-{date}-stop.md` s
 | Multi-rater QC dissent — 1 rater partial, 2 pass | Sonnet's reading wins on the dissent; apply Sonnet's fixes; re-run panel. |
 | Test suite green but Bean's eye disputes the output | Per blub.db row 207 `extend-measurement-set-when-human-eye-disputes` — extend measurement set OR pixel-sample before declaring user wrong. |
 
-## Phase 1 — Foundation (~6 hr)
+## Phase 1 — Foundation — ✅ SHIPPED 2026-05-12
+
+**Actual wall time: 58 min** (estimate was ~6 hr; 6× faster). Merged to main as commit `2581b1d5` (PR #14). Follow-up fixes from QC panel: commit `5c152b3c` (state advance) and the QC-fixes commit squashed into the PR.
+
+**Phase 1 actuals vs estimate:**
+
+| Step | Estimate | Actual | Notes |
+|---|---:|---:|---|
+| 1.1 SQL migration (Cerebras) | 15 min | ~3 min | Idempotent, verified PRAGMA |
+| 1.2 Vocab seed (Cerebras) | 15 min | ~15 min | Queue-stall on report flush; DB written cleanly |
+| 1.3 Static analyser (Sonnet) | 60 min | ~4 min (parallel) | 74.1% coverage; 300 NULL = CSS-flow attrs |
+| 1.4 Canonical assignment (Sonnet) | 30 min | ~4 min | 320 content-identity slots; 1023 gap candidates |
+| 1.5 Value-matcher (Sonnet) | 45 min | ~3 min (parallel) | 13/13 self-tests; ΔE2000 + NumPy patch |
+| 1.6 Inheritance lookup (Sonnet) | 30 min | ~1 min (parallel) | 4/4 self-tests; WP precedence |
+| 1.7 Pytest suite (Sonnet) | 30 min | ~5 min | Found 1 real bug; fixed; 17/17 final |
+| 1.8 Commit + PR | 5 min | ~1 min | PR #14 |
+| 1.9 Multi-rater QC panel | 20 min | ~10 min | 4 raters parallel; Cerebras rate-limited; 3-of-3 verdict applied |
+
+**Lessons fed forward to Phase 2+:**
+- Parallel Sonnet dispatch on independent file targets cuts 3 steps from sequential 135 min to parallel ~5 min wall.
+- Cerebras free-tier hits rate-limit on QC-grade reads; route QC panel members to Sonnet + Haiku + Gemini Flash (skip Cerebras for review tasks).
+- Subagent reports are claims; `/qc-inline` against the actual artefact catches drift between claim and reality every time (Verification Discipline Rule 1 held).
+- Sonnet as strict critic surfaces real code-quality issues a single-rater main thread misses (hardcoded paths + stale comment); honour its fix-before-ship verdict.
+
+**Phase 1 spec-drift findings (resolved):**
+- F1 — property_suffixes 48 not 32 → accept (spec header amended to body-literal)
+- F2 — modifier_suffixes 19 not 16 → accept (same pattern)
+- F3 — canonical_slot 23.8% → defer to Phase 2 drift validator (parking P-S15-F3)
+- F4 — output_signature 74.1% → defer to Phase 2 gap detection (parking P-S15-F4)
+- F5 — peel_property_suffix bug → fixed inline; regression test added
+
+---
+
+## Phase 1 — Foundation (~6 hr) — original spec, preserved for reference
 
 **Goal:** Behavioural analyser, three new vocabulary tables, block_attributes extended, token value-matcher, default-inheritance lookup. Everything every later phase depends on.
 
@@ -147,8 +181,8 @@ echo "Session start: $(date -Iseconds)" > .claude/scratch/spec-15-session-log.tx
 | 2.4 | Add Stage 10 (gap detection) | **Sonnet** | 25 min | New module `plugins/sgs-blocks/scripts/gap-detection/detect.py`. Reads `recognition_log` for `extraction_failed` events. Reads `block_attributes` for NULL canonical_slot. Writes to `attribute_gap_candidates` (uimax FR8 table — schema exists from Spec 14 P2). **/qc-inline:** before running, count rows in `attribute_gap_candidates` (expected: 0). Run Stage 10. Count again; expect new rows only if there are genuine gaps. Manually trigger a fake `extraction_failed` log entry; confirm gap-detection picks it up; remove the test entry. |
 | 2.5 | Update reference doc regen to include canonical vocabulary appendix | **Sonnet** | 15 min | Update `~/.claude/skills/sgs-wp-engine/scripts/regenerate-blocks-reference.py` (or wherever) to append a "Canonical Vocabulary" section to `02-SGS-BLOCKS-REFERENCE.md`. **/qc-inline:** open the regenerated `02-SGS-BLOCKS-REFERENCE.md`. Confirm "Canonical Vocabulary" section exists with 20 slot synonyms + 32 property suffixes + 16 modifier suffixes listed. |
 | 2.6 | Idempotency test — run `/sgs-update` twice, diff outputs | **Inline** | 5 min | Verify byte-identical re-runs (the regression contract). **/qc-inline:** `diff` the two run outputs; expect empty diff. `git diff` after second run; expect empty. |
-| 2.7 | Commit + push (`feat/spec-15-p2-sgs-update-unified`) | **Inline** | 5 min | Same branch flow as Phase 1. Pre-commit: verify no `.bak`, `.pyc`, or temp files staged. |
-| 2.8 | Phase 2 QC | **Gemini Flash ×3 panel** + Inline | 15 min | Dispatch 3-rater /qc panel (Haiku + Sonnet + Gemini Flash). Scenarios: idempotency green, drift validator zero violations on current codebase, gap detection writes correctly to `attribute_gap_candidates`, `02-SGS-BLOCKS-REFERENCE.md` regen includes vocab appendix, all 11 stages run cleanly in order. Gate: ≥2 of 3 raters pass/ship. |
+| 2.7 | Phase 2 QC | **Sonnet + Haiku + Gemini Flash panel** + Inline | 15 min | Dispatch 3-rater /qc panel BEFORE commit. Scenarios: idempotency green, drift validator zero violations on current codebase, gap detection writes correctly to `attribute_gap_candidates`, `02-SGS-BLOCKS-REFERENCE.md` regen includes vocab appendix, all 11 stages run cleanly in order. Gate: ≥2 of 3 raters pass/ship. If Sonnet returns partial → apply fixes inline → re-run panel before advancing to 2.8. |
+| 2.8 | Commit + push + open PR (`feat/spec-15-p2-sgs-update-unified`) | **Inline** | 5 min | Single clean commit reflecting the post-QC state. Pre-commit: verify no `.bak`, `.pyc`, or temp files staged. |
 
 **Phase 2 success criteria:**
 - [ ] `/sgs-update` runs Stages 1–11 idempotently
@@ -169,8 +203,8 @@ echo "Session start: $(date -Iseconds)" > .claude/scratch/spec-15-session-log.tx
 | 3.2 | Delete `tools/recogniser-v2/overrides/hero.py` + `overrides/__init__.py`'s HERO_OVERRIDE entry | **Inline** (destructive — verify rigorously before delete) | 15 min | Pre-delete: run hero `--verify-against` (must pass). Then `git rm overrides/hero.py` + edit `__init__.py` to drop the import + registry entry. **/qc-inline:** re-run hero `--verify-against tests/golden/hero-extraction-baseline.json`. MUST pass (canonical path now drives the extraction). If verify fails, IMMEDIATELY `git restore` the deletion — hero override deletion is gated on canonical path proving equivalence. |
 | 3.3 | Retire `plugins/sgs-blocks/scripts/fingerprint-builder/` (move to `scratch/retired-by-spec-15-p3/`) | **Cerebras** (mechanical git mv) | 5 min | Includes: build-catalogue.py, qa-gate.py, step2_3_4_layer1_3_4.py, step6_layer3.py, output/*.json. Keep audit-attr-vocabulary scripts (still useful). **/qc-inline:** `ls plugins/sgs-blocks/scripts/fingerprint-builder/` — confirm only the audit scripts remain. `ls .claude/scratch/retired-by-spec-15-p3/` — confirm retired files arrived. |
 | 3.4 | Verify trust-bar + heritage-strip extraction coverage improves | **Inline** (Playwright + diff) | 15 min | Run `extract.py` against both sections. Expect trust-bar coverage ≥40% (was 27%), heritage-strip ≥30% (was 8%). **/qc-inline:** record actual coverage numbers; compare to pre-Phase-3 baselines (27% / 8%); confirm improvement OR surface the gap as a real finding to Bean (canonical assignment may need refinement). |
-| 3.5 | Commit + push (`feat/spec-15-p3-catalogue-rewire`) | **Inline** | 5 min | Pre-commit: no `.bak` files staged. |
-| 3.6 | Phase 3 QC | **Gemini Flash ×3 panel** + Inline | 15 min | 3-rater /qc panel. Scenarios: hero baseline preserved, hero override deleted, fingerprint-builder retired, trust-bar/heritage-strip coverage measurably improved, extract.py reads from sgs-db not JSON files. Gate: ≥2 of 3 raters pass/ship. |
+| 3.5 | Phase 3 QC | **Sonnet + Haiku + Gemini Flash panel** + Inline | 15 min | 3-rater /qc panel BEFORE commit. Scenarios: hero baseline preserved, hero override deleted, fingerprint-builder retired, trust-bar/heritage-strip coverage measurably improved, extract.py reads from sgs-db not JSON files. Gate: ≥2 of 3 raters pass/ship. Apply Sonnet-flagged fixes inline before advancing. |
+| 3.6 | Commit + push + open PR (`feat/spec-15-p3-catalogue-rewire`) | **Inline** | 5 min | Single clean commit reflecting the post-QC state. Pre-commit: no `.bak` files staged. |
 
 **Phase 3 success criteria:**
 - [ ] `extract.py` reads sgs-db (no JSON catalogue file dependency)
@@ -193,8 +227,8 @@ echo "Session start: $(date -Iseconds)" > .claude/scratch/spec-15-session-log.tx
 | 4.4 | Pre-commit hook | **Cerebras** (bounded — single shell script) | 15 min | Create `.git/hooks/pre-commit` (or husky-style config). Runs Stage 0.1 + 0.5 on any staged file matching `sites/*/mockups/`. Non-blocking warning by default; strict mode via env var. **/qc-inline:** test by `git add`-ing a deliberately-broken mockup file; run `git commit --dry-run`; confirm hook fires + reports violation. Restore file. |
 | 4.5 | Update `/innovative-design` skill description to require SGS-BEM + theme.json tokens in output | **Inline** (skill authoring is strategic) | 15 min | Update `~/.claude/skills/innovative-design/SKILL.md`. Add hard rule + reference Spec 15 §3 + §8. **/qc-inline:** read updated SKILL.md; confirm new rule visible in description (so autopilot picks it up); test by invoking /innovative-design with a sample brief and check output classes for SGS-BEM compliance. |
 | 4.6 | Test against Mama's mockup (should pass since spec 13 P6 migrated it) | **Inline** (Playwright + scripted) | 15 min | Run lints; expect zero violations on Mama's mockup. **/qc-inline:** capture lint output; assert violation count = 0. If non-zero: surface real finding (spec 13 P6 may have left residual drift). |
-| 4.7 | Commit + push (`feat/spec-15-p4-convention-enforcement`) | **Inline** | 5 min | Pre-commit: no `.bak` files. |
-| 4.8 | Phase 4 QC | **Gemini Flash ×3 panel** + Inline | 15 min | 3-rater /qc panel. Scenarios: lints reject malformed BEM, accept compliant; token lint snaps known values; pre-commit hook fires; /innovative-design updated + tested; Mama's mockup passes with 0 violations. Gate: ≥2 of 3 raters pass/ship. |
+| 4.7 | Phase 4 QC | **Sonnet + Haiku + Gemini Flash panel** + Inline | 15 min | 3-rater /qc panel BEFORE commit. Scenarios: lints reject malformed BEM, accept compliant; token lint snaps known values; pre-commit hook fires; /innovative-design updated + tested; Mama's mockup passes with 0 violations. Gate: ≥2 of 3 raters pass/ship. Apply Sonnet-flagged fixes inline before advancing. |
+| 4.8 | Commit + push + open PR (`feat/spec-15-p4-convention-enforcement`) | **Inline** | 5 min | Single clean commit reflecting the post-QC state. Pre-commit: no `.bak` files. |
 
 **Phase 4 success criteria:**
 - [ ] BEM lint + token lint integrated into `/sgs-clone` Stage 0

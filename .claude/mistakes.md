@@ -1,5 +1,21 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-11 (three new lessons added — style.css build-naming gotcha, namespaced-class fatal, plan-references-fictional-files repeat)
+**Last updated:** 2026-05-12 (two new lessons — case-sensitive endswith; QC panel before commit)
+
+## 2026-05-12 — Multi-rater QC panel runs BEFORE commit, not after
+
+**The rule:** A multi-rater QC panel exists to GATE the commit, not to retroactively bless one. Order the phase template as: build → /qc-inline per dispatch → multi-rater panel → apply panel fixes inline → commit + push + PR (one clean commit). The commit step is LAST.
+
+**Incident:** Spec 15 Phase 1 master plan ordered Step 1.8 (commit + push + PR) before Step 1.9 (multi-rater QC panel). I followed it. The panel then found real fixes (hardcoded Windows paths, stale "KNOWN BUG" docstring, spec §11 wording mismatch). Those needed a follow-up commit on the same branch — so PR #14 ended up with two logical commits (build + QC fixes) instead of one. Audit trail reads "shipped, then fixed" which is confusing; cognitive load on the reviewer; if any panel finding were unfixable, the branch would already be pushed.
+
+**Apply going forward:** Spec 15 master execution plan §Phase 2–5 templates amended 2026-05-12 to put the multi-rater QC panel BEFORE the commit step. Same rule for any future phase-gate template that uses multi-rater review. Memory: `feedback_qc_before_commit.md`. blub.db pattern key: `qc-panel-gates-commit-not-follows-it`.
+
+## 2026-05-12 — `str.endswith(suffix)` on camelCase is case-sensitive; matches will silently miss
+
+**The rule:** When peeling a property suffix off a camelCase attribute name (e.g. `borderRadiusTL` → strip `TL` → check whether `borderRadius` ends with `BorderRadius`), Python's `str.endswith()` is case-sensitive. `'borderRadius'.endswith('BorderRadius')` returns `False`, so the suffix never peels and `role` stays NULL. Equally, when the stem IS the suffix (e.g. `borderRadius` == `BorderRadius` length-wise), the prefix becomes empty and naïve code `continue`s past the match — same silent drop.
+
+**Incident:** Spec 15 Phase 1 `peel_property_suffix()` initially used raw `name.endswith(suffix)`. Caught by pytest test 7 (`test_border_radius_tl_corner_decomposes_and_gets_visual_role`) — 16/17 passed; the one failure surfaced the bug. Fix: case-insensitive comparison (`name.lower().endswith(suffix.lower())`) PLUS a return-with-empty-prefix path that still propagates the matched suffix info upward. Test 7 then passed; full suite back to 17/17.
+
+**Apply going forward:** When matching strings drawn from two different naming conventions (camelCase JS-attr names vs PascalCase suffix-table keys, or kebab-case CSS classes vs PascalCase block names), normalise case BEFORE the comparison and handle the empty-prefix edge case explicitly. Add a regression test for camelCase boundary attrs whenever a new property-suffix-style decomposition function is introduced. blub.db pattern key: `camelcase-endswith-is-case-sensitive-normalise-before-compare`.
 
 ## 2026-05-11 — @wordpress/scripts emits style-index.css; register_block_type wants style.css
 

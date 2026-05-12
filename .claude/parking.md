@@ -1,12 +1,34 @@
 ---
 doc_type: parking
 project: small-giants-wp
-last_updated: 2026-05-11
+last_updated: 2026-05-12
 ---
 
 # Parking — deferred work with named triggers
 
 Items here have a clear next-step but aren't urgent. Each entry: the work, the trigger to resume, the spec, and rough effort. Resolved items are kept as one-line summaries (no ORIGINAL retention to keep the file scannable).
+
+## New 2026-05-12 — Spec 15 Phase 1 QC panel deferrals
+
+### P-S15-F3 — Decide root-level structural attr handling (~30 min in Phase 2)
+
+**What:** 1023 of 1343 `block_attributes` rows (76.2%) legitimately have `canonical_slot = NULL` because the v1 slot vocabulary is content-identity only. Phase 2 drift validator must rule on: (a) accept NULL as the canonical state for structural attrs, or (b) add a `__root__` pseudo-slot for schema uniformity, or (c) extend slot vocab with structural canonicals (`container`, `wrapper`, `inner`).
+
+**Trigger:** Phase 2 Step 2.3 (drift validator). The validator's behaviour spec must commit to one of the three options before it can flag violations.
+
+**Spec ref:** `.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md` §11 Phase 1 success criteria (updated 2026-05-12).
+
+**Effort:** ~30 min inline architectural call once Phase 2 Step 2.3 begins.
+
+### P-S15-F4 — Lift output_signature coverage above 90% (~60-90 min in Phase 2)
+
+**What:** Static analyser at 74.1% (995/1343). The 300 NULL attrs are design-shape CSS values that flow through PHP interpolation rather than `esc_*()` calls. Lifting coverage requires a small PHP-AST-light pass (e.g. detect `style=" ... {$attrs['X']} ..."` interpolations or array-keyed style maps).
+
+**Trigger:** Phase 2 Step 2.4 (gap detection). Either accept 74.1% as ceiling and surface the rest as gap candidates, or invest 60-90 min to lift coverage.
+
+**Spec ref:** §11 + §5.3 signature schema. Decision needed: extend the analyser, or accept the gap.
+
+**Effort:** 60-90 min if pursued (Sonnet dispatch + tests).
 
 ## New 2026-05-11
 
