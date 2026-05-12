@@ -1,5 +1,13 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-12 (two new lessons — case-sensitive endswith; QC panel before commit)
+**Last updated:** 2026-05-12 (three new lessons — case-sensitive endswith; QC panel before commit; always-merge-to-main default)
+
+## 2026-05-12 — Always merge to main when committing (no parked PRs across sessions)
+
+**The rule:** Squash-merge to main is the default close-out of every commit on a feature branch. Build → QC panel → commit → push → squash-merge → delete branch → checkout main → pull. One flow, one session. Don't leave a PR open across sessions waiting for a separate merge.
+
+**Incident:** During the 2026-05-12 Spec 15 Phase 1 handoff Bean reinforced: "Always merge to main when committing unless I say otherwise." Phase 1 PR #14 was correctly squash-merged in-session; the follow-up doc commit went directly to main. But the global-CLAUDE.md "feature touching 3+ files → branch + PR" rule, read literally, could imply parking the PR for later review — that's not Bean's pattern. Long-lived feature branches accumulate drift; CC sessions checkpoint at session end, so any PR not merged is implicitly parked.
+
+**Apply going forward:** After every feature commit on a branch, the next step is squash-merge + delete + checkout main + pull. Direct-to-main commits remain fine for: docs, state.md advances, single-file fixes, post-merge follow-ups. The ONLY exception is Bean explicitly saying "hold the PR". Memory: `feedback_always_merge_to_main.md`. blub.db pattern key: `always-merge-to-main-when-committing`.
 
 ## 2026-05-12 — Multi-rater QC panel runs BEFORE commit, not after
 
