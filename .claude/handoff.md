@@ -3,7 +3,8 @@ doc_type: handoff
 project: small-giants-wp
 session_tag: small-giants-wp-2026-05-12-spec-15-phase-3.5
 session_date: 2026-05-12
-recommended_model: sonnet
+recommended_model: opus
+recommended_model_note: "Opus as orchestrator (bigger context window + /qc-inline inline). Delegate per-branch via /delegate; fan out via /dispatching-parallel-agents (lint scripts, long-tail close, 3-rater QC panel) and /subagent-driven-development (per-task implementer + 2 reviewers where appropriate). Cost stays low because leaf work routes to Sonnet/Haiku/Cerebras while Opus orchestrates."
 ---
 
 # Session Handoff — 2026-05-12 (Spec 15 Phase 2 + 3 + 3.5)
@@ -64,6 +65,17 @@ recommended_model: sonnet
 ~~~
 You are a senior WordPress block developer specialising in the SGS Framework, Gutenberg blocks, and Spec 15's deterministic draft-to-SGS converter. This session continues Phase 4 (draft convention enforcement + long-tail close).
 
+## Execution Strategy — Opus orchestrator + per-branch delegation
+
+You're on **Opus** for the bigger context window + ability to run `/qc-inline` between steps without context switching. **DO NOT do leaf work on Opus** — that's expensive. Instead:
+
+- **`/delegate`** — call before every dispatch to pick the cheapest model that will succeed (Sonnet / Haiku / Cerebras). Never hardcode the model.
+- **`/dispatching-parallel-agents`** — use for fanout-friendly work: building the two lints in parallel (4.1 + 4.2), the 3-rater QC panel (4.7), per-block long-tail batches (4.6a).
+- **`/subagent-driven-development`** — use when a task warrants implementer + spec-reviewer + quality-reviewer (e.g. step 4.5a/b skill updates where /lifecycle gates apply).
+- **`/qc-inline`** — run between steps inline (Opus has the context to verify without re-loading). Saves dispatch overhead on the verification half.
+
+The cost shape: Opus orchestrates (~10% of tokens), leaves go to Sonnet/Haiku (~90%).
+
 ## Where You Are
 
 Plan: `.claude/plans/spec-15-master-execution-plan.md`
@@ -82,11 +94,14 @@ Read `.claude/handoff.md` and `.claude/CLAUDE.md` for full context. Living plan 
 | `/brainstorming` | Design-mode for BEM regex edge cases + token-snap policy decisions |
 | `/gap-analysis` | Grade lint scripts + final Phase 4 deliverables before commit |
 | `/lifecycle` | Required gate for step 4.5a/b SKILL.md edits |
-| `/research` | Auto-routes; pick `/research-check` for quick lookups (e.g. git-hooks patterns) |
+| `/research` | Auto-routes; `/research-check` for quick lookups (e.g. git-hooks patterns) |
 | `/strategic-plan` | Confirm Phase 4 step ordering before writing code |
 | `/sgs-wp-engine` | SGS Framework operations + QA pipeline |
-| `/wp-block-development` | If any block work surfaces during long-tail close |
-| `/qc-inline` | Per-step /qc-inline checks per Phase 4 plan |
+| `/wp-block-development` | Block work during long-tail close if surfaced |
+| `/qc-inline` | **Run BETWEEN steps in main thread** — Opus has context to verify without re-dispatch |
+| `/delegate` | Per-branch model picker — call before every dispatch |
+| `/dispatching-parallel-agents` | Fanout 4.1+4.2 lints, QC panel, long-tail batches |
+| `/subagent-driven-development` | Implementer + 2 reviewers for 4.5a/b skill updates |
 | `/handoff` | End-of-session handoff generation |
 
 ## MCP Servers & Tools

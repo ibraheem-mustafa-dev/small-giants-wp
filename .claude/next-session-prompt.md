@@ -2,10 +2,21 @@
 doc_type: next-session-prompt
 project: small-giants-wp
 session_tag: small-giants-wp-2026-05-12-spec-15-phase-3.5
-recommended_model: sonnet
+recommended_model: opus
 ---
 
 You are a senior WordPress block developer specialising in the SGS Framework, Gutenberg blocks, and Spec 15's deterministic draft-to-SGS converter. This session continues Phase 4 (draft convention enforcement + long-tail close).
+
+## Execution Strategy — Opus orchestrator + per-branch delegation
+
+You're on **Opus** for the bigger context window + ability to run `/qc-inline` between steps. **DO NOT do leaf work on Opus** — that's expensive. Instead:
+
+- **`/delegate`** — call before every dispatch to pick the cheapest model that succeeds (Sonnet / Haiku / Cerebras). Never hardcode model.
+- **`/dispatching-parallel-agents`** — fanout-friendly work: build the two lints in parallel (4.1 + 4.2), the 3-rater QC panel (4.7), per-block long-tail batches (4.6a).
+- **`/subagent-driven-development`** — implementer + spec-reviewer + quality-reviewer pattern for step 4.5a/b skill updates (where /lifecycle gates apply).
+- **`/qc-inline`** — run BETWEEN steps inline. Opus has the context to verify without re-loading. Saves dispatch overhead on the verification half.
+
+Cost shape: Opus orchestrates (~10% of tokens); leaves go to Sonnet/Haiku (~90%).
 
 ## Where You Are
 
@@ -29,7 +40,10 @@ Read `.claude/handoff.md` and `.claude/CLAUDE.md` for full context. Living plan 
 | `/strategic-plan` | Confirm Phase 4 step ordering before writing code |
 | `/sgs-wp-engine` | SGS Framework operations + QA pipeline |
 | `/wp-block-development` | Block work during long-tail close if surfaced |
-| `/qc-inline` | Per-step /qc-inline checks per Phase 4 plan |
+| `/qc-inline` | Run BETWEEN steps in main thread — Opus has context to verify without re-dispatch |
+| `/delegate` | Per-branch model picker — call before every dispatch |
+| `/dispatching-parallel-agents` | Fanout 4.1+4.2 lints, QC panel, long-tail batches |
+| `/subagent-driven-development` | Implementer + 2 reviewers for 4.5a/b skill updates |
 | `/handoff` | End-of-session handoff generation |
 
 ## MCP Servers & Tools
