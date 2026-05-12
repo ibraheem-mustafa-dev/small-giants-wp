@@ -354,6 +354,31 @@ _FONT_SIZE_PROPERTIES: frozenset[str] = frozenset({"font-size"})
 _SHADOW_PROPERTIES: frozenset[str] = frozenset({"box-shadow", "text-shadow"})
 _FAMILY_PROPERTIES: frozenset[str] = frozenset({"font-family"})
 
+# Border-class shorthands.  Format: width style colour (any order, any subset).
+# Examples: "1px solid #abc", "thin dashed red", "#000".
+# Width components are routed to snap_spacing; colour components to snap_color;
+# style keywords (solid / dashed / dotted / etc.) are ignored.
+_BORDER_PROPERTIES: frozenset[str] = frozenset({
+    "border",
+    "border-top",
+    "border-right",
+    "border-bottom",
+    "border-left",
+    "border-block",
+    "border-block-start",
+    "border-block-end",
+    "border-inline",
+    "border-inline-start",
+    "border-inline-end",
+    "outline",
+})
+
+_BORDER_STYLE_KEYWORDS: frozenset[str] = frozenset({
+    "none", "hidden", "dotted", "dashed", "solid", "double",
+    "groove", "ridge", "inset", "outset", "initial", "inherit", "unset",
+    "thin", "medium", "thick",  # named widths — skip (not token-mappable)
+})
+
 
 def _route_property(prop: str) -> str | None:
     """Return the matcher key for *prop*, or None if it should be skipped."""
@@ -365,6 +390,8 @@ def _route_property(prop: str) -> str | None:
         return "color"
     if prop == "background":
         return "background"  # special partial handling
+    if prop in _BORDER_PROPERTIES:
+        return "border-shorthand"
     if prop in _MAX_WIDTH_PROPERTIES:
         return "max-width"
     if prop in _SPACING_PROPERTIES:
@@ -392,6 +419,11 @@ def _token_class_for_route(route: str, prop: str) -> TokenClass:
         return "shadow"
     if route == "family":
         return "fontFamily"
+    if route == "border-shorthand":
+        # The handler emits per-part class (colour or spacing) directly;
+        # this fallback is only consulted for the parent declaration's
+        # bookkeeping (e.g. _build_write_plan's total_checked counter).
+        return "spacing"
     return "spacing"  # unreachable fallback
 
 
@@ -445,9 +477,15 @@ _COLOUR_LIKE_RE = re.compile(
 )
 
 
-def _split_shorthand_lengths(value: str) -> list[str]:
-    """Split a shorthand value like '16px 24px' into individual length strings."""
-    return _LENGTH_TOKEN_RE.findall(value)
+def _split_shorthand_lengths(value: str) -> list[tuple[str, int]]:
+    """Split a shorthand value like '16px 24px' into (length, char_offset) tuples.
+
+    The char_offset is the position of the part within ``value`` — used by the
+    discovery flow to compute per-part line/col positions so each gap-candidate
+    points at its actual location in a shorthand, not at the parent
+    declaration's start.
+    """
+    return [(m.group(0), m.start()) for m in _LENGTH_TOKEN_RE.finditer(value)]
 
 
 # ---------------------------------------------------------------------------
@@ -485,7 +523,7 @@ def _snap_value(
         parts = _split_shorthand_lengths(cleaned)
         if not parts:
             return None
-        return snap_spacing(parts[0], theme["spacing_sizes"])
+        return snap_spacing(parts[0][0], theme["spacing_sizes"])
 
     if route == "max-width":
         return _snap_max_width(cleaned, theme.get("max_widths", []))
@@ -505,18 +543,21 @@ def _snap_value(
 def _snap_spacing_multi(
     value: str,
     theme: dict[str, Any],
-) -> list[tuple[str, str, float]]:
+) -> list[tuple[str, str, float, int]]:
     """
     Snap all length tokens in a spacing shorthand value.
 
-    Returns list of (individual_length_str, nearest_token_or_raw, confidence).
+    Returns list of (individual_length_str, nearest_token_or_raw, confidence,
+    char_offset_within_value). The offset lets the discovery layer build a
+    distinct Occurrence per shorthand part so error messages point at the
+    correct position rather than at the parent declaration's start.
     """
     cleaned = value.strip()
     parts = _split_shorthand_lengths(cleaned)
     results = []
-    for part in parts:
+    for part, offset in parts:
         token, conf = snap_spacing(part, theme["spacing_sizes"])
-        results.append((part, token, conf))
+        results.append((part, token, conf, offset))
     return results
 
 
@@ -745,9 +786,16 @@ def _discover_from_declaration(
 
     if route == "spacing" and prop.strip().lower() in _SPACING_PROPERTIES:
         # Handle shorthands by checking each length token individually.
+        # Each part gets its own Occurrence with column adjusted by the part's
+        # offset within the value, so error messages can pinpoint which value
+        # in `padding: 30px 16px 30px 24px;` is the gap candidate.
         parts = _snap_spacing_multi(value, theme)
         results: list[tuple[TokenClass, str, str, Occurrence]] = []
-        for raw_part, _nearest, confidence in parts:
+        # Estimate value's column offset within the declaration: "prop: ".
+        # Real CSS often has whitespace variation around the colon; this is an
+        # approximation that's good enough to distinguish parts from each other.
+        value_col_offset = len(prop) + 2
+        for raw_part, _nearest, confidence, part_offset in parts:
             if _is_exempt_value(raw_part):
                 continue
             if math.isclose(confidence, 1.0, abs_tol=1e-9):
@@ -757,8 +805,21 @@ def _discover_from_declaration(
                 "maxWidth" if prop.strip().lower() in _MAX_WIDTH_PROPERTIES else "spacing"
             )
             slug = _generate_slug(actual_class, raw_part, prop)
-            results.append((actual_class, slug, raw_part, occurrence))
+            part_occurrence = Occurrence(
+                line=line,
+                col=col + value_col_offset + part_offset,
+                source_label=source_label,
+                css_property=prop,
+            )
+            results.append((actual_class, slug, raw_part, part_occurrence))
         return results
+
+    if route == "border-shorthand":
+        # border: <width> <style> <colour> — any subset, any order.
+        # Split into per-part discoveries; route each part to its own matcher.
+        return _discover_border_shorthand(
+            prop, value, line, col, source_label, theme,
+        )
 
     # All other routes snap a single value.
     result = _snap_value(value, route, theme)
@@ -771,6 +832,70 @@ def _discover_from_declaration(
 
     slug = _generate_slug(token_class, value, prop)
     return [(token_class, slug, value, occurrence)]
+
+
+def _discover_border_shorthand(
+    prop: str,
+    value: str,
+    line: int,
+    col: int,
+    source_label: str,
+    theme: dict[str, Any],
+) -> list[tuple[TokenClass, str, str, Occurrence]]:
+    """Walk a `border: 1px solid #abc`-style value, routing each part to the
+    correct matcher.  Lengths go to snap_spacing; colour-like tokens go to
+    snap_color; style keywords are ignored.
+
+    Each part gets its own Occurrence with the part-offset-corrected column.
+    """
+    results: list[tuple[TokenClass, str, str, Occurrence]] = []
+    value_col_offset = len(prop) + 2
+
+    # Walk word-by-word, tracking offsets so positions line up.
+    for match in re.finditer(r"\S+", value):
+        token = match.group(0).strip()
+        if not token:
+            continue
+        offset = match.start()
+        lower = token.lower()
+
+        # Skip style keywords + named widths
+        if lower in _BORDER_STYLE_KEYWORDS:
+            continue
+
+        # Skip exempt values (var, currentColor, transparent, etc.)
+        if _is_exempt_value(token):
+            continue
+
+        part_occurrence = Occurrence(
+            line=line,
+            col=col + value_col_offset + offset,
+            source_label=source_label,
+            css_property=prop,
+        )
+
+        # Length component (1px, 2rem, 0.5em) → spacing
+        if _LENGTH_TOKEN_RE.fullmatch(token):
+            snapped = snap_spacing(token, theme["spacing_sizes"])
+            _nearest, confidence = snapped
+            if math.isclose(confidence, 1.0, abs_tol=1e-9):
+                continue
+            slug = _generate_slug("spacing", token, prop)
+            results.append(("spacing", slug, token, part_occurrence))
+            continue
+
+        # Colour component (hex, rgb(), named) → colour
+        if _COLOUR_LIKE_RE.match(token) or token.lower().startswith("rgb"):
+            snapped = snap_color(token, theme["palette"])
+            _nearest, confidence = snapped
+            if math.isclose(confidence, 1.0, abs_tol=1e-9):
+                continue
+            slug = _generate_slug("color", token, prop)
+            results.append(("color", slug, token, part_occurrence))
+            continue
+
+        # Unknown component (e.g. inset offsets in box-shadow style usage) — skip
+    return results
 
 
 def _build_write_plan(
@@ -875,9 +1000,11 @@ def _check_declaration_verdict(
 
     if route == "spacing" and prop in _SPACING_PROPERTIES:
         parts = _snap_spacing_multi(value, theme)
-        for raw_part, token, confidence in parts:
+        value_col_offset = len(prop) + 2
+        for raw_part, token, confidence, part_offset in parts:
             v = _make_spacing_violation(
-                prop, raw_part, token, confidence, line, col, source_label, is_warning
+                prop, raw_part, token, confidence, line, col + value_col_offset + part_offset,
+                source_label, is_warning,
             )
             if v is not None:
                 violations.append(v)

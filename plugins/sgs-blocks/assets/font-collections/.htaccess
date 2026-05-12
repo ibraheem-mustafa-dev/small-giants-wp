@@ -1,0 +1,26 @@
+# Font Library collection manifest — served once per editor session when
+# the operator opens "Manage Fonts" in the Site Editor.  The JSON is ~2.5MB
+# uncompressed; gzip cuts it to ~250KB.
+#
+# Cache aggressively — the manifest only changes when
+# plugins/sgs-blocks/scripts/build-font-collection.py is re-run, which
+# happens at most when the uimax google_fonts table is refreshed (quarterly).
+
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE application/json
+</IfModule>
+
+<IfModule mod_headers.c>
+    <FilesMatch "\.json$">
+        # 30 days — manifest is a versioned static asset
+        Header set Cache-Control "public, max-age=2592000, immutable"
+        Header set Vary "Accept-Encoding"
+    </FilesMatch>
+</IfModule>
+
+# LiteSpeed equivalent (Hostinger uses LiteSpeed; .htaccess directives are honoured)
+<IfModule LiteSpeed>
+    <FilesMatch "\.json$">
+        SetEnv cache-control "public, max-age=2592000"
+    </FilesMatch>
+</IfModule>
