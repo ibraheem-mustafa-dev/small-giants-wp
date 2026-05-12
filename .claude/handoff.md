@@ -133,6 +133,15 @@ Next task: Phase 5 sub-phase 5a — Gap detection wiring
 
 Per `feedback_dont_delegate_the_test_of_unproven_work.md` — if the milestone is to PROVE something works (live deploy, hero baseline, drift validator), Opus owns the proof step. Never delegate; never accept agent text reports as evidence.
 
+### Verification cadence per sub-phase (MANDATORY)
+
+Three-layer verification on every Phase 5 sub-phase. Skipping any layer breaks the contract from `feedback_qc_before_commit.md` + master plan Verification Discipline Rules 1 + 2.
+
+- **Layer 1 — `/qc-inline` after every subagent dispatch.** Subagent reports are claims, not evidence. Run `/qc-inline` against the actual artefact (file contents, DB row state, test stdout, screenshot).
+- **Layer 2 — `/qc-inline` at end of every sub-phase** against the sub-phase's success criteria. Confidence ≥ 90 to advance. Drift validator + hero baseline must stay PASS.
+- **Layer 3 — 3-rater `/qc` panel BEFORE every commit.** `/dispatching-parallel-agents` to Sonnet (strict) + Haiku (sanity) + Gemini Flash (vision / breadth). ≥ 2/3 `pass/ship` to commit. Sonnet `partial` or `fail` treated as real — apply fixes inline, re-run until clean, THEN commit.
+- **Phase 5 final gate (after 5f only) — full `/qc` PIPELINE, not /qc-inline.** Durable per-stage artefacts in `pipeline-state/qc/<run_id>/` because the Phase 5 deliverable surface is too large for inline.
+
 ## Skills to Invoke
 
 | Skill | When to use |
@@ -178,25 +187,31 @@ Phase 5 is mostly architectural + integration work. Skip broad research unless s
 
 ---
 
+**Every task below ends with the 3-layer verification cadence (Layer 1 mid-dispatch /qc-inline + Layer 2 end-of-sub-phase /qc-inline + Layer 3 3-rater /qc panel before commit). Only sub-phase 5f swaps Layer 3 for the full /qc pipeline.**
+
 ## Task 1: Phase 5 sub-phase 5a — Gap detection
 
-Wire `/sgs-clone` Stage 9 (coverage report) to write `attribute_gap_candidates` + `functionality_gap_candidates` (FR8 tables, schema exists from Spec 14 P2). Dispatch the gap-detection module build to Sonnet via `/subagent-driven-development`. `/qc-inline` against Mama's mockup; expect new gap rows surfaced for any block-type miss.
+Sonnet (implementer) + Haiku (spec-reviewer) via `/subagent-driven-development`. Wire `/sgs-clone` Stage 9 to write `attribute_gap_candidates` + `functionality_gap_candidates` (FR8). Layer 1 `/qc-inline` after Sonnet returns. Layer 2 `/qc-inline` against 5a success criteria. Layer 3 3-rater `/qc` panel before `feat(spec-15-p5a-gap-detection): <desc>` commit.
 
 ## Task 2: Phase 5 sub-phase 5b — Staged scaffolding
 
-Block scaffolding output lands in a staging directory; operator review interface (FR15) writes ambiguous-case prompts back to `recognition_log`. Use `/wp-block-development` skill for new block-type emission patterns. Sonnet implementer + spec + quality reviewers via `/subagent-driven-development`.
+Sonnet triad via `/subagent-driven-development` + **per-block-type fanout** via `/dispatching-parallel-agents` (3-5 way Sonnet, independent files). Staging dir + FR15 operator interface + recognition_log writes. Layer 1 `/qc-inline` per parallel branch. Layer 2 + 3 as above, commit `feat(spec-15-p5b-staged-scaffolding): <desc>`.
 
 ## Task 3: Phase 5 sub-phase 5c — Lingua-franca conversion
 
-External scrape sources enter the pipeline via `/uimax-sgs-scrape-pattern`. Source classes preserved in `equivalent_implementations`; SGS-BEM primary written. Per Spec 15 §8.1 + Rosetta Stone Hard Rule. `/qc-inline` against a sample external source.
+Sonnet triad + Gemini Flash rater for multi-convention classification breadth (1M context). External scrape sources → `/uimax-sgs-scrape-pattern` → SGS-BEM primary + source-convention siblings in `equivalent_implementations`. Per Spec 15 §8.1. Layer 1-3 verification, commit `feat(spec-15-p5c-lingua-franca): <desc>`.
 
 ## Task 4: Phase 5 sub-phase 5d — WP integration wiring
 
-Stage 7 block-comment markup serialisation with InnerBlocks (FR12); Stage 6 block.json schema validation (FR6). Use `wp-blockmarkup` MCP to verify markup roundtrip. Use `wp-devdocs` MCP for any WP hook signature.
+Sonnet triad with WP-aware reviewer + **2-way fanout**: Stage 7 markup serialisation (FR12) and Stage 6 block.json schema validation (FR6) are independent. `wp-blockmarkup` MCP for markup roundtrip; `wp-devdocs` MCP for hook signatures. Layer 1-3 verification, commit `feat(spec-15-p5d-wp-integration): <desc>`.
 
-## Task 5: Phase 5 sub-phase 5e + 5f — Autonomy + visual QA + acceptance harness
+## Task 5: Phase 5 sub-phase 5e — Autonomy + visual QA
 
-Visual parity ≤ 1% pixel diff at 3 viewports (375/768/1440) via Playwright; regions > 0.5% surfaced as thumbnails for operator review. Sub-phase 5f acceptance harness: 5 canonical-mutation-boundary checks green + ≥ 90% block attribute coverage on Mama's mockup. 3-rater QC panel (Sonnet + Haiku + Gemini Flash) BEFORE final commit.
+`/dispatching-parallel-agents` for design-reviewer agent + Gemini Flash vision rater + Python pixel-diff (independent branches). Visual parity ≤ 1% pixel diff at 3 viewports via Playwright; regions > 0.5% surfaced as thumbnails. Gemini Pro Vision EXCLUDED — Gemini Flash handles vision. Layer 1 includes Opus personally inspecting ≥ 3 surfaced regions per `feedback_dont_delegate_the_test_of_unproven_work.md` — visual proof is operator-owned. Layer 2 + 3 as above, commit `feat(spec-15-p5e-visual-qa): <desc>`.
+
+## Task 6: Phase 5 sub-phase 5f — Acceptance harness + final QC
+
+Cerebras for mechanical SQL writes. 5 canonical-mutation-boundary checks + ≥ 90% block attribute coverage on Mama's mockup. **Layer 3 here is the FULL `/qc` PIPELINE, not `/qc-inline`** — the Phase 5 deliverable surface is large enough to warrant durable per-stage artefacts in `pipeline-state/qc/<run_id>/`. Multi-rater (Sonnet + Haiku + Gemini Flash). Commit `feat(spec-15-p5f-acceptance-harness): <desc>` then `/handoff` to close Phase 5.
 
 ## Guardrails
 
