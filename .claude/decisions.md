@@ -141,3 +141,46 @@ Closes the long-pending question on 4 scripts referenced in `/sgs-clone` SKILL.m
 **KJC #2 — critical-fix-verification.py scope (revised after Bean challenge):** lightweight 5-check harness, not the original "broader scope" framing. Justification: forensic audit found no documented original broader scope; the original framing was a fabrication. The 5 checks selected because the other 10 spec-14 hard constraints are already enforced elsewhere (uimax-write-validator for Rosetta Stone + no-licensing; argparse for `--resume`; editor convention for em-dashes; FR20 mutex for builds; etc.).
 
 **Source-of-truth note (additional finding):** v1 fingerprints data at `tools/recogniser/data/fingerprints.json` is FROZEN — no script maintains it. `block_type` field is stale (testimonial + whatsapp-cta migrated to dynamic 2026-05-05; tab + feature-grid + multi-button mis-classified or missing). `sgs-framework.db` `blocks.type` is the authoritative source for static/dynamic, maintained by `/sgs-update` Stage 1. uimax `component_libraries` carries design-intelligence axes (mood/style/industry/cross-platform equivalents) but no static/dynamic field. Spec 14 references updated to point at sgs-db.
+
+
+## 2026-05-12 — Spec 15 ratified (unified architecture)
+
+**Architectural realignment.** Specs 12, 13, 14 absorbed into a single unified Spec 15 — "Deterministic Draft-to-SGS Converter + QA Pipeline — Unified Architecture". Driven by Bean's correction: each per-phase spec was bolted on sideways without recognising they're all the same foundational architecture. Originals moved to `.claude/scratch/absorbed/` with absorption headers preserving commit-history continuity.
+
+### Six locked decisions (§12B of Spec 15)
+
+1. **Canonical naming corner cases:** `subheading` (lowercase one word, matches BEM convention in selectors) + `buttonSecondary` (noun-first; clusters alphabetically with `button*` / `buttonPrimary*`).
+2. **Block.json `sgs.attrSelectors` field:** DB is source of truth (populated by /sgs-update static analysis). Block.json may optionally declare `supports.sgs.attrSelectors` to override the auto-derivation per-attribute.
+3. **Polymorphic media migration:** Yes, add WP block deprecation per affected block. Existing posts auto-migrate to `type: 'image'`. Standard SGS pattern.
+4. **`styles.blocks.<name>` precedence:** Match WP standard exactly — blocks > elements > root. Phase 1 success criteria adds unit test.
+5. **Per-attribute equivalent_implementations override schema:** Defer to Phase 6. Phases 1-5 only populate canonical_slot + role + selector; composition rule handles platforms.
+6. **Visual parity tolerance:** 1% pixel diff as pass gate; regions > 0.5% surfaced as thumbnails for operator review. Industry-norm middle ground.
+
+### Verification discipline (autonomous execution rules)
+
+4 rules added to the master execution plan:
+1. Subagent reports are claims, not evidence. After every dispatch, /qc-inline the actual artefact before advancing.
+2. Inline work gets multi-rater /qc panel (Haiku + Sonnet + Gemini Flash) at phase end before opening PR. Gate: ≥2 of 3 raters pass/ship.
+3. Six named stop conditions (subagent fails twice, multi-rater fail, architectural decision needed, destructive op, pipeline state corruption, step exceeds 3× estimated time).
+4. Recovery paths per dispatch failure mode (retry-once-then-take-over for subagent errors; split-or-promote for Cerebras 12-round ceiling; re-prompt-or-treat-as-absent for malformed Gemini JSON).
+
+Session timer (Step 0 of Phase 1) writes `.claude/scratch/spec-15-session-start.txt` so SC6 is mechanically testable.
+
+### Asset inventory + lifecycle (Spec 15 §12E)
+
+Every file/script/data source/skill mentioned in the spec is tagged BUILT / PLANNED / TO-RETIRE / DATA-SOURCE / REFERENCE / ABSORBED. Six overlap classes surfaced and scheduled for cleanup across phases 1-5:
+- v1 recogniser scripts (7 files, ~8000 LOC) — TO-RETIRE in Phase 5
+- fingerprint-builder output JSONs (4 files) + scripts — TO-RETIRE in Phase 3
+- ATTR_TO_CSS dict in pattern-fingerprint.py — supersede in Phase 1
+- TRUTH-SPEC.md per-mockup — retire after Phase 4
+- master-spec14-build-plan.md — ABSORBED into Spec 15
+- v1 fingerprints.json — DATA-SOURCE for Phase 1 seed, REFERENCE after
+
+### Multi-rater QC discipline established
+
+This session ran the multi-rater /qc panel four times (Spec 15 v0.1 → v0.2 + plan v0.2 → v0.3). The pattern that emerged:
+- Sonnet is the strict critic — catches what other raters skim past. Trust Sonnet's `partial` even when 2 other raters say `pass`.
+- Gemini Flash and Haiku are useful for fast triangulation but routinely miss depth issues.
+- Main-thread inline review is biased toward what it wrote — don't include in panel.
+- Gemini Pro is EXCLUDED (503 retry loop unresolved upstream).
+- Cerebras can hit its 12-tool-round ceiling on long-file reads; useful for bounded SQL/single-file tasks only.
