@@ -1,95 +1,83 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-last_updated: 2026-05-12
-session_tag: small-giants-wp-2026-05-12-spec15-p1-foundation-shipped
+session_tag: small-giants-wp-2026-05-12-spec-15-phase-3.5
 recommended_model: sonnet
-recommended_model_score: 3/12 (novelty 0 + adversarial 1 + context 1 + design 1)
 ---
 
-# Next Session — Spec 15 Phase 2 (/sgs-update unified)
-
-Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-12-spec15-p1-foundation-shipped"`
-
-You are a senior systems engineer specialising in deterministic-pipeline tooling: SQLite-backed catalogues, /sgs-update orchestration, drift detection, and idempotent-stage architecture for the SGS WordPress framework. Phase 1 of the Spec 15 build is shipped; your job is to wire it together as a single idempotent /sgs-update pass + close out the two Phase-1-deferred architectural decisions.
-
-Read `.claude/handoff.md` and `.claude/CLAUDE.md` for full context, then work through the priorities below.
+You are a senior WordPress block developer specialising in the SGS Framework, Gutenberg blocks, and Spec 15's deterministic draft-to-SGS converter. This session continues Phase 4 (draft convention enforcement + long-tail close).
 
 ## Where You Are
 
 Plan: `.claude/plans/spec-15-master-execution-plan.md`
-Current phase: Phase 2 — /sgs-update unified
-Progress: 1/5 phases complete (Phase 1 — Foundation SHIPPED 2026-05-12, commit `2581b1d5`)
-Next task: Step 2.1 — Add Stage 3 (behavioural analysis) to update-db.py
+Current phase: Phase 4 — Draft convention enforcement + long-tail close
+Progress: Phase 1, 2, 3, 3.5 shipped — ~50% of Spec 15 milestones
+Next task: Phase 4 step 4.1 — Implement Stage 0.1 BEM lint at `plugins/sgs-blocks/scripts/lints/bem-lint.py`
+
+Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-12-spec-15-phase-3.5"`
+
+Read `.claude/handoff.md` and `.claude/CLAUDE.md` for full context. Living plan at `.claude/plans/spec-15-master-execution-plan.md` §Phase 4.
 
 ## Skills to Invoke
 
 | Skill | When to use |
 |-------|-------------|
-| `/brainstorming` | Architectural call at Steps 2.3 (F3) + 2.4 (F4) — drift validator + gap detection design |
-| `/gap-analysis` | Grade Phase 2 deliverable before the QC panel |
-| `/lifecycle` | Only if Phase 2 introduces a new skill/agent/pipeline (unlikely — should be pure code) |
-| `/research` | Only if drift validator needs reference to industry-standard catalogue patterns |
-| `/strategic-plan` | Not needed — Phase 2 plan already in master execution plan |
-| `/delegate` | Before every Agent dispatch — returns model + fallback chain |
-| `/subagent-prompt` | Pre-write cold prompts for Sonnet dispatches at Steps 2.1-2.5 |
-| `/sgs-db` | Inspect sgs-framework.db state during 2.1-2.4 |
-| `/wp-blocks` | Cross-reference block.json schemas if needed during drift detection |
-| `/uimax` | Query design tokens / naming conventions if drift validator needs cross-platform context |
-| `/dispatching-parallel-agents` | Only if 2+ steps can safely run on independent files (sqlite-lock check first) |
-| `/qc` | Phase 2 QC panel at Step 2.7 — BEFORE commit (Sonnet + Haiku + Gemini Flash) |
-| `/handoff` | Session close |
+| `/brainstorming` | Design-mode for BEM regex edge cases + token-snap policy decisions |
+| `/gap-analysis` | Grade lint scripts + final Phase 4 deliverables before commit |
+| `/lifecycle` | Required gate for step 4.5a/b SKILL.md edits |
+| `/research` | Auto-routes; `/research-check` for quick lookups (e.g. git-hooks patterns) |
+| `/strategic-plan` | Confirm Phase 4 step ordering before writing code |
+| `/sgs-wp-engine` | SGS Framework operations + QA pipeline |
+| `/wp-block-development` | Block work during long-tail close if surfaced |
+| `/qc-inline` | Per-step /qc-inline checks per Phase 4 plan |
+| `/handoff` | End-of-session handoff generation |
 
 ## MCP Servers & Tools
 
 | Tool | What to use it for |
 |------|-------------------|
-| Python 3.13 + sqlite3 stdlib | DB queries + ALTER + idempotent INSERT/UPDATE |
-| BeautifulSoup4 | If drift validator parses HTML for non-canonical class detection |
-| Pytest | Extend Phase 1 test suite for new stages |
-| Cerebras agent (`python ~/.claude/agents/cerebras-agent/agent.py`) | Bounded mechanical SQL only — NOT for QC review (rate-limits) |
-| Gemini Flash CLI (`gemini -p ... --model gemini-3-flash-preview`) | QC panel 3rd rater (free, 1M context) — source `~/.openclaw/.env` first |
-| `gh pr create` / `gh pr merge` | Phase 2 PR |
-| `wp-devdocs` MCP | Validate any new WP hook references during drift detection |
+| `playwright` MCP | Render Mama's mockup + capture lint output for step 4.6 + 4.6b |
+| Python sqlite3 | DB queries against sgs-framework.db for long-tail close (step 4.6a) |
+| Git CLI | Per-step direct-to-main commits per always-merge-to-main rule |
 
 ## Agents to Delegate To
 
 | Agent | When |
-|------|------|
-| `wp-sgs-developer` | If drift validator needs WP-specific block-attribute conventions explained inline |
-| `general-purpose` (model=sonnet) | All bounded code-gen dispatches at Steps 2.1-2.5 |
-| `general-purpose` (model=haiku) | QC panel rater 1 (fast sanity check) |
-| `general-purpose` (model=sonnet) | QC panel rater 2 (strict critic — honour fix-before-ship verdicts inline) |
+|-------|------|
+| `wp-sgs-developer` | Block PHP/JS work during long-tail close if surfaced |
+| 3-rater QC panel (Sonnet + Haiku + Gemini Flash) | Step 4.7 — BEFORE commit per qc-before-commit rule |
+
+## Research Approach
+
+Phase 4 work is mostly mechanical lint + DB work. Skip research unless pre-commit hook implementation hits an unfamiliar git-hooks pattern — then `/research-check` for a quick lookup.
 
 ---
 
-## Task 1: Wire Phase 1 modules into /sgs-update (Steps 2.1-2.2, ~40 min)
+## Task 1: Phase 4 step 4.1 — BEM lint
 
-Dispatch via `/delegate` then Sonnet. Edit `~/.claude/skills/sgs-wp-engine/scripts/update-db.py` to add Stage 3 (behavioural analysis) calling `plugins/sgs-blocks/scripts/behavioural-analyser/extract-signatures.py` and Stage 4 (canonical assignment) calling `assign-canonical.py`. Idempotent — re-run produces no diffs. Run `/qc-inline` after each: dry-run shows Stage 3/4 logged in order; spot-check 3 DB rows post-run.
+Build `plugins/sgs-blocks/scripts/lints/bem-lint.py`. Validate every HTML class against Spec 13 regex (`^\.sgs-[a-z][a-z0-9-]*(__[a-z][a-z0-9-]*)?(--[a-z][a-z0-9-]*)?$`). Report violations with line numbers. /qc-inline: Mama's mockup expect 0; deliberately-malformed `.hero-copy` expect 1; mixed file expect violations only on bad classes.
 
-## Task 2: Drift validator + F3 architectural call (Step 2.3, ~25 min)
+## Task 2: Phase 4 step 4.2 — Token-usage lint
 
-Sonnet dispatch creates `plugins/sgs-blocks/scripts/drift-validator/validate.py`. Decomposes every block_attributes row; reports violations. Inline architectural call on F3: decide accept-NULL canonical_slot vs add `__root__` pseudo-slot vs extend slot vocab. Record decision in `.claude/decisions.md`.
+Build `plugins/sgs-blocks/scripts/lints/token-lint.py`. Reads CSS values; calls Phase 1 value-matcher; flags un-snappable values. /qc-inline: 5 inputs (3 palette colours, 1 arbitrary hex, 1 non-token spacing).
 
-## Task 3: Gap detection + F4 architectural call (Step 2.4, ~25 min)
+## Task 3: Phase 4 step 4.3–4.4 — Wire + pre-commit hook
 
-Sonnet dispatch creates `plugins/sgs-blocks/scripts/gap-detection/detect.py`. Reads `recognition_log` for `extraction_failed` events + `block_attributes` for NULL canonical_slot. Writes to `attribute_gap_candidates`. Inline architectural call on F4: accept 74.1% output_signature coverage vs invest 60-90 min in PHP-AST-light extension. Record decision in `.claude/decisions.md`.
+Wire both lints into `/sgs-clone` Stage 0 with three modes (strict / draft-mode / legacy). Add `.git/hooks/pre-commit` firing on `sites/*/mockups/` changes.
 
-## Task 4: Reference doc regen + idempotency (Steps 2.5-2.6, ~20 min)
+## Task 4: Phase 4 step 4.5a + 4.5b — Skill updates
 
-Sonnet dispatch updates the regen script to append "Canonical Vocabulary" appendix to `02-SGS-BLOCKS-REFERENCE.md` (20 slot synonyms + 48 property suffixes + 19 modifier suffixes). Inline: run `/sgs-update` twice, `diff` outputs — expect empty.
+Update `~/.agents/skills/ui-ux-pro-max/SKILL.md` (primary draft-design — hard rule for SGS-BEM + theme.json tokens) and `~/.claude/skills/innovative-design/SKILL.md` (router — propagate to dispatch targets). Reference Spec 15 §3 + §8. Gate via `/lifecycle`.
 
-## Task 5: QC panel BEFORE commit, then single clean commit (Steps 2.7-2.8, ~20 min)
+## Task 5: Phase 4 step 4.6a + 4.6b — Long-tail close + lint retro
 
-Dispatch 3-rater panel (Sonnet + Haiku + Gemini Flash) — NOT after the commit. Apply Sonnet-flagged fixes inline; re-run panel if diff material. Only then commit + push + open PR with title `feat(spec-15-p2): /sgs-update unified pipeline`. Squash-merge.
+Walk 37 residual gap candidates. Canonicalise OR flag `instance-data-not-canonicalisable`. Target queue 37→≤10. Then run BEM + token lints on Mama's mockup; cross-reference gap-candidate flags; canonicalise matches. Report delta.
 
 ## Guardrails
 
-- No `--resume` flags in any pipeline or script.
-- No em-dashes in pipeline output.
-- QC panel BEFORE commit — hard rule.
-- UK English everywhere; no emojis; no mocking in tests.
-- Pre-commit: verify no `.bak`, `.pyc`, or temp files staged.
-- Phase 1 modules are shipped — DO NOT rewrite them. Wire them in.
-- F3 + F4 are architectural decisions to MAKE inline at Steps 2.3 + 2.4 — don't pre-empt them in cold prompts.
-- Branch discipline: `feat/spec-15-p2-sgs-update-unified` for the build; main only for the squash-merge.
+- Drift validator must stay PASS after every step: `python plugins/sgs-blocks/scripts/drift-validator/validate.py`
+- Hero `--verify-against tests/golden/hero-extraction-baseline.json` must stay PASS
+- assign-canonical row-select is locked to (canonical_slot IS NULL AND role IS NULL AND derived_selector IS NULL) — do not loosen
+- buttonSecondary stays canonical; do not recreate `secondaryCta` as a separate slot
+- 3-rater QC panel BEFORE commit per qc-before-commit rule
+- Direct commits to main per always-merge-to-main rule
