@@ -499,7 +499,8 @@ Conditions that draft-building pipelines and external-source integrations must c
 | Source of draft | Required pre-processing | Enforcement point |
 |---|---|---|
 | Bean-controlled HTML/CSS draft | Author in SGS-BEM. Use theme.json token values (not arbitrary CSS values). | Stage 0.1 + 0.5 of `/sgs-clone` |
-| `/innovative-design` output | Must emit SGS-BEM HTML. Token values from active theme.json. | `/innovative-design` skill update — Phase 4 of this spec |
+| `/ui-ux-pro-max` draft output (primary draft-design skill) | Must emit SGS-BEM HTML. Token values from active theme.json. | `/ui-ux-pro-max` skill update — Phase 4 of this spec |
+| `/innovative-design` (design-toolbox router) | Dispatches to `/ui-ux-pro-max` for draft generation, and to other sub-skills (animation, polish, design-review). Must propagate the SGS-BEM + token requirements to its dispatch targets. | `/innovative-design` routing update — Phase 4 of this spec |
 | `/sgs-clone --draft-mode` (Bean-iterating drafts) | Soft warnings on BEM violations, allow continue | Stage 0.1 soft mode |
 | AI-builder output (Lovable, v0, Bolt, Cursor) | Route through `/uimax-classify-naming` to identify source convention, then through lingua-franca conversion (Spec 13 §5 → absorbed here in §8.1) before the draft enters `/sgs-clone` | External pipeline wrapper |
 | External scraped sites (competitor cloning) | Same — `/uimax-sgs-scrape-pattern` runs before `/sgs-clone`. Source classes preserved in `equivalent_implementations.<source-convention>`, SGS-BEM primary written to `patterns.primary_class`. | `/uimax-sgs-scrape-pattern` is the gateway |
@@ -633,13 +634,14 @@ Six phases. Each phase ships an isolated commit + verifiable improvement. Earlie
 
 ### Phase 4 — Draft convention enforcement (~3-4 hr)
 
-**Output:** Stage 0.1 BEM lint + Stage 0.5 token-usage lint in `/sgs-clone`. Pre-commit hook for `sites/*/mockups/`. `/innovative-design` updated to emit compliant drafts.
+**Output:** Stage 0.1 BEM lint + Stage 0.5 token-usage lint in `/sgs-clone`. Pre-commit hook for `sites/*/mockups/`. `/ui-ux-pro-max` (primary draft-design skill) updated to emit compliant drafts; `/innovative-design` (design-toolbox router) updated to propagate the requirement to its dispatch targets.
 
 **Success criteria:**
 - `/sgs-clone --draft-mode` reports BEM + token violations as warnings
 - `/sgs-clone --strict` rejects non-compliant drafts
 - Pre-commit hook fires on any change to a mockup file under `sites/*/mockups/`
-- `/innovative-design` skill description updated; output verified to use SGS-BEM + theme.json tokens
+- `/ui-ux-pro-max` skill description updated; draft output verified to use SGS-BEM + theme.json tokens (primary draft-design skill)
+- `/innovative-design` skill description updated to flag SGS-BEM + token requirement when routing to draft-design dispatch targets (design-toolbox role)
 - Commit: `feat(spec-15-p4): draft convention enforcement gates`
 
 ### Phase 5 — Clone pipeline E2E (~8-10 hr)
@@ -855,7 +857,8 @@ Every file, script, data source, table, plan doc, and skill mentioned in Spec 15
 | `/uimax` | BUILT | uimax query + ingest helper. |
 | `/uimax-classify-naming` | BUILT | External-source convention identifier. |
 | `/uimax-sgs-scrape-pattern` | BUILT | External-source pattern scraper + lingua-franca writer. |
-| `/innovative-design` | BUILT (updating in Phase 4) | Output must conform to SGS-BEM per Phase 4 FR38. |
+| `/ui-ux-pro-max` | BUILT (updating in Phase 4) | Primary draft-design skill. Output must conform to SGS-BEM + theme.json tokens per Phase 4 FR38. |
+| `/innovative-design` | BUILT (updating in Phase 4) | Design-toolbox router. Dispatches to `/ui-ux-pro-max` for draft generation and to other sub-skills (animation, polish, design-review). Must propagate the SGS-BEM + token requirement. |
 | `/library-docs` | BUILT | Context7-backed library docs lookup. Used in Phase 6 cross-platform vocabulary fill. |
 | `/strategic-plan` | BUILT | Phase planning skill; will run after spec migration. |
 | `/qc` | BUILT | Multi-stage QC pipeline; consumed at end of every phase. |

@@ -193,9 +193,9 @@ echo "Session start: $(date -Iseconds)" > .claude/scratch/spec-15-session-log.tx
 
 ---
 
-## Phase 3 — Catalogue + extractor rewires (~2 hr)
+## Phase 3 — Catalogue + extractor rewires + Phase 2 follow-ups + gap remediation (~3 hr)
 
-**Goal:** `extract.py` reads canonical-slot data from sgs-db. Hero override deleted. Spec 14 P3 catalogue scripts retired.
+**Goal:** `extract.py` reads canonical-slot data from sgs-db. Hero override deleted. Spec 14 P3 catalogue scripts retired. Phase 2 panel-flagged caveats addressed. The 1038 gap candidates from Phase 2's Stage 10 detection are triaged — vocabulary expansion where appropriate, non-canonicalisable flag for pure instance data.
 
 | # | Step | Model | Time | Notes |
 |---|---|---|---:|---|
@@ -203,21 +203,30 @@ echo "Session start: $(date -Iseconds)" > .claude/scratch/spec-15-session-log.tx
 | 3.2 | Delete `tools/recogniser-v2/overrides/hero.py` + `overrides/__init__.py`'s HERO_OVERRIDE entry | **Inline** (destructive — verify rigorously before delete) | 15 min | Pre-delete: run hero `--verify-against` (must pass). Then `git rm overrides/hero.py` + edit `__init__.py` to drop the import + registry entry. **/qc-inline:** re-run hero `--verify-against tests/golden/hero-extraction-baseline.json`. MUST pass (canonical path now drives the extraction). If verify fails, IMMEDIATELY `git restore` the deletion — hero override deletion is gated on canonical path proving equivalence. |
 | 3.3 | Retire `plugins/sgs-blocks/scripts/fingerprint-builder/` (move to `scratch/retired-by-spec-15-p3/`) | **Cerebras** (mechanical git mv) | 5 min | Includes: build-catalogue.py, qa-gate.py, step2_3_4_layer1_3_4.py, step6_layer3.py, output/*.json. Keep audit-attr-vocabulary scripts (still useful). **/qc-inline:** `ls plugins/sgs-blocks/scripts/fingerprint-builder/` — confirm only the audit scripts remain. `ls .claude/scratch/retired-by-spec-15-p3/` — confirm retired files arrived. |
 | 3.4 | Verify trust-bar + heritage-strip extraction coverage improves | **Inline** (Playwright + diff) | 15 min | Run `extract.py` against both sections. Expect trust-bar coverage ≥40% (was 27%), heritage-strip ≥30% (was 8%). **/qc-inline:** record actual coverage numbers; compare to pre-Phase-3 baselines (27% / 8%); confirm improvement OR surface the gap as a real finding to Bean (canonical assignment may need refinement). |
-| 3.5 | Phase 3 QC | **Sonnet + Haiku + Gemini Flash panel** + Inline | 15 min | 3-rater /qc panel BEFORE commit. Scenarios: hero baseline preserved, hero override deleted, fingerprint-builder retired, trust-bar/heritage-strip coverage measurably improved, extract.py reads from sgs-db not JSON files. Gate: ≥2 of 3 raters pass/ship. Apply Sonnet-flagged fixes inline before advancing. |
-| 3.6 | Commit + push + open PR (`feat/spec-15-p3-catalogue-rewire`) | **Inline** | 5 min | Single clean commit reflecting the post-QC state. Pre-commit: no `.bak` files staged. |
+| 3.5 | **Phase 2 caveat A** — extend drift validator to check `modifier_suffixes` | **Sonnet** | 15 min | Spec 15 §6 Stage 9 lists three violation dimensions: unknown slot, unknown property suffix, unknown modifier. Phase 2 implemented slot + role + selector-prefix only. Extend `drift-validator/validate.py` to also re-decompose `attr_name` and check that any trailing token after a property suffix is a known modifier_suffix. **/qc-inline:** inject a row with attr_name like `headingFoozle` (Foozle not in modifier_suffixes); confirm validator flags as "unknown modifier 'Foozle'"; clean up. |
+| 3.6 | **Phase 2 caveat B** — populate gap-detection `stem` column with actual decomposed stem | **Sonnet** | 10 min | Current implementation in `gap-detection/detect.py:61` uses full `attr_name` as stem placeholder. Per Spec 15 §3.3, the stem should be the decomposed root (e.g. attr_name `paddingBottomMobile` → stem `padding`). Import the decomposition logic from `behavioural-analyser/assign-canonical.py` and apply at insert time. **/qc-inline:** delete a single gap-candidate row, re-run detect.py, confirm new row's `stem` field is the decomposed root not the full attr_name. |
+| 3.7 | **Phase 2 caveat C** — remove redundant `--full` flag clause in update-db.py | **Cerebras** (mechanical) | 5 min | `if args.full or total_changes > 0:` makes the flag a no-op when any change is detected. Simplify to `if total_changes > 0 or args.full:` or just `if total_changes > 0:` and keep `--full` as the manual-force path with its own branch above. **/qc-inline:** run update-db.py with and without `--full`; confirm both paths reach `run_behavioural_stages()`. |
+| 3.8 | **Gap remediation — triage the 1038 candidates from Phase 2 Stage 10** | **Sonnet + Inline review** | 30 min | Classify each gap row into: (a) **hover/state** (~80) — add `hover` modifier to modifier_suffixes; (b) **layout primitives** (~90: columns/width/gap/padding/margin/min) — add `layout_properties` companion vocab table OR extend property_suffixes with these as role=layout entries; (c) **border/radius** (~25) — add to property_suffixes; (d) **transitions/animation** (~50) — add to property_suffixes with role=motion; (e) **form-field conditionals** (~85: fieldName/conditionalValue/conditionalOperator/etc.) — flag `proposed_action='instance-data-not-canonicalisable'` so they leave the queue; (f) **empty-stem failures** (15) — operator review case-by-case; (g) **remainder** (~700) — defer to per-block triage during Phase 4 lints. Output: vocab table inserts via `seed-spec-15-p1-vocab.py` extension, plus a markdown summary at `.claude/reports/phase-3-gap-triage-<date>.md`. Re-run Phase 2 Stage 4 + Stage 10; expect canonicalised count to climb from 307 to ≥600 and gap queue to drop from 1038 to ≤500. **/qc-inline:** record before/after counts; surface as bulk-fix progress to operator. |
+| 3.9 | Phase 3 QC | **Sonnet + Haiku + Gemini Flash panel** + Inline | 15 min | 3-rater /qc panel BEFORE commit. Scenarios: hero baseline preserved, hero override deleted, fingerprint-builder retired, trust-bar/heritage-strip coverage measurably improved, extract.py reads from sgs-db not JSON files, drift validator covers all 3 dimensions, gap-detection stem populated correctly, gap-queue reduced by ≥50%. Gate: ≥2 of 3 raters pass/ship. Apply Sonnet-flagged fixes inline before advancing. |
+| 3.10 | Commit + push to main (`feat(spec-15-p3): catalogue rewire + Phase 2 caveats + gap remediation`) | **Inline** | 5 min | Single clean commit reflecting the post-QC state. Pre-commit: no `.bak` files staged. Direct-to-main per always-merge-to-main rule. |
 
 **Phase 3 success criteria:**
 - [ ] `extract.py` reads sgs-db (no JSON catalogue file dependency)
 - [ ] `overrides/hero.py` deleted; hero extraction via canonical path matches `tests/golden/hero-extraction-baseline.json`
 - [ ] Fingerprint-builder retired to scratch
 - [ ] Trust-bar + heritage-strip coverage measurably improves
-- [ ] Commit `feat(spec-15-p3): catalogue + extractor rewire to canonical slots` on origin/main
+- [ ] Drift validator covers all 3 Spec §6 violation dimensions (slot + property suffix + modifier)
+- [ ] Gap-detection `stem` column populated with decomposed root (not full attr_name)
+- [ ] `update-db.py --full` flag cleanup applied
+- [ ] Gap queue reduced ≥50% via vocabulary expansion + instance-data-not-canonicalisable flagging (target: 1038 → ≤500; canonicalised attrs 307 → ≥600)
+- [ ] Phase 3 gap-triage report at `.claude/reports/phase-3-gap-triage-<date>.md`
+- [ ] Commit `feat(spec-15-p3): catalogue rewire + Phase 2 caveats + gap remediation` on origin/main
 
 ---
 
 ## Phase 4 — Draft convention enforcement (~3 hr)
 
-**Goal:** Stage 0.1 BEM lint + Stage 0.5 token-usage lint in `/sgs-clone`. Pre-commit hook for drafts. `/innovative-design` updated.
+**Goal:** Stage 0.1 BEM lint + Stage 0.5 token-usage lint in `/sgs-clone`. Pre-commit hook for drafts. `/ui-ux-pro-max` updated (primary draft-design skill) + `/innovative-design` updated (design-toolbox router that dispatches to it).
 
 | # | Step | Model | Time | Notes |
 |---|---|---|---:|---|
@@ -225,15 +234,17 @@ echo "Session start: $(date -Iseconds)" > .claude/scratch/spec-15-session-log.tx
 | 4.2 | Implement Stage 0.5 token-usage lint | **Sonnet** | 30 min | Module: `plugins/sgs-blocks/scripts/lints/token-lint.py`. Reads CSS in draft. For each value, calls the Phase 1 value-matcher. Surfaces values that don't snap to any token. Flags as gap candidates. **/qc-inline:** feed lint a CSS file with 5 values — 3 known palette colours (expect snap), 1 arbitrary `#abcdef` (expect gap-candidate flag), 1 non-token spacing like `37px` (expect snap to nearest with confidence < 1.0 OR gap-candidate flag). Confirm output structure matches spec §9. |
 | 4.3 | Wire both lints into `/sgs-clone` Stage 0 with `--draft-mode` / `--strict` / `--legacy` flag modes | **Sonnet** | 20 min | Three modes per spec §9: strict halts, draft-mode warns, legacy bypasses. **/qc-inline:** for each mode, run `/sgs-clone` against a deliberately-broken draft. Strict mode exits non-zero. Draft-mode logs warning + exits 0. Legacy bypasses entirely. |
 | 4.4 | Pre-commit hook | **Cerebras** (bounded — single shell script) | 15 min | Create `.git/hooks/pre-commit` (or husky-style config). Runs Stage 0.1 + 0.5 on any staged file matching `sites/*/mockups/`. Non-blocking warning by default; strict mode via env var. **/qc-inline:** test by `git add`-ing a deliberately-broken mockup file; run `git commit --dry-run`; confirm hook fires + reports violation. Restore file. |
-| 4.5 | Update `/innovative-design` skill description to require SGS-BEM + theme.json tokens in output | **Inline** (skill authoring is strategic) | 15 min | Update `~/.claude/skills/innovative-design/SKILL.md`. Add hard rule + reference Spec 15 §3 + §8. **/qc-inline:** read updated SKILL.md; confirm new rule visible in description (so autopilot picks it up); test by invoking /innovative-design with a sample brief and check output classes for SGS-BEM compliance. |
+| 4.5a | Update `/ui-ux-pro-max` skill description — primary draft-design skill must emit SGS-BEM + theme.json tokens | **Inline** (skill authoring is strategic) | 15 min | Update `~/.agents/skills/ui-ux-pro-max/SKILL.md`. Add hard rule + reference Spec 15 §3 + §8. **/qc-inline:** read updated SKILL.md; confirm new rule visible in description (so autopilot picks it up); test by invoking /ui-ux-pro-max with a sample brief and check output classes for SGS-BEM compliance. |
+| 4.5b | Update `/innovative-design` skill description — design-toolbox router must propagate the SGS-BEM + token requirement to its draft-design dispatch targets | **Inline** | 10 min | Update `~/.claude/skills/innovative-design/SKILL.md`. Add note that /ui-ux-pro-max is the primary draft-design dispatch target and the SGS-BEM + token requirement applies. **/qc-inline:** read updated SKILL.md; confirm reference to /ui-ux-pro-max + Spec 15 §3 + §8. |
 | 4.6 | Test against Mama's mockup (should pass since spec 13 P6 migrated it) | **Inline** (Playwright + scripted) | 15 min | Run lints; expect zero violations on Mama's mockup. **/qc-inline:** capture lint output; assert violation count = 0. If non-zero: surface real finding (spec 13 P6 may have left residual drift). |
-| 4.7 | Phase 4 QC | **Sonnet + Haiku + Gemini Flash panel** + Inline | 15 min | 3-rater /qc panel BEFORE commit. Scenarios: lints reject malformed BEM, accept compliant; token lint snaps known values; pre-commit hook fires; /innovative-design updated + tested; Mama's mockup passes with 0 violations. Gate: ≥2 of 3 raters pass/ship. Apply Sonnet-flagged fixes inline before advancing. |
+| 4.7 | Phase 4 QC | **Sonnet + Haiku + Gemini Flash panel** + Inline | 15 min | 3-rater /qc panel BEFORE commit. Scenarios: lints reject malformed BEM, accept compliant; token lint snaps known values; pre-commit hook fires; `/ui-ux-pro-max` updated + tested (draft output SGS-BEM compliant); `/innovative-design` router updated; Mama's mockup passes with 0 violations. Gate: ≥2 of 3 raters pass/ship. Apply Sonnet-flagged fixes inline before advancing. |
 | 4.8 | Commit + push + open PR (`feat/spec-15-p4-convention-enforcement`) | **Inline** | 5 min | Single clean commit reflecting the post-QC state. Pre-commit: no `.bak` files. |
 
 **Phase 4 success criteria:**
 - [ ] BEM lint + token lint integrated into `/sgs-clone` Stage 0
 - [ ] Pre-commit hook fires on `sites/*/mockups/` changes
-- [ ] `/innovative-design` skill updated + output verified compliant
+- [ ] `/ui-ux-pro-max` skill updated + draft output verified SGS-BEM + token compliant (primary draft-design skill)
+- [ ] `/innovative-design` skill updated to flag the requirement at dispatch (design-toolbox router)
 - [ ] Mama's mockup passes lints with zero violations
 - [ ] Commit `feat(spec-15-p4): draft convention enforcement gates` on origin/main
 
