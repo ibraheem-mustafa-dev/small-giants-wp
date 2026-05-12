@@ -348,18 +348,11 @@ class TestAssignCanonical:
           - Property suffix 'BorderRadius' should peel → role='visual'
           - Residual stem should not match any slot → canonical_slot stays NULL
 
-        KNOWN BUG (Phase 1 QC finding):
-        peel_property_suffix() uses case-sensitive str.endswith().  After
-        peeling 'TL', the remaining string is 'borderRadius' (lowercase b).
-        The property_suffixes dict key is 'BorderRadius' (uppercase B).
-        'borderRadius'.endswith('BorderRadius') is False, so the suffix is
-        NOT peeled and prop_info remains None → role stays None instead of
-        'visual'.  Fix: normalise suffix comparison to a camelCase-boundary
-        check rather than literal endswith, OR ensure property_suffix keys
-        are stored in lowercase.
-
-        The test asserts the CORRECT expected behaviour.  It will FAIL until
-        the bug is fixed — which is intentional: this is a Phase 1 QC signal.
+        Regression guard for the case-sensitive endswith bug fixed in
+        Phase 1 QC: peel_property_suffix() now does a case-insensitive
+        comparison and handles the empty-prefix edge case (whole stem ==
+        property suffix), so role gets assigned for camelCase attrs like
+        borderRadiusTL.
         """
         slot_map = vocabularies["slot_map"]
         property_suffixes = vocabularies["property_suffixes"]

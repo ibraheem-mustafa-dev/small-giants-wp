@@ -30,9 +30,18 @@ from typing import Optional
 # Paths
 # ---------------------------------------------------------------------------
 
-DB_PATH = Path(r"C:\Users\Bean\.claude\skills\sgs-wp-engine\sgs-framework.db")
-FINGERPRINTS_PATH = Path(
-    r"C:\Users\Bean\Projects\small-giants-wp\tools\recogniser\data\fingerprints.json"
+# DB lives outside the repo (in the sgs-wp-engine skill folder). Resolve via
+# the user's home so this works on any machine. Override with $SGS_FRAMEWORK_DB.
+import os
+DB_PATH = Path(
+    os.environ.get(
+        "SGS_FRAMEWORK_DB",
+        str(Path.home() / ".claude/skills/sgs-wp-engine/sgs-framework.db"),
+    )
+)
+# fingerprints.json lives in the repo; resolve relative to this file.
+FINGERPRINTS_PATH = (
+    Path(__file__).resolve().parents[4] / "tools/recogniser/data/fingerprints.json"
 )
 
 # ---------------------------------------------------------------------------
