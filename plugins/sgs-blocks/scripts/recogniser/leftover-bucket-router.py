@@ -21,13 +21,15 @@ Inputs (file paths or piped JSON):
 Output JSON shape (compatible with orchestrator stage_9_report):
   {
     "leftover_buckets": {
-      "unrecognised_class":            [{"selector": "...", "class": "...", "section_id": "..."}],
-      "unrecognised_section":          [{"section_id": "...", "confidence": 0.4}],
-      "extraction_failed":             [{"section_id": "...", "slot": "...", "reason": "..."}],
-      "animation_unclassified":        [{"selector": "...", "animation": "..."}],
-      "structural_mismatch_or_orphan": [{"section_id": "...", "reason": "..."}]
+      # Each item carries gap_level + severity per Spec 15 FR8.
+      "unrecognised_class":            [{"selector": "...", "class": "...", "section_id": "...", "gap_level": "convention", "severity": "low"}],
+      "unrecognised_section":          [{"section_id": "...", "confidence": 0.4, "gap_level": "structural", "severity": "high"}],
+      "extraction_failed":             [{"section_id": "...", "slot": "...", "reason": "...", "gap_level": "attribute", "severity": "medium"}],
+      "animation_unclassified":        [{"selector": "...", "animation": "...", "gap_level": "functionality", "severity": "low"}],
+      "structural_mismatch_or_orphan": [{"section_id": "...", "reason": "...", "gap_level": "structural", "severity": "high"}]
     },
     "totals": {<bucket_name>: <count>, ...},
+    "gap_level_totals": {"attribute": N, "functionality": N, "convention": N, "structural": N},
     "total_count": <int>
   }
 """
@@ -53,6 +55,52 @@ EMPTY_BUCKETS_TEMPLATE: dict[str, list] = {
     "structural_mismatch_or_orphan": [],
 }
 
+# Spec 15 Phase 5a.1 — bucket → gap_level mapping.
+#
+# Each bucket routes to ONE of four FR8 gap levels. The level determines
+# which uimax table the gap-detection writer downstream emits to:
+#   attribute     -> uimax.attribute_gap_candidates
+#   functionality -> uimax.functionality_gap_candidates
+#   convention    -> attribute_gap_candidates (with convention=true sidecar)
+#   structural    -> functionality_gap_candidates (with structural=true sidecar)
+#
+# Convention vs attribute: an `unrecognised_class` is a naming-convention
+# miss (lingua-franca path), not a missing block.json attribute. Routing
+# it to convention keeps the attribute-gap surface focused on real holes
+# in the block-attribute design surface.
+BUCKET_TO_GAP_LEVEL: dict[str, str] = {
+    "unrecognised_class":            "convention",
+    "unrecognised_section":          "structural",
+    "extraction_failed":             "attribute",
+    "animation_unclassified":        "functionality",
+    "structural_mismatch_or_orphan": "structural",
+}
+
+# Severity floor per bucket. Per-item logic may upgrade (never downgrade)
+# based on confidence delta, recurrence, or operator-tag. Severity drives
+# operator-review ordering at 5a.5.
+BUCKET_SEVERITY_FLOOR: dict[str, str] = {
+    "unrecognised_class":            "low",      # often cosmetic / decorative class
+    "unrecognised_section":          "high",     # whole section unrouted
+    "extraction_failed":             "medium",   # declared slot, missing value
+    "animation_unclassified":        "low",      # behaviour passes silently if dropped
+    "structural_mismatch_or_orphan": "high",     # block chose but DOM disagrees
+}
+
+
+def _enrich_item(item: dict, bucket: str, confidence: float | None = None) -> dict:
+    """Stamp gap_level + severity on a bucket item.
+
+    Severity escalates from the bucket floor when confidence < 0.25 (the
+    'rough guess' threshold). Returns the same dict for chained use.
+    """
+    item["gap_level"] = BUCKET_TO_GAP_LEVEL[bucket]
+    severity = BUCKET_SEVERITY_FLOOR[bucket]
+    if confidence is not None and confidence < 0.25 and severity == "low":
+        severity = "medium"
+    item["severity"] = severity
+    return item
+
 # Regex hints used to spot animation references in extracted attributes /
 # leftover CSS rules. Cheap heuristic -- a missing match here is acceptable
 # (it just means the animation passes through silently rather than being
@@ -72,62 +120,66 @@ def _empty_buckets() -> dict[str, list]:
 
 def route_unrecognised_class(boundaries: list[dict], buckets: dict[str, list]) -> None:
     """A boundary whose voter could not assign any slug is routed here."""
+    bucket = "unrecognised_class"
     for b in boundaries:
         if b.get("fallback_strategy") == "gap-candidate":
             for cls in b.get("class_signature", []):
-                buckets["unrecognised_class"].append({
+                buckets[bucket].append(_enrich_item({
                     "section_id": b.get("section_id"),
                     "selector": b.get("selector"),
                     "class": cls,
-                })
+                }, bucket))
 
 
 def route_unrecognised_section(matches: list[dict], buckets: dict[str, list]) -> None:
     """Sections whose top candidate scored below the threshold."""
+    bucket = "unrecognised_section"
     for m in matches:
         confidence = float(m.get("confidence", 0.0))
         if confidence < UNRECOGNISED_CONFIDENCE_THRESHOLD:
-            buckets["unrecognised_section"].append({
+            buckets[bucket].append(_enrich_item({
                 "section_id": m.get("section_id"),
                 "boundary_id": m.get("boundary_id"),
                 "block_name": m.get("block_name"),
                 "confidence": confidence,
-            })
+            }, bucket, confidence=confidence))
 
 
 def route_extraction_failed(slot_lists: dict, extract: dict, buckets: dict[str, list]) -> None:
     """For each section, surface declared slots that came back empty."""
+    bucket = "extraction_failed"
     extracted_attrs = extract.get("extracted_attributes") or {}
     for boundary_id, scaffold in (slot_lists or {}).items():
         section_id = scaffold.get("section_id", boundary_id)
         for slot in scaffold.get("slots", []):
             name = slot["slot_name"]
             if name not in extracted_attrs:
-                buckets["extraction_failed"].append({
+                buckets[bucket].append(_enrich_item({
                     "section_id": section_id,
                     "boundary_id": boundary_id,
                     "slot": name,
                     "reason": "no value extracted",
-                })
+                }, bucket))
 
 
 def route_animation_unclassified(extract: dict, buckets: dict[str, list]) -> None:
     """Look for animation-shaped artefacts in extract output that lack a class."""
+    bucket = "animation_unclassified"
     markup = extract.get("block_markup") or ""
     coverage = extract.get("coverage") or {}
     leftover_css = coverage.get("leftover_css") or []
     for rule in leftover_css:
         rule_text = json.dumps(rule) if not isinstance(rule, str) else rule
         if any(pat.search(rule_text) for pat in ANIMATION_HINT_PATTERNS):
-            buckets["animation_unclassified"].append({
+            buckets[bucket].append(_enrich_item({
                 "source": "leftover_css",
                 "rule": rule_text[:200],
-            })
+            }, bucket))
     if any(pat.search(markup) for pat in ANIMATION_HINT_PATTERNS):
-        buckets["animation_unclassified"].append({
+        buckets[bucket].append(_enrich_item({
             "source": "block_markup",
             "hint": "animation/transition reference present in serialised markup",
-        })
+        }, bucket))
 
 
 def route_structural_mismatch(matches: list[dict], extract: dict, buckets: dict[str, list]) -> None:
@@ -136,23 +188,23 @@ def route_structural_mismatch(matches: list[dict], extract: dict, buckets: dict[
     Minimum signal for v1: chosen block is sgs/* but extract coverage is 0,
     OR chosen block is core/group (deferred fallback) with non-trivial DOM.
     """
-    coverage = extract.get("coverage") or {}
+    bucket = "structural_mismatch_or_orphan"
     extracted_count = len(extract.get("extracted_attributes") or {})
     for m in matches:
         block = m.get("block_name", "")
         section_id = m.get("section_id")
         if block.startswith("sgs/") and extracted_count == 0:
-            buckets["structural_mismatch_or_orphan"].append({
+            buckets[bucket].append(_enrich_item({
                 "section_id": section_id,
                 "block_name": block,
                 "reason": "block chosen but extractor returned zero attributes",
-            })
+            }, bucket))
         if block == "core/group" and float(m.get("confidence", 0.0)) == 0.0:
-            buckets["structural_mismatch_or_orphan"].append({
+            buckets[bucket].append(_enrich_item({
                 "section_id": section_id,
                 "block_name": block,
                 "reason": "deferred fallback; no SGS block matched",
-            })
+            }, bucket))
 
 
 def route(
@@ -175,9 +227,16 @@ def route(
     route_structural_mismatch(matches, extract_dict, buckets)
 
     totals = {name: len(items) for name, items in buckets.items()}
+    gap_level_totals = {"attribute": 0, "functionality": 0, "convention": 0, "structural": 0}
+    for items in buckets.values():
+        for item in items:
+            level = item.get("gap_level")
+            if level in gap_level_totals:
+                gap_level_totals[level] += 1
     return {
         "leftover_buckets": buckets,
         "totals": totals,
+        "gap_level_totals": gap_level_totals,
         "total_count": sum(totals.values()),
     }
 
