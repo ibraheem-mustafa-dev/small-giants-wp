@@ -74,12 +74,23 @@ def load_role_taxonomy() -> set[str]:
     return set()
 
 
-def load_vocabulary(conn: sqlite3.Connection) -> tuple[set[str], set[str], set[str], set[str]]:
+def load_vocabulary(conn: sqlite3.Connection) -> tuple[set[str], set[str], set[str], set[str], dict[str, set[str]]]:
     slot_set = {r[0] for r in conn.execute("SELECT canonical_slot FROM slot_synonyms")}
     role_set = load_role_taxonomy()
     property_suffix_set = {r[0] for r in conn.execute("SELECT suffix FROM property_suffixes")}
     modifier_suffix_set = {r[0] for r in conn.execute("SELECT suffix FROM modifier_suffixes")}
-    return slot_set, role_set, property_suffix_set, modifier_suffix_set
+    # canonical_slot -> {canonical_slot, aliases...} so the modifier check can
+    # accept alias forms (e.g. `subHeadline` is accepted as `subheading`).
+    alias_map: dict[str, set[str]] = {}
+    for canon, aliases_json in conn.execute("SELECT canonical_slot, aliases FROM slot_synonyms"):
+        aliases: set[str] = {canon}
+        if aliases_json:
+            try:
+                aliases |= set(json.loads(aliases_json))
+            except (json.JSONDecodeError, TypeError):
+                pass
+        alias_map[canon] = aliases
+    return slot_set, role_set, property_suffix_set, modifier_suffix_set, alias_map
 
 
 def _peel_longest_suffix(name: str, suffix_set: set[str]) -> str | None:
@@ -100,6 +111,7 @@ def detect_unknown_modifier(
     canonical_slot: str | None,
     property_suffix_set: set[str],
     modifier_suffix_set: set[str],
+    alias_map: dict[str, set[str]],
 ) -> str | None:
     """Spec 15 §6 Stage 9 modifier check.
 
@@ -111,6 +123,10 @@ def detect_unknown_modifier(
     modifier_suffix → then peel longest known property_suffix → then check
     the remaining trailing CamelCase token. If a CamelCase token still
     trails after the peels AND it's in neither vocab, flag it as drift.
+
+    Honours slot_synonyms aliases — the remaining stem after peels is
+    accepted if it matches the canonical_slot OR any of its aliases (e.g.
+    `subHeadline` accepts as alias of `subheading`).
     """
     if canonical_slot is None:
         return None
@@ -127,14 +143,18 @@ def detect_unknown_modifier(
     token = m.group(1)
     if token in property_suffix_set or token in modifier_suffix_set:
         return None
-    # Don't flag the slot itself
-    if remaining == canonical_slot:
+    # Don't flag the slot itself or any of its aliases
+    accepted_forms = alias_map.get(canonical_slot, {canonical_slot})
+    if remaining in accepted_forms:
+        return None
+    # Case-insensitive fallback (vocab is camelCase; aliases may be lower)
+    if remaining.lower() in {a.lower() for a in accepted_forms}:
         return None
     return token
 
 
 def validate(conn: sqlite3.Connection) -> list[tuple[str, str, str]]:
-    slot_set, role_set, prop_set, mod_set = load_vocabulary(conn)
+    slot_set, role_set, prop_set, mod_set, alias_map = load_vocabulary(conn)
     violations: list[tuple[str, str, str]] = []
 
     rows = conn.execute(
@@ -155,7 +175,7 @@ def validate(conn: sqlite3.Connection) -> list[tuple[str, str, str]]:
         ):
             violations.append((block_slug, attr_name, f"derived_selector '{derived_selector}' does not start with .sgs- or .wp-block-sgs-"))
         unknown_modifier = detect_unknown_modifier(
-            attr_name, canonical_slot, prop_set, mod_set
+            attr_name, canonical_slot, prop_set, mod_set, alias_map
         )
         if unknown_modifier is not None:
             violations.append((block_slug, attr_name, f"unknown modifier '{unknown_modifier}'"))
