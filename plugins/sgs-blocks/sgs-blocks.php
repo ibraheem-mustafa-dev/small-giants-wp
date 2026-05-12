@@ -99,6 +99,11 @@ Stripe_Settings::init();
 // Mobile nav block patterns (6 presets).
 require_once SGS_BLOCKS_PATH . 'includes/mobile-nav-patterns.php';
 
+// Google Fonts catalogue — registers ~1,900 fonts in the editor's Manage fonts modal.
+// Zero frontend cost: fonts are only enqueued when an operator explicitly installs them.
+require_once SGS_BLOCKS_PATH . 'includes/class-font-collection.php';
+new Font_Collection();
+
 // Register REST API endpoints.
 Forms\Form_REST_API::register();
 
@@ -109,18 +114,21 @@ Forms\Form_Admin::register();
 Forms\Form_Privacy::register();
 
 // Activation hook for database setup.
-register_activation_hook( __FILE__, [ Forms\Form_Activator::class, 'activate' ] );
+register_activation_hook( __FILE__, array( Forms\Form_Activator::class, 'activate' ) );
 
 // Register mega menu template part area.
-add_filter( 'default_wp_template_part_areas', function( $areas ) {
-	$areas[] = array(
-		'area'        => 'mega-menu',
-		'area_tag'    => 'div',
-		'label'       => __( 'Mega Menu', 'sgs-blocks' ),
-		'description' => __( 'Mega menu dropdown panel content.', 'sgs-blocks' ),
-		'icon'        => 'layout',
-	);
-	return $areas;
-} );
+add_filter(
+	'default_wp_template_part_areas',
+	function ( $areas ) {
+		$areas[] = array(
+			'area'        => 'mega-menu',
+			'area_tag'    => 'div',
+			'label'       => __( 'Mega Menu', 'sgs-blocks' ),
+			'description' => __( 'Mega menu dropdown panel content.', 'sgs-blocks' ),
+			'icon'        => 'layout',
+		);
+		return $areas;
+	}
+);
 
 SGS_Blocks::instance();
