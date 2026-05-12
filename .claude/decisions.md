@@ -2,6 +2,20 @@
 
 Append-only. Most-recent first.
 
+## 2026-05-12 — Spec 15 Phase 5 pre-flight: DB target, form-instance scope, hero re-baseline
+
+**Decision (DB target):** Phase 5 reads/writes the canonical `~/.agents/skills/sgs-wp-engine/sgs-framework.db` exclusively. The empty 0-byte stub at `plugins/sgs-blocks/scripts/sgs-framework.db` deleted as orphaned artefact. The drift validator already env-defaults to `~/.claude/skills/sgs-wp-engine/sgs-framework.db` via `SGS_FRAMEWORK_DB`; both `~/.claude/skills/...` and `~/.agents/skills/...` point at the same DB on this machine.
+
+**Decision (form-instance scope-exclusion):** 97 `block_attributes` rows on form-field blocks (13 form-field block types × {fieldName, placeholder, helpText, required, conditional{Field,Operator,Value}, rateLimit, defaultValue}) marked with `canonical_slot = '__form_instance__'` — a new sentinel slot registered in `slot_synonyms`. These are per-instance form content fields (not designable visual slots) and intentionally outside the visual canonical-slot vocabulary. Phase 5d-onwards write paths MUST skip rows where `canonical_slot = '__form_instance__'`.
+
+**Decision (non-form NULL backfill):** 10 non-form NULL `canonical_slot` rows backfilled to existing vocab: `media` (imageId, imageSize on decorative-image/gallery/post-grid), `animation` (parallaxStrength, pathDrawDurationMs on sgs/media; exitDuration on sgs/mobile-nav), `padding` (submenuIndent + Mobile + Tablet on sgs/mobile-nav), `text` (taglineText on sgs/mobile-nav). Drift validator: PASS 0/1343 preserved.
+
+**Decision (hero baseline re-capture):** `tests/golden/hero-extraction-baseline.json` re-captured against current main. Pre-existing 2-value drift (`splitImage`, `splitImageMobile`: null → populated object) accepted as additive — matches `feedback_cloning_preserves_intentional_bespoke_detail.md` (cloning produces intentional bespoke detail; baseline locks the as-built state, not a wishful null). Hero `--verify-against` now PASS.
+
+**Why:** Phase 5a entry preconditions required 0 NULL canonical_slot. Investigation showed 91 of 107 NULLs were per-instance form-field semantic data (no canonical-slot mapping makes sense). Backfilling them with visual-vocab slots would mis-classify them. The sentinel approach preserves intent without polluting the visual vocabulary. Hero baseline re-capture clears the inherited drift that would have blocked verification rounds during 5a–5e.
+
+**How to apply:** Phase 5d FR21 mutation discipline + Phase 5b staged scaffolding MUST treat `__form_instance__` as a no-op slot (skip token resolution + skip canonical-slot drift checks). Future form-block work should write to the `__form_instance__` sentinel for new conditional-logic attrs, not introduce per-form canonical_slot vocabulary. Hero baseline tracks as-built state; re-baseline on any intentional extract.py change.
+
 ## 2026-05-12 — Spec 15 Phase 4.5: cloning preserves intentional bespoke detail (additive token discovery)
 
 **Decision:** The `/sgs-clone` token lint defaults to ADDITIVE mode — non-token CSS values become `NewTokenCandidate` rows in a `TokenWritePlan` and are written to the client's style variation JSON, NOT snapped to the nearest registered token. Verdict mode (the original "snap or fail" behaviour) is preserved as an opt-in `--no-new-tokens` flag for back-compat. Base `theme.json` stays lean; the client variation absorbs bespoke differences. Layered overrides, WP-native: theme.json (registry) → style variation (client defaults) → block.json (block defaults) → inline (per-instance).
