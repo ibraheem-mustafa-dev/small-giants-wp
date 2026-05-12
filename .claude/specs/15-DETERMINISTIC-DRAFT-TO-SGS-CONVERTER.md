@@ -815,29 +815,33 @@ Every file, script, data source, table, plan doc, and skill mentioned in Spec 15
 | **sgs-framework.db** | `~/.claude/skills/sgs-wp-engine/sgs-framework.db` (635KB) | Authoritative SGS framework metadata. Phase 1 extends `block_attributes` + adds 3 new vocab tables. |
 | **uimax** (ui-ux-pro-max.db) | `~/.agents/skills/ui-ux-pro-max/scripts/ui-ux-pro-max.db` (3.4MB) | Cross-platform design intelligence DB. 5164 design_tokens + 67 SGS component_libraries rows + 63 animations rows. Phase 1 mirrors per-attribute canonical/role/signature; Phase 2 wires `/sgs-update` Stage 8 to keep mirror current. |
 
-#### Plan files in `.claude/plans/`
+#### Plan files
+
+**Cleanup 2026-05-12 (Option B):** plans/ tidied from 19 → 5 files. Spec 14 P5-P10 plans moved to `scratch/absorbed/` (their content is now inlined in Spec 15 plan §Phase 5 sub-phases). Spec 13 `-complete` files + Spec 13 P8 moved to `scratch/archive/` (shipped or low-priority reference; commit history covers them).
+
+**Active in `.claude/plans/`:**
 
 | File | Status | Notes |
 |---|---|---|
-| `master-spec14-build-plan.md` | ABSORBED | Master plan for Spec 14. Phase ordering folded into Spec 15 §11. Move to scratch alongside specs 12/13/14. |
-| `phase-1-doc-recon-and-snapshots.md` | REFERENCE | Spec 14 P1 — shipped (commit `f467bc72`). Stays as commit-history continuity. |
-| `phase-2-schema-and-recursion-guard.md` | REFERENCE | Spec 14 P2 — shipped (commit `15f4d6cf`). Stays. |
-| `phase-3-catalogue-build.md` | REFERENCE | Spec 14 P3 — shipped (commits `e0f26ec5` + `10819cbb` + `833fed21`). Stays. |
-| `phase-4-extract-refactor.md` | REFERENCE | Spec 14 P4 — shipped (commit `8e2e427a`). Stays. |
-| `phase-5-gap-detection.md` | INPUT to Spec 15 Phase 5 | Plan content carried forward; Phase 5 of Spec 15 absorbs. |
-| `phase-6-staged-scaffolding.md` | INPUT to Spec 15 Phase 5 | Same. |
-| `phase-7-lingua-franca.md` | INPUT to Spec 15 Phase 5 | Same. |
-| `phase-8-wp-integration-wiring.md` | INPUT to Spec 15 Phase 5 | Same. |
-| `phase-9-autonomy-and-visual-qa.md` | INPUT to Spec 15 Phase 5 | Same. |
-| `phase-10-acceptance-harness.md` | INPUT to Spec 15 Phase 5 | Same. |
-| `phase-1-foundation-complete.md` | REFERENCE | Spec 13 P1 — shipped. Stays. |
-| `phase-2-db-cleanup-audit-complete.md` | REFERENCE | Spec 13 P2 — shipped. Stays. |
-| `phase-3-skill-rename-complete.md` | REFERENCE | Spec 13 P3 — shipped. Stays. |
-| `phase-4-bulk-propagation-complete.md` | REFERENCE | Spec 13 P4 — shipped. Stays. |
-| `phase-5-cross-platform-parking-complete.md` | REFERENCE | Spec 13 P5 — shipped. Stays. |
-| `phase-6-mockup-migration-complete.md` | REFERENCE | Spec 13 P6 — shipped. Stays. |
-| `phase-7-orchestrator-rewire-complete.md` | REFERENCE | Spec 13 P7 — shipped. Stays. |
-| `phase-8-validation-and-deploy.md` | REFERENCE | Spec 13 P8 — never started. Low priority; absorbed into Phase 4 of Spec 15 (convention enforcement). |
+| `spec-15-master-execution-plan.md` | ACTIVE | Truth doc for Phases 1-5 execution. |
+| `phase-1-doc-recon-and-snapshots.md` | REFERENCE | Spec 14 P1 — shipped (commit `f467bc72`). Kept as commit-history anchor for `feat(p1)` references. |
+| `phase-2-schema-and-recursion-guard.md` | REFERENCE | Spec 14 P2 — shipped (commit `15f4d6cf`). Kept as commit-history anchor for `feat(p2)`. |
+| `phase-3-catalogue-build.md` | REFERENCE | Spec 14 P3 — shipped (commits `e0f26ec5` + `10819cbb` + `833fed21`). Kept as commit-history anchor for `feat(p3)`. |
+| `phase-4-extract-refactor.md` | REFERENCE | Spec 14 P4 — shipped (commit `8e2e427a`). Kept as commit-history anchor for `feat(p4)`. |
+
+**Moved to `.claude/scratch/absorbed/`** (Spec 14 P5–P10 — content inlined in Spec 15 plan §Phase 5; do NOT author new work against these):
+
+- `phase-5-gap-detection.md` (now Spec 15 sub-phase 5a)
+- `phase-6-staged-scaffolding.md` (now Spec 15 sub-phase 5b)
+- `phase-7-lingua-franca.md` (now Spec 15 sub-phase 5c)
+- `phase-8-wp-integration-wiring.md` (now Spec 15 sub-phase 5d)
+- `phase-9-autonomy-and-visual-qa.md` (now Spec 15 sub-phase 5e)
+- `phase-10-acceptance-harness.md` (now Spec 15 sub-phase 5f)
+
+**Moved to `.claude/scratch/archive/`** (Spec 13 shipped + the never-started P8 — historical reference only):
+
+- `phase-1-foundation-complete.md` through `phase-7-orchestrator-rewire-complete.md` (Spec 13 P1–P7 shipped)
+- `phase-8-validation-and-deploy.md` (Spec 13 P8 — never started; validation aspects fully covered by Spec 15 Phase 4 + 5e + 5f)
 
 #### Skills + commands referenced
 
