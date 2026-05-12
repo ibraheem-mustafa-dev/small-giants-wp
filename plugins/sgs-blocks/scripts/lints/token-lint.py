@@ -612,31 +612,56 @@ def _flush_decl(
     chars: list[str],
     decl_start: int,
     css_source: str,
-    declarations: list[tuple[str, str, int, int]],
+    declarations: list[tuple[str, str, int, int, int]],
 ) -> None:
-    """Parse accumulated chars as a CSS declaration and append to *declarations* if valid."""
-    decl_str = "".join(chars).strip()
-    if ":" not in decl_str:
+    """Parse accumulated chars as a CSS declaration and append to *declarations* if valid.
+
+    Each emitted entry is (prop, val, decl_line, decl_col, value_col_offset) where
+    value_col_offset is the column delta from decl_col to where the value's first
+    non-whitespace character starts.  This lets shorthand discovery compute exact
+    per-part column positions regardless of whitespace variation around the colon
+    (`padding:30px` vs `padding : 30px` vs `padding:  30px`).
+    """
+    raw = "".join(chars)
+    if ":" not in raw:
         return
-    colon_pos = decl_str.index(":")
-    prop = decl_str[:colon_pos].strip()
-    val = decl_str[colon_pos + 1:].strip()
-    if prop and val:
-        line, col = _compute_line_col(css_source, decl_start)
-        declarations.append((prop, val, line, col))
+    raw_colon_pos = raw.index(":")
+    prop = raw[:raw_colon_pos].strip()
+    val_with_ws = raw[raw_colon_pos + 1:]
+    val = val_with_ws.strip()
+    if not (prop and val):
+        return
+
+    # Leading-whitespace count between the colon and the value's first char,
+    # so value_col_offset = (colon position relative to declaration start) + 1
+    # (skip the colon) + (whitespace count).
+    leading_ws = len(val_with_ws) - len(val_with_ws.lstrip())
+    # decl_col points at the first char of `chars`, which may itself be
+    # leading whitespace before the property name.  Strip-leading offset for prop:
+    prop_leading_ws = len(raw) - len(raw.lstrip())
+    value_col_offset = raw_colon_pos + 1 + leading_ws - prop_leading_ws
+
+    line, col = _compute_line_col(css_source, decl_start)
+    # Recompute col to point at the property's first char (not the declaration's
+    # opening whitespace) so col + value_col_offset lands exactly on the value.
+    col = col + prop_leading_ws
+    declarations.append((prop, val, line, col, value_col_offset))
 
 
 def _parse_css_declarations(
     css_source: str,
-) -> list[tuple[str, str, int, int]]:
+) -> list[tuple[str, str, int, int, int]]:
     """
-    Walk *css_source* and yield (property, value, line, col) for every
-    declaration found inside a rule body (brace depth >= 1).
+    Walk *css_source* and yield (property, value, line, col, value_col_offset)
+    for every declaration found inside a rule body (brace depth >= 1).
+
+    value_col_offset is the column delta from col to where the value starts,
+    accounting for whitespace around the colon.
     """
     cleaned = _strip_comments(css_source)
     cleaned = _skip_at_blocks(cleaned, ("keyframes", "font-face"))
 
-    declarations: list[tuple[str, str, int, int]] = []
+    declarations: list[tuple[str, str, int, int, int]] = []
     depth = 0
     i = 0
     length = len(cleaned)
@@ -767,12 +792,19 @@ def _discover_from_declaration(
     col: int,
     source_label: str,
     theme: dict[str, Any],
+    *,
+    value_col_offset: int | None = None,
 ) -> list[tuple[TokenClass, str, str, Occurrence]]:
     """
     Check a single CSS declaration and return token candidates.
 
     Returns a list of (token_class, proposed_slug, raw_value, occurrence).
     Empty list if the value is already a registered token or is exempt.
+
+    ``value_col_offset`` is the parser-provided column delta from ``col`` to
+    where the value's first character starts (handles arbitrary whitespace
+    around the colon).  When None, falls back to the heuristic
+    ``len(prop) + 2`` which assumes ``prop: value`` with one space.
     """
     if _is_exempt_value(value):
         return []
@@ -791,10 +823,11 @@ def _discover_from_declaration(
         # in `padding: 30px 16px 30px 24px;` is the gap candidate.
         parts = _snap_spacing_multi(value, theme)
         results: list[tuple[TokenClass, str, str, Occurrence]] = []
-        # Estimate value's column offset within the declaration: "prop: ".
-        # Real CSS often has whitespace variation around the colon; this is an
-        # approximation that's good enough to distinguish parts from each other.
-        value_col_offset = len(prop) + 2
+        # Use parser-supplied value_col_offset when available; otherwise fall back
+        # to the heuristic `len(prop) + 2` which assumes one space after colon.
+        effective_value_col_offset = (
+            value_col_offset if value_col_offset is not None else len(prop) + 2
+        )
         for raw_part, _nearest, confidence, part_offset in parts:
             if _is_exempt_value(raw_part):
                 continue
@@ -807,7 +840,7 @@ def _discover_from_declaration(
             slug = _generate_slug(actual_class, raw_part, prop)
             part_occurrence = Occurrence(
                 line=line,
-                col=col + value_col_offset + part_offset,
+                col=col + effective_value_col_offset + part_offset,
                 source_label=source_label,
                 css_property=prop,
             )
@@ -819,6 +852,7 @@ def _discover_from_declaration(
         # Split into per-part discoveries; route each part to its own matcher.
         return _discover_border_shorthand(
             prop, value, line, col, source_label, theme,
+            value_col_offset=value_col_offset,
         )
 
     # All other routes snap a single value.
@@ -841,6 +875,8 @@ def _discover_border_shorthand(
     col: int,
     source_label: str,
     theme: dict[str, Any],
+    *,
+    value_col_offset: int | None = None,
 ) -> list[tuple[TokenClass, str, str, Occurrence]]:
     """Walk a `border: 1px solid #abc`-style value, routing each part to the
     correct matcher.  Lengths go to snap_spacing; colour-like tokens go to
@@ -849,7 +885,9 @@ def _discover_border_shorthand(
     Each part gets its own Occurrence with the part-offset-corrected column.
     """
     results: list[tuple[TokenClass, str, str, Occurrence]] = []
-    value_col_offset = len(prop) + 2
+    effective_value_col_offset = (
+        value_col_offset if value_col_offset is not None else len(prop) + 2
+    )
 
     # Walk word-by-word, tracking offsets so positions line up.
     for match in re.finditer(r"\S+", value):
@@ -869,7 +907,7 @@ def _discover_border_shorthand(
 
         part_occurrence = Occurrence(
             line=line,
-            col=col + value_col_offset + offset,
+            col=col + effective_value_col_offset + offset,
             source_label=source_label,
             css_property=prop,
         )
@@ -918,7 +956,7 @@ def _build_write_plan(
     candidates: dict[tuple[str, str, str], NewTokenCandidate] = {}
     total_checked = 0
 
-    for prop, value, line, col in declarations:
+    for prop, value, line, col, value_col_offset in declarations:
         route = _route_property(prop)
         if route is None:
             continue
@@ -927,7 +965,8 @@ def _build_write_plan(
         total_checked += 1
 
         discovered = _discover_from_declaration(
-            prop, value, line, col, source_label, theme
+            prop, value, line, col, source_label, theme,
+            value_col_offset=value_col_offset,
         )
         for token_class, slug, raw_value, occurrence in discovered:
             key = (token_class, slug, raw_value)
@@ -981,12 +1020,17 @@ def _check_declaration_verdict(
     source_label: str,
     mode: Mode,
     theme: dict[str, Any],
+    *,
+    value_col_offset: int | None = None,
 ) -> list[TokenViolation]:
     """
     Check a single CSS declaration and return violations (--no-new-tokens mode).
 
     For spacing shorthands, all individual length tokens in the value are
     checked and may each produce a violation.
+
+    ``value_col_offset`` mirrors _discover_from_declaration's parameter:
+    parser-provided value column delta, or None to use the heuristic.
     """
     if _is_exempt_value(value):
         return []
@@ -997,13 +1041,16 @@ def _check_declaration_verdict(
 
     is_warning = mode == "draft"
     violations: list[TokenViolation] = []
+    effective_value_col_offset = (
+        value_col_offset if value_col_offset is not None else len(prop) + 2
+    )
 
     if route == "spacing" and prop in _SPACING_PROPERTIES:
         parts = _snap_spacing_multi(value, theme)
-        value_col_offset = len(prop) + 2
         for raw_part, token, confidence, part_offset in parts:
             v = _make_spacing_violation(
-                prop, raw_part, token, confidence, line, col + value_col_offset + part_offset,
+                prop, raw_part, token, confidence, line,
+                col + effective_value_col_offset + part_offset,
                 source_label, is_warning,
             )
             if v is not None:
@@ -1084,7 +1131,7 @@ def _lint_declarations_verdict(
     violations: list[TokenViolation] = []
     total_checked = 0
 
-    for prop, value, line, col in declarations:
+    for prop, value, line, col, value_col_offset in declarations:
         route = _route_property(prop)
         if route is None:
             continue
@@ -1092,7 +1139,8 @@ def _lint_declarations_verdict(
             continue
         total_checked += 1
         new_violations = _check_declaration_verdict(
-            prop, value, line, col, source_label, mode, theme
+            prop, value, line, col, source_label, mode, theme,
+            value_col_offset=value_col_offset,
         )
         violations.extend(new_violations)
 
@@ -1148,16 +1196,21 @@ def _parse_inline_style_declarations(
     Inline styles don't have rule blocks — declarations are separated by ';'
     directly.  Line/col are inherited from the element position.
     """
-    declarations: list[tuple[str, str, int, int]] = []
+    declarations: list[tuple[str, str, int, int, int]] = []
     for decl in inline_css.split(";"):
-        decl = decl.strip()
+        # Don't strip — preserve whitespace so we can compute value_col_offset
         if ":" not in decl:
             continue
-        colon_pos = decl.index(":")
-        prop = decl[:colon_pos].strip()
-        val = decl[colon_pos + 1:].strip()
-        if prop and val:
-            declarations.append((prop, val, base_line, base_col))
+        raw_colon_pos = decl.index(":")
+        prop = decl[:raw_colon_pos].strip()
+        val_with_ws = decl[raw_colon_pos + 1:]
+        val = val_with_ws.strip()
+        if not (prop and val):
+            continue
+        leading_ws = len(val_with_ws) - len(val_with_ws.lstrip())
+        prop_leading_ws = len(decl) - len(decl.lstrip())
+        value_col_offset = raw_colon_pos + 1 + leading_ws - prop_leading_ws
+        declarations.append((prop, val, base_line, base_col, value_col_offset))
     return declarations
 
 

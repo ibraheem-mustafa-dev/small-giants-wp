@@ -141,6 +141,9 @@ def stage_0_5_token_lint(mockup: Path, mode: str, run_dir: Path,
     variation_paths = [variation] if variation else None
     if variation:
         print(f"[stage-0.5] overlay variation: {variation.relative_to(REPO)}")
+    elif client:
+        expected = REPO / "theme" / "sgs-theme" / "styles" / f"{client}.json"
+        print(f"[stage-0.5] no variation found for client={client!r} (expected {expected.relative_to(REPO)}) — using base theme only")
     result = tok.lint_html_inline_styles(
         mockup, mode=mode, no_new_tokens=no_new_tokens, variation_paths=variation_paths,
     )
