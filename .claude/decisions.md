@@ -35,6 +35,46 @@ Append-only. Most-recent first.
 | `deliverable.md` for Mama's run readable by Bean | ⏸️ — same as prior run pattern; full-page-markup.html readable + sandybrown URL preserved while live. |
 | No leftover feature-branch commits | ✅ |
 
+**Phase 5h.1 — CSS-lift stage shipped (2026-05-13 same day):**
+
+Bean correctly redirected to root-cause investigation before scoping 5h. /systematic-debugging Phase 1 found:
+
+- All 61 blocks survived WP storage (no validation drops, only `core/` prefix normalisation).
+- Rendered DOM has the EXACT mockup class hooks (`.sgs-featured-product`, `.sgs-ingredients-section`, etc.) — composer was already correct.
+- Across 53 stylesheets loaded on sandybrown, ZERO rules existed for the bespoke section classes. Computed `backgroundColor` was `rgba(0,0,0,0)`, computed `padding` was `0px`.
+- The mockup has 22,442 chars of inline `<style>` containing all bespoke per-section CSS keyed off `.sgs-<section>` classes. **The clone pipeline dropped this CSS entirely.** No CSS-lift stage existed.
+
+Hypothesis test (one-shot inject): adding mockup CSS as `wp:html <style>` to the page produced exact `backgroundColor: rgb(251,243,220)` / `padding: 56px 20px` matches on every section. Hypothesis confirmed.
+
+**Pipeline fix shipped (commit pending):**
+- `sgs-clone-orchestrator.py`: new `stage_0_7_css_lift()`. Reads mockup inline `<style>` blocks + all local `<link rel="stylesheet">` paths, concatenates with provenance headers, writes `theme/sgs-theme/styles/<client>.css`. Idempotent — every clone run overwrites.
+- `theme/sgs-theme/functions.php`: new variation-CSS enqueue. Loads `styles/<active_theme_style>.css` AFTER framework stylesheets when the active variation has a sibling `.css` file. Cache-busted via `filemtime()`.
+- `recogniser/confidence-matrix.py`: `discover_registered_blocks()` now excludes scaffold-grade blocks (`version == "0.1.0-scaffold"`) from routable set. Without this, post-5g.2 re-runs route to bare scaffolds and skip the composer entirely. Scaffolds remain promoted in `src/blocks/` for future polish; they're just not routed to until version ≥ 1.0.
+
+**Pipeline E2E re-run (run `mamas-munches-homepage-2026-05-13-093952`):**
+- Stage 0.7 produces `theme/sgs-theme/styles/mamas-munches.css` (25,520 chars including provenance header).
+- Stage 2 correctly routes 3 sections to registered composites (hero, trust-bar, heritage-strip) + 6 sections to `core/group` → composer fires → `sgs/container` patterns with atomic children.
+- Stage 9b autonomy chain: 6 scaffolded, 0 promoted (existing canonical dirs blocked re-promotion — soft-warning path, not error).
+- Theme deployed via tar + scp + OPcache reset. Variation stylesheet verified loaded via `getComputedStyle()` — `.sgs-featured-product`/`.sgs-ingredients-section`/`.sgs-gift-section`/`.sgs-social-proof`/`.sgs-footer` all carry the mockup-spec backgroundColor + padding.
+
+**Phase 5h hard gate measurement (the actual pass criterion):**
+
+| Viewport | Diff % | Gate (≤1%) | Verdict |
+|----------|--------|------------|---------|
+| 375 mobile | 72.33% | FAIL | clone SHORTER by 927px |
+| 768 tablet | 53.67% | FAIL | clone TALLER by 1030px |
+| 1440 desktop | 45.88% | FAIL | clone TALLER by 486px |
+
+CSS-lift took the diff from 85% → 45-72% but the ≤1% gate is NOT met. Three named structural gaps remain, each with a concrete pipeline fix:
+
+**5h.4 — WP global header chrome (~30 min):** Cloned page uses `page.html` template which includes WP site header part. Mockup is standalone. ~400px mismatch at top across all viewports. Fix: new `templates/clone-page.html` with no header/footer parts; pipeline tags the WP page with this template via `template` meta in WP REST POST.
+
+**5h.5 — Composer doesn't preserve BEM child class hierarchy (load-bearing, ~2 hr):** Mockup CSS targets `.sgs-featured-product__grid`, `.sgs-featured-product__card`, `.sgs-ingredients-section__list` etc. Composer emits flat `core/heading` + `core/paragraph` + `sgs/button`. Without `__grid` wrappers, the lifted grid CSS rules have no element to bind to → layout collapses to single-column stack. Fix: extend `compose_atomic_pattern()` to walk source DOM preserving BEM child element classes; wrap atomic groups in `wp:group {"className":"sgs-X__grid"}` so the lifted CSS applies.
+
+**5h.6 — Composite block extraction loses mockup-shape (~45 min):** Matched composites (`sgs/hero`) use their own block-internal markup which may not reproduce the mockup's exact CTA arrangement, split-image proportions etc. Fix: per-composite-block "mockup-shape audit" step that verifies extracted attrs fully reproduce the mockup section's layout, OR fall through to composer for composites that have low coverage.
+
+Phase 5 stays OPEN at 5h.4-5h.6. Phase 6 sequenced after.
+
 **Phase 5h — styling parity fidelity (formally opened 2026-05-13 per Bean):**
 
 - **Pass criterion (HARD GATE):** ≤ 1% pixel diff vs mockup at 375 / 768 / 1440 viewports. No partial closure. No "structural is enough" softening. Bean confirmed this is the pass criterion for 5h closure.

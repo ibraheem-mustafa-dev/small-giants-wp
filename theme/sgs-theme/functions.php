@@ -219,6 +219,24 @@ function enqueue_styles(): void {
 		$theme_version
 	);
 
+	// Per-variation stylesheet — written by the clone pipeline's stage 0.7
+	// (CSS-lift) at theme/sgs-theme/styles/<variation>.css. Loaded AFTER the
+	// framework stylesheets so per-section rules can override defaults. Only
+	// enqueued when the active variation actually has a sibling .css file —
+	// the JSON variation alone never carries CSS rules.
+	$active_variation = get_theme_mod( 'active_theme_style', '' );
+	if ( $active_variation ) {
+		$variation_css_path = get_theme_file_path( "styles/{$active_variation}.css" );
+		if ( file_exists( $variation_css_path ) ) {
+			wp_enqueue_style(
+				"sgs-variation-{$active_variation}",
+				get_theme_file_uri( "styles/{$active_variation}.css" ),
+				[ 'sgs-core-blocks', 'sgs-utilities' ],
+				$theme_version . '.' . filemtime( $variation_css_path )
+			);
+		}
+	}
+
 	// Dark mode — only load when the feature is enabled.
 	if ( get_option( 'sgs_dark_mode_enabled', false ) ) {
 		wp_enqueue_style(

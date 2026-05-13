@@ -53,8 +53,19 @@ COMPOSITE_PRIORITY = {
 }
 
 
-def discover_registered_blocks(blocks_dir: Path = SGS_BLOCKS_SRC) -> set[str]:
-    """Return the set of registered SGS block slugs by reading block.json files."""
+def discover_registered_blocks(blocks_dir: Path = SGS_BLOCKS_SRC,
+                               include_scaffolds: bool = False) -> set[str]:
+    """Return the set of routable SGS block slugs by reading block.json files.
+
+    Phase 5h.1: by default, blocks whose `version` is `0.1.0-scaffold` (the
+    marker stamped by atomic-block-scaffold during stage 9b autonomy promotion)
+    are EXCLUDED. The hard-gate at score_candidates() then treats them like
+    unregistered, which forces stage 4 down the composer path so real atomic
+    content lands instead of the scaffold's empty render.php stub. Once a
+    scaffold-grade block is polished to version >= 1.0 it becomes routable
+    automatically. Pass include_scaffolds=True to get every promoted slug
+    (used by autonomy-chain duplicate detection, not by routing).
+    """
     registered: set[str] = set()
     if not blocks_dir.exists():
         return registered
@@ -62,8 +73,12 @@ def discover_registered_blocks(blocks_dir: Path = SGS_BLOCKS_SRC) -> set[str]:
         try:
             data = json.loads(block_json.read_text(encoding="utf-8"))
             name = data.get("name")
-            if isinstance(name, str) and name:
-                registered.add(name)
+            if not isinstance(name, str) or not name:
+                continue
+            version = str(data.get("version", ""))
+            if not include_scaffolds and version == "0.1.0-scaffold":
+                continue
+            registered.add(name)
         except (json.JSONDecodeError, OSError):
             continue
     return registered
