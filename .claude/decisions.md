@@ -2,6 +2,50 @@
 
 Append-only. Most-recent first.
 
+## 2026-05-13 — Spec 15 Phase 5g: structural defect closed; partial Phase 5 closure accepted
+
+**Decision (state):** 5g.1 + 5g.2 + 5g.3 implemented inline. Live E2E proves the load-bearing structural defect from the earlier `2026-05-13-055523` run is closed: all 9 Mama's-homepage sections now render with content. Literal acceptance gates (≥ 90% coverage + ≤ 1% pixel diff) NOT met because the composer emits default `sgs/container` layouts instead of reproducing the mockup's bespoke column/grid/background styling. Bean accepted **partial Phase 5 closure** (option A); styling fidelity becomes Phase 5h follow-up or absorbed into Phase 6 work.
+
+**What 5g.1 + 5g.2 + 5g.3 changed:**
+
+- **5g.1** — `recogniser/confidence-matrix.py:94-107`: hard-gate. When voter slug is not in `registered_blocks`, drop the candidate entirely (was: dampen confidence to 0.75 and emit anyway). Stage 2 now lands unregistered sections at `core/group` with confidence 0.0 → goes to leftover-bucket-router as `unrecognised_section` → routed to autonomy chain at stage 9b. Layer-1 qc-inline: 3 synthesised boundaries (unreg-no-secondary, registered-direct, unreg-primary-but-reg-secondary) all behave correctly.
+
+- **5g.2** — `sgs-clone-orchestrator.py` new `stage_9b_autonomy_chain()`: for each `unrecognised_section` whose voter pointed at an `sgs/<slug>` candidate, dispatch `bucket-c-classifier.classify_batch()` in-process (sqlite read, ~5s timeout), then call `atomic-block-scaffold.scaffold() + promote()` with `--db-path` set to the canonical sgs-framework.db. Default ON (`--no-scaffold-new-blocks` / `--no-promote-new-blocks` opt-outs). Layer-1 qc-inline: 4 scenarios (promote-path, scaffold-only, disabled, malformed-slug) all pass.
+
+- **5g.3** — `sgs-clone-orchestrator.py` new `compose_atomic_pattern()` helper + replaced the deferred-fallback skip at stage 4: when a section is matched to `core/group` (post-5g.1 hard-gate), the composer walks the section DOM and emits `<!-- wp:sgs/container {"anchor":"<id>","className":"<cls>"} --> ... <!-- /wp:sgs/container -->` wrapping `core/heading` + `core/paragraph` + `sgs/button` + `sgs/decorative-image` atomic children. Note: `sgs/heading` and `sgs/text` do NOT exist as registered blocks; the prompt's specific names were aspirational. `core/heading` + `core/paragraph` are the right primitives per existing SGS conventions. Layer-1 qc-inline: featured-product → 4 distinct atomic types; ingredients-section → headings + paragraphs only; trust-bar → `None` correctly (no atomic content).
+
+**Live E2E verdict (run `mamas-munches-homepage-2026-05-13-074854`):**
+
+- Pipeline: stage 0.1 BEM lint 0 violations (149 classes), stage 0.5 token lint 0 candidates (variation overlay loaded), stage 1 voter 9 boundaries primary-convention=sgs-prefixed-bem, stage 2 matrix matches: 3 of 9 routed to registered SGS blocks (`sgs/hero`, `sgs/trust-bar`, `sgs/heritage-strip`) + 6 routed to `core/group` (then composed by 5g.3), stage 3 slot list 212 slots, stage 4-8 extract 84 attrs + 13,533 chars markup, stage 9 leftover 225 entries, stage 9b autonomy 6 scaffolded + 6 promoted.
+- Promoted blocks: `plugins/sgs-blocks/src/blocks/{header,featured-product,ingredients-section,gift-section,social-proof,footer}` — `0.1.0-scaffold` version, role=text-content. Untracked dirs (additions, not modifications) — Spec 15 FR21 staged-merge channel honoured. Block-attributes rows registered in sgs-framework.db.
+- Deploy: sandybrown post `spec15-p5g-e2e-test` (id 59) via WP REST API, screenshotted at 375/768/1440 (Playwright MCP), Bean's-own-eyes verification confirmed all 9 sections render with content. Post deleted post-verification.
+- Acceptance harness 5/5 GREEN (no_root_theme_json_mutation, no_canonical_block_mutation, no_licensing_in_uimax, sgs_update_idempotency, pipeline_state_clean).
+
+**Phase 5 acceptance status (literal vs. operational):**
+
+| Gate | Status |
+|------|--------|
+| Sub-phases 5a-5f modules shipped on origin/main | ✅ |
+| Sub-phases 5g.1-5g.3 shipped this session | ✅ |
+| E2E run completes end-to-end (no crashes) | ✅ |
+| Harness 5/5 GREEN | ✅ |
+| Multi-rater /qc on full Phase 5 deliverable ≥ 2/3 ship | ✅ (prior 5a-5f panels) + ⏸️ (proper multi-model 3-rater on 5g delta DEFERRED to Phase 6 cold-start due to time-cost of multi-model orchestration; inline 3-perspective single-model assessment ran 3/3 ship with 3 follow-ups parked) |
+| ≥ 90% mockup-USED-attr coverage at 3 viewports | ❌ — **38.2% aggregate**. Deferred-composed sections (b1/b4/b6/b7/b8/b9) have `0/0` denominators because they're matched to `core/group` (no block.json slot list); the coverage metric is misleading for atomic-composed sections. |
+| ≤ 1% pixel diff at 3 viewports | ❌ — visual styling diverges significantly. Class of defect SHIFTED from "sections vapour entirely" (85%) to "sections render but styling doesn't reproduce mockup's bespoke layouts". |
+| `deliverable.md` for Mama's run readable by Bean | ⏸️ — same as prior run pattern; full-page-markup.html readable + sandybrown URL preserved while live. |
+| No leftover feature-branch commits | ✅ |
+
+**Phase 5h — styling parity fidelity (formally opened 2026-05-13 per Bean):**
+
+- **Pass criterion (HARD GATE):** ≤ 1% pixel diff vs mockup at 375 / 768 / 1440 viewports. No partial closure. No "structural is enough" softening. Bean confirmed this is the pass criterion for 5h closure.
+- **Scope absorbs the three follow-ups surfaced by the 5g closure raters:**
+    1. **Composer CSS-mapping extension** — extract bespoke layout intent from the mockup CSS (column structure, gaps, padding, decorative backgrounds, pseudo-elements) and map onto `sgs/container` attributes (layout, columns, gap, backgroundColor). The load-bearing fix.
+    2. **Coverage-metric redesign** — split denominator into "block.json slots filled" vs "atomic elements composed".
+    3. **Scaffold polish + inserter visibility** — 6 promoted blocks ship as `0.1.0-scaffold` with stub render.php. Mitigation: add `_scaffold` suffix to title OR set `supports.inserter: false` until version >= 1.0.
+- **Phase 5 stays OPEN** at 5h until pixel-diff gate is met. Phase 6 (cross-platform output) sequenced AFTER 5h closes — it would be irresponsible to extend a foundation that doesn't pass its own parity gate.
+
+**Test page disposition:** sandybrown post id 59 deleted post-verification. Fresh app password issued via SSH (`Claude-MCP-spec15-p5g`) — stale `WP_APP_PWD_MAMAS` in `~/.openclaw/.secrets/wp-app-passwords.env` should be rotated.
+
 ## 2026-05-13 — Spec 15 Phase 5: live E2E exposes recogniser-hallucinates-blocks bug; Phase 5 NOT closed
 
 **Decision (state):** Phase 5 module surface is shipped on origin/main across 7 commits (a0e1d145 5a / f8398efd 5b / 4061114a 5c / 14ba9782 5d / 8f2e9ff1 5e / c4f0c3e5 + 93b6226f 5f). The acceptance gates from `phase-5-clone-pipeline-e2e.md` "Phase 5 overall acceptance" are NOT all met. Phase 5 is **NOT CLOSED**.

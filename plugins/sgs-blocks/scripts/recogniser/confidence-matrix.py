@@ -91,19 +91,18 @@ def score_candidates(boundary: dict, registered_blocks: set[str] | None = None) 
     candidates: list[dict] = []
 
     # Primary candidate from voter.
-    if candidate_slug:
-        registered = candidate_slug in registered_blocks
-        # Slight confidence reduction when the slug is voter-derived but not yet
-        # registered -- a pattern-only sliver (e.g. ingredients-section maps to
-        # sgs/feature-grid; the section class itself names a pattern, not a block).
-        confidence = voter_confidence
-        if not registered:
-            confidence = min(confidence, 0.75)
+    # HARD GATE (Phase 5g.1, 2026-05-13): if the slug is not a registered SGS
+    # block we DROP the candidate entirely. Previously we kept it at confidence
+    # 0.75, which let the orchestrator emit `<!-- wp:sgs/<unregistered> /-->`
+    # block-comments that WP silently dropped (Mama's homepage 2026-05-13 lost
+    # 6 of 9 sections this way). Dropping forces the section into the
+    # bucket-c-classifier + atomic-block-scaffold autonomy path at stage 9.
+    if candidate_slug and candidate_slug in registered_blocks:
         candidates.append({
             "block_name": candidate_slug,
-            "confidence": confidence,
+            "confidence": voter_confidence,
             "tie_breaker": fallback,
-            "registered": registered,
+            "registered": True,
         })
 
     # Secondary candidates: scan the class signature for additional SGS slugs

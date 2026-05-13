@@ -1,0 +1,27 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "sgs/header",
+  "title": "Header",
+  "category": "sgs-content",
+  "icon": "block-default",
+  "description": "Scaffolded by spec-15-p5b.8 from a bucket-C role=text-content gap. Needs human polish.",
+  "textdomain": "sgs-blocks",
+  "version": "0.1.0-scaffold",
+  "attributes": {
+    "text": {
+      "type": "string",
+      "default": ""
+    }
+  },
+  "supports": {
+    "html": false,
+    "anchor": true,
+    "sgs": {
+      "imageControls": false
+    }
+  },
+  "editorScript": "file:./index.js",
+  "render": "file:./render.php",
+  "style": "file:./style.css"
+}

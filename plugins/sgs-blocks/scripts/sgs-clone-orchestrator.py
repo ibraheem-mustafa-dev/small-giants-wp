@@ -31,6 +31,7 @@ import argparse
 import importlib.util
 import json
 import os
+import re
 import sqlite3
 import subprocess
 import sys
@@ -43,11 +44,16 @@ sys.stdout.reconfigure(encoding="utf-8")
 REPO = Path(__file__).resolve().parents[3]
 RECOGNISER_DIR = Path(__file__).resolve().parent / "recogniser"
 LINTS_DIR = Path(__file__).resolve().parent / "lints"
+ORCHESTRATOR_DIR = Path(__file__).resolve().parent / "orchestrator"
 
 VOTER_SCRIPT = RECOGNISER_DIR / "per-section-convention-voter.py"
 MATRIX_SCRIPT = RECOGNISER_DIR / "confidence-matrix.py"
 ROUTER_SCRIPT = RECOGNISER_DIR / "leftover-bucket-router.py"
 REVIEW_SCRIPT = RECOGNISER_DIR / "simple_html_review_report.py"
+CLASSIFIER_SCRIPT = RECOGNISER_DIR / "bucket-c-classifier.py"
+SCAFFOLD_SCRIPT = ORCHESTRATOR_DIR / "atomic-block-scaffold.py"
+
+SGS_FRAMEWORK_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 
 
 def _load_lint_module(filename: str, attr_name: str):
@@ -219,6 +225,129 @@ def stage_0_5_token_lint(mockup: Path, mode: str, run_dir: Path,
     return out
 
 UIMAX_DB = Path(os.path.expanduser("~/.agents/skills/ui-ux-pro-max/scripts/ui-ux-pro-max.db"))
+
+
+# ---------------------------------------------------------------------------
+# Phase 5g.3 -- pattern composer
+#   Walks a section's DOM and emits a wp:sgs/container pattern composition
+#   built from core/heading, core/paragraph, sgs/button, sgs/decorative-image.
+#   Hard Rule 3: every clone-pipeline emission is a pattern composition, not
+#   a bare single-block dump. Used for deferred / scaffold-only sections
+#   where the extract.py harvest produces nothing usable.
+# ---------------------------------------------------------------------------
+
+_BUTTON_HINT_RE = re.compile(r"\b(button|btn|cta)\b", re.IGNORECASE)
+
+
+def _emit_block(name: str, attrs: dict, inner_html: str | None = None,
+                self_closing: bool = True) -> str:
+    """Emit a single Gutenberg block-comment + (optional) inner HTML."""
+    attr_json = json.dumps(attrs, ensure_ascii=False, separators=(",", ":")) if attrs else ""
+    head = f"<!-- wp:{name}{(' ' + attr_json) if attr_json else ''}"
+    if self_closing:
+        return head + " /-->"
+    return head + " -->" + (inner_html or "") + f"<!-- /wp:{name} -->"
+
+
+def _emit_core_heading(text: str, level: int) -> str:
+    tag = f"h{max(1, min(6, level))}"
+    inner = f"<{tag} class=\"wp-block-heading\">{text}</{tag}>"
+    attrs = {"level": level} if level != 2 else {}
+    return _emit_block("core/heading", attrs, inner_html=inner, self_closing=False)
+
+
+def _emit_core_paragraph(text: str) -> str:
+    inner = f"<p>{text}</p>"
+    return _emit_block("core/paragraph", {}, inner_html=inner, self_closing=False)
+
+
+def _emit_sgs_button(label: str, url: str) -> str:
+    return _emit_block("sgs/button", {"label": label, "url": url or "#"})
+
+
+def _emit_sgs_decorative_image(src: str, alt: str) -> str:
+    return _emit_block(
+        "sgs/decorative-image",
+        {"imageUrl": src, "imageAlt": alt or ""},
+    )
+
+
+def compose_atomic_pattern(mockup_path: Path, selector: str,
+                           section_id: str, class_signature: list[str]) -> str | None:
+    """Compose a wp:sgs/container atomic-pattern from a section in the mockup.
+
+    Returns Gutenberg markup string or None if the section cannot be resolved
+    or yields no useful inner content.
+    """
+    try:
+        from bs4 import BeautifulSoup
+    except ImportError:
+        return None
+    if not mockup_path.exists():
+        return None
+    soup = BeautifulSoup(mockup_path.read_text(encoding="utf-8"), "html.parser")
+    try:
+        node = soup.select_one(selector)
+    except Exception:  # noqa: BLE001 -- malformed selector
+        return None
+    if node is None:
+        return None
+
+    inner_blocks: list[str] = []
+    seen_texts: set[str] = set()
+    seen_urls: set[str] = set()
+    seen_imgs: set[str] = set()
+
+    # Walk descendants in document order, emitting atomic blocks.
+    for el in node.descendants:
+        name = getattr(el, "name", None)
+        if not name:
+            continue
+        if name in {"h1", "h2", "h3", "h4", "h5", "h6"}:
+            text = el.get_text(" ", strip=True)
+            if text and text not in seen_texts:
+                seen_texts.add(text)
+                inner_blocks.append(_emit_core_heading(text, int(name[1])))
+        elif name == "p":
+            text = el.get_text(" ", strip=True)
+            if text and text not in seen_texts and len(text) > 1:
+                seen_texts.add(text)
+                inner_blocks.append(_emit_core_paragraph(text))
+        elif name == "button" or (name == "a" and _BUTTON_HINT_RE.search(" ".join(el.get("class", [])) or "")):
+            label = el.get_text(" ", strip=True)
+            url = el.get("href", "") if name == "a" else ""
+            key = f"{label}|{url}"
+            if label and key not in seen_urls:
+                seen_urls.add(key)
+                inner_blocks.append(_emit_sgs_button(label, url))
+        elif name == "img":
+            src = el.get("src", "") or ""
+            alt = el.get("alt", "") or ""
+            if src and src not in seen_imgs:
+                seen_imgs.add(src)
+                inner_blocks.append(_emit_sgs_decorative_image(src, alt))
+
+    if not inner_blocks:
+        return None
+
+    # Pick the most descriptive sgs- class (skip BEM children with -- or __).
+    section_class = ""
+    for cls in class_signature or []:
+        if cls.startswith("sgs-") and "--" not in cls and "__" not in cls:
+            section_class = cls
+            break
+
+    container_attrs: dict = {}
+    if section_id:
+        container_attrs["anchor"] = section_id
+    if section_class:
+        container_attrs["className"] = section_class
+
+    inner_html = "\n  ".join(inner_blocks)
+    container_attrs_json = json.dumps(container_attrs, ensure_ascii=False, separators=(",", ":")) if container_attrs else ""
+    head = f"<!-- wp:sgs/container{(' ' + container_attrs_json) if container_attrs_json else ''} -->"
+    return head + "\n  " + inner_html + "\n<!-- /wp:sgs/container -->"
+
 
 
 def now_iso() -> str:
@@ -421,20 +550,39 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path) -> dict:
             aggregate_warnings.append(f"{boundary_id}: no selector resolved; skipping")
             continue
 
-        # Skip extract entirely when the matched block is the deferred core/group
-        # fallback -- the section is in the leftover bucket already and extract.py
-        # has no real target.
+        # Deferred fallback: matched block is core/group OR confidence is zero.
+        # Phase 5g.3 — instead of emitting nothing, compose a wp:sgs/container
+        # atomic-pattern from the source DOM (core/heading + core/paragraph +
+        # sgs/button + sgs/decorative-image). This is the structural fix
+        # for the "6 of 9 Mama's sections vapour on the page" gap.
         if target_block == "core/group" or m.get("confidence", 0) == 0:
-            aggregate_warnings.append(f"{boundary_id}: deferred fallback, skipping extract")
-            per_section_results.append({
-                "boundary_id": boundary_id,
-                "section_id": m.get("section_id"),
-                "selector": section_selector,
-                "block_name": target_block,
-                "status": "skipped-deferred",
-                "extracted_attributes": {},
-                "block_markup": "",
-            })
+            pattern_markup = compose_atomic_pattern(
+                args.mockup, section_selector,
+                m.get("section_id") or boundary_id,
+                boundary.get("class_signature", []),
+            )
+            if pattern_markup:
+                aggregate_markup_parts.append(pattern_markup)
+                per_section_results.append({
+                    "boundary_id": boundary_id,
+                    "section_id": m.get("section_id"),
+                    "selector": section_selector,
+                    "block_name": "sgs/container",
+                    "status": "deferred-composed-pattern",
+                    "extracted_attributes": {},
+                    "block_markup": pattern_markup,
+                })
+            else:
+                aggregate_warnings.append(f"{boundary_id}: deferred fallback + no composable content, skipping")
+                per_section_results.append({
+                    "boundary_id": boundary_id,
+                    "section_id": m.get("section_id"),
+                    "selector": section_selector,
+                    "block_name": target_block,
+                    "status": "skipped-deferred",
+                    "extracted_attributes": {},
+                    "block_markup": "",
+                })
             continue
 
         per_section_out = run_dir / f"extract-{boundary_id}.json"
@@ -513,6 +661,126 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path) -> dict:
     return output
 
 
+
+# ---------------------------------------------------------------------------
+# Stage 9b -- AUTONOMY CHAIN (Phase 5g.2)
+#   For each unrecognised_section the voter pointed at an unregistered SGS
+#   slug, route the boundary through bucket-c-classifier (role inference)
+#   then atomic-block-scaffold to land starter files + DB rows. Closes the
+#   "voter hallucinated, WP dropped the section" gap surfaced on Mama's
+#   homepage 2026-05-13.
+# ---------------------------------------------------------------------------
+
+_SLUG_TOKEN_RE = re.compile(r"^[a-z][a-z0-9-]*$")
+_RESERVED_SCAFFOLD_SLUGS = {"hero", "container", "form"}
+
+
+def _autonomy_boundary_index(boundary_output: dict) -> dict[str, dict]:
+    return {b["boundary_id"]: b for b in boundary_output.get("boundaries", [])}
+
+
+def stage_9b_autonomy_chain(boundary: dict, match: dict, buckets_output: dict,
+                            run_dir: Path, run_id: str,
+                            scaffold_new_blocks: bool, promote_new_blocks: bool) -> dict:
+    """Scaffold (and optionally promote) new SGS blocks for unrecognised sections."""
+    started = now_iso()
+    errors: list[str] = []
+    warnings: list[str] = []
+    scaffolded: list[dict] = []
+    seen_slugs: set[str] = set()
+
+    if not scaffold_new_blocks:
+        out = {"enabled": False, "scaffolded": [], "promoted_count": 0}
+        write_artefact(run_dir, 91, "autonomy-chain", "complete", out, started, [], ["disabled by --no-scaffold-new-blocks"])
+        return out
+
+    boundary_index = _autonomy_boundary_index(boundary)
+    leftover = (buckets_output or {}).get("leftover_buckets", {}) or {}
+    unrec = leftover.get("unrecognised_section", []) or []
+
+    # Build minimal elements for the classifier. We have no computed_styles
+    # at stage 9 (extract was skipped for deferred fallbacks) so the classifier
+    # returns winning_role=None and the scaffold falls back to text-content,
+    # which is the documented safe scaffold (atomic-block-scaffold.py:188-191).
+    elements: list[dict] = []
+    boundary_for_item: list[dict] = []
+    for item in unrec:
+        bid = item.get("boundary_id")
+        b = boundary_index.get(bid) or {}
+        candidate_slug = b.get("candidate_block_slug") or ""
+        if not candidate_slug or not candidate_slug.startswith("sgs/"):
+            continue
+        slug = candidate_slug[len("sgs/"):]
+        if not _SLUG_TOKEN_RE.match(slug) or slug in _RESERVED_SCAFFOLD_SLUGS or slug in seen_slugs:
+            continue
+        seen_slugs.add(slug)
+        elements.append({
+            "selector": b.get("selector"),
+            "computed_styles": {},  # not available at stage 9; classifier degrades gracefully
+            "class_signature": b.get("class_signature", []),
+        })
+        boundary_for_item.append({"slug": slug, "candidate_block_slug": candidate_slug, "boundary": b})
+
+    # Dispatch the classifier in-process (single sqlite read, fast).
+    classifier_results: list[dict] = []
+    if elements:
+        try:
+            cls_mod = _load_module_from_path("sgs_bucket_c_classifier", CLASSIFIER_SCRIPT)
+            classifier_results = cls_mod.classify_batch(elements, db_path=SGS_FRAMEWORK_DB)
+        except Exception as exc:  # noqa: BLE001
+            warnings.append(f"bucket-c-classifier soft-failed: {exc}; falling back to text-content for all")
+            classifier_results = [{"winning_role": None, "confidence": 0.0} for _ in elements]
+
+    # Scaffold + optionally promote each.
+    scaffold_mod = None
+    try:
+        scaffold_mod = _load_module_from_path("sgs_atomic_block_scaffold", SCAFFOLD_SCRIPT)
+    except Exception as exc:  # noqa: BLE001
+        errors.append(f"atomic-block-scaffold import failed: {exc}")
+
+    promoted_count = 0
+    if scaffold_mod is not None:
+        for meta, cls_out in zip(boundary_for_item, classifier_results):
+            slug = meta["slug"]
+            role = cls_out.get("winning_role") or "text-content"
+            try:
+                manifest = scaffold_mod.scaffold(slug=slug, role=role, run_id=run_id)
+            except scaffold_mod.ScaffoldError as exc:
+                warnings.append(f"scaffold({slug}, {role}) skipped: {exc}")
+                continue
+            entry = {
+                "candidate_block_slug": meta["candidate_block_slug"],
+                "slug": slug,
+                "role": role,
+                "role_confidence": cls_out.get("confidence", 0.0),
+                "staging_dir": manifest.get("staging_dir"),
+                "files": manifest.get("files", []),
+                "promoted": False,
+            }
+            if promote_new_blocks:
+                try:
+                    promoted = scaffold_mod.promote(manifest, db_path=SGS_FRAMEWORK_DB)
+                    entry["promoted"] = True
+                    entry["canonical_path"] = promoted.get("canonical_path")
+                    entry["db_rows_inserted"] = promoted.get("db_rows_inserted", 0)
+                    promoted_count += 1
+                except scaffold_mod.ScaffoldError as exc:
+                    warnings.append(f"promote({slug}) skipped: {exc}")
+            scaffolded.append(entry)
+
+    out = {
+        "enabled": True,
+        "promote_new_blocks": promote_new_blocks,
+        "scaffolded": scaffolded,
+        "scaffolded_count": len(scaffolded),
+        "promoted_count": promoted_count,
+        "candidates_seen": len(boundary_for_item),
+    }
+    status = "complete" if not errors else "failed"
+    write_artefact(run_dir, 91, "autonomy-chain", status, out, started, errors, warnings)
+    return out
+
+
 # ---------------------------------------------------------------------------
 # Stage 9 -- REPORT (dispatcher: leftover-bucket-router + recognition_log + simple_html_review_report)
 # ---------------------------------------------------------------------------
@@ -569,7 +837,8 @@ def insert_recognition_log(run_id: str, buckets_output: dict) -> tuple[int, list
     return rows_inserted, warnings
 
 
-def stage_9_report(boundary: dict, match: dict, slot_list: dict, extract: dict, run_dir: Path) -> dict:
+def stage_9_report(boundary: dict, match: dict, slot_list: dict, extract: dict, run_dir: Path,
+                   scaffold_new_blocks: bool = True, promote_new_blocks: bool = True) -> dict:
     """Stage 9 -- route leftovers + INSERT recognition_log + render review HTML."""
     started = now_iso()
     errors: list[str] = []
@@ -611,6 +880,16 @@ def stage_9_report(boundary: dict, match: dict, slot_list: dict, extract: dict, 
     # 9b. INSERT into recognition_log (soft-fail).
     rows_inserted, log_warnings = insert_recognition_log(run_dir.name, buckets_output)
     warnings.extend(log_warnings)
+
+    # 9b-autonomy. Scaffold (and optionally promote) new blocks for any
+    # unrecognised_section the voter pointed at an unregistered slug. The
+    # autonomy chain runs BEFORE the review HTML is rendered so freshly
+    # promoted slugs are visible to downstream tooling.
+    autonomy_out = stage_9b_autonomy_chain(
+        boundary, match, buckets_output, run_dir, run_dir.name,
+        scaffold_new_blocks=scaffold_new_blocks,
+        promote_new_blocks=promote_new_blocks,
+    )
 
     # 9c. Render operator-review HTML via simple_html_review_report subprocess.
     review_html_path = run_dir / "operator-review.html"
@@ -662,6 +941,7 @@ def stage_9_report(boundary: dict, match: dict, slot_list: dict, extract: dict, 
         "leftover_total_count": buckets_output.get("total_count", 0),
         "recognition_log_rows_inserted": rows_inserted,
         "operator_review_html_path": str(review_html_path),
+        "autonomy_chain": autonomy_out,
     }
     status = "complete" if not errors else "failed"
     write_artefact(run_dir, 9, "report", status, output, started, errors, warnings)
@@ -688,6 +968,14 @@ def main():
         choices=("strict", "draft", "legacy"),
         default="strict",
         help="Stage 0.1/0.5 QA mode: strict halts on violations, draft warns, legacy bypasses",
+    )
+    parser.add_argument(
+        "--no-scaffold-new-blocks", action="store_true",
+        help="Skip stage 9b: do not scaffold new SGS blocks for unrecognised sections",
+    )
+    parser.add_argument(
+        "--no-promote-new-blocks", action="store_true",
+        help="Stage 9b scaffolds but does not promote into src/blocks/ (default is promote)",
     )
     args = parser.parse_args()
 
@@ -725,10 +1013,17 @@ def main():
     extracted_count = len(extract_out.get("extracted_attributes") or {})
     print(f"[stage-4-8] extract: {extracted_count} attrs extracted")
 
-    report = stage_9_report(boundary, match, slot_list, extract_out, run_dir)
+    report = stage_9_report(
+        boundary, match, slot_list, extract_out, run_dir,
+        scaffold_new_blocks=not args.no_scaffold_new_blocks,
+        promote_new_blocks=not args.no_promote_new_blocks,
+    )
     print(f"[stage-9] leftover entries: {report['leftover_total_count']} across {sum(1 for v in report['leftover_totals'].values() if v > 0)} buckets")
     print(f"[stage-9] recognition_log rows inserted: {report['recognition_log_rows_inserted']}")
     print(f"[stage-9] operator-review: {report['operator_review_html_path']}")
+    autonomy = report.get("autonomy_chain") or {}
+    if autonomy.get("enabled"):
+        print(f"[stage-9b] autonomy: {autonomy.get('scaffolded_count', 0)} scaffolded ({autonomy.get('promoted_count', 0)} promoted) from {autonomy.get('candidates_seen', 0)} candidates")
     print(f"[orchestrator] DONE. Artefacts in {run_dir}")
 
 
