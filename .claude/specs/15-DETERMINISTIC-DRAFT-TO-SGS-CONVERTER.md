@@ -4,7 +4,7 @@ spec_id: 15
 spec_version: 0.2
 project: small-giants-wp
 title: Deterministic Draft-to-SGS Converter + QA Pipeline — Unified Architecture
-status: APPROVED — Phases 1, 2, 3, 3.5, 4, 4.5 SHIPPED on origin/main; Phase 5 modules (5a-5f) SHIPPED 2026-05-13 but Phase 5 acceptance NOT MET (live E2E parity 85% diff vs 1% target); Phase 5 closure = sub-phase 5g orchestrator rewrite
+status: APPROVED - Phases 1-4.5 SHIPPED; Phase 5 modules 5a-5f SHIPPED 2026-05-13; Phase 5g (orchestrator rewrite + CSS-lift) SHIPPED 2026-05-13; Phase 6 Step 0 (entry-script rewire composes Phase 5 modules + +REGISTER tail writes pattern PHP + sgs-db + uimax rows) SHIPPED 2026-05-13 commit d0d30579; Phase 5 acceptance HARD GATE (<=1% pixel diff at 3 viewports) still pending; Phase 7 pattern fidelity is the next-up plan; live baseline post Phase 6 Step 0: 64.9% / 43.7% / 36.5% diff
 session_date: 2026-05-12
 authors: Bean + Claude (Opus 4.7)
 absorbs: ['.claude/scratch/absorbed/12-DRAFT-TO-SGS-PIPELINE.md', '.claude/scratch/absorbed/13-DRAFT-NAMING-CONVENTION.md', '.claude/scratch/absorbed/14-CLONING-PIPELINE-CATALOGUE.md']
@@ -691,6 +691,12 @@ Six phases. Each phase ships an isolated commit + verifiable improvement. Earlie
 **Root cause from first live E2E (decisions.md 2026-05-13):** The legacy production orchestrator at `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` does NOT compose with the new Phase 5 modules. Three architectural gaps: (1) confidence-matrix detects `registered=False` but only dampens confidence to 0.75; orchestrator emits unregistered block names that WP silently drops; (2) Hard Rule 3 violated — orchestrator emits bare self-closing block refs instead of pattern compositions wrapped in `wp:sgs/container` with InnerBlocks holding atomic blocks; (3) 5a.2 bucket-c-classifier + 5b.8 atomic-block-scaffold autonomy chain never fires in production. On Mama's homepage: 6 of 9 recogniser-targeted blocks don't exist → 6 sections become vapour on the rendered page.
 
 **Phase 5 closure path: sub-phase 5g (orchestrator emission-stage rewrite, ~2 hr).** Steps 5g.1–5g.5 defined in the dedicated plan file. The work composes already-built Phase 5 modules into the production emission path.
+
+**UPDATE 2026-05-13: Phase 6 Step 0 SHIPPED (commit `d0d30579`).** The entry-script rewire that composes Phase 5 modules via `orchestrator_main.run()` + adds the `+REGISTER` tail (write pattern PHP files + sgs-db rows + uimax rows with Rosetta Stone payload) is now on `origin/main`. The pipeline runs end-to-end per spec: stages execute, screenshots captured via Playwright, pixel diff measured, autonomy gate decides, patterns auto-register on PASS. Live E2E proof: run `mamas-munches-homepage-2026-05-13-105351` (deliverable at `pipeline-state/sgs-clone/<run_id>/deliverable.md`) shows real per-viewport diff numbers, autonomy halt at 1% threshold, +REGISTER correctly skipped on halted runs. 22 pytest tests green (`plugins/sgs-blocks/scripts/orchestrator/test_register_patterns.py`). 3-rater QC panel (Sonnet + Haiku + Gemini Flash) returned ship after both Sonnet hard blockers (em-dashes + uimax idempotency claim) were addressed inline.
+
+**Phase 5 acceptance still pending.** Pixel-parity gate (≤1% at 3 viewports) is NOT met. Live baseline post Phase 6 Step 0: 64.9% / 43.7% / 36.5%. The remaining symptoms are now ISOLATED and named: composer doesn't preserve BEM child hierarchy, WP global header chrome adds ~400px mismatch, sgs/hero composite extract may miss mockup-equivalent slots. Each is a discrete fix.
+
+**Phase 7 — Pattern Fidelity is next-up.** Full plan at `.claude/plans/phase-7-pattern-fidelity.md`. 12 executable steps, ~3-4 hr, hard pass criterion ≤1% pixel diff at 3 viewports. Phase 6 (cross-platform output extension) sequenced AFTER Phase 7 closes - irresponsible to extend a foundation that doesn't pass its own parity gate.
 
 ### Phase 6 — Cross-platform output (extension) (~6-8 hr)
 

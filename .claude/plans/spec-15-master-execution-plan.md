@@ -311,6 +311,39 @@ echo "Session start: $(date -Iseconds)" > .claude/scratch/spec-15-session-log.tx
 
 ---
 
+## Phase 7 — Pattern Fidelity (Pixel-Parity Gate Closure) (~3-4 hr) — NEXT-UP
+
+**Status:** APPROVED. Detailed plan at `.claude/plans/phase-7-pattern-fidelity.md`.
+
+**Why phase 7 (and not phase 6 next):** Phase 6 in the original sequence was "cross-platform output extension" (Bootstrap / Tailwind / shadcn generators from sgs-db). That's deferred per spec because it should consume a validated foundation. Phase 5 acceptance hard pass criterion (≤1% pixel diff at 3 viewports) was not met by the modules+integration alone - the composer didn't preserve BEM child hierarchy and the WP global header polluted clone pages. Phase 7 closes that gap. Phase 6 (cross-platform) sits AFTER 7.
+
+**Goal:** Pipeline produces pattern PHP files + WP pages that render at <= 1% pixel diff vs the source mockup at 375 / 768 / 1440 viewports.
+
+**12-step executable plan covers:**
+1. Cold-start baseline verification (drift + pytest + hero golden)
+2. Extend `compose_atomic_pattern()` to preserve BEM child hierarchy via `wp:core/group {"className":"sgs-X__Y"}` wrappers (Sonnet subagent, ~90 min)
+3. QA Gate post-composer
+4. Live E2E delta measurement post-composer-only
+5. Create `theme/sgs-theme/templates/clone-page.html` (Cerebras, ~20 min)
+6. Wire `--deploy-to-sandybrown` + `template: clone-page` REST POST attr
+7. QA Gate - WP chrome stripped from rendered clone
+8. Hero composite shape audit + targeted fixes (only if <=3 quick wins)
+9. Closing live E2E + parity-gate measurement (hard pass: <=1% across 3 viewports)
+10. Multi-rater QC panel (Sonnet + Haiku + Gemini Flash via /dispatching-parallel-agents)
+11. Commit + push + Phase 5 closure
+12. /handoff for Phase 6 (cross-platform output)
+
+**Key Judgement Calls pre-decided:**
+- wp:core/group as the BEM-wrapper block (not wp:columns or new sgs/bem-wrapper)
+- Fully bare clone-page.html template (no chrome at all)
+- Hero fix cap: up to 3 inline gaps; beyond that park
+
+**Aggregate cost estimate:** ~$0.27 (Sonnet composer rewrite + 3-rater QC panel; rest inline or free-tier).
+
+**Phase exit gate (hard):** <=1% pixel diff at 375 / 768 / 1440 - per Bean's 2026-05-13 directive, no partial closure.
+
+---
+
 ## Phase 5 — Clone pipeline E2E (~8 hr — absorbs Spec 14 P5–P10) — MODULES SHIPPED 2026-05-13; ACCEPTANCE NOT MET
 
 **Status:** Sub-phases 5a-5f modules shipped on origin/main across 8 commits. First live E2E on Mama's homepage 2026-05-13 PROVED the pipeline runs but FAILED the load-bearing visual-parity gate (85% pixel diff at 3 viewports vs 1% target). Three architectural gaps surfaced: (1) confidence-matrix hallucinates block names without hard existence gate, (2) orchestrator violates Hard Rule 3 "patterns over single blocks", (3) 5a.2 bucket-c-classifier + 5b.8 atomic-block-scaffold autonomy chain never fires in legacy orchestrator. Phase 5 closure path = sub-phase 5g (orchestrator emission-stage rewrite, ~2 hr) defined in `phase-5-clone-pipeline-e2e.md`.
