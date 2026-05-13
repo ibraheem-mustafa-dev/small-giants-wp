@@ -3,7 +3,7 @@ doc_type: visual-reference
 project: small-giants-wp
 purpose: One-page visual explanation of the SGS Cloning Pipeline. Reference in future conversations to avoid re-explaining the model.
 session_date: 2026-05-11
-sibling_doc: .claude/specs/14-CLONING-PIPELINE-CATALOGUE.md
+sibling_doc: .claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md (former Spec 14 absorbed 2026-05-12)
 ---
 
 # SGS Cloning Pipeline — At a Glance
@@ -225,6 +225,6 @@ THE CATALOGUE (data layer)
 
 ## See also
 
-- Full spec: [.claude/specs/14-CLONING-PIPELINE-CATALOGUE.md](specs/14-CLONING-PIPELINE-CATALOGUE.md)
-- Canonical naming convention: [.claude/specs/13-DRAFT-NAMING-CONVENTION.md](specs/13-DRAFT-NAMING-CONVENTION.md)
-- 9-stage pipeline detail: [.claude/specs/12-DRAFT-TO-SGS-PIPELINE.md](specs/12-DRAFT-TO-SGS-PIPELINE.md)
+- Full spec: [.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md (former Spec 14 absorbed 2026-05-12)](specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md)
+- Canonical naming convention: [.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md (§8.1; former Spec 13 absorbed 2026-05-12)](specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md)
+- 9-stage pipeline detail: [.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md (former Spec 12 absorbed 2026-05-12)](specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md)

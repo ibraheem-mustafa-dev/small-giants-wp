@@ -228,7 +228,7 @@ Any tool that feeds uimax — `/sgs-clone` plus its sibling commands `/uimax-scr
 
 Every Bean-controlled draft (mockup, sketch, hand-coded HTML produced in-house) MUST use `.sgs-<block>__<element>--<modifier>`. Block matches an SGS block slug, element matches a slot, modifier matches an attribute value. The `/sgs-clone` Stage 0 pre-flight gate hard-rejects non-conforming drafts on production runs; `--draft-mode` downgrades to a soft lint warning; `--legacy` bypasses the gate for pre-rule mockups. Live scrapes (sites Bean does NOT control) use lingua-franca-conversion at recognition time: `/uimax-*` skills convert source-convention class names to SGS-BEM as primary at write time, preserving original convention as a sibling row in `equivalent_implementations`.
 
-**Canonical reference:** `.claude/specs/13-DRAFT-NAMING-CONVENTION.md` (locked 2026-05-10). Captured as blub.db row 236, pattern_key `bean-drafts-use-sgs-prefixed-bem-naming`. Convention rollout plan: `.claude/plan.md` + `.claude/plans/phase-1..8.md`.
+**Canonical reference:** `.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md (§8.1; former Spec 13 absorbed 2026-05-12)` (locked 2026-05-10). Captured as blub.db row 236, pattern_key `bean-drafts-use-sgs-prefixed-bem-naming`. Convention rollout plan: `.claude/plan.md` + `.claude/plans/phase-1..8.md`.
 
 ### Saved-defaults model (canonical)
 

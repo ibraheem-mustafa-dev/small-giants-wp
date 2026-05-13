@@ -15,7 +15,7 @@
 
 SGS is a standalone WordPress block theme and Gutenberg blocks plugin built by Small Giants Studio. It competes directly with Kadence, Spectra, and GenerateBlocks — every block must be fully configurable by non-technical clients through the block editor alone. The framework is client-agnostic; Indus Foods is the first client and acts as the proving ground, but every architectural decision must hold for any business type.
 
-**Draft naming convention (canonical):** All Bean-controlled drafts (mockups, sketches, hand-coded HTML produced in-house) MUST use SGS-prefixed BEM (`.sgs-<block>__<element>--<modifier>`). Canonical reference: **`.claude/specs/13-DRAFT-NAMING-CONVENTION.md`** (locked 2026-05-10). Live scrapes use lingua-franca-conversion at recognition time. The 9-stage `/sgs-clone` pipeline collapses from probabilistic to deterministic for Bean-authored drafts under this convention.
+**Draft naming convention (canonical):** All Bean-controlled drafts (mockups, sketches, hand-coded HTML produced in-house) MUST use SGS-prefixed BEM (`.sgs-<block>__<element>--<modifier>`). Canonical reference: **`.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md (§8.1; former Spec 13 absorbed 2026-05-12)`** (locked 2026-05-10). Live scrapes use lingua-franca-conversion at recognition time. The 9-stage `/sgs-clone` pipeline collapses from probabilistic to deterministic for Bean-authored drafts under this convention.
 
 ## Stack
 
@@ -154,7 +154,7 @@ small-giants-wp/
 
     **Skill surface (shipped 2026-05-09):** `/sgs-clone` (orchestrator) + 5 siblings (`/uimax-scrape`, `/uimax-sgs-scrape-pattern`, `/uimax-mood-board`, `/uimax-scrape-animation`, `/uimax-classify-naming`) at `~/.claude/skills/`. All 6 graded >=B (skillscores 87-98%). Each carries rubric file at `<skill-dir>/references/end-goal-rubric.md` with `bean_signoff: confirmed_via_m7_brief_2026-05-08`. The deprecated `/animation-harvest` skill stays in repo as reference; replacement `/uimax-scrape-animation` enforces the SGS-block-attribute mapping the deprecated skill silently dropped.
 
-    Spec at `.claude/specs/12-DRAFT-TO-SGS-PIPELINE.md`. Salvage matrix REVISIONS at `.claude/specs/cloning-skill-salvage-matrix-2026-05-05.md`. Pattern dedup mechanics REVISIONS at `.claude/specs/pattern-dedup-classify-mechanics-2026-05-05.md`.
+    Spec at `.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md (former Spec 12 absorbed 2026-05-12)`. Salvage matrix REVISIONS at `.claude/specs/cloning-skill-salvage-matrix-2026-05-05.md`. Pattern dedup mechanics REVISIONS at `.claude/specs/pattern-dedup-classify-mechanics-2026-05-05.md`.
 
 21. **Universal CSS foundations applied to core-blocks-critical.css (2026-05-03)** — Three rules apply across ALL SGS-themed client sites: `* { box-sizing: border-box; }` (modern web standard, required for layout fidelity to mockups that measure dimensions inclusive of padding/border); `img { max-width: 100%; height: auto; display: block; }` (prevents image overflow inside containers); canonical `@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; ... } }` (replaces 4 redundant per-block prefers-reduced-motion blocks across `core-blocks.css` and `back-to-top.css`). Removed at the same time. Per-site overrides (e.g. mockup-faithful 2px focus-visible with `border-radius: 4px` for Mama's) live in the variation JSON's `styles.css` field, NOT in framework CSS — variation can deliberately diverge from framework default.
 
