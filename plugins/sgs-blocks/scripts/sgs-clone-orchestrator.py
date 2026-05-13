@@ -629,12 +629,22 @@ def stage_9_report(boundary: dict, match: dict, slot_list: dict, extract: dict, 
         errors.append(f"simple_html_review_report exited {proc_review.returncode}: {(proc_review.stderr or '')[:500]}")
 
     # 9d. Coverage roll-up.
+    # Bug fix 2026-05-13: extract['extracted_attributes'] keys are namespaced
+    # `<block-short>.<slot_name>` (e.g. hero.headline) but slot_list slots
+    # are bare names (e.g. headline). Match by `<short>.<slot>` lookup.
     extracted_attrs = (extract or {}).get("extracted_attributes") or {}
     slot_lists = (slot_list or {}).get("slot_lists") or {}
+    matches = (match or {}).get("matches") or []
+    block_by_bid = {m.get("boundary_id"): m.get("block_name", "") for m in matches}
     coverage_by_boundary: dict[str, dict] = {}
     for boundary_id, scaffold in slot_lists.items():
         slots = scaffold.get("slots", [])
-        open_slots = [s["slot_name"] for s in slots if s["slot_name"] not in extracted_attrs]
+        block_name = block_by_bid.get(boundary_id, "")
+        block_short = block_name.rsplit("/", 1)[-1] if block_name else ""
+        prefix = f"{block_short}." if block_short else ""
+        def _is_extracted(name: str) -> bool:
+            return (name in extracted_attrs) or (f"{prefix}{name}" in extracted_attrs)
+        open_slots = [s["slot_name"] for s in slots if not _is_extracted(s["slot_name"])]
         attrs_total = len(slots)
         attrs_extracted = attrs_total - len(open_slots) if attrs_total else 0
         pct = round((attrs_extracted / attrs_total * 100), 1) if attrs_total else 0.0
