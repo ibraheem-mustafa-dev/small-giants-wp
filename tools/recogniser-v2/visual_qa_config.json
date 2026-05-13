@@ -1,0 +1,14 @@
+{
+  "$comment": "Spec 15 Phase 5e.0 thresholds. pass_threshold = max acceptable diff for auto-pass; surface_threshold = diff above which a region gets thumbnailed for operator review even when still under pass.",
+  "pass_threshold": 0.01,
+  "surface_threshold": 0.005,
+  "viewports": [375, 768, 1440],
+  "scope": "full-page",
+  "diff_metric": "perceptual",
+  "screenshot_format": "png",
+  "bundle_filename": "visual-qa-bundle.zip",
+  "max_pixel_delta": null,
+  "fail_on_console_error": true,
+  "fail_on_failed_preflight": true,
+  "spec_reference": "Spec 15 §7 stage 8 visual-parity gate"
+}
