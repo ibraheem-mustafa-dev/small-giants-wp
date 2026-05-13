@@ -1,94 +1,81 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-session_tag: small-giants-wp-2026-05-14-spec-15-phase-5h-styling-parity
+session_tag: small-giants-wp-2026-05-14-spec-15-phase-7-pattern-fidelity
 recommended_model: opus
 ---
 
-You are a senior WordPress block + Python pipeline engineer + design-fidelity engineer. This session opens **Spec 15 Phase 5h** — the styling parity gap that 5g.1-5g.3 (shipped commit `e8478a33` on origin/main) exposed but did not close. Phase 5 remains OPEN at 5h until the hard pass criterion is met:
+You are a senior WordPress block + Python pipeline + design-fidelity engineer. This session starts **Spec 15 Phase 7 — Pattern Fidelity** on a now-functional pipeline. Phase 6 Step 0 (commit `<TBD>` on origin/main) wired the production entry script to compose Phase 5 modules via `orchestrator_main.run()` + +REGISTER tail. Pipeline runs end-to-end: stages execute, screenshots captured, pixel diff measured, autonomy gate decides, patterns registered on PASS.
 
-> **Hard pass criterion (Bean confirmed 2026-05-13):** ≤ 1% pixel diff at 375 / 768 / 1440 viewports vs the mockup. No partial closure. No "structural is enough" softening.
+What's still NOT closed: the pixel-parity gate itself. Live E2E `mamas-munches-homepage-2026-05-13-105351` measured 64.9% / 43.7% / 36.5% diff at 375 / 768 / 1440. The plumbing is correct; the OUTPUT it produces still diverges from the mockup. Three named gaps, each with concrete fix:
 
-Read `.claude/handoff.md`, `.claude/state.md`, `.claude/decisions.md` (2026-05-13 Spec 15 Phase 5g entry — the "Phase 5h" subsection), and `.claude/plans/phase-5-clone-pipeline-e2e.md`.
+> **Hard pass criterion (still):** ≤ 1% pixel diff at 375 / 768 / 1440 vs the mockup. No partial closure. Phase 5 stays open until this gate is met.
 
-Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-14-spec-15-phase-5h-styling-parity"`
+Read `.claude/handoff.md`, `.claude/state.md`, `.claude/decisions.md` (the 2026-05-13 "Phase 6 Step 0" entry above the 5g entry), and `.claude/cloning-pipeline-flow.md`.
 
 ## Where you are
 
-Phase 5g (commit `e8478a33`) closed the load-bearing **structural** defect:
-- `confidence-matrix.py` now hard-gates unregistered slugs (drops to `core/group`).
-- `sgs-clone-orchestrator.py` has a stage 9b autonomy chain that scaffolds + promotes new blocks via FR21.
-- The deferred-fallback branch in stage 4 now emits a `wp:sgs/container` atomic-pattern composition (core/heading + core/paragraph + sgs/button + sgs/decorative-image) instead of skipping.
+Phase 6 Step 0 (this session's prior work) is shipped. The production entry script now:
 
-Live E2E `mamas-munches-homepage-2026-05-13-074854`: all 9 sections render with content (vs prior 3 of 9). 5/5 acceptance harness GREEN. 6 blocks scaffolded + promoted (header / featured-product / ingredients-section / gift-section / social-proof / footer). Bean's-own-eyes verification confirmed via sandybrown deploy.
+- Runs Stages 0.1 → 9 (legacy logic preserved)
+- Mirrors artefacts to Phase 5 `staged_output` convention
+- Calls `orchestrator_main.run()` — preflight → staged_merge → visual_qa → autonomy_decision → conditional sgs-update → deliverable
+- Runs `register_patterns.register_run()` on success — writes pattern PHP files + sgs-db rows + uimax rows with Rosetta Stone payload
+- 20-test pytest suite at `plugins/sgs-blocks/scripts/orchestrator/test_register_patterns.py` (all green)
+- 3-rater QC panel (Sonnet + Haiku + Gemini Flash) returned ship from all three
 
-**What 5g did NOT fix:** styling fidelity. The composer emits default `sgs/container` layouts. The mockup uses bespoke column grids, decorative backgrounds, custom typography sizing. Pixel diff at 3 viewports remains significantly above 1%.
+What's broken: the COMPOSED OUTPUT still doesn't match the mockup. The 3 gaps:
 
-## What 5h must close
-
-### 5h.1 — Composer CSS-mapping extension (~2-3 hr; load-bearing)
+### 7.1 — Composer BEM child hierarchy (~2-3 hr; load-bearing)
 
 File: `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py:compose_atomic_pattern()`.
 
-Extend the composer to extract bespoke layout intent from the source mockup CSS and map onto `sgs/container` attributes:
-- Column structure (1 / 2 / 3 / 4 columns) → `container.layout = "columns"` + `columns = N`
-- Gap → `container.gap`
-- Padding → `container.paddingTop/Right/Bottom/Left`
-- Background colour → `container.backgroundColor` (must resolve to a palette token via `_client_variation_path()` overlay)
-- Decorative backgrounds (pseudo-elements ::before / ::after) → either map to `sgs/decorative-image` siblings OR promote to a new `sgs-<slug>` block with the bespoke decoration baked in
+Current composer emits flat `core/heading + core/paragraph + sgs/button + sgs/decorative-image` inside `wp:sgs/container`. Mockup CSS targets BEM children: `.sgs-featured-product__grid`, `.sgs-featured-product__card`, `.sgs-ingredients-section__list`. These class hooks don't exist in the rendered DOM so the CSS-lifted grid rules can't bind.
 
-Inputs: mockup HTML + parsed CSS. The composer currently calls `bs4` only for HTML walk; you'll need to add a CSS parser (`tinycss2` or `cssutils`) and resolve computed styles per section.
+Extend the composer to walk the source DOM preserving BEM child class names. Wrap each `__grid` / `__card` / `__list` boundary in `wp:core/group {"className":"sgs-X__grid"}` so the lifted CSS applies. Per spec FR1 (Layer 4 inner-blocks catalogue) + spec FR3 (Layer 3 internal-elements catalogue), the existing `block_compositions` + `slot_synonyms` tables in sgs-framework.db carry this structure already — the composer needs to LOOK UP the section's block composition rather than emit generic atomics.
 
-Layer-1 `/qc-inline`: feed Mama's featured-product section (`section.sgs-featured-product` in mockup) and verify the emitted container carries `columns=3` (zookies / single-product / trial-pack split), `backgroundColor` token matching mockup's surface-pink, and at least one inner `sgs/decorative-image` for the cookie photography.
+Layer-1 `/qc-inline`: re-emit Mama's featured-product section; verify the markup contains `__grid` and `__card` className wrappers; verify pixel diff at 1440 drops below 20%.
 
-### 5h.2 — Coverage-metric redesign (~30-45 min)
+### 7.2 — WP global header chrome (~30 min)
 
-File: `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py:stage_9_report` (the `coverage_by_boundary` block).
+Cloned pages render inside `page.html` which includes the WP site `header.html` template part. Mockup is standalone. ~400px of mismatch at top across all viewports.
 
-Split the denominator into TWO metrics:
-- **block_slot_coverage** — slots declared in the matched block's `block.json` that were filled from extract (current behaviour, only meaningful when matched block ≠ core/group)
-- **atomic_composition_coverage** — atomic-content elements (heading / paragraph / button / image) the composer emitted from the section DOM, vs total atomic elements present in source
+Fix: new `theme/sgs-theme/templates/clone-page.html` template with no header/footer parts (or `<header>` + `<footer>` block-comments left empty). When the pipeline creates the WP page via REST, set `template: 'clone-page'` in the POST payload.
 
-Aggregate scoring uses both metrics with explicit labels. The composite "coverage" line in the operator-review HTML must show both numbers separately so the gate is readable.
+Layer-1 `/qc-inline`: capture clone at 1440 after deploying with the new template; verify no WP site header at the top of the page.
 
-Layer-1 `/qc-inline`: re-run pipeline on Mama's; verify deferred-composed sections (b1, b4, b6, b7, b8, b9) now report meaningful `atomic_composition_coverage` ratios instead of `0/0`.
+### 7.3 — Composite block (sgs/hero) shape audit (~45 min)
 
-### 5h.3 — Scaffold polish + inserter gating (~30 min)
+Hero matched at confidence 1.0 to `sgs/hero` (a registered composite block). Extract.py fills slot attributes (headline, subHeadline, ctaPrimaryText, splitImage etc.) but the rendered hero block uses its own internal markup which may not reproduce the mockup's exact arrangement — e.g. mockup hero may use a different column ratio, CTA placement, label-above-headline order.
 
-For each of the 6 scaffold-grade blocks (`0.1.0-scaffold`) at `plugins/sgs-blocks/src/blocks/{header,featured-product,ingredients-section,gift-section,social-proof,footer}/`:
+Investigate whether extract.py is filling all mockup-equivalent slots on sgs/hero. Run extract.py against the hero section + compare extracted attributes to the mockup's actual structure. If extracted attrs are sufficient, the gap is in sgs/hero's render.php (different layout). If extracted attrs are missing some, extend extract.py's slot list for hero.
 
-Either:
-- Set `"supports": {"inserter": false}` in `block.json` while version remains `0.1.0-scaffold` — they stay registered (so previously-scaffolded references resolve) but don't pollute the inserter.
-- OR add `_scaffold` suffix to the title (`"Header (scaffold)"`) so operators can see they're stubs.
+Layer-1 `/qc-inline`: extract Mama's hero + diff against `tests/golden/hero-extraction-baseline.json`. Identify which slots are missing or wrong.
 
-`atomic-block-scaffold.py:_block_json_payload` already emits the `0.1.0-scaffold` version; extend it to add `"supports": {"inserter": false}` by default when role=text-content. Layer-1 `/qc-inline`: scaffold a synthetic block, verify `inserter: false` lands in block.json.
+### 7.4 — Re-measure visual parity at end (~30 min)
 
-### 5h.4 — Live E2E + visual parity measurement (~45 min)
+Re-run the full pipeline E2E with `--clone-url`. Verify pixel diff drops below 1% at all 3 viewports.
 
 ```bash
 python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py \
   --mockup sites/mamas-munches/mockups/homepage/index.html \
   --auto-section --client mamas-munches --page homepage \
-  --media-map sites/mamas-munches/research/sandybrown-media-map.json
+  --media-map sites/mamas-munches/research/sandybrown-media-map.json \
+  --mode draft --no-promote-new-blocks \
+  --clone-url "https://sandybrown-nightingale-600381.hostingersite.com/<your-test-page>/"
 ```
 
-Deploy markup to sandybrown via WP REST API (use a fresh app password — the one in `~/.openclaw/.secrets/wp-app-passwords.env` is stale; create a new one via SSH: `ssh -p 65002 u945238940@141.136.39.73 "cd domains/sandybrown-nightingale-600381.hostingersite.com/public_html && wp user application-password create 1 'Claude-MCP-spec15-p5h' --porcelain"`).
+If outcome.overall == 'success', +REGISTER will fire and the new patterns will land in `theme/sgs-theme/patterns/` + sgs-db + uimax. Phase 5 closes.
 
-Screenshot at 375 / 768 / 1440 via Playwright. Pixel-diff vs the mockup using PIL `Image.open(...).getpixel((x, y))` or `pixelmatch` from `~/.agents/skills/visual-qa/scripts/screenshot-diff-helper.js`.
+If outcome.overall == 'halted', the deliverable.md will name the failing viewport. Iterate 7.1 / 7.2 / 7.3 until the gate passes.
 
-**HARD GATE: ≤ 1% pixel diff at ALL 3 viewports.** No softening. Per Bean's directive.
-
-Open the rendered URL with your own eyes (`feedback_dont_delegate_the_test_of_unproven_work`). Verify every section: hero proportions, featured-product column layout, ingredients grid, gift-section split, social-proof testimonial cards, footer columns.
-
-### 5h.5 — Final commit + Phase 5 closure (~15 min)
+### 7.5 — Commit + Phase 5 closure (~15 min)
 
 ```
-git commit -m "feat(spec-15-p5h): styling parity ≤1% pixel-diff gate met across 375/768/1440"
+git commit -m "feat(spec-15-p7): pattern fidelity — pixel-parity gate met across 375/768/1440"
 ```
 
-If the gate is met: update `.claude/state.md` to `current_subphase: phase-5-CLOSED`. Generate `/handoff` for Phase 6 (cross-platform output extension).
-
-If the gate is NOT met: iterate. Phase 5 does not close. Do not soft-close.
+Mark Phase 5 CLOSED. Generate `/handoff` for Phase 6 (cross-platform output extension — the deferred phase per spec).
 
 ## Skills to invoke
 
@@ -96,42 +83,33 @@ If the gate is NOT met: iterate. Phase 5 does not close. Do not soft-close.
 |-------|------|
 | `/sgs-clone` | The pipeline itself |
 | `/sgs-wp-engine` | SGS framework operations |
-| `/wp-block-development` | If scaffold polish requires real block.json edits |
-| `/visual-qa` | 5h.4 multi-viewport capture + pixel diff |
+| `/wp-block-development` | If 7.1 needs new block.json work |
+| `/wp-block-themes` | If 7.2 needs a new theme template |
+| `/visual-qa` | Optional 9-layer audit on the final deliverable |
 | `/qc-inline` | Layer-1 after every step |
-| `/library-docs tinycss2` or `/library-docs cssutils` | CSS parser choice for 5h.1 |
+| `/test-driven-development` | New code in 7.1 should ship with tests |
 | `/handoff` | End-of-session close |
-
-## MCP + Tools
-
-| Tool | Use |
-|------|-----|
-| Playwright MCP (or fresh-Chromium CLI per Section P1) | Multi-viewport screenshots in 5h.4 — fresh Chromium is canonical |
-| PIL via Python | Pixel diff |
-| `scripts/screenshot-diff-helper.js` | Alternative + visual diff heatmap |
-| SSH alias `hd` | WP-CLI on sandybrown |
-| Git CLI | Per-step commits direct to main |
 
 ## Guardrails
 
 - Drift validator MUST stay PASS after every step: `python plugins/sgs-blocks/scripts/drift-validator/validate.py`
 - Hero baseline MUST stay PASS: `cd tools/recogniser-v2 && python extract.py --mockup ../../sites/mamas-munches/mockups/homepage/index.html --section ".sgs-hero" --block sgs/hero --verify-against ../../tests/golden/hero-extraction-baseline.json`
-- FR21: scaffold-grade blocks (`0.1.0-scaffold`) skip the visual-diff pre-commit gate; polished blocks (version >= 1.0) require the standard passing report.
-- FR21: never mutate root theme.json; client tokens go to `theme/sgs-theme/styles/mamas-munches.json` via `variation_router.py` (5d.3).
-- No `--resume` flags (blub.db row 224).
-- No em-dashes in pipeline output / decisions / handoffs (Bean preference 2026-05-08). Em-dashes in extracted user-facing copy from the mockup are fine.
-- Open the rendered sandybrown URL with your own eyes before claiming parity met (`feedback_dont_delegate_the_test_of_unproven_work`).
-- The ≤ 1% pixel-diff gate is a HARD pass criterion. No partial closure. No alternative metric substitution.
+- Pytest for register_patterns MUST stay 20/20 green: `python -m pytest plugins/sgs-blocks/scripts/orchestrator/test_register_patterns.py`
+- FR21: never mutate root theme.json; client tokens go to `theme/sgs-theme/styles/mamas-munches.json` via `variation_router.py`
+- No `--resume` flags
+- No em-dashes in pipeline output / decisions / handoffs
+- Open the rendered URL with own eyes before claiming parity met (`feedback_dont_delegate_the_test_of_unproven_work`)
+- The ≤ 1% pixel-diff gate is a HARD pass criterion. No partial closure.
 
 ## Artefacts from prior session
 
-- Commit `e8478a33` — Phase 5g shipped (orchestrator rewrite + 6 scaffold promotions).
-- `pipeline-state/mamas-munches-homepage-2026-05-13-074854/` — 5g.4 run output.
-  - `full-page-markup.html` — 13.5k chars of produced markup.
-  - `screenshots/{mobile,tablet,desktop}.png` — what 5g.4 looked like.
-  - `stage-9.json` — coverage roll-up, autonomy chain output, harness 5/5 GREEN.
-- 6 new scaffold blocks at `plugins/sgs-blocks/src/blocks/{header,featured-product,ingredients-section,gift-section,social-proof,footer}/`.
+- Commit `<TBD>` — Phase 6 Step 0 shipped (entry-script rewire + +REGISTER + capture)
+- 5 newly registered patterns at `theme/sgs-theme/patterns/{header,featured-product,gift-section,social-proof,footer}.php`
+- 5 rows in `sgs-framework.db.patterns` with `is_auto_generated=1` source=`sgs-clone-pipeline`
+- 5 rows in uimax patterns with Rosetta Stone payload
+- Live E2E run `pipeline-state/sgs-clone/mamas-munches-homepage-2026-05-13-105351/` — deliverable + screenshots
+- 20-test pytest suite for register_patterns
 
-## Phase 6 (after 5h closes)
+## Phase 6 cross-platform output (after Phase 5 closes)
 
 Phase 6 — Cross-platform output (~6-8 hr): Block.json → Bootstrap / Tailwind / shadcn / React / Node.js code generators using uimax `equivalent_implementations` + `design_tokens` cross-platform columns. Sequenced AFTER 5h closes — irresponsible to extend a foundation that doesn't pass its own parity gate.

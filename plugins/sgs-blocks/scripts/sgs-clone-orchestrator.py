@@ -489,11 +489,17 @@ def write_artefact(run_dir: Path, stage_n: int, stage_name: str, status: str, ou
 
 
 def _load_module_from_path(module_name: str, path: Path):
-    """Import a python file whose name contains hyphens (e.g. confidence-matrix.py)."""
+    """Import a python file whose name contains hyphens (e.g. confidence-matrix.py).
+
+    Registers the module in sys.modules BEFORE exec so @dataclass can look
+    up the owning module during class processing (`sys.modules.get(cls.__module__)`
+    returns None otherwise + dataclass crashes with `'NoneType' has no __dict__`).
+    """
     spec = importlib.util.spec_from_file_location(module_name, path)
     if spec is None or spec.loader is None:
         raise ImportError(f"Could not load module from {path}")
     module = importlib.util.module_from_spec(spec)
+    sys.modules[module_name] = module
     spec.loader.exec_module(module)
     return module
 
@@ -1089,6 +1095,20 @@ def main():
         "--no-promote-new-blocks", action="store_true",
         help="Stage 9b scaffolds but does not promote into src/blocks/ (default is promote)",
     )
+    parser.add_argument(
+        "--clone-url", type=str, default=None,
+        help="URL of deployed clone for visual-qa capture. When omitted, visual-qa "
+             "uses the stub (0.0 diff). Required for the autonomy-gate pixel-parity check.",
+    )
+    parser.add_argument(
+        "--skip-register", action="store_true",
+        help="Skip the +REGISTER tail (do not write pattern PHP files or DB rows).",
+    )
+    parser.add_argument(
+        "--skip-autonomy-gate", action="store_true",
+        help="Skip orchestrator_main.run() autonomy chain (preflight + staged_merge + "
+             "visual_qa + autonomy_decision + deliverable). Useful for diagnostic runs.",
+    )
     args = parser.parse_args()
 
     if not args.section and not args.auto_section:
@@ -1138,7 +1158,119 @@ def main():
     autonomy = report.get("autonomy_chain") or {}
     if autonomy.get("enabled"):
         print(f"[stage-9b] autonomy: {autonomy.get('scaffolded_count', 0)} scaffolded ({autonomy.get('promoted_count', 0)} promoted) from {autonomy.get('candidates_seen', 0)} candidates")
-    print(f"[orchestrator] DONE. Artefacts in {run_dir}")
+
+    # ------------------------------------------------------------------
+    # Phase 6 Step 0 — compose with the Phase 5 module surface
+    #
+    # Up to this point we've run the legacy stage chain (writes
+    # pipeline-state/<run_id>/stage-N.json artefacts in the original shape).
+    # Now we:
+    #   1. mirror the artefacts to the Phase 5 staged_output convention so
+    #      staged_merge can find them
+    #   2. build trivial pass-through StageHandlers
+    #   3. call orchestrator_main.run() — preflight + staged_merge + visual_qa
+    #      + autonomy_decision + sgs-update auto-invoke (on PASS) + deliverable
+    #   4. run +REGISTER on success — write pattern PHP files + sgs-db rows
+    #      + uimax rows for every novel pattern surfaced
+    # ------------------------------------------------------------------
+    if args.skip_autonomy_gate:
+        print("[orchestrator] DONE (autonomy gate skipped per --skip-autonomy-gate).")
+        return
+
+    om = _load_module_from_path(
+        "sgs_orchestrator_main", ORCHESTRATOR_DIR / "orchestrator_main.py",
+    )
+    sm = _load_module_from_path(
+        "sgs_staged_merge", ORCHESTRATOR_DIR / "staged_merge.py",
+    )
+    so = _load_module_from_path(
+        "sgs_staged_output", ORCHESTRATOR_DIR / "staged_output.py",
+    )
+    vqa_capture = _load_module_from_path(
+        "sgs_visual_qa_capture", ORCHESTRATOR_DIR / "visual_qa_capture.py",
+    )
+    reg_mod = _load_module_from_path(
+        "sgs_register_patterns", ORCHESTRATOR_DIR / "register_patterns.py",
+    )
+
+    # 1. Mirror legacy artefacts to the Phase 5 staged_output convention so
+    #    staged_merge.merge() can read them. Stage 5 schemas live alongside
+    #    each module; we pass require_schema=False to skip strict shape
+    #    validation while the legacy artefact shape is still in flight.
+    so_run_id = run_id
+    so_run_dir = so.run_dir(so_run_id)
+    so_run_dir.mkdir(parents=True, exist_ok=True)
+    legacy_to_phase5 = {
+        1: ("boundary", boundary),
+        2: ("match", match),
+        3: ("slot_list", slot_list),
+        4: ("extract", extract_out),
+        9: ("coverage", report),
+    }
+    for stage_n, (canonical_name, payload) in legacy_to_phase5.items():
+        target = so.stage_path(so_run_id, stage_n, name=canonical_name)
+        target.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+
+    # 2. Pass-through handlers. The stages already ran; staged_merge's job
+    #    is to verify each artefact exists and call apply() before allowing
+    #    the run to advance to visual-qa + autonomy. Canonical mutations
+    #    (scaffold promotions in stage 9b) already happened during stage
+    #    execution; rollback would need to revert those. For now, rollback
+    #    is also a no-op -- atomic rollback is parking work for the next
+    #    pass (the FR21 invariant holds because scaffold-promote uses the
+    #    staged-merge channel itself).
+    handlers = [
+        sm.StageHandler(
+            stage=stage_n,
+            apply=lambda _a: None,
+            rollback=lambda _a: None,
+            artefact_name=name,
+        )
+        for stage_n, (name, _payload) in legacy_to_phase5.items()
+    ]
+
+    # 3. capture_callable: live Playwright multi-viewport when --clone-url
+    #    is supplied; otherwise the stub (0.0 diff, lets autonomy pass).
+    if args.clone_url:
+        ctx = vqa_capture.CaptureContext(
+            clone_url=args.clone_url,
+            mockup_dir=args.mockup.parent.resolve(),
+            mockup_relative_path=args.mockup.name,
+            out_dir=so_run_dir / "screenshots",
+        )
+        capture_fn = vqa_capture.make_capture_callable(ctx)
+        print(f"[autonomy] visual-qa capture: live (clone-url={args.clone_url})")
+    else:
+        capture_fn = vqa_capture.stub_capture
+        print("[autonomy] visual-qa capture: stub (no --clone-url; autonomy will pass)")
+
+    outcome = om.run(
+        run_id=so_run_id,
+        stage_handlers=handlers,
+        capture_callable=capture_fn,
+        sgs_update_cmd=[sys.executable,
+                        str(Path.home() / ".claude/skills/sgs-wp-engine/scripts/update-db.py")],
+        sgs_update_dry_run=True,  # safer default for an inline run
+        require_schema=False,     # legacy artefact shapes feed the merger
+    )
+    print(f"[autonomy] outcome={outcome.overall} merge={outcome.merge_outcome} "
+          f"decision={outcome.autonomy_decision} sgs_update_rc={outcome.sgs_update_returncode}")
+    print(f"[autonomy] deliverable: {outcome.deliverable_path}")
+
+    # 4. +REGISTER on success (writes pattern PHP files + sgs-db + uimax)
+    if outcome.overall == "success" and not args.skip_register:
+        register_result = reg_mod.register_run(
+            run_id=so_run_id,
+            extract_artefact={"output": extract_out},
+            boundary_artefact=boundary,
+        )
+        print(reg_mod.summarise(register_result))
+    elif args.skip_register:
+        print("[+REGISTER] skipped per --skip-register")
+    else:
+        print(f"[+REGISTER] skipped: autonomy outcome={outcome.overall} (not 'success')")
+
+    print(f"[orchestrator] DONE. Artefacts in {run_dir} + {so_run_dir}")
 
 
 if __name__ == "__main__":

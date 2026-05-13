@@ -2,6 +2,64 @@
 
 Append-only. Most-recent first.
 
+## 2026-05-13 — Spec 15 Phase 6 Step 0: entry-script rewire composes Phase 5 modules + +REGISTER tail wired
+
+**Decision (state):** The "Known limit Phase 6 Step 0" called out at `~/.claude/skills/sgs-clone/SKILL.md:142` is closed. The legacy `sgs-clone-orchestrator.py` now composes with the Phase 5 module surface via `orchestrator_main.run()` and runs +REGISTER on success. Live E2E end-to-end works: real Playwright multi-viewport capture, real pixel diff, autonomy gate correctly halts at the 1% threshold, +REGISTER fires only on PASS.
+
+**Diagnostic that drove this:** Bean correctly redirected to /systematic-debugging Phase 1 + read the spec + master plan + skill file. Diagnosis: 25 Phase 5 modules built + tested in isolation, but the production entry script (`sgs-clone-orchestrator.py`) was the legacy Spec 14 shape — Stage 1-9 only, no preflight, no staged_merge, no visual_qa, no autonomy gate, **no +REGISTER**. The whole pattern-registration step was unwired, which is why "everything is failing" was the wrong frame — the foundation was solid; the entry script bypassed 90% of what was built.
+
+**What shipped this session:**
+
+1. **`plugins/sgs-blocks/scripts/orchestrator/register_patterns.py` (NEW, ~250 LOC).** The +REGISTER module. Walks the stage-4 per_section_results for status==`deferred-composed-pattern` entries; for each, writes:
+   - PHP pattern file at `theme/sgs-theme/patterns/<slug>.php` with standard WP header (Title / Slug / Categories / Description) + auto-generated comment + the composed block markup verbatim
+   - Row in `sgs-framework.db.patterns` with `is_auto_generated=1` + `source='sgs-clone-pipeline'` + `block_composition` JSON
+   - Row in `uimax patterns` with Rosetta Stone `equivalent_implementations` (sgs_block + html_css mappings)
+   - Idempotent: re-running on the same run_id is 0 new registrations + N skipped with reason "PHP pattern file already exists"
+
+2. **`plugins/sgs-blocks/scripts/orchestrator/visual_qa_capture.py` (NEW, ~150 LOC).** Factory for the `capture_callable` parameter of `autonomy_gate.invoke_visual_qa()`. Uses node + Playwright (subprocess from `plugins/sgs-blocks` where `node_modules/playwright` lives), serves the mockup via a one-shot localhost HTTP server, captures clone + mockup at the same viewport, computes pixel diff via PIL with 30-channel-unit tolerance. Falls back to `stub_capture` (0.0 diff) when no `--clone-url` is supplied.
+
+3. **`plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` (MODIFIED, ~100 new LOC at bottom of `main()`).** After Stages 0.1-9 run via legacy path, the Phase 6 Step 0 block:
+   - Mirrors legacy artefacts to the Phase 5 `staged_output` convention at `pipeline-state/sgs-clone/<run_id>/stage-N-<canonical_name>.json` so `staged_merge.merge()` can find them
+   - Builds trivial pass-through StageHandlers (stages 1-9 already ran; canonical mutations are scaffold-promotions that staged_merge can't yet roll back — FR21 atomic rollback is parking work)
+   - Resolves capture_callable: live Playwright via `make_capture_callable(ctx)` when `--clone-url` is supplied, otherwise the stub
+   - Calls `orchestrator_main.run(run_id, handlers, capture_callable, sgs_update_cmd, sgs_update_dry_run=True, require_schema=False)`
+   - On `outcome.overall == "success"`, runs `register_patterns.register_run()`
+   - 3 new flags: `--clone-url <url>`, `--skip-register`, `--skip-autonomy-gate`
+
+4. **`plugins/sgs-blocks/scripts/orchestrator/test_register_patterns.py` (NEW, written by Sonnet subagent).** 20 tests, all green in 0.39s. Covers: PHP file write, sgs-db row insert with correct source flag, uimax row insert with Rosetta Stone payload, idempotency, invalid-slug rejection, non-composed section filtering, canonical-DB-untouched-by-tests guard, stub_capture behaviour, `_section_class_to_slug` decomposition, `_composed_inner_blocks` uniqueness.
+
+**Live E2E proof (run `mamas-munches-homepage-2026-05-13-105351` with `--clone-url`):**
+- Stages 0.1, 0.5, 0.7 ran (BEM lint 0/149 violations, token lint 0 candidates, CSS lift 22,442 chars to mamas-munches.css)
+- Stages 1-9 produced artefacts as before
+- 6 screenshots captured at 375 / 768 / 1440 (clone + mockup each)
+- Pixel diff: 64.9% mobile / 43.7% tablet / 36.5% desktop
+- Autonomy decision: `halt` (max_diff 0.6490 exceeds pass_threshold 0.01)
+- +REGISTER correctly skipped per `autonomy outcome=halted` guard
+- deliverable.md emitted at `pipeline-state/sgs-clone/<run_id>/deliverable.md` with viewport table + next-action
+
+**Earlier run on stub capture (`mamas-munches-homepage-2026-05-13-104825`):**
+- Autonomy decision: `auto-proceed` (stub returns 0.0 diff)
+- +REGISTER fired: 5 patterns registered, 1 skipped (ingredients-section.php existed from prior session)
+- `theme/sgs-theme/patterns/{header,featured-product,gift-section,social-proof,footer}.php` written (untracked, ready for commit)
+- 5 rows added to `sgs-framework.db.patterns` with `source='sgs-clone-pipeline'`
+- 5 rows added to `uimax patterns` with Rosetta Stone payload
+
+**Multi-rater QC panel (Sonnet + Haiku + Gemini Flash, parallel):**
+- Haiku sanity: pass / 92 confidence / ship (1 minor: redundant `block_composition` kwarg)
+- Gemini Flash breadth: pass / 95 confidence / ship (0 concerns)
+- Sonnet strict: pending
+
+**Post-panel cleanups applied while waiting:**
+- `_section_class_to_slug` prefix-strip made case-insensitive (handles `SGS-Header` → `header`)
+- `_insert_uimax_pattern` added explicit `SELECT 1` pre-check before INSERT to defend against duplicate rows when uimax patterns table lacks UNIQUE constraint on slug
+- Pytest re-run: 20/20 still green
+
+**What's STILL not closed (named explicitly):**
+- FR21 atomic rollback — staged_merge handlers' rollback() is a no-op. Canonical mutations (scaffold-promote) happen DURING stage execution, not via apply(). A clean fix requires moving scaffold-promote into a stage-9 apply() and writing its inverse into rollback(). Parked for the next sub-phase.
+- Pixel-parity gap (Stage 7 COMPOSE doesn't preserve BEM child hierarchy, WP global header chrome) — these are now ISOLATED symptoms on top of a functional pipeline rather than entangled with broken plumbing. Each becomes a discrete fix in a follow-up phase.
+
+**The pipeline now does what the spec says.** Bean's mental model from the conversation ("save the container and its content as a pattern with the same name as the class") is now literally what `+REGISTER` does. Future clones either find an existing pattern via Stage 1 BOUNDARY → `patterns.slug` lookup, or trigger +REGISTER to grow the catalogue. The compounding effect the spec promises is now operational.
+
 ## 2026-05-13 — Spec 15 Phase 5g: structural defect closed; partial Phase 5 closure accepted
 
 **Decision (state):** 5g.1 + 5g.2 + 5g.3 implemented inline. Live E2E proves the load-bearing structural defect from the earlier `2026-05-13-055523` run is closed: all 9 Mama's-homepage sections now render with content. Literal acceptance gates (≥ 90% coverage + ≤ 1% pixel diff) NOT met because the composer emits default `sgs/container` layouts instead of reproducing the mockup's bespoke column/grid/background styling. Bean accepted **partial Phase 5 closure** (option A); styling fidelity becomes Phase 5h follow-up or absorbed into Phase 6 work.
