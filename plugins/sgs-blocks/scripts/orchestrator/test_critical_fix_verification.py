@@ -113,6 +113,24 @@ def test_pipeline_state_orphan_detected() -> None:
     print("  PASS  pipeline-state-orphan-detected: leftover file flagged")
 
 
+def test_pipeline_state_canonical_outputs_allowed() -> None:
+    """Phase 5 final QC finding: canonical non-stage outputs (deliverable.md,
+    merge-log.md, gap-review.md) MUST NOT be flagged as orphans."""
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        run_dir = root / "sgs-clone" / "run-5f-canonical"
+        run_dir.mkdir(parents=True)
+        # A valid stage artefact + every canonical non-stage output
+        (run_dir / "stage-1-boundary.json").write_text("{}", encoding="utf-8")
+        (run_dir / "deliverable.md").write_text("# Deliverable", encoding="utf-8")
+        (run_dir / "merge-log.md").write_text("# Merge log", encoding="utf-8")
+        (run_dir / "gap-review.md").write_text("# Gap review", encoding="utf-8")
+        (run_dir / "manifest.json").write_text("{}", encoding="utf-8")
+        result = mod.check_pipeline_state_clean(run_id="run-5f-canonical", root=root)
+        assert result["ok"] is True, f"canonical outputs falsely flagged orphan: {result}"
+    print("  PASS  pipeline-state-canonical-outputs-allowed: 4 canonical filenames whitelisted")
+
+
 def test_pipeline_state_clean_passes_when_no_orphans() -> None:
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
@@ -134,8 +152,9 @@ def main() -> int:
     test_idempotency_with_noop_runner_passes()
     test_idempotency_runner_that_mutates_fails()
     test_pipeline_state_orphan_detected()
+    test_pipeline_state_canonical_outputs_allowed()
     test_pipeline_state_clean_passes_when_no_orphans()
-    print("\nHARNESS-5F.1: PASS (8 contracts: 5-check structure + 3 negative-path detections)")
+    print("\nHARNESS-5F.1: PASS (9 contracts: 5-check structure + 4 negative-path detections + canonical-allow-list)")
     return 0
 
 

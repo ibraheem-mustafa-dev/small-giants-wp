@@ -229,13 +229,34 @@ def check_sgs_update_idempotency(
 
 # ---- Check 5 -- pipeline-state clean post-success ---------------------------
 
+# Canonical non-stage filenames emitted by 5a/5b/5e/5f modules. These are
+# NOT orphans even though they don't match the stage-N-<name>.json pattern.
+# Operator-facing outputs (markdown reports, audit logs, bundles) live
+# alongside the stage artefacts and are part of the canonical run dir
+# contract.
+_CANONICAL_NON_STAGE_FILENAMES: set[str] = {
+    "deliverable.md",           # 5e.7
+    "merge-log.md",             # 5e.3 audit trail
+    "gap-review.md",            # 5a.5
+    "manifest.json",            # 5b.8 scaffold
+    "visual-qa-bundle.zip",     # 5e.4 (config: cfg["bundle_filename"])
+}
+
 
 def check_pipeline_state_clean(
     run_id: str | None = None,
     root: Path = _so.PIPELINE_ROOT,
+    extra_allowed: set[str] | None = None,
 ) -> dict:
     """Confirm no orphan files in pipeline-state/sgs-clone/<run_id>/.
-    When run_id is None, scans every run dir under root."""
+
+    A file counts as "orphan" only when it neither matches the
+    stage-N-<name>.json convention NOR appears in the canonical
+    non-stage allow-list (deliverable.md / merge-log.md / gap-review.md
+    / manifest.json / visual-qa-bundle.zip). Callers can extend the
+    allow-list via `extra_allowed`.
+    """
+    allowed = _CANONICAL_NON_STAGE_FILENAMES | (extra_allowed or set())
     sgs_clone = root / "sgs-clone"
     if not sgs_clone.exists():
         return _check("pipeline_state_clean", True, "no pipeline-state runs yet")
@@ -248,8 +269,9 @@ def check_pipeline_state_clean(
         if not run_dir.exists():
             continue
         runs_scanned += 1
-        # Use staged_output.find_orphans to enumerate
         for entry in _so.find_orphans(run_dir.name, root=root):
+            if entry["name"] in allowed:
+                continue
             orphans_total.append(f"{run_dir.name}/{entry['name']}")
     if orphans_total:
         return _check("pipeline_state_clean", False,
