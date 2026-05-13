@@ -2,16 +2,18 @@
 doc_type: phase-plan
 parent_spec: .claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md
 project: small-giants-wp
-title: Phase 7 — Pattern Fidelity (Pixel-Parity Gate Closure)
+title: Phase 6 — Pattern Fidelity (Pixel-Parity Gate Closure)
 session_date: 2026-05-13
 status: APPROVED — ready to execute next session
 plan_label: PLAN: opus
 recommended_model: opus
 ---
 
-# Phase 7 — Pattern Fidelity
+# Phase 6 — Pattern Fidelity
 
-**USP:** Phase 6 Step 0 made the pipeline produce patterns end-to-end. Phase 7 makes the patterns produced ACTUALLY MATCH THE MOCKUP at the pixel level. Until this gate closes, every clone is a faithful structural copy but a styling mismatch. Closing it means the SGS Framework can clone any draft to a pixel-faithful WP site - the load-bearing capability that justifies the framework's existence vs Kadence / Spectra / GenerateBlocks.
+> **Renumbering note (2026-05-13):** This phase was originally drafted as 'Phase 7'. The cross-platform output extension that was 'Phase 6' is now Phase-extra 1 because it's an after-completion extension rather than core build work. Commits prior to this rename (`d0d30579`, `fc9f567f`) carry the OLD label `p6-step-0` / `p7` for traceability - that's intentional and historical, not stale.
+
+**USP:** Phase 5 made the pipeline produce patterns end-to-end. Phase 6 makes the patterns produced ACTUALLY MATCH THE MOCKUP at the pixel level. Until this gate closes, every clone is a faithful structural copy but a styling mismatch. Closing it means the SGS Framework can clone any draft to a pixel-faithful WP site - the load-bearing capability that justifies the framework's existence vs Kadence / Spectra / GenerateBlocks.
 
 **Plan label:** [PLAN: opus]
 **Docscore:** B+ (estimated; refine after Stage 7 of phase-planner)
@@ -26,14 +28,14 @@ recommended_model: opus
 - [ ] Live E2E pixel diff ≤ 1% at 375 / 768 / 1440 viewports against Mama's homepage mockup
 - [ ] Autonomy gate decides `auto-proceed` on the closing run
 - [ ] +REGISTER fires, writes the final pattern set with PASS-quality artefacts
-- [ ] Phase 5 marked CLOSED in state.md + decisions.md
-- [ ] Commit `feat(spec-15-p7): pattern fidelity — pixel-parity gate met` on origin/main
+- [ ] Phase-extra 1 (cross-platform output) ready to sequence (Phase 5 already closed when this phase started) in state.md + decisions.md
+- [ ] Commit `feat(spec-15-p6): pattern fidelity — pixel-parity gate met` on origin/main
 
 ## Entry context (read before starting)
 
 - `.claude/state.md` — current phase status, blockers
 - `.claude/decisions.md` (2026-05-13 Phase 6 Step 0 + Phase 5g entries — the architectural arc this session sits on top of)
-- `.claude/plans/spec-15-master-execution-plan.md` (Phase 7 enters as the post-Phase-6 follow-up)
+- `.claude/plans/spec-15-master-execution-plan.md` (Phase 6 enters as the post-Phase-6 follow-up)
 - `.claude/cloning-pipeline-flow.md` — the canonical 9-stage diagram
 - `.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md` §6 (Stage 7 COMPOSE — InnerBlocks pattern), §8.1 (SGS-BEM regex), Hard Rule 3 / 4
 - `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py:compose_atomic_pattern` — the target of the BEM-hierarchy rewrite
@@ -211,24 +213,24 @@ Step 7 — Hero composite shape audit
   Action:      Run `python tools/recogniser-v2/extract.py --mockup sites/mamas-munches/mockups/homepage/index.html --section .sgs-hero --block sgs/hero --media-map sites/mamas-munches/research/sandybrown-media-map.json` and inspect the extracted attributes JSON. Cross-reference with what the mockup's hero ACTUALLY contains (CTA arrangement, label-above-headline order, split-column ratios, image proportions). Identify gaps: extracted-but-rendered-differently OR missing-from-extraction.
   Files:       (read-only audit) - if gaps found, MAY modify tools/recogniser-v2/data/role-templates.json OR a single extract strategy file
   Inputs:      sites/mamas-munches/mockups/homepage/index.html, plugins/sgs-blocks/src/blocks/hero/block.json, plugins/sgs-blocks/src/blocks/hero/render.php
-  Outcome:     A short audit doc at `.claude/reports/phase-7-hero-audit.md` listing per-slot: extracted-value, mockup-value, match-status. Action items: (a) extraction-fix, (b) render-fix, (c) accept-as-known-gap.
+  Outcome:     A short audit doc at `.claude/reports/phase-6-hero-audit.md` listing per-slot: extracted-value, mockup-value, match-status. Action items: (a) extraction-fix, (b) render-fix, (c) accept-as-known-gap.
   Exec:        SEQUENTIAL
   Deps:        Step 6 complete
   Marker:      (none)
   Time:        45 min
   Tooling:     bash, Read, Write
-  On-Fail:     If the audit doesn't isolate a clear finding, park as P-S15-P7-HERO and proceed; hero may be a separate phase.
+  On-Fail:     If the audit doesn't isolate a clear finding, park as P-S15-P6-HERO and proceed; hero may be a separate phase.
   Test:
     Happy:       Audit identifies <= 5 gaps with concrete fix proposals
     Edge:        Audit finds zero gaps - hero is already extracting everything; the diff is purely in the block's render.php (separate concern)
-    Fail:        Audit reveals systemic extraction issue across all composite blocks - park; out of scope for Phase 7
+    Fail:        Audit reveals systemic extraction issue across all composite blocks - park; out of scope for Phase 6
     Integration: Run hero --verify-against tests/golden/hero-extraction-baseline.json post-any-fix; must still PASS
 
 Step 8 — Apply hero fixes (only if audit identifies <= 3 quick-fix gaps)
   Model:       inline
   Action:      Apply the fixes from Step 7's audit. If gap is extraction-side, modify role-templates / extract strategy. If gap is render-side, modify hero/render.php with a deprecation match. If audit found > 3 gaps OR systemic issue, SKIP this step and park the work.
   Files:       (varies based on Step 7 audit) - likely tools/recogniser-v2/data/role-templates.json or plugins/sgs-blocks/src/blocks/hero/render.php
-  Inputs:      .claude/reports/phase-7-hero-audit.md
+  Inputs:      .claude/reports/phase-6-hero-audit.md
   Outcome:     Hero rendering closer to mockup shape; hero --verify-against still PASS.
   Exec:        SEQUENTIAL
   Deps:        Step 7 audit
@@ -264,7 +266,7 @@ Step 10 — Multi-rater QC panel
   Model:       sonnet + haiku + gemini-flash (parallel via /dispatching-parallel-agents)
   Action:      Dispatch 3 cold raters in parallel: Sonnet strict critic, Haiku sanity, Gemini Flash breadth. Each reads the new composer + clone-page template + the closing deliverable.md + a sample of 2 newly registered patterns. Gate: >= 2 of 3 pass/ship.
   Files:       (read-only review)
-  Inputs:      Step 9 closing deliverable, .claude/reports/phase-7-hero-audit.md, updated pattern PHP files in theme/sgs-theme/patterns/
+  Inputs:      Step 9 closing deliverable, .claude/reports/phase-6-hero-audit.md, updated pattern PHP files in theme/sgs-theme/patterns/
   Outcome:     Panel verdicts collected; if Sonnet flags real issues, apply fixes inline + re-run panel (per QC discipline).
   Exec:        PARALLEL with Step 11 prep (gathering files for commit)
   Deps:        Step 9 PASS
@@ -276,14 +278,14 @@ Step 10 — Multi-rater QC panel
     Happy:       3 ship verdicts
     Edge:        Sonnet returns fix-then-ship with concrete fixes - apply inline, re-run panel
     Fail:        2+ raters return hold - escalate to Bean; do not commit
-    Integration: Panel output JSON saved to pipeline-state/phase-7-qc-panel-<date>.json
+    Integration: Panel output JSON saved to pipeline-state/phase-6-qc-panel-<date>.json
 
 Step 11 — Commit + push + Phase 5 closure
   Model:       inline
-  Action:      Stage all phase 7 changes (composer, theme template, hero audit + fixes, deliverable proof, decisions / state updates). Single commit feat(spec-15-p7): pattern fidelity - pixel-parity gate met. Push to origin/main. Update .claude/state.md current_subphase to phase-5-CLOSED + phase 7 SHIPPED.
-  Files:       Phase 7 changes + .claude/state.md + .claude/decisions.md
+  Action:      Stage all phase 6 changes (composer, theme template, hero audit + fixes, deliverable proof, decisions / state updates). Single commit feat(spec-15-p6): pattern fidelity - pixel-parity gate met. Push to origin/main. Update .claude/state.md current_subphase to phase-6-SHIPPED (Phase 5 already CLOSED when this phase started) + phase 6 SHIPPED.
+  Files:       Phase 6 changes + .claude/state.md + .claude/decisions.md
   Inputs:      Step 10 ship verdict
-  Outcome:     Commit on origin/main. Phase 5 officially closed.
+  Outcome:     Commit on origin/main. Phase 6 SHIPPED. Phase-extra 1 (cross-platform output) is the next-up extension.
   Exec:        SEQUENTIAL
   Deps:        Step 10 ship
   Marker:      HANDOFF
@@ -298,10 +300,10 @@ Step 11 — Commit + push + Phase 5 closure
 
 Step 12 — /handoff for next phase
   Model:       inline
-  Action:      Generate session handoff via /handoff. Update .claude/handoff.md + .claude/next-session-prompt.md to point at Phase 6 (cross-platform output) - the deferred spec-15 phase.
+  Action:      Generate session handoff via /handoff. Update .claude/handoff.md + .claude/next-session-prompt.md to point at Phase-extra 1 (cross-platform output) - the deferred spec-15 extension.
   Files:       .claude/handoff.md, .claude/next-session-prompt.md
   Inputs:      Step 11 commit hash
-  Outcome:     Handoff doc ready; next session can cold-start on Phase 6.
+  Outcome:     Handoff doc ready; next session can cold-start on Phase-extra 1.
   Exec:        SEQUENTIAL
   Deps:        Step 11 complete
   Marker:      HANDOFF
@@ -309,7 +311,7 @@ Step 12 — /handoff for next phase
   Tooling:     /handoff skill
   On-Fail:     /handoff failures are rare; surface inline if so.
   Test:
-    Happy:       handoff.md + next-session-prompt.md both updated; session_tag set for Phase 6
+    Happy:       handoff.md + next-session-prompt.md both updated; session_tag set for Phase-extra 1
     Edge:        next-session-prompt.md already exists from prior session - regenerate with phase 6 scope
     Fail:        /handoff skill crashes - generate the doc inline as a fallback
     Integration: Open the new next-session-prompt.md and verify it reads cleanly cold
@@ -417,7 +419,7 @@ NO em-dashes. NO emojis. UK English.
 - **Decision:** Should the clone-page.html template have ANY chrome (e.g. a minimal site logo) or be fully bare?
   - **Options:** [A] Fully bare - just `<main>` + post_content / [B] Minimal - just the SGS site logo top-left, nothing else / [C] Adaptive - operator chooses per-deploy via a post meta flag
   - **Recommendation:** [A] Fully bare
-  - **Why:** Phase 7's gate is pixel parity vs mockup. Mockup HAS its own header section (registered as the sgs/header pattern). Any chrome in the template duplicates content + inflates diff. Real client pages can switch to the standard page.html template post-launch.
+  - **Why:** Phase 6's gate is pixel parity vs mockup. Mockup HAS its own header section (registered as the sgs/header pattern). Any chrome in the template duplicates content + inflates diff. Real client pages can switch to the standard page.html template post-launch.
   - **Cost of wrong choice:** [B] adds duplicate logo (mockup has its own); [C] adds operator complexity for a 1-time configuration
   - **Who decides:** architect (already chose [A])
 
@@ -425,7 +427,7 @@ NO em-dashes. NO emojis. UK English.
   - **Options:** [A] Fix up to 3 gaps inline, park anything beyond / [B] Fix every gap regardless of count / [C] Park hero entirely; accept current diff
   - **Recommendation:** [A] Fix up to 3 inline
   - **Why:** Hero is composite-single-block (Hard Rule 6 exception); its render.php IS the pattern. Three quick fixes can usually be done in 45 min without destabilising the baseline. Beyond 3, the audit revealed systemic issue better handled separately.
-  - **Cost of wrong choice:** [B] could blow out Phase 7 time budget; [C] leaves hero as the residual symptom
+  - **Cost of wrong choice:** [B] could blow out Phase 6 time budget; [C] leaves hero as the residual symptom
   - **Who decides:** architect (already chose [A], with hard-stop fallback to park if baseline regresses)
 
 ### Pre-emptive decisions (planner-surfaced; no parallel hidden-decisions dispatch in this short plan)
@@ -470,7 +472,7 @@ Mostly inline work + 2 subagent dispatches. Conservative bound: <$0.50 even with
 
 ## Phase entry preconditions
 
-- Phase 6 Step 0 SHIPPED at commit d0d30579 on origin/main ✅
+- Phase 5 CLOSED (modules 5a-5f + 5g rewrite + 5h.1 CSS-lift + integration plumbing shipped 2026-05-13). Pipeline runs end-to-end. ✅
 - 22/22 register_patterns pytest green ✅
 - Drift validator 0 violations ✅
 - Hero --verify-against baseline PASS (last verified post-Phase-5g) ✅
@@ -482,5 +484,5 @@ Mostly inline work + 2 subagent dispatches. Conservative bound: <$0.50 even with
 - ≤1% pixel diff at 375 / 768 / 1440 in a live E2E run ✅ (required)
 - Autonomy decision = auto-proceed on the closing run ✅ (consequential)
 - +REGISTER fires + updates the patterns with PASS-quality artefacts ✅ (consequential)
-- Phase 5 marked CLOSED ✅ (required)
+- Phase-extra 1 (cross-platform output) ready to sequence (Phase 5 already closed when this phase started) ✅ (required)
 - Phase 6 (cross-platform output) next-session-prompt ready ✅ (required)

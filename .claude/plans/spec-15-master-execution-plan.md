@@ -10,7 +10,7 @@ recommended_model_session_default: opus (architectural judgement at phase transi
 
 # Spec 15 Master Execution Plan
 
-Synced phase-by-phase build plan for the unified architecture defined in `.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md`. Phase 6 (cross-platform output extension) is deferred per spec — planned at the end of Phase 5.
+Synced phase-by-phase build plan for the unified architecture defined in `.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md`. Phases 1-6 are core build work. Phase-extra 1 (cross-platform output extension) is deferred until Phase 6 closes; it consumes Phase 6's high-quality patterns as input.
 
 ## Global rules
 
@@ -311,11 +311,33 @@ echo "Session start: $(date -Iseconds)" > .claude/scratch/spec-15-session-log.tx
 
 ---
 
-## Phase 7 — Pattern Fidelity (Pixel-Parity Gate Closure) (~3-4 hr) — NEXT-UP
+## Phase numbering refresh (2026-05-13)
 
-**Status:** APPROVED. Detailed plan at `.claude/plans/phase-7-pattern-fidelity.md`.
+Phase 5 originally owned the ≤1% pixel-parity gate as its acceptance criterion. After Phase 5g + 5h.1 + the integration plumbing shipped (commits up to `fc9f567f`), the pipeline runs end-to-end - Phase 5's scope (modules + integration + autonomy chain + +REGISTER tail) is complete. The parity gate is now Phase 6's own success criterion, not a Phase 5 remainder.
 
-**Why phase 7 (and not phase 6 next):** Phase 6 in the original sequence was "cross-platform output extension" (Bootstrap / Tailwind / shadcn generators from sgs-db). That's deferred per spec because it should consume a validated foundation. Phase 5 acceptance hard pass criterion (≤1% pixel diff at 3 viewports) was not met by the modules+integration alone - the composer didn't preserve BEM child hierarchy and the WP global header polluted clone pages. Phase 7 closes that gap. Phase 6 (cross-platform) sits AFTER 7.
+The original Phase 6 ("cross-platform output extension" - Bootstrap / Tailwind / shadcn / React / Node.js generators from sgs-db + uimax) was an after-completion extension, not core build work. Sitting in the middle of the build sequence was misleading. It's renamed Phase-extra 1.
+
+The taxonomy is now:
+
+| Phase | Scope | Status |
+|---|---|---|
+| 1 | Foundation - vocab tables + behavioural analyser + value matcher | SHIPPED |
+| 2 | /sgs-update unified pipeline | SHIPPED |
+| 3 | Catalogue rewires + extractor canonical-slot reads | SHIPPED |
+| 4 + 4.5 | Convention enforcement + additive token discovery | SHIPPED |
+| 5 | Clone pipeline E2E (modules 5a-5f + 5g + 5h.1 + integration plumbing) | SHIPPED |
+| 6 | Pattern fidelity (≤1% pixel-parity gate) | NEXT-UP |
+| Extra 1 | Cross-platform output extension (Bootstrap / Tailwind / shadcn / React / Node generators) | DEFERRED until Phase 6 closes |
+
+Commit-message labels predating this rename (`p6-step-0` on `d0d30579`, `p7` on `fc9f567f`) are retained verbatim for git-log traceability. Under the new scheme `p6-step-0` was Phase 5 integration plumbing and `p7` was the original Phase 7 plan (now Phase 6).
+
+---
+
+## Phase 6 — Pattern Fidelity (Pixel-Parity Gate Closure) (~3-4 hr) — NEXT-UP
+
+**Status:** APPROVED. Detailed plan at `.claude/plans/phase-6-pattern-fidelity.md`.
+
+**Why this is core build work:** Phase 5 shipped the pipeline plumbing but the rendered output still diverges from the source mockup (live baseline 64.9% / 43.7% / 36.5% diff). Without this gate, every clone is structurally faithful but stylistically wrong. Closing this gate is what makes the SGS Framework competitive with Kadence / Spectra / GenerateBlocks. Phase-extra 1 (cross-platform output) consumes Phase 6's high-quality patterns as input, so it sequences after.
 
 **Goal:** Pipeline produces pattern PHP files + WP pages that render at <= 1% pixel diff vs the source mockup at 375 / 768 / 1440 viewports.
 
@@ -331,7 +353,7 @@ echo "Session start: $(date -Iseconds)" > .claude/scratch/spec-15-session-log.tx
 9. Closing live E2E + parity-gate measurement (hard pass: <=1% across 3 viewports)
 10. Multi-rater QC panel (Sonnet + Haiku + Gemini Flash via /dispatching-parallel-agents)
 11. Commit + push + Phase 5 closure
-12. /handoff for Phase 6 (cross-platform output)
+12. /handoff for Phase-extra 1 (cross-platform output)
 
 **Key Judgement Calls pre-decided:**
 - wp:core/group as the BEM-wrapper block (not wp:columns or new sgs/bem-wrapper)
@@ -344,22 +366,21 @@ echo "Session start: $(date -Iseconds)" > .claude/scratch/spec-15-session-log.tx
 
 ---
 
-## Phase 5 — Clone pipeline E2E (~8 hr — absorbs Spec 14 P5–P10) — MODULES SHIPPED 2026-05-13; ACCEPTANCE NOT MET
+## Phase 5 — Clone pipeline E2E (~8 hr - absorbs Spec 14 P5-P10) - CLOSED 2026-05-13
 
-**Status:** Sub-phases 5a-5f modules shipped on origin/main across 8 commits. First live E2E on Mama's homepage 2026-05-13 PROVED the pipeline runs but FAILED the load-bearing visual-parity gate (85% pixel diff at 3 viewports vs 1% target). Three architectural gaps surfaced: (1) confidence-matrix hallucinates block names without hard existence gate, (2) orchestrator violates Hard Rule 3 "patterns over single blocks", (3) 5a.2 bucket-c-classifier + 5b.8 atomic-block-scaffold autonomy chain never fires in legacy orchestrator. Phase 5 closure path = sub-phase 5g (orchestrator emission-stage rewrite, ~2 hr) defined in `phase-5-clone-pipeline-e2e.md`.
+**Status:** CLOSED 2026-05-13. All sub-phases shipped on `origin/main` across the commit range up to `fc9f567f`:
+- 5a-5f: Phase 5 module surface (recogniser scripts + orchestrator coordination modules + autonomy gate + acceptance harness)
+- 5g: orchestrator emission-stage rewrite (commit `e8478a33`)
+- 5h.1: CSS-lift stage + variation enqueue + scaffold-routing exclusion (commit `3dce6084`)
+- Integration plumbing: entry-script rewire that composes Phase 5 modules via `orchestrator_main.run()` + +REGISTER tail (commit `d0d30579`, originally labelled `p6-step-0` for the pre-rename "Phase 6 Step 0" framing — see Phase numbering refresh above)
 
-**See dedicated plan:** `.claude/plans/phase-5-clone-pipeline-e2e.md` — 6 module sub-phases (5a-5f) ALL SHIPPED + sub-phase 5g (orchestrator rewrite, REMAINING) to close the live acceptance gate.
+**What Phase 5 owns at closure:** the pipeline runs end-to-end. Stages 0.1 -> 9 produce real artefacts, autonomy gate decides correctly on real pixel-diff input, +REGISTER writes pattern PHP files + sgs-db rows + uimax rows on PASS, deliverable.md emitted in canonical shape. Live E2E proof at `pipeline-state/sgs-clone/mamas-munches-homepage-2026-05-13-105351/`.
 
-**Why a separate file:** Phase 5 is the largest phase (~8–10 hr, the actual clone-pipeline E2E delivery) and the absorbed Spec 14 P5–P10 content needed Spec-15-aware rewriting (DB-driven canonical_slot, 1% visual parity, /qc-inline rule baked into every step). Compressing it into table rows here would defeat the autonomy-execution discipline. Phases 1–4 stay inline because they have fewer steps.
+**What Phase 5 explicitly does NOT own:** the ≤1% pixel-parity gate. After the renumbering, that's Phase 6's hard pass criterion. Phase 5's acceptance scope was reframed to "modules + integration + pipeline-runs-E2E", all green.
 
-**Goal:** `/sgs-clone` runs end-to-end on a Bean-controlled draft with ≥ 90% block attribute coverage + ≤ 1% visual parity diff at 3 viewports + 5/5 critical-fix-verification checks green.
+**See dedicated plan:** `.claude/plans/phase-5-clone-pipeline-e2e.md` for the original 5a-5f sub-phase detail (retained for audit trail).
 
-**Entry preconditions** (sub-phase 5a entry — full per-sub-phase preconditions in the dedicated plan):
-- Phases 1–4 shipped on origin/main
-- Session timer running (`.claude/scratch/spec-15-session-start.txt` exists)
-- Mama's mockup ready at `sites/mamas-munches/mockups/homepage/index.html`
-
-**Phase 5 acceptance:** sub-phases 5a–5f shipped on origin/main + E2E run hits all three thresholds + multi-rater /qc on full deliverable returns ≥ 2/3 pass/ship + `deliverable.md` readable by Bean. Then handoff to Phase 6 (cross-platform output extension).
+**Original goal text (retained for traceability):** `/sgs-clone` runs end-to-end on a Bean-controlled draft with ≥ 90% block attribute coverage + ≤ 1% visual parity diff at 3 viewports + 5/5 critical-fix-verification checks green. The pixel-parity portion of this goal moved to Phase 6's success criteria during the 2026-05-13 renumbering.
 
 ## Ready-to-dispatch prompts for Phase 1 (concrete, paste-and-go)
 
@@ -651,7 +672,7 @@ Be critical. Honest assessment. Diversity of opinion welcome.
 | Phase 5 — Clone pipeline E2E | ~8 hr | ~$0.80 (12-15× Sonnet across sub-phases) |
 | **Total Phases 1–5** | **~21 hr** | **~$1.65** |
 
-Phase 6 (cross-platform output) deferred + planned at end of Phase 5.
+Phase-extra 1 (cross-platform output extension) deferred until Phase 6 closes - it consumes Phase 6's high-quality patterns as input. Separate plan file at `.claude/plans/phase-extra-1-cross-platform-output.md` (not yet written; outline pending).
 
 ---
 

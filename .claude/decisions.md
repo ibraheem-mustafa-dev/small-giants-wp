@@ -2,6 +2,31 @@
 
 Append-only. Most-recent first.
 
+## 2026-05-13 - Phase numbering refresh + Phase 5 closed
+
+**Decision:** Renumber Spec 15 phases so the core build sequence is contiguous and after-completion extensions sit outside it. Same-day refresh because the prior numbering had the pixel-parity work stuck as "Phase 7" with the cross-platform extension as "Phase 6" in the middle of the build sequence - confusing readers and self.
+
+**Renumbering (Bean's call):**
+
+| Before | After | Reason |
+|---|---|---|
+| Phase 7 - Pattern Fidelity | Phase 6 - Pattern Fidelity | Core build work; owns the <=1% pixel-parity gate as its hard pass criterion |
+| Phase 6 - Cross-platform output extension | Phase-extra 1 - Cross-platform output extension | After-completion extension; consumes Phase 6's high-quality patterns as input |
+
+**Phase 5 closure (parallel decision):** Phase 5's scope was reframed to "modules + integration + pipeline runs E2E". The <=1% pixel-parity gate moved to Phase 6's ownership as its OWN success criterion, not a Phase 5 remainder. Under the new scheme:
+- Phase 5 = SHIPPED. Modules 5a-5f + 5g rewrite + 5h.1 CSS-lift + integration plumbing (commit `d0d30579`, originally labelled `p6-step-0`) + plan and docs (`fc9f567f`, originally labelled `p7`). All on origin/main.
+- Phase 6 = next-up. Plan at `.claude/plans/phase-6-pattern-fidelity.md` (12 steps).
+- Phase-extra 1 = deferred. Plan not yet written.
+
+**Files updated:**
+- `.claude/plans/phase-7-pattern-fidelity.md` -> renamed via `git mv` to `.claude/plans/phase-6-pattern-fidelity.md`; content rewritten for new numbering
+- `.claude/plans/spec-15-master-execution-plan.md` - new "Phase numbering refresh" section at top; Phase 5 section marked CLOSED; Phase 6 section now describes pattern fidelity (was Phase 7); Phase-extra 1 referenced
+- `.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md` - status frontmatter + Phase 5 body section updated
+- `.claude/state.md` - current_phase = `spec-15-phase-6-pattern-fidelity`
+- `.claude/handoff.md` + `.claude/next-session-prompt.md` - references updated
+
+**Git history note (intentional):** commit `d0d30579` carries the label `p6-step-0` and `fc9f567f` carries `p7`. These predate the renumbering refresh and are retained verbatim for `git log` searchability. Going forward, new commits use the new numbering: `p6` for pattern fidelity work, `pe1` for Phase-extra 1 work.
+
 ## 2026-05-13 — Spec 15 Phase 6 Step 0: entry-script rewire composes Phase 5 modules + +REGISTER tail wired
 
 **Decision (state):** The "Known limit Phase 6 Step 0" called out at `~/.claude/skills/sgs-clone/SKILL.md:142` is closed. The legacy `sgs-clone-orchestrator.py` now composes with the Phase 5 module surface via `orchestrator_main.run()` and runs +REGISTER on success. Live E2E end-to-end works: real Playwright multi-viewport capture, real pixel diff, autonomy gate correctly halts at the 1% threshold, +REGISTER fires only on PASS.

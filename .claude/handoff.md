@@ -19,7 +19,7 @@ recommended_model: opus
 7. **Stub-capture E2E** registered 5 patterns to canonical state: header.php, featured-product.php, gift-section.php, social-proof.php, footer.php + sgs-db rows + uimax rows.
 8. **Pytest suite written by Sonnet subagent (22 tests, 0.40s).** Includes direct uimax-idempotency regression test that exercises `_insert_uimax_pattern` twice on a no-UNIQUE table.
 9. **Multi-rater QC panel** (Sonnet + Haiku + Gemini Flash, parallel). Verdicts: ship / ship / fix-then-ship. Sonnet's two hard blockers (em-dashes + uimax idempotency claim in docstring) addressed inline + regression test added.
-10. **Phase 7 plan written** at `.claude/plans/phase-7-pattern-fidelity.md` (12 steps, ~3-4 hr, opus-shaped). Master execution plan + Spec 15 + state.md updated to reflect Phase 6 Step 0 closure + Phase 7 next.
+10. **Phase 6 plan written (renumbered from Phase 7)** at `.claude/plans/phase-6-pattern-fidelity.md` (12 steps, ~3-4 hr, opus-shaped). Master execution plan + Spec 15 + state.md updated to reflect Phase 5 closure + Phase 6 (Pattern Fidelity) next.
 
 ## Current State
 
@@ -31,14 +31,14 @@ recommended_model: opus
 
 ## Known Issues / Blockers
 
-- Phase 5 acceptance hard gate (<=1% pixel diff at 3 viewports) still pending. Live baseline: 64.9% / 43.7% / 36.5%. Phase 7 closes this.
+- Phase 5 CLOSED 2026-05-13 (modules + integration + pipeline E2E all shipped). The <=1% pixel-parity gate is now Phase 6's hard pass criterion - not a Phase 5 remainder. Live baseline: 64.9% / 43.7% / 36.5%.
 - FR21 atomic rollback: `staged_merge` handlers' rollback() is no-op. Scaffold-promote mutations happen during stage execution, not via apply(). Parked for a follow-up sub-phase.
 - Visual-QA `regions` field always empty in deliverable. Spec wants localised-diff thumbnails above 0.5% surface threshold. Parked.
 
 ## Next Priorities (in order)
 
-1. **Execute Phase 7 plan** at `.claude/plans/phase-7-pattern-fidelity.md`. 12 steps. Hard pass criterion: <=1% pixel diff at 375 / 768 / 1440. Phase 5 does NOT close until this gate passes.
-2. **After Phase 7 closes**, sequence Phase 6 (cross-platform output extension - Bootstrap / Tailwind / shadcn / React generators from sgs-db) per the master plan.
+1. **Execute Phase 6 plan** at `.claude/plans/phase-6-pattern-fidelity.md`. 12 steps. Hard pass criterion: <=1% pixel diff at 375 / 768 / 1440. Phase 5 already closed; Phase 6 owns this gate.
+2. **After Phase 6 closes**, sequence Phase-extra 1 (cross-platform output extension - Bootstrap / Tailwind / shadcn / React generators from sgs-db) per the master plan.
 3. **Parked** items list (FR21 rollback wiring, regions surfacing, numpy pixel-diff upgrade, test fixture schema-drift cleanup). Each is a clean discrete fix.
 
 ## Files Modified
@@ -54,33 +54,33 @@ recommended_model: opus
 | `.claude/decisions.md` | Phase 6 Step 0 entry added at top |
 | `.claude/state.md` | current_phase advanced to spec-15-phase-7-pattern-fidelity |
 | `.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md` | Status frontmatter + Phase 5 section updated |
-| `.claude/plans/spec-15-master-execution-plan.md` | New Phase 7 section inserted |
-| `.claude/plans/phase-7-pattern-fidelity.md` (NEW) | 12-step executable plan with cold prompts + KJC |
-| `.claude/next-session-prompt.md` | Rewritten for Phase 7 |
+| `.claude/plans/spec-15-master-execution-plan.md` | New Phase 6 section + renumbering refresh inserted |
+| `.claude/plans/phase-6-pattern-fidelity.md` (NEW) | 12-step executable plan with cold prompts + KJC |
+| `.claude/next-session-prompt.md` | Rewritten for Phase 6 |
 
 ## Notes for Next Session
 
 - The Phase 5 modules sit at `plugins/sgs-blocks/scripts/orchestrator/` - 25 modules + 16 test files, all green in isolation. The new entry-script composes them; don't bypass.
 - Sonnet's "fix-then-ship" verdict flagged a subtle architectural truth: the uimax patterns table has NO UNIQUE constraint on `slug`, so `ON CONFLICT DO NOTHING` is a no-op. The explicit `SELECT 1` pre-check in `_insert_uimax_pattern` is load-bearing. Don't refactor it out.
 - `_pixel_diff` uses a pure-Python nested loop (~7-15s per 1440px-tall full-page image). numpy is available; a follow-up rewrite would cut visual-qa time ~10x.
-- Phase 7's Step 2 (composer BEM-hierarchy rewrite) is the load-bearing fix. Cold prompt is pre-written in the plan file - paste directly when dispatching the Sonnet subagent.
+- Phase 6's Step 2 (composer BEM-hierarchy rewrite) is the load-bearing fix. Cold prompt is pre-written in the plan file - paste directly when dispatching the Sonnet subagent.
 - Hard rule from Bean (2026-05-13): no partial closure. The <=1% pixel-diff gate at 3 viewports is the only thing that closes Phase 5.
 
 ## Next Session Prompt
 
 ~~~
-You are a senior WordPress block + Python pipeline + design-fidelity engineer. You have a working SGS cloning pipeline whose final gate (<=1% pixel diff at 3 viewports) is the last thing standing between Phase 5 closure and shipping Phase 6 cross-platform generators.
+You are a senior WordPress block + Python pipeline + design-fidelity engineer. You have a working SGS cloning pipeline whose final gate (<=1% pixel diff at 3 viewports) is the last thing standing between Phase 5 closure and shipping Phase-extra 1 cross-platform generators.
 
 Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-13-spec-15-phase-6-step-0-shipped"`
 
 ## Where You Are
 
-Plan: `.claude/plans/phase-7-pattern-fidelity.md`
-Current phase: Spec 15 Phase 7 - Pattern Fidelity (Pixel-Parity Gate Closure)
+Plan: `.claude/plans/phase-6-pattern-fidelity.md`
+Current phase: Spec 15 Phase 6 - Pattern Fidelity (Pixel-Parity Gate Closure)
 Progress: 0/12 steps. Phase 6 Step 0 shipped at commit `d0d30579`. Pipeline composes end-to-end; only the pattern OUTPUT quality (BEM child hierarchy, WP chrome strip, hero shape) needs closing.
 Next task: Step 1 - cold-start baseline verification (drift + register_patterns pytest + hero golden test).
 
-Read `.claude/handoff.md`, `.claude/state.md`, `.claude/decisions.md` (top entry), and `.claude/plans/phase-7-pattern-fidelity.md` end-to-end before starting Step 1.
+Read `.claude/handoff.md`, `.claude/state.md`, `.claude/decisions.md` (top entry), and `.claude/plans/phase-6-pattern-fidelity.md` end-to-end before starting Step 1.
 
 ## Skills to Invoke
 
@@ -108,7 +108,7 @@ Read `.claude/handoff.md`, `.claude/state.md`, `.claude/decisions.md` (top entry
 | Tool | What to use it for |
 |------|-------------------|
 | Playwright MCP | Quick interactive checks at 1440 viewport for QA gate verification (Step 7) |
-| GitHub MCP | If a Phase 7 commit needs a PR (not expected on main) |
+| GitHub MCP | If a Phase 6 commit needs a PR (not expected on main) |
 | SSH alias `hd` | Theme deploy in Step 6 + OPcache reset |
 | `library-docs` | If a sub-step needs current Playwright / Node API docs |
 
@@ -117,12 +117,12 @@ Read `.claude/handoff.md`, `.claude/state.md`, `.claude/decisions.md` (top entry
 | Agent | When |
 |-------|------|
 | `wp-sgs-developer` | Step 8 if hero render.php changes need SGS-specific depth |
-| `research-pipeline` | Only if Phase 7 surfaces a novel decision needing structured research |
+| `research-pipeline` | Only if Phase 6 surfaces a novel decision needing structured research |
 | `test-and-explain` | Optional: explain test outcomes in plain English at QA Gates |
 
 ## Research Approach
 
-Phase 7 has no open research questions - the plan was scoped explicitly. SKIP unless Step 7 (hero shape audit) reveals a systemic issue that needs `/research-check`.
+Phase 6 has no open research questions - the plan was scoped explicitly. SKIP unless Step 7 (hero shape audit) reveals a systemic issue that needs `/research-check`.
 
 ---
 
@@ -130,7 +130,7 @@ Phase 7 has no open research questions - the plan was scoped explicitly. SKIP un
 
 Run Step 1 of the plan. All 4 gates green before mutating anything.
 
-## Task 2: Execute Phase 7 steps 2-9
+## Task 2: Execute Phase 6 steps 2-9
 
 Follow the plan exactly. Cold prompts for Steps 2 and 4 are pre-written and paste-ready. QA gates are sequential and mandatory. Step 9 is the closing gate: <=1% pixel diff at 375 / 768 / 1440 across all three viewports.
 
@@ -146,6 +146,6 @@ Steps 10-12 of the plan. Pre-commit QC discipline applies - re-run panel after f
 - FR21: never mutate root theme.json; client tokens go via `variation_router.py` to `theme/sgs-theme/styles/<client>.json`
 - No `--resume` flags; no stage-resume infrastructure; sessions are atomic
 - No em-dashes in pipeline output / decisions / handoffs (Hard Rule 9)
-- No partial Phase 5 closure: the <=1% gate is the hard pass criterion
+- Phase 5 already closed; Phase 6 owns the <=1% gate - no partial Phase 6 closure either
 - Open the rendered URL with own eyes before claiming parity met
 ~~~
