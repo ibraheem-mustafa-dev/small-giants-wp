@@ -2,6 +2,39 @@
 
 Append-only. Most-recent first.
 
+## 2026-05-13 — Spec 15 Phase 5: live E2E exposes recogniser-hallucinates-blocks bug; Phase 5 NOT closed
+
+**Decision (state):** Phase 5 module surface is shipped on origin/main across 7 commits (a0e1d145 5a / f8398efd 5b / 4061114a 5c / 14ba9782 5d / 8f2e9ff1 5e / c4f0c3e5 + 93b6226f 5f). The acceptance gates from `phase-5-clone-pipeline-e2e.md` "Phase 5 overall acceptance" are NOT all met. Phase 5 is **NOT CLOSED**.
+
+**What the first live E2E proved (run `mamas-munches-homepage-2026-05-13-055523`):**
+- `/sgs-clone` pipeline does run end-to-end on Mama's homepage via the legacy `sgs-clone-orchestrator.py` (which already wires the recogniser scripts).
+- 9 sections recognised, 22,606 chars of "valid" SGS block markup emitted.
+- 5/5 acceptance harness (5f.1) GREEN against post-clone state.
+- One real bug found + fixed: stage 9 coverage roll-up keyed mismatch (commit 70f56c39).
+
+**What it ALSO proved (the load-bearing finding):**
+- **6 of 9 blocks the recogniser routed to don't exist** in `plugins/sgs-blocks/src/blocks/` OR on the live WP install. Targeted but unbuilt: `sgs/header`, `sgs/featured-product`, `sgs/ingredients-section`, `sgs/gift-section`, `sgs/social-proof`, `sgs/footer`.
+- `confidence-matrix.py:95-107` correctly detects `registered=False` and reduces confidence to 0.75, but the orchestrator downstream emits the block-markup comment anyway (`<!-- wp:sgs/featured-product /-->`). WordPress silently drops these because no block is registered.
+- Visual parity: 85% pixel diff at all 3 viewports (mobile/tablet/desktop) vs the 1% gate. The deployed page has hero (broken word-wrap, missing split image) + footer-template visible, with the 6 middle sections completely absent.
+
+**Why:** The recogniser was built to pattern-match section IDs to plausible block slugs. The existence check was added as a confidence dampener (not a hard gate) on the assumption that all probable block slugs would be registered. The mockup uses semantic section names that the framework hasn't materialised yet -- correct of the recogniser to flag them, wrong of the orchestrator to commit-emit them.
+
+**How to apply:** Phase 5 closure now requires ONE of three remediation paths:
+1. **Hard gate in confidence-matrix** -- reject any candidate where `registered=False`; route to bucket-c-classifier (5a.2) for new-block scaffolding (5b.8). Fastest fix; ~30 min.
+2. **Orchestrator fallback emission** -- when `registered=False`, emit `wp:core/html` wrapping the raw section HTML so visible content survives even without a matching SGS block. ~45 min. Lower fidelity but renders.
+3. **Scaffold + build the 6 missing blocks** (header, featured-product, ingredients-section, gift-section, social-proof, footer) via 5b.8 `atomic-block-scaffold.py --promote` + designer polishing. The real solution but ~6+ hr of work.
+
+Path 1 is the disciplined choice: surface the gap to the operator via FR8 functionality_gap_candidates and refuse to emit non-functional markup. Path 3 is the proper completion but exits the Phase 5 envelope.
+
+**Phase 5 acceptance status (per the plan's literal gate):**
+- [x] Sub-phases 5a-5f shipped on origin/main
+- [ ] E2E run on Mama's hits >= 90% coverage + <= 1% visual parity + 5/5 harness green  -- harness green; coverage 38% literal (denom inflated); **visual parity 85% off target**
+- [x] Multi-rater /qc on full Phase 5 deliverable >= 2/3 pass/ship (prior panels)
+- [ ] `deliverable.md` for Mama's run readable by Bean without translation  -- written at `pipeline-state/mamas-munches-homepage-2026-05-13-055523/deliverable.md`; readable, but documents the failure
+- [x] No leftover feature-branch commits
+
+**Test page used:** sandybrown WP post ID 58 "Mama Phase 5 E2E Clone" -- created from the produced markup, screenshotted at 375/768/1440, deleted post-test. Real screenshots preserved at `pipeline-state/mamas-munches-homepage-2026-05-13-055523/screenshots/`.
+
 ## 2026-05-12 — Spec 15 Phase 5 pre-flight: DB target, form-instance scope, hero re-baseline
 
 **Decision (DB target):** Phase 5 reads/writes the canonical `~/.agents/skills/sgs-wp-engine/sgs-framework.db` exclusively. The empty 0-byte stub at `plugins/sgs-blocks/scripts/sgs-framework.db` deleted as orphaned artefact. The drift validator already env-defaults to `~/.claude/skills/sgs-wp-engine/sgs-framework.db` via `SGS_FRAMEWORK_DB`; both `~/.claude/skills/...` and `~/.agents/skills/...` point at the same DB on this machine.
