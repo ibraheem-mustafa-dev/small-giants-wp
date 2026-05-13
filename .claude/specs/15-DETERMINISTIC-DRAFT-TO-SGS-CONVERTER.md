@@ -4,7 +4,7 @@ spec_id: 15
 spec_version: 0.2
 project: small-giants-wp
 title: Deterministic Draft-to-SGS Converter + QA Pipeline — Unified Architecture
-status: APPROVED — Phases 1, 2, 3, 3.5, 4, 4.5 SHIPPED on origin/main; Phase 5 next
+status: APPROVED — Phases 1, 2, 3, 3.5, 4, 4.5 SHIPPED on origin/main; Phase 5 modules (5a-5f) SHIPPED 2026-05-13 but Phase 5 acceptance NOT MET (live E2E parity 85% diff vs 1% target); Phase 5 closure = sub-phase 5g orchestrator rewrite
 session_date: 2026-05-12
 authors: Bean + Claude (Opus 4.7)
 absorbs: ['.claude/scratch/absorbed/12-DRAFT-TO-SGS-PIPELINE.md', '.claude/scratch/absorbed/13-DRAFT-NAMING-CONVENTION.md', '.claude/scratch/absorbed/14-CLONING-PIPELINE-CATALOGUE.md']
@@ -673,17 +673,24 @@ Six phases. Each phase ships an isolated commit + verifiable improvement. Earlie
 - **P-S15-STYLEVAR-GEN** — Auto-generate style variations from uimax font_pairings + colour palettes (framed as Step 1 of every future draft-design cycle per operator 2026-05-12)
 - **P-S15-PAIRINGS-PICKER** — Site Editor SlotFill panel for browsing uimax pairings (post-STYLEVAR-GEN)
 
-### Phase 5 — Clone pipeline E2E (~8-10 hr)
+### Phase 5 — Clone pipeline E2E (~8-10 hr) — MODULES SHIPPED 2026-05-13; ACCEPTANCE NOT MET
 
-**Output:** Absorbs Spec 14 P5–P10 plan files at `.claude/plans/phase-5-*.md` through `.claude/plans/phase-10-*.md`. Adapts entry conditions to consume the now-canonical foundation.
+**Output:** Absorbs Spec 14 P5–P10 plan files. Adapts entry conditions to consume the canonical foundation.
 
-**Success criteria:**
-- `/sgs-clone` runs end-to-end on Mama's mockup with ≥90% block attribute coverage
-- Visual parity ≤ 1% pixel diff vs draft at 3 viewports; regions > 0.5% surfaced as thumbnails in QC report for operator review
-- Coverage report + gap detection write to uimax
-- Operator interface for ambiguous cases (FR15)
-- Acceptance harness (absorbed from Spec 14 P10) passes — defined as: all 5 canonical-mutation-boundary checks green + ≥90% block attribute coverage on Mama's mockup
-- Commit per sub-phase using `feat(spec-15-p5-<sub>): <description>` format (e.g. `feat(spec-15-p5-gap-detection): ...`, `feat(spec-15-p5-staged-scaffolding): ...`), all on origin/main
+**Success criteria (per `phase-5-clone-pipeline-e2e.md` "Phase 5 overall acceptance"):**
+- [x] Sub-phases 5a-5f modules shipped on origin/main (8 commits 2026-05-12/13)
+- [ ] `/sgs-clone` runs end-to-end on Mama's mockup with ≥90% block attribute coverage — **FAILED** first live E2E 2026-05-13: 38% literal; denom inflated by mockup-unused features
+- [ ] Visual parity ≤ 1% pixel diff vs draft at 3 viewports — **FAILED** first live E2E 2026-05-13: 85% diff at all 3 viewports (375/768/1440)
+- [x] Coverage report + gap detection write to uimax (5a.4 + 5a.5)
+- [x] Operator interface for ambiguous cases (FR15) — 5e.7 deliverable.md + 5a.5 gap-review.md (modules built; never fired against unregistered blocks because of root-cause gap below)
+- [x] Acceptance harness (5f.1) passes — 5/5 canonical-mutation-boundary checks GREEN against post-clone state
+- [x] Commit per sub-phase using `feat(spec-15-p5-<sub>): <description>` format, all on origin/main
+
+**Phase 5 status: MODULES SHIPPED, ACCEPTANCE NOT MET.** 3 of 5 gates green.
+
+**Root cause from first live E2E (decisions.md 2026-05-13):** The legacy production orchestrator at `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` does NOT compose with the new Phase 5 modules. Three architectural gaps: (1) confidence-matrix detects `registered=False` but only dampens confidence to 0.75; orchestrator emits unregistered block names that WP silently drops; (2) Hard Rule 3 violated — orchestrator emits bare self-closing block refs instead of pattern compositions wrapped in `wp:sgs/container` with InnerBlocks holding atomic blocks; (3) 5a.2 bucket-c-classifier + 5b.8 atomic-block-scaffold autonomy chain never fires in production. On Mama's homepage: 6 of 9 recogniser-targeted blocks don't exist → 6 sections become vapour on the rendered page.
+
+**Phase 5 closure path: sub-phase 5g (orchestrator emission-stage rewrite, ~2 hr).** Steps 5g.1–5g.5 defined in the dedicated plan file. The work composes already-built Phase 5 modules into the production emission path.
 
 ### Phase 6 — Cross-platform output (extension) (~6-8 hr)
 

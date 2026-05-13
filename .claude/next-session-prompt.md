@@ -1,171 +1,131 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-session_tag: small-giants-wp-2026-05-12-spec-15-phase-4-shipped
+session_tag: small-giants-wp-2026-05-13-phase-5-closure-5g-orchestrator-rewrite
 recommended_model: opus
 ---
 
-You are a senior WordPress block developer + Python pipeline engineer specialising in the SGS Framework, Gutenberg blocks, and Spec 15's deterministic draft-to-SGS converter. This session ships Phase 5 — Clone pipeline E2E (the largest single phase, ~8-10 hr).
+You are a senior WordPress block + Python pipeline engineer. This session closes Spec 15 Phase 5 by completing sub-phase 5g (orchestrator emission-stage rewrite, ~2 hr estimate). Phase 5 modules 5a-5f are SHIPPED on origin/main. The first live E2E on Mama's homepage 2026-05-13 PROVED the pipeline runs but FAILED the load-bearing visual-parity gate (85% pixel diff vs 1% target at 3 viewports).
 
-Read `.claude/handoff.md`, `.claude/state.md`, and `.claude/CLAUDE.md` for full context. The plan is at `.claude/plans/phase-5-clone-pipeline-e2e.md` (6 sub-phases: 5a Gap detection → 5b Staged scaffolding → 5c Lingua-franca → 5d WP integration → 5e Autonomy + visual QA → 5f Acceptance harness).
+Read `.claude/handoff.md`, `.claude/state.md`, `.claude/decisions.md` (2026-05-13 entry), and `.claude/plans/phase-5-clone-pipeline-e2e.md` (the "Phase 5 closure path" + steps 5g.1–5g.5).
 
-Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-12-spec-15-phase-4-shipped"`
+Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-13-phase-5-closure-5g-orchestrator-rewrite"`
 
 ## Where You Are
 
-Plan: `.claude/plans/phase-5-clone-pipeline-e2e.md`
-Current phase: Phase 5 — Clone pipeline E2E (the largest single phase)
-Progress: Phases 1, 2, 3, 3.5, 4, 4.5 shipped — 6 of 7 phases complete (~83%)
-Next task: Phase 5 sub-phase 5a — Gap detection wiring
+Phase 5 module surface SHIPPED on origin/main 9 commits 2026-05-12/13. Live E2E proved 3 architectural gaps in the legacy production orchestrator (`plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py`):
 
-## Execution Strategy — Opus orchestrator + per-branch delegation
+1. **Recogniser hallucinates blocks** — `confidence-matrix.py:95-107` detects `registered=False` but only dampens confidence to 0.75; orchestrator emits unregistered block names that WP drops. 6 of 9 Mama's-homepage sections vapour on the rendered page.
 
-**You are on Opus.** Opus owns: orchestration, multi-rater QC synthesis, architectural decisions, mid-flight pivots, `/qc-inline` between sub-phases. Opus does NOT do leaf code-gen.
+2. **Hard Rule 3 violated** — orchestrator emits bare `<!-- wp:sgs/<block> /-->` + `wp:html` style dumps instead of pattern compositions like `wp:sgs/container > InnerBlocks(sgs/heading + sgs/text + sgs/button)`.
 
-**Cost shape:** Opus orchestrates ~10% of tokens; subagent leaves take ~90%.
+3. **Autonomy chain never fires** — 5a.2 bucket-c-classifier + 5b.8 `atomic-block-scaffold.py --promote` exist as modules but the legacy orchestrator never invokes them.
 
-### Dispatch primitives (when to use which)
+## Acceptance gate to close Phase 5
 
-- **`/delegate`** — call BEFORE every dispatch. Returns the cheapest model that will succeed for the task descriptor (Sonnet / Haiku / Cerebras / Gemini Flash). Never hardcode model — let `/delegate` decide. Surface the recommendation in chat: *"Using <model> for <task> (via /delegate)."*
-- **`/subagent-driven-development`** — implementer + spec-reviewer + quality-reviewer triad for ANY new module / new code surface. Implementer = Sonnet most often; reviewers = Haiku (spec) + Sonnet/Gemini Flash (quality).
-- **`/dispatching-parallel-agents`** — fanout when 2+ tasks are independent: different files, no shared state, no sequential dependency. Per `feedback_parallel_dispatch_shared_files.md` — NEVER run two subagents on the same file.
-- **`/subagent-prompt`** — write the cold prompt BEFORE every Agent dispatch. Self-contained — no conversation context. The 7-section template (Role / Task / Context / Instructions / Output / Criteria / KJCs) is mandatory for non-trivial dispatches.
-- **`/qc-inline`** — run BETWEEN sub-phases against the actual artefact. Subagent reports are claims, not evidence (Verification Discipline Rule 1).
+Per `phase-5-clone-pipeline-e2e.md` "Phase 5 overall acceptance":
+- [x] Sub-phases 5a-5f modules shipped on origin/main
+- [ ] E2E run on Mama's hits ≥ 90% mockup-used-attr coverage + ≤ 1% pixel diff at 3 viewports + 5/5 harness GREEN
+- [x] Multi-rater /qc on full deliverable ≥ 2/3 ship (prior panels)
+- [ ] `deliverable.md` for Mama's run readable by Bean
+- [x] No leftover feature branches
 
-### Model routing per Phase 5 sub-phase
+3 of 5 met. The two failing gates are coverage + visual parity — both surface via the same root-cause fix.
 
-| Sub-phase | Primary subagent model | Pattern | Why this model |
-|---|---|---|---|
-| **5a Gap detection** | **Sonnet** (implementer) + **Haiku** (spec-reviewer) | `/subagent-driven-development` triad | Sonnet builds the gap-detection module (mechanical code-gen with judgement); Haiku validates against FR8 schema |
-| **5b Staged scaffolding** | **Sonnet** (implementer) + **Sonnet** (quality-reviewer) | `/subagent-driven-development` triad; **fanout per block-type** via `/dispatching-parallel-agents` | Per-block-type scaffold builds are independent — 3-5 way Sonnet fanout cuts wall time. Cerebras-eligible per scaffold if simple enough (12-round ceiling); `/delegate` will downgrade if so |
-| **5c Lingua-franca conversion** | **Sonnet** (implementer) + **Gemini Flash** (multi-convention classification breadth) | `/subagent-driven-development` + Gemini Flash rater | Class-name convention classification benefits from Gemini Flash's 1M context for ingesting whole scrape samples + cross-convention dictionaries |
-| **5d WP integration wiring** | **Sonnet** (implementer) — wp-blockmarkup + wp-devdocs MCPs validate output | `/subagent-driven-development` with WP-aware reviewer; **2-way fanout**: markup serialisation + block.json validation are independent | Sonnet handles WP-specific code-gen; MCPs are the verifiers, not subagents |
-| **5e Visual QA** | **design-reviewer agent** + **Gemini Flash** (vision rater) | `/dispatching-parallel-agents` for design-reviewer + Gemini Flash + Python pixel-diff | Gemini Pro Vision would be primary but is EXCLUDED per /delegate canon (503 retry). Gemini Flash handles vision adequately at 1M context; design-reviewer agent owns the human-eye criteria |
-| **5f Acceptance harness** | **3-rater panel: Sonnet + Haiku + Gemini Flash** | `/dispatching-parallel-agents` for the panel + Cerebras for mechanical DB writes (FREE) | Per `feedback_qc_before_commit.md` — multi-rater BEFORE commit. Cerebras handles boundary-check SQL writes if any are needed (bounded, FREE, 12-round ceiling fine) |
+## Steps for this session (5g.1–5g.5)
 
-### Reserved fallbacks
+### 5g.1 — Hard-gate confidence-matrix (~15 min)
 
-- **Gemini Pro 3.1** — EXCLUDED until 503 retry loop fixed upstream. Do not dispatch.
-- **Cerebras** — qwen-3-235b, FREE, 12 tool rounds, 16K output cap. Use for bounded SQL migrations, single-file mechanical edits, deterministic transforms. NOT for review tasks (rate-limits on QC-grade reads).
-- **Haiku** — primary for fast sanity checks, schema validation, deterministic classification. Secondary reviewer in `/subagent-driven-development` triads.
+File: `plugins/sgs-blocks/scripts/recogniser/confidence-matrix.py:95-107`. Change: when `registered=False`, DROP the candidate entirely (don't emit with confidence 0.75). Add Layer-1 `/qc-inline`: feed the script a synthetic boundary with both registered + unregistered slugs; assert only the registered one surfaces in `candidates`.
 
-### When NOT to dispatch
+### 5g.2 — Wire bucket-c-classifier + atomic-block-scaffold into stage 9 (~30 min)
 
-Per `feedback_dont_delegate_the_test_of_unproven_work.md` — if the milestone is to PROVE something works (live deploy, hero baseline verification, drift validator green light), Opus owns the proof step. Never delegate it. Never accept an agent's text report as evidence; open the URL or run the verification command yourself.
+File: `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py:stage_9_report`. For every `unrecognised_section` leftover bucket entry, invoke `bucket-c-classifier.py` to assign a role, then invoke `atomic-block-scaffold.py --slug <inferred> --role <classified> --run-id <run> --promote` to land starter files in `src/blocks/<new-slug>/` + register in sgs-framework.db. Surface scaffolded blocks in `gap-review.md` via 5a.5.
 
-### Verification cadence per sub-phase (MANDATORY)
+`/qc-inline`: synthesise an unrecognised section; verify a `scaffold-<slug>/` dir appears in the run's `pipeline-state/` + a new row appears in `sgs-framework.db.blocks`.
 
-Three-layer verification on every sub-phase. Skipping any layer breaks the contract from `feedback_qc_before_commit.md` and the master plan's Verification Discipline Rules 1 + 2.
+### 5g.3 — Patterns-over-blocks emission (~45 min)
 
-**Layer 1 — `/qc-inline` after every subagent dispatch (mid-sub-phase).** When a subagent returns "done", do NOT accept the text report as proof. Run `/qc-inline` against the actual artefact: read the file the agent wrote, run its self-tests, query the DB row it claimed to update, capture the screenshot the test produced. Verification Discipline Rule 1 — subagent reports are claims, not evidence.
+File: `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py:stage_4_5_6_7_8_extract` (or extract `compose_pattern()` helper). Rewrite the per-section emission so output is:
 
-**Layer 2 — `/qc-inline` at end of every sub-phase (before staging the commit).** Full sub-phase deliverable QC against the sub-phase's success criteria. Confidence ≥ 90 (ship band) before proceeding. Drift validator + hero baseline must stay PASS.
+```
+<!-- wp:sgs/container {"sectionId":"<id>","sectionClass":"sgs-<original>"} -->
+  <!-- wp:sgs/heading {"text":"..."} /-->
+  <!-- wp:sgs/text {"body":"..."} /-->
+  <!-- wp:sgs/button {"label":"..."} /-->
+  <!-- (extracted media as wp:sgs/decorative-image or wp:core/image) -->
+<!-- /wp:sgs/container -->
+```
 
-**Layer 3 — 3-rater `/qc` panel BEFORE every commit (parallel dispatch).** `/dispatching-parallel-agents` to Sonnet (strict critic) + Haiku (fast sanity) + Gemini Flash (vision / breadth, where relevant). Gate to advance: ≥ 2 of 3 raters `pass/ship`. Sonnet `partial` or `fail` is treated as real — apply Sonnet's fixes inline, re-run the panel until clean, THEN commit. Per `feedback_qc_before_commit.md` — finding issues post-commit means a follow-up cleanup commit + stale audit trail.
+Atomic block selection by extracted slot role (Phase 5a.2 classifier already maps slots to roles). Per Hard Rule 3 in `/sgs-clone` SKILL.md. Use `wp:sgs/container` as the wrapper for now; future iterations can map specific section IDs to bespoke patterns.
 
-**Phase 5 final gate (after 5f only):** full `/qc` pipeline against the entire Phase 5 deliverable (not `/qc-inline`). Acceptance harness from sub-phase 5f is the input. Multi-stage durable artefacts in `pipeline-state/qc/<run_id>/` because the artefact is large enough to warrant the full pipeline over the inline version.
+`/qc-inline`: re-emit Mama's hero; verify markup contains `wp:sgs/container` wrapper + at least 2 inner registered atomic blocks (heading + text minimum).
 
-If any layer surfaces a real issue: fix → re-run that layer → only then proceed to the next layer.
+### 5g.4 — Re-run E2E + measure (~30 min)
+
+```bash
+python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py \
+  --mockup sites/mamas-munches/mockups/homepage/index.html \
+  --auto-section --client mamas-munches --page homepage \
+  --media-map sites/mamas-munches/research/sandybrown-media-map.json
+```
+
+Deploy produced markup to sandybrown via WP-CLI `wp post create --post_type=page`, capture screenshots at 375/768/1440 via the same Python script at `/tmp/capture_parity.py` from the prior session (Playwright + PIL), pixel-diff vs mockup. Targets: ≥ 90% mockup-USED-attr coverage (not block.json-declared) + ≤ 1% pixel diff at all 3 viewports + 5/5 harness green.
+
+Per `feedback_dont_delegate_the_test_of_unproven_work`: open the rendered URL with your own eyes before claiming closure. Verify hero word-wrap is correct, all 9 sections render, footer is correct.
+
+### 5g.5 — Final commit + Phase 5 closure (~15 min)
+
+```
+git commit -m "feat(spec-15-p5g-orchestrator-rewrite): live E2E parity gate met"
+```
+
+Then 3-rater /qc panel (Sonnet strict + Haiku sanity + Gemini Flash breadth) on the full Phase 5 deliverable including 5g. ≥ 2/3 ship to close. Update state.md + decisions.md with the closure verdict. `/handoff` for Phase 6 (cross-platform output extension).
 
 ## Skills to Invoke
 
-| Skill | When to use |
-|-------|-------------|
-| `/brainstorming` | Architectural decisions per sub-phase (5a-5f) |
-| `/gap-analysis` | Grade each sub-phase deliverable before commit |
-| `/lifecycle` | If any sub-phase requires skill / agent / pipeline edits |
-| `/research-check` | Quick lookups (Playwright pixel-diff APIs, WP block markup serialisation) |
-| `/strategic-plan` | Confirm sub-phase 5a-5f ordering before kickoff |
-| `/sgs-wp-engine` | SGS Framework operations + QA pipeline (mandatory for SGS work) |
-| `/wp-block-development` | Block emission patterns in sub-phase 5b + 5d |
-| `/wp-block-themes` | theme.json contract validation in sub-phase 5d |
-| `/visual-qa` | Sub-phase 5e visual parity check at 3 viewports |
-| `/qc-inline` | Between sub-phases — Opus has context to verify inline |
-| `/qc` | Full pipeline output review at sub-phase 5f (acceptance harness) |
-| `/delegate` | Per-branch model picker — call before every dispatch |
-| `/dispatching-parallel-agents` | Fanout independent sub-phase work |
-| `/subagent-driven-development` | Implementer + 2 reviewers for new sub-phase modules |
-| `/handoff` | End-of-session handoff generation |
-
-## MCP Servers & Tools
-
-| Tool | What to use it for |
-|------|-------------------|
-| `playwright` MCP | Multi-viewport screenshots + pixel-diff for sub-phase 5e visual parity |
-| `wp-blockmarkup` MCP | Validate WP block-comment markup serialisation in sub-phase 5d |
-| `wp-devdocs` MCP | Verify WP hook + filter signatures during sub-phase 5d wiring |
-| `mcp__a11y__audit_webpage` | Sub-phase 5e a11y audit on generated output |
-| Python sqlite3 | DB queries against sgs-framework.db for gap detection (5a) |
-| Git CLI | Per-sub-phase direct-to-main commits per always-merge-to-main rule |
-
-## Agents to Delegate To
-
-| Agent | When |
+| Skill | When |
 |-------|------|
-| `wp-sgs-developer` | Block emission + theme.json contract work in 5b + 5d |
-| `design-reviewer` | Visual parity review in 5e against the live draft |
-| 3-rater QC panel (Sonnet + Haiku + Gemini Flash) | Sub-phase 5f acceptance harness — BEFORE final commit per qc-before-commit rule |
+| `/sgs-clone` | The pipeline itself (already updated with Phase 5 module pre-flight) |
+| `/sgs-wp-engine` | SGS Framework operations + QA pipeline |
+| `/wp-block-development` | When 5g.2 scaffolds new blocks, atomic-block-scaffold emits 6 starter files per new block |
+| `/visual-qa` | 5g.4 multi-viewport capture + pixel diff (autonomy gate dispatch documented in `~/.agents/skills/visual-qa/SKILL.md`) |
+| `/qc-inline` | Layer-1 after every step + Layer-2 aggregate before commit |
+| `/handoff` | End-of-session close |
 
-## Research Approach
+## MCP Servers + Tools
 
-Phase 5 is mostly architectural + integration work. Skip broad research unless sub-phase 5e (visual parity) needs Playwright pixel-diff library research — then `/research-check` for the current API. For sub-phase 5d, `/library-docs` for WP block-markup serialisation if the existing `wp-blockmarkup` MCP doesn't cover an edge case.
-
----
-
-## Task 1: Phase 5 sub-phase 5a — Gap detection
-
-**Build:** dispatch gap-detection module build to Sonnet via `/subagent-driven-development` (implementer) + Haiku (spec-reviewer). Wire `/sgs-clone` Stage 9 (coverage report) to write `attribute_gap_candidates` + `functionality_gap_candidates` (FR8 tables, schema exists from Spec 14 P2).
-**Verify (Layer 1):** `/qc-inline` against actual artefact after Sonnet returns — read the module, run its self-tests inline, query the DB for new gap rows on Mama's mockup. Verify drift validator stays PASS.
-**Verify (Layer 2):** `/qc-inline` against sub-phase 5a success criteria (gap rows written, schema match, FR8 covered). Confidence ≥ 90 to advance.
-**Verify (Layer 3 — BEFORE commit):** 3-rater `/qc` panel via `/dispatching-parallel-agents` (Sonnet + Haiku + Gemini Flash). ≥ 2/3 ship to commit.
-**Commit:** `feat(spec-15-p5a-gap-detection): <desc>` direct to main.
-
-## Task 2: Phase 5 sub-phase 5b — Staged scaffolding
-
-**Build:** Sonnet implementer + Sonnet quality-reviewer via `/subagent-driven-development`. Fanout per block-type via `/dispatching-parallel-agents` (3-5 way Sonnet — independent files). Block scaffolding output lands in a staging directory; operator review interface (FR15) writes ambiguous-case prompts to `recognition_log`. Use `/wp-block-development` skill for new block-type emission patterns.
-**Verify (Layer 1):** `/qc-inline` against EACH parallel-dispatched scaffold output (one per block-type). Per `feedback_parallel_dispatch_shared_files.md` — different files per branch, no shared state.
-**Verify (Layer 2):** `/qc-inline` against sub-phase 5b success criteria (staging dir populated, FR15 operator interface functional, recognition_log writes correct).
-**Verify (Layer 3 — BEFORE commit):** 3-rater `/qc` panel. ≥ 2/3 ship to commit.
-**Commit:** `feat(spec-15-p5b-staged-scaffolding): <desc>` direct to main.
-
-## Task 3: Phase 5 sub-phase 5c — Lingua-franca conversion
-
-**Build:** Sonnet implementer via `/subagent-driven-development` + Gemini Flash classification-breadth rater (1M context for whole scrape samples + cross-convention dictionaries). External scrape sources enter via `/uimax-sgs-scrape-pattern`. Source classes preserved in `equivalent_implementations`; SGS-BEM primary written. Per Spec 15 §8.1 + Rosetta Stone Hard Rule.
-**Verify (Layer 1):** `/qc-inline` against the conversion module's output for at least 2 sample external sources (one Bootstrap-shaped, one Tailwind-shaped). Confirm SGS-BEM primary + source-convention siblings written.
-**Verify (Layer 2):** `/qc-inline` against sub-phase 5c success criteria.
-**Verify (Layer 3 — BEFORE commit):** 3-rater `/qc` panel. ≥ 2/3 ship.
-**Commit:** `feat(spec-15-p5c-lingua-franca): <desc>` direct to main.
-
-## Task 4: Phase 5 sub-phase 5d — WP integration wiring
-
-**Build:** Sonnet implementer via `/subagent-driven-development` with WP-aware reviewer. **2-way fanout** via `/dispatching-parallel-agents`: Stage 7 block-comment markup serialisation with InnerBlocks (FR12) + Stage 6 block.json schema validation (FR6) are independent. Use `wp-blockmarkup` MCP to verify markup roundtrip. Use `wp-devdocs` MCP for any WP hook signature.
-**Verify (Layer 1):** `/qc-inline` against each branch — markup roundtrip through `wp-blockmarkup` MCP must be byte-identical; block.json validation must pass against the WP schema.
-**Verify (Layer 2):** `/qc-inline` against sub-phase 5d success criteria. Confirm FR6 + FR12 covered.
-**Verify (Layer 3 — BEFORE commit):** 3-rater `/qc` panel. ≥ 2/3 ship.
-**Commit:** `feat(spec-15-p5d-wp-integration): <desc>` direct to main.
-
-## Task 5: Phase 5 sub-phase 5e — Autonomy + visual QA
-
-**Build:** `/dispatching-parallel-agents` for design-reviewer agent + Gemini Flash vision rater + Python pixel-diff (independent branches). Visual parity ≤ 1% pixel diff at 3 viewports (375/768/1440) via Playwright; regions > 0.5% surfaced as thumbnails for operator review. Gemini Pro Vision EXCLUDED per /delegate canon — Gemini Flash handles vision at 1M context.
-**Verify (Layer 1):** `/qc-inline` against the parity report. Operator (Opus, you) personally inspects ≥ 3 surfaced regions to confirm classification accuracy (per `feedback_dont_delegate_the_test_of_unproven_work.md` — visual proof is operator-owned). a11y audit via `mcp__a11y__audit_webpage`.
-**Verify (Layer 2):** `/qc-inline` against sub-phase 5e success criteria (≤ 1% parity at all 3 viewports).
-**Verify (Layer 3 — BEFORE commit):** 3-rater `/qc` panel including design-reviewer agent as a rater. ≥ 2/3 ship.
-**Commit:** `feat(spec-15-p5e-visual-qa): <desc>` direct to main.
-
-## Task 6: Phase 5 sub-phase 5f — Acceptance harness + final QC
-
-**Build:** Cerebras for any mechanical SQL writes (FREE, bounded). 5 canonical-mutation-boundary checks: (1) no root theme.json mutation, (2) no canonical-block files mutated outside FR21 commit, (3) no licensing strings in uimax writes, (4) idempotency re-run produces no new gap rows, (5) staging dir empty post-success. ≥ 90% block attribute coverage on Mama's mockup.
-**Verify (Layer 1):** `/qc-inline` against each of the 5 boundary checks individually. Opus runs each verification command and confirms output — do NOT delegate the proof step.
-**Verify (Layer 2):** `/qc-inline` against sub-phase 5f success criteria.
-**Verify (Layer 3 — FULL `/qc` PIPELINE, not /qc-inline):** the Phase 5 deliverable is large enough to warrant the durable per-stage artefacts of the full `/qc` pipeline. Inputs: full Phase 5 deliverable across 5a-5e + the acceptance harness. Outputs: `pipeline-state/qc/<run_id>/` with per-stage JSON + final report. Multi-rater Sonnet + Haiku + Gemini Flash panel. ≥ 2/3 ship.
-**Commit:** `feat(spec-15-p5f-acceptance-harness): <desc>` direct to main.
-**Then:** `/handoff` to close Phase 5 and queue Phase 6 (cross-platform output, post-deferred).
+| Tool | Use |
+|------|-----|
+| Playwright MCP (or CLI) | Multi-viewport screenshots at 375/768/1440 in step 5g.4 |
+| Bash via SSH alias `hd` | WP-CLI commands on sandybrown (no `wp eval` — the hook blocks it; use `wp post create` + WP REST API) |
+| PIL via Python | Pixel diff in step 5g.4 (same script pattern as `/tmp/capture_parity.py` from prior session) |
+| Git CLI | Per-step commits direct to main per always-merge-to-main rule |
 
 ## Guardrails
 
-- Drift validator must stay PASS after every sub-phase: `python plugins/sgs-blocks/scripts/drift-validator/validate.py`
-- Hero `--verify-against tests/golden/hero-extraction-baseline.json` must stay PASS
-- Additive token discovery default — do NOT reintroduce snap-to-nearest verdict mode (captured in auto-memory `feedback_cloning_preserves_intentional_bespoke_detail.md`)
-- Mama's mockup token state must stay clean — re-discovery with variation overlay should return 0 candidates
-- 3-rater QC panel BEFORE each sub-phase commit per qc-before-commit rule
-- Direct commits to main per always-merge-to-main rule, format: `feat(spec-15-p5-<sub>): <description>`
+- Drift validator MUST stay PASS after every step: `python plugins/sgs-blocks/scripts/drift-validator/validate.py`
+- Hero baseline MUST stay PASS: `cd tools/recogniser-v2 && python extract.py --mockup ../../sites/mamas-munches/mockups/homepage/index.html --section ".sgs-hero" --block sgs/hero --verify-against ../../tests/golden/hero-extraction-baseline.json`
+- FR21: never mutate root theme.json; client tokens go to `theme/sgs-theme/styles/mamas-munches.json` via `variation_router.py` (5d.3)
+- No `--resume` flags (blub.db row 224)
+- No em-dashes in pipeline output (Bean preference 2026-05-08)
+- Open the rendered sandybrown URL with your own eyes before claiming parity met (`feedback_dont_delegate_the_test_of_unproven_work`)
+
+## Artefacts to consult from the prior session
+
+- `pipeline-state/mamas-munches-homepage-2026-05-13-055523/` — full prior run output
+  - `deliverable.md` — what Bean saw last time
+  - `screenshots/clone-{mobile,tablet,desktop}.png` — broken renders proving the gap
+  - `operator-review.html` — gap-review HTML
+- Commit `70f56c39` — stage-9 coverage bug fix
+- Commit `2388904f` — decisions.md + state.md updates
+
+## Sandybrown creds for step 5g.4
+
+`~/.openclaw/.secrets/wp-app-passwords.env` → `WP_USER_MAMAS` + `WP_APP_PWD_MAMAS`. SSH alias `hd` → Hostinger user `u945238940` at `141.136.39.73:65002`. Mama's WP install at `domains/sandybrown-nightingale-600381.hostingersite.com/public_html/`. Public URL `https://sandybrown-nightingale-600381.hostingersite.com/`.
+
+When done with the test page, `wp post delete <id> --force` via SSH.
+
+## Phase 6 (after Phase 5 closes)
+
+Phase 6 — Cross-platform output (extension, ~6-8 hr): Block.json → Bootstrap / Tailwind / shadcn / React / Node.js code generators using uimax `equivalent_implementations` + `design_tokens` cross-platform columns. Single commit `feat(spec-15-p6): cross-platform output generators`. Not blocking; recommended after Phase 5 fully closes so the cross-platform generators consume a validated foundation.

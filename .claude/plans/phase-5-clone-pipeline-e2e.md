@@ -240,14 +240,64 @@ The absorbed Spec 14 P5–P10 plans assumed a different mapping layer. Critical 
 
 ---
 
-## Phase 5 overall acceptance
+## Phase 5 overall acceptance — STATUS 2026-05-13
 
 Phase 5 declares done when ALL of:
 
-- [ ] Sub-phases 5a–5f shipped on origin/main (6 commits visible)
-- [ ] E2E run on Mama's mockup hits: ≥ 90% block attr coverage + ≤ 1% visual parity + 5/5 critical-fix-verification green
-- [ ] Multi-rater /qc on the full Phase 5 deliverable returns ≥ 2/3 pass/ship
-- [ ] `pipeline-state/sgs-clone/<run_id>/deliverable.md` for Mama's run readable by Bean without translation
-- [ ] No `feat(spec-15-p5-` commit left behind on a feature branch — all merged
+- [x] Sub-phases 5a–5f shipped on origin/main (commits: 73a33b1c preflight + a0e1d145 5a + f8398efd 5b + 4061114a 5c + 14ba9782 5d + 8f2e9ff1 5e + c4f0c3e5 5f + 93b6226f harness whitelist fix)
+- [ ] E2E run on Mama's mockup hits: ≥ 90% block attr coverage + ≤ 1% visual parity + 5/5 critical-fix-verification green — **FAILED 2026-05-13 first live E2E:** harness 5/5 green ✅; coverage 38% literal (denom inflated by mockup-unused block.json features); **visual parity 85% diff at all 3 viewports vs 1% target**
+- [x] Multi-rater /qc on the full Phase 5 deliverable returns ≥ 2/3 pass/ship (prior panels — Sonnet + Haiku + Gemini Flash all said COMMIT NOW: yes)
+- [~] `pipeline-state/sgs-clone/<run_id>/deliverable.md` for Mama's run readable by Bean — written at `pipeline-state/mamas-munches-homepage-2026-05-13-055523/`; documents the failure honestly
+- [x] No `feat(spec-15-p5-` commit left behind on a feature branch — all merged
 
-After Phase 5 ships: `/handoff` for Phase 6 (cross-platform output — Bootstrap/Tailwind/shadcn/React/Node.js generators using uimax `equivalent_implementations` + design_tokens cross-platform columns). Phase 6 is the extension phase; not blocking Phase 5 acceptance.
+**Phase 5 status: MODULES SHIPPED, ACCEPTANCE NOT MET.** 3 of 5 gates green. The load-bearing visual-parity gate is 85× off target.
+
+## Root cause from the live E2E (commits 70f56c39 + 2388904f)
+
+The legacy production orchestrator (`plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py`) does NOT compose with the new Phase 5 modules. Three architectural gaps:
+
+1. **Recogniser hallucinates blocks.** `confidence-matrix.py:95-107` detects `registered=False` for unknown block names but only dampens confidence to 0.75 (still above any practical threshold). The orchestrator faithfully emits `<!-- wp:sgs/<fake-block> /-->` for every match. On Mama's homepage, 6 of 9 target blocks don't exist (header, featured-product, ingredients-section, gift-section, social-proof, footer). WordPress silently drops the unregistered block comments → 6/9 sections vapour on the rendered page.
+
+2. **Hard Rule 3 violated (patterns over single blocks).** Spec 12 / Spec 15 hard rule 3: *"mockup classes and sections map to PATTERNS (composite containers — header, footer, mega menu, sgs/hero), not single blocks. Pattern holds 1+ blocks."* The orchestrator emits bare self-closing block refs + `wp:html` style dumps. No `wp:sgs/container` wrappers, no InnerBlocks composition, no atomic-block content. Even with a fake block name, a pattern composition of registered atomic blocks (heading + text + button + image) inside a container wrapper would render.
+
+3. **5a.2 bucket-c-classifier + 5b.8 atomic-block-scaffold NEVER FIRE in the legacy orchestrator.** The autonomy chain Phase 5 built — surface unregistered/unmatched candidates to bucket-c → scaffold a new block via `atomic-block-scaffold.py --promote` mid-run — exists as modules but is NOT wired into the production pipeline. Verified: 0 scaffold-* dirs in the live run; `unrecognised_section` bucket count 0 (everything routed confidently, even fake names).
+
+## Phase 5 closure path
+
+The remaining Phase 5 work is the **orchestrator emission-stage rewrite** — NOT a new sub-phase, but the live wiring of stages 4-8 in `sgs-clone-orchestrator.py`:
+
+### Step 5g.1 — Hard-gate confidence-matrix on `registered=True` (~15 min)
+
+`plugins/sgs-blocks/scripts/recogniser/confidence-matrix.py:95-107`: when `registered=False`, drop the candidate entirely (don't emit with confidence 0.75). Caller sees no match for that boundary, routes to `unrecognised_section` leftover bucket per 5a.1.
+
+### Step 5g.2 — Wire bucket-c-classifier + atomic-block-scaffold into orchestrator stage 9 (~30 min)
+
+After leftover-bucket-router runs, for every `unrecognised_section` entry: invoke `bucket-c-classifier.py` to assign a role + invoke `atomic-block-scaffold.py --slug <inferred> --role <classified-role> --run-id <run> --promote` to land starter files in `src/blocks/<new-slug>/` and a row in sgs-framework.db. Surfaced in `gap-review.md` for operator polishing.
+
+### Step 5g.3 — Patterns-over-blocks emission (~45 min)
+
+Rewrite `sgs-clone-orchestrator.py` stage 7 (compose) so every section emits as a pattern composition:
+
+```
+<!-- wp:sgs/container {"sectionId":"<id>"} -->
+  <!-- wp:sgs/heading {"text":"..."} /-->
+  <!-- wp:sgs/text {"body":"..."} /-->
+  <!-- wp:sgs/button {"label":"..."} /-->
+<!-- /wp:sgs/container -->
+```
+
+Atomic block selection by extracted slot role (Phase 5a.2 already classifies these). Per Hard Rule 3.
+
+### Step 5g.4 — Re-run E2E on Mama's homepage + re-measure (~30 min)
+
+`/sgs-clone --auto-section` on Mama's mockup → deploy to new sandybrown post → Playwright screenshot at 375/768/1440 → pixel diff vs mockup → measure coverage of slots that are actually USED in the mockup (not the inflated denominator). Targets: ≥ 90% mockup-used-attr coverage + ≤ 1% pixel diff at all 3 viewports + 5/5 harness green.
+
+### Step 5g.5 — Final commit + Phase 5 closure (~15 min)
+
+`feat(spec-15-p5g-orchestrator-rewrite): live E2E parity gate met` + `/handoff` to actual Phase 6.
+
+**Total estimate: ~2 hr.** Each step has a small Layer-1 `/qc-inline` gate. Layer-3 panel at 5g.5 against the entire orchestrator rewrite. Per `feedback_dont_delegate_the_test_of_unproven_work` — operator opens the rendered URL with their own eyes at 5g.4 before claiming closure.
+
+---
+
+After Phase 5 closure: `/handoff` for Phase 6 (cross-platform output — Bootstrap/Tailwind/shadcn/React/Node.js generators using uimax `equivalent_implementations` + design_tokens cross-platform columns). Phase 6 is the extension phase; not blocking Phase 5 closure.

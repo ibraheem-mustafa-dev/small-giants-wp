@@ -1,224 +1,144 @@
 ---
 doc_type: handoff
 project: small-giants-wp
-session_tag: small-giants-wp-2026-05-12-spec-15-phase-4-shipped
-session_date: 2026-05-12
+session_tag: small-giants-wp-2026-05-13-phase-5-modules-shipped-acceptance-not-met
+session_date: 2026-05-13
 recommended_model: opus
 ---
 
-# Session Handoff — 2026-05-12 (Spec 15 Phase 4 + 4.5 shipped)
+# Session Handoff — 2026-05-13 (Phase 5 modules SHIPPED; live E2E proved acceptance NOT MET)
 
-## Completed This Session
+## TL;DR
 
-1. **Phase 4 — Draft convention enforcement (commit `8599faf3`).** Stage 0.1 BEM-compliance lint + Stage 0.5 token-usage lint integrated into `/sgs-clone` orchestrator with three modes (strict halts, draft warns, legacy bypasses). Pre-commit hook fires on `sites/*/mockups/*.{html,htm,css}` with `SGS_LINT_STRICT=1` env var for hard-gate mode, auto-resolving the client variation from the staged path. `/ui-ux-pro-max` + `/innovative-design` SKILL.md updated with HARD RULE for SGS-BEM + theme.json tokens. 37 long-tail gap candidates closed to 0 (7 new canonical slots: header, feature, bar, star, tab, quote, role; 11 mobile-nav `show*` → `boolean-visibility`; 11 instance-config flagged). FR38 + FR39 closed.
+Phase 5 of Spec 15 was driven module-by-module through this session: sub-phases 5a (gap detection), 5b (staged scaffolding), 5c (lingua-franca), 5d (WP integration), 5e (autonomy + visual QA), 5f (acceptance harness). All six sub-phases SHIPPED on origin/main across 8 feature commits + 1 fix commit + 1 docs commit. Layer-1 per-step `/qc-inline` PASS throughout. Layer-2 sub-phase aggregates GREEN. Layer-3 3-rater panels (Sonnet strict + Haiku fast sanity + Gemini Flash breadth) all converged on COMMIT NOW: yes with concrete fixes applied inline pre-commit.
 
-2. **Phase 4.5 — Additive token discovery + Font Library (commit `55a6d73e`).** Mid-phase architectural pivot per operator framing "cloning preserves intentional bespoke detail — small differences ARE the design". Token lint rewritten as additive: non-token values become `NewTokenCandidate` rows in `TokenWritePlan`, written to client variation via `apply_write_plan()`. `--no-new-tokens` flag preserves legacy verdict mode for back-compat. `max-width` / `min-width` route to a dedicated `_snap_max_width()` matcher against `settings.layout.contentSize` + `wideSize` + `settings.custom.maxWidth.*`. Variation overlay merges client tokens before discovery so existing tokens dedupe. Font Library scaffold registers all 1,923 uimax `google_fonts` as `wp_register_font_collection( 'sgs-google-fonts' )` with zero frontend cost (theme.json untouched; Issue #39332 avoided). First real use on Mama's mockup: 3 → 0 candidates with variation overlay (Fraunces deduped to slug `heading`), then 2 new tokens written (spacing-28 + narrow-420). Idempotent re-apply 0 added.
+Then — at your push — I ran the actual live E2E on Mama's homepage. Pipeline runs all 9 stages cleanly, emits 22 606 chars of "valid" SGS block markup, 5/5 acceptance harness GREEN. Deployed to sandybrown post 58, screenshotted at 3 viewports, pixel-diffed vs the mockup. **85% pixel diff at all three viewports vs the 1% acceptance gate.** Opened the URL with my own eyes: hero renders (with broken word-wrap + missing split image), footer renders, the other 6 sections are absent. Root cause: the recogniser confidently routes 6 of 9 sections to blocks that don't exist (`sgs/header`, `sgs/featured-product`, `sgs/ingredients-section`, `sgs/gift-section`, `sgs/social-proof`, `sgs/footer`). The orchestrator violates Hard Rule 3 (patterns over single blocks) — emits bare self-closing block refs instead of pattern compositions wrapped in `wp:sgs/container` with InnerBlocks containing registered atomic blocks. And the autonomy chain Phase 5 built (5a.2 bucket-c-classifier → 5b.8 atomic-block-scaffold `--promote`) never fires in the legacy production orchestrator.
 
-3. **Phase 4.5 fixes from 3-rater QC panel (commit `3c2c07b7`).** Sonnet (strict critic) returned fix-then-ship with 2 ship-blockers + 6 concerns. Fixed: orchestrator `v.class_token` AttributeError (Violation dataclass field is `token`); missing `--variation` CLI flag (pre-commit hook would have produced systematic false-positive candidates); `_in_skip_tag` dead code in bem-lint.py; stale max-width docstring; innovative-design / ui-ux-pro-max routing contradiction. Plus shorthand line/col precision (per-part Occurrence with adjusted col), border / outline shorthand routing (`_discover_border_shorthand` handles per-word dispatch), `.htaccess` gzip + 30-day cache directives.
+**Phase 5 status: modules SHIPPED, acceptance NOT MET.** 3 of 5 acceptance gates green. The closure path is sub-phase 5g — orchestrator emission-stage rewrite (~2 hr, steps 5g.1–5g.5 defined in `phase-5-clone-pipeline-e2e.md`). Live E2E surfaced the bugs the unit-test surface alone could never have caught; per the original panel's warning ("module surface complete ≠ live pipeline works"), this was the expected outcome of finally running the real test.
 
-4. **Phase 4.5 polish from `/qc-inline` pass (commit `a9b9b1c3`).** Two final items: Stage 0.5 logs explicit fallback when `--client X` supplied but variation JSON missing; parser-aware column tracking replaces the `len(prop) + 2` whitespace heuristic — `_flush_decl` captures the value's exact column offset, the declarations tuple becomes 5-tuple `(prop, val, line, col, value_col_offset)`, every per-part shorthand column lands pixel-exact regardless of whitespace variation.
+## What shipped this session
 
-5. **Living-doc closeout (commit `1173792a`).** Spec 15 §11 Phase 4 + 4.5 sections marked SHIPPED with full success-criteria checklists. Master execution plan extended with full actuals table (~3 hr inline + ~7 min parallel fanout vs 4 hr estimate) + lessons fed forward to Phase 5. `state.md` advanced to `spec-15-phase-5-clone-pipeline-e2e` with full phase_4_summary. `decisions.md` captures the additive-mode design principle. `plugins/sgs-blocks/CLAUDE.md` Backend Integrations extended with Font Library Collection row. Auto-memory updated: new `feedback_cloning_preserves_intentional_bespoke_detail.md` indexed in MEMORY.md.
+| Commit | Sub-phase | Description |
+|--------|-----------|-------------|
+| `73a33b1c` | Pre-flight | DB hygiene (97 form-instance scope-excluded + 10 NULL backfills + 0-byte stub deleted), hero baseline re-captured |
+| `a0e1d145` | 5a Gap detection | leftover-bucket-router 4-level routing + bucket-c-classifier + functionality-gap-detector + attribute-gap-writer + gap-review-report. 5 modules + 5 tests in `recogniser/`. |
+| `f8398efd` | 5b Staged scaffolding | staged_output + validate-stage-artifact + 7 stage schemas + mutex + media-sideload + attribute-staged-apply + functionality-bulk-apply + atomic-block-scaffold. 8 modules + 8 tests in `orchestrator/`. |
+| `4061114a` | 5c Lingua-franca | lingua_franca + stage1_boundary_hook. 5 convention rules + canonical SGS-BEM fast path. |
+| `14ba9782` | 5d WP integration | token_resolver + variation_router + supports_writer + modifier_extractors + wp_integration. 6 modules + 6 tests. |
+| `8f2e9ff1` | 5e Autonomy + visual QA | preflight_chain + staged_merge (keystone) + autonomy_gate + orchestrator_main + visual_qa_config.json. 4 modules + 4 tests. |
+| `c4f0c3e5` | 5f Acceptance harness | critical-fix-verification 5-check harness + state.md updates. |
+| `93b6226f` | 5f fix | Whitelist canonical non-stage outputs (deliverable.md / merge-log.md / etc.) from orphan classifier. |
+| `70f56c39` | 5f bug fix | Stage 9 coverage roll-up: bare-slot vs `block.attr` key mismatch (found by live E2E). |
+| `2388904f` | Docs | decisions.md + state.md record honest Phase 5 status post live E2E. |
 
-## Current State
+Plus skill + command updates (user-level registries, no project commit): `/sgs-clone`, `/sgs-update`, `/visual-qa` + 9 sgs/uimax SKILL.md + sgs-db command updated for Phase 5 module references + Spec 13 → Spec 15 §8.1 collapse. Live project docs (`architecture.md`, `goals.md`, `cloning-pipeline-flow.md`, root `CLAUDE.md`) updated to point at Spec 15 instead of absorbed Specs 12/13/14.
 
-- **Branch:** main at `1173792a`
-- **Tests:** 11/11 token-lint self-tests pass; 5/5 BEM-lint self-tests pass
-- **Build:** n/a (Python lint scripts; PHP `php -l` clean on `class-font-collection.php`)
-- **Uncommitted changes:** none (handoff/next-session-prompt updates land in this commit)
-- **Drift validator:** PASS (0 violations across 1,343 attrs)
-- **Hero baseline:** `tests/golden/hero-extraction-baseline.json` PASS preserved end-to-end
-- **Spec 15 progress:** Phases 1, 2, 3, 3.5, 4, 4.5 shipped; Phase 5 next
+## Architectural truths the live E2E exposed
 
-## Known Issues / Blockers
+### Truth 1 — Recogniser hallucinates blocks (the load-bearing finding)
 
-- Skillscore rubric mismatch: command files (`~/.claude/commands/*.md`), agent files (`~/.claude/agents/*.md`), and reference-style mini-skills (polish, bolder, colourise, distill, etc.) graded against full-skill criteria. 24 of 45 files sit below 90% — pre-existing baseline noise, not caused by Phase 4 edits. Future fix: skill-type classifier in sgs-skillscore.
+`plugins/sgs-blocks/scripts/recogniser/confidence-matrix.py:95-107`:
 
-## Next Priorities (in order)
+```python
+registered = candidate_slug in registered_blocks
+confidence = voter_confidence
+if not registered:
+    confidence = min(confidence, 0.75)   # ← only mildly dampens
+candidates.append({
+    "block_name": candidate_slug,         # ← emitted regardless
+    "confidence": confidence,
+    "registered": registered,
+})
+```
 
-1. **Phase 5 sub-phase 5a — Gap detection** (~1-2 hr). Wire `/sgs-clone` Stage 9 (coverage report) to write `attribute_gap_candidates` + `functionality_gap_candidates` (FR8 tables, schema exists from Spec 14 P2). Drift validator must stay PASS.
+The script knows when a block doesn't exist (`registered=False`) but only nudges the confidence down to 0.75. The orchestrator faithfully emits `<!-- wp:sgs/featured-product /-->` for every match. WordPress silently drops every block-comment that references an unregistered block name. On Mama's homepage: 6 of 9 sections become vapour.
 
-2. **Phase 5 sub-phase 5b — Staged scaffolding** (~2 hr). Block scaffolding output lands in a staging directory; operator review interface (FR15) writes ambiguous-case prompts back to `recognition_log`. Use `/wp-block-development` for new block-type emission patterns.
+Closure fix: hard-gate. When `registered=False`, drop the candidate; route to `unrecognised_section` bucket; downstream stage-9 invokes bucket-c-classifier (Phase 5a.2) + atomic-block-scaffold (Phase 5b.8) — both of which exist as modules and were never wired into the legacy orchestrator.
 
-3. **Phase 5 sub-phase 5c — Lingua-franca conversion** (~1-2 hr). External scrape sources enter via `/uimax-sgs-scrape-pattern`. Source classes preserved as siblings in `equivalent_implementations`; SGS-BEM primary written. Per Spec 15 §8.1 + Rosetta Stone Hard Rule.
+### Truth 2 — Hard Rule 3 violated (patterns over single blocks)
 
-4. **Phase 5 sub-phase 5d — WP integration wiring** (~2 hr). Stage 7 block-comment markup serialisation with InnerBlocks (FR12); Stage 6 block.json schema validation (FR6). Use `/wp-block-themes` for theme.json contract validation.
+Spec 12 / Spec 15 Hard Rule 3: *"mockup classes and sections map to PATTERNS (composite containers — header, footer, mega menu, sgs/hero), not single blocks. Pattern holds 1+ blocks."*
 
-5. **Phase 5 sub-phase 5e + 5f — Autonomy + visual QA + acceptance harness** (~2-3 hr). Visual parity ≤ 1% pixel diff at 3 viewports via Playwright; regions > 0.5% surfaced as thumbnails. Acceptance harness: 5 canonical-mutation-boundary checks green + ≥ 90% block attribute coverage on Mama's mockup.
+What the orchestrator actually emits per section:
 
-## Files Modified
+```
+<!-- wp:sgs/<fake-block> { attrs } /-->     ← self-closing, no inner blocks
+<!-- wp:html -->
+<style>
+  #sgs-<fake-block>-1 .sgs-<class> { ... }   ← unscoped CSS dump
+</style>
+<!-- /wp:html -->
+```
 
-| File | What changed |
-|---|---|
-| `plugins/sgs-blocks/scripts/lints/bem-lint.py` | NEW — BEM-compliance lint, 3 modes, 5 self-tests |
-| `plugins/sgs-blocks/scripts/lints/token-lint.py` | NEW — additive token discovery, TokenWritePlan, apply_write_plan, variation overlay, max-width matcher, border-shorthand, 11 self-tests |
-| `plugins/sgs-blocks/scripts/lints/__init__.py` | NEW |
-| `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` | Stage 0.1 + 0.5 wiring with 3 modes + client variation auto-resolution + explicit fallback log |
-| `plugins/sgs-blocks/includes/class-font-collection.php` | NEW — registers WP 6.5+ Font Library collection |
-| `plugins/sgs-blocks/scripts/build-font-collection.py` | NEW — idempotent manifest builder from uimax google_fonts |
-| `plugins/sgs-blocks/assets/font-collections/google-fonts.json` | NEW — 1,923 fonts manifest |
-| `plugins/sgs-blocks/assets/font-collections/.htaccess` | NEW — gzip + 30-day cache |
-| `plugins/sgs-blocks/sgs-blocks.php` | 3-line Font_Collection wiring |
-| `plugins/sgs-blocks/CLAUDE.md` | Font Library Collection row + notes |
-| `theme/sgs-theme/styles/mamas-munches.json` | spacing-28 + narrow-420 tokens written |
-| `.git/hooks/pre-commit` | Stage 0.1 + 0.5 section + variation auto-resolution (NOT versioned) |
-| `.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md` | Phase 4 + 4.5 SHIPPED; FR38 + FR39 closed |
-| `.claude/plans/spec-15-master-execution-plan.md` | Phase 4 + 4.5 actuals table + lessons forward |
-| `.claude/state.md` | Advanced to Phase 5; phase_4_summary written |
-| `.claude/decisions.md` | Additive-mode principle captured |
-| `.claude/parking.md` | P-S15-STYLEVAR-GEN + P-S15-PAIRINGS-PICKER parked |
-| `.claude/reports/phase-4-5-token-discovery-2026-05-12.md` | NEW phase report |
-| `~/.agents/skills/ui-ux-pro-max/SKILL.md` | HARD RULE for SGS-BEM + theme.json tokens |
-| `~/.claude/skills/innovative-design/SKILL.md` | Routing role clarified |
-| `~/.claude/projects/.../memory/feedback_cloning_preserves_intentional_bespoke_detail.md` | NEW |
-| `~/.claude/projects/.../memory/MEMORY.md` | Indexed new feedback file |
-| `~/.claude/skills/sgs-wp-engine/sgs-framework.db` | 7 new slots; 26 attrs canonicalised; 11 mobile-nav re-roled |
+There is no `wp:sgs/container` wrapper, no InnerBlocks slot, no atomic-block composition. Had the orchestrator emitted `wp:sgs/container > InnerBlocks(sgs/heading + sgs/text + sgs/button + image)`, even unregistered "section block" names would carry visible content because the inner atomic blocks ARE registered. The pattern composition is the protection against the failure mode you saw; the orchestrator skips it entirely.
 
-## Notes for Next Session
+Closure fix: rewrite the orchestrator stage 4-8 emission step to compose pattern wrappers with InnerBlocks holding registered atomic blocks selected by extracted-slot role (Phase 5a.2 classifier already maps roles).
 
-- **Use Opus as orchestrator + delegate leaves.** Phase 5 sub-phases will dispatch heavily to Sonnet/Haiku/Cerebras per `/delegate`. Opus handles strategic gates, multi-rater QC synthesis, architectural decisions; leaf work goes to lower-cost models.
-- **Multi-rater QC BEFORE commit.** Per `feedback_qc_before_commit.md`. Sonnet caught 2 ship-blockers this session that the main-thread inline checks missed.
-- **The additive-mode pivot is locked.** Captured to auto-memory. Any new lint, matcher, or token-related infrastructure on the clone pipeline defaults to ADDITIVE. Don't reintroduce snap-to-nearest verdict mode by default.
-- **Phase 5 deliverables go DIRECT to main per `feedback_always_merge_to_main.md`.** No feature branches unless cross-cutting. Per-sub-phase commits: `feat(spec-15-p5-<sub>): <description>`.
-- **Parallel fanout works well for independent sub-tasks.** Phase 4.5 shipped ~30 min faster via parallel Sonnet dispatch.
+### Truth 3 — Autonomy chain never fires in production
+
+The whole point of Phase 5e (autonomy gate) was: when /sgs-clone surfaces an unregistered candidate, the bucket-c-classifier (5a.2) classifies its role, atomic-block-scaffold (5b.8) drops starter files into `src/blocks/<new-slug>/` and registers a row in `sgs-framework.db.blocks`, the operator-review HTML surfaces the gap for human polishing, and `/sgs-update` runs post-PASS to refresh the catalogue.
+
+Live run evidence: 0 `scaffold-*` dirs under `pipeline-state/<run>/`. `unrecognised_section` bucket count: 0 (everything routed confidently, even fake names). The legacy orchestrator at `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` doesn't import or call 5a.2 OR 5b.8. The entire autonomy-and-scaffold chain Phase 5 built is unused.
+
+Closure fix: wire bucket-c-classifier + atomic-block-scaffold into the orchestrator's stage 9 after leftover-bucket-router runs.
+
+## Files + artefacts
+
+### Phase 5 modules (all on origin/main)
+
+- `plugins/sgs-blocks/scripts/recogniser/` — 5a + base recogniser scripts (10 files)
+- `plugins/sgs-blocks/scripts/orchestrator/` — 5b/5c/5d/5e/5f modules (22 files)
+- `plugins/sgs-blocks/scripts/orchestrator/schemas/stage-{1,2,3,4,6,7,9}.json` — per-stage validation schemas
+- `tools/recogniser-v2/visual_qa_config.json` — 1% pass / 0.5% surface / 3 viewports
+
+### Live E2E artefacts (preserved at `pipeline-state/mamas-munches-homepage-2026-05-13-055523/`)
+
+- `stage-1.json` through `stage-9.json` — full per-stage outputs
+- `full-page-markup.html` — 22 606 chars produced markup
+- `operator-review.html` — gap-review surface
+- `deliverable.md` — honest write-up of the run
+- `screenshots/clone-{mobile,tablet,desktop}.png` — rendered sandybrown clone
+- `screenshots/mockup-{mobile,tablet,desktop}.png` — mockup baseline
+- `screenshots/parity-report.json` — pixel-diff JSON (max diff 0.8564)
+
+### Skills + project docs touched
+
+- `~/.claude/skills/sgs-clone/SKILL.md` — Pre-flight + Tool Bindings rebuilt with all 20 Phase 5 modules; `--resume` removed; cross-refs Spec 12/14 → Spec 15
+- `~/.claude/commands/sgs-update.md` — Phase 5 module surface section added; FR21 mutation discipline note
+- `~/.agents/skills/visual-qa/SKILL.md` — Phase 5e autonomy-gate dispatch section added
+- 9 sgs/uimax SKILL.md files — Spec 13 → Spec 15 §8.1 (heading + canonical reference + bare refs)
+- 5 live project docs (`architecture.md`, `goals.md`, `cloning-pipeline-flow.md`, root `CLAUDE.md`, `state.md`) — same Spec 12/13/14 → 15 collapse
+- `.claude/plans/phase-5-clone-pipeline-e2e.md` — "Phase 5 overall acceptance" section updated with live-E2E scoreboard + sub-phase 5g closure path
+- `.claude/plans/spec-15-master-execution-plan.md` — Phase 5 heading marked "MODULES SHIPPED; ACCEPTANCE NOT MET"
+- `.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md` — frontmatter + §11.5 success-criteria checklist updated with live-E2E scoreboard
+
+## Guardrails preserved end-to-end
+
+- Drift validator 0/1343 PASS preserved across every commit
+- Hero baseline `--verify-against tests/golden/hero-extraction-baseline.json` PASS preserved
+- `feedback_dont_delegate_the_test_of_unproven_work` honoured — opened the rendered sandybrown URL with my own eyes before claiming closure (and refused to claim closure once visible)
+- `feedback_qc_before_commit` honoured — 3-rater panels fired before every sub-phase commit; concrete concerns applied inline pre-commit
+
+## Bean's two sharp follow-up questions (validated)
+
+You asked at the end:
+1. *"Isn't it supposed to make the blocks as it goes along and make new blocks before it marks itself as finished?"* — **Yes, per Phase 5b.8 + 5a.2.** Verified: the autonomy chain was NEVER WIRED into production. 0 `scaffold-*` dirs in the live run. The modules exist; the legacy orchestrator never composes with them.
+2. *"Did it at least recognise the classes and make patterns wrapped in containers out of them?"* — **No.** Verified: every section emitted as a bare `<!-- wp:sgs/<block> /-->` with a `wp:html<style>` dump. No `wp:sgs/container` wrappers. No InnerBlocks composition. No atomic-block content. Hard Rule 3 documented but not implemented in the production emission path.
+
+Both questions converge on the same architectural truth: the legacy production orchestrator is a v1 that contradicts the spec's Hard Rule 3 + ignores the registered-block existence check + skips the autonomy chain. That's the sub-phase 5g rewrite scope.
+
+## Phase 5 closure path (sub-phase 5g, ~2 hr)
+
+Defined in `.claude/plans/phase-5-clone-pipeline-e2e.md` steps 5g.1–5g.5:
+
+1. **5g.1 (~15 min)** — Hard-gate `confidence-matrix.py` on `registered=True`. Layer-1 `/qc-inline`: synthetic boundary with registered + unregistered slugs; assert only registered surfaces.
+2. **5g.2 (~30 min)** — Wire `bucket-c-classifier.py` + `atomic-block-scaffold.py --promote` into `sgs-clone-orchestrator.py:stage_9_report`. Layer-1 `/qc-inline`: synthesise unrecognised section; verify `scaffold-<slug>/` dir + sgs-framework.db `blocks` row.
+3. **5g.3 (~45 min)** — Pattern-composition emission in `stage_4_5_6_7_8_extract`. Wrap every section in `wp:sgs/container` with InnerBlocks of registered atomic blocks (heading + text + button + image). Layer-1 `/qc-inline`: re-emit Mama's hero; verify markup contains the container + ≥ 2 inner atomic blocks.
+4. **5g.4 (~30 min)** — Re-run live E2E. Deploy to sandybrown via `wp post create` (no `wp eval`; hook-blocked). Playwright screenshot at 375/768/1440. Pixel diff vs mockup. Targets: ≥ 90% mockup-USED-attr coverage + ≤ 1% pixel diff + 5/5 harness GREEN. Open URL with own eyes per `feedback_dont_delegate_the_test_of_unproven_work`.
+5. **5g.5 (~15 min)** — Commit `feat(spec-15-p5g-orchestrator-rewrite): live E2E parity gate met` + 3-rater Layer-3 panel + `/handoff` for Phase 6.
+
+After 5g closes: Phase 6 — Cross-platform output (~6-8 hr) — Bootstrap/Tailwind/shadcn/React/Node.js code generators using uimax `equivalent_implementations` + `design_tokens` cross-platform columns. Single commit `feat(spec-15-p6): cross-platform output generators`. Not blocking; extension phase.
 
 ## Next Session Prompt
 
-~~~
-You are a senior WordPress block developer + Python pipeline engineer specialising in the SGS Framework, Gutenberg blocks, and Spec 15's deterministic draft-to-SGS converter. This session ships Phase 5 — Clone pipeline E2E (the largest single phase, ~8-10 hr).
-
-Read `.claude/handoff.md`, `.claude/state.md`, and `.claude/CLAUDE.md` for full context. The plan is at `.claude/plans/phase-5-clone-pipeline-e2e.md` (6 sub-phases: 5a Gap detection → 5b Staged scaffolding → 5c Lingua-franca → 5d WP integration → 5e Autonomy + visual QA → 5f Acceptance harness).
-
-Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-12-spec-15-phase-4-shipped"`
-
-## Where You Are
-
-Plan: `.claude/plans/phase-5-clone-pipeline-e2e.md`
-Current phase: Phase 5 — Clone pipeline E2E (the largest single phase)
-Progress: Phases 1, 2, 3, 3.5, 4, 4.5 shipped — 6 of 7 phases complete (~83%)
-Next task: Phase 5 sub-phase 5a — Gap detection wiring
-
-## Execution Strategy — Opus orchestrator + per-branch delegation
-
-**You are on Opus.** Opus owns orchestration, multi-rater QC synthesis, architectural decisions, mid-flight pivots, `/qc-inline` between sub-phases. Opus does NOT do leaf code-gen.
-
-**Cost shape:** Opus orchestrates ~10% of tokens; subagent leaves take ~90%.
-
-### Dispatch primitives (when to use which)
-
-- **`/delegate`** — call BEFORE every dispatch. Returns the cheapest model that will succeed (Sonnet / Haiku / Cerebras / Gemini Flash). Never hardcode model. Surface the recommendation in chat.
-- **`/subagent-driven-development`** — implementer + spec-reviewer + quality-reviewer triad for any new module / new code surface.
-- **`/dispatching-parallel-agents`** — fanout when 2+ tasks are independent (different files, no shared state). Per `feedback_parallel_dispatch_shared_files.md` — NEVER run two subagents on the same file.
-- **`/subagent-prompt`** — write the cold prompt BEFORE every Agent dispatch. 7-section template (Role / Task / Context / Instructions / Output / Criteria / KJCs) mandatory for non-trivial dispatches.
-- **`/qc-inline`** — run BETWEEN sub-phases against the actual artefact. Subagent reports are claims, not evidence.
-
-### Model routing per Phase 5 sub-phase
-
-| Sub-phase | Primary subagent model | Pattern | Why this model |
-|---|---|---|---|
-| **5a Gap detection** | Sonnet (implementer) + Haiku (spec-reviewer) | `/subagent-driven-development` triad | Sonnet builds module; Haiku validates against FR8 schema |
-| **5b Staged scaffolding** | Sonnet (implementer + quality-reviewer) | Triad + **fanout per block-type** via `/dispatching-parallel-agents` | Per-block-type scaffold builds are independent — 3-5 way Sonnet fanout cuts wall time. Cerebras-eligible per scaffold if simple |
-| **5c Lingua-franca** | Sonnet (implementer) + Gemini Flash (multi-convention classification) | Triad + Gemini Flash rater | Gemini Flash's 1M context ideal for whole scrape samples + cross-convention dictionaries |
-| **5d WP integration** | Sonnet (implementer); wp-blockmarkup + wp-devdocs MCPs validate | Triad with WP-aware reviewer; **2-way fanout**: markup serialisation + block.json validation independent | Sonnet for WP-specific code-gen; MCPs are verifiers not subagents |
-| **5e Visual QA** | design-reviewer agent + Gemini Flash (vision rater) | `/dispatching-parallel-agents` for design-reviewer + Gemini Flash + Python pixel-diff | Gemini Pro Vision EXCLUDED (503 retry). Gemini Flash handles vision at 1M context; design-reviewer owns human-eye criteria |
-| **5f Acceptance harness** | 3-rater panel: Sonnet + Haiku + Gemini Flash | `/dispatching-parallel-agents` for panel + Cerebras for mechanical SQL (FREE) | Multi-rater BEFORE commit per `feedback_qc_before_commit.md` |
-
-### Reserved fallbacks
-
-- **Gemini Pro 3.1** EXCLUDED until 503 retry loop fixed.
-- **Cerebras** (qwen-3-235b, FREE, 12 tool rounds, 16K output cap): bounded SQL migrations, single-file mechanical edits. Not for review.
-- **Haiku** primary for fast sanity / schema validation; secondary reviewer in triads.
-
-### When NOT to dispatch
-
-Per `feedback_dont_delegate_the_test_of_unproven_work.md` — if the milestone is to PROVE something works (live deploy, hero baseline, drift validator), Opus owns the proof step. Never delegate; never accept agent text reports as evidence.
-
-### Verification cadence per sub-phase (MANDATORY)
-
-Three-layer verification on every Phase 5 sub-phase. Skipping any layer breaks the contract from `feedback_qc_before_commit.md` + master plan Verification Discipline Rules 1 + 2.
-
-- **Layer 1 — `/qc-inline` after every subagent dispatch.** Subagent reports are claims, not evidence. Run `/qc-inline` against the actual artefact (file contents, DB row state, test stdout, screenshot).
-- **Layer 2 — `/qc-inline` at end of every sub-phase** against the sub-phase's success criteria. Confidence ≥ 90 to advance. Drift validator + hero baseline must stay PASS.
-- **Layer 3 — 3-rater `/qc` panel BEFORE every commit.** `/dispatching-parallel-agents` to Sonnet (strict) + Haiku (sanity) + Gemini Flash (vision / breadth). ≥ 2/3 `pass/ship` to commit. Sonnet `partial` or `fail` treated as real — apply fixes inline, re-run until clean, THEN commit.
-- **Phase 5 final gate (after 5f only) — full `/qc` PIPELINE, not /qc-inline.** Durable per-stage artefacts in `pipeline-state/qc/<run_id>/` because the Phase 5 deliverable surface is too large for inline.
-
-## Skills to Invoke
-
-| Skill | When to use |
-|-------|-------------|
-| `/brainstorming` | Architectural decisions per sub-phase (5a-5f) |
-| `/gap-analysis` | Grade each sub-phase deliverable before commit |
-| `/lifecycle` | If any sub-phase requires skill / agent / pipeline edits |
-| `/research-check` | Quick lookups (Playwright pixel-diff APIs, WP block markup serialisation) |
-| `/strategic-plan` | Confirm sub-phase 5a-5f ordering before kickoff |
-| `/sgs-wp-engine` | SGS Framework operations + QA pipeline (mandatory for SGS work) |
-| `/wp-block-development` | Block emission patterns in sub-phase 5b + 5d |
-| `/wp-block-themes` | theme.json contract validation in sub-phase 5d |
-| `/visual-qa` | Sub-phase 5e visual parity check at 3 viewports |
-| `/qc-inline` | Between sub-phases — Opus has context to verify inline |
-| `/qc` | Full pipeline output review at sub-phase 5f (acceptance harness) |
-| `/delegate` | Per-branch model picker — call before every dispatch |
-| `/dispatching-parallel-agents` | Fanout independent sub-phase work |
-| `/subagent-driven-development` | Implementer + 2 reviewers for new sub-phase modules |
-| `/handoff` | End-of-session handoff generation |
-
-## MCP Servers & Tools
-
-| Tool | What to use it for |
-|------|-------------------|
-| `playwright` MCP | Multi-viewport screenshots + pixel-diff for sub-phase 5e visual parity |
-| `wp-blockmarkup` MCP | Validate WP block-comment markup serialisation in sub-phase 5d |
-| `wp-devdocs` MCP | Verify WP hook + filter signatures during sub-phase 5d wiring |
-| `mcp__a11y__audit_webpage` | Sub-phase 5e a11y audit on generated output |
-| Python sqlite3 | DB queries against sgs-framework.db for gap detection (5a) |
-| Git CLI | Per-sub-phase direct-to-main commits per always-merge-to-main rule |
-
-## Agents to Delegate To
-
-| Agent | When |
-|-------|------|
-| `wp-sgs-developer` | Block emission + theme.json contract work in 5b + 5d |
-| `design-reviewer` | Visual parity review in 5e against the live draft |
-| 3-rater QC panel (Sonnet + Haiku + Gemini Flash) | Sub-phase 5f acceptance harness — BEFORE final commit per qc-before-commit rule |
-
-## Research Approach
-
-Phase 5 is mostly architectural + integration work. Skip broad research unless sub-phase 5e (visual parity) needs Playwright pixel-diff library research — then `/research-check` for the current API. For sub-phase 5d, `/library-docs` for WP block-markup serialisation if the existing `wp-blockmarkup` MCP doesn't cover an edge case.
-
----
-
-**Every task below ends with the 3-layer verification cadence (Layer 1 mid-dispatch /qc-inline + Layer 2 end-of-sub-phase /qc-inline + Layer 3 3-rater /qc panel before commit). Only sub-phase 5f swaps Layer 3 for the full /qc pipeline.**
-
-## Task 1: Phase 5 sub-phase 5a — Gap detection
-
-Sonnet (implementer) + Haiku (spec-reviewer) via `/subagent-driven-development`. Wire `/sgs-clone` Stage 9 to write `attribute_gap_candidates` + `functionality_gap_candidates` (FR8). Layer 1 `/qc-inline` after Sonnet returns. Layer 2 `/qc-inline` against 5a success criteria. Layer 3 3-rater `/qc` panel before `feat(spec-15-p5a-gap-detection): <desc>` commit.
-
-## Task 2: Phase 5 sub-phase 5b — Staged scaffolding
-
-Sonnet triad via `/subagent-driven-development` + **per-block-type fanout** via `/dispatching-parallel-agents` (3-5 way Sonnet, independent files). Staging dir + FR15 operator interface + recognition_log writes. Layer 1 `/qc-inline` per parallel branch. Layer 2 + 3 as above, commit `feat(spec-15-p5b-staged-scaffolding): <desc>`.
-
-## Task 3: Phase 5 sub-phase 5c — Lingua-franca conversion
-
-Sonnet triad + Gemini Flash rater for multi-convention classification breadth (1M context). External scrape sources → `/uimax-sgs-scrape-pattern` → SGS-BEM primary + source-convention siblings in `equivalent_implementations`. Per Spec 15 §8.1. Layer 1-3 verification, commit `feat(spec-15-p5c-lingua-franca): <desc>`.
-
-## Task 4: Phase 5 sub-phase 5d — WP integration wiring
-
-Sonnet triad with WP-aware reviewer + **2-way fanout**: Stage 7 markup serialisation (FR12) and Stage 6 block.json schema validation (FR6) are independent. `wp-blockmarkup` MCP for markup roundtrip; `wp-devdocs` MCP for hook signatures. Layer 1-3 verification, commit `feat(spec-15-p5d-wp-integration): <desc>`.
-
-## Task 5: Phase 5 sub-phase 5e — Autonomy + visual QA
-
-`/dispatching-parallel-agents` for design-reviewer agent + Gemini Flash vision rater + Python pixel-diff (independent branches). Visual parity ≤ 1% pixel diff at 3 viewports via Playwright; regions > 0.5% surfaced as thumbnails. Gemini Pro Vision EXCLUDED — Gemini Flash handles vision. Layer 1 includes Opus personally inspecting ≥ 3 surfaced regions per `feedback_dont_delegate_the_test_of_unproven_work.md` — visual proof is operator-owned. Layer 2 + 3 as above, commit `feat(spec-15-p5e-visual-qa): <desc>`.
-
-## Task 6: Phase 5 sub-phase 5f — Acceptance harness + final QC
-
-Cerebras for mechanical SQL writes. 5 canonical-mutation-boundary checks + ≥ 90% block attribute coverage on Mama's mockup. **Layer 3 here is the FULL `/qc` PIPELINE, not `/qc-inline`** — the Phase 5 deliverable surface is large enough to warrant durable per-stage artefacts in `pipeline-state/qc/<run_id>/`. Multi-rater (Sonnet + Haiku + Gemini Flash). Commit `feat(spec-15-p5f-acceptance-harness): <desc>` then `/handoff` to close Phase 5.
-
-## Guardrails
-
-- Drift validator must stay PASS after every sub-phase: `python plugins/sgs-blocks/scripts/drift-validator/validate.py`
-- Hero `--verify-against tests/golden/hero-extraction-baseline.json` must stay PASS
-- Additive token discovery default — do NOT reintroduce snap-to-nearest verdict mode (captured in auto-memory)
-- Mama's mockup token state must stay clean — re-discovery with variation overlay should return 0 candidates
-- 3-rater QC panel BEFORE each sub-phase commit per qc-before-commit rule
-- Direct commits to main per always-merge-to-main rule, format: `feat(spec-15-p5-<sub>): <description>`
-~~~
+See `.claude/next-session-prompt.md`. Starts with the resume command + Stage 5g step list + creds locations + the "open the URL with your own eyes" reminder.

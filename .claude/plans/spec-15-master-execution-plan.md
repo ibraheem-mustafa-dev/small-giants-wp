@@ -311,9 +311,11 @@ echo "Session start: $(date -Iseconds)" > .claude/scratch/spec-15-session-log.tx
 
 ---
 
-## Phase 5 — Clone pipeline E2E (~8 hr — absorbs Spec 14 P5–P10)
+## Phase 5 — Clone pipeline E2E (~8 hr — absorbs Spec 14 P5–P10) — MODULES SHIPPED 2026-05-13; ACCEPTANCE NOT MET
 
-**See dedicated plan:** `.claude/plans/phase-5-clone-pipeline-e2e.md` — 248 lines, 6 sub-phases (5a Gap detection · 5b Staged scaffolding · 5c Lingua-franca · 5d WP integration wiring · 5e Autonomy + visual QA · 5f Acceptance harness), 38 dispatch steps with per-step `/qc-inline` verification, sub-phase multi-rater QC gates.
+**Status:** Sub-phases 5a-5f modules shipped on origin/main across 8 commits. First live E2E on Mama's homepage 2026-05-13 PROVED the pipeline runs but FAILED the load-bearing visual-parity gate (85% pixel diff at 3 viewports vs 1% target). Three architectural gaps surfaced: (1) confidence-matrix hallucinates block names without hard existence gate, (2) orchestrator violates Hard Rule 3 "patterns over single blocks", (3) 5a.2 bucket-c-classifier + 5b.8 atomic-block-scaffold autonomy chain never fires in legacy orchestrator. Phase 5 closure path = sub-phase 5g (orchestrator emission-stage rewrite, ~2 hr) defined in `phase-5-clone-pipeline-e2e.md`.
+
+**See dedicated plan:** `.claude/plans/phase-5-clone-pipeline-e2e.md` — 6 module sub-phases (5a-5f) ALL SHIPPED + sub-phase 5g (orchestrator rewrite, REMAINING) to close the live acceptance gate.
 
 **Why a separate file:** Phase 5 is the largest phase (~8–10 hr, the actual clone-pipeline E2E delivery) and the absorbed Spec 14 P5–P10 content needed Spec-15-aware rewriting (DB-driven canonical_slot, 1% visual parity, /qc-inline rule baked into every step). Compressing it into table rows here would defeat the autonomy-execution discipline. Phases 1–4 stay inline because they have fewer steps.
 
