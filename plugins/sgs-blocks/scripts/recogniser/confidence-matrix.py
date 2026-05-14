@@ -77,18 +77,19 @@ SGS_PATTERNS_DIR = REPO / "theme" / "sgs-theme" / "patterns"
 # blocks when both could match (e.g. featured-product over product-card).
 COMPOSITE_PRIORITY = {
     "sgs/hero": 10,
-    "sgs/featured-product": 9,
     "sgs/cta-section": 8,
     "sgs/feature-grid": 7,
     "sgs/testimonial-slider": 7,
     "sgs/heritage-strip": 6,
     "sgs/trust-bar": 6,
-    "sgs/header": 5,
-    "sgs/footer": 5,
     "sgs/info-box": 4,
     "sgs/testimonial": 4,
     "sgs/product-card": 3,
 }
+# Removed 2026-05-14: sgs/featured-product, sgs/header, sgs/footer (stub blocks
+# deleted after PR #18). Re-add when proper composite blocks are authored for
+# these slots, or when the deterministic block generator (next-session work)
+# clones them from existing template-library blocks.
 
 
 def discover_registered_blocks(blocks_dir: Path = SGS_BLOCKS_SRC,
@@ -434,7 +435,8 @@ if __name__ == "__main__":
         sample_patterns = sorted(patterns)[:5]
         print(f"   first 5: {sample_patterns}")
 
-        # Fake boundary: .sgs-featured-product (pattern match expected)
+        # Fake boundary: .sgs-featured-product (block + pattern both deleted
+        # 2026-05-14 — expected output: deferred-no-match, confidence 0.0)
         boundary_pattern = {
             "boundary_id": "test-1",
             "candidate_block_slug": "sgs/featured-product",

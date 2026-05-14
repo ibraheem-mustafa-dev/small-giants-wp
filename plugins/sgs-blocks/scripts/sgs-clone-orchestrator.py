@@ -1903,9 +1903,11 @@ def main():
             out_dir=so_run_dir / "screenshots",
         )
         capture_fn = vqa_capture.make_capture_callable(ctx)
+        capture_mode = "real"
         print(f"[autonomy] visual-qa capture: live (clone-url={args.clone_url})")
     else:
         capture_fn = vqa_capture.stub_capture
+        capture_mode = "stub"
         print("[autonomy] visual-qa capture: stub (no --clone-url; autonomy will pass)")
 
     outcome = om.run(
@@ -1921,19 +1923,39 @@ def main():
           f"decision={outcome.autonomy_decision} sgs_update_rc={outcome.sgs_update_returncode}")
     print(f"[autonomy] deliverable: {outcome.deliverable_path}")
 
-    # 4. +REGISTER on success (writes pattern PHP files + sgs-db + uimax)
-    if outcome.overall == "success" and not args.skip_register:
+    # 4. +REGISTER — two-tier gate (added 2026-05-14 after the 5 composer-shape
+    #    residue patterns from a stub-capture 2026-05-13 run were caught polluting
+    #    theme/sgs-theme/patterns/):
+    #      a) PROMOTE to canonical theme/sgs-theme/patterns/ ONLY when
+    #         outcome.overall == "success" AND capture_mode == "real". Stub
+    #         capture always returns diff 0.0, so it can't be trusted to gate a
+    #         canonical-tree mutation.
+    #      b) Otherwise STAGE to pipeline-state/<run>/proposed-patterns/ so
+    #         operators can review and manually promote later.
+    #    --skip-register opts out of both paths.
+    if args.skip_register:
+        print("[+REGISTER] skipped per --skip-register")
+    else:
+        promote_to_canonical = (outcome.overall == "success" and capture_mode == "real")
+        if promote_to_canonical:
+            target_dir = reg_mod.PATTERNS_DIR
+            print(f"[+REGISTER] promoting to canonical: {target_dir}")
+        else:
+            target_dir = so_run_dir / "proposed-patterns"
+            target_dir.mkdir(parents=True, exist_ok=True)
+            reason = (
+                "stub capture" if capture_mode == "stub"
+                else f"autonomy outcome={outcome.overall}"
+            )
+            print(f"[+REGISTER] staging to proposed-patterns (reason: {reason}): {target_dir}")
         register_result = reg_mod.register_run(
             run_id=so_run_id,
             extract_artefact={"output": extract_out},
             boundary_artefact=boundary,
+            patterns_dir=target_dir,
             run_dir=so_run_dir,
         )
         print(reg_mod.summarise(register_result))
-    elif args.skip_register:
-        print("[+REGISTER] skipped per --skip-register")
-    else:
-        print(f"[+REGISTER] skipped: autonomy outcome={outcome.overall} (not 'success')")
 
     # 5. critical-fix-verification (Phase 6 v2 Step 4k) -- the 4-check FR21
     # acceptance harness runs after +REGISTER so it can verify the
