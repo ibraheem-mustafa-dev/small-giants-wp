@@ -2,6 +2,36 @@
 
 Append-only. Most-recent first.
 
+## 2026-05-14 - Phase 6 v2 Step 4c: supports_writer wired before Stage 6 emission (+ inheritance transitively)
+
+**Decision:** Third module wire-in of Phase 6 v2 - `supports_writer.filter_writes` dispatched inside `stage_4_5_6_7_8_extract` after the Stage 4.5 variation_router block, before the per_section_results.append call. For each matched section, the orchestrator loads the target block's `block.json` (REPO/plugins/sgs-blocks/src/blocks/<slug>/block.json) and calls `filter_writes(block_slug, section_attrs, block_json, theme_json)`. The three outputs land on per_section_results as `supports_decisions`, `supports_emitted_attributes`, `supports_omitted_attributes`. `value-matcher/inheritance.py` is now also LIVE -- transitively reachable because supports_writer optionally imports it at module load.
+
+**Why this approach:** advisory signal at this stage, mutation deferred. Downstream consumers (Step 4i staged-apply + Step 4j wp_integration) need to know which overrides are cascade-redundant in order to strip them at deploy time, but the block markup is already serialised by extract.py before this dispatch fires -- so we record the decision rather than rewriting the markup here. Keeps the wire-in mechanical and respects the per-step bisect-isolation rule. The transitive inheritance.py reachability flips its tooling-map status from NO to YES for free, closing the long-standing TRANSITIVELY UNWIRED note that lived on Stage 5.
+
+**Trade-offs considered:**
+- Could have mutated section_attrs to drop omitted attrs immediately - rejected because section_markup was already serialised against the unfiltered set; dropping attrs here would create a markup/attrs mismatch the downstream stages can't reconcile yet.
+- Could have re-serialised the markup inline - rejected as new logic in sgs-clone-orchestrator.py; that work belongs to Step 4i's bulk-apply.
+
+**Verification:**
+- 5/5 supports_writer pytest tests still green
+- 7/7 variation_router + 8/8 token_resolver pytest still green (regression)
+- Drift validator still 0/1349 violations
+- tooling-map drift-check still passes
+- AST syntax check on modified orchestrator: OK
+
+**Files touched:**
+- `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` (SUPPORTS_WRITER_SCRIPT constant + supports_writer() lazy-loader + per-section filter_writes dispatch + 3 supports_* fields on per_section_results)
+
+**Doc updates per docs-registry update-trigger matrix:**
+- `tooling-map.md` row for supports_writer.py: TESTS-ONLY -> YES with wiring detail
+- `tooling-map.md` inheritance.py reachability column: NO -> YES (transitively via supports_writer)
+- `cloning-pipeline-flow.md` Stage 5 block: PARTIAL GAP -> LIVE with wiring detail
+- `decisions.md` (this entry)
+
+**Next:** Step 4d (`modifier_extractors`) - button-role / dynamic-link / block-variation match between Stage 4 extract and Stage 7 compose.
+
+---
+
 ## 2026-05-14 - Phase 6 v2 Step 4b: variation_router wired into Stage 4.5 gap-candidate path
 
 **Decision:** Second module wire-in of Phase 6 v2 - `variation_router` from `plugins/sgs-blocks/scripts/orchestrator/variation_router.py` dispatched inside the existing Stage 4.5 soft-fail block in `stage_4_5_6_7_8_extract`. After `token_resolver.resolve_batch` returns, every `is_gap_candidate=true` resolution with a recognised role (color/spacing/font_size/shadow/family) and a non-empty string `raw_value` is routed through `add_token(client_slug, role, slug, raw_value, theme_root=REPO/theme/sgs-theme, write=True)`. Slug derivation reuses `token-lint._generate_slug` via a second lazy-loader so the orchestrator never duplicates the slug rules already exercised by token-lint's additive-discovery test suite. (role, slug) tuples for actually-inserted-or-updated tokens land on `per_section_results[i].new_tokens_written`. Exceptions surface as `aggregate_warnings` and never break the extract loop.

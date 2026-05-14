@@ -333,28 +333,36 @@ The big picture in one page, with EVERY script, file, DB table and skill plotted
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Stage 5 — Default-inheritance check [PARTIAL GAP]
+### Stage 5 — Default-inheritance check [LIVE]
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │ SCRIPTS:                                                                    │
 │  ✓ plugins/sgs-blocks/scripts/value-matcher/inheritance.py - lookup func   │
-│       BUT only imported by supports_writer.py (unwired) + tests             │
-│       Effective status: TRANSITIVELY UNWIRED                                │
-│  ✗ orchestrator/supports_writer.py - decide() omit-vs-emit                  │
-│       TESTS-ONLY - should fire before Stage 7 to skip redundant attrs       │
+│       WIRED transitively 2026-05-14 (Phase 6 v2 Step 4c) via                │
+│       supports_writer.py's optional import. inheritance.py loads if the     │
+│       file exists; supports_writer falls back to its self-contained         │
+│       default lookup otherwise.                                             │
+│  ✓ orchestrator/supports_writer.py - filter_writes() omit-vs-emit           │
+│       WIRED 2026-05-14 (Phase 6 v2 Step 4c) - lazy-loaded via               │
+│       sgs-clone-orchestrator.py:supports_writer() helper. Inside the        │
+│       per-section loop after the variation_router dispatch: loads the       │
+│       target block's block.json by slug, calls filter_writes(block_slug,   │
+│       section_attrs, block_json, theme_json) and lands three fields on     │
+│       per_section_results -- supports_decisions (debug trail),             │
+│       supports_emitted_attributes (writes downstream must include),         │
+│       supports_omitted_attributes (let WP cascade handle). Step 4i           │
+│       staged-apply + Step 4j wp_integration consume these signals to        │
+│       strip cascade-matching overrides at deploy time. Soft-fail on          │
+│       missing block.json -- absence == emit everything.                     │
 │                                                                             │
-│ FILES (R) when wired:                                                       │
+│ FILES (R):                                                                  │
 │  theme/sgs-theme/theme.json (styles.elements.X + styles.blocks.X defaults)  │
 │  plugins/sgs-blocks/src/blocks/<slug>/block.json (supports declarations)    │
 │                                                                             │
 │ DB tables (R):  block_supports                                              │
 │                                                                             │
-│ GAP: Without wiring, every extracted attr writes per-block override even    │
-│      when value matches global default. Bloated block markup; cascade       │
-│      precedence not respected.                                              │
-│                                                                             │
-│ STATUS:       UNWIRED - Phase 6 step 3                                      │
+│ STATUS:       LIVE - Phase 6 v2 Step 4c complete                            │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 

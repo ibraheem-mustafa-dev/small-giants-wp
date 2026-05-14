@@ -55,6 +55,7 @@ SCAFFOLD_SCRIPT = ORCHESTRATOR_DIR / "atomic-block-scaffold.py"
 TOKEN_RESOLVER_SCRIPT = ORCHESTRATOR_DIR / "token_resolver.py"
 VARIATION_ROUTER_SCRIPT = ORCHESTRATOR_DIR / "variation_router.py"
 TOKEN_LINT_SCRIPT = LINTS_DIR / "token-lint.py"
+SUPPORTS_WRITER_SCRIPT = ORCHESTRATOR_DIR / "supports_writer.py"
 
 SGS_FRAMEWORK_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 
@@ -564,6 +565,19 @@ _TOKEN_RESOLVER_ROLE_TO_TOKEN_LINT_CLASS = {
 }
 
 
+# Lazy-import supports_writer (Spec 15 Phase 6 v2 Step 4c). supports_writer
+# itself transitively loads value-matcher/inheritance.py when present, so the
+# Phase 5 inheritance check is reachable through this single dispatch.
+_supports_writer_mod = None
+
+
+def supports_writer():
+    global _supports_writer_mod
+    if _supports_writer_mod is None:
+        _supports_writer_mod = _load_module_from_path("sgs_supports_writer", SUPPORTS_WRITER_SCRIPT)
+    return _supports_writer_mod
+
+
 # ---------------------------------------------------------------------------
 # Stage 1 -- BOUNDARY (dispatcher: per-section-convention-voter.py)
 # ---------------------------------------------------------------------------
@@ -869,6 +883,32 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path) -> dict:
             except Exception as exc:  # noqa: BLE001 - variation routing is additive; soft-fail
                 aggregate_warnings.append(f"{boundary_id}: variation_router soft-failed: {exc}; gap tokens not written")
 
+        # Stage 5+6 prep (Phase 6 v2 Step 4c) -- supports-first override decision.
+        # For each resolved attribute, ask supports_writer whether the value
+        # matches the WP supports cascade default; emit-or-omit decision lands
+        # on the per_section result so Step 4i staged-apply + Step 4j
+        # wp_integration can strip cascade-matching overrides at deploy time.
+        # supports_writer transitively loads value-matcher/inheritance.py so
+        # the Phase 5 inheritance lookup fires through this single dispatch.
+        # Soft-fail so a missing block.json or registry quirk never blocks
+        # the extract loop -- absence of supports decisions == emit everything.
+        section_supports_decisions: list[dict] = []
+        section_supports_omitted: dict = {}
+        section_supports_emitted: dict = dict(section_attrs)
+        if section_attrs and theme_json:
+            try:
+                sw = supports_writer()
+                slug = target_block.split("/")[-1] if "/" in target_block else target_block
+                _block_json_path = REPO / "plugins" / "sgs-blocks" / "src" / "blocks" / slug / "block.json"
+                if _block_json_path.exists():
+                    block_json = json.loads(_block_json_path.read_text(encoding="utf-8"))
+                    decision_bundle = sw.filter_writes(target_block, section_attrs, block_json, theme_json)
+                    section_supports_decisions = decision_bundle.get("decisions") or []
+                    section_supports_omitted = decision_bundle.get("omitted_attributes") or {}
+                    section_supports_emitted = decision_bundle.get("emitted_attributes") or dict(section_attrs)
+            except Exception as exc:  # noqa: BLE001 - supports decision is advisory; soft-fail
+                aggregate_warnings.append(f"{boundary_id}: supports_writer soft-failed: {exc}; cascade override stripping skipped")
+
         per_section_results.append({
             "boundary_id": boundary_id,
             "section_id": m.get("section_id"),
@@ -880,6 +920,9 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path) -> dict:
             "block_markup": section_markup,
             "token_resolutions": section_token_resolutions,
             "new_tokens_written": section_new_tokens_written,
+            "supports_decisions": section_supports_decisions,
+            "supports_emitted_attributes": section_supports_emitted,
+            "supports_omitted_attributes": section_supports_omitted,
         })
 
         # Aggregate attributes prefixed with section_id so multi-section
