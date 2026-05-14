@@ -2,6 +2,35 @@
 
 Append-only. Most-recent first.
 
+## 2026-05-14 - Phase 6 v2 Step 4k: critical-fix-verification wired after +REGISTER (Step 4 COMPLETE)
+
+**Decision:** Eleventh and final wire-in of Phase 6 v2 Step 4 - `critical_fix_verification.run_harness(run_id=so_run_id)` dispatched at the end of `main()` after the +REGISTER tail (whether it ran or was skipped). The 5-check FR21 boundary harness now fires automatically per clone: `no_root_theme_mutation` + `no_canonical_block_mutation_outside_fr21` + `no_licensing_strings_in_uimax_writes` + `sgs_update_idempotency` + `pipeline_state_clean_post_success`. Aggregated check matrix lands at `run_dir/critical-fix-verification.json`. Soft-fails so a missing optional input (theme hash baseline, sgs_update runner) doesn't blow up an otherwise-successful clone -- the operator still sees the full check matrix in the result.
+
+**Why this approach:** the harness is a post-flight audit, not a gate. Firing it AFTER +REGISTER (rather than BEFORE) means the audit covers the full mutation surface of the clone -- including the patterns + sgs-db + uimax writes performed by register_run. Soft-fail rather than hard-fail because the harness can flag false positives (e.g. an expected-theme-hash baseline that hasn't been refreshed) and we don't want operator-visible audit drift to block production-grade clones.
+
+**Trade-offs considered:**
+- Could have fired the harness before +REGISTER as a gate - rejected because +REGISTER is itself a canonical-mutation channel; auditing without seeing its writes leaves the most-likely violation source unchecked.
+- Could have raised on any check failure - rejected because the harness is designed to "run all checks even on failure"; turning a soft-fail into a hard-fail at the orchestrator level defeats that contract.
+
+**Verification:**
+- 9/9 critical-fix-verification pytest tests still green
+- All 10 prior wire-in suites still green
+- Drift validator still 0/1349 violations
+- tooling-map drift-check still passes
+- AST syntax check on modified orchestrator: OK
+
+**Files touched:**
+- `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` (CRITICAL_FIX_VERIFICATION_SCRIPT constant + critical_fix_verification() lazy-loader + run_harness dispatch in main() after +REGISTER + critical-fix-verification.json write)
+
+**Doc updates per docs-registry update-trigger matrix:**
+- `tooling-map.md` row for critical-fix-verification.py: TESTS-ONLY -> YES with wiring detail
+- `cloning-pipeline-flow.md` final acceptance harness block: ✗ -> ✓ with wiring detail; UNWIRED -> LIVE
+- `decisions.md` (this entry)
+
+**Phase 6 v2 Step 4 STATUS:** COMPLETE. All 13 unwired modules (+ 2 transitives: inheritance + lingua_franca) are now reachable from the live /sgs-clone path. Next: Step 5 (Rosetta Stone discipline fix in register_patterns.py), Step 6 (small wins), Step 7 (full E2E + measure parity), Step 8 (commit + close).
+
+---
+
 ## 2026-05-14 - Phase 6 v2 Step 4j: wp_integration wired before autonomy gate
 
 **Decision:** Tenth wire-in - `wp_integration.validate_block_markup` runs automatically each clone after Step 4i and before the autonomy gate. Calls the `/wp-blocks` CLI at `~/.claude/hooks/wp-blocks.py` against the aggregate block markup from `extract_out`. Status + errors + warnings land on `run_dir/stage-4j.json`. `route_native_feature` + `build_deploy_command` remain operator-gated (FR21); lazy-loader makes them reachable from post-clone tooling via the orchestrator's namespace.

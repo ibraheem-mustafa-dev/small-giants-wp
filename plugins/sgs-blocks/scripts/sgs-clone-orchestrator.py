@@ -65,6 +65,7 @@ ATTRIBUTE_STAGED_APPLY_SCRIPT = ORCHESTRATOR_DIR / "attribute-staged-apply.py"
 FUNCTIONALITY_BULK_APPLY_SCRIPT = ORCHESTRATOR_DIR / "functionality-bulk-apply.py"
 MEDIA_SIDELOAD_SCRIPT = ORCHESTRATOR_DIR / "media-sideload.py"
 WP_INTEGRATION_SCRIPT = ORCHESTRATOR_DIR / "wp_integration.py"
+CRITICAL_FIX_VERIFICATION_SCRIPT = ORCHESTRATOR_DIR / "critical-fix-verification.py"
 
 # The set of HTML attributes that the functionality-gap-detector treats as
 # behaviour fingerprints. Kept here so the orchestrator's BS4 walk only emits
@@ -707,6 +708,19 @@ def wp_integration():
             "sgs_wp_integration", WP_INTEGRATION_SCRIPT,
         )
     return _wp_integration_mod
+
+
+# Lazy-import critical-fix-verification (Spec 15 Phase 6 v2 Step 4k).
+_critical_fix_verification_mod = None
+
+
+def critical_fix_verification():
+    global _critical_fix_verification_mod
+    if _critical_fix_verification_mod is None:
+        _critical_fix_verification_mod = _load_module_from_path(
+            "sgs_critical_fix_verification", CRITICAL_FIX_VERIFICATION_SCRIPT,
+        )
+    return _critical_fix_verification_mod
 
 
 def _harvest_functionality_gap_elements(mockup_path: Path, match_output: dict) -> list[dict]:
@@ -1878,6 +1892,25 @@ def main():
         print("[+REGISTER] skipped per --skip-register")
     else:
         print(f"[+REGISTER] skipped: autonomy outcome={outcome.overall} (not 'success')")
+
+    # 5. critical-fix-verification (Phase 6 v2 Step 4k) -- the 5-check FR21
+    # acceptance harness runs after +REGISTER so it can verify the
+    # canonical-mutation invariants held end-to-end: no root theme.json
+    # mutation, no canonical-block mutation outside FR21 channels, no
+    # licensing strings in uimax writes, /sgs-update idempotency,
+    # pipeline-state clean post-success. Soft-fail so a missing optional
+    # dependency (e.g. expected theme hash) doesn't blow up a successful
+    # run -- the operator still sees the full check matrix in the result.
+    cfv_result: dict = {"checks": [], "summary": {"passed": 0, "failed": 0, "total": 0}}
+    try:
+        cfv = critical_fix_verification()
+        cfv_result = cfv.run_harness(run_id=so_run_id)
+        cfv_path = run_dir / "critical-fix-verification.json"
+        cfv_path.write_text(json.dumps(cfv_result, indent=2, ensure_ascii=False, default=str), encoding="utf-8")
+        summary = cfv_result.get("summary") or {}
+        print(f"[stage-4k] critical-fix-verification: {summary.get('passed', 0)}/{summary.get('total', 0)} checks passed; artefact at {cfv_path}")
+    except Exception as exc:  # noqa: BLE001 - harness is post-flight audit; soft-fail
+        print(f"[stage-4k] critical-fix-verification soft-failed: {exc}", file=sys.stderr)
 
     print(f"[orchestrator] DONE. Artefacts in {run_dir} + {so_run_dir}")
 

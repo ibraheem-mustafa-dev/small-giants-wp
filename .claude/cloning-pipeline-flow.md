@@ -622,19 +622,24 @@ The big picture in one page, with EVERY script, file, DB table and skill plotted
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Final acceptance harness [GAP]
+### Final acceptance harness [LIVE]
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │ SCRIPTS:                                                                    │
-│  ✗ orchestrator/critical-fix-verification.py - 5-check FR21 boundary harness│
-│       TESTS-ONLY - should fire after +REGISTER to confirm no canonical     │
-│       mutation outside FR21-designated paths                                │
+│  ✓ orchestrator/critical-fix-verification.py - 5-check FR21 boundary harness│
+│       WIRED 2026-05-14 (Phase 6 v2 Step 4k) - sgs-clone-orchestrator.py    │
+│       main() calls run_harness(run_id=so_run_id) after the +REGISTER tail. │
+│       Aggregated check matrix lands at run_dir/critical-fix-verification.   │
+│       json. Runs all 5 checks even on individual failure -- surfaces full   │
+│       state to operator. Soft-fails on missing optional inputs (theme hash,│
+│       sgs_update runner).                                                   │
 │                                                                             │
-│ Checks: no_root_theme_mutation, no_canonical_block_mutation,                │
-│         no_licensing_in_uimax, plus 2 more                                  │
+│ Checks: no_root_theme_mutation, no_canonical_block_mutation_outside_fr21,   │
+│         no_licensing_strings_in_uimax_writes, sgs_update_idempotency,       │
+│         pipeline_state_clean_post_success                                   │
 │                                                                             │
-│ STATUS:       UNWIRED - Phase 6 step 8                                      │
+│ STATUS:       LIVE - Phase 6 v2 Step 4k complete                            │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
