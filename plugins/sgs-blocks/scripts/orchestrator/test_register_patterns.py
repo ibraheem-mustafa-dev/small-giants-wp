@@ -599,8 +599,155 @@ def test_11():
         test_uimax_idempotency_without_unique_constraint(Path(tmp))
 
 
+# ---------------------------------------------------------------------------
+# Test 12 — Phase 6 v2 Step 5: compliant payload routes through the validator
+# and lands in uimax.patterns
+# ---------------------------------------------------------------------------
+
+def test_compliant_payload_routes_through_validator_and_writes(tmp_path: Path) -> None:
+    """Validate-and-write happy path: compliant payload INSERTs a row.
+
+    Asserts:
+      - row appears in patterns
+      - equivalent_implementations is stored as JSON containing sgs_block + html_css
+      - source = 'sgs-clone-pipeline'
+      - is_canonical_for_sgs_drafts = 1
+    """
+    uimax_db = _make_uimax_db(tmp_path / "uimax.db")
+    inserted = mod._insert_uimax_pattern(
+        slug="hero-split",
+        title="Hero Split",
+        blocks_used=["sgs/hero", "sgs/button"],
+        section_class="sgs-hero-split",
+        db_path=uimax_db,
+    )
+    assert inserted is True, "compliant payload should INSERT"
+
+    con = sqlite3.connect(str(uimax_db))
+    try:
+        row = con.execute(
+            "SELECT slug, title, category, source, equivalent_implementations, "
+            "is_canonical_for_sgs_drafts, primary_class FROM patterns WHERE slug=?",
+            ("sgs/hero-split",),
+        ).fetchone()
+    finally:
+        con.close()
+    assert row is not None, "row missing after compliant insert"
+    slug_val, title_val, category_val, source_val, ei_val, canon_val, primary_val = row
+    assert slug_val == "sgs/hero-split"
+    assert title_val == "Hero Split"
+    assert category_val == "sgs"
+    assert source_val == "sgs-clone-pipeline"
+    assert canon_val == 1
+    assert primary_val == ".sgs-hero-split"
+    ei = json.loads(ei_val)
+    assert ei["sgs_block"] == "sgs/hero,sgs/button", f"sgs_block mismatch: {ei}"
+    assert ei["html_css"] == "sgs-hero-split", f"html_css mismatch: {ei}"
+    print("  PASS  compliant-payload routes through validator + writes row")
+
+
+def test_12():
+    """pytest wrapper for the compliant-payload regression test."""
+    import tempfile
+    with tempfile.TemporaryDirectory() as tmp:
+        test_compliant_payload_routes_through_validator_and_writes(Path(tmp))
+
+
+# ---------------------------------------------------------------------------
+# Test 13 — Phase 6 v2 Step 5: non-compliant payload is rejected by the
+# validator and NO row is written
+# ---------------------------------------------------------------------------
+
+def test_non_compliant_payload_rejected_no_row_written(tmp_path: Path) -> None:
+    """Short-circuit fallback path (NOT the validator subprocess path).
+
+    Empty blocks_used + a table schema without a `gap_candidate` column means
+    _insert_uimax_pattern returns False at the schema-check gate BEFORE
+    calling _uimax_write(). Test 14 exercises the actual validator-subprocess
+    row-213 rejection path; this test covers the orchestrator-side guard
+    that prevents a malformed payload from ever reaching the chokepoint.
+    """
+    uimax_db = _make_uimax_db(tmp_path / "uimax.db")
+    inserted = mod._insert_uimax_pattern(
+        slug="orphan-section",
+        title="Orphan Section",
+        blocks_used=[],                     # null sgs_block path
+        section_class="orphan-section",
+        db_path=uimax_db,
+    )
+    assert inserted is False, "non-compliant payload must NOT insert"
+    con = sqlite3.connect(str(uimax_db))
+    try:
+        count = con.execute(
+            "SELECT COUNT(*) FROM patterns WHERE slug=?",
+            ("sgs/orphan-section",),
+        ).fetchone()[0]
+    finally:
+        con.close()
+    assert count == 0, "table must remain empty after rejected write"
+    print("  PASS  non-compliant payload rejected; zero rows persisted")
+
+
+def test_13():
+    """pytest wrapper for the non-compliant-rejection regression test."""
+    import tempfile
+    with tempfile.TemporaryDirectory() as tmp:
+        test_non_compliant_payload_rejected_no_row_written(Path(tmp))
+
+
+# ---------------------------------------------------------------------------
+# Test 14 — Phase 6 v2 Step 5: validator-subprocess row-213 rejection
+# (a null sgs_block without gap_candidate=true MUST raise ValidationError).
+# Test 13 covers the orchestrator-side short-circuit; this test exercises
+# the chokepoint itself so we have coverage on the live subprocess path.
+# ---------------------------------------------------------------------------
+
+def test_null_sgs_block_without_gap_candidate_raises_validation_error(tmp_path: Path) -> None:
+    """Direct validate_and_write call with null sgs_block + no gap_candidate
+    must raise ValidationError (row 213). Asserts:
+      - ValidationError raised
+      - exc.errors mentions row-213
+      - no row persisted to disk
+    """
+    uimax_db = _make_uimax_db(tmp_path / "uimax.db")
+    uw = mod._uimax_write()
+    bad_payload = {
+        "slug": "sgs/no-mapping",
+        "title": "No Mapping",
+        "category": "sgs",
+        "description": "null sgs_block without gap_candidate",
+        "source": "sgs-clone-pipeline",
+        # null sgs_block; no gap_candidate field at all — must reject.
+        "equivalent_implementations": {"sgs_block": None, "html_css": "no-mapping"},
+    }
+    raised = False
+    try:
+        uw.validate_and_write(str(uimax_db), "patterns", bad_payload)
+    except uw.ValidationError as exc:
+        raised = True
+        assert any("row-213" in e for e in exc.errors), (
+            f"expected row-213 error, got {exc.errors}"
+        )
+    assert raised, "null sgs_block without gap_candidate must raise ValidationError"
+
+    con = sqlite3.connect(str(uimax_db))
+    try:
+        count = con.execute("SELECT COUNT(*) FROM patterns").fetchone()[0]
+    finally:
+        con.close()
+    assert count == 0, "row-213 rejection must leave table empty"
+    print("  PASS  null sgs_block without gap_candidate raises row-213 ValidationError")
+
+
+def test_14():
+    """pytest wrapper for the row-213 validator-subprocess regression test."""
+    import tempfile
+    with tempfile.TemporaryDirectory() as tmp:
+        test_null_sgs_block_without_gap_candidate_raises_validation_error(Path(tmp))
+
+
 if __name__ == "__main__":
-    print("Spec 15 Phase 6 Step 0 -- register_patterns contract tests")
+    print("Spec 15 Phase 6 Step 0 + v2 Step 5 -- register_patterns contract tests")
     import tempfile
     for name, fn in [
         ("test_register_run_writes_php_pattern_file", test_register_run_writes_php_pattern_file),
@@ -610,11 +757,18 @@ if __name__ == "__main__":
         ("test_register_run_skips_invalid_slug", test_register_run_skips_invalid_slug),
         ("test_register_run_skips_non_composed_sections", test_register_run_skips_non_composed_sections),
         ("test_register_run_canonical_dbs_untouched", test_register_run_canonical_dbs_untouched),
+        ("test_uimax_idempotency_without_unique_constraint", test_uimax_idempotency_without_unique_constraint),
+        ("test_compliant_payload_routes_through_validator_and_writes",
+         test_compliant_payload_routes_through_validator_and_writes),
+        ("test_non_compliant_payload_rejected_no_row_written",
+         test_non_compliant_payload_rejected_no_row_written),
+        ("test_null_sgs_block_without_gap_candidate_raises_validation_error",
+         test_null_sgs_block_without_gap_candidate_raises_validation_error),
     ]:
         with tempfile.TemporaryDirectory() as tmp:
             fn(Path(tmp))
     test_stub_capture_returns_clean_diff()
     test_section_class_to_slug()
     test_composed_inner_blocks_lists_uniquely()
-    print("\nREGISTER-PATTERNS-PHASE-6: PASS (10/10)")
+    print("\nREGISTER-PATTERNS-PHASE-6+V2-STEP-5: PASS (14/14)")
     sys.exit(0)

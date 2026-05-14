@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 """Pre-write validator for uimax tables.
 
-Enforces two captured behavioural rules:
-- blub.db row 211 (no licensing) -- rejects payloads carrying licensing-shaped keys
-  anywhere in the payload tree (at any depth, including nested dicts and list items).
-- blub.db row 213 (Rosetta Stone) -- every artefact-table row MUST carry
-  equivalent_implementations.sgs_block populated with a slug string OR explicit null
-  combined with gap_candidate=true.
+Enforces the Rosetta Stone discipline (blub.db row 213): every artefact-table
+row MUST carry equivalent_implementations.sgs_block populated with a slug
+string OR explicit null combined with gap_candidate=true.
+
+(The row-211 IP-defence gate that previously sat here was removed 2026-05-14
+per blub.db row 213-sibling — UI patterns and block functionality are not
+copyrightable, so there is no threat model to defend against. The gate was
+encoding the rejected IP-firewall framing in inverted form.)
 
 CLI contract (called by uimax_write.py via subprocess):
 
@@ -26,21 +28,6 @@ import json
 import sys
 from typing import Any
 
-# Row 211 -- any key whose name contains one of these substrings (case-insensitive)
-# is banned anywhere in the payload tree. The substring match catches variants
-# like "license_url", "source_license", "ipfirewall".
-LICENSING_BANNED_SUBSTRINGS = (
-    "license",
-    "licence",
-    "provenance_license",
-    "source_license",
-    "ip_firewall",
-    "copyright",
-    "redistribution",
-    "promotion_path",
-    "external_patterns",
-)
-
 # Row 213 -- these tables hold design-artefact rows that must carry the Rosetta
 # Stone mapping. Other tables (e.g. design_tokens, raw lookups) are exempt.
 ARTEFACT_TABLES = frozenset(
@@ -52,30 +39,6 @@ ARTEFACT_TABLES = frozenset(
         "component_libraries",
     }
 )
-
-
-def find_licensing_violations(node: Any, path: str = "") -> list[str]:
-    """Walk the payload looking for banned keys at any depth.
-
-    Returns a list of human-readable error strings. The walker descends through
-    dicts and lists, building a dotted path so the operator can find the offender.
-    """
-    errors: list[str] = []
-    if isinstance(node, dict):
-        for key, value in node.items():
-            here = f"{path}.{key}" if path else key
-            key_lc = str(key).lower()
-            for banned in LICENSING_BANNED_SUBSTRINGS:
-                if banned in key_lc:
-                    errors.append(
-                        f"row-211 violation: key '{here}' contains banned licensing term '{banned}'"
-                    )
-                    break  # one violation per key is enough
-            errors.extend(find_licensing_violations(value, here))
-    elif isinstance(node, list):
-        for i, item in enumerate(node):
-            errors.extend(find_licensing_violations(item, f"{path}[{i}]" if path else f"[{i}]"))
-    return errors
 
 
 def check_rosetta_stone(table: str, payload: dict[str, Any]) -> tuple[list[str], list[str]]:
@@ -155,8 +118,6 @@ def check_rosetta_stone(table: str, payload: dict[str, Any]) -> tuple[list[str],
 def validate(table: str, payload: dict[str, Any]) -> dict[str, Any]:
     errors: list[str] = []
     warnings: list[str] = []
-
-    errors.extend(find_licensing_violations(payload))
 
     rosetta_errors, rosetta_warnings = check_rosetta_stone(table, payload)
     errors.extend(rosetta_errors)

@@ -616,18 +616,24 @@ The big picture in one page, with EVERY script, file, DB table and skill plotted
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### +REGISTER tail — Pattern registration
+### +REGISTER tail — Pattern registration [LIVE — Rosetta Stone gated]
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │ SCRIPTS:                                                                    │
 │  ✓ orchestrator/register_patterns.py - register_run()                       │
-│       imported by sgs-clone-orchestrator.py:1192; called at line 1262       │
-│       on successful autonomy_gate decision                                  │
-│  ⚠ uimax-tools/uimax_write.py - SHOULD be called but is BYPASSED            │
-│       register_patterns.py uses sqlite3 directly, breaking Rosetta Stone    │
-│       validator chain                                                       │
-│  ⚠ uimax-tools/uimax-write-validator.py - bypassed transitively             │
+│       imported by sgs-clone-orchestrator.py main(); called on successful    │
+│       autonomy_gate decision                                                │
+│  ✓ uimax-tools/uimax_write.py - REFACTORED 2026-05-14 (Phase 6 v2 Step 5). │
+│       register_patterns._insert_uimax_pattern now routes through            │
+│       uimax_write.validate_and_write instead of direct sqlite3 INSERT.     │
+│       Lazy-loaded via register_patterns._uimax_write() helper.              │
+│  ✓ uimax-tools/uimax-write-validator.py - WIRED 2026-05-14 transitively    │
+│       via uimax_write.validate_and_write. Every uimax patterns INSERT is    │
+│       now gated by row 213 (Rosetta Stone — every artefact carries an SGS- │
+│       block mapping in equivalent_implementations). Validator subprocess    │
+│       runs before each write; rejection raises ValidationError which       │
+│       register_patterns catches and soft-fails as a skipped pattern.        │
 │                                                                             │
 │ FILES (W):                                                                  │
 │  theme/sgs-theme/patterns/<slug>.php (PHP pattern file with markup)         │
@@ -635,17 +641,16 @@ The big picture in one page, with EVERY script, file, DB table and skill plotted
 │ DB tables (W):                                                              │
 │  patterns (sgs-framework.db) - INSERT new auto-registered pattern row       │
 │  block_compositions (sgs-framework.db) - INSERT inner-block list row        │
-│  patterns (uimax) - INSERT with Rosetta Stone equivalent_implementations    │
+│  patterns (uimax) - INSERT via validate_and_write with Rosetta Stone        │
+│       equivalent_implementations enforcement (sgs_block + html_css)         │
 │                                                                             │
 │ Skills (X):                                                                 │
 │  /uimax-sgs-scrape-pattern - pattern Rosetta Stone payload generation       │
 │  /uimax-scrape-animation - per-animation Rosetta Stone payload              │
 │                                                                             │
-│ FIX NEEDED: route register_patterns.py writes through uimax_write.py so the │
-│             validator fires. Currently the licensing + Rosetta Stone checks │
-│             are silently skipped on every clone-pipeline write.             │
-│                                                                             │
-│ STATUS:       LIVE - working but bypasses validator (Phase 6 step 9)        │
+│ STATUS:       LIVE - Phase 6 v2 Step 5 complete; chokepoint propagation     │
+│               to other uimax tables tracked at P-S15-UIMAX-CHOKEPOINT-      │
+│               PROPAGATE in parking.md                                       │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -654,17 +659,19 @@ The big picture in one page, with EVERY script, file, DB table and skill plotted
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │ SCRIPTS:                                                                    │
-│  ✓ orchestrator/critical-fix-verification.py - 5-check FR21 boundary harness│
+│  ✓ orchestrator/critical-fix-verification.py - 4-check FR21 boundary harness│
 │       WIRED 2026-05-14 (Phase 6 v2 Step 4k) - sgs-clone-orchestrator.py    │
 │       main() calls run_harness(run_id=so_run_id) after the +REGISTER tail. │
 │       Aggregated check matrix lands at run_dir/critical-fix-verification.   │
-│       json. Runs all 5 checks even on individual failure -- surfaces full   │
+│       json. Runs all 4 checks even on individual failure -- surfaces full   │
 │       state to operator. Soft-fails on missing optional inputs (theme hash,│
-│       sgs_update runner).                                                   │
+│       sgs_update runner). The harness shipped with five checks; the fifth  │
+│       was an IP-defence scan that was removed 2026-05-14 alongside the    │
+│       validator's row-211 strip (UI patterns aren't copyrightable so the  │
+│       scan was theatre).                                                    │
 │                                                                             │
 │ Checks: no_root_theme_mutation, no_canonical_block_mutation_outside_fr21,   │
-│         no_licensing_strings_in_uimax_writes, sgs_update_idempotency,       │
-│         pipeline_state_clean_post_success                                   │
+│         sgs_update_idempotency, pipeline_state_clean_post_success           │
 │                                                                             │
 │ STATUS:       LIVE - Phase 6 v2 Step 4k complete                            │
 └─────────────────────────────────────────────────────────────────────────────┘

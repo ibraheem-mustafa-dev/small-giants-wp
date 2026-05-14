@@ -2,8 +2,8 @@
 
 Single chokepoint for any Python code (skill runs, scripts, /sgs-clone Stage 9
 +REGISTER) that writes rows into uimax. Calls the validator first; raises if
-the payload violates row 211 (licensing) or row 213 (Rosetta Stone). Only
-writes if validation passes.
+the payload violates row 213 (Rosetta Stone — every artefact-table row carries
+equivalent_implementations.sgs_block). Only writes if validation passes.
 
 This module exists so future write code cannot accidentally skip the validator
 by calling sqlite3 directly. Use `validate_and_write()` instead of raw INSERT.
@@ -19,7 +19,7 @@ Usage:
                      "equivalent_implementations": {"sgs_block": "sgs/hero"}},
         )
     except ValidationError as exc:
-        # exc.errors is the list from the validator (row 211 / row 213 messages)
+        # exc.errors is the list from the validator (row 213 messages)
         print(exc.errors)
 """
 
@@ -80,7 +80,7 @@ def validate_and_write(
     """Validate the payload, then INSERT into uimax `table`.
 
     Returns the new row's lastrowid. Raises ValidationError if the validator
-    rejects (row 211 or row 213 violation).
+    rejects (row 213 Rosetta Stone violation).
     """
     result = validate(table, payload)
     if not result["valid"]:

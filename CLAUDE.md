@@ -139,7 +139,7 @@ Stage 3+4 implemented in `plugins/sgs-blocks/scripts/uimax-tools/sgs-update-uima
 
 | File | Role |
 |---|---|
-| `uimax-write-validator.py` | Pre-write validator. Rejects rows 211 (no licensing) + 213 (Rosetta Stone equivalent_implementations.sgs_block). |
+| `uimax-write-validator.py` | Pre-write validator. Rejects payloads missing `equivalent_implementations.sgs_block` on artefact tables (row 213 Rosetta Stone discipline). |
 | `uimax_write.py` | Python helper module — atomic validate-then-write. Single chokepoint so future write code can't accidentally skip the validator. |
 | `seed-block-compositions.py` | One-shot seed script for sgs-framework.db `block_compositions` table (idempotent). |
 | `sgs-update-uimax-sync.py` | Stage 3+4 sync called by `/sgs-update`. |

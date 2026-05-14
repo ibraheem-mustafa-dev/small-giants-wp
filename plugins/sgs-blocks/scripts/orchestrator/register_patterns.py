@@ -24,6 +24,7 @@ UK English in comments + output.
 """
 from __future__ import annotations
 
+import importlib.util as _ilu
 import json
 import re
 import sqlite3
@@ -38,6 +39,39 @@ REPO = Path(__file__).resolve().parents[4]
 PATTERNS_DIR = REPO / "theme" / "sgs-theme" / "patterns"
 SGS_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 UIMAX_DB = Path.home() / ".agents" / "skills" / "ui-ux-pro-max" / "scripts" / "ui-ux-pro-max.db"
+
+# Rosetta Stone chokepoint -- ALL uimax writes route through uimax_write.
+# Loaded lazily because uimax-tools sits at a hyphenated path that blocks
+# normal package imports. The module exposes validate_and_write() +
+# ValidationError; both are used by _insert_uimax_pattern.
+_UIMAX_WRITE_PATH = (
+    Path(__file__).resolve().parents[1] / "uimax-tools" / "uimax_write.py"
+)
+_uimax_write_mod = None
+
+
+def _uimax_write():
+    """Lazy-load the uimax_write module (single uimax write chokepoint).
+
+    Raises FileNotFoundError if the module is missing — that condition
+    indicates a broken framework install rather than a per-clone fault,
+    so we surface it instead of soft-failing silently here.
+    """
+    global _uimax_write_mod
+    if _uimax_write_mod is None:
+        if not _UIMAX_WRITE_PATH.exists():
+            raise FileNotFoundError(
+                f"uimax_write.py missing at {str(_UIMAX_WRITE_PATH)}; "
+                "framework install broken."
+            )
+        spec = _ilu.spec_from_file_location("sgs_uimax_write", _UIMAX_WRITE_PATH)
+        if spec is None or spec.loader is None:
+            raise ImportError(f"Cannot load uimax_write from {str(_UIMAX_WRITE_PATH)}")
+        mod = _ilu.module_from_spec(spec)
+        sys.modules["sgs_uimax_write"] = mod
+        spec.loader.exec_module(mod)
+        _uimax_write_mod = mod
+    return _uimax_write_mod
 
 _SLUG_RE = re.compile(r"^[a-z][a-z0-9-]*$")
 
@@ -181,86 +215,102 @@ def _insert_sgs_pattern(slug: str, title: str, description: str,
 def _insert_uimax_pattern(slug: str, title: str, blocks_used: list[str],
                           section_class: str,
                           db_path: Path = UIMAX_DB) -> bool:
-    """INSERT into uimax patterns with Rosetta Stone equivalent_implementations.
+    """INSERT into uimax patterns via the uimax_write validate-then-write chokepoint.
 
-    Returns True on insert. Soft-fail: DB unavailable or table missing
-    returns False without raising -- uimax is the catalogue layer, not a
-    runtime gate.
+    Phase 6 v2 Step 5 — Rosetta Stone discipline fix. Replaces the previous
+    direct sqlite3 INSERT path so every /sgs-clone uimax write is gated by
+    uimax-write-validator (row 213 Rosetta Stone — every artefact-table row
+    carries an SGS-block mapping in equivalent_implementations).
+
+    Returns True on insert. Soft-fail: DB unavailable, table missing, or
+    validator rejection returns False without raising — uimax is the
+    catalogue layer, not a runtime gate. The dedupe pre-check on `slug` is
+    preserved because the canonical uimax patterns table has no UNIQUE
+    constraint.
     """
     if not db_path.exists():
         return False
+    # Open a short-lived read-only connection to inspect schema + dedupe.
+    # Close it BEFORE validate_and_write opens its own connection (the
+    # validator subprocess does not touch the DB; only the writer does).
     try:
         con = sqlite3.connect(str(db_path), timeout=10.0)
     except sqlite3.Error:
         return False
     try:
-        # Verify the patterns table exists in uimax
         has_table = con.execute(
             "SELECT 1 FROM sqlite_master WHERE type='table' AND name='patterns'"
         ).fetchone()
         if not has_table:
             return False
-        # Belt-and-braces existence check: the canonical uimax patterns table
-        # has no UNIQUE constraint on slug, so ON CONFLICT can't catch a
-        # duplicate. Pre-check ensures we never write the same slug twice.
         existing = con.execute(
             "SELECT 1 FROM patterns WHERE slug = ?", (f"sgs/{slug}",)
         ).fetchone()
         if existing:
             return False
         cols = [r[1] for r in con.execute("PRAGMA table_info(patterns)").fetchall()]
-        # Build a payload using only columns the uimax patterns table actually has;
-        # always include slug + title. Add equivalent_implementations / source /
-        # is_canonical_for_sgs_drafts if those columns exist.
-        payload: dict = {
-            "slug": f"sgs/{slug}",
-            "title": title,
-            "category": "sgs",
-            "description": f"Auto-registered from sgs-clone of .{section_class}",
-        }
-        equivalents = {
-            "sgs_block": ",".join(blocks_used) if blocks_used else None,
-            "html_css": section_class,
-        }
-        if "equivalent_implementations" in cols:
-            payload["equivalent_implementations"] = json.dumps(equivalents, ensure_ascii=False)
-        if "source" in cols:
-            payload["source"] = "sgs-clone-pipeline"
-        if "is_canonical_for_sgs_drafts" in cols:
-            payload["is_canonical_for_sgs_drafts"] = 1
-        if "primary_class" in cols:
-            payload["primary_class"] = f".sgs-{slug}"
-        # Filter payload to columns that exist in the actual table
-        usable = {k: v for k, v in payload.items() if k in cols}
-        if not usable:
-            return False
-        col_list = ", ".join(usable.keys())
-        placeholders = ", ".join("?" for _ in usable)
-        # ON CONFLICT DO NOTHING - slug should be unique or have an index;
-        # if the table lacks a unique constraint we fall back to a manual
-        # exists check.
-        try:
-            con.execute(
-                f"INSERT INTO patterns ({col_list}) VALUES ({placeholders}) "
-                "ON CONFLICT DO NOTHING",
-                tuple(usable.values()),
-            )
-            con.commit()
-            return con.total_changes > 0
-        except sqlite3.OperationalError:
-            existing = con.execute(
-                "SELECT 1 FROM patterns WHERE slug = ?", (f"sgs/{slug}",)
-            ).fetchone()
-            if existing:
-                return False
-            con.execute(
-                f"INSERT INTO patterns ({col_list}) VALUES ({placeholders})",
-                tuple(usable.values()),
-            )
-            con.commit()
-            return True
     finally:
         con.close()
+
+    # Rosetta Stone discipline requires equivalent_implementations; without
+    # that column the catalogue row can't carry the SGS-block mapping, so
+    # skip the write rather than persist a row that violates row 213.
+    if "equivalent_implementations" not in cols:
+        return False
+
+    has_sgs_block = bool(blocks_used)
+    equivalents: dict = {
+        "sgs_block": ",".join(blocks_used) if has_sgs_block else None,
+        "html_css": section_class,
+    }
+
+    payload: dict = {
+        "slug": f"sgs/{slug}",
+        "title": title,
+        "category": "sgs",
+        "description": f"Auto-registered from sgs-clone of .{section_class}",
+        # Pass the dict directly — validate_and_write JSON-encodes dict/list
+        # values for SQLite text storage. Encoding here would double-stringify.
+        "equivalent_implementations": equivalents,
+    }
+    if not has_sgs_block:
+        # Validator row 213: null sgs_block must be paired with
+        # gap_candidate=true. If the table has no gap_candidate column we
+        # can't satisfy the rule, so skip the write rather than violate it.
+        if "gap_candidate" not in cols:
+            return False
+        payload["gap_candidate"] = 1
+    if "source" in cols:
+        payload["source"] = "sgs-clone-pipeline"
+    if "is_canonical_for_sgs_drafts" in cols:
+        payload["is_canonical_for_sgs_drafts"] = 1
+    if "primary_class" in cols:
+        payload["primary_class"] = f".sgs-{slug}"
+
+    # Drop any key the actual table can't accept. INSERT would fail otherwise.
+    usable = {k: v for k, v in payload.items() if k in cols}
+    if "slug" not in usable or "equivalent_implementations" not in usable:
+        # Cannot identify the row or satisfy Rosetta Stone -- skip.
+        return False
+
+    try:
+        uw = _uimax_write()
+    except Exception:  # noqa: BLE001 - lazy-load can raise SyntaxError /
+        # AttributeError / module-init exceptions in addition to the obvious
+        # FileNotFoundError + ImportError. Soft-fail per the catalogue-not-
+        # gate contract so a broken framework install never aborts the
+        # clone pipeline mid-run.
+        return False
+    try:
+        uw.validate_and_write(str(db_path), "patterns", usable)
+        return True
+    except uw.ValidationError:
+        # Row 213 reject -- expected when a payload is malformed (e.g. null
+        # sgs_block without gap_candidate). Soft-fail per the module's
+        # catalogue-not-gate contract.
+        return False
+    except (sqlite3.Error, FileNotFoundError, RuntimeError):
+        return False
 
 
 def register_run(

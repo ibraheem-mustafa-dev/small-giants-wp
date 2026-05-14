@@ -1,6 +1,6 @@
 """Spec 15 Phase 5f.1 self-test for critical-fix-verification.py.
 
-Plan contract: run harness against current main; all 5 should pass.
+Plan contract: run harness against current main; all 4 should pass.
 Deliberately violate check 1 (mutate root theme.json); rerun; assert
 check 1 fails + others pass. Restore.
 """
@@ -26,7 +26,6 @@ def test_each_check_callable() -> None:
     """Every check function returns the documented {name, ok, detail} shape."""
     for fn in (mod.check_no_root_theme_mutation,
                mod.check_no_canonical_block_mutation,
-               mod.check_no_licensing_in_uimax,
                mod.check_sgs_update_idempotency,
                mod.check_pipeline_state_clean):
         result = fn()
@@ -34,19 +33,19 @@ def test_each_check_callable() -> None:
         for key in ("name", "ok", "detail"):
             assert key in result, f"{fn.__name__} missing key {key}: {result}"
         assert isinstance(result["ok"], bool)
-    print("  PASS  each-check-callable: 5 checks return well-formed result dicts")
+    print("  PASS  each-check-callable: 4 checks return well-formed result dicts")
 
 
 def test_harness_aggregates() -> None:
     """run_harness returns the aggregated shape with summary counts."""
     result = mod.run_harness()
-    assert "checks" in result and len(result["checks"]) == 5
+    assert "checks" in result and len(result["checks"]) == 4
     assert "summary" in result
     s = result["summary"]
-    assert s["total"] == 5
+    assert s["total"] == 4
     assert s["passed"] + s["failed"] == s["total"]
     assert isinstance(result["all_green"], bool)
-    print(f"  PASS  harness-aggregates: 5 checks ran, summary={s}")
+    print(f"  PASS  harness-aggregates: 4 checks ran, summary={s}")
 
 
 def test_theme_mutation_detected_via_hash() -> None:
@@ -55,15 +54,6 @@ def test_theme_mutation_detected_via_hash() -> None:
     assert result["ok"] is False
     assert "hash drift" in result["detail"]
     print("  PASS  theme-mutation-detected: wrong expected_hash -> fail")
-
-
-def test_licensing_scan_runs() -> None:
-    """Check 3 runs against the real uimax DB and returns a verdict."""
-    result = mod.check_no_licensing_in_uimax()
-    # Either ok=True (clean) OR ok=False with concrete findings -- both are
-    # valid verdicts; the test asserts the function runs without crashing.
-    assert "name" in result and result["name"] == "no_licensing_in_uimax"
-    print(f"  PASS  licensing-scan-runs: verdict={result['ok']} ({result['detail'][:60]})")
 
 
 def test_idempotency_with_noop_runner_passes() -> None:
@@ -148,13 +138,12 @@ def main() -> int:
     test_each_check_callable()
     test_harness_aggregates()
     test_theme_mutation_detected_via_hash()
-    test_licensing_scan_runs()
     test_idempotency_with_noop_runner_passes()
     test_idempotency_runner_that_mutates_fails()
     test_pipeline_state_orphan_detected()
     test_pipeline_state_canonical_outputs_allowed()
     test_pipeline_state_clean_passes_when_no_orphans()
-    print("\nHARNESS-5F.1: PASS (9 contracts: 5-check structure + 4 negative-path detections + canonical-allow-list)")
+    print("\nHARNESS-5F.1: PASS (8 contracts: 4-check structure + 4 negative-path detections + canonical-allow-list)")
     return 0
 
 

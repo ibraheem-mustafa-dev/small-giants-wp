@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
 """critical-fix-verification.py -- Spec 15 Phase 5f.1 acceptance harness.
 
-The 5-check harness per Spec 15 FR18 P1 KJC2. Runs ALL checks even when
+The 4-check harness per Spec 15 FR18 P1 KJC2. Runs ALL checks even when
 one fails; surfaces the full picture so the operator sees the whole
 state.
 
-Five boundary checks:
+(Originally five checks; the IP-defence check was removed 2026-05-14 per
+the captured cloning-context framing rule — UI patterns and block
+functionality are not copyrightable so there is no threat model to
+defend against.)
+
+Four boundary checks:
 
   1. no_root_theme_mutation
      Root `theme/sgs-theme/theme.json` content hash matches the
@@ -17,16 +22,11 @@ Five boundary checks:
      the working tree (no uncommitted changes outside the FR21
      staged-merge / promote() channel).
 
-  3. no_licensing_strings_in_uimax_writes
-     Audit recent uimax row writes (when a journal table exists OR
-     by spot-checking uimax row text content) for forbidden tokens:
-     "license", "copyright", "trademark", "tm" -- per blub.db row 211.
-
-  4. sgs_update_idempotency
+  3. sgs_update_idempotency
      Snapshot sgs-framework.db; re-run /sgs-update (or stub callable);
      diff against snapshot; pass iff zero net row changes.
 
-  5. pipeline_state_clean_post_success
+  4. pipeline_state_clean_post_success
      For every successful run in pipeline-state/sgs-clone/<run_id>/,
      assert the run's staging dir matches the canonical artefact
      manifest (no leftover orphans).
@@ -61,10 +61,6 @@ DEFAULT_THEME_JSON = PROJECT_ROOT / "theme" / "sgs-theme" / "theme.json"
 DEFAULT_CANONICAL_BLOCKS = PROJECT_ROOT / "plugins" / "sgs-blocks" / "src" / "blocks"
 DEFAULT_SGS_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 DEFAULT_UIMAX_DB = Path.home() / ".agents" / "skills" / "ui-ux-pro-max" / "scripts" / "ui-ux-pro-max.db"
-
-# Forbidden tokens per blub.db row 211 (no licensing/IP framing).
-_FORBIDDEN_TOKENS = ("license", "licence", "copyright", "trademark")
-
 
 def _hash_file(p: Path) -> str:
     return hashlib.sha256(p.read_bytes()).hexdigest()
@@ -139,48 +135,7 @@ def check_no_canonical_block_mutation(
                   f"git diff clean ({len(changed)} allowed entries)")
 
 
-# ---- Check 3 -- no licensing strings in uimax ------------------------------
-
-
-def check_no_licensing_in_uimax(
-    uimax_db: Path = DEFAULT_UIMAX_DB,
-    tables: tuple[str, ...] = ("naming_conventions", "patterns", "design_tokens"),
-) -> dict:
-    """Spot-check the first 100 rows of common uimax text tables for
-    forbidden tokens. Cheap heuristic; full audit lives in /uimax-audit."""
-    if not uimax_db.exists():
-        return _check("no_licensing_in_uimax", False,
-                      f"uimax DB missing at {uimax_db}")
-    findings: list[str] = []
-    conn = sqlite3.connect(str(uimax_db), timeout=5.0)
-    try:
-        existing = {r[0] for r in conn.execute(
-            "SELECT name FROM sqlite_master WHERE type='table'"
-        )}
-        for table in tables:
-            if table not in existing:
-                continue
-            # Concatenate every TEXT column for the table; scan for forbidden.
-            cols = [r[1] for r in conn.execute(f"PRAGMA table_info({table})")
-                    if r[2].upper() == "TEXT"]
-            if not cols:
-                continue
-            sql_cols = " || ' ' || ".join(f"COALESCE({c}, '')" for c in cols)
-            rows = conn.execute(f"SELECT rowid, {sql_cols} FROM {table} LIMIT 500").fetchall()
-            for rid, blob in rows:
-                low = (blob or "").lower()
-                for token in _FORBIDDEN_TOKENS:
-                    if token in low:
-                        findings.append(f"{table}#{rid} contains {token!r}")
-    finally:
-        conn.close()
-    if findings:
-        return _check("no_licensing_in_uimax", False,
-                      f"{len(findings)} hits: {findings[:3]}")
-    return _check("no_licensing_in_uimax", True, "no forbidden tokens in scanned tables")
-
-
-# ---- Check 4 -- /sgs-update idempotency -------------------------------------
+# ---- Check 3 -- /sgs-update idempotency -------------------------------------
 
 
 def _db_row_count_snapshot(db_path: Path) -> dict:
@@ -227,7 +182,7 @@ def check_sgs_update_idempotency(
                   f"all {len(before)} tables stable across re-run")
 
 
-# ---- Check 5 -- pipeline-state clean post-success ---------------------------
+# ---- Check 4 -- pipeline-state clean post-success ---------------------------
 
 # Canonical non-stage filenames emitted by 5a/5b/5e/5f modules. These are
 # NOT orphans even though they don't match the stage-N-<name>.json pattern.
@@ -294,7 +249,6 @@ def run_harness(
     checks = [
         check_no_root_theme_mutation(expected_hash=theme_expected_hash),
         check_no_canonical_block_mutation(),
-        check_no_licensing_in_uimax(),
         check_sgs_update_idempotency(runner=sgs_update_runner),
         check_pipeline_state_clean(run_id=run_id,
                                    root=pipeline_root or _so.PIPELINE_ROOT),

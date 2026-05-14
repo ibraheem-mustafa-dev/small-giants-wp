@@ -61,7 +61,7 @@ HERE = Path(__file__).resolve().parent
 if str(HERE) not in sys.path:
     sys.path.insert(0, str(HERE))
 
-from uimax_write import validate, ValidationError  # noqa: E402
+from uimax_write import ValidationError, validate_and_write  # noqa: E402
 
 # Animations columns the /uimax-scrape-animation skill expects to write.
 # Migration runs safely multiple times -- only adds columns that are missing.
@@ -110,9 +110,6 @@ def _build_sgs_payload(slug: str, title: str, description: str) -> dict:
         "summary": summary,
         "wai_aria_url": "",
         "framework": "WordPress (Gutenberg)",
-        # No "license" field — row 211 (no licensing language in uimax/cloning context).
-        # SGS Blocks are GPL-2.0+ as a project, tracked in the plugin header and theme
-        # metadata, not on every component_libraries row.
         "source_url": (
             "https://github.com/Ibraheem-Mustafa/small-giants-wp/tree/main/"
             f"plugins/sgs-blocks/src/blocks/{short_slug}"
@@ -164,32 +161,30 @@ def stage_3_sync_blocks_to_db_and_csv(dry_run: bool = False) -> dict:
     inserted_slugs: list[str] = []
 
     if not dry_run:
+        # Close the inspection connection so validate_and_write can open its own.
+        # SQLite WAL mode tolerates the brief overlap but the explicit close keeps
+        # the chokepoint contract clean: every uimax write runs through one path.
+        # Phase 6 v2 Step 5 (extended scope 2026-05-14): route the
+        # component_libraries write through validate_and_write so the Rosetta
+        # Stone validator gates each INSERT through a single chokepoint.
+        conn_uimax.close()
         for slug, title, description in sgs_rows:
             if slug in existing_keys:
                 skip_count += 1
                 continue
             payload = _build_sgs_payload(slug, title, description)
-            # Validate the payload via uimax-write-validator.py (Rosetta Stone gate).
+            # Restrict payload to columns that exist in the DB schema (defensive).
+            row_payload = {k: v for k, v in payload.items() if k in db_columns}
             try:
-                vresult = validate("component_libraries", payload)
-                if not vresult["valid"]:
-                    raise ValidationError(vresult["errors"], vresult.get("warnings", []))
+                validate_and_write(UIMAX_DB, "component_libraries", row_payload)
             except ValidationError as exc:
                 insert_errors.append(f"{slug}: {exc.errors}")
                 continue
-
-            # Restrict payload to columns that exist in the DB schema (defensive).
-            row_payload = {k: v for k, v in payload.items() if k in db_columns}
-            cols = list(row_payload.keys())
-            placeholders = ",".join("?" * len(cols))
-            sql = (
-                f"INSERT INTO component_libraries ({','.join(cols)}) "
-                f"VALUES ({placeholders})"
-            )
-            conn_uimax.execute(sql, list(row_payload.values()))
             insert_count += 1
             inserted_slugs.append(slug)
-        conn_uimax.commit()
+        # Re-open the connection for the Phase C row count below.
+        conn_uimax = sqlite3.connect(UIMAX_DB)
+        conn_uimax.row_factory = sqlite3.Row
 
     # Phase C: row count for reporting.
     db_total_rows = conn_uimax.execute(

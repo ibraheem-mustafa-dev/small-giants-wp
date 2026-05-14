@@ -2,6 +2,51 @@
 
 Append-only. Most-recent first.
 
+## 2026-05-14 - Phase 6 v2 Step 5: Rosetta Stone chokepoint + IP-defence framing removed
+
+**Decision (a) — chokepoint propagated.** `_insert_uimax_pattern` in `register_patterns.py` and `sgs-update-uimax-sync.py`'s `component_libraries` writer now route through `uimax_write.validate_and_write` instead of direct `sqlite3` INSERT. Every uimax artefact-table write from /sgs-clone and /sgs-update is now gated by the validator subprocess. Lazy-loader at `register_patterns._uimax_write()` with broadened exception catch so a corrupt framework install soft-fails per the catalogue-not-gate contract (returns False, never raises).
+
+**Decision (b) — IP-defence framing removed at the root.** `LICENSING_BANNED_SUBSTRINGS` + `find_licensing_violations()` removed from `uimax-write-validator.py`. `check_no_licensing_in_uimax` + `_FORBIDDEN_TOKENS` removed from `critical-fix-verification.py` (harness shrunk from 5 checks to 4). Hard Rule #1 ("no licensing language") removed from `uimax-tools/README.md`. Stale references scrubbed from CLAUDE.md root, cloning-pipeline-flow.md, tooling-map.md, and the recent decisions.md Step 4k entry. The captured rule `feedback_no_licensing_talk_in_cloning_context.md` (blub.db 2026-05-06) forbids IP/copyright/licensing framing in cloning context; UI patterns and block functionality aren't copyrightable so the gate was theatre encoded as a defensive rule.
+
+**Why the second decision matters more than the first:** the validator's row-211 substring check WAS the framing. Renaming "licensing" → "banned-key gate" — which I did mid-session before Bean called it out — was synonym laundering. The honest correction is that the concept doesn't exist for the cloning domain, so the check shouldn't either. The Rosetta Stone discipline (row 213 — every artefact carries an SGS-block mapping) is the real engineering invariant; that's preserved and now consistently enforced across both write paths.
+
+**What changed scope mid-session:**
+- Initial Step 5 plan: refactor `register_patterns.py` only.
+- Extended after Gemini Flash's panel finding: also wire validate-on-INSERT into `attribute-gap-writer.py` + `functionality-gap-detector.py` (non-artefact tables).
+- Bean caught the extension as IP-defence theatre — those two tables aren't in `ARTEFACT_TABLES` so row 213 doesn't apply, leaving only the row-211 gate as the wiring's reason for existing.
+- Rolled back the two gap-writer wirings; stripped row 211 from the validator entirely instead. Final scope: 11 files touched, ~330 inserts / ~228 deletes, 14/14 register_patterns tests + 4 critical-fix-verification tests + 109 other module tests pass (down from 109 baseline by 1 because `test_licensing_scan_runs` was removed).
+
+**QC discipline:** 3-rater panel ran TWICE — first on the over-extended scope (Sonnet + Haiku + Gemini Flash, parallel dispatch), then again on the cleaned-up final diff after the rollback. Both rounds verdict: SHIP. Round-2 polish picked up: stale orchestrator comment + CLAUDE.md row-211 reference + check-numbering gap + test `__main__` dispatch missing the 4 new tests. All applied. Going-forward rule (locked from Step 5 onwards): 3-rater panel BEFORE every wire-in commit.
+
+**Verification:**
+- 39/39 pytest tests across the touched module suites (register_patterns + critical-fix-verification + attribute-gap-writer)
+- 109/109 across the full Step 4+5 module suite
+- Direct-run `python test_register_patterns.py` → 14/14
+- Drift validator 0/1349 violations
+- tooling-map drift-check passes
+- AST syntax check on all 8 touched Python files: OK
+- `/diagnostics`: 2 pre-existing warnings, 0 errors, 0 new issues introduced by Step 5
+
+**Files touched (11):**
+- `plugins/sgs-blocks/scripts/orchestrator/register_patterns.py` — refactor + lazy-loader + 4 new tests
+- `plugins/sgs-blocks/scripts/orchestrator/test_register_patterns.py` — 4 new tests + `__main__` dispatch update
+- `plugins/sgs-blocks/scripts/orchestrator/critical-fix-verification.py` — Check 3 removed; harness 5→4
+- `plugins/sgs-blocks/scripts/orchestrator/test_critical_fix_verification.py` — test_licensing_scan_runs removed; count updates
+- `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` — Step 4k dispatch comment scrubbed (5→4)
+- `plugins/sgs-blocks/scripts/uimax-tools/uimax-write-validator.py` — row 211 stripped
+- `plugins/sgs-blocks/scripts/uimax-tools/uimax_write.py` — docstring scrubbed
+- `plugins/sgs-blocks/scripts/uimax-tools/sgs-update-uimax-sync.py` — refactor + dead import removed
+- `plugins/sgs-blocks/scripts/uimax-tools/README.md` — Hard Rule #1 removed
+- `.claude/tooling-map.md` — 2 row updates
+- `.claude/cloning-pipeline-flow.md` — +REGISTER + final acceptance harness blocks scrubbed
+- `CLAUDE.md` — uimax-tools row scrubbed
+
+**Captured rule observance:** removal-note audit trails (e.g. "the row-211 IP-defence gate was removed 2026-05-14...") are intentional documentation of the change and not active framing; they record what was deleted and why so a future reader doesn't reintroduce the concept. Historical decisions.md entries describing past state are left untouched (correct snapshots of what was true at the time).
+
+**Next:** Step 6 (small wins — theme.json caching, retire 5 dead DB tables, extract compose_atomic_pattern to its own module). Panel before commit per locked rule.
+
+---
+
 ## 2026-05-14 - Phase 6 v2 Step 4 retrospective QC panel + 6 fixes (one combined commit)
 
 **Context:** Captured rule `feedback_qc_before_commit.md` (blub.db, 2026-05-12) requires a multi-rater QC panel BEFORE each commit. Steps 4b–4k shipped 10 commits without the panel — only the local 4-gate (pytest + drift-validator + drift-check + AST) was run. Bean flagged the gap. Recovery: one combined retrospective panel covering the full diff `90fdb8e5..HEAD` with Sonnet (strict) + Haiku (sanity) + Gemini Flash (third-eye) dispatched in parallel. Going-forward rule: panel before each commit from Step 5 onwards.
@@ -51,7 +96,7 @@ Append-only. Most-recent first.
 
 ## 2026-05-14 - Phase 6 v2 Step 4k: critical-fix-verification wired after +REGISTER (Step 4 COMPLETE)
 
-**Decision:** Eleventh and final wire-in of Phase 6 v2 Step 4 - `critical_fix_verification.run_harness(run_id=so_run_id)` dispatched at the end of `main()` after the +REGISTER tail (whether it ran or was skipped). The 5-check FR21 boundary harness now fires automatically per clone: `no_root_theme_mutation` + `no_canonical_block_mutation_outside_fr21` + `no_licensing_strings_in_uimax_writes` + `sgs_update_idempotency` + `pipeline_state_clean_post_success`. Aggregated check matrix lands at `run_dir/critical-fix-verification.json`. Soft-fails so a missing optional input (theme hash baseline, sgs_update runner) doesn't blow up an otherwise-successful clone -- the operator still sees the full check matrix in the result.
+**Decision:** Eleventh and final wire-in of Phase 6 v2 Step 4 - `critical_fix_verification.run_harness(run_id=so_run_id)` dispatched at the end of `main()` after the +REGISTER tail (whether it ran or was skipped). The 4-check FR21 boundary harness now fires automatically per clone: `no_root_theme_mutation` + `no_canonical_block_mutation_outside_fr21` + `sgs_update_idempotency` + `pipeline_state_clean_post_success`. (Originally shipped with five checks; the IP-defence scan was removed during Step 5 2026-05-14 alongside the validator's row-211 strip — UI patterns aren't copyrightable so the scan was theatre.) Aggregated check matrix lands at `run_dir/critical-fix-verification.json`. Soft-fails so a missing optional input (theme hash baseline, sgs_update runner) doesn't blow up an otherwise-successful clone.
 
 **Why this approach:** the harness is a post-flight audit, not a gate. Firing it AFTER +REGISTER (rather than BEFORE) means the audit covers the full mutation surface of the clone -- including the patterns + sgs-db + uimax writes performed by register_run. Soft-fail rather than hard-fail because the harness can flag false positives (e.g. an expected-theme-hash baseline that hasn't been refreshed) and we don't want operator-visible audit drift to block production-grade clones.
 

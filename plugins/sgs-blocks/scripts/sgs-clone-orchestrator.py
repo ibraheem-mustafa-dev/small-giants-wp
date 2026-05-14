@@ -1960,14 +1960,14 @@ def main():
     else:
         print(f"[+REGISTER] skipped: autonomy outcome={outcome.overall} (not 'success')")
 
-    # 5. critical-fix-verification (Phase 6 v2 Step 4k) -- the 5-check FR21
+    # 5. critical-fix-verification (Phase 6 v2 Step 4k) -- the 4-check FR21
     # acceptance harness runs after +REGISTER so it can verify the
     # canonical-mutation invariants held end-to-end: no root theme.json
-    # mutation, no canonical-block mutation outside FR21 channels, no
-    # licensing strings in uimax writes, /sgs-update idempotency,
-    # pipeline-state clean post-success. Soft-fail so a missing optional
-    # dependency (e.g. expected theme hash) doesn't blow up a successful
-    # run -- the operator still sees the full check matrix in the result.
+    # mutation, no canonical-block mutation outside FR21 channels,
+    # /sgs-update idempotency, pipeline-state clean post-success.
+    # Soft-fail so a missing optional dependency (e.g. expected theme hash)
+    # doesn't blow up a successful run -- the operator still sees the full
+    # check matrix in the result.
     cfv_result: dict = {"checks": [], "summary": {"passed": 0, "failed": 0, "total": 0}}
     try:
         cfv = critical_fix_verification()
