@@ -1,0 +1,30 @@
+/* ===== SGS Label — Editor Only ===== */
+
+/* Ensure an empty label block is visible in the editor so operators
+   can click into it. The placeholder text handles this via RichText,
+   but we add a min-height safety net. */
+.wp-block-sgs-label:empty {
+	min-height: 1.5em;
+}
+
+/* Show a subtle outline in the editor so operators can locate the block
+   when it blends into the page background (e.g. plain variant on white). */
+.block-editor-block-list__block .wp-block-sgs-label {
+	outline: 1px dashed rgba(0, 0, 0, 0.12);
+	outline-offset: 2px;
+}
+
+/* Remove the outline when the block is selected — the block selection
+   ring already provides sufficient visual affordance. */
+.block-editor-block-list__block.is-selected .wp-block-sgs-label,
+.block-editor-block-list__block.is-highlighted .wp-block-sgs-label {
+	outline: none;
+}
+
+/* Inspector row layout helper — used in edit.js for unit + value pairs */
+.sgs-inspector-row {
+	display: grid;
+	grid-template-columns: 1fr auto;
+	gap: 8px;
+	align-items: end;
+}

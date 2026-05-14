@@ -1,0 +1,138 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "sgs/label",
+    "version": "0.1.0",
+    "title": "Label",
+    "category": "sgs-content",
+    "description": "Atomic eyebrow / kicker / badge text block. Three style variants: plain text, full-width pill fill, content-width pill wrap. Reusable for section eyebrows, card-tag badges, and intro labels.",
+    "keywords": [
+        "label",
+        "eyebrow",
+        "kicker",
+        "badge",
+        "pill",
+        "tag"
+    ],
+    "textdomain": "sgs-blocks",
+    "icon": "tag",
+    "supports": {
+        "align": true,
+        "html": false,
+        "color": {
+            "text": true,
+            "background": true,
+            "link": false
+        },
+        "spacing": {
+            "margin": true,
+            "padding": false
+        }
+    },
+    "selectors": {
+        "root": ".wp-block-sgs-label",
+        "typography": ".wp-block-sgs-label"
+    },
+    "attributes": {
+        "text": {
+            "type": "string",
+            "source": "html",
+            "selector": ".wp-block-sgs-label",
+            "default": ""
+        },
+        "tag": {
+            "type": "string",
+            "enum": [ "span", "p", "div" ],
+            "default": "span"
+        },
+        "variantStyle": {
+            "type": "string",
+            "enum": [ "plain", "pill-fill", "pill-wrap" ],
+            "default": "plain"
+        },
+        "textColour": {
+            "type": "string",
+            "default": "primary"
+        },
+        "backgroundColour": {
+            "type": "string",
+            "default": "primary"
+        },
+        "fontFamily": {
+            "type": "string",
+            "default": ""
+        },
+        "fontSize": {
+            "type": "number",
+            "default": 12
+        },
+        "fontSizeUnit": {
+            "type": "string",
+            "default": "px"
+        },
+        "fontSizeTablet": {
+            "type": "number"
+        },
+        "fontSizeMobile": {
+            "type": "number"
+        },
+        "fontWeight": {
+            "type": "string",
+            "default": "600"
+        },
+        "lineHeight": {
+            "type": "number",
+            "default": 1.2
+        },
+        "lineHeightUnit": {
+            "type": "string",
+            "default": "em"
+        },
+        "letterSpacing": {
+            "type": "number",
+            "default": 0.08
+        },
+        "letterSpacingUnit": {
+            "type": "string",
+            "default": "em"
+        },
+        "textTransform": {
+            "type": "string",
+            "default": "uppercase"
+        },
+        "textDecoration": {
+            "type": "string",
+            "default": ""
+        },
+        "paddingTop": {
+            "type": "number",
+            "default": 4
+        },
+        "paddingRight": {
+            "type": "number",
+            "default": 12
+        },
+        "paddingBottom": {
+            "type": "number",
+            "default": 4
+        },
+        "paddingLeft": {
+            "type": "number",
+            "default": 12
+        },
+        "borderRadius": {
+            "type": "number",
+            "default": 6
+        }
+    },
+    "editorScript": "file:./index.js",
+    "editorStyle": "file:./index.css",
+    "style": "file:./style-index.css",
+    "example": {
+        "attributes": {
+            "text": "Our signature",
+            "variantStyle": "plain",
+            "textColour": "primary"
+        }
+    }
+}

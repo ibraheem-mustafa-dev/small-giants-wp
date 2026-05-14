@@ -1,0 +1,97 @@
+/* ===== SGS Label — Frontend + Editor ===== */
+
+/* ----- Base (all variants) ----- */
+.wp-block-sgs-label {
+	/* Default values — overridden per-instance via CSS custom properties set inline */
+	--sgs-label-colour: var(--wp--preset--color--primary);
+	--sgs-label-bg: var(--wp--preset--color--primary);
+	--sgs-label-font-size: 12px;
+	--sgs-label-font-weight: 600;
+	--sgs-label-line-height: 1.2em;
+	--sgs-label-letter-spacing: 0.08em;
+	--sgs-label-text-transform: uppercase;
+	--sgs-label-text-decoration: none;
+	--sgs-label-border-radius: 6px;
+	--sgs-label-padding: 4px 12px 4px 12px;
+	--sgs-label-font-family: inherit;
+
+	display: inline-block;
+	color: var(--sgs-label-colour);
+	font-family: var(--sgs-label-font-family);
+	font-size: var(--sgs-label-font-size);
+	font-weight: var(--sgs-label-font-weight);
+	line-height: var(--sgs-label-line-height);
+	letter-spacing: var(--sgs-label-letter-spacing);
+	text-transform: var(--sgs-label-text-transform);
+	text-decoration: var(--sgs-label-text-decoration);
+
+	/* Reset margin for span/div wrappers so layout isn't unexpected */
+	margin: 0;
+}
+
+/* ----- Variant: plain (eyebrow — no background, no padding) ----- */
+.wp-block-sgs-label.is-style-plain {
+	background: none;
+	padding: 0;
+	border-radius: 0;
+}
+
+/* ----- Variant: pill-fill (full-width rounded background) ----- */
+.wp-block-sgs-label.is-style-pill-fill {
+	display: block;
+	width: 100%;
+	background-color: var(--sgs-label-bg);
+	padding: var(--sgs-label-padding);
+	border-radius: var(--sgs-label-border-radius);
+	text-align: center;
+	/* Ensure text colour reads against the background (operator responsibility,
+	   but provide a legible contrast-safe default via the colour token pair) */
+	color: var(--wp--preset--color--surface, #ffffff);
+}
+
+/* Opt-out override: operator can re-apply --sgs-label-colour via inspector */
+.wp-block-sgs-label.is-style-pill-fill:not([style*="--sgs-label-colour"]) {
+	color: var(--wp--preset--color--surface, #ffffff);
+}
+
+/* ----- Variant: pill-wrap (content-width — collapses to text width) ----- */
+.wp-block-sgs-label.is-style-pill-wrap {
+	display: inline-block;
+	width: max-content;
+	max-width: 100%;
+	background-color: var(--sgs-label-bg);
+	padding: var(--sgs-label-padding);
+	border-radius: var(--sgs-label-border-radius);
+	color: var(--wp--preset--color--surface, #ffffff);
+}
+
+.wp-block-sgs-label.is-style-pill-wrap:not([style*="--sgs-label-colour"]) {
+	color: var(--wp--preset--color--surface, #ffffff);
+}
+
+/* ----- Responsive font size overrides (tablet / mobile) ----- */
+/* Applied via a sibling CSS custom property written by the save layer.
+   Because CSS has no conditional var() fallback that triggers on
+   breakpoints, responsive font sizes are handled via @media wrappers
+   using data attributes set during render. This approach is the
+   SGS-standard pattern (mirrors hero / info-box blocks). */
+@media ( max-width: 1024px ) {
+	.wp-block-sgs-label[data-font-size-tablet] {
+		font-size: attr(data-font-size-tablet);
+	}
+}
+
+@media ( max-width: 767px ) {
+	.wp-block-sgs-label[data-font-size-mobile] {
+		font-size: attr(data-font-size-mobile);
+	}
+}
+
+/* ===== Reduced motion — no animated states on this block ===== */
+/* (Label has no transitions; rule kept as placeholder for
+   future hover/animation additions — matches SGS pattern.) */
+@media ( prefers-reduced-motion: reduce ) {
+	.wp-block-sgs-label {
+		transition: none;
+	}
+}
