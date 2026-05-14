@@ -843,7 +843,7 @@ def stage_2_match(boundary_output: dict, run_dir: Path) -> dict:
         scaffolds = cm.discover_scaffold_blocks()
         matches: list[dict] = []
         for boundary in boundary_output.get("boundaries", []):
-            ranked = cm.score_candidates(boundary, registered, patterns, scaffolds)
+            ranked = cm.score_candidates(boundary, registered, patterns, scaffolds, run_dir=run_dir)
             top = ranked[0] if ranked else {"block_name": "core/group", "confidence": 0.0, "tie_breaker": "deferred-no-match"}
             matches.append({
                 "boundary_id": boundary["boundary_id"],
@@ -1064,7 +1064,7 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                 tr = token_resolver()
                 tr_items = [{"block_slug": target_block, "attr_name": k, "raw_value": v}
                             for k, v in section_attrs.items()]
-                section_token_resolutions = tr.resolve_batch(tr_items, theme_json)
+                section_token_resolutions = tr.resolve_batch(tr_items, theme_json, run_dir=run_dir)
                 for res in section_token_resolutions:
                     if not res.get("is_gap_candidate") and res.get("token_slug") is not None:
                         section_attrs[res["attr_name"]] = res["token_slug"]
@@ -1109,6 +1109,7 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                     report = vr.add_token(
                         _client_slug, role, slug, raw_value.strip(),
                         theme_root=_theme_root, write=True,
+                        run_dir=run_dir,
                     )
                     if report.get("action") in ("inserted", "updated"):
                         section_new_tokens_written.append((role, slug))
@@ -1147,7 +1148,7 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
         if section_attrs and theme_json and block_json:
             try:
                 sw = supports_writer()
-                decision_bundle = sw.filter_writes(target_block, section_attrs, block_json, theme_json)
+                decision_bundle = sw.filter_writes(target_block, section_attrs, block_json, theme_json, run_dir=run_dir)
                 section_supports_decisions = decision_bundle.get("decisions") or []
                 section_supports_omitted = decision_bundle.get("omitted_attributes") or {}
                 section_supports_emitted = decision_bundle.get("emitted_attributes") or dict(section_attrs)
@@ -1797,9 +1798,13 @@ def main():
         if aggregate_markup.strip():
             try:
                 validation = wpi.validate_block_markup(aggregate_markup)
+                # wp-blocks CLI emits diagnostics as `issues` (not `errors`/`warnings`).
+                # Read both shapes so a future CLI rename to `errors` stays compatible.
+                # Without this fall-through, "invalid" was surfacing with empty errors --
+                # silently dropping every "Unknown block" diagnostic. Caught 2026-05-14.
                 stage_4j_summary["validate_block_markup"] = {
                     "status": validation.get("status"),
-                    "errors": validation.get("errors") or [],
+                    "errors": validation.get("issues") or validation.get("errors") or [],
                     "warnings": validation.get("warnings") or [],
                 }
                 status_str = validation.get("status", "unknown")
@@ -1922,6 +1927,7 @@ def main():
             run_id=so_run_id,
             extract_artefact={"output": extract_out},
             boundary_artefact=boundary,
+            run_dir=so_run_dir,
         )
         print(reg_mod.summarise(register_result))
     elif args.skip_register:
