@@ -1,0 +1,392 @@
+---
+doc_type: spec
+spec_id: 16
+spec_version: 0.2
+project: small-giants-wp
+title: Deterministic Slot-Aware Converter — Spec 15 §7 Stages 3-7 Implementation
+status: ACCEPTED 2026-05-14 — Phase 1 prototype shipped; Phases 2-6 queued for next session
+session_date: 2026-05-14
+authors: Bean + Claude (Opus 4.7)
+relationship_to_spec_15: |
+  Spec 16 is the concrete implementation of Spec 15 §7 Stages 3-7. Spec 15
+  defined the convention layer (SGS-BEM), the mapping layer (slot synonyms +
+  property suffixes + modifier suffixes), the data layer (block_attributes
+  with canonical_slot column populated by /sgs-update Stage 4), and the 10-
+  stage pipeline shape. Spec 16 specifies the actual converter module that
+  consumes the Layer 2 + Layer 3 data Spec 15 created.
+  
+  Spec 15 §7.2 already commits to retiring overrides/hero.py "after Phase 3
+  of this spec lands (canonical-slot data populated in sgs-db)". That data
+  IS now populated. Spec 16 delivers the deletion.
+
+  Spec 15 stays canonical for L0-L3, Stage 0-2, Stage 8-9, and the
+  /sgs-update pipeline. Spec 16 owns Stages 3-7 (extraction → token snap →
+  default-inherit → emission → render) and the converter module surface.
+references:
+  - .claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md (canonical L0-L3 + §7 outline)
+  - .claude/cloning-pipeline-flow.md (annotated stage map + script status)
+  - .claude/tooling-map.md (per-script inventory)
+  - .claude/skills-commands-map.md (skill + command catalogue)
+  - .claude/db-tables-map.md (DB schema R/W matrix)
+captured_corrections_this_session:
+  - container-mandatory-at-section-mandatory-only-at-section
+  - status-built-filter-falls-through-doesnt-block
+  - tag-fallback-wins-over-bem-class
+  - composite-claims-slot-first-then-standalone
+  - pass-through-wrappers-lift-css-to-variation
+  - retire-extract-py-this-cycle-not-deferred
+---
+
+# Spec 16 — Deterministic Slot-Aware Converter
+
+## 1. Purpose + relationship to Spec 15
+
+Implement Spec 15 §7 Stages 3-7 as a single recursive DOM walker that consumes the canonical_slot / role / derived_selector data that `/sgs-update` Stage 4 already populates in `block_attributes`.
+
+The implementation **replaces**:
+- `tools/recogniser-v2/extract.py` (731 lines) — per-block role-strategy dispatcher
+- `tools/recogniser-v2/extract_strategies.py` (303 lines) — 11 role strategies
+- `tools/recogniser-v2/overrides/hero.py` (908 lines) — per-block hand-coded override
+
+Total legacy code retired: ~1,942 lines. Replacement: ~1,140 lines across 3 Python modules (db_lookup.py ~280, convert.py ~680, convert_page.py ~170 — verified Haiku QC 2026-05-14). The retired code lives in `tools/recogniser-v2/` which is kept as a deprecated path with a deletion gate in Phase 6.
+
+## 2. The 5 architectural rules (accepted 2026-05-14)
+
+### R1 — Container rule (refined per Bean 2026-05-14)
+
+> sgs/container is **MANDATORY** at the top-level section boundary (one container per section, wrapping the whole pattern).
+> sgs/container is **AVAILABLE** anywhere else when a container block's functionality (background, max-width, columns, shape dividers, etc.) provides utility.
+> sgs/container is **NOT auto-emitted** for nested wrappers without functionality. Those pass through.
+
+The converter only auto-emits sgs/container at the top-level section. Operators / pattern authors can still nest containers manually when wanted. Captured 2026-05-14.
+
+### R2 — Atomic-tag precedence
+
+> Tag-fallback ALWAYS wins over BEM class-based routing for atomic tags.
+
+`<img class="sgs-product-card__image">` → core/image, not a slot-wrapper container. The class travels as className AND is lifted into the parent block's typed attribute when the parent claims the slot. Captured 2026-05-14.
+
+### R3 — Slot-claim precedence
+
+> A composite block claims its canonical slot ONLY when the descendant is inside its block-root. Outside the parent block, the canonical slot routes to its standalone block fallback.
+
+Inside `sgs/product-card`, a `__card-tag` descendant becomes `trialTag` attr. Outside, an unparented `__label` becomes `sgs/label`. Captured 2026-05-14.
+
+### R4 — Status filter (refined per Bean 2026-05-14)
+
+> The block lookup uses `status='built'` only. Drafts referencing blocks that aren't yet built do NOT block conversion — they fall through to `sgs/container` with the source className preserved.
+
+**This is the gap-surfacing mechanism, not a stop gate.** When the operator sees the `className: "sgs-novel-block"` carried on an emitted container, they decide: author the new block, or keep as a styled container. The fall-through preserves both the source intent (className) AND the visual styling (CSS lifted to variation buffer).
+
+The status filter is necessary because emitting `<!-- wp:sgs/<planned-block-not-yet-built> /-->` produces a WordPress "this block contains unexpected or invalid content" error in the editor. Status=`built` ensures every emitted block has working PHP/JS to render it.
+
+### R5 — CSS drives emission (re-architected per Bean 2026-05-14)
+
+> Every CSS rule in the source draft has a guaranteed destination in the converter output. The converter NEVER drops a CSS rule. CSS drives emission decisions.
+
+**The principle:** we're making clones. The whole point is faithful reproduction. A CSS rule that exists in the source MUST end up somewhere in the output where it still binds. The converter has three valid destinations for any given rule:
+
+1. **Markup wrapper carrying the className** — the rule's target class lives on an emitted element. Standard case, no further action.
+2. **Typed attribute on the parent block** — the rule's CSS property maps to a typed attribute on the parent emitted block via `property_suffixes` lookup. The value lifts into the attribute; the rule itself doesn't need to ship in variation CSS.
+3. **Attribute gap candidate** — the rule's CSS property doesn't currently have a matching typed attribute on the responsible block. The converter writes the gap to `attribute_gap_candidates` (Spec 15 §4.2 table, already exists) with enough context for the operator to author the new attribute.
+
+The converter MUST NOT drop any CSS rule into the void. If options 1-3 all fail (the rule has no parent block AND no atomic emitted wrapper to carry it), that's a converter bug — surface as halt-level.
+
+**Mechanic for option 1 (wrapper emission, CSS-driven):**
+
+When walking a wrapper that wouldn't otherwise emit (no block match, no typed-attr lift available, no canonical-slot standalone), check whether ANY CSS rule in the parsed-CSS dict targets the wrapper's classes. If yes → emit `sgs/container` (or `core/group` per styling needs) carrying the className. The wrapper becomes a markup anchor for the CSS rule. If no → pass-through walk (the original R5 behaviour, now safe because no CSS exists to anchor).
+
+**This corrects the over-aggressive R1 implementation.** R1 says "sgs/container is mandatory at top-level, available elsewhere when its functionality is useful". CSS rules targeting a wrapper class ARE a form of useful functionality — they're explicit layout/styling intent. The converter detects CSS presence and emits the wrapper when needed.
+
+**Mechanic for option 2 (typed-attr lift):**
+
+For each CSS rule lifted at the parent-block level (e.g. `.sgs-hero { padding: 56px; }` while inside the `sgs/hero` block-root):
+- Iterate CSS properties; look up `property_suffixes` table for each
+- Find the parent block's typed attribute matching the property's role
+- If matched: snap value to theme.json token (CSS-token-snap pass, per Gemini Flash QC), lift into the attribute
+- If not matched: option 3 fires (gap candidate)
+
+**Mechanic for option 3 (attribute gap candidate):**
+
+The converter writes one row per (block_slug, css_property, raw_value, source_class) to `sgs-framework.db.attribute_gap_candidates`. The Stage 9 coverage report aggregates these into the operator-review.html. Operator decision per gap:
+- Author the new attribute on the block.json (recommended) — converter picks it up on the next run
+- Author a new pattern that includes a wrapper carrying the class (alternative)
+- Mark as "intentional-noop" (accept the styling won't apply — rare and surfaces in the report regardless)
+
+**Why this matters:** the converter becomes a "block schema discovery" tool. Running it on a real client draft tells us exactly what attributes are missing from our catalogue. Over time, the catalogue extends to cover every CSS pattern Bean's drafts use.
+
+## 3. The 9 functional requirements
+
+### FR1 — Block-root slot harvest
+
+For every SGS-BEM draft section whose `.sgs-<block>` matches a registered block (status=built):
+- Emit one `<!-- wp:sgs/<block> {attrs} /-->` (self-closing) with attrs lifted from descendants
+- Descendant elements with `__<element>` class names lift into the matching attribute via `attr_name_for_slot_or_alias(block_slug, canonical_slot_for(element))`
+- Tag-fallback fires for unclassed `<h*>` (lifts to heading-slot attr, generic via DB lookup) and CTA `<a class="sgs-button">` (lifts to ctaText/Url or ctaPrimaryText/Url + ctaSecondaryText/Url depending on schema)
+- Array-typed attrs (e.g. `packSizes` on product-card) use special-case extractors
+
+### FR2 — Atomic-tag emission
+
+Per ATOMIC_TAG_MAP:
+- `<h1>`–`<h6>` → `core/heading` with `level` and optional `anchor`
+- `<p>` → `core/paragraph`
+- `<img>` → `core/image` with `url`/`alt`/`width`/`height`; url resolved through media-map
+- `<a class*="sgs-button">` → `sgs/button`
+- `<button>` → `sgs/button`
+- `<span>`/`<div>` with SGS-BEM element resolving to a canonical slot that has a standalone block — route to that block (e.g. `sgs/label` for label/badge/icon)
+
+### FR3 — Pass-through wrapper rule
+
+For any element that doesn't match FR1/FR2 and isn't the top-level section:
+- DO NOT emit a sgs/container wrapper
+- Walk children, return concatenated child markup joined with newlines
+- Lift the wrapper's source CSS rules into the variation buffer (per R5)
+
+### FR4 — Top-level section container
+
+For the outermost section element (called with `is_top_level=True`):
+- Emit `sgs/container` with the SGS-BEM class preserved as `className`
+- Lift the section-level CSS rules into the variation buffer
+- This is the ONLY place the converter AUTO-emits sgs/container
+
+### FR5 — Media-map resolution
+
+Before emitting `core/image` (or any image-bearing typed attr like `sgs/product-card.image`):
+- Look up the source `src` basename in the loaded media-map
+- If found, substitute the registered WP attachment URL
+- If not found, pass the original src unchanged
+
+Hook point: `/image-optimiser` runs at the orchestrator's Stage 4i media-sideload step, not inside the converter.
+
+### FR6 — CSS routing (three-destination policy per R5)
+
+For every CSS rule in the parsed-CSS dict, the converter MUST route it to one of three destinations. Never drop.
+
+**Destination 1 — Typed attribute lift (preferred):**
+
+When the rule targets a class on a descendant inside a block-root, AND the CSS property maps to a typed attribute on that parent block via `property_suffixes`:
+- Apply CSS-token-snap to the value (Spec 15 §5.4): look up nearest theme.json token via `design_tokens`; ΔE2000 ≤ 2.0 → snap (confidence 1.0); ≤ 5.0 → snap (0.85); ≤ 10.0 → snap (0.6); > 10.0 → keep raw + flag gap candidate
+- Lift the (possibly snapped) value into the typed attribute
+- The rule does NOT ship in variation CSS — the block's render.php applies the styling via inline styles or block-level CSS at editor save
+
+**Destination 2 — Markup wrapper carrying className (fallback):**
+
+When the rule targets a class on a wrapper that has NO typed-attr destination (block doesn't expose a matching attr, OR the wrapper isn't inside any block-root):
+- Emit a markup wrapper for that node (`sgs/container` or `core/group` depending on layout needs) carrying the className
+- Lift the rule into the variation CSS buffer; orchestrator writes it to `theme/sgs-theme/styles/<client>.json` `styles.css` field, scoped via `.page-id-N`
+- The class on the emitted wrapper is the anchor for the CSS rule
+
+**Destination 3 — Attribute gap candidate:**
+
+When the rule's class IS inside a block-root AND the CSS property logically belongs as a typed attribute, BUT the block doesn't currently declare such an attribute:
+- Write a row to `sgs-framework.db.attribute_gap_candidates` (table exists per Spec 15 §4.2): `(block_slug, attr_name_proposed, css_property, raw_value, source_class, source_run_id)`
+- The Stage 9 coverage report aggregates these into operator-review.html
+- Operator authors the missing attribute on the block.json — converter picks it up next run (Destination 1 now succeeds)
+- Until authored: the rule ALSO lifts to Destination 2 as a temporary fallback so styling doesn't visibly drop while the operator decides
+
+**Hard rule:** every CSS rule MUST hit at least one of Destinations 1 / 2 / 3. The converter logs a halt-level error if a rule can't be routed. There is no fourth "silently dropped" destination.
+
+**Implication for FR3 (pass-through):** an unmatched wrapper passes through (no markup wrapper) ONLY when no CSS rules in the buffer target its classes. The presence of CSS upgrades the pass-through to a Destination-2 emission.
+
+**Reporting:** Stage 9 surfaces per-section:
+- Typed-attr lifts (count) — these are the "perfect" conversions
+- Wrapper-CSS lifts (count + class list) — these are working but operator could promote to typed attrs over time
+- Attribute gap candidates (count + (block, property, value) triples) — the catalogue-extension work queue
+
+### FR7 — Visual QA verification (the closure gate)
+
+Spec 16 is not closed until end-to-end visual QA passes:
+- Run `/sgs-clone --converter` on a target page (Mama's homepage is the canary)
+- Deploy resulting block markup + variation CSS to staging
+- Run `/visual-qa` against the deployed URL at 375 / 768 / 1440 viewports
+- Pixel diff ≤ 1% against the source mockup
+
+Until FR7 verifies, "is it visually correct?" remains unanswered.
+
+### FR8 — Legacy extract.py retirement (added 2026-05-14 per Bean)
+
+**Clarified gating per Sonnet QC 2026-05-14 — three-tier confidence:**
+
+Spec 15 §7.2 originally authorised this deletion "after Phase 3 of this spec lands (canonical-slot data populated in sgs-db)". That data IS now populated. Spec 16 narrows the gate to three concrete preconditions:
+
+1. **Spec 16 Phase 3 (orchestrator wiring) tests green** — the converter is the live Stage-4 path for SGS-BEM-canonical sections; legacy extract.py is reachable only as fallback for non-SGS-BEM input
+2. **At least one client (Mama's homepage) passes the converter end-to-end** through deploy + Stage 8 visual QA
+3. **Grep audit of the orchestrator codebase confirms no Python imports of `extract.py` / `extract_strategies.py` / `overrides/*` outside `tools/recogniser-v2/__init__.py`**
+
+If (3) finds external imports, those get rewired to the converter BEFORE the deletion. Two-client validation (Mama's + Indus Foods or helping-doctors) is DESIRABLE but is the criterion for full Spec 16 closure (§9 item 7), not for FR8 specifically. Single-client visual QA pass is sufficient to retire the legacy code.
+
+Deletion steps:
+- `rm tools/recogniser-v2/extract.py`
+- `rm tools/recogniser-v2/extract_strategies.py`
+- `rm -rf tools/recogniser-v2/overrides/`
+- Update `tools/recogniser-v2/__init__.py` to re-export converter module functions
+- Update Spec 15 §7.1 + §7.2 to reference Spec 16
+- Update `tooling-map.md` + `cloning-pipeline-flow.md` to reflect Stage 4 path swap
+
+### FR9 — sgs/heading composite block (added 2026-05-14 per Bean)
+
+Build a new composite block `sgs/heading` that packages the section-heading three-element pattern as one block.
+
+**Source pattern in drafts:**
+```html
+<span class="sgs-section-heading__label">Give the gift of nourishment</span>
+<h2 id="gift-h2">A gift she'll actually use</h2>
+<p class="sgs-section-heading__sub">For baby showers, new arrivals, and the mums who deserve a treat.</p>
+```
+
+**Block attrs:**
+- `label` (string) + `labelTag` (enum: span/p/div, default "span") + `labelEnabled` (boolean, default true) + label typography family (mirrors sgs/hero's labelFontSize/Weight/etc, default `textTransform: "uppercase"`)
+- `headline` (string) + `headlineLevel` (enum: h1-h6, default "h2") + `headlineId` (string, anchor) + heading typography family
+- `subheading` (string) + `subheadingTag` (enum, default "p") + `subheadingEnabled` (boolean, default true) + sub typography family (mirrors sgs/hero's sub family)
+- `icon` (string) + `iconPosition` (enum: above-label, beside-label, none, default "none") — leverages existing sgs/icon block conventions
+- `emoji` (string) — single emoji rendered alongside label per existing block patterns
+- Container attrs inherited from sgs/container `supports` for background / spacing if section-heading needs them at block-level
+- Alignment + colour controls native via `supports.color` + `supports.spacing.margin`
+
+**Default styles taken from the gift-section CSS** (so the block ships with sensible visual defaults):
+- Label: uppercase, 11px-13px, weight 700, letter-spacing 0.5px, colour `accent`/text
+- H2 default: 28px mobile / 36px desktop, weight 600, colour `text`
+- Sub: 16px, colour `text-muted`, line-height 1.55
+
+**Converter integration:**
+- When the converter encounters any element whose class matches a block-root pattern for `sgs/heading` (e.g. `<div class="sgs-section-heading">` or `<header class="sgs-heading">`), lift the entire subtree into one `sgs/heading` block instead of emitting children as separate atomic blocks. This uses the same FR1 block-root slot-harvest path as `sgs/product-card`.
+- **Detection rule (corrected per Sonnet QC 2026-05-14):** trigger on the block-root class (`sgs-section-heading` or `sgs-heading`). The three sub-elements (`__label`, the `<hN>` heading, `__sub`) are then harvested from descendants regardless of sibling position, order, or wrapping. This matches how every other composite block (product-card, hero) already works.
+- **Source drafts may not use a wrapping block-root class today.** For backwards compatibility with the Mama's mockup pattern (label + h2 + sub as bare siblings in section content), the converter ALSO recognises a contiguous sibling run matching the three-element template as a heading composite — but Spec 15-conformant new drafts SHOULD wrap them in `<div class="sgs-section-heading">` to be unambiguous.
+- Fallback: if only some elements present (e.g. label + h2 but no sub), still emit sgs/heading with the missing slots disabled. The block.json sets `labelEnabled` / `subheadingEnabled` so absent sections don't render.
+
+## 4. The 6 phases (all next-session work — none deferred per Bean 2026-05-14)
+
+### Phase 1 — Standalone prototype (SHIPPED 2026-05-14)
+
+- `db_lookup.py` + `convert.py` + `convert_page.py` ✓
+- `sgs/label` atomic block ✓ (PR #21 merged)
+- Test on `.claude/test/Featured-product.html` ✓
+- Test on `sites/mamas-munches/mockups/homepage/index.html` (9 sections, 10 block types) ✓
+- Container over-emission fixed (114 → 12) ✓
+- Sonnet Issue 2 applied (status='built' filter) ✓
+
+### Phase 2 — Atomic-block expansion: sgs/heading + sgs/divider
+
+Build TWO blocks:
+- `sgs/heading` per FR9 above (the section-heading composite)
+- `sgs/divider` — styled section separator (Q5a #3 — currently emits as empty container or core/separator)
+
+Skip `sgs/icon` (already exists). Skip the other 7 candidates from Q5a.
+
+**Subagent dispatch plan**: 2 parallel Sonnet implementers (one per block, disjoint file sets), 1 Haiku QC reviewer per output, sgs-update Stage 4 in between to populate canonical_slot rows. Total wall time ≤ 45 min.
+
+### Phase 3 — Orchestrator wiring (Spec 15 Stage 4 replacement)
+
+- Add `--mode pipeline --out <path>` CLI to `convert.py` that writes per-section JSON in Stage 4 schema
+- Add `--converter-v2` flag to `sgs-clone-orchestrator.py`
+- Branch in `stage_4_5_6_7_8_extract` to dispatch the converter for SGS-BEM-canonical sections
+- Skip Stages 4.5 (token resolve), 5 (supports decision), 7 (compose) when converter is used — converter does these inline
+- Keep Stages 0.1, 0.5, 1, 2, 4i, 4j, 8, 9, +REGISTER unchanged
+
+**Subagent dispatch plan**: 1 Sonnet implementer for the orchestrator branch, 1 Sonnet QC for the per-section JSON shape correctness, 1 Haiku QC for the flag wiring. Total wall time ≤ 30 min.
+
+### Phase 4 — Visual QA verification end-to-end
+
+**Baseline clarified per Sonnet QC 2026-05-14:**
+
+The pixel-diff comparison is **WP-rendered output (with active style variation) vs WP-rendered source mockup**, NOT WP-rendered output vs raw mockup HTML. The two are different render contexts:
+
+| Render context | What it includes | Suitable as baseline? |
+|---|---|---|
+| Raw mockup HTML in browser | Local fonts, no WP theme styles, no plugin styles | No — too many spurious diffs (font loading, base styles, variation overrides) |
+| WP-rendered source mockup (mockup HTML pasted into a WP post on staging) | Active theme CSS, active style variation, all WP filters | **Yes — this is the canonical baseline.** Diffs reflect ONLY converter output differences, not render-context differences. |
+| WP-rendered converter output (the new path) | Same theme + variation context | The thing being measured |
+
+The Phase 8 visual_qa_capture.py module already supports rendering BOTH the mockup-as-WP-post AND the converter-output-as-WP-post and diffing them. Phase 4 reuses that exact path — no new render comparator needed.
+
+**Steps:**
+- Build Mama's homepage via `/sgs-clone --converter-v2 sites/mamas-munches/mockups/homepage/index.html`
+- Deploy to sandybrown-nightingale-600381.hostingersite.com (staging)
+- Render the SAME mockup as a WP post on the same staging site (the baseline)
+- Run `/visual-qa` against both URLs at 3 viewports (375, 768, 1440)
+- Pixel diff ≤ 1% per viewport vs the WP-rendered mockup baseline
+
+**Max iteration gate (per Sonnet QC 2026-05-14):** if Phase 4 fails on the first run, dispatch ONE Sonnet diagnostician to identify the converter bug + propose a patch. Apply the patch, re-run. If the SECOND iteration still fails, surface the diff thumbnails to Bean for human review. Three iterations maximum per Phase 4 attempt — prevents unbounded loop.
+
+**Subagent dispatch plan**: inline `/sgs-clone --converter-v2` run + inline `/visual-qa` run; if diff > 1%, dispatch Sonnet diagnostician (max 2 dispatches). Total wall time ≤ 60 min (≤ 45 min on first-pass success).
+
+### Phase 5 — /sgs-update Stage 4 canonical pass
+
+`/sgs-update` Stage 4 (canonical assignment) hasn't yet populated canonical_slot for the new sgs/label block's typography family. Run a manual pass + spot-check the output. Same for sgs/heading + sgs/divider when Phase 2 lands.
+
+**Subagent dispatch plan**: inline. ~10 min.
+
+### Phase 6 — Retire legacy extract.py (FR8)
+
+Delete the 1,942 lines of extract.py + extract_strategies.py + overrides/hero.py. Update Spec 15 references. Add tooling-map entries.
+
+**Subagent dispatch plan**: 1 Sonnet implementer (carefully sequences the deletes + import-path updates), 1 Haiku QC verifying no stale references. Total wall time ≤ 20 min.
+
+### Total next-session estimate (all phases, parallel where safe): ~2.5 hours
+
+## 5. Module surface (Phase 1 shipped, Phases 2-6 add to this)
+
+### Current modules (Phase 1)
+
+| Module | Role | Lines (verified) | Status |
+|---|---|---|---|
+| `.claude/scratch/converter-prototype/db_lookup.py` | DB-backed canonical lookups | 282 | Prototype scratch |
+| `.claude/scratch/converter-prototype/convert.py` | Single-section converter + DOM walker | 681 | Prototype scratch |
+| `.claude/scratch/converter-prototype/convert_page.py` | Full-page wrapper | 173 | Prototype scratch |
+| **Total** | | **1,136 lines** | (Haiku QC 2026-05-14) |
+
+### Phase 3 target locations (production)
+
+| Module | Role | Promoted from |
+|---|---|---|
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/db_lookup.py` | Canonical lookups | scratch/ |
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` | DOM walker | scratch/ |
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert_page.py` | Full-page wrapper | scratch/ |
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/__init__.py` | Public API: `convert_section(html, css, media_map) → (markup, variation_css)` | NEW |
+
+## 6. What gets retired (Phase 6)
+
+| File | Lines | Why retired |
+|---|---|---|
+| `tools/recogniser-v2/extract.py` | 731 | Replaced by converter's `walk()` + `lift_subtree_into_block_attrs()` |
+| `tools/recogniser-v2/extract_strategies.py` | 303 | Role-strategy dispatch replaced by canonical_slot DB lookup |
+| `tools/recogniser-v2/overrides/hero.py` | 908 | Per-block override pattern obsolete once canonical_slot data is complete |
+| `tools/recogniser-v2/overrides/__init__.py` | Small | Module registry no longer needed |
+
+What stays:
+- `tools/recogniser-v2/data/role-templates.json` — referenced by Spec 15 §6 Stage 4; canonical_slot data layer
+- `tools/recogniser-v2/visual_qa_config.json` — pixel-diff thresholds, used by Stage 8
+- `tools/recogniser-v2/*-validator.js` — multi-frame QA, used by Stage 8
+
+## 7. Open design questions (answered or parked)
+
+| # | Question | Resolution |
+|---|---|---|
+| Q1 | Which canonical slot vocabulary is missing for v0.2? | Add `icon` canonical (Bean confirmed sgs/icon-block already exists, just needs the canonical row in slot_synonyms). Other Q5a candidates either already exist or stay deferred. |
+| Q2 | Converter as new module vs CLI substitute? | Module — same-process import via `from orchestrator.converter_v2 import convert_section`. ~50ms saved per section, easier stack traces. CLI substitute pattern only retained for `extract.py` legacy compatibility during Phase 3. |
+| Q3 | How do blocks usually store CSS? | Three places: (1) theme.json tokens (cross-block), (2) per-block style.css (block's static frontend CSS), (3) per-instance inline `style="..."` set by editor for non-token values. Spec 16's variation buffer lands in (1) at `theme/sgs-theme/styles/<client>.json` styles.css field, scoped via `.page-id-N`. |
+| Q4 | /sgs-update + new label block typography canonicals? | Yes — manual Stage 4 pass in Phase 5. Or extend `assign-canonical.py` heuristics during Phase 5. |
+
+## 8. Known limitations + parked items (non-blocking)
+
+| Item | Severity | Source | Resolution |
+|---|---|---|---|
+| `source: "html"` on sgs/label.text is broad — round-trip break if save.js wraps content later | Low | Sonnet Issue 1 | Park; revisit when adding sgs/heading with multi-RichText (Phase 2) |
+| `attr(data-X)` CSS responsive doesn't work cross-browser (systemic across hero/info-box) | Medium | Sonnet Issue 3 | Park; switch to inline CSS custom properties at save time across all blocks in a future cleanup pass |
+| variantStyle enum hardcoded `["standard","trial","gift"]` | Low | Sonnet enum live-reading | Move to live DB read via `block_attributes.enum_values` in Phase 3 |
+| Nested block-roots (block inside block) need recursion guard | Edge case | Sonnet Q1 edge case | Add guard in Phase 3 wiring work |
+| JSON serialisation has no pre-emit validation for newlines/quotes | Low | Gemini Flash surprise 1 | Add in Phase 3 |
+
+## 9. Validation criteria for "the universal cloning script that works without intervention"
+
+Bean's stated end goal: a script that converts any SGS-BEM draft into a working WP site with zero AI or Bean intervention. Spec 16 closure requires ALL of:
+
+1. ✓ Phase 1 — prototype produces clean block markup on the Mama's mockup (single-page test)
+2. ⏳ Phase 2 — sgs/heading + sgs/divider blocks exist; converter routes to them
+3. ⏳ Phase 3 — converter wired into orchestrator; `/sgs-clone --converter-v2` runs end-to-end
+4. ⏳ Phase 4 — Mama's homepage deployed via converter passes `/visual-qa` at ≤ 1% pixel diff (THIS is the closure gate)
+5. ⏳ Phase 5 — /sgs-update Stage 4 canonical data complete for all new blocks
+6. ⏳ Phase 6 — legacy extract.py + overrides retired
+7. ⏳ End-to-end run on a SECOND client (Indus Foods or helping-doctors) without code changes — confirms the architecture generalises
+
+Items 1-6 are next-session work. Item 7 is the production validation that happens after the first client ships.
