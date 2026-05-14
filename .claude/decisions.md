@@ -2,6 +2,53 @@
 
 Append-only. Most-recent first.
 
+## 2026-05-14 - Phase 6 v2 Step 4 retrospective QC panel + 6 fixes (one combined commit)
+
+**Context:** Captured rule `feedback_qc_before_commit.md` (blub.db, 2026-05-12) requires a multi-rater QC panel BEFORE each commit. Steps 4b–4k shipped 10 commits without the panel — only the local 4-gate (pytest + drift-validator + drift-check + AST) was run. Bean flagged the gap. Recovery: one combined retrospective panel covering the full diff `90fdb8e5..HEAD` with Sonnet (strict) + Haiku (sanity) + Gemini Flash (third-eye) dispatched in parallel. Going-forward rule: panel before each commit from Step 5 onwards.
+
+**Panel verdict:** FIX-AND-SHIP. Six findings (2 ship-blockers + 4 high-severity concerns) addressed in this commit; non-blocking nits deferred.
+
+**Fixes applied:**
+
+1. **Step 4h path math** (Sonnet). `run_dir = REPO/"pipeline-state"/run_id` is two segments past REPO. The original `out_root = run_dir.parent.parent` resolved to REPO, so the gap-review.md was being written to `<repo-root>/sgs-clone/<run_id>/gap-review.md` — outside `pipeline-state/`, polluting the working tree. Fix: `out_root = run_dir.parent` so the file lands at `pipeline-state/sgs-clone/<run_id>/gap-review.md` (the module's documented contract).
+
+2. **theme_json staleness** (Gemini Flash). `theme_json` is loaded once before the per-section extract loop. When 4b's `variation_router.add_token` minted a new token in section 1, the in-memory `theme_json` dict was not updated, so section 2's `token_resolver.resolve_batch` didn't see it and re-flagged the same raw value as a fresh gap candidate. Fix: new `_reflect_new_token_in_theme_json` helper + role→registry-slice map mirroring `variation_router._ROLE_TO_REGISTRY`; called inline after every successful `add_token` insert/update.
+
+3. **per_section_results schema mismatch** (Haiku). Deferred-fallback append sites (target_block == "core/group" or confidence == 0) wrote 7-key dicts; the normal path wrote 13-key dicts. Current consumer `_harvest_attribute_gap_candidates` uses `.get()` so it's defensive, but any future direct-key consumer (Step 7 compose, downstream operator scripts) would `KeyError` on missing fields. Fix: both deferred branches now write the full 13-key schema with safe empty defaults for the new fields.
+
+4. **4b silent suppression on 4a failure** (Sonnet). When `token_resolver.resolve_batch` raised, `section_token_resolutions = []` caused 4b's guard to skip silently with no diagnostic — an operator debugging a zero-new-tokens client run would not see the propagated cause. Fix: second `aggregate_warnings.append` in the 4a `except` block explicitly noting that 4b's variation_router writes are also suppressed.
+
+5. **cloning-pipeline-flow.md gap-list never updated** (Sonnet). Lines 786–789 still listed all 4 critical gaps (Stage 4.5 token snap, Stage 5 inheritance, Stage 1 convention enrichment, Stage 9 gap-writers) as open; the docs-registry drift-check hook covers `tooling-map.md` only. Line 750 still showed `/uimax-classify-naming ✗`. Fix: strike-through each resolved item with the resolution commit hash; flip the `/uimax-classify-naming` annotation to ✓ (heuristic classifier in use; uimax-backed callable injection deferred). Pipeline-stages-LIVE count corrected from 15 → 17 (Stage 4.5 + Stage 5 now live).
+
+6. **Truth-doc placement drift for 4i + 4j** (Gemini Flash). Both updates landed under Stage 7 in `cloning-pipeline-flow.md`, but code dispatches them in `main()` AFTER stage_9_report. Fix: removed the 4i + 4j paragraphs from the Stage 7 block (replaced with a pointer note); added a new "Pre-deploy gate" block placed before Stage 8 documenting the actual execution order.
+
+**Non-blocking findings deferred:**
+- `dynamic_link` per-value try/except (Sonnet concern) — parse-error misattribution; minor.
+- `tl._generate_slug` private-API access (Sonnet concern) — would benefit from a `generate_slug` public alias in token-lint.py.
+- "Phase 6 Step 0" comment label drift (Haiku nit).
+- Lazy-loader registry refactor (all 3 raters) — architectural, defer to a dedicated refactor commit if/when the pattern grows further.
+
+**Going-forward rule (locked):** from Step 5 onwards, the 3-rater panel fires BEFORE every wire-in commit per `feedback_qc_before_commit.md`.
+
+**Verification:**
+- All 81 pytest tests across the 11 Step-4 module suites still green
+- Drift validator still 0/1349 violations
+- tooling-map drift-check still passes
+- AST syntax check on modified orchestrator: OK
+
+**Files touched:**
+- `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` (4 code fixes: path math, theme_json staleness helper + dispatch, schema-stable deferred-fallback dicts, 4b suppression diagnostic)
+- `.claude/cloning-pipeline-flow.md` (2 doc fixes: gap-list + pipeline-stages stats updated, new Pre-deploy gate block + Stage 7 pointer note)
+
+**Doc updates per docs-registry update-trigger matrix:**
+- `cloning-pipeline-flow.md` — gap-list + Stage 7 + Pre-deploy gate (per fix 5 + 6)
+- `decisions.md` (this entry)
+- `tooling-map.md` unchanged (no module wired/unwired in this commit)
+
+**Next:** Step 5 (Rosetta Stone discipline fix in register_patterns.py), with 3-rater panel before commit.
+
+---
+
 ## 2026-05-14 - Phase 6 v2 Step 4k: critical-fix-verification wired after +REGISTER (Step 4 COMPLETE)
 
 **Decision:** Eleventh and final wire-in of Phase 6 v2 Step 4 - `critical_fix_verification.run_harness(run_id=so_run_id)` dispatched at the end of `main()` after the +REGISTER tail (whether it ran or was skipped). The 5-check FR21 boundary harness now fires automatically per clone: `no_root_theme_mutation` + `no_canonical_block_mutation_outside_fr21` + `no_licensing_strings_in_uimax_writes` + `sgs_update_idempotency` + `pipeline_state_clean_post_success`. Aggregated check matrix lands at `run_dir/critical-fix-verification.json`. Soft-fails so a missing optional input (theme hash baseline, sgs_update runner) doesn't blow up an otherwise-successful clone -- the operator still sees the full check matrix in the result.

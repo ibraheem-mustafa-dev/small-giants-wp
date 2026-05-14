@@ -587,6 +587,43 @@ _TOKEN_RESOLVER_ROLE_TO_TOKEN_LINT_CLASS = {
 }
 
 
+# Per-role theme.json registry slice path + value-key, mirroring
+# variation_router._ROLE_TO_REGISTRY. Used by the Step 4b dispatch to
+# reflect newly-minted tokens back into the in-memory theme_json so
+# subsequent sections in the same /sgs-clone run see them via
+# token_resolver.resolve_batch (Gemini Flash QC panel finding 2026-05-14).
+_TOKEN_RESOLVER_ROLE_TO_THEME_JSON_REGISTRY: dict[str, tuple[list[str], str]] = {
+    "color":     (["color", "palette"],            "color"),
+    "spacing":   (["spacing", "spacingSizes"],     "size"),
+    "font_size": (["typography", "fontSizes"],     "size"),
+    "shadow":    (["shadow", "presets"],           "shadow"),
+    "family":    (["typography", "fontFamilies"],  "fontFamily"),
+}
+
+
+def _reflect_new_token_in_theme_json(theme_json: dict, role: str, slug: str, raw_value: str) -> None:
+    """Append a newly-minted token to the in-memory theme_json registry.
+
+    The variation_router writes the token to the client variation file on
+    disk; this helper also mutates the orchestrator-scoped theme_json dict
+    so the next section's token_resolver.resolve_batch can snap matching
+    raw values to the new slug instead of re-flagging them as gap
+    candidates. No-op when the token already exists at the slug.
+    """
+    cfg = _TOKEN_RESOLVER_ROLE_TO_THEME_JSON_REGISTRY.get(role)
+    if cfg is None:
+        return
+    path, value_key = cfg
+    settings = theme_json.setdefault("settings", {})
+    area = settings.setdefault(path[0], {})
+    bucket = area.setdefault(path[1], [])
+    if not isinstance(bucket, list):
+        return
+    if any(isinstance(e, dict) and e.get("slug") == slug for e in bucket):
+        return
+    bucket.append({"slug": slug, value_key: raw_value.strip()})
+
+
 # Lazy-import supports_writer (Spec 15 Phase 6 v2 Step 4c). supports_writer
 # itself transitively loads value-matcher/inheritance.py when present, so the
 # Phase 5 inheritance check is reachable through this single dispatch.
@@ -1025,6 +1062,11 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path) -> dict:
                 m.get("section_id") or boundary_id,
                 boundary.get("class_signature", []),
             )
+            # Schema-stable: every per_section_results entry carries the
+            # full Step-4-era field set (Haiku QC panel finding 2026-05-14).
+            # Deferred-fallback paths populate the trace fields with safe
+            # empty defaults so any direct-key downstream consumer never
+            # hits a KeyError.
             if pattern_markup:
                 aggregate_markup_parts.append(pattern_markup)
                 per_section_results.append({
@@ -1033,8 +1075,15 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path) -> dict:
                     "selector": section_selector,
                     "block_name": "sgs/container",
                     "status": "deferred-composed-pattern",
+                    "extract_path": "",
                     "extracted_attributes": {},
                     "block_markup": pattern_markup,
+                    "token_resolutions": [],
+                    "new_tokens_written": [],
+                    "supports_decisions": [],
+                    "supports_emitted_attributes": {},
+                    "supports_omitted_attributes": {},
+                    "modifier_signals": {},
                 })
             else:
                 aggregate_warnings.append(f"{boundary_id}: deferred fallback + no composable content, skipping")
@@ -1044,8 +1093,15 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path) -> dict:
                     "selector": section_selector,
                     "block_name": target_block,
                     "status": "skipped-deferred",
+                    "extract_path": "",
                     "extracted_attributes": {},
                     "block_markup": "",
+                    "token_resolutions": [],
+                    "new_tokens_written": [],
+                    "supports_decisions": [],
+                    "supports_emitted_attributes": {},
+                    "supports_omitted_attributes": {},
+                    "modifier_signals": {},
                 })
             continue
 
@@ -1100,6 +1156,12 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path) -> dict:
                         section_attrs[res["attr_name"]] = res["token_slug"]
             except Exception as exc:  # noqa: BLE001 - token snap is additive; soft-fail
                 aggregate_warnings.append(f"{boundary_id}: token_resolver soft-failed: {exc}; raw values preserved")
+                # Sonnet QC panel 2026-05-14: when 4a fails, 4b's
+                # variation_router dispatch silently no-ops via the empty
+                # section_token_resolutions guard. Surface that so operators
+                # debugging a zero-new-tokens client run see the propagated
+                # cause without having to read source.
+                aggregate_warnings.append(f"{boundary_id}: variation_router gap-token writes also skipped (suppressed by upstream token_resolver failure)")
 
         # Stage 4.5 (Phase 6 v2 Step 4b) -- route every is_gap_candidate=true
         # resolution into the client's style variation JSON via variation_router.
@@ -1132,6 +1194,10 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path) -> dict:
                     )
                     if report.get("action") in ("inserted", "updated"):
                         section_new_tokens_written.append((role, slug))
+                        # Reflect the new token into the in-memory theme_json
+                        # so the next section's token_resolver can snap to
+                        # the new slug instead of re-flagging the same value.
+                        _reflect_new_token_in_theme_json(theme_json, role, slug, raw_value)
             except Exception as exc:  # noqa: BLE001 - variation routing is additive; soft-fail
                 aggregate_warnings.append(f"{boundary_id}: variation_router soft-failed: {exc}; gap tokens not written")
 
@@ -1526,18 +1592,19 @@ def stage_9_report(boundary: dict, match: dict, slot_list: dict, extract: dict, 
         warnings.append(f"functionality_gap_detector soft-failed: {exc}; behavioural gaps not persisted")
         functionality_gap_detector_result = {"candidate_count": 0, "rows_written": 0, "mode": "errored", "error": str(exc)}
 
-    # 9e-gap-review-report (Phase 6 v2 Step 4h). Render the operator-facing
-    # markdown gap-review.md combining the leftover-bucket-router output
-    # (which carries the severity + gap_level enrichment for every bucket).
-    # The report writes to run_dir/gap-review.md; out_dir for write_report
-    # is the parent of `pipeline-state/sgs-clone/<run_id>` because the
-    # module appends `sgs-clone/<run_id>/gap-review.md` itself.
+    # 9e-gap-review-report (Phase 6 v2 Step 4h, path fix 2026-05-14 QC panel).
+    # Render the operator-facing markdown gap-review.md combining the
+    # leftover-bucket-router output (severity + gap_level enrichment for
+    # every bucket). The module appends `sgs-clone/<run_id>/gap-review.md`
+    # to out_dir internally. run_dir is `REPO/pipeline-state/<run_id>` (two
+    # segments past REPO), so out_dir must be `run_dir.parent` (== REPO/
+    # pipeline-state). The .parent.parent variant introduced in the initial
+    # 4h wire-in resolved to REPO and wrote the report to <repo-root>/
+    # sgs-clone/<run_id>/gap-review.md, polluting the working tree.
     gap_review_report_path: str | None = None
     try:
         grr = gap_review_report()
-        # run_dir is `<root>/pipeline-state/sgs-clone/<run_id>`; out_dir
-        # passed to write_report is `<root>/pipeline-state`.
-        out_root = run_dir.parent.parent
+        out_root = run_dir.parent  # = REPO/pipeline-state
         written = grr.write_report(buckets_output, run_dir.name, out_dir=out_root)
         gap_review_report_path = str(written)
     except Exception as exc:  # noqa: BLE001 - report rendering is advisory; soft-fail

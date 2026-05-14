@@ -235,7 +235,7 @@ Per docs-registry update-trigger matrix:
 
 ## See also
 
-- v1 plan (superseded): [.claude/plans/phase-6-pattern-fidelity.md](phase-6-pattern-fidelity.md)
+- v1 plan (superseded): [.claude/plans/archive/phase-6-pattern-fidelity.md](phase-6-pattern-fidelity.md)
 - Master plan: [.claude/plans/spec-15-master-execution-plan.md](spec-15-master-execution-plan.md)
 - Spec: [.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md](../specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md)
 - Visual flow: [.claude/cloning-pipeline-flow.md](../cloning-pipeline-flow.md)

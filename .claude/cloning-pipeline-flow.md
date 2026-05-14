@@ -412,24 +412,9 @@ The big picture in one page, with EVERY script, file, DB table and skill plotted
 │       FALLBACK ONLY - fires when matched block is core/group or             │
 │       confidence == 0 (which it does for 6 of 9 Mama's sections). Emits a   │
 │       flat wp:sgs/container with bare atomic blocks, NO BEM child wrappers. │
-│  ✓ orchestrator/wp_integration.py - validate_block_markup, route_native    │
-│       _feature, build_deploy_command - WIRED 2026-05-14 (Phase 6 v2        │
-│       Step 4j) - sgs-clone-orchestrator.py main() runs validate_block_    │
-│       markup on aggregate_markup before the autonomy gate; status /        │
-│       errors / warnings land on run_dir/stage-4j.json. route_native_       │
-│       feature + build_deploy_command remain operator-gated (lazy-loaded   │
-│       and reachable from post-clone tooling). Soft-fails when /wp-blocks  │
-│       CLI is missing.                                                       │
-│  ✓ orchestrator/attribute-staged-apply.py + functionality-bulk-apply.py +   │
-│       media-sideload.py - WIRED 2026-05-14 (Phase 6 v2 Step 4i) -          │
-│       sgs-clone-orchestrator.py main() runs media-sideload.sideload_batch  │
-│       in dry-run mode after stage_9_report; manifest at run_dir/           │
-│       media-sideload-manifest.json. attribute-staged-apply +               │
-│       functionality-bulk-apply lazy-loaded into sys.modules so post-clone  │
-│       operator scripts can dispatch their stage_change / stage_bulk_job /  │
-│       approve / emit_deploy_command APIs via the orchestrator's namespace. │
-│       Summary on run_dir/stage-4i.json. All three remain operator-gated -  │
-│       no auto-mutation of live WP.                                          │
+│  (Stage 4i + 4j apply-module surface + wp_integration validate moved      │
+│   2026-05-14 QC panel — see "Pre-deploy gate" block below; the orchestrator│
+│   dispatches them in main() AFTER stage_9_report, not inside Stage 7.)     │
 │                                                                             │
 │ FILES (R):                                                                  │
 │  pipeline-state/sgs-clone/<run_id>/extract-*.json (per-section results)     │
@@ -464,6 +449,48 @@ The big picture in one page, with EVERY script, file, DB table and skill plotted
 │                approves promotion                                           │
 │                                                                             │
 │ STATUS:       LIVE - working                                                │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Pre-deploy gate — Apply-module surface + markup validation [LIVE]
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ ORDERING NOTE: dispatched in main() AFTER stage_9_report and BEFORE the    │
+│ Stage 8 autonomy gate. Placed in the flow doc here (not under Stage 7) to  │
+│ match actual execution order — Sonnet + Gemini Flash QC panel finding      │
+│ 2026-05-14.                                                                │
+│                                                                             │
+│ SCRIPTS:                                                                    │
+│  ✓ orchestrator/attribute-staged-apply.py + functionality-bulk-apply.py +   │
+│       media-sideload.py - WIRED 2026-05-14 (Phase 6 v2 Step 4i).           │
+│       media-sideload.sideload_batch fires automatically in dry-run mode    │
+│       per clone; harvests image-object slots from extract_out and writes   │
+│       manifest at run_dir/media-sideload-manifest.json. Operator promotes  │
+│       to upload via the module's --upload CLI flag. attribute-staged-apply │
+│       + functionality-bulk-apply lazy-loaded into sys.modules — operator   │
+│       dispatch only; no auto-mutation. Summary on run_dir/stage-4i.json.   │
+│  ✓ orchestrator/wp_integration.py - validate_block_markup, route_native_   │
+│       feature, build_deploy_command - WIRED 2026-05-14 (Phase 6 v2 Step    │
+│       4j). main() runs validate_block_markup on extract_out.block_markup   │
+│       before the autonomy gate; status / errors / warnings land on         │
+│       run_dir/stage-4j.json. route_native_feature + build_deploy_command   │
+│       remain operator-gated (lazy-loaded only). Soft-fails when /wp-blocks │
+│       CLI is missing.                                                       │
+│                                                                             │
+│ FILES (W):                                                                  │
+│  pipeline-state/<run_id>/media-sideload-manifest.json                       │
+│  pipeline-state/<run_id>/stage-4i.json                                      │
+│  pipeline-state/<run_id>/stage-4j.json                                      │
+│                                                                             │
+│ FR21 invariants enforced:                                                   │
+│  - media-sideload is upload=False (dry-run) on the auto-fire path           │
+│  - attribute-staged-apply + functionality-bulk-apply are loaded but never   │
+│    called — they're FR21 staging modules requiring operator-supplied        │
+│    changes / jobs                                                           │
+│  - wp_integration.build_deploy_command is loaded but never called           │
+│                                                                             │
+│ STATUS:       LIVE - Phase 6 v2 Steps 4i + 4j complete                      │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -747,7 +774,7 @@ Refreshes the data layer; runs OUT-OF-BAND from /sgs-clone.
 
 ```
 /sgs-clone
-  ├─ Stage 1: /uimax-classify-naming ✗ (needs stage1_boundary_hook wired)
+  ├─ Stage 1: /uimax-classify-naming ✓ via stage1_boundary_hook (wired Phase 6 v2 Step 4e 2026-05-14; current dispatch uses the in-module heuristic classifier, /uimax-classify-naming-backed callable injection deferred)
   ├─ Stage 7: /sgs-wp-engine (block-level questions, on-demand)
   ├─ Stage 8: (no skill dispatch - uses inline visual_qa_capture.py)
   ├─ +REGISTER: /uimax-sgs-scrape-pattern (pattern Rosetta Stone payload)
@@ -775,18 +802,18 @@ Refreshes the data layer; runs OUT-OF-BAND from /sgs-clone.
 | Skill/command files referenced | 17 | Catalogued in skills-commands-map.md |
 | /visual-qa internal scripts | 8 | Skill-bundle scripts at ~/.agents/skills/visual-qa/scripts/ |
 | Pipeline stages defined | 10 + 4 tails | 0, 0.1, 0.5, 0.7, 1, 2, 3, 4, 5, 6, 7, 7b, 8, 9, 9b + DEPLOY/PARITY/REGISTER/UPDATE |
-| Pipeline stages LIVE | 15 | Stages 0, 0.1, 0.5, 0.7, 1, 2, 3, 4, 6, 7, 7b, 8, 9, 9b, +REGISTER (CORRECTED 2026-05-13 - prior "13" undercounted 0.1, 0.5, 0.7, 9b) |
-| Pipeline stages UNWIRED | 2 critical | Stage 4.5 token snap; Stage 5 default inheritance |
-| Pipeline stages PARTIAL | 2 | Stage 9b autonomy chain (2 of N rails); +REGISTER (validator bypass) |
+| Pipeline stages LIVE | 17 | Stages 0, 0.1, 0.5, 0.7, 1, 2, 3, 4, 4.5, 5, 6, 7, 7b, 8, 9, 9b, +REGISTER (updated 2026-05-14 after Phase 6 v2 Step 4 closed — 4.5 + 5 flipped LIVE) |
+| Pipeline stages UNWIRED | 0 critical | All Phase 6 v2 Step 4 wire-ins complete 2026-05-14 |
+| Pipeline stages PARTIAL | 2 | Stage 9b autonomy chain (2 of N rails); +REGISTER (validator bypass; Step 5 fix outstanding) |
 
 ## Gaps + optimisation opportunities surfaced by this annotation
 
 ### Critical (block parity gate)
 
-1. **Stage 4.5 token snap unwired** - colour/spacing/font values stay raw, never become slug references, variation CSS doesn't take effect. Phase 6 step 1+2. (~45 min)
-2. **Stage 5 default inheritance unwired** - bloated per-block attribute writes that conflict with cascade defaults. Phase 6 step 3. (~30 min)
-3. **Stage 1 convention enrichment unwired** - stage1_boundary_hook + lingua_franca + /uimax-classify-naming all blocked because the hook isn't called. Phase 6 step 5. (~30 min)
-4. **Stage 9 gap-writers unwired** - operator can't see what's failing. Phase 6 step 6. (~30 min)
+1. ~~**Stage 4.5 token snap unwired**~~ — RESOLVED 2026-05-14 (Phase 6 v2 Step 4a token_resolver + 4b variation_router commits `90fdb8e5` + `111d0815`).
+2. ~~**Stage 5 default inheritance unwired**~~ — RESOLVED 2026-05-14 (Phase 6 v2 Step 4c supports_writer + inheritance transitive, commit `dc83d172`).
+3. ~~**Stage 1 convention enrichment unwired**~~ — RESOLVED 2026-05-14 (Phase 6 v2 Step 4e stage1_boundary_hook + lingua_franca transitive, commit `a200e3d6`). Note: in-module heuristic classifier is the current dispatch; /uimax-classify-naming-backed callable injection deferred.
+4. ~~**Stage 9 gap-writers unwired**~~ — RESOLVED 2026-05-14 (Phase 6 v2 Steps 4f + 4g + 4h — attribute-gap-writer + functionality-gap-detector + gap-review-report, commits `19b45333` + `d0c4370f` + `efc2b418`).
 
 ### Architectural debt (not Phase 6 blockers)
 
