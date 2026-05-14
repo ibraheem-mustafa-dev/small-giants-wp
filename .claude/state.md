@@ -11,7 +11,7 @@ current_step: "Spec 16 Phase 1 shipped 2026-05-14. Phase 7 plan ready at .claude
 last_updated: 2026-05-14 (Spec 16 Phase 1 shipped; converter prototype emits 10 SGS block types on full Mama's page; Phase 7 plan + multi-model QC complete)
 blockers:
   - "Skillscore rubric mismatch: command files (~/.claude/commands/*.md), agent files (~/.claude/agents/*.md), and reference-style mini-skills (polish, bolder, colourise, distill, etc.) are graded against full-skill criteria. 24 of 45 Phase 4 files sit below 90% for this reason - all pre-existing baseline noise, not caused by Phase 4 edits. Future fix: add skill-type classifier to sgs-skillscore."
-recommended_model_next: sonnet
+recommended_model_next: opus
 ---
 
 # small-giants-wp — State Snapshot

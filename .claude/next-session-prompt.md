@@ -2,7 +2,7 @@
 doc_type: next-session-prompt
 project: small-giants-wp
 session_tag: small-giants-wp-2026-05-14-spec-16-phase-7
-recommended_model: sonnet
+recommended_model: opus
 generated: 2026-05-14
 ---
 
