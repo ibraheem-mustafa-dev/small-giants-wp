@@ -296,7 +296,7 @@ The big picture in one page, with EVERY script, file, DB table and skill plotted
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Stage 4.5 — Token snapping (per value) [GAP]
+### Stage 4.5 — Token snapping (per value) [LIVE]
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -307,25 +307,29 @@ The big picture in one page, with EVERY script, file, DB table and skill plotted
 │       matched section in stage_4_5_6_7_8_extract loop. Snaps raw values    │
 │       to token_slug when confidence >= 0.6; gap candidates surface in       │
 │       per_section_results.token_resolutions. 8 pytest tests still green.    │
-│  ✗ orchestrator/variation_router.py - add_token() writes new tokens to      │
+│  ✓ orchestrator/variation_router.py - add_token() writes new tokens to      │
 │       client variation JSON; hard-blocked from root theme.json mutation     │
-│       TESTS-ONLY                                                            │
+│       WIRED 2026-05-14 (Phase 6 v2 Step 4b) - lazy-loaded via              │
+│       variation_router() helper. Inside the existing token_resolver soft-  │
+│       fail block in stage_4_5_6_7_8_extract: every is_gap_candidate=true   │
+│       resolution with a recognised role + non-empty string raw_value is    │
+│       routed through add_token(client, role, slug, raw_value, write=True). │
+│       Slug derived via token-lint._generate_slug (single canonical helper).│
+│       (role, slug) tuples appended to per_section_results.new_tokens_       │
+│       written. Soft-fail emits aggregate_warnings; never blocks extract.    │
 │  ✓ plugins/sgs-blocks/scripts/value-matcher/match.py - the snap engine      │
-│       (wired ELSEWHERE via token-lint at Stage 0.5; would be wired again   │
-│        here via token_resolver if Phase 6 lands)                            │
+│       (wired here via token_resolver + ALSO at Stage 0.5 via token-lint)   │
+│  ✓ plugins/sgs-blocks/scripts/lints/token-lint.py - canonical slug gen     │
+│       loaded lazily for _generate_slug() only (Phase 6 v2 Step 4b).         │
 │                                                                             │
-│ FILES (R) when wired:                                                       │
+│ FILES (R):                                                                  │
 │  theme/sgs-theme/theme.json                                                 │
-│  theme/sgs-theme/styles/<client>.json                                       │
+│  theme/sgs-theme/styles/<client>.json (overlay merged into theme_json)     │
 │                                                                             │
-│ FILES (W) when wired:                                                       │
-│  theme/sgs-theme/styles/<client>.json (new token candidates)                │
+│ FILES (W):                                                                  │
+│  theme/sgs-theme/styles/<client>.json (new token candidates, idempotent)    │
 │                                                                             │
-│ GAP: Without wiring, colour/spacing/font values stay raw in extracted       │
-│      attributes - no token references, no variation overrides take effect.  │
-│      Primary contributor to current pixel-diff.                             │
-│                                                                             │
-│ STATUS:       UNWIRED - Phase 6 step 1+2                                    │
+│ STATUS:       LIVE - Phase 6 v2 Step 4a+4b complete                         │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 

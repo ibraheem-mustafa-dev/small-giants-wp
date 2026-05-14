@@ -2,6 +2,34 @@
 
 Append-only. Most-recent first.
 
+## 2026-05-14 - Phase 6 v2 Step 4b: variation_router wired into Stage 4.5 gap-candidate path
+
+**Decision:** Second module wire-in of Phase 6 v2 - `variation_router` from `plugins/sgs-blocks/scripts/orchestrator/variation_router.py` dispatched inside the existing Stage 4.5 soft-fail block in `stage_4_5_6_7_8_extract`. After `token_resolver.resolve_batch` returns, every `is_gap_candidate=true` resolution with a recognised role (color/spacing/font_size/shadow/family) and a non-empty string `raw_value` is routed through `add_token(client_slug, role, slug, raw_value, theme_root=REPO/theme/sgs-theme, write=True)`. Slug derivation reuses `token-lint._generate_slug` via a second lazy-loader so the orchestrator never duplicates the slug rules already exercised by token-lint's additive-discovery test suite. (role, slug) tuples for actually-inserted-or-updated tokens land on `per_section_results[i].new_tokens_written`. Exceptions surface as `aggregate_warnings` and never break the extract loop.
+
+**Why this approach:** keeps "deterministic not inline" - both the write path (variation_router.add_token) and the slug rules (token-lint._generate_slug) are module APIs; only the dispatch glue lives in the orchestrator. Reusing token-lint's slug helper means Stage 0.5 (CSS-driven discovery) and Stage 4.5 (extract-driven discovery) propose the same slugs for the same raw values, so re-runs are idempotent across both stages. `add_token` is itself idempotent (returns `action="noop"` on duplicate slug+value), so re-running the pipeline on the same mockup writes nothing new. Soft-fail preserves the Phase 4 framing - cloning preserves intentional bespoke detail; if a write hiccups the raw values stay in the extract for downstream stages to consume.
+
+**Trade-offs considered:**
+- Could have added a `propose_slug(role, value)` helper directly to variation_router to keep the orchestrator dependent on a single module - rejected because token-lint already owns the canonical slug rules and duplicating them risks Stage 0.5 / Stage 4.5 divergence.
+- Could have skipped the `new_tokens_written` field - kept because it gives Step 4f (attribute-gap-writer) a deterministic signal of which tokens were just minted on this run, distinguishing them from pre-existing variation entries.
+
+**Verification:**
+- 7/7 variation_router pytest tests still green
+- Drift validator still 0/1349 violations
+- tooling-map drift-check still passes
+- AST syntax check on modified orchestrator: OK
+
+**Files touched:**
+- `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` (VARIATION_ROUTER_SCRIPT + TOKEN_LINT_SCRIPT constants; variation_router() + _token_lint() lazy-loaders; _TOKEN_RESOLVER_ROLE_TO_TOKEN_LINT_CLASS translation map; per-section gap-candidate dispatch loop; new_tokens_written field on per_section_results)
+
+**Doc updates per docs-registry update-trigger matrix:**
+- `tooling-map.md` row for variation_router.py: TESTS-ONLY -> YES with wiring detail
+- `cloning-pipeline-flow.md` Stage 4.5 block: variation_router ✗ -> ✓ with wiring detail + UNWIRED -> LIVE status flip
+- `decisions.md` (this entry)
+
+**Next:** Step 4c (`supports_writer` + `inheritance` transitive) - decide block-supports per attribute path before Stage 6 emission.
+
+---
+
 ## 2026-05-14 - Phase 6 v2 Step 4a: token_resolver wired into Stage 4.5
 
 **Decision:** First module wire-in of Phase 6 v2 - `token_resolver` from `plugins/sgs-blocks/scripts/orchestrator/token_resolver.py` integrated into `sgs-clone-orchestrator.py:stage_4_5_6_7_8_extract` between per-section extract.py subprocess return and per_section_results aggregation. Lazy-loaded via `token_resolver()` helper alongside the existing `confidence_matrix()` pattern. Theme.json + variation overlay loaded once per /sgs-clone run (will move to Stage 0 caching in Step 6a).

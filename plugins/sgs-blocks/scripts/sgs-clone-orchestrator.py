@@ -53,6 +53,8 @@ REVIEW_SCRIPT = RECOGNISER_DIR / "simple_html_review_report.py"
 CLASSIFIER_SCRIPT = RECOGNISER_DIR / "bucket-c-classifier.py"
 SCAFFOLD_SCRIPT = ORCHESTRATOR_DIR / "atomic-block-scaffold.py"
 TOKEN_RESOLVER_SCRIPT = ORCHESTRATOR_DIR / "token_resolver.py"
+VARIATION_ROUTER_SCRIPT = ORCHESTRATOR_DIR / "variation_router.py"
+TOKEN_LINT_SCRIPT = LINTS_DIR / "token-lint.py"
 
 SGS_FRAMEWORK_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 
@@ -527,6 +529,41 @@ def token_resolver():
     return _token_resolver_mod
 
 
+# Lazy-import variation_router + token-lint slug generator (Spec 15 Phase 6 v2 Step 4b).
+# token-lint is loaded for its canonical _generate_slug() helper -- module reuse
+# avoids duplicating slug rules already covered by the additive token-discovery
+# tests in token-lint's suite. variation_router owns the single write path
+# into client style variation JSONs.
+_variation_router_mod = None
+_token_lint_mod = None
+
+
+def variation_router():
+    global _variation_router_mod
+    if _variation_router_mod is None:
+        _variation_router_mod = _load_module_from_path("sgs_variation_router", VARIATION_ROUTER_SCRIPT)
+    return _variation_router_mod
+
+
+def _token_lint():
+    global _token_lint_mod
+    if _token_lint_mod is None:
+        _token_lint_mod = _load_module_from_path("sgs_token_lint", TOKEN_LINT_SCRIPT)
+    return _token_lint_mod
+
+
+# Role names from token_resolver (color / spacing / font_size / shadow / family)
+# map onto token-lint's TokenClass values (color / spacing / fontSize / shadow /
+# fontFamily) for slug generation. Keep this dict in lock-step with both modules.
+_TOKEN_RESOLVER_ROLE_TO_TOKEN_LINT_CLASS = {
+    "color":     "color",
+    "spacing":   "spacing",
+    "font_size": "fontSize",
+    "shadow":    "shadow",
+    "family":    "fontFamily",
+}
+
+
 # ---------------------------------------------------------------------------
 # Stage 1 -- BOUNDARY (dispatcher: per-section-convention-voter.py)
 # ---------------------------------------------------------------------------
@@ -798,6 +835,40 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path) -> dict:
             except Exception as exc:  # noqa: BLE001 - token snap is additive; soft-fail
                 aggregate_warnings.append(f"{boundary_id}: token_resolver soft-failed: {exc}; raw values preserved")
 
+        # Stage 4.5 (Phase 6 v2 Step 4b) -- route every is_gap_candidate=true
+        # resolution into the client's style variation JSON via variation_router.
+        # Slug derivation reuses token-lint._generate_slug so candidates match
+        # the rules tested in token-lint's additive-discovery suite. Soft-fail
+        # so a variation write hiccup never breaks the extract loop.
+        section_new_tokens_written: list[tuple[str, str]] = []
+        _client_slug = getattr(args, "client", "") or ""
+        if section_token_resolutions and _client_slug:
+            try:
+                vr = variation_router()
+                tl = _token_lint()
+                _theme_root = REPO / "theme" / "sgs-theme"
+                for res in section_token_resolutions:
+                    if not res.get("is_gap_candidate"):
+                        continue
+                    role = res.get("role")
+                    raw_value = res.get("raw_value")
+                    token_lint_class = _TOKEN_RESOLVER_ROLE_TO_TOKEN_LINT_CLASS.get(role)
+                    if token_lint_class is None:
+                        continue
+                    if not isinstance(raw_value, str) or not raw_value.strip():
+                        continue
+                    slug = tl._generate_slug(token_lint_class, raw_value, res.get("attr_name", "") or "")
+                    if not slug:
+                        continue
+                    report = vr.add_token(
+                        _client_slug, role, slug, raw_value.strip(),
+                        theme_root=_theme_root, write=True,
+                    )
+                    if report.get("action") in ("inserted", "updated"):
+                        section_new_tokens_written.append((role, slug))
+            except Exception as exc:  # noqa: BLE001 - variation routing is additive; soft-fail
+                aggregate_warnings.append(f"{boundary_id}: variation_router soft-failed: {exc}; gap tokens not written")
+
         per_section_results.append({
             "boundary_id": boundary_id,
             "section_id": m.get("section_id"),
@@ -808,6 +879,7 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path) -> dict:
             "extracted_attributes": section_attrs,
             "block_markup": section_markup,
             "token_resolutions": section_token_resolutions,
+            "new_tokens_written": section_new_tokens_written,
         })
 
         # Aggregate attributes prefixed with section_id so multi-section
