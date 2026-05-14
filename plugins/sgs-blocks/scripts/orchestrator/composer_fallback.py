@@ -24,6 +24,38 @@ from pathlib import Path
 _BUTTON_HINT_RE = re.compile(r"\b(button|btn|cta)\b", re.IGNORECASE)
 
 
+# ---------------------------------------------------------------------------
+# Lazy-load trace.Trace; soft-fail to None if unavailable.
+# ---------------------------------------------------------------------------
+def _load_trace():
+    """Locate and load trace.Trace; return None on any failure."""
+    import importlib.util as _ilu
+    from pathlib import Path as _Path
+    here = _Path(__file__).resolve()
+    for parent in [here.parent, *here.parents]:
+        candidate = parent / "orchestrator" / "trace.py"
+        if candidate.exists():
+            spec = _ilu.spec_from_file_location("orchestrator_trace", candidate)
+            mod = _ilu.module_from_spec(spec)
+            try:
+                spec.loader.exec_module(mod)
+                return mod.Trace
+            except Exception:
+                return None
+        candidate2 = parent / "trace.py"
+        if candidate2.exists() and parent.name == "orchestrator":
+            spec = _ilu.spec_from_file_location("orchestrator_trace", candidate2)
+            mod = _ilu.module_from_spec(spec)
+            try:
+                spec.loader.exec_module(mod)
+                return mod.Trace
+            except Exception:
+                return None
+    return None
+
+_Trace = _load_trace()
+
+
 def _emit_block(name: str, attrs: dict, inner_html: str | None = None,
                 self_closing: bool = True) -> str:
     """Emit a single Gutenberg block-comment + (optional) inner HTML."""
@@ -58,7 +90,8 @@ def _emit_sgs_decorative_image(src: str, alt: str) -> str:
 
 
 def compose_atomic_pattern(mockup_path: Path, selector: str,
-                           section_id: str, class_signature: list[str]) -> str | None:
+                           section_id: str, class_signature: list[str],
+                           run_dir=None) -> str | None:
     """Compose a wp:sgs/container atomic-pattern from a section in the mockup.
 
     Returns Gutenberg markup string or None if the section cannot be resolved
@@ -77,6 +110,20 @@ def compose_atomic_pattern(mockup_path: Path, selector: str,
         return None
     if node is None:
         return None
+
+    tr = (_Trace.for_run(run_dir) if _Trace else None)
+    if tr:
+        try:
+            tr.event(
+                stage="stage_7_fallback_composer_start",
+                selector=selector,
+                section_id=section_id,
+                class_signature=class_signature,
+                mockup_exists=mockup_path.exists(),
+                node_found=True,
+            )
+        except Exception:
+            pass
 
     inner_blocks: list[str] = []
     seen_texts: set[str] = set()
@@ -131,4 +178,16 @@ def compose_atomic_pattern(mockup_path: Path, selector: str,
     inner_html = "\n  ".join(inner_blocks)
     container_attrs_json = json.dumps(container_attrs, ensure_ascii=False, separators=(",", ":")) if container_attrs else ""
     head = f"<!-- wp:sgs/container{(' ' + container_attrs_json) if container_attrs_json else ''} -->"
+    if tr:
+        try:
+            tr.event(
+                stage="stage_7_fallback_composer_result",
+                section_id=section_id,
+                inner_block_count=len(inner_blocks),
+                inner_block_types=[b.split("<!--")[0].strip() for b in inner_blocks],
+                section_class=section_class,
+                composed=len(inner_blocks) > 0,
+            )
+        except Exception:
+            pass
     return head + "\n  " + inner_html + "\n<!-- /wp:sgs/container -->"

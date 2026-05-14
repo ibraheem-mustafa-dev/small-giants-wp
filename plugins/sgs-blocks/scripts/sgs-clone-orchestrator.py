@@ -56,6 +56,7 @@ TOKEN_RESOLVER_SCRIPT = ORCHESTRATOR_DIR / "token_resolver.py"
 VARIATION_ROUTER_SCRIPT = ORCHESTRATOR_DIR / "variation_router.py"
 TOKEN_LINT_SCRIPT = LINTS_DIR / "token-lint.py"
 SUPPORTS_WRITER_SCRIPT = ORCHESTRATOR_DIR / "supports_writer.py"
+TRACE_SCRIPT = ORCHESTRATOR_DIR / "trace.py"
 MODIFIER_EXTRACTORS_SCRIPT = ORCHESTRATOR_DIR / "modifier_extractors.py"
 STAGE1_BOUNDARY_HOOK_SCRIPT = ORCHESTRATOR_DIR / "stage1_boundary_hook.py"
 ATTRIBUTE_GAP_WRITER_SCRIPT = RECOGNISER_DIR / "attribute-gap-writer.py"
@@ -126,6 +127,10 @@ def stage_0_1_bem_lint(mockup: Path, mode: str, run_dir: Path) -> dict:
         "exit_code": result.exit_code,
     }
     (run_dir / "stage-0.1-bem-lint.json").write_text(json.dumps(out, indent=2), encoding="utf-8")
+
+    _emit(_trace_for(run_dir), stage="stage_0_1_bem_lint", mode=mode,
+          violations_count=len(violations), total_classes_checked=result.total_classes_checked,
+          passed=result.passed)
 
     if mode == "draft":
         level = "warning"
@@ -206,6 +211,11 @@ def stage_0_5_token_lint(mockup: Path, mode: str, run_dir: Path,
         }
         (run_dir / "stage-0.5-token-lint.json").write_text(json.dumps(out, indent=2), encoding="utf-8")
 
+        _emit(_trace_for(run_dir), stage="stage_0_5_token_lint", mode=mode, additive=False,
+              violations_count=len(violations),
+              total_declarations_checked=result.total_declarations_checked,
+              passed=result.passed)
+
         if mode == "draft":
             level = "warning"
         elif violations:
@@ -241,6 +251,11 @@ def stage_0_5_token_lint(mockup: Path, mode: str, run_dir: Path,
         "summary": result.summary,
     }
     (run_dir / "stage-0.5-token-lint.json").write_text(json.dumps(out, indent=2), encoding="utf-8")
+
+    _emit(_trace_for(run_dir), stage="stage_0_5_token_lint", mode=mode, additive=True,
+          new_tokens_count=len(candidates),
+          total_declarations_checked=result.total_declarations_checked,
+          passed=result.passed)
 
     print(f"[stage-0.5] token lint ({mode}, additive): {len(candidates)} new-token candidates across {result.total_declarations_checked} declarations")
     for c in candidates[:5]:
@@ -468,6 +483,33 @@ def _token_lint():
     if _token_lint_mod is None:
         _token_lint_mod = _load_module_from_path("sgs_token_lint", TOKEN_LINT_SCRIPT)
     return _token_lint_mod
+
+
+# Lazy-import trace logger (2026-05-14, Q3 diagnostic synthesis).
+# Writes one trace.jsonl per run; every event is soft-failed so trace failure
+# never propagates and breaks the pipeline.
+_trace_mod = None
+
+
+def _trace_for(run_dir: "Path | None"):
+    """Return a Trace bound to run_dir, or None if unavailable. Always safe."""
+    global _trace_mod
+    try:
+        if _trace_mod is None:
+            _trace_mod = _load_module_from_path("sgs_trace", TRACE_SCRIPT)
+        return _trace_mod.Trace.for_run(run_dir)
+    except Exception:
+        return None
+
+
+def _emit(tr, **kwargs) -> None:
+    """Soft-fail wrapper around tr.event(...). No-op if tr is None."""
+    if tr is None:
+        return
+    try:
+        tr.event(**kwargs)
+    except Exception:
+        pass
 
 
 # Role names from token_resolver (color / spacing / font_size / shadow / family)
@@ -809,9 +851,11 @@ def stage_2_match(boundary_output: dict, run_dir: Path) -> dict:
     try:
         cm = confidence_matrix()
         registered = cm.discover_registered_blocks()
+        patterns = cm.discover_registered_patterns()
+        scaffolds = cm.discover_scaffold_blocks()
         matches: list[dict] = []
         for boundary in boundary_output.get("boundaries", []):
-            ranked = cm.score_candidates(boundary, registered)
+            ranked = cm.score_candidates(boundary, registered, patterns, scaffolds)
             top = ranked[0] if ranked else {"block_name": "core/group", "confidence": 0.0, "tie_breaker": "deferred-no-match"}
             matches.append({
                 "boundary_id": boundary["boundary_id"],
@@ -845,6 +889,20 @@ def stage_3_slot_list(match_output: dict, run_dir: Path) -> dict:
         boundary_id = m["boundary_id"]
         block_name = m["block_name"]
         section_id = m.get("section_id")
+
+        # Pattern matches use a "pattern:<slug>" sentinel block_name (matcher Tier 2).
+        # Patterns have no block.json and no per-attribute slot list -- they are
+        # pre-composed PHP files. Record the pattern reference and emit an empty
+        # slot list; downstream compose stage routes pattern_ref to wp:pattern directly.
+        if isinstance(block_name, str) and block_name.startswith("pattern:"):
+            slot_lists[boundary_id] = {
+                "block_name": block_name,
+                "section_id": section_id,
+                "pattern_ref": block_name[len("pattern:"):],
+                "slots": [],
+            }
+            continue
+
         slug = block_name.split("/")[-1] if "/" in block_name else block_name
         block_json_path = REPO / "plugins" / "sgs-blocks" / "src" / "blocks" / slug / "block.json"
         slots: list[dict] = []
@@ -865,6 +923,9 @@ def stage_3_slot_list(match_output: dict, run_dir: Path) -> dict:
             "section_id": section_id,
             "slots": slots,
         }
+        _emit(_trace_for(run_dir), stage="stage_3_slot_list",
+              boundary_id=boundary_id, block_name=block_name, section_id=section_id,
+              slot_count=len(slots), block_json_found=block_json_path.exists())
 
     output = {"slot_lists": slot_lists, "version_drift_warnings": warnings}
     write_artefact(run_dir, 3, "slot-list", "complete" if not warnings else "warning", output, started, [], warnings)
@@ -926,6 +987,11 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
         # sgs/button + sgs/decorative-image). This is the structural fix
         # for the "6 of 9 Mama's sections vapour on the page" gap.
         if target_block == "core/group" or m.get("confidence", 0) == 0:
+            _emit(_trace_for(run_dir), stage="stage_4_deferred_fallback",
+                  boundary_id=boundary_id, section_id=m.get("section_id"),
+                  selector=section_selector, target_block=target_block,
+                  confidence=m.get("confidence", 0),
+                  fallback_reason="core/group match or zero confidence")
             pattern_markup = composer_fallback().compose_atomic_pattern(
                 args.mockup, section_selector,
                 m.get("section_id") or boundary_id,
@@ -995,6 +1061,9 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
         section_attrs: dict = {}
         section_markup = ""
         section_coverage: dict = {}
+        _emit(_trace_for(run_dir), stage="stage_4_extract_subprocess",
+              boundary_id=boundary_id, section_selector=section_selector,
+              target_block=target_block, exit_code=proc.returncode)
         if proc.returncode != 0:
             aggregate_errors.append(f"{boundary_id} ({section_selector} -> {target_block}): extract.py exit {proc.returncode}: {(proc.stderr or '')[:300]}")
             section_status = "failed"
@@ -1024,6 +1093,10 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                     if not res.get("is_gap_candidate") and res.get("token_slug") is not None:
                         section_attrs[res["attr_name"]] = res["token_slug"]
             except Exception as exc:  # noqa: BLE001 - token snap is additive; soft-fail
+                _emit(_trace_for(run_dir), stage="stage_4_5_token_resolver_softfail",
+                      boundary_id=boundary_id, exception_type=type(exc).__name__,
+                      exception_str=str(exc), raw_values_preserved=True,
+                      variation_router_skipped=True)
                 aggregate_warnings.append(f"{boundary_id}: token_resolver soft-failed: {exc}; raw values preserved")
                 # Sonnet QC panel 2026-05-14: when 4a fails, 4b's
                 # variation_router dispatch silently no-ops via the empty

@@ -27,6 +27,38 @@ sys.stdout.reconfigure(encoding="utf-8")
 DEFAULT_THEME_ROOT = Path("theme/sgs-theme")
 
 
+# ---------------------------------------------------------------------------
+# Lazy-load trace.Trace; soft-fail to None if unavailable.
+# ---------------------------------------------------------------------------
+def _load_trace():
+    """Locate and load trace.Trace; return None on any failure."""
+    import importlib.util as _ilu
+    from pathlib import Path as _Path
+    here = _Path(__file__).resolve()
+    for parent in [here.parent, *here.parents]:
+        candidate = parent / "orchestrator" / "trace.py"
+        if candidate.exists():
+            spec = _ilu.spec_from_file_location("orchestrator_trace", candidate)
+            mod = _ilu.module_from_spec(spec)
+            try:
+                spec.loader.exec_module(mod)
+                return mod.Trace
+            except Exception:
+                return None
+        candidate2 = parent / "trace.py"
+        if candidate2.exists() and parent.name == "orchestrator":
+            spec = _ilu.spec_from_file_location("orchestrator_trace", candidate2)
+            mod = _ilu.module_from_spec(spec)
+            try:
+                spec.loader.exec_module(mod)
+                return mod.Trace
+            except Exception:
+                return None
+    return None
+
+_Trace = _load_trace()
+
+
 class VariationRouterError(RuntimeError):
     pass
 
@@ -85,6 +117,7 @@ def add_token(
     name: str | None = None,
     theme_root: Path = DEFAULT_THEME_ROOT,
     write: bool = False,
+    run_dir=None,
 ) -> dict:
     """Add or update a token in the CLIENT'S variation file.
 
@@ -138,7 +171,7 @@ def add_token(
         target_path.write_text(json.dumps(variation, indent=2, ensure_ascii=False),
                                encoding="utf-8")
 
-    return {
+    report = {
         "client_slug":          client_slug,
         "role":                 role,
         "slug":                 slug,
@@ -147,6 +180,22 @@ def add_token(
         "mode":                 "write" if write else "dry-run",
         "root_theme_untouched": True,
     }
+    tr = (_Trace.for_run(run_dir) if _Trace else None)
+    if tr:
+        try:
+            tr.event(
+                stage="stage_4_5_variation_router",
+                client_slug=client_slug,
+                role=role,
+                slug=slug,
+                value=value,
+                action=action,
+                mode="write" if write else "dry-run",
+                root_theme_untouched=True,
+            )
+        except Exception:
+            pass
+    return report
 
 
 def main(argv: list[str] | None = None) -> int:

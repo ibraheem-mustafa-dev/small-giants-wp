@@ -50,6 +50,35 @@ _UIMAX_WRITE_PATH = (
 _uimax_write_mod = None
 
 
+def _load_trace():
+    """Lazy-load orchestrator.trace.Trace; soft-fail to a no-op if unavailable."""
+    from pathlib import Path as _Path
+    here = _Path(__file__).resolve()
+    for parent in [here.parent, *here.parents]:
+        candidate = parent / "orchestrator" / "trace.py"
+        if candidate.exists():
+            spec = _ilu.spec_from_file_location("orchestrator_trace", candidate)
+            mod = _ilu.module_from_spec(spec)
+            try:
+                spec.loader.exec_module(mod)
+                return mod.Trace
+            except Exception:
+                return None
+        candidate2 = parent / "trace.py"
+        if candidate2.exists() and parent.name == "orchestrator":
+            spec = _ilu.spec_from_file_location("orchestrator_trace", candidate2)
+            mod = _ilu.module_from_spec(spec)
+            try:
+                spec.loader.exec_module(mod)
+                return mod.Trace
+            except Exception:
+                return None
+    return None
+
+
+_Trace = _load_trace()
+
+
 def _uimax_write():
     """Lazy-load the uimax_write module (single uimax write chokepoint).
 
@@ -320,6 +349,7 @@ def register_run(
     patterns_dir: Path = PATTERNS_DIR,
     sgs_db: Path = SGS_DB,
     uimax_db: Path = UIMAX_DB,
+    run_dir: Path | None = None,
 ) -> RegisterResult:
     """Register every novel pattern produced by a successful clone run.
 
@@ -331,7 +361,14 @@ def register_run(
         with the original class signature where available)
       patterns_dir: where the PHP files land (default theme/sgs-theme/patterns/)
       sgs_db / uimax_db: catalogue paths (defaults to canonical locations)
+      run_dir: optional pipeline-state run directory for trace writes; derived
+        from run_id when not supplied (soft-fails to disabled if dir absent)
     """
+    # Resolve trace writer. Derive run_dir from run_id when not supplied;
+    # Trace.for_run() returns a disabled no-op if the directory does not exist.
+    if run_dir is None:
+        run_dir = Path("pipeline-state") / "sgs-clone" / run_id
+    tr = (_Trace.for_run(run_dir) if _Trace else None)
     result = RegisterResult(run_id=run_id)
     boundary_by_id: dict[str, dict] = {}
     if boundary_artefact:
@@ -366,6 +403,17 @@ def register_run(
         if php_path.exists():
             reg.skipped_reason = "PHP pattern file already exists -- preserved"
             result.skipped.append(reg)
+            # Call-site 19 — +REGISTER dedup skip (trace map §19).
+            if tr:
+                try:
+                    tr.event(
+                        stage="register_pattern_skipped",
+                        run_id=run_id,
+                        slug=f"sgs/{reg.slug}",
+                        skipped_reason=reg.skipped_reason,
+                    )
+                except Exception:
+                    pass
             continue
 
         description = (
@@ -422,6 +470,22 @@ def register_run(
             result.errors.append(f"uimax insert failed for {slug}: {exc}")
 
         result.registered.append(reg)
+
+        # Call-site 18 — +REGISTER pattern INSERT (trace map §18).
+        if tr:
+            try:
+                tr.event(
+                    stage="register_pattern_inserted",
+                    run_id=run_id,
+                    slug=f"sgs/{reg.slug}",
+                    title=reg.title,
+                    blocks_used=reg.blocks_used,
+                    php_path=reg.php_path,
+                    sgs_db_inserted=reg.sgs_db_inserted,
+                    uimax_inserted=reg.uimax_inserted,
+                )
+            except Exception:
+                pass
 
     return result
 
