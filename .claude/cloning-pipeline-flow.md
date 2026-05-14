@@ -414,8 +414,16 @@ The big picture in one page, with EVERY script, file, DB table and skill plotted
 │       flat wp:sgs/container with bare atomic blocks, NO BEM child wrappers. │
 │  ✗ orchestrator/wp_integration.py - validate_block_markup, route_native    │
 │       _feature, build_deploy_command - TESTS-ONLY                           │
-│  ✗ orchestrator/attribute-staged-apply.py + functionality-bulk-apply.py +   │
-│       media-sideload.py - TESTS-ONLY (production write path missing)        │
+│  ✓ orchestrator/attribute-staged-apply.py + functionality-bulk-apply.py +   │
+│       media-sideload.py - WIRED 2026-05-14 (Phase 6 v2 Step 4i) -          │
+│       sgs-clone-orchestrator.py main() runs media-sideload.sideload_batch  │
+│       in dry-run mode after stage_9_report; manifest at run_dir/           │
+│       media-sideload-manifest.json. attribute-staged-apply +               │
+│       functionality-bulk-apply lazy-loaded into sys.modules so post-clone  │
+│       operator scripts can dispatch their stage_change / stage_bulk_job /  │
+│       approve / emit_deploy_command APIs via the orchestrator's namespace. │
+│       Summary on run_dir/stage-4i.json. All three remain operator-gated -  │
+│       no auto-mutation of live WP.                                          │
 │                                                                             │
 │ FILES (R):                                                                  │
 │  pipeline-state/sgs-clone/<run_id>/extract-*.json (per-section results)     │

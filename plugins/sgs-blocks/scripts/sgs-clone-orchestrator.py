@@ -61,6 +61,9 @@ STAGE1_BOUNDARY_HOOK_SCRIPT = ORCHESTRATOR_DIR / "stage1_boundary_hook.py"
 ATTRIBUTE_GAP_WRITER_SCRIPT = RECOGNISER_DIR / "attribute-gap-writer.py"
 FUNCTIONALITY_GAP_DETECTOR_SCRIPT = RECOGNISER_DIR / "functionality-gap-detector.py"
 GAP_REVIEW_REPORT_SCRIPT = RECOGNISER_DIR / "gap-review-report.py"
+ATTRIBUTE_STAGED_APPLY_SCRIPT = ORCHESTRATOR_DIR / "attribute-staged-apply.py"
+FUNCTIONALITY_BULK_APPLY_SCRIPT = ORCHESTRATOR_DIR / "functionality-bulk-apply.py"
+MEDIA_SIDELOAD_SCRIPT = ORCHESTRATOR_DIR / "media-sideload.py"
 
 # The set of HTML attributes that the functionality-gap-detector treats as
 # behaviour fingerprints. Kept here so the orchestrator's BS4 walk only emits
@@ -652,6 +655,44 @@ def gap_review_report():
     if _gap_review_report_mod is None:
         _gap_review_report_mod = _load_module_from_path("sgs_gap_review_report", GAP_REVIEW_REPORT_SCRIPT)
     return _gap_review_report_mod
+
+
+# Lazy-import attribute-staged-apply + functionality-bulk-apply + media-sideload
+# (Spec 15 Phase 6 v2 Step 4i). All three are operator-gated workflows: they
+# stage / emit deploy commands; they NEVER auto-mutate live WordPress. The
+# orchestrator wires them so that (a) the modules are reachable from the
+# /sgs-clone runtime namespace and (b) media-sideload's dry-run harvester
+# runs automatically each clone to leave a manifest the operator can review.
+_attribute_staged_apply_mod = None
+_functionality_bulk_apply_mod = None
+_media_sideload_mod = None
+
+
+def attribute_staged_apply():
+    global _attribute_staged_apply_mod
+    if _attribute_staged_apply_mod is None:
+        _attribute_staged_apply_mod = _load_module_from_path(
+            "sgs_attribute_staged_apply", ATTRIBUTE_STAGED_APPLY_SCRIPT,
+        )
+    return _attribute_staged_apply_mod
+
+
+def functionality_bulk_apply():
+    global _functionality_bulk_apply_mod
+    if _functionality_bulk_apply_mod is None:
+        _functionality_bulk_apply_mod = _load_module_from_path(
+            "sgs_functionality_bulk_apply", FUNCTIONALITY_BULK_APPLY_SCRIPT,
+        )
+    return _functionality_bulk_apply_mod
+
+
+def media_sideload():
+    global _media_sideload_mod
+    if _media_sideload_mod is None:
+        _media_sideload_mod = _load_module_from_path(
+            "sgs_media_sideload", MEDIA_SIDELOAD_SCRIPT,
+        )
+    return _media_sideload_mod
 
 
 def _harvest_functionality_gap_elements(mockup_path: Path, match_output: dict) -> list[dict]:
@@ -1627,6 +1668,55 @@ def main():
     autonomy = report.get("autonomy_chain") or {}
     if autonomy.get("enabled"):
         print(f"[stage-9b] autonomy: {autonomy.get('scaffolded_count', 0)} scaffolded ({autonomy.get('promoted_count', 0)} promoted) from {autonomy.get('candidates_seen', 0)} candidates")
+
+    # ------------------------------------------------------------------
+    # Phase 6 v2 Step 4i — Apply-module surface (between Stage 7 compose
+    # and Stage 8 autonomy-gate / deploy). All three apply modules are
+    # operator-gated by FR21 contract; they stage + emit deploy commands
+    # and NEVER auto-mutate live WordPress. We:
+    #   1. Run media-sideload.sideload_batch in dry-run mode to harvest
+    #      every image-object slot from the extract and write a manifest
+    #      the operator can later promote with --upload.
+    #   2. Lazy-load attribute-staged-apply + functionality-bulk-apply
+    #      so they're registered in sys.modules and reachable by
+    #      post-clone operator scripts via the orchestrator's namespace.
+    # Result lands on a stage_4i.json artefact at run_dir/.
+    # ------------------------------------------------------------------
+    stage_4i_summary: dict = {"media_sideload": None, "modules_loaded": []}
+    try:
+        msl = media_sideload()
+        sideload_report = msl.sideload_batch(
+            extract_out,
+            mockup_root=args.mockup.parent,
+            upload=False,
+        )
+        manifest_path = run_dir / "media-sideload-manifest.json"
+        manifest_path.write_text(
+            json.dumps(sideload_report, indent=2, ensure_ascii=False),
+            encoding="utf-8",
+        )
+        stage_4i_summary["media_sideload"] = {
+            "slots_found": sideload_report.get("slots_found", 0),
+            "mode": sideload_report.get("mode", "dry-run"),
+            "manifest_path": str(manifest_path),
+        }
+        print(f"[stage-4i] media-sideload: {sideload_report.get('slots_found', 0)} image slot(s) staged (dry-run); manifest at {manifest_path}")
+    except Exception as exc:  # noqa: BLE001 - operator-review artefact; soft-fail
+        print(f"[stage-4i] media-sideload soft-failed: {exc}", file=sys.stderr)
+        stage_4i_summary["media_sideload"] = {"error": str(exc), "mode": "errored"}
+    for loader_name, loader in (
+        ("attribute_staged_apply", attribute_staged_apply),
+        ("functionality_bulk_apply", functionality_bulk_apply),
+    ):
+        try:
+            loader()
+            stage_4i_summary["modules_loaded"].append(loader_name)
+        except Exception as exc:  # noqa: BLE001 - load failure non-fatal
+            print(f"[stage-4i] {loader_name} load soft-failed: {exc}", file=sys.stderr)
+    (run_dir / "stage-4i.json").write_text(
+        json.dumps(stage_4i_summary, indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
 
     # ------------------------------------------------------------------
     # Phase 6 Step 0 — compose with the Phase 5 module surface

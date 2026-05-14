@@ -2,6 +2,35 @@
 
 Append-only. Most-recent first.
 
+## 2026-05-14 - Phase 6 v2 Step 4i: 3 apply modules wired between Stage 7 compose and Stage 8 deploy
+
+**Decision:** Ninth wire-in - bundle of three operator-gated apply modules from `plugins/sgs-blocks/scripts/orchestrator/`. Dispatch location is in `main()` between `stage_9_report` and the autonomy gate (the Stage-8 boundary). Three separate lazy-loaders (`attribute_staged_apply`, `functionality_bulk_apply`, `media_sideload`) registered in `sys.modules`. Only `media_sideload.sideload_batch` is auto-invoked (dry-run mode) per clone -- it walks `extract_out` for `image-object` slots, writes a manifest at `run_dir/media-sideload-manifest.json`. Operators promote to real upload via the module's `--upload` CLI flag. The other two modules remain operator-gated (FR21): no auto-mutation, no auto-staging without operator-supplied changes / jobs. Summary lands at `run_dir/stage-4i.json` listing slot count + which modules loaded.
+
+**Why this approach:** all three modules are by design "stage + emit, never auto-execute" per FR21. Forcing them to auto-fire without operator-supplied changes would either be a no-op (no changes to stage) or violate the operator-gate contract. The right wire is: make them reachable from the live path so post-clone tooling can dispatch them via the orchestrator's namespace, plus auto-fire the harmless harvest step (media-sideload dry-run manifest) so the operator sees the slot inventory immediately after each clone.
+
+**Trade-offs considered:**
+- Could have called `media_sideload.sideload_batch(upload=True)` auto-uploading every image - rejected because it would mutate live WP media library on every clone, violating the operator-gate principle.
+- Could have skipped attribute-staged-apply + functionality-bulk-apply entirely until operator-supplied changes arrive - rejected because the lazy-loader registration costs ~zero and unblocks post-clone tooling that wants to dispatch via the orchestrator namespace.
+
+**Verification:**
+- 21/21 combined pytest tests across the 3 modules still green
+- All 8 prior wire-in suites still green
+- Drift validator still 0/1349 violations
+- tooling-map drift-check still passes
+- AST syntax check on modified orchestrator: OK
+
+**Files touched:**
+- `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` (3 script constants + 3 lazy-loaders + stage 4i dispatch block in main() + stage-4i.json + media-sideload-manifest.json writes)
+
+**Doc updates per docs-registry update-trigger matrix:**
+- `tooling-map.md` rows for attribute-staged-apply / functionality-bulk-apply / media-sideload: TESTS-ONLY -> YES with wiring detail (3 rows)
+- `cloning-pipeline-flow.md` Stage 7 block: 3 modules ✗ -> ✓ with wiring detail
+- `decisions.md` (this entry)
+
+**Next:** Step 4j (`wp_integration`) - validate_block_markup + route_native_feature + build_deploy_command between Stage 7 compose and Stage 8 deploy.
+
+---
+
 ## 2026-05-14 - Phase 6 v2 Step 4h: gap-review-report wired after both gap writers
 
 **Decision:** Eighth module wire-in of Phase 6 v2 - `gap_review_report.write_report(buckets_output, run_id, out_dir)` dispatched in `stage_9_report` after the attribute-gap-writer + functionality-gap-detector calls. The module appends `sgs-clone/<run_id>/gap-review.md` to its `out_dir` argument internally, so the orchestrator passes `run_dir.parent.parent` (the pipeline-state root) to land the file at the canonical path. Written path lands on `stage_9 output.gap_review_report_path` (None when the dispatch soft-fails).
