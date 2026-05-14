@@ -61,27 +61,17 @@ Project-local. `~/.claude/CLAUDE.md` and `~/.claude/rules/*.md` are global - out
 
 ---
 
-## 2. Deprecated docs
+## 2. Deprecation policy (registry of deprecated docs purged 2026-05-14)
 
-Files that USED to be canonical or were referenced as canonical, now retired.
-
-**Column meaning:** "Original path" is where the doc USED to live. "Current location" is where its contents now reside (or where the superseding doc lives). Deprecated specs are MOVED to `.claude/scratch/absorbed/` (not left in their original `.claude/specs/` location). The "leave on disk for commit-history continuity" rule means **the move target preserves commit history**, not that the original path stays populated.
-
-| Original path (now empty) | Why | Current location | Date |
-|----|-----|-------------|------|
-| `.claude/reports/script-inventory-master-2026-05-09.md` | Referenced in state.md but file was never written / lost | `.claude/tooling-map.md` (richer, QC-verified) | 2026-05-13 |
-| `.claude/specs/12-DRAFT-TO-SGS-PIPELINE.md` | Absorbed into Spec 15 | `.claude/scratch/absorbed/12-DRAFT-TO-SGS-PIPELINE.md` (commit history continuity) | 2026-05-12 |
-| `.claude/specs/13-DRAFT-NAMING-CONVENTION.md` | Absorbed into Spec 15 §8.1 | `.claude/scratch/absorbed/13-DRAFT-NAMING-CONVENTION.md` | 2026-05-12 |
-| `.claude/specs/14-CLONING-PIPELINE-CATALOGUE.md` | Absorbed into Spec 15 | `.claude/scratch/absorbed/14-CLONING-PIPELINE-CATALOGUE.md` | 2026-05-12 |
-| `.claude/plans/phase-6-pattern-fidelity.md` (v1) | Superseded by v2 - v1 framed Phase 6 as "patch composer + chrome + hero" (symptom-driven); v2 is architecture-driven (wire 14 modules + extract.py generalisation + retire Stage 0.7) | `.claude/plans/archive/phase-6-pattern-fidelity-v2.md` (chain — see next row) | 2026-05-14 |
-| `.claude/plans/phase-6-pattern-fidelity-v2.md` (v2, formerly active) | Spec 15 §7 Phase 6 work absorbed into Spec 16 (deterministic slot-aware converter) 2026-05-14. v2 plan preserved in archive for git-log continuity; Phase 7 plan is the live successor | `.claude/plans/phase-7-spec-16-converter-rollout.md` (moved to `plans/archive/`) | 2026-05-14 |
-| `.claude/plans/phase-5-clone-pipeline-e2e.md` (closed) | Phase 5 CLOSED 2026-05-13 (commit fc9f567f) — pipeline runs end-to-end per spec, +REGISTER writes patterns on PASS. Moved to archive as part of 2026-05-14 living-docs cleanup | `.claude/plans/archive/phase-5-clone-pipeline-e2e.md` (chain to spec-15 master plan for cross-phase context) | 2026-05-14 |
+Per Bean's 2026-05-14 simplification: the deprecated-docs registry section is removed. Superseded files live at their archive paths (`.claude/scratch/absorbed/` for specs, `.claude/plans/archive/` for phase plans). Commit history is the audit trail for what got deprecated, when, and why.
 
 **When deprecating**, do these in the same commit:
-1. Move row from canonical table to deprecated table
-2. Add `status: deprecated` + `superseded_by: <path>` + `deprecated_on: YYYY-MM-DD` to the doc's frontmatter
-3. **For specs being absorbed**: `git mv .claude/specs/X.md .claude/scratch/absorbed/X.md` (preserves commit history in the new location). The original `.claude/specs/` path is then empty - that's intentional.
-4. **For plans being superseded** (e.g. v1 → v2): leave the v1 file in `.claude/plans/` with `status: deprecated` frontmatter. Don't move plan files; they live with their successors.
+1. Add `status: deprecated` + `superseded_by: <path>` + `deprecated_on: YYYY-MM-DD` to the doc's frontmatter
+2. **For specs being absorbed**: `git mv .claude/specs/X.md .claude/scratch/absorbed/X.md` (preserves commit history in the new location). The original `.claude/specs/` path is then empty — intentional.
+3. **For phase plans being closed or superseded**: `git mv .claude/plans/phase-N-*.md .claude/plans/archive/phase-N-*.md`. The archive directory preserves git-log continuity.
+4. Remove the row from the canonical_docs table in this file + docs-registry.yaml. The deprecation is recorded in the commit message and visible via `git log --follow <archive-path>`.
+
+No standing "deprecated_docs" table is maintained — the registry is a forward-looking inventory of active canonical docs, not a graveyard ledger.
 5. Update `.claude/docs-registry.yaml` sidecar to match.
 
 ---

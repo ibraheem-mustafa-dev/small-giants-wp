@@ -6,13 +6,25 @@ session_date: 2026-05-13
 last_annotated: 2026-05-13 (post 4-reviewer QC: Sonnet/Haiku/Gemini Flash/Gemini Pro - Material corrections applied; line numbers refreshed)
 line_number_policy: Line numbers cited in this doc are accurate as of 2026-05-13 against `sgs-clone-orchestrator.py` HEAD (1277 lines). If they drift after edits, grep for the function or constant name instead.
 qc_consensus: 4 reviewers agree on all wiring-status claims. Material errors patched 2026-05-13.
-last_verified: 2026-05-14
+last_verified: 2026-05-15
 update_triggers:
   - Pipeline stage change (new stage, retired stage, renumbered)
   - Script wired or unwired (status flip in any stage block)
   - DB schema change affecting any pipeline stage
   - Skill dispatch change at any stage
   - Inline-function extraction (e.g. stage_0_7_css_lift retired - remove its stage block)
+spec_16_status: |
+  This doc describes the LIVE pipeline as of 2026-05-15. Spec 16
+  (.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md) is the concrete
+  implementation of Stages 3-7 via a slot-aware DOM walker. Phase 1
+  prototype shipped 2026-05-14 at .claude/scratch/converter-prototype/
+  but is NOT yet wired into this live pipeline. Phase 3 of the Spec 16
+  rollout plan (.claude/plans/phase-7-spec-16-converter-rollout.md)
+  branches stage_4_5_6_7_8_extract to dispatch the converter for SGS-
+  BEM-canonical sections; legacy extract.py path stays as fallback.
+  After Phase 6 of the rollout, legacy extract.py + extract_strategies
+  + overrides/hero.py retire and this doc's Stage 4 description rewrites
+  around the converter. Until then: this doc reflects the legacy path.
 registry_entry: docs-registry.md row 11
 companion_docs:
   - .claude/tooling-map.md - per-script inventory with status

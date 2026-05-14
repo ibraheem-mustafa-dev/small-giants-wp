@@ -1,6 +1,6 @@
 # small-giants-wp — Goals
 
-**Last updated:** 2026-04-29
+**Last updated:** 2026-05-15 (Spec 16 Phase 1 shipped 2026-05-14)
 
 ## Primary outcome
 

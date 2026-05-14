@@ -15,7 +15,7 @@ This file is the entry point for the working area — what's where, in canonical
 | Mistakes | `mistakes.md` | Recurring lessons (sourced from CC auto-memory feedback files) |
 | Last session | `handoff.md` | Most recent session summary |
 | Next session | `next-session-prompt.md` | Pre-written kick-off for the next session |
-| Specs | `specs/` | Block + framework specs (00-11) + optimisation-toolkit + design-brain rubrics. **Spec 15 (`.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md`) is the unified architecture for the deterministic draft-to-SGS converter + QA pipeline** (locked 2026-05-12, absorbs Specs 12+13+14 — originals at `.claude/scratch/absorbed/`). |
+| Specs | `specs/` | Block + framework specs (00-11) + optimisation-toolkit + design-brain rubrics. **Spec 15 (`.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md`)** owns L0-L3 + Stages 0-2 + 8-9 + /sgs-update (locked 2026-05-12, absorbs Specs 12+13+14). **Spec 16 (`.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md`)** is the concrete implementation of Spec 15 §7 Stages 3-7 via the slot-aware DOM walker (locked 2026-05-14, Phase 1 prototype shipped). |
 | Active plans | `plans/` | Master plan + per-phase plans (`/strategic-plan` + `/phase-planner` outputs) |
 | Strategy docs | `plans/strategy/` | Cross-cutting strategy (Step 2, toolset spec, design-brain, deferred pipelines) |
 | Archived plans | `plans/archive/` | Completed or superseded plans |

@@ -161,41 +161,10 @@ canonical_docs:
       - new_material_finding
       - phase_closure
 
-deprecated_docs:
-  - path: .claude/reports/script-inventory-master-2026-05-09.md
-    reason: "Referenced in state.md but file was never written / lost"
-    superseded_by: .claude/tooling-map.md
-    deprecated_on: 2026-05-13
-
-  - path: .claude/specs/12-DRAFT-TO-SGS-PIPELINE.md
-    reason: "Absorbed into Spec 15"
-    superseded_by: .claude/scratch/absorbed/12-DRAFT-TO-SGS-PIPELINE.md
-    deprecated_on: 2026-05-12
-
-  - path: .claude/specs/13-DRAFT-NAMING-CONVENTION.md
-    reason: "Absorbed into Spec 15 §8.1"
-    superseded_by: .claude/scratch/absorbed/13-DRAFT-NAMING-CONVENTION.md
-    deprecated_on: 2026-05-12
-
-  - path: .claude/specs/14-CLONING-PIPELINE-CATALOGUE.md
-    reason: "Absorbed into Spec 15"
-    superseded_by: .claude/scratch/absorbed/14-CLONING-PIPELINE-CATALOGUE.md
-    deprecated_on: 2026-05-12
-
-  - path: .claude/plans/phase-6-pattern-fidelity.md
-    reason: "v1 was symptom-driven (patch composer + chrome + hero); v2 is architecture-driven (wire 14 modules + extract.py generalisation)"
-    superseded_by: .claude/plans/archive/phase-6-pattern-fidelity-v2.md
-    deprecated_on: 2026-05-14
-
-  - path: .claude/plans/archive/phase-6-pattern-fidelity-v2.md
-    reason: "Spec 15 §7 Phase 6 work absorbed into Spec 16 (deterministic slot-aware converter). v2 plan is preserved in archive for git-log continuity but is no longer the active phase plan."
-    superseded_by: .claude/plans/phase-7-spec-16-converter-rollout.md
-    deprecated_on: 2026-05-14
-
-  - path: .claude/plans/archive/phase-5-clone-pipeline-e2e.md
-    reason: "Phase 5 CLOSED 2026-05-13 (commit fc9f567f) — pipeline runs end-to-end per spec, +REGISTER writes patterns on PASS. Moved to archive as part of 2026-05-14 living-docs cleanup."
-    superseded_by: .claude/plans/spec-15-master-execution-plan.md
-    deprecated_on: 2026-05-14
+# deprecated_docs section purged 2026-05-14 per Bean — superseded files
+# live at their archive paths (.claude/scratch/absorbed/ for specs,
+# .claude/plans/archive/ for phase plans). Commit history is the audit
+# trail for what got deprecated and when.
 
 enforcement_hooks:
   - path: .claude/hooks/tooling-map-drift-check.py

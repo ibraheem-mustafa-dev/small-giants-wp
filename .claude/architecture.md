@@ -17,6 +17,8 @@ SGS is a standalone WordPress block theme and Gutenberg blocks plugin built by S
 
 **Draft naming convention (canonical):** All Bean-controlled drafts (mockups, sketches, hand-coded HTML produced in-house) MUST use SGS-prefixed BEM (`.sgs-<block>__<element>--<modifier>`). Canonical reference: **`.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md (§8.1; former Spec 13 absorbed 2026-05-12)`** (locked 2026-05-10). Live scrapes use lingua-franca-conversion at recognition time. The 9-stage `/sgs-clone` pipeline collapses from probabilistic to deterministic for Bean-authored drafts under this convention.
 
+**Deterministic converter (slot-aware DOM walker, Spec 16 2026-05-14):** Spec 16 is the concrete implementation of Spec 15 §7 Stages 3-7. Phase 1 shipped 2026-05-14: prototype at `.claude/scratch/converter-prototype/` (1,136 lines across db_lookup + convert + convert_page) emits clean WP block markup with typed-attr lifts on the Mama's Munches homepage (10 SGS block types from 9 sections). Replaces ~1,942 lines of legacy `extract.py` + `extract_strategies.py` + `overrides/hero.py` at Phase 6 of the rollout. Phase 7 plan at `.claude/plans/phase-7-spec-16-converter-rollout.md`.
+
 ## Stack
 
 | Layer | Technology | Notes |

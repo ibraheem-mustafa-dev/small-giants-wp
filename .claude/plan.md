@@ -3,12 +3,16 @@ doc_type: plan
 project: small-giants-wp
 plan_name: convention-rollout-and-m9-completion
 created: 2026-05-10
+last_updated: 2026-05-15
 phase_count: 8
 total_estimate_min: 540-720 (9-12 hours focused)
-status: draft (not yet executing)
+status: superseded — convention-rollout phases 1-7 closed; M9 / clone-orchestrator work reframed as Spec 16. Active plan now at .claude/plans/phase-7-spec-16-converter-rollout.md.
+successor_plan: .claude/plans/phase-7-spec-16-converter-rollout.md
 ---
 
 # Plan - SGS-BEM Convention Rollout + M9 Completion
+
+**2026-05-15 status note:** Convention-rollout work completed across phases 1-7. The M9 / clone-orchestrator concerns this plan sketched were reframed in Spec 16 (2026-05-14) as a slot-aware DOM walker. Active execution plan now lives at `.claude/plans/phase-7-spec-16-converter-rollout.md`. Spec 15 stays canonical for L0-L3 + Stages 0-2 + 8-9 + /sgs-update; Spec 16 owns Stages 3-7. See `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` for the active implementation spec.
 
 ## USP
 

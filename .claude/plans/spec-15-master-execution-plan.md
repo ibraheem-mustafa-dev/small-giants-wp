@@ -2,15 +2,19 @@
 doc_type: master-execution-plan
 parent_spec: .claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md
 project: small-giants-wp
-title: Spec 15 — Master Execution Plan (Phases 1–5)
+title: Spec 15 — Master Execution Plan (Phases 1–5 closed; Phase 6 absorbed into Spec 16)
 session_date: 2026-05-12
-status: APPROVED — execution starts next session
+last_updated: 2026-05-15
+status: PHASES 1-5 CLOSED 2026-05-13. Phase 6 absorbed into Spec 16 (Deterministic Slot-Aware Converter) 2026-05-14. Active phase plan at .claude/plans/phase-7-spec-16-converter-rollout.md.
+successor_plan: .claude/plans/phase-7-spec-16-converter-rollout.md
 recommended_model_session_default: opus (architectural judgement at phase transitions); steps explicitly dispatch to lower-cost models per the per-step assignment
 ---
 
 # Spec 15 Master Execution Plan
 
-Synced phase-by-phase build plan for the unified architecture defined in `.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md`. Phases 1-6 are core build work. Phase-extra 1 (cross-platform output extension) is deferred until Phase 6 closes; it consumes Phase 6's high-quality patterns as input.
+**2026-05-15 status note:** Phases 1-5 closed by 2026-05-13. The original Phase 6 ("pattern fidelity v2") was absorbed into Spec 16 on 2026-05-14 — the deterministic slot-aware converter at `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` is the concrete implementation of Spec 15 §7 Stages 3-7 that Phase 6 was working toward. Active execution now sits in `.claude/plans/phase-7-spec-16-converter-rollout.md` (Spec 16 Phases 2-6). Phase-extra 1 (cross-platform output extension) still sequences after Spec 16 closes.
+
+Synced phase-by-phase build plan for the unified architecture defined in `.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md`. Phases 1-6 are core build work. Phase-extra 1 (cross-platform output extension) is deferred until Phase 6 (now Spec 16 Phase 7) closes; it consumes high-quality patterns as input.
 
 ## Global rules
 
