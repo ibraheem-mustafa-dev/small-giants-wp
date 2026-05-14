@@ -2,6 +2,35 @@
 
 Append-only. Most-recent first.
 
+## 2026-05-14 - Phase 6 v2 Step 4h: gap-review-report wired after both gap writers
+
+**Decision:** Eighth module wire-in of Phase 6 v2 - `gap_review_report.write_report(buckets_output, run_id, out_dir)` dispatched in `stage_9_report` after the attribute-gap-writer + functionality-gap-detector calls. The module appends `sgs-clone/<run_id>/gap-review.md` to its `out_dir` argument internally, so the orchestrator passes `run_dir.parent.parent` (the pipeline-state root) to land the file at the canonical path. Written path lands on `stage_9 output.gap_review_report_path` (None when the dispatch soft-fails).
+
+**Why this approach:** the report renders directly from the leftover-bucket-router output which is already in scope as `buckets_output` -- no additional data marshalling required. write_report() handles directory creation itself. Single dispatch closes the operator-review surface: one markdown file the operator opens to triage every gap surfaced by the run (convention / structural / attribute / functionality, sorted by severity).
+
+**Trade-offs considered:**
+- Could have rendered the markdown inline in the orchestrator - rejected as "deterministic not inline" violation; gap-review-report module already owns the rendering logic + test suite.
+- Could have combined the 4f + 4g + 4h dispatches into a single helper - kept them separate so a soft-fail in one doesn't cascade to the others; each can be regenerated independently.
+
+**Verification:**
+- gap-review-report self-test: PASS (columns + sort + summary + empty-omit + path contract)
+- All 7 prior wire-in suites still green
+- Drift validator still 0/1349 violations
+- tooling-map drift-check still passes
+- AST syntax check on modified orchestrator: OK
+
+**Files touched:**
+- `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` (GAP_REVIEW_REPORT_SCRIPT constant + gap_review_report() lazy-loader + write_report dispatch in stage_9_report + gap_review_report_path field on stage_9 output)
+
+**Doc updates per docs-registry update-trigger matrix:**
+- `tooling-map.md` row for gap-review-report.py: TESTS-ONLY -> YES with wiring detail
+- `cloning-pipeline-flow.md` Stage 9 block: gap-review-report ✗ -> ✓ with wiring detail
+- `decisions.md` (this entry)
+
+**Next:** Step 4i (`attribute-staged-apply` + `functionality-bulk-apply` + `media-sideload`) - three apply modules between Stage 7 compose and Stage 8 deploy.
+
+---
+
 ## 2026-05-14 - Phase 6 v2 Step 4g: functionality-gap-detector wired after attribute-gap-writer
 
 **Decision:** Seventh module wire-in of Phase 6 v2 - `functionality_gap_detector.detect_batch(elements, run_id, write=True)` dispatched in `stage_9_report` after the attribute-gap-writer dispatch. Elements are harvested by a new helper `_harvest_functionality_gap_elements(mockup_path, match)` that uses BeautifulSoup (already a dependency of the orchestrator's compose_atomic_pattern fallback) to walk the mockup DOM under every matched section selector and emit detector-shaped element dicts for any DOM node carrying a behaviour-fingerprint attribute (17 known data-* + aria-* attrs) or an inline on*-style handler. `stage_9_report` gains an optional `mockup_path` kwarg threaded from `args.mockup` at the driver call site so the harvester has the source DOM in scope.

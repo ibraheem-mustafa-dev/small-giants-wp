@@ -522,8 +522,13 @@ The big picture in one page, with EVERY script, file, DB table and skill plotted
 │       with provenance sgs-clone:<run_id>. Result on stage_9 output.        │
 │       functionality_gap_detector. Soft-fails on BS4 import or selector    │
 │       miss.                                                                 │
-│  ✗ recogniser/gap-review-report.py - markdown gap-review.md                 │
-│       TESTS-ONLY                                                            │
+│  ✓ recogniser/gap-review-report.py - markdown gap-review.md                 │
+│       WIRED 2026-05-14 (Phase 6 v2 Step 4h) - stage_9_report calls         │
+│       write_report(buckets_output, run_id, out_dir=run_dir.parent.parent)  │
+│       after the two gap writers fire. out_dir is the pipeline-state root;  │
+│       the module appends `sgs-clone/<run_id>/gap-review.md`. Written path  │
+│       on stage_9 output.gap_review_report_path. Soft-fails on rendering    │
+│       errors.                                                               │
 │                                                                             │
 │ FILES (W):                                                                  │
 │  pipeline-state/sgs-clone/<run_id>/stage-9-coverage.json                    │

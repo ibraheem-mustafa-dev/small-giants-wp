@@ -60,6 +60,7 @@ MODIFIER_EXTRACTORS_SCRIPT = ORCHESTRATOR_DIR / "modifier_extractors.py"
 STAGE1_BOUNDARY_HOOK_SCRIPT = ORCHESTRATOR_DIR / "stage1_boundary_hook.py"
 ATTRIBUTE_GAP_WRITER_SCRIPT = RECOGNISER_DIR / "attribute-gap-writer.py"
 FUNCTIONALITY_GAP_DETECTOR_SCRIPT = RECOGNISER_DIR / "functionality-gap-detector.py"
+GAP_REVIEW_REPORT_SCRIPT = RECOGNISER_DIR / "gap-review-report.py"
 
 # The set of HTML attributes that the functionality-gap-detector treats as
 # behaviour fingerprints. Kept here so the orchestrator's BS4 walk only emits
@@ -640,6 +641,17 @@ def functionality_gap_detector():
             "sgs_functionality_gap_detector", FUNCTIONALITY_GAP_DETECTOR_SCRIPT,
         )
     return _functionality_gap_detector_mod
+
+
+# Lazy-import gap-review-report (Spec 15 Phase 6 v2 Step 4h).
+_gap_review_report_mod = None
+
+
+def gap_review_report():
+    global _gap_review_report_mod
+    if _gap_review_report_mod is None:
+        _gap_review_report_mod = _load_module_from_path("sgs_gap_review_report", GAP_REVIEW_REPORT_SCRIPT)
+    return _gap_review_report_mod
 
 
 def _harvest_functionality_gap_elements(mockup_path: Path, match_output: dict) -> list[dict]:
@@ -1445,6 +1457,23 @@ def stage_9_report(boundary: dict, match: dict, slot_list: dict, extract: dict, 
         warnings.append(f"functionality_gap_detector soft-failed: {exc}; behavioural gaps not persisted")
         functionality_gap_detector_result = {"candidate_count": 0, "rows_written": 0, "mode": "errored", "error": str(exc)}
 
+    # 9e-gap-review-report (Phase 6 v2 Step 4h). Render the operator-facing
+    # markdown gap-review.md combining the leftover-bucket-router output
+    # (which carries the severity + gap_level enrichment for every bucket).
+    # The report writes to run_dir/gap-review.md; out_dir for write_report
+    # is the parent of `pipeline-state/sgs-clone/<run_id>` because the
+    # module appends `sgs-clone/<run_id>/gap-review.md` itself.
+    gap_review_report_path: str | None = None
+    try:
+        grr = gap_review_report()
+        # run_dir is `<root>/pipeline-state/sgs-clone/<run_id>`; out_dir
+        # passed to write_report is `<root>/pipeline-state`.
+        out_root = run_dir.parent.parent
+        written = grr.write_report(buckets_output, run_dir.name, out_dir=out_root)
+        gap_review_report_path = str(written)
+    except Exception as exc:  # noqa: BLE001 - report rendering is advisory; soft-fail
+        warnings.append(f"gap_review_report soft-failed: {exc}; markdown report not written")
+
     # 9c. Render operator-review HTML via simple_html_review_report subprocess.
     review_html_path = run_dir / "operator-review.html"
     cmd_review = [
@@ -1498,6 +1527,7 @@ def stage_9_report(boundary: dict, match: dict, slot_list: dict, extract: dict, 
         "autonomy_chain": autonomy_out,
         "attribute_gap_writer": attribute_gap_writer_result,
         "functionality_gap_detector": functionality_gap_detector_result,
+        "gap_review_report_path": gap_review_report_path,
     }
     status = "complete" if not errors else "failed"
     write_artefact(run_dir, 9, "report", status, output, started, errors, warnings)
