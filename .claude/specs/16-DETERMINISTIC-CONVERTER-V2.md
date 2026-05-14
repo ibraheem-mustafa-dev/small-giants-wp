@@ -158,9 +158,23 @@ Before emitting `core/image` (or any image-bearing typed attr like `sgs/product-
 
 Hook point: `/image-optimiser` runs at the orchestrator's Stage 4i media-sideload step, not inside the converter.
 
-### FR6 — CSS routing (three-destination policy per R5)
+### FR6 — CSS routing (four-destination policy per R5)
 
-For every CSS rule in the parsed-CSS dict, the converter MUST route it to one of three destinations. Never drop.
+For every CSS rule in the parsed-CSS dict, the converter MUST route it to one of four destinations. Never drop. Never halt.
+
+**Destination 0 — Global/reset rules (added per Sonnet QC 2026-05-14):**
+
+Rules whose selector has NO class component AND targets a global element pass straight to the variation CSS buffer as unscoped global rules. These are NOT halt-level errors — they're legitimate styling intent that belongs at the page/site level.
+
+Includes:
+- Element selectors: `body { ... }`, `html { ... }`, bare tag selectors (`h1 { ... }`, `a { ... }`)
+- Pseudo-class roots: `:root { --colour: ... }` (CSS custom-property declarations)
+- Universal: `* { box-sizing: ... }`
+- Pseudo-elements: `::before`, `::after` without a class anchor
+
+Detection rule: parse the selector with `tinycss2` or a simple CSS-selector regex. If NO `.classname` component appears AND the selector is one of the global patterns above → Destination 0. The variation CSS file gets these rules at the top of the file, NOT page-id-scoped (because they ARE global intent).
+
+This destination prevents the converter from halting on legitimate "reset" CSS or theme-wide overrides that have no per-block routing.
 
 **Destination 1 — Typed attribute lift (preferred):**
 
@@ -184,7 +198,7 @@ When the rule's class IS inside a block-root AND the CSS property logically belo
 - Operator authors the missing attribute on the block.json — converter picks it up next run (Destination 1 now succeeds)
 - Until authored: the rule ALSO lifts to Destination 2 as a temporary fallback so styling doesn't visibly drop while the operator decides
 
-**Hard rule:** every CSS rule MUST hit at least one of Destinations 1 / 2 / 3. The converter logs a halt-level error if a rule can't be routed. There is no fourth "silently dropped" destination.
+**Hard rule:** every CSS rule MUST hit at least one of Destinations 0 / 1 / 2 / 3. The converter logs a halt-level error if a rule can't be routed. There is no fifth "silently dropped" destination.
 
 **Implication for FR3 (pass-through):** an unmatched wrapper passes through (no markup wrapper) ONLY when no CSS rules in the buffer target its classes. The presence of CSS upgrades the pass-through to a Destination-2 emission.
 

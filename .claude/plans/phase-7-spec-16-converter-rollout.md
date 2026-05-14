@@ -378,7 +378,9 @@ Triggers `.claude/handoff.md` + `.claude/next-session-prompt.md` regeneration. U
 
 ---
 
-## Exit criteria (Phase 7 closure)
+## Exit criteria — Phase 7 vs Spec 16 closure (clarified per Sonnet final QC 2026-05-14)
+
+### Phase 7 closure (the 7 items below)
 
 1. ✓ Phase 2: sgs/heading + sgs/divider in `src/blocks/` at status='built'
 2. ✓ Phase 3: orchestrator runs `--converter-v2` end-to-end
@@ -388,4 +390,12 @@ Triggers `.claude/handoff.md` + `.claude/next-session-prompt.md` regeneration. U
 6. ✓ Final QC panel: 4-reviewer multi-model verdict on the full state (all SHIP / PASS / READY / TECHNICALLY-SOUND)
 7. ✓ /handoff invoked; state.md reflects shipped status; PR merged to main
 
-Without all 7 — Phase 7 is NOT closed, Spec 16 stays open.
+Without all 7 — Phase 7 is NOT closed.
+
+### Spec 16 closure (beyond Phase 7)
+
+Per Spec 16 §9 item 7, Spec 16 itself does NOT close on Phase 7 alone. The remaining gate:
+
+**8. ✓ End-to-end run on a SECOND client (Indus Foods or helping-doctors) without code changes — confirms the architecture generalises**
+
+This is post-Phase-7 work and may schedule into Phase 8 or a separate verification session. Phase 7 closed means "Mama's works end-to-end"; Spec 16 closed means "the architecture generalises across clients". Don't conflate them at the next-session sign-off.
