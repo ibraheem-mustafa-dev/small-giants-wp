@@ -391,7 +391,76 @@ What stays:
 | Nested block-roots (block inside block) need recursion guard | Edge case | Sonnet Q1 edge case | Add guard in Phase 3 wiring work |
 | JSON serialisation has no pre-emit validation for newlines/quotes | Low | Gemini Flash surprise 1 | Add in Phase 3 |
 
-## 9. Validation criteria for "the universal cloning script that works without intervention"
+## 9. Tooling integration
+
+Cross-references to `.claude/skills-commands-map.md`, `.claude/tooling-map.md`, `.claude/db-tables-map.md`, and `.claude/cloning-pipeline-flow.md`. Every entry in the tables below is verifiable in those companion docs.
+
+### 9.1 Skills + slash commands the converter invokes / integrates with
+
+| Skill / command | Role for Spec 16 |
+|---|---|
+| `/sgs-clone` | The pipeline that Spec 16 implements Stages 3-7 of. Phase 3 adds `--converter-v2` flag dispatching to the new path. |
+| `/sgs-update` | Populates the canonical data (block_attributes, slot_synonyms, modifier_suffixes, property_suffixes, design_tokens) that the converter consumes. Phase 5 of the rollout runs a full canonical pass. |
+| `/sgs-db` | Operator + subagent query interface to the SGS knowledge base. Used in Phase 2 to verify new blocks register with canonical_slot rows; used in Phase 4 to inspect attribute_gap_candidates writes. |
+| `/wp-blocks` | Block-schema lookup for cross-checking block.json shape during Phase 2 (sgs/heading + sgs/divider creation). |
+| `/visual-qa` | Phase 4 closure gate — 9-layer audit at 3 viewports against the WP-rendered mockup baseline. ≤1% pixel diff required to close. |
+| `/uimax` / `/ui-ux-pro-max` | Reads `uimax.naming_conventions` for the SGS-BEM regex via the cached `_sgs_bem_regex()` helper in `db_lookup.py`. |
+| `/uimax-classify-naming` | Spec 15 §8 upstream condition for non-SGS-BEM input. Not consumed by the converter directly; routes external sources to SGS-BEM before they enter `/sgs-clone`. |
+| `/subagent-driven-development` | Phase 7 Steps 1.1, 1.2, 2.1, 2.3 — implementer + 2 reviewers pattern for new block creation + orchestrator wiring. |
+| `/dispatching-parallel-agents` | Phase 7 Steps 1.1+1.2 parallel (different file sets), Step 8 four-reviewer final QC. |
+| `/delegate` | Per-step model routing — Sonnet for load-bearing, Haiku for mechanical, Gemini Flash for cheap edits, Gemini Pro for deep review, Cerebras for grep audits. |
+| `/handoff` | Final step of every Phase 7 session; regenerates handoff.md + next-session-prompt.md + state.md body. |
+
+### 9.2 Scripts (production paths after Phase 3 promotion)
+
+| Script | Lines | Wired into | Role |
+|---|---|---|---|
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/db_lookup.py` | 282 | converter_v2 module | DB-backed canonical lookups: BEM parser, registered_block_slugs, slot_synonyms loader, modifier_suffixes loader, attr_name_for_slot_or_alias finder, hyphen-normalised string match |
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` | 681 | converter_v2 module | Single-section DOM walker + slot-aware extraction + 4-destination CSS routing |
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert_page.py` | 173 | converter_v2 module | Full-page wrapper; splits mockup into top-level sections, dispatches per-section, concatenates output + variation CSS buffer |
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/__init__.py` | NEW | converter_v2 module | Public API: `convert_section(html, css, media_map)`, `convert_page(html, media_map)` |
+| `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` | (existing) | Stage 4 dispatch | Branches to converter_v2 when `--converter-v2` flag set AND section is SGS-BEM-canonical |
+| `plugins/sgs-blocks/scripts/orchestrator/trace.py` | (existing) | Diagnostic | Optional `Trace.for_run(run_dir)` for converter decision logging — wired in Phase 3 |
+| `plugins/sgs-blocks/scripts/recogniser/per-section-convention-voter.py` | (existing) | Stage 1 | Identifies sections + SGS-BEM-canonical flag the converter dispatch depends on |
+| `plugins/sgs-blocks/scripts/recogniser/confidence-matrix.py` | (existing) | Stage 2 | Matches sections to registered blocks (status='built'); converter consumes the match |
+| `plugins/sgs-blocks/scripts/lints/bem-lint.py` | (existing) | Stage 0.1 | BEM compliance gate before converter runs (Spec 15 §9) |
+| `plugins/sgs-blocks/scripts/lints/token-lint.py` | (existing) | Stage 0.5 | Token-usage gate; surfaces non-token values as gap candidates |
+
+### 9.3 Scripts retired in Phase 6
+
+| Script | Lines | Replaced by |
+|---|---|---|
+| `tools/recogniser-v2/extract.py` | 731 | `converter_v2/convert.py` walk() + lift_subtree_into_block_attrs() |
+| `tools/recogniser-v2/extract_strategies.py` | 303 | DB-backed canonical_slot lookup in `converter_v2/db_lookup.py` |
+| `tools/recogniser-v2/overrides/hero.py` | 908 | Per-block override pattern obsolete; hero's slots become regular catalogue-driven entries (Spec 15 §7.2) |
+| `tools/recogniser-v2/overrides/__init__.py` | ~8 | Module registry no longer needed |
+
+### 9.4 DB tables (R/W matrix)
+
+| Table | DB | R / W | When | Purpose |
+|---|---|---|---|---|
+| `blocks` | sgs-framework.db | R | every convert_section call | Filter to `status='built'` for routable block slugs |
+| `block_attributes` | sgs-framework.db | R | per block-root match | Reads attr_name + canonical_slot + role + attr_type for slot-aware extraction |
+| `slot_synonyms` | sgs-framework.db | R | every BEM element resolution | Maps element name (eyebrow, sub, description, etc.) → canonical slot (label, subheading, text) |
+| `modifier_suffixes` | sgs-framework.db | R | every BEM modifier resolution | Canonical Primary / Secondary / Hover / Tablet / etc. with kind (variant/state/breakpoint/side) |
+| `property_suffixes` | sgs-framework.db | R | CSS-token-snap pass (FR6 Destination 1) | Maps CSS property → token category (palette, spacingSizes, fontSizes, etc.) |
+| `design_tokens` | sgs-framework.db | R | token-snap value resolution | Source of truth for theme.json token slugs + values |
+| `style_variations` | sgs-framework.db | R | client variation CSS lift | Reads active client's tokens_json overlay |
+| `patterns` | sgs-framework.db | R | (future Phase 2 pattern-level match) | Pattern-level routing when section spans multiple blocks |
+| `attribute_gap_candidates` | sgs-framework.db | **W** | FR6 Destination 3 | The converter writes one row per (block_slug, css_property, raw_value, source_class) when a CSS rule has no matching typed attribute — the catalogue-extension work queue |
+| `naming_conventions` | uimax | R | BEM regex resolution | `convention_name='SGS WordPress'` row holds the canonical regex for `_sgs_bem_regex()` |
+| `recognition_log` | uimax | **W** | Stage 9 (unchanged) | Existing pipeline writes; converter doesn't add to or remove from this |
+
+### 9.5 Cross-references to companion docs
+
+- `.claude/skills-commands-map.md` — full catalogue of all 17 skills + commands, pipeline position, scripts invoked
+- `.claude/tooling-map.md` — per-script inventory across `plugins/sgs-blocks/scripts/`, `tools/`, and skill bundles. Spec 16 added converter prototype rows 2026-05-14
+- `.claude/db-tables-map.md` — per-table inventory (29 sgs-framework + 48 uimax) with schemas + R/W matrix per pipeline stage
+- `.claude/cloning-pipeline-flow.md` — annotated visual flow of /sgs-clone + /sgs-update with per-stage scripts, files, DB, skills, status. Spec 16 status note added 2026-05-15 in frontmatter
+
+---
+
+## 10. Validation criteria for "the universal cloning script that works without intervention"
 
 Bean's stated end goal: a script that converts any SGS-BEM draft into a working WP site with zero AI or Bean intervention. Spec 16 closure requires ALL of:
 

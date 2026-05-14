@@ -20,7 +20,82 @@ references:
 
 Implements Spec 16 §4 Phases 2-6 (Phase 1 prototype already shipped). Closes with end-to-end visual QA passing on Mama's Munches homepage at ≤1% pixel diff.
 
+## Tooling reference (cross-cuts every step)
+
+Cross-references to `.claude/skills-commands-map.md`, `.claude/tooling-map.md`, `.claude/db-tables-map.md`, `.claude/cloning-pipeline-flow.md`.
+
+### Skills + commands invoked across Phase 7
+
+| Skill | Where |
+|---|---|
+| `/subagent-driven-development` | Steps 1.1, 1.2, 2.1, 2.3 (implementer + 2 QC reviewers per task) |
+| `/dispatching-parallel-agents` | Steps 1.1+1.2 parallel, Step 8.1 four-reviewer QC |
+| `/delegate` | Per-step model routing (Sonnet/Haiku/Gemini Flash/Gemini Pro/Cerebras) |
+| `/sgs-update` | Steps 1.3, 4 — DB canonical pass |
+| `/sgs-db` | Pre-flight + spot-checks throughout |
+| `/wp-blocks` | Step 1.x — block schema cross-check |
+| `/sgs-clone --converter-v2` | Steps 2.x, 3.1 — the wired pipeline path |
+| `/visual-qa` | Step 3.3 — closure gate |
+| `/cerebras` | Step 5.1 — zero-cost grep audit |
+| `/gemini-flash` | Step 5.4 — mechanical doc updates |
+| `/handoff` | Step 8.2 — session close |
+
+### Scripts touched
+
+| Path | Step | Action |
+|---|---|---|
+| `plugins/sgs-blocks/src/blocks/heading/*` | 1.1 | CREATE (6 files) |
+| `plugins/sgs-blocks/src/blocks/divider/*` | 1.2 | CREATE (6 files) |
+| `~/.claude/skills/sgs-wp-engine/scripts/update-db.py` | 1.3, 4 | INVOKE |
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/__init__.py` | 2.1 | CREATE |
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/{db_lookup,convert,convert_page}.py` | 2.1 | MOVE from `.claude/scratch/converter-prototype/` |
+| `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` | 2.3 | MODIFY (Stage 4 branch + `--converter-v2` arg) |
+| `plugins/sgs-blocks/scripts/orchestrator/trace.py` | 2.3 | INVOKE (wire `Trace.for_run` into converter) |
+| `plugins/sgs-blocks/scripts/orchestrator/visual_qa_capture.py` | 3.3 | INVOKE |
+| `tools/recogniser-v2/visual_qa_config.json` | 3.3 | READ (thresholds) |
+| `plugins/sgs-blocks/scripts/orchestrator/autonomy_gate.py` | 3.3 | READS visual-qa output |
+| `tools/recogniser-v2/extract.py` | 5.2 | DELETE |
+| `tools/recogniser-v2/extract_strategies.py` | 5.2 | DELETE |
+| `tools/recogniser-v2/overrides/hero.py` | 5.2 | DELETE |
+| `tools/recogniser-v2/overrides/__init__.py` | 5.2 | DELETE |
+| `tools/recogniser-v2/__init__.py` | 5.2 | MODIFY (re-export converter_v2 functions) |
+| `.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md` | 5.3 | MODIFY (mark §7.2 deprecation as ✓ delivered) |
+| `.claude/tooling-map.md` | 5.4 | MODIFY (retire legacy rows; mark converter_v2 LIVE) |
+| `.claude/cloning-pipeline-flow.md` | 5.4 | MODIFY (Stage 4 description rewrite; spec_16_status → LIVE) |
+| `.claude/db-tables-map.md` | 5.4 | MODIFY (Stage 4 R/W matrix swap) |
+| `.claude/handoff.md` + `.claude/next-session-prompt.md` + `.claude/state.md` | 8.2 | REGENERATE via `/handoff` |
+
+### DB tables read/written by the wired converter (Stage 4)
+
+| Table | DB | R/W | Used for |
+|---|---|---|---|
+| `blocks` | sgs-framework.db | R | Routable block slugs (status='built') |
+| `block_attributes` | sgs-framework.db | R | canonical_slot + role + attr_type for slot-aware extraction |
+| `slot_synonyms` | sgs-framework.db | R | element → canonical slot resolution |
+| `modifier_suffixes` | sgs-framework.db | R | Primary/Secondary/Hover/etc. classification |
+| `property_suffixes` | sgs-framework.db | R | CSS property → token category for token-snap |
+| `design_tokens` | sgs-framework.db | R | theme.json token catalogue for snap targets |
+| `style_variations` | sgs-framework.db | R | active client variation tokens overlay |
+| `naming_conventions` | uimax | R | SGS-BEM canonical regex (`is_canonical_for_sgs_drafts=1`) |
+| `attribute_gap_candidates` | sgs-framework.db | **W** | FR6 Destination 3 — catalogue-extension queue |
+| `recognition_log` | uimax | **W** | Existing pipeline writes; unchanged by converter |
+
+### Files NOT touched by Phase 7 (untouched by design)
+
+| File | Reason |
+|---|---|
+| `plugins/sgs-blocks/scripts/recogniser/per-section-convention-voter.py` | Stage 1 stays unchanged — converter consumes its `is_sgs_bem_canonical` output |
+| `plugins/sgs-blocks/scripts/recogniser/confidence-matrix.py` | Stage 2 stays unchanged — Spec 16 leaves matching as-is |
+| `plugins/sgs-blocks/scripts/lints/bem-lint.py` + `lints/token-lint.py` | Stages 0.1 + 0.5 gates stay unchanged |
+| `tools/recogniser-v2/data/role-templates.json` | Stays per Spec 15 §6 Stage 4 binding |
+| `tools/recogniser-v2/visual_qa_config.json` | Stays — Phase 4 reads it |
+| `tools/multi-frame-qa/capture.js` + `scripts/mockup-parity-validator.js` + `scripts/screenshot-diff-helper.js` | Stays — Stage 8 visual QA infrastructure |
+
 ## Pre-flight checks (run inline at session start, ~3 min)
+
+**Skills used:** `/sgs-db` (DB query), `/wp-blocks` (block schema cross-check)
+**Scripts touched:** `~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py` (read-only), `.claude/scratch/converter-prototype/convert_page.py`
+**DB tables read:** `blocks` (sgs-framework.db) — verify sgs/label at status='built'
 
 ```bash
 # 1. Phase 1 artefacts present
@@ -78,6 +153,14 @@ If any check fails — halt and surface to Bean. The plan assumes the Phase 1 ba
 
 ### Step 1.3 — /sgs-update Stage 4 canonical pass (inline, sequential after 1.1 + 1.2)
 
+**Skill:** `/sgs-update` (the canonical sister-pipeline to `/sgs-clone`)
+**Scripts:**
+- `~/.claude/skills/sgs-wp-engine/scripts/update-db.py` — main driver (Stages 1-11)
+- `plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py` — Stage 4 worker; the canonical_slot assignment heuristic
+- `plugins/sgs-blocks/scripts/uimax-tools/sgs-update-uimax-sync.py` — Stage 3 + 4 uimax mirror
+
+**DB tables written:** `blocks`, `block_attributes` (canonical_slot, role, derived_selector), `block_selectors`, `block_supports`, `slot_synonyms`, `modifier_suffixes`, `property_suffixes`
+
 ```bash
 python ~/.claude/skills/sgs-wp-engine/scripts/update-db.py --repo .
 ```
@@ -96,9 +179,14 @@ If canonical_slot is NULL for slots that clearly map to existing canonicals — 
 
 ### Step 1.4 — Converter routing for the new blocks (inline)
 
+**Files modified:** `.claude/scratch/converter-prototype/convert.py` (until Step 2.1 promotes it to `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py`)
+**Functions touched:** `get_block_for_node()` (slot-to-standalone-block fallback + atomic-tag map), `lift_subtree_into_block_attrs()` (sgs/heading three-slot harvest)
+**DB tables read:** `block_attributes` (sgs/heading + sgs/divider attrs), `slot_synonyms` (label/heading/subheading canonicals)
+
 Update `.claude/scratch/converter-prototype/convert.py`:
-- Add `sgs/heading` to detection: any element matching block-root class `sgs-heading` OR `sgs-section-heading` triggers the FR1 block-root lift path
-- Add `sgs/divider` to atomic detection: `<hr>` tag fallback routes here; class `sgs-divider` block-root match
+- Add `sgs/heading` to detection: any element matching block-root class `sgs-heading` OR `sgs-section-heading` triggers the FR1 block-root lift path. Use `db.attr_name_for_slot_or_alias('sgs/heading', 'label'|'heading'|'subheading')` to find the lift targets.
+- Add `sgs/divider` to atomic detection: `<hr>` tag fallback routes here; class `sgs-divider` block-root match.
+- Extend `SLOT_TO_STANDALONE_BLOCK` map: `{"label": "sgs/label", "badge": "sgs/label", "heading": "sgs/heading", "subheading": "sgs/heading"}` (heading + subheading inside `__section-heading` context route to the composite; alone outside, they go to core/heading per the atomic-tag rule R2).
 
 Smoke-test against Mama's gift-section (already has the three-element pattern):
 
@@ -117,6 +205,17 @@ python .claude/scratch/converter-prototype/convert_page.py \
 ## Step 2 — Phase 3: Orchestrator wiring (Sonnet SDD, ~30 min wall)
 
 **Goal:** Wire the converter into `sgs-clone-orchestrator.py` as the live Stage 4 path for SGS-BEM-canonical sections. Legacy `extract.py` remains as fallback for non-SGS-BEM input (until Step 5 retirement).
+
+**Skills + commands:** `/subagent-driven-development` (Sonnet implementer + Haiku QC + Sonnet QC); `/delegate` per agent
+**Scripts touched:**
+- `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` — Stage 4 branch logic at `stage_4_5_6_7_8_extract()` (~line 980-1040, current legacy path is the `subprocess.run([extract.py, ...])` call)
+- `plugins/sgs-blocks/scripts/orchestrator/converter_v2/__init__.py` — NEW public API module
+- `plugins/sgs-blocks/scripts/orchestrator/converter_v2/{db_lookup,convert,convert_page}.py` — promoted from `.claude/scratch/converter-prototype/`
+- `plugins/sgs-blocks/scripts/orchestrator/trace.py` — wire `Trace.for_run(run_dir)` into the converter for diagnostic logging
+- `plugins/sgs-blocks/scripts/recogniser/per-section-convention-voter.py` — read `is_sgs_bem_canonical(boundary)` output to decide dispatch path
+
+**DB tables read by the wired converter:** `blocks`, `block_attributes` (with canonical_slot), `slot_synonyms`, `modifier_suffixes`, `property_suffixes`, `design_tokens`, `style_variations`, `naming_conventions` (uimax)
+**DB tables written:** `attribute_gap_candidates` (when FR6 Destination 3 fires)
 
 ### Step 2.1 — Promote converter prototype to production path (Sonnet)
 
@@ -190,6 +289,20 @@ Add `--converter-v2` argparse flag. Skip Stages 4.5, 5, 7 when converter ran (it
 
 **Goal:** Close FR7 — the "is it visually correct" gate.
 
+**Skills + commands:** `/sgs-clone --converter-v2` (the wired path from Step 2), `/visual-qa` (9-layer audit skill), `/delegate` (Sonnet diagnostician if needed)
+**Scripts touched:**
+- `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` — invoked end-to-end
+- `plugins/sgs-blocks/scripts/orchestrator/visual_qa_capture.py` — Playwright + PIL pixel-diff factory
+- `tools/multi-frame-qa/capture.js` — multi-frame capture at 0/200/500/1000/3000ms per viewport
+- `scripts/mockup-parity-validator.js` — computed-style diff between mockup-as-WP-post and converter-output
+- `scripts/screenshot-diff-helper.js` — pixel-level diff via pixelmatch
+- `tools/recogniser-v2/visual_qa_config.json` — thresholds (1% pass / 0.5% surface / 3 viewports)
+- `plugins/sgs-blocks/scripts/orchestrator/autonomy_gate.py` — PASS/SURFACE/HALT decision
+
+**SSH targets for deploy:** sandybrown-nightingale-600381.hostingersite.com (staging)
+**WP REST endpoint:** `POST /wp/v2/posts` (creating the mockup-as-post baseline + the converter-output post)
+**DB tables read:** None at this stage (Stage 8 is filesystem + REST API, not SQL)
+
 ### Step 3.1 — Build Mama's via converter (inline)
 
 ```bash
@@ -235,6 +348,12 @@ If diff > 1%:
 
 ## Step 4 — Phase 5: /sgs-update full canonical pass (~10 min wall, inline)
 
+**Skill:** `/sgs-update` (Stages 1-11 idempotent rescan)
+**Scripts touched:** `~/.claude/skills/sgs-wp-engine/scripts/update-db.py` (driver), `populate-db.py` (Stage 1), `behavioural-analyser/{extract-signatures,assign-canonical}.py` (Stages 3-4), `uimax-tools/sgs-update-uimax-sync.py` (Stages 3+4 uimax mirror), `drift-validator/validate.py` (Stage 9), `gap-detection/detect.py` (Stage 10)
+**DB tables read/written:**
+- W: `blocks`, `block_attributes` (canonical_slot, role, derived_selector, output_signature), `block_selectors`, `block_supports`, `block_capabilities`, `block_compositions`, `block_changes`, `slot_synonyms`, `modifier_suffixes`, `property_suffixes`, `design_tokens`, `style_variations`, `theme_parts`, `hooks`, `patterns`, `pattern_coverage`, `attribute_gap_candidates`
+- W (uimax): `component_libraries`, `animations`
+
 ```bash
 python ~/.claude/skills/sgs-wp-engine/scripts/update-db.py --repo .
 ```
@@ -255,7 +374,9 @@ If candidates exist — surface to Bean as the catalogue-extension work queue (w
 
 ### Step 5.1 — Grep audit (Cerebras — zero-cost mechanical scan)
 
-**Why Cerebras here:** purely mechanical. Find every Python import of the soon-deleted files across the repo. /delegate routes this to Cerebras as the cheapest-LLM-with-correct-output choice for a pattern-search task.
+**Skill:** `/cerebras` — zero-cost LLM delegation for mechanical pattern search
+**Why Cerebras here:** purely mechanical. Find every Python import of the soon-deleted files across the repo. `/delegate` routes this to Cerebras as the cheapest-LLM-with-correct-output choice for a pattern-search task.
+**Scripts read:** all `*.py` under `plugins/sgs-blocks/scripts/`, `tools/`, `.claude/scratch/converter-prototype/`
 
 ```bash
 grep -rn "from tools.recogniser_v2.extract\|import extract\|extract_strategies\|overrides.hero" \
@@ -281,10 +402,13 @@ In `.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md`:
 
 ### Step 5.4 — tooling-map.md + cloning-pipeline-flow.md updates (Gemini Flash)
 
-**Why Gemini Flash:** mechanical doc edits with cross-referencing. /delegate routes mechanical-update-with-context tasks to Gemini Flash (cheap + accurate at this scale).
+**Skill:** `/gemini-flash` — cheap mechanical doc edits with cross-referencing
+**Why Gemini Flash:** mechanical doc edits with cross-referencing. `/delegate` routes mechanical-update-with-context tasks to Gemini Flash (cheap + accurate at this scale).
+**Files modified:** `.claude/tooling-map.md` + `.claude/cloning-pipeline-flow.md` + `.claude/db-tables-map.md` (Stage 4 R/W matrix moves from extract.py to converter_v2)
 
-- `tooling-map.md`: mark `extract.py` / `extract_strategies.py` / `overrides/hero.py` as RETIRED; add `converter_v2/*.py` rows
-- `cloning-pipeline-flow.md`: replace Stage 4's script-list with converter_v2 module
+- `tooling-map.md`: mark `extract.py` / `extract_strategies.py` / `overrides/hero.py` as RETIRED; add `converter_v2/*.py` rows; mark `data/role-templates.json` + `visual_qa_config.json` as STAYS
+- `cloning-pipeline-flow.md`: replace Stage 4's script-list with converter_v2 module; update the spec_16_status frontmatter field (set to "LIVE" since the converter is now wired)
+- `db-tables-map.md`: update Stage 4 row in the matrix — reads now hit converter_v2 module, writes to attribute_gap_candidates
 
 **Wall-time:** ~15 min implementer + ~5 min parallel updates.
 
@@ -331,6 +455,9 @@ git checkout main && git pull --ff-only origin main
 
 ### Step 8.1 — QC panel on the final state (parallel dispatch)
 
+**Skill:** `/dispatching-parallel-agents` — 4-reviewer fan-out
+**Reviewers read:** Spec 16 + Phase 7 plan + state.md + decisions.md + parking.md + final mamas-homepage.html output + visual-qa diff report
+
 | Agent | Model | Scope |
 |---|---|---|
 | QC A | **Sonnet** | Architectural review on the wired converter + Spec 15/16 alignment |
@@ -339,6 +466,9 @@ git checkout main && git pull --ff-only origin main
 | QC D | **Gemini Flash** | Fresh-eyes on the final Mama's output: scan for surprising emissions, check semantic completeness |
 
 ### Step 8.2 — /handoff (inline, last)
+
+**Skill:** `/handoff` — regenerates living docs per `.claude/docs-registry.yaml` canonical_docs list
+**Files written:** `.claude/handoff.md`, `.claude/next-session-prompt.md`, `.claude/state.md` (body refresh), `.claude/decisions.md` (append today's), `.claude/parking.md` (cleanup shipped + append new), `.claude/projects.md` (refresh via project-manager agent)
 
 Triggers `.claude/handoff.md` + `.claude/next-session-prompt.md` regeneration. Update `state.md` to reflect Spec 16 fully shipped.
 
