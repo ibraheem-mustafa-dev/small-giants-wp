@@ -61,6 +61,38 @@ import extract_strategies
 
 
 REPO = Path(__file__).resolve().parents[2]
+
+
+# ---------------------------------------------------------------------------
+# Lazy-load orchestrator.trace.Trace; soft-fail to None if unavailable.
+# ---------------------------------------------------------------------------
+def _load_trace():
+    """Locate and load trace.Trace; return None on any failure."""
+    import importlib.util as _ilu
+    from pathlib import Path as _Path
+    here = _Path(__file__).resolve()
+    for parent in [here.parent, *here.parents]:
+        candidate = parent / "orchestrator" / "trace.py"
+        if candidate.exists():
+            spec = _ilu.spec_from_file_location("orchestrator_trace", candidate)
+            mod = _ilu.module_from_spec(spec)
+            try:
+                spec.loader.exec_module(mod)
+                return mod.Trace
+            except Exception:
+                return None
+        candidate2 = parent / "trace.py"
+        if candidate2.exists() and parent.name == "orchestrator":
+            spec = _ilu.spec_from_file_location("orchestrator_trace", candidate2)
+            mod = _ilu.module_from_spec(spec)
+            try:
+                spec.loader.exec_module(mod)
+                return mod.Trace
+            except Exception:
+                return None
+    return None
+
+_Trace = _load_trace()
 # CATALOGUE path retired Spec 15 Phase 3 step 3.3 — Layer 1/3/4 catalogue data
 # now lives in sgs-framework.db. Role templates live at tools/recogniser-v2/data/.
 
@@ -314,7 +346,8 @@ def parse_mockup_styles(html: str) -> dict[str, dict[str, str]]:
 # Generic dispatcher (NEW — replaces FINGERPRINTS + EXTRACTORS hard-coded path)
 # ---------------------------------------------------------------------------
 def extract_block(block_name: str, section, ctx: dict,
-                  emit_strategy_trace: bool = False) -> tuple[dict, list, dict]:
+                  emit_strategy_trace: bool = False,
+                  run_dir=None) -> tuple[dict, list, dict]:
     """Catalogue-driven dispatcher.
 
     For each Layer 3 slot of *block_name*:
@@ -335,6 +368,7 @@ def extract_block(block_name: str, section, ctx: dict,
     attrs: dict = {}
     inner_blocks: list = []
     trace: dict = {}
+    tr = (_Trace.for_run(run_dir) if _Trace else None)
 
     # Override path FIRST — for hero this populates ~50 attrs.
     if override is not None:
@@ -368,6 +402,19 @@ def extract_block(block_name: str, section, ctx: dict,
         if value is not None:
             attrs[attr_name] = value
             trace[attr_name] = {'strategy': strategy_label, 'confidence': confidence, 'source': 'convention'}
+            if tr:
+                try:
+                    tr.event(
+                        stage="stage_4_slot_extract",
+                        block_name=block_name,
+                        attr_name=attr_name,
+                        role=role,
+                        strategy=strategy_label,
+                        confidence=confidence,
+                        value_type=type(value).__name__,
+                    )
+                except Exception:
+                    pass
 
     if not emit_strategy_trace:
         # Trace is internal only — caller adds to JSON if --emit-strategy-trace
@@ -486,6 +533,8 @@ def main():
                    help='With --verify-against, require bit-exact match (fail on additive deltas)')
     p.add_argument('--emit-strategy-trace', action='store_true',
                    help='Embed per-attribute strategy + confidence in JSON output')
+    p.add_argument('--run-dir', default=None,
+                   help='Optional: pipeline-state run directory for trace.jsonl output')
     args = p.parse_args()
 
     if args.viewport and args.viewport != 1440:
@@ -532,7 +581,9 @@ def main():
     ctx['section_css'] = section_css
 
     # Dispatch
-    extracted, inner_blocks, strategy_trace = extract_block(args.block, section, ctx)
+    extracted, inner_blocks, strategy_trace = extract_block(
+        args.block, section, ctx, run_dir=args.run_dir,
+    )
 
     # Hero-specific computed-style overrides (the existing apply_computed_overrides_hero pass)
     if args.block == 'sgs/hero' and computed:

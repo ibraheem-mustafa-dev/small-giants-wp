@@ -51,6 +51,34 @@ sys.modules.setdefault("staged_output", _so)
 _so_spec.loader.exec_module(_so)
 
 
+def _load_trace():
+    """Lazy-load orchestrator.trace.Trace; soft-fail to a no-op if unavailable."""
+    from pathlib import Path as _Path
+    here = _Path(__file__).resolve()
+    for parent in [here.parent, *here.parents]:
+        candidate = parent / "orchestrator" / "trace.py"
+        if candidate.exists():
+            spec = _ilu.spec_from_file_location("orchestrator_trace", candidate)
+            mod = _ilu.module_from_spec(spec)
+            try:
+                spec.loader.exec_module(mod)
+                return mod.Trace
+            except Exception:
+                return None
+        candidate2 = parent / "trace.py"
+        if candidate2.exists() and parent.name == "orchestrator":
+            spec = _ilu.spec_from_file_location("orchestrator_trace", candidate2)
+            mod = _ilu.module_from_spec(spec)
+            try:
+                spec.loader.exec_module(mod)
+                return mod.Trace
+            except Exception:
+                return None
+    return None
+
+_Trace = _load_trace()
+
+
 # Heuristic classifier used as the default when no explicit classifier is
 # passed in. Production orchestrator should dispatch to /uimax-classify-naming
 # for higher-confidence classification.
@@ -94,6 +122,7 @@ def _is_sgs_bem_canonical(class_signature: list[str]) -> bool:
 def enrich_boundary(
     boundary: dict,
     classifier: Callable[[list[str]], str | None] | None = None,
+    run_dir: "Path | None" = None,
 ) -> dict:
     """Enrich ONE boundary record with lingua-franca conversion.
 
@@ -112,6 +141,20 @@ def enrich_boundary(
         enriched["gap_candidate_classes"] = []
         enriched["lingua_franca_skipped"] = True
         enriched["lingua_franca_skipped_reason"] = "already SGS-BEM canonical"
+        # Trace: fast-path skip (boundary already SGS-BEM canonical).
+        tr = (_Trace.for_run(run_dir) if _Trace else None)
+        if tr:
+            try:
+                tr.event(
+                    stage="stage_1_boundary_hook",
+                    boundary_id=boundary.get("boundary_id"),
+                    source_convention="SGS WordPress",
+                    lingua_franca_skipped=True,
+                    skipped_reason="already SGS-BEM canonical",
+                    primary_sgs_bem=classes[0] if classes else None,
+                )
+            except Exception:
+                pass
         return enriched
 
     convention = (classifier or heuristic_classify)(classes)
@@ -121,17 +164,33 @@ def enrich_boundary(
     enriched["equivalent_implementations"] = result["equivalent_implementations"]
     enriched["gap_candidate_classes"] = result["gap_candidate_classes"]
     enriched["lingua_franca_skipped"] = False
+    # Trace: heavy-path lingua-franca conversion result.
+    tr = (_Trace.for_run(run_dir) if _Trace else None)
+    if tr:
+        try:
+            tr.event(
+                stage="stage_1_boundary_hook",
+                boundary_id=boundary.get("boundary_id"),
+                source_convention=convention,
+                lingua_franca_skipped=False,
+                primary_sgs_bem=result["primary_sgs_bem"],
+                gap_candidate_classes=result["gap_candidate_classes"],
+                equivalent_implementations_count=len(result["equivalent_implementations"]),
+            )
+        except Exception:
+            pass
     return enriched
 
 
 def enrich_stage1_payload(
     payload: dict,
     classifier: Callable[[list[str]], str | None] | None = None,
+    run_dir: "Path | None" = None,
 ) -> dict:
     """Enrich every boundary in a Stage-1 artefact. Returns a new dict."""
     out = dict(payload)
     out["boundaries"] = [
-        enrich_boundary(b, classifier=classifier)
+        enrich_boundary(b, classifier=classifier, run_dir=run_dir)
         for b in payload.get("boundaries", [])
     ]
     return out

@@ -44,6 +44,38 @@ _vm_spec.loader.exec_module(_vm)
 DEFAULT_MIN_CONFIDENCE = 0.6
 
 
+# ---------------------------------------------------------------------------
+# Lazy-load trace.Trace; soft-fail to None if unavailable.
+# ---------------------------------------------------------------------------
+def _load_trace():
+    """Locate and load trace.Trace; return None on any failure."""
+    import importlib.util as _ilu
+    from pathlib import Path as _Path
+    here = _Path(__file__).resolve()
+    for parent in [here.parent, *here.parents]:
+        candidate = parent / "orchestrator" / "trace.py"
+        if candidate.exists():
+            spec = _ilu.spec_from_file_location("orchestrator_trace", candidate)
+            mod = _ilu.module_from_spec(spec)
+            try:
+                spec.loader.exec_module(mod)
+                return mod.Trace
+            except Exception:
+                return None
+        candidate2 = parent / "trace.py"
+        if candidate2.exists() and parent.name == "orchestrator":
+            spec = _ilu.spec_from_file_location("orchestrator_trace", candidate2)
+            mod = _ilu.module_from_spec(spec)
+            try:
+                spec.loader.exec_module(mod)
+                return mod.Trace
+            except Exception:
+                return None
+    return None
+
+_Trace = _load_trace()
+
+
 # Attr-name heuristics -> role. The role determines which snap_* function
 # to call and which theme.json registry slice to read.
 def _role_for_attr(attr_name: str) -> str | None:
@@ -98,6 +130,7 @@ def resolve(
     raw_value,
     theme_json: dict,
     min_confidence: float = DEFAULT_MIN_CONFIDENCE,
+    run_dir=None,
 ) -> dict:
     """Resolve ONE extracted attribute to a token CSS var or a gap candidate.
 
@@ -116,6 +149,8 @@ def resolve(
                                  calling the matcher,
         }
     """
+    tr = (_Trace.for_run(run_dir) if _Trace else None)
+
     role = _role_for_attr(attr_name)
     base = {
         "block_slug": block_slug,
@@ -124,18 +159,36 @@ def resolve(
         "role":       role,
     }
     if role is None:
-        return {**base, "token_slug": None, "css_var": None, "confidence": 0.0,
-                "is_gap_candidate": False,
-                "snap_skipped_reason": "no role mapping for attr"}
+        result = {**base, "token_slug": None, "css_var": None, "confidence": 0.0,
+                  "is_gap_candidate": False,
+                  "snap_skipped_reason": "no role mapping for attr"}
+        if tr:
+            try:
+                tr.event(stage="stage_4_5_token_resolve", **result)
+            except Exception:
+                pass
+        return result
     if not isinstance(raw_value, str) or not raw_value.strip():
-        return {**base, "token_slug": None, "css_var": None, "confidence": 0.0,
-                "is_gap_candidate": False,
-                "snap_skipped_reason": "raw_value not a non-empty string"}
+        result = {**base, "token_slug": None, "css_var": None, "confidence": 0.0,
+                  "is_gap_candidate": False,
+                  "snap_skipped_reason": "raw_value not a non-empty string"}
+        if tr:
+            try:
+                tr.event(stage="stage_4_5_token_resolve", **result)
+            except Exception:
+                pass
+        return result
     registry = _registry_slice(theme_json, role) or []
     if not registry:
-        return {**base, "token_slug": None, "css_var": None, "confidence": 0.0,
-                "is_gap_candidate": True,
-                "snap_skipped_reason": f"theme.json registry slice for {role!r} is empty"}
+        result = {**base, "token_slug": None, "css_var": None, "confidence": 0.0,
+                  "is_gap_candidate": True,
+                  "snap_skipped_reason": f"theme.json registry slice for {role!r} is empty"}
+        if tr:
+            try:
+                tr.event(stage="stage_4_5_token_resolve", **result)
+            except Exception:
+                pass
+        return result
 
     snap_fn = {
         "color":     _vm.snap_color,
@@ -147,25 +200,38 @@ def resolve(
     slug, confidence = snap_fn(raw_value, registry)
 
     if confidence >= min_confidence:
-        return {**base, "token_slug": slug, "css_var": _css_var(role, slug),
-                "confidence": confidence, "is_gap_candidate": False,
-                "snap_skipped_reason": None}
+        result = {**base, "token_slug": slug, "css_var": _css_var(role, slug),
+                  "confidence": confidence, "is_gap_candidate": False,
+                  "snap_skipped_reason": None}
+        if tr:
+            try:
+                tr.event(stage="stage_4_5_token_resolve", **result)
+            except Exception:
+                pass
+        return result
     # Below threshold -- write gap candidate; downstream additive-token
     # discovery decides whether to emit a NewTokenCandidate.
-    return {**base, "token_slug": None, "css_var": None,
-            "confidence": confidence, "is_gap_candidate": True,
-            "snap_skipped_reason": f"confidence {confidence:.2f} below {min_confidence}"}
+    result = {**base, "token_slug": None, "css_var": None,
+              "confidence": confidence, "is_gap_candidate": True,
+              "snap_skipped_reason": f"confidence {confidence:.2f} below {min_confidence}"}
+    if tr:
+        try:
+            tr.event(stage="stage_4_5_token_resolve", **result)
+        except Exception:
+            pass
+    return result
 
 
 def resolve_batch(
     items: list[dict],
     theme_json: dict,
     min_confidence: float = DEFAULT_MIN_CONFIDENCE,
+    run_dir=None,
 ) -> list[dict]:
     """Convenience: resolve a list of {block_slug, attr_name, raw_value}."""
     return [
         resolve(i.get("block_slug", ""), i["attr_name"], i.get("raw_value"),
-                theme_json, min_confidence=min_confidence)
+                theme_json, min_confidence=min_confidence, run_dir=run_dir)
         for i in items
     ]
 

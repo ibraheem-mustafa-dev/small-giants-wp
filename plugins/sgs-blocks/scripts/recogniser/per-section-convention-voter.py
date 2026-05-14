@@ -59,6 +59,35 @@ from pathlib import Path
 sys.stdout.reconfigure(encoding="utf-8")
 sys.stderr.reconfigure(encoding="utf-8")
 
+
+def _load_trace():
+    """Lazy-load orchestrator.trace.Trace; soft-fail to a no-op if unavailable."""
+    import importlib.util as _ilu
+    from pathlib import Path as _Path
+    here = _Path(__file__).resolve()
+    for parent in [here.parent, *here.parents]:
+        candidate = parent / "orchestrator" / "trace.py"
+        if candidate.exists():
+            spec = _ilu.spec_from_file_location("orchestrator_trace", candidate)
+            mod = _ilu.module_from_spec(spec)
+            try:
+                spec.loader.exec_module(mod)
+                return mod.Trace
+            except Exception:
+                return None
+        candidate2 = parent / "trace.py"
+        if candidate2.exists() and parent.name == "orchestrator":
+            spec = _ilu.spec_from_file_location("orchestrator_trace", candidate2)
+            mod = _ilu.module_from_spec(spec)
+            try:
+                spec.loader.exec_module(mod)
+                return mod.Trace
+            except Exception:
+                return None
+    return None
+
+_Trace = _load_trace()
+
 try:
     from bs4 import BeautifulSoup, Tag
 except ImportError:
@@ -177,13 +206,31 @@ def collect_class_signature(node: Tag) -> list[str]:
     return [c for c in classes if c]
 
 
-def build_boundary(node: Tag, selector: str, used_ids: set[str], idx: int) -> dict:
+def build_boundary(node: Tag, selector: str, used_ids: set[str], idx: int,
+                   run_dir: Path | None = None) -> dict:
     """Build a single boundary dict for one section node."""
     class_signature = collect_class_signature(node)
     convention = detect_convention(class_signature)
     slug, confidence, fallback = vote_block_slug(class_signature, convention)
     semantic_role_hint = slug.split("/")[-1] if slug else (class_signature[0] if class_signature else "unknown")
     section_id = derive_section_id(node, class_signature, used_ids)
+
+    # Trace: Stage 1 convention vote decision.
+    tr = (_Trace.for_run(run_dir) if _Trace else None)
+    if tr:
+        try:
+            tr.event(
+                stage="stage_1_convention_vote",
+                boundary_id=f"b{idx}",
+                selector=selector,
+                class_signature=class_signature,
+                convention=convention,
+                candidate_block_slug=slug,
+                candidate_confidence=confidence,
+                fallback_strategy=fallback,
+            )
+        except Exception:
+            pass
 
     return {
         "boundary_id": f"b{idx}",
@@ -253,7 +300,8 @@ def auto_detect_sections(soup: BeautifulSoup) -> list[tuple[Tag, str]]:
     return out
 
 
-def vote(mockup_path: Path, section_selector: str | None, auto_section: bool) -> dict:
+def vote(mockup_path: Path, section_selector: str | None, auto_section: bool,
+         run_dir: Path | None = None) -> dict:
     """Top-level voting entry point. Returns orchestrator-compatible JSON dict."""
     html = mockup_path.read_text(encoding="utf-8")
     soup = BeautifulSoup(html, "html.parser")
@@ -263,14 +311,14 @@ def vote(mockup_path: Path, section_selector: str | None, auto_section: bool) ->
 
     if auto_section:
         for idx, (node, selector) in enumerate(auto_detect_sections(soup), start=1):
-            boundaries.append(build_boundary(node, selector, used_ids, idx))
+            boundaries.append(build_boundary(node, selector, used_ids, idx, run_dir=run_dir))
     else:
         if not section_selector:
             sys.exit("ERROR: --section required unless --auto-section set")
         node = find_section_node(soup, section_selector)
         if node is None:
             sys.exit(f"ERROR: selector {section_selector!r} matched zero nodes in {mockup_path}")
-        boundaries.append(build_boundary(node, section_selector, used_ids, 1))
+        boundaries.append(build_boundary(node, section_selector, used_ids, 1, run_dir=run_dir))
 
     convention_counter = Counter(b["convention_per_section"] for b in boundaries)
     most_common = convention_counter.most_common()
@@ -299,7 +347,10 @@ def main(argv: list[str] | None = None) -> int:
     if not args.mockup.exists():
         sys.exit(f"ERROR: mockup not found at {args.mockup}")
 
-    result = vote(args.mockup, args.section, args.auto_section)
+    # Derive run_dir from the --out path so trace events land in the same
+    # pipeline-state/<run_id>/ folder that the orchestrator owns.
+    run_dir: Path | None = args.out.parent if args.out else None
+    result = vote(args.mockup, args.section, args.auto_section, run_dir=run_dir)
     payload = json.dumps(result, indent=2, ensure_ascii=False)
     if args.out:
         args.out.parent.mkdir(parents=True, exist_ok=True)

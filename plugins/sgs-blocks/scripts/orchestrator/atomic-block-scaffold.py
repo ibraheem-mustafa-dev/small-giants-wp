@@ -41,6 +41,35 @@ _so_spec = _ilu.spec_from_file_location("staged_output", HERE / "staged_output.p
 _so = _ilu.module_from_spec(_so_spec)
 _so_spec.loader.exec_module(_so)
 
+
+def _load_trace():
+    """Lazy-load orchestrator.trace.Trace; soft-fail to a no-op if unavailable."""
+    from pathlib import Path as _Path
+    here = _Path(__file__).resolve()
+    for parent in [here.parent, *here.parents]:
+        candidate = parent / "orchestrator" / "trace.py"
+        if candidate.exists():
+            spec = _ilu.spec_from_file_location("orchestrator_trace", candidate)
+            mod = _ilu.module_from_spec(spec)
+            try:
+                spec.loader.exec_module(mod)
+                return mod.Trace
+            except Exception:
+                return None
+        candidate2 = parent / "trace.py"
+        if candidate2.exists() and parent.name == "orchestrator":
+            spec = _ilu.spec_from_file_location("orchestrator_trace", candidate2)
+            mod = _ilu.module_from_spec(spec)
+            try:
+                spec.loader.exec_module(mod)
+                return mod.Trace
+            except Exception:
+                return None
+    return None
+
+
+_Trace = _load_trace()
+
 CANONICAL_BLOCKS_ROOT = Path("plugins/sgs-blocks/src/blocks")
 
 
@@ -224,6 +253,23 @@ def scaffold(
     (target / "manifest.json").write_text(
         json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8"
     )
+
+    # Call-site 16 — Stage 9b: scaffold proposed (trace map §16).
+    tr = (_Trace.for_run(_so.run_dir(run_id, root=root)) if _Trace else None)
+    if tr:
+        try:
+            tr.event(
+                stage="stage_9b_scaffold_proposed",
+                slug=f"sgs/{slug}",
+                role=role,
+                run_id=run_id,
+                staging_dir=str(target),
+                files=sorted(files.keys()),
+                pending_db_rows_count=len(pending_rows),
+            )
+        except Exception:
+            pass
+
     return manifest
 
 
@@ -270,6 +316,23 @@ def promote(
     (Path(manifest["staging_dir"]) / "manifest.json").write_text(
         json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8"
     )
+
+    # Call-site 17 — Stage 9b: scaffold promoted (trace map §17).
+    # run_dir is the parent of staging_dir (staging_dir = <run_dir>/scaffold-<slug>).
+    _promote_run_dir = Path(manifest["staging_dir"]).parent
+    tr = (_Trace.for_run(_promote_run_dir) if _Trace else None)
+    if tr:
+        try:
+            tr.event(
+                stage="stage_9b_scaffold_promoted",
+                slug=manifest["slug"],
+                canonical_path=str(dest),
+                db_rows_inserted=db_rows_inserted,
+                promoted=True,
+            )
+        except Exception:
+            pass
+
     return manifest
 
 

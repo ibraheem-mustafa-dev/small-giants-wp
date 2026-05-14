@@ -33,6 +33,38 @@ sys.stdout.reconfigure(encoding="utf-8")
 HERE = Path(__file__).parent
 _VALUE_MATCHER_DIR = HERE.parent / "value-matcher"
 
+
+# ---------------------------------------------------------------------------
+# Lazy-load trace.Trace; soft-fail to None if unavailable.
+# ---------------------------------------------------------------------------
+def _load_trace():
+    """Locate and load trace.Trace; return None on any failure."""
+    import importlib.util as _ilu
+    from pathlib import Path as _Path
+    here = _Path(__file__).resolve()
+    for parent in [here.parent, *here.parents]:
+        candidate = parent / "orchestrator" / "trace.py"
+        if candidate.exists():
+            spec = _ilu.spec_from_file_location("orchestrator_trace", candidate)
+            mod = _ilu.module_from_spec(spec)
+            try:
+                spec.loader.exec_module(mod)
+                return mod.Trace
+            except Exception:
+                return None
+        candidate2 = parent / "trace.py"
+        if candidate2.exists() and parent.name == "orchestrator":
+            spec = _ilu.spec_from_file_location("orchestrator_trace", candidate2)
+            mod = _ilu.module_from_spec(spec)
+            try:
+                spec.loader.exec_module(mod)
+                return mod.Trace
+            except Exception:
+                return None
+    return None
+
+_Trace = _load_trace()
+
 # Optional consult of Phase 1's inheritance.py if present. We never crash
 # without it -- the module ships with a self-contained default lookup.
 _inh = None
@@ -140,6 +172,7 @@ def filter_writes(
     attribute_writes: dict,           # attr_name -> resolved_value
     block_json: dict,
     theme_json: dict,
+    run_dir=None,
 ) -> dict:
     """Apply decide() across a dict of pending writes.
 
@@ -153,10 +186,25 @@ def filter_writes(
     emitted: dict = {}
     omitted: dict = {}
     decisions: list[dict] = []
+    tr = (_Trace.for_run(run_dir) if _Trace else None)
     for name, value in attribute_writes.items():
         d = decide(block_slug, name, value, block_json, theme_json)
         decisions.append(d)
         (emitted if d["emit"] else omitted)[name] = value
+        if tr:
+            try:
+                tr.event(
+                    stage="stage_5_supports_decision",
+                    block_slug=block_slug,
+                    attr_name=name,
+                    resolved_value=value,
+                    emit=d["emit"],
+                    reason=d["reason"],
+                    inherited_default=d.get("inherited_default"),
+                    supports_key=d.get("supports_key"),
+                )
+            except Exception:
+                pass
     return {
         "emitted_attributes": emitted,
         "omitted_attributes": omitted,
