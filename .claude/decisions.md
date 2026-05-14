@@ -2,6 +2,36 @@
 
 Append-only. Most-recent first.
 
+## 2026-05-14 - Phase 6 v2 Step 4g: functionality-gap-detector wired after attribute-gap-writer
+
+**Decision:** Seventh module wire-in of Phase 6 v2 - `functionality_gap_detector.detect_batch(elements, run_id, write=True)` dispatched in `stage_9_report` after the attribute-gap-writer dispatch. Elements are harvested by a new helper `_harvest_functionality_gap_elements(mockup_path, match)` that uses BeautifulSoup (already a dependency of the orchestrator's compose_atomic_pattern fallback) to walk the mockup DOM under every matched section selector and emit detector-shaped element dicts for any DOM node carrying a behaviour-fingerprint attribute (17 known data-* + aria-* attrs) or an inline on*-style handler. `stage_9_report` gains an optional `mockup_path` kwarg threaded from `args.mockup` at the driver call site so the harvester has the source DOM in scope.
+
+**Why this approach:** the detector module owns the scoring + INSERT logic; the orchestrator-side helper is the minimum BS4 glue that produces detector-shaped input. Keeping the behaviour-attribute set duplicated as a module-top constant `_BEHAVIOUR_HTML_ATTR_SET` (mirroring the detector's `_BEHAVIOUR_HTML_ATTRS`) lets the BS4 walk skip non-fingerprint elements early -- avoids handing the detector a no-op load when the per-section subtree has hundreds of irrelevant nodes. Drift between the two sets is acceptable risk: the detector ignores attrs it doesn't recognise; new behaviour attrs added to the detector but not the orchestrator's set get silently dropped at the harvest step (acceptable; can be reviewed by parking note if a behaviour ever goes missing).
+
+**Trade-offs considered:**
+- Could have called detect_batch with EVERY DOM node and let the detector filter - rejected because that loads the detector with potentially 1000s of no-op elements per run, multiplying both module-load cost and the resulting `candidates` empty-row noise.
+- Could have used html.parser stdlib instead of BS4 - chose BS4 because it's already imported in the orchestrator for compose_atomic_pattern and supports CSS-selector lookups on section roots.
+- Could have plumbed mockup_path through a closure instead of a new kwarg - the explicit kwarg keeps the function signature self-documenting.
+
+**Verification:**
+- functionality-gap-detector self-test script: 3 PASS (click-toggle 4 candidates; modal-on-hero confidence=0.9; benign-paragraph 0 rows)
+- All 6 prior wire-in suites still green
+- Drift validator still 0/1349 violations
+- tooling-map drift-check still passes
+- AST syntax check on modified orchestrator: OK
+
+**Files touched:**
+- `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` (FUNCTIONALITY_GAP_DETECTOR_SCRIPT constant + _BEHAVIOUR_HTML_ATTR_SET + functionality_gap_detector() lazy-loader + _harvest_functionality_gap_elements() BS4 helper + stage_9_report mockup_path kwarg + dispatch + driver call-site wiring + functionality_gap_detector field on stage_9 output)
+
+**Doc updates per docs-registry update-trigger matrix:**
+- `tooling-map.md` row for functionality-gap-detector.py: TESTS-ONLY -> YES with wiring detail
+- `cloning-pipeline-flow.md` Stage 9 block: functionality-gap-detector ✗ -> ✓ with wiring detail
+- `decisions.md` (this entry)
+
+**Next:** Step 4h (`gap-review-report`) - markdown gap-review report combining 4f + 4g outputs.
+
+---
+
 ## 2026-05-14 - Phase 6 v2 Step 4f: attribute-gap-writer wired after Stage 9 leftover routing
 
 **Decision:** Sixth module wire-in of Phase 6 v2 - `attribute_gap_writer.stage(gaps, run_id, write=True)` dispatched in `stage_9_report` after the autonomy chain completes. Gap-candidate rows are harvested by a new helper `_harvest_attribute_gap_candidates(extract)` that walks `extract.per_section_results[*].token_resolutions` and forwards every entry with `is_gap_candidate=True` and a non-empty string `raw_value` into the writer's six-field input schema: `{block_slug, selector, css_property, value_seen, role_proposed, confidence}`. Provenance is `sgs-clone:<run_id>`. Result lands on `stage_9 output.attribute_gap_writer`.

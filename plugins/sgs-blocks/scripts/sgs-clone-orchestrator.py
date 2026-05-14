@@ -59,6 +59,19 @@ SUPPORTS_WRITER_SCRIPT = ORCHESTRATOR_DIR / "supports_writer.py"
 MODIFIER_EXTRACTORS_SCRIPT = ORCHESTRATOR_DIR / "modifier_extractors.py"
 STAGE1_BOUNDARY_HOOK_SCRIPT = ORCHESTRATOR_DIR / "stage1_boundary_hook.py"
 ATTRIBUTE_GAP_WRITER_SCRIPT = RECOGNISER_DIR / "attribute-gap-writer.py"
+FUNCTIONALITY_GAP_DETECTOR_SCRIPT = RECOGNISER_DIR / "functionality-gap-detector.py"
+
+# The set of HTML attributes that the functionality-gap-detector treats as
+# behaviour fingerprints. Kept here so the orchestrator's BS4 walk only emits
+# element dicts that the detector will actually score. Source: the
+# _BEHAVIOUR_HTML_ATTRS constant inside the detector module.
+_BEHAVIOUR_HTML_ATTR_SET = frozenset({
+    "data-action", "data-toggle", "data-target", "data-modal-open",
+    "data-modal-close", "data-tab-trigger", "data-tab-panel", "data-accordion",
+    "data-dropdown", "data-scroll-to", "data-reveal", "data-animate",
+    "data-lightbox", "aria-expanded", "aria-controls", "aria-haspopup",
+    "data-copy-to-clipboard",
+})
 
 SGS_FRAMEWORK_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 
@@ -614,6 +627,77 @@ def attribute_gap_writer():
     if _attribute_gap_writer_mod is None:
         _attribute_gap_writer_mod = _load_module_from_path("sgs_attribute_gap_writer", ATTRIBUTE_GAP_WRITER_SCRIPT)
     return _attribute_gap_writer_mod
+
+
+# Lazy-import functionality-gap-detector (Spec 15 Phase 6 v2 Step 4g).
+_functionality_gap_detector_mod = None
+
+
+def functionality_gap_detector():
+    global _functionality_gap_detector_mod
+    if _functionality_gap_detector_mod is None:
+        _functionality_gap_detector_mod = _load_module_from_path(
+            "sgs_functionality_gap_detector", FUNCTIONALITY_GAP_DETECTOR_SCRIPT,
+        )
+    return _functionality_gap_detector_mod
+
+
+def _harvest_functionality_gap_elements(mockup_path: Path, match_output: dict) -> list[dict]:
+    """Walk the mockup DOM under every matched section selector and emit
+    element dicts (selector / matched_block_slug / html_attrs / inline_handlers)
+    for every element that carries at least one behaviour-fingerprint
+    attribute or an inline on*-style handler.
+
+    The detector module owns the scoring logic; this helper is the BS4
+    glue that produces detector-shaped input from the live mockup.
+    """
+    if not mockup_path or not mockup_path.exists():
+        return []
+    try:
+        from bs4 import BeautifulSoup
+    except ImportError:
+        return []
+    try:
+        soup = BeautifulSoup(mockup_path.read_text(encoding="utf-8"), "html.parser")
+    except Exception:  # noqa: BLE001
+        return []
+
+    elements: list[dict] = []
+    for m in match_output.get("matches") or []:
+        section_selector = (m.get("selector")
+                            or m.get("boundary_selector")
+                            or "")
+        matched_slug = m.get("block_name")
+        if not section_selector:
+            continue
+        try:
+            root = soup.select_one(section_selector)
+        except Exception:  # noqa: BLE001 - malformed selector
+            continue
+        if root is None:
+            continue
+        for el in root.descendants:
+            tag = getattr(el, "name", None)
+            if not tag:
+                continue
+            attrs = {k.lower(): v for k, v in (el.attrs or {}).items()}
+            behaviour_attrs = {k: v for k, v in attrs.items() if k in _BEHAVIOUR_HTML_ATTR_SET}
+            inline_handlers = [k for k in attrs.keys() if k.startswith("on") and len(k) > 2]
+            if not behaviour_attrs and not inline_handlers:
+                continue
+            # Build a precise-ish selector for traceability.
+            classes = " ".join(el.get("class") or [])
+            sel_suffix = (f".{el.get('class')[0]}" if el.get("class") else f"#{el.get('id')}"
+                          if el.get("id") else "")
+            elements.append({
+                "selector":            f"{section_selector} {tag}{sel_suffix}".strip(),
+                "matched_block_slug":  matched_slug,
+                "html_tag":            tag,
+                "html_attrs":          behaviour_attrs,
+                "inline_handlers":     inline_handlers,
+                "class_signature":     classes,
+            })
+    return elements
 
 
 def _harvest_attribute_gap_candidates(extract: dict) -> list[dict]:
@@ -1273,7 +1357,8 @@ def insert_recognition_log(run_id: str, buckets_output: dict) -> tuple[int, list
 
 
 def stage_9_report(boundary: dict, match: dict, slot_list: dict, extract: dict, run_dir: Path,
-                   scaffold_new_blocks: bool = True, promote_new_blocks: bool = True) -> dict:
+                   scaffold_new_blocks: bool = True, promote_new_blocks: bool = True,
+                   mockup_path: Path | None = None) -> dict:
     """Stage 9 -- route leftovers + INSERT recognition_log + render review HTML."""
     started = now_iso()
     errors: list[str] = []
@@ -1343,6 +1428,23 @@ def stage_9_report(boundary: dict, match: dict, slot_list: dict, extract: dict, 
         warnings.append(f"attribute_gap_writer soft-failed: {exc}; gap candidates not persisted")
         attribute_gap_writer_result = {"row_count": 0, "inserted": 0, "bumped": 0, "mode": "errored", "error": str(exc)}
 
+    # 9d-functionality-gap-detector (Phase 6 v2 Step 4g). Walk the mockup
+    # DOM under every matched section selector and emit a gap-candidate row
+    # for any element carrying a behaviour-fingerprint attribute (data-action,
+    # data-toggle, aria-expanded, etc.) or an inline on*-handler. The
+    # detector module owns the scoring + INSERT logic; this orchestrator
+    # call provides the BS4 glue. Soft-fails so the rest of Stage 9 still
+    # completes when bs4 is unavailable or a selector misfires.
+    functionality_gap_detector_result: dict = {"candidate_count": 0, "rows_written": 0, "mode": "skipped"}
+    try:
+        elements = _harvest_functionality_gap_elements(mockup_path, match) if mockup_path else []
+        if elements:
+            fgd = functionality_gap_detector()
+            functionality_gap_detector_result = fgd.detect_batch(elements, run_id=run_dir.name, write=True)
+    except Exception as exc:  # noqa: BLE001 - functionality gap detection is operator-review artefact; soft-fail
+        warnings.append(f"functionality_gap_detector soft-failed: {exc}; behavioural gaps not persisted")
+        functionality_gap_detector_result = {"candidate_count": 0, "rows_written": 0, "mode": "errored", "error": str(exc)}
+
     # 9c. Render operator-review HTML via simple_html_review_report subprocess.
     review_html_path = run_dir / "operator-review.html"
     cmd_review = [
@@ -1395,6 +1497,7 @@ def stage_9_report(boundary: dict, match: dict, slot_list: dict, extract: dict, 
         "operator_review_html_path": str(review_html_path),
         "autonomy_chain": autonomy_out,
         "attribute_gap_writer": attribute_gap_writer_result,
+        "functionality_gap_detector": functionality_gap_detector_result,
     }
     status = "complete" if not errors else "failed"
     write_artefact(run_dir, 9, "report", status, output, started, errors, warnings)
@@ -1486,6 +1589,7 @@ def main():
         boundary, match, slot_list, extract_out, run_dir,
         scaffold_new_blocks=not args.no_scaffold_new_blocks,
         promote_new_blocks=not args.no_promote_new_blocks,
+        mockup_path=args.mockup,
     )
     print(f"[stage-9] leftover entries: {report['leftover_total_count']} across {sum(1 for v in report['leftover_totals'].values() if v > 0)} buckets")
     print(f"[stage-9] recognition_log rows inserted: {report['recognition_log_rows_inserted']}")

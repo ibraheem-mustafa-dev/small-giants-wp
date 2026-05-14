@@ -511,8 +511,17 @@ The big picture in one page, with EVERY script, file, DB table and skill plotted
 │       value_seen, role_proposed, confidence}. Provenance is sgs-clone:     │
 │       <run_id>. Dedupes against (block_slug, selector, css_property).      │
 │       Result lands on stage_9 output.attribute_gap_writer.                  │
-│  ✗ recogniser/functionality-gap-detector.py - behaviour-expectation gaps    │
-│       TESTS-ONLY                                                            │
+│  ✓ recogniser/functionality-gap-detector.py - behaviour-expectation gaps    │
+│       WIRED 2026-05-14 (Phase 6 v2 Step 4g) - stage_9_report uses BS4 to   │
+│       walk the mockup under every matched section selector via             │
+│       _harvest_functionality_gap_elements(), emitting elements that carry │
+│       any of 17 behaviour-fingerprint HTML attrs (data-action/toggle/     │
+│       target/modal/tab/accordion/scroll-* + aria-expanded/controls/        │
+│       haspopup) or an inline on*-handler. Detector batches detect_batch() │
+│       across the elements, writes to uimax.functionality_gap_candidates    │
+│       with provenance sgs-clone:<run_id>. Result on stage_9 output.        │
+│       functionality_gap_detector. Soft-fails on BS4 import or selector    │
+│       miss.                                                                 │
 │  ✗ recogniser/gap-review-report.py - markdown gap-review.md                 │
 │       TESTS-ONLY                                                            │
 │                                                                             │
