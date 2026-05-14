@@ -174,30 +174,39 @@ The big picture in one page, with EVERY script, file, DB table and skill plotted
 │ SCRIPTS:                                                                    │
 │  ✓ plugins/sgs-blocks/scripts/recogniser/per-section-convention-voter.py    │
 │       subprocess-called from sgs-clone-orchestrator.py at line 536          │
-│  ✗ plugins/sgs-blocks/scripts/orchestrator/stage1_boundary_hook.py          │
-│       TESTS-ONLY - should fire end-of-stage to enrich boundaries with       │
-│       SGS-BEM primaries + equivalent_implementations                        │
-│  ✗ plugins/sgs-blocks/scripts/orchestrator/lingua_franca.py                 │
-│       TESTS-ONLY (transitive via stage1_boundary_hook)                      │
+│  ✓ plugins/sgs-blocks/scripts/orchestrator/stage1_boundary_hook.py          │
+│       WIRED 2026-05-14 (Phase 6 v2 Step 4e) - lazy-loaded via                │
+│       stage1_boundary_hook() helper. After voter.json is parsed, the        │
+│       hook calls enrich_stage1_payload(output) which adds                   │
+│       source_convention + primary_sgs_bem + equivalent_implementations +    │
+│       gap_candidate_classes + lingua_franca_skipped to every boundary.      │
+│       voter.json is then rewritten with the enriched payload so Stage 2    │
+│       and Stage 4 see the enriched data via the existing file read.        │
+│       Bean-controlled SGS-BEM drafts hit the fast path (skipped=True).      │
+│       Soft-fails to original output.                                        │
+│  ✓ plugins/sgs-blocks/scripts/orchestrator/lingua_franca.py                 │
+│       WIRED 2026-05-14 (transitively via stage1_boundary_hook module       │
+│       import). Handles BEM, Tailwind, kebab-semantic, Bootstrap, SGS WP    │
+│       conventions; preserves source-convention names in                    │
+│       equivalent_implementations per Rosetta Stone discipline.              │
 │                                                                             │
 │ FILES (R):                                                                  │
 │  sites/<client>/mockups/<page>/index.html                                   │
 │                                                                             │
 │ FILES (W):                                                                  │
-│  pipeline-state/sgs-clone/<run_id>/voter.json                               │
+│  pipeline-state/sgs-clone/<run_id>/voter.json (rewritten post-enrichment)   │
 │  pipeline-state/sgs-clone/<run_id>/stage-1.json                             │
 │                                                                             │
 │ DB tables (R):  slot_synonyms (sgs-framework.db)                            │
 │ DB tables (W):  none at this stage                                          │
 │                                                                             │
 │ Skills (X):                                                                 │
-│  ✗ /uimax-classify-naming - SHOULD be dispatched here per SKILL.md          │
-│       but only fires if stage1_boundary_hook is wired (currently isn't)     │
+│  ✗ /uimax-classify-naming - higher-quality classifier; current dispatch    │
+│       uses the heuristic classifier shipped inside stage1_boundary_hook.    │
+│       Production swap requires injecting a /uimax-classify-naming-backed    │
+│       callable as the `classifier` kwarg (deferred).                        │
 │                                                                             │
-│ GAP: Without stage1_boundary_hook + lingua_franca wired, sections from      │
-│      non-SGS-BEM mockups don't get convention-converted before matching.    │
-│                                                                             │
-│ STATUS:       LIVE (voter works) but enrichment chain unwired                │
+│ STATUS:       LIVE - Phase 6 v2 Step 4e complete                            │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 

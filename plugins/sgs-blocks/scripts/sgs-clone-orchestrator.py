@@ -57,6 +57,7 @@ VARIATION_ROUTER_SCRIPT = ORCHESTRATOR_DIR / "variation_router.py"
 TOKEN_LINT_SCRIPT = LINTS_DIR / "token-lint.py"
 SUPPORTS_WRITER_SCRIPT = ORCHESTRATOR_DIR / "supports_writer.py"
 MODIFIER_EXTRACTORS_SCRIPT = ORCHESTRATOR_DIR / "modifier_extractors.py"
+STAGE1_BOUNDARY_HOOK_SCRIPT = ORCHESTRATOR_DIR / "stage1_boundary_hook.py"
 
 SGS_FRAMEWORK_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 
@@ -590,6 +591,19 @@ def modifier_extractors():
     return _modifier_extractors_mod
 
 
+# Lazy-import stage1_boundary_hook (Spec 15 Phase 6 v2 Step 4e). The module
+# transitively loads orchestrator/lingua_franca.py at import time so wiring
+# this single helper flips lingua_franca's reachability column too.
+_stage1_boundary_hook_mod = None
+
+
+def stage1_boundary_hook():
+    global _stage1_boundary_hook_mod
+    if _stage1_boundary_hook_mod is None:
+        _stage1_boundary_hook_mod = _load_module_from_path("sgs_stage1_boundary_hook", STAGE1_BOUNDARY_HOOK_SCRIPT)
+    return _stage1_boundary_hook_mod
+
+
 # ---------------------------------------------------------------------------
 # Stage 1 -- BOUNDARY (dispatcher: per-section-convention-voter.py)
 # ---------------------------------------------------------------------------
@@ -618,6 +632,25 @@ def stage_1_boundary(mockup_path: Path, section_selector: str, auto_section: boo
         output = json.loads(voter_out.read_text(encoding="utf-8"))
     else:
         errors.append("voter completed but voter.json was not written")
+
+    # Stage 1 enrichment (Phase 6 v2 Step 4e) -- stage1_boundary_hook adds
+    # lingua-franca conversion to each boundary: source_convention,
+    # primary_sgs_bem, equivalent_implementations, gap_candidate_classes,
+    # lingua_franca_skipped. Bean-controlled SGS-BEM drafts hit the fast path
+    # (skipped=True). Downstream stages (Stage 2 match, Stage 4 extract by
+    # boundary id) read voter.json which we rewrite below with the enriched
+    # payload. Transitively wires orchestrator/lingua_franca.py at module
+    # import time. Soft-fails to the original output so a hook crash never
+    # blocks Stage 2.
+    if output and output.get("boundaries"):
+        try:
+            sbh = stage1_boundary_hook()
+            output = sbh.enrich_stage1_payload(output)
+            # Rewrite voter.json so per-boundary lookups downstream pick up
+            # the enriched fields without a second read of the original file.
+            voter_out.write_text(json.dumps(output, indent=2, ensure_ascii=False), encoding="utf-8")
+        except Exception as exc:  # noqa: BLE001 - enrichment is advisory; soft-fail
+            warnings.append(f"stage1_boundary_hook soft-failed: {exc}; raw boundaries preserved")
 
     status = "complete" if not errors else "failed"
     write_artefact(run_dir, 1, "boundary", status, output, started, errors, warnings)

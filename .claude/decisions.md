@@ -2,6 +2,38 @@
 
 Append-only. Most-recent first.
 
+## 2026-05-14 - Phase 6 v2 Step 4e: stage1_boundary_hook wired at end of Stage 1 (+ lingua_franca transitively)
+
+**Decision:** Fifth module wire-in of Phase 6 v2 - `stage1_boundary_hook.enrich_stage1_payload(output)` dispatched at the end of `stage_1_boundary`, after voter.json is parsed and before `write_artefact` writes the stage-1 artefact. The orchestrator rewrites `voter.json` with the enriched payload so downstream stages (Stage 2 match, Stage 4 extract by boundary id) read the enriched data through the existing voter.json file read without changing any other call sites. `orchestrator/lingua_franca.py` becomes LIVE transitively -- it's loaded at stage1_boundary_hook module-import time.
+
+**Enrichment fields added per boundary:** `source_convention`, `primary_sgs_bem`, `equivalent_implementations`, `gap_candidate_classes`, `lingua_franca_skipped`. Bean-controlled SGS-BEM drafts hit the fast path (`lingua_franca_skipped=True`) per FR9 -- never rewritten.
+
+**Why this approach:** rewriting voter.json instead of plumbing enriched boundaries through return values keeps the change minimal and idempotent. Downstream stages already read voter.json by path (line 663 `boundary_path = run_dir / "voter.json"`), so the existing pipeline picks up the enriched fields with zero downstream edits. The heuristic classifier shipped inside the hook handles the common conventions; production swap to /uimax-classify-naming is deferred (requires injecting a callable as the `classifier` kwarg) and not blocking pixel-parity.
+
+**Trade-offs considered:**
+- Could have passed enriched boundaries through return value AND rewritten the file - chose rewrite-only because the function signature stays stable and other callers (write_artefact) get the enriched payload via the same `output` dict.
+- Could have deferred lingua_franca wiring to a separate step - rejected because it's a transitive import that costs nothing extra and finally retires the long-standing TRANSITIVELY UNWIRED note on Stage 1.
+
+**Verification:**
+- 6/6 stage1_boundary_hook pytest tests still green
+- 11/11 modifier_extractors + 5/5 supports_writer + 7/7 variation_router + 8/8 token_resolver still green (regression)
+- Drift validator still 0/1349 violations
+- tooling-map drift-check still passes
+- AST syntax check on modified orchestrator: OK
+
+**Files touched:**
+- `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` (STAGE1_BOUNDARY_HOOK_SCRIPT constant + stage1_boundary_hook() lazy-loader + enrich_stage1_payload dispatch + voter.json rewrite)
+
+**Doc updates per docs-registry update-trigger matrix:**
+- `tooling-map.md` row for stage1_boundary_hook.py: TESTS-ONLY -> YES with wiring detail
+- `tooling-map.md` row for lingua_franca.py: TESTS-ONLY -> YES (transitively via stage1_boundary_hook)
+- `cloning-pipeline-flow.md` Stage 1 block: stage1_boundary_hook + lingua_franca ✗ -> ✓ with wiring detail
+- `decisions.md` (this entry)
+
+**Next:** Step 4f (`attribute-gap-writer`) - after Stage 9 leftover routing.
+
+---
+
 ## 2026-05-14 - Phase 6 v2 Step 4d: modifier_extractors wired between Stage 4 and Stage 7
 
 **Decision:** Fourth module wire-in of Phase 6 v2 - all three classifiers from `modifier_extractors` dispatched in the per-section loop after the supports_writer block. `button_role(section_attrs)` fires only when target_block name contains 'button' (lower-cased). `dynamic_link(href)` parses every `section_attrs` value that starts with `:`; only successful parses are retained. `match_block_variation(block_json, section_attrs)` fires only when the block's block.json declares a `variations` key. Block.json loading was lifted above the supports_writer dispatch in this commit so 4c + 4d share the same `block_json` variable -- one disk read, two dispatches.
