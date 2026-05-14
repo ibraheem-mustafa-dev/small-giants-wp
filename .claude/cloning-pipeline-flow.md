@@ -59,7 +59,7 @@ The big picture in one page, with EVERY script, file, DB table and skill plotted
 
 ## Per-stage annotated flow
 
-### Stage 0 — Pre-flight
+### Stage 0 — Pre-flight + Theme Cache
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -68,9 +68,17 @@ The big picture in one page, with EVERY script, file, DB table and skill plotted
 │  ✓ orchestrator/mutex.py                  Cross-platform file lock (1hr stale) │
 │  ✓ orchestrator/staged_output.py          Creates pipeline-state/<run_id>/   │
 │                                                                             │
+│ THEME CACHE (Step 6a, 2026-05-14):                                          │
+│  theme.json + variation overlay loaded ONCE in main() into run_ctx dict.   │
+│  All downstream stages read run_ctx["theme_json"] — single source of truth. │
+│  _reflect_new_token_in_theme_json() mutates the same dict so token         │
+│  discovery in section N is visible to section N+1.                         │
+│                                                                             │
 │ FILES (R):                                                                  │
 │  pipeline-state/sgs-clone/<run_id>/.mutex.lock                              │
 │  plugins/sgs-blocks/scripts/orchestrator/schemas/stage-N.json (per stage)   │
+│  theme/sgs-theme/theme.json (base tokens)                                   │
+│  theme/sgs-theme/styles/<client>.json (variation overlay)                   │
 │                                                                             │
 │ FILES (W):                                                                  │
 │  pipeline-state/sgs-clone/<run_id>/stage-0-preflight.json                   │
@@ -408,7 +416,7 @@ The big picture in one page, with EVERY script, file, DB table and skill plotted
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │ SCRIPTS:                                                                    │
 │  ✓ INLINE serialise inside extract.py.serialize_block()                     │
-│  ◯ INLINE compose_atomic_pattern() at sgs-clone-orchestrator.py:339         │
+│  ✓ orchestrator/composer_fallback.py compose_atomic_pattern() (Step 6c)     │
 │       FALLBACK ONLY - fires when matched block is core/group or             │
 │       confidence == 0 (which it does for 6 of 9 Mama's sections). Emits a   │
 │       flat wp:sgs/container with bare atomic blocks, NO BEM child wrappers. │
@@ -721,8 +729,8 @@ Refreshes the data layer; runs OUT-OF-BAND from /sgs-clone.
 
 | File | Purpose | Stages that touch it |
 |------|---------|----------------------|
-| `theme/sgs-theme/theme.json` | Base design tokens + global default styles | 0.5 (R), 4.5 (R), 5 (R) |
-| `theme/sgs-theme/styles/<client>.json` | Per-client token overrides + per-client style variation | 0.5 (R+W), 4.5 (R+W) |
+| `theme/sgs-theme/theme.json` | Base design tokens + global default styles | 0 (R→run_ctx), 0.5 (R) |
+| `theme/sgs-theme/styles/<client>.json` | Per-client token overrides + per-client style variation | 0 (R→run_ctx), 0.5 (R+W) |
 | `theme/sgs-theme/styles/<client>.css` | Stage 0.7 monolithic CSS dump (architectural debt) | 0.7 (W) |
 | `theme/sgs-theme/patterns/<slug>.php` | Registered pattern markup | +REGISTER (W), /sgs-update Stage 5 (R) |
 | `theme/sgs-theme/templates/*.html` | Page templates (block-based) | (consumed by WP at render time, not by pipeline) |
@@ -831,7 +839,7 @@ Refreshes the data layer; runs OUT-OF-BAND from /sgs-clone.
 
 ### Optimisation opportunities
 
-9. **theme.json read 3+ times** (Stage 0.5, 4.5, 5) - could cache in run context.
+9. ~~**theme.json read 3+ times**~~ FIXED (Step 6a, 2026-05-14) — cached in run_ctx at Stage 0; all downstream stages read from ctx.
 10. **5 dead DB tables** in sgs-framework.db (sections_detected, extraction_cache, block_opportunities, weaknesses, animations) - retire or remove from schema.
 11. **Per-section subprocess overhead** at Stage 4 (one Python startup per matched section) - could batch via single extract.py invocation taking a list of sections.
 

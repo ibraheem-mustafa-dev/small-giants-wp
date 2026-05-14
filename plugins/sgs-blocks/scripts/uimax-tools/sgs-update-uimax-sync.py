@@ -20,11 +20,16 @@ Stage 3 logic (preserves existing Rosetta Stone):
   DB table back to its CSV. Single chokepoint — no per-table regen logic
   duplicated here.
 
-Stage 4: Scan sgs-framework.db `animations` table for `is_gap_candidate = 1`
-rows and emit a markdown report at
-`<repo>/reports/uimax-gap-candidates-<date>.md`. Adds the
+Stage 4: Scan the `animations` table for `is_gap_candidate = 1` rows and emit
+a markdown report at `<repo>/reports/uimax-gap-candidates-<date>.md`. Adds
 `is_gap_candidate` and related columns to the `animations` table on first run
 if they are missing (schema migration -- safe to run multiple times).
+
+Note (Step 6b 2026-05-14): the sgs-framework.db `animations` table was
+retired (0 rows; dropped). When the table is absent, Stage 4 short-circuits
+and returns `{"status": "retired"}`. The richer `uimax.animations` table
+(63 rows in `~/.agents/skills/ui-ux-pro-max/scripts/ui-ux-pro-max.db`) is
+the live store for scraped animations and is unaffected.
 
 Called by `/sgs-update` after Stages 1 and 2.
 
@@ -235,11 +240,17 @@ def stage_4_scan_gap_candidates(repo: Path, dry_run: bool = False) -> dict:
     """Stage 4: scan animations.is_gap_candidate=1 rows and emit a markdown report.
 
     First migrates the animations table if columns are missing.
+    Returns {"status": "retired"} if the animations table has been dropped (Step 6b).
     """
     if not SGS_DB.exists():
         return {"status": "error", "reason": f"sgs-framework.db not found at {SGS_DB}"}
 
     conn = sqlite3.connect(SGS_DB)
+    _tables = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+    if "animations" not in _tables:
+        conn.close()
+        return {"status": "retired", "reason": "animations table dropped (Step 6b); no gap-candidate scan needed"}
+
     try:
         added_cols = ensure_animations_columns(conn)
         rows = conn.execute(
@@ -350,7 +361,9 @@ def main(argv: list[str]) -> int:
         print("Stage 4 — Scan animations for gap candidates")
         r4 = stage_4_scan_gap_candidates(repo, dry_run=args.dry_run)
         results["stage_4"] = r4
-        if r4.get("status") == "error":
+        if r4.get("status") == "retired":
+            print(f"  SKIPPED: {r4['reason']}")
+        elif r4.get("status") == "error":
             print(f"  ERROR: {r4['reason']}")
             return 1
         added = r4.get("schema_added_columns") or []

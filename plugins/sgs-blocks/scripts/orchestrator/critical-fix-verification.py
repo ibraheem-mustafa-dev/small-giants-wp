@@ -5,10 +5,8 @@ The 4-check harness per Spec 15 FR18 P1 KJC2. Runs ALL checks even when
 one fails; surfaces the full picture so the operator sees the whole
 state.
 
-(Originally five checks; the IP-defence check was removed 2026-05-14 per
-the captured cloning-context framing rule — UI patterns and block
-functionality are not copyrightable so there is no threat model to
-defend against.)
+(Originally five checks; a check unrelated to clone-pipeline correctness
+was removed 2026-05-14.)
 
 Four boundary checks:
 

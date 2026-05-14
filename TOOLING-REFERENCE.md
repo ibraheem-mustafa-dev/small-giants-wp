@@ -243,7 +243,7 @@ Located in `C:\Users\Bean\.claude\hooks\`. Includes both **hook scripts** (fired
 
 | Script | Type | Purpose |
 |--------|------|---------|
-| `wp-blocks.py` | CLI | Search/schema/attributes/markup/variations/validate/tokens/gaps/impact/weaknesses for blocks |
+| `wp-blocks.py` | CLI | Search/schema/attributes/markup/variations/validate/tokens/gaps/impact for blocks |
 | `wp-hook-graph.py` | CLI | Map WP hook dependencies in a plugin |
 | `wp-pattern-gen.py` | CLI | Generate WP block patterns from URL or mockup |
 | `wp-perf.py` | CLI | Full-stack WP performance audit |
@@ -307,7 +307,7 @@ Located in `C:\Users\Bean\.agents\skills\sgs-wp-engine\scripts\`.
 
 | Script | Purpose |
 |--------|---------|
-| `sgs-db.py` | Query the SGS Framework SQLite DB — blocks, tokens, patterns, hooks, impacts, gaps, weaknesses |
+| `sgs-db.py` | Query the SGS Framework SQLite DB — blocks, tokens, patterns, hooks, impacts, gaps |
 | `create-db.py` | Initialise SGS Framework database |
 | `populate-db.py` | Populate database with block definitions from source |
 | `update-db.py` | Update database after schema changes |

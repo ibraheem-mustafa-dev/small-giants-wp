@@ -5,10 +5,8 @@ Enforces the Rosetta Stone discipline (blub.db row 213): every artefact-table
 row MUST carry equivalent_implementations.sgs_block populated with a slug
 string OR explicit null combined with gap_candidate=true.
 
-(The row-211 IP-defence gate that previously sat here was removed 2026-05-14
-per blub.db row 213-sibling — UI patterns and block functionality are not
-copyrightable, so there is no threat model to defend against. The gate was
-encoding the rejected IP-firewall framing in inverted form.)
+(An earlier row-211 gate unrelated to Rosetta Stone integrity was removed
+2026-05-14.)
 
 CLI contract (called by uimax_write.py via subprocess):
 

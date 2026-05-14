@@ -66,6 +66,7 @@ FUNCTIONALITY_BULK_APPLY_SCRIPT = ORCHESTRATOR_DIR / "functionality-bulk-apply.p
 MEDIA_SIDELOAD_SCRIPT = ORCHESTRATOR_DIR / "media-sideload.py"
 WP_INTEGRATION_SCRIPT = ORCHESTRATOR_DIR / "wp_integration.py"
 CRITICAL_FIX_VERIFICATION_SCRIPT = ORCHESTRATOR_DIR / "critical-fix-verification.py"
+COMPOSER_FALLBACK_SCRIPT = ORCHESTRATOR_DIR / "composer_fallback.py"
 
 # The set of HTML attributes that the functionality-gap-detector treats as
 # behaviour fingerprints. Kept here so the orchestrator's BS4 walk only emits
@@ -365,127 +366,9 @@ def stage_0_7_css_lift(mockup_path: Path, client: str, run_dir: Path) -> dict:
 
 
 
-# ---------------------------------------------------------------------------
-# Phase 5g.3 -- pattern composer
-#   Walks a section's DOM and emits a wp:sgs/container pattern composition
-#   built from core/heading, core/paragraph, sgs/button, sgs/decorative-image.
-#   Hard Rule 3: every clone-pipeline emission is a pattern composition, not
-#   a bare single-block dump. Used for deferred / scaffold-only sections
-#   where the extract.py harvest produces nothing usable.
-# ---------------------------------------------------------------------------
-
-_BUTTON_HINT_RE = re.compile(r"\b(button|btn|cta)\b", re.IGNORECASE)
-
-
-def _emit_block(name: str, attrs: dict, inner_html: str | None = None,
-                self_closing: bool = True) -> str:
-    """Emit a single Gutenberg block-comment + (optional) inner HTML."""
-    attr_json = json.dumps(attrs, ensure_ascii=False, separators=(",", ":")) if attrs else ""
-    head = f"<!-- wp:{name}{(' ' + attr_json) if attr_json else ''}"
-    if self_closing:
-        return head + " /-->"
-    return head + " -->" + (inner_html or "") + f"<!-- /wp:{name} -->"
-
-
-def _emit_core_heading(text: str, level: int) -> str:
-    tag = f"h{max(1, min(6, level))}"
-    inner = f"<{tag} class=\"wp-block-heading\">{text}</{tag}>"
-    attrs = {"level": level} if level != 2 else {}
-    return _emit_block("core/heading", attrs, inner_html=inner, self_closing=False)
-
-
-def _emit_core_paragraph(text: str) -> str:
-    inner = f"<p>{text}</p>"
-    return _emit_block("core/paragraph", {}, inner_html=inner, self_closing=False)
-
-
-def _emit_sgs_button(label: str, url: str) -> str:
-    return _emit_block("sgs/button", {"label": label, "url": url or "#"})
-
-
-def _emit_sgs_decorative_image(src: str, alt: str) -> str:
-    return _emit_block(
-        "sgs/decorative-image",
-        {"imageUrl": src, "imageAlt": alt or ""},
-    )
-
-
-def compose_atomic_pattern(mockup_path: Path, selector: str,
-                           section_id: str, class_signature: list[str]) -> str | None:
-    """Compose a wp:sgs/container atomic-pattern from a section in the mockup.
-
-    Returns Gutenberg markup string or None if the section cannot be resolved
-    or yields no useful inner content.
-    """
-    try:
-        from bs4 import BeautifulSoup
-    except ImportError:
-        return None
-    if not mockup_path.exists():
-        return None
-    soup = BeautifulSoup(mockup_path.read_text(encoding="utf-8"), "html.parser")
-    try:
-        node = soup.select_one(selector)
-    except Exception:  # noqa: BLE001 -- malformed selector
-        return None
-    if node is None:
-        return None
-
-    inner_blocks: list[str] = []
-    seen_texts: set[str] = set()
-    seen_urls: set[str] = set()
-    seen_imgs: set[str] = set()
-
-    # Walk descendants in document order, emitting atomic blocks.
-    for el in node.descendants:
-        name = getattr(el, "name", None)
-        if not name:
-            continue
-        if name in {"h1", "h2", "h3", "h4", "h5", "h6"}:
-            text = el.get_text(" ", strip=True)
-            if text and text not in seen_texts:
-                seen_texts.add(text)
-                inner_blocks.append(_emit_core_heading(text, int(name[1])))
-        elif name == "p":
-            text = el.get_text(" ", strip=True)
-            if text and text not in seen_texts and len(text) > 1:
-                seen_texts.add(text)
-                inner_blocks.append(_emit_core_paragraph(text))
-        elif name == "button" or (name == "a" and _BUTTON_HINT_RE.search(" ".join(el.get("class", [])) or "")):
-            label = el.get_text(" ", strip=True)
-            url = el.get("href", "") if name == "a" else ""
-            key = f"{label}|{url}"
-            if label and key not in seen_urls:
-                seen_urls.add(key)
-                inner_blocks.append(_emit_sgs_button(label, url))
-        elif name == "img":
-            src = el.get("src", "") or ""
-            alt = el.get("alt", "") or ""
-            if src and src not in seen_imgs:
-                seen_imgs.add(src)
-                inner_blocks.append(_emit_sgs_decorative_image(src, alt))
-
-    if not inner_blocks:
-        return None
-
-    # Pick the most descriptive sgs- class (skip BEM children with -- or __).
-    section_class = ""
-    for cls in class_signature or []:
-        if cls.startswith("sgs-") and "--" not in cls and "__" not in cls:
-            section_class = cls
-            break
-
-    container_attrs: dict = {}
-    if section_id:
-        container_attrs["anchor"] = section_id
-    if section_class:
-        container_attrs["className"] = section_class
-
-    inner_html = "\n  ".join(inner_blocks)
-    container_attrs_json = json.dumps(container_attrs, ensure_ascii=False, separators=(",", ":")) if container_attrs else ""
-    head = f"<!-- wp:sgs/container{(' ' + container_attrs_json) if container_attrs_json else ''} -->"
-    return head + "\n  " + inner_html + "\n<!-- /wp:sgs/container -->"
-
+# Pattern composer (compose_atomic_pattern + helpers + _BUTTON_HINT_RE)
+# extracted to orchestrator/composer_fallback.py 2026-05-14 (Phase 6 v2 Step 6c).
+# Reached via the lazy-loaded composer_fallback() dispatcher above.
 
 
 def now_iso() -> str:
@@ -550,6 +433,18 @@ def token_resolver():
     if _token_resolver_mod is None:
         _token_resolver_mod = _load_module_from_path("sgs_token_resolver", TOKEN_RESOLVER_SCRIPT)
     return _token_resolver_mod
+
+
+# Lazy-import composer_fallback (Phase 6 v2 Step 6c — extracted from inline
+# compose_atomic_pattern + helpers per the deterministic-not-inline rule).
+_composer_fallback_mod = None
+
+
+def composer_fallback():
+    global _composer_fallback_mod
+    if _composer_fallback_mod is None:
+        _composer_fallback_mod = _load_module_from_path("sgs_composer_fallback", COMPOSER_FALLBACK_SCRIPT)
+    return _composer_fallback_mod
 
 
 # Lazy-import variation_router + token-lint slug generator (Spec 15 Phase 6 v2 Step 4b).
@@ -980,7 +875,7 @@ def stage_3_slot_list(match_output: dict, run_dir: Path) -> dict:
 # Stage 4-8 -- EXTRACT through SERIALISE (unchanged; calls extract.py)
 # ---------------------------------------------------------------------------
 
-def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path) -> dict:
+def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: dict | None = None) -> dict:
     """Stage 4-8 -- delegate to tools/recogniser-v2/extract.py (single-section v1)."""
     started = now_iso()
     extract_out = run_dir / "extract-result.json"
@@ -1004,36 +899,10 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path) -> dict:
     boundary_dict = json.loads(boundary_path.read_text(encoding="utf-8")) if boundary_path.exists() else {}
     boundaries_by_id = {b["boundary_id"]: b for b in boundary_dict.get("boundaries", [])}
 
-    # Stage 4.5 -- TOKEN SNAP (Phase 6 v2 Step 4a). Load theme.json + variation
-    # overlay once per /sgs-clone run for token_resolver.resolve_batch() calls
-    # below. theme.json holds base tokens; variation overlay carries per-client
-    # overrides per Spec 15 §4.7. NOT mutated -- read-only.
-    _theme_path = REPO / "theme" / "sgs-theme" / "theme.json"
-    _variation_path = REPO / "theme" / "sgs-theme" / "styles" / f"{getattr(args, 'client', '')}.json"
-    theme_json: dict = {}
-    if _theme_path.exists():
-        try:
-            theme_json = json.loads(_theme_path.read_text(encoding="utf-8"))
-        except json.JSONDecodeError as exc:
-            print(f"[stage-4.5] theme.json parse error: {exc}; token snap disabled", file=sys.stderr)
-    if _variation_path.exists() and theme_json:
-        try:
-            variation = json.loads(_variation_path.read_text(encoding="utf-8"))
-            # Overlay variation settings on top of base theme settings.
-            for cat in ("color", "spacing", "typography", "shadow"):
-                base_cat = theme_json.setdefault("settings", {}).setdefault(cat, {})
-                var_cat = (variation.get("settings") or {}).get(cat) or {}
-                for k, v in var_cat.items():
-                    if isinstance(v, list) and isinstance(base_cat.get(k), list):
-                        # Merge by slug -- variation entries replace base entries with same slug.
-                        slug_to_var = {item.get("slug"): item for item in v if isinstance(item, dict)}
-                        merged = [slug_to_var.pop(it.get("slug"), it) for it in base_cat[k] if isinstance(it, dict)]
-                        merged.extend(slug_to_var.values())
-                        base_cat[k] = merged
-                    else:
-                        base_cat[k] = v
-        except json.JSONDecodeError as exc:
-            print(f"[stage-4.5] variation parse error: {exc}; using base theme only", file=sys.stderr)
+    # Stage 4.5 -- TOKEN SNAP. theme_json is loaded once at Stage 0 in main()
+    # and carried here via run_ctx (Step 6a cache). Mutations from _reflect_new_token
+    # already operate on the same in-memory dict so multi-section runs stay coherent.
+    theme_json: dict = (run_ctx or {}).get("theme_json", {})
 
     aggregate_attributes: dict = {}
     aggregate_markup_parts: list[str] = []
@@ -1057,7 +926,7 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path) -> dict:
         # sgs/button + sgs/decorative-image). This is the structural fix
         # for the "6 of 9 Mama's sections vapour on the page" gap.
         if target_block == "core/group" or m.get("confidence", 0) == 0:
-            pattern_markup = compose_atomic_pattern(
+            pattern_markup = composer_fallback().compose_atomic_pattern(
                 args.mockup, section_selector,
                 m.get("section_id") or boundary_id,
                 boundary.get("class_signature", []),
@@ -1726,6 +1595,37 @@ def main():
     print(f"[orchestrator] run_dir={run_dir}")
     print(f"[orchestrator] mode={args.mode}")
 
+    # Stage 0 -- THEME CACHE (Step 6a). Load theme.json + variation overlay once
+    # per run. All downstream stages read from run_ctx["theme_json"] — single source
+    # of truth. Mutations via _reflect_new_token_in_theme_json operate on the same
+    # dict, so token discovery in section N is visible to section N+1.
+    _theme_path = REPO / "theme" / "sgs-theme" / "theme.json"
+    _variation_path = REPO / "theme" / "sgs-theme" / "styles" / f"{args.client}.json"
+    _theme_json: dict = {}
+    if _theme_path.exists():
+        try:
+            _theme_json = json.loads(_theme_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            print(f"[stage-0] theme.json parse error: {exc}; token snap disabled", file=sys.stderr)
+    if _variation_path.exists() and _theme_json:
+        try:
+            _variation = json.loads(_variation_path.read_text(encoding="utf-8"))
+            for _cat in ("color", "spacing", "typography", "shadow"):
+                _base_cat = _theme_json.setdefault("settings", {}).setdefault(_cat, {})
+                _var_cat = (_variation.get("settings") or {}).get(_cat) or {}
+                for _k, _v in _var_cat.items():
+                    if isinstance(_v, list) and isinstance(_base_cat.get(_k), list):
+                        _slug_to_var = {item.get("slug"): item for item in _v if isinstance(item, dict)}
+                        _merged = [_slug_to_var.pop(it.get("slug"), it) for it in _base_cat[_k] if isinstance(it, dict)]
+                        _merged.extend(_slug_to_var.values())
+                        _base_cat[_k] = _merged
+                    else:
+                        _base_cat[_k] = _v
+        except json.JSONDecodeError as exc:
+            print(f"[stage-0] variation parse error: {exc}; using base theme only", file=sys.stderr)
+    run_ctx: dict = {"theme_json": _theme_json}
+    print(f"[stage-0] theme cache: {len(_theme_json.get('settings', {}).get('color', {}).get('palette', []))} palette tokens loaded")
+
     stage_0_1_bem_lint(args.mockup, args.mode, run_dir)
     stage_0_5_token_lint(args.mockup, args.mode, run_dir, client=args.client)
     css_lift = stage_0_7_css_lift(args.mockup, args.client, run_dir)
@@ -1747,7 +1647,7 @@ def main():
     slot_count = sum(len(v.get("slots", [])) for v in slot_list.get("slot_lists", {}).values())
     print(f"[stage-3] slot list: {slot_count} slots across {len(slot_list.get('slot_lists', {}))} sections")
 
-    extract_out = stage_4_5_6_7_8_extract(args, match, run_dir)
+    extract_out = stage_4_5_6_7_8_extract(args, match, run_dir, run_ctx)
     extracted_count = len(extract_out.get("extracted_attributes") or {})
     print(f"[stage-4-8] extract: {extracted_count} attrs extracted")
 

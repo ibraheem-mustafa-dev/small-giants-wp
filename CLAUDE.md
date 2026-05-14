@@ -131,9 +131,9 @@ python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py context indus-foods # Lo
 1. Re-scan codebase + update sgs-framework.db (`update-db.py`)
 2. Regenerate `.claude/specs/02-SGS-BLOCKS-REFERENCE.md` from the DB
 3. Mirror sgs-blocks → uimax `~/.agents/skills/ui-ux-pro-max/data/component-libraries.csv` so `/ui-ux-pro-max` (the design brain) sees current SGS blocks alongside Radix UI Primitives, Headless UI, etc.
-4. Scan `animations.is_gap_candidate=1` rows + emit markdown report at `reports/uimax-gap-candidates-<date>.md`
+4. Scan `animations.is_gap_candidate=1` rows + emit markdown report at `reports/uimax-gap-candidates-<date>.md` — **short-circuits to `{"status":"retired"}` since Step 6b 2026-05-14 dropped the sgs-framework.db `animations` table** (live store is `uimax.animations` in `~/.agents/skills/ui-ux-pro-max/scripts/ui-ux-pro-max.db`)
 
-Stage 3+4 implemented in `plugins/sgs-blocks/scripts/uimax-tools/sgs-update-uimax-sync.py` (idempotent). On first run Stage 4 migrates the `animations` table schema with 5 columns (`is_gap_candidate`, `gap_reason`, `sgs_block`, `sgs_animation_attribute`, `equivalent_implementations`).
+Stage 3+4 implemented in `plugins/sgs-blocks/scripts/uimax-tools/sgs-update-uimax-sync.py` (idempotent). Stage 4 schema migration is dormant since the table was retired; the gate stays wired in case the table is re-introduced.
 
 ### `plugins/sgs-blocks/scripts/uimax-tools/` — write-side helpers
 

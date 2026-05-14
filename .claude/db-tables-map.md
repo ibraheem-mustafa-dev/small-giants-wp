@@ -53,11 +53,11 @@ The matrix below is built from grep evidence of every script that reads (R) or w
 | /sgs-update Stage 1 | Codebase re-scan | blocks (W), block_attributes (W), block_supports (W), block_selectors (W), block_capabilities (W), design_tokens (W), style_variations (W), patterns (W), theme_parts (W), hooks (W), components (W), plugins (W), deploy_steps (W), gotchas (W), pattern_coverage (W), block_changes (W) | - |
 | /sgs-update Stage 2-4 | Behavioural analysis | block_attributes (W: canonical_slot, role, derived_selector), slot_synonyms (W), attribute_gap_candidates (W) | - |
 | /sgs-update Stage 3 | uimax sync | blocks (R) | component_libraries (W) |
-| /sgs-update Stage 4 | Animation gap report | - | animations (R: is_gap_candidate=1 rows) |
+| /sgs-update Stage 4 | Animation gap report — **RETIRED Step 6b 2026-05-14** | - | ~~animations~~ (table dropped; Stage 4 returns `{"status":"retired"}` gracefully) |
 
 Notes:
 - "R via theme.json" means the script loads `theme/sgs-theme/theme.json` directly, NOT the `design_tokens` DB table. The DB table is populated by `/sgs-update` but not read at clone runtime.
-- `sections_detected`, `extraction_cache`, and `block_opportunities` have zero rows and no script writes them during normal runs - see individual entries below.
+- `sections_detected`, `extraction_cache`, `block_opportunities`, `weaknesses`, `animations` — **all RETIRED Step 6b 2026-05-14**: 0 rows confirmed, tables dropped from sgs-framework.db.
 
 ---
 
@@ -900,21 +900,21 @@ Only tables that the /sgs-clone or /sgs-update pipeline actively reads or writes
 | Table | DB | Purpose | Why not in pipeline |
 |---|---|---|---|
 | animation_tokens | sgs-framework.db | SGS keyframe animation CSS catalogue | Reference for block development; not queried at clone time |
-| animations | sgs-framework.db | Scraped animation observations | Empty (0 rows); future /uimax-scrape-animation output target |
+| ~~animations~~ | ~~sgs-framework.db~~ | ~~Scraped animation observations~~ | **RETIRED Step 6b 2026-05-14** — 0 rows; table dropped |
 | block_capabilities | sgs-framework.db | Named features per block | Human-facing query tool; not needed at clone time |
 | block_changes | sgs-framework.db | /sgs-update change audit log | Append-only audit trail |
-| block_opportunities | sgs-framework.db | Planned section-to-block match store | Empty (0 rows); superseded by JSON artefact approach |
+| ~~block_opportunities~~ | ~~sgs-framework.db~~ | ~~Planned section-to-block match store~~ | **RETIRED Step 6b 2026-05-14** — 0 rows; table dropped |
 | components | sgs-framework.db | Shared editor component catalogue | Development reference only |
 | deploy_steps | sgs-framework.db | Ordered deploy commands | Surfaced by /deploy-check, not clone pipeline |
-| extraction_cache | sgs-framework.db | URL extraction result cache | Empty (0 rows); caching handled at artefact level |
+| ~~extraction_cache~~ | ~~sgs-framework.db~~ | ~~URL extraction result cache~~ | **RETIRED Step 6b 2026-05-14** — 0 rows; table dropped |
 | gotchas | sgs-framework.db | Known developer gotchas | Human reference |
 | hooks | sgs-framework.db | SGS WordPress hook registry | Development reference only |
 | pattern_coverage | sgs-framework.db | Industry section coverage map | Planning/status tool, not clone runtime |
 | pipeline_corrections | sgs-framework.db | Lessons from failed runs | Human reference |
 | plugins | sgs-framework.db | Framework plugin registry | Human reference |
-| sections_detected | sgs-framework.db | Planned section detection store | Empty (0 rows); superseded by JSON artefact approach |
+| ~~sections_detected~~ | ~~sgs-framework.db~~ | ~~Planned section detection store~~ | **RETIRED Step 6b 2026-05-14** — 0 rows; table dropped |
 | theme_parts | sgs-framework.db | Template part registry | Development reference only |
-| weaknesses | sgs-framework.db | Block quality gap tracker | Empty (0 rows); planned but not implemented |
+| ~~weaknesses~~ | ~~sgs-framework.db~~ | ~~Block quality gap tracker~~ | **RETIRED Step 6b 2026-05-14** — 0 rows; table dropped |
 | naming_conventions | uimax | CSS convention definitions | Rules embedded as static data in lingua_franca.py |
 | design_tokens (uimax) | uimax | Cross-system token reference | Not SGS-specific; used by /ui-ux-pro-max skill only |
 | google_fonts | uimax | Full Google Fonts catalogue | Used by /ui-ux-pro-max for font recommendations |
