@@ -502,8 +502,15 @@ The big picture in one page, with EVERY script, file, DB table and skill plotted
 │       subprocess-called from sgs-clone-orchestrator.py:989                  │
 │  ✓ recogniser/simple_html_review_report.py - operator-review HTML           │
 │       subprocess-called at line 1024                                        │
-│  ✗ recogniser/attribute-gap-writer.py - INSERT to attribute_gap_candidates  │
-│       TESTS-ONLY                                                            │
+│  ✓ recogniser/attribute-gap-writer.py - INSERT to attribute_gap_candidates  │
+│       WIRED 2026-05-14 (Phase 6 v2 Step 4f) - sgs-clone-orchestrator.py    │
+│       stage_9_report calls attribute_gap_writer().stage(gaps, run_id, write│
+│       =True) after autonomy chain. Gaps harvested from extract.per_section_│
+│       results via _harvest_attribute_gap_candidates(); maps token_resolu-  │
+│       tions[is_gap_candidate=true] -> {block_slug, selector, css_property, │
+│       value_seen, role_proposed, confidence}. Provenance is sgs-clone:     │
+│       <run_id>. Dedupes against (block_slug, selector, css_property).      │
+│       Result lands on stage_9 output.attribute_gap_writer.                  │
 │  ✗ recogniser/functionality-gap-detector.py - behaviour-expectation gaps    │
 │       TESTS-ONLY                                                            │
 │  ✗ recogniser/gap-review-report.py - markdown gap-review.md                 │

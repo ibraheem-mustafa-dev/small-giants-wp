@@ -2,6 +2,35 @@
 
 Append-only. Most-recent first.
 
+## 2026-05-14 - Phase 6 v2 Step 4f: attribute-gap-writer wired after Stage 9 leftover routing
+
+**Decision:** Sixth module wire-in of Phase 6 v2 - `attribute_gap_writer.stage(gaps, run_id, write=True)` dispatched in `stage_9_report` after the autonomy chain completes. Gap-candidate rows are harvested by a new helper `_harvest_attribute_gap_candidates(extract)` that walks `extract.per_section_results[*].token_resolutions` and forwards every entry with `is_gap_candidate=True` and a non-empty string `raw_value` into the writer's six-field input schema: `{block_slug, selector, css_property, value_seen, role_proposed, confidence}`. Provenance is `sgs-clone:<run_id>`. Result lands on `stage_9 output.attribute_gap_writer`.
+
+**Why this approach:** the writer already encapsulates the de-dup logic on `(block_slug, selector, css_property)` so repeat clone runs don't proliferate identical rows -- meaning we can fire it eagerly on every run without sweeping concerns. Mapping `attr_name` onto `css_property` is the closest semantic substitute (token_resolver is attr-aware, not CSS-property-aware); the operator-review report knows how to interpret either. Soft-fail keeps uimax DB issues isolated to this step.
+
+**Trade-offs considered:**
+- Could have harvested gaps from leftover_buckets instead of per_section_results - rejected because the token_resolver's is_gap_candidate signal is more precise (already filtered by confidence threshold) than the bucket router's broader categorisation.
+- Could have skipped attribute-gap-writer when row_count==0 - kept the dispatch unconditional so the `attribute_gap_writer` field on stage_9 output always exists (downstream consumers can rely on schema stability).
+
+**Verification:**
+- 3/3 attribute-gap-writer pytest tests still green (DeprecationWarning on utcnow noted but non-blocking)
+- All 5 prior wire-in test suites still green (regression)
+- Drift validator still 0/1349 violations
+- tooling-map drift-check still passes
+- AST syntax check on modified orchestrator: OK
+
+**Files touched:**
+- `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` (ATTRIBUTE_GAP_WRITER_SCRIPT constant + attribute_gap_writer() lazy-loader + _harvest_attribute_gap_candidates() helper + dispatch in stage_9_report + attribute_gap_writer field on stage_9 output)
+
+**Doc updates per docs-registry update-trigger matrix:**
+- `tooling-map.md` row for attribute-gap-writer.py: TESTS-ONLY -> YES with wiring detail
+- `cloning-pipeline-flow.md` Stage 9 block: attribute-gap-writer ✗ -> ✓ with wiring detail
+- `decisions.md` (this entry)
+
+**Next:** Step 4g (`functionality-gap-detector`) - parallel detector for behaviour-expectation gaps after Stage 9 routing.
+
+---
+
 ## 2026-05-14 - Phase 6 v2 Step 4e: stage1_boundary_hook wired at end of Stage 1 (+ lingua_franca transitively)
 
 **Decision:** Fifth module wire-in of Phase 6 v2 - `stage1_boundary_hook.enrich_stage1_payload(output)` dispatched at the end of `stage_1_boundary`, after voter.json is parsed and before `write_artefact` writes the stage-1 artefact. The orchestrator rewrites `voter.json` with the enriched payload so downstream stages (Stage 2 match, Stage 4 extract by boundary id) read the enriched data through the existing voter.json file read without changing any other call sites. `orchestrator/lingua_franca.py` becomes LIVE transitively -- it's loaded at stage1_boundary_hook module-import time.

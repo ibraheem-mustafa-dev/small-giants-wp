@@ -58,6 +58,7 @@ TOKEN_LINT_SCRIPT = LINTS_DIR / "token-lint.py"
 SUPPORTS_WRITER_SCRIPT = ORCHESTRATOR_DIR / "supports_writer.py"
 MODIFIER_EXTRACTORS_SCRIPT = ORCHESTRATOR_DIR / "modifier_extractors.py"
 STAGE1_BOUNDARY_HOOK_SCRIPT = ORCHESTRATOR_DIR / "stage1_boundary_hook.py"
+ATTRIBUTE_GAP_WRITER_SCRIPT = RECOGNISER_DIR / "attribute-gap-writer.py"
 
 SGS_FRAMEWORK_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 
@@ -602,6 +603,47 @@ def stage1_boundary_hook():
     if _stage1_boundary_hook_mod is None:
         _stage1_boundary_hook_mod = _load_module_from_path("sgs_stage1_boundary_hook", STAGE1_BOUNDARY_HOOK_SCRIPT)
     return _stage1_boundary_hook_mod
+
+
+# Lazy-import attribute-gap-writer (Spec 15 Phase 6 v2 Step 4f).
+_attribute_gap_writer_mod = None
+
+
+def attribute_gap_writer():
+    global _attribute_gap_writer_mod
+    if _attribute_gap_writer_mod is None:
+        _attribute_gap_writer_mod = _load_module_from_path("sgs_attribute_gap_writer", ATTRIBUTE_GAP_WRITER_SCRIPT)
+    return _attribute_gap_writer_mod
+
+
+def _harvest_attribute_gap_candidates(extract: dict) -> list[dict]:
+    """Walk extract.per_section_results and collect every is_gap_candidate=True
+    token resolution as an attribute-gap-writer input row.
+
+    The attribute-gap-writer schema needs (block_slug, selector, css_property,
+    value_seen, role_proposed, confidence). token_resolutions carry block_slug,
+    attr_name, raw_value, role, confidence, is_gap_candidate. attr_name maps
+    onto css_property as the closest semantic substitute (the resolver is
+    attr-aware, not CSS-property-aware).
+    """
+    gaps: list[dict] = []
+    for section in (extract or {}).get("per_section_results") or []:
+        selector = section.get("selector") or ""
+        for res in section.get("token_resolutions") or []:
+            if not res.get("is_gap_candidate"):
+                continue
+            raw_value = res.get("raw_value")
+            if not isinstance(raw_value, str) or not raw_value.strip():
+                continue
+            gaps.append({
+                "block_slug":    res.get("block_slug") or section.get("block_name"),
+                "selector":      selector,
+                "css_property":  res.get("attr_name"),
+                "value_seen":    raw_value.strip(),
+                "role_proposed": res.get("role"),
+                "confidence":    res.get("confidence"),
+            })
+    return gaps
 
 
 # ---------------------------------------------------------------------------
@@ -1284,6 +1326,23 @@ def stage_9_report(boundary: dict, match: dict, slot_list: dict, extract: dict, 
         promote_new_blocks=promote_new_blocks,
     )
 
+    # 9c-attr-gap-writer (Phase 6 v2 Step 4f). Harvest every
+    # is_gap_candidate=true token resolution from the per-section extract
+    # results into uimax.attribute_gap_candidates so operators can review
+    # them. Provenance is `sgs-clone:<run_id>` -- filterable per run. The
+    # writer dedupes against (block_slug, selector, css_property) so repeat
+    # clone runs over the same draft don't proliferate rows. Soft-fails so
+    # a uimax DB hiccup never breaks the rest of Stage 9.
+    attribute_gap_writer_result: dict = {"row_count": 0, "inserted": 0, "bumped": 0, "mode": "skipped"}
+    try:
+        gaps = _harvest_attribute_gap_candidates(extract)
+        if gaps:
+            agw = attribute_gap_writer()
+            attribute_gap_writer_result = agw.stage(gaps, run_id=run_dir.name, write=True)
+    except Exception as exc:  # noqa: BLE001 - gap writes are operator-review artefact; soft-fail
+        warnings.append(f"attribute_gap_writer soft-failed: {exc}; gap candidates not persisted")
+        attribute_gap_writer_result = {"row_count": 0, "inserted": 0, "bumped": 0, "mode": "errored", "error": str(exc)}
+
     # 9c. Render operator-review HTML via simple_html_review_report subprocess.
     review_html_path = run_dir / "operator-review.html"
     cmd_review = [
@@ -1335,6 +1394,7 @@ def stage_9_report(boundary: dict, match: dict, slot_list: dict, extract: dict, 
         "recognition_log_rows_inserted": rows_inserted,
         "operator_review_html_path": str(review_html_path),
         "autonomy_chain": autonomy_out,
+        "attribute_gap_writer": attribute_gap_writer_result,
     }
     status = "complete" if not errors else "failed"
     write_artefact(run_dir, 9, "report", status, output, started, errors, warnings)
