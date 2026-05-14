@@ -1,7 +1,7 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-session_tag: small-giants-wp-2026-05-14-docs-registry-plus-step-4a
+session_tag: small-giants-wp-2026-05-14-step-5-rosetta-stone
 recommended_model: sonnet
 last_verified: 2026-05-14
 update_triggers:
@@ -9,88 +9,96 @@ update_triggers:
 registry_entry: docs-registry.md row 6
 ---
 
-You are a senior WordPress block-pipeline integration engineer continuing Phase 6 v2 of the SGS deterministic draft-to-SGS cloning pipeline. Mechanical wiring of pre-built modules into /sgs-clone orchestrator following the v2 plan exactly.
+You are a senior WordPress block-pipeline integration engineer continuing Phase 6 v2 of the SGS deterministic draft-to-SGS cloning pipeline. Steps 6 (small wins), 7 (full E2E + pixel-parity measurement), and 8 (commit + close) remain. The pipeline is now fully wired through Step 5; Step 7 is the first run that will measure parity with everything live.
 
-Resume command: CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-14-docs-registry-plus-step-4a"
+Resume command: CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-14-step-5-rosetta-stone"
+
+recommended_model: sonnet
+
+Read `.claude/handoff.md` and `.claude/state.md` for full context, then work through these priorities. **Multi-rater QC panel (Sonnet strict + Haiku sanity + Gemini Flash third-eye) BEFORE every commit per `feedback_qc_before_commit.md` — locked rule from Step 5 onwards.**
 
 ## Where You Are
 
 Plan: `.claude/plans/phase-6-pattern-fidelity-v2.md`
-Current phase: Phase 6 v2 - Step 4 module wiring (mechanical integration)
-Progress: Step 4a (token_resolver) SHIPPED + committed `90fdb8e5` on main 2026-05-14; 12 steps remaining (4b-4k + Step 5 + Step 6 + Step 7 + Step 8)
-Next task: Step 4b (variation_router) - working tree is CLEAN, start straight on the wiring
-
-## Cold-Start Reading Order (per docs-registry §5)
-
-Read in this order before doing anything else:
-
-1. `.claude/state.md` - current phase + blockers
-2. `.claude/handoff.md` - what just happened (2026-05-14 session)
-3. `.claude/docs-registry.md` §3 update-trigger matrix + §5 cold-start order + §7 enforcement hooks
-4. `.claude/cloning-pipeline-flow.md` - annotated visual flow (Stage 4.5 token_resolver now ✓)
-5. `.claude/plans/phase-6-pattern-fidelity-v2.md` - active execution plan
-6. `.claude/decisions.md` - last 2 entries (Step 4a + phase numbering)
-7. On-demand: `.claude/tooling-map.md` (module APIs), `.claude/db-tables-map.md` (DB R/W), `.claude/skills-commands-map.md` (skill chain)
+Current phase: Phase 6 v2 — Steps 4a–4k + 4-QC + 5 ✅ COMPLETE; Steps 6/7/8 remain
+Progress: 12 / 15 plan rows shipped (80%)
+Next task: Step 6a — theme.json caching at Stage 0
 
 ## Skills to Invoke
 
 | Skill | When to use |
 |-------|-------------|
-| `/brainstorming` | Architectural choice surfaces mid-wiring |
-| `/gap-analysis` | After each step before marking complete |
+| `/brainstorming` | Any architectural choice surfaces during Step 6 or Step 7 triage |
+| `/gap-analysis` | Pre-commit grading on Step 6c (new `composer_fallback.py` module) |
 | `/lifecycle` | Only if a skill/agent/pipeline file needs changing |
 | `/research` | Unfamiliar API/library question |
-| `/strategic-plan` | NOT needed - v2 plan already exists |
-| `/sgs-wp-engine` | SGS DB queries via sgs-db.py |
-| `/qc-inline` | After each wire-in for per-step verification |
+| `/strategic-plan` | NOT needed — v2 plan already exists |
+| `/sgs-wp-engine` | SGS DB queries via `sgs-db.py`; touch tests on retired DB tables |
+| `/qc-inline` | After each Step 6 sub-task before the 3-rater panel |
+| `/visual-qa` | Step 7's pixel-parity measurement at 375/768/1440 viewports |
 | `/handoff` | At session close |
 
 ## MCP Servers & Tools
 
 | Tool | What to use it for |
 |------|-------------------|
-| Playwright MCP | Stage 8 visual QA verification when running full E2E in Step 7 |
-| github MCP | Only if reviewing pre-Phase-5 history |
+| Playwright MCP | Step 7 multi-viewport screenshot capture for pixel-parity measurement |
+| github MCP | Only if reviewing pre-Step-5 commit history |
+| `~/.claude/hooks/local-search.py` | Pre-Step-6 check for any retired-table references in the codebase before DROP |
 
 ## Agents to Delegate To
 
 | Agent | When |
 |-------|------|
-| wp-sgs-developer | Wiring needs deeper WP-block work than v2 plan describes |
-| code-reviewer | After Step 4 completes, before Step 7 E2E |
+| `wp-sgs-developer` | Step 7 deploy + WP REST page creation for Mama's mockup if needed |
+| `code-reviewer` (feature-dev) | Sonnet rater in the 3-rater panel before each commit |
 
-## Tasks
+## Research Approach
 
-### Task 1: Step 4b - wire variation_router
+Not required for Step 6 (well-scoped mechanical changes). For Step 7, if pixel-parity fails at a specific viewport and the cause isn't obvious from the screenshots, invoke `/research-check` against the specific CSS / layout pattern that's drifting. Don't speculate — measure first, search second.
 
-Per `.claude/plans/phase-6-pattern-fidelity-v2.md` row 4b. Module at `plugins/sgs-blocks/scripts/orchestrator/variation_router.py`. Public API: `add_token(client_slug, role, slug, value)`. Insertion point: inside the token_resolver loop in sgs-clone-orchestrator.py (after section_token_resolutions iteration added in Step 4a). Call variation_router.add_token() when `is_gap_candidate=true` AND raw_value parses as a valid token-shape value. Soft-fail on exception. Add a `new_tokens_written` list of (role, slug) pairs to per_section_results.
+---
 
-Per-step verification (ALL must stay green):
-- `python -m pytest plugins/sgs-blocks/scripts/orchestrator/test_variation_router.py -x`
-- `python plugins/sgs-blocks/scripts/drift-validator/validate.py`
-- `python .claude/hooks/tooling-map-drift-check.py`
-- `python -c "import ast; ast.parse(open('plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py', encoding='utf-8').read())"`
+## Task 1: Step 6a — theme.json caching (~10 min)
 
-### Task 2: Update truth docs in the SAME commit as the wire-in
+Load `theme.json` + variation overlay ONCE at Stage 0 of `/sgs-clone` into a shared `run_ctx` dict. Downstream stages (4.5 token_resolver, 4.5 variation_router, 4c supports_writer, +REGISTER) read from `run_ctx['theme_json']` instead of re-reading from disk. Mutations from Step 4b's `_reflect_new_token_in_theme_json` already work on the in-memory dict — caching at Stage 0 means a single source of truth across the whole run. Update `cloning-pipeline-flow.md` Stage 0 block to note the cache.
 
-Per docs-registry §3 update-trigger matrix, "Wire an unwired module into the live path" requires:
+**Verification:** existing 109 tests stay green; drift validator 0/1349; tooling-map drift-check passes. Run 3-rater panel before commit.
 
-- `tooling-map.md` variation_router row: TESTS-ONLY -> YES with insertion-point detail
-- `cloning-pipeline-flow.md` Stage 4.5 block: variation_router ✗ -> ✓ with wiring detail
-- `decisions.md` append new entry for 2026-05-14 Step 4b
+## Task 2: Step 6b — Retire 5 dead DB tables (~15 min)
 
-Commit message: `feat(spec-15-p6-v2-4b): wire variation_router into Stage 4.5 token-snap gap path`.
+DROP TABLE for `sections_detected`, `extraction_cache`, `block_opportunities`, `weaknesses`, `animations` (sgs-framework.db ONLY — leave `uimax.animations` intact). Update `/sgs-update` Stage 1 to stop recreating them. Run `python ~/.claude/hooks/local-search.py "sections_detected extraction_cache block_opportunities weaknesses"` first to confirm no live readers exist. Update `db-tables-map.md` to mark the 5 tables RETIRED.
 
-### Task 3: If time, continue to Step 4c
+**Verification:** sgs-db.py query against the dropped tables errors as expected; `/sgs-update` Stage 1 runs without recreating them; existing tests stay green. 3-rater panel before commit.
 
-Wire `supports_writer` (+ `inheritance` transitive) before Stage 6 emission. Per v2 plan row 4c. Same verification + same doc-update discipline. Separate commit.
+## Task 3: Step 6c — Extract compose_atomic_pattern to composer_fallback.py (~10 min)
+
+Create `plugins/sgs-blocks/scripts/orchestrator/composer_fallback.py`. Move `compose_atomic_pattern` + its helpers (`_emit_core_heading`, `_emit_core_paragraph`, `_emit_sgs_button`, `_BUTTON_HINT_RE`) out of `sgs-clone-orchestrator.py`. Orchestrator imports via the existing lazy-load pattern. Function name + signature unchanged. Add to `tooling-map.md`.
+
+**Verification:** the deferred-fallback path in `stage_4_5_6_7_8_extract` still produces atomic block markup for unmatched sections; existing 109 tests stay green. 3-rater panel before commit.
+
+## Task 4: Step 7 — Full E2E + measure pixel parity (~30 min)
+
+Run:
+```bash
+python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py \
+  --mockup sites/mamas-munches/mockups/homepage/index.html \
+  --auto-section --client mamas-munches --page homepage \
+  --media-map sites/mamas-munches/research/sandybrown-media-map.json \
+  --mode draft --no-promote-new-blocks \
+  --clone-url "https://sandybrown-nightingale-600381.hostingersite.com/<test-page>/"
+```
+
+Capture pixel-diff at 375 / 768 / 1440 via `/visual-qa` Quick mode. Hard pass: ≤1% diff at all 3 viewports. Verify all 14 modules show evidence of having fired (gap-writer rows; token_resolver hits; Rosetta Stone validator fired on every uimax write; no regression in hero golden test). If acceptance fails, triage which module didn't fire as expected — fix incrementally, don't retreat to the v1 framing. 3-rater panel before any fix commit.
+
+## Task 5: Step 8 — Commit + close Phase 6 (~15 min)
+
+Final commit on `main` if all Step 7 gates passed: `feat(spec-15-p6-v2-8): Phase 6 closed — pixel-parity gate green at 3 viewports`. Update `state.md`: `current_phase: phase-extra-1-cross-platform-output-extension`. Update `phase-6-pattern-fidelity-v2.md` Step 8 row ✅. Run `/handoff` to write the next session's prompt for Phase-extra 1.
 
 ## Guardrails
 
-- DO NOT skip pytest + drift-validator + drift-check + AST check after any wire-in
-- DO NOT bundle multiple wire-ins into one commit - one module per commit for bisect isolation
-- DO NOT inline new logic in sgs-clone-orchestrator.py - use the module's public API per "deterministic not inline" rule (Phase 6 v2 frontmatter)
-- DO update tooling-map.md + cloning-pipeline-flow.md + decisions.md in the SAME commit as the wire-in (docs-registry §3 trigger)
-- Theme.json + variation overlay already loaded in stage_4_5_6_7_8_extract (lines ~656-680). REUSE the `theme_json` variable already in scope - do NOT re-load.
-- Hard pass criterion for Phase 6: ≤1% pixel diff at 375/768/1440. Don't lose sight during 11 remaining wire-ins.
-- If you hit unexpected behaviour mid-wiring, run /qc-inline FIRST before adding fallback code. Surface anomalies; don't paper over.
+- 3-rater panel BEFORE every commit (locked rule). Local 4-gate (pytest + drift-validator + drift-check + AST) is the floor, not the ceiling.
+- DO NOT reintroduce IP-firewall framing in any new code. Trigger phrases to self-check: license / IP / copyright / provenance / redistribution / firewall between / promotion path / external_patterns.
+- DO NOT add `--resume` flags, stage-resume infrastructure, or partial-run continuation to any pipeline script. Sessions are atomic; the handoff/next-session-prompt flow is the only session-bridging mechanism.
+- DO update `tooling-map.md` + `cloning-pipeline-flow.md` + `decisions.md` in the SAME commit as each Step 6 sub-task per docs-registry §3.
+- If pixel parity fails at Step 7 and root cause isn't obvious, `/qc-inline` FIRST before adding fallback code. Surface anomalies; don't paper over.

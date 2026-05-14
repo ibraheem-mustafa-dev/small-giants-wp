@@ -96,19 +96,22 @@ Pipeline runs end-to-end on a Bean-controlled mockup and produces ≤1% pixel di
 
 Order by impact on pixel-parity:
 
-| Order | Module | File path on disk | Insertion point in sgs-clone-orchestrator.py | Public API | Time |
-|-------|--------|-------------------|------------------------------------------------|------------|------|
-| 4a | `token_resolver` | `plugins/sgs-blocks/scripts/orchestrator/token_resolver.py` | After Stage 4 extract loop returns, before Stage 6 emission | `resolve_batch(attrs, theme_json, variation_json)` | 20 min |
-| 4b | `variation_router` | `plugins/sgs-blocks/scripts/orchestrator/variation_router.py` | Inside token_resolver loop, on gap-candidate match | `add_token(client_slug, role, slug, value)` | 15 min |
-| 4c | `supports_writer` (+ `inheritance` transitive) | `plugins/sgs-blocks/scripts/orchestrator/supports_writer.py` (loads `plugins/sgs-blocks/scripts/value-matcher/inheritance.py`) | Before Stage 6 emission, after Stage 5 inheritance check | `decide(block_json, theme_json, attr_path, value)` | 30 min |
-| 4d | `modifier_extractors` | `plugins/sgs-blocks/scripts/orchestrator/modifier_extractors.py` | Between Stage 4 extract and Stage 7 compose | `button_role(visual_attrs)`, `dynamic_link(href)`, `match_block_variation(extracted, variations)` | 20 min |
-| 4e | `stage1_boundary_hook` (+ `lingua_franca` transitive) | `plugins/sgs-blocks/scripts/orchestrator/stage1_boundary_hook.py` (loads `plugins/sgs-blocks/scripts/orchestrator/lingua_franca.py`) | End of Stage 1, before Stage 2 match | `enrich_boundary(boundary)` + `enrich_run(run_dir)` | 30 min |
-| 4f | `attribute-gap-writer` | `plugins/sgs-blocks/scripts/recogniser/attribute-gap-writer.py` | After Stage 9 leftover routing | `stage(gaps, run_id, write=False)` | 20 min |
-| 4g | `functionality-gap-detector` | `plugins/sgs-blocks/scripts/recogniser/functionality-gap-detector.py` | After Stage 9 leftover routing | `detect_element(element, block_slug, conn)` | 20 min |
-| 4h | `gap-review-report` | `plugins/sgs-blocks/scripts/recogniser/gap-review-report.py` | After 4f + 4g produce gap candidates | `render_markdown(...)` + `write_report(...)` | 15 min |
-| 4i | `attribute-staged-apply` + `functionality-bulk-apply` + `media-sideload` | `plugins/sgs-blocks/scripts/orchestrator/{attribute-staged-apply.py, functionality-bulk-apply.py, media-sideload.py}` | Between Stage 7 compose and Stage 8 deploy | (3 functions per module - see tooling-map.md) | 60 min |
-| 4j | `wp_integration` | `plugins/sgs-blocks/scripts/orchestrator/wp_integration.py` | Between Stage 7 compose and Stage 8 deploy | `validate_block_markup(markup)` + `route_native_feature(feature, value)` + `build_deploy_command(...)` | 25 min |
-| 4k | `critical-fix-verification` | `plugins/sgs-blocks/scripts/orchestrator/critical-fix-verification.py` | After +REGISTER tail | `check_no_root_theme_mutation` + 4 more | 25 min |
+| Order | Module | File path on disk | Insertion point in sgs-clone-orchestrator.py | Public API | Time | Status |
+|-------|--------|-------------------|------------------------------------------------|------------|------|--------|
+| 4a | `token_resolver` | `plugins/sgs-blocks/scripts/orchestrator/token_resolver.py` | After Stage 4 extract loop returns, before Stage 6 emission | `resolve_batch(attrs, theme_json, variation_json)` | 20 min | ✅ shipped 2026-05-14 (`90fdb8e5`) |
+| 4b | `variation_router` | `plugins/sgs-blocks/scripts/orchestrator/variation_router.py` | Inside token_resolver loop, on gap-candidate match | `add_token(client_slug, role, slug, value)` | 15 min | ✅ shipped 2026-05-14 (`111d0815`) |
+| 4c | `supports_writer` (+ `inheritance` transitive) | `plugins/sgs-blocks/scripts/orchestrator/supports_writer.py` (loads `plugins/sgs-blocks/scripts/value-matcher/inheritance.py`) | Before Stage 6 emission, after Stage 5 inheritance check | `decide(block_json, theme_json, attr_path, value)` | 30 min | ✅ shipped 2026-05-14 (`dc83d172`) |
+| 4d | `modifier_extractors` | `plugins/sgs-blocks/scripts/orchestrator/modifier_extractors.py` | Between Stage 4 extract and Stage 7 compose | `button_role(visual_attrs)`, `dynamic_link(href)`, `match_block_variation(extracted, variations)` | 20 min | ✅ shipped 2026-05-14 (`a307ca88`) |
+| 4e | `stage1_boundary_hook` (+ `lingua_franca` transitive) | `plugins/sgs-blocks/scripts/orchestrator/stage1_boundary_hook.py` (loads `plugins/sgs-blocks/scripts/orchestrator/lingua_franca.py`) | End of Stage 1, before Stage 2 match | `enrich_boundary(boundary)` + `enrich_run(run_dir)` | 30 min | ✅ shipped 2026-05-14 (`a200e3d6`) |
+| 4f | `attribute-gap-writer` | `plugins/sgs-blocks/scripts/recogniser/attribute-gap-writer.py` | After Stage 9 leftover routing | `stage(gaps, run_id, write=False)` | 20 min | ✅ shipped 2026-05-14 (`19b45333`) |
+| 4g | `functionality-gap-detector` | `plugins/sgs-blocks/scripts/recogniser/functionality-gap-detector.py` | After Stage 9 leftover routing | `detect_element(element, block_slug, conn)` | 20 min | ✅ shipped 2026-05-14 (`d0c4370f`) |
+| 4h | `gap-review-report` | `plugins/sgs-blocks/scripts/recogniser/gap-review-report.py` | After 4f + 4g produce gap candidates | `render_markdown(...)` + `write_report(...)` | 15 min | ✅ shipped 2026-05-14 (`efc2b418`) |
+| 4i | `attribute-staged-apply` + `functionality-bulk-apply` + `media-sideload` | `plugins/sgs-blocks/scripts/orchestrator/{attribute-staged-apply.py, functionality-bulk-apply.py, media-sideload.py}` | Between Stage 7 compose and Stage 8 deploy | (3 functions per module - see tooling-map.md) | 60 min | ✅ shipped 2026-05-14 (`5fded299`) |
+| 4j | `wp_integration` | `plugins/sgs-blocks/scripts/orchestrator/wp_integration.py` | Between Stage 7 compose and Stage 8 deploy | `validate_block_markup(markup)` + `route_native_feature(feature, value)` + `build_deploy_command(...)` | 25 min | ✅ shipped 2026-05-14 (`1db96011`) |
+| 4k | `critical-fix-verification` | `plugins/sgs-blocks/scripts/orchestrator/critical-fix-verification.py` | After +REGISTER tail | `check_no_root_theme_mutation` + 3 more | 25 min | ✅ shipped 2026-05-14 (`1cb4596e`) |
+| 4-QC | Step 4 retrospective panel + 6 fixes | — | — | — | — | ✅ shipped 2026-05-14 (`ea816992`) — Step 4h path math + theme_json staleness + schema-stable deferred dicts + 4b silent-suppression diagnostic + 2 flow-doc fixes |
+
+**Step 4 STATUS: COMPLETE** (11 wire-ins + 1 QC fix-up commit; 109/109 tests across 11 module suites green; drift validator 0/1349; tooling-map drift-check passes).
 
 **Folder distribution**: 10 of the 13 modules live in `plugins/sgs-blocks/scripts/orchestrator/`. 3 (the Stage 9 gap-writers) live in `plugins/sgs-blocks/scripts/recogniser/`. The 2 transitives split: `inheritance.py` in `value-matcher/`, `lingua_franca.py` in `orchestrator/`.
 
@@ -122,20 +125,29 @@ Order by impact on pixel-parity:
 
 **Doc updates per step**: `tooling-map.md` (status YES + reason) + `cloning-pipeline-flow.md` (✗ → ✓ in the relevant stage block).
 
-### Step 5: Rosetta Stone discipline fix (~20 min)
+### Step 5: Rosetta Stone discipline fix (~20 min) — ✅ COMPLETE 2026-05-14 (`8aaad110`)
 
-**Problem**: `register_patterns.py` writes to uimax via direct sqlite3, bypassing `uimax_write.py` + validator. Licensing + Rosetta Stone checks silently skipped on every clone.
+**Problem**: `register_patterns.py` writes to uimax via direct sqlite3, bypassing `uimax_write.py` + validator. Rosetta Stone check silently skipped on every clone.
 
-**Solution**: Refactor `register_patterns.py` to import `uimax_write.validate_and_write(...)` instead of `sqlite3.connect()` + `INSERT`. Same payload, single validation chokepoint.
+**Solution shipped**: refactored `register_patterns.py` AND `sgs-update-uimax-sync.py` to route through `uimax_write.validate_and_write()`. The patterns + component_libraries writes (the two artefact-table writers in the codebase) are now gated by the validator subprocess.
 
-**Files touched**: `plugins/sgs-blocks/scripts/orchestrator/register_patterns.py`.
+**Scope extension caught mid-session**: Gemini Flash flagged that `attribute-gap-writer.py` and `functionality-gap-detector.py` also bypassed the validator. I extended scope to wire `validate()` into both — but Bean called out that those tables aren't in `ARTEFACT_TABLES`, so the wiring's only effect was running the row-211 IP-defence check, which is itself a violation of `feedback_no_licensing_talk_in_cloning_context.md` (UI patterns aren't copyrightable). Rolled the two gap-writer refactors back; stripped the row-211 framing from the validator entirely instead.
 
-**Verification**: write a deliberately-non-compliant payload (missing `equivalent_implementations.sgs_block`) and confirm validator rejects (ValidationError raised). Then write a compliant payload and confirm it lands in uimax.
+**Files touched (13)**: register_patterns.py + sgs-update-uimax-sync.py + uimax-write-validator.py (row 211 stripped) + uimax_write.py (docstring scrubbed) + critical-fix-verification.py (Check 3 removed, harness 5→4) + test_register_patterns.py + test_critical_fix_verification.py + sgs-clone-orchestrator.py (stale Step 4k comment) + uimax-tools/README.md + CLAUDE.md + tooling-map.md + cloning-pipeline-flow.md + decisions.md.
 
-**Doc updates**:
-- `tooling-map.md` - register_patterns.py note updated; uimax_write.py + uimax-write-validator.py status flipped from PARTIAL to YES
-- `cloning-pipeline-flow.md` - +REGISTER tail block updated (no longer "BYPASSED")
-- `decisions.md` - log: "Rosetta Stone discipline restored on /sgs-clone path"
+**Verification shipped**:
+- 4 new tests on register_patterns: compliant write + short-circuit fallback + validator-subprocess row-213 rejection + uimax idempotency
+- 39/39 pytest across touched suites; 109/109 across full Step 4+5 module suite
+- Drift validator 0/1349; tooling-map drift-check passes; AST OK x8
+- /diagnostics: 0 new issues
+- 3-rater panel ran twice (over-extended scope rejected; cleaned diff approved SHIP)
+
+**Doc updates applied**:
+- tooling-map.md: uimax_write + uimax-write-validator rows flipped to YES via both paths
+- cloning-pipeline-flow.md: +REGISTER tail block + final acceptance harness block scrubbed
+- decisions.md: new entry capturing chokepoint propagation + framing removal
+
+### Step 6: Small wins (~30 min) — remaining
 
 ### Step 6: Small wins (~30 min)
 
@@ -150,7 +162,7 @@ c. **Extract `compose_atomic_pattern` to its own module** (deterministic-not-inl
 - (b): `db-tables-map.md` - mark 5 tables as RETIRED + remove rows; `cloning-pipeline-flow.md` - remove dead-table mentions
 - (c): `tooling-map.md` - add `composer_fallback.py` row; `cloning-pipeline-flow.md` - Stage 7 references new path
 
-### Step 7: Full E2E + measure parity (~30 min)
+### Step 7: Full E2E + measure parity (~30 min) — remaining
 
 ```bash
 python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py \
@@ -170,7 +182,7 @@ python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py \
 
 **If acceptance fails**: triage which module didn't fire as expected or produced unexpected output. Fix incrementally; don't retreat to the v1 framing.
 
-### Step 8: Commit + close (~15 min)
+### Step 8: Commit + close (~15 min) — remaining
 
 ```
 git commit -m "feat(spec-15-p6): pattern fidelity v2 - 13 modules wired + extract.py CSS generalisation + Stage 0.7 retirement + Rosetta Stone discipline restored"

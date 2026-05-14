@@ -1,5 +1,23 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-12 (three new lessons — case-sensitive endswith; QC panel before commit; always-merge-to-main default)
+**Last updated:** 2026-05-14 (new lesson — synonym laundering on captured-rule violations)
+
+## 2026-05-14 — Synonym laundering doesn't satisfy a captured rule when the concept itself is the violation
+
+**The rule:** When a captured behavioural rule forbids a *concept* (not just a word), removing the word from variable names / comments / docs is not compliance — it's framing leakage in disguise. The honest fix is to remove the concept's encoding from the code at the root, not rename the surface symbols.
+
+**Incident:** During Phase 6 v2 Step 5 (2026-05-14), Bean's first nudge surfaced row-211 "no licensing language" survivors in code I'd just edited. I treated it as a vocabulary issue and renamed `LICENSING_BANNED_SUBSTRINGS` → `row-211 banned-key gate` across comments and docstrings. Bean's second nudge: "It's not the word licensing itself that is banned, it's the concept. We can't just get around it by using synonyms if we're still actually checking for licensing. You can't copyright a UI pattern or block functionality!" The actual rule (`feedback_no_licensing_talk_in_cloning_context.md`, blub.db 2026-05-06) bans the IP-firewall framing, not just the L-word. The substring check itself encoded the framing — defending against a non-existent threat model. Renaming the check left the framing intact in inverted form.
+
+**The fix:** stripped `LICENSING_BANNED_SUBSTRINGS` + `find_licensing_violations()` from `uimax-write-validator.py` entirely. Removed `check_no_licensing_in_uimax` + `_FORBIDDEN_TOKENS` from `critical-fix-verification.py` (harness 5 → 4 checks). Removed Hard Rule #1 from `uimax-tools/README.md`. Validator now enforces only row 213 (Rosetta Stone — every artefact-table row carries `equivalent_implementations.sgs_block`), which IS a real engineering invariant about cross-platform translation completeness, not IP defence.
+
+**Apply going forward:** when a captured rule fires and my first pass is a rename, ask the second question — does this rule forbid the *word* or the *concept*? If the rule's `Why:` line cites a domain reason (UI patterns aren't copyrightable; tokens aren't dependencies; etc.), then any code path that encodes the concept is the violation regardless of vocabulary. Renaming is a smell, not a fix.
+
+**Trigger phrases that should make me stop and re-check (not just rename):**
+- "It's not the word, it's the concept"
+- "Same thing with a different name"
+- "You're getting around the rule with a synonym"
+- "Why does this check exist at all"
+
+**Memory:** captured here + as a blub.db follow-up (`synonym-laundering-doesnt-satisfy-concept-bans`). Cross-references `feedback_no_licensing_talk_in_cloning_context.md` (row 211 source rule) and `feedback_dont_delete_db_rows_on_ghost_verdict.md` (sibling rule about not pre-emptively deleting things without operator surfacing — different incident, same pattern of treating the surface symptom rather than the underlying intent).
 
 ## 2026-05-12 — Always merge to main when committing (no parked PRs across sessions)
 
