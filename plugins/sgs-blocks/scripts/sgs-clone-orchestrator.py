@@ -64,6 +64,7 @@ GAP_REVIEW_REPORT_SCRIPT = RECOGNISER_DIR / "gap-review-report.py"
 ATTRIBUTE_STAGED_APPLY_SCRIPT = ORCHESTRATOR_DIR / "attribute-staged-apply.py"
 FUNCTIONALITY_BULK_APPLY_SCRIPT = ORCHESTRATOR_DIR / "functionality-bulk-apply.py"
 MEDIA_SIDELOAD_SCRIPT = ORCHESTRATOR_DIR / "media-sideload.py"
+WP_INTEGRATION_SCRIPT = ORCHESTRATOR_DIR / "wp_integration.py"
 
 # The set of HTML attributes that the functionality-gap-detector treats as
 # behaviour fingerprints. Kept here so the orchestrator's BS4 walk only emits
@@ -693,6 +694,19 @@ def media_sideload():
             "sgs_media_sideload", MEDIA_SIDELOAD_SCRIPT,
         )
     return _media_sideload_mod
+
+
+# Lazy-import wp_integration (Spec 15 Phase 6 v2 Step 4j).
+_wp_integration_mod = None
+
+
+def wp_integration():
+    global _wp_integration_mod
+    if _wp_integration_mod is None:
+        _wp_integration_mod = _load_module_from_path(
+            "sgs_wp_integration", WP_INTEGRATION_SCRIPT,
+        )
+    return _wp_integration_mod
 
 
 def _harvest_functionality_gap_elements(mockup_path: Path, match_output: dict) -> list[dict]:
@@ -1715,6 +1729,42 @@ def main():
             print(f"[stage-4i] {loader_name} load soft-failed: {exc}", file=sys.stderr)
     (run_dir / "stage-4i.json").write_text(
         json.dumps(stage_4i_summary, indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
+
+    # ------------------------------------------------------------------
+    # Phase 6 v2 Step 4j — wp_integration: validate aggregate block markup
+    # via /wp-blocks CLI before the autonomy gate. route_native_feature +
+    # build_deploy_command are operator-gated -- lazy-loader registration
+    # makes them reachable from post-clone tooling. Soft-fails so a
+    # missing CLI or malformed markup never blocks the autonomy decision.
+    # Result lands at run_dir/stage-4j.json.
+    # ------------------------------------------------------------------
+    stage_4j_summary: dict = {"validate_block_markup": None, "modules_loaded": []}
+    try:
+        wpi = wp_integration()
+        aggregate_markup = (extract_out or {}).get("block_markup") or ""
+        if aggregate_markup.strip():
+            try:
+                validation = wpi.validate_block_markup(aggregate_markup)
+                stage_4j_summary["validate_block_markup"] = {
+                    "status": validation.get("status"),
+                    "errors": validation.get("errors") or [],
+                    "warnings": validation.get("warnings") or [],
+                }
+                status_str = validation.get("status", "unknown")
+                print(f"[stage-4j] wp-blocks validate: {status_str}")
+            except Exception as exc:  # noqa: BLE001 - CLI may be missing in dev; soft-fail
+                stage_4j_summary["validate_block_markup"] = {"status": "skipped", "reason": str(exc)}
+                print(f"[stage-4j] wp-blocks validate skipped: {exc}", file=sys.stderr)
+        else:
+            stage_4j_summary["validate_block_markup"] = {"status": "skipped", "reason": "empty aggregate markup"}
+        stage_4j_summary["modules_loaded"] = ["wp_integration"]
+    except Exception as exc:  # noqa: BLE001 - module load failure non-fatal
+        print(f"[stage-4j] wp_integration load soft-failed: {exc}", file=sys.stderr)
+        stage_4j_summary["validate_block_markup"] = {"status": "errored", "reason": str(exc)}
+    (run_dir / "stage-4j.json").write_text(
+        json.dumps(stage_4j_summary, indent=2, ensure_ascii=False),
         encoding="utf-8",
     )
 

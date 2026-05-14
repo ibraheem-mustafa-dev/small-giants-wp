@@ -2,6 +2,36 @@
 
 Append-only. Most-recent first.
 
+## 2026-05-14 - Phase 6 v2 Step 4j: wp_integration wired before autonomy gate
+
+**Decision:** Tenth wire-in - `wp_integration.validate_block_markup` runs automatically each clone after Step 4i and before the autonomy gate. Calls the `/wp-blocks` CLI at `~/.claude/hooks/wp-blocks.py` against the aggregate block markup from `extract_out`. Status + errors + warnings land on `run_dir/stage-4j.json`. `route_native_feature` + `build_deploy_command` remain operator-gated (FR21); lazy-loader makes them reachable from post-clone tooling via the orchestrator's namespace.
+
+**Why this approach:** validating aggregate markup ONCE per clone (rather than per-section inside the extract loop) keeps the CLI invocation count low and surfaces aggregate validation errors at the same point the autonomy gate consumes them. The /wp-blocks CLI is not always present on dev machines; soft-fail to "skipped" rather than treating CLI absence as a clone failure. build_deploy_command is intentionally NOT auto-invoked because it requires a target_post_id which lives in the operator's promotion workflow, not the clone artefact.
+
+**Trade-offs considered:**
+- Could have invoked validate per-section inside the extract loop - rejected because the autonomy gate consumes aggregate markup; per-section validation would multiply CLI invocations N-fold without surfacing earlier signal.
+- Could have used route_native_feature to auto-transform extracted attrs - rejected because the transform list (lightbox / duotone / appearanceTools) is narrow and current extract output rarely surfaces them; better to defer until Stage 4i operator workflows are exercised end-to-end.
+- Could have failed the run on validation errors - rejected; aggregate markup may have benign warnings even in well-formed clones and we want the autonomy gate to be the single failure-decision point.
+
+**Verification:**
+- 11/11 wp_integration pytest tests still green
+- All 9 prior wire-in suites still green
+- Drift validator still 0/1349 violations
+- tooling-map drift-check still passes
+- AST syntax check on modified orchestrator: OK
+
+**Files touched:**
+- `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` (WP_INTEGRATION_SCRIPT constant + wp_integration() lazy-loader + stage 4j dispatch block in main() + stage-4j.json write)
+
+**Doc updates per docs-registry update-trigger matrix:**
+- `tooling-map.md` row for wp_integration.py: TESTS-ONLY -> YES with wiring detail
+- `cloning-pipeline-flow.md` Stage 7 block: wp_integration ✗ -> ✓ with wiring detail
+- `decisions.md` (this entry)
+
+**Next:** Step 4k (`critical-fix-verification`) - five FR21-canonical-mutation-boundary checks after +REGISTER tail.
+
+---
+
 ## 2026-05-14 - Phase 6 v2 Step 4i: 3 apply modules wired between Stage 7 compose and Stage 8 deploy
 
 **Decision:** Ninth wire-in - bundle of three operator-gated apply modules from `plugins/sgs-blocks/scripts/orchestrator/`. Dispatch location is in `main()` between `stage_9_report` and the autonomy gate (the Stage-8 boundary). Three separate lazy-loaders (`attribute_staged_apply`, `functionality_bulk_apply`, `media_sideload`) registered in `sys.modules`. Only `media_sideload.sideload_batch` is auto-invoked (dry-run mode) per clone -- it walks `extract_out` for `image-object` slots, writes a manifest at `run_dir/media-sideload-manifest.json`. Operators promote to real upload via the module's `--upload` CLI flag. The other two modules remain operator-gated (FR21): no auto-mutation, no auto-staging without operator-supplied changes / jobs. Summary lands at `run_dir/stage-4i.json` listing slot count + which modules loaded.

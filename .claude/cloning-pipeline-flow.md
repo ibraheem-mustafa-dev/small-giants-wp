@@ -412,8 +412,14 @@ The big picture in one page, with EVERY script, file, DB table and skill plotted
 │       FALLBACK ONLY - fires when matched block is core/group or             │
 │       confidence == 0 (which it does for 6 of 9 Mama's sections). Emits a   │
 │       flat wp:sgs/container with bare atomic blocks, NO BEM child wrappers. │
-│  ✗ orchestrator/wp_integration.py - validate_block_markup, route_native    │
-│       _feature, build_deploy_command - TESTS-ONLY                           │
+│  ✓ orchestrator/wp_integration.py - validate_block_markup, route_native    │
+│       _feature, build_deploy_command - WIRED 2026-05-14 (Phase 6 v2        │
+│       Step 4j) - sgs-clone-orchestrator.py main() runs validate_block_    │
+│       markup on aggregate_markup before the autonomy gate; status /        │
+│       errors / warnings land on run_dir/stage-4j.json. route_native_       │
+│       feature + build_deploy_command remain operator-gated (lazy-loaded   │
+│       and reachable from post-clone tooling). Soft-fails when /wp-blocks  │
+│       CLI is missing.                                                       │
 │  ✓ orchestrator/attribute-staged-apply.py + functionality-bulk-apply.py +   │
 │       media-sideload.py - WIRED 2026-05-14 (Phase 6 v2 Step 4i) -          │
 │       sgs-clone-orchestrator.py main() runs media-sideload.sideload_batch  │
