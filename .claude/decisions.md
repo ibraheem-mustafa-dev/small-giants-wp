@@ -2,6 +2,30 @@
 
 Append-only. Most-recent first.
 
+## 2026-05-14 - Phase 6 v2 Step 4a: token_resolver wired into Stage 4.5
+
+**Decision:** First module wire-in of Phase 6 v2 - `token_resolver` from `plugins/sgs-blocks/scripts/orchestrator/token_resolver.py` integrated into `sgs-clone-orchestrator.py:stage_4_5_6_7_8_extract` between per-section extract.py subprocess return and per_section_results aggregation. Lazy-loaded via `token_resolver()` helper alongside the existing `confidence_matrix()` pattern. Theme.json + variation overlay loaded once per /sgs-clone run (will move to Stage 0 caching in Step 6a).
+
+**Why this approach:** preserves the existing per-section subprocess pattern; minimum-impact wiring (15 lines for theme/variation loading + 10 lines for the per-section snap call); raw values silently replaced with token_slug when confidence >= 0.6; gap candidates surface in `per_section_results[i].token_resolutions` field for the (still-unwired) Stage 9 gap-writers to consume later. Soft-fails on exception to preserve raw values.
+
+**Verification:**
+- 8/8 token_resolver pytest tests still green
+- Drift validator still 0/1349 violations
+- tooling-map drift-check still passes
+- AST syntax check on modified orchestrator: OK
+
+**Files touched:**
+- `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` (TOKEN_RESOLVER_SCRIPT constant + token_resolver() lazy-loader + theme.json+variation overlay loading + per-section snap call + token_resolutions field on per_section_results)
+
+**Doc updates per docs-registry update-trigger matrix:**
+- `tooling-map.md` row for token_resolver.py: TESTS-ONLY -> YES with wiring detail
+- `cloning-pipeline-flow.md` Stage 4.5 block: ✗ -> ✓ with wiring detail
+- `decisions.md` (this entry)
+
+**Next:** Step 4b (`variation_router`) - sibling write path that fires inside token_resolver loop on gap-candidate match.
+
+---
+
 ## 2026-05-13 - Phase numbering refresh + Phase 5 closed
 
 **Decision:** Renumber Spec 15 phases so the core build sequence is contiguous and after-completion extensions sit outside it. Same-day refresh because the prior numbering had the pixel-parity work stuck as "Phase 7" with the cross-platform extension as "Phase 6" in the middle of the build sequence - confusing readers and self.

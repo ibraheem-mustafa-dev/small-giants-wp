@@ -1,115 +1,100 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-session_tag: small-giants-wp-2026-05-14-spec-15-phase-6-pattern-fidelity
-recommended_model: opus
+session_tag: small-giants-wp-2026-05-14-docs-registry-plus-step-4a
+recommended_model: sonnet
+last_verified: 2026-05-14
+update_triggers:
+  - "/handoff run with a clear next-task"
+registry_entry: docs-registry.md row 6
 ---
 
-You are a senior WordPress block + Python pipeline + design-fidelity engineer. This session starts **Spec 15 Phase 6 — Pattern Fidelity** on a now-functional pipeline. Phase 6 Step 0 (commit `<TBD>` on origin/main) wired the production entry script to compose Phase 5 modules via `orchestrator_main.run()` + +REGISTER tail. Pipeline runs end-to-end: stages execute, screenshots captured, pixel diff measured, autonomy gate decides, patterns registered on PASS.
+You are a senior WordPress block-pipeline integration engineer continuing Phase 6 v2 of the SGS deterministic draft-to-SGS cloning pipeline. Mechanical wiring of pre-built modules into /sgs-clone orchestrator following the v2 plan exactly.
 
-What's still NOT closed: the pixel-parity gate itself. Live E2E `mamas-munches-homepage-2026-05-13-105351` measured 64.9% / 43.7% / 36.5% diff at 375 / 768 / 1440. The plumbing is correct; the OUTPUT it produces still diverges from the mockup. Three named gaps, each with concrete fix:
+Resume command: CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-14-docs-registry-plus-step-4a"
 
-> **Hard pass criterion (still):** ≤ 1% pixel diff at 375 / 768 / 1440 vs the mockup. No partial closure. Phase 5 already CLOSED (2026-05-13); Phase 6 owns this gate.
+## Where You Are
 
-Read `.claude/handoff.md`, `.claude/state.md`, `.claude/decisions.md` (the 2026-05-13 "Phase 6 Step 0" entry above the 5g entry), and `.claude/cloning-pipeline-flow.md`.
+Plan: `.claude/plans/phase-6-pattern-fidelity-v2.md`
+Current phase: Phase 6 v2 - Step 4 module wiring (mechanical integration)
+Progress: Step 4a (token_resolver) SHIPPED 2026-05-14; 12 steps remaining (4b-4k + Step 5 + Step 6 + Step 7 + Step 8)
+Next task: commit prior-session work + start Step 4b (variation_router)
 
-## Where you are
+## Cold-Start Reading Order (per docs-registry §5)
 
-Phase 6 Step 0 (this session's prior work) is shipped. The production entry script now:
+Read in this order before doing anything else:
 
-- Runs Stages 0.1 → 9 (legacy logic preserved)
-- Mirrors artefacts to Phase 5 `staged_output` convention
-- Calls `orchestrator_main.run()` — preflight → staged_merge → visual_qa → autonomy_decision → conditional sgs-update → deliverable
-- Runs `register_patterns.register_run()` on success — writes pattern PHP files + sgs-db rows + uimax rows with Rosetta Stone payload
-- 20-test pytest suite at `plugins/sgs-blocks/scripts/orchestrator/test_register_patterns.py` (all green)
-- 3-rater QC panel (Sonnet + Haiku + Gemini Flash) returned ship from all three
+1. `.claude/state.md` - current phase + blockers
+2. `.claude/handoff.md` - what just happened (2026-05-14 session)
+3. `.claude/docs-registry.md` §3 update-trigger matrix + §5 cold-start order + §7 enforcement hooks
+4. `.claude/cloning-pipeline-flow.md` - annotated visual flow (Stage 4.5 token_resolver now ✓)
+5. `.claude/plans/phase-6-pattern-fidelity-v2.md` - active execution plan
+6. `.claude/decisions.md` - last 2 entries (Step 4a + phase numbering)
+7. On-demand: `.claude/tooling-map.md` (module APIs), `.claude/db-tables-map.md` (DB R/W), `.claude/skills-commands-map.md` (skill chain)
 
-What's broken: the COMPOSED OUTPUT still doesn't match the mockup. The 3 gaps:
+## Skills to Invoke
 
-### 6.1 — Composer BEM child hierarchy (~2-3 hr; load-bearing)
+| Skill | When to use |
+|-------|-------------|
+| `/brainstorming` | Architectural choice surfaces mid-wiring |
+| `/gap-analysis` | After each step before marking complete |
+| `/lifecycle` | Only if a skill/agent/pipeline file needs changing |
+| `/research` | Unfamiliar API/library question |
+| `/strategic-plan` | NOT needed - v2 plan already exists |
+| `/sgs-wp-engine` | SGS DB queries via sgs-db.py |
+| `/qc-inline` | After each wire-in for per-step verification |
+| `/handoff` | At session close |
 
-File: `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py:compose_atomic_pattern()`.
+## MCP Servers & Tools
 
-Current composer emits flat `core/heading + core/paragraph + sgs/button + sgs/decorative-image` inside `wp:sgs/container`. Mockup CSS targets BEM children: `.sgs-featured-product__grid`, `.sgs-featured-product__card`, `.sgs-ingredients-section__list`. These class hooks don't exist in the rendered DOM so the CSS-lifted grid rules can't bind.
+| Tool | What to use it for |
+|------|-------------------|
+| Playwright MCP | Stage 8 visual QA verification when running full E2E in Step 7 |
+| github MCP | Only if reviewing pre-Phase-5 history |
 
-Extend the composer to walk the source DOM preserving BEM child class names. Wrap each `__grid` / `__card` / `__list` boundary in `wp:core/group {"className":"sgs-X__grid"}` so the lifted CSS applies. Per spec FR1 (Layer 4 inner-blocks catalogue) + spec FR3 (Layer 3 internal-elements catalogue), the existing `block_compositions` + `slot_synonyms` tables in sgs-framework.db carry this structure already — the composer needs to LOOK UP the section's block composition rather than emit generic atomics.
+## Agents to Delegate To
 
-Layer-1 `/qc-inline`: re-emit Mama's featured-product section; verify the markup contains `__grid` and `__card` className wrappers; verify pixel diff at 1440 drops below 20%.
-
-### 6.2 — WP global header chrome (~30 min)
-
-Cloned pages render inside `page.html` which includes the WP site `header.html` template part. Mockup is standalone. ~400px of mismatch at top across all viewports.
-
-Fix: new `theme/sgs-theme/templates/clone-page.html` template with no header/footer parts (or `<header>` + `<footer>` block-comments left empty). When the pipeline creates the WP page via REST, set `template: 'clone-page'` in the POST payload.
-
-Layer-1 `/qc-inline`: capture clone at 1440 after deploying with the new template; verify no WP site header at the top of the page.
-
-### 6.3 — Composite block (sgs/hero) shape audit (~45 min)
-
-Hero matched at confidence 1.0 to `sgs/hero` (a registered composite block). Extract.py fills slot attributes (headline, subHeadline, ctaPrimaryText, splitImage etc.) but the rendered hero block uses its own internal markup which may not reproduce the mockup's exact arrangement — e.g. mockup hero may use a different column ratio, CTA placement, label-above-headline order.
-
-Investigate whether extract.py is filling all mockup-equivalent slots on sgs/hero. Run extract.py against the hero section + compare extracted attributes to the mockup's actual structure. If extracted attrs are sufficient, the gap is in sgs/hero's render.php (different layout). If extracted attrs are missing some, extend extract.py's slot list for hero.
-
-Layer-1 `/qc-inline`: extract Mama's hero + diff against `tests/golden/hero-extraction-baseline.json`. Identify which slots are missing or wrong.
-
-### 6.4 — Re-measure visual parity at end (~30 min)
-
-Re-run the full pipeline E2E with `--clone-url`. Verify pixel diff drops below 1% at all 3 viewports.
-
-```bash
-python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py \
-  --mockup sites/mamas-munches/mockups/homepage/index.html \
-  --auto-section --client mamas-munches --page homepage \
-  --media-map sites/mamas-munches/research/sandybrown-media-map.json \
-  --mode draft --no-promote-new-blocks \
-  --clone-url "https://sandybrown-nightingale-600381.hostingersite.com/<your-test-page>/"
-```
-
-If outcome.overall == 'success', +REGISTER will fire and the new patterns will land in `theme/sgs-theme/patterns/` + sgs-db + uimax. Phase 6 closes.
-
-If outcome.overall == 'halted', the deliverable.md will name the failing viewport. Iterate 6.1 / 6.2 / 6.3 until the gate passes.
-
-### 6.5 — Commit + Phase 6 closure (~15 min)
-
-```
-git commit -m "feat(spec-15-p6): pattern fidelity — pixel-parity gate met across 375/768/1440"
-```
-
-Mark Phase 6 SHIPPED (Phase 5 already CLOSED at 2026-05-13). Generate `/handoff` for Phase-extra 1 (cross-platform output extension — the deferred phase per spec).
-
-## Skills to invoke
-
-| Skill | When |
+| Agent | When |
 |-------|------|
-| `/sgs-clone` | The pipeline itself |
-| `/sgs-wp-engine` | SGS framework operations |
-| `/wp-block-development` | If 6.1 needs new block.json work |
-| `/wp-block-themes` | If 6.2 needs a new theme template |
-| `/visual-qa` | Optional 9-layer audit on the final deliverable |
-| `/qc-inline` | Layer-1 after every step |
-| `/test-driven-development` | New code in 6.1 should ship with tests |
-| `/handoff` | End-of-session close |
+| wp-sgs-developer | Wiring needs deeper WP-block work than v2 plan describes |
+| code-reviewer | After Step 4 completes, before Step 7 E2E |
+
+## Tasks
+
+### Task 1: Commit prior-session work (FIRST ACTION)
+
+~14 files modified/new from 2026-05-14 session are uncommitted on `main` at `ed3942eb`. Use /commit-commands:commit. Message: `feat(spec-15-p6-v2): docs-registry + drift-check hook + Phase 6 v2 plan + Step 4a token_resolver wired`. Push to main per framework CLAUDE.md rule.
+
+### Task 2: Step 4b - wire variation_router
+
+Per `.claude/plans/phase-6-pattern-fidelity-v2.md` row 4b. Module at `plugins/sgs-blocks/scripts/orchestrator/variation_router.py`. Public API: `add_token(client_slug, role, slug, value)`. Insertion point: inside the token_resolver loop in sgs-clone-orchestrator.py (after section_token_resolutions iteration added in Step 4a). Call variation_router.add_token() when `is_gap_candidate=true` AND raw_value parses as a valid token-shape value. Soft-fail on exception. Add a `new_tokens_written` list of (role, slug) pairs to per_section_results.
+
+Per-step verification (ALL must stay green):
+- `python -m pytest plugins/sgs-blocks/scripts/orchestrator/test_variation_router.py -x`
+- `python plugins/sgs-blocks/scripts/drift-validator/validate.py`
+- `python .claude/hooks/tooling-map-drift-check.py`
+- `python -c "import ast; ast.parse(open('plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py', encoding='utf-8').read())"`
+
+### Task 3: Update truth docs in the SAME commit as the wire-in
+
+Per docs-registry §3 update-trigger matrix, "Wire an unwired module into the live path" requires:
+
+- `tooling-map.md` variation_router row: TESTS-ONLY -> YES with insertion-point detail
+- `cloning-pipeline-flow.md` Stage 4.5 block: variation_router ✗ -> ✓ with wiring detail
+- `decisions.md` append new entry for 2026-05-14 Step 4b
+
+Commit message: `feat(spec-15-p6-v2-4b): wire variation_router into Stage 4.5 token-snap gap path`.
+
+### Task 4: If time, continue to Step 4c
+
+Wire `supports_writer` (+ `inheritance` transitive) before Stage 6 emission. Per v2 plan row 4c. Same verification + same doc-update discipline. Separate commit.
 
 ## Guardrails
 
-- Drift validator MUST stay PASS after every step: `python plugins/sgs-blocks/scripts/drift-validator/validate.py`
-- Hero baseline MUST stay PASS: `cd tools/recogniser-v2 && python extract.py --mockup ../../sites/mamas-munches/mockups/homepage/index.html --section ".sgs-hero" --block sgs/hero --verify-against ../../tests/golden/hero-extraction-baseline.json`
-- Pytest for register_patterns MUST stay 20/20 green: `python -m pytest plugins/sgs-blocks/scripts/orchestrator/test_register_patterns.py`
-- FR21: never mutate root theme.json; client tokens go to `theme/sgs-theme/styles/mamas-munches.json` via `variation_router.py`
-- No `--resume` flags
-- No em-dashes in pipeline output / decisions / handoffs
-- Open the rendered URL with own eyes before claiming parity met (`feedback_dont_delegate_the_test_of_unproven_work`)
-- The ≤ 1% pixel-diff gate is a HARD pass criterion. No partial closure.
-
-## Artefacts from prior session
-
-- Commit `<TBD>` — Phase 6 Step 0 shipped (entry-script rewire + +REGISTER + capture)
-- 5 newly registered patterns at `theme/sgs-theme/patterns/{header,featured-product,gift-section,social-proof,footer}.php`
-- 5 rows in `sgs-framework.db.patterns` with `is_auto_generated=1` source=`sgs-clone-pipeline`
-- 5 rows in uimax patterns with Rosetta Stone payload
-- Live E2E run `pipeline-state/sgs-clone/mamas-munches-homepage-2026-05-13-105351/` — deliverable + screenshots
-- 20-test pytest suite for register_patterns
-
-## Phase-extra 1 cross-platform output (after Phase 6 closes)
-
-Phase 6 — Cross-platform output (~6-8 hr): Block.json → Bootstrap / Tailwind / shadcn / React / Node.js code generators using uimax `equivalent_implementations` + `design_tokens` cross-platform columns. Sequenced AFTER 5h closes — irresponsible to extend a foundation that doesn't pass its own parity gate.
+- DO NOT skip pytest + drift-validator + drift-check + AST check after any wire-in
+- DO NOT bundle multiple wire-ins into one commit - one module per commit for bisect isolation
+- DO NOT inline new logic in sgs-clone-orchestrator.py - use the module's public API per "deterministic not inline" rule (Phase 6 v2 frontmatter)
+- DO update tooling-map.md + cloning-pipeline-flow.md + decisions.md in the SAME commit as the wire-in (docs-registry §3 trigger)
+- Theme.json + variation overlay already loaded in stage_4_5_6_7_8_extract (lines ~656-680). REUSE the `theme_json` variable already in scope - do NOT re-load.
+- Hard pass criterion for Phase 6: ≤1% pixel diff at 375/768/1440. Don't lose sight during 11 remaining wire-ins.
+- If you hit unexpected behaviour mid-wiring, run /qc-inline FIRST before adding fallback code. Surface anomalies; don't paper over.

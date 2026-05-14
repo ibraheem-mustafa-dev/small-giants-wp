@@ -4,10 +4,22 @@ parent_spec: .claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md
 project: small-giants-wp
 title: Phase 6 — Pattern Fidelity (Pixel-Parity Gate Closure)
 session_date: 2026-05-13
-status: APPROVED — ready to execute next session
+status: deprecated
+superseded_by: .claude/plans/phase-6-pattern-fidelity-v2.md
+deprecated_on: 2026-05-14
+deprecation_reason: |
+  v1 framed Phase 6 as "patch composer + chrome + hero" (symptom-driven).
+  4-reviewer QC on 2026-05-13 surfaced that the actual blocker is the
+  integration gap (13 unwired modules + extract.py CSS-consumption only
+  works for hero + Stage 0.7 wrong-architecture + Rosetta Stone bypassed).
+  v2 is architecture-driven against those findings. v1 kept for commit-history
+  continuity only - do NOT execute against v1.
 plan_label: PLAN: opus
 recommended_model: opus
 ---
+
+> **DEPRECATED 2026-05-14** — superseded by `.claude/plans/phase-6-pattern-fidelity-v2.md`. See deprecation_reason in frontmatter. v1 retained for commit-message history only.
+
 
 # Phase 6 — Pattern Fidelity
 

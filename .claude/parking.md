@@ -1,10 +1,33 @@
 ---
 doc_type: parking
 project: small-giants-wp
-last_updated: 2026-05-12
+last_updated: 2026-05-14
 ---
 
 # Parking — deferred work with named triggers
+
+## New 2026-05-14 — Phase 6 v2 deferrals
+
+### P-S15-ROLE-TEMPLATES-MIGRATE — Migrate role-templates.json into property_suffixes DB table (~2 hr)
+
+**What:** `tools/recogniser-v2/data/role-templates.json` carries 20 role definitions + cross-platform extraction recipes. Spec 15 §6 Stage 4 + FR2 marks this TO-MIGRATE in Phase 1 - migration was deferred and never completed. The file is currently functioning (read by extract.py at load_role_templates() line 227) but accumulates silent drift versus the DB (every Spec 15 Phase 3/3.5 pass updates the DB but the JSON file might be stale).
+
+**Trigger:** Post-Phase-6 doc-hygiene sweep, OR when an extract.py regression surfaces that traces to JSON-vs-DB divergence, whichever comes first.
+
+**Approach:**
+- Write migration script `plugins/sgs-blocks/scripts/migrate-role-templates-to-db.py` that walks role-templates.json + INSERTs/UPDATEs the matching property_suffixes rows
+- Update extract.py.load_role_templates() to read from DB instead of file (or retain JSON as fallback during transition)
+- Verify byte-parity per-role between JSON values and migrated DB values
+- Add the `role-templates-vs-property-suffixes-check.py` drift-check hook (see docs-registry section 7)
+- Delete role-templates.json after operator approval
+
+**Spec ref:** Spec 15 §6 Stage 4 + FR2 + Appendix E ("role-templates.json TO-MIGRATE Phase 1").
+
+**Why parked until after Phase 6:** Phase 6 closes the pixel-parity gate via integration work (wiring 14 modules + generalising extract.py CSS-consumption). Adding the role-templates migration to Phase 6 risks the working Stage 4 dispatch path for no parity-gate benefit. Cleaner to land Phase 6 first, then sweep this migration as a focused mini-phase.
+
+**Mitigation while parked:** the new drift-check hook `role-templates-vs-property-suffixes-check.py` (added to docs-registry section 7 as a future hook) would surface drift if built. For now, drift is implicit risk.
+
+
 
 Items here have a clear next-step but aren't urgent. Each entry: the work, the trigger to resume, the spec, and rough effort. Resolved items are kept as one-line summaries (no ORIGINAL retention to keep the file scannable).
 

@@ -52,6 +52,7 @@ ROUTER_SCRIPT = RECOGNISER_DIR / "leftover-bucket-router.py"
 REVIEW_SCRIPT = RECOGNISER_DIR / "simple_html_review_report.py"
 CLASSIFIER_SCRIPT = RECOGNISER_DIR / "bucket-c-classifier.py"
 SCAFFOLD_SCRIPT = ORCHESTRATOR_DIR / "atomic-block-scaffold.py"
+TOKEN_RESOLVER_SCRIPT = ORCHESTRATOR_DIR / "token_resolver.py"
 
 SGS_FRAMEWORK_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 
@@ -515,6 +516,17 @@ def confidence_matrix():
     return _confidence_matrix_mod
 
 
+# Lazy-import the token_resolver module on first call (Spec 15 Phase 5d.2 - wired by Phase 6 v2 Step 4a).
+_token_resolver_mod = None
+
+
+def token_resolver():
+    global _token_resolver_mod
+    if _token_resolver_mod is None:
+        _token_resolver_mod = _load_module_from_path("sgs_token_resolver", TOKEN_RESOLVER_SCRIPT)
+    return _token_resolver_mod
+
+
 # ---------------------------------------------------------------------------
 # Stage 1 -- BOUNDARY (dispatcher: per-section-convention-voter.py)
 # ---------------------------------------------------------------------------
@@ -652,6 +664,37 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path) -> dict:
     boundary_dict = json.loads(boundary_path.read_text(encoding="utf-8")) if boundary_path.exists() else {}
     boundaries_by_id = {b["boundary_id"]: b for b in boundary_dict.get("boundaries", [])}
 
+    # Stage 4.5 -- TOKEN SNAP (Phase 6 v2 Step 4a). Load theme.json + variation
+    # overlay once per /sgs-clone run for token_resolver.resolve_batch() calls
+    # below. theme.json holds base tokens; variation overlay carries per-client
+    # overrides per Spec 15 §4.7. NOT mutated -- read-only.
+    _theme_path = REPO / "theme" / "sgs-theme" / "theme.json"
+    _variation_path = REPO / "theme" / "sgs-theme" / "styles" / f"{getattr(args, 'client', '')}.json"
+    theme_json: dict = {}
+    if _theme_path.exists():
+        try:
+            theme_json = json.loads(_theme_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            print(f"[stage-4.5] theme.json parse error: {exc}; token snap disabled", file=sys.stderr)
+    if _variation_path.exists() and theme_json:
+        try:
+            variation = json.loads(_variation_path.read_text(encoding="utf-8"))
+            # Overlay variation settings on top of base theme settings.
+            for cat in ("color", "spacing", "typography", "shadow"):
+                base_cat = theme_json.setdefault("settings", {}).setdefault(cat, {})
+                var_cat = (variation.get("settings") or {}).get(cat) or {}
+                for k, v in var_cat.items():
+                    if isinstance(v, list) and isinstance(base_cat.get(k), list):
+                        # Merge by slug -- variation entries replace base entries with same slug.
+                        slug_to_var = {item.get("slug"): item for item in v if isinstance(item, dict)}
+                        merged = [slug_to_var.pop(it.get("slug"), it) for it in base_cat[k] if isinstance(it, dict)]
+                        merged.extend(slug_to_var.values())
+                        base_cat[k] = merged
+                    else:
+                        base_cat[k] = v
+        except json.JSONDecodeError as exc:
+            print(f"[stage-4.5] variation parse error: {exc}; using base theme only", file=sys.stderr)
+
     aggregate_attributes: dict = {}
     aggregate_markup_parts: list[str] = []
     aggregate_coverage: dict = {}
@@ -737,6 +780,24 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path) -> dict:
                 aggregate_warnings.append(f"{boundary_id}: extract result malformed: {e}")
                 section_status = "warning"
 
+        # Stage 4.5 -- snap raw extracted values to theme.json token slugs
+        # via token_resolver.resolve_batch (Phase 6 v2 Step 4a). For each attr:
+        # if confidence >= threshold, replace raw value with token_slug so
+        # block.json attributes hold slug references; else flag as gap candidate
+        # for the (still-unwired) Stage 9 gap-writers to consume.
+        section_token_resolutions: list[dict] = []
+        if section_attrs and theme_json:
+            try:
+                tr = token_resolver()
+                tr_items = [{"block_slug": target_block, "attr_name": k, "raw_value": v}
+                            for k, v in section_attrs.items()]
+                section_token_resolutions = tr.resolve_batch(tr_items, theme_json)
+                for res in section_token_resolutions:
+                    if not res.get("is_gap_candidate") and res.get("token_slug") is not None:
+                        section_attrs[res["attr_name"]] = res["token_slug"]
+            except Exception as exc:  # noqa: BLE001 - token snap is additive; soft-fail
+                aggregate_warnings.append(f"{boundary_id}: token_resolver soft-failed: {exc}; raw values preserved")
+
         per_section_results.append({
             "boundary_id": boundary_id,
             "section_id": m.get("section_id"),
@@ -746,6 +807,7 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path) -> dict:
             "extract_path": str(per_section_out),
             "extracted_attributes": section_attrs,
             "block_markup": section_markup,
+            "token_resolutions": section_token_resolutions,
         })
 
         # Aggregate attributes prefixed with section_id so multi-section

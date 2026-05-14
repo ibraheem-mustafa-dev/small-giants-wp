@@ -1,0 +1,224 @@
+# docs-registry.yaml - machine-readable sidecar for docs-registry.md
+# Update both files together. See docs-registry.md for human-readable detail.
+
+generated: 2026-05-14
+project: small-giants-wp
+
+canonical_docs:
+  - path: .claude/CLAUDE.md
+    scope: forever
+    doc_type: project-rules
+    owns: "Project rules, hard rules, deploy commands, gotchas, framework architecture, naming conventions"
+    update_triggers:
+      - new_project_wide_rule
+      - hard_constraint_added
+      - deploy_command_change
+
+  - path: .claude/architecture.md
+    scope: forever
+    doc_type: architecture
+    owns: "System design + 354-feature audit + dev setup (high-level only)"
+    update_triggers:
+      - architectural_decision_affecting_system_shape
+      - major_dev_setup_change
+
+  - path: .claude/goals.md
+    scope: forever
+    doc_type: goals
+    owns: "Active project goals + exit criteria"
+    update_triggers:
+      - new_goal
+      - exit_criterion_change
+
+  - path: .claude/state.md
+    scope: forever_auto_regen
+    doc_type: state
+    sot_for: "current_phase, current_subphase, current_step, blockers"
+    update_triggers:
+      - handoff_run
+      - phase_transition
+      - subphase_transition
+      - new_blocker
+      - blocker_resolved
+
+  - path: .claude/handoff.md
+    scope: forever_auto_regen
+    doc_type: handoff
+    update_triggers:
+      - handoff_run
+
+  - path: .claude/next-session-prompt.md
+    scope: forever_auto_regen
+    doc_type: next-session-prompt
+    update_triggers:
+      - handoff_run_with_clear_next_task
+
+  - path: .claude/decisions.md
+    scope: forever_append_only
+    doc_type: decisions
+    update_triggers:
+      - architectural_decision
+      - scope_decision
+      - tooling_decision
+
+  - path: .claude/mistakes.md
+    scope: forever_append_only
+    doc_type: mistakes
+    sot_note: "blub.db /api/corrections is the actual SoT; this is human-readable mirror"
+    update_triggers:
+      - project_specific_behavioural_correction
+
+  - path: .claude/parking.md
+    scope: forever_append_only_with_status
+    doc_type: parking
+    update_triggers:
+      - deferred_work_added
+      - parked_item_resolved
+
+  - path: .claude/plan.md
+    scope: forever_master
+    doc_type: master-plan
+    update_triggers:
+      - phase_rename
+      - master_plan_revision
+      - new_top_level_milestone
+
+  - path: .claude/cloning-pipeline-flow.md
+    scope: forever
+    doc_type: visual-reference
+    owns: "Annotated visual flow of /sgs-clone + /sgs-update with per-stage scripts, files, DB, skills, status"
+    update_triggers:
+      - pipeline_stage_change
+      - script_wired_or_unwired
+      - db_schema_change_affecting_pipeline
+      - skill_dispatch_change
+
+  - path: .claude/tooling-map.md
+    scope: forever
+    doc_type: tooling-map
+    owns: "Per-script inventory (107 scripts) with status + wired-in classification + file path"
+    update_triggers:
+      - script_add_remove_rename
+      - script_wiring_status_change
+      - script_status_reclassification
+    enforcement: .claude/hooks/tooling-map-drift-check.py
+
+  - path: .claude/skills-commands-map.md
+    scope: forever
+    doc_type: skills-commands-map
+    owns: "All slash commands + skills with pipeline position + scripts each invokes"
+    update_triggers:
+      - skill_or_command_added
+      - skill_or_command_retired
+      - pipeline_position_change
+
+  - path: .claude/db-tables-map.md
+    scope: forever
+    doc_type: db-tables-map
+    owns: "Per-table inventory (29 sgs-framework + 48 uimax) with schema + R/W matrix per pipeline stage"
+    update_triggers:
+      - table_add_remove
+      - column_add_remove_rename
+      - script_newly_reads_or_writes_table
+
+  - path: .claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md
+    scope: spec_version_canonical
+    doc_type: spec
+    spec_version: 15
+    update_triggers:
+      - architectural_change
+      - fr_addition
+      - phase_rename
+
+  - path: .claude/plans/spec-15-master-execution-plan.md
+    scope: spec_version_canonical
+    doc_type: execution-plan
+    update_triggers:
+      - phase_added
+      - phase_closure
+      - scope_change
+
+  - path: .claude/plans/phase-6-pattern-fidelity-v2.md
+    scope: phase_canonical_active
+    doc_type: phase-plan
+    phase: 6
+    plan_version: 2
+    update_triggers:
+      - step_status_change
+      - new_material_finding
+      - phase_closure
+
+deprecated_docs:
+  - path: .claude/reports/script-inventory-master-2026-05-09.md
+    reason: "Referenced in state.md but file was never written / lost"
+    superseded_by: .claude/tooling-map.md
+    deprecated_on: 2026-05-13
+
+  - path: .claude/specs/12-DRAFT-TO-SGS-PIPELINE.md
+    reason: "Absorbed into Spec 15"
+    superseded_by: .claude/scratch/absorbed/12-DRAFT-TO-SGS-PIPELINE.md
+    deprecated_on: 2026-05-12
+
+  - path: .claude/specs/13-DRAFT-NAMING-CONVENTION.md
+    reason: "Absorbed into Spec 15 §8.1"
+    superseded_by: .claude/scratch/absorbed/13-DRAFT-NAMING-CONVENTION.md
+    deprecated_on: 2026-05-12
+
+  - path: .claude/specs/14-CLONING-PIPELINE-CATALOGUE.md
+    reason: "Absorbed into Spec 15"
+    superseded_by: .claude/scratch/absorbed/14-CLONING-PIPELINE-CATALOGUE.md
+    deprecated_on: 2026-05-12
+
+  - path: .claude/plans/phase-6-pattern-fidelity.md
+    reason: "v1 was symptom-driven (patch composer + chrome + hero); v2 is architecture-driven (wire 14 modules + extract.py generalisation)"
+    superseded_by: .claude/plans/phase-6-pattern-fidelity-v2.md
+    deprecated_on: 2026-05-14
+
+enforcement_hooks:
+  - path: .claude/hooks/tooling-map-drift-check.py
+    status: committed
+    enforces: tooling-map.md
+    built_on: 2026-05-13
+
+future_hooks:
+  - path: .claude/hooks/db-tables-drift-check.py
+    enforces: db-tables-map.md
+    status: not_built
+    notes: "Compare PRAGMA table_info against db-tables-map.md schema columns"
+
+  - path: .claude/hooks/cloning-pipeline-flow-status-check.py
+    enforces: cloning-pipeline-flow.md
+    status: not_built
+    notes: "Parse LIVE-stage status labels; fail if a LIVE-marked module has no import in entry-points. Requires semantic parsing."
+
+  - path: .claude/hooks/role-templates-vs-property-suffixes-check.py
+    enforces: drift_between_role-templates.json_and_property_suffixes_DB
+    status: not_built
+    notes: "Closes drift risk surfaced by P-S15-ROLE-TEMPLATES-MIGRATE in parking.md"
+
+cold_start_reading_order:
+  - 1. .claude/state.md
+  - 2. .claude/handoff.md
+  - 3. .claude/next-session-prompt.md
+  - 4. .claude/cloning-pipeline-flow.md (pipeline work) OR .claude/architecture.md (other)
+  - 5. .claude/plans/phase-N-*.md (active phase)
+  - 6. .claude/decisions.md (last 5-10 entries)
+  - 7. .claude/parking.md (last 5 entries)
+  - 8. Domain reference: tooling-map.md / skills-commands-map.md / db-tables-map.md / specs/15-*.md
+
+retention_rules:
+  - directory: .claude/scratch/
+    policy: age_out_after_30_days_or_promote_to_reports_if_durable
+    trigger: handoff_invokes_scratch_prune
+
+  - directory: .claude/reports/
+    policy: forever
+    note: durable QC / audit / lifecycle reports
+
+  - directory: .claude/memory/
+    policy: forever
+    note: archived handoffs + consolidation receipts; handoff rotates current INTO memory on next session
+
+  - directory: .claude/scratch/absorbed/
+    policy: forever
+    note: deprecated docs preserved for commit-history continuity
