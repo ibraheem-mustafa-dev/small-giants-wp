@@ -609,3 +609,30 @@ These blocks remain `status='planned'` in sgs-framework.db until implementation 
 ### Process correction captured
 
 Lesson logged for autopilot/episodic memory: **Don't delete DB rows based on a "ghost row" verdict without first asking the operator.** Zero references in commits/handoffs/specs is necessary but NOT sufficient evidence — the operator may be holding the design intent in their head with no written trail yet. Future "ghost row" investigations must surface to operator with the deletion proposal before executing.
+
+---
+
+## 2026-05-14 parked items (Spec 16 session)
+
+### P-S16-1: sgs/label `source: "html"` selector breadth
+Source binding selector on text attr is `.wp-block-sgs-label` (the root). If save.js is ever modified to wrap content in a child element, round-trip break. Revisit when adding sgs/heading composite block (Phase 2) — same RichText shape, same potential trap.
+Source: Sonnet QC 2026-05-14
+
+### P-S16-2: `attr(data-X)` CSS responsive font-size pattern is systemic
+Used in sgs/label + sgs/hero + sgs/info-box. Near-zero browser support for `attr()` outside `content:`. Switch all three to inline CSS custom properties at save time in a future cleanup pass.
+Source: Sonnet QC 2026-05-14
+
+### P-S16-3: variantStyle enum hardcoded in converter
+`["standard","trial","gift"]` hardcoded in convert.py:lift_subtree_into_block_attrs. Move to live DB read via block_attributes.enum_values when wiring as Phase 3.
+
+### P-S16-4: Pre-emit JSON serialisation validation
+Source text with newlines / unescaped quotes / control chars could break the JSON serialisation in block markup. Currently no pre-emit validator. Add in Phase 3.
+Source: Gemini Flash QC 2026-05-14
+
+### P-S16-5: Nested block-roots edge case (block inside block)
+sgs-product-card inside sgs-featured-product would trigger lift_subtree on the outer block but its descendant walk would consume the inner block's slots into outer attrs. Add recursion guard in Phase 3.
+Source: Sonnet QC architectural review 2026-05-14
+
+### P-S16-6: Indus Foods + helping-doctors converter validation
+Spec 16 §9 item 7 (closure criterion): run converter on second client without code changes. Indus Foods and helping-doctors mockups exist but haven't been tested yet. Schedule after Mama's Phase 4 closes.
+

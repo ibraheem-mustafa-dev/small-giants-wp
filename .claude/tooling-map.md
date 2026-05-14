@@ -399,3 +399,50 @@ Summary of everything the spec explicitly marks as TO-RETIRE:
 5. **One-off scripts in gap-detection/ and behavioural-analyser/:** Many scripts here are tagged ONE-OFF because they were written to run once per phase migration (e.g. canonicalise-pass-2.py, apply-fanout-proposals.py, backfill-coarse-roles.py). They are idempotent so re-running is safe, but they have no role in the live clone pipeline. Consider moving them to `.claude/scratch/migrations/` once their phase is fully closed, to reduce script-folder noise.
 
 6. **brand-palette-sampler.py dependencies:** Requires `pillow`, `scikit-learn`, `numpy`, and optionally `colormath`. Not declared in any requirements.txt that I checked. If invoked from a fresh environment it will fail. Worth adding a setup note or requirements file.
+
+---
+
+## 2026-05-14 additions — Spec 16 converter prototype + sgs/label block
+
+### New: deterministic converter prototype (Spec 16 Phase 1)
+
+Lives at `.claude/scratch/converter-prototype/` while in prototype scratch; Phase 3 of the rollout plan promotes these to `plugins/sgs-blocks/scripts/orchestrator/converter_v2/`.
+
+| Script | Lines | Status | Role |
+|---|---|---|---|
+| `.claude/scratch/converter-prototype/db_lookup.py` | 282 | PROTOTYPE | DB-backed canonical lookups: SGS-BEM parser, registered_block_slugs, slot_synonyms, modifier_suffixes, attr_name_for_slot_or_alias, hyphen-normalised |
+| `.claude/scratch/converter-prototype/convert.py` | 681 | PROTOTYPE | Single-section converter + DOM walker. Block-root slot harvest, atomic-tag emission, slot-to-standalone-block fallback, pass-through wrapper rule with CSS lift |
+| `.claude/scratch/converter-prototype/convert_page.py` | 173 | PROTOTYPE | Full-page wrapper. Splits mockup into top-level sections (filtered to bare-sgs-block classes, deduped against ancestors), calls convert.py per section |
+| `.claude/scratch/converter-prototype/output/mamas-homepage.html` | 286 | PROTOTYPE OUTPUT | First end-to-end run output: 9 sections, 10 SGS block types, 12 containers |
+| `.claude/scratch/converter-prototype/output/mamas-variation.css` | 27 rules | PROTOTYPE OUTPUT | Variation CSS lifted from pass-through wrappers |
+
+**Wired into /sgs-clone:** NO — prototype runs as standalone tool outside the orchestrator. Phase 3 of the rollout plan wires it as the live Stage 4 path for SGS-BEM-canonical sections.
+
+**Replaces (Phase 6 retirement gate):** tools/recogniser-v2/extract.py (731) + extract_strategies.py (303) + overrides/hero.py (908) = ~1,942 lines retired. Replacement ~1,136 lines.
+
+### New: sgs/label atomic block (PR #21 merged 2026-05-14)
+
+| File | Status |
+|---|---|
+| `plugins/sgs-blocks/src/blocks/label/block.json` | CURRENT |
+| `plugins/sgs-blocks/src/blocks/label/edit.js` | CURRENT |
+| `plugins/sgs-blocks/src/blocks/label/save.js` | CURRENT |
+| `plugins/sgs-blocks/src/blocks/label/style.css` | CURRENT |
+| `plugins/sgs-blocks/src/blocks/label/editor.css` | CURRENT |
+| `plugins/sgs-blocks/src/blocks/label/index.js` | CURRENT |
+
+22 attributes across content + typography + surface. Three style variants (plain / pill-fill / pill-wrap) selected via `variantStyle` attribute applied as `is-style-X` className.
+
+**Sibling block-style cleanup work to schedule alongside Phase 7:** sgs/heading (Phase 2 Step 1.1) and sgs/divider (Phase 2 Step 1.2) follow the same 6-file pattern.
+
+### Scheduled retirement (Phase 6 of rollout)
+
+| File | Lines | Retirement reason |
+|---|---|---|
+| `tools/recogniser-v2/extract.py` | 731 | Per-block role-strategy dispatcher replaced by converter's walk() + lift_subtree_into_block_attrs() |
+| `tools/recogniser-v2/extract_strategies.py` | 303 | 11 role strategies replaced by canonical_slot DB lookup |
+| `tools/recogniser-v2/overrides/hero.py` | 908 | Per-block override pattern obsolete once canonical_slot data is complete (per Spec 15 §7.2) |
+| `tools/recogniser-v2/overrides/__init__.py` | 8 | Module registry no longer needed |
+
+Retirement gated on Phase 4 visual QA pass + grep audit (Phase 7 Step 5.1, dispatched to Cerebras).
+

@@ -830,3 +830,31 @@ This session ran the multi-rater /qc panel four times (Spec 15 v0.1 → v0.2 + p
 - Main-thread inline review is biased toward what it wrote — don't include in panel.
 - Gemini Pro is EXCLUDED (503 retry loop unresolved upstream).
 - Cerebras can hit its 12-tool-round ceiling on long-file reads; useful for bounded SQL/single-file tasks only.
+
+---
+
+## 2026-05-14 — Spec 16 (Deterministic Slot-Aware Converter)
+
+**Context:** all-day session shipping converter prototype + sgs/label atomic block + multi-PR cleanup of the pre-existing pipeline (composer_fallback retirement, scaffold-stub deletion, +REGISTER gate fix, residue pattern cleanup). PRs #15-#21 merged.
+
+**Decision 1 — Spec 16 framed as Spec 15 §7 implementation, NOT successor.** Spec 15 already defined the architecture (L0-L3 layers, /sgs-update Stage 4 canonical_slot population, §7.1 role dispatch, §7.2 commits to retiring overrides/hero.py). Spec 16 delivers the concrete converter module that consumes that data. Spec 15 stays canonical for everything else.
+
+**Decision 2 — R5 re-architected to "CSS drives emission, never drop".** Initial draft had "orphan tracking" — track CSS rules that don't bind to emitted elements. Bean correctly rejected this: we're making clones, can't afford to drop CSS. Re-architected to 3-destination routing: (1) typed-attribute lift, (2) markup wrapper carrying className, (3) attribute_gap_candidates row when neither possible. Every CSS rule MUST hit one of the three. The converter becomes self-extending — surfaces missing attributes via Spec 15 §4.2 existing table.
+
+**Decision 3 — sgs/container is MANDATORY at section-level, AVAILABLE elsewhere.** R1 refined per Bean's correction. Auto-emission only at top-level section boundary. Nested wrappers pass through UNLESS CSS rules target them (then emit per Destination 2). Operators / pattern authors can still nest containers manually when wanted.
+
+**Decision 4 — Phase 4 visual QA baseline is WP-rendered mockup-as-post, NOT raw mockup HTML.** Per Sonnet QC. Diffing against raw mockup HTML produces false-positives from render-context differences (fonts, base theme styles). The Phase 8 visual_qa_capture module already supports this; Phase 4 reuses that exact path.
+
+**Decision 5 — Phase 4 max-iteration cap = 2.** Per Sonnet QC. Prevents unbounded "iterate the converter until pass" loops that consume sessions. After 2 iterations with Sonnet diagnostician, surface to Bean.
+
+**Decision 6 — Legacy extract.py retirement gate = single-client visual QA pass + grep audit.** Spec 15 §7.2 originally authorised deletion after canonical_slot populated (already done). Spec 16 FR8 narrows to: Phase 3 wiring tests green + Mama's homepage visual QA pass + no external imports found. Two-client validation is Spec 16 closure criterion (§9 item 7), not FR8 specifically.
+
+**Decision 7 — sgs/heading composite block added to Phase 2.** Bundles label + h2 + sub as one block per Mama's gift-section three-element pattern. Defaults from gift-section CSS. Replaces three separate atomic blocks in converter output.
+
+**Decision 8 — Three model-routing patterns confirmed for next-session execution:**
+- Sonnet for load-bearing logic (orchestrator wiring, architectural QC, diagnostician)
+- Haiku for mechanical correctness (block.json validation, schema conformance, AST checks)
+- Gemini Flash for cheap mechanical edits with cross-references (tooling-map updates, fresh-eyes reviews)
+- Gemini Pro for deep technical reviews when not blocked on file access
+- Cerebras for zero-cost grep / pattern scans (Phase 6 deletion audit)
+
