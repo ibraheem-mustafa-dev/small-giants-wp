@@ -125,6 +125,17 @@ canonical_docs:
     scope: spec_version_canonical
     doc_type: spec
     spec_version: 15
+    note: "L0-L3 + Stages 0-2 + 8-9 + /sgs-update remain canonical here. Stages 3-7 implementation moved to Spec 16 per 2026-05-14 header note."
+    update_triggers:
+      - architectural_change
+      - fr_addition
+      - phase_rename
+
+  - path: .claude/specs/16-DETERMINISTIC-CONVERTER-V2.md
+    scope: spec_version_canonical
+    doc_type: spec
+    spec_version: 16
+    note: "Concrete implementation of Spec 15 §7 Stages 3-7 via slot-aware DOM walker. Added 2026-05-14."
     update_triggers:
       - architectural_change
       - fr_addition
@@ -138,11 +149,13 @@ canonical_docs:
       - phase_closure
       - scope_change
 
-  - path: .claude/plans/phase-6-pattern-fidelity-v2.md
+  - path: .claude/plans/phase-7-spec-16-converter-rollout.md
     scope: phase_canonical_active
     doc_type: phase-plan
-    phase: 6
-    plan_version: 2
+    phase: 7
+    plan_version: 1
+    spec: 16
+    note: "Active phase plan as of 2026-05-14 — covers Spec 16 Phases 2-6 + final QC + handoff."
     update_triggers:
       - step_status_change
       - new_material_finding
@@ -171,7 +184,17 @@ deprecated_docs:
 
   - path: .claude/plans/phase-6-pattern-fidelity.md
     reason: "v1 was symptom-driven (patch composer + chrome + hero); v2 is architecture-driven (wire 14 modules + extract.py generalisation)"
-    superseded_by: .claude/plans/phase-6-pattern-fidelity-v2.md
+    superseded_by: .claude/plans/archive/phase-6-pattern-fidelity-v2.md
+    deprecated_on: 2026-05-14
+
+  - path: .claude/plans/archive/phase-6-pattern-fidelity-v2.md
+    reason: "Spec 15 §7 Phase 6 work absorbed into Spec 16 (deterministic slot-aware converter). v2 plan is preserved in archive for git-log continuity but is no longer the active phase plan."
+    superseded_by: .claude/plans/phase-7-spec-16-converter-rollout.md
+    deprecated_on: 2026-05-14
+
+  - path: .claude/plans/archive/phase-5-clone-pipeline-e2e.md
+    reason: "Phase 5 CLOSED 2026-05-13 (commit fc9f567f) — pipeline runs end-to-end per spec, +REGISTER writes patterns on PASS. Moved to archive as part of 2026-05-14 living-docs cleanup."
+    superseded_by: .claude/plans/spec-15-master-execution-plan.md
     deprecated_on: 2026-05-14
 
 enforcement_hooks:

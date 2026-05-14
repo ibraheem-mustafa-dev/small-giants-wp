@@ -26,7 +26,7 @@ enforcement_hook: .claude/hooks/tooling-map-drift-check.py (committed - fails co
 
 ---
 
-## 1. Canonical docs (14 forever-scope sources + phase-scoped patterns)
+## 1. Canonical docs (14 forever-scope sources + 5 phase-scoped patterns)
 
 Project-local. `~/.claude/CLAUDE.md` and `~/.claude/rules/*.md` are global - out of registry scope.
 
@@ -53,10 +53,11 @@ Project-local. `~/.claude/CLAUDE.md` and `~/.claude/rules/*.md` are global - out
 
 | # | Doc pattern | Scope | Owns during phase | Archive when |
 |---|------------|-------|--------------------|--------------|
-| 15 | `specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md` | spec-version-canonical | Authoritative spec for current spec version (15). Architecture, layers, FRs, phases | Spec is superseded by a new spec number |
-| 16 | `plans/spec-15-master-execution-plan.md` | spec-version-canonical | Cross-phase orchestrator for this spec's phases | When spec is superseded |
-| 17 | `plans/phase-N-*.md` | phase-canonical | Per-phase executable plan + step status | When phase status flips to CLOSED in state.md - then mark `scope: closed` and move out of active rotation |
-| 18 | `plans/phase-6-pattern-fidelity-v2.md` | phase-canonical (active) | Phase 6 executable plan (v2) - supersedes v1; covers extract.py CSS-consumption generalisation + 14-module wiring + Rosetta Stone fix + small wins | Phase 6 closes - mark scope:closed |
+| 15 | `specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md` | spec-version-canonical | Authoritative spec for L0-L3 + Stages 0-2 + 8-9 + /sgs-update. Stages 3-7 implementation moved to Spec 16 per 2026-05-14 header note | Spec is superseded by a new spec number |
+| 16 | `specs/16-DETERMINISTIC-CONVERTER-V2.md` | spec-version-canonical | Concrete implementation of Spec 15 §7 Stages 3-7 via slot-aware DOM walker. 5 architectural rules, 9 FRs, 6 phases. Added 2026-05-14 | Spec is superseded by a new spec number |
+| 17 | `plans/spec-15-master-execution-plan.md` | spec-version-canonical | Cross-phase orchestrator for Spec 15 phases | When Spec 15 is superseded |
+| 18 | `plans/phase-N-*.md` | phase-canonical | Per-phase executable plan + step status | When phase status flips to CLOSED in state.md - then move to `plans/archive/` |
+| 19 | `plans/phase-7-spec-16-converter-rollout.md` | phase-canonical (active) | Phase 7 executable plan for Spec 16 Phases 2-6 + final QC + handoff. 8 steps with per-step subagent delegation tables. Added 2026-05-14 | Phase 7 closes — move to `plans/archive/` |
 
 ---
 
@@ -72,7 +73,9 @@ Files that USED to be canonical or were referenced as canonical, now retired.
 | `.claude/specs/12-DRAFT-TO-SGS-PIPELINE.md` | Absorbed into Spec 15 | `.claude/scratch/absorbed/12-DRAFT-TO-SGS-PIPELINE.md` (commit history continuity) | 2026-05-12 |
 | `.claude/specs/13-DRAFT-NAMING-CONVENTION.md` | Absorbed into Spec 15 §8.1 | `.claude/scratch/absorbed/13-DRAFT-NAMING-CONVENTION.md` | 2026-05-12 |
 | `.claude/specs/14-CLONING-PIPELINE-CATALOGUE.md` | Absorbed into Spec 15 | `.claude/scratch/absorbed/14-CLONING-PIPELINE-CATALOGUE.md` | 2026-05-12 |
-| `.claude/plans/phase-6-pattern-fidelity.md` (v1) | Superseded by v2 - v1 framed Phase 6 as "patch composer + chrome + hero" (symptom-driven); v2 is architecture-driven (wire 14 modules + extract.py generalisation + retire Stage 0.7) | `.claude/plans/phase-6-pattern-fidelity-v2.md` | 2026-05-14 |
+| `.claude/plans/phase-6-pattern-fidelity.md` (v1) | Superseded by v2 - v1 framed Phase 6 as "patch composer + chrome + hero" (symptom-driven); v2 is architecture-driven (wire 14 modules + extract.py generalisation + retire Stage 0.7) | `.claude/plans/archive/phase-6-pattern-fidelity-v2.md` (chain — see next row) | 2026-05-14 |
+| `.claude/plans/phase-6-pattern-fidelity-v2.md` (v2, formerly active) | Spec 15 §7 Phase 6 work absorbed into Spec 16 (deterministic slot-aware converter) 2026-05-14. v2 plan preserved in archive for git-log continuity; Phase 7 plan is the live successor | `.claude/plans/phase-7-spec-16-converter-rollout.md` (moved to `plans/archive/`) | 2026-05-14 |
+| `.claude/plans/phase-5-clone-pipeline-e2e.md` (closed) | Phase 5 CLOSED 2026-05-13 (commit fc9f567f) — pipeline runs end-to-end per spec, +REGISTER writes patterns on PASS. Moved to archive as part of 2026-05-14 living-docs cleanup | `.claude/plans/archive/phase-5-clone-pipeline-e2e.md` (chain to spec-15 master plan for cross-phase context) | 2026-05-14 |
 
 **When deprecating**, do these in the same commit:
 1. Move row from canonical table to deprecated table
