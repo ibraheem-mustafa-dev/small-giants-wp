@@ -67,7 +67,6 @@ FUNCTIONALITY_BULK_APPLY_SCRIPT = ORCHESTRATOR_DIR / "functionality-bulk-apply.p
 MEDIA_SIDELOAD_SCRIPT = ORCHESTRATOR_DIR / "media-sideload.py"
 WP_INTEGRATION_SCRIPT = ORCHESTRATOR_DIR / "wp_integration.py"
 CRITICAL_FIX_VERIFICATION_SCRIPT = ORCHESTRATOR_DIR / "critical-fix-verification.py"
-COMPOSER_FALLBACK_SCRIPT = ORCHESTRATOR_DIR / "composer_fallback.py"
 
 # The set of HTML attributes that the functionality-gap-detector treats as
 # behaviour fingerprints. Kept here so the orchestrator's BS4 walk only emits
@@ -381,9 +380,10 @@ def stage_0_7_css_lift(mockup_path: Path, client: str, run_dir: Path) -> dict:
 
 
 
-# Pattern composer (compose_atomic_pattern + helpers + _BUTTON_HINT_RE)
-# extracted to orchestrator/composer_fallback.py 2026-05-14 (Phase 6 v2 Step 6c).
-# Reached via the lazy-loaded composer_fallback() dispatcher above.
+# composer_fallback retired 2026-05-14: unmatched sections now surface to
+# operator (per_section_results[].status = "unmatched") instead of emitting
+# best-effort atomic markup that masked catalogue gaps. The autonomy chain
+# (stage_9b) handles the recovery path by scaffolding novel blocks.
 
 
 def now_iso() -> str:
@@ -448,18 +448,6 @@ def token_resolver():
     if _token_resolver_mod is None:
         _token_resolver_mod = _load_module_from_path("sgs_token_resolver", TOKEN_RESOLVER_SCRIPT)
     return _token_resolver_mod
-
-
-# Lazy-import composer_fallback (Phase 6 v2 Step 6c — extracted from inline
-# compose_atomic_pattern + helpers per the deterministic-not-inline rule).
-_composer_fallback_mod = None
-
-
-def composer_fallback():
-    global _composer_fallback_mod
-    if _composer_fallback_mod is None:
-        _composer_fallback_mod = _load_module_from_path("sgs_composer_fallback", COMPOSER_FALLBACK_SCRIPT)
-    return _composer_fallback_mod
 
 
 # Lazy-import variation_router + token-lint slug generator (Spec 15 Phase 6 v2 Step 4b).
@@ -981,63 +969,51 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
             aggregate_warnings.append(f"{boundary_id}: no selector resolved; skipping")
             continue
 
-        # Deferred fallback: matched block is core/group OR confidence is zero.
-        # Phase 5g.3 — instead of emitting nothing, compose a wp:sgs/container
-        # atomic-pattern from the source DOM (core/heading + core/paragraph +
-        # sgs/button + sgs/decorative-image). This is the structural fix
-        # for the "6 of 9 Mama's sections vapour on the page" gap.
+        # Unmatched section: matcher returned core/group OR confidence 0.0.
+        # No block, no pattern, no scaffold matched the candidate slug. Per the
+        # 2026-05-14 retirement of composer_fallback, the right response is to
+        # SURFACE the gap to the operator -- not emit best-effort atomic markup
+        # that hides the catalogue gap behind plausible-looking output.
+        #
+        # The autonomy chain (stage_9b) is the proper recovery path: it scaffolds
+        # a v0.1.0-scaffold block which the matcher's Tier 3 then catches at
+        # confidence 0.5 on the next run, giving the operator a one-step
+        # promotion path. composer_fallback short-circuited that loop by
+        # producing wrong markup that passed downstream schema checks but failed
+        # visual parity, masking the catalogue gap.
+        #
+        # No block_markup is emitted for an unmatched section. The visual-parity
+        # gate at Stage 8 will halt the autonomy_gate (a section-shaped hole in
+        # the rendered page is impossible to miss). Stage 9 reports unmatched
+        # sections in operator-review.html + the unmatched_sections list.
         if target_block == "core/group" or m.get("confidence", 0) == 0:
-            _emit(_trace_for(run_dir), stage="stage_4_deferred_fallback",
+            _emit(_trace_for(run_dir), stage="stage_4_unmatched_section",
                   boundary_id=boundary_id, section_id=m.get("section_id"),
                   selector=section_selector, target_block=target_block,
                   confidence=m.get("confidence", 0),
-                  fallback_reason="core/group match or zero confidence")
-            pattern_markup = composer_fallback().compose_atomic_pattern(
-                args.mockup, section_selector,
-                m.get("section_id") or boundary_id,
-                boundary.get("class_signature", []),
+                  class_signature=boundary.get("class_signature", []),
+                  reason="no block / pattern / scaffold matched candidate slug")
+            aggregate_warnings.append(
+                f"{boundary_id}: unmatched section -- operator review required "
+                f"(selector={section_selector}, candidate={target_block})"
             )
-            # Schema-stable: every per_section_results entry carries the
-            # full Step-4-era field set (Haiku QC panel finding 2026-05-14).
-            # Deferred-fallback paths populate the trace fields with safe
-            # empty defaults so any direct-key downstream consumer never
-            # hits a KeyError.
-            if pattern_markup:
-                aggregate_markup_parts.append(pattern_markup)
-                per_section_results.append({
-                    "boundary_id": boundary_id,
-                    "section_id": m.get("section_id"),
-                    "selector": section_selector,
-                    "block_name": "sgs/container",
-                    "status": "deferred-composed-pattern",
-                    "extract_path": "",
-                    "extracted_attributes": {},
-                    "block_markup": pattern_markup,
-                    "token_resolutions": [],
-                    "new_tokens_written": [],
-                    "supports_decisions": [],
-                    "supports_emitted_attributes": {},
-                    "supports_omitted_attributes": {},
-                    "modifier_signals": {},
-                })
-            else:
-                aggregate_warnings.append(f"{boundary_id}: deferred fallback + no composable content, skipping")
-                per_section_results.append({
-                    "boundary_id": boundary_id,
-                    "section_id": m.get("section_id"),
-                    "selector": section_selector,
-                    "block_name": target_block,
-                    "status": "skipped-deferred",
-                    "extract_path": "",
-                    "extracted_attributes": {},
-                    "block_markup": "",
-                    "token_resolutions": [],
-                    "new_tokens_written": [],
-                    "supports_decisions": [],
-                    "supports_emitted_attributes": {},
-                    "supports_omitted_attributes": {},
-                    "modifier_signals": {},
-                })
+            per_section_results.append({
+                "boundary_id": boundary_id,
+                "section_id": m.get("section_id"),
+                "selector": section_selector,
+                "block_name": target_block,
+                "status": "unmatched",
+                "extract_path": "",
+                "extracted_attributes": {},
+                "block_markup": "",
+                "token_resolutions": [],
+                "new_tokens_written": [],
+                "supports_decisions": [],
+                "supports_emitted_attributes": {},
+                "supports_omitted_attributes": {},
+                "modifier_signals": {},
+                "class_signature": boundary.get("class_signature", []),
+            })
             continue
 
         per_section_out = run_dir / f"extract-{boundary_id}.json"
@@ -1595,6 +1571,24 @@ def stage_9_report(boundary: dict, match: dict, slot_list: dict, extract: dict, 
             "open_slots": open_slots,
         }
 
+    # Surface unmatched sections to the operator. Each is a section the matcher
+    # could not route to a block / pattern / scaffold; with composer_fallback
+    # retired (2026-05-14) these sections produce no markup and instead require
+    # operator review -- either add a block, add a pattern, or promote a
+    # scaffold from the autonomy chain.
+    per_section_results = (extract or {}).get("per_section_results") or []
+    unmatched_sections = [
+        {
+            "boundary_id": s.get("boundary_id"),
+            "section_id": s.get("section_id"),
+            "selector": s.get("selector"),
+            "candidate_block": s.get("block_name"),
+            "class_signature": s.get("class_signature", []),
+        }
+        for s in per_section_results
+        if s.get("status") == "unmatched"
+    ]
+
     output = {
         "coverage": coverage_by_boundary,
         "leftover_buckets": buckets_output.get("leftover_buckets", {}),
@@ -1606,6 +1600,8 @@ def stage_9_report(boundary: dict, match: dict, slot_list: dict, extract: dict, 
         "attribute_gap_writer": attribute_gap_writer_result,
         "functionality_gap_detector": functionality_gap_detector_result,
         "gap_review_report_path": gap_review_report_path,
+        "unmatched_sections": unmatched_sections,
+        "unmatched_section_count": len(unmatched_sections),
     }
     status = "complete" if not errors else "failed"
     write_artefact(run_dir, 9, "report", status, output, started, errors, warnings)
