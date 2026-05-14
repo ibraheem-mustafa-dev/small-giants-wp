@@ -2,6 +2,36 @@
 
 Append-only. Most-recent first.
 
+## 2026-05-14 - Phase 6 v2 Step 4d: modifier_extractors wired between Stage 4 and Stage 7
+
+**Decision:** Fourth module wire-in of Phase 6 v2 - all three classifiers from `modifier_extractors` dispatched in the per-section loop after the supports_writer block. `button_role(section_attrs)` fires only when target_block name contains 'button' (lower-cased). `dynamic_link(href)` parses every `section_attrs` value that starts with `:`; only successful parses are retained. `match_block_variation(block_json, section_attrs)` fires only when the block's block.json declares a `variations` key. Block.json loading was lifted above the supports_writer dispatch in this commit so 4c + 4d share the same `block_json` variable -- one disk read, two dispatches.
+
+**Why this approach:** all three are pure functions (no DB / filesystem side-effects), so a single per-section sweep is the cheapest place to fire them and the cleanest hand-off to downstream stages. Outputs land on `per_section_results[i].modifier_signals` keyed by classifier name -- consumers (Step 7 compose for variation overrides; Step 4i staged-apply for button-role; Step 4j wp_integration for FR25 dynamic-link resolution) read only the keys they need. Per-dispatch try/except means a single failing classifier never blocks the other two.
+
+**Trade-offs considered:**
+- Could have fired button_role on every section regardless of block-name - rejected because the classifier defaults to "primary" for any solid-background and would pollute non-button sections with meaningless modifier signals.
+- Could have parsed dynamic_link on every string attribute - the `:` prefix check filters out obvious non-candidates cheaply, keeping `dyn_links` empty on the common path.
+- Lifting block.json load above 4c saves one disk read per section and keeps the variable scope tight.
+
+**Verification:**
+- 11/11 modifier_extractors pytest tests still green
+- 5/5 supports_writer + 7/7 variation_router + 8/8 token_resolver pytest still green (regression)
+- Drift validator still 0/1349 violations
+- tooling-map drift-check still passes
+- AST syntax check on modified orchestrator: OK
+
+**Files touched:**
+- `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` (MODIFIER_EXTRACTORS_SCRIPT constant + modifier_extractors() lazy-loader + lifted block.json load + 3-way modifier dispatch + modifier_signals field on per_section_results)
+
+**Doc updates per docs-registry update-trigger matrix:**
+- `tooling-map.md` row for modifier_extractors.py: TESTS-ONLY -> YES with wiring detail
+- `cloning-pipeline-flow.md` Stage 4 block: modifier_extractors ✗ -> ✓ with wiring detail
+- `decisions.md` (this entry)
+
+**Next:** Step 4e (`stage1_boundary_hook` + `lingua_franca` transitive) - end of Stage 1, before Stage 2 match.
+
+---
+
 ## 2026-05-14 - Phase 6 v2 Step 4c: supports_writer wired before Stage 6 emission (+ inheritance transitively)
 
 **Decision:** Third module wire-in of Phase 6 v2 - `supports_writer.filter_writes` dispatched inside `stage_4_5_6_7_8_extract` after the Stage 4.5 variation_router block, before the per_section_results.append call. For each matched section, the orchestrator loads the target block's `block.json` (REPO/plugins/sgs-blocks/src/blocks/<slug>/block.json) and calls `filter_writes(block_slug, section_attrs, block_json, theme_json)`. The three outputs land on per_section_results as `supports_decisions`, `supports_emitted_attributes`, `supports_omitted_attributes`. `value-matcher/inheritance.py` is now also LIVE -- transitively reachable because supports_writer optionally imports it at module load.

@@ -56,6 +56,7 @@ TOKEN_RESOLVER_SCRIPT = ORCHESTRATOR_DIR / "token_resolver.py"
 VARIATION_ROUTER_SCRIPT = ORCHESTRATOR_DIR / "variation_router.py"
 TOKEN_LINT_SCRIPT = LINTS_DIR / "token-lint.py"
 SUPPORTS_WRITER_SCRIPT = ORCHESTRATOR_DIR / "supports_writer.py"
+MODIFIER_EXTRACTORS_SCRIPT = ORCHESTRATOR_DIR / "modifier_extractors.py"
 
 SGS_FRAMEWORK_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 
@@ -578,6 +579,17 @@ def supports_writer():
     return _supports_writer_mod
 
 
+# Lazy-import modifier_extractors (Spec 15 Phase 6 v2 Step 4d).
+_modifier_extractors_mod = None
+
+
+def modifier_extractors():
+    global _modifier_extractors_mod
+    if _modifier_extractors_mod is None:
+        _modifier_extractors_mod = _load_module_from_path("sgs_modifier_extractors", MODIFIER_EXTRACTORS_SCRIPT)
+    return _modifier_extractors_mod
+
+
 # ---------------------------------------------------------------------------
 # Stage 1 -- BOUNDARY (dispatcher: per-section-convention-voter.py)
 # ---------------------------------------------------------------------------
@@ -883,6 +895,19 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path) -> dict:
             except Exception as exc:  # noqa: BLE001 - variation routing is additive; soft-fail
                 aggregate_warnings.append(f"{boundary_id}: variation_router soft-failed: {exc}; gap tokens not written")
 
+        # Load target block.json once -- consumed by Step 4c (supports_writer)
+        # and Step 4d (modifier_extractors.match_block_variation). Soft-fail to
+        # an empty dict so downstream dispatches no-op gracefully when the file
+        # is missing (deferred fallback blocks, dynamically scaffolded blocks).
+        _block_slug_local = target_block.split("/")[-1] if "/" in target_block else target_block
+        _block_json_path = REPO / "plugins" / "sgs-blocks" / "src" / "blocks" / _block_slug_local / "block.json"
+        block_json: dict = {}
+        if _block_json_path.exists():
+            try:
+                block_json = json.loads(_block_json_path.read_text(encoding="utf-8"))
+            except json.JSONDecodeError as exc:
+                aggregate_warnings.append(f"{boundary_id}: block.json parse error: {exc}; downstream dispatches skipped")
+
         # Stage 5+6 prep (Phase 6 v2 Step 4c) -- supports-first override decision.
         # For each resolved attribute, ask supports_writer whether the value
         # matches the WP supports cascade default; emit-or-omit decision lands
@@ -895,19 +920,58 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path) -> dict:
         section_supports_decisions: list[dict] = []
         section_supports_omitted: dict = {}
         section_supports_emitted: dict = dict(section_attrs)
-        if section_attrs and theme_json:
+        if section_attrs and theme_json and block_json:
             try:
                 sw = supports_writer()
-                slug = target_block.split("/")[-1] if "/" in target_block else target_block
-                _block_json_path = REPO / "plugins" / "sgs-blocks" / "src" / "blocks" / slug / "block.json"
-                if _block_json_path.exists():
-                    block_json = json.loads(_block_json_path.read_text(encoding="utf-8"))
-                    decision_bundle = sw.filter_writes(target_block, section_attrs, block_json, theme_json)
-                    section_supports_decisions = decision_bundle.get("decisions") or []
-                    section_supports_omitted = decision_bundle.get("omitted_attributes") or {}
-                    section_supports_emitted = decision_bundle.get("emitted_attributes") or dict(section_attrs)
+                decision_bundle = sw.filter_writes(target_block, section_attrs, block_json, theme_json)
+                section_supports_decisions = decision_bundle.get("decisions") or []
+                section_supports_omitted = decision_bundle.get("omitted_attributes") or {}
+                section_supports_emitted = decision_bundle.get("emitted_attributes") or dict(section_attrs)
             except Exception as exc:  # noqa: BLE001 - supports decision is advisory; soft-fail
                 aggregate_warnings.append(f"{boundary_id}: supports_writer soft-failed: {exc}; cascade override stripping skipped")
+
+        # Stage 6 prep (Phase 6 v2 Step 4d) -- modifier_extractors classifies
+        # post-extract / pre-emission modifiers. Three independent dispatches:
+        #   button_role(visual_attrs)            -> primary/secondary/ghost
+        #   dynamic_link(href)                   -> :verb(args) parse for FR25
+        #   match_block_variation(block_json,    -> best registered variation +
+        #                         extracted_attrs)  per-instance overrides
+        # All three are pure functions; their outputs land on per_section_results
+        # as modifier_signals so Step 7 compose / Step 4i staged-apply can act
+        # on them. Soft-fail per dispatch -- one failing classifier never blocks
+        # the others.
+        section_modifier_signals: dict = {}
+        if section_attrs:
+            try:
+                me = modifier_extractors()
+                # button-role: only meaningful for button-shaped blocks.
+                if "button" in (target_block or "").lower():
+                    try:
+                        section_modifier_signals["button_role"] = me.button_role(section_attrs)
+                    except Exception as exc:  # noqa: BLE001
+                        aggregate_warnings.append(f"{boundary_id}: modifier_extractors.button_role soft-failed: {exc}")
+                # dynamic-link: parse every href-like attribute value once.
+                dyn_links: dict = {}
+                for k, v in section_attrs.items():
+                    if not isinstance(v, str):
+                        continue
+                    if not v.lstrip().startswith(":"):
+                        continue
+                    parsed = me.dynamic_link(v)
+                    if parsed.get("parsed"):
+                        dyn_links[k] = parsed
+                if dyn_links:
+                    section_modifier_signals["dynamic_links"] = dyn_links
+                # match-block-variation: only when block.json declares variations.
+                if block_json.get("variations"):
+                    try:
+                        section_modifier_signals["block_variation"] = me.match_block_variation(
+                            block_json, section_attrs,
+                        )
+                    except Exception as exc:  # noqa: BLE001
+                        aggregate_warnings.append(f"{boundary_id}: modifier_extractors.match_block_variation soft-failed: {exc}")
+            except Exception as exc:  # noqa: BLE001 - module load failure; soft-fail
+                aggregate_warnings.append(f"{boundary_id}: modifier_extractors soft-failed: {exc}")
 
         per_section_results.append({
             "boundary_id": boundary_id,
@@ -923,6 +987,7 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path) -> dict:
             "supports_decisions": section_supports_decisions,
             "supports_emitted_attributes": section_supports_emitted,
             "supports_omitted_attributes": section_supports_omitted,
+            "modifier_signals": section_modifier_signals,
         })
 
         # Aggregate attributes prefixed with section_id so multi-section

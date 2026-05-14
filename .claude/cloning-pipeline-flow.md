@@ -273,8 +273,16 @@ The big picture in one page, with EVERY script, file, DB table and skill plotted
 │       silent drift risk. Future drift-check hook                            │
 │       `role-templates-vs-property-suffixes-check.py` listed in              │
 │       docs-registry section 7.                                              │
-│  ✗ orchestrator/modifier_extractors.py - button_role/dynamic_link/variation │
-│       TESTS-ONLY - should fire between Stage 4 and Stage 7                  │
+│  ✓ orchestrator/modifier_extractors.py - button_role/dynamic_link/variation │
+│       WIRED 2026-05-14 (Phase 6 v2 Step 4d) - lazy-loaded via               │
+│       modifier_extractors() helper. In the per-section loop after the      │
+│       supports_writer dispatch: button_role fires when target_block name   │
+│       contains 'button'; dynamic_link parses every section_attr value      │
+│       starting with ':' (only successful parses retained); match_block_    │
+│       variation fires when block.json declares `variations`. Outputs land  │
+│       on per_section_results.modifier_signals (keys: button_role,          │
+│       dynamic_links, block_variation). Each dispatch soft-fails            │
+│       independently.                                                       │
 │                                                                             │
 │ FILES (R):                                                                  │
 │  sites/<client>/mockups/<page>/index.html                                   │
@@ -289,10 +297,9 @@ The big picture in one page, with EVERY script, file, DB table and skill plotted
 │                                                                             │
 │ External tools: Playwright (computed-style extraction at 3 viewports)       │
 │                                                                             │
-│ GAP: modifier_extractors unwired → button roles never classified,           │
-│      dynamic links never resolved, variation matching skipped.              │
-│                                                                             │
-│ STATUS:       LIVE for hero (42% coverage); partial for atomic blocks       │
+│ STATUS:       LIVE for hero (42% coverage); partial for atomic blocks;      │
+│               modifier_extractors LIVE post-Step-4d (button-role +          │
+│               dynamic-link + block-variation classifiers)                   │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
