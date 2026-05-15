@@ -16,6 +16,7 @@
     ],
     "textdomain": "sgs-blocks",
     "icon": "tag",
+    "render": "file:./render.php",
     "supports": {
         "align": true,
         "html": false,
@@ -36,18 +37,24 @@
     "attributes": {
         "text": {
             "type": "string",
-            "source": "html",
-            "selector": ".wp-block-sgs-label",
             "default": ""
         },
         "tag": {
             "type": "string",
-            "enum": [ "span", "p", "div" ],
+            "enum": [
+                "span",
+                "p",
+                "div"
+            ],
             "default": "span"
         },
         "variantStyle": {
             "type": "string",
-            "enum": [ "plain", "pill-fill", "pill-wrap" ],
+            "enum": [
+                "plain",
+                "pill-fill",
+                "pill-wrap"
+            ],
             "default": "plain"
         },
         "textColour": {

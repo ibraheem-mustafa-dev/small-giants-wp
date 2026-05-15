@@ -8,6 +8,22 @@ last_updated: 2026-05-16
 
 ## New 2026-05-16 — Phase 8 in-flight backlog
 
+### P-PHASE8-16 — Spec 16 invariant: cv2-eligible blocks must be dynamic
+
+**What:** Multi-rater /qc panel (architecture lens) on the 2026-05-16 render.php audit fix recommended codifying as a Spec 16 FR: every block that cv2 may emit via self-closing block comment MUST have a `render.php` registered via `"render": "file:./render.php"` in `block.json`. Static blocks (save.js only, no render.php) silently produce empty HTML when cv2 emits them as self-closing comments — caught for trust-bar + label on Mama's. 7 other static blocks (certification-bar, counter, divider, heading, notice-banner, process-steps, tab) would hit the same bug if cv2 starts emitting them.
+
+**Trigger:** Next cv2 extension that gains the ability to emit one of those 7 static blocks (currently not in the emit set on Mama's), OR a fresh-eyes adversarial test surfaces it.
+
+**Approach:** (1) Add an FR-NEW to Spec 16 stating the invariant. (2) Add a cv2 pre-flight gate: walk the emit candidate set from `db.standalone_block_for()` + block-root lookups + INNER_BLOCK_PATTERNS, hard-reject the run if any candidate block has no `render.php` file in its src/. Implement in `convert_page.py` / orchestrator init. ~25 lines.
+
+### P-PHASE8-17 — Convert remaining 7 static SGS blocks to dynamic
+
+**What:** certification-bar, counter, divider, heading, notice-banner, process-steps, tab — all currently static (no render.php). Add render.php for each as a PHP port of save.js. Required before cv2 can safely emit them.
+
+**Trigger:** P-PHASE8-16's pre-flight gate is wired AND any of these blocks needs to enter the cv2 emit set.
+
+**Approach:** Mirror the 2026-05-16 trust-bar + label pattern: write render.php, add `"render": "file:./render.php"` to block.json, remove any `"source": "html"` on attrs (gotcha #3 from CLAUDE.md), keep save.js as-is for editor block validation. ~30-60 min per block depending on save.js complexity.
+
 ### P-PHASE8-14 — Section-collapses-into-leaf-block guard
 
 **What:** Multi-rater /qc panel (fresh-eyes lens) flagged an adversarial scenario: a section whose class accidentally matches a leaf-level block name (e.g. `<section class="sgs-product-card">` rather than `<section class="sgs-products"><div class="sgs-product-card">…</div>…</section>`). Stage 2 matches the registered `sgs/product-card` at confidence 1.0. The block-root fast path fires at the section root. `lift_subtree_into_block_attrs` collapses the entire multi-component section into a single product-card block with whatever the first descendant's attrs were. No bucket captures this — silent collapse.

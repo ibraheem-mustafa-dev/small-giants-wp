@@ -1,165 +1,166 @@
 {
-    "$schema":  "https://schemas.wp.org/trunk/block.json",
-    "apiVersion":  3,
-    "name":  "sgs/trust-bar",
-    "version":  "0.1.0",
-    "title":  "SGS Trust Bar",
-    "category":  "sgs-content",
-    "description":  "Horizontal strip of key stats and trust signals with animated number counters. Great for showcasing years of experience, customers served, or certifications.",
-    "keywords":  [
-                     "trust",
-                     "stats",
-                     "bar",
-                     "strip",
-                     "numbers"
-                 ],
-    "textdomain":  "sgs-blocks",
-    "icon":  "awards",
-    "supports":  {
-                     "align":  [
-                                   "wide",
-                                   "full"
-                               ],
-                     "anchor":  true,
-                     "html":  false,
-                     "color":  {
-                                   "background":  true,
-                                   "text":  true,
-                                   "gradients":  true
-                               },
-                     "typography":  {
-                                        "fontSize":  true,
-                                        "lineHeight":  true,
-                                        "textAlign":  true,
-                                        "letterSpacing":  true,
-                                        "textTransform":  true,
-                                        "fontWeight":  true,
-                                        "fontStyle":  true
-                                    },
-                     "spacing":  {
-                                     "margin":  true,
-                                     "padding":  true
-                                 },
-                     "__experimentalBorder":  {
-                                                  "radius":  true,
-                                                  "width":  true,
-                                                  "color":  true,
-                                                  "style":  true
-                                              }
-                 },
-    "selectors":  {
-                      "root":  ".sgs-trust-bar",
-                      "typography":  ".sgs-trust-bar__value"
-                  },
-    "attributes":  {
-                       "items":  {
-                                     "type":  "array",
-                                     "default":  [
-                                                     {
-                                                         "value":  "5,000",
-                                                         "suffix":  "+",
-                                                         "label":  "Businesses Served",
-                                                         "animated":  true,
-                                                         "icon":  ""
-                                                     },
-                                                     {
-                                                         "value":  "60",
-                                                         "suffix":  "+",
-                                                         "label":  "Years Experience",
-                                                         "animated":  true,
-                                                         "icon":  ""
-                                                     },
-                                                     {
-                                                         "value":  "Next-Day",
-                                                         "suffix":  "",
-                                                         "label":  "Delivery Available",
-                                                         "animated":  false,
-                                                         "icon":  ""
-                                                     }
-                                                 ]
-                                 },
-                       "showItemIcons":  {
-                                             "type":  "boolean",
-                                             "default":  false
-                                         },
-                       "dividers":  {
-                                        "type":  "boolean",
-                                        "default":  false
-                                    },
-                       "animated":  {
-                                        "type":  "boolean",
-                                        "default":  true
-                                    },
-                       "valueColour":  {
-                                           "type":  "string",
-                                           "default":  "primary"
-                                       },
-                       "labelColour":  {
-                                           "type":  "string",
-                                           "default":  "text"
-                                       },
-                       "labelFontSize":  {
-                                             "type":  "string"
-                                         },
-                       "labelFontSizeTablet":  {
-                                             "type":  "string",
-                                             "default":  ""
-                                         },
-                       "labelFontSizeMobile":  {
-                                             "type":  "string",
-                                             "default":  ""
-                                         },
-                       "hoverBackgroundColour":  {
-                                                     "type":  "string",
-                                                     "default":  ""
-                                                 },
-                       "hoverTextColour":  {
-                                               "type":  "string",
-                                               "default":  ""
-                                           },
-                       "hoverBorderColour":  {
-                                                 "type":  "string",
-                                                 "default":  ""
-                                             },
-                       "hoverEffect":  {
-                                           "type":  "string",
-                                           "default":  "none"
-                                       },
-                       "transitionDuration":  {
-                                                  "type":  "string",
-                                                  "default":  "300"
-                                              },
-                       "transitionEasing":  {
-                                                "type":  "string",
-                                                "default":  "ease-in-out"
-                                            }
-                   },
-    "editorScript":  "file:./index.js",
-    "editorStyle":  "file:./index.css",
-    "style":  "file:./style-index.css",
-    "viewScriptModule":  "file:./view.js",
-    "example":  {
-                    "attributes":  {
-                                       "items":  [
-                                                     {
-                                                         "value":  "5,000",
-                                                         "suffix":  "+",
-                                                         "label":  "Businesses Served",
-                                                         "animated":  true
-                                                     },
-                                                     {
-                                                         "value":  "60",
-                                                         "suffix":  "+",
-                                                         "label":  "Years Experience",
-                                                         "animated":  true
-                                                     },
-                                                     {
-                                                         "value":  "Next-Day",
-                                                         "suffix":  "",
-                                                         "label":  "Delivery Available",
-                                                         "animated":  false
-                                                     }
-                                                 ]
-                                   }
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "sgs/trust-bar",
+    "version": "0.1.0",
+    "title": "SGS Trust Bar",
+    "category": "sgs-content",
+    "description": "Horizontal strip of key stats and trust signals with animated number counters. Great for showcasing years of experience, customers served, or certifications.",
+    "keywords": [
+        "trust",
+        "stats",
+        "bar",
+        "strip",
+        "numbers"
+    ],
+    "textdomain": "sgs-blocks",
+    "icon": "awards",
+    "render": "file:./render.php",
+    "supports": {
+        "align": [
+            "wide",
+            "full"
+        ],
+        "anchor": true,
+        "html": false,
+        "color": {
+            "background": true,
+            "text": true,
+            "gradients": true
+        },
+        "typography": {
+            "fontSize": true,
+            "lineHeight": true,
+            "textAlign": true,
+            "letterSpacing": true,
+            "textTransform": true,
+            "fontWeight": true,
+            "fontStyle": true
+        },
+        "spacing": {
+            "margin": true,
+            "padding": true
+        },
+        "__experimentalBorder": {
+            "radius": true,
+            "width": true,
+            "color": true,
+            "style": true
+        }
+    },
+    "selectors": {
+        "root": ".sgs-trust-bar",
+        "typography": ".sgs-trust-bar__value"
+    },
+    "attributes": {
+        "items": {
+            "type": "array",
+            "default": [
+                {
+                    "value": "5,000",
+                    "suffix": "+",
+                    "label": "Businesses Served",
+                    "animated": true,
+                    "icon": ""
+                },
+                {
+                    "value": "60",
+                    "suffix": "+",
+                    "label": "Years Experience",
+                    "animated": true,
+                    "icon": ""
+                },
+                {
+                    "value": "Next-Day",
+                    "suffix": "",
+                    "label": "Delivery Available",
+                    "animated": false,
+                    "icon": ""
                 }
+            ]
+        },
+        "showItemIcons": {
+            "type": "boolean",
+            "default": false
+        },
+        "dividers": {
+            "type": "boolean",
+            "default": false
+        },
+        "animated": {
+            "type": "boolean",
+            "default": true
+        },
+        "valueColour": {
+            "type": "string",
+            "default": "primary"
+        },
+        "labelColour": {
+            "type": "string",
+            "default": "text"
+        },
+        "labelFontSize": {
+            "type": "string"
+        },
+        "labelFontSizeTablet": {
+            "type": "string",
+            "default": ""
+        },
+        "labelFontSizeMobile": {
+            "type": "string",
+            "default": ""
+        },
+        "hoverBackgroundColour": {
+            "type": "string",
+            "default": ""
+        },
+        "hoverTextColour": {
+            "type": "string",
+            "default": ""
+        },
+        "hoverBorderColour": {
+            "type": "string",
+            "default": ""
+        },
+        "hoverEffect": {
+            "type": "string",
+            "default": "none"
+        },
+        "transitionDuration": {
+            "type": "string",
+            "default": "300"
+        },
+        "transitionEasing": {
+            "type": "string",
+            "default": "ease-in-out"
+        }
+    },
+    "editorScript": "file:./index.js",
+    "editorStyle": "file:./index.css",
+    "style": "file:./style-index.css",
+    "viewScriptModule": "file:./view.js",
+    "example": {
+        "attributes": {
+            "items": [
+                {
+                    "value": "5,000",
+                    "suffix": "+",
+                    "label": "Businesses Served",
+                    "animated": true
+                },
+                {
+                    "value": "60",
+                    "suffix": "+",
+                    "label": "Years Experience",
+                    "animated": true
+                },
+                {
+                    "value": "Next-Day",
+                    "suffix": "",
+                    "label": "Delivery Available",
+                    "animated": false
+                }
+            ]
+        }
+    }
 }
