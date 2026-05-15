@@ -124,6 +124,34 @@ def _slot_to_html_tag() -> dict[str, str]:
     return {c: t for c, t in rows if t}
 
 
+@functools.lru_cache(maxsize=1)
+def _slot_to_standalone_block() -> dict[str, str]:
+    """Return {canonical_slot: standalone_block_slug}.
+
+    Source of truth for "this element-name routes to that block when the parent
+    block doesn't claim the slot". Replaces the previous hardcoded
+    SLOT_TO_STANDALONE_BLOCK dict in convert.py — synonym vocabulary AND
+    standalone-block routing now both live in sgs-framework.db.slot_synonyms.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT canonical_slot, standalone_block FROM slot_synonyms "
+            "WHERE standalone_block IS NOT NULL AND standalone_block != ''"
+        ).fetchall()
+    finally:
+        conn.close()
+    return {c: b for c, b in rows}
+
+
+def standalone_block_for(canonical_slot: str) -> str | None:
+    """Return the standalone block slug for a canonical slot, or None.
+
+    e.g. 'label' → 'sgs/label', 'badge' → 'sgs/label', 'card' → 'sgs/info-box'.
+    """
+    return _slot_to_standalone_block().get(canonical_slot)
+
+
 def _normalise(token: str) -> str:
     """Strip hyphens/underscores and lowercase. So 'max-width' == 'maxWidth' == 'max_width'.
     Per Bean's note 2026-05-14: multi-word attrs should auto-handle hyphen variants."""

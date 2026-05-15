@@ -1,10 +1,28 @@
 ---
 doc_type: parking
 project: small-giants-wp
-last_updated: 2026-05-15
+last_updated: 2026-05-16
 ---
 
 # Parking — deferred work with named triggers
+
+## New 2026-05-16 — Phase 8 in-flight backlog
+
+### P-PHASE8-9 — Slot-synonym expansion: tile / panel / feature / module / item
+
+**What:** The 2026-05-16 walker fix added `card → sgs/info-box` via `slot_synonyms.standalone_block`. Multi-rater /qc panel (fresh-eyes lens) recommended also registering the four next-most-common BEM element names that map to info-box compositions in real-world client mockups: `tile`, `panel`, `feature`, `module`, `item`.
+
+**Trigger:** Next client onboarding hits one of these element names AND surfaces as an unmatched gap in `pipeline-state/<run>/leftover-buckets.json`, OR Phase 8 closure work touches a section with these names.
+
+**Approach:** INSERT rows into `slot_synonyms` (sgs-framework.db) with `canonical_slot` = one of the names, `standalone_block` = `sgs/info-box`. Mirror as aliases on the existing `card` row if structurally equivalent. ~5 min per synonym.
+
+### P-PHASE8-10 — Standalone-block column validation on walker startup
+
+**What:** Multi-rater /qc panel (architecture lens) raised a deferred concern: a bad row in `slot_synonyms.standalone_block` (e.g. `text → sgs/paragraph`, `media → sgs/image`) would route every leaf-text element through the composite path, conflicting with `ATOMIC_TAG_MAP`. No load-time validation today.
+
+**Trigger:** Next time someone proposes adding a synonym for a tag covered by `ATOMIC_TAG_MAP`, OR the converter exhibits unexpected routing under DB extension.
+
+**Approach:** In `db_lookup._slot_to_standalone_block()`, reject any row where the standalone_block matches a value in `ATOMIC_TAG_MAP.values()`. Emit stderr warning + drop the row from the map. ~10 lines.
 
 ## New 2026-05-15 — Phase 8 backlog (after Spec 16 Phase 7 architectural close)
 

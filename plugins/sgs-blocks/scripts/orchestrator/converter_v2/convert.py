@@ -142,15 +142,11 @@ ATOMIC_TAG_MAP: dict[str, str] = {
     "hr": "sgs/divider",
 }
 
-# Canonical slot → standalone block fallback. When an element's BEM portion
-# resolves to one of these canonical slots and no parent block owns the slot,
-# emit the dedicated standalone block instead of falling through to core blocks.
-# Added 2026-05-14 after creating sgs/label as a first-class atomic block.
-SLOT_TO_STANDALONE_BLOCK: dict[str, str] = {
-    "label": "sgs/label",
-    # 'badge' is a label with pill background — same target, different variant
-    "badge": "sgs/label",
-}
+# Canonical slot → standalone block routing is now sourced from
+# sgs-framework.db.slot_synonyms.standalone_block (column added 2026-05-16).
+# Look up via db.standalone_block_for(canonical_slot). The DB row is the single
+# source of truth: synonym vocabulary AND standalone-block routing both live in
+# slot_synonyms now. e.g. label→sgs/label, badge→sgs/label, card→sgs/info-box.
 
 # Source classes that should emit as sgs/container with specific layout attrs,
 # overriding any block-root or pass-through routing. Two use cases:
@@ -1269,11 +1265,83 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
             f"belongs in WP template parts, not post content -->"
         )
 
-    # ---- CSS-driven sgs/container detection ----
-    # If the node's source CSS shows display:grid|flex, emit as sgs/container
-    # with attrs (layout, gridTemplateColumns, gap) read from the mockup's own
-    # CSS. Generic across any client mockup — no hardcoded class names or
-    # ratios. Replaces the 2026-05-15 SECTION_AS_CONTAINER_OVERRIDES dict.
+    target, bem = get_block_for_node(node)
+
+    # ---- BLOCK-ROOT FAST PATH (FR1): lift subtree into typed attrs ----
+    # When a node's first SGS-BEM class is a bare block reference (sgs-X with
+    # no element) AND sgs/X is a registered block, this node IS that block.
+    # Switch from "recurse and nest" to "harvest descendants into block attrs".
+    #
+    # PRECEDENCE: this MUST fire before the CSS-driven container override
+    # (2026-05-16 fix). Previously, the CSS-driven override ran first and
+    # absorbed every nested .sgs-product-card / .sgs-info-box / .sgs-testimonial-
+    # slider that happened to have display:flex|grid in source CSS, emitting
+    # sgs/container with className instead of the registered block. FR1 was
+    # only firing at the top-level section. Spec 16 R3+FR1 says block-root
+    # slot harvest happens AT EVERY DEPTH where the BEM class resolves to a
+    # registered status='built' block — not just at section boundaries.
+    if (target.startswith("sgs/") and target != "sgs/container"
+            and bem and bem.element is None and db.block_exists(target)):
+        lifted = lift_subtree_into_block_attrs(node, target, css_rules=css_rules)
+        wrapper_attrs = lift_attrs_for_block(target, node, bem, classes)
+        merged = {**wrapper_attrs, **lifted}
+
+        # Change 3: InnerBlocks emission for blocks that use InnerBlocks
+        # rather than flat array attrs (e.g. sgs/feature-grid → sgs/info-box).
+        # When a pattern exists for the target, emit child blocks as inner markup
+        # instead of emitting a self-closing block.
+        if target in INNER_BLOCK_PATTERNS:
+            inner_markup = _lift_inner_blocks(node, INNER_BLOCK_PATTERNS[target])
+            if inner_markup:
+                return emit_wp_block(target, merged, inner_markup, self_closing=False)
+
+        return emit_wp_block(target, merged, [], self_closing=True)
+
+    # ---- COMPOSITE-ELEMENT-TO-STANDALONE-BLOCK FAST PATH ----
+    # When a node's BEM element resolves to a canonical slot that has a
+    # standalone block in DB (e.g. `__card` → 'card' → sgs/info-box), AND the
+    # node has element children (composite, not bare text), emit the standalone
+    # block with descendants lifted via the same FR1 path. Added 2026-05-16
+    # so `sgs-gift-section__card` etc. become sgs/info-box blocks rather than
+    # pass-through wrappers losing their composition.
+    #
+    # This is intentionally distinct from the leaf-text path further below,
+    # which handles single-line elements like <span class="sgs-foo__label">
+    # by emitting sgs/label with just text+tag+variantStyle attrs. Composite
+    # elements need full descendant lift — the FR1 mechanism is correct.
+    if (target == "sgs/container" and bem and bem.element
+            and any(isinstance(c, Tag) for c in node.children)):
+        canonical = db.canonical_slot_for(bem.element)
+        standalone = db.standalone_block_for(canonical) if canonical else None
+        if standalone and db.block_exists(standalone):
+            lifted = lift_subtree_into_block_attrs(node, standalone, css_rules=css_rules)
+            wrapper_attrs = lift_attrs_for_block(standalone, node, bem, classes)
+            merged = {**wrapper_attrs, **lifted}
+            # Empty-attrs safety net (QC panel finding 2026-05-16): if neither
+            # the FR1 descent nor the wrapper attrs produced any content keys,
+            # the block will render blank in WP. Warn so the operator surfaces
+            # a missing canonical_slot mapping or a malformed source subtree
+            # rather than silently shipping an invisible empty block.
+            if not lifted and not any(k for k in wrapper_attrs if k != "className"):
+                sys.stderr.write(
+                    f"[converter_v2] WARN: composite-element path emitted "
+                    f"{standalone} with no content attrs lifted from "
+                    f"<{node.name} class=\"{' '.join(classes)}\">. "
+                    f"Check slot_synonyms/block_attributes canonical_slot mapping "
+                    f"for block_slug={standalone}.\n"
+                )
+            if standalone in INNER_BLOCK_PATTERNS:
+                inner_markup = _lift_inner_blocks(node, INNER_BLOCK_PATTERNS[standalone])
+                if inner_markup:
+                    return emit_wp_block(standalone, merged, inner_markup, self_closing=False)
+            return emit_wp_block(standalone, merged, [], self_closing=True)
+
+    # ---- CSS-driven sgs/container detection (FALLBACK) ----
+    # If the node's source CSS shows display:grid|flex AND no block-root /
+    # composite-element route above claimed it, emit as sgs/container with
+    # attrs (layout, gridTemplateColumns, gap) read from the mockup's own CSS.
+    # Generic across any client mockup — no hardcoded class names or ratios.
+    # Replaces the 2026-05-15 SECTION_AS_CONTAINER_OVERRIDES dict.
     container_override = _detect_grid_container_from_css(classes, css_rules)
     if container_override:
         inner_blocks: list[str] = []
@@ -1295,29 +1363,6 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
         if decls:
             variation_buf.append(decls)
         return emit_wp_block("sgs/container", cont_attrs, inner_blocks)
-
-    target, bem = get_block_for_node(node)
-
-    # ---- BLOCK-ROOT FAST PATH: lift subtree into typed attrs ----
-    # When a node's first SGS-BEM class is a bare block reference (sgs-X with
-    # no element) AND sgs/X is a registered block, this node IS that block.
-    # Switch from "recurse and nest" to "harvest descendants into block attrs".
-    if (target.startswith("sgs/") and target != "sgs/container"
-            and bem and bem.element is None and db.block_exists(target)):
-        lifted = lift_subtree_into_block_attrs(node, target, css_rules=css_rules)
-        wrapper_attrs = lift_attrs_for_block(target, node, bem, classes)
-        merged = {**wrapper_attrs, **lifted}
-
-        # Change 3: InnerBlocks emission for blocks that use InnerBlocks
-        # rather than flat array attrs (e.g. sgs/feature-grid → sgs/info-box).
-        # When a pattern exists for the target, emit child blocks as inner markup
-        # instead of emitting a self-closing block.
-        if target in INNER_BLOCK_PATTERNS:
-            inner_markup = _lift_inner_blocks(node, INNER_BLOCK_PATTERNS[target])
-            if inner_markup:
-                return emit_wp_block(target, merged, inner_markup, self_closing=False)
-
-        return emit_wp_block(target, merged, [], self_closing=True)
 
     # Atomic content blocks — emit with text content
     if target == "core/paragraph":
@@ -1355,9 +1400,9 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
     has_element_children = any(isinstance(c, Tag) for c in node.children)
     text_content = node.get_text(strip=True)
     if not has_element_children and text_content and target == "sgs/container":
-        # Slot-to-standalone-block routing
+        # Slot-to-standalone-block routing — DB-driven via slot_synonyms.
         canonical = db.canonical_slot_for(bem.element) if bem and bem.element else None
-        standalone = SLOT_TO_STANDALONE_BLOCK.get(canonical) if canonical else None
+        standalone = db.standalone_block_for(canonical) if canonical else None
         if standalone and db.block_exists(standalone):
             # Infer variantStyle from canonical slot (badge → pill-wrap by default)
             variant = "pill-wrap" if canonical == "badge" else "plain"
