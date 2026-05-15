@@ -41,7 +41,7 @@ registry_entry: docs-registry.md row 12
 |---|---|
 | plugins/sgs-blocks/src/blocks/container/block.json | +3 string attrs: gridTemplateColumns, gridTemplateColumnsTablet, gridTemplateColumnsMobile (Phase 7 — allows asymmetric grid tracks like "5fr 3fr" that the existing columns: N attr cannot express) |
 | plugins/sgs-blocks/src/blocks/container/render.php | +sgs_sanitize_grid_template() helper + override logic — when gridTemplateColumns set, emits `grid-template-columns: <value>` instead of `repeat(N, 1fr)` |
-| plugins/sgs-blocks/src/blocks/heritage-strip/block.json | +1 line: `"render": "file:./render.php"` — block was registered with NULL render_callback, do_blocks() returned empty string |
+| ~~plugins/sgs-blocks/src/blocks/heritage-strip/block.json~~ | _(Phase 7 fix superseded — block fully retired 2026-05-16 P-PHASE8-1; replaced by `theme/sgs-theme/patterns/brand.php`. The original 1-line render fix was rendered moot by the block's removal.)_ |
 | plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py | _cv2_eligible computed once per boundary at top of loop; unmatched-section gate now skips cv2-eligible boundaries (fixes 5-of-9 short-circuit); converter softfail emits unmatched stub instead of falling through to broken legacy extract.py |
 | plugins/sgs-blocks/scripts/recogniser/leftover-bucket-router.py | route_extraction_failed() bare-key lookup fix — checks bare name, section_id.name, and boundary_id.name forms (fixes 100% false-fail classification) |
 

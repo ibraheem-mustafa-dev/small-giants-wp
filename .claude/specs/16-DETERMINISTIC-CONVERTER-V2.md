@@ -9,7 +9,7 @@ session_date: 2026-05-15
 authors: Bean + Claude (Opus 4.7)
 status_history:
   - 2026-05-14: v0.2 ACCEPTED, Phase 1 prototype shipped, Phases 2-6 queued
-  - 2026-05-15: v0.3 PARTIAL CLOSURE — Phase 7 architectural work shipped (commits 06eca194 + 19c89f0f on feat/spec-16-converter-v2-rollout, pushed not merged); visual gate redefined as PER-SECTION (not full-page) per binding methodology rule (blub.db row 256); legacy extract.py retirement deferred to Phase 8 + visual-gate-close; heritage-strip-as-block to be deprecated in favour of Brand Story PATTERN (Bean's 2026-05-15 redirect, parked as P-PHASE8-1)
+  - 2026-05-15: v0.3 PARTIAL CLOSURE — Phase 7 architectural work shipped (commits 06eca194 + 19c89f0f on feat/spec-16-converter-v2-rollout, pushed not merged); visual gate redefined as PER-SECTION (not full-page) per binding methodology rule (blub.db row 256); legacy extract.py retirement deferred to Phase 8 + visual-gate-close; heritage-strip block retired in favour of Brand Story PATTERN (Bean's 2026-05-15 redirect, completed in P-PHASE8-1 commit 9a32a164)
 closure_gate_definition_v0_3:
   rule: "Closure unit is the SECTION, NOT the page. Each section closes independently at <= 1% pixel diff across 375 / 768 / 1440 viewports via `scripts/pixel-diff.py --selector .sgs-{section}`. The page closes when ALL sections close."
   rationale: |

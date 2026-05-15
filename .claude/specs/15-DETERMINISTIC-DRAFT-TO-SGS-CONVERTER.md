@@ -357,11 +357,8 @@ Examples:
   block sgs/hero, attribute headlineFontSize, canonical_slot=heading
     -> .sgs-hero__heading
 
-  block sgs/heritage-strip, attribute bodyFontSize, canonical_slot=text
-    -> .sgs-heritage-strip__text
-
   block sgs/trust-bar, attribute labelFontSize, canonical_slot=text
-    -> .sgs-trust-bar__text
+    -> .sgs-trust-bar__label
 ```
 
 For deeper nesting (e.g. nested headings like `.sgs-hero__copy h1`), the slot can declare a `selector_pattern` override in `slot_synonyms` (rare exception; default is the simple form).

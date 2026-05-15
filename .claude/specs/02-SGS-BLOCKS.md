@@ -25,7 +25,6 @@ sgs-blocks/
 │   │   ├── info-box/             # Info/feature card
 │   │   ├── counter/              # Animated statistic counter
 │   │   ├── trust-bar/            # Horizontal stats strip
-│   │   ├── heritage-strip/       # Full-width heritage/story section
 │   │   ├── card-grid/            # Flexible image+content grid (overlay/card variants)
 │   │   ├── testimonial/          # Single testimonial card
 │   │   ├── testimonial-slider/   # Multi-testimonial carousel
@@ -246,25 +245,7 @@ block-name/
 
 ---
 
-### 6. Heritage Strip (`sgs/heritage-strip`)
-
-**Purpose:** Full-width story section with images and narrative text (built for Indus Foods, reusable for any "about us" story).
-
-**Attributes:**
-- `layout` — image-text-image | text-image | image-text
-- `headline` — RichText
-- `body` — RichText
-- `imageLeft` — media object
-- `imageRight` — media object
-- `backgroundColour` — token slug (default: primary-dark)
-
-**Render:** Static `save()`.
-
-**Responsive:** Stacks to single column on mobile (headline, images, body text).
-
----
-
-### 7. Card Grid (`sgs/card-grid`)
+### 6. Card Grid (`sgs/card-grid`)
 
 **Purpose:** Flexible grid of image+content tiles. Supports two visual variants: overlay (text on image) and card (text below image). Replaces a separate image gallery and product grid.
 
@@ -297,7 +278,7 @@ block-name/
 
 ---
 
-### 8. Testimonial (`sgs/testimonial`)
+### 7. Testimonial (`sgs/testimonial`)
 
 **Purpose:** Single testimonial card.
 
@@ -313,7 +294,7 @@ block-name/
 
 ---
 
-### 9. Testimonial Slider (`sgs/testimonial-slider`)
+### 8. Testimonial Slider (`sgs/testimonial-slider`)
 
 **Purpose:** Carousel/slider of multiple testimonials.
 
@@ -333,7 +314,7 @@ block-name/
 
 ---
 
-### 10. CTA Section (`sgs/cta-section`)
+### 9. CTA Section (`sgs/cta-section`)
 
 **Purpose:** Call-to-action section with headline, supporting text, and multiple button options.
 
@@ -350,7 +331,7 @@ block-name/
 
 ---
 
-### 11. Process Steps (`sgs/process-steps`)
+### 10. Process Steps (`sgs/process-steps`)
 
 **Purpose:** Horizontal timeline showing a multi-step process.
 
@@ -365,7 +346,7 @@ block-name/
 
 ---
 
-### 12. Accordion (`sgs/accordion`)
+### 11. Accordion (`sgs/accordion`)
 
 **Purpose:** Expandable content sections (FAQ, details).
 
@@ -381,7 +362,7 @@ block-name/
 
 ---
 
-### 13. Tabs (`sgs/tabs`)
+### 12. Tabs (`sgs/tabs`)
 
 **Purpose:** Tabbed content panels.
 
@@ -395,7 +376,7 @@ block-name/
 
 ---
 
-### 14. Brand Strip (`sgs/brand-strip`)
+### 13. Brand Strip (`sgs/brand-strip`)
 
 **Purpose:** Horizontal logo carousel/strip.
 
@@ -410,7 +391,7 @@ block-name/
 
 ---
 
-### 15. WhatsApp CTA (`sgs/whatsapp-cta`)
+### 14. WhatsApp CTA (`sgs/whatsapp-cta`)
 
 **Purpose:** WhatsApp integration — floating button and/or inline CTA.
 
@@ -426,7 +407,7 @@ block-name/
 
 ---
 
-### 16. Certification Bar (`sgs/certification-bar`)
+### 15. Certification Bar (`sgs/certification-bar`)
 
 **Purpose:** Horizontal strip of certification/accreditation badges with optional labels. Used for trust signals (BRC, Halal, SALSA, FSA, Unitas, FWD).
 
@@ -446,7 +427,7 @@ block-name/
 
 ---
 
-### 17. Notice Banner (`sgs/notice-banner`)
+### 16. Notice Banner (`sgs/notice-banner`)
 
 **Purpose:** Inline informational banner for contextual messages like minimum order values, delivery terms, or promotional notices. Appears within page content (not fixed to top like announcement-bar).
 
@@ -467,7 +448,7 @@ block-name/
 
 ---
 
-### 18. Announcement Bar (`sgs/announcement-bar`)
+### 17. Announcement Bar (`sgs/announcement-bar`)
 
 **Replaces:** HelloBar, OptinMonster top bars, HashBar
 
@@ -538,7 +519,7 @@ block-name/
 
 ---
 
-### 19. SVG Background (`sgs/svg-background`)
+### 18. SVG Background (`sgs/svg-background`)
 
 **Purpose:** Container that renders an SVG animation behind its inner blocks, with responsive sizing handled properly.
 
@@ -554,7 +535,7 @@ block-name/
 
 ---
 
-### 20. Pricing Table (`sgs/pricing-table`)
+### 19. Pricing Table (`sgs/pricing-table`)
 
 **Purpose:** Service/pricing comparison table with highlighted "recommended" column.
 
@@ -567,7 +548,7 @@ block-name/
 
 ---
 
-### 21. Modal (`sgs/modal`)
+### 20. Modal (`sgs/modal`)
 
 **Purpose:** Lightbox/modal overlay triggered by button click.
 
@@ -583,7 +564,7 @@ block-name/
 
 ---
 
-### 22. Icon List (`sgs/icon-list`)
+### 21. Icon List (`sgs/icon-list`)
 
 **Purpose:** List with custom icons/checkmarks per item. Used for feature lists, benefit lists, and comparison points.
 
@@ -601,7 +582,7 @@ block-name/
 
 ---
 
-### 23. Google Reviews (`sgs/google-reviews`)
+### 22. Google Reviews (`sgs/google-reviews`)
 
 **Replaces:** Elfsight Google Reviews ($$$), Widget for Google Reviews, Trustindex, ReviewsOnMyWebsite
 
@@ -698,7 +679,7 @@ Output as `<script type="application/ld+json">` in render.php — enables Google
 
 ---
 
-### 24. Mega Menu (`sgs/mega-menu`)
+### 23. Mega Menu (`sgs/mega-menu`)
 
 **Replaces:** Max Mega Menu, JetMenu (Crocoblock), Kadence Pro mega menu
 
@@ -863,7 +844,7 @@ const { state } = store( 'sgs/mega-menu', {
 
 ---
 
-### 25. Decorative Image (`sgs/decorative-image`)
+### 24. Decorative Image (`sgs/decorative-image`)
 
 **Purpose:** Absolute-positioned decorative images that float freely across page sections, unconstrained by containers and not affecting layout flow. Used for organic, editorial-style design where images (food photography, decorative elements, brand illustrations) are scattered naturally over section backgrounds.
 
@@ -984,7 +965,7 @@ const { state } = store( 'sgs/mega-menu', {
 
 ---
 
-### 26. Trustpilot Reviews (`sgs/trustpilot-reviews`)
+### 25. Trustpilot Reviews (`sgs/trustpilot-reviews`)
 
 **Replaces:** Trustpilot's own WordPress plugin (free tier blocks all display widgets), Better Business Reviews, Trustindex, ReviewsOnMyWebsite.
 

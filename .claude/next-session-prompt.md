@@ -24,7 +24,7 @@ Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-gia
 
 ## State at session close (2026-05-16)
 
-**All cv2-eligible blocks are now dynamic.** Heritage-strip retired (lives as `theme/sgs-theme/patterns/brand.php`). 10 of 10 cv2-emittable blocks have `render.php` — no more "self-closing block comment renders empty" bug. The 7 conversions (certification-bar, counter, divider, heading, notice-banner, process-steps, tab) shipped via parallel agent dispatch.
+**All cv2-eligible blocks are now dynamic.** Heritage-strip block retired (replaced by `theme/sgs-theme/patterns/brand.php`). 10 of 10 cv2-emittable blocks have `render.php` — no more "self-closing block comment renders empty" bug. The 7 conversions (certification-bar, counter, divider, heading, notice-banner, process-steps, tab) shipped via parallel agent dispatch.
 
 **Universal BEM-child array lifter shipped.** `convert.py:_lift_bem_child_array()` finds most-repeated `sgs-<parent>__<element>` group inside a parent block-root, lifts each as a typed array item, resolves schema field names via slot_synonyms + block.json item shape. Zero hardcoded class names. Trust-bar items array now lifts 4 entries (was 0). Hidden / aria-hidden item-level descendants correctly skipped.
 
@@ -49,10 +49,10 @@ extraction_failed:   455 (185 stage_3 + 270 cv2_emitted_dynamic)
 
 ## Priority order for Phase 8 continuation (Bean's directive: UNIVERSAL solutions only)
 
-1. **Recogniser stale-block cleanup** (P-PHASE8-NEW-1, ~30 min). `confidence-matrix.py:83` + `per-section-convention-voter.py:115+263` still reference `sgs/heritage-strip` as a block. A future client mockup with `sgs-heritage-strip` class won't route to the brand pattern correctly. Fix: remove the heritage-strip block references, ensure pattern matcher picks up `brand.php` for `sgs-brand` AND `sgs-heritage-strip` class signatures (multi-name pattern lookup, OR slot-synonym for the section_id).
+1. **Recogniser stale-block cleanup** (P-PHASE8-NEW-1, ~30 min). `confidence-matrix.py:83` + `per-section-convention-voter.py:115+263` still reference `sgs/heritage-strip` as a block (now retired). Fix: remove the stale block-name references, ensure pattern matcher picks up `brand.php` for `sgs-brand` AND `sgs-heritage-strip` class signatures (multi-name pattern lookup, OR slot-synonym for the section_id).
 2. **Per-section pixel diff verification** (post-deploy). Re-run `scripts/pixel-diff.py --selector .sgs-X --viewport <vp>` for each section at 375/768/1440. Expectations vs prior:
    - trust-bar: 99.7% → likely ~50-70% (items now lift but value/suffix/icon-class mismatch persists; schema/render mismatch is the next gate)
-   - heritage-strip: 99% → likely ~50-70% (now cv2 R4 fall-through, no longer a registered block enforcing layout)
+   - heritage-strip: 99% → N/A (now replaced by brand.php pattern, no longer routes as a block)
    - Others mostly unchanged (the converter changes don't directly affect their per-section diffs)
 3. **Schema/render mismatch decision** (Bean parked this — discuss FIRST next session). Trust-bar's schema item shape `{value, suffix, label, animated, icon}` is stat-counter biased; Mama's mockup wants `{icon-svg, text}` for trust badges. Two paths:
    - A) Extend trust-bar schema with a `variant` enum (stat-counter vs trust-badge) + render branches

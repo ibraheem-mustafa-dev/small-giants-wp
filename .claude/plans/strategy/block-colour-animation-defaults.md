@@ -29,12 +29,6 @@
 
 ---
 
-## Group B — Heritage / brand signature
-
-| Block | bg | text | Hover | Animation entry | Focus ring |
-|---|---|---|---|---|---|
-| `sgs/heritage-strip` | `primary` | `text-inverse` | none | `reveal-up` stagger 80ms, duration: `slow`, easing: `ease-out` | n/a |
-
 ---
 
 ## Group C — CTA blocks (FIX #1, #2)
