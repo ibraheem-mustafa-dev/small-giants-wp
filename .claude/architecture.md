@@ -182,7 +182,6 @@ small-giants-wp/
 | `sgs/brand-strip` | Infinite-scroll logo carousel, greyscale + hover reveal |
 | `sgs/accordion` + `sgs/accordion-item` | FAQ accordion using native `<details>`, FAQ Schema, Interactivity API |
 | `sgs/counter` | Animated number counter with IntersectionObserver |
-| `sgs/heritage-strip` | Stats/heritage bar with icon + label + value |
 | `sgs/trust-bar` | Trust badges strip |
 | `sgs/certification-bar` | Certification logos strip |
 | `sgs/icon-list` | Icon + text list items |
@@ -1338,7 +1337,6 @@ Sessions 3–14 added: animation extension on all blocks, hover effects extensio
 | `sgs/business-info` | Content | 8 display types: address, phone, email, hours, map, social, etc. Auto-populates from settings page | ○ Code-confirmed only |
 | `sgs/google-reviews` | Social Proof | Dynamic Google Reviews integration | ◐ Deployed (palestine-lives + sandybrown) |
 | `sgs/trustpilot-reviews` | Social Proof | Trustpilot review display: carousel/grid/list/badge variants; inline/synced/placeholder data sources; brand identity locked, typography theme-inherited; Schema.org JSON-LD. Sync infrastructure at `includes/trustpilot/` (Browserless `?token=` auth + JSON-LD parser + WP-cron `sgs_trustpilot_sync_event`). | ✅ Deployed + live-verified on sandybrown 2026-05-11 |
-| `sgs/heritage-strip` | Content | Brand heritage timeline/story strip | ○ Code-confirmed only |
 | `sgs/modal` | Interactive | Modal/dialogue overlay (check if uses native `<dialog>` — S-tier #346) | ○ Code-confirmed only |
 | `sgs/notice-banner` | Content | Contextual notice/alert banner | ○ Code-confirmed only |
 | `sgs/process-steps` | Content | Numbered step-by-step process block | ○ Code-confirmed only |

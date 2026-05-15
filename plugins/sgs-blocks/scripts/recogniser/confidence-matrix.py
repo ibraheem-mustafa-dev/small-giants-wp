@@ -80,7 +80,6 @@ COMPOSITE_PRIORITY = {
     "sgs/cta-section": 8,
     "sgs/feature-grid": 7,
     "sgs/testimonial-slider": 7,
-    "sgs/heritage-strip": 6,
     "sgs/trust-bar": 6,
     "sgs/info-box": 4,
     "sgs/testimonial": 4,

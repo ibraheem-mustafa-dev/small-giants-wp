@@ -28,7 +28,7 @@ last_updated: 2026-05-16
 
 ### P-PHASE9-1 — Per-block extension hook wiring sweep
 
-**What:** The 9 newly-dynamic blocks (heritage-strip-restored, trust-bar, label, certification-bar, counter, divider, heading, notice-banner, process-steps, tab) don't yet wire `animation` / `responsive-visibility` / `image-controls` extension hooks into their render.php. Existing already-dynamic blocks deferred this too — broader sweep needed.
+**What:** The 9 newly-dynamic blocks (trust-bar, label, certification-bar, counter, divider, heading, notice-banner, process-steps, tab) don't yet wire `animation` / `responsive-visibility` / `image-controls` extension hooks into their render.php. Existing already-dynamic blocks deferred this too — broader sweep needed. (Heritage-strip is NOT in this list — it was retired as a block in this session; lives as `theme/sgs-theme/patterns/brand.php`.)
 
 **Trigger:** When a client mockup uses one of these blocks with animation/visibility controls AND it doesn't render OR when a cohesive cleanup sweep is opened.
 

@@ -112,7 +112,7 @@ LEGACY_ROLE_LOOKUP: dict[str, str] = {
     "site-footer": "sgs/footer",
     "header": "sgs/header",
     "footer": "sgs/footer",
-    "heritage-strip": "sgs/heritage-strip",
+    "heritage-strip": "brand",  # retired block; routes through pattern matcher
     "cta": "sgs/cta-section",
     "cta-section": "sgs/cta-section",
     "testimonial": "sgs/testimonial",
@@ -259,8 +259,8 @@ def auto_detect_sections(soup: BeautifulSoup) -> list[tuple[Tag, str]]:
     sections rather than be the section itself) as a transparent container:
     the inner `<section>` children get promoted to top-level boundaries.
     This matches the canonical SGS mockup shape -- body > header + main + footer
-    where main wraps the 7 content sections (hero, trust-bar, featured-product,
-    heritage-strip, ingredients-section, gift-section, social-proof).
+    where main wraps the content sections (hero, trust-bar, featured-product,
+    brand, ingredients-section, gift-section, social-proof).
     """
     out: list[tuple[Tag, str]] = []
     body = soup.body or soup

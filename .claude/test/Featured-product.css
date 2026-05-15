@@ -1,0 +1,139 @@
+/* ══════════════════════════════════════════
+FEATURED PRODUCT
+══════════════════════════════════════════ */
+.sgs-featured-product {
+  padding: 56px 20px;
+  background: var(--surface-cream);
+}
+.sgs-featured-product__inner {
+  max-width: 1040px;
+  margin: 0 auto;
+}
+.sgs-featured-product h2 {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.sgs-featured-product .sgs-section-heading__intro {
+  font-size: 16px;
+  color: var(--text-muted);
+  margin-bottom: 32px;
+}
+.sgs-products {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.sgs-product-card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+}
+.sgs-product-card__image {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+.sgs-product-card__body {
+  padding: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.sgs-product-card h3 {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.sgs-product-card__description {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  flex: 1;
+  line-height: 1.55;
+}
+
+.sgs-featured-product__pill-group {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.sgs-featured-product__pill {
+  background: var(--surface-cream);
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 13px;
+  font-family: "Inter", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  transition: all 0.15s;
+  line-height: 1;
+}
+.sgs-featured-product__pill.active {
+  border-color: var(--primary);
+  background: rgba(230, 138, 149, 0.1);
+  color: var(--text);
+}
+.sgs-featured-product__pill:hover:not(.active) {
+  border-color: var(--primary-dark);
+}
+
+.sgs-featured-product__price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.sgs-featured-product__price {
+  font-family: "Fraunces", serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text);
+}
+.sgs-featured-product__price-note {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.sgs-gift-section__card--trial {
+  border: 2px dashed var(--accent);
+  background: linear-gradient(
+    135deg,
+    rgba(245, 208, 80, 0.08) 0%,
+    rgba(230, 138, 149, 0.06) 100%
+  );
+}
+.sgs-gift-section__card-tag--trial {
+  display: inline-flex;
+  align-items: center;
+  background: var(--accent);
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+@media (min-width: 768px) {
+  .sgs-products {
+    grid-template-columns: 5fr 3fr;
+  }
+  .sgs-featured-product h2 {
+    font-size: 36px;
+  }
+}
