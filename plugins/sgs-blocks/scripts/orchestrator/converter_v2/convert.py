@@ -23,6 +23,7 @@ Usage:
 """
 from __future__ import annotations
 
+import functools
 import json
 import sys
 from pathlib import Path
@@ -461,6 +462,213 @@ def _lift_array_attr(node: Tag, attr_name: str, pattern: dict) -> list:
         if item:
             results.append(item)
     return results
+
+
+@functools.lru_cache(maxsize=128)
+def _block_json_item_keys(block_slug: str, attr_name: str) -> tuple[str, ...]:
+    """Return the ordered field keys from the first default item in block.json
+    for `attr_name` on `block_slug`. Used to map BEM element names to item-schema
+    field names when the DB doesn't have per-item sub-field info.
+
+    Returns an empty tuple if block.json is not found or the default is not a
+    list of dicts. Cached so each block.json is read at most once per run.
+    """
+    import json as _json
+    block_name = block_slug.split("/", 1)[-1]  # "sgs/trust-bar" → "trust-bar"
+    # Resolve relative to this file's location (converter_v2/) then walk up
+    _here = Path(__file__).resolve().parent
+    # Typical layout: plugins/sgs-blocks/build/blocks/<name>/block.json
+    _repo_root = _here
+    for _ in range(6):
+        _repo_root = _repo_root.parent
+        candidate = _repo_root / "plugins" / "sgs-blocks" / "build" / "blocks" / block_name / "block.json"
+        if candidate.exists():
+            try:
+                data = _json.loads(candidate.read_text(encoding="utf-8"))
+                default = data.get("attributes", {}).get(attr_name, {}).get("default")
+                if isinstance(default, list) and default and isinstance(default[0], dict):
+                    return tuple(default[0].keys())
+            except Exception:
+                pass
+            break
+    return ()
+
+
+def _lift_bem_child_array(node: "Tag", parent_slug: str,
+                          attr_name: str, schema: dict) -> list | None:
+    """Universal BEM-child array lifter (P-PHASE8-2, 2026-05-16).
+
+    For any block whose mockup uses BEM-child elements as array items
+    (e.g. sgs-trust-bar__badge × N), discovers the repeating element group,
+    maps each item's descendant text slots to schema field names, and returns
+    a list of item dicts — without any hardcoded class names.
+
+    Algorithm:
+      1. Derive parent BEM tail from block slug  (e.g. "trust-bar")
+      2. Collect all descendants carrying an sgs-<parent-tail>__<element> class
+      3. Group by element name — find the group with count > 1 (the array)
+      4. For each item in that group (skipping hidden/aria-hidden AT ITEM LEVEL):
+           - Walk item's descendants for sgs-<parent-tail>__<field-or-alias> classes
+           - Map via canonical_slot_for() to schema field names
+           - Collect text content per field
+      5. Return list of dicts (only populated fields), or None if nothing detected.
+
+    Falls back gracefully to None so the caller can skip cleanly.
+    """
+    parent_bem = parent_slug.rsplit("/", 1)[-1]   # "sgs/trust-bar" → "trust-bar"
+    prefix = f"sgs-{parent_bem}__"
+
+    # --- Step 1: collect ALL BEM descendants ---
+    def has_parent_bem_element(tag_classes) -> bool:
+        if not tag_classes:
+            return False
+        classes = tag_classes if isinstance(tag_classes, list) else [tag_classes]
+        return any(c.startswith(prefix) for c in classes)
+
+    all_bem_descendants = node.find_all(
+        True, class_=has_parent_bem_element
+    )
+
+    # --- Step 2: group by element name (using the FIRST matching class) ---
+    from collections import Counter
+    element_counts: Counter = Counter()
+    for el in all_bem_descendants:
+        classes = el.get("class") or []
+        for c in classes:
+            parsed = db.parse_sgs_bem(c)
+            if parsed and parsed.block == parent_bem and parsed.element:
+                element_counts[parsed.element] += 1
+                break  # only count the primary BEM class
+
+    if not element_counts:
+        return None
+
+    # --- Step 3: pick the most-repeated element with count > 1 ---
+    candidates = [(el, cnt) for el, cnt in element_counts.items() if cnt > 1]
+    if not candidates:
+        return None
+    # Sort by count desc; break ties alphabetically for determinism
+    candidates.sort(key=lambda x: (-x[1], x[0]))
+    array_element_name = candidates[0][0]  # e.g. "badge"
+
+    # --- Step 4: collect items from that element group ---
+    item_nodes = []
+    for el in all_bem_descendants:
+        classes = el.get("class") or []
+        for c in classes:
+            parsed = db.parse_sgs_bem(c)
+            if parsed and parsed.block == parent_bem and parsed.element == array_element_name:
+                item_nodes.append(el)
+                break
+
+    if not item_nodes:
+        return None
+
+    # --- Step 5: determine schema field names from default item shape ---
+    # The default of an array attr is a list of dicts; the keys of the first
+    # dict are the expected field names. We also try alias resolution for each.
+    attr_info = schema.get(attr_name, {})
+    # attr_info doesn't carry the default — we need block.json for that.
+    # However, we can discover field names from the DB's block_attributes for the
+    # parent block. Trust-bar has items as a flat array — the sub-fields are not
+    # in the DB as separate rows. Fall back: try all text-bearing BEM elements
+    # that appear inside the item nodes.
+
+    # Build a field-name → BEM-element-names lookup by trying:
+    #   a) direct: field_name == BEM element name
+    #   b) alias:  canonical_slot_for(BEM element) == canonical_slot_for(field_name)
+    # We discover the field names dynamically from the child BEM elements present
+    # in the first item node (avoids needing block.json at runtime).
+    first_item = item_nodes[0]
+    child_elements: list[str] = []
+    for desc in first_item.find_all(True):
+        desc_classes = desc.get("class") or []
+        for c in desc_classes:
+            parsed = db.parse_sgs_bem(c)
+            if parsed and parsed.block == parent_bem and parsed.element and parsed.element != array_element_name:
+                if parsed.element not in child_elements:
+                    child_elements.append(parsed.element)
+                break
+
+    if not child_elements:
+        return None  # no sub-elements to lift from
+
+    # --- Step 6: build item dicts ---
+    results: list[dict] = []
+    for item_node in item_nodes:
+        # Skip items that are hidden AT THE ITEM LEVEL (not inside it)
+        if item_node.get("hidden") is not None:
+            continue
+        if item_node.get("aria-hidden") == "true":
+            continue
+
+        item: dict = {}
+        for child_el_name in child_elements:
+            # Find the matching BEM descendant inside this item
+            def _has_this_child(tag_classes, _el=child_el_name, _bem=parent_bem):
+                if not tag_classes:
+                    return False
+                classes = tag_classes if isinstance(tag_classes, list) else [tag_classes]
+                return any(
+                    db.parse_sgs_bem(c) and
+                    db.parse_sgs_bem(c).block == _bem and
+                    db.parse_sgs_bem(c).element == _el
+                    for c in classes
+                )
+            found = item_node.find(True, class_=_has_this_child)
+            if not found:
+                continue
+            text = found.get_text(strip=True)
+            if not text:
+                continue
+
+            # Map child element name → schema field name.
+            # Resolution order:
+            #   (a) direct: attr_name_for_slot_or_alias (DB-backed)
+            #   (b) canonical slot alias chain
+            #   (c) block.json item default shape keys — try normalised match
+            #       (e.g. BEM "text" → item key "label" when "label" is the
+            #       primary text field in the default array item dict)
+            #   (d) BEM element name as-is (last resort)
+            field_name = db.attr_name_for_slot_or_alias(parent_slug, child_el_name)
+            if not field_name:
+                canonical = db.canonical_slot_for(child_el_name)
+                if canonical:
+                    field_name = db.attr_name_for_slot_or_alias(parent_slug, canonical)
+            if not field_name:
+                # Try block.json item default shape — look for a key whose
+                # normalised form matches the BEM element name or its canonical slot.
+                item_schema_keys = _block_json_item_keys(parent_slug, attr_name)
+                norm_el = db._normalise(child_el_name)
+                norm_canonical = db._normalise(db.canonical_slot_for(child_el_name) or "")
+                # Pass 1: direct or canonical normalised match
+                for key in item_schema_keys:
+                    norm_key = db._normalise(key)
+                    if norm_key == norm_el or (norm_canonical and norm_key == norm_canonical):
+                        field_name = key
+                        break
+                # Pass 2: primary text slot heuristic — BEM element is a text-bearing
+                # slot (canonical "text" or "label") and item schema has "label" key but
+                # not the BEM element name. Map the text content to "label".
+                if not field_name and item_schema_keys:
+                    _text_canonicals = {"text", "label", "body"}
+                    _el_canonical = db.canonical_slot_for(child_el_name) or child_el_name
+                    if _el_canonical in _text_canonicals and child_el_name not in item_schema_keys:
+                        # Find the most label-like key in item schema
+                        for _preferred in ("label", "text", "title", "name"):
+                            if _preferred in item_schema_keys:
+                                field_name = _preferred
+                                break
+            # (d) last resort: use the BEM element name as-is
+            if not field_name:
+                field_name = child_el_name
+
+            item[field_name] = text
+
+        if item:
+            results.append(item)
+
+    return results if results else None
 
 
 # ============================================================================
@@ -909,7 +1117,7 @@ def lift_subtree_into_block_attrs(node: Tag, block_slug: str,
         single <a> descendant
       - image/object attrs: lifted as {id, url, alt} objects (sgs/hero images)
       - variantStyle enum: detected from --modifier OR trialTag presence
-      - heritage-strip: body lifted from <blockquote>/<p>, imageLeft from <img>
+      - (heritage-strip retired 2026-05-16; now lives as a pattern)
 
     The node itself is not consumed — caller still owns the className.
     """
@@ -1005,34 +1213,49 @@ def lift_subtree_into_block_attrs(node: Tag, block_slug: str,
                 if lifted_array:
                     attrs[attr_name] = lifted_array
 
-    # ---- 1f. Heritage-strip body + blockquote lift ----
-    # heritage-strip has a 'body' string attr that should receive the
-    # story text from a <blockquote> (or first substantial <p>).
-    # The <img> inside the strip maps to 'imageLeft' (object type).
-    if block_slug == "sgs/heritage-strip":
-        # Body: prefer <blockquote> — concatenate all <p> inside it
-        if "body" in schema and "body" not in attrs:
-            bq = node.find("blockquote")
-            if bq:
-                paragraphs = [p.get_text(strip=True) for p in bq.find_all("p")]
-                if paragraphs:
-                    attrs["body"] = "\n\n".join(paragraphs)
-            else:
-                # Fallback: first <p> that isn't a heading-like element
-                p_tags = node.find_all("p")
-                substantial = [p.get_text(strip=True) for p in p_tags if len(p.get_text(strip=True)) > 40]
-                if substantial:
-                    attrs["body"] = substantial[0]
+    # ---- 1e-B. Universal BEM-child array lifter (P-PHASE8-2, 2026-05-16) ----
+    # For array attrs that have NO ARRAY_LIFT_PATTERNS entry (e.g. trust-bar's
+    # `items`), try the generic BEM-child detector. Works for any block whose
+    # mockup uses sgs-<parent>__<element> BEM children as array items.
+    _bem_array_item_nodes: list = []  # track for exclusion in section 2
+    for _attr_name_bem, _info_bem in schema.items():
+        if _info_bem.get("attr_type") == "array" and _attr_name_bem not in attrs:
+            _lifted_bem = _lift_bem_child_array(node, block_slug, _attr_name_bem, schema)
+            if _lifted_bem:
+                attrs[_attr_name_bem] = _lifted_bem
+                # Record item-level nodes so section 2 skips their descendants
+                _parent_bem = block_slug.rsplit("/", 1)[-1]
+                _prefix = f"sgs-{_parent_bem}__"
+                from collections import Counter as _C
+                _ec: _C = _C()
+                for _d in node.find_all(True, class_=lambda _c: _c and any(
+                    _x.startswith(_prefix) for _x in (_c if isinstance(_c, list) else [_c])
+                )):
+                    _dclasses = _d.get("class") or []
+                    for _dc in _dclasses:
+                        _dp = db.parse_sgs_bem(_dc)
+                        if _dp and _dp.block == _parent_bem and _dp.element:
+                            _ec[_dp.element] += 1
+                            break
+                _array_el = max(
+                    ((_el, _cnt) for _el, _cnt in _ec.items() if _cnt > 1),
+                    key=lambda x: (-x[1], x[0]),
+                    default=(None, 0),
+                )[0]
+                if _array_el:
+                    for _item_node in node.find_all(True, class_=lambda _c: _c and any(
+                        db.parse_sgs_bem(_x) and
+                        db.parse_sgs_bem(_x).block == _parent_bem and
+                        db.parse_sgs_bem(_x).element == _array_el
+                        for _x in (_c if isinstance(_c, list) else [_c])
+                    )):
+                        _bem_array_item_nodes.append(_item_node)
 
-        # imageLeft: first <img> inside the section
-        if "imageLeft" in schema and "imageLeft" not in attrs:
-            img = node.find("img")
-            if img:
-                attrs["imageLeft"] = {
-                    "id": None,
-                    "url": _resolve_media_url(img.get("src", "").strip()),
-                    "alt": img.get("alt", "").strip(),
-                }
+    # ---- 1f. (retired 2026-05-16) — Heritage-strip lift guard removed ----
+    # sgs/heritage-strip was deleted as a block; it lives as a pattern
+    # (theme/sgs-theme/patterns/brand.php). The Stage 2 pattern matcher now
+    # routes `sgs-heritage-strip` / `sgs-brand` class signatures through the
+    # pattern path; there is no longer a block-root to lift body+image into.
 
     # ---- 1g. Hero image lift — object-typed image attrs (Change 1) ----
     # sgs/hero uses splitImage (desktop) and splitImageMobile (mobile) as
@@ -1107,6 +1330,10 @@ def lift_subtree_into_block_attrs(node: Tag, block_slug: str,
             )
             for mc in matched_children:
                 _array_child_descendants.update(mc.descendants)
+    # Also exclude descendants of BEM-child array items lifted by section 1e-B
+    for _item_node in _bem_array_item_nodes:
+        _array_child_descendants.add(_item_node)
+        _array_child_descendants.update(_item_node.descendants)
 
     for desc in node.find_all(True):
         if desc is node:

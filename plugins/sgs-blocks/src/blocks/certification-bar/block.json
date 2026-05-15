@@ -2,7 +2,7 @@
     "$schema":  "https://schemas.wp.org/trunk/block.json",
     "apiVersion":  3,
     "name":  "sgs/certification-bar",
-    "version":  "0.1.0",
+    "version":  "0.2.0",
     "title":  "SGS Certification Bar",
     "category":  "sgs-content",
     "description":  "Horizontal strip of certification badges with optional labels. Trust signals like BRC, Halal, SALSA.",
@@ -15,6 +15,7 @@
                      "brc"
                  ],
     "textdomain":  "sgs-blocks",
+    "render":  "file:./render.php",
     "icon":  "awards",
     "supports":  {
                      "align":  [
@@ -50,8 +51,7 @@
     "attributes":  {
                        "title":  {
                                      "type":  "string",
-                                     "source":  "html",
-                                     "selector":  ".sgs-certification-bar__title"
+                                     "default":  ""
                                  },
                        "items":  {
                                      "type":  "array",

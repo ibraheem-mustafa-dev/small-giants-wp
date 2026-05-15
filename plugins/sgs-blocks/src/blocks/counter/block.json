@@ -2,7 +2,7 @@
     "$schema":  "https://schemas.wp.org/trunk/block.json",
     "apiVersion":  3,
     "name":  "sgs/counter",
-    "version":  "0.1.0",
+    "version":  "0.2.0",
     "title":  "SGS Counter",
     "category":  "sgs-content",
     "description":  "Animated number counter with prefix, suffix, and label.",
@@ -60,8 +60,7 @@
                                   },
                        "label":  {
                                      "type":  "string",
-                                     "source":  "html",
-                                     "selector":  ".sgs-counter__label"
+                                     "default":  ""
                                  },
                        "duration":  {
                                         "type":  "number",
@@ -94,6 +93,7 @@
     "editorScript":  "file:./index.js",
     "editorStyle":  "file:./index.css",
     "style":  "file:./style-index.css",
+    "render":  "file:./render.php",
     "viewScriptModule":  "file:./view.js",
     "example":  {
                     "attributes":  {

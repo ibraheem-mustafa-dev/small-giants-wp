@@ -2,7 +2,7 @@
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
     "name": "sgs/divider",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "title": "Divider",
     "category": "sgs-layout",
     "description": "Section separator with four visual variants: simple line, dot row, SVG wave, or centred shape. Used to mark transitions between page sections.",
@@ -81,6 +81,7 @@
             "default": 3
         }
     },
+    "render": "file:./render.php",
     "editorScript": "file:./index.js",
     "editorStyle": "file:./index.css",
     "style": "file:./style-index.css",
