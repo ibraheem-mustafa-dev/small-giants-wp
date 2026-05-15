@@ -40,20 +40,24 @@ _SEVERITY_RANK = {"high": 0, "medium": 1, "low": 2}
 # Per-bucket descriptions of what the operator should do when triaging
 # items in that bucket. Drives the proposed_action column.
 _PROPOSED_ACTION_BY_BUCKET: dict[str, str] = {
-    "unrecognised_class":            "Add to naming-conventions or lingua-franca map (5c)",
-    "unrecognised_section":          "Atomic-block scaffold candidate (5b.8) or new SGS block",
-    "extraction_failed":             "Extend slot extractor or declare slot omission",
-    "animation_unclassified":        "Route via /uimax-scrape-animation + register SGS animation",
-    "structural_mismatch_or_orphan": "Re-check block fingerprint or scaffold an atomic block",
+    "unrecognised_class":               "Add to naming-conventions or lingua-franca map (5c)",
+    "unrecognised_section":             "Atomic-block scaffold candidate (5b.8) or new SGS block",
+    "extraction_failed":                "Extend slot extractor or declare slot omission",
+    "animation_unclassified":           "Route via /uimax-scrape-animation + register SGS animation",
+    "structural_mismatch_or_orphan":    "Re-check block fingerprint or scaffold an atomic block",
+    "chrome_skipped":                   "No action — intentional skip of <header>/<footer>/<nav>",
+    "cv2_handled_no_top_level_match":   "Review cv2's emitted block composition; consider authoring a new top-level SGS block for this section signature",
 }
 
 # Pretty-name per bucket for the report grouping.
 _BUCKET_LABEL: dict[str, str] = {
-    "unrecognised_class":            "Unrecognised class (convention)",
-    "unrecognised_section":          "Unrecognised section (structural)",
-    "extraction_failed":             "Extraction failed (attribute)",
-    "animation_unclassified":        "Animation unclassified (functionality)",
-    "structural_mismatch_or_orphan": "Structural mismatch / orphan",
+    "unrecognised_class":               "Unrecognised class (convention)",
+    "unrecognised_section":             "Unrecognised section (structural)",
+    "extraction_failed":                "Extraction failed (attribute)",
+    "animation_unclassified":           "Animation unclassified (functionality)",
+    "structural_mismatch_or_orphan":    "Structural mismatch / orphan",
+    "chrome_skipped":                   "Chrome skipped (info)",
+    "cv2_handled_no_top_level_match":   "cv2-handled, no top-level match (structural)",
 }
 
 

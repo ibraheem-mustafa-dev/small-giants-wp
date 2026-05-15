@@ -8,6 +8,22 @@ last_updated: 2026-05-16
 
 ## New 2026-05-16 — Phase 8 in-flight backlog
 
+### P-PHASE8-14 — Section-collapses-into-leaf-block guard
+
+**What:** Multi-rater /qc panel (fresh-eyes lens) flagged an adversarial scenario: a section whose class accidentally matches a leaf-level block name (e.g. `<section class="sgs-product-card">` rather than `<section class="sgs-products"><div class="sgs-product-card">…</div>…</section>`). Stage 2 matches the registered `sgs/product-card` at confidence 1.0. The block-root fast path fires at the section root. `lift_subtree_into_block_attrs` collapses the entire multi-component section into a single product-card block with whatever the first descendant's attrs were. No bucket captures this — silent collapse.
+
+**Trigger:** Real client mockup hits the pattern, OR Phase 8 closure work uses an adversarial test to demonstrate the gap.
+
+**Approach:** Add a new check `route_section_complexity_mismatch` (or extend `route_wrong_block_type`): when Stage 2 matches a registered LEAF block (no InnerBlocks slot in block.json) at confidence ≥ threshold AND the section DOM contains > N child elements OR descendant depth > D, emit `structural_mismatch_or_orphan` with `source="section_collapsed_into_leaf_block"` and severity `high`. Need to read block.json `supports` to determine "is this a leaf vs composite block". ~25 lines + DB lookup.
+
+### P-PHASE8-15 — severity_totals key in orchestrator router-failure fallback
+
+**What:** Multi-rater /qc panel (ecosystem lens) noted the orchestrator's bucket-router subprocess-fail fallback initialiser hardcodes `{"leftover_buckets": {}, "totals": {}, "total_count": 0}` — no `severity_totals` key. If the router subprocess fails (non-zero exit) AND a downstream consumer eventually reads `severity_totals`, it'll throw KeyError. No consumer reads it yet, but future operator-review HTML / handoff regen may.
+
+**Trigger:** First downstream consumer of `severity_totals` is wired in.
+
+**Approach:** Add `"severity_totals": {}` to the fallback init dict at `sgs-clone-orchestrator.py:1606`. 1 line.
+
 ### P-PHASE8-11 — Severity totals dashboard in leftover-buckets.json
 
 **What:** Multi-rater /qc panel (architecture lens) on the 2026-05-16 bucket-router upgrade flagged that `gap_level_totals` collapses all `structural` buckets (`unrecognised_section` severity=high, `cv2_handled_no_top_level_match` severity=low, `chrome_skipped` severity=info) under the same `structural` count. An operator reading `gap_level_totals.structural = 5` can't tell whether 5 are blocking or noise.

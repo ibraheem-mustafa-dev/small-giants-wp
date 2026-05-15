@@ -97,15 +97,41 @@ BUCKET_SEVERITY_FLOOR: dict[str, str] = {
 }
 
 
+# Buckets that are TYPE classifications rather than gravity assessments.
+# Their floor severity is taken as the literal severity — no confidence-
+# based escalation. Without this opt-out, a cv2_handled item (confidence
+# always 0.0 because Stage 2 didn't match — that's the very condition
+# making it cv2_handled) would escalate from 'low' to 'medium', misleading
+# the operator into thinking the section is a genuine problem.
+#
+# Inclusion criterion for future buckets: add a bucket here ONLY if the
+# bucket is reached BECAUSE confidence is low (the low confidence is what
+# defines membership), not because it represents an accuracy signal.
+# Examples of buckets that SHOULD NOT be in this set: unrecognised_class
+# (low confidence IS the signal), structural_mismatch_or_orphan (DOM-vs-
+# block disagreement, escalation by low confidence is correct).
+_NO_CONFIDENCE_ESCALATION: set[str] = {
+    "chrome_skipped",
+    "cv2_handled_no_top_level_match",
+}
+
+
 def _enrich_item(item: dict, bucket: str, confidence: float | None = None) -> dict:
     """Stamp gap_level + severity on a bucket item.
 
     Severity escalates from the bucket floor when confidence < 0.25 (the
-    'rough guess' threshold). Returns the same dict for chained use.
+    'rough guess' threshold), EXCEPT for type-classification buckets
+    listed in _NO_CONFIDENCE_ESCALATION. Returns the same dict for
+    chained use.
     """
     item["gap_level"] = BUCKET_TO_GAP_LEVEL[bucket]
     severity = BUCKET_SEVERITY_FLOOR[bucket]
-    if confidence is not None and confidence < 0.25 and severity == "low":
+    if (
+        confidence is not None
+        and confidence < 0.25
+        and severity == "low"
+        and bucket not in _NO_CONFIDENCE_ESCALATION
+    ):
         severity = "medium"
     item["severity"] = severity
     return item
@@ -361,6 +387,160 @@ def route_animation_unclassified(extract: dict, buckets: dict[str, list]) -> Non
         }, bucket))
 
 
+_BEM_BLOCK_FROM_CLASS = re.compile(r"^sgs-([a-z](?:[a-z0-9]|-(?!-))*)")
+# Block boundary detection — opens (<!-- wp:slug) and closes (<!-- /wp:slug -->).
+# Used for depth-aware traversal so the wrong-block-type plausibility check
+# inspects only the section-ROOT emission, not nested descendants.
+_WP_BLOCK_OPEN = re.compile(r"<!--\s+wp:((?:sgs|core)/[\w-]+)\b")
+_WP_BLOCK_CLOSE = re.compile(r"<!--\s+/wp:(?:sgs|core)/[\w-]+\s+-->")
+_WP_BLOCK_SELFCLOSE_AT_OPEN = re.compile(r"/-->")
+
+
+def _section_root_block_slug(markup: str) -> str | None:
+    """Return the slug of the FIRST emitted WP block at depth 0 (the section
+    root). Skips chrome-skip comments. Returns None if no depth-0 block found.
+
+    Depth tracking: each non-self-closing open increments depth on enter, each
+    matching close decrements. Self-closing blocks (`/-->`) don't change depth.
+    We're not building an AST — we just need the first depth-0 open.
+    """
+    depth = 0
+    i = 0
+    n = len(markup)
+    while i < n:
+        # Locate next event: open OR close
+        m_open = _WP_BLOCK_OPEN.search(markup, i)
+        m_close = _WP_BLOCK_CLOSE.search(markup, i)
+        # Pick the earliest event
+        next_open_pos = m_open.start() if m_open else n + 1
+        next_close_pos = m_close.start() if m_close else n + 1
+        if next_open_pos >= n and next_close_pos >= n:
+            return None  # nothing more
+        if next_open_pos < next_close_pos:
+            # Open at this position
+            if depth == 0:
+                return m_open.group(1)
+            # Determine if this open is self-closing
+            # Look for /--> before the next newline or -->
+            tail_end = markup.find("-->", m_open.end())
+            if tail_end == -1:
+                return None
+            tail_segment = markup[m_open.end(): tail_end]
+            if not _WP_BLOCK_SELFCLOSE_AT_OPEN.search(tail_segment + "-->"):
+                depth += 1
+            i = tail_end + 3
+        else:
+            # Close at this position
+            depth = max(0, depth - 1)
+            i = m_close.end()
+    return None
+
+
+def _section_first_typed_block(markup: str) -> str | None:
+    """Return the section-root emitted block slug ONLY if it's a typed sgs/*
+    block (not sgs/container). Used by the wrong-block-type plausibility
+    check — depth-0 only, no false positives from nested descendants.
+
+    Known limitation (depth-0 only): a section whose ROOT is sgs/container
+    (correct per R4) but whose nested descendants contain a wrongly-typed
+    block (e.g. sgs/team-member emitted three levels deep inside a
+    sgs/hero subtree) will not be caught here. The depth-0 restriction is
+    the correct first-pass heuristic — recursing into descendants would
+    add false positives from legitimate nesting. Recursive-scan with
+    parent-block awareness is the Phase 9 extension path; see P-PHASE8-14
+    (section-collapses-into-leaf-block guard) for the adjacent gap.
+    """
+    root_slug = _section_root_block_slug(markup)
+    if root_slug and root_slug.startswith("sgs/") and root_slug != "sgs/container":
+        return root_slug
+    return None
+
+
+def _bem_block_name_from_signature(class_signature: list) -> str | None:
+    """Extract the bare BEM block name from a class_signature.
+
+    e.g. ['sgs-featured-product'] -> 'featured-product'
+         ['sgs-product-card--trial', 'sgs-pill'] -> 'product-card' (first sgs- class wins)
+    Returns None when no sgs-<name> class is present.
+    """
+    for cls in (class_signature or []):
+        m = _BEM_BLOCK_FROM_CLASS.match(cls)
+        if m:
+            return m.group(1)
+    return None
+
+
+def _slug_tail(slug: str) -> str:
+    """sgs/product-card -> product-card"""
+    return slug.rsplit("/", 1)[-1] if "/" in slug else slug
+
+
+def route_wrong_block_type(matches: list[dict], boundaries: list[dict], extract: dict, buckets: dict[str, list]) -> None:
+    """P-PHASE8-12 (2026-05-16) — flag cv2-handled sections whose first
+    typed emission disagrees with the section's BEM root-block-name.
+
+    Heuristic: when cv2 emits a typed sgs/<X> block (not sgs/container) AT
+    THE SECTION ROOT, the section's class_signature SHOULD carry a matching
+    `sgs-<X>` class. If the names differ AND ranked_candidates didn't rank
+    sgs/<X> at the top, the converter likely picked the wrong block-type
+    (e.g. matched on an inner descendant's class instead of the section
+    wrapper). Surface as structural so the operator can investigate.
+
+    This sits ALONGSIDE structural_mismatch_or_orphan rather than inside it,
+    because chrome_skipped + cv2_handled sections were excluded from that
+    bucket to avoid double-bucketing. The wrong-block-type check is a
+    targeted plausibility guard rail on cv2 emissions specifically.
+    """
+    bucket = "structural_mismatch_or_orphan"
+    psr_by_bid = {r.get("boundary_id"): r for r in _per_section_results(extract)}
+    boundaries_by_id = {b.get("boundary_id"): b for b in (boundaries or [])}
+
+    for m in matches:
+        bid = m.get("boundary_id")
+        psr = psr_by_bid.get(bid) or {}
+        markup = psr.get("block_markup") or ""
+        # Only check cv2-handled sections (those that emitted typed blocks
+        # but did NOT have a top-level Stage 2 match).
+        if not _section_emitted_typed_blocks(markup):
+            continue
+        if float(m.get("confidence", 0.0)) >= UNRECOGNISED_CONFIDENCE_THRESHOLD:
+            continue
+        if _CHROME_SKIPPED_MARKER.search(markup):
+            continue
+
+        first_typed = _section_first_typed_block(markup)
+        if not first_typed:
+            continue  # cv2 only emitted sgs/container — R4 fall-through, fine
+
+        boundary = boundaries_by_id.get(bid) or {}
+        section_bem = _bem_block_name_from_signature(boundary.get("class_signature") or [])
+        if section_bem is None:
+            continue  # can't compare — no BEM name to check against
+
+        first_typed_tail = _slug_tail(first_typed)
+        if first_typed_tail == section_bem:
+            continue  # cv2 emitted the matching block — fine
+
+        # Plausibility: was the emitted block in the ranked_candidates list?
+        ranked = m.get("ranked_candidates") or []
+        ranked_slugs = {c.get("block_name") for c in ranked}
+        if first_typed in ranked_slugs:
+            continue  # cv2 chose a real candidate the voter saw — accept
+
+        buckets[bucket].append(_enrich_item({
+            "section_id": m.get("section_id"),
+            "boundary_id": bid,
+            "block_name": first_typed,
+            "section_bem_block": section_bem,
+            "reason": (
+                f"cv2 emitted {first_typed} at section root, but section's "
+                f"BEM root-class implies sgs/{section_bem}. Possible wrong-"
+                f"block-type."
+            ),
+            "source": "cv2_plausibility_check",
+        }, bucket))
+
+
 def route_structural_mismatch(matches: list[dict], extract: dict, buckets: dict[str, list]) -> None:
     """Flag sections where DOM-shape disagrees with the matched block.
 
@@ -370,7 +550,8 @@ def route_structural_mismatch(matches: list[dict], extract: dict, buckets: dict[
     Skips sections that route_unrecognised_section already classified as
     chrome_skipped or cv2_handled_no_top_level_match (per binding rule #1
     2026-05-16) — those have a clearer classification and should not also
-    appear here as structural mismatch.
+    appear here as structural mismatch. The wrong-block-type plausibility
+    check in route_wrong_block_type covers cv2-handled sections separately.
     """
     bucket = "structural_mismatch_or_orphan"
     extracted_count = len(extract.get("extracted_attributes") or {})
@@ -419,18 +600,27 @@ def route(
     route_extraction_failed(slot_lists, extract_dict, buckets)
     route_animation_unclassified(extract_dict, buckets)
     route_structural_mismatch(matches, extract_dict, buckets)
+    route_wrong_block_type(matches, boundaries, extract_dict, buckets)
 
     totals = {name: len(items) for name, items in buckets.items()}
     gap_level_totals = {"attribute": 0, "functionality": 0, "convention": 0, "structural": 0}
+    # P-PHASE8-11 (2026-05-16) — severity dashboard alongside gap_level_totals.
+    # Operator question "how many BLOCKING gaps?" used to require manual
+    # filtering because high/low/info collapsed into one structural count.
+    severity_totals = {"info": 0, "low": 0, "medium": 0, "high": 0}
     for items in buckets.values():
         for item in items:
             level = item.get("gap_level")
             if level in gap_level_totals:
                 gap_level_totals[level] += 1
+            sev = item.get("severity")
+            if sev in severity_totals:
+                severity_totals[sev] += 1
     return {
         "leftover_buckets": buckets,
         "totals": totals,
         "gap_level_totals": gap_level_totals,
+        "severity_totals": severity_totals,
         "total_count": sum(totals.values()),
     }
 

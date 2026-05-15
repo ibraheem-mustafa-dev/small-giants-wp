@@ -423,6 +423,71 @@ def run() -> None:
     conn.commit()
 
     # ------------------------------------------------------------------
+    # P-PHASE8-13 (2026-05-16) — Second-pass role backfill.
+    #
+    # The main pass above leaves role=NULL whenever
+    #   - the attr name doesn't carry a property suffix, AND
+    #   - slot_synonyms.role is NULL for the resolved canonical_slot.
+    #
+    # Both conditions hold for most pure-content attrs (heading, body,
+    # label, button text, etc.) — they have a clear canonical_slot but no
+    # property suffix to peel. With slot_synonyms.role now populated for
+    # content-bearing slots (see migrations/2026-05-16-slot-synonyms-
+    # roles.py), this pass propagates that role to the matching
+    # block_attributes rows. Required by the bucket-router's
+    # cv2_emitted_dynamic filter to keep the gap signal meaningful.
+    #
+    # Incremental safety: only touches rows where role IS NULL AND
+    # canonical_slot IS NOT NULL AND the attr_name had NO property suffix
+    # peeled in decompose_attr_name. The property-suffix guard avoids the
+    # false-positive case where e.g. attr_name='textTransform' has stem
+    # 'text' resolving to canonical_slot='text', which would propagate
+    # role='text-content' even though the attr is a typography CSS
+    # property — its real role is 'typography', assigned via the property
+    # suffix path. Without the guard the backfill mis-routes CSS-property
+    # attrs that happen to share a stem with a content slot.
+    # ------------------------------------------------------------------
+    backfill_cur = conn.cursor()
+    backfill_cur.execute(
+        "SELECT ba.id, ba.attr_name, ba.canonical_slot, ss.role "
+        "FROM block_attributes ba "
+        "JOIN slot_synonyms ss ON ss.canonical_slot = ba.canonical_slot "
+        "WHERE ba.role IS NULL "
+        "AND ba.canonical_slot IS NOT NULL "
+        "AND ss.role IS NOT NULL"
+    )
+    candidate_rows = backfill_cur.fetchall()
+    backfill_updates = []
+    suffix_guarded_count = 0
+    for row_id, attr_name, _canonical_slot, slot_role in candidate_rows:
+        # Re-run decomposition to check whether attr_name carries a
+        # property suffix. If yes, the property suffix should have set
+        # role earlier — its absence means a name like 'rotationXY'
+        # where the suffix peels but no property role mapping exists.
+        # Either way, prefer NOT to fill via slot.role when a suffix
+        # was peeled.
+        _, _prop_suffix, prop_info, _ = decompose_attr_name(
+            attr_name, property_suffixes, modifier_map
+        )
+        if prop_info is not None:
+            # Property suffix was peeled — skip slot.role propagation.
+            suffix_guarded_count += 1
+            continue
+        backfill_updates.append((slot_role, row_id))
+
+    if backfill_updates:
+        conn.executemany(
+            "UPDATE block_attributes SET role = ? WHERE id = ?",
+            backfill_updates,
+        )
+        conn.commit()
+    print(
+        f"[backfill] propagated slot.role -> block_attributes.role on "
+        f"{len(backfill_updates)} rows (guarded {suffix_guarded_count} "
+        f"property-suffix attrs)"
+    )
+
+    # ------------------------------------------------------------------
     # Self-checks
     # ------------------------------------------------------------------
 
