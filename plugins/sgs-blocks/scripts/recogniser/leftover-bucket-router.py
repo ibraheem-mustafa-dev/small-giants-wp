@@ -146,14 +146,26 @@ def route_unrecognised_section(matches: list[dict], buckets: dict[str, list]) ->
 
 
 def route_extraction_failed(slot_lists: dict, extract: dict, buckets: dict[str, list]) -> None:
-    """For each section, surface declared slots that came back empty."""
+    """For each section, surface declared slots that came back empty.
+
+    The extract['extracted_attributes'] dict may use either bare slot names
+    (e.g. ``"headline"``) OR section-prefixed names (e.g. ``"hero.headline"``
+    or ``"hero.hero.headline"`` from the multi-section aggregation).
+    We check both forms so converter_v2 and legacy paths are treated equally.
+    """
     bucket = "extraction_failed"
     extracted_attrs = extract.get("extracted_attributes") or {}
     for boundary_id, scaffold in (slot_lists or {}).items():
         section_id = scaffold.get("section_id", boundary_id)
         for slot in scaffold.get("slots", []):
             name = slot["slot_name"]
-            if name not in extracted_attrs:
+            # Check all plausible key forms: bare, section_id-prefixed, boundary-prefixed
+            found = (
+                name in extracted_attrs
+                or f"{section_id}.{name}" in extracted_attrs
+                or f"{boundary_id}.{name}" in extracted_attrs
+            )
+            if not found:
                 buckets[bucket].append(_enrich_item({
                     "section_id": section_id,
                     "boundary_id": boundary_id,

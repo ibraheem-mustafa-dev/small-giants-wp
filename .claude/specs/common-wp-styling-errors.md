@@ -233,6 +233,29 @@ Also: always use `background-image:` not `background:` shorthand for gradient/im
 
 **Captured:** 2026-05-06 (H-9 audit). Fixed in `cta-section/style.css` (gradient preset rules + button gradient) and `post-grid/style.css` (skeleton shimmer).
 
+## S. Pixel-diff investigation methodology (2026-05-15 Spec 16 Phase 7 session)
+
+**Symptom:** Pixel-diff between deployed SGS converter output and a mockup baseline plateaus at ~30-45% even after multiple architectural converter improvements. Tempting conclusion: "the closure gate is unachievable, the comparison is structurally noisy".
+
+**Reality:** Two separate effects mixed together:
+
+1. **Real converter quality gaps** — every gap is ALREADY classified by the orchestrator at `pipeline-state/<run>/leftover-buckets.json` into 5 buckets (unrecognised_class, unrecognised_section, extraction_failed, animation_unclassified, structural_mismatch_or_orphan). Reading the bucket data tells you exactly which (section, slot, reason) combos failed.
+2. **Structural measurement noise** — full-page diff has ~30-45% irreducible floor from WP-block-wrapper differences (`<section class="sgs-container wp-block-sgs-container ...">` vs mockup's bare `<div class="sgs-products">`) + intentional UX differences (carousel vs stacked, theme.json tokens vs inline CSS).
+
+### The methodology rules (binding)
+
+1. **READ pipeline-state/<run>/leftover-buckets.json BEFORE conjecturing.** The orchestrator records what didn't translate. Spot-fixing without that evidence is forbidden.
+2. **Use per-section cropped diff (`--selector .sgs-X`), not full-page.** `scripts/pixel-diff.py --selector .sgs-{section}` or `scripts/screenshot-diff-helper.js --selector`. Each section closes independently at ≤ 1% across 375/768/1440 viewports.
+3. **Track converter quality via bucket counts**, not pixel-diff percentages. Going from 212 extraction_failed → 185 is real converter progress even when the pixel-diff number doesn't move (because the lifted attrs land on theme.json defaults that happen to coincide with the mockup's inline values).
+
+### The 2026-05-15 incident
+
+Spent ~6 hours of one session running 12 passes of full-page pixel diff and conjecturing about causes (DPR mismatch, body-anchored alignment, WP chrome noise, asymmetric grid columns). One read of `leftover-buckets.json` would have revealed the actual root cause: 212 extraction_failed entries, 173 in hero, all STYLING attrs (headlineFontSize, headlineColour, labelLetterSpacing, etc.) that the converter wasn't lifting from inline `style="..."` + matched CSS rules. After reading the bucket data, the focused fix (CSS-driven `_lift_styling_attrs()`) took ~60 min.
+
+**Lessons captured:** `~/.openclaw/workspace/memory/learning/2026-05-15-read-leftover-buckets-*.md` + `~/.openclaw/workspace/memory/learning/2026-05-15-per-section-cropped-pixel-diff-*.md`. blub.db rows 254, 256.
+
+**Files:** `pipeline-state/<run>/leftover-buckets.json` (orchestrator output) — `plugins/sgs-blocks/scripts/recogniser/leftover-bucket-router.py` (writer; bare-key lookup bug also fixed 2026-05-15 — was causing 100% false "failed" classification) — `plugins/sgs-blocks/scripts/orchestrator/converter_v2/__init__.py` (extracted_attributes was always empty, suppressing all signal — fixed 2026-05-15).
+
 ## How to add an entry
 
 1. Hit a real WordPress styling failure in a session.

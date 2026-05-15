@@ -1,10 +1,91 @@
 ---
 doc_type: parking
 project: small-giants-wp
-last_updated: 2026-05-14
+last_updated: 2026-05-15
 ---
 
 # Parking — deferred work with named triggers
+
+## New 2026-05-15 — Phase 8 backlog (after Spec 16 Phase 7 architectural close)
+
+### P-PHASE8-1 — Heritage-strip as Brand Story PATTERN (Bean's 2026-05-15 redirect)
+
+**What:** Retire the `sgs/heritage-strip` block entirely. Replace with a registered pattern composing `sgs/container` (2-col grid) + `core/heading` + `core/paragraph` + `sgs/quote` (or sgs/testimonial-slider for the author bit) + `sgs/button`. Image goes in the right column.
+
+**Trigger:** Phase 8 section-by-section closure work reaches the heritage section, OR a new client needs the Brand Story composition.
+
+**Approach:**
+- Register pattern at `theme/sgs-theme/patterns/brand-story.php` with placeholder content
+- Update Spec 16 §Phase-4 + framework block-build-status table to remove heritage-strip
+- Migrate existing posts using sgs/heritage-strip via WP-CLI block-recovery (or accept they stay on the deprecated block until manually re-laid)
+- Update converter — remove the `if block_slug == "sgs/heritage-strip":` guard at line 1016 (it's currently dead code since the CSS-driven path catches the section)
+
+**Spec ref:** Bean's 2026-05-15 redirect in conversation; capture in Spec 16 v0.3.
+
+### P-PHASE8-2 — Per-block render.php audits
+
+**What:** Many lifted styling attrs aren't honoured by block render.php. The converter lifts `headlineFontSizeTablet` correctly but the block's render.php doesn't emit a `@media (min-width:768px) { .sgs-Xxx__headline { font-size:N }}` rule for it. Audit 6-8 blocks (hero, product-card, info-box, heritage-strip, testimonial-slider, feature-grid, card-grid, cta-section).
+
+**Trigger:** Phase 8 section-by-section closure — each section's per-section diff above 1% drives an audit of its block's render.php.
+
+**Approach:** for each block:
+1. List all *Tablet / *Mobile / *Desktop variant attrs in block.json
+2. Confirm render.php emits matching media-query CSS for each
+3. Confirm CSS uses `:not([style*="<prop>"])` fallback pattern per SGS standard
+
+**Effort:** ~30 min per block × 6-8 = 3-4 hours.
+
+### P-PHASE8-3 — Remove hyperspecific block_slug guards in `lift_subtree_into_block_attrs`
+
+**What:** `if block_slug == "sgs/hero":` at line 1016 and `if block_slug == "sgs/heritage-strip":` at line 1048 are pre-existing technical debt the multi-model QC panel surfaced as "in scope of NEEDS-REFACTOR but not new". Refactor to BEM-modifier-driven generic lift via a DB-backed `block_image_slots` table (subagent 5's 2026-05-15 design).
+
+**Trigger:** Either Phase 8 closure work hits a non-Mama's hero, OR the heritage-strip pattern refactor (P-PHASE8-1) makes the heritage guard dead code.
+
+**Approach:** see 2026-05-15 subagent 5 report in conversation transcript. ~70-80 lines + DB seed.
+
+### P-PHASE8-4 — `convert_page.py` line 198 still hardcodes `extracted_attributes: {}`
+
+**What:** During the 2026-05-15 styling-lift work, the implementer fixed `convert_section()` in `__init__.py` to populate extracted_attributes via brace-depth extraction. The parallel `convert_page.py` function still has the hardcoded empty dict. If the orchestrator routes through convert_page.py instead of convert_section, Stage 9 sees empty extracted_attributes.
+
+**Trigger:** Next session start (Phase 8 will run convert_page.py at orchestrator invocation; surface this as one of the first investigations).
+
+**Approach:** apply the same brace-depth extractor logic. ~15 lines.
+
+### P-PHASE8-5 — Pack-size pills not rendering on featured-product cards
+
+**What:** Lift code in `_extract_attr_value` and the lift_subtree loop correctly emits `packSizes` array in the converter's WP block markup for Zookies card. Render.php has `if ( ! $is_trial && ! empty( $pack_sizes ) )` gate. Pills don't render visibly on the deployed page. Audit the `$is_trial` computation — likely the variantStyle being lifted as "standard" doesn't quite match what render.php expects.
+
+**Trigger:** Phase 8 section-by-section closure hits `.sgs-featured-product`.
+
+**Approach:** open `plugins/sgs-blocks/src/blocks/product-card/render.php`, trace `$is_trial`, confirm the variantStyle enum mapping. ~15 min.
+
+### P-PHASE8-6 — Section-internal nav mapping
+
+**What:** `<nav>` is in `SKIP_TOP_LEVEL_TAGS` so the top-level header skip works. But nested navs (inside non-header sections) currently pass-through their children as bare `<a>` tags that render as `<p>Shop</p><p>About</p>…` paragraphs. Map nested `<nav>` to `core/navigation` or `sgs/mega-menu`.
+
+**Trigger:** Phase 8 work hits a section with nested nav, OR a new client mockup needs section-internal navigation.
+
+**Approach:** add `<nav>` to ATOMIC_TAG_MAP routing to `core/navigation` with a child-link lifting helper. ~30 lines.
+
+### P-PHASE8-7 — `_BREAKPOINT_SUFFIXES` non-standard breakpoint silent-drop
+
+**What:** The styling-lifter's `_BREAKPOINT_SUFFIXES` table covers 5 industry-standard breakpoints (min-width 768/1024/1280, max-width 767/640). Non-standard breakpoints (e.g. `min-width: 900px` or `min-width: 576px`) are silently ignored — the responsive attr family doesn't get lifted.
+
+**Trigger:** Phase 8 work hits a mockup with non-standard breakpoints, OR a CC/QC reviewer flags this gap.
+
+**Approach:** add a stderr warning when a media-query selector matches a known class but the breakpoint isn't in the table. Long-term: read breakpoints from theme.json or a new config rather than a hardcoded set. ~30 min.
+
+### P-PHASE8-8 — Spec 16 v0.3 — closure gate revision
+
+**What:** Spec 16 §Phase 4 currently says "≤ 1% pixel diff" without specifying per-section vs full-page. 2026-05-15 work proved per-section cropped diff is the honest measurement. Spec needs revision to define:
+- Closure unit = section (cropped via `--selector .sgs-X`)
+- Threshold = ≤ 1% across 375 / 768 / 1440 viewports per section
+- Page-level closure = ALL sections close
+- Methodology rule: read leftover-buckets.json BEFORE any pixel-diff conjecture
+
+**Trigger:** First Phase 8 session (this is a 30-min doc update, do it early).
+
+**Approach:** edit `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` §Phase 4 closure-gate definition.
 
 ## New 2026-05-14 — Phase 6 v2 deferrals
 

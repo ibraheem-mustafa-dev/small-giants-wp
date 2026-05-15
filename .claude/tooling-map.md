@@ -9,7 +9,7 @@ companion_docs:
   - .claude/db-tables-map.md - All tables in sgs-framework.db + ui-ux-pro-max.db with read/write provenance per pipeline stage
   - .claude/reports/2026-05-13-tooling-map-qc-gemini-flash.md - Independent QC verdict 93/100
 qc_status: PATCHED 2026-05-13 - applied 5 material corrections from Gemini Flash + /qc-inline + 2 corrections from Round 2 (Haiku + Gemini)
-last_verified: 2026-05-14
+last_verified: 2026-05-15
 update_triggers:
   - Any script add/remove/rename under plugins/sgs-blocks/scripts/, scripts/, or tools/
   - Any script wiring status change (TESTS-ONLY -> YES, etc.)
@@ -17,6 +17,39 @@ update_triggers:
 enforcement: .claude/hooks/tooling-map-drift-check.py (committed 2026-05-13, currently passes)
 registry_entry: docs-registry.md row 12
 ---
+
+## NEW 2026-05-15 — Spec 16 Phase 7 additions (uncommitted to main; on feat/spec-16-converter-v2-rollout)
+
+| Script | Path | Purpose | Status | Wiring |
+|---|---|---|---|---|
+| converter_v2/__init__.py | plugins/sgs-blocks/scripts/orchestrator/converter_v2/__init__.py | Public API for the Spec 16 deterministic converter — exposes `convert_section()` + `convert_page()`. Also contains brace-depth JSON extractor that populates `extracted_attributes` from emitted block markup (fixes pre-existing always-empty bug). | NEW 2026-05-15 | LIVE — imported by sgs-clone-orchestrator.py:1046 when `--converter-v2` flag is on AND boundary is SGS-BEM canonical |
+| converter_v2/convert.py | plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py | Slot-aware DOM-to-WP-blocks converter. ~1500 lines. Contains DB-driven block routing, CSS-driven container detection (`_detect_grid_container_from_css`), CSS-driven styling-attr lifter (`_lift_styling_attrs`), per-child mediaType detection, BEM-modifier-first hero variant inference, 4 lift patterns (hero image, testimonials array, feature-grid InnerBlocks, heritage body+image). | NEW 2026-05-15 (promoted from .claude/scratch/converter-prototype/) | LIVE — production path for cv2-eligible boundaries |
+| converter_v2/convert_page.py | plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert_page.py | Page-level convenience wrapper around convert_section. Has `--mode pipeline` CLI for orchestrator subprocess invocation + direct CLI mode for smoke tests. NOTE: line 198 still hardcodes `extracted_attributes: {}` — Phase 8 P-PHASE8-4 backlog item. | NEW 2026-05-15 | LIVE — direct CLI smoke test path |
+| converter_v2/db_lookup.py | plugins/sgs-blocks/scripts/orchestrator/converter_v2/db_lookup.py | DB helpers for converter — block_attrs(), block_exists(), attr_name_for_slot_or_alias(), canonical_slot_for(), modifier_kind(), parse_sgs_bem(). Wraps sgs-framework.db + uimax.db queries with @lru_cache. | NEW 2026-05-15 | LIVE — imported by convert.py |
+| pixel-diff.py | scripts/pixel-diff.py | Python equivalent of scripts/screenshot-diff-helper.js (Node version requires pixelmatch which isn't installed). Playwright + PIL pixel diff. Forces device_scale_factor=1 (eliminates DPR noise). `--selector` flag for per-section cropped diff (mirrors screenshot-diff-helper.js). `find_body_start_y()` heuristic for body-anchored alignment when not using selector. | NEW 2026-05-15 | STANDALONE — invoked by Phase 8 visual-QA workflow |
+
+## NEW 2026-05-15 — New atomic blocks
+
+| Block | Path | Status | Notes |
+|---|---|---|---|
+| sgs/heading | plugins/sgs-blocks/src/blocks/heading/* | NEW 2026-05-15, BUILT but not yet used in any rendered output | 48 attrs across 3 slots (label + headline + sub). Native supports.color + supports.spacing. Block Selectors API targets typography to headline. |
+| sgs/divider | plugins/sgs-blocks/src/blocks/divider/* | NEW 2026-05-15, BUILT but not yet used in any rendered output | 12 attrs, 4 variants (line/dots/wave/shape). Custom `dividerAlign` attr (renamed from `align` post QC panel — collision with WP-core align). |
+
+## MODIFIED 2026-05-15
+
+| File | Change |
+|---|---|
+| plugins/sgs-blocks/src/blocks/container/block.json | +3 string attrs: gridTemplateColumns, gridTemplateColumnsTablet, gridTemplateColumnsMobile (Phase 7 — allows asymmetric grid tracks like "5fr 3fr" that the existing columns: N attr cannot express) |
+| plugins/sgs-blocks/src/blocks/container/render.php | +sgs_sanitize_grid_template() helper + override logic — when gridTemplateColumns set, emits `grid-template-columns: <value>` instead of `repeat(N, 1fr)` |
+| plugins/sgs-blocks/src/blocks/heritage-strip/block.json | +1 line: `"render": "file:./render.php"` — block was registered with NULL render_callback, do_blocks() returned empty string |
+| plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py | _cv2_eligible computed once per boundary at top of loop; unmatched-section gate now skips cv2-eligible boundaries (fixes 5-of-9 short-circuit); converter softfail emits unmatched stub instead of falling through to broken legacy extract.py |
+| plugins/sgs-blocks/scripts/recogniser/leftover-bucket-router.py | route_extraction_failed() bare-key lookup fix — checks bare name, section_id.name, and boundary_id.name forms (fixes 100% false-fail classification) |
+
+## NEW 2026-05-15 — Pipeline output documentation
+
+Per Bean's 2026-05-15 binding rule: **ALWAYS read `pipeline-state/<run>/leftover-buckets.json` BEFORE conjecturing about converter quality.** The orchestrator already classifies every gap. Full registry of pipeline run artefacts now lives in `docs-registry.yaml:pipeline_run_artefacts`. Reading order at session start now requires `leftover-buckets.json` as item 10 of cold-start.
+
+
 
 # SGS Cloning Pipeline - Tooling Map
 

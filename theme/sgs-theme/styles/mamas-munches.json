@@ -94,6 +94,14 @@
           "slug": "cookie-brown-warm",
           "color": "#BE7B52",
           "name": "Cookie Brown Warm (brand-source warm tone)"
+        },
+        {
+          "slug": "client-surface-pink",
+          "color": "surface-pink"
+        },
+        {
+          "slug": "client-text",
+          "color": "text"
         }
       ]
     },
@@ -130,6 +138,12 @@
               ]
             }
           ]
+        }
+      ],
+      "fontSizes": [
+        {
+          "slug": "px",
+          "size": "px"
         }
       ]
     },
@@ -174,6 +188,10 @@
           "slug": "28",
           "size": "28px",
           "name": "28px"
+        },
+        {
+          "slug": "px",
+          "size": "px"
         }
       ]
     }

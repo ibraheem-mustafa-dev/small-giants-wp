@@ -33,6 +33,16 @@ See `subprojects.md`.
 
 For a fast cold-start orientation read: `quickstart.md`.
 
+## Binding methodology rules (2026-05-15, blub.db rows 254-256)
+
+These three rules apply to all SGS converter / clone pipeline / visual-QA work. Re-violation = recurring correction.
+
+1. **Read `pipeline-state/<run>/leftover-buckets.json` BEFORE conjecturing about converter quality or pixel-diff causes.** The orchestrator already classifies every gap by (section, slot, reason) into 5 buckets. Spot-fixing without this evidence is forbidden. See `~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_read_leftover_buckets_before_conjecturing.md`.
+
+2. **Multi-model `/qc` panel (Sonnet + Haiku + Gemini Flash + Cerebras) BEFORE every commit** touching converter / pipeline / SGS block logic. `/qc-inline` is the lightweight self-check during implementation; `/qc` is the dispatch gate. Single-Sonnet implementer review is insufficient. See `feedback_multi_model_qc_before_commit.md`.
+
+3. **Per-section cropped pixel diff** via `scripts/pixel-diff.py --selector .sgs-{section}`, NOT full-page. Full-page has ~30-45% structural noise floor. Each section closes independently at ≤ 1% across 375 / 768 / 1440 viewports. See `feedback_per_section_cropped_pixel_diff.md`.
+
 ## Consolidated on 2026-04-29
 
 Originals from `docs/`, `specs/`, and root-level scattered files were consolidated into this canonical layout by `/project-consolidate`. Receipts at `memory/consolidated-2026-04-29/`.

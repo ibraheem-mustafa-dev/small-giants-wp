@@ -969,6 +969,25 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
             aggregate_warnings.append(f"{boundary_id}: no selector resolved; skipping")
             continue
 
+        # Spec 16 Phase 7 — compute converter_v2 eligibility once per boundary.
+        # When --converter-v2 is active AND the boundary's class_signature is
+        # already SGS-BEM canonical, the converter takes over Stages 4+4.5+5+7
+        # inline. The converter emits sgs/container with the source className
+        # for section wrappers it doesn't recognise as a registered block, so
+        # the variation CSS still binds via className selector. This means the
+        # legacy "unmatched -> operator review" gate below must NOT short-
+        # circuit cv2-eligible boundaries — they get a recovery path the
+        # legacy world didn't have.
+        _cv2_eligible = False
+        if getattr(args, "converter_v2", False):
+            _class_sig = boundary.get("class_signature") or []
+            try:
+                _s1bh = stage1_boundary_hook()
+                if _s1bh is not None and hasattr(_s1bh, "_is_sgs_bem_canonical"):
+                    _cv2_eligible = bool(_s1bh._is_sgs_bem_canonical(_class_sig))
+            except Exception:  # noqa: BLE001
+                _cv2_eligible = False
+
         # Unmatched section: matcher returned core/group OR confidence 0.0.
         # No block, no pattern, no scaffold matched the candidate slug. Per the
         # 2026-05-14 retirement of composer_fallback, the right response is to
@@ -986,7 +1005,12 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
         # gate at Stage 8 will halt the autonomy_gate (a section-shaped hole in
         # the rendered page is impossible to miss). Stage 9 reports unmatched
         # sections in operator-review.html + the unmatched_sections list.
-        if target_block == "core/group" or m.get("confidence", 0) == 0:
+        #
+        # Spec 16 Phase 7 — cv2-eligible boundaries skip this gate. The
+        # converter handles unmatched section wrappers by emitting
+        # sgs/container with className so the variation CSS binds. Surfacing
+        # them as "unmatched" would mask successful converter output.
+        if (target_block == "core/group" or m.get("confidence", 0) == 0) and not _cv2_eligible:
             _emit(_trace_for(run_dir), stage="stage_4_unmatched_section",
                   boundary_id=boundary_id, section_id=m.get("section_id"),
                   selector=section_selector, target_block=target_block,
@@ -1015,6 +1039,130 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                 "class_signature": boundary.get("class_signature", []),
             })
             continue
+
+        # Phase 7 Step 2.3 — Spec 16 converter_v2 branch.
+        # _cv2_eligible was computed once at the top of the loop; reuse it.
+        # When eligible, delegate to the slot-aware converter rather than the
+        # legacy extract.py subprocess (which the 2026-05-15 closure-gate work
+        # found to be unreliable across section shapes).
+        if _cv2_eligible:
+            _class_sig = boundary.get("class_signature") or []
+            try:
+                # Import the production converter package. The orchestrator
+                # runs from REPO root, so the package path is discoverable
+                # via importlib if sys.path includes ORCHESTRATOR_DIR's parent.
+                _conv_pkg_dir = ORCHESTRATOR_DIR.parent  # .../scripts/
+                if str(_conv_pkg_dir) not in sys.path:
+                    sys.path.insert(0, str(_conv_pkg_dir))
+                from orchestrator.converter_v2 import convert_section as _conv_section
+                # Read section HTML from the mockup (same source as legacy extract.py).
+                # The boundary selector identifies which top-level element to extract.
+                from bs4 import BeautifulSoup as _BS4
+                _mockup_html = args.mockup.read_text(encoding="utf-8")
+                _soup = _BS4(_mockup_html, "html.parser")
+                # Extract inline CSS for variation-CSS lifting.
+                _style_blocks = [t.get_text() for t in _soup.find_all("style")]
+                _section_css = "\n\n".join(_style_blocks)
+                # Find the section element matching the boundary selector.
+                # Prefer ID-based lookup; fall back to class-based CSS selector.
+                _sec_el = None
+                _sec_id = boundary.get("section_id") or ""
+                if _sec_id:
+                    _sec_el = _soup.find(id=_sec_id)
+                if _sec_el is None and section_selector:
+                    # Strip the leading tag name if present (e.g. "section.sgs-hero" → "sgs-hero")
+                    _sel_parts = section_selector.split(".", 1)
+                    _tag = _sel_parts[0] if len(_sel_parts) > 1 else None
+                    _cls = _sel_parts[1] if len(_sel_parts) > 1 else _sel_parts[0]
+                    _sec_el = _soup.find(_tag, class_=_cls.split(".")[0]) if _tag else _soup.find(class_=_cls.split(".")[0])
+                _section_html = str(_sec_el) if _sec_el is not None else ""
+                # Build media map dict from file if provided.
+                _media_map_obj: dict = {}
+                if args.media_map and args.media_map.exists():
+                    import json as _json
+                    _media_map_obj = _json.loads(args.media_map.read_text(encoding="utf-8"))
+                result = _conv_section(
+                    html=_section_html,
+                    css=_section_css,
+                    media_map=_media_map_obj,
+                )
+                # Normalise to orchestrator per_section_results schema.
+                _cv2_markup = result.get("block_markup", "")
+                per_section_results.append({
+                    "boundary_id": boundary_id,
+                    "section_id": m.get("section_id"),
+                    "selector": section_selector,
+                    "block_name": result.get("block_name", target_block),
+                    "status": result.get("status", "complete"),
+                    "extract_path": "",
+                    "extracted_attributes": result.get("extracted_attributes", {}),
+                    "block_markup": _cv2_markup,
+                    "token_resolutions": [],
+                    "new_tokens_written": [],
+                    "supports_decisions": [],
+                    "supports_emitted_attributes": result.get("extracted_attributes", {}),
+                    "supports_omitted_attributes": {},
+                    "modifier_signals": {},
+                    "variation_css": result.get("variation_css", ""),
+                    "attribute_gap_candidates": result.get("attribute_gap_candidates", []),
+                    "class_signature": _class_sig,
+                    "converter_v2": True,
+                })
+                if _cv2_markup:
+                    aggregate_markup_parts.append(_cv2_markup)
+                # Aggregate converter_v2 extracted attrs into the combined dict so
+                # Stage 9 leftover-bucket-router credits them correctly. Prefixed
+                # by section_id to avoid key collisions across sections (same
+                # pattern as the legacy path at the bottom of the loop).
+                _cv2_attrs = result.get("extracted_attributes", {})
+                _cv2_section_id = m.get("section_id") or boundary_id
+                for _k, _v in _cv2_attrs.items():
+                    aggregate_attributes[f"{_cv2_section_id}.{_k}"] = _v
+                _emit(
+                    _trace_for(run_dir),
+                    stage="stage_4_converter_v2",
+                    boundary_id=boundary_id,
+                    section_selector=section_selector,
+                    target_block=target_block,
+                    markup_lines=_cv2_markup.count("\n") + 1 if _cv2_markup else 0,
+                    variation_css_rules=result.get("variation_css", "").count("\n") + 1 if result.get("variation_css") else 0,
+                    extracted_attr_count=len(_cv2_attrs),
+                )
+                continue  # Skip Stages 4.5, 5, 7 — converter handled them inline.
+            except Exception as _exc:  # noqa: BLE001
+                # Converter_v2 soft-fail. Per Bean 2026-05-15: legacy extract.py
+                # was found to be unreliable across section shapes, so we do
+                # NOT fall through to it. Instead surface as unmatched so the
+                # operator-review queue catches it.
+                aggregate_warnings.append(
+                    f"{boundary_id}: converter_v2 soft-failed ({_exc}); marked unmatched (no legacy fallback)"
+                )
+                _emit(
+                    _trace_for(run_dir),
+                    stage="stage_4_converter_v2_softfail",
+                    boundary_id=boundary_id,
+                    exception_type=type(_exc).__name__,
+                    exception_str=str(_exc),
+                    fallback="unmatched_section",
+                )
+                per_section_results.append({
+                    "boundary_id": boundary_id,
+                    "section_id": m.get("section_id"),
+                    "selector": section_selector,
+                    "block_name": target_block,
+                    "status": "unmatched-cv2-softfail",
+                    "extract_path": "",
+                    "extracted_attributes": {},
+                    "block_markup": "",
+                    "token_resolutions": [],
+                    "new_tokens_written": [],
+                    "supports_decisions": [],
+                    "supports_emitted_attributes": {},
+                    "supports_omitted_attributes": {},
+                    "modifier_signals": {},
+                    "class_signature": _class_sig,
+                })
+                continue
 
         per_section_out = run_dir / f"extract-{boundary_id}.json"
         cmd = [
@@ -1651,6 +1799,11 @@ def main():
         "--skip-autonomy-gate", action="store_true",
         help="Skip orchestrator_main.run() autonomy chain (preflight + staged_merge + "
              "visual_qa + autonomy_decision + deliverable). Useful for diagnostic runs.",
+    )
+    parser.add_argument(
+        "--converter-v2", action="store_true", default=False,
+        help="Use Spec 16 converter_v2 for SGS-BEM-canonical sections "
+             "(replaces legacy extract.py for those sections).",
     )
     args = parser.parse_args()
 

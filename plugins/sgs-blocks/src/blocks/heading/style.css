@@ -1,0 +1,74 @@
+/* ===== SGS Section Heading — Frontend + Editor ===== */
+/* Baseline values match the Mama's Munches gift-section heading cluster.      */
+/* Inline styles (written by save.js) ALWAYS take precedence over these rules. */
+
+/* ----- Wrapper ----- */
+.wp-block-sgs-heading {
+	text-align: center;
+}
+
+/* ----- Label (eyebrow / kicker) ----- */
+.wp-block-sgs-heading__label {
+	display: block;
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 1.5px;
+	text-transform: uppercase;
+	margin-bottom: 8px;
+
+	/* :not([style*="color"]) ensures the default token never overrides an
+	   operator-supplied inline colour value from the inspector. */
+}
+
+.wp-block-sgs-heading__label:not([style*="color"]) {
+	color: var(--wp--preset--color--primary);
+}
+
+/* ----- Headline ----- */
+.wp-block-sgs-heading__headline {
+	font-size: 28px;
+	font-weight: 700;
+	line-height: 1.2;
+	margin-top: 0;
+	margin-bottom: 8px;
+}
+
+.wp-block-sgs-heading__headline:not([style*="color"]) {
+	color: var(--wp--preset--color--text);
+}
+
+/* Tablet — scale headline up to 36px */
+@media (min-width: 768px) {
+	.wp-block-sgs-heading__headline {
+		font-size: 36px;
+	}
+}
+
+/* ----- Sub (intro / supporting copy) ----- */
+.wp-block-sgs-heading__sub {
+	font-size: 16px;
+	line-height: 1.5;
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+.wp-block-sgs-heading__sub:not([style*="color"]) {
+	color: var(--wp--preset--color--text-muted);
+}
+
+/* ----- Icon / emoji prefix ----- */
+.wp-block-sgs-heading__icon {
+	display: block;
+	font-size: 1.5em;
+	line-height: 1;
+	margin-bottom: 8px;
+}
+
+/* ===== Reduced motion ===== */
+@media (prefers-reduced-motion: reduce) {
+	.wp-block-sgs-heading,
+	.wp-block-sgs-heading * {
+		transition: none;
+		animation: none;
+	}
+}

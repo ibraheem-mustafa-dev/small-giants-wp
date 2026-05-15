@@ -5,7 +5,8 @@ plan_version: 1
 spec: 16
 project: small-giants-wp
 generated: 2026-05-14
-status: ready-to-execute (next session)
+status: PARTIAL CLOSURE 2026-05-15 — architectural work (Steps 1, 2, 5b, 6, 7) SHIPPED on feat/spec-16-converter-v2-rollout (commits 06eca194 + 19c89f0f). Visual-QA gate (Step 3) NOT reached at ≤ 1% full-page; closure gate redefined as per-section. Steps 4 + 5a + 8 carried into Phase 8 as section-by-section workflow. See .claude/plans/phase-8-section-by-section-closure.md (TBD) + parking.md P-PHASE8-* for Phase 8 backlog.
+actual_wall_time: ~13 hours over 2026-05-15 (vs estimated 2.5-3 hr — overshoot was ~6 hours of spot-fixing pixel-diff before reading leftover-buckets.json; captured as binding rule blub.db row 254)
 estimated_wall_time: 2.5–3 hours
 parallel_dispatch_eligible: yes — see Step-level dispatch tables
 references:

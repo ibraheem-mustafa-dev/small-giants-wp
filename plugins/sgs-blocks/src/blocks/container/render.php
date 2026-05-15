@@ -16,10 +16,32 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/shape-dividers.php';
 
+if ( ! function_exists( 'sgs_sanitize_grid_template' ) ) {
+	/**
+	 * Sanitise a CSS grid-template-columns value for safe inline-style emission.
+	 *
+	 * Allows: digits, letters, whitespace, percent, parens, commas, dashes.
+	 * Forbids: semicolons, braces, quotes, angle brackets, slashes.
+	 * Strips: anything else.
+	 *
+	 * @param string $value Raw attribute value.
+	 * @return string Sanitised CSS fragment.
+	 */
+	function sgs_sanitize_grid_template( $value ) {
+		$value = (string) $value;
+		// Keep only characters that can appear in a legitimate grid-template-columns value.
+		$value = preg_replace( '/[^A-Za-z0-9\s%(),.\-]/', '', $value );
+		return trim( $value );
+	}
+}
+
 $layout           = $attributes['layout'] ?? 'stack';
 $columns          = $attributes['columns'] ?? 2;
 $columns_mobile   = $attributes['columnsMobile'] ?? 1;
 $columns_tablet   = $attributes['columnsTablet'] ?? 2;
+$grid_template            = $attributes['gridTemplateColumns'] ?? '';
+$grid_template_tablet     = $attributes['gridTemplateColumnsTablet'] ?? '';
+$grid_template_mobile     = $attributes['gridTemplateColumnsMobile'] ?? '';
 $gap              = $attributes['gap'] ?? '40';
 $gap_tablet       = $attributes['gapTablet'] ?? '';
 $gap_mobile       = $attributes['gapMobile'] ?? '';
@@ -58,7 +80,16 @@ if ( ! empty( $bg_image['url'] ) ) {
 
 if ( 'grid' === $layout ) {
 	$styles[] = 'display:grid';
-	$styles[] = 'grid-template-columns:repeat(' . absint( $columns ) . ',1fr)';
+	// gridTemplateColumns string overrides the columns:N → repeat(N,1fr) default.
+	// Allows asymmetric tracks like "5fr 3fr" / "60% 40%" / "minmax(0,1fr) 320px".
+	// Phase 7 Spec 16 — 2026-05-15 added to support mockup grids like product-card
+	// pairs (5fr 3fr) and Brand Story 2-col (1fr 1fr) that the columns:N attr
+	// cannot express.
+	if ( '' !== trim( (string) $grid_template ) ) {
+		$styles[] = 'grid-template-columns:' . sgs_sanitize_grid_template( $grid_template );
+	} else {
+		$styles[] = 'grid-template-columns:repeat(' . absint( $columns ) . ',1fr)';
+	}
 	$styles[] = 'align-items:' . esc_attr( $vertical_align );
 } elseif ( 'flex' === $layout ) {
 	$styles[] = 'display:flex';

@@ -1,0 +1,117 @@
+/* ===== SGS Divider — Frontend + Editor ===== */
+
+/* ----- Outer wrapper (all variants) ----- */
+.wp-block-sgs-divider {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Horizontal alignment of the inner divider element */
+.wp-block-sgs-divider.is-divider-align-left {
+    justify-content: flex-start;
+}
+
+.wp-block-sgs-divider.is-divider-align-center {
+    justify-content: center;
+}
+
+.wp-block-sgs-divider.is-divider-align-right {
+    justify-content: flex-end;
+}
+
+/* ----- Variant: line ----- */
+hr.wp-block-sgs-divider__line {
+    display: block;
+    border: 0;
+    /* Colour fallback — overridden per-instance via inline style */
+    border-top: 1px solid var(--wp--preset--color--primary);
+    height: 0;
+    /* No margin — parent wrapper handles margin via marginTop/marginBottom attrs */
+    margin: 0;
+    padding: 0;
+}
+
+hr.wp-block-sgs-divider__line:not([style*="border-top"]) {
+    border-top-color: var(--wp--preset--color--primary);
+}
+
+/* ----- Variant: dots ----- */
+.wp-block-sgs-divider__dots {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.wp-block-sgs-divider__dot {
+    display: inline-block;
+    border-radius: 50%;
+    /* Colour fallback — overridden per-instance via inline style */
+    background-color: var(--wp--preset--color--primary);
+    flex-shrink: 0;
+}
+
+.wp-block-sgs-divider__dot:not([style*="background-color"]) {
+    background-color: var(--wp--preset--color--primary);
+}
+
+/* ----- Variant: wave ----- */
+.wp-block-sgs-divider__wave {
+    display: block;
+    line-height: 0;
+}
+
+.wp-block-sgs-divider__wave svg {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.wp-block-sgs-divider__wave svg path {
+    /* Colour fallback — inline stroke attr overrides per-instance */
+    stroke: var(--wp--preset--color--primary);
+    fill: none;
+}
+
+/* ----- Variant: shape ----- */
+.wp-block-sgs-divider__shape {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wp-block-sgs-divider__shape-inner {
+    display: inline-block;
+    flex-shrink: 0;
+    /* Colour fallback — overridden per-instance via inline style */
+    background-color: var(--wp--preset--color--primary);
+}
+
+.wp-block-sgs-divider__shape-inner:not([style*="background-color"]) {
+    background-color: var(--wp--preset--color--primary);
+}
+
+/* Shape modifiers */
+.wp-block-sgs-divider__shape-inner.is-circle {
+    border-radius: 50%;
+}
+
+.wp-block-sgs-divider__shape-inner.is-square {
+    border-radius: 0;
+}
+
+.wp-block-sgs-divider__shape-inner.is-diamond {
+    border-radius: 0;
+    transform: rotate(45deg);
+}
+
+/* ===== Reduced motion ===== */
+@media ( prefers-reduced-motion: reduce ) {
+    .wp-block-sgs-divider,
+    .wp-block-sgs-divider * {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}

@@ -71,6 +71,18 @@
 			"type": "number",
 			"default": 2
 		},
+		"gridTemplateColumns": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumnsTablet": {
+			"type": "string",
+			"default": ""
+		},
+		"gridTemplateColumnsMobile": {
+			"type": "string",
+			"default": ""
+		},
 		"gap": {
 			"type": "string",
 			"default": "40"

@@ -1,5 +1,35 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-14 (new lesson — synonym laundering on captured-rule violations)
+**Last updated:** 2026-05-15 (3 new lessons — leftover-bucket-first / multi-model-QC-before-commit / per-section-pixel-diff)
+
+## 2026-05-15 — Spent ~6 hours spot-fixing pixel-diff without reading the orchestrator's own leftover buckets
+
+**The rule:** When diagnosing converter quality, pixel-diff gaps, or any /sgs-clone output problem — READ `pipeline-state/<run>/leftover-buckets.json` and `stage-9.json` BEFORE proposing fixes or running pixel-diff iterations. The orchestrator already classifies every gap by (section, slot, reason) into 5 buckets. Spot-fixing without that evidence is forbidden.
+
+**Incident:** During Spec 16 Phase 7 closure work, ran 12 passes of full-page pixel diff conjecturing about causes (DPR mismatch, body-anchored alignment, WP chrome noise, asymmetric grid columns) for ~6 hours. Numbers plateaued at ~39% desktop with zero movement. Bean's "properly analyse the issue instead of throwing shots in the dark" forced me to actually read the bucket — which revealed 212 extraction_failed entries, 173 in hero, all STYLING attrs the converter wasn't lifting. After reading, the focused fix (CSS-driven `_lift_styling_attrs()`) took ~60 min.
+
+**Why this is high-impact recurrence risk:** The temptation to spot-fix pixel-diff is strong because each iteration is fast. But the orchestrator already did the diagnostic work — ignoring it wastes hours on guesses.
+
+**Captured fully:** `~/.openclaw/workspace/memory/learning/2026-05-15-read-leftover-buckets-before-conjecturing-on-pixel-diff.md` + `feedback_read_leftover_buckets_before_conjecturing.md` + blub.db row 254.
+
+## 2026-05-15 — Single-Sonnet implementer review missed 4+ hyperspecific patterns Bean caught manually
+
+**The rule:** Multi-model `/qc` panel (Sonnet architecture + Haiku mechanical + Gemini Flash fresh-eyes + Cerebras ecosystem) runs BEFORE every commit touching converter / pipeline / SGS block logic. `/qc-inline` is the lightweight self-check during implementation; `/qc` is the dispatch gate.
+
+**Incident:** Spec 16 Phase 7 — single-Sonnet implementer review passed 4 hyperspecific Mama's-only patterns: (1) `SECTION_AS_CONTAINER_OVERRIDES` dict mapping `"sgs-heritage-strip"` → specific grid ratios, (2) hardcoded `sgs-hero__image` / `sgs-hero__image--mobile` class lookups, (3) `mediaType="emoji"` unconditional default on feature-grid, (4) `variant="split"` unconditional default on hero with image present. All would silently break on Indus Foods / HelpingDoctors / mosque mockups. Bean caught all 4 via review and only then was the multi-model panel dispatched — which independently flagged the same 4 + classified them by severity.
+
+**Why this is high-impact recurrence risk:** The implementer's context (the mockup they have in front of them) makes them blind to "this only works for this mockup". The multi-model panel's different lenses (architecture / mechanical inventory / fresh-eyes generalisation / ecosystem-pattern-check) catch what self-review cannot. extract.py's death-by-hyperspecificity is the precedent this panel exists to prevent.
+
+**Captured fully:** `~/.openclaw/workspace/memory/learning/2026-05-15-multi-model-qc-panel-before-every-commit.md` + `feedback_multi_model_qc_before_commit.md` + blub.db row 255.
+
+## 2026-05-15 — Ran full-page pixel-diff with no `--selector` flag the entire session despite the flag existing for exactly this purpose
+
+**The rule:** Pixel-diff closure gate is PER-SECTION (cropped with `--selector .sgs-{section-name}`) at 3 viewports, NOT full-page. Full-page diff has ~30-45% structural noise floor (WP-block-wrapper differences + intentional UX choices like carousel vs stacked) that no converter can avoid. Per-section cropped diff strips that noise — it's the honest converter-quality measurement.
+
+**Incident:** 12 passes of full-page diff plateaued at ~39% desktop. Conjectured the floor was unachievable. The framework has had `scripts/screenshot-diff-helper.js --selector .sgs-X` from the start — designed exactly to crop to a section's body region. I never ran it with a selector. The QC subagent's "realistic floor is 10-15% with crop-out-WP-scaffolding, current setup floors at ~40%" was the same finding, also ignored until Bean rejected the "unachievable" framing.
+
+**Why this is high-impact recurrence risk:** The default behaviour (`--selector` not set) silently measures noise + signal mixed together. Every future Phase 4 / Phase 8 visual-QA run must default to per-section cropping with explicit selectors per section in the mockup.
+
+**Captured fully:** `~/.openclaw/workspace/memory/learning/2026-05-15-per-section-cropped-pixel-diff-not-full-page.md` + `feedback_per_section_cropped_pixel_diff.md` + blub.db row 256.
 
 ## 2026-05-14 — Synonym laundering doesn't satisfy a captured rule when the concept itself is the violation
 

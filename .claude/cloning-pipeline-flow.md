@@ -14,17 +14,27 @@ update_triggers:
   - Skill dispatch change at any stage
   - Inline-function extraction (e.g. stage_0_7_css_lift retired - remove its stage block)
 spec_16_status: |
-  This doc describes the LIVE pipeline as of 2026-05-15. Spec 16
-  (.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md) is the concrete
-  implementation of Stages 3-7 via a slot-aware DOM walker. Phase 1
-  prototype shipped 2026-05-14 at .claude/scratch/converter-prototype/
-  but is NOT yet wired into this live pipeline. Phase 3 of the Spec 16
-  rollout plan (.claude/plans/phase-7-spec-16-converter-rollout.md)
-  branches stage_4_5_6_7_8_extract to dispatch the converter for SGS-
-  BEM-canonical sections; legacy extract.py path stays as fallback.
-  After Phase 6 of the rollout, legacy extract.py + extract_strategies
-  + overrides/hero.py retire and this doc's Stage 4 description rewrites
-  around the converter. Until then: this doc reflects the legacy path.
+  LIVE as of 2026-05-15. Spec 16 converter v2 promoted from .claude/scratch/
+  converter-prototype/ to plugins/sgs-blocks/scripts/orchestrator/converter_v2/
+  on feat/spec-16-converter-v2-rollout (commits 06eca194 + 19c89f0f, pushed
+  not merged). `sgs-clone-orchestrator.py --converter-v2` flag (default OFF)
+  routes SGS-BEM-canonical boundaries through the converter; the unmatched-
+  section gate (lines ~989-1017) was fixed so all 9 of 9 boundaries reach
+  converter_v2 when cv2-eligible (was 5 of 9 short-circuiting at session
+  start). Legacy extract.py REMAINS in the orchestrator as fallback for
+  non-cv2-eligible boundaries, but converter softfail no longer falls
+  through to it — emits unmatched stub for operator review instead. Phase 6
+  legacy retirement deferred to Phase 8 + only after visual gate closes.
+  CSS-driven container detection (replaces hardcoded SECTION_AS_CONTAINER_
+  OVERRIDES) + CSS-driven _lift_styling_attrs() are the architecturally
+  significant additions; both schema-driven and generic across clients per
+  multi-model /qc panel verdict.
+phase_8_status: |
+  Phase 8 (section-by-section pixel-diff closure) begins next session.
+  Closure unit is the SECTION (cropped diff via --selector), not the page.
+  Read pipeline-state/<run>/leftover-buckets.json BEFORE any converter-
+  quality conjecture — orchestrator already classifies every gap. See
+  feedback_read_leftover_buckets_before_conjecturing.md + blub.db row 254.
 registry_entry: docs-registry.md row 11
 companion_docs:
   - .claude/tooling-map.md - per-script inventory with status

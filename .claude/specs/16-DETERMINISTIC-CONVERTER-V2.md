@@ -1,12 +1,37 @@
 ---
 doc_type: spec
 spec_id: 16
-spec_version: 0.2
+spec_version: 0.3
 project: small-giants-wp
 title: Deterministic Slot-Aware Converter — Spec 15 §7 Stages 3-7 Implementation
-status: ACCEPTED 2026-05-14 — Phase 1 prototype shipped; Phases 2-6 queued for next session
-session_date: 2026-05-14
+status: PARTIAL CLOSURE 2026-05-15 — Phase 1 + Phase 7 architectural shipped; Phase 4 visual gate redefined as per-section; Phase 8 section-by-section work pending
+session_date: 2026-05-15
 authors: Bean + Claude (Opus 4.7)
+status_history:
+  - 2026-05-14: v0.2 ACCEPTED, Phase 1 prototype shipped, Phases 2-6 queued
+  - 2026-05-15: v0.3 PARTIAL CLOSURE — Phase 7 architectural work shipped (commits 06eca194 + 19c89f0f on feat/spec-16-converter-v2-rollout, pushed not merged); visual gate redefined as PER-SECTION (not full-page) per binding methodology rule (blub.db row 256); legacy extract.py retirement deferred to Phase 8 + visual-gate-close; heritage-strip-as-block to be deprecated in favour of Brand Story PATTERN (Bean's 2026-05-15 redirect, parked as P-PHASE8-1)
+closure_gate_definition_v0_3:
+  rule: "Closure unit is the SECTION, NOT the page. Each section closes independently at <= 1% pixel diff across 375 / 768 / 1440 viewports via `scripts/pixel-diff.py --selector .sgs-{section}`. The page closes when ALL sections close."
+  rationale: |
+    Full-page pixel diff has a structural noise floor of ~30-45% baked in by
+    WP-block-wrapper differences (`<section class="sgs-container wp-block-sgs-container ...">`
+    vs mockup's bare `<div class="sgs-products">`) plus intentional UX choices
+    (carousel vs stacked, theme.json tokens vs inline CSS values). No "perfect"
+    converter can reach 1% full-page diff with this comparison shape. Per-section
+    cropped diff strips the wrapper noise — it's the honest converter-quality
+    measurement. Captured as binding rule (blub.db row 256) after the 2026-05-15
+    session ran 12 full-page passes plateaued at ~39% before this realisation.
+  enforcement: |
+    Phase 8 section-by-section workflow + `scripts/pixel-diff.py --selector` flag
+    + `scripts/screenshot-diff-helper.js --selector` flag are the standard.
+    Full-page diff retained for trend tracking only — not as the closure gate.
+mandatory_methodology_rules:
+  - rule: "Read pipeline-state/<run>/leftover-buckets.json BEFORE conjecturing about converter quality or pixel-diff causes."
+    captured_at: blub.db row 254
+    why: "The orchestrator already classifies every gap by (section, slot, reason) into 5 buckets. The 2026-05-15 session lost ~6 hours spot-fixing pixel-diff without consulting this data. Spot-fixes without bucket evidence are forbidden."
+  - rule: "Multi-model /qc panel (Sonnet + Haiku + Gemini Flash + Cerebras) BEFORE every commit touching converter / pipeline / SGS block logic."
+    captured_at: blub.db row 255
+    why: "Single-Sonnet implementer review missed 4+ hyperspecific patterns in the 2026-05-15 session. The panel catches what the implementer's context blinds them to. extract.py's death-by-hyperspecificity is the precedent this panel exists to prevent."
 relationship_to_spec_15: |
   Spec 16 is the concrete implementation of Spec 15 §7 Stages 3-7. Spec 15
   defined the convention layer (SGS-BEM), the mapping layer (slot synonyms +

@@ -1,0 +1,239 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "sgs/heading",
+    "version": "0.1.0",
+    "title": "Section Heading",
+    "category": "sgs-content",
+    "description": "Composite section-heading cluster: optional eyebrow label, primary headline (h1–h4), and optional subheading paragraph. Mirrors sgs/hero label-family as a standalone reusable heading unit.",
+    "keywords": [
+        "heading",
+        "section heading",
+        "title",
+        "eyebrow"
+    ],
+    "textdomain": "sgs-blocks",
+    "icon": "heading",
+    "supports": {
+        "align": true,
+        "html": false,
+        "color": {
+            "text": true,
+            "background": true,
+            "link": false
+        },
+        "spacing": {
+            "margin": true,
+            "padding": true
+        }
+    },
+    "selectors": {
+        "root": ".wp-block-sgs-heading",
+        "typography": ".wp-block-sgs-heading__headline"
+    },
+    "attributes": {
+        "label": {
+            "type": "string",
+            "default": ""
+        },
+        "labelEnabled": {
+            "type": "boolean",
+            "default": true
+        },
+        "labelTag": {
+            "type": "string",
+            "enum": [ "span", "p", "div" ],
+            "default": "span"
+        },
+        "labelFontFamily": {
+            "type": "string",
+            "default": ""
+        },
+        "labelFontSize": {
+            "type": "number",
+            "default": 12
+        },
+        "labelFontSizeUnit": {
+            "type": "string",
+            "default": "px"
+        },
+        "labelFontSizeTablet": {
+            "type": "number"
+        },
+        "labelFontSizeMobile": {
+            "type": "number"
+        },
+        "labelFontWeight": {
+            "type": "string",
+            "default": "600"
+        },
+        "labelLineHeight": {
+            "type": "number",
+            "default": 1.2
+        },
+        "labelLineHeightUnit": {
+            "type": "string",
+            "default": "em"
+        },
+        "labelLetterSpacing": {
+            "type": "number",
+            "default": 0.08
+        },
+        "labelLetterSpacingUnit": {
+            "type": "string",
+            "default": "em"
+        },
+        "labelTextTransform": {
+            "type": "string",
+            "default": "uppercase"
+        },
+        "labelColour": {
+            "type": "string",
+            "default": "primary"
+        },
+        "headline": {
+            "type": "string",
+            "default": ""
+        },
+        "headlineLevel": {
+            "type": "string",
+            "enum": [ "h1", "h2", "h3", "h4" ],
+            "default": "h2"
+        },
+        "headlineId": {
+            "type": "string",
+            "default": ""
+        },
+        "headlineFontFamily": {
+            "type": "string",
+            "default": ""
+        },
+        "headlineFontSize": {
+            "type": "number",
+            "default": 28
+        },
+        "headlineFontSizeUnit": {
+            "type": "string",
+            "default": "px"
+        },
+        "headlineFontSizeTablet": {
+            "type": "number"
+        },
+        "headlineFontSizeMobile": {
+            "type": "number"
+        },
+        "headlineFontWeight": {
+            "type": "string",
+            "default": "700"
+        },
+        "headlineLineHeight": {
+            "type": "number",
+            "default": 1.2
+        },
+        "headlineLineHeightUnit": {
+            "type": "string",
+            "default": "em"
+        },
+        "headlineLetterSpacing": {
+            "type": "number",
+            "default": -0.01
+        },
+        "headlineLetterSpacingUnit": {
+            "type": "string",
+            "default": "em"
+        },
+        "headlineTextTransform": {
+            "type": "string",
+            "default": "none"
+        },
+        "headlineColour": {
+            "type": "string",
+            "default": "text"
+        },
+        "sub": {
+            "type": "string",
+            "default": ""
+        },
+        "subEnabled": {
+            "type": "boolean",
+            "default": true
+        },
+        "subTag": {
+            "type": "string",
+            "enum": [ "p", "div" ],
+            "default": "p"
+        },
+        "subFontFamily": {
+            "type": "string",
+            "default": ""
+        },
+        "subFontSize": {
+            "type": "number",
+            "default": 16
+        },
+        "subFontSizeUnit": {
+            "type": "string",
+            "default": "px"
+        },
+        "subFontSizeTablet": {
+            "type": "number"
+        },
+        "subFontSizeMobile": {
+            "type": "number"
+        },
+        "subFontWeight": {
+            "type": "string",
+            "default": "400"
+        },
+        "subLineHeight": {
+            "type": "number",
+            "default": 1.5
+        },
+        "subLineHeightUnit": {
+            "type": "string",
+            "default": "em"
+        },
+        "subLetterSpacing": {
+            "type": "number",
+            "default": 0
+        },
+        "subLetterSpacingUnit": {
+            "type": "string",
+            "default": "em"
+        },
+        "subTextTransform": {
+            "type": "string",
+            "default": "none"
+        },
+        "subColour": {
+            "type": "string",
+            "default": "text-muted"
+        },
+        "icon": {
+            "type": "string",
+            "default": ""
+        },
+        "iconPosition": {
+            "type": "string",
+            "enum": [ "before-label", "before-headline", "none" ],
+            "default": "none"
+        },
+        "emoji": {
+            "type": "string",
+            "default": ""
+        }
+    },
+    "editorScript": "file:./index.js",
+    "editorStyle": "file:./index.css",
+    "style": "file:./style-index.css",
+    "example": {
+        "attributes": {
+            "label": "Our speciality",
+            "labelEnabled": true,
+            "headline": "A section heading that converts",
+            "headlineLevel": "h2",
+            "sub": "Optional supporting copy that gives context to the section above.",
+            "subEnabled": true
+        }
+    }
+}

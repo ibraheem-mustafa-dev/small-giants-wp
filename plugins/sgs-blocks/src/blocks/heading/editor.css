@@ -1,0 +1,46 @@
+/* ===== SGS Section Heading — Editor Only ===== */
+
+/* Give empty slots a minimum height so operators can click into them */
+.wp-block-sgs-heading__label:empty,
+.wp-block-sgs-heading__headline:empty,
+.wp-block-sgs-heading__sub:empty {
+	min-height: 1.5em;
+}
+
+/* Subtle dashed outline so the cluster boundary is visible in the editor
+   even when the background is white and content is sparse. */
+.block-editor-block-list__block .wp-block-sgs-heading {
+	outline: 1px dashed rgba(0, 0, 0, 0.1);
+	outline-offset: 4px;
+}
+
+/* Remove outline when block is selected — the selection ring takes over */
+.block-editor-block-list__block.is-selected .wp-block-sgs-heading,
+.block-editor-block-list__block.is-highlighted .wp-block-sgs-heading {
+	outline: none;
+}
+
+/* Placeholder text colour for each slot — distinguishes slot purpose at a glance */
+.wp-block-sgs-heading__label .block-editor-rich-text__editable:empty::before {
+	color: var(--wp--preset--color--primary);
+	opacity: 0.5;
+}
+
+.wp-block-sgs-heading__headline .block-editor-rich-text__editable:empty::before {
+	color: var(--wp--preset--color--text);
+	opacity: 0.4;
+}
+
+.wp-block-sgs-heading__sub .block-editor-rich-text__editable:empty::before {
+	color: var(--wp--preset--color--text-muted);
+	opacity: 0.4;
+}
+
+/* Inspector row layout helper — value + unit pairs side by side */
+/* (Shared with other SGS blocks — safe to re-declare idempotently) */
+.sgs-inspector-row {
+	display: grid;
+	grid-template-columns: 1fr auto;
+	gap: 8px;
+	align-items: end;
+}

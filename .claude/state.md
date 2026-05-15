@@ -2,15 +2,16 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-current_phase: spec-16-phase-7-converter-rollout
-current_subphase: "Spec 16 Phase 1 (slot-aware converter prototype + sgs/label atomic block) SHIPPED 2026-05-14 across PRs #15-#21. Prototype emits 286 lines of WP block markup for the Mama's Munches homepage — 9 sections, 10 SGS block types (announcement-bar, button, container, feature-grid, heritage-strip, hero, label, product-card, testimonial-slider, trust-bar) + 3 core types. Converter at .claude/scratch/converter-prototype/ — 1,136 lines across db_lookup.py + convert.py + convert_page.py. Replaces ~1,942 lines of legacy extract.py + extract_strategies.py + overrides/hero.py (retirement gated on Spec 16 Phase 6 visual QA). Phase 7 plan at .claude/plans/phase-7-spec-16-converter-rollout.md ready to execute next session — covers Spec 16 Phases 2-6: sgs/heading + sgs/divider blocks, orchestrator wiring, end-to-end visual QA on Mama's at <=1% pixel diff, legacy code retirement, multi-model final QC, /handoff. Estimated 2.5-3 hours wall time with parallel subagent dispatch."
-current_subphase_step: "Spec 16 Phase 1 closed. PRs merged today on origin/main: #15 matcher pattern+scaffold tiers + Q3 trace, #16 composer_fallback retirement, #17 trace wiring + validator surface, #18 residue pattern deletion, #19 scaffold-stub block deletion, #20 +REGISTER real-capture gate, #21 sgs/label atomic block. Spec 16 v0.2 written at .claude/specs/16-DETERMINISTIC-CONVERTER-V2.md with 5 architectural rules R1-R5 (R5 = CSS-drives-emission, never drop, gap-flag via attribute_gap_candidates), 9 functional requirements FR1-FR9, 6 phases (1 shipped, 2-6 in next-session plan). 4-reviewer multi-model QC complete on the spec; fixes applied. Next: execute Phase 7 plan."
-phase_4_summary: "Phase 4 + 4.5 (convention enforcement gates + additive token discovery + Font Library) shipped 2026-05-12 across 4 commits on origin/main (8599faf3 / 55a6d73e / 3c2c07b7 / a9b9b1c3). Stage 0.1 BEM lint + Stage 0.5 token lint integrated into /sgs-clone with 3 modes. Additive token discovery: non-token CSS values become NewTokenCandidate rows in the client variation, not violations. Font Library scaffold registers 1,923 google_fonts via wp_register_font_collection() with zero frontend cost. Drift validator 0/1343 PASS preserved end-to-end. 81 canonical slots in vocabulary; 1,236/1,343 attrs canonicalised."
-phase_5_summary: "Phase 5 CLOSED 2026-05-13 (commit fc9f567f). Modules 5a-5f + 5g (orchestrator emission-stage rewrite) + 5h.1 (CSS-lift stage) + integration plumbing all shipped. Pipeline runs end-to-end per spec; +REGISTER writes patterns on PASS. <=1% pixel-parity gate moved to Phase 6 ownership."
-current_step: "Spec 16 Phase 1 shipped 2026-05-14. Phase 7 plan ready at .claude/plans/phase-7-spec-16-converter-rollout.md: Phase 2 (sgs/heading + sgs/divider, parallel Sonnet+Haiku+Gemini Flash dispatch, ~45min), Phase 3 (orchestrator wiring, Sonnet SDD, ~30min), Phase 4 (deploy + /visual-qa pixel-diff with 2-iteration cap + Sonnet diagnostician, ~60min), Phase 5 (/sgs-update canonical pass, ~10min), Phase 6 (legacy extract.py retirement, ~20min — uses Cerebras for mechanical grep audit + Gemini Flash for tooling-map+flow updates), Step 8 (4-reviewer multi-model final QC + /handoff, ~15min). Total ~2.5-3 hr wall time. Exit criteria: 7 items in plan §8 — closure only when all met. Pixel-parity gate target: <=1% per viewport on Mama's homepage."
-last_updated: 2026-05-15 (Spec 16 + Phase 7 tooling cross-refs added; living docs refreshed; deprecated_docs purged; archive moves complete)
+current_phase: spec-16-phase-8-section-by-section-closure
+current_subphase: "Spec 16 Phase 7 architectural work SHIPPED 2026-05-15 on feat/spec-16-converter-v2-rollout (commits 06eca194 + 19c89f0f, pushed but not merged). Converter v2 now routes 9 of 9 sections through schema-driven lift logic (was 4 of 9 at session start). Pixel-diff closure gate NOT REACHED — plateaued at ~39% desktop / ~42% mobile / ~45% tablet. Phase 7 closure split: 'architecture closed' (this session) + 'visual gate closed via section-by-section work' (Phase 8). 3 binding methodology rules captured to all 3 persistence layers (blub.db rows 254/255/256) — leftover-buckets.json read FIRST, multi-model /qc BEFORE every commit, per-section cropped pixel diff (not full-page)."
+current_subphase_step: "Phase 8 entry: section-by-section converter quality closure per Bean's 2026-05-15 directive. Loop per section: (1) read pipeline-state/<run>/leftover-buckets.json filtered by section_id, (2) diagnose cause (converter / block schema / block render / theme CSS), (3) design UNIVERSAL fix (never section-specific), (4) implement + /qc-inline self-check, (5) multi-model /qc panel (Sonnet+Haiku+Gemini Flash+Cerebras) BEFORE commit, (6) re-run orchestrator + redeploy, (7) per-section pixel diff with --selector .sgs-{section} at 375/768/1440. Section closes when all 3 viewports ≤ 1%. Page closes when all sections close. Priority: hero (.sgs-hero 69%), gift-section (57%), ingredients (48%), social-proof (42%), featured-product (39%)."
+phase_7_summary: "Phase 7 architectural work shipped 2026-05-15. 24 files changed, 4545 insertions, 107 deletions on feat/spec-16-converter-v2-rollout. (1) Unmatched-section gate fix in orchestrator — _cv2_eligible flag computed once per boundary, fixes 5-of-9 short-circuit. (2) New atomic blocks: sgs/heading (48 attrs, 3-slot composite) + sgs/divider (12 attrs, 4 variants). (3) Converter promoted from .claude/scratch/converter-prototype/ to plugins/sgs-blocks/scripts/orchestrator/converter_v2/. (4) 4 lift patterns: hero image, testimonials array, feature-grid InnerBlocks, heritage body+image. (5) CSS-driven _lift_styling_attrs() (~280 lines) lifts inline style + matched CSS + @media variants into *Colour / *FontSize / *FontWeight / *LineHeight / *LetterSpacing / *TextTransform / *FontFamily / *Padding* / *BorderRadius* / MaxWidth attrs. (6) CSS-driven container detection replaces hardcoded SECTION_AS_CONTAINER_OVERRIDES (Bean caught as hyperspecific). (7) Tag-based SKIP_TOP_LEVEL_TAGS replaces class-based SKIP_SECTION_CLASSES. (8) Per-child mediaType detection replaces unconditional 'emoji' default. (9) BEM-modifier-first hero variant inference replaces unconditional 'split'. (10) gridTemplateColumns + Tablet + Mobile attrs added to sgs/container with sgs_sanitize_grid_template() render-side. (11) heritage-strip block.json got missing render: file:./render.php line. (12) Pre-existing bugs fixed: convert_section() extracted_attributes was always empty (brace-depth extractor added); leftover-bucket-router bare-key mismatch causing 100% false-fail classification. (13) scripts/pixel-diff.py created — Python equivalent of screenshot-diff-helper.js with --selector + DPR=1 + body-anchored alignment."
+phase_4_summary: "Phase 4 + 4.5 (convention enforcement gates + additive token discovery + Font Library) shipped 2026-05-12. Stage 0.1 BEM lint + Stage 0.5 token lint integrated into /sgs-clone with 3 modes."
+phase_5_summary: "Phase 5 CLOSED 2026-05-13. Modules 5a-5h.1 shipped. Pipeline runs end-to-end per spec."
+current_step: "Phase 8 section-by-section closure per Bean's 2026-05-15 directive. Read .claude/next-session-prompt.md for the full workflow + priority order + binding methodology rules. First action: read pipeline-state/<latest-run>/leftover-buckets.json and pick the worst section by per-section diff (currently .sgs-hero at 69% with 151 extraction_failed entries)."
+last_updated: 2026-05-15 (Phase 7 partial close + 3 methodology lessons captured + docs registry refreshed for Phase 8 readiness)
 blockers:
-  - "Skillscore rubric mismatch: command files (~/.claude/commands/*.md), agent files (~/.claude/agents/*.md), and reference-style mini-skills (polish, bolder, colourise, distill, etc.) are graded against full-skill criteria. 24 of 45 Phase 4 files sit below 90% for this reason - all pre-existing baseline noise, not caused by Phase 4 edits. Future fix: add skill-type classifier to sgs-skillscore."
+  - "None blocking — Phase 8 ready to start. The feat/spec-16-converter-v2-rollout branch is pushed but not merged; merge decision deferred to Bean."
 recommended_model_next: opus
 ---
 
@@ -18,56 +19,49 @@ recommended_model_next: opus
 
 > Frontmatter above is the contract. Body below is regenerated by `/handoff` each session.
 
-## Where we are (2026-05-14 close)
+## Where we are (2026-05-15 close)
 
-**Spec 16 Phase 1 SHIPPED.** Deterministic slot-aware converter prototype produces clean WP block markup on the full Mama's homepage — 10 SGS block types, 12 containers (down from 114 pre-fix), 27 variation CSS rules from 9 sections. 1,136 lines across 3 Python modules in `.claude/scratch/converter-prototype/`. Replaces ~1,942 lines of legacy `extract.py` + `extract_strategies.py` + `overrides/hero.py` (retirement in Phase 7 Step 5).
+**Spec 16 Phase 7 architectural work SHIPPED.** Branch `feat/spec-16-converter-v2-rollout` at commit `19c89f0f`. 9 of 9 sections route through converter v2 (was 4 of 9 at session start). CSS-driven styling-attr lifter populates 68 new attrs per Mama's homepage run. All hyperspecific patterns refactored to CSS-driven or DB-driven per Bean's repeated catches. Multi-model /qc panel verdict: SHIP — all new functions GENERIC.
 
-**Spec 16 v0.2 written** at `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md`. 5 architectural rules (R1-R5, including R5 "CSS drives emission, never drop, gap-flag missing attrs" with 4 destinations), 9 FRs, 6 phases. QC'd by Sonnet + Haiku + Gemini Flash + Gemini Pro across 2 panels with 9 fixes applied.
+**Pixel-diff closure gate NOT reached** — full-page diff plateaued at ~39% desktop. Per-section cropped diff (newly understood as the honest measurement) shows .sgs-hero at 69%, .sgs-gift-section at 57%, .sgs-ingredients-section at 48%, .sgs-social-proof at 42%, .sgs-featured-product at 39%. The remaining work is per-section converter refinement + block render.php fidelity — that's Phase 8 scope.
 
-**Spec 15 absorbed Phase 6** into Spec 16 — Spec 15 stays canonical for L0-L3 + Stages 0-2 + 8-9 + /sgs-update; Spec 16 owns Stages 3-7 + module surface. Spec 15 §7.2's commitment to retire `overrides/hero.py` becomes Spec 16 FR8.
+**Methodology lessons captured.** The 2026-05-15 session lost ~6 hours to spot-fixing pixel-diff without reading the orchestrator's leftover buckets. Three binding rules captured to all 3 persistence layers (workspace lesson files + CC auto-memory + blub.db rows 254/255/256):
 
-**Phase 7 plan ready** at `.claude/plans/phase-7-spec-16-converter-rollout.md`. 8 steps covering Spec 16 Phases 2-6 + final QC + handoff. Estimated 2.5-3 hours wall time with parallel subagent dispatch routing Sonnet / Haiku / Gemini Flash / Gemini Pro / Cerebras per task shape.
+1. **Read `pipeline-state/<run>/leftover-buckets.json` BEFORE conjecturing** about converter/pixel-diff causes. The orchestrator already classifies every gap.
+2. **Multi-model `/qc` panel BEFORE every commit** (Sonnet + Haiku + Gemini Flash + Cerebras). Single-Sonnet review missed 4+ hyperspecific patterns this session.
+3. **Per-section cropped pixel diff** via `--selector .sgs-X`, NOT full-page. Full-page has ~30-45% structural noise floor that no converter can avoid.
 
-## Today's PR chain (origin/main)
+## Today's commits (feat/spec-16-converter-v2-rollout, pushed not merged)
 
-| PR / commit | What |
+| Commit | What |
 |---|---|
-| #15 | Matcher pattern+scaffold tiers + Q3 trace infrastructure |
-| #16 | composer_fallback retirement |
-| #17 | Trace wiring + validator surface |
-| #18 | Residue pattern deletion (5 composer-shape junk patterns) |
-| #19 | Scaffold-stub block deletion (6 blocks) |
-| #20 | +REGISTER real-capture gate + composite priority cleanup |
-| #21 | sgs/label atomic block (new — 3 style variants, 22 attrs) |
-| #22 | Spec 16 + Phase 7 plan + doc-registry updates |
-| `b16c1ae5` | R5 Destination 0 + Phase 7/Spec 16 closure split |
-| `14ce0a5c` | /handoff for Spec 16 Phase 1 close |
-| `c4b29ae6` | Model recommendation bumped to opus per Bean's override |
+| `06eca194` | Phase 7 architectural work — 24 files, 4545 insertions, 107 deletions. New blocks, converter promotion, 4 lift patterns, CSS-driven styling lifter, 2 pre-existing bug fixes, pixel-diff harness. |
+| `19c89f0f` | Docs + methodology lessons capture — docs-registry.yaml updates (credentials + pipeline-state artefacts + cold-start order), common-wp-styling-errors.md Section S, next-session-prompt.md rewritten for Phase 8. |
 
-## Next session — open tracks (priority order)
+## Next session — Phase 8 entry
 
-1. **Execute Phase 7 plan end-to-end** — `.claude/plans/phase-7-spec-16-converter-rollout.md`. 8 steps, ~2.5-3 hours.
-2. **Phase 4 (Step 3) is THE closure gate** — deploy + /visual-qa with hard 2-iteration cap.
-3. **After Phase 7 closes** (Mama's at ≤1% pixel diff), run on a second client (Indus Foods or helping-doctors) per Spec 16 §9 item 7 — that's Spec 16 closure, distinct from Phase 7 closure.
+1. **Read** `.claude/next-session-prompt.md` for the full workflow + priority order
+2. **Read** `pipeline-state/<latest-run>/leftover-buckets.json` for the canonical gap inventory
+3. **Start** with the worst section (.sgs-hero, 69%) — read its bucket entries, diagnose cause, design universal fix, /qc panel, redeploy, re-diff per-section
+4. **Move** to next worst when current section's 3 viewports all show ≤ 1%
+
+## Phase 8 backlog (parked items, see parking.md P-PHASE8-*)
+
+- P-PHASE8-1: Heritage-strip → Brand Story pattern (Bean's 2026-05-15 redirect)
+- P-PHASE8-2: Per-block render.php audits (6-8 blocks)
+- P-PHASE8-3: Remove block_slug == hardcoded guards in lift_subtree (lines 1016, 1048)
+- P-PHASE8-4: convert_page.py line 198 extracted_attributes still hardcoded `{}`
+- P-PHASE8-5: Pack-size pills render-gating audit on product-card
+- P-PHASE8-6: Section-internal nav mapping
+- P-PHASE8-7: Non-standard breakpoint silent-drop in _BREAKPOINT_SUFFIXES
+- P-PHASE8-8: Spec 16 v0.3 closure-gate revision (per-section, not full-page)
 
 ## Subprojects
 
-- Mama's Munches — `sites/mamas-munches/.claude/` — homepage clone is the converter's canary test
-- Indus Foods Phase 4 — `sites/indus-foods/.claude/` — second-client validation target
+- Mama's Munches — `sites/mamas-munches/.claude/` — homepage clone is the converter's canary test (Phase 8 closure target)
+- Indus Foods Phase 4 — `sites/indus-foods/.claude/` — second-client validation target (post Mama's close)
 - helping-doctors — alternative second-client validation target
 
-## Today's decisions (Spec 16 session)
+## Today's decisions (10 entries — see decisions.md 2026-05-15 section)
 
-8 architectural decisions appended to `.claude/decisions.md`. Highlights:
-- Spec 16 framed as Spec 15 §7 implementation, not successor
-- R5 re-architected from "orphan tracking" to "CSS drives emission, never drop" per Bean's correction
-- sgs/container MANDATORY at section-level, AVAILABLE elsewhere (not auto-emitted for nested wrappers)
-- Phase 4 visual QA baseline = WP-rendered mockup-as-post (not raw mockup HTML)
-- Phase 4 max-iteration cap = 2 (prevents unbounded converter-debugging loops)
-- Legacy extract.py retirement gated on single-client visual QA + grep audit
-- sgs/heading composite block added to Phase 2 (label + h2 + sub bundle)
-- Model routing patterns confirmed: Sonnet load-bearing, Haiku mechanical, Gemini Flash cheap edits, Cerebras grep audit
-
-## Parked items (added today — 6 new)
-
-P-S16-1 through P-S16-6 in `.claude/parking.md`. All non-blocking, scheduled into Phase 7 sub-steps or future cleanup passes. Highlights: `source:html` selector tightening for sgs/label (revisit at sgs/heading creation), responsive `attr(data-X)` CSS systemic issue across hero/info-box/label, variantStyle enum live-read in Phase 3, JSON pre-emit validation, nested block-root recursion guard, two-client validation post-Phase-7.
+Phase 7 architectural close + 3 binding methodology rules + 6 named refactors removing hyperspecific patterns. All decisions are CSS-driven / schema-driven / DB-driven — no class-name hardcodes remain in the new code per multi-model QC verdict.

@@ -22,6 +22,7 @@ desktop.ini
 .claude/.lifecycle-mode-*.json
 .claude/*.js
 .claude/scratch/
+.claude/secrets/
 
 # Environment
 .env
