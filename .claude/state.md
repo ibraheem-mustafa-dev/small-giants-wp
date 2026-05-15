@@ -19,7 +19,7 @@ recommended_model_next: opus
 
 ## Where we are (2026-05-16 close)
 
-**Spec 16 Phase 8 — diagnostic surface trustworthy + universal converter mechanics shipped.** 5 commits on `main` (a2d58a3d → 9a32a164). All 10 cv2-eligible blocks now dynamic. Heritage-strip retired. Universal BEM-child array lifter operational. Leftover-bucket dashboard accurate.
+**Spec 16 Phase 8 — diagnostic surface trustworthy + universal converter mechanics shipped + heritage-strip fully scrubbed.** 7 commits on `main` (a2d58a3d → e0cd5a0f). All 10 cv2-eligible blocks now dynamic. Heritage-strip retired across filesystem + DBs (sgs-framework.db 58 rows + uimax.db 989 rows) + scripts + docs (audit trail preserved). Universal BEM-child array lifter operational. Leftover-bucket dashboard accurate.
 
 **Bucket signal at session close** (post-deploy, sandybrown):
 - 0 high-severity blockers
@@ -30,7 +30,7 @@ recommended_model_next: opus
 
 **Per-section pixel diff NOT re-run after Phase B** (context budget). Trust-bar items now lift 4 entries; heritage-strip now cv2 R4 fall-through; render path verified via curl class-grep on live sandybrown.
 
-## Today's 5 commits
+## Today's 7 commits
 
 | Commit | What |
 |---|---|
@@ -39,6 +39,8 @@ recommended_model_next: opus
 | `d859da4c` | P-PHASE8-11 severity_totals + P-PHASE8-12 wrong-block-type + P-PHASE8-13 role backfill |
 | `7a2a777d` | P-PHASE8-2 round 1 — heritage-strip restore + trust-bar + label dynamic, WP file-render echo discovery |
 | `9a32a164` | P-PHASE8-1 heritage-strip retirement + P-PHASE8-17 7 parallel blocks dynamic + universal BEM-child array lifter |
+| `b57269ec` | Heritage-strip DB cleanup (sgs-framework 58 rows + uimax 989 rows) + recogniser scripts cleaned |
+| `e0cd5a0f` | Heritage-strip doc cleanup across all docs-registry canonical_docs |
 
 ## Next session — Phase 8 continuation
 

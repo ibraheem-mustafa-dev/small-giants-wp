@@ -19,17 +19,19 @@ companion_docs:
 
 ## Headline
 
-5 commits shipped to `main`. The leftover-bucket diagnostic surface is now trustworthy and actionable. Every cv2-emittable block is now dynamic (no more silent empty-render). The universal BEM-child array lifter unblocks per-section converter LIFT FIDELITY work. Heritage-strip retired (lives as a pattern). 0 high-severity gaps remain in Mama's leftover buckets.
+7 commits shipped to `main` (HEAD: `e0cd5a0f`). The leftover-bucket diagnostic surface is now trustworthy and actionable. Every cv2-emittable block is now dynamic. The universal BEM-child array lifter unblocks per-section converter LIFT FIDELITY work. Heritage-strip retired across filesystem + DBs + scripts + docs (live references all removed; audit trail preserved). 0 high-severity gaps remain in Mama's leftover buckets.
 
 ## Commits shipped (all on main)
 
 | Commit | What |
 |---|---|
 | `a2d58a3d` | Walker precedence swap (FR1 above CSS-driven container) + DB-driven SLOT_TO_STANDALONE_BLOCK (`slot_synonyms.standalone_block` column) + composite-element routing (card → sgs/info-box). |
-| `752f4aed` | Bucket-router accuracy upgrade: 2 new buckets (`chrome_skipped`, `cv2_handled_no_top_level_match`), dynamic slot-list coverage for cv2-emitted blocks via DB block_attributes lookup, all-blocks attr harvest in `__init__.py:convert_section`. |
-| `d859da4c` | P-PHASE8-11 `severity_totals` dashboard + P-PHASE8-12 wrong-block-type plausibility check (depth-aware section-root parsing) + P-PHASE8-13 `block_attributes.role` backfill via `slot_synonyms.role` migration + assign-canonical.py second-pass propagation with property-suffix guard. |
-| `7a2a777d` | P-PHASE8-2 render.php audit (round 1): heritage-strip src/render.php restored from build/ + trust-bar + label converted static→dynamic. Discovered the WP file-render wrapper discards return values — switched all new render.php files to printf/echo style. |
-| `9a32a164` | P-PHASE8-1 heritage-strip retirement + P-PHASE8-17 batch static→dynamic for 7 blocks (certification-bar, counter, divider, heading, notice-banner, process-steps, tab) via /dispatching-parallel-agents + universal BEM-child array lifter for trust-bar items + all subsequent array attrs across blocks. |
+| `752f4aed` | Bucket-router accuracy upgrade: 2 new buckets (`chrome_skipped`, `cv2_handled_no_top_level_match`), dynamic slot-list coverage for cv2-emitted blocks via DB block_attributes lookup, all-blocks attr harvest. |
+| `d859da4c` | P-PHASE8-11 `severity_totals` dashboard + P-PHASE8-12 wrong-block-type plausibility check + P-PHASE8-13 `block_attributes.role` backfill via `slot_synonyms.role` migration. |
+| `7a2a777d` | P-PHASE8-2 render.php audit (round 1): trust-bar + label converted static→dynamic. WP file-render wrapper return-value-discard bug discovered. |
+| `9a32a164` | P-PHASE8-1 heritage-strip retirement + P-PHASE8-17 batch static→dynamic for 7 blocks (certification-bar, counter, divider, heading, notice-banner, process-steps, tab) via /dispatching-parallel-agents + universal BEM-child array lifter. |
+| `b57269ec` | DB cleanup: 58 rows deleted from sgs-framework.db + 989 rows from uimax.db (all heritage-strip references) + recogniser scripts cleaned (confidence-matrix.py COMPOSITE_PRIORITY + per-section-convention-voter.py legacy slug map now routes to brand pattern). |
+| `e0cd5a0f` | Doc cleanup across all docs-registry canonical_docs (architecture.md retirement marker, parking.md typo fix, tooling-map.md superseded row, specs 02/15/16 stale refs removed, visual-diff stub deleted). |
 
 ## What's now true that wasn't yesterday
 
