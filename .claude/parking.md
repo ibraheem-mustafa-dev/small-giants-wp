@@ -8,6 +8,30 @@ last_updated: 2026-05-16
 
 ## New 2026-05-16 — Phase 8 in-flight backlog
 
+### P-PHASE8-11 — Severity totals dashboard in leftover-buckets.json
+
+**What:** Multi-rater /qc panel (architecture lens) on the 2026-05-16 bucket-router upgrade flagged that `gap_level_totals` collapses all `structural` buckets (`unrecognised_section` severity=high, `cv2_handled_no_top_level_match` severity=low, `chrome_skipped` severity=info) under the same `structural` count. An operator reading `gap_level_totals.structural = 5` can't tell whether 5 are blocking or noise.
+
+**Trigger:** Next bucket-router pass, OR operator-review dashboard work surfaces the gap.
+
+**Approach:** Add a `severity_totals` dict in parallel to `gap_level_totals` — keys: `info / low / medium / high`. Counts derived from the existing `severity` field already on each bucket item. ~4 lines.
+
+### P-PHASE8-12 — Wrong-block-type detection in cv2-handled sections
+
+**What:** Multi-rater /qc panel (architecture lens) flagged that `route_structural_mismatch` now skips ALL cv2-handled sections to avoid double-bucketing. But a cv2-handled section that emits e.g. `sgs/product-card` when the mockup clearly shows a hero section is a wrong-block-type error that silently vanishes from `structural_mismatch_or_orphan`.
+
+**Trigger:** Phase 8 finds a section where cv2 emits a plausibly-wrong block, OR adversarial mockup testing surfaces this.
+
+**Approach:** Cross-reference emitted slugs against `match.ranked_candidates` — if cv2 emitted a block that wasn't in the top-3 candidates AND the candidate-confidence delta is large, flag as wrong-block-type. ~15 lines.
+
+### P-PHASE8-13 — Populate block_attributes.role column via /sgs-update
+
+**What:** The 2026-05-16 bucket-router upgrade filters cv2_emitted_dynamic by `role IN ('text-content', 'content', 'select-from-enum')` to keep the signal meaningful. Currently most rows have role=NULL — the filter conservatively keeps them. Once /sgs-update Stage 4 (canonical pass) populates `block_attributes.role` properly, the filter will cut more noise. Today's Mama's run: 286 cv2_emitted entries; expected after role population: ~80-120.
+
+**Trigger:** Next /sgs-update Stage 4 enhancement pass.
+
+**Approach:** Extend `behavioural-analyser/assign-canonical.py` to also infer role from output_signature + attr_type combinations. ~20 lines.
+
 ### P-PHASE8-9 — Slot-synonym expansion: tile / panel / feature / module / item
 
 **What:** The 2026-05-16 walker fix added `card → sgs/info-box` via `slot_synonyms.standalone_block`. Multi-rater /qc panel (fresh-eyes lens) recommended also registering the four next-most-common BEM element names that map to info-box compositions in real-world client mockups: `tile`, `panel`, `feature`, `module`, `item`.

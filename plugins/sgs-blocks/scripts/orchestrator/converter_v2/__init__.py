@@ -190,33 +190,49 @@ def convert_section(html: str, css: str, media_map: dict) -> dict:
 
     extracted: dict = {}
 
-    def _extract_first_wp_block_attrs(markup: str) -> tuple[str, dict]:
-        """Return (block_slug, attrs_dict) for the first WP block comment in markup."""
-        # Find the first <!-- wp:<slug>  occurrence
-        _slug_re = _re.compile(r"<!-- wp:([\w/\-]+)\s+(\{)", _re.DOTALL)
-        m = _slug_re.search(markup)
-        if not m:
-            return ("", {})
-        slug = m.group(1)
-        brace_start = m.start(2)  # position of opening {
-        depth = 0
-        for i, ch in enumerate(markup[brace_start:], start=brace_start):
-            if ch == "{":
-                depth += 1
-            elif ch == "}":
-                depth -= 1
-                if depth == 0:
-                    raw_json = markup[brace_start: i + 1]
-                    try:
-                        return (slug, _json.loads(raw_json))
-                    except ValueError:
-                        return (slug, {})
-        return (slug, {})
+    def _harvest_all_wp_block_attrs(markup: str) -> list[tuple[str, dict]]:
+        """Return [(block_slug, attrs_dict), ...] for EVERY WP block comment in
+        markup that carries an attrs JSON object.
 
-    block_slug, raw_attrs = _extract_first_wp_block_attrs(block_markup)
-    if raw_attrs:
+        Walks every <!-- wp:<slug> { ... } occurrence with brace-depth counting
+        so nested objects in attrs (e.g. splitImage: {id, url}) don't fool the
+        scanner. Critical for leftover-bucket-router accuracy: sections with
+        composite-block compositions (sgs/container > sgs/product-card × 2 etc.)
+        previously only had the outer container's attrs harvested. Stage 9 then
+        treated every nested block's slot as 'extraction_failed' even though
+        the converter HAD lifted them. Fixed 2026-05-16 per Bean's directive
+        that leftover-buckets must give accurate info (binding rule #1).
+        """
+        results: list[tuple[str, dict]] = []
+        _slug_re = _re.compile(r"<!-- wp:([\w/\-]+)\s+(\{)", _re.DOTALL)
+        for m in _slug_re.finditer(markup):
+            slug = m.group(1)
+            brace_start = m.start(2)
+            depth = 0
+            for i, ch in enumerate(markup[brace_start:], start=brace_start):
+                if ch == "{":
+                    depth += 1
+                elif ch == "}":
+                    depth -= 1
+                    if depth == 0:
+                        raw_json = markup[brace_start: i + 1]
+                        try:
+                            results.append((slug, _json.loads(raw_json)))
+                        except ValueError:
+                            pass
+                        break
+        return results
+
+    for block_slug, raw_attrs in _harvest_all_wp_block_attrs(block_markup):
+        if not raw_attrs:
+            continue
         block_short = block_slug.rsplit("/", 1)[-1]
         for k, v in raw_attrs.items():
+            # Bare attr-name key (last-write-wins across nested blocks is fine
+            # — the bucket-router treats finding any non-empty value at the
+            # bare name as 'slot filled'; we don't need block-disambiguation
+            # for the gap signal). The block-short-prefixed form additionally
+            # preserves block context for downstream consumers that want it.
             extracted[k] = v
             extracted[f"{block_short}.{k}"] = v
 
