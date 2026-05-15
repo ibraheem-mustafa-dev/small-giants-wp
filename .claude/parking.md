@@ -6,6 +6,42 @@ last_updated: 2026-05-16
 
 # Parking — deferred work with named triggers
 
+## CLOSED 2026-05-16 (this session)
+
+- **P-PHASE8-1** — Heritage-strip as Brand Story PATTERN ✓ **DONE** in commit `9a32a164`. Block deleted, `theme/sgs-theme/patterns/brand.php` created. Hardcoded lift guards removed from convert.py.
+- **P-PHASE8-2** — Per-block render.php audits (round 1+2) ✓ **DONE** for the 10 cv2-eligible blocks (commits `7a2a777d` + `9a32a164`). Static → dynamic conversion. WP file-render wrapper echo-style discovered. Extension-hook wiring (animation/responsive-visibility/image-controls) deferred → P-PHASE9-1.
+- **P-PHASE8-3** — Hyperspecific `if block_slug == "sgs/hero":` / `if block_slug == "sgs/heritage-strip":` guards ✓ **PARTIAL** — heritage-strip guard removed with the block. sgs/hero guard remains (sgs/hero lift code is still hero-specific) — re-park as P-PHASE9-2.
+- **P-PHASE8-11** — `severity_totals` dashboard ✓ **DONE** in commit `d859da4c`.
+- **P-PHASE8-12** — Wrong-block-type plausibility check ✓ **DONE** in commit `d859da4c` with depth-aware section-root parsing.
+- **P-PHASE8-13** — Populate `block_attributes.role` via slot_synonyms.role ✓ **DONE** in commit `d859da4c`. Migration script + assign-canonical.py second-pass propagation with property-suffix guard.
+- **P-PHASE8-17** — Convert remaining 7 static SGS blocks to dynamic ✓ **DONE** in commit `9a32a164` (parallel agent dispatch).
+
+## New 2026-05-16 — Phase 8 continuation backlog
+
+### P-PHASE8-NEW-1 — Recogniser stale heritage-strip references
+
+**What:** `confidence-matrix.py:83` + `per-section-convention-voter.py:115+263` still reference `sgs/heritage-strip` as a registered block (stale post-retirement). A future client mockup with `sgs-heritage-strip` class won't route to the `brand.php` pattern correctly.
+
+**Trigger:** Either before a new client onboarding hits `sgs-heritage-strip` OR as the first cleanup item next session.
+
+**Approach:** (1) Remove the stale block-name references. (2) Either register the `brand.php` pattern under BOTH slugs (`brand` + `heritage-strip`) so legacy class signatures still match, OR add a slot_synonyms-style alias mapping for pattern names. Lean toward (1) + multi-slug pattern registration since it's the simplest deterministic fix. ~30 min.
+
+### P-PHASE9-1 — Per-block extension hook wiring sweep
+
+**What:** The 9 newly-dynamic blocks (heritage-strip-restored, trust-bar, label, certification-bar, counter, divider, heading, notice-banner, process-steps, tab) don't yet wire `animation` / `responsive-visibility` / `image-controls` extension hooks into their render.php. Existing already-dynamic blocks deferred this too — broader sweep needed.
+
+**Trigger:** When a client mockup uses one of these blocks with animation/visibility controls AND it doesn't render OR when a cohesive cleanup sweep is opened.
+
+**Approach:** Identify the existing dynamic blocks that DO wire extensions correctly (likely sgs/hero, sgs/product-card) and copy the wiring pattern across all dynamic blocks. ~2-3 hours.
+
+### P-PHASE9-2 — sgs/hero hardcoded lift cleanup
+
+**What:** `lift_subtree_into_block_attrs` still has `if block_slug == "sgs/hero":` block at line ~1037 with hardcoded splitImage / splitImageMobile / variant logic. Heritage-strip's equivalent was removed when the block retired; hero's remains as the last hyperspecific block_slug guard.
+
+**Trigger:** Need a non-Mama's hero shape OR cohesive refactor.
+
+**Approach:** Refactor to BEM-modifier-driven generic lift via DB-backed `block_image_slots` table (subagent 5's 2026-05-15 design). ~70-80 lines + DB seed.
+
 ## New 2026-05-16 — Phase 8 in-flight backlog
 
 ### P-PHASE8-16 — Spec 16 invariant: cv2-eligible blocks must be dynamic

@@ -3,15 +3,13 @@ doc_type: state
 project: small-giants-wp
 project_id: 14
 current_phase: spec-16-phase-8-section-by-section-closure
-current_subphase: "Spec 16 Phase 7 architectural work SHIPPED 2026-05-15 on feat/spec-16-converter-v2-rollout (commits 06eca194 + 19c89f0f, pushed but not merged). Converter v2 now routes 9 of 9 sections through schema-driven lift logic (was 4 of 9 at session start). Pixel-diff closure gate NOT REACHED — plateaued at ~39% desktop / ~42% mobile / ~45% tablet. Phase 7 closure split: 'architecture closed' (this session) + 'visual gate closed via section-by-section work' (Phase 8). 3 binding methodology rules captured to all 3 persistence layers (blub.db rows 254/255/256) — leftover-buckets.json read FIRST, multi-model /qc BEFORE every commit, per-section cropped pixel diff (not full-page)."
-current_subphase_step: "Phase 8 entry: section-by-section converter quality closure per Bean's 2026-05-15 directive. Loop per section: (1) read pipeline-state/<run>/leftover-buckets.json filtered by section_id, (2) diagnose cause (converter / block schema / block render / theme CSS), (3) design UNIVERSAL fix (never section-specific), (4) implement + /qc-inline self-check, (5) multi-model /qc panel (Sonnet+Haiku+Gemini Flash+Cerebras) BEFORE commit, (6) re-run orchestrator + redeploy, (7) per-section pixel diff with --selector .sgs-{section} at 375/768/1440. Section closes when all 3 viewports ≤ 1%. Page closes when all sections close. Priority: hero (.sgs-hero 69%), gift-section (57%), ingredients (48%), social-proof (42%), featured-product (39%)."
-phase_7_summary: "Phase 7 architectural work shipped 2026-05-15. 24 files changed, 4545 insertions, 107 deletions on feat/spec-16-converter-v2-rollout. (1) Unmatched-section gate fix in orchestrator — _cv2_eligible flag computed once per boundary, fixes 5-of-9 short-circuit. (2) New atomic blocks: sgs/heading (48 attrs, 3-slot composite) + sgs/divider (12 attrs, 4 variants). (3) Converter promoted from .claude/scratch/converter-prototype/ to plugins/sgs-blocks/scripts/orchestrator/converter_v2/. (4) 4 lift patterns: hero image, testimonials array, feature-grid InnerBlocks, heritage body+image. (5) CSS-driven _lift_styling_attrs() (~280 lines) lifts inline style + matched CSS + @media variants into *Colour / *FontSize / *FontWeight / *LineHeight / *LetterSpacing / *TextTransform / *FontFamily / *Padding* / *BorderRadius* / MaxWidth attrs. (6) CSS-driven container detection replaces hardcoded SECTION_AS_CONTAINER_OVERRIDES (Bean caught as hyperspecific). (7) Tag-based SKIP_TOP_LEVEL_TAGS replaces class-based SKIP_SECTION_CLASSES. (8) Per-child mediaType detection replaces unconditional 'emoji' default. (9) BEM-modifier-first hero variant inference replaces unconditional 'split'. (10) gridTemplateColumns + Tablet + Mobile attrs added to sgs/container with sgs_sanitize_grid_template() render-side. (11) heritage-strip block.json got missing render: file:./render.php line. (12) Pre-existing bugs fixed: convert_section() extracted_attributes was always empty (brace-depth extractor added); leftover-bucket-router bare-key mismatch causing 100% false-fail classification. (13) scripts/pixel-diff.py created — Python equivalent of screenshot-diff-helper.js with --selector + DPR=1 + body-anchored alignment."
-phase_4_summary: "Phase 4 + 4.5 (convention enforcement gates + additive token discovery + Font Library) shipped 2026-05-12. Stage 0.1 BEM lint + Stage 0.5 token lint integrated into /sgs-clone with 3 modes."
-phase_5_summary: "Phase 5 CLOSED 2026-05-13. Modules 5a-5h.1 shipped. Pipeline runs end-to-end per spec."
-current_step: "Phase 8 section-by-section closure per Bean's 2026-05-15 directive. Read .claude/next-session-prompt.md for the full workflow + priority order + binding methodology rules. First action: read pipeline-state/<latest-run>/leftover-buckets.json and pick the worst section by per-section diff (currently .sgs-hero at 69% with 151 extraction_failed entries)."
-last_updated: 2026-05-15 (Phase 7 partial close + 3 methodology lessons captured + docs registry refreshed for Phase 8 readiness)
+current_subphase: "Phase 8 iterative closure work. Session 2026-05-16 shipped 5 commits: walker precedence + DB-driven SLOT routing + composite-element fast path (a2d58a3d); bucket-router accuracy upgrade with chrome_skipped + cv2_handled buckets (752f4aed); severity_totals dashboard + wrong-block-type plausibility + role backfill (d859da4c); P-PHASE8-2 render.php audit round 1 — heritage-strip restore + trust-bar + label conversion + WP file-render wrapper return-value discovery (7a2a777d); P-PHASE8-1 heritage-strip retirement + P-PHASE8-17 batch static→dynamic for 7 blocks via parallel agents + universal BEM-child array lifter (9a32a164). All cv2-emittable blocks are now dynamic. Trust-bar items array now lifts 4 entries from Mama's mockup. Heritage-strip retired, lives as brand.php pattern. Leftover-bucket diagnostic surface is now trustworthy: 0 high-severity gaps in Mama's run."
+current_subphase_step: "Phase 8 continuation. Priority order: (1) P-PHASE8-NEW-1 recogniser cleanup — remove stale sgs/heritage-strip refs in confidence-matrix.py + per-section-convention-voter.py, register brand pattern to match sgs-heritage-strip + sgs-brand class signatures. (2) Re-run per-section pixel diff post-deploy to quantify gains. (3) Schema/render mismatch decision for trust-bar (was deferred — re-park as urgent). (4) Hero 768px viewport selector-mismatch investigation. (5) P-PHASE9-1 per-block extension hook sweep across all dynamic blocks. (6-8) P-PHASE8-14/15/16 backlog. Read pipeline-state/mamas-munches-homepage-2026-05-15-215823/leftover-buckets.json FIRST per binding rule #1."
+phase_7_summary: "Phase 7 architectural work shipped 2026-05-15. Converter v2 promoted from scratch/ to production. 9 of 9 sections route through cv2 lift logic."
+phase_8_session_2026_05_16_summary: "5 commits on main. Walker precedence + DB-driven routing. Bucket-router accuracy: chrome_skipped + cv2_handled_no_top_level_match buckets, severity_totals dashboard, wrong-block-type plausibility, all-blocks attr harvest, dynamic slot-list coverage for cv2-emitted blocks. block_attributes.role backfill via slot_synonyms.role + property-suffix-guarded second pass. Heritage-strip retired (P-PHASE8-1 done) — brand.php pattern replaces. 7 static→dynamic block conversions via parallel agents (certification-bar, counter, divider, heading, notice-banner, process-steps, tab) + label + trust-bar (round 1) — all 10 cv2-eligible blocks now dynamic. Universal BEM-child array lifter unblocks per-section LIFT FIDELITY work. Trust-bar items array now lifts 4 entries from Mama's mockup (was 0). WP file-render wrapper return-value-discard bug discovered + fixed. All 9 newly-dynamic block.json files version-bumped to 0.2.0 with source:html removed per CLAUDE.md gotcha #3. Multi-rater /qc panels ran BEFORE every commit per binding rule #2. Visual-diff stubs added in reports/visual-diff/ for SGS commit gate compliance."
+last_updated: 2026-05-16 (5 commits shipped + docs regen)
 blockers:
-  - "None blocking — Phase 8 ready to start. The feat/spec-16-converter-v2-rollout branch is pushed but not merged; merge decision deferred to Bean."
+  - "None blocking — Phase 8 continuation ready. Trust-bar schema/render mismatch is deferred (was Bean's wait-on-review-choice), needs decision next session before pixel-diff closure on trust-bar can hit < 1%."
 recommended_model_next: opus
 ---
 
@@ -19,49 +17,48 @@ recommended_model_next: opus
 
 > Frontmatter above is the contract. Body below is regenerated by `/handoff` each session.
 
-## Where we are (2026-05-15 close)
+## Where we are (2026-05-16 close)
 
-**Spec 16 Phase 7 architectural work SHIPPED.** Branch `feat/spec-16-converter-v2-rollout` at commit `19c89f0f`. 9 of 9 sections route through converter v2 (was 4 of 9 at session start). CSS-driven styling-attr lifter populates 68 new attrs per Mama's homepage run. All hyperspecific patterns refactored to CSS-driven or DB-driven per Bean's repeated catches. Multi-model /qc panel verdict: SHIP — all new functions GENERIC.
+**Spec 16 Phase 8 — diagnostic surface trustworthy + universal converter mechanics shipped.** 5 commits on `main` (a2d58a3d → 9a32a164). All 10 cv2-eligible blocks now dynamic. Heritage-strip retired. Universal BEM-child array lifter operational. Leftover-bucket dashboard accurate.
 
-**Pixel-diff closure gate NOT reached** — full-page diff plateaued at ~39% desktop. Per-section cropped diff (newly understood as the honest measurement) shows .sgs-hero at 69%, .sgs-gift-section at 57%, .sgs-ingredients-section at 48%, .sgs-social-proof at 42%, .sgs-featured-product at 39%. The remaining work is per-section converter refinement + block render.php fidelity — that's Phase 8 scope.
+**Bucket signal at session close** (post-deploy, sandybrown):
+- 0 high-severity blockers
+- 2 chrome_skipped (intentional: header/footer)
+- 4 cv2_handled_no_top_level_match (sections need top-level block OR recogniser cleanup for brand pattern alias)
+- 455 medium attribute-coverage gaps (185 stage_3 + 270 cv2_emitted_dynamic)
+- 0 unrecognised_section, 0 structural_mismatch
 
-**Methodology lessons captured.** The 2026-05-15 session lost ~6 hours to spot-fixing pixel-diff without reading the orchestrator's leftover buckets. Three binding rules captured to all 3 persistence layers (workspace lesson files + CC auto-memory + blub.db rows 254/255/256):
+**Per-section pixel diff NOT re-run after Phase B** (context budget). Trust-bar items now lift 4 entries; heritage-strip now cv2 R4 fall-through; render path verified via curl class-grep on live sandybrown.
 
-1. **Read `pipeline-state/<run>/leftover-buckets.json` BEFORE conjecturing** about converter/pixel-diff causes. The orchestrator already classifies every gap.
-2. **Multi-model `/qc` panel BEFORE every commit** (Sonnet + Haiku + Gemini Flash + Cerebras). Single-Sonnet review missed 4+ hyperspecific patterns this session.
-3. **Per-section cropped pixel diff** via `--selector .sgs-X`, NOT full-page. Full-page has ~30-45% structural noise floor that no converter can avoid.
-
-## Today's commits (feat/spec-16-converter-v2-rollout, pushed not merged)
+## Today's 5 commits
 
 | Commit | What |
 |---|---|
-| `06eca194` | Phase 7 architectural work — 24 files, 4545 insertions, 107 deletions. New blocks, converter promotion, 4 lift patterns, CSS-driven styling lifter, 2 pre-existing bug fixes, pixel-diff harness. |
-| `19c89f0f` | Docs + methodology lessons capture — docs-registry.yaml updates (credentials + pipeline-state artefacts + cold-start order), common-wp-styling-errors.md Section S, next-session-prompt.md rewritten for Phase 8. |
+| `a2d58a3d` | Walker FR1 precedence + composite-element fast path + DB-driven SLOT_TO_STANDALONE_BLOCK |
+| `752f4aed` | Bucket-router accuracy — chrome_skipped + cv2_handled buckets, all-blocks attr harvest |
+| `d859da4c` | P-PHASE8-11 severity_totals + P-PHASE8-12 wrong-block-type + P-PHASE8-13 role backfill |
+| `7a2a777d` | P-PHASE8-2 round 1 — heritage-strip restore + trust-bar + label dynamic, WP file-render echo discovery |
+| `9a32a164` | P-PHASE8-1 heritage-strip retirement + P-PHASE8-17 7 parallel blocks dynamic + universal BEM-child array lifter |
 
-## Next session — Phase 8 entry
+## Next session — Phase 8 continuation
 
-1. **Read** `.claude/next-session-prompt.md` for the full workflow + priority order
-2. **Read** `pipeline-state/<latest-run>/leftover-buckets.json` for the canonical gap inventory
-3. **Start** with the worst section (.sgs-hero, 69%) — read its bucket entries, diagnose cause, design universal fix, /qc panel, redeploy, re-diff per-section
-4. **Move** to next worst when current section's 3 viewports all show ≤ 1%
+Read `.claude/next-session-prompt.md` for the full workflow + priority order + 4 binding rules. First action: read `pipeline-state/mamas-munches-homepage-2026-05-15-215823/leftover-buckets.json` for canonical gap inventory.
 
-## Phase 8 backlog (parked items, see parking.md P-PHASE8-*)
+## Phase 8 backlog (open in parking.md)
 
-- P-PHASE8-1: Heritage-strip → Brand Story pattern (Bean's 2026-05-15 redirect)
-- P-PHASE8-2: Per-block render.php audits (6-8 blocks)
-- P-PHASE8-3: Remove block_slug == hardcoded guards in lift_subtree (lines 1016, 1048)
-- P-PHASE8-4: convert_page.py line 198 extracted_attributes still hardcoded `{}`
-- P-PHASE8-5: Pack-size pills render-gating audit on product-card
-- P-PHASE8-6: Section-internal nav mapping
-- P-PHASE8-7: Non-standard breakpoint silent-drop in _BREAKPOINT_SUFFIXES
-- P-PHASE8-8: Spec 16 v0.3 closure-gate revision (per-section, not full-page)
+- **P-PHASE8-NEW-1** — Recogniser stale heritage-strip refs cleanup
+- **P-PHASE8-14** — Section-collapses-into-leaf-block guard (adversarial)
+- **P-PHASE8-15** — severity_totals key in orchestrator router-failure fallback
+- **P-PHASE8-16** — Spec 16 invariant + cv2 pre-flight gate
+- **P-PHASE9-1** — Per-block extension hook sweep
+- (Deferred decision) Trust-bar schema/render mismatch for badge shape
 
 ## Subprojects
 
-- Mama's Munches — `sites/mamas-munches/.claude/` — homepage clone is the converter's canary test (Phase 8 closure target)
-- Indus Foods Phase 4 — `sites/indus-foods/.claude/` — second-client validation target (post Mama's close)
+- Mama's Munches — `sites/mamas-munches/.claude/` — homepage clone is converter canary
+- Indus Foods Phase 4 — `sites/indus-foods/.claude/` — second-client validation target
 - helping-doctors — alternative second-client validation target
 
-## Today's decisions (10 entries — see decisions.md 2026-05-15 section)
+## Today's decisions (see decisions.md 2026-05-16 section)
 
-Phase 7 architectural close + 3 binding methodology rules + 6 named refactors removing hyperspecific patterns. All decisions are CSS-driven / schema-driven / DB-driven — no class-name hardcodes remain in the new code per multi-model QC verdict.
+7 new architectural decisions appended: walker precedence model, DB-driven slot→standalone routing, bucket-classification accuracy model, severity_totals dashboard, role backfill via slot_synonyms.role, WP file-render wrapper echo-style pattern, heritage-strip retirement as pattern not block, universal BEM-child array lifter design.

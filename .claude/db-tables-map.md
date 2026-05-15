@@ -608,28 +608,32 @@ Notes:
 
 ### slot_synonyms
 
-- Row count: 82
-- Purpose: The canonical slot vocabulary. Every named content slot in the SGS extraction model lives here. Each row has a canonical_slot name (e.g. 'heading', 'media', 'cta'), a JSON list of aliases (attribute name synonyms), the semantic HTML tag for the slot, and the WP canonical equivalent where applicable.
+- Row count: 82 (last verified 2026-05-16)
+- Purpose: The canonical slot vocabulary AND runtime standalone-block routing table. Every named content slot lives here with a canonical_slot name (e.g. 'heading', 'card'), a JSON list of aliases, an optional role, a semantic HTML tag, and (added 2026-05-16) an optional standalone_block slug for slot→standalone-block routing.
 - Schema:
   - `canonical_slot` TEXT PK
   - `aliases` TEXT NOT NULL (JSON array)
-  - `role` TEXT
+  - `role` TEXT — content-bearing role (text-content / content / select-from-enum / image-object / visual). Populated 2026-05-16 via `migrations/2026-05-16-slot-synonyms-roles.py`.
   - `description` TEXT
-  - `wp_canonical` TEXT (e.g. 'core/heading')
-  - `html_semantic_tag` TEXT (e.g. 'h1', 'p', 'img')
+  - `wp_canonical` TEXT
+  - `html_semantic_tag` TEXT
+  - `standalone_block` TEXT — ADDED 2026-05-16 via `migrations/2026-05-16-slot-synonyms-standalone-block.py`. When a BEM element resolves to this slot AND no parent block owns the slot, walker emits this block. Examples: label→sgs/label, badge→sgs/label, card→sgs/info-box.
   - `created_at` TEXT DEFAULT CURRENT_TIMESTAMP
 - Read by:
-  - `behavioural-analyser/assign-canonical.py` line 61: `SELECT canonical_slot, aliases, role FROM slot_synonyms` - loaded at startup for every /sgs-update Stage 4 run
-  - `drift-validator/validate.py` line 78: `SELECT canonical_slot FROM slot_synonyms` - validates that all canonical_slots in block_attributes are valid
+  - `converter_v2/db_lookup.py:standalone_block_for()` — runtime walker routing (added 2026-05-16)
+  - `behavioural-analyser/assign-canonical.py` line 61: `SELECT canonical_slot, aliases, role FROM slot_synonyms` — loaded at startup for every /sgs-update Stage 4 run + the second-pass role backfill (added 2026-05-16)
+  - `drift-validator/validate.py` line 78: `SELECT canonical_slot FROM slot_synonyms` — validates block_attributes.canonical_slot values
   - `drift-validator/validate.py` line 85: reads aliases for alias-overlap validation
   - `gap-detection/canonicalise-slot-only.py` line 23: reads full slot_synonyms for canonicalisation pass
 - Written by:
   - `~/.claude/skills/sgs-wp-engine/scripts/seed-spec-15-p1-vocab.py` (initial seed, Spec 15 Phase 1)
+  - `plugins/sgs-blocks/scripts/migrations/2026-05-16-slot-synonyms-standalone-block.py` (idempotent — adds standalone_block column + populates label/badge/card rows)
+  - `plugins/sgs-blocks/scripts/migrations/2026-05-16-slot-synonyms-roles.py` (idempotent — populates role for ~25 canonical content slots)
   - `gap-detection/apply-fanout-proposals.py` line 98: `INSERT INTO slot_synonyms` (extends vocabulary from mining results)
   - `gap-detection/apply-phase-3.5-vocab.py` lines 82-92: INSERT or UPDATE aliases
   - `gap-detection/canonicalise-pass-2.py` lines 79-92: INSERT new slots found during pass-2
-- Key columns for pipeline: `canonical_slot` (the PK that block_attributes.canonical_slot references), `aliases` (attribute names that map to this slot), `html_semantic_tag` (Stage 4 extraction target)
-- Pipeline stage: /sgs-update Stage 4 behavioural analysis (R). Gap-detection passes (W). Not read at /sgs-clone runtime (Stage 1 uses embedded heuristics in lingua_franca.py).
+- Key columns for pipeline: `canonical_slot` (PK), `aliases` (attribute synonyms), `standalone_block` (cv2 routing), `role` (cv2_emitted_dynamic bucket filter)
+- Pipeline stage: /sgs-update Stage 4 behavioural analysis (R). cv2 walker runtime (R via db_lookup). Gap-detection passes (W). Migrations 2026-05-16 (W).
 
 ---
 
