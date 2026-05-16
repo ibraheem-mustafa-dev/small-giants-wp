@@ -1,81 +1,82 @@
 ---
 doc_type: handoff
 project: small-giants-wp
-session_tag: small-giants-wp-2026-05-19-brand-walkdown-universal-lift
+session_tag: small-giants-wp-2026-05-19-path-b-sgs-media-sgs-text
 session_date: 2026-05-19
 recommended_model: sonnet
 last_verified: 2026-05-19
-update_triggers:
-  - "/handoff run"
-companion_docs:
-  - .claude/state.md
-  - .claude/next-session-prompt.md
-  - .claude/parking.md
-  - .claude/decisions.md
-  - .claude/plan.md
-  - .claude/tooling-map.md
-  - .claude/cloning-pipeline-flow.md
 ---
 
-# Session Handoff — 2026-05-19 (Phase 9 brand walkdown — universal core-block CSS lift + QC + parking)
+# Session Handoff — 2026-05-19 (Phase 9 walkdown + Path B universal lift)
 
 ## Headline
 
-**3 commits to `main` (HEAD `8444d4e4`).** Phase 9 evidence stack is now actually live (pre-work was inert), and the first universal converter improvement from the walkdown shipped. 4-rater /qc panel ratified post-implementation with 3 fixes applied before merge. 1 new behavioural rule captured. 5 new parking entries opened. Net +6 attrs lifted across 5 Mama's sections; hero/trust-bar canary holds. Next session opens on redeploy + coverage-metric extension to actually verify visible-pixel improvement.
+**5 commits to `main` (HEAD `ae701a53`).** Universal core-block CSS lift shipped (commit 99b344d7 + fixes), discovered it was visually inert because core/* are static-render, then **shipped Path B** — built two new dynamic SGS blocks (`sgs/media`, `sgs/text`) in parallel worktrees and swapped the converter atomic branches to emit them. Brand pixel diff moved from baseline 31/13/37% to **28/11/29%** at desktop/tablet/mobile. NOT the 1% goal, but real measured movement with verified server-rendered inline styles in the live HTML.
 
 ## Completed This Session
 
-1. **Discovered + fixed `--debug-trace` wiring bug** (`8444d4e4`). The 2026-05-18 pre-work commit `8b69bc0a` shipped per-section `convert-trace-<boundary>.jsonl` infrastructure that was inert: `stage_4_5_6_7_8_extract` assigned `_trace_mod` without a `global` declaration, raising silent `UnboundLocalError` swallowed by the broad except. Fix: 6-line addition. Verified — 9 per-boundary trace files now written, 587 events.
-2. **Shipped universal core-block CSS lift** (`99b344d7` + `a0592001`). New `_lift_core_block_style()` in `convert.py` emits CSS into WP core-block `style.*` schema for atomic_image / atomic_heading / atomic_paragraph / atomic_text_fallback. 26-entry data-driven mapping table. Brand attrs 38→40 vs main HEAD. Net +6 attrs across 5 sections.
-3. **Ran 4-rater /qc panel** (Sonnet converter-internals + Haiku DB-schema + Sonnet integration + Sonnet adversarial). 3 NEEDS_FIX findings shipped: (a) BLOCKING tag-selector blast-radius guard — `_lift_core_block_style` skips nodes without `sgs-` class to prevent bare-tag rules corrupting every paragraph globally; (b) shallow-merge `attrs["style"]` for forward-compat; (c) wire `atomic_text_fallback` branch (was missed in initial integration). 1 finding parked as P2 (P-CORE-STYLE-MAP-DB-MIGRATION).
-4. **Implemented P-PHASE9-6 RETIRED_BLOCK_REMAP guard** in `per-section-convention-voter.py`. New `_registered_block_slug_roots()` reads sgs-wp-engine DB `blocks` table at import (read-only), asserts no remap key collides with a currently-registered block slug. Soft-fail to empty set if DB unreadable.
-5. **Opened 5 new parking entries** (parking.md): P-CORE-STYLE-MAP-DB-MIGRATION, P-COVERAGE-METRIC-CORE-STYLE, P-PARENT-QUALIFIED-TAG-LIFT, P-TAG-SELECTOR-LIFT, P-PHASE9-REDEPLOY-BASELINE.
-6. **Captured `feedback_qc_panel_must_assert_file_existence`** behavioural rule (CC auto-memory). QC panels validating file artefacts MUST include "list run-dir + assert file appears + wc -l + head -1 schema check" steps. Function-level byte-equality is tautological if the writer is inert.
+1. **Discovered + fixed `--debug-trace` wiring bug** (`8444d4e4`). Pre-work commit 8b69bc0a's UnboundLocalError silently disabled per-section trace. Fix: `global _trace_mod` in `stage_4_5_6_7_8_extract`.
+2. **Shipped universal core-block CSS lift** (`99b344d7` + `a0592001`). New `_lift_core_block_style()` in convert.py + 26-entry mapping + 4-rater /qc panel + 3 NEEDS_FIX shipped.
+3. **P-PHASE9-6 RETIRED_BLOCK_REMAP guard** — import-time collision check against sgs-wp-engine DB blocks table.
+4. **Discovered static-block frontend-invisibility** — core/heading + core/image + core/paragraph save.js HTML is frozen in post_content; JSON style attrs are ignored at render time. Lift code was structurally correct but visually inert.
+5. **Path B: built sgs/media + sgs/text in parallel** (`ae701a53`). Two new dynamic blocks. sgs/media (36 attrs) — content image with server-side inline style. sgs/text (44 attrs) — full typography/spacing flat schema with per-viewport @media blocks. Both registered via plugin auto-discovery. `function_exists()` guards on render.php helpers to prevent fatal redeclaration.
+6. **Wired converter swap** — atomic_image → sgs/media, atomic_paragraph + atomic_text_fallback → sgs/text when source has SGS-BEM class. New `_flatten_wp_style_to_sgs_flat()` helper bridges WP nested → SGS flat schemas. textColour double-encoding fix normalises `var:preset|color|slug` and `var(--wp--preset--color--X)` to bare slug before re-wrap.
+7. **Deployed sgs-blocks to sandybrown** — npm build + tar deploy + OPcache reset. Updated post 65 via REST. Verified rendered HTML contains inline styles: `<img style="object-fit:cover;max-height:380px;border-radius:16px">` and `<p style="color:var(--wp--preset--color--text-muted);font-size:16px;line-height:1.75em;...">`.
+8. **Captured behavioural rule** `feedback_qc_panel_must_assert_file_existence` — when QC artefact is a file, raters MUST assert file exists with non-zero bytes + schema check.
 
 ## Current State
 
-- **Branch:** main at `8444d4e4`
-- **Tests:** WP block validation: valid (stage-4j on every shakeout). No automated test suite.
-- **Build:** n/a (Python orchestrator)
-- **Uncommitted changes:** none (state.md + handoff.md + next-session-prompt.md will be one final commit)
-- **Live state on sandybrown:** post 65 still at 2026-05-17 baseline — does NOT reflect today's lift improvements
-- **Mama's canary attrs:** hero=62, trust-bar=6, brand=40 (+2), featured=53 (+1), ingredients=28 (+1), gift=43 (+1), social-proof=17 (+1). Total 249.
+- **Branch:** main at `ae701a53`
+- **Live:** post 65 at sandybrown rendering sgs/media + sgs/text with inline styles applied
+- **Tests:** WP block validation locally reports "Unknown block: sgs/text" (DB not refreshed via `/sgs-update`); on deployed sandybrown rendering succeeds.
+- **Uncommitted:** None except this handoff regen.
+- **Pixel diff (brand at 3 viewports):** 28.3% / 10.6% / 28.8% — improved from 31.2% / 12.2% / 36.6% pre-Path-B
+
+## Pixel Diff vs Session Goal
+
+| Viewport | Session start | Pre-Path-B | **End of session** | Goal |
+|----------|---------------|------------|--------------------|------|
+| 1440     | 31.2%         | 31.2%      | **28.3%**          | ≤1%  |
+| 768      | 13.0%         | 12.2%      | **10.6%**          | ≤1%  |
+| 375      | 36.6%         | 36.6%      | **28.8%**          | ≤1%  |
+
+**Goal NOT achieved.** Real movement (3-8pp drops), but the 1% target requires more work.
 
 ## Known Issues / Blockers
 
-- **P-PHASE9-REDEPLOY-BASELINE** — post 65 baseline must be refreshed with new converter output before pixel-diff can show visible improvement. Currently brand reads 31% / 13% / 37% at 1440 / 768 / 375 (unchanged from pre-lift because the rendered page is the same).
-- **P-COVERAGE-METRIC-CORE-STYLE** — coverage% metric is blind to nested style.* paths. Brand reads 18.75% (3/16 rules covered) despite the lift adding 4 nested style objects. Metric extension needed before walkdown can produce honest before/after numbers.
-- **P-PARENT-QUALIFIED-TAG-LIFT** — current SGS-class guard is strict; rejects parent-qualified tag selectors like `.sgs-brand__body p`. Costs -1 attr/section vs subagent's permissive run. Tradeoff accepted for safety; smarter guard parked.
+- **Broken image URL** — converter emits `imageUrl: "../../research/photography/wp-media-library/Halimahs.jpeg"` which sandybrown renders as `src="http://../../research/..."`. Image fails to load. Likely the biggest remaining pixel-diff contributor on every viewport. Fix: media-sideload non-dry-run, or URL rewrite step.
+- **Headline still core/heading** — sgs/heading has wrapper-div mismatch (`<div class="wp-block-sgs-heading"><h2>` vs naked `<h2>`), would change DOM structure unrelated to lift. Path A (inline style on saved HTML) is the safe alternative.
+- **Tag-only blockquote selectors** — `.sgs-brand__body p` rule still skipped by SGS-class guard. Parked as P-PARENT-QUALIFIED-TAG-LIFT.
+- **Local `wp-blocks validate` reports invalid** — DB doesn't know about sgs/media + sgs/text yet. Run `/sgs-update` to refresh.
 
 ## Next Priorities (in order)
 
-1. **Refresh sandybrown post 65 with new converter block_markup** (~20 min, P-PHASE9-REDEPLOY-BASELINE). Run full-page `/sgs-clone`, take new brand `block_markup`, update post via REST or wp-admin. Verifies the universal lift in visible pixels.
-2. **Extend `pixel-diff.py compute_attribute_coverage` to walk nested style.* dicts** (~30 min, P-COVERAGE-METRIC-CORE-STYLE). Reuse `_CORE_BLOCK_STYLE_MAP` as ground truth. Re-measure brand coverage post-extension.
-3. **Re-run brand pixel-diff at 3 viewports with split-metric** (~10 min). Expect coverage% jump from 18.75% → likely 50-70%+ once nested paths count.
-4. **Decide on parent-qualified tag-selector smarter guard** (P-PARENT-QUALIFIED-TAG-LIFT, ~45-60 min) only if the -1-attr/section gap proves to bite after #2-3.
-5. **Open hero walkdown** with the same loop (single-section --debug-trace + per-section pixel-diff + branch on coverage%).
+1. **Media sideload non-dry-run** (~30 min) — upload mockup images to WP Media Library, replace relative URLs in extract.json. Almost certainly the biggest pixel-diff win remaining.
+2. **`/sgs-update`** to refresh sgs-framework.db with the two new blocks. Local `wp-blocks validate` will pass after.
+3. **Path A for atomic_heading** (~20 min) — emit `<h2 style="font-size:28px;color:...;margin-bottom:20px">` inline on the saved HTML so the headline styles apply. Avoids the sgs/heading wrapper-div mismatch.
+4. **Parent-qualified tag-selector smarter guard** (P-PARENT-QUALIFIED-TAG-LIFT, ~45 min) — allow lift when matched selector has an SGS-class ancestor.
+5. **Re-measure brand at 3 viewports** — expect ≤5% on at least one viewport. Then hero walkdown opens.
 
 ## Files Modified
 
 | File | What changed |
 |---|---|
-| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` | +257 net lines: new `_lift_core_block_style()`, 26-entry `_CORE_BLOCK_STYLE_MAP`, 4 atomic-branch integrations, SGS-class guard, shallow-merge |
-| `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` | +5 lines: `global _trace_mod` in `stage_4_5_6_7_8_extract` |
-| `plugins/sgs-blocks/scripts/recogniser/per-section-convention-voter.py` | +40 lines: `_registered_block_slug_roots()` + import-time collision assertion |
-| `.claude/parking.md` | +80 lines: 5 new P-* entries from walkdown |
-| `.claude/state.md` | regenerated for Phase 9 session 2 |
-| `.claude/handoff.md` | this file |
-| `.claude/next-session-prompt.md` | regenerated |
-| `~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_qc_panel_must_assert_file_existence.md` | new behavioural rule |
-| `~/.claude/projects/.../memory/MEMORY.md` | index entry prepended for the new rule |
+| `plugins/sgs-blocks/src/blocks/media/*` | NEW dynamic block (7 files) |
+| `plugins/sgs-blocks/src/blocks/text/*` | NEW dynamic block (7 files) |
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` | Added `_lift_core_block_style`, `_flatten_wp_style_to_sgs_flat`, `_split_value_unit`. Swapped atomic_image / atomic_paragraph / atomic_text_fallback to emit sgs/media + sgs/text. textColour double-encoding fix. |
+| `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` | `global _trace_mod` |
+| `plugins/sgs-blocks/scripts/recogniser/per-section-convention-voter.py` | RETIRED_BLOCK_REMAP collision guard |
+| `.claude/parking.md` | 5+ new entries (this + previous session) |
+| `.claude/decisions.md` | 4 new decisions from this session |
+| `.claude/mistakes.md` | 1 new lesson (QC must assert file artefacts) |
+| `~/.claude/projects/.../memory/feedback_qc_panel_must_assert_file_existence.md` | new behavioural rule |
 
 ## Notes for Next Session
 
-- The pre-work 4-rater /qc panel passed all 4 lenses but missed the wiring bug because no rater asserted file existence after running the orchestrator. New rule captured. Apply going forward.
-- Sonnet adversarial as Cerebras replacement caught the BLOCKING tag-blast-radius bug. The Cerebras-stall protocol from 2026-05-18 worked again today (Cerebras was skipped pre-emptively; replaced with explicit Sonnet adversarial-lens dispatch).
-- `_CORE_BLOCK_STYLE_MAP` is hardcoded — should be DB-driven per binding rule blub.db row 260. Parked as P2 because the existing `property_suffixes` schema is SGS-suffix-shaped, not WP-style-path-shaped. Either add a column or a sibling table.
-- Brand pixel-diff dimensions mismatched today (mockup 780x2110 vs sgs 1000x705) — the sandybrown page renders shorter than the mockup baseline post. Redeploy will normalise this.
-- Worktree `agent-afad3a430908ba2fc` (locked) still exists at `.claude/worktrees/` — can be cleaned with `git worktree remove --force` after the merge is confirmed stable.
+- The sandybrown post 65 baseline matters — both posts 65 and 66 need their content kept in sync with the mockup for pixel-diff to be meaningful. Post 66 (mockup baseline) hasn't been refreshed this session.
+- Image URL is THE biggest visible defect. The mockup's relative path needs to be either (a) uploaded to WP Media Library and replaced with the WP URL, or (b) absolute-pathed to the mockup hosting. Without this fix, no amount of styling can close pixel diff because the image area is white-empty.
+- sgs/heading wrapper-div is a structural choice — the existing block adds a `<div class="wp-block-sgs-heading">` around the `<h2>`. For atomic-heading swap to be safe, would need a config that drops the wrapper for single-headline use cases. Or just use Path A.
+- The 4-rater /qc panel must include "assert file artefact exists" step per the new captured rule. This session caught the static-block-invisibility bug only because I curl-fetched the rendered HTML and grepped for the style attrs.
 
 ## Next Session Prompt
 

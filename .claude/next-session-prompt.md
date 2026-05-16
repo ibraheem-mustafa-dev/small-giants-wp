@@ -1,101 +1,98 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-session_tag: small-giants-wp-2026-05-20-redeploy-coverage-metric-then-hero
+session_tag: small-giants-wp-2026-05-20-media-sideload-heading-lift-then-close-brand
 recommended_model: sonnet
 generated: 2026-05-19
-plan_revision: v5 (post brand-walkdown universal lift)
+plan_revision: v6 (post Path B ship)
 ---
 
-You are a senior SGS Framework architect resuming Spec 16 Phase 9 — brand walkdown verification and hero walkdown start. The 2026-05-19 session shipped the universal core-block CSS lift across 3 commits on `main` (HEAD `8444d4e4`). Two blockers must close before brand walkdown can produce honest before/after numbers: redeploy baseline + extend coverage metric.
+You are a senior SGS Framework architect closing Phase 9 brand walkdown. The 2026-05-19 session shipped Path B (sgs/media + sgs/text dynamic blocks, converter swap). Brand pixel diff dropped 3-8pp across viewports but is at 10.6%-28.8%, not the ≤1% goal. Two remaining contributors are bigger than the rest combined; close them first.
 
-Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-20-redeploy-coverage-metric-then-hero"`
+Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-20-media-sideload-heading-lift-then-close-brand"`
 
-## ALWAYS-LOAD invocations (in this order)
+## ALWAYS-LOAD invocations
 
 1. `/autopilot`
-2. Read `.claude/handoff.md` — 2026-05-19 brand walkdown summary
-3. Read `.claude/state.md` — frontmatter contract, blockers, recommended_model
-4. Read `.claude/parking.md` — 5 new entries from this walkdown
-5. Read 4 binding methodology rules in `~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/MEMORY.md`:
-   - `feedback_qc_panel_must_assert_file_existence` (new 2026-05-19 — when artefact is a file, raters MUST assert file appears with non-zero bytes + schema check)
-   - `feedback_read_leftover_buckets_before_conjecturing` (row 254)
-   - `feedback_multi_model_qc_before_commit` (row 255)
-   - `feedback_per_section_cropped_pixel_diff` (row 256)
+2. Read `.claude/handoff.md` — 2026-05-19 Path B summary
+3. Read `.claude/state.md` — current state + blockers
+4. Read `.claude/parking.md` — 7+ entries from this walkdown
+5. Read `~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/MEMORY.md` top 5 rules including the new `feedback_qc_panel_must_assert_file_existence` (when artefact is a file, QC must `ls`/`wc -l`/`head -1` it end-to-end)
 
 ## Skills to Invoke
 
-| Skill | When to use |
-|-------|-------------|
-| `/brainstorming` | Architectural decision on whether to ship the parent-qualified tag-selector smarter guard or park further |
-| `/gap-analysis` | Grade the coverage-metric extension before shipping |
-| `/lifecycle` | If any skill/agent/pipeline edits are needed |
-| `/research` | If a coverage-metric design question needs sourcing |
-| `/strategic-plan` | Plan hero walkdown loop after brand closes |
+| Skill | When |
+|---|---|
+| `/brainstorming` | If Path A vs sgs/heading-wrapper-drop decision needs framing |
+| `/gap-analysis` | Grade any new converter changes |
+| `/lifecycle` | If skill/agent edits needed |
+| `/research` | Probably none — most work is mechanical |
+| `/strategic-plan` | Plan hero walkdown once brand closes |
 | `/systematic-debugging` | Per-section log analysis on hero |
-| `/qc` | Multi-rater panel before every commit touching converter/pipeline (binding rule #2) |
+| `/qc` | Multi-rater panel before EVERY commit touching converter (binding rule) — INCLUDE file-existence assertion per new rule |
 | `/qc-inline` | Self-check during implementation |
-| `/sgs-wp-engine` | All SGS Framework work — block dev, mockup-to-blocks, design QA |
-| `/sgs-update` | If DB role refresh is bundled with cross-cutting batch |
-| `/wp-block-development` | If new attribute work touches block.json schema |
-| `/capture-lesson` | Session end ONLY, batch from in-session findings |
+| `/sgs-wp-engine` | All SGS framework work |
+| `/sgs-update` | MANDATORY — refresh sgs-framework.db with sgs/media + sgs/text registrations |
+| `/wp-block-development` | If sgs/heading needs a `noWrapper` variant |
 
-## MCP Servers & Tools
+## MCP & Tools
 
-| Tool | What to use it for |
-|------|-------------------|
-| `mcp-wordpress` (REST) | Update sandybrown post 65 with new converter block_markup |
-| `playwright` | Re-screenshot brand at 3 viewports after redeploy |
-| `chrome-devtools-mcp` | DOM inspect if pixel-diff shows unexpected residuals |
+| Tool | What for |
+|---|---|
+| `mcp-wordpress` REST | Update sandybrown post 65 with new converter output |
+| Playwright | Re-screenshot brand at 3 viewports |
+| `python scripts/pixel-diff.py --selector .sgs-brand --expected-rules ... --extracted-attrs ...` | Per-section split-metric diff |
 
 ## Agents to Delegate To
 
 | Agent | When |
-|------|------|
-| Sonnet via `/delegate` | Implementation of coverage-metric extension (~30 min, mechanical, well-spec'd) |
-| Sonnet adversarial via `/delegate` | Cerebras replacement in the next /qc panel (Cerebras still unreliable per 2026-05-18 + 2026-05-19 sessions) |
-| `wp-sgs-developer` | If post-65 redeploy needs REST + cache invalidation work |
-
-## Research Approach
-
-None of the planned tasks need fresh external research. The coverage-metric extension reuses `_CORE_BLOCK_STYLE_MAP` from convert.py as ground truth.
+|---|---|
+| Sonnet via `/delegate` | Implementation of media-sideload non-dry-run + URL replacement (~30 min, mechanical) |
+| Sonnet adversarial | Cerebras replacement in /qc panel |
+| `wp-sgs-developer` | If atomic_heading Path A wiring needs WordPress-specific judgement |
 
 ---
 
-## Task 1: Redeploy sandybrown post 65 with new converter output (~20 min)
+## Task 1 — Media sideload non-dry-run (~30 min, BIGGEST IMPACT)
 
-P-PHASE9-REDEPLOY-BASELINE. Run full-page `/sgs-clone` on Mama's homepage. Extract the brand section's `block_markup` from extract.json. Update sandybrown post 65 (`/2026/05/15/spec16-p7-converter-v2-output-2026-05-15/`) via REST API (mcp-wordpress) OR wp-admin. Hostinger edge cache purge if needed. Verify the new `image.style.scale`, `image.style.dimensions.maxHeight`, `heading.style.typography.fontSize` etc. render in the page DOM.
+**Why this first:** the live rendered post 65 has `<img src="http://../../research/photography/wp-media-library/Halimahs.jpeg">` — broken URL. Image area is white-empty. Almost certainly the biggest single contributor to the 28-29% pixel diff on desktop + mobile. Until this is fixed, no amount of styling can close pixel diff.
 
-## Task 2: Extend `compute_attribute_coverage` to count nested style.* paths (~30 min)
+**What:** the orchestrator's stage-4i media-sideload runs in `--dry-run` mode by default. Need to either:
+- (a) Run media-sideload for real (upload to sandybrown WP Media Library, replace URLs in extract.json), OR
+- (b) Add a URL-rewrite step that maps mockup-relative paths to deployed asset URLs (Hostinger media library or theme assets/)
 
-P-COVERAGE-METRIC-CORE-STYLE. Modify `scripts/pixel-diff.py compute_attribute_coverage` to walk nested `*.style` dicts in extracted_attrs. For each leaf path, derive the equivalent CSS property via the `_CORE_BLOCK_STYLE_MAP` inverse lookup (style.color.text → `color`, style.typography.fontSize → `font-size`, etc.). Mark expected-rule as covered if any of its declarations match.
+Check `plugins/sgs-blocks/scripts/orchestrator/media_sideload.py` (or wherever stage 4i lives) — find the dry-run gate and document what the live mode does. If it uploads to WP Media Library, run it. If it doesn't yet, add it.
 
-Multi-rater /qc panel before commit (Sonnet + Haiku + Gemini Flash + Sonnet adversarial — Cerebras still skip). **Apply the new binding rule: every rater MUST assert the pixel-diff diff.json contains the expected `attribute_coverage.covered_rules` count via end-to-end command + file inspection, not just behavioural-equivalence.**
+After: re-run converter, re-update post 65, re-measure pixel diff. Expect 1440 and 375 to drop by 10-20pp.
 
-## Task 3: Re-run brand pixel-diff at 3 viewports + measure honest delta (~10 min)
+## Task 2 — `/sgs-update` to refresh DB with sgs/media + sgs/text (~5 min)
 
-After Task 1 + 2 ship, re-run:
+Local `wp-blocks validate` currently reports "Unknown block: sgs/text" because sgs-framework.db hasn't been refreshed. Run `/sgs-update` to re-scan and update. Then re-run shakeout — validation should pass cleanly.
 
-```bash
-python scripts/pixel-diff.py \
-  --mockup "<sandybrown post 66>" --sgs "<sandybrown post 65>" \
-  --selector ".sgs-brand" --viewport 1440x900 \
-  --out reports/brand-walkdown-2026-05-20/diff-1440x900.json \
-  --expected-rules pipeline-state/<latest>/expected-rules-b1.jsonl \
-  --extracted-attrs reports/brand-walkdown-2026-05-20/brand-attrs.json
-```
+## Task 3 — Path A for atomic_heading (~20 min)
 
-Expected: coverage% should jump from 18.75% toward 60-80% (subject to remaining tag-only-selector gaps parked as P-PARENT-QUALIFIED-TAG-LIFT). Pixel diff% should drop materially if the lift translates to visible style application.
+The headline `.sgs-brand__headline` is still emitted as core/heading with style.* JSON (invisible). Adding inline `style="..."` to the saved `<h2>` opening tag is the safest fix — no DOM structural change.
 
-## Task 4: Branch on evidence + park or fix (~variable)
+In `convert.py` atomic_heading branch:
+1. After getting `style_dict` from `_lift_core_block_style`, build a CSS string: `font-size:28px;color:var(--wp--preset--color--text);margin-bottom:20px;...`
+2. Inject as inline style on the `<h2>` opening tag
+3. Keep the JSON attrs so the editor still sees them
 
-- If coverage% ≥ 95% on brand-scoped denominator AND pixel diff ≤ 5% → brand converter-DONE, move to hero
-- If coverage% < 95% → run /systematic-debugging on the trace + expected-rules diff; single hypothesis → DB-first fix → multi-rater /qc commit gate
-- If parent-qualified tag-selector gap proves to bite (≥-1 attr/section consistently across hero too) → unpark P-PARENT-QUALIFIED-TAG-LIFT, implement smarter guard
+Verify on sandybrown brand section after re-deploy.
 
-## Task 5: Open hero walkdown (~60-90 min if time remains)
+## Task 4 — Parent-qualified tag-selector smarter guard (~45 min, P-PARENT-QUALIFIED-TAG-LIFT)
 
-Same loop as brand. Run single-section command:
+The current SGS-class guard in `_lift_core_block_style` rejects ALL tag-only selectors to prevent blast radius. This blocks legitimate parent-qualified lifts like `.sgs-brand__body p { font-size:17px }`.
+
+Modify `_collect_css_decls_for_element` to ALSO return the matched selectors. In `_lift_core_block_style`, allow declarations through if the matched selector contains an `.sgs-` class anywhere in its chain.
+
+## Task 5 — Re-measure brand at 3 viewports + branch
+
+Expected after Tasks 1+3+4: ≤5% on at least one viewport. Multi-rater /qc panel before commit (binding rule #2). Run /sgs-update for DB refresh.
+
+## Task 6 — Hero walkdown opens (~60-90 min if time)
+
+Same loop as brand. Single-section command:
 
 ```bash
 python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py \
@@ -107,16 +104,15 @@ python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py \
   --mode draft --debug-trace
 ```
 
-Read evidence in order: expected-rules-b1.jsonl → convert-trace-b1.jsonl → leftover-buckets.json → extract.json per_section_results → pixel-diff with split-metric. Branch on coverage% per Task 4 rules.
-
-Council /qc only if /systematic-debugging produces no clear hypothesis. Sonnet adversarial as Cerebras replacement.
+Hero already uses sgs/hero (slot-aware path) so the Path B work doesn't directly apply. Hero needs its own debugging via the trace + expected-rules baseline + pixel-diff loop.
 
 ## Guardrails
 
-- **Binding rule reminders:** Read pipeline-state evidence BEFORE conjecturing (row 254). Multi-model /qc BEFORE every commit (row 255). Per-section cropped pixel diff (row 256). **NEW: QC raters MUST assert file artefacts exist with expected content (2026-05-19 rule).**
-- **DB-first lookups:** check `.claude/db-tables-map.md` before adding any hardcoded dict (row 260).
-- **Don't break the canary:** hero=62, trust-bar=6. Shakeout after every fix.
-- **Never `return ob_get_clean()` / `return sprintf()` in render.php.** Never set `"source": "html"` on dynamic block attrs.
-- **Default time estimates LOW** per `~/.claude/rules/time-estimates.md`.
-- **Handoff walks docs registry** — every doc in `.claude/docs-registry.yaml` checked at session end.
-- **Worktree cleanup:** `git worktree remove --force .claude/worktrees/agent-afad3a430908ba2fc` if confirmed stable.
+- **Read pipeline-state evidence FIRST** (rule 254) — leftover-buckets, trace, expected-rules before conjecturing
+- **Multi-rater /qc BEFORE every commit** (rule 255) — Sonnet + Haiku + Gemini Flash + Sonnet-adversarial (Cerebras still skip)
+- **Per-section cropped pixel diff** (rule 256) — `--selector .sgs-{section}` only
+- **QC raters MUST assert file artefacts exist** (rule 2026-05-19) — when artefact is .jsonl/.json/.png/.html, include `ls`/`wc -l`/`head -1` step
+- **DB-first lookups** (rule 260) — check db-tables-map.md before hardcoded dicts. `_CORE_BLOCK_STYLE_MAP` is parked for migration (P-CORE-STYLE-MAP-DB-MIGRATION)
+- **Never `return ob_get_clean()` / `return sprintf()` in render.php.** Never `source: html` on dynamic attrs.
+- **Default time estimates LOW** per `~/.claude/rules/time-estimates.md`
+- **Handoff walks docs-registry** at session end
