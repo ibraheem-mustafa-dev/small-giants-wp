@@ -283,6 +283,133 @@ def parent_block_for(child_slug: str) -> str | None:
 
 
 # ----------------------------------------------------------------------------
+# CSS property → SGS attr suffix mapping (DB-driven, replaces hardcoded dict)
+# ----------------------------------------------------------------------------
+
+# Suffix → kind override for cases where the suffix name carries kind semantics
+# the role column doesn't distinguish. Empty → fall through to role-based inference.
+_KIND_BY_SUFFIX: dict[str, str] = {
+    "LineHeight":    "number_unitless",
+    "LetterSpacing": "number_px_or_em",
+    # String-typed enums/keywords (defeat the role-based "number_px" default)
+    "FontFamily":      "string",
+    "FontWeight":      "string",
+    "TextTransform":   "string",
+    "TextAlign":       "string",
+    "TextDecoration":  "string",
+    "ObjectFit":       "string",
+    "ObjectPosition":  "string",
+    "BorderStyle":     "string",
+    "BoxShadow":       "string",   # composite value or token ref
+    "Easing":          "string",   # transition-timing-function: cubic-bezier(...) / ease
+    "Columns":         "string",   # grid-template-columns: '1fr 1fr' etc.
+    "AspectRatio":     "string",   # '16/9' syntax
+    "Style":           "string",
+    "Variant":         "string",
+    "Alignment":       "string",
+}
+
+
+def _kind_for(suffix: str, role: str | None) -> str | None:
+    """Infer the convert.py 'kind' for a property_suffixes row.
+
+    Returns one of: 'colour', 'number_px', 'number_unitless', 'number_px_or_em',
+    'string'. Returns None for rows that shouldn't be lifted via CSS (behaviour,
+    select-from-enum, content roles — these aren't CSS-driven).
+    """
+    if suffix in _KIND_BY_SUFFIX:
+        return _KIND_BY_SUFFIX[suffix]
+    if role == "color" or any(t in suffix for t in ("Colour", "Color", "Background", "Foreground")):
+        return "colour"
+    if role in ("layout", "typography", "visual", "spacing", "shadow", "motion", "number-css-px"):
+        return "number_px"
+    if role == "number-css-percent":
+        return "number_px"  # we strip the unit either way
+    # Roles that aren't CSS-lifted (content, behaviour, enum-class-probe, etc.)
+    return None
+
+
+@functools.lru_cache(maxsize=1)
+def css_property_suffixes() -> list[tuple[str, str, str]]:
+    """Return list of (css_property, suffix, kind) tuples from property_suffixes
+    table, filtered to rows where:
+      - css_property IS NOT NULL (skip 'Style'/'Variant' etc. with no CSS prop)
+      - kind can be inferred (skip behaviour/select-from-enum rows that aren't CSS-driven)
+
+    Replaces the hardcoded _CSS_PROP_TO_SUFFIX dict in convert.py. The DB is
+    canonical; this function is the single read path.
+
+    The same CSS property may map to multiple suffixes (e.g. color → both
+    'Colour' and 'Color'). Caller iterates the full list and tries each suffix
+    in turn — _try_set() drops rows where the suffix doesn't exist in the
+    target block's schema.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT suffix, css_property, role FROM property_suffixes "
+            "WHERE css_property IS NOT NULL AND css_property != ''"
+        ).fetchall()
+    finally:
+        conn.close()
+    out: list[tuple[str, str, str]] = []
+    for suffix, css_prop, role in rows:
+        kind = _kind_for(suffix, role)
+        if kind is None:
+            continue
+        out.append((css_prop, suffix, kind))
+    return out
+
+
+# ----------------------------------------------------------------------------
+# Breakpoint suffix vocabulary (DB-driven, replaces hardcoded _BREAKPOINT_SUFFIXES)
+# ----------------------------------------------------------------------------
+
+# Standard breakpoint marker → [suffixes to try, in priority order]. Tablet+Desktop
+# both fire for min-width: 768 because most mockups have only one breakpoint and
+# the converter wants to populate both responsive attrs from that single rule.
+# This mapping is convention, not data — the DB has the suffix vocabulary; this
+# function maps @media query breakpoints to which suffixes those queries apply to.
+_BREAKPOINT_RULES: list[tuple[str, list[str]]] = [
+    ("min-width: 768",  ["Tablet", "Desktop"]),
+    ("min-width: 1024", ["Desktop"]),
+    ("min-width: 1280", ["Desktop"]),
+    ("max-width: 767",  ["Mobile"]),
+    ("max-width: 640",  ["Mobile"]),
+]
+
+
+@functools.lru_cache(maxsize=1)
+def breakpoint_suffix_rules() -> list[tuple[str, list[str]]]:
+    """Return the breakpoint marker → suffix-list mapping for CSS @media parsing.
+
+    The suffix vocabulary is DB-canonical via modifier_suffixes (kind='breakpoint');
+    this function pairs each breakpoint marker with the suffixes from that vocabulary
+    that should be populated when the marker matches. Verifies at module load
+    that every suffix referenced here exists in the DB's modifier_suffixes table.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        db_suffixes = {
+            s for (s,) in conn.execute(
+                "SELECT suffix FROM modifier_suffixes WHERE kind = 'breakpoint'"
+            ).fetchall()
+        }
+    finally:
+        conn.close()
+    # Verify the convention rules only reference suffixes that exist in the DB
+    for marker, suffixes in _BREAKPOINT_RULES:
+        for sfx in suffixes:
+            if sfx not in db_suffixes:
+                raise RuntimeError(
+                    f"breakpoint_suffix_rules: marker {marker!r} references "
+                    f"suffix {sfx!r} not in modifier_suffixes (kind='breakpoint'). "
+                    f"DB has {sorted(db_suffixes)}. Run /sgs-update to refresh."
+                )
+    return _BREAKPOINT_RULES
+
+
+# ----------------------------------------------------------------------------
 # Smoke test
 # ----------------------------------------------------------------------------
 

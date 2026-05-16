@@ -795,46 +795,33 @@ def _lift_inner_blocks(node: Tag, pattern: dict) -> list[str]:
 # CSS-driven styling-attribute lifter
 # ============================================================================
 
-# CSS property → (attr_suffix, value_kind)
+# CSS property → (attr_suffix, value_kind) — DB-driven via db.css_property_suffixes()
 # value_kind: 'colour' | 'number_px' | 'number_unitless' | 'string' | 'number_px_or_em'
-_CSS_PROP_TO_SUFFIX: list[tuple[str, str, str]] = [
-    ("color",            "Colour",        "colour"),
-    ("background-color", "BackgroundColour", "colour"),
-    ("font-size",        "FontSize",      "number_px"),
-    ("font-weight",      "FontWeight",    "string"),
-    ("line-height",      "LineHeight",    "number_unitless"),
-    ("letter-spacing",   "LetterSpacing", "number_px_or_em"),
-    ("text-transform",   "TextTransform", "string"),
-    ("font-family",      "FontFamily",    "string"),
-    ("max-width",        "MaxWidth",      "number_px"),
-    ("padding-top",      "PaddingTop",    "number_px"),
-    ("padding-right",    "PaddingRight",  "number_px"),
-    ("padding-bottom",   "PaddingBottom", "number_px"),
-    ("padding-left",     "PaddingLeft",   "number_px"),
-    ("border-radius",    "BorderRadius",  "number_px"),
-    # Added 2026-05-17: margin + gap families to close per-block *MarginBottom*
-    # / *GapUnit / *Gap unit-suffix lift gaps (no-op when target block doesn't
-    # declare the attr — _try_set guards via schema check).
-    ("margin-top",       "MarginTop",     "number_px"),
-    ("margin-right",     "MarginRight",   "number_px"),
-    ("margin-bottom",    "MarginBottom",  "number_px"),
-    ("margin-left",      "MarginLeft",    "number_px"),
-    ("gap",              "Gap",           "number_px"),
-    ("row-gap",          "RowGap",        "number_px"),
-    ("column-gap",       "ColumnGap",     "number_px"),
-]
+#
+# Refactored 2026-05-17 (blub.db row 260 — DB-first lookups rule). Previously a
+# hardcoded 21-row list that duplicated property_suffixes table. Now reads the
+# canonical 99-row DB table via db.css_property_suffixes() — 48 rows survive the
+# CSS-driven filter (rows with css_property NOT NULL + kind inferable). The
+# remaining 51 DB rows are behaviour/select-from-enum/content attrs that aren't
+# CSS-lifted and are filtered out by _kind_for() returning None.
+#
+# Wrap the DB call in a module-level lazy load so the import path is cheap and
+# the lookup is cached for the run.
+def _css_prop_to_suffix() -> list[tuple[str, str, str]]:
+    """DB-driven replacement for the old _CSS_PROP_TO_SUFFIX list constant.
 
-# Breakpoint marker → attr name suffix for font-size-family attrs
-# Source mockup uses a single @media (min-width: Xpx) block — treat as both
-# Tablet and Desktop values (most mockups only have one breakpoint).
-_BREAKPOINT_SUFFIXES: list[tuple[str, list[str]]] = [
-    # (substring to match in media_key, [attr suffixes to try])
-    ("min-width: 768",  ["Tablet", "Desktop"]),
-    ("min-width: 1024", ["Desktop"]),
-    ("min-width: 1280", ["Desktop"]),
-    ("max-width: 767",  ["Mobile"]),
-    ("max-width: 640",  ["Mobile"]),
-]
+    Returns the same (css_property, suffix, kind) tuple shape callers expect.
+    Cached by db.css_property_suffixes()'s @lru_cache.
+    """
+    return db.css_property_suffixes()
+
+
+# Breakpoint marker → attr name suffix — DB-driven via db.breakpoint_suffix_rules().
+# Suffix vocabulary canonical in modifier_suffixes table (kind='breakpoint');
+# marker→suffix mapping verified at module load against the DB.
+def _breakpoint_suffixes() -> list[tuple[str, list[str]]]:
+    """DB-verified replacement for the old _BREAKPOINT_SUFFIXES list constant."""
+    return db.breakpoint_suffix_rules()
 
 _VAR_TOKEN_RE = re.compile(r"var\(--(?:wp--preset--color--)?([a-z0-9-]+)\)")
 
@@ -986,7 +973,7 @@ def _collect_css_decls_for_element(
         # Route to base or breakpoint bucket
         if media_part:
             # Determine which breakpoint suffix(es) this media query maps to
-            for bp_substr, bp_suffix_list in _BREAKPOINT_SUFFIXES:
+            for bp_substr, bp_suffix_list in _breakpoint_suffixes():
                 if bp_substr in media_part:
                     for bp_suffix in bp_suffix_list:
                         if bp_suffix not in bp_decls:
@@ -1069,7 +1056,7 @@ def _lift_styling_attrs(
         attrs[attr_name] = value
 
     # ---- Base (desktop/default) props ----
-    for css_prop, suffix, kind in _CSS_PROP_TO_SUFFIX:
+    for css_prop, suffix, kind in _css_prop_to_suffix():
         raw = base_decls.get(css_prop)
         if raw is None:
             continue
@@ -1115,7 +1102,7 @@ def _lift_styling_attrs(
 
     # ---- Breakpoint-specific font-size (the most commonly needed one) ----
     for bp_suffix, bp_decl_map in bp_decls.items():
-        for css_prop, suffix, kind in _CSS_PROP_TO_SUFFIX:
+        for css_prop, suffix, kind in _css_prop_to_suffix():
             raw = bp_decl_map.get(css_prop)
             if raw is None:
                 continue
