@@ -3,16 +3,22 @@ doc_type: plan
 project: small-giants-wp
 plan_name: convention-rollout-and-m9-completion
 created: 2026-05-10
-last_updated: 2026-05-15
+last_updated: 2026-05-17
 phase_count: 8
 total_estimate_min: 540-720 (9-12 hours focused)
-status: superseded — convention-rollout phases 1-7 closed; M9 / clone-orchestrator work reframed as Spec 16. Active plan now at .claude/plans/phase-7-spec-16-converter-rollout.md.
-successor_plan: .claude/plans/phase-7-spec-16-converter-rollout.md
+status: archived — phases 7+8 closed since original write; active work is Phase 9. Active execution doc is .claude/next-session-prompt.md (v3 — post-4-rater council review). This file kept as historical audit trail.
+successor_plan: .claude/next-session-prompt.md (v3 — section-by-section walkdown, 2026-05-17)
+phase_chain:
+  - phase-7-spec-16-converter-rollout — CLOSED 2026-05-13
+  - phase-8-section-by-section-closure — CLOSED 2026-05-16 (22 commits across 3 sessions)
+  - phase-9-brand-hero-evidence-walkdown — ACTIVE
 ---
 
-# Plan - SGS-BEM Convention Rollout + M9 Completion
+# Plan - SGS-BEM Convention Rollout + M9 Completion (ARCHIVED — historical audit trail)
 
-**2026-05-15 status note:** Convention-rollout work completed across phases 1-7. The M9 / clone-orchestrator concerns this plan sketched were reframed in Spec 16 (2026-05-14) as a slot-aware DOM walker. Active execution plan now lives at `.claude/plans/phase-7-spec-16-converter-rollout.md`. Spec 15 stays canonical for L0-L3 + Stages 0-2 + 8-9 + /sgs-update; Spec 16 owns Stages 3-7. See `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` for the active implementation spec.
+**2026-05-17 status note:** Three phases closed since this plan was written. Phase 7 (Spec 16 converter rollout) closed 2026-05-13. Phase 8 (section-by-section closure, 22 commits across 3 sessions) closed 2026-05-16. Phase 9 (brand + hero evidence-driven walkdown) is the active phase as of 2026-05-17 — see `.claude/next-session-prompt.md` v3 (validated by 4-rater council review: architecture / adversarial / pragmatist / evidence). Pass condition for Phase 9 splits into attribute-coverage% ≥ 95% (universality, pure converter score) + pixel-diff% ≤ 5% (fidelity, block + theme + render score) per evidence-lens recommendation. The M9 / clone-orchestrator concerns this plan originally sketched were reframed in Spec 16 (2026-05-14) as a slot-aware DOM walker. Spec 15 stays canonical for L0-L3 + Stages 0-2 + 8-9 + /sgs-update; Spec 16 owns Stages 3-7.
+
+**Active plan reference for next session: `.claude/next-session-prompt.md` v3.**
 
 ## USP
 

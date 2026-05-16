@@ -1,5 +1,25 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-15 (3 new lessons — leftover-bucket-first / multi-model-QC-before-commit / per-section-pixel-diff)
+**Last updated:** 2026-05-17 (2 new lessons — parse_css silent-miss / DB-first lookups not hardcoded dicts)
+
+## 2026-05-17 — parse_css regex captured 0 of 13 @media blocks; every responsive variant silently dropped at parse time
+
+**The rule:** Recogniser bugs that emit ZERO trace events look identical to clean runs. Before declaring a recognition gap "missing feature in converter", verify the parser saw the source data at all. Add `parse_input` trace events + an `expected-rules-<boundary>.jsonl` baseline that lists every CSS declaration selecting into the section's DOM subtree. Diff `expected ∖ css_rule_seen` to surface silent misses.
+
+**Incident:** During Phase 9 lift-fidelity sweep, categorised 537 leftover-bucket entries: 22% (120 entries) classified as "responsive variants failing". Parked as P-PHASE8-NEW-4 (CSS-lift media-query support) — assumed cv2 walker needed media-query support added. Spent ~90 min on the categorisation work. When the parallel implementation agent investigated, the actual root cause was `parse_css` regex `@media[^{]+\{((?:[^{}]+\{[^{}]+\})+)\}` requiring media body to end with `}` immediately after the last inner rule's `}`. Real CSS always has whitespace between, so the regex matched 0 of 13 @media blocks on Mama's mockup. Every responsive override was silently dropped at parse time. After the brace-balanced scanner fix: 13/13 captured, hero headlineFontSizeDesktop correctly 58 (was 34 from base-CSS only).
+
+**Why this is high-impact recurrence risk:** The recogniser logs gaps it KNOWS about. It cannot log gaps it never saw. Silent misses are invisible to bucket dashboards, pixel diffs, and /systematic-debugging until you add an expected-vs-seen comparator. Yesterday's @media bug fit this pattern perfectly — the 9 stage-4 events all said "successful conversion", the buckets said "responsive variants missing", and the truth was "parser dropped everything".
+
+**Captured fully:** evidence-lens output from 4-rater review of the next-session plan; addressed in v3 next-session-prompt pre-work Step 2 (expected-rules baseline). Commit `20ef1d66` (fix) + `1fa4e880` (plan revision).
+
+## 2026-05-17 — Added rows to hardcoded `_CSS_PROP_TO_SUFFIX` dict when property_suffixes DB table already had 99 rows for the same purpose
+
+**The rule:** Before adding hardcoded lookup data to converter / recogniser / orchestrator scripts (`convert.py`, `per-section-convention-voter.py`, etc.), check `.claude/db-tables-map.md` for an existing canonical table. sgs-framework.db has `property_suffixes` (117 rows), `block_supports` (370 rows), `modifier_suffixes` (19 rows, kind='breakpoint' + corner + side + state), `slot_synonyms`, `block_attributes` (1406 rows), `block_selectors`, `block_compositions`. Refactor scripts to read via `db_lookup.py`; never add another in-script dict. The DB is canonical, fed by `/sgs-update`; manual dicts in scripts do not sync.
+
+**Incident:** Added margin/gap rows to `convert.py:_CSS_PROP_TO_SUFFIX` (taking it to 21 hardcoded rows) when Bean pointed out the DB has a `property_suffixes` table. Inspection revealed 99 rows for the same lookup. Every "small fix" that session (margin/gap suffix, retired-block remap, hero `__split-image` lookup) duplicated DB-driven data. The recognition gap was not missing DATA — it was missing DB READS.
+
+**Why this is high-impact recurrence risk:** Hardcoded dicts in scripts feel cheap (one-line additions). They create silent drift between the DB (canonical, fed by /sgs-update) and the script (manual). Every drift instance is a future silent failure when the DB is refreshed and the script still has stale data.
+
+**Captured fully:** blub.db row 260; embedded as Rule 11 HARD-GATE in `~/.claude/skills/sgs-clone/SKILL.md`. Refactor shipped in commit `168fd2ca` (cv2 path now reads via `db_lookup.css_property_suffixes()` + `breakpoint_suffix_rules()`).
 
 ## 2026-05-15 — Spent ~6 hours spot-fixing pixel-diff without reading the orchestrator's own leftover buckets
 
