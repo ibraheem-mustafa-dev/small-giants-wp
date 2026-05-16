@@ -96,26 +96,65 @@ def _resolve_media_url(src: str) -> str:
 
 
 def parse_css(css_text: str) -> dict[str, dict[str, str]]:
-    """Parse CSS into {selector: {prop: value}}. Media queries flatten with marker."""
+    """Parse CSS into {selector: {prop: value}}. Media queries flatten with marker.
+
+    Uses a brace-balanced scanner so nested ``@media`` blocks of any size are
+    extracted correctly. Inner rules under a media block are stored as
+    ``"<media-condition> :: <selector>"`` keys; non-media rules are stored bare.
+
+    Replaces an earlier regex-only implementation whose ``_MEDIA_RE`` pattern
+    silently failed on every real-world ``@media`` block (verified 2026-05-17 —
+    13 ``@media`` queries in Mama's mockup, 0 captured). Captured at parking
+    P-PHASE8-NEW-4 and blub.db row 207 measurement-vs-eye discipline.
+    """
     rules: dict[str, dict[str, str]] = {}
     css_text = re.sub(r"/\*.*?\*/", "", css_text, flags=re.DOTALL)
 
-    def _media_replace(m: re.Match) -> str:
-        cond = m.group(0).split("{", 1)[0].strip()
-        body = m.group(1)
-        for inner in _RULE_RE.finditer(body):
+    def _ingest_rules_text(text: str, media_cond: str = "") -> None:
+        """Parse a chunk of CSS containing top-level ``selector { decls }`` pairs."""
+        for inner in _RULE_RE.finditer(text):
             sel = inner.group(1).strip()
             decls = inner.group(2)
-            key = f"{cond} :: {sel}"
+            # Skip @-rule directives that slipped through (e.g. @font-face inside).
+            if sel.startswith("@"):
+                continue
+            key = f"{media_cond} :: {sel}" if media_cond else sel
             rules.setdefault(key, {}).update(_parse_decls(decls))
-        return ""
 
-    css_text = _MEDIA_RE.sub(_media_replace, css_text)
-
-    for m in _RULE_RE.finditer(css_text):
-        sel = m.group(1).strip()
-        decls = m.group(2)
-        rules.setdefault(sel, {}).update(_parse_decls(decls))
+    # Walk the source extracting @media blocks via brace counting, ingesting
+    # the surrounding text as plain rules.
+    i = 0
+    n = len(css_text)
+    plain_start = 0
+    while i < n:
+        if css_text.startswith("@media", i):
+            # Ingest everything before this @media as plain rules
+            _ingest_rules_text(css_text[plain_start:i])
+            brace_open = css_text.find("{", i)
+            if brace_open == -1:
+                break
+            cond = css_text[i:brace_open].strip()
+            # Brace-balanced scan for the matching closing brace
+            depth = 1
+            j = brace_open + 1
+            while j < n and depth > 0:
+                ch = css_text[j]
+                if ch == "{":
+                    depth += 1
+                elif ch == "}":
+                    depth -= 1
+                j += 1
+            if depth != 0:
+                # Malformed CSS — bail out, ingest the rest as plain
+                break
+            body = css_text[brace_open + 1 : j - 1]
+            _ingest_rules_text(body, media_cond=cond)
+            i = j
+            plain_start = j
+            continue
+        i += 1
+    # Tail
+    _ingest_rules_text(css_text[plain_start:])
     return rules
 
 
@@ -914,6 +953,11 @@ def _collect_css_decls_for_element(
             if p not in target:
                 target[p] = v
 
+    # Collect matching selectors first so media-keyed rules can be applied in
+    # ascending specificity order (more-specific breakpoint overrides broader).
+    matched_base: list[dict[str, str]] = []
+    matched_media: list[tuple[str, dict[str, str]]] = []
+
     # ---- 1. Inline style ----
     inline = desc.get("style", "") or ""
     if inline:
@@ -970,18 +1014,42 @@ def _collect_css_decls_for_element(
         if not matches:
             continue
 
-        # Route to base or breakpoint bucket
+        # Route to base or breakpoint bucket (buffered for ordered apply)
         if media_part:
-            # Determine which breakpoint suffix(es) this media query maps to
-            for bp_substr, bp_suffix_list in _breakpoint_suffixes():
-                if bp_substr in media_part:
-                    for bp_suffix in bp_suffix_list:
-                        if bp_suffix not in bp_decls:
-                            bp_decls[bp_suffix] = {}
-                        _merge_into(bp_decls[bp_suffix], decls)
-                    break
+            matched_media.append((media_part, decls))
         else:
-            _merge_into(base_decls, decls)
+            matched_base.append(decls)
+
+    # Apply base decls (CSS source order, preserve first)
+    for d in matched_base:
+        _merge_into(base_decls, d)
+
+    # Apply media decls in ascending specificity so the most-specific
+    # breakpoint wins for each suffix. min-width: 1280 must override
+    # min-width: 768 for the Desktop bucket. max-width works in reverse —
+    # smaller max-width is more specific (max-width: 640 over max-width: 767).
+    def _specificity_key(media_cond: str) -> tuple[int, int]:
+        """Lower tuple = applied first (so it gets overwritten by later)."""
+        mn = re.search(r"min-width\s*:\s*(\d+)", media_cond)
+        mx = re.search(r"max-width\s*:\s*(\d+)", media_cond)
+        if mn:
+            # smaller min-width first → larger overwrites
+            return (0, int(mn.group(1)))
+        if mx:
+            # larger max-width first → smaller overwrites
+            return (1, -int(mx.group(1)))
+        return (2, 0)
+
+    bp_rules = _breakpoint_suffixes()
+    matched_media.sort(key=lambda mc: _specificity_key(mc[0]))
+    for media_part, decls in matched_media:
+        for bp_substr, bp_suffix_list in bp_rules:
+            if bp_substr in media_part:
+                for bp_suffix in bp_suffix_list:
+                    bucket = bp_decls.setdefault(bp_suffix, {})
+                    # overwrite — later (more specific) wins
+                    bucket.update(decls)
+                break
 
     return base_decls, bp_decls
 
@@ -1100,7 +1168,15 @@ def _lift_styling_attrs(
                     unit = "px"
                 _try_set(unit_candidate, unit)
 
-    # ---- Breakpoint-specific font-size (the most commonly needed one) ----
+    # ---- Breakpoint-specific overrides ----
+    # Media-query declarations are more specific than the base rule for the
+    # viewports they cover, so they OVERWRITE any same-attr value the base
+    # loop emitted via its base→Desktop schema-fallback. Apply in ascending
+    # specificity within each property: base-emitted Desktop (34) gets
+    # overridden by min-width:768 (52), which gets overridden by
+    # min-width:1280 (58). Ordering is already established in
+    # _collect_css_decls_for_element via _specificity_key; bp_decls dict
+    # iteration preserves that insertion order on Python 3.7+.
     for bp_suffix, bp_decl_map in bp_decls.items():
         for css_prop, suffix, kind in _css_prop_to_suffix():
             raw = bp_decl_map.get(css_prop)
@@ -1111,7 +1187,27 @@ def _lift_styling_attrs(
                 continue
             # Construct e.g. headlineFontSizeTablet / headlineFontSizeDesktop
             candidate = f"{prefix}{suffix}{bp_suffix}"
-            _try_set(candidate, val)
+            if candidate in schema:
+                attrs[candidate] = val
+            # Companion Unit attr (same inference rules as the base loop)
+            if kind in ("number_px", "number_px_or_em", "number_unitless"):
+                unit_candidate = f"{prefix}{suffix}Unit{bp_suffix}"
+                if unit_candidate not in schema:
+                    # Some schemas use {prefix}{suffix}{bp}Unit instead
+                    unit_candidate = f"{prefix}{suffix}{bp_suffix}Unit"
+                if unit_candidate in schema:
+                    raw_stripped = raw.strip().lower()
+                    if raw_stripped.endswith("rem"):
+                        unit = "rem"
+                    elif raw_stripped.endswith("em"):
+                        unit = "em"
+                    elif raw_stripped.endswith("%"):
+                        unit = "%"
+                    elif kind == "number_unitless":
+                        unit = "em"
+                    else:
+                        unit = "px"
+                    attrs[unit_candidate] = unit
 
 
 def lift_subtree_into_block_attrs(node: Tag, block_slug: str,
