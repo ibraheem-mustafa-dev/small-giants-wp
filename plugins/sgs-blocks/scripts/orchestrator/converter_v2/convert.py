@@ -1140,9 +1140,26 @@ def _lift_core_block_style(
 
     Soft-fail: any malformed CSS value emits a ``css_decl_skipped`` trace
     event and continues — never raises.
+
+    Tag-selector blast-radius guard: this helper fires ONLY when the node
+    carries at least one ``sgs-`` class. Tag-only rules like ``p { color: ... }``
+    or ``blockquote { font-style: ... }`` match every element of that tag in
+    ``_collect_css_decls_for_element`` and would silently corrupt unrelated
+    paragraphs/headings. The intent of this lift is per-class CSS targeting
+    BEM children; without the SGS-class gate, a single bare-tag rule could
+    overwrite styling across the whole document. Captured 2026-05-19 by QC
+    rater 3 (adversarial lens) — pattern_key core-block-lift-requires-sgs-class.
     """
     style: dict = {}
     extra_top: dict = {}
+
+    # Tag-selector blast-radius guard. See docstring for the corruption
+    # scenario this prevents (rater 3 blocking finding 2026-05-19).
+    has_sgs_class = any(c.startswith("sgs-") for c in (classes or []))
+    if not has_sgs_class:
+        _trace("css_decl_skipped", target_block=block_slug,
+               css_prop="*", reason="no_sgs_bem_class_on_node")
+        return style, extra_top
 
     # Collect base (desktop/default) CSS declarations for this element.
     # _collect_css_decls_for_element handles inline style + direct class
@@ -2270,7 +2287,11 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
         attrs = lift_attrs_for_block(target, node, bem, classes)
         style_dict, extra_top = _lift_core_block_style(node, classes, css_rules, target)
         if style_dict:
-            attrs["style"] = style_dict
+            # Shallow-merge (forward-compat) — if lift_attrs_for_block or any
+            # future helper sets attrs["style"], preserve it; new keys win on
+            # collision but existing top-level keys (e.g. 'spacing') merge per
+            # rater 1+3 finding 2026-05-19.
+            attrs["style"] = {**attrs.get("style", {}), **style_dict}
         attrs.update(extra_top)
         return emit_wp_block(target, attrs, [f"<p>{text}</p>"])
 
@@ -2281,7 +2302,11 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
         attrs = lift_attrs_for_block(target, node, bem, classes)
         style_dict, extra_top = _lift_core_block_style(node, classes, css_rules, target)
         if style_dict:
-            attrs["style"] = style_dict
+            # Shallow-merge (forward-compat) — if lift_attrs_for_block or any
+            # future helper sets attrs["style"], preserve it; new keys win on
+            # collision but existing top-level keys (e.g. 'spacing') merge per
+            # rater 1+3 finding 2026-05-19.
+            attrs["style"] = {**attrs.get("style", {}), **style_dict}
         attrs.update(extra_top)
         level = attrs.get("level", 2)
         anchor_attr = f' id="{attrs["anchor"]}"' if attrs.get("anchor") else ""
@@ -2296,7 +2321,11 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
         attrs = lift_attrs_for_block(target, node, bem, classes)
         style_dict, extra_top = _lift_core_block_style(node, classes, css_rules, target)
         if style_dict:
-            attrs["style"] = style_dict
+            # Shallow-merge (forward-compat) — if lift_attrs_for_block or any
+            # future helper sets attrs["style"], preserve it; new keys win on
+            # collision but existing top-level keys (e.g. 'spacing') merge per
+            # rater 1+3 finding 2026-05-19.
+            attrs["style"] = {**attrs.get("style", {}), **style_dict}
         attrs.update(extra_top)
         url = attrs.get("url", "")
         alt = attrs.get("alt", "")
@@ -2342,6 +2371,12 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
                node_tag=node.name, node_classes=classes,
                bem_element=(bem.element if bem else None), depth=depth)
         attrs = lift_attrs_for_block("core/paragraph", node, bem, classes)
+        # Per QC rater 1 finding 2026-05-19 — atomic_text_fallback is the same
+        # shape as atomic_paragraph and must also lift CSS into style.*
+        style_dict, extra_top = _lift_core_block_style(node, classes, css_rules, "core/paragraph")
+        if style_dict:
+            attrs["style"] = {**attrs.get("style", {}), **style_dict}
+        attrs.update(extra_top)
         return emit_wp_block("core/paragraph", attrs, [f"<p>{text_content}</p>"])
 
     # Container-or-composite blocks — walk children
