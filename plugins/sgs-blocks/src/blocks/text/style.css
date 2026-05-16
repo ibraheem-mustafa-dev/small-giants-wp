@@ -1,0 +1,37 @@
+/**
+ * sgs/text — frontend styles.
+ *
+ * Minimal base rules. All visual styling comes from inline styles emitted by
+ * render.php, so this file only provides sensible block-level defaults and
+ * drop-cap support that cannot be expressed via inline styles alone.
+ */
+
+.wp-block-sgs-text {
+	/* Ensure the element forms its own box so margin/padding attrs work as expected. */
+	display: block;
+}
+
+/* Inline-element tags need explicit block display to honour margin/padding. */
+.wp-block-sgs-text[data-tag="span"],
+.wp-block-sgs-text[data-tag="em"],
+.wp-block-sgs-text[data-tag="strong"] {
+	display: inline;
+}
+
+/* Drop cap — base float rules that apply regardless of viewport. */
+.wp-block-sgs-text.has-drop-cap::first-letter {
+	float: left;
+	line-height: 0.8;
+	margin-right: 0.1em;
+	margin-top: 0.05em;
+}
+
+/* Honour reduced-motion preference. */
+@media ( prefers-reduced-motion: reduce ) {
+	.wp-block-sgs-text *,
+	.wp-block-sgs-text *::before,
+	.wp-block-sgs-text *::after {
+		animation-duration: 0.01ms !important;
+		transition-duration: 0.01ms !important;
+	}
+}

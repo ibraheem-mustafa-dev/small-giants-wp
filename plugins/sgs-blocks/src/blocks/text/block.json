@@ -1,0 +1,244 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "sgs/text",
+    "version": "0.1.0",
+    "title": "Text",
+    "category": "sgs-content",
+    "description": "Single-element body text block. Emits one configurable HTML tag with full SGS typography, spacing, and colour controls. Replaces core/paragraph in the converter pipeline so inline-style attributes reach the rendered DOM.",
+    "keywords": [
+        "text",
+        "paragraph",
+        "body",
+        "copy"
+    ],
+    "textdomain": "sgs-blocks",
+    "icon": "editor-paragraph",
+    "render": "file:./render.php",
+    "supports": {
+        "anchor": true,
+        "className": true,
+        "html": false,
+        "color": false
+    },
+    "attributes": {
+        "text": {
+            "type": "string",
+            "default": ""
+        },
+        "tag": {
+            "type": "string",
+            "enum": [
+                "p",
+                "span",
+                "div",
+                "blockquote",
+                "em",
+                "strong"
+            ],
+            "default": "p"
+        },
+        "textColour": {
+            "type": "string",
+            "default": ""
+        },
+        "fontSize": {
+            "type": "number"
+        },
+        "fontSizeUnit": {
+            "type": "string",
+            "default": "px"
+        },
+        "fontSizeTablet": {
+            "type": "number"
+        },
+        "fontSizeMobile": {
+            "type": "number"
+        },
+        "fontWeight": {
+            "type": "string",
+            "default": ""
+        },
+        "lineHeight": {
+            "type": "number"
+        },
+        "lineHeightUnit": {
+            "type": "string",
+            "default": "em"
+        },
+        "lineHeightTablet": {
+            "type": "number"
+        },
+        "lineHeightMobile": {
+            "type": "number"
+        },
+        "letterSpacing": {
+            "type": "number"
+        },
+        "letterSpacingUnit": {
+            "type": "string",
+            "default": "em"
+        },
+        "fontStyle": {
+            "type": "string",
+            "enum": [
+                "",
+                "normal",
+                "italic"
+            ],
+            "default": ""
+        },
+        "textDecoration": {
+            "type": "string",
+            "enum": [
+                "",
+                "none",
+                "underline",
+                "line-through"
+            ],
+            "default": ""
+        },
+        "textTransform": {
+            "type": "string",
+            "enum": [
+                "",
+                "none",
+                "uppercase",
+                "lowercase",
+                "capitalize"
+            ],
+            "default": ""
+        },
+        "fontFamily": {
+            "type": "string",
+            "default": ""
+        },
+        "marginTop": {
+            "type": "number"
+        },
+        "marginRight": {
+            "type": "number"
+        },
+        "marginBottom": {
+            "type": "number"
+        },
+        "marginLeft": {
+            "type": "number"
+        },
+        "marginUnit": {
+            "type": "string",
+            "default": "px"
+        },
+        "marginTopTablet": {
+            "type": "number"
+        },
+        "marginRightTablet": {
+            "type": "number"
+        },
+        "marginBottomTablet": {
+            "type": "number"
+        },
+        "marginLeftTablet": {
+            "type": "number"
+        },
+        "marginTopMobile": {
+            "type": "number"
+        },
+        "marginRightMobile": {
+            "type": "number"
+        },
+        "marginBottomMobile": {
+            "type": "number"
+        },
+        "marginLeftMobile": {
+            "type": "number"
+        },
+        "paddingTop": {
+            "type": "number"
+        },
+        "paddingRight": {
+            "type": "number"
+        },
+        "paddingBottom": {
+            "type": "number"
+        },
+        "paddingLeft": {
+            "type": "number"
+        },
+        "paddingUnit": {
+            "type": "string",
+            "default": "px"
+        },
+        "paddingTopTablet": {
+            "type": "number"
+        },
+        "paddingRightTablet": {
+            "type": "number"
+        },
+        "paddingBottomTablet": {
+            "type": "number"
+        },
+        "paddingLeftTablet": {
+            "type": "number"
+        },
+        "paddingTopMobile": {
+            "type": "number"
+        },
+        "paddingRightMobile": {
+            "type": "number"
+        },
+        "paddingBottomMobile": {
+            "type": "number"
+        },
+        "paddingLeftMobile": {
+            "type": "number"
+        },
+        "textAlign": {
+            "type": "string",
+            "enum": [
+                "",
+                "left",
+                "center",
+                "right",
+                "justify"
+            ],
+            "default": ""
+        },
+        "maxWidth": {
+            "type": "number"
+        },
+        "maxWidthUnit": {
+            "type": "string",
+            "default": "px"
+        },
+        "dropCap": {
+            "type": "boolean",
+            "default": false
+        },
+        "firstLetterColour": {
+            "type": "string",
+            "default": ""
+        },
+        "firstLetterFontSize": {
+            "type": "number"
+        },
+        "firstLetterFontSizeUnit": {
+            "type": "string",
+            "default": "em"
+        },
+        "firstLetterFontWeight": {
+            "type": "string",
+            "default": ""
+        }
+    },
+    "editorScript": "file:./index.js",
+    "editorStyle": "file:./index.css",
+    "style": "file:./style-index.css",
+    "example": {
+        "attributes": {
+            "text": "This is a sample paragraph demonstrating the SGS Text block with full typography controls.",
+            "fontSize": 16,
+            "textColour": "text"
+        }
+    }
+}

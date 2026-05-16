@@ -1,0 +1,15 @@
+/* sgs/media — frontend styling is inline per-instance. Block defaults only. */
+.wp-block-sgs-media {
+	margin: 0;
+	display: block;
+}
+.wp-block-sgs-media img {
+	display: block;
+	max-width: 100%;
+	height: auto;
+}
+.wp-block-sgs-media figcaption {
+	margin-top: 0.5em;
+	font-size: 0.9em;
+	color: var(--wp--preset--color--text-muted);
+}

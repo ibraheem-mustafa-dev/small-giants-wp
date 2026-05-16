@@ -1117,6 +1117,145 @@ _STR_PASSTHROUGH_ALLOWED: dict[str, set[str]] = {
 }
 
 
+def _split_value_unit(raw, default_unit: str = "px") -> tuple:
+    """Split a CSS value like '28px' into ('28', 'px'). Returns (val, unit) as
+    strings. For unrecognised forms returns (raw_string, default_unit)."""
+    if raw is None or raw == "":
+        return ("", default_unit)
+    s = str(raw).strip()
+    m = re.match(r"^([\d.]+)\s*(px|em|rem|%|vh|vw)?$", s)
+    if not m:
+        return (s, default_unit)
+    val = m.group(1)
+    unit = m.group(2) or default_unit
+    return (val, unit)
+
+
+def _flatten_wp_style_to_sgs_flat(style_dict: dict, extra_top: dict,
+                                  target_block: str) -> dict:
+    """Map a WP nested `style` dict + top-level extras to flat SGS attrs.
+
+    Used by the atomic converter branches when emitting sgs/media or sgs/text
+    instead of their core/* counterparts. The flat shape matches the schema
+    those two blocks declare in their block.json.
+
+    Returns a dict {attr_name: value} to merge into the block's attrs.
+    Empty dict if style_dict is empty/None.
+    """
+    flat: dict = {}
+    if not style_dict:
+        if "aspectRatio" in (extra_top or {}):
+            flat["aspectRatio"] = extra_top["aspectRatio"]
+        return flat
+
+    # Colour — strip `var:preset|color|<slug>` wrapping to bare slug, since
+    # sgs render.php's `sgs_colour_value()` re-wraps slugs into the WP preset
+    # var() form. Double-wrapping produced
+    # `var(--wp--preset--color--varpresetcolortext-muted)` on first attempt.
+    def _normalise_colour(raw: str) -> str:
+        if not raw:
+            return raw
+        s = str(raw).strip()
+        # var:preset|color|text-muted -> text-muted
+        if s.startswith("var:preset|color|"):
+            return s[len("var:preset|color|"):]
+        # var(--wp--preset--color--xxx) -> xxx
+        m = re.match(r"^var\(--wp--preset--color--([a-z0-9-]+)\)$", s)
+        if m:
+            return m.group(1)
+        return s
+
+    color_obj = style_dict.get("color") or {}
+    if color_obj.get("text"):
+        flat["textColour"] = _normalise_colour(color_obj["text"])
+    if color_obj.get("background") and target_block == "sgs/text":
+        flat["backgroundColour"] = _normalise_colour(color_obj["background"])
+
+    # Typography (sgs/text only — sgs/media has no typography)
+    if target_block == "sgs/text":
+        typo = style_dict.get("typography") or {}
+        if typo.get("fontSize"):
+            v, u = _split_value_unit(typo["fontSize"])
+            flat["fontSize"] = v
+            flat["fontSizeUnit"] = u
+        if typo.get("fontWeight"):
+            flat["fontWeight"] = typo["fontWeight"]
+        if typo.get("lineHeight"):
+            v, u = _split_value_unit(typo["lineHeight"], default_unit="em")
+            flat["lineHeight"] = v
+            flat["lineHeightUnit"] = u
+        if typo.get("letterSpacing"):
+            v, u = _split_value_unit(typo["letterSpacing"], default_unit="em")
+            flat["letterSpacing"] = v
+            flat["letterSpacingUnit"] = u
+        if typo.get("fontStyle"):
+            flat["fontStyle"] = typo["fontStyle"]
+        if typo.get("textDecoration"):
+            flat["textDecoration"] = typo["textDecoration"]
+        if typo.get("textTransform"):
+            flat["textTransform"] = typo["textTransform"]
+
+    # Spacing — margin/padding per-side. sgs/text supports both; sgs/media
+    # has no spacing controls in schema (rely on parent container's gap).
+    if target_block == "sgs/text":
+        spacing = style_dict.get("spacing") or {}
+        margin = spacing.get("margin") or {}
+        m_unit_seen = None
+        for side in ("top", "right", "bottom", "left"):
+            if side in margin:
+                v, u = _split_value_unit(margin[side])
+                flat[f"margin{side.capitalize()}"] = v
+                m_unit_seen = u
+        if m_unit_seen:
+            flat["marginUnit"] = m_unit_seen
+        padding = spacing.get("padding") or {}
+        p_unit_seen = None
+        for side in ("top", "right", "bottom", "left"):
+            if side in padding:
+                v, u = _split_value_unit(padding[side])
+                flat[f"padding{side.capitalize()}"] = v
+                p_unit_seen = u
+        if p_unit_seen:
+            flat["paddingUnit"] = p_unit_seen
+
+    # Border radius — both blocks support it
+    border = style_dict.get("border") or {}
+    radius = border.get("radius")
+    if isinstance(radius, str) and radius:
+        v, u = _split_value_unit(radius)
+        flat["borderRadius"] = v
+        flat["borderRadiusUnit"] = u
+    elif isinstance(radius, dict):
+        corner_map = {"topLeft": "TL", "topRight": "TR",
+                      "bottomLeft": "BL", "bottomRight": "BR"}
+        unit_seen = None
+        for corner, short in corner_map.items():
+            if corner in radius:
+                v, u = _split_value_unit(radius[corner])
+                flat[f"borderRadius{short}"] = v
+                unit_seen = u
+        if unit_seen:
+            flat["borderRadiusUnit"] = unit_seen
+
+    # Image-only: dimensions + object-fit + aspect-ratio
+    if target_block == "sgs/media":
+        dim = style_dict.get("dimensions") or {}
+        if dim.get("maxHeight"):
+            v, u = _split_value_unit(dim["maxHeight"])
+            flat["maxHeight"] = v
+            flat["maxHeightUnit"] = u
+        if dim.get("maxWidth"):
+            v, u = _split_value_unit(dim["maxWidth"])
+            flat["maxWidth"] = v
+            flat["maxWidthUnit"] = u
+        if style_dict.get("scale"):
+            flat["objectFit"] = style_dict["scale"]
+    if (extra_top or {}).get("aspectRatio") and target_block == "sgs/media":
+        flat["aspectRatio"] = extra_top["aspectRatio"]
+
+    return flat
+
+
 def _lift_core_block_style(
     node: "Tag",
     classes: list[str],
@@ -2279,20 +2418,38 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
             variation_buf.append(decls)
         return emit_wp_block("sgs/container", cont_attrs, inner_blocks)
 
-    # Atomic content blocks — emit with text content
+    # Atomic content blocks — emit with text content.
+    # Path B swap (2026-05-19): when the source node carries an SGS-BEM class,
+    # emit a server-rendered sgs/text or sgs/media instead of core/* so the
+    # lifted style attrs apply on the frontend. core/* are STATIC blocks —
+    # their save.js HTML is frozen in post_content, so JSON style attrs are
+    # invisible to the renderer. SGS dynamic blocks build the HTML from
+    # attrs at render time, making the lift visible.
     if target == "core/paragraph":
         _trace("walker_branch_taken", branch="atomic_paragraph",
                node_tag=node.name, node_classes=classes, depth=depth)
         text = node.get_text(strip=True)
+        sgs_classes = [c for c in (classes or []) if c.startswith("sgs-")]
+        if sgs_classes:
+            # Swap to sgs/text — emits a styled <p> server-side.
+            style_dict, extra_top = _lift_core_block_style(
+                node, classes, css_rules, "core/paragraph"
+            )
+            flat = _flatten_wp_style_to_sgs_flat(
+                style_dict, extra_top, "sgs/text"
+            )
+            text_attrs: dict = {
+                "text": text,
+                "tag": node.name if node.name in
+                       ("p", "span", "div", "blockquote", "em", "strong") else "p",
+                "className": " ".join(sgs_classes),
+            }
+            if node.get("id"):
+                text_attrs["anchor"] = node["id"]
+            text_attrs.update(flat)
+            return emit_wp_block("sgs/text", text_attrs, [], self_closing=True)
+        # No SGS class — keep core/paragraph (style won't apply but no swap candidate)
         attrs = lift_attrs_for_block(target, node, bem, classes)
-        style_dict, extra_top = _lift_core_block_style(node, classes, css_rules, target)
-        if style_dict:
-            # Shallow-merge (forward-compat) — if lift_attrs_for_block or any
-            # future helper sets attrs["style"], preserve it; new keys win on
-            # collision but existing top-level keys (e.g. 'spacing') merge per
-            # rater 1+3 finding 2026-05-19.
-            attrs["style"] = {**attrs.get("style", {}), **style_dict}
-        attrs.update(extra_top)
         return emit_wp_block(target, attrs, [f"<p>{text}</p>"])
 
     if target == "core/heading":
@@ -2318,15 +2475,31 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
     if target == "core/image":
         _trace("walker_branch_taken", branch="atomic_image",
                node_tag=node.name, node_classes=classes, depth=depth)
+        sgs_classes = [c for c in (classes or []) if c.startswith("sgs-")]
+        if sgs_classes:
+            # Swap to sgs/media — server-rendered <figure><img></figure> with
+            # styling applied per attrs (path B 2026-05-19).
+            style_dict, extra_top = _lift_core_block_style(
+                node, classes, css_rules, "core/image"
+            )
+            flat = _flatten_wp_style_to_sgs_flat(
+                style_dict, extra_top, "sgs/media"
+            )
+            media_attrs: dict = {
+                "imageUrl": node.get("src", ""),
+                "imageAlt": node.get("alt", ""),
+                "className": " ".join(sgs_classes),
+            }
+            if str(node.get("width", "")).isdigit():
+                media_attrs["imageWidth"] = int(node["width"])
+            if str(node.get("height", "")).isdigit():
+                media_attrs["imageHeight"] = int(node["height"])
+            if node.get("id"):
+                media_attrs["anchor"] = node["id"]
+            media_attrs.update(flat)
+            return emit_wp_block("sgs/media", media_attrs, [], self_closing=True)
+        # No SGS class — keep core/image (style won't apply but no swap candidate)
         attrs = lift_attrs_for_block(target, node, bem, classes)
-        style_dict, extra_top = _lift_core_block_style(node, classes, css_rules, target)
-        if style_dict:
-            # Shallow-merge (forward-compat) — if lift_attrs_for_block or any
-            # future helper sets attrs["style"], preserve it; new keys win on
-            # collision but existing top-level keys (e.g. 'spacing') merge per
-            # rater 1+3 finding 2026-05-19.
-            attrs["style"] = {**attrs.get("style", {}), **style_dict}
-        attrs.update(extra_top)
         url = attrs.get("url", "")
         alt = attrs.get("alt", "")
         return emit_wp_block(
@@ -2366,17 +2539,30 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
                 label_attrs["className"] = " ".join(sgs_classes)
             return emit_wp_block(standalone, label_attrs, [], self_closing=True)
 
-        # Default fallback
+        # Default fallback — same Path-B swap as atomic_paragraph (2026-05-19)
         _trace("walker_branch_taken", branch="atomic_text_fallback",
                node_tag=node.name, node_classes=classes,
                bem_element=(bem.element if bem else None), depth=depth)
+        sgs_classes = [c for c in (classes or []) if c.startswith("sgs-")]
+        if sgs_classes:
+            style_dict, extra_top = _lift_core_block_style(
+                node, classes, css_rules, "core/paragraph"
+            )
+            flat = _flatten_wp_style_to_sgs_flat(
+                style_dict, extra_top, "sgs/text"
+            )
+            text_attrs2: dict = {
+                "text": text_content,
+                "tag": node.name if node.name in
+                       ("p", "span", "div", "blockquote", "em", "strong") else "p",
+                "className": " ".join(sgs_classes),
+            }
+            if node.get("id"):
+                text_attrs2["anchor"] = node["id"]
+            text_attrs2.update(flat)
+            return emit_wp_block("sgs/text", text_attrs2, [], self_closing=True)
+        # No SGS class
         attrs = lift_attrs_for_block("core/paragraph", node, bem, classes)
-        # Per QC rater 1 finding 2026-05-19 — atomic_text_fallback is the same
-        # shape as atomic_paragraph and must also lift CSS into style.*
-        style_dict, extra_top = _lift_core_block_style(node, classes, css_rules, "core/paragraph")
-        if style_dict:
-            attrs["style"] = {**attrs.get("style", {}), **style_dict}
-        attrs.update(extra_top)
         return emit_wp_block("core/paragraph", attrs, [f"<p>{text_content}</p>"])
 
     # Container-or-composite blocks — walk children

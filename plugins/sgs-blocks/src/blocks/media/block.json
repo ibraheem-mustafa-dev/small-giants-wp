@@ -1,0 +1,190 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "sgs/media",
+    "version": "1.0.0",
+    "title": "SGS Media",
+    "category": "sgs-content",
+    "description": "Content image block. Replaces core/image in the SGS clone-pipeline converter so styling attributes lift correctly to the frontend via server-side render.",
+    "keywords": [
+        "image",
+        "media",
+        "photo",
+        "picture",
+        "figure"
+    ],
+    "textdomain": "sgs-blocks",
+    "icon": "format-image",
+    "supports": {
+        "anchor": true,
+        "className": true,
+        "color": false,
+        "html": false,
+        "sgs": {
+            "imageControls": true
+        }
+    },
+    "attributes": {
+        "imageId": {
+            "type": "integer",
+            "default": null
+        },
+        "imageUrl": {
+            "type": "string",
+            "default": ""
+        },
+        "imageAlt": {
+            "type": "string",
+            "default": ""
+        },
+        "imageWidth": {
+            "type": "integer",
+            "default": null
+        },
+        "imageHeight": {
+            "type": "integer",
+            "default": null
+        },
+        "maxWidth": {
+            "type": "string",
+            "default": null
+        },
+        "maxWidthUnit": {
+            "type": "string",
+            "default": "px"
+        },
+        "maxWidthMobile": {
+            "type": "string",
+            "default": null
+        },
+        "maxWidthTablet": {
+            "type": "string",
+            "default": null
+        },
+        "maxHeight": {
+            "type": "string",
+            "default": null
+        },
+        "maxHeightUnit": {
+            "type": "string",
+            "default": "px"
+        },
+        "maxHeightMobile": {
+            "type": "string",
+            "default": null
+        },
+        "maxHeightTablet": {
+            "type": "string",
+            "default": null
+        },
+        "aspectRatio": {
+            "type": "string",
+            "default": ""
+        },
+        "objectFit": {
+            "type": "string",
+            "default": "cover",
+            "enum": [ "cover", "contain", "fill", "none", "scale-down" ]
+        },
+        "objectPosition": {
+            "type": "string",
+            "default": "center center"
+        },
+        "borderRadius": {
+            "type": "string",
+            "default": ""
+        },
+        "borderRadiusUnit": {
+            "type": "string",
+            "default": "px"
+        },
+        "borderRadiusTL": {
+            "type": "string",
+            "default": ""
+        },
+        "borderRadiusTR": {
+            "type": "string",
+            "default": ""
+        },
+        "borderRadiusBL": {
+            "type": "string",
+            "default": ""
+        },
+        "borderRadiusBR": {
+            "type": "string",
+            "default": ""
+        },
+        "boxShadow": {
+            "type": "string",
+            "default": ""
+        },
+        "opacity": {
+            "type": "number",
+            "default": 1
+        },
+        "alignment": {
+            "type": "string",
+            "default": "left",
+            "enum": [ "left", "center", "right" ]
+        },
+        "order": {
+            "type": "integer",
+            "default": null
+        },
+        "orderMobile": {
+            "type": "integer",
+            "default": null
+        },
+        "orderTablet": {
+            "type": "integer",
+            "default": null
+        },
+        "caption": {
+            "type": "string",
+            "default": ""
+        },
+        "captionTag": {
+            "type": "string",
+            "default": "figcaption",
+            "enum": [ "figcaption", "div" ]
+        },
+        "captionColour": {
+            "type": "string",
+            "default": ""
+        },
+        "captionFontSize": {
+            "type": "integer",
+            "default": null
+        },
+        "captionFontSizeUnit": {
+            "type": "string",
+            "default": "px"
+        },
+        "linkUrl": {
+            "type": "string",
+            "default": ""
+        },
+        "linkOpensNewTab": {
+            "type": "boolean",
+            "default": false
+        },
+        "linkRel": {
+            "type": "string",
+            "default": ""
+        }
+    },
+    "render": "file:./render.php",
+    "editorScript": "file:./index.js",
+    "editorStyle": "file:./index.css",
+    "style": "file:./style-index.css",
+    "example": {
+        "attributes": {
+            "imageUrl": "https://via.placeholder.com/800x600",
+            "imageAlt": "Example image",
+            "imageWidth": 800,
+            "imageHeight": 600,
+            "objectFit": "cover",
+            "alignment": "center"
+        }
+    }
+}
