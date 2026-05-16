@@ -812,6 +812,16 @@ _CSS_PROP_TO_SUFFIX: list[tuple[str, str, str]] = [
     ("padding-bottom",   "PaddingBottom", "number_px"),
     ("padding-left",     "PaddingLeft",   "number_px"),
     ("border-radius",    "BorderRadius",  "number_px"),
+    # Added 2026-05-17: margin + gap families to close per-block *MarginBottom*
+    # / *GapUnit / *Gap unit-suffix lift gaps (no-op when target block doesn't
+    # declare the attr — _try_set guards via schema check).
+    ("margin-top",       "MarginTop",     "number_px"),
+    ("margin-right",     "MarginRight",   "number_px"),
+    ("margin-bottom",    "MarginBottom",  "number_px"),
+    ("margin-left",      "MarginLeft",    "number_px"),
+    ("gap",              "Gap",           "number_px"),
+    ("row-gap",          "RowGap",        "number_px"),
+    ("column-gap",       "ColumnGap",     "number_px"),
 ]
 
 # Breakpoint marker → attr name suffix for font-size-family attrs
@@ -1075,13 +1085,32 @@ def _lift_styling_attrs(
         if candidate not in schema:
             desktop_candidate = f"{prefix}{suffix}Desktop"
             _try_set(desktop_candidate, val)
-        # Also try with 'Unit' companion where applicable
-        if kind in ("number_px", "number_px_or_em") and suffix not in ("MaxWidth",):
+        # Also try with 'Unit' companion where applicable. Universal: every
+        # numeric kind that has a paired *Unit attr in schema gets the unit
+        # emitted. Inference rules:
+        #   - explicit 'em'/'rem'/'%' suffix → use that literal unit
+        #   - bare number on line-height → 'em' (CSS unitless multiplier convention,
+        #     matches SGS hero schema default for *LineHeightUnit)
+        #   - everything else → 'px' (matches SGS default for *FontSizeUnit etc.)
+        # MaxWidth exclusion removed 2026-05-17 — its Unit attr (e.g.
+        # contentMaxWidthUnit) was silently failing to lift in the hero
+        # extraction_failed bucket. number_unitless added to set so LineHeight
+        # emits a Unit alongside its numeric value.
+        if kind in ("number_px", "number_px_or_em", "number_unitless"):
             unit_candidate = f"{prefix}{suffix}Unit"
             if unit_candidate in schema and unit_candidate not in attrs:
-                # Infer unit from raw value
-                raw_stripped = raw.strip()
-                unit = "em" if raw_stripped.endswith("em") else "px"
+                raw_stripped = raw.strip().lower()
+                if raw_stripped.endswith("rem"):
+                    unit = "rem"
+                elif raw_stripped.endswith("em"):
+                    unit = "em"
+                elif raw_stripped.endswith("%"):
+                    unit = "%"
+                elif kind == "number_unitless":
+                    # line-height: 1.65 → unit "em" (CSS multiplier convention)
+                    unit = "em"
+                else:
+                    unit = "px"
                 _try_set(unit_candidate, unit)
 
     # ---- Breakpoint-specific font-size (the most commonly needed one) ----

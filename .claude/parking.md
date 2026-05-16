@@ -57,6 +57,29 @@ Pixel-diff confirms: ingredients/gift sit at 30-62% across viewports — lift fi
 
 **Approach:** (a) Add a `_HIGH_IMPACT_ROLES` filter in leftover-bucket-router to distinguish noise (default-OK config) from real content gaps. (b) Per-section sweep — identify the 5-10 attrs that actually visually matter per block type. (c) Improve `_lift_bem_child_array()` BEM-walker to handle info-box per-item icon/emoji content (currently lifts heading + description but not media). Open-ended; ~2-4 hours per section.
 
+### P-PHASE9-4 — Block-root styling lift via WP native supports (NEW 2026-05-17, HIGH IMPACT)
+
+**What:** The mockup CSS authors styling at the BLOCK ROOT (e.g. `.sgs-info-box { padding: 22px 16px; border-radius: 12px; border: 1px solid var(--border); background: white; }`). The converter's `_lift_styling_attrs` only runs at SLOT-ELEMENT level (heading, description) — never at block root. Net: every block with native WP `supports: { spacing, border, color }` ships without its root styling. The mockup's authored padding/border/background never lands on the block, so the rendered output uses block defaults.
+
+Affects EVERY block using WP supports: container, hero, info-box, brand-pattern container, card-grid, feature-grid, label, button, testimonial, gallery, etc. Cross-section impact — this is one of the highest-leverage script flaws.
+
+**Discovered 2026-05-17** during pixel-diff hero/info-box analysis. The mockup explicitly sets `.sgs-info-box { background: white; border-radius: 12px; padding: 22px 16px; ... }` but the converter emits info-box blocks with empty `style` attr.
+
+**Trigger:** When closing pixel-diff on info-box / card-grid / hero / brand sections OR when any client mockup styles block roots (universally true).
+
+**Approach:**
+1. New function `_lift_root_supports_to_style(node, block_slug, schema, attrs, css_rules)` — reads block-root CSS, maps CSS props to WP native `style` attribute object:
+   - `padding-*` → `style.spacing.padding.{top,right,bottom,left}`
+   - `margin-*` → `style.spacing.margin.{top,right,bottom,left}`
+   - `border-*` → `style.border.{width,radius,style,color}`
+   - `background-color` / `color` → `style.color.{background,text}`
+   - `gap` → `style.spacing.blockGap`
+2. Invoke at every block emission point (FR1 path, composite-element fast path, atomic-text path).
+3. Validate against WordPress block.json supports declaration — only emit `style` properties the block declares support for (e.g. don't emit `style.border` on a block with `supports.border = false`).
+4. Schema lookup: the `block.json` `supports` object declares what `style` properties are allowed.
+
+~2-3 hours including FR1 + composite-element wiring + validation gate + unit tests.
+
 ### P-PHASE9-1 — Per-block extension hook wiring sweep
 
 **What:** The 9 newly-dynamic blocks (trust-bar, label, certification-bar, counter, divider, heading, notice-banner, process-steps, tab) don't yet wire `animation` / `responsive-visibility` / `image-controls` extension hooks into their render.php. Existing already-dynamic blocks deferred this too — broader sweep needed. (Heritage-strip is NOT in this list — it was retired as a block in this session; lives as `theme/sgs-theme/patterns/brand.php`.)
