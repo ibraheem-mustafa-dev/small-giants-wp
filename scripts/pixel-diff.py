@@ -24,6 +24,114 @@ from PIL import Image, ImageChops, ImageDraw
 from playwright.sync_api import sync_playwright
 
 
+# ============================================================================
+# Attribute-coverage computation (Phase 9 pre-work Step 3)
+# ============================================================================
+# Pairs with expected_rules.py to give a split metric:
+#   - pixel-diff%          — visible rendered delta (existing diff)
+#   - attribute-coverage%  — what fraction of expected CSS rules got at
+#     least one declaration lifted onto an SGS attribute. Pure converter
+#     score, isolated from block + theme rendering.
+# A section with attribute-coverage 100% + pixel-diff 5% routes the residual
+# work to block/theme, not converter. A section with coverage <95% routes the
+# residual to converter.
+
+
+def _load_property_suffixes_map() -> dict[str, set[str]]:
+    """Return {css_property: {SGS_attr_suffix, ...}} via db_lookup.
+
+    Falls back to an empty map if db_lookup can't be imported (zero-coverage
+    output rather than a hard error — pixel-diff still completes).
+    """
+    try:
+        repo_root = Path(__file__).resolve().parent.parent
+        cv2_dir = repo_root / "plugins" / "sgs-blocks" / "scripts"
+        if str(cv2_dir) not in sys.path:
+            sys.path.insert(0, str(cv2_dir))
+        from orchestrator.converter_v2 import db_lookup as db  # type: ignore[no-redef]
+        # db.css_property_suffixes() returns list[tuple[css_prop, suffix, role]]
+        out: dict[str, set[str]] = {}
+        for row in db.css_property_suffixes():
+            css_prop, suffix = row[0], row[1]
+            out.setdefault(css_prop.lower(), set()).add(suffix)
+        return out
+    except Exception:  # noqa: BLE001
+        return {}
+
+
+def compute_attribute_coverage(expected_rules_path: Path,
+                               extracted_attrs_path: Path) -> dict:
+    """Compute attribute-coverage% for one section.
+
+    Algorithm:
+      1. Load expected-rules baseline (JSONL).
+      2. For each rule, collect the set of CSS property names from its decls.
+      3. A rule is COVERED iff there exists ≥1 CSS property in the rule whose
+         SGS suffix (via property_suffixes) appears as a substring of ANY key
+         in extracted_attributes.
+      4. coverage% = covered_rules / total_rules × 100.
+
+    Returns {coverage_percent, total_rules, covered_rules, uncovered_rules}.
+    """
+    if not expected_rules_path.exists() or not extracted_attrs_path.exists():
+        return {
+            "coverage_percent": None,
+            "total_rules": 0,
+            "covered_rules": 0,
+            "uncovered_rules": [],
+            "note": "expected-rules or extracted-attrs path missing",
+        }
+
+    rules: list[dict] = []
+    with open(expected_rules_path, "r", encoding="utf-8") as fh:
+        for line in fh:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                rules.append(json.loads(line))
+            except json.JSONDecodeError:
+                continue
+
+    extracted_obj = json.loads(extracted_attrs_path.read_text(encoding="utf-8"))
+    if isinstance(extracted_obj, dict) and "extracted_attributes" in extracted_obj:
+        # per_section_results entry shape
+        extracted_obj = extracted_obj["extracted_attributes"]
+    attr_keys = list(extracted_obj.keys()) if isinstance(extracted_obj, dict) else []
+    attr_keys_lower = [k.lower() for k in attr_keys]
+
+    prop_map = _load_property_suffixes_map()
+
+    covered = 0
+    uncovered: list[str] = []
+    for rule in rules:
+        decls = rule.get("declarations") or {}
+        props = [p.lower() for p in decls.keys()]
+        rule_covered = False
+        for prop in props:
+            suffixes = prop_map.get(prop, set())
+            for suf in suffixes:
+                suf_l = suf.lower()
+                if any(suf_l in k for k in attr_keys_lower):
+                    rule_covered = True
+                    break
+            if rule_covered:
+                break
+        if rule_covered:
+            covered += 1
+        else:
+            uncovered.append(rule.get("selector", "<unknown>"))
+
+    total = len(rules)
+    pct = (covered / total) * 100 if total else None
+    return {
+        "coverage_percent": round(pct, 2) if pct is not None else None,
+        "total_rules": total,
+        "covered_rules": covered,
+        "uncovered_rules": uncovered[:50],  # cap to keep diff.json readable
+    }
+
+
 def log(msg: str) -> None:
     ts = datetime.now(timezone.utc).strftime("%H:%M:%S")
     print(f"[{ts}] {msg}", flush=True)
@@ -169,6 +277,22 @@ def main() -> int:
              "Eliminates full-page WP-chrome / wrapper noise. Falls back to "
              "full page if selector matches zero elements.",
     )
+    ap.add_argument(
+        "--expected-rules",
+        default=None,
+        type=Path,
+        help="Path to expected-rules-<boundary>.jsonl from Step 2 baseline. "
+             "When paired with --extracted-attrs, diff.json adds attribute-"
+             "coverage%% (pure converter score).",
+    )
+    ap.add_argument(
+        "--extracted-attrs",
+        default=None,
+        type=Path,
+        help="Path to per-section extracted_attributes JSON. Accepts either a "
+             "flat {attr: value} dict OR a per_section_results entry "
+             "({extracted_attributes: {...}, ...}).",
+    )
     args = ap.parse_args()
 
     try:
@@ -244,6 +368,17 @@ def main() -> int:
         ),
         "captured_at": datetime.now(timezone.utc).isoformat(),
     }
+
+    # Phase 9 split-metric: attribute-coverage% sits alongside the pixel-diff%.
+    # Coverage 100% + diff >5% → block/theme work, not converter. Coverage <95%
+    # → converter work. See v3 plan branching rule in next-session-prompt.md.
+    if args.expected_rules and args.extracted_attrs:
+        coverage = compute_attribute_coverage(args.expected_rules, args.extracted_attrs)
+        summary["attribute_coverage"] = coverage
+        cov_pct = coverage.get("coverage_percent")
+        if cov_pct is not None:
+            log(f"COVERAGE {cov_pct:.2f}% "
+                f"({coverage['covered_rules']}/{coverage['total_rules']} expected rules)")
     (out_dir / "diff.json").write_text(json.dumps(summary, indent=2))
     log(f"VERDICT {summary['verdict']} ({pct:.3f}% vs threshold {args.threshold}%)")
     log(f"OUTPUT {out_dir}/")

@@ -27,6 +27,33 @@ if not UIMAX_DB.exists():
     UIMAX_DB = Path.home() / ".agents" / "skills" / "ui-ux-pro-max" / "scripts" / "ui-ux-pro-max.db"
 
 
+# ----------------------------------------------------------------------------
+# Trace emitter (debug-trace evidence chain)
+# ----------------------------------------------------------------------------
+# Mirrors the pattern in convert.py. set_trace() is called by convert.py's
+# set_trace() so both modules emit into the same per-section trace file.
+_TRACE = None  # type: ignore[assignment]
+_TRACE_BOUNDARY = ""
+
+
+def set_trace(tr, boundary_id: str = "") -> None:
+    """Bind a per-section Trace + boundary tag. Pass tr=None to disable."""
+    global _TRACE, _TRACE_BOUNDARY
+    _TRACE = tr
+    _TRACE_BOUNDARY = boundary_id or ""
+
+
+def _trace(stage: str, **kwargs) -> None:
+    """Soft-fail trace emission. No-op when no trace is bound."""
+    if _TRACE is None:
+        return
+    try:
+        kwargs.setdefault("boundary_id", _TRACE_BOUNDARY)
+        _TRACE.event(stage=stage, **kwargs)
+    except Exception:  # noqa: BLE001 — never break the converter
+        pass
+
+
 class BemParse(NamedTuple):
     """Parsed SGS-BEM class name. None fields mean the part wasn't present."""
     block: str | None       # 'featured-product', 'product-card', 'button'
@@ -149,7 +176,11 @@ def standalone_block_for(canonical_slot: str) -> str | None:
 
     e.g. 'label' → 'sgs/label', 'badge' → 'sgs/label', 'card' → 'sgs/info-box'.
     """
-    return _slot_to_standalone_block().get(canonical_slot)
+    result = _slot_to_standalone_block().get(canonical_slot)
+    if result is None and canonical_slot:
+        _trace("db_lookup_miss", lookup="standalone_block_for",
+               canonical_slot=canonical_slot)
+    return result
 
 
 def _normalise(token: str) -> str:
@@ -173,6 +204,7 @@ def canonical_slot_for(token: str) -> str | None:
     for key, val in syn.items():
         if _normalise(key) == norm_target:
             return val
+    _trace("db_lookup_miss", lookup="canonical_slot_for", token=token)
     return None
 
 
@@ -245,10 +277,13 @@ def block_attrs(block_slug: str) -> dict[str, dict]:
         ).fetchall()
     finally:
         conn.close()
-    return {
+    result = {
         name: {"attr_type": t, "role": role, "canonical_slot": cs}
         for name, t, role, cs in rows
     }
+    if not result:
+        _trace("db_lookup_miss", lookup="block_attrs", block_slug=block_slug)
+    return result
 
 
 def attr_for_slot(block_slug: str, canonical_slot: str) -> str | None:
@@ -260,6 +295,8 @@ def attr_for_slot(block_slug: str, canonical_slot: str) -> str | None:
     for name, info in block_attrs(block_slug).items():
         if info.get("canonical_slot") == canonical_slot:
             return name
+    _trace("db_lookup_miss", lookup="attr_for_slot",
+           block_slug=block_slug, canonical_slot=canonical_slot)
     return None
 
 

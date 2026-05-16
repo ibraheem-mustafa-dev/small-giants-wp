@@ -49,6 +49,48 @@ _DECL_RE = re.compile(r"\s*([\w-]+)\s*:\s*([^;]+);?\s*", re.DOTALL)
 
 
 # ============================================================================
+# Trace emitter (debug-trace evidence chain)
+# ============================================================================
+# Per-section trace for /systematic-debugging: emits walker_branch_taken,
+# attr_skipped, db_lookup_miss events to convert-trace-<boundary>.jsonl when
+# the caller (orchestrator) has set a Trace via set_trace(). Defaults to no-op.
+_TRACE = None  # type: ignore[assignment]
+_TRACE_BOUNDARY = ""  # tagged on every event so cross-file diffs stay coherent
+
+
+def set_trace(tr, boundary_id: str = "") -> None:
+    """Bind a per-section Trace + boundary tag. Pass tr=None to disable.
+
+    Called once per section from the orchestrator dispatch (or convert_section
+    when run standalone with --debug-trace). All trace emit calls inside this
+    module AND db_lookup reference the bound trace until the next set_trace
+    call — single chokepoint binds both modules in one go.
+    """
+    global _TRACE, _TRACE_BOUNDARY
+    _TRACE = tr
+    _TRACE_BOUNDARY = boundary_id or ""
+    # Bind db_lookup to the same trace so db_lookup_miss events land in the
+    # same per-section file as walker_branch_taken / attr_skipped.
+    try:
+        db.set_trace(tr, boundary_id)
+    except AttributeError:
+        # db_lookup module loaded before this version of set_trace was added.
+        # Safe to ignore — db_lookup_miss events will just not emit.
+        pass
+
+
+def _trace(stage: str, **kwargs) -> None:
+    """Soft-fail trace emission. No-op when no trace is bound."""
+    if _TRACE is None:
+        return
+    try:
+        kwargs.setdefault("boundary_id", _TRACE_BOUNDARY)
+        _TRACE.event(stage=stage, **kwargs)
+    except Exception:  # noqa: BLE001 — trace emission must never break convert
+        pass
+
+
+# ============================================================================
 # Media-map resolution + image-optimiser hook
 # ============================================================================
 # Per Bean (2026-05-14): when source HTML has e.g. <img src="../../research/
@@ -1775,6 +1817,34 @@ def lift_subtree_into_block_attrs(node: Tag, block_slug: str,
 
             break  # done with this descendant
 
+    # Emit attr_skipped roll-up: for every schema-declared attr that the
+    # subtree lift did not fill, surface one event per skipped attr with the
+    # reason inferred from current evidence. This is the cheapest way to
+    # surface "what the schema wanted vs what we delivered" without inline
+    # emits across this 600-line function. Stage 2 (expected-rules baseline)
+    # compares these against the per-section CSS rule baseline to catch silent
+    # misses (e.g. yesterday's @media regex bug emitted zero trace events).
+    if _TRACE is not None:
+        try:
+            for _attr_name, _info in (schema or {}).items():
+                if _attr_name in attrs:
+                    continue
+                _attr_type = _info.get("attr_type", "string")
+                # value_empty is the default reason — no descendant matched the
+                # canonical_slot for this attr. db_lookup_no_row would be
+                # surfaced by db_lookup.py separately. kind_inference_failed
+                # would need inline emits in _extract_attr_value (parked).
+                _reason = "value_empty"
+                if _attr_type == "array":
+                    _reason = "array_no_pattern_match"
+                _trace("attr_skipped",
+                       block_slug=block_slug,
+                       attr=_attr_name,
+                       attr_type=_attr_type,
+                       reason=_reason)
+        except Exception:  # noqa: BLE001 — trace emission must never break convert
+            pass
+
     return attrs
 
 
@@ -1854,6 +1924,8 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
     # regardless of its className.
     if is_top_level and node.name in SKIP_TOP_LEVEL_TAGS:
         skip_label = " ".join(classes) if classes else node.name
+        _trace("walker_branch_taken", branch="chrome_skip", node_tag=node.name,
+               node_classes=classes, depth=depth)
         return (
             f"<!-- sgs-converter: CHROME SKIPPED (<{node.name}> {skip_label}) -- "
             f"belongs in WP template parts, not post content -->"
@@ -1876,6 +1948,8 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
     # registered status='built' block — not just at section boundaries.
     if (target.startswith("sgs/") and target != "sgs/container"
             and bem and bem.element is None and db.block_exists(target)):
+        _trace("walker_branch_taken", branch="fr1_block_root", node_tag=node.name,
+               node_classes=classes, target_block=target, depth=depth)
         lifted = lift_subtree_into_block_attrs(node, target, css_rules=css_rules)
         wrapper_attrs = lift_attrs_for_block(target, node, bem, classes)
         merged = {**wrapper_attrs, **lifted}
@@ -1912,6 +1986,10 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
         canonical = db.canonical_slot_for(bem.element)
         standalone = db.standalone_block_for(canonical) if canonical else None
         if standalone and db.block_exists(standalone):
+            _trace("walker_branch_taken", branch="composite_element",
+                   node_tag=node.name, node_classes=classes,
+                   bem_element=bem.element, canonical_slot=canonical,
+                   target_block=standalone, depth=depth)
             lifted = lift_subtree_into_block_attrs(node, standalone, css_rules=css_rules)
             wrapper_attrs = lift_attrs_for_block(standalone, node, bem, classes)
             merged = {**wrapper_attrs, **lifted}
@@ -1944,6 +2022,9 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
     # Replaces the 2026-05-15 SECTION_AS_CONTAINER_OVERRIDES dict.
     container_override = _detect_grid_container_from_css(classes, css_rules)
     if container_override:
+        _trace("walker_branch_taken", branch="css_driven_container",
+               node_tag=node.name, node_classes=classes,
+               layout=container_override.get("layout"), depth=depth)
         inner_blocks: list[str] = []
         for child in node.children:
             if isinstance(child, NavigableString):
@@ -1966,11 +2047,15 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
 
     # Atomic content blocks — emit with text content
     if target == "core/paragraph":
+        _trace("walker_branch_taken", branch="atomic_paragraph",
+               node_tag=node.name, node_classes=classes, depth=depth)
         text = node.get_text(strip=True)
         attrs = lift_attrs_for_block(target, node, bem, classes)
         return emit_wp_block(target, attrs, [f"<p>{text}</p>"])
 
     if target == "core/heading":
+        _trace("walker_branch_taken", branch="atomic_heading",
+               node_tag=node.name, node_classes=classes, depth=depth)
         text = node.get_text(strip=True)
         attrs = lift_attrs_for_block(target, node, bem, classes)
         level = attrs.get("level", 2)
@@ -1981,6 +2066,8 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
         )
 
     if target == "core/image":
+        _trace("walker_branch_taken", branch="atomic_image",
+               node_tag=node.name, node_classes=classes, depth=depth)
         attrs = lift_attrs_for_block(target, node, bem, classes)
         url = attrs.get("url", "")
         alt = attrs.get("alt", "")
@@ -1990,6 +2077,8 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
         )
 
     if target == "sgs/button":
+        _trace("walker_branch_taken", branch="atomic_button",
+               node_tag=node.name, node_classes=classes, depth=depth)
         attrs = lift_attrs_for_block(target, node, bem, classes)
         return emit_wp_block(target, attrs, [], self_closing=True)
 
@@ -2004,6 +2093,9 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
         canonical = db.canonical_slot_for(bem.element) if bem and bem.element else None
         standalone = db.standalone_block_for(canonical) if canonical else None
         if standalone and db.block_exists(standalone):
+            _trace("walker_branch_taken", branch="atomic_text_standalone",
+                   node_tag=node.name, node_classes=classes,
+                   canonical_slot=canonical, target_block=standalone, depth=depth)
             # Infer variantStyle from canonical slot (badge → pill-wrap by default)
             variant = "pill-wrap" if canonical == "badge" else "plain"
             label_attrs: dict = {
@@ -2017,6 +2109,9 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
             return emit_wp_block(standalone, label_attrs, [], self_closing=True)
 
         # Default fallback
+        _trace("walker_branch_taken", branch="atomic_text_fallback",
+               node_tag=node.name, node_classes=classes,
+               bem_element=(bem.element if bem else None), depth=depth)
         attrs = lift_attrs_for_block("core/paragraph", node, bem, classes)
         return emit_wp_block("core/paragraph", attrs, [f"<p>{text_content}</p>"])
 
@@ -2047,6 +2142,9 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
     if (target == "sgs/container" and not is_top_level
             and bem and bem.element
             and inner_blocks):
+        _trace("walker_branch_taken", branch="sgs_bem_wrapper",
+               node_tag=node.name, node_classes=classes,
+               bem_element=bem.element, depth=depth)
         sgs_classes = [c for c in classes if c.startswith("sgs-")]
         cont_attrs: dict = {}
         if sgs_classes:
@@ -2064,6 +2162,9 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
     # the variation CSS lift below (className-keyed selectors still target the
     # source class even without a markup wrapper).
     if target == "sgs/container" and not is_top_level:
+        _trace("walker_branch_taken", branch="pass_through",
+               node_tag=node.name, node_classes=classes,
+               child_count=len(inner_blocks), depth=depth)
         # Lift the wrapper's CSS to variation buffer so styling survives.
         decls = _collect_css_for_classes(classes, css_rules)
         if decls:
@@ -2076,9 +2177,15 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
 
     # Top-level container — keep wrapper, lift CSS.
     if target == "sgs/container":
+        _trace("walker_branch_taken", branch="top_level_container",
+               node_tag=node.name, node_classes=classes, depth=depth)
         decls = _collect_css_for_classes(classes, css_rules)
         if decls:
             variation_buf.append(decls)
+    else:
+        _trace("walker_branch_taken", branch="fallback",
+               node_tag=node.name, node_classes=classes,
+               target_block=target, depth=depth)
 
     return emit_wp_block(target, attrs, inner_blocks)
 

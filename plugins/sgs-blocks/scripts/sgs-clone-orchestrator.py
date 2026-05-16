@@ -1081,10 +1081,37 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                 if args.media_map and args.media_map.exists():
                     import json as _json
                     _media_map_obj = _json.loads(args.media_map.read_text(encoding="utf-8"))
+                # Per-section debug trace (Phase 9 pre-work Step 1) — emits
+                # walker_branch_taken / attr_skipped / db_lookup_miss into
+                # pipeline-state/<run>/convert-trace-<boundary>.jsonl when the
+                # operator passes --debug-trace. No-op otherwise.
+                _cv2_trace = None
+                if getattr(args, "debug_trace", False):
+                    try:
+                        if _trace_mod is None:
+                            _trace_mod = _load_module_from_path("sgs_trace", TRACE_SCRIPT)
+                        _cv2_trace = _trace_mod.Trace.for_boundary(run_dir, boundary_id)
+                    except Exception:  # noqa: BLE001
+                        _cv2_trace = None
+                    # Step 2 — expected-rules baseline. Writes alongside the
+                    # trace so /systematic-debugging can diff expected vs seen.
+                    try:
+                        _exp_rules_mod = _load_module_from_path(
+                            "sgs_expected_rules", ORCHESTRATOR_DIR / "expected_rules.py")
+                        _exp_rules_mod.write_baseline(
+                            _section_html, _section_css, run_dir, boundary_id,
+                        )
+                    except Exception as _exc:  # noqa: BLE001
+                        # Baseline failure must not break the converter run.
+                        aggregate_warnings.append(
+                            f"{boundary_id}: expected-rules baseline soft-failed ({_exc})"
+                        )
                 result = _conv_section(
                     html=_section_html,
                     css=_section_css,
                     media_map=_media_map_obj,
+                    trace=_cv2_trace,
+                    boundary_id=boundary_id,
                 )
                 # Normalise to orchestrator per_section_results schema.
                 _cv2_markup = result.get("block_markup", "")
@@ -1799,6 +1826,13 @@ def main():
         "--skip-autonomy-gate", action="store_true",
         help="Skip orchestrator_main.run() autonomy chain (preflight + staged_merge + "
              "visual_qa + autonomy_decision + deliverable). Useful for diagnostic runs.",
+    )
+    parser.add_argument(
+        "--debug-trace", action="store_true", default=False,
+        help="Emit per-section convert-trace-<boundary>.jsonl files capturing "
+             "walker_branch_taken, attr_skipped, and db_lookup_miss events. "
+             "Adds ~5%% runtime overhead; OFF in production register-tail runs, "
+             "recommended ON for /sgs-clone debugging walkdowns.",
     )
     parser.add_argument(
         "--converter-v2", action="store_true", default=False,

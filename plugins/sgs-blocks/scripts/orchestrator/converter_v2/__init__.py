@@ -112,7 +112,8 @@ def convert_page(html_path: "str | object", media_map_path: "str | object | None
     return results
 
 
-def convert_section(html: str, css: str, media_map: dict) -> dict:
+def convert_section(html: str, css: str, media_map: dict,
+                    trace=None, boundary_id: str = "") -> dict:
     """Convert a single section's HTML+CSS to a Stage 4 result dict.
 
     Returns a dict matching the per_section_results schema documented in
@@ -131,9 +132,22 @@ def convert_section(html: str, css: str, media_map: dict) -> dict:
     media_map:
         Dict of {filename: {id, url}} for WP attachment URL resolution.
         Pass an empty dict when no media-map is available.
+    trace:
+        Optional Trace instance (orchestrator.trace.Trace) bound to a per-
+        section file (typically ``Trace.for_boundary(run_dir, boundary_id)``).
+        When supplied, walker_branch_taken / attr_skipped / db_lookup_miss
+        events are emitted. When None, all emission is no-op.
+    boundary_id:
+        Section identifier tagged onto every emitted trace event so cross-file
+        diffs stay coherent. Defaults to ''.
     """
     from bs4 import BeautifulSoup
     from . import convert as v3
+
+    # Bind the trace before walk() runs so all walker decisions, attribute
+    # skips, and DB lookup misses for this section route to the right file.
+    # Soft-reset to None at function exit so subsequent sections don't inherit.
+    v3.set_trace(trace, boundary_id)
 
     # Load media map into module-level cache
     if media_map:

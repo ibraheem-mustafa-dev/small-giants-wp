@@ -96,6 +96,42 @@ class Trace:
         return instance
 
     @classmethod
+    def for_boundary(cls, run_dir: Path | str | None, boundary_id: str) -> "Trace":
+        """Return a Trace bound to ``<run_dir>/convert-trace-<boundary_id>.jsonl``.
+
+        Per-section trace file for converter-internal evidence (walker branch
+        decisions, attribute skips, DB lookup misses). Distinct from the run-wide
+        ``trace.jsonl`` written by ``for_run`` so per-section evidence can be
+        read without grepping the full pipeline trace.
+
+        Disabled (no-op) when ``run_dir`` is None, missing, or ``boundary_id``
+        is empty.
+        """
+        if run_dir is None or not boundary_id:
+            return cls._disabled_instance()
+
+        resolved = str(Path(run_dir).resolve())
+        if not Path(resolved).exists():
+            return cls._disabled_instance()
+
+        # Sanitise boundary_id for filesystem safety — replace any char not in
+        # [A-Za-z0-9._-] with '_'. Keeps the filename readable while preventing
+        # path-traversal or invalid-char failures on NTFS.
+        import re as _re
+        safe = _re.sub(r"[^A-Za-z0-9._-]", "_", boundary_id)
+        trace_path = Path(resolved) / f"convert-trace-{safe}.jsonl"
+        key = str(trace_path.resolve())
+        if key in _INSTANCES:
+            return _INSTANCES[key]
+
+        instance = cls.__new__(cls)
+        instance._trace_path = trace_path
+        instance._run_id = Path(resolved).name
+        instance._disabled = False
+        _INSTANCES[key] = instance
+        return instance
+
+    @classmethod
     def disabled(cls) -> "Trace":
         """Return a no-op Trace. Safe to call ``event()`` on — nothing is written."""
         return cls._disabled_instance()
