@@ -3,12 +3,13 @@ doc_type: state
 project: small-giants-wp
 project_id: 14
 current_phase: spec-16-phase-9-section-by-section-walkdown
-current_subphase: "Phase 9 — section-by-section walkdown to <1% pixel diff. Session 2026-05-17 shipped 10 commits + 2 parallel-agent merges + full docs registry update. Total extraction coverage on Mama's: 176 → 243 attrs (+38%). 7 distinct recognition/conversion flaws caught and shipped. parse_css regex bug (0/13 → 13/13 @media blocks captured) was the largest single-line recognition flaw of the session. Block-root supports lift via WP native style.* now universal. DB-first refactor replaces hardcoded _CSS_PROP_TO_SUFFIX + _BREAKPOINT_SUFFIXES dicts with property_suffixes (117 rows) + modifier_suffixes reads."
-current_subphase_step: "Next session — SECTION-BY-SECTION walkdown on Mama's mockup. Pass condition (per Bean 2026-05-17): each of the 7 class sections hits <1% per-section pixel diff at 375/768/1440px. Pre-work: instrument convert.py with per-decision trace emitter (writes convert-trace-<boundary>.jsonl). Per-section loop: targeted single-section run → /systematic-debugging on logs → /qc 4-rater research-council debate (3 rounds: independent / cross-debate / synthesis) → DB-first universal fix → multi-rater /qc commit gate → verify pixel diff <1% → capture universal rule via /capture-lesson. Section order: hero → trust-bar → featured-product → brand → ingredients → gift → social-proof. Definition of done: at least 2 sections closed, 5 QC follow-ups bundled, bucket-router role refresh shipped, universal rules captured."
+current_subphase: "Phase 9 pre-work shipped (2026-05-18 close). Three evidence layers landed behind --debug-trace: per-section convert-trace-<boundary>.jsonl (9 walker_branch_taken sites + composite_element_no_standalone diagnostic + attr_skipped roll-up + 4 db_lookup_miss sites), per-section expected-rules-<boundary>.jsonl baseline (in-tree parse_css + soupsieve with pseudo-strip + class-token fallback), split-metric pixel-diff (--expected-rules + --extracted-attrs flags → attribute-coverage% via suffix-anchored property_suffixes match). Step 4 shakeout: 10 Mama's sections, byte-identical extraction with trace on/off, no leak across calls. 4-rater QC panel ran on commit 8b69bc0a: Haiku SHIP, Gemini Flash SHIP, Sonnet(internals) NEEDS_FIX → 3 fixes shipped 10a93d87, Sonnet(adversarial as Cerebras replacement, Cerebras queue stalled) NEEDS_FIX → 2 fixes shipped 397295c3. All 4 lenses SHIP post-fix."
+current_subphase_step: "NEXT SESSION — brand-then-hero walkdown using the evidence infrastructure. Workflow per next-session-prompt.md (v3): (1) targeted single-section /sgs-clone run with --converter-v2 --debug-trace --no-scaffold-new-blocks --skip-register --skip-autonomy-gate; (2) read evidence in order: expected-rules-<sec>.jsonl vs convert-trace-<sec>.jsonl diff for silent misses, leftover-buckets.json, extract.json per_section_results, attribute-coverage% + pixel-diff%; (3) branch on evidence: coverage ≥95% + diff >5% → block/theme work (park), coverage <95% → /systematic-debugging on logs → DB-first fix → multi-rater /qc commit gate. Brand first (closest to passing at 13% tablet diff; likely converter-DONE so fast first close validates the loop). Hero next (68%/70%/80% across viewports; expect council needed). Cross-cutting batch (P-PHASE9-5..9 + bucket-router role refresh w/ regression check) bundled in ONE commit. Definition of done: brand closed to ≤5% pixel diff OR routed to render-side; hero attribute-coverage% measured + at least one universal fix shipped; cross-cutting batch shipped with regression check; lessons captured at session end."
 phase_8_summary: "Phase 8 closed across sessions 2026-05-15, 2026-05-16, 2026-05-17. 22 commits total. Walker precedence + DB-driven routing + bucket router accuracy + severity_totals + role backfill + heritage-strip retirement + 7 static→dynamic + universal BEM-child array lifter + voter retired-block remap + walker grouping preservation + hero mockup migration + parse_css regex fix + block-root supports lift + DB-first refactor."
-last_updated: 2026-05-17 (10-commit session + parallel-agent merge)
+phase_9_prework_summary: "2026-05-18 single-session pre-work. 3 commits: 8b69bc0a (initial pre-work, 560 insertions across 7 files), 10a93d87 (Sonnet QC findings — composite_element diagnostic gap, try/finally trace reset, defensive try/except removal), 397295c3 (adversarial QC findings — suffix-anchored coverage match replacing substring match, soupsieve selector resolution in CLI). Cerebras queue stalled with zero output ~10 min; replaced with Sonnet adversarial-lens dispatch. Re-shakeout after every fix: zero divergence."
+last_updated: 2026-05-18 (Phase 9 pre-work — evidence infrastructure shipped + 4-rater QC complete)
 blockers:
-  - "None blocking. Phase 9 architecture is universal — needs validation against other client mockups to prove portability and surface client-specific gaps the Mama's canary didn't expose."
+  - "None blocking. Evidence infrastructure ready for brand+hero walkdown next session."
 recommended_model_next: opus
 ---
 
@@ -16,55 +17,63 @@ recommended_model_next: opus
 
 > Frontmatter above is the contract. Body below is regenerated by `/handoff` each session.
 
-## Where we are (2026-05-17 close)
+## Where we are (2026-05-18 close)
 
-**Spec 16 Phase 9 architectural foundation shipped.** 10 commits on `main` (HEAD: `45fd851b`). Total extraction coverage on Mama's canary: 176 → 243 attrs (+38%). All 7 testable sections gained attrs. Brand section went from 0 → 38 attrs (was emitting as `core/group` confidence 0.0 before session start). Hero gained 16 attrs including correct responsive font sizes (was 34 for desktop; now 58 from media-query lift). DB-first refactor closes the systematic flaw where 78 CSS-prop suffixes were being silently missed by hardcoded code.
+**Phase 9 pre-work shipped.** 3 commits on `main` (HEAD: `397295c3`). The brand-then-hero section walkdown next session opens onto a working evidence stack:
 
-**Pixel diff at tablet vs session start:** brand 99.6% → 13.0% (−86.6pp). hero 99.9% → 68.0% (−31.9pp). Ingredients 30.8% (new measurement).
+1. `--debug-trace` flag on `sgs-clone-orchestrator.py` — emits per-section `convert-trace-<boundary>.jsonl` capturing 9 walker branch decisions, every attribute skip with reason, every db_lookup miss
+2. Per-section `expected-rules-<boundary>.jsonl` baseline emitted alongside — every CSS rule that selects into the section subtree, with @media condition preserved (the parse_css fix from 2026-05-17 means @media rules are no longer silently dropped)
+3. `scripts/pixel-diff.py` extended with `--expected-rules` + `--extracted-attrs` flags — produces both `mismatch_percent` (render score) AND `attribute_coverage` block in `diff.json` (pure converter score). Coverage uses suffix-anchored match on property_suffixes DB (117 rows); the substring-match false-positive from initial implementation was caught + fixed by the adversarial rater.
 
-**Methodology:** 3 binding rules upheld throughout (read leftover-buckets, multi-rater /qc before commit, per-section cropped pixel diff). 2 new captured rules embedded as HARD-GATEs in `/sgs-clone` SKILL.md: row 260 (DB-first lookups) + row 261 (don't skip Playwright for lift fidelity).
+**Mama's canary unchanged this session** (intentional): 243 attrs total, byte-identical extraction with trace on vs off. The instrumentation is provably side-effect-free. Pixel diff measurements pre-walkdown still stand: brand 13.0% tablet, hero 68.0%/70.0%/80.0% across 768/1440/375.
 
-## Today's 10 commits
+**Methodology rules upheld:** binding rule #2 (multi-model /qc panel before commit) honoured with 4-rater dispatch on the pre-work commit. Cerebras queue-stalled and was swapped for a Sonnet adversarial-lens — that's a session-level adaptation, not a rule violation; the gate fired with 4 independent lenses.
+
+## Today's 3 commits
 
 | Commit | What |
 |---|---|
-| `e34618f9` | Voter `RETIRED_BLOCK_REMAP` (P-PHASE8-NEW-1) |
-| `631dc68b` | Pixel-diff baseline + P-PHASE8-NEW-2 parking |
-| `df3a6cbf` | Walker preserves SGS-BEM grouping wrappers |
-| `f0f6329e` | Post-fix pixel-diff + 3 parking entries |
-| `2f075073` | Hero mockup migration + canonical `__split-image` lift |
-| `1cb80614` | Universal Unit-suffix lift + P-PHASE9-4 parking |
-| `7e0014bf` | mamas-munches.css regen |
-| `168fd2ca` | DB-first refactor — property_suffixes + modifier_suffixes DB reads |
-| `20ef1d66` | **parse_css @media regex bug fix** (0/13 → 13/13) (parallel agent A6) |
-| `90692106` | **block-root supports lift** via WP native style.* (parallel agent A5) |
-| (merge) `45fd851b` | Merge both parallel-agent branches |
+| `8b69bc0a` | Pre-work shipped — trace extension + expected-rules baseline + split-metric pixel-diff (560 insertions, 7 files) |
+| `10a93d87` | Sonnet QC fixes — composite_element_no_standalone diagnostic emit, try/finally trace reset in convert_section, defensive try/except removed around db.set_trace |
+| `397295c3` | Sonnet adversarial QC fixes (Cerebras replacement) — suffix-anchored attribute-coverage match (kills substring false-positive), soupsieve selector resolution in expected_rules.py CLI |
 
-## Next session — UNIVERSAL APPLICABILITY
+## Next session — BRAND THEN HERO
 
-Read `.claude/next-session-prompt.md` for the full workflow. First action: run cv2 on every existing client mockup (8 clients total), categorise gap patterns by client family, identify next universal fixes.
+Read `.claude/next-session-prompt.md` for the full v3 workflow. The pre-work shipped today is the input. Single-section command:
+
+```bash
+python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py \
+  --mockup sites/mamas-munches/mockups/homepage/index.html \
+  --client mamas-munches --page homepage \
+  --section "section.sgs-brand" \
+  --converter-v2 --no-scaffold-new-blocks \
+  --skip-register --skip-autonomy-gate \
+  --mode draft --debug-trace
+```
+
+The `--debug-trace` flag writes `convert-trace-brand.jsonl` + `expected-rules-brand.jsonl` to `pipeline-state/<run>/`. Pixel-diff with both files paired computes attribute-coverage%.
 
 ## Phase 9 backlog (open in parking.md)
 
-- **P-PHASE9-5** — Empty-DB defensive assertion (QC panel A1) — ~5 line fix
-- **P-PHASE9-6** — RETIRED_BLOCK_REMAP future-block guard (QC panel C1) — ~10 line fix
-- **P-PHASE9-7** — SGS-BEM grouping-wrapper watch list (QC panel B3) — audit pattern-level assumptions
-- **P-PHASE9-8** — Inline thin DB-lookup wrappers (Fresh-eyes nit) — ~10 lines removed
-- **P-PHASE9-9** — Rename `_kind_for` → `_value_kind_for_suffix` (Fresh-eyes nit)
-- **P-PHASE9-1** — Per-block extension hook wiring sweep (animation/visibility/image-controls)
-- **P-PHASE9-2** — sgs/hero hardcoded lift cleanup (~70-80 lines)
-- **P-PHASE9-3** — Per-instance lift fidelity sweep (info-box children depth)
-- **P-PHASE8-NEW-2 reframed** — Original framing closed; pattern-attr-mapping infrastructure parked as separate design discussion
-- **Trust-bar schema/render mismatch** — Bean's deferred decision (badges vs stat-counter shape)
-- **Hero 768 height delta** — was 267px, now +85px after migration — within tolerance, real-content-fidelity work remains
+Unchanged from 2026-05-17 close — Phase 9 pre-work didn't touch any of these:
+
+- **P-PHASE9-5** — Empty-DB defensive assertion — ~5 line fix
+- **P-PHASE9-6** — RETIRED_BLOCK_REMAP future-block guard — ~10 line fix
+- **P-PHASE9-7** — SGS-BEM grouping-wrapper watch list — pattern audit
+- **P-PHASE9-8** — Inline thin DB-lookup wrappers — ~10 lines removed
+- **P-PHASE9-9** — Rename `_kind_for` → `_value_kind_for_suffix`
+- **P-PHASE9-1** — Per-block extension hook wiring sweep
+- **P-PHASE9-2** — sgs/hero hardcoded lift cleanup
+- **P-PHASE9-3** — Per-instance lift fidelity sweep
+- **Trust-bar schema/render mismatch** — Bean's deferred decision
+- **Hero 768 height delta** — within tolerance, real-content-fidelity work remains
 
 ## Subprojects
 
-- Mama's Munches — `sites/mamas-munches/.claude/` — canary for all converter work, full migration to canonical SGS-BEM complete
-- Indus Foods Phase 4 — `sites/indus-foods/.claude/` — second-client validation target (NEXT)
-- helping-doctors — alternative second-client validation target (NEXT)
-- 5 additional style-variation clients: healthcare, construction, professional, mosque, eye-care — variation only, may have minimal mockups
+- Mama's Munches — canary for converter work + tomorrow's brand+hero walkdown target
+- Indus Foods Phase 4 — second-client validation target (later in Phase 9)
+- helping-doctors / healthcare / construction / professional / mosque / eye-care — additional Phase 9 portability validation
 
-## Today's decisions (see decisions.md 2026-05-17 section)
+## Today's decisions (see decisions.md 2026-05-18 section)
 
-7 architectural decisions appended. Includes the parse_css regex root cause, block-root supports lift design, DB-first refactor model, walker grouping preservation predicate, voter retired-block remap mechanism, mockup architectural alignment, and the rule-embed strategy via SKILL.md HARD-GATEs.
+3 decisions appended: 4-rater QC panel composition + Cerebras-replacement protocol; suffix-anchored coverage match (replacing substring); convert_section try/finally trace lifetime discipline.

@@ -1,5 +1,33 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-17 (2 new lessons — parse_css silent-miss / DB-first lookups not hardcoded dicts)
+**Last updated:** 2026-05-18 (2 new lessons — substring-match too permissive on suffix-anchored vocabularies / docstring-implementation drift in trace lifetime)
+
+## 2026-05-18 — Substring matching on bounded-suffix vocabulary is too permissive (false-positive coverage)
+
+**The rule:** When matching a key against a set of known suffixes from a controlled vocabulary, do NOT use Python `in` (substring). The match must be ANCHORED to the suffix boundary — either `endswith(suffix)` for bare matches, or `endswith(suffix + tail)` for known optional tails. Substring matching silently inflates positive-match rate whenever ANY vocabulary suffix is also a substring of any other vocabulary item.
+
+**Incident:** `compute_attribute_coverage` in `scripts/pixel-diff.py` initial implementation used `suf_l in k` where `suf_l` is lowercase SGS-attr-suffix (e.g. "size") and `k` is a lowercase attr name (e.g. "iconsize"). The check was meant to ask "is the attr `iconSize` evidence that the `size`-property was lifted onto something?". For the suffix "color" → keys like `backgroundColor` / `borderColor` this works (no other vocabulary item contains "color" as substring). For "size" the substring is shared across `fontSize` / `iconSize` / `imageSize` — three distinct semantic suffixes from the property_suffixes table. A CSS `font-size` rule could be flagged COVERED if the section happened to have `iconSize` lifted onto an unrelated block. Caught by the adversarial QC rater (Sonnet-as-Cerebras-replacement) before the bug shipped to production walkdown.
+
+**Why this is high-impact recurrence risk:** The metric was being designed AS the gate for tomorrow's brand+hero walkdown. A 95%-coverage false-positive routes the operator to block/theme work when the converter actually missed font-size; the silent miss never gets diagnosed and the brand declaration of "converter-DONE" is wrong. The substring shortcut would have looked safe in dev-time smoke testing (small attr stubs without iconSize/imageSize never expose the false-positive) and bitten at production scale.
+
+**Fix:** suffix-anchored match — `key.endswith(suffix)` OR `key.endswith(suffix + breakpoint_tail)` where `breakpoint_tail` is one of {mobile, tablet, desktop, hover, focus, active, disabled} drawn from `modifier_suffixes` vocabulary. Adversarial probe verifies fix: stub with only `iconSize` + `imageSize` (no fontSize) returns 0% coverage for font-size rules. Commit `397295c3` (2026-05-18).
+
+**Generalisation:** Any time you write a vocabulary-matching check against a string key, ask "could ANY vocabulary item be a substring of another vocabulary item?" If yes (and it almost always is — the SGS property_suffixes table has 117 entries with extensive shared roots), do not use substring; use anchored match.
+
+---
+
+## 2026-05-18 — Docstring promised "soft-reset to None at function exit" but implementation never did
+
+**The rule:** When a docstring describes behaviour at function-lifetime boundaries (entry/exit, success/failure paths), the implementation MUST actually do it. Drift between docstring and code is a recurring source of subtle bugs that pass tests for the current call shape but fail in any extension (exception path, parallel dispatch, future maintainer reading the docstring as truth).
+
+**Incident:** Pre-work `convert_section()` in `plugins/sgs-blocks/scripts/orchestrator/converter_v2/__init__.py` bound `v3.set_trace(trace, boundary_id)` at entry. The docstring above the call read "Soft-reset to None at function exit so subsequent sections don't inherit." The reset was never implemented. Sequential dispatch happened to be safe (next call overwrites the `_TRACE` global immediately, so trace-leak between sections was invisible). Caught by Sonnet converter-internals QC rater because the docstring made the intent visible — the rater compared docstring to code and flagged the gap.
+
+**Why this is high-impact recurrence risk:** Future parallel/threaded dispatch (mentioned explicitly in this session's plan) would race on the module-level `_TRACE` global. Thread A binds for section "hero", Thread B binds for section "brand"; Thread A's walker emits into Thread B's trace file. The docstring suggested this was already handled; it wasn't. A future maintainer reading the docstring and not checking implementation would assume safety they don't have.
+
+**Fix:** Split `convert_section` body into `_convert_section_body()` helper. Wrap call in `try/finally`. `finally: v3.set_trace(None, "")`. Re-shakeout confirms `leaked_trace=False` on every section. Commit `10a93d87` (2026-05-18).
+
+**Generalisation:** Apply the verify-rendered-output-not-internal-metrics discipline (blub.db row 194) to docstrings too. A docstring claims behaviour; verify the implementation actually does it. When you write a docstring describing lifecycle behaviour ("resets at exit", "cleans up on failure", "idempotent on retry"), write the test or shakeout that PROVES the claim before shipping. If you can't write that proof cheaply, the docstring is aspiration, not contract.
+
+---
 
 ## 2026-05-17 — parse_css regex captured 0 of 13 @media blocks; every responsive variant silently dropped at parse time
 

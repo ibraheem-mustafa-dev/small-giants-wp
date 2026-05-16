@@ -6,7 +6,21 @@ session_date: 2026-05-13
 last_annotated: 2026-05-13 (post 4-reviewer QC: Sonnet/Haiku/Gemini Flash/Gemini Pro - Material corrections applied; line numbers refreshed)
 line_number_policy: Line numbers cited in this doc are accurate as of 2026-05-13 against `sgs-clone-orchestrator.py` HEAD (1277 lines). If they drift after edits, grep for the function or constant name instead.
 qc_consensus: 4 reviewers agree on all wiring-status claims. Material errors patched 2026-05-13.
-last_verified: 2026-05-15
+last_verified: 2026-05-18
+debug_trace_addendum: |
+  2026-05-18: `--debug-trace` CLI flag added to sgs-clone-orchestrator.py.
+  When ON, every cv2-eligible section dispatches with a per-section Trace
+  bound (Trace.for_boundary(run_dir, boundary_id)) AND an expected-rules
+  baseline written (expected_rules.write_baseline) alongside the existing
+  cv2 dispatch. Output files: pipeline-state/<run>/convert-trace-<safe-
+  boundary>.jsonl (walker_branch_taken / attr_skipped / db_lookup_miss
+  events) + pipeline-state/<run>/expected-rules-<safe-boundary>.jsonl
+  (every CSS rule selecting into the section subtree, @media-aware). OFF
+  in production register-tail runs; ON during Phase 9 walkdown debugging.
+  Pixel-diff at the end now consumes both via --expected-rules + --extracted-
+  attrs paired flags → diff.json gets an `attribute_coverage` block alongside
+  `mismatch_percent`. Suffix-anchored match via property_suffixes DB (117
+  rows): key.endswith(suffix) OR key.endswith(suffix + breakpoint_tail).
 update_triggers:
   - Pipeline stage change (new stage, retired stage, renumbered)
   - Script wired or unwired (status flip in any stage block)

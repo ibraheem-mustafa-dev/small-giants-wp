@@ -2,6 +2,37 @@
 
 Append-only. Most-recent first.
 
+## 2026-05-18 — Phase 9 pre-work session (evidence infrastructure)
+
+### D1: Evidence stack triple — trace + expected-rules + split-metric coverage
+**Context:** Tomorrow's brand+hero walkdown needs to distinguish "converter didn't lift X" from "block/theme doesn't render X" deterministically. Pre-2026-05-18 evidence was full-page pixel-diff% (mixes both) + leftover-buckets.json (post-hoc gap classification only).
+**Decision:** Ship three new evidence layers, all gated behind `--debug-trace`:
+1. Per-section `convert-trace-<boundary>.jsonl` — 14 walker_branch_taken labels + attr_skipped roll-up + db_lookup_miss events
+2. Per-section `expected-rules-<boundary>.jsonl` — every CSS rule selecting into subtree (parse_css + soupsieve)
+3. `attribute_coverage` block in pixel-diff `diff.json` — pure converter score via suffix-anchored property_suffixes match
+
+**Why this shape:** the diff `expected ∖ trace-seen` exposes silent misses (the 2026-05-17 @media regex bug emitted zero trace events and looked clean); the coverage-vs-pixel-diff split routes residual work to converter (<95% coverage) vs block/theme (100% coverage + diff>5%) deterministically.
+**Trade-off accepted:** ~5% runtime overhead under `--debug-trace`, OFF in production register-tail runs.
+
+### D2: 4-rater /qc panel with Cerebras-stall replacement protocol
+**Context:** Binding rule #2 mandates Sonnet + Haiku + Gemini Flash + Cerebras panel before every converter/pipeline commit. Cerebras free-tier queue stalled this session with zero output after ~10 min (known failure mode per skill doc; 5-30 min stalls during demand spikes).
+**Decision:** When Cerebras stalls with zero bytes after ~10 min, kill the task via TaskStop and dispatch a Sonnet agent with the adversarial-lens prompt as replacement. The gate's purpose is 4 INDEPENDENT lenses, not 4 specific model brands.
+**Why not just wait:** queue stalls can persist 30+ min and block downstream work. The replacement protocol preserves the gate's intent while keeping the session moving.
+**Outcome this session:** Cerebras-replacement Sonnet returned 3 findings (2 valid → shipped in commit `397295c3`, 1 false-alarm about cross-module trace desync that misread the `convert.set_trace` atomic bind).
+
+### D3: Suffix-anchored attribute-coverage match (replaces substring match)
+**Context:** Initial implementation of `compute_attribute_coverage` in `scripts/pixel-diff.py` used `suf_l in k` substring match — semantically too permissive. SGS suffix "size" matched `iconsize` AND `imagesize` AND `fontsize` simultaneously, so a CSS `font-size` rule could count as COVERED if any of those attrs were present on any block in the section.
+**Decision:** Replace substring match with suffix-anchored match: key must `endswith(suffix)` OR `endswith(suffix + breakpoint_tail)` where tail ∈ {mobile, tablet, desktop, hover, focus, active, disabled}.
+**Why:** the SGS attr naming convention is `<slot><Property>[Breakpoint]` — bare endswith is too strict (misses responsive variants), pure substring is too permissive. Anchored-plus-bounded-tail honours both convention and breakpoint vocabulary.
+**Adversarial probe verifies:** stub with only `iconSize` + `imageSize` (no `fontSize`) returns 0% coverage for font-size rules. Pre-fix would have returned ~100%.
+
+### D4: Trace lifetime discipline — try/finally reset in convert_section
+**Context:** Initial `convert_section` bound `v3.set_trace(trace, boundary_id)` at entry but didn't reset on exit. Docstring said "Soft-reset to None at function exit"; implementation didn't match. Sequential dispatch was safe (next call overwrites _TRACE), but exception-between-calls would leave stale binding; future parallel/threaded dispatch would race on module-level singleton.
+**Decision:** Split convert_section body into `_convert_section_body()` helper. Wrap call in try/finally. `finally: v3.set_trace(None, "")` guarantees clean reset.
+**Why not refactor _TRACE to per-thread:** out of scope for pre-work. Future parallel dispatch should switch to a per-Trace-instance pattern (no module singletons); the try/finally is the minimum discipline that fits the current architecture and matches the docstring.
+
+---
+
 ## 2026-05-17 — Universal recognition + conversion improvements (10-commit session close)
 
 Session ran end-to-end on Mama's Munches mockup as canary. Total extraction coverage +38% (176 → 243 attrs). 7 distinct recognition + conversion flaws caught and shipped, supported by a 4-rater /qc panel + parallel implementation agents.

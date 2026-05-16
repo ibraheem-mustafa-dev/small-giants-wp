@@ -3,11 +3,11 @@ doc_type: plan
 project: small-giants-wp
 plan_name: convention-rollout-and-m9-completion
 created: 2026-05-10
-last_updated: 2026-05-17
+last_updated: 2026-05-18
 phase_count: 8
 total_estimate_min: 540-720 (9-12 hours focused)
-status: archived — phases 7+8 closed since original write; active work is Phase 9. Active execution doc is .claude/next-session-prompt.md (v3 — post-4-rater council review). This file kept as historical audit trail.
-successor_plan: .claude/next-session-prompt.md (v3 — section-by-section walkdown, 2026-05-17)
+status: archived — phases 7+8 closed since original write; active work is Phase 9. Phase 9 pre-work shipped 2026-05-18 (3 commits on main, HEAD 397295c3). Active execution doc is .claude/next-session-prompt.md (v4 — brand-then-hero walkdown). This file kept as historical audit trail.
+successor_plan: .claude/next-session-prompt.md (v4 — brand-then-hero walkdown, 2026-05-18 onwards)
 phase_chain:
   - phase-7-spec-16-converter-rollout — CLOSED 2026-05-13
   - phase-8-section-by-section-closure — CLOSED 2026-05-16 (22 commits across 3 sessions)
@@ -16,9 +16,11 @@ phase_chain:
 
 # Plan - SGS-BEM Convention Rollout + M9 Completion (ARCHIVED — historical audit trail)
 
+**2026-05-18 status note:** Phase 9 pre-work shipped today (3 commits on main: 8b69bc0a + 10a93d87 + 397295c3). Three evidence layers delivered behind `--debug-trace`: per-section trace JSONL (14 walker labels + attr_skipped + db_lookup_miss), per-section expected-rules baseline (parse_css + soupsieve), split-metric pixel-diff (suffix-anchored attribute-coverage% via property_suffixes DB). 4-rater /qc panel ratified post-fix (Cerebras stalled, replaced by Sonnet adversarial-lens). Brand+hero walkdown is the next session — see `.claude/next-session-prompt.md` v4.
+
 **2026-05-17 status note:** Three phases closed since this plan was written. Phase 7 (Spec 16 converter rollout) closed 2026-05-13. Phase 8 (section-by-section closure, 22 commits across 3 sessions) closed 2026-05-16. Phase 9 (brand + hero evidence-driven walkdown) is the active phase as of 2026-05-17 — see `.claude/next-session-prompt.md` v3 (validated by 4-rater council review: architecture / adversarial / pragmatist / evidence). Pass condition for Phase 9 splits into attribute-coverage% ≥ 95% (universality, pure converter score) + pixel-diff% ≤ 5% (fidelity, block + theme + render score) per evidence-lens recommendation. The M9 / clone-orchestrator concerns this plan originally sketched were reframed in Spec 16 (2026-05-14) as a slot-aware DOM walker. Spec 15 stays canonical for L0-L3 + Stages 0-2 + 8-9 + /sgs-update; Spec 16 owns Stages 3-7.
 
-**Active plan reference for next session: `.claude/next-session-prompt.md` v3.**
+**Active plan reference for next session: `.claude/next-session-prompt.md` v4.**
 
 ## USP
 
