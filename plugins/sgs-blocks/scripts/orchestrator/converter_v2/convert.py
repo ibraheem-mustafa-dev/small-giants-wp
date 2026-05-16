@@ -70,13 +70,10 @@ def set_trace(tr, boundary_id: str = "") -> None:
     _TRACE = tr
     _TRACE_BOUNDARY = boundary_id or ""
     # Bind db_lookup to the same trace so db_lookup_miss events land in the
-    # same per-section file as walker_branch_taken / attr_skipped.
-    try:
-        db.set_trace(tr, boundary_id)
-    except AttributeError:
-        # db_lookup module loaded before this version of set_trace was added.
-        # Safe to ignore — db_lookup_miss events will just not emit.
-        pass
+    # same per-section file as walker_branch_taken / attr_skipped. db_lookup
+    # is shipped with convert; if set_trace is missing here it's a deploy bug
+    # we WANT to surface rather than swallow. Sonnet QC finding 2026-05-17.
+    db.set_trace(tr, boundary_id)
 
 
 def _trace(stage: str, **kwargs) -> None:
@@ -1985,6 +1982,16 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
             and any(isinstance(c, Tag) for c in node.children)):
         canonical = db.canonical_slot_for(bem.element)
         standalone = db.standalone_block_for(canonical) if canonical else None
+        if not (standalone and db.block_exists(standalone)):
+            # Outer composite_element guard fired but no standalone block
+            # exists — node falls through to css_driven_container / sgs_bem_
+            # wrapper / pass_through. Emit explicit signal so /systematic-
+            # debugging can distinguish "never a candidate" from "candidate
+            # but DB missed the slot mapping". Sonnet QC finding 2026-05-17.
+            _trace("walker_branch_taken", branch="composite_element_no_standalone",
+                   node_tag=node.name, node_classes=classes,
+                   bem_element=bem.element, canonical_slot=canonical,
+                   standalone_lookup=standalone, depth=depth)
         if standalone and db.block_exists(standalone):
             _trace("walker_branch_taken", branch="composite_element",
                    node_tag=node.name, node_classes=classes,

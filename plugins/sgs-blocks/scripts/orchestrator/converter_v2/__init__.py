@@ -146,8 +146,27 @@ def convert_section(html: str, css: str, media_map: dict,
 
     # Bind the trace before walk() runs so all walker decisions, attribute
     # skips, and DB lookup misses for this section route to the right file.
-    # Soft-reset to None at function exit so subsequent sections don't inherit.
+    # Soft-reset to None in the finally block at function exit so subsequent
+    # sections don't inherit, and an exception between calls leaves no stale
+    # binding. Future parallel/threaded dispatch will need a per-thread Trace
+    # rather than this module-level singleton — see convert.py:_TRACE.
+    # (Sonnet QC finding 2026-05-17.)
     v3.set_trace(trace, boundary_id)
+    try:
+        return _convert_section_body(html, css, media_map)
+    finally:
+        v3.set_trace(None, "")
+
+
+def _convert_section_body(html: str, css: str, media_map: dict) -> dict:
+    """Implementation body for convert_section (trace-lifetime separated).
+
+    Kept as a private helper purely so convert_section can wrap the trace
+    binding in try/finally cleanly. All behaviour is unchanged from the
+    pre-2026-05-17 inline body.
+    """
+    from bs4 import BeautifulSoup
+    from . import convert as v3
 
     # Load media map into module-level cache
     if media_map:
