@@ -1259,24 +1259,36 @@ def lift_subtree_into_block_attrs(node: Tag, block_slug: str,
 
     # ---- 1g. Hero image lift — object-typed image attrs (Change 1) ----
     # sgs/hero uses splitImage (desktop) and splitImageMobile (mobile) as
-    # object-typed attrs ({id, url, alt}). The source DOM uses:
-    #   - <div class="sgs-hero__image"><img .../></div>  → splitImage
-    #   - <img class="sgs-hero__image--mobile" .../>     → splitImageMobile
-    # These don't map through the BEM slot lookup (the element is 'image', but
-    # the attr name on hero is 'splitImage' not 'image'). Lift them directly.
+    # object-typed attrs ({id, url, alt}). The source DOM uses (in priority):
+    #   - <img class="sgs-hero__split-image--desktop">  → splitImage (canonical SGS, matches block emission)
+    #   - <img class="sgs-hero__split-image--mobile">   → splitImageMobile (canonical SGS)
+    #   - <div class="sgs-hero__image"><img/></div>     → splitImage (LEGACY non-canonical)
+    #   - <img class="sgs-hero__image--mobile">         → splitImageMobile (LEGACY non-canonical)
+    # Canonical lookups take precedence so post-migration mockups (Spec 13
+    # SGS-BEM naming) work correctly; legacy lookups remain for unmigrated
+    # mockups. These don't route through the BEM slot lookup (element is
+    # 'image' but the attr name on hero is 'splitImage' not 'image').
     if block_slug == "sgs/hero":
         if "splitImage" in schema and "splitImage" not in attrs:
-            img_wrapper = node.find(class_="sgs-hero__image")
-            if img_wrapper:
-                img = img_wrapper.find("img") if img_wrapper.name != "img" else img_wrapper
-                if img:
-                    attrs["splitImage"] = {
-                        "id": None,
-                        "url": _resolve_media_url(img.get("src", "").strip()),
-                        "alt": img.get("alt", "").strip(),
-                    }
+            # Canonical SGS naming first (matches block emission)
+            desktop_img = node.find("img", class_=lambda c: c and "sgs-hero__split-image--desktop" in c)
+            if desktop_img is None:
+                # Legacy fallback for pre-migration mockups
+                img_wrapper = node.find(class_="sgs-hero__image")
+                if img_wrapper:
+                    desktop_img = img_wrapper.find("img") if img_wrapper.name != "img" else img_wrapper
+            if desktop_img:
+                attrs["splitImage"] = {
+                    "id": None,
+                    "url": _resolve_media_url(desktop_img.get("src", "").strip()),
+                    "alt": desktop_img.get("alt", "").strip(),
+                }
         if "splitImageMobile" in schema and "splitImageMobile" not in attrs:
-            mobile_img = node.find("img", class_=lambda c: c and "sgs-hero__image--mobile" in c)
+            # Canonical SGS naming first
+            mobile_img = node.find("img", class_=lambda c: c and "sgs-hero__split-image--mobile" in c)
+            if mobile_img is None:
+                # Legacy fallback for pre-migration mockups
+                mobile_img = node.find("img", class_=lambda c: c and "sgs-hero__image--mobile" in c)
             if mobile_img:
                 attrs["splitImageMobile"] = {
                     "id": None,

@@ -242,21 +242,25 @@
     /* ══════════════════════════════════════════
        HERO
     ══════════════════════════════════════════ */
-    .sgs-hero { background: var(--surface-pink); overflow: hidden; }
-
-    /* Mobile layout: portrait photo stacked above content */
-    .sgs-hero--mobile {}
-    .sgs-hero__image--mobile {
-      width: 100%;
-      height: 340px;
-      object-fit: cover;
-      object-position: center 20%;
-      display: block;
-    }
-    .sgs-hero__content {
-      padding: 28px 20px 40px;
+    /* Hero — single-grid responsive pattern (migrated 2026-05-17 from dual
+       --mobile/--desktop variants). Preserves all per-viewport differences:
+       art-directed image swap, padding scale, h1 typography flip, CTA
+       direction. Single DOM, media-query reflow — matches SGS hero block. */
+    .sgs-hero {
       background: var(--surface-pink);
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-template-areas: "media" "content";
     }
+    .sgs-hero__media { grid-area: media; overflow: hidden; }
+    .sgs-hero__content { grid-area: content; padding: 28px 20px 40px; background: var(--surface-pink); }
+
+    /* Mobile: portrait image only, hide desktop image */
+    .sgs-hero__split-image { width: 100%; object-fit: cover; display: block; }
+    .sgs-hero__split-image--mobile { height: 340px; object-position: center 20%; }
+    .sgs-hero__split-image--desktop { display: none; }
+
     .sgs-hero__content h1 {
       font-size: 34px;
       font-weight: 700;
@@ -264,7 +268,7 @@
       margin-bottom: 14px;
       letter-spacing: -0.5px;
     }
-    .sgs-hero__content .sgs-hero__sub {
+    .sgs-hero__sub {
       font-size: 16px;
       color: var(--text);
       margin-bottom: 24px;
@@ -272,44 +276,39 @@
     }
     .sgs-hero__ctas { display: flex; flex-direction: column; gap: 10px; }
 
-    /* Tablet / desktop: two-column grid */
-    .sgs-hero--desktop { display: none; }
-
+    /* Tablet / desktop: 2-col grid, swap to desktop image */
     @media (min-width: 768px) {
-      .sgs-hero--mobile { display: none; }
-      .sgs-hero--desktop {
-        display: grid;
+      .sgs-hero {
         grid-template-columns: 1fr 1fr;
+        grid-template-areas: "content media";
         min-height: 520px;
       }
-      .sgs-hero__copy {
+      .sgs-hero__media { height: 100%; }
+      .sgs-hero__split-image--mobile { display: none; }
+      .sgs-hero__split-image--desktop {
+        display: block;
+        height: 100%;
+        object-position: center;
+      }
+      .sgs-hero__content {
         display: flex;
         flex-direction: column;
         justify-content: center;
         padding: 56px 48px;
-        background: var(--surface-pink);
       }
-      .sgs-hero__copy h1 {
-        font-size: 46px;
-        font-weight: 700;
-        color: var(--text);
+      .sgs-hero__content h1 {
+        font-family: 'Fraunces', serif;
+        font-size: 52px;
+        line-height: 1.15;
         margin-bottom: 16px;
         letter-spacing: -1px;
       }
-      .sgs-hero__copy .sgs-hero__sub {
-        font-size: 18px;
-        color: var(--text);
-        margin-bottom: 28px;
-        max-width: 420px;
-        line-height: 1.65;
-      }
-      .sgs-hero__copy .sgs-hero__ctas { flex-direction: row; gap: 12px; }
-      .sgs-hero__image { overflow: hidden; }
-      .sgs-hero__image img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+      .sgs-hero__sub { font-size: 18px; margin-bottom: 28px; max-width: 420px; }
+      .sgs-hero__ctas { flex-direction: row; gap: 12px; }
     }
     @media (min-width: 1280px) {
-      .sgs-hero__copy { padding: 72px 64px; }
-      .sgs-hero__copy h1 { font-size: 58px; }
+      .sgs-hero__content { padding: 72px 64px; }
+      .sgs-hero__content h1 { font-size: 58px; }
     }
 
 
@@ -763,48 +762,27 @@
      HERO
 ══════════════════════════════════════════ -->
 <section class="sgs-hero" aria-labelledby="hero-h1">
-
-  <!-- Mobile layout -->
-  <div class="sgs-hero--mobile">
-    <img class="sgs-hero__image--mobile"
+  <div class="sgs-hero__content">
+    <span class="sgs-section-heading__label">Handmade in Birmingham</span>
+    <h1 id="hero-h1">Made for the mum<br>who needs it most</h1>
+    <p class="sgs-hero__sub">Handmade lactation cookies with proper galactagogue ingredients. No medical claims — just nourishment your body will thank you for.</p>
+    <div class="sgs-hero__ctas">
+      <a href="/shop/" class="sgs-button sgs-button--primary">Shop Zookies</a>
+      <a href="/product/trial-pack/" class="sgs-button sgs-button--secondary">Try 3 for £5</a>
+    </div>
+  </div>
+  <div class="sgs-hero__media">
+    <img class="sgs-hero__split-image sgs-hero__split-image--mobile"
          src="../../research/photography/wp-media-library/aesthetic-pic.jpeg"
          alt="Freshly baked Mama's Munches lactation cookies on a warm background"
          loading="eager"
          width="1080" height="1080">
-    <div class="sgs-hero__content">
-      <span class="sgs-section-heading__label">Handmade in Birmingham</span>
-      <h1 id="hero-h1">Made for the mum who needs it most</h1>
-      <p class="sgs-hero__sub">Handmade lactation cookies with proper galactagogue ingredients. No medical claims — just nourishment your body will thank you for.</p>
-      <div class="sgs-hero__ctas">
-        <a href="/shop/" class="sgs-button sgs-button--primary">Shop Zookies</a>
-        <a href="/product/trial-pack/" class="sgs-button sgs-button--secondary">Try 3 for £5</a>
-      </div>
-    </div>
+    <img class="sgs-hero__split-image sgs-hero__split-image--desktop"
+         src="../../research/photography/wp-media-library/IMG_20260419_173547_107.webp"
+         alt="Close-up of Mama's Munches Zookies — real ingredients, baked fresh"
+         loading="eager"
+         width="1536" height="1536">
   </div>
-
-  <!-- Desktop layout (tablet+) -->
-  <div class="sgs-hero--desktop">
-    <div class="sgs-hero__copy">
-      <span class="sgs-section-heading__label">Handmade in Birmingham</span>
-      <h1 style="font-family:'Fraunces',serif;font-size:52px;font-weight:700;color:var(--text);line-height:1.15;margin-bottom:16px;letter-spacing:-1px;">
-        Made for the mum<br>who needs it most
-      </h1>
-      <p class="sgs-hero__sub" style="font-size:18px;color:var(--text);margin-bottom:28px;max-width:420px;line-height:1.65;">
-        Handmade lactation cookies with proper galactagogue ingredients. No medical claims — just nourishment your body will thank you for.
-      </p>
-      <div class="sgs-hero__ctas">
-        <a href="/shop/" class="sgs-button sgs-button--primary">Shop Zookies</a>
-        <a href="/product/trial-pack/" class="sgs-button sgs-button--secondary">Try 3 for £5</a>
-      </div>
-    </div>
-    <div class="sgs-hero__image">
-      <img src="../../research/photography/wp-media-library/IMG_20260419_173547_107.webp"
-           alt="Close-up of Mama's Munches Zookies — real ingredients, baked fresh"
-           loading="eager"
-           width="1536" height="1536">
-    </div>
-  </div>
-
 </section>
 
 
