@@ -112,12 +112,32 @@ LEGACY_ROLE_LOOKUP: dict[str, str] = {
     "site-footer": "sgs/footer",
     "header": "sgs/header",
     "footer": "sgs/footer",
-    "heritage-strip": "brand",  # retired block; routes through pattern matcher
     "cta": "sgs/cta-section",
     "cta-section": "sgs/cta-section",
     "testimonial": "sgs/testimonial",
     "testimonial-slider": "sgs/testimonial-slider",
 }
+
+# Retired SGS blocks that now live as theme patterns. Maps the SGS-BEM
+# slug-root (e.g. "heritage-strip" from class "sgs-heritage-strip") to the
+# pattern bare slug registered in theme/sgs-theme/patterns/*.php. Surfaced
+# via confidence-matrix Tier 2 pattern match, which emits block_name
+# "pattern:<slug>" so the orchestrator routes to the pattern's PHP file.
+#
+# Distinct from LEGACY_ROLE_LOOKUP (above): that lookup is for pre-SGS-BEM
+# kebab-semantic classes encountered under --legacy mode. This dict fires
+# on canonical SGS-BEM mockups where a block was retired post-Spec-13.
+RETIRED_BLOCK_REMAP: dict[str, str] = {
+    "heritage-strip": "brand",  # retired 2026-05-16 (P-PHASE8-1)
+}
+
+# Invariant: a slug-root can be in LEGACY_ROLE_LOOKUP or RETIRED_BLOCK_REMAP but
+# never both. Otherwise the legacy-branch consultation order (LEGACY first, then
+# RETIRED) would silently shadow the retired-block remap. Raises at import time.
+assert not (LEGACY_ROLE_LOOKUP.keys() & RETIRED_BLOCK_REMAP.keys()), (
+    "LEGACY_ROLE_LOOKUP and RETIRED_BLOCK_REMAP must have disjoint keys; "
+    f"collision: {LEGACY_ROLE_LOOKUP.keys() & RETIRED_BLOCK_REMAP.keys()}"
+)
 
 # Tags treated as candidate top-level sections during auto-detection.
 SECTION_TAGS = ("section", "header", "footer", "main", "aside", "nav")
@@ -158,16 +178,28 @@ def vote_block_slug(class_signature: list[str], convention: str) -> tuple[str, f
 
     Returns (slug, confidence, fallback_strategy).
     """
-    # SGS-prefixed BEM: literal strip of the prefix wins.
-    for cls in class_signature:
-        if cls.startswith("sgs-") and "--" not in cls and "__" not in cls:
-            slug_root = cls[len("sgs-"):]
-            return (f"sgs/{slug_root}", 1.0, "literal-slug-match")
+    # SGS-prefixed BEM. Two passes: retired-block remap takes precedence over
+    # the literal-slug match, scanned across ALL sgs- classes so a wrapper-
+    # utility class listed first (e.g. ["sgs-section", "sgs-heritage-strip"])
+    # doesn't shadow a retired-block class listed later.
+    sgs_bem_classes = [
+        cls for cls in class_signature
+        if cls.startswith("sgs-") and "--" not in cls and "__" not in cls
+    ]
+    for cls in sgs_bem_classes:
+        slug_root = cls[len("sgs-"):]
+        if slug_root in RETIRED_BLOCK_REMAP:
+            return (RETIRED_BLOCK_REMAP[slug_root], 0.95, "retired-block-remap")
+    if sgs_bem_classes:
+        slug_root = sgs_bem_classes[0][len("sgs-"):]
+        return (f"sgs/{slug_root}", 1.0, "literal-slug-match")
 
     # Legacy kebab-semantic: lookup table.
     for cls in class_signature:
         if cls in LEGACY_ROLE_LOOKUP:
             return (LEGACY_ROLE_LOOKUP[cls], 0.85, "spec-12-lookup")
+        if cls in RETIRED_BLOCK_REMAP:
+            return (RETIRED_BLOCK_REMAP[cls], 0.85, "retired-block-remap-legacy")
 
     # No match -- gap candidate.
     return ("", 0.0, "gap-candidate")

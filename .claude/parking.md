@@ -1,12 +1,16 @@
 ---
 doc_type: parking
 project: small-giants-wp
-last_updated: 2026-05-16
+last_updated: 2026-05-17
 ---
 
 # Parking — deferred work with named triggers
 
-## CLOSED 2026-05-16 (this session)
+## CLOSED 2026-05-17 (this session)
+
+- **P-PHASE8-NEW-1** — Recogniser stale heritage-strip references ✓ **DONE**. Voter now consults a new `RETIRED_BLOCK_REMAP` dict in both SGS-BEM literal and legacy-kebab branches, routing `sgs-heritage-strip` (and any future retired block) to its replacement pattern via confidence-matrix Tier 2. Iteration-order safety fix included: ALL `sgs-` classes scanned for retirement before falling to literal-slug match. Mockup source migrated to `sgs-brand*` canonical naming. Disjoint-keys assertion added between LEGACY_ROLE_LOOKUP and RETIRED_BLOCK_REMAP. Unit test file added (`test_per_section_convention_voter.py`, 10 assertions).
+
+## CLOSED 2026-05-16 (previous session)
 
 - **P-PHASE8-1** — Heritage-strip as Brand Story PATTERN ✓ **DONE** in commit `9a32a164`. Block deleted, `theme/sgs-theme/patterns/brand.php` created. Hardcoded lift guards removed from convert.py.
 - **P-PHASE8-2** — Per-block render.php audits (round 1+2) ✓ **DONE** for the 10 cv2-eligible blocks (commits `7a2a777d` + `9a32a164`). Static → dynamic conversion. WP file-render wrapper echo-style discovered. Extension-hook wiring (animation/responsive-visibility/image-controls) deferred → P-PHASE9-1.
@@ -15,16 +19,6 @@ last_updated: 2026-05-16
 - **P-PHASE8-12** — Wrong-block-type plausibility check ✓ **DONE** in commit `d859da4c` with depth-aware section-root parsing.
 - **P-PHASE8-13** — Populate `block_attributes.role` via slot_synonyms.role ✓ **DONE** in commit `d859da4c`. Migration script + assign-canonical.py second-pass propagation with property-suffix guard.
 - **P-PHASE8-17** — Convert remaining 7 static SGS blocks to dynamic ✓ **DONE** in commit `9a32a164` (parallel agent dispatch).
-
-## New 2026-05-16 — Phase 8 continuation backlog
-
-### P-PHASE8-NEW-1 — Recogniser stale heritage-strip references
-
-**What:** `confidence-matrix.py:83` + `per-section-convention-voter.py:115+263` still reference `sgs/heritage-strip` as a registered block (stale post-retirement). A future client mockup with `sgs-heritage-strip` class won't route to the `brand.php` pattern correctly.
-
-**Trigger:** Either before a new client onboarding hits `sgs-heritage-strip` OR as the first cleanup item next session.
-
-**Approach:** (1) Remove the stale block-name references. (2) Either register the `brand.php` pattern under BOTH slugs (`brand` + `heritage-strip`) so legacy class signatures still match, OR add a slot_synonyms-style alias mapping for pattern names. Lean toward (1) + multi-slug pattern registration since it's the simplest deterministic fix. ~30 min.
 
 ### P-PHASE9-1 — Per-block extension hook wiring sweep
 

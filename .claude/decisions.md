@@ -2,6 +2,22 @@
 
 Append-only. Most-recent first.
 
+## 2026-05-17 — P-PHASE8-NEW-1 — Retired-block remap mechanism for the voter
+
+**Context.** `sgs/heritage-strip` block retired 2026-05-16 (P-PHASE8-1) and replaced by `theme/sgs-theme/patterns/brand.php`. The recogniser's voter still output `sgs/heritage-strip` as the candidate slug for `sgs-heritage-strip`-classed sections, so confidence-matrix dropped them at Tier 1 and the section fell through to a generic `sgs/container` emission — losing the brand-pattern composition.
+
+**Decision (a) — Add a dedicated `RETIRED_BLOCK_REMAP` dict in `per-section-convention-voter.py`**, distinct from `LEGACY_ROLE_LOOKUP`. The two dicts serve different purposes — LEGACY maps pre-SGS-BEM kebab-semantic classes for --legacy mode mockups; RETIRED maps SGS-BEM slug-roots whose block was retired post-Spec-13. Conflating them was the original bug: the heritage-strip entry was placed in LEGACY and was dead code for SGS-BEM mockups (the literal-slug branch returned first and bypassed the legacy lookup). Disjoint-keys invariant enforced via module-load assertion.
+
+**Decision (b) — Voter, not confidence-matrix, owns the remap.** Placing it in confidence-matrix would require special-casing retired slugs at Tier 1. Placing it at the voter means the dead slug is never emitted in the first place, and confidence-matrix Tier 2's existing pattern-match logic (`bare_slug ∈ registered_patterns`) handles the routing automatically. End-to-end wiring: voter returns `("brand", 0.95, "retired-block-remap")` → confidence-matrix emits `block_name="pattern:brand"` → orchestrator routes to `pattern_ref="brand"` (brand.php).
+
+**Decision (c) — Scan ALL `sgs-` classes for retirement BEFORE falling to first-class literal-slug match.** Adversarial QC lens caught this — original patch returned on the first `sgs-` class, which meant a section like `<section class="sgs-section sgs-heritage-strip">` (wrapper utility first) would emit `sgs/section` and never reach the remap. Fixed by collecting all SGS-BEM classes first, then a pass for retired-block remap, then literal-slug match on the first.
+
+**Decision (d) — Mockup source migrated to canonical `sgs-brand*` class names.** The mockup at `sites/mamas-munches/mockups/homepage/index.html` was authored before the retirement using `sgs-heritage-strip*` classes. CSS lift was regenerating `.sgs-heritage-strip*` selectors into the deployed `mamas-munches.css`, leaving the brand-pattern's rendered DOM (`sgs-brand*`) unstyled. Per Bean's SGS-BEM-naming rule (Bean-controlled drafts must use canonical class names), the durable fix lives at the mockup source. Next clone run regenerates `mamas-munches.css` with correct `.sgs-brand*` selectors. RETIRED_BLOCK_REMAP remains the converter-side safety net for live scrapes / unmigrated mockups.
+
+**Decision (e) — DEFER design-question on `sgs/brand` future block.** Adversarial lens noted: if `sgs/brand` is later registered as a real block, the remap silently locks pattern routing forever (Tier 2 fires before Tier 1 can pick up the registered block). Acceptable today (no `sgs/brand` block in flight). Re-evaluate if a `sgs/brand` block is ever scoped — the remap entry should be deleted at that point so the literal-slug path takes over.
+
+**Multi-rater /qc panel (binding rule #2) ran BEFORE commit.** 4 parallel reviewers: architecture (SHIP), adversarial (FIX-FIRST → iteration-order fix applied), ecosystem (FIX-FIRST → CSS migration + unit test + docs applied), fresh-eyes (SHIP). All findings closed.
+
 ## 2026-05-16 — Spec 16 Phase 8 session: 5 commits, accuracy + universality
 
 **Decision (a) — Walker FR1 precedence above CSS-driven container override.** convert.py:walk() previously ran CSS-driven container detection BEFORE FR1 block-root lookup. Result: every nested `sgs-<block>` with display:flex|grid in source CSS (which is most of them — product-card, info-box, testimonial-slider all do) got absorbed as a styled container instead of becoming its registered block. FR1 was only firing at the top-level section. Swap fixes universally — applies at every depth where the BEM class resolves to a registered status='built' block. Commit `a2d58a3d`.
