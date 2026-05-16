@@ -20,6 +20,16 @@ last_updated: 2026-05-17
 - **P-PHASE8-13** — Populate `block_attributes.role` via slot_synonyms.role ✓ **DONE** in commit `d859da4c`. Migration script + assign-canonical.py second-pass propagation with property-suffix guard.
 - **P-PHASE8-17** — Convert remaining 7 static SGS blocks to dynamic ✓ **DONE** in commit `9a32a164` (parallel agent dispatch).
 
+### P-PHASE8-NEW-2 — Stage 4 converter doesn't honour pattern: routing (NEW 2026-05-17)
+
+**What:** Voter + confidence-matrix correctly classify sections as `pattern:<slug>` matches (Tier 2 — registered pattern). Orchestrator at `sgs-clone-orchestrator.py:885` records `pattern_ref` in `slot_lists`. But Stage 4 (`convert.py` walker) is unaware of pattern routing — it walks the DOM and emits `sgs/container` + descendants anyway. Net: brand-pattern composition (label + heading + body + CTA + image in proper grid via brand.php) is never actually emitted, even when the recogniser correctly identifies it.
+
+Discovered 2026-05-17 while verifying P-PHASE8-NEW-1 voter fix end-to-end. Brand section trace shows `top_pick="pattern:brand"` but `target_block="pattern:brand"` Stage 4 emission is sgs/container.
+
+**Trigger:** Before any client mockup needs an actual brand.php composition (or any other pattern-routed section); also before trust-bar schema decision (Priority #3) since that decision is downstream of pattern-vs-block routing semantics.
+
+**Approach:** Two paths. (A) Wire `convert.py:walk()` to detect when boundary's `pattern_ref` is set and emit `<!-- wp:pattern {"slug":"sgs/<name>"} /-->` instead of walking the subtree. Lift any inline-customisable attrs (label text, headline, image src) into a wrapping `<!-- wp:group -->` with `inserter:false` for variation overrides. (B) Defer pattern-routing entirely — drop the Tier 2 pattern signal from confidence-matrix and rely on convert.py walker output as canonical. (A) preserves pattern composition; (B) simplifies. Lean (A). ~30-45 min.
+
 ### P-PHASE9-1 — Per-block extension hook wiring sweep
 
 **What:** The 9 newly-dynamic blocks (trust-bar, label, certification-bar, counter, divider, heading, notice-banner, process-steps, tab) don't yet wire `animation` / `responsive-visibility` / `image-controls` extension hooks into their render.php. Existing already-dynamic blocks deferred this too — broader sweep needed. (Heritage-strip is NOT in this list — it was retired as a block in this session; lives as `theme/sgs-theme/patterns/brand.php`.)
