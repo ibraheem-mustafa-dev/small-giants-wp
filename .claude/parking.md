@@ -1,10 +1,88 @@
 ---
 doc_type: parking
 project: small-giants-wp
-last_updated: 2026-05-18
+last_updated: 2026-05-19
 ---
 
 # Parking — deferred work with named triggers
+
+## Opened 2026-05-19 (brand walkdown — universal core-block CSS lift session)
+
+### P-CORE-STYLE-MAP-DB-MIGRATION — Migrate `_CORE_BLOCK_STYLE_MAP` to DB-driven lookup (~1.5 hrs)
+
+**What:** The new `_lift_core_block_style()` helper in `convert.py` (commit landing 2026-05-19) uses a 26-entry module-level dict `_CORE_BLOCK_STYLE_MAP` mapping CSS properties to WP core-block `style.*` paths. This is data, not logic — should live in the canonical sgs-framework.db, not inline.
+
+**Why DB-first:** Binding rule blub.db row 260 (2026-05-17) — hardcoded lookup dicts must check DB first. The existing `property_suffixes` (117 rows) covers the SGS-flat-attr mapping (`color → colour`, `font-size → fontSize`, etc.). Core-block style paths (`color → ["color","text"]`, `font-size → ["typography","fontSize"]`) are a parallel but distinct mapping. Either: (a) add a new column to property_suffixes (`core_block_style_path`, JSON-encoded), OR (b) add a new sibling table `core_block_style_paths` (css_property, style_path JSON, kind, image_only bool).
+
+**Trigger:** Next converter iteration touching core-block lift OR a `/sgs-update` refresh that should propagate to both maps OR rater feedback on subsequent commits flags the duplicate.
+
+**Approach:**
+1. Schema migration adding `core_block_style_paths` table (CSV-seeded for idempotency)
+2. New `db_lookup.core_block_style_path_for(css_prop)` returning `(path, kind, image_only)`
+3. Replace module-level `_CORE_BLOCK_STYLE_MAP` with lazy DB call (lru_cache on first use)
+4. Mark Bean's row-260 lesson satisfied
+
+Captured: 2026-05-19 by QC rater 2 (Haiku DB-schema lens).
+
+### P-COVERAGE-METRIC-CORE-STYLE — Extend `attribute_coverage` to count core-block nested style paths (~30 min)
+
+**What:** `scripts/pixel-diff.py compute_attribute_coverage` does suffix-anchored match on SGS-flat-attr keys (`headlineFontSize`, `image.url`, etc.). The new universal-lift helper emits nested `style.color.text`, `style.typography.fontSize`, `image.style.scale` etc. — the coverage matcher doesn't recognise these paths as covering CSS rules.
+
+**Evidence:** 2026-05-19 brand walkdown: post-lift extract has +4 new nested style objects (image.style, heading.style, paragraph.style, button.style). Coverage% still reads 18.75% — unchanged from pre-lift baseline. The lift IS happening (verified in extract.json); the metric is blind to it.
+
+**Approach:** Add a second matcher to `compute_attribute_coverage` that walks nested `*.style` dicts and matches each leaf's path tail (e.g. `style.color.text` covers `color` rules, `style.typography.fontSize` covers `font-size`, `style.dimensions.maxHeight` covers `max-height`). Reuse `_CORE_BLOCK_STYLE_MAP` from convert.py as the ground truth.
+
+**Trigger:** Next session's brand+hero re-measurement OR before any handoff that claims coverage% as evidence.
+
+Captured: 2026-05-19 inline during brand walkdown.
+
+### P-CHILD-CSS-LIFT — Universal child-block CSS lift (CLOSED via this session's commit, partial coverage)
+
+**What:** Per-element CSS rules targeting BEM-element children (`.sgs-brand__image`, `.sgs-brand__headline`, `.sgs-brand__body`) weren't being lifted into emitted core/* child blocks. Walker emitted core/image/heading/paragraph with only HTML-attribute data (url, alt, level, anchor), dropping every per-class CSS declaration.
+
+**Closed via:** Sonnet subagent commit `99b344d7` (merged 2026-05-19) — new `_lift_core_block_style()` helper applied to atomic_image / atomic_heading / atomic_paragraph branches + (rater 1 fix) atomic_text_fallback branch.
+
+**Remaining caveats:**
+- Coverage% metric doesn't count nested style paths yet → P-COVERAGE-METRIC-CORE-STYLE above
+- `tag-only selectors` (e.g. `blockquote p { font-size }`) aren't lifted by class-matched lookup. Would need a parallel tag-matched lookup. Park as P-TAG-SELECTOR-LIFT for next session.
+- Pixel-diff requires redeploy + re-screenshot to verify visible improvement — current 31% pixel diff on brand unchanged because post 65 hasn't been redeployed with new converter output. Park as P-PHASE9-REDEPLOY-BASELINE.
+
+### P-PARENT-QUALIFIED-TAG-LIFT — Smarter SGS-class guard allowing parent-qualified tag selectors (~45-60 min)
+
+**What:** The 2026-05-19 commit's `_lift_core_block_style` SGS-class guard rejects lift on any node without an `sgs-` class. This correctly blocks the tag-blast-radius bug (rater 3 finding: `p { color: #333 }` corrupting every paragraph globally). However, it ALSO rejects parent-qualified tag selectors like `.sgs-brand__body p { font-size }` — the inner `<p>` has no SGS class but the matching selector IS class-qualified via the ancestor.
+
+**Evidence:** Post-fix shakeout 2026-05-19 shows -1 attr per non-canary section vs subagent's permissive run (brand 40 vs 41, featured-product 53 vs 54, ingredients 28 vs 29, gift 43 vs 44, social-proof 17 vs 18). The lost attr per section is the parent-qualified tag-selector lift.
+
+**Approach:** Modify `_collect_css_decls_for_element` (or add a sibling fn) to RETURN the matched selectors alongside declarations. Then in `_lift_core_block_style`, after collecting decls, filter to only those whose matched selector has at least one `.sgs-*` class token anywhere in the selector chain. This allows `.sgs-brand__body p` (has ancestor sgs class) while rejecting bare `p` (no sgs class anywhere).
+
+**Trigger:** Next session's brand+hero re-measurement when the -1 attr/section gap proves to bite OR P-COVERAGE-METRIC-CORE-STYLE shipping reveals which specific rules are lost.
+
+Captured: 2026-05-19 post-fix verification.
+
+### P-TAG-SELECTOR-LIFT — Lift CSS from tag-only selectors targeting atomic children (~30-45 min)
+
+**What:** `_lift_core_block_style` reads CSS via `_collect_css_decls_for_element` which matches by class + parent-qualified class selectors. Pure tag selectors (`blockquote p`, `blockquote footer`, `h1, h2, h3 { font-family }`, `img { max-width }`, `a { color }`) aren't picked up because the node's classes don't match.
+
+**Why this matters for brand:** mockup CSS has 5 tag-only rules that affect brand subtree visibility:
+- `*, *::before, *::after { box-sizing; margin; padding }`
+- `h1, h2, h3 { font-family; line-height }`
+- `img { max-width; display }`
+- `a { color; text-decoration }`
+- `blockquote { font-style }` + `blockquote p { ... }` + `blockquote footer { ... }`
+
+After universal-class filter (the 5 above are universal → don't count), the blockquote-children rules are still missing. They drop brand's effective coverage by 3 rules (blockquote, blockquote p, blockquote footer).
+
+**Approach:** Add a second pass in `_lift_core_block_style` that queries CSS rules for selectors matching the node's tag name + ancestor chain. Limit ancestor chain to 3 levels to avoid combinatorial blowup. Reuse mapping infrastructure.
+
+**Trigger:** Next walkdown where blockquote / tag-styled content is visible OR P-COVERAGE-METRIC-CORE-STYLE shows tag-selector residual.
+
+### P-PHASE9-REDEPLOY-BASELINE — Refresh sandybrown post 65 with post-lift converter output (~20 min)
+
+**What:** Pixel-diff baseline (post 65 at sandybrown-nightingale-600381.hostingersite.com) was last refreshed 2026-05-17. The 2026-05-19 commit adds new `style.*` attrs into emitted block markup. Until post 65 is redeployed with the new markup, pixel-diff% won't reflect the visible improvement.
+
+**Approach:** Re-run `/sgs-clone` full-page mode → take new extract.json's block_markup for the brand section → update WP post 65 via REST or wp-admin → take fresh screenshots. Standard redeploy workflow.
+
+**Trigger:** Next session's brand+hero re-measurement.
 
 ## Opened 2026-05-18 (QC inline on pre-work)
 

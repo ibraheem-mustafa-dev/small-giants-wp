@@ -139,6 +139,46 @@ assert not (LEGACY_ROLE_LOOKUP.keys() & RETIRED_BLOCK_REMAP.keys()), (
     f"collision: {LEGACY_ROLE_LOOKUP.keys() & RETIRED_BLOCK_REMAP.keys()}"
 )
 
+
+def _registered_block_slug_roots() -> set[str]:
+    """Read sgs-framework.db for currently-registered block slugs, returned as
+    bare slug roots (e.g. 'hero' from 'sgs/hero'). Cached at module load.
+
+    Soft-fail to empty set if DB is missing/unreadable — the assertion below
+    is a guardrail against re-registering a retired slug, not a hard runtime
+    dependency. The voter still functions if the DB read fails.
+    """
+    import sqlite3 as _sql
+    from pathlib import Path as _P
+    # Canonical DB path (same as orchestrator.converter_v2.db_lookup.SGS_DB):
+    # ~/.claude/skills/sgs-wp-engine/sgs-framework.db. The block registry
+    # (blocks table) lives there, not in the plugin-local converter DB.
+    db_path = _P.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+    if not db_path.exists():
+        return set()
+    try:
+        conn = _sql.connect(f"file:{db_path}?mode=ro", uri=True)
+        rows = conn.execute("SELECT slug FROM blocks").fetchall()
+        conn.close()
+    except Exception:
+        return set()
+    return {r[0][len("sgs/"):] for r in rows if r[0] and r[0].startswith("sgs/")}
+
+
+# P-PHASE9-6 guard: a RETIRED_BLOCK_REMAP key must NOT collide with a
+# currently-registered block slug. If sgs/heritage-strip is later re-registered
+# as a real block, the unconditional remap below would silently shadow it. This
+# import-time check forces a deliberate decision: either remove the remap entry
+# or rename the registered block.
+_REGISTERED = _registered_block_slug_roots()
+_collision = RETIRED_BLOCK_REMAP.keys() & _REGISTERED
+assert not _collision, (
+    "RETIRED_BLOCK_REMAP collision with registered block(s): "
+    f"{sorted(_collision)}. Either remove the entry from RETIRED_BLOCK_REMAP "
+    "or rename the registered block. Re-registering a retired slug means the "
+    "remap is no longer correct."
+)
+
 # Tags treated as candidate top-level sections during auto-detection.
 SECTION_TAGS = ("section", "header", "footer", "main", "aside", "nav")
 

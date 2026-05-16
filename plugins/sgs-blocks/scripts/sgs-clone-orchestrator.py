@@ -926,6 +926,11 @@ def stage_3_slot_list(match_output: dict, run_dir: Path) -> dict:
 
 def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: dict | None = None) -> dict:
     """Stage 4-8 -- delegate to tools/recogniser-v2/extract.py (single-section v1)."""
+    # Module-level cache populated lazily on first --debug-trace cv2 dispatch.
+    # Without `global`, the assignment at the cv2 branch makes _trace_mod local
+    # to this function and the prior `is None` check raises UnboundLocalError,
+    # caught by the broad except, silently disabling per-section trace.
+    global _trace_mod
     started = now_iso()
     extract_out = run_dir / "extract-result.json"
 
