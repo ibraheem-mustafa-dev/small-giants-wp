@@ -1,0 +1,23 @@
+{
+  "mockup_url": "https://sandybrown-nightingale-600381.hostingersite.com/2026/05/15/spec16-p7-mockup-baseline-2026-05-15/",
+  "sgs_url": "https://sandybrown-nightingale-600381.hostingersite.com/2026/05/15/spec16-p7-converter-v2-output-2026-05-15/",
+  "viewport": "375x812",
+  "mockup_dimensions": [
+    343,
+    1552
+  ],
+  "sgs_dimensions": [
+    343,
+    1196
+  ],
+  "aligned_dimensions": [
+    343,
+    981
+  ],
+  "mismatched_pixels": 205351,
+  "total_pixels": 336483,
+  "mismatch_percent": 61.0286,
+  "threshold_percent": 1.0,
+  "verdict": "FAIL",
+  "captured_at": "2026-05-16T04:50:53.437984+00:00"
+}

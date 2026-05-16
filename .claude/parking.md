@@ -20,15 +20,42 @@ last_updated: 2026-05-17
 - **P-PHASE8-13** — Populate `block_attributes.role` via slot_synonyms.role ✓ **DONE** in commit `d859da4c`. Migration script + assign-canonical.py second-pass propagation with property-suffix guard.
 - **P-PHASE8-17** — Convert remaining 7 static SGS blocks to dynamic ✓ **DONE** in commit `9a32a164` (parallel agent dispatch).
 
-### P-PHASE8-NEW-2 — Stage 4 converter doesn't honour pattern: routing (NEW 2026-05-17)
+### P-PHASE8-NEW-2 — Stage 4 converter doesn't honour pattern: routing ✓ **REFRAMED + CLOSED 2026-05-17**
 
-**What:** Voter + confidence-matrix correctly classify sections as `pattern:<slug>` matches (Tier 2 — registered pattern). Orchestrator at `sgs-clone-orchestrator.py:885` records `pattern_ref` in `slot_lists`. But Stage 4 (`convert.py` walker) is unaware of pattern routing — it walks the DOM and emits `sgs/container` + descendants anyway. Net: brand-pattern composition (label + heading + body + CTA + image in proper grid via brand.php) is never actually emitted, even when the recogniser correctly identifies it.
+**Original framing:** Stage 4 ignores `pattern_ref` and emits sgs/container instead of `<!-- wp:pattern -->`.
 
-Discovered 2026-05-17 while verifying P-PHASE8-NEW-1 voter fix end-to-end. Brand section trace shows `top_pick="pattern:brand"` but `target_block="pattern:brand"` Stage 4 emission is sgs/container.
+**Reframe after deeper investigation:** Theme patterns in WordPress don't carry per-instance overrides — a bare `wp:pattern` reference renders the pattern's PLACEHOLDER text, not Mama's actual content. Universal pattern-attr-mapping is a multi-day infrastructure design, not a 30-min fix. The PRACTICAL fix turned out to be different: the walker was unwrapping authored SGS-BEM grouping wrappers (`<div class="sgs-brand__content">`) via the unnamed-wrapper PASS-THROUGH, losing the pattern's structural contract.
 
-**Trigger:** Before any client mockup needs an actual brand.php composition (or any other pattern-routed section); also before trust-bar schema decision (Priority #3) since that decision is downstream of pattern-vs-block routing semantics.
+**Closed via commit `df3a6cbf`:** walker now preserves any `sgs/container` target with a BEM `__element` as a nested `sgs/container` with className preserved. Brand section now emits 2-col grid + nested __content stack + __image right column matching brand.php structure. Pixel-diff: 99.6% → 12.9% at tablet (87pp improvement).
 
-**Approach:** Two paths. (A) Wire `convert.py:walk()` to detect when boundary's `pattern_ref` is set and emit `<!-- wp:pattern {"slug":"sgs/<name>"} /-->` instead of walking the subtree. Lift any inline-customisable attrs (label text, headline, image src) into a wrapping `<!-- wp:group -->` with `inserter:false` for variation overrides. (B) Defer pattern-routing entirely — drop the Tier 2 pattern signal from confidence-matrix and rely on convert.py walker output as canonical. (A) preserves pattern composition; (B) simplifies. Lean (A). ~30-45 min.
+### P-PHASE8-NEW-3 — Hero 768px viewport selector height mismatch (NEW 2026-05-17)
+
+**What:** Hero pixel-diff at 768px tablet = 99.9% (mockup 693px tall, SGS 426px tall — 267px delta). Other viewports (1440 = 70%, 375 = 80%) are normal. Tablet-only height collapse.
+
+**Trigger:** Before per-section pixel-diff for hero can close OR when an SGS client needs reliable tablet hero rendering.
+
+**Approach:** DOM inspect at 768px to identify which element shrinks (likely image object-fit or column-ratio difference). `@media (max-width:767px)` cutoff means 768 uses desktop layout — so the 2-col grid is in play. Mockup vs SGS column-width ratios may differ. Check `splitColumnRatio` attr and `.sgs-hero__split-image` rendering. ~30-45 min.
+
+### P-PHASE8-NEW-4 — CSS-lift media-query support (NEW 2026-05-17)
+
+**What:** Walker's CSS-driven container detection reads ONLY base CSS rules — `@media (min-width:768px)` overrides of `grid-template-columns` are ignored. Net for brand section: `columnsMobile:2` when mockup intends 1-col stack on mobile (mobile base CSS has `grid-template-columns: 1fr`, desktop media-query overrides to `1fr 1fr`).
+
+**Trigger:** Any responsive grid container where mobile and desktop columns differ. Affects every clone.
+
+**Approach:** Extend `_detect_grid_container_from_css()` to read media-query nested rules and emit `columnsMobile`/`columnsTablet`/`columns` based on viewport breakpoints. Map standard breakpoints (768/1024 px) to columnsTablet/columns; everything else stays columnsMobile. ~1-2 hours.
+
+### P-PHASE9-3 — Per-instance lift fidelity sweep (renamed from generic "lift gaps", NEW 2026-05-17)
+
+**What:** 538 extraction_failed entries on Mama's latest run dominated by config-attrs at defaults (textColour, padding, hoverEffect, transitionDuration) — these are intentionally unset, not real gaps. Real high-impact gaps:
+- Ingredients section (147 entries): info-box children — emoji/icon, heading, description per item not lifting at full fidelity
+- Gift section (106 entries): same info-box family
+- Hero (151 entries): mix of CSS-lift styling + image attrs
+
+Pixel-diff confirms: ingredients/gift sit at 30-62% across viewports — lift fidelity is the bottleneck once structural composition is right.
+
+**Trigger:** When pixel-diff closure on ingredients/gift becomes priority OR when adding a new client with info-box-heavy layouts.
+
+**Approach:** (a) Add a `_HIGH_IMPACT_ROLES` filter in leftover-bucket-router to distinguish noise (default-OK config) from real content gaps. (b) Per-section sweep — identify the 5-10 attrs that actually visually matter per block type. (c) Improve `_lift_bem_child_array()` BEM-walker to handle info-box per-item icon/emoji content (currently lifts heading + description but not media). Open-ended; ~2-4 hours per section.
 
 ### P-PHASE9-1 — Per-block extension hook wiring sweep
 
