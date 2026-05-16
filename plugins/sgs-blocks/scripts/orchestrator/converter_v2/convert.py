@@ -1662,10 +1662,32 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
                 # come back joined with \n. Append as-is — emit_wp_block handles join.
                 inner_blocks.append(converted)
 
+    # Preserve SGS-BEM grouping wrappers (e.g. sgs-brand__content) as nested
+    # sgs/container blocks. The BEM __element signals authored structural
+    # intent — the mockup explicitly wrapped these children, typically because
+    # the receiving pattern's layout (grid column, stacked group, named slot)
+    # expects that grouping. Pass-through would lose the contract and produce
+    # flat-sibling output where the pattern wanted nested composition.
+    # Inserted BEFORE the unnamed-wrapper PASS-THROUGH (2026-05-17, follow-up
+    # to P-PHASE8-NEW-1 architectural finding: walker was unwrapping
+    # sgs-brand__content into flat siblings of sgs-brand__image).
+    if (target == "sgs/container" and not is_top_level
+            and bem and bem.element
+            and inner_blocks):
+        sgs_classes = [c for c in classes if c.startswith("sgs-")]
+        cont_attrs: dict = {}
+        if sgs_classes:
+            cont_attrs["className"] = " ".join(sgs_classes)
+        decls = _collect_css_for_classes(classes, css_rules)
+        if decls:
+            variation_buf.append(decls)
+        return emit_wp_block("sgs/container", cont_attrs, inner_blocks)
+
     # PASS-THROUGH path: when this node would have been a generic sgs/container
-    # and we're NOT at the top level, drop the wrapper. Return children only.
-    # Their styling survives via the variation CSS lift below (className-keyed
-    # selectors still target the source class even without a markup wrapper).
+    # AND has no BEM element (random unnamed wrapper) AND we're NOT at the top
+    # level, drop the wrapper. Return children only. Their styling survives via
+    # the variation CSS lift below (className-keyed selectors still target the
+    # source class even without a markup wrapper).
     if target == "sgs/container" and not is_top_level:
         # Lift the wrapper's CSS to variation buffer so styling survives.
         decls = _collect_css_for_classes(classes, css_rules)
