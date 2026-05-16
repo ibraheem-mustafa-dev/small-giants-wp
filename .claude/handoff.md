@@ -1,10 +1,10 @@
 ---
 doc_type: handoff
 project: small-giants-wp
-session_tag: small-giants-wp-2026-05-18-phase-9-prework-evidence-infrastructure
-session_date: 2026-05-18
-recommended_model: opus
-last_verified: 2026-05-18
+session_tag: small-giants-wp-2026-05-19-brand-walkdown-universal-lift
+session_date: 2026-05-19
+recommended_model: sonnet
+last_verified: 2026-05-19
 update_triggers:
   - "/handoff run"
 companion_docs:
@@ -17,88 +17,65 @@ companion_docs:
   - .claude/cloning-pipeline-flow.md
 ---
 
-# Session Handoff — 2026-05-18 (Spec 16 Phase 9 pre-work — evidence infrastructure)
+# Session Handoff — 2026-05-19 (Phase 9 brand walkdown — universal core-block CSS lift + QC + parking)
 
 ## Headline
 
-**3 commits shipped to `main` (HEAD `397295c3`).** Pre-work for tomorrow's brand+hero section walkdown is fully shipped, QC'd by all 4 lenses, and provably side-effect-free against the Mama's canary. Single command tomorrow:
+**3 commits to `main` (HEAD `8444d4e4`).** Phase 9 evidence stack is now actually live (pre-work was inert), and the first universal converter improvement from the walkdown shipped. 4-rater /qc panel ratified post-implementation with 3 fixes applied before merge. 1 new behavioural rule captured. 5 new parking entries opened. Net +6 attrs lifted across 5 Mama's sections; hero/trust-bar canary holds. Next session opens on redeploy + coverage-metric extension to actually verify visible-pixel improvement.
 
-```bash
-python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py \
-  --mockup sites/mamas-munches/mockups/homepage/index.html \
-  --client mamas-munches --page homepage --section "section.sgs-brand" \
-  --converter-v2 --no-scaffold-new-blocks --skip-register --skip-autonomy-gate \
-  --mode draft --debug-trace
-```
+## Completed This Session
 
-produces three new artefacts per run, side-by-side in `pipeline-state/<run>/`:
-1. `convert-trace-<boundary>.jsonl` — every walker decision, attribute skip, DB lookup miss
-2. `expected-rules-<boundary>.jsonl` — every CSS rule selecting into the section (@media-aware)
-3. `diff.json` (when paired with pixel-diff) gains `attribute_coverage` block — pure converter score, separate from render-side pixel-diff%
+1. **Discovered + fixed `--debug-trace` wiring bug** (`8444d4e4`). The 2026-05-18 pre-work commit `8b69bc0a` shipped per-section `convert-trace-<boundary>.jsonl` infrastructure that was inert: `stage_4_5_6_7_8_extract` assigned `_trace_mod` without a `global` declaration, raising silent `UnboundLocalError` swallowed by the broad except. Fix: 6-line addition. Verified — 9 per-boundary trace files now written, 587 events.
+2. **Shipped universal core-block CSS lift** (`99b344d7` + `a0592001`). New `_lift_core_block_style()` in `convert.py` emits CSS into WP core-block `style.*` schema for atomic_image / atomic_heading / atomic_paragraph / atomic_text_fallback. 26-entry data-driven mapping table. Brand attrs 38→40 vs main HEAD. Net +6 attrs across 5 sections.
+3. **Ran 4-rater /qc panel** (Sonnet converter-internals + Haiku DB-schema + Sonnet integration + Sonnet adversarial). 3 NEEDS_FIX findings shipped: (a) BLOCKING tag-selector blast-radius guard — `_lift_core_block_style` skips nodes without `sgs-` class to prevent bare-tag rules corrupting every paragraph globally; (b) shallow-merge `attrs["style"]` for forward-compat; (c) wire `atomic_text_fallback` branch (was missed in initial integration). 1 finding parked as P2 (P-CORE-STYLE-MAP-DB-MIGRATION).
+4. **Implemented P-PHASE9-6 RETIRED_BLOCK_REMAP guard** in `per-section-convention-voter.py`. New `_registered_block_slug_roots()` reads sgs-wp-engine DB `blocks` table at import (read-only), asserts no remap key collides with a currently-registered block slug. Soft-fail to empty set if DB unreadable.
+5. **Opened 5 new parking entries** (parking.md): P-CORE-STYLE-MAP-DB-MIGRATION, P-COVERAGE-METRIC-CORE-STYLE, P-PARENT-QUALIFIED-TAG-LIFT, P-TAG-SELECTOR-LIFT, P-PHASE9-REDEPLOY-BASELINE.
+6. **Captured `feedback_qc_panel_must_assert_file_existence`** behavioural rule (CC auto-memory). QC panels validating file artefacts MUST include "list run-dir + assert file appears + wc -l + head -1 schema check" steps. Function-level byte-equality is tautological if the writer is inert.
 
-## Today's session was scoped tight on purpose
+## Current State
 
-Bean and I weighed two options at orientation: (A) full v3 plan in one session (~5-7 hrs of honest work — pre-work + brand + hero + cross-cutting + handoff), or (B) pre-work only, committed + QC'd today, brand+hero next session. Picked **B** because:
+- **Branch:** main at `8444d4e4`
+- **Tests:** WP block validation: valid (stage-4j on every shakeout). No automated test suite.
+- **Build:** n/a (Python orchestrator)
+- **Uncommitted changes:** none (state.md + handoff.md + next-session-prompt.md will be one final commit)
+- **Live state on sandybrown:** post 65 still at 2026-05-17 baseline — does NOT reflect today's lift improvements
+- **Mama's canary attrs:** hero=62, trust-bar=6, brand=40 (+2), featured=53 (+1), ingredients=28 (+1), gift=43 (+1), social-proof=17 (+1). Total 249.
 
-- v3 plan budgeted pre-work at ~60 min; orientation found the actual implementation across 5 files + 1 new module realistically needed ~2-2.5 hrs (more like ~4 hrs counting QC + fixes + re-shakeouts)
-- Doing pre-work + brand + hero in one session would have stacked context risk: 5+ hours of focused work, multiple commits, two debugging sessions
-- Tomorrow opens onto working infrastructure rather than mid-flight scaffolding
+## Known Issues / Blockers
 
-The trade-off paid off: today's pre-work shipped clean with 4-rater QC ratified, and tomorrow's walkdown opens with zero infrastructure surprise.
+- **P-PHASE9-REDEPLOY-BASELINE** — post 65 baseline must be refreshed with new converter output before pixel-diff can show visible improvement. Currently brand reads 31% / 13% / 37% at 1440 / 768 / 375 (unchanged from pre-lift because the rendered page is the same).
+- **P-COVERAGE-METRIC-CORE-STYLE** — coverage% metric is blind to nested style.* paths. Brand reads 18.75% (3/16 rules covered) despite the lift adding 4 nested style objects. Metric extension needed before walkdown can produce honest before/after numbers.
+- **P-PARENT-QUALIFIED-TAG-LIFT** — current SGS-class guard is strict; rejects parent-qualified tag selectors like `.sgs-brand__body p`. Costs -1 attr/section vs subagent's permissive run. Tradeoff accepted for safety; smarter guard parked.
 
-## Three commits, three QC iterations
+## Next Priorities (in order)
 
-| Commit | What | QC trigger |
-|---|---|---|
-| `8b69bc0a` | Initial pre-work — 560 insertions across 7 files | 4-rater /qc panel dispatched |
-| `10a93d87` | Sonnet (converter-internals) NEEDS_FIX → 3 fixes | composite_element diagnostic gap, try/finally trace reset, defensive try/except removed |
-| `397295c3` | Sonnet (adversarial, Cerebras replacement) NEEDS_FIX → 2 fixes | substring false-positive in attribute-coverage, soupsieve selector resolution |
+1. **Refresh sandybrown post 65 with new converter block_markup** (~20 min, P-PHASE9-REDEPLOY-BASELINE). Run full-page `/sgs-clone`, take new brand `block_markup`, update post via REST or wp-admin. Verifies the universal lift in visible pixels.
+2. **Extend `pixel-diff.py compute_attribute_coverage` to walk nested style.* dicts** (~30 min, P-COVERAGE-METRIC-CORE-STYLE). Reuse `_CORE_BLOCK_STYLE_MAP` as ground truth. Re-measure brand coverage post-extension.
+3. **Re-run brand pixel-diff at 3 viewports with split-metric** (~10 min). Expect coverage% jump from 18.75% → likely 50-70%+ once nested paths count.
+4. **Decide on parent-qualified tag-selector smarter guard** (P-PARENT-QUALIFIED-TAG-LIFT, ~45-60 min) only if the -1-attr/section gap proves to bite after #2-3.
+5. **Open hero walkdown** with the same loop (single-section --debug-trace + per-section pixel-diff + branch on coverage%).
 
-## What shipped (the evidence stack)
+## Files Modified
 
-### Step 1 — Lightweight trace extension
-
-| File | Change |
+| File | What changed |
 |---|---|
-| `plugins/sgs-blocks/scripts/orchestrator/trace.py` | New `Trace.for_boundary(run_dir, boundary_id)` classmethod. Writes `convert-trace-<safe-id>.jsonl`. Same per-process singleton + soft-fail discipline as the existing `for_run`. |
-| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` | `_TRACE` module-level singleton + `set_trace(tr, boundary_id)` + `_trace(stage, **kw)` wrapper. `set_trace` atomically binds db_lookup's trace too (single chokepoint). 10 walker_branch_taken emit sites cover the 6 v3-plan-named labels at the right granularity: chrome_skip, fr1_block_root, composite_element, composite_element_no_standalone, css_driven_container, atomic_paragraph/heading/image/button, atomic_text_standalone, atomic_text_fallback, sgs_bem_wrapper, pass_through, top_level_container, fallback. attr_skipped roll-up at exit of `lift_subtree_into_block_attrs` covering value_empty + array_no_pattern_match. |
-| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/db_lookup.py` | Mirror `_TRACE`/`set_trace`/`_trace` pattern. 4 `db_lookup_miss` emit sites: `canonical_slot_for`, `standalone_block_for`, `attr_for_slot`, `block_attrs`. lru_cache means each miss emits once per unknown lookup — correct behaviour. |
-| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/__init__.py` | `convert_section()` accepts `trace` + `boundary_id` kwargs. Body split into `_convert_section_body()` so trace lifetime can be wrapped in try/finally — guarantees the module-level singleton resets at exit (Sonnet fix). |
-| `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` | New `--debug-trace` flag. cv2 dispatch builds `Trace.for_boundary(run_dir, boundary_id)` per section + passes into `convert_section`. |
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` | +257 net lines: new `_lift_core_block_style()`, 26-entry `_CORE_BLOCK_STYLE_MAP`, 4 atomic-branch integrations, SGS-class guard, shallow-merge |
+| `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` | +5 lines: `global _trace_mod` in `stage_4_5_6_7_8_extract` |
+| `plugins/sgs-blocks/scripts/recogniser/per-section-convention-voter.py` | +40 lines: `_registered_block_slug_roots()` + import-time collision assertion |
+| `.claude/parking.md` | +80 lines: 5 new P-* entries from walkdown |
+| `.claude/state.md` | regenerated for Phase 9 session 2 |
+| `.claude/handoff.md` | this file |
+| `.claude/next-session-prompt.md` | regenerated |
+| `~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_qc_panel_must_assert_file_existence.md` | new behavioural rule |
+| `~/.claude/projects/.../memory/MEMORY.md` | index entry prepended for the new rule |
 
-### Step 2 — Expected-rules baseline
+## Notes for Next Session
 
-NEW: `plugins/sgs-blocks/scripts/orchestrator/expected_rules.py`. Per-section CSS-rule baseline. Uses in-tree `parse_css` (the post-2026-05-17 @media-fix version, so @media-keyed rules are captured) + soupsieve for selector→subtree matching. Pseudo-elements/states stripped before matching; class-token fallback for selectors soupsieve cannot parse. Schema: `{selector, declarations, source_media_condition}` per JSONL line. CLI selector resolution uses `soup.select(selector, limit=1)` (Sonnet adversarial fix — original hand-rolled split silently mis-matched compound selectors).
-
-### Step 3 — Split-metric pixel diff
-
-`scripts/pixel-diff.py` extended with `--expected-rules` + `--extracted-attrs` flags. Computes attribute-coverage% via property_suffixes DB lookup. Suffix-anchored match: SGS attr key matches expected suffix iff `endswith(suffix)` OR `endswith(suffix + breakpoint_tail)` for tail ∈ {mobile, tablet, desktop, hover, focus, active, disabled}. Replaces original substring match that the adversarial rater caught as a false-positive risk. Adversarial probe (extract has only iconSize+imageSize, no fontSize) correctly returns 0% coverage for font-size rules — where pre-fix would have returned ~100%.
-
-### Step 4 — Validation shakeout
-
-`convert_section` ran on all 10 Mama's sections twice — once with `trace=None`, once with a real Trace bound. Byte-identical `block_markup` AND `extracted_attributes` on every section. Attr counts match yesterday's HEAD canary: hero=62, brand=38, trust-bar=6, featured-product=52, ingredients=27, gift=42, social-proof=16 (sum 243).
-
-Re-shakeout after Sonnet fixes (10a93d87): unchanged, plus `leaked_trace=False` on every section confirms the try/finally reset works.
-
-Re-shakeout after adversarial fixes (397295c3): unchanged.
-
-## 4-rater /qc panel verdicts
-
-| Lens | Model | Verdict | Notes |
-|---|---|---|---|
-| Converter-internals | Sonnet | NEEDS_FIX → SHIP post-fix | 3 findings, all fixed in 10a93d87 |
-| DB-schema | Haiku | SHIP | lru_cache miss-emission correct, css_property_suffixes 3-tuple shape correctly unpacked, substring-match mitigated by SGS naming discipline |
-| Integration boundaries | Gemini Flash | SHIP | Module resolution correct, path math reliable, sanitisation parity confirmed between trace.py and expected_rules.py |
-| Adversarial (Cerebras replacement) | Sonnet | NEEDS_FIX → SHIP post-fix | Cerebras queue stalled 10+ min with zero output; killed task + dispatched Sonnet adversarial-lens. 3 findings: 2 valid (substring false-positive, CLI selector resolution), 1 false-alarm (claimed db_lookup._TRACE could desync — missed that convert.set_trace atomically binds both). Valid 2 fixed in 397295c3. |
-
-## Methodology learnings captured
-
-1. **Handoff walks the docs registry** — `feedback_handoff_walks_docs_registry.md` (blub.db candidate). Bean directive 2026-05-18: every `/handoff` must walk through every doc in `.claude/docs-registry.yaml` and update each that needs refreshing, not just the handoff trio. Captured + applied this session.
-2. **Cerebras-stall replacement protocol** — When Cerebras stalls in upstream queue with zero output (5-30 min per skill doc), kill the task via TaskStop and dispatch Sonnet via Agent with the adversarial lens prompt. Documented in decisions.md 2026-05-18.
-
-## Open from this session — Phase 9 brand+hero walkdown
-
-Priority is the brand-then-hero walkdown documented in `.claude/next-session-prompt.md`. The evidence stack from today is the input.
+- The pre-work 4-rater /qc panel passed all 4 lenses but missed the wiring bug because no rater asserted file existence after running the orchestrator. New rule captured. Apply going forward.
+- Sonnet adversarial as Cerebras replacement caught the BLOCKING tag-blast-radius bug. The Cerebras-stall protocol from 2026-05-18 worked again today (Cerebras was skipped pre-emptively; replaced with explicit Sonnet adversarial-lens dispatch).
+- `_CORE_BLOCK_STYLE_MAP` is hardcoded — should be DB-driven per binding rule blub.db row 260. Parked as P2 because the existing `property_suffixes` schema is SGS-suffix-shaped, not WP-style-path-shaped. Either add a column or a sibling table.
+- Brand pixel-diff dimensions mismatched today (mockup 780x2110 vs sgs 1000x705) — the sandybrown page renders shorter than the mockup baseline post. Redeploy will normalise this.
+- Worktree `agent-afad3a430908ba2fc` (locked) still exists at `.claude/worktrees/` — can be cleaned with `git worktree remove --force` after the merge is confirmed stable.
 
 ## Next Session Prompt
 

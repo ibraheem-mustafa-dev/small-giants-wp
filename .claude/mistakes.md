@@ -1,5 +1,23 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-18 (2 new lessons — substring-match too permissive on suffix-anchored vocabularies / docstring-implementation drift in trace lifetime)
+**Last updated:** 2026-05-19 (1 new lesson — QC panels validating file artefacts must assert file existence end-to-end, not just function-level byte-equality)
+
+## 2026-05-19 — QC panel byte-equality check was tautological while the writer was inert
+
+**What:** The 2026-05-18 Phase 9 pre-work shipped `--debug-trace` infrastructure supposed to emit per-section `convert-trace-<boundary>.jsonl` files. 4-rater /qc panel ratified the change SHIP across all lenses. Step 4 shakeout reported "byte-identical extraction with trace on vs off — leaked_trace=False on every section".
+
+**Reality (caught 2026-05-19):** First brand-walkdown command produced `expected-rules-b1.jsonl` but NO `convert-trace-b1.jsonl`. Root cause: `stage_4_5_6_7_8_extract` in `sgs-clone-orchestrator.py` assigned `_trace_mod` without a `global` declaration. Python compiles it as a local; the `is None` check on the prior line raises silent `UnboundLocalError` swallowed by the broad `except: _cv2_trace = None`. The trace was never bound. The "byte-identical extraction" was tautologically true because nothing was being captured either way.
+
+**Why the panel missed it:** All 4 raters reviewed the diff at the FUNCTION level. None ran the orchestrator end-to-end and asserted the file appeared at the expected path with expected event count. The behavioural-equivalence shakeout was the wrong test — it would pass equally if the writer was correct AND if the writer was inert.
+
+**Rule for future panels:** When the QC artefact under test is a FILE (any .jsonl/.json/.png/.css/.md the change is supposed to produce), every rater's prompt MUST include:
+
+1. Run the production command end-to-end with the flag enabled
+2. `ls <run_dir>` — confirm the file exists
+3. `wc -l <file>` — confirm non-zero
+4. `head -1 <file>` — confirm schema matches the spec
+5. Compare event count against expected emission sites
+
+Function-level behavioural equivalence is NOT sufficient. Captured as `feedback_qc_panel_must_assert_file_existence.md` in CC auto-memory. Sibling rule: `verify-rendered-output-not-internal-metrics` (blub.db row 194) — same shape, different domain.
 
 ## 2026-05-18 — Substring matching on bounded-suffix vocabulary is too permissive (false-positive coverage)
 

@@ -2,6 +2,29 @@
 
 Append-only. Most-recent first.
 
+## 2026-05-19 — Phase 9 brand walkdown (universal core-block CSS lift)
+
+### D1: Universal core-block CSS lift via new `_lift_core_block_style()` helper
+**Context:** Brand walkdown evidence showed converter emits atomic core/image/heading/paragraph blocks with only HTML-attribute data — every per-class CSS declaration targeting BEM-element children was silently dropped. Affects every section with styled BEM children: brand, hero info-box children, featured-product, ingredients, gift, social-proof.
+**Decision:** New `_lift_core_block_style(node, classes, css_rules, block_slug)` in convert.py emits CSS declarations into WP core-block `style.{color, typography, spacing, border, dimensions}` schema + top-level `aspectRatio` for core/image. 26-entry data-driven `_CORE_BLOCK_STYLE_MAP` module-level dict (parked for DB migration as P-CORE-STYLE-MAP-DB-MIGRATION). Wired into atomic_image / atomic_heading / atomic_paragraph / atomic_text_fallback branches.
+**Why this shape:** WP core blocks have a different attribute schema than SGS blocks. Existing `_lift_styling_attrs` covers the slot-aware path (sgs/hero, sgs/product-card) with `{prefix}{suffix}` flat attrs. Core blocks use nested `style.*` dicts. The two paths coexist — slot-aware for SGS composites, the new core-block path for atomic core children.
+**Trade-off accepted:** Hardcoded mapping table violates DB-first rule (blub.db row 260) — parked as P2 because `property_suffixes` schema is SGS-suffix-shaped, would need a new column or sibling table for WP-style-path mapping.
+
+### D2: Tag-selector blast-radius guard — require SGS-BEM class for core-block lift
+**Context:** `_collect_css_decls_for_element` matches tag-only selectors (e.g. `p { color: #333 }`) when the node tag matches the selector's last part. Without a guard, a single bare-tag rule could lift onto every paragraph/heading/image globally, corrupting unrelated content. Adversarial finding from QC rater 3.
+**Decision:** `_lift_core_block_style` skips the lift entirely when the node has no `sgs-` class in its class list. Emits `css_decl_skipped` trace event for visibility.
+**Why this strict guard rather than smarter parent-qualified detection:** the strict guard is provably safe — no false-positive lifts possible. Smarter detection (allow if any ancestor in the matched selector has an sgs-class) requires refactoring `_collect_css_decls_for_element` to return matched selectors alongside declarations, parked as P-PARENT-QUALIFIED-TAG-LIFT. Trade-off: -1 attr per non-canary section vs the permissive version (brand 40 vs 41). Acceptable to prevent the global-corruption regression.
+
+### D3: Shallow-merge `attrs["style"]` rather than blind assignment (forward-compat)
+**Context:** QC raters 1+3 flagged that the original integration did `attrs["style"] = style_dict` — fine today because `lift_attrs_for_block` doesn't set `attrs["style"]` for atomic blocks, but fragile to future additions.
+**Decision:** All 4 integration sites now do `attrs["style"] = {**attrs.get("style", {}), **style_dict}`. Shallow merge preserves existing top-level keys; new keys win on collision.
+
+### D4: QC panel rule extension — assert file artefact existence end-to-end
+**Context:** The 2026-05-18 4-rater panel passed all lenses but missed a UnboundLocalError that made `--debug-trace` silently inert. The behavioural-equivalence check ("byte-identical extraction with trace on vs off") was tautological because the writer never wrote. Caught 2026-05-19 when the first brand-walkdown command produced expected-rules but no convert-trace.
+**Decision:** When the QC artefact is a FILE (any .jsonl/.json/.png/.css/.md produced by the change), every rater MUST include "list run-dir + assert file appears with non-zero bytes + wc -l + head -1 schema check" steps. Function-level byte-equality is insufficient.
+**Captured as:** `feedback_qc_panel_must_assert_file_existence.md` in CC auto-memory + this decisions entry.
+**Sibling rule:** `verify-rendered-output-not-internal-metrics` (blub.db row 194) — extends "verify produced artefacts, not behavioural-equivalence of producers".
+
 ## 2026-05-18 — Phase 9 pre-work session (evidence infrastructure)
 
 ### D1: Evidence stack triple — trace + expected-rules + split-metric coverage

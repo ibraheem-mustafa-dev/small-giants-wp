@@ -3,77 +3,72 @@ doc_type: state
 project: small-giants-wp
 project_id: 14
 current_phase: spec-16-phase-9-section-by-section-walkdown
-current_subphase: "Phase 9 pre-work shipped (2026-05-18 close). Three evidence layers landed behind --debug-trace: per-section convert-trace-<boundary>.jsonl (9 walker_branch_taken sites + composite_element_no_standalone diagnostic + attr_skipped roll-up + 4 db_lookup_miss sites), per-section expected-rules-<boundary>.jsonl baseline (in-tree parse_css + soupsieve with pseudo-strip + class-token fallback), split-metric pixel-diff (--expected-rules + --extracted-attrs flags → attribute-coverage% via suffix-anchored property_suffixes match). Step 4 shakeout: 10 Mama's sections, byte-identical extraction with trace on/off, no leak across calls. 4-rater QC panel ran on commit 8b69bc0a: Haiku SHIP, Gemini Flash SHIP, Sonnet(internals) NEEDS_FIX → 3 fixes shipped 10a93d87, Sonnet(adversarial as Cerebras replacement, Cerebras queue stalled) NEEDS_FIX → 2 fixes shipped 397295c3. All 4 lenses SHIP post-fix."
-current_subphase_step: "NEXT SESSION — brand-then-hero walkdown using the evidence infrastructure. Workflow per next-session-prompt.md (v3): (1) targeted single-section /sgs-clone run with --converter-v2 --debug-trace --no-scaffold-new-blocks --skip-register --skip-autonomy-gate; (2) read evidence in order: expected-rules-<sec>.jsonl vs convert-trace-<sec>.jsonl diff for silent misses, leftover-buckets.json, extract.json per_section_results, attribute-coverage% + pixel-diff%; (3) branch on evidence: coverage ≥95% + diff >5% → block/theme work (park), coverage <95% → /systematic-debugging on logs → DB-first fix → multi-rater /qc commit gate. Brand first (closest to passing at 13% tablet diff; likely converter-DONE so fast first close validates the loop). Hero next (68%/70%/80% across viewports; expect council needed). Cross-cutting batch (P-PHASE9-5..9 + bucket-router role refresh w/ regression check) bundled in ONE commit. Definition of done: brand closed to ≤5% pixel diff OR routed to render-side; hero attribute-coverage% measured + at least one universal fix shipped; cross-cutting batch shipped with regression check; lessons captured at session end."
-phase_8_summary: "Phase 8 closed across sessions 2026-05-15, 2026-05-16, 2026-05-17. 22 commits total. Walker precedence + DB-driven routing + bucket router accuracy + severity_totals + role backfill + heritage-strip retirement + 7 static→dynamic + universal BEM-child array lifter + voter retired-block remap + walker grouping preservation + hero mockup migration + parse_css regex fix + block-root supports lift + DB-first refactor."
-phase_9_prework_summary: "2026-05-18 single-session pre-work. 3 commits: 8b69bc0a (initial pre-work, 560 insertions across 7 files), 10a93d87 (Sonnet QC findings — composite_element diagnostic gap, try/finally trace reset, defensive try/except removal), 397295c3 (adversarial QC findings — suffix-anchored coverage match replacing substring match, soupsieve selector resolution in CLI). Cerebras queue stalled with zero output ~10 min; replaced with Sonnet adversarial-lens dispatch. Re-shakeout after every fix: zero divergence."
-last_updated: 2026-05-18 (Phase 9 pre-work — evidence infrastructure shipped + 4-rater QC complete)
+current_subphase: "Brand walkdown (2026-05-19 close). Universal core-block CSS-lift shipped via 3 commits on main (HEAD `8444d4e4`): (a) feat 99b344d7 — new `_lift_core_block_style()` in convert.py emits CSS into WP core-block style.* schema for atomic_image/heading/paragraph emissions; (b) fix a0592001 — 3 QC findings (tag-selector SGS-class guard against blast-radius, shallow-merge attrs[style] forward-compat, atomic_text_fallback wired); (c) fix 8444d4e4 — trace-wiring UnboundLocalError (added `global _trace_mod` to stage_4_5_6_7_8_extract; --debug-trace was inert pre-fix, no convert-trace files written) + P-PHASE9-6 RETIRED_BLOCK_REMAP future-block guard reading sgs-wp-engine DB blocks table for collision check + parking.md (5 new entries). 4-rater /qc panel ratified post-fix. Cerebras-stall protocol exercised — replaced with Sonnet adversarial. Brand attrs 38→40 (+2 vs main HEAD; +1 short of subagent's permissive claim, lost to deliberate SGS-class guard against tag-blast-radius)."
+current_subphase_step: "NEXT SESSION — redeploy + re-measure brand (post 65 baseline stale 2026-05-17), then extend coverage% metric to count nested style.* paths (P-COVERAGE-METRIC-CORE-STYLE), then continue brand walkdown + hero walkdown. Workflow: (1) /sgs-clone full-page on Mama's, capture new block_markup for brand; (2) refresh sandybrown post 65 with the new markup; (3) re-screenshot at 3 viewports; (4) extend pixel-diff.py compute_attribute_coverage to walk nested style.* dicts as covering CSS rules; (5) re-run pixel-diff with --expected-rules + --extracted-attrs; (6) decide on the smarter parent-qualified tag-selector guard (P-PARENT-QUALIFIED-TAG-LIFT) if -1-attr/section gap proves to bite. Hero walkdown after brand closes. Cross-cutting batch (P-PHASE9-5..9 + bucket-router role refresh w/ regression check) deferred to mid-walkdown bundling."
+phase_9_session_2_summary: "2026-05-19 brand walkdown session. 3 commits to main. Phase 9 evidence stack now confirmed live (--debug-trace writes per-section convert-trace-<boundary>.jsonl + expected-rules-<boundary>.jsonl). Universal core-block CSS lift shipped with proper SGS-class guard. 4-rater /qc panel ran post-implementation, 3 NEEDS_FIX findings shipped (tag-blast-radius adversarial guard, shallow-merge defensive forward-compat, atomic_text_fallback wiring). Cerebras-stall protocol exercised. 5 new parking entries (P-CORE-STYLE-MAP-DB-MIGRATION, P-COVERAGE-METRIC-CORE-STYLE, P-PARENT-QUALIFIED-TAG-LIFT, P-TAG-SELECTOR-LIFT, P-PHASE9-REDEPLOY-BASELINE). 1 new behavioural rule captured (feedback_qc_panel_must_assert_file_existence)."
+last_updated: 2026-05-19 (brand walkdown — universal core-block CSS lift shipped + 4-rater QC + 5 new parking entries)
 blockers:
-  - "None blocking. Evidence infrastructure ready for brand+hero walkdown next session."
-recommended_model_next: opus
+  - "P-PHASE9-REDEPLOY-BASELINE — post 65 baseline stale 2026-05-17, blocks pixel-diff% improvement verification on brand"
+  - "P-COVERAGE-METRIC-CORE-STYLE — coverage% metric blind to nested style.* paths, blocks attribute-coverage% improvement verification"
+recommended_model_next: sonnet
 ---
 
 # small-giants-wp — State Snapshot
 
 > Frontmatter above is the contract. Body below is regenerated by `/handoff` each session.
 
-## Where we are (2026-05-18 close)
+## Where we are (2026-05-19 close)
 
-**Phase 9 pre-work shipped.** 3 commits on `main` (HEAD: `397295c3`). The brand-then-hero section walkdown next session opens onto a working evidence stack:
+**Universal core-block CSS lift shipped.** 3 commits on `main` (HEAD: `8444d4e4`). Phase 9 evidence stack is now provably live (the pre-work shipped 2026-05-18 was inert until today's wiring fix).
 
-1. `--debug-trace` flag on `sgs-clone-orchestrator.py` — emits per-section `convert-trace-<boundary>.jsonl` capturing 9 walker branch decisions, every attribute skip with reason, every db_lookup miss
-2. Per-section `expected-rules-<boundary>.jsonl` baseline emitted alongside — every CSS rule that selects into the section subtree, with @media condition preserved (the parse_css fix from 2026-05-17 means @media rules are no longer silently dropped)
-3. `scripts/pixel-diff.py` extended with `--expected-rules` + `--extracted-attrs` flags — produces both `mismatch_percent` (render score) AND `attribute_coverage` block in `diff.json` (pure converter score). Coverage uses suffix-anchored match on property_suffixes DB (117 rows); the substring-match false-positive from initial implementation was caught + fixed by the adversarial rater.
+**Key infrastructure changes:**
 
-**Mama's canary unchanged this session** (intentional): 243 attrs total, byte-identical extraction with trace on vs off. The instrumentation is provably side-effect-free. Pixel diff measurements pre-walkdown still stand: brand 13.0% tablet, hero 68.0%/70.0%/80.0% across 768/1440/375.
+1. `convert.py` gains `_lift_core_block_style(node, classes, css_rules, block_slug)` — emits WP core-block `style.{color, typography, spacing, border, dimensions}` plus `aspectRatio` top-level for core/image. 26-entry `_CORE_BLOCK_STYLE_MAP` module-level dict (parked for DB migration as P-CORE-STYLE-MAP-DB-MIGRATION).
+2. Tag-selector blast-radius guard — `_lift_core_block_style` skips when node has no `sgs-` class. Prevents bare-tag rules like `p { color: #333 }` from corrupting every paragraph in the document. Adversarial finding from rater 3.
+3. `--debug-trace` now actually works. Pre-2026-05-19 the flag was inert because `stage_4_5_6_7_8_extract` was missing `global _trace_mod` — UnboundLocalError silently disabled the trace binding. 9 per-boundary convert-trace-<id>.jsonl files written in today's shakeout (587 events total).
+4. RETIRED_BLOCK_REMAP guard — voter reads sgs-wp-engine DB blocks table at import, asserts no remap key collides with currently-registered block. Soft-fail to empty set if DB unreadable.
 
-**Methodology rules upheld:** binding rule #2 (multi-model /qc panel before commit) honoured with 4-rater dispatch on the pre-work commit. Cerebras queue-stalled and was swapped for a Sonnet adversarial-lens — that's a session-level adaptation, not a rule violation; the gate fired with 4 independent lenses.
+**Mama's canary held:** hero=62, trust-bar=6, brand=40 (+2 vs main HEAD), featured-product=53 (+1), ingredients=28 (+1), gift=43 (+1), social-proof=17 (+1). Net +6 attrs across 5 sections. WP block validation: valid.
+
+**Pixel-diff:** unchanged (post 65 hasn't been redeployed with new markup). Brand still reads 31.25% at 1440 / 12.98% at 768 / 36.59% at 375. Coverage% still reads 18.75% because the metric doesn't count nested style.* paths yet. Both gaps parked.
 
 ## Today's 3 commits
 
 | Commit | What |
 |---|---|
-| `8b69bc0a` | Pre-work shipped — trace extension + expected-rules baseline + split-metric pixel-diff (560 insertions, 7 files) |
-| `10a93d87` | Sonnet QC fixes — composite_element_no_standalone diagnostic emit, try/finally trace reset in convert_section, defensive try/except removed around db.set_trace |
-| `397295c3` | Sonnet adversarial QC fixes (Cerebras replacement) — suffix-anchored attribute-coverage match (kills substring false-positive), soupsieve selector resolution in expected_rules.py CLI |
+| `99b344d7` | feat — universal core-block CSS lift (+222 lines convert.py, subagent dispatch) |
+| `a0592001` | fix — 3 QC findings (tag-selector guard + shallow-merge + atomic_text_fallback wiring) |
+| `8444d4e4` | fix — trace-wiring UnboundLocalError + P-PHASE9-6 guard + parking (+124 lines, 3 files) |
 
-## Next session — BRAND THEN HERO
+## Next session — REDEPLOY THEN RE-MEASURE
 
-Read `.claude/next-session-prompt.md` for the full v3 workflow. The pre-work shipped today is the input. Single-section command:
+Read `.claude/next-session-prompt.md` for the full workflow. Two blockers first:
 
-```bash
-python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py \
-  --mockup sites/mamas-munches/mockups/homepage/index.html \
-  --client mamas-munches --page homepage \
-  --section "section.sgs-brand" \
-  --converter-v2 --no-scaffold-new-blocks \
-  --skip-register --skip-autonomy-gate \
-  --mode draft --debug-trace
-```
+1. **P-PHASE9-REDEPLOY-BASELINE** (~20 min) — refresh sandybrown post 65 with new converter output so pixel-diff% reflects the visible-lift improvement
+2. **P-COVERAGE-METRIC-CORE-STYLE** (~30 min) — extend `compute_attribute_coverage` to walk nested style.* dicts as covering CSS rules
 
-The `--debug-trace` flag writes `convert-trace-brand.jsonl` + `expected-rules-brand.jsonl` to `pipeline-state/<run>/`. Pixel-diff with both files paired computes attribute-coverage%.
+Then brand walkdown can produce honest before/after numbers. Hero walkdown opens after.
 
-## Phase 9 backlog (open in parking.md)
+## Phase 9 backlog (parking.md)
 
-Unchanged from 2026-05-17 close — Phase 9 pre-work didn't touch any of these:
+New 2026-05-19:
+- P-CORE-STYLE-MAP-DB-MIGRATION (P2) — migrate `_CORE_BLOCK_STYLE_MAP` to property_suffixes-style DB lookup
+- P-COVERAGE-METRIC-CORE-STYLE — coverage% blind to nested style.* paths
+- P-PARENT-QUALIFIED-TAG-LIFT — smarter guard for `.sgs-X p { ... }` selectors (current strict guard rejects them; -1 attr/section)
+- P-TAG-SELECTOR-LIFT — broader tag-selector coverage for blockquote/h-tag CSS
+- P-PHASE9-REDEPLOY-BASELINE — refresh post 65 baseline
 
-- **P-PHASE9-5** — Empty-DB defensive assertion — ~5 line fix
-- **P-PHASE9-6** — RETIRED_BLOCK_REMAP future-block guard — ~10 line fix
-- **P-PHASE9-7** — SGS-BEM grouping-wrapper watch list — pattern audit
-- **P-PHASE9-8** — Inline thin DB-lookup wrappers — ~10 lines removed
-- **P-PHASE9-9** — Rename `_kind_for` → `_value_kind_for_suffix`
-- **P-PHASE9-1** — Per-block extension hook wiring sweep
-- **P-PHASE9-2** — sgs/hero hardcoded lift cleanup
-- **P-PHASE9-3** — Per-instance lift fidelity sweep
-- **Trust-bar schema/render mismatch** — Bean's deferred decision
-- **Hero 768 height delta** — within tolerance, real-content-fidelity work remains
+Unchanged from 2026-05-18:
+- P-PHASE9-5..9 (cross-cutting batch — deferred to mid-walkdown bundle)
+- P-PHASE9-1..3 (extension wiring, hero hardcoded lift, per-instance fidelity)
+- Trust-bar/social-proof schema decision (own session)
 
 ## Subprojects
 
-- Mama's Munches — canary for converter work + tomorrow's brand+hero walkdown target
-- Indus Foods Phase 4 — second-client validation target (later in Phase 9)
+- Mama's Munches — canary + brand walkdown target. Brand attrs 38→40. Hero walkdown still pending.
+- Indus Foods Phase 4 — second-client validation (later in Phase 9)
 - helping-doctors / healthcare / construction / professional / mosque / eye-care — additional Phase 9 portability validation
 
-## Today's decisions (see decisions.md 2026-05-18 section)
+## Today's lesson captured
 
-3 decisions appended: 4-rater QC panel composition + Cerebras-replacement protocol; suffix-anchored coverage match (replacing substring); convert_section try/finally trace lifetime discipline.
+`feedback_qc_panel_must_assert_file_existence.md` — when the QC artefact is a FILE (jsonl/json/png/css/md), every rater MUST include "list run-dir + assert file appears + wc -l + head -1 schema check" steps. Function-level byte-equality is tautological if the writer is inert. Caught when 2026-05-18 4-rater panel missed the UnboundLocalError that made --debug-trace silently inert.
