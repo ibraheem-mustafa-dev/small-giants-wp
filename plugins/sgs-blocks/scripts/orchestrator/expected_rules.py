@@ -171,14 +171,14 @@ def _cli() -> int:
 
     full_css = "\n\n".join(t.get_text() for t in soup.find_all("style"))
 
-    # Resolve the section element. Same logic as the orchestrator's cv2 dispatch.
-    sec_el = None
-    sel_parts = args.section_selector.split(".", 1)
-    if len(sel_parts) > 1:
-        tag, cls = sel_parts
-        sec_el = soup.find(tag or True, class_=cls.split(".")[0])
-    else:
-        sec_el = soup.find(class_=sel_parts[0].lstrip("."))
+    # Resolve the section element via soupsieve so multi-class and descendant
+    # selectors work correctly. Sonnet adversarial QC finding 2026-05-17: the
+    # earlier hand-rolled `tag + first-class-token` split silently matched the
+    # wrong element when the operator passed a compound selector like
+    # `section.sgs-brand.sgs-brand--alt` — only the first class was honoured,
+    # so a variant earlier in the HTML would mask the intended target.
+    matches = soup.select(args.section_selector, limit=1)
+    sec_el = matches[0] if matches else None
     if sec_el is None:
         sys.stderr.write(f"No element matched section selector: {args.section_selector}\n")
         return 2

@@ -102,6 +102,27 @@ def compute_attribute_coverage(expected_rules_path: Path,
 
     prop_map = _load_property_suffixes_map()
 
+    # Suffix-match discipline (Sonnet adversarial QC finding 2026-05-17): the
+    # original ``suf_l in k`` substring match was too permissive — suffix
+    # "size" matched fontsize AND iconsize AND imagesize, so a font-size CSS
+    # rule could count as covered just because the section had iconSize set.
+    # Suffix-anchored match: an SGS attr key matches an expected suffix iff
+    # the key ends with the suffix, optionally followed by ONE recognised
+    # breakpoint/state suffix. This eliminates the cross-suffix contamination
+    # while still covering responsive + state variants (the universal Unit-
+    # suffix lift shipped 2026-05-17 produces e.g. headlineFontSizeDesktop,
+    # cardPaddingMobile etc.).
+    _BREAKPOINT_TAILS = ("mobile", "tablet", "desktop",
+                         "hover", "focus", "active", "disabled")
+
+    def _key_matches_suffix(key_lower: str, suf_lower: str) -> bool:
+        if key_lower.endswith(suf_lower):
+            return True
+        for tail in _BREAKPOINT_TAILS:
+            if key_lower.endswith(suf_lower + tail):
+                return True
+        return False
+
     covered = 0
     uncovered: list[str] = []
     for rule in rules:
@@ -112,7 +133,7 @@ def compute_attribute_coverage(expected_rules_path: Path,
             suffixes = prop_map.get(prop, set())
             for suf in suffixes:
                 suf_l = suf.lower()
-                if any(suf_l in k for k in attr_keys_lower):
+                if any(_key_matches_suffix(k, suf_l) for k in attr_keys_lower):
                     rule_covered = True
                     break
             if rule_covered:
