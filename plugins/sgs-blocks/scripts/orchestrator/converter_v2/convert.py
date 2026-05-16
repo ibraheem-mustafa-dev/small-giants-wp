@@ -844,6 +844,249 @@ def _extract_token_or_hex(value: str) -> str | None:
     return None
 
 
+def _support_allows(supports: dict, top_key: str, sub_key: str | None = None) -> bool:
+    """Return True when the block's supports map allows the given property.
+
+    supports.color = True               → _support_allows(s, 'color') is True
+    supports.color = {"background":True} → _support_allows(s, 'color', 'background') is True
+    Missing key → False (gate closed).
+    """
+    if top_key not in supports:
+        return False
+    val = supports[top_key]
+    if val is True:
+        return True
+    if isinstance(val, dict):
+        if sub_key is None:
+            # Asked top-level; consider True if any sub-key is True
+            return any(v is True for v in val.values())
+        return bool(val.get(sub_key))
+    return False
+
+
+def _set_in(target: dict, path: list[str], value) -> None:
+    """Set `value` at nested dict path inside `target`, never overwriting an existing leaf.
+    Intermediate non-dict entries are left alone (caller's existing data wins)."""
+    cur = target
+    for key in path[:-1]:
+        nxt = cur.get(key)
+        if not isinstance(nxt, dict):
+            if nxt is not None:
+                return  # Don't clobber existing non-dict value
+            nxt = {}
+            cur[key] = nxt
+        cur = nxt
+    leaf = path[-1]
+    if leaf in cur:
+        return  # never overwrite — caller's pre-set values win
+    cur[leaf] = value
+
+
+def _colour_value_to_style(raw: str) -> str | None:
+    """Convert a CSS colour expression to the WP `style.*` colour form.
+
+    Palette token  → 'var:preset|color|<slug>'
+    Hex literal    → '#RRGGBB'
+    rgb(...)       → None (ambiguous — let caller skip)
+    """
+    if not raw:
+        return None
+    token_or_hex = _extract_token_or_hex(raw)
+    if token_or_hex is None:
+        return None
+    if token_or_hex.startswith("#"):
+        return token_or_hex
+    # Palette slug
+    return f"var:preset|color|{token_or_hex}"
+
+
+def _preserve_unit(raw: str) -> str | None:
+    """Return the trimmed CSS value as-is when it looks like a single dimension/literal.
+
+    Used for non-numeric WP style fields (border.radius, border.width, padding values,
+    blockGap) that accept the raw CSS string ('22px', '1.5rem', '12px', '0.5em').
+    Returns None for empty or clearly compound expressions we can't normalise.
+    """
+    if not raw:
+        return None
+    v = raw.strip().rstrip(";")
+    if not v:
+        return None
+    # Reject CSS var() refs and rgb()/hsl() — caller should handle colour path separately
+    # but allow simple identifiers like 'solid', '1px', '12px', '1.5rem', '50%'.
+    return v
+
+
+# Static mapping table: which CSS property → (supports gate keys, style.* path builder)
+# Used by _lift_root_supports_to_style. Universal — no block-specific keys.
+# Each entry: (supports_top, supports_sub_or_None, style_path_fn, value_converter)
+def _root_lift_rules():
+    """Return the canonical CSS-property → WP style.* mapping list.
+
+    Each rule: (css_prop, supports_top, supports_sub, style_path, kind)
+      kind ∈ {"colour", "unit"} — controls value conversion.
+    Padding/margin shorthand handled separately in caller (multi-value parsing).
+    """
+    return [
+        # spacing.padding / margin — long-hand sides
+        ("padding-top",    "spacing",            "padding", ["spacing", "padding", "top"],    "unit"),
+        ("padding-right",  "spacing",            "padding", ["spacing", "padding", "right"],  "unit"),
+        ("padding-bottom", "spacing",            "padding", ["spacing", "padding", "bottom"], "unit"),
+        ("padding-left",   "spacing",            "padding", ["spacing", "padding", "left"],   "unit"),
+        ("margin-top",     "spacing",            "margin",  ["spacing", "margin", "top"],     "unit"),
+        ("margin-right",   "spacing",            "margin",  ["spacing", "margin", "right"],   "unit"),
+        ("margin-bottom",  "spacing",            "margin",  ["spacing", "margin", "bottom"],  "unit"),
+        ("margin-left",    "spacing",            "margin",  ["spacing", "margin", "left"],    "unit"),
+        # spacing.blockGap
+        ("gap",            "spacing",            "blockGap",["spacing", "blockGap"],          "unit"),
+        # border.* (under __experimentalBorder)
+        ("border-radius",  "__experimentalBorder", "radius",["border", "radius"],             "unit"),
+        ("border-width",   "__experimentalBorder", "width", ["border", "width"],              "unit"),
+        ("border-style",   "__experimentalBorder", "style", ["border", "style"],              "unit"),
+        ("border-color",   "__experimentalBorder", "color", ["border", "color"],              "colour"),
+        # color.*
+        ("background-color", "color",            "background", ["color", "background"],      "colour"),
+        ("color",            "color",            "text",       ["color", "text"],            "colour"),
+    ]
+
+
+def _parse_padding_shorthand(value: str) -> dict[str, str] | None:
+    """Parse 'padding: 22px 16px' → {'top':'22px','right':'16px','bottom':'22px','left':'16px'}.
+
+    Returns None if the value can't be parsed as 1-4 space-separated tokens. CSS
+    rules: 1 token = all sides; 2 tokens = top/bottom + left/right; 3 = top, l/r, bottom;
+    4 = top right bottom left.
+    """
+    if not value:
+        return None
+    parts = value.strip().split()
+    if not parts or len(parts) > 4:
+        return None
+    # Reject if any token contains a comma/paren (e.g. 'var(--x)' is fine; '0, 0' is not)
+    if any("," in p for p in parts):
+        return None
+    if len(parts) == 1:
+        t = r = b = l = parts[0]
+    elif len(parts) == 2:
+        t = b = parts[0]
+        r = l = parts[1]
+    elif len(parts) == 3:
+        t, lr, b = parts
+        r = l = lr
+    else:
+        t, r, b, l = parts
+    return {"top": t, "right": r, "bottom": b, "left": l}
+
+
+def _lift_root_supports_to_style(
+    node: Tag,
+    block_slug: str,
+    css_rules: dict,
+    attrs: dict,
+) -> None:
+    """Lift block-root CSS into WP native `style.*` attributes.
+
+    Reads the node's own CSS (inline + class selectors targeting this element),
+    consults `db.block_supports_for(block_slug)`, and writes matching properties
+    into `attrs['style']`. Universal — every block whose CSS defines root-level
+    spacing/border/colour gets it lifted onto the emitted block instead of being
+    silently dropped on the variation-CSS lift.
+
+    Never overwrites existing keys in `attrs['style']`. Other code paths still win.
+    """
+    if not block_slug or not block_slug.startswith("sgs/"):
+        return
+
+    supports = db.block_supports_for(block_slug)
+    if not supports:
+        return
+
+    # Collect base (non-media-query) declarations targeting this element's own classes.
+    base_decls, _bp_decls = _collect_css_decls_for_element(node, css_rules)
+    if not base_decls:
+        return
+
+    style: dict = attrs.get("style") or {}
+
+    # ---- 0. Colour shorthand: `background: <colour>` (without -color suffix)
+    #         and `border: <width> <style> <colour>` are common in hand-authored
+    #         mockup CSS. Normalise them BEFORE the rule table runs so the same
+    #         supports gates apply.
+    if "background" in base_decls and "background-color" not in base_decls:
+        # Only treat as colour if it looks like a single colour value (no images / gradients)
+        bg = base_decls["background"].strip()
+        if bg and "url(" not in bg and "gradient" not in bg:
+            # Take the first space-separated token that resolves to a colour
+            for tok in bg.split():
+                if _extract_token_or_hex(tok) is not None or tok in (
+                    "white", "black", "transparent",
+                ):
+                    base_decls["background-color"] = tok
+                    break
+            else:
+                # Single named colour we don't recognise via _extract_token_or_hex (e.g. 'white')
+                if len(bg.split()) == 1:
+                    base_decls["background-color"] = bg
+
+    if "border" in base_decls and "border-width" not in base_decls:
+        # `border: 1px solid var(--border)` → width=1px, style=solid, color=var(--border)
+        parts = base_decls["border"].strip().split()
+        # Pick out width (first token with unit), style (keyword), colour (rest)
+        _STYLE_KW = {"solid", "dashed", "dotted", "double", "groove", "ridge",
+                     "inset", "outset", "none", "hidden"}
+        for tok in parts:
+            if tok in _STYLE_KW:
+                base_decls.setdefault("border-style", tok)
+            elif re.match(r"^[\d.]+(px|em|rem|%)$", tok):
+                base_decls.setdefault("border-width", tok)
+            else:
+                # Anything else is treated as the colour token
+                base_decls.setdefault("border-color", tok)
+
+    # Named CSS colours we accept as-is (parse_css strips quoting; _colour_value_to_style
+    # otherwise returns None for non-hex/non-var values).
+    _NAMED_COLOURS = {"white": "#FFFFFF", "black": "#000000"}
+    for k in ("background-color", "color", "border-color"):
+        v = base_decls.get(k)
+        if v and v.strip().lower() in _NAMED_COLOURS:
+            base_decls[k] = _NAMED_COLOURS[v.strip().lower()]
+
+    # ---- 1. Padding/margin shorthand: expand BEFORE long-hand lookup so the
+    #         long-hand pass below can also overlay specific sides if present.
+    for shorthand_prop, side_top in (("padding", "padding"), ("margin", "margin")):
+        raw = base_decls.get(shorthand_prop)
+        if raw is None:
+            continue
+        if not _support_allows(supports, "spacing", side_top):
+            continue
+        sides = _parse_padding_shorthand(raw)
+        if not sides:
+            continue
+        for side, val in sides.items():
+            unit_val = _preserve_unit(val)
+            if unit_val is None:
+                continue
+            _set_in(style, ["spacing", shorthand_prop, side], unit_val)
+
+    # ---- 2. Long-hand + colour + border + gap pass via the rule table.
+    for css_prop, sup_top, sup_sub, path, kind in _root_lift_rules():
+        if css_prop not in base_decls:
+            continue
+        if not _support_allows(supports, sup_top, sup_sub):
+            continue
+        raw = base_decls[css_prop]
+        if kind == "colour":
+            converted = _colour_value_to_style(raw)
+        else:
+            converted = _preserve_unit(raw)
+        if converted is None:
+            continue
+        _set_in(style, path, converted)
+
+    if style:
+        attrs["style"] = style
+
+
 def _css_value_to_attr(value: str, kind: str) -> object | None:
     """Convert a raw CSS value string to the Python value for a block attr.
 
@@ -1541,6 +1784,10 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
         wrapper_attrs = lift_attrs_for_block(target, node, bem, classes)
         merged = {**wrapper_attrs, **lifted}
 
+        # P-PHASE9-4: lift block-root CSS (padding/border/background/colour) onto
+        # WP native style.* attrs gated by block_supports.
+        _lift_root_supports_to_style(node, target, css_rules, merged)
+
         # Change 3: InnerBlocks emission for blocks that use InnerBlocks
         # rather than flat array attrs (e.g. sgs/feature-grid → sgs/info-box).
         # When a pattern exists for the target, emit child blocks as inner markup
@@ -1572,6 +1819,8 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
             lifted = lift_subtree_into_block_attrs(node, standalone, css_rules=css_rules)
             wrapper_attrs = lift_attrs_for_block(standalone, node, bem, classes)
             merged = {**wrapper_attrs, **lifted}
+            # P-PHASE9-4: lift block-root CSS onto WP native style.* attrs
+            _lift_root_supports_to_style(node, standalone, css_rules, merged)
             # Empty-attrs safety net (QC panel finding 2026-05-16): if neither
             # the FR1 descent nor the wrapper attrs produced any content keys,
             # the block will render blank in WP. Warn so the operator surfaces
@@ -1706,6 +1955,8 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
         cont_attrs: dict = {}
         if sgs_classes:
             cont_attrs["className"] = " ".join(sgs_classes)
+        # P-PHASE9-4: lift block-root CSS onto sgs/container's WP native style.* attrs
+        _lift_root_supports_to_style(node, "sgs/container", css_rules, cont_attrs)
         decls = _collect_css_for_classes(classes, css_rules)
         if decls:
             variation_buf.append(decls)
