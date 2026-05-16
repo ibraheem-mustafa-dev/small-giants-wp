@@ -43,9 +43,21 @@ Step 4 shakeout proved trace emission is byte-identical side-effect-free on all 
 
 **Pre-walkdown order rule** (architecture lens, unchanged from v3): work the section to "next class-of-flaw identified", then fix universally, then measure impact across ALL sections, then re-rank and continue. Section drives DISCOVERY; fix commits at FLAW-CLASS scope.
 
-### Section 1 — BRAND (~30-45 min — closest to passing, validates the workflow)
+### Section 1 — BRAND (~45-75 min — real debugging session, not a fast close)
 
-**Why brand first** (4-rater panel agreed 2026-05-17): currently 13% pixel diff at tablet. Most likely converter-DONE (P-PHASE9-4 supports lift should have deposited padding/border/background attrs). If attribute-coverage% = 100%, brand is converter-complete and routes to block/theme work — fast first close validates the loop.
+**REVISED EXPECTATION (2026-05-18 QC, post-pre-work).** The 2026-05-17 hypothesis ("brand is closest to passing → fast first close validates the loop") was based on pixel-diff alone (13% tablet). The split-metric shipped today contradicts it: a dry-run on Mama's brand gives **attribute-coverage ~18.75% (3 of 16 expected CSS rules covered)** against the 38 attrs the converter lifted. Hero by comparison is 57.14% (16/28), trust-bar 0% (10/10 deferred per parking), featured-product 12.9% (4/31).
+
+**Why brand first anyway:** smallest absolute number of expected rules (16) and smallest pixel-diff. A universal fix that unlocks brand will likely propagate to harder sections. Brand-first remains correct strategy; "fast close" is the wrong framing.
+
+**Coverage-metric refinement to apply mentally during tomorrow's read:**
+- Universal selectors (`*, *::before, *::after`, `h1, h2, h3`, `img`, `a`) appear in baseline but have no SGS-attr equivalent by design. Mentally subtract these from the denominator when reading coverage%.
+- Rules targeting nested blocks (e.g. `.sgs-button` inside brand) compare against the wrong extract — `.sgs-button` attrs live in the child block's emit, not the parent's. Cross-block aggregation is parked for cross-cutting batch (action 3 below).
+- After both filters: brand's effective block-scoped coverage is ~30% (3 of 10 block-scoped rules). Still well under 95%. Real debugging needed.
+
+**Expected outcome path:**
+1. Read baseline + trace + leftover-buckets — most uncovered rules will fall into 2-3 universal patterns (e.g. heading-typography lift, body-typography lift, CTA-button-as-nested-block boundary).
+2. Apply DB-first universal fix to the highest-impact pattern.
+3. Re-run brand + cross-check the same fix on hero/featured-product — if it lifts coverage on 2+ sections, it's universal; capture in draft-rules.md.
 
 **Loop:**
 
