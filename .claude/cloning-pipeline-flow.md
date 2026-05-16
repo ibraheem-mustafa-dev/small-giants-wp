@@ -305,13 +305,11 @@ The big picture in one page, with EVERY script, file, DB table and skill plotted
 │  ✓ tools/recogniser-v2/overrides/__init__.py - override registry            │
 │  ✓ tools/recogniser-v2/overrides/hero.py - hero-specific (Phase 3 delete)   │
 │  ✓ tools/recogniser-v2/data/role-templates.json - role recipes (READ)       │
-│       Legacy v1 seed file. Per Spec 15 FR2 + §6 Stage 4, this content       │
-│       should migrate to property_suffixes DB table - migration deferred     │
-│       at Phase 1 + now parked as P-S15-ROLE-TEMPLATES-MIGRATE in            │
-│       parking.md. /sgs-update does NOT keep this file in sync with the DB - │
-│       silent drift risk. Future drift-check hook                            │
-│       `role-templates-vs-property-suffixes-check.py` listed in              │
-│       docs-registry section 7.                                              │
+│       Legacy v1 seed file. As of 2026-05-17 the converter cv2 path reads    │
+│       property_suffixes directly via db_lookup.css_property_suffixes()      │
+│       (replaces hardcoded _CSS_PROP_TO_SUFFIX in convert.py — blub.db row   │
+│       260, DB-first lookups rule). role-templates.json still consulted by   │
+│       legacy extract.py — drift risk persists for that path.                │
 │  ✓ orchestrator/modifier_extractors.py - button_role/dynamic_link/variation │
 │       WIRED 2026-05-14 (Phase 6 v2 Step 4d) - lazy-loaded via               │
 │       modifier_extractors() helper. In the per-section loop after the      │

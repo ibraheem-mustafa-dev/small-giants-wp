@@ -2,6 +2,29 @@
 
 Append-only. Most-recent first.
 
+## 2026-05-17 — Universal recognition + conversion improvements (10-commit session close)
+
+Session ran end-to-end on Mama's Munches mockup as canary. Total extraction coverage +38% (176 → 243 attrs). 7 distinct recognition + conversion flaws caught and shipped, supported by a 4-rater /qc panel + parallel implementation agents.
+
+**Decision (a) — `parse_css` regex was the single biggest recognition hole.** The previous regex `@media[^{]+\{((?:[^{}]+\{[^{}]+\})+)\}` required media body to end with `}` immediately after the last inner rule's `}` — real CSS always has whitespace between, so the regex matched **0 of 13** `@media` blocks on Mama's mockup. Every responsive override was silently dropped at parse time. Replaced with a brace-balanced scanner that walks the source, finds `@media`, counts braces to the matching close, and ingests the body keyed as `<media-cond> :: <selector>`. Result: 13/13 media blocks captured; hero `headlineFontSizeDesktop` now correctly 58 (was 34 from base-CSS only). Commit `20ef1d66` (worktree-merged via `45fd851b`).
+
+**Decision (b) — Block-root supports lift via `block_supports` table.** Added `_lift_root_supports_to_style(node, block_slug, css_rules, attrs)` in convert.py — reads block-root CSS, queries `db.block_supports_for(slug)`, emits `style.spacing.padding`, `style.border.radius`, `style.color.background`, etc. only when the block declares native WP support. Universal across every block using `supports.spacing | border | color | typography`. Wired into all 3 emission paths (FR1 fast path, composite-element-to-standalone, SGS-BEM grouping wrapper). +3 attrs avg per section; all 7 sections now emit `style.*` attrs. Commit `90692106`.
+
+**Decision (c) — DB-first lookups, no hardcoded dicts.** `convert.py:_CSS_PROP_TO_SUFFIX` (21 hardcoded rows) replaced by `db.css_property_suffixes()` reading the `property_suffixes` table (117 rows → 66 surface for cv2 lifter). `_BREAKPOINT_SUFFIXES` replaced by `db.breakpoint_suffix_rules()` reading `modifier_suffixes` (kind='breakpoint'). DB seeded with 18 per-side longhand rows via idempotent migration `2026-05-17-property-suffixes-per-side.py`. Captured rule blub.db row 260; structurally enforced as Rule 11 HARD-GATE in `/sgs-clone` SKILL.md. Commit `168fd2ca`.
+
+**Decision (d) — Walker preserves SGS-BEM grouping wrappers.** Previously every non-top-level `sgs/container` was unwrapped (PASS-THROUGH at convert.py:1665ish), flattening authored `<div class="sgs-brand__content">` groupings into flat sibling output. New branch BEFORE the pass-through: when target is sgs/container AND `bem.element` is set AND there are inner blocks, preserve as nested `sgs/container` with className. Universal — no hardcoded class names; pass-through still fires for unnamed wrappers. Result: brand section emits 2-col grid + nested __content stack + __image right column matching brand.php composition. Commit `df3a6cbf`.
+
+**Decision (e) — Voter `RETIRED_BLOCK_REMAP` for retired-block-to-pattern routing.** Dict at voter level (per-section-convention-voter.py) maps retired SGS-BEM slug-roots → replacement pattern bare slug. Confidence-matrix Tier 2 picks up the pattern via existing registered_patterns logic. End-to-end wiring: voter → matrix → orchestrator pattern_ref. Iteration-order safety: ALL `sgs-` classes scanned for retirement before falling to first-class literal-slug match. Disjoint-keys assertion at module load between LEGACY_ROLE_LOOKUP and RETIRED_BLOCK_REMAP. Commit `e34618f9`.
+
+**Decision (f) — Mockup architectural alignment to canonical SGS-BEM.** Mama's mockup hero migrated from dual-variant pattern (`--mobile` + `--desktop` siblings) to single-grid responsive matching SGS hero block DOM 1:1. All per-viewport differences preserved via media queries (art-directed image swap, padding scale 28→56→72px, h1 flip 34px sans → 52px Fraunces serif → 58px, CTA column→row). Aligns mockup with the SGS-BEM-naming canonical rule (blub.db row 236). Hero 768px pixel-diff: 99.9% → 68.0% (32-point improvement). Companion lift logic supports canonical `sgs-hero__split-image--{desktop,mobile}` lookups with legacy `__image` fallback. Commit `2f075073`.
+
+**Decision (g) — Two captured rules embedded as HARD-GATEs in `/sgs-clone` SKILL.md.** blub.db row 260 (DB-first lookups) and row 261 (don't skip Playwright for lift fidelity, with cv2-path scope correction noted) added as Rule 11 + Rule 12 HARD-GATEs. Future `/sgs-clone` invocations see them every load. Three persistence layers: workspace lesson file + CC auto-memory + blub.db, plus SKILL.md HARD-GATE for active enforcement. Pattern keys stable so recurrence increments existing rows.
+
+**Methodology this session followed (binding rules upheld):**
+- Read leftover-buckets BEFORE conjecturing (row 254) — caught the parse_css regex bug instead of treating "responsive variants" as a converter gap
+- Multi-rater /qc panel BEFORE every commit (row 255) — 4-rater panel ran on session close; all SHIP
+- Per-section cropped pixel diff (row 256) — every closure validated section-by-section, not full-page
+
 ## 2026-05-17 — P-PHASE8-NEW-1 — Retired-block remap mechanism for the voter
 
 **Context.** `sgs/heritage-strip` block retired 2026-05-16 (P-PHASE8-1) and replaced by `theme/sgs-theme/patterns/brand.php`. The recogniser's voter still output `sgs/heritage-strip` as the candidate slug for `sgs-heritage-strip`-classed sections, so confidence-matrix dropped them at Tier 1 and the section fell through to a generic `sgs/container` emission — losing the brand-pattern composition.

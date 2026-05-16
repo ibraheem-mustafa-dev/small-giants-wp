@@ -2,14 +2,13 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-current_phase: spec-16-phase-8-section-by-section-closure
-current_subphase: "Phase 8 iterative closure work. Session 2026-05-16 shipped 5 commits: walker precedence + DB-driven SLOT routing + composite-element fast path (a2d58a3d); bucket-router accuracy upgrade with chrome_skipped + cv2_handled buckets (752f4aed); severity_totals dashboard + wrong-block-type plausibility + role backfill (d859da4c); P-PHASE8-2 render.php audit round 1 — heritage-strip restore + trust-bar + label conversion + WP file-render wrapper return-value discovery (7a2a777d); P-PHASE8-1 heritage-strip retirement + P-PHASE8-17 batch static→dynamic for 7 blocks via parallel agents + universal BEM-child array lifter (9a32a164). All cv2-emittable blocks are now dynamic. Trust-bar items array now lifts 4 entries from Mama's mockup. Heritage-strip retired, lives as brand.php pattern. Leftover-bucket diagnostic surface is now trustworthy: 0 high-severity gaps in Mama's run."
-current_subphase_step: "Phase 8 continuation. Priority order: (1) P-PHASE8-NEW-1 recogniser cleanup — remove stale sgs/heritage-strip refs in confidence-matrix.py + per-section-convention-voter.py, register brand pattern to match sgs-heritage-strip + sgs-brand class signatures. (2) Re-run per-section pixel diff post-deploy to quantify gains. (3) Schema/render mismatch decision for trust-bar (was deferred — re-park as urgent). (4) Hero 768px viewport selector-mismatch investigation. (5) P-PHASE9-1 per-block extension hook sweep across all dynamic blocks. (6-8) P-PHASE8-14/15/16 backlog. Read pipeline-state/mamas-munches-homepage-2026-05-15-215823/leftover-buckets.json FIRST per binding rule #1."
-phase_7_summary: "Phase 7 architectural work shipped 2026-05-15. Converter v2 promoted from scratch/ to production. 9 of 9 sections route through cv2 lift logic."
-phase_8_session_2026_05_16_summary: "5 commits on main. Walker precedence + DB-driven routing. Bucket-router accuracy: chrome_skipped + cv2_handled_no_top_level_match buckets, severity_totals dashboard, wrong-block-type plausibility, all-blocks attr harvest, dynamic slot-list coverage for cv2-emitted blocks. block_attributes.role backfill via slot_synonyms.role + property-suffix-guarded second pass. Heritage-strip retired (P-PHASE8-1 done) — brand.php pattern replaces. 7 static→dynamic block conversions via parallel agents (certification-bar, counter, divider, heading, notice-banner, process-steps, tab) + label + trust-bar (round 1) — all 10 cv2-eligible blocks now dynamic. Universal BEM-child array lifter unblocks per-section LIFT FIDELITY work. Trust-bar items array now lifts 4 entries from Mama's mockup (was 0). WP file-render wrapper return-value-discard bug discovered + fixed. All 9 newly-dynamic block.json files version-bumped to 0.2.0 with source:html removed per CLAUDE.md gotcha #3. Multi-rater /qc panels ran BEFORE every commit per binding rule #2. Visual-diff stubs added in reports/visual-diff/ for SGS commit gate compliance."
-last_updated: 2026-05-16 (5 commits shipped + docs regen)
+current_phase: spec-16-phase-9-universal-recognition-uplift
+current_subphase: "Phase 9 — universal recognition + conversion improvements. Session 2026-05-17 shipped 10 commits + 2 parallel-agent merges. Total extraction coverage on Mama's: 176 → 243 attrs (+38%). 7 distinct recognition/conversion flaws caught and shipped. parse_css regex bug (0/13 → 13/13 @media blocks captured) was the largest single-line recognition flaw of the session. Block-root supports lift via WP native style.* now universal across every block declaring supports. DB-first refactor replaces hardcoded _CSS_PROP_TO_SUFFIX + _BREAKPOINT_SUFFIXES dicts with property_suffixes (117 rows) + modifier_suffixes reads. Voter retired-block remap routes sgs-heritage-strip → brand pattern. Walker preserves SGS-BEM grouping wrappers. Hero mockup migrated to single-grid responsive (canonical SGS-BEM)."
+current_subphase_step: "Next session — UNIVERSAL APPLICABILITY validation across all clients. Phase 9 architecture has shipped on Mama's canary. Next session must (a) test cv2 + new fixes against every existing client mockup (indus-foods, helping-doctors, healthcare, construction, professional, mosque, eye-care, mamas-munches) to surface client-specific recognition gaps the Mama's run never exposed, (b) categorise gap patterns by mockup family to find next universal fixes, (c) close 5 QC-panel follow-ups (P-PHASE9-5 through P-PHASE9-9). Priorities documented in next-session-prompt.md."
+phase_8_summary: "Phase 8 closed across sessions 2026-05-15, 2026-05-16, 2026-05-17. 22 commits total. Walker precedence + DB-driven routing + bucket router accuracy + severity_totals + role backfill + heritage-strip retirement + 7 static→dynamic + universal BEM-child array lifter + voter retired-block remap + walker grouping preservation + hero mockup migration + parse_css regex fix + block-root supports lift + DB-first refactor."
+last_updated: 2026-05-17 (10-commit session + parallel-agent merge)
 blockers:
-  - "None blocking — Phase 8 continuation ready. Trust-bar schema/render mismatch is deferred (was Bean's wait-on-review-choice), needs decision next session before pixel-diff closure on trust-bar can hit < 1%."
+  - "None blocking. Phase 9 architecture is universal — needs validation against other client mockups to prove portability and surface client-specific gaps the Mama's canary didn't expose."
 recommended_model_next: opus
 ---
 
@@ -17,50 +16,55 @@ recommended_model_next: opus
 
 > Frontmatter above is the contract. Body below is regenerated by `/handoff` each session.
 
-## Where we are (2026-05-16 close)
+## Where we are (2026-05-17 close)
 
-**Spec 16 Phase 8 — diagnostic surface trustworthy + universal converter mechanics shipped + heritage-strip fully scrubbed.** 7 commits on `main` (a2d58a3d → e0cd5a0f). All 10 cv2-eligible blocks now dynamic. Heritage-strip retired across filesystem + DBs (sgs-framework.db 58 rows + uimax.db 989 rows) + scripts + docs (audit trail preserved). Universal BEM-child array lifter operational. Leftover-bucket dashboard accurate.
+**Spec 16 Phase 9 architectural foundation shipped.** 10 commits on `main` (HEAD: `45fd851b`). Total extraction coverage on Mama's canary: 176 → 243 attrs (+38%). All 7 testable sections gained attrs. Brand section went from 0 → 38 attrs (was emitting as `core/group` confidence 0.0 before session start). Hero gained 16 attrs including correct responsive font sizes (was 34 for desktop; now 58 from media-query lift). DB-first refactor closes the systematic flaw where 78 CSS-prop suffixes were being silently missed by hardcoded code.
 
-**Bucket signal at session close** (post-deploy, sandybrown):
-- 0 high-severity blockers
-- 2 chrome_skipped (intentional: header/footer)
-- 4 cv2_handled_no_top_level_match (sections need top-level block OR recogniser cleanup for brand pattern alias)
-- 455 medium attribute-coverage gaps (185 stage_3 + 270 cv2_emitted_dynamic)
-- 0 unrecognised_section, 0 structural_mismatch
+**Pixel diff at tablet vs session start:** brand 99.6% → 13.0% (−86.6pp). hero 99.9% → 68.0% (−31.9pp). Ingredients 30.8% (new measurement).
 
-**Per-section pixel diff NOT re-run after Phase B** (context budget). Trust-bar items now lift 4 entries; heritage-strip now cv2 R4 fall-through; render path verified via curl class-grep on live sandybrown.
+**Methodology:** 3 binding rules upheld throughout (read leftover-buckets, multi-rater /qc before commit, per-section cropped pixel diff). 2 new captured rules embedded as HARD-GATEs in `/sgs-clone` SKILL.md: row 260 (DB-first lookups) + row 261 (don't skip Playwright for lift fidelity).
 
-## Today's 7 commits
+## Today's 10 commits
 
 | Commit | What |
 |---|---|
-| `a2d58a3d` | Walker FR1 precedence + composite-element fast path + DB-driven SLOT_TO_STANDALONE_BLOCK |
-| `752f4aed` | Bucket-router accuracy — chrome_skipped + cv2_handled buckets, all-blocks attr harvest |
-| `d859da4c` | P-PHASE8-11 severity_totals + P-PHASE8-12 wrong-block-type + P-PHASE8-13 role backfill |
-| `7a2a777d` | P-PHASE8-2 round 1 — heritage-strip restore + trust-bar + label dynamic, WP file-render echo discovery |
-| `9a32a164` | P-PHASE8-1 heritage-strip retirement + P-PHASE8-17 7 parallel blocks dynamic + universal BEM-child array lifter |
-| `b57269ec` | Heritage-strip DB cleanup (sgs-framework 58 rows + uimax 989 rows) + recogniser scripts cleaned |
-| `e0cd5a0f` | Heritage-strip doc cleanup across all docs-registry canonical_docs |
+| `e34618f9` | Voter `RETIRED_BLOCK_REMAP` (P-PHASE8-NEW-1) |
+| `631dc68b` | Pixel-diff baseline + P-PHASE8-NEW-2 parking |
+| `df3a6cbf` | Walker preserves SGS-BEM grouping wrappers |
+| `f0f6329e` | Post-fix pixel-diff + 3 parking entries |
+| `2f075073` | Hero mockup migration + canonical `__split-image` lift |
+| `1cb80614` | Universal Unit-suffix lift + P-PHASE9-4 parking |
+| `7e0014bf` | mamas-munches.css regen |
+| `168fd2ca` | DB-first refactor — property_suffixes + modifier_suffixes DB reads |
+| `20ef1d66` | **parse_css @media regex bug fix** (0/13 → 13/13) (parallel agent A6) |
+| `90692106` | **block-root supports lift** via WP native style.* (parallel agent A5) |
+| (merge) `45fd851b` | Merge both parallel-agent branches |
 
-## Next session — Phase 8 continuation
+## Next session — UNIVERSAL APPLICABILITY
 
-Read `.claude/next-session-prompt.md` for the full workflow + priority order + 4 binding rules. First action: read `pipeline-state/mamas-munches-homepage-2026-05-15-215823/leftover-buckets.json` for canonical gap inventory.
+Read `.claude/next-session-prompt.md` for the full workflow. First action: run cv2 on every existing client mockup (8 clients total), categorise gap patterns by client family, identify next universal fixes.
 
-## Phase 8 backlog (open in parking.md)
+## Phase 9 backlog (open in parking.md)
 
-- **P-PHASE8-NEW-1** — Recogniser stale heritage-strip refs cleanup
-- **P-PHASE8-14** — Section-collapses-into-leaf-block guard (adversarial)
-- **P-PHASE8-15** — severity_totals key in orchestrator router-failure fallback
-- **P-PHASE8-16** — Spec 16 invariant + cv2 pre-flight gate
-- **P-PHASE9-1** — Per-block extension hook sweep
-- (Deferred decision) Trust-bar schema/render mismatch for badge shape
+- **P-PHASE9-5** — Empty-DB defensive assertion (QC panel A1) — ~5 line fix
+- **P-PHASE9-6** — RETIRED_BLOCK_REMAP future-block guard (QC panel C1) — ~10 line fix
+- **P-PHASE9-7** — SGS-BEM grouping-wrapper watch list (QC panel B3) — audit pattern-level assumptions
+- **P-PHASE9-8** — Inline thin DB-lookup wrappers (Fresh-eyes nit) — ~10 lines removed
+- **P-PHASE9-9** — Rename `_kind_for` → `_value_kind_for_suffix` (Fresh-eyes nit)
+- **P-PHASE9-1** — Per-block extension hook wiring sweep (animation/visibility/image-controls)
+- **P-PHASE9-2** — sgs/hero hardcoded lift cleanup (~70-80 lines)
+- **P-PHASE9-3** — Per-instance lift fidelity sweep (info-box children depth)
+- **P-PHASE8-NEW-2 reframed** — Original framing closed; pattern-attr-mapping infrastructure parked as separate design discussion
+- **Trust-bar schema/render mismatch** — Bean's deferred decision (badges vs stat-counter shape)
+- **Hero 768 height delta** — was 267px, now +85px after migration — within tolerance, real-content-fidelity work remains
 
 ## Subprojects
 
-- Mama's Munches — `sites/mamas-munches/.claude/` — homepage clone is converter canary
-- Indus Foods Phase 4 — `sites/indus-foods/.claude/` — second-client validation target
-- helping-doctors — alternative second-client validation target
+- Mama's Munches — `sites/mamas-munches/.claude/` — canary for all converter work, full migration to canonical SGS-BEM complete
+- Indus Foods Phase 4 — `sites/indus-foods/.claude/` — second-client validation target (NEXT)
+- helping-doctors — alternative second-client validation target (NEXT)
+- 5 additional style-variation clients: healthcare, construction, professional, mosque, eye-care — variation only, may have minimal mockups
 
-## Today's decisions (see decisions.md 2026-05-16 section)
+## Today's decisions (see decisions.md 2026-05-17 section)
 
-7 new architectural decisions appended: walker precedence model, DB-driven slot→standalone routing, bucket-classification accuracy model, severity_totals dashboard, role backfill via slot_synonyms.role, WP file-render wrapper echo-style pattern, heritage-strip retirement as pattern not block, universal BEM-child array lifter design.
+7 architectural decisions appended. Includes the parse_css regex root cause, block-root supports lift design, DB-first refactor model, walker grouping preservation predicate, voter retired-block remap mechanism, mockup architectural alignment, and the rule-embed strategy via SKILL.md HARD-GATEs.

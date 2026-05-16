@@ -6,9 +6,46 @@ last_updated: 2026-05-17
 
 # Parking — deferred work with named triggers
 
-## CLOSED 2026-05-17 (this session)
+## CLOSED 2026-05-17 (10-commit session)
 
-- **P-PHASE8-NEW-1** — Recogniser stale heritage-strip references ✓ **DONE**. Voter now consults a new `RETIRED_BLOCK_REMAP` dict in both SGS-BEM literal and legacy-kebab branches, routing `sgs-heritage-strip` (and any future retired block) to its replacement pattern via confidence-matrix Tier 2. Iteration-order safety fix included: ALL `sgs-` classes scanned for retirement before falling to literal-slug match. Mockup source migrated to `sgs-brand*` canonical naming. Disjoint-keys assertion added between LEGACY_ROLE_LOOKUP and RETIRED_BLOCK_REMAP. Unit test file added (`test_per_section_convention_voter.py`, 10 assertions).
+- **P-PHASE9-4** — Block-root styling lift via WP native supports ✓ **DONE** via commit `90692106`. New `_lift_root_supports_to_style()` in convert.py reads block-root CSS, queries `db.block_supports_for(slug)`, emits `style.spacing/border/color/typography` attrs only when the block declares native WP support. Universal — wired into all 3 emission paths. +3 attrs/section avg across 7 sections.
+- **P-PHASE8-NEW-4** — CSS-lift media-query support ✓ **DONE** via commit `20ef1d66`. Root cause was the `parse_css` regex bug — 0/13 @media blocks captured because `[^{}]+` couldn't span the whitespace between sibling rules. Brace-balanced scanner replacement now captures 13/13. Hero `headlineFontSizeDesktop` now correctly 58 (was 34 from base-CSS only).
+- **P-PHASE8-NEW-3** — Hero 768px height delta ✓ **DONE** via commit `2f075073`. Architectural mismatch closed: mockup migrated from dual-variant pattern (`--mobile` + `--desktop` siblings) to single-grid responsive matching SGS hero block DOM 1:1. Height delta: -267px → +85px.
+- **P-PHASE8-NEW-2** — Stage 4 pattern routing ✓ **DONE (REFRAMED)** via commit `df3a6cbf`. Original framing abandoned (theme patterns don't carry per-instance overrides). Real fix: walker preserves SGS-BEM grouping wrappers as nested sgs/container, matching pattern's structural composition while keeping mockup content.
+- **P-PHASE8-NEW-1** — Recogniser stale heritage-strip references ✓ **DONE** via commit `e34618f9`. Voter `RETIRED_BLOCK_REMAP` dict + iteration-order safety + disjoint-keys assertion + mockup migration to `sgs-brand*` + unit test.
+- **DB-first refactor** ✓ **DONE** via commit `168fd2ca`. `_CSS_PROP_TO_SUFFIX` + `_BREAKPOINT_SUFFIXES` removed; `db_lookup.py` gains `css_property_suffixes()` + `breakpoint_suffix_rules()`. Property_suffixes seeded with 18 per-side longhand rows via idempotent migration. Blub.db row 260 (DB-first rule) + Rule 11 HARD-GATE in `/sgs-clone` SKILL.md.
+
+## QC-PANEL FOLLOW-UPS (parked 2026-05-17, non-blocking robustness)
+
+### P-PHASE9-5 — Empty-DB defensive assertion (Adversarial A1)
+
+**What:** `db_lookup.css_property_suffixes()` returns `[]` silently if the `property_suffixes` table is empty or DB file is missing (sqlite3 auto-creates an empty file on connect). The lifter then extracts zero CSS-driven attrs across the entire pipeline with no error raised.
+
+**Approach:** Add `assert len(rows) > 0` at module load. Or fail-fast with a clear `RuntimeError` message naming the canonical DB path + `/sgs-update` recovery command. ~5 line fix.
+
+### P-PHASE9-6 — RETIRED_BLOCK_REMAP future-block-registration guard (Adversarial C1)
+
+**What:** `RETIRED_BLOCK_REMAP = {"heritage-strip": "brand"}` silently locks pattern routing even if `sgs/brand` is later registered as a real block. The remap fires unconditionally; Tier 2 always picks the pattern over the block.
+
+**Approach:** Add a module-load assertion that no `RETIRED_BLOCK_REMAP` value collides with a currently-registered block slug (via `db.registered_block_slugs()`). Or invert the priority: check `block_exists()` first, only remap when the block is actually gone.
+
+### P-PHASE9-7 — Watch list for SGS-BEM grouping-wrapper preservation (Adversarial B3)
+
+**What:** The walker fix (commit `df3a6cbf`) now preserves any sgs/container wrapper with a BEM `__element`. Previously these were dropped. Future patterns receiving SGS-BEM `__element` wrappers may need explicit nesting tolerance — if a pattern PHP file doesn't expect a nested container at a given slot, the wrapper introduces unexpected DOM.
+
+**Approach:** When new patterns are authored, audit them for assumptions about whether `__content` / `__media` / etc. wrappers exist. Add a pattern-level test that validates structural conformance.
+
+### P-PHASE9-8 — Inline thin DB-lookup wrappers (Fresh-eyes nit)
+
+**What:** `convert.py:_css_prop_to_suffix()` and `_breakpoint_suffixes()` are thin wrappers (`return db.css_property_suffixes()`, `return db.breakpoint_suffix_rules()`) with no transformation. Pointless indirection.
+
+**Approach:** Inline the calls at the 3 call sites; drop the wrapper functions. ~10 lines removed.
+
+### P-PHASE9-9 — Rename `_kind_for` → `_value_kind_for_suffix` (Fresh-eyes nit)
+
+**What:** `db_lookup._kind_for(suffix, role)` is opaque on cold read. A new dev has to read the body to learn "kind" means convert.py's value-conversion kind (colour / number_px / string / etc.).
+
+**Approach:** Rename to `_value_kind_for_suffix()`. Update the 1 call site.
 
 ## CLOSED 2026-05-16 (previous session)
 

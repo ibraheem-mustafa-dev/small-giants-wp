@@ -568,11 +568,11 @@ Notes:
 
 ### property_suffixes
 
-- Row count: 99
+- Row count: 117 (was 99 — 18 per-side longhand rows seeded 2026-05-17 via migration `2026-05-17-property-suffixes-per-side.py`)
 - Purpose: Vocabulary of CSS property name suffixes used in SGS block attributes (e.g. `Colour` -> `color`, `Background` -> `background-color`, `TextColour` -> `color`). `assign-canonical.py` strips these suffixes to get the attribute stem before slot lookup. Also flags whether the property should be matched to a token (`is_token_matched`) and which source provides the token.
 - Schema:
   - `suffix` TEXT PK
-  - `role` TEXT NOT NULL (color/spacing/typography/shadow)
+  - `role` TEXT NOT NULL (color/spacing/typography/shadow/layout/visual/behaviour/motion/select-from-enum/content/etc.)
   - `css_property` TEXT
   - `is_token_matched` INTEGER DEFAULT 1
   - `token_source` TEXT (palette/spacing/shadow/font)
@@ -580,7 +580,8 @@ Notes:
 - Read by:
   - `behavioural-analyser/assign-canonical.py`: loads full table at startup for suffix classification during role assignment
   - `drift-validator/validate.py`: reads property_suffixes to validate role assignments
-- Written by: `~/.claude/skills/sgs-wp-engine/scripts/seed-spec-15-p1-vocab.py` (Spec 15 Phase 1 migration seed)
+  - `orchestrator/converter_v2/db_lookup.py:css_property_suffixes()` (NEW 2026-05-17): converter reads this for CSS-prop → SGS-attr-suffix mapping. Replaces hardcoded `_CSS_PROP_TO_SUFFIX` constant in `convert.py` (blub.db row 260 — DB-first lookups rule). 66 rows surface for cv2 lifter after `_kind_for()` filter (rows with css_property NOT NULL + kind inferable from role).
+- Written by: `~/.claude/skills/sgs-wp-engine/scripts/seed-spec-15-p1-vocab.py` (Spec 15 Phase 1 migration seed) + `plugins/sgs-blocks/scripts/migrations/2026-05-17-property-suffixes-per-side.py` (per-side longhand additions, idempotent)
 - Key columns: `suffix`, `role`, `is_token_matched`
 - Pipeline stage: /sgs-update Stage 4 behavioural analysis (R). Not written at runtime.
 

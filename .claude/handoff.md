@@ -1,129 +1,83 @@
 ---
 doc_type: handoff
 project: small-giants-wp
-session_tag: small-giants-wp-2026-05-16-spec-16-phase-8-section-by-section
-session_date: 2026-05-16
+session_tag: small-giants-wp-2026-05-17-universal-recognition-uplift
+session_date: 2026-05-17
 recommended_model: opus
-last_verified: 2026-05-16
+last_verified: 2026-05-17
 update_triggers:
   - "/handoff run"
 companion_docs:
   - .claude/state.md
   - .claude/next-session-prompt.md
-  - .claude/specs/16-DETERMINISTIC-CONVERTER-V2.md
   - .claude/parking.md
   - .claude/decisions.md
+  - .claude/db-tables-map.md
 ---
 
-# Session Handoff — 2026-05-16 (Spec 16 Phase 8 — bucket-router accuracy + render.php audit + universal lifter)
+# Session Handoff — 2026-05-17 (Spec 16 Phase 9 — universal recognition + conversion improvements)
 
 ## Headline
 
-7 commits shipped to `main` (HEAD: `e0cd5a0f`). The leftover-bucket diagnostic surface is now trustworthy and actionable. Every cv2-emittable block is now dynamic. The universal BEM-child array lifter unblocks per-section converter LIFT FIDELITY work. Heritage-strip retired across filesystem + DBs + scripts + docs (live references all removed; audit trail preserved). 0 high-severity gaps remain in Mama's leftover buckets.
+**10 commits shipped to `main` (HEAD `45fd851b`).** Mama's Munches canary: 176 → 243 extracted attrs (+38%). Brand section: 0 → 38 attrs (was emitting as `core/group` confidence 0.0). Hero: 46 → 62 attrs incl. correct responsive `headlineFontSizeDesktop=58` (was 34 from base-CSS only). Two parallel-agent implementations merged cleanly. Four-rater /qc panel all returned SHIP.
+
+**Single biggest find of the session:** `parse_css` regex matched **0 of 13** `@media` blocks on Mama's mockup. Every responsive override silently dropped at parse time. That single bug accounted for the bulk of the "responsive variants failing" diagnostic noise that drove half of Phase 8.
 
 ## Commits shipped (all on main)
 
 | Commit | What |
 |---|---|
-| `a2d58a3d` | Walker precedence swap (FR1 above CSS-driven container) + DB-driven SLOT_TO_STANDALONE_BLOCK (`slot_synonyms.standalone_block` column) + composite-element routing (card → sgs/info-box). |
-| `752f4aed` | Bucket-router accuracy upgrade: 2 new buckets (`chrome_skipped`, `cv2_handled_no_top_level_match`), dynamic slot-list coverage for cv2-emitted blocks via DB block_attributes lookup, all-blocks attr harvest. |
-| `d859da4c` | P-PHASE8-11 `severity_totals` dashboard + P-PHASE8-12 wrong-block-type plausibility check + P-PHASE8-13 `block_attributes.role` backfill via `slot_synonyms.role` migration. |
-| `7a2a777d` | P-PHASE8-2 render.php audit (round 1): trust-bar + label converted static→dynamic. WP file-render wrapper return-value-discard bug discovered. |
-| `9a32a164` | P-PHASE8-1 heritage-strip retirement + P-PHASE8-17 batch static→dynamic for 7 blocks (certification-bar, counter, divider, heading, notice-banner, process-steps, tab) via /dispatching-parallel-agents + universal BEM-child array lifter. |
-| `b57269ec` | DB cleanup: 58 rows deleted from sgs-framework.db + 989 rows from uimax.db (all heritage-strip references) + recogniser scripts cleaned (confidence-matrix.py COMPOSITE_PRIORITY + per-section-convention-voter.py legacy slug map now routes to brand pattern). |
-| `e0cd5a0f` | Doc cleanup across all docs-registry canonical_docs (architecture.md retirement marker, parking.md typo fix, tooling-map.md superseded row, specs 02/15/16 stale refs removed, visual-diff stub deleted). |
+| `e34618f9` | Voter `RETIRED_BLOCK_REMAP` dict + iteration-order safety + disjoint-keys assertion + mockup migration |
+| `631dc68b` | Pixel-diff baseline @ 3 viewports × 7 sections (21 diffs) + 3 new parking entries |
+| `df3a6cbf` | Walker preserves SGS-BEM grouping wrappers (`__content` etc.) as nested sgs/container |
+| `f0f6329e` | Post-fix pixel-diff report + 3 more parking entries |
+| `2f075073` | Hero mockup migration: dual-variant → single-grid responsive matching SGS hero block |
+| `1cb80614` | Universal Unit-suffix lift for margin/gap/lineheight/maxwidth |
+| `7e0014bf` | Regenerated `mamas-munches.css` from latest run |
+| `168fd2ca` | **DB-first refactor** — `_CSS_PROP_TO_SUFFIX` + `_BREAKPOINT_SUFFIXES` removed; db_lookup.py gains `css_property_suffixes()` + `breakpoint_suffix_rules()` |
+| `20ef1d66` | **parse_css @media regex fix** (parallel agent) — 0/13 → 13/13 captured |
+| `90692106` | **block-root supports lift** via `block_supports` table (parallel agent) — emits `style.spacing/border/color/typography` per-block |
+| (merge) `45fd851b` | Merge both parallel-agent branches |
 
 ## What's now true that wasn't yesterday
 
-1. **Leftover buckets give accurate, actionable info.** 4 new buckets (`chrome_skipped`, `cv2_handled_no_top_level_match`, plus expanded `extraction_failed` with `source` tagging) classify every gap by what it actually is. `severity_totals` dashboard answers "how many BLOCKING gaps?" at a glance.
-2. **Every cv2-emittable block is dynamic.** All 10 blocks cv2 routes via FR1 or composite-element fast paths now have `render.php`. The silent-empty-render bug (static block + self-closing comment) cannot recur.
-3. **Universal BEM-child array detection.** Any block with an array-typed schema attr lifts items from `sgs-<parent>__<element>` BEM children without per-block configuration. Trust-bar (was 0 items) now lifts 4.
-4. **Heritage-strip is gone as a block.** Replaced by `theme/sgs-theme/patterns/brand.php` (2-col container + heading/text/button + image). P-PHASE8-3 hardcoded lift guards in convert.py removed. P-PHASE8-1 closed.
-5. **All cv2-emitted block.json files have versions bumped to 0.2.0** signalling the static→dynamic transition.
-6. **CLAUDE.md gotcha #3 (`source: html` on dynamic blocks) enforced** across all 9 newly-dynamic blocks — `source` + `selector` removed from any attrs that would have failed at render time.
+1. Every SGS block emits WP native `style.*` attrs from block-root CSS when the block declares the matching `supports`. Universal — no per-block hardcoded logic.
+2. `@media` query overrides actually lift — `headlineFontSizeDesktop`, `subHeadlineFontSizeTablet` etc. populate from responsive CSS.
+3. CSS-prop ↔ SGS-attr-suffix mapping is DB-driven — 117-row `property_suffixes` is canonical, no parallel hardcoded list in convert.py.
+4. Breakpoint suffix vocabulary is DB-verified — module load raises if `modifier_suffixes` is out of sync.
+5. Mockup architectural alignment — Mama's hero is single-grid responsive matching SGS block DOM 1:1.
+6. Voter handles retired-block routing structurally via `RETIRED_BLOCK_REMAP`.
+7. Walker preserves authored SGS-BEM grouping wrappers as nested sgs/container.
 
-## Mama's bucket state at session close
+## Mama's bucket + extraction state
 
 ```
-total: 461
-severity_totals: {info: 2, low: 4, medium: 455, high: 0}
-totals: {
-  chrome_skipped:                2  [header, footer]
-  cv2_handled_no_top_level_match: 4  [featured-product, gift-section, social-proof, heritage-strip]
-  unrecognised_section:          0
-  structural_mismatch_or_orphan: 0
-  extraction_failed:           455 (185 stage_3 + 270 cv2_emitted_dynamic)
-  animation_unclassified:        0
-}
+Pre-session-start (2026-05-15 21:58):  attrs=176  leftover=461
+Post-combined (now):                   attrs=243  leftover=536
 ```
 
-| Section | extraction_failed | What's still missing |
+Per-section attr gains: brand 0→38, hero 46→62, gift 34→42, featured-product 46→52, ingredients 24→27, trust-bar 4→6, social-proof 14→16.
+
+Per-section pixel diff @ tablet: brand 99.6% → 13.0% (-86.6pp); hero 99.9% → 68.0% (-31.9pp); ingredients 30.8% (new); trust-bar ~99.7% (unchanged, schema decision deferred).
+
+## /qc panel verdicts (4-rater, binding rule #2)
+
+| Lens | Verdict | Notes |
 |---|---|---|
-| hero | 151 | Real per-block render.php audit gaps (responsive font sizes, gradient overlays, etc.) |
-| ingredients-section | 147 | 4× info-box × 54 attrs each — many are rare optional attrs (default-OK) |
-| gift-section | 106 | Same pattern as ingredients (info-box internals) |
-| featured-product | 21 | sgs/product-card per-instance attrs |
-| trust-bar | 14 | Schema/render mismatch (badges vs stat-counter shape — deferred decision) |
-| heritage-strip | 10 | Cv2 R4 fall-through (no longer a block); recogniser still references sgs/heritage-strip — P-PHASE8-NEW-1 |
-| social-proof | 6 | Testimonial-slider carousel vs static cards (deferred decision) |
+| Architecture | SHIP | Refactor at right layer, predicates correct, mockup migration aligns with canonical rule |
+| Adversarial | SHIP | 3 follow-ups parked (P-PHASE9-5/6/7) |
+| Ecosystem | SHIP | 2 doc-stat fixes applied |
+| Fresh-eyes | SHIP | 2 cleanup nits parked (P-PHASE9-8/9) |
 
-## Multi-rater /qc verdicts (binding rule #2 — ran BEFORE every commit)
+## Methodology learnings captured
 
-| Commit | Lenses | Verdict | Notable findings |
-|---|---|---|---|
-| 752f4aed | Sonnet+Haiku | SHIP after applying attr_role filter | Architecture-lens caught cv2_emitted noise pre-filter |
-| d859da4c | 4-lens panel (Sonnet+Haiku+Sonnet+Sonnet) | FIX-FIRST → SHIP | Ecosystem-lens caught gap-review-report.py missing the 2 new buckets — fixed inline. Fresh-eyes flagged adversarial section-collapses-into-leaf-block (parked P-PHASE8-14) |
-| 7a2a777d | 4-lens panel | FIX-FIRST → SHIP | Ecosystem caught label.text `source: html` schema mismatch — fixed inline |
-| 9a32a164 | Combined 4-lens single-agent | SHIP | 3 deferred items (extension hook sweep, recogniser stale heritage-strip refs, brand.php phpcs manual-only) |
+1. **DB-first lookups** — blub.db row 260, Rule 11 HARD-GATE.
+2. **Don't skip Playwright for lift fidelity (legacy path)** — blub.db row 261 (recurrence 2), Rule 12 HARD-GATE.
 
-## Methodology learnings (3 captured binding rules from 2026-05-15 — still hold)
+## Open from this session — Phase 9 continuation
 
-1. **Read `pipeline-state/<run>/leftover-buckets.json` BEFORE conjecturing.** The orchestrator already classifies every gap.
-2. **Multi-rater /qc panel BEFORE every commit** touching converter/pipeline/block logic.
-3. **Per-section cropped pixel diff via `--selector`, NOT full-page.** Full-page has ~30-45% structural noise floor.
-
-Plus new ones added this session:
-4. **WP `file:` render wrapper discards return values.** render.php MUST `printf`/`echo`/interleave HTML — never `return ob_get_clean()` or `return sprintf()`. (Caught during the static→dynamic conversion; would have shipped silent empty renders.)
-5. **Schema-mockup-intent mismatch is a category of bug.** When the mockup uses a block's BEM CLASS but for a different SEMANTIC purpose than the block was designed for (Mama's trust-bar uses badges/text-content instead of stat counters), the LIFT can succeed mechanically while the RENDER still produces wrong output. Two are different gates. Decide which one to fix first per case.
-
-## Open from this session — Phase 8 continuation
-
-Priority order:
-
-1. **P-PHASE8-NEW-1** — Recogniser cleanup: `confidence-matrix.py:83` + `per-section-convention-voter.py:115+263` still reference `sgs/heritage-strip` as a block. Remove + ensure `brand.php` pattern matches both `sgs-brand` and `sgs-heritage-strip` class signatures (multi-name pattern lookup OR slot-synonym for section_id).
-2. **Per-section pixel diff verification** post-deploy. Re-run each section at 3 viewports.
-3. **Schema/render mismatch decision** for trust-bar (stat-counter shape vs badge shape). Was Bean's "wait on review choice" — re-park as urgent now.
-4. **Hero per-section diff** (100% at 768px viewport implies selector mismatch at tablet — investigate).
-5. **P-PHASE9-1** — Per-block extension hook sweep (animation, responsive-visibility, image-controls) across all dynamic blocks.
-6. **P-PHASE8-14** — Section-collapses-into-leaf-block guard (adversarial mockup mitigation).
-7. **P-PHASE8-15** — `severity_totals` key in orchestrator router-failure fallback.
-8. **P-PHASE8-16** — Spec 16 invariant: codify "cv2-eligible blocks must be dynamic" as FR + add pre-flight gate.
-
-## Key files modified
-
-| Path | What changed |
-|---|---|
-| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` | Walker precedence swap, composite-element routing, BEM-child array lifter, heritage-strip guard removal, DB-driven slot routing |
-| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/db_lookup.py` | `standalone_block_for()` helper |
-| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/__init__.py` | All-blocks attr harvest (was first-block-only) |
-| `plugins/sgs-blocks/scripts/recogniser/leftover-bucket-router.py` | +2 buckets, severity_totals, wrong-block-type plausibility, depth-aware section-root parsing, dynamic slot-list coverage for cv2 sections |
-| `plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py` | Role backfill second pass with property-suffix guard |
-| `plugins/sgs-blocks/scripts/recogniser/gap-review-report.py` | +2 bucket labels + proposed actions |
-| `plugins/sgs-blocks/scripts/migrations/2026-05-16-slot-synonyms-standalone-block.py` | NEW migration — adds standalone_block column |
-| `plugins/sgs-blocks/scripts/migrations/2026-05-16-slot-synonyms-roles.py` | NEW migration — populates slot_synonyms.role |
-| `plugins/sgs-blocks/src/blocks/heritage-strip/` | DELETED |
-| `plugins/sgs-blocks/src/blocks/{trust-bar,label}/render.php` | NEW (round 1 conversion) |
-| `plugins/sgs-blocks/src/blocks/{certification-bar,counter,divider,heading,notice-banner,process-steps,tab}/render.php` | NEW (round 2 parallel conversion) |
-| All 9 above blocks' `block.json` | render-key added, version bumped to 0.2.0, source:html removed where present |
-| `theme/sgs-theme/patterns/brand.php` | NEW (replaces sgs/heritage-strip block) |
-| `sgs-framework.db.slot_synonyms` | +standalone_block column + role populated for content-bearing slots + card row → sgs/info-box |
-| `sgs-framework.db.block_attributes.role` | Backfilled (text-content 26→78) |
+Priority documented in `.claude/next-session-prompt.md`. Top action: validate Phase 9 architecture against the other 7 client mockups to surface client-specific recognition gaps Mama's canary never exposed.
 
 ## Next Session Prompt
 
 See `.claude/next-session-prompt.md`.
-
-Resume command:
-```
-CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-16-spec-16-phase-8-section-by-section"
-```
