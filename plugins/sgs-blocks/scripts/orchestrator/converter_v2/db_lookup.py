@@ -264,6 +264,54 @@ def attr_for_slot(block_slug: str, canonical_slot: str) -> str | None:
 
 
 # ----------------------------------------------------------------------------
+# Block supports — wp native supports flags (color/spacing/border/typography...)
+# ----------------------------------------------------------------------------
+
+@functools.lru_cache(maxsize=256)
+def block_supports_for(block_slug: str) -> dict:
+    """Return the parsed WordPress `supports` map for a block, keyed by support_name.
+
+    Reads sgs-framework.db `block_supports` (block_slug, support_name, support_value).
+    Each support_value is parsed as JSON when it's an object/array, otherwise the
+    literal string is returned. Used by the converter to gate which `style.*`
+    properties may be emitted on the block when lifting block-root CSS.
+
+    Example return for sgs/info-box:
+        {
+            "color":                 {"background": True, "text": True, "link": True},
+            "typography":            {"fontSize": True, "lineHeight": True, ...},
+            "spacing":               {"margin": True, "padding": True},
+            "shadow":                True,
+            "__experimentalBorder":  {"radius": True, "width": True, "color": True, "style": True},
+            ...
+        }
+    """
+    import json
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT support_name, support_value FROM block_supports WHERE block_slug = ?",
+            (block_slug,),
+        ).fetchall()
+    finally:
+        conn.close()
+    out: dict = {}
+    for name, value in rows:
+        if value is None:
+            continue
+        v = value.strip()
+        # Parse JSON objects/arrays/bools/numbers — fall back to raw string
+        if v.startswith(("{", "[")) or v in ("true", "false", "null") or (v and v[0].isdigit()):
+            try:
+                out[name] = json.loads(v)
+                continue
+            except (ValueError, TypeError):
+                pass
+        out[name] = v
+    return out
+
+
+# ----------------------------------------------------------------------------
 # Block parent/child relationship — for InnerBlocks containers
 # ----------------------------------------------------------------------------
 
