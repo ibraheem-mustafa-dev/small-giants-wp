@@ -94,6 +94,7 @@ if ( ! in_array( $sub_tag, array( 'p', 'div' ), true ) ) {
  * @param array $args Array of style properties (colour, fontSize, fontWeight, etc.).
  * @return string     Inline style attribute string (empty if no styles).
  */
+if ( ! function_exists( 'sgs_heading_build_slot_style' ) ) {
 function sgs_heading_build_slot_style( $args ) {
 	$style_parts = array();
 
@@ -126,6 +127,7 @@ function sgs_heading_build_slot_style( $args ) {
 	}
 
 	return $style_parts ? ' style="' . esc_attr( implode( ';', $style_parts ) ) . '"' : '';
+}
 }
 
 // Build per-slot styles.
@@ -177,7 +179,7 @@ $sub_style = sgs_heading_build_slot_style(
 $wrapper_attrs = get_block_wrapper_attributes( array( 'class' => 'wp-block-sgs-heading' ) );
 
 ?>
-<div<?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+<div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 	<?php
 	// Icon / emoji before label.
 	if ( 'before-label' === $icon_position && ( $icon || $emoji ) ) :

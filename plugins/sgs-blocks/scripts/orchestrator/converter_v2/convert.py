@@ -279,7 +279,19 @@ def _detect_grid_container_from_css(
         display = decls.get("display", "").strip()
         if display not in ("grid", "flex"):
             continue
-        attrs: dict = {"layout": display}
+        # When display:flex + flex-direction:column, the semantic is "stack"
+        # (sgs/container.layout=stack renders as `display:flex;flex-direction:column`).
+        # Using layout=flex on these emits flex-wrap:wrap which spreads items
+        # horizontally — wrong for column-stack containers. Captured 2026-05-17
+        # during brand walkdown (mockup's .sgs-brand__content was emitted as
+        # flex-wrap and stretched the content column to ~480px instead of the
+        # mockup's intended ~390px column-stack).
+        flex_dir = decls.get("flex-direction", "").strip()
+        if display == "flex" and flex_dir == "column":
+            layout = "stack"
+        else:
+            layout = display
+        attrs: dict = {"layout": layout}
 
         # Base (mobile-first) declarations
         gtc = decls.get("grid-template-columns", "").strip()
@@ -2476,13 +2488,48 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
         _trace("walker_branch_taken", branch="atomic_heading",
                node_tag=node.name, node_classes=classes, depth=depth)
         text = node.get_text(strip=True)
+        sgs_classes_h = [c for c in (classes or []) if c.startswith("sgs-")]
+        if sgs_classes_h:
+            # Swap to sgs/heading (dynamic) so the SGS-flat headline* styling
+            # attrs render as inline style on the <h2>. core/heading is STATIC —
+            # its saved `<h2 class="wp-block-heading">` HTML is frozen and
+            # never receives the JSON className, so mockup CSS like
+            # `.sgs-brand__headline { color: var(--text) }` can never match.
+            # Captured 2026-05-17 (Bean's directive in brand walkdown).
+            heading_schema = db.block_attrs("sgs/heading")
+            heading_attrs: dict = {
+                "headline": text,
+                "headlineLevel": int(node.name[1]) if node.name and node.name.startswith("h") else 2,
+                "className": " ".join(sgs_classes_h),
+                "labelEnabled": False,
+                "subEnabled": False,
+            }
+            if node.get("id"):
+                heading_attrs["headlineId"] = node["id"]
+                heading_attrs["anchor"] = node["id"]
+            # Lift CSS via the existing slot-aware path. _slot_attr_prefix
+            # resolves slot="heading" to prefix="headline" on this schema.
+            try:
+                _lift_styling_attrs(
+                    node, "heading", "sgs/heading",
+                    heading_schema, heading_attrs, css_rules,
+                )
+            except Exception:  # noqa: BLE001
+                pass
+            # Also lift block-root supports (margin-bottom etc.) onto wrapper
+            # style.* — sgs/heading has WP native spacing supports that render
+            # on the wrapper <div>.
+            try:
+                _lift_root_supports_to_style(
+                    node, "sgs/heading", css_rules, heading_attrs,
+                )
+            except Exception:  # noqa: BLE001
+                pass
+            return emit_wp_block("sgs/heading", heading_attrs, [], self_closing=True)
+        # No SGS class — fall back to core/heading (static, but no swap candidate)
         attrs = lift_attrs_for_block(target, node, bem, classes)
         style_dict, extra_top = _lift_core_block_style(node, classes, css_rules, target)
         if style_dict:
-            # Shallow-merge (forward-compat) — if lift_attrs_for_block or any
-            # future helper sets attrs["style"], preserve it; new keys win on
-            # collision but existing top-level keys (e.g. 'spacing') merge per
-            # rater 1+3 finding 2026-05-19.
             attrs["style"] = {**attrs.get("style", {}), **style_dict}
         attrs.update(extra_top)
         level = attrs.get("level", 2)

@@ -186,6 +186,17 @@ def capture(
             el = page.locator(selector).first
             try:
                 el.wait_for(state="visible", timeout=5000)
+                # Scroll the target element into view so any lazy-loaded images
+                # within it actually fetch + decode. Without this, sections far
+                # below the initial viewport screenshot with empty `<img>` slots
+                # because `loading="lazy"` keeps them deferred. Captured
+                # 2026-05-17 during brand walkdown.
+                el.scroll_into_view_if_needed()
+                page.wait_for_timeout(1200)
+                try:
+                    page.wait_for_load_state("networkidle", timeout=5000)
+                except Exception:  # noqa: BLE001
+                    pass
                 el.screenshot(path=str(out_path))
                 browser.close()
                 return
