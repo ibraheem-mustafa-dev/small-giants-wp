@@ -1,10 +1,96 @@
 ---
 doc_type: parking
 project: small-giants-wp
-last_updated: 2026-05-18
+last_updated: 2026-05-19
 ---
 
 # Parking — deferred work with named triggers
+
+## Opened 2026-05-19 (Spec 17 council outcome — header/footer architecture)
+
+The 4-seat / 2-round council on Spec 17 surfaced 8 follow-ups that are out of v1 scope but worth tracking. Full outcome at `.claude/reports/council-outcome-spec-17.md`.
+
+### P-S17-A — Independent colour + typography preset split (~3-4 hrs)
+
+**What:** Today each style variation JSON bundles colour + typography + spacing together. Top block themes (Twenty Twenty-Five, Ollie) split colour stacks and typography stacks into separate `/styles/colors/` and `/styles/typography/` folders. Result: 8 colour presets × 9 typography presets = 72 design combinations from 17 files instead of 72 separate variation JSONs.
+
+**Fix shape:** Refactor `theme/sgs-theme/styles/` into two subdirectories. Update Site Editor Styles panel to surface both axes. Existing variations remain as bundled "complete" presets but operators can mix.
+
+**Trigger:** When SGS reaches 8+ client style variations OR a client requests "I like Mama's colours but with the Indus typography."
+
+**Source:** Spec 17 council, Seat 1 Round 2 endorsement.
+
+### P-S17-B — Pattern versioning on `wp_template_part` records (~2 hrs)
+
+**What:** Pipeline cannot detect "what version of this pattern is currently live vs the version I'm about to write." Re-clone idempotence (FR-S7-4) protects against overwriting OPERATOR edits, but doesn't help when the pipeline regenerates the same pattern with intentional updates.
+
+**Fix shape:** Add `_sgs_pattern_version` post meta alongside `_sgs_cloned_from_pattern_slug`. Pipeline compares version on re-run; if newer, overwrite; if same, skip.
+
+**Trigger:** After v1 ships and the first pipeline regeneration scenario surfaces (likely when an SGS client requests a refresh).
+
+**Source:** Spec 17 council, Seat 4 Round 2.
+
+### P-S17-C — Complex nested-component patterns (~4-6 hrs)
+
+**What:** v1 assumes one pattern per page section (header, footer, hero, etc.). Real mockups have 5+ levels of container > row > column > component nesting. The current 1:1 mapping breaks for designs with composite layouts.
+
+**Fix shape:** Pattern composition registry — patterns can reference other patterns. Spec the depth limit, recursion guard, and inserter UX.
+
+**Trigger:** When a client mockup contains a nesting structure the v1 mapping cannot represent.
+
+**Source:** Spec 17 council, Seat 4 Round 2.
+
+### P-S17-D — Live preview on variation picker (~3-4 hrs)
+
+**What:** FR-S5-2's variation picker is a dropdown + Activate button. Operator can't see what the variation will do until they activate. The Site Editor's Styles panel has live preview; the SGS picker does not.
+
+**Fix shape:** Either (a) replicate Site Editor's preview mechanism via iframe, OR (b) replace the dedicated picker with a deep-link into the Site Editor Styles panel. Option (b) is the v1.1 default — option (a) is a v2 idea.
+
+**Trigger:** First operator complaint or usability test that flags the missing preview.
+
+**Source:** Spec 17 council, Seat 2 walkthrough #2.
+
+### P-S17-E — Public browseable pattern library marketing page (~1-2 days)
+
+**What:** Frost (the block theme) hosts `frostwp.com/patterns` — a public page listing every header/footer/section pattern with screenshots. Useful for sales conversations: agency can show a prospective client "here are 12 header shapes that work with this framework" before they commit.
+
+**Fix shape:** Static page generated from the pattern registry (auto-screenshot via Playwright or hand-curated). Hosted on smallgiantsstudio.co.uk or a subdomain.
+
+**Trigger:** When SGS has 20+ client-facing patterns OR a sales lead asks "what do my header options look like?"
+
+**Source:** Research brief idea #7.
+
+### P-S17-F — Deeper PII export safety beyond GDPR exporter (~2-3 hrs)
+
+**What:** v1 ships the basic `wp_privacy_personal_data_exporters` integration in FR-S4-1. The council surfaced a richer concern: per-key sensitivity flags, export-policy controls (e.g. "VAT number always excluded from any export channel"), and audit logging of who exported what.
+
+**Fix shape:** Extend Site Info schema with a `sensitivity` flag per well-known key (`public` | `business-internal` | `restricted`). Export channels respect the flag.
+
+**Trigger:** When SGS hosts a client with regulated data (medical, legal, financial) OR a GDPR audit requirement surfaces.
+
+**Source:** Spec 17 council, Seat 3 Round 2.
+
+### P-S17-G — Down-migrations + rollback in the migration framework (~4-6 hrs)
+
+**What:** FR-S7-2's migration framework is one-way. If a future migration breaks something and the framework is rolled back, attribute data may be in an unrecoverable state. Top WP plugins (WooCommerce, Yoast) ship down-migration support.
+
+**Fix shape:** Each migration callable in `plugins/sgs-blocks/includes/migrations/{version}.php` gains an optional `down()` method. CLI gets `wp sgs migrations rollback --to=<version>`.
+
+**Trigger:** Either (a) a migration ships and immediately needs revert, OR (b) before any data-destructive migration is added (the trigger should be "before we ship a destructive migration, build this first").
+
+**Source:** Spec 17 council, Seat 3 Round 1.
+
+### P-S17-H — WP-CLI `--allow-root` + server-user capability audit (~1-2 hrs)
+
+**What:** WP-CLI commands (FR-S5-3) run as the server OS user by default — no WordPress `current_user_can()` enforcement unless `--user=<id>` is set. If a command is ever exposed via a web-accessible path (e.g. a REST wrapper for the cloning pipeline), capability enforcement must be added explicitly — it does not inherit from the WP-CLI path. v1 explicitly forbids REST wrappers for write paths, but this is a known long-term landmine.
+
+**Fix shape:** Each CLI command's handler asserts `current_user_can` AFTER WP-CLI loads the user context. Document `--allow-root` and `--user` behaviour. Add integration tests that verify a command run with no user context fails-closed.
+
+**Trigger:** When considering ANY REST wrapper around a CLI command, OR when adding pipeline service-user authentication.
+
+**Source:** Spec 17 council, Seat 3 Round 2.
+
+---
 
 ## Opened 2026-05-18 (post P-WP-ALIGNMENT-WIDTH-SYSTEM orchestrator re-run findings)
 
