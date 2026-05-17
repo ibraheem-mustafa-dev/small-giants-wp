@@ -292,7 +292,12 @@
                 "none",
                 "solid",
                 "dashed",
-                "dotted"
+                "dotted",
+                "double",
+                "groove",
+                "ridge",
+                "inset",
+                "outset"
             ],
             "default": "none"
         },
@@ -340,6 +345,15 @@
         "inheritStyle": {
             "type": "boolean",
             "default": false
+        },
+        "transitionDuration": {
+            "type": "number",
+            "default": 300
+        },
+        "transitionEasing": {
+            "type": "string",
+            "enum": [ "ease", "ease-in", "ease-out", "ease-in-out", "linear" ],
+            "default": "ease"
         }
     },
     "editorScript": "file:./index.js",

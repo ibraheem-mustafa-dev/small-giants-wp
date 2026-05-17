@@ -273,7 +273,11 @@
                 "solid",
                 "dashed",
                 "dotted",
-                "double"
+                "double",
+                "groove",
+                "ridge",
+                "inset",
+                "outset"
             ],
             "default": "none"
         },

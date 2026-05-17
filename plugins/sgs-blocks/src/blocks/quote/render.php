@@ -165,8 +165,8 @@ if ( ! in_array( $variant_style, $allowed_variants, true ) ) {
 	$variant_style = 'default';
 }
 
-// Validate border-style.
-$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double' );
+// FIX B (P-BORDER-STYLE-ENUM-PARITY 2026-05-17): full CSS border-style set.
+$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
 if ( ! in_array( $border_style, $allowed_border_styles, true ) ) {
 	$border_style = 'none';
 }
@@ -347,7 +347,10 @@ if ( ! function_exists( 'sgs_quote_wrapper_responsive_css' ) ) {
 
 $anchor = $attributes['anchor'] ?? '';
 if ( ! $anchor ) {
-	$anchor = 'sgs-quote-' . wp_unique_id();
+	// FIX D (P-WP-UNIQUE-ID-CACHE-COLLISION 2026-05-17): content-derived hash
+	// replaces wp_unique_id()'s per-request sequential counter. Stable across
+	// fragment-cached renders: same block attrs → same id on every request.
+	$anchor = 'sgs-quote-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 }
 $scope = '#' . esc_attr( $anchor );
 
@@ -650,6 +653,16 @@ $responsive_css = trim(
 
 // ---------------------------------------------------------------------------
 // 14. Output.
+//
+// FIX E audit (P-WP-AUTOP-INTERACTION 2026-05-17):
+// sgs/quote emits <blockquote><p>…</p><footer>…</footer></blockquote>.
+// wpautop() runs on 'the_content' at priority 10. do_blocks() runs at priority 9,
+// so block render output is injected into the content string BEFORE wpautop sees it.
+// wpautop skips content already inside block-level elements (<blockquote>, <p>, etc.)
+// because it only wraps bare text nodes at the top level of the content string.
+// A <blockquote> is a block-level element — wpautop will not insert a <p> wrapper
+// around it, and the inner <p> elements are already explicit markup, not bare text.
+// No double-wrap risk confirmed. No defensive action needed.
 // ---------------------------------------------------------------------------
 
 if ( $responsive_css ) {

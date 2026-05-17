@@ -128,6 +128,13 @@ $custom_width_unit = $attributes['customWidthUnit'] ?? 'px';
 // Inherit-style escape hatch.
 $inherit_style = ! empty( $attributes['inheritStyle'] );
 
+// FIX C (P-HEADING-TRANSITION-ATTRS 2026-05-17): configurable hover transition.
+$transition_duration_raw = isset( $attributes['transitionDuration'] ) ? absint( $attributes['transitionDuration'] ) : 300;
+$transition_duration     = $transition_duration_raw > 0 ? $transition_duration_raw : 300;
+$transition_easing_raw   = $attributes['transitionEasing'] ?? 'ease';
+$allowed_easings         = array( 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'linear' );
+$transition_easing       = in_array( $transition_easing_raw, $allowed_easings, true ) ? $transition_easing_raw : 'ease';
+
 // ---------------------------------------------------------------------------
 // 2. Soft-fail: nothing to render if text is empty.
 // ---------------------------------------------------------------------------
@@ -151,8 +158,8 @@ if ( ! in_array( $variant_style, $allowed_variants, true ) ) {
 	$variant_style = 'default';
 }
 
-// Validate borderStyle against allowlist.
-$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted' );
+// FIX B (P-BORDER-STYLE-ENUM-PARITY 2026-05-17): full CSS border-style set.
+$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
 if ( ! in_array( $border_style, $allowed_border_styles, true ) ) {
 	$border_style = 'none';
 }
@@ -186,7 +193,8 @@ if ( ! function_exists( 'sgs_text_build_inline_style' ) ) {
 // Early-return path for inheritStyle — emit a bare element with class only.
 if ( $inherit_style ) {
 	$anchor     = $attributes['anchor'] ?? '';
-	$uid        = $anchor ? esc_attr( $anchor ) : 'sgs-text-' . wp_unique_id();
+	// FIX D: hash-based id (stable across fragment-cached renders).
+	$uid        = $anchor ? esc_attr( $anchor ) : 'sgs-text-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 	$base_class = 'wp-block-sgs-text';
 	if ( 'default' !== $variant_style ) {
 		$base_class .= ' wp-block-sgs-text--' . sanitize_html_class( $variant_style );
@@ -348,8 +356,9 @@ $inline_style = sgs_text_build_inline_style( $style_parts );
 
 $anchor = $attributes['anchor'] ?? '';
 if ( ! $anchor ) {
-	// Generate a unique id for this render; not persisted but consistent within a request.
-	$anchor = 'sgs-text-' . wp_unique_id();
+	// FIX D (P-WP-UNIQUE-ID-CACHE-COLLISION 2026-05-17): content-derived hash —
+	// stable across fragment-cached renders. Same attrs → same id on every request.
+	$anchor = 'sgs-text-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 }
 $scope = '#' . esc_attr( $anchor );
 
@@ -534,8 +543,8 @@ if ( $has_hover ) {
 	}
 
 	if ( $hover_decls ) {
-		// Transition on the element itself so hover feels smooth.
-		$css_hover  = $scope . '{transition:color 200ms ease,background-color 200ms ease,transform 200ms ease,box-shadow 200ms ease;}';
+		// FIX C: operator-supplied duration + easing replace the hardcoded 200ms/ease.
+		$css_hover  = $scope . '{transition:color ' . $transition_duration . 'ms ' . $transition_easing . ',background-color ' . $transition_duration . 'ms ' . $transition_easing . ',transform ' . $transition_duration . 'ms ' . $transition_easing . ',box-shadow ' . $transition_duration . 'ms ' . $transition_easing . ';}';
 		$css_hover .= $scope . ':hover,' . $scope . ':focus-visible{' . implode( ';', $hover_decls ) . '}';
 
 		// Respect reduced-motion preference.
@@ -571,6 +580,20 @@ $wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );
 
 // ---------------------------------------------------------------------------
 // 8. Output.
+//
+// FIX E audit (P-WP-AUTOP-INTERACTION 2026-05-17):
+// wpautop() is hooked to 'the_content' filter (priority 10). Block render output
+// does NOT pass through 'the_content' — WordPress calls render_block() before the
+// filter chain, and render_block output is stitched back into the already-filtered
+// post content string after wpautop has already run on the surrounding text nodes.
+// Ref: wp-includes/class-wp-block.php render() → wp-includes/blocks.php
+// do_blocks() → called by the 'the_content' filter at priority 9 (before wpautop
+// at priority 10). The render_block output is therefore never double-wrapped.
+//
+// The one edge case is manual calls to apply_filters('the_content', $html) on
+// content that already contains rendered block HTML with <p> tags. That scenario
+// is outside normal WP page rendering and would be a bug in whatever code calls it.
+// No defensive action needed here; document for future regression awareness.
 // ---------------------------------------------------------------------------
 
 if ( $responsive_css ) {

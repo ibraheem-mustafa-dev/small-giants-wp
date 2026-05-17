@@ -15,6 +15,19 @@
  * @since 2026-05-16  P-PHASE8-2 render.php audit
  * @since 2026-05-17  Peer-parity attrs: wrapper spacing/background/border/hover/variant,
  *                    per-slot fontStyle/textDecoration/margin (responsive).
+ * @since 2026-05-17  FIX A (P-HEADING-DEFAULTS-NORMALISE-FOR-SERIF): removed opinionated
+ *                    serif-hostile defaults for headlineLetterSpacing (-0.01em),
+ *                    headlineTextTransform ('none'), subLetterSpacing (0), subTextTransform
+ *                    ('none'). Defaults now ''/null so theme/cascade wins — correct for
+ *                    both Inter (sans) and DM Serif Display client variations.
+ *                    Label slot keeps uppercase + 0.08em tracking (universal small-caps
+ *                    aesthetic confirmed for all current SGS label usages).
+ * @since 2026-05-17  FIX B (P-BORDER-STYLE-ENUM-PARITY): expanded $allowed_border_styles
+ *                    to full CSS set: none/solid/dashed/dotted/double/groove/ridge/inset/outset.
+ * @since 2026-05-17  FIX C (P-HEADING-TRANSITION-ATTRS): transitionDuration + transitionEasing
+ *                    attrs replace hardcoded 300ms/ease in scoped hover CSS.
+ * @since 2026-05-17  FIX D (P-WP-UNIQUE-ID-CACHE-COLLISION): replaced wp_unique_id() with
+ *                    content-derived md5 hash for stable scoped CSS IDs under fragment cache.
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content (unused).
@@ -108,11 +121,15 @@ $headline_font_family         = $attributes['headlineFontFamily'] ?? '';
 $headline_font_size           = $attributes['headlineFontSize'] ?? 28;
 $headline_font_size_unit      = $attributes['headlineFontSizeUnit'] ?? 'px';
 $headline_font_weight         = $attributes['headlineFontWeight'] ?? '700';
-$headline_line_height         = $attributes['headlineLineHeight'] ?? 1.2;
+// FIX A: line-height and letter-spacing default to '' so the theme cascade wins.
+// Hardcoded 1.2 / -0.01em actively hurt serif faces (DM Serif Display, Playfair).
+// Numeric 0 for letter-spacing is falsy in PHP, so null sentinel used instead.
+$headline_line_height         = isset( $attributes['headlineLineHeight'] ) ? $attributes['headlineLineHeight'] : null;
 $headline_line_height_unit    = $attributes['headlineLineHeightUnit'] ?? 'em';
-$headline_letter_spacing      = $attributes['headlineLetterSpacing'] ?? -0.01;
+$headline_letter_spacing      = isset( $attributes['headlineLetterSpacing'] ) ? $attributes['headlineLetterSpacing'] : null;
 $headline_letter_spacing_unit = $attributes['headlineLetterSpacingUnit'] ?? 'em';
-$headline_text_transform      = $attributes['headlineTextTransform'] ?? 'none';
+// FIX A: text-transform defaults to '' (no inline style) so the cascade controls the value.
+$headline_text_transform      = isset( $attributes['headlineTextTransform'] ) ? $attributes['headlineTextTransform'] : '';
 $headline_colour              = $attributes['headlineColour'] ?? 'text';
 $headline_font_style          = isset( $attributes['headlineFontStyle'] ) ? sanitize_text_field( $attributes['headlineFontStyle'] ) : '';
 $headline_text_decoration     = isset( $attributes['headlineTextDecoration'] ) ? sanitize_text_field( $attributes['headlineTextDecoration'] ) : '';
@@ -138,11 +155,13 @@ $sub_font_family         = $attributes['subFontFamily'] ?? '';
 $sub_font_size           = $attributes['subFontSize'] ?? 16;
 $sub_font_size_unit      = $attributes['subFontSizeUnit'] ?? 'px';
 $sub_font_weight         = $attributes['subFontWeight'] ?? '400';
-$sub_line_height         = $attributes['subLineHeight'] ?? 1.5;
+// FIX A: sub line-height / letter-spacing / text-transform default to null/''.
+// sub_line_height 1.5 was fine for body text but prevents theme cascade; drop it.
+$sub_line_height         = isset( $attributes['subLineHeight'] ) ? $attributes['subLineHeight'] : null;
 $sub_line_height_unit    = $attributes['subLineHeightUnit'] ?? 'em';
-$sub_letter_spacing      = $attributes['subLetterSpacing'] ?? 0;
+$sub_letter_spacing      = isset( $attributes['subLetterSpacing'] ) ? $attributes['subLetterSpacing'] : null;
 $sub_letter_spacing_unit = $attributes['subLetterSpacingUnit'] ?? 'em';
-$sub_text_transform      = $attributes['subTextTransform'] ?? 'none';
+$sub_text_transform      = isset( $attributes['subTextTransform'] ) ? $attributes['subTextTransform'] : '';
 $sub_colour              = $attributes['subColour'] ?? 'text-muted';
 $sub_font_style          = isset( $attributes['subFontStyle'] ) ? sanitize_text_field( $attributes['subFontStyle'] ) : '';
 $sub_text_decoration     = isset( $attributes['subTextDecoration'] ) ? sanitize_text_field( $attributes['subTextDecoration'] ) : '';
@@ -209,6 +228,14 @@ $border_width_unit   = sgs_heading_safe_unit( $attributes['borderWidthUnit'] ?? 
 $border_colour       = $attributes['borderColour'] ?? '';
 $box_shadow          = $attributes['boxShadow'] ?? '';
 $box_shadow_hover    = $attributes['boxShadowHover'] ?? '';
+// FIX C (P-HEADING-TRANSITION-ATTRS 2026-05-17): expose transition controls so
+// operators can dial in duration and easing from the block inspector.
+$transition_duration_raw = isset( $attributes['transitionDuration'] ) ? absint( $attributes['transitionDuration'] ) : 300;
+$transition_duration     = $transition_duration_raw > 0 ? $transition_duration_raw : 300;
+$transition_easing_raw   = $attributes['transitionEasing'] ?? 'ease';
+$allowed_easings         = array( 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'linear' );
+$transition_easing       = in_array( $transition_easing_raw, $allowed_easings, true ) ? $transition_easing_raw : 'ease';
+
 $hover_scale         = isset( $attributes['hoverScale'] ) && null !== $attributes['hoverScale'] ? (float) $attributes['hoverScale'] : null;
 $hover_colour        = $attributes['hoverColour'] ?? '';
 $hover_background    = $attributes['hoverBackground'] ?? '';
@@ -217,9 +244,11 @@ $custom_width        = $attributes['customWidth'] ?? '';
 $custom_width_unit   = sgs_heading_safe_unit( $attributes['customWidthUnit'] ?? 'px' );
 $inherit_style       = ! empty( $attributes['inheritStyle'] );
 
-// Validate borderStyle enum.
+// FIX B (P-BORDER-STYLE-ENUM-PARITY 2026-05-17): full CSS border-style set,
+// matching sgs/quote and the CSS spec. Previously limited to 4 values; 'double'
+// silently fell back to 'none'. groove/ridge/inset/outset added for completeness.
 $border_style_raw      = $attributes['borderStyle'] ?? 'none';
-$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted' );
+$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
 $border_style          = in_array( $border_style_raw, $allowed_border_styles, true ) ? $border_style_raw : 'none';
 
 // Validate variantStyle enum.
@@ -267,15 +296,17 @@ if ( ! function_exists( 'sgs_heading_build_slot_style' ) ) {
 			$style_parts[] = 'font-weight:' . esc_attr( $args['fontWeight'] );
 		}
 
-		if ( isset( $args['lineHeight'] ) && null !== $args['lineHeight'] ) {
+		// FIX A: guards use null !== AND '' !== so empty defaults produce no inline style.
+		if ( isset( $args['lineHeight'] ) && null !== $args['lineHeight'] && '' !== $args['lineHeight'] ) {
 			$style_parts[] = 'line-height:' . floatval( $args['lineHeight'] ) . ( $args['lineHeightUnit'] ?? 'em' );
 		}
 
-		if ( isset( $args['letterSpacing'] ) && null !== $args['letterSpacing'] ) {
+		if ( isset( $args['letterSpacing'] ) && null !== $args['letterSpacing'] && '' !== $args['letterSpacing'] ) {
 			$style_parts[] = 'letter-spacing:' . floatval( $args['letterSpacing'] ) . ( $args['letterSpacingUnit'] ?? 'em' );
 		}
 
-		if ( isset( $args['textTransform'] ) && $args['textTransform'] ) {
+		// FIX A: only emit text-transform when an explicit non-empty value is set.
+		if ( isset( $args['textTransform'] ) && '' !== $args['textTransform'] ) {
 			$style_parts[] = 'text-transform:' . esc_attr( $args['textTransform'] );
 		}
 
@@ -473,7 +504,12 @@ if ( ! $inherit_style ) {
 // 7. Unique ID + scoped CSS for hover states and responsive rules.
 // ---------------------------------------------------------------------------
 
-$uid = wp_unique_id( 'sgs-hdg-' );
+// FIX D (P-WP-UNIQUE-ID-CACHE-COLLISION 2026-05-17): use a content-derived hash
+// instead of wp_unique_id()'s per-request sequential counter. wp_unique_id returns
+// different values across fragment-cached request fragments, causing the scoped
+// <style> id and the rendered element id to diverge. md5 of serialised attrs is
+// deterministic: same block instance → same uid on every render.
+$uid = 'sgs-hdg-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 
 $scoped_css = array();
 
@@ -496,8 +532,8 @@ if ( $has_scale ) {
 }
 
 if ( $hover_rules || $has_scale ) {
-	// Transition always emitted when any hover behaviour is requested.
-	$scoped_css[] = "#{$uid}.wp-block-sgs-heading{transition:all 300ms ease;}";
+	// FIX C: transition uses operator-supplied duration + easing (defaults 300ms/ease).
+	$scoped_css[] = "#{$uid}.wp-block-sgs-heading{transition:all {$transition_duration}ms {$transition_easing};}";
 	$scoped_css[] = "@media(prefers-reduced-motion:reduce){#{$uid}.wp-block-sgs-heading{transition:none !important;transform:none !important;}}";
 
 	if ( $hover_rules ) {
