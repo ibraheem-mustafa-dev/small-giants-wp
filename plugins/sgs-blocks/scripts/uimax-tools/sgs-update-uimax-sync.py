@@ -366,14 +366,17 @@ def main(argv: list[str]) -> int:
         elif r4.get("status") == "error":
             print(f"  ERROR: {r4['reason']}")
             return 1
-        added = r4.get("schema_added_columns") or []
-        if added:
-            print(f"  Schema migration: added columns {added} to animations table")
-        if args.dry_run:
-            print(f"  [dry-run] would scan; {r4['gap_candidates_found']} candidates currently flagged")
         else:
-            print(f"  Found {r4['gap_candidates_found']} gap candidates; "
-                  f"report at {r4['report_path']}")
+            # Stage 4 ran the live animation-table scan (table not retired).
+            added = r4.get("schema_added_columns") or []
+            if added:
+                print(f"  Schema migration: added columns {added} to animations table")
+            count = r4.get("gap_candidates_found", "n/a")
+            if args.dry_run:
+                print(f"  [dry-run] would scan; {count} candidates currently flagged")
+            else:
+                print(f"  Found {count} gap candidates; "
+                      f"report at {r4.get('report_path', '(none)')}")
 
     return 0
 

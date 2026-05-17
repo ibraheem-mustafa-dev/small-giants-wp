@@ -5,7 +5,7 @@
 > `plugins/sgs-blocks/scripts/generate-block-reference.py`.
 > Refresh: `python plugins/sgs-blocks/scripts/generate-block-reference.py`.
 
-**Last generated:** 2026-05-12T16:29:47
+**Last generated:** 2026-05-17T11:12:19
 
 **For architectural patterns, customisation standards, and build status, see [`02-SGS-BLOCKS.md`](02-SGS-BLOCKS.md).** This file is the per-block attribute/supports/selector reference only.
 
@@ -13,8 +13,8 @@
 
 ## Contents
 
-- [Layout](#layout) (5 blocks)
-- [Content](#content) (34 blocks)
+- [Layout](#layout) (6 blocks)
+- [Content](#content) (37 blocks)
 - [Forms](#forms) (17 blocks)
 - [Interactive](#interactive) (11 blocks)
 
@@ -27,9 +27,9 @@ _SGS Container_
 
 **Type:** Dynamic
 
-Flexible layout wrapper â€” the fundamental building block for all page sections.
+Flexible layout wrapper â€” the fundamental building block for all page sections. Supports default/wide/full/custom widthMode per viewport — composes with WP-native alignfull/alignwide.
 
-**Attributes** (26):
+**Attributes** (35):
 
 | Name | Type | Default | Responsive |
 |------|------|---------|------------|
@@ -40,9 +40,14 @@ Flexible layout wrapper â€” the fundamental building block for all page sec
 | `columns` | `number` | `2` | Yes |
 | `columnsMobile` | `number` | `1` | — |
 | `columnsTablet` | `number` | `2` | — |
+| `customWidth` | `number` | `0` | — |
+| `customWidthUnit` | `string` | `"px"` | — |
 | `gap` | `string` | `"40"` | Yes |
 | `gapMobile` | `string` | `""` | — |
 | `gapTablet` | `string` | `""` | — |
+| `gridTemplateColumns` | `string` | `""` | Yes |
+| `gridTemplateColumnsMobile` | `string` | `""` | — |
+| `gridTemplateColumnsTablet` | `string` | `""` | — |
 | `htmlTag` | `string` | `"section"` | — |
 | `layout` | `string` | `"stack"` | — |
 | `maxWidth` | `string` | `"wide"` | — |
@@ -59,6 +64,10 @@ Flexible layout wrapper â€” the fundamental building block for all page sec
 | `shapeDividerTopHeight` | `number` | `80` | — |
 | `shapeDividerTopInvert` | `boolean` | `false` | — |
 | `verticalAlign` | `string` | `"start"` | — |
+| `widthMode` | `string (enum)` | `"default"` | Yes |
+| `widthModeDesktop` | `string` | `""` | — |
+| `widthModeMobile` | `string` | `""` | — |
+| `widthModeTablet` | `string` | `""` | — |
 
 **Supports:**
 - `__experimentalBorder` ({"radius": true, "width": t...), `align` (["wide", "full"]), `anchor`, `color` ({"background": true, "text"...), `html` (false), `spacing` ({"margin": true, "padding":...), `typography` ({"fontSize": true, "lineHei...)
@@ -68,6 +77,35 @@ Flexible layout wrapper â€” the fundamental building block for all page sec
 | Element | Selector |
 |---------|----------|
 | `root` | `.wp-block-sgs-container` |
+
+---
+
+### `sgs/divider`
+_Divider_
+
+**Type:** Dynamic
+
+Section separator with four visual variants: simple line, dot row, SVG wave, or centred shape. Used to mark transitions between page sections.
+
+**Attributes** (12):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `colour` | `string` | `"primary"` | — |
+| `dividerAlign` | `string (enum)` | `"center"` | — |
+| `dotCount` | `number` | `3` | — |
+| `marginBottom` | `number` | `32` | — |
+| `marginTop` | `number` | `32` | — |
+| `marginUnit` | `string` | `"px"` | — |
+| `shape` | `string (enum)` | `"circle"` | — |
+| `shapeSize` | `number` | `12` | — |
+| `thickness` | `number` | `1` | — |
+| `variant` | `string (enum)` | `"line"` | — |
+| `width` | `number` | `100` | — |
+| `widthUnit` | `string` | `"%"` | — |
+
+**Supports:**
+- `align` (["wide", "full", "center"]), `color` ({"text": false, "background...), `html` (false), `spacing` ({"margin": true, "padding":...)
 
 ---
 
@@ -627,7 +665,7 @@ Flexible image and content grid with overlay and card variants.
 ### `sgs/certification-bar`
 _SGS Certification Bar_
 
-**Type:** Static
+**Type:** Dynamic
 
 Horizontal strip of certification badges with optional labels. Trust signals like BRC, Halal, SALSA.
 
@@ -640,7 +678,7 @@ Horizontal strip of certification badges with optional labels. Trust signals lik
 | `items` | `array` | `[]` | — |
 | `labelColour` | `string` | `"text-muted"` | — |
 | `labelFontSize` | `string` | `—` | — |
-| `title` | `string` | `—` | — |
+| `title` | `string` | `""` | — |
 | `titleColour` | `string` | `"text"` | — |
 | `titleFontSize` | `string` | `—` | — |
 
@@ -659,7 +697,7 @@ Horizontal strip of certification badges with optional labels. Trust signals lik
 ### `sgs/counter`
 _SGS Counter_
 
-**Type:** Static
+**Type:** Dynamic
 
 Animated number counter with prefix, suffix, and label.
 
@@ -670,7 +708,7 @@ Animated number counter with prefix, suffix, and label.
 | `accentStroke` | `boolean` | `false` | — |
 | `duration` | `number` | `2000` | — |
 | `icon` | `string` | `""` | — |
-| `label` | `string` | `—` | — |
+| `label` | `string` | `""` | — |
 | `labelColour` | `string` | `"text-muted"` | — |
 | `labelFontSize` | `string` | `—` | — |
 | `number` | `number` | `0` | — |
@@ -923,51 +961,171 @@ Display Google Business Profile reviews with aggregate ratings and schema.org ma
 
 ---
 
-### `sgs/heritage-strip`
-_SGS Heritage Strip_
+### `sgs/heading`
+_Section Heading_
 
-**Type:** Static
+**Type:** Dynamic
 
-Full-width story section with images and narrative text. Three layout options.
+Composite section-heading cluster: optional eyebrow label, primary headline (h1–h4), and optional subheading paragraph. Mirrors sgs/hero label-family as a standalone reusable heading unit.
 
-**Attributes** (24):
+**Attributes** (144):
 
 | Name | Type | Default | Responsive |
 |------|------|---------|------------|
-| `backgroundColor` | `string` | `"primary"` | — |
-| `backgroundColour` | `string` | `—` | — |
-| `badge` | `string` | `""` | — |
-| `bgPattern` | `string (enum)` | `"none"` | — |
-| `body` | `string` | `""` | — |
-| `bodyColour` | `string` | `"text-inverse"` | — |
-| `bodyFontSize` | `string` | `—` | Yes |
-| `bodyFontSizeMobile` | `string` | `""` | — |
-| `bodyFontSizeTablet` | `string` | `""` | — |
+| `backgroundColour` | `string` | `""` | — |
+| `borderColour` | `string` | `""` | — |
+| `borderRadius` | `string` | `""` | — |
+| `borderRadiusBL` | `string` | `""` | — |
+| `borderRadiusBR` | `string` | `""` | — |
+| `borderRadiusTL` | `string` | `""` | — |
+| `borderRadiusTR` | `string` | `""` | — |
+| `borderRadiusUnit` | `string` | `"px"` | — |
+| `borderStyle` | `string (enum)` | `"none"` | — |
+| `borderWidthBottom` | `string` | `""` | — |
+| `borderWidthLeft` | `string` | `""` | — |
+| `borderWidthRight` | `string` | `""` | — |
+| `borderWidthTop` | `string` | `""` | — |
+| `borderWidthUnit` | `string` | `"px"` | — |
+| `boxShadow` | `string` | `""` | — |
+| `boxShadowHover` | `string` | `""` | — |
+| `customWidth` | `string` | `""` | — |
+| `customWidthUnit` | `string` | `"px"` | — |
+| `emoji` | `string` | `""` | — |
 | `headline` | `string` | `""` | — |
-| `headlineColour` | `string` | `"text-inverse"` | — |
-| `headlineFontSize` | `string` | `—` | Yes |
-| `headlineFontSizeMobile` | `string` | `""` | — |
-| `headlineFontSizeTablet` | `string` | `""` | — |
-| `hoverBackgroundColour` | `string` | `""` | — |
-| `hoverBorderColour` | `string` | `""` | — |
-| `hoverEffect` | `string` | `"none"` | — |
-| `hoverTextColour` | `string` | `""` | — |
-| `imageLeft` | `object` | `—` | — |
-| `imageRight` | `object` | `—` | — |
-| `layout` | `string` | `"image-text-image"` | — |
-| `textColor` | `string` | `"text-inverse"` | — |
-| `transitionDuration` | `string` | `"300"` | — |
-| `transitionEasing` | `string` | `"ease-in-out"` | — |
+| `headlineColour` | `string` | `"text"` | — |
+| `headlineFontFamily` | `string` | `""` | — |
+| `headlineFontSize` | `number` | `28` | Yes |
+| `headlineFontSizeMobile` | `number` | `—` | — |
+| `headlineFontSizeTablet` | `number` | `—` | — |
+| `headlineFontSizeUnit` | `string` | `"px"` | — |
+| `headlineFontStyle` | `string (enum)` | `""` | — |
+| `headlineFontWeight` | `string` | `"700"` | — |
+| `headlineId` | `string` | `""` | — |
+| `headlineLetterSpacing` | `number` | `—` | — |
+| `headlineLetterSpacingUnit` | `string` | `"em"` | — |
+| `headlineLevel` | `string (enum)` | `"h2"` | — |
+| `headlineLineHeight` | `number` | `—` | — |
+| `headlineLineHeightUnit` | `string` | `"em"` | — |
+| `headlineMarginBottom` | `string` | `""` | Yes |
+| `headlineMarginBottomMobile` | `string` | `""` | — |
+| `headlineMarginBottomTablet` | `string` | `""` | — |
+| `headlineMarginLeft` | `string` | `""` | Yes |
+| `headlineMarginLeftMobile` | `string` | `""` | — |
+| `headlineMarginLeftTablet` | `string` | `""` | — |
+| `headlineMarginRight` | `string` | `""` | Yes |
+| `headlineMarginRightMobile` | `string` | `""` | — |
+| `headlineMarginRightTablet` | `string` | `""` | — |
+| `headlineMarginTop` | `string` | `""` | Yes |
+| `headlineMarginTopMobile` | `string` | `""` | — |
+| `headlineMarginTopTablet` | `string` | `""` | — |
+| `headlineMarginUnit` | `string` | `"px"` | — |
+| `headlineTextDecoration` | `string (enum)` | `""` | — |
+| `headlineTextTransform` | `string` | `""` | — |
+| `hoverBackground` | `string` | `""` | — |
+| `hoverColour` | `string` | `""` | — |
+| `hoverScale` | `number` | `—` | — |
+| `icon` | `string` | `""` | — |
+| `iconPosition` | `string (enum)` | `"none"` | — |
+| `inheritStyle` | `boolean` | `false` | — |
+| `label` | `string` | `""` | — |
+| `labelColour` | `string` | `"primary"` | — |
+| `labelEnabled` | `boolean` | `true` | — |
+| `labelFontFamily` | `string` | `""` | — |
+| `labelFontSize` | `number` | `12` | Yes |
+| `labelFontSizeMobile` | `number` | `—` | — |
+| `labelFontSizeTablet` | `number` | `—` | — |
+| `labelFontSizeUnit` | `string` | `"px"` | — |
+| `labelFontStyle` | `string (enum)` | `""` | — |
+| `labelFontWeight` | `string` | `"600"` | — |
+| `labelLetterSpacing` | `number` | `0.08` | — |
+| `labelLetterSpacingUnit` | `string` | `"em"` | — |
+| `labelLineHeight` | `number` | `1.2` | — |
+| `labelLineHeightUnit` | `string` | `"em"` | — |
+| `labelMarginBottom` | `string` | `""` | Yes |
+| `labelMarginBottomMobile` | `string` | `""` | — |
+| `labelMarginBottomTablet` | `string` | `""` | — |
+| `labelMarginLeft` | `string` | `""` | Yes |
+| `labelMarginLeftMobile` | `string` | `""` | — |
+| `labelMarginLeftTablet` | `string` | `""` | — |
+| `labelMarginRight` | `string` | `""` | Yes |
+| `labelMarginRightMobile` | `string` | `""` | — |
+| `labelMarginRightTablet` | `string` | `""` | — |
+| `labelMarginTop` | `string` | `""` | Yes |
+| `labelMarginTopMobile` | `string` | `""` | — |
+| `labelMarginTopTablet` | `string` | `""` | — |
+| `labelMarginUnit` | `string` | `"px"` | — |
+| `labelTag` | `string (enum)` | `"span"` | — |
+| `labelTextDecoration` | `string (enum)` | `""` | — |
+| `labelTextTransform` | `string` | `"uppercase"` | — |
+| `marginBottom` | `string` | `""` | Yes |
+| `marginBottomMobile` | `string` | `""` | — |
+| `marginBottomTablet` | `string` | `""` | — |
+| `marginLeft` | `string` | `""` | Yes |
+| `marginLeftMobile` | `string` | `""` | — |
+| `marginLeftTablet` | `string` | `""` | — |
+| `marginRight` | `string` | `""` | Yes |
+| `marginRightMobile` | `string` | `""` | — |
+| `marginRightTablet` | `string` | `""` | — |
+| `marginTop` | `string` | `""` | Yes |
+| `marginTopMobile` | `string` | `""` | — |
+| `marginTopTablet` | `string` | `""` | — |
+| `marginUnit` | `string` | `"px"` | — |
+| `paddingBottom` | `string` | `""` | Yes |
+| `paddingBottomMobile` | `string` | `""` | — |
+| `paddingBottomTablet` | `string` | `""` | — |
+| `paddingLeft` | `string` | `""` | Yes |
+| `paddingLeftMobile` | `string` | `""` | — |
+| `paddingLeftTablet` | `string` | `""` | — |
+| `paddingRight` | `string` | `""` | Yes |
+| `paddingRightMobile` | `string` | `""` | — |
+| `paddingRightTablet` | `string` | `""` | — |
+| `paddingTop` | `string` | `""` | Yes |
+| `paddingTopMobile` | `string` | `""` | — |
+| `paddingTopTablet` | `string` | `""` | — |
+| `paddingUnit` | `string` | `"px"` | — |
+| `sub` | `string` | `""` | — |
+| `subColour` | `string` | `"text-muted"` | — |
+| `subEnabled` | `boolean` | `true` | — |
+| `subFontFamily` | `string` | `""` | — |
+| `subFontSize` | `number` | `16` | Yes |
+| `subFontSizeMobile` | `number` | `—` | — |
+| `subFontSizeTablet` | `number` | `—` | — |
+| `subFontSizeUnit` | `string` | `"px"` | — |
+| `subFontStyle` | `string (enum)` | `""` | — |
+| `subFontWeight` | `string` | `"400"` | — |
+| `subLetterSpacing` | `number` | `—` | — |
+| `subLetterSpacingUnit` | `string` | `"em"` | — |
+| `subLineHeight` | `number` | `—` | — |
+| `subLineHeightUnit` | `string` | `"em"` | — |
+| `subMarginBottom` | `string` | `""` | Yes |
+| `subMarginBottomMobile` | `string` | `""` | — |
+| `subMarginBottomTablet` | `string` | `""` | — |
+| `subMarginLeft` | `string` | `""` | Yes |
+| `subMarginLeftMobile` | `string` | `""` | — |
+| `subMarginLeftTablet` | `string` | `""` | — |
+| `subMarginRight` | `string` | `""` | Yes |
+| `subMarginRightMobile` | `string` | `""` | — |
+| `subMarginRightTablet` | `string` | `""` | — |
+| `subMarginTop` | `string` | `""` | Yes |
+| `subMarginTopMobile` | `string` | `""` | — |
+| `subMarginTopTablet` | `string` | `""` | — |
+| `subMarginUnit` | `string` | `"px"` | — |
+| `subTag` | `string (enum)` | `"p"` | — |
+| `subTextDecoration` | `string (enum)` | `""` | — |
+| `subTextTransform` | `string` | `""` | — |
+| `transitionDuration` | `number` | `300` | — |
+| `transitionEasing` | `string (enum)` | `"ease"` | — |
+| `variantStyle` | `string (enum)` | `"default"` | — |
 
 **Supports:**
-- `__experimentalBorder` ({"radius": true, "width": t...), `align` (["wide", "full"]), `anchor`, `color` ({"background": true, "text"...), `html` (false), `spacing` ({"margin": true, "padding":...), `typography` ({"fontSize": true, "lineHei...)
+- `align`, `color` ({"text": true, "background"...), `html` (false), `spacing` ({"margin": true, "padding":...)
 
 **Selectors:**
 
 | Element | Selector |
 |---------|----------|
-| `root` | `.sgs-heritage-strip` |
-| `typography` | `.sgs-heritage-strip__headline` |
+| `root` | `.wp-block-sgs-heading` |
+| `typography` | `.wp-block-sgs-heading__headline` |
 
 ---
 
@@ -1165,28 +1323,106 @@ Feature or benefit card with 5 toggleable, reorderable elements: media, title, s
 
 ---
 
+### `sgs/label`
+_Label_
+
+**Type:** Dynamic
+
+Atomic eyebrow / kicker / badge text block. Three style variants: plain text, full-width pill fill, content-width pill wrap. Reusable for section eyebrows, card-tag badges, and intro labels.
+
+**Attributes** (22):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `backgroundColour` | `string` | `"primary"` | — |
+| `borderRadius` | `number` | `6` | — |
+| `fontFamily` | `string` | `""` | — |
+| `fontSize` | `number` | `12` | Yes |
+| `fontSizeMobile` | `number` | `—` | — |
+| `fontSizeTablet` | `number` | `—` | — |
+| `fontSizeUnit` | `string` | `"px"` | — |
+| `fontWeight` | `string` | `"600"` | — |
+| `letterSpacing` | `number` | `0.08` | — |
+| `letterSpacingUnit` | `string` | `"em"` | — |
+| `lineHeight` | `number` | `1.2` | — |
+| `lineHeightUnit` | `string` | `"em"` | — |
+| `paddingBottom` | `number` | `4` | — |
+| `paddingLeft` | `number` | `12` | — |
+| `paddingRight` | `number` | `12` | — |
+| `paddingTop` | `number` | `4` | — |
+| `tag` | `string (enum)` | `"span"` | — |
+| `text` | `string` | `""` | — |
+| `textColour` | `string` | `"primary"` | — |
+| `textDecoration` | `string` | `""` | — |
+| `textTransform` | `string` | `"uppercase"` | — |
+| `variantStyle` | `string (enum)` | `"plain"` | — |
+
+**Supports:**
+- `align`, `color` ({"text": true, "background"...), `html` (false), `spacing` ({"margin": true, "padding":...)
+
+**Selectors:**
+
+| Element | Selector |
+|---------|----------|
+| `root` | `.wp-block-sgs-label` |
+| `typography` | `.wp-block-sgs-label` |
+
+---
+
 ### `sgs/media`
 _SGS Media_
 
 **Type:** Dynamic
 
-Single content block for placing an image OR video with Schema.org markup (ImageObject / VideoObject) and alt text. Supports both Media Library and external URLs. Replaces ad-hoc <img> + <video> placement across blocks.
+Content image block. Replaces core/image in the SGS clone-pipeline converter so styling attributes lift correctly to the frontend via server-side render.
 
-**Attributes** (43):
+**Attributes** (75):
 
 | Name | Type | Default | Responsive |
 |------|------|---------|------------|
+| `alignment` | `string (enum)` | `"left"` | — |
+| `aspectRatio` | `string` | `""` | — |
+| `borderRadius` | `string` | `""` | — |
+| `borderRadiusBL` | `string` | `""` | — |
+| `borderRadiusBR` | `string` | `""` | — |
+| `borderRadiusTL` | `string` | `""` | — |
+| `borderRadiusTR` | `string` | `""` | — |
+| `borderRadiusUnit` | `string` | `"px"` | — |
+| `boxShadow` | `string` | `""` | — |
+| `caption` | `string` | `""` | — |
+| `captionColour` | `string` | `""` | — |
+| `captionFontSize` | `integer` | `—` | — |
+| `captionFontSizeUnit` | `string` | `"px"` | — |
+| `captionTag` | `string (enum)` | `"figcaption"` | — |
 | `decorMedia` | `object` | `—` | — |
 | `fadeOnScroll` | `boolean` | `false` | — |
 | `flipX` | `boolean` | `false` | — |
 | `hideOnMobile` | `boolean` | `false` | — |
 | `hideOnTablet` | `boolean` | `false` | — |
 | `imageAlt` | `string` | `""` | — |
-| `imageId` | `number` | `—` | — |
-| `imageUrl` | `string` | `—` | — |
+| `imageHeight` | `integer` | `—` | — |
+| `imageId` | `integer` | `—` | — |
+| `imageUrl` | `string` | `""` | — |
+| `imageWidth` | `integer` | `—` | — |
+| `linkOpensNewTab` | `boolean` | `false` | — |
+| `linkRel` | `string` | `""` | — |
+| `linkUrl` | `string` | `""` | — |
+| `maxHeight` | `string` | `—` | Yes |
+| `maxHeightMobile` | `string` | `—` | — |
+| `maxHeightTablet` | `string` | `—` | — |
+| `maxHeightUnit` | `string` | `"px"` | — |
+| `maxWidth` | `string` | `—` | Yes |
+| `maxWidthMobile` | `string` | `—` | — |
 | `maxWidthPercent` | `number` | `20` | — |
+| `maxWidthTablet` | `string` | `—` | — |
+| `maxWidthUnit` | `string` | `"px"` | — |
 | `mediaType` | `string` | `"image"` | — |
-| `opacity` | `number` | `85` | — |
+| `objectFit` | `string (enum)` | `"cover"` | — |
+| `objectPosition` | `string` | `"center center"` | — |
+| `opacity` | `number` | `1` | — |
+| `order` | `integer` | `—` | Yes |
+| `orderMobile` | `integer` | `—` | — |
+| `orderTablet` | `integer` | `—` | — |
 | `overflow` | `string` | `"visible"` | — |
 | `parallaxStrength` | `number` | `0` | — |
 | `pathDrawDurationMs` | `number` | `1500` | — |
@@ -1221,7 +1457,7 @@ Single content block for placing an image OR video with Schema.org markup (Image
 | `zIndex` | `number` | `1` | — |
 
 **Supports:**
-- `anchor`, `html` (false), `sgs` ({"mediaControls": true})
+- `anchor`, `className`, `color` (false), `html` (false), `sgs` ({"imageControls": true})
 
 ---
 
@@ -1259,7 +1495,7 @@ A flexible container for one or more SGS Buttons. Provides per-breakpoint layout
 ### `sgs/notice-banner`
 _SGS Notice Banner_
 
-**Type:** Static
+**Type:** Dynamic
 
 Inline informational banner for contextual messages like minimum order values, delivery terms, or promotional notices.
 
@@ -1270,7 +1506,7 @@ Inline informational banner for contextual messages like minimum order values, d
 | `customIcon` | `object` | `{"source": "", "value": "", "label": ""}` | — |
 | `dismissible` | `boolean` | `false` | — |
 | `icon` | `string` | `"info"` | — |
-| `text` | `string` | `—` | — |
+| `text` | `string` | `""` | — |
 | `textColour` | `string` | `"text"` | — |
 | `textFontSize` | `string` | `—` | — |
 | `variant` | `string` | `"info"` | — |
@@ -1416,7 +1652,7 @@ Pricing plans displayed in responsive columns with features, CTAs, monthly/yearl
 ### `sgs/process-steps`
 _SGS Process Steps_
 
-**Type:** Static
+**Type:** Dynamic
 
 Horizontal timeline showing a multi-step process.
 
@@ -1479,6 +1715,115 @@ Static product card with pack-size variant pills, price and CTA. Pure visual blo
 
 **Supports:**
 - `align` (false), `html` (false), `spacing` ({"margin": true, "padding":...)
+
+---
+
+### `sgs/quote`
+_Quote_
+
+**Type:** Dynamic
+
+Attributed blockquote with body paragraphs and an optional footer attribution. Emits semantic <blockquote> + <footer> so converter-pipeline outputs preserve the correct HTML5 structure and inheritable italic styling.
+
+**Attributes** (92):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `attribution` | `string` | `""` | — |
+| `attributionColour` | `string` | `""` | — |
+| `attributionEnabled` | `boolean` | `true` | — |
+| `attributionFontFamily` | `string` | `""` | — |
+| `attributionFontSize` | `number` | `—` | Yes |
+| `attributionFontSizeMobile` | `number` | `—` | — |
+| `attributionFontSizeTablet` | `number` | `—` | — |
+| `attributionFontSizeUnit` | `string` | `"px"` | — |
+| `attributionFontStyle` | `string (enum)` | `""` | — |
+| `attributionFontWeight` | `string` | `""` | — |
+| `attributionLineHeight` | `number` | `—` | — |
+| `attributionLineHeightUnit` | `string` | `"em"` | — |
+| `attributionMarginTop` | `number` | `—` | Yes |
+| `attributionMarginTopMobile` | `number` | `—` | — |
+| `attributionMarginTopTablet` | `number` | `—` | — |
+| `attributionMarginUnit` | `string` | `"px"` | — |
+| `attributionTag` | `string (enum)` | `"footer"` | — |
+| `attributionTextDecoration` | `string (enum)` | `""` | — |
+| `attributionTextTransform` | `string (enum)` | `""` | — |
+| `backgroundColour` | `string` | `""` | — |
+| `body` | `array` | `[]` | — |
+| `bodyColour` | `string` | `""` | — |
+| `bodyFontFamily` | `string` | `""` | — |
+| `bodyFontSize` | `number` | `—` | Yes |
+| `bodyFontSizeMobile` | `number` | `—` | — |
+| `bodyFontSizeTablet` | `number` | `—` | — |
+| `bodyFontSizeUnit` | `string` | `"px"` | — |
+| `bodyFontStyle` | `string (enum)` | `"italic"` | — |
+| `bodyFontWeight` | `string` | `""` | — |
+| `bodyLetterSpacing` | `number` | `—` | — |
+| `bodyLetterSpacingUnit` | `string` | `"em"` | — |
+| `bodyLineHeight` | `number` | `—` | Yes |
+| `bodyLineHeightMobile` | `number` | `—` | — |
+| `bodyLineHeightTablet` | `number` | `—` | — |
+| `bodyLineHeightUnit` | `string` | `"em"` | — |
+| `bodyMarginBottom` | `number` | `—` | Yes |
+| `bodyMarginBottomMobile` | `number` | `—` | — |
+| `bodyMarginBottomTablet` | `number` | `—` | — |
+| `bodyMarginUnit` | `string` | `"px"` | — |
+| `bodyTag` | `string (enum)` | `"p"` | — |
+| `bodyTextDecoration` | `string (enum)` | `""` | — |
+| `bodyTextTransform` | `string (enum)` | `""` | — |
+| `borderColour` | `string` | `""` | — |
+| `borderRadius` | `string` | `""` | — |
+| `borderRadiusBL` | `string` | `""` | — |
+| `borderRadiusBR` | `string` | `""` | — |
+| `borderRadiusTL` | `string` | `""` | — |
+| `borderRadiusTR` | `string` | `""` | — |
+| `borderRadiusUnit` | `string` | `"px"` | — |
+| `borderStyle` | `string (enum)` | `"none"` | — |
+| `borderWidthBottom` | `string` | `""` | — |
+| `borderWidthLeft` | `string` | `""` | — |
+| `borderWidthRight` | `string` | `""` | — |
+| `borderWidthTop` | `string` | `""` | — |
+| `borderWidthUnit` | `string` | `"px"` | — |
+| `boxShadow` | `string` | `""` | — |
+| `boxShadowHover` | `string` | `""` | — |
+| `customWidth` | `string` | `""` | — |
+| `customWidthUnit` | `string` | `"px"` | — |
+| `hoverBackground` | `string` | `""` | — |
+| `hoverColour` | `string` | `""` | — |
+| `hoverScale` | `number` | `—` | — |
+| `inheritStyle` | `boolean` | `false` | — |
+| `marginBottom` | `string` | `""` | Yes |
+| `marginBottomMobile` | `string` | `""` | — |
+| `marginBottomTablet` | `string` | `""` | — |
+| `marginLeft` | `string` | `""` | Yes |
+| `marginLeftMobile` | `string` | `""` | — |
+| `marginLeftTablet` | `string` | `""` | — |
+| `marginRight` | `string` | `""` | Yes |
+| `marginRightMobile` | `string` | `""` | — |
+| `marginRightTablet` | `string` | `""` | — |
+| `marginTop` | `string` | `""` | Yes |
+| `marginTopMobile` | `string` | `""` | — |
+| `marginTopTablet` | `string` | `""` | — |
+| `marginUnit` | `string` | `"px"` | — |
+| `paddingBottom` | `string` | `""` | Yes |
+| `paddingBottomMobile` | `string` | `""` | — |
+| `paddingBottomTablet` | `string` | `""` | — |
+| `paddingLeft` | `string` | `""` | Yes |
+| `paddingLeftMobile` | `string` | `""` | — |
+| `paddingLeftTablet` | `string` | `""` | — |
+| `paddingRight` | `string` | `""` | Yes |
+| `paddingRightMobile` | `string` | `""` | — |
+| `paddingRightTablet` | `string` | `""` | — |
+| `paddingTop` | `string` | `""` | Yes |
+| `paddingTopMobile` | `string` | `""` | — |
+| `paddingTopTablet` | `string` | `""` | — |
+| `paddingUnit` | `string` | `"px"` | — |
+| `transitionDuration` | `string` | `"300"` | — |
+| `transitionEasing` | `string` | `"ease-in-out"` | — |
+| `variantStyle` | `string (enum)` | `"default"` | — |
+
+**Supports:**
+- `anchor`, `className`, `color` (false), `html` (false)
 
 ---
 
@@ -1735,6 +2080,102 @@ Carousel of testimonials with CSS scroll-snap and optional autoplay.
 
 ---
 
+### `sgs/text`
+_Text_
+
+**Type:** Dynamic
+
+Single-element body text block. Emits one configurable HTML tag with full SGS typography, spacing, colour, border, shadow, and hover controls. Replaces core/paragraph in the converter pipeline so inline-style attributes reach the rendered DOM.
+
+**Attributes** (79):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `backgroundColour` | `string` | `""` | — |
+| `borderColour` | `string` | `""` | — |
+| `borderRadius` | `string` | `""` | — |
+| `borderRadiusBL` | `string` | `""` | — |
+| `borderRadiusBR` | `string` | `""` | — |
+| `borderRadiusTL` | `string` | `""` | — |
+| `borderRadiusTR` | `string` | `""` | — |
+| `borderRadiusUnit` | `string` | `"px"` | — |
+| `borderStyle` | `string (enum)` | `"none"` | — |
+| `borderWidthBottom` | `string` | `""` | — |
+| `borderWidthLeft` | `string` | `""` | — |
+| `borderWidthRight` | `string` | `""` | — |
+| `borderWidthTop` | `string` | `""` | — |
+| `borderWidthUnit` | `string` | `"px"` | — |
+| `boxShadow` | `string` | `""` | — |
+| `boxShadowHover` | `string` | `""` | — |
+| `customWidth` | `string` | `""` | — |
+| `customWidthUnit` | `string` | `"px"` | — |
+| `dropCap` | `boolean` | `false` | — |
+| `firstLetterColour` | `string` | `""` | — |
+| `firstLetterFontSize` | `number` | `—` | — |
+| `firstLetterFontSizeUnit` | `string` | `"em"` | — |
+| `firstLetterFontWeight` | `string` | `""` | — |
+| `fontFamily` | `string` | `""` | — |
+| `fontSize` | `number` | `—` | Yes |
+| `fontSizeMobile` | `number` | `—` | — |
+| `fontSizeTablet` | `number` | `—` | — |
+| `fontSizeUnit` | `string` | `"px"` | — |
+| `fontStyle` | `string (enum)` | `""` | — |
+| `fontWeight` | `string` | `""` | — |
+| `hoverBackground` | `string` | `""` | — |
+| `hoverColour` | `string` | `""` | — |
+| `hoverScale` | `number` | `—` | — |
+| `inheritStyle` | `boolean` | `false` | — |
+| `letterSpacing` | `number` | `—` | Yes |
+| `letterSpacingMobile` | `string` | `""` | — |
+| `letterSpacingTablet` | `string` | `""` | — |
+| `letterSpacingUnit` | `string` | `"em"` | — |
+| `lineHeight` | `number` | `—` | Yes |
+| `lineHeightMobile` | `number` | `—` | — |
+| `lineHeightTablet` | `number` | `—` | — |
+| `lineHeightUnit` | `string` | `"em"` | — |
+| `marginBottom` | `number` | `—` | Yes |
+| `marginBottomMobile` | `number` | `—` | — |
+| `marginBottomTablet` | `number` | `—` | — |
+| `marginLeft` | `number` | `—` | Yes |
+| `marginLeftMobile` | `number` | `—` | — |
+| `marginLeftTablet` | `number` | `—` | — |
+| `marginRight` | `number` | `—` | Yes |
+| `marginRightMobile` | `number` | `—` | — |
+| `marginRightTablet` | `number` | `—` | — |
+| `marginTop` | `number` | `—` | Yes |
+| `marginTopMobile` | `number` | `—` | — |
+| `marginTopTablet` | `number` | `—` | — |
+| `marginUnit` | `string` | `"px"` | — |
+| `maxWidth` | `number` | `—` | — |
+| `maxWidthUnit` | `string` | `"px"` | — |
+| `paddingBottom` | `number` | `—` | Yes |
+| `paddingBottomMobile` | `number` | `—` | — |
+| `paddingBottomTablet` | `number` | `—` | — |
+| `paddingLeft` | `number` | `—` | Yes |
+| `paddingLeftMobile` | `number` | `—` | — |
+| `paddingLeftTablet` | `number` | `—` | — |
+| `paddingRight` | `number` | `—` | Yes |
+| `paddingRightMobile` | `number` | `—` | — |
+| `paddingRightTablet` | `number` | `—` | — |
+| `paddingTop` | `number` | `—` | Yes |
+| `paddingTopMobile` | `number` | `—` | — |
+| `paddingTopTablet` | `number` | `—` | — |
+| `paddingUnit` | `string` | `"px"` | — |
+| `tag` | `string (enum)` | `"p"` | — |
+| `text` | `string` | `""` | — |
+| `textAlign` | `string (enum)` | `""` | — |
+| `textColour` | `string` | `""` | — |
+| `textDecoration` | `string (enum)` | `""` | — |
+| `textTransform` | `string (enum)` | `""` | — |
+| `transitionDuration` | `number` | `300` | — |
+| `transitionEasing` | `string (enum)` | `"ease"` | — |
+| `variantStyle` | `string (enum)` | `"default"` | — |
+
+**Supports:**
+- `anchor`, `className`, `color` (false), `html` (false)
+
+---
+
 ### `sgs/trust-badges`
 _SGS Trust Badges_
 
@@ -1770,7 +2211,7 @@ Icon-in-circle badge row for trust signals. Supports a per-badge pending flag to
 ### `sgs/trust-bar`
 _SGS Trust Bar_
 
-**Type:** Static
+**Type:** Dynamic
 
 Horizontal strip of key stats and trust signals with animated number counters. Great for showcasing years of experience, customers served, or certifications.
 
@@ -2715,7 +3156,7 @@ Displays a reading-progress bar and/or countdown at the top or bottom of the vie
 ### `sgs/tab`
 _SGS Tab_
 
-**Type:** Static
+**Type:** Dynamic
 
 Individual tab panel — add any content blocks inside.
 
@@ -2772,83 +3213,214 @@ Source of truth for SGS attribute decomposition (Spec 15 §3.3). Regenerated fro
 
 | Canonical slot | Aliases | HTML tag | Description |
 |---|---|---|---|
+| `__form_instance__` | [] | — | Per-instance form field content (fieldName, placeholder, helpText, required, conditional*). Not a designable visual slot — content lives on each form instance, not in the block-attribute design vocabulary. |
+| `accent` | [] | — | Accent colour for interactive states (link underline, focus, hover) |
 | `alt` | [] | — | Image alt text |
+| `animation` | ["motion", "sgsAnimation", "stagger", "staggerDelay"] | — | Animation motion concept (incl. sgsAnimation) |
+| `ariaLabel` | [] | — | ARIA label slot (a11y) |
+| `aspectRatio` | ["aspect"] | — | Aspect-ratio slot |
+| `autoplay` | [] | — | Autoplay boolean slot |
+| `autoplaySpeed` | [] | — | Autoplay-speed slot |
 | `avatar` | ["portrait", "profile", "authorImage"] | img | Person portrait |
-| `backgroundMedia` | ["backgroundImage", "backgroundVideo", "bgImage", "bgVideo", "heroImage"] | — | Background polymorphic |
+| `backdrop` | [] | — | Backdrop / scrim — modal / popup / drawer overlay |
+| `backgroundMedia` | ["background", "backgroundImage", "backgroundVideo", "bgColor", "bgColour", "bgImage", "bgVideo", "heroImage"] | — | Background polymorphic |
 | `badge` | ["pill"] | span | Decorative badge / pill |
+| `bar` | ["barColour", "progressBar"] | div | progress bar visual element |
+| `border` | ["borderRadius", "borderColor", "borderColour", "borderWidth", "borderStyle"] | — | Border-properties container slot |
+| `breakpoint` | [] | — | Responsive breakpoint threshold (px) |
 | `button` | ["cta", "ctaPrimary", "primaryCta", "primaryButton"] | a | Primary CTA / button |
 | `buttonSecondary` | ["ctaSecondary", "secondaryCta", "secondaryButton"] | a | Secondary CTA / button |
 | `caption` | [] | figcaption | Image caption |
+| `card` | ["cardStyle"] | — | Card-container slot |
+| `column` | ["columns"] | — | Grid/flex column slot |
 | `date` | ["datetime", "timestamp"] | time | Date |
+| `drawer` | [] | — | Drawer-container slot |
+| `feature` | ["featureColour"] | li | pricing tier feature list item |
+| `flip` | [] | — | Mirror / scaleX(-1) transform toggle |
+| `focusRing` | [] | — | Focus-ring outline (a11y) — width / colour / offset / opacity |
+| `gap` | ["blockGap"] | — | Gap layout primitive slot |
+| `header` | ["headerBackground", "headerColour"] | header | accordion item header (distinct from page heading) |
 | `heading` | ["title", "headline", "name"] | h1 | Primary heading |
-| `icon` | ["symbol", "glyph"] | svg | Iconography |
+| `hideOn` | ["hideOnMobile", "hideOnTablet", "hideOnDesktop"] | — | Responsive-hide control slot |
+| `hover` | ["hoverState"] | — | Hover-state slot (state modifier acting as slot) |
+| `htmlTag` | [] | — | HTML tag selector (section / div / article) |
+| `icon` | ["glyph", "iconPosition", "iconSize", "iconValue", "symbol"] | svg | Iconography |
+| `imageAlt` | ["imageAltText"] | — | Image alt-text slot (a11y) |
 | `items` | [] | ul | Repeating list of items |
 | `label` | ["eyebrow", "kicker", "tag"] | span | Pre-heading label |
+| `layout` | ["layoutType"] | — | Layout-mode slot |
+| `lazyLoad` | [] | — | Defer asset load until viewport intersection |
+| `letterSpacing` | [] | — | Letter-spacing slot |
 | `link` | ["url", "href", "anchor"] | a | Link target URL |
+| `linkOpensNewTab` | ["openInNewTab", "target"] | — | Link-target control slot |
+| `logo` | ["logoMaxWidth", "logoImage"] | — | Logo container slot |
+| `loop` | [] | — | Media loop boolean |
+| `margin` | ["margin"] | — | Margin layout primitive slot |
+| `max` | ["maxHeight", "maxWidth"] | — | Max-dimension slot |
 | `media` | ["image", "photo", "picture", "video", "embed"] | img | Polymorphic image/video slot |
+| `mediaSource` | [] | — | Source discriminator: upload / youtube / vimeo / url |
+| `mediaType` | [] | — | Discriminator: image / video / svg / lottie |
+| `min` | ["minHeight", "minWidth"] | — | Min-dimension slot (peeled stem) |
+| `muted` | [] | — | Video / audio mute boolean |
+| `number` | [] | — | Numeric-display slot |
+| `opacity` | [] | — | Opacity slot |
 | `options` | [] | select | Form-field selection options |
+| `overflow` | [] | — | CSS overflow control |
+| `overlay` | [] | — | Overlay-properties slot |
+| `padding` | ["padding"] | — | Padding layout primitive slot |
+| `panel` | [] | — | Panel-container slot |
+| `parallax` | [] | — | Scroll-parallax intensity / behaviour |
+| `position` | [] | — | Position slot — CSS position keyword or coordinate object |
+| `positionX` | [] | — | X-axis position slot |
+| `positionY` | [] | — | Y-axis position slot |
 | `price` | ["cost", "amount"] | span | Price |
+| `query` | ["queryArgs", "wpQuery"] | — | WP_Query / Query Loop descriptor |
+| `quote` | ["quoteText", "quoteBody"] | blockquote | testimonial quote body |
 | `rating` | ["stars", "score"] | span | Star rating |
+| `role` | ["speakerRole", "authorRole", "jobTitle"] | span | testimonial speaker role / job title |
+| `rotation` | ["rotate"] | — | Rotation transform slot |
 | `separator` | ["divider", "rule"] | hr | Visual divider |
-| `subheading` | ["subtitle", "subHeadline", "sub"] | h2 | Sub-heading |
-| `text` | ["body", "description", "content", "caption", "copy"] | p | Paragraph body |
+| `shadow` | [] | — | Shadow-properties slot |
+| `showArrows` | [] | — | Show-arrows boolean slot |
+| `showDate` | [] | — | Show-date boolean slot |
+| `showDots` | [] | — | Show-dots boolean slot |
+| `size` | [] | — | Square dimension (button size, icon size, close size) |
+| `split` | [] | — | Split-layout slot |
+| `star` | ["starColour", "emptyStar"] | svg | star rating visual element (filled or empty variant) |
+| `subheading` | ["sub", "subHeadline", "subTitle", "subtitle"] | h2 | Sub-heading |
+| `tab` | ["tabActive", "tabActiveIndicator", "tabText", "tabBg"] | button | tab UI primitive (label + active + indicator variants) |
+| `text` | ["body", "caption", "content", "copy", "description", "textAlign", "textTransform"] | p | Paragraph body |
+| `transition` | ["motion", "css-transition"] | — | CSS transition motion concept |
+| `variant` | ["style"] | — | Variant/style enum slot |
+| `verticalAlign` | [] | — | Vertical alignment within container |
+| `width` | [] | — | Width layout primitive slot |
+| `zIndex` | [] | — | z-index stacking order |
 
-_Total: 20 canonical slots._
+_Total: 82 canonical slots._
 
 ### Property Suffixes
 
 | Suffix | Role | CSS property | Token-matched | Token source |
 |---|---|---|---|---|
 | `Alignment` | behaviour | — | no | — |
+| `Animation` | motion | — | no | — |
 | `AspectRatio` | layout | aspect-ratio | yes | — |
+| `Attachment` | enum-class-probe | — | no | — |
 | `Background` | color | background-color | yes | palette |
 | `BackgroundColor` | color | background-color | yes | palette |
 | `BackgroundColour` | color | background-color | yes | palette |
+| `Bg` | color | background-color | no | — |
+| `BlockGap` | spacing-token | gap | no | — |
+| `Blur` | number-css-px | filter: blur() | no | — |
+| `BorderBottomLeftRadius` | visual | border-bottom-left-radius | yes | spacing |
+| `BorderBottomRightRadius` | visual | border-bottom-right-radius | yes | spacing |
+| `BorderBottomWidth` | visual | border-bottom-width | yes | spacing |
 | `BorderColor` | color | border-color | yes | palette |
 | `BorderColour` | color | border-color | yes | palette |
+| `BorderLeftWidth` | visual | border-left-width | yes | spacing |
 | `BorderRadius` | visual | border-radius | yes | — |
+| `BorderRightWidth` | visual | border-right-width | yes | spacing |
 | `BorderStyle` | visual | border-style | yes | — |
+| `BorderTopLeftRadius` | visual | border-top-left-radius | yes | spacing |
+| `BorderTopRightRadius` | visual | border-top-right-radius | yes | spacing |
+| `BorderTopWidth` | visual | border-top-width | yes | spacing |
 | `BorderWidth` | visual | border-width | yes | — |
 | `BoxShadow` | visual | box-shadow | yes | shadow.presets |
+| `Circle` | select-from-enum | — | no | — |
 | `Color` | color | color | yes | palette |
 | `Colour` | color | color | yes | palette |
+| `ColumnGap` | layout | column-gap | yes | spacing |
+| `Columns` | layout | grid-template-columns | no | — |
+| `ContentSize` | number-css-px | max-width | no | — |
+| `Date` | text-content | — | no | — |
+| `Delay` | motion | transition-delay | no | — |
+| `Duration` | motion | transition-duration | no | — |
+| `Easing` | motion | transition-timing-function | no | — |
+| `Effect` | select-from-enum | — | no | — |
+| `Email` | text-content | — | no | — |
+| `Emoji` | text-content | — | no | — |
 | `ErrorMessage` | behaviour | — | no | — |
+| `Files` | enum-class-probe | — | no | — |
 | `FontFamily` | typography | font-family | yes | fontFamilies |
 | `FontSize` | typography | font-size | yes | fontSizes |
+| `FontStyle` | select-from-enum | font-style | no | — |
 | `FontWeight` | typography | font-weight | yes | — |
 | `Foreground` | color | color | yes | palette |
 | `Gap` | layout | gap | yes | spacingSizes |
+| `Gradient` | colour-gradient | background-image | no | — |
+| `Grayscale` | select-from-enum | — | no | — |
 | `Height` | layout | height | yes | — |
 | `HelpText` | behaviour | — | no | — |
 | `Href` | content | — | no | — |
+| `Icon` | enum-class-probe | — | no | — |
+| `Id` | enum-class-probe | — | no | — |
+| `Image` | image-object | — | no | — |
+| `ImageZoom` | select-from-enum | — | no | — |
+| `Item` | select-from-enum | — | no | — |
+| `Large` | select-from-enum | — | no | — |
 | `Layout` | layout | — | yes | — |
 | `LetterSpacing` | typography | letter-spacing | yes | — |
 | `LineHeight` | typography | line-height | yes | — |
 | `Link` | content | — | no | — |
+| `LinkColor` | colour-text | color (on a) | no | — |
 | `Margin` | layout | margin | yes | spacingSizes |
+| `MarginBottom` | layout | margin-bottom | yes | spacing |
+| `MarginLeft` | layout | margin-left | yes | spacing |
+| `MarginRight` | layout | margin-right | yes | spacing |
+| `MarginTop` | layout | margin-top | yes | spacing |
+| `Max` | layout | — | no | — |
 | `MaxHeight` | layout | max-height | yes | — |
 | `MaxWidth` | layout | max-width | yes | — |
+| `Min` | layout | — | no | — |
 | `MinHeight` | layout | min-height | yes | — |
 | `MinWidth` | layout | min-width | yes | — |
+| `Mode` | select-from-enum | — | no | — |
+| `Note` | text-content | — | no | — |
 | `ObjectFit` | visual | object-fit | yes | — |
 | `ObjectPosition` | visual | object-position | yes | — |
 | `Opacity` | visual | opacity | yes | — |
+| `Overlay` | boolean-visibility | — | no | — |
+| `Override` | select-from-enum | — | no | — |
 | `Padding` | layout | padding | yes | spacingSizes |
+| `PaddingBottom` | layout | padding-bottom | yes | spacing |
+| `PaddingLeft` | layout | padding-left | yes | spacing |
+| `PaddingRight` | layout | padding-right | yes | spacing |
+| `PaddingTop` | layout | padding-top | yes | spacing |
+| `Pages` | enum-class-probe | — | no | — |
+| `Percent` | number-css-percent | percentage | no | — |
+| `Phone` | text-content | — | no | — |
 | `Placeholder` | behaviour | — | no | — |
+| `Position` | select-from-enum | — | no | — |
+| `Poster` | image-object | — | no | — |
+| `Preset` | select-from-enum | — | no | — |
+| `Radius` | visual | border-radius | no | — |
+| `Rating` | number-css-px | — | no | — |
 | `Required` | behaviour | — | no | — |
+| `RowGap` | layout | row-gap | yes | spacing |
+| `Scale` | select-from-enum | — | no | — |
+| `Schema` | text-content | — | no | — |
 | `Shadow` | color | box-shadow | yes | shadow.presets |
+| `Size` | select-from-enum | — | no | — |
+| `Spacing` | spacing-token | padding/margin (preset) | no | — |
+| `Speed` | number-css-px | — | no | — |
+| `StaggerDelay` | motion | — | no | — |
 | `Stroke` | color | stroke | yes | palette |
 | `Style` | behaviour | — | no | — |
+| `Text` | text-content | — | no | — |
 | `TextAlign` | typography | text-align | yes | — |
 | `TextColor` | color | color | yes | palette |
 | `TextColour` | color | color | yes | palette |
 | `TextDecoration` | typography | text-decoration | yes | — |
 | `TextTransform` | typography | text-transform | yes | — |
+| `Title` | text-content | — | no | — |
+| `Type` | select-from-enum | — | no | — |
 | `Url` | content | — | no | — |
 | `Variant` | behaviour | — | no | — |
+| `Video` | image-object | — | no | — |
+| `WideSize` | number-css-px | max-width | no | — |
 | `Width` | layout | width | yes | — |
 
-_Total: 48 property suffixes._
+_Total: 117 property suffixes._
 
 ### Modifier Suffixes
 
@@ -2878,7 +3450,7 @@ _Total: 19 modifier suffixes._
 
 ## Stats
 
-- **Total blocks:** 67
-- **Dynamic (render.php):** 60
-- **Static (save.js):** 7
-- **Total attributes:** 1343
+- **Total blocks:** 71
+- **Dynamic (render.php):** 71
+- **Static (save.js):** 0
+- **Total attributes:** 1714
