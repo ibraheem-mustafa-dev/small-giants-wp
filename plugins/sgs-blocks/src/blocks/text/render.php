@@ -13,6 +13,9 @@
  * on the same page never collide.
  *
  * @since 2026-05-17  Phase 9 — sgs/text block
+ * @since 2026-05-17  Peer-parity attrs: background, border, box-shadow, hover,
+ *                    variantStyle, customWidth, per-viewport letter-spacing,
+ *                    inheritStyle.
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content (unused — block is leaf-level).
@@ -43,6 +46,8 @@ $line_height_tablet          = isset( $attributes['lineHeightTablet'] ) ? $attri
 $line_height_mobile          = isset( $attributes['lineHeightMobile'] ) ? $attributes['lineHeightMobile'] : null;
 $letter_spacing              = isset( $attributes['letterSpacing'] ) ? $attributes['letterSpacing'] : null;
 $letter_spacing_unit         = $attributes['letterSpacingUnit'] ?? 'em';
+$letter_spacing_tablet       = isset( $attributes['letterSpacingTablet'] ) && '' !== $attributes['letterSpacingTablet'] ? $attributes['letterSpacingTablet'] : null;
+$letter_spacing_mobile       = isset( $attributes['letterSpacingMobile'] ) && '' !== $attributes['letterSpacingMobile'] ? $attributes['letterSpacingMobile'] : null;
 $font_style                  = $attributes['fontStyle'] ?? '';
 $text_decoration             = $attributes['textDecoration'] ?? '';
 $text_transform              = $attributes['textTransform'] ?? '';
@@ -82,6 +87,47 @@ $first_letter_font_size      = isset( $attributes['firstLetterFontSize'] ) ? $at
 $first_letter_font_size_unit = $attributes['firstLetterFontSizeUnit'] ?? 'em';
 $first_letter_font_weight    = $attributes['firstLetterFontWeight'] ?? '';
 
+// --- New peer-parity attrs ---
+
+// Background.
+$background_colour = $attributes['backgroundColour'] ?? '';
+
+// Border-radius family.
+$border_radius      = $attributes['borderRadius'] ?? '';
+$border_radius_unit = $attributes['borderRadiusUnit'] ?? 'px';
+$border_radius_tl   = $attributes['borderRadiusTL'] ?? '';
+$border_radius_tr   = $attributes['borderRadiusTR'] ?? '';
+$border_radius_bl   = $attributes['borderRadiusBL'] ?? '';
+$border_radius_br   = $attributes['borderRadiusBR'] ?? '';
+
+// Border family.
+$border_width_top    = $attributes['borderWidthTop'] ?? '';
+$border_width_right  = $attributes['borderWidthRight'] ?? '';
+$border_width_bottom = $attributes['borderWidthBottom'] ?? '';
+$border_width_left   = $attributes['borderWidthLeft'] ?? '';
+$border_width_unit   = $attributes['borderWidthUnit'] ?? 'px';
+$border_style        = $attributes['borderStyle'] ?? 'none';
+$border_colour       = $attributes['borderColour'] ?? '';
+
+// Box shadow — preset slug or empty.
+$box_shadow       = $attributes['boxShadow'] ?? '';
+$box_shadow_hover = $attributes['boxShadowHover'] ?? '';
+
+// Hover state.
+$hover_scale      = isset( $attributes['hoverScale'] ) ? (float) $attributes['hoverScale'] : null;
+$hover_colour     = $attributes['hoverColour'] ?? '';
+$hover_background = $attributes['hoverBackground'] ?? '';
+
+// Variant style.
+$variant_style = $attributes['variantStyle'] ?? 'default';
+
+// Width override.
+$custom_width      = $attributes['customWidth'] ?? '';
+$custom_width_unit = $attributes['customWidthUnit'] ?? 'px';
+
+// Inherit-style escape hatch.
+$inherit_style = ! empty( $attributes['inheritStyle'] );
+
 // ---------------------------------------------------------------------------
 // 2. Soft-fail: nothing to render if text is empty.
 // ---------------------------------------------------------------------------
@@ -99,29 +145,74 @@ if ( ! in_array( $tag_name, $allowed_tags, true ) ) {
 	$tag_name = 'p';
 }
 
+// Validate variantStyle against allowlist.
+$allowed_variants = array( 'default', 'quote', 'caption', 'lead' );
+if ( ! in_array( $variant_style, $allowed_variants, true ) ) {
+	$variant_style = 'default';
+}
+
+// Validate borderStyle against allowlist.
+$allowed_border_styles = array( 'none', 'solid', 'dashed', 'dotted' );
+if ( ! in_array( $border_style, $allowed_border_styles, true ) ) {
+	$border_style = 'none';
+}
+
+// Validate unit values — only allow safe CSS units.
+$allowed_units      = array( 'px', 'em', 'rem', '%', 'vw', 'vh' );
+$border_radius_unit = in_array( $border_radius_unit, $allowed_units, true ) ? $border_radius_unit : 'px';
+$border_width_unit  = in_array( $border_width_unit, $allowed_units, true ) ? $border_width_unit : 'px';
+$custom_width_unit  = in_array( $custom_width_unit, $allowed_units, true ) ? $custom_width_unit : 'px';
+
 // ---------------------------------------------------------------------------
 // 4. Build desktop inline-style string.
-// Mirrors sgs_heading_build_slot_style() but applied to the single element.
+// When inheritStyle is true, suppress all block-default styles and emit
+// only the wrapper element — the theme/parent cascade takes over.
 // ---------------------------------------------------------------------------
 
-/**
- * Build an inline style string from an array of CSS declarations.
- * Returns empty string if no declarations are present.
- *
- * @param array $parts CSS declaration strings (e.g. 'color:red').
- * @return string Inline style attribute value (no surrounding quotes).
- */
 if ( ! function_exists( 'sgs_text_build_inline_style' ) ) {
+	/**
+	 * Build an inline style string from an array of CSS declarations.
+	 * Returns empty string if no declarations are present.
+	 *
+	 * @param array $parts CSS declaration strings (e.g. 'color:red').
+	 * @return string Inline style attribute value (no surrounding quotes).
+	 */
 	function sgs_text_build_inline_style( array $parts ): string {
 		$parts = array_filter( $parts );
 		return implode( ';', $parts );
 	}
 }
 
+// Early-return path for inheritStyle — emit a bare element with class only.
+if ( $inherit_style ) {
+	$anchor     = $attributes['anchor'] ?? '';
+	$uid        = $anchor ? esc_attr( $anchor ) : 'sgs-text-' . wp_unique_id();
+	$base_class = 'wp-block-sgs-text';
+	if ( 'default' !== $variant_style ) {
+		$base_class .= ' wp-block-sgs-text--' . sanitize_html_class( $variant_style );
+	}
+	$wrapper_args = array( 'class' => $base_class );
+	if ( $anchor ) {
+		$wrapper_args['id'] = $uid;
+	}
+	$wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );
+	printf(
+		'<%1$s %2$s>%3$s</%1$s>',
+		tag_escape( $tag_name ),
+		$wrapper_attrs, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		wp_kses_post( $text )
+	);
+	return;
+}
+
 $style_parts = array();
 
 if ( $text_colour ) {
 	$style_parts[] = 'color:' . sgs_colour_value( $text_colour );
+}
+
+if ( $background_colour ) {
+	$style_parts[] = 'background-color:' . sgs_colour_value( $background_colour );
 }
 
 if ( null !== $font_size && '' !== $font_size ) {
@@ -164,6 +255,11 @@ if ( null !== $max_width && '' !== $max_width ) {
 	$style_parts[] = 'max-width:' . floatval( $max_width ) . esc_attr( $max_width_unit );
 }
 
+// Custom width (overrides max-width when both are set — only one emitted).
+if ( '' !== $custom_width && null !== $custom_width ) {
+	$style_parts[] = 'width:' . esc_attr( $custom_width ) . $custom_width_unit;
+}
+
 // Margin — only emit each side when a non-null value is set.
 if ( null !== $margin_top ) {
 	$style_parts[] = 'margin-top:' . floatval( $margin_top ) . esc_attr( $margin_unit );
@@ -192,12 +288,62 @@ if ( null !== $padding_left ) {
 	$style_parts[] = 'padding-left:' . floatval( $padding_left ) . esc_attr( $padding_unit );
 }
 
+// Border-radius.
+// Per-corner wins when any corner is set; falls back to uniform borderRadius.
+$has_per_corner = ( '' !== $border_radius_tl || '' !== $border_radius_tr || '' !== $border_radius_bl || '' !== $border_radius_br );
+if ( $has_per_corner ) {
+	$brtl          = '' !== $border_radius_tl ? esc_attr( $border_radius_tl ) . $border_radius_unit : '0';
+	$brtr          = '' !== $border_radius_tr ? esc_attr( $border_radius_tr ) . $border_radius_unit : '0';
+	$brbr          = '' !== $border_radius_br ? esc_attr( $border_radius_br ) . $border_radius_unit : '0';
+	$brbl          = '' !== $border_radius_bl ? esc_attr( $border_radius_bl ) . $border_radius_unit : '0';
+	$style_parts[] = "border-radius:{$brtl} {$brtr} {$brbr} {$brbl}";
+} elseif ( '' !== $border_radius ) {
+	$style_parts[] = 'border-radius:' . esc_attr( $border_radius ) . $border_radius_unit;
+}
+
+// Border — emit per-side when any side is set, else shorthand.
+$has_border_width = ( '' !== $border_width_top || '' !== $border_width_right || '' !== $border_width_bottom || '' !== $border_width_left );
+if ( $has_border_width && 'none' !== $border_style ) {
+	$bc = $border_colour ? sgs_colour_value( $border_colour ) : 'currentColor';
+	$bs = esc_attr( $border_style );
+
+	// Check if all sides are equal — use shorthand if so.
+	$sides_equal = ( $border_width_top === $border_width_right
+		&& $border_width_right === $border_width_bottom
+		&& $border_width_bottom === $border_width_left
+		&& '' !== $border_width_top );
+
+	if ( $sides_equal ) {
+		$style_parts[] = 'border:' . esc_attr( $border_width_top ) . $border_width_unit . ' ' . $bs . ' ' . $bc;
+	} else {
+		if ( '' !== $border_width_top ) {
+			$style_parts[] = 'border-top:' . esc_attr( $border_width_top ) . $border_width_unit . ' ' . $bs . ' ' . $bc;
+		}
+		if ( '' !== $border_width_right ) {
+			$style_parts[] = 'border-right:' . esc_attr( $border_width_right ) . $border_width_unit . ' ' . $bs . ' ' . $bc;
+		}
+		if ( '' !== $border_width_bottom ) {
+			$style_parts[] = 'border-bottom:' . esc_attr( $border_width_bottom ) . $border_width_unit . ' ' . $bs . ' ' . $bc;
+		}
+		if ( '' !== $border_width_left ) {
+			$style_parts[] = 'border-left:' . esc_attr( $border_width_left ) . $border_width_unit . ' ' . $bs . ' ' . $bc;
+		}
+	}
+} elseif ( $border_colour && ! $has_border_width ) {
+	// Colour-only (e.g. border shorthand driven by theme) — emit border-color.
+	$style_parts[] = 'border-color:' . sgs_colour_value( $border_colour );
+}
+
+// Box shadow — preset slug maps to CSS custom property.
+if ( $box_shadow ) {
+	$safe_slug     = sanitize_html_class( $box_shadow );
+	$style_parts[] = 'box-shadow:var(--wp--preset--shadow--' . $safe_slug . ')';
+}
+
 $inline_style = sgs_text_build_inline_style( $style_parts );
 
 // ---------------------------------------------------------------------------
-// 5. Responsive scoped <style> block.
-// Uses block anchor or a unique id to scope overrides so multiple
-// instances on the same page never collide.
+// 5. Unique id for scoped CSS.
 // ---------------------------------------------------------------------------
 
 $anchor = $attributes['anchor'] ?? '';
@@ -207,85 +353,98 @@ if ( ! $anchor ) {
 }
 $scope = '#' . esc_attr( $anchor );
 
-/**
- * Build a CSS declaration block for a single responsive breakpoint.
- *
- * @param string     $scope         CSS selector (e.g. '#sgs-text-1').
- * @param string     $media         Media query string (e.g. '@media (max-width:767px)').
- * @param float|null $fs            Font size override.
- * @param string     $fs_unit       Font size unit.
- * @param float|null $lh            Line-height override.
- * @param string     $lh_unit       Line-height unit.
- * @param float|null $mt            Margin-top override.
- * @param float|null $mr            Margin-right override.
- * @param float|null $mb            Margin-bottom override.
- * @param float|null $ml            Margin-left override.
- * @param string     $m_unit        Margin unit.
- * @param float|null $pt            Padding-top override.
- * @param float|null $pr            Padding-right override.
- * @param float|null $pb            Padding-bottom override.
- * @param float|null $pl            Padding-left override.
- * @param string     $p_unit        Padding unit.
- * @return string CSS string (empty when no overrides are set).
- */
+// ---------------------------------------------------------------------------
+// 6. Responsive scoped <style> block.
+// Uses block anchor or a generated unique id to scope overrides so multiple
+// instances on the same page never collide.
+// ---------------------------------------------------------------------------
+
 if ( ! function_exists( 'sgs_text_responsive_css' ) ) {
-function sgs_text_responsive_css(
-	string $scope,
-	string $media,
-	?float $fs,
-	string $fs_unit,
-	?float $lh,
-	string $lh_unit,
-	?float $mt,
-	?float $mr,
-	?float $mb,
-	?float $ml,
-	string $m_unit,
-	?float $pt,
-	?float $pr,
-	?float $pb,
-	?float $pl,
-	string $p_unit
-): string {
-	$decls = array();
+	/**
+	 * Build a CSS declaration block for a single responsive breakpoint.
+	 *
+	 * @param string      $scope   CSS selector (e.g. '#sgs-text-1').
+	 * @param string      $media   Media query string (e.g. '@media (max-width:767px)').
+	 * @param float|null  $fs      Font size override.
+	 * @param string      $fs_unit Font size unit.
+	 * @param float|null  $lh      Line-height override.
+	 * @param string      $lh_unit Line-height unit.
+	 * @param string|null $ls      Letter-spacing override (string to preserve sign).
+	 * @param string      $ls_unit Letter-spacing unit.
+	 * @param float|null  $mt      Margin-top override.
+	 * @param float|null  $mr      Margin-right override.
+	 * @param float|null  $mb      Margin-bottom override.
+	 * @param float|null  $ml      Margin-left override.
+	 * @param string      $m_unit  Margin unit.
+	 * @param float|null  $pt      Padding-top override.
+	 * @param float|null  $pr      Padding-right override.
+	 * @param float|null  $pb      Padding-bottom override.
+	 * @param float|null  $pl      Padding-left override.
+	 * @param string      $p_unit  Padding unit.
+	 * @return string CSS string (empty when no overrides are set).
+	 */
+	function sgs_text_responsive_css(
+		string $scope,
+		string $media,
+		?float $fs,
+		string $fs_unit,
+		?float $lh,
+		string $lh_unit,
+		?string $ls,
+		string $ls_unit,
+		?float $mt,
+		?float $mr,
+		?float $mb,
+		?float $ml,
+		string $m_unit,
+		?float $pt,
+		?float $pr,
+		?float $pb,
+		?float $pl,
+		string $p_unit
+	): string {
+		$decls = array();
 
-	if ( null !== $fs ) {
-		$decls[] = 'font-size:' . $fs . $fs_unit;
-	}
-	if ( null !== $lh ) {
-		$decls[] = 'line-height:' . $lh . $lh_unit;
-	}
-	if ( null !== $mt ) {
-		$decls[] = 'margin-top:' . $mt . $m_unit;
-	}
-	if ( null !== $mr ) {
-		$decls[] = 'margin-right:' . $mr . $m_unit;
-	}
-	if ( null !== $mb ) {
-		$decls[] = 'margin-bottom:' . $mb . $m_unit;
-	}
-	if ( null !== $ml ) {
-		$decls[] = 'margin-left:' . $ml . $m_unit;
-	}
-	if ( null !== $pt ) {
-		$decls[] = 'padding-top:' . $pt . $p_unit;
-	}
-	if ( null !== $pr ) {
-		$decls[] = 'padding-right:' . $pr . $p_unit;
-	}
-	if ( null !== $pb ) {
-		$decls[] = 'padding-bottom:' . $pb . $p_unit;
-	}
-	if ( null !== $pl ) {
-		$decls[] = 'padding-left:' . $pl . $p_unit;
-	}
+		if ( null !== $fs ) {
+			$decls[] = 'font-size:' . $fs . $fs_unit;
+		}
+		if ( null !== $lh ) {
+			$decls[] = 'line-height:' . $lh . $lh_unit;
+		}
+		if ( null !== $ls && '' !== $ls ) {
+			$decls[] = 'letter-spacing:' . esc_attr( $ls ) . $ls_unit;
+		}
+		if ( null !== $mt ) {
+			$decls[] = 'margin-top:' . $mt . $m_unit;
+		}
+		if ( null !== $mr ) {
+			$decls[] = 'margin-right:' . $mr . $m_unit;
+		}
+		if ( null !== $mb ) {
+			$decls[] = 'margin-bottom:' . $mb . $m_unit;
+		}
+		if ( null !== $ml ) {
+			$decls[] = 'margin-left:' . $ml . $m_unit;
+		}
+		if ( null !== $pt ) {
+			$decls[] = 'padding-top:' . $pt . $p_unit;
+		}
+		if ( null !== $pr ) {
+			$decls[] = 'padding-right:' . $pr . $p_unit;
+		}
+		if ( null !== $pb ) {
+			$decls[] = 'padding-bottom:' . $pb . $p_unit;
+		}
+		if ( null !== $pl ) {
+			$decls[] = 'padding-left:' . $pl . $p_unit;
+		}
 
-	if ( empty( $decls ) ) {
-		return '';
-	}
+		if ( empty( $decls ) ) {
+			return '';
+		}
 
-	return $media . '{' . $scope . '{' . implode( ';', $decls ) . '}}';
-}
+		return $media . '{' . $scope . '{' . implode( ';', $decls ) . '}}';
+	}
 }
 
 // Tablet (768px – 1023px).
@@ -296,6 +455,8 @@ $css_tablet = sgs_text_responsive_css(
 	$font_size_unit,
 	null !== $line_height_tablet ? floatval( $line_height_tablet ) : null,
 	$line_height_unit,
+	$letter_spacing_tablet,
+	$letter_spacing_unit,
 	null !== $margin_top_tablet ? floatval( $margin_top_tablet ) : null,
 	null !== $margin_right_tablet ? floatval( $margin_right_tablet ) : null,
 	null !== $margin_bottom_tablet ? floatval( $margin_bottom_tablet ) : null,
@@ -316,6 +477,8 @@ $css_mobile = sgs_text_responsive_css(
 	$font_size_unit,
 	null !== $line_height_mobile ? floatval( $line_height_mobile ) : null,
 	$line_height_unit,
+	$letter_spacing_mobile,
+	$letter_spacing_unit,
 	null !== $margin_top_mobile ? floatval( $margin_top_mobile ) : null,
 	null !== $margin_right_mobile ? floatval( $margin_right_mobile ) : null,
 	null !== $margin_bottom_mobile ? floatval( $margin_bottom_mobile ) : null,
@@ -347,20 +510,59 @@ if ( $drop_cap ) {
 	$css_drop_cap = $scope . '::first-letter{' . implode( ';', $fl_decls ) . '}';
 }
 
-$responsive_css = trim( $css_tablet . $css_mobile . $css_drop_cap );
+// Hover state scoped CSS.
+// Uses focus-visible alongside :hover to satisfy WCAG 2.2 AA
+// keyboard-navigation parity (change is not colour-only — scale + shadow
+// provide additional non-colour cue).
+$css_hover = '';
+$has_hover = ( $hover_colour || $hover_background || null !== $hover_scale || $box_shadow_hover );
+if ( $has_hover ) {
+	$hover_decls = array();
+
+	if ( $hover_colour ) {
+		$hover_decls[] = 'color:' . sgs_colour_value( $hover_colour );
+	}
+	if ( $hover_background ) {
+		$hover_decls[] = 'background-color:' . sgs_colour_value( $hover_background );
+	}
+	if ( null !== $hover_scale && abs( $hover_scale - 1.0 ) > 0.001 ) {
+		$hover_decls[] = 'transform:scale(' . round( $hover_scale, 3 ) . ')';
+	}
+	if ( $box_shadow_hover ) {
+		$safe_hover_slug = sanitize_html_class( $box_shadow_hover );
+		$hover_decls[]   = 'box-shadow:var(--wp--preset--shadow--' . $safe_hover_slug . ')';
+	}
+
+	if ( $hover_decls ) {
+		// Transition on the element itself so hover feels smooth.
+		$css_hover  = $scope . '{transition:color 200ms ease,background-color 200ms ease,transform 200ms ease,box-shadow 200ms ease;}';
+		$css_hover .= $scope . ':hover,' . $scope . ':focus-visible{' . implode( ';', $hover_decls ) . '}';
+
+		// Respect reduced-motion preference.
+		$css_hover .= '@media (prefers-reduced-motion:reduce){' . $scope . '{transition:none !important;transform:none !important;}}';
+	}
+}
+
+$responsive_css = trim( $css_tablet . $css_mobile . $css_drop_cap . $css_hover );
 
 // ---------------------------------------------------------------------------
-// 6. Assemble wrapper attributes.
+// 7. Assemble wrapper attributes.
 // get_block_wrapper_attributes() merges className + custom anchor so WP
 // adds the block class, any editor-assigned custom class, and the anchor id.
 // ---------------------------------------------------------------------------
 
-$wrapper_args = array( 'class' => 'wp-block-sgs-text' );
+// Build CSS class list — base + variant modifier.
+$wrapper_classes = array( 'wp-block-sgs-text' );
+if ( 'default' !== $variant_style ) {
+	$wrapper_classes[] = 'wp-block-sgs-text--' . sanitize_html_class( $variant_style );
+}
+
+$wrapper_args = array( 'class' => implode( ' ', $wrapper_classes ) );
 if ( $inline_style ) {
 	$wrapper_args['style'] = $inline_style;
 }
 // Pass anchor so get_block_wrapper_attributes() writes id="…" on the element —
-// this is the same id used to scope the responsive <style> block.
+// this is the same id used to scope the responsive and hover <style> blocks.
 if ( $anchor && isset( $attributes['anchor'] ) ) {
 	$wrapper_args['id'] = esc_attr( $anchor );
 }
@@ -368,7 +570,7 @@ if ( $anchor && isset( $attributes['anchor'] ) ) {
 $wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );
 
 // ---------------------------------------------------------------------------
-// 7. Output.
+// 8. Output.
 // ---------------------------------------------------------------------------
 
 if ( $responsive_css ) {

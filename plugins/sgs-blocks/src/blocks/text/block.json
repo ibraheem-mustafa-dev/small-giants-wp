@@ -5,7 +5,7 @@
     "version": "0.1.0",
     "title": "Text",
     "category": "sgs-content",
-    "description": "Single-element body text block. Emits one configurable HTML tag with full SGS typography, spacing, and colour controls. Replaces core/paragraph in the converter pipeline so inline-style attributes reach the rendered DOM.",
+    "description": "Single-element body text block. Emits one configurable HTML tag with full SGS typography, spacing, colour, border, shadow, and hover controls. Replaces core/paragraph in the converter pipeline so inline-style attributes reach the rendered DOM.",
     "keywords": [
         "text",
         "paragraph",
@@ -78,6 +78,14 @@
         "letterSpacingUnit": {
             "type": "string",
             "default": "em"
+        },
+        "letterSpacingTablet": {
+            "type": "string",
+            "default": ""
+        },
+        "letterSpacingMobile": {
+            "type": "string",
+            "default": ""
         },
         "fontStyle": {
             "type": "string",
@@ -229,6 +237,109 @@
         "firstLetterFontWeight": {
             "type": "string",
             "default": ""
+        },
+        "backgroundColour": {
+            "type": "string",
+            "default": ""
+        },
+        "borderRadius": {
+            "type": "string",
+            "default": ""
+        },
+        "borderRadiusUnit": {
+            "type": "string",
+            "default": "px"
+        },
+        "borderRadiusTL": {
+            "type": "string",
+            "default": ""
+        },
+        "borderRadiusTR": {
+            "type": "string",
+            "default": ""
+        },
+        "borderRadiusBL": {
+            "type": "string",
+            "default": ""
+        },
+        "borderRadiusBR": {
+            "type": "string",
+            "default": ""
+        },
+        "borderWidthTop": {
+            "type": "string",
+            "default": ""
+        },
+        "borderWidthRight": {
+            "type": "string",
+            "default": ""
+        },
+        "borderWidthBottom": {
+            "type": "string",
+            "default": ""
+        },
+        "borderWidthLeft": {
+            "type": "string",
+            "default": ""
+        },
+        "borderWidthUnit": {
+            "type": "string",
+            "default": "px"
+        },
+        "borderStyle": {
+            "type": "string",
+            "enum": [
+                "none",
+                "solid",
+                "dashed",
+                "dotted"
+            ],
+            "default": "none"
+        },
+        "borderColour": {
+            "type": "string",
+            "default": ""
+        },
+        "boxShadow": {
+            "type": "string",
+            "default": ""
+        },
+        "boxShadowHover": {
+            "type": "string",
+            "default": ""
+        },
+        "hoverScale": {
+            "type": "number"
+        },
+        "hoverColour": {
+            "type": "string",
+            "default": ""
+        },
+        "hoverBackground": {
+            "type": "string",
+            "default": ""
+        },
+        "variantStyle": {
+            "type": "string",
+            "enum": [
+                "default",
+                "quote",
+                "caption",
+                "lead"
+            ],
+            "default": "default"
+        },
+        "customWidth": {
+            "type": "string",
+            "default": ""
+        },
+        "customWidthUnit": {
+            "type": "string",
+            "default": "px"
+        },
+        "inheritStyle": {
+            "type": "boolean",
+            "default": false
         }
     },
     "editorScript": "file:./index.js",

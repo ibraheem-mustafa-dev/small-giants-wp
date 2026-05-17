@@ -6,6 +6,32 @@ last_updated: 2026-05-19
 
 # Parking — deferred work with named triggers
 
+## Opened 2026-05-17 (Bean's design call from brand walkdown)
+
+### P-SGS-QUOTE-BLOCK — Build `sgs/quote` block for blockquote + attribution patterns (~2-3 hrs)
+
+**Bean's directive 2026-05-17:** "Option A for the block quote." Current converter routes `<blockquote class="sgs-brand__body">` to `sgs/container` (losing the blockquote tag/italic inheritance) and the inner `<footer>` attribution to `sgs/text` with `tag: "p"` (losing the footer semantic + the mockup CSS rule `blockquote footer { color: var(--primary) }` no longer matches).
+
+**Solution:** new composite `sgs/quote` block that holds:
+- Quote body paragraphs (rendered inside `<blockquote>` for italic inheritance)
+- Attribution string + colour + spacing (rendered inside `<footer>` inside the blockquote, matching HTML5 spec)
+
+**Attrs (~30 spec'd):**
+- `body` (string OR repeated paragraphs array)
+- `attribution` (string)
+- `attributionColour`, `attributionFontSize`, `attributionFontWeight`, `attributionFontStyle` + viewports + Unit
+- `attributionMarginTop` + viewports + Unit
+- Body styling: `bodyColour`, `bodyFontSize`, `bodyLineHeight`, `bodyFontStyle` (default "italic"), `bodyMarginBottom` (between paragraphs)
+- Wrapper: `backgroundColour`, `borderRadius`, `padding` (4 sides × 3 viewports + Unit), `borderLeft` accent
+- `variantStyle`: enum "default"|"pullquote"|"testimonial"
+- WP supports: className, anchor
+
+**Converter integration:** detect `<blockquote>` with SGS-BEM class → emit `sgs/quote` with body + attribution lifted from inner `<p>` × N + `<footer>`. Replaces current sgs/container + sgs/text-x4 routing for blockquote subtrees.
+
+**Trigger:** Next session OR when another client mockup uses a blockquote pattern.
+
+Captured 2026-05-17 from brand walkdown design discussion.
+
 ## Opened 2026-05-17 (post-Path-B measurement deep-dive)
 
 ### P-MEASUREMENT-CONTEXT-PARITY — Pixel-diff baseline has 30%+ wrapper-context noise floor

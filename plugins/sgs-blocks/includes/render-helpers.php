@@ -232,6 +232,46 @@ function sgs_colour_value( ?string $slug_or_value ): string {
 }
 
 /**
+ * Resolve a shadow attribute value to a CSS box-shadow string.
+ *
+ * If the value is already a raw CSS shadow (contains a digit early in the
+ * string, or starts with `var(`, `0 `, `rgb`, `inset`) it is returned
+ * escaped as-is. Otherwise it is treated as a design token slug and wrapped
+ * in a CSS custom property reference: var(--wp--preset--shadow--{slug}).
+ *
+ * Universal — mirrors sgs_colour_value() / sgs_font_size_value() shape.
+ *
+ * @param string|null $slug_or_value A CSS shadow string or a design token slug.
+ * @return string A CSS box-shadow value, or empty string if input is empty.
+ */
+function sgs_shadow_value( ?string $slug_or_value ): string {
+	if ( ! $slug_or_value ) {
+		return '';
+	}
+
+	$value = trim( $slug_or_value );
+
+	// Raw CSS shadow detection — any of the indicators below means
+	// "don't wrap in preset var, pass through".
+	$is_raw = (
+		str_starts_with( $value, 'var(' ) ||
+		str_starts_with( $value, 'inset' ) ||
+		str_starts_with( $value, 'rgb' ) ||
+		str_starts_with( $value, '0 ' ) ||
+		(bool) preg_match( '/^\d/', $value )
+	);
+
+	if ( $is_raw ) {
+		return esc_attr( $value );
+	}
+
+	// Sanitise slug to valid WordPress preset characters only.
+	$slug = preg_replace( '/[^a-z0-9-]/', '', strtolower( $value ) );
+
+	return 'var(--wp--preset--shadow--' . $slug . ')';
+}
+
+/**
  * Resolve a font-size attribute value to a CSS font-size string.
  *
  * If the value starts with a digit (e.g. "16px", "1.5em") or with "clamp(",

@@ -2,7 +2,7 @@
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
     "name": "sgs/heading",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "title": "Section Heading",
     "category": "sgs-content",
     "description": "Composite section-heading cluster: optional eyebrow label, primary headline (h1–h4), and optional subheading paragraph. Mirrors sgs/hero label-family as a standalone reusable heading unit.",
@@ -29,6 +29,7 @@
     },
     "render": "file:./render.php",
     "attributes": {
+
         "label": {
             "type": "string",
             "default": ""
@@ -88,6 +89,69 @@
             "type": "string",
             "default": "primary"
         },
+        "labelFontStyle": {
+            "type": "string",
+            "enum": [ "normal", "italic" ],
+            "default": ""
+        },
+        "labelTextDecoration": {
+            "type": "string",
+            "enum": [ "none", "underline", "line-through" ],
+            "default": ""
+        },
+        "labelMarginTop": {
+            "type": "string",
+            "default": ""
+        },
+        "labelMarginRight": {
+            "type": "string",
+            "default": ""
+        },
+        "labelMarginBottom": {
+            "type": "string",
+            "default": ""
+        },
+        "labelMarginLeft": {
+            "type": "string",
+            "default": ""
+        },
+        "labelMarginTopTablet": {
+            "type": "string",
+            "default": ""
+        },
+        "labelMarginRightTablet": {
+            "type": "string",
+            "default": ""
+        },
+        "labelMarginBottomTablet": {
+            "type": "string",
+            "default": ""
+        },
+        "labelMarginLeftTablet": {
+            "type": "string",
+            "default": ""
+        },
+        "labelMarginTopMobile": {
+            "type": "string",
+            "default": ""
+        },
+        "labelMarginRightMobile": {
+            "type": "string",
+            "default": ""
+        },
+        "labelMarginBottomMobile": {
+            "type": "string",
+            "default": ""
+        },
+        "labelMarginLeftMobile": {
+            "type": "string",
+            "default": ""
+        },
+        "labelMarginUnit": {
+            "type": "string",
+            "default": "px"
+        },
+
         "headline": {
             "type": "string",
             "default": ""
@@ -147,6 +211,69 @@
             "type": "string",
             "default": "text"
         },
+        "headlineFontStyle": {
+            "type": "string",
+            "enum": [ "normal", "italic" ],
+            "default": ""
+        },
+        "headlineTextDecoration": {
+            "type": "string",
+            "enum": [ "none", "underline", "line-through" ],
+            "default": ""
+        },
+        "headlineMarginTop": {
+            "type": "string",
+            "default": ""
+        },
+        "headlineMarginRight": {
+            "type": "string",
+            "default": ""
+        },
+        "headlineMarginBottom": {
+            "type": "string",
+            "default": ""
+        },
+        "headlineMarginLeft": {
+            "type": "string",
+            "default": ""
+        },
+        "headlineMarginTopTablet": {
+            "type": "string",
+            "default": ""
+        },
+        "headlineMarginRightTablet": {
+            "type": "string",
+            "default": ""
+        },
+        "headlineMarginBottomTablet": {
+            "type": "string",
+            "default": ""
+        },
+        "headlineMarginLeftTablet": {
+            "type": "string",
+            "default": ""
+        },
+        "headlineMarginTopMobile": {
+            "type": "string",
+            "default": ""
+        },
+        "headlineMarginRightMobile": {
+            "type": "string",
+            "default": ""
+        },
+        "headlineMarginBottomMobile": {
+            "type": "string",
+            "default": ""
+        },
+        "headlineMarginLeftMobile": {
+            "type": "string",
+            "default": ""
+        },
+        "headlineMarginUnit": {
+            "type": "string",
+            "default": "px"
+        },
+
         "sub": {
             "type": "string",
             "default": ""
@@ -206,6 +333,69 @@
             "type": "string",
             "default": "text-muted"
         },
+        "subFontStyle": {
+            "type": "string",
+            "enum": [ "normal", "italic" ],
+            "default": ""
+        },
+        "subTextDecoration": {
+            "type": "string",
+            "enum": [ "none", "underline", "line-through" ],
+            "default": ""
+        },
+        "subMarginTop": {
+            "type": "string",
+            "default": ""
+        },
+        "subMarginRight": {
+            "type": "string",
+            "default": ""
+        },
+        "subMarginBottom": {
+            "type": "string",
+            "default": ""
+        },
+        "subMarginLeft": {
+            "type": "string",
+            "default": ""
+        },
+        "subMarginTopTablet": {
+            "type": "string",
+            "default": ""
+        },
+        "subMarginRightTablet": {
+            "type": "string",
+            "default": ""
+        },
+        "subMarginBottomTablet": {
+            "type": "string",
+            "default": ""
+        },
+        "subMarginLeftTablet": {
+            "type": "string",
+            "default": ""
+        },
+        "subMarginTopMobile": {
+            "type": "string",
+            "default": ""
+        },
+        "subMarginRightMobile": {
+            "type": "string",
+            "default": ""
+        },
+        "subMarginBottomMobile": {
+            "type": "string",
+            "default": ""
+        },
+        "subMarginLeftMobile": {
+            "type": "string",
+            "default": ""
+        },
+        "subMarginUnit": {
+            "type": "string",
+            "default": "px"
+        },
+
         "icon": {
             "type": "string",
             "default": ""
@@ -218,6 +408,205 @@
         "emoji": {
             "type": "string",
             "default": ""
+        },
+
+        "marginTop": {
+            "type": "string",
+            "default": ""
+        },
+        "marginRight": {
+            "type": "string",
+            "default": ""
+        },
+        "marginBottom": {
+            "type": "string",
+            "default": ""
+        },
+        "marginLeft": {
+            "type": "string",
+            "default": ""
+        },
+        "marginTopTablet": {
+            "type": "string",
+            "default": ""
+        },
+        "marginRightTablet": {
+            "type": "string",
+            "default": ""
+        },
+        "marginBottomTablet": {
+            "type": "string",
+            "default": ""
+        },
+        "marginLeftTablet": {
+            "type": "string",
+            "default": ""
+        },
+        "marginTopMobile": {
+            "type": "string",
+            "default": ""
+        },
+        "marginRightMobile": {
+            "type": "string",
+            "default": ""
+        },
+        "marginBottomMobile": {
+            "type": "string",
+            "default": ""
+        },
+        "marginLeftMobile": {
+            "type": "string",
+            "default": ""
+        },
+        "marginUnit": {
+            "type": "string",
+            "default": "px"
+        },
+        "paddingTop": {
+            "type": "string",
+            "default": ""
+        },
+        "paddingRight": {
+            "type": "string",
+            "default": ""
+        },
+        "paddingBottom": {
+            "type": "string",
+            "default": ""
+        },
+        "paddingLeft": {
+            "type": "string",
+            "default": ""
+        },
+        "paddingTopTablet": {
+            "type": "string",
+            "default": ""
+        },
+        "paddingRightTablet": {
+            "type": "string",
+            "default": ""
+        },
+        "paddingBottomTablet": {
+            "type": "string",
+            "default": ""
+        },
+        "paddingLeftTablet": {
+            "type": "string",
+            "default": ""
+        },
+        "paddingTopMobile": {
+            "type": "string",
+            "default": ""
+        },
+        "paddingRightMobile": {
+            "type": "string",
+            "default": ""
+        },
+        "paddingBottomMobile": {
+            "type": "string",
+            "default": ""
+        },
+        "paddingLeftMobile": {
+            "type": "string",
+            "default": ""
+        },
+        "paddingUnit": {
+            "type": "string",
+            "default": "px"
+        },
+        "backgroundColour": {
+            "type": "string",
+            "default": ""
+        },
+        "borderRadius": {
+            "type": "string",
+            "default": ""
+        },
+        "borderRadiusUnit": {
+            "type": "string",
+            "default": "px"
+        },
+        "borderRadiusTL": {
+            "type": "string",
+            "default": ""
+        },
+        "borderRadiusTR": {
+            "type": "string",
+            "default": ""
+        },
+        "borderRadiusBL": {
+            "type": "string",
+            "default": ""
+        },
+        "borderRadiusBR": {
+            "type": "string",
+            "default": ""
+        },
+        "borderWidthTop": {
+            "type": "string",
+            "default": ""
+        },
+        "borderWidthRight": {
+            "type": "string",
+            "default": ""
+        },
+        "borderWidthBottom": {
+            "type": "string",
+            "default": ""
+        },
+        "borderWidthLeft": {
+            "type": "string",
+            "default": ""
+        },
+        "borderWidthUnit": {
+            "type": "string",
+            "default": "px"
+        },
+        "borderStyle": {
+            "type": "string",
+            "enum": [ "none", "solid", "dashed", "dotted" ],
+            "default": "none"
+        },
+        "borderColour": {
+            "type": "string",
+            "default": ""
+        },
+        "boxShadow": {
+            "type": "string",
+            "default": ""
+        },
+        "boxShadowHover": {
+            "type": "string",
+            "default": ""
+        },
+        "hoverScale": {
+            "type": "number",
+            "default": null
+        },
+        "hoverColour": {
+            "type": "string",
+            "default": ""
+        },
+        "hoverBackground": {
+            "type": "string",
+            "default": ""
+        },
+        "variantStyle": {
+            "type": "string",
+            "enum": [ "default", "hero", "section", "card" ],
+            "default": "default"
+        },
+        "customWidth": {
+            "type": "string",
+            "default": ""
+        },
+        "customWidthUnit": {
+            "type": "string",
+            "default": "px"
+        },
+        "inheritStyle": {
+            "type": "boolean",
+            "default": false
         }
     },
     "editorScript": "file:./index.js",
