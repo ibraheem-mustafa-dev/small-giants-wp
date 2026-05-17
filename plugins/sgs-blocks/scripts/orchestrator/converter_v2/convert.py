@@ -77,6 +77,12 @@ _WIDTH_MATCH_TOLERANCE_PCT: float = 5.0
 # --modifier, no descendant combinators).
 _SGS_BEM_BLOCK_ROOT_RE = re.compile(r"^\.sgs-[a-z][a-z0-9]*(-[a-z0-9]+)*$")
 
+# Selector regex for SGS-BEM __inner ELEMENT — many client mockups (e.g. Mama's
+# Munches) carry the canonical section width on `__inner` rather than the block
+# root.  We ONLY accept `__inner`; other element suffixes (`__title`, `__lead`,
+# `__card`, etc.) are content slots, not layout containers.
+_SGS_BEM_INNER_RE = re.compile(r"^\.sgs-[a-z][a-z0-9]*(-[a-z0-9]+)*__inner$")
+
 # CSS lengths we treat as "full-bleed" rather than as a contentSize/wideSize
 # candidate. Used by both detection (skip these in clustering) and width-mode
 # matching (map directly to `widthMode: full`).
@@ -1664,7 +1670,10 @@ def _detect_client_layout_widths(css_rules: dict) -> dict:
         if " :: " in sel:
             continue
         sel_clean = sel.strip()
-        if not _SGS_BEM_BLOCK_ROOT_RE.match(sel_clean):
+        if not (
+            _SGS_BEM_BLOCK_ROOT_RE.match(sel_clean)
+            or _SGS_BEM_INNER_RE.match(sel_clean)
+        ):
             continue
         raw = decls.get("max-width")
         if raw is None:
@@ -3233,5 +3242,42 @@ def _trace_classifications(section: Tag) -> None:
             )
 
 
+def _run_selector_regex_tests() -> None:
+    """Quick sanity-check for _SGS_BEM_BLOCK_ROOT_RE and _SGS_BEM_INNER_RE.
+
+    8 canonical cases — run via `python convert.py --test-selectors`.
+    Green = ACCEPT, Red = REJECT.  Raises AssertionError on any mismatch.
+    """
+    cases = [
+        # (selector, expected_accept, label)
+        (".sgs-brand",              True,  "block root"),
+        (".sgs-trust-bar",          True,  "kebab block root"),
+        (".sgs-header__inner",      True,  "NEW: __inner element"),
+        (".sgs-trust-bar__inner",   True,  "NEW: kebab + __inner"),
+        (".sgs-header__title",      False, "other element — REJECT"),
+        (".sgs-button--primary",    False, "modifier — REJECT"),
+        (".sgs-card__inner--featured", False, "element + modifier — REJECT"),
+        (".foo",                    False, "non-SGS — REJECT"),
+    ]
+
+    all_passed = True
+    for sel, expected, label in cases:
+        accepted = bool(
+            _SGS_BEM_BLOCK_ROOT_RE.match(sel)
+            or _SGS_BEM_INNER_RE.match(sel)
+        )
+        status = "OK  " if accepted == expected else "FAIL"
+        outcome = "ACCEPT" if accepted else "REJECT"
+        if accepted != expected:
+            all_passed = False
+        print(f"  [{status}] {outcome:6s}  {sel!r:<40s} ({label})")
+
+    assert all_passed, "One or more selector regex tests failed — see output above."
+    print("  All 8 selector regex tests passed.")
+
+
 if __name__ == "__main__":
+    if len(sys.argv) == 2 and sys.argv[1] == "--test-selectors":
+        _run_selector_regex_tests()
+        sys.exit(0)
     sys.exit(main(sys.argv))
