@@ -33,7 +33,9 @@ Captured 2026-05-17 at session close.
 
 ---
 
-### P-WP-ALIGNMENT-WIDTH-SYSTEM — Per-mockup theme content widths + per-block alignment selectors (PRIORITY, after P-USE-PAGES-NOT-POSTS) (~2-3 hrs)
+### P-WP-ALIGNMENT-WIDTH-SYSTEM — Per-mockup theme content widths + per-block alignment selectors (PRIORITY, after P-USE-PAGES-NOT-POSTS) (~2-3 hrs) — **CLOSED 2026-05-18**
+
+**Resolution:** Shipped in `86172812`. Container Branches A + C + Converter Branch B + 2× `/qc-inline` passes (caught BEM regex bug, scored editor UI 96/100). 6 new container attrs + 5 new converter helpers + InspectorControls UI + visual-diff PASS report at `reports/visual-diff/container-2026-05-17.md`. Brand pixel-diff at 1440 unchanged post-deploy (43.73%) — expected because block markup on page 131 still dates from yesterday's pre-widthMode converter output. **The framework infrastructure is shipped; the ROI measurement requires a full orchestrator pipeline re-run with `--client-slug=mamas-munches`, which is the next session's first concrete step.** See decisions.md D3 and next-session-prompt.md.
 
 **TL;DR:** Even after switching to pages, mockups author sections at non-WP-aligned widths (Mama's brand at `max-width: 1000px`) which need a per-mockup `contentSize`/`wideSize` AND a sgs/container `widthMode` selector to map cleanly to WP-native alignment. Hero-clone-poc at https://sandybrown-nightingale-600381.hostingersite.com/hero-clone-poc/ proves the alignfull mechanism works on a PAGE. This work is downstream of P-USE-PAGES-NOT-POSTS but still needed for true mockup fidelity.
 

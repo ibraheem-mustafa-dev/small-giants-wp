@@ -2,6 +2,34 @@
 
 Append-only. Most-recent first.
 
+## 2026-05-18 — P-WP-ALIGNMENT-WIDTH-SYSTEM shipped
+
+### D2: Task 0 — cv2 pipeline targets WP PAGES, not POSTS
+
+**Context:** Post 65 (the existing cv2 canary) renders via `single.html` with `.entry-content { max-width: 800px }` and `is-layout-constrained` main wrapper. SGS clones websites; websites are PAGES rendered via `page.html` (`is-layout-flow`, no cap). Inherited "POST" target was historical inertia — the script `reports/brand-walkdown-2026-05-19/upload_and_patch.py` hardcoded `/wp/v2/posts/65` since early-session.
+
+**Decision:** All cv2 pipeline output targets WP **pages** by default. Created page 131 (`/cv2-output-mamas-munches/`) + page 132 (baseline). `upload_and_patch.py` rewritten with `argparse` — `--target page|post --target-id N`, default `page` + `131`. Convention documented in root `CLAUDE.md` "Site Migration" section.
+
+**Evidence proving it works:** Apples-to-apples brand-cropped pixel-diff at 1440 against the SAME mockup baseline — Post 65 (`is-layout-constrained`): 58.0%. Page 131 (`is-layout-flow`): 43.7%. 14.3-point drop from this single architectural change.
+
+### D3: Tasks 2-3 — widthMode infrastructure as the per-viewport alignment system
+
+**Context:** Even after Task 0 fixed the parent-context constraint, mockups commonly author arbitrary section widths (Mama's brand at 1000px, hero at full-viewport). The cv2 converter was lifting these as inline `style.dimensions.maxWidth` — bypassing WP's native alignment chain AND bypassing per-client theme.json content widths. So every client's pages emitted hardcoded pixel literals regardless of their style variation.
+
+**Decision:** Build the WP-native alignment system into sgs/container + the converter:
+1. **Schema (`block.json`)** — new `widthMode` (enum default/wide/full/custom) + per-viewport overrides (`widthModeMobile/Tablet/Desktop`, empty = inherit base) + `customWidth` + `customWidthUnit`. Legacy `maxWidth` attr preserved for backwards-compat.
+2. **Render (`render.php`)** — emit `alignwide` / `alignfull` for base widthMode. Per-viewport overrides emit a scoped `<style>` block keyed off the same UID pattern used for responsive `gap` (mobile ≤599px / tablet ≤1023px / desktop ≥1024px). Allowlist validation on enum + unit; `customWidth > 0` guard prevents malformed CSS.
+3. **Editor UI (`edit.js`)** — InspectorControls section: ToggleGroup for base, ResponsiveControl for per-viewport, conditional custom inputs. Editor canvas mirrors render via composed classes + inline max-width.
+4. **Converter (`convert.py`)** — `_detect_client_layout_widths` scans SGS-BEM block-root selectors for `max-width` declarations and proposes `{contentSize, wideSize}` for the client's style variation. `_write_client_layout_widths` writes to `theme/sgs-theme/styles/{client_slug}.json:settings.layout` idempotently. `_match_theme_width` compares lifted widths against theme widths with ±5% tolerance. `_lift_root_supports_to_style` emits semantic `widthMode` when match; falls back to legacy inline for arbitrary literals.
+
+**Universal-benefit:** Zero client literals. Widths resolve via WP CSS vars chain → theme.json defaults → per-client variation overrides. Works for any client whose mockup CSS follows SGS-BEM naming.
+
+**QC trace:** 2× `/qc-inline` passes. First caught a real BEM regex bug (`_SGS_BEM_BLOCK_ROOT_RE` matched `.sgs-X--Y` modifiers) and fixed it inline before commit. Second scored editor UI 96/100 with zero findings. Visual-diff PASS report at `reports/visual-diff/container-2026-05-17.md`.
+
+**Commits:** `c7f42003` (Task 0) + `86172812` (Tasks 2-3).
+
+---
+
 ## 2026-05-17 — Brand walkdown close (WP alignment architecture surfaced)
 
 ### D1: Architectural fix — WP-native alignment + per-client theme.json widths

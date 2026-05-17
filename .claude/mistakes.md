@@ -1,5 +1,20 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-17 (2 new lessons — dismissing wrapper-context mismatch as "measurement noise" instead of fixable architecture; sgs/* render.php helpers must have function_exists guards from day one)
+**Last updated:** 2026-05-18 (1 new lesson — BEM regex char-class `[a-z0-9-]` matches consecutive `--` and silently lets modifier shapes through what looks like a block-root-only filter)
+
+## 2026-05-18 — BEM regex `[a-z0-9-]*` silently matches `--modifier` shapes
+
+**What:** Branch B's `_SGS_BEM_BLOCK_ROOT_RE` was authored as `^\.sgs-[a-z][a-z0-9-]*$` to filter SGS-BEM block-root selectors (no `__element`, no `--modifier`). Because the hyphen sits inside the character class `[a-z0-9-]`, the regex happily matches *two consecutive hyphens* and lets `.sgs-section--alt` slip through to the width-detection cluster. Smoke test caught this — `_detect_client_layout_widths` returned a polluted `{contentSize: 900px, wideSize: 1200px}` because a `.sgs-section--alt { max-width: 900px }` rule was being counted as a block root.
+
+**Why it happened:** The original prompt explicitly said "no `__element` or `--modifier` parts" — the agent encoded the intent ("hyphens allowed in block names") but missed the implication ("but not consecutive hyphens / BEM modifier separator"). Char-class `[-]` is correct for kebab-case identifiers (single-hyphen between segments) and incorrect for filtering `--` because it doesn't constrain hyphen placement.
+
+**The fix:** `^\.sgs-[a-z][a-z0-9]*(-[a-z0-9]+)*$` — segmented kebab pattern. Each segment is one or more alphanumeric chars; segments are joined by exactly one hyphen. Rejects `--` because the second `-` would need a following alphanumeric segment, and `.sgs-X--Y` parses as `(-X)(--Y)` which doesn't satisfy `(-[a-z0-9]+)` (no leading alphanumeric after the first hyphen). Verified across 12 cases including legitimate kebab-case roots (`.sgs-card-grid`, `.sgs-trust-bar`, `.sgs-info-box`, `.sgs-cta-section`) — all pass.
+
+**Pattern to avoid in future:**
+- When a regex needs to exclude double-character sequences but allow the single character, the char class alone is insufficient — must constrain placement via grouping
+- Always smoke-test BEM-classification regexes against the full canonical case set (block root / kebab-case root / `__element` / `--modifier` / `__element--modifier` / non-SGS) before treating the regex as "obviously correct"
+- For any helper that classifies CSS selectors by shape, ship a 5+-case unit assertion next to the regex
+
+**Captured 2026-05-18.** Found and fixed during `/qc-inline` #1 before commit — would otherwise have shipped as a silent universal-benefit violation (any client whose mockup uses BEM modifiers at section level would have had their widthMode detection polluted).
 
 ## 2026-05-17 — Using WP POSTS as cv2 test target when SGS clones WEBSITES (=pages)
 

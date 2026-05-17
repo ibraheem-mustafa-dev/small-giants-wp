@@ -1,214 +1,134 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-session_tag: small-giants-wp-2026-05-18-wp-alignment-width-system
+session_tag: small-giants-wp-2026-05-19-orchestrator-rerun
 recommended_model: sonnet
-generated: 2026-05-17
-plan_revision: v7 (post brand walkdown + 11 parked fixes shipped)
+generated: 2026-05-18
+plan_revision: v8 (post P-WP-ALIGNMENT-WIDTH-SYSTEM ship)
 ---
 
-You are a senior SGS Framework architect implementing **P-WP-ALIGNMENT-WIDTH-SYSTEM** — the architectural fix that unblocks brand pixel-diff (and all cross-client cloning fidelity downstream of it).
+You are continuing the SGS Framework Phase 9 brand walkdown. The architectural alignment-width work shipped 2026-05-18 in two commits: `c7f42003` (Task 0 pages-not-posts) + `86172812` (Tasks 2-3 widthMode infrastructure). Your job this session: **prove out the widthMode emission with a real orchestrator pipeline re-run, push to page 131, measure pixel-diff, then pivot to intra-section closure.**
 
-Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-18-wp-alignment-width-system"`
+Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-19-orchestrator-rerun"`
 
-## THE PROBLEM (one-paragraph summary)
+## THE STATE (one-paragraph)
 
-Brand pixel-diff stuck at 47-58% because the cv2 test target is a WP POST (rendered via `single.html` template with `.entry-content { max-width: 800px }` constraint) — but the SGS framework clones WEBSITES which should be WP PAGES (rendered via `page.html` with no such constraint). Bean's pull-back at session close: "Why are you using post templates for pages anyway?" Historical inertia — early handoff said "Post 65", my upload_and_patch.py inherited the target. Hero-clone-poc at https://sandybrown-nightingale-600381.hostingersite.com/hero-clone-poc/ is a PAGE — it works. The fix has two layers: (1) switch pipeline to use pages, (2) per-client `contentSize`/`wideSize` + sgs/container `widthMode` for arbitrary mockup widths beyond the standard WP alignment slots.
-
-## THE FIX (Bean's directive, 2026-05-17)
-
-Two layers, both within WordPress block-theme conventions:
-
-1. **Per-client `contentSize` / `wideSize` in theme.json style variations.** Each client's `theme/sgs-theme/styles/{client}.json` gets `settings.layout.contentSize` + `wideSize` derived from the mockup CSS section widths. Per-viewport variants supported.
-
-2. **sgs/container `widthMode` attr** — enum `default | wide | full | custom` × per-viewport (Mobile/Tablet/Desktop). When `widthMode="full"` block emits `alignfull` class to escape `.entry-content`. When `"wide"` emits `alignwide`. When `"custom"` emits inline max-width.
-
-Full implementation plan + reading list in `.claude/parking.md` under **P-WP-ALIGNMENT-WIDTH-SYSTEM** (phases A-F).
+Page 131 (`/cv2-output-mamas-munches/`) is the new canary — `page.html` template + `is-layout-flow` main, no 800px cap. Block markup on page 131 currently dates from 2026-05-17's converter output (pre-widthMode). The new converter knows how to emit `widthMode: "wide"`/`"full"`/`"default"` when section CSS matches theme widths within ±5%; the new render.php translates those into WP-native `alignfull`/`alignwide` with per-viewport overrides via scoped `<style>` blocks. Editor InspectorControls let operators pick widthMode + per-viewport + customWidth/Unit. Visual-diff report at `reports/visual-diff/container-2026-05-17.md` documents zero regression. Brand pixel-diff at 1440 is 43.7% (down from yesterday's 58.0%) — but the further drop from widthMode emission can only be measured after a full orchestrator re-run produces new block markup carrying the new attrs.
 
 ## ALWAYS-LOAD invocations (in this order)
 
 1. `/autopilot`
-2. `.claude/parking.md` → search `P-WP-ALIGNMENT-WIDTH-SYSTEM` — the full architecture + reading list + phases A-F
-3. `.claude/state.md` — frontmatter contract, blockers, 13-commit list
-4. `.claude/handoff.md` — 2026-05-17 session close summary
-5. `~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/MEMORY.md` — top 5 binding rules
+2. `.claude/state.md` — 2026-05-18 snapshot
+3. `.claude/handoff.md` — 2026-05-18 session close summary
+4. `.claude/parking.md` → search for any newly-opened entries
+5. `~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/MEMORY.md` — top binding rules
+6. `reports/visual-diff/container-2026-05-17.md` — Tasks 2-3 acceptance evidence
 
-## Reading list (load in order, ~20 min total)
+## Reading list
 
-1. **Live evidence — hero-clone-poc page-source diff:**
-   - https://sandybrown-nightingale-600381.hostingersite.com/hero-clone-poc/ (the working clone)
-   - https://sandybrown-nightingale-600381.hostingersite.com/2026/05/15/spec16-p7-converter-v2-output-2026-05-15/ (the not-working post 65)
-   - Use Playwright to inspect both: parent chain, classList, getComputedStyle on `.sgs-hero` / `.sgs-brand`
-2. **`theme/sgs-theme/theme.json`** — current `settings.layout.contentSize` + `wideSize` values
-3. **`theme/sgs-theme/styles/mamas-munches.json`** — does the style variation override layout? (probably not yet)
-4. **`plugins/sgs-blocks/src/blocks/hero/block.json`** — find `supports.align` declaration. This is what lets hero use `alignfull` on hero-clone-poc.
-5. **`plugins/sgs-blocks/src/blocks/container/block.json`** — current sgs/container schema, no `align` support yet
-6. **`plugins/sgs-blocks/src/blocks/container/render.php`** — current `sgs-container--width-{wide|content|full}` class emission. New `widthMode` work extends this.
-7. **`plugins/sgs-blocks/src/blocks/container/style.css`** — current `.sgs-container--width-wide` CSS rules (max-width: 1200px etc.)
-8. **`/wp-block-development` skill** — `supports.align` block.json semantics + alignment behaviour
-9. **`/wp-block-themes` skill** — theme.json layout configuration + style variations
-10. **WordPress docs (web fetch):**
-    - https://developer.wordpress.org/themes/global-settings-and-styles/settings/layout/
-    - https://developer.wordpress.org/block-editor/reference-guides/block-api/block-supports/#align
-11. **`.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md`** §7 stages 3-7 (converter pipeline reference)
-12. **`.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md`** — slot-aware DOM walker (where new lift rules will plug in)
+1. **`plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py`** + **`plugins/sgs-blocks/scripts/orchestrator/orchestrator_main.py`** — find how the orchestrator invokes convert.py and whether `--client-slug` is already wired through, or if it needs an integration step (it likely needs one — Branch B only wired the convert.py CLI, not the orchestrator wrapper)
+2. **`sites/mamas-munches/mockups/homepage/index.html`** + the previous run-dir at `pipeline-state/mamas-munches-homepage-2026-05-17-071529/` — reference for inputs and expected outputs
+3. **`theme/sgs-theme/styles/mamas-munches.json`** — confirm currently has NO `settings.layout` block (smoke artefact was reverted before commit); the real orchestrator run will populate it
+4. **`plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py`** lines 1573-1779 (helper block) and 3137-3199 (main + CLI) — the new entry points
 
-## Skills to Invoke
+## Skills to invoke
 
 | Skill | When |
 |-------|------|
-| `/brainstorming` | Architecture decisions on per-viewport widthMode UX |
-| `/gap-analysis` | Grade the implementation before commit |
-| `/lifecycle` | If skill/agent edits needed |
-| `/research` | If specific WP alignment behaviour needs verifying |
-| `/strategic-plan` | Plan phases A-F + cross-block container changes |
-| `/systematic-debugging` | If pixel-diff doesn't drop as expected post-fix |
-| `/qc` | Multi-rater panel BEFORE every commit touching converter/pipeline/SGS block logic (binding rule #2) |
-| `/qc-inline` | Self-check during implementation |
+| `/strategic-plan` | If the orchestrator wiring for --client-slug needs more than one mechanical step |
+| `/systematic-debugging` | If the orchestrator re-run produces unexpected output |
+| `/qc-inline` | Self-check before any orchestrator-wrapper edit lands |
+| `/qc` | Multi-rater panel BEFORE committing any converter/orchestrator/SGS block change (binding rule #2) |
 | `/sgs-wp-engine` | All SGS framework work |
-| `/sgs-update` | Refresh sgs-framework.db after new container attrs land |
-| `/wp-block-development` | New container attrs, supports.align semantics |
-| `/wp-block-themes` | theme.json layout config, style variations |
-| `/wp-wpcli-and-ops` | theme.json reload, cache purge |
-| `/library-docs` | If specific WordPress API needs verification |
+| `/sgs-update` | Refresh sgs-framework.db after orchestrator outputs are validated |
 
-## MCP Servers & Tools
+## MCP & tools
 
 | Tool | What for |
 |------|---------|
-| `mcp-wordpress` REST | Inspect/update sandybrown posts 65 + hero-clone-poc (verify template) |
-| `playwright` | Compare hero-clone-poc vs post 65 DOM/computed-style + re-screenshot brand after fix |
-| `chrome-devtools-mcp` | Live DOM inspection if Playwright misses something |
-| `python scripts/pixel-diff.py --selector .sgs-brand` | Per-section split-metric diff |
-| `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py` | Block schema + style variation queries |
-| `gh` CLI | If a PR is the right way to ship the multi-block container change |
+| `mcp-wordpress` REST | Push new converter output to page 131; verify mtime advances |
+| `playwright` | Multi-viewport screenshot of page 131 post-update |
+| `python scripts/pixel-diff.py --selector .sgs-{section}` | Per-section cropped diff at 3 viewports (binding rule #3) |
+| `python plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py --help` | Confirm Branch B's CLI surface |
 
-## Agents to Delegate To
+## Task 1 — orchestrator wiring (~30 min)
 
-| Agent | When |
-|------|------|
-| Sonnet via `/delegate` | sgs/container widthMode attr addition (~1 hr, mechanical extension of existing widthMode patterns) |
-| Sonnet adversarial | Cerebras replacement in /qc panel (Cerebras still unreliable per 2026-05-18 session) |
-| `wp-sgs-developer` agent | If theme.json + container changes need WP-specific judgement |
+Branch B wired `--client-slug=<slug>` into `convert.py`'s `main()`. The full orchestrator (`orchestrator_main.py` / `sgs-clone-orchestrator.py`) likely calls convert.py via subprocess — confirm whether the `--client-slug` flag needs threading through that wrapper, and add it if so. If the wrapper already accepts a `--client` flag, ensure it forwards as `--client-slug`.
 
-## Research Approach
+Quick check before editing:
+```bash
+grep -nE "subprocess|convert\.py|client_slug|--client" plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py plugins/sgs-blocks/scripts/orchestrator/orchestrator_main.py
+```
 
-The hero-clone-poc is the existence proof — read its rendered HTML first, then verify the mechanism in WP docs, then implement the same pattern on sgs/container. No external research needed beyond the WordPress block API + theme.json docs. The /research-check tier should be enough if any question comes up.
+## Task 2 — full orchestrator re-run (~15 min)
 
----
+Run the orchestrator against the Mama's mockup with `--client-slug=mamas-munches`. The new run-dir should:
+- Populate `theme/sgs-theme/styles/mamas-munches.json:settings.layout` from detected mockup widths
+- Emit `widthMode: "wide"`/`"full"`/`"default"` on container instances whose CSS matched theme widths within ±5%
+- Keep emitting inline `style.dimensions.maxWidth` for arbitrary literals (legacy fallback path preserved)
 
-## Task 0 — Switch pipeline target from POST to PAGE (FOUNDATION, ~30 min)
+Verify by `grep`ing the new `extract.json` for `widthMode` hits + reading the modified style variation.
 
-This is the foundation under everything else. Do this FIRST.
+## Task 3 — push + remeasure (~10 min)
 
-1. Read `.claude/parking.md` → **P-USE-PAGES-NOT-POSTS** for the full context.
-2. Create a new WP page on sandybrown via REST `POST /wp/v2/pages` with slug `cv2-output-mamas-munches`. Capture the new page ID.
-3. (Optionally) Create a sibling page `mockup-baseline-mamas-munches` for the baseline comparison.
-4. Modify `reports/brand-walkdown-2026-05-19/upload_and_patch.py`:
-   - Change `posts/65` hardcoded URL → CLI arg `--target page|post` + `--target-id <id>`
-   - Default `--target page`
-5. Add a one-liner to `.claude/CLAUDE.md` under "Site Migration": "cv2 output goes to WP PAGES (page.html template), never POSTS. Posts use single.html which constrains content-width to 800px and is wrong for landing-page clones."
-6. Verify by re-pushing today's converter output to the new PAGE and screenshotting brand at 1440. Expect immediate width-constraint improvement vs the post.
+```bash
+python reports/brand-walkdown-2026-05-19/upload_and_patch.py <new-run-dir>
+# Defaults to --target page --target-id 131 — no flags needed
+```
 
-After Task 0, the rest of the work (theme.json widths + sgs/container widthMode) makes more sense — you're now operating in the correct rendering context.
+Then re-measure brand-cropped diff at 3 viewports:
+```bash
+for vp in 1440x900 768x1024 375x812; do
+  python scripts/pixel-diff.py \
+    --mockup file:///C:/Users/Bean/Projects/small-giants-wp/sites/mamas-munches/mockups/homepage/index.html \
+    --sgs https://sandybrown-nightingale-600381.hostingersite.com/cv2-output-mamas-munches/ \
+    --viewport $vp \
+    --selector ".sgs-brand" \
+    --out reports/brand-walkdown-2026-05-19/page131-orchestrator-rerun-brand-${vp%x*}
+done
+```
 
-## Task 1 — Discovery + reference reading (~30 min)
+Expected: brand at 1440 stays roughly at 43.7% (brand's authored 1000px doesn't match theme widths — falls back to inline-style, no behaviour change) OR drops further if there are other intra-brand changes the new converter picked up. Honest answer: small expected change.
 
-Read the 12 items in the reading list above. Anchor the implementation in WP-native conventions before writing code.
+The more interesting measurement is **per-section diffs across the page** — hero (66.8% baseline), cta, trust, etc. Tasks 2-3 buy bigger ROI on sections whose mockup CSS matched theme widths exactly.
 
-Specifically confirm:
-- What does `theme.json:settings.layout` look like in the current SGS theme?
-- What does `supports.align` look like in sgs/hero's block.json (the working example)?
-- Does WP's `alignfull` mechanism use negative margins or a different escape technique?
-- Can theme.json style variations override `settings.layout.contentSize` per-client?
+## Task 4 — pivot to intra-section closure (~remaining session)
 
-## Task 2 — Per-client contentSize/wideSize lift (~1.5 hrs)
+With P-WP-ALIGNMENT-WIDTH-SYSTEM closed, the remaining pixel-diff is intra-section. Open parking entries for the largest residual diff sections after Task 3's measurement. Candidates:
+- **Hero (66.8% at 1440)** — likely image positioning / `object-fit` / `object-position` parity. The mockup's hero image is positioned differently than the SGS render.
+- **Brand (43.7% at 1440)** — text layout, font-weight/size, image positioning within the section
+- Per-viewport responsive parity at 375 / 768 (mockup-mobile differs from SGS-mobile due to CSS responsive overrides)
 
-Stage 0.5 or 0.7 of `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` (CSS-lift) gains a new helper `_detect_client_layout_widths(css_rules) -> dict`:
-- Scan top-level section CSS for `max-width` values
-- Take MIN of declared section widths as `contentSize` candidate
-- Take MAX as `wideSize` candidate
-- Per-viewport: read `@media` query overrides for these properties → emit mobile/tablet/desktop variants
+Each section gets its own parking entry with: section selector, current diff %, candidate root cause, proposed fix shape, estimated time.
 
-Write the values to `theme/sgs-theme/styles/{client}.json` under `settings.layout.contentSize` / `wideSize`. Idempotent — re-running shouldn't keep growing the file.
+## Task 5 — commit + handoff (~15 min)
 
-## Task 3 — sgs/container widthMode attr (~1 hr)
-
-Add to `plugins/sgs-blocks/src/blocks/container/block.json`:
-- `widthMode`: enum `["default", "wide", "full", "custom"]` (default "default")
-- `widthModeMobile`, `widthModeTablet`, `widthModeDesktop`: same enum (default "")
-- `customWidth`, `customWidthMobile`, `customWidthTablet` already exist — reuse for `custom` mode
-
-In `container/render.php`:
-- Read widthMode attrs (per-viewport)
-- When `widthMode="full"` add `alignfull` class to wrapper class list
-- When `"wide"` add `alignwide`
-- When `"custom"` emit inline `max-width: {customWidth}{customWidthUnit}`
-- When `"default"` no override (inherits theme contentSize via existing `sgs-container--width-content` class)
-- Per-viewport: emit scoped `<style>` block that switches `max-width` per `@media` breakpoint
-
-Also: add `"align": ["wide", "full"]` to `supports` in container's block.json so WP's alignment API recognises the block.
-
-## Task 4 — Converter wiring (~30 min)
-
-In convert.py `_lift_root_supports_to_style` (where `max-width` is currently lifted as `style.dimensions.maxWidth`):
-- Compare lifted max-width to client's `contentSize` / `wideSize` (from theme.json)
-- If matches contentSize → emit `widthMode: "default"`
-- If matches wideSize → emit `widthMode: "wide"`
-- If is "none" / "100vw" → emit `widthMode: "full"`
-- Else → emit `widthMode: "custom"` + `customWidth` (current behaviour)
-
-This makes the lift convention-aware instead of always emitting custom max-width.
-
-## Task 5 — Verification (~30 min)
-
-1. Re-run pipeline on Mama's mockup
-2. Push to post 65 (keep on `single.html` template to test alignfull escape works on a constrained parent)
-3. Re-measure brand pixel-diff vs file:// raw mockup at 3 viewports
-4. Expected: ≤5% on at least one viewport
-5. Bonus: change post 65's template to `page.html` (via `_wp_page_template` post-meta) — should match hero-clone-poc behaviour
-
-## Task 6 — Multi-rater /qc panel + commit (~20 min)
-
-Per binding rule #2 — 4 raters before any commit touching converter/pipeline/block logic. Same dispatch shape as 2026-05-17 (Sonnet universality + Haiku DB + Sonnet optimality + Sonnet adversarial). Cerebras still unreliable — use Sonnet adversarial as 4th rater.
-
-## Task 7 — Session close + handoff (~15 min)
-
-Walk `.claude/docs-registry.yaml` per binding rule. Update every doc that the architecture-fix work touched. Capture lessons.
+Walk `.claude/docs-registry.yaml` per binding rule. Update state.md, handoff.md, parking.md, mistakes.md, next-session-prompt.md. NO Co-Authored-By footer on commits.
 
 ## Guardrails
 
-- **Read pipeline-state evidence BEFORE conjecturing** (binding rule, blub.db row 254)
-- **Multi-rater /qc panel BEFORE every commit** (rule 255) — Sonnet + Haiku + Gemini Flash + Sonnet-adversarial
-- **Per-section cropped pixel diff** (rule 256) — `--selector .sgs-{section}`
-- **QC raters MUST assert file artefacts** (2026-05-19 rule) — when artefact is .jsonl/.json/.png/.html, include `ls` + `wc -l` + `head -1` schema check
-- **DB-first lookups** (rule 260)
-- **`<tag <?php echo`** — ALWAYS leading space before `<?php echo $wrapper_attrs` (2026-05-17 bug)
-- **`function_exists()` guard** on every top-level helper in render.php
-- **Default time estimates LOW** per `~/.claude/rules/time-estimates.md`
-- **Handoff walks docs-registry** at session end (binding rule)
-- **NO Co-Authored-By footer in commits** (recurring correction)
-- **Commit message specificity** — name the parking entry closed + the trigger
-- **Hero-clone-poc URL** = https://sandybrown-nightingale-600381.hostingersite.com/hero-clone-poc/ — read its DOM before implementing
+- **Read pipeline-state/<run>/leftover-buckets.json BEFORE conjecturing** about converter quality or pixel-diff causes (binding rule #1)
+- **Multi-rater /qc panel BEFORE every commit** touching converter/pipeline/block logic (binding rule #2)
+- **Per-section cropped pixel-diff** via `--selector .sgs-{section}` (binding rule #3)
+- **NO smoke artefacts in commits** — if you run convert.py with a synthetic CSS for verification, revert the resulting style-variation write before `git add`
+- **Hero-clone-poc URL** = https://sandybrown-nightingale-600381.hostingersite.com/hero-clone-poc/ — the canonical existence proof for working alignment
+- **Page 131** = https://sandybrown-nightingale-600381.hostingersite.com/cv2-output-mamas-munches/ — the canary
 
 ## Definition of done (HONEST budget)
 
 Must close in-session:
-- ✓ theme.json contentSize/wideSize lifted into mamas-munches.json from mockup CSS
-- ✓ sgs/container widthMode attr (Default/Wide/Full/Custom × per-viewport) shipped with WP-native align class emission
-- ✓ Converter emits widthMode based on contentSize/wideSize comparison
-- ✓ Brand pixel-diff at ≤5% on at least one viewport
-- ✓ Multi-rater /qc panel ran + ratified
-- ✓ Backwards-compat verified (existing posts without widthMode default to current behaviour)
-- ✓ Handoff walks the docs registry
+- ✓ Orchestrator wiring confirmed (or extended) for `--client-slug=mamas-munches`
+- ✓ Full pipeline re-run produces new extract.json with widthMode hits + populated mamas-munches.json layout
+- ✓ Page 131 carries the new markup; brand-cropped diff re-measured at 3 viewports
+- ✓ Per-section diffs measured across the homepage (hero / brand / cta / trust / others)
+- ✓ At least 2 new parking entries opened for the largest residual intra-section diffs
+- ✓ Handoff walks the docs-registry
 
 Acceptable explicit defers:
-- Per-viewport widthMode UI affordances in the editor inspector (operator-facing)
-- Theme-side Customiser exposure of contentSize/wideSize (Bean has done this on other sites — could be follow-up)
-- Sweep across other clients' style variations
+- Per-section fixes themselves (they're the parking entries — fix them in subsequent sessions)
+- Indus Foods second-client validation (separate session)
 
 Unacceptable:
-- Quiet defers (no parking entry pointing at the next action)
-- Skipping the discovery phase (Task 1) and going straight to implementation
-- Treating wrapper-context as "measurement noise" again — it's a real architectural fix
-- Committing without /qc panel
+- Skipping the orchestrator re-run (it's the proof point for Tasks 2-3)
+- Committing without /qc panel if converter/pipeline/block logic changes
+- Smoke artefacts in commits

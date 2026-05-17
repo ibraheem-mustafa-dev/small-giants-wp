@@ -3,12 +3,12 @@ doc_type: state
 project: small-giants-wp
 project_id: 14
 current_phase: spec-16-phase-9-section-by-section-walkdown
-current_subphase: "Brand walkdown closed with 13 commits shipped (HEAD `8a4d6224`). Universal core-block CSS lift + Path B (sgs/media + sgs/text dynamic blocks) + sgs/quote block (Option A for blockquote+footer) + sgs/heading peer-parity (48 → 144 attrs) + sgs/text peer-parity (52 → 79 attrs) + 11 QC-panel parked findings closed via 3 parallel subagents + 7 QC-panel ship-blocker fixes + heading function_exists fatal patch. Pixel-diff measurement against file:// raw mockup at 47-58% across viewports — but root-caused at session close to WP-template max-width mismatch (post 65 single.html constrains .entry-content to 800px; raw mockup has no WP wrapper; hero-clone-poc PAGE template + alignfull = perfect clone). P-WP-ALIGNMENT-WIDTH-SYSTEM parked with full architecture for next session."
-current_subphase_step: "NEXT SESSION — implement P-WP-ALIGNMENT-WIDTH-SYSTEM (~3-4 hrs). Two layers: (1) per-client contentSize/wideSize in theme/sgs-theme/styles/{client}.json derived from mockup CSS section widths; (2) sgs/container widthMode attr (default/wide/full/custom) × per-viewport with WP-native alignfull/alignwide class emission. Discovery first: read theme.json + hero block.json + wp-block-themes skill + WP align docs to confirm exact mechanism (hero-clone-poc proves it works). Detailed implementation plan in parking.md under P-WP-ALIGNMENT-WIDTH-SYSTEM."
-phase_9_session_close_summary: "2026-05-17 session — 13 commits shipped (HEAD 8a4d6224). New blocks: sgs/media (36 attrs), sgs/text (79 attrs), sgs/quote (92 attrs). sgs/heading expanded to 144 attrs (peer-parity). Converter improvements: universal core-block CSS lift, atomic_heading swap to sgs/heading, flex-direction:column → layout=stack, max-width lift onto sgs/container, root-supports lift on css_driven_container branch, multi-class BEM disambig, !important strip, colour normalisation (hex/rgb/var passthrough), CSS-function unit handling (calc/clamp/min/max/var). Block render fixes: 6 dynamic blocks' malformed <tag<?php echo template sweep, function_exists() guards universal, content-derived stable UIDs (cache-safe), borderStyle 9-value enum parity, transition attrs configurable, heading defaults emptied for serif compat. New regression test: FR1+grid double-lift (passes). 4-rater /qc panel ran post-implementation. /qc-inline ran on parked-findings closure. 23 parking entries opened across the session; 11 closed via parallel subagents; the remainder are next-session work."
-last_updated: 2026-05-17 (brand walkdown closed — architecture fix surfaced for next session)
+current_subphase: "P-WP-ALIGNMENT-WIDTH-SYSTEM SHIPPED 2026-05-18. Two-commit landing: Task 0 (`c7f42003`) — cv2 pipeline now targets WP PAGES not POSTS via argparse-rewritten upload_and_patch.py; brand pixel-diff at 1440 dropped 58.0% → 43.7% (14.3-point reduction from removing the single.html `.entry-content { max-width: 800px }` constraint). Tasks 2-3 (`86172812`) — sgs/container widthMode per-viewport (default/wide/full/custom) + InspectorControls editor UI + converter widthMode emission + per-client style variation lift, all universal-benefit (zero client literals). Caught + fixed a BEM regex correctness bug via /qc-inline #1; editor UI scored 96/100 in /qc-inline #2."
+current_subphase_step: "NEXT SESSION — full orchestrator pipeline re-run with --client-slug=mamas-munches to regenerate Mama's block markup carrying widthMode attrs, push to page 131, re-measure brand-cropped pixel-diff to quantify Tasks 2-3 ROI. Then pivot to intra-section closure (content/typography/image-positioning parity inside individual sections — the remaining diff class after P-WP-ALIGNMENT-WIDTH-SYSTEM closed the parent-context class)."
+phase_9_session_close_summary: "2026-05-18 session — 2 commits shipped. Task 0 + Tasks 2-3 landed via parallel-agent dispatch (Branches A + B + C) and 2 inline-QC passes. New surfaces: WP page 131 (cv2-output-mamas-munches) + page 132 (mockup-baseline-mamas-munches) on sandybrown; 6 new container attrs (widthMode + per-viewport variants + customWidth/Unit); 5 new converter helpers (_detect_client_layout_widths, _write_client_layout_widths, _load_theme_widths, _match_theme_width, _parse_px_length) + module constants (_LIFT_CONTEXT, _WIDTH_MATCH_TOLERANCE_PCT, _SGS_BEM_BLOCK_ROOT_RE, _FULL_BLEED_WIDTH_VALUES). Editor InspectorControls + responsive map for widthMode. Visual-diff PASS report at reports/visual-diff/container-2026-05-17.md. Deploy: build (webpack 5.105.2 6.3s clean), tar-deploy, OPcache reset, end-to-end smoke confirming style-variation lift fires, brand pixel-diff measured at 3 viewports post-deploy (zero regression: 43.73/47.60/56.32 vs pre-deploy 43.73 at 1440)."
+last_updated: 2026-05-18 (P-WP-ALIGNMENT-WIDTH-SYSTEM shipped)
 blockers:
-  - "P-WP-ALIGNMENT-WIDTH-SYSTEM is the #1 priority — brand pixel-diff against raw mockup file:// is stuck at 47-58% across viewports because the WP single.html post template constrains .entry-content to 800px while the raw mockup has no theme wrapper. Hero-clone-poc proves the architecture works (alignfull + page template). Next session's fix is multi-layer."
+  - "No active blockers. Brand pixel-diff measurement against the NEW block markup (carrying widthMode attrs) requires a full orchestrator pipeline re-run, which is the next session's first concrete step."
 recommended_model_next: sonnet
 ---
 
@@ -16,79 +16,56 @@ recommended_model_next: sonnet
 
 > Frontmatter above is the contract. Body below is regenerated by `/handoff` each session.
 
-## Where we are (2026-05-17 close)
+## Where we are (2026-05-18 close)
 
-**13 commits to `main` (HEAD `8a4d6224`).** Brand walkdown closed honestly. The session produced major converter improvements + 3 new dynamic blocks + peer-parity expansion, but the pixel-diff goal (≤1% per section) was NOT achieved because of a previously-unidentified WP-template architecture mismatch — root-caused at session close.
+**P-WP-ALIGNMENT-WIDTH-SYSTEM is closed.** The architectural pull-back surfaced 2026-05-17 — "why are you using post templates for pages anyway" — landed in two clean commits:
 
-**The architectural finding:**
+- `c7f42003` Task 0: pipeline targets WP PAGES not POSTS — 14.3-point pixel-diff drop on brand at 1440 from removing the inherited 800px content-width cap
+- `86172812` Tasks 2-3: sgs/container widthMode infrastructure (per-viewport, WP-native alignfull/alignwide composition) + converter widthMode emission + per-client style variation auto-lift + editor InspectorControls + visual-diff report
 
-Post 65 (cv2 output) lives inside WP's `single.html` post template, which wraps content in `.entry-content { max-width: 800px }`. The raw mockup HTML rendered via `file://` has no WP template wrapper — sections render at viewport width (1440 at 1440 viewport). So:
+Both commits shipped through the parallel-agent dispatch protocol with two inline-QC passes. First QC caught a real BEM regex correctness bug (`_SGS_BEM_BLOCK_ROOT_RE` matching `.sgs-X--Y` shapes) before commit; second QC scored editor UI 96/100 with zero findings.
 
-- **Mockup brand** = 1000px (mockup CSS authored `max-width: 1000px`)
-- **SGS brand** = 800px (theme caps any section wider than `.entry-content`)
-- 200px width gap = 30-40% of pixel-diff at 1440 viewport
-
-The hero-clone-poc at https://sandybrown-nightingale-600381.hostingersite.com/hero-clone-poc/ PROVES this is fixable — it uses a `page.html` template (no .entry-content constraint) PLUS `alignfull` class on the hero block. Result: perfect clone of the mockup hero.
-
-**Bean's directive for next session** (transcribed verbatim):
-
-> "I think the proper solution is probably to change the default website max content width for each website based on the mockup. I know that's possible in wp and have set up max content width in customiser or site editor in other website themes across the 3 device types. Also, the sgs/containers should be able to choose to their own content width either, default, custom or full and make it customisable for mobile, tablet and desktop like the rest of our setup. Lets check what they actually allow for /wp-blocks"
-
-Full architecture proposal + reading list lives in `.claude/parking.md` under **P-WP-ALIGNMENT-WIDTH-SYSTEM** (priority entry).
-
-## Today's 13 commits (chronological)
+## Today's 2 commits (chronological)
 
 | Commit | What |
 |---|---|
-| `99b344d7` | feat: universal core-block CSS lift |
-| `a0592001` | fix: 3 QC findings (SGS-class guard, shallow-merge, atomic_text_fallback) |
-| `8444d4e4` | fix: trace-wiring + RETIRED_BLOCK_REMAP guard |
-| `ae701a53` | feat: Path B — sgs/media + sgs/text dynamic blocks |
-| `4bc1d3a8` | feat: sgs/media naked-img + upload-and-patch helper |
-| `0ad2961d` | fix: root-supports lift on css_driven_container + max-width |
-| `a0ed6b8d` | fix: atomic_heading swap to sgs/heading + flex-direction lift |
-| `744ec4b5` | feat: sgs/text + sgs/heading peer-parity attrs |
-| `8af7b6b9` | fix: 4-rater /qc panel findings + sgs/quote block (92 attrs) |
-| `62e8e23d` | fix: 4 pipeline-script parked fixes |
-| `aefefe76` | fix: 5 block-side parked fixes |
-| `59ee4490` | fix: 6 wrapper-attr templates + FR1+grid regression test |
-| `8a4d6224` | fix: function_exists guards on heading helpers |
+| `c7f42003` | fix(pipeline): cv2 output targets WP PAGES, not POSTS — argparse rewrite of upload_and_patch.py, doc'd in CLAUDE.md, closes P-USE-PAGES-NOT-POSTS |
+| `86172812` | feat(container): widthMode per-viewport + converter widthMode emission — 6 new attrs, 5 new converter helpers, editor InspectorControls, +583/-19 LOC across 6 files, visual-diff PASS report |
 
-## Brand pixel-diff measurement journey (honest)
+## Brand pixel-diff measurement journey (apples-to-apples per-section cropped)
 
-| Step | 1440 | 768 | 375 |
-|------|------|-----|-----|
-| Session start | 31.2% | 13.0% | 36.6% |
-| After Path B | 28.3% | 10.6% | 28.8% |
-| Image upload (post 65) | 31.0% | 12.2% | 38.8% |
-| Image upload (both posts patched) | 36.4% | 12.8% | 36.1% |
-| Naked-img + max-width lift | 36.4% | 12.8% | 38.8% |
-| vs raw mockup file:// (heading swap) | 16.4% | 21.1% | 36.4% |
-| Final (after parity + QC fixes) | 58.0% | 47.7% | 56.3% |
+| Surface | Template | 1440 brand-cropped |
+|---|---|---|
+| Post 65 (yesterday's surface, `single.html` `is-layout-constrained`) | post | 58.0% |
+| Page 131 (today's surface, `page.html` `is-layout-flow`) | page | 43.7% |
+| Page 131 post-deploy (render.php changes additive, markup unchanged) | page | 43.7% (zero regression) |
 
-The final regression at 1440 is because the previous lift improvements moved the SGS section width from "wide" alignment to declared `max-width: 1000px` (rendered as 800 due to .entry-content constraint), making it NARROWER than the mockup's full-viewport hero. The architectural fix (P-WP-ALIGNMENT-WIDTH-SYSTEM) addresses the parent-constraint root cause.
+The 43.7% residual is intra-section (content layout, typography, image positioning) — not parent-context. Tasks 2-3's pixel-diff ROI on the existing markup is zero because the block markup on page 131 dates from yesterday's pre-widthMode converter output; the new widthMode-emitting converter needs a full orchestrator re-run to produce updated markup.
 
 ## Next session — START HERE
 
-Read **`.claude/parking.md` → P-WP-ALIGNMENT-WIDTH-SYSTEM** for the full architecture + reading list + implementation phases A-F.
+1. Re-run the full orchestrator pipeline against Mama's mockup with `--client-slug=mamas-munches` (orchestrator_main.py / sgs-clone-orchestrator.py — not just convert.py)
+2. Confirm `theme/sgs-theme/styles/mamas-munches.json` gains a `settings.layout` block populated from mockup CSS
+3. Confirm emitted block markup contains `widthMode: "wide"` (or `"full"`) on container instances whose mockup CSS matched theme widths
+4. Push new markup to page 131 via `upload_and_patch.py <run-dir>` (defaults now correct)
+5. Re-measure brand-cropped pixel-diff at 3 viewports
+6. Then pivot to intra-section closure — the residual diff class. Open parking entries for content/typography/image-positioning parity within individual sections.
 
-Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-18-wp-alignment-width-system"`
+Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-19-orchestrator-rerun"`
 
-## Phase 9 backlog (parking.md)
+## Phase 9 backlog (parking.md after this session)
 
-23 entries opened/touched during 2026-05-17 session:
-- **PRIORITY:** P-WP-ALIGNMENT-WIDTH-SYSTEM (architecture fix from session close)
-- **Closed today via subagents:** P-MULTI-CLASS-BEM-PRIMARY-DISAMBIG, P-CSS-IMPORTANT-STRIP, P-VOTER-IMPORT-ASSERT-UX, P-PIXEL-DIFF-LAZY-LOAD-DYNAMIC-WAIT, P-HEADING-DEFAULTS-NORMALISE-FOR-SERIF, P-BORDER-STYLE-ENUM-PARITY, P-HEADING-TRANSITION-ATTRS, P-WP-UNIQUE-ID-CACHE-COLLISION, P-WP-AUTOP-INTERACTION, P-WRAPPER-ATTR-LEADING-SPACE-AUDIT, P-FR1-PLUS-GRID-DOUBLE-LIFT-REGRESSION
-- **Open for next session:** P-CORE-STYLE-MAP-DB-MIGRATION, P-COVERAGE-METRIC-CORE-STYLE, P-PARENT-QUALIFIED-TAG-LIFT, P-TAG-SELECTOR-LIFT, P-PHASE9-REDEPLOY-BASELINE (closed in practice — post 65 was redeployed), P-IMAGE-UPLOAD-INTO-PIPELINE, P-SGS-QUOTE-BLOCK (closed by Option A ship), P-MEASUREMENT-CONTEXT-PARITY (will be closed by P-WP-ALIGNMENT-WIDTH-SYSTEM), plus the QC-panel residuals
+- **Closed today:** P-USE-PAGES-NOT-POSTS, P-WP-ALIGNMENT-WIDTH-SYSTEM (system shipped; ROI measurement parked as next-session orchestrator-rerun work)
+- **Open for next session:** orchestrator pipeline re-run + remeasurement, then intra-section closure parking entries for the residual 43.7% brand / 66.8% hero diff
 
 ## Subprojects
 
-- Mama's Munches — canary, brand pixel-diff blocked on P-WP-ALIGNMENT-WIDTH-SYSTEM
-- Indus Foods Phase 4 — second-client validation target
-- helping-doctors etc. — additional clients to be ported once theme.json contentSize/wideSize plumbing is in place
+- Mama's Munches — canary, brand framework infrastructure complete; awaiting orchestrator re-run for measurement
+- Indus Foods Phase 4 — second-client validation target (Tasks 2-3 ready to receive Indus mockup as soon as its layout widths get detected)
+- Other style variations (helping-doctors, healthcare, construction, professional, mosque, eye-care) — automatically benefit from Tasks 2-3 the next time their orchestrator runs
 
 ## Lessons captured this session
 
-1. **`feedback_qc_panel_must_assert_file_existence.md`** (2026-05-19 originally) — QC raters MUST assert file artefact existence end-to-end when the deliverable is a file
-2. **The `<tag<?php echo` malformed-HTML pattern audit** — captured 6 dynamic blocks affected, swept + regression test added
-3. **WP template context matters for pixel-diff baselines** — single.html vs page.html template have radically different content-width constraints. Hero-clone-poc (page template + alignfull) ≠ post 65 (single template, no alignfull). Captured as P-WP-ALIGNMENT-WIDTH-SYSTEM architectural finding.
+1. **BEM regex char-class `[a-z0-9-]` matches `--` consecutively** — caught by /qc-inline, fixed inline before commit. Use segmented kebab regex `^\.sgs-[a-z][a-z0-9]*(-[a-z0-9]+)*$` for block-root selectors.
+2. **WP template context can dominate pixel-diff** — `single.html` vs `page.html` was a 14.3-point swing. Audit rendering-surface template chain before chasing block-side fixes when pixel-diff is stubbornly high.
+3. **Smoke test artefacts must be reverted before commit** — test-time helper invocations write real-looking JSON into style variations; revert manually before `git add`.
