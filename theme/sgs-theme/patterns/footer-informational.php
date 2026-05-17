@@ -30,21 +30,21 @@
 		<!-- Column 2: Quick Links, Contact, Opening Hours -->
 		<!-- wp:column -->
 		<div class="wp-block-column">
-			<!-- wp:heading {"level":2,"textColor":"surface","fontSize":"medium","className":"sgs-footer-label","style":{"typography":{"fontWeight":"700"},"spacing":{"margin":{"bottom":"var:preset|spacing|20"}}}} -->
-			<h2 class="wp-block-heading has-surface-color has-text-color has-medium-font-size sgs-footer-label" style="font-weight:700;margin-bottom:var(--wp--preset--spacing--20)">Quick Links</h2>
+			<!-- wp:heading {"level":2,"textColor":"surface","fontSize":"medium","className":"sgs-link-list__heading","style":{"typography":{"fontWeight":"700"},"spacing":{"margin":{"bottom":"var:preset|spacing|20"}}}} -->
+			<h2 class="wp-block-heading has-surface-color has-text-color has-medium-font-size sgs-link-list__heading" style="font-weight:700;margin-bottom:var(--wp--preset--spacing--20)">Quick Links</h2>
 			<!-- /wp:heading -->
 
-			<!-- wp:navigation {"textColor":"text-inverse","layout":{"type":"flex","orientation":"vertical"},"style":{"spacing":{"blockGap":"var:preset|spacing|10"},"typography":{"lineHeight":"2.2"}},"fontSize":"small","className":"sgs-footer-nav"} /-->
+			<!-- wp:navigation {"textColor":"text-inverse","layout":{"type":"flex","orientation":"vertical"},"style":{"spacing":{"blockGap":"var:preset|spacing|10"},"typography":{"lineHeight":"2.2"}},"fontSize":"small","className":"sgs-link-list__nav"} /-->
 
-			<!-- wp:heading {"level":3,"textColor":"surface","fontSize":"medium","className":"sgs-footer-label","style":{"typography":{"fontWeight":"700"},"spacing":{"margin":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|20"}}}} -->
-			<h3 class="wp-block-heading has-surface-color has-text-color has-medium-font-size sgs-footer-label" style="font-weight:700;margin-top:var(--wp--preset--spacing--40);margin-bottom:var(--wp--preset--spacing--20)">Contact</h3>
+			<!-- wp:heading {"level":3,"textColor":"surface","fontSize":"medium","className":"sgs-link-list__heading","style":{"typography":{"fontWeight":"700"},"spacing":{"margin":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|20"}}}} -->
+			<h3 class="wp-block-heading has-surface-color has-text-color has-medium-font-size sgs-link-list__heading" style="font-weight:700;margin-top:var(--wp--preset--spacing--40);margin-bottom:var(--wp--preset--spacing--20)">Contact</h3>
 			<!-- /wp:heading -->
 
 			<!-- wp:sgs/business-info {"type":"phone","textColor":"text-inverse","fontSize":"small"} /-->
 			<!-- wp:sgs/business-info {"type":"email","textColor":"text-inverse","fontSize":"small"} /-->
 
-			<!-- wp:heading {"level":3,"textColor":"surface","fontSize":"medium","className":"sgs-footer-label","style":{"typography":{"fontWeight":"700"},"spacing":{"margin":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|20"}}}} -->
-			<h3 class="wp-block-heading has-surface-color has-text-color has-medium-font-size sgs-footer-label" style="font-weight:700;margin-top:var(--wp--preset--spacing--40);margin-bottom:var(--wp--preset--spacing--20)">Opening Hours</h3>
+			<!-- wp:heading {"level":3,"textColor":"surface","fontSize":"medium","className":"sgs-link-list__heading","style":{"typography":{"fontWeight":"700"},"spacing":{"margin":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|20"}}}} -->
+			<h3 class="wp-block-heading has-surface-color has-text-color has-medium-font-size sgs-link-list__heading" style="font-weight:700;margin-top:var(--wp--preset--spacing--40);margin-bottom:var(--wp--preset--spacing--20)">Opening Hours</h3>
 			<!-- /wp:heading -->
 
 			<!-- wp:sgs/business-info {"type":"hours","textColor":"text-inverse","fontSize":"small"} /-->
@@ -56,8 +56,8 @@
 		<div class="wp-block-column">
 			<!-- wp:sgs/business-info {"type":"map"} /-->
 
-			<!-- wp:heading {"level":3,"textColor":"surface","fontSize":"medium","className":"sgs-footer-label","style":{"typography":{"fontWeight":"700"},"spacing":{"margin":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|20"}}}} -->
-			<h3 class="wp-block-heading has-surface-color has-text-color has-medium-font-size sgs-footer-label" style="font-weight:700;margin-top:var(--wp--preset--spacing--30);margin-bottom:var(--wp--preset--spacing--20)">Address</h3>
+			<!-- wp:heading {"level":3,"textColor":"surface","fontSize":"medium","className":"sgs-link-list__heading","style":{"typography":{"fontWeight":"700"},"spacing":{"margin":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|20"}}}} -->
+			<h3 class="wp-block-heading has-surface-color has-text-color has-medium-font-size sgs-link-list__heading" style="font-weight:700;margin-top:var(--wp--preset--spacing--30);margin-bottom:var(--wp--preset--spacing--20)">Address</h3>
 			<!-- /wp:heading -->
 
 			<!-- wp:sgs/business-info {"type":"address","textColor":"text-inverse","fontSize":"small"} /-->

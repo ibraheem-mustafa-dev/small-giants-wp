@@ -116,34 +116,34 @@
 /* ─── LIST ─── */
 
 /* Footer link lists — no bullets, no padding */
-.sgs-footer-links {
+.sgs-link-list__items {
 	list-style: none;
 }
 
-.sgs-footer-links a {
+.sgs-link-list__items a {
 	text-decoration: none;
 	transition: color 200ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.sgs-footer-links a:hover {
+.sgs-link-list__items a:hover {
 	/* color-mix() tint: 85% accent + 15% black; fallback for older browsers */
 	color: color-mix(in srgb, var(--wp--preset--color--accent, #f87a1f) 85%, black);
 	color: var(--sgs-hover-accent, var(--wp--preset--color--accent, #f87a1f));
 }
 
 /* Footer navigation blocks — vertical link lists */
-.sgs-footer-nav .wp-block-navigation-item__content {
+.sgs-link-list__nav .wp-block-navigation-item__content {
 	text-decoration: none;
 	transition: color 200ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.sgs-footer-nav .wp-block-navigation-item__content:hover {
+.sgs-link-list__nav .wp-block-navigation-item__content:hover {
 	/* color-mix() tint: 85% accent + 15% black; fallback for older browsers */
 	color: color-mix(in srgb, var(--wp--preset--color--accent, #f87a1f) 85%, black);
 	color: var(--sgs-hover-accent, var(--wp--preset--color--accent, #f87a1f));
 }
 
-.sgs-footer-nav .wp-block-navigation-item__content:focus-visible {
+.sgs-link-list__nav .wp-block-navigation-item__content:focus-visible {
 	outline: 2px solid var(--wp--preset--color--accent);
 	outline-offset: 2px;
 }
@@ -172,8 +172,8 @@
 /* ─── FOCUS INDICATORS — footer links ─── */
 
 /* Footer links */
-.sgs-footer-links a:focus-visible,
-.sgs-footer-nav .wp-block-navigation-item__content:focus-visible {
+.sgs-link-list__items a:focus-visible,
+.sgs-link-list__nav .wp-block-navigation-item__content:focus-visible {
 	outline: 3px solid var(--sgs-focus-color);
 	outline-offset: 2px;
 	border-radius: 2px;
@@ -188,7 +188,7 @@
  * explicitly set on a heading that also carries .has-text-color).
  *
  * Also fixes the heading hierarchy: footer section labels are H2s styled
- * small via .sgs-footer-label — no level skipping from H2 → H6.
+ * small via .sgs-link-list__heading — no level skipping from H2 → H6.
  */
 .wp-block-template-part footer .wp-block-heading.has-surface-color.has-text-color,
 .wp-block-template-part footer .wp-block-heading.has-text-inverse-color.has-text-color,
@@ -198,7 +198,7 @@ footer .wp-block-heading.has-text-inverse-color.has-text-color {
 }
 
 /* Footer heading visual size — must match the small font-size already applied */
-.sgs-footer-label {
+.sgs-link-list__heading {
 	font-size: var(--wp--preset--font-size--small, 0.875rem);
 	font-weight: 700;
 	text-transform: uppercase;
@@ -530,17 +530,17 @@ footer .wp-block-list a:hover,
 /* ─── FOOTER ─── */
 
 /* Gold social icons with hover glow */
-.sgs-footer-socials .wp-block-social-link a {
+.sgs-link-list__socials .wp-block-social-link a {
 	transition: transform 0.2s ease, filter 0.2s ease;
 }
 
-.sgs-footer-socials .wp-block-social-link a:hover {
+.sgs-link-list__socials .wp-block-social-link a:hover {
 	transform: scale(1.15);
 	filter: brightness(1.3);
 }
 
 /* Footer label headings */
-.sgs-footer-label {
+.sgs-link-list__heading {
 	text-transform: uppercase;
 	letter-spacing: 0.05em;
 }

@@ -317,8 +317,8 @@ footer .wp-block-heading.has-surface-color.has-text-color,
 footer .wp-block-heading.has-text-inverse-color.has-text-color,
 .wp-block-template-part footer .wp-block-heading.has-surface-color.has-text-color,
 .wp-block-template-part footer .wp-block-heading.has-text-inverse-color.has-text-color,
-footer .sgs-footer-label,
-.wp-block-template-part footer .sgs-footer-label{
+footer .sgs-link-list__heading,
+.wp-block-template-part footer .sgs-link-list__heading{
 	color:var(--wp--preset--color--accent-light,#e7d768)!important;
 	text-transform:none!important;
 	letter-spacing:normal!important;
@@ -326,11 +326,11 @@ footer .sgs-footer-label,
 /* ── Footer social icons: reduce to 25px ────────────────────────────────────
  * core-blocks.css sets min-width/height:44px on all social icons for WCAG.
  * Footer social icons should be 25px to match reference site. */
-.sgs-footer-socials .wp-block-social-link a{
+.sgs-link-list__socials .wp-block-social-link a{
 	min-width:25px!important;min-height:25px!important;
 	width:25px;height:25px;padding:0!important;
 }
-.sgs-footer-socials .wp-block-social-link svg{
+.sgs-link-list__socials .wp-block-social-link svg{
 	width:20px!important;height:20px!important;
 }
 ";
