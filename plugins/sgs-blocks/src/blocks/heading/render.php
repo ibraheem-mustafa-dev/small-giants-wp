@@ -53,10 +53,12 @@ $allowed_units = array( 'px', 'em', 'rem', '%', 'vh', 'vw' );
  * @param string $fallback Fallback unit (default 'px').
  * @return string          Sanitised unit.
  */
-function sgs_heading_safe_unit( $unit, $fallback = 'px' ) {
-	static $allowed = array( 'px', 'em', 'rem', '%', 'vh', 'vw' );
-	$unit           = sanitize_text_field( (string) $unit );
-	return in_array( $unit, $allowed, true ) ? $unit : $fallback;
+if ( ! function_exists( 'sgs_heading_safe_unit' ) ) {
+	function sgs_heading_safe_unit( $unit, $fallback = 'px' ) {
+		static $allowed = array( 'px', 'em', 'rem', '%', 'vh', 'vw' );
+		$unit           = sanitize_text_field( (string) $unit );
+		return in_array( $unit, $allowed, true ) ? $unit : $fallback;
+	}
 }
 
 /**
@@ -67,6 +69,7 @@ function sgs_heading_safe_unit( $unit, $fallback = 'px' ) {
  * @param string $unit  Validated CSS unit.
  * @return string       e.g. "20px" or "".
  */
+if ( ! function_exists( 'sgs_heading_spacing_val' ) ) {
 function sgs_heading_spacing_val( $value, $unit ) {
 	$trimmed = trim( (string) $value );
 	if ( '' === $trimmed ) {
@@ -77,6 +80,7 @@ function sgs_heading_spacing_val( $value, $unit ) {
 		return '';
 	}
 	return $trimmed . $unit;
+}
 }
 
 // ---------------------------------------------------------------------------
