@@ -1,7 +1,7 @@
 <?php
 /**
  * Title: Indus Foods Footer
- * Slug: sgs-theme/footer-indus-foods
+ * Slug: sgs/indus-foods-footer
  * Categories: footer
  * Block Types: core/template-part/footer
  * Inserter: yes

@@ -1,8 +1,8 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/theme.json",
 	"version": 3,
-	"title": "Indus Foods",
-	"description": "Bundled preset — colour + typography combined. For independent axes use colours/indus-foods and typography/indus-foods.",
+	"title": "Indus Foods Colours",
+	"description": "Colour-only axis — teal and gold palette. Combine with any typography preset.",
 	"settings": {
 		"color": {
 			"palette": [
@@ -87,54 +87,11 @@
 					"name": "Footer Background"
 				}
 			]
-		},
-		"typography": {
-			"fontFamilies": [
-				{
-					"fontFamily": "Montserrat, system-ui, sans-serif",
-					"slug": "heading",
-					"name": "Heading",
-					"fontFace": [
-						{
-							"fontFamily": "Montserrat",
-							"fontWeight": "100 900",
-							"fontStyle": "normal",
-							"fontDisplay": "swap",
-							"src": [
-								"file:./assets/fonts/montserrat-variable-latin.woff2"
-							]
-						}
-					]
-				},
-				{
-					"fontFamily": "'Source Sans 3', system-ui, sans-serif",
-					"slug": "body",
-					"name": "Body",
-					"fontFace": [
-						{
-							"fontFamily": "Source Sans 3",
-							"fontWeight": "200 900",
-							"fontStyle": "normal",
-							"fontDisplay": "swap",
-							"src": [
-								"file:./assets/fonts/source-sans-3-variable-latin.woff2"
-							]
-						}
-					]
-				}
-			]
 		}
 	},
 	"styles": {
-		"typography": {
-			"fontFamily": "var:preset|font-family|body"
-		},
 		"elements": {
 			"heading": {
-				"typography": {
-					"fontFamily": "var:preset|font-family|heading",
-					"fontWeight": "700"
-				},
 				"color": {
 					"text": "var:preset|color|primary"
 				}
@@ -154,48 +111,11 @@
 					"background": "var:preset|color|primary",
 					"text": "var:preset|color|surface"
 				},
-				"typography": {
-					"fontWeight": "600",
-					"fontSize": "var:preset|font-size|medium",
-					"textDecoration": "none"
-				},
-				"border": {
-					"radius": "10px"
-				},
-				"spacing": {
-					"padding": {
-						"top": "16px",
-						"bottom": "16px",
-						"left": "36px",
-						"right": "36px"
-					}
-				},
 				":hover": {
 					"color": {
 						"background": "var:preset|color|primary-dark",
 						"text": "var:preset|color|surface"
 					}
-				},
-				":focus": {
-					"outline": {
-						"color": "var:preset|color|primary",
-						"width": "2px",
-						"offset": "2px",
-						"style": "solid"
-					}
-				}
-			}
-		},
-		"blocks": {
-			"core/site-title": {
-				"typography": {
-					"fontFamily": "var:preset|font-family|heading"
-				}
-			},
-			"core/navigation": {
-				"typography": {
-					"fontSize": "var:preset|font-size|medium",
-					"fontWeight": "600"
 				}
 			}
 		}

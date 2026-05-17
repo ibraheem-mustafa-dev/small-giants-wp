@@ -1,0 +1,114 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/theme.json",
+	"version": 3,
+	"title": "SGS Construction Colours",
+	"description": "Colour-only axis — near-black and strong orange. Combine with any typography preset.",
+	"settings": {
+		"color": {
+			"palette": [
+				{
+					"slug": "primary",
+					"color": "#1C1C1C",
+					"name": "Primary (Near-Black)"
+				},
+				{
+					"slug": "primary-dark",
+					"color": "#0A0A0A",
+					"name": "Primary Dark"
+				},
+				{
+					"slug": "accent",
+					"color": "#E8700A",
+					"name": "Accent (Strong Orange)"
+				},
+				{
+					"slug": "accent-light",
+					"color": "#FDE8D0",
+					"name": "Accent Light"
+				},
+				{
+					"slug": "error",
+					"color": "#DC2626",
+					"name": "Error"
+				},
+				{
+					"slug": "surface",
+					"color": "#FFFFFF",
+					"name": "Surface (White)"
+				},
+				{
+					"slug": "surface-alt",
+					"color": "#F5F3F0",
+					"name": "Surface Alt (Warm Off-White)"
+				},
+				{
+					"slug": "footer-bg",
+					"color": "#1C1C1C",
+					"name": "Footer Background"
+				},
+				{
+					"slug": "text-primary",
+					"color": "#1C1C1C",
+					"name": "Text Primary"
+				},
+				{
+					"slug": "text-secondary",
+					"color": "#5A5A5A",
+					"name": "Text Secondary"
+				},
+				{
+					"slug": "text-muted",
+					"color": "#7A7A7A",
+					"name": "Text Muted"
+				},
+				{
+					"slug": "text-inverse",
+					"color": "#FFFFFF",
+					"name": "Text Inverse (White)"
+				},
+				{
+					"slug": "border-subtle",
+					"color": "#E8700A",
+					"name": "Border Subtle (Orange)"
+				},
+				{
+					"slug": "border-light",
+					"color": "#E5E7EB",
+					"name": "Border Light"
+				}
+			]
+		}
+	},
+	"styles": {
+		"color": {
+			"background": "var(--wp--preset--color--surface)",
+			"text": "var(--wp--preset--color--text-primary)"
+		},
+		"elements": {
+			"link": {
+				"color": {
+					"text": "var(--wp--preset--color--accent)"
+				},
+				":hover": {
+					"color": {
+						"text": "var(--wp--preset--color--primary)"
+					}
+				}
+			},
+			"button": {
+				"color": {
+					"background": "var(--wp--preset--color--accent)",
+					"text": "var(--wp--preset--color--text-inverse)"
+				},
+				":hover": {
+					"color": {
+						"background": "var(--wp--preset--color--primary)",
+						"text": "var(--wp--preset--color--text-inverse)"
+					}
+				}
+			},
+			"h5": { "color": { "text": "var(--wp--preset--color--accent)" } },
+			"h6": { "color": { "text": "var(--wp--preset--color--text-secondary)" } }
+		}
+	}
+}

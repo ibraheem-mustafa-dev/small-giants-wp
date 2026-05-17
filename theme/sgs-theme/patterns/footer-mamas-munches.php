@@ -1,7 +1,7 @@
 <?php
 /**
  * Title: Mamas Munches Footer
- * Slug: sgs-theme/footer-mamas-munches
+ * Slug: sgs/mamas-munches-footer
  * Categories: footer
  * Block Types: core/template-part/footer
  * Inserter: yes

@@ -86,14 +86,14 @@ WP 6.9 already provides every primitive needed. The framework `parts/header.html
 - Customiser-API surface for new settings
 - REST endpoint for atomic pattern registration (security risk; Council A4)
 - New media uploader on the SGS admin page (SVG XSS risk; Council M8)
-- Independent colour + typography preset split (P-S17-A)
+- ~~Independent colour + typography preset split (P-S17-A)~~ — PROMOTED TO IN-SCOPE → see §S8
 - Pattern versioning (P-S17-B)
 - Complex nested-component patterns beyond 1:1 (P-S17-C)
 - Live preview on variation picker (P-S17-D)
 
 ---
 
-# 6. Spec sections
+# 6. Spec sections (8 total)
 
 Each FR carries: behaviour, acceptance criteria, model recommendation, 4-layer test strategy (unit/integration/E2E/regression), dependencies, universal-benefit tag.
 
@@ -555,6 +555,63 @@ Each FR carries: behaviour, acceptance criteria, model recommendation, 4-layer t
 
 ---
 
+## §S8 — Two-Axis Style Variations
+
+**Plain English:** Each style variation is split into two independent axes — a colour preset and a typography preset — stored in `styles/colours/` and `styles/typography/` subdirectories. WordPress 6.5+ auto-discovers these subdirectories without any PHP registration. Operators in the Site Editor Styles panel can mix any colour preset with any typography preset, giving combinatorial design freedom (8 colour presets × 8 typography presets = 64 combinations from 24 files instead of 64 separate variation JSONs). The original top-level variation files remain as bundled "complete" presets — zero change for existing operators.
+
+### FR-S8-1 — Directory split and per-variation refactor
+
+**Behaviour:** Each existing variation `<variant>.json` in `theme/sgs-theme/styles/` is split into:
+- `styles/colours/<variant>.json` — ONLY the colour layer: `settings.color.palette`, colour-derived `styles.elements.*` colour overrides. Title format: `"<Variant> Colours"`.
+- `styles/typography/<variant>.json` — ONLY the typography layer: `settings.typography.fontFamilies`, `settings.typography.fontSizes`, typographic `styles.elements.*` overrides, font-related `styles.blocks.*` entries. Title format: `"<Variant> Typography"`.
+- The original top-level `<variant>.json` becomes a "bundled" variation: retains both layers unchanged, gains `description: "Bundled preset — colour + typography combined. For independent axes use colours/<variant> and typography/<variant>."`.
+- Spacing, layout, custom `settings.spacing.spacingSizes`, and block-level overrides that are not typography-only stay in the bundled top-level file; they are NOT duplicated into the axis files.
+- Font face declarations (`fontFace[]` on each `fontFamily` entry) go into the typography file.
+
+**Acceptance criteria:**
+- `styles/colours/` directory exists with one `.json` per variation
+- `styles/typography/` directory exists with one `.json` per variation
+- Each colour file: `settings.color.palette` present with ≥ 1 entry; `settings.typography.fontFamilies` absent
+- Each typography file: `settings.typography.fontFamilies` present with ≥ 1 entry; `settings.color.palette` absent
+- All colour files: palette slugs are a superset of the bundled file's palette slugs (no slug lost)
+- All typography files: fontFamily slugs match the bundled file's fontFamily slugs
+- Top-level bundled files: `settings.color.palette` + `settings.typography.fontFamilies` both present; `description` contains `"Bundled preset"`
+- All files parse as valid `theme.json` v3 (schema + version: 3)
+- All files ≤ 500 lines
+- Test suite `plugins/sgs-blocks/scripts/tests/test_two_axis_style_variations.py` passes 44/44
+
+**Model:** Sonnet
+**Tests:**
+- Unit: `test_two_axis_style_variations.py` (44 tests) — JSON-key presence, palette slug completeness, fontFamily slug completeness, file size guard, bundled-preset integrity. 44/44 PASSED.
+- Integration: Activate a colour-only variation in WP Site Editor, confirm palette tokens available in block inspector. Activate a typography-only variation, confirm font families switch. Activate bundled preset, confirm both axes active simultaneously.
+- E2E: Playwright — open Site Editor Styles panel on sandybrown canary; confirm colour and typography presets appear as separate selectable groups; confirm mixing colour from one variation with typography from another renders correctly at 375/768/1440.
+- Regression: grep `styles/colours/` and `styles/typography/` for any palette or fontFamily keys that are absent from the corresponding bundled file.
+**Depends on:** None (pure file addition; no PHP changes needed)
+**Universal-benefit:** Yes — every future SGS client immediately benefits from combinatorial variation freedom
+
+### FR-S8-2 — WP discovery wiring and operator UX
+
+**Behaviour:** WordPress 6.5+ auto-discovers `.json` files in `styles/` subdirectories without registration. Confirmed via fullsiteediting.com documentation: *"subfolders work"* — no `theme.json` entry and no PHP hook required. Operators see colour and typography presets as separate groups in the Site Editor Styles panel. Labels come from the `title` field in each JSON file.
+
+**Acceptance criteria:**
+- No `theme.json` modification required for subdirectory discovery on WP 6.5+
+- No PHP class `class-sgs-style-variation-discovery.php` required (discovery is native)
+- Operator opens Appearance → Editor → Styles → Browse styles: colour presets labelled e.g. "Mama's Munches Colours" appear alongside typography presets labelled e.g. "Mama's Munches Typography"
+- Bundled presets continue to appear with their existing labels (no title change)
+- Activating a colour preset does not reset the active typography preset (WP native behaviour — each axis is stored separately in `wp_global_styles`)
+- If the site is on WP < 6.5: bundled top-level files continue to work exactly as before; axis files are simply ignored by WP (safe graceful degradation)
+
+**Model:** Sonnet
+**Tests:**
+- Unit: Confirm `styles/colours/` and `styles/typography/` contain exactly 8 files each matching `EXPECTED_VARIATIONS`.
+- Integration: On WP 6.9 test install, confirm `WP_Theme_JSON_Resolver::get_style_variations()` returns colour + typography + bundled presets (total ≥ 24 variations).
+- E2E: Playwright — open Styles panel; assert variation labels include "Colours" and "Typography" suffix variants; confirm mix-and-match persist across page reload.
+- Regression: Existing sites running bundled presets render identically post-deploy (pixel-diff < 1% at all three breakpoints).
+**Depends on:** FR-S8-1
+**Universal-benefit:** Yes
+
+---
+
 # 7. Cross-cutting concerns
 
 ## 7.1 Security
@@ -644,6 +701,7 @@ Spec ships successfully if all observable on sandybrown canary site:
 |------|---------|-------|
 | 2026-05-19 | v1 draft | Initial draft after research brief + Bean Q&A |
 | 2026-05-19 | v2 | Council-revised. Applied 10 must-fixes (M1-M10) + 5 recommended additions (A1-A5). Added FR-S5-3 (WP-CLI surface), FR-S7-4 (re-clone idempotence meta). Hardened §7.1 with 5 new requirements. Added 4 new risks (R7-R10). Logo workflow stays in Site Editor (M8). REST pattern endpoint rejected (Council A4). Spec marked council-passed, ready to implement. |
+| 2026-05-19 | v2.1 | Promoted P-S17-A to in-scope. Added §S8 Two-Axis Style Variations (FR-S8-1 + FR-S8-2). Updated §6 header to 8 spec sections. All 8 existing variations split into `styles/colours/` + `styles/typography/` axes; 16 new files created; 8 bundled top-level files annotated. 44/44 tests passing. |
 
 ---
 

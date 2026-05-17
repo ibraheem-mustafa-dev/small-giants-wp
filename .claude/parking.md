@@ -10,15 +10,31 @@ last_updated: 2026-05-19
 
 The 4-seat / 2-round council on Spec 17 surfaced 8 follow-ups that are out of v1 scope but worth tracking. Full outcome at `.claude/reports/council-outcome-spec-17.md`.
 
-### P-S17-A — Independent colour + typography preset split (~3-4 hrs)
+### P-S17-A — Independent colour + typography preset split — PROMOTED TO IN-SCOPE 2026-05-19 — see Spec 17 §S8
+
+**Status:** DONE. Implemented as Wave 1 Task E. Commit: [hash].
 
 **What:** Today each style variation JSON bundles colour + typography + spacing together. Top block themes (Twenty Twenty-Five, Ollie) split colour stacks and typography stacks into separate `/styles/colors/` and `/styles/typography/` folders. Result: 8 colour presets × 9 typography presets = 72 design combinations from 17 files instead of 72 separate variation JSONs.
 
 **Fix shape:** Refactor `theme/sgs-theme/styles/` into two subdirectories. Update Site Editor Styles panel to surface both axes. Existing variations remain as bundled "complete" presets but operators can mix.
 
-**Trigger:** When SGS reaches 8+ client style variations OR a client requests "I like Mama's colours but with the Indus typography."
+**Trigger (historical):** When SGS reaches 8+ client style variations OR a client requests "I like Mama's colours but with the Indus typography."
 
-**Source:** Spec 17 council, Seat 1 Round 2 endorsement.
+**Source:** Spec 17 council, Seat 1 Round 2 endorsement. Promoted by Bean 2026-05-19.
+
+### P-S17-TESTS-BOOTSTRAP — new test files in scripts/tests/ need PHPUnit bootstrap (~30 min)
+
+**What:** Wave 1 implementation landed new PHP test files at `plugins/sgs-blocks/scripts/tests/test_site_info.php` and `test_site_info_binding.php`. They use PHPUnit's `TestCase`, `assertTrue`, `assertSame` etc. but the existing PHPUnit bootstrap lives at `plugins/sgs-blocks/tests/php/bootstrap.php` — a different directory tree. intelephense flags every assertion as `Undefined method`. The tests are correct in shape but cannot run as-is.
+
+**Fix shape (two options):**
+1. Move `scripts/tests/*.php` test files to `tests/php/` so they inherit the existing bootstrap. Update any path references in CI scripts.
+2. Add a `scripts/tests/bootstrap.php` that requires the parent bootstrap + the necessary autoloader.
+
+**Recommendation:** Option 1 (move to canonical location). Python test files at `scripts/tests/` stay there — different framework.
+
+**Trigger:** Before Wave 2 implementation lands (next session) so the new tests can actually run.
+
+**Source:** Wave 1 QC sweep, intelephense diagnostics on new PHP test files.
 
 ### P-S17-B — Pattern versioning on `wp_template_part` records (~2 hrs)
 

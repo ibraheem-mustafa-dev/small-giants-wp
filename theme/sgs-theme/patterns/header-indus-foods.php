@@ -1,7 +1,7 @@
 <?php
 /**
  * Title: Indus Foods Header
- * Slug: sgs-theme/header-indus-foods
+ * Slug: sgs/indus-foods-header
  * Categories: header
  * Block Types: core/template-part/header
  * Inserter: yes

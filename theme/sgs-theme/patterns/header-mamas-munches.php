@@ -1,7 +1,7 @@
 <?php
 /**
  * Title: Mamas Munches Header
- * Slug: sgs-theme/header-mamas-munches
+ * Slug: sgs/mamas-munches-header
  * Categories: header
  * Block Types: core/template-part/header
  * Inserter: yes

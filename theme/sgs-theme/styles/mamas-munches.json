@@ -2,6 +2,7 @@
   "$schema": "https://schemas.wp.org/trunk/theme.json",
   "version": 3,
   "title": "Mama's Munches",
+  "description": "Bundled preset — colour + typography combined. For independent axes use colours/mamas-munches and typography/mamas-munches.",
   "settings": {
     "color": {
       "palette": [

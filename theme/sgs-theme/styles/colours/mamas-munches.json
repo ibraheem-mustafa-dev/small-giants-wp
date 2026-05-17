@@ -1,0 +1,149 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/theme.json",
+	"version": 3,
+	"title": "Mama's Munches Colours",
+	"description": "Colour-only axis — coral pink, cream and warm tones. Combine with any typography preset.",
+	"settings": {
+		"color": {
+			"palette": [
+				{
+					"slug": "primary",
+					"color": "#E68A95",
+					"name": "Primary (Coral Pink)"
+				},
+				{
+					"slug": "primary-dark",
+					"color": "#C56A7A",
+					"name": "Primary Dark (Coral Hover)"
+				},
+				{
+					"slug": "surface-pink",
+					"color": "#F5C2C8",
+					"name": "Soft Pink (Hero / Trust Bar)"
+				},
+				{
+					"slug": "surface",
+					"color": "#FBF3DC",
+					"name": "Surface (Cream)"
+				},
+				{
+					"slug": "surface-alt",
+					"color": "#FFF9F0",
+					"name": "Surface Alt (Warm Off-white)"
+				},
+				{
+					"slug": "accent",
+					"color": "#F5D050",
+					"name": "Accent (Warm Yellow)"
+				},
+				{
+					"slug": "accent-text",
+					"color": "#7A6500",
+					"name": "Accent Text (WCAG AA on White)"
+				},
+				{
+					"slug": "text",
+					"color": "#3A2E26",
+					"name": "Text (Choc-chip Charcoal)"
+				},
+				{
+					"slug": "text-muted",
+					"color": "#6B5C50",
+					"name": "Text Muted (Warm Mid-brown)"
+				},
+				{
+					"slug": "text-inverse",
+					"color": "#FFFAF5",
+					"name": "Text Inverse (Off-white)"
+				},
+				{
+					"slug": "cookie-brown",
+					"color": "#8B6F4E",
+					"name": "Cookie Brown (Decorative)"
+				},
+				{
+					"slug": "border-subtle",
+					"color": "#E8D5C0",
+					"name": "Border (Warm Beige)"
+				},
+				{
+					"slug": "success",
+					"color": "#2E7D4F",
+					"name": "Success"
+				},
+				{
+					"slug": "footer-bg",
+					"color": "#3A2E26",
+					"name": "Footer Background"
+				},
+				{
+					"slug": "surface-peach",
+					"color": "#FAC47E",
+					"name": "Surface Peach (brand-source warm tone)"
+				},
+				{
+					"slug": "surface-cream-warm",
+					"color": "#E3B78B",
+					"name": "Surface Cream Warm (brand-source warm tone)"
+				},
+				{
+					"slug": "border-warm",
+					"color": "#DAAA92",
+					"name": "Border Warm (brand-source warm tone)"
+				},
+				{
+					"slug": "cookie-brown-warm",
+					"color": "#BE7B52",
+					"name": "Cookie Brown Warm (brand-source warm tone)"
+				},
+				{
+					"slug": "client-surface-pink",
+					"color": "surface-pink"
+				},
+				{
+					"slug": "client-text",
+					"color": "text"
+				}
+			]
+		}
+	},
+	"styles": {
+		"color": {
+			"background": "var:preset|color|surface",
+			"text": "var:preset|color|text"
+		},
+		"elements": {
+			"link": {
+				"color": {
+					"text": "var:preset|color|primary-dark"
+				},
+				":hover": {
+					"color": {
+						"text": "var:preset|color|text"
+					}
+				}
+			},
+			"button": {
+				"color": {
+					"background": "var:preset|color|primary",
+					"text": "var:preset|color|text"
+				},
+				"border": {
+					"radius": "10px",
+					"width": "2px",
+					"color": "var:preset|color|primary",
+					"style": "solid"
+				},
+				":hover": {
+					"color": {
+						"background": "var:preset|color|text",
+						"text": "var:preset|color|text-inverse"
+					},
+					"border": {
+						"color": "var:preset|color|text"
+					}
+				}
+			}
+		}
+	}
+}

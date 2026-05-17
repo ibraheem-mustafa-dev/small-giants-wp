@@ -2,6 +2,7 @@
 	"$schema": "https://schemas.wp.org/trunk/theme.json",
 	"version": 3,
 	"title": "HelpingDoctors EHR",
+	"description": "Bundled preset — colour + typography combined. For independent axes use colours/helping-doctors and typography/helping-doctors.",
 	"settings": {
 		"color": {
 			"palette": [

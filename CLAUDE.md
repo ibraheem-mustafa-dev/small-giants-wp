@@ -32,13 +32,19 @@ Future clients (Dream Wedding, Workwear Now, etc.) get their own folder when onb
 
 ## Naming Convention
 
+**Full rules, examples, and anti-patterns:** [`.claude/specs/00-naming-conventions.md`](.claude/specs/00-naming-conventions.md)
+**CI linter:** `python scripts/lint-naming-conventions.py`
+
 - Theme: `sgs-theme`
 - Plugins: `sgs-blocks`, `sgs-booking`, `sgs-client-notes`
 - PHP namespace: `SGS\Theme`, `SGS\Blocks`, `SGS\Booking`, `SGS\ClientNotes`
 - Text domain: `sgs-theme`, `sgs-blocks`, `sgs-booking`, `sgs-client-notes`
-- CSS prefix: `.sgs-`
+- CSS prefix: `.sgs-` (BEM: `sgs-<block>__<element>--<modifier>`, hyphens only)
 - Block namespace: `sgs/block-name`
+- Pattern slugs: `sgs/<role>` (framework) or `sgs/<client-slug>-<role>` (client) — `sgs-theme/` is deprecated
 - Hook prefix: `sgs_`
+- `wp_options` keys: `sgs_*`
+- Post-meta keys: `_sgs_*` (private) / `sgs_*` (public)
 
 ## Design Tokens
 
