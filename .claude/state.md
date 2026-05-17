@@ -17,7 +17,11 @@ clean_baseline_pixel_diff_2026_05_18:
     sgs-brand: "43.71% (image positioning + typography)"
     sgs-trust-bar: "31.71% (duplicated labels + missing icon SVGs)"
     sgs-header: "24.08% (possible selector mismatch — see P-HEADER-WRAPPER-CLASS-AUDIT)"
-last_updated: 2026-05-18 (full-cycle close + Opus handoff policy + capture-lesson gate live)
+last_updated: 2026-05-18 (full-cycle close + Opus handoff policy + capture-lesson gate live + late-session meta-skills upgrade)
+meta_skills_upgrade_2026_05_18:
+  scope: "Autopilot + handoff skill restructure shipped late in the session (lives in ~/.claude + ~/.agents, outside this repo). Three commits — small-giants-wp/main 47727609 (drop recommended_model + dead --resume lines), ~/.claude/master (handoff Gate rewrite + session-init.py canonical-path + autopilot-lesson-surface extension + matcher scoping for SessionStart hooks), ~/.claude/master fddb2b0 (subagent-context de-dup fix), ~/.agents/master a8914ba (autopilot SKILL.md Stage 0 step 6 docs-registry preload + step 8 removed + Stage 3 plain-English HARD RULE)."
+  effect: "Next session will exercise the new gates for the first time: outcome-vs-completion at 3.5, auto-merge-to-main at 2, registry-first reconciliation at 4.5, /capture-lesson at 4.8, orchestration plan at 6. Methodology guardrails (deploy-before-test, root-cause-before-instance, outcome-vs-completion, /qc multi-rater, per-section cropped pixel-diff, --converter-v2 required, WP_DEBUG_DISPLAY false) baked into every future Next Session Prompt."
+  qc_status: "Skill+hook updates ran through /qc — 95-confidence pass, 10 scenarios green, zero substantive findings, 1 regex-authoring false-positive on a content check."
 blockers:
   - "No active blockers. Phase 9b intra-section closure work is parked with named triggers; each parking entry is a discrete <30-min task. Footer + header selector mismatches must be fixed FIRST to make further pixel-diff measurements trustworthy."
 ---

@@ -1,0 +1,23 @@
+{
+  "slug": "sgs/gift-section",
+  "role": "text-content",
+  "run_id": "mamas-munches-homepage-2026-05-17-104738",
+  "staging_dir": "pipeline-state\\sgs-clone\\mamas-munches-homepage-2026-05-17-104738\\scaffold-gift-section",
+  "files": [
+    "block.json",
+    "edit.js",
+    "index.js",
+    "render.php",
+    "save.js",
+    "style.css"
+  ],
+  "pending_db_rows": [
+    {
+      "block_slug": "sgs/gift-section",
+      "attr_name": "text",
+      "attr_type": "string",
+      "canonical_slot": null
+    }
+  ],
+  "promoted": false
+}
