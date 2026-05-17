@@ -256,6 +256,39 @@ Spent ~6 hours of one session running 12 passes of full-page pixel diff and conj
 
 **Files:** `pipeline-state/<run>/leftover-buckets.json` (orchestrator output) — `plugins/sgs-blocks/scripts/recogniser/leftover-bucket-router.py` (writer; bare-key lookup bug also fixed 2026-05-15 — was causing 100% false "failed" classification) — `plugins/sgs-blocks/scripts/orchestrator/converter_v2/__init__.py` (extracted_attributes was always empty, suppressing all signal — fixed 2026-05-15).
 
+## T. CSS-selector classifier regex traps (2026-05-18 widthMode dispatch)
+
+When a Python regex filters SGS-BEM CSS selectors and intends to allow ONLY block-roots (e.g. `.sgs-brand`, `.sgs-card-grid`) while rejecting `__element` and `--modifier` shapes:
+
+### T1 — Char-class `[a-z0-9-]` silently matches consecutive `--`
+
+**Symptom:** `_detect_client_layout_widths(css_rules)` in `convert.py` returned polluted `{contentSize: 900px, wideSize: 1200px}` when fed CSS containing `.sgs-section--alt { max-width: 900px }`. The function intended to ignore modifier shapes; the 900 value should never have entered the cluster.
+
+**Root cause:** Original regex `^\.sgs-[a-z][a-z0-9-]*$` puts `-` inside the char class. The char class allows ONE OR MORE hyphens anywhere, including consecutively. So `.sgs-section--alt` matches: `.sgs-` + `s` + `ection--alt` (all chars in `[a-z0-9-]`) + `$`. The regex looks restrictive but isn't.
+
+**Fix:** Use segmented kebab pattern. Each segment is `[a-z0-9]+` (one or more alphanumeric, no hyphens). Segments joined by exactly one hyphen:
+
+```python
+_SGS_BEM_BLOCK_ROOT_RE = re.compile(r"^\.sgs-[a-z][a-z0-9]*(-[a-z0-9]+)*$")
+```
+
+Now `.sgs-X--Y` fails: after the first `-`, the next group `(-[a-z0-9]+)` requires `[a-z0-9]+` immediately, but it gets another `-` instead.
+
+**Verified across 12 cases:** `.sgs-hero` ✓, `.sgs-card-grid` ✓, `.sgs-trust-bar` ✓, `.sgs-info-box` ✓, `.sgs-cta-section` ✓ (kebab-case roots pass) — `.sgs-section--alt` ✗, `.sgs-brand__title` ✗, `.sgs-brand--featured` ✗, `.sgs-card-grid--3col` ✗, `.sgs-card-grid__item` ✗ (modifier/element shapes correctly rejected).
+
+### The detection rule (binding)
+
+When a regex is filtering "single character allowed but the doubled form forbidden", char-class alone is INSUFFICIENT. Constrain placement via grouping:
+
+- WRONG: `[char]*` — allows any count, any placement
+- RIGHT: `(prefix-segment)(separator-segment)*` — each separator surrounded by required content
+
+**Companion rule:** every BEM-classification regex must ship with a 5+-case unit assertion next to its definition. Standard cases to assert: block root, kebab-case root, `__element`, `--modifier`, `__element--modifier`, non-SGS selector. If any case fails, the regex is wrong before the calling code is.
+
+**Captured 2026-05-18.** Caught by `/qc-inline` #1 before commit. Pattern was a silent universal-benefit violation — every client whose mockup CSS used `--` modifier selectors at section level would have had their auto-detected `contentSize`/`wideSize` polluted.
+
+---
+
 ## How to add an entry
 
 1. Hit a real WordPress styling failure in a session.

@@ -6,17 +6,19 @@ created: 2026-05-10
 last_updated: 2026-05-18
 phase_count: 8
 total_estimate_min: 540-720 (9-12 hours focused)
-status: archived — phases 7+8 closed since original write; active work is Phase 9. Phase 9 pre-work shipped 2026-05-18 (3 commits on main, HEAD 397295c3). Active execution doc is .claude/next-session-prompt.md (v4 — brand-then-hero walkdown). This file kept as historical audit trail.
-successor_plan: .claude/next-session-prompt.md (v4 — brand-then-hero walkdown, 2026-05-18 onwards)
+status: archived — phases 7+8 closed since original write; active work is Phase 9. P-WP-ALIGNMENT-WIDTH-SYSTEM milestone CLOSED 2026-05-18 (3 commits — c7f42003 Task 0 pages-not-posts, 86172812 Tasks 2-3 widthMode infra, 16721374 docs walk; HEAD 16721374). Active execution doc is .claude/next-session-prompt.md (v8 — orchestrator re-run + intra-section pivot). This file kept as historical audit trail.
+successor_plan: .claude/next-session-prompt.md (v8 — orchestrator re-run + intra-section pivot, 2026-05-19 onwards)
 phase_chain:
   - phase-7-spec-16-converter-rollout — CLOSED 2026-05-13
   - phase-8-section-by-section-closure — CLOSED 2026-05-16 (22 commits across 3 sessions)
-  - phase-9-brand-hero-evidence-walkdown — ACTIVE
+  - phase-9-brand-hero-evidence-walkdown — ACTIVE (P-WP-ALIGNMENT-WIDTH-SYSTEM milestone CLOSED 2026-05-18)
 ---
 
 # Plan - SGS-BEM Convention Rollout + M9 Completion (ARCHIVED — historical audit trail)
 
-**2026-05-18 status note:** Phase 9 pre-work shipped today (3 commits on main: 8b69bc0a + 10a93d87 + 397295c3). Three evidence layers delivered behind `--debug-trace`: per-section trace JSONL (14 walker labels + attr_skipped + db_lookup_miss), per-section expected-rules baseline (parse_css + soupsieve), split-metric pixel-diff (suffix-anchored attribute-coverage% via property_suffixes DB). 4-rater /qc panel ratified post-fix (Cerebras stalled, replaced by Sonnet adversarial-lens). Brand+hero walkdown is the next session — see `.claude/next-session-prompt.md` v4.
+**2026-05-18 status note (Phase 9 mid-session):** P-WP-ALIGNMENT-WIDTH-SYSTEM shipped today (3 commits on main: c7f42003 + 86172812 + 16721374, HEAD 16721374). cv2 pipeline now targets WP PAGES not POSTS (14.3-point brand pixel-diff drop at 1440 from removing the inherited 800px content-area cap); sgs/container has full per-viewport widthMode system + InspectorControls editor UI; converter detects mockup widths and lifts them into per-client style variations idempotently. Universal-benefit principle held — zero client literals in framework code; one BEM regex correctness bug caught + fixed by `/qc-inline` before commit (now captured as Section T in `.claude/specs/common-wp-styling-errors.md` + a new entry in `.claude/mistakes.md`). Next session pivots to orchestrator pipeline re-run + intra-section closure.
+
+**Prior 2026-05-18 status (early-session, not yet committed at the time — superseded by the above):** Phase 9 pre-work shipped (3 commits referenced 8b69bc0a + 10a93d87 + 397295c3, but those hashes don't appear in the current `main` log — likely worktree-local). Three evidence layers delivered behind `--debug-trace`: per-section trace JSONL (14 walker labels + attr_skipped + db_lookup_miss), per-section expected-rules baseline (parse_css + soupsieve), split-metric pixel-diff (suffix-anchored attribute-coverage% via property_suffixes DB). 4-rater /qc panel ratified post-fix (Cerebras stalled, replaced by Sonnet adversarial-lens).
 
 **2026-05-17 status note:** Three phases closed since this plan was written. Phase 7 (Spec 16 converter rollout) closed 2026-05-13. Phase 8 (section-by-section closure, 22 commits across 3 sessions) closed 2026-05-16. Phase 9 (brand + hero evidence-driven walkdown) is the active phase as of 2026-05-17 — see `.claude/next-session-prompt.md` v3 (validated by 4-rater council review: architecture / adversarial / pragmatist / evidence). Pass condition for Phase 9 splits into attribute-coverage% ≥ 95% (universality, pure converter score) + pixel-diff% ≤ 5% (fidelity, block + theme + render score) per evidence-lens recommendation. The M9 / clone-orchestrator concerns this plan originally sketched were reframed in Spec 16 (2026-05-14) as a slot-aware DOM walker. Spec 15 stays canonical for L0-L3 + Stages 0-2 + 8-9 + /sgs-update; Spec 16 owns Stages 3-7.
 

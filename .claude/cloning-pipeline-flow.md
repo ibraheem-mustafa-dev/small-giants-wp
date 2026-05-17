@@ -211,6 +211,43 @@ The big picture in one page, with EVERY script, file, DB table and skill plotted
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
+### Stage 0.8 — Theme-widths detection + style-variation layout lift (2026-05-18)
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ SCRIPTS:                                                                    │
+│  plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py            │
+│       _detect_client_layout_widths(css_rules)                               │
+│       _write_client_layout_widths(client_slug, widths, repo_root)           │
+│       _load_theme_widths(client_slug, repo_root)                            │
+│                                                                             │
+│ FILES (R):                                                                  │
+│  theme/sgs-theme/theme.json (settings.layout — framework defaults)          │
+│  theme/sgs-theme/styles/<client>.json (variation overrides if present)      │
+│                                                                             │
+│ FILES (W):                                                                  │
+│  theme/sgs-theme/styles/<client>.json (idempotent — appends                 │
+│      settings.layout.contentSize/wideSize when keys not yet present)        │
+│                                                                             │
+│ DB tables:    none (CSS-pattern based, not slug-based)                      │
+│ Skills:       none                                                          │
+│                                                                             │
+│ HOW: Scans CSS rule set for selectors matching SGS-BEM block-root regex     │
+│      `^\.sgs-[a-z][a-z0-9]*(-[a-z0-9]+)*$` (segmented kebab; rejects        │
+│      `__element` and `--modifier` shapes). Clusters max-width declarations  │
+│      → smallest cluster centre = contentSize candidate; largest = wideSize. │
+│      Falls back silently when fewer than 1 distinct usable width found.     │
+│      Seeds `_LIFT_CONTEXT["theme_widths"]` so Stage 4 widthMode lift can    │
+│      compare lifted max-widths against ±5% tolerance.                       │
+│                                                                             │
+│ CLI:          convert.py … --client-slug=<slug>                             │
+│ INVARIANT:    Universal-benefit — works for any client whose mockup CSS     │
+│               follows SGS-BEM naming. Zero client-specific literals.        │
+│                                                                             │
+│ STATUS:       LIVE (Branch B 2026-05-18)                                    │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
 ### Stage 1 — Section boundary detection
 
 ```
