@@ -2,91 +2,69 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-current_phase: spec-16-phase-9-section-by-section-walkdown
-current_subphase: "P-WP-ALIGNMENT-WIDTH-SYSTEM full-cycle close 2026-05-18. Orchestrator wiring complete: convert_section() accepts client_slug + repo_root, seed_pipeline_context() seeds _LIFT_CONTEXT once per pipeline run, reset_pipeline_seed() clears state between runs. Caller (sgs-clone-orchestrator.py) passes both at the convert_section call site and resets at the top of stage_4_5_6_7_8_extract. End-to-end verified: `--converter-v2` orchestrator run on Mama's mockup → 376 attrs extracted (all 9 sections complete) → 5 widthMode hits in block_markup → mamas-munches.json:settings.layout populated with detected {contentSize:1000px, wideSize:1000px}. Pushed to page 131. WP_DEBUG_DISPLAY=true was contaminating measurements via a font-collection Notice banner above header — suppressed in wp-config.php; clean baselines now stable."
-current_subphase_step: "NEXT SESSION — Phase 9b intra-section closure. Five parking entries opened for follow-up: P-DETECT-INNER-ELEMENT-WIDTHS (~20 min — extend block-root regex to accept __inner element width signals), P-FOOTER-WRAPPER-CLASS-MISSING (~10 min — sgs/footer render.php doesn't emit .sgs-footer on wrapper), P-HEADER-WRAPPER-CLASS-AUDIT (~10 min — same suspected pattern), P-UTF8-MOJIBAKE-IN-CONVERTER (~30 min — gift-section promo bar shows double-encoded characters), and the umbrella P-INTRA-SECTION-CLOSURE which holds 9 section-level diff entries to address next."
-phase_9_session_close_summary: "2026-05-18 session — Tasks 0+2+3 shipped earlier in the day (5 commits c7f42003 + 86172812 + 16721374 + 8ec062bc + 8995a15a). Late-session pivot to next-session work: orchestrator wiring shipped, end-to-end pipeline run produced verified widthMode emission + style-variation auto-lift, clean per-section pixel-diff baseline measured at 1440 across 9 sections. WP debug-notice contamination diagnosed + suppressed. Five parking entries + three behavioural lessons captured. Handoff skill (~/.claude/commands/handoff.md) restructured to default to Opus, walk docs-registry.yaml authoritatively, and run /capture-lesson as a mandatory pre-handoff gate."
-clean_baseline_pixel_diff_2026_05_18:
-  selector_per_section_at_1440:
-    sgs-footer: "98.67% (selector mismatch — see P-FOOTER-WRAPPER-CLASS-MISSING)"
-    sgs-featured-product: "68.20% (layout variant — 1 hero card mockup vs 2-stack SGS)"
-    sgs-hero: "66.96% (image positioning + content layout)"
-    sgs-social-proof: "56.77% (carousel variant in SGS vs stacked list in mockup)"
-    sgs-ingredients-section: "51.23% (image positioning + grid)"
-    sgs-gift-section: "47.32% (UTF-8 mojibake + image positioning + typography)"
-    sgs-brand: "43.71% (image positioning + typography)"
-    sgs-trust-bar: "31.71% (duplicated labels + missing icon SVGs)"
-    sgs-header: "24.08% (possible selector mismatch — see P-HEADER-WRAPPER-CLASS-AUDIT)"
-last_updated: 2026-05-18 (full-cycle close + Opus handoff policy + capture-lesson gate live + late-session meta-skills upgrade)
-meta_skills_upgrade_2026_05_18:
-  scope: "Autopilot + handoff skill restructure shipped late in the session (lives in ~/.claude + ~/.agents, outside this repo). Three commits — small-giants-wp/main 47727609 (drop recommended_model + dead --resume lines), ~/.claude/master (handoff Gate rewrite + session-init.py canonical-path + autopilot-lesson-surface extension + matcher scoping for SessionStart hooks), ~/.claude/master fddb2b0 (subagent-context de-dup fix), ~/.agents/master a8914ba (autopilot SKILL.md Stage 0 step 6 docs-registry preload + step 8 removed + Stage 3 plain-English HARD RULE)."
-  effect: "Next session will exercise the new gates for the first time: outcome-vs-completion at 3.5, auto-merge-to-main at 2, registry-first reconciliation at 4.5, /capture-lesson at 4.8, orchestration plan at 6. Methodology guardrails (deploy-before-test, root-cause-before-instance, outcome-vs-completion, /qc multi-rater, per-section cropped pixel-diff, --converter-v2 required, WP_DEBUG_DISPLAY false) baked into every future Next Session Prompt."
-  qc_status: "Skill+hook updates ran through /qc — 95-confidence pass, 10 scenarios green, zero substantive findings, 1 regex-authoring false-positive on a content check."
+current_phase: spec-17-header-footer-architecture
+current_subphase: "Wave 1 foundation shipped 2026-05-19. Spec 17 v2 council-passed; 5 parallel subagents implemented Site Info store + binding source + migrations + slug conventions + two-axis style variations (P-S17-A promoted to in-scope, new §S8). 102 namespace prefixes applied across 5 PHP class files. All 5 implementation files pass php -l. Test suites green where bootstrap exists: 23/23 naming linter, 10/10 Site Info, 22/22 binding source, 44/44 two-axis variations. PHP test files at scripts/tests/ need PHPUnit bootstrap (P-S17-TESTS-BOOTSTRAP)."
+current_subphase_step: "NEXT SESSION — Wave 2 implementation. Depends on Wave 1 merged (b825d80a + 0118661f on main). Wave 2 FRs: S4-3 admin page, S4-4 business-info refactor, S4-5 personal-data sweep, S1 framework defaults pattern-delegation, S3-1 multi-pattern picker, S7-1 block deprecations. Wave 3 (variation-linkage seeding + conditional rules + CPT advanced headers + admin menu + variation picker + WP-CLI surface) follows Wave 2."
+last_updated: 2026-05-19
+spec_17_council_outcome: ".claude/reports/council-outcome-spec-17.md — 10 must-fixes (M1-M10) + 5 additions (A1-A5) all baked into Spec 17 v2. 8 parking entries P-S17-A..H opened; A promoted to in-scope this session."
+wave_1_commits:
+  - "ee7d943f — Spec 17 v2 + research brief + council outputs + parking entries"
+  - "b825d80a — Wave 1 foundation: 5 PHP classes + 16 colour/typography variation files + naming-conventions spec + linter + tests"
+  - "0118661f — fix-up: pattern-slug-shim wired into SGS_Blocks bootstrap"
 blockers:
-  - "No active blockers. Phase 9b intra-section closure work is parked with named triggers; each parking entry is a discrete <30-min task. Footer + header selector mismatches must be fixed FIRST to make further pixel-diff measurements trustworthy."
+  - "P-S17-TESTS-BOOTSTRAP — new PHP test files at scripts/tests/ need PHPUnit bootstrap (or move to tests/php/) before Wave 2 implementation. Documented in parking.md."
 ---
 
 # small-giants-wp — State Snapshot
 
 > Frontmatter above is the contract. Body below is regenerated by `/handoff` each session.
 
-## Where we are (2026-05-18 close)
+## Where we are (2026-05-19 close)
 
-**Phase 9 framework-level work is done.** The full P-WP-ALIGNMENT-WIDTH-SYSTEM cycle shipped today:
-
-- **Task 0** (`c7f42003`): cv2 pipeline targets WP PAGES not POSTS — 14.3-point brand pixel-diff drop at 1440
-- **Tasks 2-3** (`86172812`): sgs/container widthMode + editor InspectorControls + converter widthMode emission + style-variation auto-lift
-- **Orchestrator wiring** (pending commit): `convert_section()` accepts `client_slug` + `repo_root`; `seed_pipeline_context()` + `reset_pipeline_seed()` exported from converter_v2 package; orchestrator passes both at call site; reset fires at the top of stage_4_5_6_7_8_extract
-- **Docs walks** (commits `16721374` + `8ec062bc`): registry + canonical doc set
-- **/sgs-update refresh** (commit `8995a15a`): 71 blocks, 1,714 attributes, uimax mirror synced
-
-## Today's commits (chronological, pre-orchestrator-wiring)
+Spec 17 (Header/Footer Architecture) Wave 1 foundation shipped. Three commits on main:
 
 | Commit | What |
 |---|---|
-| `c7f42003` | Task 0 — cv2 pipeline targets WP PAGES not POSTS |
-| `86172812` | Tasks 2-3 — widthMode infra + InspectorControls + converter wiring |
-| `16721374` | Docs walk #1 — state/handoff/next-session/mistakes/decisions/parking |
-| `8ec062bc` | Docs walk #2 — architecture/plan/cloning-pipeline-flow/spec-16/styling-errors |
-| `8995a15a` | /sgs-update refresh — block reference regen + Stage 4 print bug fix |
+| `ee7d943f` | Spec 17 v2 + research brief + council outputs + 8 parking entries |
+| `b825d80a` | Wave 1 foundation (5 parallel subagents) |
+| `0118661f` | Fix-up: pattern-slug-shim bootstrap wiring |
 
-## End-to-end pipeline proof (2026-05-18 late session)
+## Wave 1 deliverables (8 FRs across 5 spec sections + new §S8)
 
-- `python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py --mockup sites/mamas-munches/mockups/homepage/index.html --client mamas-munches --page homepage --auto-section --no-playwright --converter-v2` ran clean
-- New run-dir: `pipeline-state/mamas-munches-homepage-2026-05-17-105020/`
-- All 9 sections matched to sgs/* blocks (confidence=1.0 for hero, trust-bar, featured-product, brand, ingredients-section, gift-section, social-proof; header + footer matched via different paths)
-- 376 attrs extracted (vs 62 yesterday on similar mockup — converter coverage substantially up)
-- 5 `widthMode` hits in block_markup (semantic emission firing)
-- `theme/sgs-theme/styles/mamas-munches.json:settings.layout = {contentSize: "1000px", wideSize: "1000px"}` — written by `_write_client_layout_widths` idempotently (only `.sgs-brand` block-root selector matched the SGS-BEM regex; `__inner` element widths missed — see P-DETECT-INNER-ELEMENT-WIDTHS)
-- New markup pushed to page 131 via `upload_and_patch.py` (defaults now correct: `--target page --target-id 131`)
+| Wave | Scope | Tests | Files |
+|------|-------|-------|-------|
+| 1A | FR-S6-1, FR-S6-2 — slug rename + linter + naming-conventions spec | 23/23 | 4 pattern PHP, shim class, naming-conventions.md, lint-naming-conventions.py |
+| 1B | FR-S4-1 — Site Info store + 11-method API + GDPR exporter | 10/10 | class-sgs-site-info.php (424 lines, WPCS-justified) |
+| 1C | FR-S4-2 — `sgs/site-info` block binding source + empty-binding hints | 22/22 | class-sgs-site-info-binding.php (289 lines) |
+| 1D | FR-S7-2 + S7-3 + S7-4 — migrations + safety guard + 3 post metas | (truncated report) | class-sgs-migrations.php, class-sgs-template-part-meta.php, 2 migration files |
+| 1E | NEW §S8 FR-S8-1 + S8-2 — two-axis style variations (colours/ + typography/) + spec patch | 44/44 | 8 colour JSONs, 8 typography JSONs, spec updated |
 
-## Clean per-section pixel-diff baseline at 1440 (post WP_DEBUG_DISPLAY suppression)
+Plus: 102 `\` prefixes added via Haiku QC sweep so intelephense resolves WP global functions correctly inside the `SGS\Blocks` namespace.
 
-| Section | Diff | Notes |
-|---|---|---|
-| sgs-footer | 98.67% | Selector mismatch — matches stray `<h2 class="sgs-footer-label">`, not `<footer>` wrapper |
-| sgs-featured-product | 68.20% | Layout variant — mockup is 1 hero card + side gallery; SGS is 2 stacked cards |
-| sgs-hero | 66.96% | Image positioning + content layout (eyebrow/CTA missing) |
-| sgs-social-proof | 56.77% | Carousel variant in SGS vs stacked list in mockup |
-| sgs-ingredients-section | 51.23% | Image positioning + grid |
-| sgs-gift-section | 47.32% | UTF-8 mojibake + image positioning + typography |
-| sgs-brand | 43.71% | Image positioning + typography |
-| sgs-trust-bar | 31.71% | Duplicated labels + missing icon SVGs |
-| sgs-header | 24.08% | Possible selector mismatch |
+## Council artefacts (carried forward)
+
+- `.claude/specs/17-HEADER-FOOTER-ARCHITECTURE.md` v2.1 — 8 spec sections, 24 FRs
+- `.claude/plans/strategy/2026-05-19-header-footer-research-brief.md` — input brief for the spec
+- `.claude/reports/council-round-1-spec-17.md` — 4 seats × Round 1 outputs
+- `.claude/reports/council-outcome-spec-17.md` — final council consensus
+
+## Pixel-diff baseline (carried from 2026-05-18)
+
+Unchanged this session — Wave 2/3 will move these numbers once Site Editor template-part DB content can be reseeded from the new patterns.
 
 ## Next session — START HERE
 
-Read **`.claude/next-session-prompt.md`** + **`.claude/parking.md`** for the 5 newly-opened parking entries. Foundational fixes first (footer + header selector mismatches) before any further measurement.
+Read `.claude/next-session-prompt.md`. Orchestration plan dispatches Wave 2 (8 FRs) via parallel subagents. Test bootstrap fix is Task 1 — gates everything else.
 
 ## Subprojects
 
-- Mama's Munches — canary, P-WP-ALIGNMENT-WIDTH-SYSTEM closed; intra-section closure is Phase 9b
-- Indus Foods — second-client validation target (the new pipeline should work cleanly; mockup CSS shape unknown)
-- Other clients — automatically benefit from Tasks 2-3 next time their orchestrator runs
+- Mama's Munches — canary; Spec 17 implementation target
+- Indus Foods — second-client validation; benefits from Spec 17 architecture automatically
+- Other clients (Helping Doctors, etc.) — same
 
 ## Lessons captured this session
 
-1. **Opus-default policy** — Bean's preference: main agent on Opus, subagents on Sonnet/Haiku. `/handoff` Gate 3.5 now defaults to opus.
-2. **`--converter-v2` flag required** — orchestrator bypasses cv2 path silently without it.
-3. **WP_DEBUG_DISPLAY contamination** — staging notice banners shift every section vertically and inflate diffs by 15-40 points.
-4. **BEM regex char-class trap** (2026-05-18 morning) — `[a-z0-9-]` matches `--`; segmented kebab is the fix.
+1. **Council convergence pattern works.** 4 seats × 2 rounds × persona diversity (not raw model diversity) surfaced 10 must-fixes that a single Sonnet implementer would have missed. SHIP-IF verdict landed cleanly after Round 2 cross-pollination.
+2. **Block bindings + global option store eliminate per-pattern personal-data hardcoding.** One canonical mechanism unblocks both multi-client isolation and pipeline integration.
+3. **Pattern-delegation (`parts/header.html` → single `wp:pattern` ref)** is the TT5-idiomatic pattern. SGS adopted it for v1.
+4. **WP-CLI is the only safe write surface for pipeline integration.** REST endpoints for atomic pattern registration are code-injection vectors (Council blocked).
