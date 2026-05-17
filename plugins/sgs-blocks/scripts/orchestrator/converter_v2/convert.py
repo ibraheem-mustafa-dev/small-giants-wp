@@ -47,6 +47,98 @@ _RULE_RE = re.compile(r"([^{}]+)\{([^{}]+)\}", re.DOTALL)
 _MEDIA_RE = re.compile(r"@media[^{]+\{((?:[^{}]+\{[^{}]+\})+)\}", re.DOTALL)
 _DECL_RE = re.compile(r"\s*([\w-]+)\s*:\s*([^;]+);?\s*", re.DOTALL)
 
+# ============================================================================
+# P-CSS-IMPORTANT-STRIP (closed 2026-05-17)
+# Strip `!important` from CSS declaration values before equality checks.
+# `display: grid !important` must compare equal to "grid" or the
+# css_driven_container branch silently skips the whole section.
+# ============================================================================
+_IMPORTANT_RE = re.compile(r"\s*!important\s*$", re.IGNORECASE)
+
+
+def _strip_important(value: str) -> str:
+    """Remove trailing `!important` (case-insensitive) and any surrounding
+    whitespace from a CSS declaration value.
+
+    Closes parking entry P-CSS-IMPORTANT-STRIP (2026-05-17).
+    """
+    return _IMPORTANT_RE.sub("", value).strip()
+
+
+# ============================================================================
+# P-MULTI-CLASS-BEM-PRIMARY-DISAMBIG (closed 2026-05-17)
+# When a node carries multiple sgs-* classes (e.g. `sgs-brand sgs-section
+# sgs-section--alt`), pick ONE as the canonical primary BEM block.  Remaining
+# classes travel as className additions only.
+#
+# Selection heuristic (CSS source order wins, subject to filters):
+#   1. Strip leading `sgs-`
+#   2. Reject BEM modifiers (`--` suffix)
+#   3. Reject BEM element qualifiers (`__` suffix)
+#   4. Reject known utility-class prefixes (see _UTILITY_PREFIXES below)
+#   5. Prefer the first candidate that is a registered block in the DB
+#   6. If none registered, take the first passing candidate
+#   7. If none pass, return the first sgs-* class unchanged (safe fallback)
+# ============================================================================
+_UTILITY_PREFIXES: tuple[str, ...] = (
+    "utility-",
+    "helper-",
+    "section",   # bare "section" and "section--alt" etc. are layout utilities
+    "grid",
+    "flex",
+)
+
+
+def _pick_primary_sgs_block(classes: list[str]) -> tuple[str, list[str]]:
+    """Choose the canonical primary BEM-block class from a list of sgs-* classes.
+
+    Returns ``(primary_class, remaining_classes)`` where *primary_class* is the
+    chosen class string (e.g. ``"sgs-brand"``) and *remaining_classes* is the
+    original list minus that one entry.
+
+    Closes parking entry P-MULTI-CLASS-BEM-PRIMARY-DISAMBIG (2026-05-17).
+    """
+    sgs = [c for c in classes if c.startswith("sgs-")]
+    if not sgs:
+        # No sgs-* classes at all — caller should not reach here but be safe.
+        return ("", list(classes))
+    if len(sgs) == 1:
+        remaining = [c for c in classes if c != sgs[0]]
+        return (sgs[0], remaining)
+
+    candidates: list[str] = []
+    for cls in sgs:
+        slug = cls[len("sgs-"):]          # strip "sgs-" prefix
+        if "--" in slug:                   # BEM modifier → skip
+            continue
+        if "__" in slug:                   # BEM element → skip
+            continue
+        if any(slug == pref.rstrip("-") or slug.startswith(pref)
+               for pref in _UTILITY_PREFIXES):
+            continue
+        candidates.append(cls)
+
+    if not candidates:
+        # All classes were modifiers/utilities — fall back to first sgs-* class.
+        remaining = [c for c in classes if c != sgs[0]]
+        return (sgs[0], remaining)
+
+    # Prefer the first candidate that resolves to a registered block.
+    for cls in candidates:
+        slug = cls[len("sgs-"):]
+        if db.block_exists(f"sgs/{slug}"):
+            remaining = [c for c in classes if c != cls]
+            _trace("primary_class_picked", primary_class=cls, method="db_registered",
+                   all_sgs_classes=sgs)
+            return (cls, remaining)
+
+    # No DB match — take the first passing candidate (CSS source order).
+    chosen = candidates[0]
+    remaining = [c for c in classes if c != chosen]
+    _trace("primary_class_picked", primary_class=chosen, method="first_candidate",
+           all_sgs_classes=sgs)
+    return (chosen, remaining)
+
 
 # ============================================================================
 # Trace emitter (debug-trace evidence chain)
@@ -276,7 +368,9 @@ def _detect_grid_container_from_css(
 
     for cls in classes:
         decls = css_rules.get(f".{cls}", {})
-        display = decls.get("display", "").strip()
+        # P-CSS-IMPORTANT-STRIP (2026-05-17): strip `!important` so
+        # `display: grid !important` compares equal to "grid".
+        display = _strip_important(decls.get("display", ""))
         if display not in ("grid", "flex"):
             continue
         # When display:flex + flex-direction:column[-reverse], the semantic
@@ -288,7 +382,7 @@ def _detect_grid_container_from_css(
         # mobile-first authored mockups commonly use this. The reverse-order
         # semantic is lost in the stack mapping (sgs/container has no reverse
         # flag yet) — captured as a known follow-up.
-        flex_dir = decls.get("flex-direction", "").strip()
+        flex_dir = _strip_important(decls.get("flex-direction", ""))
         if display == "flex" and flex_dir in ("column", "column-reverse"):
             layout = "stack"
         else:
@@ -400,9 +494,16 @@ def lift_attrs_for_block(block_slug: str, node: Tag, bem: db.BemParse | None,
     attrs: dict = {}
 
     # Always preserve sgs-* classNames so the variation CSS still binds.
+    # P-MULTI-CLASS-BEM-PRIMARY-DISAMBIG (2026-05-17): when multiple sgs-*
+    # classes are present, pick one canonical primary for downstream routing.
+    # All sgs-* classes still travel as className (variation CSS binds to all).
     sgs_classes = [c for c in classes if c.startswith("sgs-")]
     if sgs_classes:
         attrs["className"] = " ".join(sgs_classes)
+        if len(sgs_classes) > 1:
+            primary, _remaining = _pick_primary_sgs_block(sgs_classes)
+            if primary:
+                attrs["_primaryBemClass"] = primary  # routing hint — stripped before emit
 
     # Lift the source HTML id as anchor (especially for headings)
     if node.get("id"):
@@ -449,7 +550,14 @@ def emit_wp_block(slug: str, attrs: dict, inner: list[str], self_closing: bool =
     """Emit a single WP block markup string."""
     attr_json = ""
     if attrs:
-        clean = {k: v for k, v in attrs.items() if v not in (None, "", [], {})}
+        # Strip internal routing-hint keys (underscore-prefixed) that must
+        # never appear in the emitted WP block comment. Currently:
+        #   _primaryBemClass — added by P-MULTI-CLASS-BEM-PRIMARY-DISAMBIG
+        # Closed parking entry P-MULTI-CLASS-BEM-PRIMARY-DISAMBIG (2026-05-17).
+        clean = {
+            k: v for k, v in attrs.items()
+            if v not in (None, "", [], {}) and not k.startswith("_")
+        }
         if clean:
             attr_json = " " + json.dumps(clean, separators=(",", ":"), ensure_ascii=False)
     if self_closing and not inner:
@@ -1548,6 +1656,8 @@ def _lift_root_supports_to_style(
             continue
         if not _support_allows(supports, "spacing", side_top):
             continue
+        # P-CSS-IMPORTANT-STRIP (2026-05-17): strip before shorthand parse.
+        raw = _strip_important(raw)
         sides = _parse_padding_shorthand(raw)
         if not sides:
             continue
@@ -1563,7 +1673,9 @@ def _lift_root_supports_to_style(
             continue
         if not _support_allows(supports, sup_top, sup_sub):
             continue
-        raw = base_decls[css_prop]
+        # P-CSS-IMPORTANT-STRIP (2026-05-17): strip `!important` so values like
+        # "22px !important" pass cleanly into _preserve_unit / _colour_value_to_style.
+        raw = _strip_important(base_decls[css_prop])
         if kind == "colour":
             converted = _colour_value_to_style(raw)
         else:
@@ -2462,11 +2574,18 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
                 converted = walk(child, css_rules, variation_buf, depth + 1, is_top_level=False)
                 if converted:
                     inner_blocks.append(converted)
-        # Lift the className AND the container-override layout attrs
+        # Lift the className AND the container-override layout attrs.
+        # P-MULTI-CLASS-BEM-PRIMARY-DISAMBIG (2026-05-17): when multiple
+        # sgs-* classes are present (e.g. "sgs-brand sgs-section sgs-section--alt"),
+        # pick a single canonical primary so downstream CSS rules don't
+        # conflict. Remaining classes still travel as className additions.
         sgs_classes = [c for c in classes if c.startswith("sgs-")]
         cont_attrs: dict = dict(container_override)
         if sgs_classes:
+            primary, _remaining = _pick_primary_sgs_block(sgs_classes)
             cont_attrs["className"] = " ".join(sgs_classes)
+            if primary:
+                cont_attrs["_primaryBemClass"] = primary  # routing hint — dropped before emit
         # P-PHASE9-4 sibling fix (2026-05-17): block-root supports lift was only
         # firing on FR1 / atomic_text_standalone / top_level_container branches.
         # css_driven_container (the path taken for `.sgs-brand` with display:grid)

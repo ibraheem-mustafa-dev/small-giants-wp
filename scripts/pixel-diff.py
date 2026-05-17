@@ -192,7 +192,24 @@ def capture(
                 # because `loading="lazy"` keeps them deferred. Captured
                 # 2026-05-17 during brand walkdown.
                 el.scroll_into_view_if_needed()
-                page.wait_for_timeout(1200)
+                # P-PIXEL-DIFF-LAZY-LOAD-DYNAMIC-WAIT (closed 2026-05-17):
+                # Replace the arbitrary 1200 ms fixed wait with a dynamic poll
+                # that waits until every lazy-loaded image in the target element
+                # reports complete + has a real naturalWidth (i.e. fully decoded).
+                # Falls back to a 1500 ms timeout if wait_for_function raises
+                # (e.g. Playwright timeout on very slow network) rather than
+                # crashing the entire pixel-diff run.
+                try:
+                    page.wait_for_function(
+                        "() => Array.from(document.querySelectorAll("
+                        "'img[loading=\"lazy\"]')).every("
+                        "img => img.complete && img.naturalWidth > 0)",
+                        timeout=8000,
+                    )
+                except Exception:  # noqa: BLE001
+                    # Dynamic wait timed out or raised — fall back to a fixed
+                    # delay that is still more conservative than the old 1200 ms.
+                    page.wait_for_timeout(1500)
                 try:
                     page.wait_for_load_state("networkidle", timeout=5000)
                 except Exception:  # noqa: BLE001

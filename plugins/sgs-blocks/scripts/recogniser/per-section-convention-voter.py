@@ -165,19 +165,52 @@ def _registered_block_slug_roots() -> set[str]:
     return {r[0][len("sgs/"):] for r in rows if r[0] and r[0].startswith("sgs/")}
 
 
-# P-PHASE9-6 guard: a RETIRED_BLOCK_REMAP key must NOT collide with a
-# currently-registered block slug. If sgs/heritage-strip is later re-registered
-# as a real block, the unconditional remap below would silently shadow it. This
-# import-time check forces a deliberate decision: either remove the remap entry
-# or rename the registered block.
+# P-VOTER-IMPORT-ASSERT-UX (closed 2026-05-17):
+# The original import-time assert was moved to a deferred function so that a
+# collision produces a clear RuntimeError with actionable guidance instead of a
+# bare AssertionError that crashes the pipeline at import with no operator context.
+# The check still fires exactly once per process (guarded by _RETIRED_COLLISION_CHECKED).
+# DB-missing path now emits a visible warning to stderr instead of silently skipping.
 _REGISTERED = _registered_block_slug_roots()
-_collision = RETIRED_BLOCK_REMAP.keys() & _REGISTERED
-assert not _collision, (
-    "RETIRED_BLOCK_REMAP collision with registered block(s): "
-    f"{sorted(_collision)}. Either remove the entry from RETIRED_BLOCK_REMAP "
-    "or rename the registered block. Re-registering a retired slug means the "
-    "remap is no longer correct."
-)
+_RETIRED_COLLISION_CHECKED: bool = False
+
+
+def _assert_no_retired_block_collision() -> None:
+    """Check that no RETIRED_BLOCK_REMAP key collides with a registered block slug.
+
+    Called once per process from vote_block_slug() on first invocation.
+    Raises RuntimeError (not AssertionError) so the pipeline surfaces a clear
+    operator message with actionable resolution steps.
+
+    Closes parking entry P-VOTER-IMPORT-ASSERT-UX (2026-05-17).
+    """
+    global _RETIRED_COLLISION_CHECKED
+    if _RETIRED_COLLISION_CHECKED:
+        return
+    _RETIRED_COLLISION_CHECKED = True
+
+    registered = _REGISTERED
+    if not registered:
+        # DB was missing or unreadable at module load — warn, don't crash.
+        # The guard is a safety net, not a hard runtime requirement.
+        import sys as _sys
+        _sys.stderr.write(
+            "[voter] WARN: sgs-framework.db missing or unreadable; "
+            "retired-block collision check skipped.\n"
+        )
+        return
+
+    collision = RETIRED_BLOCK_REMAP.keys() & registered
+    if collision:
+        from pathlib import Path as _P
+        remap_location = _P(__file__).resolve()
+        raise RuntimeError(
+            f"RETIRED_BLOCK_REMAP collision with registered block(s): "
+            f"{sorted(collision)}. "
+            f"To resolve: either remove the colliding entry from RETIRED_BLOCK_REMAP "
+            f"(in {remap_location}) OR rename the registered block in sgs-framework.db. "
+            f"Re-registering a retired slug means the remap would silently shadow it."
+        )
 
 # Tags treated as candidate top-level sections during auto-detection.
 SECTION_TAGS = ("section", "header", "footer", "main", "aside", "nav")
@@ -218,6 +251,11 @@ def vote_block_slug(class_signature: list[str], convention: str) -> tuple[str, f
 
     Returns (slug, confidence, fallback_strategy).
     """
+    # P-VOTER-IMPORT-ASSERT-UX (closed 2026-05-17): deferred collision check
+    # fires on the first call instead of at import time, giving a clear
+    # RuntimeError with actionable guidance rather than a bare AssertionError.
+    _assert_no_retired_block_collision()
+
     # SGS-prefixed BEM. Two passes: retired-block remap takes precedence over
     # the literal-slug match, scanned across ALL sgs- classes so a wrapper-
     # utility class listed first (e.g. ["sgs-section", "sgs-heritage-strip"])
