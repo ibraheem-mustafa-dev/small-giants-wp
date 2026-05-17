@@ -6,6 +6,40 @@ last_updated: 2026-05-19
 
 # Parking — deferred work with named triggers
 
+## Opened 2026-05-17 (post-Path-B measurement deep-dive)
+
+### P-MEASUREMENT-CONTEXT-PARITY — Pixel-diff baseline has 30%+ wrapper-context noise floor
+
+**What:** Brand pixel diff stayed at ~36/13/39% across multiple variations even after universal lift + Path B (sgs/media + sgs/text) + naked-img figure removal + real image upload. Root cause is NOT converter quality — it's wrapper-context noise in the measurement.
+
+**Evidence (2026-05-17):** `.sgs-brand` crop dimensions at 1440 viewport:
+- post 66 (mockup baseline): 780 × 791
+- post 65 (SGS converter output): 1000 × 705
+
+Different DOM wrapper contexts: post 66 is plain mockup HTML inside WP content area; post 65 has SGS sgs/container parent applying its own padding/max-width. The 30%+ floor cannot be closed without rendering both sides in identical contexts.
+
+**Approach options:**
+1. **Standalone-page renderer** — both mockup and converter output rendered as bare HTML pages (no WP theme chrome), pixel-diff between those. New infrastructure (~2-4 hrs).
+2. **Identical-wrapper mode** — modify post 66 to wrap mockup HTML in the same SGS-container DOM as post 65. Brittle; depends on the section-shape Bean is cloning. (~1 hr).
+3. **Reduced-noise selector** — pixel-diff a finer-grained selector (e.g. just `.sgs-brand__image` element) rather than the whole section. Eliminates wrapper noise but loses cross-element context.
+
+**Trigger:** Next brand+hero walkdown session OR when Bean reviews the 2026-05-17 close.
+
+Captured: 2026-05-17.
+
+### P-IMAGE-UPLOAD-INTO-PIPELINE — Promote upload_and_patch.py into the orchestrator (~30 min)
+
+**What:** The 2026-05-17 session built `reports/brand-walkdown-2026-05-19/upload_and_patch.py` as a one-shot fix to upload mockup images + patch block_markup. The orchestrator's stage-4i media-sideload runs in `--dry-run` mode by default; live upload is never triggered through the canonical pipeline.
+
+**Approach:** Add `--upload-media` flag to `sgs-clone-orchestrator.py`. When set:
+- Pass `upload=True` to `sideload_batch`
+- Add a post-sideload "URL rewrite" step that maps relative paths in `extract.json:block_markup` to the uploaded WP attachment URLs
+- Save patched extract as authoritative for post-deploy `register_to_wp`
+
+**Trigger:** Any client deploy or live-data run where the converter must produce a working page.
+
+Captured: 2026-05-17.
+
 ## Opened 2026-05-19 (brand walkdown — universal core-block CSS lift session)
 
 ### P-CORE-STYLE-MAP-DB-MIGRATION — Migrate `_CORE_BLOCK_STYLE_MAP` to DB-driven lookup (~1.5 hrs)
