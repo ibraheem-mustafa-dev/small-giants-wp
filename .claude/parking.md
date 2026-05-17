@@ -22,19 +22,13 @@ The 4-seat / 2-round council on Spec 17 surfaced 8 follow-ups that are out of v1
 
 **Source:** Spec 17 council, Seat 1 Round 2 endorsement. Promoted by Bean 2026-05-19.
 
-### P-S17-TESTS-BOOTSTRAP — new test files in scripts/tests/ need PHPUnit bootstrap (~30 min)
+### P-S17-TESTS-BOOTSTRAP — RESOLVED 2026-05-19
 
-**What:** Wave 1 implementation landed new PHP test files at `plugins/sgs-blocks/scripts/tests/test_site_info.php` and `test_site_info_binding.php`. They use PHPUnit's `TestCase`, `assertTrue`, `assertSame` etc. but the existing PHPUnit bootstrap lives at `plugins/sgs-blocks/tests/php/bootstrap.php` — a different directory tree. intelephense flags every assertion as `Undefined method`. The tests are correct in shape but cannot run as-is.
+**Resolution:** `test_site_info.php` moved to `plugins/sgs-blocks/tests/php/SiteInfoTest.php` (renamed class `Test_Sgs_Site_Info` → `SiteInfoTest` per PHPUnit `*Test.php` discovery + PSR-4 convention). Inherits the existing `tests/php/bootstrap.php` which autoloads composer + PHPUnit. `test_site_info_binding.php` retained at `scripts/tests/` — it uses a self-contained `t_equals`/`t_contains` standalone runner (not PHPUnit), runs directly via `php`.
 
-**Fix shape (two options):**
-1. Move `scripts/tests/*.php` test files to `tests/php/` so they inherit the existing bootstrap. Update any path references in CI scripts.
-2. Add a `scripts/tests/bootstrap.php` that requires the parent bootstrap + the necessary autoloader.
+**Verification:** `vendor/bin/phpunit --filter SiteInfoTest` is the canonical run command once `composer install` populates `vendor/`. Wave 1B's original 10/10 pass came via the file's `class_exists('PHPUnit\Framework\TestCase')` fallback runner — that fallback is still intact, so the file runs both via PHPUnit (after composer install) and via raw `php` (without).
 
-**Recommendation:** Option 1 (move to canonical location). Python test files at `scripts/tests/` stay there — different framework.
-
-**Trigger:** Before Wave 2 implementation lands (next session) so the new tests can actually run.
-
-**Source:** Wave 1 QC sweep, intelephense diagnostics on new PHP test files.
+**intelephense note:** intelephense still flags `TestCase` + assertion methods as undefined until `composer install` runs and `vendor/autoload.php` is on its include path. Existing `BlockRegistrationTest.php` / `FormSubmissionTest.php` / `RenderOutputTest.php` show the same warnings. Not a blocker.
 
 ### P-S17-B — Pattern versioning on `wp_template_part` records (~2 hrs)
 

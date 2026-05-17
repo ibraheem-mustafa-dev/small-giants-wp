@@ -124,7 +124,7 @@ use SGS\Blocks\Sgs_Site_Info;
 // ---------------------------------------------------------------------------
 if ( class_exists( 'PHPUnit\Framework\TestCase' ) ) {
 
-	class Test_Sgs_Site_Info extends \PHPUnit\Framework\TestCase {
+	class SiteInfoTest extends \PHPUnit\Framework\TestCase {
 		protected function setUp(): void {
 			Wp_Options_Stub::reset();
 			Sgs_Site_Info::register();
