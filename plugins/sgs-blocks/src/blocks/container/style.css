@@ -27,6 +27,12 @@
 	z-index: 1;
 }
 
+/* widthMode — WP-native alignwide/alignfull compose with these SGS-internal
+   width aliases. Per-client theme.json:settings.layout.contentSize/wideSize
+   override the underlying CSS vars via WP's global style chain, so widths
+   inherit per active style variation. WP core supplies the layout rules for
+   .alignwide / .alignfull inside .entry-content; no overrides needed here. */
+
 /* Width variants */
 .sgs-container--width-content {
 	max-width: var(--wp--style--global--content-size, 800px);

@@ -67,6 +67,28 @@ const WIDTH_OPTIONS = [
   { label: __("Full", "sgs-blocks"), value: "full" },
 ];
 
+const WIDTH_MODE_OPTIONS = [
+  { label: __("Default", "sgs-blocks"), value: "default" },
+  { label: __("Wide (alignwide)", "sgs-blocks"), value: "wide" },
+  { label: __("Full (alignfull)", "sgs-blocks"), value: "full" },
+  { label: __("Custom", "sgs-blocks"), value: "custom" },
+];
+
+const WIDTH_MODE_INHERIT_OPTIONS = [
+  { label: __("Inherit", "sgs-blocks"), value: "" },
+  ...WIDTH_MODE_OPTIONS,
+];
+
+const CUSTOM_WIDTH_UNIT_OPTIONS = [
+  { label: "px", value: "px" },
+  { label: "em", value: "em" },
+  { label: "rem", value: "rem" },
+  { label: "%", value: "%" },
+  { label: "vw", value: "vw" },
+];
+
+const CUSTOM_WIDTH_UNIT_VALUES = CUSTOM_WIDTH_UNIT_OPTIONS.map((o) => o.value);
+
 const ALIGN_OPTIONS = [
   { label: __("Top", "sgs-blocks"), value: "start" },
   { label: __("Centre", "sgs-blocks"), value: "center" },
@@ -86,7 +108,23 @@ export default function Edit({ attributes, setAttributes }) {
     maxWidth,
     minHeight,
     verticalAlign,
+    widthMode = "default",
+    widthModeMobile = "",
+    widthModeTablet = "",
+    widthModeDesktop = "",
+    customWidth = 0,
+    customWidthUnit = "px",
   } = attributes;
+
+  const anyCustom =
+    widthMode === "custom" ||
+    widthModeMobile === "custom" ||
+    widthModeTablet === "custom" ||
+    widthModeDesktop === "custom";
+
+  const safeCustomUnit = CUSTOM_WIDTH_UNIT_VALUES.includes(customWidthUnit)
+    ? customWidthUnit
+    : "px";
 
   const style = {
     gap: spacingVar(gap),
@@ -109,10 +147,16 @@ export default function Edit({ attributes, setAttributes }) {
     style.alignItems = verticalAlign;
   }
 
+  if (widthMode === "custom" && customWidth > 0) {
+    style.maxWidth = `${customWidth}${safeCustomUnit}`;
+  }
+
   const className = [
     "sgs-container",
     `sgs-container--${layout}`,
     `sgs-container--width-${maxWidth}`,
+    widthMode === "wide" && "alignwide",
+    widthMode === "full" && "alignfull",
   ]
     .filter(Boolean)
     .join(" ");
@@ -196,6 +240,70 @@ export default function Edit({ attributes, setAttributes }) {
               />
             ))}
           </ToggleGroupControl>
+
+          <ToggleGroupControl
+            label={__("Width mode", "sgs-blocks")}
+            value={widthMode}
+            onChange={(val) => setAttributes({ widthMode: val })}
+            isBlock
+            __nextHasNoMarginBottom
+          >
+            {WIDTH_MODE_OPTIONS.map((opt) => (
+              <ToggleGroupControlOption
+                key={opt.value}
+                value={opt.value}
+                label={opt.label}
+              />
+            ))}
+          </ToggleGroupControl>
+          <p className="components-base-control__help">
+            {__(
+              "Composes with WP-native alignment. Per-viewport overrides below.",
+              "sgs-blocks"
+            )}
+          </p>
+
+          <ResponsiveControl label={__("Width mode by viewport", "sgs-blocks")}>
+            {(breakpoint) => {
+              const attrMap = {
+                desktop: "widthModeDesktop",
+                tablet: "widthModeTablet",
+                mobile: "widthModeMobile",
+              };
+              const attr = attrMap[breakpoint];
+              return (
+                <SelectControl
+                  value={attributes[attr] || ""}
+                  options={WIDTH_MODE_INHERIT_OPTIONS}
+                  onChange={(val) => setAttributes({ [attr]: val })}
+                  __nextHasNoMarginBottom
+                />
+              );
+            }}
+          </ResponsiveControl>
+
+          {anyCustom && (
+            <>
+              <RangeControl
+                label={__("Custom width", "sgs-blocks")}
+                value={customWidth}
+                onChange={(val) =>
+                  setAttributes({ customWidth: val || 0 })
+                }
+                min={0}
+                max={2000}
+                step={10}
+                __nextHasNoMarginBottom
+              />
+              <SelectControl
+                label={__("Unit", "sgs-blocks")}
+                value={safeCustomUnit}
+                options={CUSTOM_WIDTH_UNIT_OPTIONS}
+                onChange={(val) => setAttributes({ customWidthUnit: val })}
+                __nextHasNoMarginBottom
+              />
+            </>
+          )}
 
           {(layout === "flex" || layout === "grid") && (
             <SelectControl

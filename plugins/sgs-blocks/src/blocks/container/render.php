@@ -54,6 +54,32 @@ $min_height       = $attributes['minHeight'] ?? '';
 $vertical_align   = $attributes['verticalAlign'] ?? 'start';
 $html_tag         = $attributes['htmlTag'] ?? 'section';
 
+// widthMode — base (mobile-first) + per-viewport overrides. Composes with WP-native
+// alignwide/alignfull. Per-client theme.json:settings.layout.contentSize/wideSize
+// flow through the --wp--style--global--*-size CSS vars so variations override correctly.
+$allowed_width_modes      = array( 'default', 'wide', 'full', 'custom' );
+$width_mode               = $attributes['widthMode'] ?? 'default';
+$width_mode_mobile        = $attributes['widthModeMobile'] ?? '';
+$width_mode_tablet        = $attributes['widthModeTablet'] ?? '';
+$width_mode_desktop       = $attributes['widthModeDesktop'] ?? '';
+$custom_width_value       = isset( $attributes['customWidth'] ) ? absint( $attributes['customWidth'] ) : 0;
+$custom_width_unit_raw    = $attributes['customWidthUnit'] ?? 'px';
+$allowed_width_units      = array( 'px', 'em', 'rem', '%', 'vw' );
+$custom_width_unit        = in_array( $custom_width_unit_raw, $allowed_width_units, true ) ? $custom_width_unit_raw : 'px';
+
+if ( ! in_array( $width_mode, $allowed_width_modes, true ) ) {
+	$width_mode = 'default';
+}
+if ( '' !== $width_mode_mobile && ! in_array( $width_mode_mobile, $allowed_width_modes, true ) ) {
+	$width_mode_mobile = '';
+}
+if ( '' !== $width_mode_tablet && ! in_array( $width_mode_tablet, $allowed_width_modes, true ) ) {
+	$width_mode_tablet = '';
+}
+if ( '' !== $width_mode_desktop && ! in_array( $width_mode_desktop, $allowed_width_modes, true ) ) {
+	$width_mode_desktop = '';
+}
+
 // Allowlist for HTML tags.
 $allowed_tags = array( 'section', 'div', 'article', 'aside', 'main' );
 if ( ! in_array( $html_tag, $allowed_tags, true ) ) {
@@ -103,6 +129,18 @@ $classes = array(
 	'sgs-container--' . esc_attr( $layout ),
 	'sgs-container--width-' . esc_attr( $max_width ),
 );
+
+// widthMode — emit WP-native alignment classes so the wrapper composes with
+// .entry-content's wide/full escape mechanism. SGS-internal width classes
+// (sgs-container--width-*) remain driven by the legacy $max_width attr above
+// for backwards-compat with existing posts.
+if ( 'wide' === $width_mode ) {
+	$classes[] = 'alignwide';
+} elseif ( 'full' === $width_mode ) {
+	$classes[] = 'alignfull';
+} elseif ( 'custom' === $width_mode && $custom_width_value > 0 ) {
+	$styles[] = 'max-width:' . $custom_width_value . $custom_width_unit;
+}
 
 // 2026-05-17 — honour style.dimensions.maxWidth lifted from mockup CSS by
 // the SGS clone-pipeline. WP's named-width enum (content/wide/full) can't
@@ -181,10 +219,11 @@ if ( $shape_top || $shape_bottom ) {
 	$classes[] = 'sgs-container--has-shape-divider';
 }
 
-// Build responsive gap CSS.
-$responsive_css = '';
-if ( $gap_tablet || $gap_mobile ) {
-	$uid = 'sgs-container-' . substr( md5( wp_json_encode( $attributes ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
+// Build responsive gap + widthMode CSS.
+$responsive_css      = '';
+$has_responsive_attr = $gap_tablet || $gap_mobile || $width_mode_mobile || $width_mode_tablet || $width_mode_desktop;
+if ( $has_responsive_attr ) {
+	$uid       = 'sgs-container-' . substr( md5( wp_json_encode( $attributes ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
 	$classes[] = $uid;
 
 	if ( $gap_tablet ) {
@@ -192,6 +231,43 @@ if ( $gap_tablet || $gap_mobile ) {
 	}
 	if ( $gap_mobile ) {
 		$responsive_css .= '@media (max-width:599px){.' . $uid . '{gap:var(--wp--preset--spacing--' . esc_attr( $gap_mobile ) . ')}}';
+	}
+
+	// Per-viewport widthMode overrides — map enum to a max-width literal.
+	// Inherits per-client contentSize/wideSize via theme global CSS vars.
+	$width_mode_to_css = function ( $mode ) use ( $custom_width_value, $custom_width_unit ) {
+		if ( 'wide' === $mode ) {
+			return 'max-width:var(--wp--style--global--wide-size,1200px)';
+		}
+		if ( 'default' === $mode ) {
+			return 'max-width:var(--wp--style--global--content-size,780px)';
+		}
+		if ( 'full' === $mode ) {
+			return 'max-width:none';
+		}
+		if ( 'custom' === $mode && $custom_width_value > 0 ) {
+			return 'max-width:' . $custom_width_value . $custom_width_unit;
+		}
+		return '';
+	};
+
+	if ( '' !== $width_mode_mobile ) {
+		$decl = $width_mode_to_css( $width_mode_mobile );
+		if ( '' !== $decl ) {
+			$responsive_css .= '@media (max-width:599px){.' . $uid . '{' . $decl . '}}';
+		}
+	}
+	if ( '' !== $width_mode_tablet ) {
+		$decl = $width_mode_to_css( $width_mode_tablet );
+		if ( '' !== $decl ) {
+			$responsive_css .= '@media (max-width:1023px){.' . $uid . '{' . $decl . '}}';
+		}
+	}
+	if ( '' !== $width_mode_desktop ) {
+		$decl = $width_mode_to_css( $width_mode_desktop );
+		if ( '' !== $decl ) {
+			$responsive_css .= '@media (min-width:1024px){.' . $uid . '{' . $decl . '}}';
+		}
 	}
 }
 

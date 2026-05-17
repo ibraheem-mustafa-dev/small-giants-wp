@@ -55,6 +55,33 @@ _DECL_RE = re.compile(r"\s*([\w-]+)\s*:\s*([^;]+);?\s*", re.DOTALL)
 # ============================================================================
 _IMPORTANT_RE = re.compile(r"\s*!important\s*$", re.IGNORECASE)
 
+# ============================================================================
+# Universal alignment / width-mode lift (Branch B, 2026-05-19)
+# Module-level context populated by `main()` before the per-block lift loop so
+# `_lift_root_supports_to_style` can compare mockup `max-width` declarations
+# against the active theme's contentSize / wideSize and emit a semantic
+# `widthMode` instead of an inline literal-pixel `style.dimensions.maxWidth`.
+#
+# Universal — derives everything from theme.json + the active style variation;
+# no client-specific literals anywhere in this module.
+# ============================================================================
+_LIFT_CONTEXT: dict = {}
+
+# Fuzzy-match tolerance (percent) used when comparing a mockup max-width to the
+# theme's contentSize / wideSize. 1000px vs 1050px should still count as "wide"
+# when wideSize is 1000. Configurable here, never buried in logic.
+_WIDTH_MATCH_TOLERANCE_PCT: float = 5.0
+
+# Selector regex for SGS-BEM BLOCK ROOT — used by `_detect_client_layout_widths`
+# to filter the CSS rule set down to top-level section roots (no __element, no
+# --modifier, no descendant combinators).
+_SGS_BEM_BLOCK_ROOT_RE = re.compile(r"^\.sgs-[a-z][a-z0-9]*(-[a-z0-9]+)*$")
+
+# CSS lengths we treat as "full-bleed" rather than as a contentSize/wideSize
+# candidate. Used by both detection (skip these in clustering) and width-mode
+# matching (map directly to `widthMode: full`).
+_FULL_BLEED_WIDTH_VALUES = {"none", "100%", "100vw", "auto"}
+
 
 def _strip_important(value: str) -> str:
     """Remove trailing `!important` (case-insensitive) and any surrounding
@@ -1575,6 +1602,224 @@ def _lift_core_block_style(
     return style, extra_top
 
 
+# ============================================================================
+# Universal width-mode helpers (Branch B, 2026-05-19)
+#
+# Goal: when mockup CSS declares a section `max-width` that matches the theme's
+# contentSize / wideSize (per the active style variation), lift it as a
+# semantic `widthMode` so WP's native alignment chain takes over and per-client
+# theme variations win. Falls back to the existing inline-style
+# `style.dimensions.maxWidth` path for arbitrary literal widths.
+# ============================================================================
+def _parse_px_length(raw: str) -> float | None:
+    """Return the numeric px-equivalent of a CSS length, or None if unsupported.
+
+    Accepts px / em / rem (em + rem treated as 16px = 1 unit, matching WP's
+    default root font-size). Rejects %, vw, vh, calc(), var(), and `none` /
+    `auto` — those are handled separately by the full-bleed path.
+    """
+    if raw is None:
+        return None
+    v = _strip_important(str(raw)).strip().lower().rstrip(";")
+    if not v or v in _FULL_BLEED_WIDTH_VALUES:
+        return None
+    m = re.match(r"^([\d.]+)\s*(px|em|rem)$", v)
+    if not m:
+        return None
+    try:
+        num = float(m.group(1))
+    except ValueError:
+        return None
+    unit = m.group(2)
+    if unit == "px":
+        return num
+    # em / rem → assume 1 unit == 16px (WP / browser default root font size)
+    return num * 16.0
+
+
+def _detect_client_layout_widths(css_rules: dict) -> dict:
+    """Detect content/wide section widths from mockup CSS.
+
+    Universal: scans the CSS rule set for selectors matching `.sgs-<block>`
+    block roots (NOT classes that look like utility / element helpers), groups
+    their `max-width` declarations, and returns {contentSize, wideSize} as
+    Python strings with the px unit preserved.
+
+    Heuristic: contentSize = the smaller cluster centre; wideSize = the larger
+    cluster centre. When only one distinct width is found, both keys carry it.
+
+    Returns {} when no usable widths found (insufficient evidence — caller
+    falls back to theme.json defaults).
+    """
+    if not css_rules:
+        return {}
+
+    # Collect (px_value, raw_value) pairs for every block-root selector.
+    candidates: list[tuple[float, str]] = []
+    for sel, decls in css_rules.items():
+        if not isinstance(decls, dict):
+            continue
+        # Skip media-query-scoped rules — those are responsive overrides, not
+        # the base canonical width. parse_css() prefixes them with `<cond> :: `.
+        if " :: " in sel:
+            continue
+        sel_clean = sel.strip()
+        if not _SGS_BEM_BLOCK_ROOT_RE.match(sel_clean):
+            continue
+        raw = decls.get("max-width")
+        if raw is None:
+            continue
+        px = _parse_px_length(raw)
+        if px is None:
+            continue
+        candidates.append((px, _strip_important(str(raw)).strip().rstrip(";")))
+
+    if not candidates:
+        return {}
+
+    # Distinct px buckets (rounded to nearest pixel — small float jitter
+    # shouldn't split a cluster).
+    distinct: dict[int, str] = {}
+    for px, raw in candidates:
+        key = int(round(px))
+        # Prefer the first raw we saw — keeps original unit if multiple rules
+        # declared the same logical width.
+        distinct.setdefault(key, raw)
+
+    if not distinct:
+        return {}
+
+    sorted_keys = sorted(distinct.keys())
+
+    if len(sorted_keys) == 1:
+        only = distinct[sorted_keys[0]]
+        return {"contentSize": only, "wideSize": only}
+
+    # Two or more distinct widths: smallest → contentSize, largest → wideSize.
+    return {
+        "contentSize": distinct[sorted_keys[0]],
+        "wideSize": distinct[sorted_keys[-1]],
+    }
+
+
+def _write_client_layout_widths(
+    client_slug: str,
+    widths: dict,
+    repo_root: Path,
+) -> bool:
+    """Merge detected widths into `theme/sgs-theme/styles/{client_slug}.json`.
+
+    Idempotent: never overwrites a value the operator has already set. Returns
+    True if the file was modified, False on no-op (file missing, no keys to
+    merge, or values already present).
+    """
+    if not client_slug or not widths:
+        return False
+
+    variation_path = (
+        repo_root / "theme" / "sgs-theme" / "styles" / f"{client_slug}.json"
+    )
+    if not variation_path.exists():
+        return False
+
+    try:
+        data = json.loads(variation_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return False
+
+    settings = data.setdefault("settings", {})
+    layout = settings.setdefault("layout", {})
+
+    modified = False
+    for key in ("contentSize", "wideSize"):
+        if key in widths and key not in layout:
+            layout[key] = widths[key]
+            modified = True
+
+    if not modified:
+        return False
+
+    variation_path.write_text(
+        json.dumps(data, indent=2, ensure_ascii=False, sort_keys=False) + "\n",
+        encoding="utf-8",
+    )
+    return True
+
+
+def _load_theme_widths(client_slug: str | None, repo_root: Path) -> dict:
+    """Return the active {contentSize, wideSize} for width-mode matching.
+
+    Reads theme.json `settings.layout` as the base, then overlays the active
+    style variation's `settings.layout` (if it exists and declares either key).
+    Universal — when `client_slug` is None / empty, returns theme.json values.
+    """
+    result: dict = {}
+    theme_path = repo_root / "theme" / "sgs-theme" / "theme.json"
+    if theme_path.exists():
+        try:
+            theme = json.loads(theme_path.read_text(encoding="utf-8"))
+            base_layout = (theme.get("settings") or {}).get("layout") or {}
+            for k in ("contentSize", "wideSize"):
+                v = base_layout.get(k)
+                if v:
+                    result[k] = v
+        except (OSError, json.JSONDecodeError):
+            pass
+
+    if client_slug:
+        variation_path = (
+            repo_root / "theme" / "sgs-theme" / "styles" / f"{client_slug}.json"
+        )
+        if variation_path.exists():
+            try:
+                variation = json.loads(variation_path.read_text(encoding="utf-8"))
+                var_layout = (variation.get("settings") or {}).get("layout") or {}
+                for k in ("contentSize", "wideSize"):
+                    v = var_layout.get(k)
+                    if v:
+                        result[k] = v
+            except (OSError, json.JSONDecodeError):
+                pass
+
+    return result
+
+
+def _match_theme_width(value_str: str, theme_widths: dict) -> str | None:
+    """Compare a CSS length to theme contentSize / wideSize with fuzzy tolerance.
+
+    Returns:
+        "default" — matches contentSize (±_WIDTH_MATCH_TOLERANCE_PCT)
+        "wide"    — matches wideSize    (±_WIDTH_MATCH_TOLERANCE_PCT)
+        None      — no match (caller falls back to inline-style literal)
+
+    When contentSize == wideSize (single-width variation), prefers "default".
+    """
+    if not value_str or not theme_widths:
+        return None
+    value_px = _parse_px_length(value_str)
+    if value_px is None:
+        return None
+
+    tol = _WIDTH_MATCH_TOLERANCE_PCT / 100.0
+
+    def _within(target_str: str | None) -> bool:
+        if not target_str:
+            return False
+        target_px = _parse_px_length(target_str)
+        if target_px is None or target_px <= 0:
+            return False
+        return abs(value_px - target_px) <= target_px * tol
+
+    content_size = theme_widths.get("contentSize")
+    wide_size = theme_widths.get("wideSize")
+
+    if _within(content_size):
+        return "default"
+    if _within(wide_size):
+        return "wide"
+    return None
+
+
 def _lift_root_supports_to_style(
     node: Tag,
     block_slug: str,
@@ -1684,16 +1929,30 @@ def _lift_root_supports_to_style(
             continue
         _set_in(style, path, converted)
 
-    # ---- 3. max-width lift (2026-05-17 sibling fix). The mockup commonly
-    # carries a literal `max-width: 1000px` on section roots that anchor the
-    # entire layout. WP's named-width enum (`content` / `wide` / `full`) can't
-    # express arbitrary values. Lift as style.dimensions.maxWidth so the
-    # downstream sgs/container render.php can emit an inline max-width on the
-    # wrapper. Universal across any container-rooted block.
+    # ---- 3. max-width lift → widthMode emission (universal-alignment system,
+    # Branch B 2026-05-19). When mockup CSS declares a section max-width that
+    # matches the theme's contentSize / wideSize (per the active style
+    # variation), emit a semantic `widthMode` value that the sgs/container
+    # render path translates into WP-native alignwide / alignfull / inherit.
+    # Falls back to the existing inline-style style.dimensions.maxWidth lift
+    # for arbitrary widths. Universal across any container-rooted block.
     if "max-width" in base_decls:
-        mw = _preserve_unit(base_decls["max-width"])
-        if mw is not None:
-            _set_in(style, ["dimensions", "maxWidth"], mw)
+        mw_raw = _strip_important(base_decls["max-width"]).strip().lower()
+        if mw_raw in _FULL_BLEED_WIDTH_VALUES:
+            # Section authored as full-bleed → emit widthMode: full and skip
+            # the literal-pixel fallback (no meaningful max-width to preserve).
+            attrs.setdefault("widthMode", "full")
+        else:
+            mw = _preserve_unit(base_decls["max-width"])
+            if mw is not None:
+                theme_widths = _LIFT_CONTEXT.get("theme_widths") or {}
+                matched = _match_theme_width(mw, theme_widths)
+                if matched in ("default", "wide"):
+                    attrs.setdefault("widthMode", matched)
+                else:
+                    # Arbitrary literal — fall back to the legacy inline-style
+                    # path so existing converter runs keep their current output.
+                    _set_in(style, ["dimensions", "maxWidth"], mw)
 
     if style:
         attrs["style"] = style
@@ -2877,18 +3136,53 @@ def _collect_css_for_classes(classes: list[str], css_rules: dict) -> str:
 
 def main(argv: list[str]) -> int:
     if len(argv) < 3:
-        print(f"Usage: {argv[0]} <section.html> <section.css> [media-map.json]", file=sys.stderr)
+        print(
+            f"Usage: {argv[0]} <section.html> <section.css> "
+            "[media-map.json] [--client-slug=<slug>]",
+            file=sys.stderr,
+        )
         return 2
 
-    html = Path(argv[1]).read_text(encoding="utf-8")
-    css_text = Path(argv[2]).read_text(encoding="utf-8")
+    # Separate positional args from flags so order is forgiving.
+    positionals: list[str] = []
+    client_slug: str | None = None
+    for a in argv[1:]:
+        if a.startswith("--client-slug="):
+            client_slug = a.split("=", 1)[1].strip() or None
+        else:
+            positionals.append(a)
+
+    if len(positionals) < 2:
+        print(
+            f"Usage: {argv[0]} <section.html> <section.css> "
+            "[media-map.json] [--client-slug=<slug>]",
+            file=sys.stderr,
+        )
+        return 2
+
+    html = Path(positionals[0]).read_text(encoding="utf-8")
+    css_text = Path(positionals[1]).read_text(encoding="utf-8")
 
     # Optional media-map for image URL resolution
-    if len(argv) >= 4:
-        load_media_map(Path(argv[3]))
+    if len(positionals) >= 3:
+        load_media_map(Path(positionals[2]))
 
     soup = BeautifulSoup(html, "html.parser")
     css_rules = parse_css(css_text)
+
+    # ---- Universal width-mode pipeline (Branch B, 2026-05-19).
+    # Detect mockup layout widths and lift into the client style variation
+    # (idempotent — never overwrites operator-tuned values). Then load the
+    # effective theme widths (variation override > theme.json default) into
+    # `_LIFT_CONTEXT` so `_lift_root_supports_to_style` can emit semantic
+    # widthMode values instead of literal-pixel max-width. Universal — fires
+    # for ANY client whose mockup CSS has section max-widths.
+    # convert.py → converter_v2 → orchestrator → scripts → sgs-blocks → plugins → repo
+    repo_root = Path(__file__).resolve().parents[5]
+    detected_widths = _detect_client_layout_widths(css_rules)
+    if detected_widths and client_slug:
+        _write_client_layout_widths(client_slug, detected_widths, repo_root)
+    _LIFT_CONTEXT["theme_widths"] = _load_theme_widths(client_slug, repo_root)
 
     section = soup.find("section")
     if section is None:
