@@ -97,7 +97,7 @@ if ( $description_colour ) {
 $desc_style_attr = $desc_style_parts ? ' style="' . esc_attr( implode( ';', $desc_style_parts ) ) . '"' : '';
 
 ?>
-<div<?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+<div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 	<?php
 	foreach ( $steps as $index => $step ) :
 		$step        = is_array( $step ) ? $step : array();

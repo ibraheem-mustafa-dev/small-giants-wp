@@ -87,7 +87,7 @@ $label_style_attr = $label_style_parts ? ' style="' . esc_attr( implode( ';', $l
 $full_text = $prefix . $formatted_number . $suffix . ' ' . $label;
 
 ?>
-<div<?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+<div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 	<?php if ( $icon ) : ?>
 		<span class="sgs-counter__icon-placeholder" data-icon="<?php echo esc_attr( $icon ); ?>" aria-hidden="true"></span>
 	<?php endif; ?>

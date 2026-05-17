@@ -72,7 +72,7 @@ $icon_key = 'none' === $icon ? 'none' : ( $icon ? $icon : $variant );
 $icon_svg = isset( $variant_icons[ $icon_key ] ) ? $variant_icons[ $icon_key ] : ( isset( $variant_icons[ $icon ] ) ? $variant_icons[ $icon ] : '' );
 
 ?>
-<div<?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> role="note">
+<div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> role="note">
 	<?php if ( $icon_svg ) : ?>
 		<span class="sgs-notice-banner__icon"><?php echo $icon_svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
 	<?php endif; ?>

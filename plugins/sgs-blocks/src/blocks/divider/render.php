@@ -75,7 +75,7 @@ $size_style = $size_style_parts ? ' style="' . esc_attr( implode( ';', $size_sty
 
 // Render variant-specific inner markup.
 ?>
-<div<?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+<div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 	<?php
 	if ( 'line' === $variant ) {
 		// Line variant — <hr> with inline border style.

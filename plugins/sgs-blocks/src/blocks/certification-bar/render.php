@@ -67,7 +67,7 @@ if ( $block_label_font_size ) {
 $label_style_attr = $label_style_parts ? ' style="' . esc_attr( implode( ';', $label_style_parts ) ) . '"' : '';
 
 ?>
-<div<?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+<div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 	<?php if ( $block_title ) : ?>
 		<p class="sgs-certification-bar__title"<?php echo $title_style_attr; // phpcs:ignore ?>>
 			<?php echo wp_kses_post( $block_title ); ?>
