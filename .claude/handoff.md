@@ -3,7 +3,6 @@ doc_type: handoff
 project: small-giants-wp
 session_tag: small-giants-wp-2026-05-19-phase-9b-intra-section
 session_date: 2026-05-18
-recommended_model: opus
 last_verified: 2026-05-18
 update_triggers:
   - "/handoff run"

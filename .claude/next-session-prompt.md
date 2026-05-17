@@ -2,14 +2,11 @@
 doc_type: next-session-prompt
 project: small-giants-wp
 session_tag: small-giants-wp-2026-05-19-phase-9b-intra-section
-recommended_model: opus
 generated: 2026-05-18
 plan_revision: v9 (post full P-WP-ALIGNMENT-WIDTH-SYSTEM cycle close)
 ---
 
 You are continuing the SGS Framework Phase 9 brand walkdown. P-WP-ALIGNMENT-WIDTH-SYSTEM closed in full on 2026-05-18: pages-not-posts canary surface, widthMode infrastructure, editor InspectorControls, converter wiring through the orchestrator. Your job this session: **Phase 9b intra-section closure.** Start by fixing the two selector-mismatch parking entries (so further measurements are trustworthy), then tackle the largest residual section diffs.
-
-Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-19-phase-9b-intra-section"`
 
 ## State (one-paragraph)
 

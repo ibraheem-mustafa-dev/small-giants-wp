@@ -20,7 +20,6 @@ clean_baseline_pixel_diff_2026_05_18:
 last_updated: 2026-05-18 (full-cycle close + Opus handoff policy + capture-lesson gate live)
 blockers:
   - "No active blockers. Phase 9b intra-section closure work is parked with named triggers; each parking entry is a discrete <30-min task. Footer + header selector mismatches must be fixed FIRST to make further pixel-diff measurements trustworthy."
-recommended_model_next: opus
 ---
 
 # small-giants-wp — State Snapshot
@@ -74,8 +73,6 @@ recommended_model_next: opus
 ## Next session — START HERE
 
 Read **`.claude/next-session-prompt.md`** + **`.claude/parking.md`** for the 5 newly-opened parking entries. Foundational fixes first (footer + header selector mismatches) before any further measurement.
-
-Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-19-phase-9b-intra-section"`
 
 ## Subprojects
 
