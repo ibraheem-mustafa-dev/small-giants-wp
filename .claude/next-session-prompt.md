@@ -1,134 +1,111 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-session_tag: small-giants-wp-2026-05-19-orchestrator-rerun
-recommended_model: sonnet
+session_tag: small-giants-wp-2026-05-19-phase-9b-intra-section
+recommended_model: opus
 generated: 2026-05-18
-plan_revision: v8 (post P-WP-ALIGNMENT-WIDTH-SYSTEM ship)
+plan_revision: v9 (post full P-WP-ALIGNMENT-WIDTH-SYSTEM cycle close)
 ---
 
-You are continuing the SGS Framework Phase 9 brand walkdown. The architectural alignment-width work shipped 2026-05-18 in two commits: `c7f42003` (Task 0 pages-not-posts) + `86172812` (Tasks 2-3 widthMode infrastructure). Your job this session: **prove out the widthMode emission with a real orchestrator pipeline re-run, push to page 131, measure pixel-diff, then pivot to intra-section closure.**
+You are continuing the SGS Framework Phase 9 brand walkdown. P-WP-ALIGNMENT-WIDTH-SYSTEM closed in full on 2026-05-18: pages-not-posts canary surface, widthMode infrastructure, editor InspectorControls, converter wiring through the orchestrator. Your job this session: **Phase 9b intra-section closure.** Start by fixing the two selector-mismatch parking entries (so further measurements are trustworthy), then tackle the largest residual section diffs.
 
-Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-19-orchestrator-rerun"`
+Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-19-phase-9b-intra-section"`
 
-## THE STATE (one-paragraph)
+## State (one-paragraph)
 
-Page 131 (`/cv2-output-mamas-munches/`) is the new canary — `page.html` template + `is-layout-flow` main, no 800px cap. Block markup on page 131 currently dates from 2026-05-17's converter output (pre-widthMode). The new converter knows how to emit `widthMode: "wide"`/`"full"`/`"default"` when section CSS matches theme widths within ±5%; the new render.php translates those into WP-native `alignfull`/`alignwide` with per-viewport overrides via scoped `<style>` blocks. Editor InspectorControls let operators pick widthMode + per-viewport + customWidth/Unit. Visual-diff report at `reports/visual-diff/container-2026-05-17.md` documents zero regression. Brand pixel-diff at 1440 is 43.7% (down from yesterday's 58.0%) — but the further drop from widthMode emission can only be measured after a full orchestrator re-run produces new block markup carrying the new attrs.
+Page 131 (`/cv2-output-mamas-munches/`) carries fresh converter output from the full cv2 pipeline run with `--converter-v2 --client mamas-munches`. 376 attrs extracted across 9 sections; 5 widthMode hits in markup; `mamas-munches.json:settings.layout` populated to `{contentSize: 1000px, wideSize: 1000px}` (incomplete because the SGS-BEM block-root regex misses `__inner` element widths — known follow-up). WP_DEBUG_DISPLAY suppressed on sandybrown. Clean per-section diff baseline at 1440 measured — footer 98.7% is the most-broken result and it's a selector-mismatch bug, not a render bug.
 
 ## ALWAYS-LOAD invocations (in this order)
 
 1. `/autopilot`
-2. `.claude/state.md` — 2026-05-18 snapshot
-3. `.claude/handoff.md` — 2026-05-18 session close summary
-4. `.claude/parking.md` → search for any newly-opened entries
-5. `~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/MEMORY.md` — top binding rules
-6. `reports/visual-diff/container-2026-05-17.md` — Tasks 2-3 acceptance evidence
+2. `.claude/state.md` — clean-baseline diff matrix in frontmatter
+3. `.claude/handoff.md` — 2026-05-18 session close
+4. `.claude/parking.md` — 5 new P-* entries opened today
+5. `~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/MEMORY.md` — top binding rules (3 new lessons today)
 
 ## Reading list
 
-1. **`plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py`** + **`plugins/sgs-blocks/scripts/orchestrator/orchestrator_main.py`** — find how the orchestrator invokes convert.py and whether `--client-slug` is already wired through, or if it needs an integration step (it likely needs one — Branch B only wired the convert.py CLI, not the orchestrator wrapper)
-2. **`sites/mamas-munches/mockups/homepage/index.html`** + the previous run-dir at `pipeline-state/mamas-munches-homepage-2026-05-17-071529/` — reference for inputs and expected outputs
-3. **`theme/sgs-theme/styles/mamas-munches.json`** — confirm currently has NO `settings.layout` block (smoke artefact was reverted before commit); the real orchestrator run will populate it
-4. **`plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py`** lines 1573-1779 (helper block) and 3137-3199 (main + CLI) — the new entry points
+1. `.claude/parking.md` Phase 9b entries:
+   - P-FOOTER-WRAPPER-CLASS-MISSING
+   - P-HEADER-WRAPPER-CLASS-AUDIT
+   - P-DETECT-INNER-ELEMENT-WIDTHS
+   - P-UTF8-MOJIBAKE-IN-CONVERTER
+   - P-INTRA-SECTION-CLOSURE
+2. `plugins/sgs-blocks/src/blocks/footer/render.php` + `plugins/sgs-blocks/src/blocks/header/render.php` — find where wrapper classes are emitted
+3. `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` lines 1640-1702 — `_detect_client_layout_widths` (regex extension target)
+4. `pipeline-state/mamas-munches-homepage-2026-05-17-105020/` — last cv2 run-dir; inspect `extract.json` + `leftover-buckets.json` BEFORE conjecturing
 
 ## Skills to invoke
 
 | Skill | When |
 |-------|------|
-| `/strategic-plan` | If the orchestrator wiring for --client-slug needs more than one mechanical step |
-| `/systematic-debugging` | If the orchestrator re-run produces unexpected output |
-| `/qc-inline` | Self-check before any orchestrator-wrapper edit lands |
-| `/qc` | Multi-rater panel BEFORE committing any converter/orchestrator/SGS block change (binding rule #2) |
+| `/brainstorming` | Architectural calls (e.g. "should `__inner` detection be in convert.py or its own helper?") |
+| `/gap-analysis` | Grade each section-fix before commit |
+| `/lifecycle` | Any skill/agent/pipeline edits |
+| `/research` | If WP block API behaviour needs verification |
+| `/strategic-plan` | Plan the Phase 9b section sweep order |
+| `/systematic-debugging` | When a section diff doesn't drop as expected post-fix |
+| `/qc` + `/qc-inline` | Mandatory before every commit touching converter/pipeline/block logic |
 | `/sgs-wp-engine` | All SGS framework work |
-| `/sgs-update` | Refresh sgs-framework.db after orchestrator outputs are validated |
+| `/sgs-update` | Refresh DB after any new attr / block change |
 
 ## MCP & tools
 
 | Tool | What for |
 |------|---------|
 | `mcp-wordpress` REST | Push new converter output to page 131; verify mtime advances |
-| `playwright` | Multi-viewport screenshot of page 131 post-update |
-| `python scripts/pixel-diff.py --selector .sgs-{section}` | Per-section cropped diff at 3 viewports (binding rule #3) |
-| `python plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py --help` | Confirm Branch B's CLI surface |
+| `playwright` | Multi-viewport screenshots + DOM inspection |
+| `python scripts/pixel-diff.py --selector .sgs-{section}` | Per-section cropped diff at 3 viewports |
+| Full orchestrator | `python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py … --converter-v2 --client mamas-munches --no-playwright` (`--converter-v2` is REQUIRED — see lesson `feedback_converter_v2_flag_required_for_cv2`) |
 
-## Task 1 — orchestrator wiring (~30 min)
+## Task 1 — selector reliability (~30 min, foundation)
 
-Branch B wired `--client-slug=<slug>` into `convert.py`'s `main()`. The full orchestrator (`orchestrator_main.py` / `sgs-clone-orchestrator.py`) likely calls convert.py via subprocess — confirm whether the `--client-slug` flag needs threading through that wrapper, and add it if so. If the wrapper already accepts a `--client` flag, ensure it forwards as `--client-slug`.
+Fix P-FOOTER-WRAPPER-CLASS-MISSING + P-HEADER-WRAPPER-CLASS-AUDIT first. The 98.7% footer diff is comparing the mockup's `<footer>` against a stray `<h2 class="sgs-footer-label">` because the sgs/footer block doesn't emit `.sgs-footer` on its wrapper. Same suspected pattern for header. Add `sgs-<block>` to the wrapper class list in each render.php. Re-measure both sections at 3 viewports; expect material drops on both.
 
-Quick check before editing:
-```bash
-grep -nE "subprocess|convert\.py|client_slug|--client" plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py plugins/sgs-blocks/scripts/orchestrator/orchestrator_main.py
-```
+**Verification:** `python -c "import urllib.request, re; html = urllib.request.urlopen('https://sandybrown-nightingale-600381.hostingersite.com/cv2-output-mamas-munches/').read().decode(); m = re.search(r'<footer[^>]*>', html); print(m.group(0) if m else 'no footer')"` — the `<footer>` tag's class attribute must contain `sgs-footer`.
 
-## Task 2 — full orchestrator re-run (~15 min)
+## Task 2 — `__inner` element width detection (~20 min)
 
-Run the orchestrator against the Mama's mockup with `--client-slug=mamas-munches`. The new run-dir should:
-- Populate `theme/sgs-theme/styles/mamas-munches.json:settings.layout` from detected mockup widths
-- Emit `widthMode: "wide"`/`"full"`/`"default"` on container instances whose CSS matched theme widths within ±5%
-- Keep emitting inline `style.dimensions.maxWidth` for arbitrary literals (legacy fallback path preserved)
+Fix P-DETECT-INNER-ELEMENT-WIDTHS. Extend `_detect_client_layout_widths` to also accept `^\.sgs-[a-z][a-z0-9]*(-[a-z0-9]+)*__inner$` selectors as width signals. Re-run orchestrator with `--converter-v2 --client mamas-munches`; expect `mamas-munches.json:settings.layout` to gain a wider `wideSize` (probably ~1280px from `.sgs-header__inner`) and a different `contentSize` (probably ~960-1040px clustered).
 
-Verify by `grep`ing the new `extract.json` for `widthMode` hits + reading the modified style variation.
+**Verification:** confirm `wideSize > contentSize` after the change, and confirm `_detect_client_layout_widths` still rejects non-`__inner` modifier/element shapes.
 
-## Task 3 — push + remeasure (~10 min)
+## Task 3 — UTF-8 mojibake (~30 min)
 
-```bash
-python reports/brand-walkdown-2026-05-19/upload_and_patch.py <new-run-dir>
-# Defaults to --target page --target-id 131 — no flags needed
-```
+Fix P-UTF8-MOJIBAKE-IN-CONVERTER. The gift-section promo bar shows `ƒÄë New product launch ÖÇö get 20% off` — CP-1252-as-UTF-8 mojibake. Trace from mockup HTML through `convert.py` to `block_markup` to identify where the encoding flips.
 
-Then re-measure brand-cropped diff at 3 viewports:
-```bash
-for vp in 1440x900 768x1024 375x812; do
-  python scripts/pixel-diff.py \
-    --mockup file:///C:/Users/Bean/Projects/small-giants-wp/sites/mamas-munches/mockups/homepage/index.html \
-    --sgs https://sandybrown-nightingale-600381.hostingersite.com/cv2-output-mamas-munches/ \
-    --viewport $vp \
-    --selector ".sgs-brand" \
-    --out reports/brand-walkdown-2026-05-19/page131-orchestrator-rerun-brand-${vp%x*}
-done
-```
+## Task 4 — intra-section closure planning (~30 min)
 
-Expected: brand at 1440 stays roughly at 43.7% (brand's authored 1000px doesn't match theme widths — falls back to inline-style, no behaviour change) OR drops further if there are other intra-brand changes the new converter picked up. Honest answer: small expected change.
+For P-INTRA-SECTION-CLOSURE, open one parking entry per section in `.claude/parking.md` with: screenshot pair (mockup vs page 131 at 1440), root-cause hypothesis, estimated fix time. Use `/strategic-plan` if more than 5 sections need cross-cutting prep work.
 
-The more interesting measurement is **per-section diffs across the page** — hero (66.8% baseline), cta, trust, etc. Tasks 2-3 buy bigger ROI on sections whose mockup CSS matched theme widths exactly.
+## Task 5 — exercise the new /handoff gates (~15 min)
 
-## Task 4 — pivot to intra-section closure (~remaining session)
-
-With P-WP-ALIGNMENT-WIDTH-SYSTEM closed, the remaining pixel-diff is intra-section. Open parking entries for the largest residual diff sections after Task 3's measurement. Candidates:
-- **Hero (66.8% at 1440)** — likely image positioning / `object-fit` / `object-position` parity. The mockup's hero image is positioned differently than the SGS render.
-- **Brand (43.7% at 1440)** — text layout, font-weight/size, image positioning within the section
-- Per-viewport responsive parity at 375 / 768 (mockup-mobile differs from SGS-mobile due to CSS responsive overrides)
-
-Each section gets its own parking entry with: section selector, current diff %, candidate root cause, proposed fix shape, estimated time.
-
-## Task 5 — commit + handoff (~15 min)
-
-Walk `.claude/docs-registry.yaml` per binding rule. Update state.md, handoff.md, parking.md, mistakes.md, next-session-prompt.md. NO Co-Authored-By footer on commits.
+This session is the first to run under the new `/handoff` Gate 3.5 (Opus default), Gate 4.5 (registry-first walk), and Gate 4.8 (`/capture-lesson` mandatory). Walk through them deliberately and surface anything that feels rough so the gates can be tightened before they ossify.
 
 ## Guardrails
 
-- **Read pipeline-state/<run>/leftover-buckets.json BEFORE conjecturing** about converter quality or pixel-diff causes (binding rule #1)
-- **Multi-rater /qc panel BEFORE every commit** touching converter/pipeline/block logic (binding rule #2)
-- **Per-section cropped pixel-diff** via `--selector .sgs-{section}` (binding rule #3)
-- **NO smoke artefacts in commits** — if you run convert.py with a synthetic CSS for verification, revert the resulting style-variation write before `git add`
-- **Hero-clone-poc URL** = https://sandybrown-nightingale-600381.hostingersite.com/hero-clone-poc/ — the canonical existence proof for working alignment
-- **Page 131** = https://sandybrown-nightingale-600381.hostingersite.com/cv2-output-mamas-munches/ — the canary
+- **`--converter-v2` is REQUIRED** on any production orchestrator run (lesson captured 2026-05-18)
+- **WP_DEBUG_DISPLAY must stay false** on sandybrown wp-config.php; if pixel-diffs suddenly inflate uniformly, check it first
+- **Multi-rater /qc panel** BEFORE every commit touching converter/pipeline/block logic
+- **Per-section cropped pixel-diff** via `--selector .sgs-{section}`, never full-page
+- **DB-first lookups** when extending convert.py (binding rule)
+- **NO Co-Authored-By footer in commits**
+- **Test the seed mechanism IS firing** by checking `_LIFT_CONTEXT["theme_widths"]` post-`reset_pipeline_seed()` + first convert_section call
 
 ## Definition of done (HONEST budget)
 
 Must close in-session:
-- ✓ Orchestrator wiring confirmed (or extended) for `--client-slug=mamas-munches`
-- ✓ Full pipeline re-run produces new extract.json with widthMode hits + populated mamas-munches.json layout
-- ✓ Page 131 carries the new markup; brand-cropped diff re-measured at 3 viewports
-- ✓ Per-section diffs measured across the homepage (hero / brand / cta / trust / others)
-- ✓ At least 2 new parking entries opened for the largest residual intra-section diffs
-- ✓ Handoff walks the docs-registry
+- ✓ Footer + header wrapper class emission fixed; re-measured diffs reflect REAL section rendering
+- ✓ `__inner` element width detection extended; second orchestrator run produces wider wideSize than contentSize
+- ✓ UTF-8 mojibake root-caused (fix may carry to follow-up if encoding-flip is non-trivial)
+- ✓ At minimum 3 intra-section parking entries opened with screenshot pairs
+- ✓ Handoff exercises the three new gates
 
 Acceptable explicit defers:
-- Per-section fixes themselves (they're the parking entries — fix them in subsequent sessions)
+- Per-section fixes themselves (each gets its own parking entry; closure happens in subsequent sessions)
 - Indus Foods second-client validation (separate session)
 
 Unacceptable:
-- Skipping the orchestrator re-run (it's the proof point for Tasks 2-3)
-- Committing without /qc panel if converter/pipeline/block logic changes
-- Smoke artefacts in commits
+- Measuring before fixing selector mismatches (numbers won't be trustworthy)
+- Skipping the orchestrator re-run after `__inner` detection extension
+- Committing without /qc panel

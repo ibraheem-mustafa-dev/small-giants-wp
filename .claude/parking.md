@@ -1,10 +1,69 @@
 ---
 doc_type: parking
 project: small-giants-wp
-last_updated: 2026-05-19
+last_updated: 2026-05-18
 ---
 
 # Parking — deferred work with named triggers
+
+## Opened 2026-05-18 (post P-WP-ALIGNMENT-WIDTH-SYSTEM orchestrator re-run findings)
+
+### P-DETECT-INNER-ELEMENT-WIDTHS — `_detect_client_layout_widths` misses `__inner` element widths (~20 min)
+
+**What:** Today's orchestrator re-run wrote `theme/sgs-theme/styles/mamas-munches.json:settings.layout = {contentSize: 1000px, wideSize: 1000px}` — both keys carry the same value because only one block-root selector (`.sgs-brand { max-width: 1000px }`) matched. The mockup actually authors content widths on `__inner` elements: `.sgs-header__inner: 1280px`, `.sgs-trust-bar__inner: 1100px`, `.sgs-featured-product__inner: 1040px`, `.sgs-ingredients-section__inner: 960px`, `.sgs-gift-section__card-inner: 960px`, `.sgs-social-proof__inner: 960px`. The current SGS-BEM-block-root regex correctly rejects these (per Section T of common-wp-styling-errors.md), but in doing so loses real layout-width signal.
+
+**Fix shape:** extend `_detect_client_layout_widths` to ALSO accept `^\.sgs-[a-z][a-z0-9]*(-[a-z0-9]+)*__inner$` selectors (the canonical SGS-BEM "inner wrapper" element name). Universal-benefit: `__inner` is a convention name, not a client-specific class. The function still rejects `__title`, `__lead`, `__card`, etc — only `__inner` counts as a layout-width signal.
+
+**Trigger:** next session's intra-section closure work — picking up after this session's framework shipment.
+
+### P-FOOTER-WRAPPER-CLASS-MISSING — sgs/footer render.php doesn't emit `.sgs-footer` on wrapper (~10 min)
+
+**What:** Pixel-diff against page 131 selecting `.sgs-footer` at 1440 returns 98.7% diff — but the cause isn't the footer rendering badly; it's that `.sgs-footer` matches a stray `<h2 class="...sgs-footer-label">` heading on the page, NOT the actual `<footer>` wrapper. The sgs/footer block's render.php emits the `<footer>` element without adding `sgs-footer` as its block-root class. Selector-by-prefix mismatches cause this collision.
+
+**Fix shape:** audit sgs/footer (and sgs/header — same issue suspected; header diff 24% may also be wrong-element-matched) render.php to add `sgs-<block-name>` class to the wrapper alongside any existing `wp-block-sgs-<name>`. Re-measure with the corrected wrapper class to get a real footer diff.
+
+**Trigger:** before any further pixel-diff measurement on `.sgs-footer` or `.sgs-header` — selector reliability gate.
+
+### P-HEADER-WRAPPER-CLASS-AUDIT — sgs/header same suspected pattern (~10 min)
+
+**What:** Similar to footer. Header at 24% (clean baseline) is suspiciously low given the visual rendering shows substantial differences. Possible that the selector is matching only a partial header sub-tree. Confirm by checking what `.sgs-header` matches on page 131.
+
+**Fix shape:** read first `<*[class*=sgs-header]>` element on the page; if it's not a `<header>` wrapper, the same fix as footer applies.
+
+**Trigger:** alongside P-FOOTER-WRAPPER-CLASS-MISSING.
+
+### P-UTF8-MOJIBAKE-IN-CONVERTER — gift-section promo bar shows `ƒÄë New product launch ÖÇö get 20% off` mojibake (~30 min)
+
+**What:** The rendered SGS output of the gift-section promo bar shows characters that look like CP-1252-as-UTF-8 mojibake — smart-quote / em-dash / emoji bytes have been double-encoded somewhere in the converter pipeline. Mockup source likely contains the correct UTF-8 characters; converter or render is corrupting them.
+
+**Fix shape:**
+1. Inspect the raw mockup source to confirm the canonical characters
+2. Trace the path from mockup HTML → BeautifulSoup parse → extract → block_markup serialise → WP REST update → render. Find where the encoding gets mishandled.
+3. Likely culprits: `convert.py` reading file without explicit `encoding='utf-8'`, or `block_markup` being passed through a Python str→bytes that defaults to cp1252 on Windows.
+
+**Trigger:** intra-section closure work on gift-section.
+
+### P-INTRA-SECTION-CLOSURE — Phase 9b: residual 40-65% intra-section diff class (next phase)
+
+**What:** With P-WP-ALIGNMENT-WIDTH-SYSTEM closed, the clean-baseline pixel-diff at 1440 across 9 sections shows:
+
+| Section | 1440 diff | Suspected root cause |
+|---|---|---|
+| sgs-hero | 66.96% | image positioning + content layout (eyebrow/CTA missing) |
+| sgs-featured-product | 68.20% | grid template / card variant (mockup: 1 hero card + gallery; SGS: 2 stacked cards) |
+| sgs-social-proof | 56.77% | layout variant (mockup: stacked list; SGS: carousel) |
+| sgs-ingredients-section | 51.23% | image positioning + grid |
+| sgs-gift-section | 47.32% | image positioning + typography + mojibake (see P-UTF8) |
+| sgs-brand | 43.71% | image positioning + typography (single mockup card vs SGS stacked images) |
+| sgs-trust-bar | 31.71% | duplicated labels + missing icon SVGs |
+| sgs-header | 24.08% | possible selector mismatch (P-HEADER-WRAPPER-CLASS-AUDIT) |
+| sgs-footer | 98.67% | selector mismatch (P-FOOTER-WRAPPER-CLASS-MISSING) |
+
+**Fix shape:** open one parking entry per section, with a screenshot pair + root-cause hypothesis + estimated fix time. Treat each section as a Phase 9b workstream. The framework-level alignment infrastructure is done; remaining work is content-layout fidelity inside each section, which is properly converter / block-CSS / mockup-discipline work.
+
+**Trigger:** next session, after P-DETECT-INNER-ELEMENT-WIDTHS + P-FOOTER-WRAPPER-CLASS-MISSING + P-HEADER-WRAPPER-CLASS-AUDIT are closed (so further measurements are trustworthy).
+
+---
 
 ## Opened 2026-05-17 (architecture fix surfaced at session close)
 

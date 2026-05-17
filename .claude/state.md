@@ -3,13 +3,24 @@ doc_type: state
 project: small-giants-wp
 project_id: 14
 current_phase: spec-16-phase-9-section-by-section-walkdown
-current_subphase: "P-WP-ALIGNMENT-WIDTH-SYSTEM SHIPPED 2026-05-18. Two-commit landing: Task 0 (`c7f42003`) — cv2 pipeline now targets WP PAGES not POSTS via argparse-rewritten upload_and_patch.py; brand pixel-diff at 1440 dropped 58.0% → 43.7% (14.3-point reduction from removing the single.html `.entry-content { max-width: 800px }` constraint). Tasks 2-3 (`86172812`) — sgs/container widthMode per-viewport (default/wide/full/custom) + InspectorControls editor UI + converter widthMode emission + per-client style variation lift, all universal-benefit (zero client literals). Caught + fixed a BEM regex correctness bug via /qc-inline #1; editor UI scored 96/100 in /qc-inline #2."
-current_subphase_step: "NEXT SESSION — full orchestrator pipeline re-run with --client-slug=mamas-munches to regenerate Mama's block markup carrying widthMode attrs, push to page 131, re-measure brand-cropped pixel-diff to quantify Tasks 2-3 ROI. Then pivot to intra-section closure (content/typography/image-positioning parity inside individual sections — the remaining diff class after P-WP-ALIGNMENT-WIDTH-SYSTEM closed the parent-context class)."
-phase_9_session_close_summary: "2026-05-18 session — 2 commits shipped. Task 0 + Tasks 2-3 landed via parallel-agent dispatch (Branches A + B + C) and 2 inline-QC passes. New surfaces: WP page 131 (cv2-output-mamas-munches) + page 132 (mockup-baseline-mamas-munches) on sandybrown; 6 new container attrs (widthMode + per-viewport variants + customWidth/Unit); 5 new converter helpers (_detect_client_layout_widths, _write_client_layout_widths, _load_theme_widths, _match_theme_width, _parse_px_length) + module constants (_LIFT_CONTEXT, _WIDTH_MATCH_TOLERANCE_PCT, _SGS_BEM_BLOCK_ROOT_RE, _FULL_BLEED_WIDTH_VALUES). Editor InspectorControls + responsive map for widthMode. Visual-diff PASS report at reports/visual-diff/container-2026-05-17.md. Deploy: build (webpack 5.105.2 6.3s clean), tar-deploy, OPcache reset, end-to-end smoke confirming style-variation lift fires, brand pixel-diff measured at 3 viewports post-deploy (zero regression: 43.73/47.60/56.32 vs pre-deploy 43.73 at 1440)."
-last_updated: 2026-05-18 (P-WP-ALIGNMENT-WIDTH-SYSTEM shipped)
+current_subphase: "P-WP-ALIGNMENT-WIDTH-SYSTEM full-cycle close 2026-05-18. Orchestrator wiring complete: convert_section() accepts client_slug + repo_root, seed_pipeline_context() seeds _LIFT_CONTEXT once per pipeline run, reset_pipeline_seed() clears state between runs. Caller (sgs-clone-orchestrator.py) passes both at the convert_section call site and resets at the top of stage_4_5_6_7_8_extract. End-to-end verified: `--converter-v2` orchestrator run on Mama's mockup → 376 attrs extracted (all 9 sections complete) → 5 widthMode hits in block_markup → mamas-munches.json:settings.layout populated with detected {contentSize:1000px, wideSize:1000px}. Pushed to page 131. WP_DEBUG_DISPLAY=true was contaminating measurements via a font-collection Notice banner above header — suppressed in wp-config.php; clean baselines now stable."
+current_subphase_step: "NEXT SESSION — Phase 9b intra-section closure. Five parking entries opened for follow-up: P-DETECT-INNER-ELEMENT-WIDTHS (~20 min — extend block-root regex to accept __inner element width signals), P-FOOTER-WRAPPER-CLASS-MISSING (~10 min — sgs/footer render.php doesn't emit .sgs-footer on wrapper), P-HEADER-WRAPPER-CLASS-AUDIT (~10 min — same suspected pattern), P-UTF8-MOJIBAKE-IN-CONVERTER (~30 min — gift-section promo bar shows double-encoded characters), and the umbrella P-INTRA-SECTION-CLOSURE which holds 9 section-level diff entries to address next."
+phase_9_session_close_summary: "2026-05-18 session — Tasks 0+2+3 shipped earlier in the day (5 commits c7f42003 + 86172812 + 16721374 + 8ec062bc + 8995a15a). Late-session pivot to next-session work: orchestrator wiring shipped, end-to-end pipeline run produced verified widthMode emission + style-variation auto-lift, clean per-section pixel-diff baseline measured at 1440 across 9 sections. WP debug-notice contamination diagnosed + suppressed. Five parking entries + three behavioural lessons captured. Handoff skill (~/.claude/commands/handoff.md) restructured to default to Opus, walk docs-registry.yaml authoritatively, and run /capture-lesson as a mandatory pre-handoff gate."
+clean_baseline_pixel_diff_2026_05_18:
+  selector_per_section_at_1440:
+    sgs-footer: "98.67% (selector mismatch — see P-FOOTER-WRAPPER-CLASS-MISSING)"
+    sgs-featured-product: "68.20% (layout variant — 1 hero card mockup vs 2-stack SGS)"
+    sgs-hero: "66.96% (image positioning + content layout)"
+    sgs-social-proof: "56.77% (carousel variant in SGS vs stacked list in mockup)"
+    sgs-ingredients-section: "51.23% (image positioning + grid)"
+    sgs-gift-section: "47.32% (UTF-8 mojibake + image positioning + typography)"
+    sgs-brand: "43.71% (image positioning + typography)"
+    sgs-trust-bar: "31.71% (duplicated labels + missing icon SVGs)"
+    sgs-header: "24.08% (possible selector mismatch — see P-HEADER-WRAPPER-CLASS-AUDIT)"
+last_updated: 2026-05-18 (full-cycle close + Opus handoff policy + capture-lesson gate live)
 blockers:
-  - "No active blockers. Brand pixel-diff measurement against the NEW block markup (carrying widthMode attrs) requires a full orchestrator pipeline re-run, which is the next session's first concrete step."
-recommended_model_next: sonnet
+  - "No active blockers. Phase 9b intra-section closure work is parked with named triggers; each parking entry is a discrete <30-min task. Footer + header selector mismatches must be fixed FIRST to make further pixel-diff measurements trustworthy."
+recommended_model_next: opus
 ---
 
 # small-giants-wp — State Snapshot
@@ -18,54 +29,63 @@ recommended_model_next: sonnet
 
 ## Where we are (2026-05-18 close)
 
-**P-WP-ALIGNMENT-WIDTH-SYSTEM is closed.** The architectural pull-back surfaced 2026-05-17 — "why are you using post templates for pages anyway" — landed in two clean commits:
+**Phase 9 framework-level work is done.** The full P-WP-ALIGNMENT-WIDTH-SYSTEM cycle shipped today:
 
-- `c7f42003` Task 0: pipeline targets WP PAGES not POSTS — 14.3-point pixel-diff drop on brand at 1440 from removing the inherited 800px content-width cap
-- `86172812` Tasks 2-3: sgs/container widthMode infrastructure (per-viewport, WP-native alignfull/alignwide composition) + converter widthMode emission + per-client style variation auto-lift + editor InspectorControls + visual-diff report
+- **Task 0** (`c7f42003`): cv2 pipeline targets WP PAGES not POSTS — 14.3-point brand pixel-diff drop at 1440
+- **Tasks 2-3** (`86172812`): sgs/container widthMode + editor InspectorControls + converter widthMode emission + style-variation auto-lift
+- **Orchestrator wiring** (pending commit): `convert_section()` accepts `client_slug` + `repo_root`; `seed_pipeline_context()` + `reset_pipeline_seed()` exported from converter_v2 package; orchestrator passes both at call site; reset fires at the top of stage_4_5_6_7_8_extract
+- **Docs walks** (commits `16721374` + `8ec062bc`): registry + canonical doc set
+- **/sgs-update refresh** (commit `8995a15a`): 71 blocks, 1,714 attributes, uimax mirror synced
 
-Both commits shipped through the parallel-agent dispatch protocol with two inline-QC passes. First QC caught a real BEM regex correctness bug (`_SGS_BEM_BLOCK_ROOT_RE` matching `.sgs-X--Y` shapes) before commit; second QC scored editor UI 96/100 with zero findings.
-
-## Today's 2 commits (chronological)
+## Today's commits (chronological, pre-orchestrator-wiring)
 
 | Commit | What |
 |---|---|
-| `c7f42003` | fix(pipeline): cv2 output targets WP PAGES, not POSTS — argparse rewrite of upload_and_patch.py, doc'd in CLAUDE.md, closes P-USE-PAGES-NOT-POSTS |
-| `86172812` | feat(container): widthMode per-viewport + converter widthMode emission — 6 new attrs, 5 new converter helpers, editor InspectorControls, +583/-19 LOC across 6 files, visual-diff PASS report |
+| `c7f42003` | Task 0 — cv2 pipeline targets WP PAGES not POSTS |
+| `86172812` | Tasks 2-3 — widthMode infra + InspectorControls + converter wiring |
+| `16721374` | Docs walk #1 — state/handoff/next-session/mistakes/decisions/parking |
+| `8ec062bc` | Docs walk #2 — architecture/plan/cloning-pipeline-flow/spec-16/styling-errors |
+| `8995a15a` | /sgs-update refresh — block reference regen + Stage 4 print bug fix |
 
-## Brand pixel-diff measurement journey (apples-to-apples per-section cropped)
+## End-to-end pipeline proof (2026-05-18 late session)
 
-| Surface | Template | 1440 brand-cropped |
+- `python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py --mockup sites/mamas-munches/mockups/homepage/index.html --client mamas-munches --page homepage --auto-section --no-playwright --converter-v2` ran clean
+- New run-dir: `pipeline-state/mamas-munches-homepage-2026-05-17-105020/`
+- All 9 sections matched to sgs/* blocks (confidence=1.0 for hero, trust-bar, featured-product, brand, ingredients-section, gift-section, social-proof; header + footer matched via different paths)
+- 376 attrs extracted (vs 62 yesterday on similar mockup — converter coverage substantially up)
+- 5 `widthMode` hits in block_markup (semantic emission firing)
+- `theme/sgs-theme/styles/mamas-munches.json:settings.layout = {contentSize: "1000px", wideSize: "1000px"}` — written by `_write_client_layout_widths` idempotently (only `.sgs-brand` block-root selector matched the SGS-BEM regex; `__inner` element widths missed — see P-DETECT-INNER-ELEMENT-WIDTHS)
+- New markup pushed to page 131 via `upload_and_patch.py` (defaults now correct: `--target page --target-id 131`)
+
+## Clean per-section pixel-diff baseline at 1440 (post WP_DEBUG_DISPLAY suppression)
+
+| Section | Diff | Notes |
 |---|---|---|
-| Post 65 (yesterday's surface, `single.html` `is-layout-constrained`) | post | 58.0% |
-| Page 131 (today's surface, `page.html` `is-layout-flow`) | page | 43.7% |
-| Page 131 post-deploy (render.php changes additive, markup unchanged) | page | 43.7% (zero regression) |
-
-The 43.7% residual is intra-section (content layout, typography, image positioning) — not parent-context. Tasks 2-3's pixel-diff ROI on the existing markup is zero because the block markup on page 131 dates from yesterday's pre-widthMode converter output; the new widthMode-emitting converter needs a full orchestrator re-run to produce updated markup.
+| sgs-footer | 98.67% | Selector mismatch — matches stray `<h2 class="sgs-footer-label">`, not `<footer>` wrapper |
+| sgs-featured-product | 68.20% | Layout variant — mockup is 1 hero card + side gallery; SGS is 2 stacked cards |
+| sgs-hero | 66.96% | Image positioning + content layout (eyebrow/CTA missing) |
+| sgs-social-proof | 56.77% | Carousel variant in SGS vs stacked list in mockup |
+| sgs-ingredients-section | 51.23% | Image positioning + grid |
+| sgs-gift-section | 47.32% | UTF-8 mojibake + image positioning + typography |
+| sgs-brand | 43.71% | Image positioning + typography |
+| sgs-trust-bar | 31.71% | Duplicated labels + missing icon SVGs |
+| sgs-header | 24.08% | Possible selector mismatch |
 
 ## Next session — START HERE
 
-1. Re-run the full orchestrator pipeline against Mama's mockup with `--client-slug=mamas-munches` (orchestrator_main.py / sgs-clone-orchestrator.py — not just convert.py)
-2. Confirm `theme/sgs-theme/styles/mamas-munches.json` gains a `settings.layout` block populated from mockup CSS
-3. Confirm emitted block markup contains `widthMode: "wide"` (or `"full"`) on container instances whose mockup CSS matched theme widths
-4. Push new markup to page 131 via `upload_and_patch.py <run-dir>` (defaults now correct)
-5. Re-measure brand-cropped pixel-diff at 3 viewports
-6. Then pivot to intra-section closure — the residual diff class. Open parking entries for content/typography/image-positioning parity within individual sections.
+Read **`.claude/next-session-prompt.md`** + **`.claude/parking.md`** for the 5 newly-opened parking entries. Foundational fixes first (footer + header selector mismatches) before any further measurement.
 
-Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-19-orchestrator-rerun"`
-
-## Phase 9 backlog (parking.md after this session)
-
-- **Closed today:** P-USE-PAGES-NOT-POSTS, P-WP-ALIGNMENT-WIDTH-SYSTEM (system shipped; ROI measurement parked as next-session orchestrator-rerun work)
-- **Open for next session:** orchestrator pipeline re-run + remeasurement, then intra-section closure parking entries for the residual 43.7% brand / 66.8% hero diff
+Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-giants-wp-2026-05-19-phase-9b-intra-section"`
 
 ## Subprojects
 
-- Mama's Munches — canary, brand framework infrastructure complete; awaiting orchestrator re-run for measurement
-- Indus Foods Phase 4 — second-client validation target (Tasks 2-3 ready to receive Indus mockup as soon as its layout widths get detected)
-- Other style variations (helping-doctors, healthcare, construction, professional, mosque, eye-care) — automatically benefit from Tasks 2-3 the next time their orchestrator runs
+- Mama's Munches — canary, P-WP-ALIGNMENT-WIDTH-SYSTEM closed; intra-section closure is Phase 9b
+- Indus Foods — second-client validation target (the new pipeline should work cleanly; mockup CSS shape unknown)
+- Other clients — automatically benefit from Tasks 2-3 next time their orchestrator runs
 
 ## Lessons captured this session
 
-1. **BEM regex char-class `[a-z0-9-]` matches `--` consecutively** — caught by /qc-inline, fixed inline before commit. Use segmented kebab regex `^\.sgs-[a-z][a-z0-9]*(-[a-z0-9]+)*$` for block-root selectors.
-2. **WP template context can dominate pixel-diff** — `single.html` vs `page.html` was a 14.3-point swing. Audit rendering-surface template chain before chasing block-side fixes when pixel-diff is stubbornly high.
-3. **Smoke test artefacts must be reverted before commit** — test-time helper invocations write real-looking JSON into style variations; revert manually before `git add`.
+1. **Opus-default policy** — Bean's preference: main agent on Opus, subagents on Sonnet/Haiku. `/handoff` Gate 3.5 now defaults to opus.
+2. **`--converter-v2` flag required** — orchestrator bypasses cv2 path silently without it.
+3. **WP_DEBUG_DISPLAY contamination** — staging notice banners shift every section vertically and inflate diffs by 15-40 points.
+4. **BEM regex char-class trap** (2026-05-18 morning) — `[a-z0-9-]` matches `--`; segmented kebab is the fix.

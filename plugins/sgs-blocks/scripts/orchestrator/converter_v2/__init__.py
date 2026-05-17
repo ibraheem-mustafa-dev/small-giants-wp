@@ -10,7 +10,74 @@ from __future__ import annotations
 
 from .convert_page import convert_page as _convert_page_impl
 
-__all__ = ["convert_page", "convert_section"]
+__all__ = [
+    "convert_page",
+    "convert_section",
+    "seed_pipeline_context",
+    "reset_pipeline_seed",
+]
+
+
+# Module-level pipeline-seed state. The orchestrator calls `convert_section`
+# once per boundary; the universal width-mode lift machinery (Branch B,
+# 2026-05-19) needs `_LIFT_CONTEXT["theme_widths"]` populated ONCE per
+# pipeline run (theme.json + variation overlay + idempotent variation-write).
+# This dict gates the seed so subsequent per-section calls no-op cheaply.
+_PIPELINE_SEEDED: dict = {"client_slug": None}
+
+
+def seed_pipeline_context(css_rules: dict, client_slug: str, repo_root) -> dict:
+    """Seed `convert._LIFT_CONTEXT` once per pipeline run.
+
+    Universal: detects mockup layout widths from the CSS rule set, writes any
+    detected widths into the active style variation (idempotent — never
+    overwrites operator-tuned values), then loads the effective theme widths
+    (variation override > theme.json default) into ``_LIFT_CONTEXT`` so
+    ``_lift_root_supports_to_style`` can emit semantic ``widthMode`` values
+    instead of literal-pixel ``style.dimensions.maxWidth``.
+
+    Idempotent: subsequent calls with the same ``client_slug`` no-op and return
+    the already-seeded ``theme_widths`` dict.
+
+    Parameters
+    ----------
+    css_rules:
+        Output of ``convert.parse_css(css_text)`` — flat ``{selector: {prop:
+        value}}`` dict scanned for ``.sgs-<block>`` root selectors carrying
+        ``max-width`` declarations.
+    client_slug:
+        Active client slug (e.g. ``"mamas-munches"``). When empty / falsy, the
+        variation-overlay step is skipped and theme.json defaults stand alone.
+    repo_root:
+        ``pathlib.Path`` pointing at the repository root. Supplied by the
+        caller — never inferred from ``__file__`` here, because the depth
+        assumption is fragile across worktrees.
+
+    Returns the seeded ``theme_widths`` dict (``{contentSize, wideSize}`` or
+    empty when no widths could be resolved).
+    """
+    from . import convert as v3
+    if _PIPELINE_SEEDED["client_slug"] == client_slug:
+        return v3._LIFT_CONTEXT.get("theme_widths") or {}
+    detected = v3._detect_client_layout_widths(css_rules)
+    if detected and client_slug:
+        v3._write_client_layout_widths(client_slug, detected, repo_root)
+    widths = v3._load_theme_widths(client_slug or None, repo_root)
+    v3._LIFT_CONTEXT["theme_widths"] = widths
+    _PIPELINE_SEEDED["client_slug"] = client_slug
+    return widths
+
+
+def reset_pipeline_seed() -> None:
+    """Reset pipeline-seed state at the start of a fresh pipeline run.
+
+    Call this from the orchestrator BEFORE the per-section loop fires so
+    back-to-back runs in the same process (multi-client batch mode, test
+    runners) don't carry stale ``theme_widths`` across clients.
+    """
+    from . import convert as v3
+    _PIPELINE_SEEDED["client_slug"] = None
+    v3._LIFT_CONTEXT.pop("theme_widths", None)
 
 
 def convert_page(html_path: "str | object", media_map_path: "str | object | None" = None) -> list[dict]:
@@ -113,6 +180,7 @@ def convert_page(html_path: "str | object", media_map_path: "str | object | None
 
 
 def convert_section(html: str, css: str, media_map: dict,
+                    client_slug: str = "", repo_root=None,
                     trace=None, boundary_id: str = "") -> dict:
     """Convert a single section's HTML+CSS to a Stage 4 result dict.
 
@@ -132,6 +200,19 @@ def convert_section(html: str, css: str, media_map: dict,
     media_map:
         Dict of {filename: {id, url}} for WP attachment URL resolution.
         Pass an empty dict when no media-map is available.
+    client_slug:
+        Active client slug (e.g. ``"mamas-munches"``). When non-empty AND
+        ``repo_root`` is supplied, the universal width-mode pipeline seed
+        fires on the first per-section call of the run and populates
+        ``convert._LIFT_CONTEXT["theme_widths"]`` so the lift step can emit
+        semantic ``widthMode`` values rather than literal-pixel maxWidth.
+        Empty / missing → seed skipped, legacy inline-style fallback stands.
+    repo_root:
+        ``pathlib.Path`` pointing at the repository root (where ``theme/``
+        and ``plugins/`` live). Required for the width-mode seed; ignored
+        when ``client_slug`` is empty. Supplied explicitly by the caller —
+        never inferred from ``__file__`` here, because the depth assumption
+        is fragile across worktrees.
     trace:
         Optional Trace instance (orchestrator.trace.Trace) bound to a per-
         section file (typically ``Trace.for_boundary(run_dir, boundary_id)``).
@@ -143,6 +224,15 @@ def convert_section(html: str, css: str, media_map: dict,
     """
     from bs4 import BeautifulSoup
     from . import convert as v3
+
+    # Universal width-mode seed (Branch B, 2026-05-19). Fires once per
+    # pipeline run thanks to `seed_pipeline_context`'s idempotent guard;
+    # subsequent per-section calls during the same run no-op cheaply.
+    # Backwards-compat: when client_slug is empty / repo_root is None,
+    # the seed is skipped entirely and the legacy fallback path stands.
+    if client_slug and repo_root is not None:
+        css_rules_seed = v3.parse_css(css) if css else {}
+        seed_pipeline_context(css_rules_seed, client_slug, repo_root)
 
     # Bind the trace before walk() runs so all walker decisions, attribute
     # skips, and DB lookup misses for this section route to the right file.

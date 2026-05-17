@@ -965,6 +965,19 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
     aggregate_warnings: list[str] = []
     per_section_results: list[dict] = []
 
+    # Reset converter_v2's pipeline-seed state at the start of every run so
+    # back-to-back orchestrator invocations in the same Python process (multi-
+    # client batch mode, test runners) don't carry stale theme_widths across
+    # clients. No-op when converter_v2 isn't importable on this run.
+    try:
+        _conv_pkg_dir_reset = ORCHESTRATOR_DIR.parent
+        if str(_conv_pkg_dir_reset) not in sys.path:
+            sys.path.insert(0, str(_conv_pkg_dir_reset))
+        from orchestrator.converter_v2 import reset_pipeline_seed as _reset_seed
+        _reset_seed()
+    except ImportError:
+        pass
+
     for m in matches:
         boundary_id = m["boundary_id"]
         target_block = m["block_name"]
@@ -1115,6 +1128,8 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                     html=_section_html,
                     css=_section_css,
                     media_map=_media_map_obj,
+                    client_slug=getattr(args, "client", "") or "",
+                    repo_root=REPO,
                     trace=_cv2_trace,
                     boundary_id=boundary_id,
                 )
