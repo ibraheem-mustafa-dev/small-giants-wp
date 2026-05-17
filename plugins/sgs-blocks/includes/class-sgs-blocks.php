@@ -36,6 +36,10 @@ final class SGS_Blocks {
 
 		// Image Controls extension — objectPosition / maxWidth / per-breakpoint height.
 		require_once SGS_BLOCKS_PATH . 'includes/image-controls.php';
+
+		// Pattern slug backward-compat shim (sgs-theme/ → sgs/ aliases, 1-cycle deprecation).
+		require_once SGS_BLOCKS_PATH . 'includes/class-pattern-slug-shim.php';
+		Pattern_Slug_Shim::register();
 	}
 
 	/**
