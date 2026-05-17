@@ -1527,6 +1527,17 @@ def _lift_root_supports_to_style(
             continue
         _set_in(style, path, converted)
 
+    # ---- 3. max-width lift (2026-05-17 sibling fix). The mockup commonly
+    # carries a literal `max-width: 1000px` on section roots that anchor the
+    # entire layout. WP's named-width enum (`content` / `wide` / `full`) can't
+    # express arbitrary values. Lift as style.dimensions.maxWidth so the
+    # downstream sgs/container render.php can emit an inline max-width on the
+    # wrapper. Universal across any container-rooted block.
+    if "max-width" in base_decls:
+        mw = _preserve_unit(base_decls["max-width"])
+        if mw is not None:
+            _set_in(style, ["dimensions", "maxWidth"], mw)
+
     if style:
         attrs["style"] = style
 
@@ -2411,6 +2422,15 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
         cont_attrs: dict = dict(container_override)
         if sgs_classes:
             cont_attrs["className"] = " ".join(sgs_classes)
+        # P-PHASE9-4 sibling fix (2026-05-17): block-root supports lift was only
+        # firing on FR1 / atomic_text_standalone / top_level_container branches.
+        # css_driven_container (the path taken for `.sgs-brand` with display:grid)
+        # was skipping the lift, so padding/max-width/background/etc. on the
+        # section root were silently dropped. This caused the section to render
+        # with default WP wide-alignment + zero padding instead of the mockup's
+        # `padding: 64px 20px; max-width: 1000px; background: var(--surface-alt)`.
+        schema = db.block_attrs("sgs/container")
+        _lift_root_supports_to_style(node, "sgs/container", css_rules, cont_attrs)
         # Lift CSS targeting these classes into the variation buffer so the
         # source CSS still binds (the className is preserved on the container).
         decls = _collect_css_for_classes(classes, css_rules)

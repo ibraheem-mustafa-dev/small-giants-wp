@@ -104,6 +104,17 @@ $classes = array(
 	'sgs-container--width-' . esc_attr( $max_width ),
 );
 
+// 2026-05-17 — honour style.dimensions.maxWidth lifted from mockup CSS by
+// the SGS clone-pipeline. WP's named-width enum (content/wide/full) can't
+// express literal pixel widths from authored mockups (e.g. `max-width: 1000px`),
+// so the converter lifts the raw value into `style.dimensions.maxWidth` and
+// this render path emits it as inline-style. Falls back to the named width
+// class above when absent.
+$style_dim = $attributes['style']['dimensions'] ?? array();
+if ( ! empty( $style_dim['maxWidth'] ) ) {
+	$styles[] = 'max-width:' . esc_attr( $style_dim['maxWidth'] );
+}
+
 // When a min-height is set, add flex-centring class (#48).
 if ( ! empty( $min_height ) ) {
 	$classes[] = 'sgs-container--has-min-height';
