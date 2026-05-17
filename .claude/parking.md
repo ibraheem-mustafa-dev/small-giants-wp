@@ -6,6 +6,111 @@ last_updated: 2026-05-19
 
 # Parking — deferred work with named triggers
 
+## Opened 2026-05-17 (architecture fix surfaced at session close)
+
+### P-WP-ALIGNMENT-WIDTH-SYSTEM — Per-mockup theme content widths + per-block alignment selectors (PRIORITY) (~3-4 hrs)
+
+**TL;DR:** Brand pixel-diff against raw mockup file:// is stuck at 47-58% because the SGS post template constrains `.entry-content` to 800px max-width while the raw mockup HTML renders sections at viewport width (1440 at 1440 viewport). The hero-clone-poc at https://sandybrown-nightingale-600381.hostingersite.com/hero-clone-poc/ **DOES** match perfectly — because it uses a different page template (`page.html` not `single.html`) AND the hero block carries `alignfull` class to escape any constraint. This finding was missed for hours because the "wrapper-context noise" framing dismissed it as unfixable measurement methodology — it's actually a real architectural fix.
+
+**Live evidence (2026-05-17):**
+
+Post 65 (post template, `single.html`):
+- `.entry-content { max-width: 800px }` parent → caps every section to 800
+- Brand declares `max-width: 1000px` inline → SGS theme caps at 800
+- Hero declares `max-width: 100%` → 800 (filled to parent)
+
+Hero-clone-poc (page template, `page.html`):
+- `.entry-content { max-width: none }` parent → no cap
+- Hero has `alignfull` class → renders 1440 (full viewport)
+- ALSO main wrapper is `is-layout-flow` (vs `is-layout-constrained` on post)
+
+Raw mockup file:// (no WP template):
+- Sections fill body at viewport width (1440)
+- Brand has its own `max-width: 1000px` → 1000
+- All other sections: 1440 (no max-width)
+
+**Bean's proposed proper solution (2026-05-17):**
+
+Two layers, both within WordPress block-theme conventions:
+
+1. **Per-mockup theme content widths.** Each client's `theme/sgs-theme/styles/{client}.json` (style variation) declares its own `settings.layout.contentSize` + `wideSize` derived from the mockup CSS. The cloning pipeline reads the mockup's section widths and writes the matching contentSize/wideSize per-client (and per-viewport — mobile/tablet/desktop). Possible in WP — theme.json supports `settings.layout` per style variation. Also possible to expose in Customiser/Site Editor as Bean has done on other websites.
+
+2. **sgs/container width selector.** Add a new attr `widthMode` enum: `"default" | "wide" | "full" | "custom"` × per-viewport (`widthModeMobile`, `widthModeTablet`, `widthModeDesktop`). Plus `customWidth + customWidthUnit` (already exists). When `widthMode="full"` the block emits `alignfull` class (escapes content-area via WP's standard mechanism). When `widthMode="wide"` emits `alignwide`. When `"custom"` emits inline `max-width: {customWidth}{customWidthUnit}`. When `"default"` no override — inherits theme contentSize.
+
+**Reference: WP block-theme alignment system**
+
+How WP block-theme handles widths:
+- `theme.json:settings.layout.contentSize` (e.g. 800px) — default content width
+- `theme.json:settings.layout.wideSize` (e.g. 1200px) — `alignwide` width
+- `alignfull` = full viewport via negative margin escape from `.entry-content`
+- Blocks declare `supports.align: ["wide", "full"]` in block.json to allow these modes
+- Site Editor exposes a global Layout panel for setting these widths
+- Customiser-side: requires either Site Editor (block themes) OR custom Customiser controls writing to theme mods
+
+**Implementation plan (next session):**
+
+A. **Discovery + reference reading** (~30 min)
+   - Read `~/.agents/skills/wp-block-development/SKILL.md` for `supports.align` semantics
+   - Read `~/.agents/skills/wp-block-themes/SKILL.md` for theme.json contentSize/wideSize patterns
+   - Read `~/.agents/skills/wp-wpcli-and-ops/SKILL.md` for theme.json reload commands
+   - Read existing `theme/sgs-theme/theme.json` to see current contentSize/wideSize
+   - Read existing `theme/sgs-theme/styles/mamas-munches.json` to see if it overrides layout
+   - Check hero block.json for current `supports.align` declaration — that's what made hero-clone-poc work
+
+B. **Per-client contentSize/wideSize lift** (~1.5 hrs)
+   - Modify `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` Stage 0.5 or 0.7 (CSS-lift): detect the LARGEST max-width value declared on top-level sections in the mockup CSS → set as `wideSize` candidate. Detect the SMALLEST (or most-frequent) → `contentSize` candidate.
+   - Add a stage that writes these values into `theme/sgs-theme/styles/{client}.json` under `settings.layout.contentSize` / `wideSize` (per-viewport variants if mockup CSS has them).
+   - Bonus: emit `mobile`/`tablet`/`desktop` variants by reading mockup's `@media` query overrides.
+
+C. **sgs/container widthMode attr + render** (~1 hr)
+   - Add `widthMode` (enum default/wide/full/custom) × per-viewport to sgs/container/block.json
+   - In sgs/container/render.php: read widthMode attrs → emit appropriate WP alignment class (`alignfull`, `alignwide`) + responsive `<style>` block for per-viewport switching
+   - In `theme/sgs-theme/theme.json` confirm `supports.align: ["wide","full"]` is declared at the container level (or in block.json)
+
+D. **Converter wiring** (~30 min)
+   - When `_lift_root_supports_to_style` lifts a section's max-width:
+     - If max-width == theme.wideSize → emit `widthMode: "wide"`
+     - If max-width == theme.contentSize → emit `widthMode: "default"`
+     - If max-width is between or exotic → emit `widthMode: "custom"` + `customWidth/Unit` (current behaviour)
+     - If max-width: none / 100vw / `var(--site-max)` etc. → emit `widthMode: "full"`
+
+E. **Verification** (~30 min)
+   - Re-run pipeline on Mama's mockup
+   - Re-update post 65 (still on single.html template — KEEP the constraint to test the alignfull escape)
+   - Re-measure brand pixel-diff vs file:// raw mockup
+   - Expected: ≤5% on at least one viewport (mockup brand at 1000 + WP-aligned width matched)
+   - Bonus: change post 65 to use a PAGE template (or set its custom field to use page.html via _wp_page_template meta) — should drop diff further if page template's wider content-area is closer to mockup's body width
+
+F. **Backwards-compat audit** (~30 min)
+   - Existing sgs/container instances without widthMode default to "default" (current behaviour) — should be backwards-compat
+   - Verify on palestine-lives.org (production) doesn't regress
+
+**Reading list for next session (load these in order):**
+1. `https://sandybrown-nightingale-600381.hostingersite.com/hero-clone-poc/` — view-source comparison shows the alignfull pattern that worked
+2. `theme/sgs-theme/theme.json` — current contentSize/wideSize values
+3. `theme/sgs-theme/styles/mamas-munches.json` — does style variation override layout?
+4. `plugins/sgs-blocks/src/blocks/hero/block.json` — find `supports.align` declaration that lets hero use alignfull
+5. `plugins/sgs-blocks/src/blocks/container/block.json` — current container schema, no align support yet
+6. `plugins/sgs-blocks/src/blocks/container/render.php` — current width handling via `sgs-container--width-{wide|content|full}` class
+7. `~/.agents/skills/wp-block-themes/SKILL.md` — `theme.json` layout configuration
+8. `~/.agents/skills/wp-block-development/SKILL.md` — `supports.align` block.json semantics + alignment behaviour
+9. `~/.agents/skills/wp-wpcli-and-ops/SKILL.md` — theme.json reload + cache purge commands
+10. `.claude/parking.md` THIS ENTRY (P-WP-ALIGNMENT-WIDTH-SYSTEM)
+11. WordPress official docs (https://developer.wordpress.org/themes/global-settings-and-styles/settings/layout/) on theme.json layout settings
+12. WordPress Block API reference for `supports.align`: https://developer.wordpress.org/block-editor/reference-guides/block-api/block-supports/#align
+
+**Why this is the right architectural call:**
+- Aligns with WP-native conventions — no custom hacks; uses standard alignment system
+- Per-client theme widths via style variations (already proven on Bean's other sites)
+- Operator gets familiar Site Editor + Customiser controls for content widths
+- Future clients with different design widths each get their own contentSize/wideSize without code changes
+- sgs/container's widthMode selector composes with existing widthMode-by-class — backwards-compat preserved
+- Fully testable via pixel-diff against file:// mockup with parent context now matching
+
+**Trigger:** Next session — this is the #1 priority that unblocks brand pixel-diff and similar cross-client cloning fidelity. All other Phase 9 work is downstream of this.
+
+Captured 2026-05-17 at session close. Bean's directive: "I think the proper solution is probably to change the default website max content width for each website based on the mockup … sgs/containers should be able to choose to their own content width either, default, custom or full and make it customisable for mobile, tablet and desktop like the rest of our setup. Lets check what they actually allow for /wp-blocks"
+
 ## Opened 2026-05-17 (4-rater /qc panel residual findings, parked)
 
 ### P-HEADING-DEFAULTS-NORMALISE-FOR-SERIF — `headlineLetterSpacing: -0.01em` default not universal (~20 min)

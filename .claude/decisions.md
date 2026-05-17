@@ -2,6 +2,53 @@
 
 Append-only. Most-recent first.
 
+## 2026-05-17 — Brand walkdown close (WP alignment architecture surfaced)
+
+### D1: Architectural fix — WP-native alignment + per-client theme.json widths
+
+**Context:** Brand pixel-diff against raw mockup file:// stuck at 47-58% across viewports despite extensive converter improvements (universal CSS lift, max-width lift, root-supports lift, etc.). Root cause identified at session close: the WP `single.html` post template constrains `.entry-content` to `max-width: 800px` while the raw mockup HTML has no WP wrapper (sections fill viewport).
+
+**Evidence:** Hero-clone-poc at https://sandybrown-nightingale-600381.hostingersite.com/hero-clone-poc/ renders the mockup hero PERFECTLY because (a) it uses `page.html` template (`.entry-content { max-width: none }`) AND (b) the hero block carries `alignfull` class to escape any constraint.
+
+**Decision:** Implement WP-native alignment system across SGS blocks instead of treating wrapper-mismatch as "measurement noise":
+1. Per-client `settings.layout.contentSize` + `wideSize` in `theme/sgs-theme/styles/{client}.json` derived from mockup CSS section widths (per-viewport)
+2. New `widthMode` attr on sgs/container (enum default/wide/full/custom × per-viewport) emitting WP-standard `alignfull` / `alignwide` classes
+3. Converter wiring to map mockup max-width to widthMode preset (when match) or `customWidth` (when literal)
+
+**Why this is the right call:** Aligns with WP block-theme conventions, gives operator-side Customiser/Site Editor exposure, per-client widths scale across the client roster, future-proofs against arbitrary mockup widths.
+
+**Why NOT custom max-width on the section root:** that's what we did and it gets capped by the parent `.entry-content` constraint. Without alignfull escape, the section never matches the mockup's full-viewport rendering.
+
+**Captured 2026-05-17 at session close. Full implementation plan + reading list parked as P-WP-ALIGNMENT-WIDTH-SYSTEM.**
+
+### D2: Three new dynamic SGS blocks shipped this session
+
+- `sgs/media` (36 attrs) — content image block, server-rendered so style.* attrs apply (replaces core/image when source has SGS-BEM class)
+- `sgs/text` (79 attrs after peer-parity expansion) — single-element styled text, replaces core/paragraph + atomic_text_fallback in converter
+- `sgs/quote` (92 attrs) — composite blockquote + attribution slot for Option A blockquote+footer pattern
+
+**Why dynamic:** WP core blocks are static — their save.js output is frozen in post_content, so JSON style attrs are invisible at render time. SGS dynamic blocks build the HTML from attrs at render time, making lifted styles visible.
+
+### D3: Converter atomic-branch SGS-class guard
+
+**Context:** QC rater 3 found that bare-tag CSS rules like `p { color: #333 }` would lift onto every paragraph globally via `_collect_css_decls_for_element`'s tag-match fallback — Mama's-style mockups would silently regress.
+
+**Decision:** Add `has_sgs_class` guard at top of `_lift_core_block_style`. Skip the lift entirely when no `sgs-` class is present. Emit `css_decl_skipped` trace event with `reason=no_sgs_bem_class_on_node`.
+
+**Trade-off:** also skips parent-qualified tag selectors like `.sgs-brand__body p` (parked as P-PARENT-QUALIFIED-TAG-LIFT for smarter guard).
+
+### D4: function_exists() guards universal on all render.php top-level helpers
+
+**Context:** Multiple "Cannot redeclare" fatals across the session (sgs_text_*, sgs_heading_safe_unit, sgs_heading_spacing_val) — each from a new render.php helper without the standard guard.
+
+**Decision:** Every top-level function declared in any render.php MUST be wrapped in `if ( ! function_exists() ) { ... }`. Applied to all newly-shipped helpers. Captured as a checklist item for the multi-rater /qc panel + handoff template.
+
+### D5: `<tag <?php echo $wrapper_attrs;` leading-space convention
+
+**Context:** sgs/heading rendered malformed `<divstyle="..."` when WP's block-supports filter injected style attr via regex without a leading space. Browser closed the section prematurely, image escaped grid.
+
+**Decision:** ALWAYS put a literal space before `<?php echo $wrapper_attrs` in template. Pattern: `<div <?php echo $wrapper_attrs; ?>>`. Swept across 6 dynamic blocks (certification-bar, counter, divider, notice-banner, process-steps, trust-bar) — all fixed.
+
 ## 2026-05-19 — Phase 9 brand walkdown (universal core-block CSS lift)
 
 ### D1: Universal core-block CSS lift via new `_lift_core_block_style()` helper

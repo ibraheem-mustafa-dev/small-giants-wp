@@ -1,5 +1,30 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-19 (1 new lesson — QC panels validating file artefacts must assert file existence end-to-end, not just function-level byte-equality)
+**Last updated:** 2026-05-17 (2 new lessons — dismissing wrapper-context mismatch as "measurement noise" instead of fixable architecture; sgs/* render.php helpers must have function_exists guards from day one)
+
+## 2026-05-17 — Dismissing the wrapper-context width mismatch as "measurement noise"
+
+**What:** When brand pixel-diff stayed at ~36-58% against raw mockup file:// after multiple converter improvements, I framed the residual as "wrapper-context noise" — implying the measurement methodology was the problem and the converter was already correct. Bean pushed back: "you got a perfect hero clone with raw HTML previously — so wrapper-context can't be unfixable."
+
+**Reality:** The wrapper-context difference IS fixable through WP-native alignment system. The hero-clone-poc at https://sandybrown-nightingale-600381.hostingersite.com/hero-clone-poc/ proves it — PAGE template + `alignfull` class on the hero block = perfect clone. POST template + no alignfull = brand capped at 800px while mockup renders 1000px (or wider).
+
+**The mistake:** I treated "structural" as a synonym for "unfixable" rather than as "real architectural issue with a real fix." Should have:
+1. Inspected the hero-clone-poc reference Bean mentioned BEFORE conjecturing about measurement noise
+2. Read WP block-theme alignment docs to find the alignfull mechanism
+3. Proposed the per-client contentSize/wideSize + sgs/container widthMode fix immediately
+
+**Pattern to avoid in future:** when pixel-diff has a stable floor and Bean has a working reference (he usually does), the floor is architecture not noise. The first move should be to INSPECT the working reference, not to dismiss the gap.
+
+**Captured 2026-05-17 at session close.** Sibling rule: `verify-rendered-output-not-internal-metrics` (blub.db row 194) — verify the rendered pixels match a known-good reference before pronouncing a measurement methodology broken.
+
+## 2026-05-17 — Every new SGS render.php helper needs function_exists guard from day one
+
+**What:** Three "Cannot redeclare" fatals shipped during the session — `sgs_text_build_inline_style`, `sgs_text_responsive_css`, `sgs_heading_safe_unit`, `sgs_heading_spacing_val` all crashed live pages when rendered N times because their initial implementations lacked `if ( ! function_exists( 'X' ) ) { ... }` wrappers. WordPress calls `require_once` per block instance, but for top-level functions declared in render.php, multiple instances cause redeclare.
+
+**Pattern:** Every NEW top-level function in ANY block's render.php MUST be wrapped in `function_exists()` from the first commit. No exceptions. Subagent prompts must include this as a hard constraint with code example.
+
+**Captured 2026-05-17.** Sibling rule: the parking entry P-WRAPPER-ATTR-LEADING-SPACE-AUDIT (also 2026-05-17) is the related-class fix for malformed-template patterns.
+
+## 2026-05-19 — QC panel byte-equality check was tautological while the writer was inert
 
 ## 2026-05-19 — QC panel byte-equality check was tautological while the writer was inert
 
