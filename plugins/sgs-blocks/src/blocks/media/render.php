@@ -176,11 +176,16 @@ if ( $has_corners ) {
 	$img_styles[] = 'border-radius:' . absint( $border_radius ) . sgs_media_validate_unit( $border_radius_unit );
 }
 
-// box-shadow — slug resolves to CSS custom property; raw CSS value passes through.
+// box-shadow — delegate to sgs_shadow_value() so raw CSS values
+// (e.g. `0 4px 12px rgba(0,0,0,0.1)`) pass through correctly. The previous
+// hardcoded `var(--wp--preset--shadow--{slug})` wrap broke raw shadows by
+// stripping spaces/parens/commas and producing a non-existent CSS custom
+// property name. Captured 2026-05-17 by QC rater 4.
 if ( '' !== $box_shadow ) {
-	// Sanitise slug: alphanumeric + dashes only.
-	$shadow_slug  = preg_replace( '/[^a-z0-9-]/', '', strtolower( $box_shadow ) );
-	$img_styles[] = 'box-shadow:var(--wp--preset--shadow--' . $shadow_slug . ')';
+	$shadow_css = sgs_shadow_value( $box_shadow );
+	if ( '' !== $shadow_css ) {
+		$img_styles[] = 'box-shadow:' . $shadow_css;
+	}
 }
 
 $img_style_attr = implode( ';', $img_styles );

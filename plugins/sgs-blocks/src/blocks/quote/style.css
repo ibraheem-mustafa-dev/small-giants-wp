@@ -1,0 +1,58 @@
+/**
+ * sgs/quote — frontend styles.
+ *
+ * Provides structural defaults for the blockquote wrapper and its two slots.
+ * All visual styling (colours, typography, spacing) comes from inline styles
+ * emitted by render.php — this file only supplies layout defaults that cannot
+ * be expressed via inline styles, and reduced-motion safety.
+ */
+
+.wp-block-sgs-quote {
+	/* Reset browser blockquote indent so padding attrs work cleanly. */
+	margin: 0;
+	padding: 0;
+}
+
+/* Body paragraphs — reset browser paragraph spacing so bodyMarginBottom attr governs. */
+.wp-block-sgs-quote__body {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+/* Attribution slot — display block so it sits below the body. */
+.wp-block-sgs-quote__attribution {
+	display: block;
+}
+
+/* Variant: pullquote — centred, larger type, left-right border accents. */
+.wp-block-sgs-quote--pullquote {
+	text-align: center;
+	border-left: 4px solid var( --wp--preset--color--primary, currentColor );
+	border-right: 4px solid var( --wp--preset--color--primary, currentColor );
+}
+
+/* Variant: testimonial — card-style rounding + light shadow. */
+.wp-block-sgs-quote--testimonial {
+	border-radius: 8px;
+	box-shadow: 0 2px 8px rgba( 0, 0, 0, 0.08 );
+}
+
+/* GPU-composited hover transition — only fires when hover attrs are set. */
+.wp-block-sgs-quote {
+	transition:
+		transform var( --sgs-transition-duration, 300ms ) var( --sgs-transition-easing, ease-in-out ),
+		box-shadow var( --sgs-transition-duration, 300ms ) var( --sgs-transition-easing, ease-in-out ),
+		background-color var( --sgs-transition-duration, 300ms ) var( --sgs-transition-easing, ease-in-out ),
+		color var( --sgs-transition-duration, 300ms ) var( --sgs-transition-easing, ease-in-out );
+}
+
+/* Honour reduced-motion preference. */
+@media ( prefers-reduced-motion: reduce ) {
+	.wp-block-sgs-quote,
+	.wp-block-sgs-quote *,
+	.wp-block-sgs-quote *::before,
+	.wp-block-sgs-quote *::after {
+		animation-duration: 0.01ms !important;
+		transition-duration: 0.01ms !important;
+	}
+}

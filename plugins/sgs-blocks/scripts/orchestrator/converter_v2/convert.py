@@ -279,15 +279,17 @@ def _detect_grid_container_from_css(
         display = decls.get("display", "").strip()
         if display not in ("grid", "flex"):
             continue
-        # When display:flex + flex-direction:column, the semantic is "stack"
-        # (sgs/container.layout=stack renders as `display:flex;flex-direction:column`).
-        # Using layout=flex on these emits flex-wrap:wrap which spreads items
-        # horizontally — wrong for column-stack containers. Captured 2026-05-17
-        # during brand walkdown (mockup's .sgs-brand__content was emitted as
-        # flex-wrap and stretched the content column to ~480px instead of the
-        # mockup's intended ~390px column-stack).
+        # When display:flex + flex-direction:column[-reverse], the semantic
+        # is "stack" (sgs/container.layout=stack renders as
+        # `display:flex;flex-direction:column`). Using layout=flex on these
+        # emits flex-wrap:wrap which spreads items horizontally — wrong for
+        # column-stack containers. Captured 2026-05-17 during brand walkdown.
+        # 2026-05-17 follow-up (QC rater 4): also accept `column-reverse` —
+        # mobile-first authored mockups commonly use this. The reverse-order
+        # semantic is lost in the stack mapping (sgs/container has no reverse
+        # flag yet) — captured as a known follow-up.
         flex_dir = decls.get("flex-direction", "").strip()
-        if display == "flex" and flex_dir == "column":
+        if display == "flex" and flex_dir in ("column", "column-reverse"):
             layout = "stack"
         else:
             layout = display
@@ -1130,12 +1132,27 @@ _STR_PASSTHROUGH_ALLOWED: dict[str, set[str]] = {
 
 
 def _split_value_unit(raw, default_unit: str = "px") -> tuple:
-    """Split a CSS value like '28px' into ('28', 'px'). Returns (val, unit) as
-    strings. For unrecognised forms returns (raw_string, default_unit)."""
+    """Split a CSS value like '28px' into ('28', 'px').
+
+    Returns (val, unit) as strings. For CSS function values like
+    `calc(100% - 40px)`, `clamp(1rem, 2vw, 3rem)`, `min(600px, 90vw)`,
+    `max(...)`, `var(...)`, the whole expression is returned as the value
+    with empty-string unit — these CSS functions carry their own units
+    and concatenating a default-unit would produce invalid CSS like
+    `calc(100% - 40px)px`. Caller must detect empty-unit case and emit
+    the value without unit suffix. Captured 2026-05-17 by QC rater 3.
+
+    For unrecognised plain forms returns (raw_string, default_unit).
+    """
     if raw is None or raw == "":
         return ("", default_unit)
     s = str(raw).strip()
-    m = re.match(r"^([\d.]+)\s*(px|em|rem|%|vh|vw)?$", s)
+    # CSS function values — pass through whole expression, no unit.
+    # The function body carries its own units; appending another would
+    # produce invalid CSS.
+    if re.match(r"^(calc|clamp|min|max|var|fit-content|minmax)\s*\(", s, re.IGNORECASE):
+        return (s, "")
+    m = re.match(r"^([\d.]+)\s*(px|em|rem|%|vh|vw|svh|svw|ch)?$", s)
     if not m:
         return (s, default_unit)
     val = m.group(1)
@@ -1160,21 +1177,37 @@ def _flatten_wp_style_to_sgs_flat(style_dict: dict, extra_top: dict,
             flat["aspectRatio"] = extra_top["aspectRatio"]
         return flat
 
-    # Colour — strip `var:preset|color|<slug>` wrapping to bare slug, since
-    # sgs render.php's `sgs_colour_value()` re-wraps slugs into the WP preset
-    # var() form. Double-wrapping produced
-    # `var(--wp--preset--color--varpresetcolortext-muted)` on first attempt.
+    # Colour normalisation — handle THREE input shapes:
+    # 1. `var:preset|color|<slug>` form from _lift_core_block_style — STRIP
+    #    to bare slug since sgs_colour_value() re-wraps slugs as
+    #    var(--wp--preset--color--X). Double-wrap produced
+    #    `var(--wp--preset--color--varpresetcolortext-muted)` (initial bug).
+    # 2. `var(--wp--preset--color--X)` form — same strip to bare slug.
+    # 3. Raw CSS colour values (#hex / rgb() / rgba() / hsl() / named) — pass
+    #    through UNCHANGED. sgs_colour_value()'s `sgs_is_css_colour` branch
+    #    detects these and escapes them as-is. Without this passthrough a
+    #    raw `#F5C2C8` becomes `var(--wp--preset--color--#f5c2c8)` (invalid).
+    #    Captured 2026-05-17 by QC rater 3+4.
     def _normalise_colour(raw: str) -> str:
         if not raw:
             return raw
         s = str(raw).strip()
-        # var:preset|color|text-muted -> text-muted
+        # `var:preset|color|text-muted` -> bare slug
         if s.startswith("var:preset|color|"):
             return s[len("var:preset|color|"):]
-        # var(--wp--preset--color--xxx) -> xxx
+        # `var(--wp--preset--color--xxx)` -> bare slug
         m = re.match(r"^var\(--wp--preset--color--([a-z0-9-]+)\)$", s)
         if m:
             return m.group(1)
+        # Raw CSS colour shapes — leave untouched for the PHP-side
+        # sgs_colour_value() to detect via sgs_is_css_colour.
+        if re.match(r"^#[0-9a-fA-F]{3,8}$", s):
+            return s
+        if re.match(r"^(rgba?|hsla?)\s*\(", s, re.IGNORECASE):
+            return s
+        if s.lower() in ("transparent", "currentcolor", "inherit", "initial",
+                         "unset", "white", "black"):
+            return s
         return s
 
     color_obj = style_dict.get("color") or {}

@@ -6,6 +6,64 @@ last_updated: 2026-05-19
 
 # Parking — deferred work with named triggers
 
+## Opened 2026-05-17 (4-rater /qc panel residual findings, parked)
+
+### P-HEADING-DEFAULTS-NORMALISE-FOR-SERIF — `headlineLetterSpacing: -0.01em` default not universal (~20 min)
+
+**What:** Rater 1 finding. sgs/heading render.php fallback default `headlineLetterSpacing: -0.01em` actively hurts readability on loose serif faces (DM Serif Display, Playfair). Sans-serif display (Inter, Montserrat) benefits from -0.01 tracking; serifs don't.
+
+**Approach:** Change default to empty string in render.php (no inline style emitted unless explicitly set). Same audit for `headlineLineHeight: 1.2` etc. — defaults should be `null`/empty so theme/inherited values win. Per-attribute audit + update.
+
+**Trigger:** First serif-typography client OR when adding a non-Inter style variation.
+
+### P-MULTI-CLASS-BEM-PRIMARY-DISAMBIG — Multi-class section needs primary-block selection (~45 min)
+
+**What:** Rater 4 finding. A section like `<section class="sgs-brand sgs-section sgs-section--alt">` collects all three as className. `_lift_root_supports_to_style` merges CSS from all three. If `.sgs-section { padding: 0 }` and `.sgs-brand { padding: 64px 20px }` both apply, last-key-wins ordering is non-deterministic.
+
+**Approach:** Pick the first SGS-BEM-shape class (not modifier, not utility) as canonical primary. Remaining classes become additional className for variation selection. Add unit test for multi-class disambiguation.
+
+### P-BORDER-STYLE-ENUM-PARITY — sgs/heading vs sgs/quote borderStyle enum mismatch (~5 min)
+
+**What:** Rater 4 finding. quote allows `["none","solid","dashed","dotted","double"]`. heading only allows 4 (no "double"). Setting `borderStyle: double` on heading silently downgrades to `none`.
+
+**Approach:** Standardise to the 5-value set across heading + text + quote + future. One-line edit in each block.json.
+
+### P-VOTER-IMPORT-ASSERT-UX — Voter assert fires at import time, no helpful error (~10 min)
+
+**What:** Rater 4 finding. `_REGISTERED = _registered_block_slug_roots()` followed by `assert not _collision` runs at module import. Collision → `AssertionError` at import = stage-3 pipeline crash without useful operator message.
+
+**Approach:** Move the check to a function called by the orchestrator with explicit error logging + soft-failure (warning, not fatal).
+
+### P-PIXEL-DIFF-LAZY-LOAD-DYNAMIC-WAIT — Replace 1200ms hardcoded wait (~15 min)
+
+**What:** Rater 3 finding. `page.wait_for_timeout(1200)` works on local but is arbitrary; could undercount on slow networks.
+
+**Approach:** Use `page.wait_for_function("() => Array.from(document.querySelectorAll('img[loading=lazy]')).every(img => img.complete)")` before screenshot.
+
+### P-WP-AUTOP-INTERACTION — Audit how WP `wpautop` interacts with sgs/text emission (~30 min)
+
+**What:** Rater 4 theoretical risk. WP's `wpautop` filter wraps bare text in `<p>` — if sgs/text emits `<p>` content, double-wrap risk.
+
+**Approach:** Test scenario; if real, add `wpautop` opt-out in block render.
+
+### P-CSS-IMPORTANT-STRIP — Strip `!important` from CSS values before regex match (~10 min)
+
+**What:** Rater 4 theoretical. `display: grid !important` doesn't equal `"grid"` after `.strip()` → css_driven_container branch skips entirely.
+
+**Approach:** Strip `!important` (and whitespace) from values before equality checks in `_detect_grid_container_from_css`.
+
+### P-WP-UNIQUE-ID-CACHE-COLLISION — Anchor scoping under fragment cache (~30 min)
+
+**What:** Rater 4 theoretical. `wp_unique_id()` is per-request sequential. Fragment cache combining requests could mismatch scoped `<style>` ID with rendered element ID.
+
+**Approach:** Use content-derived hash (e.g. `md5` of block JSON) for scoped IDs instead of sequential counter. Stable across cache fragments.
+
+### P-HEADING-TRANSITION-ATTRS — Add transitionDuration + transitionEasing attrs to sgs/heading hover (~15 min)
+
+**What:** Rater 4 finding (partially false — attrs don't exist today). sgs/heading hover transition is hardcoded `300ms ease`. Non-configurable; should expose attrs for parity with hover-controls extension.
+
+**Approach:** Add `transitionDuration` (number, default 300) + `transitionEasing` (string, default "ease") to block.json. Render.php reads them. Same for sgs/text + sgs/quote.
+
 ## Opened 2026-05-17 (/qc-inline findings on session changes)
 
 ### P-WRAPPER-ATTR-LEADING-SPACE-AUDIT — Sweep `<element<?php echo` across all dynamic blocks (~45 min)

@@ -1,0 +1,45 @@
+/**
+ * sgs/quote — block editor styles.
+ *
+ * Keeps the editor canvas presentation consistent with the frontend.
+ * Adds editor-only affordances (body-row wrapper for remove button,
+ * add-paragraph button spacing).
+ */
+
+.wp-block-sgs-quote {
+	/* Prevent collapsed height on empty canvas. */
+	min-height: 2em;
+}
+
+/* Body row wrapper — contains RichText + Remove button in the editor only. */
+.wp-block-sgs-quote__body-row {
+	position: relative;
+}
+
+.wp-block-sgs-quote__body-row + .wp-block-sgs-quote__body-row {
+	margin-top: 4px;
+}
+
+/* Shared inspector row helper — side-by-side controls (value + unit).
+   Duplicated from sgs/text editor.css so blocks are independently importable. */
+.sgs-inspector-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	align-items: flex-end;
+	margin-bottom: 8px;
+}
+
+.sgs-inspector-row > * {
+	flex: 1 1 80px;
+	min-width: 60px;
+}
+
+/* Section label within inspector panels. */
+.sgs-inspector-label {
+	font-size: 11px;
+	font-weight: 500;
+	text-transform: uppercase;
+	color: #757575;
+	margin: 12px 0 4px;
+}
