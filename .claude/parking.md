@@ -8,9 +8,32 @@ last_updated: 2026-05-19
 
 ## Opened 2026-05-17 (architecture fix surfaced at session close)
 
-### P-WP-ALIGNMENT-WIDTH-SYSTEM — Per-mockup theme content widths + per-block alignment selectors (PRIORITY) (~3-4 hrs)
+### P-USE-PAGES-NOT-POSTS — Pipeline target should be WP PAGES, not POSTS (FOUNDATION, ~30 min)
 
-**TL;DR:** Brand pixel-diff against raw mockup file:// is stuck at 47-58% because the SGS post template constrains `.entry-content` to 800px max-width while the raw mockup HTML renders sections at viewport width (1440 at 1440 viewport). The hero-clone-poc at https://sandybrown-nightingale-600381.hostingersite.com/hero-clone-poc/ **DOES** match perfectly — because it uses a different page template (`page.html` not `single.html`) AND the hero block carries `alignfull` class to escape any constraint. This finding was missed for hours because the "wrapper-context noise" framing dismissed it as unfixable measurement methodology — it's actually a real architectural fix.
+**Bean's question 2026-05-17:** "Why are you using post templates for pages anyway?"
+
+**Honest answer:** historical inertia. Posts 65 + 66 were created early in the project as test surfaces with slugs `spec16-p7-converter-v2-output-2026-05-15` + `spec16-p7-mockup-baseline-2026-05-15`. The handoff said "Post 65 (cv2 output)" — I just kept pushing there. The `reports/brand-walkdown-2026-05-19/upload_and_patch.py` script hardcodes `/wp/v2/posts/65`.
+
+**Why it's wrong:** SGS framework clones *websites*. Websites are PAGES (homepage as static front-page, plus sub-pages) — never blog POSTS. The WP `single.html` template was designed for blog-post content reading: `.entry-content { max-width: 800px }`, `is-layout-constrained` main wrapper, no `alignfull` defaults. None of that applies to landing pages.
+
+**The fix:**
+
+1. Create a new WP page `/cv2-output-mamas-munches/` (or repurpose hero-clone-poc URL pattern)
+2. Update `upload_and_patch.py`: change `posts/65` → `pages/{new-id}` (REST endpoint `/wp-json/wp/v2/pages/{id}`)
+3. Update mockup-baseline post 66 similarly → page 66
+4. Add a CLI flag `--target page|post` to upload_and_patch.py (page default)
+5. Document the pages-not-posts convention in CLAUDE.md so future sessions don't inherit the wrong pattern
+6. Optionally: parking P-PIPELINE-REGISTER-TO-WP-STAGE — promote the `upload_and_patch.py` one-shot into a proper orchestrator stage with `--target` flag built-in
+
+**Trigger:** START OF NEXT SESSION — this is the foundation under P-WP-ALIGNMENT-WIDTH-SYSTEM. With pages, much of the alignment-width work simplifies because `page.html` already gives sections more room.
+
+Captured 2026-05-17 at session close.
+
+---
+
+### P-WP-ALIGNMENT-WIDTH-SYSTEM — Per-mockup theme content widths + per-block alignment selectors (PRIORITY, after P-USE-PAGES-NOT-POSTS) (~2-3 hrs)
+
+**TL;DR:** Even after switching to pages, mockups author sections at non-WP-aligned widths (Mama's brand at `max-width: 1000px`) which need a per-mockup `contentSize`/`wideSize` AND a sgs/container `widthMode` selector to map cleanly to WP-native alignment. Hero-clone-poc at https://sandybrown-nightingale-600381.hostingersite.com/hero-clone-poc/ proves the alignfull mechanism works on a PAGE. This work is downstream of P-USE-PAGES-NOT-POSTS but still needed for true mockup fidelity.
 
 **Live evidence (2026-05-17):**
 

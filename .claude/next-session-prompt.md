@@ -13,7 +13,7 @@ Resume command: `CLAUDE_CODE_ENABLE_AWAY_SUMMARY=1 claude -p --resume "small-gia
 
 ## THE PROBLEM (one-paragraph summary)
 
-Brand pixel-diff against raw mockup file:// is stuck at 47-58% because WP's `single.html` post template constrains `.entry-content` to `max-width: 800px` while the raw mockup has no theme wrapper. Sections that author themselves at non-WP-aligned widths (like brand's `max-width: 1000px`) get capped at 800. The hero-clone-poc at https://sandybrown-nightingale-600381.hostingersite.com/hero-clone-poc/ proves the architecture works: PAGE template (`page.html`, no constraint) + `alignfull` class on the hero block = perfect clone of the mockup hero at 1440×n.
+Brand pixel-diff stuck at 47-58% because the cv2 test target is a WP POST (rendered via `single.html` template with `.entry-content { max-width: 800px }` constraint) — but the SGS framework clones WEBSITES which should be WP PAGES (rendered via `page.html` with no such constraint). Bean's pull-back at session close: "Why are you using post templates for pages anyway?" Historical inertia — early handoff said "Post 65", my upload_and_patch.py inherited the target. Hero-clone-poc at https://sandybrown-nightingale-600381.hostingersite.com/hero-clone-poc/ is a PAGE — it works. The fix has two layers: (1) switch pipeline to use pages, (2) per-client `contentSize`/`wideSize` + sgs/container `widthMode` for arbitrary mockup widths beyond the standard WP alignment slots.
 
 ## THE FIX (Bean's directive, 2026-05-17)
 
@@ -96,6 +96,21 @@ Full implementation plan + reading list in `.claude/parking.md` under **P-WP-ALI
 The hero-clone-poc is the existence proof — read its rendered HTML first, then verify the mechanism in WP docs, then implement the same pattern on sgs/container. No external research needed beyond the WordPress block API + theme.json docs. The /research-check tier should be enough if any question comes up.
 
 ---
+
+## Task 0 — Switch pipeline target from POST to PAGE (FOUNDATION, ~30 min)
+
+This is the foundation under everything else. Do this FIRST.
+
+1. Read `.claude/parking.md` → **P-USE-PAGES-NOT-POSTS** for the full context.
+2. Create a new WP page on sandybrown via REST `POST /wp/v2/pages` with slug `cv2-output-mamas-munches`. Capture the new page ID.
+3. (Optionally) Create a sibling page `mockup-baseline-mamas-munches` for the baseline comparison.
+4. Modify `reports/brand-walkdown-2026-05-19/upload_and_patch.py`:
+   - Change `posts/65` hardcoded URL → CLI arg `--target page|post` + `--target-id <id>`
+   - Default `--target page`
+5. Add a one-liner to `.claude/CLAUDE.md` under "Site Migration": "cv2 output goes to WP PAGES (page.html template), never POSTS. Posts use single.html which constrains content-width to 800px and is wrong for landing-page clones."
+6. Verify by re-pushing today's converter output to the new PAGE and screenshotting brand at 1440. Expect immediate width-constraint improvement vs the post.
+
+After Task 0, the rest of the work (theme.json widths + sgs/container widthMode) makes more sense — you're now operating in the correct rendering context.
 
 ## Task 1 — Discovery + reference reading (~30 min)
 

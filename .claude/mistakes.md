@@ -1,6 +1,23 @@
 # small-giants-wp — Mistakes & Recurring Lessons
 **Last updated:** 2026-05-17 (2 new lessons — dismissing wrapper-context mismatch as "measurement noise" instead of fixable architecture; sgs/* render.php helpers must have function_exists guards from day one)
 
+## 2026-05-17 — Using WP POSTS as cv2 test target when SGS clones WEBSITES (=pages)
+
+**What:** The cv2 pipeline output was being pushed to WP POST 65 — a blog post rendered via `single.html` template. That template applies `.entry-content { max-width: 800px }` and `is-layout-constrained` main wrapper — design choices for blog-post content reading. SGS Framework clones websites; websites are PAGES (`page.html` template, no such constraint).
+
+**Bean's pull-back at session close (2026-05-17):** "Why are you using post templates for pages anyway?"
+
+**Why it happened:** Historical inertia. Early handoff said "Post 65 (cv2 output): /2026/05/15/spec16-p7-converter-v2-output-2026-05-15/" — I inherited the target without questioning whether posts were the right WP content type for cloning landing pages. The `reports/brand-walkdown-2026-05-19/upload_and_patch.py` script hardcodes `/wp/v2/posts/65`. The whole session's pixel-diff measurement against post 65 baked in a template mismatch that hero-clone-poc (a PAGE at /hero-clone-poc/) doesn't have.
+
+**The mistake:** spent multiple sessions optimising the converter against a baseline that was the wrong WP content type. Should have asked "is post or page the right rendering target?" at session-1 hour 0, not session-N hour 8.
+
+**Pattern to avoid in future:**
+- When a project clones websites, default to WP PAGES (or static front-page), not POSTS
+- Question every inherited target choice from handoffs — historical handoffs can carry forward early-session mistakes
+- Read the actual rendered DOM context (template + wrapper chain) of the test surface BEFORE iterating on the artefact being measured
+
+**Captured 2026-05-17.** Triggers a parking entry P-USE-PAGES-NOT-POSTS as the foundation for next session.
+
 ## 2026-05-17 — Dismissing the wrapper-context width mismatch as "measurement noise"
 
 **What:** When brand pixel-diff stayed at ~36-58% against raw mockup file:// after multiple converter improvements, I framed the residual as "wrapper-context noise" — implying the measurement methodology was the problem and the converter was already correct. Bean pushed back: "you got a perfect hero clone with raw HTML previously — so wrapper-context can't be unfixable."
