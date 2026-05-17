@@ -8,7 +8,9 @@ last_updated: 2026-05-19
 
 ## Opened 2026-05-17 (architecture fix surfaced at session close)
 
-### P-USE-PAGES-NOT-POSTS — Pipeline target should be WP PAGES, not POSTS (FOUNDATION, ~30 min)
+### P-USE-PAGES-NOT-POSTS — Pipeline target should be WP PAGES, not POSTS (FOUNDATION, ~30 min) — **CLOSED 2026-05-18**
+
+**Resolution:** Page 131 (`/cv2-output-mamas-munches/`) created via REST; page 132 (`/mockup-baseline-mamas-munches/`) created as baseline sibling. `reports/brand-walkdown-2026-05-19/upload_and_patch.py` rewritten with `argparse` — accepts `--target page|post` + `--target-id <N>`, defaults to `--target page --target-id 131`. Convention documented in root `CLAUDE.md` under "Site Migration". Pushed yesterday's `extract.patched.json` block_markup to page 131; rendered HTML confirms `<main class="...is-layout-flow...">` (no 800px cap) vs post 65 which still renders `is-layout-constrained`. Architectural existence proof matches hero-clone-poc. Captured 2026-05-18.
 
 **Bean's question 2026-05-17:** "Why are you using post templates for pages anyway?"
 

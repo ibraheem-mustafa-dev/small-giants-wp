@@ -1,12 +1,23 @@
 #!/usr/bin/env python3
 """One-shot: upload all mockup images to sandybrown WP Media Library +
 patch the converter's block_markup to use the new attachment URLs +
-update post 65.
+update the target WP page (or post).
+
+Usage:
+    upload_and_patch.py <pipeline-state/run-dir> [--target page|post] [--target-id N]
+
+Defaults: --target page --target-id 131 (cv2-output-mamas-munches).
+
+Why pages, not posts: SGS clones websites; websites are PAGES rendered via
+`page.html` (no .entry-content max-width constraint). Posts render via
+`single.html` which constrains content-width to 800px and is wrong for
+landing-page clones. See .claude/parking.md → P-USE-PAGES-NOT-POSTS.
 
 Reads sandybrown credentials from .claude/secrets/sandybrown.env.
 """
 from __future__ import annotations
 
+import argparse
 import base64
 import json
 import mimetypes
@@ -19,7 +30,6 @@ from pathlib import Path
 sys.stdout.reconfigure(encoding="utf-8")
 
 REPO = Path(__file__).resolve().parents[2]
-RUN_DIR = Path(sys.argv[1]) if len(sys.argv) > 1 else None
 MOCKUP_ROOT = REPO / "sites/mamas-munches/mockups/homepage"
 ENV = REPO / ".claude/secrets/sandybrown.env"
 
@@ -58,11 +68,31 @@ def upload_one(file_path: Path) -> dict:
 
 
 def main():
-    if RUN_DIR is None or not RUN_DIR.exists():
-        print("usage: upload_and_patch.py <pipeline-state/run-dir>", file=sys.stderr)
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("run_dir", type=Path, help="pipeline-state/<run-id> directory")
+    parser.add_argument(
+        "--target",
+        choices=("page", "post"),
+        default="page",
+        help="WP object type to update (default: page — see P-USE-PAGES-NOT-POSTS)",
+    )
+    parser.add_argument(
+        "--target-id",
+        type=int,
+        default=131,
+        help="WP object ID (default: 131 = cv2-output-mamas-munches page)",
+    )
+    args = parser.parse_args()
+
+    run_dir: Path = args.run_dir
+    if not run_dir.exists():
+        print(f"run dir not found: {run_dir}", file=sys.stderr)
         sys.exit(2)
 
-    extract_path = RUN_DIR / "extract.json"
+    endpoint = f"{WP_URL}/wp-json/wp/v2/{'pages' if args.target == 'page' else 'posts'}/{args.target_id}"
+    print(f"Target: {args.target} id={args.target_id} -> {endpoint}\n")
+
+    extract_path = run_dir / "extract.json"
     d = json.loads(extract_path.read_text(encoding="utf-8"))
     bm = d.get("block_markup", "")
 
@@ -113,15 +143,15 @@ def main():
     print(f"\nPatched block_markup: {len(bm)} -> {len(new_bm)} chars")
 
     # Save patched markup
-    out = RUN_DIR / "extract.patched.json"
+    out = run_dir / "extract.patched.json"
     d["block_markup"] = new_bm
     out.write_text(json.dumps(d, indent=2, ensure_ascii=False), encoding="utf-8")
     print(f"Saved patched extract to {out}")
 
-    # Update post 65
-    print("\nUpdating sandybrown post 65...")
+    # Update target WP object
+    print(f"\nUpdating sandybrown {args.target} {args.target_id}...")
     req = urllib.request.Request(
-        f"{WP_URL}/wp-json/wp/v2/posts/65",
+        endpoint,
         data=json.dumps({"content": new_bm}).encode(),
         method="POST",
         headers={"Authorization": AUTH, "Content-Type": "application/json"},
@@ -131,7 +161,7 @@ def main():
         idx = resp.find('{"id"')
         if idx >= 0:
             r = json.loads(resp[idx:])
-            print(f"  post 65 modified {r.get('modified')}")
+            print(f"  {args.target} {args.target_id} modified {r.get('modified')} link={r.get('link')}")
     except urllib.error.HTTPError as e:
         print(f"  HTTP {e.code}: {e.read().decode('utf-8','ignore')[:300]}")
 

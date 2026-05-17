@@ -150,6 +150,8 @@ Full README at `plugins/sgs-blocks/scripts/uimax-tools/README.md`.
 
 The primary client onboarding workflow. Takes any existing website and replicates it using SGS blocks — everything through editor attributes, zero hardcoding. Methodology at `~/.claude/skills/sgs-wp-engine/references/fidelity-comparator.md`.
 
+**cv2 output goes to WP PAGES (`page.html` template), never POSTS.** Posts use `single.html` which constrains `.entry-content` to `max-width: 800px` — wrong for landing-page clones. Pages use `page.html` with no such constraint. Canary surface for Mama's Munches is page **131** (`/cv2-output-mamas-munches/`) on sandybrown; raw-mockup baseline is page **132** (`/mockup-baseline-mamas-munches/`). `reports/brand-walkdown-2026-05-19/upload_and_patch.py` defaults to `--target page --target-id 131`. See `.claude/parking.md → P-USE-PAGES-NOT-POSTS`.
+
 ## Framework Stats (as of 2026-05-11, post /sgs-update full rescan)
 
 - **67 blocks** total (60 dynamic + 7 static per `02-SGS-BLOCKS-REFERENCE.md`). Includes 2 review-source blocks — google-reviews + trustpilot-reviews. Trustpilot Sync backend infrastructure (Settings > SGS Trustpilot Sync) shipped 2026-05-11 commit `06df2807`.
