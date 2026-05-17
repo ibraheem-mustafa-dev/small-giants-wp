@@ -15,7 +15,9 @@ You are a senior SGS Framework engineer with deep WordPress block + Gutenberg ex
 
 Yesterday we built the plumbing. None of it is yet visible to a site owner. The Site Info store exists at `wp_options['sgs_site_info']` with an 11-method PHP API, but no admin page surfaces it. The block binding source `sgs/site-info` registers correctly, but no patterns reference it yet. The migration framework boots, but only the baseline migration is wired. The two-axis style variations are on disk in `theme/sgs-theme/styles/colours/` and `theme/sgs-theme/styles/typography/`, but no operator can mix them until WP 6.5+ discovers them at next admin load (which it should, automatically). Today's job: make Wave 1 visible to operators, refactor `sgs/business-info` so it reads from the store (with a one-shot migration lifting per-instance attribute data into the store), replace the framework-default `parts/header.html` and `parts/footer.html` with single `wp:pattern` references that activate the Site Editor "Replace" picker, and add block deprecations so existing sites stop showing "Invalid block" warnings in the editor.
 
-Wave 1 left one foundation gap: PHP test files at `plugins/sgs-blocks/scripts/tests/` use PHPUnit but the existing bootstrap lives at `plugins/sgs-blocks/tests/php/`. Tests cannot run as-is. That's Task 0 — it gates everything else.
+Wave 1's two outstanding items are resolved (commit `aa224057`): the PHPUnit test moved to `tests/php/SiteInfoTest.php` (inherits bootstrap), CSS timestamp regen committed, lucide-icons.php empty-delta reverted. Wave 2 is cleared to start in parallel — no Task 0 gate.
+
+**One operational prerequisite:** subagents that depend on running PHPUnit need `composer install` first inside `plugins/sgs-blocks/`. Wave 1B's tests passed via the file's standalone-runner fallback; PHPUnit verification is a Wave 2 prerequisite.
 
 ## Skills to Invoke
 
@@ -61,22 +63,22 @@ Wave 1 left one foundation gap: PHP test files at `plugins/sgs-blocks/scripts/te
 
 ---
 
-## Task 0 — Resolve P-S17-TESTS-BOOTSTRAP (gates everything)
+## Task 0 — Composer install + verify Wave 1 tests
 
-**What:** Move new PHP test files from `plugins/sgs-blocks/scripts/tests/` into `plugins/sgs-blocks/tests/php/` so they inherit the existing PHPUnit bootstrap. Python tests stay where they are.
+**What:** Run `cd plugins/sgs-blocks && composer install` (or `composer update` if `composer.lock` exists). Run `vendor/bin/phpunit --filter SiteInfoTest tests/php/SiteInfoTest.php` to verify the moved test passes under PHPUnit (not just the standalone-runner fallback).
 
-**Why:** Wave 1's PHP test files (test_site_info.php, test_site_info_binding.php) cannot run as-is because PHPUnit's TestCase isn't on the autoload path. Without this fix, no Wave 2 test can run either — every FR's 4-layer test strategy stays on paper.
+**Why:** Wave 1B's 10/10 pass came via the `class_exists('PHPUnit\Framework\TestCase')` fallback runner — PHPUnit itself was never invoked. Confirm the canonical test path works before any Wave 2 subagent depends on it.
 
-**Estimated time:** ~10 min
+**Estimated time:** ~5 min
 
 **Orchestration:**
 - Execution: inline (main thread on Opus)
-- Reason: trivial file move + path update; not worth subagent overhead
+- Reason: trivial verification step
 - Depends on: none
-- Parallel with: none — gates the rest
-- /qc gate after: `/qc-inline` (smoke: run `phpunit` against the moved files; all green)
+- Parallel with: none — confirms baseline before parallel Wave 2 dispatch
+- /qc gate after: none (verification IS the gate)
 
-**Acceptance:** `cd plugins/sgs-blocks && vendor/bin/phpunit tests/php/test_site_info.php` returns 10/10 pass; same for `test_site_info_binding.php` (22/22).
+**Acceptance:** `vendor/bin/phpunit` exits 0 with 10/10 SiteInfoTest cases reported.
 
 ---
 

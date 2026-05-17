@@ -4,15 +4,17 @@ project: small-giants-wp
 project_id: 14
 current_phase: spec-17-header-footer-architecture
 current_subphase: "Wave 1 foundation shipped 2026-05-19. Spec 17 v2 council-passed; 5 parallel subagents implemented Site Info store + binding source + migrations + slug conventions + two-axis style variations (P-S17-A promoted to in-scope, new §S8). 102 namespace prefixes applied across 5 PHP class files. All 5 implementation files pass php -l. Test suites green where bootstrap exists: 23/23 naming linter, 10/10 Site Info, 22/22 binding source, 44/44 two-axis variations. PHP test files at scripts/tests/ need PHPUnit bootstrap (P-S17-TESTS-BOOTSTRAP)."
-current_subphase_step: "NEXT SESSION — Wave 2 implementation. Depends on Wave 1 merged (b825d80a + 0118661f on main). Wave 2 FRs: S4-3 admin page, S4-4 business-info refactor, S4-5 personal-data sweep, S1 framework defaults pattern-delegation, S3-1 multi-pattern picker, S7-1 block deprecations. Wave 3 (variation-linkage seeding + conditional rules + CPT advanced headers + admin menu + variation picker + WP-CLI surface) follows Wave 2."
+current_subphase_step: "NEXT SESSION — Wave 2 implementation. Wave 1 merged on main (HEAD aa224057). Outstanding items both resolved this session: P-S17-TESTS-BOOTSTRAP (SiteInfoTest.php moved to tests/php/) + pre-session pollution (mamas-munches.css timestamp committed; lucide-icons.php reverted to HEAD). Wave 2 FRs (8 in parallel): S4-3 admin page, S4-4 business-info refactor + migration, S4-5 personal-data sweep + linter, S1-1/S1-2/S1-3 framework defaults pattern-delegation, S3-1 multi-pattern picker, S7-1 block deprecations. Wave 3 (variation-linkage seeding + conditional rules + CPT advanced headers + admin menu + variation picker + WP-CLI surface) follows Wave 2."
 last_updated: 2026-05-19
 spec_17_council_outcome: ".claude/reports/council-outcome-spec-17.md — 10 must-fixes (M1-M10) + 5 additions (A1-A5) all baked into Spec 17 v2. 8 parking entries P-S17-A..H opened; A promoted to in-scope this session."
 wave_1_commits:
   - "ee7d943f — Spec 17 v2 + research brief + council outputs + parking entries"
   - "b825d80a — Wave 1 foundation: 5 PHP classes + 16 colour/typography variation files + naming-conventions spec + linter + tests"
   - "0118661f — fix-up: pattern-slug-shim wired into SGS_Blocks bootstrap"
+  - "a414d10c — handoff trio (state + handoff + next-session-prompt)"
+  - "aa224057 — outstanding items resolved (test move + CSS refresh)"
 blockers:
-  - "P-S17-TESTS-BOOTSTRAP — new PHP test files at scripts/tests/ need PHPUnit bootstrap (or move to tests/php/) before Wave 2 implementation. Documented in parking.md."
+  - "None — Wave 2 cleared to start. Composer install required before PHPUnit tests run (`cd plugins/sgs-blocks && composer install`); subagents should expect to invoke this if their tests use vendor/."
 ---
 
 # small-giants-wp — State Snapshot

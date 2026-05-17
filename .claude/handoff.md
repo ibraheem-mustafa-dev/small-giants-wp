@@ -14,7 +14,17 @@ companion_docs:
   - .claude/reports/council-outcome-spec-17.md
 ---
 
-# Session Handoff — 2026-05-19 (Spec 17 v2 + Council + Wave 1 Foundation)
+# Session Handoff — 2026-05-19 (Spec 17 v2 + Council + Wave 1 Foundation + Outstanding Resolved)
+
+## Final updates after first /handoff
+
+- **P-S17-TESTS-BOOTSTRAP resolved (commit `aa224057`):** `test_site_info.php` moved from `scripts/tests/` to `tests/php/SiteInfoTest.php`, class renamed `Test_Sgs_Site_Info` → `SiteInfoTest` per PHPUnit `*Test.php` discovery + PSR-4. Inherits existing `tests/php/bootstrap.php` (autoloads composer + PHPUnit). The standalone-runner fallback inside the file is preserved, so it works both via `vendor/bin/phpunit` and via raw `php`. The binding test (`test_site_info_binding.php`) stays at `scripts/tests/` — it uses its own `t_equals`/`t_contains` runner, not PHPUnit.
+- **Pre-session pollution cleared:** `theme/sgs-theme/styles/mamas-munches.css` timestamp regen committed (CSS-lift output from earlier orchestrator run; content identical except header timestamp). `plugins/sgs-blocks/includes/lucide-icons.php` had no real diff — likely a CRLF nudge — reverted to HEAD.
+- **HEAD now `aa224057` on main.** Working tree clean (modulo untracked scratch outputs in `.claude/worktrees/` and `reports/brand-walkdown-2026-05-19/*` — out of scope).
+
+---
+
+
 
 ## Completed This Session
 
