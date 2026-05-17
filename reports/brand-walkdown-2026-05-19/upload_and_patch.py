@@ -1,0 +1,140 @@
+#!/usr/bin/env python3
+"""One-shot: upload all mockup images to sandybrown WP Media Library +
+patch the converter's block_markup to use the new attachment URLs +
+update post 65.
+
+Reads sandybrown credentials from .claude/secrets/sandybrown.env.
+"""
+from __future__ import annotations
+
+import base64
+import json
+import mimetypes
+import re
+import sys
+import urllib.error
+import urllib.request
+from pathlib import Path
+
+sys.stdout.reconfigure(encoding="utf-8")
+
+REPO = Path(__file__).resolve().parents[2]
+RUN_DIR = Path(sys.argv[1]) if len(sys.argv) > 1 else None
+MOCKUP_ROOT = REPO / "sites/mamas-munches/mockups/homepage"
+ENV = REPO / ".claude/secrets/sandybrown.env"
+
+# Parse env
+env: dict[str, str] = {}
+for line in ENV.read_text(encoding="utf-8").splitlines():
+    line = line.strip()
+    if not line or line.startswith("#") or "=" not in line:
+        continue
+    k, _, v = line.partition("=")
+    env[k.strip()] = v.strip().strip('"').strip("'")
+
+WP_URL = env["WP_URL_SANDYBROWN"]
+USER = env["WP_USER_SANDYBROWN"]
+PW = env["WP_APP_PWD_SANDYBROWN"]
+AUTH = "Basic " + base64.b64encode(f"{USER}:{PW}".encode()).decode()
+
+
+def upload_one(file_path: Path) -> dict:
+    mime, _ = mimetypes.guess_type(str(file_path))
+    mime = mime or "application/octet-stream"
+    data = file_path.read_bytes()
+    req = urllib.request.Request(
+        f"{WP_URL}/wp-json/wp/v2/media",
+        data=data, method="POST",
+        headers={
+            "Authorization": AUTH,
+            "Content-Type": mime,
+            "Content-Disposition": f'attachment; filename="{file_path.name}"',
+        },
+    )
+    with urllib.request.urlopen(req, timeout=120) as resp:
+        raw = resp.read().decode("utf-8", errors="ignore")
+        idx = raw.find("{")
+        return json.loads(raw[idx:]) if idx >= 0 else {}
+
+
+def main():
+    if RUN_DIR is None or not RUN_DIR.exists():
+        print("usage: upload_and_patch.py <pipeline-state/run-dir>", file=sys.stderr)
+        sys.exit(2)
+
+    extract_path = RUN_DIR / "extract.json"
+    d = json.loads(extract_path.read_text(encoding="utf-8"))
+    bm = d.get("block_markup", "")
+
+    # Find every mockup-relative image URL in block_markup
+    urls = sorted(set(re.findall(
+        r'\.\./\.\./research/photography/wp-media-library/[\w\-.]+\.(?:jpe?g|png|webp|gif|svg)',
+        bm, re.IGNORECASE,
+    )))
+    print(f"Found {len(urls)} unique relative image URL(s)")
+    for u in urls:
+        print(f"  {u}")
+    print()
+
+    url_map: dict[str, str] = {}
+    for u in urls:
+        local = (MOCKUP_ROOT / u).resolve()
+        # Permit any path inside the repo (mockup `../../research/...` is legit).
+        try:
+            local.relative_to(REPO.resolve())
+        except ValueError:
+            print(f"  SKIP (escapes repo root): {local}")
+            continue
+        if not local.exists():
+            print(f"  MISSING: {local}")
+            continue
+        try:
+            resp = upload_one(local)
+            new_url = resp.get("source_url") or resp.get("guid", {}).get("rendered", "")
+            if new_url:
+                url_map[u] = new_url
+                print(f"  uploaded {local.name} -> id={resp.get('id')} url={new_url}")
+            else:
+                print(f"  no source_url in response for {local.name}: {resp}")
+        except urllib.error.HTTPError as e:
+            err_body = e.read().decode("utf-8", errors="ignore")[:200]
+            print(f"  HTTP {e.code} on {local.name}: {err_body}")
+        except Exception as e:  # noqa: BLE001
+            print(f"  ERROR on {local.name}: {e}")
+
+    if not url_map:
+        print("\nNo uploads succeeded; aborting patch + post update.")
+        sys.exit(1)
+
+    # Patch block_markup
+    new_bm = bm
+    for old, new in url_map.items():
+        new_bm = new_bm.replace(old, new)
+    print(f"\nPatched block_markup: {len(bm)} -> {len(new_bm)} chars")
+
+    # Save patched markup
+    out = RUN_DIR / "extract.patched.json"
+    d["block_markup"] = new_bm
+    out.write_text(json.dumps(d, indent=2, ensure_ascii=False), encoding="utf-8")
+    print(f"Saved patched extract to {out}")
+
+    # Update post 65
+    print("\nUpdating sandybrown post 65...")
+    req = urllib.request.Request(
+        f"{WP_URL}/wp-json/wp/v2/posts/65",
+        data=json.dumps({"content": new_bm}).encode(),
+        method="POST",
+        headers={"Authorization": AUTH, "Content-Type": "application/json"},
+    )
+    try:
+        resp = urllib.request.urlopen(req, timeout=120).read().decode("utf-8", errors="ignore")
+        idx = resp.find('{"id"')
+        if idx >= 0:
+            r = json.loads(resp[idx:])
+            print(f"  post 65 modified {r.get('modified')}")
+    except urllib.error.HTTPError as e:
+        print(f"  HTTP {e.code}: {e.read().decode('utf-8','ignore')[:300]}")
+
+
+if __name__ == "__main__":
+    main()

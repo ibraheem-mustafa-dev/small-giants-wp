@@ -348,6 +348,38 @@ $img_html = sprintf(
 	$img_style_part
 );
 
+// When the block has no caption AND no link wrapper, fidelity is best
+// served by emitting the bare <img> with the wrapper classes/anchor lifted
+// onto it directly — no <figure> wrapper. This matches the canonical
+// mockup pattern (`<img class="sgs-foo__image">`) so per-class CSS rules
+// like `.sgs-brand__image { max-height: 380px }` cascade to the right
+// element. The <figure> structure remains for captioned/linked images
+// where it carries semantic value. Captured 2026-05-17.
+$naked_mode = ( '' === $caption ) && empty( $link_open );
+if ( $naked_mode ) {
+	// Extract classes from wrapper_attributes string + merge with sgs-media__img.
+	// get_block_wrapper_attributes returns a string like `class="..." id="..." ...`.
+	// Parse class= and id= specifically; drop the rest (style applies to wrapper, not img).
+	preg_match( '/class="([^"]*)"/', $wrapper_attributes, $cm );
+	preg_match( '/id="([^"]*)"/', $wrapper_attributes, $im );
+	$merged_classes = trim(
+		( $cm[1] ?? '' ) . ' sgs-media__img'
+	);
+	$id_attr = ! empty( $im[1] ) ? ' id="' . esc_attr( $im[1] ) . '"' : '';
+	$img_html = sprintf(
+		'<img src="%s" alt="%s"%s%s%s%s%s%s class="%s" loading="lazy" decoding="async" />',
+		esc_url( $resolved_url ),
+		esc_attr( $image_alt ),
+		$img_width_part,
+		$img_height_part,
+		$img_srcset,
+		$img_sizes,
+		$img_style_part,
+		$id_attr,
+		esc_attr( $merged_classes )
+	);
+}
+
 // ---------------------------------------------------------------------------
 // 14. Build the caption element.
 // ---------------------------------------------------------------------------
@@ -376,11 +408,16 @@ if ( $responsive_css ) {
 // ---------------------------------------------------------------------------
 // 16. Final output: <figure> > [<a>] <img> [</a>] [caption].
 // ---------------------------------------------------------------------------
-printf(
-	'<figure %s>%s%s%s%s</figure>',
-	$wrapper_attributes, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() escapes internally.
-	$link_open,          // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled from esc_url() + esc_attr() above.
-	$img_html,           // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- every attribute escaped individually above.
-	$link_close,         // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- always '' or '</a>' (static string, no user input).
-	$caption_html        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled from wp_kses_post() + esc_attr() above.
-);
+if ( $naked_mode ) {
+	// Naked img — classes already merged from wrapper. No <figure> wrapper.
+	echo $img_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- every attribute escaped individually above.
+} else {
+	printf(
+		'<figure %s>%s%s%s%s</figure>',
+		$wrapper_attributes, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() escapes internally.
+		$link_open,          // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled from esc_url() + esc_attr() above.
+		$img_html,           // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- every attribute escaped individually above.
+		$link_close,         // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- always '' or '</a>' (static string, no user input).
+		$caption_html        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled from wp_kses_post() + esc_attr() above.
+	);
+}
