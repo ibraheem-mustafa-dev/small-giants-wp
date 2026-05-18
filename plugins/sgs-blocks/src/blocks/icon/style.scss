@@ -1,0 +1,113 @@
+// ===== SGS Icon — style.scss =====
+// Compiled to style.css / style-index.css via @wordpress/scripts.
+// Naming: SGS-BEM .sgs-icon / .sgs-icon__link / .sgs-icon__svg
+
+.wp-block-sgs-icon {
+	margin-top: 0;
+	margin-bottom: 0;
+
+	&.aligncenter {
+		text-align: center;
+	}
+
+	&.alignright {
+		text-align: right;
+	}
+
+	&.alignleft {
+		text-align: left;
+	}
+
+	&.alignwide,
+	&.alignfull {
+		display: flex;
+		justify-content: center;
+	}
+}
+
+// Root element — inline-flex so it wraps tightly around the icon.
+.sgs-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	// Size driven by CSS custom property set by render.php.
+	width: var(--sgs-icon-size, 32px);
+	height: var(--sgs-icon-size, 32px);
+}
+
+// SVG container — fills the root element.
+.sgs-icon__svg {
+	display: inline-flex;
+	width: 100%;
+	height: 100%;
+	align-items: center;
+	justify-content: center;
+
+	svg {
+		width: 100%;
+		height: 100%;
+		display: block;
+	}
+}
+
+// Link wrapper — touch target minimum 44×44 px (WCAG 2.5.5).
+.sgs-icon__link {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 44px;
+	min-height: 44px;
+	text-decoration: none;
+	color: inherit;
+	transition: transform var(--wp--custom--transition--fast, 0.15s ease),
+	            color var(--wp--custom--transition--fast, 0.15s ease);
+
+	&:hover {
+		transform: scale(var(--sgs-icon-hover-scale, 1.1));
+		color: var(--sgs-icon-hover-colour, var(--wp--preset--color--accent-text));
+	}
+
+	// WCAG 2.4.7 — focus must always be visible.
+	&:focus-visible {
+		outline: 2px solid var(--wp--preset--color--primary);
+		outline-offset: 2px;
+		border-radius: 2px;
+	}
+}
+
+// ── Size modifiers ─────────────────────────────────────────────────────────
+.sgs-icon--size-small  { width: var(--sgs-icon-size, 20px); height: var(--sgs-icon-size, 20px); }
+.sgs-icon--size-medium { width: var(--sgs-icon-size, 32px); height: var(--sgs-icon-size, 32px); }
+.sgs-icon--size-large  { width: var(--sgs-icon-size, 48px); height: var(--sgs-icon-size, 48px); }
+.sgs-icon--size-custom { width: var(--sgs-icon-size, 64px); height: var(--sgs-icon-size, 64px); }
+
+// ── Background shape modifiers ────────────────────────────────────────────
+.sgs-icon--bg-circle {
+	border-radius: 50%;
+	padding: 12px;
+}
+
+.sgs-icon--bg-rounded {
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	padding: 12px;
+}
+
+.sgs-icon--bg-square {
+	padding: 12px;
+}
+
+// ── Editor preview placeholder ────────────────────────────────────────────
+.sgs-icon__placeholder {
+	font-size: 11px;
+	text-transform: lowercase;
+	opacity: 0.5;
+	font-family: monospace;
+}
+
+// ── Reduced motion — static icon; no animation applies.
+// prefers-reduced-motion: transitions suppressed for hover only.
+@media (prefers-reduced-motion: reduce) {
+	.sgs-icon__link {
+		transition: none;
+	}
+}
