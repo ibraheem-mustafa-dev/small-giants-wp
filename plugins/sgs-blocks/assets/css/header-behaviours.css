@@ -5,9 +5,10 @@
  * header. The JS ResizeObserver publishes --sgs-header-height; this rule
  * consumes it. Defaults to 0px when the property is not yet set (no jump).
  *
- * F2 — Behaviour modifier classes: transparent overlay, sticky pin, and
- * hide-on-scroll-down smart reveal. State classes (.is-scrolled,
- * .is-scrolling-down) are toggled by view.js.
+ * F2 — Behaviour modifier classes are on <body>, not on the header element.
+ * CSS selectors descend from body to `header.wp-block-template-part` so no
+ * DOM class injection is needed. State classes (is-header-scrolled,
+ * is-header-scrolling-down) are also toggled on body by view.js.
  *
  * All z-index values use the WP admin-bar safe range (< 99999) while staying
  * above typical theme content layers (100).
@@ -30,7 +31,7 @@
  * transitions to the theme surface colour.
  * ---------------------------------------------------------------------- */
 
-.sgs-header--transparent {
+body.sgs-header-behaviour-transparent header.wp-block-template-part {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -39,7 +40,7 @@
 	z-index: 100;
 }
 
-.sgs-header--transparent.is-scrolled {
+body.sgs-header-behaviour-transparent.is-header-scrolled header.wp-block-template-part {
 	background: var( --wp--preset--color--surface, #ffffff );
 }
 
@@ -50,7 +51,7 @@
  * --sgs-header-height publisher to keep scroll-padding-top accurate.
  * ---------------------------------------------------------------------- */
 
-.sgs-header--sticky {
+body.sgs-header-behaviour-sticky header.wp-block-template-part {
 	position: sticky;
 	top: 0;
 	z-index: 100;
@@ -65,17 +66,17 @@
  * appears/disappears without animation.
  * ---------------------------------------------------------------------- */
 
-.sgs-header--hide-on-scroll-down {
+body.sgs-header-behaviour-hide-on-scroll-down header.wp-block-template-part {
 	transition: transform 200ms ease;
 	will-change: transform;
 }
 
-.sgs-header--hide-on-scroll-down.is-scrolling-down {
+body.sgs-header-behaviour-hide-on-scroll-down.is-header-scrolling-down header.wp-block-template-part {
 	transform: translateY( -100% );
 }
 
 @media ( prefers-reduced-motion: reduce ) {
-	.sgs-header--hide-on-scroll-down {
+	body.sgs-header-behaviour-hide-on-scroll-down header.wp-block-template-part {
 		transition: none;
 	}
 }

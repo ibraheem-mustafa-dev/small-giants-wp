@@ -5,10 +5,16 @@
  *   1. Publishes `--sgs-header-height` CSS custom property on :root and body
  *      via ResizeObserver so sticky headers don't obscure anchor targets
  *      (WCAG 2.4.11 — scroll-padding-top picks this up via CSS).
- *   2. Toggles behaviour state classes:
- *      - `.sgs-header--transparent` → `.is-scrolled` when scrollY > 50
- *      - `.sgs-header--hide-on-scroll-down` → `.is-scrolling-down` when
- *        scrollY > 100 AND scroll direction is downward.
+ *   2. Reads the active behaviour from body class:
+ *      - body.sgs-header-behaviour-transparent → toggles body.is-header-scrolled
+ *        when scrollY > 50.
+ *      - body.sgs-header-behaviour-hide-on-scroll-down → toggles
+ *        body.is-header-scrolling-down when scrollY > 100 AND direction is down.
+ *   3. When no sgs-header-behaviour-* class is on body, the scroll listener is
+ *      skipped entirely — zero event overhead on pages without behaviour rules.
+ *
+ * State classes are toggled on document.body, not on the header element.
+ * CSS selectors in header-behaviours.css descend from body accordingly.
  *
  * Single passive scroll listener; requestAnimationFrame coalesce throttle.
  *
@@ -21,16 +27,26 @@
 	'use strict';
 
 	/**
-	 * Locate the header element. Accepts both the bare WP template-part wrapper
-	 * (`header.wp-block-template-part`) and our injected hook class (`header.sgs-header`).
+	 * Locate the header element.
 	 *
 	 * @return {HTMLElement|null}
 	 */
 	function getHeaderEl() {
-		return (
-			document.querySelector( 'header.sgs-header' ) ||
-			document.querySelector( 'header.wp-block-template-part' )
+		return document.querySelector( 'header.wp-block-template-part' );
+	}
+
+	/**
+	 * Read the active behaviour slug from body class.
+	 * Returns the slug string (e.g. 'transparent', 'sticky', 'hide-on-scroll-down')
+	 * or an empty string when no behaviour class is present.
+	 *
+	 * @return {string}
+	 */
+	function getActiveBehaviour() {
+		const match = document.body.className.match(
+			/sgs-header-behaviour-([\w-]+)/
 		);
+		return match ? match[ 1 ] : '';
 	}
 
 	/**
@@ -69,16 +85,13 @@
 
 	/**
 	 * Wire up the scroll listener for F2 behaviour state classes.
+	 * State is toggled on document.body, not on the header element.
 	 *
-	 * @param {HTMLElement} header
+	 * @param {string} behaviour Active behaviour slug.
 	 */
-	function initScrollBehaviours( header ) {
-		const isTransparent = header.classList.contains(
-			'sgs-header--transparent'
-		);
-		const isHideOnScroll = header.classList.contains(
-			'sgs-header--hide-on-scroll-down'
-		);
+	function initScrollBehaviours( behaviour ) {
+		const isTransparent = behaviour === 'transparent';
+		const isHideOnScroll = behaviour === 'hide-on-scroll-down';
 
 		if ( ! isTransparent && ! isHideOnScroll ) {
 			return;
@@ -91,21 +104,21 @@
 			rafScheduled = false;
 			const scrollY = window.scrollY;
 
-			// Transparent → opaque transition.
+			// Transparent → opaque transition (state on body).
 			if ( isTransparent ) {
 				if ( scrollY > 50 ) {
-					header.classList.add( 'is-scrolled' );
+					document.body.classList.add( 'is-header-scrolled' );
 				} else {
-					header.classList.remove( 'is-scrolled' );
+					document.body.classList.remove( 'is-header-scrolled' );
 				}
 			}
 
-			// Hide on scroll down (smart reveal).
+			// Hide on scroll down — smart reveal (state on body).
 			if ( isHideOnScroll ) {
 				if ( scrollY > 100 && scrollY > prevScrollY ) {
-					header.classList.add( 'is-scrolling-down' );
+					document.body.classList.add( 'is-header-scrolling-down' );
 				} else if ( scrollY <= prevScrollY ) {
-					header.classList.remove( 'is-scrolling-down' );
+					document.body.classList.remove( 'is-header-scrolling-down' );
 				}
 			}
 
@@ -136,8 +149,15 @@
 		if ( ! header ) {
 			return;
 		}
+
+		// F1 — always publish header height for scroll-padding-top.
 		initHeightPublisher( header );
-		initScrollBehaviours( header );
+
+		// F2 — scroll behaviour state; only active when a behaviour class exists.
+		const behaviour = getActiveBehaviour();
+		if ( behaviour ) {
+			initScrollBehaviours( behaviour );
+		}
 	}
 
 	if (
