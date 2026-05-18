@@ -1116,3 +1116,6 @@ This session ran the multi-rater /qc panel four times (Spec 15 v0.1 → v0.2 + p
 - Gemini Pro for deep technical reviews when not blocked on file access
 - Cerebras for zero-cost grep / pattern scans (Phase 6 deletion audit)
 
+
+
+**Decision 9 — Parallax scroll is NOT applicable to logo / icon / header blocks (2026-05-20).** Parallax-on-logo is architecturally wrong (logos must remain visually anchored to header), parallax-on-icon makes no semantic sense (icons are not background imagery), parallax-on-header would break sticky/transparent behaviour and cause jank during scroll-direction changes. The universal `parallax.php` extension stays opt-in via `supports.sgs.parallax` (or similar flag). For `sgs/responsive-logo`, `sgs/icon`, and the header behaviour wrapper (Phase 2A Branches B+C+A), parallax MUST NOT be wired — no opt-in, no Customiser control. This is permanent, not deferred. Block-level decision applies universally across these three classes regardless of operator demand.

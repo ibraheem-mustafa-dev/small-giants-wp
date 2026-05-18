@@ -105,7 +105,7 @@ Every new SGS block automatically picks up these universal extensions via existi
 | Animation attributes (scroll reveal) | Automatic via `render_block` filter | YES — logo entrance animation on page load |
 | Custom CSS per block (sgsCustomCss) | Automatic via `render_block` filter | YES |
 | Conditional visibility (login-gated, date-range) | Automatic via `render_block` filter | YES — e.g. show a "Holiday" logo during a date range |
-| Parallax scroll | Automatic via `render_block` filter | NO — not appropriate for a header logo (parking note in block.json comment) |
+| Parallax scroll | Automatic via `render_block` filter | NO — Decision 9 (`.claude/decisions.md`): parallax not applicable to logos. Block-level architectural rule, not deferred work. |
 | Heading anchors | n/a | NO — logo is not a heading |
 
 Branch B subagent MUST verify each universal-extension-tagged attribute appears in the rendered output by running the relevant attribute through render and asserting the expected classes/styles are present.
