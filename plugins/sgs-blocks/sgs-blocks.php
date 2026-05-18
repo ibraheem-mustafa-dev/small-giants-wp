@@ -140,6 +140,11 @@ require_once SGS_BLOCKS_PATH . 'includes/class-sgs-header-rules-admin.php';
 Sgs_Header_Rules::register();
 Sgs_Header_Rules_Admin::register();
 
+// SGS header behaviours (F1+F2+F4, Phase 2A) — class injector + asset enqueuer.
+// Must load after Sgs_Header_Rules::register() so the sgs_header_rule_resolved filter point exists.
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-header-behaviours.php';
+Sgs_Header_Behaviours::register();
+
 // SGS conditional footer rules (FR-S3-3) — mirror of header rules for the footer area.
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-footer-rules.php';
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-footer-rules-admin.php';
