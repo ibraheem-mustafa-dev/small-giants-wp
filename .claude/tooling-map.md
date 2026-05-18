@@ -18,6 +18,32 @@ enforcement: .claude/hooks/tooling-map-drift-check.py (committed 2026-05-13, cur
 registry_entry: docs-registry.md row 12
 ---
 
+## NEW 2026-05-19 — Spec 17 Header/Footer Architecture classes (shipped to main 2026-05-18)
+
+All classes live under `plugins/sgs-blocks/includes/` unless otherwise noted.
+
+| Class | File | Purpose |
+|---|---|---|
+| `Sgs_Admin_Menu` | `admin/class-sgs-admin-menu.php` | Registers SGS top-level WP admin menu + routes sub-pages to registered admin classes |
+| `Sgs_Site_Info` | `class-sgs-site-info.php` | Site Info CPT store — schema validation, GDPR personal-data exporter, block binding source registration |
+| `Sgs_Site_Info_Admin` | `admin/class-sgs-site-info-admin.php` | Admin UI for the Site Info store (Settings > SGS Site Info) |
+| `Sgs_Site_Info_Binding_Source` | `class-sgs-site-info-binding-source.php` | Registers `sgs/site-info` as a WP block binding source for live data injection into blocks |
+| `Sgs_Safety_Guard` | `class-sgs-safety-guard.php` | Pre-flight guard — prevents seeder from overwriting template parts with operator edits; `set_internal()` trusted-caller bypass for seeder state writes |
+| `Sgs_Template_Part_Seeder` | `class-sgs-template-part-seeder.php` | Seeds canonical header/footer template parts from the pattern registry on first activation |
+| `Sgs_Template_Part_Resetter` | `class-sgs-template-part-resetter.php` | Resets seeded template parts back to canonical state via `wp sgs reset-template-parts` |
+| `Sgs_Template_Part_Meta` | `class-sgs-template-part-meta.php` | Post-meta helpers for template parts (`mark_seeded`, `get_seeded_from_slug`); custom slash-preserving sanitiser replacing `sanitize_key()` |
+| `Sgs_Header_Rules` | `class-sgs-header-rules.php` | Conditional header behaviour engine — 12 rule types, evaluated per-request, result cached for the request lifetime |
+| `Sgs_Header_Rules_Admin` | `admin/class-sgs-header-rules-admin.php` | Admin UI for header rules (Settings > SGS Header Behaviour) |
+| `Sgs_Header_Rules_ReDoS_Guard` | `class-sgs-header-rules-redos-guard.php` | Two-layer ReDoS protection for URL-pattern matching (length cap 256 chars + catastrophic-backtracking blocklist) |
+| `Sgs_Footer_Rules` | `class-sgs-footer-rules.php` | Conditional footer behaviour engine (mirrors header engine architecture) |
+| `Sgs_Footer_Rules_Admin` | `admin/class-sgs-footer-rules-admin.php` | Admin UI for footer rules (Settings > SGS Footer Behaviour) |
+| `Sgs_Variation_Picker` | `class-sgs-variation-picker.php` | Style variation picker dropdown + Activate button; resolver-only `post_id` lookup to avoid per-request `WP_Query` |
+| `Sgs_Legacy_Theme_Mod_Migrator` | `class-sgs-legacy-theme-mod-migrator.php` | Migrates legacy `active_theme_style` theme_mod on first variation picker activation; wrapped by `wp sgs theme-mod restore` |
+| `Sgs_Block_CPTs` | `class-sgs-block-cpts.php` | Registers `sgs_header` + `sgs_footer` CPTs with REST gated to `edit_theme_options` capability |
+| `Sgs_Cli_Commands` | `class-sgs-cli-commands.php` | 12-command `wp sgs` CLI surface: `seed-template-parts`, `reset-template-parts`, `site-info get/set/export/import`, `theme-mod get/backup/restore`, `migrations run/status/rollback` |
+| `Sgs_Floating_UI_Customiser` | `class-sgs-floating-ui-customiser.php` | Registers `Appearance → Customise → SGS Floating UI` section with live-preview controls for Back to Top + Reading Progress |
+| `Sgs_Floating_UI_Renderer` | `class-sgs-floating-ui-renderer.php` | `wp_footer` hook renderer — reads `get_theme_mod()` values and outputs Back to Top + Reading Progress HTML; per-page hide via `_sgs_hide_floating_ui` post meta |
+
 ## NEW 2026-05-15 — Spec 16 Phase 7 additions (uncommitted to main; on feat/spec-16-converter-v2-rollout)
 
 | Script | Path | Purpose | Status | Wiring |

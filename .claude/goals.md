@@ -1,6 +1,6 @@
 # small-giants-wp — Goals
 
-**Last updated:** 2026-05-15 (Spec 16 Phase 1 shipped 2026-05-14)
+**Last updated:** 2026-05-19 (Spec 17 Waves 1+2+2.5+3 shipped 2026-05-18; Floating UI Customiser shipped post-Spec-17)
 
 ## Primary outcome
 
@@ -15,6 +15,13 @@ Ship a complete WordPress block framework + theme + supporting plugins (forms, b
 | **Track B 5 client builds** | Mama's Munches, Indus Foods, CMX Group, Snooza/Ophir, SGS Studio v2 — each shipped per zero-QC definition (sign-off touchpoints documented per client) | `plans/strategy/2026-04-21-step2-strategic-plan.md` §1, §5 |
 | **Design-brain rebuild (Phase 4 — gates everything)** | Blueprint schema locked, council.py smoke-tested, philosophy-autoload.py wired, 8 modifier skills deleted, ui-ux-pro-max restructured into 6 progressive-disclosure modes | `plans/strategy/2026-04-24-design-brain-architecture.md` |
 | **Convention rollout (SGS-prefixed BEM canonical for drafts)** | All 8 phases of `.claude/plan.md` complete: lesson captured, Spec 13 written, ~48 surfaces propagated, `/style-replicator` renamed, Mama's mockup migrated, orchestrator rewired, validated + deployed | `.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md (§8.1; former Spec 13 absorbed 2026-05-12)` + `.claude/plan.md` |
+
+## Achieved goals (2026-05-18)
+
+| Goal | Status | Notes |
+|------|--------|-------|
+| **Spec 17 — Header/Footer Architecture** | DONE | 16 FRs, 22 PHP classes, 12 WP-CLI commands across 3 waves. Full spec: `.claude/specs/17-SGS-HEADER-FOOTER-ARCHITECTURE.md` |
+| **Floating UI Customiser** | DONE | `Sgs_Floating_UI_Customiser` + `Sgs_Floating_UI_Renderer` replace admin-page approach with live Customiser preview. `sgs/back-to-top` block deprecated to no-op. |
 
 ## Non-goals (out of scope this milestone)
 

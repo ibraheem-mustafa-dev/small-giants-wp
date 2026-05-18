@@ -43,6 +43,14 @@ These three rules apply to all SGS converter / clone pipeline / visual-QA work. 
 
 3. **Per-section cropped pixel diff** via `scripts/pixel-diff.py --selector .sgs-{section}`, NOT full-page. Full-page has ~30-45% structural noise floor. Each section closes independently at ≤ 1% across 375 / 768 / 1440 viewports. See `feedback_per_section_cropped_pixel_diff.md`.
 
+## Spec 17 — Header/Footer Architecture (shipped 2026-05-18)
+
+Spec 17 delivered three waves in a single session. Full spec: `.claude/specs/17-SGS-HEADER-FOOTER-ARCHITECTURE.md`.
+
+- **Wave 1+2+2.5:** SGS top-level admin menu (`Sgs_Admin_Menu`), Site Info store (`Sgs_Site_Info` + admin + binding source), template-part seeder/resetter/meta/safety guard, 16 FRs, 22 new PHP classes.
+- **Wave 3:** Conditional rules engines for header and footer (`Sgs_Header_Rules` + `Sgs_Footer_Rules`, each with admin UI and a ReDoS guard), `sgs_header` / `sgs_footer` CPTs (REST-gated to `edit_theme_options`), variation picker (`Sgs_Variation_Picker` + `Sgs_Legacy_Theme_Mod_Migrator`), 12 WP-CLI commands via `Sgs_Cli_Commands` (`wp sgs` surface).
+- **Post-Spec-17:** Floating UI replacement — `Sgs_Floating_UI_Customiser` + `Sgs_Floating_UI_Renderer` move Back to Top / Reading Progress from a settings admin page to `Appearance → Customise → SGS Floating UI` with live Customiser preview. See architecture decision 13.
+
 ## Consolidated on 2026-04-29
 
 Originals from `docs/`, `specs/`, and root-level scattered files were consolidated into this canonical layout by `/project-consolidate`. Receipts at `memory/consolidated-2026-04-29/`.

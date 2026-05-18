@@ -408,6 +408,24 @@ For each major script category in tooling-map.md, which command or skill is the 
 
 The `/visual-qa` skill was missed in the initial 17-item audit. It IS a pipeline skill but it is NOT called by `/sgs-clone`. The clone pipeline's Stage 8 uses the lightweight `visual_qa_capture.py` (Quick-mode equivalent embedded into the autonomy_gate). The full 9-layer `/visual-qa` is operator-invoked separately for deep audits. They share `tools/recogniser-v2/visual_qa_config.json` but no code.
 
+---
+
+## ADDENDUM 2026-05-19 — Spec 17 session command skillscores
+
+The following commands were restructured and re-scored during the Spec 17 session (2026-05-18):
+
+| Command / skill | Skillscore | Session | Notes |
+|---|---|---|---|
+| `/wp-hooks` | 98% | 2026-05-18 | Spec 17 patterns added — hook registration patterns for CPTs + CLI commands |
+| `/wp-hook-graph` | 100% | 2026-05-18 | Spec 17 filter/action graph for header/footer rules engines |
+| `/deploy-check` | 100% | 2026-05-18 | Spec 17 deploy checklist items added (OPcache + CLI commands verification) |
+| `/sgs-db` | 100% | 2026-05-18 | Spec 17 block CPT entries added to sgs-framework.db |
+| `sgs-wp-engine` (skill) | — | 2026-05-18 | `references/spec-17-architecture.md` added as reference doc |
+| `/wp-plugin-development` | — | 2026-05-18 | Spec 17 CPT + CLI patterns added |
+| `/wp-block-development` | — | 2026-05-18 | Spec 17 block binding source + CPT patterns added |
+| `/wp-rest-api` | — | 2026-05-18 | Spec 17 CPT REST capability gating pattern added |
+| `/visual-qa` | — | 2026-05-18 | Spec 17 Customiser + admin page visual-QA notes added |
+
 ### /visual-qa
 
 - **Type:** skill (pipeline)

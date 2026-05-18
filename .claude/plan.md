@@ -6,7 +6,7 @@ created: 2026-05-10
 last_updated: 2026-05-18
 phase_count: 8
 total_estimate_min: 540-720 (9-12 hours focused)
-status: archived — phases 7+8 closed since original write; active work is Phase 9. P-WP-ALIGNMENT-WIDTH-SYSTEM milestone CLOSED 2026-05-18 (3 commits — c7f42003 Task 0 pages-not-posts, 86172812 Tasks 2-3 widthMode infra, 16721374 docs walk; HEAD 16721374). Active execution doc is .claude/next-session-prompt.md (v8 — orchestrator re-run + intra-section pivot). This file kept as historical audit trail.
+status: archived — phases 7+8 closed since original write; active work is Phase 9. P-WP-ALIGNMENT-WIDTH-SYSTEM milestone CLOSED 2026-05-18 (3 commits — c7f42003 Task 0 pages-not-posts, 86172812 Tasks 2-3 widthMode infra, 16721374 docs walk; HEAD 16721374). Spec 17 Waves 1+2+2.5+3 COMPLETE 2026-05-18 (22 PHP classes, 12 WP-CLI commands, Floating UI Customiser replacement). Active execution doc is .claude/next-session-prompt.md (v8 — orchestrator re-run + intra-section pivot). This file kept as historical audit trail.
 successor_plan: .claude/next-session-prompt.md (v8 — orchestrator re-run + intra-section pivot, 2026-05-19 onwards)
 phase_chain:
   - phase-7-spec-16-converter-rollout — CLOSED 2026-05-13
@@ -22,7 +22,9 @@ phase_chain:
 
 **2026-05-17 status note:** Three phases closed since this plan was written. Phase 7 (Spec 16 converter rollout) closed 2026-05-13. Phase 8 (section-by-section closure, 22 commits across 3 sessions) closed 2026-05-16. Phase 9 (brand + hero evidence-driven walkdown) is the active phase as of 2026-05-17 — see `.claude/next-session-prompt.md` v3 (validated by 4-rater council review: architecture / adversarial / pragmatist / evidence). Pass condition for Phase 9 splits into attribute-coverage% ≥ 95% (universality, pure converter score) + pixel-diff% ≤ 5% (fidelity, block + theme + render score) per evidence-lens recommendation. The M9 / clone-orchestrator concerns this plan originally sketched were reframed in Spec 16 (2026-05-14) as a slot-aware DOM walker. Spec 15 stays canonical for L0-L3 + Stages 0-2 + 8-9 + /sgs-update; Spec 16 owns Stages 3-7.
 
-**Active plan reference for next session: `.claude/next-session-prompt.md` v4.**
+**Active plan reference for next session: `.claude/next-session-prompt.md` v8 (orchestrator re-run + intra-section closure, post Spec 17).**
+
+**Spec 17 complete 2026-05-18.** Next framework milestones: (1) Phase 9b intra-section pixel-diff closure (P-INTRA-SECTION-CLOSURE), (2) Spec 18 or next roadmap spec. See `.claude/parking.md` for P-S17-* follow-up items (B-H still open, A DONE).
 
 ## USP
 

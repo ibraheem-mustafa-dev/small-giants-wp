@@ -2,6 +2,48 @@
 
 Append-only. Most-recent first.
 
+## 2026-05-19 — Spec 17 Header/Footer Architecture (Waves 1+2+2.5+3)
+
+### Council M1: CPT REST capability gating
+
+**Context:** `sgs_header` + `sgs_footer` CPTs need REST API access for the block editor but must not be readable by unauthenticated requests — page layout data (header variant, footer layout) is not public information.
+
+**Decision:** Both CPTs register with `show_in_rest: true` but `capability_type` overridden so `read_post` requires `edit_theme_options`. Anonymous REST calls return 401. Logged at `.claude/specs/17-SGS-HEADER-FOOTER-ARCHITECTURE.md §M1`.
+
+**File:** `includes/class-sgs-block-cpts.php`
+
+### Council N1: Variation picker resolver-only post_id lookup
+
+**Context:** Variation picker needed to resolve the currently-active `wp_global_styles` post to avoid a `WP_Query` on every front-end request (even unauthenticated page loads go through the picker's `init` hook).
+
+**Decision:** Use the resolver-only `_resolve_global_styles_post_id()` path — single direct DB lookup by `post_type = 'wp_global_styles'` + `post_status = 'publish'`, no `WP_Query`, cached for the request lifetime. Keeps picker render cost sub-millisecond.
+
+**File:** `includes/class-sgs-variation-picker.php`
+
+### `set_internal()` trusted-caller bypass in Sgs_Safety_Guard
+
+**Context:** `Sgs_Safety_Guard` blocks the seeder from overwriting template parts that an operator has edited in the Site Editor. But the seeder itself needs to mark a part as "seeded" (set internal state) without the guard treating that write as an operator edit and blocking itself.
+
+**Decision:** Add `set_internal( $key, $value )` method that sets post meta directly, bypassing the guard's own edit-detection hook. Only callable from within the seeder class (documented as trusted-caller pattern, not exposed to client code).
+
+**File:** `includes/class-sgs-safety-guard.php`
+
+### Two-layer ReDoS guard for header/footer rules engine
+
+**Context:** The header and footer rules engines accept URL-pattern input from operators (e.g. "hide footer on `/checkout*`"). Operator-supplied regex-like patterns that are too long or that contain catastrophic-backtracking constructs can cause PHP execution time spikes.
+
+**Decision:** `Sgs_Header_Rules_ReDoS_Guard` (and its footer mirror) applies two layers: (1) input-length cap of 256 characters before pattern compilation, (2) static blocklist of catastrophic-backtracking constructs (`(a+)+`, `(.*a){x,}`, nested quantifiers etc.) validated via `preg_match` on the incoming pattern string before it is compiled as a regex. Extracted to its own class rather than inlined to stay within the 300-line PHP cap.
+
+**File:** `includes/class-sgs-header-rules-redos-guard.php` (header engine); footer engine gets its own mirror at same path depth.
+
+### Build-replacement-before-retiring-legacy rule
+
+**Context:** The Floating UI Customiser was built to replace the old `Sgs_Floating_UI` settings admin page. In a previous session the old code was retired before the replacement was proven functional, leaving a functionality gap.
+
+**Decision (binding, captured as `mistakes.md` top entry):** Any new system replacing a legacy system MUST be fully built, deployed, and eyes-on verified before the legacy code is retired. Apply to every future replace/refactor: build first, verify, THEN delete.
+
+**Commit:** post-Spec-17 session 2026-05-18.
+
 ## 2026-05-18 — P-WP-ALIGNMENT-WIDTH-SYSTEM shipped
 
 ### D2: Task 0 — cv2 pipeline targets WP PAGES, not POSTS

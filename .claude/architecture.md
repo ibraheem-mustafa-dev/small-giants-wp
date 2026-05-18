@@ -327,6 +327,46 @@ The master feature audit (`docs/plans/2026-02-21-master-feature-audit.md`) track
 | Rank Math Free | SEO | No plans to replace |
 | Playwright v1.58.2 | Visual testing | Globally installed on dev machine, Chromium ready |
 
+## Spec 17 — Header/Footer Architecture (shipped 2026-05-18)
+
+16 FRs, 22 new PHP classes, 12 WP-CLI commands across Waves 1+2+2.5+3. Full spec: `.claude/specs/17-SGS-HEADER-FOOTER-ARCHITECTURE.md`.
+
+### New PHP classes
+
+| Class | Purpose | File |
+|---|---|---|
+| `Sgs_Admin_Menu` | Registers SGS top-level WP admin menu and sub-pages | `includes/admin/class-sgs-admin-menu.php` |
+| `Sgs_Site_Info` | Site Info store — registers `sgs_site_info` CPT, schema validation, GDPR exporter | `includes/class-sgs-site-info.php` |
+| `Sgs_Site_Info_Admin` | Admin UI for Site Info store | `includes/admin/class-sgs-site-info-admin.php` |
+| `Sgs_Site_Info_Binding_Source` | Block binding source for `sgs/site-info` | `includes/class-sgs-site-info-binding-source.php` |
+| `Sgs_Safety_Guard` | Pre-flight guard preventing seeder from overwriting operator-edited template parts | `includes/class-sgs-safety-guard.php` |
+| `Sgs_Template_Part_Seeder` | Seeds canonical header/footer template parts from pattern registry | `includes/class-sgs-template-part-seeder.php` |
+| `Sgs_Template_Part_Resetter` | Resets template parts back to canonical pattern state | `includes/class-sgs-template-part-resetter.php` |
+| `Sgs_Template_Part_Meta` | CPT meta helpers (`mark_seeded`, `get_seeded_from_slug`) with round-trip-safe slug sanitiser | `includes/class-sgs-template-part-meta.php` |
+| `Sgs_Header_Rules` | Conditional header behaviour engine (12 rule types) with ReDoS guard | `includes/class-sgs-header-rules.php` |
+| `Sgs_Header_Rules_Admin` | Admin UI for header rules (Settings > SGS Header) | `includes/admin/class-sgs-header-rules-admin.php` |
+| `Sgs_Header_Rules_ReDoS_Guard` | Two-layer ReDoS protection for URL-pattern matching in rules engine | `includes/class-sgs-header-rules-redos-guard.php` |
+| `Sgs_Footer_Rules` | Conditional footer behaviour engine (mirrors header engine) | `includes/class-sgs-footer-rules.php` |
+| `Sgs_Footer_Rules_Admin` | Admin UI for footer rules (Settings > SGS Footer) | `includes/admin/class-sgs-footer-rules-admin.php` |
+| `Sgs_Variation_Picker` | Style variation picker dropdown + Activate button (FR-S5-2) | `includes/class-sgs-variation-picker.php` |
+| `Sgs_Legacy_Theme_Mod_Migrator` | Migrates legacy `active_theme_style` theme_mod on first picker activation | `includes/class-sgs-legacy-theme-mod-migrator.php` |
+| `Sgs_Block_CPTs` | Registers `sgs_header` + `sgs_footer` CPTs, REST-gated to `edit_theme_options` | `includes/class-sgs-block-cpts.php` |
+| `Sgs_Cli_Commands` | 12-command `wp sgs` CLI surface (seeder, resetter, site-info, theme-mod, migrations) | `includes/class-sgs-cli-commands.php` |
+| `Sgs_Floating_UI_Customiser` | Registers `Appearance → Customise → SGS Floating UI` Customiser section | `includes/class-sgs-floating-ui-customiser.php` |
+| `Sgs_Floating_UI_Renderer` | `wp_footer` renderer reading Customiser `theme_mod` values for Back to Top + Reading Progress | `includes/class-sgs-floating-ui-renderer.php` |
+
+### WP-CLI surface (`wp sgs`)
+
+12 commands across 4 groups: `seed-template-parts`, `reset-template-parts`, `site-info get/set/export/import`, `theme-mod get/backup/restore`, `migrations run/status/rollback`.
+
+### Key architectural decisions captured in decisions.md
+
+- **Council M1:** `sgs_header` + `sgs_footer` CPT REST endpoint gated to `edit_theme_options` (not public, not `read`) — prevents unauthenticated enumeration of site layout data.
+- **Council N1:** Variation picker uses resolver-only `post_id` lookup (no `WP_Query` per-request) to keep the picker's render cost sub-millisecond.
+- **`set_internal()` trusted-caller bypass:** Safety guard's operator-edit detection allows seeder to set internal state without triggering its own block.
+- **Two-layer ReDoS guard:** URL-pattern rules engine validates patterns against both input-length cap (256 chars) and a catastrophic-backtracking regex blocklist before compiling.
+- **Build-replacement-before-retiring-legacy rule:** Any new system replacing a legacy system (Floating UI Customiser replacing the old settings admin page) MUST be fully built and verified before retiring the legacy code — never retire first.
+
 ## Deployment
 
 **Dev site (all changes go here):** `https://palestine-lives.org`

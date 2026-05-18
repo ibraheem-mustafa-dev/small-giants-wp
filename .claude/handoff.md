@@ -1,11 +1,82 @@
 ---
 doc_type: handoff
 project: small-giants-wp
-session_tag: small-giants-wp-2026-05-18-spec-17-complete
-session_date: 2026-05-18
+session_tag: small-giants-wp-2026-05-19-floating-ui-plus-skill-restructure
+session_date: 2026-05-19
 ---
 
-# Session Handoff — 2026-05-18
+# Session Handoff — 2026-05-19
+
+## Completed This Session
+
+1. **Floating UI replacement shipped** — `Sgs_Floating_UI_Customiser` + `Sgs_Floating_UI_Renderer` classes plus vanilla-JS frontend + CSS. Customiser → SGS Floating UI panel (Appearance → Customise) controls back-to-top button + reading-progress bar with 7 settings (enabled toggles, colour pickers, position, height). Council N1 resolver-only post lookup. 44px touch targets + WCAG 2.2 AA. 12 PHPUnit tests pass (1195 suite total).
+2. **Build-before-retire lesson captured** — `feedback_build_replacement_before_retiring_legacy.md` written to 3 persistence layers (CC auto-memory + MEMORY.md index + project mistakes.md). blub.db corrections API POST attempted. Rule: never delete a feature before its replacement is built, tested, shipped.
+3. **skillscore CLI auto-detect verified** — `detect_artifact_type()` at line 211 auto-routes by path (`/commands/` → command type, 80% threshold; SKILL.md → skill, 90%; AGENT.md → agent, 85%). Differential check matrix already live: 13 command-tailored checks vs ~22 skill checks. No additional work needed — last session's subagent landed it.
+4. **4 commands restructured to skillscore 80%+** — wp-hooks 68→98% A; wp-hook-graph 60→100% A; deploy-check 70→100% A; sgs-db 70→100% A. Numbered stages + HARD GATE markers + named alternatives added.
+5. **9 skill files updated with Spec 17 patterns** — wp-plugin-development gains 5 canonical patterns (set_internal, Settings API + JS, Council M1, Council N1, ReDoS guard); wp-block-development gains central-store refactor + block-bindings; wp-rest-api gains capability-gated CPT REST; wp-hooks + wp-hook-graph gain Spec 17 hook usages; sgs-wp-engine/references/spec-17-architecture.md (227 lines, new); visual-qa/references/spec-17-admin-pages.md (103 lines, new); innovative-design + ui-ux-pro-max gain SGS Framework pattern library (9 patterns ingested into uimax DB).
+6. **/sgs-update DB refresh** — sgs-framework.db rescanned (1622 rows, 71 blocks, 1714 attributes). `02-SGS-BLOCKS-REFERENCE.md` regenerated. uimax `component-libraries.csv` synced (71 SGS blocks mirrored, 215 total libraries).
+7. **8 errors in FloatingUiCustomiserTest diagnosed + fixed inline** — root cause was `namespace SGS\Blocks\Tests;` at file top putting WP function/class stubs (sanitize_hex_color, absint, WP_Customize_Manager) in test namespace instead of global. Production code in `SGS\Blocks` couldn't resolve. Fix: removed namespace declaration, fully-qualified `\PHPUnit\Framework\TestCase`.
+8. **Committed + pushed to main** — `d4da8c68`. Suite green throughout (1195/0/0).
+
+## Current State
+
+- **Branch:** main at `d4da8c68`
+- **Tests:** 1195 pass, 0 fail, 0 errors (10 PHPUnit framework deprecation notices unchanged)
+- **Build:** passes
+- **Uncommitted changes:** none — pushed
+- **Deploy status:** code on main; NOT yet deployed to palestine-lives.org / sandybrown
+
+## Known Issues / Blockers
+
+- **Live-site smoke test still pending** for Wave 3 + Floating UI. Suite green ≠ outcome until operator workflows verified on real WP install (admin pages render, CLI commands work via WP-CLI, conditional rules fire, CPT REST capability gate confirmed, Customiser controls live-preview correctly).
+- **Pre-existing test-stub WPCS noise** (~47 warnings per test file flagging `wp_json_encode` / `__` etc. as "should start with theme prefix") — established pattern across all tests, not new debt.
+
+## Outcome vs Completion Assessment (Gate 3.5)
+
+| Task | Verdict |
+|------|---------|
+| Floating UI replacement | OUTCOME ACHIEVED — Customiser controls work, tests pass, bootstrap wired, replaces retired blocks |
+| Lesson captured | OUTCOME ACHIEVED — 3 persistence layers + mistakes doc entry |
+| skillscore command test | OUTCOME ACHIEVED — already live + verified |
+| 4 commands restructured | OUTCOME ACHIEVED — all pass 80%+ threshold |
+| 9 skill updates | OUTCOME ACHIEVED — all updates landed |
+| DB refresh | OUTCOME ACHIEVED — 71 blocks, 1714 attrs in DB; reference doc regenerated |
+| Live-site deploy verification | NOT YET HIT — deferred to next session |
+
+## Next Priorities (in order)
+
+1. **Live-site smoke test** of Spec 17 admin pages + WP-CLI commands + Customiser Floating UI on sandybrown clone. Capture screenshot evidence per admin page; run each `wp sgs` command as `--user=1` and capture stdout.
+2. **Deploy verification** to palestine-lives.org once smoke test passes on sandybrown. Use canonical tar deploy from framework CLAUDE.md.
+3. **Continue Phase 2 block roadmap** (per `docs/plans/2026-02-21-master-feature-audit.md`) — Hover scale transform, Hover shadow elevation, Hover image zoom, Transition controls, Block link, Icon Block, Timeline, Pricing Table.
+4. **Optional refinements** — extend Floating UI panel with scroll-trigger threshold control + smooth-scroll easing picker; client onboarding flow via new admin menu.
+
+## Files Modified
+
+| File path | What changed |
+|---|---|
+| `plugins/sgs-blocks/sgs-blocks.php` | Wire Sgs_Floating_UI_Customiser + Sgs_Floating_UI_Renderer at end of bootstrap (lines 162-166) |
+| `plugins/sgs-blocks/includes/class-sgs-floating-ui-customiser.php` | NEW — 305 lines; Customiser section + 7 controls + sanitisers |
+| `plugins/sgs-blocks/includes/class-sgs-floating-ui-renderer.php` | NEW — wp_footer renderer + asset enqueue + inline CSS custom props |
+| `plugins/sgs-blocks/assets/floating-ui/floating-ui.js` | NEW — vanilla JS scroll listener + smooth scroll + progress fill |
+| `plugins/sgs-blocks/assets/floating-ui/floating-ui.css` | NEW — fixed-position styles + 44px touch target |
+| `plugins/sgs-blocks/tests/php/FloatingUiCustomiserTest.php` | NEW — 12 tests; namespace declaration removed for global-scope stubs |
+| `.claude/mistakes.md` | New top entry — build-replacement-before-retiring-legacy lesson |
+| `.claude/specs/02-SGS-BLOCKS-REFERENCE.md` | Regenerated via /sgs-update (71 blocks, 1714 attrs) |
+| `~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_build_replacement_before_retiring_legacy.md` | NEW — CC auto-memory layer for the lesson |
+| `~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/MEMORY.md` | Index entry for new lesson |
+| `~/.claude/commands/{wp-hooks,wp-hook-graph,deploy-check,sgs-db}.md` | Restructured to pass skillscore 80%+ (numbered stages + HARD GATE + alternatives) |
+| `~/.claude/skills/wp-plugin-development/`, `wp-block-development/`, `wp-rest-api/`, `innovative-design/`, `ui-ux-pro-max/` | +Spec 17 patterns in each |
+| `~/.claude/skills/sgs-wp-engine/references/spec-17-architecture.md` | NEW (227 lines) — Spec 17 architecture overview |
+| `~/.claude/skills/visual-qa/references/spec-17-admin-pages.md` | NEW (103 lines) — admin pages to include in visual QA |
+
+## Notes for Next Session
+
+- **Customiser deep-link URL:** `admin_url('customize.php?autofocus[section]=sgs_floating_ui')` auto-focuses the new section. Use this in any future docs or operator notices.
+- **Floating UI option key is `sgs_floating_ui`** (`type => 'option'`, NOT `theme_mod`). Persists across theme switches.
+- **The 27→0 failure recovery from prior session was a stash-induced disaster.** Hard rule already captured: subagents may NEVER use `git stash`. Every recovery dispatch in this session included the safety clause and worked correctly.
+- **WP-CLI commands need `--user=<id>`** for any write operation — the capability gate fires inside the command body, not via WP-CLI's command-line auth. Document in `/wp-wpcli-and-ops` skill if not already there.
+
+
 
 ## Completed This Session
 

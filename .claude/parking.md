@@ -1433,28 +1433,30 @@ Source: Sonnet QC architectural review 2026-05-14
 ### P-S16-6: Indus Foods + helping-doctors converter validation
 Spec 16 §9 item 7 (closure criterion): run converter on second client without code changes. Indus Foods and helping-doctors mockups exist but haven't been tested yet. Schedule after Mama's Phase 4 closes.
 
-### P-S17-W3-HEADER-RULES-SPLIT: Split class-sgs-header-rules.php (399 lines) + class-sgs-header-rules-admin.php (303 lines)
-FR-S3-2 Round-1 Opus subagent delivered both files over the 300-line PHP cap. The core engine file (399) is the more pressing split — proposed extraction: move the ReDoS guard helpers + the static-blacklist regex table into `class-sgs-header-rules-redos-guard.php` (~120 lines). Main engine drops to ~280. Admin file (303) is just barely over and can stay until the rules UI grows.
+### P-S17-W3-HEADER-RULES-SPLIT: Split class-sgs-header-rules.php — RESOLVED 2026-05-19
 
-Trigger: next time anything touches the rules engine OR alongside FR-S3-3 footer rules implementation (mirror the post-split structure for the footer twin so both stay aligned).
+**Resolution:** ReDoS guard helpers + static-blacklist regex table extracted to `class-sgs-header-rules-redos-guard.php`. Main engine dropped to ~280 lines. Footer rules engine (`class-sgs-footer-rules.php`) authored with the post-split structure from the start. Both engines under 300-line cap.
+
 Source: Round 1 Wave 3 dispatch 2026-05-18.
 
-### P-S17-W3-HEADER-RULES-TESTS: Add HeaderRulesTest + HeaderRulesReDoSGuardTest (missing from Round 1)
-FR-S3-2 subagent ran out of attention before writing the 15 tests specified in its brief. Production code lands functional but has zero test coverage. Round 1 follow-up dispatch added them inline this same session — IF that follow-up succeeded, this parking item is closed. If not, dispatch a tight Sonnet to add the 15 tests next session (8 engine + 7 ReDoS guard).
+### P-S17-W3-HEADER-RULES-TESTS: Add HeaderRulesTest + HeaderRulesReDoSGuardTest — RESOLVED 2026-05-19
+
+**Resolution:** Follow-up dispatch in the same session added `HeaderRulesTest.php` (8 engine tests) + `HeaderRulesReDoSGuardTest.php` (7 guard tests) to `plugins/sgs-blocks/tests/php/`. All 15 tests passing.
+
 Source: Round 1 Wave 3 truncated final response 2026-05-18.
 
-### P-S17-W3-VARIATION-PICKER-SPLIT: Split class-sgs-variation-picker.php (316 lines)
-FR-S5-2 subagent landed 316 lines after trimming an active-variation hint to stay close to cap. Marginal violation. Split the legacy theme_mod migration helpers (maybe_migrate_legacy_theme_mod + restore_legacy_theme_mod + backup option constants) into `class-sgs-legacy-theme-mod-migrator.php` (~70 lines). Main picker class drops to ~245.
+### P-S17-W3-VARIATION-PICKER-SPLIT: Split class-sgs-variation-picker.php — RESOLVED 2026-05-19
 
-Trigger: when next adding any feature to the variation picker OR alongside FR-S5-3 WP-CLI implementation (the migrator helper will be wrapped by `wp sgs theme-mod restore` then).
+**Resolution:** Legacy theme_mod migration helpers extracted to `class-sgs-legacy-theme-mod-migrator.php` (~70 lines). Main picker class dropped to ~245 lines. `wp sgs theme-mod restore` CLI command wraps the migrator as planned.
+
 Source: Round 1 Wave 3 dispatch 2026-05-18.
 
-### P-S17-W1B-SANITIZE-KEY-STRIPS-SLASH: `Sgs_Template_Part_Meta::mark_seeded()` mangles pattern slugs
-FR-S2-1 subagent flagged: `Sgs_Template_Part_Meta::mark_seeded()` (shipped Wave 1B) runs `sanitize_key()` on the pattern slug before storing. `sanitize_key()` strips `/`, so `sgs/framework-header-default` is stored as `sgsframework-header-default`. The slug-comparison guard in `Sgs_Template_Part_Seeder::maybe_seed()` still works because both sides sanitize identically, but round-trip integrity is lost — downstream code reading `_sgs_cloned_from_pattern_slug` cannot resolve back to a pattern in `WP_Block_Patterns_Registry` without manual mangling.
+### P-S17-W1B-SANITIZE-KEY-STRIPS-SLASH: `Sgs_Template_Part_Meta::mark_seeded()` mangles pattern slugs — RESOLVED 2026-05-19
 
-Fix: replace `sanitize_key()` with a custom sanitiser that allows `[a-z0-9_/\-]` (allows slash). Update Wave 1B's existing tests + add a round-trip integrity test. Touch points: `plugins/sgs-blocks/includes/class-sgs-template-part-meta.php` + its PHPUnit file.
+**Resolution:** `sanitize_key()` replaced with custom sanitiser allowing `[a-z0-9_/\-]` (preserves slash). Round-trip integrity test added to the template-part-meta PHPUnit file. `wp sgs reset-template-parts` now displays the canonical slug without mangling.
 
-Trigger: anytime any downstream code (e.g. FR-S5-3 CLI `wp sgs reset-template-parts` showing operators what's currently seeded) needs to display the seeded slug to humans.
+Touch points: `plugins/sgs-blocks/includes/class-sgs-template-part-meta.php` + `plugins/sgs-blocks/tests/php/TemplatePartMetaTest.php`.
+
 Source: FR-S2-1 Round 1 subagent finding 2026-05-18.
 
 ### P-S17-W2-ADMIN-SPLIT: Split class-sgs-site-info-admin.php (502 lines → ~250 + ~80 + existing fields companion)
