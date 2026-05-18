@@ -5,7 +5,6 @@ import {
 	SelectControl,
 	TextControl,
 	RangeControl,
-	ToggleControl,
 } from '@wordpress/components';
 import { DesignTokenPicker } from '../../components';
 import { colourVar } from '../../utils';
@@ -17,30 +16,56 @@ const BG_SHAPES = [
 	{ label: __( 'Square', 'sgs-blocks' ), value: 'square' },
 ];
 
+const LINK_TARGET_OPTIONS = [
+	{ label: __( 'Same tab', 'sgs-blocks' ), value: '_self' },
+	{ label: __( 'New tab', 'sgs-blocks' ), value: '_blank' },
+];
+
+/**
+ * Size modifiers for editor preview.
+ *
+ * @param {number} size px value
+ * @return {string} BEM modifier class
+ */
+function sizeModifier( size ) {
+	if ( size <= 20 ) {
+		return 'sgs-icon--size-small';
+	}
+	if ( size <= 40 ) {
+		return 'sgs-icon--size-medium';
+	}
+	if ( size <= 64 ) {
+		return 'sgs-icon--size-large';
+	}
+	return 'sgs-icon--size-custom';
+}
+
 export default function Edit( { attributes, setAttributes } ) {
 	const {
-		icon,
-		size,
+		iconName,
+		iconSize,
 		iconColour,
 		backgroundColour,
 		backgroundShape,
-		link,
-		linkOpensNewTab,
-		linkLabel,
+		linkUrl,
+		linkTarget,
+		ariaLabel,
 	} = attributes;
 
 	const blockAlign = attributes.align || 'center';
-	const className = [
+	const className  = [
 		'sgs-icon',
+		sizeModifier( iconSize ),
 		backgroundShape !== 'none' && `sgs-icon--bg-${ backgroundShape }`,
 		`align${ blockAlign }`,
 	].filter( Boolean ).join( ' ' );
 
 	const style = {
-		width: `${ size }px`,
-		height: `${ size }px`,
-		color: colourVar( iconColour ) || undefined,
-		backgroundColor: backgroundColour ? colourVar( backgroundColour ) : undefined,
+		'--sgs-icon-size': `${ iconSize }px`,
+		color:             colourVar( iconColour ) || undefined,
+		backgroundColor:   backgroundColour && backgroundShape !== 'none'
+			? colourVar( backgroundColour )
+			: undefined,
 	};
 
 	const blockProps = useBlockProps( { className, style } );
@@ -51,17 +76,18 @@ export default function Edit( { attributes, setAttributes } ) {
 				<PanelBody title={ __( 'Icon', 'sgs-blocks' ) }>
 					<TextControl
 						label={ __( 'Icon name (Lucide)', 'sgs-blocks' ) }
-						help={ __( 'Enter a Lucide icon name, e.g. "heart", "star", "arrow-right"', 'sgs-blocks' ) }
-						value={ icon }
-						onChange={ ( val ) => setAttributes( { icon: val } ) }
+						help={ __( 'Enter any Lucide icon name, e.g. "heart", "star", "arrow-right". All 1917 icons are supported.', 'sgs-blocks' ) }
+						value={ iconName }
+						onChange={ ( val ) => setAttributes( { iconName: val.trim() } ) }
 						__nextHasNoMarginBottom
 					/>
 					<RangeControl
 						label={ __( 'Size (px)', 'sgs-blocks' ) }
-						value={ size }
-						onChange={ ( val ) => setAttributes( { size: val } ) }
+						value={ iconSize }
+						onChange={ ( val ) => setAttributes( { iconSize: val } ) }
 						min={ 16 }
 						max={ 128 }
+						step={ 4 }
 						__nextHasNoMarginBottom
 					/>
 					<DesignTokenPicker
@@ -91,32 +117,47 @@ export default function Edit( { attributes, setAttributes } ) {
 				<PanelBody title={ __( 'Link', 'sgs-blocks' ) } initialOpen={ false }>
 					<TextControl
 						label={ __( 'Link URL', 'sgs-blocks' ) }
-						value={ link }
-						onChange={ ( val ) => setAttributes( { link: val } ) }
+						value={ linkUrl }
+						onChange={ ( val ) => setAttributes( { linkUrl: val } ) }
 						type="url"
 						__nextHasNoMarginBottom
 					/>
-					{ link && (
-						<TextControl
-							label={ __( 'Accessible label', 'sgs-blocks' ) }
-							help={ __( 'Describes the link destination for screen readers. Defaults to the icon name if left blank.', 'sgs-blocks' ) }
-							value={ linkLabel }
-							onChange={ ( val ) => setAttributes( { linkLabel: val } ) }
+					{ linkUrl && (
+						<SelectControl
+							label={ __( 'Open in', 'sgs-blocks' ) }
+							value={ linkTarget }
+							options={ LINK_TARGET_OPTIONS }
+							onChange={ ( val ) => setAttributes( { linkTarget: val } ) }
 							__nextHasNoMarginBottom
 						/>
 					) }
-					<ToggleControl
-						label={ __( 'Open in new tab', 'sgs-blocks' ) }
-						checked={ linkOpensNewTab }
-						onChange={ ( val ) => setAttributes( { linkOpensNewTab: val } ) }
+				</PanelBody>
+
+				<PanelBody title={ __( 'Accessibility', 'sgs-blocks' ) } initialOpen={ false }>
+					<TextControl
+						label={ __( 'Accessible label', 'sgs-blocks' ) }
+						help={
+							linkUrl
+								? __( 'Describes the link destination for screen readers. Defaults to the icon name when blank.', 'sgs-blocks' )
+								: __( 'Describes the icon for screen readers. Leave blank for decorative icons (they will be hidden from assistive technology).', 'sgs-blocks' )
+						}
+						value={ ariaLabel }
+						onChange={ ( val ) => setAttributes( { ariaLabel: val } ) }
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				<span className="sgs-icon__placeholder" aria-hidden="true">
-					{ icon }
+				{ /* Editor preview: show icon name as text. The actual SVG is rendered
+				     server-side via render.php using sgs_get_lucide_icon(). */ }
+				<span
+					className={ `sgs-icon__svg sgs-icon__svg--preview` }
+					aria-hidden="true"
+					title={ iconName }
+				>
+					{ /* Placeholder showing icon name slug in editor */ }
+					<span className="sgs-icon__placeholder">{ iconName }</span>
 				</span>
 			</div>
 		</>
