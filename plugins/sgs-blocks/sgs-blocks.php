@@ -159,6 +159,12 @@ Sgs_Template_Part_Resetter::register();
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-block-cpts.php';
 Sgs_Block_CPTs::register();
 
+// SGS Floating UI — Customiser controls + frontend renderer (replaces retired back-to-top + reading-progress blocks).
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-floating-ui-customiser.php';
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-floating-ui-renderer.php';
+Sgs_Floating_UI_Customiser::register();
+Sgs_Floating_UI_Renderer::register();
+
 // Register GDPR personal data exporters and erasers.
 Forms\Form_Privacy::register();
 

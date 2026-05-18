@@ -1,5 +1,32 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-18 (1 new lesson — BEM regex char-class `[a-z0-9-]` matches consecutive `--` and silently lets modifier shapes through what looks like a block-root-only filter)
+**Last updated:** 2026-05-18 (2 new lessons — build-replacement-before-retiring + BEM regex char-class)
+
+## 2026-05-18 — Retired legacy feature before the replacement was built
+
+**What:** Spec 17 Wave 2 Polish 1b deleted the `sgs/back-to-top` + `sgs/reading-progress` Gutenberg blocks because their `render.php` returned empty strings (test debt — both blocks were no-op shims pending a Customiser-based replacement). The "replacement" — Customiser → SGS Floating UI panel — was named as a future promise. It didn't exist on disk.
+
+**Why it happened:** During the 4-rater QC pass, reviewer R4 (user-impact) flagged the deletion as a UX gap requiring an admin notice. I added the notice ("Customiser → SGS Floating UI panel — coming in the next release") and called it resolved. The notice softened the visible regression but didn't undo it. Bean's pull-back at session 2026-05-18 close: "Why did you retire the floating UI before you had built the replacement?"
+
+**The mistake:** sequence was retire → promise → (much later) replace. Operators with existing block instances on live posts immediately saw WordPress's generic "block deleted" placeholder. The notice told them the replacement was coming, but couldn't do anything about the broken posts in the meantime.
+
+**The fix:** correct sequence is replace → migrate → retire:
+  1. Build `Sgs_Floating_UI_Customiser` + `Sgs_Floating_UI_Renderer` first
+  2. Verify on dev site (Playwright check: button shows on scroll, progress bar fills)
+  3. Add operator notice pointing at the new Customiser controls
+  4. THEN remove the broken blocks
+
+**Pattern to avoid in future:**
+- Before recommending block / feature / class / endpoint removal, ask: "does the replacement exist on disk + does it pass tests?"
+- If no, scope removal as Step N of a plan where Step 1 is "build replacement"
+- If a QC reviewer suggests "option 1b: unregister entirely" for a broken-by-design feature, do not pick it unless the replacement already shipped
+- Operator-visible degradation is the cost; "shipping clean code" is not worth that cost
+- Add a verification gate to /qc panels: when ANY reviewer flags "deleted feature has no replacement", BLOCK the deletion until the replacement file exists + has passing tests
+
+**Related lesson:** sibling rule `feedback_dont_delete_db_rows_on_ghost_verdict.md` (2026-05-11) — same shape, different domain (DB rows vs code features).
+
+**Captured 2026-05-18.** Resolution: Customiser → SGS Floating UI panel built in session 2026-05-19 as a Sonnet subagent dispatch (~20 min wall clock).
+
+
 
 ## 2026-05-18 — BEM regex `[a-z0-9-]*` silently matches `--modifier` shapes
 
