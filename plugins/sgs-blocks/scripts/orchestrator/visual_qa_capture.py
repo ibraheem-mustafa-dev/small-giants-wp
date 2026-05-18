@@ -222,5 +222,28 @@ def make_capture_callable(ctx: CaptureContext) -> Callable[[int], dict]:
 
 
 def stub_capture(_viewport_px: int) -> dict:
-    """Default-safe callable that returns a clean diff (used in tests + dry runs)."""
-    return {"diff_ratio": 0.0, "screenshot_path": "", "regions": []}
+    """DEPRECATED -- do not use in production paths.
+
+    Returns a ``stage_8_skipped`` sentinel that autonomy_gate.autonomy_decision()
+    treats as ``surface-to-operator`` (never auto-pass).
+
+    The name is preserved for backwards compatibility with callers that already
+    import it by name (e.g. sgs-clone-orchestrator.py), but callers should
+    treat the returned dict as a skip signal, not a clean pass.
+
+    If you genuinely want a smoke-test that bypasses visual QA, pass
+    ``--smoke-stage-8`` to the orchestrator (not yet implemented -- flag
+    intentionally absent so operators cannot accidentally opt in to a silent
+    pass).
+    """
+    return {
+        "diff_ratio":       None,
+        "screenshot_path":  "",
+        "regions":          [],
+        "stage_8_skipped":  True,
+        "skip_reason":      (
+            "Stage 8 visual QA was skipped because --clone-url was not supplied. "
+            "Operator must run /visual-qa against the deployed URL manually, "
+            "OR re-run with --clone-url=<staging-url> to enforce the 1% gate."
+        ),
+    }

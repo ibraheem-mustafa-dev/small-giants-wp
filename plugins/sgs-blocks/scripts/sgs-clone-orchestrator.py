@@ -925,7 +925,13 @@ def stage_3_slot_list(match_output: dict, run_dir: Path) -> dict:
 # ---------------------------------------------------------------------------
 
 def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: dict | None = None) -> dict:
-    """Stage 4-8 -- delegate to tools/recogniser-v2/extract.py (single-section v1)."""
+    """Stage 4-8 -- extract, token-snap, compose, and serialise per boundary.
+
+    cv2 (converter_v2) is the only supported extraction path. Legacy
+    tools/recogniser-v2/extract.py subprocess is permanently retired.
+    Non-SGS-BEM boundaries halt with status 'unmatched-non-bem-compliant'
+    and an operator-actionable warning (no subprocess fallback).
+    """
     # Module-level cache populated lazily on first --debug-trace cv2 dispatch.
     # Without `global`, the assignment at the cv2 branch makes _trace_mod local
     # to this function and the prior `is None` check raises UnboundLocalError,
@@ -1211,214 +1217,46 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                 })
                 continue
 
-        per_section_out = run_dir / f"extract-{boundary_id}.json"
-        cmd = [
-            sys.executable,
-            str(REPO / "tools" / "recogniser-v2" / "extract.py"),
-            "--mockup", str(args.mockup),
-            "--section", section_selector,
-            "--block", target_block,
-            "--out", str(per_section_out),
-        ]
-        if args.media_map:
-            cmd.extend(["--media-map", str(args.media_map)])
-        if args.viewport:
-            cmd.extend(["--viewport", str(args.viewport)])
-        if args.no_playwright:
-            cmd.append("--no-playwright")
-
-        proc = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8")
-        section_status = "complete"
-        section_attrs: dict = {}
-        section_markup = ""
-        section_coverage: dict = {}
-        _emit(_trace_for(run_dir), stage="stage_4_extract_subprocess",
-              boundary_id=boundary_id, section_selector=section_selector,
-              target_block=target_block, exit_code=proc.returncode)
-        if proc.returncode != 0:
-            aggregate_errors.append(f"{boundary_id} ({section_selector} -> {target_block}): extract.py exit {proc.returncode}: {(proc.stderr or '')[:300]}")
-            section_status = "failed"
-        elif per_section_out.exists():
-            try:
-                extracted = json.loads(per_section_out.read_text(encoding="utf-8"))
-                section_attrs = extracted.get("attributes") or {}
-                section_markup = extracted.get("markup") or ""
-                section_coverage = extracted.get("coverage") or {}
-            except json.JSONDecodeError as e:
-                aggregate_warnings.append(f"{boundary_id}: extract result malformed: {e}")
-                section_status = "warning"
-
-        # Stage 4.5 -- snap raw extracted values to theme.json token slugs
-        # via token_resolver.resolve_batch (Phase 6 v2 Step 4a). For each attr:
-        # if confidence >= threshold, replace raw value with token_slug so
-        # block.json attributes hold slug references; else flag as gap candidate
-        # for the (still-unwired) Stage 9 gap-writers to consume.
-        section_token_resolutions: list[dict] = []
-        if section_attrs and theme_json:
-            try:
-                tr = token_resolver()
-                tr_items = [{"block_slug": target_block, "attr_name": k, "raw_value": v}
-                            for k, v in section_attrs.items()]
-                section_token_resolutions = tr.resolve_batch(tr_items, theme_json, run_dir=run_dir)
-                for res in section_token_resolutions:
-                    if not res.get("is_gap_candidate") and res.get("token_slug") is not None:
-                        section_attrs[res["attr_name"]] = res["token_slug"]
-            except Exception as exc:  # noqa: BLE001 - token snap is additive; soft-fail
-                _emit(_trace_for(run_dir), stage="stage_4_5_token_resolver_softfail",
-                      boundary_id=boundary_id, exception_type=type(exc).__name__,
-                      exception_str=str(exc), raw_values_preserved=True,
-                      variation_router_skipped=True)
-                aggregate_warnings.append(f"{boundary_id}: token_resolver soft-failed: {exc}; raw values preserved")
-                # Sonnet QC panel 2026-05-14: when 4a fails, 4b's
-                # variation_router dispatch silently no-ops via the empty
-                # section_token_resolutions guard. Surface that so operators
-                # debugging a zero-new-tokens client run see the propagated
-                # cause without having to read source.
-                aggregate_warnings.append(f"{boundary_id}: variation_router gap-token writes also skipped (suppressed by upstream token_resolver failure)")
-
-        # Stage 4.5 (Phase 6 v2 Step 4b) -- route every is_gap_candidate=true
-        # resolution into the client's style variation JSON via variation_router.
-        # Slug derivation reuses token-lint._generate_slug so candidates match
-        # the rules tested in token-lint's additive-discovery suite. Soft-fail
-        # so a variation write hiccup never breaks the extract loop.
-        section_new_tokens_written: list[tuple[str, str]] = []
-        _client_slug = getattr(args, "client", "") or ""
-        if section_token_resolutions and _client_slug:
-            try:
-                vr = variation_router()
-                tl = _token_lint()
-                _theme_root = REPO / "theme" / "sgs-theme"
-                for res in section_token_resolutions:
-                    if not res.get("is_gap_candidate"):
-                        continue
-                    role = res.get("role")
-                    raw_value = res.get("raw_value")
-                    token_lint_class = _TOKEN_RESOLVER_ROLE_TO_TOKEN_LINT_CLASS.get(role)
-                    if token_lint_class is None:
-                        continue
-                    if not isinstance(raw_value, str) or not raw_value.strip():
-                        continue
-                    slug = tl._generate_slug(token_lint_class, raw_value, res.get("attr_name", "") or "")
-                    if not slug:
-                        continue
-                    report = vr.add_token(
-                        _client_slug, role, slug, raw_value.strip(),
-                        theme_root=_theme_root, write=True,
-                        run_dir=run_dir,
-                    )
-                    if report.get("action") in ("inserted", "updated"):
-                        section_new_tokens_written.append((role, slug))
-                        # Reflect the new token into the in-memory theme_json
-                        # so the next section's token_resolver can snap to
-                        # the new slug instead of re-flagging the same value.
-                        _reflect_new_token_in_theme_json(theme_json, role, slug, raw_value)
-            except Exception as exc:  # noqa: BLE001 - variation routing is additive; soft-fail
-                aggregate_warnings.append(f"{boundary_id}: variation_router soft-failed: {exc}; gap tokens not written")
-
-        # Load target block.json once -- consumed by Step 4c (supports_writer)
-        # and Step 4d (modifier_extractors.match_block_variation). Soft-fail to
-        # an empty dict so downstream dispatches no-op gracefully when the file
-        # is missing (deferred fallback blocks, dynamically scaffolded blocks).
-        _block_slug_local = target_block.split("/")[-1] if "/" in target_block else target_block
-        _block_json_path = REPO / "plugins" / "sgs-blocks" / "src" / "blocks" / _block_slug_local / "block.json"
-        block_json: dict = {}
-        if _block_json_path.exists():
-            try:
-                block_json = json.loads(_block_json_path.read_text(encoding="utf-8"))
-            except json.JSONDecodeError as exc:
-                aggregate_warnings.append(f"{boundary_id}: block.json parse error: {exc}; downstream dispatches skipped")
-
-        # Stage 5+6 prep (Phase 6 v2 Step 4c) -- supports-first override decision.
-        # For each resolved attribute, ask supports_writer whether the value
-        # matches the WP supports cascade default; emit-or-omit decision lands
-        # on the per_section result so Step 4i staged-apply + Step 4j
-        # wp_integration can strip cascade-matching overrides at deploy time.
-        # supports_writer transitively loads value-matcher/inheritance.py so
-        # the Phase 5 inheritance lookup fires through this single dispatch.
-        # Soft-fail so a missing block.json or registry quirk never blocks
-        # the extract loop -- absence of supports decisions == emit everything.
-        section_supports_decisions: list[dict] = []
-        section_supports_omitted: dict = {}
-        section_supports_emitted: dict = dict(section_attrs)
-        if section_attrs and theme_json and block_json:
-            try:
-                sw = supports_writer()
-                decision_bundle = sw.filter_writes(target_block, section_attrs, block_json, theme_json, run_dir=run_dir)
-                section_supports_decisions = decision_bundle.get("decisions") or []
-                section_supports_omitted = decision_bundle.get("omitted_attributes") or {}
-                section_supports_emitted = decision_bundle.get("emitted_attributes") or dict(section_attrs)
-            except Exception as exc:  # noqa: BLE001 - supports decision is advisory; soft-fail
-                aggregate_warnings.append(f"{boundary_id}: supports_writer soft-failed: {exc}; cascade override stripping skipped")
-
-        # Stage 6 prep (Phase 6 v2 Step 4d) -- modifier_extractors classifies
-        # post-extract / pre-emission modifiers. Three independent dispatches:
-        #   button_role(visual_attrs)            -> primary/secondary/ghost
-        #   dynamic_link(href)                   -> :verb(args) parse for FR25
-        #   match_block_variation(block_json,    -> best registered variation +
-        #                         extracted_attrs)  per-instance overrides
-        # All three are pure functions; their outputs land on per_section_results
-        # as modifier_signals so Step 7 compose / Step 4i staged-apply can act
-        # on them. Soft-fail per dispatch -- one failing classifier never blocks
-        # the others.
-        section_modifier_signals: dict = {}
-        if section_attrs:
-            try:
-                me = modifier_extractors()
-                # button-role: only meaningful for button-shaped blocks.
-                if "button" in (target_block or "").lower():
-                    try:
-                        section_modifier_signals["button_role"] = me.button_role(section_attrs)
-                    except Exception as exc:  # noqa: BLE001
-                        aggregate_warnings.append(f"{boundary_id}: modifier_extractors.button_role soft-failed: {exc}")
-                # dynamic-link: parse every href-like attribute value once.
-                dyn_links: dict = {}
-                for k, v in section_attrs.items():
-                    if not isinstance(v, str):
-                        continue
-                    if not v.lstrip().startswith(":"):
-                        continue
-                    parsed = me.dynamic_link(v)
-                    if parsed.get("parsed"):
-                        dyn_links[k] = parsed
-                if dyn_links:
-                    section_modifier_signals["dynamic_links"] = dyn_links
-                # match-block-variation: only when block.json declares variations.
-                if block_json.get("variations"):
-                    try:
-                        section_modifier_signals["block_variation"] = me.match_block_variation(
-                            block_json, section_attrs,
-                        )
-                    except Exception as exc:  # noqa: BLE001
-                        aggregate_warnings.append(f"{boundary_id}: modifier_extractors.match_block_variation soft-failed: {exc}")
-            except Exception as exc:  # noqa: BLE001 - module load failure; soft-fail
-                aggregate_warnings.append(f"{boundary_id}: modifier_extractors soft-failed: {exc}")
-
+        # cv2 is the only supported converter path (Bean directive 2026-05-18).
+        # Legacy tools/recogniser-v2/extract.py subprocess is permanently retired.
+        # If we reach this point, _cv2_eligible is False — the boundary's
+        # class_signature is not SGS-BEM canonical. Halt with a clear operator-
+        # actionable message; collect ALL non-compliant boundaries in one pass
+        # so the operator sees the complete picture without re-running.
+        _non_bem_class_sig = boundary.get("class_signature") or []
+        _non_bem_sig_str = " ".join(_non_bem_class_sig) if isinstance(_non_bem_class_sig, list) else str(_non_bem_class_sig)
+        _non_bem_warning = (
+            f"{boundary_id}: section class '{_non_bem_sig_str}' is not SGS-BEM compliant; "
+            f"cv2 cannot process it. Re-author per Spec 13 §8.1 "
+            f"(.sgs-<block>__<element>--<modifier>) or run /uimax-sgs-scrape-pattern "
+            f"first to convert external classes."
+        )
+        aggregate_warnings.append(_non_bem_warning)
+        _emit(
+            _trace_for(run_dir),
+            stage="stage_4_non_bem_halt",
+            boundary_id=boundary_id,
+            class_signature=_non_bem_class_sig,
+            reason="non-bem-compliant",
+        )
         per_section_results.append({
             "boundary_id": boundary_id,
             "section_id": m.get("section_id"),
             "selector": section_selector,
             "block_name": target_block,
-            "status": section_status,
-            "extract_path": str(per_section_out),
-            "extracted_attributes": section_attrs,
-            "block_markup": section_markup,
-            "token_resolutions": section_token_resolutions,
-            "new_tokens_written": section_new_tokens_written,
-            "supports_decisions": section_supports_decisions,
-            "supports_emitted_attributes": section_supports_emitted,
-            "supports_omitted_attributes": section_supports_omitted,
-            "modifier_signals": section_modifier_signals,
+            "status": "unmatched-non-bem-compliant",
+            "extract_path": "",
+            "extracted_attributes": {},
+            "block_markup": "",
+            "token_resolutions": [],
+            "new_tokens_written": [],
+            "supports_decisions": [],
+            "supports_emitted_attributes": {},
+            "supports_omitted_attributes": {},
+            "modifier_signals": {},
+            "class_signature": _non_bem_class_sig,
         })
-
-        # Aggregate attributes prefixed with section_id so multi-section
-        # results do not collide on the same attribute name (e.g. headline).
-        section_id = m.get("section_id") or boundary_id
-        for k, v in section_attrs.items():
-            aggregate_attributes[f"{section_id}.{k}"] = v
-        if section_markup:
-            aggregate_markup_parts.append(section_markup)
-        if section_coverage:
-            aggregate_coverage[section_id] = section_coverage
+        continue
 
     # Also write a single legacy extract-result.json so existing tooling
     # that expects one file still finds something.
@@ -1855,9 +1693,12 @@ def main():
              "recommended ON for /sgs-clone debugging walkdowns.",
     )
     parser.add_argument(
-        "--converter-v2", action="store_true", default=False,
-        help="Use Spec 16 converter_v2 for SGS-BEM-canonical sections "
-             "(replaces legacy extract.py for those sections).",
+        "--converter-v2", action="store_true", default=True,
+        help="Use Spec 16 converter_v2 (default: True — cv2 is the only supported "
+             "converter path; legacy extract.py subprocess is disabled). Passing "
+             "--converter-v2 explicitly is a no-op (idempotent). Non-SGS-BEM "
+             "boundaries halt with a clear remediation message rather than "
+             "falling through to the retired legacy extractor.",
     )
     args = parser.parse_args()
 

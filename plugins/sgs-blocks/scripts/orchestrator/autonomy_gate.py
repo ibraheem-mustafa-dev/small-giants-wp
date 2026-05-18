@@ -12,9 +12,17 @@ Four tightly-coupled pieces of the post-merge autonomy chain:
        (production: dispatched via /visual-qa skill; tests: deterministic
        stub) so this module is testable without a live browser.
 
+       When the callable returns ``stage_8_skipped=True`` (i.e. the
+       stub_capture sentinel from visual_qa_capture.py), the result
+       bundle carries ``stage_8_skipped=True`` and NO viewport diffs.
+       autonomy_decision() then emits ``surface-to-operator`` -- never
+       auto-proceed -- with an operator-actionable note.
+
   5e.5 autonomy_decision(visual_qa_result, console_errors, preflight)
        Decision: PASS only when diff <= pass_threshold AND zero console
        errors AND zero failed pre-flights. Otherwise surface to operator.
+       When stage_8_skipped=True: ALWAYS surface-to-operator (never
+       auto-proceed via a silent zero diff).
 
   5e.6 auto_invoke_sgs_update(...)
        After PASS, runs /sgs-update so sgs-framework.db reflects any
@@ -89,10 +97,33 @@ def invoke_visual_qa(
     run_dir = _so.run_dir(run_id, root=out_root)
     run_dir.mkdir(parents=True, exist_ok=True)
 
+    # Probe the capture callable with the first viewport to detect a skip
+    # sentinel before iterating all viewports.  The sentinel is returned by
+    # visual_qa_capture.stub_capture() when --clone-url is absent.
+    first_probe = capture(cfg["viewports"][0])
+    if first_probe.get("stage_8_skipped"):
+        skip_reason = first_probe.get(
+            "skip_reason",
+            "Stage 8 visual QA was skipped because --clone-url was not supplied. "
+            "Operator must run /visual-qa against the deployed URL manually, "
+            "OR re-run with --clone-url=<staging-url> to enforce the 1% gate.",
+        )
+        bundle = {
+            "run_id":          run_id,
+            "viewports":       [],
+            "max_diff_ratio":  None,   # explicitly None -- not 0.0
+            "config":          cfg,
+            "stage_8_skipped": True,
+            "skip_reason":     skip_reason,
+        }
+        _so.write_artefact(run_id, 8, bundle, name="visual_qa", root=out_root)
+        return bundle
+
     per_viewport: list[dict] = []
     max_diff = 0.0
-    for vp in cfg["viewports"]:
-        capture_result = capture(vp)
+    # Process first_probe result (already captured above)
+    for idx, vp in enumerate(cfg["viewports"]):
+        capture_result = first_probe if idx == 0 else capture(vp)
         diff_ratio = float(capture_result.get("diff_ratio", 0.0))
         max_diff = max(max_diff, diff_ratio)
         regions = capture_result.get("regions") or []
@@ -141,7 +172,25 @@ def autonomy_decision(
     surface_threshold = cfg["surface_threshold"]
     fail_on_console = cfg.get("fail_on_console_error", True)
 
-    diff = float(visual_qa_result.get("max_diff_ratio", 0.0))
+    # Stage-8 skip sentinel: --clone-url was not supplied so no real capture ran.
+    # MUST NOT auto-proceed -- surface to operator with actionable instructions.
+    if visual_qa_result.get("stage_8_skipped"):
+        skip_reason = visual_qa_result.get(
+            "skip_reason",
+            "Stage 8 visual QA was skipped because --clone-url was not supplied. "
+            "Operator must run /visual-qa against the deployed URL manually, "
+            "OR re-run with --clone-url=<staging-url> to enforce the 1% gate.",
+        )
+        return {
+            "decision":        "surface-to-operator",
+            "reasons":         [f"stage-8-skipped: {skip_reason}"],
+            "diff_ratio":      None,   # no measurement was taken
+            "stage_8_skipped": True,
+            "thresholds":      {"pass": pass_threshold, "surface": surface_threshold},
+        }
+
+    diff_raw = visual_qa_result.get("max_diff_ratio")
+    diff = float(diff_raw) if diff_raw is not None else 0.0
     reasons: list[str] = []
 
     # Halt path: hard fails
@@ -255,18 +304,38 @@ def emit_deliverable(
 
     # Visual-QA section
     vqa = summary.get("visual_qa") or {}
+    stage_8_skipped = vqa.get("stage_8_skipped") or autonomy.get("stage_8_skipped")
     if vqa:
         lines.append("## Visual parity")
         lines.append("")
-        lines.append("| Viewport | Diff ratio | Surfaced regions |")
-        lines.append("|---:|---:|---:|")
-        for vp in vqa.get("viewports") or []:
-            lines.append(
-                f"| {vp.get('viewport')} | {vp.get('diff_ratio', 0):.4f} | "
-                f"{len(vp.get('surfaced_regions') or [])} |"
+        if stage_8_skipped:
+            skip_reason = (
+                vqa.get("skip_reason")
+                or autonomy.get("reasons", [""])[0].replace("stage-8-skipped: ", "")
+                or (
+                    "Stage 8 visual QA was skipped because --clone-url was not supplied. "
+                    "Operator must run /visual-qa against the deployed URL manually, "
+                    "OR re-run with --clone-url=<staging-url> to enforce the 1% gate."
+                )
             )
-        lines.append(f"\n**Max diff across viewports:** {vqa.get('max_diff_ratio', 0):.4f}")
-        lines.append("")
+            lines.append(
+                "> **Stage 8 not run -- deploy decision deferred to operator.**"
+            )
+            lines.append("")
+            lines.append(skip_reason)
+            lines.append("")
+        else:
+            lines.append("| Viewport | Diff ratio | Surfaced regions |")
+            lines.append("|---:|---:|---:|")
+            for vp in vqa.get("viewports") or []:
+                lines.append(
+                    f"| {vp.get('viewport')} | {vp.get('diff_ratio', 0):.4f} | "
+                    f"{len(vp.get('surfaced_regions') or [])} |"
+                )
+            max_diff = vqa.get("max_diff_ratio")
+            if max_diff is not None:
+                lines.append(f"\n**Max diff across viewports:** {max_diff:.4f}")
+            lines.append("")
 
     # Applied stages
     if "applied_stages" in summary:

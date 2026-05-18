@@ -431,21 +431,29 @@ def test_register_run_canonical_dbs_untouched(tmp_path: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Test 8 -- stub_capture returns the expected clean-diff shape
+# Test 8 -- stub_capture returns the skip-sentinel shape (not a clean 0.0 diff)
 # ---------------------------------------------------------------------------
-def test_stub_capture_returns_clean_diff() -> None:
+def test_stub_capture_returns_skip_sentinel() -> None:
+    """stub_capture must return a stage_8_skipped sentinel, NOT diff_ratio=0.0.
+
+    The old assertion (diff_ratio == 0.0) was the silent-pass bug described
+    in FR7.  Replaced 2026-05 to assert the correct sentinel behaviour.
+    """
     result = vqc.stub_capture(1440)
     assert isinstance(result, dict), f"Expected dict, got {type(result)}"
-    assert "diff_ratio" in result, f"Missing 'diff_ratio' key. Keys: {list(result.keys())}"
     assert "screenshot_path" in result, f"Missing 'screenshot_path' key. Keys: {list(result.keys())}"
     assert "regions" in result, f"Missing 'regions' key. Keys: {list(result.keys())}"
-    assert result["diff_ratio"] == 0.0, (
-        f"Expected diff_ratio=0.0 for stub_capture, got {result['diff_ratio']}"
+    # FR7 fix: diff_ratio must be None (sentinel), not 0.0 (silent pass)
+    assert result.get("stage_8_skipped") is True, (
+        f"stub_capture must set stage_8_skipped=True; got: {result}"
+    )
+    assert result.get("diff_ratio") is None, (
+        f"stub_capture must return diff_ratio=None (not 0.0); got {result.get('diff_ratio')}"
     )
     assert isinstance(result["regions"], list), (
         f"Expected 'regions' to be a list, got {type(result['regions'])}"
     )
-    print("  PASS  test_stub_capture_returns_clean_diff")
+    print("  PASS  test_stub_capture_returns_skip_sentinel")
 
 
 # ---------------------------------------------------------------------------
@@ -533,7 +541,7 @@ def test_7(tmp_path):
 
 
 def test_8():
-    test_stub_capture_returns_clean_diff()
+    test_stub_capture_returns_skip_sentinel()
 
 
 def test_9():
@@ -767,7 +775,7 @@ if __name__ == "__main__":
     ]:
         with tempfile.TemporaryDirectory() as tmp:
             fn(Path(tmp))
-    test_stub_capture_returns_clean_diff()
+    test_stub_capture_returns_skip_sentinel()
     test_section_class_to_slug()
     test_composed_inner_blocks_lists_uniquely()
     print("\nREGISTER-PATTERNS-PHASE-6+V2-STEP-5: PASS (14/14)")
