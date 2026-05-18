@@ -67,8 +67,15 @@ final class Sgs_Block_CPTs {
 	public static function register_post_types(): void {
 
 		/**
-		 * Shared capability map — all paths require `edit_theme_options`.
+		 * Shared capability map — primitive caps only.
+		 *
 		 * Council M1: subscriber-level users cannot list or read entries via REST.
+		 * All primitives route to `edit_theme_options`. The singular meta-caps
+		 * `edit_post`, `read_post`, `delete_post` are deliberately omitted —
+		 * with `map_meta_cap => true` WP core derives them from these primitives
+		 * via `map_meta_cap()`. Listing meta-caps here triggers the WP 6.1+
+		 * `_doing_it_wrong( 'map_meta_cap', 'check against a specific post' )`
+		 * notice because core's mapper evaluates them as object-bound caps.
 		 *
 		 * @var array<string,string>
 		 */
@@ -76,12 +83,10 @@ final class Sgs_Block_CPTs {
 			'read'                   => 'edit_theme_options',
 			'read_private_posts'     => 'edit_theme_options',
 			'edit_posts'             => 'edit_theme_options',
-			'edit_post'              => 'edit_theme_options',
 			'edit_private_posts'     => 'edit_theme_options',
 			'edit_published_posts'   => 'edit_theme_options',
 			'edit_others_posts'      => 'edit_theme_options',
 			'publish_posts'          => 'edit_theme_options',
-			'delete_post'            => 'edit_theme_options',
 			'delete_posts'           => 'edit_theme_options',
 			'delete_private_posts'   => 'edit_theme_options',
 			'delete_published_posts' => 'edit_theme_options',

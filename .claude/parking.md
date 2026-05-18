@@ -1467,3 +1467,47 @@ Proposed split: extract `maybe_show_deprecated_blocks_notice()` + `handle_dismis
 Trigger: next time anything else gets added to `class-sgs-site-info-admin.php` (new section, new field type, new admin action) OR when Wave 3 starts. Until then, the file works fine; the cap is a maintainability target, not a runtime constraint.
 Source: 4-rater /qc panel 2026-05-19 (R3 architecture, A1 + A2 findings; subagent justified inline).
 
+
+### P-S17-FONT-COLLECTION-NOTICE: WP_Font_Collection sanitize_and_validate_data fires _doing_it_wrong on every WP-CLI invocation
+**Captured 2026-05-20.** `wp_register_font_collection('sgs-google-fonts', [..., 'src' => '<URL>'])` triggers `WP_Font_Collection::sanitize_and_validate_data` with the registration metadata (which has no `font_families` — those live in the JSON at `src`, intended to lazy-load). WP 6.5+ validator complains "missing or empty property: font_families".
+
+**Impact:** WP_DEBUG_DISPLAY is already `false` on staging so the notice is NOT user-visible in admin or frontend. Only appears in WP-CLI output (which respects different display rules). Functionally harmless — fonts work in the editor when the JSON URL is fetched.
+
+**Options when un-parking:**
+1. Register with `font_families` inline (load 2.5MB JSON via file_get_contents into a transient on first access) — heavy on cold cache
+2. Move registration from `init` to `current_screen` / `enqueue_block_editor_assets` so it only fires in editor context — clean
+3. Wait for WP core to fix the eager-validation regression — uncontrolled
+
+**Recommendation:** Option 2 next time we touch this file. Hook is currently `init` — switching to a hook fired only in the block-editor admin path silences CLI noise and avoids loading 1923 entries on every request.
+
+Touch point: `plugins/sgs-blocks/includes/class-font-collection.php`.
+Source: Session 2026-05-20 sandybrown smoke test (Spec 17 live verification).
+
+### P-S18-LEGACY-CUSTOMISER-CONTROLS-ORPHANED: 16 legacy floating-UI controls still registered alongside the canonical 7
+**Captured 2026-05-20.** Customiser section `sgs_floating_ui` has 23 controls registered, not 7. The canonical 7 (`sgs_floating_ui_*` prefix from Spec 18) are present. But 16 legacy controls with prefixes `sgs_back_to_top_*` (8) and `sgs_reading_progress_*` (8) are ALSO registered to the same section — orphan registrations from a prior iteration.
+
+**Operator impact:** opening `Appearance → Customise → SGS Floating UI` shows 23 controls. Some duplicate the canonical 7's purpose (e.g. `sgs_back_to_top_enabled` vs `sgs_floating_ui_back_to_top_enabled`). Confusing UX and risks operator setting one prefix while the renderer reads the other.
+
+**Touch points to investigate:**
+- `plugins/sgs-blocks/includes/class-sgs-floating-ui-customiser.php` (the canonical 7)
+- Grep for `add_control.*sgs_back_to_top` or `add_control.*sgs_reading_progress` (the orphans)
+
+**Fix sketch:** identify which file registers the legacy 16 and either delete (replacement is built, per build-replacement-before-retiring rule) or migrate any still-useful settings into the canonical 7.
+
+**Acceptance:** `wp eval` enumerating `sgs_floating_ui` section returns exactly 7 controls matching Spec 18.
+
+Source: Session 2026-05-20 sandybrown smoke test (Spec 17 live verification, Task 1).
+
+### P-S18-TRANSPARENT-PATTERN-IS-STUB: framework-header-transparent currently delegates 100% to default pattern
+**Captured 2026-05-20.** `theme/sgs-theme/patterns/framework-header-transparent.php` is `<!-- wp:pattern {"slug":"sgs/framework-header-default"} /-->` with a TODO comment "v1.1: variant-specific markup + transparent-over-hero behaviour."
+
+**Impact:** the conditional-rule engine cannot be verified end-to-end at the rendered-output layer for the transparent variant — both default and transparent rules produce byte-identical HTML. Resolver verification works in isolation (`Sgs_Header_Rules::evaluate()` returns 13151 bytes correctly), but the visible-distinction acceptance criterion from Spec 17 ("transparent header renders on homepage when rule fires") is untestable.
+
+**To un-park:** implement the transparent overlay variant per Spec 18 v1.1:
+- Sticky positioning with translucent background (likely `position: absolute; top: 0; background: rgba(255,255,255,0.8); backdrop-filter: blur(...)`)
+- A distinguishing wrapper class so visual diff tests can verify which variant fired
+- Once shipped, re-run the acceptance check by adding a rule with `is_front_page` condition and curling `/` to see the transparent classes appear.
+
+**Sibling patterns to audit at same time:** `sgs/framework-header-shrink`, `sgs/framework-header-sticky`, `sgs/framework-header-centred`, `sgs/framework-header-minimal` — check whether they're real variants or stubs delegating to default too.
+
+Source: Session 2026-05-20 sandybrown smoke test (Task 1 acceptance criterion 4).

@@ -157,7 +157,9 @@ Sgs_Template_Part_Resetter::register();
 
 // SGS Advanced Headers / Footers CPTs (FR-S3-4) — REST gated to edit_theme_options (Council M1).
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-block-cpts.php';
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-cpt-rest-gate.php';
 Sgs_Block_CPTs::register();
+Sgs_Cpt_Rest_Gate::register();
 
 // SGS Floating UI — Customiser controls + frontend renderer (replaces retired back-to-top + reading-progress blocks).
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-floating-ui-customiser.php';
