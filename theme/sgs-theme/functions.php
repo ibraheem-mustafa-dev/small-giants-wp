@@ -700,7 +700,6 @@ function add_missing_image_dimensions( string $image, string $context, int $atta
 }
 add_filter( 'wp_content_img_tag', __NAMESPACE__ . '\add_missing_image_dimensions', 10, 3 );
 
-// SGS Floating UI — Customiser-controlled global elements (Back to Top, Reading Progress).
-require_once get_theme_file_path( 'inc/floating-ui-customiser.php' );
-require_once get_theme_file_path( 'inc/floating-ui-output.php' );
-
+// SGS Floating UI — Back to Top + Reading Progress are now registered via
+// Sgs_Floating_UI_Customiser in the sgs-blocks plugin (Spec 18).
+// The legacy theme-side customiser + output files were removed 2026-05-20.
