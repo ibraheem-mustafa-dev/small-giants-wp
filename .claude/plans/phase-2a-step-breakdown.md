@@ -2,8 +2,9 @@
 
 **Parent plan:** [phase-2-header-behaviours-and-responsive-logo.md](phase-2-header-behaviours-and-responsive-logo.md)
 **Generated:** 2026-05-20 via inline phase-planner (research + decisions locked)
-**Estimated wall clock:** ~2 hours parallel, ~4 hours sequential
-**Dispatch shape:** 2 parallel Sonnet subagents (Branch A + Branch B), then 4 sequential main-thread steps
+**Expanded 2026-05-20:** scope grew to include the original Phase 2 P1 list (Icon, Timeline, Pricing polish, universal-extension UI rollout, attribute audit) per Bean's directive — all in one parallel-dispatch round.
+**Estimated wall clock:** ~2.5 hours parallel (7 subagents), ~10 hours sequential
+**Dispatch shape:** 7 parallel Sonnet subagents (Branches A–G), then 4 sequential main-thread steps + integration
 
 ---
 
@@ -212,7 +213,180 @@ NO `git stash`, NO `git reset`, NO destructive git verbs. Work in fresh worktree
 
 ---
 
-## Sequential main-thread steps (after Branch A + B merge)
+---
+
+## Branch C (Sonnet subagent) — sgs/icon block
+
+**Scope:** New single-icon block. Uses existing `lucide-icons.php` map (1917 icons) already shipped for `sgs/icon-list`. File-disjoint.
+
+**Files to create:**
+- `plugins/sgs-blocks/src/blocks/icon/block.json`
+- `plugins/sgs-blocks/src/blocks/icon/edit.js`
+- `plugins/sgs-blocks/src/blocks/icon/save.js` (returns null)
+- `plugins/sgs-blocks/src/blocks/icon/render.php`
+- `plugins/sgs-blocks/src/blocks/icon/index.js`
+- `plugins/sgs-blocks/src/blocks/icon/style.scss`
+- `plugins/sgs-blocks/tests/php/IconTest.php`
+
+### Attributes (block.json)
+- `iconName` (string, default 'star') — picker bound to lucide-icons.php map
+- `iconSize` (number, default 32) — px
+- `iconColour` (string, default 'primary') — token slug
+- `linkUrl` (string, optional)
+- `linkTarget` (enum: '_self' | '_blank' — default '_self')
+- `linkRel` (string, default '' — auto 'noopener noreferrer' when target=_blank)
+- `ariaLabel` (string) — required when no surrounding text context
+
+### Universal SGS extensions (mandatory — see Branch B inheritance section)
+- `supports.sgs.imageControls: false` (icon is SVG, not raster — no object-position controls needed)
+- device-visibility / hover effects / animation attributes / custom CSS / conditional visibility — all auto via render_block
+
+### SGS-BEM naming
+- Root: `.sgs-icon`
+- Link wrapper (when linkUrl): `.sgs-icon__link`
+- SVG: `.sgs-icon__svg`
+- Modifier (size): `.sgs-icon--size-{small|medium|large|custom}`
+
+### Acceptance
+- Picker shows all 1917 lucide icons searchable
+- Renders inline SVG via lucide-icons.php helper (same path sgs/icon-list uses — DRY)
+- WCAG: when no link, role=img + aria-label required; when link present, link gets aria-label, svg gets aria-hidden=true
+- Estimated time: 60 min
+
+---
+
+## Branch D (Sonnet subagent) — sgs/timeline block
+
+**Scope:** New date-based timeline block. Different from existing `sgs/process-steps` which is numbered/positional. File-disjoint.
+
+**Files to create:**
+- `plugins/sgs-blocks/src/blocks/timeline/block.json`
+- `plugins/sgs-blocks/src/blocks/timeline/edit.js`
+- `plugins/sgs-blocks/src/blocks/timeline/save.js` (returns null)
+- `plugins/sgs-blocks/src/blocks/timeline/render.php`
+- `plugins/sgs-blocks/src/blocks/timeline/index.js`
+- `plugins/sgs-blocks/src/blocks/timeline/style.scss`
+- `plugins/sgs-blocks/src/blocks/timeline/view.js` (IntersectionObserver scroll-reveal)
+- `plugins/sgs-blocks/tests/php/TimelineTest.php`
+
+### Attributes
+- `orientation` (enum: 'vertical' | 'horizontal' — default 'vertical')
+- `alignment` (enum: 'left' | 'centre' | 'alternating' — default 'alternating', vertical only)
+- `entries` (array) — each entry: `date` (string), `title` (string), `description` (richtext), `icon` (lucide name, optional), `image` (media id, optional)
+- `connectorStyle` (enum: 'line' | 'dashed' | 'dotted' — default 'line')
+- `connectorColour` (string, default 'border-subtle')
+- `dateColour` (string, default 'accent-text')
+- `revealOnScroll` (boolean, default true)
+- `revealStagger` (number, default 100) — ms between siblings
+
+### Universal extensions
+- `supports.sgs.imageControls: true` (entries may have images)
+- All standard universals
+
+### SGS-BEM
+- Root: `.sgs-timeline`
+- Modifier (orientation): `.sgs-timeline--vertical` / `--horizontal`
+- Modifier (alignment): `.sgs-timeline--align-left` / `--align-centre` / `--align-alternating`
+- Entry: `.sgs-timeline__entry`
+- Entry date: `.sgs-timeline__date`
+- Entry connector node: `.sgs-timeline__node`
+- Entry content: `.sgs-timeline__content`
+- Connector line: `.sgs-timeline__connector`
+- State (revealed): `.sgs-timeline__entry.is-revealed`
+
+### Acceptance
+- Vertical + horizontal both work at 375/768/1440 (horizontal scrolls on mobile)
+- Scroll-reveal honours `prefers-reduced-motion`
+- WCAG: each entry is a `<li>` inside `<ol>` semantically; date is a `<time datetime="...">` element
+- Estimated time: 75 min
+
+---
+
+## Branch E (Sonnet subagent) — sgs/pricing-table polish + L14 audit
+
+**Scope:** Existing `sgs/pricing-table` block. Audit + close gaps. File-disjoint (only touches pricing-table files).
+
+**Files to read first:**
+- `plugins/sgs-blocks/src/blocks/pricing-table/block.json`
+- `plugins/sgs-blocks/src/blocks/pricing-table/edit.js`
+- `plugins/sgs-blocks/src/blocks/pricing-table/render.php`
+- `plugins/sgs-blocks/src/blocks/pricing-table/style.scss`
+- Master feature audit `docs/plans/2026-02-21-master-feature-audit.md` — find the "L14" tag and resolve what's expected vs current state
+
+### Audit checklist
+- Confirm 2/3/4 column layouts work at 375/768/1440
+- Confirm Monthly/Yearly toggle JS works (already has billingToggle attr)
+- Confirm "highlighted plan" visual emphasis (border + badge)
+- Confirm universal extensions all wired (device-visibility, hover, animation, custom-css)
+- Confirm SGS-BEM naming throughout — if any selectors are non-conformant, fix them
+- Compare against Kadence Pro Pricing Table for feature parity gaps
+
+### Likely fixes (based on initial inspection of attributes)
+- billingToggle currently boolean → may need to be enum to support "no toggle / monthly only / yearly only / both" patterns
+- Add per-plan icon attribute (lucide picker — for the new sgs/icon-like UX)
+- Add per-plan ribbon attribute (small badge like "Best value")
+- Add per-feature included/excluded marker (check vs cross)
+
+### Acceptance
+- All universal extensions wired
+- All SGS-BEM selectors conformant
+- New attrs added with backward-compatible defaults
+- Tests updated
+- Estimated time: 60 min
+
+---
+
+## Branch F (Sonnet subagent) — universal-extension EDITOR UI rollout
+
+**Scope:** The universal extensions (`hover-effects.php`, `device-visibility.php`, `animation-attributes.php`, `custom-css.php`, `conditional-visibility.php`) ALL ship server-side filters that read `sgs*` attributes. But the EDITOR UI controls that let operators SET those attributes may not be wired into every block's inspector. This branch audits + adds the inspector controls.
+
+**Files to investigate + edit (Branch F prompt MUST list):**
+- `plugins/sgs-blocks/src/extensions/` (if exists — shared inspector control components)
+- For each of the 71 SGS blocks in `plugins/sgs-blocks/src/blocks/*/edit.js` — check whether the universal-extension inspector panels are imported and rendered
+
+**Investigation outputs:**
+- A CSV / table at `reports/2026-05-20-universal-extension-coverage.csv` — one row per block, columns: block_slug, has_device_visibility_ui, has_hover_effects_ui, has_animation_ui, has_custom_css_ui, has_conditional_visibility_ui
+- A retrofit script that adds the missing UI panels to each block's edit.js (using a shared `<UniversalExtensions block={attributes}>` component)
+
+### Universal extension UI components to ship (if not already shared)
+- `<DeviceVisibilityPanel>` — 3 checkboxes (hide on mobile/tablet/desktop)
+- `<HoverEffectsPanel>` — hover scale / shadow / image-zoom + transition duration + easing
+- `<AnimationPanel>` — entrance animation + stagger + duration
+- `<CustomCssPanel>` — code textarea + scoped to block
+- `<ConditionalVisibilityPanel>` — login state + date range + role conditions
+
+**Acceptance:**
+- Every block has the universal-extension inspector panels available (those that don't apply — e.g. parallax on header — explicitly skipped with a comment)
+- One shared component module to keep DRY
+- Tests confirm the attrs round-trip
+- Estimated time: 90 min
+
+---
+
+## Branch G (Sonnet subagent) — sgs-db block attribute audit + retrofit
+
+**Scope:** For each of the 71 SGS blocks, query `sgs-framework.db` for the attributes it CURRENTLY has, and the universal-extension capability flags it OPTED INTO (e.g. `supports.sgs.imageControls`). Identify blocks that have images (e.g. `<img>` in render.php) but don't declare `imageControls: true`. Retrofit. File-disjoint with Branch F because this touches block.json + render.php, not edit.js.
+
+**Files to read:**
+- `plugins/sgs-blocks/src/blocks/*/block.json` (71 files)
+- `plugins/sgs-blocks/src/blocks/*/render.php` (60 dynamic blocks)
+- `sgs-framework.db` via `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py block <slug>`
+
+**Investigation outputs:**
+- `reports/2026-05-20-block-attribute-audit.csv` — one row per block, columns: block_slug, has_image_in_render, declares_imageControls, has_link_anywhere, declares_blockLink_supports, ... (and any other universal-extension supports flags)
+- Retrofit commits to add missing `supports.sgs.imageControls: true` etc
+
+**Cross-reference with Branch B / D / E** — they declare imageControls themselves; Branch G must not double-write.
+
+**Acceptance:**
+- Every block with an `<img>` in render output declares imageControls (per CLAUDE.md image-controls discipline)
+- Audit CSV committed
+- Tests confirm new attrs round-trip
+- Estimated time: 75 min
+
+---
+
+## Sequential main-thread steps (after all 7 branches merge)
 
 ### Step M1. Add `_sgs_header_behaviour` post meta to sgs_header CPT (F3) — ~10 min
 
@@ -294,22 +468,43 @@ Two competitive moats no WP competitor currently has:
 
 ---
 
-## Dispatch shape summary
+## Dispatch shape summary (expanded — 7 branches)
 
 ```
-T+0:    Branch A subagent dispatched (F1+F2+F4, ~80 min cold)
-T+0:    Branch B subagent dispatched (F5, ~90 min cold)
-        (parallel)
-T+90:   Both return. Main thread merges both into local worktree.
-T+90:   Multi-rater /qc panel on Branch A diff (~10 min)
-T+100:  Multi-rater /qc panel on Branch B diff (~10 min)
-T+110:  Main thread: M1 → M5 sequentially (~95 min)
-T+205:  Deploy + Playwright + WCAG + CLS verification (~15 min)
-T+220:  /qc-inline self-check (~5 min)
-T+225:  Commit + push
+T+0:    Branch A subagent — header behaviours layer (~80 min)
+T+0:    Branch B subagent — sgs/responsive-logo (~90 min)
+T+0:    Branch C subagent — sgs/icon (~60 min)
+T+0:    Branch D subagent — sgs/timeline (~75 min)
+T+0:    Branch E subagent — pricing-table polish (~60 min)
+T+0:    Branch F subagent — universal-extension UI rollout (~90 min)
+T+0:    Branch G subagent — sgs-db attribute audit + retrofit (~75 min)
+        (all parallel, all on separate git worktrees off main)
+
+T+90:   All branches reach max return time.
+T+90:   Multi-rater /qc panel × 7 (parallel, ~10 min each, run in waves of 4)
+T+120:  All /qc panels done. Merge each into main sequentially (~5 min/branch = 35 min)
+T+155:  Conflict resolution if any (most branches file-disjoint; F + G touch
+        block.json files, careful coordination needed)
+T+170:  Main thread M1–M5 (CPT meta, admin UI, WP-CLI param, dev pattern
+        updates, Customiser default — ~95 min)
+T+265:  npm run build + tar deploy to sandybrown + OPcache reset (~15 min)
+T+280:  Playwright multi-viewport screenshots for every new + changed block
+        + WCAG focus visible + CLS=0 verification (~20 min)
+T+300:  /qc-inline integration self-check on main-thread M-step diff (~5 min)
+T+305:  Commit + push (per the project CLAUDE.md branch discipline:
+        feature touching 3+ files → create branch + PR, but Bean's
+        always-merge-to-main rule trumps when the branch is fully QC'd —
+        squash-merge feature/phase-2a-massive → main)
 ```
 
-Total: ~3.75 hours wall clock with parallel dispatch. ~6 hours fully sequential.
+**Total:** ~5 hours wall clock with parallel. ~12 hours sequential. Saves 7 hours via parallel dispatch.
+
+### Coordination notes (critical)
+
+- **Branches F + G both touch block.json files.** F edits the `attributes` arrays of edit.js for inspector UI; G edits the `supports.sgs` declarations of block.json. They DON'T overlap on the same JSON keys, but the files do overlap. Subagent prompts MUST be explicit about this — F writes to edit.js, G writes to block.json — and the merge sequence does F first then G (G's smaller diff resolves easily on top of F).
+- **Branches B + C + D + E all use the same `npm run build` postbuild script.** They MUST NOT race on `plugins/sgs-blocks/build/`. The build runs ONCE in main thread after all 7 branches merge, NOT inside each subagent. Subagent prompts MUST forbid running `npm run build`.
+- **Each subagent works in a separate git worktree.** Use `/using-git-worktrees` skill pattern.
+- **NO git stash / git reset / git checkout -- / git clean / git restore** in any subagent prompt (blub.db row from 2026-05-18).
 
 ---
 
