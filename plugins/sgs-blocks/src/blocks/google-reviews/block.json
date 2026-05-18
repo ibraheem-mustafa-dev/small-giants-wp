@@ -15,6 +15,9 @@
   "icon": "star-filled",
   "textdomain": "sgs-blocks",
   "supports": {
+    "sgs": {
+      "imageControls": false
+    },
     "align": [
       "wide",
       "full"

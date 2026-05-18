@@ -16,6 +16,9 @@
 	"textdomain": "sgs-blocks",
 	"icon": "slides",
 	"supports": {
+		"sgs": {
+			"imageControls": true
+		},
 		"align": [
 			"wide",
 			"full"

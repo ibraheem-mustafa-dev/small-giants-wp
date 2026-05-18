@@ -4,10 +4,11 @@
  * Handles the monthly/yearly billing toggle. Uses vanilla JS only.
  * Finds the radio inputs inside each .sgs-pricing-table--has-toggle wrapper
  * and toggles the hidden attribute on .sgs-pricing-table__price--monthly /
- * --yearly spans accordingly.
+ * --yearly spans and .sgs-pricing-table__savings-badge elements accordingly.
  *
  * Progressive enhancement: the monthly price is always visible by default
- * (rendered with no hidden attr). Only price--yearly starts hidden.
+ * (rendered with no hidden attr). Only price--yearly and savings badges
+ * start hidden.
  *
  * @package SGS\Blocks
  */
@@ -27,7 +28,8 @@
 		}
 
 		/**
-		 * Update price visibility based on the currently-selected billing period.
+		 * Update price visibility and savings badge based on the currently-selected
+		 * billing period.
 		 */
 		function applyPeriod() {
 			const checked = wrapper.querySelector( '.sgs-pricing-table__toggle-input:checked' );
@@ -40,6 +42,11 @@
 				el.hidden = ( period !== 'monthly' );
 			} );
 			wrapper.querySelectorAll( '.sgs-pricing-table__price--yearly' ).forEach( ( el ) => {
+				el.hidden = ( period !== 'yearly' );
+			} );
+
+			// Savings badge: show only when yearly is active.
+			wrapper.querySelectorAll( '.sgs-pricing-table__savings-badge' ).forEach( ( el ) => {
 				el.hidden = ( period !== 'yearly' );
 			} );
 

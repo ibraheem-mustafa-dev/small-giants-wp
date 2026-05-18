@@ -1,10 +1,10 @@
 import { registerBlockType } from '@wordpress/blocks';
 import metadata from './block.json';
 import Edit from './edit';
-import deprecated from './deprecated';
+import Save from './save';
+import './style.scss';
 
 registerBlockType( metadata.name, {
 	edit: Edit,
-	save: () => null,
-	deprecated,
+	save: Save,
 } );

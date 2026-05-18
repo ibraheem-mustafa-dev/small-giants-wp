@@ -51,7 +51,7 @@ function resolve_hover_defaults( string $block_name ): array {
 		'sgs/post-grid',
 		'sgs/google-reviews',
 		'sgs/process-steps',
-		'sgs/icon-block',
+		'sgs/icon',
 	);
 
 	// Scale + shadow only (no image zoom — no image in block).

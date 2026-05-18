@@ -1,0 +1,102 @@
+/**
+ * SGS Responsive Logo — frontend styles.
+ *
+ * SGS-BEM naming:
+ *   .sgs-responsive-logo              Root wrapper
+ *   .sgs-responsive-logo__link        Wrapping <a> (when linkToHome = true)
+ *   .sgs-responsive-logo__picture     <picture> element
+ *   .sgs-responsive-logo__image--desktop  Main <img>
+ *   .sgs-responsive-logo__svg         Inline SVG wrapper (animation mode)
+ *   .sgs-responsive-logo__picture--fallback  Static images in animation mode
+ *   .sgs-responsive-logo--animate-draw / --animate-hover / --animate-scroll
+ *   .sgs-responsive-logo.is-animating  JS state: animation in progress
+ *   .sgs-responsive-logo.is-animated   JS state: animation complete
+ */
+
+.sgs-responsive-logo {
+	display: inline-block;
+	width: var( --logo-width, 240px );
+	max-width: 100%;
+
+	// ── Link wrapper ──────────────────────────────────────────────────────────
+	&__link {
+		display: inline-block;
+		line-height: 0; // prevent inline-block gap below image
+		text-decoration: none;
+		transition: opacity 150ms ease;
+
+		&:hover,
+		&:focus-visible {
+			opacity: 0.85;
+		}
+
+		// Sufficient focus ring for WCAG 2.4.11
+		&:focus-visible {
+			outline: 2px solid currentColor;
+			outline-offset: 3px;
+			border-radius: 2px;
+		}
+	}
+
+	// ── Picture element ───────────────────────────────────────────────────────
+	&__picture {
+		display: block;
+		line-height: 0;
+	}
+
+	// ── Images ────────────────────────────────────────────────────────────────
+	&__image--desktop {
+		display: block;
+		width: 100%;
+		height: auto;
+		max-width: 100%;
+	}
+
+	// ── SVG animation wrapper ─────────────────────────────────────────────────
+	&__svg {
+		display: block;
+		width: 100%;
+		line-height: 0;
+
+		svg {
+			display: block;
+			width: 100%;
+			height: auto;
+		}
+	}
+
+	// ── Fallback picture (used alongside inline SVG for tablet/mobile) ────────
+	&__picture--fallback {
+		display: none; // hidden on desktop; shown via breakpoint below
+
+		@media ( max-width: 1024px ) {
+			display: block;
+		}
+	}
+
+	// Hide inline SVG on tablet/mobile when fallback picture is present
+	&--animate-draw,
+	&--animate-hover,
+	&--animate-scroll {
+		.sgs-responsive-logo__svg {
+			@media ( max-width: 1024px ) {
+				display: none;
+			}
+		}
+	}
+
+	// ── Animation state classes ───────────────────────────────────────────────
+	&.is-animating {
+		.sgs-responsive-logo__svg svg * {
+			// Vivus uses stroke-dashoffset; ensure transitions are smooth
+			transition: stroke-dashoffset var( --vivus-duration, 1s ) ease-out;
+		}
+	}
+
+	// ── Reduced-motion override ───────────────────────────────────────────────
+	@media ( prefers-reduced-motion: reduce ) {
+		&.is-animating .sgs-responsive-logo__svg svg * {
+			transition-duration: 0.01ms !important; // stylelint-disable-line declaration-no-important
+		}
+	}
+}

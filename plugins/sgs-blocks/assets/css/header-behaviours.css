@@ -1,0 +1,81 @@
+/**
+ * Header Behaviours CSS (F1 + F2).
+ *
+ * F1 — WCAG 2.4.11: ensures anchor-link focus targets land below any sticky
+ * header. The JS ResizeObserver publishes --sgs-header-height; this rule
+ * consumes it. Defaults to 0px when the property is not yet set (no jump).
+ *
+ * F2 — Behaviour modifier classes: transparent overlay, sticky pin, and
+ * hide-on-scroll-down smart reveal. State classes (.is-scrolled,
+ * .is-scrolling-down) are toggled by view.js.
+ *
+ * All z-index values use the WP admin-bar safe range (< 99999) while staying
+ * above typical theme content layers (100).
+ *
+ * @package SGS\Blocks
+ */
+
+/* -------------------------------------------------------------------------
+ * F1 — Scroll-padding-top fix for anchor links (WCAG 2.4.11)
+ * ---------------------------------------------------------------------- */
+
+:root {
+	scroll-padding-top: var( --sgs-header-height, 0px );
+}
+
+/* -------------------------------------------------------------------------
+ * F2 — Transparent overlay behaviour
+ *
+ * The header sits absolutely above the hero / banner content. On scroll it
+ * transitions to the theme surface colour.
+ * ---------------------------------------------------------------------- */
+
+.sgs-header--transparent {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	background: transparent;
+	z-index: 100;
+}
+
+.sgs-header--transparent.is-scrolled {
+	background: var( --wp--preset--color--surface, #ffffff );
+}
+
+/* -------------------------------------------------------------------------
+ * F2 — Sticky behaviour
+ *
+ * The header pins to the top of the viewport. Pairs naturally with the
+ * --sgs-header-height publisher to keep scroll-padding-top accurate.
+ * ---------------------------------------------------------------------- */
+
+.sgs-header--sticky {
+	position: sticky;
+	top: 0;
+	z-index: 100;
+}
+
+/* -------------------------------------------------------------------------
+ * F2 — Hide-on-scroll-down (smart reveal)
+ *
+ * The header slides off the top when the user scrolls down, slides back in
+ * on upward scroll. GPU-composited via transform (no layout thrash).
+ * prefers-reduced-motion: transition is stripped so the header simply
+ * appears/disappears without animation.
+ * ---------------------------------------------------------------------- */
+
+.sgs-header--hide-on-scroll-down {
+	transition: transform 200ms ease;
+	will-change: transform;
+}
+
+.sgs-header--hide-on-scroll-down.is-scrolling-down {
+	transform: translateY( -100% );
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+	.sgs-header--hide-on-scroll-down {
+		transition: none;
+	}
+}

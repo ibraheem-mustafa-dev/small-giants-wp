@@ -5,17 +5,20 @@
 	"version": "0.1.0",
 	"title": "SGS Icon",
 	"category": "sgs-content",
-	"description": "Standalone SVG icon with size, colour, background, and optional link.",
+	"description": "Icon from multiple sources — Lucide SVG, WordPress icons, Dashicons, or emoji — with size, colour, optional background shape, and optional link.",
 	"keywords": [
 		"icon",
 		"svg",
+		"lucide",
+		"dashicon",
+		"emoji",
 		"symbol",
 		"graphic"
 	],
 	"textdomain": "sgs-blocks",
 	"icon": "heart",
 	"supports": {
-		"align": [ "center", "wide", "full" ],
+		"align": [ "left", "center", "right" ],
 		"anchor": true,
 		"html": false,
 		"color": {
@@ -25,19 +28,39 @@
 		"spacing": {
 			"margin": true,
 			"padding": true
+		},
+		"sgs": {
+			"imageControls": false
 		}
 	},
 	"selectors": {
 		"root": ".wp-block-sgs-icon"
 	},
 	"attributes": {
-		"icon": {
+		"iconSource": {
+			"type": "string",
+			"default": "lucide",
+			"enum": [ "lucide", "wp-icon", "dashicon", "emoji" ]
+		},
+		"iconName": {
 			"type": "string",
 			"default": "star"
 		},
-		"size": {
+		"emojiChar": {
+			"type": "string",
+			"default": ""
+		},
+		"dashiconName": {
+			"type": "string",
+			"default": ""
+		},
+		"wpIconName": {
+			"type": "string",
+			"default": ""
+		},
+		"iconSize": {
 			"type": "number",
-			"default": 48
+			"default": 32
 		},
 		"iconColour": {
 			"type": "string",
@@ -49,17 +72,22 @@
 		},
 		"backgroundShape": {
 			"type": "string",
-			"default": "circle"
+			"default": "none"
 		},
-		"link": {
+		"linkUrl": {
 			"type": "string",
 			"default": ""
 		},
-		"linkOpensNewTab": {
-			"type": "boolean",
-			"default": false
+		"linkTarget": {
+			"type": "string",
+			"default": "_self",
+			"enum": [ "_self", "_blank" ]
 		},
-		"linkLabel": {
+		"linkRel": {
+			"type": "string",
+			"default": ""
+		},
+		"ariaLabel": {
 			"type": "string",
 			"default": ""
 		},
@@ -78,8 +106,8 @@
 	"render": "file:./render.php",
 	"example": {
 		"attributes": {
-			"icon": "star",
-			"size": 48,
+			"iconName": "star",
+			"iconSize": 48,
 			"iconColour": "primary",
 			"backgroundShape": "circle",
 			"backgroundColour": "surface-alt"

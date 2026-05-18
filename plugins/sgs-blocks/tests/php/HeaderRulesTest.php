@@ -59,6 +59,19 @@ if ( ! function_exists( 'add_action' ) ) {
 if ( ! function_exists( 'add_filter' ) ) {
 	function add_filter(): void {}
 }
+if ( ! function_exists( 'apply_filters' ) ) {
+	/**
+	 * Passthrough stub for apply_filters — returns the first value argument unchanged.
+	 *
+	 * @param string $hook_name Filter hook name (unused in tests).
+	 * @param mixed  $value     The value to filter.
+	 * @param mixed  ...$args   Additional arguments (unused).
+	 * @return mixed
+	 */
+	function apply_filters( string $hook_name, $value, ...$args ) {
+		return $value;
+	}
+}
 
 // Minimal WP_Error stub if WP itself is not loaded.
 if ( ! class_exists( 'WP_Error' ) ) {

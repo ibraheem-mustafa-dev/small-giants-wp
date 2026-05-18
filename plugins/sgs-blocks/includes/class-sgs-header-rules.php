@@ -235,7 +235,18 @@ final class Sgs_Header_Rules {
 					if ( Sgs_Header_Rules::rule_matches( $rule ) ) {
 						$html = Sgs_Header_Rules::render_pattern( (string) ( $rule['pattern_slug'] ?? '' ) );
 						if ( null !== $html ) {
-							return $html;
+							/**
+							 * Filters the rendered header HTML after a rule match.
+							 *
+							 * Allows downstream classes (e.g. Sgs_Header_Behaviours) to
+							 * inject wrapper classes or attributes into the outermost
+							 * <header> element before the HTML is returned to the template.
+							 *
+							 * @since 1.0.0
+							 * @param string              $html The rendered pattern HTML.
+							 * @param array<string,mixed> $rule The matched rule definition.
+							 */
+							return (string) \apply_filters( 'sgs_header_rule_resolved', $html, $rule );
 						}
 					}
 				}

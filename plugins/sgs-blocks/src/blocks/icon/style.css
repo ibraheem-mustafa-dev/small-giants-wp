@@ -1,4 +1,5 @@
-/* ===== SGS Icon ===== */
+/* ===== SGS Icon — style.css ===== */
+/* Naming: SGS-BEM .sgs-icon / .sgs-icon__link / .sgs-icon__svg */
 
 .wp-block-sgs-icon {
 	margin-top: 0;
@@ -23,8 +24,20 @@
 	justify-content: center;
 }
 
+/* Root element — size driven by CSS custom property from render.php */
 .sgs-icon {
 	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--sgs-icon-size, 32px);
+	height: var(--sgs-icon-size, 32px);
+}
+
+/* SVG container — fills the root */
+.sgs-icon__svg {
+	display: inline-flex;
+	width: 100%;
+	height: 100%;
 	align-items: center;
 	justify-content: center;
 }
@@ -35,11 +48,17 @@
 	display: block;
 }
 
+/* Link wrapper — minimum 44×44 px touch target (WCAG 2.5.5) */
 .sgs-icon__link {
 	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 44px;
+	min-height: 44px;
 	text-decoration: none;
 	color: inherit;
-	transition: var(--wp--custom--transition--fast, 0.15s ease);
+	transition: transform var(--wp--custom--transition--fast, 0.15s ease),
+	            color var(--wp--custom--transition--fast, 0.15s ease);
 }
 
 .sgs-icon__link:hover {
@@ -47,11 +66,20 @@
 	color: var(--sgs-icon-hover-colour, var(--wp--preset--color--accent-text));
 }
 
+/* WCAG 2.4.7 — focus must always be visible */
 .sgs-icon__link:focus-visible {
 	outline: 2px solid var(--wp--preset--color--primary);
 	outline-offset: 2px;
+	border-radius: 2px;
 }
 
+/* ── Size modifiers ─────────────────────────────────────────────────────── */
+.sgs-icon--size-small  { width: var(--sgs-icon-size, 20px); height: var(--sgs-icon-size, 20px); }
+.sgs-icon--size-medium { width: var(--sgs-icon-size, 32px); height: var(--sgs-icon-size, 32px); }
+.sgs-icon--size-large  { width: var(--sgs-icon-size, 48px); height: var(--sgs-icon-size, 48px); }
+.sgs-icon--size-custom { width: var(--sgs-icon-size, 64px); height: var(--sgs-icon-size, 64px); }
+
+/* ── Background shape modifiers ──────────────────────────────────────────── */
 .sgs-icon--bg-circle {
 	border-radius: 50%;
 	padding: 12px;
@@ -66,12 +94,15 @@
 	padding: 12px;
 }
 
+/* ── Editor preview placeholder ─────────────────────────────────────────── */
 .sgs-icon__placeholder {
-	font-size: 12px;
+	font-size: 11px;
 	text-transform: lowercase;
-	opacity: 0.6;
+	opacity: 0.5;
+	font-family: monospace;
 }
 
+/* ── Reduced motion — suppress hover transitions ────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
 	.sgs-icon__link {
 		transition: none;

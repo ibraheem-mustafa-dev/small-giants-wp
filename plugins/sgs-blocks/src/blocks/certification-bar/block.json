@@ -18,6 +18,9 @@
     "render":  "file:./render.php",
     "icon":  "awards",
     "supports":  {
+                     "sgs":  {
+                                 "imageControls":  true
+                             },
                      "align":  [
                                    "wide",
                                    "full"
