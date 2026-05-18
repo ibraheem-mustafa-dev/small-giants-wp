@@ -5,11 +5,13 @@
 	"version": "0.1.0",
 	"title": "SGS Icon",
 	"category": "sgs-content",
-	"description": "Single Lucide SVG icon with size, colour, optional background shape, and optional link.",
+	"description": "Icon from multiple sources — Lucide SVG, WordPress icons, Dashicons, or emoji — with size, colour, optional background shape, and optional link.",
 	"keywords": [
 		"icon",
 		"svg",
 		"lucide",
+		"dashicon",
+		"emoji",
 		"symbol",
 		"graphic"
 	],
@@ -35,9 +37,26 @@
 		"root": ".wp-block-sgs-icon"
 	},
 	"attributes": {
+		"iconSource": {
+			"type": "string",
+			"default": "lucide",
+			"enum": [ "lucide", "wp-icon", "dashicon", "emoji" ]
+		},
 		"iconName": {
 			"type": "string",
 			"default": "star"
+		},
+		"emojiChar": {
+			"type": "string",
+			"default": ""
+		},
+		"dashiconName": {
+			"type": "string",
+			"default": ""
+		},
+		"wpIconName": {
+			"type": "string",
+			"default": ""
 		},
 		"iconSize": {
 			"type": "number",
