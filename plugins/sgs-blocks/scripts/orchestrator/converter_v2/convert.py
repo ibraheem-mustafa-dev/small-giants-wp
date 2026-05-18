@@ -67,6 +67,102 @@ _IMPORTANT_RE = re.compile(r"\s*!important\s*$", re.IGNORECASE)
 # ============================================================================
 _LIFT_CONTEXT: dict = {}
 
+# ============================================================================
+# D3 — Attribute gap candidate accumulator
+# ============================================================================
+# Collects unlifted CSS rules during a per-section conversion run.  Entries are
+# dicts with keys: block_slug, css_property, raw_value, source_class, run_id.
+# Flushed to sgs-framework.db + the per-section result dict by _flush_gap_candidates().
+# Reset to [] at the start of every convert_section call (clear_gap_candidates()).
+# ============================================================================
+_GAP_CANDIDATES: list[dict] = []
+_GAP_RUN_ID: str = ""  # populated by seed_gap_context() from the orchestrator run_id
+
+
+def seed_gap_context(run_id: str) -> None:
+    """Set the current pipeline run_id so D3 writes carry provenance.
+
+    Called by the orchestrator (or convert_section in __init__.py) once per run.
+    Safe to call multiple times — only updates the module-level constant.
+    """
+    global _GAP_RUN_ID
+    _GAP_RUN_ID = run_id or ""
+
+
+def clear_gap_candidates() -> None:
+    """Reset the accumulator at the start of a fresh section conversion."""
+    global _GAP_CANDIDATES
+    _GAP_CANDIDATES = []
+
+
+def _record_gap_candidate(
+    block_slug: str,
+    css_property: str,
+    raw_value: str,
+    source_class: str,
+) -> None:
+    """Append one unlifted CSS rule to the in-flight accumulator.
+
+    De-duplication within a single run: (block_slug, css_property, source_class)
+    tuples are checked against existing entries so the same rule on the same
+    element is never added twice during one section conversion.
+    """
+    for existing in _GAP_CANDIDATES:
+        if (
+            existing["block_slug"] == block_slug
+            and existing["css_property"] == css_property
+            and existing["source_class"] == source_class
+        ):
+            return  # already recorded for this section run
+    _GAP_CANDIDATES.append({
+        "block_slug": block_slug,
+        "css_property": css_property,
+        "raw_value": raw_value,
+        "source_class": source_class,
+        "run_id": _GAP_RUN_ID,
+    })
+
+
+def flush_gap_candidates() -> list[dict]:
+    """Write all accumulated gap candidates to sgs-framework.db and return them.
+
+    Uses ``db.write_attribute_gap_candidate()`` for idempotent INSERT OR IGNORE
+    writes.  Returns the list of written rows (each row is the input dict enriched
+    with ``attr_name_proposed`` from the DB helper).  Clears the accumulator
+    after writing so a second flush is safe (no double-writes).
+    """
+    if not _GAP_CANDIDATES:
+        return []
+
+    flushed: list[dict] = []
+    for gap in _GAP_CANDIDATES:
+        block_slug = gap["block_slug"]
+        css_property = gap["css_property"]
+        raw_value = gap["raw_value"]
+        source_class = gap["source_class"]
+        run_id = gap.get("run_id", "")
+
+        try:
+            proposed = db.propose_attr_name(block_slug, css_property, source_class)
+            db.write_attribute_gap_candidate(
+                block_slug=block_slug,
+                css_property=css_property,
+                raw_value=raw_value,
+                source_class=source_class,
+                source_run_id=run_id,
+                proposed_attr=proposed,
+            )
+            flushed.append({**gap, "attr_name_proposed": proposed})
+        except Exception as exc:  # noqa: BLE001 — gap writes must never break convert
+            sys.stderr.write(
+                f"[converter_v2] WARN: D3 gap write failed for "
+                f"{block_slug!r} css={css_property!r}: {exc}\n"
+            )
+
+    clear_gap_candidates()
+    return flushed
+
+
 # Fuzzy-match tolerance (percent) used when comparing a mockup max-width to the
 # theme's contentSize / wideSize. 1000px vs 1050px should still count as "wide"
 # when wideSize is 1000. Configurable here, never buried in logic.
@@ -2208,6 +2304,11 @@ def _lift_styling_attrs(
         attrs[attr_name] = value
 
     # ---- Base (desktop/default) props ----
+    # Track which CSS properties were successfully lifted so D3 can surface
+    # the remainder as attribute gap candidates (Spec 16 §FR6 destination D3).
+    _known_css_props: set[str] = {cp for cp, _, _ in _css_prop_to_suffix()}
+    _lifted_css_props: set[str] = set()
+
     for css_prop, suffix, kind in _css_prop_to_suffix():
         raw = base_decls.get(css_prop)
         if raw is None:
@@ -2216,6 +2317,9 @@ def _lift_styling_attrs(
         if val is None:
             continue
         candidate = f"{prefix}{suffix}"
+        # Track as "attempted" — whether or not the candidate exists in schema.
+        # A candidate that misses the schema is still a gap candidate.
+        _lifted_css_props.add(css_prop)
         _try_set(candidate, val)
         # Some blocks use {prefix}FontSizeDesktop instead of {prefix}FontSize as
         # the canonical base/desktop value (e.g. sgs/hero headlineFontSizeDesktop).
@@ -2251,6 +2355,61 @@ def _lift_styling_attrs(
                 else:
                     unit = "px"
                 _try_set(unit_candidate, unit)
+
+    # ---- D3 — Attribute gap candidates (Spec 16 §FR6 destination D3) ----
+    # Any CSS property present in base_decls that was NEITHER:
+    #   (a) absent from _known_css_props (no suffix mapping in property_suffixes)
+    #   (b) fully lifted because its candidate attr is missing from the schema
+    # …is a gap candidate. We identify these as properties in base_decls that
+    # were NOT successfully written into attrs (either not attempted at all, or
+    # attempted but the candidate didn't exist in schema).
+    #
+    # Two distinct failure modes:
+    #   Mode 1: css_prop not in _known_css_props → no suffix mapping at all
+    #   Mode 2: css_prop in _known_css_props → suffix mapped but candidate not
+    #           in schema (both `candidate` AND `candidate + 'Desktop'` missed)
+    #
+    # Both are D3 — the property has no landing slot on this block.
+    # We skip structural/layout CSS that _lift_root_supports_to_style handles
+    # (padding, margin, max-width, width, display, gap, etc.) to avoid noisy
+    # duplicate proposals that are already handled by the supports-lift path.
+    _SUPPORTS_HANDLED_PROPS: frozenset[str] = frozenset({
+        "padding", "padding-top", "padding-right", "padding-bottom", "padding-left",
+        "margin", "margin-top", "margin-right", "margin-bottom", "margin-left",
+        "max-width", "min-width", "width", "height", "min-height", "max-height",
+        "display", "gap", "grid-template-columns", "flex-direction", "align-items",
+        "justify-content", "justify-items", "align-self", "flex-wrap",
+        "background", "background-color", "background-image",
+        "color", "border", "border-color", "border-width", "border-style",
+        "border-radius",
+    })
+    if block_slug and block_slug.startswith("sgs/"):
+        # Derive the primary source class from desc's SGS-BEM classes so the
+        # gap row carries a useful selector (e.g. ".sgs-hero__label").
+        desc_sgs_classes = [c for c in (desc.get("class", []) or []) if c.startswith("sgs-")]
+        source_class = f".{desc_sgs_classes[0]}" if desc_sgs_classes else f".{slot_name}"
+
+        for css_prop, raw in base_decls.items():
+            if css_prop in _SUPPORTS_HANDLED_PROPS:
+                continue  # handled by _lift_root_supports_to_style
+
+            # Mode 1: no suffix mapping exists at all for this CSS property
+            if css_prop not in _known_css_props:
+                _record_gap_candidate(block_slug, css_prop, raw, source_class)
+                continue
+
+            # Mode 2: suffix mapped but neither bare nor Desktop candidate landed in schema
+            if css_prop in _lifted_css_props:
+                # At least one suffix was attempted — check whether it actually landed.
+                # We consider it "lifted" only if the resulting attr exists in schema.
+                # Check all suffixes for this css_prop.
+                any_in_schema = any(
+                    f"{prefix}{sfx}" in schema or f"{prefix}{sfx}Desktop" in schema
+                    for cp, sfx, _ in _css_prop_to_suffix()
+                    if cp == css_prop
+                )
+                if not any_in_schema:
+                    _record_gap_candidate(block_slug, css_prop, raw, source_class)
 
     # ---- Breakpoint-specific overrides ----
     # Media-query declarations are more specific than the base rule for the

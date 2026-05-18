@@ -60,6 +60,26 @@ sys.stdout.reconfigure(encoding="utf-8")
 sys.stderr.reconfigure(encoding="utf-8")
 
 
+def _load_db_lookup():
+    """Lazy-load db_lookup.legacy_role_lookup_for; soft-fail to None if unavailable."""
+    import importlib.util as _ilu
+    here = Path(__file__).resolve()
+    for ancestor in here.parents:
+        candidate = ancestor / "orchestrator" / "converter_v2" / "db_lookup.py"
+        if candidate.exists():
+            spec = _ilu.spec_from_file_location("db_lookup", candidate)
+            mod = _ilu.module_from_spec(spec)
+            try:
+                spec.loader.exec_module(mod)
+                return getattr(mod, "legacy_role_lookup_for", None)
+            except Exception:
+                return None
+    return None
+
+
+_legacy_role_lookup_for = _load_db_lookup()
+
+
 def _load_trace():
     """Lazy-load orchestrator.trace.Trace; soft-fail to a no-op if unavailable."""
     import importlib.util as _ilu
@@ -94,29 +114,26 @@ except ImportError:
     sys.exit("beautifulsoup4 required: pip install beautifulsoup4")
 
 
-# Spec 12 section 8 lookup table -- legacy/non-conforming kebab roles -> SGS slug.
-# Bean-controlled drafts produced after 2026-05-10 should NOT need this table
-# (they use the SGS-prefixed BEM convention). Kept for live-scrape fallback +
+# Spec 12 section 8 / Spec 15 §1.1 lookup — legacy/non-conforming kebab roles -> SGS slug.
+# Bean-controlled drafts produced after 2026-05-10 should NOT need this lookup
+# (they use the SGS-prefixed BEM convention). Used for live-scrape fallback +
 # pre-rule mockups via the --legacy flag.
-LEGACY_ROLE_LOOKUP: dict[str, str] = {
-    "hero": "sgs/hero",
-    "trust-bar": "sgs/trust-bar",
-    "trust-badges": "sgs/trust-bar",
-    "featured-product": "sgs/featured-product",
-    "brand-story": "sgs/info-box",
-    "ingredients": "sgs/feature-grid",
-    "ingredients-section": "sgs/feature-grid",
-    "gift-section": "sgs/feature-grid",
-    "social-proof": "sgs/testimonial",
-    "site-header": "sgs/header",
-    "site-footer": "sgs/footer",
-    "header": "sgs/header",
-    "footer": "sgs/footer",
-    "cta": "sgs/cta-section",
-    "cta-section": "sgs/cta-section",
-    "testimonial": "sgs/testimonial",
-    "testimonial-slider": "sgs/testimonial-slider",
-}
+#
+# The 17 entries previously hardcoded here have been migrated to the DB table
+# `legacy_role_lookup` in sgs-framework.db (both ~/.claude and ~/.agents paths).
+# They are seeded by:
+#   plugins/sgs-blocks/scripts/uimax-tools/seed-legacy-role-lookup.py
+# and re-synced on every /sgs-update run.
+#
+# At runtime the voter calls _legacy_role_lookup_for() (loaded from
+# db_lookup.legacy_role_lookup_for via lazy import). If the DB is unavailable
+# the function soft-fails to None and the section is flagged as a gap-candidate.
+#
+# LEGACY_ROLE_LOOKUP is retained as an empty dict so that any downstream code
+# that references it by name (e.g. detect_convention, existing tests) still
+# imports cleanly without AttributeError. It is NOT consulted at runtime —
+# all resolution now goes through _legacy_role_lookup_for().
+LEGACY_ROLE_LOOKUP: dict[str, str] = {}
 
 # Retired SGS blocks that now live as theme patterns. Maps the SGS-BEM
 # slug-root (e.g. "heritage-strip" from class "sgs-heritage-strip") to the
@@ -127,13 +144,22 @@ LEGACY_ROLE_LOOKUP: dict[str, str] = {
 # Distinct from LEGACY_ROLE_LOOKUP (above): that lookup is for pre-SGS-BEM
 # kebab-semantic classes encountered under --legacy mode. This dict fires
 # on canonical SGS-BEM mockups where a block was retired post-Spec-13.
-RETIRED_BLOCK_REMAP: dict[str, str] = {
-    "heritage-strip": "brand",  # retired 2026-05-16 (P-PHASE8-1)
-}
+#
+# Heritage-strip remap removed 2026-05-21 — retired blocks should be
+# hard-deleted across all surfaces (files, refs, DB rows). The 8 Indus Foods
+# files that previously referenced heritage-strip were migrated to brand in
+# Wave 3d. This dict is retained as an empty placeholder; future "no permanent
+# remap" is the rule. See feedback_universal_extraction_no_per_block_legacy.md
+# + decisions.md.
+#
+# TODO: Once Wave 3d Indus migration is verified clean, the consultation branch
+# below (if slug_root in RETIRED_BLOCK_REMAP / if cls in RETIRED_BLOCK_REMAP)
+# can be physically removed in a follow-up commit.
+RETIRED_BLOCK_REMAP: dict[str, str] = {}
 
 # Invariant: a slug-root can be in LEGACY_ROLE_LOOKUP or RETIRED_BLOCK_REMAP but
-# never both. Otherwise the legacy-branch consultation order (LEGACY first, then
-# RETIRED) would silently shadow the retired-block remap. Raises at import time.
+# never both. Both dicts are now empty, so this invariant trivially holds.
+# Retained as a guard against future non-empty additions to either dict.
 assert not (LEGACY_ROLE_LOOKUP.keys() & RETIRED_BLOCK_REMAP.keys()), (
     "LEGACY_ROLE_LOOKUP and RETIRED_BLOCK_REMAP must have disjoint keys; "
     f"collision: {LEGACY_ROLE_LOOKUP.keys() & RETIRED_BLOCK_REMAP.keys()}"
@@ -216,6 +242,13 @@ def _assert_no_retired_block_collision() -> None:
 SECTION_TAGS = ("section", "header", "footer", "main", "aside", "nav")
 
 
+def _is_known_legacy_role(cls: str) -> bool:
+    """Return True if cls is a recognised legacy kebab role (DB lookup)."""
+    if _legacy_role_lookup_for is not None:
+        return _legacy_role_lookup_for(cls) is not None
+    return False
+
+
 def detect_convention(class_signature: list[str]) -> str:
     """Classify the naming convention of a section's class signature.
 
@@ -228,15 +261,15 @@ def detect_convention(class_signature: list[str]) -> str:
     if not class_signature:
         return "unknown"
     has_sgs = any(c.startswith("sgs-") for c in class_signature)
+    non_sgs = [c for c in class_signature if not c.startswith("sgs-")]
     has_kebab_role = any(
-        c in LEGACY_ROLE_LOOKUP or "-" in c
-        for c in class_signature
-        if not c.startswith("sgs-")
+        _is_known_legacy_role(c) or "-" in c
+        for c in non_sgs
     )
     if has_sgs and has_kebab_role:
         # Only flag mixed if the non-prefixed class is a recognised role,
         # not just any kebab-case utility class.
-        if any(c in LEGACY_ROLE_LOOKUP for c in class_signature if not c.startswith("sgs-")):
+        if any(_is_known_legacy_role(c) for c in non_sgs):
             return "mixed"
         return "sgs-prefixed-bem"
     if has_sgs:
@@ -272,11 +305,16 @@ def vote_block_slug(class_signature: list[str], convention: str) -> tuple[str, f
         slug_root = sgs_bem_classes[0][len("sgs-"):]
         return (f"sgs/{slug_root}", 1.0, "literal-slug-match")
 
-    # Legacy kebab-semantic: lookup table.
+    # Legacy kebab-semantic: DB-driven lookup (migrated from hardcoded dict 2026-05-21).
     for cls in class_signature:
-        if cls in LEGACY_ROLE_LOOKUP:
-            return (LEGACY_ROLE_LOOKUP[cls], 0.85, "spec-12-lookup")
+        if _legacy_role_lookup_for is not None:
+            db_slug = _legacy_role_lookup_for(cls)
+            if db_slug is not None:
+                return (db_slug, 0.85, "spec-12-lookup")
         if cls in RETIRED_BLOCK_REMAP:
+            # RETIRED_BLOCK_REMAP is now empty (see comment above the dict).
+            # This branch is a no-op but retained until Wave 3d Indus migration
+            # is verified clean and the branch can be removed in a follow-up commit.
             return (RETIRED_BLOCK_REMAP[cls], 0.85, "retired-block-remap-legacy")
 
     # No match -- gap candidate.

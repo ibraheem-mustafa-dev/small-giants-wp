@@ -2,10 +2,11 @@
 
 Focus areas:
   - SGS-BEM literal-slug match (canonical Spec 13 path)
-  - RETIRED_BLOCK_REMAP routing across both branches (P-PHASE8-NEW-1)
-  - Iteration-order safety: retired-block remap fires even when a wrapper
-    utility class is listed before the retired class in the signature
-  - LEGACY_ROLE_LOOKUP under --legacy mode (kebab-semantic)
+  - RETIRED_BLOCK_REMAP now empty (Wave 3c, 2026-05-21) — heritage-strip falls
+    through to literal-slug-match on the SGS-BEM path; gap-candidate on the
+    legacy path. The old "brand" remap is no longer emitted.
+  - Iteration-order safety: first sgs- class without BEM separators wins
+  - LEGACY_ROLE_LOOKUP now empty — resolution via DB (legacy_role_lookup table)
   - Disjoint-keys invariant between LEGACY_ROLE_LOOKUP and RETIRED_BLOCK_REMAP
 
 Run: python test_per_section_convention_voter.py
@@ -30,25 +31,32 @@ CASES: list[tuple[str, list[str], tuple[str, float, str]]] = [
      ["sgs-hero"],
      ("sgs/hero", 1.0, "literal-slug-match")),
 
-    ("sgs-bem retired block (P-PHASE8-NEW-1)",
+    # Wave 3c (2026-05-21): RETIRED_BLOCK_REMAP emptied.
+    # heritage-strip no longer remaps to 'brand' — emits literal-slug-match.
+    # The orchestrator handles the unbuilt slug downstream (gap-candidate route).
+    ("sgs-bem formerly-retired block (Wave 3c: remap removed)",
      ["sgs-heritage-strip"],
-     ("brand", 0.95, "retired-block-remap")),
+     ("sgs/heritage-strip", 1.0, "literal-slug-match")),
 
-    ("legacy kebab role",
+    ("legacy kebab role (DB-backed)",
      ["hero"],
      ("sgs/hero", 0.85, "spec-12-lookup")),
 
-    ("legacy kebab role for retired block (--legacy mode)",
+    # Wave 3c: heritage-strip is not in the legacy_role_lookup DB table
+    # (it was only ever in RETIRED_BLOCK_REMAP, not the legacy kebab dict).
+    # Now resolves as gap-candidate on the legacy path.
+    ("legacy kebab for formerly-retired block (Wave 3c: now gap-candidate)",
      ["heritage-strip"],
-     ("brand", 0.85, "retired-block-remap-legacy")),
+     ("", 0.0, "gap-candidate")),
 
     ("unknown class signature",
      ["random-section"],
      ("", 0.0, "gap-candidate")),
 
-    ("iteration-order: wrapper utility before retired class",
+    # Wave 3c: wrapper before formerly-retired class — first sgs- class wins.
+    ("iteration-order: wrapper utility before formerly-retired class",
      ["sgs-section", "sgs-heritage-strip"],
-     ("brand", 0.95, "retired-block-remap")),
+     ("sgs/section", 1.0, "literal-slug-match")),
 
     ("iteration-order: wrapper utility before live block",
      ["sgs-section", "sgs-hero"],

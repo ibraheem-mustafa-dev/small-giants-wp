@@ -495,6 +495,161 @@ def breakpoint_suffix_rules() -> list[tuple[str, list[str]]]:
 
 
 # ----------------------------------------------------------------------------
+# D3 — Attribute gap candidate helpers
+# ----------------------------------------------------------------------------
+
+def propose_attr_name(block_slug: str, css_property: str, source_class: str) -> str:
+    """Derive a sensible proposed attribute name for a CSS property that has no
+    matching typed attr on ``block_slug``.
+
+    Algorithm (DB-first per Rule 11):
+      1. Look up the CSS property in ``property_suffixes`` to get the canonical
+         suffix (e.g. ``letter-spacing`` → ``LetterSpacing``).
+      2. Parse ``source_class`` as SGS-BEM to extract the slot/element name
+         (e.g. ``.sgs-hero__label`` → element ``label``).
+      3. Resolve the element through ``slot_synonyms`` to a canonical slot
+         (e.g. ``label`` → ``label``).
+      4. Combine: ``{slot}{Suffix}`` (e.g. ``labelLetterSpacing``).
+
+    Fallback chain:
+      - If no suffix in DB → use camelCase of the CSS property itself.
+      - If no slot from BEM parse → use ``block`` (bare suffix on the block root).
+      - Strip any leading ``sgs-`` and the block name portion from the slot so
+        proposals use the slot short-form only (``label``, not ``hero-label``).
+    """
+    # Step 1: suffix from property_suffixes
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        row = conn.execute(
+            "SELECT suffix FROM property_suffixes "
+            "WHERE css_property = ? AND css_property IS NOT NULL "
+            "ORDER BY rowid LIMIT 1",
+            (css_property,),
+        ).fetchone()
+    finally:
+        conn.close()
+
+    if row:
+        suffix = row[0]  # e.g. "LetterSpacing", "Colour", "FontSize"
+    else:
+        # Fallback: camelCase the CSS property ("letter-spacing" → "LetterSpacing")
+        parts = css_property.split("-")
+        suffix = parts[0] + "".join(p.title() for p in parts[1:])
+        # Capitalise first letter to match SGS naming convention (PascalCase suffix)
+        suffix = suffix[0].upper() + suffix[1:] if suffix else css_property
+
+    # Step 2+3: slot from BEM parse of source_class
+    bem = parse_sgs_bem(source_class.lstrip("."))
+    slot: str = ""
+    if bem and bem.element:
+        canonical = canonical_slot_for(bem.element)
+        slot = canonical if canonical else bem.element
+    elif bem and bem.block:
+        # Source class is a block root (no element) — slot is the block itself
+        slot = ""  # bare suffix on the block root: e.g. "LetterSpacing"
+
+    # Step 4: compose the proposed attr name
+    if slot:
+        # camelCase the slot (it's already lowercase from DB; capitalise first letter)
+        slot_camel = slot[0].lower() + slot[1:]
+        return f"{slot_camel}{suffix}"
+    # No slot — bare suffix form (rare: block-root styling attr)
+    # Lowercase first char to get camelCase: "LetterSpacing" → "letterSpacing"
+    return suffix[0].lower() + suffix[1:] if suffix else css_property
+
+
+def write_attribute_gap_candidate(
+    block_slug: str,
+    css_property: str,
+    raw_value: str,
+    source_class: str,
+    source_run_id: str,
+    proposed_attr: str | None = None,
+) -> None:
+    """Insert (or ignore duplicate) row into ``attribute_gap_candidates``.
+
+    Maps the FR6 idealised columns onto the actual table schema:
+      - ``attr_name``        ← proposed attribute name (derived via propose_attr_name)
+      - ``stem``             ← css_property  (repurposed: carries the CSS property)
+      - ``proposed_action``  ← context string with raw_value + source_class + run_id
+
+    UNIQUE constraint: ``(block_slug, attr_name)`` — same proposed attr on the
+    same block only inserts once regardless of how many times the run encounters it.
+    Different raw values or source classes for the SAME proposed attr are collapsed
+    (first-writer wins). Use INSERT OR IGNORE to enforce idempotency without errors.
+    """
+    if not proposed_attr:
+        proposed_attr = propose_attr_name(block_slug, css_property, source_class)
+
+    proposed_action = (
+        f"add attr: css={css_property} "
+        f"raw={raw_value!r} "
+        f"class={source_class} "
+        f"run={source_run_id}"
+    )
+
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        conn.execute(
+            """
+            INSERT OR IGNORE INTO attribute_gap_candidates
+                (block_slug, attr_name, stem, proposed_action)
+            VALUES (?, ?, ?, ?)
+            """,
+            (block_slug, proposed_attr, css_property, proposed_action),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+
+# ----------------------------------------------------------------------------
+# Legacy role lookup — kebab-semantic class → SGS slug (DB-driven)
+# Replaces hardcoded LEGACY_ROLE_LOOKUP dict in per-section-convention-voter.py.
+# Table: sgs-framework.db legacy_role_lookup. Seeded by:
+#   plugins/sgs-blocks/scripts/uimax-tools/seed-legacy-role-lookup.py
+# ----------------------------------------------------------------------------
+
+# Module-level cache populated on first call. Avoids repeated DB round-trips
+# across multiple sections in a single run.
+_LEGACY_ROLE_CACHE: dict[str, str] | None = None
+
+
+def _load_legacy_role_cache() -> dict[str, str]:
+    """Query legacy_role_lookup table and return {kebab_role: sgs_slug}."""
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute("SELECT kebab_role, sgs_slug FROM legacy_role_lookup").fetchall()
+    except sqlite3.OperationalError:
+        # Table not yet created — seed script hasn't been run. Soft-fail to empty.
+        rows = []
+    finally:
+        conn.close()
+    return {kebab: slug for kebab, slug in rows}
+
+
+def legacy_role_lookup_for(kebab_role: str) -> str | None:
+    """Return the SGS block slug for a legacy kebab-semantic role, or None.
+
+    Queries sgs-framework.db legacy_role_lookup (seeded by
+    plugins/sgs-blocks/scripts/uimax-tools/seed-legacy-role-lookup.py).
+    Results cached in-module after the first call (warmup pattern).
+
+    Examples:
+        legacy_role_lookup_for('hero')           -> 'sgs/hero'
+        legacy_role_lookup_for('trust-bar')      -> 'sgs/trust-bar'
+        legacy_role_lookup_for('unknown-role')   -> None
+    """
+    global _LEGACY_ROLE_CACHE
+    if _LEGACY_ROLE_CACHE is None:
+        _LEGACY_ROLE_CACHE = _load_legacy_role_cache()
+    result = _LEGACY_ROLE_CACHE.get(kebab_role)
+    if result is None and kebab_role:
+        _trace("db_lookup_miss", lookup="legacy_role_lookup_for", kebab_role=kebab_role)
+    return result
+
+
+# ----------------------------------------------------------------------------
 # Smoke test
 # ----------------------------------------------------------------------------
 

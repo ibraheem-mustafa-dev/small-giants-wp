@@ -864,11 +864,40 @@ def stage_2_match(boundary_output: dict, run_dir: Path) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# Stage 3 -- SLOT LIST (unchanged; reads block.json directly)
+# Stage 3 -- SLOT LIST (DB-canonical; falls back to auto-derived with gap marker)
 # ---------------------------------------------------------------------------
 
+def _load_db_block_attrs(block_slug: str) -> dict:
+    """Load {attr_name: {role, canonical_slot, attr_type}} from sgs-framework.db.
+
+    Uses db_lookup.block_attrs() which is LRU-cached per slug.
+    Returns an empty dict if the import fails or the block has no DB rows.
+    This is a module-local helper so Wave 3a can freely modify db_lookup.py.
+    """
+    try:
+        _db_dir = ORCHESTRATOR_DIR.parent
+        if str(_db_dir) not in sys.path:
+            sys.path.insert(0, str(_db_dir))
+        from orchestrator.converter_v2.db_lookup import block_attrs  # type: ignore[import]
+        return block_attrs(block_slug)
+    except Exception:  # noqa: BLE001 — never break Stage 3 on a DB miss
+        return {}
+
+
 def stage_3_slot_list(match_output: dict, run_dir: Path) -> dict:
-    """Stage 3 -- build the slot scaffold from each matched block's block.json."""
+    """Stage 3 -- build the slot scaffold from each matched block's block.json.
+
+    For every attribute declared in block.json, the slot entry is tagged with
+    DB-canonical metadata when available:
+
+      canonical_source: 'db'          -- canonical_slot + role came from block_attributes
+      canonical_source: 'auto-derived' -- DB had no row for this attr; fell back to
+                                          block.json inference; slot_canonicalisation_gap=True
+                                          is set so operators can see what needs canonicalising
+
+    Universal-extraction principle: auto-derived is never silently treated as
+    canonical. Every slot declares which path produced it.
+    """
     started = now_iso()
     warnings: list[str] = []
     slot_lists: dict[str, dict] = {}
@@ -894,18 +923,56 @@ def stage_3_slot_list(match_output: dict, run_dir: Path) -> dict:
         slug = block_name.split("/")[-1] if "/" in block_name else block_name
         block_json_path = REPO / "plugins" / "sgs-blocks" / "src" / "blocks" / slug / "block.json"
         slots: list[dict] = []
+
+        # Load DB canonical metadata for this block (keyed by attr_name).
+        # Empty dict if block not in DB or import unavailable -- handled per-attr below.
+        db_attrs = _load_db_block_attrs(block_name)
+
+        db_canonical_count = 0
+        auto_derived_count = 0
+
         if block_json_path.exists():
             block_json = json.loads(block_json_path.read_text(encoding="utf-8"))
             for attr_name, attr_def in (block_json.get("attributes") or {}).items():
                 default_val = attr_def.get("default") if isinstance(attr_def, dict) else None
-                slots.append({
-                    "slot_name": attr_name,
-                    "attribute_role": "auto-derived",
-                    "default": default_val,
-                    "search_scope": "self",
-                })
+
+                db_row = db_attrs.get(attr_name)
+                db_canonical_slot = db_row.get("canonical_slot") if db_row else None
+                db_role = db_row.get("role") if db_row else None
+                db_attr_type = db_row.get("attr_type") if db_row else None
+
+                if db_row and db_canonical_slot:
+                    # DB row exists and canonical_slot is populated -- use DB values.
+                    slot_entry: dict = {
+                        "slot_name": attr_name,
+                        "canonical_slot": db_canonical_slot,
+                        "attribute_role": db_role or "unknown",
+                        "attr_type": db_attr_type,
+                        "default": default_val,
+                        "search_scope": "self",
+                        "canonical_source": "db",
+                    }
+                    db_canonical_count += 1
+                else:
+                    # DB row missing or canonical_slot is NULL -- fall back to
+                    # auto-derived behaviour but mark the gap explicitly.
+                    # Never silently treat auto-derived as canonical.
+                    slot_entry = {
+                        "slot_name": attr_name,
+                        "canonical_slot": attr_name,   # auto-derived: slot name = attr name
+                        "attribute_role": db_role or "auto-derived",
+                        "attr_type": db_attr_type,
+                        "default": default_val,
+                        "search_scope": "self",
+                        "canonical_source": "auto-derived",
+                        "slot_canonicalisation_gap": True,
+                    }
+                    auto_derived_count += 1
+
+                slots.append(slot_entry)
         else:
             warnings.append(f"block.json not found at {block_json_path}")
+
         slot_lists[boundary_id] = {
             "block_name": block_name,
             "section_id": section_id,
@@ -913,7 +980,9 @@ def stage_3_slot_list(match_output: dict, run_dir: Path) -> dict:
         }
         _emit(_trace_for(run_dir), stage="stage_3_slot_list",
               boundary_id=boundary_id, block_name=block_name, section_id=section_id,
-              slot_count=len(slots), block_json_found=block_json_path.exists())
+              slot_count=len(slots), block_json_found=block_json_path.exists(),
+              db_canonical_count=db_canonical_count,
+              auto_derived_count=auto_derived_count)
 
     output = {"slot_lists": slot_lists, "version_drift_warnings": warnings}
     write_artefact(run_dir, 3, "slot-list", "complete" if not warnings else "warning", output, started, [], warnings)
@@ -1720,6 +1789,17 @@ def main():
     print(f"[orchestrator] run_id={run_id}")
     print(f"[orchestrator] run_dir={run_dir}")
     print(f"[orchestrator] mode={args.mode}")
+
+    # Wave 3a follow-up: seed cv2's gap-candidate accumulator with this run's
+    # run_id so every attribute_gap_candidate row emitted under D3 carries
+    # traceable provenance. Soft-fail on ImportError (cv2 not importable on
+    # this Python path — same fallback shape as the existing reset_pipeline_seed
+    # at line ~976).
+    try:
+        from orchestrator.converter_v2 import seed_gap_context as _seed_gap_context
+        _seed_gap_context(run_id=run_id)
+    except Exception:
+        pass
 
     # Stage 0 -- THEME CACHE (Step 6a). Load theme.json + variation overlay once
     # per run. All downstream stages read from run_ctx["theme_json"] — single source

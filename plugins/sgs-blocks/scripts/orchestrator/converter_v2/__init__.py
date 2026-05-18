@@ -14,6 +14,7 @@ __all__ = [
     "convert_page",
     "convert_section",
     "seed_pipeline_context",
+    "seed_gap_context",
     "reset_pipeline_seed",
 ]
 
@@ -78,6 +79,17 @@ def reset_pipeline_seed() -> None:
     from . import convert as v3
     _PIPELINE_SEEDED["client_slug"] = None
     v3._LIFT_CONTEXT.pop("theme_widths", None)
+
+
+def seed_gap_context(run_id: str) -> None:
+    """Set the pipeline run_id for D3 gap candidate provenance.
+
+    Call this from the orchestrator once per pipeline run (before the
+    per-section loop) so every gap row written during this run carries the
+    correct ``source_run_id``.  Proxies to ``convert.seed_gap_context()``.
+    """
+    from . import convert as v3
+    v3.seed_gap_context(run_id)
 
 
 def convert_page(html_path: "str | object", media_map_path: "str | object | None" = None) -> list[dict]:
@@ -278,6 +290,10 @@ def _convert_section_body(html: str, css: str, media_map: dict) -> dict:
     css_rules = v3.parse_css(css) if css else {}
     variation_buf: list[str] = []
 
+    # D3: reset accumulator at the start of each section so gaps from a previous
+    # section don't bleed into this one's result dict.
+    v3.clear_gap_candidates()
+
     # Find the section root — first element child of soup
     root = soup.find()
     if root is None:
@@ -359,6 +375,10 @@ def _convert_section_body(html: str, css: str, media_map: dict) -> dict:
             extracted[k] = v
             extracted[f"{block_short}.{k}"] = v
 
+    # D3: flush accumulated gap candidates — writes to sgs-framework.db via
+    # INSERT OR IGNORE and returns the written rows for the result dict.
+    gap_candidates = v3.flush_gap_candidates()
+
     return {
         "boundary_id": section_id or selector,
         "section_id": section_id,
@@ -368,5 +388,5 @@ def _convert_section_body(html: str, css: str, media_map: dict) -> dict:
         "extracted_attributes": extracted,
         "block_markup": block_markup,
         "variation_css": "\n".join(variation_buf),
-        "attribute_gap_candidates": [],  # populated when the converter emits gap rows
+        "attribute_gap_candidates": gap_candidates,
     }

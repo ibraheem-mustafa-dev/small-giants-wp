@@ -78,7 +78,29 @@ $content = <<<'BLOCKS'
 </div>
 <!-- /wp:group -->
 
-<!-- wp:sgs/heritage-strip {"align":"full","layout":"image-text-image","headline":"Three generations. One family. Since 1962.","body":"When Amir Chaudhary's grandparents opened one of the UK's first halal butchers on Ladypool Road in Birmingham's Balti Triangle, they couldn't have known it would become a £15M wholesale operation serving 5,000 customers across the UK, Ireland, and Europe. But the values haven't changed: know your customer, never compromise on quality, and always deliver on your word.","headlineColour":"#FFFFFF","bodyColour":"rgba(255,255,255,0.75)","backgroundColour":"#075E80","imageLeft":{"url":"/wp-content/uploads/indus-foods/2025/11/Indus-Foods-Banner-1024x683.jpg","alt":"Indus Foods warehouse — Sparkbrook, Birmingham"},"imageRight":{"url":"/wp-content/uploads/indus-foods/2025/11/Indus-AI-Placeholder-1024x510.webp","alt":"Amir Chaudhary, Director — Indus Foods"}} /-->
+<!-- wp:pattern {"slug":"sgs/brand"} /-->
+
+<!-- wp:sgs/container {"layout":"grid","columns":2,"gridTemplateColumns":"1fr 1fr","columnsMobile":1,"gap":"60","className":"sgs-brand","style":{"color":{"background":"#075E80"}}} -->
+
+	<!-- wp:sgs/container {"layout":"stack","gap":"24","className":"sgs-brand__content"} -->
+
+		<!-- wp:sgs/label {"text":"Our Heritage","tag":"span","variantStyle":"plain","className":"sgs-brand__label"} /-->
+
+		<!-- wp:core/heading {"level":2,"className":"sgs-brand__headline","style":{"color":{"text":"#FFFFFF"}}} -->
+		<h2 class="wp-block-heading sgs-brand__headline" style="color:#FFFFFF">Three generations. One family. Since 1962.</h2>
+		<!-- /wp:core/heading -->
+
+		<!-- wp:core/paragraph {"className":"sgs-brand__body","style":{"color":{"text":"rgba(255,255,255,0.75)"}}} -->
+		<p class="sgs-brand__body" style="color:rgba(255,255,255,0.75)">When Amir Chaudhary's grandparents opened one of the UK's first halal butchers on Ladypool Road in Birmingham's Balti Triangle, they couldn't have known it would become a £15M wholesale operation serving 5,000 customers across the UK, Ireland, and Europe. But the values haven't changed: know your customer, never compromise on quality, and always deliver on your word.</p>
+		<!-- /wp:core/paragraph -->
+
+	<!-- /wp:sgs/container -->
+
+	<!-- wp:core/image {"className":"sgs-brand__image"} -->
+	<figure class="wp-block-image sgs-brand__image"><img src="/wp-content/uploads/indus-foods/2025/11/Indus-Foods-Banner-1024x683.jpg" alt="Indus Foods warehouse — Sparkbrook, Birmingham" /></figure>
+	<!-- /wp:core/image -->
+
+<!-- /wp:sgs/container -->
 
 <!-- wp:group {"align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|60"}},"color":{"background":"#F8F7F4"}},"layout":{"type":"constrained","contentSize":"1200px"}} -->
 <div class="wp-block-group alignfull has-background" style="background-color:#F8F7F4;padding-top:var(--wp--preset--spacing--60);padding-bottom:var(--wp--preset--spacing--60)">

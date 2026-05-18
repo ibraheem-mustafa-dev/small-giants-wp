@@ -71,7 +71,7 @@ Available tools to use:
 
 1. **Build Phase 1a: SGS Theme** — theme.json, templates, header/footer, fonts, core block styles. Deploy to palestine-lives.org and verify it activates cleanly.
 2. **Build Phase 1b: SGS Blocks infrastructure** — @wordpress/scripts setup, block categories, shared components (ResponsiveControl, DesignTokenPicker, AnimationControl), then container block as the foundation.
-3. **Build Phase 1b: Core blocks** — hero, info-box, counter, trust-bar, icon-list, card-grid, cta-section, process-steps, testimonial, testimonial-slider, heritage-strip, brand-strip, certification-bar, notice-banner, whatsapp-cta.
+3. **Build Phase 1b: Core blocks** — hero, info-box, counter, trust-bar, icon-list, card-grid, cta-section, process-steps, testimonial, testimonial-slider, brand (pattern, retired heritage-strip 2026-05-16), certification-bar, notice-banner, whatsapp-cta.
 4. **Build Phase 1b: Core form blocks** — form wrapper, form-step, text/email/phone/textarea/select/radio/checkbox, tiles, file, consent, form-review + processing engine.
 5. **Phase 1c: Deploy Indus Foods pages** — build 4 service pages + trade application + homepage using the blocks.
 
