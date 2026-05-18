@@ -22,6 +22,9 @@
                         "sgs/formId"
                     ],
     "supports":  {
+                     "sgs":  {
+                                 "imageControls":  false
+                             },
                      "html":  false,
                      "anchor":  false
                  },

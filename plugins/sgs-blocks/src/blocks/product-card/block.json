@@ -18,6 +18,9 @@
   "textdomain": "sgs-blocks",
   "icon": "products",
   "supports": {
+    "sgs": {
+      "imageControls": true
+    },
     "html": false,
     "align": false,
     "spacing": {

@@ -1,0 +1,69 @@
+block_slug,dynamic,has_direct_img_in_render,has_helper_img_in_render,img_method,declares_imageControls,current_sgs_supports,status
+sgs/accordion,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/accordion-item,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/announcement-bar,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/brand-strip,True,False,True,helper_function,True,"{""imageControls"": true}",OK_imageControls_true
+sgs/breadcrumbs,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/business-info,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/button,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/card-grid,True,True,True,direct_img_tag,True,"{""imageControls"": true}",OK_imageControls_true
+sgs/certification-bar,True,True,False,direct_img_tag,True,"{""imageControls"": true}",OK_imageControls_true
+sgs/container,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/countdown-timer,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/counter,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/cta-section,True,False,True,helper_function,False,"{""imageControls"": false}",OK_explicit_opt_out
+sgs/decorative-image,True,False,True,helper_function,True,"{""imageControls"": true}",OK_imageControls_true
+sgs/divider,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/feature-grid,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/form,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/form-field-address,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/form-field-checkbox,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/form-field-consent,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/form-field-date,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/form-field-email,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/form-field-file,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/form-field-hidden,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/form-field-number,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/form-field-phone,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/form-field-radio,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/form-field-select,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/form-field-text,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/form-field-textarea,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/form-field-tiles,True,True,False,direct_img_tag,False,"{""imageControls"": false}",OK_explicit_opt_out
+sgs/form-review,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/form-step,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/gallery,True,True,True,direct_img_tag,True,"{""imageControls"": true}",OK_imageControls_true
+sgs/google-reviews,True,True,False,direct_img_tag,False,"{""imageControls"": false}",OK_explicit_opt_out
+sgs/heading,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/hero,True,True,True,direct_img_tag,True,"{""imageControls"": true}",OK_imageControls_true
+sgs/icon,True,False,False,none,False,"{""imageControls"": false}",OK_explicit_opt_out_no_img
+sgs/icon-block,True,False,False,none,False,"{""imageControls"": false}",OK_explicit_opt_out_no_img
+sgs/icon-list,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/info-box,True,False,True,helper_function,True,"{""imageControls"": true}",OK_imageControls_true
+sgs/label,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/media,True,True,True,direct_img_tag,True,"{""imageControls"": true}",OK_imageControls_true
+sgs/mega-menu,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/mobile-nav,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/mobile-nav-toggle,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/modal,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/multi-button,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/notice-banner,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/post-grid,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/pricing-table,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/process-steps,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/product-card,True,True,False,direct_img_tag,True,"{""imageControls"": true}",OK_imageControls_true
+sgs/quote,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/social-icons,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/star-rating,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/svg-background,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/tab,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/table-of-contents,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/tabs,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/team-member,True,False,True,helper_function,True,"{""imageControls"": true}",OK_imageControls_true
+sgs/testimonial,True,True,True,direct_img_tag,True,"{""imageControls"": true}",OK_imageControls_true
+sgs/testimonial-slider,True,False,True,helper_function,True,"{""imageControls"": true}",OK_imageControls_true
+sgs/text,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/trust-badges,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/trust-bar,True,False,False,none,None,{},OK_no_image_no_declaration
+sgs/trustpilot-reviews,True,True,False,direct_img_tag,False,"{""imageControls"": false}",OK_explicit_opt_out
+sgs/whatsapp-cta,True,False,False,none,None,{},OK_no_image_no_declaration

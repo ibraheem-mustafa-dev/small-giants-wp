@@ -16,6 +16,9 @@
   "textdomain": "sgs-blocks",
   "icon": "megaphone",
   "supports": {
+    "sgs": {
+      "imageControls": false
+    },
     "align": [
       "wide",
       "full"
