@@ -100,3 +100,6 @@ pipeline-state/
 # Python bytecode caches
 **/__pycache__/
 *.pyc
+
+# Agent worktrees — local-only, never tracked
+.claude/worktrees/
