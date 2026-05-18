@@ -1,0 +1,44 @@
+"""
+synthetic-cheat.py.txt
+======================
+Fixture file containing intentional cheat patterns.
+This file is parsed by test_qc_anti_cheat.py to verify detection.
+The .txt extension prevents it from being imported as live Python.
+"""
+
+# CHEAT 1 — client slug as dict key
+OVERRIDE_MAP = {
+    "mamas-munches": {"bg": "#ffffff", "layout": "card"},
+    "indus-foods": {"bg": "#f5f5f5", "layout": "hero"},
+}
+
+# CHEAT 2 — section name in if-comparison
+def resolve_layout(section):
+    if section == "brand":
+        return "brand-layout"
+    elif section == "hero":
+        return "hero-layout"
+    elif section == "footer":
+        return "footer-layout"
+    return "default-layout"
+
+# CHEAT 3 — client slug in if-comparison
+def get_client_palette(client):
+    if client == "indus-foods":
+        return "#0A7EA8"
+    return None
+
+# CHEAT 4 — hardcoded forbidden hex colour as a constant
+BRAND_PINK = "#F5C2C8"
+BRAND_TEAL = "#0F7E80"
+
+# CHEAT 5 — hardcoded font name as a constant
+DEFAULT_HEADING_FONT = "DM Serif Display"
+
+# CHEAT 6 — section-name dict keys (majority are section names)
+SECTION_CSS_MAP = {
+    "hero": "sgs-hero",
+    "brand": "sgs-brand",
+    "footer": "sgs-footer",
+    "header": "sgs-header",
+}

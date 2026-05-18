@@ -16,6 +16,22 @@ Output schema (per section):
         "class_signature": list[str],  # sorted unique top-level class names (cap 30)
     }
 
+Extended API:
+
+    detect_body_header_behaviour(html) -> dict | None
+
+    Scans the <body> element for ``sgs-header-behaviour-{slug}`` classes and
+    returns a structured header-rule dict if found, or None when absent.
+    The returned dict is NOT a section record -- it is routed to the
+    ``sgs_header_rules`` WP option by the output pipeline, not to a block.
+
+    Return shape when present:
+        {
+            "behaviour": str,           # e.g. "sticky", "transparent"
+            "scope": "all",             # always "all" for mockup-derived rules
+            "source": "mockup-body-class",
+        }
+
 CLI:
     python tools/recogniser/section_detector.py <html-file>
 
@@ -172,6 +188,47 @@ def _all_page_level(soup: BeautifulSoup, tag_name: str) -> list[Tag]:
         if parents.issubset(structural):
             out.append(candidate)
     return out
+
+
+# Valid header behaviour slugs (mirrors Sgs_Header_Behaviours::VALID_BEHAVIOURS).
+# Source of truth: plugins/sgs-blocks/includes/class-sgs-header-behaviours.php
+_VALID_HEADER_BEHAVIOURS = frozenset({"transparent", "sticky", "hide-on-scroll-down"})
+
+# Prefix used by Sgs_Header_Behaviours::add_body_classes() on the <body> element.
+_HEADER_BEHAVIOUR_PREFIX = "sgs-header-behaviour-"
+
+
+def detect_body_header_behaviour(html: str) -> dict | None:
+    """Scan ``<body>`` for an ``sgs-header-behaviour-{slug}`` class.
+
+    Returns a header-rule dict when a valid behaviour class is found on
+    the ``<body>`` element, or ``None`` when absent or the slug is
+    unrecognised.
+
+    The returned dict is routed to the ``sgs_header_rules`` WP option by
+    the output pipeline -- it does NOT represent a block section.
+
+    Return shape:
+        {
+            "behaviour": str,           # e.g. "sticky", "transparent"
+            "scope": "all",             # always "all" for mockup-derived rules
+            "source": "mockup-body-class",
+        }
+    """
+    soup = BeautifulSoup(html, _PARSER)
+    body = soup.body
+    if body is None:
+        return None
+    for cls in body.get("class", []) or []:
+        if cls.startswith(_HEADER_BEHAVIOUR_PREFIX):
+            slug = cls[len(_HEADER_BEHAVIOUR_PREFIX):]
+            if slug in _VALID_HEADER_BEHAVIOURS:
+                return {
+                    "behaviour": slug,
+                    "scope": "all",
+                    "source": "mockup-body-class",
+                }
+    return None
 
 
 def detect_sections(html: str) -> list[dict]:

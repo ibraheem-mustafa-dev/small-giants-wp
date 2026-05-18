@@ -1108,23 +1108,55 @@
     "source": "sgs"
   },
   "sgs/icon": {
-    "attr_extractors": [],
     "block_name": "sgs/icon",
-    "block_type": "dynamic",
+    "source": "sgs",
     "category": "sgs-content",
-    "optional_features": [
-      "colour",
-      "hover"
-    ],
-    "required_features": [],
+    "block_type": "dynamic",
     "required_html_pattern": {
+      "tag": "div",
       "class_includes_any": [
         "sgs-icon",
         "wp-block-sgs-icon"
-      ],
-      "tag": "section"
+      ]
     },
-    "source": "sgs"
+    "attr_extractors": [
+      {
+        "attr": "iconName",
+        "selector": ".sgs-icon__glyph, [data-icon-name]",
+        "extract": "data-icon-name"
+      },
+      {
+        "attr": "iconSource",
+        "selector": ".sgs-icon__glyph, [data-icon-source]",
+        "extract": "data-icon-source"
+      },
+      {
+        "attr": "emojiChar",
+        "selector": ".sgs-icon__emoji",
+        "extract": "text"
+      },
+      {
+        "attr": "ariaLabel",
+        "selector": ".sgs-icon, [aria-label]",
+        "extract": "aria-label"
+      },
+      {
+        "attr": "linkUrl",
+        "selector": ".sgs-icon__link, a",
+        "extract": "href"
+      },
+      {
+        "attr": "linkTarget",
+        "selector": ".sgs-icon__link, a",
+        "extract": "target"
+      }
+    ],
+    "required_features": [],
+    "optional_features": [
+      "colour",
+      "hover",
+      "transition"
+    ]
   },
   "sgs/icon-block": {
     "attr_extractors": [],
@@ -1374,6 +1406,35 @@
     },
     "source": "sgs"
   },
+  "sgs/responsive-logo": {
+    "block_name": "sgs/responsive-logo",
+    "source": "sgs",
+    "category": "sgs-content",
+    "block_type": "dynamic",
+    "required_html_pattern": {
+      "tag": "div",
+      "class_includes_any": [
+        "sgs-responsive-logo",
+        "wp-block-sgs-responsive-logo"
+      ]
+    },
+    "attr_extractors": [
+      {
+        "attr": "alt",
+        "selector": ".sgs-responsive-logo__image, img",
+        "extract": "alt"
+      },
+      {
+        "attr": "width",
+        "selector": ".sgs-responsive-logo__image, img",
+        "extract": "width"
+      }
+    ],
+    "required_features": [],
+    "optional_features": [
+      "animation"
+    ]
+  },
   "sgs/social-icons": {
     "attr_extractors": [],
     "block_name": "sgs/social-icons",
@@ -1592,6 +1653,32 @@
       "tag": "section"
     },
     "source": "sgs"
+  },
+  "sgs/timeline": {
+    "block_name": "sgs/timeline",
+    "source": "sgs",
+    "category": "sgs-content",
+    "block_type": "dynamic",
+    "required_html_pattern": {
+      "tag": "div",
+      "class_includes_any": [
+        "sgs-timeline",
+        "wp-block-sgs-timeline"
+      ]
+    },
+    "attr_extractors": [
+      {
+        "attr": "entries",
+        "selector": ".sgs-timeline__item",
+        "extract": "timeline-entries"
+      }
+    ],
+    "required_features": [],
+    "optional_features": [
+      "colour",
+      "transition",
+      "alignment"
+    ]
   },
   "sgs/trust-badges": {
     "attr_extractors": [],

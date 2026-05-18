@@ -5,7 +5,7 @@
 > `plugins/sgs-blocks/scripts/generate-block-reference.py`.
 > Refresh: `python plugins/sgs-blocks/scripts/generate-block-reference.py`.
 
-**Last generated:** 2026-05-18T09:01:09
+**Last generated:** 2026-05-18T14:09:10
 
 **For architectural patterns, customisation standards, and build status, see [`02-SGS-BLOCKS.md`](02-SGS-BLOCKS.md).** This file is the per-block attribute/supports/selector reference only.
 
@@ -14,7 +14,7 @@
 ## Contents
 
 - [Layout](#layout) (6 blocks)
-- [Content](#content) (37 blocks)
+- [Content](#content) (39 blocks)
 - [Forms](#forms) (17 blocks)
 - [Interactive](#interactive) (11 blocks)
 
@@ -427,7 +427,7 @@ Horizontal logo strip with infinite marquee scroll, fade edges, direction contro
 | `transitionEasing` | `string` | `"ease-in-out"` | — |
 
 **Supports:**
-- `__experimentalBorder` ({"radius": true, "width": t...), `align` (["wide", "full"]), `anchor`, `color` ({"background": true, "text"...), `html` (false), `spacing` ({"margin": true, "padding":...)
+- `__experimentalBorder` ({"radius": true, "width": t...), `align` (["wide", "full"]), `anchor`, `color` ({"background": true, "text"...), `html` (false), `sgs` ({"imageControls": true}), `spacing` ({"margin": true, "padding":...)
 
 ---
 
@@ -683,7 +683,7 @@ Horizontal strip of certification badges with optional labels. Trust signals lik
 | `titleFontSize` | `string` | `—` | — |
 
 **Supports:**
-- `__experimentalBorder` ({"radius": true, "width": t...), `align` (["wide", "full"]), `anchor`, `color` ({"background": true, "text"...), `html` (false), `spacing` ({"margin": true, "padding":...), `typography` ({"fontSize": true, "lineHei...)
+- `__experimentalBorder` ({"radius": true, "width": t...), `align` (["wide", "full"]), `anchor`, `color` ({"background": true, "text"...), `html` (false), `sgs` ({"imageControls": true}), `spacing` ({"margin": true, "padding":...), `typography` ({"fontSize": true, "lineHei...)
 
 **Selectors:**
 
@@ -776,7 +776,7 @@ Call-to-action section with headline, supporting text, and buttons.
 | `transitionEasing` | `string` | `"ease-in-out"` | — |
 
 **Supports:**
-- `__experimentalBorder` ({"radius": true, "width": t...), `align` (["wide", "full"]), `anchor`, `color` ({"background": true, "text"...), `html` (false), `shadow`, `spacing` ({"margin": true, "padding":...), `typography` ({"fontSize": true, "lineHei...)
+- `__experimentalBorder` ({"radius": true, "width": t...), `align` (["wide", "full"]), `anchor`, `color` ({"background": true, "text"...), `html` (false), `sgs` ({"imageControls": false}), `shadow`, `spacing` ({"margin": true, "padding":...), `typography` ({"fontSize": true, "lineHei...)
 
 **Selectors:**
 
@@ -951,7 +951,7 @@ Display Google Business Profile reviews with aggregate ratings and schema.org ma
 | `variant` | `string (enum)` | `"grid"` | — |
 
 **Supports:**
-- `align` (["wide", "full"]), `anchor`, `className`, `color` ({"background": true, "text"...), `html` (false), `interactivity`
+- `align` (["wide", "full"]), `anchor`, `className`, `color` ({"background": true, "text"...), `html` (false), `interactivity`, `sgs` ({"imageControls": false})
 
 **Selectors:**
 
@@ -1134,26 +1134,36 @@ _SGS Icon_
 
 **Type:** Dynamic
 
-Standalone SVG icon with size, colour, background, and optional link.
+Icon from multiple sources — Lucide SVG, WordPress icons, Dashicons, or emoji — with size, colour, optional background shape, and optional link.
 
-**Attributes** (11):
+**Attributes** (21):
 
 | Name | Type | Default | Responsive |
 |------|------|---------|------------|
+| `ariaLabel` | `string` | `""` | — |
 | `backgroundColour` | `string` | `"surface-alt"` | — |
-| `backgroundShape` | `string` | `"circle"` | — |
+| `backgroundShape` | `string` | `"none"` | — |
+| `dashiconName` | `string` | `""` | — |
+| `emojiChar` | `string` | `""` | — |
 | `hoverColour` | `string` | `"accent-text"` | — |
 | `hoverScale` | `number` | `1.1` | — |
 | `icon` | `string` | `"star"` | — |
 | `iconColour` | `string` | `"primary"` | — |
+| `iconName` | `string` | `"star"` | — |
+| `iconSize` | `number` | `32` | — |
+| `iconSource` | `string (enum)` | `"lucide"` | — |
 | `iconValue` | `object` | `—` | — |
 | `link` | `string` | `""` | — |
 | `linkLabel` | `string` | `""` | — |
 | `linkOpensNewTab` | `boolean` | `false` | — |
+| `linkRel` | `string` | `""` | — |
+| `linkTarget` | `string (enum)` | `"_self"` | — |
+| `linkUrl` | `string` | `""` | — |
 | `size` | `number` | `48` | — |
+| `wpIconName` | `string` | `""` | — |
 
 **Supports:**
-- `align` (["center", "wide", "full"]), `anchor`, `color` ({"background": true, "text"...), `html` (false), `spacing` ({"margin": true, "padding":...)
+- `align` (["left", "center", "right"]), `anchor`, `color` ({"background": true, "text"...), `html` (false), `sgs` ({"imageControls": false}), `spacing` ({"margin": true, "padding":...)
 
 **Selectors:**
 
@@ -1616,7 +1626,7 @@ Pricing plans displayed in responsive columns with features, CTAs, monthly/yearl
 
 | Name | Type | Default | Responsive |
 |------|------|---------|------------|
-| `billingToggle` | `boolean` | `true` | — |
+| `billingToggle` | `string (enum)` | `"monthly-yearly"` | — |
 | `billingToggleMonthlyLabel` | `string` | `"Monthly"` | — |
 | `billingToggleYearlyLabel` | `string` | `"Yearly"` | — |
 | `columns` | `number` | `3` | — |
@@ -1638,7 +1648,7 @@ Pricing plans displayed in responsive columns with features, CTAs, monthly/yearl
 | `toggleStyle` | `string (enum)` | `"text"` | — |
 
 **Supports:**
-- `align` (["wide", "full"]), `anchor`, `color` ({"background": true, "text"...), `html` (false), `spacing` ({"margin": true, "padding":...), `typography` ({"fontSize": true, "lineHei...)
+- `align` (["wide", "full"]), `anchor`, `color` ({"background": true, "text"...), `html` (false), `sgs` ({"imageControls": false}), `spacing` ({"margin": true, "padding":...), `typography` ({"fontSize": true, "lineHei...)
 
 **Selectors:**
 
@@ -1714,7 +1724,7 @@ Static product card with pack-size variant pills, price and CTA. Pure visual blo
 | `variantStyle` | `string (enum)` | `"standard"` | — |
 
 **Supports:**
-- `align` (false), `html` (false), `spacing` ({"margin": true, "padding":...)
+- `align` (false), `html` (false), `sgs` ({"imageControls": true}), `spacing` ({"margin": true, "padding":...)
 
 ---
 
@@ -1824,6 +1834,37 @@ Attributed blockquote with body paragraphs and an optional footer attribution. E
 
 **Supports:**
 - `anchor`, `className`, `color` (false), `html` (false)
+
+---
+
+### `sgs/responsive-logo`
+_SGS Responsive Logo_
+
+**Type:** Dynamic
+
+Three-slot logo block (desktop / tablet / mobile) with optional SVG animation. Replaces core/site-logo in SGS header patterns. Competitive moat: H/Square/Mark aspect-ratio variants per breakpoint.
+
+**Attributes** (8):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `alt` | `string` | `""` | — |
+| `animationStyle` | `string (enum)` | `"none"` | — |
+| `desktopLogoId` | `number` | `—` | — |
+| `linkToHome` | `boolean` | `true` | — |
+| `mobileLogoId` | `number` | `—` | — |
+| `svgAnimationSource` | `number` | `—` | — |
+| `tabletLogoId` | `number` | `—` | — |
+| `width` | `number` | `240` | — |
+
+**Supports:**
+- `_comment_parallax` ("Parallax deliberately excl...), `align` (["left", "center", "right",...), `anchor`, `html` (false), `sgs` ({"imageControls": true}), `spacing` ({"margin": true, "padding":...)
+
+**Selectors:**
+
+| Element | Selector |
+|---------|----------|
+| `root` | `.wp-block-sgs-responsive-logo` |
 
 ---
 
@@ -2069,7 +2110,7 @@ Carousel of testimonials with CSS scroll-snap and optional autoplay.
 | `transitionEasing` | `string` | `"ease-in-out"` | — |
 
 **Supports:**
-- `__experimentalBorder` ({"radius": true, "width": t...), `align` (["wide", "full"]), `anchor`, `color` ({"background": true, "text"...), `html` (false), `spacing` ({"margin": true, "padding":...), `typography` ({"fontSize": true, "lineHei...)
+- `__experimentalBorder` ({"radius": true, "width": t...), `align` (["wide", "full"]), `anchor`, `color` ({"background": true, "text"...), `html` (false), `sgs` ({"imageControls": true}), `spacing` ({"margin": true, "padding":...), `typography` ({"fontSize": true, "lineHei...)
 
 **Selectors:**
 
@@ -2173,6 +2214,38 @@ Single-element body text block. Emits one configurable HTML tag with full SGS ty
 
 **Supports:**
 - `anchor`, `className`, `color` (false), `html` (false)
+
+---
+
+### `sgs/timeline`
+_SGS Timeline_
+
+**Type:** Dynamic
+
+Date-based timeline with vertical or horizontal orientation and scroll-reveal animation.
+
+**Attributes** (8):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `alignment` | `string` | `"alternating"` | — |
+| `connectorColour` | `string` | `"border-subtle"` | — |
+| `connectorStyle` | `string` | `"line"` | — |
+| `dateColour` | `string` | `"accent"` | — |
+| `entries` | `array` | `[{"date": "2020-01-01", "title": "Fir...` | — |
+| `orientation` | `string` | `"vertical"` | — |
+| `revealOnScroll` | `boolean` | `true` | — |
+| `revealStagger` | `number` | `100` | — |
+
+**Supports:**
+- `__experimentalBorder` ({"radius": true, "width": t...), `align` (["wide", "full"]), `anchor`, `color` ({"background": true, "text"...), `html` (false), `sgs` ({"imageControls": true}), `shadow`, `spacing` ({"margin": true, "padding":...), `typography` ({"fontSize": true, "lineHei...)
+
+**Selectors:**
+
+| Element | Selector |
+|---------|----------|
+| `root` | `.sgs-timeline` |
+| `typography` | `.sgs-timeline__title` |
 
 ---
 
@@ -2750,7 +2823,7 @@ Visual tile selection with icons.
 | `width` | `string` | `"full"` | — |
 
 **Supports:**
-- `anchor` (false), `html` (false)
+- `anchor` (false), `html` (false), `sgs` ({"imageControls": false})
 
 ---
 
@@ -3450,7 +3523,7 @@ _Total: 19 modifier suffixes._
 
 ## Stats
 
-- **Total blocks:** 71
-- **Dynamic (render.php):** 71
+- **Total blocks:** 73
+- **Dynamic (render.php):** 73
 - **Static (save.js):** 0
-- **Total attributes:** 1714
+- **Total attributes:** 1740

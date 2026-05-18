@@ -1,0 +1,9 @@
+[
+  {
+    "name": "mamas-munches-homepage",
+    "mockup": "sites/mamas-munches/mockups/homepage/index.html",
+    "client": "mamas-munches",
+    "page": "homepage",
+    "baseline": "reports/baselines/mamas-munches-homepage-extract.json"
+  }
+]

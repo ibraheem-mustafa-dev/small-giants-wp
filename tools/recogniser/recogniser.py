@@ -37,7 +37,7 @@ from pathlib import Path
 
 # Local import: section detector lives next to this file.
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from section_detector import detect_sections  # noqa: E402
+from section_detector import detect_sections, detect_body_header_behaviour  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Paths & constants
@@ -484,9 +484,30 @@ def _write_markdown_report(
 
 
 def _write_decisions_json(
-    out_md_path: Path, decisions: list[dict],
+    out_md_path: Path,
+    decisions: list[dict],
+    header_behaviour_rule: dict | None = None,
 ) -> Path:
-    """Write the raw decisions JSON next to the markdown report."""
+    """Write the raw decisions JSON next to the markdown report.
+
+    When *header_behaviour_rule* is provided (from
+    ``detect_body_header_behaviour``), a companion
+    ``recogniser-header-rules-*.json`` file is also written alongside the
+    decisions JSON.  The companion file contains the rule dict ready for
+    the output pipeline to write to the ``sgs_header_rules`` WP option.
+
+    The companion file shape:
+        {
+            "option_name": "sgs_header_rules",
+            "rules": [
+                {
+                    "behaviour": "<slug>",
+                    "scope": "all",
+                    "source": "mockup-body-class"
+                }
+            ]
+        }
+    """
     json_name = out_md_path.name.replace(
         "recogniser-run-", "recogniser-decisions-"
     )
@@ -499,6 +520,24 @@ def _write_decisions_json(
         json.dumps(decisions, indent=2, ensure_ascii=False),
         encoding="utf-8",
     )
+
+    if header_behaviour_rule is not None:
+        # Write companion header-rules file for the output pipeline.
+        rules_name = json_name.replace(
+            "recogniser-decisions-", "recogniser-header-rules-"
+        )
+        if rules_name == json_name:
+            rules_name = out_md_path.stem + "-header-rules.json"
+        rules_path = out_md_path.parent / rules_name
+        rules_payload = {
+            "option_name": "sgs_header_rules",
+            "rules": [header_behaviour_rule],
+        }
+        rules_path.write_text(
+            json.dumps(rules_payload, indent=2, ensure_ascii=False),
+            encoding="utf-8",
+        )
+
     return json_path
 
 
@@ -577,6 +616,16 @@ def main(argv: list[str] | None = None) -> int:
         sys.stderr.write("ERROR: no sections detected in HTML.\n")
         return 3
 
+    # Detect body.sgs-header-behaviour-* and write the sgs_header_rules option
+    # alongside decisions. Does NOT produce a section/block record.
+    header_behaviour_rule = detect_body_header_behaviour(html)
+    if header_behaviour_rule is not None:
+        slug = header_behaviour_rule["behaviour"]
+        sys.stderr.write(
+            f"recogniser: body.sgs-header-behaviour-{slug} detected "
+            f"-- writing header_rule to decisions\n"
+        )
+
     catalogue = _load_fingerprints()
     template = _load_prompt_template()
 
@@ -631,7 +680,7 @@ def main(argv: list[str] | None = None) -> int:
                 args.output, decisions, sections,
                 args.variation, args.html, [],
             )
-            _write_decisions_json(args.output, decisions)
+            _write_decisions_json(args.output, decisions, header_behaviour_rule)
             return 4
 
     prompt_tweaks = [
@@ -650,7 +699,7 @@ def main(argv: list[str] | None = None) -> int:
         args.output, decisions, sections,
         args.variation, args.html, prompt_tweaks,
     )
-    json_path = _write_decisions_json(args.output, decisions)
+    json_path = _write_decisions_json(args.output, decisions, header_behaviour_rule)
 
     counts = _summarise(decisions)
     sys.stderr.write(
