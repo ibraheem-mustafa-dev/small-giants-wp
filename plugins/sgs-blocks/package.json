@@ -17,5 +17,8 @@
 		"@wordpress/icons": "^11.6.0",
 		"@wordpress/scripts": "^30.0.0",
 		"lucide-static": "^0.564.0"
+	},
+	"dependencies": {
+		"vivus": "^0.4.6"
 	}
 }
