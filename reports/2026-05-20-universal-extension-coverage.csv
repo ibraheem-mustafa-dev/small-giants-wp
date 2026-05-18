@@ -1,0 +1,69 @@
+block_slug,has_device_visibility_ui,has_hover_effects_ui,has_animation_ui,has_custom_css_ui,has_conditional_visibility_ui,notes
+sgs/accordion,yes,yes,yes,yes,yes,global HOC — all panels injected by extensions/index.js
+sgs/accordion-item,yes,yes,no,yes,yes,animation n/a — inner block; never a scroll target (animation.js denylist)
+sgs/announcement-bar,yes,yes,yes,yes,yes,global HOC
+sgs/brand-strip,yes,yes,yes,yes,yes,global HOC
+sgs/breadcrumbs,yes,yes,yes,yes,yes,global HOC
+sgs/business-info,yes,yes,yes,yes,yes,global HOC
+sgs/button,yes,yes,yes,yes,yes,global HOC
+sgs/card-grid,yes,yes,yes,yes,yes,global HOC; hover defaults: scale+shadow+image-zoom via SCALE_SHADOW_DEFAULT_BLOCKS
+sgs/certification-bar,yes,yes,yes,yes,yes,global HOC
+sgs/container,yes,yes,yes,yes,yes,global HOC
+sgs/countdown-timer,yes,yes,yes,yes,yes,global HOC
+sgs/counter,yes,yes,yes,yes,yes,global HOC
+sgs/cta-section,yes,yes,yes,yes,yes,global HOC; hover defaults: scale+shadow+image-zoom
+sgs/decorative-image,yes,yes,yes,yes,yes,global HOC
+sgs/divider,yes,yes,yes,yes,yes,global HOC
+sgs/feature-grid,yes,yes,yes,yes,yes,global HOC
+sgs/form,yes,yes,yes,yes,yes,global HOC
+sgs/form-field-address,yes,yes,no,yes,yes,animation n/a — form field (child block; denylist)
+sgs/form-field-checkbox,yes,yes,no,yes,yes,animation n/a — form field (child block; denylist)
+sgs/form-field-consent,yes,yes,no,yes,yes,animation n/a — form field (child block; denylist)
+sgs/form-field-date,yes,yes,no,yes,yes,animation n/a — form field (child block; denylist)
+sgs/form-field-email,yes,yes,no,yes,yes,animation n/a — form field (child block; denylist)
+sgs/form-field-file,yes,yes,no,yes,yes,animation n/a — form field (child block; denylist)
+sgs/form-field-hidden,yes,yes,no,yes,yes,animation n/a — form field (child block; denylist)
+sgs/form-field-number,yes,yes,no,yes,yes,animation n/a — form field (child block; denylist)
+sgs/form-field-phone,yes,yes,no,yes,yes,animation n/a — form field (child block; denylist)
+sgs/form-field-radio,yes,yes,no,yes,yes,animation n/a — form field (child block; denylist)
+sgs/form-field-select,yes,yes,no,yes,yes,animation n/a — form field (child block; denylist)
+sgs/form-field-text,yes,yes,no,yes,yes,animation n/a — form field (child block; denylist)
+sgs/form-field-textarea,yes,yes,no,yes,yes,animation n/a — form field (child block; denylist)
+sgs/form-field-tiles,yes,yes,no,yes,yes,animation n/a — form field (child block; denylist)
+sgs/form-review,yes,yes,no,yes,yes,animation n/a — inner block (denylist)
+sgs/form-step,yes,yes,no,yes,yes,animation n/a — inner block (denylist)
+sgs/gallery,yes,yes,yes,yes,yes,global HOC; hover defaults: image-zoom only via IMAGE_ZOOM_ONLY_BLOCKS
+sgs/google-reviews,yes,yes,yes,yes,yes,global HOC; hover defaults: scale+shadow+image-zoom
+sgs/heading,yes,yes,yes,yes,yes,global HOC
+sgs/hero,yes,yes,yes,yes,yes,global HOC
+sgs/icon,yes,yes,yes,yes,yes,global HOC; hover defaults: scale+shadow+image-zoom via SCALE_SHADOW_DEFAULT_BLOCKS
+sgs/icon-block,yes,yes,yes,yes,yes,global HOC; hover defaults: scale+shadow+image-zoom
+sgs/icon-list,yes,yes,yes,yes,yes,global HOC
+sgs/info-box,yes,yes,yes,yes,yes,global HOC; hover defaults: scale+shadow+image-zoom
+sgs/label,yes,yes,yes,yes,yes,global HOC
+sgs/media,yes,yes,yes,yes,yes,global HOC
+sgs/mega-menu,yes,yes,yes,yes,yes,global HOC
+sgs/mobile-nav,yes,yes,yes,yes,yes,global HOC; has its own local AnimationPanel.js (mobile-nav-specific — not a duplicate of the global one)
+sgs/mobile-nav-toggle,yes,yes,yes,yes,yes,global HOC
+sgs/modal,yes,yes,yes,yes,yes,global HOC
+sgs/multi-button,yes,yes,yes,yes,yes,global HOC
+sgs/notice-banner,yes,yes,yes,yes,yes,global HOC
+sgs/post-grid,yes,yes,yes,yes,yes,global HOC; hover defaults: scale+shadow+image-zoom
+sgs/pricing-table,yes,yes,yes,yes,yes,global HOC; hover defaults: scale+shadow+image-zoom
+sgs/process-steps,yes,yes,yes,yes,yes,global HOC; hover defaults: scale+shadow+image-zoom
+sgs/product-card,yes,yes,yes,yes,yes,global HOC
+sgs/quote,yes,yes,yes,yes,yes,global HOC
+sgs/social-icons,yes,yes,yes,yes,yes,global HOC
+sgs/star-rating,yes,yes,yes,yes,yes,global HOC
+sgs/svg-background,yes,yes,yes,yes,yes,global HOC
+sgs/tab,yes,yes,no,yes,yes,animation n/a — inner block; never a scroll target (animation.js denylist)
+sgs/table-of-contents,yes,yes,yes,yes,yes,global HOC
+sgs/tabs,yes,yes,yes,yes,yes,global HOC
+sgs/team-member,yes,yes,yes,yes,yes,global HOC; hover defaults: scale+shadow+image-zoom
+sgs/testimonial,yes,yes,yes,yes,yes,global HOC
+sgs/testimonial-slider,yes,yes,yes,yes,yes,global HOC
+sgs/text,yes,yes,yes,yes,yes,global HOC
+sgs/trust-badges,yes,yes,yes,yes,yes,global HOC
+sgs/trust-bar,yes,yes,yes,yes,yes,global HOC
+sgs/trustpilot-reviews,yes,yes,yes,yes,yes,global HOC
+sgs/whatsapp-cta,yes,yes,yes,yes,yes,global HOC; hover defaults: scale+shadow (no image-zoom) via NO_IMAGE_ZOOM_BLOCKS
