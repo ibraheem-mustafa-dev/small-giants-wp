@@ -499,3 +499,32 @@ Bean's stated end goal: a script that converts any SGS-BEM draft into a working 
 7. ⏳ End-to-end run on a SECOND client (Indus Foods or helping-doctors) without code changes — confirms the architecture generalises
 
 Items 1-6 are next-session work. Item 7 is the production validation that happens after the first client ships.
+
+---
+
+## 11. Spec 17 pattern-target extension (added 2026-05-19, not yet implemented)
+
+Spec 17 ships 9 framework header/footer patterns + a `sgs/site-info` block binding source.
+Stage 6 emission should be extended to recognise when an extracted header/footer subtree
+substantially matches a framework pattern, then emit a `wp:pattern` reference + Site Info
+bindings instead of bespoke markup.
+
+**Acceptance gate:** when running `/sgs-clone` on a mockup whose header is structurally
+identical to `sgs/framework-header-default`, the output should contain:
+
+```
+<!-- wp:pattern {"slug":"sgs/framework-header-default"} /-->
+```
+
+at the header slot, NOT bespoke `<header>...</header>` markup.
+
+**Match algorithm:** compare extracted slot tree against the pattern's structural
+fingerprint (allowed nesting + child-block count + text-content shape). Differences in
+content values (logo file, social links, copyright text) are routed through `sgs/site-info`
+block bindings to the central Site Info store rather than being baked into the emitted
+markup.
+
+**Cross-reference:**
+- Spec 17 §S6 — the framework pattern definitions
+- `.claude/specs/17-HEADER-FOOTER-ARCHITECTURE.md` — full header/footer architecture
+- `.claude/cloning-pipeline-flow.md` "Stage 6 — Block.json emission" — pipeline context

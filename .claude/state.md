@@ -7,7 +7,7 @@ current_subphase: "Floating UI replacement shipped 2026-05-19. Sgs_Floating_UI_C
 current_subphase_step: "NEXT SESSION — production deploy + operator validation. All code on main (HEAD d4da8c68). Suite 1195/0/0, build clean. Pending: live-site smoke test on sandybrown (admin pages render, wp sgs commands work via WP-CLI with --user=1, conditional header/footer rules fire correctly, CPT REST capability gate denies subscriber reads, Customiser Floating UI live-preview works for all 7 controls). Outcome-vs-completion bar: code shipped ≠ outcome until operator workflows verified on a real WP install."
 last_updated: 2026-05-19
 latest_commit: "d4da8c68 on main — feat(spec-17): ship Floating UI replacement via Customiser + capture lessons"
-session_2026_05_19_summary: "Floating UI replacement build + 4 command restructures + 9 skill updates + DB refresh + lesson capture + 8-error inline diagnosis (namespace-scope bug in test stubs)."
+session_2026_05_19_summary: "Floating UI replacement build + 4 command restructures + 9 skill updates + DB refresh + lesson capture + 8-error inline diagnosis (namespace-scope bug in test stubs). Plus 2 new specs (18-SGS-FLOATING-UI + 19-SGS-CLI-COMMANDS) and Spec 16 + cloning-pipeline-flow updates with pattern-target extension notes."
 prior_session_2026_05_18_summary: "Spec 17 Wave 2 + 2.5 + 3 delivery + two git-stash incidents wiping uncommitted work + surgical recovery via stash@{0} extraction. Test debt cleared from 27 failures to 0."
 blockers:
   - "None — Spec 17 complete on main. Next session focuses on production verification (deploy + smoke test) and any blocker discovery from real-site operator workflows."

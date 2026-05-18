@@ -68,13 +68,20 @@ session_date: 2026-05-19
 | `~/.claude/skills/wp-plugin-development/`, `wp-block-development/`, `wp-rest-api/`, `innovative-design/`, `ui-ux-pro-max/` | +Spec 17 patterns in each |
 | `~/.claude/skills/sgs-wp-engine/references/spec-17-architecture.md` | NEW (227 lines) — Spec 17 architecture overview |
 | `~/.claude/skills/visual-qa/references/spec-17-admin-pages.md` | NEW (103 lines) — admin pages to include in visual QA |
+| `.claude/specs/18-SGS-FLOATING-UI.md` | NEW (148 lines) — Floating UI Customiser spec: 7 controls, wp_options data, frontend behaviour, a11y, postMessage preview, 12-test coverage, 4 parked future enhancements |
+| `.claude/specs/19-SGS-CLI-COMMANDS.md` | NEW (199 lines) — full `wp sgs` reference for all 12 commands: syntax, capability, delegate class, examples, common errors, quick-reference cheatsheet |
+| `.claude/cloning-pipeline-flow.md` | +15 lines before Stage 6 — Spec 17 framework patterns as converter targets; flags Stage 6 extension as follow-up |
+| `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` | +21 lines as new §11 — pattern-target extension (not yet implemented); acceptance gate + match algorithm + Spec 17 cross-ref |
+| `.claude/CLAUDE.md`, `architecture.md`, `decisions.md`, `goals.md`, `parking.md`, `plan.md`, `tooling-map.md`, `skills-commands-map.md` | Walked + updated by docs-registry sweep — Spec 17 + Floating UI reflected in each |
 
 ## Notes for Next Session
 
 - **Customiser deep-link URL:** `admin_url('customize.php?autofocus[section]=sgs_floating_ui')` auto-focuses the new section. Use this in any future docs or operator notices.
 - **Floating UI option key is `sgs_floating_ui`** (`type => 'option'`, NOT `theme_mod`). Persists across theme switches.
 - **The 27→0 failure recovery from prior session was a stash-induced disaster.** Hard rule already captured: subagents may NEVER use `git stash`. Every recovery dispatch in this session included the safety clause and worked correctly.
-- **WP-CLI commands need `--user=<id>`** for any write operation — the capability gate fires inside the command body, not via WP-CLI's command-line auth. Document in `/wp-wpcli-and-ops` skill if not already there.
+- **WP-CLI commands need `--user=<id>`** for any write operation — the capability gate fires inside the command body, not via WP-CLI's command-line auth. Full reference now at `.claude/specs/19-SGS-CLI-COMMANDS.md`.
+- **Floating UI standalone spec** lives at `.claude/specs/18-SGS-FLOATING-UI.md`. Use it as the canonical reference rather than digging through Spec 17 for floating-UI specifics.
+- **Spec 16 Stage 6 extension** is parked, not implemented. When `/sgs-clone` runs on a mockup whose header structurally matches `sgs/framework-header-default`, Stage 6 SHOULD emit `<!-- wp:pattern {...} /-->` but currently emits bespoke `<header>` markup. Acceptance gate + match algorithm documented in Spec 16 §11. Pick this up alongside any cloning-pipeline work.
 
 
 

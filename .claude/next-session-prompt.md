@@ -72,11 +72,16 @@ We built a lot. We have not yet tested any of it on a live WP install. Per Bean'
 - Parallel with: none
 - /qc gate after: visual-qa via Playwright on the 7 admin pages + Customiser preview (capture screenshots)
 
+**Reference docs to consult during this task:**
+- `.claude/specs/19-SGS-CLI-COMMANDS.md` — canonical `wp sgs` reference (12 commands, capabilities, examples, common errors)
+- `.claude/specs/18-SGS-FLOATING-UI.md` — Floating UI spec (7 controls, expected frontend behaviour, a11y bar)
+- `.claude/specs/17-SGS-HEADER-FOOTER-ARCHITECTURE.md` — Spec 17 master (admin pages + CPT REST gate + rules engine)
+
 **Acceptance:**
 - `npm run build` clean → tar deploy → SSH unpack → OPcache reset all complete
 - All 7 admin pages load without fatal: SGS top-level menu, Site Info, Header Rules, Footer Rules, Advanced Headers, Advanced Footers, Reset Header/Footer, Style Variations
-- `wp sgs site-info get business_name`, `wp sgs migrations status`, `wp sgs header-rules list` all return non-empty stdout with `--user=1`
-- Customiser → SGS Floating UI section appears with 7 controls
+- All 12 `wp sgs` commands verified per Spec 19 examples (run each with `--user=1` where required; capture stdout)
+- Customiser → SGS Floating UI section appears with 7 controls per Spec 18
 - Toggling back-to-top enabled in Customiser shows the button immediately (postMessage transport works)
 - CPT REST: GET `/wp-json/wp/v2/sgs_header` as subscriber returns 403; as admin returns array
 - Conditional rule: add a rule "post type = page, URL = ^/$" → activate sgs-header-transparent → load homepage → header markup is the transparent variant

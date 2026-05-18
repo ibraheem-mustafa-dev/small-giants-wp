@@ -463,6 +463,17 @@ The big picture in one page, with EVERY script, file, DB table and skill plotted
 
 ### Stage 6 — Block.json emission
 
+**Spec 17 framework pattern targets (added 2026-05-19):** the `/sgs-clone` Stage 6
+(cv2 emission) can now target the 9 framework header/footer patterns shipped in Spec 17
+(`sgs/framework-header-{default,sticky,transparent,shrink,minimal,centred}` +
+`sgs/framework-footer-{default,compact,informational}`) instead of always generating
+bespoke header/footer markup. When a captured header/footer mockup substantially matches
+one of these patterns, the converter emits
+`<!-- wp:pattern {"slug":"sgs/framework-header-default"} /-->` and routes the differences
+(logo file, social links, copyright text) through `sgs/site-info` block bindings to the
+central Site Info store. Spec 16 §7 Stage 6 needs an extension to recognise the match;
+tracked as a follow-up.
+
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │ SCRIPTS:                                                                    │
