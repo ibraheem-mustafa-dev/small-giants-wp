@@ -2,11 +2,24 @@
 /**
  * Server-side render for the SGS Icon block.
  *
+ * Supports four icon sources:
+ *   - lucide    : inline SVG via sgs_get_lucide_icon() (1917 icons).
+ *   - wp-icon   : inline SVG from bundled @wordpress/icons subset.
+ *   - dashicon  : Dashicons font via span.dashicons (enqueues dashicons stylesheet).
+ *   - emoji     : plain text emoji wrapped in a semantic <span>.
+ *
  * WCAG 2.2 AA semantics:
- *   - Decorative (no ariaLabel, no linkUrl): svg wrapper has aria-hidden="true".
+ *   - Decorative (no ariaLabel, no linkUrl): icon container has aria-hidden="true".
  *   - Informative (ariaLabel set, no linkUrl): root <div> gets role="img" + aria-label.
- *   - Linked (linkUrl set): <a> gets aria-label (falls back to iconName); svg has aria-hidden="true".
- *   - Touch target: when linkUrl is set the wrapper enforces min 44×44 px via CSS custom property.
+ *   - Linked (linkUrl set): <a> gets aria-label (falls back to iconName / source label).
+ *   - Emoji: always has aria-label (glyphs unreliable in all screen readers).
+ *   - Touch target: when linkUrl is set the wrapper enforces min 44×44 px via CSS class.
+ *
+ * BEM classes added by this template:
+ *   .sgs-icon--source-lucide  / --source-wp-icon / --source-dashicon / --source-emoji
+ *   .sgs-icon__svg      (lucide + wp-icon)
+ *   .sgs-icon__dashicon (dashicon span)
+ *   .sgs-icon__emoji    (emoji span)
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content (unused).
@@ -19,9 +32,26 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
+require_once dirname( __DIR__, 3 ) . '/includes/wp-icons.php';
 
-// Sanitise icon name: lowercase alpha, digits, hyphens only (safe for sgs_get_lucide_icon lookup).
+// ── Source resolution ─────────────────────────────────────────────────────────
+$allowed_sources = array( 'lucide', 'wp-icon', 'dashicon', 'emoji' );
+$icon_source     = $attributes['iconSource'] ?? 'lucide';
+if ( ! in_array( $icon_source, $allowed_sources, true ) ) {
+	$icon_source = 'lucide';
+}
+
+// Sanitise icon name: lowercase alpha, digits, hyphens only.
 $icon_name    = preg_replace( '/[^a-z0-9-]/', '', strtolower( $attributes['iconName'] ?? 'star' ) );
+$wp_icon_name = preg_replace( '/[^a-z0-9-]/', '', strtolower( $attributes['wpIconName'] ?? '' ) );
+// Dashicon slug: prefix stripped if operator includes it; hyphens allowed.
+$dashicon_name = preg_replace( '/[^a-z0-9-]/', '', strtolower( $attributes['dashiconName'] ?? '' ) );
+// Emoji: allow unicode characters only — strip control chars and HTML.
+$emoji_char = $attributes['emojiChar'] ?? '';
+$emoji_char = trim( $emoji_char );
+// Strip any HTML tags that may have been injected.
+$emoji_char = wp_strip_all_tags( $emoji_char );
+
 $icon_size    = absint( $attributes['iconSize'] ?? 32 );
 $icon_colour  = $attributes['iconColour'] ?? 'primary';
 $bg_colour    = $attributes['backgroundColour'] ?? '';
@@ -38,14 +68,19 @@ if ( ! in_array( $link_target, array( '_self', '_blank' ), true ) ) {
 	$link_target = '_self';
 }
 
-// Auto rel when target=_blank (WCAG / security).
+// Auto rel when target=_blank (security).
 $effective_rel = $link_rel;
 if ( '_blank' === $link_target && '' === $effective_rel ) {
 	$effective_rel = 'noopener noreferrer';
 }
 
-// ── Wrapper classes ────────────────────────────────────────────────────────
-$classes = array( 'sgs-icon' );
+// Enqueue Dashicons on the frontend when this source is used.
+if ( 'dashicon' === $icon_source ) {
+	wp_enqueue_style( 'dashicons' );
+}
+
+// ── Wrapper classes ───────────────────────────────────────────────────────────
+$classes = array( 'sgs-icon', 'sgs-icon--source-' . $icon_source );
 if ( 'none' !== $bg_shape ) {
 	$allowed_shapes = array( 'circle', 'rounded', 'square' );
 	if ( in_array( $bg_shape, $allowed_shapes, true ) ) {
@@ -53,7 +88,7 @@ if ( 'none' !== $bg_shape ) {
 	}
 }
 
-// ── Inline styles ─────────────────────────────────────────────────────────
+// ── Inline styles ─────────────────────────────────────────────────────────────
 $styles = array();
 if ( $icon_size ) {
 	$styles[] = '--sgs-icon-size:' . $icon_size . 'px';
@@ -67,7 +102,7 @@ if ( $bg_colour && 'none' !== $bg_shape ) {
 $styles[] = '--sgs-icon-hover-colour:' . sgs_colour_value( $hover_colour );
 $styles[] = '--sgs-icon-hover-scale:' . round( $hover_scale, 3 );
 
-// ── WCAG role + aria attributes on the wrapper ────────────────────────────
+// ── WCAG role + aria attributes on the wrapper ────────────────────────────────
 $extra_wrapper_attrs = array(
 	'class' => implode( ' ', $classes ),
 	'style' => implode( ';', $styles ) . ';',
@@ -81,19 +116,65 @@ if ( '' === $link_url && '' !== $aria_label ) {
 
 $wrapper_attributes = get_block_wrapper_attributes( $extra_wrapper_attrs );
 
-// ── SVG ───────────────────────────────────────────────────────────────────
-$icon_svg = sgs_get_lucide_icon( $icon_name );
+// ── Icon content by source ────────────────────────────────────────────────────
+switch ( $icon_source ) {
 
-// Decorative: hide svg from AT when no semantic context is provided.
-$svg_aria = ( '' === $link_url && '' === $aria_label ) ? ' aria-hidden="true"' : ' aria-hidden="true"';
-// Note: svg is always aria-hidden. The accessible name lives on the link (when
-// linked) or on the wrapper role=img (when informative). Never on the svg itself.
+	case 'wp-icon':
+		$icon_svg = sgs_get_wp_icon( $wp_icon_name );
+		$output   = sprintf(
+			'<span class="sgs-icon__svg" aria-hidden="true">%s</span>',
+			$icon_svg
+		);
+		break;
 
-$output = sprintf( '<span class="sgs-icon__svg"%s>%s</span>', $svg_aria, $icon_svg );
+	case 'dashicon':
+		// Dashicons font — render via CSS content + unicode via span.dashicons.
+		// aria-hidden since the icon is decorative at element level; accessible
+		// name is on the link or wrapper role=img when needed.
+		$safe_slug = '' !== $dashicon_name ? $dashicon_name : 'star-filled';
+		$output    = sprintf(
+			'<span class="sgs-icon__dashicon dashicons dashicons-%s" aria-hidden="true"></span>',
+			esc_attr( $safe_slug )
+		);
+		break;
 
-// ── Link wrapper ──────────────────────────────────────────────────────────
+	case 'emoji':
+		// Emoji: always gets an aria-label — glyph screen reader support is unreliable.
+		$safe_emoji = '' !== $emoji_char ? $emoji_char : '⭐';
+		// Accessible label: use explicit label, fall back to "icon" for decorative.
+		$emoji_aria_label = '' !== $aria_label ? $aria_label : 'icon';
+		$output           = sprintf(
+			'<span class="sgs-icon__emoji" role="img" aria-label="%s">%s</span>',
+			esc_attr( $emoji_aria_label ),
+			esc_html( $safe_emoji )
+		);
+		break;
+
+	case 'lucide':
+	default:
+		$icon_svg = sgs_get_lucide_icon( $icon_name );
+		$output   = sprintf(
+			'<span class="sgs-icon__svg" aria-hidden="true">%s</span>',
+			$icon_svg
+		);
+		break;
+}
+
+// ── Link wrapper ──────────────────────────────────────────────────────────────
 if ( '' !== $link_url ) {
-	$accessible_label = '' !== $aria_label ? $aria_label : $icon_name;
+	// Determine the accessible label for the link.
+	// Priority: explicit ariaLabel → iconName (lucide) / wpIconName / dashiconName / emoji.
+	if ( '' !== $aria_label ) {
+		$accessible_label = $aria_label;
+	} elseif ( 'emoji' === $icon_source && '' !== $emoji_char ) {
+		$accessible_label = $emoji_char;
+	} elseif ( 'dashicon' === $icon_source && '' !== $dashicon_name ) {
+		$accessible_label = $dashicon_name;
+	} elseif ( 'wp-icon' === $icon_source && '' !== $wp_icon_name ) {
+		$accessible_label = $wp_icon_name;
+	} else {
+		$accessible_label = $icon_name;
+	}
 
 	$link_attrs = sprintf(
 		' href="%s" class="sgs-icon__link" aria-label="%s"',
@@ -112,5 +193,5 @@ if ( '' !== $link_url ) {
 	$output = sprintf( '<a%s>%s</a>', $link_attrs, $output );
 }
 
-// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $wrapper_attributes from WP core; $output built above with esc_url/esc_attr.
+// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $wrapper_attributes from WP core; $output built above with esc_url/esc_attr/esc_html.
 printf( '<div %s>%s</div>', $wrapper_attributes, $output );
