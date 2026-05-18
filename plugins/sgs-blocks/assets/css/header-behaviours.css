@@ -32,8 +32,8 @@
  * ---------------------------------------------------------------------- */
 
 body.sgs-header-behaviour-transparent header.wp-block-template-part {
-	position: absolute;
-	top: 0;
+	position: absolute !important;
+	top: 0 !important;
 	left: 0;
 	right: 0;
 	background: transparent;
@@ -52,8 +52,8 @@ body.sgs-header-behaviour-transparent.is-header-scrolled header.wp-block-templat
  * ---------------------------------------------------------------------- */
 
 body.sgs-header-behaviour-sticky header.wp-block-template-part {
-	position: sticky;
-	top: 0;
+	position: sticky !important;
+	top: 0 !important;
 	z-index: 100;
 }
 
