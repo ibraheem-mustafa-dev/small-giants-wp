@@ -52,13 +52,21 @@ class Font_Collection {
 			return;
 		}
 
+		// WP_Font_Collection's lazy-load contract: pass the JSON file path under
+		// the `font_families` key (NOT `src`). When `font_families` is a string,
+		// core treats it as a path/URL to lazy-load via ::get_data(); when it's
+		// an array, core treats it as inline data. Earlier registrations passed
+		// `src` (an unrecognised key) which left required_properties as
+		// ['name', 'font_families'] — the validator then fired _doing_it_wrong
+		// on every call because `font_families` was genuinely missing. Captured
+		// 2026-05-20 — see wp-includes/fonts/class-wp-font-collection.php:66-74.
 		wp_register_font_collection(
 			'sgs-google-fonts',
 			array(
-				'name'        => __( 'Google Fonts (full catalogue)', 'sgs-blocks' ),
-				'description' => __( 'All ~1,900 Google Fonts, browsable in the editor. Install individual typefaces via Manage fonts — no frontend cost until installed.', 'sgs-blocks' ),
-				'src'         => SGS_BLOCKS_URL . 'assets/font-collections/google-fonts.json',
-				'categories'  => array(
+				'name'          => __( 'Google Fonts (full catalogue)', 'sgs-blocks' ),
+				'description'   => __( 'All ~1,900 Google Fonts, browsable in the editor. Install individual typefaces via Manage fonts — no frontend cost until installed.', 'sgs-blocks' ),
+				'font_families' => SGS_BLOCKS_PATH . 'assets/font-collections/google-fonts.json',
+				'categories'    => array(
 					array(
 						'name' => __( 'Sans Serif', 'sgs-blocks' ),
 						'slug' => 'sans-serif',
