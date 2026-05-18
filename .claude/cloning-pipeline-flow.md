@@ -1,12 +1,13 @@
 ---
 doc_type: visual-reference
 project: small-giants-wp
-purpose: Annotated one-page visual flow of the SGS Cloning Pipeline. Every stage shows scripts that run, files read/written, DB tables touched, skills dispatched, and wiring status. Use this as the cold-start map.
+purpose: Annotated one-page visual flow of the SGS Cloning Pipeline. Every stage shows scripts that run, files read/written, DB tables touched, skills dispatched, and wiring status. Use this as the cold-start map. Also serves as the single canonical implementation reference — per-script inventory, per-skill/command inventory, and per-table R/W matrix are ALL absorbed here (2026-05-21).
 session_date: 2026-05-13
-last_annotated: 2026-05-13 (post 4-reviewer QC: Sonnet/Haiku/Gemini Flash/Gemini Pro - Material corrections applied; line numbers refreshed)
+last_annotated: 2026-05-21 (post wave-cleanup absorption: tooling-map + skills-commands-map + db-tables-map folded in; wave 1-3 post-cleanup status lines added)
+last_consolidated: 2026-05-21
 line_number_policy: Line numbers cited in this doc are accurate as of 2026-05-13 against `sgs-clone-orchestrator.py` HEAD (1277 lines). If they drift after edits, grep for the function or constant name instead.
 qc_consensus: 4 reviewers agree on all wiring-status claims. Material errors patched 2026-05-13.
-last_verified: 2026-05-18
+last_verified: 2026-05-21
 debug_trace_addendum: |
   2026-05-18: `--debug-trace` CLI flag added to sgs-clone-orchestrator.py.
   When ON, every cv2-eligible section dispatches with a per-section Trace
@@ -31,18 +32,13 @@ spec_16_status: |
   LIVE as of 2026-05-15. Spec 16 converter v2 promoted from .claude/scratch/
   converter-prototype/ to plugins/sgs-blocks/scripts/orchestrator/converter_v2/
   on feat/spec-16-converter-v2-rollout (commits 06eca194 + 19c89f0f, pushed
-  not merged). `sgs-clone-orchestrator.py --converter-v2` flag (default OFF)
-  routes SGS-BEM-canonical boundaries through the converter; the unmatched-
-  section gate (lines ~989-1017) was fixed so all 9 of 9 boundaries reach
-  converter_v2 when cv2-eligible (was 5 of 9 short-circuiting at session
-  start). Legacy extract.py REMAINS in the orchestrator as fallback for
-  non-cv2-eligible boundaries, but converter softfail no longer falls
-  through to it — emits unmatched stub for operator review instead. Phase 6
-  legacy retirement deferred to Phase 8 + only after visual gate closes.
-  CSS-driven container detection (replaces hardcoded SECTION_AS_CONTAINER_
-  OVERRIDES) + CSS-driven _lift_styling_attrs() are the architecturally
-  significant additions; both schema-driven and generic across clients per
-  multi-model /qc panel verdict.
+  not merged). `sgs-clone-orchestrator.py --converter-v2` flag DEFAULT FLIPPED
+  TO TRUE on 2026-05-21 (Wave 1 cleanup, commit ee8db653). Legacy extract.py
+  subprocess block (~120 lines) retired from orchestrator — non-SGS-BEM
+  sections now mark status=unmatched-non-bem-compliant and emit operator-
+  actionable warning. tools/recogniser-v2/extract.py + extract_strategies.py +
+  overrides/hero.py REMAIN ON DISK (unreachable from orchestrator); physical
+  deletion deferred to next session after universal-extraction verification.
 phase_8_status: |
   Phase 8 (section-by-section pixel-diff closure) begins next session.
   Closure unit is the SECTION (cropped diff via --selector), not the page.
@@ -50,15 +46,36 @@ phase_8_status: |
   quality conjecture — orchestrator already classifies every gap. See
   feedback_read_leftover_buckets_before_conjecturing.md + blub.db row 254.
 registry_entry: docs-registry.md row 11
+absorbed_docs:
+  - .claude/tooling-map.md - ABSORBED 2026-05-21 → see "Script inventory" section below
+  - .claude/skills-commands-map.md - ABSORBED 2026-05-21 → see "Skill dispatch chain" section below
+  - .claude/db-tables-map.md - ABSORBED 2026-05-21 → see "DB heat-map (full)" section below
+  - Each original file replaced with a redirect stub for git-blame continuity.
 companion_docs:
-  - .claude/tooling-map.md - per-script inventory with status
-  - .claude/skills-commands-map.md - per-skill/command inventory + /visual-qa addendum
-  - .claude/db-tables-map.md - per-table R/W matrix
   - .claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md - authoritative spec
+  - .claude/specs/16-DETERMINISTIC-CONVERTER-V2.md - end-goal spec (implementation reference = this doc)
   - .claude/docs-registry.md - governance and update-trigger matrix
 ---
 
 # SGS Cloning Pipeline - Annotated Flow
+
+## Truth-doc structure (post-2026-05-21 consolidation)
+
+Two documents own the entire pipeline knowledge surface:
+
+| Doc | Role | Location |
+|-----|------|----------|
+| **This file** (`cloning-pipeline-flow.md`) | **Single implementation reference** — per-stage scripts/files/DB/skills/status + per-script inventory + per-skill/command catalogue + DB R/W heat-map | `.claude/cloning-pipeline-flow.md` |
+| **Spec 16** | **End-goal spec** — Stages 3-7 slot-aware DOM walker implementation contract | `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` |
+
+**What was absorbed here on 2026-05-21:**
+- `tooling-map.md` (520 lines) — per-script inventory folded into the "Script inventory" section at the bottom of this doc
+- `skills-commands-map.md` (459 lines) — per-skill/command catalogue folded into the "Skill dispatch chain (full)" section
+- `db-tables-map.md` (926 lines) — per-table R/W matrix folded into the "DB heat-map (full)" section
+
+The three original files now contain redirect stubs pointing here. Spec 15 → Spec 16 absorption is deferred to next session.
+
+---
 
 The big picture in one page, with EVERY script, file, DB table and skill plotted on the chart. Use this to spot gaps, weaknesses and optimisation opportunities at a glance.
 
@@ -341,7 +358,13 @@ The big picture in one page, with EVERY script, file, DB table and skill plotted
 │                                                                             │
 │ FILES (W):  pipeline-state/sgs-clone/<run_id>/stage-3-slot_list.json        │
 │                                                                             │
-│ STATUS:       LIVE - working but inline (extract-to-module candidate)       │
+│ Wave 3 (2026-05-21, e60fe58e): stage_3_slot_list() now annotates each slot  │
+│   with canonical_source: 'db' | 'auto-derived'. slot_canonicalisation_gap:  │
+│   true on auto-derived slots. Mama's run: 81.4% DB-canonical, 18.6% gap.   │
+│                                                                             │
+│ STATUS (pre-Wave3): LIVE - working but inline (extract-to-module candidate) │
+│ STATUS (post-Wave3 2026-05-21): LIVE - DB canonical_slot lookup active;     │
+│               gap annotation signals operator what needs assign-canonical.  │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -350,17 +373,16 @@ The big picture in one page, with EVERY script, file, DB table and skill plotted
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │ SCRIPTS:                                                                    │
-│  ✓ tools/recogniser-v2/extract.py - dispatcher                              │
-│  ✓ tools/recogniser-v2/extract_strategies.py - 11 role-based strategies     │
-│  ✓ tools/recogniser-v2/utils.py - shared helpers                            │
-│  ✓ tools/recogniser-v2/overrides/__init__.py - override registry            │
-│  ✓ tools/recogniser-v2/overrides/hero.py - hero-specific (Phase 3 delete)   │
-│  ✓ tools/recogniser-v2/data/role-templates.json - role recipes (READ)       │
-│       Legacy v1 seed file. As of 2026-05-17 the converter cv2 path reads    │
-│       property_suffixes directly via db_lookup.css_property_suffixes()      │
-│       (replaces hardcoded _CSS_PROP_TO_SUFFIX in convert.py — blub.db row   │
-│       260, DB-first lookups rule). role-templates.json still consulted by   │
-│       legacy extract.py — drift risk persists for that path.                │
+│  ✗ tools/recogniser-v2/extract.py - UNREACHABLE from orchestrator           │
+│       Wave 1 (2026-05-21, ee8db653): legacy subprocess block removed.       │
+│       File remains on disk; physical deletion deferred to next session.     │
+│  ✗ tools/recogniser-v2/extract_strategies.py - UNREACHABLE (same)           │
+│  ✗ tools/recogniser-v2/overrides/__init__.py - UNREACHABLE (same)           │
+│  ✗ tools/recogniser-v2/overrides/hero.py - UNREACHABLE (same)               │
+│  ✗ tools/recogniser-v2/data/role-templates.json - no longer consulted       │
+│       cv2 path reads property_suffixes via db_lookup.css_property_suffixes()│
+│  ✓ converter_v2/convert.py - NOW THE PRIMARY SLOT EXTRACTION ENGINE         │
+│       --converter-v2 default flipped True (Wave 1 2026-05-21).              │
 │  ✓ orchestrator/modifier_extractors.py - button_role/dynamic_link/variation │
 │       WIRED 2026-05-14 (Phase 6 v2 Step 4d) - lazy-loaded via               │
 │       modifier_extractors() helper. In the per-section loop after the      │
@@ -385,9 +407,11 @@ The big picture in one page, with EVERY script, file, DB table and skill plotted
 │                                                                             │
 │ External tools: Playwright (computed-style extraction at 3 viewports)       │
 │                                                                             │
-│ STATUS:       LIVE for hero (42% coverage); partial for atomic blocks;      │
-│               modifier_extractors LIVE post-Step-4d (button-role +          │
-│               dynamic-link + block-variation classifiers)                   │
+│ STATUS (pre-Wave1): LIVE for hero (42% coverage); partial for atomic blocks  │
+│ STATUS (post-Wave1 2026-05-21): cv2 is the ONLY path. Legacy extract.py     │
+│               unreachable. Non-SGS-BEM boundaries halt with operator note.  │
+│               D3 gap-candidate emission wired (Wave 3, e60fe58e): every     │
+│               unlifted CSS property now surfaces as attribute_gap_candidate. │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -538,7 +562,12 @@ tracked as a follow-up.
 │ FR21 contract: NO mutation outside pipeline-state until autonomy_gate       │
 │                approves promotion                                           │
 │                                                                             │
-│ STATUS:       LIVE - working                                                │
+│ Wave 2 (7d713ba0): schema validation default-on. Production bypass          │
+│   (require_schema=False at line ~1976) replaced with                        │
+│   require_schema=not args.no_schema_validation. Operator must now           │
+│   explicitly pass --no-schema-validation to skip; default is enforced.     │
+│                                                                             │
+│ STATUS:       LIVE - working; schema validation now default-on              │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -618,9 +647,21 @@ tracked as a follow-up.
 │    separately for the full 9-layer audit. Stage 8 uses visual_qa_capture   │
 │    only (Quick-mode equivalent in Python).                                  │
 │                                                                             │
-│ Hard gate: pixel-diff ≤ 1% at 375/768/1440 viewports                        │
+│ Hard gate: pixel-diff ≤ 1% at 375/768/1440 viewports — per SECTION via      │
+│   --selector (Wave 2, 7d713ba0). CaptureContext.selector threaded through   │
+│   to page.locator(selector).screenshot(). Full-page fallback when no sel.  │
 │                                                                             │
-│ STATUS:       LIVE - working; pass gate currently failing for Mama's        │
+│ ADDITIONAL GATE (Wave 2): unresolved_slots deploy gate — autonomy_decision  │
+│   halts when stage-9-coverage.json open_slots > 0. Operator-actionable     │
+│   note points at stage-9-coverage.json.                                     │
+│                                                                             │
+│ STUB FIX (Wave 1, ee8db653): stub_capture() no longer silently returns 0.0.│
+│   Returns {diff_ratio: None, stage_8_skipped: True} sentinel. autonomy_gate│
+│   returns surface-to-operator (never auto-proceed) on skip.                │
+│                                                                             │
+│ STATUS (pre-Wave1): LIVE - working; pass gate failing for Mama's            │
+│ STATUS (post-Wave1/2 2026-05-21): LIVE - per-section cropped diff + stub    │
+│               sentinel + unresolved_slots gate all enforced.                │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -674,7 +715,21 @@ tracked as a follow-up.
 │  functionality_gap_candidates (uimax) - when functionality-gap-detector     │
 │       wired                                                                 │
 │                                                                             │
-│ STATUS:       LIVE for routing + report; GAP WRITES UNWIRED                 │
+│ Wave 2 (7d713ba0): STAGE_2_CONFIDENCE_THRESHOLD = 0.7 named constant added  │
+│   to confidence-matrix.py + leftover-bucket-router.py. Magic 0.5 at lines  │
+│   48/222/510 replaced. Stage 9 applies ≥0.7 gate to route low-confidence   │
+│   sections to autonomy chain.                                               │
+│                                                                             │
+│ Wave 3 (e60fe58e): LEGACY_ROLE_LOOKUP migrated to DB table                  │
+│   (legacy_role_lookup, 17 entries, seed-legacy-role-lookup.py).             │
+│   Voter refactored to call db_lookup.legacy_role_lookup_for(kebab_role).   │
+│   Hardcoded dict emptied to {}.                                             │
+│   RETIRED_BLOCK_REMAP soft-emptied to {} (consultation branch no-op;        │
+│   physical removal in follow-up).                                           │
+│                                                                             │
+│ STATUS (pre-Wave2): LIVE for routing + report; GAP WRITES UNWIRED           │
+│ STATUS (post-Wave2/3 2026-05-21): LIVE - confidence gate enforced; legacy   │
+│               role lookup DB-backed; gap writes wired (Phase 6 v2 Step 4f+g)│
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -738,9 +793,15 @@ tracked as a follow-up.
 │  /uimax-sgs-scrape-pattern - pattern Rosetta Stone payload generation       │
 │  /uimax-scrape-animation - per-animation Rosetta Stone payload              │
 │                                                                             │
-│ STATUS:       LIVE - Phase 6 v2 Step 5 complete; chokepoint propagation     │
-│               to other uimax tables tracked at P-S15-UIMAX-CHOKEPOINT-      │
-│               PROPAGATE in parking.md                                       │
+│ Wave 2 (7d713ba0): uimax-write-validator gains 16-keyword licensing reject.  │
+│   Forbidden keywords: license/licence, IP-firewall, redistribution,         │
+│   copyright, intellectual property, trademark, patent, etc.                 │
+│   Allowlist: "license-free" with WARN. Recursive payload walk + column      │
+│   name scan. Rosetta Stone validation preserved.                            │
+│                                                                             │
+│ STATUS:       LIVE - Phase 6 v2 Step 5 complete; licensing gate active      │
+│               (Wave 2); chokepoint propagation tracked at P-S15-UIMAX-      │
+│               CHOKEPOINT-PROPAGATE in parking.md                            │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -927,16 +988,16 @@ Refreshes the data layer; runs OUT-OF-BAND from /sgs-clone.
 
 ## Pattern-key tracking
 
-This visual flow captures every entry from:
-- `.claude/tooling-map.md` (107 scripts)
-- `.claude/skills-commands-map.md` (17 commands+skills + 8 visual-qa internal)
-- `.claude/db-tables-map.md` (29 sgs-framework tables + 48 uimax tables)
+This visual flow captures every entry from (all absorbed 2026-05-21):
+- ~~`.claude/tooling-map.md`~~ — 107 scripts, now in "Script inventory" section below
+- ~~`.claude/skills-commands-map.md`~~ — 17 commands+skills + 8 visual-qa internal, now in "Skill dispatch chain (full)" section
+- ~~`.claude/db-tables-map.md`~~ — 29 sgs-framework tables + 48 uimax tables, now in "DB heat-map (full)" section
 - `.claude/reports/2026-05-13-tooling-map-qc-gemini-flash.md` (Round 1 QC)
 - `.claude/scratch/qc-tooling-map-haiku-round2.md` (Round 2 QC by Haiku)
 - `.claude/scratch/qc-tooling-map-gemini-flash-round2.md` (Round 2 QC by Gemini)
 - `.claude/scratch/visual-qa-audit.md` + `.claude/scratch/visual-qa-audit-qc.md`
 
-Synced 2026-05-13. Next sync trigger: after Phase 6 wiring lands (status column updates) OR after the next /sgs-update Stage 11 doc regen.
+Synced 2026-05-13. Post-wave-cleanup updates applied 2026-05-21 (Waves 1-3 status lines). Next sync trigger: after any stage change, script wired/unwired, DB schema change, or skill dispatch change.
 
 ## See also
 
@@ -969,3 +1030,267 @@ Plus header behaviour wrapper hook:
 The Phase 2A pricing-table additions (Branch E) also extend the recogniser surface: `__icon`, `__ribbon`, `__savings-badge`, `__feature--included`, `__feature--excluded`.
 
 **Next session recogniser work:** run `/sgs-update` to sync `sgs-framework.db` with the new blocks (responsive-logo, icon multi-source, timeline) + the new attributes on pricing-table. Then ensure `tools/recogniser/` matches a draft mockup carrying any of these SGS-BEM selectors directly to the corresponding SGS block.
+
+---
+
+## Script inventory (absorbed from tooling-map.md, 2026-05-21)
+
+Source: `.claude/tooling-map.md` (520 lines, generated 2026-05-13, last-verified 2026-05-18). Original doc replaced with redirect stub.
+
+> **Update trigger:** Any script add/remove/rename under `plugins/sgs-blocks/scripts/`, `scripts/`, or `tools/`; any wiring status change; any status reclassification. Enforcement: `.claude/hooks/tooling-map-drift-check.py`.
+
+### Spec 16 converter v2 (in `plugins/sgs-blocks/scripts/orchestrator/converter_v2/`)
+
+| Script | Status | Notes |
+|---|---|---|
+| `__init__.py` | LIVE | Public API: `convert_section()` + `convert_page()`. Brace-depth JSON extractor. |
+| `convert.py` | LIVE | Slot-aware DOM-to-WP-blocks converter. Wave 3 D3 gap-candidate emission for every unlifted CSS property. CSS-driven container detection; DB-first suffix lookups. |
+| `convert_page.py` | LIVE | Page-level wrapper. `--mode pipeline` CLI for orchestrator subprocess. |
+| `db_lookup.py` | LIVE | `css_property_suffixes()` (117 rows), `breakpoint_suffix_rules()`, `block_supports_for()`, `legacy_role_lookup_for()` (Wave 3). `@lru_cache`. |
+| `test_root_supports_lift.py` | LIVE | 3 smoke tests for `_lift_root_supports_to_style()`. |
+
+Evidence infrastructure (Phase 9 pre-work, 2026-05-18):
+- `orchestrator/expected_rules.py` LIVE -- per-section CSS-rule baseline extractor; writes `expected-rules-<boundary>.jsonl`
+- `orchestrator/trace.py` (`Trace.for_boundary`) LIVE -- per-section trace bound to `convert-trace-<boundary>.jsonl`
+- `scripts/pixel-diff.py` STANDALONE -- `--selector` per-section cropped diff; `--expected-rules` and `--extracted-attrs` paired flags compute `attribute_coverage` block
+- `migrations/2026-05-17-property-suffixes-per-side.py` LIVE -- idempotent seed of 18 per-side longhand rows into property_suffixes
+
+### Live pipeline core
+
+| Script | Path | Status | Wired | Notes |
+|---|---|---|---|---|
+| sgs-clone-orchestrator.py | plugins/sgs-blocks/scripts/ | CURRENT | YES | Entry point. `--converter-v2` default TRUE (Wave 1, 2026-05-21). Non-SGS-BEM halt replaces legacy subprocess. |
+| orchestrator_main.py | orchestrator/ | CURRENT | YES | preflight + staged_merge + visual_qa + autonomy gate |
+| register_patterns.py | orchestrator/ | CURRENT | YES | +REGISTER tail; uimax writes via validate_and_write |
+| preflight_chain.py | orchestrator/ | CURRENT | YES | run_preflight() + run_precommit_gate() |
+| staged_merge.py | orchestrator/ | CURRENT | YES | FR21 keystone; schema validation default-on (Wave 2) |
+| staged_output.py | orchestrator/ | CURRENT | YES | pipeline-state dir convention |
+| autonomy_gate.py | orchestrator/ | CURRENT | YES | Per-section cropped diff + skip sentinel + unresolved_slots gate (Waves 1+2) |
+| visual_qa_capture.py | orchestrator/ | CURRENT | YES | Playwright + PIL pixel-diff factory |
+| mutex.py | orchestrator/ | CURRENT | YES | File-based build mutex, 1hr stale lock |
+| validate-stage-artifact.py | orchestrator/ | CURRENT | YES | Schema validator for stage-N artefacts |
+| atomic-block-scaffold.py | orchestrator/ | CURRENT | FALLBACK | Emits 4 Gutenberg files; --promote copies to src |
+| variation_router.py | orchestrator/ | CURRENT | YES | Writes to client variation JSON; hard-blocked from root theme.json |
+| token_resolver.py | orchestrator/ | CURRENT | YES | Snaps to token at confidence >= 0.6 |
+| attribute-staged-apply.py | orchestrator/ | CURRENT | YES (operator-gated) | FR21 staging + emit only |
+| functionality-bulk-apply.py | orchestrator/ | CURRENT | YES (operator-gated) | Transactional bulk apply |
+| media-sideload.py | orchestrator/ | CURRENT | YES | Dry-run default |
+| supports_writer.py | orchestrator/ | CURRENT | YES | Omit-vs-emit using block_supports |
+| stage1_boundary_hook.py | orchestrator/ | CURRENT | YES | Convention classifier + lingua_franca enrichment |
+| modifier_extractors.py | orchestrator/ | CURRENT | YES | button_role / dynamic_link / match_block_variation |
+| wp_integration.py | orchestrator/ | CURRENT | YES | validate_block_markup auto; rest operator-gated |
+| lingua_franca.py | orchestrator/ | CURRENT | YES (transitive) | BEM/Tailwind/Bootstrap/SGS convention conversion |
+| critical-fix-verification.py | orchestrator/ | CURRENT | YES | 4-check FR21 acceptance harness |
+| composer_fallback.py | orchestrator/ | CURRENT | YES | Fallback for core/group or confidence==0 |
+
+### Recogniser modules
+
+| Script | Path | Status | Wired | Notes |
+|---|---|---|---|---|
+| per-section-convention-voter.py | recogniser/ | CURRENT | YES | Stage 1; LEGACY_ROLE_LOOKUP migrated to DB (Wave 3) |
+| confidence-matrix.py | recogniser/ | CURRENT | YES | Stage 2; STAGE_2_CONFIDENCE_THRESHOLD = 0.7 (Wave 2) |
+| leftover-bucket-router.py | recogniser/ | CURRENT | YES | Stage 9; 0.7 threshold (Wave 2) |
+| simple_html_review_report.py | recogniser/ | CURRENT | YES | Stage 9 operator review HTML |
+| bucket-c-classifier.py | recogniser/ | CURRENT | YES | Autonomy chain; CLASSIFIER_SCRIPT at line 53 |
+| attribute-gap-writer.py | recogniser/ | CURRENT | YES | Stage 9; D3 gap-candidate writes (Wave 3) |
+| functionality-gap-detector.py | recogniser/ | CURRENT | YES | Stage 9; 17 behaviour-fingerprint attrs |
+| gap-review-report.py | recogniser/ | CURRENT | YES | Stage 9; markdown gap-review.md |
+| recursion-guard.py | recogniser/ | CURRENT | NO | Max_depth=12 guard; not yet wired |
+
+### Legacy extraction modules (unreachable after Wave 1, 2026-05-21)
+
+| Script | Path | Status | Notes |
+|---|---|---|---|
+| extract.py | tools/recogniser-v2/ | UNREACHABLE | Subprocess block removed Wave 1. On disk; deletion deferred. |
+| extract_strategies.py | tools/recogniser-v2/ | UNREACHABLE | Same |
+| utils.py | tools/recogniser-v2/ | UNREACHABLE | Same |
+| overrides/__init__.py | tools/recogniser-v2/ | UNREACHABLE | Same |
+| overrides/hero.py | tools/recogniser-v2/ | TO-RETIRE | Same |
+
+v1 recogniser (tools/recogniser/ -- 7 files): all TO-RETIRE Spec 15 Phase 5; none wired.
+
+### Supporting scripts (NOT wired into /sgs-clone live path)
+
+**Token/value matching:** `match.py` (LIVE via token-lint.py:91; also token_resolver), `inheritance.py` (LIVE transitively via supports_writer).
+
+**Lints:** `bem-lint.py` (Stage 0.1 LIVE), `token-lint.py` (Stage 0.5 LIVE).
+
+**DB vocab/gap-detection:** `detect.py` (/sgs-update S10), all `apply-*.py` / `canonicalise-*.py` / `coverage-*.py` (ONE-OFF, not wired).
+
+**Behavioural analyser:** `assign-canonical.py` (/sgs-update S4), others ONE-OFF.
+
+**Drift validator:** `validate.py` (LIVE via preflight_chain.run_precommit_gate()).
+
+**Pattern tools:** `pattern-register.py`, `pattern-fingerprint.py`, `pattern-classify.py` (all superseded in production by register_patterns.py).
+
+**uimax tools:** `uimax_write.py` (LIVE chokepoint), `uimax-write-validator.py` (LIVE transitive; Wave 2 licensing reject added), `sgs-update-uimax-sync.py` (/sgs-update S3+4), `seed-block-compositions.py` (ONE-OFF).
+
+**Build tools:** `generate-icons.js`, `copy-built-styles.js` (build-time); `build-font-collection.py`, `generate-block-reference.py` (/sgs-update S2), `audit-block-uniformity.py` (standalone).
+
+**QA/diff tools (scripts/):** `colour-parity-audit.js`, `mockup-parity-validator.js`, `screenshot-diff-helper.js`, `css-pattern-audit.js`, `font-source-audit.js`, `global-styles-reset.js`, `render-mobile-override-audit.js`, `brand-palette-sampler.py`, `sgs-block-grep.py`, `wp-update-block-attrs.js`, `pixel-diff.py` (all standalone/operator tools, NOT wired into /sgs-clone).
+
+**Multi-frame QA:** `tools/multi-frame-qa/capture.js` (invoked by visual_qa_capture.py OR standalone).
+
+### Wave 1-3 test files
+
+| Test file | Tests | Wave |
+|---|---|---|
+| test_orchestrator_non_bem_halt.py | 8 | Wave 1 |
+| test_uimax_write_validator.py | 19 | Wave 2 |
+| test_confidence_threshold.py | 7 | Wave 2 |
+| test_attribute_gap_candidate.py | 5 | Wave 3 |
+| test_stage_3_db_canonical.py | 7 pass + 2 skip | Wave 3 |
+| test_voter_db_legacy.py | 11 | Wave 3 |
+
+### Deprecated / to-retire summary
+
+| File | Retirement phase | Disk state |
+|---|---|---|
+| tools/recogniser/*.py (7 files) | Spec 15 Phase 5 | EXISTS |
+| tools/recogniser-v2/extract.py | Wave 1 unreachable; physical delete deferred | EXISTS |
+| tools/recogniser-v2/extract_strategies.py | Same | EXISTS |
+| tools/recogniser-v2/overrides/hero.py | Same | EXISTS |
+| fingerprint-builder/build-catalogue.py | Spec 15 Phase 3 | MISSING |
+| fingerprint-builder/step*.py (2 files) | Spec 15 Phase 3 | MISSING (.pyc only) |
+| fingerprint-builder/qa-gate.py | Spec 15 Phase 3 | MISSING |
+
+---
+
+## Skill dispatch chain (full) (absorbed from skills-commands-map.md, 2026-05-21)
+
+Source: `.claude/skills-commands-map.md` (459 lines, generated 2026-05-13, last-verified 2026-05-14). Original doc replaced with redirect stub.
+
+> **Update trigger:** New skill or command added; pipeline position change; skill/command retired or renamed.
+
+### Quick index by pipeline stage
+
+| Pipeline stage | Commands / skills |
+|---|---|
+| Pre-clone (mockup prep) | `/uimax-scrape`, `/uimax-mood-board`, `/uimax-classify-naming` |
+| Stage 0 pre-flight | `/sgs-clone`, `/sgs-wp-engine` |
+| Stage 1-2 boundary+match | `/sgs-clone`, `/uimax-classify-naming` (heuristic in-module; full dispatch deferred) |
+| Stage 3-5 slot/extract | `/sgs-clone`, `/chrome-devtools-cli`, `/playwright` (fallbacks) |
+| Stage 6-7 classify+compose | `/sgs-clone`, `/ui-ux-pro-max` (judgement), `/uimax` (query) |
+| Stage 8-9 serialise+report | `/sgs-clone`, `/sgs-db` |
+| +DEPLOY +PARITY +REGISTER | `/sgs-clone`, `/uimax-sgs-scrape-pattern`, `/uimax-scrape-animation`, `/sgs-update`, `/playwright`, `/chrome-devtools-cli` |
+| Sister pipeline | `/sgs-update`, `/sgs-db` |
+| Cross-cutting | `/sgs-db`, `/wp-blocks`, `/wp-hooks`, `/wp-hook-graph`, `/sgs-wp-engine` |
+
+### Per-command/skill summary
+
+- **`/sgs-clone`** -- pipeline entry. `--converter-v2` default TRUE (Wave 1). Non-SGS-BEM halt. Reads/writes sgs-framework.db + ui-ux-pro-max.db.
+- **`/sgs-db`** -- cross-cutting reference. CLI at `~/.agents/skills/sgs-wp-engine/scripts/sgs-db.py`. Read-only normal usage.
+- **`/sgs-update`** -- sister pipeline. Scripts: update-db.py (S1), generate-block-reference.py (S2), sgs-update-uimax-sync.py (S3+4). Now also re-syncs legacy_role_lookup (Wave 3). Writes both DBs.
+- **`/uimax-sgs-scrape-pattern`** -- +REGISTER tail. Atomic write to sgs-framework.db.patterns + uimax.patterns. Scripts: pattern-fingerprint.py, pattern-classify.py, pattern-register.py, uimax_write.py + validator.
+- **`/wp-blocks`** -- cross-cutting; Stage 2+3 block attribute lookup.
+- **`/wp-hook-graph`**, **`/wp-hooks`**, **`/wp-perf-gate`** -- auxiliary; not in clone pipeline.
+- **`/sgs-wp-engine`** -- cross-cutting coordinator; Stage 7 block-level questions.
+- **`/ui-ux-pro-max`** / **`/uimax`** -- Stages 6-7 judgement + +REGISTER equivalent_implementations. Backed by ui-ux-pro-max.db.
+- **`/uimax-classify-naming`** -- Stage 1 convention classification. Writes uimax.naming_conventions.
+- **`/uimax-mood-board`** -- pre-clone multi-URL aggregation; not on standard runs.
+- **`/uimax-scrape`** -- pre-clone client design language seeding.
+- **`/uimax-scrape-animation`** -- +REGISTER tail animation harvest. Writes uimax.animations.
+- **`/chrome-devtools-cli`** -- Stage 4/5 fallback; runtime CSS extraction.
+- **`/playwright`** -- Stage 4/5 fallback; production capture via visual_qa_capture.py.
+- **`/visual-qa`** -- SIBLING (NOT in /sgs-clone path). Operator-invoked 9-layer audit. 8 JS scripts at `~/.agents/skills/visual-qa/scripts/`. **Known bug:** `run-audit.js:137` calls `responsive-audit.js` but file is `responsive-screenshots.js`.
+
+### Scripts outside the repo (skill/hook scripts)
+
+| Script | Referenced by |
+|---|---|
+| `~/.agents/skills/sgs-wp-engine/scripts/sgs-db.py` | `/sgs-db`, `/uimax-sgs-scrape-pattern` |
+| `~/.agents/skills/sgs-wp-engine/scripts/update-db.py` | `/sgs-update` Stage 1 |
+| `~/.claude/hooks/wp-blocks.py` | `/wp-blocks` |
+| `~/.claude/hooks/wp-docs.py` | `/wp-hooks` |
+| `~/.claude/hooks/wp-hook-graph.py` | `/wp-hook-graph` |
+| `~/.claude/hooks/wp-perf-gate.py` | `/wp-perf-gate` |
+| `~/.agents/skills/ui-ux-pro-max/scripts/search.py` | `/uimax`, `/ui-ux-pro-max`, `/sgs-wp-engine` |
+| `~/.agents/skills/ui-ux-pro-max/scripts/ingest-extraction.py` | `/uimax` (ingest mode) |
+
+---
+
+## DB heat-map (full) (absorbed from db-tables-map.md, 2026-05-21)
+
+Source: `.claude/db-tables-map.md` (926 lines, generated 2026-05-13, last-verified 2026-05-14). Original doc replaced with redirect stub.
+
+> **Update trigger:** Any table add/remove; any column add/remove/rename; any script that newly reads or writes a table.
+
+### Quick stats
+
+| DB | Tables | Rows | Path |
+|---|---|---|---|
+| sgs-framework.db | 29 | ~4,050 | `~/.claude/skills/sgs-wp-engine/sgs-framework.db` |
+| ui-ux-pro-max.db | 48 | ~10,353 | `~/.agents/skills/ui-ux-pro-max/scripts/ui-ux-pro-max.db` |
+
+### Stage-to-tables matrix
+
+| Stage | sgs-framework.db | uimax |
+|---|---|---|
+| 0 | -- | -- |
+| 0.1 | -- | naming_conventions (embedded rules; no live query) |
+| 0.5 | -- (reads theme.json directly) | -- |
+| 1 | slot_synonyms (R) | naming_conventions (reference) |
+| 2 | blocks (R via filesystem) | -- |
+| 3 | block_attributes (R: canonical_slot, role, derived_selector) | -- |
+| 3 (Wave 3) | block_attributes (R: canonical_source annotation) | -- |
+| 4 | block_attributes (R: canonical_slot, output_signature) | -- |
+| 4 (Wave 3 D3) | attribute_gap_candidates (W: unlifted CSS props) | -- |
+| 4.5 | design_tokens (R via theme.json) | -- |
+| 5 | block_supports (R) | -- |
+| 6 | block_attributes (R), design_tokens (R via theme.json) | -- |
+| 9 | attribute_gap_candidates (W) | recognition_log (W), functionality_gap_candidates (W) |
+| +REGISTER | patterns (W), block_compositions (W) | patterns (W), component_libraries (R+W) |
+| /sgs-update S1 | blocks, block_attributes, block_supports, block_selectors, block_capabilities, design_tokens, style_variations, patterns, theme_parts, hooks, components, plugins, deploy_steps, gotchas, pattern_coverage, block_changes (all W) | -- |
+| /sgs-update S2-4 | block_attributes (W: canonical_slot, role), slot_synonyms (W), attribute_gap_candidates (W) | -- |
+| /sgs-update S3 | blocks (R), legacy_role_lookup (R, Wave 3) | component_libraries (W) |
+| /sgs-update S4 | -- | animations (R for gap report) |
+
+**RETIRED (Step 6b 2026-05-14 -- tables dropped from sgs-framework.db):** sections_detected, extraction_cache, block_opportunities, weaknesses, animations.
+
+**NEW (Wave 3, 2026-05-21):** legacy_role_lookup (17 rows) -- voter LEGACY_ROLE_LOOKUP dict migrated here.
+
+### sgs-framework.db key tables
+
+| Table | Rows | Pipeline use | Writer |
+|---|---|---|---|
+| block_attributes | 1,349 | Stages 3+4 R; cv2 D3 W attribute_gap_candidates | /sgs-update S1+S4 |
+| slot_synonyms | 82 | Stage 1 R; cv2 walker standalone_block routing | seed scripts + gap-detection |
+| block_supports | 347 | Stage 5 supports_writer R | /sgs-update S1 |
+| property_suffixes | 117 | assign-canonical; cv2 db_lookup.css_property_suffixes() | seed + 2026-05-17 migration |
+| blocks | 67 | Stage 2 cross-check; /sgs-update S3 uimax sync | /sgs-update S1 |
+| patterns | 41 | Stage 2 confidence boost; +REGISTER W | /sgs-update S1; register_patterns.py |
+| block_compositions | 37 | Stage 2 confidence boost; +REGISTER W | register_patterns.py |
+| attribute_gap_candidates | 107+ | Stage 9 W; D3 emission W (Wave 3); detect.py R | assign-canonical; detect.py; cv2 D3 |
+| legacy_role_lookup | 17 | Voter R via db_lookup (Wave 3) | seed-legacy-role-lookup.py; /sgs-update sync |
+| modifier_suffixes | 19 | assign-canonical; drift-validator | seed scripts |
+| design_tokens | 28 | Reference; NOT read at clone runtime (reads theme.json) | /sgs-update S1 |
+| style_variations | 8 | Reference; NOT read at clone runtime | /sgs-update S1 |
+
+All remaining tables (block_capabilities, block_changes, block_selectors, components, deploy_steps, gotchas, hooks, pattern_coverage, pipeline_corrections, plugins, theme_parts, animation_tokens) are populated by /sgs-update S1 and are NOT read at /sgs-clone runtime.
+
+### uimax pipeline-relevant tables
+
+| Table | Rows | Pipeline use | Writer |
+|---|---|---|---|
+| recognition_log | 2,779 | Stage 9 W (soft-fail); detect.py R | sgs-clone-orchestrator.py |
+| component_libraries | 211 | /sgs-update S3 R+W | sgs-update-uimax-sync.py |
+| animations | 63 | /sgs-update S4 gap report R | /uimax-scrape-animation (external) |
+| patterns | 5 | +REGISTER W | register_patterns.py |
+| naming_conventions | 16 | Reference; static data embedded in lingua_franca.py | /uimax-classify-naming |
+| functionality_gap_candidates | 0 | Stage 9 W | functionality-gap-detector.py |
+| attribute_gap_candidates (uimax) | 0 | Planned output of attribute-gap-writer.py | (not yet written) |
+
+### Cross-DB sync flows
+
+| Source | Target | Script | Trigger |
+|---|---|---|---|
+| sgs-framework.db.blocks | uimax.component_libraries | sgs-update-uimax-sync.py S3 | /sgs-update S3 |
+| /sgs-clone Stage 9 | uimax.recognition_log | sgs-clone-orchestrator.py | End of every Stage 9 |
+| /sgs-clone +REGISTER | sgs-framework.db.patterns | register_patterns.py | +REGISTER tail |
+| /sgs-clone +REGISTER | uimax.patterns | register_patterns.py | +REGISTER tail |
+| uimax DB | CSV files at ~/.agents/skills/ui-ux-pro-max/data/ | update-db.py regenerate-csvs | After Stage 3 writes |
+| uimax.recognition_log (extraction_failed) | sgs-framework.db.attribute_gap_candidates | gap-detection/detect.py | Manual or /sgs-update S4 gap pass |
+
+### Reference-only uimax tables (not read/written by pipeline)
+
+chart_templates (626), design_tokens (5164), google_fonts (1923), app_interface (30), charts (25), colors (269), icon_libraries (225), icons (105), interaction_patterns (30), landing (34), mood_boards/mood_board_items (0), products (161), react_performance (44), stack_* tables (0-60 each), styles (84), typography (74), ui_reasoning (161), ux_guidelines (161), gov_patterns (68), ft_chart_vocabulary (39).
