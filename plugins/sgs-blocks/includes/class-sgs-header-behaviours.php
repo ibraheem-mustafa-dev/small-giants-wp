@@ -40,7 +40,67 @@ final class Sgs_Header_Behaviours {
 	 */
 	public static function register(): void {
 		\add_filter( 'sgs_header_rule_resolved', array( __CLASS__, 'inject_behaviour_class' ), 10, 2 );
+		// Second filter: WP core wraps template-part content in <header class="wp-block-template-part">
+		// AFTER our pattern HTML is returned. The first filter above can't inject onto that wrapper
+		// because the wrapper doesn't exist yet at that point. This second filter runs post-wrap,
+		// reads the active rule's behaviour, and injects the SGS classes into the wrapper.
+		\add_filter( 'render_block_core/template-part', array( __CLASS__, 'inject_wrapper_class' ), 10, 2 );
 		\add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue_assets' ) );
+	}
+
+	/**
+	 * Inject .sgs-header (+ behaviour modifier) onto the <header class="wp-block-template-part">
+	 * wrapper that WP core renders around the template-part content. Runs only for the header area;
+	 * footer area is left untouched (FR-S3-3 owns the footer-side mirror).
+	 *
+	 * @param string              $block_content The fully-rendered template-part HTML (includes wrapper).
+	 * @param array<string,mixed> $block         Parsed block.
+	 * @return string
+	 */
+	public static function inject_wrapper_class( string $block_content, array $block ): string {
+		if ( ( $block['attrs']['area'] ?? '' ) !== 'header' ) {
+			return $block_content;
+		}
+
+		// Find the active rule that the rules engine matched on THIS request,
+		// so we know the behaviour modifier. Re-evaluating won't double-render —
+		// Sgs_Header_Rules has a per-request guard. Instead read directly from
+		// the rules option + condition matcher.
+		$rules = Sgs_Header_Rules::list_rules();
+		$behaviour = 'none';
+		foreach ( $rules as $rule ) {
+			if ( Sgs_Header_Rules::rule_matches( $rule ) ) {
+				$behaviour_raw = isset( $rule['behaviour'] ) ? (string) $rule['behaviour'] : 'none';
+				$behaviour = in_array( $behaviour_raw, self::VALID_BEHAVIOURS, true ) ? $behaviour_raw : 'none';
+				break;
+			}
+		}
+
+		$classes_to_add = 'none' === $behaviour ? 'sgs-header' : 'sgs-header sgs-header--' . $behaviour;
+
+		// Inject onto the FIRST <header ...> tag — typically the wrapper that core just added.
+		$callback = static function ( array $matches ) use ( $classes_to_add ): string {
+			$tag_open = $matches[1];
+			$attrs    = $matches[2];
+
+			if ( preg_match( '/\bclass=(["\'])([^"\']*)\1/i', $attrs, $cm ) ) {
+				$merged   = trim( $cm[2] . ' ' . $classes_to_add );
+				$new_attr = 'class=' . $cm[1] . $merged . $cm[1];
+				$attrs    = str_replace( $cm[0], $new_attr, $attrs );
+				return $tag_open . $attrs . '>';
+			}
+
+			return $tag_open . ' class="' . \esc_attr( $classes_to_add ) . '"' . $attrs . '>';
+		};
+
+		$result = preg_replace_callback(
+			'/(<header)((?:\s[^>]*)?)>/i',
+			$callback,
+			$block_content,
+			1
+		);
+
+		return null === $result ? $block_content : $result;
 	}
 
 	/**

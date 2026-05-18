@@ -1511,3 +1511,33 @@ Source: Session 2026-05-20 sandybrown smoke test (Spec 17 live verification, Tas
 **Sibling patterns to audit at same time:** `sgs/framework-header-shrink`, `sgs/framework-header-sticky`, `sgs/framework-header-centred`, `sgs/framework-header-minimal` — check whether they're real variants or stubs delegating to default too.
 
 Source: Session 2026-05-20 sandybrown smoke test (Task 1 acceptance criterion 4).
+
+### P-PHASE-2A-WRAPPER-CLASS-NOT-INJECTED: Header behaviour wrapper class isn't reaching the live <header> element
+**Captured 2026-05-20.** Branch A's `Sgs_Header_Behaviours::inject_behaviour_class` filter hooks `sgs_header_rule_resolved` (fires INSIDE `Sgs_Header_Rules::evaluate()`). At that point the rule has matched and `render_pattern()` has returned the inner content of the header — but that content has NO `<header>` tag. WP core adds the `<header class="wp-block-template-part">` wrapper LATER, via `render_block_core_template_part()`'s html_tag wrapping logic. 
+
+Tried adding a second filter on `render_block_core/template-part` to inject the class onto the wrapper after core wraps. Filter IS registered (verified via `has_filter`) but never fires in practice — when `pre_render_block` short-circuits with our content, WP core appears to skip the `render_block_{name}` filter chain OR the wrapper isn't added when pre_render returns non-null.
+
+**Verified live on sandybrown (2026-05-20):**
+- Rule with `behaviour: "sticky"` stored correctly in `wp_options['sgs_header_rules']`
+- `Sgs_Header_Rules::evaluate()` returns 13421 bytes of header content
+- Live homepage shows `<header class="wp-block-template-part">` WITHOUT `.sgs-header` or `.sgs-header--sticky`
+- Position: `static` (CSS sticky not applied)
+- Behaviour CSS file IS enqueued, JS view.js IS enqueued
+
+**Three fix strategies for follow-up:**
+
+1. **Body data attribute + CSS** (recommended). PHP reads active rule's behaviour on `wp_head`, outputs `<body class="sgs-header-behaviour-sticky">` via `body_class` filter. CSS targets `body.sgs-header-behaviour-sticky header.wp-block-template-part`. No DOM rewriting needed.
+
+2. **Client-side JS injection.** Pass active behaviour via `wp_localize_script` → view.js reads it on DOMContentLoaded → adds class to `header.wp-block-template-part`. Risks FOUC (flash of unstyled content before JS runs).
+
+3. **Replace pre_render_block short-circuit with a different rendering strategy.** Don't short-circuit; instead modify the template-part `slug` attribute on `render_block_data` to point at the rule-resolved pattern. Then WP core's normal rendering happens and the wrapper is added; our class injection on `render_block_core/template-part` runs as intended.
+
+Strategy 1 is the cleanest 30-min fix. Strategy 3 is the architecturally correct fix but requires re-thinking Sgs_Header_Rules::filter_template_part (~2 hours).
+
+**Impact on Phase 2A:** behaviour CSS + JS modules SHIPPED but currently unreachable from operator workflow. PR is mergeable; behaviours simply don't fire until follow-up lands. Test rule on sandybrown (rule_06711ea0) deleted to keep staging clean.
+
+Touch points:
+- `plugins/sgs-blocks/includes/class-sgs-header-behaviours.php` (current second-filter attempt)
+- `plugins/sgs-blocks/includes/class-sgs-header-rules.php` (where filter_template_part returns content)
+
+Source: Session 2026-05-20 Phase 2A integration verification.
