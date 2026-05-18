@@ -42,6 +42,11 @@ class CaptureContext:
     mockup_relative_path: str   # e.g. "index.html"
     out_dir: Path
     diff_tolerance: int = 30    # per-pixel R+G+B delta threshold
+    selector: str | None = None  # CSS selector for per-section cropped capture
+                                  # (e.g. ".sgs-hero"). When set, only the
+                                  # matching DOM subtree is screenshotted on
+                                  # both clone + mockup, eliminating WP-chrome
+                                  # and full-page structural noise (blub.db row 256).
 
 
 def _free_port() -> int:
@@ -94,13 +99,51 @@ def _playwright_cwd() -> Path:
     return _PLAYWRIGHT_HOST_PKG
 
 
-def _run_playwright_capture(url: str, viewport_px: int, out_png: Path) -> bool:
-    """Use a one-liner playwright script via node to take a full-page screenshot."""
+def _run_playwright_capture(
+    url: str,
+    viewport_px: int,
+    out_png: Path,
+    selector: str | None = None,
+) -> bool:
+    """Use a one-liner playwright script via node to take a screenshot.
+
+    When ``selector`` is provided the screenshot is cropped to the matching
+    DOM element via ``page.locator(selector).first.screenshot()``, which
+    eliminates WP-chrome and full-page structural noise (blub.db row 256,
+    per-section cropped pixel-diff rule). Falls back to full-page when the
+    selector matches zero elements.
+
+    When ``selector`` is None, full-page capture is used (backwards-compatible
+    behaviour preserved for operator opt-in / no-section-metadata runs).
+    """
     # Pass an absolute path to playwright - node runs in plugins/sgs-blocks
     # (so it can `require('playwright')`) and would otherwise resolve a
     # relative out_png against THAT cwd, not the orchestrator's cwd.
     out_png = out_png.resolve()
     out_png.parent.mkdir(parents=True, exist_ok=True)
+
+    if selector:
+        # Per-section selector path: screenshot only the matching subtree.
+        # Falls back to full-page if the locator count is zero.
+        selector_js = json.dumps(selector)
+        screenshot_js = (
+            f"  const _sel = {selector_js};"
+            f"  const _locs = page.locator(_sel);"
+            f"  const _cnt = await _locs.count();"
+            f"  if (_cnt > 0) {{"
+            f"    await _locs.first().scrollIntoViewIfNeeded();"
+            f"    await page.waitForTimeout(400);"
+            f"    await _locs.first().screenshot({{path: {json.dumps(str(out_png))}}});"
+            f"  }} else {{"
+            f"    await page.screenshot({{path: {json.dumps(str(out_png))}, fullPage: true}});"
+            f"  }}"
+        )
+    else:
+        # Full-page path: original behaviour, no selector.
+        screenshot_js = (
+            f"  await page.screenshot({{path: {json.dumps(str(out_png))}, fullPage: true}});"
+        )
+
     js = (
         "const {chromium} = require('playwright');"
         "(async () => {"
@@ -109,7 +152,7 @@ def _run_playwright_capture(url: str, viewport_px: int, out_png: Path) -> bool:
         f"  const page = await ctx.newPage();"
         f"  await page.goto({json.dumps(url)}, {{waitUntil: 'networkidle', timeout: 30000}});"
         f"  await page.waitForTimeout(1500);"
-        f"  await page.screenshot({{path: {json.dumps(str(out_png))}, fullPage: true}});"
+        f"{screenshot_js}"
         f"  await browser.close();"
         "})().catch(e => {console.error(e); process.exit(1);});"
     )
@@ -178,17 +221,31 @@ def make_capture_callable(ctx: CaptureContext) -> Callable[[int], dict]:
     """Return a capture_callable(viewport_px) -> dict matching the visual-QA contract.
 
     Each invocation:
-      1. Captures the deployed clone at the given viewport
-      2. Captures the mockup at the same viewport (served over local HTTP)
+      1. Captures the deployed clone at the given viewport (selector-cropped
+         when ctx.selector is set, full-page otherwise)
+      2. Captures the mockup at the same viewport (served over local HTTP,
+         same selector scope)
       3. Computes pixel diff between the two
       4. Returns {diff_ratio, screenshot_path, regions}
+
+    The ``selector`` field on ``ctx`` drives per-section cropping (blub.db
+    row 256). Pass ``selector=None`` (the default) to retain full-page
+    behaviour for backwards compatibility.
     """
+    # Capture file stems encode both viewport and selector so multiple per-section
+    # callables writing into the same out_dir don't collide.
+    _sel_slug = (
+        ctx.selector.lstrip(".").replace(" ", "_").replace(">", "-")
+        if ctx.selector else "fullpage"
+    )
 
     def _capture(viewport_px: int) -> dict:
-        clone_png = ctx.out_dir / f"clone-{viewport_px}.png"
-        mockup_png = ctx.out_dir / f"mockup-{viewport_px}.png"
+        clone_png = ctx.out_dir / f"clone-{viewport_px}-{_sel_slug}.png"
+        mockup_png = ctx.out_dir / f"mockup-{viewport_px}-{_sel_slug}.png"
 
-        clone_ok = _run_playwright_capture(ctx.clone_url, viewport_px, clone_png)
+        clone_ok = _run_playwright_capture(
+            ctx.clone_url, viewport_px, clone_png, selector=ctx.selector
+        )
         if not clone_ok:
             return {
                 "diff_ratio": 1.0,
@@ -200,7 +257,9 @@ def make_capture_callable(ctx: CaptureContext) -> Callable[[int], dict]:
         port = _free_port()
         with _serve_mockup_dir(ctx.mockup_dir, port) as base_url:
             mockup_url = f"{base_url}/{ctx.mockup_relative_path.lstrip('/')}"
-            mockup_ok = _run_playwright_capture(mockup_url, viewport_px, mockup_png)
+            mockup_ok = _run_playwright_capture(
+                mockup_url, viewport_px, mockup_png, selector=ctx.selector
+            )
 
         if not mockup_ok:
             return {

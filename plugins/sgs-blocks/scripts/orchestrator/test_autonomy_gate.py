@@ -22,6 +22,8 @@ import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
+import pytest
+
 HERE = Path(__file__).parent
 SPEC = importlib.util.spec_from_file_location("autonomy_gate", HERE / "autonomy_gate.py")
 mod = importlib.util.module_from_spec(SPEC)
@@ -319,6 +321,234 @@ def test_deliverable_includes_operator_note_when_stage_8_skipped() -> None:
     print("  PASS  deliverable-stage-8-skipped: operator-actionable note present")
 
 
+# ---- Wave 2a: per-section pixel-diff + unresolved-slots gate ----
+
+
+def _make_section_capture_factory(per_section_diffs: dict[str, float]):
+    """Return a capture_factory that yields deterministic per-section diffs.
+
+    ``per_section_diffs`` maps selector (e.g. ".sgs-hero") to a fixed diff_ratio
+    so tests can assert section-level routing without a live browser.
+    Returns a ``CaptureFactory`` matching the
+    ``Callable[[str | None], CaptureCallable]`` contract.
+    """
+    def factory(selector):
+        def capture(vp: int) -> dict:
+            ratio = per_section_diffs.get(selector, 0.001)
+            return {
+                "diff_ratio": ratio,
+                "screenshot_path": f"/tmp/sec-{selector}-{vp}.png",
+                "regions": [],
+            }
+        return capture
+    return factory
+
+
+def test_per_section_selector_threading() -> None:
+    """CaptureContext accepts selector; capture_factory receives it per section."""
+    received_selectors: list[str | None] = []
+
+    def factory(sel):
+        received_selectors.append(sel)
+        def cap(vp): return {"diff_ratio": 0.002, "screenshot_path": "", "regions": []}
+        return cap
+
+    psr = [
+        {"section_id": "hero",        "boundary_id": "b1"},
+        {"section_id": "testimonials", "boundary_id": "b2"},
+    ]
+    with tempfile.TemporaryDirectory() as tmp:
+        result = mod.invoke_visual_qa(
+            "run-selector-threading",
+            lambda vp: {"diff_ratio": 0.001, "screenshot_path": "", "regions": []},
+            out_root=Path(tmp),
+            per_section_results=psr,
+            capture_factory=factory,
+        )
+        # Factory must have been called once per section (not once overall)
+        assert len(received_selectors) == 2, \
+            f"Expected factory called 2× (once per section), got: {received_selectors}"
+        assert ".sgs-hero" in received_selectors, \
+            f"Expected .sgs-hero selector, got: {received_selectors}"
+        assert ".sgs-testimonials" in received_selectors, \
+            f"Expected .sgs-testimonials selector, got: {received_selectors}"
+        assert result.get("scope") == "per-section"
+        assert "per_section_diffs" in result
+    print("  PASS  per-section-selector-threading: factory called per section with .sgs-{id}")
+
+
+def test_per_section_max_diff_is_worst_section() -> None:
+    """When one section reports 2.5% and another 0.3%, max_diff_ratio == 2.5%."""
+    factory = _make_section_capture_factory({
+        ".sgs-hero":         0.025,   # above 1% threshold
+        ".sgs-features":     0.003,   # below threshold
+    })
+    psr = [
+        {"section_id": "hero",     "boundary_id": "b-hero"},
+        {"section_id": "features", "boundary_id": "b-feat"},
+    ]
+    with tempfile.TemporaryDirectory() as tmp:
+        result = mod.invoke_visual_qa(
+            "run-max-diff",
+            lambda vp: {"diff_ratio": 0.001, "screenshot_path": "", "regions": []},
+            out_root=Path(tmp),
+            per_section_results=psr,
+            capture_factory=factory,
+        )
+        assert result["max_diff_ratio"] == pytest.approx(0.025), \
+            f"Expected max 0.025 (worst section), got: {result['max_diff_ratio']}"
+        # Decision must halt because 2.5% > 1% pass_threshold
+        decision = mod.autonomy_decision(result)
+        assert decision["decision"] == "halt", \
+            f"Expected halt (2.5% > 1%), got: {decision}"
+    print("  PASS  per-section-max-diff: max_diff_ratio reflects worst section (2.5%)")
+
+
+def test_per_section_all_clean_auto_proceeds() -> None:
+    """When all sections are below pass_threshold, decision is auto-proceed."""
+    factory = _make_section_capture_factory({
+        ".sgs-hero":    0.003,
+        ".sgs-contact": 0.002,
+    })
+    psr = [
+        {"section_id": "hero",    "boundary_id": "bh"},
+        {"section_id": "contact", "boundary_id": "bc"},
+    ]
+    with tempfile.TemporaryDirectory() as tmp:
+        result = mod.invoke_visual_qa(
+            "run-all-clean",
+            lambda vp: {"diff_ratio": 0.001, "screenshot_path": "", "regions": []},
+            out_root=Path(tmp),
+            per_section_results=psr,
+            capture_factory=factory,
+        )
+        decision = mod.autonomy_decision(result)
+        assert decision["decision"] == "auto-proceed", \
+            f"Expected auto-proceed (all sections < 1%), got: {decision}"
+    print("  PASS  per-section-all-clean: auto-proceed when all sections pass 1% gate")
+
+
+def test_unresolved_slots_gate_halts() -> None:
+    """Hard Rule 8: unresolved_slots > 0 returns halt with actionable deliverable note."""
+    coverage = {
+        "boundary-hero": {
+            "open_slots": ["headlineColour", "ctaLabel"],
+            "attrs_total": 10,
+            "attrs_extracted": 8,
+            "coverage_percent": 80.0,
+        },
+        "boundary-footer": {
+            "open_slots": [],
+            "attrs_total": 5,
+            "attrs_extracted": 5,
+            "coverage_percent": 100.0,
+        },
+    }
+    vqa_clean = {"max_diff_ratio": 0.003, "viewports": []}
+    decision = mod.autonomy_decision(vqa_clean, coverage=coverage)
+    assert decision["decision"] == "halt", \
+        f"Expected halt (2 open slots in hero), got: {decision}"
+    assert decision.get("unresolved_slots") == 2, \
+        f"Expected unresolved_slots=2, got: {decision.get('unresolved_slots')}"
+    assert decision.get("affected_sections") == 1, \
+        f"Expected affected_sections=1, got: {decision.get('affected_sections')}"
+    note = " ".join(decision.get("reasons", []))
+    assert "unresolved slot" in note.lower(), \
+        f"Expected 'unresolved slot' in reason, got: {note}"
+    assert "stage-9-coverage.json" in note, \
+        f"Expected stage-9-coverage.json reference, got: {note}"
+    print("  PASS  unresolved-slots-gate-halts: halt with slot count + actionable note")
+
+
+def test_unresolved_slots_zero_falls_through_to_diff_path() -> None:
+    """Regression: when all slots are resolved, decision falls through to pixel-diff path."""
+    coverage = {
+        "boundary-hero": {
+            "open_slots": [],
+            "attrs_total": 10,
+            "attrs_extracted": 10,
+            "coverage_percent": 100.0,
+        },
+    }
+    # Low diff — should auto-proceed with no unresolved-slots interference
+    vqa_clean = {"max_diff_ratio": 0.002, "viewports": []}
+    decision = mod.autonomy_decision(vqa_clean, coverage=coverage)
+    assert decision["decision"] == "auto-proceed", \
+        f"Expected auto-proceed (zero open slots + clean diff), got: {decision}"
+    assert "unresolved_slots" not in decision, \
+        "unresolved_slots key must be absent when slots=0 (not 0-valued)"
+    print("  PASS  unresolved-slots-zero-falls-through: auto-proceed when all slots filled")
+
+
+def test_unresolved_slots_gate_before_skip_sentinel() -> None:
+    """Unresolved slots gate fires even when stage_8_skipped=True (slot coverage is independent)."""
+    coverage = {
+        "boundary-hero": {
+            "open_slots": ["headlineColour"],
+            "attrs_total": 5,
+            "attrs_extracted": 4,
+            "coverage_percent": 80.0,
+        },
+    }
+    skip_result = {
+        "stage_8_skipped": True,
+        "max_diff_ratio": None,
+        "viewports": [],
+    }
+    decision = mod.autonomy_decision(skip_result, coverage=coverage)
+    # Slots gate fires first — returns halt, not surface-to-operator
+    assert decision["decision"] == "halt", \
+        f"Expected halt (open slots > 0), got: {decision}"
+    assert decision.get("unresolved_slots") == 1
+    print("  PASS  unresolved-slots-before-skip-sentinel: halt takes priority over stage-8-skipped")
+
+
+def test_full_page_fallback_no_section_metadata() -> None:
+    """When per_section_results is None, full-page capture is used (backwards-compat)."""
+    dispatched: list[int] = []
+
+    def full_page_capture(vp: int) -> dict:
+        dispatched.append(vp)
+        return {"diff_ratio": 0.004, "screenshot_path": f"/tmp/fp-{vp}.png", "regions": []}
+
+    with tempfile.TemporaryDirectory() as tmp:
+        result = mod.invoke_visual_qa(
+            "run-fullpage-compat",
+            full_page_capture,
+            out_root=Path(tmp),
+            # No per_section_results — full-page path must activate
+        )
+        assert dispatched == [375, 768, 1440], \
+            f"Expected 3 full-page viewport calls, got: {dispatched}"
+        assert result.get("scope") == "full-page", \
+            f"Expected scope=full-page, got: {result.get('scope')}"
+        assert "per_section_diffs" not in result, \
+            "per_section_diffs must be absent in full-page mode"
+    print("  PASS  full-page-fallback: full-page used when no section metadata supplied")
+
+
+def test_no_capture_factory_forces_full_page() -> None:
+    """Even with per_section_results provided, absent capture_factory falls back to full-page."""
+    psr = [{"section_id": "hero", "boundary_id": "bh"}]
+    dispatched: list[int] = []
+
+    def cap(vp):
+        dispatched.append(vp)
+        return {"diff_ratio": 0.001, "screenshot_path": "", "regions": []}
+
+    with tempfile.TemporaryDirectory() as tmp:
+        result = mod.invoke_visual_qa(
+            "run-no-factory",
+            cap,
+            out_root=Path(tmp),
+            per_section_results=psr,
+            capture_factory=None,   # explicitly no factory
+        )
+        assert result.get("scope") == "full-page", \
+            f"Expected full-page when capture_factory=None, got: {result.get('scope')}"
+    print("  PASS  no-capture-factory-forces-full-page: scope=full-page when factory absent")
+
+
 def main() -> int:
     print("Spec 15 Phase 5e.4 + 5e.5 + 5e.6 + 5e.7 -- autonomy_gate contract")
     test_visual_qa_iterates_viewports()
@@ -338,9 +568,19 @@ def main() -> int:
     test_autonomy_decision_stub_with_preflight_still_surfaces()
     test_real_capture_dispatch_when_clone_url_supplied()
     test_deliverable_includes_operator_note_when_stage_8_skipped()
+    # Wave 2a: per-section pixel-diff + unresolved-slots gate
+    test_per_section_selector_threading()
+    test_per_section_max_diff_is_worst_section()
+    test_per_section_all_clean_auto_proceeds()
+    test_unresolved_slots_gate_halts()
+    test_unresolved_slots_zero_falls_through_to_diff_path()
+    test_unresolved_slots_gate_before_skip_sentinel()
+    test_full_page_fallback_no_section_metadata()
+    test_no_capture_factory_forces_full_page()
     print(
-        "\nAUTONOMY-GATE-5E.4+5+6+7 + STAGE-8-SKIP-SENTINEL: PASS "
-        "(2 vqa + 5 autonomy + 2 sgs-update + 1 deliverable + 6 skip-sentinel)"
+        "\nAUTONOMY-GATE: PASS "
+        "(2 vqa + 5 autonomy + 2 sgs-update + 1 deliverable + 6 skip-sentinel "
+        "+ 8 wave-2a per-section+slots)"
     )
     return 0
 

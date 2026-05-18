@@ -7,7 +7,7 @@ per Spec 12 section 6 plus the 2026-05-08 4-model peer review (5th bucket
 
 Buckets:
   unrecognised_class            -- class names with no slug / role mapping
-  unrecognised_section          -- low-confidence match candidates (< 0.5)
+  unrecognised_section          -- low-confidence match candidates (< 0.7)
   extraction_failed             -- declared block.json attrs with no value
   animation_unclassified        -- animations referenced but not classified
   structural_mismatch_or_orphan -- DOM shape disagrees with chosen block
@@ -45,7 +45,11 @@ sys.stdout.reconfigure(encoding="utf-8")
 sys.stderr.reconfigure(encoding="utf-8")
 
 # Confidence below this counts as an unrecognised section.
-UNRECOGNISED_CONFIDENCE_THRESHOLD = 0.5
+# Spec 15 §7 Stage 2 hard gate: block-type match confidence ≥ 0.7 required.
+# Boundaries with top-candidate confidence < 0.7 are routed to the autonomy chain
+# (bucket-c-classifier + atomic-block-scaffold) instead of passing through to
+# Stage 3+ pipeline. This is a named constant to enable single-point changes.
+STAGE_2_CONFIDENCE_THRESHOLD = 0.7
 
 EMPTY_BUCKETS_TEMPLATE: dict[str, list] = {
     "unrecognised_class": [],
@@ -215,7 +219,7 @@ def route_unrecognised_section(
 
     for m in matches:
         confidence = float(m.get("confidence", 0.0))
-        if confidence >= UNRECOGNISED_CONFIDENCE_THRESHOLD:
+        if confidence >= STAGE_2_CONFIDENCE_THRESHOLD:
             continue
         bid = m.get("boundary_id")
         psr = psr_by_bid.get(bid) or {}
@@ -503,7 +507,7 @@ def route_wrong_block_type(matches: list[dict], boundaries: list[dict], extract:
         # but did NOT have a top-level Stage 2 match).
         if not _section_emitted_typed_blocks(markup):
             continue
-        if float(m.get("confidence", 0.0)) >= UNRECOGNISED_CONFIDENCE_THRESHOLD:
+        if float(m.get("confidence", 0.0)) >= STAGE_2_CONFIDENCE_THRESHOLD:
             continue
         if _CHROME_SKIPPED_MARKER.search(markup):
             continue

@@ -48,6 +48,15 @@ sys.stdout.reconfigure(encoding="utf-8")
 
 HERE = Path(__file__).parent
 
+# Canonical skip-reason message shared across invoke_visual_qa,
+# autonomy_decision, and emit_deliverable so the operator always sees the
+# same actionable text regardless of which code path emitted it (S1192).
+_STAGE_8_SKIP_REASON = (
+    "Stage 8 visual QA was skipped because --clone-url was not supplied. "
+    "Operator must run /visual-qa against the deployed URL manually, "
+    "OR re-run with --clone-url=<staging-url> to enforce the 1% gate."
+)
+
 _so_spec = _ilu.spec_from_file_location("staged_output", HERE / "staged_output.py")
 _so = _ilu.module_from_spec(_so_spec)
 sys.modules.setdefault("staged_output", _so)
@@ -74,21 +83,56 @@ def _load_vqa_config(config_path: Path) -> dict:
 # (viewport_px) -> {diff_ratio: float, screenshot_path: str, regions: [...]}
 CaptureCallable = Callable[[int], dict]
 
+# Factory that accepts an optional CSS selector and returns a CaptureCallable.
+# Used for per-section mode: capture_factory(".sgs-hero") -> CaptureCallable.
+# When None is passed, the factory returns a full-page capture callable.
+CaptureFactory = Callable[[Any], CaptureCallable]
+
 
 def invoke_visual_qa(
     run_id: str,
     capture: CaptureCallable,
     config_path: Path = Path("tools/recogniser-v2/visual_qa_config.json"),
     out_root: Path = _so.PIPELINE_ROOT,
+    per_section_results: list[dict] | None = None,
+    capture_factory: "CaptureFactory | None" = None,
 ) -> dict:
     """Run visual-QA capture across every configured viewport.
 
+    Per-section mode (binding methodology rule, blub.db row 256):
+      When ``per_section_results`` is provided AND ``capture_factory`` is
+      provided, capture is done per-section using
+      ``.sgs-{section_id}`` selectors (or the ``selector`` field already on
+      the result dict when present). Each section gets its own per-viewport
+      diff_ratio. ``max_diff_ratio`` in the returned bundle reflects the
+      maximum across all sections + all viewports.
+
+      The ``capture_factory`` callable must accept a ``str | None`` selector
+      and return a ``CaptureCallable``. Production wiring:
+
+          ctx = CaptureContext(..., selector=None)
+          def factory(sel):
+              import dataclasses
+              scoped_ctx = dataclasses.replace(ctx, selector=sel)
+              return make_capture_callable(scoped_ctx)
+          invoke_visual_qa(run_id, capture_fn, per_section_results=psr,
+                           capture_factory=factory)
+
+    Full-page fallback (backwards-compatible):
+      When ``per_section_results`` is None OR ``capture_factory`` is None,
+      the original single ``capture`` callable is used for full-page capture
+      across viewports. The ``scope: "full-page"`` config key is honoured
+      for backwards compatibility but the default run path is per-section
+      whenever section metadata is available.
+
     Returns:
         {
-          "run_id":     ...,
-          "viewports":  [{viewport, diff_ratio, screenshot, surfaced_regions}, ...],
-          "max_diff_ratio": float,        # worst viewport
-          "config":     <loaded config>,
+          "run_id":            ...,
+          "viewports":         [{viewport, diff_ratio, screenshot, surfaced_regions}, ...],
+          "max_diff_ratio":    float,       # worst across all sections + viewports
+          "config":            <loaded config>,
+          "per_section_diffs": [{section_id, selector, viewports: [{vp, diff_ratio}], max_diff}, ...]
+                               # present in per-section mode only
         }
     """
     cfg = _load_vqa_config(config_path)
@@ -102,12 +146,7 @@ def invoke_visual_qa(
     # visual_qa_capture.stub_capture() when --clone-url is absent.
     first_probe = capture(cfg["viewports"][0])
     if first_probe.get("stage_8_skipped"):
-        skip_reason = first_probe.get(
-            "skip_reason",
-            "Stage 8 visual QA was skipped because --clone-url was not supplied. "
-            "Operator must run /visual-qa against the deployed URL manually, "
-            "OR re-run with --clone-url=<staging-url> to enforce the 1% gate.",
-        )
+        skip_reason = first_probe.get("skip_reason", _STAGE_8_SKIP_REASON)
         bundle = {
             "run_id":          run_id,
             "viewports":       [],
@@ -119,6 +158,28 @@ def invoke_visual_qa(
         _so.write_artefact(run_id, 8, bundle, name="visual_qa", root=out_root)
         return bundle
 
+    # Determine whether to run in per-section mode or full-page mode.
+    # Per-section requires: section metadata with section_id fields + a capture_factory.
+    use_per_section = (
+        bool(per_section_results)
+        and capture_factory is not None
+        and any(
+            s.get("section_id") or s.get("selector")
+            for s in per_section_results
+        )
+    )
+
+    if use_per_section:
+        return _invoke_visual_qa_per_section(
+            run_id=run_id,
+            cfg=cfg,
+            surface_threshold=surface_threshold,
+            per_section_results=per_section_results,
+            capture_factory=capture_factory,
+            out_root=out_root,
+        )
+
+    # Full-page path (original behaviour — backwards-compatible).
     per_viewport: list[dict] = []
     max_diff = 0.0
     # Process first_probe result (already captured above)
@@ -142,8 +203,117 @@ def invoke_visual_qa(
         "viewports":      per_viewport,
         "max_diff_ratio": max_diff,
         "config":         cfg,
+        "scope":          "full-page",
     }
     # Persist as the canonical stage-8 artefact
+    _so.write_artefact(run_id, 8, bundle, name="visual_qa", root=out_root)
+    return bundle
+
+
+def _section_selector(section: dict) -> str | None:
+    """Derive the CSS selector for a per_section_results entry.
+
+    Priority order:
+      1. ``selector`` field already present on the entry (e.g. set by the
+         voter/matcher in Stage 2 — e.g. "section.sgs-hero")
+      2. ``.sgs-{section_id}`` constructed from the ``section_id`` field
+         (canonical SGS-BEM root class per Spec 13 §8.1)
+      3. None — caller falls back to full-page for this section.
+    """
+    if section.get("selector"):
+        return section["selector"]
+    sid = section.get("section_id")
+    if sid:
+        return f".sgs-{sid}"
+    return None
+
+
+def _invoke_visual_qa_per_section(
+    run_id: str,
+    cfg: dict,
+    surface_threshold: float,
+    per_section_results: list[dict],
+    capture_factory: "CaptureFactory",
+    out_root: Path,
+) -> dict:
+    """Per-section pixel-diff path (binding rule blub.db row 256).
+
+    Each section is captured independently at every configured viewport via
+    ``capture_factory(selector)``. The autonomy decision uses
+    ``max(per-section diff_ratios)`` across ALL sections × ALL viewports,
+    NOT a single full-page diff (which has a 30-45% noise floor from
+    WP-block-wrapper structural differences).
+
+    Returns the same shape as the full-page path with an additional
+    ``per_section_diffs`` key for operator transparency.
+    """
+    viewports = cfg["viewports"]
+
+    per_section_diffs: list[dict] = []
+    global_max_diff = 0.0
+
+    for sec in per_section_results:
+        selector = _section_selector(sec)
+        section_id = sec.get("section_id") or sec.get("boundary_id") or "unknown"
+
+        # Get a selector-scoped capture callable from the factory.
+        section_capture = capture_factory(selector)
+
+        sec_vp_results: list[dict] = []
+        sec_max_diff = 0.0
+        for vp in viewports:
+            cap_result = section_capture(vp)
+            diff_ratio = float(cap_result.get("diff_ratio", 0.0))
+            sec_max_diff = max(sec_max_diff, diff_ratio)
+            global_max_diff = max(global_max_diff, diff_ratio)
+            regions = cap_result.get("regions") or []
+            surfaced = [
+                r for r in regions
+                if float(r.get("diff", 0.0)) >= surface_threshold
+            ]
+            sec_vp_results.append({
+                "viewport":         vp,
+                "diff_ratio":       diff_ratio,
+                "screenshot":       cap_result.get("screenshot_path"),
+                "surfaced_regions": surfaced,
+            })
+
+        per_section_diffs.append({
+            "section_id": section_id,
+            "selector":   selector,
+            "viewports":  sec_vp_results,
+            "max_diff":   sec_max_diff,
+        })
+
+    # Aggregate viewport summary: worst section diff per viewport for the
+    # top-level ``viewports`` list (preserves backwards-compat with callers
+    # that read vqa_result["viewports"][i]["diff_ratio"]).
+    agg_per_viewport: list[dict] = []
+    for i, vp in enumerate(viewports):
+        worst_vp_diff = max(
+            (s["viewports"][i]["diff_ratio"] for s in per_section_diffs
+             if i < len(s["viewports"])),
+            default=0.0,
+        )
+        worst_surfaced: list[dict] = []
+        for s in per_section_diffs:
+            if i < len(s["viewports"]):
+                worst_surfaced.extend(s["viewports"][i].get("surfaced_regions") or [])
+        agg_per_viewport.append({
+            "viewport":         vp,
+            "diff_ratio":       worst_vp_diff,
+            "screenshot":       None,   # section-level screenshots; no single path
+            "surfaced_regions": worst_surfaced,
+        })
+
+    bundle = {
+        "run_id":            run_id,
+        "viewports":         agg_per_viewport,
+        "max_diff_ratio":    global_max_diff,
+        "config":            cfg,
+        "scope":             "per-section",
+        "per_section_diffs": per_section_diffs,
+    }
     _so.write_artefact(run_id, 8, bundle, name="visual_qa", root=out_root)
     return bundle
 
@@ -151,18 +321,60 @@ def invoke_visual_qa(
 # ---- 5e.5 autonomy gate -----------------------------------------------------
 
 
+def _count_unresolved_slots(coverage: dict | None) -> tuple[int, int]:
+    """Return (total_unresolved_slots, affected_sections) from a stage-9 coverage dict.
+
+    The coverage dict is shaped as:
+      {
+        "<boundary_id>": {
+          "open_slots": ["slot_name", ...],
+          "attrs_total": int,
+          "attrs_extracted": int,
+          "coverage_percent": float,
+        },
+        ...
+      }
+
+    This is the ``coverage_by_boundary`` output from ``stage_9_report()``
+    in sgs-clone-orchestrator.py. Hard Rule 8: an unresolved slot blocks
+    deploy (every block-attribute slot must be filled, defaulted, or marked
+    'not present in mockup' before auto-proceed is allowed).
+    """
+    if not coverage or not isinstance(coverage, dict):
+        return 0, 0
+    total_unresolved = 0
+    affected = 0
+    for _boundary_id, cov in coverage.items():
+        if not isinstance(cov, dict):
+            continue
+        open_slots = cov.get("open_slots") or []
+        if isinstance(open_slots, list) and open_slots:
+            total_unresolved += len(open_slots)
+            affected += 1
+    return total_unresolved, affected
+
+
 def autonomy_decision(
     visual_qa_result: dict,
     console_errors: int = 0,
     preflight_abort: bool = False,
     config_path: Path = Path("tools/recogniser-v2/visual_qa_config.json"),
+    coverage: dict | None = None,
 ) -> dict:
-    """Decision logic per Spec 15 Â§7 stage 8.
+    """Decision logic per Spec 15 §7 stage 8 + Hard Rule 8.
+
+    Hard Rule 8 -- unresolved slots gate:
+      When ``coverage`` (the stage-9 ``coverage_by_boundary`` dict) is
+      supplied, any boundary with ``open_slots`` causes an immediate halt.
+      ``open_slots`` are attribute slots that were neither filled from the
+      mockup extract nor defaulted nor marked 'not present in mockup'.
+      Deploy is blocked until all open slots are resolved. Deliverable note
+      points to stage-9-coverage.json for operator triage.
 
     Returns:
         {
-          "decision":  "auto-proceed" | "surface-to-operator" | "halt",
-          "reasons":   [...],
+          "decision":   "auto-proceed" | "surface-to-operator" | "halt",
+          "reasons":    [...],
           "diff_ratio": float,
           "thresholds": {pass, surface},
         }
@@ -172,15 +384,31 @@ def autonomy_decision(
     surface_threshold = cfg["surface_threshold"]
     fail_on_console = cfg.get("fail_on_console_error", True)
 
+    # Hard Rule 8: unresolved-slots gate. Run BEFORE the visual-QA checks so
+    # the operator sees a clear "fix slots first" message rather than a diff
+    # number that is meaningless until the block output is correct.
+    # Checked even when stage_8_skipped is True -- slot coverage is independent
+    # of the visual-QA capture path.
+    unresolved_slots, affected_sections = _count_unresolved_slots(coverage)
+    if unresolved_slots > 0:
+        return {
+            "decision":          "halt",
+            "reasons": [
+                f"{unresolved_slots} unresolved slot(s) across {affected_sections} section(s) "
+                f"-- block-attribute coverage incomplete. Operator must resolve each "
+                f"open slot (fill, default, or mark 'not present in mockup') before "
+                f"deploy. See stage-9-coverage.json for the full list."
+            ],
+            "diff_ratio":        None,
+            "unresolved_slots":  unresolved_slots,
+            "affected_sections": affected_sections,
+            "thresholds":        {"pass": pass_threshold, "surface": surface_threshold},
+        }
+
     # Stage-8 skip sentinel: --clone-url was not supplied so no real capture ran.
     # MUST NOT auto-proceed -- surface to operator with actionable instructions.
     if visual_qa_result.get("stage_8_skipped"):
-        skip_reason = visual_qa_result.get(
-            "skip_reason",
-            "Stage 8 visual QA was skipped because --clone-url was not supplied. "
-            "Operator must run /visual-qa against the deployed URL manually, "
-            "OR re-run with --clone-url=<staging-url> to enforce the 1% gate.",
-        )
+        skip_reason = visual_qa_result.get("skip_reason", _STAGE_8_SKIP_REASON)
         return {
             "decision":        "surface-to-operator",
             "reasons":         [f"stage-8-skipped: {skip_reason}"],
@@ -312,11 +540,7 @@ def emit_deliverable(
             skip_reason = (
                 vqa.get("skip_reason")
                 or autonomy.get("reasons", [""])[0].replace("stage-8-skipped: ", "")
-                or (
-                    "Stage 8 visual QA was skipped because --clone-url was not supplied. "
-                    "Operator must run /visual-qa against the deployed URL manually, "
-                    "OR re-run with --clone-url=<staging-url> to enforce the 1% gate."
-                )
+                or _STAGE_8_SKIP_REASON
             )
             lines.append(
                 "> **Stage 8 not run -- deploy decision deferred to operator.**"
@@ -346,11 +570,11 @@ def emit_deliverable(
         lines.append("")
 
     if summary.get("gap_review_path"):
-        lines.append(f"## Gap review")
+        lines.append("## Gap review")
         lines.append(f"\nSee `{summary['gap_review_path']}` for operator triage.")
         lines.append("")
     if summary.get("deploy_url"):
-        lines.append(f"## Verify URL")
+        lines.append("## Verify URL")
         lines.append(f"\n[{summary['deploy_url']}]({summary['deploy_url']})")
         lines.append("")
 

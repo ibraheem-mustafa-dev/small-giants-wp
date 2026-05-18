@@ -1700,6 +1700,14 @@ def main():
              "boundaries halt with a clear remediation message rather than "
              "falling through to the retired legacy extractor.",
     )
+    parser.add_argument(
+        "--no-schema-validation", action="store_true", default=False,
+        help="Skip Stage 6 block.json attribute schema validation. By default, the "
+             "orchestrator halts with an actionable error if any block emits attributes "
+             "that violate the block.json schema. Use this flag only for developer "
+             "debugging when you need to inspect a broken payload without halting. "
+             "(default: False — validation is required)",
+    )
     args = parser.parse_args()
 
     if not args.section and not args.auto_section:
@@ -1907,8 +1915,8 @@ def main():
 
     # 1. Mirror legacy artefacts to the Phase 5 staged_output convention so
     #    staged_merge.merge() can read them. Stage 5 schemas live alongside
-    #    each module; we pass require_schema=False to skip strict shape
-    #    validation while the legacy artefact shape is still in flight.
+    #    each module. Schema validation is enabled by default (require_schema=True)
+    #    unless the operator passes --no-schema-validation for debugging.
     so_run_id = run_id
     so_run_dir = so.run_dir(so_run_id)
     so_run_dir.mkdir(parents=True, exist_ok=True)
@@ -1965,7 +1973,7 @@ def main():
         sgs_update_cmd=[sys.executable,
                         str(Path.home() / ".claude/skills/sgs-wp-engine/scripts/update-db.py")],
         sgs_update_dry_run=True,  # safer default for an inline run
-        require_schema=False,     # legacy artefact shapes feed the merger
+        require_schema=not args.no_schema_validation,  # Flip default: True (validate) unless --no-schema-validation
     )
     print(f"[autonomy] outcome={outcome.overall} merge={outcome.merge_outcome} "
           f"decision={outcome.autonomy_decision} sgs_update_rc={outcome.sgs_update_returncode}")

@@ -135,8 +135,16 @@ def merge(
         if require_schema:
             ok, errs = _vsa.validate_path(path, stage=handler.stage)
             if not ok:
-                reason = f"stage-{handler.stage} schema violations: {errs[:3]}"
-                _append_log(log_path, f"- FAIL stage {handler.stage}: {reason}")
+                # Halt with actionable error message for operator
+                violation_details = "\n  ".join(str(e) for e in errs[:5])
+                reason = (
+                    f"Stage {handler.stage} schema validation failed. "
+                    f"Violations:\n  {violation_details}"
+                    + (f"\n  ... and {len(errs) - 5} more" if len(errs) > 5 else "")
+                    + f"\nSee {path} for the full artefact payload."
+                )
+                _append_log(log_path, f"- FAIL stage {handler.stage}: SCHEMA VALIDATION FAILURE")
+                _append_log(log_path, f"\n{reason}\n")
                 result.outcome = "rolled-back"
                 result.failed_stage = handler.stage
                 result.failed_reason = reason

@@ -136,7 +136,7 @@ def test_schema_validation_blocks_apply() -> None:
         ]
         result = mod.merge("run-5e3-sch", handlers, root=root, require_schema=True)
         assert result.outcome == "rolled-back"
-        assert "schema violations" in result.failed_reason
+        assert "schema validation failed" in result.failed_reason.lower()
         assert not applied_stages, "apply must NOT fire when schema fails"
     print("  PASS  schema-validation-blocks-apply: malformed stage-3 stops merge before apply")
 
