@@ -34,6 +34,9 @@
     "spacing": {
       "margin": true,
       "padding": true
+    },
+    "sgs": {
+      "imageControls": false
     }
   },
   "selectors": {
@@ -46,8 +49,14 @@
       "default": 3
     },
     "billingToggle": {
-      "type": "boolean",
-      "default": true
+      "type": "string",
+      "default": "monthly-yearly",
+      "enum": [
+        "none",
+        "monthly-yearly",
+        "monthly-only",
+        "yearly-only"
+      ]
     },
     "toggleStyle": {
       "type": "string",
@@ -75,13 +84,17 @@
           "period": "monthly",
           "description": "Everything you need to get started.",
           "features": [
-            "5 projects",
-            "10 GB storage",
-            "Email support"
+            { "text": "5 projects", "included": true },
+            { "text": "10 GB storage", "included": true },
+            { "text": "Email support", "included": true }
           ],
           "ctaText": "Get started",
           "ctaUrl": "",
-          "highlighted": false
+          "highlighted": false,
+          "iconName": "",
+          "ribbonText": "",
+          "ribbonColour": "accent",
+          "savingsBadgeText": ""
         },
         {
           "name": "Professional",
@@ -90,15 +103,19 @@
           "period": "monthly",
           "description": "For growing teams who need more.",
           "features": [
-            "Unlimited projects",
-            "100 GB storage",
-            "Priority support",
-            "Advanced analytics",
-            "Custom domain"
+            { "text": "Unlimited projects", "included": true },
+            { "text": "100 GB storage", "included": true },
+            { "text": "Priority support", "included": true },
+            { "text": "Advanced analytics", "included": true },
+            { "text": "Custom domain", "included": true }
           ],
           "ctaText": "Get started",
           "ctaUrl": "",
-          "highlighted": true
+          "highlighted": true,
+          "iconName": "",
+          "ribbonText": "Most popular",
+          "ribbonColour": "accent",
+          "savingsBadgeText": "Save 17%"
         },
         {
           "name": "Enterprise",
@@ -107,16 +124,20 @@
           "period": "monthly",
           "description": "For large organisations with custom needs.",
           "features": [
-            "Everything in Professional",
-            "Unlimited storage",
-            "24/7 phone support",
-            "Custom integrations",
-            "Dedicated account manager",
-            "SLA guarantee"
+            { "text": "Everything in Professional", "included": true },
+            { "text": "Unlimited storage", "included": true },
+            { "text": "24/7 phone support", "included": true },
+            { "text": "Custom integrations", "included": true },
+            { "text": "Dedicated account manager", "included": true },
+            { "text": "SLA guarantee", "included": true }
           ],
           "ctaText": "Contact sales",
           "ctaUrl": "",
-          "highlighted": false
+          "highlighted": false,
+          "iconName": "",
+          "ribbonText": "",
+          "ribbonColour": "accent",
+          "savingsBadgeText": ""
         }
       ]
     },

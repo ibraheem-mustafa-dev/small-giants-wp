@@ -11,6 +11,7 @@ import {
 	TextControl,
 	Button,
 	ToggleControl,
+	CheckboxControl,
 } from '@wordpress/components';
 import { Icon, plus, close } from '@wordpress/icons';
 import { DesignTokenPicker } from '../../components';
@@ -33,6 +34,17 @@ const TOGGLE_STYLE_OPTIONS = [
 	{ label: __( 'Button (filled / outline)', 'sgs-blocks' ), value: 'button' },
 ];
 
+/**
+ * billingToggle enum options.
+ * Backward-compat: legacy boolean true was equivalent to 'monthly-yearly'.
+ */
+const BILLING_TOGGLE_OPTIONS = [
+	{ label: __( 'Monthly & Yearly (toggle)', 'sgs-blocks' ), value: 'monthly-yearly' },
+	{ label: __( 'Monthly only', 'sgs-blocks' ), value: 'monthly-only' },
+	{ label: __( 'Yearly only', 'sgs-blocks' ), value: 'yearly-only' },
+	{ label: __( 'No toggle', 'sgs-blocks' ), value: 'none' },
+];
+
 const CTA_STYLE_OPTIONS = [
 	{ label: __( 'Primary', 'sgs-blocks' ), value: 'primary' },
 	{ label: __( 'Secondary', 'sgs-blocks' ), value: 'secondary' },
@@ -40,14 +52,49 @@ const CTA_STYLE_OPTIONS = [
 	{ label: __( 'Outline', 'sgs-blocks' ), value: 'outline' },
 ];
 
+/**
+ * Normalise a billingToggle value to the enum string.
+ * Handles the legacy boolean → string migration.
+ *
+ * @param {*} raw Raw attribute value.
+ * @return {string} Normalised enum string.
+ */
+function normaliseBillingToggle( raw ) {
+	if ( raw === true || raw === 'true' ) {
+		return 'monthly-yearly';
+	}
+	if ( raw === false || raw === 'false' ) {
+		return 'none';
+	}
+	const valid = [ 'none', 'monthly-yearly', 'monthly-only', 'yearly-only' ];
+	return valid.includes( raw ) ? raw : 'monthly-yearly';
+}
+
+/**
+ * Normalise a single feature to the object shape.
+ * Handles legacy string features.
+ *
+ * @param {*} f Raw feature value.
+ * @return {{ text: string, included: boolean }} Normalised feature.
+ */
+function normaliseFeature( f ) {
+	if ( typeof f === 'string' ) {
+		return { text: f, included: true };
+	}
+	return {
+		text: typeof f.text === 'string' ? f.text : '',
+		included: typeof f.included === 'boolean' ? f.included : true,
+	};
+}
+
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		columns,
-		billingToggle,
+		billingToggle: billingToggleRaw,
 		toggleStyle,
 		billingToggleMonthlyLabel,
 		billingToggleYearlyLabel,
-		plans,
+		plans: plansRaw,
 		style,
 		titleColour,
 		priceColour,
@@ -59,6 +106,16 @@ export default function Edit( { attributes, setAttributes } ) {
 		popularBadgeColour,
 		popularBadgeBackground,
 	} = attributes;
+
+	// Normalise values from any legacy state.
+	const billingToggle = normaliseBillingToggle( billingToggleRaw );
+	const showToggle = billingToggle === 'monthly-yearly';
+
+	// Normalise plans so features are always objects.
+	const plans = ( plansRaw || [] ).map( ( plan ) => ( {
+		...plan,
+		features: ( plan.features || [] ).map( normaliseFeature ),
+	} ) );
 
 	const className = [
 		'sgs-pricing-table',
@@ -74,10 +131,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		setAttributes( { plans: newPlans } );
 	};
 
-	const updatePlanFeature = ( planIndex, featureIndex, value ) => {
+	const updatePlanFeature = ( planIndex, featureIndex, key, value ) => {
 		const newPlans = [ ...plans ];
 		const newFeatures = [ ...newPlans[ planIndex ].features ];
-		newFeatures[ featureIndex ] = value;
+		newFeatures[ featureIndex ] = { ...newFeatures[ featureIndex ], [ key ]: value };
 		newPlans[ planIndex ] = {
 			...newPlans[ planIndex ],
 			features: newFeatures,
@@ -87,18 +144,22 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const addFeature = ( planIndex ) => {
 		const newPlans = [ ...plans ];
-		newPlans[ planIndex ].features = [
-			...newPlans[ planIndex ].features,
-			'',
-		];
+		newPlans[ planIndex ] = {
+			...newPlans[ planIndex ],
+			features: [
+				...newPlans[ planIndex ].features,
+				{ text: '', included: true },
+			],
+		};
 		setAttributes( { plans: newPlans } );
 	};
 
 	const removeFeature = ( planIndex, featureIndex ) => {
 		const newPlans = [ ...plans ];
-		newPlans[ planIndex ].features = newPlans[
-			planIndex
-		].features.filter( ( _, i ) => i !== featureIndex );
+		newPlans[ planIndex ] = {
+			...newPlans[ planIndex ],
+			features: newPlans[ planIndex ].features.filter( ( _, i ) => i !== featureIndex ),
+		};
 		setAttributes( { plans: newPlans } );
 	};
 
@@ -109,11 +170,17 @@ export default function Edit( { attributes, setAttributes } ) {
 				{
 					name: __( 'New Plan', 'sgs-blocks' ),
 					price: '£0.00',
+					priceYearly: '',
 					period: 'monthly',
-					features: [ __( 'Feature 1', 'sgs-blocks' ) ],
+					description: '',
+					features: [ { text: __( 'Feature 1', 'sgs-blocks' ), included: true } ],
 					ctaText: __( 'Get Started', 'sgs-blocks' ),
 					ctaUrl: '',
 					highlighted: false,
+					iconName: '',
+					ribbonText: '',
+					ribbonColour: 'accent',
+					savingsBadgeText: '',
 				},
 			],
 		} );
@@ -149,15 +216,17 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 					/>
-					<ToggleControl
-						label={ __( 'Show monthly/yearly billing toggle', 'sgs-blocks' ) }
-						checked={ billingToggle }
+					<SelectControl
+						label={ __( 'Billing toggle', 'sgs-blocks' ) }
+						value={ billingToggle }
+						options={ BILLING_TOGGLE_OPTIONS }
 						onChange={ ( val ) =>
 							setAttributes( { billingToggle: val } )
 						}
+						help={ __( 'Controls whether a monthly/yearly switcher appears and which prices show.', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
 					/>
-					{ billingToggle && (
+					{ showToggle && (
 						<>
 							<TextControl
 								label={ __( 'Monthly label', 'sgs-blocks' ) }
@@ -312,10 +381,23 @@ export default function Edit( { attributes, setAttributes } ) {
 									</div>
 								) }
 
+								{ plan.ribbonText && (
+									<div
+										className="sgs-pricing-table__ribbon"
+										style={ {
+											backgroundColor: colourVar(
+												plan.ribbonColour || 'accent'
+											),
+										} }
+									>
+										{ plan.ribbonText }
+									</div>
+								) }
+
 								<div className="sgs-pricing-table__header">
 									<RichText
 										tagName="h3"
-										className="sgs-pricing-table__title"
+										className="sgs-pricing-table__name"
 										value={ plan.name }
 										onChange={ ( val ) =>
 											updatePlan(
@@ -358,29 +440,44 @@ export default function Edit( { attributes, setAttributes } ) {
 													) || undefined,
 											} }
 										/>
-										{ billingToggle && (
-											<RichText
-												tagName="div"
-												className="sgs-pricing-table__price sgs-pricing-table__price--yearly"
-												value={ plan.priceYearly || '' }
-												onChange={ ( val ) =>
-													updatePlan(
-														planIndex,
-														'priceYearly',
-														val
-													)
-												}
-												placeholder={ __(
-													'£0 /yr',
-													'sgs-blocks'
-												) }
-												style={ {
-													color:
-														colourVar(
-															priceColour
-														) || undefined,
-												} }
-											/>
+										{ billingToggle !== 'none' && billingToggle !== 'monthly-only' && (
+											<>
+												<RichText
+													tagName="div"
+													className="sgs-pricing-table__price sgs-pricing-table__price--yearly"
+													value={ plan.priceYearly || '' }
+													onChange={ ( val ) =>
+														updatePlan(
+															planIndex,
+															'priceYearly',
+															val
+														)
+													}
+													placeholder={ __(
+														'£0 /yr',
+														'sgs-blocks'
+													) }
+													style={ {
+														color:
+															colourVar(
+																priceColour
+															) || undefined,
+													} }
+												/>
+												<TextControl
+													label={ __( 'Savings badge (yearly)', 'sgs-blocks' ) }
+													value={ plan.savingsBadgeText || '' }
+													onChange={ ( val ) =>
+														updatePlan(
+															planIndex,
+															'savingsBadgeText',
+															val
+														)
+													}
+													placeholder={ __( 'e.g. Save 20%', 'sgs-blocks' ) }
+													__nextHasNoMarginBottom
+												/>
+											</>
 										) }
 										<SelectControl
 											value={ plan.period }
@@ -397,20 +494,71 @@ export default function Edit( { attributes, setAttributes } ) {
 									</div>
 								</div>
 
+								{ /* Per-plan icon name control */ }
+								<div className="sgs-pricing-table__plan-meta">
+									<TextControl
+										label={ __( 'Icon name (Lucide)', 'sgs-blocks' ) }
+										value={ plan.iconName || '' }
+										onChange={ ( val ) =>
+											updatePlan( planIndex, 'iconName', val )
+										}
+										placeholder={ __( 'e.g. star, zap, shield-check', 'sgs-blocks' ) }
+										help={ __( 'Any Lucide icon slug. Leave blank for no icon.', 'sgs-blocks' ) }
+										__nextHasNoMarginBottom
+									/>
+									<TextControl
+										label={ __( 'Ribbon text', 'sgs-blocks' ) }
+										value={ plan.ribbonText || '' }
+										onChange={ ( val ) =>
+											updatePlan( planIndex, 'ribbonText', val )
+										}
+										placeholder={ __( 'e.g. Best value', 'sgs-blocks' ) }
+										__nextHasNoMarginBottom
+									/>
+									{ plan.ribbonText && (
+										<DesignTokenPicker
+											label={ __( 'Ribbon colour', 'sgs-blocks' ) }
+											value={ plan.ribbonColour || 'accent' }
+											onChange={ ( val ) =>
+												updatePlan( planIndex, 'ribbonColour', val )
+											}
+										/>
+									) }
+								</div>
+
 								<ul className="sgs-pricing-table__features">
 									{ plan.features.map(
 										( feature, featureIndex ) => (
 											<li
 												key={ featureIndex }
-												className="sgs-pricing-table__feature"
+												className={ [
+													'sgs-pricing-table__feature',
+													feature.included
+														? 'sgs-pricing-table__feature--included'
+														: 'sgs-pricing-table__feature--excluded',
+												].join( ' ' ) }
 											>
-												<RichText
-													tagName="span"
-													value={ feature }
+												<CheckboxControl
+													label={ __( 'Included', 'sgs-blocks' ) }
+													checked={ feature.included }
 													onChange={ ( val ) =>
 														updatePlanFeature(
 															planIndex,
 															featureIndex,
+															'included',
+															val
+														)
+													}
+													__nextHasNoMarginBottom
+												/>
+												<RichText
+													tagName="span"
+													value={ feature.text }
+													onChange={ ( val ) =>
+														updatePlanFeature(
+															planIndex,
+															featureIndex,
+															'text',
 															val
 														)
 													}
@@ -423,6 +571,7 @@ export default function Edit( { attributes, setAttributes } ) {
 															colourVar(
 																featureColour
 															) || undefined,
+														opacity: feature.included ? 1 : 0.5,
 													} }
 												/>
 												<Button

@@ -14,10 +14,15 @@
  */
 
 // ── Autoloader ───────────────────────────────────────────────────────────────
-// Composer autoloader (provides PHPUnit + any future autoloaded classes).
-$autoload = dirname( __DIR__, 2 ) . '/vendor/autoload.php';
+// Composer autoloader — looks in own vendor/ first, then falls back to the
+// canonical project root vendor/ (used when running from a git worktree).
+$sgs_autoload = dirname( __DIR__, 2 ) . '/vendor/autoload.php';
+if ( ! file_exists( $sgs_autoload ) ) {
+    // Worktree: seven levels up from tests/php/ reaches the main project root.
+    $sgs_autoload = dirname( __DIR__, 7 ) . '/plugins/sgs-blocks/vendor/autoload.php';
+}
 
-if ( ! file_exists( $autoload ) ) {
+if ( ! file_exists( $sgs_autoload ) ) {
     fwrite(
         STDERR,
         'ERROR: vendor/autoload.php not found.' . PHP_EOL .
@@ -26,7 +31,7 @@ if ( ! file_exists( $autoload ) ) {
     exit( 1 );
 }
 
-require_once $autoload;
+require_once $sgs_autoload;
 
 // ── Plugin root constants ─────────────────────────────────────────────────────
 define( 'SGS_BLOCKS_TESTS_DIR', __DIR__ );
@@ -44,3 +49,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! defined( 'WP_PLUGIN_DIR' ) ) {
     define( 'WP_PLUGIN_DIR', dirname( SGS_BLOCKS_PLUGIN_DIR ) );
 }
+
+// ── WordPress function stubs for render.php inclusion tests ──────────────────
+require_once __DIR__ . '/stubs/wp-functions.php';
