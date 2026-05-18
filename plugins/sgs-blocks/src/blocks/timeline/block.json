@@ -1,0 +1,146 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "sgs/timeline",
+  "version": "0.1.0",
+  "title": "SGS Timeline",
+  "category": "sgs-content",
+  "description": "Date-based timeline with vertical or horizontal orientation and scroll-reveal animation.",
+  "keywords": [
+    "timeline",
+    "history",
+    "events",
+    "dates",
+    "milestones"
+  ],
+  "textdomain": "sgs-blocks",
+  "icon": "list-view",
+  "supports": {
+    "align": [
+      "wide",
+      "full"
+    ],
+    "anchor": true,
+    "html": false,
+    "color": {
+      "background": true,
+      "text": true
+    },
+    "typography": {
+      "fontSize": true,
+      "lineHeight": true,
+      "textAlign": true,
+      "letterSpacing": true,
+      "textTransform": true,
+      "fontWeight": true,
+      "fontStyle": true
+    },
+    "spacing": {
+      "margin": true,
+      "padding": true
+    },
+    "shadow": true,
+    "__experimentalBorder": {
+      "radius": true,
+      "width": true,
+      "color": true,
+      "style": true
+    },
+    "sgs": {
+      "imageControls": true
+    }
+  },
+  "selectors": {
+    "root": ".sgs-timeline",
+    "typography": ".sgs-timeline__title"
+  },
+  "attributes": {
+    "orientation": {
+      "type": "string",
+      "default": "vertical"
+    },
+    "alignment": {
+      "type": "string",
+      "default": "alternating"
+    },
+    "entries": {
+      "type": "array",
+      "default": [
+        {
+          "date": "2020-01-01",
+          "title": "First Milestone",
+          "description": "<p>Description of this milestone.</p>",
+          "icon": "",
+          "image": 0
+        },
+        {
+          "date": "2022-06-15",
+          "title": "Second Milestone",
+          "description": "<p>Description of this milestone.</p>",
+          "icon": "",
+          "image": 0
+        },
+        {
+          "date": "2024-12-01",
+          "title": "Third Milestone",
+          "description": "<p>Description of this milestone.</p>",
+          "icon": "",
+          "image": 0
+        }
+      ]
+    },
+    "connectorStyle": {
+      "type": "string",
+      "default": "line"
+    },
+    "connectorColour": {
+      "type": "string",
+      "default": "border-subtle"
+    },
+    "dateColour": {
+      "type": "string",
+      "default": "accent"
+    },
+    "revealOnScroll": {
+      "type": "boolean",
+      "default": true
+    },
+    "revealStagger": {
+      "type": "number",
+      "default": 100
+    }
+  },
+  "render": "file:./render.php",
+  "viewScriptModule": "file:./view.js",
+  "editorScript": "file:./index.js",
+  "style": "file:./style-index.css",
+  "example": {
+    "attributes": {
+      "orientation": "vertical",
+      "alignment": "alternating",
+      "entries": [
+        {
+          "date": "1962-01-01",
+          "title": "Company Founded",
+          "description": "<p>Our story began with a vision and a handshake.</p>",
+          "icon": "building",
+          "image": 0
+        },
+        {
+          "date": "1975-06-01",
+          "title": "First Warehouse",
+          "description": "<p>Opened our first dedicated production facility.</p>",
+          "icon": "warehouse",
+          "image": 0
+        },
+        {
+          "date": "2010-03-15",
+          "title": "National Expansion",
+          "description": "<p>Grew distribution across the UK.</p>",
+          "icon": "truck",
+          "image": 0
+        }
+      ]
+    }
+  }
+}

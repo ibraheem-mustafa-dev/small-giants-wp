@@ -1,0 +1,490 @@
+/* =============================================================================
+   SGS Timeline — Frontend + Editor
+   ============================================================================= */
+
+// ── CSS custom property defaults ──────────────────────────────────────────────
+
+.sgs-timeline {
+	--sgs-connector-colour: var(--wp--preset--color--border-subtle, #0d5557);
+	--sgs-date-colour: var(--wp--preset--color--accent, #f87a1f);
+	--sgs-node-size: 16px;
+	--sgs-connector-width: 2px;
+	--sgs-reveal-stagger: 100ms;
+	--sgs-reveal-duration: 400ms;
+	--sgs-reveal-easing: ease-out;
+}
+
+// ── Scroll-reveal state ────────────────────────────────────────────────────────
+
+// Default hidden state (overridden immediately for reduced motion).
+// Only applies when the timeline has data-reveal-on-scroll set.
+.sgs-timeline[data-reveal-on-scroll] .sgs-timeline__entry:not(.is-revealed) {
+	opacity: 0;
+	transform: translateY(20px);
+}
+
+.sgs-timeline__entry.is-revealed {
+	opacity: 1;
+	transform: translateY(0);
+	transition-property: opacity, transform;
+	transition-duration: var(--sgs-reveal-duration);
+	transition-timing-function: var(--sgs-reveal-easing);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-timeline[data-reveal-on-scroll] .sgs-timeline__entry:not(.is-revealed) {
+		opacity: 1;
+		transform: none;
+	}
+
+	.sgs-timeline__entry.is-revealed {
+		transition: none;
+	}
+}
+
+// =============================================================================
+// VERTICAL orientation (default)
+// =============================================================================
+
+.sgs-timeline--vertical {
+	position: relative;
+	padding: var(--wp--preset--spacing--40, 2rem) 0;
+	list-style: none;
+	margin: 0;
+
+	// Central connecting line running down the full height.
+	&::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 50%;
+		transform: translateX(-50%);
+		width: var(--sgs-connector-width);
+		background-color: var(--sgs-connector-colour);
+	}
+
+	// Left-aligned: line sits on the left edge.
+	&.sgs-timeline--align-left::before {
+		left: var(--sgs-node-size);
+		transform: none;
+	}
+
+	// Centre-aligned: line sits on the left edge (entries all right-side).
+	&.sgs-timeline--align-centre::before {
+		left: var(--sgs-node-size);
+		transform: none;
+	}
+}
+
+// Dashed connector.
+.sgs-timeline--vertical.sgs-timeline--connector-dashed::before {
+	background: repeating-linear-gradient(
+		to bottom,
+		var(--sgs-connector-colour) 0,
+		var(--sgs-connector-colour) 8px,
+		transparent 8px,
+		transparent 16px
+	);
+	background-color: transparent;
+}
+
+// Dotted connector.
+.sgs-timeline--vertical.sgs-timeline--connector-dotted::before {
+	background: repeating-linear-gradient(
+		to bottom,
+		var(--sgs-connector-colour) 0,
+		var(--sgs-connector-colour) 3px,
+		transparent 3px,
+		transparent 9px
+	);
+	background-color: transparent;
+}
+
+// ── Vertical entry layout ──────────────────────────────────────────────────────
+
+.sgs-timeline--vertical .sgs-timeline__entry {
+	position: relative;
+	display: grid;
+	grid-template-columns: 1fr auto 1fr;
+	grid-template-rows: auto;
+	align-items: start;
+	gap: 0 var(--wp--preset--spacing--30, 1.5rem);
+	margin-bottom: var(--wp--preset--spacing--40, 2rem);
+	list-style: none;
+
+	&:last-child {
+		margin-bottom: 0;
+	}
+}
+
+// Alternating: odd entries — date left, content right.
+.sgs-timeline--vertical.sgs-timeline--align-alternating .sgs-timeline__entry:nth-child(odd) {
+	.sgs-timeline__date {
+		grid-column: 1;
+		text-align: right;
+		padding-right: var(--wp--preset--spacing--20, 1rem);
+	}
+
+	.sgs-timeline__node {
+		grid-column: 2;
+		grid-row: 1;
+	}
+
+	.sgs-timeline__content {
+		grid-column: 3;
+		grid-row: 1;
+		text-align: left;
+	}
+}
+
+// Alternating: even entries — content left, date right.
+.sgs-timeline--vertical.sgs-timeline--align-alternating .sgs-timeline__entry:nth-child(even) {
+	.sgs-timeline__date {
+		grid-column: 3;
+		grid-row: 1;
+		text-align: left;
+		padding-left: var(--wp--preset--spacing--20, 1rem);
+	}
+
+	.sgs-timeline__node {
+		grid-column: 2;
+		grid-row: 1;
+	}
+
+	.sgs-timeline__content {
+		grid-column: 1;
+		grid-row: 1;
+		text-align: right;
+	}
+}
+
+// Left-aligned: date | node | content all on left side.
+.sgs-timeline--vertical.sgs-timeline--align-left .sgs-timeline__entry {
+	grid-template-columns: auto auto 1fr;
+
+	.sgs-timeline__date {
+		grid-column: 1;
+		grid-row: 1;
+		text-align: right;
+		padding-right: var(--wp--preset--spacing--20, 1rem);
+		min-width: 100px;
+	}
+
+	.sgs-timeline__node {
+		grid-column: 2;
+		grid-row: 1;
+	}
+
+	.sgs-timeline__content {
+		grid-column: 3;
+		grid-row: 1;
+		text-align: left;
+	}
+}
+
+// Centre-aligned: single-column layout with centred node line.
+.sgs-timeline--vertical.sgs-timeline--align-centre .sgs-timeline__entry {
+	grid-template-columns: auto 1fr;
+	grid-template-rows: auto auto;
+
+	.sgs-timeline__date {
+		grid-column: 2;
+		grid-row: 1;
+		text-align: left;
+		padding-left: var(--wp--preset--spacing--20, 1rem);
+	}
+
+	.sgs-timeline__node {
+		grid-column: 1;
+		grid-row: 1 / 3;
+		align-self: start;
+	}
+
+	.sgs-timeline__content {
+		grid-column: 2;
+		grid-row: 2;
+		text-align: left;
+	}
+}
+
+// =============================================================================
+// HORIZONTAL orientation
+// =============================================================================
+
+.sgs-timeline--horizontal {
+	display: flex;
+	flex-direction: row;
+	align-items: flex-start;
+	gap: 0;
+	position: relative;
+	list-style: none;
+	margin: 0;
+	padding: var(--wp--preset--spacing--30, 1.5rem) 0;
+	overflow-x: auto;
+	scroll-snap-type: x mandatory;
+	-webkit-overflow-scrolling: touch;
+
+	// Horizontal connecting line.
+	&::before {
+		content: '';
+		position: absolute;
+		top: calc(var(--sgs-node-size) / 2 + var(--wp--preset--spacing--30, 1.5rem));
+		left: 0;
+		right: 0;
+		height: var(--sgs-connector-width);
+		background-color: var(--sgs-connector-colour);
+	}
+}
+
+// Dashed connector — horizontal.
+.sgs-timeline--horizontal.sgs-timeline--connector-dashed::before {
+	background: repeating-linear-gradient(
+		to right,
+		var(--sgs-connector-colour) 0,
+		var(--sgs-connector-colour) 8px,
+		transparent 8px,
+		transparent 16px
+	);
+	background-color: transparent;
+}
+
+// Dotted connector — horizontal.
+.sgs-timeline--horizontal.sgs-timeline--connector-dotted::before {
+	background: repeating-linear-gradient(
+		to right,
+		var(--sgs-connector-colour) 0,
+		var(--sgs-connector-colour) 3px,
+		transparent 3px,
+		transparent 9px
+	);
+	background-color: transparent;
+}
+
+.sgs-timeline--horizontal .sgs-timeline__entry {
+	flex: 0 0 min(220px, 80vw);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	padding: 0 var(--wp--preset--spacing--20, 1rem);
+	scroll-snap-align: start;
+	list-style: none;
+
+	&:first-child {
+		padding-left: 0;
+	}
+
+	&:last-child {
+		padding-right: 0;
+	}
+}
+
+.sgs-timeline--horizontal .sgs-timeline__date {
+	order: 1;
+	margin-bottom: var(--wp--preset--spacing--20, 1rem);
+}
+
+.sgs-timeline--horizontal .sgs-timeline__node {
+	order: 2;
+	margin-bottom: var(--wp--preset--spacing--20, 1rem);
+}
+
+.sgs-timeline--horizontal .sgs-timeline__content {
+	order: 3;
+	text-align: center;
+}
+
+// =============================================================================
+// Shared element styles
+// =============================================================================
+
+// ── Node (dot on the connector line) ──────────────────────────────────────────
+
+.sgs-timeline__node {
+	position: relative;
+	width: var(--sgs-node-size);
+	height: var(--sgs-node-size);
+	flex-shrink: 0;
+	z-index: 1;
+
+	&::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border-radius: 50%;
+		background-color: var(--sgs-connector-colour);
+		border: 3px solid var(--wp--preset--color--surface, #fff);
+		box-sizing: border-box;
+	}
+
+	// When a Lucide icon is present, hide the default circle.
+	&:has(.sgs-timeline__node-icon)::before {
+		display: none;
+	}
+}
+
+.sgs-timeline__node-icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	background-color: var(--sgs-connector-colour);
+	margin: -8px;
+
+	svg {
+		width: 16px;
+		height: 16px;
+		color: var(--wp--preset--color--surface, #fff);
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 2;
+	}
+}
+
+// ── Date ──────────────────────────────────────────────────────────────────────
+
+.sgs-timeline__date {
+	display: block;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	font-weight: 700;
+	line-height: 1.4;
+	letter-spacing: 0.03em;
+	text-transform: uppercase;
+}
+
+.sgs-timeline__date:not([style*='color']) {
+	color: var(--sgs-date-colour);
+}
+
+// ── Content ───────────────────────────────────────────────────────────────────
+
+.sgs-timeline__content {
+	padding: var(--wp--preset--spacing--20, 1rem) 0;
+}
+
+// ── Title ─────────────────────────────────────────────────────────────────────
+
+.sgs-timeline__title {
+	margin: 0 0 var(--wp--preset--spacing--10, 0.5rem) 0;
+	font-size: var(--wp--preset--font-size--medium, 1rem);
+	font-weight: 700;
+	line-height: 1.3;
+}
+
+.sgs-timeline__title:not([style*='color']) {
+	color: var(--wp--preset--color--text, #1e1e1e);
+}
+
+// ── Description ───────────────────────────────────────────────────────────────
+
+.sgs-timeline__description {
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	line-height: 1.6;
+	margin: 0;
+}
+
+.sgs-timeline__description:not([style*='color']) {
+	color: var(--wp--preset--color--text-muted, #555);
+}
+
+.sgs-timeline__description p {
+	margin: 0 0 var(--wp--preset--spacing--10, 0.5rem) 0;
+
+	&:last-child {
+		margin-bottom: 0;
+	}
+}
+
+// ── Image ──────────────────────────────────────────────────────────────────────
+
+.sgs-timeline__image {
+	display: block;
+	max-width: 100%;
+	height: auto;
+	margin-top: var(--wp--preset--spacing--20, 1rem);
+	border-radius: var(--wp--custom--border-radius--small, 4px);
+}
+
+// =============================================================================
+// Responsive — collapse horizontal to vertical on mobile
+// =============================================================================
+
+@media (max-width: 767px) {
+	// Horizontal becomes a vertical scroll-snap list.
+	.sgs-timeline--horizontal {
+		flex-direction: column;
+		overflow-x: visible;
+		scroll-snap-type: none;
+
+		&::before {
+			top: 0;
+			bottom: 0;
+			left: calc(var(--sgs-node-size) / 2);
+			right: auto;
+			width: var(--sgs-connector-width);
+			height: auto;
+		}
+	}
+
+	.sgs-timeline--horizontal .sgs-timeline__entry {
+		flex: none;
+		flex-direction: row;
+		align-items: flex-start;
+		text-align: left;
+		gap: var(--wp--preset--spacing--20, 1rem);
+		padding: 0 0 var(--wp--preset--spacing--30, 1.5rem) 0;
+		scroll-snap-align: none;
+	}
+
+	.sgs-timeline--horizontal .sgs-timeline__date {
+		order: 3;
+		margin-bottom: 0;
+	}
+
+	.sgs-timeline--horizontal .sgs-timeline__node {
+		order: 1;
+		margin-bottom: 0;
+		flex-shrink: 0;
+	}
+
+	.sgs-timeline--horizontal .sgs-timeline__content {
+		order: 2;
+		text-align: left;
+		padding: 0;
+	}
+
+	// Vertical alternating collapses to left-aligned on mobile.
+	.sgs-timeline--vertical.sgs-timeline--align-alternating {
+		&::before {
+			left: var(--sgs-node-size);
+			transform: none;
+		}
+
+		.sgs-timeline__entry:nth-child(odd),
+		.sgs-timeline__entry:nth-child(even) {
+			grid-template-columns: auto 1fr;
+
+			.sgs-timeline__date {
+				grid-column: 2;
+				grid-row: 2;
+				text-align: left;
+				padding: 0 0 0 var(--wp--preset--spacing--20, 1rem);
+			}
+
+			.sgs-timeline__node {
+				grid-column: 1;
+				grid-row: 1 / 3;
+			}
+
+			.sgs-timeline__content {
+				grid-column: 2;
+				grid-row: 1;
+				text-align: left;
+				padding-left: var(--wp--preset--spacing--20, 1rem);
+			}
+		}
+	}
+}
