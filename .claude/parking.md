@@ -1541,3 +1541,37 @@ Touch points:
 - `plugins/sgs-blocks/includes/class-sgs-header-rules.php` (where filter_template_part returns content)
 
 Source: Session 2026-05-20 Phase 2A integration verification.
+
+### P-TIMELINE-ADVANCED-VISUAL-EFFECTS: sgs/timeline needs textured / themed line + progressive-fill effects
+**Captured 2026-05-20.** Bean's directive (originally requested before Phase 2A, re-flagged at session end): the sgs/timeline block shipped in Phase 2A Branch D supports orientation (vertical default / horizontal), alignment, scroll-reveal via IntersectionObserver, and prefers-reduced-motion honour. But the LINE itself + per-entry backgrounds need advanced visual treatment Bean specifically asked for:
+
+**Required effects on the timeline LINE:**
+1. **Pulsing** — animated stroke or filter pulse on `.sgs-timeline__connector`
+2. **Texture / theme** — operator-selectable connector style beyond `line / dashed / dotted`:
+   - Vine (organic curved + leaves at intervals via SVG pattern or background-image)
+   - Tree (trunk + branches at each entry node)
+   - Connected bricks falling into place 1-by-1 as scroll progresses (MIC — Muslims in Construction client primary use case)
+   - General colour / gradient fill that progresses with scroll position
+3. **Per-entry background fill** — as user scrolls past each entry node, that entry's `.sgs-timeline__content` background fills with a colour or gradient. Operator chooses the source colour / gradient per entry OR globally per timeline.
+
+**Implementation sketch (for the future session):**
+- Add `connectorTexture` attribute (enum: 'plain' | 'pulse' | 'vine' | 'tree' | 'bricks' | 'gradient-fill') — extends existing connectorStyle
+- Add `connectorFillSource` (string: token slug for colour OR gradient slug)
+- Add `entryFillOnReveal` (boolean) — toggle per-entry background fill on reveal
+- Add `entryFillSource` (string: token slug or per-entry override)
+- view.js extends: in addition to .is-revealed toggle, track scroll position relative to each connector segment and animate fill-percentage via CSS custom property `--sgs-timeline-fill-progress` updated on rAF
+- SVG-based connector renders: replace solid `<div class="sgs-timeline__connector">` with `<svg>` per connector segment when texture != plain, allowing pattern fills + path animation
+- Bricks variant: each entry segment is a series of small block elements stagger-animated with transform translateY → 0 + opacity 0 → 1 on reveal
+
+**Client driving the request:** MIC (Muslims in Construction) — wants the timeline-of-bricks visual for their journey/process page.
+
+**Acceptance when this lands:**
+- Each connector texture rendered correctly at 375 / 768 / 1440 viewports
+- `prefers-reduced-motion` disables texture animation, falls back to plain solid line
+- Per-entry background fill animates only on scroll progression past entry node
+- Bricks variant renders distinct brick units (not a single texture)
+- WCAG: animations honour reduced-motion; decorative SVG textures have `aria-hidden="true"`
+
+**Also update blocks spec:** `.claude/specs/02-SGS-BLOCKS.md` needs an sgs/timeline section that documents these expanded effects as the canonical scope (currently only sgs/process-steps is documented as "horizontal timeline").
+
+Source: Bean's 2026-05-20 directive — captured at end of Phase 2A massive session before cloning-pipeline resumption.

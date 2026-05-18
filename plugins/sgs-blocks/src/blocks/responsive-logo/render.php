@@ -47,11 +47,20 @@ if ( ! in_array( $animation_style, $allowed_animation_styles, true ) ) {
 
 // ── Early exit: nothing to render ────────────────────────────────────────────
 
-if ( 0 === $desktop_logo_id ) {
-	return;
-}
-
 // ── Resolve image URLs ────────────────────────────────────────────────────────
+// When no desktop logo is set on the block, fall back to the WP site's default
+// custom logo (Appearance → Customise → Site Identity → Logo). Operators who
+// upload a single logo via the Customiser get all three breakpoints pointing
+// at it automatically. Per Bean's directive 2026-05-20.
+
+if ( 0 === $desktop_logo_id ) {
+	$sgs_site_logo_id = (int) get_theme_mod( 'custom_logo', 0 );
+	if ( $sgs_site_logo_id > 0 ) {
+		$desktop_logo_id = $sgs_site_logo_id;
+	} else {
+		return;
+	}
+}
 
 $desktop_url = wp_get_attachment_url( $desktop_logo_id );
 if ( ! $desktop_url ) {
