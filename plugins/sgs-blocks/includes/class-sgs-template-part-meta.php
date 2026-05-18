@@ -59,6 +59,29 @@ final class Sgs_Template_Part_Meta {
 	const POST_TYPE = 'wp_template_part';
 
 	// -------------------------------------------------------------------------
+	// Sanitisation helper.
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Sanitise a pattern slug while preserving the namespace separator.
+	 *
+	 * WordPress's sanitize_key() strips the forward slash, mangling slugs such
+	 * as 'sgs/framework-header-default' to 'sgsframework-header-default' and
+	 * breaking round-trip integrity against WP_Block_Patterns_Registry.
+	 *
+	 * This sanitiser allows exactly the characters present in valid SGS pattern
+	 * slugs: lowercase letters, digits, hyphens, underscores, slashes, and dots.
+	 * It provides equivalent XSS/injection safety — no spaces, no angle brackets,
+	 * no quotes — while keeping the slash intact.
+	 *
+	 * @param string $slug Raw slug value.
+	 * @return string Sanitised slug safe for storage and registry look-up.
+	 */
+	public static function sanitize_pattern_slug( string $slug ): string {
+		return \preg_replace( '/[^a-z0-9_\-\/\.]/', '', \strtolower( $slug ) );
+	}
+
+	// -------------------------------------------------------------------------
 	// Boot.
 	// -------------------------------------------------------------------------
 
@@ -82,7 +105,10 @@ final class Sgs_Template_Part_Meta {
 	 *   - auth_callback  => checks edit_theme_options (Council C1)
 	 *
 	 * Sanitisation:
-	 *   - Slug fields use \sanitize_key() (alphanumeric + hyphens/underscores, lowercase).
+	 *   - Slug fields use sgs_sanitize_pattern_slug() — lowercase alphanumeric plus
+	 *     hyphens, underscores, forward slashes, and dots — preserving the namespace
+	 *     separator in SGS pattern slugs (e.g. 'sgs/framework-header-default').
+	 *     Using sanitize_key() would strip the slash, breaking round-trip integrity.
 	 *   - Timestamp field uses absint() (positive integer only).
 	 */
 	public static function register_meta(): void {
@@ -96,7 +122,7 @@ final class Sgs_Template_Part_Meta {
 			array(
 				'single'            => true,
 				'show_in_rest'      => false,
-				'sanitize_callback' => 'sanitize_key',
+				'sanitize_callback' => array( self::class, 'sanitize_pattern_slug' ),
 				'auth_callback'     => $auth_callback,
 				'type'              => 'string',
 				'description'       => 'Slug of the block pattern that seeded this template part record.',
@@ -109,7 +135,7 @@ final class Sgs_Template_Part_Meta {
 			array(
 				'single'            => true,
 				'show_in_rest'      => false,
-				'sanitize_callback' => 'sanitize_key',
+				'sanitize_callback' => array( self::class, 'sanitize_pattern_slug' ),
 				'auth_callback'     => $auth_callback,
 				'type'              => 'string',
 				'description'       => 'Style variation slug that was active at the last seeding event.',
@@ -145,8 +171,8 @@ final class Sgs_Template_Part_Meta {
 	 * @param string $variation_slug Style variation slug that was active at seeding.
 	 */
 	public static function mark_seeded( int $post_id, string $pattern_slug, string $variation_slug ): void {
-		\update_post_meta( $post_id, self::META_PATTERN_SLUG, \sanitize_key( $pattern_slug ) );
-		\update_post_meta( $post_id, self::META_VARIATION_SLUG, \sanitize_key( $variation_slug ) );
+		\update_post_meta( $post_id, self::META_PATTERN_SLUG, self::sanitize_pattern_slug( $pattern_slug ) );
+		\update_post_meta( $post_id, self::META_VARIATION_SLUG, self::sanitize_pattern_slug( $variation_slug ) );
 		\update_post_meta( $post_id, self::META_SEEDED_AT, \time() );
 	}
 
@@ -189,6 +215,6 @@ final class Sgs_Template_Part_Meta {
 		$stored_variation = \get_post_meta( $post_id, self::META_VARIATION_SLUG, true );
 
 		// Reseed only when the active variation has actually changed.
-		return \sanitize_key( $new_variation_slug ) !== (string) $stored_variation;
+		return self::sanitize_pattern_slug( $new_variation_slug ) !== (string) $stored_variation;
 	}
 }

@@ -123,6 +123,12 @@
 					]
 				}
 			]
+		},
+		"custom": {
+			"sgs": {
+				"headerPattern": "sgs/framework-header-default",
+				"footerPattern": "sgs/framework-footer-default"
+			}
 		}
 	},
 	"styles": {

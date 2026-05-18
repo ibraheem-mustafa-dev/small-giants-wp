@@ -200,6 +200,39 @@ final class Sgs_Site_Info {
 			return false;
 		}
 
+		return self::write_to_store( $key, $value );
+	}
+
+	/**
+	 * TRUSTED INTERNAL API — write a value to the store, skipping the capability check.
+	 *
+	 * Use ONLY from trusted server-side contexts where no user is logged in:
+	 *   - Migrations (e.g. plugin upgrade routines)
+	 *   - WP-CLI command handlers
+	 *   - WP-Cron callbacks
+	 *
+	 * Key allowlist + reserved-key denylist + per-key sanitisation still apply.
+	 * Never expose to user input.
+	 *
+	 * @param  string $key   Dot-notation key.
+	 * @param  mixed  $value Raw value to store (will be sanitised).
+	 * @return bool   True on success, false on failure.
+	 */
+	public static function set_internal( string $key, $value ): bool {
+		return self::write_to_store( $key, $value );
+	}
+
+	/**
+	 * Shared write body — validates key, sanitises value, writes to wp_options.
+	 *
+	 * Callers MUST perform their own capability check (or deliberately skip it,
+	 * as set_internal() does for trusted server-side contexts).
+	 *
+	 * @param  string $key   Dot-notation key.
+	 * @param  mixed  $value Raw value to store (will be sanitised).
+	 * @return bool   True on success, false on failure.
+	 */
+	private static function write_to_store( string $key, $value ): bool {
 		if ( ! self::is_valid_key( $key ) ) {
 			return false;
 		}
@@ -208,7 +241,7 @@ final class Sgs_Site_Info {
 		$store     = self::load_store();
 		$store     = self::dot_set( $store, $key, $sanitised );
 
-		// Write is already gated by \current_user_can() above — not a frontend write.
+		// Capability gating is the caller's responsibility — see set() / set_internal().
 		return (bool) \update_option( self::OPTION_KEY, $store, true ); // phpcs:ignore WordPressVIPMinimum.Performance.LowExpiryCacheTime
 	}
 

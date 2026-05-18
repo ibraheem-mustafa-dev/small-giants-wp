@@ -110,6 +110,55 @@ Forms\Form_REST_API::register();
 // Register admin settings page (webhook URL + submissions viewer).
 Forms\Form_Admin::register();
 
+// SGS top-level admin menu (FR-S5-1) — must register BEFORE any submenu class.
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-admin-menu.php';
+Sgs_Admin_Menu::register();
+
+// SGS Site Info — public store + admin settings page (FR-S4-3) + Wave 2.5 split notices class.
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-site-info.php';
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-site-info-admin-fields.php';
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-site-info-admin-notices.php';
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-site-info-admin.php';
+Sgs_Site_Info::register();
+Sgs_Site_Info_Admin::register();
+
+// SGS existing-site safety guard (FR-S7-3) — gates seeding on plugin upgrade.
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-migrations.php';
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-safety-guard.php';
+Sgs_Safety_Guard::register();
+
+// SGS template-part seeder (FR-S2-1) — seeds wp_template_part records on variation activation.
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-template-part-meta.php';
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-template-part-seeder.php';
+Sgs_Template_Part_Meta::register();
+Sgs_Template_Part_Seeder::register();
+
+// SGS conditional header rules (FR-S3-2) — pre_render_block filter + admin UI + ReDoS guard.
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-header-rules-redos-guard.php'; // Must load before main engine.
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-header-rules.php';
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-header-rules-admin.php';
+Sgs_Header_Rules::register();
+Sgs_Header_Rules_Admin::register();
+
+// SGS conditional footer rules (FR-S3-3) — mirror of header rules for the footer area.
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-footer-rules.php';
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-footer-rules-admin.php';
+Sgs_Footer_Rules::register();
+Sgs_Footer_Rules_Admin::register();
+
+// SGS style variation picker (FR-S5-2) — Council N1 resolver-only activation + legacy theme_mod backup.
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-legacy-theme-mod-migrator.php'; // Must load before picker (P-S17-W3-VARIATION-PICKER-SPLIT).
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-variation-picker.php';
+Sgs_Variation_Picker::register();
+
+// SGS template-part resetter (FR-S2-3) — admin button + public helper for FR-S5-3 CLI wrap.
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-template-part-resetter.php';
+Sgs_Template_Part_Resetter::register();
+
+// SGS Advanced Headers / Footers CPTs (FR-S3-4) — REST gated to edit_theme_options (Council M1).
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-block-cpts.php';
+Sgs_Block_CPTs::register();
+
 // Register GDPR personal data exporters and erasers.
 Forms\Form_Privacy::register();
 
@@ -130,5 +179,11 @@ add_filter(
 		return $areas;
 	}
 );
+
+// WP-CLI command surface (FR-S5-3) — loaded only when WP-CLI is active; zero frontend cost.
+if ( defined( 'WP_CLI' ) && WP_CLI ) {
+	require_once SGS_BLOCKS_PATH . 'includes/class-sgs-cli-commands.php';
+	\WP_CLI::add_command( 'sgs', Sgs_Cli_Commands::class );
+}
 
 SGS_Blocks::instance();

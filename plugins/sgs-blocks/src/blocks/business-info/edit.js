@@ -55,7 +55,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						status="info"
 						style={ { marginTop: '12px' } }
 					>
-						{ __( 'Content is pulled from Settings > Business Details.', 'sgs-blocks' ) }
+						{ __( 'Edit this site’s business data at Appearance → SGS Site Info.', 'sgs-blocks' ) }
 					</Notice>
 				</PanelBody>
 

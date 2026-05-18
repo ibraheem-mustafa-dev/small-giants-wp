@@ -234,6 +234,31 @@ Use `DesignTokenPicker` component for colour selection from theme.json palette i
 - **CSS `color` fallback pattern** — use `:not([style*="color"])` selectors so inline styles from the editor always win over CSS defaults.
 - **`useInnerBlocksProps`** — always use this (not `InnerBlocks` component directly) for proper block editor integration.
 
+## Adding a deprecation when a block's save output changes
+
+Whenever you change a static block's `save.js` output OR a block.json attribute schema that affects what gets stored in `post_content`, existing posts will fail validation with "This block contains unexpected content". The fix is a `deprecated.js` entry covering the previous shape.
+
+**Procedure:**
+
+1. Capture the previous save output and the previous attribute schema verbatim (use `git show <prev-sha>:path/to/block/save.js`).
+2. Create or edit `src/blocks/<block>/deprecated.js`. Each version object has `{ attributes, save, migrate? }`.
+3. For static→null conversions (block became dynamic via render.php), the new entry's `save` reproduces the old static HTML.
+4. For attribute renames or shape changes, add a `migrate(attributes)` that returns the new-shape attributes.
+5. Wire the array into `index.js`:
+   ```js
+   import deprecated from './deprecated';
+   registerBlockType( metadata.name, { edit: Edit, save: Save, deprecated } );
+   ```
+6. Order matters — newest version first: `export default [ v3, v2, v1 ];`.
+7. Run `npm run build`. Open an affected post in the editor and confirm zero "Invalid block" warnings.
+8. Add the block slug to `AFFECTED_BLOCKS` in `tests/php/BlockDeprecationsTest.php` and run `vendor/bin/phpunit tests/php/BlockDeprecationsTest.php`.
+
+**Canonical examples:** `src/blocks/process-steps/deprecated.js` (empty-innerHTML → null-save), `src/blocks/testimonial/deprecated.js` (static→null, multiple historical shapes), `src/blocks/notice-banner/deprecated.js` (emoji→SVG icon change with default-attribute backfill).
+
+## Retired blocks — back-to-top + reading-progress (2026-05-18, Spec 17 Wave 2 Polish 1b)
+
+The `sgs/back-to-top` and `sgs/reading-progress` blocks were fully removed (`src/` + `build/` directories deleted, no `deprecated.js` shim). Floating UI for both behaviours migrates to the Customiser at *Appearance → Customise → SGS Floating UI* (separate spec; ship date TBD). Existing post content carrying `wp:sgs/back-to-top` or `wp:sgs/reading-progress` markers will render WordPress's generic "block has been deleted" placeholder until operators remove the blocks and reconfigure via the Customiser. A one-shot dismissible admin notice (`Sgs_Site_Info_Admin_Notices::maybe_show_deprecated_blocks_notice`) surfaces the migration path on next admin load for `edit_theme_options` users.
+
 ## Forms (Built Into This Plugin)
 
 Forms are NOT a separate plugin. The form blocks (`sgs/form`, `sgs/form-step`, `sgs/form-field-*`, `sgs/form-review`) and the form processing engine all live here.

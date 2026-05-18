@@ -41,10 +41,9 @@
 
 		<!-- wp:social-links {"iconColor":"surface","iconColorValue":"#FFFFFF","size":"has-normal-icon-size","className":"is-style-logos-only sgs-top-bar-socials"} -->
 		<ul class="wp-block-social-links has-normal-icon-size has-icon-color is-style-logos-only sgs-top-bar-socials">
-			<!-- wp:social-link {"url":"https://www.linkedin.com/company/indus-foods-ltd/","service":"linkedin"} /-->
-			<!-- wp:social-link {"url":"https://www.facebook.com/indusfoodsltd/","service":"facebook"} /-->
-			<!-- wp:social-link {"url":"https://g.page/r/CYLLa_01-rZvEAE/review","service":"google"} /-->
-			<!-- wp:social-link {"url":"https://www.instagram.com/indusfoodsltd/","service":"instagram"} /-->
+			<!-- wp:social-link {"service":"linkedin","metadata":{"bindings":{"url":{"source":"sgs/site-info","args":{"key":"socials.linkedin"}}}}} /-->
+			<!-- wp:social-link {"service":"facebook","metadata":{"bindings":{"url":{"source":"sgs/site-info","args":{"key":"socials.facebook"}}}}} /-->
+			<!-- wp:social-link {"service":"instagram","metadata":{"bindings":{"url":{"source":"sgs/site-info","args":{"key":"socials.instagram"}}}}} /-->
 		</ul>
 		<!-- /wp:social-links -->
 

@@ -1,0 +1,43 @@
+<?php
+/**
+ * Title: SGS Framework Header — Default
+ * Slug: sgs/framework-header-default
+ * Block Types: core/template-part/header
+ * Categories: sgs-headers
+ * Keywords: header, sgs, framework, default, logo, navigation
+ * Viewport Width: 1440
+ * Inserter: true
+ * Description: Minimal default SGS header — colour-neutral, logo + primary nav + mobile-nav drawer.
+ *
+ * @package SGS\Theme
+ */
+
+?>
+
+<!-- wp:group {"style":{"spacing":{"padding":{"top":"0","bottom":"0","left":"0","right":"0"}}},"backgroundColor":"surface","layout":{"type":"default"},"metadata":{"name":"Site Header"}} -->
+<div class="wp-block-group has-surface-background-color has-background" style="padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
+
+	<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|30","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}},"border":{"bottom":{"color":"var:preset|color|surface-alt","width":"1px"}}},"layout":{"type":"flex","justifyContent":"space-between","flexWrap":"nowrap"},"metadata":{"name":"Main Navigation"}} -->
+	<div class="wp-block-group" style="border-bottom-color:var(--wp--preset--color--surface-alt);border-bottom-width:1px;padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--40)">
+
+		<!-- wp:site-logo {"width":240,"shouldSyncIcon":true} /-->
+
+		<!-- wp:group {"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"right"},"metadata":{"name":"Navigation and CTA"}} -->
+		<div class="wp-block-group">
+
+			<!-- Mobile nav toggle (hamburger) — proper SGS block, moveable + removable in Site Editor -->
+			<!-- wp:sgs/mobile-nav-toggle /-->
+
+			<!-- wp:navigation {"textColor":"text","layout":{"type":"flex","justifyContent":"right"},"style":{"typography":{"fontWeight":"600"},"spacing":{"blockGap":"var:preset|spacing|40"}},"fontSize":"medium"} /-->
+
+		</div>
+		<!-- /wp:group -->
+
+	</div>
+	<!-- /wp:group -->
+
+	<!-- Mobile navigation drawer — SGS block with Popover API, spring animation, stagger cascade -->
+	<!-- wp:sgs/mobile-nav {"variant":"overlay"} /-->
+
+</div>
+<!-- /wp:group -->

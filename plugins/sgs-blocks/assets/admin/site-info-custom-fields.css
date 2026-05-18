@@ -1,0 +1,31 @@
+/**
+ * SGS Site Info — Custom Fields repeater.
+ *
+ * Minimal styling for the Add Row / Remove Row controls. Sized to meet
+ * WCAG 2.2 AA 44px minimum touch targets.
+ */
+
+.sgs-site-info-custom-fields-table .sgs-site-info-actions-col {
+	width: 110px;
+}
+
+.sgs-site-info-custom-fields-table .sgs-site-info-remove-row,
+.sgs-site-info-custom-fields-table .sgs-site-info-add-row {
+	min-height: 44px;
+	min-width: 44px;
+	padding: 6px 16px;
+}
+
+.sgs-site-info-custom-fields-table tbody td {
+	vertical-align: middle;
+	padding: 8px;
+}
+
+.sgs-site-info-custom-fields-table .sgs-site-info-remove-row {
+	color: #b32d2e;
+}
+
+.sgs-site-info-custom-fields-table .sgs-site-info-remove-row:hover,
+.sgs-site-info-custom-fields-table .sgs-site-info-remove-row:focus {
+	color: #8a1d1e;
+}

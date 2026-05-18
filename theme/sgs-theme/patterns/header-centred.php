@@ -1,13 +1,17 @@
 <?php
 /**
- * Title: Header — Centred Logo
- * Slug: sgs/header-centred
- * Categories: sgs-headers
+ * Title: SGS Framework Header — Centred
+ * Slug: sgs/framework-header-centred
  * Block Types: core/template-part/header
- * Description: Logo centred above, navigation centred below. Elegant and balanced.
+ * Categories: sgs-headers
+ * Keywords: header, sgs, framework, centred, centered, logo, balanced, elegant
+ * Viewport Width: 1440
+ * Inserter: true
+ * Description: Logo centred above navigation, navigation centred below. Elegant and balanced — suits hospitality, wellness, and lifestyle brands.
  *
  * @package SGS\Theme
  */
+
 ?>
 
 <!-- wp:group {"style":{"spacing":{"padding":{"top":"0","bottom":"0","left":"0","right":"0"}}},"backgroundColor":"surface","layout":{"type":"default"},"metadata":{"name":"Centred Header"}} -->

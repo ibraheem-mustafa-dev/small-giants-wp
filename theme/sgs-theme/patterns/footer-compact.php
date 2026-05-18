@@ -1,13 +1,17 @@
 <?php
 /**
- * Title: Footer — Compact (2-Column)
- * Slug: sgs/footer-compact
- * Categories: sgs-footers
+ * Title: SGS Framework Footer — Compact
+ * Slug: sgs/framework-footer-compact
  * Block Types: core/template-part/footer
- * Description: Two-column footer with logo and description on the left, contact and socials on the right. Content auto-populates from Settings > Business Details.
+ * Categories: sgs-footers
+ * Keywords: footer, sgs, framework, compact, two-column, contact, socials
+ * Viewport Width: 1440
+ * Inserter: true
+ * Description: Two-column footer — logo and tagline left, contact details and social icons right. Content auto-populates from Settings > Business Details.
  *
  * @package SGS\Theme
  */
+
 ?>
 
 <!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"0","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"footer-bg","layout":{"type":"constrained","wideSize":"1200px"},"metadata":{"name":"Compact Footer"}} -->

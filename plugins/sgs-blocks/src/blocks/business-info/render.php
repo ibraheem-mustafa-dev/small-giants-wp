@@ -2,8 +2,10 @@
 /**
  * Server-side render for the SGS Business Info block.
  *
- * Reads business details stored in wp_options (via Settings > Business Details)
- * and renders the requested type. All output is escaped at the point of output.
+ * Reads business details from the central Sgs_Site_Info store (populated via
+ * Appearance > SGS Site Info) and renders the requested type. All output is
+ * escaped at the point of output via Sgs_Site_Info::get_esc_html() /
+ * get_esc_url() where the escaping context is unambiguous.
  *
  * Types:
  *  - phone       : clickable telephone link with optional icon
@@ -13,7 +15,7 @@
  *  - socials     : row of social media icon links
  *  - copyright   : "Copyright © [year] [name]" line
  *  - description : business tagline
- *  - map         : Google Maps iframe embed via CID
+ *  - map         : Google Maps iframe embed via address search
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner block content (unused — dynamic block).
@@ -27,7 +29,9 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 
-$type         = $attributes['type'] ?? 'phone';
+use SGS\Blocks\Sgs_Site_Info;
+
+$display_type = $attributes['type'] ?? 'phone';
 $show_icon    = ! empty( $attributes['showIcon'] );
 $link_phone   = ! empty( $attributes['linkPhone'] );
 $link_email   = ! empty( $attributes['linkEmail'] );
@@ -35,10 +39,10 @@ $icon_colour  = $attributes['iconColour'] ?? 'primary';
 $text_colour  = $attributes['textColour'] ?? 'text';
 $label_colour = $attributes['labelColour'] ?? 'text-muted';
 
-// Placeholder shown in the editor when data is missing.
+// Placeholder shown when data is missing.
 $placeholder = sprintf(
 	'<span class="sgs-business-info__placeholder">%s</span>',
-	esc_html__( 'Set in Settings > Business Details', 'sgs-blocks' )
+	esc_html__( 'Set in Appearance > SGS Site Info', 'sgs-blocks' )
 );
 
 /**
@@ -57,15 +61,14 @@ $icon_html = function ( string $icon_name ) use ( $show_icon ): string {
 
 $html = '';
 
-switch ( $type ) {
+switch ( $display_type ) {
 
 	// ── Phone ─────────────────────────────────────────────────────────────────
 	case 'phone':
-		$phone = get_option( 'sgs_business_phone', '' );
-		if ( $phone ) {
-			// Build a tel: href — strip everything except digits and +.
-			$tel_href = 'tel:' . preg_replace( '/[^0-9+]/', '', $phone );
-			$inner = $icon_html( 'phone' ) . '<span>' . esc_html( $phone ) . '</span>';
+		$phone_raw = (string) Sgs_Site_Info::get( 'phone', '' );
+		if ( '' !== $phone_raw ) {
+			$tel_href = 'tel:' . preg_replace( '/[^0-9+]/', '', $phone_raw );
+			$inner    = $icon_html( 'phone' ) . '<span>' . Sgs_Site_Info::get_esc_html( 'phone' ) . '</span>';
 			if ( $link_phone ) {
 				$html = sprintf(
 					'<a href="%s" class="sgs-business-info__link">%s</a>',
@@ -83,13 +86,13 @@ switch ( $type ) {
 
 	// ── Email ─────────────────────────────────────────────────────────────────
 	case 'email':
-		$email = get_option( 'sgs_business_email', '' );
-		if ( $email && is_email( $email ) ) {
-			$inner = $icon_html( 'mail' ) . '<span>' . esc_html( $email ) . '</span>';
+		$email_raw = (string) Sgs_Site_Info::get( 'email', '' );
+		if ( '' !== $email_raw && is_email( $email_raw ) ) {
+			$inner = $icon_html( 'mail' ) . '<span>' . Sgs_Site_Info::get_esc_html( 'email' ) . '</span>';
 			if ( $link_email ) {
 				$html = sprintf(
 					'<a href="%s" class="sgs-business-info__link">%s</a>',
-					esc_url( 'mailto:' . antispambot( $email ) ),
+					esc_url( 'mailto:' . antispambot( $email_raw ) ),
 					$inner
 				);
 			} else {
@@ -103,27 +106,14 @@ switch ( $type ) {
 
 	// ── Address ───────────────────────────────────────────────────────────────
 	case 'address':
-		$street   = get_option( 'sgs_business_street', '' );
-		$city     = get_option( 'sgs_business_city', '' );
-		$postcode = get_option( 'sgs_business_postcode', '' );
-		$country  = get_option( 'sgs_business_country', 'United Kingdom' );
-
-		$lines = array_filter( [
-			$street,
-			$city,
-			$postcode,
-			$country,
-		] );
-
-		if ( $lines ) {
-			$address_html = implode(
-				'<br>',
-				array_map( 'esc_html', $lines )
-			);
+		$address_raw = (string) Sgs_Site_Info::get( 'address', '' );
+		if ( '' !== $address_raw ) {
+			// Address is stored sanitised by Sgs_Site_Info::sanitise_address()
+			// which allows only plain text + <br>. Safe to echo as-is.
 			$html = sprintf(
 				'<address class="sgs-business-info sgs-business-address">%s%s</address>',
 				$icon_html( 'map-pin' ),
-				$address_html
+				wp_kses( $address_raw, array( 'br' => array() ) )
 			);
 		} else {
 			$html = '<address class="sgs-business-info sgs-business-address">' . $placeholder . '</address>';
@@ -132,34 +122,33 @@ switch ( $type ) {
 
 	// ── Opening Hours ─────────────────────────────────────────────────────────
 	case 'hours':
-		$hours = get_option( 'sgs_business_hours', [] );
-		$days  = [
-			'monday'    => __( 'Monday', 'sgs-blocks' ),
-			'tuesday'   => __( 'Tuesday', 'sgs-blocks' ),
-			'wednesday' => __( 'Wednesday', 'sgs-blocks' ),
-			'thursday'  => __( 'Thursday', 'sgs-blocks' ),
-			'friday'    => __( 'Friday', 'sgs-blocks' ),
-			'saturday'  => __( 'Saturday', 'sgs-blocks' ),
-			'sunday'    => __( 'Sunday', 'sgs-blocks' ),
-		];
+		$days = array(
+			'mon' => __( 'Monday', 'sgs-blocks' ),
+			'tue' => __( 'Tuesday', 'sgs-blocks' ),
+			'wed' => __( 'Wednesday', 'sgs-blocks' ),
+			'thu' => __( 'Thursday', 'sgs-blocks' ),
+			'fri' => __( 'Friday', 'sgs-blocks' ),
+			'sat' => __( 'Saturday', 'sgs-blocks' ),
+			'sun' => __( 'Sunday', 'sgs-blocks' ),
+		);
 
-		if ( is_array( $hours ) && array_filter( $hours ) ) {
-			$rows = '';
-			foreach ( $days as $slug => $label ) {
-				$value = isset( $hours[ $slug ] ) ? sanitize_text_field( $hours[ $slug ] ) : '';
-				if ( '' === $value ) {
-					continue;
-				}
-				$rows .= sprintf(
-					'<div class="sgs-business-hours__row"><dt class="sgs-business-hours__day">%s</dt><dd class="sgs-business-hours__time">%s</dd></div>',
-					esc_html( $label ),
-					esc_html( $value )
-				);
+		$rows     = '';
+		$has_rows = false;
+		foreach ( $days as $slug => $label ) {
+			$value = (string) Sgs_Site_Info::get( "opening_hours.{$slug}", '' );
+			if ( '' === $value ) {
+				continue;
 			}
-			$html = sprintf(
-				'<dl class="sgs-business-info sgs-business-hours">%s</dl>',
-				$rows
+			$has_rows = true;
+			$rows    .= sprintf(
+				'<div class="sgs-business-hours__row"><dt class="sgs-business-hours__day">%s</dt><dd class="sgs-business-hours__time">%s</dd></div>',
+				esc_html( $label ),
+				Sgs_Site_Info::get_esc_html( "opening_hours.{$slug}" )
 			);
+		}
+
+		if ( $has_rows ) {
+			$html = sprintf( '<dl class="sgs-business-info sgs-business-hours">%s</dl>', $rows );
 		} else {
 			$html = '<dl class="sgs-business-info sgs-business-hours"><div class="sgs-business-hours__row">' . $placeholder . '</div></dl>';
 		}
@@ -167,33 +156,53 @@ switch ( $type ) {
 
 	// ── Social Links ──────────────────────────────────────────────────────────
 	case 'socials':
-		$social_map = [
-			'sgs_social_linkedin'  => [ 'icon' => 'linkedin',  'label' => 'LinkedIn'  ],
-			'sgs_social_facebook'  => [ 'icon' => 'facebook',  'label' => 'Facebook'  ],
-			'sgs_social_instagram' => [ 'icon' => 'instagram', 'label' => 'Instagram' ],
-			'sgs_social_google'    => [ 'icon' => 'star',      'label' => 'Google'    ],
-			'sgs_social_twitter'   => [ 'icon' => 'twitter',   'label' => 'X/Twitter' ],
-		];
+		$social_map = array(
+			'linkedin'  => array(
+				'icon'  => 'linkedin',
+				'label' => 'LinkedIn',
+			),
+			'facebook'  => array(
+				'icon'  => 'facebook',
+				'label' => 'Facebook',
+			),
+			'instagram' => array(
+				'icon'  => 'instagram',
+				'label' => 'Instagram',
+			),
+			'youtube'   => array(
+				'icon'  => 'youtube',
+				'label' => 'YouTube',
+			),
+			'tiktok'    => array(
+				'icon'  => 'music',
+				'label' => 'TikTok',
+			),
+			'twitter'   => array(
+				'icon'  => 'twitter',
+				'label' => 'X/Twitter',
+			),
+			'whatsapp'  => array(
+				'icon'  => 'message-circle',
+				'label' => 'WhatsApp',
+			),
+		);
 
 		$items = '';
-		foreach ( $social_map as $option_key => $meta ) {
-			$url = get_option( $option_key, '' );
-			if ( ! $url ) {
+		foreach ( $social_map as $slug => $meta ) {
+			$url_raw = (string) Sgs_Site_Info::get( "socials.{$slug}", '' );
+			if ( '' === $url_raw ) {
 				continue;
 			}
 			$items .= sprintf(
 				'<li class="sgs-business-socials__item"><a href="%s" target="_blank" rel="noopener noreferrer" aria-label="%s" class="sgs-business-socials__link">%s</a></li>',
-				esc_url( $url ),
+				Sgs_Site_Info::get_esc_url( "socials.{$slug}" ),
 				esc_attr( $meta['label'] ),
 				sgs_get_lucide_icon( $meta['icon'] )
 			);
 		}
 
-		if ( $items ) {
-			$html = sprintf(
-				'<ul class="sgs-business-info sgs-business-socials">%s</ul>',
-				$items
-			);
+		if ( '' !== $items ) {
+			$html = sprintf( '<ul class="sgs-business-info sgs-business-socials">%s</ul>', $items );
 		} else {
 			$html = '<ul class="sgs-business-info sgs-business-socials"><li>' . $placeholder . '</li></ul>';
 		}
@@ -201,13 +210,13 @@ switch ( $type ) {
 
 	// ── Copyright ─────────────────────────────────────────────────────────────
 	case 'copyright':
-		$name = get_option( 'sgs_business_name', '' );
-		if ( $name ) {
+		$name_raw = (string) Sgs_Site_Info::get( 'copyright', '' );
+		if ( '' !== $name_raw ) {
 			$html = sprintf(
 				'<p class="sgs-business-info sgs-business-copyright">%s &copy; %s %s</p>',
 				esc_html__( 'Copyright', 'sgs-blocks' ),
 				esc_html( gmdate( 'Y' ) ),
-				esc_html( $name )
+				Sgs_Site_Info::get_esc_html( 'copyright' )
 			);
 		} else {
 			$html = '<p class="sgs-business-info sgs-business-copyright">' . $placeholder . '</p>';
@@ -216,12 +225,11 @@ switch ( $type ) {
 
 	// ── Description / Tagline ─────────────────────────────────────────────────
 	case 'description':
-		$tagline = get_option( 'sgs_business_tagline', '' );
-		if ( $tagline ) {
-			// nl2br so multi-line taglines preserve their line breaks.
+		$tagline_raw = (string) Sgs_Site_Info::get( 'tagline', '' );
+		if ( '' !== $tagline_raw ) {
 			$html = sprintf(
 				'<p class="sgs-business-info sgs-business-description">%s</p>',
-				nl2br( esc_html( $tagline ) )
+				nl2br( Sgs_Site_Info::get_esc_html( 'tagline' ) )
 			);
 		} else {
 			$html = '<p class="sgs-business-info sgs-business-description">' . $placeholder . '</p>';
@@ -230,25 +238,12 @@ switch ( $type ) {
 
 	// ── Map Embed ─────────────────────────────────────────────────────────────
 	case 'map':
-		$name     = get_option( 'sgs_business_name', '' );
-		$street   = get_option( 'sgs_business_street', '' );
-		$city     = get_option( 'sgs_business_city', '' );
-		$postcode = get_option( 'sgs_business_postcode', '' );
-		$cid      = get_option( 'sgs_business_maps_cid', '' );
-
-		// Prefer search-based embed (shows pin, address panel, stars).
-		// Fall back to CID-based embed if no address is set.
-		$query_parts = array_filter( [ $name, $street, $city, $postcode ] );
-		if ( $query_parts ) {
-			$map_url = 'https://maps.google.com/maps?q=' . rawurlencode( implode( ', ', $query_parts ) ) . '&z=15&hl=en&t=m&output=embed&iwloc=near';
-		} elseif ( $cid && preg_match( '/^[0-9]+$/', $cid ) ) {
-			$map_url = 'https://www.google.com/maps?cid=' . rawurlencode( $cid ) . '&output=embed';
-		} else {
-			$map_url = '';
-		}
-
-		if ( $map_url ) {
-			$html = sprintf(
+		$address_raw = (string) Sgs_Site_Info::get( 'address', '' );
+		if ( '' !== $address_raw ) {
+			// Strip <br> back to commas for the maps search query.
+			$query   = trim( preg_replace( '/\s*<br\s*\/?>\s*/i', ', ', $address_raw ) );
+			$map_url = 'https://maps.google.com/maps?q=' . rawurlencode( $query ) . '&z=15&hl=en&t=m&output=embed&iwloc=near';
+			$html    = sprintf(
 				'<div class="sgs-business-info sgs-business-map"><iframe src="%s" width="100%%" height="400" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="%s"></iframe></div>',
 				esc_url( $map_url ),
 				esc_attr__( 'Business location map', 'sgs-blocks' )
@@ -261,14 +256,18 @@ switch ( $type ) {
 
 // Emit colour CSS custom properties so style.css can consume them.
 $wrapper_styles = array(
-	'--sgs-bi-icon-colour:'  . sgs_colour_value( $icon_colour ),
-	'--sgs-bi-text-colour:'  . sgs_colour_value( $text_colour ),
+	'--sgs-bi-icon-colour:' . sgs_colour_value( $icon_colour ),
+	'--sgs-bi-text-colour:' . sgs_colour_value( $text_colour ),
 	'--sgs-bi-label-colour:' . sgs_colour_value( $label_colour ),
 );
 
-$wrapper_attributes = get_block_wrapper_attributes( array(
-	'class' => 'sgs-business-info-wrap sgs-business-info-wrap--' . esc_attr( $type ),
-	'style' => implode( ';', $wrapper_styles ) . ';',
-) );
+$wrapper_attributes = get_block_wrapper_attributes(
+	array(
+		'class' => 'sgs-business-info-wrap sgs-business-info-wrap--' . esc_attr( $display_type ),
+		'style' => implode( ';', $wrapper_styles ) . ';',
+	)
+);
 
-printf( '<div %s>%s</div>', $wrapper_attributes, $html );
+// $wrapper_attributes is pre-escaped by get_block_wrapper_attributes() (core).
+// $html is composed entirely from internally-escaped pieces (esc_html/esc_url/esc_attr).
+printf( '<div %s>%s</div>', $wrapper_attributes, $html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped

@@ -1,13 +1,17 @@
 <?php
 /**
- * Title: Footer — Informational (3-Column)
- * Slug: sgs/footer-informational
- * Categories: sgs-footers
+ * Title: SGS Framework Footer — Informational
+ * Slug: sgs/framework-footer-informational
  * Block Types: core/template-part/footer
- * Description: Three-column footer with business description, quick links, contact, hours, map, and address. Content auto-populates from Settings > Business Details.
+ * Categories: sgs-footers
+ * Keywords: footer, sgs, framework, informational, three-column, links, hours, map, address
+ * Viewport Width: 1440
+ * Inserter: true
+ * Description: Three-column footer — business description and socials, quick links and contact hours, map and address with directions. Content auto-populates from Settings > Business Details.
  *
  * @package SGS\Theme
  */
+
 ?>
 
 <!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"0","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}},"backgroundColor":"footer-bg","layout":{"type":"constrained","wideSize":"1200px"},"metadata":{"name":"Site Footer"}} -->

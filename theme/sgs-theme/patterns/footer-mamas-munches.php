@@ -21,12 +21,12 @@
 
 			<!-- wp:site-logo {"width":150,"shouldSyncIcon":true} /-->
 
-			<!-- wp:paragraph {"textColor":"text-inverse"} -->
-			<p class="has-text-inverse-color has-text-color">Real food for real mums. Handmade in Birmingham with care.</p>
+			<!-- wp:paragraph {"textColor":"text-inverse","metadata":{"bindings":{"content":{"source":"sgs/site-info","args":{"key":"tagline"}}}}} -->
+			<p class="has-text-inverse-color has-text-color">placeholder — replaced at render</p>
 			<!-- /wp:paragraph -->
 
-			<!-- wp:paragraph {"textColor":"text-inverse","style":{"typography":{"fontSize":"0.875rem"}}} -->
-			<p class="has-text-inverse-color has-text-color" style="font-size:0.875rem">Birmingham, UK &nbsp;·&nbsp; <a href="mailto:Zainab@mamasmunches.com">Zainab@mamasmunches.com</a></p>
+			<!-- wp:paragraph {"textColor":"text-inverse","style":{"typography":{"fontSize":"0.875rem"}},"metadata":{"bindings":{"content":{"source":"sgs/site-info","args":{"key":"address"}}}}} -->
+			<p class="has-text-inverse-color has-text-color" style="font-size:0.875rem">placeholder — replaced at render</p>
 			<!-- /wp:paragraph -->
 
 		</div>
@@ -63,8 +63,8 @@
 	</div>
 	<!-- /wp:columns -->
 
-	<!-- wp:paragraph {"textColor":"text-inverse","align":"center","style":{"typography":{"fontSize":"0.8rem"},"spacing":{"margin":{"top":"var:preset|spacing|40"}}}} -->
-	<p class="has-text-inverse-color has-text-color has-text-align-center" style="font-size:0.8rem;margin-top:var(--wp--preset--spacing--40)">&#169; 2026 Mama&#39;s Munches. Registered Food Business, Birmingham.</p>
+	<!-- wp:paragraph {"textColor":"text-inverse","align":"center","style":{"typography":{"fontSize":"0.8rem"},"spacing":{"margin":{"top":"var:preset|spacing|40"}}},"metadata":{"bindings":{"content":{"source":"sgs/site-info","args":{"key":"copyright"}}}}} -->
+	<p class="has-text-inverse-color has-text-color has-text-align-center" style="font-size:0.8rem;margin-top:var(--wp--preset--spacing--40)">placeholder — replaced at render</p>
 	<!-- /wp:paragraph -->
 
 </div>

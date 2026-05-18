@@ -7,6 +7,7 @@
 import { registerBlockType } from '@wordpress/blocks';
 import metadata from './block.json';
 import Edit from './edit';
+import deprecated from './deprecated';
 
 // Import frontend styles so webpack compiles them into style-index.css.
 import './style.css';
@@ -14,4 +15,5 @@ import './style.css';
 registerBlockType( metadata.name, {
 	edit: Edit,
 	save: () => null, // Dynamic block — rendered server-side via render.php.
+	deprecated,
 } );

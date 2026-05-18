@@ -1,13 +1,17 @@
 <?php
 /**
- * Title: Header — Minimal (Logo + Navigation)
- * Slug: sgs/header-minimal
- * Categories: sgs-headers
+ * Title: SGS Framework Header — Minimal
+ * Slug: sgs/framework-header-minimal
  * Block Types: core/template-part/header
- * Description: Clean minimal header with logo and navigation only. No top bar.
+ * Categories: sgs-headers
+ * Keywords: header, sgs, framework, minimal, compact, landing
+ * Viewport Width: 1440
+ * Inserter: true
+ * Description: Compact header — logo left, primary navigation right. No top bar or mobile drawer. Best for landing pages.
  *
  * @package SGS\Theme
  */
+
 ?>
 
 <!-- wp:group {"style":{"spacing":{"padding":{"top":"0","bottom":"0","left":"0","right":"0"}}},"backgroundColor":"surface","layout":{"type":"default"},"metadata":{"name":"Minimal Header"}} -->

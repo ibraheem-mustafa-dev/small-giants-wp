@@ -64,7 +64,12 @@ class FormSubmissionTest extends TestCase {
     }
 
     /**
-     * Method name fragments that must appear in class-form-rest-api.php.
+     * Method name fragments that must appear in class-form-rest-api.php (facade).
+     *
+     * After the R2 facade refactor, the three submission-logic methods
+     * (handle_submit, check_rate_limit, validate_fields) live in
+     * class-form-rest-submission.php. Only the facade's own orchestration
+     * methods stay in class-form-rest-api.php.
      *
      * @return array<string, array{0: string}>
      */
@@ -72,10 +77,21 @@ class FormSubmissionTest extends TestCase {
         return [
             'register method'         => [ 'function register'         ],
             'register_routes method'  => [ 'function register_routes'  ],
-            'handle_submit method'    => [ 'function handle_submit'    ],
             'verify_form_nonce'       => [ 'function verify_form_nonce'],
-            'check_rate_limit'        => [ 'function check_rate_limit' ],
-            'validate_fields'         => [ 'function validate_fields'  ],
+            'require_manage_options'  => [ 'function require_manage_options' ],
+        ];
+    }
+
+    /**
+     * Method name fragments that must appear in class-form-rest-submission.php.
+     *
+     * @return array<string, array{0: string}>
+     */
+    public static function rest_submission_method_provider(): array {
+        return [
+            'handle_submit method' => [ 'function handle_submit'    ],
+            'check_rate_limit'     => [ 'function check_rate_limit' ],
+            'validate_fields'      => [ 'function validate_fields'  ],
         ];
     }
 
@@ -190,7 +206,7 @@ class FormSubmissionTest extends TestCase {
         );
     }
 
-    // ── Form_REST_API method declarations ─────────────────────────────────────
+    // ── Form_REST_API method declarations (facade) ────────────────────────────
 
     /**
      * @param string $method_fragment Substring that must appear in the source.
@@ -203,6 +219,25 @@ class FormSubmissionTest extends TestCase {
             $method_fragment,
             $content,
             "class-form-rest-api.php must declare '{$method_fragment}'."
+        );
+    }
+
+    // ── Form_REST_Submission method declarations ──────────────────────────────
+
+    /**
+     * Submission-logic methods live in class-form-rest-submission.php after
+     * the R2 facade refactor.
+     *
+     * @param string $method_fragment Substring that must appear in the source.
+     */
+    #[DataProvider( 'rest_submission_method_provider' )]
+    public function test_form_rest_submission_declares_method( string $method_fragment ): void {
+        $content = $this->read_forms_file( 'class-form-rest-submission.php' );
+
+        $this->assertStringContainsString(
+            $method_fragment,
+            $content,
+            "class-form-rest-submission.php must declare '{$method_fragment}'."
         );
     }
 
@@ -259,15 +294,16 @@ class FormSubmissionTest extends TestCase {
     }
 
     /**
-     * REST API must implement rate limiting.
+     * Rate-limiting logic lives in class-form-rest-submission.php after the
+     * R2 facade refactor. The facade delegates to it via check_rate_limit().
      */
     public function test_rest_api_implements_rate_limiting(): void {
-        $content = $this->read_forms_file( 'class-form-rest-api.php' );
+        $content = $this->read_forms_file( 'class-form-rest-submission.php' );
 
         $this->assertStringContainsString(
             'check_rate_limit',
             $content,
-            'class-form-rest-api.php must implement rate limiting via check_rate_limit().'
+            'class-form-rest-submission.php must implement rate limiting via check_rate_limit().'
         );
     }
 
