@@ -398,3 +398,16 @@ wp sgs theme-mod restore --user=1
 - **`plugins/sgs-blocks/includes/class-sgs-cli-commands.php`** — canonical implementation (622 lines)
 - **`wp-wpcli-and-ops` skill (SKILL.md)** — the `/wp-wpcli-and-ops` skill documents this surface and should be invoked for any WP-CLI work in this project
 - **Spec 17 §S2 + §S3** — the `seed-template-parts`, `reset-template-parts`, `header-rules`, and `footer-rules` commands mirror the admin UI described there
+
+---
+
+## 2026-05-20 — Behaviour parameter NOT YET wired on wp sgs header_rules add
+
+Phase 2A added a `behaviour` key on header rules (read by `Sgs_Header_Behaviours::add_body_classes`) but the CLI command `wp sgs header_rules add <json>` currently strips unknown keys via its sanitiser. Until the CLI is extended, behaviours are set via:
+
+```bash
+wp --user=1 sgs header_rules add '{"pattern_slug":"sgs/framework-header-default","priority":5,"conditions":[]}'
+wp --user=1 eval '$rules = get_option("sgs_header_rules", []); foreach($rules as $i => $r){if(($r["id"]??"")==="rule_XXX"){$rules[$i]["behaviour"]="sticky";}} update_option("sgs_header_rules", $rules);'
+```
+
+**Next session work:** extend `Sgs_Header_Rules::add_rule()` to accept + sanitise `behaviour` from the input JSON. Add `--behaviour=<slug>` examples to the CLI help. Estimated 20 min.

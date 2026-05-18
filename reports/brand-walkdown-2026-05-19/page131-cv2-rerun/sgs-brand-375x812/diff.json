@@ -1,0 +1,23 @@
+{
+  "mockup_url": "file:///C:/Users/Bean/Projects/small-giants-wp/sites/mamas-munches/mockups/homepage/index.html",
+  "sgs_url": "https://sandybrown-nightingale-600381.hostingersite.com/cv2-output-mamas-munches/",
+  "viewport": "375x812",
+  "mockup_dimensions": [
+    375,
+    1232
+  ],
+  "sgs_dimensions": [
+    343,
+    1115
+  ],
+  "aligned_dimensions": [
+    375,
+    1060
+  ],
+  "mismatched_pixels": 223869,
+  "total_pixels": 397500,
+  "mismatch_percent": 56.3192,
+  "threshold_percent": 1.0,
+  "verdict": "FAIL",
+  "captured_at": "2026-05-17T10:52:07.181665+00:00"
+}

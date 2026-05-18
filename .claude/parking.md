@@ -1483,7 +1483,12 @@ Source: 4-rater /qc panel 2026-05-19 (R3 architecture, A1 + A2 findings; subagen
 Touch point: `plugins/sgs-blocks/includes/class-font-collection.php`.
 Source: Session 2026-05-20 sandybrown smoke test (Spec 17 live verification).
 
-### P-S18-LEGACY-CUSTOMISER-CONTROLS-ORPHANED: 16 legacy floating-UI controls still registered alongside the canonical 7
+### P-S18-LEGACY-CUSTOMISER-CONTROLS-ORPHANED — RESOLVED 2026-05-20
+**Resolution.** Branch J deleted all 7 theme-side files (985 lines): `inc/floating-ui-customiser.php`, `inc/floating-ui-output.php`, plus 4 CSS/JS theme assets (`back-to-top.css`, `reading-progress.css`, `back-to-top.js`, `reading-progress.js`, `customiser-preview.js`). `theme/sgs-theme/functions.php` updated to drop the two `require_once` lines. Customiser → SGS Floating UI section now shows exactly 7 Spec 18 canonical controls. All output handled by the plugin's `Sgs_Floating_UI_Renderer` (no more theme-side parallel system). Commits `af5755b2` + `2be7c648`.
+
+---
+
+### P-S18-LEGACY-CUSTOMISER-CONTROLS-ORPHANED (original capture, archived after resolution)
 **Captured 2026-05-20.** Customiser section `sgs_floating_ui` has 23 controls registered, not 7. The canonical 7 (`sgs_floating_ui_*` prefix from Spec 18) are present. But 16 legacy controls with prefixes `sgs_back_to_top_*` (8) and `sgs_reading_progress_*` (8) are ALSO registered to the same section — orphan registrations from a prior iteration.
 
 **Operator impact:** opening `Appearance → Customise → SGS Floating UI` shows 23 controls. Some duplicate the canonical 7's purpose (e.g. `sgs_back_to_top_enabled` vs `sgs_floating_ui_back_to_top_enabled`). Confusing UX and risks operator setting one prefix while the renderer reads the other.
@@ -1512,7 +1517,22 @@ Source: Session 2026-05-20 sandybrown smoke test (Spec 17 live verification, Tas
 
 Source: Session 2026-05-20 sandybrown smoke test (Task 1 acceptance criterion 4).
 
-### P-PHASE-2A-WRAPPER-CLASS-NOT-INJECTED: Header behaviour wrapper class isn't reaching the live <header> element
+### P-PHASE-2A-WRAPPER-CLASS-NOT-INJECTED — RESOLVED 2026-05-20
+**Resolution.** Branch I replaced both DOM-injection attempts with a body_class strategy. PHP `add_filter('body_class', ...)` walks rules + appends `sgs-has-header` (always) + `sgs-has-header-behaviour` + `sgs-header-behaviour-{slug}` to the body. CSS targets `body.sgs-header-behaviour-* header.wp-block-template-part`. JS reads behaviour from body class, toggles `body.is-header-scrolled` + `body.is-header-scrolling-down` for state. WP-core specificity conflict on `position`+`top` resolved via `!important` on those two properties only (z-index won naturally). Version bumped 0.1.1 → 0.1.2 to bust browser cache.
+
+**Verified live on sandybrown 2026-05-20:**
+- `body_sticky: true`, `css_ver: ?ver=0.1.2`
+- `header_position: 'sticky'`, `header_top: '0px'`
+- `scroll_padding_top: '80px'` (WCAG 2.4.11 fix live)
+- `--sgs-header-height: '80px'` (ResizeObserver publisher works)
+
+Commits: `6dc19f07` (Branch I body_class strategy) + `9a6808d5` (merge) + `0201c0d9` (!important + version bump).
+
+Sibling parking entry `P-S18-TRANSPARENT-PATTERN-IS-STUB` can now be acted on — recommendation per Branch J audit: delete the 3 stub patterns (`framework-header-transparent`, `framework-header-sticky`, `framework-header-shrink`) since behaviour layer replaces them. Decision needs Bean confirmation.
+
+---
+
+### P-PHASE-2A-WRAPPER-CLASS-NOT-INJECTED (original capture, archived after resolution)
 **Captured 2026-05-20.** Branch A's `Sgs_Header_Behaviours::inject_behaviour_class` filter hooks `sgs_header_rule_resolved` (fires INSIDE `Sgs_Header_Rules::evaluate()`). At that point the rule has matched and `render_pattern()` has returned the inner content of the header — but that content has NO `<header>` tag. WP core adds the `<header class="wp-block-template-part">` wrapper LATER, via `render_block_core_template_part()`'s html_tag wrapping logic. 
 
 Tried adding a second filter on `render_block_core/template-part` to inject the class onto the wrapper after core wraps. Filter IS registered (verified via `has_filter`) but never fires in practice — when `pre_render_block` short-circuits with our content, WP core appears to skip the `render_block_{name}` filter chain OR the wrapper isn't added when pre_render returns non-null.

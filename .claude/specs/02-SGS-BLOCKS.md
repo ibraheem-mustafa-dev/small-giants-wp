@@ -1312,3 +1312,57 @@ add_filter( 'block_categories_all', 'sgs_block_categories' );
 Blocks read design tokens from `theme.json` at both build time and runtime. In the editor, the `DesignTokenPicker` component reads the theme's colour palette and offers those as options. On the frontend, blocks output CSS custom properties that resolve to whatever the active style variation defines.
 
 This means: build blocks once, and they automatically adapt to any client site's colour scheme.
+
+
+---
+
+## Phase 2A Additions (2026-05-20 — commits a7f85a4a / 393e3d06 / 0201c0d9)
+
+### sgs/responsive-logo (NEW — Phase 2A Branch B)
+
+Three logo slots (desktop / tablet / mobile) with picture element per-breakpoint swap (600px / 1024px). Optional Vivus Instant SVG animation lazy-loaded via dynamic import (~7KB, draw-on-load / hover-redraw / scroll-trigger). When no logo is set on the block, falls back to the WP site default core/site-logo via get_theme_mod custom_logo.
+
+Attributes: desktopLogoId, tabletLogoId, mobileLogoId, svgAnimationSource, animationStyle (enum: none / draw-on-load / hover-redraw / scroll-trigger), width, linkToHome, alt.
+
+Supports: align, spacing.margin/padding, sgs.imageControls: true.
+
+SGS-BEM: `.sgs-responsive-logo` root + `__picture` / `__image--desktop/tablet/mobile` / `__svg` / `__link` + `--animate-{draw,hover,scroll}` modifiers + `.is-animating` / `.is-animated` states.
+
+Competitive moat: no WP competitor (Kadence Pro, Spectra Pro, GenerateBlocks Pro, Astra Pro, Blocksy Pro) currently has H/Square/Mark aspect-ratio variants per breakpoint in one block.
+
+### sgs/icon (NEW — Phase 2A Branches C + H)
+
+Single-icon block with FOUR icon sources: Lucide (1917 icons via existing lucide-icons.php), WordPress @wordpress/icons (45 inline SVGs via new wp-icons.php), Dashicons (15 curated, auto-enqueues dashicons font when used), emoji (with WCAG aria-label fallback "icon" when blank).
+
+Attributes: iconSource (enum), iconName, emojiChar, dashiconName, wpIconName, iconSize, iconColour, linkUrl, linkTarget, linkRel, ariaLabel.
+
+SGS-BEM: `.sgs-icon` root + `__link` / `__svg` / `__emoji` / `__dashicon` + `--source-{lucide,wp-icon,dashicon,emoji}` + `--size-{small,medium,large,custom}`.
+
+Retired: the legacy sgs/icon-block slug (was a backward-compat shim) was deleted in commit 8a587e10.
+
+### sgs/timeline (NEW — Phase 2A Branch D)
+
+Date-based timeline (distinct from existing sgs/process-steps which is positional/numbered). Vertical or horizontal orientation. Alternating / left / centre alignment (vertical only). Scroll-reveal via IntersectionObserver with stagger delay (default 100ms) honouring prefers-reduced-motion. Connector style: line / dashed / dotted. Semantic ol/li/time markup.
+
+Attributes: orientation (enum), alignment (enum), entries (array of date/title/description/icon/image), connectorStyle, connectorColour, dateColour, revealOnScroll, revealStagger.
+
+SGS-BEM: `.sgs-timeline` root + `--vertical/horizontal` + `--align-{left,centre,alternating}` + `__entry` / `__date` / `__node` / `__content` / `__title` / `__description` / `__image` / `__connector` + `.is-revealed` state.
+
+Future enhancement (parked): P-TIMELINE-ADVANCED-VISUAL-EFFECTS — textured/themed connector (vine, tree, MIC bricks-falling-into-place), per-entry colour-fill on scroll progression, line pulsing. See .claude/parking.md for full implementation sketch.
+
+### sgs/pricing-table polish (Phase 2A Branch E)
+
+Five Kadence-Pro-parity additions:
+1. billingToggle boolean to 4-value enum (monthly-yearly / monthly-only / yearly-only / none) with backward-compat
+2. features array of strings to array of objects with text and included keys, render emits check/cross SVG (legacy strings treated as included=true)
+3. Per-plan iconName (Lucide picker)
+4. Per-plan ribbonText + ribbonColour (absolute top-right badge)
+5. Per-plan savingsBadgeText (auto-shown when yearly toggle active)
+
+### Universal-extension UI components (Phase 2A Branch F)
+
+Six shared React components in plugins/sgs-blocks/src/components/universal-extensions/. ALSO ship globally via addFilter editor.BlockEdit HOC in src/blocks/extensions/index.js — every block already gets them in the inspector automatically. The new components are for direct-import in new blocks.
+
+### Block attribute audit (Phase 2A Branch G)
+
+Audit report at reports/2026-05-20-block-attribute-audit.csv. 9 block.json retrofits applied. Confirmed: imageControls is the only supports.sgs flag the universal extensions gate on. All other extensions are attribute-driven (apply universally via render_block filters).

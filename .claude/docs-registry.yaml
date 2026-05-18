@@ -121,6 +121,44 @@ canonical_docs:
       - column_add_remove_rename
       - script_newly_reads_or_writes_table
 
+  - path: .claude/specs/02-SGS-BLOCKS.md
+    scope: spec_version_canonical
+    doc_type: spec
+    spec_version: 2
+    owns: "Block-by-block specifications + Phase 2A additions (sgs/responsive-logo, sgs/icon multi-source, sgs/timeline, pricing-table polish, universal-extension components, block attribute audit)"
+    update_triggers:
+      - block_added
+      - block_attribute_change
+      - block_retired
+
+  - path: .claude/specs/17-HEADER-FOOTER-ARCHITECTURE.md
+    scope: spec_version_canonical
+    doc_type: spec
+    spec_version: 17
+    owns: "Spec 17 header/footer architecture (Site Info store + rules engines + CPTs + WP-CLI + behaviour layer via body_class)"
+    update_triggers:
+      - architectural_change
+      - fr_addition
+      - new_behaviour_added
+
+  - path: .claude/specs/18-SGS-FLOATING-UI.md
+    scope: spec_version_canonical
+    doc_type: spec
+    spec_version: 18
+    owns: "Floating UI Customiser controls (7 canonical) — Back to Top + Reading Progress + integration with Sgs_Floating_UI_Renderer"
+    update_triggers:
+      - control_added_or_removed
+      - renderer_logic_change
+
+  - path: .claude/specs/19-SGS-CLI-COMMANDS.md
+    scope: spec_version_canonical
+    doc_type: spec
+    spec_version: 19
+    owns: "Canonical wp sgs CLI surface (12 commands + behaviour parameter — see Spec 17 behaviour layer)"
+    update_triggers:
+      - cli_command_added_or_removed
+      - cli_parameter_change
+
   - path: .claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md
     scope: spec_version_canonical
     doc_type: spec

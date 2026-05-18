@@ -179,3 +179,31 @@ reads a static option with no user-supplied routing.
 | Smooth-scroll easing picker | Low | CSS `scroll-behavior` doesn't support custom easing; JS-based smooth scroll with easing param |
 | Custom icon picker for the BTT button | Medium | Replace the hard-coded chevron SVG with a Lucide icon selector |
 | Per-page disable via post meta | Medium | `_sgs_disable_floating_ui` post meta checkbox in the block editor sidebar |
+
+
+---
+
+## Phase 2A Cleanup (2026-05-20 — commits af5755b2 / 2be7c648)
+
+### Legacy theme-side floating UI retired
+
+Before Phase 2A, the theme (sgs-theme) carried a PARALLEL floating-UI system: 16 Customiser controls (sgs_back_to_top_* + sgs_reading_progress_* prefixes) registered alongside Spec 18 seven canonical controls (sgs_floating_ui_* prefix). Operators saw 23 controls in Appearance to Customise to SGS Floating UI — confusing UX where some controls were duplicate-purpose and others were dead.
+
+Branch J deleted the theme-side parallel system entirely (985 lines):
+- theme/sgs-theme/inc/floating-ui-customiser.php — registered the 16 orphan controls
+- theme/sgs-theme/inc/floating-ui-output.php — read the theme_mods + enqueued 4 theme assets
+- theme/sgs-theme/assets/css/back-to-top.css
+- theme/sgs-theme/assets/css/reading-progress.css
+- theme/sgs-theme/assets/js/back-to-top.js
+- theme/sgs-theme/assets/js/reading-progress.js
+- theme/sgs-theme/assets/js/customiser-preview.js
+
+theme/sgs-theme/functions.php updated to drop the two require_once lines.
+
+### Final state
+
+All floating UI now lives ENTIRELY in the plugin (sgs-blocks):
+- 7 canonical controls registered by Sgs_Floating_UI_Customiser
+- All frontend output handled by Sgs_Floating_UI_Renderer
+
+Customiser to SGS Floating UI section verified live (2026-05-20) shows exactly 7 controls with the sgs_floating_ui_* prefix.

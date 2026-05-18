@@ -1,0 +1,41 @@
+{
+  "mockup_url": "https://sandybrown-nightingale-600381.hostingersite.com/2026/05/15/spec16-p7-mockup-baseline-2026-05-15/",
+  "sgs_url": "https://sandybrown-nightingale-600381.hostingersite.com/2026/05/15/spec16-p7-converter-v2-output-2026-05-15/",
+  "viewport": "1440x900",
+  "mockup_dimensions": [
+    780,
+    2110
+  ],
+  "sgs_dimensions": [
+    1000,
+    705
+  ],
+  "aligned_dimensions": [
+    1000,
+    705
+  ],
+  "mismatched_pixels": 220281,
+  "total_pixels": 705000,
+  "mismatch_percent": 31.2455,
+  "threshold_percent": 1.0,
+  "verdict": "FAIL",
+  "captured_at": "2026-05-16T21:10:32.329461+00:00",
+  "attribute_coverage": {
+    "coverage_percent": 42.11,
+    "total_rules": 19,
+    "covered_rules": 8,
+    "uncovered_rules": [
+      "*, *::before, *::after",
+      "img",
+      "a",
+      "*, *::before, *::after",
+      ".sgs-header__nav",
+      ".sgs-header__hamburger",
+      ".sgs-header__nav a",
+      ".sgs-header__nav a:hover",
+      ".sgs-header__nav-featured",
+      ".sgs-header__nav-featured:hover",
+      ".sgs-header__nav a"
+    ]
+  }
+}

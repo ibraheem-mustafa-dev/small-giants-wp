@@ -706,3 +706,41 @@ Spec ships successfully if all observable on sandybrown canary site:
 ---
 
 *End of Spec 17 v2. Council-approved. Ready for parallel-subagent implementation.*
+
+
+---
+
+## Phase 2A Additions (2026-05-20 — commits a7f85a4a / 9a6808d5 / 0201c0d9)
+
+### Behaviour layer (resolves Spec 17 §S3 visual variants gap)
+
+The header rule engine routes a pattern slug. Phase 2A adds an orthogonal behaviour axis: transparent / sticky / hide-on-scroll-down. Stored on the rule as behaviour key alongside pattern_slug + conditions.
+
+Injection strategy: body_class (FINAL). Two earlier attempts using pre_render_block short-circuit + render_block_core/template-part failed because:
+1. Sgs_Header_Rules::filter_template_part short-circuits pre_render_block with content that has no header tag — regex injection found nothing to inject into.
+2. When pre_render_block returns non-null, WP core skips both the render_callback wrapper AND the render_block filter chain.
+
+The body_class strategy bypasses the entire short-circuit chain:
+- add_filter body_class walks Sgs_Header_Rules::list_rules + rule_matches to find the active rule
+- Appends 3 classes: sgs-has-header (always, stable cloning-recogniser hook) + sgs-has-header-behaviour (when ANY behaviour matches) + sgs-header-behaviour-{slug} (specific behaviour)
+- CSS targets body.sgs-header-behaviour-* header.wp-block-template-part
+- JS reads behaviour from body class regex, toggles body.is-header-scrolled + body.is-header-scrolling-down for state
+
+Specificity fix: Some WP core rule wins specificity for position and top on .wp-block-template-part. Resolved with !important on those two properties only (z-index won naturally).
+
+Verified live on sandybrown (2026-05-20): header_position sticky, header_top 0px, scroll_padding_top 80px (WCAG 2.4.11 fix), --sgs-header-height 80px (ResizeObserver publisher).
+
+### WCAG 2.4.11 mitigation (no competitor solves this fully)
+
+view.js runs a ResizeObserver on header.wp-block-template-part publishing --sgs-header-height to root + body. header-behaviours.css consumes it via root scroll-padding-top. Anchor link clicks now land BELOW the sticky header (the F110 failure none of Kadence/Spectra/GenerateBlocks/Astra/Blocksy solve cleanly).
+
+### Files
+
+- plugins/sgs-blocks/includes/class-sgs-header-behaviours.php — body_class filter + asset enqueuer
+- plugins/sgs-blocks/assets/css/header-behaviours.css — behaviour CSS + scroll-padding-top
+- plugins/sgs-blocks/src/header-behaviours/view.js — ResizeObserver + scroll listener
+- plugins/sgs-blocks/tests/php/HeaderBehavioursTest.php — body_class strategy tests
+
+### Pattern fate (decision pending)
+
+The 3 framework-header stub patterns (framework-header-transparent, -sticky, -shrink) all delegate 100% to default. Now that behaviour layer attaches via body_class, the stubs are byte-identical to default + a behaviour rule. Branch J audit recommendation: delete the 3 stubs. Operator workflow becomes pure: SGS to Header Rules + behaviour dropdown. Decision needs Bean confirmation — see reports/2026-05-20-framework-header-stub-audit.md for trade-offs.

@@ -945,3 +945,27 @@ Synced 2026-05-13. Next sync trigger: after Phase 6 wiring lands (status column 
 - Phase 6 plan: [.claude/plans/phase-6-pattern-fidelity.md](plans/phase-6-pattern-fidelity.md)
 - State: [.claude/state.md](state.md)
 - Decisions log: [.claude/decisions.md](decisions.md)
+
+---
+
+## Phase 2A Recogniser Targets (2026-05-20)
+
+Three new SGS-BEM selectors land in main and become valid recogniser match targets for the Stage 3+ slot-aware DOM walker:
+
+| Recogniser target selector | Source block | Notes |
+|----------------------------|--------------|-------|
+| `.sgs-responsive-logo` (+ `__picture`, `__image--desktop/tablet/mobile`, `__svg`, `__link`, `--animate-*`, `.is-animating`/`.is-animated`) | `sgs/responsive-logo` | 3-slot logo with picture-element breakpoint swap. Falls back to core site-logo when no slots set. |
+| `.sgs-icon` (+ `__link`, `__svg`, `__emoji`, `__dashicon`, `--source-{lucide,wp-icon,dashicon,emoji}`, `--size-*`) | `sgs/icon` | Multi-source icon (Lucide / WP / Dashicon / emoji). |
+| `.sgs-timeline` (+ `--vertical/horizontal`, `--align-*`, `__entry`, `__date`, `__node`, `__content`, `__title`, `__description`, `__image`, `__connector`, `.is-revealed`) | `sgs/timeline` | Date-based timeline; semantic ol/li/time markup. |
+
+Plus header behaviour wrapper hook:
+
+| Selector | Note |
+|----------|------|
+| `body.sgs-has-header` | Always present when ANY header rule matches (stable recogniser hook). |
+| `body.sgs-has-header-behaviour` | Present when active rule has a behaviour. |
+| `body.sgs-header-behaviour-{transparent,sticky,hide-on-scroll-down}` | Specific behaviour modifier. |
+
+The Phase 2A pricing-table additions (Branch E) also extend the recogniser surface: `__icon`, `__ribbon`, `__savings-badge`, `__feature--included`, `__feature--excluded`.
+
+**Next session recogniser work:** run `/sgs-update` to sync `sgs-framework.db` with the new blocks (responsive-logo, icon multi-source, timeline) + the new attributes on pricing-table. Then ensure `tools/recogniser/` matches a draft mockup carrying any of these SGS-BEM selectors directly to the corresponding SGS block.

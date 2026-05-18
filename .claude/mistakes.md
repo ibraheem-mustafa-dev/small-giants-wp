@@ -652,3 +652,22 @@ When a lesson fires that you want to remember:
 1. Add a `feedback_<slug>.md` file to the auto-memory dir
 2. Add a row to this table
 3. The CC auto-memory system reloads it automatically next session
+
+## 2026-05-20 — CSS injection strategy assumed DOM injection; should have started with body_class
+
+**What:** Branch A (Phase 2A header behaviour layer) wrote `Sgs_Header_Behaviours::inject_behaviour_class` to find the rendered `<header>` element and inject `.sgs-header--sticky` etc directly via regex on the returned HTML. The filter hooked `sgs_header_rule_resolved`. It never fired in practice because:
+1. The content returned by `Sgs_Header_Rules::filter_template_part` had no `<header>` tag (WP core adds the wrapper later)
+2. The wrapper `<header class="wp-block-template-part">` is added by `render_block_core_template_part()` AFTER the `pre_render_block` short-circuit
+3. When `pre_render_block` returns non-null, WP core ALSO skips the `render_block_{name}` filter chain — so a second filter on `render_block_core/template-part` also never fired
+
+A second attempt added the `render_block_core/template-part` filter and similarly failed. Two attempts, no working injection.
+
+**Why it happened:** The mental model assumed "find the header element in the rendered HTML and edit it". The correct strategy was always to use WP's body_class filter — fires on every wp_head independent of the template-part render chain. CSS targets `body.sgs-header-behaviour-* header.wp-block-template-part`. No DOM rewriting needed. Done in ~30 minutes by Branch I.
+
+**The lesson:** when WP renders a block with `pre_render_block` short-circuit AND the rendered output includes a wrapper element added by core's render_callback, DO NOT try to regex into the wrapper. Use body_class (or a parent-element class) to signal state + CSS targeting. This is the WordPress idiomatic pattern.
+
+**Sibling specificity gotcha:** even when the body_class-strategy CSS reached the document, `position: sticky` and `top: 0` were overridden by some WP core rule on `.wp-block-template-part`. `z-index: 100` from the same declaration block won. Resolved with `!important` on the two properties only. Lesson: WP core has competing template-part defaults at higher specificity than expected — when overriding `position` / `display` / `top` on core wrapper elements, default to `!important` rather than chasing the specificity battle.
+
+**How to apply:** for any future PHP-side injection into WP-rendered core blocks, ask first: "Does WP's render chain wrap my content in something? Can I target the wrapper via body_class + CSS instead of regex injection?" body_class is cheaper, more reliable, and survives every WP render path.
+
+Captured 2026-05-20. blub.db pattern_key candidate: `body-class-strategy-over-dom-injection`.

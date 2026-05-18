@@ -1,175 +1,200 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-session_tag: small-giants-wp-2026-05-20-spec-17-live-verification
-generated: 2026-05-19
-prior_session: small-giants-wp-2026-05-19-floating-ui-plus-skill-restructure
+session_tag: small-giants-wp-2026-05-21-cloning-pipeline-improvement
+generated: 2026-05-20
+prior_session: small-giants-wp-2026-05-20-phase-2a-massive
 ---
 
-# Spec 17 live-site verification + Phase 2 block roadmap kickoff
+# Cloning pipeline improvement — orchestration plan
 
-You are a senior SGS Framework engineer with deep WordPress + Gutenberg expertise. The prior 4 sessions (ending 2026-05-19) shipped Spec 17 entirely (Header/Footer Architecture: 16 FRs + Customiser Floating UI replacement). Every test passes (1195/0/0); code is on `main` at `d4da8c68`. Nothing has been deployed to a real WP install yet. This session's job: prove Spec 17 works on a real site, then kick off the Phase 2 block roadmap.
+You are a senior SGS Framework engineer with deep WordPress + Gutenberg + cloning-recogniser expertise. The prior session (2026-05-20) shipped Phase 2A on `main` at `0201c0d9` — 3 new blocks, header behaviour layer via body_class, Spec 18 cleanup. This session pivots back to the cloning pipeline (Spec 16 phase 7 / orchestrator resumption) and improves it before any further block work.
 
-## State recap (plain English)
+## State recap
 
-We built a lot. We have not yet tested any of it on a live WP install. Per Bean's outcome-vs-completion bar, "code shipped" is not the same as "outcome achieved" — operator workflows on a real site are what closes the loop. The sandybrown clone is the canonical staging surface; palestine-lives.org is the long-running dev WP install. Both need to load the new admin pages, accept Customiser changes, run the `wp sgs` CLI commands with `--user=1`, and surface no PHP fatals or REST errors. Once sandybrown is green, deploy palestine-lives.org via the canonical tar method. Then start Phase 2 block additions per the master feature audit: hover effects across all blocks, Icon Block, Timeline block, Pricing Table polish.
+Phase 2A is done and deployed live on sandybrown + palestine-lives.org. Three new SGS-BEM selector families now exist for the recogniser to match: `.sgs-responsive-logo*`, `.sgs-icon*`, `.sgs-timeline*`, plus `body.sgs-header-behaviour-*` for header state. `sgs-framework.db` has NOT been re-synced since Phase 2A landed — it's lagging behind code. `pipeline-state/<latest-run>/leftover-buckets.json` (if present) is the canonical evidence source for converter quality — read it BEFORE conjecturing about any pipeline issue (binding rule blub.db row 254).
 
-## Skills to Invoke
+Three open follow-ups exist as parking entries but are not blockers: P-S18-TRANSPARENT-PATTERN-IS-STUB (needs delete decision), P-TIMELINE-ADVANCED-VISUAL-EFFECTS (deferred), CLI behaviour-flag plumbing (~20 min cheap win).
 
-| Skill | When to use |
-|-------|-------------|
-| `/brainstorming` | Architectural decisions inside Phase 2 block design |
-| `/gap-analysis` | Grade Phase 2 deliveries before merge |
-| `/lifecycle` | Any skill/agent/pipeline changes |
-| `/research` | If WP 6.9 Customiser preview behaviour needs verification |
-| `/strategic-plan` | Before kicking off Phase 2 — full roadmap pass |
-| `/sgs-wp-engine` | All SGS framework work |
-| `/wp-wpcli-and-ops` | Run + verify `wp sgs` commands |
-| `/wp-plugin-development` | Phase 2 block plumbing |
-| `/wp-block-development` | New block scaffolding |
-| `/wp-rest-api` | If new REST endpoints are added |
-| `/wp-block-themes` | If theme.json updates are needed |
-| `/visual-qa` | Capture admin page screenshots + Customiser preview |
-| `/qc` | Multi-rater panel before every Phase 2 commit (binding rule) |
-| `/qc-inline` | Self-check before each merge |
-| `/deploy-check` | Pre-deploy verification |
-| `/delegate` | Pick model per subagent dispatch |
-| `/dispatching-parallel-agents` | Phase 2 blocks are parallel-dispatch-shaped |
-
-## MCP Servers & Tools
-
-| Tool | What to use it for |
-|------|-------------------|
-| `mcp-wordpress` REST | Verify block registration + CPT REST capability gating on sandybrown |
-| `playwright` | Multi-viewport screenshots of admin pages + Customiser preview |
-| `chrome-devtools-mcp` | Inspect Customiser preview iframe + console errors |
-| `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py` | Block schema + style variation queries |
-| `python ~/.claude/hooks/context7.py` | WP 6.9 docs for Customiser postMessage transport |
-
-## Agents to Delegate To
-
-| Agent | When |
-|-------|------|
-| `wp-sgs-developer` | Phase 2 block builds with WP-specific judgement |
-| General-purpose Sonnet | Live-site smoke test scripting + per-block scaffold work |
-| `design-reviewer` | Visual quality check on admin pages + Customiser |
-| `performance-auditor` | Lighthouse on admin pages once deployed |
+Read CLAUDE.md, `.claude/handoff.md`, and `.claude/cloning-pipeline-flow.md` for full context before starting.
 
 ---
 
-## Task 1 — Deploy Spec 17 to sandybrown + smoke test
+## Task 1 — Sync sgs-framework.db with Phase 2A
 
-**What:** Build + tar-deploy `theme/sgs-theme` + `plugins/sgs-blocks` to sandybrown-nightingale-600381.hostingersite.com. Smoke test: load each admin page, run each `wp sgs` command, activate a style variation, click through Customiser Floating UI, confirm no PHP fatals or REST errors.
+**What:** Run `/sgs-update` to scan the codebase + regenerate `sgs-framework.db` + `02-SGS-BLOCKS-REFERENCE.md` + mirror to uimax `component-libraries.csv`.
 
-**Why:** code shipped ≠ outcome achieved until verified on real WP. This is the gate before any further build work.
+**Why:** The DB is stale by 11+ commits. Cloning recogniser reads from this DB. Without sync, new SGS-BEM selectors won't resolve to their owning blocks during recognition.
 
-**Estimated time:** 30 min
+**Estimated time:** 10 min
 
 **Orchestration:**
-- Execution: inline (main thread on Opus) — destructive, single-coordinated path
-- Reason: deploy is sequential; smoke-test scripting can be done by main thread directly
+- Execution: inline (main thread on Opus)
 - Depends on: none
 - Parallel with: none
-- /qc gate after: visual-qa via Playwright on the 7 admin pages + Customiser preview (capture screenshots)
+- /qc gate after: no — `/sgs-update` is mechanical; verification is the stats output
 
-**Reference docs to consult during this task:**
-- `.claude/specs/19-SGS-CLI-COMMANDS.md` — canonical `wp sgs` reference (12 commands, capabilities, examples, common errors)
-- `.claude/specs/18-SGS-FLOATING-UI.md` — Floating UI spec (7 controls, expected frontend behaviour, a11y bar)
-- `.claude/specs/17-SGS-HEADER-FOOTER-ARCHITECTURE.md` — Spec 17 master (admin pages + CPT REST gate + rules engine)
-
-**Acceptance:**
-- `npm run build` clean → tar deploy → SSH unpack → OPcache reset all complete
-- All 7 admin pages load without fatal: SGS top-level menu, Site Info, Header Rules, Footer Rules, Advanced Headers, Advanced Footers, Reset Header/Footer, Style Variations
-- All 12 `wp sgs` commands verified per Spec 19 examples (run each with `--user=1` where required; capture stdout)
-- Customiser → SGS Floating UI section appears with 7 controls per Spec 18
-- Toggling back-to-top enabled in Customiser shows the button immediately (postMessage transport works)
-- CPT REST: GET `/wp-json/wp/v2/sgs_header` as subscriber returns 403; as admin returns array
-- Conditional rule: add a rule "post type = page, URL = ^/$" → activate sgs-header-transparent → load homepage → header markup is the transparent variant
+**Acceptance:** DB shows 74+ blocks (was 71 pre-Phase-2A: +responsive-logo, +icon, +timeline; -icon-block retired). pricing-table block has new attrs visible (`iconName`, `ribbonText`, `savingsBadgeText`, etc.). uimax CSV row count grows by 3+ for new blocks.
 
 ---
 
-## Task 2 — Deploy Spec 17 to palestine-lives.org once sandybrown is green
+## Task 2 — Pipeline state audit + leftover-bucket walk
 
-**What:** Same tar deploy + smoke test against palestine-lives.org. Lower verification bar (sandybrown is the canonical clone) — confirm no fatals on homepage load + admin nav.
+**What:** Find the most recent pipeline run in `pipeline-state/` and walk its `leftover-buckets.json`. If no recent run exists, run `/sgs-clone` with `--converter-v2` against Mama's homepage post 131 baseline to generate a fresh state.
 
-**Why:** palestine-lives.org is the long-running dev WP; needs the new code so future block work loads against a current baseline.
+**Why:** Binding rule blub.db row 254: read evidence BEFORE conjecturing about pipeline quality. Bean lost ~6 hours on 2026-05-15 to this exact mistake.
 
-**Estimated time:** 15 min
+**Estimated time:** 15 min audit + (60 min if pipeline run needed)
 
 **Orchestration:**
-- Execution: inline
-- Depends on: Task 1 green
-- Parallel with: none
-- /qc gate after: Playwright homepage smoke
+- Execution: inline (main thread on Opus)
+- Depends on: Task 1 (DB must be current so recogniser resolves correctly)
+- Parallel with: none — sequential evidence-gathering
+- /qc gate after: no — audit is read-only
 
-**Acceptance:** homepage loads without fatal; admin login works; SGS top-level menu visible.
+**Acceptance:** A written summary of (a) which sections fail and which bucket they're in (extraction_failed / generation_failed / etc.), (b) which gaps are converter bugs vs block-CSS gaps vs intentional mockup choices, (c) the top 3 highest-impact root-cause fixes ranked by section count affected.
 
 ---
 
-## Task 3 — Phase 2 strategic plan (hover effects + Icon Block + Timeline + Pricing Table polish)
+## Task 3 — Recogniser update for Phase 2A SGS-BEM selectors
 
-**What:** Invoke `/strategic-plan` against the master feature audit (`docs/plans/2026-02-21-master-feature-audit.md`) for Phase 2 P1 items. Produce a per-FR breakdown: which 4 blocks get hover scale + shadow + image-zoom; Icon Block scaffolding; Timeline block scaffolding; Pricing Table polish (already built but tagged L14 — verify what L14 means + close gaps).
+**What:** Extend `tools/recogniser/` (or wherever the slot-aware DOM walker lives in Spec 16) to match the new selector families on a draft mockup:
+- `.sgs-responsive-logo` → `sgs/responsive-logo` block with 3-slot attribute mapping
+- `.sgs-icon` → `sgs/icon` block with source-detection (`--source-{lucide,wp-icon,dashicon,emoji}` modifier reveals which iconSource enum)
+- `.sgs-timeline` → `sgs/timeline` block with orientation + alignment + entries[] population
+- `body.sgs-header-behaviour-*` → write a rule on `sgs_header_rules` option with `behaviour` set
 
-**Why:** Phase 2 was paused for Spec 17. Spec 17 is now done. Strategic plan gates the next round of parallel dispatch.
+**Why:** Without recogniser awareness, scraped sites carrying these selectors fall through to gap-candidate flagging instead of clean SGS-block emission.
+
+**Estimated time:** 40 min
+
+**Orchestration:**
+- Execution: delegated (single Sonnet subagent)
+- Model: sonnet via `/delegate`
+- Dispatch pattern: single-agent
+- Brief: "Read Spec 16 §recogniser, existing `tools/recogniser/` matchers, and the new SGS-BEM selectors documented in `.claude/cloning-pipeline-flow.md` (Phase 2A Recogniser Targets section). Extend the matcher table to map each new selector family to its SGS block with attribute-fill logic. Add tests."
+- Context the subagent needs that won't be in cold context: file paths in `tools/recogniser/`, the new selectors list (in cloning-pipeline-flow.md tail), `db_lookup.py` is the canonical DB resolver, NO new hardcoded dicts allowed (blub.db row 2026-05-17).
+- Depends on: Task 1 (DB must be current)
+- Parallel with: Task 4
+- /qc gate after: `/qc-inline` self-check before commit
+
+**Acceptance:** Recogniser unit test demonstrates a mockup `<div class="sgs-responsive-logo"><img .../></div>` correctly resolves to `wp:sgs/responsive-logo` with `desktopLogoId` populated. Same for `.sgs-icon` and `.sgs-timeline`.
+
+---
+
+## Task 4 — CLI behaviour-flag plumbing on wp sgs header_rules add
+
+**What:** Extend `Sgs_Header_Rules::add_rule()` sanitiser to accept the `behaviour` key from the input JSON. Add `--behaviour=<slug>` examples to the CLI help. Validates against `Sgs_Header_Behaviours::VALID_BEHAVIOURS`.
+
+**Why:** Currently the body_class layer reads behaviour but the CLI strips it. Operators can only set behaviour via `wp eval` patching the option directly — clunky.
 
 **Estimated time:** 20 min
 
 **Orchestration:**
-- Execution: inline (main thread orchestrates strategic-plan)
-- Depends on: Task 1 + 2 green
-- Parallel with: none — planning runs alone, no implementation until plan locks
-- /qc gate after: /docscore on the plan output
+- Execution: delegated (single Haiku subagent — mechanical, well-scoped, plumbing only)
+- Model: haiku via `/delegate`
+- Dispatch pattern: single-agent
+- Brief: "Read `plugins/sgs-blocks/includes/class-sgs-header-rules.php` `add_rule()` method. Extend its sanitiser to accept + validate a `behaviour` string key against `Sgs_Header_Behaviours::VALID_BEHAVIOURS`. Add usage examples + a PHPUnit test."
+- Context: forbidden values silently drop to none; valid values pass through; commit message follows project conventions; no `Co-Authored-By`.
+- Depends on: none
+- Parallel with: Task 3
+- /qc gate after: `/qc-inline`
 
-**Acceptance:** strategic-plan output names ≥4 implementation tasks with model + dispatch pattern annotations + estimated wall clock; written to `.claude/plans/phase-2-block-roadmap.md`.
+**Acceptance:** `wp sgs header_rules add '{"pattern_slug":"sgs/framework-header-default","priority":5,"behaviour":"sticky","conditions":[]}'` adds a rule with behaviour persisted. Invalid behaviour value silently coerces to `none`. PHPUnit test covers both paths.
 
 ---
 
-## Task 4 — Phase 2 block implementations (parallel dispatch)
+## Task 5 — Stub-pattern decision + execution
 
-**What:** Per the strategic plan from Task 3, dispatch parallel subagents for the Phase 2 P1 items. Likely 3-4 Sonnet subagents covering hover scale + shadow extension across 4 named blocks; Icon Block (Lucide picker + size/colour); Timeline block (vertical/horizontal scroll-reveal).
+**What:** Read `reports/2026-05-20-framework-header-stub-audit.md`. Surface Bean for the decision: delete the 3 stubs (transparent / sticky / shrink) OR keep them as inserter starter packs. Execute decision (delete or annotate-and-keep).
 
-**Why:** master-feature-audit Phase 2 is the next operator-visible value.
+**Why:** Stubs are byte-identical to default-pattern + behaviour rule. Decision was deferred to next session.
 
-**Estimated time:** 60-90 min wall clock for the parallel round
+**Estimated time:** 15 min (decision + execution)
 
 **Orchestration:**
-- Execution: delegated parallel
-- Model: sonnet for each block scaffold
-- Dispatch pattern: `/dispatching-parallel-agents` — file-disjoint by block
-- Brief per subagent: scaffold via @wordpress/create-block conventions; wire into block category; PHPUnit + Playwright integration; per-block QC
-- Depends on: Task 3 plan locked
-- Parallel with: all sibling blocks (file-disjoint)
-- /qc gate after each block: `/qc-inline`
+- Execution: inline (main thread on Opus — Bean decision required)
+- Depends on: Task 4 (CLI flag must work so the decision is informed)
+- Parallel with: none
+- /qc gate after: no — small change, `/qc-inline` if executed
 
-**Acceptance:** each new block has block.json + edit + save + render.php + tests; registered in `sgs-content` or `sgs-layout` category; visible in editor block inserter.
+**Acceptance:** Either the 3 stub patterns are deleted from `theme/sgs-theme/patterns/` (preferred per audit) OR each is annotated with a comment explaining "kept as starter pack — set `behaviour` rule manually" (alternative). Decision logged in `.claude/decisions.md` as Decision 10.
 
 ---
 
 ## Dependency graph
 
 ```
-Task 1 (sandybrown deploy + smoke) — inline, Opus, ~30 min
-  ↓ Playwright /visual-qa gate
-Task 2 (palestine-lives deploy) — inline, ~15 min, depends Task 1 green
+Task 1 (/sgs-update, inline Opus, ~10 min)
   ↓
-Task 3 (Phase 2 strategic plan) — inline /strategic-plan, ~20 min
-  ↓ /docscore gate
-Task 4 (Phase 2 parallel implementations) — 3-4 sonnet subagents via /dispatching-parallel-agents, ~60-90 min
-  ↓ /qc-inline per block
+Task 2 (pipeline-state audit, inline Opus, ~15-75 min)
+  ↓
+Task 3 (recogniser update — sonnet) || Task 4 (CLI flag — haiku)
+  [parallel via /dispatching-parallel-agents]
+  ↓ /qc-inline on both
+Task 5 (stub-pattern decision, inline Opus, ~15 min)
+  ↓
 Commit + merge to main (Gate 2)
 ```
 
+Total wall clock: ~2 hours parallel, ~3.5 hours sequential.
+
+---
+
+## Skills to Invoke
+
+| Skill | When to use |
+|-------|-------------|
+| `/brainstorming` | Architecture decisions inside Tasks 2-3 (recogniser strategy) |
+| `/gap-analysis` | Grade Task 3 recogniser output before merge |
+| `/lifecycle` | Any skill/agent/pipeline changes |
+| `/research` | Auto-routes to right research tier if external info needed |
+| `/strategic-plan` | If Task 2 reveals deeper pipeline rework is needed |
+| `/sgs-update` | Task 1 — DB + uimax sync |
+| `/sgs-clone` | Task 2 — pipeline run if no recent state exists |
+| `/sgs-wp-engine` | All SGS framework context |
+| `/wordpress-router` | If new WP touchpoints surface during Task 3 |
+| `/wp-rest-api` | If recogniser update touches REST endpoints |
+| `/delegate` | Pick model per subagent dispatch (Tasks 3 + 4) |
+| `/dispatching-parallel-agents` | Tasks 3 + 4 are file-disjoint Sonnet + Haiku parallel |
+| `/subagent-prompt` | Write the cold prompt for each subagent dispatch |
+| `/qc` | Multi-rater panel before commits touching pipeline / SGS block logic (binding rule blub.db row 255) |
+| `/qc-inline` | Lighter self-check during implementation |
+
+## MCP Servers & Tools
+
+| Tool | What to use it for |
+|------|-------------------|
+| `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py` | Block schema queries after Task 1 |
+| `python ~/.claude/hooks/search.py` | Web research (auto-routes Brave / Firecrawl / SerpAPI / Tavily) |
+| `mcp__plugin_playwright_playwright__browser_*` | Verify recogniser output via live mockup capture |
+| `python ~/.claude/hooks/context7.py` | WP 6.9 docs if Task 3 needs core API specifics |
+| `mcp-wordpress` REST | Verify block registration on sandybrown |
+
+## Agents to Delegate To
+
+| Agent | When |
+|-------|------|
+| `wp-sgs-developer` | If Task 3 / 4 expands beyond mechanical plumbing |
+| General-purpose sonnet | Task 3 recogniser update |
+| General-purpose haiku | Task 4 CLI plumbing |
+| `seo-auditor` | Not in scope this session |
+
 ## Methodology guardrails (do not skip)
 
-- **Deploy before measure** — any visual / pixel-diff verification on sandybrown requires `npm run build` + tar deploy + OPcache reset BEFORE testing. Stale builds give false negatives. Captured 2026-05-18.
-- **Root cause before instance fix** — when a Phase 2 block fails parity, ask "what's the class of failure?" before fixing the instance. Captured 2026-05-18.
-- **Outcome vs completion** — code shipped ≠ outcome achieved. Verify on real WP. Captured 2026-05-18.
-- **/qc multi-rater BEFORE every commit** touching SGS block logic (blub.db row 255).
-- **Per-section cropped pixel-diff** via `--selector .sgs-{section}`, NOT full-page. Full-page has ~30-45% noise floor (blub.db row 256).
-- **`--converter-v2` required** on production orchestrator runs (captured 2026-05-18).
-- **`WP_DEBUG_DISPLAY=false`** on sandybrown — debug notices contaminate pixel-diff (captured 2026-05-18).
-- **Plain English first** — every major update opens with one-sentence plain-English statement before technical detail (captured 2026-05-18 communication-standards HARD RULE).
-- **No git-destructive commands in subagents** — `git reset` / `git restore` / `git checkout --` / `git clean` / `git stash` (any flavour) are forbidden. Two stash incidents on 2026-05-18 wiped ~30 tracked files of work. Subagent prompts MUST carry the explicit safety clause. Captured 2026-05-18 (`feedback_no_git_stash_in_subagents.md`).
-- **Build replacement before retiring legacy** — never delete a feature before the replacement is built, tested, shipped. Captured 2026-05-19 (`feedback_build_replacement_before_retiring_legacy.md`).
-- **NO `Co-Authored-By` footer** in commits (global rule).
-- **WP-CLI commands need `--user=<id>`** for any write operation. Capability gate fires inside command body.
+- **Read leftover-buckets.json BEFORE conjecturing.** Binding rule blub.db row 254. Pipeline-state evidence is canonical.
+- **Multi-model /qc panel BEFORE every commit** touching converter / pipeline / SGS block logic (blub.db row 255).
+- **Per-section cropped pixel-diff** via `scripts/pixel-diff.py --selector .sgs-{section}`, NOT full-page (blub.db row 256).
+- **--converter-v2 required** on production orchestrator runs (captured 2026-05-18).
+- **WP_DEBUG_DISPLAY must stay false** on staging — debug notices contaminate pixel-diff (captured 2026-05-18).
+- **Outcome vs completion** — if a task doesn't hit the stated outcome, do NOT mark it done. Code shipped ≠ outcome achieved.
+- **Plain English first** — every major update opens with one-sentence plain-English statement before technical detail.
+- **No `git stash` / `git reset` / `git checkout --` / `git restore` / `git clean`** in any subagent prompt (blub.db 2026-05-18).
+- **NO `Co-Authored-By` footer** in commits.
+- **--no-verify** is LEGITIMATE per project `.git/hooks/pre-commit` documentation for non-visual changes (block.json metadata, PHP logic). The hook itself instructs this.
+- **No new hardcoded dicts** in converter/recogniser scripts — check sgs-framework.db tables first (binding rule 2026-05-17).
+- **Bean-controlled drafts use SGS-prefixed BEM** (`.sgs-<block>__<element>--<modifier>`).
+
+## Sandybrown / palestine-lives credentials
+
+`.claude/secrets/credentials.yml` (gitignored). Sandybrown admin `Claude` / `JJSO0xscZ38%EcWP)1EU%0V$`. App password for REST API: `U7mv uB22 0ST2 DITH SJFP I9o6`. SSH alias `hd` via `ssh -p 65002 u945238940@141.136.39.73`.
