@@ -15,6 +15,9 @@
   "textdomain": "sgs-blocks",
   "icon": "admin-appearance",
   "supports": {
+    "sgs": {
+      "imageControls": false
+    },
     "align": false,
     "anchor": true,
     "html": false,
