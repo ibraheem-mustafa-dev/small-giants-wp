@@ -99,12 +99,7 @@
 	text-align: center;
 }
 
-.sgs-pricing-table__title {
-	margin: 0 0 var(--wp--preset--spacing--20, 1rem);
-	font-size: var(--wp--preset--font-size--large, 1.5rem);
-	font-weight: 700;
-	color: var(--wp--preset--color--heading, #1e1e1e);
-}
+/* __title kept as a selector alias in the billing-toggle section below. */
 
 .sgs-pricing-table__price-wrapper {
 	display: flex;
@@ -267,8 +262,81 @@
 	display: none;
 }
 
+/* ── Per-plan icon ───────────────────────────────────────────────────────── */
+
+.sgs-pricing-table__icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: var(--wp--preset--spacing--20, 1rem);
+	color: var(--wp--preset--color--primary, #0f7e80);
+}
+
+.sgs-pricing-table__icon svg {
+	width: 2rem;
+	height: 2rem;
+}
+
+/* ── Per-plan ribbon ──────────────────────────────────────────────────────── */
+
+.sgs-pricing-table__ribbon {
+	position: absolute;
+	top: 0;
+	right: 0;
+	padding: 0.25rem 0.875rem;
+	border-radius: 0 var(--sgs-pricing-border-radius) 0 var(--wp--custom--border-radius--small, 4px);
+	font-size: 0.8rem;
+	font-weight: 600;
+	color: var(--wp--preset--color--white, #fff);
+	background-color: var(--wp--preset--color--accent, #d4a843);
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+	line-height: 1.6;
+}
+
+/* ── Plan title — canonical BEM name is __name (was __title in legacy markup) */
+
+/* Backward-compat: __title was used in earlier versions. Keep the selector
+   so any markup rendered before this upgrade still looks correct. */
+.sgs-pricing-table__title,
+.sgs-pricing-table__name {
+	margin: 0 0 var(--wp--preset--spacing--20, 1rem);
+	font-size: var(--wp--preset--font-size--large, 1.5rem);
+	font-weight: 700;
+	color: var(--wp--preset--color--heading, #1e1e1e);
+}
+
+/* ── Feature included / excluded states ──────────────────────────────────── */
+
+.sgs-pricing-table__feature--excluded {
+	opacity: 0.5;
+}
+
+.sgs-pricing-table__feature-icon--cross {
+	color: var(--wp--preset--color--text-muted, #888);
+}
+
+/* ── Savings badge ────────────────────────────────────────────────────────── */
+
+.sgs-pricing-table__savings-badge {
+	display: inline-block;
+	padding: 0.2rem 0.625rem;
+	border-radius: 999px;
+	font-size: 0.8rem;
+	font-weight: 700;
+	color: var(--wp--preset--color--white, #fff);
+	background-color: var(--wp--preset--color--success, #2e7d4f);
+	letter-spacing: 0.01em;
+}
+
 /* ── Billing toggle ─────────────────────────────────────────────────────── */
 
+/*
+ * Canonical class is __billing-toggle (introduced in Phase 2A).
+ * Legacy class __toggle is kept as an alias so markup rendered before this
+ * upgrade does not break. Both selectors are listed together below.
+ */
+.sgs-pricing-table__billing-toggle,
 .sgs-pricing-table__toggle {
 	display: flex;
 	align-items: center;
@@ -303,6 +371,9 @@
 }
 
 /* Active label — text style (default): bold + primary colour */
+.sgs-pricing-table__billing-toggle--style-text
+	.sgs-pricing-table__toggle-input:checked
+	+ .sgs-pricing-table__toggle-label,
 .sgs-pricing-table__toggle--style-text
 	.sgs-pricing-table__toggle-input:checked
 	+ .sgs-pricing-table__toggle-label {
@@ -311,6 +382,7 @@
 }
 
 /* The sliding pill track — visible in text style only */
+.sgs-pricing-table__billing-toggle--style-text .sgs-pricing-table__toggle-track,
 .sgs-pricing-table__toggle--style-text .sgs-pricing-table__toggle-track {
 	position: absolute;
 	inset: 0;
@@ -320,14 +392,17 @@
 }
 
 /* Button style — hide the track, style each label as a button */
+.sgs-pricing-table__billing-toggle--style-button .sgs-pricing-table__toggle-track,
 .sgs-pricing-table__toggle--style-button .sgs-pricing-table__toggle-track {
 	display: none;
 }
 
+.sgs-pricing-table__billing-toggle--style-button,
 .sgs-pricing-table__toggle--style-button {
 	gap: 0.5rem;
 }
 
+.sgs-pricing-table__billing-toggle--style-button .sgs-pricing-table__toggle-label,
 .sgs-pricing-table__toggle--style-button .sgs-pricing-table__toggle-label {
 	min-height: 44px; /* WCAG 2.2 SC 2.5.5 minimum touch target */
 	display: inline-flex;
@@ -343,6 +418,9 @@
 }
 
 /* Active button: filled */
+.sgs-pricing-table__billing-toggle--style-button
+	.sgs-pricing-table__toggle-input:checked
+	+ .sgs-pricing-table__toggle-label,
 .sgs-pricing-table__toggle--style-button
 	.sgs-pricing-table__toggle-input:checked
 	+ .sgs-pricing-table__toggle-label {
@@ -352,6 +430,8 @@
 }
 
 /* Inactive button hover: light tint */
+.sgs-pricing-table__billing-toggle--style-button
+	.sgs-pricing-table__toggle-label:hover,
 .sgs-pricing-table__toggle--style-button
 	.sgs-pricing-table__toggle-label:hover {
 	background-color: color-mix(
@@ -363,6 +443,8 @@
 
 /* Fallback for browsers without color-mix */
 @supports not (color: color-mix(in srgb, black 10%, transparent)) {
+	.sgs-pricing-table__billing-toggle--style-button
+		.sgs-pricing-table__toggle-label:hover,
 	.sgs-pricing-table__toggle--style-button
 		.sgs-pricing-table__toggle-label:hover {
 		background-color: rgba(15, 126, 128, 0.1);
