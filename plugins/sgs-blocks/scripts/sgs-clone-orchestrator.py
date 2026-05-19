@@ -1829,6 +1829,14 @@ def main():
              "visual_qa + autonomy_decision + deliverable). Useful for diagnostic runs.",
     )
     parser.add_argument(
+        "--deploy-target", type=str, default=None,
+        help="Per-page deploy target in shape 'page:<id>' or 'post:<id>'. When set, "
+             "Stage 10 auto-runs upload_and_patch.py after pipeline completion — "
+             "uploads referenced images to WP media library + patches the target "
+             "page/post with the new block_markup. Omit for draft-only runs. "
+             "Example: --deploy-target page:144",
+    )
+    parser.add_argument(
         "--debug-trace", action="store_true", default=False,
         help="Emit per-section convert-trace-<boundary>.jsonl files capturing "
              "walker_branch_taken, attr_skipped, and db_lookup_miss events. "
@@ -2069,6 +2077,35 @@ def main():
             )
     except Exception as exc:  # noqa: BLE001 - surfacing is observability; soft-fail
         print(f"[stage-9c] surface-logs soft-failed: {exc}", file=sys.stderr)
+
+    # Stage 10 — per-page deploy (upload images + patch target page) if requested.
+    # Soft-fail: any deploy error logs to stderr but does NOT halt the pipeline.
+    # Fires AFTER Stage 9c (sidecar logs already surfaced) and BEFORE the
+    # --skip-autonomy-gate early return so the deploy lands even on dev runs
+    # (the operator opted in via --deploy-target).
+    if args.deploy_target:
+        try:
+            if ":" not in args.deploy_target:
+                raise ValueError(f"--deploy-target must be 'page:<id>' or 'post:<id>', got {args.deploy_target!r}")
+            target_kind, target_id_str = args.deploy_target.split(":", 1)
+            target_id = int(target_id_str)
+            if target_kind not in ("page", "post"):
+                raise ValueError(f"--deploy-target kind must be 'page' or 'post', got {target_kind!r}")
+            import subprocess
+            _upload_script = Path(__file__).parent / "orchestrator" / "upload_and_patch.py"
+            result = subprocess.run(
+                [sys.executable, str(_upload_script), str(run_dir),
+                 "--target", target_kind, "--target-id", str(target_id)],
+                capture_output=True, text=True, timeout=180,
+            )
+            if result.returncode == 0:
+                # Print only the final success line + the link, skip image-upload chatter
+                tail_lines = [ln for ln in result.stdout.splitlines() if "modified" in ln or "link=" in ln]
+                print(f"[stage-10] deploy: patched {target_kind} {target_id} — {tail_lines[-1] if tail_lines else 'OK'}")
+            else:
+                print(f"[stage-10] deploy soft-failed (exit {result.returncode}): {result.stderr[:200]}", file=sys.stderr)
+        except Exception as exc:  # noqa: BLE001 — Stage 10 is opt-in observability; soft-fail
+            print(f"[stage-10] deploy soft-failed: {exc}", file=sys.stderr)
 
     if args.skip_autonomy_gate:
         print("[orchestrator] DONE (autonomy gate skipped per --skip-autonomy-gate).")

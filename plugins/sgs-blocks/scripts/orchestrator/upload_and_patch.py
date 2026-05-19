@@ -29,7 +29,10 @@ from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-REPO = Path(__file__).resolve().parents[2]
+# Moved 2026-05-19 from reports/brand-walkdown-2026-05-19/ to canonical
+# location at plugins/sgs-blocks/scripts/orchestrator/. parents math shifts
+# to [4] (orchestrator → scripts → sgs-blocks → plugins → repo).
+REPO = Path(__file__).resolve().parents[4]
 MOCKUP_ROOT = REPO / "sites/mamas-munches/mockups/homepage"
 ENV = REPO / ".claude/secrets/sandybrown.env"
 
