@@ -1,5 +1,5 @@
 ---
-spec_id: 18
+spec_id: 20
 title: Structured pipeline log surfacing
 status: SHIPPED 2026-05-19
 shipped_in: commit 1ea586b2 (sgs-clone-orchestrator.py stage-9c + plugins/sgs-blocks/scripts/orchestrator/surface_pipeline_logs.py)
@@ -15,7 +15,7 @@ related_docs:
   - CLAUDE.md (operator-facing entry point)
 ---
 
-# Spec 18 — Structured pipeline log surfacing
+# Spec 20 — Structured pipeline log surfacing
 
 ## Problem
 

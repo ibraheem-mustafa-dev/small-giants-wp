@@ -150,6 +150,17 @@ canonical_docs:
       - cli_command_added_or_removed
       - cli_parameter_change
 
+  - path: .claude/specs/20-STRUCTURED-PIPELINE-LOG-SURFACING.md
+    scope: spec_version_canonical
+    doc_type: spec
+    spec_version: 20
+    note: "Stage 9c orchestrator surfaces per-severity logs from trace.jsonl at pipeline end. Shipped 2026-05-19 commit 1ea586b2 (B1 fix). Stage 9c placement-bug regression caught + fixed 2026-05-19 commit d2be3d6e."
+    owns: "Structured per-severity log emission (summary.log always; chrome-skipped.log / errors.log / warnings.log conditional) into pipeline-state/<run>/"
+    update_triggers:
+      - new_severity_bucket
+      - classifier_rule_change
+      - stage_9c_wiring_change
+
   # REMOVED 2026-05-21: specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md
   # absorbed into Spec 16 §12 Appendix A. File retained for git-blame only.
 

@@ -857,7 +857,7 @@ tracked as a follow-up.
 │  [stage-9c] surfaced logs: chrome_skip=2 errors=0 warnings=3 ->            │
 │             chrome-skipped.log, warnings.log, summary.log                   │
 │                                                                             │
-│ See spec: .claude/specs/18-STRUCTURED-PIPELINE-LOG-SURFACING.md             │
+│ See spec: .claude/specs/20-STRUCTURED-PIPELINE-LOG-SURFACING.md             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 

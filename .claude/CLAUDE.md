@@ -45,9 +45,9 @@ These rules apply to all SGS converter / clone pipeline / visual-QA work. Re-vio
 
 4. **Schema enumeration BEFORE any "missing column" / "missing table" / "missing section" claim** (added 2026-05-19, blub.db row 272). Run `python ~/.claude/hooks/wp-blocks.py dump` to emit the full schema manifest (all 3 DBs — wp core blocks + sgs-framework + uimax) BEFORE claiming any gap. Partial-scan failure: agent queries 60% of columns, declares a gap, the missing column exists in the unscanned 40%. Any DB-schema claim must cite the enumeration that returned it; uncited claims are treated as unverified. See `feedback_schema_enumeration_before_gap_claims.md` + research synthesis at `~/.openclaw/workspace/memory/research/2026-05-19-agent-schema-enumeration-discipline.md`.
 
-## Spec 18 — Structured pipeline log surfacing (shipped 2026-05-19)
+## Spec 20 — Structured pipeline log surfacing (shipped 2026-05-19)
 
-Stage 9c in `/sgs-clone` writes per-severity sidecar logs into each run directory at pipeline end (summary.log always; chrome-skipped.log / errors.log / warnings.log when bucket has ≥1 entry). Replaces the failure mode where chrome-skip events leaked into `block_markup` as HTML comments + auto-wrapped as `core/freeform`. Full spec: `.claude/specs/18-STRUCTURED-PIPELINE-LOG-SURFACING.md`. Implementation: `plugins/sgs-blocks/scripts/orchestrator/surface_pipeline_logs.py` + Stage 9c wire in `sgs-clone-orchestrator.py`. Soft-fail so observability never blocks pipeline completion.
+Stage 9c in `/sgs-clone` writes per-severity sidecar logs into each run directory at pipeline end (summary.log always; chrome-skipped.log / errors.log / warnings.log when bucket has ≥1 entry). Replaces the failure mode where chrome-skip events leaked into `block_markup` as HTML comments + auto-wrapped as `core/freeform`. Full spec: `.claude/specs/20-STRUCTURED-PIPELINE-LOG-SURFACING.md`. Implementation: `plugins/sgs-blocks/scripts/orchestrator/surface_pipeline_logs.py` + Stage 9c wire in `sgs-clone-orchestrator.py`. Soft-fail so observability never blocks pipeline completion.
 
 ## Spec 17 — Header/Footer Architecture (shipped 2026-05-18)
 
