@@ -30,8 +30,8 @@ session_date: 2026-05-19
 ## Known Issues / Blockers
 
 - **Phase 3 pixel-diff residual differences** from WP global chrome (header/footer template parts + nav menu showing test pages) — theme-template-part work, not converter scope
-- **`plugins/sgs-blocks/src/blocks/footer/` untracked** — created by a parallel subagent outside any authorised brief. Decide: integrate or `git clean -fd`
 - **Static→dynamic + container changes NOT YET DEPLOYED** to palestine-lives.org. Without `/deploy`, live sites still serve old static save outputs.
+- **Header/footer-as-blocks 3rd recurrence** (blub.db row 274): a parallel subagent silently created `src/blocks/header/` + `src/blocks/footer/` as collateral. Removed this session. Open question for next session: build enforcement hook so this can't happen a 4th time. Spec 17 §S1-2 + Spec 19 §4.6 are canonical — header/footer are TEMPLATE PARTS, not Gutenberg blocks.
 
 ## Next Priorities (in order)
 

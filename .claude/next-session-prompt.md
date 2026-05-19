@@ -87,23 +87,19 @@ Only if Task 3 surfaces unknowns about WP theme template-part conventions (`part
 - LiteSpeed cache cleared + OPcache HTTP-reset confirmed
 - One representative block (e.g. sgs/label) returns its dynamic render HTML on palestine-lives.org, not the old static span output
 
-## Task 2 — Investigate + decide footer block collateral
+## Task 2 — Build the no-header-footer-block enforcement hook
 
-**What:** The untracked `plugins/sgs-blocks/src/blocks/footer/` directory contains a full block (block.json, edit.js, index.js, manifest.json, render.php, save.js, style.css). It was created by a parallel subagent outside any of yesterday's authorised briefs. Today: read each file, diff against any existing footer pattern in `theme/sgs-theme/parts/footer.html` + the absorbed sgs/footer references in db, decide integrate or remove.
+**What:** Create `.claude/hooks/no-header-footer-block.py` — a PostToolUse hook on `Write|Edit` that hard-rejects any file path matching `plugins/sgs-blocks/src/blocks/(header|footer|nav)/`. Register in `.claude/settings.json`. Header / footer / nav are TEMPLATE PARTS per Spec 17 §S1-2 + Spec 19 §4.6, NOT Gutenberg blocks.
 
-**Why:** Untracked code in `src/blocks/` is either (a) intentional groundwork that should be on a feature branch with proper deprecation review, or (b) collateral that pollutes the source tree. Either way it needs a decision before it accidentally lands in the next build.
+**Why:** This architectural rule has been violated THREE times now (blub.db row 274 — 2026-05-01 per-client files, 2026-05-XX same again, 2026-05-19 Gutenberg blocks). Each capture catches a different specific failure with the same root cause. Prompt-discipline alone has failed 3 times — structural enforcement is the next escalation. Yesterday's parallel subagent silently created `src/blocks/header/` + `src/blocks/footer/` as collateral that wasn't in any brief; the operator caught it post-hoc. Hook prevents the 4th recurrence.
 
-**Estimated time:** 25 min.
+**Estimated time:** 20 min.
 
 **Orchestration:**
-- Execution: delegated, sonnet via `/delegate`
-- Dispatch pattern: single-agent
-- Brief: Audit `plugins/sgs-blocks/src/blocks/footer/`. Compare to existing footer handling (theme template part vs block, any existing `sgs/footer` references in sgs-framework.db). Decide integration path. If integrate: produce a feature branch with deprecation review. If remove: `git clean -fd` it.
-- Context the agent needs: today's handoff.md notes; `theme/sgs-theme/parts/footer.html` for current footer rendering; `python ~/.claude/hooks/wp-blocks.py schema sgs/footer` to see if sgs/footer is a registered block already
-- Depends on: Task 1 (deploy must succeed first so we know which footer flow is canonical)
-- /qc gate after: `/qc-inline` — if integrate, verify build still green + deprecated.js shim added for any save shape change; if remove, verify nothing else references the footer/ dir
+- Execution: inline (main thread) — small hook + settings.json registration + verification test
+- /qc gate after: `/qc-inline` — try `Write` to `plugins/sgs-blocks/src/blocks/header/test.txt`, confirm hook blocks with clear error. Try `Write` to `plugins/sgs-blocks/src/blocks/hero/test.txt`, confirm hook allows.
 
-**Acceptance:** Working tree shows EITHER (a) footer block on a feature branch with PR opened OR (b) clean working tree with footer/ removed. Decision documented in `.claude/decisions.md`.
+**Acceptance:** Hook in `.claude/hooks/no-header-footer-block.py` + registered in `.claude/settings.json` PostToolUse with matcher `Write|Edit`. Verification test passes (header/footer/nav paths blocked, every other src/blocks/ path allowed). Spec 17 + Spec 19 + the captured rule cite the hook as the structural enforcement.
 
 ## Task 3 — WP global chrome alignment for Mama's Munches mockup parity
 
