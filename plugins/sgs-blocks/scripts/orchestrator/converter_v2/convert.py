@@ -3379,6 +3379,166 @@ def _collect_css_for_classes(classes: list[str], css_rules: dict) -> str:
 
 
 # ============================================================================
+# Universal section-wrapper className guarantee (2026-05-21)
+# ============================================================================
+
+
+def _extract_first_block_comment(line: str) -> tuple[str, str | None, str] | None:
+    """Parse a WP block comment line into (tag_part, attrs_json, closing).
+
+    Returns None if the line cannot be parsed as a WP block open-comment.
+
+    ``tag_part``    — ``"<!-- wp:sgs/container"`` (slug included)
+    ``attrs_json``  — raw JSON object string ``"{...}"`` or None when absent
+    ``closing``     — ``"-->"`` or ``"/-->"`` (stripped of surrounding spaces)
+
+    Uses brace-depth counting for ``attrs_json`` so nested objects
+    (e.g. ``{"items":[{"label":"x"}]}``) are captured in full rather than
+    truncated at the first inner ``}`` by a greedy/non-greedy regex.
+    """
+    # Match the slug prefix.
+    slug_m = re.match(r"(<!-- wp:[\w/\-]+)", line)
+    if not slug_m:
+        return None
+    tag_part = slug_m.group(1)
+    rest = line[slug_m.end():]
+
+    # Determine closing style.
+    if rest.rstrip().endswith("/-->"):
+        closing = "/-->"
+    elif rest.rstrip().endswith("-->"):
+        closing = "-->"
+    else:
+        return None  # incomplete / multi-line comment; bail out safely
+
+    # Strip the closing from rest so we can scan for the JSON object.
+    # Remove trailing whitespace + closing token.
+    close_idx = rest.rfind(closing)
+    attrs_region = rest[:close_idx].strip()
+
+    if not attrs_region or not attrs_region.startswith("{"):
+        return (tag_part, None, closing)
+
+    # Brace-depth scan to find the matching closing brace.
+    depth = 0
+    end = -1
+    in_str = False
+    escape = False
+    for i, ch in enumerate(attrs_region):
+        if escape:
+            escape = False
+            continue
+        if ch == "\\" and in_str:
+            escape = True
+            continue
+        if ch == '"' and not escape:
+            in_str = not in_str
+            continue
+        if in_str:
+            continue
+        if ch == "{":
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0:
+                end = i
+                break
+
+    if end == -1:
+        return (tag_part, None, closing)  # malformed — no matching brace
+
+    return (tag_part, attrs_region[: end + 1], closing)
+
+
+def ensure_root_section_class(block_markup: str, section_id: str) -> str:
+    """Guarantee that the first WP block in *block_markup* carries
+    ``sgs-{section_id}`` in its ``className`` attribute.
+
+    Universal — fires for every Stage-3 section regardless of which converter
+    branch produced the markup.  Never overwrites existing classNames; only
+    prepends the missing section class when absent.
+
+    Rules:
+    - Empty *block_markup* or empty *section_id* → return unchanged (no-op).
+    - Comments / CHROME SKIPPED lines before the first ``<!-- wp:`` → left
+      intact; the first real block comment is patched.
+    - The block is a self-closing (``/-->``) comment → stays self-closing.
+    - ``className`` already contains ``sgs-{section_id}`` (exact token match
+      in the space-separated className value) → no-op (idempotent).
+    - ``className`` is absent → added as the first key in the attrs object.
+    - ``className`` exists but lacks the section class → section class
+      prepended with a space separator.
+    - Non-JSON / malformed attrs → no-op (do not corrupt the markup).
+
+    Called by ``_convert_section_body`` in ``__init__.py`` after ``walk()``
+    produces ``block_markup``.  Also importable by tests and the orchestrator
+    for post-hoc correction.
+    """
+    if not block_markup or not section_id:
+        return block_markup
+
+    section_class = f"sgs-{section_id}"
+
+    # Find the first line that opens a WP block comment (skip CHROME SKIPPED
+    # comment lines and blank lines that may precede the first real block).
+    lines = block_markup.split("\n")
+    first_block_line_idx: int | None = None
+    for idx, line in enumerate(lines):
+        stripped = line.strip()
+        if stripped.startswith("<!-- wp:") and not stripped.startswith("<!-- /wp:"):
+            first_block_line_idx = idx
+            break
+
+    if first_block_line_idx is None:
+        # No WP block found (e.g. all-CHROME-SKIPPED markup).
+        return block_markup
+
+    first_line = lines[first_block_line_idx]
+
+    # Parse the block comment into its constituent parts first — we need
+    # the attrs JSON to do a reliable className token check.  Checking
+    # the raw line would give false positives (e.g. "sgs-trust-bar" found
+    # in the block slug "<!-- wp:sgs/trust-bar") or false negatives for
+    # BEM subclasses (e.g. "sgs-brand" found inside "sgs-brand__content").
+    parsed = _extract_first_block_comment(first_line)
+    if parsed is None:
+        # Can't parse — return unchanged rather than corrupt.
+        return block_markup
+
+    tag_part, attrs_json_str, closing = parsed
+
+    if attrs_json_str:
+        # Attempt to parse and patch the attrs dict.
+        try:
+            attrs_dict = json.loads(attrs_json_str)
+            existing_class = attrs_dict.get("className", "")
+            # Exact token match: split on spaces so "sgs-brand" doesn't
+            # match "sgs-brand__content" or "sgs-ingredients-section__inner".
+            if section_class in existing_class.split():
+                return block_markup  # already present — idempotent
+            attrs_dict["className"] = (
+                (section_class + " " + existing_class).strip()
+            )
+            # Re-serialise with compact separators (matching emit_wp_block).
+            new_attrs_str = json.dumps(
+                attrs_dict, separators=(",", ":"), ensure_ascii=False
+            )
+            new_first_line = f"{tag_part} {new_attrs_str} {closing}"
+        except (ValueError, AttributeError):
+            # Malformed JSON — return unchanged rather than corrupt.
+            return block_markup
+    else:
+        # No attrs object — add a minimal one with just className.
+        new_attrs_str = json.dumps(
+            {"className": section_class}, separators=(",", ":"), ensure_ascii=False
+        )
+        new_first_line = f"{tag_part} {new_attrs_str} {closing}"
+
+    lines[first_block_line_idx] = new_first_line
+    return "\n".join(lines)
+
+
+# ============================================================================
 # Main
 # ============================================================================
 

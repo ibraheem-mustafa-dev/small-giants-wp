@@ -1207,6 +1207,11 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                     repo_root=REPO,
                     trace=_cv2_trace,
                     boundary_id=boundary_id,
+                    # Pass Stage-3 section_id so the universal className
+                    # guarantee step can inject sgs-{section_id} onto the
+                    # root block even when the HTML class attribute doesn't
+                    # match (e.g. pattern:brand sections, external scrapes).
+                    section_id=m.get("section_id") or "",
                 )
                 # Normalise to orchestrator per_section_results schema.
                 _cv2_markup = result.get("block_markup", "")

@@ -13,6 +13,7 @@ from .convert_page import convert_page as _convert_page_impl
 __all__ = [
     "convert_page",
     "convert_section",
+    "ensure_root_section_class",
     "seed_pipeline_context",
     "seed_gap_context",
     "reset_pipeline_seed",
@@ -90,6 +91,17 @@ def seed_gap_context(run_id: str) -> None:
     """
     from . import convert as v3
     v3.seed_gap_context(run_id)
+
+
+def ensure_root_section_class(block_markup: str, section_id: str) -> str:
+    """Public proxy to ``convert.ensure_root_section_class``.
+
+    Guarantees the first WP block in *block_markup* carries
+    ``sgs-{section_id}`` in its ``className`` attribute.  Idempotent.
+    See ``convert.ensure_root_section_class`` for full documentation.
+    """
+    from . import convert as v3
+    return v3.ensure_root_section_class(block_markup, section_id)
 
 
 def convert_page(html_path: "str | object", media_map_path: "str | object | None" = None) -> list[dict]:
@@ -193,7 +205,8 @@ def convert_page(html_path: "str | object", media_map_path: "str | object | None
 
 def convert_section(html: str, css: str, media_map: dict,
                     client_slug: str = "", repo_root=None,
-                    trace=None, boundary_id: str = "") -> dict:
+                    trace=None, boundary_id: str = "",
+                    section_id: str = "") -> dict:
     """Convert a single section's HTML+CSS to a Stage 4 result dict.
 
     Returns a dict matching the per_section_results schema documented in
@@ -233,6 +246,13 @@ def convert_section(html: str, css: str, media_map: dict,
     boundary_id:
         Section identifier tagged onto every emitted trace event so cross-file
         diffs stay coherent. Defaults to ''.
+    section_id:
+        Stage-3 canonical section identifier (e.g. ``"featured-product"``,
+        ``"social-proof"``). When non-empty, the post-emission universal
+        className guarantee step ensures the root block's ``className``
+        attribute carries ``sgs-{section_id}`` regardless of which converter
+        branch produced the markup. Idempotent — safe to pass even when the
+        class is already present. Defaults to '' (no guarantee step).
     """
     from bs4 import BeautifulSoup
     from . import convert as v3
@@ -255,17 +275,22 @@ def convert_section(html: str, css: str, media_map: dict,
     # (Sonnet QC finding 2026-05-17.)
     v3.set_trace(trace, boundary_id)
     try:
-        return _convert_section_body(html, css, media_map)
+        return _convert_section_body(html, css, media_map, section_id=section_id)
     finally:
         v3.set_trace(None, "")
 
 
-def _convert_section_body(html: str, css: str, media_map: dict) -> dict:
+def _convert_section_body(html: str, css: str, media_map: dict,
+                          section_id: str = "") -> dict:
     """Implementation body for convert_section (trace-lifetime separated).
 
     Kept as a private helper purely so convert_section can wrap the trace
     binding in try/finally cleanly. All behaviour is unchanged from the
-    pre-2026-05-17 inline body.
+    pre-2026-05-17 inline body except for the universal section-class
+    guarantee step (2026-05-21): after walk() produces block_markup,
+    ensure_root_section_class() is called with the Stage-3 section_id so
+    every section root block carries sgs-{section_id} in its className,
+    regardless of which converter branch emitted it.
     """
     from bs4 import BeautifulSoup
     from . import convert as v3
@@ -310,7 +335,23 @@ def _convert_section_body(html: str, css: str, media_map: dict) -> dict:
         }
 
     block_markup = v3.walk(root, css_rules, variation_buf, depth=0, is_top_level=True) or ""
-    section_id = root.get("id", "")
+
+    # Universal section-wrapper className guarantee (2026-05-21).
+    # The Stage-3 section_id (e.g. "featured-product") is the canonical
+    # identifier for this boundary. The walk() emitter sets className from
+    # the HTML class attribute, which normally matches — but the guarantee
+    # step is DB-driven and universal: it fires for every section regardless
+    # of which converter branch produced the markup, so the pixel-diff
+    # tool's --selector .sgs-{section_id} always finds the root block.
+    # Idempotent: no-op when sgs-{section_id} is already present.
+    if section_id:
+        block_markup = v3.ensure_root_section_class(block_markup, section_id)
+
+    # Resolve section_id: prefer the caller-supplied Stage-3 id; fall back
+    # to the HTML element's id attribute for legacy / direct-call compat.
+    html_id = root.get("id", "")
+    resolved_section_id = section_id or html_id
+
     selector_classes: list[str] = root.get("class", []) or []
     selector = f"{root.name}." + ".".join(selector_classes) if selector_classes else root.name
 
@@ -380,8 +421,8 @@ def _convert_section_body(html: str, css: str, media_map: dict) -> dict:
     gap_candidates = v3.flush_gap_candidates()
 
     return {
-        "boundary_id": section_id or selector,
-        "section_id": section_id,
+        "boundary_id": resolved_section_id or selector,
+        "section_id": resolved_section_id,
         "selector": selector,
         "block_name": "sgs/container",  # downstream consumers infer the actual block from block_markup
         "status": "complete",
