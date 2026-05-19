@@ -1,0 +1,676 @@
+#!/usr/bin/env python3
+"""Seed sgs-framework.db `slot_synonyms` with BEM element → canonical slot mappings.
+
+Discovers missing aliases by walking block.json + save.js + render.php for every
+SGS block and inserting BEM element names that are NOT yet covered by any existing
+canonical_slot or alias in slot_synonyms.
+
+Fixes RC-3: composite BEM element names like `split-image`, `side-image`, `bg-img`,
+`bg-media` currently return None from `canonical_slot_for()`, causing
+`_lift_styling_attrs` to silently drop every CSS rule on those elements.
+
+Idempotent semantics:
+- Uses INSERT OR IGNORE for new rows (canonical_slots that don't exist yet).
+- Uses UPDATE to extend the `aliases` JSON array of EXISTING canonical rows
+  (e.g. adding "split-image" to the existing `media` canonical's aliases).
+- Re-running is a no-op once all rows are present.
+
+The strategy for aliases-extension (rather than new rows) is intentional:
+  `split-image` is not a new concept — it's the media slot rendered in a split
+  layout. Adding it as an alias of `media` is correct and follows how the existing
+  `image`, `photo`, `picture` aliases work. Similarly `bg-img`/`bg-media` are
+  aliases of `backgroundMedia`.
+
+Writes to BOTH sgs-framework.db instances (same dual-DB pattern as
+seed-legacy-role-lookup.py):
+  - ~/.claude/skills/sgs-wp-engine/sgs-framework.db (claude path — read by db_lookup.py)
+  - ~/.agents/skills/sgs-wp-engine/sgs-framework.db  (agents path — read by update-db.py)
+
+Run:
+    python plugins/sgs-blocks/scripts/uimax-tools/seed-slot-synonyms.py
+    python plugins/sgs-blocks/scripts/uimax-tools/seed-slot-synonyms.py --dry-run
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import re
+import sqlite3
+import sys
+from pathlib import Path
+
+sys.stdout.reconfigure(encoding="utf-8")
+
+# ---------------------------------------------------------------------------
+# DB paths — mirrors seed-legacy-role-lookup.py dual-write pattern exactly
+# ---------------------------------------------------------------------------
+_CLAUDE_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+_AGENTS_DB = Path.home() / ".agents" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+
+# ---------------------------------------------------------------------------
+# Canonical data — new alias extensions to EXISTING canonical rows.
+#
+# Format:  (canonical_slot, [new_aliases_to_add], description_note)
+#
+# These are aliases of existing canonicals — the BEM element name used on an
+# <img>/<video> tag inside a split-layout, background, or side-panel. The
+# canonical_slot it belongs to is determined by which block_attributes row
+# controls image styling (objectFit, objectPosition, width, height, border).
+#
+# "split-image" → media:
+#   hero/block.json: imageObjectFit, imageObjectPosition → canonical_slot='media'
+#   The BEM element sgs-hero__split-image is the <img> controlled by those attrs.
+#   RC-3 trigger: these 20 attrs were silently dropped because
+#   canonical_slot_for('split-image') returned None.
+#
+# "bg-img" → backgroundMedia:
+#   hero/render.php emits sgs-hero__bg-img for the background image element.
+#   backgroundImage/backgroundMedia attrs → canonical_slot='backgroundMedia'.
+#
+# "bg-media" → backgroundMedia:
+#   cta-section/render.php emits sgs-cta-section__bg-media.
+#   Same backgroundMedia concept.
+#
+# "side-image" / "side-img" → media:
+#   Used in blocks with a side-by-side image+text layout. Maps to media slot
+#   same as split-image (the image column in a 2-col layout).
+#
+# "img" → media:
+#   Bare img element (no block qualifier) — shorthand for the media slot.
+#
+# "video-bg" → backgroundMedia:
+#   hero/render.php emits sgs-hero__video-bg for background video elements.
+# ---------------------------------------------------------------------------
+ALIAS_EXTENSIONS: list[tuple[str, list[str]]] = [
+    # ----- image / media slot aliases -----------------------------------
+    ("media", [
+        "split-image",        # RC-3 root cause: hero split-image drops ~20 attrs
+        "split-image--bleed", # bleed modifier variant of split-image
+        "split-image--desktop",  # responsive desktop variant
+        "split-image--mobile",   # responsive mobile variant
+        "side-image",         # side-panel image (2-col layouts)
+        "side-img",           # abbreviated form of side-image
+        "img",                # bare img element shorthand
+        "image-wrap",         # wrapper div that controls image sizing/border
+        "img-wrap",           # abbreviated form of image-wrap
+        "bg-img",             # alias kept here as well for blocks using bg-img as media
+        "photo",              # already an alias but ensure normalised form included
+        "slot-img",           # media-manager slot image preview
+        "thumb-img",          # thumbnail image (gallery, post-grid)
+        "thumb",              # thumbnail container
+        "badge-img",          # image inside a badge element
+    ]),
+
+    # ----- background media aliases ------------------------------------
+    ("backgroundMedia", [
+        "bg-img",             # hero background image element class
+        "bg-media",           # cta-section background media wrapper
+        "bg-video",           # background video element
+        "video-bg",           # hero video-bg BEM element
+        "svg-bg",             # SVG used as background decoration
+    ]),
+
+    # ----- text / body slot aliases ------------------------------------
+    ("text", [
+        "bio",                # biography text (team-member, testimonial)
+        "excerpt",            # post excerpt (post-grid cards)
+        "intro",              # introductory paragraph
+        "body-row",           # text body row (multi-column text layouts)
+        "review-content",     # review body text (review blocks)
+        "consent-text",       # legal consent copy (forms)
+        "content-preview",    # content preview pane (editor UI)
+        "custom-content",     # custom body content slot
+        "inner",              # generic inner content wrapper
+        "inner-label",        # inner label text
+        "label-control",      # label associated with a form control
+        "quote",              # quote body (deprecated alias — canonical already has 'quote')
+    ]),
+
+    # ----- heading slot aliases ----------------------------------------
+    ("heading", [
+        "headline",           # display headline (hero, cta-section)
+        "card-title",         # title on a card element
+        "review-header",      # review source / reviewer name header
+        "aggregate-text",     # aggregate score label text
+    ]),
+
+    # ----- subheading slot aliases -------------------------------------
+    ("subheading", [
+        "subheadline",        # explicit subheadline element (hero, feature-grid)
+    ]),
+
+    # ----- label slot aliases ------------------------------------------
+    ("label", [
+        "badge-label",        # text inside a badge
+        "badge-text",         # alternative badge text element name
+        "inner-label",        # inner slot label
+        "slot-label",         # media-manager slot label
+        "node-icon",          # tree-node icon label (timeline, step blocks)
+    ]),
+
+    # ----- button / CTA aliases ----------------------------------------
+    ("button", [
+        "btn",                # abbreviated button element
+        "ctas",               # plural CTA container (holds primary + secondary btns)
+        "cta-inputs",         # CTA with inline input (email capture CTAs)
+        "buttons",            # multiple-button group container
+        "readmore",           # read-more link element
+        "load-more",          # load-more pagination trigger
+    ]),
+
+    # ----- avatar / portrait aliases -----------------------------------
+    ("avatar", [
+        "avatar-img",         # the <img> inside the avatar container
+        "avatar-initials",    # text initials fallback for avatar
+    ]),
+
+    # ----- icon slot aliases -------------------------------------------
+    ("icon", [
+        "feature-icon",       # icon inside a feature item (feature-grid)
+        "feature-icon--check",  # checkmark icon variant
+        "feature-icon--cross",  # cross/excluded icon variant
+        "check",              # standalone check icon element
+        "verified-icon",      # verification checkmark icon
+        "badge-number",       # numeric badge (notification-style)
+    ]),
+
+    # ----- rating / stars slot aliases ---------------------------------
+    ("rating", [
+        "stars",              # star rating container
+        "header-stars",       # stars in the review header section
+        "card-stars",         # stars on a review card
+        "aggregate",          # aggregate rating score display
+    ]),
+
+    # ----- number / stat slot aliases ----------------------------------
+    ("number", [
+        "stat",               # single statistic value (trust-bar, stats block)
+        "stats",              # statistics container
+        "count",              # count display (review count, product count)
+        "count-link",         # linked count (e.g. '128 reviews')
+        "aggregate",          # aggregate numeric score
+        "numeric",            # explicit numeric element
+        "badge-number",       # numeric badge overlay
+    ]),
+
+    # ----- date slot aliases -------------------------------------------
+    ("date", [
+        "card-date",          # date on a post/review card
+        "day",                # day unit (countdown timer)
+        "period",             # billing period label (pricing)
+        "time",               # time element alias
+    ]),
+
+    # ----- text slot aliases — social / attribution -------------------
+    ("text", [
+        "attribution",        # attribution line (testimonial — "— Jane Smith, CEO")
+        "author",             # author name (post cards, testimonials)
+        "verified-text",      # 'Verified buyer' label text
+        "verified",           # verification status text
+    ]),
+
+    # ----- role (job title) aliases -----------------------------------
+    ("role", [
+        "card-meta",          # meta line on a card (role/category)
+        "category",           # post category label
+    ]),
+
+    # ----- items / list slot aliases ----------------------------------
+    ("items", [
+        "list",               # explicit list container
+        "features",           # feature-list container
+        "badges",             # badges list container
+        "social",             # social links list container
+        "social-link",        # individual social link item
+        "thumbs",             # thumbnails list
+        "dots",               # carousel dot indicators
+        "dot",                # single carousel dot
+        "arrows",             # carousel arrows container
+        "arrow",              # single carousel arrow
+        "filters",            # filter tags list (post-grid)
+        "filter",             # single filter tag
+        "set",                # option-set container (choice group)
+        "option",             # single selectable option
+    ]),
+
+    # ----- card slot aliases -------------------------------------------
+    ("card", [
+        "card-body",          # card content area
+        "card-header",        # card header section
+        "review",             # review card element
+        "review-row",         # review item row
+        "plan",               # pricing plan card
+        "plan-meta",          # pricing plan metadata section
+        "slide",              # carousel/slider slide item
+        "entry",              # feed/list entry item
+        "item",               # generic list item
+        "item-link",          # linked item
+        "item-btn",           # item action button
+        "stat",               # stat card (also listed under number — dual mapping)
+        "step",               # step item (multi-step progress)
+        "stage",              # stage/phase card (timeline)
+        "node",               # tree node (timeline, step)
+        "slot",               # media-manager slot container
+    ]),
+
+    # ----- panel slot aliases ------------------------------------------
+    ("panel", [
+        "panels",             # multi-panel container
+        "panel-hint",         # panel auxiliary hint text
+        "panel-note",         # panel footnote
+        "preview",            # content preview panel
+        "preview-container",  # preview panel container
+    ]),
+
+    # ----- overlay slot aliases ----------------------------------------
+    ("overlay", [
+        "overlay-bio",        # bio overlay panel (team-member)
+        "lightbox",           # lightbox overlay
+        "lightbox-body",      # lightbox content area
+        "lightbox-img",       # lightbox image
+        "lightbox-caption",   # lightbox caption
+        "lightbox-close",     # lightbox close button
+        "lightbox-next",      # lightbox next button
+        "lightbox-prev",      # lightbox previous button
+        "lightbox-counter",   # lightbox position counter
+        "dialog",             # dialog overlay element
+    ]),
+
+    # ----- separator slot aliases --------------------------------------
+    ("separator", [
+        "line",               # visual line separator
+        "wave",               # decorative wave divider
+        "shape",              # decorative shape divider
+        "card-sep",           # card internal separator
+    ]),
+
+    # ----- logo slot aliases -------------------------------------------
+    ("logo", [
+        "header-logo",        # logo in a header context
+        "header-logo-link",   # logo wrapped in a link
+        "google-logo",        # Google branding logo (review blocks)
+    ]),
+
+    # ----- link slot aliases -------------------------------------------
+    ("link", [
+        "count-link",         # linked count display
+        "image-link",         # image wrapped in a link
+        "social-link",        # social media link
+    ]),
+
+    # ----- nav / menu slot aliases ------------------------------------
+    ("items", [
+        "nav",                # navigation list
+        "menu",               # menu list
+    ]),
+
+    # ----- progress slot (bar canonical) ------------------------------
+    ("bar", [
+        "progress",           # progress value fill
+        "progress-bar",       # progress bar track element
+        "progress-wrapper",   # progress bar outer wrapper
+        "progress-steps",     # step indicator container
+        "progress-step",      # individual step indicator
+        "progress-step-label",  # step label text
+        "progress-step-number", # step number badge
+        "track",              # slider track element
+    ]),
+
+    # ----- split / layout slot aliases --------------------------------
+    ("split", [
+        "grid",               # grid layout container
+        "row",                # row layout container
+        "group",              # generic group/wrapper
+        "body-row",           # body text row in split layout
+    ]),
+
+    # ----- price slot aliases -----------------------------------------
+    ("price", [
+        "price-wrapper",      # price display wrapper
+        "savings-badge",      # savings/discount badge on pricing
+        "ribbon",             # pricing ribbon element
+    ]),
+
+    # ----- caption slot aliases ---------------------------------------
+    ("caption", [
+        "lightbox-caption",   # caption inside lightbox (also in overlay)
+    ]),
+
+    # ----- tab slot aliases -------------------------------------------
+    ("tab", [
+        "billing-toggle",     # monthly/yearly billing toggle (pricing)
+        "toggle-input",       # toggle switch input
+        "toggle-label",       # toggle switch label
+        "toggle-track",       # toggle visual track element
+        "filter",             # filter tab (post-grid — also in items)
+    ]),
+]
+
+# ---------------------------------------------------------------------------
+# New canonical rows — slot names that don't exist as a canonical yet.
+#
+# These are BEM elements that represent genuinely new slot concepts not yet
+# in the vocabulary. Each becomes a new canonical_slot row.
+#
+# Format: (canonical_slot, [aliases], role, description, html_tag)
+# ---------------------------------------------------------------------------
+NEW_CANONICAL_ROWS: list[tuple[str, list[str], str | None, str, str | None]] = [
+    # Social / review aggregate concepts
+    ("review",        ["review-row", "review-item", "review-card"],    "identity",    "Single review entry (distinct from review-content body text)", "article"),
+    ("social",        ["social-link", "social-icon", "social-item"],   "identity",    "Social media link / icon container",                           "a"),
+    ("nav",           ["navigation", "menu-nav"],                      "identity",    "Navigation container slot",                                    "nav"),
+    # Progress / step concepts
+    ("progress",      ["progress-bar", "progressBar", "progress-fill"], "visual",     "Progress indicator — fill level or step tracker",              "div"),
+    ("step",          ["progress-step", "wizard-step", "stage-item"],  "identity",    "Individual step in a multi-step sequence",                     "li"),
+    # Media management
+    ("slot",          ["slot-placeholder", "slot-upload", "slot-preview", "slot-actions", "slot-label", "slot-img"], "identity", "Media-manager slot container (admin UI)", "div"),
+    # Structural
+    ("ribbon",        ["price-ribbon", "plan-ribbon"],                 "visual",      "Decorative ribbon overlay on a card/panel",                    "span"),
+]
+
+# ---------------------------------------------------------------------------
+# AMBIGUOUS mappings — surfaced for operator review, NOT auto-inserted.
+# Rule: if a BEM element could plausibly belong to 2+ different canonical
+# slots with equal evidence, it goes here instead of ALIAS_EXTENSIONS.
+# ---------------------------------------------------------------------------
+AMBIGUOUS: list[tuple[str, list[str], str]] = [
+    ("author", ["heading", "text"], "Author name could be heading-level (prominent) or text-level (byline). In post-grid it's heading-ish; in testimonial it's text-ish. Recommend: add to 'text' + override per-block via block_attributes canonical_slot."),
+    ("aggregate", ["number", "rating"], "'aggregate' appears in review blocks as both the numeric score and a star-rating rollup. Recommend: add to 'rating' (most common use: aggregate star rating) and also add 'aggregate-text' to 'text'."),
+    ("stat", ["number", "card"], "In trust-bar/stats block, 'stat' is the entire card unit (card slot). In a stat-value context it's a number. Recommend: add to 'number' for styling purposes (number controls objectFit etc.) since the card wrapper is covered by 'card'."),
+    ("card-meta", ["role", "text"], "'card-meta' in post-grid is the category/date meta line (text). In team-member it's the job title (role). Recommend: add to 'text' as the wider classification; per-block canonical_slot on the attr is the tiebreaker."),
+]
+
+
+# ---------------------------------------------------------------------------
+# Core seeder logic
+# ---------------------------------------------------------------------------
+
+def _current_aliases(conn: sqlite3.Connection, canonical: str) -> list[str]:
+    """Return the current aliases list for a canonical slot."""
+    row = conn.execute(
+        "SELECT aliases FROM slot_synonyms WHERE canonical_slot = ?", (canonical,)
+    ).fetchone()
+    if not row or not row[0]:
+        return []
+    try:
+        return json.loads(row[0])
+    except (ValueError, TypeError):
+        return []
+
+
+def _extend_aliases(
+    conn: sqlite3.Connection,
+    canonical: str,
+    new_aliases: list[str],
+    dry_run: bool,
+) -> tuple[int, int]:
+    """Extend the aliases JSON array for an existing canonical row.
+
+    Returns (added, skipped) counts.
+    """
+    existing = set(_current_aliases(conn, canonical))
+    to_add = [a for a in new_aliases if a not in existing]
+    skipped = len(new_aliases) - len(to_add)
+
+    if not to_add:
+        return 0, skipped
+
+    merged = sorted(existing | set(to_add))
+    merged_json = json.dumps(merged, ensure_ascii=False)
+
+    if not dry_run:
+        conn.execute(
+            "UPDATE slot_synonyms SET aliases = ? WHERE canonical_slot = ?",
+            (merged_json, canonical),
+        )
+        conn.commit()
+
+    return len(to_add), skipped
+
+
+def _insert_canonical_row(
+    conn: sqlite3.Connection,
+    canonical: str,
+    aliases: list[str],
+    role: str | None,
+    description: str,
+    html_tag: str | None,
+    dry_run: bool,
+) -> tuple[int, int]:
+    """INSERT OR IGNORE a new canonical_slot row.
+
+    Returns (inserted, skipped) counts.
+    """
+    if not dry_run:
+        cur = conn.execute(
+            """
+            INSERT OR IGNORE INTO slot_synonyms
+                (canonical_slot, aliases, role, description, html_semantic_tag)
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (canonical, json.dumps(aliases, ensure_ascii=False), role, description, html_tag),
+        )
+        conn.commit()
+        inserted = cur.rowcount
+    else:
+        # In dry-run, check if it already exists
+        exists = conn.execute(
+            "SELECT 1 FROM slot_synonyms WHERE canonical_slot = ?", (canonical,)
+        ).fetchone()
+        inserted = 0 if exists else 1
+
+    skipped = 1 - inserted
+    return inserted, skipped
+
+
+def seed_db(db_path: Path, dry_run: bool) -> dict:
+    """Seed one DB. Returns stats dict."""
+    if not db_path.exists():
+        print(f"  SKIP: DB not found at {db_path}", file=sys.stderr)
+        return {"alias_added": 0, "alias_skipped": 0, "canonical_inserted": 0, "canonical_skipped": 0}
+
+    conn = sqlite3.connect(str(db_path))
+    stats = {"alias_added": 0, "alias_skipped": 0, "canonical_inserted": 0, "canonical_skipped": 0}
+
+    try:
+        # Pass 1: extend aliases on existing canonical rows
+        for canonical, new_aliases in ALIAS_EXTENSIONS:
+            # Check the canonical exists
+            exists = conn.execute(
+                "SELECT 1 FROM slot_synonyms WHERE canonical_slot = ?", (canonical,)
+            ).fetchone()
+            if not exists:
+                print(f"  WARNING: canonical '{canonical}' not found — skipping alias extension {new_aliases[:3]!r}...")
+                continue
+            added, skipped = _extend_aliases(conn, canonical, new_aliases, dry_run)
+            stats["alias_added"] += added
+            stats["alias_skipped"] += skipped
+            if added:
+                verb = "[DRY-RUN] would add" if dry_run else "added"
+                print(f"  alias→{canonical}: {verb} {added} ({new_aliases[:3]}{'...' if len(new_aliases) > 3 else ''})")
+
+        # Pass 2: insert new canonical rows
+        for canonical, aliases, role, description, html_tag in NEW_CANONICAL_ROWS:
+            inserted, skipped = _insert_canonical_row(
+                conn, canonical, aliases, role, description, html_tag, dry_run
+            )
+            stats["canonical_inserted"] += inserted
+            stats["canonical_skipped"] += skipped
+            if inserted:
+                verb = "[DRY-RUN] would insert" if dry_run else "inserted"
+                print(f"  NEW canonical: {canonical} ({verb})")
+
+    finally:
+        conn.close()
+
+    return stats
+
+
+def _discover_bem_elements(repo_path: Path) -> set[str]:
+    """Walk block source files and collect all BEM element names.
+
+    Returns a set of raw element strings (e.g. 'split-image', 'bg-img').
+    Used only to validate coverage — the authoritative data is ALIAS_EXTENSIONS.
+    """
+    blocks_root = repo_path / "plugins" / "sgs-blocks" / "src" / "blocks"
+    elements: set[str] = set()
+
+    if not blocks_root.exists():
+        return elements
+
+    pattern = re.compile(r"sgs-[\w-]+__([\w-]+)")
+
+    for block_dir in blocks_root.iterdir():
+        if not block_dir.is_dir():
+            continue
+        for fname in ("save.js", "edit.js", "render.php"):
+            f = block_dir / fname
+            if f.exists():
+                try:
+                    text = f.read_text(encoding="utf-8", errors="ignore")
+                    for m in pattern.finditer(text):
+                        elem = m.group(1)
+                        # Strip trailing -- (modifier fragments caught by regex)
+                        elem = elem.rstrip("-")
+                        if elem:
+                            elements.add(elem)
+                except OSError:
+                    pass
+
+    return elements
+
+
+def _verify_coverage(db_path: Path, repo_path: Path | None) -> tuple[int, int, list[str]]:
+    """After seeding, check what elements are still unresolvable.
+
+    Returns (resolved, unresolved, list_of_unresolved).
+    """
+    if repo_path is None:
+        return 0, 0, []
+
+    elements = _discover_bem_elements(repo_path)
+    if not elements:
+        return 0, 0, []
+
+    conn = sqlite3.connect(str(db_path))
+    try:
+        rows = conn.execute("SELECT canonical_slot, aliases FROM slot_synonyms").fetchall()
+    finally:
+        conn.close()
+
+    # Build lookup set: all known keys (canonicals + aliases)
+    known: set[str] = set()
+    for canonical, aliases_json in rows:
+        known.add(canonical)
+        # Normalise: strip hyphens/underscores → lowercase for comparison
+        known.add(re.sub(r"[-_]", "", canonical).lower())
+        if aliases_json:
+            try:
+                for a in json.loads(aliases_json):
+                    known.add(a)
+                    known.add(re.sub(r"[-_]", "", a).lower())
+            except (ValueError, TypeError):
+                pass
+
+    resolved = []
+    unresolved = []
+    for elem in sorted(elements):
+        norm = re.sub(r"[-_]", "", elem).lower()
+        if elem in known or norm in known:
+            resolved.append(elem)
+        else:
+            unresolved.append(elem)
+
+    return len(resolved), len(unresolved), unresolved
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Seed slot_synonyms with BEM element → canonical slot mappings (RC-3 fix)"
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Print what would be inserted/updated without writing to the DB",
+    )
+    parser.add_argument(
+        "--repo",
+        default=None,
+        help="Path to small-giants-wp repo root (enables coverage verification)",
+    )
+    args = parser.parse_args(argv)
+
+    dry_run = args.dry_run
+    repo_path = Path(args.repo) if args.repo else None
+
+    # Auto-detect repo path from script location if not provided
+    if repo_path is None:
+        # script lives at: <repo>/plugins/sgs-blocks/scripts/uimax-tools/seed-slot-synonyms.py
+        script_dir = Path(__file__).resolve().parent
+        candidate = script_dir.parent.parent.parent.parent  # 4 levels up to repo root
+        if (candidate / "plugins" / "sgs-blocks").exists():
+            repo_path = candidate
+
+    if dry_run:
+        print("=== DRY-RUN MODE — no DB writes ===")
+
+    # Print ambiguous mappings warning first so it's visible
+    print("\n" + "=" * 60)
+    print("AMBIGUOUS MAPPINGS — operator review required (not auto-inserted):")
+    for elem, candidates, reason in AMBIGUOUS:
+        print(f"  {elem!r} → candidates {candidates!r}")
+        print(f"       Reason: {reason}")
+    print("=" * 60)
+
+    total_alias_added = 0
+    total_alias_skipped = 0
+    total_canonical_inserted = 0
+    total_canonical_skipped = 0
+
+    for label, db_path in [("~/.claude DB", _CLAUDE_DB), ("~/.agents DB", _AGENTS_DB)]:
+        print(f"\nSeeding {label}: {db_path}")
+        stats = seed_db(db_path, dry_run)
+        print(f"  alias_added       : {stats['alias_added']}")
+        print(f"  alias_skipped     : {stats['alias_skipped']}  (already present)")
+        print(f"  canonical_inserted: {stats['canonical_inserted']}")
+        print(f"  canonical_skipped : {stats['canonical_skipped']}  (already present)")
+        total_alias_added += stats["alias_added"]
+        total_alias_skipped += stats["alias_skipped"]
+        total_canonical_inserted += stats["canonical_inserted"]
+        total_canonical_skipped += stats["canonical_skipped"]
+
+    print()
+    print("slot_synonyms seed complete:")
+    total_new = total_alias_added + total_canonical_inserted
+    print(f"  alias_added       : {total_alias_added}")
+    print(f"  alias_skipped     : {total_alias_skipped}")
+    print(f"  canonical_inserted: {total_canonical_inserted}")
+    print(f"  canonical_skipped : {total_canonical_skipped}")
+
+    # Row counts
+    print()
+    for label, db_path in [("~/.claude DB", _CLAUDE_DB), ("~/.agents DB", _AGENTS_DB)]:
+        if db_path.exists():
+            conn = sqlite3.connect(str(db_path))
+            count = conn.execute("SELECT COUNT(*) FROM slot_synonyms").fetchone()[0]
+            conn.close()
+            verb = "would be" if dry_run else "now"
+            print(f"  {label} slot_synonyms row count {verb}: {count}")
+
+    # Coverage check
+    if repo_path and _CLAUDE_DB.exists():
+        print()
+        print("Coverage verification (BEM elements discoverable via slot_synonyms):")
+        resolved, unresolved_count, unresolved_list = _verify_coverage(_CLAUDE_DB, repo_path)
+        print(f"  Resolved  : {resolved}")
+        print(f"  Unresolved: {unresolved_count}")
+        if unresolved_list:
+            print("  Unresolved elements (UI-only or structural — no attr styling needed):")
+            for e in unresolved_list:
+                print(f"    - {e}")
+
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

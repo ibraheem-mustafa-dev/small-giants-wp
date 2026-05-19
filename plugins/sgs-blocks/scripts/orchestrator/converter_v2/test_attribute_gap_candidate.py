@@ -386,3 +386,238 @@ def test_source_class_preserved(temp_db):
         assert "test-run-003" in row[0], (
             f"run_id 'test-run-003' must appear in proposed_action; got {row[0]!r}"
         )
+
+
+# ---------------------------------------------------------------------------
+# Test 6: RC-2 — layout props removed from _SUPPORTS_HANDLED_PROPS now reach D3
+# ---------------------------------------------------------------------------
+
+def test_rc2_layout_props_reach_d3(temp_db):
+    """RC-2 regression guard: justify-content and grid-template-columns were
+    previously excluded from D3 via _SUPPORTS_HANDLED_PROPS despite NOT being
+    handled by _lift_root_supports_to_style. After the fix they must flow into
+    D3 Mode 1 (no suffix mapping) and produce _record_gap_candidate calls.
+
+    Simulates .sgs-hero__content with justify-content: center on sgs/hero.
+    Expects at least one gap candidate entry for 'justify-content'.
+
+    Also verifies that a genuinely handled prop (e.g. color) does NOT reach D3
+    when it lifts successfully — no regression on the no-double-write guarantee.
+    """
+    with _patch_db(temp_db):
+        from orchestrator.converter_v2 import convert as cv
+
+        cv.clear_gap_candidates()
+        cv.seed_gap_context("test-run-rc2")
+
+        from bs4 import BeautifulSoup
+
+        # Simulate .sgs-hero__content with layout props + a colour that lifts
+        html = '<div class="sgs-hero__content" style="justify-content: center; grid-template-columns: 1fr 1fr; color: var(--text);"></div>'
+        soup = BeautifulSoup(html, "html.parser")
+        desc = soup.find("div")
+
+        # Schema: "content" anchor + "contentColour" so colour D1-lifts; no
+        # attrs for justify-content / grid-template-columns → those must fall to D3.
+        schema = {
+            "content": {"attr_type": "string", "canonical_slot": "content"},
+            "contentColour": {"attr_type": "string", "canonical_slot": "content"},
+        }
+        attrs: dict = {}
+        css_rules: dict = {
+            ".sgs-hero__content": {
+                "justify-content": "center",
+                "grid-template-columns": "1fr 1fr",
+                "color": "var(--text)",
+            },
+        }
+
+        cv._lift_styling_attrs(desc, "content", "sgs/hero", schema, attrs, css_rules)
+
+        gaps = cv._GAP_CANDIDATES
+
+        # 1. justify-content MUST be in gap candidates (RC-2 fix)
+        jc_gaps = [g for g in gaps if g["css_property"] == "justify-content"]
+        assert len(jc_gaps) >= 1, (
+            f"RC-2 FAIL: justify-content must reach D3 after removing it from "
+            f"_SUPPORTS_HANDLED_PROPS; _GAP_CANDIDATES={gaps}"
+        )
+
+        # 2. grid-template-columns MUST also be in gap candidates (RC-2 fix)
+        gtc_gaps = [g for g in gaps if g["css_property"] == "grid-template-columns"]
+        assert len(gtc_gaps) >= 1, (
+            f"RC-2 FAIL: grid-template-columns must reach D3 after removing it from "
+            f"_SUPPORTS_HANDLED_PROPS; _GAP_CANDIDATES={gaps}"
+        )
+
+        # 3. color must NOT appear in gap candidates (colour D1-lifted, no double-write)
+        colour_gaps = [g for g in gaps if g["css_property"] == "color"]
+        assert len(colour_gaps) == 0, (
+            f"No-regression FAIL: color must not reach D3 when it D1-lifts "
+            f"successfully; colour_gaps={colour_gaps}"
+        )
+
+
+# ---------------------------------------------------------------------------
+# Test 7: RC-2 — padding still bypasses D3 (handled props must not regress)
+# ---------------------------------------------------------------------------
+
+def test_rc2_handled_props_still_bypass_d3(temp_db):
+    """Verify that CSS properties genuinely handled by _lift_root_supports_to_style
+    (padding, margin, gap, background-color, border-radius) do NOT appear as D3
+    gap candidates — i.e. removing the layout props from _SUPPORTS_HANDLED_PROPS
+    did not accidentally remove genuinely handled props too.
+    """
+    with _patch_db(temp_db):
+        from orchestrator.converter_v2 import convert as cv
+
+        cv.clear_gap_candidates()
+        cv.seed_gap_context("test-run-rc2-noregress")
+
+        from bs4 import BeautifulSoup
+
+        html = '<div class="sgs-hero__content"></div>'
+        soup = BeautifulSoup(html, "html.parser")
+        desc = soup.find("div")
+
+        schema = {
+            "content": {"attr_type": "string", "canonical_slot": "content"},
+        }
+        attrs: dict = {}
+        css_rules: dict = {
+            ".sgs-hero__content": {
+                "padding": "24px",
+                "margin-top": "16px",
+                "gap": "12px",
+                "background-color": "#0F7E80",
+                "border-radius": "8px",
+            },
+        }
+
+        cv._lift_styling_attrs(desc, "content", "sgs/hero", schema, attrs, css_rules)
+
+        gaps = cv._GAP_CANDIDATES
+        handled_in_gaps = [
+            g for g in gaps
+            if g["css_property"] in {
+                "padding", "margin-top", "gap", "background-color", "border-radius"
+            }
+        ]
+        assert len(handled_in_gaps) == 0, (
+            f"No-regression FAIL: handled props must not reach D3; found: {handled_in_gaps}"
+        )
+
+
+# ---------------------------------------------------------------------------
+# Test 8: RC-1 — D3 Mode 2 emits breakpoint-suffixed gap candidates
+# ---------------------------------------------------------------------------
+
+def _seed_rc1_props(temp_db_path: "Path") -> None:
+    """Add font-family and line-height rows to property_suffixes in the temp DB.
+
+    These rows are needed so _css_prop_to_suffix() returns FontFamily and
+    LineHeight entries, enabling D3 Mode 2 to check them against the schema.
+    """
+    conn = sqlite3.connect(str(temp_db_path))
+    conn.executemany(
+        "INSERT OR IGNORE INTO property_suffixes (suffix, role, css_property) VALUES (?, ?, ?)",
+        [
+            ("FontFamily", "typography", "font-family"),
+            ("LineHeight", "typography", "line-height"),
+        ],
+    )
+    conn.commit()
+    conn.close()
+
+
+def test_rc1_breakpoint_only_props_produce_gap_candidates(temp_db):
+    """RC-1 smoke test: breakpoint-only CSS props that have a property_suffixes
+    mapping but no matching schema attr must surface as D3 gap candidates with
+    a breakpoint-suffixed source_class (e.g. ".sgs-hero__heading@Desktop").
+
+    Simulates:
+        h1 { color: red; }
+        @media (min-width: 1280px) { h1 { font-family: Fraunces; line-height: 1.1; } }
+
+    Against sgs/hero hero with schema:
+        - "headline" (string, heading slot)         — prefix anchor
+        - "headlineColour" (string, heading slot)   — so D1 lifts `color` from base
+
+    Expected: gap candidates for headlineFontFamilyDesktop and
+    headlineLineHeightDesktop (Mode 2 — suffix mapped but attr absent from schema).
+
+    Also verifies zero double-emission: headlineColour lands via D1 for base_decls,
+    must NOT appear as a D3 gap row.
+    """
+    # Seed font-family + line-height into the temp DB before patching
+    _seed_rc1_props(temp_db)
+
+    with _patch_db(temp_db):
+        from orchestrator.converter_v2 import convert as cv
+
+        cv.clear_gap_candidates()
+        cv.seed_gap_context("test-run-rc1")
+
+        from bs4 import BeautifulSoup
+
+        # h1 element with SGS-BEM heading class so _slot_attr_prefix finds prefix
+        html = '<h1 class="sgs-hero__heading">Hero Title</h1>'
+        soup = BeautifulSoup(html, "html.parser")
+        desc = soup.find("h1")
+
+        # Schema: "headline" anchor + "headlineColour" (D1 lands for base color)
+        # Deliberately NO headlineFontFamilyDesktop or headlineLineHeightDesktop
+        # so those breakpoint props must fall to D3.
+        schema = {
+            "headline":      {"attr_type": "string", "canonical_slot": "heading"},
+            "headlineColour": {"attr_type": "string", "canonical_slot": "heading"},
+        }
+        attrs: dict = {}
+
+        # css_rules format: "media_cond::selector" → {prop: value} for media rules,
+        # "selector" → {prop: value} for base rules.
+        css_rules: dict = {
+            # Base rule — color lifts via D1 into headlineColour
+            ".sgs-hero__heading": {"color": "red"},
+            # Breakpoint-only rules — font-family and line-height appear ONLY here
+            "min-width: 1280px::h1": {
+                "font-family": "Fraunces",
+                "line-height": "1.1",
+            },
+        }
+
+        cv._lift_styling_attrs(desc, "heading", "sgs/hero", schema, attrs, css_rules)
+
+        gaps = cv._GAP_CANDIDATES
+
+        # 1. font-family at Desktop breakpoint must produce a D3 gap candidate
+        ff_gaps = [g for g in gaps if g["css_property"] == "font-family"]
+        assert len(ff_gaps) >= 1, (
+            f"RC-1 FAIL: font-family in @media (min-width:1280px) must produce a "
+            f"D3 gap candidate; _GAP_CANDIDATES={gaps}"
+        )
+        # source_class must carry the breakpoint annotation
+        ff_bp_gaps = [g for g in ff_gaps if "@Desktop" in g.get("source_class", "")]
+        assert len(ff_bp_gaps) >= 1, (
+            f"RC-1 FAIL: font-family gap row must have '@Desktop' in source_class; "
+            f"ff_gaps={ff_gaps}"
+        )
+
+        # 2. line-height at Desktop breakpoint must produce a D3 gap candidate
+        lh_gaps = [g for g in gaps if g["css_property"] == "line-height"]
+        assert len(lh_gaps) >= 1, (
+            f"RC-1 FAIL: line-height in @media (min-width:1280px) must produce a "
+            f"D3 gap candidate; _GAP_CANDIDATES={gaps}"
+        )
+        lh_bp_gaps = [g for g in lh_gaps if "@Desktop" in g.get("source_class", "")]
+        assert len(lh_bp_gaps) >= 1, (
+            f"RC-1 FAIL: line-height gap row must have '@Desktop' in source_class; "
+            f"lh_gaps={lh_gaps}"
+        )
+
+        # 3. Zero double-emission: color D1-lifted from base → must NOT appear in D3 gaps
+        colour_gaps = [g for g in gaps if g["css_property"] == "color"]
+        assert len(colour_gaps) == 0, (
+            f"RC-1 no-double-emission FAIL: color lifted via D1 must not appear in "
+            f"D3 gap candidates; colour_gaps={colour_gaps}"
+        )
