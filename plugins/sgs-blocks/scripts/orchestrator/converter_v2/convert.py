@@ -25,10 +25,46 @@ from __future__ import annotations
 
 import functools
 import json
+import subprocess
 import sys
 from pathlib import Path
 
 from bs4 import BeautifulSoup, NavigableString, Tag
+
+# ---------------------------------------------------------------------------
+# 5.3.1 — wp-blocks validation gate (advisory, soft-fail)
+# After emit_wp_block() produces markup, validate via wp-blocks.py validate.
+# On failure: log a structured warning to trace.jsonl; never halt the pipeline.
+# ---------------------------------------------------------------------------
+_WP_BLOCKS_CLI = Path(__file__).parents[5] / ".claude" / "hooks" / "wp-blocks.py"
+# Resolve against the home directory when the repo-relative path misses
+if not _WP_BLOCKS_CLI.exists():
+    _WP_BLOCKS_CLI = Path.home() / ".claude" / "hooks" / "wp-blocks.py"
+
+
+def _wp_blocks_validate(markup: str, slug: str) -> None:
+    """Run wp-blocks.py validate on *markup*. Soft-fail: logs to trace, never raises."""
+    if not _WP_BLOCKS_CLI.exists():
+        return
+    try:
+        result = subprocess.run(
+            [sys.executable, str(_WP_BLOCKS_CLI), "validate", markup],
+            capture_output=True, text=True, timeout=10, encoding="utf-8",
+        )
+        if result.returncode != 0:
+            _trace("wp_blocks_validation_failed", slug=slug,
+                   branch="wp_blocks_validation_failed",
+                   error=result.stderr[:300] if result.stderr else "non-zero exit")
+            return
+        data = json.loads(result.stdout)
+        if data.get("status") != "valid":
+            issues = data.get("issues", [])
+            _trace("wp_blocks_validation_failed", slug=slug,
+                   branch="wp_blocks_validation_failed",
+                   issues=issues[:5])
+    except Exception as exc:  # noqa: BLE001 — validation must never break emit
+        _trace("wp_blocks_validation_soft_fail", slug=slug,
+               soft_failed=True, error=str(exc)[:200])
 
 sys.stdout.reconfigure(encoding="utf-8")
 sys.stderr.reconfigure(encoding="utf-8")
@@ -720,9 +756,13 @@ def emit_wp_block(slug: str, attrs: dict, inner: list[str], self_closing: bool =
                       "Emitting open+close with empty inner — recovery UI will rebuild.")
         self_closing = False
     if self_closing and not inner:
-        return f"<!-- wp:{slug}{attr_json} /-->"
+        markup = f"<!-- wp:{slug}{attr_json} /-->"
+        _wp_blocks_validate(markup, slug)
+        return markup
     inner_str = "\n".join(inner)
-    return f"<!-- wp:{slug}{attr_json} -->\n{inner_str}\n<!-- /wp:{slug} -->"
+    markup = f"<!-- wp:{slug}{attr_json} -->\n{inner_str}\n<!-- /wp:{slug} -->"
+    _wp_blocks_validate(markup, slug)
+    return markup
 
 
 # ============================================================================

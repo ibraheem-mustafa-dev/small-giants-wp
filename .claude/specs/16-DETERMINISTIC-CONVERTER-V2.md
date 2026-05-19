@@ -689,6 +689,10 @@ Spec 15 absorbed Spec 14 FR1–FR26 and added FR27–FR40. Spec 16 added FR1–F
 - **FR35 (default-inheritance check):** LIVE — supports_writer.py
 - **FR38 + FR39 (Stage 0.1 BEM lint + pre-commit hook):** SHIPPED 2026-05-12
 
-### 12.10 Spec 15 retirement notes
+### 12.10 Structured pipeline log surfacing (Spec 18)
+
+Stage 9c surfaces per-severity sidecar logs from `trace.jsonl` at pipeline end. See `.claude/specs/18-STRUCTURED-PIPELINE-LOG-SURFACING.md` for full design. Files written to `pipeline-state/<run>/`: `summary.log` (always), `chrome-skipped.log` / `errors.log` / `warnings.log` (when bucket has ≥1 entry). Soft-fail wrapped so observability never blocks pipeline completion. Shipped 2026-05-19 commit `1ea586b2` alongside the chrome-skip leakage fix that motivated the spec.
+
+### 12.11 Spec 15 retirement notes
 
 Spec 15 file (`.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md`) is retained on disk with absorption marker in its frontmatter. Future readers: this section (Spec 16 §12) is the canonical content; Spec 15 file is historical record only.

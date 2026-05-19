@@ -68,6 +68,25 @@ MEDIA_SIDELOAD_SCRIPT = ORCHESTRATOR_DIR / "media-sideload.py"
 WP_INTEGRATION_SCRIPT = ORCHESTRATOR_DIR / "wp_integration.py"
 CRITICAL_FIX_VERIFICATION_SCRIPT = ORCHESTRATOR_DIR / "critical-fix-verification.py"
 
+# ---------------------------------------------------------------------------
+# 5.3.x — wp-* CLI paths (advisory integration, soft-fail on any failure)
+# ---------------------------------------------------------------------------
+_HOOKS_DIR = Path.home() / ".claude" / "hooks"
+WP_BLOCKS_CLI   = _HOOKS_DIR / "wp-blocks.py"
+WP_DOCS_CLI     = _HOOKS_DIR / "wp-docs.py"
+WP_HOOK_GRAPH_CLI = _HOOKS_DIR / "wp-hook-graph.py"
+
+
+def _run_cli(cmd: list[str], timeout: int = 15) -> dict:
+    """Run a wp-* CLI; return parsed JSON dict. Soft-fail returns {"_error": ...}."""
+    try:
+        r = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, encoding="utf-8")
+        return json.loads(r.stdout) if r.stdout.strip() else {"_error": "empty_stdout", "_stderr": r.stderr[:200]}
+    except json.JSONDecodeError:
+        return {"_error": "json_parse", "_raw": r.stdout[:200] if r.stdout else ""}
+    except Exception as exc:  # noqa: BLE001
+        return {"_error": str(exc)[:200]}
+
 # The set of HTML attributes that the functionality-gap-detector treats as
 # behaviour fingerprints. Kept here so the orchestrator's BS4 walk only emits
 # element dicts that the detector will actually score. Source: the
@@ -830,8 +849,21 @@ def stage_1_boundary(mockup_path: Path, section_selector: str, auto_section: boo
 # Stage 2 -- MATCH (dispatcher: confidence-matrix.score_candidates importable)
 # ---------------------------------------------------------------------------
 
+def _wp_blocks_match(description: str) -> dict:
+    """Call wp-blocks.py match and return the parsed dict. Soft-fail returns {}."""
+    if not WP_BLOCKS_CLI.exists():
+        return {}
+    result = _run_cli([sys.executable, str(WP_BLOCKS_CLI), "match", description])
+    return result if "_error" not in result else {}
+
+
 def stage_2_match(boundary_output: dict, run_dir: Path) -> dict:
-    """Stage 2 -- import confidence-matrix.score_candidates and rank candidates per boundary."""
+    """Stage 2 -- import confidence-matrix.score_candidates and rank candidates per boundary.
+
+    5.3.2 enhancement: after scoring, cross-check each match against wp-blocks.py match.
+    When the two disagree by > 0.3 confidence, favour the wp-blocks result (it has
+    the SGS pattern DB behind it) and log a warning for operator review.
+    """
     started = now_iso()
     errors: list[str] = []
     warnings: list[str] = []
@@ -845,13 +877,50 @@ def stage_2_match(boundary_output: dict, run_dir: Path) -> dict:
         for boundary in boundary_output.get("boundaries", []):
             ranked = cm.score_candidates(boundary, registered, patterns, scaffolds, run_dir=run_dir)
             top = ranked[0] if ranked else {"block_name": "core/group", "confidence": 0.0, "tie_breaker": "deferred-no-match"}
+
+            # 5.3.2 — cross-check with wp-blocks.py match (advisory, soft-fail).
+            # Build a description from section_id + selector for the natural-language query.
+            section_id = boundary.get("section_id") or boundary.get("boundary_id") or ""
+            selector   = boundary.get("selector", "")
+            description = f"{section_id} {selector}".strip()
+            wp_match_data = {}
+            wp_top_block: str | None = None
+            wp_top_score: float = 0.0
+            if description and WP_BLOCKS_CLI.exists():
+                wp_match_data = _wp_blocks_match(description)
+                wp_matches_list = wp_match_data.get("matches", [])
+                if wp_matches_list:
+                    wp_top = wp_matches_list[0]
+                    wp_top_block = wp_top.get("block")
+                    # wp-blocks score is 0-10; normalise to 0-1 for comparison
+                    raw_score = wp_top.get("score", 0)
+                    wp_top_score = raw_score / 10.0 if isinstance(raw_score, (int, float)) else 0.0
+
+            cm_confidence = top.get("confidence", 0.0)
+            cm_block = top.get("block_name", "core/group")
+            chosen_block = cm_block
+            chosen_source = "confidence_matrix"
+
+            if wp_top_block and wp_top_score > cm_confidence + 0.3:
+                # wp-blocks is more confident by the threshold — favour it.
+                warnings.append(
+                    f"boundary={boundary['boundary_id']}: wp-blocks match "
+                    f"({wp_top_block}, score={wp_top_score:.2f}) overrides "
+                    f"confidence-matrix ({cm_block}, conf={cm_confidence:.2f})"
+                )
+                chosen_block = wp_top_block
+                chosen_source = "wp_blocks_cli"
+
             matches.append({
                 "boundary_id": boundary["boundary_id"],
-                "section_id": boundary.get("section_id"),
-                "block_name": top["block_name"],
-                "confidence": top["confidence"],
+                "section_id": section_id,
+                "block_name": chosen_block,
+                "confidence": max(cm_confidence, wp_top_score),
                 "alternatives": ranked[1:],
                 "ranked_candidates": ranked,
+                "wp_blocks_match": wp_top_block,
+                "wp_blocks_score": wp_top_score,
+                "chosen_source": chosen_source,
             })
         output = {"matches": matches}
     except Exception as exc:  # noqa: BLE001 -- top-level safety; capture and continue

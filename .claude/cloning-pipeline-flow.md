@@ -59,6 +59,26 @@ companion_docs:
 
 # SGS Cloning Pipeline - Annotated Flow
 
+## Table of Contents
+
+- [Truth-doc structure](#truth-doc-structure-post-2026-05-21-consolidation)
+- [Legend](#legend)
+- [Live entry-point chain](#live-entry-point-chain-verified-2026-05-13)
+- [Per-stage annotated flow](#per-stage-annotated-flow) — Stages 0 / 0.1 / 0.5 / 0.7 / 0.8 / 1 / 2 / 3 / 4 / 4.5 / 5 / 6 / 7 / 7b / pre-deploy gate / 8 / 9 / 9b / 9c / +REGISTER / final acceptance
+- [Sister pipeline — /sgs-update (11 stages)](#sister-pipeline--sgs-update-11-stages)
+- [**Data Sources & Block-Equivalent Layers**](#data-sources--block-equivalent-layers) — the 2 DBs + 6 translation layers
+- [Direct file accesses inventory](#direct-file-accesses-inventory-across-the-whole-pipeline)
+- [DB table heat-map](#db-table-heat-map)
+- [Skill dispatch chain](#skill-dispatch-chain-when-fully-wired)
+- [Status summary](#status-summary)
+- [Gaps + optimisation opportunities](#gaps--optimisation-opportunities-surfaced-by-this-annotation)
+- [Pattern-key tracking](#pattern-key-tracking)
+- [See also](#see-also)
+- [Phase 2A Recogniser Targets](#phase-2a-recogniser-targets-2026-05-20)
+- [Script inventory (absorbed from tooling-map.md)](#script-inventory-absorbed-from-tooling-mapmd-2026-05-21)
+- [Skill dispatch chain (full) (absorbed from skills-commands-map.md)](#skill-dispatch-chain-full-absorbed-from-skills-commands-mapmd-2026-05-21)
+- [DB heat-map (full) (absorbed from db-tables-map.md)](#db-heat-map-full-absorbed-from-db-tables-mapmd-2026-05-21)
+
 ## Truth-doc structure (post-2026-05-21 consolidation)
 
 Two documents own the entire pipeline knowledge surface:
@@ -809,6 +829,38 @@ tracked as a follow-up.
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
+### Stage 9c — Structured pipeline log surfacing [LIVE — shipped 2026-05-19]
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ SCRIPTS:                                                                    │
+│  ✓ orchestrator/surface_pipeline_logs.py - reads trace.jsonl, classifies   │
+│       events into 4 buckets (chrome_skip / error / warning / info), emits   │
+│       per-severity sidecar logs into run_dir. summary.log always written;   │
+│       chrome-skipped.log / errors.log / warnings.log only when bucket has   │
+│       >=1 entry. Soft-fail wrapped so observability never blocks pipeline.  │
+│                                                                             │
+│ MOTIVATION (Bug B incident 2026-05-19):                                     │
+│  Before: cv2 walk() chrome_skip branch returned an HTML comment             │
+│  '<!-- sgs-converter: CHROME SKIPPED (<header>) -->' which got              │
+│  auto-paragraph-wrapped by WP into core/freeform blocks on every clone.     │
+│  After: walk() returns None for chrome-skip; event lives in trace.jsonl     │
+│  + sidecar chrome-skipped.log. Zero block_markup leakage.                   │
+│                                                                             │
+│ FILES (W):                                                                  │
+│  pipeline-state/<run>/summary.log         - one line per stage, always      │
+│  pipeline-state/<run>/chrome-skipped.log  - chrome_skip events, conditional │
+│  pipeline-state/<run>/errors.log          - passed:false / error* events    │
+│  pipeline-state/<run>/warnings.log        - soft-fails + lint violations    │
+│                                                                             │
+│ ORCHESTRATOR OUTPUT:                                                        │
+│  [stage-9c] surfaced logs: chrome_skip=2 errors=0 warnings=3 ->            │
+│             chrome-skipped.log, warnings.log, summary.log                   │
+│                                                                             │
+│ See spec: .claude/specs/18-STRUCTURED-PIPELINE-LOG-SURFACING.md             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
 ### Final acceptance harness [LIVE]
 
 ```
@@ -871,6 +923,93 @@ Refreshes the data layer; runs OUT-OF-BAND from /sgs-clone.
 │        ensures one runs at a time)                                          │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
+
+## Data Sources & Block-Equivalent Layers
+
+This section consolidates **what data lives where** so the pipeline + agents can answer:
+- *Which DB holds X?*
+- *What naming convention do drafts use?*
+- *How is a block's "equivalent" stored across the translation layers?*
+
+Added 2026-05-19 in response to scattered-info findability gap; supersedes ad-hoc lookups across §"Direct file accesses inventory", §"DB table heat-map", and Spec 15 §8.1.
+
+### The 2 SQLite databases
+
+| DB | Path | Tables | Purpose | Touched by |
+|----|------|--------|---------|------------|
+| **sgs-framework.db** (canonical SGS knowledge) | `~/.claude/skills/sgs-wp-engine/sgs-framework.db` AND mirrored at `~/.agents/skills/sgs-wp-engine/sgs-framework.db` (DUAL — always write both) | 25 | Block schemas, attribute catalogue, slot vocab, supports, patterns, hooks, gotchas, deploy steps | Every clone-pipeline stage (R) + `/sgs-update` (R+W) |
+| **uimax.db** (cross-platform design intelligence) | `~/.agents/skills/ui-ux-pro-max/scripts/ui-ux-pro-max.db` | 48 | Naming conventions, Rosetta Stone equivalents, design tokens, animation library, component libraries (Radix/shadcn/etc.), recognition log, mood boards | Stage 9 (W — gap-writers), +REGISTER (W), `/sgs-update` Stage 8 (mirror) |
+| (3rd party reference) **core/blocks.db** | `~/.wp-blockmarkup-mcp/blocks.db` | 7 | Verified WP-core block schemas + markup examples | `/wp-blocks` CLI only |
+
+**Canonical schema dump (run this before any "missing column" claim):**
+
+```bash
+python ~/.claude/hooks/wp-blocks.py dump
+```
+
+Emits compact markdown for all 3 DBs (table names + column lists + row counts). ~1500 tokens. See binding rule #4 in project CLAUDE.md.
+
+### Draft naming convention (SGS-BEM)
+
+Bean-controlled drafts (mockup, sketch, hand-coded HTML) MUST use `.sgs-<block>__<element>--<modifier>`:
+- `<block>` matches a registered SGS block slug (e.g. `hero`, `trust-bar`, `container`)
+- `<element>` matches a slot id from that block's slot list (e.g. `headline`, `cta`, `media`)
+- `<modifier>` matches a `block.json` attribute value (e.g. `--split`, `--align-left`)
+- Validation regex: `^\.sgs-[a-z][a-z0-9-]*(__[a-z][a-z0-9-]*)?(--[a-z][a-z0-9-]*)?$`
+
+The convention is stored in `uimax.naming_conventions` row `"SGS WordPress"` with `is_canonical_for_sgs_drafts=1`. Stage 0.1 BEM lint hard-rejects non-conforming drafts on production runs. Spec 15 §8.1 (now part of Spec 16 §12) is canonical reference.
+
+Live scrapes (sites Bean does NOT control) use **lingua-franca conversion** at write time: SGS-BEM primary, source convention preserved as a sibling row in `equivalent_implementations`.
+
+### Block-equivalent layers (what's stored per block, per attribute)
+
+For any SGS block, the data stack across the 2 DBs:
+
+| Layer | Where it lives | Column / Table | Status (2026-05-19) |
+|-------|---------------|----------------|---------------------|
+| Block **name** | `sgs-framework.blocks.slug` | `slug` (e.g. `sgs/container`) | ✅ Fully populated — 73 blocks |
+| Block **title / description / category** | `sgs-framework.blocks` | `title`, `description`, `category`, `type`, `status`, `grade` | ✅ Auto-synced by `/sgs-update` |
+| **Has-render-php / has-view-script flags** | `sgs-framework.blocks` | `has_render_php`, `has_view_script` | ✅ Auto-synced |
+| Attribute **names** | `sgs-framework.block_attributes` | `attr_name` keyed by `block_slug` | ✅ 1755 rows (post 2026-05-19) |
+| Attribute **type + default** | `sgs-framework.block_attributes` | `attr_type`, `default_value` | ✅ Auto-synced from block.json |
+| Attribute **enum_values (possible values)** | `sgs-framework.block_attributes.enum_values` | JSON array, e.g. `'["standard","split","video","svg-animated"]'` | ✅ Populated for every block.json enum |
+| Attribute **canonical slot** | `sgs-framework.block_attributes.canonical_slot` | Stage-3 lookup target | ✅ +`slot_synonyms` table provides BEM-element aliases (89 rows) |
+| Attribute **role** (semantic category) | `sgs-framework.block_attributes.role` | e.g. `image-object`, `select-from-enum`, `motion`, `text-content` | ✅ |
+| **Inspector control type** (which React widget edits this attr) | `sgs-framework.block_attributes.inspector_control_type` | e.g. `RangeControl`, `SelectControl`, `ToggleControl`, `MediaPlaceholder` | ✅ 809 rows populated 2026-05-19 |
+| **Output signature** (how the attr renders to HTML) | `sgs-framework.block_attributes.output_signature` | JSON: `{type, output_function, output_element, output_class, output_role, is_content_or_design, conditional_gates}` | ✅ |
+| **Equivalent implementations** (Rosetta Stone) | `sgs-framework.block_attributes.equivalent_implementations` | JSON: `{sgs_wp: "<wp:block …/>", html_css: "<element class='.sgs-x__slot--mod'>"}` | ✅ 1630 rows populated 2026-05-19 — every attr has a draft↔WP mapping |
+| **Derived selector** | `sgs-framework.block_attributes.derived_selector` | e.g. `.sgs-hero__label` — used by Stage 2 matching | ✅ |
+| Block **supports** (WP-native colour / typography / spacing / border + custom sgs.*) | `sgs-framework.block_supports` | Per-block flag rows | ✅ 404 rows |
+| Block **compositions** (parent → child blocks) | `sgs-framework.block_compositions` | Pattern-level inner-block lists | ✅ 37 rows |
+| Block **selectors** (CSS root + element selectors) | `sgs-framework.block_selectors` | Per-block CSS scope | ✅ 74 rows |
+| Block **change history** | `sgs-framework.block_changes` | Auto-logged by `/sgs-update` | ✅ 2329 rows |
+| Block **hooks** (sgs_* WP filters/actions per block) | `sgs-framework.hooks` | Populated by `/wp-hooks` integration | ✅ wired 2026-05-19 |
+| **Design tokens** (colour / spacing / font / shadow per theme.json) | `sgs-framework.design_tokens` | theme.json palette + variation overrides | ✅ 39 rows post-refresh 2026-05-19 |
+| **Style variations** (per-client `styles/<client>.json`) | `sgs-framework.style_variations` | Active variation catalogue | ✅ 8 variations 2026-05-19 |
+| **Cross-stack components** (Radix / shadcn / Material UI / etc. with equiv_implementations) | `uimax.component_libraries` | 217 rows | ✅ |
+| **Naming conventions** (16 frameworks' BEM patterns) | `uimax.naming_conventions` | SGS WordPress = canonical | ✅ |
+| **Recognition log** (every clone pipeline boundary classification) | `uimax.recognition_log` | Append-only audit trail | ✅ Stage 9 W |
+
+### Value-conversion exceptions (most CSS/JS values transfer raw — these don't)
+
+| Exception type | Example | Where canonical mapping lives |
+|----------------|---------|-------------------------------|
+| Enum-bounded attrs | `variant ∈ {standard, split, video, svg-animated}` | `block_attributes.enum_values` |
+| BEM `--flag` booleans | `.sgs-container--ken-burns` → `bgKenBurns: true` | Universal rule — derivable from BEM convention, no per-block catalogue |
+| Palette token refs | `var(--wp--preset--color--surface-pink)` → `"surface-pink"` | `design_tokens` table |
+| Number+unit splits | `font-size: 16px` → `fontSize: 16` + `fontSizeUnit: "px"` | `property_suffixes` (117) + `modifier_suffixes` (19) |
+| Object attrs (media) | `{id, url, alt}` | Direct passthrough |
+| Nested `style.*` | `style.color.background` | WP-native structured format |
+
+All other CSS/JS values are direct-passthrough — no conversion catalogue needed.
+
+### Where to look when the pipeline can't extract something
+
+1. **Slot-resolution failure** (attr not landing in any canonical slot) → check `slot_synonyms` table; extend via `seed-slot-synonyms.py` if needed.
+2. **Attribute schema gap** (attr not in `block_attributes`) → run `/sgs-update` to re-scan block.json; if gap persists, the attr isn't declared in block.json.
+3. **CSS rule lifted but doesn't appear in output** → check `attribute_gap_candidates` (sgs-framework — 1009 rows) — every dropped CSS rule registers here.
+4. **Draft class name not recognised** → check `uimax.naming_conventions.SGS WordPress` pattern matches; check `slot_synonyms` for BEM element aliases.
+5. **Cross-stack equivalent missing** (e.g. need Tailwind / shadcn variant of an SGS block) → check `uimax.patterns.equivalent_implementations` JSON; populate via `/uimax-sgs-scrape-pattern`.
 
 ## Direct file accesses inventory (across the whole pipeline)
 

@@ -33,15 +33,21 @@ See `subprojects.md`.
 
 For a fast cold-start orientation read: `quickstart.md`.
 
-## Binding methodology rules (2026-05-15, blub.db rows 254-256)
+## Binding methodology rules (2026-05-15, blub.db rows 254-256, 272)
 
-These three rules apply to all SGS converter / clone pipeline / visual-QA work. Re-violation = recurring correction.
+These rules apply to all SGS converter / clone pipeline / visual-QA work. Re-violation = recurring correction.
 
 1. **Read `pipeline-state/<run>/leftover-buckets.json` BEFORE conjecturing about converter quality or pixel-diff causes.** The orchestrator already classifies every gap by (section, slot, reason) into 5 buckets. Spot-fixing without this evidence is forbidden. See `~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_read_leftover_buckets_before_conjecturing.md`.
 
 2. **Multi-model `/qc` panel (Sonnet + Haiku + Gemini Flash + Cerebras) BEFORE every commit** touching converter / pipeline / SGS block logic. `/qc-inline` is the lightweight self-check during implementation; `/qc` is the dispatch gate. Single-Sonnet implementer review is insufficient. See `feedback_multi_model_qc_before_commit.md`.
 
 3. **Per-section cropped pixel diff** via `scripts/pixel-diff.py --selector .sgs-{section}`, NOT full-page. Full-page has ~30-45% structural noise floor. Each section closes independently at ≤ 1% across 375 / 768 / 1440 viewports. See `feedback_per_section_cropped_pixel_diff.md`.
+
+4. **Schema enumeration BEFORE any "missing column" / "missing table" / "missing section" claim** (added 2026-05-19, blub.db row 272). Run `python ~/.claude/hooks/wp-blocks.py dump` to emit the full schema manifest (all 3 DBs — wp core blocks + sgs-framework + uimax) BEFORE claiming any gap. Partial-scan failure: agent queries 60% of columns, declares a gap, the missing column exists in the unscanned 40%. Any DB-schema claim must cite the enumeration that returned it; uncited claims are treated as unverified. See `feedback_schema_enumeration_before_gap_claims.md` + research synthesis at `~/.openclaw/workspace/memory/research/2026-05-19-agent-schema-enumeration-discipline.md`.
+
+## Spec 18 — Structured pipeline log surfacing (shipped 2026-05-19)
+
+Stage 9c in `/sgs-clone` writes per-severity sidecar logs into each run directory at pipeline end (summary.log always; chrome-skipped.log / errors.log / warnings.log when bucket has ≥1 entry). Replaces the failure mode where chrome-skip events leaked into `block_markup` as HTML comments + auto-wrapped as `core/freeform`. Full spec: `.claude/specs/18-STRUCTURED-PIPELINE-LOG-SURFACING.md`. Implementation: `plugins/sgs-blocks/scripts/orchestrator/surface_pipeline_logs.py` + Stage 9c wire in `sgs-clone-orchestrator.py`. Soft-fail so observability never blocks pipeline completion.
 
 ## Spec 17 — Header/Footer Architecture (shipped 2026-05-18)
 

@@ -327,6 +327,10 @@ The master feature audit (`docs/plans/2026-02-21-master-feature-audit.md`) track
 | Rank Math Free | SEO | No plans to replace |
 | Playwright v1.58.2 | Visual testing | Globally installed on dev machine, Chromium ready |
 
+## Spec 18 — Structured pipeline log surfacing (shipped 2026-05-19)
+
+Observability layer over `/sgs-clone` pipeline. Stage 9c reads `pipeline-state/<run>/trace.jsonl` at end of every pipeline run, classifies events into 4 buckets (chrome_skip / error / warning / info), writes per-severity sidecar logs into the run directory. `summary.log` always written; `chrome-skipped.log` / `errors.log` / `warnings.log` only when their bucket has ≥1 entry. Soft-fail wrapped so observability never blocks `[orchestrator] DONE`. Implementation: `plugins/sgs-blocks/scripts/orchestrator/surface_pipeline_logs.py` + Stage 9c wire in `sgs-clone-orchestrator.py`. Full spec: `.claude/specs/18-STRUCTURED-PIPELINE-LOG-SURFACING.md`.
+
 ## Spec 17 — Header/Footer Architecture (shipped 2026-05-18)
 
 16 FRs, 22 new PHP classes, 12 WP-CLI commands across Waves 1+2+2.5+3. Full spec: `.claude/specs/17-SGS-HEADER-FOOTER-ARCHITECTURE.md`.
