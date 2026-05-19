@@ -59,6 +59,7 @@ D3 Mode 2 fires when a CSS property has a `property_suffixes` mapping but no can
 2. Read `memory/feedback_universal_extraction_no_per_block_legacy.md` (the binding rule).
 3. Baseline check: current `attribute_gap_candidates` row count (so we can measure delta after RC fixes).
 4. Verify no uncommitted work from yesterday: `git status`.
+5. **NEW** — drift-check hooks are now active (`.claude/hooks/drift-check-dispatcher.py` wired via `.claude/settings.json`). 5 checks fire on Edit/Write/Bash. Mixed posture: A (warn via systemMessage) for script-inventory + skill-dispatch + stage-status + Spec 16 FR/R nudges; B (BLOCK exit 2) for DB schema row-count drift. Expect 1-2 warn surfaces per pipeline-script edit — this is by design. If the DB-drift block fires, address it before continuing (update flow doc / Spec 16 counts to match actual DB state).
 
 ### Phase 1 — Fix the 4 RCs (orchestrated parallel waves, ~2 hr wall)
 

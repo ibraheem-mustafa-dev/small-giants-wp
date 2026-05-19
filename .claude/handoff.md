@@ -19,6 +19,15 @@ After the initial handoff write, Bean caught two issues + directed additional wo
 
 3. **Multi-model /qc on flow doc + Spec 16** — 5 Sonnet raters (Gemini skipped per established fabrication pattern). Verdicts: flow doc CONDITIONAL-PASS (14/15) + Spec 16 CONDITIONAL-PASS (12/13). 4 concrete findings fixed inline: broken phase-6 link → `archive/`, `property_suffixes` count 99→117, "Full spec" label on Spec 15 retired, missing Stage 7 row added to Spec 16 §12.8. Deferred findings logged to parking.md (P-WAVE-4-DOC-FOLLOWUPS).
 
+4. **Docs-registry trim 28→17** (commit `93048a9b`) — Bean directive: registry should only carry essentials so future-session reads don't waste tokens. Removed 4 absorbed docs, 2 historical plans, 2 secrets files, 4 enforcement hooks (Python not docs). Deleted `.md` sibling (yaml is readable as-is). 39% reduction in registry walk surface. Tombstoned the orphan `tooling-map-drift-check.py` hook (its target was absorbed; script retained for git-history with explicit retirement notice).
+
+5. **Drift-check dispatcher hook shipped** (commit `c0ab7874`) — Bean directive: hooks should catch staleness in real-time rather than wait for /handoff Gate 4.5. Built `.claude/hooks/drift-check-dispatcher.py` as single PostToolUse entry point with 5 checks: (1) Script inventory drift, (2) DB schema drift, (3) Skill dispatch drift, (4) Stage status nudge, (5) Spec 16 FR/R nudge. Mixed posture: A (warn via systemMessage, exit 0) for 1/3/4/5; B (BLOCK via stderr + exit 2) for DB schema drift (silently dangerous). Wired in NEW `.claude/settings.json` with matcher `Edit|Write|Bash`. Smoke-tested with 3 synthetic payloads; tightened DB regex after catching a false-positive (loose pattern matched adjacent table's row count in 5-line window — now requires `(N rows|entries)` parens within 40 chars of table name). **Hooks load at SessionStart so they're inert until Claude Code restart — full acceptance happens next session.**
+
+## Late-session outcome assessment (Gate 3.5)
+
+- Items 1-4 above: **OUTCOME ACHIEVED** — measurable signal hit (tests pass, files committed, registry shrunk, /qc raters confirmed accuracy).
+- Item 5 (drift-check dispatcher): **CODE SHIPPED, OUTCOME PARTIAL.** Hooks committed + smoke-tested but inert in current session (hot-swap not supported per `/hook-development` skill doc). True outcome — "hooks fire on real Edit/Bash calls and surface drift" — is verified next session.
+
 ## Completed This Session
 
 1. **Audits — 2 rounds, 11 reports.** Round 1 (doc-convergence): 6 panels (3 Sonnet + 2 Gemini + Opus). Round 2 (code-as-evidence): 6 panels. Reports under `reports/2026-05-21-*-audit-*.md`. **Critical methodology finding:** both Gemini panels produced fabricated quotes and line numbers across both rounds. Sonnet + Opus were grounded. Lesson: verify Gemini agent claims by grep before relaying.
