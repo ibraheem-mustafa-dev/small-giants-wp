@@ -104,6 +104,85 @@ _IMPORTANT_RE = re.compile(r"\s*!important\s*$", re.IGNORECASE)
 _LIFT_CONTEXT: dict = {}
 
 # ============================================================================
+# D1 sidecar — css-d1-assignments.json reader (Spec 16 §FR6 P1.B, 2026-05-20)
+# ============================================================================
+# When stage_0_7_css_lift (the new router-based path) has run, it writes a
+# css-d1-assignments.json sidecar into pipeline-state/<run>/.  The cv2 walker
+# reads this sidecar to get pre-classified typed-attr assignments for each
+# block slug instead of re-deriving them via _collect_css_decls_for_element.
+#
+# Loading strategy:
+#   1. The orchestrator calls seed_d1_sidecar(run_dir) once before the
+#      per-section loop.  If the file exists it is loaded; if not the
+#      module falls back to _collect_css_decls_for_element (graceful
+#      degradation — runs without P1.B still work).
+#   2. _load_d1_assignments(section_key) returns the pre-classified decls
+#      for a given block slug (e.g. 'sgs/hero').  Callers merge the result
+#      into the css_rules dict that _lift_root_supports_to_style normally
+#      derives at runtime — making it ADDITIVE rather than a replacement,
+#      so attrs that _collect_css_decls_for_element would find are still
+#      found (the runtime CSS is still parsed; D1 assignments give richer
+#      pre-classified context).
+#
+# NOTE (P1.A nice-to-have #4 — hero-0 limitation, 2026-05-20):
+#   The FR1 block-root slot-harvest path (_lift_attrs_for_block / hero
+#   inline-style lift) currently does NOT go through the D1 sidecar.
+#   It reads block attrs from the element directly and uses
+#   _snap_style_dict_leaves for token-snap.  The D1 sidecar improves
+#   _lift_root_supports_to_style (native WP supports — spacing/border/
+#   colour) and _lift_core_block_style (core/* block style dicts).
+#   The FR1 path is planned for a follow-up commit once the D1 sidecar
+#   wire is validated end-to-end.
+# ============================================================================
+_D1_SIDECAR: dict = {}   # {block_slug: {attr_path: {value, role, source_class, ...}}}
+
+
+def seed_d1_sidecar(run_dir: "Path | None") -> bool:
+    """Load css-d1-assignments.json from run_dir into the module-level cache.
+
+    Safe to call multiple times — each call replaces the previous cache.
+    Returns True if the sidecar was loaded, False otherwise.
+    """
+    global _D1_SIDECAR
+    _D1_SIDECAR = {}
+    if run_dir is None:
+        return False
+    sidecar_path = Path(run_dir) / "css-d1-assignments.json"
+    if not sidecar_path.exists():
+        return False
+    try:
+        import json as _json
+        _D1_SIDECAR = _json.loads(sidecar_path.read_text(encoding="utf-8"))
+        return bool(_D1_SIDECAR)
+    except Exception:  # noqa: BLE001
+        return False
+
+
+def _load_d1_assignments(section_key: str) -> dict[str, str]:
+    """Return a flat {css_prop: value} dict from the D1 sidecar for section_key.
+
+    section_key is typically a block slug (e.g. 'sgs/hero').  The D1 sidecar
+    is keyed by block_slug from css_router.route_css().
+
+    Returns an empty dict when the sidecar is absent or the key is not found.
+    This is the graceful-degradation path — callers always fall back to
+    _collect_css_decls_for_element when needed.
+    """
+    if not _D1_SIDECAR:
+        return {}
+    entries = _D1_SIDECAR.get(section_key) or {}
+    # Flatten: attr_path keys look like 'sgs/hero.padding-top'; extract the css_prop.
+    flat: dict[str, str] = {}
+    for attr_path, entry in entries.items():
+        if isinstance(entry, dict):
+            css_prop = entry.get("css_prop") or attr_path.split(".")[-1]
+            value = entry.get("value") or ""
+            if css_prop and value:
+                flat[css_prop] = value
+    return flat
+
+
+# ============================================================================
 # Stage 4.5 — Token resolution accumulator (Spec 16 §FR6 D1)
 # ============================================================================
 # Collects token-snap results during a per-section conversion run.
@@ -156,72 +235,12 @@ def _get_token_resolver():
     return _TOKEN_RESOLVER_MOD
 
 
-def _snap_attrs_to_tokens(
-    block_slug: str,
-    attrs_source: dict,
-    attr_name_map: "dict[str, str] | None" = None,
-) -> None:
-    """Resolve attrs_source values against theme.json tokens and rewrite in place.
 
-    For each key/value pair in attrs_source whose value is a non-empty string:
-      - If confidence >= 0.6 and css_var is non-null: rewrite the value to css_var.
-      - Record the resolution (snapped or gap) in _TOKEN_RESOLUTIONS.
-      - For gap candidates: also call _record_gap_candidate so they appear in D3.
-
-    attr_name_map: optional dict mapping attrs_source keys to the attr_name expected
-    by the resolver (e.g. {"color": "colour"}). When None, keys are used as-is.
-
-    Universal — applies to any block_slug / attr combination.
-    """
-    tr_mod = _get_token_resolver()
-    if tr_mod is None:
-        return  # resolver unavailable — soft-fail, keep raw values
-
-    theme_json = _LIFT_CONTEXT.get("theme_json") or {}
-
-    items = []
-    key_to_attr_name = {}
-    for k, v in attrs_source.items():
-        if not isinstance(v, str) or not v.strip():
-            continue
-        attr_name = (attr_name_map or {}).get(k, k)
-        items.append({"block_slug": block_slug, "attr_name": attr_name, "raw_value": v})
-        key_to_attr_name[k] = attr_name
-
-    if not items:
-        return
-
-    try:
-        resolutions = tr_mod.resolve_batch(items, theme_json, min_confidence=0.6)
-    except Exception:  # noqa: BLE001 — token-snap must never break conversion
-        return
-
-    for res in resolutions:
-        _TOKEN_RESOLUTIONS.append(res)
-        attr_name = res.get("attr_name", "")
-        # Find the original key in attrs_source that maps to this attr_name
-        orig_key = attr_name  # default: attr_name IS the key
-        for k, a in key_to_attr_name.items():
-            if a == attr_name:
-                orig_key = k
-                break
-
-        if (
-            res.get("confidence", 0.0) >= 0.6
-            and res.get("css_var")
-            and not res.get("is_gap_candidate")
-            and orig_key in attrs_source
-        ):
-            # Rewrite the raw literal to the css_var token reference
-            attrs_source[orig_key] = res["css_var"]
-        elif res.get("is_gap_candidate") and res.get("role") is not None:
-            # Surface as a D3 gap candidate (same as unlifted CSS rules)
-            _record_gap_candidate(
-                block_slug,
-                attr_name,
-                res.get("raw_value") or "",
-                f"token_snap_gap:{attr_name}",
-            )
+# _snap_attrs_to_tokens was defined here but never called in production.
+# Removed 2026-05-20 (P1.A nice-to-have #1). The token-snap path for
+# block-level attrs goes through _snap_style_dict_leaves (called at the end of
+# _lift_root_supports_to_style and _lift_core_block_style). If a future path
+# needs per-attrs-dict snapping, re-introduce with an explicit call site.
 
 
 # ============================================================================
@@ -1650,17 +1669,26 @@ def _flatten_wp_style_to_sgs_flat(style_dict: dict, extra_top: dict,
         if typo.get("fontSize"):
             v, u = _split_value_unit(typo["fontSize"])
             flat["fontSize"] = v
-            flat["fontSizeUnit"] = u
+            # Unit companion: when _snap_style_dict_leaves rewrote the value to a
+            # CSS var(), _split_value_unit returns u="" (CSS function carries its
+            # own unit — appending 'px' would produce invalid CSS like
+            # "var(--wp--preset--font-size--xlarge)px"). Drop the unit attr when
+            # the value is already a token reference so the block renders with
+            # the var()'s intrinsic unit rather than an invalid concatenation.
+            if u:
+                flat["fontSizeUnit"] = u
         if typo.get("fontWeight"):
             flat["fontWeight"] = typo["fontWeight"]
         if typo.get("lineHeight"):
             v, u = _split_value_unit(typo["lineHeight"], default_unit="em")
             flat["lineHeight"] = v
-            flat["lineHeightUnit"] = u
+            if u:
+                flat["lineHeightUnit"] = u
         if typo.get("letterSpacing"):
             v, u = _split_value_unit(typo["letterSpacing"], default_unit="em")
             flat["letterSpacing"] = v
-            flat["letterSpacingUnit"] = u
+            if u:
+                flat["letterSpacingUnit"] = u
         if typo.get("fontStyle"):
             flat["fontStyle"] = typo["fontStyle"]
         if typo.get("textDecoration"):
@@ -1678,7 +1706,8 @@ def _flatten_wp_style_to_sgs_flat(style_dict: dict, extra_top: dict,
             if side in margin:
                 v, u = _split_value_unit(margin[side])
                 flat[f"margin{side.capitalize()}"] = v
-                m_unit_seen = u
+                if u:
+                    m_unit_seen = u
         if m_unit_seen:
             flat["marginUnit"] = m_unit_seen
         padding = spacing.get("padding") or {}
@@ -1687,7 +1716,8 @@ def _flatten_wp_style_to_sgs_flat(style_dict: dict, extra_top: dict,
             if side in padding:
                 v, u = _split_value_unit(padding[side])
                 flat[f"padding{side.capitalize()}"] = v
-                p_unit_seen = u
+                if u:
+                    p_unit_seen = u
         if p_unit_seen:
             flat["paddingUnit"] = p_unit_seen
 
@@ -1758,8 +1788,17 @@ _STYLE_KEY_TO_ROLE: dict[str, str] = {
     "typography": "font_size",  # font-size is the primary snap target; fontFamily override below
 }
 # Fine-grained overrides: (top_key, leaf_key) → role.
-_STYLE_SUBKEY_ROLE_OVERRIDE: dict[tuple[str, str], str] = {
+# P1.A nice-to-have #2 fix (2026-05-20): typography.lineHeight MUST NOT route to
+# font_size. There is no WP theme.json preset for line-height values — snapping
+# a unitless ratio or em value against the font-size preset registry produces
+# false matches (e.g. 1.6 snapping to '16px' xlarge). The sentinel value None
+# causes _snap_leaf to skip the snap entirely (no gap candidate emitted either —
+# line-height is intentional non-token content). css_router._infer_role() uses
+# the same guard when classifying D1 entries (role != 'font_size' for line-height).
+_STYLE_SUBKEY_ROLE_OVERRIDE: dict[tuple[str, str], str | None] = {
     ("typography", "fontFamily"): "family",
+    ("typography", "lineHeight"): None,   # skip snap — no WP preset for line-height
+    ("typography", "lineHeightUnit"): None,  # derived unit — never tokenisable
 }
 # Border sub-keys that represent colours (all others skip).
 _BORDER_COLOUR_SUBKEYS: frozenset[str] = frozenset({"color", "colour"})
@@ -1772,6 +1811,106 @@ _ALREADY_TOKEN_PREFIXES: tuple[str, ...] = (
 )
 
 
+def _token_value_for_slug(role: str, slug: str, theme_json: dict) -> str | None:
+    """Look up the raw CSS value for a snapped token slug in the theme.json registry.
+
+    Returns the value string (e.g. '#0F7E80', '1rem', '32px') or None when the
+    slug is not found. Used by the strict exact-match guard in _snap_leaf.
+
+    role → registry key mapping mirrors token_resolver._registry_slice().
+    """
+    settings = theme_json.get("settings") or {}
+    if role == "color":
+        entries = (settings.get("color") or {}).get("palette") or []
+        for e in entries:
+            if e.get("slug") == slug:
+                return e.get("color")
+    elif role == "spacing":
+        entries = (settings.get("spacing") or {}).get("spacingSizes") or []
+        for e in entries:
+            if e.get("slug") == slug:
+                return e.get("size")
+    elif role == "font_size":
+        entries = (settings.get("typography") or {}).get("fontSizes") or []
+        for e in entries:
+            if e.get("slug") == slug:
+                return e.get("size")
+    elif role == "shadow":
+        entries = (settings.get("shadow") or {}).get("presets") or []
+        for e in entries:
+            if e.get("slug") == slug:
+                return e.get("shadow")
+    elif role == "family":
+        entries = (settings.get("typography") or {}).get("fontFamilies") or []
+        for e in entries:
+            if e.get("slug") == slug:
+                return e.get("fontFamily")
+    return None
+
+
+def _strict_snap_passes(role: str, literal: str, token_value: str) -> bool:
+    """Return True only when the token's actual value is close enough to the literal.
+
+    Colour  — hex equality (case-insensitive) OR ΔE2000 ≤ 1.0 (imperceptible).
+    Spacing — both values convertible to px; delta ≤ 1 px.
+    FontSize— same px conversion; delta ≤ 1 px.
+    Shadow / Family — always pass (string-exact matching already performed by
+                      snap_shadow/snap_family; near-match noise negligible).
+
+    Returns True (pass / allow snap) or False (reject / keep literal).
+    Soft-fail: any exception returns True so a guard crash never silently drops
+    a valid snap.
+    """
+    try:
+        if role == "color":
+            # Fast path: hex equality (case-insensitive strip).
+            def _normalise_hex(h: str) -> str | None:
+                h = h.strip().upper()
+                if re.match(r"^#[0-9A-F]{6}$", h):
+                    return h
+                if re.match(r"^#[0-9A-F]{3}$", h):
+                    # Expand shorthand #RGB → #RRGGBB
+                    return "#" + "".join(c * 2 for c in h[1:])
+                if re.match(r"^#[0-9A-F]{8}$", h):
+                    return h[:7]  # strip alpha
+                return None
+
+            lit_hex = _normalise_hex(literal)
+            tok_hex = _normalise_hex(token_value)
+            if lit_hex is not None and tok_hex is not None:
+                if lit_hex == tok_hex:
+                    return True  # exact hex match — allow
+            # Perceptual fallback: ΔE2000 ≤ 1.0.
+            # Lazy-load colormath via the already-imported value_matcher module
+            # (available through the token_resolver module's loaded _vm).
+            tr_mod = _get_token_resolver()
+            if tr_mod is None:
+                return True  # guard unavailable — allow to avoid false blocks
+            vm = getattr(tr_mod, "_vm", None)
+            if vm is None:
+                return True
+            try:
+                srgb_lit = vm._parse_colour_to_srgb(literal)
+                srgb_tok = vm._parse_colour_to_srgb(token_value)
+                delta = vm._colour_delta_e(srgb_lit, srgb_tok)
+                return delta <= 1.0
+            except Exception:
+                return True  # unrecognised colour format — allow
+
+        if role in ("spacing", "font_size"):
+            lit_px = _parse_px_length(literal)
+            tok_px = _parse_px_length(token_value)
+            if lit_px is None or tok_px is None:
+                return True  # non-px unit (%, vw, etc.) — allow existing snap
+            return abs(lit_px - tok_px) <= 1.0
+
+        # shadow / family — keep existing logic; these already require exact/near match.
+        return True
+
+    except Exception:  # noqa: BLE001
+        return True  # soft-fail: never block a snap due to guard error
+
+
 def _snap_style_dict_leaves(block_slug: str, style: dict) -> None:
     """Walk `style` recursively and snap leaf string values to theme.json tokens.
 
@@ -1780,6 +1919,14 @@ def _snap_style_dict_leaves(block_slug: str, style: dict) -> None:
     Soft-fail: any exception per-leaf is swallowed so a bad value never breaks convert.
 
     Universal — no Mama-specific logic.
+
+    P1.A strict exact-match guard (2026-05-20): after the resolver returns a snap
+    result, the token's actual value is looked up in theme.json and compared to the
+    original literal via _strict_snap_passes(). Near-match snaps where the token
+    resolves to a perceptually different value (e.g. #FFFFFF snapping to text-inverse
+    which is #FFFAF5 cream at ΔE2000 ≈ 2.8) are rejected. The literal is preserved
+    in the emitted attrs and the result is surfaced as a gap candidate with reason
+    `snap_value_diverges_from_literal` so the operator can add an exact token later.
     """
     tr_mod = _get_token_resolver()
     if tr_mod is None:
@@ -1806,10 +1953,14 @@ def _snap_style_dict_leaves(block_slug: str, style: dict) -> None:
                 return  # not a colour — skip without recording
             role_from_path = "color"
         else:
-            role_override = _STYLE_SUBKEY_ROLE_OVERRIDE.get((top_key, str(key)))
-            role_from_path = role_override or _STYLE_KEY_TO_ROLE.get(top_key)
+            _override_key = (top_key, str(key))
+            if _override_key in _STYLE_SUBKEY_ROLE_OVERRIDE:
+                # Explicit override present — may be None (skip) or a role string.
+                role_from_path = _STYLE_SUBKEY_ROLE_OVERRIDE[_override_key]
+            else:
+                role_from_path = _STYLE_KEY_TO_ROLE.get(top_key)
             if role_from_path is None:
-                return  # unknown section — skip
+                return  # skip: either unknown section or explicit None sentinel
 
         # Build a synthetic attr_name the resolver will recognise for the role.
         # We want _role_for_attr(attr_name) == role_from_path.
@@ -1838,6 +1989,53 @@ def _snap_style_dict_leaves(block_slug: str, style: dict) -> None:
             and res.get("css_var")
             and not res.get("is_gap_candidate")
         ):
+            # ----------------------------------------------------------------
+            # P1.A strict exact-match guard: verify the token's actual resolved
+            # value matches the literal within perceptual tolerances before
+            # committing the snap.  A resolver confidence of 0.85 ("near match")
+            # is intentionally permissive — it accepts ΔE2000 up to 5.0 for
+            # colours or ≤15% deviation for spacing.  That confidence tier exists
+            # to help the value-matcher express "this is close"; it does NOT mean
+            # "the operator wants the nearest value substituted for the literal".
+            # The operator's binding rule (see council report 2026-05-20) is:
+            #   token references replace literals ONLY when values MATCH, not
+            #   when they are merely close.
+            #
+            # Example regression blocked by this guard:
+            #   color.background: '#FFFFFF' → snapped to 'text-inverse' at 0.85
+            #   mamas-munches text-inverse = #FFFAF5 (cream, ΔE2000 ≈ 2.8)
+            #   gift-section rendered cream where mockup is pure white
+            #   → gift-section pixel-diff regressed +10-22pt across viewports
+            # ----------------------------------------------------------------
+            token_slug = res.get("token_slug")
+            token_value = (
+                _token_value_for_slug(role_from_path, token_slug, theme_json)
+                if token_slug else None
+            )
+            if token_value is not None and not _strict_snap_passes(
+                role_from_path, value, token_value
+            ):
+                # Guard rejected: token value diverges from literal.
+                # Keep literal in attrs (do not rewrite parent[key]).
+                # Surface as a gap candidate so the operator knows an exact
+                # token is missing from theme.json for this value.
+                _record_gap_candidate(
+                    block_slug,
+                    full_attr_name,
+                    value,
+                    "snap_value_diverges_from_literal",
+                )
+                _trace(
+                    "token_snap_rejected",
+                    target_block=block_slug,
+                    attr=full_attr_name,
+                    literal=value,
+                    token_slug=token_slug,
+                    token_value=token_value,
+                    confidence=res.get("confidence"),
+                    reason="snap_value_diverges_from_literal",
+                )
+                return
             parent[key] = res["css_var"]
         elif res.get("is_gap_candidate") and res.get("role") is not None:
             _record_gap_candidate(
