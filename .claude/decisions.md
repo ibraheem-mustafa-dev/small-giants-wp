@@ -2,6 +2,50 @@
 
 Append-only. Most-recent first.
 
+## 2026-05-19 — Session decisions (cv2 RCs + deploy consolidation + Stage 10 + skill rename)
+
+### D1: `/deploy` → `/wp-sgs-deploy` rename + `/deploy-check` absorbed as Phase 1
+
+Three deploy concepts were conflated — framework deploy, per-page deploy, pre-flight checklist — each in a different file with overlapping descriptions. Operators routinely skipped the checklist because it was a separate step.
+
+**Decision:** Rename `/deploy` → `/wp-sgs-deploy` (project-scoped name disambiguates). Merge `/deploy-check` INTO `/wp-sgs-deploy` as Phase 1. Per-page deploy moves to `/sgs-clone --deploy-target page:<id>` as Stage 10. Three canonical homes, no overlap. `--skip-check` flag preserves freedom for trusted micro-patches; production rejects the flag.
+
+**Outcome:** Deploy ran on palestine-lives.org. Initial 500 from a separate gotcha (`tar --exclude='src'` strips vendor) — re-tar with path-anchored exclude restored 200 OK. Skill scored 96%.
+
+### D2: Stage 10 — per-page deploy wired into cloning pipeline
+
+`upload_and_patch.py` existed as a tactical script. Operators had to remember it; most runs skipped it.
+
+**Decision:** Wire into orchestrator as Stage 10. New flag `--deploy-target page:<id>` / `post:<id>`. Script moved to canonical `plugins/sgs-blocks/scripts/orchestrator/upload_and_patch.py`. Stage 10 fires AFTER Stage 9c, BEFORE `--skip-autonomy-gate` early return. Soft-fails — never halts pipeline.
+
+**Outcome:** /qc 5/5 with live evidence `[stage-10] deploy: patched page 144`.
+
+### D3: 5 universal-extraction RCs closed in cv2 — no per-block legacy
+
+Wave 3 verification (2026-05-18) flagged 4 RCs preventing universal extraction from catching every CSS rule. RC-5 emerged during pixel-diff diagnostics — every section needs `sgs-{section_id}` className on its root block.
+
+**Decision:** Fix each via universal-extraction principles (binding rule `universal-extraction-no-per-block-legacy`). Every CSS rule → existing attr OR D3 attribute_gap_candidate. No silent drops, no per-block patches.
+
+**Outcome:** Spot-check showed ≥10 of 11 previously silent-dropped attributes surface via D1 or D3.
+
+### D4: All 10 static SGS blocks converted to dynamic — `_STILL_STATIC_SGS_BLOCKS = frozenset()`
+
+Mixing static and dynamic blocks caused 5 "invalid block" errors on page 144 because cv2 self-closes block comments (only valid for dynamic). Bean's binding rule: all SGS blocks dynamic for consistency.
+
+**Decision:** Convert remaining 10 statics (certification-bar / counter / heading / notice-banner / process-steps / trust-bar in batch 1; label / feature-grid / multi-button / mobile-nav in batch 2). save returns null; render.php drives 100% frontend; deprecated.js shim for backward compat.
+
+**Trade-off:** PHP renders every block per request vs cached HTML in post_content. Mitigation: full-page caching at CDN / LiteSpeed.
+
+**Outcome:** A1 cv2 self-close guard is now a no-op. 16/16 tests green. Framework deployed.
+
+### D5: Container block becomes canonical advanced-background wrapper
+
+Hero block.json had `backgroundColor.default = "primary-dark"` coexisting with `supports.color.background: true` — Section H6 dual-cascade anti-pattern. Section blocks shouldn't own backgrounds.
+
+**Decision:** Container extended with 4 background modes (Image, Video, Animation incl. parallax + ken-burns, Overlay incl. gradient). 15 new attrs. 4-tab inspector. Hero block.json defaults removed.
+
+**Outcome:** Hero on page 144 renders `has-surface-pink-background-color` matching trust-bar pattern + working pages 29/8.
+
 ## 2026-05-19 — Spec 17 Header/Footer Architecture (Waves 1+2+2.5+3)
 
 ### Council M1: CPT REST capability gating

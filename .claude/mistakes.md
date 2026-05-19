@@ -1,5 +1,48 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-21 (3 new lessons — strip-feature-update-docs-same-commit + verify-gemini-claims-by-grep + don't-port-per-block-fix-universal)
+**Last updated:** 2026-05-19 (4 new lessons — schema-enumeration-before-gap-claims + qc-inline-on-live-pipeline + header-footer-template-parts 3rd recurrence + tar-exclude-must-be-path-anchored)
+
+## 2026-05-19 — Four CRITICAL lessons captured (blub.db rows 272-275)
+
+### 1. Schema enumeration before gap claims — blub.db row 272 (high)
+
+Claimed `block_attributes.enum_values` column didn't exist while proposing a schema migration. Bean disproved with `PRAGMA table_info()` — column was there + populated (1755 rows).
+
+**Rule:** Before any "missing column" / "missing table" claim, run a FULL schema enumeration. `python ~/.claude/hooks/wp-blocks.py dump` covers all 3 DBs (~1500 tokens). Bound as binding rule #4 in project CLAUDE.md.
+
+**Family:** verify-rendered-output-not-internal-metrics (row 194), extend-measurement-set-when-human-eye-disputes (row 207), read-leftover-buckets-before-conjecturing (row 254). All instances of: **verify ground truth before claiming what's missing from it.**
+
+### 2. /qc-inline must run on the live pipeline, not isolated units — blub.db row 273 (medium)
+
+Block 5.3 subagent ran /qc-inline against `surface_pipeline_logs.py` in isolation with synthetic input. 10/10 pass. Real /sgs-clone run later showed Stage 9c never fired — I'd placed the block AFTER the `--skip-autonomy-gate` early return. Function works perfectly when called; never gets called.
+
+**Rule:** For any pipeline wiring change, /qc-inline MUST (1) run the actual pipeline entry point, (2) grep stdout for the new stage's output, (3) inspect the artefacts dir. Isolated function QC proves the function works but NOT that it's reachable.
+
+### 3. Header + footer are TEMPLATE PARTS, not Gutenberg blocks — blub.db row 274 (CRITICAL, 3rd recurrence)
+
+A parallel subagent silently created `src/blocks/header/` + `src/blocks/footer/` as full Gutenberg block dirs. NOT in any authorised brief. Caught by `git status`.
+
+**Recurrence ledger:**
+- 2026-05-01: per-client `header-mamas-munches.html` files (rule captured)
+- 2026-05-XX: duplicate per-client file capture
+- 2026-05-19: Gutenberg block form (this incident)
+
+**Rule:** Header + footer are WordPress 6.9 template parts per Spec 17 §S1-2 + Spec 19 §4.6. `parts/header.html` + `parts/footer.html` each contain a single `wp:pattern` reference; framework patterns hold the markup; `wp_template_part` records get seeded on style-variation activate. CPT `sgs_header` / `sgs_footer` power the conditional rules engine — still NOT regular blocks. cv2 chrome-skips `<header>`/`<footer>`/`<nav>` at top level (correct).
+
+**3rd recurrence → structural enforcement.** Open task for next session: build `.claude/hooks/no-header-footer-block.py` PostToolUse to hard-reject `Write|Edit` on `src/blocks/(header|footer|nav)/`. Prompt-discipline has failed 3 times.
+
+### 4. tar `--exclude` for deploy must be path-anchored, not basename — blub.db row 275 (CRITICAL, documented-but-recurring)
+
+`/wp-sgs-deploy both` ran the SKILL.md's documented tar command. Deploy completed. Site returned HTTP 500.
+
+**Root cause:** `--exclude='src'` is a basename match — tar applied it to every `src/` dir in the tree, including `vendor/myclabs/deep-copy/src/`, `vendor/phpunit/*/src/`. Composer autoload couldn't find its source files; plugin failed with fatal autoload error.
+
+**Documented but recurring:** The gotcha IS in CLAUDE.md ("Tar `--exclude='src'` breaks vendor"). But the wp-sgs-deploy SKILL.md carried the wrong form. Documentation conflicting with itself.
+
+**Rule:** ALWAYS `--exclude='plugins/sgs-blocks/src'` (path-anchored), NEVER `--exclude='src'` (basename). HTTP 500 + composer/autoload_real.php in error log → this is the most likely cause.
+
+**Meta-pattern:** "documented but recurring" — rules captured in CLAUDE.md must also live in the canonical skill/script source. Drift between the two is its own failure mode. SKILL.md fixed in commit `a9083ca9`.
+
+---
 
 ## 2026-05-21 — Stale-doc-text caused a regression of a deliberately-stripped check
 

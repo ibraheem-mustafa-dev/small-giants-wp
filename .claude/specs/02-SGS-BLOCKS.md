@@ -1,5 +1,7 @@
 # SGS Blocks — Custom Gutenberg Block Library
 
+> **Last block-architecture update: 2026-05-19.** All 10 previously-static SGS blocks (certification-bar / counter / heading / label / feature-grid / multi-button / mobile-nav / notice-banner / process-steps / trust-bar) converted to dynamic — save returns null, render.php drives 100% of frontend output, each with `deprecated.js` shim for backward compat on existing posts. `_STILL_STATIC_SGS_BLOCKS = frozenset()` (cv2 A1 guard is now a no-op). Container block extended with advanced backgrounds (4 modes: image / video / parallax+ken-burns / gradient-overlay; 15 new attrs; view.js + render.php + style.css). Hero block.json defaults removed (Section H6 dual-cascade anti-pattern fix). Framework deployed to palestine-lives.org (commit `a9083ca9`). Per-block attribute counts in `02-SGS-BLOCKS-REFERENCE.md` regenerate on every `/sgs-update`.
+
 ## Purpose
 
 A WordPress plugin providing a curated library of custom Gutenberg blocks purpose-built for Small Giants Studio client sites. Replaces Spectra Pro with blocks that produce clean, semantic markup, respect the SGS Theme design tokens, and render correctly across all breakpoints.
