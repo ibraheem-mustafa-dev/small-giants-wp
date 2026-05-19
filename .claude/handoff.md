@@ -7,7 +7,17 @@ session_date: 2026-05-21
 
 # Session Handoff — 2026-05-21
 
-Option-A cleanup sprint: four waves of cv2 pipeline cleanup + verification, surfacing 4 concrete root-cause gaps for next session.
+Option-A cleanup sprint: four waves of cv2 pipeline cleanup + verification + Spec 15→16 absorption + Wave 2b licensing-revert + truth-doc consolidation + multi-model /qc on flow doc & Spec 16. Surfaced 4 universal-extraction root-cause gaps for next session.
+
+## Post-session addendum (2026-05-21 late)
+
+After the initial handoff write, Bean caught two issues + directed additional work:
+
+1. **Wave 2b licensing-reject was wrong** — Bean clarified "no licensing" means don't add validation infrastructure, not "ban the words". A previous incarnation was deliberately stripped 2026-05-14; Wave 2b re-implemented it from stale SKILL.md text. REVERTED same session: validator stripped + tombstone comment + 3 regression-guard tests; SKILL.md Hard Rule 1 retired; memory file clarified; architecture.md stale claim fixed; decisions.md Decision 18 logged; mistakes.md captured `strip-feature-update-docs-same-commit` lesson.
+
+2. **Spec 15 absorbed into Spec 16** (deferred from main session, completed inline). Spec 16 gained §12 Appendix A folding all of Spec 15's canonical content (L0-L5 layers + SGS-BEM + canonical slot/property/modifier vocabularies + /sgs-update 11 stages + upstream conditions + QA gates summary + FR27-FR40). Spec 15 frontmatter flipped to `status: ABSORBED_INTO_SPEC_16`. Docs-registry.yaml updated to mark Spec 15 + 3 sibling docs as `scope: absorbed`.
+
+3. **Multi-model /qc on flow doc + Spec 16** — 5 Sonnet raters (Gemini skipped per established fabrication pattern). Verdicts: flow doc CONDITIONAL-PASS (14/15) + Spec 16 CONDITIONAL-PASS (12/13). 4 concrete findings fixed inline: broken phase-6 link → `archive/`, `property_suffixes` count 99→117, "Full spec" label on Spec 15 retired, missing Stage 7 row added to Spec 16 §12.8. Deferred findings logged to parking.md (P-WAVE-4-DOC-FOLLOWUPS).
 
 ## Completed This Session
 

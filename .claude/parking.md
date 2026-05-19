@@ -1,10 +1,32 @@
 ---
 doc_type: parking
 project: small-giants-wp
-last_updated: 2026-05-19
+last_updated: 2026-05-21
 ---
 
 # Parking — deferred work with named triggers
+
+## Opened 2026-05-21 (Option A cleanup sprint outcomes)
+
+**P-UNIVERSAL-EXTRACTION-RC-FIXES** — 4 root causes from Wave 3 verification (full evidence at `reports/2026-05-21-wave-3-verification.md`): RC-3 `slot_synonyms` DB gaps for composite slot names; RC-2 `_SUPPORTS_HANDLED_PROPS` over-exclusion; RC-1 D3 Mode 2 breakpoint coverage gap; RC-4 `_collect_css_decls_for_element` grouped-selector bug. **Trigger:** next session Phase 1 — universal-extraction completeness work.
+
+**P-LEGACY-FILES-PHYSICAL-DELETION** — `tools/recogniser-v2/extract.py` + `extract_strategies.py` + `overrides/hero.py` (1942 LOC) remain on disk; unreachable from orchestrator. Physical deletion deferred until universal extraction handles hero via D1/D3 (no per-block legacy). **Trigger:** Wave 3 verification re-runs PASS on hero universal-handling.
+
+**P-RETIRED-BLOCK-REMAP-PHYSICAL-DELETION** — `RETIRED_BLOCK_REMAP` dict + consultation branch soft-emptied today (Wave 3c). Consultation retained as no-op for safety. **Trigger:** audit confirms no remaining consultation paths.
+
+**P-TEST-POLLUTION-HYGIENE** — `test_licensed_in_description_rejected` fails after `test_staged_merge` (now N/A after Wave 2b revert, but underlying state-leak pattern likely affects other cross-file runs). **Trigger:** any cross-file pytest ordering failure.
+
+**P-MAMAS-ANNOTATED-INDEX-MIGRATION** — `sites/mamas-munches/mockups/homepage/annotated-index.html` still uses `.sgs-heritage-strip` (canonical `index.html` migrated). **Trigger:** ~10 min Haiku migration in any wait window.
+
+**P-PHP-FOOD-SERVICE-INT-INTERPOLATION** — Pre-existing Intelephense diagnostic at `sites/indus-foods/deploy/food-service-page.php:413` (`$result` int interpolation). Benign. **Trigger:** Indus PHP-tooling pass.
+
+**P-WAVE-4-DOC-FOLLOWUPS** — Sonnet /qc raters surfaced: `/research-buddies` skill missing from dispatch chain; Wave 3 Indus heritage-strip not in flow doc body; `+DEPLOY`/`+PARITY` tails could use dedicated stage blocks; FR36/FR37/FR40 status incomplete in Spec 16 §12.9. **Trigger:** next session Phase 4.
+
+**P-DRIFT-CHECK-HOOK-UPDATE** — `tooling-map-drift-check.py` + `db-tables-drift-check.py` were configured for the now-absorbed source docs. May need updating to read absorbed sections in `cloning-pipeline-flow.md`, OR retiring. **Trigger:** next `/sgs-update` hook failure OR routine hooks pass.
+
+**P-SKILL-MD-LICENSING-HARD-RULE-CLEAN** — `~/.claude/skills/sgs-clone/SKILL.md` Hard Rule 1 retired today (replaced with retirement comment). The numbered rule list now has a gap (Rule 2-14 remain). Renumbering deferred. **Trigger:** next SKILL.md edit / `/skill-writer` pass.
+
+---
 
 ## Opened 2026-05-19 (Spec 17 council outcome — header/footer architecture)
 

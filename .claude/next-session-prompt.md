@@ -60,17 +60,79 @@ D3 Mode 2 fires when a CSS property has a `property_suffixes` mapping but no can
 3. Baseline check: current `attribute_gap_candidates` row count (so we can measure delta after RC fixes).
 4. Verify no uncommitted work from yesterday: `git status`.
 
-### Phase 1 — Fix the 4 RCs (parallel agents, ~2 hr wall)
+### Phase 1 — Fix the 4 RCs (orchestrated parallel waves, ~2 hr wall)
 
-**Wave 1a (Sonnet, RC-3 slot_synonyms, ~30 min):** Investigate which slot names appear in block.json files under `plugins/sgs-blocks/src/blocks/` that AREN'T yet in `slot_synonyms`. Propose a deterministic auto-population rule (e.g. extract every `__<element>` slot from block.json `attributes` keys + their `description` fields). Extend `/sgs-update` to populate or extend `slot_synonyms` from block.json. Re-run `/sgs-update`. Verify `canonical_slot_for('split-image')` returns non-None.
+#### Task 1a — RC-3: `slot_synonyms` DB gaps
 
-**Wave 1b (Sonnet, RC-2 SUPPORTS_HANDLED_PROPS, ~45 min):** Inspect `_lift_root_supports_to_style()` to determine which properties supports actually handles. Tighten `_SUPPORTS_HANDLED_PROPS` to that exact set. Add D3 fallback for any property that was previously flagged as supports-handled but isn't routed by supports.
+**What:** Composite slot names like `split-image` resolve to None in `canonical_slot_for()`, so `_lift_styling_attrs` never fires for those elements and D3 never sees their CSS rules. ~20 attrs silently drop per affected block.
+**Why:** Universal-extraction completeness for every block with composite-named slots (split-image, split-media, side-card, etc.).
+**Estimated time:** 30 min.
 
-**Wave 1c (Sonnet, RC-1 D3 breakpoint coverage, ~30 min):** Refactor D3 Mode 2 to walk all breakpoint variants (mobile / tablet / desktop) and propose breakpoint-suffixed attr names via existing `_breakpoint_suffixes` DB-driven vocabulary.
+**Orchestration:**
+- Execution: delegated, sonnet via `/delegate`
+- Dispatch: single-agent
+- Brief: Investigate which `__<element>` slot names appear in `plugins/sgs-blocks/src/blocks/<slug>/block.json` files that AREN'T yet in `slot_synonyms`. Propose a deterministic auto-population rule. Extend `/sgs-update` to populate `slot_synonyms` from block.json on every run.
+- Context the agent needs: `slot_synonyms` table schema, `db_lookup.canonical_slot_for()` signature, `update-db.py` insertion patterns (see Wave 3c `seed-legacy-role-lookup.py` precedent at `plugins/sgs-blocks/scripts/uimax-tools/`).
+- Depends on: none
+- Parallel with: Task 1b, 1c, 1d (file-disjoint)
+- /qc gate after: `/qc-inline` self-check + verify `canonical_slot_for('split-image')` returns non-None
 
-**Wave 1d (Haiku, RC-4 grouped-selector bug, ~15 min):** Fix `_collect_css_decls_for_element` to iterate every part of grouped selectors. Add a test case for `h1, h2, h3` grouped CSS.
+**Acceptance:** post-edit, re-running `/sgs-clone --converter-v2` on Mama's homepage produces measurably MORE entries via D1 lift (was 153/188 = 81.4%) — at least 5 percentage points higher.
 
-All 4 file-disjoint. Dispatch via `/dispatching-parallel-agents`. **`/qc-inline` after each Wave 1 sub-task. Commit + merge to main per wave.**
+#### Task 1b — RC-2: `_SUPPORTS_HANDLED_PROPS` over-exclusion
+
+**What:** Properties like `justify-content` and `grid-template-columns` are tagged "supports-handled" so D3 skips them, but `_lift_root_supports_to_style()` only writes WP-native `style.*` attrs — block-specific layout attrs (`verticalAlignment`, `splitColumnRatio`) silently drop in no-man's land.
+**Why:** Wave 0 finding — hero's `verticalAlignment` + `splitColumnRatio` were silent-drop examples. Fixing this lifts every block's layout attrs through the universal path.
+**Estimated time:** 45 min.
+
+**Orchestration:**
+- Execution: delegated, sonnet via `/delegate`
+- Dispatch: single-agent
+- Brief: Inspect `_lift_root_supports_to_style()` to determine which CSS properties supports actually handles. Tighten `_SUPPORTS_HANDLED_PROPS` to that exact set. Add D3 fallback for properties previously flagged as supports-handled but not routed by supports.
+- Context: `convert.py` `_lift_root_supports_to_style()` body; `_SUPPORTS_HANDLED_PROPS` set; Wave 3a's D3 emission infrastructure at convert.py `_record_gap_candidate()`.
+- Depends on: none
+- Parallel with: 1a, 1c, 1d
+- /qc gate after: `/qc-inline` + spot-check that hero's `verticalAlignment` now appears in either extract.json (D1 lift) OR `attribute_gap_candidates` (D3 fallback)
+
+**Acceptance:** `attribute_gap_candidate` row count delta on Mama's homepage post-fix is positive (more universal-extraction coverage); zero hero layout attrs silently drop in spot-check.
+
+#### Task 1c — RC-1: D3 Mode 2 breakpoint coverage
+
+**What:** D3 Mode 2 only inspects `base_decls`. Mobile-first CSS where `font-family: 'Fraunces'` only appears inside `@media (min-width: 768px)` never reaches `_lifted_css_props`. Desktop-overrides typography pipeline drops silently.
+**Why:** Universal-extraction completeness across breakpoints — every responsive variant should surface via D1 or D3, never drop.
+**Estimated time:** 30 min.
+
+**Orchestration:**
+- Execution: delegated, sonnet via `/delegate`
+- Dispatch: single-agent
+- Brief: Refactor D3 Mode 2 in `convert.py` to walk all breakpoint variants (mobile/tablet/desktop) and propose breakpoint-suffixed attr names (e.g. `headlineFontFamilyDesktop`) via existing `_breakpoint_suffixes` DB-driven vocabulary.
+- Context: `convert.py` `_lift_styling_attrs` Mode 2 trigger; `db_lookup.breakpoint_suffix_rules()`; `modifier_suffixes` DB table (19 rows, 3 breakpoints).
+- Depends on: none
+- Parallel with: 1a, 1b, 1d
+- /qc gate after: `/qc-inline` + verify mobile-first @media CSS in Mama's hero now appears as breakpoint-suffixed gap rows (e.g. `sgs/hero.headlineFontFamilyDesktop`)
+
+**Acceptance:** new gap rows post-fix include breakpoint-suffixed proposals; previously dropped @media font/spacing/colour rules now surface.
+
+#### Task 1d — RC-4: grouped-selector bug
+
+**What:** `_collect_css_decls_for_element` splits `h1, h2, h3` and uses `parts[-1]` → only `'h3'` matches. Rules like `h1, h2, h3 { font-family: Fraunces; }` never match `<h1>` elements.
+**Why:** Narrow bug, ~5-line fix. Universal benefit: any draft using grouped heading selectors gets correctly attributed.
+**Estimated time:** 15 min.
+
+**Orchestration:**
+- Execution: delegated, haiku via `/delegate`
+- Dispatch: single-agent
+- Brief: Fix `_collect_css_decls_for_element` to iterate every part of grouped CSS selectors. Add a regression test for `h1, h2, h3 { font-family: Fraunces; }` against `<h1>` element.
+- Context: convert.py line ~2200-2400 region (find function); existing convert.py tests for collection patterns.
+- Depends on: none
+- Parallel with: 1a, 1b, 1c
+- /qc gate after: `/qc-inline` + new test passes
+
+**Acceptance:** grouped-selector regression test green; one previously-misattributed Mama's CSS rule now lifts correctly.
+
+#### Phase 1 closure — multi-rater /qc + commit
+
+After all 4 tasks return: dispatch `/qc` 4-rater panel (Sonnet + Haiku + Gemini Flash + Cerebras) on the combined diff. Binding rule blub.db row 255 — converter-touching commits require multi-rater /qc. Then commit + push + merge to main (already on main per Wave 4 standing posture).
 
 ### Phase 2 — Pipeline end-to-end re-run (Opus inline, ~15 min)
 
@@ -108,9 +170,31 @@ Yesterday's Wave 4 agent hit context-limit trying to absorb 4 large docs in one 
 - Agent A (Haiku, ~20 min): UPDATE `cloning-pipeline-flow.md` for the 4 wave commits' state changes. ONLY update — no absorption work.
 - Agent B (Sonnet, ~25 min): ABSORB `tooling-map.md` + `skills-commands-map.md` + `db-tables-map.md` into `cloning-pipeline-flow.md`. Replace the 3 sibling docs with redirect stubs. Sweep references.
 
-### Phase 5 — Spec 15 → Spec 16 absorption (DEFERRED FROM 2026-05-21, ~30 min)
+### Phase 5 — Spec 15 → Spec 16 absorption (COMPLETED 2026-05-21 LATE — skip)
 
-Mark Spec 15 frontmatter as ABSORBED. Fold canonical L0-L3 + Stages 0-2 + 8-9 + /sgs-update content into Spec 16 §12 Appendix. Update cross-references.
+This was deferred at first handoff write but completed inline same session. Spec 16 §12 Appendix A folds Spec 15's canonical content; Spec 15 status flipped to `ABSORBED_INTO_SPEC_16`. Skip this phase. If any /qc finding from yesterday's flow-doc raters (P-WAVE-4-DOC-FOLLOWUPS in parking.md) needs follow-up, do that instead.
+
+## Dependency graph
+
+```
+Phase 0 — pre-flight (Opus inline, 5 min)
+  ↓
+Phase 1 — RC fixes (4 parallel agents, ~2 hr wall)
+  ├─ Task 1a sonnet — RC-3 slot_synonyms                ┐
+  ├─ Task 1b sonnet — RC-2 SUPPORTS_HANDLED_PROPS       ├─ all file-disjoint, parallel
+  ├─ Task 1c sonnet — RC-1 D3 breakpoint coverage       ┤
+  └─ Task 1d haiku — RC-4 grouped-selector bug          ┘
+  ↓
+Phase 1 closure — /qc multi-rater (4 raters: Sonnet + Haiku + Gemini Flash + Cerebras) + commit + push + merge-to-main
+  ↓
+Phase 2 — Pipeline end-to-end run (Opus inline, ~15 min) — measure D1/D3 coverage delta vs yesterday's baseline
+  ↓
+Phase 3 — Per-section /systematic-debugging on still-above-1% sections (Opus inline + per-section Sonnet diagnostician, ~2-3 hr)
+  ↓ per section closed
+  /qc multi-rater + commit per section
+  ↓
+Phase 6 — Followups (parallel low-priority during waits)
+```
 
 ### Phase 6 — Other followups (parallel low-priority during waits)
 

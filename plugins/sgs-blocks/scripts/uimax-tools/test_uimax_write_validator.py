@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
-"""Tests for uimax-write-validator.py Hard Rule 1 (licensing keywords) enforcement.
+"""Tests for uimax-write-validator.py — Rosetta Stone discipline (Row 213) only.
+
+Wave 2b on 2026-05-21 mis-added licensing-keyword scanning to this validator,
+based on stale SKILL.md text claiming a Hard Rule 1 the actual code had
+already stripped on 2026-05-14 (decisions.md Phase 6 v2 Step 5 sub-decision
+(b)). Bean clarified same session: the "no licensing" rule means don't ADD
+licensing-validation infrastructure at all — not "ban the words". The
+licensing-scan code + its tests were reverted; this file retains only the
+Rosetta Stone tests (which are real load-bearing engineering).
 
 Run with: pytest test_uimax_write_validator.py -v
 """
@@ -17,247 +25,154 @@ spec = importlib.util.spec_from_file_location("uimax_write_validator", validator
 validator_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(validator_module)
 
-check_licensing_keywords = validator_module.check_licensing_keywords
 check_rosetta_stone = validator_module.check_rosetta_stone
 validate = validator_module.validate
-FORBIDDEN_KEYWORDS = validator_module.FORBIDDEN_KEYWORDS
-LICENSING_ALLOWLIST = validator_module.LICENSING_ALLOWLIST
 
 VALIDATOR_SCRIPT = Path(__file__).parent / "uimax-write-validator.py"
 
 
-class TestLicensingKeywordDetection:
-    """Test Hard Rule 1: reject licensing keywords in payloads."""
+class TestRosettaStone:
+    """Row 213 — every artefact-table write carries equivalent_implementations.sgs_block."""
 
-    def test_license_field_rejected(self):
-        """Payload with license field should be rejected."""
-        payload = {
-            "slug": "test-component",
-            "license": "MIT",
-            "equivalent_implementations": {"sgs_block": "sgs/hero"},
-        }
-        errors, warnings = check_licensing_keywords(payload)
-        assert len(errors) > 0, "Expected licensing keyword rejection"
-        assert "license" in errors[0].lower()
-
-    def test_licensed_in_description_rejected(self):
-        """Substring match: 'licensed' in description value."""
-        payload = {
-            "slug": "test-component",
-            "description": "MIT licensed component",
-            "equivalent_implementations": {"sgs_block": "sgs/hero"},
-        }
-        errors, warnings = check_licensing_keywords(payload)
-        assert len(errors) > 0
-        assert "licensed" in errors[0].lower()
-
-    def test_licence_uk_spelling_rejected(self):
-        """UK spelling 'licence' should also be rejected."""
-        payload = {
-            "name": "test",
-            "notes": "Requires a valid licence to use",
-            "equivalent_implementations": {"sgs_block": "sgs/hero"},
-        }
-        errors, warnings = check_licensing_keywords(payload)
-        assert len(errors) > 0
-        assert "licence" in errors[0].lower()
-
-    def test_provenance_license_column_rejected(self):
-        """Column name containing 'provenance_license' should be rejected."""
-        payload = {
-            "slug": "test",
-            "provenance_license": "MIT",
-            "equivalent_implementations": {"sgs_block": "sgs/hero"},
-        }
-        errors, warnings = check_licensing_keywords(payload)
-        assert len(errors) > 0
-        assert "provenance_license" in errors[0]
-
-    def test_ip_firewall_rejected(self):
-        """IP-firewall variant should be rejected."""
-        payload = {
-            "slug": "test",
-            "notes": "behind IP-firewall due to licensing",
-            "equivalent_implementations": {"sgs_block": "sgs/hero"},
-        }
-        errors, warnings = check_licensing_keywords(payload)
-        assert len(errors) > 0
-
-    def test_redistribution_rejected(self):
-        """'redistribution' keyword should be rejected."""
-        payload = {
-            "name": "test",
-            "terms": "redistribution not permitted",
-            "equivalent_implementations": {"sgs_block": "sgs/hero"},
-        }
-        errors, warnings = check_licensing_keywords(payload)
-        assert len(errors) > 0
-        assert "redistribution" in errors[0].lower()
-
-    def test_copyright_rejected(self):
-        """'copyright' keyword should be rejected."""
-        payload = {
-            "source": "https://example.com",
-            "attribution": "Copyright 2024 Example Corp",
-            "equivalent_implementations": {"sgs_block": "sgs/hero"},
-        }
-        errors, warnings = check_licensing_keywords(payload)
-        assert len(errors) > 0
-        assert "copyright" in errors[0].lower()
-
-    def test_intellectual_property_rejected(self):
-        """'intellectual property' keyword should be rejected."""
-        payload = {
-            "slug": "test",
-            "notes": "This component is protected intellectual property",
-            "equivalent_implementations": {"sgs_block": "sgs/hero"},
-        }
-        errors, warnings = check_licensing_keywords(payload)
-        assert len(errors) > 0
-
-    def test_trademark_rejected(self):
-        """'trademark' keyword should be rejected."""
-        payload = {
-            "name": "My Trademark Brand Logo",
-            "equivalent_implementations": {"sgs_block": "sgs/hero"},
-        }
-        errors, warnings = check_licensing_keywords(payload)
-        assert len(errors) > 0
-        assert "trademark" in errors[0].lower()
-
-    def test_patent_rejected(self):
-        """'patent' keyword should be rejected."""
-        payload = {
-            "slug": "test",
-            "notes": "Uses patented technology",
-            "equivalent_implementations": {"sgs_block": "sgs/hero"},
-        }
-        errors, warnings = check_licensing_keywords(payload)
-        assert len(errors) > 0
-        assert "patent" in errors[0].lower()
-
-    def test_nested_licensing_keyword_rejected(self):
-        """Licensing keyword deeply nested should be rejected."""
-        payload = {
-            "slug": "test",
-            "equivalent_implementations": {
-                "sgs_block": "sgs/hero",
-                "bootstrap": {"notes": "Cannot redistribute this"},
-            },
-        }
-        errors, warnings = check_licensing_keywords(payload)
-        assert len(errors) > 0
-
-    def test_allowlist_license_free_passes(self):
-        """'license-free' should be allowlisted and pass with a warning."""
-        payload = {
-            "slug": "test",
-            "description": "license-free font for commercial use",
-            "equivalent_implementations": {"sgs_block": "sgs/hero"},
-        }
-        errors, warnings = check_licensing_keywords(payload)
-        # Should pass validation (error count = 0) but log a warning
-        assert len(errors) == 0, f"Expected no errors, got: {errors}"
-        assert len(warnings) > 0, "Expected a warning about allowlist match"
-
-    def test_case_insensitive_matching(self):
-        """Keywords should match case-insensitively."""
-        payload = {
-            "slug": "test",
-            "notes": "LICENSE terms apply",  # Uppercase
-            "equivalent_implementations": {"sgs_block": "sgs/hero"},
-        }
-        errors, warnings = check_licensing_keywords(payload)
-        assert len(errors) > 0, "Case-insensitive match should work"
-
-    def test_clean_payload_passes(self):
-        """Payload with no licensing keywords should pass."""
-        payload = {
+    def test_artefact_payload_with_sgs_block_passes(self):
+        """Artefact table + valid sgs_block slug → passes."""
+        result = validate("patterns", {
             "slug": "test-pattern",
-            "name": "Hero Split Layout",
-            "source": "https://example.com/design",
             "equivalent_implementations": {"sgs_block": "sgs/hero"},
-        }
-        errors, warnings = check_licensing_keywords(payload)
-        assert len(errors) == 0, f"Clean payload should pass, got errors: {errors}"
+        })
+        assert result["valid"] is True, result
 
-
-class TestRosettaStoneIntegration:
-    """Test that Rosetta Stone validation still works alongside licensing checks."""
-
-    def test_licensing_error_takes_precedence(self):
-        """If payload has both licensing violation and Rosetta Stone violation,
-        licensing error appears first."""
-        payload = {
-            "slug": "test",
-            "license": "MIT",
-            # Missing equivalent_implementations
-        }
-        result = validate("patterns", payload)
-        assert not result["valid"]
-        assert len(result["errors"]) > 0
-        # First error should be licensing (checked first)
-        assert "license" in result["errors"][0].lower()
-
-    def test_rosetta_stone_still_enforced(self):
-        """Rosetta Stone check should still work when no licensing keywords."""
-        payload = {
-            "slug": "test",
-            "name": "Clean Component",
-            # Missing equivalent_implementations
-        }
-        result = validate("patterns", payload)
-        assert not result["valid"]
-        assert any("equivalent_implementations" in err for err in result["errors"])
-
-    def test_both_checks_pass(self):
-        """Clean payload passes both licensing and Rosetta Stone checks."""
-        payload = {
+    def test_artefact_payload_with_null_sgs_block_passes(self):
+        """Artefact table + explicit null sgs_block + gap_candidate flag → passes."""
+        result = validate("patterns", {
             "slug": "test-pattern",
-            "name": "Good Component",
-            "source": "idea",
-            "equivalent_implementations": {"sgs_block": "sgs/hero"},
-        }
-        result = validate("patterns", payload)
-        assert result["valid"]
-        assert len(result["errors"]) == 0
+            "gap_candidate": True,
+            "equivalent_implementations": {"sgs_block": None},
+        })
+        assert result["valid"] is True, result
+
+    def test_artefact_payload_missing_equivalent_implementations_rejected(self):
+        """Artefact table + missing equivalent_implementations → rejected."""
+        result = validate("patterns", {
+            "slug": "test-pattern",
+        })
+        assert result["valid"] is False, result
+        assert any("equivalent_implementations" in e for e in result["errors"])
+
+    def test_artefact_payload_missing_sgs_block_rejected(self):
+        """Artefact table + equivalent_implementations missing sgs_block key → rejected."""
+        result = validate("patterns", {
+            "slug": "test-pattern",
+            "equivalent_implementations": {"bootstrap": "card"},
+        })
+        assert result["valid"] is False, result
+        assert any("sgs_block" in e for e in result["errors"])
+
+    def test_non_artefact_table_skips_rosetta(self):
+        """Non-artefact tables (e.g. recognition_log) don't require equivalent_implementations."""
+        result = validate("recognition_log", {
+            "run_id": "test-run",
+            "outcome": "ok",
+        })
+        assert result["valid"] is True, result
+
+    def test_components_table_requires_rosetta(self):
+        """components is an artefact table → requires equivalent_implementations."""
+        result = validate("components", {
+            "slug": "test-component",
+        })
+        assert result["valid"] is False, result
+
+    def test_animations_table_requires_rosetta(self):
+        """animations is an artefact table → requires equivalent_implementations."""
+        result = validate("animations", {
+            "slug": "test-animation",
+        })
+        assert result["valid"] is False, result
+
+    def test_naming_conventions_requires_rosetta(self):
+        """naming_conventions is an artefact table → requires equivalent_implementations."""
+        result = validate("naming_conventions", {
+            "convention_name": "TestConvention",
+        })
+        assert result["valid"] is False, result
+
+    def test_component_libraries_requires_rosetta(self):
+        """component_libraries is an artefact table → requires equivalent_implementations."""
+        result = validate("component_libraries", {
+            "slug": "test-lib",
+        })
+        assert result["valid"] is False, result
+
+    def test_empty_string_sgs_block_rejected(self):
+        """Empty string sgs_block is not a valid slug or explicit null → rejected."""
+        result = validate("patterns", {
+            "slug": "test-pattern",
+            "equivalent_implementations": {"sgs_block": ""},
+        })
+        assert result["valid"] is False, result
 
 
 class TestCLIInvocation:
-    """Test the validator via subprocess (CLI interface)."""
+    """CLI invocation regression tests."""
 
-    def test_cli_rejects_licensing_keyword(self):
-        """CLI should reject payload with licensing keyword and exit 1."""
-        payload = {"license": "MIT", "equivalent_implementations": {"sgs_block": "sgs/hero"}}
-        proc = subprocess.run(
-            [sys.executable, str(VALIDATOR_SCRIPT), "patterns", json.dumps(payload)],
-            capture_output=True,
-            text=True,
-        )
-        assert proc.returncode == 1, "Should exit 1 on validation failure"
-        result = json.loads(proc.stdout)
-        assert not result["valid"]
-        assert len(result["errors"]) > 0
-        assert "license" in result["errors"][0].lower()
-
-    def test_cli_accepts_clean_payload(self):
-        """CLI should accept clean payload and exit 0."""
-        payload = {
+    def test_cli_accepts_valid_artefact_payload(self):
+        """CLI exits 0 on a valid payload."""
+        payload = json.dumps({
             "slug": "test-pattern",
             "equivalent_implementations": {"sgs_block": "sgs/hero"},
-        }
-        proc = subprocess.run(
-            [sys.executable, str(VALIDATOR_SCRIPT), "patterns", json.dumps(payload)],
-            capture_output=True,
-            text=True,
+        })
+        result = subprocess.run(
+            [sys.executable, str(VALIDATOR_SCRIPT), "patterns", payload],
+            capture_output=True, text=True
         )
-        assert proc.returncode == 0, "Should exit 0 on validation success"
-        result = json.loads(proc.stdout)
-        assert result["valid"]
-        assert len(result["errors"]) == 0
+        assert result.returncode == 0, f"stderr={result.stderr} stdout={result.stdout}"
+        out = json.loads(result.stdout)
+        assert out["valid"] is True
+
+    def test_cli_rejects_payload_missing_rosetta(self):
+        """CLI exits non-zero on a payload missing equivalent_implementations."""
+        payload = json.dumps({"slug": "test-pattern"})
+        result = subprocess.run(
+            [sys.executable, str(VALIDATOR_SCRIPT), "patterns", payload],
+            capture_output=True, text=True
+        )
+        assert result.returncode != 0, f"stdout={result.stdout}"
 
 
-if __name__ == "__main__":
-    import pytest
+class TestLicensingInfrastructureNotPresent:
+    """Regression guard: licensing-keyword scanning must NOT be added back.
 
-    pytest.main([__file__, "-v"])
+    Bean's rule (feedback_no_licensing_talk_in_cloning_context.md): the cloning
+    domain has no licensing concept. Adding licensing-keyword scans to this
+    validator is theatre, not engineering. If a future agent adds them again,
+    this test fires and tells the agent to read the tombstone in the validator
+    + the captured rule + decisions.md 2026-05-14 sub-decision (b).
+    """
+
+    def test_no_forbidden_keywords_constant(self):
+        """FORBIDDEN_KEYWORDS must not exist on the validator module."""
+        assert not hasattr(validator_module, "FORBIDDEN_KEYWORDS"), (
+            "Licensing-keyword scanning was deliberately stripped on 2026-05-14 "
+            "(decisions.md Phase 6 v2 Step 5 sub-decision (b)) and again on "
+            "2026-05-21 (Wave 2b revert). See top-of-file tombstone in "
+            "uimax-write-validator.py + feedback_no_licensing_talk_in_cloning_context.md"
+        )
+
+    def test_no_check_licensing_function(self):
+        """check_licensing_keywords function must not exist."""
+        assert not hasattr(validator_module, "check_licensing_keywords"), (
+            "Licensing-scan infrastructure was deliberately stripped. See tombstone."
+        )
+
+    def test_payload_with_license_keyword_passes_rosetta(self):
+        """A payload mentioning 'license' in description should still validate cleanly
+        if Rosetta Stone is satisfied — licensing words are not forbidden."""
+        result = validate("patterns", {
+            "slug": "test-pattern",
+            "description": "Inspired by MIT-licensed reference",
+            "equivalent_implementations": {"sgs_block": "sgs/hero"},
+        })
+        assert result["valid"] is True, (
+            f"Licensing words in descriptions are NOT forbidden. result={result}"
+        )

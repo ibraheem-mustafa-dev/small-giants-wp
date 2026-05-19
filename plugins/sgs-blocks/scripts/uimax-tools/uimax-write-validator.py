@@ -37,88 +37,24 @@ ARTEFACT_TABLES = frozenset(
     }
 )
 
-# Hard Rule 1 (blub.db row 211) -- forbidden licensing keywords.
-# Scanned case-insensitively as substrings in all string values and column names.
-FORBIDDEN_KEYWORDS = frozenset(
-    {
-        "license",
-        "licence",
-        "licensing",
-        "licensed",
-        "provenance_license",
-        "provenance license",
-        "ip-firewall",
-        "ip firewall",
-        "redistribution",
-        "redistribute",
-        "promotion_path",
-        "promotion path",
-        "copyright",
-        "intellectual property",
-        "trademark",
-        "patent",
-    }
-)
-
-# Benign allowlist -- tokens that contain a forbidden keyword but are not licensing
-# violations in context. Defaults to empty; extend only with explicit justification.
-LICENSING_ALLOWLIST = frozenset({
-    "license-free",
-})
-
-
-def check_licensing_keywords(
-    payload: dict[str, Any], path_prefix: str = "payload"
-) -> tuple[list[str], list[str]]:
-    """Hard Rule 1 enforcement: reject payloads containing licensing keywords.
-
-    Scans recursively through all string values and column names (keys).
-    Returns (errors, warnings). Warnings are logged for allowlisted matches.
-    """
-    errors: list[str] = []
-    warnings: list[str] = []
-
-    def scan_value(value: Any, current_path: str) -> None:
-        """Recursively scan value for forbidden keywords."""
-        if isinstance(value, str):
-            lower_val = value.lower()
-            for keyword in FORBIDDEN_KEYWORDS:
-                if keyword in lower_val:
-                    # Check allowlist first
-                    is_allowed = False
-                    for allowed in LICENSING_ALLOWLIST:
-                        if allowed in lower_val:
-                            is_allowed = True
-                            warnings.append(
-                                f"Licensing keyword '{keyword}' found at '{current_path}' but matches allowlist entry '{allowed}' — passing."
-                            )
-                            break
-                    if not is_allowed:
-                        errors.append(
-                            f"Licensing keyword '{keyword}' detected at path '{current_path}' in uimax write payload. "
-                            "Hard Rule 1 (blub.db row 211) — uimax payloads must use source taxonomy 'idea' / 'draft' / '<URL>' only. "
-                            "Strip the licensing reference and resubmit."
-                        )
-                        return
-        elif isinstance(value, dict):
-            for key, val in value.items():
-                # Scan the key (column name) for forbidden keywords
-                lower_key = key.lower()
-                for keyword in FORBIDDEN_KEYWORDS:
-                    if keyword in lower_key:
-                        errors.append(
-                            f"Licensing keyword '{keyword}' detected in column name '{key}' at path '{current_path}'. "
-                            "Hard Rule 1 (blub.db row 211) — rename the column and resubmit."
-                        )
-                        return
-                # Recursively scan the value
-                scan_value(val, f"{current_path}.{key}")
-        elif isinstance(value, list):
-            for idx, item in enumerate(value):
-                scan_value(item, f"{current_path}[{idx}]")
-
-    scan_value(payload, "payload")
-    return errors, warnings
+# Licensing infrastructure intentionally NOT present.
+#
+# This validator does NOT check for licensing keywords. Bean's binding rule
+# (feedback_no_licensing_talk_in_cloning_context.md): the cloning domain has no
+# licensing concept. Web designs and component patterns aren't licenseable in
+# the way an IP-defence gate would imply. The whole source taxonomy is `idea` /
+# `draft` / `<URL>` — there is no licence/copyright column to validate against.
+#
+# A previous incarnation of this validator scanned payloads for forbidden tokens
+# (`license`, `copyright`, etc.). That gate was deliberately stripped on
+# 2026-05-14 (decisions.md Phase 6 v2 Step 5, sub-decision (b) — "IP-defence
+# framing removed at the root"). Wave 2b on 2026-05-21 mis-implemented the gate
+# AGAIN from stale SKILL.md text; reverted same session. This comment is the
+# tombstone — re-implementing licensing scans here is a regression.
+#
+# The Rosetta Stone gate (row 213 — every artefact carries
+# equivalent_implementations.sgs_block) is the real engineering invariant.
+# That stays.
 
 
 def check_rosetta_stone(table: str, payload: dict[str, Any]) -> tuple[list[str], list[str]]:
@@ -199,10 +135,10 @@ def validate(table: str, payload: dict[str, Any]) -> dict[str, Any]:
     errors: list[str] = []
     warnings: list[str] = []
 
-    # Check licensing keywords first (Hard Rule 1)
-    licensing_errors, licensing_warnings = check_licensing_keywords(payload)
-    errors.extend(licensing_errors)
-    warnings.extend(licensing_warnings)
+    # Licensing-keyword scanning intentionally NOT performed. See top-of-file
+    # tombstone for context (decisions.md 2026-05-14 sub-decision (b) +
+    # feedback_no_licensing_talk_in_cloning_context.md). The cloning domain has
+    # no licensing concept; an IP-defence gate would be theatre, not engineering.
 
     # Check Rosetta Stone discipline (Row 213)
     rosetta_errors, rosetta_warnings = check_rosetta_stone(table, payload)

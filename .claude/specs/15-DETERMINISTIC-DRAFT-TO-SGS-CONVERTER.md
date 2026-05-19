@@ -1,10 +1,13 @@
 ---
 doc_type: spec
 spec_id: 15
-spec_version: 0.2
+spec_version: 0.3
 project: small-giants-wp
-title: Deterministic Draft-to-SGS Converter + QA Pipeline — Unified Architecture
-status: APPROVED - Phases 1-5 SHIPPED on origin/main 2026-05-13. Phase 6 (pattern fidelity v2) ABSORBED into Spec 16 2026-05-14 — Spec 16 (`16-DETERMINISTIC-CONVERTER-V2.md`) is the concrete implementation of this spec's §7 Stages 3-7 via a slot-aware recursive DOM walker. Spec 16 Phase 1 (prototype + sgs/label block) shipped 2026-05-14; Phases 2-6 sequenced in `.claude/plans/phase-7-spec-16-converter-rollout.md`. The <=1% pixel-parity gate moves from this spec to Spec 16 §FR7 + Phase 4. §7.2's "delete overrides/hero.py" commitment is delivered by Spec 16 §FR8. This spec stays canonical for L0-L3 + Stages 0-2 + Stages 8-9 + /sgs-update; Spec 16 owns Stages 3-7 + module surface. Commit-message labels predating the absorption (`p6-step-0` d0d30579, `p7` fc9f567f) retained for git-log traceability.
+title: Deterministic Draft-to-SGS Converter + QA Pipeline — Unified Architecture (ABSORBED INTO SPEC 16)
+status: ABSORBED_INTO_SPEC_16 (2026-05-21). Canonical content folded into `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` §12 Appendix A. This file retained for historical reference + git-blame continuity only. Future readers — Spec 16 is the single end-goal spec; do NOT treat this file as live truth. Status_history below documents the absorption decision chain. The pre-absorption status was: "APPROVED - Phases 1-5 SHIPPED on origin/main 2026-05-13. Phase 6 ABSORBED into Spec 16 2026-05-14. This spec stays canonical for L0-L3 + Stages 0-2 + Stages 8-9 + /sgs-update; Spec 16 owns Stages 3-7 + module surface." 2026-05-21 session completed the full absorption — every section's canonical content now lives in Spec 16 §12.
+absorbed_into: .claude/specs/16-DETERMINISTIC-CONVERTER-V2.md
+absorbed_at_section: "§12 Appendix A — Spec 15 absorbed content"
+absorption_date: 2026-05-21
 session_date: 2026-05-12
 authors: Bean + Claude (Opus 4.7)
 absorbs: ['.claude/scratch/absorbed/12-DRAFT-TO-SGS-PIPELINE.md', '.claude/scratch/absorbed/13-DRAFT-NAMING-CONVENTION.md', '.claude/scratch/absorbed/14-CLONING-PIPELINE-CATALOGUE.md']

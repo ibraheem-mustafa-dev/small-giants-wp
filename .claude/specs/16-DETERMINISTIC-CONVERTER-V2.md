@@ -528,3 +528,167 @@ markup.
 - Spec 17 §S6 — the framework pattern definitions
 - `.claude/specs/17-HEADER-FOOTER-ARCHITECTURE.md` — full header/footer architecture
 - `.claude/cloning-pipeline-flow.md` "Stage 6 — Block.json emission" — pipeline context
+
+---
+
+## 12. Appendix A — Spec 15 absorbed content (2026-05-21)
+
+Spec 15 (`.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md`) was the predecessor spec covering convention + data + mapping + pipeline layers + /sgs-update. Today (2026-05-21) Spec 15 is formally ABSORBED into Spec 16 as the single end-goal spec. Spec 15 stays on disk as a redirect stub with frontmatter pointer to this section for git-blame continuity. This appendix folds the canonical content Spec 15 owned (per its frontmatter: L0–L3 + Stages 0-2 + 8-9 + /sgs-update); Spec 16 already owns Stages 3-7.
+
+### 12.1 Architectural layers (Spec 15 §2)
+
+The system has six layers; each consumes only the layers below it.
+
+```
+L5 — END GOAL: deterministic draft → SGS clone + QA-validated output
+L4 — CONVERTER + QA PIPELINE: /sgs-clone orchestrator (Stages 0-9 + QA per stage)
+L3 — MAPPING LAYER (Rosetta Stone): slot synonyms · property suffixes · modifier
+     suffixes · output-signature canonicalisation · token value-matcher · default-
+     inheritance check · cross-platform composition
+L2 — DATA LAYER: sgs-framework.db (blocks, block_attributes [canonical_slot + role
+     + derived_selector + output_signature + equivalent_implementations], patterns,
+     block_compositions, design_tokens, block_selectors, slot_synonyms,
+     property_suffixes, modifier_suffixes, legacy_role_lookup [added Wave 3c
+     2026-05-21]) + uimax (component_libraries, patterns, design_tokens, animations,
+     naming_conventions, recognition_log, attribute_gap_candidates,
+     functionality_gap_candidates) + theme.json + per-client style variations
+L1 — CONVENTION LAYER: SGS-BEM canonical (.sgs-<block>__<element>--<modifier>);
+     block.json attribute naming canonical via canonical_slot; theme.json token slug
+     canonical; behavioural canonicalisation rule (same output signature → same
+     canonical slot)
+L0 — UPSTREAM CONDITIONS: drafts emit SGS-BEM HTML with theme.json tokens; AI-builder
+     output routes through /uimax-classify-naming + lingua-franca conversion; external
+     scrapes route through /uimax-sgs-scrape-pattern first
+```
+
+### 12.2 Convention layer (Spec 15 §3)
+
+- **SGS-BEM regex:** `^\.sgs-[a-z][a-z0-9-]*(__[a-z][a-z0-9-]*)?(--[a-z][a-z0-9-]*)?$`. `<block>` = registered SGS block slug; `<element>` = canonical slot from §12.4; `<modifier>` = canonical modifier from §12.6 OR block.json attribute enum value.
+- **Behavioural canonicalisation rule:** two attributes with the same output signature (output function + DOM wrapper + BEM element class + CSS property + conditional gates, derived by static analysis of render.php / save.js) ARE the same concept and share a canonical slot regardless of declared names.
+- **Canonical attribute decomposition template:** `<canonical_slot><PropertyType><Modifier><Breakpoint>` (e.g. `headlineFontSizeMobile` → heading + FontSize + ∅ + Mobile; `ctaPrimaryHoverBackground` → button + Primary + Hover + Background).
+
+### 12.3 Canonical slot vocabulary (Spec 15 §3.4)
+
+Lives in `sgs-framework.db.slot_synonyms`. v1 seed table:
+
+| Concept | Canonical | Synonyms folded in |
+|---|---|---|
+| Primary heading | `heading` | title, headline, name |
+| Sub-heading | `subheading` | subtitle, subHeadline, sub |
+| Pre-heading label | `label` | eyebrow, kicker, tag |
+| Paragraph body | `text` | body, description, content, caption, copy |
+| Polymorphic image/video | `media` | image, photo, picture, video, embed |
+| Background polymorphic | `backgroundMedia` | backgroundImage, backgroundVideo, bgImage, bgVideo, heroImage |
+| Image alt text | `alt` | — |
+| Image caption | `caption` | — |
+| Primary CTA / button | `button` | cta, ctaPrimary, primaryCta, primaryButton |
+| Secondary CTA / button | `buttonSecondary` | ctaSecondary, secondaryCta, secondaryButton |
+| Link target URL | `link` | url, href, anchor |
+| Repeating list of items | `items` | (distinct from options, badges) |
+| Form-field selection options | `options` | — |
+| Decorative badge / pill | `badge` | pill |
+| Person portrait | `avatar` | portrait, profile, authorImage |
+| Iconography | `icon` | symbol, glyph |
+| Date | `date` | datetime, timestamp |
+| Price | `price` | cost, amount |
+| Star rating | `rating` | stars, score |
+| Visual divider | `separator` | divider, rule |
+
+Phase 3.5 extended the vocabulary to also include layout primitives (padding/margin/gap/width/column), state slots (hover/focus/active/disabled), and motion concepts (transition/animation) — these are first-class design slots, not NULL-gap candidates.
+
+### 12.4 Property suffix vocabulary (Spec 15 §3.5)
+
+32 canonical property suffixes frozen after Phase 1, lives in `sgs-framework.db.property_suffixes` (117 rows as of 2026-05-21 — original 99 + 18 per-side longhand rows added post-2026-05-17):
+
+- **Colour family:** Colour, Color, Background, Foreground, TextColour, TextColor, BorderColour, BorderColor, BackgroundColour, BackgroundColor, Stroke, Shadow
+- **Typography:** FontFamily, FontSize, FontWeight, LineHeight, LetterSpacing, TextTransform, TextDecoration, TextAlign
+- **Layout:** Padding, Margin, Gap, Width, Height, MinHeight, MaxWidth, MaxHeight, MinWidth, AspectRatio
+- **Visual:** BorderRadius, BorderWidth, BorderStyle, BoxShadow, Opacity, ObjectFit, ObjectPosition
+- **Content:** Url, Href, Link
+- **Behaviour:** Style, Variant, Layout, Alignment, Required, Placeholder, HelpText, ErrorMessage
+
+### 12.5 Modifier suffix vocabulary (Spec 15 §3.6)
+
+Lives in `sgs-framework.db.modifier_suffixes` (19 rows across 6 kinds):
+
+| Kind | Values |
+|---|---|
+| Breakpoint | Mobile, Tablet, Desktop |
+| Side | Top, Right, Bottom, Left |
+| Corner | TL, TR, BL, BR |
+| State | Hover, Active, Focus, Disabled |
+| Variant | Primary, Secondary, Tertiary |
+| Unit | Unit |
+
+### 12.6 /sgs-update unified pipeline (Spec 15 §6) — 11 stages
+
+`/sgs-update` is the single scanner that keeps the data layer current and the mapping layer derived. All 11 stages idempotent.
+
+| Stage | Function |
+|---|---|
+| 1 — Inventory | Walk `plugins/sgs-blocks/src/blocks/` + `theme/sgs-theme/`. Populate blocks, patterns, theme_parts |
+| 2 — Block.json native | Parse each block.json. Populate block_attributes (basic) + block_selectors + block_supports |
+| 3 — Behavioural analysis | Parse render.php / save.js per block. Extract output_signature per attribute |
+| 4 — Canonical assignment | Decompose attr name per §12.2, look up canonical_slot via slot_synonyms, assign role via property_suffixes, derive selector. Write to block_attributes |
+| 5 — Pattern composition | Parse `theme/sgs-theme/patterns/*.php` for nested block markers. Populate block_compositions |
+| 6 — Token sync | Parse theme.json. Sync settings.* to design_tokens; sync styles.* defaults to theme_defaults cache |
+| 7 — Animation sync | Scan sgsAnimation enum values; sync to uimax animations |
+| 8 — Uimax mirror | Sync to uimax (component_libraries, patterns, design_tokens, animations, naming_conventions) |
+| 9 — Drift validator | Every attribute decomposes into known canonicals? Flag violations. Exit non-zero on `--strict` |
+| 10 — Gap detection | Signatures without canonical_slot → attribute_gap_candidates. Unresolved selectors → gap candidates |
+| 11 — Reference doc regen | Regenerate `.claude/specs/02-SGS-BLOCKS-REFERENCE.md` + canonical vocabulary appendix |
+
+**Added 2026-05-21 (Wave 3c):** Stage 0 — legacy_role_lookup seeding via `seed-legacy-role-lookup.py` (idempotent; populates the DB table from authoritative pre-SGS-BEM mappings).
+
+### 12.7 Upstream conditions (Spec 15 §8)
+
+Conditions that draft-building pipelines and external-source integrations must conform to:
+
+| Source of draft | Required pre-processing | Enforcement |
+|---|---|---|
+| Bean-controlled HTML/CSS draft | Author in SGS-BEM. Use theme.json tokens | Stage 0.1 + 0.5 of /sgs-clone |
+| `/ui-ux-pro-max` draft output | SGS-BEM HTML + token values | /ui-ux-pro-max skill |
+| `/innovative-design` router | Propagates SGS-BEM + token requirements to dispatch targets | /innovative-design skill |
+| `/sgs-clone --draft-mode` | Soft warnings on BEM violations | Stage 0.1 soft mode |
+| AI-builder output (Lovable, v0, Bolt, Cursor) | Route through `/uimax-classify-naming` + lingua-franca conversion | External pipeline wrapper |
+| External scraped sites | `/uimax-sgs-scrape-pattern` runs first. SGS-BEM is primary; source class preserved in equivalent_implementations | /uimax-sgs-scrape-pattern gateway |
+
+**Wave 1 (2026-05-21) update:** non-SGS-BEM input to `/sgs-clone` now HALTS-WITH-CLEAR-ERROR. The previous silent fallback to legacy extract.py is gone. Operators get an actionable message pointing at Spec 13 §8.1 (re-author the draft) or /uimax-sgs-scrape-pattern (route through scraper first).
+
+### 12.8 QA gates summary (Spec 15 §9)
+
+QA fires at every stage. Three modes: strict (halt), soft-warn (log + continue), legacy-bypass (skip). See Spec 16 §FR6 + §FR7 for the converter-layer gates; below covers Spec 15-owned Stage 0/0.1/0.5 + Stage 2 + Stage 8/9:
+
+| Stage | QA gate | Wave 2 status |
+|---|---|---|
+| 0.1 | BEM compliance | LIVE (3 modes via bem-lint.py) |
+| 0.5 | Token-usage | LIVE (3 modes via token-lint.py) |
+| 2 | Block-type match confidence ≥ 0.7 | LIVE 2026-05-21 (Wave 2c; constant STAGE_2_CONFIDENCE_THRESHOLD in confidence-matrix.py + leftover-bucket-router.py) |
+| 3 | Per-attribute extraction outcome logged | LIVE 2026-05-21 (Wave 3b; canonical_source: 'db' \| 'auto-derived' annotation) |
+| 6 | block.json schema validation | LIVE 2026-05-21 (Wave 2d; require_schema default-True; --no-schema-validation opt-out) |
+| 7 | WP block markup parse | LIVE (extract.py / staged_merge.py serialise to WP block-comment markup; orchestrator halts on serialiser exception) |
+| 8 | Visual parity ≤ 1% pixel-diff at 3 viewports, per-section | LIVE 2026-05-21 (Wave 2a; --selector threading via page.locator(selector).screenshot(); unresolved_slots==0 deploy gate) |
+| 9 | Coverage + gap report | LIVE (writes attribute_gap_candidates + functionality_gap_candidates) |
+
+Plus `/sgs-update` Stage 9 drift validator + pre-commit hook on `sites/*/mockups/` files.
+
+### 12.9 Functional requirements (Spec 15 §10, consolidated with Spec 16)
+
+Spec 15 absorbed Spec 14 FR1–FR26 and added FR27–FR40. Spec 16 added FR1–FR9 (converter v2 architecture). Together they form the converter + data-layer + canonical-vocabulary surface. Notable post-2026-05-21 status:
+
+- **FR21 (no canonical mutation outside designated FRs):** LIVE — Wave 3a's CSS D3 destination writes to `attribute_gap_candidates` only; no canonical-block mutation
+- **FR22 (stage-resume removed):** LIVE — atomic sessions, no `--resume` flag (router-pattern.md doc stub references to be cleaned next session)
+- **FR27 (behavioural canonicalisation):** LIVE
+- **FR28 (canonical attribute decomposition):** LIVE — 117 property_suffixes (32 canonical + 18 per-side longhands populated since 2026-05-17 expansion) + 19 modifier_suffixes seeded in DB
+- **FR29 (slot_synonyms table seeded):** LIVE
+- **FR30 (property_suffixes + modifier_suffixes vocab tables):** LIVE
+- **FR31 (block_attributes schema extension with canonical_slot/role/derived_selector):** LIVE
+- **FR32 (static analyser for render.php/save.js → output_signature):** LIVE (assign-canonical.py)
+- **FR33 (`/sgs-update` Stages 3+4+9+10):** LIVE
+- **FR34 (token value-matcher ΔE2000):** LIVE
+- **FR35 (default-inheritance check):** LIVE — supports_writer.py
+- **FR38 + FR39 (Stage 0.1 BEM lint + pre-commit hook):** SHIPPED 2026-05-12
+
+### 12.10 Spec 15 retirement notes
+
+Spec 15 file (`.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md`) is retained on disk with absorption marker in its frontmatter. Future readers: this section (Spec 16 §12) is the canonical content; Spec 15 file is historical record only.

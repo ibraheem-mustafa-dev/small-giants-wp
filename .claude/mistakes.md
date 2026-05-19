@@ -1,5 +1,38 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-18 (2 new lessons — build-replacement-before-retiring + BEM regex char-class)
+**Last updated:** 2026-05-21 (3 new lessons — strip-feature-update-docs-same-commit + verify-gemini-claims-by-grep + don't-port-per-block-fix-universal)
+
+## 2026-05-21 — Stale-doc-text caused a regression of a deliberately-stripped check
+
+**What went wrong:** Wave 2b of today's cleanup re-implemented a 16-keyword licensing-reject in `plugins/sgs-blocks/scripts/uimax-tools/uimax-write-validator.py` because `~/.claude/skills/sgs-clone/SKILL.md` Hard Rule 1 stated: "The `uimax-write-validator.py` rejects any payload that mentions licensing keywords." The agent correctly implemented what the doc claimed.
+
+**The actual rule:** Bean's "no licensing" rule (`memory/feedback_no_licensing_talk_in_cloning_context.md`) means **don't add licensing-VALIDATION infrastructure** — the cloning domain has no licensing concept. The rule is NOT "ban the words"; it's "don't validate FOR licensing at all."
+
+**The history that should have caught this:** the validator's licensing-scan code had been deliberately stripped on 2026-05-14 (decisions.md Phase 6 v2 Step 5 sub-decision (b)). SKILL.md Hard Rule 1 was supposed to be removed at the same time but wasn't. Today's Wave 2b agent followed the stale doc and re-implemented the gate. Reverted same session + tombstone comment + 3 regression-guard tests.
+
+**The lesson — doc-vs-code drift across sessions:** when a deliberate code change retires a documented feature, the same commit MUST update every doc/skill/spec that describes the feature. A "stripped X but didn't update the docs" commit is incomplete. Future agents read the stale doc, treat it as truth, and re-implement what was deliberately removed.
+
+**How to apply:** whenever a code change retires a documented feature (HARD-GATE, validator, lint, dispatcher branch, etc.), the same commit MUST include `grep -rn '<feature-name>' .claude/ ~/.claude/skills/<this-skill>/ CLAUDE.md` + an edit to every match. blub.db pattern_key candidate: `strip-feature-update-docs-same-commit`.
+
+## 2026-05-21 — Don't port per-block legacy logic; fix the universal extraction instead
+
+**What almost went wrong:** Wave 0 safety scan found `overrides/hero.py:extract_hero()` lifts ~30 hero-specific styling attrs that cv2's universal path doesn't handle. My initial proposal: port the hero-specific logic into cv2.
+
+**Bean's correction:** every SGS block has unique attributes. Per-block porting recreates the legacy `overrides/` anti-pattern Spec 16 was built to retire. The right answer is to fix cv2's UNIVERSAL extraction so every block (not just hero) gets handled. Hero is just the canary where the gap shows up most visibly.
+
+**The lesson:** when an audit finds "cv2 doesn't have X-specific logic", the answer is NEVER "port X-specific logic". It's "what universal-extraction primitive should have handled X, and why didn't it?" For CSS extraction gaps the answer is almost always Spec 16 R5 D3 (`attribute_gap_candidate`). For attribute-schema gaps the answer is Stage 3 DB-driven `canonical_slot_for()`. For slot-mapping gaps the answer is `slot_synonyms` + `property_suffixes` + `modifier_suffixes` DB tables. Captured at `memory/feedback_universal_extraction_no_per_block_legacy.md`.
+
+## 2026-05-21 — Verify every Gemini agent claim by grep before relaying as fact
+
+**What went wrong:** Across both audit rounds (Round 1 doc-convergence + Round 2 code-as-evidence), 5 Gemini agent reports total — every single one contained fabricated specific line citations or quoted strings that did not exist (verified by grep). Examples:
+- Gemini Pro claimed `parse_css_value()` is "not defined" in convert.py — `parse_css()` exists at line 262
+- Gemini Pro claimed MEMORY.md says "Do NOT implement pattern-level recognition yet" — that string does not exist anywhere
+- Gemini Flash claimed `per-section-convention-voter.py` "does NOT exist in repository" — file very much exists, was being edited the same session
+
+**The lesson:** Gemini agents on this project produce credible-looking reports that include specific line numbers + quoted strings that look plausible but are synthesised rather than read. Sonnet panels did NOT exhibit this pattern.
+
+**How to apply:** any Gemini auditor finding must be verified by grep + file read before being treated as fact. Sonnet remains the trustworthy auditor type for this project. Worth structurally enforcing in audit dispatch: when an audit cites a specific file:line, the synthesis step grep-confirms it before relaying. blub.db pattern_key candidate: `verify-gemini-claims-by-grep`.
+
+## 2026-05-18 — Retired legacy feature before the replacement was built
 
 ## 2026-05-18 — Retired legacy feature before the replacement was built
 

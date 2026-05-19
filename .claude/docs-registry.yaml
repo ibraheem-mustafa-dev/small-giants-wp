@@ -94,32 +94,30 @@ canonical_docs:
       - skill_dispatch_change
 
   - path: .claude/tooling-map.md
-    scope: forever
+    scope: absorbed
     doc_type: tooling-map
-    owns: "Per-script inventory (107 scripts) with status + wired-in classification + file path"
-    update_triggers:
-      - script_add_remove_rename
-      - script_wiring_status_change
-      - script_status_reclassification
-    enforcement: .claude/hooks/tooling-map-drift-check.py
+    owns: "ABSORBED 2026-05-21 into cloning-pipeline-flow.md 'Script inventory' section. Original content folded; file retained as ~9-line redirect stub for git-blame + external-link continuity."
+    absorbed_into: .claude/cloning-pipeline-flow.md
+    absorbed_at_section: "Script inventory"
+    absorption_date: 2026-05-21
+    enforcement: .claude/hooks/tooling-map-drift-check.py (NOTE: hook may need updating to read absorbed section instead)
 
   - path: .claude/skills-commands-map.md
-    scope: forever
+    scope: absorbed
     doc_type: skills-commands-map
-    owns: "All slash commands + skills with pipeline position + scripts each invokes"
-    update_triggers:
-      - skill_or_command_added
-      - skill_or_command_retired
-      - pipeline_position_change
+    owns: "ABSORBED 2026-05-21 into cloning-pipeline-flow.md 'Skill dispatch chain (full)' section. Original content folded; file retained as ~9-line redirect stub."
+    absorbed_into: .claude/cloning-pipeline-flow.md
+    absorbed_at_section: "Skill dispatch chain (full)"
+    absorption_date: 2026-05-21
 
   - path: .claude/db-tables-map.md
-    scope: forever
+    scope: absorbed
     doc_type: db-tables-map
-    owns: "Per-table inventory (29 sgs-framework + 48 uimax) with schema + R/W matrix per pipeline stage"
-    update_triggers:
-      - table_add_remove
-      - column_add_remove_rename
-      - script_newly_reads_or_writes_table
+    owns: "ABSORBED 2026-05-21 into cloning-pipeline-flow.md 'DB heat-map (full)' section. Original content folded; file retained as ~9-line redirect stub."
+    absorbed_into: .claude/cloning-pipeline-flow.md
+    absorbed_at_section: "DB heat-map (full)"
+    absorption_date: 2026-05-21
+    enforcement: .claude/hooks/db-tables-drift-check.py (NOTE: hook may need updating to read absorbed section instead)
 
   - path: .claude/specs/02-SGS-BLOCKS.md
     scope: spec_version_canonical
@@ -160,14 +158,15 @@ canonical_docs:
       - cli_parameter_change
 
   - path: .claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md
-    scope: spec_version_canonical
+    scope: absorbed
     doc_type: spec
     spec_version: 15
-    note: "L0-L3 + Stages 0-2 + 8-9 + /sgs-update remain canonical here. Stages 3-7 implementation moved to Spec 16 per 2026-05-14 header note."
+    note: "ABSORBED INTO SPEC 16 on 2026-05-21. Canonical content folded into Spec 16 §12 Appendix A. File retained on disk for historical reference + git-blame continuity only. Do NOT treat as live truth."
+    absorbed_into: .claude/specs/16-DETERMINISTIC-CONVERTER-V2.md
+    absorbed_at_section: "§12 Appendix A — Spec 15 absorbed content"
+    absorption_date: 2026-05-21
     update_triggers:
-      - architectural_change
-      - fr_addition
-      - phase_rename
+      - NEVER_UPDATE_DIRECTLY  # update Spec 16 §12 instead
 
   - path: .claude/specs/16-DETERMINISTIC-CONVERTER-V2.md
     scope: spec_version_canonical

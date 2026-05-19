@@ -52,8 +52,8 @@ absorbed_docs:
   - .claude/db-tables-map.md - ABSORBED 2026-05-21 → see "DB heat-map (full)" section below
   - Each original file replaced with a redirect stub for git-blame continuity.
 companion_docs:
-  - .claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md - authoritative spec
-  - .claude/specs/16-DETERMINISTIC-CONVERTER-V2.md - end-goal spec (implementation reference = this doc)
+  - .claude/specs/16-DETERMINISTIC-CONVERTER-V2.md - SINGLE end-goal spec (Spec 15 absorbed into §12 on 2026-05-21)
+  - .claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md - ABSORBED 2026-05-21 → see Spec 16 §12 Appendix A; file retained for historical reference only
   - .claude/docs-registry.md - governance and update-trigger matrix
 ---
 
@@ -66,14 +66,15 @@ Two documents own the entire pipeline knowledge surface:
 | Doc | Role | Location |
 |-----|------|----------|
 | **This file** (`cloning-pipeline-flow.md`) | **Single implementation reference** — per-stage scripts/files/DB/skills/status + per-script inventory + per-skill/command catalogue + DB R/W heat-map | `.claude/cloning-pipeline-flow.md` |
-| **Spec 16** | **End-goal spec** — Stages 3-7 slot-aware DOM walker implementation contract | `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` |
+| **Spec 16** | **Single end-goal spec** — full pipeline architecture (Stages 0-9 + L0-L3 layers + canonical vocabularies + /sgs-update + QA gates). Spec 15 absorbed into §12 Appendix A. | `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` |
 
-**What was absorbed here on 2026-05-21:**
-- `tooling-map.md` (520 lines) — per-script inventory folded into the "Script inventory" section at the bottom of this doc
-- `skills-commands-map.md` (459 lines) — per-skill/command catalogue folded into the "Skill dispatch chain (full)" section
-- `db-tables-map.md` (926 lines) — per-table R/W matrix folded into the "DB heat-map (full)" section
+**What was absorbed on 2026-05-21:**
+- `tooling-map.md` (520 lines) → "Script inventory" section at the bottom of this doc
+- `skills-commands-map.md` (459 lines) → "Skill dispatch chain (full)" section
+- `db-tables-map.md` (926 lines) → "DB heat-map (full)" section
+- `specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md` (918 lines) → Spec 16 §12 Appendix A
 
-The three original files now contain redirect stubs pointing here. Spec 15 → Spec 16 absorption is deferred to next session.
+All four original files now contain absorption markers in their frontmatter / are replaced with redirect stubs. The pipeline knowledge surface is now **two documents total**: this implementation-state doc + Spec 16.
 
 ---
 
@@ -793,15 +794,18 @@ tracked as a follow-up.
 │  /uimax-sgs-scrape-pattern - pattern Rosetta Stone payload generation       │
 │  /uimax-scrape-animation - per-animation Rosetta Stone payload              │
 │                                                                             │
-│ Wave 2 (7d713ba0): uimax-write-validator gains 16-keyword licensing reject.  │
-│   Forbidden keywords: license/licence, IP-firewall, redistribution,         │
-│   copyright, intellectual property, trademark, patent, etc.                 │
-│   Allowlist: "license-free" with WARN. Recursive payload walk + column      │
-│   name scan. Rosetta Stone validation preserved.                            │
+│ Wave 2b regression + revert (2026-05-21): a 16-keyword licensing-reject     │
+│   gate was added in commit 7d713ba0 from stale SKILL.md text, then          │
+│   REVERTED same session. Rule clarification: "no licensing" means do NOT    │
+│   add licensing-validation infrastructure; not "ban the words". A previous  │
+│   incarnation of this gate was stripped on 2026-05-14 (decisions.md Phase   │
+│   6 v2 Step 5 sub-decision (b)). The validator has a tombstone comment +    │
+│   regression-guard tests so the next agent doesn't re-add it. Rosetta       │
+│   Stone validation (row 213) remains.                                       │
 │                                                                             │
-│ STATUS:       LIVE - Phase 6 v2 Step 5 complete; licensing gate active      │
-│               (Wave 2); chokepoint propagation tracked at P-S15-UIMAX-      │
-│               CHOKEPOINT-PROPAGATE in parking.md                            │
+│ STATUS:       LIVE - Phase 6 v2 Step 5 complete; Rosetta Stone gate active; │
+│               NO licensing gate (deliberately). Chokepoint propagation      │
+│               tracked at P-S15-UIMAX-CHOKEPOINT-PROPAGATE in parking.md     │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -1001,9 +1005,10 @@ Synced 2026-05-13. Post-wave-cleanup updates applied 2026-05-21 (Waves 1-3 statu
 
 ## See also
 
-- Full spec: [.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md](specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md)
+- **Single end-goal spec:** [.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md](specs/16-DETERMINISTIC-CONVERTER-V2.md) — Spec 15 absorbed into §12 Appendix A on 2026-05-21
+- Historical Spec 15 (absorbed, retained for git-blame): [.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md](specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md)
 - Master execution plan: [.claude/plans/spec-15-master-execution-plan.md](plans/spec-15-master-execution-plan.md)
-- Phase 6 plan: [.claude/plans/phase-6-pattern-fidelity.md](plans/phase-6-pattern-fidelity.md)
+- Phase 6 plan (archived): [.claude/plans/archive/phase-6-pattern-fidelity.md](plans/archive/phase-6-pattern-fidelity.md)
 - State: [.claude/state.md](state.md)
 - Decisions log: [.claude/decisions.md](decisions.md)
 
@@ -1123,7 +1128,7 @@ v1 recogniser (tools/recogniser/ -- 7 files): all TO-RETIRE Spec 15 Phase 5; non
 
 **Pattern tools:** `pattern-register.py`, `pattern-fingerprint.py`, `pattern-classify.py` (all superseded in production by register_patterns.py).
 
-**uimax tools:** `uimax_write.py` (LIVE chokepoint), `uimax-write-validator.py` (LIVE transitive; Wave 2 licensing reject added), `sgs-update-uimax-sync.py` (/sgs-update S3+4), `seed-block-compositions.py` (ONE-OFF).
+**uimax tools:** `uimax_write.py` (LIVE chokepoint), `uimax-write-validator.py` (LIVE transitive; Rosetta Stone gate only — Wave 2b licensing reject was added then REVERTED same session, see decisions.md 2026-05-21 + tombstone comment in the file), `sgs-update-uimax-sync.py` (/sgs-update S3+4), `seed-block-compositions.py` (ONE-OFF), `seed-legacy-role-lookup.py` (Wave 3c, idempotent, /sgs-update Stage 0).
 
 **Build tools:** `generate-icons.js`, `copy-built-styles.js` (build-time); `build-font-collection.py`, `generate-block-reference.py` (/sgs-update S2), `audit-block-uniformity.py` (standalone).
 
