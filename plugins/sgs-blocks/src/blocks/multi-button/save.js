@@ -1,14 +1,11 @@
-import { useBlockProps, InnerBlocks } from '@wordpress/block-editor';
-
 /**
- * Dynamic block — render.php handles frontend output.
- * Save stores the InnerBlocks content inside a wrapper div for
- * correct block serialisation and validation.
+ * Multi-Button block — dynamic save.
+ *
+ * Returns null: all frontend output is handled by render.php.
+ * The pre-conversion static save shape is preserved in deprecated.js (v1)
+ * so WordPress can validate and migrate existing stored content.
+ *
+ * @return {null}
  */
-export default function save() {
-	return (
-		<div { ...useBlockProps.save() }>
-			<InnerBlocks.Content />
-		</div>
-	);
-}
+const save = () => null;
+export default save;

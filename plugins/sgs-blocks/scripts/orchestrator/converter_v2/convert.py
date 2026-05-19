@@ -685,12 +685,11 @@ def lift_attrs_for_block(block_slug: str, node: Tag, bem: db.BemParse | None,
 # block to dynamic. When this set is empty, the guard becomes a no-op.
 # Removed by A2 batch 1 (2026-05-19, commit 8624d316): certification-bar,
 # counter, heading, notice-banner, process-steps, trust-bar.
-_STILL_STATIC_SGS_BLOCKS: frozenset[str] = frozenset({
-    "sgs/label",
-    "sgs/feature-grid",
-    "sgs/multi-button",
-    "sgs/mobile-nav",
-})
+# All SGS blocks are now dynamic — the A1 guard is a no-op.
+# Kept as an empty frozenset so the guard logic below compiles without change.
+# Repopulate if a new static block is introduced and conversion is pending.
+# Removed batch 2 (2026-05-21): label, feature-grid, multi-button, mobile-nav.
+_STILL_STATIC_SGS_BLOCKS: frozenset[str] = frozenset()
 
 
 def emit_wp_block(slug: str, attrs: dict, inner: list[str], self_closing: bool = False) -> str:
