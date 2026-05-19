@@ -11,8 +11,8 @@ session_2026_05_19_summary: "13 commits. 5 RCs + container backgrounds + 10 stat
 prior_session_2026_05_21_summary: "Option A cleanup sprint — 4 commits to main. Wave 0 safety scan → universal-extraction-no-per-block-legacy rule. Waves 1-3 shipped pipeline structural cleanup. Wave 3 verification surfaced the 4 RCs that today's session closed."
 blockers:
   - "Phase 3 pixel-diff residual visual differences come from WP global chrome (header/footer template parts + nav menu showing test pages) — not converter-side. Separate session needed."
-  - "Untracked plugins/sgs-blocks/src/blocks/footer/ — collateral from a parallel subagent NOT in any of today's authorised briefs. Decide next session: integrate or remove."
   - "Static→dynamic conversions + container backgrounds NOT YET DEPLOYED to palestine-lives.org. /deploy is the first next-session priority — without it, live sites still serve the old static save outputs."
+  - "Header/footer-as-blocks 3rd recurrence (blub.db row 274, CRITICAL): a parallel subagent silently created src/blocks/header/ + src/blocks/footer/ as collateral. Removed. Header + footer are TEMPLATE PARTS per Spec 17 §S1-2 + Spec 19 §4.6. Next session Task 2: build .claude/hooks/no-header-footer-block.py PostToolUse to hard-reject Write/Edit on src/blocks/(header|footer|nav)/ — 3-time recurrence proves prompt-discipline alone is insufficient."
 ---
 
 # small-giants-wp — State Snapshot
