@@ -2093,15 +2093,33 @@ def main():
                 raise ValueError(f"--deploy-target kind must be 'page' or 'post', got {target_kind!r}")
             import subprocess
             _upload_script = Path(__file__).parent / "orchestrator" / "upload_and_patch.py"
+            # Pass --client so Stage 10 activates the matching style
+            # variation site-wide after patching the page. Without --client
+            # the variation CSS at theme/sgs-theme/styles/<client>.css never
+            # enqueues (functions.php gates on active_theme_style theme_mod).
+            # Shipped 2026-05-20 per Pipeline Root-Gap Council R1.
             result = subprocess.run(
                 [sys.executable, str(_upload_script), str(run_dir),
-                 "--target", target_kind, "--target-id", str(target_id)],
+                 "--target", target_kind, "--target-id", str(target_id),
+                 "--client", args.client],
                 capture_output=True, text=True, timeout=180,
             )
             if result.returncode == 0:
                 # Print only the final success line + the link, skip image-upload chatter
                 tail_lines = [ln for ln in result.stdout.splitlines() if "modified" in ln or "link=" in ln]
                 print(f"[stage-10] deploy: patched {target_kind} {target_id} — {tail_lines[-1] if tail_lines else 'OK'}")
+            elif result.returncode == 3:
+                # Exit code 3 = page-PATCH succeeded but variation activation
+                # FAILED. The page now carries new block markup but renders
+                # with default theme tokens. Surface as a named warning, not
+                # generic deploy-failed (the deploy itself worked).
+                variation_lines = [ln for ln in result.stdout.splitlines() if "variation" in ln.lower()]
+                print(
+                    f"[stage-10] deploy: patched {target_kind} {target_id} BUT variation activation FAILED — "
+                    f"page renders with default theme tokens until resolved. "
+                    f"Detail: {variation_lines[-1] if variation_lines else 'see stage-10 stdout'}",
+                    file=sys.stderr,
+                )
             else:
                 print(f"[stage-10] deploy soft-failed (exit {result.returncode}): {result.stderr[:200]}", file=sys.stderr)
         except Exception as exc:  # noqa: BLE001 — Stage 10 is opt-in observability; soft-fail

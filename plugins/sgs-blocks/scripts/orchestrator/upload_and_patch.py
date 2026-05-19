@@ -85,6 +85,18 @@ def main():
         default=131,
         help="WP object ID (default: 131 = cv2-output-mamas-munches page)",
     )
+    parser.add_argument(
+        "--client",
+        type=str,
+        default="",
+        help=(
+            "Client slug to activate as the site-wide style variation after "
+            "patching. When set, POSTs to /wp-json/sgs/v1/active-variation. "
+            "Required for the variation CSS file (theme/sgs-theme/styles/"
+            "<client>.css) to actually load on the live page. Shipped "
+            "2026-05-20 per Pipeline Root-Gap Council R1."
+        ),
+    )
     args = parser.parse_args()
 
     run_dir: Path = args.run_dir
@@ -167,6 +179,46 @@ def main():
             print(f"  {args.target} {args.target_id} modified {r.get('modified')} link={r.get('link')}")
     except urllib.error.HTTPError as e:
         print(f"  HTTP {e.code}: {e.read().decode('utf-8','ignore')[:300]}")
+
+    # Activate the matching style variation site-wide.
+    # Without this, the variation CSS file written by Stage 0.7 never
+    # enqueues (theme/sgs-theme/functions.php gates on active_theme_style
+    # theme_mod). Pipeline Root-Gap Council R1.
+    #
+    # Variation activation failures get a distinct exit code (3) so the
+    # orchestrator's Stage 10 dispatch surfaces them as a named warning
+    # instead of burying them in stderr. The page-PATCH already succeeded
+    # at this point; we don't want to claim Stage 10 "deployed" when the
+    # variation didn't actually activate.
+    variation_failed = False
+    if args.client:
+        print(f"\nActivating style variation '{args.client}' site-wide...")
+        var_req = urllib.request.Request(
+            f"{WP_URL}/wp-json/sgs/v1/active-variation",
+            data=json.dumps({"slug": args.client}).encode(),
+            method="POST",
+            headers={"Authorization": AUTH, "Content-Type": "application/json"},
+        )
+        try:
+            var_resp = urllib.request.urlopen(var_req, timeout=30).read().decode("utf-8", errors="ignore")
+            var_body = json.loads(var_resp) if var_resp.strip().startswith("{") else {}
+            prev = var_body.get("previous_slug", "")
+            activated = bool(var_body.get("activated"))
+            print(f"  variation: {prev or '(none)'} -> {var_body.get('slug', args.client)} (activated={activated})")
+            if not activated:
+                print(f"  variation FAIL: REST endpoint reported activated=false. body={var_body}")
+                variation_failed = True
+        except urllib.error.HTTPError as e:
+            print(f"  variation HTTP {e.code}: {e.read().decode('utf-8', 'ignore')[:300]}")
+            variation_failed = True
+        except Exception as e:  # noqa: BLE001
+            print(f"  variation ERROR: {e}")
+            variation_failed = True
+    else:
+        print("\nNo --client passed; skipping variation activation (variation CSS will not load).")
+
+    if variation_failed:
+        sys.exit(3)
 
 
 if __name__ == "__main__":

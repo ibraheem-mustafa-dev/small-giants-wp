@@ -107,6 +107,12 @@ new Font_Collection();
 // Register REST API endpoints.
 Forms\Form_REST_API::register();
 
+// Variation activation REST — sgs/v1/active-variation endpoint used by
+// /sgs-clone Stage 10 to flip active_theme_style on deploy.
+// Shipped 2026-05-20 per Pipeline Root-Gap Council R1.
+require_once SGS_BLOCKS_PATH . 'includes/class-variation-rest.php';
+Variation_REST::register();
+
 // Register admin settings page (webhook URL + submissions viewer).
 Forms\Form_Admin::register();
 
