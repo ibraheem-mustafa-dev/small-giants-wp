@@ -17,6 +17,7 @@ __all__ = [
     "seed_pipeline_context",
     "seed_gap_context",
     "seed_theme_json",
+    "seed_d1_sidecar",
     "reset_pipeline_seed",
 ]
 
@@ -108,6 +109,27 @@ def seed_theme_json(theme_json: dict) -> None:
     """
     from . import convert as v3
     v3._LIFT_CONTEXT["theme_json"] = theme_json if isinstance(theme_json, dict) else {}
+
+
+def seed_d1_sidecar(run_dir: "str | object | None") -> bool:
+    """Load css-d1-assignments.json from run_dir into the cv2 D1 sidecar cache.
+
+    Call this from the orchestrator ONCE before the per-section loop fires, after
+    stage_0_7_css_lift has written the css-d1-assignments.json sidecar.
+
+    When the sidecar is loaded, ``_lift_root_supports_to_style`` and
+    ``_lift_core_block_style`` will MERGE the pre-classified D1 assignments into
+    ``base_decls`` so typed attrs get the router's richer CSS context in addition
+    to what ``_collect_css_decls_for_element`` finds at runtime.
+
+    Graceful-degradation: if run_dir is None or the file doesn't exist, the
+    module cache stays empty and cv2 falls back to _collect_css_decls_for_element
+    exclusively (same behaviour as before P1.B).
+
+    Returns True if the sidecar was loaded, False otherwise.
+    """
+    from . import convert as v3
+    return v3.seed_d1_sidecar(run_dir)
 
 
 def ensure_root_section_class(block_markup: str, section_id: str) -> str:

@@ -2107,6 +2107,20 @@ def _lift_core_block_style(
     except Exception:  # noqa: BLE001
         return style, extra_top
 
+    # P1.B — MERGE D1 sidecar assignments (Spec 16 §FR6 D1).
+    # Additive merge: D1 sidecar pre-classified values are merged into
+    # base_decls only when the runtime collection didn't already find them.
+    # Keeps _collect_css_decls_for_element as the authoritative source for
+    # per-element CSS; D1 sidecar adds block-level context the runtime
+    # CSS-selector walk may have missed (e.g. rules keyed by block-root class
+    # rather than the specific element's class). Core/* block style path.
+    # The FR1 typed-attr slot-harvest path is intentionally separate.
+    # Documented at _snap_style_dict_leaves call sites (P1.A nice-to-have #4).
+    _d1_sidecar_decls_core = _load_d1_assignments(block_slug)
+    if _d1_sidecar_decls_core:
+        for _d1c_prop, _d1c_val in _d1_sidecar_decls_core.items():
+            base_decls.setdefault(_d1c_prop, _d1c_val)
+
     if not base_decls:
         return style, extra_top
 
@@ -2471,6 +2485,23 @@ def _lift_root_supports_to_style(
 
     # Collect base (non-media-query) declarations targeting this element's own classes.
     base_decls, _bp_decls = _collect_css_decls_for_element(node, css_rules)
+
+    # P1.B — MERGE D1 sidecar assignments (Spec 16 §FR6 D1).
+    # _load_d1_assignments returns the css_router's pre-classified typed-attr
+    # values for this block slug from the run's css-d1-assignments.json sidecar.
+    # ADDITIVE: sidecar values supplement _collect_css_decls_for_element output,
+    # never overwriting keys already found at runtime (existing path still wins
+    # for exact per-element CSS resolution).
+    # NOTE: this is the WP-supports path (spacing/border/colour via `style.*`).
+    # The FR1 typed-attrs path (_lift_attrs_for_block / hero slot-harvest) is
+    # separate and intentionally does NOT use the D1 sidecar — it reads block
+    # attrs directly from the element. Documented at _snap_style_dict_leaves
+    # call sites (P1.A nice-to-have #4). See convert.py:107-135.
+    _d1_sidecar_decls = _load_d1_assignments(block_slug)
+    if _d1_sidecar_decls:
+        for _d1_prop, _d1_val in _d1_sidecar_decls.items():
+            base_decls.setdefault(_d1_prop, _d1_val)
+
     if not base_decls:
         return
 

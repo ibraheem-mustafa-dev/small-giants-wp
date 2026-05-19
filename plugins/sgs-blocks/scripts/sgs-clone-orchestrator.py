@@ -310,37 +310,31 @@ def _client_variation_css_path(client: str) -> Path:
     return REPO / "theme" / "sgs-theme" / "styles" / f"{client}.css"
 
 
-def stage_0_7_css_lift(mockup_path: Path, client: str, run_dir: Path) -> dict:
-    """Harvest the mockup's CSS and write a single per-variation stylesheet.
+def _collect_mockup_css(mockup_path: Path) -> tuple[str, list[dict], list[str]]:
+    """Collect all CSS text from a mockup HTML file.
 
     Sources harvested (in document order):
       1. Every inline <style>...</style> block in the mockup HTML
       2. Every <link rel="stylesheet" href="..."> resolved to a local file
          relative to the mockup directory (external/CDN URLs skipped)
 
-    Output: theme/sgs-theme/styles/<client>.css. Pre-existing content is
-    overwritten -- this stage is the canonical writer for the file.
+    Returns (combined_css_text, sources_list, warnings_list).
     """
-    started = now_iso()
-    errors: list[str] = []
-    warnings: list[str] = []
     sources: list[dict] = []
+    warnings: list[str] = []
+    parts: list[str] = []
 
     if not mockup_path.exists():
-        errors.append(f"mockup not found at {mockup_path}")
-        out = {"output_path": "", "total_chars": 0, "sources": [], "passed": False}
-        write_artefact(run_dir, 7, "css-lift", "failed", out, started, errors, warnings)
-        return out
+        return "", sources, [f"mockup not found at {mockup_path}"]
 
     html = mockup_path.read_text(encoding="utf-8")
-    parts: list[str] = []
 
     inline_blocks = _STYLE_BLOCK_RE.findall(html)
     for i, css in enumerate(inline_blocks):
         css = css.strip()
         if not css:
             continue
-        parts.append(f"/* === mockup inline <style> #{i + 1} === */\n{css}\n")
+        parts.append(css)
         sources.append({"kind": "inline_style", "index": i, "chars": len(css)})
 
     mockup_dir = mockup_path.parent
@@ -362,36 +356,166 @@ def stage_0_7_css_lift(mockup_path: Path, client: str, run_dir: Path) -> dict:
             continue
         css = candidate.read_text(encoding="utf-8").strip()
         rel = candidate.relative_to(REPO)
-        parts.append(f"/* === mockup linked CSS: {rel} === */\n{css}\n")
+        parts.append(css)
         sources.append({"kind": "linked_css", "href": href, "resolved": str(rel), "chars": len(css)})
 
-    if not parts:
+    combined = "\n\n".join(parts)
+    if not combined.strip():
         warnings.append("no CSS sources found in mockup (zero inline <style>, zero local <link>)")
+    return combined, sources, warnings
 
+
+def stage_0_7_css_lift(mockup_path: Path, client: str, run_dir: Path,
+                       theme_json: dict | None = None,
+                       page_id: int | None = None) -> dict:
+    """Harvest the mockup's CSS and route it via the Spec 16 §FR6 four-destination router.
+
+    Replaces the previous verbatim CSS dump with the css_router module.
+
+    Destinations:
+      D0 — global/reset rules → written unscoped to variation CSS (top of file)
+      D1 — typed-attr lift    → written to pipeline-state/<run>/css-d1-assignments.json
+      D2 — wrapper CSS        → written scoped to .page-id-N in variation CSS
+      D3 — gap candidates     → written to sgs-framework.db.attribute_gap_candidates
+                                  + ALSO to D2 as fallback
+
+    Hard rule (Spec 16 §R5): every CSS rule routes to exactly one bucket.
+    Chrome-skip: rules targeting <header>/<footer>/<nav> are not emitted to D2.
+
+    Output:
+      - theme/sgs-theme/styles/<client>.css  (D0 + D2 + D3-fallback only)
+      - pipeline-state/<run>/css-d1-assignments.json  (D1 typed-attr sidecar for cv2)
+    """
+    started = now_iso()
+    errors: list[str] = []
+    warnings: list[str] = []
+
+    if not mockup_path.exists():
+        errors.append(f"mockup not found at {mockup_path}")
+        out = {"output_path": "", "total_chars": 0, "sources": [], "passed": False,
+               "css_router_stats": {}}
+        write_artefact(run_dir, 7, "css-lift", "failed", out, started, errors, warnings)
+        return out
+
+    # ---- 1. Collect raw CSS from all sources ----
+    css_text, sources, collect_warnings = _collect_mockup_css(mockup_path)
+    warnings.extend(collect_warnings)
+    css_body_chars = sum(s.get("chars", 0) for s in sources
+                         if s.get("kind") in {"inline_style", "linked_css"})
+
+    # ---- 2. Load css_router (lazy import, same directory as this script) ----
+    try:
+        _css_router_path = ORCHESTRATOR_DIR / "css_router.py"
+        _css_router_spec = importlib.util.spec_from_file_location("css_router", _css_router_path)
+        _css_router_mod = importlib.util.module_from_spec(_css_router_spec)
+        _css_router_spec.loader.exec_module(_css_router_mod)
+    except Exception as exc:  # noqa: BLE001
+        # Fallback: verbatim dump (preserves previous behaviour on import failure).
+        warnings.append(f"css_router import failed ({exc}); falling back to verbatim CSS dump")
+        return _stage_0_7_verbatim_fallback(css_text, sources, css_body_chars,
+                                             client, mockup_path, run_dir, started, errors, warnings)
+
+    run_id = run_dir.name
+    th_json = theme_json or {}
+
+    # ---- 3. Route CSS via the four-destination router ----
+    try:
+        router_result = _css_router_mod.route_css(
+            css_text=css_text,
+            boundaries_meta={},  # section_id → meta (not needed for CSS routing)
+            theme_json=th_json,
+            run_id=run_id,
+        )
+    except Exception as exc:  # noqa: BLE001
+        warnings.append(f"css_router.route_css failed ({exc}); falling back to verbatim dump")
+        return _stage_0_7_verbatim_fallback(css_text, sources, css_body_chars,
+                                             client, mockup_path, run_dir, started, errors, warnings)
+
+    routing_stats = router_result.get("stats", {})
+    d0_rules: list[str] = router_result.get("d0", [])
+    d1_assignments: dict = router_result.get("d1", {})
+    d2_rules: list[str] = router_result.get("d2", [])
+    d3_entries: list[dict] = router_result.get("d3", [])
+
+    # ---- 4. Write D0 + D2 + D3-fallback to variation CSS file ----
+    try:
+        out_path, total_chars = _css_router_mod.write_variation_css(
+            client=client,
+            d0_rules=d0_rules,
+            d2_rules=d2_rules,
+            mockup_path=mockup_path,
+            page_id=page_id,
+            repo_root=REPO,
+        )
+    except Exception as exc:  # noqa: BLE001
+        errors.append(f"write_variation_css failed: {exc}")
+        out_path = _client_variation_css_path(client)
+        total_chars = 0
+
+    # ---- 5. Write D1 assignments sidecar (consumed by cv2 convert.py) ----
+    d1_sidecar_path = run_dir / "css-d1-assignments.json"
+    try:
+        d1_sidecar_path.write_text(
+            json.dumps(d1_assignments, indent=2, ensure_ascii=False),
+            encoding="utf-8",
+        )
+    except Exception as exc:  # noqa: BLE001
+        warnings.append(f"css-d1-assignments.json write failed: {exc}")
+
+    # ---- 6. Write D3 gap candidates to sgs-framework.db ----
+    d3_inserted = 0
+    if d3_entries:
+        try:
+            d3_inserted = _css_router_mod.write_d3_to_db(d3_entries, sgs_db_path=None)
+        except Exception as exc:  # noqa: BLE001
+            warnings.append(f"D3 gap candidate DB write failed: {exc}")
+
+    output = {
+        "output_path": str(out_path.relative_to(REPO)) if out_path.exists() else "",
+        "total_chars": total_chars,
+        "css_body_chars": css_body_chars,
+        "sources": sources,
+        "d1_sidecar_path": str(d1_sidecar_path.relative_to(REPO)) if d1_sidecar_path.exists() else "",
+        "d3_inserted": d3_inserted,
+        "css_router_stats": routing_stats,
+        "passed": not bool(errors),
+    }
+    status = "complete" if not errors else "partial"
+    write_artefact(run_dir, 7, "css-lift", status, output, started, errors, warnings)
+    return output
+
+
+def _stage_0_7_verbatim_fallback(
+    css_text: str, sources: list[dict], css_body_chars: int,
+    client: str, mockup_path: Path, run_dir: Path,
+    started: str, errors: list[str], warnings: list[str],
+) -> dict:
+    """Verbatim CSS dump — preserves the pre-P1.B behaviour as a graceful fallback
+    when css_router is unavailable. Writes all CSS to variation CSS unscoped.
+    """
     header = (
         "/*!\n"
         f" * SGS clone-pipeline CSS-lift output for client: {client}\n"
         f" * Source mockup: {mockup_path.relative_to(REPO) if mockup_path.is_absolute() else mockup_path}\n"
         f" * Lifted: {started}\n"
         " *\n"
-        " * Generated by stage_0_7_css_lift in sgs-clone-orchestrator.py.\n"
-        " * Loaded by sgs-theme/functions.php when the matching style variation\n"
-        " * is active (active_theme_style theme mod). Edits to this file will\n"
-        " * be overwritten on the next clone run -- author changes in the\n"
-        " * mockup source.\n"
+        " * FALLBACK MODE: css_router unavailable; verbatim dump (Spec 16 §FR6 routing bypassed).\n"
         " */\n\n"
     )
-    payload = header + "\n".join(parts)
+    payload = header + css_text
     out_path = _client_variation_css_path(client)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(payload, encoding="utf-8")
-
     output = {
         "output_path": str(out_path.relative_to(REPO)),
         "total_chars": len(payload),
-        "css_body_chars": sum(s.get("chars", 0) for s in sources if s.get("kind") in {"inline_style", "linked_css"}),
+        "css_body_chars": css_body_chars,
         "sources": sources,
+        "d1_sidecar_path": "",
+        "d3_inserted": 0,
+        "css_router_stats": {},
         "passed": True,
+        "fallback_mode": "verbatim",
     }
     status = "complete" if not errors else "failed"
     write_artefact(run_dir, 7, "css-lift", status, output, started, errors, warnings)
@@ -1135,6 +1259,33 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
             _seed_theme_json(theme_json)
         except Exception:  # noqa: BLE001
             pass  # token-snap gracefully degrades if seeding fails
+
+    # P1.B — seed css-d1-assignments.json sidecar into cv2's D1 cache.
+    # stage_0_7_css_lift already wrote the sidecar at run_dir/css-d1-assignments.json.
+    # Seeding here (before the per-section loop) means every section's
+    # _lift_root_supports_to_style / _lift_core_block_style call can MERGE the
+    # router's pre-classified D1 assignments alongside what _collect_css_decls_for_element
+    # derives at runtime — richer CSS context = more attrs lifted, fewer D3 gap candidates.
+    # Graceful-degradation: if the sidecar file is absent, seed_d1_sidecar returns False
+    # and cv2 falls back to _collect_css_decls_for_element exclusively.
+    if getattr(args, "converter_v2", False):
+        try:
+            _cv2_d1_dir = ORCHESTRATOR_DIR.parent
+            if str(_cv2_d1_dir) not in sys.path:
+                sys.path.insert(0, str(_cv2_d1_dir))
+            from orchestrator.converter_v2 import seed_d1_sidecar as _seed_d1_sidecar
+            _d1_loaded = _seed_d1_sidecar(run_dir)
+            if _d1_loaded:
+                from orchestrator.converter_v2 import convert as _cv2_convert_mod
+                _d1_entry_count = sum(
+                    len(v) for v in _cv2_convert_mod._D1_SIDECAR.values()
+                    if isinstance(v, dict)
+                )
+                print(f"[stage-4.5] D1 sidecar loaded: {_d1_entry_count} typed-attr assignments available for cv2")
+            else:
+                print("[stage-4.5] D1 sidecar not available; cv2 uses _collect_css_decls_for_element exclusively")
+        except Exception as _d1_exc:  # noqa: BLE001
+            print(f"[stage-4.5] D1 sidecar seed soft-failed ({_d1_exc}); cv2 falls back gracefully")
 
     for m in matches:
         boundary_id = m["boundary_id"]
@@ -1960,8 +2111,28 @@ def main():
 
     stage_0_1_bem_lint(args.mockup, args.mode, run_dir)
     stage_0_5_token_lint(args.mockup, args.mode, run_dir, client=args.client)
-    css_lift = stage_0_7_css_lift(args.mockup, args.client, run_dir)
-    print(f"[stage-0.7] css-lift: {css_lift.get('css_body_chars', 0)} chars from {len(css_lift.get('sources', []))} source(s) -> {css_lift.get('output_path','')}")
+    # Derive page_id from --deploy-target page:<id> if available.
+    _deploy_page_id: int | None = None
+    _deploy_target = getattr(args, "deploy_target", "") or ""
+    if _deploy_target.startswith("page:"):
+        try:
+            _deploy_page_id = int(_deploy_target.split(":", 1)[1])
+        except ValueError:
+            pass
+    css_lift = stage_0_7_css_lift(
+        args.mockup, args.client, run_dir,
+        theme_json=_theme_json,
+        page_id=_deploy_page_id,
+    )
+    _css_stats = css_lift.get("css_router_stats", {})
+    _fallback = " [FALLBACK-VERBATIM]" if css_lift.get("fallback_mode") else ""
+    print(
+        f"[stage-0.7] css-lift{_fallback}: {css_lift.get('css_body_chars', 0)} chars "
+        f"from {len(css_lift.get('sources', []))} source(s) -> {css_lift.get('output_path','')} "
+        f"| D0={_css_stats.get('d0_count',0)} D1={_css_stats.get('d1_count',0)} "
+        f"D2={_css_stats.get('d2_count',0)} D3={_css_stats.get('d3_count',0)} "
+        f"total={_css_stats.get('total_rules',0)} chrome-skipped={_css_stats.get('chrome_skipped',0)}"
+    )
 
     boundary = stage_1_boundary(args.mockup, args.section or "", args.auto_section, run_dir)
     bcount = len(boundary.get("boundaries", []))
