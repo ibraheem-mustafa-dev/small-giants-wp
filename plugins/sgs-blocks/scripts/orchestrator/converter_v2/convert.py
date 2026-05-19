@@ -2158,38 +2158,43 @@ def _collect_css_decls_for_element(
         #   (a) ".sgs-hero__sub"           → direct class match
         #   (b) ".sgs-hero__copy h1"       → parent class + descendant tag
         #   (c) ".sgs-hero__copy .sgs-x"   → parent class + descendant class
+        # Handle grouped selectors (h1, h2, h3) — check if ANY part matches
         matches = False
-        parts = sel_part.split()
-        if not parts:
-            continue
+        for individual_sel in sel_part.split(","):
+            individual_sel = individual_sel.strip()
+            if not individual_sel:
+                continue
 
-        last_part = parts[-1]
+            parts = individual_sel.split()
+            if not parts:
+                continue
 
-        # Direct class match
-        if last_part.startswith(".") and last_part[1:] in desc_classes:
-            matches = True
-        # Direct tag match
-        elif last_part == desc_tag and len(parts) >= 1:
-            matches = True
+            last_part = parts[-1]
 
-        if not matches:
-            continue
-
-        # If a parent qualifier exists, confirm this element is inside that parent
-        if len(parts) > 1 and matches:
-            parent_token = parts[-2]
-            if parent_token.startswith("."):
-                parent_cls = parent_token[1:]
-                # Walk up DOM to see if any ancestor has this class
-                ancestor = desc.parent
-                ancestor_match = False
-                while ancestor and ancestor.name:
-                    if parent_cls in (ancestor.get("class", []) or []):
-                        ancestor_match = True
-                        break
-                    ancestor = ancestor.parent
-                if not ancestor_match:
-                    matches = False
+            # Direct class match
+            if last_part.startswith(".") and last_part[1:] in desc_classes:
+                matches = True
+                break
+            # Direct tag match
+            elif last_part == desc_tag and len(parts) >= 1:
+                # If a parent qualifier exists, confirm this element is inside that parent
+                parent_match = True
+                if len(parts) > 1:
+                    parent_token = parts[-2]
+                    if parent_token.startswith("."):
+                        parent_cls = parent_token[1:]
+                        # Walk up DOM to see if any ancestor has this class
+                        ancestor = desc.parent
+                        ancestor_match = False
+                        while ancestor and ancestor.name:
+                            if parent_cls in (ancestor.get("class", []) or []):
+                                ancestor_match = True
+                                break
+                            ancestor = ancestor.parent
+                        parent_match = ancestor_match
+                if parent_match:
+                    matches = True
+                    break
 
         if not matches:
             continue
@@ -2370,18 +2375,39 @@ def _lift_styling_attrs(
     #           in schema (both `candidate` AND `candidate + 'Desktop'` missed)
     #
     # Both are D3 — the property has no landing slot on this block.
-    # We skip structural/layout CSS that _lift_root_supports_to_style handles
-    # (padding, margin, max-width, width, display, gap, etc.) to avoid noisy
-    # duplicate proposals that are already handled by the supports-lift path.
+    # We skip CSS properties that _lift_root_supports_to_style ACTUALLY handles
+    # (i.e. writes into attrs["style"] or attrs["widthMode"]) to avoid duplicate
+    # proposals. The set is derived directly from _root_lift_rules() + the three
+    # shorthand-expansion paths at the top of that function:
+    #
+    #   Shorthand shims:  padding, margin, background (→ background-color),
+    #                     border (→ border-width/style/color)
+    #   _root_lift_rules: padding-{top,right,bottom,left}, margin-{top,right,bottom,left},
+    #                     gap, border-radius, border-width, border-style, border-color,
+    #                     background-color, color
+    #   max-width lift:   max-width (→ widthMode or style.dimensions.maxWidth)
+    #
+    # RC-2 FIX (2026-05-21): removed over-broad exclusions that were NOT handled
+    # by supports-lift — min-width, width, height, min-height, max-height,
+    # display, grid-template-columns, flex-direction, align-items, justify-content,
+    # justify-items, align-self, flex-wrap, background-image. These now flow into
+    # D3 Mode 1 and produce attribute_gap_candidate rows for block-specific attrs
+    # (e.g. verticalAlignment, splitColumnRatio) as intended by Spec 16 R5.
     _SUPPORTS_HANDLED_PROPS: frozenset[str] = frozenset({
-        "padding", "padding-top", "padding-right", "padding-bottom", "padding-left",
-        "margin", "margin-top", "margin-right", "margin-bottom", "margin-left",
-        "max-width", "min-width", "width", "height", "min-height", "max-height",
-        "display", "gap", "grid-template-columns", "flex-direction", "align-items",
-        "justify-content", "justify-items", "align-self", "flex-wrap",
-        "background", "background-color", "background-image",
-        "color", "border", "border-color", "border-width", "border-style",
-        "border-radius",
+        # Shorthand shims (normalised before rule table)
+        "padding", "margin", "background", "border",
+        # Long-hand sides — padding
+        "padding-top", "padding-right", "padding-bottom", "padding-left",
+        # Long-hand sides — margin
+        "margin-top", "margin-right", "margin-bottom", "margin-left",
+        # spacing.blockGap
+        "gap",
+        # border.* (via _root_lift_rules + border shorthand shim)
+        "border-radius", "border-width", "border-style", "border-color",
+        # color.*
+        "background-color", "color",
+        # max-width lift → widthMode / style.dimensions.maxWidth
+        "max-width",
     })
     if block_slug and block_slug.startswith("sgs/"):
         # Derive the primary source class from desc's SGS-BEM classes so the
@@ -2411,7 +2437,7 @@ def _lift_styling_attrs(
                 if not any_in_schema:
                     _record_gap_candidate(block_slug, css_prop, raw, source_class)
 
-    # ---- Breakpoint-specific overrides ----
+    # ---- Breakpoint-specific overrides (D1) ----
     # Media-query declarations are more specific than the base rule for the
     # viewports they cover, so they OVERWRITE any same-attr value the base
     # loop emitted via its base→Desktop schema-fallback. Apply in ascending
@@ -2420,6 +2446,13 @@ def _lift_styling_attrs(
     # min-width:1280 (58). Ordering is already established in
     # _collect_css_decls_for_element via _specificity_key; bp_decls dict
     # iteration preserves that insertion order on Python 3.7+.
+    #
+    # _bp_lifted_keys tracks (css_prop, bp_suffix) pairs that were successfully
+    # written into attrs as D1 hits. The D3 breakpoint loop below uses this to
+    # avoid double-emission: a prop that lands as a typed attr must NOT also
+    # surface as a D3 gap row for the same (block, attr_name, breakpoint).
+    _bp_lifted_keys: set[tuple[str, str]] = set()
+
     for bp_suffix, bp_decl_map in bp_decls.items():
         for css_prop, suffix, kind in _css_prop_to_suffix():
             raw = bp_decl_map.get(css_prop)
@@ -2432,6 +2465,7 @@ def _lift_styling_attrs(
             candidate = f"{prefix}{suffix}{bp_suffix}"
             if candidate in schema:
                 attrs[candidate] = val
+                _bp_lifted_keys.add((css_prop, bp_suffix))  # D1 hit — suppress D3
             # Companion Unit attr (same inference rules as the base loop)
             if kind in ("number_px", "number_px_or_em", "number_unitless"):
                 unit_candidate = f"{prefix}{suffix}Unit{bp_suffix}"
@@ -2451,6 +2485,52 @@ def _lift_styling_attrs(
                     else:
                         unit = "px"
                     attrs[unit_candidate] = unit
+
+    # ---- D3 — Breakpoint-variant gap candidates (RC-1 fix) ----
+    # Mobile-first CSS often puts typography overrides exclusively inside
+    # @media (min-width: …) rules. Those declarations live in bp_decls but
+    # the original D3 loop only walked base_decls, so breakpoint-only props
+    # (e.g. font-family or line-height under min-width:1280) were silently
+    # dropped with zero trace in the gap-candidate output.
+    #
+    # For each breakpoint variant we apply the same two failure-mode checks as
+    # the base D3 block above:
+    #   Mode 1: css_prop not in _known_css_props → no suffix mapping in DB
+    #   Mode 2: suffix mapped but {prefix}{suffix}{bp_suffix} not in schema
+    #
+    # Anti-double-emission: (css_prop, bp_suffix) pairs already tracked in
+    # _bp_lifted_keys (D1 wrote a typed attr) are skipped here.
+    #
+    # source_class gets an "@{bp_suffix}" decoration so the gap row is
+    # human-readable (e.g. ".sgs-hero__label@Desktop").
+    if block_slug and block_slug.startswith("sgs/"):
+        for bp_suffix, bp_decl_map in bp_decls.items():
+            for css_prop, raw in bp_decl_map.items():
+                if css_prop in _SUPPORTS_HANDLED_PROPS:
+                    continue  # handled by _lift_root_supports_to_style
+
+                # Anti-double-emission guard: D1 already wrote this attr → skip
+                if (css_prop, bp_suffix) in _bp_lifted_keys:
+                    continue
+
+                bp_source_class = f"{source_class}@{bp_suffix}"
+
+                # Mode 1: no suffix mapping exists at all for this CSS property
+                if css_prop not in _known_css_props:
+                    _record_gap_candidate(block_slug, css_prop, raw, bp_source_class)
+                    continue
+
+                # Mode 2: suffix is mapped but the breakpoint-suffixed candidate
+                # does not exist in the schema for this block.
+                # Check every suffix for this css_prop — if none yield a schema
+                # hit for this bp_suffix, emit a gap candidate.
+                any_in_schema = any(
+                    f"{prefix}{sfx}{bp_suffix}" in schema
+                    for cp, sfx, _ in _css_prop_to_suffix()
+                    if cp == css_prop
+                )
+                if not any_in_schema:
+                    _record_gap_candidate(block_slug, css_prop, raw, bp_source_class)
 
 
 def lift_subtree_into_block_attrs(node: Tag, block_slug: str,
