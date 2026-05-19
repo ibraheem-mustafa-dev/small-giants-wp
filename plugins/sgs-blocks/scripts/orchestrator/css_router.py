@@ -636,6 +636,15 @@ def write_variation_css(
 
     parts: list[str] = [header]
 
+    # Deduplicate rules before writing. The verbatim Stage 0.7 dump relied on
+    # browser parser idempotency; the router emits per-property routes so a
+    # mockup rule repeated across @media blocks or duplicated source <style>
+    # tags would write multiple times if we didn't dedup here. Preserves first-
+    # occurrence order so cascade ordering matches the source CSS. Captured
+    # 2026-05-20 in P1.B QC panel (Sonnet rater).
+    d0_rules = list(dict.fromkeys(d0_rules))
+    d2_rules = list(dict.fromkeys(d2_rules))
+
     if d0_rules:
         parts.append("/* ── D0 — global/reset rules ──────────────────────────── */\n")
         parts.extend(f"{r}\n" for r in d0_rules)
