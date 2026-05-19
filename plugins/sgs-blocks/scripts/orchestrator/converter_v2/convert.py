@@ -675,8 +675,33 @@ def lift_attrs_for_block(block_slug: str, node: Tag, bem: db.BemParse | None,
 # DOM walker
 # ============================================================================
 
+# Static SGS blocks (save.js returns HTML, NOT null) — cv2 must NOT self-close
+# these because WP runs save() at load time and compares against stored
+# innerHTML; an empty self-close fails validation and renders as "Invalid
+# block" placeholder until manual recovery (see common-wp-styling-errors.md
+# Section B + Bug A 2026-05-19 incident on page 144).
+#
+# A1 INTERIM GUARD (2026-05-19): list shrinks as A2 finishes converting each
+# block to dynamic. When this set is empty, the guard becomes a no-op.
+# Removed by A2 batch 1 (2026-05-19, commit 8624d316): certification-bar,
+# counter, heading, notice-banner, process-steps, trust-bar.
+_STILL_STATIC_SGS_BLOCKS: frozenset[str] = frozenset({
+    "sgs/label",
+    "sgs/feature-grid",
+    "sgs/multi-button",
+    "sgs/mobile-nav",
+})
+
+
 def emit_wp_block(slug: str, attrs: dict, inner: list[str], self_closing: bool = False) -> str:
-    """Emit a single WP block markup string."""
+    """Emit a single WP block markup string.
+
+    A1 guard: refuses to self-close a block in _STILL_STATIC_SGS_BLOCKS — those
+    are static blocks whose save() returns HTML; a self-closed marker would
+    fail WP validation on every page load. Forces open+close with empty inner
+    instead; WP will still flag the block as invalid but at least parses it
+    as a block (not core/freeform) and the recovery UI succeeds.
+    """
     attr_json = ""
     if attrs:
         # Strip internal routing-hint keys (underscore-prefixed) that must
@@ -689,6 +714,12 @@ def emit_wp_block(slug: str, attrs: dict, inner: list[str], self_closing: bool =
         }
         if clean:
             attr_json = " " + json.dumps(clean, separators=(",", ":"), ensure_ascii=False)
+    # A1 guard: never self-close a currently-static block.
+    if self_closing and slug in _STILL_STATIC_SGS_BLOCKS:
+        _trace("emit_wp_block_self_close_guarded", slug=slug,
+               reason="block is still static; self-close would fail validation. "
+                      "Emitting open+close with empty inner — recovery UI will rebuild.")
+        self_closing = False
     if self_closing and not inner:
         return f"<!-- wp:{slug}{attr_json} /-->"
     inner_str = "\n".join(inner)
