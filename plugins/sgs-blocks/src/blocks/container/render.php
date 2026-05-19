@@ -35,37 +35,66 @@ if ( ! function_exists( 'sgs_sanitize_grid_template' ) ) {
 	}
 }
 
-$layout           = $attributes['layout'] ?? 'stack';
-$columns          = $attributes['columns'] ?? 2;
-$columns_mobile   = $attributes['columnsMobile'] ?? 1;
-$columns_tablet   = $attributes['columnsTablet'] ?? 2;
-$grid_template            = $attributes['gridTemplateColumns'] ?? '';
-$grid_template_tablet     = $attributes['gridTemplateColumnsTablet'] ?? '';
-$grid_template_mobile     = $attributes['gridTemplateColumnsMobile'] ?? '';
-$gap              = $attributes['gap'] ?? '40';
-$gap_tablet       = $attributes['gapTablet'] ?? '';
-$gap_mobile       = $attributes['gapMobile'] ?? '';
-$bg_image         = $attributes['backgroundImage'] ?? null;
-$overlay_colour   = $attributes['backgroundOverlayColour'] ?? '';
-$overlay_opacity  = $attributes['backgroundOverlayOpacity'] ?? 50;
-$shadow           = $attributes['shadow'] ?? '';
-$max_width        = $attributes['maxWidth'] ?? 'wide';
-$min_height       = $attributes['minHeight'] ?? '';
-$vertical_align   = $attributes['verticalAlign'] ?? 'start';
-$html_tag         = $attributes['htmlTag'] ?? 'section';
+$layout               = $attributes['layout'] ?? 'stack';
+$columns              = $attributes['columns'] ?? 2;
+$columns_mobile       = $attributes['columnsMobile'] ?? 1;
+$columns_tablet       = $attributes['columnsTablet'] ?? 2;
+$grid_template        = $attributes['gridTemplateColumns'] ?? '';
+$grid_template_tablet = $attributes['gridTemplateColumnsTablet'] ?? '';
+$grid_template_mobile = $attributes['gridTemplateColumnsMobile'] ?? '';
+$gap                  = $attributes['gap'] ?? '40';
+$gap_tablet           = $attributes['gapTablet'] ?? '';
+$gap_mobile           = $attributes['gapMobile'] ?? '';
+$bg_image             = $attributes['backgroundImage'] ?? null;
+$bg_image_tablet      = $attributes['backgroundImageTablet'] ?? null;
+$bg_image_mobile      = $attributes['backgroundImageMobile'] ?? null;
+$bg_size              = $attributes['backgroundSize'] ?? 'cover';
+$allowed_bg_sizes     = array( 'cover', 'contain', 'auto' );
+if ( ! in_array( $bg_size, $allowed_bg_sizes, true ) ) {
+	$bg_size = 'cover';
+}
+$bg_position = $attributes['backgroundPosition'] ?? 'center center';
+// Allowlist bg-position: only numbers, letters, whitespace, %, top/left/right/bottom/center.
+$bg_position        = preg_replace( '/[^A-Za-z0-9\s%]/', '', $bg_position );
+$bg_repeat          = $attributes['backgroundRepeat'] ?? 'no-repeat';
+$allowed_bg_repeats = array( 'no-repeat', 'repeat', 'repeat-x', 'repeat-y' );
+if ( ! in_array( $bg_repeat, $allowed_bg_repeats, true ) ) {
+	$bg_repeat = 'no-repeat';
+}
+$bg_attachment       = $attributes['backgroundAttachment'] ?? 'scroll';
+$allowed_attachments = array( 'scroll', 'fixed' );
+if ( ! in_array( $bg_attachment, $allowed_attachments, true ) ) {
+	$bg_attachment = 'scroll';
+}
+$overlay_colour         = $attributes['backgroundOverlayColour'] ?? '';
+$overlay_opacity        = $attributes['backgroundOverlayOpacity'] ?? 50;
+$overlay_gradient       = ! empty( $attributes['overlayGradient'] );
+$overlay_gradient_angle = isset( $attributes['overlayGradientAngle'] ) ? absint( $attributes['overlayGradientAngle'] ) : 180;
+$overlay_gradient_from  = $attributes['overlayGradientFrom'] ?? '';
+$overlay_gradient_to    = $attributes['overlayGradientTo'] ?? '';
+$bg_video               = $attributes['bgVideo'] ?? null;
+$bg_video_mobile        = $attributes['bgVideoMobile'] ?? null;
+$bg_parallax            = ! empty( $attributes['bgParallax'] );
+$bg_ken_burns           = ! empty( $attributes['bgKenBurns'] );
+$bg_animation_duration  = isset( $attributes['bgAnimationDuration'] ) ? absint( $attributes['bgAnimationDuration'] ) : 20;
+$shadow                 = $attributes['shadow'] ?? '';
+$max_width              = $attributes['maxWidth'] ?? 'wide';
+$min_height             = $attributes['minHeight'] ?? '';
+$vertical_align         = $attributes['verticalAlign'] ?? 'start';
+$html_tag               = $attributes['htmlTag'] ?? 'section';
 
 // widthMode — base (mobile-first) + per-viewport overrides. Composes with WP-native
 // alignwide/alignfull. Per-client theme.json:settings.layout.contentSize/wideSize
 // flow through the --wp--style--global--*-size CSS vars so variations override correctly.
-$allowed_width_modes      = array( 'default', 'wide', 'full', 'custom' );
-$width_mode               = $attributes['widthMode'] ?? 'default';
-$width_mode_mobile        = $attributes['widthModeMobile'] ?? '';
-$width_mode_tablet        = $attributes['widthModeTablet'] ?? '';
-$width_mode_desktop       = $attributes['widthModeDesktop'] ?? '';
-$custom_width_value       = isset( $attributes['customWidth'] ) ? absint( $attributes['customWidth'] ) : 0;
-$custom_width_unit_raw    = $attributes['customWidthUnit'] ?? 'px';
-$allowed_width_units      = array( 'px', 'em', 'rem', '%', 'vw' );
-$custom_width_unit        = in_array( $custom_width_unit_raw, $allowed_width_units, true ) ? $custom_width_unit_raw : 'px';
+$allowed_width_modes   = array( 'default', 'wide', 'full', 'custom' );
+$width_mode            = $attributes['widthMode'] ?? 'default';
+$width_mode_mobile     = $attributes['widthModeMobile'] ?? '';
+$width_mode_tablet     = $attributes['widthModeTablet'] ?? '';
+$width_mode_desktop    = $attributes['widthModeDesktop'] ?? '';
+$custom_width_value    = isset( $attributes['customWidth'] ) ? absint( $attributes['customWidth'] ) : 0;
+$custom_width_unit_raw = $attributes['customWidthUnit'] ?? 'px';
+$allowed_width_units   = array( 'px', 'em', 'rem', '%', 'vw' );
+$custom_width_unit     = in_array( $custom_width_unit_raw, $allowed_width_units, true ) ? $custom_width_unit_raw : 'px';
 
 if ( ! in_array( $width_mode, $allowed_width_modes, true ) ) {
 	$width_mode = 'default';
@@ -87,7 +116,7 @@ if ( ! in_array( $html_tag, $allowed_tags, true ) ) {
 }
 
 // Build inline styles.
-$styles = array();
+$styles   = array();
 $styles[] = 'gap:var(--wp--preset--spacing--' . esc_attr( $gap ) . ')';
 
 if ( $min_height ) {
@@ -98,10 +127,23 @@ if ( $shadow ) {
 	$styles[] = 'box-shadow:var(--wp--preset--shadow--' . esc_attr( $shadow ) . ')';
 }
 
-if ( ! empty( $bg_image['url'] ) ) {
+// Background image — inline styles (desktop base).
+// Video backgrounds don't use CSS background-image; the <video> element handles them.
+$has_bg_image = ! empty( $bg_image['url'] );
+$has_bg_video = ! empty( $bg_video['url'] );
+if ( $has_bg_image && ! $has_bg_video ) {
 	$styles[] = 'background-image:url(' . esc_url( $bg_image['url'] ) . ')';
-	$styles[] = 'background-size:cover';
-	$styles[] = 'background-position:center';
+	$styles[] = 'background-size:' . esc_attr( $bg_size );
+	$styles[] = 'background-position:' . esc_attr( $bg_position );
+	$styles[] = 'background-repeat:' . esc_attr( $bg_repeat );
+	if ( 'fixed' === $bg_attachment ) {
+		$styles[] = 'background-attachment:fixed';
+	}
+}
+
+// Ken-burns animation duration CSS custom property (consumed by CSS animation).
+if ( $bg_ken_burns && $has_bg_image ) {
+	$styles[] = '--sgs-ken-burns-duration:' . absint( $bg_animation_duration ) . 's';
 }
 
 if ( 'grid' === $layout ) {
@@ -158,6 +200,20 @@ if ( ! empty( $min_height ) ) {
 	$classes[] = 'sgs-container--has-min-height';
 }
 
+// Advanced background mode classes.
+if ( $has_bg_image && ! $has_bg_video ) {
+	$classes[] = 'sgs-container--has-bg-image';
+	if ( $bg_parallax ) {
+		$classes[] = 'sgs-container--parallax';
+	}
+	if ( $bg_ken_burns ) {
+		$classes[] = 'sgs-container--ken-burns';
+	}
+}
+if ( $has_bg_video ) {
+	$classes[] = 'sgs-container--has-bg-video';
+}
+
 if ( 'grid' === $layout ) {
 	$classes[] = 'sgs-cols-' . absint( $columns );
 	if ( $columns_tablet ) {
@@ -175,16 +231,62 @@ $wrapper_attributes = get_block_wrapper_attributes(
 	)
 );
 
-// Build overlay markup.
-$overlay_html = '';
-if ( ! empty( $bg_image['url'] ) && $overlay_colour ) {
-	$overlay_style = sprintf(
-		'background-color:%s;opacity:%s',
-		esc_attr( $overlay_colour ),
-		esc_attr( $overlay_opacity / 100 )
-	);
-	$overlay_html = '<span class="sgs-container__overlay" style="' . $overlay_style . '" aria-hidden="true"></span>';
+// Build video background markup.
+// bgVideo / bgVideoMobile work on any container (not tied to a variant).
+// Two data-src-* attributes let view.js swap the src on viewport resize.
+$video_html = '';
+if ( $has_bg_video ) {
+	$desktop_src = esc_url( $bg_video['url'] );
+	$mobile_src  = ! empty( $bg_video_mobile['url'] ) ? esc_url( $bg_video_mobile['url'] ) : $desktop_src;
+
+	if ( $desktop_src === $mobile_src ) {
+		$video_html = sprintf(
+			'<video class="sgs-container__video-bg" autoplay loop muted playsinline preload="none" aria-hidden="true">' .
+			'<source src="%s" type="video/mp4"></video>',
+			$desktop_src
+		);
+	} else {
+		$video_html = sprintf(
+			'<video class="sgs-container__video-bg sgs-container__video-bg--responsive" autoplay loop muted playsinline preload="none" aria-hidden="true"' .
+			' data-src-desktop="%s" data-src-mobile="%s">' .
+			'<source src="%s" type="video/mp4"></video>',
+			esc_attr( $desktop_src ),
+			esc_attr( $mobile_src ),
+			$desktop_src
+		);
+	}
 }
+
+// Build overlay markup.
+// Overlay fires whenever there is any background (image OR video) and a colour is set.
+// overlayGradient: replaces the flat colour with a two-stop linear-gradient overlay.
+$overlay_html       = '';
+$has_any_bg         = $has_bg_image || $has_bg_video;
+$has_overlay_colour = $overlay_colour || ( $overlay_gradient && $overlay_gradient_from );
+
+if ( $has_any_bg && $has_overlay_colour ) {
+	if ( $overlay_gradient && $overlay_gradient_from ) {
+		$grad_from     = sgs_colour_value( $overlay_gradient_from );
+		$grad_to       = $overlay_gradient_to ? sgs_colour_value( $overlay_gradient_to ) : 'transparent';
+		$overlay_style = sprintf(
+			'background-image:linear-gradient(%ddeg,%s,%s);opacity:%s',
+			$overlay_gradient_angle,
+			$grad_from,
+			$grad_to,
+			esc_attr( $overlay_opacity / 100 )
+		);
+	} else {
+		$overlay_style = sprintf(
+			'background-color:%s;opacity:%s',
+			sgs_colour_value( $overlay_colour ),
+			esc_attr( $overlay_opacity / 100 )
+		);
+	}
+	$overlay_html = '<span class="sgs-container__overlay" style="' . esc_attr( $overlay_style ) . '" aria-hidden="true"></span>';
+}
+
+// Responsive bg-image swaps (tablet / mobile) — emitted as scoped <style>.
+// These are appended to $responsive_css below alongside gap / widthMode rules.
 
 // Shape dividers.
 $shape_top    = $attributes['shapeDividerTop'] ?? '';
@@ -219,12 +321,18 @@ if ( $shape_top || $shape_bottom ) {
 	$classes[] = 'sgs-container--has-shape-divider';
 }
 
-// Build responsive gap + widthMode CSS.
+// Build responsive gap + widthMode + bg-image CSS.
 $responsive_css      = '';
-$has_responsive_attr = $gap_tablet || $gap_mobile || $width_mode_mobile || $width_mode_tablet || $width_mode_desktop;
-if ( $has_responsive_attr ) {
+$has_responsive_bg   = ! empty( $bg_image_tablet['url'] ) || ! empty( $bg_image_mobile['url'] );
+$has_responsive_attr = $gap_tablet || $gap_mobile || $width_mode_mobile || $width_mode_tablet || $width_mode_desktop || $has_responsive_bg;
+// Also need a uid when bg-parallax/ken-burns is active (for the no-parallax class via JS) or bg-video is responsive.
+$needs_uid           = $has_responsive_attr || $bg_parallax || $bg_ken_burns || ( $has_bg_video && ! empty( $bg_video_mobile['url'] ) );
+$uid                 = '';
+if ( $needs_uid ) {
 	$uid       = 'sgs-container-' . substr( md5( wp_json_encode( $attributes ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
 	$classes[] = $uid;
+}
+if ( $has_responsive_attr ) {
 
 	if ( $gap_tablet ) {
 		$responsive_css .= '@media (max-width:1023px){.' . $uid . '{gap:var(--wp--preset--spacing--' . esc_attr( $gap_tablet ) . ')}}';
@@ -269,10 +377,20 @@ if ( $has_responsive_attr ) {
 			$responsive_css .= '@media (min-width:1024px){.' . $uid . '{' . $decl . '}}';
 		}
 	}
+
+	// Tablet background image override.
+	if ( ! empty( $bg_image_tablet['url'] ) ) {
+		$responsive_css .= '@media (max-width:1023px){.' . $uid . '{background-image:url(' . esc_url( $bg_image_tablet['url'] ) . ');background-size:' . esc_attr( $bg_size ) . ';background-position:' . esc_attr( $bg_position ) . '}}';
+	}
+
+	// Mobile background image override.
+	if ( ! empty( $bg_image_mobile['url'] ) ) {
+		$responsive_css .= '@media (max-width:599px){.' . $uid . '{background-image:url(' . esc_url( $bg_image_mobile['url'] ) . ');background-size:' . esc_attr( $bg_size ) . ';background-position:' . esc_attr( $bg_position ) . '}}';
+	}
 }
 
-// Rebuild wrapper attributes if shapes added a class or responsive uid was added.
-if ( $shape_top || $shape_bottom || $responsive_css ) {
+// Rebuild wrapper attributes whenever the class list has grown (shapes, uid, bg-video, parallax classes).
+if ( $shape_top || $shape_bottom || $uid ) {
 	$wrapper_attributes = get_block_wrapper_attributes(
 		array(
 			'class' => implode( ' ', $classes ),
@@ -281,16 +399,17 @@ if ( $shape_top || $shape_bottom || $responsive_css ) {
 	);
 }
 
-// Output responsive CSS if needed.
-if ( $responsive_css ) {
+// Output responsive CSS if needed (scoped to the uid class so it only targets this instance).
+if ( $responsive_css && $uid ) {
 	printf( '<style id="%s">%s</style>', esc_attr( $uid ), $responsive_css );
 }
 
 printf(
-	'<%1$s %2$s>%3$s%4$s%5$s%6$s</%1$s>',
+	'<%1$s %2$s>%3$s%4$s%5$s%6$s%7$s</%1$s>',
 	$html_tag,
 	$wrapper_attributes,
 	$shape_top_html,
+	$video_html,
 	$overlay_html,
 	$content,
 	$shape_bottom_html

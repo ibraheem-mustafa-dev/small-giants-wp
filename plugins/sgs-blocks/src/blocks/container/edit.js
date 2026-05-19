@@ -14,6 +14,7 @@ import {
   ToggleControl,
   __experimentalToggleGroupControl as ToggleGroupControl,
   __experimentalToggleGroupControlOption as ToggleGroupControlOption,
+  TabPanel,
 } from "@wordpress/components";
 import {
   ResponsiveControl,
@@ -21,6 +22,36 @@ import {
   DesignTokenPicker,
 } from "../../components";
 import { spacingVar, shadowVar } from "../../utils";
+
+const BG_SIZE_OPTIONS = [
+  { label: __("Cover", "sgs-blocks"), value: "cover" },
+  { label: __("Contain", "sgs-blocks"), value: "contain" },
+  { label: __("Auto", "sgs-blocks"), value: "auto" },
+];
+
+const BG_POSITION_OPTIONS = [
+  { label: __("Centre centre", "sgs-blocks"), value: "center center" },
+  { label: __("Top centre", "sgs-blocks"), value: "top center" },
+  { label: __("Bottom centre", "sgs-blocks"), value: "bottom center" },
+  { label: __("Centre left", "sgs-blocks"), value: "center left" },
+  { label: __("Centre right", "sgs-blocks"), value: "center right" },
+  { label: __("Top left", "sgs-blocks"), value: "top left" },
+  { label: __("Top right", "sgs-blocks"), value: "top right" },
+  { label: __("Bottom left", "sgs-blocks"), value: "bottom left" },
+  { label: __("Bottom right", "sgs-blocks"), value: "bottom right" },
+];
+
+const BG_REPEAT_OPTIONS = [
+  { label: __("No repeat", "sgs-blocks"), value: "no-repeat" },
+  { label: __("Repeat", "sgs-blocks"), value: "repeat" },
+  { label: __("Repeat X", "sgs-blocks"), value: "repeat-x" },
+  { label: __("Repeat Y", "sgs-blocks"), value: "repeat-y" },
+];
+
+const BG_ATTACHMENT_OPTIONS = [
+  { label: __("Scroll", "sgs-blocks"), value: "scroll" },
+  { label: __("Fixed (parallax)", "sgs-blocks"), value: "fixed" },
+];
 
 const SHAPE_OPTIONS = [
   { label: __("None", "sgs-blocks"), value: "" },
@@ -102,8 +133,23 @@ export default function Edit({ attributes, setAttributes }) {
     columns,
     gap,
     backgroundImage,
+    backgroundImageTablet,
+    backgroundImageMobile,
+    backgroundSize = "cover",
+    backgroundPosition = "center center",
+    backgroundRepeat = "no-repeat",
+    backgroundAttachment = "scroll",
     backgroundOverlayColour,
     backgroundOverlayOpacity,
+    overlayGradient = false,
+    overlayGradientAngle = 180,
+    overlayGradientFrom = "",
+    overlayGradientTo = "",
+    bgVideo,
+    bgVideoMobile,
+    bgParallax = false,
+    bgKenBurns = false,
+    bgAnimationDuration = 20,
     shadow,
     maxWidth,
     minHeight,
@@ -126,14 +172,27 @@ export default function Edit({ attributes, setAttributes }) {
     ? customWidthUnit
     : "px";
 
+  // Editor preview: show bg-image if set (video not previewed inline — too complex for editor).
+  const hasBgImage = !!backgroundImage?.url;
+  const hasBgVideo = !!bgVideo?.url;
+
   const style = {
     gap: spacingVar(gap),
     minHeight: minHeight || undefined,
     ...(shadow && { boxShadow: shadowVar(shadow) }),
-    ...(backgroundImage?.url && {
+    ...(hasBgImage && !hasBgVideo && {
       backgroundImage: `url(${backgroundImage.url})`,
-      backgroundSize: "cover",
-      backgroundPosition: "center",
+      backgroundSize,
+      backgroundPosition,
+      backgroundRepeat,
+      ...(backgroundAttachment === "fixed" && { backgroundAttachment: "fixed" }),
+    }),
+    ...(hasBgVideo && {
+      // Show a teal placeholder in editor when video is set
+      backgroundColor: "var(--wp--preset--color--primary, #0F7E80)",
+    }),
+    ...(bgKenBurns && hasBgImage && {
+      "--sgs-ken-burns-duration": `${bgAnimationDuration}s`,
     }),
   };
 
@@ -341,81 +400,398 @@ export default function Edit({ attributes, setAttributes }) {
         </PanelBody>
 
         <PanelBody
-          title={__("Background Image", "sgs-blocks")}
+          title={__("Background", "sgs-blocks")}
           initialOpen={false}
         >
-          <MediaUploadCheck>
-            <MediaUpload
-              onSelect={(media) =>
-                setAttributes({
-                  backgroundImage: {
-                    id: media.id,
-                    url: media.url,
-                    alt: media.alt,
-                  },
-                })
-              }
-              allowedTypes={["image"]}
-              value={backgroundImage?.id}
-              render={({ open }) => (
-                <div>
-                  {backgroundImage?.url ? (
-                    <>
-                      <img
-                        src={backgroundImage.url}
-                        alt=""
-                        style={{
-                          maxWidth: "100%",
-                          marginBottom: "8px",
-                        }}
-                      />
-                      <Button
-                        variant="secondary"
-                        onClick={() =>
+          <TabPanel
+            tabs={[
+              { name: "image", title: __("Image", "sgs-blocks") },
+              { name: "video", title: __("Video", "sgs-blocks") },
+              { name: "animation", title: __("Animation", "sgs-blocks") },
+              { name: "overlay", title: __("Overlay", "sgs-blocks") },
+            ]}
+          >
+            {(tab) => {
+              if (tab.name === "image") {
+                return (
+                  <>
+                    <p
+                      className="components-base-control__label"
+                      style={{ fontWeight: 600, marginBottom: "4px" }}
+                    >
+                      {__("Desktop image", "sgs-blocks")}
+                    </p>
+                    <MediaUploadCheck>
+                      <MediaUpload
+                        onSelect={(media) =>
                           setAttributes({
-                            backgroundImage: undefined,
+                            backgroundImage: {
+                              id: media.id,
+                              url: media.url,
+                              alt: media.alt,
+                            },
                           })
                         }
-                        isDestructive
-                      >
-                        {__("Remove image", "sgs-blocks")}
-                      </Button>
-                    </>
-                  ) : (
-                    <Button variant="secondary" onClick={open}>
-                      {__("Select image", "sgs-blocks")}
-                    </Button>
-                  )}
-                </div>
-              )}
-            />
-          </MediaUploadCheck>
+                        allowedTypes={["image"]}
+                        value={backgroundImage?.id}
+                        render={({ open }) => (
+                          <div style={{ marginBottom: "8px" }}>
+                            {backgroundImage?.url ? (
+                              <>
+                                <img
+                                  src={backgroundImage.url}
+                                  alt=""
+                                  style={{ maxWidth: "100%", marginBottom: "8px" }}
+                                />
+                                <Button
+                                  variant="secondary"
+                                  onClick={() =>
+                                    setAttributes({ backgroundImage: undefined })
+                                  }
+                                  isDestructive
+                                >
+                                  {__("Remove image", "sgs-blocks")}
+                                </Button>
+                              </>
+                            ) : (
+                              <Button variant="secondary" onClick={open}>
+                                {__("Select image", "sgs-blocks")}
+                              </Button>
+                            )}
+                          </div>
+                        )}
+                      />
+                    </MediaUploadCheck>
 
-          {backgroundImage?.url && (
-            <>
-              <DesignTokenPicker
-                label={__("Overlay colour", "sgs-blocks")}
-                value={backgroundOverlayColour}
-                onChange={(val) =>
-                  setAttributes({
-                    backgroundOverlayColour: val,
-                  })
-                }
-              />
-              <RangeControl
-                label={__("Overlay opacity (%)", "sgs-blocks")}
-                value={backgroundOverlayOpacity}
-                onChange={(val) =>
-                  setAttributes({
-                    backgroundOverlayOpacity: val,
-                  })
-                }
-                min={0}
-                max={100}
-                __nextHasNoMarginBottom
-              />
-            </>
-          )}
+                    <p
+                      className="components-base-control__label"
+                      style={{ fontWeight: 600, marginBottom: "4px", marginTop: "8px" }}
+                    >
+                      {__("Tablet image (optional)", "sgs-blocks")}
+                    </p>
+                    <MediaUploadCheck>
+                      <MediaUpload
+                        onSelect={(media) =>
+                          setAttributes({
+                            backgroundImageTablet: {
+                              id: media.id,
+                              url: media.url,
+                              alt: media.alt,
+                            },
+                          })
+                        }
+                        allowedTypes={["image"]}
+                        value={backgroundImageTablet?.id}
+                        render={({ open }) => (
+                          <div style={{ marginBottom: "8px" }}>
+                            {backgroundImageTablet?.url ? (
+                              <Button
+                                variant="secondary"
+                                onClick={() =>
+                                  setAttributes({ backgroundImageTablet: undefined })
+                                }
+                                isDestructive
+                              >
+                                {__("Remove tablet image", "sgs-blocks")}
+                              </Button>
+                            ) : (
+                              <Button variant="secondary" onClick={open}>
+                                {__("Select tablet image", "sgs-blocks")}
+                              </Button>
+                            )}
+                          </div>
+                        )}
+                      />
+                    </MediaUploadCheck>
+
+                    <p
+                      className="components-base-control__label"
+                      style={{ fontWeight: 600, marginBottom: "4px", marginTop: "8px" }}
+                    >
+                      {__("Mobile image (optional)", "sgs-blocks")}
+                    </p>
+                    <MediaUploadCheck>
+                      <MediaUpload
+                        onSelect={(media) =>
+                          setAttributes({
+                            backgroundImageMobile: {
+                              id: media.id,
+                              url: media.url,
+                              alt: media.alt,
+                            },
+                          })
+                        }
+                        allowedTypes={["image"]}
+                        value={backgroundImageMobile?.id}
+                        render={({ open }) => (
+                          <div style={{ marginBottom: "8px" }}>
+                            {backgroundImageMobile?.url ? (
+                              <Button
+                                variant="secondary"
+                                onClick={() =>
+                                  setAttributes({ backgroundImageMobile: undefined })
+                                }
+                                isDestructive
+                              >
+                                {__("Remove mobile image", "sgs-blocks")}
+                              </Button>
+                            ) : (
+                              <Button variant="secondary" onClick={open}>
+                                {__("Select mobile image", "sgs-blocks")}
+                              </Button>
+                            )}
+                          </div>
+                        )}
+                      />
+                    </MediaUploadCheck>
+
+                    {hasBgImage && (
+                      <>
+                        <SelectControl
+                          label={__("Size", "sgs-blocks")}
+                          value={backgroundSize}
+                          options={BG_SIZE_OPTIONS}
+                          onChange={(val) => setAttributes({ backgroundSize: val })}
+                          __nextHasNoMarginBottom
+                        />
+                        <SelectControl
+                          label={__("Position", "sgs-blocks")}
+                          value={backgroundPosition}
+                          options={BG_POSITION_OPTIONS}
+                          onChange={(val) =>
+                            setAttributes({ backgroundPosition: val })
+                          }
+                          __nextHasNoMarginBottom
+                        />
+                        <SelectControl
+                          label={__("Repeat", "sgs-blocks")}
+                          value={backgroundRepeat}
+                          options={BG_REPEAT_OPTIONS}
+                          onChange={(val) => setAttributes({ backgroundRepeat: val })}
+                          __nextHasNoMarginBottom
+                        />
+                        <SelectControl
+                          label={__("Attachment", "sgs-blocks")}
+                          value={backgroundAttachment}
+                          options={BG_ATTACHMENT_OPTIONS}
+                          onChange={(val) =>
+                            setAttributes({ backgroundAttachment: val })
+                          }
+                          __nextHasNoMarginBottom
+                        />
+                      </>
+                    )}
+                  </>
+                );
+              }
+
+              if (tab.name === "video") {
+                return (
+                  <>
+                    <p className="components-base-control__help">
+                      {__(
+                        "Video replaces the background image. Add an image as fallback for browsers that block autoplay.",
+                        "sgs-blocks"
+                      )}
+                    </p>
+                    <p
+                      className="components-base-control__label"
+                      style={{ fontWeight: 600, marginBottom: "4px" }}
+                    >
+                      {__("Desktop video", "sgs-blocks")}
+                    </p>
+                    <MediaUploadCheck>
+                      <MediaUpload
+                        onSelect={(media) =>
+                          setAttributes({
+                            bgVideo: { id: media.id, url: media.url },
+                          })
+                        }
+                        allowedTypes={["video"]}
+                        value={bgVideo?.id}
+                        render={({ open }) => (
+                          <div style={{ marginBottom: "8px" }}>
+                            {bgVideo?.url ? (
+                              <>
+                                <p style={{ fontSize: "12px", marginBottom: "4px" }}>
+                                  {bgVideo.url.split("/").pop()}
+                                </p>
+                                <Button
+                                  variant="secondary"
+                                  onClick={() => setAttributes({ bgVideo: undefined })}
+                                  isDestructive
+                                >
+                                  {__("Remove video", "sgs-blocks")}
+                                </Button>
+                              </>
+                            ) : (
+                              <Button variant="secondary" onClick={open}>
+                                {__("Select video", "sgs-blocks")}
+                              </Button>
+                            )}
+                          </div>
+                        )}
+                      />
+                    </MediaUploadCheck>
+
+                    <p
+                      className="components-base-control__label"
+                      style={{ fontWeight: 600, marginBottom: "4px", marginTop: "8px" }}
+                    >
+                      {__("Mobile video (optional)", "sgs-blocks")}
+                    </p>
+                    <MediaUploadCheck>
+                      <MediaUpload
+                        onSelect={(media) =>
+                          setAttributes({
+                            bgVideoMobile: { id: media.id, url: media.url },
+                          })
+                        }
+                        allowedTypes={["video"]}
+                        value={bgVideoMobile?.id}
+                        render={({ open }) => (
+                          <div style={{ marginBottom: "8px" }}>
+                            {bgVideoMobile?.url ? (
+                              <Button
+                                variant="secondary"
+                                onClick={() =>
+                                  setAttributes({ bgVideoMobile: undefined })
+                                }
+                                isDestructive
+                              >
+                                {__("Remove mobile video", "sgs-blocks")}
+                              </Button>
+                            ) : (
+                              <Button variant="secondary" onClick={open}>
+                                {__("Select mobile video", "sgs-blocks")}
+                              </Button>
+                            )}
+                          </div>
+                        )}
+                      />
+                    </MediaUploadCheck>
+                  </>
+                );
+              }
+
+              if (tab.name === "animation") {
+                return (
+                  <>
+                    <p className="components-base-control__help">
+                      {__(
+                        "Requires a background image to be set. Ken-burns and parallax are mutually exclusive — ken-burns takes priority.",
+                        "sgs-blocks"
+                      )}
+                    </p>
+                    <ToggleControl
+                      label={__("Ken-burns zoom", "sgs-blocks")}
+                      help={__(
+                        "Slow zoom animation on the background image.",
+                        "sgs-blocks"
+                      )}
+                      checked={bgKenBurns}
+                      onChange={(val) =>
+                        setAttributes({ bgKenBurns: val, bgParallax: val ? false : bgParallax })
+                      }
+                      __nextHasNoMarginBottom
+                    />
+                    <ToggleControl
+                      label={__("Parallax scroll", "sgs-blocks")}
+                      help={__(
+                        "Fixed background-attachment parallax effect. Disabled on touch devices.",
+                        "sgs-blocks"
+                      )}
+                      checked={bgParallax}
+                      onChange={(val) =>
+                        setAttributes({ bgParallax: val, bgKenBurns: val ? false : bgKenBurns })
+                      }
+                      __nextHasNoMarginBottom
+                    />
+                    {bgKenBurns && (
+                      <RangeControl
+                        label={__("Animation duration (seconds)", "sgs-blocks")}
+                        value={bgAnimationDuration}
+                        onChange={(val) =>
+                          setAttributes({ bgAnimationDuration: val })
+                        }
+                        min={5}
+                        max={60}
+                        step={1}
+                        __nextHasNoMarginBottom
+                      />
+                    )}
+                  </>
+                );
+              }
+
+              if (tab.name === "overlay") {
+                return (
+                  <>
+                    <p className="components-base-control__help">
+                      {__(
+                        "Overlay sits on top of the background image or video.",
+                        "sgs-blocks"
+                      )}
+                    </p>
+                    <ToggleControl
+                      label={__("Gradient overlay", "sgs-blocks")}
+                      checked={overlayGradient}
+                      onChange={(val) => setAttributes({ overlayGradient: val })}
+                      __nextHasNoMarginBottom
+                    />
+                    {overlayGradient ? (
+                      <>
+                        <RangeControl
+                          label={__("Angle (degrees)", "sgs-blocks")}
+                          value={overlayGradientAngle}
+                          onChange={(val) =>
+                            setAttributes({ overlayGradientAngle: val })
+                          }
+                          min={0}
+                          max={360}
+                          __nextHasNoMarginBottom
+                        />
+                        <DesignTokenPicker
+                          label={__("Gradient from", "sgs-blocks")}
+                          value={overlayGradientFrom}
+                          onChange={(val) =>
+                            setAttributes({ overlayGradientFrom: val })
+                          }
+                        />
+                        <DesignTokenPicker
+                          label={__("Gradient to (leave empty for transparent)", "sgs-blocks")}
+                          value={overlayGradientTo}
+                          onChange={(val) =>
+                            setAttributes({ overlayGradientTo: val })
+                          }
+                        />
+                      </>
+                    ) : (
+                      <DesignTokenPicker
+                        label={__("Overlay colour", "sgs-blocks")}
+                        value={backgroundOverlayColour}
+                        onChange={(val) =>
+                          setAttributes({ backgroundOverlayColour: val })
+                        }
+                      />
+                    )}
+                    <RangeControl
+                      label={__("Overlay opacity (%)", "sgs-blocks")}
+                      value={backgroundOverlayOpacity}
+                      onChange={(val) =>
+                        setAttributes({ backgroundOverlayOpacity: val })
+                      }
+                      min={0}
+                      max={100}
+                      __nextHasNoMarginBottom
+                    />
+                  </>
+                );
+              }
+
+              return null;
+            }}
+          </TabPanel>
         </PanelBody>
 
         <PanelBody title={__("Shadow", "sgs-blocks")} initialOpen={false}>

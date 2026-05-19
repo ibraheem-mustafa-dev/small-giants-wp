@@ -98,12 +98,71 @@
 		"backgroundImage": {
 			"type": "object"
 		},
+		"backgroundImageTablet": {
+			"type": "object"
+		},
+		"backgroundImageMobile": {
+			"type": "object"
+		},
+		"backgroundSize": {
+			"type": "string",
+			"default": "cover",
+			"enum": ["cover", "contain", "auto"]
+		},
+		"backgroundPosition": {
+			"type": "string",
+			"default": "center center"
+		},
+		"backgroundRepeat": {
+			"type": "string",
+			"default": "no-repeat",
+			"enum": ["no-repeat", "repeat", "repeat-x", "repeat-y"]
+		},
+		"backgroundAttachment": {
+			"type": "string",
+			"default": "scroll",
+			"enum": ["scroll", "fixed"]
+		},
 		"backgroundOverlayColour": {
 			"type": "string"
 		},
 		"backgroundOverlayOpacity": {
 			"type": "number",
 			"default": 50
+		},
+		"overlayGradient": {
+			"type": "boolean",
+			"default": false
+		},
+		"overlayGradientAngle": {
+			"type": "number",
+			"default": 180
+		},
+		"overlayGradientFrom": {
+			"type": "string",
+			"default": ""
+		},
+		"overlayGradientTo": {
+			"type": "string",
+			"default": ""
+		},
+		"bgVideo": {
+			"type": "object"
+		},
+		"bgVideoMobile": {
+			"type": "object"
+		},
+		"bgParallax": {
+			"type": "boolean",
+			"default": false
+		},
+		"bgKenBurns": {
+			"type": "boolean",
+			"default": false
+		},
+		"bgAnimationDuration": {
+			"type": "number",
+			"default": 20
 		},
 		"shadow": {
 			"type": "string"
@@ -193,6 +252,7 @@
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",
 	"style": "file:./style-index.css",
+	"viewScriptModule": "file:./view.js",
 	"example": {
 		"attributes": {
 			"layout": "grid",
