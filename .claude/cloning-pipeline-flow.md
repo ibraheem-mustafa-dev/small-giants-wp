@@ -861,6 +861,46 @@ tracked as a follow-up.
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
+### Stage 10 — Per-page deploy (cv2 output → live WP page) [LIVE — shipped 2026-05-19]
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ SCRIPTS:                                                                    │
+│  ✓ orchestrator/upload_and_patch.py - uploads referenced mockup images to  │
+│       WP media library + patches the target page/post via REST API.         │
+│       Reads sandybrown credentials from .claude/secrets/sandybrown.env.     │
+│       Moved 2026-05-19 from reports/brand-walkdown-2026-05-19/ to canonical │
+│       location at plugins/sgs-blocks/scripts/orchestrator/.                 │
+│                                                                             │
+│ TRIGGER:                                                                    │
+│  Fires only when sgs-clone-orchestrator.py is invoked with                  │
+│  --deploy-target page:<id> or --deploy-target post:<id>. Omit the flag to   │
+│  produce a draft-only run that doesn't touch any live URL.                  │
+│                                                                             │
+│ ORCHESTRATOR PLACEMENT:                                                     │
+│  Fires AFTER Stage 9c surfacing (so sidecar logs are written first) and    │
+│  BEFORE the --skip-autonomy-gate early return (so the deploy lands even on  │
+│  dev runs when the operator opts in). Soft-fail: any deploy error logs to   │
+│  stderr but does NOT halt the pipeline.                                     │
+│                                                                             │
+│ FILES (W):                                                                  │
+│  pipeline-state/<run>/extract.patched.json - block_markup with image URLs   │
+│                                              swapped to sandybrown URLs     │
+│  WP page/post N (sandybrown) - PATCHed via REST API                         │
+│                                                                             │
+│ ORCHESTRATOR OUTPUT:                                                        │
+│  [stage-10] deploy: patched page 144 — page 144 modified 2026-05-19T16:14:01│
+│                     link=https://sandybrown-nightingale-600381.hostingersite│
+│                     .com/rc-fix-verification-mamas-munches/                 │
+│                                                                             │
+│ RELATIONSHIP TO /wp-sgs-deploy:                                             │
+│  /wp-sgs-deploy is FRAMEWORK deploy (sgs-blocks + sgs-theme to              │
+│  palestine-lives.org — framework-wide, infrequent). Stage 10 is PER-PAGE    │
+│  cv2-output deploy to a client's staging site — per-clone-run cadence.      │
+│  Different scopes, different skills.                                        │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
 ### Final acceptance harness [LIVE]
 
 ```
@@ -1226,6 +1266,9 @@ Evidence infrastructure (Phase 9 pre-work, 2026-05-18):
 | lingua_franca.py | orchestrator/ | CURRENT | YES (transitive) | BEM/Tailwind/Bootstrap/SGS convention conversion |
 | critical-fix-verification.py | orchestrator/ | CURRENT | YES | 4-check FR21 acceptance harness |
 | composer_fallback.py | orchestrator/ | CURRENT | YES | Fallback for core/group or confidence==0 |
+| **surface_pipeline_logs.py** | orchestrator/ | CURRENT (shipped 2026-05-19) | YES | Stage 9c — classifies trace.jsonl events into 4 buckets, writes summary.log always + per-severity sidecar logs when bucket has ≥1 entry. Soft-fail wrapped. Spec 20. |
+| **upload_and_patch.py** | orchestrator/ | CURRENT (shipped 2026-05-19) | YES (opt-in via --deploy-target) | Stage 10 — uploads referenced mockup images to WP media library + patches target page/post via REST. Reads sandybrown env. Moved from reports/brand-walkdown-2026-05-19/. |
+| **wp-pre-merge-gate.py** | plugins/sgs-blocks/scripts/ | CURRENT (shipped 2026-05-19) | YES (advisory) | Wraps `/wp-blocks health` + `/wp-hooks validate` + `/wp-hook-graph validate` into one pre-commit gate. Non-zero exit on any sub-tool failure. |
 
 ### Recogniser modules
 
@@ -1312,13 +1355,17 @@ Source: `.claude/skills-commands-map.md` (459 lines, generated 2026-05-13, last-
 |---|---|
 | Pre-clone (mockup prep) | `/uimax-scrape`, `/uimax-mood-board`, `/uimax-classify-naming` |
 | Stage 0 pre-flight | `/sgs-clone`, `/sgs-wp-engine` |
-| Stage 1-2 boundary+match | `/sgs-clone`, `/uimax-classify-naming` (heuristic in-module; full dispatch deferred) |
+| Stage 1-2 boundary+match | `/sgs-clone`, `/uimax-classify-naming` (heuristic in-module; full dispatch deferred), **`/wp-blocks match`** (cross-check, wired 2026-05-19) |
 | Stage 3-5 slot/extract | `/sgs-clone`, `/chrome-devtools-cli`, `/playwright` (fallbacks) |
 | Stage 6-7 classify+compose | `/sgs-clone`, `/ui-ux-pro-max` (judgement), `/uimax` (query) |
+| Stage 7 emit | `/sgs-clone`, **`/wp-blocks validate`** (post-emit soft-fail validation, wired 2026-05-19) |
 | Stage 8-9 serialise+report | `/sgs-clone`, `/sgs-db` |
+| **Stage 9c** structured-log surfacing | `/sgs-clone` (wires `surface_pipeline_logs.py`, Spec 20) |
+| **Stage 10** per-page deploy | `/sgs-clone --deploy-target page:<id>` (wires `upload_and_patch.py`, shipped 2026-05-19) |
 | +DEPLOY +PARITY +REGISTER | `/sgs-clone`, `/uimax-sgs-scrape-pattern`, `/uimax-scrape-animation`, `/sgs-update`, `/playwright`, `/chrome-devtools-cli` |
 | Sister pipeline | `/sgs-update`, `/sgs-db` |
-| Cross-cutting | `/sgs-db`, `/wp-blocks`, `/wp-hooks`, `/wp-hook-graph`, `/sgs-wp-engine` |
+| **Framework deploy** (separate from clone pipeline) | **`/wp-sgs-deploy <plugin\|theme\|both>`** — project-scoped skill at `.claude/skills/wp-sgs-deploy/SKILL.md`; absorbed `/deploy-check` as Phase 1 (2026-05-19); renamed from `/deploy` |
+| Cross-cutting | `/sgs-db`, `/wp-blocks`, `/wp-hooks`, `/wp-hook-graph`, `/sgs-wp-engine`, **`/wp-pre-merge-gate`** (wraps wp-blocks + wp-hooks + wp-hook-graph; wired 2026-05-19) |
 
 ### Per-command/skill summary
 
@@ -1326,9 +1373,12 @@ Source: `.claude/skills-commands-map.md` (459 lines, generated 2026-05-13, last-
 - **`/sgs-db`** -- cross-cutting reference. CLI at `~/.agents/skills/sgs-wp-engine/scripts/sgs-db.py`. Read-only normal usage.
 - **`/sgs-update`** -- sister pipeline. Scripts: update-db.py (S1), generate-block-reference.py (S2), sgs-update-uimax-sync.py (S3+4). Now also re-syncs legacy_role_lookup (Wave 3). Writes both DBs.
 - **`/uimax-sgs-scrape-pattern`** -- +REGISTER tail. Atomic write to sgs-framework.db.patterns + uimax.patterns. Scripts: pattern-fingerprint.py, pattern-classify.py, pattern-register.py, uimax_write.py + validator.
-- **`/wp-blocks`** -- cross-cutting; Stage 2+3 block attribute lookup.
-- **`/wp-hook-graph`**, **`/wp-hooks`**, **`/wp-perf-gate`** -- auxiliary; not in clone pipeline.
-- **`/sgs-wp-engine`** -- cross-cutting coordinator; Stage 7 block-level questions.
+- **`/wp-blocks`** -- cross-cutting; Stage 2 match cross-check + Stage 7 post-emit validate + Stage 2/3 block attribute lookup. Now exposes `dump` subcommand covering all 3 DBs in ~1500 tokens (added 2026-05-19 for the schema-enumeration discipline safeguard, blub.db row 272 + CLAUDE.md binding rule #4).
+- **`/wp-hook-graph`**, **`/wp-hooks`**, **`/wp-perf-gate`** -- auxiliary; wired into `/sgs-update` post-flight hook-audit (2026-05-19) + `wp-pre-merge-gate.py` wrapper.
+- **`/sgs-wp-engine`** -- cross-cutting coordinator; Stage 7 block-level questions. **TODO next session:** add `/wp-sgs-deploy` cross-reference (currently the skill lives at `.claude/skills/wp-sgs-deploy/SKILL.md` but `/sgs-wp-engine` SKILL.md doesn't yet route framework-deploy questions to it).
+- **`/wordpress-router`** -- WP-domain routing. **TODO next session:** add `/wp-sgs-deploy` to the framework-deploy branch of the routing table.
+- **`/wp-sgs-deploy`** -- FRAMEWORK deploy (sgs-blocks + sgs-theme to palestine-lives.org). Project-scoped skill at `.claude/skills/wp-sgs-deploy/SKILL.md` (renamed from `/deploy` 2026-05-19; absorbed `/deploy-check` as Phase 1). Scored 96% on skillscore. Stages: CHECK → BUILD → EXECUTE → CACHE → VERIFY. `--skip-check` flag is staging-only.
+- **`/wp-pre-merge-gate`** -- wraps `/wp-blocks health` + `/wp-hooks validate` + `/wp-hook-graph validate` into one advisory gate. Script at `plugins/sgs-blocks/scripts/wp-pre-merge-gate.py` (shipped 2026-05-19).
 - **`/ui-ux-pro-max`** / **`/uimax`** -- Stages 6-7 judgement + +REGISTER equivalent_implementations. Backed by ui-ux-pro-max.db.
 - **`/uimax-classify-naming`** -- Stage 1 convention classification. Writes uimax.naming_conventions.
 - **`/uimax-mood-board`** -- pre-clone multi-URL aggregation; not on standard runs.

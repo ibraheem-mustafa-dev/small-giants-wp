@@ -693,6 +693,19 @@ Spec 15 absorbed Spec 14 FR1–FR26 and added FR27–FR40. Spec 16 added FR1–F
 
 Stage 9c surfaces per-severity sidecar logs from `trace.jsonl` at pipeline end. See `.claude/specs/20-STRUCTURED-PIPELINE-LOG-SURFACING.md` for full design. Files written to `pipeline-state/<run>/`: `summary.log` (always), `chrome-skipped.log` / `errors.log` / `warnings.log` (when bucket has ≥1 entry). Soft-fail wrapped so observability never blocks pipeline completion. Shipped 2026-05-19 commit `1ea586b2` alongside the chrome-skip leakage fix that motivated the spec.
 
-### 12.11 Spec 15 retirement notes
+### 12.11 Stage 10 — Per-page deploy (shipped 2026-05-19)
+
+Added 2026-05-19 alongside the deploy-skill consolidation. `sgs-clone-orchestrator.py` accepts `--deploy-target page:<id>` or `--deploy-target post:<id>`; when set, Stage 10 subprocess-calls `plugins/sgs-blocks/scripts/orchestrator/upload_and_patch.py` after Stage 9c surfacing and BEFORE the `--skip-autonomy-gate` early return. The script uploads every mockup image referenced in `block_markup` to the WP media library + PATCHes the target page/post via REST API. Soft-fails — pipeline DONE is never blocked by a deploy error.
+
+`upload_and_patch.py` was moved from `reports/brand-walkdown-2026-05-19/` to the canonical `plugins/sgs-blocks/scripts/orchestrator/` location 2026-05-19 (REPO path math = `parents[4]`).
+
+**Relationship to `/wp-sgs-deploy`:**
+- Stage 10 = PER-PAGE deploy (cv2 output → one client staging page). Per-clone-run cadence.
+- `/wp-sgs-deploy` = FRAMEWORK deploy (sgs-blocks + sgs-theme → palestine-lives.org). Per-framework-change cadence.
+- Different scopes; different skills. Each pipeline has exactly one canonical deploy path; no overlap.
+
+See orchestrator Stage 10 entry in `.claude/cloning-pipeline-flow.md` for the per-stage diagram. Acceptance verified by /qc 5/5 with live evidence: `[stage-10] deploy: patched page 144` in stdout.
+
+### 12.12 Spec 15 retirement notes
 
 Spec 15 file (`.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md`) is retained on disk with absorption marker in its frontmatter. Future readers: this section (Spec 16 §12) is the canonical content; Spec 15 file is historical record only.

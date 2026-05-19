@@ -109,8 +109,16 @@ Re-run after commit 1ea586b2:
 - **Severity tagging at call site** — adding `level="info|warn|error|critical"` to `_trace()` calls would eliminate the inference-from-shape heuristic. Larger refactor; park.
 - **Telegram/n8n side channel** — pipe `errors.log` into n8n on emit so operators get push notification on critical pipeline failures. Park; not blocking.
 
+## Relationship to other deploy surfaces (added 2026-05-19)
+
+- **Spec 16 §12.11 Stage 10** — per-page deploy via `--deploy-target page:<id>` (the cloning pipeline's own deploy stage; per-clone-run cadence). Stage 9c logs surface BEFORE Stage 10 runs, so a deploy failure is captured in `errors.log`.
+- **`/wp-sgs-deploy` skill** — framework deploy (sgs-blocks + sgs-theme to palestine-lives.org; per-framework-change cadence). Canonical path: `.claude/skills/wp-sgs-deploy/SKILL.md`. Renamed from `/deploy` 2026-05-19 + absorbed `/deploy-check` as Phase 1. Different scope from Stage 10 — framework-wide vs per-page.
+- **Stage 9c surfacing** (this spec) — observability layer that sits OVER both deploy paths. Errors from either deploy land in the same `errors.log` shape so operators have one place to look.
+
 ## See also
 
-- Spec 16 §7 stage 9c — references this spec
-- `cloning-pipeline-flow.md` Stage 9c entry
+- Spec 16 §12.10 — Spec 20 cross-reference
+- Spec 16 §12.11 — Stage 10 (the consumer of Stage 9c logs when --deploy-target is set)
+- `cloning-pipeline-flow.md` Stage 9c entry + Stage 10 entry
+- `.claude/skills/wp-sgs-deploy/SKILL.md` — companion framework-deploy skill
 - `feedback_universal_extraction_no_per_block_legacy.md` — same root philosophy (universal extraction, observable evidence)

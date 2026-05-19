@@ -1,10 +1,18 @@
 ---
 doc_type: parking
 project: small-giants-wp
-last_updated: 2026-05-21
+last_updated: 2026-05-19
 ---
 
 # Parking — deferred work with named triggers
+
+## Opened 2026-05-19 (post-rename + Stage 10 wiring)
+
+**P-SGS-WP-ENGINE-ADD-DEPLOY-XREF** — `/sgs-wp-engine` SKILL.md (`~/.claude/skills/sgs-wp-engine/SKILL.md`) currently routes block-development / theme / clone questions but does NOT mention `/wp-sgs-deploy` as the canonical framework-deploy entry point. Operators asking sgs-wp-engine "how do I deploy?" today get no route. **Trigger:** next session — add a "Framework deploy" sub-section to sgs-wp-engine SKILL.md pointing at `.claude/skills/wp-sgs-deploy/SKILL.md` with the project-scoped path note (skill lives in PROJECT `.claude/skills/`, NOT user-level `~/.claude/skills/`).
+
+**P-WORDPRESS-ROUTER-ADD-DEPLOY-BRANCH** — `/wordpress-router` SKILL.md's domain-classification table doesn't have a framework-deploy branch. WordPress questions about deploying the SGS framework should route to `/wp-sgs-deploy`, not generic /deploy-check or /vps-deploy. **Trigger:** next session — add a row to the wordpress-router routing table mapping framework-deploy keywords ("push to palestine-lives", "deploy sgs-blocks", "deploy sgs-theme") to `/wp-sgs-deploy`. Mention the project-scope (skill lives at `.claude/skills/wp-sgs-deploy/SKILL.md` so it only applies when CC is in the small-giants-wp working directory).
+
+**P-NO-HEADER-FOOTER-BLOCK-HOOK** — 4th occurrence today of `src/blocks/header/` + `src/blocks/footer/` recreating themselves (parallel subagent collateral). Prompt-discipline has failed. **Trigger:** next session Task 2 — build `.claude/hooks/no-header-footer-block.py` PostToolUse hook to hard-reject `Write|Edit` on `plugins/sgs-blocks/src/blocks/(header|footer|nav)/`. Register in `.claude/settings.json`. ~30 LOC. Verification: try to Write a file under those paths, confirm hook blocks with clear error.
 
 ## Opened 2026-05-21 (Option A cleanup sprint outcomes)
 
