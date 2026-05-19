@@ -227,6 +227,72 @@ pipeline_run_artefacts:
     doc_type: orchestrator-output
     owns: "Human-readable Stage 9 surface that points the operator at what didn't translate. Open this in a browser for visual review of gaps."
 
+  # Stage 9c sidecar logs — shipped 2026-05-19 per Spec 20. Replaces the
+  # chrome-skip-HTML-comment-leakage bug (Bug B) and consolidates trace
+  # events into operator-readable per-severity logs. summary.log always
+  # written; the other three only when their bucket has >=1 entry.
+  - filename: summary.log
+    doc_type: orchestrator-output
+    owns: "Stage 9c — one line per stage with event/error/warning counts. ALWAYS written on every pipeline run regardless of success/failure. Quick triage surface."
+    read_when: "After any pipeline run, before opening trace.jsonl. Skim for any non-zero error or warning column."
+    writer: plugins/sgs-blocks/scripts/orchestrator/surface_pipeline_logs.py
+    spec: .claude/specs/20-STRUCTURED-PIPELINE-LOG-SURFACING.md
+
+  - filename: chrome-skipped.log
+    doc_type: orchestrator-output
+    owns: "Stage 9c — every chrome-skip event (header/footer/nav lifted out of post_content) with reason. Only written when at least one chrome-skip event fired."
+    read_when: "Investigating whether the mockup's header/footer/nav was correctly chrome-skipped vs leaked into block_markup."
+    writer: plugins/sgs-blocks/scripts/orchestrator/surface_pipeline_logs.py
+
+  - filename: errors.log
+    doc_type: orchestrator-output
+    owns: "Stage 9c — every trace event with passed=false or error*/error_message fields. Only written when at least one error event fired."
+    read_when: "Triaging a failed or partial pipeline run. Open BEFORE diving into trace.jsonl."
+    writer: plugins/sgs-blocks/scripts/orchestrator/surface_pipeline_logs.py
+
+  - filename: warnings.log
+    doc_type: orchestrator-output
+    owns: "Stage 9c — every soft-fail / BEM-lint violation / token-lint finding / wp-blocks-validation soft-fail. Only written when at least one warning event fired."
+    read_when: "After a passed run that 'feels off'. Warnings flag latent gaps that didn't break the pipeline but reduce output quality."
+    writer: plugins/sgs-blocks/scripts/orchestrator/surface_pipeline_logs.py
+
+  # Stage 10 output — shipped 2026-05-19. Only present when /sgs-clone was
+  # invoked with --deploy-target page:<id> or --deploy-target post:<id>.
+  - filename: extract.patched.json
+    doc_type: orchestrator-output
+    owns: "Stage 10 — block_markup with mockup-relative image URLs swapped to live WP media library URLs. Used by upload_and_patch.py to PATCH the target page/post via REST."
+    read_when: "Verifying which images were sideloaded + what final markup landed on the live page after Stage 10."
+    writer: plugins/sgs-blocks/scripts/orchestrator/upload_and_patch.py
+    spec: .claude/specs/16-DETERMINISTIC-CONVERTER-V2.md §12.11
+
+  # Standard per-stage artefacts written by sgs-clone-orchestrator.py for
+  # every run. Cross-reference cloning-pipeline-flow.md per-stage entries
+  # for the canonical owns/writer/read_when per file.
+  - filename: extract.json
+    doc_type: orchestrator-output
+    owns: "Stage 4 full extraction record — block_markup + per-section extracted_attributes + variation_css + slot resolution. Sibling to extract-result.json (which is the Stage 4 summary)."
+    read_when: "Need the full Stage 4 output for cross-stage debugging or to diff against extract.patched.json."
+
+  - filename: slot-list.json
+    doc_type: orchestrator-output
+    owns: "Stage 3 — per-boundary slot catalogue + canonical_source ratio (db vs auto-derived)."
+    read_when: "Diagnosing slot-resolution gaps; cross-reference with slot_synonyms DB table."
+
+  - filename: voter.json
+    doc_type: orchestrator-output
+    owns: "Stage 1 — convention voter output; per-boundary class_signature + convention classification."
+    read_when: "Stage 1 boundary detection or convention-classification questions."
+
+  - filename: match.json
+    doc_type: orchestrator-output
+    owns: "Stage 2 — confidence-matrix results; per-boundary block-type match + confidence score."
+    read_when: "Stage 2 match quality questions or to confirm wp-blocks match cross-check fired (wired 2026-05-19)."
+
+  - filename: media-sideload-manifest.json
+    doc_type: orchestrator-output
+    owns: "Stage 4i — image-sideload manifest (dry-run by default). Lists every mockup image that would be uploaded to WP media library on a real deploy."
+    read_when: "Before Stage 10 runs OR when diagnosing image-related Stage 10 failures."
+
 # deprecated_docs section purged 2026-05-14 per Bean — superseded files
 # live at their archive paths (.claude/scratch/absorbed/ for specs,
 # .claude/plans/archive/ for phase plans). Commit history is the audit
