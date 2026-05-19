@@ -146,6 +146,34 @@ But Phase 3 pixel-diff yesterday still showed every section failing above 1% —
 - Re-run pipeline shows measurable pixel-diff improvement
 - Strategic-plan tasks logged for non-surgical fixes
 
+## Task 5 — Add `/wp-sgs-deploy` cross-reference to `/sgs-wp-engine` skill
+
+**What:** `/sgs-wp-engine` SKILL.md at `~/.claude/skills/sgs-wp-engine/SKILL.md` routes block-development / theme / clone questions but doesn't mention `/wp-sgs-deploy` as the canonical framework-deploy entry. Operators asking sgs-wp-engine "how do I deploy?" today get no route. Add a "Framework deploy" sub-section pointing at the PROJECT-SCOPED skill at `.claude/skills/wp-sgs-deploy/SKILL.md` (note: project-scoped, not user-level).
+
+**Why:** Routing completeness. Closes a discoverability gap operators have hit silently.
+
+**Estimated time:** 5 min.
+
+**Orchestration:**
+- Execution: inline (main thread)
+- /qc gate after: `/qc-inline` — read the updated sgs-wp-engine SKILL.md + confirm the deploy route is present + that it explicitly names the project-scoped path
+
+**Acceptance:** `~/.claude/skills/sgs-wp-engine/SKILL.md` has a "Framework deploy" sub-section referencing `/wp-sgs-deploy` with the path note (`.claude/skills/wp-sgs-deploy/SKILL.md` — project-scoped, applies in small-giants-wp working directory).
+
+## Task 6 — Add framework-deploy routing branch to `/wordpress-router` skill
+
+**What:** `/wordpress-router` SKILL.md at `~/.claude/skills/wordpress-router/SKILL.md` has a domain-classification table for WP questions. Currently no branch routes framework-deploy keywords to `/wp-sgs-deploy`. Add a row mapping `push to palestine-lives` / `deploy sgs-blocks` / `deploy sgs-theme` / `framework deploy` → `/wp-sgs-deploy`. Mention the project-scope (skill lives in `.claude/skills/`, only applies when CC is in small-giants-wp working directory).
+
+**Why:** Same as Task 5 — routing completeness from the WP-domain side.
+
+**Estimated time:** 5 min.
+
+**Orchestration:**
+- Execution: inline (main thread); parallel with Task 5
+- /qc gate after: `/qc-inline` — verify the routing table has the new row + confirm a sample query routes to `/wp-sgs-deploy` not `/deploy-check` or `/vps-deploy`
+
+**Acceptance:** wordpress-router SKILL.md routing table has the framework-deploy branch with `/wp-sgs-deploy` as the target.
+
 ## Dependency graph
 
 ```
@@ -157,6 +185,10 @@ Task 3 — /systematic-debugging on top 3 gaps (3 sequential sonnet, ~60 min)
   ↓ root-cause writeups + diff sketches
 Task 4 — Ship surgical fixes (inline + sonnet per fix, ~60-90 min)
   ↓ each /qc gated + re-run pipeline
+Tasks 5 + 6 — Skill SKILL.md updates (inline, parallel, ~5 min each)
+  • /sgs-wp-engine: add /wp-sgs-deploy framework-deploy sub-section
+  • /wordpress-router: add framework-deploy routing branch
+  ↓
 Final — commit + push + /handoff
 ```
 
