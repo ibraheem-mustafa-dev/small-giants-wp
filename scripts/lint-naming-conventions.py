@@ -35,6 +35,7 @@ Exit codes:
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import sys
 from pathlib import Path
@@ -46,6 +47,26 @@ sys.stdout.reconfigure(encoding="utf-8")
 # ---------------------------------------------------------------------------
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+
+# ---------------------------------------------------------------------------
+# WP core hook allow-list
+# ---------------------------------------------------------------------------
+# Loaded from scripts/wp-core-hooks-allowlist.json so new entries can be added
+# without editing Python code. Falls back to an empty set if the file is
+# missing (linter still works, just produces more false-positives for hooks).
+
+_ALLOWLIST_PATH = Path(__file__).resolve().parent / "wp-core-hooks-allowlist.json"
+
+def _load_hook_allowlist() -> frozenset[str]:
+    if not _ALLOWLIST_PATH.exists():
+        return frozenset()
+    try:
+        data = json.loads(_ALLOWLIST_PATH.read_text(encoding="utf-8"))
+        return frozenset(data.get("hooks", []))
+    except (json.JSONDecodeError, KeyError):
+        return frozenset()
+
+WP_CORE_HOOKS_ALLOWLIST: frozenset[str] = _load_hook_allowlist()
 
 SCAN_ROOTS = [
     REPO_ROOT / "theme" / "sgs-theme",
@@ -188,7 +209,22 @@ SKIP_OPTION_PREFIXES = (
 # ---------------------------------------------------------------------------
 
 def _is_core_hook(name: str) -> bool:
-    return name.startswith(WP_CORE_HOOK_PREFIXES)
+    """Return True if the hook name is a WP core / well-known non-SGS hook.
+
+    Checks two sources in order:
+    1. The JSON allow-list (exact match) — covers hooks that can't be detected
+       by prefix alone (e.g. 'render_block', 'body_class', 'style_loader_tag').
+    2. The prefix list — fast heuristic for large families like admin_*, wp_*, etc.
+    3. Dynamic render_block_<namespace> variants produced by WP core.
+    """
+    if name in WP_CORE_HOOKS_ALLOWLIST:
+        return True
+    if name.startswith(WP_CORE_HOOK_PREFIXES):
+        return True
+    # render_block_<block-name> is a WP core dynamic filter variant.
+    if name.startswith("render_block_"):
+        return True
+    return False
 
 
 def _is_skip_option(name: str) -> bool:
@@ -281,17 +317,38 @@ def check_bem_classes(css_files: list[Path]) -> list[Violation]:
 
 
 def check_php_function_prefixes(php_files: list[Path]) -> list[Violation]:
-    """Rule 4: Top-level PHP functions must be prefixed sgs_."""
+    """Rule 4: Global PHP functions must be prefixed sgs_.
+
+    Functions declared inside a PHP namespace (namespace SGS\\Blocks; or
+    namespace SGS\\Theme; etc.) are NOT global — they are scoped to that
+    namespace and carry the SGS identity through the namespace itself.
+    Only functions in the global namespace (no namespace declaration in the
+    file, OR declared inside a namespace {} block that is the global
+    namespace) must carry the sgs_ prefix.
+
+    Detection strategy:
+    - Parse namespace declarations in the file.
+    - If the file contains ANY named namespace declaration (namespace Foo;
+      or namespace Foo { ... }), every top-level function in that file is
+      considered namespaced and is exempt from the prefix requirement.
+    - Files with zero namespace declarations are treated as global scope.
+    """
+    # Matches: namespace Foo\Bar; OR namespace Foo\Bar {
+    NS_DECL = re.compile(r"^\s*namespace\s+[A-Za-z\\]+\s*[;{]", re.MULTILINE)
+
     violations: list[Violation] = []
-    # Functions that are WordPress hooks/callbacks at top level are allowed
-    # to have WP-conventional names only if they are registered via add_action/
-    # add_filter. We do a simple heuristic: function at column 0 = top-level.
     exempt_prefixes = (
         "sgs_",
-        "__",     # magic methods surfacing at top level (unlikely but safe)
+        "__",  # magic methods (unlikely at file scope but safe to skip)
     )
     for path in php_files:
         text = path.read_text(encoding="utf-8", errors="replace")
+
+        # If the file uses a named namespace, all its functions are scoped —
+        # the sgs_ prefix rule does not apply.
+        if NS_DECL.search(text):
+            continue
+
         for match in PHP_FUNC.finditer(text):
             name = match.group(1)
             if name.startswith(exempt_prefixes):

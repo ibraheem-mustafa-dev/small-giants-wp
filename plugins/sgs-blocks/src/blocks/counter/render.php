@@ -46,14 +46,14 @@ $accent_stroke   = ! empty( $attributes['accentStroke'] );
  * @param bool $separator Whether to add thousand separators.
  * @return string Formatted number string.
  */
-function format_counter_number( int $num, bool $separator ): string {
+function sgs_format_counter_number( int $num, bool $separator ): string {
 	if ( $separator ) {
 		return number_format_i18n( $num );
 	}
 	return (string) $num;
 }
 
-$formatted_number = format_counter_number( $number, $separator );
+$formatted_number = sgs_format_counter_number( $number, $separator );
 
 // Wrapper class — preserves SGS-BEM root + optional accent-stroke modifier.
 $wrapper_classes = array( 'sgs-counter' );
