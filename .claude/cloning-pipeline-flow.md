@@ -45,7 +45,7 @@ phase_8_status: |
   Read pipeline-state/<run>/leftover-buckets.json BEFORE any converter-
   quality conjecture — orchestrator already classifies every gap. See
   feedback_read_leftover_buckets_before_conjecturing.md + blub.db row 254.
-registry_entry: docs-registry.md row 11
+registry_entry: docs-registry.yaml canonical_docs (cloning-pipeline-flow.md)
 absorbed_docs:
   - .claude/tooling-map.md - ABSORBED 2026-05-21 → see "Script inventory" section below
   - .claude/skills-commands-map.md - ABSORBED 2026-05-21 → see "Skill dispatch chain" section below
@@ -54,7 +54,7 @@ absorbed_docs:
 companion_docs:
   - .claude/specs/16-DETERMINISTIC-CONVERTER-V2.md - SINGLE end-goal spec (Spec 15 absorbed into §12 on 2026-05-21)
   - .claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md - ABSORBED 2026-05-21 → see Spec 16 §12 Appendix A; file retained for historical reference only
-  - .claude/docs-registry.md - governance and update-trigger matrix
+  - .claude/docs-registry.yaml - authoritative project-tracked docs list (trimmed 2026-05-21 to 17 essential entries; .md sibling retired same date)
 ---
 
 # SGS Cloning Pipeline - Annotated Flow

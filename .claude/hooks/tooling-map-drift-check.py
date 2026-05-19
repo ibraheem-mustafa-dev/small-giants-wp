@@ -1,15 +1,28 @@
 """
-tooling-map-drift-check.py
-==========================
-Pre-commit hook that verifies .claude/tooling-map.md stays in sync with
-script files on disk. Exits 1 when drift is detected, 0 when clean.
+tooling-map-drift-check.py — RETIRED 2026-05-21
+================================================
 
-PURPOSE
--------
-The tooling-map.md is the authoritative inventory of every script in the
-SGS pipeline. New scripts can appear in plugins/sgs-blocks/scripts/,
+The .claude/tooling-map.md doc this hook enforces was ABSORBED into
+.claude/cloning-pipeline-flow.md "Script inventory" section on 2026-05-21.
+The doc this hook checks is now a 9-line redirect stub; the drift check
+returns false positives.
+
+This hook is NOT currently wired into .claude/settings.json. It's an
+orphan script kept on disk for git-history continuity. If a future session
+wants drift detection on the absorbed Script inventory section, repurpose
+the regex/AST parsing logic below to walk the section in cloning-pipeline-
+flow.md instead. The drift-detection algorithm is sound; only the target
+file path needs updating.
+
+DO NOT WIRE THIS HOOK AS-IS — it will fire false positives on the
+absorbed stub.
+
+Original purpose follows for reference:
+
+The tooling-map.md was the authoritative inventory of every script in the
+SGS pipeline. New scripts could appear in plugins/sgs-blocks/scripts/,
 scripts/, and tools/ without anyone updating the inventory. This script
-catches that gap before it becomes stale documentation.
+caught that gap before it became stale documentation.
 
 WHAT IT CHECKS
 --------------

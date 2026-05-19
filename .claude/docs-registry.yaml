@@ -1,7 +1,21 @@
-# docs-registry.yaml - machine-readable sidecar for docs-registry.md
-# Update both files together. See docs-registry.md for human-readable detail.
+# docs-registry.yaml — authoritative list of project-tracked docs.
+# Walked by /handoff Gate 4.5 on every session close + by autopilot
+# session-init for context preload. Keep this list LEAN — only docs
+# that are load-bearing for session resume, active reference, or
+# append-only history. Absorbed docs / archived plans / non-doc
+# artefacts (hooks, secrets) do NOT belong here.
+#
+# Trim history:
+# - 2026-05-21: trimmed 28 → 17 entries (Bean directive). Removed
+#   4 absorbed docs (tooling-map.md + skills-commands-map.md +
+#   db-tables-map.md + specs/15-...md), 2 historical plans
+#   (spec-15-master-execution-plan + phase-7-spec-16-converter-
+#   rollout), 2 gitignored secrets files, 4 enforcement hooks
+#   (Python, not docs — hook lifecycle ≠ doc lifecycle). Sibling
+#   .md version retired same session (yaml is readable as-is).
 
 generated: 2026-05-15
+last_trimmed: 2026-05-21
 project: small-giants-wp
 
 canonical_docs:
@@ -93,31 +107,10 @@ canonical_docs:
       - db_schema_change_affecting_pipeline
       - skill_dispatch_change
 
-  - path: .claude/tooling-map.md
-    scope: absorbed
-    doc_type: tooling-map
-    owns: "ABSORBED 2026-05-21 into cloning-pipeline-flow.md 'Script inventory' section. Original content folded; file retained as ~9-line redirect stub for git-blame + external-link continuity."
-    absorbed_into: .claude/cloning-pipeline-flow.md
-    absorbed_at_section: "Script inventory"
-    absorption_date: 2026-05-21
-    enforcement: .claude/hooks/tooling-map-drift-check.py (NOTE: hook may need updating to read absorbed section instead)
-
-  - path: .claude/skills-commands-map.md
-    scope: absorbed
-    doc_type: skills-commands-map
-    owns: "ABSORBED 2026-05-21 into cloning-pipeline-flow.md 'Skill dispatch chain (full)' section. Original content folded; file retained as ~9-line redirect stub."
-    absorbed_into: .claude/cloning-pipeline-flow.md
-    absorbed_at_section: "Skill dispatch chain (full)"
-    absorption_date: 2026-05-21
-
-  - path: .claude/db-tables-map.md
-    scope: absorbed
-    doc_type: db-tables-map
-    owns: "ABSORBED 2026-05-21 into cloning-pipeline-flow.md 'DB heat-map (full)' section. Original content folded; file retained as ~9-line redirect stub."
-    absorbed_into: .claude/cloning-pipeline-flow.md
-    absorbed_at_section: "DB heat-map (full)"
-    absorption_date: 2026-05-21
-    enforcement: .claude/hooks/db-tables-drift-check.py (NOTE: hook may need updating to read absorbed section instead)
+  # REMOVED 2026-05-21: tooling-map.md / skills-commands-map.md / db-tables-map.md
+  # absorbed into cloning-pipeline-flow.md (Script inventory + Skill dispatch chain +
+  # DB heat-map sections). 9-line redirect stubs remain on disk but the registry
+  # walk no longer touches them.
 
   - path: .claude/specs/02-SGS-BLOCKS.md
     scope: spec_version_canonical
@@ -157,16 +150,8 @@ canonical_docs:
       - cli_command_added_or_removed
       - cli_parameter_change
 
-  - path: .claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md
-    scope: absorbed
-    doc_type: spec
-    spec_version: 15
-    note: "ABSORBED INTO SPEC 16 on 2026-05-21. Canonical content folded into Spec 16 §12 Appendix A. File retained on disk for historical reference + git-blame continuity only. Do NOT treat as live truth."
-    absorbed_into: .claude/specs/16-DETERMINISTIC-CONVERTER-V2.md
-    absorbed_at_section: "§12 Appendix A — Spec 15 absorbed content"
-    absorption_date: 2026-05-21
-    update_triggers:
-      - NEVER_UPDATE_DIRECTLY  # update Spec 16 §12 instead
+  # REMOVED 2026-05-21: specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md
+  # absorbed into Spec 16 §12 Appendix A. File retained for git-blame only.
 
   - path: .claude/specs/16-DETERMINISTIC-CONVERTER-V2.md
     scope: spec_version_canonical
@@ -178,25 +163,12 @@ canonical_docs:
       - fr_addition
       - phase_rename
 
-  - path: .claude/plans/spec-15-master-execution-plan.md
-    scope: spec_version_canonical
-    doc_type: execution-plan
-    update_triggers:
-      - phase_added
-      - phase_closure
-      - scope_change
-
-  - path: .claude/plans/phase-7-spec-16-converter-rollout.md
-    scope: phase_canonical_active
-    doc_type: phase-plan
-    phase: 7
-    plan_version: 1
-    spec: 16
-    note: "Phase 7 architectural work shipped 2026-05-15 on feat/spec-16-converter-v2-rollout. Pixel-diff closure gate NOT reached — Phase 8 scope covers per-block render.php audits + section-by-section closure via per-section cropped diff."
-    update_triggers:
-      - step_status_change
-      - new_material_finding
-      - phase_closure
+  # REMOVED 2026-05-21: plans/spec-15-master-execution-plan.md and
+  # plans/phase-7-spec-16-converter-rollout.md — historical phase plans whose
+  # phases shipped 2026-05-13 → 2026-05-21. The active phase plan is whatever
+  # .claude/plans/phase-N-<active>.md exists (autopilot derives the active
+  # phase by walking that directory for the earliest non-complete plain file).
+  # Files remain on disk for git-blame; registry walk no longer touches them.
 
   - path: .claude/specs/common-wp-styling-errors.md
     scope: forever_append_only
@@ -207,21 +179,11 @@ canonical_docs:
       - fix_documented_after_recurrence
     note: "Captured lessons that point to specific styling-error rows should cross-link here so the catalogue stays the single search target for 'I've seen this before'."
 
-# Project-scoped credentials (gitignored — never committed)
-project_credentials:
-  - path: .claude/secrets/credentials.yml
-    scope: gitignored_persistent
-    doc_type: credentials-yml
-    owns: "WP REST + SSH credentials for client staging sites. Currently: sandybrown (Mama's Munches staging)."
-    gitignored_via: ".gitignore: .claude/secrets/"
-    loader_example: "import yaml; yaml.safe_load(open('.claude/secrets/credentials.yml'))"
-    notes: "Future client onboarding: add a new top-level key per site with wp_user, wp_app_password, wp_admin_label, ssh_alias, ssh_path, generated, source."
-
-  - path: .claude/secrets/sandybrown.env
-    scope: gitignored_persistent
-    doc_type: credentials-env
-    owns: "Bash-compatible mirror of sandybrown credentials. Same values as credentials.yml; for shell-script consumption."
-    gitignored_via: ".gitignore: .claude/secrets/"
+# Project credentials — gitignored files at .claude/secrets/credentials.yml
+# and .claude/secrets/sandybrown.env. NOT registry-tracked: they're loaded
+# only when credentials are needed, never read during the registry doc-walk.
+# Loader: `import yaml; yaml.safe_load(open('.claude/secrets/credentials.yml'))`.
+# Future client onboarding adds a new top-level key per site.
 
 # Pipeline run artefacts — the orchestrator writes these per-run; they're the
 # diagnostic surface for converter / clone pipeline output. Captured 2026-05-15
@@ -259,27 +221,14 @@ pipeline_run_artefacts:
 # .claude/plans/archive/ for phase plans). Commit history is the audit
 # trail for what got deprecated and when.
 
-enforcement_hooks:
-  - path: .claude/hooks/tooling-map-drift-check.py
-    status: committed
-    enforces: tooling-map.md
-    built_on: 2026-05-13
-
-future_hooks:
-  - path: .claude/hooks/db-tables-drift-check.py
-    enforces: db-tables-map.md
-    status: not_built
-    notes: "Compare PRAGMA table_info against db-tables-map.md schema columns"
-
-  - path: .claude/hooks/cloning-pipeline-flow-status-check.py
-    enforces: cloning-pipeline-flow.md
-    status: not_built
-    notes: "Parse LIVE-stage status labels; fail if a LIVE-marked module has no import in entry-points. Requires semantic parsing."
-
-  - path: .claude/hooks/role-templates-vs-property-suffixes-check.py
-    enforces: drift_between_role-templates.json_and_property_suffixes_DB
-    status: not_built
-    notes: "Closes drift risk surfaced by P-S15-ROLE-TEMPLATES-MIGRATE in parking.md"
+# Enforcement hooks moved OUT of the doc registry 2026-05-21 — hooks are
+# Python files configured in .claude/settings.json, not docs. Lifecycle is
+# managed at the hook config level. The 4 hooks still on disk:
+#   - tooling-map-drift-check.py — stale (target absorbed); see Option B fix in
+#     same-session commit + parking entry P-DRIFT-CHECK-HOOK-UPDATE
+#   - db-tables-drift-check.py — never built; was a planned future hook
+#   - cloning-pipeline-flow-status-check.py — never built; planned future hook
+#   - role-templates-vs-property-suffixes-check.py — never built; planned future hook
 
 cold_start_reading_order:
   - 1. .claude/state.md
@@ -289,7 +238,7 @@ cold_start_reading_order:
   - 5. .claude/plans/phase-N-*.md (active phase)
   - 6. .claude/decisions.md (last 5-10 entries)
   - 7. .claude/parking.md (last 5 entries)
-  - 8. Domain reference: tooling-map.md / skills-commands-map.md / db-tables-map.md / specs/15-*.md
+  - 8. Domain reference: cloning-pipeline-flow.md (absorbed tooling-map + skills-commands-map + db-tables-map) + specs/16-DETERMINISTIC-CONVERTER-V2.md (absorbed Spec 15 §12)
   - 9. .claude/specs/common-wp-styling-errors.md (sections A-R catalogue — check BEFORE filing new "I've seen this" tickets)
   - 10. pipeline-state/<latest-run>/leftover-buckets.json (MANDATORY before any converter-quality conjecture — see feedback_read_leftover_buckets_before_conjecturing.md)
 

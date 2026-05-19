@@ -22,7 +22,7 @@ last_updated: 2026-05-21
 
 **P-WAVE-4-DOC-FOLLOWUPS** — Sonnet /qc raters surfaced: `/research-buddies` skill missing from dispatch chain; Wave 3 Indus heritage-strip not in flow doc body; `+DEPLOY`/`+PARITY` tails could use dedicated stage blocks; FR36/FR37/FR40 status incomplete in Spec 16 §12.9. **Trigger:** next session Phase 4.
 
-**P-DRIFT-CHECK-HOOK-UPDATE** — `tooling-map-drift-check.py` + `db-tables-drift-check.py` were configured for the now-absorbed source docs. May need updating to read absorbed sections in `cloning-pipeline-flow.md`, OR retiring. **Trigger:** next `/sgs-update` hook failure OR routine hooks pass.
+**P-DRIFT-CHECK-HOOK-UPDATE** — `tooling-map-drift-check.py` was the only drift hook actually built; the other 3 (`db-tables-drift-check.py`, `cloning-pipeline-flow-status-check.py`, `role-templates-vs-property-suffixes-check.py`) were `not_built` aspirational entries that have been removed from the registry. The existing tooling-map hook is now tombstoned (2026-05-21) — script retained for git-history but explicitly marked retired in its docstring + not wired into settings.json. **Trigger:** if anyone wants drift detection on the absorbed Script inventory section of `cloning-pipeline-flow.md`, repurpose the existing regex/AST logic against that section + the new target path. Or build the other 3 hooks fresh if their original purposes still apply.
 
 **P-SKILL-MD-LICENSING-HARD-RULE-CLEAN** — `~/.claude/skills/sgs-clone/SKILL.md` Hard Rule 1 retired today (replaced with retirement comment). The numbered rule list now has a gap (Rule 2-14 remain). Renumbering deferred. **Trigger:** next SKILL.md edit / `/skill-writer` pass.
 
