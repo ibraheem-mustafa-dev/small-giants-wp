@@ -2963,11 +2963,12 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
     if is_top_level and node.name in SKIP_TOP_LEVEL_TAGS:
         skip_label = " ".join(classes) if classes else node.name
         _trace("walker_branch_taken", branch="chrome_skip", node_tag=node.name,
-               node_classes=classes, depth=depth)
-        return (
-            f"<!-- sgs-converter: CHROME SKIPPED (<{node.name}> {skip_label}) -- "
-            f"belongs in WP template parts, not post content -->"
-        )
+               node_classes=classes, depth=depth,
+               reason=f"<{node.name}> {skip_label} belongs in WP template parts, not post content")
+        # Return None — chrome-skip events live in trace.jsonl + recognition_log,
+        # NOT in block_markup. Emitting an HTML comment here causes WP to wrap it
+        # as core/freeform on the rendered page (Bug B, 2026-05-19).
+        return None
 
     target, bem = get_block_for_node(node)
 

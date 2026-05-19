@@ -2117,6 +2117,27 @@ def main():
     except Exception as exc:  # noqa: BLE001 - harness is post-flight audit; soft-fail
         print(f"[stage-4k] critical-fix-verification soft-failed: {exc}", file=sys.stderr)
 
+    # Surface per-severity pipeline logs from trace.jsonl (B1 fix, 2026-05-19).
+    # Writes chrome-skipped.log / errors.log / warnings.log / summary.log into run_dir
+    # so operators don't have to scan the full trace.jsonl by hand.
+    try:
+        _logsurf = _load_module_from_path(
+            "surface_pipeline_logs",
+            Path(__file__).parent / "orchestrator" / "surface_pipeline_logs.py",
+        )
+        _surf = _logsurf.surface(run_dir)
+        if _surf.get("status") == "ok":
+            counts = _surf.get("counts", {})
+            print(
+                f"[stage-9c] surfaced logs: "
+                f"chrome_skip={counts.get('chrome_skip',0)} "
+                f"errors={counts.get('error',0)} "
+                f"warnings={counts.get('warning',0)} "
+                f"-> {', '.join(_surf.get('files_written', {}).keys())}"
+            )
+    except Exception as exc:  # noqa: BLE001 - surfacing is observability; soft-fail
+        print(f"[stage-9c] surface-logs soft-failed: {exc}", file=sys.stderr)
+
     print(f"[orchestrator] DONE. Artefacts in {run_dir} + {so_run_dir}")
 
 
