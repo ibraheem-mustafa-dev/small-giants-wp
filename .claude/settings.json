@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python C:/Users/Bean/Projects/small-giants-wp/.claude/hooks/drift-check-dispatcher.py",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

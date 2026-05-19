@@ -22,7 +22,14 @@ last_updated: 2026-05-21
 
 **P-WAVE-4-DOC-FOLLOWUPS** — Sonnet /qc raters surfaced: `/research-buddies` skill missing from dispatch chain; Wave 3 Indus heritage-strip not in flow doc body; `+DEPLOY`/`+PARITY` tails could use dedicated stage blocks; FR36/FR37/FR40 status incomplete in Spec 16 §12.9. **Trigger:** next session Phase 4.
 
-**P-DRIFT-CHECK-HOOK-UPDATE** — `tooling-map-drift-check.py` was the only drift hook actually built; the other 3 (`db-tables-drift-check.py`, `cloning-pipeline-flow-status-check.py`, `role-templates-vs-property-suffixes-check.py`) were `not_built` aspirational entries that have been removed from the registry. The existing tooling-map hook is now tombstoned (2026-05-21) — script retained for git-history but explicitly marked retired in its docstring + not wired into settings.json. **Trigger:** if anyone wants drift detection on the absorbed Script inventory section of `cloning-pipeline-flow.md`, repurpose the existing regex/AST logic against that section + the new target path. Or build the other 3 hooks fresh if their original purposes still apply.
+**P-DRIFT-CHECK-HOOK-UPDATE — RESOLVED 2026-05-21.** Replaced by `.claude/hooks/drift-check-dispatcher.py` — single PostToolUse hook wired via `.claude/settings.json` that runs 5 checks against the 4 high-drift-risk truth-doc surfaces:
+- Check 1 (POSTURE A — warn): Script inventory drift in `cloning-pipeline-flow.md`
+- Check 2 (POSTURE B — block via exit 2): DB schema row-count drift (sgs-framework.db ↔ flow doc / Spec 16 §12)
+- Check 3 (POSTURE A): Skill dispatch chain drift (~/.claude/skills/*/SKILL.md vs flow doc)
+- Check 4 (POSTURE A): Stage status nudge (stage-owning script edited → verify STATUS line)
+- Check 5 (POSTURE A): Spec 16 FR/R drift nudge (cv2/orchestrator edited → verify §3 FR + §2 R)
+
+Old `tooling-map-drift-check.py` stays tombstoned (not wired). Posture A checks emit systemMessage JSON; posture B (DB) writes to stderr + exit 2 (blocks until acknowledged). Smoke-tested 2026-05-21 with synthetic payloads; false-positive on regex tightness already caught + fixed (tight pattern requires `(N rows)` parens within 40 chars of table name).
 
 **P-SKILL-MD-LICENSING-HARD-RULE-CLEAN** — `~/.claude/skills/sgs-clone/SKILL.md` Hard Rule 1 retired today (replaced with retirement comment). The numbered rule list now has a gap (Rule 2-14 remain). Renumbering deferred. **Trigger:** next SKILL.md edit / `/skill-writer` pass.
 
