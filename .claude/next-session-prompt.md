@@ -1,263 +1,183 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-session_tag: small-giants-wp-2026-05-22-universal-extraction-rc-fixes
-generated: 2026-05-21
-prior_session: small-giants-wp-2026-05-21-pipeline-cleanup-option-A
-primary_goal: "Close the 4 root-cause gaps surfacing in Wave 3 verification, run pipeline end-to-end, then council audit + /systematic-debugging on remaining gaps"
+session_tag: small-giants-wp-2026-05-20-deploy-and-chrome-alignment
+generated: 2026-05-19
+prior_session: small-giants-wp-2026-05-19-rc-fixes-and-rosetta-stone
+primary_goal: "Deploy 2026-05-19 framework changes (10 static→dynamic blocks + container advanced backgrounds + hero block.json fix) to palestine-lives.org via /deploy. Then close Phase 3 pixel-diff via WP global chrome alignment + investigate untracked footer block collateral."
 ---
 
-# Universal-extraction root-cause fixes + pipeline end-to-end verification
+# Deploy 2026-05-19 framework + WP chrome alignment + footer audit
 
-Yesterday's session shipped four waves of cv2 cleanup (commits `62ee8b87` → `e60fe58e`). The cloning pipeline is now structurally sound: cv2 is the only converter path, legacy fallback removed, documented gates enforced, universal-extraction CSS D3 safety net wired. But Wave 3 verification surfaced four specific root causes preventing universal extraction from actually catching every CSS rule. Today's session fixes those four RCs, runs the pipeline end-to-end, then dispatches a focused gap-analysis council to identify what's still missing.
+You are a senior SGS Framework engineer. Main agent on Opus (Bean's binding rule). Orchestrate haiku/sonnet/opus/gemini-flash/gemini-pro/cerebras subagents via `/delegate`.
 
-You are a senior SGS Framework engineer specialising in cv2 / universal extraction. Main agent on Opus (Bean's binding rule). Orchestrate Sonnet + Haiku + Gemini Flash + Gemini Pro + Cerebras via `/delegate`.
+## State recap (plain English)
 
-## Primary goal
+Yesterday's session shipped 13 commits on main (79196c52 → 6119b93f) closing 5 universal-extraction RCs in the cv2 converter, converting ALL 10 static SGS blocks to dynamic, building advanced backgrounds into the Container block (4 modes — Image / Video / Animation / Overlay; 15 new attrs), fixing the hero block.json dual-cascade bug, shipping Spec 20 structured pipeline log surfacing (Stage 9c), populating the full Rosetta Stone (1755 equivalent_implementations rows = 100%), and wiring /wp-blocks + /wp-hooks + /wp-hook-graph into the cloning pipeline.
 
-Reach **<1% pixel parity per section** via `/sgs-clone`, working **1 section at a time**, **no targeted cheats**. Universal extraction over per-block legacy porting (see `memory/feedback_universal_extraction_no_per_block_legacy.md`). Every CSS rule maps to (a) existing block attribute via DB fingerprint OR (b) new-attribute proposal via D3 — never silently drops.
+Everything compiles + tests green (16/16) + page 144 on sandybrown verified as fixed. BUT none of the framework changes (block conversions + hero defaults + container backgrounds) are deployed to palestine-lives.org yet — they exist only on disk. Today's first job is to deploy.
 
-## State recap (post-2026-05-21 session)
+Phase 3 pixel-diff residual differences come from WP global chrome (the nav menu shows test pages I created during yesterday's sweep + header/footer template parts don't match the mockup). That's separate from converter scope. Theme template-part work.
 
-### What shipped (4 commits on main)
+A new untracked `plugins/sgs-blocks/src/blocks/footer/` directory exists — a parallel subagent created it outside any of my briefs yesterday. Decide today whether to integrate intentionally or remove.
 
-| Commit | Wave | Summary |
-|--------|------|---------|
-| `62ee8b87` | Foundation | Rounds 1+2 audits + /sgs-update regen + Task 0.3 recogniser + Phase 1 QC scripts (qc-anti-cheat, qc-correctness-regression, qc-coverage-honesty) |
-| `ee8db653` | Wave 1 | cv2-only path (`--converter-v2` default-True; legacy subprocess removed; halt-with-clear-error on non-BEM); Stage 8 stub gate fixed (no more silent 0.0 pass) |
-| `7d713ba0` | Wave 2 | Per-section pixel-diff via `--selector .sgs-{section}`; `unresolved_slots==0` deploy gate; uimax licensing reject; confidence ≥0.7 gate; `require_schema=True` default |
-| `e60fe58e` | Wave 3 | CSS D3 destination wired in convert.py walk(); Stage 3 calls DB canonical_slot; LEGACY_ROLE_LOOKUP→DB table; RETIRED_BLOCK_REMAP soft-emptied; 7 Indus heritage-strip files migrated to brand |
+## Skills to Invoke
 
-Mama's homepage post-Wave-3 measurements:
-- 989 `attribute_gap_candidate` rows in `sgs-framework.db` (14 new from this run — previously silent drops)
-- 153 / 188 (81.4%) Stage 3 slots resolved via DB canonical_slot
-- 17 `legacy_role_lookup` entries migrated to DB; idempotent seed runs on every `/sgs-update`
+| Skill | When to use |
+|-------|-------------|
+| `/brainstorming` | Architectural decisions on the footer block scope + chrome alignment design |
+| `/gap-analysis` | Grade deploy output + chrome-alignment proposals before commit |
+| `/lifecycle` | Any skill/agent/pipeline lifecycle changes |
+| `/research` | Auto-routes — use for unfamiliar WP template-part conventions if needed |
+| `/strategic-plan` | Plan chrome-alignment implementation order before writing code |
+| `/deploy` | THE PROJECT DEPLOY SKILL — `.claude/skills/deploy/SKILL.md`. First task. Build → tar → SCP → SSH extract → cache clear → OPcache reset |
+| `/sgs-clone` | If re-running the pipeline post-deploy to verify the new dynamic blocks emit correctly |
+| `/sgs-update` | After deploy to refresh sgs-framework.db block status flags |
+| `/sgs-wp-engine` | Block-level questions during footer audit |
+| `/wp-blocks` | Schema queries; `dump` subcommand for any schema-state question |
+| `/wp-block-themes` | Template-part conventions for chrome alignment |
+| `/qc-inline` | Self-check after each sub-task before commit |
+| `/qc` | Multi-rater panel before converter/pipeline/block commits (binding rule blub.db row 255) |
+| `/visual-qa` | Compare mockup vs deployed framework post-deploy |
+| `/handoff` | At session close — walks docs-registry, writes the trio |
 
-### What's still broken — 4 root causes (full evidence at `reports/2026-05-21-wave-3-verification.md`)
+## MCP Servers & Tools
 
-**RC-3 — `slot_synonyms` DB gaps. (HIGH ROI, DATA-ONLY FIX)**
-`canonical_slot_for('split-image')` returns None. The `slot_synonyms` table doesn't have entries for composite slot names like `split-image`, `split-media`. Because canonical_slot lookup fails, `_lift_styling_attrs` never fires for those elements, so D3 never sees their CSS rules. Estimated ~20 hero attrs (object-fit, object-position, image grid controls) silently drop for this reason alone. Universal benefit: every block with composite-named slots gets unblocked.
-**Fix:** add entries to `slot_synonyms` DB table for every composite slot name found across SGS blocks. Could be a `/sgs-update` extension that auto-discovers slot-name patterns from `block.json` and populates the synonym table.
+| Tool | What to use it for |
+|------|-------------------|
+| `mcp__plugin_playwright_playwright__browser_*` | Verify deploy landed correctly on palestine-lives.org — screenshot before/after, check console errors |
+| `mcp__plugin_github_github__*` | Reference any prior PRs / commits / issues touching the chrome alignment work |
+| `python ~/.claude/hooks/wp-blocks.py dump` | Schema manifest BEFORE any "missing column" claim (binding rule #4) |
+| `python ~/.claude/hooks/wp-blocks.py validate '<markup>'` | Post-emit markup validation (already wired into cv2 — see convert.py:760+764) |
+| `python ~/.claude/hooks/wp-docs.py search-hooks` | Verify hook names against the 7283-hook DB |
+| `python ~/.claude/hooks/wp-hook-graph.py scan plugins/sgs-blocks` | Hook-collision audit on plugin code |
+| `gh pr list` / `gh issue view` | Cross-reference prior chrome-alignment attempts |
 
-**RC-2 — `_SUPPORTS_HANDLED_PROPS` over-exclusion. (HIGH ROI, CODE FIX)**
-`convert.py` excludes properties like `justify-content` and `grid-template-columns` from D3 because they're tagged "supports-handled". But `_lift_root_supports_to_style()` only writes WP-native `style.*` attrs — it has no path for block-specific layout attrs like `verticalAlignment` or `splitColumnRatio`. So those properties fall into no-man's land: excluded from D3 (flagged supports-handled), but not actually handled by supports lift. Silent drop, zero trace.
-**Fix:** tighten `_SUPPORTS_HANDLED_PROPS` to only props supports actually handles, OR add a block-attr fallback path after supports lift fails (the D3 net should still catch it).
+## Agents to Delegate To
 
-**RC-1 — D3 Mode 2 breakpoint coverage gap. (HIGH ROI, CODE FIX)**
-D3 Mode 2 fires when a CSS property has a `property_suffixes` mapping but no candidate landed in the block's schema. The check only inspects `base_decls`. Mobile-first CSS where `font-family: 'Fraunces'` only appears inside `@media (min-width: 768px)` never reaches `_lifted_css_props`. Desktop-overrides typography pipeline drops silently.
-**Fix:** D3 Mode 2 must walk every breakpoint variant of the rule, not just base_decls. Use `_breakpoint_suffixes` DB-driven vocabulary to derive breakpoint-suffixed attr name (e.g. `headlineFontFamilyDesktop`).
+| Agent | When |
+|-------|------|
+| `wp-sgs-developer` | Heavy WP build work — block customisation, template-part edits, theme integration |
+| `design-reviewer` | Visual quality check post-deploy + mockup parity validation |
+| `performance-auditor` | If any deploy adds heavy DOM (video bg, parallax) — verify Lighthouse stays green |
+| `test-and-explain` | Plain-English explanation of post-deploy verification results |
+| `research-pipeline` | Any unknowns surfaced about WP template-part conventions |
 
-**RC-4 — `_collect_css_decls_for_element` grouped-selector bug. (NARROW BUG)**
-`split()` on `h1, h2, h3` returns `['h1', 'h2', 'h3']` but code uses `parts[-1]` giving `'h3'`. Rule like `h1, h2, h3 { font-family: Fraunces; }` never matches any `<h1>` element.
-**Fix:** iterate every part of the grouped selector, not just the last. ~5-line fix.
+## Research Approach
 
-## Today's execution plan
+Only if Task 3 surfaces unknowns about WP theme template-part conventions (`parts/header.html` + `parts/footer.html` structure, dynamic vs static template-part choice, how mega-menu interacts with template-part rendering): run `/research-check` first with a specific query. Don't invoke research preemptively.
 
-### Phase 0 — Pre-flight (Opus inline, ~5 min)
+---
 
-1. Read `reports/2026-05-21-wave-3-verification.md` in full (file:line evidence for the 4 RCs).
-2. Read `memory/feedback_universal_extraction_no_per_block_legacy.md` (the binding rule).
-3. Baseline check: current `attribute_gap_candidates` row count (so we can measure delta after RC fixes).
-4. Verify no uncommitted work from yesterday: `git status`.
-5. **NEW** — drift-check hooks are now active (`.claude/hooks/drift-check-dispatcher.py` wired via `.claude/settings.json`). 5 checks fire on Edit/Write/Bash. Mixed posture: A (warn via systemMessage) for script-inventory + skill-dispatch + stage-status + Spec 16 FR/R nudges; B (BLOCK exit 2) for DB schema row-count drift. Expect 1-2 warn surfaces per pipeline-script edit — this is by design. If the DB-drift block fires, address it before continuing (update flow doc / Spec 16 counts to match actual DB state).
+## Task 1 — Deploy framework changes to palestine-lives.org
 
-### Phase 1 — Fix the 4 RCs (orchestrated parallel waves, ~2 hr wall)
+**What:** Run the project `/deploy` skill (`/deploy plugin` then `/deploy theme` OR `/deploy both`) to land the 10 static→dynamic block conversions + container advanced backgrounds + hero block.json fix on the live site. Without this, palestine-lives.org still serves the old static save outputs and the new dynamic blocks aren't reachable from the editor.
 
-#### Task 1a — RC-3: `slot_synonyms` DB gaps
+**Why:** Production readiness. The framework code is correct on disk + tests pass + page 144 on sandybrown is verified, but the FRAMEWORK site (palestine-lives.org) doesn't carry the new code yet. Every operator + every clone-pipeline target site downstream of palestine-lives.org expects the new dynamic blocks.
 
-**What:** Composite slot names like `split-image` resolve to None in `canonical_slot_for()`, so `_lift_styling_attrs` never fires for those elements and D3 never sees their CSS rules. ~20 attrs silently drop per affected block.
-**Why:** Universal-extraction completeness for every block with composite-named slots (split-image, split-media, side-card, etc.).
+**Estimated time:** 10 min.
+
+**Orchestration:**
+- Execution: inline (main thread) — Opus drives the deploy commands
+- /qc gate after: `/qc-inline` running `curl -sI https://palestine-lives.org/` + verifying static→dynamic conversion via WP REST API check of a known previously-static block
+
+**Acceptance:**
+- `npm run build` succeeds
+- Tar + SCP + SSH extract complete without errors
+- LiteSpeed cache cleared + OPcache HTTP-reset confirmed
+- One representative block (e.g. sgs/label) returns its dynamic render HTML on palestine-lives.org, not the old static span output
+
+## Task 2 — Investigate + decide footer block collateral
+
+**What:** The untracked `plugins/sgs-blocks/src/blocks/footer/` directory contains a full block (block.json, edit.js, index.js, manifest.json, render.php, save.js, style.css). It was created by a parallel subagent outside any of yesterday's authorised briefs. Today: read each file, diff against any existing footer pattern in `theme/sgs-theme/parts/footer.html` + the absorbed sgs/footer references in db, decide integrate or remove.
+
+**Why:** Untracked code in `src/blocks/` is either (a) intentional groundwork that should be on a feature branch with proper deprecation review, or (b) collateral that pollutes the source tree. Either way it needs a decision before it accidentally lands in the next build.
+
+**Estimated time:** 25 min.
+
+**Orchestration:**
+- Execution: delegated, sonnet via `/delegate`
+- Dispatch pattern: single-agent
+- Brief: Audit `plugins/sgs-blocks/src/blocks/footer/`. Compare to existing footer handling (theme template part vs block, any existing `sgs/footer` references in sgs-framework.db). Decide integration path. If integrate: produce a feature branch with deprecation review. If remove: `git clean -fd` it.
+- Context the agent needs: today's handoff.md notes; `theme/sgs-theme/parts/footer.html` for current footer rendering; `python ~/.claude/hooks/wp-blocks.py schema sgs/footer` to see if sgs/footer is a registered block already
+- Depends on: Task 1 (deploy must succeed first so we know which footer flow is canonical)
+- /qc gate after: `/qc-inline` — if integrate, verify build still green + deprecated.js shim added for any save shape change; if remove, verify nothing else references the footer/ dir
+
+**Acceptance:** Working tree shows EITHER (a) footer block on a feature branch with PR opened OR (b) clean working tree with footer/ removed. Decision documented in `.claude/decisions.md`.
+
+## Task 3 — WP global chrome alignment for Mama's Munches mockup parity
+
+**What:** Update theme template parts (`theme/sgs-theme/parts/header.html` + `theme/sgs-theme/parts/footer.html`) so when cloned pages render they DON'T show the WP test-page nav menu + match the Mama's Munches mockup chrome (logo + nav structure + footer columns). This is what's blocking Phase 3 pixel-diff from closing.
+
+**Why:** Phase 3 pixel-diff sweep yesterday showed all 7 sections × 3 viewports failing — but the dominant variable was WP chrome contamination, not converter-side issues. Aligning the chrome unlocks the actual converter parity measurement.
+
+**Estimated time:** 60 min.
+
+**Orchestration:**
+- Execution: delegated, sonnet via `/delegate` (heavy WP template-part work — wp-sgs-developer agent is the canonical handler)
+- Dispatch pattern: single-agent (sequenced after Task 1 deploy)
+- Brief: Update `theme/sgs-theme/parts/header.html` to use the mamas-munches mockup header structure (logo + nav). Update footer template part similarly. Use `/wp-block-themes` skill for template-part API patterns. After update, deploy via Task 1's flow, then re-run `/sgs-clone` against Mama's homepage + re-pixel-diff per section per viewport.
+- Context the agent needs: mockup at `sites/mamas-munches/mockups/homepage/index.html`; current rendered page at `https://sandybrown-nightingale-600381.hostingersite.com/rc-fix-verification-mamas-munches/`; Phase 3 pixel-diff results from `reports/2026-05-19-phase-3-pixel-diff/`
+- Depends on: Task 1 (need framework deploy first)
+- /qc gate after: `/visual-qa --mode compare` against the mockup, AND re-run per-section cropped pixel-diff via `scripts/pixel-diff.py --selector .sgs-{section} --viewport 1440x900` for hero + brand + social-proof + ingredients + gift + featured-product + trust-bar
+
+**Acceptance:** At least hero + trust-bar + brand sections close at ≤ 5% pixel-diff @ 1440x900 (down from 99% / 31% / 64% respectively yesterday). Remaining sections improvement documented; any still > 5% means converter-side work needed in a separate session.
+
+## Task 4 — Operator UX trial — container advanced backgrounds
+
+**What:** Open page 144 in WP admin. Switch the hero block to use a container wrapper instead. Exercise each of the 4 new Background tabs (Image, Video, Animation, Overlay) and verify the inspector controls map to the right block attributes AND render.php emits the right markup.
+
+**Why:** The container backgrounds shipped + 12 inline QC scenarios passed yesterday, but the operator-facing UX (the actual click-through path) hasn't been exercised by a human (or a Playwright-driven proxy). This is the smoke test that proves the editor experience matches the engineering acceptance.
+
 **Estimated time:** 30 min.
 
 **Orchestration:**
-- Execution: delegated, sonnet via `/delegate`
-- Dispatch: single-agent
-- Brief: Investigate which `__<element>` slot names appear in `plugins/sgs-blocks/src/blocks/<slug>/block.json` files that AREN'T yet in `slot_synonyms`. Propose a deterministic auto-population rule. Extend `/sgs-update` to populate `slot_synonyms` from block.json on every run.
-- Context the agent needs: `slot_synonyms` table schema, `db_lookup.canonical_slot_for()` signature, `update-db.py` insertion patterns (see Wave 3c `seed-legacy-role-lookup.py` precedent at `plugins/sgs-blocks/scripts/uimax-tools/`).
-- Depends on: none
-- Parallel with: Task 1b, 1c, 1d (file-disjoint)
-- /qc gate after: `/qc-inline` self-check + verify `canonical_slot_for('split-image')` returns non-None
+- Execution: inline (main thread) via Playwright MCP — Opus drives the browser
+- /qc gate after: `/qc-inline` — verify the 4 modes each produce the expected wrapper markup in the saved post_content
 
-**Acceptance:** post-edit, re-running `/sgs-clone --converter-v2` on Mama's homepage produces measurably MORE entries via D1 lift (was 153/188 = 81.4%) — at least 5 percentage points higher.
-
-#### Task 1b — RC-2: `_SUPPORTS_HANDLED_PROPS` over-exclusion
-
-**What:** Properties like `justify-content` and `grid-template-columns` are tagged "supports-handled" so D3 skips them, but `_lift_root_supports_to_style()` only writes WP-native `style.*` attrs — block-specific layout attrs (`verticalAlignment`, `splitColumnRatio`) silently drop in no-man's land.
-**Why:** Wave 0 finding — hero's `verticalAlignment` + `splitColumnRatio` were silent-drop examples. Fixing this lifts every block's layout attrs through the universal path.
-**Estimated time:** 45 min.
-
-**Orchestration:**
-- Execution: delegated, sonnet via `/delegate`
-- Dispatch: single-agent
-- Brief: Inspect `_lift_root_supports_to_style()` to determine which CSS properties supports actually handles. Tighten `_SUPPORTS_HANDLED_PROPS` to that exact set. Add D3 fallback for properties previously flagged as supports-handled but not routed by supports.
-- Context: `convert.py` `_lift_root_supports_to_style()` body; `_SUPPORTS_HANDLED_PROPS` set; Wave 3a's D3 emission infrastructure at convert.py `_record_gap_candidate()`.
-- Depends on: none
-- Parallel with: 1a, 1c, 1d
-- /qc gate after: `/qc-inline` + spot-check that hero's `verticalAlignment` now appears in either extract.json (D1 lift) OR `attribute_gap_candidates` (D3 fallback)
-
-**Acceptance:** `attribute_gap_candidate` row count delta on Mama's homepage post-fix is positive (more universal-extraction coverage); zero hero layout attrs silently drop in spot-check.
-
-#### Task 1c — RC-1: D3 Mode 2 breakpoint coverage
-
-**What:** D3 Mode 2 only inspects `base_decls`. Mobile-first CSS where `font-family: 'Fraunces'` only appears inside `@media (min-width: 768px)` never reaches `_lifted_css_props`. Desktop-overrides typography pipeline drops silently.
-**Why:** Universal-extraction completeness across breakpoints — every responsive variant should surface via D1 or D3, never drop.
-**Estimated time:** 30 min.
-
-**Orchestration:**
-- Execution: delegated, sonnet via `/delegate`
-- Dispatch: single-agent
-- Brief: Refactor D3 Mode 2 in `convert.py` to walk all breakpoint variants (mobile/tablet/desktop) and propose breakpoint-suffixed attr names (e.g. `headlineFontFamilyDesktop`) via existing `_breakpoint_suffixes` DB-driven vocabulary.
-- Context: `convert.py` `_lift_styling_attrs` Mode 2 trigger; `db_lookup.breakpoint_suffix_rules()`; `modifier_suffixes` DB table (19 rows, 3 breakpoints).
-- Depends on: none
-- Parallel with: 1a, 1b, 1d
-- /qc gate after: `/qc-inline` + verify mobile-first @media CSS in Mama's hero now appears as breakpoint-suffixed gap rows (e.g. `sgs/hero.headlineFontFamilyDesktop`)
-
-**Acceptance:** new gap rows post-fix include breakpoint-suffixed proposals; previously dropped @media font/spacing/colour rules now surface.
-
-#### Task 1d — RC-4: grouped-selector bug
-
-**What:** `_collect_css_decls_for_element` splits `h1, h2, h3` and uses `parts[-1]` → only `'h3'` matches. Rules like `h1, h2, h3 { font-family: Fraunces; }` never match `<h1>` elements.
-**Why:** Narrow bug, ~5-line fix. Universal benefit: any draft using grouped heading selectors gets correctly attributed.
-**Estimated time:** 15 min.
-
-**Orchestration:**
-- Execution: delegated, haiku via `/delegate`
-- Dispatch: single-agent
-- Brief: Fix `_collect_css_decls_for_element` to iterate every part of grouped CSS selectors. Add a regression test for `h1, h2, h3 { font-family: Fraunces; }` against `<h1>` element.
-- Context: convert.py line ~2200-2400 region (find function); existing convert.py tests for collection patterns.
-- Depends on: none
-- Parallel with: 1a, 1b, 1c
-- /qc gate after: `/qc-inline` + new test passes
-
-**Acceptance:** grouped-selector regression test green; one previously-misattributed Mama's CSS rule now lifts correctly.
-
-#### Phase 1 closure — multi-rater /qc + commit
-
-After all 4 tasks return: dispatch `/qc` 4-rater panel (Sonnet + Haiku + Gemini Flash + Cerebras) on the combined diff. Binding rule blub.db row 255 — converter-touching commits require multi-rater /qc. Then commit + push + merge to main (already on main per Wave 4 standing posture).
-
-### Phase 2 — Pipeline end-to-end re-run (Opus inline, ~15 min)
-
-Run `/sgs-clone --converter-v2` against Mama's homepage:
-
-```bash
-python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py \
-  --converter-v2 \
-  --mockup sites/mamas-munches/mockups/homepage/index.html \
-  --client mamas-munches --page homepage \
-  --auto-section --skip-autonomy-gate --skip-register --mode draft
-```
-
-Measure:
-- Total `attribute_gap_candidate` rows added (should be significantly higher than yesterday's +14 — every previously-dropped attribute now surfaces)
-- Stage 3 canonical_source ratio (should improve toward 100% if RC-3 closes the slot_synonyms gaps)
-- Per-section pixel-diff numbers (Stage 8 runs per-section via `--selector` per Wave 2a) — capture for council audit input
-
-### Phase 3 — Council audit + /systematic-debugging on remaining gaps (~2-3 hr)
-
-For each section that's STILL above 1% pixel-diff after Phase 1+2:
-1. Read `pipeline-state/<run>/leftover-buckets.json` for that section (binding rule blub.db row 254)
-2. Read `attribute_gap_candidates` rows for the block + section
-3. `/systematic-debugging` on the specific gap: root cause → evidence → proposed fix → explicit link to end-goal
-4. Branch decision: build the fix OR formally defer with Decision-log entry
-
-Council shape: 3 Sonnet + 1 Gemini Flash + 1 Gemini Pro auditors per section.
-
-**Critical:** verify each Gemini auditor's specific claims by grep before relaying — yesterday's session had 2 Gemini panels fabricate quotes/line numbers. Sonnet panels were reliable; Gemini panels need verification.
-
-### Phase 4 — Truth-doc consolidation (DEFERRED FROM 2026-05-21, ~45 min)
-
-Yesterday's Wave 4 agent hit context-limit trying to absorb 4 large docs in one pass. Today's redispatch:
-
-- Agent A (Haiku, ~20 min): UPDATE `cloning-pipeline-flow.md` for the 4 wave commits' state changes. ONLY update — no absorption work.
-- Agent B (Sonnet, ~25 min): ABSORB `tooling-map.md` + `skills-commands-map.md` + `db-tables-map.md` into `cloning-pipeline-flow.md`. Replace the 3 sibling docs with redirect stubs. Sweep references.
-
-### Phase 5 — Spec 15 → Spec 16 absorption (COMPLETED 2026-05-21 LATE — skip)
-
-This was deferred at first handoff write but completed inline same session. Spec 16 §12 Appendix A folds Spec 15's canonical content; Spec 15 status flipped to `ABSORBED_INTO_SPEC_16`. Skip this phase. If any /qc finding from yesterday's flow-doc raters (P-WAVE-4-DOC-FOLLOWUPS in parking.md) needs follow-up, do that instead.
+**Acceptance:** Each of 4 background modes (image / video / parallax-or-kenburns / overlay) produces a visible visual difference on the frontend when set. Block validation stays clean across all 4 mode switches. No "Invalid block" placeholder appears at any point.
 
 ## Dependency graph
 
 ```
-Phase 0 — pre-flight (Opus inline, 5 min)
+Task 1 deploy (inline, Opus, ~10 min)
   ↓
-Phase 1 — RC fixes (4 parallel agents, ~2 hr wall)
-  ├─ Task 1a sonnet — RC-3 slot_synonyms                ┐
-  ├─ Task 1b sonnet — RC-2 SUPPORTS_HANDLED_PROPS       ├─ all file-disjoint, parallel
-  ├─ Task 1c sonnet — RC-1 D3 breakpoint coverage       ┤
-  └─ Task 1d haiku — RC-4 grouped-selector bug          ┘
+Task 2 footer audit (sonnet, ~25 min) ──┐
+                                          ├─ parallel after Task 1
+Task 3 chrome alignment (sonnet, ~60 min)┘
+  ↓ (Task 3 only)
+/visual-qa + per-section pixel-diff
   ↓
-Phase 1 closure — /qc multi-rater (4 raters: Sonnet + Haiku + Gemini Flash + Cerebras) + commit + push + merge-to-main
+Task 4 container UX trial (Playwright, ~30 min)
   ↓
-Phase 2 — Pipeline end-to-end run (Opus inline, ~15 min) — measure D1/D3 coverage delta vs yesterday's baseline
-  ↓
-Phase 3 — Per-section /systematic-debugging on still-above-1% sections (Opus inline + per-section Sonnet diagnostician, ~2-3 hr)
-  ↓ per section closed
-  /qc multi-rater + commit per section
-  ↓
-Phase 6 — Followups (parallel low-priority during waits)
+/qc + commit + push + merge-to-main + /handoff
 ```
 
-### Phase 6 — Other followups (parallel low-priority during waits)
+## Methodology guardrails (do not skip)
 
-- Test-pollution fix: `test_licensed_in_description_rejected` fails when `test_staged_merge` runs first; passes isolated. Module-level state leak. ~20 min Haiku.
-- Mama's `annotated-index.html` still has `.sgs-heritage-strip` selectors. ~10 min Haiku migration.
-- PHP type nit at `food-service-page.php:413` (`$result` int interpolation). ~5 min.
-
-## Skills to invoke
-
-| Skill | When |
-|-------|------|
-| `/autopilot` | First — establishes live skill routing + ADHD support |
-| `/brainstorming` | Phase 1 design decisions (e.g. how to auto-populate slot_synonyms) |
-| `/dispatching-parallel-agents` | Phase 1 4-agent parallel dispatch + Phase 3 council |
-| `/subagent-prompt` | Cold prompts for each Phase 1 / Phase 3 dispatch |
-| `/delegate` | Pick model per task |
-| `/qc-inline` | Self-check after each Wave 1 sub-task before commit |
-| `/qc` | Multi-rater panel before any commit touching converter / pipeline / SGS block logic (binding rule blub.db row 255) |
-| `/systematic-debugging` | Phase 3 per-section gap diagnosis |
-| `/sgs-clone` | Phase 2 end-to-end run |
-| `/sgs-update` | Phase 1 RC-3 (auto-populate slot_synonyms) |
-| `/sgs-db` | Query gap-candidate table + slot_synonyms |
-| `/sgs-wp-engine` | Block-level questions during Phase 3 |
-| `/gap-analysis` | Grade Phase 3 fix proposals before commit |
-
-## Tool bindings
-
-| Tool | What for |
-|------|----------|
-| `python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py --converter-v2 ...` | Phase 2 pipeline run |
-| `python ~/.agents/skills/sgs-wp-engine/scripts/sgs-db.py` | Block / attr queries |
-| `mcp__plugin_playwright_playwright__browser_*` | Pixel-diff verification per section |
-| `gh` | Cross-reference any historical fix or related issue |
-
-## Methodology guardrails (binding — do not skip)
-
-- **Read leftover-buckets.json BEFORE conjecturing.** Pipeline-state evidence is canonical (blub.db row 254).
-- **Multi-rater /qc panel BEFORE every commit** touching converter / pipeline / SGS block logic (blub.db row 255).
-- **Per-section cropped pixel-diff** via `scripts/pixel-diff.py --selector .sgs-{section}`, NOT full-page (blub.db row 256).
-- **Universal extraction over per-block legacy porting** (`memory/feedback_universal_extraction_no_per_block_legacy.md`). Every CSS rule maps to existing attr OR new-attr proposal. No silent drops. Leftover buckets are debug surfaces, NOT production destinations.
-- **`--converter-v2` is the ONLY converter path** (Wave 1 ee8db653). Don't reintroduce a legacy fallback flag without architectural review.
-- **WP_DEBUG_DISPLAY=false** on staging.
-- **DB-first lookups, no hardcoded dicts** (Rule 11, blub.db row 260). `legacy_role_lookup` is now in DB (Wave 3c).
-- **No destructive git verbs in subagents** (`stash`, `reset --hard`, `checkout --`, `restore`, `clean`).
-- **No `Co-Authored-By` footer in commits.**
-- **Verify Gemini agent claims by grep** before relaying as fact — fabrications were caught in both audit rounds yesterday.
+- **Deploy before measure** — any change that should be visible on a live URL requires `npm run build` + tar deploy + OPcache reset BEFORE running any pixel-diff / browser test against that URL. If you skip the deploy, the test is measuring stale output.
+- **Root cause before instance fix** — when a section fails parity, ask "what's the class of failure?" before fixing the specific instance. Today's chrome work is a class fix (template parts); section-by-section CSS tuning is the anti-pattern.
+- **Outcome vs completion** — if the work doesn't hit the stated acceptance, do NOT mark the task done. Re-plan or escalate. Code shipped ≠ outcome achieved.
+- **/qc multi-rater BEFORE every commit** touching converter / pipeline / SGS block logic (binding rule blub.db row 255).
+- **Per-section cropped pixel-diff** via `--selector .sgs-{section}`, never full-page (binding rule blub.db row 256).
+- **Schema enumeration BEFORE gap claims** — `python ~/.claude/hooks/wp-blocks.py dump` (binding rule #4 in CLAUDE.md, blub.db row 272).
+- **/qc-inline against live pipeline** not just isolated units — placement bugs survive isolated QC (lesson #273 from yesterday).
+- **WP_DEBUG_DISPLAY must stay false** on staging — debug notices contaminate every pixel-diff.
+- **No `git stash` / reset / checkout-- / restore / clean** in subagents — explicit destructive verbs forbidden.
+- **No `Co-Authored-By:` lines** in commits.
+- **--converter-v2 required** on production orchestrator runs.
 
 ## Acceptance criteria (whole session)
 
-- **Phase 1 complete:** all 4 RCs fixed + committed + pushed. Wave 3 verification re-run on Mama's homepage shows PASS verdict (universal extraction surfaces every spot-checked hero attr via D1 or D3, zero silent drops in the 10-attr sample).
-- **Phase 2 complete:** new `attribute_gap_candidate` row count measurably higher than yesterday's baseline; Stage 3 canonical_source ratio improved; per-section pixel-diff numbers captured per viewport.
-- **Phase 3 in progress:** at least 1 section's gap fully diagnosed via `/systematic-debugging` with proposed fix linked to end-goal.
-- **Phase 4 + 5:** stretch goals; ship if Phase 1-3 close under budget.
-
-## Sandybrown / palestine-lives credentials
-
-`.claude/secrets/credentials.yml` (gitignored). SSH alias `hd`. WP_DEBUG_DISPLAY=false on staging.
+- Framework changes deployed to palestine-lives.org with one representative dynamic-block check passing.
+- Footer block collateral decision made + documented; working tree clean of unauthorised untracked code.
+- Hero + trust-bar + brand sections close at ≤ 5% pixel-diff @ 1440x900 (or chrome-alignment work explicitly documented as "needs Task 3.2 next session").
+- Container advanced backgrounds verified working in editor for all 4 modes.
 
 ## Key files to read at session start
 
-- `reports/2026-05-21-wave-3-verification.md` — the 4 RCs with file:line evidence
-- `memory/feedback_universal_extraction_no_per_block_legacy.md` — the binding behavioural rule
-- `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` — converter v2 spec (Spec 15 absorption deferred to today's Phase 5)
-- `.claude/cloning-pipeline-flow.md` — pipeline implementation reference (full consolidation pending Phase 4)
 - `.claude/handoff.md` — yesterday's full session digest
+- `.claude/state.md` — current phase + blockers
+- `.claude/specs/20-STRUCTURED-PIPELINE-LOG-SURFACING.md` — Stage 9c contract (live)
+- `.claude/cloning-pipeline-flow.md` §"Data Sources & Block-Equivalent Layers" — DB + draft-naming reference
+- `.claude/CLAUDE.md` binding rule #4 — schema-enumeration discipline

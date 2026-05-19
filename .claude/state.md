@@ -2,35 +2,28 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-current_phase: pipeline-cleanup-option-A-shipped-rc-fixes-pending
-current_subphase: "Option-A cleanup sprint 2026-05-21 shipped: 4 waves on main (62ee8b87 foundation + ee8db653 cv2-only + 7d713ba0 documented gates + e60fe58e universal extraction). Cloning pipeline is now structurally sound — cv2 is the only converter path, legacy fallback removed, Stage 8 stub no longer silent-passes, CSS D3 destination wired (every unlifted CSS rule emits attribute_gap_candidate), Stage 3 calls DB canonical_slot, LEGACY_ROLE_LOOKUP migrated to DB, 7 Indus heritage-strip files migrated to brand. Mama's homepage measurements: 989 attribute_gap_candidate rows (14 new from latest run), 153/188 (81.4%) Stage 3 slots DB-canonical."
-current_subphase_step: "NEXT SESSION — fix 4 root-cause gaps surfacing in Wave 3 verification (reports/2026-05-21-wave-3-verification.md). RC-3 slot_synonyms DB gaps, RC-2 _SUPPORTS_HANDLED_PROPS over-exclusion, RC-1 D3 Mode 2 breakpoint coverage, RC-4 grouped-selector bug in _collect_css_decls_for_element. Then end-to-end pipeline re-run + council audit + /systematic-debugging on remaining gaps. Late-session 2026-05-21 additions: Wave 2b licensing reject reverted, Spec 15 absorbed into Spec 16 §12 Appendix A, multi-model /qc on flow doc + Spec 16 with 4 fixes applied, docs-registry trimmed 28→17, drift-check dispatcher hook shipped (5 checks via .claude/hooks/drift-check-dispatcher.py wired through new .claude/settings.json — inert until next session's restart per Claude Code hook-loading semantics)."
-last_updated: 2026-05-21
-latest_commit: "c0ab7874 on main — hooks(drift-check): wire 5-check PostToolUse dispatcher"
-session_2026_05_21_summary: "Option A cleanup sprint. 4 commits to main. Rounds 1+2 audits (11 reports). Wave 0 safety scan: DEFER-DELETION (hero attrs treated as universal-extraction gap, not porting target — captured rule at memory/feedback_universal_extraction_no_per_block_legacy.md). Wave 1: cv2-only path + Stage 8 stub fix. Wave 2: 4 documented gates enforced (per-section pixel-diff via --selector, unresolved_slots deploy gate, licensing reject, confidence ≥0.7, require_schema default-True). Wave 3: CSS D3 + Stage 3 DB + LEGACY_ROLE_LOOKUP→DB + Indus heritage-strip migration. Wave 3 verification: PARTIAL-PASS with 4 specific RCs identified."
-prior_session_2026_05_20_summary: "Phase 2A massive — 8 parallel Sonnet subagents shipped 3 new blocks (responsive-logo, icon multi-source, timeline) + header behaviour layer (body_class strategy) + Spec 18 floating-UI cleanup. Live verified on sandybrown + palestine-lives.org."
+current_phase: post-RC-fix-cleanup-shipped-cloning-pipeline-structurally-sound
+current_subphase: "13 commits on main 79196c52 → 6119b93f (2026-05-19 session). 5 RCs in cv2 universal-extraction silent-drop closure (RC-1 D3 Mode 2 breakpoint coverage, RC-2 _SUPPORTS_HANDLED_PROPS over-exclusion, RC-3 slot_synonyms DB gaps, RC-4 grouped CSS selector bug, RC-5 universal section-wrapper className guarantee). Container advanced backgrounds (4 modes — image/video/parallax+ken-burns/gradient-overlay; 15 new attrs; build green). ALL 10 static SGS blocks → dynamic (each with deprecated.js shim + render.php verified faithful). Hero block.json dual-cascade fix (removed primary-dark / text-inverse defaults — Section H6 anti-pattern). B1 cv2 chrome-skip leakage fix + Spec 20 structured pipeline log surfacing (Stage 9c writes summary.log always + per-severity sidecar logs). Lint 77 → 0 violations + WP-core allow-list (135 hooks). DB enrichment: 1755 equivalent_implementations = 100% Rosetta Stone; 811 inspector_control_type; 89 slot_synonyms; 8 style_variations; 39 design_tokens; 13 hooks. wp-* CLI wiring (/wp-blocks emit-time validate at convert.py:760+764; /wp-blocks match Stage 2 cross-check; /wp-hook-graph audit at /sgs-update post-flight; wp-pre-merge-gate.py wrapper). library-docs CLI repaired. /sgs-db default schema dump. /wp-blocks dump subcommand covers all 3 DBs. Binding rule #4 in CLAUDE.md (schema-enumeration discipline, blub.db row 272). Data Sources & Block-Equivalent Layers section in flow doc + flow doc TOC. Stage 9c placement regression caught by /qc-inline against live pipeline and fixed in commit d2be3d6e."
+current_subphase_step: "Implementation work COMPLETE. Page 144 (rc-fix-verification-mamas-munches on sandybrown) carries cv2 output with all 4 issue classes from Bean's editor inspection resolved. Next session priority: /deploy to palestine-lives.org (build → tar → SCP → SSH → cache clear → OPcache reset); investigate untracked plugins/sgs-blocks/src/blocks/footer/ collateral; align WP global chrome (theme template parts) with mockup so Phase 3 pixel-diff closes."
+last_updated: 2026-05-19
+latest_commit: "6119b93f on main — docs(spec): renumber 18 → 20 (Structured pipeline log surfacing)"
+session_2026_05_19_summary: "13 commits. 5 RCs + container backgrounds + 10 static→dynamic blocks + B1 chrome-skip + Spec 20 (renamed from 18 due to collision with 18-SGS-FLOATING-UI) + lint 77→0 + DB enrichment (full Rosetta Stone) + wp-* CLI wiring + library-docs CLI fix + sgs-db default schema dump + Data Sources flow-doc section + binding rule #4 (blub.db row 272) + lesson #273 (qc-inline on live pipeline). Two new feedback files: feedback_schema_enumeration_before_gap_claims.md + qc-inline-on-live-pipeline-catches-placement-bugs.md."
+prior_session_2026_05_21_summary: "Option A cleanup sprint — 4 commits to main. Wave 0 safety scan → universal-extraction-no-per-block-legacy rule. Waves 1-3 shipped pipeline structural cleanup. Wave 3 verification surfaced the 4 RCs that today's session closed."
 blockers:
-  - "None blocking. 4 RCs identified by Wave 3 verification are the next session's primary work — clear evidence-cited fixes."
+  - "Phase 3 pixel-diff residual visual differences come from WP global chrome (header/footer template parts + nav menu showing test pages) — not converter-side. Separate session needed."
+  - "Untracked plugins/sgs-blocks/src/blocks/footer/ — collateral from a parallel subagent NOT in any of today's authorised briefs. Decide next session: integrate or remove."
+  - "Static→dynamic conversions + container backgrounds NOT YET DEPLOYED to palestine-lives.org. /deploy is the first next-session priority — without it, live sites still serve the old static save outputs."
 ---
 
 # small-giants-wp — State Snapshot
 
-Option-A cleanup sprint complete on `main` at `e60fe58e` (2026-05-21). 4 waves of cv2 pipeline cleanup shipped + Wave 3 verification surfaced 4 concrete root-cause gaps for next session.
+Cloning pipeline end-to-end structurally sound after today's session. All 4 issue classes Bean spotted on page 144 (invalid blocks, hero dual-cascade, picker collisions, dark-pink default) root-caused + fixed at source. Rosetta Stone complete (1755 equivalent_implementations rows = 100%).
 
-Cloning pipeline post-cleanup:
-- cv2 is the ONLY converter path (legacy fallback removed; non-BEM input halts-with-clear-error)
-- Stage 8 pixel-diff stub no longer silently passes (returns explicit skip sentinel when --clone-url not supplied)
-- Per-section pixel-diff wired via `--selector .sgs-{section}` (replaces full-page default)
-- `unresolved_slots == 0` deploy gate enforced (Hard Rule 8)
-- Confidence threshold `STAGE_2_CONFIDENCE_THRESHOLD = 0.7` named constant
-- `require_schema=True` default at Stage 6 (production bypass closed)
-- Licensing-keyword reject in `uimax-write-validator.py` (Hard Rule 1)
-- CSS D3 destination wired in `convert.py walk()` — every unlifted CSS property emits `attribute_gap_candidate` row (universal-extraction safety net)
-- Stage 3 calls DB `canonical_slot_for()` instead of `auto-derived`
-- `LEGACY_ROLE_LOOKUP` migrated to `legacy_role_lookup` DB table (17 entries); idempotent seed at every `/sgs-update`
-- `RETIRED_BLOCK_REMAP` soft-emptied
-- 7 Indus Foods files migrated `heritage-strip → brand`
+## Live wirings as of `6119b93f`
 
-Next session focus: 4 RC fixes (RC-3 slot_synonyms / RC-2 SUPPORTS_HANDLED_PROPS / RC-1 D3 breakpoint coverage / RC-4 grouped-selector bug) → end-to-end pipeline re-run → council audit + `/systematic-debugging`. Deferred: Wave 4 truth-doc consolidation + Spec 15→16 absorption.
-
-For full session detail see `.claude/handoff.md` and `.claude/next-session-prompt.md`.
+- **cv2 converter:** every section root carries `sgs-{section_id}` className; chrome-skip returns None (no block_markup leak); `_STILL_STATIC_SGS_BLOCKS = frozenset()`; /wp-blocks validate fires after every emit
+- **Stage 9c:** writes `summary.log` always + per-severity sidecar logs when bucket has ≥1 entry; placement-bug regression caught + fixed
+- **DB enrichment:** 1755 block_attributes carry equivalent_implementations JSON (sgs_wp ↔ html_css Rosetta Stone); 811 inspector_control_type; slot_synonyms covers all 26 anomaly attrs + 15 container attrs
+- **wp-* CLI wiring:** /wp-blocks emit-time validate, Stage 2 match cross-check, /wp-hook-graph audit, wp-pre-merge-gate.py
+- **Schema-enumeration discipline:** `python ~/.claude/hooks/wp-blocks.py dump` covers all 3 DBs (~1500 tokens); bound by project CLAUDE.md rule #4
+- **/deploy skill:** project-level at `.claude/skills/deploy/SKILL.md` (NOT user-level); covers build → tar → SCP → SSH extract → cache clear → OPcache reset
