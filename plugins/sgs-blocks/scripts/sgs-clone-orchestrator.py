@@ -1122,6 +1122,20 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
     except ImportError:
         pass
 
+    # Stage 4.5 — seed theme_json into converter_v2._LIFT_CONTEXT so
+    # _snap_style_dict_leaves can resolve against the palette + spacing + font-size
+    # registries during the per-section walk. Uses the same merged theme_json that
+    # was built at Stage 0 (base theme.json + variation overlay).
+    if theme_json and getattr(args, "converter_v2", False):
+        try:
+            _cv2_dir_seed = ORCHESTRATOR_DIR.parent
+            if str(_cv2_dir_seed) not in sys.path:
+                sys.path.insert(0, str(_cv2_dir_seed))
+            from orchestrator.converter_v2 import seed_theme_json as _seed_theme_json
+            _seed_theme_json(theme_json)
+        except Exception:  # noqa: BLE001
+            pass  # token-snap gracefully degrades if seeding fails
+
     for m in matches:
         boundary_id = m["boundary_id"]
         target_block = m["block_name"]
@@ -1284,6 +1298,36 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                 )
                 # Normalise to orchestrator per_section_results schema.
                 _cv2_markup = result.get("block_markup", "")
+                # Stage 4.5 — harvest token resolutions from the cv2 walker.
+                # The converter snapped colour/spacing/font-size values during
+                # _lift_root_supports_to_style / _lift_core_block_style and
+                # accumulated them in convert._TOKEN_RESOLUTIONS, which
+                # __init__._convert_section_body flushed into result["token_resolutions"].
+                _cv2_token_res = result.get("token_resolutions", [])
+                # Reflect any newly-minted tokens into the in-memory theme_json
+                # so the next section's resolver sees them as snappable targets.
+                _new_tokens: list[dict] = []
+                for _tr in _cv2_token_res:
+                    # A snapped result has token_slug + css_var set; is_gap_candidate=False.
+                    if (
+                        _tr.get("token_slug")
+                        and _tr.get("css_var")
+                        and not _tr.get("is_gap_candidate")
+                        and _tr.get("role")
+                    ):
+                        # Only reflect if NOT already in the registry (resolver
+                        # may have snapped to an existing token — no-op then).
+                        # _reflect_new_token_in_theme_json is idempotent on the slug.
+                        try:
+                            _reflect_new_token_in_theme_json(
+                                theme_json,
+                                _tr["role"],
+                                _tr["token_slug"],
+                                _tr.get("raw_value", ""),
+                            )
+                            _new_tokens.append(_tr)
+                        except Exception:  # noqa: BLE001
+                            pass
                 per_section_results.append({
                     "boundary_id": boundary_id,
                     "section_id": m.get("section_id"),
@@ -1293,8 +1337,8 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                     "extract_path": "",
                     "extracted_attributes": result.get("extracted_attributes", {}),
                     "block_markup": _cv2_markup,
-                    "token_resolutions": [],
-                    "new_tokens_written": [],
+                    "token_resolutions": _cv2_token_res,
+                    "new_tokens_written": _new_tokens,
                     "supports_decisions": [],
                     "supports_emitted_attributes": result.get("extracted_attributes", {}),
                     "supports_omitted_attributes": {},

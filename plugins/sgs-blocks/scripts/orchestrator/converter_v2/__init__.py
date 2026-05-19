@@ -16,6 +16,7 @@ __all__ = [
     "ensure_root_section_class",
     "seed_pipeline_context",
     "seed_gap_context",
+    "seed_theme_json",
     "reset_pipeline_seed",
 ]
 
@@ -80,6 +81,7 @@ def reset_pipeline_seed() -> None:
     from . import convert as v3
     _PIPELINE_SEEDED["client_slug"] = None
     v3._LIFT_CONTEXT.pop("theme_widths", None)
+    v3._LIFT_CONTEXT.pop("theme_json", None)
 
 
 def seed_gap_context(run_id: str) -> None:
@@ -91,6 +93,21 @@ def seed_gap_context(run_id: str) -> None:
     """
     from . import convert as v3
     v3.seed_gap_context(run_id)
+
+
+def seed_theme_json(theme_json: dict) -> None:
+    """Store the orchestrator's merged theme.json in _LIFT_CONTEXT for token-snap.
+
+    Called once per pipeline run (before the per-section loop) so
+    ``_snap_style_dict_leaves`` inside convert.py has access to the palette /
+    spacing / font-size registries without threading theme_json through every
+    function call.
+
+    Idempotent — subsequent calls update the in-memory dict in-place so
+    cross-session reuse (test runners) always sees the freshest registry.
+    """
+    from . import convert as v3
+    v3._LIFT_CONTEXT["theme_json"] = theme_json if isinstance(theme_json, dict) else {}
 
 
 def ensure_root_section_class(block_markup: str, section_id: str) -> str:
@@ -319,6 +336,9 @@ def _convert_section_body(html: str, css: str, media_map: dict,
     # section don't bleed into this one's result dict.
     v3.clear_gap_candidates()
 
+    # Stage 4.5 — reset token-resolution accumulator for this section.
+    v3.clear_token_resolutions()
+
     # Find the section root — first element child of soup
     root = soup.find()
     if root is None:
@@ -332,6 +352,7 @@ def _convert_section_body(html: str, css: str, media_map: dict,
             "block_markup": "",
             "variation_css": "",
             "attribute_gap_candidates": [],
+            "token_resolutions": [],
         }
 
     block_markup = v3.walk(root, css_rules, variation_buf, depth=0, is_top_level=True) or ""
@@ -420,6 +441,9 @@ def _convert_section_body(html: str, css: str, media_map: dict,
     # INSERT OR IGNORE and returns the written rows for the result dict.
     gap_candidates = v3.flush_gap_candidates()
 
+    # Stage 4.5 — flush token resolutions accumulated during walk().
+    token_resolutions = v3.flush_token_resolutions()
+
     return {
         "boundary_id": resolved_section_id or selector,
         "section_id": resolved_section_id,
@@ -430,4 +454,5 @@ def _convert_section_body(html: str, css: str, media_map: dict,
         "block_markup": block_markup,
         "variation_css": "\n".join(variation_buf),
         "attribute_gap_candidates": gap_candidates,
+        "token_resolutions": token_resolutions,
     }

@@ -104,6 +104,127 @@ _IMPORTANT_RE = re.compile(r"\s*!important\s*$", re.IGNORECASE)
 _LIFT_CONTEXT: dict = {}
 
 # ============================================================================
+# Stage 4.5 — Token resolution accumulator (Spec 16 §FR6 D1)
+# ============================================================================
+# Collects token-snap results during a per-section conversion run.
+# Reset at the start of every section via clear_token_resolutions().
+# Flushed to the per-section result dict via flush_token_resolutions().
+# Each entry matches token_resolver.resolve() output shape:
+#   {block_slug, attr_name, raw_value, role, token_slug, css_var,
+#    confidence, is_gap_candidate, snap_skipped_reason}
+# ============================================================================
+_TOKEN_RESOLUTIONS: list[dict] = []
+
+
+def clear_token_resolutions() -> None:
+    """Reset the accumulator at the start of a fresh section conversion."""
+    global _TOKEN_RESOLUTIONS
+    _TOKEN_RESOLUTIONS = []
+
+
+def flush_token_resolutions() -> list[dict]:
+    """Return the accumulated resolutions and clear the list.
+
+    Called by __init__.py after walk() completes to include the snapped
+    token resolutions in the per-section result dict.
+    """
+    global _TOKEN_RESOLUTIONS
+    out = list(_TOKEN_RESOLUTIONS)
+    _TOKEN_RESOLUTIONS = []
+    return out
+
+
+# Lazy-load token_resolver (sibling module in parent orchestrator/ directory).
+# Soft-fail: returns None on any import error so token-snap never breaks conversion.
+_TOKEN_RESOLVER_MOD = None
+
+
+def _get_token_resolver():
+    """Return the token_resolver module, loading it lazily on first call."""
+    global _TOKEN_RESOLVER_MOD
+    if _TOKEN_RESOLVER_MOD is None:
+        import importlib.util as _ilu
+        _tr_path = Path(__file__).parent.parent / "token_resolver.py"
+        if _tr_path.exists():
+            try:
+                spec = _ilu.spec_from_file_location("_cv2_token_resolver", _tr_path)
+                mod = _ilu.module_from_spec(spec)
+                spec.loader.exec_module(mod)
+                _TOKEN_RESOLVER_MOD = mod
+            except Exception:
+                _TOKEN_RESOLVER_MOD = None
+    return _TOKEN_RESOLVER_MOD
+
+
+def _snap_attrs_to_tokens(
+    block_slug: str,
+    attrs_source: dict,
+    attr_name_map: "dict[str, str] | None" = None,
+) -> None:
+    """Resolve attrs_source values against theme.json tokens and rewrite in place.
+
+    For each key/value pair in attrs_source whose value is a non-empty string:
+      - If confidence >= 0.6 and css_var is non-null: rewrite the value to css_var.
+      - Record the resolution (snapped or gap) in _TOKEN_RESOLUTIONS.
+      - For gap candidates: also call _record_gap_candidate so they appear in D3.
+
+    attr_name_map: optional dict mapping attrs_source keys to the attr_name expected
+    by the resolver (e.g. {"color": "colour"}). When None, keys are used as-is.
+
+    Universal — applies to any block_slug / attr combination.
+    """
+    tr_mod = _get_token_resolver()
+    if tr_mod is None:
+        return  # resolver unavailable — soft-fail, keep raw values
+
+    theme_json = _LIFT_CONTEXT.get("theme_json") or {}
+
+    items = []
+    key_to_attr_name = {}
+    for k, v in attrs_source.items():
+        if not isinstance(v, str) or not v.strip():
+            continue
+        attr_name = (attr_name_map or {}).get(k, k)
+        items.append({"block_slug": block_slug, "attr_name": attr_name, "raw_value": v})
+        key_to_attr_name[k] = attr_name
+
+    if not items:
+        return
+
+    try:
+        resolutions = tr_mod.resolve_batch(items, theme_json, min_confidence=0.6)
+    except Exception:  # noqa: BLE001 — token-snap must never break conversion
+        return
+
+    for res in resolutions:
+        _TOKEN_RESOLUTIONS.append(res)
+        attr_name = res.get("attr_name", "")
+        # Find the original key in attrs_source that maps to this attr_name
+        orig_key = attr_name  # default: attr_name IS the key
+        for k, a in key_to_attr_name.items():
+            if a == attr_name:
+                orig_key = k
+                break
+
+        if (
+            res.get("confidence", 0.0) >= 0.6
+            and res.get("css_var")
+            and not res.get("is_gap_candidate")
+            and orig_key in attrs_source
+        ):
+            # Rewrite the raw literal to the css_var token reference
+            attrs_source[orig_key] = res["css_var"]
+        elif res.get("is_gap_candidate") and res.get("role") is not None:
+            # Surface as a D3 gap candidate (same as unlifted CSS rules)
+            _record_gap_candidate(
+                block_slug,
+                attr_name,
+                res.get("raw_value") or "",
+                f"token_snap_gap:{attr_name}",
+            )
+
+
+# ============================================================================
 # D3 — Attribute gap candidate accumulator
 # ============================================================================
 # Collects unlifted CSS rules during a per-section conversion run.  Entries are
@@ -1608,6 +1729,134 @@ def _flatten_wp_style_to_sgs_flat(style_dict: dict, extra_top: dict,
     return flat
 
 
+# ============================================================================
+# Stage 4.5 — Token-snap helper for WP block style dicts
+# ============================================================================
+# _snap_style_dict_leaves walks the nested WP block style dict produced by
+# _lift_root_supports_to_style / _lift_core_block_style and snaps each leaf
+# string value to a theme.json token CSS var when confidence >= 0.6.
+#
+# Path → role mapping (WP native style dict conventions):
+#   style.color.*                 → color  (background, text, gradient)
+#   style.spacing.*               → spacing (padding.*, margin.*, blockGap)
+#   style.typography.fontSize     → font_size
+#   style.typography.fontFamily   → family
+#   style.border.color            → color (only the colour sub-key)
+#
+# Skips:
+#   - Values already in WP token format ("var:preset|*" or "var(--wp--preset--*)")
+#   - Border sub-keys that are not colours (width, radius, style)
+#   - Values that are not strings or are empty
+#
+# Universal — applies to any block_slug. No Mama-specific logic.
+# ============================================================================
+# Map from (top-level key) → token role. "border" is handled specially (only
+# colour sub-keys snap; width/radius/style sub-keys skip).
+_STYLE_KEY_TO_ROLE: dict[str, str] = {
+    "color":      "color",
+    "spacing":    "spacing",
+    "typography": "font_size",  # font-size is the primary snap target; fontFamily override below
+}
+# Fine-grained overrides: (top_key, leaf_key) → role.
+_STYLE_SUBKEY_ROLE_OVERRIDE: dict[tuple[str, str], str] = {
+    ("typography", "fontFamily"): "family",
+}
+# Border sub-keys that represent colours (all others skip).
+_BORDER_COLOUR_SUBKEYS: frozenset[str] = frozenset({"color", "colour"})
+
+# Prefix patterns that signal a value is already a WP token reference —
+# no snap needed, skip silently.
+_ALREADY_TOKEN_PREFIXES: tuple[str, ...] = (
+    "var:preset|",      # WP block attrs format: var:preset|color|slug
+    "var(--wp--preset",  # CSS custom property format already resolved
+)
+
+
+def _snap_style_dict_leaves(block_slug: str, style: dict) -> None:
+    """Walk `style` recursively and snap leaf string values to theme.json tokens.
+
+    Mutates `style` in-place: snapped leaves are replaced with the css_var string.
+    Records every resolution (snapped or gap) in _TOKEN_RESOLUTIONS.
+    Soft-fail: any exception per-leaf is swallowed so a bad value never breaks convert.
+
+    Universal — no Mama-specific logic.
+    """
+    tr_mod = _get_token_resolver()
+    if tr_mod is None:
+        return
+    theme_json = _LIFT_CONTEXT.get("theme_json") or {}
+    if not theme_json:
+        # No registry available — still attempt the call so the resolver emits
+        # its "empty registry slice" warning (per token_resolver.py:182 pattern).
+        pass  # fall through to the per-leaf resolve calls below
+
+    def _snap_leaf(path_keys: list, parent: dict, key: object, value: str) -> None:
+        """Resolve one leaf value and rewrite it if snapped."""
+        # Skip values already in WP token format.
+        if any(value.startswith(p) for p in _ALREADY_TOKEN_PREFIXES):
+            return
+
+        # Determine role from the path. path_keys[0] is the top-level style key.
+        top_key = path_keys[0] if path_keys else ""
+
+        # Handle border specially: only snap colour sub-keys; skip width/radius/style.
+        if top_key == "border":
+            leaf_key = str(key)
+            if leaf_key not in _BORDER_COLOUR_SUBKEYS:
+                return  # not a colour — skip without recording
+            role_from_path = "color"
+        else:
+            role_override = _STYLE_SUBKEY_ROLE_OVERRIDE.get((top_key, str(key)))
+            role_from_path = role_override or _STYLE_KEY_TO_ROLE.get(top_key)
+            if role_from_path is None:
+                return  # unknown section — skip
+
+        # Build a synthetic attr_name the resolver will recognise for the role.
+        # We want _role_for_attr(attr_name) == role_from_path.
+        role_to_synthetic_attr: dict[str, str] = {
+            "color":     "backgroundColor",
+            "spacing":   "paddingTop",
+            "font_size": "fontSize",
+            "shadow":    "boxShadow",
+            "family":    "fontFamily",
+        }
+        attr_name = role_to_synthetic_attr.get(role_from_path, "backgroundColor")
+
+        # Use dot-separated path as a readable unique attr_name for the record.
+        full_attr_name = ".".join(str(k) for k in path_keys) + f".{key}"
+
+        try:
+            res = tr_mod.resolve(block_slug, attr_name, value, theme_json, min_confidence=0.6)
+        except Exception:  # noqa: BLE001
+            return
+
+        # Store with the full path key so the orchestrator record is informative.
+        _TOKEN_RESOLUTIONS.append({**res, "attr_name": full_attr_name})
+
+        if (
+            res.get("confidence", 0.0) >= 0.6
+            and res.get("css_var")
+            and not res.get("is_gap_candidate")
+        ):
+            parent[key] = res["css_var"]
+        elif res.get("is_gap_candidate") and res.get("role") is not None:
+            _record_gap_candidate(
+                block_slug,
+                full_attr_name,
+                value,
+                f"token_snap_gap:{full_attr_name}",
+            )
+
+    def _walk(path_keys: list, node: dict) -> None:
+        for k, v in node.items():
+            if isinstance(v, dict):
+                _walk(path_keys + [k], v)
+            elif isinstance(v, str) and v.strip():
+                _snap_leaf(path_keys, node, k, v)
+
+    _walk([], style)
+
+
 def _lift_core_block_style(
     node: "Tag",
     classes: list[str],
@@ -1770,6 +2019,10 @@ def _lift_core_block_style(
             _trace("css_decl_skipped", target_block=block_slug,
                    css_prop=css_prop, reason=f"exception:{exc}")
             continue
+
+    # Stage 4.5 — Token snap on core-block style lifted values.
+    if style:
+        _snap_style_dict_leaves(block_slug, style)
 
     return style, extra_top
 
@@ -2131,6 +2384,14 @@ def _lift_root_supports_to_style(
 
     if style:
         attrs["style"] = style
+
+    # ---- Stage 4.5 — Token snap on root-support lifted values.
+    # After writing style into attrs, snap any colour / spacing / font-size values
+    # that matched against theme.json tokens at confidence >= 0.6.
+    # _snap_style_dict_leaves mutates style in-place and records each resolution
+    # in _TOKEN_RESOLUTIONS for the orchestrator to harvest.
+    if style:
+        _snap_style_dict_leaves(block_slug, style)
 
 
 def _css_value_to_attr(value: str, kind: str) -> object | None:
