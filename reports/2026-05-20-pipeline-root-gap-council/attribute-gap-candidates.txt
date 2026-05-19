@@ -1,0 +1,73 @@
+--- attribute_gap_candidates schema ---
+  id                        INTEGER
+  block_slug                TEXT
+  attr_name                 TEXT
+  stem                      TEXT
+  proposed_action           TEXT
+  created_at                TEXT
+
+--- total rows: 1009 ---
+
+--- top 30 by block_slug x proposed_action ---
+     87  sgs/button :: new-canonical-slot-needed
+     72  sgs/text :: new-canonical-slot-needed
+     65  sgs/quote :: new-canonical-slot-needed
+     52  sgs/heading :: new-canonical-slot-needed
+     38  sgs/post-grid :: new-canonical-slot-needed
+     36  sgs/container :: new-canonical-slot-needed
+     33  sgs/mobile-nav :: new-canonical-slot-needed
+     29  sgs/hero :: new-canonical-slot-needed
+     25  sgs/media :: new-canonical-slot-needed
+     21  sgs/trustpilot-reviews :: new-canonical-slot-needed
+     20  sgs/announcement-bar :: new-canonical-slot-needed
+     20  sgs/label :: new-canonical-slot-needed
+     19  sgs/gallery :: new-canonical-slot-needed
+     18  sgs/form :: new-canonical-slot-needed
+     18  sgs/google-reviews :: new-canonical-slot-needed
+     18  sgs/team-member :: new-canonical-slot-needed
+     17  sgs/info-box :: new-canonical-slot-needed
+     16  sgs/decorative-image :: new-canonical-slot-needed
+     14  sgs/multi-button :: new-canonical-slot-needed
+     13  sgs/icon :: new-canonical-slot-needed
+     12  sgs/card-grid :: new-canonical-slot-needed
+     12  sgs/divider :: new-canonical-slot-needed
+     12  sgs/pricing-table :: new-canonical-slot-needed
+     11  sgs/feature-grid :: new-canonical-slot-needed
+     10  sgs/cta-section :: new-canonical-slot-needed
+     10  sgs/table-of-contents :: new-canonical-slot-needed
+      9  sgs/countdown-timer :: new-canonical-slot-needed
+      9  sgs/mega-menu :: new-canonical-slot-needed
+      8  sgs/brand-strip :: new-canonical-slot-needed
+      8  sgs/testimonial :: new-canonical-slot-needed
+
+--- top 30 missing attr_name stems ---
+     17  attribution
+     14  fieldName
+     14  conditionalValue
+     14  conditionalOperator
+     14  conditionalField
+     13  required
+     13  placeholder
+     13  helpText
+     11  sgs
+     10  custom
+      9  show
+      7  sgsHover
+      6  closeButton
+      5  display
+      4  trigger
+      4  shape
+      4  order
+      4  inherit
+      4  font-size
+      4  firstLetter
+      4  colour
+      4  bg
+      3  wrap
+      3  submit
+      3  submenuIndent
+      3  sublink
+      3  splitColumnRatio
+      3  socialIcon
+      3  popularBadge
+      3  line-height
