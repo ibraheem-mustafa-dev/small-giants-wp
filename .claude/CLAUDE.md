@@ -33,7 +33,17 @@ See `subprojects.md`.
 
 For a fast cold-start orientation read: `quickstart.md`.
 
-## Binding methodology rules (2026-05-15, blub.db rows 254-256, 272)
+## Phase 1 Spec 16 §FR6 architectural rewrite + Phase 2 future capabilities (shipped 2026-05-20)
+
+13 commits (`8ceb8787` → `bb3de12b`) implementing Spec 16 §FR6 four-destination CSS router + cascade-on-edit token-snap + Phase 2 future capabilities. See:
+
+- **Pipeline changes:** `.claude/cloning-pipeline-flow.md` 2026-05-20 section
+- **Architectural decisions:** `.claude/decisions.md` D1-D6 (path-A activation / strict-match / router / chrome defence-in-depth / promotion-is-band-aid / native register_block_variation)
+- **Honest-path council finding:** `reports/2026-05-20-pipeline-root-gap-council/real-path-synthesis.md` — operator-promotion is end-of-line cleanup, not primary pixel-diff path. Structural gaps G1-G5 + F5 close the dominant 50-85% gap.
+- **Spec 16 §13 + §14:** implementation status + known gaps blocking ≤1% target
+- **Common WP errors §U + §V + §W:** scope-prefix-breaks-lookup, self-closing-breaks-InnerBlocks, measurement-contamination
+
+## Binding methodology rules (2026-05-15, blub.db rows 254-256, 272 + 5 new 2026-05-20)
 
 These rules apply to all SGS converter / clone pipeline / visual-QA work. Re-violation = recurring correction.
 
@@ -44,6 +54,12 @@ These rules apply to all SGS converter / clone pipeline / visual-QA work. Re-vio
 3. **Per-section cropped pixel diff** via `scripts/pixel-diff.py --selector .sgs-{section}`, NOT full-page. Full-page has ~30-45% structural noise floor. Each section closes independently at ≤ 1% across 375 / 768 / 1440 viewports. See `feedback_per_section_cropped_pixel_diff.md`.
 
 4. **Schema enumeration BEFORE any "missing column" / "missing table" / "missing section" claim** (added 2026-05-19, blub.db row 272). Run `python ~/.claude/hooks/wp-blocks.py dump` to emit the full schema manifest (all 3 DBs — wp core blocks + sgs-framework + uimax) BEFORE claiming any gap. Partial-scan failure: agent queries 60% of columns, declares a gap, the missing column exists in the unscanned 40%. Any DB-schema claim must cite the enumeration that returned it; uncited claims are treated as unverified. See `feedback_schema_enumeration_before_gap_claims.md` + research synthesis at `~/.openclaw/workspace/memory/research/2026-05-19-agent-schema-enumeration-discipline.md`.
+
+5. **Token-snap MUST require strict exact-match** (added 2026-05-20). Snap only when token's resolved value EQUALS the literal within tight tolerance (ΔE ≤ 1.0 for colour, ≤ 1px for spacing/font-size). "Nearest match" (confidence 0.85) is not snap-eligible — it silently introduces visible drift. Bean's binding step 3: "if value matches global default, use token; if not, insert literal." See `mistakes.md` 2026-05-20 lesson 1 + commit `8a996194`.
+
+6. **Operator-promotion is end-of-line cleanup, NOT primary pixel-diff path** (added 2026-05-20). 3-rater honest-path council confirmed: dominant 50-85% of remaining pixel-diff comes from STRUCTURAL gaps (cv2 emit shape, scope-breaks-lookup, slot-resolver text-only, measurement contamination, DOM-shape mismatches). Promotion closes the last 5-10% AFTER structural fixes land. Running promotion first produces 1-3% per section while leaving 50%+ failures untouched. See `mistakes.md` 2026-05-20 lesson 4.
+
+7. **CSS-scope-prefix audit required when introducing scoped CSS** (added 2026-05-20). When you introduce a CSS-scope prefix (e.g. `.page-id-N`) anywhere in the pipeline, grep every internal consumer of that CSS for the original (unscoped) match pattern. P1.B.x scoped variation CSS for cascade isolation — silently broke cv2's `_collect_css_decls_for_element` which still searched for bare `.sgs-X`. See `mistakes.md` 2026-05-20 lesson 3 + `specs/common-wp-styling-errors.md` §U.
 
 ## Spec 20 — Structured pipeline log surfacing (shipped 2026-05-19)
 

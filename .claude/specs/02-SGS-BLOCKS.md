@@ -1368,3 +1368,13 @@ Six shared React components in plugins/sgs-blocks/src/components/universal-exten
 ### Block attribute audit (Phase 2A Branch G)
 
 Audit report at reports/2026-05-20-block-attribute-audit.csv. 9 block.json retrofits applied. Confirmed: imageControls is the only supports.sgs flag the universal extensions gate on. All other extensions are attribute-driven (apply universally via render_block filters).
+
+---
+
+## 2026-05-20 — Block-variation system (P2.iii) + attribute-gap promotion path (P2.ii)
+
+**Block variations:** cv2 walker now has an `essence_match_variation` tier (confidence 0.70-0.90) that emits `register_block_variation()` named variants (e.g. featured-product-card, trial-product-card as variants of sgs/product-card) instead of scaffolding new blocks. PHP variations registered via `includes/variations/sgs-*.php` files auto-discovered by `class-sgs-block-variations.php`. Implementation: `essence_match_detector.py` + `convert.py` walker tier integration. Commit `36ef9552`.
+
+**Attribute promotion:** new operator-driven CLI `stage_attribute_promotion.py` (commands: `list --top N`, `promote --id <row_id>`, `status`) mutates block.json `attributes` + emits render.php inline-style branch for promoted gap candidates. Reads from BOTH uimax DB + sgs-framework DB candidates (1128-row backlog). Manual confirmation gate + idempotent. Commit `37c92950`.
+
+**How blocks evolve over time:** during clone runs, cv2 routes gap candidates to D3 (per Spec 16 §FR6). Operator periodically runs the promotion CLI to convert high-confidence candidates into block.json schema additions. Next clone run picks up the new attrs, lifting them via D1 instead of flagging as gap. Each promoted attr permanently expands the block's typed surface for future clones.

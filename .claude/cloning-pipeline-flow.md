@@ -1488,3 +1488,72 @@ All remaining tables (block_capabilities, block_changes, block_selectors, compon
 ### Reference-only uimax tables (not read/written by pipeline)
 
 chart_templates (626), design_tokens (5164), google_fonts (1923), app_interface (30), charts (25), colors (269), icon_libraries (225), icons (105), interaction_patterns (30), landing (34), mood_boards/mood_board_items (0), products (161), react_performance (44), stack_* tables (0-60 each), styles (84), typography (74), ui_reasoning (161), ux_guidelines (161), gov_patterns (68), ft_chart_vocabulary (39).
+
+---
+
+## 2026-05-20 — Phase 1 Spec 16 §FR6 architectural rewrite + Phase 2 future capabilities
+
+13 commits (`8ceb8787` → `bb3de12b`) shipped this session. Pipeline status changes:
+
+### Stage 10 — Variation activation wired (commit `8ceb8787`)
+- NEW REST endpoint `POST /wp-json/sgs/v1/active-variation` at `plugins/sgs-blocks/includes/class-variation-rest.php`
+- `upload_and_patch.py --client <slug>` activates the matching style variation via `set_theme_mod('active_theme_style', $slug)` after page-PATCH
+- Read-back confirmation + exit code 3 distinct from generic deploy failure
+- STATUS: LIVE
+
+### Stage 4.5 — Token-snap now actually fires (commits `7b3101fc` + `8a996194`)
+- `token_resolver.resolve_batch` wired into cv2's `_lift_root_supports_to_style` + `_lift_core_block_style` via `_snap_style_dict_leaves` helper
+- Strict exact-match guard at `_strict_snap_passes`: colour requires ΔE ≤ 1.0 or hex equality; spacing/font-size require ≤ 1px delta; below threshold → keep literal + surface gap candidate
+- Per-section `token_resolutions` accumulator (mirrors `_GAP_CANDIDATES` pattern)
+- STATUS: LIVE; flow doc previously claimed it was wired but it was never actually called — now actually invokes
+
+### Stage 0.7 — Four-destination router replaces verbatim CSS dump (commits `05fb38a4` + `44ba373b` + `dce5a496`)
+- NEW module: `plugins/sgs-blocks/scripts/orchestrator/css_router.py` (~661 LOC)
+- D0 = global/reset (unscoped variation CSS), D1 = typed-attr-lift with token-snap (sidecar JSON), D2 = wrapper-CSS scoped `.page-id-N`, D3 = gap-candidate DB + D2 fallback
+- NEW artefact: `pipeline-state/<run>/css-d1-assignments.json` (D1 sidecar consumed by cv2)
+- `@media` inner selectors scoped via `_scope_media_rule()` (P1.B.x fix — base specificity inversion bug)
+- D1 attr-suffix scan over all block attrs (P1.B.x — was 3-candidate heuristic; now full scan)
+- D2 emission filters out properties already lifted to D1
+- D1 sidecar key format `block_slug:section_id` (multi-instance support)
+- D1 media field preserved (responsive variant resolution pending — F5 next session)
+- Chrome-skip rules route to D0 (not silent drop)
+- STATUS: LIVE; flow doc Stage 0.7 status changes from "wrong-architecture" to "Spec 16 §FR6 compliant"
+- **KNOWN GAP (next session G2):** cv2's `_collect_css_decls_for_element` still searches for bare `.sgs-X` selectors; the `.page-id-N` scope prefix introduced by the router breaks lookup. Strip prefix in cv2 matcher to close.
+
+### Stage 9b — Autonomy chrome-skip + scaffold quality scoring (commit `3a70587c`)
+- `_is_chrome_section()` detects header/footer/nav at 4 boundary signal levels (slug / selector tag / class BEM root / section_id) before scaffolding
+- `score_scaffold()` quality scoring (0-5 by file presence/validity); `scaffold_quality_report` in stage-9b.json output
+- Role-specific inspector controls in generated `edit.js` (6 roles: color/typography/layout/text-content/image-object/motion)
+
+### New tool-layer enforcement (commit `8838b6fb`)
+- `.claude/hooks/no-header-footer-block.py` PostToolUse hook hard-rejects Write|Edit on `plugins/sgs-blocks/src/blocks/(header|footer|nav)/`
+- Defence-in-depth with Stage 9b chrome-skip (P2.i)
+
+### New orchestrator capability — attribute-gap promotion (commit `37c92950`)
+- NEW CLI: `plugins/sgs-blocks/scripts/orchestrator/stage_attribute_promotion.py`
+- Three commands: `list --top N` / `promote --id <row_id>` / `status`
+- Manual confirmation gate + idempotent
+- Reads BOTH uimax DB + sgs-framework DB candidates
+- Mutates block.json `attributes` + emits render.php inline-style branch
+- Operator-driven (not automatic); designed to close R2 dead-CSS gap over time
+- STATUS: LIVE; honest-path council assessment 2026-05-20: this is end-of-line cleanup (last 5-10%), NOT primary pixel-diff path
+
+### New cv2 walker tier — block-variation system (commit `36ef9552`)
+- NEW module: `plugins/sgs-blocks/scripts/orchestrator/essence_match_detector.py`
+- Confidence band 0.70-0.90 against existing block → emit `register_block_variation()` named variant instead of new-block scaffold
+- New cv2 walker tier `essence_match_variation` between FR1 and scaffold path
+- PHP loader at `includes/variations/class-sgs-block-variations.php` (glob auto-discovery)
+- STATUS: LIVE infrastructure; activation depends on cv2 detection firing during real clone runs
+
+### Known gaps blocking ≤ 1% pixel-diff target (per 2026-05-20 honest-path council)
+
+See `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` §14 for full evidence + fix-shape per gap.
+
+- **G1** — cv2 self-closing `wp:sgs/hero` emit → InnerBlocks (CTAs) never serialise → empty container on rendered page. ~50pp of hero's 67.8% gap.
+- **G2** — `.page-id-N` scope breaks cv2's CSS lookup → kills 60-80% of value-lift on SGS-registered blocks.
+- **G3** — Stage 3 slot resolver only reads text content → 142 of hero's 171 slots return empty.
+- **G4** — Pixel-diff measurement contaminated by WP admin bar + sgs-header → +10-20pp inflation on EVERY section.
+- **G5** — Per-block DOM-shape mismatches (`<blockquote>` vs `<section>`; mockup-grid vs render-carousel; mockup-SVG vs Lucide-slug).
+- **F5** — D1 media-field flow: responsive variants stored but not routed to `<attr>Mobile`/`<attr>Tablet`/`<attr>Desktop` block.json variant attrs.
+
+Next session: full Phase 1 closure G1-G5 + F5 in 4 waves. See `.claude/next-session-prompt.md`.

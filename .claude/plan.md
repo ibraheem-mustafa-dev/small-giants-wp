@@ -87,3 +87,11 @@ Fresh sessions per boundary OK; Spec 13 + lesson + rule capture mean any session
 - Stage 7 (Docscore) deferred - context-constrained this session; recommend running on each phase file at session-start of next session before execution
 
 If Bean wants any of these added retroactively, route via `/docscore` per phase file.
+
+---
+
+## 2026-05-20 — Phase 1 closure plan (G1-G5 + F5) — successor
+
+This master plan was archived 2026-05-18; Phase 7 (Spec 16 converter rollout) and Phase 8 (section-by-section closure) shipped. The Spec 16 architectural rewrite work was tracked in `.claude/plans/phase-1-spec16-rewrite-2026-05-20.md` (executed this session — all of Phase 1 P1.A + P1.B + P1.B.x + Phase 2 wave shipped across 13 commits).
+
+**Active successor plan:** `.claude/next-session-prompt.md` — 4-wave G1-G5 + F5 closure to hit ≤ 1% pixel-diff per section. Council synthesis at `reports/2026-05-20-pipeline-root-gap-council/real-path-synthesis.md`.

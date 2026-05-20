@@ -744,3 +744,15 @@ view.js runs a ResizeObserver on header.wp-block-template-part publishing --sgs-
 ### Pattern fate (decision pending)
 
 The 3 framework-header stub patterns (framework-header-transparent, -sticky, -shrink) all delegate 100% to default. Now that behaviour layer attaches via body_class, the stubs are byte-identical to default + a behaviour rule. Branch J audit recommendation: delete the 3 stubs. Operator workflow becomes pure: SGS to Header Rules + behaviour dropdown. Decision needs Bean confirmation — see reports/2026-05-20-framework-header-stub-audit.md for trade-offs.
+
+---
+
+## 2026-05-20 — Structural enforcement (defence-in-depth): P2.0 + P2.i
+
+After 5 occurrences of header/footer/nav being scaffolded as Gutenberg blocks (blub.db row 274), single-layer enforcement insufficient. Two-layer defence shipped this session:
+
+**Tool layer (P2.0, commit `8838b6fb`):** `.claude/hooks/no-header-footer-block.py` PostToolUse hook hard-rejects `Write|Edit` on `plugins/sgs-blocks/src/blocks/(header|footer|nav)/`. Path-anchored regex with `(/|$)` boundary; does NOT block legitimate template-part edits at `theme/sgs-theme/parts/header.html`, plugin-side files like `includes/class-sgs-header-rules.php`, or CSS files with "header" in their name.
+
+**Source layer (P2.i, commit `3a70587c`):** `_is_chrome_section()` in Stage 9b autonomy chain detects chrome at 4 boundary signal levels (slug / selector tag / class BEM root / section_id). Chrome sections surface as `unmatched-chrome-skipped` in stage-9b.json output instead of triggering the scaffolder.
+
+This is the canonical pattern: tool-layer hook is the safety net; source-layer chrome-skip prevents the autonomy chain from CAUSING the anti-pattern. Both fail-independent.

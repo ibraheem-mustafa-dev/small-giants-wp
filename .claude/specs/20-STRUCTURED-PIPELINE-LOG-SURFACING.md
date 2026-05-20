@@ -122,3 +122,17 @@ Re-run after commit 1ea586b2:
 - `cloning-pipeline-flow.md` Stage 9c entry + Stage 10 entry
 - `.claude/skills/wp-sgs-deploy/SKILL.md` — companion framework-deploy skill
 - `feedback_universal_extraction_no_per_block_legacy.md` — same root philosophy (universal extraction, observable evidence)
+
+---
+
+## 2026-05-20 — New per-run artefacts that supplement Stage 9c logs
+
+Stage 9c surface logs unchanged. Additional artefacts written by Phase 1 + Phase 2 work this session:
+
+- **`css-d1-assignments.json`** (Stage 0.7 four-destination router) — D1 typed-attr-lift sidecar consumed by cv2
+- **`extract.json` per-section `token_resolutions: [...]`** (Stage 4.5 token-snap accumulator) — snap results with confidence + role + gap-candidate flag
+- **`extract.json` per-section `essence_matches: [...]`** (cv2 walker variation tier) — block-variation detection events
+- **`stage-9b.json` `scaffold_quality_report`** (autonomy quality scoring) — per-scaffolded-block 5-file scoring
+- **`stage-9b.json` `chrome_skipped`** + `chrome_skipped_count` — sections rejected from scaffolding by `_is_chrome_section()`
+
+These artefacts are operator-readable diagnostic surfaces alongside the 4 sidecar logs (summary, errors, warnings, chrome-skipped). Use them to verify Phase 1 + Phase 2 wiring fired per-run.

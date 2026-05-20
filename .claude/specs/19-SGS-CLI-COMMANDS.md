@@ -411,3 +411,18 @@ wp --user=1 eval '$rules = get_option("sgs_header_rules", []); foreach($rules as
 ```
 
 **Next session work:** extend `Sgs_Header_Rules::add_rule()` to accept + sanitise `behaviour` from the input JSON. Add `--behaviour=<slug>` examples to the CLI help. Estimated 20 min.
+
+---
+
+## 2026-05-20 — Out-of-scope but operator-relevant: stage_attribute_promotion.py CLI
+
+This spec owns the `wp sgs *` PHP CLI surface (12 commands via WP-CLI). A separate operator-driven Python CLI shipped in the orchestrator scope this session:
+
+**`plugins/sgs-blocks/scripts/orchestrator/stage_attribute_promotion.py`** (commit `37c92950`):
+- `python stage_attribute_promotion.py list --top N` — ranked candidates from `attribute_gap_candidates` (uimax + sgs-framework DBs)
+- `python stage_attribute_promotion.py promote --id <row_id>` — mutate block.json + render.php (manual confirm gate)
+- `python stage_attribute_promotion.py status` — promoted vs pending counts
+
+NOT a `wp sgs` subcommand because (a) it mutates source files outside WP runtime, (b) it requires manual operator confirmation gate, (c) it operates on dev-machine artefacts not server state. If future maintenance wants a `wp sgs promote-attribute` wrapper around it, that would belong in this spec.
+
+**Sgs_Variation_REST** (commit `8ceb8787`): also a separate REST surface at `sgs/v1/active-variation` (POST + GET; `manage_options` gated). Activates the style variation site-wide via `set_theme_mod`. Not exposed as a `wp sgs` command — called by the clone pipeline's Stage 10 via HTTP (REST endpoint) rather than via wp-cli.

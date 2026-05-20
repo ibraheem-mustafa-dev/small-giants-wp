@@ -2032,3 +2032,27 @@ git push
 ```
 
 No CI/CD pipeline — deployment is manual via `scp` as described above.
+
+---
+
+## 2026-05-20 — Phase 1 Spec 16 §FR6 architectural rewrite + Phase 2 future capabilities
+
+13 commits (`8ceb8787` → `bb3de12b`) added:
+
+**New modules:**
+- `plugins/sgs-blocks/scripts/orchestrator/css_router.py` (661 LOC) — Spec 16 §FR6 four-destination router (D0/D1/D2/D3)
+- `plugins/sgs-blocks/scripts/orchestrator/stage_attribute_promotion.py` — operator-driven CLI for promoting gap candidates into block.json schema
+- `plugins/sgs-blocks/scripts/orchestrator/essence_match_detector.py` — cv2 walker tier for essence-match-with-differences → block-variation emit
+- `plugins/sgs-blocks/includes/class-variation-rest.php` — sgs/v1/active-variation REST endpoint
+- `plugins/sgs-blocks/includes/variations/class-sgs-block-variations.php` — PHP variations loader
+- `.claude/hooks/no-header-footer-block.py` — PostToolUse hook for chrome-block prevention
+
+**New per-run artefacts:** `css-d1-assignments.json` (D1 sidecar), per-section `token_resolutions` + `essence_matches` in `extract.json`, `scaffold_quality_report` in `stage-9b.json`.
+
+**Cross-references:**
+- Full pipeline changes: `.claude/cloning-pipeline-flow.md` 2026-05-20 section
+- Spec compliance + known gaps: `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` §13 + §14
+- Architectural decisions: `.claude/decisions.md` D1-D6
+- Honest-path council finding: `reports/2026-05-20-pipeline-root-gap-council/real-path-synthesis.md`
+
+**Status:** Spec 16 §FR6 architecturally compliant. Pixel-diff target ≤ 1% per section NOT yet hit — structural gaps G1-G5 + F5 documented for next-session full Phase 1 closure.

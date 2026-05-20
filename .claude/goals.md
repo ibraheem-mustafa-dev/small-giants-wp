@@ -48,3 +48,9 @@ Ship a complete WordPress block framework + theme + supporting plugins (forms, b
 | Client sign-off rate on first Blueprint review | > 70% (Mode B autonomous acceptance) |
 | Council false-positive rate | < 10% per persona after 3 months tuning |
 | DB validated-outcome rows | +50 / quarter once shipping |
+
+## Active goals (added 2026-05-20)
+
+| Goal | Exit criteria | Source |
+|------|--------------|--------|
+| **Phase 1 pixel-diff closure (G1-G5 + F5)** | 1440 average pixel-diff ≤ 5%, 768 ≤ 8%, 375 ≤ 10% across 7 Mama's Munches sections | `.claude/next-session-prompt.md` (4-wave plan); evidence at `reports/2026-05-20-pipeline-root-gap-council/real-path-synthesis.md` |
