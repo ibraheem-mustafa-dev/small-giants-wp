@@ -1,7 +1,27 @@
 ---
 doc_type: parking
 project: small-giants-wp
-last_updated: 2026-05-20
+last_updated: 2026-05-21
+---
+
+## Opened 2026-05-21 (Wave 2 reshape + pipeline reality findings + qc-trio follow-ups)
+
+**P-WAVE-2-RESHAPE-AS-ONE-WIRING-GAP** — G1 + G3 + G5 reframed as ONE wiring gap, not three separate problems. The SGS-framework.db has all the mapping data needed (`property_suffixes` 117 rows, `slot_synonyms` 89 rows, `block_compositions` 37 rows, `block_attributes` 1755 rows, `modifier_suffixes` 19 rows) but cv2 doesn't query all of it consistently. Wave 2 = one architectural change wiring the DB tables into the walker's emit shape, NOT three per-block fixes. See decisions.md Decision 26. **Trigger:** Wave 2 of next session.
+
+**P-BLOCK-COMPOSITIONS-READ-PATH** — `block_compositions` table is WRITE-ONLY in current code. Only `pattern-register.py` + `seed-block-compositions.py` INSERT; nothing reads. Pipeline doc line 354 claims it's read as a fallback — inaccurate. cv2 walker should query `block_compositions` for parent-child block relations to drive nested-block emission shape. **Trigger:** Wave 2 G1+G3+G5 work; concrete fix point in convert.py walker.
+
+**P-FR1-VARIATION-BUF-CONSISTENCY** — FR1 fast path (`convert.py:3670-3689`) shortcuts to `lift_subtree_into_block_attrs()` and returns directly without appending to `variation_buf`. Result: registered SGS blocks (hero, trust-bar) have `variation_css_rules=0` even when CSS is in `_section_css`. One-line fix: `variation_buf.append(_collect_css_for_classes(classes, css_rules))` after line 3675. Universal, not hero-special. **Trigger:** Wave 2 alongside the G1+G3+G5 wiring fix.
+
+**P-QC-COUNCIL-PHASE-B-BACKPORTS** — qc-trio gap-analysis identified 5 backports from /qc-council into /qc + /qc-inline. Phase A shipped this session via Sonnet subagent — branch `feat/qc-skills-backport-from-qc-council` commit `e340cde` in `~/.agents/skills/`. Phase B = optional follow-ups for hard-iteration-cap + persona-disagreement-carry-forward + rationalisation-table integration. Lower priority since the trio is already at 92-94% skillscore. **Trigger:** next skill-optimisation session.
+
+**P-CLONING-PIPELINE-FLOW-DOC-DRIFT** — 2026-05-21 reality check found 2 inaccuracies: (1) line 354 claims `block_compositions` is read as a fallback — actually write-only; (2) entry-point chain "verified 2026-05-13" predates the 2026-05-20 architectural rewrite. Plus 2026-05-21 G2 Step 1+2 changes (orchestrator-side CSS merge into `_section_css` + cv2 scope strip) aren't documented yet. **Trigger:** after G2 Step 1+2 commits land + as part of any pipeline architecture work.
+
+**P-QC-COUNCIL-FIXTURE-SMOKE-TEST** — `~/.agents/skills/qc-council/scripts/fixtures/example-council.json` has the canonical 2026-05-21 Wave-1 (G2 + G4) case study with expected verdicts. Should be run through `/qc-council` to confirm the skill actually catches the planted no-ops as designed. **Trigger:** first real `/qc-council` invocation.
+
+**P-SUBAGENT-DRIVEN-DEV-VERIFY-LOOP-XREF** — `/subagent-driven-development` line 324 was updated to point at `/verify-loop` instead of the deleted `superpowers:test-driven-development`. Cross-check that any other dispatch graph node referencing the deleted skills got migrated. **Trigger:** during next skill-auditor run.
+
+**P-SGS-WAVE-1-G2-COMMIT** — G2 Step 1 (orchestrator merges variation CSS into `_section_css`) + Step 2 (cv2 strips `.page-id-N` scope prefix) + 7 unit tests are uncommitted on branch `fix/g4-measurement-decontamination` in the small-giants-wp repo. Numbers: 5 sections (featured-product / brand / gift / social-proof / ingredients) doubled their `variation_css_rules` (100% gain each); hero + trust-bar stayed at 0 because FR1 fast path bypasses the consumption code (see P-FR1-VARIATION-BUF-CONSISTENCY). Step 1+2 is enabling infrastructure — it doesn't move pixel-diff alone but unlocks G3. **Trigger:** committed + pushed in Phase D of this session OR handoff if not.
+
 ---
 
 ## Opened 2026-05-20 (Phase 1 closure follow-ups + Phase 2 medium-severity items)

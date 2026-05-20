@@ -2831,6 +2831,20 @@ def _collect_css_decls_for_element(
             if not individual_sel:
                 continue
 
+            # G2 — Strip leading `.page-id-N` scope prefix introduced by
+            # css_router.py P1.B.x for cascade isolation. cv2's matcher
+            # works on bare BEM selectors; the scope prefix is irrelevant
+            # to whether THIS rule targets THIS element. Without stripping,
+            # scoped rules in the variation CSS (mamas-munches.css) can never
+            # match bare-selector lookups — 142/171 hero slots + 14/15
+            # trust-bar slots silently return "no value extracted".
+            # See specs/common-wp-styling-errors.md §U + specs/16 §14.2.
+            individual_sel = re.sub(
+                r"^\.page-id-\d+\s+", "", individual_sel
+            )
+            if not individual_sel:
+                continue
+
             parts = individual_sel.split()
             if not parts:
                 continue

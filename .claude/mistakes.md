@@ -1,5 +1,25 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-20 (5 new lessons from Phase 1 architectural rewrite + 3-rater honest-path council)
+**Last updated:** 2026-05-21 (2 new lessons from QC trio + skill cleanup session)
+
+## 2026-05-21 — Two lessons captured (blub.db rows 276 + 277)
+
+### 1. Council predictions need empirical validation before being treated as fix specs (row 276)
+
+The 2026-05-20 honest-path council proposed fixes for G2 + G4. Wave 1 of 2026-05-21 dispatched parallel Sonnet subagents to implement both council-prescribed fixes exactly. Both produced **zero pixel-diff movement**. G2 (cv2 strip `.page-id-N`) was a no-op because cv2 never received scope-prefixed CSS in the first place — the orchestrator only fed it Source A (mockup inline `<style>`), never Source B (the generated variation CSS file). G4 (chrome strip in pixel-diff.py) was a no-op because `el.screenshot()` already clips to element bounding box — chrome above the element was never in the captured pixels. In both cases the diagnostic claim was correct but the proposed fix shape targeted the wrong code path.
+
+**Rule:** any multi-rater council that proposes a fix shape MUST include an empirical-validation step that runs the actual pipeline and measures the predicted outcome BEFORE the fix is treated as an accepted spec. Council output is a hypothesis until validated. Diagnostic claims may be trusted (raters triangulate evidence); fix-shape proposals must be measured (raters infer control flow and frequently miss layered handoffs, fast paths, or framework conventions).
+
+**How to apply:** When a council, debate, or systematic-debugging exercise produces a fix proposal, write the predicted outcome in concrete falsifiable units (either numeric or goal-shaped success criterion). Run the smallest pipeline slice that produces the metric WITHOUT the fix applied. If baseline already matches the predicted post-fix value → diagnosis wrong, re-investigate. If baseline differs → fix proceeds AS A HYPOTHESIS to be measured post-application. The new `/qc-council` skill bakes this gate into Stage 5 so it can't be skipped. Extends mistakes.md 2026-05-20 lesson 5 (multi-rater councils catch band-aids) — turns out councils themselves need empirical validation on top.
+
+### 2. Skills only called by other skills should be non-user-invocable (row 277)
+
+Slash menu has 200+ entries. Skills that exist primarily to be called by other skills (e.g. `/subagent-prompt`, `/requesting-code-review`, `/deploy-check`) add noise that increases overwhelm and indecision when they show in the menu.
+
+**Rule:** When a skill exists primarily to be called by other skills or agents — not for direct user invocation — mark it `user-invocable: false` in its frontmatter. The slash menu shows only skills the operator actively invokes directly; internal helpers stay invocable via the Skill tool by consumer skills but invisible to the menu.
+
+**How to apply:** Identify candidates by (1) no direct-invocation trigger phrases — description starts with "this skill is invoked by X" rather than "use this when you want Y"; (2) skill exists primarily in other skills' Invoked Skills tables, not as a direct operator choice; (3) marking non-user-invocable does not break any consumer (consumers invoke via the Skill tool regardless of menu visibility); (4) triggers list contains generic verbs that create false-positive menu matches. Set `user-invocable: false` on matches. Applied this session to `/requesting-code-review`, `/deploy-check`. Strategic objective: adhd-accessibility — reduces operator-visible noise.
+
+---
 
 ## 2026-05-20 — Five lessons captured (blub.db corrections)
 

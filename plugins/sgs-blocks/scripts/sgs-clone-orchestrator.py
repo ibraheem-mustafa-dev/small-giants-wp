@@ -1390,6 +1390,29 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                 # Extract inline CSS for variation-CSS lifting.
                 _style_blocks = [t.get_text() for t in _soup.find_all("style")]
                 _section_css = "\n\n".join(_style_blocks)
+                # G2 — Merge generated variation CSS into _section_css so cv2's
+                # _collect_css_decls_for_element can see the scoped rules emitted
+                # by css_router (D2 destination). Without this, cv2 only ever
+                # sees the mockup's inline <style> rules; the page-id-scoped
+                # rules in theme/sgs-theme/styles/<client>.css are invisible
+                # to the consumer. Companion to the strip in convert.py
+                # _collect_css_decls_for_element. See specs/16 §14.2 +
+                # specs/common-wp-styling-errors §U. Captured 2026-05-20
+                # honest-path council; producer-side fix 2026-05-21.
+                _variation_css_path = _client_variation_css_path(args.client)
+                if _variation_css_path.exists():
+                    try:
+                        _variation_css = _variation_css_path.read_text(encoding="utf-8")
+                        if _variation_css.strip():
+                            _section_css = (
+                                _section_css
+                                + "\n\n/* variation CSS (G2 merge) */\n"
+                                + _variation_css
+                            )
+                    except OSError as _exc:  # noqa: BLE001
+                        aggregate_warnings.append(
+                            f"{boundary_id}: variation CSS read soft-failed ({_exc})"
+                        )
                 # Find the section element matching the boundary selector.
                 # Prefer ID-based lookup; fall back to class-based CSS selector.
                 _sec_el = None
