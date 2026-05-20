@@ -19,6 +19,7 @@ __all__ = [
     "seed_theme_json",
     "seed_d1_sidecar",
     "reset_pipeline_seed",
+    "flush_essence_matches",
 ]
 
 
@@ -361,6 +362,9 @@ def _convert_section_body(html: str, css: str, media_map: dict,
     # Stage 4.5 — reset token-resolution accumulator for this section.
     v3.clear_token_resolutions()
 
+    # P2.iii — reset essence-match event accumulator for this section.
+    v3.clear_essence_matches()
+
     # Find the section root — first element child of soup
     root = soup.find()
     if root is None:
@@ -375,6 +379,7 @@ def _convert_section_body(html: str, css: str, media_map: dict,
             "variation_css": "",
             "attribute_gap_candidates": [],
             "token_resolutions": [],
+            "essence_matches": [],
         }
 
     block_markup = v3.walk(root, css_rules, variation_buf, depth=0, is_top_level=True) or ""
@@ -466,6 +471,9 @@ def _convert_section_body(html: str, css: str, media_map: dict,
     # Stage 4.5 — flush token resolutions accumulated during walk().
     token_resolutions = v3.flush_token_resolutions()
 
+    # P2.iii — flush essence-match events accumulated during walk().
+    essence_matches = v3.flush_essence_matches()
+
     return {
         "boundary_id": resolved_section_id or selector,
         "section_id": resolved_section_id,
@@ -477,4 +485,5 @@ def _convert_section_body(html: str, css: str, media_map: dict,
         "variation_css": "\n".join(variation_buf),
         "attribute_gap_candidates": gap_candidates,
         "token_resolutions": token_resolutions,
+        "essence_matches": essence_matches,
     }

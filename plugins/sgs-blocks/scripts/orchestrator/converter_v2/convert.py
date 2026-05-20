@@ -77,6 +77,32 @@ except ImportError:
     sys.path.insert(0, str(Path(__file__).parent))
     import db_lookup as db  # type: ignore[no-redef]  # noqa: E402
 
+# P2.iii — essence-match detector (block-variation tier).
+# Lazy-loaded on first use so the module stays import-safe when the orchestrator
+# path doesn't include scripts/orchestrator/ (e.g. in unit-test harnesses that
+# only import converter_v2 directly).
+_essence_match_mod = None
+
+
+def _get_essence_match_detector():
+    """Lazy-load essence_match_detector — returns None on ImportError (soft-fail)."""
+    global _essence_match_mod
+    if _essence_match_mod is not None:
+        return _essence_match_mod
+    try:
+        import importlib.util as _ilu
+        _here = Path(__file__).resolve().parent.parent  # scripts/orchestrator/
+        _candidate = _here / "essence_match_detector.py"
+        if _candidate.exists():
+            spec = _ilu.spec_from_file_location("essence_match_detector", _candidate)
+            mod = _ilu.module_from_spec(spec)
+            spec.loader.exec_module(mod)
+            _essence_match_mod = mod
+            return mod
+    except Exception:  # noqa: BLE001 — variation system must never block emit
+        pass
+    return None
+
 # CSS parsing helpers from prior iteration
 import re
 _RULE_RE = re.compile(r"([^{}]+)\{([^{}]+)\}", re.DOTALL)
@@ -288,6 +314,30 @@ def _get_token_resolver():
 # ============================================================================
 _GAP_CANDIDATES: list[dict] = []
 _GAP_RUN_ID: str = ""  # populated by seed_gap_context() from the orchestrator run_id
+
+# ============================================================================
+# P2.iii — Essence-match event accumulator
+# ============================================================================
+# Collects essence-match (block-variation) events during a per-section run.
+# Each entry describes one candidate → variation routing decision:
+#   {candidate_slug, parent_slug, variation_slug, variation_attrs, confidence}
+# Flushed to the per-section result dict via flush_essence_matches().
+# Reset per section via clear_essence_matches().
+# ============================================================================
+_ESSENCE_MATCH_EVENTS: list[dict] = []
+
+
+def clear_essence_matches() -> None:
+    """Reset the essence-match accumulator at the start of a section run."""
+    global _ESSENCE_MATCH_EVENTS
+    _ESSENCE_MATCH_EVENTS = []
+
+
+def flush_essence_matches() -> list[dict]:
+    """Return + clear the essence-match events for the current section."""
+    events = list(_ESSENCE_MATCH_EVENTS)
+    clear_essence_matches()
+    return events
 
 
 def seed_gap_context(run_id: str) -> None:
@@ -3623,6 +3673,77 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
                 return emit_wp_block(target, merged, inner_markup, self_closing=False)
 
         return emit_wp_block(target, merged, [], self_closing=True)
+
+    # ---- ESSENCE-MATCH TIER (P2.iii — block-variation system) ----
+    # Fires when:
+    #   - FR1 did NOT match (block not in registered catalogue)
+    #   - The BEM class parsed to a bare block reference (no element)
+    #   - The candidate block name scores 0.70-0.90 against a registered block
+    #     (meaning it looks like a variant, not a brand-new block)
+    #
+    # Example: sgs-featured-product-card (not registered) → score 0.84 vs
+    #          sgs/product-card (registered) → emit as sgs/product-card with
+    #          {"variantStyle": "featured"} instead of scaffolding a new block.
+    #
+    # This tier sits between FR1 (≥ 0.90 / registered) and the scaffold path
+    # (< 0.70 / unrecognised). Confidence 0.70-0.90 is the "essence-match band".
+    if (target == "sgs/container" and bem and bem.element is None):
+        # Only try essence-match when the BEM class gave us a potential slug
+        # (i.e. the block portion was parseable but not in the catalogue)
+        candidate_slug = f"sgs/{bem.block}" if bem and bem.block else None
+        if candidate_slug and candidate_slug != "sgs/container":
+            _em_mod = _get_essence_match_detector()
+            if _em_mod is not None:
+                # Probe attrs: lift a lightweight version of the subtree to
+                # build a slot fingerprint without full extraction overhead.
+                try:
+                    _probe_schema = db.block_attrs(candidate_slug) if db.block_exists(candidate_slug) else {}
+                    _probe_attrs = lift_subtree_into_block_attrs(
+                        node, candidate_slug if db.block_exists(candidate_slug) else "sgs/container",
+                        css_rules=css_rules,
+                    )
+                except Exception:  # noqa: BLE001
+                    _probe_attrs = {}
+                try:
+                    em_result = _em_mod.detect_essence_match(candidate_slug, _probe_attrs)
+                except Exception:  # noqa: BLE001
+                    em_result = None
+                if em_result is not None:
+                    _trace(
+                        "walker_branch_taken",
+                        branch="essence_match_variation",
+                        node_tag=node.name,
+                        node_classes=classes,
+                        candidate_slug=candidate_slug,
+                        parent_slug=em_result.parent_slug,
+                        variation_slug=em_result.variation_slug,
+                        confidence=em_result.confidence,
+                        depth=depth,
+                    )
+                    # Record the event for the per-section summary
+                    _ESSENCE_MATCH_EVENTS.append({
+                        "candidate_slug":  candidate_slug,
+                        "parent_slug":     em_result.parent_slug,
+                        "variation_slug":  em_result.variation_slug,
+                        "variation_attrs": em_result.variation_attrs,
+                        "confidence":      em_result.confidence,
+                        "reasoning":       em_result.reasoning,
+                    })
+                    # Lift the full subtree as if this were the parent block
+                    parent = em_result.parent_slug
+                    lifted = lift_subtree_into_block_attrs(node, parent, css_rules=css_rules)
+                    wrapper_attrs = lift_attrs_for_block(parent, node, bem, classes)
+                    # Merge: variation_attrs first so overrides from the instance win
+                    merged = {**wrapper_attrs, **em_result.variation_attrs, **lifted}
+                    # variation_slug as a named attr so the WP block knows which
+                    # variation is active (used by register_block_variation())
+                    merged["_variationSlug"] = em_result.variation_slug  # stripped before emit
+                    _lift_root_supports_to_style(node, parent, css_rules, merged)
+                    if parent in INNER_BLOCK_PATTERNS:
+                        inner_markup = _lift_inner_blocks(node, INNER_BLOCK_PATTERNS[parent])
+                        if inner_markup:
+                            return emit_wp_block(parent, merged, inner_markup, self_closing=False)
+                    return emit_wp_block(parent, merged, [], self_closing=True)
 
     # ---- COMPOSITE-ELEMENT-TO-STANDALONE-BLOCK FAST PATH ----
     # When a node's BEM element resolves to a canonical slot that has a
