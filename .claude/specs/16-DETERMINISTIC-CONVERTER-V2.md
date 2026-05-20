@@ -760,3 +760,63 @@ Mockup uses `<blockquote>` for brand-strip body; render emits `<section>`. Mocku
 **Fix shape:** per-block render.php adjustments OR Block Style Variation additions via P2.iii infrastructure. Each block is a separate, isolated change; parallelisable.
 
 Full evidence: `reports/2026-05-20-pipeline-root-gap-council/real-path-synthesis.md` + per-rater reports (A/B/C). Next-session plan: `.claude/next-session-prompt.md` (4-wave G1-G5 + F5 closure).
+
+## 15. Wave 2 reshape — G1 + G3 + G5 are ONE wiring gap (2026-05-21)
+
+The 2026-05-21 reality check (`/wp-blocks dump` + grep of `plugins/sgs-blocks/scripts/orchestrator/`) reframes §14.1, §14.3, and §14.5 as symptoms of one underlying wiring gap, not three separate problems.
+
+### What the data showed
+
+The SGS-framework.db has the complete mapping infrastructure cv2 needs:
+
+| Table | Rows | Purpose | Currently used by cv2? |
+|---|---|---|---|
+| `property_suffixes` | 117 | CSS property → block-attribute suffix | YES — via `db.css_property_suffixes()` |
+| `slot_synonyms` | 89 | canonical slot → role + tag + standalone block | YES — via slot resolver |
+| `block_compositions` | 37 | parent-child block relations | **NO — WRITE-ONLY** (only `pattern-register.py` + `seed-block-compositions.py` INSERT; nothing reads) |
+| `block_attributes` | 1755 | per-block attribute schema | YES |
+| `modifier_suffixes` | 19 | BEM modifier resolution | YES |
+| `block_supports` | 404 | block_slug → support_name → value | YES |
+| `block_selectors` | 74 | block_slug → element → selector | YES |
+| `legacy_role_lookup` | 17 | kebab role → SGS slug | YES — via `db_lookup.legacy_role_lookup_for()` |
+
+`block_compositions` is the missing piece. The cloning-pipeline-flow.md doc claimed (line 354) it's read as a fallback — that claim is **inaccurate**.
+
+### The one wiring gap
+
+cv2's walker doesn't:
+1. Walk every CSS class in the mockup HTML
+2. Assign CSS ownership per class (every rule targeting that class via direct / descendant / parent-qualified selectors)
+3. Record parent-child relations between classes (which classes appear inside which other classes in the mockup DOM)
+4. Use that parent-child graph to drive nested-block emission shape
+
+When (1)-(4) are wired, G1 (empty hero CTAs), G3 (Stage 3 text-only slot resolver), and G5 (per-block DOM mismatches) all dissolve simultaneously:
+
+- **G1 dissolves** because the walker emits OPEN blocks with nested children matching the mockup's parent-child shape — InnerBlocks carry the CTA buttons inside `sgs/hero`, the `card`s inside `sgs/card-grid`, etc. Hero isn't special; every composite block inherits the same behaviour.
+- **G3 dissolves** because Stage 3 slot resolution queries `property_suffixes` for non-text slots too — every CSS property in an owned rule maps to an attribute suffix via the existing 117-row table.
+- **G5 dissolves** because the emitted DOM nesting graph matches the mockup's nesting graph by construction. No per-block `render.php` patches needed; the universal-extraction primitive does the work.
+
+### What changes in code
+
+| Site | Change shape |
+|---|---|
+| `convert.py walk()` FR1 fast path (line 3675) | Add `variation_buf.append(_collect_css_for_classes(classes, css_rules))` after `lift_subtree_into_block_attrs()` so registered SGS blocks consume the merged CSS (one-line consistency fix; not hero-special) |
+| `convert.py` walker entry | Walk every CSS class encountered in the section; assign ownership of CSS rules per class; record parent-child via `block_compositions` query + natural BEM relations |
+| `slot_list.py` | Query `property_suffixes` for visual/structural slot types, not just text-content slots (the typed-attr-lift path of Spec 16 §FR6 Destination 1) |
+| cv2 emit shape | Use the parent-child graph to drive nested-block emission; preserve mockup class names on emitted blocks via `additionalClasses` / `className` |
+
+### What G4 looked like and why it was discarded
+
+§14.4 (measurement contamination from WP chrome) was empirically falsified 2026-05-21. The chrome-strip patch was a no-op because `el.screenshot()` already clips to the element bounding box — chrome above the element was never in the captured pixels for the canonical `--selector` workflow. The remaining diff is genuine structural content gap, not chrome inflation. §14.4 is closed without a fix.
+
+### Methodology lesson — blub.db row 276
+
+Both council-prescribed Wave-1 fixes (G2 cv2 strip + G4 chrome strip) implemented exactly to spec, both produced zero pixel-diff movement. The diagnostic claim was correct in each case; the proposed fix shape targeted the wrong code path. This is the new `/qc-council` skill's reason for existing — every council fix-shape proposal must clear an empirical pre/post measurement gate before any subagent dispatch. Captured 2026-05-21 (blub.db row 276) + mistakes.md 2026-05-21 lesson 1.
+
+### Status of G2 Step 1+2 (shipped 2026-05-21)
+
+Step 1 (orchestrator merges `theme/sgs-theme/styles/<client>.css` into `_section_css`) + Step 2 (cv2 strips `.page-id-\d+` prefix in selector matcher) + 7 regression-guard unit tests shipped 2026-05-21 (commit `affca3f1` on main). 5 sections (featured-product, brand, gift, social-proof, ingredients) doubled their `variation_css_rules` (100% each). Hero + trust-bar stayed at 0 due to FR1 fast-path bypass — parked as `P-FR1-VARIATION-BUF-CONSISTENCY` in `parking.md` for the one-line follow-up. Step 1+2 is enabling infrastructure: pixel-diff doesn't move alone, but unlocks G3 wiring.
+
+### Wave 2 acceptance criterion
+
+After the universal-extraction wiring lands (block_compositions read path + property_suffixes query for visual slots + parent-child graph drives emit shape), the acceptance is: hero `stage_3_slot_list` failures drop from 142 to under 30 AND hero `variation_css_rules` rises from 0 to at least 8 AND brand pixel-diff at 1440 drops below 20% (from 43.7%). Goal-shaped post-condition per `/qc-council` Stage 5: every CSS declaration in the mockup either matches a theme.json token (correct elision via cascade) OR lands as a block attribute / inline style on the emitted markup — coverage approaches 100%.

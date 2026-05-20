@@ -95,3 +95,20 @@ If Bean wants any of these added retroactively, route via `/docscore` per phase 
 This master plan was archived 2026-05-18; Phase 7 (Spec 16 converter rollout) and Phase 8 (section-by-section closure) shipped. The Spec 16 architectural rewrite work was tracked in `.claude/plans/phase-1-spec16-rewrite-2026-05-20.md` (executed this session — all of Phase 1 P1.A + P1.B + P1.B.x + Phase 2 wave shipped across 13 commits).
 
 **Active successor plan:** `.claude/next-session-prompt.md` — 4-wave G1-G5 + F5 closure to hit ≤ 1% pixel-diff per section. Council synthesis at `reports/2026-05-20-pipeline-root-gap-council/real-path-synthesis.md`.
+
+## 2026-05-21 — Wave 2 reshape — single wiring gap, not three problems
+
+G1 + G3 + G5 reframed as ONE wiring gap. Detail in `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` §15.
+
+The 2026-05-20 council framing (5 structural gaps + F5 = 4 waves) is superseded by the 2026-05-21 reality check finding: the SGS-framework.db has the complete mapping infrastructure cv2 needs (`property_suffixes` 117 / `slot_synonyms` 89 / `block_compositions` 37 / `block_attributes` 1755 / `modifier_suffixes` 19) but cv2 doesn't query `block_compositions` at all and doesn't query `property_suffixes` for visual / structural slots. Wave 2 is one architectural change wiring the DB tables into the walker's emit shape, not three per-block fixes.
+
+**Status as of 2026-05-21 close:**
+- G2 Step 1+2 shipped — enabling infrastructure (commit `affca3f1`)
+- G4 discarded — empirically falsified (no-op)
+- G1 + G3 + G5 absorbed into single Wave-2 wiring fix — see Spec 16 §15
+- FR1 fast-path consistency add — one-line `variation_buf.append()` follow-up parked as `P-FR1-VARIATION-BUF-CONSISTENCY`
+- F5 D1 media-field flow — still distinct from the Wave 2 wiring; remains as next-after-Wave-2
+
+Acceptance criterion for the reshaped Wave 2: hero `stage_3_slot_list` failures drop 142 → <30, hero `variation_css_rules` rises 0 → ≥8, brand pixel-diff at 1440 drops 43.7% → <20%. Goal-shaped post-condition per `/qc-council` Stage 5: every mockup CSS declaration either matches a theme.json token (correct elision) OR lands as a block attribute / inline style on emitted markup.
+
+**Methodology added 2026-05-21:** all multi-fix proposals from any council / debate / systematic-debugging exercise now route through `/qc-council` for empirical pre/post measurement gate before subagent dispatch. blub.db row 276 + mistakes.md 2026-05-21 lesson 1.

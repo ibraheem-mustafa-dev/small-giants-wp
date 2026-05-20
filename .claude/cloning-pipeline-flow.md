@@ -1557,3 +1557,33 @@ See `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` §14 for full evidence + fi
 - **F5** — D1 media-field flow: responsive variants stored but not routed to `<attr>Mobile`/`<attr>Tablet`/`<attr>Desktop` block.json variant attrs.
 
 Next session: full Phase 1 closure G1-G5 + F5 in 4 waves. See `.claude/next-session-prompt.md`.
+
+## 2026-05-21 — Wave-1 result + Wave-2 reshape + doc-accuracy corrections
+
+### G2 Step 1+2 shipped (commit `affca3f1` on main)
+
+- **Step 1:** `sgs-clone-orchestrator.py` near line 1392 — reads `theme/sgs-theme/styles/<client>.css` and appends to `_section_css` before `convert_section` runs so cv2's `_collect_css_decls_for_element` actually sees the scoped variation rules.
+- **Step 2:** `converter_v2/convert.py` line ~2834 — strips leading `.page-id-\d+\s+` prefix in the per-selector matching loop. One-line regex add + 7 regression-guard unit tests in `test_g2_scope_strip.py`.
+
+Empirical result: 5 of 7 sections doubled their `variation_css_rules` (featured-product 15→30, brand 8→16, gift 17→34, social-proof 11→22, ingredients 7→14). Hero + trust-bar stayed at 0 because the FR1 fast path returns before appending to `variation_buf`. Parked as `P-FR1-VARIATION-BUF-CONSISTENCY` — one-line follow-up: `variation_buf.append(_collect_css_for_classes(classes, css_rules))` after `lift_subtree_into_block_attrs()` at line 3675.
+
+### G4 discarded (no-op confirmed)
+
+Chrome-strip patch in `scripts/pixel-diff.py` was empirically falsified. `el.screenshot()` already clips to the element bounding box — chrome above the element was never in the captured pixels for the canonical `--selector` workflow. The remaining diff is genuine structural content gap, not chrome inflation. G4 line in §14.4 + the matrix entry are closed.
+
+### Wave 2 reshape — G1 + G3 + G5 are ONE wiring gap
+
+`/wp-blocks dump` (2026-05-21) confirmed the SGS-framework.db has the complete mapping infrastructure cv2 needs — `property_suffixes` (117 rows), `slot_synonyms` (89 rows), `block_compositions` (37 rows), `block_attributes` (1755 rows), `modifier_suffixes` (19 rows). The G1+G3+G5 symptoms (empty hero CTAs / text-only slot resolver / per-block DOM mismatches) are all manifestations of one underlying gap: cv2 doesn't walk all classes + assign CSS ownership + record parent-child relations using the tables that exist.
+
+Wave 2 = ONE architectural change wiring the DB tables into the walker's emit shape, NOT three per-block fixes. Full reshape detail: `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` §15.
+
+### Doc-accuracy corrections (this doc was inaccurate in two places)
+
+1. **Line 354 claim "patterns table or block_compositions before falling through" is WRONG.** `block_compositions` is write-only in the current code — only `pattern-register.py` + `seed-block-compositions.py` INSERT, nothing reads. cv2 walker does NOT query the table. This is the canonical Wave 2 wiring fix.
+2. **Line 116 "Live entry-point chain (verified 2026-05-13)" is STALE.** The 2026-05-20 architectural rewrite added `css_router.py`, `essence_match_detector.py`, `stage_attribute_promotion.py` which are not in the chain ASCII art. The new files exist on disk and are wired but the ASCII visualisation predates them.
+
+Both corrections parked as `P-CLONING-PIPELINE-FLOW-DOC-DRIFT` — full rewrite of the entry-point chain + DB heat-map sections deferred to a dedicated doc-accuracy session.
+
+### Methodology lesson — empirical-validation gate (blub.db row 276)
+
+Wave 1's G2 + G4 fixes were both implemented exactly to council prescription. Both produced zero pixel-diff movement. The diagnostic claim was correct in each case; the proposed fix shape targeted the wrong code path. The new `/qc-council` skill (created 2026-05-21) bakes an empirical pre/post measurement gate into Stage 5 so this failure mode can't recur. Every council fix-shape proposal now passes through baseline measurement before any subagent dispatch.
