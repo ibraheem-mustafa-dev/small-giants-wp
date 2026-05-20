@@ -887,6 +887,14 @@ def lift_attrs_for_block(block_slug: str, node: Tag, bem: db.BemParse | None,
     # P-MULTI-CLASS-BEM-PRIMARY-DISAMBIG (2026-05-17): when multiple sgs-*
     # classes are present, pick one canonical primary for downstream routing.
     # All sgs-* classes still travel as className (variation CSS binds to all).
+    #
+    # Wave 2 Change 4 (2026-05-22): modifier classes (sgs-hero--featured, etc.)
+    # are already preserved here because any class starting with 'sgs-' is
+    # included — modifiers share the 'sgs-' prefix. This ensures scoped CSS
+    # like '.page-id-N .sgs-hero--featured { ... }' matches the rendered block.
+    # Auxiliary sgs-* classes that resolve to separate registered blocks become
+    # nested children via the walker; they are still included in className for
+    # variation CSS fallback (their CSS may target the parent context too).
     sgs_classes = [c for c in classes if c.startswith("sgs-")]
     if sgs_classes:
         attrs["className"] = " ".join(sgs_classes)
@@ -1318,6 +1326,40 @@ INNER_BLOCK_PATTERNS: dict[str, dict] = {
         # any non-emoji info-box (SVG icons → empty emoji + wrong type).
         "media_type_selector": ".sgs-info-box__icon",
     },
+    # Wave 2 Change 2 (2026-05-22): hero CTAs → sgs/multi-button → sgs/button
+    #
+    # hero uses InnerBlocks (save.js returns <InnerBlocks.Content />). Without
+    # this entry the FR1 branch emits hero self-closing ( /-->) which causes the
+    # rendered page to show empty CTA slots. The correct serialisation is:
+    #   <!-- wp:sgs/hero {...} -->
+    #     <!-- wp:sgs/multi-button -->
+    #       <!-- wp:sgs/button {"label":"...", "url":"...", "inheritStyle":"primary"} /-->
+    #       <!-- wp:sgs/button {"label":"...", "url":"...", "inheritStyle":"secondary"} /-->
+    #     <!-- /wp:sgs/multi-button -->
+    #   <!-- /wp:sgs/hero -->
+    #
+    # wrapper_block: optional — when present, child blocks are wrapped in this
+    # block (open/close) before being inserted into the outer block's InnerBlocks.
+    # wrapper_block_attrs: static attrs to set on the wrapper block.
+    "sgs/hero": {
+        "child_class": "sgs-button",
+        "inner_block_slug": "sgs/button",
+        "lift_fields": {
+            # Child IS the <a> element, so '@text' reads child.get_text()
+            # and '@href' reads child.get('href'). Both use the @-from-self syntax.
+            "label": "@text",
+            "url":   "@href",
+        },
+        # --primary → inheritStyle=primary, --secondary → inheritStyle=secondary
+        "modifier_to_attr": {
+            "primary":   ("inheritStyle", "primary"),
+            "secondary": ("inheritStyle", "secondary"),
+        },
+        # Wrap all sgs/button children in a sgs/multi-button container so the
+        # block hierarchy matches what the hero editor inserts by default.
+        "wrapper_block": "sgs/multi-button",
+        "wrapper_block_attrs": {},
+    },
 }
 
 
@@ -1351,12 +1393,29 @@ def _detect_media_type(icon_el) -> str | None:
 def _lift_inner_blocks(node: Tag, pattern: dict) -> list[str]:
     """Walk child elements matching pattern['child_class'] within `node` and
     emit each as a self-closing WP inner block. Returns a list of markup strings.
+
+    Supported pattern keys:
+      child_class       — CSS class fragment to match children against
+      inner_block_slug  — WP block slug to emit for each child
+      lift_fields       — {attr_name: selector} — selector may be:
+                            'tag,tag'         → get_text() of first match
+                            '@html-attr'      → read HTML attribute from child itself
+                            'tag@html-attr'   → read HTML attribute from matched child
+      set_attrs         — {attr_name: value} — static attrs always applied
+      media_type_selector — CSS selector to detect mediaType per child
+      modifier_to_attr  — {modifier_str: (attr_name, attr_val)} — maps BEM modifier
+                          classes (e.g. '--primary') to static block attrs
+      wrapper_block     — optional block slug to wrap ALL child blocks inside
+      wrapper_block_attrs — {attr_name: value} static attrs on the wrapper block
     """
     child_cls = pattern["child_class"]
     inner_slug = pattern["inner_block_slug"]
     lift_fields: dict[str, str] = pattern.get("lift_fields", {})
     set_attrs: dict = pattern.get("set_attrs", {})
     media_type_selector: str | None = pattern.get("media_type_selector")
+    modifier_to_attr: dict = pattern.get("modifier_to_attr", {})
+    wrapper_block: str | None = pattern.get("wrapper_block")
+    wrapper_block_attrs: dict = pattern.get("wrapper_block_attrs", {})
 
     children = node.find_all(
         True,
@@ -1376,10 +1435,36 @@ def _lift_inner_blocks(node: Tag, pattern: dict) -> list[str]:
     blocks = []
     for child in top_level_children:
         item_attrs: dict = dict(set_attrs)  # start with fixed attrs
+
+        # Lift fields — supports '@attr' (from child itself) and 'tag@attr' syntax
         for attr_name, selector in lift_fields.items():
-            val = _array_lift_text_of_first(child, selector)
+            if selector == "@text":
+                # Special case: read the child's own text content
+                val = child.get_text(strip=True)
+            elif selector.startswith("@"):
+                # Read HTML attribute directly from the child element
+                html_attr = selector[1:]
+                val = (child.get(html_attr) or "").strip()
+            elif "@" in selector:
+                # 'tag@attr' — find first matching tag, read its HTML attribute
+                parts = selector.split("@", 1)
+                css_sel, html_attr = parts[0].strip(), parts[1].strip()
+                found_el = child.find(css_sel) if css_sel else child
+                val = (found_el.get(html_attr) or "").strip() if found_el else ""
+            else:
+                val = _array_lift_text_of_first(child, selector)
             if val:
                 item_attrs[attr_name] = val
+
+        # Modifier-to-attr: inspect child's class list for BEM modifiers
+        if modifier_to_attr:
+            child_cls_list = child.get("class") or []
+            child_cls_str = " ".join(child_cls_list)
+            for modifier_str, (m_attr_name, m_attr_val) in modifier_to_attr.items():
+                if f"--{modifier_str}" in child_cls_str:
+                    item_attrs[m_attr_name] = m_attr_val
+                    break
+
         # Per-child mediaType detection from source DOM content. Replaces the
         # 2026-05-15-removed unconditional `mediaType="emoji"` default which
         # would have corrupted SVG/image icons across non-emoji client mockups.
@@ -1412,6 +1497,12 @@ def _lift_inner_blocks(node: Tag, pattern: dict) -> list[str]:
         if sgs_cls:
             item_attrs["className"] = " ".join(sgs_cls)
         blocks.append(emit_wp_block(inner_slug, item_attrs, [], self_closing=True))
+
+    # Optional wrapper block: wrap all child block markup inside a parent block
+    if wrapper_block and blocks:
+        wrapped = emit_wp_block(wrapper_block, wrapper_block_attrs, blocks,
+                                self_closing=False)
+        return [wrapped]
     return blocks
 
 
@@ -3677,7 +3768,16 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
         # WP native style.* attrs gated by block_supports.
         _lift_root_supports_to_style(node, target, css_rules, merged)
 
-        # Change 3: InnerBlocks emission for blocks that use InnerBlocks
+        # Wave 2 Change 1 (2026-05-22): FR1 fast path now appends per-section CSS
+        # to variation_buf — same pattern as pass_through (l.4097-4099),
+        # sgs/container essence-match (l.4082-4084), and top_level_container
+        # (l.4110-4112). FR1 was the only outlier; every registered SGS block
+        # (hero, trust-bar, etc.) now receives its variation CSS.
+        decls = _collect_css_for_classes(classes, css_rules)
+        if decls:
+            variation_buf.append(decls)
+
+        # Change 2: InnerBlocks emission for blocks that use InnerBlocks
         # rather than flat array attrs (e.g. sgs/feature-grid → sgs/info-box).
         # When a pattern exists for the target, emit child blocks as inner markup
         # instead of emitting a self-closing block.

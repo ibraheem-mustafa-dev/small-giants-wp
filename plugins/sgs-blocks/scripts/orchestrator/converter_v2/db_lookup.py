@@ -401,6 +401,14 @@ def _kind_for(suffix: str, role: str | None) -> str | None:
     Returns one of: 'colour', 'number_px', 'number_unitless', 'number_px_or_em',
     'string'. Returns None for rows that shouldn't be lifted via CSS (behaviour,
     select-from-enum, content roles — these aren't CSS-driven).
+
+    Wave 2 Change 3 (2026-05-22): added 'colour-gradient', 'select-from-enum',
+    'spacing-token' to the lifted set. Schema evidence (blub.db 272):
+      - colour-gradient: suffix='Gradient', css_property='background-image' — URL-valued
+      - select-from-enum: suffix='FontStyle', css_property='font-style' — string enum
+      - spacing-token: suffix='BlockGap', css_property='gap' — numeric px value
+      - spacing-token: suffix='Spacing', css_property='padding/margin (preset)' — skipped
+        (multi-property; no single CSS prop to match)
     """
     if suffix in _KIND_BY_SUFFIX:
         return _KIND_BY_SUFFIX[suffix]
@@ -410,7 +418,15 @@ def _kind_for(suffix: str, role: str | None) -> str | None:
         return "number_px"
     if role == "number-css-percent":
         return "number_px"  # we strip the unit either way
-    # Roles that aren't CSS-lifted (content, behaviour, enum-class-probe, etc.)
+    # Wave 2 Change 3: lift additional CSS-driven roles that previously returned None
+    if role == "colour-gradient":
+        return "string"  # background-image: url(...) or gradient string
+    if role == "select-from-enum":
+        return "string"  # e.g. font-style: italic/normal
+    if role == "spacing-token" and suffix == "BlockGap":
+        return "number_px"  # gap: Npx — single CSS property, safe to lift
+    # spacing-token/Spacing maps to multi-property (padding + margin preset) — not CSS-lifted
+    # Roles that aren't CSS-lifted (content, behaviour, etc.)
     return None
 
 
