@@ -8,16 +8,16 @@
   ],
   "sgs_dimensions": [
     343,
-    1434
+    1485
   ],
   "aligned_dimensions": [
     375,
     855
   ],
-  "mismatched_pixels": 162857,
+  "mismatched_pixels": 170070,
   "total_pixels": 320625,
-  "mismatch_percent": 50.7936,
+  "mismatch_percent": 53.0433,
   "threshold_percent": 1.0,
   "verdict": "FAIL",
-  "captured_at": "2026-05-19T22:16:54.917181+00:00"
+  "captured_at": "2026-05-20T08:26:40.733386+00:00"
 }

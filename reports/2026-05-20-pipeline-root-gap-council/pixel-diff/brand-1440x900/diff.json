@@ -8,7 +8,7 @@
   ],
   "sgs_dimensions": [
     1000,
-    680
+    679
   ],
   "aligned_dimensions": [
     1000,
@@ -19,5 +19,5 @@
   "mismatch_percent": 43.7066,
   "threshold_percent": 1.0,
   "verdict": "FAIL",
-  "captured_at": "2026-05-19T22:16:31.118892+00:00"
+  "captured_at": "2026-05-20T08:26:16.337038+00:00"
 }

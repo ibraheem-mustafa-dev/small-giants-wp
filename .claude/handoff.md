@@ -1,83 +1,106 @@
 ---
 doc_type: handoff
 project: small-giants-wp
-session_date: 2026-05-19
+session_date: 2026-05-20
 ---
 
-# Session Handoff — 2026-05-19
+# Session Handoff — 2026-05-20
 
 ## Completed This Session
 
-1. **5 RCs in cv2 universal-extraction silent-drop closure** + **container advanced backgrounds (4 modes, 15 new attrs)** + **ALL 10 static SGS blocks → dynamic** + **hero block.json dual-cascade fix** + **B1 cv2 chrome-skip leakage + Spec 20 structured pipeline log surfacing (Stage 9c)** + **lint 77→0** + **DB enrichment (1755 equivalent_implementations rows = 100% Rosetta Stone)** + **wp-* CLI wiring into cloning pipeline (5 integration points)**. 13 commits (`79196c52` → `6119b93f`).
-2. **`/deploy` → `/wp-sgs-deploy` rename + `/deploy-check` absorbed as Phase 1**. Skill consolidation per Bean's architectural call — three concepts (framework deploy / per-page deploy / pre-flight check) untangled into one canonical place each. `/wp-sgs-deploy` scored 96% (up from 66%). Stub at `~/.claude/commands/deploy-check.md` redirects future invocations. Commits `aae157c9` + `2d0ec25a`.
-3. **Stage 10 wiring** in `sgs-clone-orchestrator.py` — new `--deploy-target page:<id>` / `post:<id>` flag, calls `upload_and_patch.py` as subprocess, fires AFTER Stage 9c and BEFORE the `--skip-autonomy-gate` early return (per yesterday's placement-bug lesson). `upload_and_patch.py` moved to canonical location `plugins/sgs-blocks/scripts/orchestrator/`. /qc 5/5 scenarios pass with `[stage-10] deploy: patched page 144` live evidence.
-4. **Framework deployed to palestine-lives.org via `/wp-sgs-deploy both`**. HTTP 200 verified, vendor composer autoload intact, all 10 dynamic block render.php files present on server. Initial deploy returned 500 due to `--exclude='src'` stripping vendor — caught + re-tarred with `--exclude='plugins/sgs-blocks/src'` (path-anchored) + redeployed clean.
-5. **`library-docs` CLI repaired** (Context7 MCP schema drift — `get-library-docs` → `query-docs`, `context7CompatibleLibraryID` → `libraryId`). **`/sgs-db` default no-args = schema dump**. **`/wp-blocks dump` subcommand** covers all 3 DBs in ~1500 tokens. Binding rule #4 added to project CLAUDE.md (schema-enumeration discipline, blub.db row 272).
-6. **`/research-check` synthesis** on agent schema-enumeration discipline. 2 researchers, both converged on layered safeguards: session-start manifest injection (primary) + verified-vs-claimed tagging (discipline) + gap-claim interceptor hook (backup). Persisted to `~/.openclaw/workspace/memory/research/2026-05-19-agent-schema-enumeration-discipline.md` + blub.db row 17150.
-7. **4 CRITICAL lessons captured** to project memory + blub.db:
-   - Row 272 — schema-enumeration before gap-claims (today's incident: claimed `enum_values` missing when populated)
-   - Row 273 — /qc-inline on live pipeline catches placement bugs subagent isolated-unit QC misses (Stage 9c placement-bug)
-   - Row 274 — header/footer ARE template parts, not Gutenberg blocks (3rd recurrence — parallel subagent created src/blocks/header/ + footer/ as collateral)
-   - Row 275 — tar `--exclude='src'` strips vendor/*/src/ → HTTP 500 (documented-but-recurring — fixed in SKILL.md)
-8. **Data Sources & Block-Equivalent Layers** consolidated section added to `cloning-pipeline-flow.md` + TOC. Answers "where does X live?" across the 2 DBs + 6 translation layers per attribute (name → type → enum_values → canonical_slot → role → inspector_control_type → output_signature → equivalent_implementations → derived_selector).
-9. **Untracked block dirs removed** — `src/blocks/header/` + `src/blocks/footer/` (parallel subagent collateral, NOT in any authorised brief). Per Spec 17 §S1-2 + Spec 19 §4.6 these are template-part territory, not Gutenberg blocks.
-10. **17 commits on main** (`79196c52` → `a9083ca9`), all pushed to origin/main. Framework + cloning pipeline + skill set in their best end-of-session state.
+1. **Pipeline Root-Gap Council (4 raters)** — Sonnet primary + Haiku triangulation + Gemini Flash environment angle + Opus inline synthesis. Cerebras rate-limited and dropped. Identified council R1 (Stage 10 variation activation), R2 (dead CSS selectors), R3 (Stage 9 over-reporting). Synthesis at `reports/2026-05-20-pipeline-root-gap-council/synthesis.md`.
+
+2. **Council R1 shipped immediately as commit `8ceb8787`** — new REST endpoint `sgs/v1/active-variation` with read-back confirmation + Stage 10 calls it after page-PATCH + exit code 3 on variation failure. Empirical: 18/21 pixel-diff cells improved, average -17pt. Best drops: gift-section/768 -44.9pt, social-proof/1440 -43.1pt, hero/768 -33.7pt.
+
+3. **Phase 1 Spec 16 §FR6 architectural rewrite (5 commits):**
+   - `7b3101fc` P1.A — `token_resolver.resolve_batch` wired into cv2 value-lift. Cascade-on-edit property activated.
+   - `8a996194` strict exact-match guard — rejects "nearest" snaps that diverge from literal value (Bean's step 3 binding). Fixed P1.A gift-section regression where `#FFFFFF` → `text-inverse` (`#FFFAF5`) was visibly cream.
+   - `05fb38a4` P1.B — four-destination CSS router (D0/D1/D2/D3) replaces verbatim Stage 0.7 dump. 661 LOC new module + 43 unit tests.
+   - `44ba373b` dedup fix — `list(dict.fromkeys(...))` on d0/d2 rules. mamas-munches.css 23,038 → 19,983 chars (-49% from pre-dedup 39,369).
+   - `dce5a496` P1.B.x — 7 holistic fixes (F1 @media inner-selector scope, F4 D1 suffix-scan, F2 D2 leak filter, F3 sidecar key format, F5 media field, F6 chrome-skip-to-D0, F7 bare-tag-in-@media guard). Recovered 5 of 6 desktop regressions caused by initial P1.B.
+
+4. **Phase 2 future capabilities (4 parallel subagent commits):**
+   - `8838b6fb` P2.0 — PostToolUse hook hard-rejects `Write|Edit` on `plugins/sgs-blocks/src/blocks/(header|footer|nav)/`. Tool-layer 5th-occurrence prevention for blub.db row 274 anti-pattern.
+   - `3a70587c` P2.i — Stage 9b autonomy chain tightening: 5-file scaffold quality scoring + report, chrome-skip header/footer/nav at all 4 boundary signal levels (slug/selector tag/class BEM root/section_id). Source-layer defence-in-depth.
+   - `37c92950` P2.ii — Attribute-gap promotion CLI. 1128-row backlog → operator-promotable into block.json schema additions + render.php inline-style support. Manual confirmation gate + idempotent + dual-DB source (uimax + sgs-framework).
+   - `36ef9552` P2.iii — Block-variation system. cv2 walker `essence_match_variation` tier between FR1 and scaffold path: confidence 0.70-0.90 emits `register_block_variation()` named variant instead of scaffolding a new block.
+
+5. **Multi-rater /qc panels ran before EVERY commit** (binding rule blub.db row 255):
+   - P1.A: Sonnet SHIP + Haiku SHIP
+   - P1.B: Sonnet FIX-THEN-SHIP (dedup) + Haiku SHIP → dedup applied as `44ba373b`
+   - P1.A strict-match patch: /qc-inline only (small follow-up)
+   - P1.B.x: Sonnet SHIP (2 minor follow-up tickets noted) + Haiku SHIP
+   - Phase 2 wave: consolidated panel verified all 4 commits SHIP
+
+6. **Per-section cropped pixel-diff measured at every architectural change** (binding rule blub.db row 256). Four baseline dirs preserved: `pixel-diff-before-C/`, `pixel-diff-post-C/`, `pixel-diff-post-P1A-patched/`, `pixel-diff-post-P1B-no-dedup/`, `pixel-diff-post-P1B-pre-x/`, `pixel-diff-post-P1Bx/`, `pixel-diff/` (current final).
+
+7. **11 commits on main** (`8ceb8787` → `36ef9552`), all pushed to `origin/main` via squash-merge (single-commit feature work; Bean's "always merge to main" workflow).
 
 ## Current State
 
-- **Branch:** `main` at `a9083ca9`
-- **Tests:** 16/16 converter_v2 (test_attribute_gap_candidate 8 + test_rc4_grouped_selectors 8 + test_root_supports_lift)
-- **Build:** `npm run build` green (~2s)
-- **Deploy status:** palestine-lives.org HTTP 200; all 10 dynamic block render.php present on server; vendor intact
-- **Page 144 (sandybrown):** carries clean cv2 output with hero pink + zero invalid blocks + Stage 10 successfully re-patches on each pipeline run
-- **Uncommitted changes:** `lucide-icons.php` + `mamas-munches.css` timestamp regen only (auto-regenerate next pipeline run)
+- **Branch:** `main` at `36ef9552`
+- **Tests:** 173 passing (60 css_router + 8 token_resolver + 9 atomic-block-scaffold + 22 autonomy_gate + 7 variation_router + 51 attribute_promotion + 14 essence_match + 2 base tests)
+- **Build:** `npm run build` green
+- **Live canary:** page 144 on sandybrown — `https://sandybrown-nightingale-600381.hostingersite.com/rc-fix-verification-mamas-munches/`
+- **D1 lift rate:** 4% → 37% (close to 40% acceptance criterion)
+- **mamas-munches.css size:** 23,038 → 18,843 chars
+
+## Pixel-diff trajectory (sections at 1440 viewport)
+
+| Section | Pre-C | Post-C | Post-P1.B raw | Post-P1.B.x | Δ from baseline |
+|---------|-------|--------|---------------|-------------|-----------------|
+| hero | 99.1% | 67.8% | 78.0% | 67.8% | -31pt (saved from -10 regression) |
+| brand | 64.4% | 43.7% | 68.5% | 43.7% | -21pt (saved from -25 regression) |
+| social-proof | 99.9% | 56.8% | 70.7% | 57.2% | -43pt (saved from -14 regression) |
+| ingredients | 30.8% | 42.9% | 42.0% | 42.6% | +12pt vs pre-C (noise — pre-C was already best) |
+| gift | 88.4% | 47.4% | 48.9% | 49.9% | -38pt |
+| featured | 81.0% | 68.2% | 68.3% | 68.2% | -13pt |
+| trust-bar | 31.9% | 31.7% | 31.7% | 31.7% | -0.2pt |
 
 ## Known Issues / Blockers
 
-- **Pixel-diff residual gap.** Phase 3 yesterday showed every section above 24% mismatch after 5 RCs + container backgrounds + section-wrapper className. Framework is structurally sound — cv2 universal-extraction complete, Rosetta Stone 100%, dynamic blocks deployed — but consistent ≤ 1% pixel-diff isn't being hit. Root gap is somewhere else: theme template parts, CSS cascade conflicts, font loading, measurement methodology, or pipeline orchestration. **Next session's primary investigation.**
-- **Header/footer-as-blocks 3rd recurrence** (blub.db row 274, CRITICAL). Open question for next session (optional Task 2): build `.claude/hooks/no-header-footer-block.py` PostToolUse hook to hard-reject Write/Edit on `src/blocks/(header|footer|nav)/`. Prompt-discipline alone has failed 3 times.
+- **Hero 375 mobile regression (+13.3pt vs post-C baseline).** New since P1.B.x. Likely F5 D1 media-field flow: responsive-variant-attr resolution incomplete (base value renders at all viewports). Mobile-only because base hero size is desktop-tuned. ~30-45 min next-session investigation.
+- **Social-proof 768 partial regression (+5.1pt).** Same probable cause as hero 375.
+- **Dead-CSS-selector problem (council R2)** unresolved at the bulk level. P2.ii promotion CLI shipped — operator must now drive promotion. Each promoted attr converts a dead CSS rule into a D1 typed-attr lift on next pipeline run.
+- **2 P1.B.x follow-up tickets** from /qc panel: (a) `@media` blocks with comma-grouped inner selectors — only first part gets `.page-id-N` scope; (b) nested `@supports` inside `@media` produces invalid CSS. Low-frequency edge cases.
+- **2 Phase 2 medium-severity follow-ups:** P2.ii `_CSS_VALUE_RE` could be tighter (defence-in-depth); P2.iii essence-match tier currently only fires when target=`sgs/container` (theoretical edge case for existing-but-stub blocks).
 
 ## Next Priorities (in order)
 
-1. **Pipeline root-gap council** — run pipeline + capture scores + logs, dispatch 5-rater gap-analysis council, identify root gaps that compound across patterns / blocks / nesting / attribute-slot diversity. Detailed orchestration in `next-session-prompt.md`.
-2. **/systematic-debugging on top 3 confirmed root gaps** from the council synthesis.
-3. **Ship surgical fixes** that came out of the debugging step. Re-measure pixel-diff after each.
-4. **Optional Task: build no-header-footer-block enforcement hook** — 3-time recurrence proves prompt-discipline alone is insufficient.
+1. **F5 responsive-variant-attr flow fix** — wire D1 media-field resolution to emit `<attr>Mobile` / `<attr>Tablet` / `<attr>Desktop` variants when media context matches. Fixes hero 375 + social-proof 768 regressions.
+2. **First operator-driven attribute promotion run** — execute `stage_attribute_promotion.py list --top 10`, then promote 3-5 high-frequency candidates. Re-run pipeline + measure pixel-diff drop. Closes council R2 incrementally.
+3. **P1.B.x comma-grouped @media fix + nested @supports fix** — small follow-ups in css_router's `_scope_media_rule()`.
+4. **Pattern-key captures to blub.db** — 5 lessons accumulated this session (see state.md captured lessons table).
+5. **Phase 1 acceptance criteria re-verification** — after F5 fix, run final 21-cell matrix. Target: 1440 average ≤ 10%, 768 ≤ 12%, 375 ≤ 15%.
 
-## Files Modified
+## Files Modified (selective — full list in commits)
 
 | File path | What changed |
 |-----------|--------------|
-| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` | RC-1 + RC-2 + RC-4 + A1 guard + B1 chrome-skip return None + /wp-blocks validate at emit |
-| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/__init__.py` | RC-5 ensure_root_section_class + section_id param |
-| `plugins/sgs-blocks/scripts/orchestrator/surface_pipeline_logs.py` | NEW — Stage 9c surfacer |
-| `plugins/sgs-blocks/scripts/orchestrator/upload_and_patch.py` | NEW location (moved from reports/) + REPO path math updated |
-| `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` | Stage 9c wiring + Stage 10 wiring (--deploy-target) + /wp-blocks match Stage 2 cross-check + hook-audit |
-| `plugins/sgs-blocks/scripts/wp-pre-merge-gate.py` | NEW — pre-commit gate wrapping wp-blocks + wp-hooks + wp-hook-graph |
-| `plugins/sgs-blocks/scripts/uimax-tools/seed-slot-synonyms.py` | NEW — RC-3 seeder |
-| `plugins/sgs-blocks/scripts/uimax-tools/enrich-db.py` | NEW — 10-target DB enrichment stage |
-| `plugins/sgs-blocks/src/blocks/hero/block.json` | Removed backgroundColor + textColor defaults |
-| `plugins/sgs-blocks/src/blocks/container/` (5 files) | Advanced backgrounds (15 new attrs + 4 modes) |
-| `plugins/sgs-blocks/src/blocks/{label,feature-grid,multi-button,mobile-nav,certification-bar,counter,heading,notice-banner,process-steps,trust-bar}/save.js` | save → null |
-| `plugins/sgs-blocks/src/blocks/{label,feature-grid,multi-button,mobile-nav,heading}/deprecated.js` | NEW deprecation entries |
-| `scripts/lint-naming-conventions.py` + `scripts/wp-core-hooks-allowlist.json` | Namespace-aware Rule 4 + 135-hook allow-list (77→0 violations) |
-| `~/.claude/hooks/context7.py` | library-docs MCP tool-name + param rename |
-| `~/.claude/hooks/wp-blocks.py` | NEW `dump` subcommand + UIMAX_DB constant |
-| `~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py` | No-args default = full schema dump |
-| `.claude/skills/wp-sgs-deploy/SKILL.md` (renamed from skills/deploy/) | Phase 1 absorbed `/deploy-check`; Stage 1-5 numbered; Goal + Common Mistakes + Correction ledger sections; skillscore 96%; tar exclude fixed to path-anchored |
-| `~/.claude/commands/deploy-check.md` | Redirect stub to `/wp-sgs-deploy <scope>` |
-| `.claude/specs/20-STRUCTURED-PIPELINE-LOG-SURFACING.md` | NEW (renumbered from 18) |
-| `.claude/CLAUDE.md` + `.claude/architecture.md` + `.claude/cloning-pipeline-flow.md` + `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` + `.claude/docs-registry.yaml` | Spec 20 cross-refs + flow-doc TOC + Data Sources section + binding rule #4 + `/deploy → /wp-sgs-deploy` rename refs |
+| `plugins/sgs-blocks/includes/class-variation-rest.php` | NEW — sgs/v1/active-variation REST endpoint with read-back |
+| `plugins/sgs-blocks/sgs-blocks.php` | Bootstrap wires Variation_REST::register() + Sgs_Block_Variations::load() |
+| `plugins/sgs-blocks/scripts/orchestrator/upload_and_patch.py` | --client arg + variation activation tail + exit code 3 |
+| `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` | Stage 10 passes --client + handles exit 3; chrome-skip helpers + scaffold quality report |
+| `plugins/sgs-blocks/scripts/orchestrator/css_router.py` | NEW — Spec 16 §FR6 four-destination router (~661 LOC after P1.B.x) |
+| `plugins/sgs-blocks/scripts/orchestrator/test_css_router.py` | NEW — 60 unit tests covering all destinations + 7 fix scenarios |
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` | token_resolver wired + _snap_style_dict_leaves + strict-match guard + D1 sidecar reader + essence-match tier |
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/__init__.py` | seed_theme_json + seed_d1_sidecar + clear/flush_essence_matches |
+| `plugins/sgs-blocks/scripts/orchestrator/stage_attribute_promotion.py` | NEW — operator-driven CLI promoting gap candidates |
+| `plugins/sgs-blocks/scripts/orchestrator/essence_match_detector.py` | NEW — confidence-band variation detection |
+| `plugins/sgs-blocks/scripts/orchestrator/atomic-block-scaffold.py` | 5-file scaffold quality scoring + role-specific edit.js |
+| `plugins/sgs-blocks/includes/variations/class-sgs-block-variations.php` | NEW — PHP variations loader (glob-based auto-discovery) |
+| `.claude/hooks/no-header-footer-block.py` | NEW — PostToolUse hook for chrome-block-path prevention |
+| `.claude/settings.json` | Wired the new hook |
+| `.claude/plans/phase-1-spec16-rewrite-2026-05-20.md` | NEW — lightweight execution plan (Option B per Bean) |
+| `reports/2026-05-20-pipeline-root-gap-council/` | NEW dir — synthesis + 4 rater reports + 4 P1.B investigation rater reports + systematic-debugging + 7 pixel-diff baseline dirs |
 
 ## Notes for Next Session
 
-- **Schema-enumeration discipline is binding** (blub.db row 272, CLAUDE.md rule #4). Run `python ~/.claude/hooks/wp-blocks.py dump` BEFORE any "missing column" / "missing table" claim. ~1500 tokens covers all 3 DBs.
-- **/qc-inline on live pipeline catches placement bugs** that subagent isolated-unit QC misses (blub.db row 273). For any wiring change: run the actual pipeline entry point + inspect artefacts dir.
-- **Header/footer are TEMPLATE PARTS, not blocks** (blub.db row 274). If a council finding suggests creating `sgs/header` or `sgs/footer` Gutenberg blocks: reject, route to Spec 17 §S1-2.
-- **tar `--exclude` must be path-anchored** (blub.db row 275). `--exclude='plugins/sgs-blocks/src'` NOT `--exclude='src'`. Documented-but-recurring class — applies to ALL deploy commands.
-- **`/wp-sgs-deploy` is the canonical deploy skill** (renamed from `/deploy` 2026-05-19). `/deploy-check` is a redirect stub. For per-page client deploys use `/sgs-clone --deploy-target page:<id>` (Stage 10).
-- **Framework IS deployed** to palestine-lives.org. Next session does NOT need to re-deploy unless framework code changes. Page 144 on sandybrown is the cv2-output canary.
+- **The architectural foundation is done.** Phase 1 ships Spec 16 §FR6 compliance + cascade-on-edit. Phase 2 ships the four future capabilities Bean asked for. Closing pixel-diff to ≤5% per section is now an incremental, operator-driven process via the P2.ii promotion CLI plus the F5 mobile-responsive fix.
+- **Stage 9b correctly chrome-skips header/footer/nav now.** Latest run shows `0 scaffolded (0 promoted) from 0 candidates` — header + footer no longer fall through to scaffolding. P2.0 hook is the defence-in-depth safety net.
+- **Total session metrics:** 11 commits, ~3500 LOC across new modules + tests + integration. 4 multi-rater /qc panels run. 4 parallel subagent dispatches succeeded (Phase 2 wave). ~3.5 hours wall-clock.
+- **Cerebras free-tier remained unreliable** — rate-limited and dropped from both /qc panels this session. Sonnet + Haiku + Gemini Flash + Opus inline is the practical multi-rater quorum.
 
 ## Next Session Prompt
 
-See [.claude/next-session-prompt.md](next-session-prompt.md) — pipeline root-gap council orchestration plan with 4 tasks (run + capture / 5-rater council / /systematic-debugging on top 3 / ship surgical fixes).
+See [.claude/next-session-prompt.md](next-session-prompt.md) — F5 mobile fix + first operator-driven promotion run + P1.B.x follow-ups.
