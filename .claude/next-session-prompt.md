@@ -15,6 +15,56 @@ Bean approved Phase 1 closure in one focused session using parallel subagent wav
 
 Invoke `/autopilot` before doing anything else.
 
+## READ FIRST — gated before any work starts
+
+The previous session shipped 15 commits + a 3-rater honest-path council that discovered the real pixel-diff path. You MUST read these in order before dispatching ANY subagent or writing ANY code, otherwise you will work blind to context that fundamentally shapes every fix:
+
+### Priority 1 — Council findings (MANDATORY, ~10 min)
+
+1. **`reports/2026-05-20-pipeline-root-gap-council/real-path-synthesis.md`** — THE foundational document. The 5 root causes (G1-G5) + F5 + their fix shapes + the "operator-promotion is band-aid" finding. If you only read ONE doc, read this.
+2. **`reports/2026-05-20-pipeline-root-gap-council/real-path-rater-A.md`** — Visible-eyeball diagnosis via Playwright. Per-section visual evidence of what's actually broken (hero CTAs missing, trust-bar icons missing, social-proof carousel-vs-grid mismatch).
+3. **`reports/2026-05-20-pipeline-root-gap-council/real-path-rater-B.md`** — Structural DOM diff per section. Mockup vs render class-name and shape mismatches.
+4. **`reports/2026-05-20-pipeline-root-gap-council/real-path-rater-C.md`** — Pipeline output forensics. Where in stage-3/4/4.5 the data is missing or wrong + per-section best-vs-worst comparison.
+
+### Priority 2 — Session state + binding rules (MANDATORY, ~5 min)
+
+5. **`.claude/handoff.md`** — Last session digest: 15 commits, what shipped, what didn't, OUTCOME ACHIEVED vs CODE SHIPPED labels.
+6. **`.claude/state.md`** — current_phase + current_subphase_step + blockers. The session-entry orientation.
+7. **`.claude/CLAUDE.md`** — Project rules + 7 binding methodology rules (especially #5 strict-exact-match, #6 promotion-is-band-aid, #7 css-scope-prefix-audit added this session).
+8. **`.claude/mistakes.md`** 2026-05-20 section — 5 fresh lessons that bear directly on this session's work.
+
+### Priority 3 — Architectural context (MANDATORY before Wave 2, ~10 min)
+
+9. **`.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` §13 + §14** — Phase 1 implementation status table + the canonical list of 5 known gaps blocking ≤ 1% pixel-diff target. §14 is the spec-side view of G1-G5; cross-references the rater reports.
+10. **`.claude/specs/common-wp-styling-errors.md` §U + §V + §W** — three new error patterns captured this session:
+    - §U: CSS scope-prefix breaks internal CSS lookup (G2 explanation)
+    - §V: Self-closing block emission breaks InnerBlocks rendering (G1 explanation)
+    - §W: Pixel-diff measurement contamination by WP chrome (G4 explanation)
+11. **`.claude/cloning-pipeline-flow.md` 2026-05-20 section** — annotated changes to every pipeline stage from this session. Cross-reference when touching any stage script.
+
+### Priority 4 — Live artefact evidence (MANDATORY before Wave 1, ~5 min)
+
+12. **Latest pipeline run dir** at `pipeline-state/<latest>/` (find via `ls -t pipeline-state/ | head -1`). Read:
+    - `extract.json` — per-section emitted block_markup + extracted_attributes + token_resolutions + essence_matches
+    - `css-d1-assignments.json` — D1 sidecar (the new artefact from Spec 16 §FR6 router)
+    - `leftover-buckets.json` — gap classification by section + slot + reason (binding rule blub.db row 254)
+    - `summary.log` — Stage 9c per-severity counters
+13. **Pixel-diff baseline matrices** at `reports/2026-05-20-pipeline-root-gap-council/pixel-diff/` (current state) + `pixel-diff-post-C/` (baseline to recover to as a minimum). Compare per-cell deltas to know which cells changed when your fixes land.
+
+### Priority 5 — Live page eyes-on (MANDATORY for G1 / G4 verification, ~2 min)
+
+14. Open the canary page in Playwright: `https://sandybrown-nightingale-600381.hostingersite.com/rc-fix-verification-mamas-munches/`. Eyes-on Hero section (CTAs invisible — that's the G1 symptom) + Brand section (notice WP admin bar + sgs-header at top of frame — that's the G4 contamination).
+
+### Reading-gate verification
+
+Before invoking your first /delegate subagent, you should be able to answer:
+- What are the 5 structural gaps (G1-G5) + F5? In your own words.
+- Why is operator-promotion (P2.ii CLI) NOT the primary pixel-diff path?
+- Where in cv2's code does the `.page-id-N` scope break the CSS lookup?
+- Which 6 cells regressed at session end + which one was a brand new regression (vs cells we recovered)?
+
+If you can't, RE-READ before proceeding. Reading is cheaper than rework.
+
 ## Skills to invoke
 
 | Skill | When |
@@ -163,11 +213,13 @@ Each commit: /qc panel + pixel-diff per-section re-measure.
 - P2.ii promotion CLI run on residual gap candidates (3-5 promotions)
 - `/handoff` at close
 
-## Key files to read at session start
+## Key files for per-wave reference (already required by the READ FIRST gate)
 
-- `reports/2026-05-20-pipeline-root-gap-council/real-path-synthesis.md` (THE foundational document for this session)
-- `reports/2026-05-20-pipeline-root-gap-council/real-path-rater-A.md` through `real-path-rater-C.md` (per-angle evidence)
-- `.claude/handoff.md` — last session's full digest
-- `.claude/state.md` — current phase + blockers
-- `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` — Spec 16 §FR6 (D1 mechanic, the foundation Stage 3 needs to use for G3)
-- `pipeline-state/<latest-run>/` — extract.json + leftover-buckets.json + css-d1-assignments.json + summary.log
+The READ FIRST section at the top of this prompt is exhaustive — these are the same files re-summarised for quick mid-session lookup:
+
+- **G1 (hero InnerBlocks):** `convert.py` hero emit path + `render.php:770` ($content slot) + `real-path-rater-A.md` Playwright evidence
+- **G2 (scope strip):** `convert.py:_collect_css_decls_for_element` + `css_router.py:write_variation_css` (where `.page-id-N` is added) + `specs/common-wp-styling-errors.md §U`
+- **G3 (visual-slot CSS mapping):** `slot_list.py` + `db_lookup.py:css_property_suffixes` + `specs/16 §FR6 D1 mechanic`
+- **G4 (measurement decontamination):** `scripts/pixel-diff.py` + `specs/common-wp-styling-errors.md §W`
+- **G5 (per-block DOM-shape):** per-block `render.php` + mockup HTML at `sites/mamas-munches/mockups/homepage/index.html` + `real-path-rater-B.md` per-section diffs
+- **F5 (D1 media-field flow):** `convert.py:_load_d1_assignments` + `css_router.py` D1 sidecar writer
