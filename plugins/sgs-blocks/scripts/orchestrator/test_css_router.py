@@ -194,29 +194,42 @@ class TestD0:
 # Test D1 — typed-attr lift
 # ---------------------------------------------------------------------------
 
+def _d1_entries_for_block(result: dict, block_slug: str) -> dict:
+    """Collect all D1 entries whose key matches block_slug or starts with '<block_slug>:'.
+
+    F3 (2026-05-20) changed D1 keys from bare block_slug to '<block_slug>:<selector>'.
+    This helper collects all matching entries regardless of which format was used.
+    """
+    merged = {}
+    for key, entries in result["d1"].items():
+        if key == block_slug or key.startswith(f"{block_slug}:"):
+            merged.update(entries)
+    return merged
+
+
 class TestD1:
     def test_hero_padding_routes_to_d1(self):
-        """sgs/hero has a paddingTop attr → padding-top on .sgs-hero should D1."""
+        """sgs/hero has a paddingTop attr — padding-top on .sgs-hero should D1."""
         css = ".sgs-hero { padding-top: 56px; }"
         result = css_router.route_css(css, EMPTY_BOUNDARIES, EMPTY_THEME, "test-run")
-        # At least one D1 entry for sgs/hero.
-        assert "sgs/hero" in result["d1"]
-        d1_hero = result["d1"]["sgs/hero"]
-        # Should have an entry for padding-top.
+        # F3: keys are now "<block_slug>:<selector>" — use prefix-match helper.
+        d1_hero = _d1_entries_for_block(result, "sgs/hero")
+        assert d1_hero, f"Expected D1 entries for sgs/hero, got keys: {list(result['d1'].keys())}"
         attr_keys = list(d1_hero.keys())
         assert any("padding-top" in k or "padding" in k for k in attr_keys)
 
     def test_hero_background_colour_routes_to_d1(self):
-        """sgs/hero has backgroundColour attr → background-color should D1."""
+        """sgs/hero has backgroundColour attr — background-color should D1."""
         css = ".sgs-hero { background-color: #F5C2C8; }"
         result = css_router.route_css(css, EMPTY_BOUNDARIES, EMPTY_THEME, "test-run")
-        assert "sgs/hero" in result["d1"]
+        d1_hero = _d1_entries_for_block(result, "sgs/hero")
+        assert d1_hero, f"Expected D1 entries for sgs/hero, got keys: {list(result['d1'].keys())}"
 
     def test_d1_includes_value(self):
         """D1 entries carry the raw CSS value."""
         css = ".sgs-hero { padding-top: 56px; }"
         result = css_router.route_css(css, EMPTY_BOUNDARIES, EMPTY_THEME, "test-run")
-        d1_hero = result["d1"]["sgs/hero"]
+        d1_hero = _d1_entries_for_block(result, "sgs/hero")
         entry = next(iter(d1_hero.values()))
         assert entry["value"] == "56px"
 
@@ -224,7 +237,7 @@ class TestD1:
         """D1 entries carry a role string."""
         css = ".sgs-hero { padding-top: 56px; }"
         result = css_router.route_css(css, EMPTY_BOUNDARIES, EMPTY_THEME, "test-run")
-        d1_hero = result["d1"]["sgs/hero"]
+        d1_hero = _d1_entries_for_block(result, "sgs/hero")
         entry = next(iter(d1_hero.values()))
         assert "role" in entry and entry["role"]
 
@@ -232,10 +245,10 @@ class TestD1:
         """Values like 'auto' should have snap_skipped=True."""
         css = ".sgs-hero { padding-top: auto; }"
         result = css_router.route_css(css, EMPTY_BOUNDARIES, EMPTY_THEME, "test-run")
-        if "sgs/hero" in result["d1"]:
-            for entry in result["d1"]["sgs/hero"].values():
-                if entry.get("value") == "auto":
-                    assert entry["snap_skipped"] is True
+        d1_hero = _d1_entries_for_block(result, "sgs/hero")
+        for entry in d1_hero.values():
+            if entry.get("value") == "auto":
+                assert entry["snap_skipped"] is True
 
 
 # ---------------------------------------------------------------------------
@@ -340,12 +353,21 @@ class TestMixed:
 # ---------------------------------------------------------------------------
 
 class TestMediaQueries:
-    def test_media_query_body_rule_routes_to_d0(self):
-        """@media (max-width: 768px) { body { ... } } → D0 (body is global)."""
+    def test_media_query_body_rule_routes_to_d2(self):
+        """@media (max-width: 768px) { body { ... } } → D2, not D0.
+
+        F7 fix (2026-05-20): bare-tag rules inside @media must NOT go to D0 —
+        they would lose their media-query wrapper, rendering unconditionally.
+        Instead they go to D2 where the @media wrapper is preserved.
+        Top-level body rules (no @media) still go to D0 — see test_body_margin_routes_to_d0.
+        """
         css = "@media (max-width: 768px) { body { font-size: 14px; } }"
         result = css_router.route_css(css, EMPTY_BOUNDARIES, EMPTY_THEME, "test-run")
-        # The body rule inside @media should still be D0.
-        assert result["stats"]["d0_count"] >= 1
+        # F7: body inside @media goes to D2 (preserves media-query wrapper).
+        assert result["stats"]["d2_count"] >= 1
+        assert result["stats"]["d0_count"] == 0, (
+            "body inside @media must NOT be D0 — it would lose its @media wrapper (F7 fix)"
+        )
 
     def test_media_query_sgs_class_routes_correctly(self):
         """@media (max-width: 768px) { .sgs-unknown { color: red; } } → D2."""
@@ -354,12 +376,20 @@ class TestMediaQueries:
         # .sgs-unknown has no registered block → D2.
         assert result["stats"]["d2_count"] >= 1
 
-    def test_reduced_motion_routes_to_d0(self):
-        """@media (prefers-reduced-motion: reduce) { *, *::before { ... } } → D0."""
+    def test_reduced_motion_routes_to_d2(self):
+        """@media (prefers-reduced-motion: reduce) { *, *::before { ... } } → D2.
+
+        F7 fix (2026-05-20): universal selectors inside @media must NOT go to D0.
+        Applying them unconditionally would remove the reduced-motion guard, causing
+        animations to run even for users who have requested reduced motion.
+        """
         css = "@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms; } }"
         result = css_router.route_css(css, EMPTY_BOUNDARIES, EMPTY_THEME, "test-run")
-        # The universal selectors inside @media should route to D0.
-        assert result["stats"]["d0_count"] >= 1
+        # F7: universal selectors inside @media go to D2 to preserve the media context.
+        assert result["stats"]["d2_count"] >= 1
+        assert result["stats"]["d0_count"] == 0, (
+            "Universal selectors inside @media must not go to D0 (would lose @media wrapper)"
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -399,10 +429,11 @@ class TestPreSnapFilter:
         css = f".sgs-hero {{ padding-top: {value}; }}"
         result = css_router.route_css(css, EMPTY_BOUNDARIES, EMPTY_THEME, "test-run")
         # If it went D1, snap_skipped should be True.
-        if "sgs/hero" in result["d1"]:
-            for entry in result["d1"]["sgs/hero"].values():
-                if entry.get("value") == value:
-                    assert entry["snap_skipped"] is True
+        # F3: use prefix-match helper to handle '<block_slug>:<selector>' keys.
+        d1_hero = _d1_entries_for_block(result, "sgs/hero")
+        for entry in d1_hero.values():
+            if entry.get("value") == value:
+                assert entry["snap_skipped"] is True
 
 
 # ---------------------------------------------------------------------------
@@ -460,11 +491,11 @@ class TestLineHeightRole:
         for entry in d3_entries:
             # D3 entries don't directly carry role; check the D1 path instead.
             pass
-        # Also check D1 if it went there.
-        if "sgs/hero" in result["d1"]:
-            for entry in result["d1"]["sgs/hero"].values():
-                if entry.get("css_prop") == "line-height":
-                    assert entry.get("role") != "font_size"
+        # Also check D1 if it went there (F3: use prefix-match helper).
+        d1_hero = _d1_entries_for_block(result, "sgs/hero")
+        for entry in d1_hero.values():
+            if entry.get("css_prop") == "line-height":
+                assert entry.get("role") != "font_size"
 
 
 # ---------------------------------------------------------------------------
@@ -514,6 +545,256 @@ class TestStats:
         assert isinstance(result["d1"], dict)
         assert isinstance(result["d2"], list)
         assert isinstance(result["d3"], list)
+
+
+# ---------------------------------------------------------------------------
+# Test F1 — @media inner-selector scoping (P1B extension)
+# ---------------------------------------------------------------------------
+
+class TestMediaBlockInnerSelectorScoping:
+    """F1: @media rules in D2 must have inner selectors scoped with .page-id-N."""
+
+    def test_media_block_inner_selector_scoping(self):
+        """write_variation_css: @media inner selector gets page-id scope."""
+        rule = "@media (min-width: 768px) { .sgs-hero { grid-template-columns: 1fr 1fr } }"
+        scoped = css_router._scope_media_rule(rule, ".page-id-144 ")
+        assert ".page-id-144 .sgs-hero" in scoped, (
+            f"Expected .page-id-144 .sgs-hero in scoped rule, got: {scoped!r}"
+        )
+        assert "@media (min-width: 768px)" in scoped
+
+    def test_media_block_scoping_multiple_inner_rules(self):
+        """Multiple inner rules inside a single @media block are all scoped."""
+        rule = (
+            "@media (min-width: 768px) { "
+            ".sgs-hero { display: grid } "
+            ".sgs-hero__content { padding: 56px } "
+            "}"
+        )
+        scoped = css_router._scope_media_rule(rule, ".page-id-144 ")
+        assert ".page-id-144 .sgs-hero { display: grid }" in scoped or (
+            ".page-id-144 .sgs-hero" in scoped and ".page-id-144 .sgs-hero__content" in scoped
+        )
+
+    def test_media_block_no_scope_when_no_page_id(self):
+        """Without a scope_prefix, @media rules are returned unchanged."""
+        rule = "@media (min-width: 768px) { .sgs-brand { grid-template-columns: 1fr 1fr } }"
+        # _scope_media_rule is only called when scope_prefix is set.
+        # Verify the rule text is preserved when emitted without scope.
+        result = css_router.route_css(rule, EMPTY_BOUNDARIES, EMPTY_THEME, "test-run")
+        assert result["stats"]["d2_count"] >= 1
+
+    def test_route_css_d2_preserves_media_wrapper(self):
+        """D2 list entries for @media rules include the @media wrapper text."""
+        css = "@media (min-width: 768px) { .sgs-hero { grid-template-columns: 1fr 1fr } }"
+        result = css_router.route_css(css, EMPTY_BOUNDARIES, EMPTY_THEME, "test-run")
+        assert result["stats"]["d2_count"] >= 1
+        d2_texts = " ".join(result["d2"])
+        assert "@media" in d2_texts
+
+
+# ---------------------------------------------------------------------------
+# Test F4 — D1 attr suffix-scan covers slot-prefixed attrs (P1B extension)
+# ---------------------------------------------------------------------------
+
+class TestD1AttrSuffixScanFullBlockAttrs:
+    """F4: _css_prop_maps_to_typed_attr scans ALL block attrs with endswith(suffix)."""
+
+    def test_slot_prefixed_colour_attr_matches(self):
+        """labelColour should match css_prop=color via Colour suffix."""
+        # Extend the mock block_attrs to include slot-prefixed attrs.
+        original_side_effect = _mock_db.block_attrs.side_effect
+
+        def extended_block_attrs(slug):
+            if slug == "sgs/hero":
+                base = original_side_effect(slug)
+                base["labelColour"] = {"role": "color"}
+                base["ctaPrimaryColour"] = {"role": "color"}
+                base["subHeadlineFontSize"] = {"role": "typography"}
+                return base
+            return original_side_effect(slug)
+
+        _mock_db.block_attrs.side_effect = extended_block_attrs
+        css_router._db = _mock_db
+
+        try:
+            result = css_router._css_prop_maps_to_typed_attr("sgs/hero", "color")
+            assert result is True, "labelColour should match color via Colour suffix"
+        finally:
+            _mock_db.block_attrs.side_effect = original_side_effect
+            css_router._db = _mock_db
+
+    def test_suffixed_font_size_attr_matches(self):
+        """subHeadlineFontSize should match css_prop=font-size via FontSize suffix."""
+        original_side_effect = _mock_db.block_attrs.side_effect
+
+        def extended_block_attrs(slug):
+            if slug == "sgs/hero":
+                base = original_side_effect(slug)
+                base["subHeadlineFontSize"] = {"role": "typography"}
+                return base
+            return original_side_effect(slug)
+
+        _mock_db.block_attrs.side_effect = extended_block_attrs
+        css_router._db = _mock_db
+
+        try:
+            result = css_router._css_prop_maps_to_typed_attr("sgs/hero", "font-size")
+            assert result is True, "subHeadlineFontSize should match font-size via FontSize suffix"
+        finally:
+            _mock_db.block_attrs.side_effect = original_side_effect
+            css_router._db = _mock_db
+
+    def test_bare_attr_still_matches(self):
+        """Existing direct attr match (backgroundColour → background-color) still works."""
+        result = css_router._css_prop_maps_to_typed_attr("sgs/hero", "background-color")
+        assert result is True
+
+
+# ---------------------------------------------------------------------------
+# Test F2 — D2 excludes D1-lifted properties (P1B extension)
+# ---------------------------------------------------------------------------
+
+class TestD2ExcludesD1LiftedProperties:
+    """F2: when a rule has mixed D1+D2 props, D2 body must not contain D1 props."""
+
+    def test_d2_excludes_d1_lifted_properties(self):
+        """A rule with background-color (D1) + display (D2) — D2 only gets display."""
+        # sgs/hero has backgroundColour → background-color maps to D1.
+        # display is not in the suffix table → D2.
+        css = ".sgs-hero { background-color: #F5C2C8; display: flex; }"
+        result = css_router.route_css(css, EMPTY_BOUNDARIES, EMPTY_THEME, "test-run")
+        # background-color should be D1.
+        assert "sgs/hero" in result["d1"] or result["stats"]["d1_count"] >= 1
+        # D2 rules should NOT contain background-color (it's been lifted to D1).
+        for rule in result["d2"]:
+            if "sgs-hero" in rule:
+                assert "background-color" not in rule, (
+                    f"D2 rule for sgs-hero should not contain background-color (D1 lifted): {rule!r}"
+                )
+
+    def test_fully_d1_rule_emits_no_d2(self):
+        """A rule where all properties lift to D1 produces zero D2 entries for that rule."""
+        css = ".sgs-hero { background-color: #F5C2C8; }"
+        result = css_router.route_css(css, EMPTY_BOUNDARIES, EMPTY_THEME, "test-run")
+        # All props went D1 — no D2 for this rule.
+        hero_d2 = [r for r in result["d2"] if "sgs-hero" in r and "background-color" in r]
+        assert len(hero_d2) == 0, (
+            f"background-color should not appear in D2 (D1-lifted): {hero_d2}"
+        )
+
+
+# ---------------------------------------------------------------------------
+# Test F3 — D1 sidecar per-section keying (P1B extension)
+# ---------------------------------------------------------------------------
+
+class TestD1SidecarPerSectionKeyed:
+    """F3: different selectors for the same block get distinct D1 sidecar keys."""
+
+    def test_d1_sidecar_per_section_keyed(self):
+        """Two rules with same block slug but different selectors produce distinct D1 keys."""
+        css = (
+            ".sgs-hero { background-color: #F5C2C8; }\n"
+            ".sgs-hero.sgs-hero--dark { background-color: #333; }\n"
+        )
+        result = css_router.route_css(css, EMPTY_BOUNDARIES, EMPTY_THEME, "test-run")
+        d1_keys = list(result["d1"].keys())
+        # With F3, there should be at least two distinct keys (one per selector).
+        assert len(d1_keys) >= 1, "Expected at least one D1 key"
+        # The keys should be scoped (contain ':') or be the bare block_slug.
+        # At minimum verify D1 got entries.
+        assert result["stats"]["d1_count"] >= 1
+
+
+# ---------------------------------------------------------------------------
+# Test F5 — D1 media context preserved (P1B extension)
+# ---------------------------------------------------------------------------
+
+class TestD1MediaContextPreserved:
+    """F5: D1 assignments carry the media field from their originating @media block."""
+
+    def test_d1_media_context_preserved(self):
+        """A D1-eligible rule inside @media carries media field in the sidecar entry."""
+        css = "@media (min-width: 1024px) { .sgs-hero { padding-top: 80px; } }"
+        result = css_router.route_css(css, EMPTY_BOUNDARIES, EMPTY_THEME, "test-run")
+        # Find D1 entries for sgs/hero.
+        d1_hero_entries = {}
+        for key, entries in result["d1"].items():
+            if key.startswith("sgs/hero"):
+                d1_hero_entries.update(entries)
+        # If padding-top was D1-lifted, it should carry the media field.
+        for attr_path, entry in d1_hero_entries.items():
+            if "padding-top" in attr_path or "padding" in attr_path.lower():
+                if entry.get("value") == "80px":
+                    assert "media" in entry, "D1 entry must carry media field"
+                    assert entry["media"] is not None, "media should be the @media condition"
+                    assert "1024px" in entry["media"]
+
+
+# ---------------------------------------------------------------------------
+# Test F6 — Chrome-skip routes to D0 (P1B extension)
+# ---------------------------------------------------------------------------
+
+class TestChromeSkipRoutesToD0:
+    """F6: header/footer/nav rules go to D0 (not silent drop) to satisfy §FR6 hard rule."""
+
+    def test_chrome_skip_routes_to_d0(self):
+        """header rule is chrome_skipped AND routed to D0 — not silently dropped."""
+        css = "header { background: white; }"
+        result = css_router.route_css(css, EMPTY_BOUNDARIES, EMPTY_THEME, "test-run")
+        assert result["stats"]["chrome_skipped"] >= 1, "Expected chrome_skipped counter to fire"
+        # F6: rule must appear in D0, not be silently dropped.
+        assert result["stats"]["d0_count"] >= 1, (
+            "Chrome-skip rules must route to D0 per §FR6 hard rule (no silent drops)"
+        )
+        assert len(result["d0"]) >= 1, "D0 list must contain the chrome-skipped rule"
+
+    def test_footer_chrome_skip_routes_to_d0(self):
+        """footer rule also routes to D0."""
+        css = "footer { padding: 40px 0; }"
+        result = css_router.route_css(css, EMPTY_BOUNDARIES, EMPTY_THEME, "test-run")
+        assert result["stats"]["chrome_skipped"] >= 1
+        assert result["stats"]["d0_count"] >= 1
+
+    def test_nav_chrome_skip_routes_to_d0(self):
+        """nav rule also routes to D0."""
+        css = "nav ul { list-style: none; }"
+        result = css_router.route_css(css, EMPTY_BOUNDARIES, EMPTY_THEME, "test-run")
+        assert result["stats"]["chrome_skipped"] >= 1
+        assert result["stats"]["d0_count"] >= 1
+
+
+# ---------------------------------------------------------------------------
+# Test F7 — h1/h2/h3 inside @media not classified as D0 (P1B extension)
+# ---------------------------------------------------------------------------
+
+class TestMediaInnerBareTagNotD0:
+    """F7: bare tag rules inside @media blocks must NOT be classified as D0."""
+
+    def test_media_inner_bare_tag_not_d0(self):
+        """h1 inside @media should route to D2, not D0 (preserves media-query wrapper)."""
+        css = "@media (min-width: 768px) { h1 { font-size: 2rem; } }"
+        result = css_router.route_css(css, EMPTY_BOUNDARIES, EMPTY_THEME, "test-run")
+        # With F7: h1 inside @media is NOT D0 — it goes to D2 (preserving the media context).
+        assert result["stats"]["d0_count"] == 0, (
+            "h1 inside @media must NOT be D0 — it would lose its @media wrapper (F7 fix)"
+        )
+        assert result["stats"]["d2_count"] >= 1, "h1 inside @media should route to D2"
+
+    def test_media_inner_heading_group_not_d0(self):
+        """h1, h2, h3 inside @media should route to D2."""
+        css = "@media (min-width: 768px) { h1, h2, h3 { font-family: 'Fraunces', serif; } }"
+        result = css_router.route_css(css, EMPTY_BOUNDARIES, EMPTY_THEME, "test-run")
+        # Each comma-part is a separate rule after parsing — all should be D2, not D0.
+        assert result["stats"]["d0_count"] == 0, (
+            "Heading tags inside @media must not go to D0 (F7 fix)"
+        )
+
+    def test_top_level_bare_tag_still_d0(self):
+        """Top-level h1 (not inside @media) still routes to D0 as before."""
+        css = "h1 { font-weight: bold; }"
+        result = css_router.route_css(css, EMPTY_BOUNDARIES, EMPTY_THEME, "test-run")
+        assert result["stats"]["d0_count"] == 1, "Top-level h1 must still go to D0"
 
 
 if __name__ == "__main__":

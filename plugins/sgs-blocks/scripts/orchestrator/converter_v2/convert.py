@@ -158,28 +158,63 @@ def seed_d1_sidecar(run_dir: "Path | None") -> bool:
         return False
 
 
-def _load_d1_assignments(section_key: str) -> dict[str, str]:
-    """Return a flat {css_prop: value} dict from the D1 sidecar for section_key.
+def _load_d1_assignments(section_key: str) -> dict[str, dict]:
+    """Return D1 assignments from the sidecar for section_key.
 
     section_key is typically a block slug (e.g. 'sgs/hero').  The D1 sidecar
-    is keyed by block_slug from css_router.route_css().
+    may be keyed by either the bare block_slug (legacy) or by
+    '<block_slug>:<selector>' (F3 format, 2026-05-20).
+
+    F5 fix (2026-05-20): returns a richer structure that preserves the `media`
+    field so callers can distinguish base values from responsive-only values:
+
+      {css_prop: {value: str, media: str|None, role: str, snap_skipped: bool}}
+
+    Callers should emit base values (media=None) as block attrs, and can route
+    responsive values to D2 as scoped @media fallbacks if the block does not
+    support responsive attribute variants.
 
     Returns an empty dict when the sidecar is absent or the key is not found.
-    This is the graceful-degradation path — callers always fall back to
-    _collect_css_decls_for_element when needed.
     """
     if not _D1_SIDECAR:
         return {}
-    entries = _D1_SIDECAR.get(section_key) or {}
-    # Flatten: attr_path keys look like 'sgs/hero.padding-top'; extract the css_prop.
-    flat: dict[str, str] = {}
-    for attr_path, entry in entries.items():
-        if isinstance(entry, dict):
-            css_prop = entry.get("css_prop") or attr_path.split(".")[-1]
-            value = entry.get("value") or ""
-            if css_prop and value:
-                flat[css_prop] = value
-    return flat
+
+    # Collect all sidecar entries whose top-level key starts with section_key.
+    # This handles both:
+    #   - bare block_slug key (legacy writes):    'sgs/hero'
+    #   - scoped key (F3 writes):                 'sgs/hero:.sgs-hero'
+    # Merge all matching sub-dicts (last-write-wins per css_prop for duplicates).
+    merged_entries: dict = {}
+    for sidecar_key, sub_dict in _D1_SIDECAR.items():
+        # Match if sidecar_key IS the section_key or STARTS WITH '<section_key>:'.
+        if sidecar_key == section_key or sidecar_key.startswith(f"{section_key}:"):
+            if isinstance(sub_dict, dict):
+                merged_entries.update(sub_dict)
+
+    if not merged_entries:
+        return {}
+
+    # Build richer output: {css_prop: {value, media, role, snap_skipped}}
+    result: dict[str, dict] = {}
+    for attr_path, entry in merged_entries.items():
+        if not isinstance(entry, dict):
+            continue
+        css_prop = entry.get("css_prop") or attr_path.split(".")[-1]
+        value = entry.get("value") or ""
+        if not css_prop or not value:
+            continue
+        media = entry.get("media")  # F5: preserve media context
+        # Prefer base (media=None) values when both exist for the same css_prop.
+        if css_prop in result and result[css_prop].get("media") is None and media is not None:
+            # Already have a base value — keep it; skip this responsive one.
+            continue
+        result[css_prop] = {
+            "value": value,
+            "media": media,
+            "role": entry.get("role", "visual"),
+            "snap_skipped": entry.get("snap_skipped", False),
+        }
+    return result
 
 
 # ============================================================================
@@ -2118,8 +2153,19 @@ def _lift_core_block_style(
     # Documented at _snap_style_dict_leaves call sites (P1.A nice-to-have #4).
     _d1_sidecar_decls_core = _load_d1_assignments(block_slug)
     if _d1_sidecar_decls_core:
-        for _d1c_prop, _d1c_val in _d1_sidecar_decls_core.items():
-            base_decls.setdefault(_d1c_prop, _d1c_val)
+        # F5 fix (2026-05-20): _load_d1_assignments now returns
+        # {css_prop: {value, media, role, snap_skipped}}.
+        # Only merge base values (media=None) into base_decls — responsive
+        # values belong in @media blocks, not as unconditional base styles.
+        for _d1c_prop, _d1c_entry in _d1_sidecar_decls_core.items():
+            if isinstance(_d1c_entry, dict):
+                if _d1c_entry.get("media") is None:
+                    _d1c_val = _d1c_entry.get("value", "")
+                    if _d1c_val:
+                        base_decls.setdefault(_d1c_prop, _d1c_val)
+            else:
+                # Legacy flat-string format (backward-compat).
+                base_decls.setdefault(_d1c_prop, _d1c_entry)
 
     if not base_decls:
         return style, extra_top
@@ -2499,8 +2545,18 @@ def _lift_root_supports_to_style(
     # call sites (P1.A nice-to-have #4). See convert.py:107-135.
     _d1_sidecar_decls = _load_d1_assignments(block_slug)
     if _d1_sidecar_decls:
-        for _d1_prop, _d1_val in _d1_sidecar_decls.items():
-            base_decls.setdefault(_d1_prop, _d1_val)
+        # F5 fix (2026-05-20): _load_d1_assignments now returns
+        # {css_prop: {value, media, role, snap_skipped}}.
+        # Only merge base values (media=None) — responsive values need @media context.
+        for _d1_prop, _d1_entry in _d1_sidecar_decls.items():
+            if isinstance(_d1_entry, dict):
+                if _d1_entry.get("media") is None:
+                    _d1_val = _d1_entry.get("value", "")
+                    if _d1_val:
+                        base_decls.setdefault(_d1_prop, _d1_val)
+            else:
+                # Legacy flat-string format (backward-compat).
+                base_decls.setdefault(_d1_prop, _d1_entry)
 
     if not base_decls:
         return

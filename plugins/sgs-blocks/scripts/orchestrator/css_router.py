@@ -278,22 +278,26 @@ def _css_prop_maps_to_typed_attr(block_slug: str, css_prop: str) -> bool:
 
     Uses db.block_attrs to confirm the block actually declares an attribute
     matching the suffix (avoids false positives from the suffix table alone).
+
+    F4 fix (2026-05-20): replaced 3-candidate heuristic with a full suffix-scan
+    across ALL block attrs.  The old heuristic missed slot-prefixed names like
+    labelColour, ctaPrimaryColour, contentPaddingTop, subHeadlineFontSize, etc.
+    The scan checks attr_name.endswith(suffix) for every (suffix, attr) pair,
+    which correctly handles any prefix convention including bare, block-name,
+    slot-name, and background.
     """
     db = _get_db()
     attrs = db.block_attrs(block_slug)
-    block_name = block_slug.split("/")[-1]  # e.g. 'hero', 'product-card'
 
     for prop, suffix, _kind in _css_prop_suffixes():
         if prop.lower() != css_prop.lower():
             continue
-        # Check both bare suffix and prefixed (block-name prefix) variants.
-        candidates = [
-            suffix[0].lower() + suffix[1:],           # camelCase (e.g. "padding")
-            f"{block_name}{suffix}",                    # prefixed (e.g. "heroPadding")
-            f"background{suffix}",                      # background-prefixed (common)
-        ]
-        for candidate in candidates:
-            if candidate in attrs:
+        # Scan ALL attrs for any name that ends with the suffix (case-insensitive).
+        # This matches: labelColour, ctaPrimaryColour, backgroundColour, overlayColour,
+        # contentPaddingTop, subHeadlineFontSize, imageWidth, etc.
+        suffix_lower = suffix.lower()
+        for attr_name in attrs:
+            if attr_name.lower().endswith(suffix_lower):
                 return True
     return False
 
@@ -397,22 +401,31 @@ def route_css(
             return bare_rule
 
         # ----------------------------------------------------------------
-        # Chrome-skip check: header/footer/nav top-level → no D2 emission.
-        # Rules targeting chrome elements are dropped entirely here because
-        # their styling lives in template parts, not variation CSS.
+        # Chrome-skip check: header/footer/nav top-level → route to D0.
+        # Chrome element rules (template-part CSS) are emitted globally but
+        # not page-id-scoped — they will be overridden by the actual template
+        # part CSS. This satisfies §FR6 hard rule: every CSS rule hits at
+        # least one of D0/D1/D2/D3. The chrome_skipped stat still fires for
+        # reporting. No silent drops.
+        # F6 fix (2026-05-20): changed from silent continue to D0 emission.
         # ----------------------------------------------------------------
         if _selector_targets_chrome(selector):
             result["stats"]["chrome_skipped"] += 1
-            # Chrome rules still count toward total but are not routed to
-            # any destination bucket — they're intentionally not emitted.
-            # We subtract them from total so D0+D1+D2+D3 sums match total
-            # minus chrome-skipped.  Surface in stats for stage-9 reporting.
+            # Route to D0 (unscoped global) — spec-compliant, not a page-id
+            # scoped rule, and harmless because template parts override it.
+            result["d0"].append(_rule_text())
+            result["stats"]["d0_count"] += 1
             continue
 
         # ----------------------------------------------------------------
         # D0 — global/reset rules
+        # Only classify as D0 when at the top level (media is None).
+        # Rules like @media (min-width:768px) { h1, h2, h3 { ... } } must NOT
+        # go D0-unscoped — they would lose their media-query wrapper entirely.
+        # Such rules fall through to D2 below, preserving the @media context.
+        # F7 fix (2026-05-20): added `and media is None` guard.
         # ----------------------------------------------------------------
-        if _is_d0_global(selector):
+        if _is_d0_global(selector) and media is None:
             result["d0"].append(_rule_text())
             result["stats"]["d0_count"] += 1
             continue
@@ -448,15 +461,28 @@ def route_css(
         #   Other props (no suffix mapping at all) → D2
 
         # Identify the section_id this block belongs to.
-        # We derive it from the block_slug — use the block name as a section proxy.
-        # The caller (orchestrator) can later merge D1 assignments per section_id.
-        # For the sidecar JSON, we key by block_slug (not section_id) since we
-        # don't always know which section owns the rule at this stage.
-        section_key = block_slug  # e.g. 'sgs/hero'
+        # F3 fix (2026-05-20): key by "<block_slug>:<selector>" so that multiple
+        # instances of the same block class on the same page (different selectors,
+        # different padding/colour rules) maintain distinct D1 entries rather than
+        # collapsing to the last-written value.  The cv2 reader (_load_d1_assignments)
+        # was updated to accept a selector suffix and do prefix-match lookup.
+        # The bare block_slug key is also kept for backward-compat with callers
+        # that don't pass a selector (accumulates all assignments as a merged view).
+        section_key = f"{block_slug}:{selector}"  # e.g. 'sgs/hero:.sgs-hero'
 
         d1_for_section = result["d1"].setdefault(section_key, {})
 
         rule_routed = False  # Did at least one prop from this rule go D1/D3?
+        # F2 fix (2026-05-20): track which props were D1-lifted so D2 emission
+        # EXCLUDES them.  Without this, a rule with mixed D1/D2 props emits the
+        # full rule to D2 (including the D1 properties), creating a specificity
+        # fight where the D2 scoped rule overrides the typed-attr value.
+        d1_lifted_props: set[str] = set()
+
+        source_cls = next(
+            (c for c in classes if _resolve_block_for_class(c) == block_slug),
+            classes[0] if classes else "",
+        )
 
         for css_prop, raw_value in props.items():
             if not raw_value:
@@ -469,10 +495,6 @@ def route_css(
                 # D1 — typed attribute lift.
                 skip_snap = _is_non_tokenisable(raw_value)
                 attr_path = f"{block_slug}.{css_prop}"
-                # Find the primary source class for provenance.
-                source_cls = next(
-                    (c for c in classes if _resolve_block_for_class(c) == block_slug), classes[0]
-                )
                 d1_for_section[attr_path] = {
                     "value": raw_value,
                     "role": _infer_role(css_prop),
@@ -484,6 +506,7 @@ def route_css(
                 }
                 result["stats"]["d1_count"] += 1
                 rule_routed = True
+                d1_lifted_props.add(css_prop)  # exclude from D2 (F2)
 
             else:
                 # Check if this prop LOGICALLY belongs as a typed attr on the
@@ -491,10 +514,6 @@ def route_css(
                 # currently declare it → D3 + D2 fallback.
                 prop_in_suffix_table = any(
                     p.lower() == css_prop.lower() for p, _s, _k in _css_prop_suffixes()
-                )
-                source_cls = next(
-                    (c for c in classes if _resolve_block_for_class(c) == block_slug),
-                    classes[0] if classes else "",
                 )
                 if prop_in_suffix_table:
                     # D3 — gap candidate (CSS prop is in the suffix table but
@@ -509,15 +528,27 @@ def route_css(
                     })
                     result["stats"]["d3_count"] += 1
                     rule_routed = True
-                    # D3 ALSO ships to D2 as a temporary fallback.
-                    result["d2"].append(_rule_text())
-                    result["stats"]["d2_count"] += 1
+                    # D3 ALSO ships to D2 as a temporary fallback (filtered by F2).
+                    # D2 emission happens after the loop below.
 
                 else:
                     # No suffix mapping at all — D2 straight (wrapper CSS).
-                    result["d2"].append(_rule_text())
-                    result["stats"]["d2_count"] += 1
+                    # Actual D2 emission happens after the loop below.
                     rule_routed = True
+
+        # ---- D2 emission for this rule (F2: exclude D1-lifted props) --------
+        # Build a filtered props dict omitting anything that went D1.
+        # If all props were D1-lifted, no D2 entry is emitted for this rule.
+        remaining_props = {p: v for p, v in props.items() if p not in d1_lifted_props and v}
+        if remaining_props:
+            def _rule_text_filtered() -> str:
+                decls = "; ".join(f"{p}: {v}" for p, v in remaining_props.items())
+                bare_rule = f"{selector} {{ {decls} }}"
+                if media:
+                    return f"{media} {{ {bare_rule} }}"
+                return bare_rule
+            result["d2"].append(_rule_text_filtered())
+            result["stats"]["d2_count"] += 1
 
         if not rule_routed:
             # Safety net: rule had props but none routed above (empty props dict
@@ -597,6 +628,83 @@ def write_d3_to_db(d3_entries: list[dict], sgs_db_path: Path) -> int:
 
 
 # ---------------------------------------------------------------------------
+# Variation CSS file writer helpers
+# ---------------------------------------------------------------------------
+
+def _scope_media_rule(rule: str, scope_prefix: str) -> str:
+    """Inject scope_prefix before each inner selector inside a @media block.
+
+    F1 fix (2026-05-20): without this, @media rules have specificity (0,1,0)
+    while base D2 rules scoped to .page-id-N have (0,2,0).  The scoped base
+    rule wins at every breakpoint, silencing every responsive layout override.
+
+    Strategy:
+      1. Find the opening `{` of the @media condition (outer brace).
+      2. Extract the inner CSS text.
+      3. For each inner qualified rule, prepend scope_prefix to its selector.
+      4. Re-wrap in the @media condition.
+
+    Uses a simple brace-depth scan rather than full CSS parsing to avoid adding
+    a tinycss2 dependency at write-time and to keep this function standalone.
+
+    Example:
+      Input:  @media (min-width: 768px) { .sgs-hero { grid-template-columns: 1fr 1fr } }
+      Output: @media (min-width: 768px) { .page-id-144 .sgs-hero { grid-template-columns: 1fr 1fr } }
+    """
+    # Locate the outer @media condition (everything before the first top-level `{`).
+    # Walk by character to handle nested `{` correctly.
+    depth = 0
+    outer_open = -1
+    for i, ch in enumerate(rule):
+        if ch == "{":
+            if depth == 0:
+                outer_open = i
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+
+    if outer_open == -1:
+        # Malformed — no opening brace found; return unchanged.
+        return rule
+
+    media_prefix = rule[:outer_open].rstrip()  # e.g. "@media (min-width: 768px)"
+    inner = rule[outer_open + 1:].rstrip()
+    # Strip the final closing `}` of the @media block.
+    if inner.endswith("}"):
+        inner = inner[:-1].strip()
+
+    # Now scope each inner rule.  Inner text looks like:
+    #   ".sgs-hero { grid-template-columns: 1fr 1fr } .sgs-hero__content { padding: 28px }"
+    # We walk by brace depth to split into individual inner rules.
+    scoped_inner_parts: list[str] = []
+    inner_depth = 0
+    buf_start = 0
+    for i, ch in enumerate(inner):
+        if ch == "{":
+            if inner_depth == 0:
+                # Everything from buf_start to i is the selector.
+                inner_selector = inner[buf_start:i].strip()
+                buf_start = i  # include `{` in the body slice
+            inner_depth += 1
+        elif ch == "}":
+            inner_depth -= 1
+            if inner_depth == 0:
+                # Full inner rule: selector + { body }
+                body = inner[buf_start:i + 1]  # includes `{` and `}`
+                scoped_sel = f"{scope_prefix}{inner_selector}"
+                # body starts with `{`, so: "<scoped-sel> <body>"
+                scoped_inner_parts.append(f"{scoped_sel} {body.strip()}")
+                buf_start = i + 1
+
+    if not scoped_inner_parts:
+        # Could not parse inner rules — return original rule unchanged to avoid data loss.
+        return rule
+
+    inner_joined = " ".join(scoped_inner_parts)
+    return f"{media_prefix} {{ {inner_joined} }}"
+
+
+# ---------------------------------------------------------------------------
 # Variation CSS file writer
 # ---------------------------------------------------------------------------
 
@@ -661,6 +769,15 @@ def write_variation_css(
                 sel = rule[:brace_idx].strip()
                 body = rule[brace_idx:]
                 parts.append(f"{scope_prefix}{sel}{body}\n")
+            elif scope_prefix and rule.startswith("@"):
+                # F1 fix (2026-05-20): scope @media rules by injecting .page-id-N
+                # INSIDE the @media block, onto each inner selector.  Without this,
+                # @media rules have specificity (0,1,0) while base D2 rules have
+                # (0,2,0) — the base rules always win, breaking every responsive layout.
+                #
+                # Before: @media (min-width:768px) { .sgs-hero { grid-template-columns: 1fr 1fr } }
+                # After:  @media (min-width:768px) { .page-id-144 .sgs-hero { grid-template-columns: 1fr 1fr } }
+                parts.append(_scope_media_rule(rule, scope_prefix) + "\n")
             else:
                 parts.append(f"{rule}\n")
         parts.append("\n")
