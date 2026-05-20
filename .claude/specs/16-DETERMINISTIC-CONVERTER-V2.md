@@ -709,3 +709,54 @@ See orchestrator Stage 10 entry in `.claude/cloning-pipeline-flow.md` for the pe
 ### 12.12 Spec 15 retirement notes
 
 Spec 15 file (`.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md`) is retained on disk with absorption marker in its frontmatter. Future readers: this section (Spec 16 §12) is the canonical content; Spec 15 file is historical record only.
+
+## 13. P1.A + P1.B + P1.B.x implementation status (shipped 2026-05-20)
+
+Spec 16 §FR6 four-destination router shipped in 5 commits this session. Status by FR:
+
+| FR | Status | Implementation site | Notes |
+|---|---|---|---|
+| FR1 Block-root slot harvest | LIVE | `convert.py:lift_attrs_for_block` (line 777) | Used for sgs-registered blocks. Receives section node + BEM parse. |
+| FR2 Atomic-tag emission | LIVE | `convert.py:walk` ATOMIC_TAG_MAP path | Stable since Spec 16 Phase 1. |
+| FR3 Pass-through wrapper rule | LIVE | `convert.py:walk` | Unmatched wrapper without CSS-anchor → pass-through. With CSS-anchor → R5/Destination 2. |
+| FR4 Top-level section container | LIVE | `convert.py:_convert_section_body` | sgs/container auto-emit at top-level only. |
+| FR5 Media-map resolution | LIVE | `convert.py:_resolve_media_url` | Hooked into atomic-image emit. |
+| FR6 CSS routing (D0/D1/D2/D3) | LIVE | `css_router.py` (NEW, 661 LOC) | `route_css()` dispatch. Hard rule satisfied. |
+| FR6 D1 token-snap | LIVE | `convert.py:_snap_style_dict_leaves` + `token_resolver.resolve_batch` | Strict exact-match guard (commit `8a996194`). |
+| FR7 Visual QA verification | PARTIAL | `scripts/pixel-diff.py` per-section cropped | Measurement contamination from WP chrome (parking P-G4-MEASUREMENT-DECONTAMINATION) — addressed next session. |
+| FR8 Legacy extract.py retirement | LIVE | Last session 2026-05-21 | extract.py + extract_strategies.py + overrides/hero.py marked unreachable. |
+| FR9 sgs/heading composite | LIVE | Spec 16 Phase 2 | Shipped earlier session. |
+
+## 14. Known gaps blocking ≤ 1% pixel-diff target (identified by honest-path council 2026-05-20)
+
+The four-destination router is correct per spec but pixel-diff target not yet hit due to:
+
+### 14.1 — Self-closing block emission for composite blocks (G1)
+
+cv2 emits `<!-- wp:sgs/hero {...} /-->` (self-closing) instead of OPEN block with InnerBlocks children. Result: render.php's `$content` (InnerBlocks output) is empty, CTAs/inner content invisible on rendered page.
+
+**Fix shape:** when a block accepts InnerBlocks AND lifted attrs contain InnerBlocks data (e.g. `ctaPrimary*` for hero), emit OPEN block with nested `wp:sgs/multi-button` + `wp:sgs/button` block comments. Set `self_closing=False`. Legacy attrs stay for deprecated.js migration.
+
+### 14.2 — Page-id scope breaks cv2's CSS lookup (G2)
+
+P1.B.x correctly scoped variation CSS rules to `.page-id-N .sgs-X` for cascade isolation. But cv2's `_collect_css_decls_for_element` searches for bare `.sgs-X`. Match fails. Stage 3 slot resolver receives empty CSS context. Silently kills 60-80% of value-lift on SGS-registered blocks.
+
+**Fix shape:** strip `.page-id-\d+\s+` prefix in cv2's selector matcher before comparison. One-line fix in `_collect_css_decls_for_element` (around line 2176).
+
+### 14.3 — Stage 3 slot resolver only extracts text content (G3)
+
+`slot_list.py` resolver handles text-content slots but returns "no value extracted" for visual/structural slots (backgroundImage, overlayColour, minHeight, ctaPrimaryColour, alignment). 142 of hero's 171 slots fail not because CSS is missing but because the resolver doesn't know how to read it.
+
+**Fix shape:** extend slot_list to call `_collect_css_decls_for_element` for visual slots + map CSS property → SGS attr name via `property_suffixes` table (the existing D1 typed-attr-lift path per §FR6). Per-slot-role dispatch: text → existing path; colour/dimension/image/structural → new CSS-driven path.
+
+### 14.4 — Measurement-side contamination (G4)
+
+Section screenshots include WP admin bar + sgs-header that mockup screenshots don't have. Systematic +10-20pp inflation on every pixel-diff cell. Pure measurement-side fix; doesn't touch pipeline.
+
+### 14.5 — Per-block DOM-shape mismatches (G5)
+
+Mockup uses `<blockquote>` for brand-strip body; render emits `<section>`. Mockup uses 3-col grid for testimonial-slider; render emits single-card carousel. Mockup uses `__badge`/`__text` for trust-bar items + inline SVG; render uses `__item`/`__label` + Lucide slugs. CSS rules targeting mockup-only classes are dead.
+
+**Fix shape:** per-block render.php adjustments OR Block Style Variation additions via P2.iii infrastructure. Each block is a separate, isolated change; parallelisable.
+
+Full evidence: `reports/2026-05-20-pipeline-root-gap-council/real-path-synthesis.md` + per-rater reports (A/B/C). Next-session plan: `.claude/next-session-prompt.md` (4-wave G1-G5 + F5 closure).

@@ -1,7 +1,35 @@
 ---
 doc_type: parking
 project: small-giants-wp
-last_updated: 2026-05-19
+last_updated: 2026-05-20
+---
+
+## Opened 2026-05-20 (Phase 1 closure follow-ups + Phase 2 medium-severity items)
+
+**P-G1-HERO-INNERBLOCKS** — cv2 emits self-closing `wp:sgs/hero` block. Render.php uses `$content` (InnerBlocks) for CTAs — empty when block is self-closing. Live page 144 hero CTAs ARE INVISIBLE. ~50pp of hero's 67.8% pixel-diff. **Trigger:** Wave 2 of next session (G1).
+
+**P-G2-PAGE-ID-SCOPE-STRIP** — P1.B.x scoped variation CSS to `.page-id-N .sgs-X` but cv2's `_collect_css_decls_for_element` searches for bare `.sgs-X`. Match fails. Silently kills 60-80% of value-lift on every SGS block. **Trigger:** Wave 1 of next session (G2). One-line fix: `re.sub(r"^\.page-id-\d+\s+", "", selector)` in convert.py.
+
+**P-G3-STAGE-3-VISUAL-SLOT-MAPPING** — Stage 3 `slot_list.py` only extracts text-content slots. Visual/structural slots (backgroundImage, overlayColour, minHeight, ctaPrimaryColour, alignment) return "no value extracted" even when mockup CSS has the values. Extend slot resolver to call `_collect_css_decls_for_element` for visual slots + map CSS prop → SGS attr name via `property_suffixes`. **Trigger:** Wave 2 of next session (G3), after G1.
+
+**P-G4-MEASUREMENT-DECONTAMINATION** — `scripts/pixel-diff.py` screenshots include WP admin bar + sgs-header. Mockup screenshots have neither. Systematic +10-20pp inflation on EVERY section measurement. Fix: Playwright `addInitScript` removes `#wpadminbar` + `.sgs-header` before screenshot. **Trigger:** Wave 1 of next session (G4).
+
+**P-G5-PER-BLOCK-DOM-SHAPE-FIXES** — Per-block mismatches between mockup and render output:
+- brand-strip: mockup `<blockquote>` vs render `<section>`
+- testimonial-slider: mockup 3-col static grid vs render single-card carousel (needs Block Style Variation `displayMode: grid` via P2.iii infrastructure)
+- trust-bar: mockup `__badge` + `__text` + inline SVG vs render `__item` + `__label` + Lucide slugs
+**Trigger:** Wave 3 of next session (G5), parallel subagents per block.
+
+**P-F5-D1-MEDIA-FIELD-RESPONSIVE-FLOW** — D1 sidecar preserves `media` field but reader at `convert.py:_load_d1_assignments` only merges base values. Responsive variants (`@media (min-width: 1024px)` → `Desktop` attr) never flow. Hero 375 mobile +13.3pt regression from this. Fix: map media-condition → breakpoint slug → responsive-variant-attr name. **Trigger:** Wave 3 of next session (F5), parallel with G5.
+
+**P-P1Bx-COMMA-MEDIA-INNER** — P1.B.x's `_scope_media_rule()` only scopes the first part of comma-grouped inner selectors. `@media (...) { .sgs-hero, .sgs-cta { ... } }` produces `.page-id-144 .sgs-hero, .sgs-cta { ... }` — `.sgs-cta` left unscoped. Low-frequency edge case. **Trigger:** next css_router maintenance pass.
+
+**P-P1Bx-NESTED-SUPPORTS** — Nested `@supports` inside `@media` produces invalid CSS. Recurse the scope-injection OR pass through unchanged. Low-frequency. **Trigger:** next css_router maintenance pass.
+
+**P-P2II-CSS-VALUE-RE-TIGHTEN** — `_CSS_VALUE_RE = re.compile(r"^[^;{}<>\"]*$")` in `stage_attribute_promotion.py` permits single quotes, backticks, parentheses. Defence-in-depth (esc_attr() in PHP is real guard) but worth tightening. **Trigger:** next P2.ii maintenance pass.
+
+**P-P2III-ESSENCE-MATCH-TIER-GATE** — `essence_match_variation` tier in cv2 walker only fires when `target == "sgs/container"`. Theoretical edge case: an existing-but-stub block at slug X with a sibling concept Y wouldn't trigger the variation tier. Low-priority. **Trigger:** first real-world variation-detection run.
+
 ---
 
 # Parking — deferred work with named triggers

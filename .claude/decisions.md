@@ -2,6 +2,42 @@
 
 Append-only. Most-recent first.
 
+## 2026-05-20 — Session decisions (Phase 1 Spec 16 §FR6 rewrite + Phase 2 future capabilities)
+
+### D1: Path A — site-wide variation activation (NOT per-page meta override)
+
+Stage 10 activates the style variation via `set_theme_mod('active_theme_style', $slug)` site-wide. Considered: per-page post-meta override (B) for multi-client-on-one-install scenarios. Bean clarified: in production each client gets their own WP install (own domain); in dev each canary gets its own Hostinger test domain. Multi-client-on-one-install is NOT a real scenario. Path B adds custom resolver complexity for zero practical benefit + non-canonical WP pattern.
+
+**Commits:** `8ceb8787` (REST endpoint) + read-back confirmation + exit-3 distinct failure surface.
+
+### D2: Token-snap requires strict exact-match (Bean's step 3 binding)
+
+P1.A's nearest-match snap caused visible regressions (cream where white expected). Per Bean's mental model: "if value matches global default, use token; if not, insert literal." Patch `8a996194` adds post-snap guard verifying token's resolved value equals literal within tight tolerance (ΔE2000 ≤ 1.0 for colour; ≤ 1px for spacing/font-size).
+
+### D3: Spec 16 §FR6 four-destination router replaces verbatim Stage 0.7 dump
+
+`css_router.py` (NEW, 661 LOC after P1.B.x) routes every CSS rule to D0 (global) / D1 (typed-attr-lift with token-snap) / D2 (wrapper-CSS scoped to `.page-id-N`) / D3 (gap-candidate). Hard rule: every rule routes to exactly one destination. No silent drops. Verbatim dump retired; cv2 reads D1 sidecar at `pipeline-state/<run>/css-d1-assignments.json` for typed-attr values.
+
+**Commits:** `05fb38a4` (router) + `44ba373b` (dedup fix) + `dce5a496` (P1.B.x — 7 holistic fixes for @media scope + suffix-scan + D2-leak filter + sidecar key + media field + chrome-to-D0 + bare-tag-in-@media guard).
+
+### D4: Header/footer/nav structural defence-in-depth (two layers)
+
+After 5 occurrences of header/footer being scaffolded as Gutenberg blocks (blub.db row 274), single-layer enforcement insufficient. Two-layer defence:
+- **Tool layer** (P2.0, `8838b6fb`): PostToolUse hook at `.claude/hooks/no-header-footer-block.py` blocks Write|Edit on `plugins/sgs-blocks/src/blocks/(header|footer|nav)/`
+- **Source layer** (P2.i, `3a70587c`): `_is_chrome_section()` in Stage 9b autonomy chain detects chrome at 4 boundary signal levels (slug / selector tag / class BEM root / section_id) and surfaces as `unmatched-chrome-skipped` instead of scaffolding
+
+### D5: Attribute-gap promotion is end-of-line cleanup, NOT primary pixel-diff path
+
+3-rater honest-path council at 2026-05-20 close confirmed operator-promotion (P2.ii CLI shipped this session) closes the LAST 5-10% of pixel-diff. The dominant 50-85% gap is structural (G1-G5 per `reports/2026-05-20-pipeline-root-gap-council/real-path-synthesis.md`). Next session: ship G1-G5 + F5, THEN run promotion.
+
+### D6: Block-variation system uses native WP `register_block_variation()` (P2.iii)
+
+Confidence band 0.70-0.90 against an existing block AND attribute differences → emit `wp:sgs/<block> {variantStyle:'featured'}` instead of scaffolding new block. Native WP mechanism — no custom variation registry. PHP loader at `includes/variations/class-sgs-block-variations.php` auto-discovers `sgs-*.php` variation files. Phase 2 infrastructure; activation depends on cv2 detection firing during real clone runs.
+
+**Commit:** `36ef9552`.
+
+---
+
 ## 2026-05-19 — Session decisions (cv2 RCs + deploy consolidation + Stage 10 + skill rename)
 
 ### D1: `/deploy` → `/wp-sgs-deploy` rename + `/deploy-check` absorbed as Phase 1

@@ -1,5 +1,46 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-19 (4 new lessons — schema-enumeration-before-gap-claims + qc-inline-on-live-pipeline + header-footer-template-parts 3rd recurrence + tar-exclude-must-be-path-anchored)
+**Last updated:** 2026-05-20 (5 new lessons from Phase 1 architectural rewrite + 3-rater honest-path council)
+
+## 2026-05-20 — Five lessons captured (blub.db corrections)
+
+### 1. Token-snap requires strict exact-match, not "nearest" match
+
+P1.A's initial implementation used the resolver's default min_confidence 0.6 — which accepts "nearest" colour matches (e.g. `#FFFFFF` → palette slug `text-inverse` = `#FFFAF5`). Visible regression: gift-section rendered cream where mockup was white. Bean's binding step 3: "if value matches global default, use token; if it doesn't match, insert literal." Patch (commit `8a996194`): post-snap guard looks up token's actual VALUE in theme.json + compares to original literal. Colour requires ΔE2000 ≤ 1.0 OR hex equality; spacing/font-size require ≤ 1px delta. Below threshold → keep literal, surface as gap-candidate.
+
+**How to apply:** any future snap-style mechanism (token, preset, slug) must verify value equality at the literal level, not "highest-confidence-match" — the latter silently introduces visible drift.
+
+### 2. CSS-router @media inner-selector scoping is required
+
+P1.B's initial implementation correctly scoped D2 base rules with `.page-id-N` prefix but emitted `@media` rules unscoped. Result: base rules at specificity (0,2,0) won every cascade battle against `@media` overrides at (0,1,0). Responsive layout overrides silently died — brand 1440 +24.8pt, social-proof 1440 +13.9pt, hero 1440 +10.2pt regressions. P1.B.x fix: `_scope_media_rule()` parses `@media (...) { ... }` wrapper and applies `.page-id-N` to inner selectors.
+
+**How to apply:** when scoping CSS for variation isolation, the scope MUST apply uniformly — base + `@media` inner + `@supports` inner — otherwise cascade specificity inverts unpredictably.
+
+### 3. CSS scope prefix breaks cv2's own CSS lookup (DOMINANT root cause)
+
+P1.B.x correctly scoped variation CSS with `.page-id-N`. But cv2's `_collect_css_decls_for_element` searches for BARE selectors (`.sgs-hero`). After scoping, every rule starts with `.page-id-144 .sgs-hero` — cv2's lookup fails. Stage 3 slot resolver receives empty CSS context → 142 of hero's 171 slots return "no value extracted". The pipeline silently kills 60-80% of value-lift potential on EVERY SGS-registered block.
+
+**How to apply:** when introducing scope prefixes for production CSS, audit every internal consumer of that CSS. The fix is small (strip the prefix in cv2's matcher) but the failure was invisible at the QC level because tests passed in isolation. Captured 2026-05-20 by 3-rater honest-path council.
+
+### 4. Operator-promotion is end-of-line cleanup, NOT the primary pixel-diff path
+
+Session-end hypothesis: "operator-driven attribute-gap promotion (P2.ii CLI) is the path to closing the dead-CSS-selector problem (council R2)." 3-rater honest-path council REFUTED this. The real gaps are:
+- Self-closing block emission → InnerBlocks empty (hero CTAs invisible) — ~50-55pp of hero's gap
+- Scope-prefix breaking cv2's lookup — kills value-lift on every SGS block (G2)
+- Stage 3 text-only slot resolution — can't read visual CSS for SGS blocks (G3)
+- Measurement contamination from WP chrome — ~10-20pp on every section (G4)
+- Per-block DOM-shape mismatches — `<blockquote>` vs `<section>`, mockup-grid vs render-carousel (G5)
+
+None of these are fixed by promotion. Promotion closes the LAST 5-10% after the structural gaps land. Running promotion first would produce 1-3% drops while leaving 50%+ failures untouched.
+
+**How to apply:** when a session-end hypothesis names a single "next-session lever" as the path to closing a multi-cause gap, demand a multi-rater honest-path council BEFORE committing the plan. Cheap insurance against a wishful path.
+
+### 5. Multi-rater QC councils catch band-aid paths a single-rater pass misses
+
+The original 4-rater root-gap council (2026-05-20 morning) correctly identified R1/R2/R3 but R2 was framed as "operator promotion will close it incrementally" — a band-aid framing. The 3-rater honest-path council at session-end (Sonnet × 3, one visible-eyeball, one structural-diff, one pipeline-forensics) independently converged on the deeper G1-G5 root causes that promotion can't reach. Multi-rater diversity caught what single-rater synthesis missed.
+
+**How to apply:** for any "what's the path forward from here?" question — especially when the answer would constrain a multi-session plan — dispatch ≥ 3 raters with DIFFERENT angles (visible verification + structural diff + pipeline forensics being the canonical trio). The cost is ~30 min; the cost of a wrong plan is a wasted session.
+
+---
 
 ## 2026-05-19 — Four CRITICAL lessons captured (blub.db rows 272-275)
 

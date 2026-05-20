@@ -289,6 +289,55 @@ When a regex is filtering "single character allowed but the doubled form forbidd
 
 ---
 
+## U. CSS scope-prefix breaks internal CSS lookup (2026-05-20 P1.B.x → honest-path council)
+
+**Symptom:** cv2's Stage 3 slot resolver returns "no value extracted" for 142 of hero's 171 slots even though mockup CSS has 12 rule blocks targeting the hero section. `pipeline-state/<run>/extract.json` shows `variation_css_rules=0` for hero + trust-bar sections.
+
+**Root cause:** P1.B.x (commit `dce5a496`) scoped D2 variation CSS rules with `.page-id-N .sgs-X` for cascade isolation. But cv2's `_collect_css_decls_for_element` (around line 2176 in `convert.py`) searches for BARE selectors like `.sgs-hero`. The scoped rule starts with `.page-id-144 .sgs-hero` — bare-match fails. Stage 3 receives empty CSS context for SGS-registered blocks → ~60-80% of value-lift potential silently dies.
+
+**Detection rule (binding):** when introducing a CSS-scope prefix anywhere in the pipeline, audit EVERY internal consumer of that CSS via grep for the original (unscoped) match pattern. Specifically:
+- `grep -rn "_collect_css_decls_for_element\|selector.*sgs-\|selector.startswith" plugins/sgs-blocks/scripts/`
+- Each result must handle the scoped form OR strip the scope before matching
+
+**Fix shape:** in cv2's selector matcher, strip `.page-id-\d+\s+` prefix before comparison. `selector = re.sub(r"^\.page-id-\d+\s+", "", selector)`. One-line fix.
+
+**Why this hides at QC level:** the css_router unit tests verify routing decisions on parsed-CSS input. They don't test the round-trip through `mamas-munches.css` → cv2-CSS-lookup → slot-resolver. /qc-inline against the live pipeline (not isolated units, per blub.db row 273) catches it. Multi-rater honest-path council caught it via Rater C pipeline forensics.
+
+**Captured 2026-05-20** by Rater C of the honest-path council. Parking entry `P-G2-PAGE-ID-SCOPE-STRIP`. Cross-link: `mistakes.md` 2026-05-20 lesson 3.
+
+## V. Self-closing block emission breaks InnerBlocks rendering (2026-05-20 honest-path council)
+
+**Symptom:** Live rendered page has `<div class="sgs-hero__ctas"></div>` — empty. Mockup shows 2 CTA buttons. Extract.json confirms `ctaPrimaryText` + `ctaSecondaryText` lifted correctly. Pixel-diff hero 1440 = 67.8% but the cause isn't extraction — it's that render.php never receives the content.
+
+**Root cause:** cv2 emits `<!-- wp:sgs/hero {...} /-->` (self-closing block comment) instead of OPEN block (`<!-- wp:sgs/hero -->...<!-- /wp:sgs/hero -->`). render.php for composite blocks reads `$content` for InnerBlocks output. Self-closing block → no InnerBlocks payload → `$content = ""` → empty container `<div>`.
+
+**Detection rule:** when a block accepts InnerBlocks (look for `<InnerBlocks.Content />` in save.js OR `$content` usage in render.php), cv2 MUST emit OPEN block with nested child block comments. Self-closing form is only valid for atomic / leaf blocks.
+
+**Fix shape:** in cv2 hero emit path, build child block comments from lifted CTA attrs:
+```
+<!-- wp:sgs/multi-button -->
+<!-- wp:sgs/button {"text":"Shop Zookies","url":"/shop/"} /-->
+<!-- wp:sgs/button {"text":"Try 3 for £5","url":"/product/trial-pack/"} /-->
+<!-- /wp:sgs/multi-button -->
+```
+Then set `self_closing=False` in `emit_wp_block()` for hero (and any other InnerBlocks-accepting block). Legacy attrs (`ctaPrimary*` / `ctaSecondary*`) stay on the parent hero block for deprecated.js migration but no longer drive rendering.
+
+**Captured 2026-05-20** by Rater A of the honest-path council (Playwright eyes-on verification of `<div class="sgs-hero__ctas"></div>` empty on live page 144). Parking entry `P-G1-HERO-INNERBLOCKS`.
+
+## W. Pixel-diff measurement contamination by WP chrome (2026-05-20 honest-path council)
+
+**Symptom:** Every section's pixel-diff is inflated by ~10-20pp. Even trust-bar (a small static band) measures 24-32% mismatch.
+
+**Root cause:** `scripts/pixel-diff.py` screenshots the section via Playwright `el.screenshot()` on the live WP page. The viewport includes the WP admin bar (`#wpadminbar`) at the top + the site's `.sgs-header` above the section content. Section-cropped screenshots capture these as top-of-frame chrome. Mockup screenshots are pure HTML with no admin bar + no header → systematic delta.
+
+**Detection rule:** when measuring rendered output against a mockup, the rendered context must MATCH the mockup context. If mockup has no WP chrome, the rendered screenshot must hide WP chrome before capture. Otherwise every section's measurement is inflated by a constant.
+
+**Fix shape:** Playwright `page.addInitScript()` or post-navigate `page.evaluate(() => { document.querySelector('#wpadminbar')?.remove(); document.querySelector('.sgs-header')?.remove(); })` before the section screenshot. Alternatively use a logged-out browser context (no admin bar) AND tighten the section-crop bounding-rect to exclude header pixels.
+
+**Captured 2026-05-20** by Rater A. Parking entry `P-G4-MEASUREMENT-DECONTAMINATION`. ~30-min fix; expected to drop EVERY pixel-diff cell by ~10-20pp uniformly.
+
+---
+
 ## How to add an entry
 
 1. Hit a real WordPress styling failure in a session.
