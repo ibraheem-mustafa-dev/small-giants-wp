@@ -158,19 +158,154 @@ $class = 'sgs-{slug}';
 
 
 def _edit_js(slug: str, role: str) -> str:
-    return f"""import {{ useBlockProps }} from '@wordpress/block-editor';
+    """Emit a functional editor component with inspector controls for every attr in the role.
+
+    Each role gets type-appropriate controls:
+      color       -> ColorPalette for backgroundColor + textColor
+      typography  -> TextControl for headline + SelectControl for fontSize
+      layout      -> TextControl for padding + gap
+      text-content -> TextControl for text
+      image-object -> MediaUpload for image
+      motion      -> SelectControl for animation + RangeControl for duration
+    """
+    attrs_scaffold = _ROLE_TO_ATTR_SCAFFOLD.get(role, {"text": {"type": "string", "default": ""}})
+
+    # Build inspector controls block per role
+    if role == "color":
+        inspector_body = f"""
+        <InspectorControls>
+            <PanelBody title="Colours" initialOpen={{{{ true }}}}>
+                <p>Background colour</p>
+                <ColorPalette
+                    value={{{{ attributes.backgroundColor }}}}
+                    onChange={{{{ (v) => setAttributes({{{{ backgroundColor: v || '' }}}}) }}}}
+                />
+                <p>Text colour</p>
+                <ColorPalette
+                    value={{{{ attributes.textColor }}}}
+                    onChange={{{{ (v) => setAttributes({{{{ textColor: v || '' }}}}) }}}}
+                />
+            </PanelBody>
+        </InspectorControls>"""
+        imports_extra = "import { InspectorControls, ColorPalette, useBlockProps } from '@wordpress/block-editor';\nimport { PanelBody } from '@wordpress/components';"
+    elif role == "typography":
+        inspector_body = f"""
+        <InspectorControls>
+            <PanelBody title="Typography" initialOpen={{{{ true }}}}>
+                <TextControl
+                    label="Headline"
+                    value={{{{ attributes.headline }}}}
+                    onChange={{{{ (v) => setAttributes({{{{ headline: v }}}}) }}}}
+                />
+                <SelectControl
+                    label="Font size"
+                    value={{{{ attributes.fontSize }}}}
+                    options={{{{ [
+                        {{{{ label: 'Small', value: 'small' }}}},
+                        {{{{ label: 'Medium', value: 'medium' }}}},
+                        {{{{ label: 'Large', value: 'large' }}}},
+                        {{{{ label: 'X-Large', value: 'x-large' }}}},
+                    ] }}}}
+                    onChange={{{{ (v) => setAttributes({{{{ fontSize: v }}}}) }}}}
+                />
+            </PanelBody>
+        </InspectorControls>"""
+        imports_extra = "import { InspectorControls, useBlockProps } from '@wordpress/block-editor';\nimport { PanelBody, TextControl, SelectControl } from '@wordpress/components';"
+    elif role == "layout":
+        inspector_body = f"""
+        <InspectorControls>
+            <PanelBody title="Layout" initialOpen={{{{ true }}}}>
+                <TextControl
+                    label="Padding"
+                    value={{{{ attributes.padding }}}}
+                    onChange={{{{ (v) => setAttributes({{{{ padding: v }}}}) }}}}
+                    help="CSS padding value, e.g. 1rem or 16px 24px"
+                />
+                <TextControl
+                    label="Gap"
+                    value={{{{ attributes.gap }}}}
+                    onChange={{{{ (v) => setAttributes({{{{ gap: v }}}}) }}}}
+                    help="CSS gap value for flex/grid children"
+                />
+            </PanelBody>
+        </InspectorControls>"""
+        imports_extra = "import { InspectorControls, useBlockProps } from '@wordpress/block-editor';\nimport { PanelBody, TextControl } from '@wordpress/components';"
+    elif role == "image-object":
+        inspector_body = f"""
+        <InspectorControls>
+            <PanelBody title="Image" initialOpen={{{{ true }}}}>
+                <MediaUploadCheck>
+                    <MediaUpload
+                        onSelect={{{{ (media) => setAttributes({{{{ image: {{{{ id: media.id, url: media.url, alt: media.alt || '' }}}} }}}}) }}}}
+                        allowedTypes={{{{ ['image'] }}}}
+                        value={{{{ attributes.image?.id }}}}
+                        render={{{{ ({{{{ open }}}}) => (
+                            <button onClick={{{{ open }}}}>
+                                {{{{ attributes.image?.url ? 'Replace image' : 'Select image' }}}}
+                            </button>
+                        ) }}}}
+                    />
+                </MediaUploadCheck>
+            </PanelBody>
+        </InspectorControls>"""
+        imports_extra = "import { InspectorControls, MediaUpload, MediaUploadCheck, useBlockProps } from '@wordpress/block-editor';\nimport { PanelBody } from '@wordpress/components';"
+    elif role == "motion":
+        inspector_body = f"""
+        <InspectorControls>
+            <PanelBody title="Animation" initialOpen={{{{ true }}}}>
+                <SelectControl
+                    label="Animation"
+                    value={{{{ attributes.animation }}}}
+                    options={{{{ [
+                        {{{{ label: 'None', value: 'none' }}}},
+                        {{{{ label: 'Fade up', value: 'fade-up' }}}},
+                        {{{{ label: 'Fade in', value: 'fade-in' }}}},
+                        {{{{ label: 'Slide left', value: 'slide-left' }}}},
+                    ] }}}}
+                    onChange={{{{ (v) => setAttributes({{{{ animation: v }}}}) }}}}
+                />
+                <RangeControl
+                    label="Duration (ms)"
+                    value={{{{ attributes.duration }}}}
+                    onChange={{{{ (v) => setAttributes({{{{ duration: v }}}}) }}}}
+                    min={{{{ 100 }}}}
+                    max={{{{ 2000 }}}}
+                    step={{{{ 50 }}}}
+                />
+            </PanelBody>
+        </InspectorControls>"""
+        imports_extra = "import { InspectorControls, useBlockProps } from '@wordpress/block-editor';\nimport { PanelBody, SelectControl, RangeControl } from '@wordpress/components';"
+    else:
+        # text-content (default)
+        inspector_body = f"""
+        <InspectorControls>
+            <PanelBody title="Content" initialOpen={{{{ true }}}}>
+                <TextControl
+                    label="Text"
+                    value={{{{ attributes.text }}}}
+                    onChange={{{{ (v) => setAttributes({{{{ text: v }}}}) }}}}
+                />
+            </PanelBody>
+        </InspectorControls>"""
+        imports_extra = "import { InspectorControls, useBlockProps } from '@wordpress/block-editor';\nimport { PanelBody, TextControl } from '@wordpress/components';"
+
+    return f"""{imports_extra}
 
 /**
  * Editor for sgs/{slug}.
  * Scaffolded by spec-15-p5b.8 (role={role}) -- needs human polish.
+ * Inspector controls generated for every attribute in the role schema.
  */
 export default function Edit({{ attributes, setAttributes }}) {{
     const blockProps = useBlockProps({{ className: 'sgs-{slug}' }});
     return (
-        <div {{ ...blockProps }}>
-            {{/* TODO(human): polish for role={role} */}}
-            <span>{{ attributes.text || 'sgs/{slug} (scaffold)' }}</span>
-        </div>
+        <>
+            {inspector_body}
+            <div {{ ...blockProps }}>
+                {{/* TODO(human): polish for role={role} */}}
+                <span>sgs/{slug} (scaffold)</span>
+            </div>
+        </>
     );
 }}
 """
@@ -203,6 +338,57 @@ def _style_css(slug: str) -> str:
 """
 
 
+def score_scaffold(staging_dir: Path) -> dict:
+    """Score a scaffold directory 0–5 (one point per required file present and non-empty).
+
+    Required files for a clean scaffold:
+      block.json   — must be present + valid JSON with 'name', 'apiVersion', 'attributes'
+      render.php   — must be present + non-empty
+      edit.js      — must be present + non-empty
+      style.css    — must be present (may be empty, but file must exist)
+      index.js     — must be present + non-empty
+
+    Returns:
+        {
+          "score": int (0-5),
+          "max_score": 5,
+          "details": {"block.json": "ok"|"missing"|"invalid", ...}
+        }
+    """
+    details: dict[str, str] = {}
+
+    # block.json — must parse with required keys
+    bj_path = staging_dir / "block.json"
+    if not bj_path.exists():
+        details["block.json"] = "missing"
+    else:
+        try:
+            bj = json.loads(bj_path.read_text(encoding="utf-8"))
+            if all(k in bj for k in ("name", "apiVersion", "attributes")):
+                details["block.json"] = "ok"
+            else:
+                details["block.json"] = "invalid-missing-required-keys"
+        except Exception:
+            details["block.json"] = "invalid-json"
+
+    # render.php, edit.js, index.js — must be present + non-empty
+    for fname in ("render.php", "edit.js", "index.js"):
+        p = staging_dir / fname
+        if not p.exists():
+            details[fname] = "missing"
+        elif p.stat().st_size == 0:
+            details[fname] = "empty"
+        else:
+            details[fname] = "ok"
+
+    # style.css — must be present (may be near-empty scaffold default)
+    css_path = staging_dir / "style.css"
+    details["style.css"] = "ok" if css_path.exists() else "missing"
+
+    score = sum(1 for v in details.values() if v == "ok")
+    return {"score": score, "max_score": 5, "details": details}
+
+
 def scaffold(
     slug: str,
     role: str,
@@ -213,7 +399,7 @@ def scaffold(
     """Write the 6 scaffold files to the run's staging dir.
 
     Returns a manifest of files written + the block_attributes rows
-    that would be inserted on promotion.
+    that would be inserted on promotion + a quality_score (0–5).
     """
     _validate_slug(slug)
     if role not in _ROLE_TO_ATTR_SCAFFOLD:
@@ -241,6 +427,10 @@ def scaffold(
          "attr_type": v.get("type"), "canonical_slot": None}
         for k, v in block_json["attributes"].items()
     ]
+
+    # Quality score: 0-5, one point per required file present + valid.
+    quality = score_scaffold(target)
+
     manifest = {
         "slug": f"sgs/{slug}",
         "role": role,
@@ -249,6 +439,9 @@ def scaffold(
         "files": sorted(files),
         "pending_db_rows": pending_rows,
         "promoted": False,
+        "quality_score": quality["score"],
+        "quality_max": quality["max_score"],
+        "quality_details": quality["details"],
     }
     (target / "manifest.json").write_text(
         json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8"

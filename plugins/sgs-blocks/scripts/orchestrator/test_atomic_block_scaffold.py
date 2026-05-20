@@ -136,6 +136,49 @@ def test_promote_refuses_existing_block() -> None:
     print("  PASS  promote-refuses-existing-block: never overwrites canonical")
 
 
+def test_quality_score_five_of_five() -> None:
+    """A clean scaffold must score 5/5."""
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        manifest = mod.scaffold("quality-check", "text-content", "run-5b8-g", root=root)
+        assert manifest["quality_score"] == 5, (
+            f"expected quality_score=5, got {manifest['quality_score']}; "
+            f"details={manifest['quality_details']}"
+        )
+        assert manifest["quality_max"] == 5
+        for fname, status in manifest["quality_details"].items():
+            assert status == "ok", f"{fname}: expected 'ok', got {status!r}"
+    print("  PASS  quality-score-five-of-five: clean scaffold scores 5/5")
+
+
+def test_quality_score_missing_file() -> None:
+    """Deleting a required file drops the score by 1."""
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        manifest = mod.scaffold("quality-miss", "color", "run-5b8-h", root=root)
+        # Delete render.php from the staging dir
+        staging = Path(manifest["staging_dir"])
+        (staging / "render.php").unlink()
+        # Re-score via the public helper
+        quality = mod.score_scaffold(staging)
+        assert quality["score"] == 4, f"expected 4 after deleting render.php, got {quality['score']}"
+        assert quality["details"]["render.php"] == "missing"
+    print("  PASS  quality-score-missing-file: deleted render.php -> score drops to 4/5")
+
+
+def test_all_role_edit_js_have_inspector_controls() -> None:
+    """Every role must produce an edit.js that contains InspectorControls import."""
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        for role in mod._ROLE_TO_ATTR_SCAFFOLD:
+            manifest = mod.scaffold(f"role-{role.replace('-','-')}", role, "run-5b8-i", root=root)
+            edit_js = (Path(manifest["staging_dir"]) / "edit.js").read_text(encoding="utf-8")
+            assert "InspectorControls" in edit_js, (
+                f"role={role}: edit.js missing InspectorControls import"
+            )
+    print("  PASS  all-role-edit-js-have-inspector-controls: 6 roles checked")
+
+
 def main() -> int:
     print("Spec 15 Phase 5b.8 -- atomic-block-scaffold contract")
     test_scaffold_writes_six_files()
@@ -144,7 +187,10 @@ def main() -> int:
     test_promote_writes_to_canonical_and_db()
     test_no_canonical_mutation_without_promote()
     test_promote_refuses_existing_block()
-    print("\nSCAFFOLD-5B.8: PASS (6 files + role-driven attrs + slug validation + promote + FR21 + no-overwrite)")
+    test_quality_score_five_of_five()
+    test_quality_score_missing_file()
+    test_all_role_edit_js_have_inspector_controls()
+    print("\nSCAFFOLD-5B.8: PASS (6 files + role-driven attrs + slug validation + promote + FR21 + no-overwrite + quality-score + inspector-controls)")
     return 0
 
 

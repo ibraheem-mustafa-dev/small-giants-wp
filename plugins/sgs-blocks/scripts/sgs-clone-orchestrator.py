@@ -1630,6 +1630,47 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
 _SLUG_TOKEN_RE = re.compile(r"^[a-z][a-z0-9-]*$")
 _RESERVED_SCAFFOLD_SLUGS = {"hero", "container", "form"}
 
+# Chrome sections are template parts (header / footer / nav), not Gutenberg blocks.
+# Spec 17 §S1-2 + blub.db row 274 (4th-occurrence rule).
+# The regex matches the BEM root class or the slug component.
+_CHROME_SLUG_RE = re.compile(r"^(header|footer|nav|site-header|site-footer|main-nav|mega-menu)$")
+# Top-level HTML tags that signal chrome sections.
+_CHROME_TAG_RE = re.compile(r"^<?(header|footer|nav)\b", re.IGNORECASE)
+
+
+def _is_chrome_section(boundary: dict) -> bool:
+    """Return True when the boundary is a template-part chrome section.
+
+    Checks (in order):
+      1. candidate_block_slug slug component matches a known chrome slug.
+      2. selector starts with <header>, <footer>, or <nav> tag.
+      3. class_signature root class matches a chrome BEM root.
+      4. section_id matches a chrome slug.
+
+    Universal (not client-specific): all four checks apply to any mockup.
+    """
+    candidate = boundary.get("candidate_block_slug") or ""
+    if candidate.startswith("sgs/"):
+        slug_part = candidate[len("sgs/"):]
+        if _CHROME_SLUG_RE.match(slug_part):
+            return True
+
+    selector = boundary.get("selector") or ""
+    if _CHROME_TAG_RE.match(selector.lstrip()):
+        return True
+
+    class_sig = boundary.get("class_signature") or []
+    for cls in class_sig:
+        root_part = cls.split("__")[0].split("--")[0]
+        if _CHROME_SLUG_RE.match(root_part.replace("sgs-", "")):
+            return True
+
+    section_id = boundary.get("section_id") or ""
+    if _CHROME_SLUG_RE.match(section_id):
+        return True
+
+    return False
+
 
 def _autonomy_boundary_index(boundary_output: dict) -> dict[str, dict]:
     return {b["boundary_id"]: b for b in boundary_output.get("boundaries", [])}
@@ -1654,6 +1695,12 @@ def stage_9b_autonomy_chain(boundary: dict, match: dict, buckets_output: dict,
     leftover = (buckets_output or {}).get("leftover_buckets", {}) or {}
     unrec = leftover.get("unrecognised_section", []) or []
 
+    # Source-side chrome-skip: header / footer / nav sections are template parts
+    # (Spec 17 §S1-2, blub.db row 274). The autonomy chain MUST NOT scaffold them
+    # as Gutenberg blocks. P2.0 PostToolUse hook is the tool-layer safety net;
+    # this check is the source-level prevention (defence in depth).
+    chrome_skipped: list[dict] = []
+
     # Build minimal elements for the classifier. We have no computed_styles
     # at stage 9 (extract was skipped for deferred fallbacks) so the classifier
     # returns winning_role=None and the scaffold falls back to text-content,
@@ -1667,6 +1714,23 @@ def stage_9b_autonomy_chain(boundary: dict, match: dict, buckets_output: dict,
         if not candidate_slug or not candidate_slug.startswith("sgs/"):
             continue
         slug = candidate_slug[len("sgs/"):]
+
+        # Chrome-skip check BEFORE slug validation — even a valid-looking
+        # header slug must never reach the scaffolder.
+        if _is_chrome_section(b):
+            chrome_skipped.append({
+                "boundary_id": bid,
+                "candidate_block_slug": candidate_slug,
+                "selector": b.get("selector", ""),
+                "section_id": b.get("section_id", ""),
+                "reason": "template-part chrome section — use theme/sgs-theme/parts/ instead of sgs-blocks/src/blocks/",
+            })
+            warnings.append(
+                f"{bid}: chrome-skip — {candidate_slug} is a template-part section "
+                f"(selector={b.get('selector', '')!r}); not scaffolded as a Gutenberg block"
+            )
+            continue
+
         if not _SLUG_TOKEN_RE.match(slug) or slug in _RESERVED_SCAFFOLD_SLUGS or slug in seen_slugs:
             continue
         seen_slugs.add(slug)
@@ -1712,6 +1776,9 @@ def stage_9b_autonomy_chain(boundary: dict, match: dict, buckets_output: dict,
                 "staging_dir": manifest.get("staging_dir"),
                 "files": manifest.get("files", []),
                 "promoted": False,
+                "quality_score": manifest.get("quality_score", 0),
+                "quality_max": manifest.get("quality_max", 5),
+                "quality_details": manifest.get("quality_details", {}),
             }
             if promote_new_blocks:
                 try:
@@ -1724,6 +1791,22 @@ def stage_9b_autonomy_chain(boundary: dict, match: dict, buckets_output: dict,
                     warnings.append(f"promote({slug}) skipped: {exc}")
             scaffolded.append(entry)
 
+    # Scaffold quality report: per-block score + aggregate pass rate.
+    scaffold_quality_report: list[dict] = []
+    for entry in scaffolded:
+        scaffold_quality_report.append({
+            "slug": entry.get("slug"),
+            "score": entry.get("quality_score", 0),
+            "max_score": entry.get("quality_max", 5),
+            "details": entry.get("quality_details", {}),
+        })
+    all_pass = all(r["score"] == r["max_score"] for r in scaffold_quality_report) if scaffold_quality_report else True
+    quality_summary = {
+        "total_scaffolded": len(scaffolded),
+        "all_5_of_5": all_pass,
+        "per_block": scaffold_quality_report,
+    }
+
     out = {
         "enabled": True,
         "promote_new_blocks": promote_new_blocks,
@@ -1731,6 +1814,9 @@ def stage_9b_autonomy_chain(boundary: dict, match: dict, buckets_output: dict,
         "scaffolded_count": len(scaffolded),
         "promoted_count": promoted_count,
         "candidates_seen": len(boundary_for_item),
+        "chrome_skipped": chrome_skipped,
+        "chrome_skipped_count": len(chrome_skipped),
+        "scaffold_quality_report": quality_summary,
     }
     status = "complete" if not errors else "failed"
     write_artefact(run_dir, 91, "autonomy-chain", status, out, started, errors, warnings)
