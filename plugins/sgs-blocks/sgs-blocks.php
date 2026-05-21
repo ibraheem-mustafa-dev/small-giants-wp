@@ -107,11 +107,10 @@ new Font_Collection();
 // Register REST API endpoints.
 Forms\Form_REST_API::register();
 
-// Variation activation REST — sgs/v1/active-variation endpoint used by
-// /sgs-clone Stage 10 to flip active_theme_style on deploy.
-// Shipped 2026-05-20 per Pipeline Root-Gap Council R1.
-require_once SGS_BLOCKS_PATH . 'includes/class-variation-rest.php';
-Variation_REST::register();
+// Variation activation REST + WP style-variation picker DELETED 2026-05-22
+// (Phase 5a Decision 18). Per-site branding now flows through the per-site
+// theme.json snapshot at sites/<client>/theme-snapshot.json pushed via
+// plugins/sgs-blocks/scripts/push-theme-snapshot.py — no theme_mod, no REST.
 
 // Register admin settings page (webhook URL + submissions viewer).
 Forms\Form_Admin::register();
@@ -157,10 +156,10 @@ require_once SGS_BLOCKS_PATH . 'includes/class-sgs-footer-rules-admin.php';
 Sgs_Footer_Rules::register();
 Sgs_Footer_Rules_Admin::register();
 
-// SGS style variation picker (FR-S5-2) — Council N1 resolver-only activation + legacy theme_mod backup.
-require_once SGS_BLOCKS_PATH . 'includes/class-sgs-legacy-theme-mod-migrator.php'; // Must load before picker (P-S17-W3-VARIATION-PICKER-SPLIT).
-require_once SGS_BLOCKS_PATH . 'includes/class-sgs-variation-picker.php';
-Sgs_Variation_Picker::register();
+// SGS style variation picker DELETED 2026-05-22 (Phase 5a Decision 18).
+// class-sgs-variation-picker.php + class-sgs-legacy-theme-mod-migrator.php
+// archived at plugins/sgs-blocks/_retired/. WP style variations are no longer
+// the per-site branding mechanism — see push-theme-snapshot.py instead.
 
 // SGS template-part resetter (FR-S2-3) — admin button + public helper for FR-S5-3 CLI wrap.
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-template-part-resetter.php';

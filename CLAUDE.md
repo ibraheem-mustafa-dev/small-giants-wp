@@ -331,8 +331,11 @@ Never use absolute server paths or hard-coded `/wp-content/...` URLs in CSS, PHP
 cd plugins/sgs-blocks && npm run build
 
 # Deploy via tar (RELIABLE — scp -r creates nested dirs on Hostinger)
+# Phase 5a (2026-05-22) — `theme/sgs-theme/styles/*.json` excluded: per-client snapshots
+# now live at `sites/<client>/theme-snapshot.json` and are deployed via
+# `plugins/sgs-blocks/scripts/push-theme-snapshot.py`, not the framework tar.
 cd /path/to/small-giants-wp
-tar -cf sgs-deploy.tar --exclude='node_modules' --exclude='.git' --exclude='plugins/sgs-blocks/src' theme/sgs-theme plugins/sgs-blocks
+tar -cf sgs-deploy.tar --exclude='node_modules' --exclude='.git' --exclude='plugins/sgs-blocks/src' --exclude='theme/sgs-theme/styles/*.json' --exclude='plugins/sgs-blocks/_retired' theme/sgs-theme plugins/sgs-blocks
 scp -P 65002 sgs-deploy.tar u945238940@141.136.39.73:sgs-deploy.tar
 ssh -p 65002 u945238940@141.136.39.73 "WP=domains/palestine-lives.org/public_html/wp-content && rm -rf \$WP/themes/sgs-theme \$WP/plugins/sgs-blocks && tar -xf sgs-deploy.tar && mv theme/sgs-theme \$WP/themes/ && mv plugins/sgs-blocks \$WP/plugins/ && rm -rf theme plugins sgs-deploy.tar"
 rm sgs-deploy.tar

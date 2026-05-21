@@ -78,24 +78,19 @@ function preload_hero_image(): void {
 /**
  * Preload critical font files to prevent FOUT.
  *
- * Outputs <link rel="preload"> tags in <head> before stylesheets load.
- * Preloads the heading font for whichever style variation is active.
- * The Indus Foods variation uses Montserrat + Source Sans 3; the base SGS
- * theme uses Inter variable.
+ * NOTE: This file is NOT currently required by functions.php — the live
+ * preload_fonts() implementation is defined directly in functions.php.
+ * The WP style-variation overlay system was removed 2026-05-22 (Phase 5a
+ * Decision 18); per-site branding now ships through a single per-site
+ * theme.json snapshot at sites/<client>/theme-snapshot.json.
+ *
+ * Sites that need a different heading-font preload should add it via a
+ * per-site mu-plugin or via the snapshot's customTemplates settings.
  */
 function preload_fonts(): void {
-	$variation = get_theme_mod( 'active_theme_style', '' );
-
-	if ( 'indus-foods' === $variation ) {
-		$fonts = array(
-			'montserrat-variable-latin.woff2',
-			'source-sans-3-variable-latin.woff2',
-		);
-	} else {
-		$fonts = array(
-			'inter-variable-latin.woff2',
-		);
-	}
+	$fonts = array(
+		'inter-variable-latin.woff2',
+	);
 
 	foreach ( $fonts as $font ) {
 		printf(

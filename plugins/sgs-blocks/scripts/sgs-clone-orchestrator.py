@@ -168,11 +168,21 @@ def stage_0_1_bem_lint(mockup: Path, mode: str, run_dir: Path) -> dict:
 
 
 def _client_variation_path(client: str | None) -> Path | None:
-    """Resolve the client style variation JSON path, or None if not present."""
+    """Resolve the per-client theme.json snapshot, or None if not present.
+
+    Phase 5a (2026-05-22 Decision 19) — per-client snapshots moved from
+    ``theme/sgs-theme/styles/<client>.json`` (the retired WP style-variation
+    overlay) to ``sites/<client>/theme-snapshot.json`` (the canonical
+    per-site theme.json). The legacy path is checked as a fallback so any
+    transitional client folders that still hold the old layout keep working.
+    """
     if not client:
         return None
-    path = REPO / "theme" / "sgs-theme" / "styles" / f"{client}.json"
-    return path if path.exists() else None
+    new_path = REPO / "sites" / client / "theme-snapshot.json"
+    if new_path.exists():
+        return new_path
+    legacy_path = REPO / "theme" / "sgs-theme" / "styles" / f"{client}.json"
+    return legacy_path if legacy_path.exists() else None
 
 
 def stage_0_5_token_lint(mockup: Path, mode: str, run_dir: Path,
@@ -2172,6 +2182,15 @@ def main():
              "Example: --deploy-target page:144",
     )
     parser.add_argument(
+        "--push-theme-snapshot", action="store_true", default=False,
+        help="After page patch, actually push the client's theme.json snapshot "
+             "to the target site via push-theme-snapshot.py (Phase 5a Decision "
+             "16'). Default OFF — Stage 10 runs a snapshot diff only (--no-push). "
+             "Even with this flag set, push-theme-snapshot.py refuses to push to "
+             "shared dev surfaces (sandybrown / palestine-lives) without an "
+             "additional explicit confirmation.",
+    )
+    parser.add_argument(
         "--debug-trace", action="store_true", default=False,
         help="Emit per-section convert-trace-<boundary>.jsonl files capturing "
              "walker_branch_taken, attr_skipped, and db_lookup_miss events. "
@@ -2234,7 +2253,11 @@ def main():
     # of truth. Mutations via _reflect_new_token_in_theme_json operate on the same
     # dict, so token discovery in section N is visible to section N+1.
     _theme_path = REPO / "theme" / "sgs-theme" / "theme.json"
-    _variation_path = REPO / "theme" / "sgs-theme" / "styles" / f"{args.client}.json"
+    # Phase 5a (2026-05-22 Decision 19) — snapshot canonical path moved to
+    # sites/<client>/theme-snapshot.json. _client_variation_path() falls back
+    # to the legacy theme/sgs-theme/styles/<client>.json if the new location
+    # is missing (transitional safety).
+    _variation_path = _client_variation_path(args.client) or (REPO / "sites" / (args.client or "_none_") / "theme-snapshot.json")
     _theme_json: dict = {}
     if _theme_path.exists():
         try:
@@ -2459,15 +2482,20 @@ def main():
                 raise ValueError(f"--deploy-target kind must be 'page' or 'post', got {target_kind!r}")
             import subprocess
             _upload_script = Path(__file__).parent / "orchestrator" / "upload_and_patch.py"
-            # Pass --client so Stage 10 activates the matching style
-            # variation site-wide after patching the page. Without --client
-            # the variation CSS at theme/sgs-theme/styles/<client>.css never
-            # enqueues (functions.php gates on active_theme_style theme_mod).
-            # Shipped 2026-05-20 per Pipeline Root-Gap Council R1.
+            # Pass --client so Stage 10 diffs (or pushes, with --push-theme-snapshot)
+            # the matching theme.json snapshot at sites/<client>/theme-snapshot.json
+            # to the target site. Phase 5a (2026-05-22 Decision 16') replacement for
+            # the deleted /wp-json/sgs/v1/active-variation REST endpoint and the
+            # retired theme/sgs-theme/styles/<client>.json overlay system.
+            _upload_cmd = [
+                sys.executable, str(_upload_script), str(run_dir),
+                "--target", target_kind, "--target-id", str(target_id),
+                "--client", args.client,
+            ]
+            if args.push_theme_snapshot:
+                _upload_cmd.append("--push-theme-snapshot")
             result = subprocess.run(
-                [sys.executable, str(_upload_script), str(run_dir),
-                 "--target", target_kind, "--target-id", str(target_id),
-                 "--client", args.client],
+                _upload_cmd,
                 capture_output=True, text=True, timeout=180,
             )
             if result.returncode == 0:

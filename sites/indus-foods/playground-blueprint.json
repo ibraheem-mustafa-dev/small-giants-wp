@@ -27,7 +27,7 @@
 		},
 		{
 			"step": "runPHP",
-			"code": "<?php require_once '/wordpress/wp-load.php'; set_theme_mod('active_theme_style', 'indus-foods');"
+			"code": "<?php /* set_theme_mod('active_theme_style', ...) removed 2026-05-22 Phase 5a Decision 18. Indus Foods branding now ships via sites/indus-foods/theme-snapshot.json pushed by push-theme-snapshot.py. */ "
 		}
 	]
 }

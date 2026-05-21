@@ -90,12 +90,36 @@ def main():
         type=str,
         default="",
         help=(
-            "Client slug to activate as the site-wide style variation after "
-            "patching. When set, POSTs to /wp-json/sgs/v1/active-variation. "
-            "Required for the variation CSS file (theme/sgs-theme/styles/"
-            "<client>.css) to actually load on the live page. Shipped "
-            "2026-05-20 per Pipeline Root-Gap Council R1."
+            "Client slug for theme.json snapshot deployment after patching. "
+            "When set, invokes push-theme-snapshot.py to diff (or push, with "
+            "--push-theme-snapshot) the local sites/<client>/theme-snapshot.json "
+            "against the target site. Phase 5a (2026-05-22) replacement for the "
+            "deleted /wp-json/sgs/v1/active-variation REST endpoint."
         ),
+    )
+    parser.add_argument(
+        "--push-theme-snapshot",
+        action="store_true",
+        help=(
+            "Actually push the client's theme.json snapshot to the target "
+            "site (default: dry-run / --no-push, which only diffs). Safety "
+            "net: even with this flag, push-theme-snapshot.py enforces "
+            "--no-push on shared dev surfaces (sandybrown / palestine-lives) "
+            "unless --yes is also threaded through. Off by default — "
+            "orchestrator users must opt in explicitly."
+        ),
+    )
+    parser.add_argument(
+        "--snapshot-ssh-host",
+        type=str,
+        default="u945238940@141.136.39.73",
+        help="SSH host for push-theme-snapshot.py (default: Hostinger sandybrown SSH).",
+    )
+    parser.add_argument(
+        "--snapshot-target-domain",
+        type=str,
+        default="sandybrown-nightingale-600381.hostingersite.com",
+        help="Target site domain for push-theme-snapshot.py REST + path derivation.",
     )
     args = parser.parse_args()
 
@@ -180,44 +204,54 @@ def main():
     except urllib.error.HTTPError as e:
         print(f"  HTTP {e.code}: {e.read().decode('utf-8','ignore')[:300]}")
 
-    # Activate the matching style variation site-wide.
-    # Without this, the variation CSS file written by Stage 0.7 never
-    # enqueues (theme/sgs-theme/functions.php gates on active_theme_style
-    # theme_mod). Pipeline Root-Gap Council R1.
+    # Phase 5a (2026-05-22 Decision 16') — Theme.json snapshot push.
     #
-    # Variation activation failures get a distinct exit code (3) so the
-    # orchestrator's Stage 10 dispatch surfaces them as a named warning
-    # instead of burying them in stderr. The page-PATCH already succeeded
-    # at this point; we don't want to claim Stage 10 "deployed" when the
-    # variation didn't actually activate.
-    variation_failed = False
-    if args.client:
-        print(f"\nActivating style variation '{args.client}' site-wide...")
-        var_req = urllib.request.Request(
-            f"{WP_URL}/wp-json/sgs/v1/active-variation",
-            data=json.dumps({"slug": args.client}).encode(),
-            method="POST",
-            headers={"Authorization": AUTH, "Content-Type": "application/json"},
-        )
-        try:
-            var_resp = urllib.request.urlopen(var_req, timeout=30).read().decode("utf-8", errors="ignore")
-            var_body = json.loads(var_resp) if var_resp.strip().startswith("{") else {}
-            prev = var_body.get("previous_slug", "")
-            activated = bool(var_body.get("activated"))
-            print(f"  variation: {prev or '(none)'} -> {var_body.get('slug', args.client)} (activated={activated})")
-            if not activated:
-                print(f"  variation FAIL: REST endpoint reported activated=false. body={var_body}")
-                variation_failed = True
-        except urllib.error.HTTPError as e:
-            print(f"  variation HTTP {e.code}: {e.read().decode('utf-8', 'ignore')[:300]}")
-            variation_failed = True
-        except Exception as e:  # noqa: BLE001
-            print(f"  variation ERROR: {e}")
-            variation_failed = True
-    else:
-        print("\nNo --client passed; skipping variation activation (variation CSS will not load).")
+    # Replaces the deleted /wp-json/sgs/v1/active-variation REST endpoint.
+    # The WP style-variation overlay system is retired; per-client snapshots
+    # now live at sites/<client>/theme-snapshot.json and are deployed via
+    # push-theme-snapshot.py over SSH+SCP. Default is --no-push (diff only).
+    # The orchestrator must opt in to live push via --push-theme-snapshot.
+    #
+    # Snapshot push failures get exit code 3 — matches the previous variation-
+    # activation contract so the orchestrator Stage 10 dispatch surfaces them
+    # as a named warning instead of generic deploy-failed.
+    import subprocess
 
-    if variation_failed:
+    snapshot_failed = False
+    if args.client:
+        push_cli = (Path(__file__).resolve().parent.parent / "push-theme-snapshot.py")
+        cmd = [
+            sys.executable, str(push_cli),
+            "--client", args.client,
+            "--target", args.snapshot_ssh_host,
+            "--target-domain", args.snapshot_target_domain,
+        ]
+        if not args.push_theme_snapshot:
+            cmd.append("--no-push")
+        else:
+            cmd.append("--yes")  # orchestrator-driven, non-interactive
+        print(f"\nPhase 5a snapshot {'PUSH' if args.push_theme_snapshot else 'DIFF'} for client '{args.client}'...")
+        try:
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+            # Echo a trimmed view of the diff for operator visibility.
+            for ln in result.stdout.splitlines():
+                if ln.strip():
+                    print(f"  {ln}")
+            if result.returncode != 0:
+                print(f"  snapshot push FAILED (exit {result.returncode}): {result.stderr[:300]}")
+                snapshot_failed = True
+        except subprocess.TimeoutExpired:
+            print("  snapshot push TIMEOUT")
+            snapshot_failed = True
+        except Exception as e:  # noqa: BLE001
+            print(f"  snapshot push ERROR: {e}")
+            snapshot_failed = True
+    else:
+        print("\nNo --client passed; skipping theme.json snapshot push.")
+
+    if snapshot_failed and args.push_theme_snapshot:
+        # Only treat as a hard failure when the operator explicitly requested
+        # a live push. A failed dry-run (--no-push) is still informative.
         sys.exit(3)
 
 

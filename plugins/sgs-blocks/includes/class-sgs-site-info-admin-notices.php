@@ -34,12 +34,16 @@ final class Sgs_Site_Info_Admin_Notices {
 	/** User-meta key for the floating-UI notice dismissal. */
 	const DISMISS_FLOATING_UI_META = 'sgs_dismissed_floating_ui_notice';
 
+	/** WP_options flag — Phase 5a (2026-05-22) variation-system migration notice. */
+	const PHASE5A_NOTICE_OPTION = 'sgs_phase5a_migration_noticed';
+
 	/**
 	 * Wire WP hooks. Called from {@see Sgs_Site_Info_Admin::register()} so all
 	 * hook wiring flows through a single entry point in the bootstrap.
 	 */
 	public static function register(): void {
 		\add_action( 'admin_notices', array( __CLASS__, 'maybe_show_deprecated_blocks_notice' ) );
+		\add_action( 'admin_notices', array( __CLASS__, 'maybe_show_phase5a_migration_notice' ) );
 		\add_action( 'admin_post_' . self::DISMISS_FLOATING_UI_ACTION, array( __CLASS__, 'handle_dismiss_floating_ui_notice' ) );
 	}
 
@@ -76,6 +80,38 @@ final class Sgs_Site_Info_Admin_Notices {
 		echo \esc_html__( 'SGS Floating UI update: the Back to Top and Reading Progress blocks have been retired in favour of a unified Customiser → SGS Floating UI panel (coming in the next release). Existing instances will appear as "block deleted" placeholders — replace them with the Customiser controls once they ship.', 'sgs-blocks' );
 		echo ' <a href="' . \esc_url( $dismiss_url ) . '">' . \esc_html__( 'Dismiss', 'sgs-blocks' ) . '</a>';
 		echo '</p></div>';
+	}
+
+	// -------------------------------------------------------------------------
+	// Phase 5a — Variation-system migration notice (2026-05-22 Decision 18)
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Show a one-shot site-wide migration notice the first time any
+	 * edit_theme_options user loads a WP Admin page after Phase 5a deploys.
+	 * Once shown, the wp_options flag is set and the notice never fires again.
+	 *
+	 * Phase 5a retired the WP style-variation overlay system. Per-client
+	 * snapshots now live at sites/<client>/theme-snapshot.json and are pushed
+	 * via push-theme-snapshot.py. This notice surfaces the architectural
+	 * change to the operator on first sight; no operator action is required
+	 * because branding has been preserved.
+	 */
+	public static function maybe_show_phase5a_migration_notice(): void {
+		if ( ! \current_user_can( Sgs_Site_Info_Admin::CAP ) ) {
+			return;
+		}
+		if ( \get_option( self::PHASE5A_NOTICE_OPTION ) ) {
+			return;
+		}
+
+		echo '<div class="notice notice-info is-dismissible"><p><strong>';
+		echo \esc_html__( 'SGS framework update:', 'sgs-blocks' );
+		echo '</strong> ';
+		echo \esc_html__( 'Style variations have been migrated to per-site theme.json files. Your client\'s branding snapshot now lives at sites/<client>/theme-snapshot.json. No action required — branding is unchanged.', 'sgs-blocks' );
+		echo '</p></div>';
+
+		\update_option( self::PHASE5A_NOTICE_OPTION, \time(), false );
 	}
 
 	/**

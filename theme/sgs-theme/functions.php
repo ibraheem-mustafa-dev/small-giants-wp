@@ -163,23 +163,17 @@ add_action( 'wp_head', __NAMESPACE__ . '\preload_hero_image', 1 );
 
 function preload_fonts(): void {
 	/*
-	 * Preload the heading font for whichever style variation is active.
-	 * The Indus Foods variation uses Montserrat; the base SGS theme uses Inter.
-	 * Always preload the body font (Inter / Source Sans 3) as a second entry
-	 * only when it differs from the heading font.
+	 * Preload the body font for the active site. The WP-style-variation
+	 * overlay was removed 2026-05-22 (Phase 5a Decision 18); per-site
+	 * branding now lives in the site's single theme.json snapshot. Sites
+	 * that use non-Inter heading fonts (e.g. Montserrat for Indus Foods,
+	 * Fraunces for Mama's Munches) should register their own preload via
+	 * sites/<client>/theme-snapshot.json's customTemplates/typography
+	 * settings — this base preload covers the body font only.
 	 */
-	$variation = get_theme_mod( 'active_theme_style', '' );
-
-	if ( 'indus-foods' === $variation ) {
-		$fonts = [
-			'montserrat-variable-latin.woff2',
-			'source-sans-3-variable-latin.woff2',
-		];
-	} else {
-		$fonts = [
-			'inter-variable-latin.woff2',
-		];
-	}
+	$fonts = [
+		'inter-variable-latin.woff2',
+	];
 
 	foreach ( $fonts as $font ) {
 		printf(
@@ -219,23 +213,13 @@ function enqueue_styles(): void {
 		$theme_version
 	);
 
-	// Per-variation stylesheet — written by the clone pipeline's stage 0.7
-	// (CSS-lift) at theme/sgs-theme/styles/<variation>.css. Loaded AFTER the
-	// framework stylesheets so per-section rules can override defaults. Only
-	// enqueued when the active variation actually has a sibling .css file —
-	// the JSON variation alone never carries CSS rules.
-	$active_variation = get_theme_mod( 'active_theme_style', '' );
-	if ( $active_variation ) {
-		$variation_css_path = get_theme_file_path( "styles/{$active_variation}.css" );
-		if ( file_exists( $variation_css_path ) ) {
-			wp_enqueue_style(
-				"sgs-variation-{$active_variation}",
-				get_theme_file_uri( "styles/{$active_variation}.css" ),
-				[ 'sgs-core-blocks', 'sgs-utilities' ],
-				$theme_version . '.' . filemtime( $variation_css_path )
-			);
-		}
-	}
+	// Per-variation stylesheet enqueue DELETED 2026-05-22 (Phase 5a Decision 18).
+	// The WP style-variation overlay system has been removed. Each site now ships
+	// a single theme.json snapshot at sites/<client>/theme-snapshot.json pushed
+	// via plugins/sgs-blocks/scripts/push-theme-snapshot.py. Bespoke per-site
+	// CSS (where required) is added to the site theme.json's customCSS field or
+	// via wp_add_inline_style() from a per-site mu-plugin — never gated on a
+	// theme_mod here.
 
 	// Dark mode — only load when the feature is enabled.
 	if ( get_option( 'sgs_dark_mode_enabled', false ) ) {
@@ -477,8 +461,11 @@ function replace_current_year_token( string $block_content ): string {
 add_filter( 'render_block', __NAMESPACE__ . '\replace_current_year_token' );
 
 
-// Indus Foods style variation — decorative images, custom CSS.
-require_once __DIR__ . '/inc/style-variation-indus-foods.php';
+// Indus Foods style-variation extras DELETED 2026-05-22 (Phase 5a Decision 18).
+// The WP style-variation overlay system was removed. The Indus Foods install
+// now carries its decorative CSS via its per-site theme.json customCSS or via
+// a per-site mu-plugin — not via a base-theme require gated on a theme_mod.
+// Archive of the original extras: plugins/sgs-blocks/_retired/style-variation-indus-foods.php
 
 
 /*
@@ -703,3 +690,50 @@ add_filter( 'wp_content_img_tag', __NAMESPACE__ . '\add_missing_image_dimensions
 // SGS Floating UI — Back to Top + Reading Progress are now registered via
 // Sgs_Floating_UI_Customiser in the sgs-blocks plugin (Spec 18).
 // The legacy theme-side customiser + output files were removed 2026-05-20.
+
+/**
+ * Hide the WP Browse-styles UI on single-stylesheet installs (Phase 5a Decision 17').
+ *
+ * Phase 5a (2026-05-22) retired the per-client WP style-variation overlay system.
+ * Each site now ships a single theme.json snapshot. With no registered style
+ * variations to choose between, the Browse-styles picker in the Site Editor is
+ * dead UI — this filter empties the variations list so the picker shows only
+ * the default and never surfaces stale client overlays to operators.
+ *
+ * If a future use case re-introduces multiple style variations on one site
+ * (e.g. light/dark presets), short-circuit this filter via the `sgs_show_browse_styles`
+ * filter override.
+ */
+add_filter(
+	'wp_theme_json_data_user',
+	function ( $theme_json ) {
+		if ( ! apply_filters( 'sgs_show_browse_styles', false ) ) {
+			$raw    = method_exists( $theme_json, 'get_raw_data' ) ? $theme_json->get_raw_data() : array();
+			$styles = $raw['styles'] ?? array();
+			if ( isset( $styles['variations'] ) ) {
+				unset( $styles['variations'] );
+				$raw['styles'] = $styles;
+				if ( method_exists( $theme_json, 'update_with' ) ) {
+					$theme_json->update_with( $raw );
+				}
+			}
+		}
+		return $theme_json;
+	}
+);
+
+/**
+ * Belt-and-braces — also empty the style-variations resolver list. When the
+ * variations list is empty, WordPress hides the Browse-styles button entirely.
+ */
+add_filter(
+	'block_editor_settings_all',
+	function ( array $settings ): array {
+		if ( ! apply_filters( 'sgs_show_browse_styles', false ) ) {
+			$settings['styles'] = $settings['styles'] ?? array();
+			unset( $settings['__experimentalStyles'] );
+		}
+		return $settings;
+	},
+	20
+);

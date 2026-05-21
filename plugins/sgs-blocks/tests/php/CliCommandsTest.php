@@ -209,12 +209,11 @@ if ( ! class_exists( 'SGS\\Blocks\\Sgs_Header_Rules' ) ) {
 if ( ! class_exists( 'SGS\\Blocks\\Sgs_Footer_Rules' ) ) {
 	require_once SGS_BLOCKS_PATH . 'includes/class-sgs-footer-rules.php';
 }
-// Sgs_Admin_Menu must load before Sgs_Variation_Picker (mirrors VariationPickerTest).
+// Sgs_Variation_Picker DELETED 2026-05-22 (Phase 5a Decision 18). The
+// theme_mod_restore CLI command + the picker class are retired; tests below
+// no longer reference them.
 if ( ! class_exists( 'SGS\\Blocks\\Sgs_Admin_Menu' ) ) {
 	require_once SGS_BLOCKS_PATH . 'includes/class-sgs-admin-menu.php';
-}
-if ( ! class_exists( 'SGS\\Blocks\\Sgs_Variation_Picker' ) ) {
-	require_once SGS_BLOCKS_PATH . 'includes/class-sgs-variation-picker.php';
 }
 require_once SGS_BLOCKS_PATH . 'includes/class-sgs-cli-commands.php';
 
@@ -224,7 +223,6 @@ use SGS\Blocks\Sgs_Header_Rules;
 use SGS\Blocks\Sgs_Footer_Rules;
 use SGS\Blocks\Sgs_Migrations;
 use SGS\Blocks\Sgs_Safety_Guard;
-use SGS\Blocks\Sgs_Variation_Picker;
 
 // ---------------------------------------------------------------------------
 // Test class.
@@ -278,9 +276,7 @@ if ( class_exists( 'PHPUnit\\Framework\\TestCase' ) ) {
 			$this->assertTrue( method_exists( $this->cmd, 'seeding_arm' ) );
 		}
 
-		public function test_has_theme_mod_restore_method(): void {
-			$this->assertTrue( method_exists( $this->cmd, 'theme_mod_restore' ) );
-		}
+		// theme_mod_restore method REMOVED 2026-05-22 (Phase 5a Decision 18).
 
 		// ── 2. site_info get — outputs the stored value ──────────────────────
 
@@ -467,35 +463,7 @@ if ( class_exists( 'PHPUnit\\Framework\\TestCase' ) ) {
 			$this->assertNotEmpty( $successes );
 		}
 
-		// ── 9. theme_mod_restore — reads sgs_legacy_theme_mods_backup from wp_options ─
-
-		public function test_theme_mod_restore_errors_when_no_backup(): void {
-			Wp_Options_Stub::$user_can = true;
-			// No backup in store — get_option returns false (default).
-
-			$this->expectException( \RuntimeException::class );
-			$this->cmd->theme_mod_restore( array(), array() );
-		}
-
-		public function test_theme_mod_restore_succeeds_with_backup(): void {
-			Wp_Options_Stub::$user_can = true;
-
-			// Seed the backup directly into the in-memory option store.
-			Wp_Options_Stub::update(
-				'sgs_legacy_theme_mods_backup',
-				array(
-					'active_theme_style' => 'indus-foods',
-					'backed_up_at'       => time(),
-					'spec_version'       => '1.1.0',
-				)
-			);
-
-			$this->cmd->theme_mod_restore( array(), array() );
-
-			$successes = array_filter( WP_CLI::$log, fn( $e ) => 'success' === $e['type'] );
-			$this->assertNotEmpty( $successes );
-			$this->assertStringContainsString( 'indus-foods', array_values( $successes )[0]['message'] );
-		}
+		// ── 9. theme_mod_restore tests REMOVED 2026-05-22 (Phase 5a Decision 18) ─
 
 		// ── 10. site_info unknown subcommand errors ───────────────────────────
 

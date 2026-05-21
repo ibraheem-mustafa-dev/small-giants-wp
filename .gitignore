@@ -97,6 +97,13 @@ tools/**/__pycache__/
 # Pipeline run-time artefacts (sgs-clone-orchestrator output)
 pipeline-state/
 
+# Phase 5a (2026-05-22) — WP style-variation overlay system retired.
+# Per-client snapshots now live at sites/<client>/theme-snapshot.json.
+# theme/sgs-theme/styles/ is no longer used for variation JSONs.
+theme/sgs-theme/styles/*.json
+theme/sgs-theme/styles/colours/
+theme/sgs-theme/styles/typography/
+
 # Python bytecode caches
 **/__pycache__/
 *.pyc

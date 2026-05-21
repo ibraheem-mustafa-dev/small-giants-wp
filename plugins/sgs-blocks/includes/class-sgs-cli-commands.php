@@ -48,7 +48,6 @@ defined( 'ABSPATH' ) || exit;
  *     wp sgs migrations status
  *     wp sgs migrations run --user=1
  *     wp sgs seeding-arm --user=1
- *     wp sgs theme-mod restore --user=1
  */
 final class Sgs_Cli_Commands {
 
@@ -452,41 +451,12 @@ final class Sgs_Cli_Commands {
 	}
 
 	// -------------------------------------------------------------------------
-	// wp sgs theme-mod restore
+	// wp sgs theme-mod restore — REMOVED 2026-05-22 (Phase 5a Decision 18)
 	// -------------------------------------------------------------------------
-
-	/**
-	 * Restore the legacy active_theme_style theme_mod from the FR-S5-2 backup.
-	 *
-	 * Reads the backup written by Sgs_Variation_Picker::maybe_migrate_legacy_theme_mod()
-	 * from wp_options['sgs_legacy_theme_mods_backup'] and re-applies the stored
-	 * active_theme_style value via set_theme_mod().
-	 *
-	 * Useful for rolling back after a failed style-variation migration.
-	 *
-	 * ## EXAMPLES
-	 *
-	 *     wp sgs theme-mod restore --user=1
-	 *
-	 * @param string[] $args       Positional arguments (unused).
-	 * @param string[] $assoc_args Named arguments (unused).
-	 */
-	public function theme_mod_restore( array $args, array $assoc_args ): void {
-		unset( $args, $assoc_args );
-
-		if ( ! \current_user_can( 'edit_theme_options' ) ) {
-			\WP_CLI::error( 'edit_theme_options capability required — pass --user=<id> (e.g. --user=1).' );
-		}
-
-		$backup = \get_option( 'sgs_legacy_theme_mods_backup', null );
-
-		if ( ! \is_array( $backup ) || empty( $backup['active_theme_style'] ) ) {
-			\WP_CLI::error( 'No usable backup found. The legacy active_theme_style theme_mod was either never set or the backup is empty.' );
-		}
-
-		\set_theme_mod( 'active_theme_style', (string) $backup['active_theme_style'] );
-		\WP_CLI::success( 'Legacy active_theme_style theme_mod restored: ' . $backup['active_theme_style'] );
-	}
+	// The WP style-variation overlay system + its theme_mod backup were
+	// retired. There is no legacy state to restore — per-site branding now
+	// lives in sites/<client>/theme-snapshot.json. Use push-theme-snapshot.py
+	// instead.
 
 	// -------------------------------------------------------------------------
 	// Private helpers
