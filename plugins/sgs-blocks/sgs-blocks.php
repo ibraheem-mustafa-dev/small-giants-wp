@@ -177,6 +177,45 @@ require_once SGS_BLOCKS_PATH . 'includes/class-sgs-floating-ui-renderer.php';
 Sgs_Floating_UI_Customiser::register();
 Sgs_Floating_UI_Renderer::register();
 
+// SGS Customiser sections — Phase 5b (Decision 21) — Header / Footer / Site Info live preview.
+// class-sgs-customiser-info-control.php extends WP_Customize_Control which is
+// only defined in admin / customise context — load it lazily inside the
+// customize_register hook (priority 1) so it never fatals on the frontend.
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-header-customiser.php';
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-header-renderer.php';
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-footer-customiser.php';
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-footer-renderer.php';
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-site-info-customiser.php';
+add_action(
+	'customize_register',
+	static function () {
+		require_once SGS_BLOCKS_PATH . 'includes/class-sgs-customiser-info-control.php';
+	},
+	1
+);
+Sgs_Header_Customiser::register();
+Sgs_Header_Renderer::register();
+Sgs_Footer_Customiser::register();
+Sgs_Footer_Renderer::register();
+Sgs_Site_Info_Customiser::register();
+
+// Phase 5b Decision 27 — wire View Transitions into Customiser navigation.
+// WP 6.9.4 lacks wp_enqueue_view_transitions_admin_css() (WP 7.0+), so we emit
+// the @view-transition rule directly via customize_controls_enqueue_scripts.
+add_action(
+	'customize_controls_enqueue_scripts',
+	function () {
+		if ( function_exists( 'wp_enqueue_view_transitions_admin_css' ) ) {
+			wp_enqueue_view_transitions_admin_css();
+			return;
+		}
+		// Fallback: inline @view-transition rule for browsers that support it.
+		wp_register_style( 'sgs-customiser-view-transitions', false, array(), SGS_BLOCKS_VERSION );
+		wp_enqueue_style( 'sgs-customiser-view-transitions' );
+		wp_add_inline_style( 'sgs-customiser-view-transitions', '@view-transition{navigation:auto;}' );
+	}
+);
+
 // Register GDPR personal data exporters and erasers.
 Forms\Form_Privacy::register();
 
