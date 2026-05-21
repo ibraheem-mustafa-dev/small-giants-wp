@@ -10,6 +10,42 @@
  * The CSS rules live in assets/css/extensions.css and use media queries
  * with display:none to hide content. Content remains in the DOM for SEO.
  *
+ * -------------------------------------------------------------------------
+ * COEXISTENCE NOTE — WP 7.0 native block visibility (Decision 25, Phase 6)
+ * -------------------------------------------------------------------------
+ *
+ * WordPress 7.0 ships native device-type show/hide controls in the block
+ * toolbar and inspector sidebar. The native system uses the block support
+ * key `'visibility'` in block.json and stores state in
+ * `block.metadata.blockVisibility.viewport` with three keys:
+ * mobile (<= 480px), tablet (480–782px), desktop (> 782px).
+ *
+ * PRECEDENCE RULE — two UIs coexist short-term:
+ *
+ *   1. WP-native visibility (preferred for simple show/hide): operator
+ *      controls appear in every block's toolbar and inspector automatically
+ *      once a block declares `"visibility": true` in its block.json supports.
+ *      This extension does NOT interfere with native visibility.
+ *
+ *   2. SGS device-visibility extension (this file): use ONLY when native
+ *      visibility is insufficient — for example, combined conditions such as
+ *      "show on mobile AND only when logged-in", or breakpoints that differ
+ *      from WP-native's fixed three sizes.
+ *
+ * RETIRE CRITERIA: When WP-native visibility reaches feature parity with
+ * all condition types supported here (combined conditions, custom breakpoints,
+ * login-state etc.), this extension will be retired. Expected WP 7.1 adds
+ * configurable breakpoints and theme.json integration.
+ *
+ * SGS blocks do NOT currently declare `"visibility": true` in block.json
+ * because this extension provides a superset of the native feature.
+ * Add `"supports": { "visibility": true }` to any block's block.json to
+ * opt that block into the native WP toolbar/inspector panel in ADDITION to
+ * this extension's controls.
+ *
+ * @see https://make.wordpress.org/core/2026/03/15/block-visibility-in-wordpress-7-0/
+ * -------------------------------------------------------------------------
+ *
  * @package SGS\Blocks
  */
 

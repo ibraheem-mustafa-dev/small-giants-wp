@@ -72,6 +72,17 @@ final class SGS_Blocks {
 
 			if ( file_exists( $block_json ) ) {
 				register_block_type( $block_json );
+
+				// Wire WP 7.0 script-module translations for blocks that use viewScriptModule.
+				// Infrastructure only — no translation .json files required until the first
+				// non-English client onboards (Decision 23c, Phase 6).
+				// Module ID convention: @sgs/<block-slug>/view (WP auto-registers this from
+				// viewScriptModule in block.json via WP_Script_Modules::register()).
+				$block_json_data = json_decode( file_get_contents( $block_json ), true ); // phpcs:ignore WordPress.WP.AlternativeFunctions
+				if ( ! empty( $block_json_data['viewScriptModule'] ) && function_exists( 'wp_set_script_module_translations' ) ) {
+					$module_id = '@sgs/' . $block . '/view';
+					wp_set_script_module_translations( $module_id, 'sgs-blocks', SGS_BLOCKS_PATH . 'languages' );
+				}
 			}
 		}
 	}

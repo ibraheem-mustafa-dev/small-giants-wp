@@ -55,11 +55,13 @@
     "attributes": {
         "quote": {
             "type": "string",
-            "default": ""
+            "default": "",
+            "role": "content"
         },
         "name": {
             "type": "string",
-            "default": ""
+            "default": "",
+            "role": "content"
         },
         "role": {
             "type": "string",

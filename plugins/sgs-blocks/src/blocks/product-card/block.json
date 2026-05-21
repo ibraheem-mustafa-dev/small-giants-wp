@@ -1,99 +1,120 @@
 {
-  "$schema": "https://schemas.wp.org/trunk/block.json",
-  "apiVersion": 3,
-  "name": "sgs/product-card",
-  "version": "1.0.0",
-  "title": "Product Card",
-  "category": "sgs-content",
-  "description": "Static product card with pack-size variant pills, price and CTA. Pure visual block — does not yet wire to cart. Pair the standard variant with the trial variant for the canonical 'main + trial' two-up layout.",
-  "keywords": [
-    "product",
-    "card",
-    "ecommerce",
-    "shop",
-    "variant",
-    "pack",
-    "pricing"
-  ],
-  "textdomain": "sgs-blocks",
-  "icon": "products",
-  "supports": {
-    "sgs": {
-      "imageControls": true
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "sgs/product-card",
+    "version": "1.0.0",
+    "title": "Product Card",
+    "category": "sgs-content",
+    "description": "Static product card with pack-size variant pills, price and CTA. Pure visual block — does not yet wire to cart. Pair the standard variant with the trial variant for the canonical 'main + trial' two-up layout.",
+    "keywords": [
+        "product",
+        "card",
+        "ecommerce",
+        "shop",
+        "variant",
+        "pack",
+        "pricing"
+    ],
+    "textdomain": "sgs-blocks",
+    "icon": "products",
+    "supports": {
+        "sgs": {
+            "imageControls": true
+        },
+        "html": false,
+        "align": false,
+        "spacing": {
+            "margin": true,
+            "padding": false
+        }
     },
-    "html": false,
-    "align": false,
-    "spacing": {
-      "margin": true,
-      "padding": false
-    }
-  },
-  "attributes": {
-    "image": {
-      "type": "string",
-      "default": ""
-    },
-    "imageAlt": {
-      "type": "string",
-      "default": ""
-    },
-    "productName": {
-      "type": "string",
-      "default": ""
-    },
-    "description": {
-      "type": "string",
-      "default": ""
-    },
-    "variantStyle": {
-      "type": "string",
-      "default": "standard",
-      "enum": ["standard", "trial", "gift"]
-    },
-    "trialTag": {
-      "type": "string",
-      "default": ""
-    },
-    "packSizes": {
-      "type": "array",
-      "default": []
-    },
-    "priceLarge": {
-      "type": "string",
-      "default": ""
-    },
-    "priceNote": {
-      "type": "string",
-      "default": ""
-    },
-    "ctaText": {
-      "type": "string",
-      "default": ""
-    },
-    "ctaUrl": {
-      "type": "string",
-      "default": ""
-    }
-  },
-  "editorScript": "file:./index.js",
-  "style": "file:./style.css",
-  "render": "file:./render.php",
-  "allowedBlocks": ["sgs/multi-button", "sgs/button"],
-  "example": {
     "attributes": {
-      "productName": "Mama's Munches Zookies",
-      "description": "Baked fresh every week and posted the same day.",
-      "variantStyle": "standard",
-      "packSizes": [
-        { "label": "8-pack", "selected": true },
-        { "label": "12-pack", "selected": false },
-        { "label": "20-pack", "selected": false },
-        { "label": "40-pack", "selected": false }
-      ],
-      "priceLarge": "£10.00",
-      "priceNote": "8-pack · Free delivery over £35",
-      "ctaText": "Add to Cart — £10",
-      "ctaUrl": "/product/zookies/"
+        "image": {
+            "type": "string",
+            "default": ""
+        },
+        "imageAlt": {
+            "type": "string",
+            "default": "",
+            "role": "content"
+        },
+        "productName": {
+            "type": "string",
+            "default": ""
+        },
+        "description": {
+            "type": "string",
+            "default": "",
+            "role": "content"
+        },
+        "variantStyle": {
+            "type": "string",
+            "default": "standard",
+            "enum": [
+                "standard",
+                "trial",
+                "gift"
+            ]
+        },
+        "trialTag": {
+            "type": "string",
+            "default": ""
+        },
+        "packSizes": {
+            "type": "array",
+            "default": []
+        },
+        "priceLarge": {
+            "type": "string",
+            "default": ""
+        },
+        "priceNote": {
+            "type": "string",
+            "default": ""
+        },
+        "ctaText": {
+            "type": "string",
+            "default": ""
+        },
+        "ctaUrl": {
+            "type": "string",
+            "default": ""
+        }
+    },
+    "editorScript": "file:./index.js",
+    "style": "file:./style.css",
+    "render": "file:./render.php",
+    "allowedBlocks": [
+        "sgs/multi-button",
+        "sgs/button"
+    ],
+    "example": {
+        "attributes": {
+            "productName": "Mama's Munches Zookies",
+            "description": "Baked fresh every week and posted the same day.",
+            "variantStyle": "standard",
+            "packSizes": [
+                {
+                    "label": "8-pack",
+                    "selected": true
+                },
+                {
+                    "label": "12-pack",
+                    "selected": false
+                },
+                {
+                    "label": "20-pack",
+                    "selected": false
+                },
+                {
+                    "label": "40-pack",
+                    "selected": false
+                }
+            ],
+            "priceLarge": "£10.00",
+            "priceNote": "8-pack · Free delivery over £35",
+            "ctaText": "Add to Cart — £10",
+            "ctaUrl": "/product/zookies/"
+        }
     }
-  }
 }

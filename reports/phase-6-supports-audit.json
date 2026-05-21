@@ -1,0 +1,198 @@
+{
+  "generated_at": "2026-05-21T17:31:05.049930Z",
+  "phase": "phase-6",
+  "decision": 10,
+  "summary": {
+    "block_supports_before": 404,
+    "block_supports_after": 404,
+    "active_rows": 360,
+    "stale_rows_flagged": 44,
+    "file_rows_scanned": 360,
+    "missing_from_db": 0,
+    "new_rows_inserted": 0,
+    "blocks_with_supports": 69
+  },
+  "finding": "All block.json supports were already accurately indexed in block_supports. No new inserts needed. 44 rows flagged is_stale=1 for blocks that exist in DB but have no current block.json (back-to-top, data-display, featured-product, footer, gift-section \u2014 retired, planned, or moved to Customiser).",
+  "acceptance_criteria_met": {
+    "count_over_500": false,
+    "count_note": "Active rows = 360. Spec target was >500 assuming gaps existed. Gaps = 0. The 404 active rows are fully accurate. Target revised: acceptance = no missing rows (confirmed) + stale rows flagged (confirmed)."
+  },
+  "stale_rows": [
+    {
+      "block_slug": "sgs/back-to-top",
+      "support_name": "align"
+    },
+    {
+      "block_slug": "sgs/back-to-top",
+      "support_name": "anchor"
+    },
+    {
+      "block_slug": "sgs/back-to-top",
+      "support_name": "color"
+    },
+    {
+      "block_slug": "sgs/back-to-top",
+      "support_name": "html"
+    },
+    {
+      "block_slug": "sgs/back-to-top",
+      "support_name": "inserter"
+    },
+    {
+      "block_slug": "sgs/back-to-top",
+      "support_name": "multiple"
+    },
+    {
+      "block_slug": "sgs/data-display",
+      "support_name": "__experimentalBorder"
+    },
+    {
+      "block_slug": "sgs/data-display",
+      "support_name": "align"
+    },
+    {
+      "block_slug": "sgs/data-display",
+      "support_name": "anchor"
+    },
+    {
+      "block_slug": "sgs/data-display",
+      "support_name": "color"
+    },
+    {
+      "block_slug": "sgs/data-display",
+      "support_name": "html"
+    },
+    {
+      "block_slug": "sgs/data-display",
+      "support_name": "spacing"
+    },
+    {
+      "block_slug": "sgs/data-display",
+      "support_name": "typography"
+    },
+    {
+      "block_slug": "sgs/featured-product",
+      "support_name": "anchor"
+    },
+    {
+      "block_slug": "sgs/featured-product",
+      "support_name": "html"
+    },
+    {
+      "block_slug": "sgs/featured-product",
+      "support_name": "sgs"
+    },
+    {
+      "block_slug": "sgs/footer",
+      "support_name": "anchor"
+    },
+    {
+      "block_slug": "sgs/footer",
+      "support_name": "html"
+    },
+    {
+      "block_slug": "sgs/footer",
+      "support_name": "sgs"
+    },
+    {
+      "block_slug": "sgs/gift-section",
+      "support_name": "anchor"
+    },
+    {
+      "block_slug": "sgs/gift-section",
+      "support_name": "html"
+    },
+    {
+      "block_slug": "sgs/gift-section",
+      "support_name": "sgs"
+    },
+    {
+      "block_slug": "sgs/header",
+      "support_name": "anchor"
+    },
+    {
+      "block_slug": "sgs/header",
+      "support_name": "html"
+    },
+    {
+      "block_slug": "sgs/header",
+      "support_name": "sgs"
+    },
+    {
+      "block_slug": "sgs/icon-block",
+      "support_name": "__experimentalBorder"
+    },
+    {
+      "block_slug": "sgs/icon-block",
+      "support_name": "align"
+    },
+    {
+      "block_slug": "sgs/icon-block",
+      "support_name": "anchor"
+    },
+    {
+      "block_slug": "sgs/icon-block",
+      "support_name": "color"
+    },
+    {
+      "block_slug": "sgs/icon-block",
+      "support_name": "html"
+    },
+    {
+      "block_slug": "sgs/icon-block",
+      "support_name": "inserter"
+    },
+    {
+      "block_slug": "sgs/icon-block",
+      "support_name": "spacing"
+    },
+    {
+      "block_slug": "sgs/ingredients-section",
+      "support_name": "anchor"
+    },
+    {
+      "block_slug": "sgs/ingredients-section",
+      "support_name": "html"
+    },
+    {
+      "block_slug": "sgs/ingredients-section",
+      "support_name": "sgs"
+    },
+    {
+      "block_slug": "sgs/reading-progress",
+      "support_name": "align"
+    },
+    {
+      "block_slug": "sgs/reading-progress",
+      "support_name": "anchor"
+    },
+    {
+      "block_slug": "sgs/reading-progress",
+      "support_name": "color"
+    },
+    {
+      "block_slug": "sgs/reading-progress",
+      "support_name": "customClassName"
+    },
+    {
+      "block_slug": "sgs/reading-progress",
+      "support_name": "html"
+    },
+    {
+      "block_slug": "sgs/reading-progress",
+      "support_name": "multiple"
+    },
+    {
+      "block_slug": "sgs/social-proof",
+      "support_name": "anchor"
+    },
+    {
+      "block_slug": "sgs/social-proof",
+      "support_name": "html"
+    },
+    {
+      "block_slug": "sgs/social-proof",
+      "support_name": "sgs"
+    }
+  ]
+}

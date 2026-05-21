@@ -55,7 +55,8 @@
         },
         "name": {
             "type": "string",
-            "default": ""
+            "default": "",
+            "role": "content"
         },
         "role": {
             "type": "string",
@@ -63,7 +64,8 @@
         },
         "bio": {
             "type": "string",
-            "default": ""
+            "default": "",
+            "role": "content"
         },
         "socialLinks": {
             "type": "array",

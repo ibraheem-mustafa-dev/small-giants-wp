@@ -32,11 +32,13 @@
             "type": "number"
         },
         "imageUrl": {
-            "type": "string"
+            "type": "string",
+            "role": "content"
         },
         "imageAlt": {
             "type": "string",
-            "default": ""
+            "default": "",
+            "role": "content"
         },
         "positionX": {
             "type": "number",

@@ -85,11 +85,13 @@
         },
         "headline": {
             "type": "string",
-            "default": ""
+            "default": "",
+            "role": "content"
         },
         "subHeadline": {
             "type": "string",
-            "default": ""
+            "default": "",
+            "role": "content"
         },
         "alignment": {
             "type": "string",
@@ -123,7 +125,8 @@
         },
         "label": {
             "type": "string",
-            "default": ""
+            "default": "",
+            "role": "content"
         },
         "backgroundVideo": {
             "type": "object"
@@ -167,10 +170,12 @@
             "default": "text-inverse"
         },
         "ctaPrimaryText": {
-            "type": "string"
+            "type": "string",
+            "role": "content"
         },
         "ctaPrimaryUrl": {
-            "type": "string"
+            "type": "string",
+            "role": "content"
         },
         "ctaPrimaryStyle": {
             "type": "string",
@@ -183,10 +188,12 @@
             "type": "string"
         },
         "ctaSecondaryText": {
-            "type": "string"
+            "type": "string",
+            "role": "content"
         },
         "ctaSecondaryUrl": {
-            "type": "string"
+            "type": "string",
+            "role": "content"
         },
         "ctaSecondaryStyle": {
             "type": "string",

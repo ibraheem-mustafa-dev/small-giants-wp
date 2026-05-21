@@ -24,7 +24,8 @@
     "attributes": {
         "text": {
             "type": "string",
-            "default": ""
+            "default": "",
+            "role": "content"
         },
         "tag": {
             "type": "string",
@@ -352,7 +353,13 @@
         },
         "transitionEasing": {
             "type": "string",
-            "enum": [ "ease", "ease-in", "ease-out", "ease-in-out", "linear" ],
+            "enum": [
+                "ease",
+                "ease-in",
+                "ease-out",
+                "ease-in-out",
+                "linear"
+            ],
             "default": "ease"
         }
     },

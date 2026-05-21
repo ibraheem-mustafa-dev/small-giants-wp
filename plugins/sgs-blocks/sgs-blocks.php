@@ -107,6 +107,10 @@ new Font_Collection();
 // Register REST API endpoints.
 Forms\Form_REST_API::register();
 
+// Lucide Icons REST bridge — registers icon collection via WP 7.0 WP_REST_Icons_Controller.
+// Safe no-op on WP 6.x (class_exists guard inside). See class-sgs-lucide-icons-rest.php.
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-lucide-icons-rest.php';
+
 // Variation activation REST + WP style-variation picker DELETED 2026-05-22
 // (Phase 5a Decision 18). Per-site branding now flows through the per-site
 // theme.json snapshot at sites/<client>/theme-snapshot.json pushed via

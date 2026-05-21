@@ -29,10 +29,10 @@
     },
     "render": "file:./render.php",
     "attributes": {
-
         "label": {
             "type": "string",
-            "default": ""
+            "default": "",
+            "role": "content"
         },
         "labelEnabled": {
             "type": "boolean",
@@ -40,7 +40,11 @@
         },
         "labelTag": {
             "type": "string",
-            "enum": [ "span", "p", "div" ],
+            "enum": [
+                "span",
+                "p",
+                "div"
+            ],
             "default": "span"
         },
         "labelFontFamily": {
@@ -91,12 +95,19 @@
         },
         "labelFontStyle": {
             "type": "string",
-            "enum": [ "normal", "italic" ],
+            "enum": [
+                "normal",
+                "italic"
+            ],
             "default": ""
         },
         "labelTextDecoration": {
             "type": "string",
-            "enum": [ "none", "underline", "line-through" ],
+            "enum": [
+                "none",
+                "underline",
+                "line-through"
+            ],
             "default": ""
         },
         "labelMarginTop": {
@@ -151,14 +162,19 @@
             "type": "string",
             "default": "px"
         },
-
         "headline": {
             "type": "string",
-            "default": ""
+            "default": "",
+            "role": "content"
         },
         "headlineLevel": {
             "type": "string",
-            "enum": [ "h1", "h2", "h3", "h4" ],
+            "enum": [
+                "h1",
+                "h2",
+                "h3",
+                "h4"
+            ],
             "default": "h2"
         },
         "headlineId": {
@@ -211,12 +227,19 @@
         },
         "headlineFontStyle": {
             "type": "string",
-            "enum": [ "normal", "italic" ],
+            "enum": [
+                "normal",
+                "italic"
+            ],
             "default": ""
         },
         "headlineTextDecoration": {
             "type": "string",
-            "enum": [ "none", "underline", "line-through" ],
+            "enum": [
+                "none",
+                "underline",
+                "line-through"
+            ],
             "default": ""
         },
         "headlineMarginTop": {
@@ -271,7 +294,6 @@
             "type": "string",
             "default": "px"
         },
-
         "sub": {
             "type": "string",
             "default": ""
@@ -282,7 +304,10 @@
         },
         "subTag": {
             "type": "string",
-            "enum": [ "p", "div" ],
+            "enum": [
+                "p",
+                "div"
+            ],
             "default": "p"
         },
         "subFontFamily": {
@@ -331,12 +356,19 @@
         },
         "subFontStyle": {
             "type": "string",
-            "enum": [ "normal", "italic" ],
+            "enum": [
+                "normal",
+                "italic"
+            ],
             "default": ""
         },
         "subTextDecoration": {
             "type": "string",
-            "enum": [ "none", "underline", "line-through" ],
+            "enum": [
+                "none",
+                "underline",
+                "line-through"
+            ],
             "default": ""
         },
         "subMarginTop": {
@@ -391,21 +423,23 @@
             "type": "string",
             "default": "px"
         },
-
         "icon": {
             "type": "string",
             "default": ""
         },
         "iconPosition": {
             "type": "string",
-            "enum": [ "before-label", "before-headline", "none" ],
+            "enum": [
+                "before-label",
+                "before-headline",
+                "none"
+            ],
             "default": "none"
         },
         "emoji": {
             "type": "string",
             "default": ""
         },
-
         "marginTop": {
             "type": "string",
             "default": ""
@@ -560,7 +594,17 @@
         },
         "borderStyle": {
             "type": "string",
-            "enum": [ "none", "solid", "dashed", "dotted", "double", "groove", "ridge", "inset", "outset" ],
+            "enum": [
+                "none",
+                "solid",
+                "dashed",
+                "dotted",
+                "double",
+                "groove",
+                "ridge",
+                "inset",
+                "outset"
+            ],
             "default": "none"
         },
         "borderColour": {
@@ -589,7 +633,12 @@
         },
         "variantStyle": {
             "type": "string",
-            "enum": [ "default", "hero", "section", "card" ],
+            "enum": [
+                "default",
+                "hero",
+                "section",
+                "card"
+            ],
             "default": "default"
         },
         "customWidth": {
@@ -610,7 +659,13 @@
         },
         "transitionEasing": {
             "type": "string",
-            "enum": [ "ease", "ease-in", "ease-out", "ease-in-out", "linear" ],
+            "enum": [
+                "ease",
+                "ease-in",
+                "ease-out",
+                "ease-in-out",
+                "linear"
+            ],
             "default": "ease"
         }
     },

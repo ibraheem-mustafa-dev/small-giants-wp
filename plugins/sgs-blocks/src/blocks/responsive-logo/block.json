@@ -71,7 +71,8 @@
         },
         "alt": {
             "type": "string",
-            "default": ""
+            "default": "",
+            "role": "content"
         }
     },
     "render": "file:./render.php",

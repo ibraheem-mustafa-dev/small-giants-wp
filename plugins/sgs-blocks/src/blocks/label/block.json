@@ -37,7 +37,8 @@
     "attributes": {
         "text": {
             "type": "string",
-            "default": ""
+            "default": "",
+            "role": "content"
         },
         "tag": {
             "type": "string",

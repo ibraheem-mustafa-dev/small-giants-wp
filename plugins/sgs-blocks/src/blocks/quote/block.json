@@ -28,7 +28,8 @@
             "items": {
                 "type": "string"
             },
-            "default": []
+            "default": [],
+            "role": "content"
         },
         "bodyTag": {
             "type": "string",
@@ -450,7 +451,7 @@
                 "Place the source's words here for emphasis and credibility.",
                 "A short third line keeps the example representative."
             ],
-            "attribution": "\u2014 Jane Smith, Customer",
+            "attribution": "— Jane Smith, Customer",
             "attributionColour": "primary",
             "bodyFontStyle": "italic",
             "paddingTop": 24,

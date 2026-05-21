@@ -31,11 +31,13 @@
         },
         "imageUrl": {
             "type": "string",
-            "default": ""
+            "default": "",
+            "role": "content"
         },
         "imageAlt": {
             "type": "string",
-            "default": ""
+            "default": "",
+            "role": "content"
         },
         "imageWidth": {
             "type": "integer",
@@ -84,7 +86,13 @@
         "objectFit": {
             "type": "string",
             "default": "cover",
-            "enum": [ "cover", "contain", "fill", "none", "scale-down" ]
+            "enum": [
+                "cover",
+                "contain",
+                "fill",
+                "none",
+                "scale-down"
+            ]
         },
         "objectPosition": {
             "type": "string",
@@ -125,7 +133,11 @@
         "alignment": {
             "type": "string",
             "default": "left",
-            "enum": [ "left", "center", "right" ]
+            "enum": [
+                "left",
+                "center",
+                "right"
+            ]
         },
         "order": {
             "type": "integer",
@@ -141,12 +153,16 @@
         },
         "caption": {
             "type": "string",
-            "default": ""
+            "default": "",
+            "role": "content"
         },
         "captionTag": {
             "type": "string",
             "default": "figcaption",
-            "enum": [ "figcaption", "div" ]
+            "enum": [
+                "figcaption",
+                "div"
+            ]
         },
         "captionColour": {
             "type": "string",
@@ -162,7 +178,8 @@
         },
         "linkUrl": {
             "type": "string",
-            "default": ""
+            "default": "",
+            "role": "content"
         },
         "linkOpensNewTab": {
             "type": "boolean",
