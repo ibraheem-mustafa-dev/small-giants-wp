@@ -15,6 +15,14 @@ This is a SINGLE session with four sequential phases of work. Not four sessions 
 
 Architecture programme status: Phases 0/0.5/1/1.5/2/3/5a/5b + 5b-paint-fix + 6 shipped across the 2026-05-21 + 2026-05-22 work blocks. Phase 4 + Phase 7 remain. Plus the unexpected-content audit (new) and the parking sweep (new) bookend the architecture work.
 
+**Latest commit on main:** `202922c1` (final housekeeping — orphan files cleaned). Working tree clean; sandybrown live on WP 7.0; `main` in sync with origin GitHub.
+
+**Two WP 7.0 surprises documented (Session B QC council):**
+1. `wp_register_icon_collection()` doesn't exist in WP 7.0. `WP_REST_Icons_Controller` class exists but no plugin-registration helper. Phase 6's `class-sgs-lucide-icons-rest.php` is defensively no-op via two guards. **Plugin-side icon registration blocked until WP 7.1.**
+2. `register_block_variation()` STILL doesn't exist as PHP in WP 7.0 (JS-only). **The Phase 1.5 Path B `get_block_type_variations` filter (`cc541e94`) remains load-bearing — DO NOT remove it expecting WP 7.0 to take over.**
+
+Both surprises validate blub.db row 283 (verify-wp-api-surface-before-dismissing-static-analyser) twice over. Defensive guards saved both implementations. When introducing any new WP API call this session (especially in Phase 4's scrapers + Phase 7's AI connector wiring), apply the row 283 verification: `curl -s "https://developer.wordpress.org/reference/functions/<name>/" -o /dev/null -w "%{http_code}\n"` before assuming the function exists.
+
 ---
 
 ## Tooling reference for this session
@@ -173,13 +181,28 @@ After Phase 7 commits + QC council affirms — move to Step 3.
 
 Bean's directive 2026-05-22: once Phase 4 ships AND QC council confirms it's totally working, sweep through every open item in `.claude/parking.md` and close them out one by one. Don't stop until parking is empty.
 
-**As of this handoff write, parking.md contains (read the file for the live list):**
-- `P-PHASE-5B-INERT-CUSTOMISER-OUTPUT` — SHOULD be SHIPPED (Session B's `0ef032fe`). Verify + remove from parking.
-- `P-PHASE-5B-PROPERTY-COVERAGE-AUDIT` — confirm WP 7.0 native theme.json covers every button-preset property; remove shim if uncovered properties = 0.
-- `P-UNEXPECTED-CONTENT-BACKLOG` — Step 0 above closes this. Verify + remove.
-- `P-EXPLICIT-DEFAULT-STYLE-RETROFIT` — decide explicit-default-per-block retrofit on the 12 Phase 1.5 composite blocks (optional UX polish). If Bean is fine with implicit Default, remove from parking with a rationale note.
+**As of this handoff write, parking.md contains 13 entries (read the file for the live list — Session B added 8 new entries in commit `499105c8`):**
+
+From Session A (5 entries):
+- `P-PHASE-5B-INERT-CUSTOMISER-OUTPUT` — RESOLVED by Session B's `0ef032fe`. Verify + move to RESOLVED section.
+- `P-PHASE-5B-PROPERTY-COVERAGE-AUDIT` — RESOLVED. Session B's coverage audit at `.claude/reports/phase-5b-button-property-coverage.md` confirmed WP 7.0 native theme.json covers 100% of consumed button-preset properties. Move to RESOLVED.
+- `P-UNEXPECTED-CONTENT-BACKLOG` — Step 0 above closes this. Verify + move to RESOLVED.
+- `P-EXPLICIT-DEFAULT-STYLE-RETROFIT` — decide explicit-default-per-block retrofit on the 12 Phase 1.5 composite blocks (optional UX polish). If Bean is fine with implicit Default, move to RESOLVED with a rationale note.
 - `P-WPCS-FUNCTIONS-PHP-DEBT` — 58 pre-existing WPCS errors in `theme/sgs-theme/functions.php` (short array syntax, multi-line formatting). Run `phpcbf --standard=WordPress`, commit the cleanup.
-- Plus the 10 `P-ARCH-PHASE-*` entries from the 2026-05-21 architecture session — most should already be resolved (each maps to a shipped phase). Walk through and remove the resolved ones.
+
+From Session B (8 entries):
+- `P-5A-COMMIT-B-RETIRED` — verify the `_retired/` directory deletion (Commit B of Phase 5a's two-commit pattern) actually landed. Should already be gone — `_retired/` doesn't exist on disk.
+- `P-5A-MAMAS-MUNCHES-CSS` — RESOLVED by Session A housekeeping commit `202922c1`. File deleted as orphan. Move to RESOLVED.
+- `P-5A-CLIENT-VARIATION-CSS-PATH` — decide future per-client CSS-override path post-overlay-kill (no longer `theme/sgs-theme/styles/*.css`). Likely sites/<client>/theme-overrides.css if/when an operator-friendly CSS path is needed.
+- `P-6-MISSING-BLOCK-JSON` — 4 DB rows reference blocks whose `block.json` source file doesn't exist (`stats-bar`, `icon-grid`, plus 2 others). Fix: either create the missing block.json files OR remove stale DB rows. Either closes the markup-examples row count gap (Phase 6.A partial).
+- `P-6-LUCIDE-REST-ENTRY-POINT` — WP 7.1 will (probably) ship `wp_register_icon_collection` or equivalent. Re-check at every WP point release. Phase 6's `class-sgs-lucide-icons-rest.php` is defensively guarded; safe to leave in place until then.
+- `P-WP70-REGISTER-BLOCK-VARIATION-MISSING` — Phase 1.5 Path B (`get_block_type_variations` filter at `cc541e94`) remains load-bearing. **DO NOT remove it.** Re-check at every WP point release.
+- `P-SESSION-B-DEFERRED-VIEW-TRANSITIONS-CLEANUP` — view transitions wired in Phase 5b (`60220b13`) but final polish deferred. Check the Customiser nav at runtime.
+- `P-PRE-EXISTING-LUCIDE-ICONS-PHP` — RESOLVED by `202922c1` (1-line timestamp churn reverted). Move to RESOLVED.
+
+Plus the 6 `P-ARCH-PHASE-*` entries from the 2026-05-21 architecture session — each maps to a shipped phase. Walk through and move the resolved ones to RESOLVED.
+
+**Also in this sweep — Phase 6.B doc fix:** update `.claude/architecture.md`'s "block-stats" section to say "no 2:1 gap exists; future supports work is purely additive for new blocks". Trivial edit; resolves the 6.B partial verdict from Session B's QC council.
 
 **Order of operations per parked item:**
 1. Read the item description
@@ -224,7 +247,19 @@ Both completed while Session A was running Phases 2 + 3 + housekeeping.
 | 5a | SHIPPED 2026-05-21 (Session B) | `43a93df9` |
 | 5b | SHIPPED 2026-05-21 (Session B) | `60220b13` |
 | 5b paint fix | SHIPPED 2026-05-22 (Session B) | `0ef032fe` |
-| 6 | SHIPPED 2026-05-22 (Session B) | `d307c8b0` |
+| 6 | SHIPPED 2026-05-22 (Session B) — 2 non-blocking partials | `d307c8b0` |
 | **7** | **PENDING (after Phase 4)** | — |
 
-**Other state to be aware of:** the deleted Spec 15 stub (tombstone for absorbed spec) plus a few modified files (`lucide-icons.php`, `mamas-munches.css`) remain uncommitted pre-existing. They've persisted across multiple sessions and aren't urgent.
+**Phase 6 partials** (both non-blocking, parked):
+- **6.A — markup examples row count** (69 authored vs 73 DB-registered). 4 DB rows reference blocks whose `block.json` source doesn't exist. Parked as `P-6-MISSING-BLOCK-JSON`. Step 3 parking sweep resolves.
+- **6.B — block_supports target was wrong-assumption** (predicted >500, found zero gaps because the 2:1 ratio assumption was false). Fix is a trivial `architecture.md` doc edit. Step 3 parking sweep resolves.
+
+**Working tree state:** CLEAN. `main` at `202922c1`, in sync with origin GitHub. All long-standing uncommitted files cleared in final housekeeping commit. Sandybrown live on WP 7.0 (DB schema 60717 → 61833, pre-upgrade backup at `~/sandybrown-pre-wp7.sql` 7.5 MB on Hostinger host for rollback path).
+
+## Detailed session records (read for full context if needed)
+
+- **Previous session handoff:** `.claude/handoff.md` (this is the most recent comprehensive summary)
+- **Session B's QC council report:** `.claude/reports/2026-05-22-session-B-qc-council.md` (per-commit empirical verdicts)
+- **Session B's session summary:** `.claude/memory/session-summary-2026-05-22-session-B.md` (full file-change inventory + WP 7.0 details + rollback command)
+- **Phase 5b button-property coverage audit:** `.claude/reports/phase-5b-button-property-coverage.md` (confirms 100% native theme.json coverage)
+- **Captured lesson:** blub.db row 283 (`verify-wp-api-surface-before-dismissing-static-analyser`) + 3-layer persistence files
