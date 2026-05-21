@@ -17,6 +17,66 @@ Architecture programme status: Phases 0/0.5/1/1.5/2/3/5a/5b + 5b-paint-fix + 6 s
 
 ---
 
+## Tooling reference for this session
+
+### Skills (invoke via Skill tool — call by name at the point of use)
+
+| Skill | When to use |
+|---|---|
+| `/autopilot` | FIRST — at session start, establishes live skill routing + ADHD support |
+| `/sgs-wp-engine` | Any SGS-specific build / replication / QA work — Phase 4 + Phase 7 + parking items both touch SGS surface |
+| `/wp-block-development` | When Phase 7 / parking items touch individual block code (block.json, attributes, render.php) |
+| `/wp-block-themes` | When touching theme.json / templates / parts |
+| `/wp-interactivity-api` | If Phase 7's AI connector wiring needs editor-side interactivity |
+| `/wp-plugin-development` | For Sgs_Ai_Connector class architecture in Phase 7 |
+| `/wp-rest-api` | For Sgs_Ai_Connector REST endpoint registration |
+| `/wp-wpcli-and-ops` | For sgs-update-v2.py CLI design (Phase 4) |
+| `/wp-performance` | If perf audit needed during parking sweep |
+| `/playwright` | Step 0 unexpected-content audit + any visual verification |
+| `/visual-qa` | 9-layer QA pipeline on Phase 4 + Phase 7 outputs |
+| `/qc-council` | After EACH phase ships — the Bean-mandated gate before moving to next step. Multi-rater validation of fix-shape proposals + empirical baseline measurement |
+| `/qc-inline --with-review` | Lightweight 4-model panel for per-commit QC (Sonnet + Haiku + Gemini Flash + Cerebras). Use on each parking-sweep commit |
+| `/research-check` | When a WP API question surfaces and you're not 100% sure of the surface (cheap default tier; escalate to `--tier extended` for multi-angle calls) |
+| `/library-docs` | For WP / library docs lookup — fast, replaces Context7 |
+| `/capture-lesson` | When a new recurring mistake or rule surfaces during the session — 3-layer persistence (workspace + CC memory + blub.db) |
+| `/delegate` | Pick the right model for any subagent dispatch (Sonnet vs Haiku vs Gemini Flash vs Cerebras) |
+| `/dispatching-parallel-agents` | When Phase 4's stages can fan out (e.g. the 10 canonical-source scrapers in Stage 2) |
+| `/subagent-prompt` | Writes cold prompts for subagent dispatches |
+| `/strategic-plan` / `/phase-planner` | If Phase 4 spills past this session and needs a fresh per-stage plan |
+| `/brain-dump` | If Bean drops a rambling input mid-session |
+| `/handoff` | At end of session if reaching the parking-sweep-empty stop condition |
+
+### MCP servers + CLI tools
+
+| Tool | Used for |
+|---|---|
+| Playwright MCP (`browser_navigate`, `browser_take_screenshot`, `browser_evaluate`, `browser_resize`, `browser_snapshot`, `browser_click`, `browser_type`, `browser_console_messages`) | Step 0 audit + all visual verification |
+| `python ~/.claude/hooks/wp-blocks.py dump` | Schema enumeration BEFORE any "missing column" claim (binding rule blub.db 272) |
+| `python ~/.claude/hooks/wp-blocks.py search "query"` / `schema <name>` / `gaps <name>` / `health` / `tokens` | Block + token + gap lookups |
+| `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py <command>` | SGS Framework knowledge base (blocks / attributes / tokens / gaps / impact / context / weaknesses / deploy / gotchas / stats / patterns / hooks / components / sql) |
+| `python ~/.agents/skills/sgs-wp-engine/scripts/sgs-db-assert.py` | Phase 1 + Phase 2 schema assertions — extend with Phase 4 assertions when the new schema_metadata table lands |
+| `python ~/.claude/hooks/wp-docs.py validate-hook "hook_name"` / `search-hooks "query"` | Verify hooks before writing PHP code |
+| `gh` CLI | GitHub operations (PR, issue, run checks, gh api) |
+| WP-CLI (over SSH) | All live WP operations on sandybrown. **Banned**: `wp eval` on `post_content` (use Playwright + `wp.data.dispatch` instead) |
+| sandybrown REST + App Password | Verification: `Claude:U7mvuB220ST2DITHSJFPI9o6` Basic Auth (env at `.claude/secrets/sandybrown.env`) |
+
+### Custom agents (delegate via Agent tool — by name)
+
+| Agent | When |
+|---|---|
+| `wp-sgs-developer` | ALL heavy SGS implementation work — Phase 4 dispatches go here |
+| `design-reviewer` | Visual QA delegation |
+| `site-reviewer` | Universal site audit |
+| `performance-auditor` | Performance / Core Web Vitals checks |
+
+### Enforcement hooks (auto-fire — do not invoke manually)
+
+- `.claude/hooks/qc-on-converter-edit.py` — warns when committing converter/orchestrator/sgs-update edits without `[qc:<run_id>]` in the message. Phase 4 commits MUST cite this marker (Phase 4 creates `sgs-update.py` which is in the watched-paths list).
+- `.claude/hooks/no-header-footer-block.py` — hard-rejects creation of `src/blocks/(header|footer|nav)/` directories.
+- `.claude/hooks/wp-content-guard.py` — blocks `wp eval` on `post_content` (use Playwright instead).
+
+---
+
 ## Step 0 — Unexpected-content audit on live site (BEFORE Phase 4 dispatches)
 
 Bean's directive 2026-05-22: before any Phase 4 work starts, audit the live sandybrown site for "This block contains unexpected content" deprecation warnings on every block and fix each instance. These have been accumulating across multiple sessions as block save outputs changed without deprecation entries being added.
@@ -45,7 +105,11 @@ Bean's directive 2026-05-22: before any Phase 4 work starts, audit the live sand
 
 After Step 0 audit closes, dispatch Phase 4.
 
-## Mandatory reads BEFORE Phase 4 dispatch
+### READ FIRST (mandatory before any Phase 4 dispatch)
+
+**The Phase 4 plan document at `.claude/plans/phase-4-sgs-update-rebuild.md` is the canonical step-by-step source. Read it in full BEFORE composing any subagent prompt or running any code.** That file contains the 9-stage breakdown, per-stage cold prompts, risk mitigations, on-fail behaviour. Do not paraphrase from memory or this handoff — the plan file is the source of truth.
+
+After reading the plan, also read:
 
 1. `.claude/state.md` — current phase status (Phases 0/0.5/1/1.5/2/3/5a/5b all SHIPPED)
 2. `.claude/handoff.md` — 2026-05-22 session summary
@@ -89,7 +153,11 @@ Pick at session open. Recommended: Option 2 (Stages 1+7+8) — get the scaffold 
 
 ## Step 2 — Phase 7 AI Connectors + WP-skills audit (after Phase 4 ships + QC council affirms)
 
-Phase 7 is the final architecture-programme phase. Cold prompt at `.claude/plans/phase-7-wp7-alignment.md`.
+### READ FIRST (mandatory before any Phase 7 dispatch)
+
+**The Phase 7 plan document at `.claude/plans/phase-7-wp7-alignment.md` is the canonical step-by-step source. Read it in full BEFORE composing any subagent prompt.** It contains the Sgs_Ai_Connector class shape, the 10 WP-family skills audit checklist, the per-skill code-example verification gate, and the WP-7.1-mid-programme escalation rule.
+
+Phase 7 is the final architecture-programme phase.
 
 WP 7.0 is now live on sandybrown (DB version 60717 → 61833, upgrade shipped 2026-05-22). Native `wp_get_connector()` + `wp_is_connector_registered()` are confirmed available — `Sgs_Ai_Connector` PHP class can wrap real native APIs, not hypothetical shims. The 10 WP-family skills audit (`wp-block-development`, `wp-block-themes`, `wp-interactivity-api`, `wp-plugin-development`, `wp-rest-api`, `wp-wpcli-and-ops`, `wp-performance`, `wp-abilities-api`, `wp-site-extraction`, `wp-project-triage`) is the bigger half of effort. Each skill revision includes a minimal code example tested live on sandybrown.
 
@@ -98,6 +166,10 @@ After Phase 7 commits + QC council affirms — move to Step 3.
 ---
 
 ## Step 3 — Parking sweep (after Phase 4 + Phase 7 + QC council affirms both)
+
+### READ FIRST (mandatory before any parking item)
+
+**Read `.claude/parking.md` in full before starting the sweep.** Bean has been adding parking entries across multiple sessions; the live list will differ from what this handoff snapshots below. Treat the file as authoritative.
 
 Bean's directive 2026-05-22: once Phase 4 ships AND QC council confirms it's totally working, sweep through every open item in `.claude/parking.md` and close them out one by one. Don't stop until parking is empty.
 
@@ -128,13 +200,15 @@ Both shipped by Session B 2026-05-22:
 
 Both completed while Session A was running Phases 2 + 3 + housekeeping.
 
-## Session close — when Phase 4 ships
+## Session close — when parking sweep is empty
 
-1. Run `/qc-council` or `/qc-inline --with-review` on the Phase 4 commits (binding rule 255)
-2. Update `.claude/state.md` Phase 4 to SHIPPED with commit SHA(s)
-3. Archive `.claude/plans/phase-4-sgs-update-rebuild.md` to `plans/archive/phase-4-sgs-update-rebuild-complete.md` if all 9 stages landed; leave in-place if partial
-4. Run `/handoff` to write a fresh next-session-prompt for Phase 5b-fix or Phase 6
-5. POST session summary to blub.db `/api/knowledge` with `category='session-completion'`
+1. Run `/qc-council` final pass — verify the architecture programme is closed end-to-end (no parking items left, all phase commits passing their gates)
+2. Update `.claude/state.md` — mark Phase 4 + Phase 7 SHIPPED with commit SHAs; mark `current_phase` as "architecture-programme-closed"
+3. Archive remaining active plans to `plans/archive/`: `phase-4-sgs-update-rebuild.md` → `-complete.md`; `phase-7-wp7-alignment.md` → `-complete.md`
+4. Walk `.claude/docs-registry.yaml` — confirm every doc listed there reflects the closed-out state; update where stale
+5. Update every numbered spec in `.claude/specs/` affected by Phase 4 + 7 (likely 01 / 02 / 16 / 19 for Phase 4; new spec or update for Phase 7's Sgs_Ai_Connector)
+6. Run `/handoff` to write a fresh next-session-prompt (post-architecture-programme — what comes next? client work? new SGS features?)
+7. POST session summary to blub.db `/api/knowledge` with `category='session-completion'` + a `programme_closure: true` flag
 
 ## Phase status snapshot (start of next session)
 
