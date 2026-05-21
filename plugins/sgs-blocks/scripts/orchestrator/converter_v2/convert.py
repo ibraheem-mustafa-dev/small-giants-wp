@@ -1304,10 +1304,9 @@ def _lift_bem_child_array(node: "Tag", parent_slug: str,
 
 
 # ============================================================================
-# InnerBlocks emission — DB-backed lookup (Phase 3 — Decision 12)
+# InnerBlocks emission — DB-backed lookup (Phase 3 — Decision 12, 2026-05-22)
 #
-# INNER_BLOCK_PATTERNS dict retired 2026-05-21.  The parent→child block
-# relationships are now read from sgs-framework.db:
+# Parent→child block relationships are read from sgs-framework.db:
 #   blocks.parent_block  — child slug → its container parent slug
 #   (reverse: SELECT slug FROM blocks WHERE parent_block = ?)
 #
@@ -1316,7 +1315,8 @@ def _lift_bem_child_array(node: "Tag", parent_slug: str,
 #   sgs/button       → parent_block = 'sgs/multi-button'  (Phase 0)
 #   sgs/multi-button → parent_block = 'sgs/hero'          (Phase 3)
 #
-# The _lift_inner_blocks function below replaces the hardcoded dict.
+# History: this DB-backed approach replaced a hardcoded Python dict on
+# 2026-05-22 via commit 79158da5.  See `.claude/decisions.md` D29 for context.
 # ============================================================================
 
 
@@ -1351,8 +1351,8 @@ def _lift_inner_blocks(node: Tag, parent_slug: str) -> list[str]:
     """Walk child elements belonging to `parent_slug` and emit each as a WP
     inner block. Returns a list of markup strings.
 
-    Phase 3 (Decision 12): replaces the retired INNER_BLOCK_PATTERNS dict.
-    Block/slot discovery is driven by sgs-framework.db:
+    Phase 3 (Decision 12, 2026-05-22): block/slot discovery is driven by
+    sgs-framework.db:
 
       SELECT slug FROM blocks WHERE parent_block = ? AND source = 'sgs'
 

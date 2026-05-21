@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Phase 3 regression tests: _lift_inner_blocks DB-backed lookup.
 
-Tests that the retired INNER_BLOCK_PATTERNS dict is correctly replaced by the
-DB-backed _lift_inner_blocks(node, parent_slug) function.
+Tests that _lift_inner_blocks(node, parent_slug) correctly emits inner blocks
+via DB-backed lookup (blocks.parent_block + slot_synonyms.standalone_block in
+sgs-framework.db). See `.claude/decisions.md` D29 for migration history.
 
 Run with:
     cd plugins/sgs-blocks/scripts/orchestrator/converter_v2

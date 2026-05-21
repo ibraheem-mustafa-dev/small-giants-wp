@@ -13,10 +13,16 @@
 #   rollout), 2 gitignored secrets files, 4 enforcement hooks
 #   (Python, not docs — hook lifecycle ≠ doc lifecycle). Sibling
 #   .md version retired same session (yaml is readable as-is).
+# - 2026-05-22: housekeeping pass. Archived 10 completed phase plans
+#   to plans/archive/. Moved handoff-track-b.md → memory/.
+#   Deleted obsolete next-session-prompt-B.md (5a + 5b shipped).
+#   specs/README.md repopulated with full inventory. No registry
+#   entries added or removed — the existing 17 canonical entries
+#   continue to cover the live load-bearing surface.
 
 generated: 2026-05-15
 last_trimmed: 2026-05-21
-last_updated: 2026-05-21
+last_updated: 2026-05-22
 project: small-giants-wp
 
 canonical_docs:
