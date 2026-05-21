@@ -1724,3 +1724,76 @@ Source: Session 2026-05-20 Phase 2A integration verification.
 **Also update blocks spec:** `.claude/specs/02-SGS-BLOCKS.md` needs an sgs/timeline section that documents these expanded effects as the canonical scope (currently only sgs/process-steps is documented as "horizontal timeline").
 
 Source: Bean's 2026-05-20 directive — captured at end of Phase 2A massive session before cloning-pipeline resumption.
+
+---
+
+## Session B (2026-05-22) — parked follow-ups
+
+The QC council on Session B (`reports/2026-05-22-session-B-qc-council.md`) surfaced seven items eligible for a future session. Status `open` unless re-attached or resolved.
+
+### P-5A-COMMIT-B-RETIRED — delete `plugins/sgs-blocks/_retired/` after soak
+
+**Status:** open
+**Source:** Phase 5a two-commit safety pattern (Decision 32, Session B). Commit A (`43a93df9`) MOVED the picker classes to `_retired/`. Commit B = the actual `rm` of `_retired/`.
+**Soak status:** sandybrown ran for the entire session post-deploy with zero `register_block_variation`-unrelated fatals attributable to the archived classes. Eligible for deletion.
+**Acceptance when this lands:**
+- `git rm -r plugins/sgs-blocks/_retired/`
+- Single commit on main
+- Re-deploy + smoke test confirms no regression
+
+### P-5A-MAMAS-MUNCHES-CSS — fold `theme/sgs-theme/styles/mamas-munches.css` into the site
+
+**Status:** open (Bean's pre-existing uncommitted file — not touched by Session B)
+**Why:** Phase 5a's variation kill emptied `theme/sgs-theme/styles/` of JSON files but the `mamas-munches.css` file remains there (pre-existing uncommitted edits from Bean). Acceptance criterion "styles/ is empty" therefore unmet on this file.
+**Options:**
+- A. Fold its CSS into `sites/mamas-munches/theme-snapshot.json`'s `styles.css` field (single canonical surface)
+- B. Move it to `sites/mamas-munches/theme-overrides.css` + enqueue via per-site mu-plugin
+**Acceptance when this lands:**
+- `theme/sgs-theme/styles/` contains zero files
+- Mama's branding still renders correctly on sandybrown
+
+### P-5A-CLIENT-VARIATION-CSS-PATH — orchestrator helper still resolves to legacy CSS path
+
+**Status:** open
+**Where:** `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py:309` — `_client_variation_css_path(client)` returns `theme/sgs-theme/styles/<client>.css`.
+**Why parked:** Out of Phase 5a scope. Used by Stage 0.7 to write per-client CSS overrides; that CSS path is still the working surface for Bean's mamas-munches.css. When P-5A-MAMAS-MUNCHES-CSS resolves, this helper should redirect to `sites/<client>/theme-overrides.css` (or wherever the canonical per-site CSS surface ends up).
+
+### P-6-MISSING-BLOCK-JSON — 4 DB rows have no source `block.json`
+
+**Status:** open
+**Why:** Phase 6 Step 6.1 hit 69 markup_examples not the expected 73 because 4 blocks present in the DB (status `built` or `planned`) have no source `block.json` file. Examples: `stats-bar`, `icon-grid` (subagent named these); 2 others unnamed in the subagent's report.
+**Options:**
+- A. Create the 4 missing `block.json` files (would let the markup-example generator complete the set)
+- B. Set the orphan DB rows to `status='retired'` or remove them
+**Acceptance when this lands:**
+- `SELECT COUNT(*) FROM markup_examples WHERE source='sgs'` matches `SELECT COUNT(*) FROM blocks WHERE source='sgs' AND status IN ('built','planned')`
+- Discrepancy is intentional and documented if not zero
+
+### P-6-LUCIDE-REST-ENTRY-POINT — research WP 7.0 icon-collection registration API
+
+**Status:** open
+**Why:** `class-sgs-lucide-icons-rest.php` checks `function_exists('wp_register_icon_collection')` — that function doesn't exist in WP 7.0 even though `WP_REST_Icons_Controller` class does. The registration entry point is somewhere else (likely a class method, possibly `WP_REST_Icons_Controller::register_collection()` or similar).
+**Acceptance when this lands:**
+- Correct registration API name identified from WP 7.0 source (`wp-includes/rest-api/endpoints/class-wp-rest-icons-controller.php`)
+- `class-sgs-lucide-icons-rest.php` updated to actually register the SGS Lucide collection
+- Playwright confirms editor icon picker loads from native REST endpoint
+- `sgs_get_lucide_icon()` shim can then be retired (separate follow-up commit)
+
+### P-WP70-REGISTER-BLOCK-VARIATION-MISSING — polyfill load-bearing forever
+
+**Status:** open (documentation-only)
+**Why:** `register_block_variation()` does NOT exist as a top-level PHP function in WP 7.0. Session A's commit `cc541e94` migrated all 13 SGS variation files to the `get_block_type_variations` filter. That polyfill is load-bearing and must not be removed by a future "WP 7.0 cleanup" refactor.
+**Acceptance when this lands:**
+- Watch WP 7.1+ release notes for a `register_block_variation()` top-level function. If/when introduced, the migration filter can be retired.
+
+### P-SESSION-B-DEFERRED-VIEW-TRANSITIONS-CLEANUP — drop the WP 6.9 inline fallback now that WP 7.0 is live
+
+**Status:** open
+**Where:** `plugins/sgs-blocks/sgs-blocks.php:200-217` — the `customize_controls_enqueue_scripts` hook has a `function_exists('wp_enqueue_view_transitions_admin_css')` branch + inline `@view-transition{navigation:auto;}` fallback.
+**Why:** Post WP 7.0 upgrade, the native function exists on sandybrown. The fallback is dead code on this site but kept for any client site still on WP 6.x.
+**Decision needed:** Are any active client sites on WP 6.x? If not, retire the fallback. If yes, keep until those clients also upgrade.
+
+### P-PRE-EXISTING-LUCIDE-ICONS-PHP — Bean's uncommitted edits to lucide-icons.php
+
+**Status:** observation only
+**Why:** `git status` shows `M plugins/sgs-blocks/includes/lucide-icons.php` as a pre-existing uncommitted modification (Bean's work, not touched by Session B). The Phase 6 Lucide REST migration shipped via a sibling file (`class-sgs-lucide-icons-rest.php`) deliberately to avoid touching this file. Session A or Bean to decide when to commit/discard the lucide-icons.php diff.

@@ -33,6 +33,25 @@ Five things change in the framework across 8 phases + 30 decisions:
 
 5. **`/sgs-update` rebuilt as 9-stage holistic refresh** — Pulls from 10 canonical sources, per-release verification gate, drift-check-dispatcher integration.
 
+## Session B 2026-05-22 status update
+
+This block reflects the empirical state on `main` at HEAD after Session B's wrap-up commit. The table below has stale duplicated rows (5a / 5b appear as both SHIPPED and PENDING in different sections) — treat this block as authoritative until Session A reconciles the table.
+
+| Phase | Commit(s) | Status | QC verdict |
+|---|---|---|---|
+| 5a — variation kill | `43a93df9` + `96df3dde` | SHIPPED, verified live | validated-shipped |
+| 5b — Customiser + button-presets bridge delete + view transitions | `60220b13` + `012c4b75` | SHIPPED, verified live | validated-partial (paint fix in 0ef032fe) |
+| 5b paint fix — renderer + JS retarget to `header.wp-block-template-part` / `footer.wp-block-template-part` | `0ef032fe` | SHIPPED, verified live via chrome-devtools | validated-shipped |
+| 6 — markup examples + supports audit + role:content + apiVersion + lucide REST (defensive) | `d307c8b0` + `a3109e3b` | SHIPPED | validated-shipped (2 non-blocking partials parked) |
+| WP 6.9.4 → 7.0 upgrade on sandybrown | n/a (Hostinger op) | SHIPPED, native APIs verified | validated-shipped (2 API surprises documented) |
+
+**Full empirical validation report:** `.claude/reports/2026-05-22-session-B-qc-council.md`.
+**Session summary:** `.claude/memory/session-summary-2026-05-22-session-B.md`.
+
+Parked follow-ups for future sessions: see `parking.md` Session B block (7 entries: P-5A-COMMIT-B-RETIRED, P-5A-MAMAS-MUNCHES-CSS, P-5A-CLIENT-VARIATION-CSS-PATH, P-6-MISSING-BLOCK-JSON, P-6-LUCIDE-REST-ENTRY-POINT, P-WP70-REGISTER-BLOCK-VARIATION-MISSING, P-SESSION-B-DEFERRED-VIEW-TRANSITIONS-CLEANUP, P-PRE-EXISTING-LUCIDE-ICONS-PHP).
+
+---
+
 ## Phase status
 
 | Phase | Decisions | Status | Wall-clock | Parallelisable? |

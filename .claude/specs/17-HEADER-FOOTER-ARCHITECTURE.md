@@ -24,6 +24,14 @@ update_triggers:
 
 # Spec 17 v2 — Header/Footer Architecture (per-site, variation-aware, operator-editable)
 
+> **Session B 2026-05-22 updates:**
+>
+> 1. **Customiser sibling surfaces shipped (Phase 5b, commit `60220b13` + paint-fix `0ef032fe`, Decisions 22+23).** Three new Customiser sections register at `Appearance → Customise → SGS Header / SGS Footer / SGS Site Info`. Implementing classes: `Sgs_Header_Customiser` + `Sgs_Footer_Customiser` + `Sgs_Site_Info_Customiser` (pattern replicated from `Sgs_Floating_UI_Customiser` per Spec 18 §8b). Companion renderers `Sgs_Header_Renderer` + `Sgs_Footer_Renderer` emit inline CSS on `wp_head`. **Additive overlay, NOT replacement.** Existing `Sgs_Header_Rules_Admin` + `Sgs_Footer_Rules_Admin` + `Sgs_Site_Info_Admin` pages remain canonical for conditional-rules management (rules-table UI; ~30 fields for site-info); Customiser sections expose the colour/typography/sticky/max-width subset (~10 settings) with live `postMessage` preview. Info-link controls inside each Customiser section deep-link operators to the admin rules pages for the full rules-management UI. Paint targets: `header.wp-block-template-part` / `footer.wp-block-template-part` (WP-canonical wrappers — verified empirically; `.wp-site-header` / `.wp-site-footer` are NOT emitted by SGS theme template parts).
+>
+> 2. **Variation-aware behaviour shift (Phase 5a, commit `43a93df9`, Decision 21).** The WP style-variation overlay system that the spec assumed (Section X §X — variation JSONs in `theme/sgs-theme/styles/`) has been retired. Per-client snapshots now live at `sites/<client>/theme-snapshot.json` and are pushed via `plugins/sgs-blocks/scripts/push-theme-snapshot.py`. Header/footer template parts + CPTs + rules engines are entirely preserved (none of these are variation-system files). Site Info store (`wp_options[sgs_site_info]`) unchanged. Anywhere the spec references "active style variation" as a behaviour trigger, the new model is "active site's theme.json snapshot" — same operator experience, different storage path.
+>
+> 3. **WP 7.0 upgrade on sandybrown (mid-session).** All Spec 17 behaviour verified post-upgrade. `register_block_variation()` does NOT exist as a global function in WP 7.0 — Session A's `get_block_type_variations` filter polyfill (commit `cc541e94`) remains load-bearing for the SGS variation files.
+
 ## 0. One-liner
 
 A single WP 6.9 architecture for header + footer template parts that gives every SGS client site a correct initial layout (driven by its active style variation), with site-specific data (logo, business info, social links) flowing in automatically from a single global store, while leaving every operator free to edit, replace, or revert via the Site Editor.

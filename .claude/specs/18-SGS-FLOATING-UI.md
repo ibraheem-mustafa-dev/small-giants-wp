@@ -19,6 +19,8 @@ references:
 
 # Spec 18 — SGS Floating UI
 
+> **Session B 2026-05-22 update — Customiser pattern from §8b replicated by 3 sibling sections.** Phase 5b (commit `60220b13` + paint-fix `0ef032fe`) shipped `Sgs_Header_Customiser` + `Sgs_Footer_Customiser` + `Sgs_Site_Info_Customiser` as direct structural clones of `Sgs_Floating_UI_Customiser`. The pattern documented in §8b is now the canonical SGS Customiser shape (confirmed by 3 successful replications). Notable empirical learning: paint targets must be `header.wp-block-template-part` / `footer.wp-block-template-part` (NOT `.wp-site-header` / `.wp-site-footer` — those classes are not emitted by SGS theme template parts); CSS custom properties belong on `:root` so they're cascade-available regardless of which wrapper exists. View Transitions wiring (Decision 27 in the staging doc) shipped in the same commit — uses `function_exists('wp_enqueue_view_transitions_admin_css')` check + inline `@view-transition{navigation:auto;}` fallback. Post WP 7.0 upgrade (also Session B), the native function exists; fallback is dead code on sandybrown but kept for any client site still on WP 6.x.
+
 ## 1. Overview
 
 Provides a Customiser-based floating UI layer that replaces the retired `sgs/back-to-top`
