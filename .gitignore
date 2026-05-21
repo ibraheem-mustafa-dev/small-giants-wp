@@ -110,3 +110,6 @@ theme/sgs-theme/styles/typography/
 
 # Agent worktrees — local-only, never tracked
 .claude/worktrees/
+
+# Phase 0.5 hook runtime state (regenerated on every converter edit; not session work)
+.claude/.qc-edit-tracker.json
