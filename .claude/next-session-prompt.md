@@ -4,14 +4,38 @@ project: small-giants-wp
 session_tag: small-giants-wp-2026-05-23-phase-4-sgs-update-rebuild
 generated: 2026-05-22
 parent_session: small-giants-wp-2026-05-22-phases-0.5-1-1.5-2-3
-primary_goal: "Execute Phase 4 — /sgs-update rebuild. 9-stage holistic refresh script (sgs-update-v2.py) co-existing with old sgs-update.py. ~120-240 min build. The largest single remaining phase. Then Phase 7 (AI Connectors + WP-skills audit) is the final tail. Plan + cold prompt in .claude/plans/phase-4-sgs-update-rebuild.md."
+primary_goal: "(0) Live-site unexpected-content audit + Block Recovery sweep. (1) Phase 4 — /sgs-update rebuild. (2) Phase 7 — AI Connectors + WP-skills audit. (3) Parking sweep — work through every open item in .claude/parking.md after Phase 4 ships + QC council affirms it. Stop only when parking is empty and architecture programme is fully closed."
 ---
 
-# Next session — Phase 4 /sgs-update rebuild
+# Next session — close out the architecture programme
 
 Invoke `/autopilot` before doing anything else.
 
-You are picking up an architecture programme with TWO phases remaining: Phase 4 (`/sgs-update` rebuild, this session) and Phase 7 (AI Connectors + skills audit, after 4). All other phases (0/0.5/1/1.5/2/3/5a/5b + 5b-paint-fix + 6) shipped across the 2026-05-21 + 2026-05-22 work blocks.
+You are picking up an architecture programme with TWO phases remaining: Phase 4 (`/sgs-update` rebuild) and Phase 7 (AI Connectors + skills audit). All other phases (0/0.5/1/1.5/2/3/5a/5b + 5b-paint-fix + 6) shipped across the 2026-05-21 + 2026-05-22 work blocks. After both close, sweep through every item in `.claude/parking.md` until parking is empty.
+
+---
+
+## Step 0 — Live-site unexpected-content audit (before Phase 4 dispatches)
+
+Bean's directive 2026-05-22: before any Phase 4 work, audit the live sandybrown site for "This block contains unexpected content" deprecation warnings on every block and fix each instance. These have been accumulating across multiple sessions as block save outputs changed without deprecation entries being added.
+
+**How to run the audit:**
+
+1. Launch Playwright. Navigate to `https://sandybrown-nightingale-600381.hostingersite.com/wp-admin/edit.php?post_type=page` (credentials: `.claude/secrets/sandybrown.env`)
+2. For each page: open in the block editor, watch the editor for the yellow "This block contains unexpected content" banner. List every block that shows it.
+3. For each affected block: click "Attempt Block Recovery" (in the block toolbar — three-dots menu → "Attempt Block Recovery"), confirm the recovery, then save the post. Recovery uses the block's deprecation chain (`deprecated.js`) to migrate the stored markup forward.
+4. If "Attempt Block Recovery" does NOT appear, OR recovery produces a structurally-wrong result, surface the specific block + page to Bean — do NOT manually fix via WP-CLI `str_replace` on `post_content` (banned per CLAUDE.md gotchas).
+5. Cover both `page` and `post` post types. Repeat for any `wp_template_part` posts (Site Editor → Patterns → Template parts).
+
+**Acceptance gate (before Phase 4 dispatch):** open ~10 representative pages in the editor and verify no "unexpected content" banners appear. Log audit summary at `.claude/reports/2026-05-23-unexpected-content-audit.md` with: pages audited, blocks fixed, blocks needing manual intervention (if any).
+
+**Time budget:** 30-60 min realistic depending on how many pages need recovery.
+
+---
+
+## Step 1 — Phase 4 /sgs-update rebuild
+
+After Step 0 audit closes, dispatch Phase 4.
 
 ## Mandatory reads BEFORE Phase 4 dispatch
 
@@ -55,13 +79,46 @@ Scope every `git add` by exact path. Never `git add .` or `-A`.
 
 Pick at session open. Recommended: Option 2 (Stages 1+7+8) — get the scaffold + `--dry-run` mode + light ports working, then dispatch Stage 2 in a fresh session with isolated focus.
 
-## After Phase 4 ships
+## Step 2 — Phase 7 AI Connectors + WP-skills audit (after Phase 4 ships)
 
-One follow-up remains on the critical path:
+Phase 7 is the final architecture-programme phase. Cold prompt at `.claude/plans/phase-7-wp7-alignment.md`.
 
-1. **Phase 7** — AI Connectors + 10 WP-skills audit. ~75-165 min. Final phase of the architecture programme.
+WP 7.0 is now live on sandybrown (DB version 60717 → 61833, upgrade shipped 2026-05-22). Native `wp_get_connector()` + `wp_is_connector_registered()` are confirmed available — `Sgs_Ai_Connector` PHP class can wrap real native APIs, not hypothetical shims. The 10 WP-family skills audit (`wp-block-development`, `wp-block-themes`, `wp-interactivity-api`, `wp-plugin-development`, `wp-rest-api`, `wp-wpcli-and-ops`, `wp-performance`, `wp-abilities-api`, `wp-site-extraction`, `wp-project-triage`) is the bigger half of effort. Each skill revision includes a minimal code example tested live on sandybrown.
 
-Phase 5b paint fix shipped at commit `0ef032fe` (Session B, 2026-05-22 — Customiser paint targets `header.wp-block-template-part` / `footer.wp-block-template-part`). Phase 6 shipped at `d307c8b0` (Session B, 2026-05-22). Both completed while Session A was running Phases 2 + 3 + housekeeping.
+After Phase 7 commits + QC council affirms — move to Step 3.
+
+---
+
+## Step 3 — Parking sweep (after Phase 4 + Phase 7 + QC council affirms)
+
+Bean's directive 2026-05-22: once Phase 4 ships AND QC council confirms it's totally working, sweep through every open item in `.claude/parking.md` and close them out one by one. Don't stop until parking is empty.
+
+**As of this handoff write, parking.md contains (read the file for the live list):**
+- `P-PHASE-5B-INERT-CUSTOMISER-OUTPUT` — SHOULD be SHIPPED (Session B's `0ef032fe`). Verify + remove from parking.
+- `P-PHASE-5B-PROPERTY-COVERAGE-AUDIT` — confirm WP 7.0 native theme.json covers every button-preset property; remove shim if uncovered properties = 0.
+- `P-UNEXPECTED-CONTENT-BACKLOG` — Step 0 above closes this. Verify + remove.
+- `P-EXPLICIT-DEFAULT-STYLE-RETROFIT` — decide explicit-default-per-block retrofit on the 12 Phase 1.5 composite blocks (optional UX polish). If Bean is fine with implicit Default, remove from parking with a rationale note.
+- `P-WPCS-FUNCTIONS-PHP-DEBT` — 58 pre-existing WPCS errors in `theme/sgs-theme/functions.php` (short array syntax, multi-line formatting). Run `phpcbf --standard=WordPress`, commit the cleanup.
+- Plus the 10 `P-ARCH-PHASE-*` entries from the 2026-05-21 architecture session — most should already be resolved (each maps to a shipped phase). Walk through and remove the resolved ones.
+
+**Order of operations per parked item:**
+1. Read the item description
+2. Verify whether it's already resolved (commit history + live-state check)
+3. If unresolved: do the work
+4. Run `/qc-inline --with-review` (4-model panel) on each non-trivial item before committing
+5. Update parking.md: either remove the item OR add a "RESOLVED [commit-sha] 2026-05-23" suffix and move to a "## Resolved" section at the bottom
+
+**Stop condition:** parking.md "Opened" sections are empty. All architecture programme work + follow-up work closed.
+
+---
+
+## Reference: Phase 5b + Phase 6 commits
+
+Both shipped by Session B 2026-05-22:
+- Phase 5b paint fix: commit `0ef032fe` (Customiser paint targets `header.wp-block-template-part` / `footer.wp-block-template-part`)
+- Phase 6: commit `d307c8b0` (markup examples + supports backfill + WP 7.0 audit)
+
+Both completed while Session A was running Phases 2 + 3 + housekeeping.
 
 ## Session close — when Phase 4 ships
 
