@@ -45,8 +45,11 @@ final class Sgs_Header_Renderer {
 	 *   --sgs-header-width: max-width
 	 * And applies position:sticky when the sticky option is enabled.
 	 *
-	 * Scoped to `.wp-site-header` (the standard SGS header template-part
-	 * wrapper class) so it doesn't bleed into other areas.
+	 * Tokens declared on `:root` so they're always available to the cascade.
+	 * Paint rules target `header.wp-block-template-part` — the WP-canonical
+	 * wrapper element emitted for `area: header` template parts on every
+	 * block theme, including SGS. This avoids depending on operator-edited
+	 * inner block-group class names which can drift via the Site Editor.
 	 */
 	public static function render_css(): void {
 		$bg    = self::get_colour( Sgs_Header_Customiser::OPT_BG_COLOUR, Sgs_Header_Customiser::DEFAULT_BG_COLOUR );
@@ -66,20 +69,24 @@ final class Sgs_Header_Renderer {
 		);
 
 		if ( $has_custom ) {
-			$css .= '.wp-site-header{';
+			// Tokens on :root — always available across the cascade.
+			$css .= ':root{';
 			$css .= '--sgs-header-bg:' . \esc_attr( $bg ) . ';';
 			$css .= '--sgs-header-text:' . \esc_attr( $text ) . ';';
 			$css .= '--sgs-header-link:' . \esc_attr( $link ) . ';';
 			$css .= '--sgs-header-width:' . \esc_attr( $width ) . ';';
+			$css .= '}';
+			// Paint rules on the WP-canonical template-part wrapper.
+			$css .= 'header.wp-block-template-part{';
 			$css .= 'background-color:var(--sgs-header-bg);';
 			$css .= 'color:var(--sgs-header-text);';
-			$css .= 'max-width:var(--sgs-header-width);';
 			$css .= '}';
-			$css .= '.wp-site-header a{color:var(--sgs-header-link);}';
+			$css .= 'header.wp-block-template-part > .wp-block-group{max-width:var(--sgs-header-width);margin-inline:auto;}';
+			$css .= 'header.wp-block-template-part a{color:var(--sgs-header-link);}';
 		}
 
 		if ( $sticky ) {
-			$css .= '.wp-site-header{position:sticky;top:0;z-index:100;}';
+			$css .= 'header.wp-block-template-part{position:sticky;top:0;z-index:100;}';
 		}
 
 		if ( '' === $css ) {

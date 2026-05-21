@@ -43,7 +43,9 @@ final class Sgs_Footer_Renderer {
 	 *   --sgs-footer-link:  link colour
 	 *   --sgs-footer-width: max-width
 	 *
-	 * Scoped to `.wp-site-footer` so it doesn't bleed into other areas.
+	 * Tokens declared on `:root`; paint rules target `footer.wp-block-template-part`
+	 * — the WP-canonical wrapper element emitted for `area: footer` template
+	 * parts on every block theme.
 	 */
 	public static function render_css(): void {
 		$bg    = self::get_colour( Sgs_Footer_Customiser::OPT_BG_COLOUR, Sgs_Footer_Customiser::DEFAULT_BG_COLOUR );
@@ -62,16 +64,18 @@ final class Sgs_Footer_Renderer {
 			return;
 		}
 
-		$css  = '.wp-site-footer{';
+		$css  = ':root{';
 		$css .= '--sgs-footer-bg:' . \esc_attr( $bg ) . ';';
 		$css .= '--sgs-footer-text:' . \esc_attr( $text ) . ';';
 		$css .= '--sgs-footer-link:' . \esc_attr( $link ) . ';';
 		$css .= '--sgs-footer-width:' . \esc_attr( $width ) . ';';
+		$css .= '}';
+		$css .= 'footer.wp-block-template-part{';
 		$css .= 'background-color:var(--sgs-footer-bg);';
 		$css .= 'color:var(--sgs-footer-text);';
-		$css .= 'max-width:var(--sgs-footer-width);';
 		$css .= '}';
-		$css .= '.wp-site-footer a{color:var(--sgs-footer-link);}';
+		$css .= 'footer.wp-block-template-part > .wp-block-group{max-width:var(--sgs-footer-width);margin-inline:auto;}';
+		$css .= 'footer.wp-block-template-part a{color:var(--sgs-footer-link);}';
 
 		echo '<style id="sgs-footer-customiser">' . $css . '</style>' . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- values are individually escaped above
 	}
