@@ -1304,63 +1304,20 @@ def _lift_bem_child_array(node: "Tag", parent_slug: str,
 
 
 # ============================================================================
-# InnerBlocks emission patterns (Change 3)
-# Keyed by block slug — when a block uses InnerBlocks rather than a flat array
-# attr, we detect child elements and emit each as a nested self-closing block.
+# InnerBlocks emission — DB-backed lookup (Phase 3 — Decision 12)
+#
+# INNER_BLOCK_PATTERNS dict retired 2026-05-21.  The parent→child block
+# relationships are now read from sgs-framework.db:
+#   blocks.parent_block  — child slug → its container parent slug
+#   (reverse: SELECT slug FROM blocks WHERE parent_block = ?)
+#
+# DB seeding that enables this:
+#   sgs/info-box     → parent_block = 'sgs/feature-grid'  (Phase 0)
+#   sgs/button       → parent_block = 'sgs/multi-button'  (Phase 0)
+#   sgs/multi-button → parent_block = 'sgs/hero'          (Phase 3)
+#
+# The _lift_inner_blocks function below replaces the hardcoded dict.
 # ============================================================================
-INNER_BLOCK_PATTERNS: dict[str, dict] = {
-    "sgs/feature-grid": {
-        # Each sgs-info-box div becomes a sgs/info-box inner block
-        "child_class": "sgs-info-box",
-        "inner_block_slug": "sgs/info-box",
-        "lift_fields": {
-            # info-box attr name → CSS selector within the child element
-            # (comma-separated, first match wins)
-            "mediaEmoji": ".sgs-info-box__icon",
-            "heading":    "h4,h3,h2",
-            "description": "p",
-        },
-        # mediaType detected per-child from source DOM (see _detect_media_type
-        # in _lift_inner_blocks). Removed the unconditional emoji default
-        # 2026-05-15 after the multi-model panel flagged it would corrupt
-        # any non-emoji info-box (SVG icons → empty emoji + wrong type).
-        "media_type_selector": ".sgs-info-box__icon",
-    },
-    # Wave 2 Change 2 (2026-05-22): hero CTAs → sgs/multi-button → sgs/button
-    #
-    # hero uses InnerBlocks (save.js returns <InnerBlocks.Content />). Without
-    # this entry the FR1 branch emits hero self-closing ( /-->) which causes the
-    # rendered page to show empty CTA slots. The correct serialisation is:
-    #   <!-- wp:sgs/hero {...} -->
-    #     <!-- wp:sgs/multi-button -->
-    #       <!-- wp:sgs/button {"label":"...", "url":"...", "inheritStyle":"primary"} /-->
-    #       <!-- wp:sgs/button {"label":"...", "url":"...", "inheritStyle":"secondary"} /-->
-    #     <!-- /wp:sgs/multi-button -->
-    #   <!-- /wp:sgs/hero -->
-    #
-    # wrapper_block: optional — when present, child blocks are wrapped in this
-    # block (open/close) before being inserted into the outer block's InnerBlocks.
-    # wrapper_block_attrs: static attrs to set on the wrapper block.
-    "sgs/hero": {
-        "child_class": "sgs-button",
-        "inner_block_slug": "sgs/button",
-        "lift_fields": {
-            # Child IS the <a> element, so '@text' reads child.get_text()
-            # and '@href' reads child.get('href'). Both use the @-from-self syntax.
-            "label": "@text",
-            "url":   "@href",
-        },
-        # --primary → inheritStyle=primary, --secondary → inheritStyle=secondary
-        "modifier_to_attr": {
-            "primary":   ("inheritStyle", "primary"),
-            "secondary": ("inheritStyle", "secondary"),
-        },
-        # Wrap all sgs/button children in a sgs/multi-button container so the
-        # block hierarchy matches what the hero editor inserts by default.
-        "wrapper_block": "sgs/multi-button",
-        "wrapper_block_attrs": {},
-    },
-}
 
 
 def _detect_media_type(icon_el) -> str | None:
@@ -1390,121 +1347,244 @@ def _detect_media_type(icon_el) -> str | None:
     return "icon"
 
 
-def _lift_inner_blocks(node: Tag, pattern: dict) -> list[str]:
-    """Walk child elements matching pattern['child_class'] within `node` and
-    emit each as a self-closing WP inner block. Returns a list of markup strings.
+def _lift_inner_blocks(node: Tag, parent_slug: str) -> list[str]:
+    """Walk child elements belonging to `parent_slug` and emit each as a WP
+    inner block. Returns a list of markup strings.
 
-    Supported pattern keys:
-      child_class       — CSS class fragment to match children against
-      inner_block_slug  — WP block slug to emit for each child
-      lift_fields       — {attr_name: selector} — selector may be:
-                            'tag,tag'         → get_text() of first match
-                            '@html-attr'      → read HTML attribute from child itself
-                            'tag@html-attr'   → read HTML attribute from matched child
-      set_attrs         — {attr_name: value} — static attrs always applied
-      media_type_selector — CSS selector to detect mediaType per child
-      modifier_to_attr  — {modifier_str: (attr_name, attr_val)} — maps BEM modifier
-                          classes (e.g. '--primary') to static block attrs
-      wrapper_block     — optional block slug to wrap ALL child blocks inside
-      wrapper_block_attrs — {attr_name: value} static attrs on the wrapper block
+    Phase 3 (Decision 12): replaces the retired INNER_BLOCK_PATTERNS dict.
+    Block/slot discovery is driven by sgs-framework.db:
+
+      SELECT slug FROM blocks WHERE parent_block = ? AND source = 'sgs'
+
+    DB seeding that enables each case:
+      sgs/info-box     -> parent_block='sgs/feature-grid'  (Phase 0)
+      sgs/button       -> parent_block='sgs/multi-button'  (Phase 0)
+      sgs/multi-button -> parent_block='sgs/hero'          (Phase 3)
+
+    Two-level hierarchy (hero -> multi-button -> button):
+      When a DB child slug itself has DB children (i.e. it is a wrapper block),
+      the function recurses one level: finds the grandchild elements in the DOM,
+      lifts their attrs, and wraps them inside the child block markup.
+
+    Field-lifting strategy per block type:
+      sgs/button   -- element IS the <a> tag; lift label=@text, url=@href,
+                      inheritStyle from BEM modifier (--primary/--secondary).
+      sgs/info-box -- lift mediaType via _detect_media_type + mediaEmoji/
+                      heading/description via CSS-selector heuristics.
+      other blocks -- call lift_subtree_into_block_attrs(el, slug).
+
+    On NULL DB lookup (block has no registered children):
+      Logs a named WARNING to trace.jsonl via _trace(soft_failed=True) so the
+      gap surfaces in pipeline-state/<run>/warnings.log.
+
+    Adjacent-grouping (wrapper case):
+      All grandchild elements found within the parent node are collected into
+      ONE wrapper block emission, not one wrapper per grandchild.
     """
-    child_cls = pattern["child_class"]
-    inner_slug = pattern["inner_block_slug"]
-    lift_fields: dict[str, str] = pattern.get("lift_fields", {})
-    set_attrs: dict = pattern.get("set_attrs", {})
-    media_type_selector: str | None = pattern.get("media_type_selector")
-    modifier_to_attr: dict = pattern.get("modifier_to_attr", {})
-    wrapper_block: str | None = pattern.get("wrapper_block")
-    wrapper_block_attrs: dict = pattern.get("wrapper_block_attrs", {})
+    import sqlite3 as _sqlite3
+    import json as _json_inner
+    from pathlib import Path as _Path
 
-    children = node.find_all(
-        True,
-        class_=lambda c: c and child_cls in (" ".join(c) if isinstance(c, list) else c),
-    )
+    _SGS_DB = _Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 
-    # Deduplicate: skip children that are descendants of another matched child
-    top_level_children = []
-    for child in children:
-        is_nested = any(
-            other is not child and (child in other.descendants)
-            for other in children
+    def _db_children(slug: str) -> list[str]:
+        """Return slugs of blocks whose parent_block = slug (source=sgs)."""
+        try:
+            _c = _sqlite3.connect(str(_SGS_DB))
+            rows = _c.execute(
+                "SELECT slug FROM blocks WHERE parent_block = ? AND source = 'sgs'",
+                (slug,),
+            ).fetchall()
+            _c.close()
+            return [r[0] for r in rows]
+        except Exception as _exc:  # noqa: BLE001
+            _trace("inner_blocks_db_error", parent_slug=slug,
+                   error=str(_exc)[:200], soft_failed=True)
+            return []
+
+    def _cls_frag(slug: str) -> str:
+        """Derive CSS class fragment from block slug: 'sgs/info-box' -> 'sgs-info-box'."""
+        return slug.replace("sgs/", "sgs-", 1)
+
+    def _find_top_level(parent: Tag, css_cls: str) -> list:
+        """Find elements with css_cls, deduplicating nested matches."""
+        elements = parent.find_all(
+            True,
+            class_=lambda c: c and css_cls in (
+                " ".join(c) if isinstance(c, list) else c
+            ),
         )
-        if not is_nested:
-            top_level_children.append(child)
+        top: list = []
+        for el in elements:
+            is_nested = any(
+                other is not el and (el in other.descendants)
+                for other in elements
+            )
+            if not is_nested:
+                top.append(el)
+        return top
 
-    blocks = []
-    for child in top_level_children:
-        item_attrs: dict = dict(set_attrs)  # start with fixed attrs
+    # --- Step 1: query direct children of parent_slug ---
+    child_slugs = _db_children(parent_slug)
 
-        # Lift fields — supports '@attr' (from child itself) and 'tag@attr' syntax
-        for attr_name, selector in lift_fields.items():
-            if selector == "@text":
-                # Special case: read the child's own text content
-                val = child.get_text(strip=True)
-            elif selector.startswith("@"):
-                # Read HTML attribute directly from the child element
-                html_attr = selector[1:]
-                val = (child.get(html_attr) or "").strip()
-            elif "@" in selector:
-                # 'tag@attr' — find first matching tag, read its HTML attribute
-                parts = selector.split("@", 1)
-                css_sel, html_attr = parts[0].strip(), parts[1].strip()
-                found_el = child.find(css_sel) if css_sel else child
-                val = (found_el.get(html_attr) or "").strip() if found_el else ""
-            else:
-                val = _array_lift_text_of_first(child, selector)
-            if val:
-                item_attrs[attr_name] = val
+    if not child_slugs:
+        _trace(
+            "inner_blocks_no_children",
+            parent_slug=parent_slug,
+            reason=(
+                "No rows in blocks.parent_block for this slug (source=sgs). "
+                "Seed blocks.parent_block to enable InnerBlocks emission."
+            ),
+            soft_failed=True,
+        )
+        return []
 
-        # Modifier-to-attr: inspect child's class list for BEM modifiers
-        if modifier_to_attr:
-            child_cls_list = child.get("class") or []
-            child_cls_str = " ".join(child_cls_list)
-            for modifier_str, (m_attr_name, m_attr_val) in modifier_to_attr.items():
-                if f"--{modifier_str}" in child_cls_str:
-                    item_attrs[m_attr_name] = m_attr_val
-                    break
+    result_blocks: list[str] = []
 
-        # Per-child mediaType detection from source DOM content. Replaces the
-        # 2026-05-15-removed unconditional `mediaType="emoji"` default which
-        # would have corrupted SVG/image icons across non-emoji client mockups.
-        if media_type_selector:
-            icon_el = None
-            for sel in (s.strip() for s in media_type_selector.split(",")):
-                if sel.startswith("."):
-                    icon_el = child.find(class_=lambda c: c and sel[1:] in (
-                        " ".join(c) if isinstance(c, list) else c))
-                else:
-                    icon_el = child.find(sel)
-                if icon_el:
-                    break
-            mt = _detect_media_type(icon_el)
-            if mt:
-                item_attrs["mediaType"] = mt
-                # If the icon is image-typed, also lift the src into mediaImage
-                if mt == "image" and icon_el is not None:
-                    img = icon_el.find("img") or icon_el
-                    if img.name == "img" and img.get("src"):
-                        item_attrs["mediaImage"] = {
-                            "id": None,
-                            "url": _resolve_media_url(img.get("src", "").strip()),
-                            "alt": img.get("alt", "").strip(),
-                        }
-                        # When using image, clear any emoji we might have lifted
-                        item_attrs.pop("mediaEmoji", None)
-        # Preserve sgs-* classes on the inner block
-        sgs_cls = [c for c in (child.get("class") or []) if c.startswith("sgs-")]
+    for child_slug in child_slugs:
+        child_cls = _cls_frag(child_slug)
+        grandchild_slugs = _db_children(child_slug)
+
+        if grandchild_slugs:
+            # --- Wrapper case (e.g. sgs/hero -> sgs/multi-button -> sgs/button) ---
+            gc_slug = grandchild_slugs[0]
+            gc_cls = _cls_frag(gc_slug)
+
+            top_gcs = _find_top_level(node, gc_cls)
+
+            # Fallback: try slot_synonyms aliases if primary class not found
+            if not top_gcs:
+                try:
+                    _ca = _sqlite3.connect(str(_SGS_DB))
+                    alias_row = _ca.execute(
+                        "SELECT aliases FROM slot_synonyms WHERE standalone_block = ?",
+                        (gc_slug,),
+                    ).fetchone()
+                    _ca.close()
+                except Exception:  # noqa: BLE001
+                    alias_row = None
+                if alias_row and alias_row[0]:
+                    try:
+                        aliases = _json_inner.loads(alias_row[0])
+                    except Exception:  # noqa: BLE001
+                        aliases = []
+                    for alias in aliases:
+                        alt_cls = f"sgs-{alias}" if not alias.startswith("sgs-") else alias
+                        top_gcs = _find_top_level(node, alt_cls)
+                        if top_gcs:
+                            break
+
+            if not top_gcs:
+                _trace(
+                    "inner_blocks_grandchild_not_found",
+                    parent_slug=parent_slug,
+                    child_slug=child_slug,
+                    grandchild_slug=gc_slug,
+                    grandchild_cls=gc_cls,
+                    soft_failed=True,
+                )
+                continue
+
+            gc_blocks: list[str] = []
+            for gc_el in top_gcs:
+                gc_attrs = _lift_inner_block_attrs(gc_el, gc_slug)
+                gc_blocks.append(emit_wp_block(gc_slug, gc_attrs, [], self_closing=True))
+
+            if gc_blocks:
+                wrapped = emit_wp_block(child_slug, {}, gc_blocks, self_closing=False)
+                result_blocks.append(wrapped)
+
+        else:
+            # --- Direct children case (e.g. sgs/feature-grid -> sgs/info-box) ---
+            top_children = _find_top_level(node, child_cls)
+
+            if not top_children:
+                _trace(
+                    "inner_blocks_child_not_found",
+                    parent_slug=parent_slug,
+                    child_slug=child_slug,
+                    child_cls=child_cls,
+                    soft_failed=True,
+                )
+                continue
+
+            for child_el in top_children:
+                child_attrs = _lift_inner_block_attrs(child_el, child_slug)
+                result_blocks.append(
+                    emit_wp_block(child_slug, child_attrs, [], self_closing=True)
+                )
+
+    return result_blocks
+
+
+def _lift_inner_block_attrs(el: Tag, slug: str) -> dict:
+    """Lift WP block attributes from a DOM element for a given inner block slug.
+
+    Per-block strategies:
+      sgs/button   -- element IS the <a> tag; lift label=text, url=href,
+                      inheritStyle from BEM modifier (--primary/--secondary).
+      sgs/info-box -- lift mediaType + mediaEmoji/heading/description via
+                      CSS-selector heuristics.
+      other        -- delegate to lift_subtree_into_block_attrs (DB-driven).
+    """
+    attrs: dict = {}
+
+    if slug == "sgs/button":
+        label = el.get_text(strip=True)
+        if label:
+            attrs["label"] = label
+        url = (el.get("href") or "").strip()
+        if url:
+            attrs["url"] = url
+        # BEM modifier -> inheritStyle: --primary / --secondary / --ghost / --outline
+        cls_list = el.get("class") or []
+        cls_str = " ".join(cls_list)
+        for mod in ("primary", "secondary", "ghost", "outline"):
+            if f"--{mod}" in cls_str:
+                attrs["inheritStyle"] = mod
+                break
+        sgs_cls = [c for c in cls_list if c.startswith("sgs-")]
         if sgs_cls:
-            item_attrs["className"] = " ".join(sgs_cls)
-        blocks.append(emit_wp_block(inner_slug, item_attrs, [], self_closing=True))
+            attrs["className"] = " ".join(sgs_cls)
 
-    # Optional wrapper block: wrap all child block markup inside a parent block
-    if wrapper_block and blocks:
-        wrapped = emit_wp_block(wrapper_block, wrapper_block_attrs, blocks,
-                                self_closing=False)
-        return [wrapped]
-    return blocks
+    elif slug == "sgs/info-box":
+        icon_el = el.find(
+            class_=lambda c: c and "sgs-info-box__icon" in (
+                " ".join(c) if isinstance(c, list) else c
+            )
+        )
+        mt = _detect_media_type(icon_el)
+        if mt:
+            attrs["mediaType"] = mt
+            if mt == "image" and icon_el is not None:
+                img = icon_el.find("img") or icon_el
+                if img.name == "img" and img.get("src"):
+                    attrs["mediaImage"] = {
+                        "id": None,
+                        "url": _resolve_media_url(img.get("src", "").strip()),
+                        "alt": img.get("alt", "").strip(),
+                    }
+            elif mt in ("emoji", "icon") and icon_el is not None:
+                emoji_text = icon_el.get_text(strip=True)
+                if emoji_text:
+                    attrs["mediaEmoji"] = emoji_text
+        heading_val = _array_lift_text_of_first(el, "h4,h3,h2")
+        if heading_val:
+            attrs["heading"] = heading_val
+        desc_val = _array_lift_text_of_first(el, "p")
+        if desc_val:
+            attrs["description"] = desc_val
+        sgs_cls = [c for c in (el.get("class") or []) if c.startswith("sgs-")]
+        if sgs_cls:
+            attrs["className"] = " ".join(sgs_cls)
 
+    else:
+        attrs = lift_subtree_into_block_attrs(el, slug)
+        sgs_cls = [c for c in (el.get("class") or []) if c.startswith("sgs-")]
+        if sgs_cls:
+            attrs.setdefault("className", " ".join(sgs_cls))
+
+    return attrs
 
 # ============================================================================
 # CSS-driven styling-attribute lifter
@@ -3777,14 +3857,12 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
         if decls:
             variation_buf.append(decls)
 
-        # Change 2: InnerBlocks emission for blocks that use InnerBlocks
-        # rather than flat array attrs (e.g. sgs/feature-grid → sgs/info-box).
-        # When a pattern exists for the target, emit child blocks as inner markup
-        # instead of emitting a self-closing block.
-        if target in INNER_BLOCK_PATTERNS:
-            inner_markup = _lift_inner_blocks(node, INNER_BLOCK_PATTERNS[target])
-            if inner_markup:
-                return emit_wp_block(target, merged, inner_markup, self_closing=False)
+        # Phase 3 (Decision 12): InnerBlocks emission via DB-backed lookup.
+        # _lift_inner_blocks queries blocks.parent_block for children of `target`.
+        # Returns [] if no DB children exist (no-op, falls through to self-close).
+        inner_markup = _lift_inner_blocks(node, target)
+        if inner_markup:
+            return emit_wp_block(target, merged, inner_markup, self_closing=False)
 
         return emit_wp_block(target, merged, [], self_closing=True)
 
@@ -3853,10 +3931,9 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
                     # variation is active (used by register_block_variation())
                     merged["_variationSlug"] = em_result.variation_slug  # stripped before emit
                     _lift_root_supports_to_style(node, parent, css_rules, merged)
-                    if parent in INNER_BLOCK_PATTERNS:
-                        inner_markup = _lift_inner_blocks(node, INNER_BLOCK_PATTERNS[parent])
-                        if inner_markup:
-                            return emit_wp_block(parent, merged, inner_markup, self_closing=False)
+                    inner_markup = _lift_inner_blocks(node, parent)
+                    if inner_markup:
+                        return emit_wp_block(parent, merged, inner_markup, self_closing=False)
                     return emit_wp_block(parent, merged, [], self_closing=True)
 
     # ---- COMPOSITE-ELEMENT-TO-STANDALONE-BLOCK FAST PATH ----
@@ -3908,10 +3985,9 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
                     f"Check slot_synonyms/block_attributes canonical_slot mapping "
                     f"for block_slug={standalone}.\n"
                 )
-            if standalone in INNER_BLOCK_PATTERNS:
-                inner_markup = _lift_inner_blocks(node, INNER_BLOCK_PATTERNS[standalone])
-                if inner_markup:
-                    return emit_wp_block(standalone, merged, inner_markup, self_closing=False)
+            inner_markup = _lift_inner_blocks(node, standalone)
+            if inner_markup:
+                return emit_wp_block(standalone, merged, inner_markup, self_closing=False)
             return emit_wp_block(standalone, merged, [], self_closing=True)
 
     # ---- CSS-driven sgs/container detection (FALLBACK) ----
