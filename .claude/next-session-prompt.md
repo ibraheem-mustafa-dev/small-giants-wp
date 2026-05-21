@@ -17,7 +17,7 @@ Architecture programme status: Phases 0/0.5/1/1.5/2/3/5a/5b + 5b-paint-fix + 6 s
 
 ---
 
-## Phase A — Unexpected-content audit on live site (BEFORE Phase 4 dispatches)
+## Step 0 — Unexpected-content audit on live site (BEFORE Phase 4 dispatches)
 
 Bean's directive 2026-05-22: before any Phase 4 work starts, audit the live sandybrown site for "This block contains unexpected content" deprecation warnings on every block and fix each instance. These have been accumulating across multiple sessions as block save outputs changed without deprecation entries being added.
 
@@ -35,15 +35,15 @@ Bean's directive 2026-05-22: before any Phase 4 work starts, audit the live sand
 5. Cover both `page` and `post`. Repeat for `wp_template_part` posts (Site Editor → Patterns → Template parts).
 6. For the Site Editor Styles area: open Appearance → Editor → Styles, interact with each section (typography, colors, layout, blocks). Note any "unexpected content" banner. Open "Manage Fonts" modal explicitly — note any error there. If the Google Fonts collection produces an error, capture: which font, what error text, what the browser console shows, what the network tab shows for `/wp-json/wp/v2/font-collections`.
 
-**Acceptance gate (before Phase B dispatch):** open ~10 representative pages + the Site Editor Styles surface + Manage Fonts modal and verify no "unexpected content" banners appear. Log audit summary at `.claude/reports/2026-05-23-unexpected-content-audit.md` with: pages audited, blocks fixed, blocks needing manual intervention, Site Editor / Manage Fonts findings.
+**Acceptance gate (before Step 1 dispatch):** open ~10 representative pages + the Site Editor Styles surface + Manage Fonts modal and verify no "unexpected content" banners appear. Log audit summary at `.claude/reports/2026-05-23-unexpected-content-audit.md` with: pages audited, blocks fixed, blocks needing manual intervention, Site Editor / Manage Fonts findings.
 
 **Time budget:** 30-60 min realistic.
 
 ---
 
-## Phase B — Phase 4 /sgs-update rebuild
+## Step 1 — Phase 4 /sgs-update rebuild
 
-After Phase A audit closes, dispatch Phase 4.
+After Step 0 audit closes, dispatch Phase 4.
 
 ## Mandatory reads BEFORE Phase 4 dispatch
 
@@ -87,17 +87,17 @@ Scope every `git add` by exact path. Never `git add .` or `-A`.
 
 Pick at session open. Recommended: Option 2 (Stages 1+7+8) — get the scaffold + `--dry-run` mode + light ports working, then dispatch Stage 2 in a fresh session with isolated focus.
 
-## Phase C — Phase 7 AI Connectors + WP-skills audit (after Phase 4 ships + QC council affirms)
+## Step 2 — Phase 7 AI Connectors + WP-skills audit (after Phase 4 ships + QC council affirms)
 
 Phase 7 is the final architecture-programme phase. Cold prompt at `.claude/plans/phase-7-wp7-alignment.md`.
 
 WP 7.0 is now live on sandybrown (DB version 60717 → 61833, upgrade shipped 2026-05-22). Native `wp_get_connector()` + `wp_is_connector_registered()` are confirmed available — `Sgs_Ai_Connector` PHP class can wrap real native APIs, not hypothetical shims. The 10 WP-family skills audit (`wp-block-development`, `wp-block-themes`, `wp-interactivity-api`, `wp-plugin-development`, `wp-rest-api`, `wp-wpcli-and-ops`, `wp-performance`, `wp-abilities-api`, `wp-site-extraction`, `wp-project-triage`) is the bigger half of effort. Each skill revision includes a minimal code example tested live on sandybrown.
 
-After Phase 7 commits + QC council affirms — move to Phase D.
+After Phase 7 commits + QC council affirms — move to Step 3.
 
 ---
 
-## Phase D — Parking sweep (after Phase 4 + Phase 7 + QC council affirms both)
+## Step 3 — Parking sweep (after Phase 4 + Phase 7 + QC council affirms both)
 
 Bean's directive 2026-05-22: once Phase 4 ships AND QC council confirms it's totally working, sweep through every open item in `.claude/parking.md` and close them out one by one. Don't stop until parking is empty.
 
