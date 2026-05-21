@@ -8,7 +8,7 @@ current_subphase_step: "Next session (2026-05-23) opens with Step 0 (unexpected-
 last_updated: 2026-05-22
 latest_commit: "19906e6a on main — docs(handoff): close-out update — Session B wrap-up + 2 WP 7.0 surprises + 2 Phase 6 partials + housekeeping clear-down"
 working_tree: CLEAN (verified post 19906e6a)
-github_branches: "main + 1 leftover (feat/phase-2a-massive — Phase 2A work landed via different commits on main; branch is dormant since 2026-05-18 and dead weight on GitHub)"
+github_branches: "main ONLY (feat/phase-2a-massive deleted 2026-05-22 — work was on main via different commits; 9 stale local remote-tracking refs pruned)"
 session_b_records:
   qc_council_report: .claude/reports/2026-05-22-session-B-qc-council.md
   session_summary: .claude/memory/session-summary-2026-05-22-session-B.md
