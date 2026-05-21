@@ -2,6 +2,12 @@
 
 Append-only. Most-recent first.
 
+## 2026-05-22 — Phase 1.5 inserted + Phase 2 parser strategy change
+
+**D32 — Phase 1.5 inserted between Phase 1 and Phase 2.** Auditing the framework at session open surfaced that 67 of 69 SGS blocks ship with ZERO inserter-discoverable variations or styles. Variation loader infrastructure exists (`includes/variations/class-sgs-block-variations.php` glob-scans for `sgs-*.php` siblings) but no sibling files use it. The original architecture programme never addressed this gap. Phase 1.5 authors 12 composite blocks × 2-4 variations × 2-3 styles each, with each variation declaring a default style via `className` in attribute defaults. Lands as PHP sibling files in `plugins/sgs-blocks/includes/variations/sgs-<block>-variations.php`. ~85 min realistic (3 parallel Sonnet subagent waves). Closes a real client-onboarding UX gap: operators pick "Product Card" from the inserter and get a polished, ready-to-edit block immediately. Plan: `.claude/plans/phase-1.5-variations-styles-default-styles.md`.
+
+**D33 — Phase 2 parser strategy: runtime enumeration, not source parsing.** The original Phase 2 used static PHP source parsing on `includes/variations/*.php` to seed the `variations` table. This crashed twice in the 2026-05-22 session: once because of a fabricated assumption (4 sgs/button rows with no source in code), again on a Playwright API mismatch (`getBlockStyles` doesn't exist as a runtime call — only `getBlockVariations` and `getBlockType().styles`). Replacement: Phase 2 re-runs as Step 1.5.6 using `wp eval` against the live WP block type + styles registry (`WP_Block_Type_Registry` + `WP_Block_Styles_Registry`). Captures everything actually registered at runtime, immune to source-parsing fabrication. Canonical going forward — any future variation/style indexing reads runtime state, not source files.
+
 ## 2026-05-21 — Architecture session (31-decision holistic redesign)
 
 Full decision set: `.claude/plans/2026-05-21-architecture-staging.md` §3 + §11. Decisions 1-31 numbered internally in that doc (numbering reflects debate sequence, not log sequence). Summary entries here for session-resume context.

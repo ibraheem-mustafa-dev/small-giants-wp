@@ -37,7 +37,12 @@ Five things change in the framework across 8 phases + 30 decisions:
 
 | Phase | Decisions | Status | Wall-clock | Parallelisable? |
 |---|---|---|---|---|
-| **0** | 3, 4, 5, 6 | SHIPPED `aec54882` | ~85 min | n/a |
+| **0** | 3, 4, 5, 6 | SHIPPED `aec54882` (2026-05-21) | ~85 min | n/a |
+| **0.5** | 31 | SHIPPED `6eaadbc2` (2026-05-21) | ~25 min | n/a |
+| **1** | 1, 2, 11 | SHIPPED `8c56ab6` skills repo (2026-05-22) | ~45 min | n/a |
+| **1.5** | D32, D33 (inserted 2026-05-22) | SHIPPED `cc541e94` (2026-05-22) | ~120 min including outage recovery | n/a |
+| **5a** | 14', 16', 17', 18, 19 | SHIPPED `43a93df9` (2026-05-21, Session B) | ~90 min | parallel to A |
+| **5b** | 21, 22, 27 | SHIPPED `60220b13` (2026-05-21, Session B) — latent inert-Customiser bug | ~120 min | after 5a |
 | **0.5** | 31 | PENDING | ~20 min | YES — independent |
 | **1** | 1, 2, 11 | PENDING | ~1.5 hr | NO — blocks 2, 3, 4 |
 | **2** | 7, 8 | PENDING | ~1.5 hr | YES — parallel with 3 |

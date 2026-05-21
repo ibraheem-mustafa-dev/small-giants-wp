@@ -1,14 +1,16 @@
 ---
 doc_type: spec
 spec_id: 19
-spec_version: 0.1
+spec_version: 0.2
 project: small-giants-wp
 title: SGS WP-CLI Command Reference — `wp sgs` Namespace
-status: SHIPPED — all 12 commands live as of Spec 17 Wave 3
+status: SHIPPED — all 12 commands live as of Spec 17 Wave 3; CLI-command DB seed shipped as part of Phase 1 (2026-05-22)
 shipped: true
 session_date: 2026-05-19
+last_updated: 2026-05-22
 authors: Bean + Claude (Sonnet 4.6)
 shipped_in: Spec 17 FR-S5-3
+phase_1_db_seed: "2026-05-22 Phase 1 (architecture programme) seeded all 12 wp sgs commands + 3 SGS pipeline scripts (sgs-clone-orchestrator, sgs-db, wp-blocks.py dump) as rows in sgs-framework.db `docs` table with `doc_type='cli-command'`, `source='sgs'`. Total 16 cli-command docs rows. Skills can now query these as DB rows alongside WP-CLI handbook docs (`source='native_wp'`)."
 implementation_file: plugins/sgs-blocks/includes/class-sgs-cli-commands.php
 references:
   - .claude/specs/17-HEADER-FOOTER-ARCHITECTURE.md (parent spec)

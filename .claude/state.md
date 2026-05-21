@@ -2,22 +2,23 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-current_phase: architecture-programme-phase-0-shipped-phases-0.5-through-7-pending
-current_subphase: "Session 2026-05-21 (architecture session) closed. Phase 0 shipped (commit aec54882 — slot_synonyms.standalone_block seeding + blocks.parent_block + blocks.replaces column + --client auto-derive). 31 architectural decisions captured in .claude/plans/2026-05-21-architecture-staging.md. 4 strategic-plan session artefacts at .claude/reports/strategic-plan-2026-05-21/. Wave 2 wiring-fix work (G1+G3+G5) is now subsumed into the architectural programme — INNER_BLOCK_PATTERNS retirement (Phase 3) plus DB merge (Phase 1) collectively address the same root gap. Separate pixel-diff G-series blockers remain open until those phases land."
-current_subphase_step: "Next session: Phase 0.5 (structural QC hook, Decision 31, ~20 min, independent). Then Phase 1 (DB merge, Decisions 1+2+11, ~1.5 hr). See .claude/plans/2026-05-21-architecture-staging.md §13 for full 4-parallel-session dispatch plan. Read staging doc §3 + §11 before dispatching any subagent."
-last_updated: 2026-05-21
-latest_commit: "75c9a6e2 on main — session(2026-05-21): handoff + next-session-prompt + state — Wave 2 reshape ready for dispatch"
+current_phase: architecture-programme-phases-0-through-1.5-shipped-phases-2-through-7-pending
+current_subphase: "Session 2026-05-22 in progress. Phases 0 + 0.5 + 1 + 1.5 SHIPPED. Phase 1.5 (Variations + Styles + Default-Styles for 12 composite blocks) inserted between Phase 1 and Phase 2 after discovery that 67 of 69 SGS blocks had zero inserter-discoverable presets. Path B (add_filter on get_block_type_variations) replaced the broken register_block_variation() approach after a site outage taught the lesson: verify WP API surface before dismissing intelephense warnings. Empirically validated via canary deploy + REST query. 40 variations + 30 styles live on sandybrown."
+current_subphase_step: "Phase 2 next — variations indexing rewritten with runtime-aware parser (wp eval against WP_Block_Type_Registry + WP_Block_Styles_Registry) per Decision D33. Phase 2 will re-seed sgs-framework.db variations table from Path B registrations. Then Phase 3 (INNER_BLOCK_PATTERNS retirement) + Phase 4 (/sgs-update rebuild). Bean directive: continue sequentially through 2 → 3 → 4 with QC gates between, no /handoff until end of programme work block."
+last_updated: 2026-05-22
+latest_commit: "cc541e94 on main — feat(phase-1.5): 12 composite block variations + styles + default-styles via get_block_type_variations filter"
 architecture_programme:
   staging_doc: .claude/plans/2026-05-21-architecture-staging.md
-  phase_0_status: SHIPPED (commit aec54882)
-  phase_0_5_status: PENDING (Decision 31 — structural QC hook)
-  phase_1_status: PENDING (DB merge — Decisions 1, 2, 11)
-  phase_2_status: PENDING (variations indexing — Decisions 7, 8)
+  phase_0_status: SHIPPED (commit aec54882, 2026-05-21)
+  phase_0_5_status: SHIPPED (commit 6eaadbc2, 2026-05-21 — qc-on-converter-edit.py hook + edit tracker)
+  phase_1_status: SHIPPED (commit 8c56ab6 in ~/.agents/skills repo, 2026-05-22 — DB merge with source column, 13/13 assertions passing, hot-path query 1.5ms)
+  phase_1.5_status: SHIPPED (commit cc541e94, 2026-05-22 — 12 composite blocks × 2-4 variations × 2-3 styles, default-style via className, Path B via get_block_type_variations filter; canary-first validated)
+  phase_2_status: PENDING (variations indexing — Decisions 7, 8 — re-dispatch with runtime-aware parser per D33)
   phase_3_status: PENDING (INNER_BLOCK_PATTERNS retirement — Decisions 24, 12)
   phase_4_status: PENDING (/sgs-update rebuild + Option B + completeness — Decisions 13, 30)
-  phase_5a_status: PENDING (variation system kill + per-site theme.json — Decisions 14', 16', 17', 18, 19)
-  phase_5b_status: PENDING (Customiser migration + button presets + view transitions — Decisions 21, 22, 27)
-  phase_6_status: PENDING (markup examples + supports backfill + WP 7.0 audits + Lucide REST — Decisions 9, 10, 23, 25, 28)
+  phase_5a_status: SHIPPED-IN-SESSION-B (commit 43a93df9, 2026-05-21 — variation system kill, per-site theme.json, push CLI per Decisions 14', 16', 17', 18, 19)
+  phase_5b_status: SHIPPED-IN-SESSION-B (commit 60220b13, 2026-05-21 — Customiser migration + button presets to theme.json + view transitions per Decisions 21, 22, 27; latent inert-Customiser-output bug to fix via Path A CSS custom properties on :root)
+  phase_6_status: PENDING (markup examples + supports backfill + WP 7.0 audits + Lucide REST — Decisions 9, 10, 23, 25, 28; now unblocked since Phase 1.5 shipped)
   phase_7_status: PENDING (AI Connectors + WP-skills WP 7.0 audit — Decisions 26, 29)
 session_2026_05_20_summary: "11 commits. Council + systematic-debugging + Phase 1 architectural rewrite (Spec 16 §FR6 compliant) + Phase 2 future capabilities (header/footer/nav hook, autonomy tightening, attribute promotion, block variations). Empirical: 5 of 6 desktop regressions from initial P1.B closed via P1.B.x. D1 typed-attr lift rate 4% → 37%. mamas-munches.css 23k → 19k chars. 60+8+40+51+14 = 173 tests passing across orchestrator + token_resolver + css_router + scaffold + promotion + essence-match. Header/footer-as-blocks anti-pattern (5th occurrence today) now blocked at both tool layer (P2.0 PostToolUse hook) AND source layer (P2.i chrome-skip in stage_9b autonomy). The 1009-row attribute_gap_candidates backlog now has a promotion CLI."
 blockers:
@@ -41,24 +42,21 @@ Research artefact: `.claude/reports/2026-05-21-pattern-overrides-research.md`
 
 | Phase | Decisions | Status | Notes |
 |---|---|---|---|
-| 0 | 3, 4, 5, 6 | SHIPPED `aec54882` | Data seeding — slot_synonyms + parent_block + replaces column + --client auto-derive |
-| 0.5 | 31 | PENDING | Structural QC hook — ~20 min, independent |
-| 1 | 1, 2, 11 | PENDING | DB merge — sgs-framework.db absorbs blocks.db + hooks.db |
-| 2 | 7, 8 | PENDING | Variations indexing — sgs/button 4 variations + all others |
+| 0 | 3, 4, 5, 6 | SHIPPED `aec54882` (2026-05-21) | Data seeding — slot_synonyms + parent_block + replaces column + --client auto-derive |
+| 0.5 | 31 | SHIPPED `6eaadbc2` (2026-05-21) | Structural QC hook + edit tracker — warning-only posture, future-proof for sgs-update.py |
+| 1 | 1, 2, 11 | SHIPPED `8c56ab6` (2026-05-22) | DB merge — sgs-framework.db absorbs blocks.db + hooks.db with source column. 13/13 assertions pass, hot-path 1.5ms |
+| **1.5** | **D32, D33** | **SHIPPED `cc541e94` (2026-05-22)** | **12 composite blocks × 2-4 variations × 2-3 styles + default-style via className. Path B (get_block_type_variations filter). Empirically validated: 40 variations + 30 styles live on sandybrown.** |
+| 2 | 7, 8 | PENDING | Variations indexing — runtime-aware parser per D33 (wp eval against WP_Block_Type_Registry); re-seeds variations table from Path B registrations |
 | 3 | 24, 12 | PENDING | INNER_BLOCK_PATTERNS retirement (Decision 24 research confirmed: keep DB-backed) |
 | 4 | 13, 30 | PENDING | /sgs-update rebuild (9-stage) + completeness assurance (10 canonical sources) |
-| 5a | 14', 16', 17', 18, 19 | PENDING | Variation system kill + per-site theme.json + push CLI |
-| 5b | 21, 22, 27 | PENDING | Customiser migration + button presets → theme.json + view transitions |
-| 6 | 9, 10, 23, 25, 28 | PENDING | Markup examples + supports backfill + WP 7.0 audits + Lucide REST |
+| 5a | 14', 16', 17', 18, 19 | SHIPPED `43a93df9` (2026-05-21, Session B) | Variation system kill + per-site theme.json + push CLI |
+| 5b | 21, 22, 27 | SHIPPED `60220b13` (2026-05-21, Session B) — LATENT BUG | Customiser migration + button presets → theme.json + view transitions. Inert-Customiser-output bug: renderers target `.wp-site-header`/`.wp-site-footer` but SGS template parts use generic wrapper classes. Fix via Path A (CSS custom properties on :root). |
+| 6 | 9, 10, 23, 25, 28 | PENDING (now unblocked) | Markup examples + supports backfill + WP 7.0 audits + Lucide REST. Phase 1.5 gate satisfied. |
 | 7 | 26, 29 | PENDING | AI Connectors registration + WP-skills WP 7.0 alignment audit |
 
-**Parallel dispatch plan (after Phase 1 lands):**
-- Session A: Phase 4 (`/sgs-update` rebuild)
-- Session B: Phases 2 + 3 (variations + INNER_BLOCK_PATTERNS)
-- Session C: Phases 5a + 5b (variation kill + Customiser)
-- Session D: Phases 6 + 7 (audits + WP 7.0 alignment)
+**Critical path remaining:** Phase 2 → 3 → 4. Sequential. Bean directive 2026-05-22: continue through 2/3/4 with QC gates between, no /handoff until block of work complete.
 
-**Critical path:** 0.5 → 1 → (longest of Session A = Phase 4 at ~5.5 hr). ~8 hr wall-clock total.
+**Phase 5b inert-Customiser bug:** Pick Option A from Session B council = emit `:root { --sgs-header-bg: ...; }` in renderer, consume via theme.json. ~30 min, tightly scoped follow-up. Tracked separately from main critical path.
 
 ---
 
@@ -118,3 +116,9 @@ Research artefact: `.claude/reports/2026-05-21-pattern-overrides-research.md`
 | pipeline-extension-routes-to-output-d2-not-csv | P1.B file size 39k vs target 12k | Dedup at write-time prevents per-property routing from inflating output |
 | header-footer-recurrence-now-5th | P1.B subagent recreated dirs | Tool-layer + source-layer defence-in-depth shipped (P2.0 + P2.i) |
 | qc-panel-finds-real-bugs-multi-rater-wins | P1.B QC found dedup bug, P1.B.x panel found 2 follow-ups | Council format with rater diversity caught issues a single-Sonnet review missed |
+
+## Captured lesson 2026-05-22 (blub.db row 283)
+
+| Pattern key | Source | Why it matters |
+|---|---|---|
+| verify-wp-api-surface-before-dismissing-static-analyser | Phase 1.5 first-attempt deploy: 12 PHP files calling non-existent `register_block_variation()`, site 500'd | Two true general facts ("intelephense lacks WP stubs" + "PHP falls back namespace→global") chained into false conclusion ("therefore noise"). Cheap check: `curl developer.wordpress.org/reference/functions/<name>/` returns 404 if the function doesn't exist. Canary-first deploy discipline prevents site outages when introducing new WP API calls at scale. Sibling rule: feedback_verify_rendered_output_not_internal_metrics (row 194). Embedding offer surfaced to `/wp-plugin-development`, `/wp-block-development`, `/strategic-plan`, `/phase-planner`, `/research` per classifier-router. |

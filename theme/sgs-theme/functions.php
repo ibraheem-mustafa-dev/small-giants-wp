@@ -435,11 +435,20 @@ function register_block_styles(): void {
 	] );
 
 	// SGS Accent — gold/accent bg, dark text (WCAG AA on gold).
-	// Default style. CSS in core-blocks.css under is-style-sgs-accent.
+	// CSS in core-blocks.css under is-style-sgs-accent.
+	//
+	// NOTE 2026-05-22: `is_default => true` removed because core/button already
+	// has a native default (`fill`, registered by WP core JS). Registering a
+	// second default on the same block produces two `is_default: true` entries
+	// in the block-types REST response, which confuses the editor's style
+	// picker and is operator-confusing (both "Fill" and "SGS Accent" appear
+	// flagged as default). SGS Accent is now a chooseable variant alongside
+	// Ghost / SGS Primary / SGS Secondary — WP's native `fill` is the
+	// no-click baseline. Operators wanting Accent-as-default per client
+	// should set it via Site Editor > Styles for that specific install.
 	register_block_style( 'core/button', [
-		'name'         => 'sgs-accent',
-		'label'        => __( 'SGS Accent (Gold)', 'sgs-theme' ),
-		'is_default'   => true,
+		'name'  => 'sgs-accent',
+		'label' => __( 'SGS Accent (Gold)', 'sgs-theme' ),
 	] );
 
 	// Animation is now handled by the sgs-blocks plugin extension system

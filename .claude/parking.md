@@ -1,8 +1,20 @@
 ---
 doc_type: parking
 project: small-giants-wp
-last_updated: 2026-05-21
+last_updated: 2026-05-22
 ---
+
+## Opened 2026-05-22 (Phase 1.5 session)
+
+**P-PHASE-5B-INERT-CUSTOMISER-OUTPUT** — Session B's Phase 5b shipped with a latent bug: Header/Footer renderers emit CSS targeting `.wp-site-header`/`.wp-site-footer`, but SGS template parts use generic `.wp-block-group` wrappers. Customiser preview shows colour changes in the dashboard but the live page stays unchanged on every customised template part (which is most live client sites). **Fix shape (Option A from Session B council):** renderer emits `:root { --sgs-header-bg: ...; --sgs-footer-bg: ...; }` based on saved theme_mods; theme.json consumes the vars via `core/template-part[area]` styles. Decoupled from DOM structure. ~30 min. **Trigger:** any time after Phase 4 lands, before Phase 6.
+
+**P-PHASE-5B-PROPERTY-COVERAGE-AUDIT** — Phase 5b's button-presets-to-theme.json migration depends on WP 7.0's native theme.json button styling covering every property the old CSS-bridge emitted. The pre-shipped audit was skipped. If any property is uncovered, a slim PHP shim is needed. Verify during the Phase 5B-INERT-CUSTOMISER-OUTPUT follow-up. **Cost if uncovered:** any uncovered property silently no-ops on affected buttons.
+
+**P-UNEXPECTED-CONTENT-BACKLOG** — Pre-existing "block contains unexpected content" errors on sandybrown surfaced during the Phase 5b discussion. Separate cleanup task: open Site Editor, click "Attempt Block Recovery" on each affected block, save. NOT bundled with the Phase 5b inert-output fix — distinct technical debt. **Cost:** operators see editor warnings; usually safe to ignore but erodes trust.
+
+**P-EXPLICIT-DEFAULT-STYLE-RETROFIT** — Phase 1.5 ships 12 composite blocks relying on WP's implicit Default style (auto-injected by editor JS). Optional retrofit: explicitly register a `'default'` style with `'is_default' => true` per block. Benefits: control over the label (could be "Standard"), control over first-insert style. Cost: 12 file edits + 1 redeploy. **Decision deferred — current implicit-Default behaviour is fine; revisit if operator UX feedback flags it.**
+
+**P-WPCS-FUNCTIONS-PHP-DEBT** — `theme/sgs-theme/functions.php` carries 58 pre-existing WPCS errors (short array syntax `[]` vs `array()`, multi-line function call formatting). Pre-dates current session. Cleanup is mechanical — run `phpcbf --standard=WordPress theme/sgs-theme/functions.php` then review. ~10 min. **Trigger:** any time; no blocker.
 
 ## Opened 2026-05-21 (architecture session — 31-decision programme)
 

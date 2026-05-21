@@ -1,5 +1,41 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-21 (architecture session — 3 additional lessons appended below QC-trio section: stale-doc regression + per-block porting anti-pattern + Gemini fabrication pattern; plus QC gate structural enforcement rule D31)
+**Last updated:** 2026-05-22 (Phase 1.5 session — verify-wp-api-surface lesson appended at top)
+
+## 2026-05-22 — Verify WP API surface before dismissing static-analyser warnings (blub.db row 283)
+
+### What happened
+
+Phase 1.5 dispatched 12 Sonnet subagents to author PHP sibling files at `plugins/sgs-blocks/includes/variations/sgs-<block>-variations.php`. Each file called `register_block_variation()` — a PHP function I had assumed existed in WP core. intelephense flagged 6 "Undefined function" warnings. I dismissed them, telling Bean: "PHP falls back from namespace to global, intelephense doesn't have WP stubs loaded, these are false positives."
+
+The first half was correct general behaviour. The second half — that the global function exists — was the assumption I never verified. `register_block_variation()` has never been a PHP function in WordPress; it's a JavaScript-only API (`wp.blocks.registerBlockVariation`). The PHP error PHP reported ("Call to undefined function `SGS\\Blocks\\register_block_variation`") used the originally-qualified name because that was the first lookup attempted; the fallback to global silently found nothing.
+
+All 12 files deployed to sandybrown fatalled on the `init` hook. Site returned HTTP 500 across every entry point. Rollback took 30 seconds; debug + diagnose took ~3 hours across two sessions.
+
+### The rule (Decision D32 + D33)
+
+When a static analyser (intelephense, phpstan, psalm, equivalent) flags an "Undefined function" warning on what looks like a WordPress core API call, treat it as a real signal — NOT a false positive — until verified against actual WP core source. Cheap check: `curl -s "https://developer.wordpress.org/reference/functions/<name>/" -o /dev/null -w "%{http_code}\n"`. If 404, the function doesn't exist — stop.
+
+Two true general facts ("intelephense lacks WP stubs" + "PHP falls back to global") do NOT add up to "the warning is noise" without source verification. Each statement is independently true; the conclusion requires evidence the statements don't supply.
+
+### How to apply
+
+1. Static-analyser warning on a WP-prefixed call (`register_`, `wp_`, `get_block_`, `add_filter`, etc.) → one curl to developer.wordpress.org before dismissing.
+2. As a sanity-check: `grep "function <name>" <wordpress-stubs.php>` against the vendored stub library if available.
+3. Mass-dispatch work using a new WP API call → canary-deploy ONE file first. Run the empirical check (REST query, Playwright, equivalent) before mass-deploying the rest. The 12-file no-canary mass-deploy is the canonical anti-pattern.
+4. Pre-deploy multi-model QC panel runs BEFORE deploy, not after. Re-sequence any phase plan that places it post-deploy.
+
+### Sibling rules
+
+- `feedback_verify_rendered_output_not_internal_metrics` (blub.db row 194) — internal metrics (`php -l` clean, `hex` grep clean) prove inputs, not outcomes. Whether the called function exists is an OUTCOME check.
+- `feedback_multi_model_qc_before_commit` (blub.db row 255) — multi-model panel before commit. Phase 1.5 had it scheduled AFTER deploy; that's wrong sequencing.
+- `feedback_extend_measurement_set_when_human_eye_disputes` (blub.db row 207) — inverse: when measurement disputes the eye, extend measurement. This one: when static-analyser disputes assumed-correct code, verify the assumption against authoritative source.
+
+### Files affected
+
+- 12 sibling files in `plugins/sgs-blocks/includes/variations/` — all rewritten using Path B (`add_filter('get_block_type_variations', ...)`), validated via canary deploy + REST query, shipped at commit `cc541e94`
+- `.claude/plans/phase-1.5-variations-styles-default-styles.md` — needs sequencing amendment: canary-first + QC panel before deploy (note added to plan; full amend at archive time)
+
+---
 
 ## 2026-05-21 — Architecture session lesson: QC gate must be structural (blub.db row 281)
 
