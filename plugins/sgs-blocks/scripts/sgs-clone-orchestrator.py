@@ -2090,6 +2090,32 @@ def stage_9_report(boundary: dict, match: dict, slot_list: dict, extract: dict, 
 
 
 # ---------------------------------------------------------------------------
+# Decision 6 helper — auto-derive --client from mockup path
+# ---------------------------------------------------------------------------
+
+def _derive_client_from_mockup_path(mockup_path: Path) -> "str | None":
+    """Walk the resolved mockup path's parents looking for a sites/<client>/ ancestor.
+
+    Returns the client slug (e.g. 'mamas-munches') when found, or None when the
+    mockup does not live under a sites/ directory (e.g. absolute path outside repo,
+    or a flat path with no sites/ component).
+
+    Examples:
+        sites/mamas-munches/mockups/homepage/index.html  -> 'mamas-munches'
+        /abs/path/sites/indus-foods/mockups/page.html    -> 'indus-foods'
+        /tmp/mockup.html                                 -> None
+    """
+    try:
+        resolved = Path(mockup_path).resolve()
+    except Exception:
+        return None
+    for parent in resolved.parents:
+        if parent.parent.name == "sites":
+            return parent.name
+    return None
+
+
+# ---------------------------------------------------------------------------
 # Driver
 # ---------------------------------------------------------------------------
 
@@ -2099,7 +2125,12 @@ def main():
     parser.add_argument("--section", type=str, default=None, help="CSS selector for a single section")
     parser.add_argument("--auto-section", action="store_true", help="Auto-detect all top-level sections (Phase 8 forward)")
     parser.add_argument("--block", type=str, default=None, help="(deprecated; ignored when voter present) target block slug")
-    parser.add_argument("--client", type=str, required=True)
+    parser.add_argument(
+        "--client", type=str, default=None,
+        help="Client slug (e.g. mamas-munches). When omitted, auto-derived from the "
+             "mockup path by walking up to find a sites/<client>/ parent directory. "
+             "Stage 10 (style activation) fires only when the client slug is known.",
+    )
     parser.add_argument("--page", type=str, required=True)
     parser.add_argument("--media-map", type=Path, default=None)
     parser.add_argument("--viewport", type=int, default=1440)
@@ -2164,6 +2195,17 @@ def main():
              "(default: False — validation is required)",
     )
     args = parser.parse_args()
+
+    # Decision 6 (Phase 0): auto-derive --client from mockup path when not supplied.
+    # Walks the resolved mockup path's parents looking for a sites/<client>/ ancestor.
+    # e.g. sites/mamas-munches/mockups/homepage/index.html -> mamas-munches
+    # Falls back to None (Stage 10 skipped) when no sites/ ancestor is found.
+    if args.client is None:
+        args.client = _derive_client_from_mockup_path(args.mockup)
+        if args.client:
+            print(f"[orchestrator] --client auto-derived from mockup path: {args.client}")
+        else:
+            print("[orchestrator] --client not supplied and could not be derived from mockup path — Stage 10 will be skipped")
 
     if not args.section and not args.auto_section:
         sys.exit("ERROR: provide --section <selector> or --auto-section")
