@@ -20,6 +20,28 @@
             "timeout": 5
           }
         ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python C:/Users/Bean/Projects/small-giants-wp/.claude/hooks/qc-on-converter-edit.py",
+            "timeout": 8
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python C:/Users/Bean/Projects/small-giants-wp/.claude/hooks/qc-on-converter-edit.py",
+            "timeout": 8
+          }
+        ]
       }
     ]
   }
