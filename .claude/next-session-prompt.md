@@ -4,14 +4,14 @@ project: small-giants-wp
 session_tag: small-giants-wp-2026-05-23-phase-4-sgs-update-rebuild
 generated: 2026-05-22
 parent_session: small-giants-wp-2026-05-22-phases-0.5-1-1.5-2-3
-primary_goal: "Execute Phase 4 — /sgs-update rebuild. 9-stage holistic refresh script (sgs-update-v2.py) co-existing with old sgs-update.py. ~120-240 min build. The largest single phase in the architecture programme. Plan + cold prompt in .claude/plans/phase-4-sgs-update-rebuild.md."
+primary_goal: "Execute Phase 4 — /sgs-update rebuild. 9-stage holistic refresh script (sgs-update-v2.py) co-existing with old sgs-update.py. ~120-240 min build. The largest single remaining phase. Then Phase 7 (AI Connectors + WP-skills audit) is the final tail. Plan + cold prompt in .claude/plans/phase-4-sgs-update-rebuild.md."
 ---
 
 # Next session — Phase 4 /sgs-update rebuild
 
 Invoke `/autopilot` before doing anything else.
 
-You are picking up a substantially-advanced architecture programme. Phases 0/0.5/1/1.5/2/3 + Session B's 5a/5b are all SHIPPED. The remaining critical-path work is Phase 4 (`/sgs-update` rebuild, this session), Phase 6 (markup examples + WP 7.0 audits, after 4), and Phase 7 (AI Connectors + skills audit, after 6). One latent bug from Session B's 5b also needs the Option A fix (CSS custom properties on :root for the inert-Customiser-output issue).
+You are picking up an architecture programme with TWO phases remaining: Phase 4 (`/sgs-update` rebuild, this session) and Phase 7 (AI Connectors + skills audit, after 4). All other phases (0/0.5/1/1.5/2/3/5a/5b + 5b-paint-fix + 6) shipped across the 2026-05-21 + 2026-05-22 work blocks.
 
 ## Mandatory reads BEFORE Phase 4 dispatch
 
@@ -57,11 +57,11 @@ Pick at session open. Recommended: Option 2 (Stages 1+7+8) — get the scaffold 
 
 ## After Phase 4 ships
 
-Two follow-up items remain on the critical path:
+One follow-up remains on the critical path:
 
-1. **Phase 5b inert-Customiser-output fix** — Session B's renderers target `.wp-site-header`/`.wp-site-footer`; SGS template parts use generic wrappers. Fix: renderer emits `:root { --sgs-header-bg: ...; }` based on saved theme_mods; theme.json consumes the vars. Documented at `.claude/parking.md → P-PHASE-5B-INERT-CUSTOMISER-OUTPUT`. ~30 min.
-2. **Phase 6** — markup examples + supports backfill + WP 7.0 block.json audits + Lucide REST. ~140-260 min. Now unblocked since Phase 1.5 shipped.
-3. **Phase 7** — AI Connectors + 10 WP-skills audit. ~75-165 min. After Phase 6.
+1. **Phase 7** — AI Connectors + 10 WP-skills audit. ~75-165 min. Final phase of the architecture programme.
+
+Phase 5b paint fix shipped at commit `0ef032fe` (Session B, 2026-05-22 — Customiser paint targets `header.wp-block-template-part` / `footer.wp-block-template-part`). Phase 6 shipped at `d307c8b0` (Session B, 2026-05-22). Both completed while Session A was running Phases 2 + 3 + housekeeping.
 
 ## Session close — when Phase 4 ships
 
@@ -81,11 +81,11 @@ Two follow-up items remain on the critical path:
 | 1.5 | SHIPPED 2026-05-22 | `cc541e94` |
 | 2 | SHIPPED 2026-05-22 | `aca7c98` (skills repo) |
 | 3 | SHIPPED 2026-05-22 | `79158da5` |
-| 4 | PENDING (this session) | — |
+| **4** | **PENDING (this session)** | — |
 | 5a | SHIPPED 2026-05-21 (Session B) | `43a93df9` |
-| 5b | SHIPPED 2026-05-21 (Session B) — latent bug | `60220b13` |
-| 5b-fix | PENDING (Option A: CSS vars on :root) | — |
-| 6 | PENDING (after Phase 4) | — |
-| 7 | PENDING (after Phase 6) | — |
+| 5b | SHIPPED 2026-05-21 (Session B) | `60220b13` |
+| 5b paint fix | SHIPPED 2026-05-22 (Session B) | `0ef032fe` |
+| 6 | SHIPPED 2026-05-22 (Session B) | `d307c8b0` |
+| **7** | **PENDING (after Phase 4)** | — |
 
-Also pending from this session: 5 pre-existing modified files + 2 untracked files left untouched. The deleted Spec 15 stub can be staged + committed any time (it's just a tombstone for an absorbed spec). The Session B Phase 5b files need the inert-output fix BEFORE committing — they're functional but the rendered output doesn't apply.
+**Other state to be aware of:** the deleted Spec 15 stub (tombstone for absorbed spec) plus a few modified files (`lucide-icons.php`, `mamas-munches.css`) remain uncommitted pre-existing. They've persisted across multiple sessions and aren't urgent.
