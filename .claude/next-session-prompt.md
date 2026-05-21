@@ -4,7 +4,7 @@ project: small-giants-wp
 session_tag: small-giants-wp-2026-05-22-architecture-execution
 generated: 2026-05-21
 prior_session: small-giants-wp-2026-05-21-architecture-staging
-primary_goal: "Execute the live-correctness critical path (Phases 0.5 → 1 → 3 → 5a) of the architecture programme. Each phase has a pre-written cold prompt below. Dispatch sequentially with /qc-council gates between. Goal: zero mid-execution interrupts. CALIBRATED EFFORT (post-Bean correction): ~3-6 hrs sequential including QC gates between phases (not 10-11 hrs — see effort-pert.md correction note). One long session OR two normal sessions."
+primary_goal: "Execute the architecture programme. Each of 9 phases has a full per-step plan with copy-paste-ready cold prompt at .claude/plans/phase-<N>-*.md. Dispatch sequentially with /qc-council gates between, OR open multiple parallel sessions per the §13 parallel-session plan. Goal: zero mid-execution interrupts beyond QC-gate verdicts + commit gates + eyes-on verification. CALIBRATED EFFORT (post-correction): critical path (0.5→1→3→5a) ~3-6 hrs; full programme sequential ~13-23 hrs; full programme with 4 parallel sessions ~5-8 hrs wall-clock."
 ---
 
 # Next session — Auto-runnable execution of live-correctness critical path
@@ -434,26 +434,37 @@ Pre-existing uncommitted changes untouched. No git stash. No reset --hard. Direc
 
 ## Session close
 
-After Phases 0.5 + 1 + 3 + 5a all commit + verify:
+After all dispatched phases commit + verify:
 
-1. Run `/qc-council` summary on all 4 phases as a single proposal set. Confirms live-correctness critical path closed.
-2. Run `/handoff` to update `.claude/handoff.md` + `.claude/state.md` + write the next `next-session-prompt.md` for Phases 2 + 4 + 5b + 6 + 7 (the parallel-session work).
-3. POST a summary to blub.db /api/knowledge with `category='session-completion'` + tags `[architecture-execution, critical-path, sgs]`.
+1. Run `/qc-council` summary on the session's phases as a single proposal set
+2. Run `/handoff` to update `.claude/handoff.md` + `.claude/state.md` + write the next `next-session-prompt.md`
+3. POST summary to blub.db `/api/knowledge` with `category='session-completion'`
 
-## What stays in next-session-prompt for the FOLLOWING session
+## All 9 phase plans now exist — full programme auto-runnable
 
-The 4 remaining phases (2, 4, 5b, 6, 7) can run in parallel sessions:
-- Session B (parallel): Phase 2 + Phase 3 sequentially — wait, Phase 3 ships this session. Just Phase 2.
-- Session C (parallel): Phase 5a + 5b sequentially — wait, Phase 5a ships this session. Just Phase 5b.
-- Session D (parallel): Phase 6 + 7 sequentially.
+| Phase | Plan file | Calibrated time | Parallel session candidate |
+|---|---|---|---|
+| 0 | (shipped at `aec54882`) | — | — |
+| 0.5 | `.claude/plans/phase-0.5-structural-qc-hook.md` | ~25 min | Session A |
+| 1 | `.claude/plans/phase-1-db-merge.md` | ~45-75 min | Session A (foundation) |
+| 2 | `.claude/plans/phase-2-variations-indexing.md` | ~40-60 min | Session B (parallel after 1) |
+| 3 | `.claude/plans/phase-3-inner-block-patterns-retirement.md` | ~60-105 min | Session A or B (after 1) |
+| 4 | `.claude/plans/phase-4-sgs-update-rebuild.md` | ~140-260 min | Session A (after 1) — bottleneck |
+| 5a | `.claude/plans/phase-5a-variation-system-kill.md` | ~60-105 min | Session C (after 1) |
+| 5b | `.claude/plans/phase-5b-customiser-migration.md` | ~205-385 min | Session C (after 5a) — highest variance |
+| 6 | `.claude/plans/phase-6-backfill-audits-lucide-rest.md` | ~135-215 min | Session D (after 1+2) |
+| 7 | `.claude/plans/phase-7-wp7-alignment.md` | ~75-165 min | Session D (after Phase 6) |
 
-Updated parallel plan for next-next session:
-- Session A2: Phase 4 (the big one — /sgs-update rebuild + Option B port, ~7.6 hr ADHD-taxed)
-- Session B2: Phase 2 (variations indexing, ~1.8 hr)
-- Session C2: Phase 5b (Customiser migration, ~14.9 hr — biggest bottleneck)
-- Session D2: Phases 6 + 7 (audits + WP 7.0 alignment, ~10.9 hr combined)
+**Parallel session dispatch plan** (Bean opens 4 VS Code windows for max wall-clock compression):
 
-Cold prompts for each get written during the close-out /handoff at end of THIS session.
+- **Session A** — critical path: 0.5 → 1 → 4 sequentially (~3.5-7 hr including QC gates)
+- **Session B** — after Phase 1 lands: 2 → 3 sequentially (~1.7-3 hr)
+- **Session C** — after Phase 1 lands: 5a → 5b sequentially (~4.4-8 hr) ← longest chain
+- **Session D** — after Phase 1+2 land: 6 → 7 sequentially (~3.5-6 hr)
+
+Wall-clock with 4 parallel sessions = max(A, B, C, D) = **~4.4-8 hr** (Session C bottleneck).
+
+Each session opens with `.claude/next-session-prompt.md` (or session-specific variant) → autopilot → first phase dispatches. Per-session Bean interrupts: QC-gate verdicts + commit-gate acknowledgements + eyes-on verification on visible changes.
 
 ---
 
