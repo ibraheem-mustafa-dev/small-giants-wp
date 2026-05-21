@@ -1,17 +1,80 @@
 ---
 doc_type: plan
 project: small-giants-wp
-plan_name: convention-rollout-and-m9-completion
+plan_name: architecture-programme-2026-05-21
 created: 2026-05-10
-last_updated: 2026-05-18
-phase_count: 8
-total_estimate_min: 540-720 (9-12 hours focused)
-status: archived — phases 7+8 closed since original write; active work is Phase 9. P-WP-ALIGNMENT-WIDTH-SYSTEM milestone CLOSED 2026-05-18 (3 commits — c7f42003 Task 0 pages-not-posts, 86172812 Tasks 2-3 widthMode infra, 16721374 docs walk; HEAD 16721374). Spec 17 Waves 1+2+2.5+3 COMPLETE 2026-05-18 (22 PHP classes, 12 WP-CLI commands, Floating UI Customiser replacement). Active execution doc is .claude/next-session-prompt.md (v8 — orchestrator re-run + intra-section pivot). This file kept as historical audit trail.
-successor_plan: .claude/next-session-prompt.md (v8 — orchestrator re-run + intra-section pivot, 2026-05-19 onwards)
+last_updated: 2026-05-21
+phase_count: 10
+total_estimate_min: 1680-1920 (28-32 hours, 8-10 sessions)
+status: active — Phase 0 SHIPPED 2026-05-21 (commit aec54882). 8 phases pending. Pixel-diff closure (G1-G5 + F5) is embedded within Phases 1 + 3. Architecture programme is the master plan as of 2026-05-21.
+prior_plan_name: convention-rollout-and-m9-completion (archived below)
+architecture_staging_doc: .claude/plans/2026-05-21-architecture-staging.md
 phase_chain:
   - phase-7-spec-16-converter-rollout — CLOSED 2026-05-13
   - phase-8-section-by-section-closure — CLOSED 2026-05-16 (22 commits across 3 sessions)
   - phase-9-brand-hero-evidence-walkdown — ACTIVE (P-WP-ALIGNMENT-WIDTH-SYSTEM milestone CLOSED 2026-05-18)
+---
+
+# Plan — SGS Framework Architecture Programme 2026-05-21
+
+Canonical detail in `.claude/plans/2026-05-21-architecture-staging.md`.
+
+## What this programme does
+
+Five things change in the framework across 8 phases + 30 decisions:
+
+1. **DB consolidation** — Three databases (blocks.db + hooks.db + sgs-framework.db) merged into sgs-framework.db. One source of truth for all WP + SGS knowledge. All skills query one DB.
+
+2. **Style-variation system killed** — Privacy leak closed (per-client overlay JSONs visible to every install). Replaced with: one `theme.json` per site, local snapshots in `sites/<client>/theme-snapshot.json`, new push CLI.
+
+3. **INNER_BLOCK_PATTERNS retired** — Hardcoded two-entry dict in `convert.py` replaced by DB-backed `blocks.parent_block` + `slot_synonyms.standalone_block` lookups.
+
+4. **Button presets migrated to WP 7.0 theme.json** — Native pseudo-element support (`:hover`, `:focus`, etc.) makes the `wp_options.sgs_button_presets` + CSS bridge redundant.
+
+5. **`/sgs-update` rebuilt as 9-stage holistic refresh** — Pulls from 10 canonical sources, per-release verification gate, drift-check-dispatcher integration.
+
+## Phase status
+
+| Phase | Decisions | Status | Wall-clock | Parallelisable? |
+|---|---|---|---|---|
+| **0** | 3, 4, 5, 6 | SHIPPED `aec54882` | ~85 min | n/a |
+| **0.5** | 31 | PENDING | ~20 min | YES — independent |
+| **1** | 1, 2, 11 | PENDING | ~1.5 hr | NO — blocks 2, 3, 4 |
+| **2** | 7, 8 | PENDING | ~1.5 hr | YES — parallel with 3 |
+| **3** | 24 (gate), 12 | PENDING | ~1.5 hr | YES — parallel with 2 |
+| **4** | 13, 30 | PENDING | ~5.5 hr | YES — parallel with 5a, 5b, 6, 7 |
+| **5a** | 14', 16', 17', 18, 19 | PENDING | ~2 hr | YES — parallel with 4, 5b |
+| **5b** | 21, 22, 27 | PENDING | ~6-10 hr | YES — parallel with 4, 5a |
+| **6** | 9, 10, 23, 25, 28 | PENDING | ~5 hr | YES — needs Phase 1+2 |
+| **7** | 26, 29 | PENDING | ~6 hr | YES — anytime after Phase 1 |
+
+**Parallel dispatch (after Phase 1):**
+- Session A: Phase 4 (`/sgs-update` rebuild)
+- Session B: Phases 2 + 3 (variations + INNER_BLOCK_PATTERNS)
+- Session C: Phases 5a + 5b (variation kill + Customiser)
+- Session D: Phases 6 + 7 (audits + WP 7.0)
+
+**Critical path:** 0.5 → 1 → Phase 4. ~8 hr wall-clock total if 4 parallel sessions run.
+
+## Acceptance criteria (whole programme)
+
+- DB: sgs-framework.db is the single source of truth; blocks.db + hooks.db can be deleted
+- Style variations: zero per-client variation files in framework; each live site has ONE theme.json
+- INNER_BLOCK_PATTERNS: dict deleted; hero CTAs still render; adjacent-button grouping works
+- Button presets: `wp_options.sgs_button_presets` row deleted; values in theme.json; primary/secondary/outline render correctly
+- Customiser: header/footer/site-info admin pages migrated; live-preview works for colours + typography + spacing
+- WP 7.0: all 73 SGS blocks have `apiVersion: 3` + `role: content` + script-module text domains; pseudo-element styles render correctly
+- `/sgs-update`: 9-stage version idempotent; `--refresh-upstream` repopulates from 10 canonical sources; drift gate catches mismatches
+
+## Methodology guardrails (carry forward)
+
+- Read `pipeline-state/<run>/leftover-buckets.json` BEFORE conjecturing (blub.db 254)
+- Multi-model `/qc` panel BEFORE every converter/pipeline commit (blub.db 255)
+- Per-section cropped pixel-diff only (blub.db 256)
+- Schema enumeration BEFORE gap claims (blub.db 272)
+- Council predictions are hypotheses — empirical gate mandatory (blub.db 276)
+- Phase 0.5 structural QC hook ships BEFORE any other phase (Decision 31, blub.db 281)
+
 ---
 
 # Plan - SGS-BEM Convention Rollout + M9 Completion (ARCHIVED — historical audit trail)

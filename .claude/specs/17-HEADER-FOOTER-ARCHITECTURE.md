@@ -48,9 +48,19 @@ A single WP 6.9 architecture for header + footer template parts that gives every
 7. "Invalid block" warnings from stored-block schema mismatches
 8. No framework versioning strategy for evolving `theme.json` / block attributes
 
-## 3. Architecture in one paragraph
+## 3. Architecture in one paragraph (REVISED 2026-05-21)
 
-WP 6.9 already provides every primitive needed. The framework `parts/header.html` and `parts/footer.html` files contain a single `wp:pattern` reference each — the real markup lives in registered block patterns. Each pattern declares `blockTypes: ['core/template-part/header']` (or `footer`), surfacing it in the Site Editor's native "Replace" picker. When an operator activates a style variation in the Site Editor's Styles panel, the `save_post_wp_global_styles` action hook fires. SGS reads the active variation by parsing the `wp_global_styles` post directly (NOT via the private-ish `WP_Theme_JSON_Resolver` API), looks up the matching header + footer patterns, and writes their content into `wp_template_part` post records via `wp_insert_post()` with the correct `wp_template_part_area` taxonomy assignment. Each seeded record carries `_sgs_cloned_from_pattern_slug` post meta — re-clones gate on this for idempotence; operator-edited records have no such meta and are preserved. Site-specific data (logo, phone, email, address, opening hours, socials, copyright) is referenced via WordPress block bindings; the binding source `sgs/site-info` reads from a single global SGS Site Info store kept in `wp_options`. The operator manages that store through one admin page at *Appearance → SGS Site Info*. Empty bindings render friendly hints with deep-links to the admin page. Multi-site isolation is automatic via WordPress's per-site `wp_options` and `wp_template_part` storage. Layout swap, content edit, and "revert to default" all remain available via the Site Editor.
+> Per `.claude/plans/2026-05-21-architecture-staging.md` §6.4 — Decisions 18, 21.
+
+WP 6.9 already provides every primitive needed. The framework `parts/header.html` and `parts/footer.html` files contain a single `wp:pattern` reference each — the real markup lives in registered block patterns. Each pattern declares `blockTypes: ['core/template-part/header']` (or `footer`), surfacing it in the Site Editor's native "Replace" picker. Template parts are seeded in one of two ways: (1) on **first install**, the SGS plugin activation hook seeds the framework-default header and footer patterns automatically; (2) **at any time after install**, an operator explicitly runs `wp sgs seed-template-parts [--variation=<slug>]` from the CLI, or clicks the "Reset Header/Footer" button in the SGS admin. **The variation-activation auto-trigger (`save_post_wp_global_styles` hook) is REMOVED** — the WP style-variation system itself is deleted (Decision 18); the auto-seed trigger no longer has a firing event. Template parts are brand-agnostic containers whose content is swapped by the operator or pipeline; they are NOT coupled to any variation. Each seeded record carries `_sgs_cloned_from_pattern_slug` post meta — re-clones gate on this for idempotence; operator-edited records have no such meta and are preserved. Site-specific data (logo, phone, email, address, opening hours, socials, copyright) is referenced via WordPress block bindings; the binding source `sgs/site-info` reads from a single global SGS Site Info store kept in `wp_options`. The operator manages that store through one admin page at *Appearance → SGS Site Info*. Empty bindings render friendly hints with deep-links to the admin page. Multi-site isolation is automatic via WordPress's per-site `wp_options` and `wp_template_part` storage. Layout swap, content edit, and "revert to default" all remain available via the Site Editor. Header/footer admin pages are being migrated to the WP Customiser (Decision 21, Phase 5b) — see §Customiser migration below.
+
+**Three-concept distinction (Bean's correction — preserved):**
+
+| Concept | What it is | Fate |
+|---|---|---|
+| WP style variations (e.g. `mamas-munches.json`) | Per-client colour/typography overlay | **DELETED** — Decision 18 |
+| Header/footer template parts (centred, split, minimal) | Brand-agnostic starting templates | **100% PRESERVED** |
+| Block-level variations (`register_block_variation`) | Variants within one block (button primary/secondary/outline) | **PRESERVED** |
 
 ## 4. Hard constraints
 
@@ -156,39 +166,17 @@ Each FR carries: behaviour, acceptance criteria, model recommendation, 4-layer t
 
 **Plain English:** Activating a style variation seeds the matching header/footer pattern into `wp_template_part` DB records. Slug comparison + transient lock guard against races. Per-record post meta marks pipeline-generated content for safe re-clones. Resolves gap #1.
 
-### FR-S2-1 — `save_post_wp_global_styles` triggers seeding (slug comparison + transient lock)
+### FR-S2-1 — Variation-triggered seeding (RETIRED 2026-05-21 — see `.claude/plans/2026-05-21-architecture-staging.md` §6.4)
 
-**Behaviour:** Hook into `save_post_wp_global_styles`. Read the active style variation by parsing the `wp_global_styles` post content directly (`get_posts(['post_type' => 'wp_global_styles'])` → `json_decode($post->post_content)`) — NOT via private resolver API. Check variation manifest for matching pattern slugs. Write pattern content into `wp_template_part` records via `wp_insert_post()`. Guard logic uses SLUG COMPARISON, not timestamps (**M3**).
+The `save_post_wp_global_styles` auto-trigger is removed. The WP style-variation system (Decision 18) is deleted, so there is no variation-activation event to hook into. Seeding now occurs via two explicit paths only:
+1. Plugin activation hook (first-install auto-seed with framework defaults)
+2. Operator-explicit `wp sgs seed-template-parts [--variation=<slug>]` CLI or admin "Reset Header/Footer" button
 
-**Acceptance criteria:**
-- Hook fires only when `_sgs_last_seeded_variation` post meta on the `wp_template_part` record differs from the new active variation slug (**M3 + Council A3**)
-- A 5-second transient `sgs_seeding_in_progress` locks the seeding function entry point against concurrent REST autosave events (**M3**)
-- Capability gate: `current_user_can('edit_theme_options')` always checked
-- Variation read path documented with two layers: (a) preferred — `WP_Theme_JSON_Resolver::get_user_data_from_wp_global_styles()`; (b) fallback if signature changes — direct `get_posts` + `json_decode`
-- If variation manifest has no `headerPattern` or `footerPattern`, fall back to framework defaults from §S1; log structured notice
-- All writes wrapped try/catch; failures `error_log` and do not break variation save
-- Each seeded record carries `_sgs_last_seeded_variation` + `_sgs_last_seeded_at` + `_sgs_cloned_from_pattern_slug` post meta (FR-S7-4)
-- All three post-meta keys registered via `register_post_meta` with `auth_callback => fn() => current_user_can('edit_theme_options')` (**M4 + Council C1**)
+The seeder PHP class (`Sgs_Template_Part_Seeder`), the post meta (`_sgs_cloned_from_pattern_slug`, `_sgs_last_seeded_at`), and the idempotence guard are all **preserved** — only the hook trigger is removed.
 
-**Model:** Opus
-**Tests:** Mock variation switch asserts slug-comparison passes/fails correctly; concurrent REST POST test asserts exactly one seeding outcome (transient lock works); end-to-end variation activation lands the right pattern; spurious save events do not trigger seeding.
-**Depends on:** FR-S2-2, FR-S2-3, §S4, FR-S7-4
-**Universal-benefit:** Yes
+### FR-S2-2 — Style variation manifest header/footer fields (RETIRED 2026-05-21 — see `.claude/plans/2026-05-21-architecture-staging.md` §6.4)
 
-### FR-S2-2 — Style variation manifest declares header + footer patterns
-
-**Behaviour:** Each variation JSON gets `settings.custom.sgs = { "headerPattern": "<slug>", "footerPattern": "<slug>" }`. Values sanitised against `WP_Block_Patterns_Registry`.
-
-**Acceptance criteria:**
-- All current variations (`mamas-munches.json`, `indus-foods.json`, `helping-doctors.json`) extended
-- Variations without the field fall back to framework defaults
-- Read path: parse JSON file directly OR via `WP_Theme_JSON_Resolver::get_theme_data()` — spec confirms round-trip
-- Theme-validity check still passes
-
-**Model:** Sonnet
-**Tests:** JSON parse + structural assertion; theme validity unchanged; integration test with each variation.
-**Depends on:** §S6
-**Universal-benefit:** Yes
+The `settings.custom.sgs.headerPattern` / `footerPattern` fields in variation JSONs are no longer needed because (a) the variation JSONs themselves are deleted (Decision 18/19) and (b) seeding is now operator-explicit rather than variation-triggered. The framework-default patterns serve as the seeding source unless the operator specifies `--variation=<slug>` referencing a pattern registered by that name.
 
 ### FR-S2-3 — Programmatic re-seed admin action
 
@@ -395,21 +383,9 @@ Each FR carries: behaviour, acceptance criteria, model recommendation, 4-layer t
 **Depends on:** §S4, §S3
 **Universal-benefit:** Yes
 
-### FR-S5-2 — Style variation picker UI (retires `active_theme_style` theme_mod; never accepts post_id from user input)
+### §S5-2 — Style Variation Picker (RETIRED 2026-05-21 — see `.claude/plans/2026-05-21-architecture-staging.md` §6.4)
 
-**Behaviour:** Dropdown of registered variations. "Activate" button POSTs nonce; activation writes to `wp_global_styles` via `wp_update_post()` — but post ID is HARD-CODED (looked up via the resolver), never accepted from form POST (**Council N1**). Legacy `active_theme_style` theme_mod migrated to new mechanism on plugin activation.
-
-**Acceptance criteria:**
-- Dropdown sourced from `WP_Theme_JSON_Resolver::get_style_variations()`
-- POST handler has: nonce check + capability check + DOES NOT read `post_id` from `$_POST` (lookup hard-coded; **Council N1**)
-- `save_post_wp_global_styles` fires (verify via test that the FR-S2-1 seeding triggers)
-- Legacy `active_theme_style` theme_mod backed up to `sgs_legacy_theme_mods_backup` (1 release cycle) then deleted
-- Migration reversible via WP-CLI
-
-**Model:** Opus
-**Tests:** Dropdown lists all variations; POST without nonce → 403; POST with injected `post_id` → still writes to correct `wp_global_styles` record (input ignored); seeding fires post-activation; legacy theme_mod migrated cleanly.
-**Depends on:** FR-S2-1
-**Universal-benefit:** Yes
+`Sgs_Variation_Picker`, `class-variation-rest.php`, and `class-sgs-legacy-theme-mod-migrator.php` are DELETED (Decision 18). The WP style-variation system is removed entirely. The SGS admin menu no longer includes a "Style Variation Picker" submenu item. Operators manage per-site branding through the WP Site Editor → Styles panel (where they edit the site's single `theme.json` directly) and through the `push-theme-snapshot.py` CLI for framework-level client deployments.
 
 ### FR-S5-3 — WP-CLI surface (`wp sgs ...`) — new FR per Council M6
 
@@ -702,10 +678,42 @@ Spec ships successfully if all observable on sandybrown canary site:
 | 2026-05-19 | v1 draft | Initial draft after research brief + Bean Q&A |
 | 2026-05-19 | v2 | Council-revised. Applied 10 must-fixes (M1-M10) + 5 recommended additions (A1-A5). Added FR-S5-3 (WP-CLI surface), FR-S7-4 (re-clone idempotence meta). Hardened §7.1 with 5 new requirements. Added 4 new risks (R7-R10). Logo workflow stays in Site Editor (M8). REST pattern endpoint rejected (Council A4). Spec marked council-passed, ready to implement. |
 | 2026-05-19 | v2.1 | Promoted P-S17-A to in-scope. Added §S8 Two-Axis Style Variations (FR-S8-1 + FR-S8-2). Updated §6 header to 8 spec sections. All 8 existing variations split into `styles/colours/` + `styles/typography/` axes; 16 new files created; 8 bundled top-level files annotated. 44/44 tests passing. |
+| 2026-05-21 | v3 | Architecture staging doc decisions applied: §3 architecture paragraph rewritten (variation-triggered seeding removed; explicit CLI / activation hook replaces it). FR-S2-1 and FR-S2-2 retired (variation trigger no longer exists). §S5-2 variation picker retired (Decision 18 deletes the variation system). §S8 two-axis style variations retired (variations deleted entirely). New §Customiser migration section added (Decision 21). Cross-reference to Spec 18 added as canonical Customiser pattern. |
 
 ---
 
-*End of Spec 17 v2. Council-approved. Ready for parallel-subagent implementation.*
+## §Customiser Migration — Header/Footer/Site Info (Decision 21, Phase 5b)
+
+> Per `.claude/plans/2026-05-21-architecture-staging.md` §6.4 — Decision 21.
+
+The SGS admin pages for Header Rules, Footer Rules, and Site Info are being migrated to the **WP Customiser** (Phase 5b), following the `Sgs_Floating_UI_Customiser` pattern established in Spec 18 (the canonical "how to register an SGS Customiser section" reference).
+
+**Why:** The current save→refresh→navigate cycle for Header/Footer Rules is poor UX. Customiser live preview gives operators immediate visual feedback.
+
+**Three new Customiser sections:**
+- `Sgs_Header_Customiser` → Customiser section "SGS Header" with `postMessage` live preview for colours/typography/spacing
+- `Sgs_Footer_Customiser` → Customiser section "SGS Footer" with `postMessage` live preview
+- `Sgs_Site_Info_Customiser` → Customiser section "SGS Site Info" — for simple fields, `postMessage`; for rules engines (regex-backed conditions), `refresh` transport (live preview impractical)
+
+**WP 7.0 View Transitions (Decision 27):** When these sections land, call `wp_enqueue_view_transitions_admin_css()` so navigation between Customiser panels gets native smooth transitions. Phase 5b implementer MUST verify this function fires in Customiser context (not just standard admin); if it doesn't, fall back to manual `customize_controls_enqueue_scripts` hook emitting the transitions CSS directly.
+
+**Preserved infrastructure (NOT Customiser-migrated):**
+- WP-CLI command surface (all 12 `wp sgs` commands stay as-is)
+- `Sgs_Header_Rules` + `Sgs_Footer_Rules` PHP classes (data layer unchanged)
+- `Sgs_Site_Info` PHP class + `sgs/site-info` block bindings source (unchanged)
+- The existing admin pages stay until Phase 5b ships (no "retire before replacement" pattern)
+
+**Cross-reference:** Spec 18 (`specs/18-SGS-FLOATING-UI.md`) is the canonical reference for how to register an SGS Customiser section — `Sgs_Floating_UI_Customiser` is the pattern to follow for `postMessage` transport + `wp_options` backing + capability gating.
+
+---
+
+## §S8 Two-Axis Style Variations (RETIRED 2026-05-21 — see `.claude/plans/2026-05-21-architecture-staging.md` §6.4)
+
+The `styles/colours/` and `styles/typography/` axis split is retired along with the entire WP style-variation system (Decision 18). The 16 axis files and 8 updated bundled files described in FR-S8-1 and FR-S8-2 are deleted. Per-site branding now lives in `sites/<client>/theme-snapshot.json` (Decision 19).
+
+---
+
+*End of Spec 17 v3. Architecture staging doc decisions applied 2026-05-21.*
 
 
 ---

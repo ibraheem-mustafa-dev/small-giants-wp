@@ -16,6 +16,7 @@
 
 generated: 2026-05-15
 last_trimmed: 2026-05-21
+last_updated: 2026-05-21
 project: small-giants-wp
 
 canonical_docs:
@@ -202,96 +203,97 @@ canonical_docs:
 # instead of reading these files. See feedback_read_leftover_buckets_*.md.
 pipeline_run_artefacts:
   base_path: "pipeline-state/<client>-<page>-<YYYY-MM-DD-HHMMSS>/"
+  artefacts:
 
-  - filename: leftover-buckets.json
-    doc_type: orchestrator-output
-    owns: "Stage 9 gap classification — every converter miss bucketed by (section, slot, reason) into 5 buckets: unrecognised_class, unrecognised_section, extraction_failed, animation_unclassified, structural_mismatch_or_orphan."
-    read_when: "Diagnosing converter quality, pixel-diff gaps, or any /sgs-clone output problem. ALWAYS read FIRST before conjecturing about causes."
-    writer: plugins/sgs-blocks/scripts/recogniser/leftover-bucket-router.py
+    - filename: leftover-buckets.json
+      doc_type: orchestrator-output
+      owns: "Stage 9 gap classification — every converter miss bucketed by (section, slot, reason) into 5 buckets: unrecognised_class, unrecognised_section, extraction_failed, animation_unclassified, structural_mismatch_or_orphan."
+      read_when: "Diagnosing converter quality, pixel-diff gaps, or any /sgs-clone output problem. ALWAYS read FIRST before conjecturing about causes."
+      writer: plugins/sgs-blocks/scripts/recogniser/leftover-bucket-router.py
 
-  - filename: stage-9.json
-    doc_type: orchestrator-output
-    owns: "Stage 9 summary — coverage stats, autonomy_chain status, gap_review_report path, unmatched_sections list, operator_review_html_path."
-    read_when: "After leftover-buckets.json — for the orchestration-level context around the gaps."
+    - filename: stage-9.json
+      doc_type: orchestrator-output
+      owns: "Stage 9 summary — coverage stats, autonomy_chain status, gap_review_report path, unmatched_sections list, operator_review_html_path."
+      read_when: "After leftover-buckets.json — for the orchestration-level context around the gaps."
 
-  - filename: extract-result.json
-    doc_type: orchestrator-output
-    owns: "Stage 4 output — the actual emitted WP block markup + variation_css + extracted_attributes. The bridge between converter and visual-QA."
-    read_when: "Verifying converter emitted the expected markup before deploying or running pixel-diff."
+    - filename: extract-result.json
+      doc_type: orchestrator-output
+      owns: "Stage 4 output — the actual emitted WP block markup + variation_css + extracted_attributes. The bridge between converter and visual-QA."
+      read_when: "Verifying converter emitted the expected markup before deploying or running pixel-diff."
 
-  - filename: trace.jsonl
-    doc_type: orchestrator-output
-    owns: "Per-stage trace events including stage_4_converter_v2 fires + softfails. Use to confirm cv2-eligible routing fired for each boundary."
+    - filename: trace.jsonl
+      doc_type: orchestrator-output
+      owns: "Per-stage trace events including stage_4_converter_v2 fires + softfails. Use to confirm cv2-eligible routing fired for each boundary."
 
-  - filename: operator-review.html
-    doc_type: orchestrator-output
-    owns: "Human-readable Stage 9 surface that points the operator at what didn't translate. Open this in a browser for visual review of gaps."
+    - filename: operator-review.html
+      doc_type: orchestrator-output
+      owns: "Human-readable Stage 9 surface that points the operator at what didn't translate. Open this in a browser for visual review of gaps."
 
-  # Stage 9c sidecar logs — shipped 2026-05-19 per Spec 20. Replaces the
-  # chrome-skip-HTML-comment-leakage bug (Bug B) and consolidates trace
-  # events into operator-readable per-severity logs. summary.log always
-  # written; the other three only when their bucket has >=1 entry.
-  - filename: summary.log
-    doc_type: orchestrator-output
-    owns: "Stage 9c — one line per stage with event/error/warning counts. ALWAYS written on every pipeline run regardless of success/failure. Quick triage surface."
-    read_when: "After any pipeline run, before opening trace.jsonl. Skim for any non-zero error or warning column."
-    writer: plugins/sgs-blocks/scripts/orchestrator/surface_pipeline_logs.py
-    spec: .claude/specs/20-STRUCTURED-PIPELINE-LOG-SURFACING.md
+    # Stage 9c sidecar logs — shipped 2026-05-19 per Spec 20. Replaces the
+    # chrome-skip-HTML-comment-leakage bug (Bug B) and consolidates trace
+    # events into operator-readable per-severity logs. summary.log always
+    # written; the other three only when their bucket has >=1 entry.
+    - filename: summary.log
+      doc_type: orchestrator-output
+      owns: "Stage 9c — one line per stage with event/error/warning counts. ALWAYS written on every pipeline run regardless of success/failure. Quick triage surface."
+      read_when: "After any pipeline run, before opening trace.jsonl. Skim for any non-zero error or warning column."
+      writer: plugins/sgs-blocks/scripts/orchestrator/surface_pipeline_logs.py
+      spec: .claude/specs/20-STRUCTURED-PIPELINE-LOG-SURFACING.md
 
-  - filename: chrome-skipped.log
-    doc_type: orchestrator-output
-    owns: "Stage 9c — every chrome-skip event (header/footer/nav lifted out of post_content) with reason. Only written when at least one chrome-skip event fired."
-    read_when: "Investigating whether the mockup's header/footer/nav was correctly chrome-skipped vs leaked into block_markup."
-    writer: plugins/sgs-blocks/scripts/orchestrator/surface_pipeline_logs.py
+    - filename: chrome-skipped.log
+      doc_type: orchestrator-output
+      owns: "Stage 9c — every chrome-skip event (header/footer/nav lifted out of post_content) with reason. Only written when at least one chrome-skip event fired."
+      read_when: "Investigating whether the mockup's header/footer/nav was correctly chrome-skipped vs leaked into block_markup."
+      writer: plugins/sgs-blocks/scripts/orchestrator/surface_pipeline_logs.py
 
-  - filename: errors.log
-    doc_type: orchestrator-output
-    owns: "Stage 9c — every trace event with passed=false or error*/error_message fields. Only written when at least one error event fired."
-    read_when: "Triaging a failed or partial pipeline run. Open BEFORE diving into trace.jsonl."
-    writer: plugins/sgs-blocks/scripts/orchestrator/surface_pipeline_logs.py
+    - filename: errors.log
+      doc_type: orchestrator-output
+      owns: "Stage 9c — every trace event with passed=false or error*/error_message fields. Only written when at least one error event fired."
+      read_when: "Triaging a failed or partial pipeline run. Open BEFORE diving into trace.jsonl."
+      writer: plugins/sgs-blocks/scripts/orchestrator/surface_pipeline_logs.py
 
-  - filename: warnings.log
-    doc_type: orchestrator-output
-    owns: "Stage 9c — every soft-fail / BEM-lint violation / token-lint finding / wp-blocks-validation soft-fail. Only written when at least one warning event fired."
-    read_when: "After a passed run that 'feels off'. Warnings flag latent gaps that didn't break the pipeline but reduce output quality."
-    writer: plugins/sgs-blocks/scripts/orchestrator/surface_pipeline_logs.py
+    - filename: warnings.log
+      doc_type: orchestrator-output
+      owns: "Stage 9c — every soft-fail / BEM-lint violation / token-lint finding / wp-blocks-validation soft-fail. Only written when at least one warning event fired."
+      read_when: "After a passed run that 'feels off'. Warnings flag latent gaps that didn't break the pipeline but reduce output quality."
+      writer: plugins/sgs-blocks/scripts/orchestrator/surface_pipeline_logs.py
 
-  # Stage 10 output — shipped 2026-05-19. Only present when /sgs-clone was
-  # invoked with --deploy-target page:<id> or --deploy-target post:<id>.
-  - filename: extract.patched.json
-    doc_type: orchestrator-output
-    owns: "Stage 10 — block_markup with mockup-relative image URLs swapped to live WP media library URLs. Used by upload_and_patch.py to PATCH the target page/post via REST."
-    read_when: "Verifying which images were sideloaded + what final markup landed on the live page after Stage 10."
-    writer: plugins/sgs-blocks/scripts/orchestrator/upload_and_patch.py
-    spec: .claude/specs/16-DETERMINISTIC-CONVERTER-V2.md §12.11
+    # Stage 10 output — shipped 2026-05-19. Only present when /sgs-clone was
+    # invoked with --deploy-target page:<id> or --deploy-target post:<id>.
+    - filename: extract.patched.json
+      doc_type: orchestrator-output
+      owns: "Stage 10 — block_markup with mockup-relative image URLs swapped to live WP media library URLs. Used by upload_and_patch.py to PATCH the target page/post via REST."
+      read_when: "Verifying which images were sideloaded + what final markup landed on the live page after Stage 10."
+      writer: plugins/sgs-blocks/scripts/orchestrator/upload_and_patch.py
+      spec: .claude/specs/16-DETERMINISTIC-CONVERTER-V2.md §12.11
 
-  # Standard per-stage artefacts written by sgs-clone-orchestrator.py for
-  # every run. Cross-reference cloning-pipeline-flow.md per-stage entries
-  # for the canonical owns/writer/read_when per file.
-  - filename: extract.json
-    doc_type: orchestrator-output
-    owns: "Stage 4 full extraction record — block_markup + per-section extracted_attributes + variation_css + slot resolution. Sibling to extract-result.json (which is the Stage 4 summary)."
-    read_when: "Need the full Stage 4 output for cross-stage debugging or to diff against extract.patched.json."
+    # Standard per-stage artefacts written by sgs-clone-orchestrator.py for
+    # every run. Cross-reference cloning-pipeline-flow.md per-stage entries
+    # for the canonical owns/writer/read_when per file.
+    - filename: extract.json
+      doc_type: orchestrator-output
+      owns: "Stage 4 full extraction record — block_markup + per-section extracted_attributes + variation_css + slot resolution. Sibling to extract-result.json (which is the Stage 4 summary)."
+      read_when: "Need the full Stage 4 output for cross-stage debugging or to diff against extract.patched.json."
 
-  - filename: slot-list.json
-    doc_type: orchestrator-output
-    owns: "Stage 3 — per-boundary slot catalogue + canonical_source ratio (db vs auto-derived)."
-    read_when: "Diagnosing slot-resolution gaps; cross-reference with slot_synonyms DB table."
+    - filename: slot-list.json
+      doc_type: orchestrator-output
+      owns: "Stage 3 — per-boundary slot catalogue + canonical_source ratio (db vs auto-derived)."
+      read_when: "Diagnosing slot-resolution gaps; cross-reference with slot_synonyms DB table."
 
-  - filename: voter.json
-    doc_type: orchestrator-output
-    owns: "Stage 1 — convention voter output; per-boundary class_signature + convention classification."
-    read_when: "Stage 1 boundary detection or convention-classification questions."
+    - filename: voter.json
+      doc_type: orchestrator-output
+      owns: "Stage 1 — convention voter output; per-boundary class_signature + convention classification."
+      read_when: "Stage 1 boundary detection or convention-classification questions."
 
-  - filename: match.json
-    doc_type: orchestrator-output
-    owns: "Stage 2 — confidence-matrix results; per-boundary block-type match + confidence score."
-    read_when: "Stage 2 match quality questions or to confirm wp-blocks match cross-check fired (wired 2026-05-19)."
+    - filename: match.json
+      doc_type: orchestrator-output
+      owns: "Stage 2 — confidence-matrix results; per-boundary block-type match + confidence score."
+      read_when: "Stage 2 match quality questions or to confirm wp-blocks match cross-check fired (wired 2026-05-19)."
 
-  - filename: media-sideload-manifest.json
-    doc_type: orchestrator-output
-    owns: "Stage 4i — image-sideload manifest (dry-run by default). Lists every mockup image that would be uploaded to WP media library on a real deploy."
-    read_when: "Before Stage 10 runs OR when diagnosing image-related Stage 10 failures."
+    - filename: media-sideload-manifest.json
+      doc_type: orchestrator-output
+      owns: "Stage 4i — image-sideload manifest (dry-run by default). Lists every mockup image that would be uploaded to WP media library on a real deploy."
+      read_when: "Before Stage 10 runs OR when diagnosing image-related Stage 10 failures."
 
 # deprecated_docs section purged 2026-05-14 per Bean — superseded files
 # live at their archive paths (.claude/scratch/absorbed/ for specs,
@@ -307,17 +309,56 @@ pipeline_run_artefacts:
 #   - cloning-pipeline-flow-status-check.py — never built; planned future hook
 #   - role-templates-vs-property-suffixes-check.py — never built; planned future hook
 
+# Architecture session artefacts — added 2026-05-21. Single canonical record of 31 architectural
+# decisions + 4 strategic-plan session reports. architecture-staging.md is the working truth doc
+# until specs 01/02/11/16/17/18/19 + common-wp-styling-errors.md are revised in Phase C. After that
+# it archives to .claude/plans/archive/.
+architecture_session_artefacts:
+
+  - path: .claude/plans/2026-05-21-architecture-staging.md
+    scope: temporary_until_specs_absorbed
+    doc_type: architecture-staging
+    owns: "31 architectural decisions (2026-05-21 session). Canonical record until Specs 01/02/11/16/17/18/19 + common-wp-styling-errors are revised (Phase C). After Phase C ships, this file archives to .claude/plans/archive/."
+    update_triggers:
+      - spec_revision_landed
+      - phase_c_spec_revisions_complete
+
+  - path: .claude/reports/strategic-plan-2026-05-21/risk-assessment.md
+    scope: forever_session_artefact
+    doc_type: risk-pre-mortem
+    owns: "Pre-mortem risk assessment for the 8-phase architecture programme. Generated by /strategic-plan during the 2026-05-21 session."
+    update_triggers: []
+
+  - path: .claude/reports/strategic-plan-2026-05-21/effort-pert.md
+    scope: forever_session_artefact
+    doc_type: effort-estimate
+    owns: "PERT effort estimate for the 8-phase architecture programme. Generated by /strategic-plan during the 2026-05-21 session."
+    update_triggers: []
+
+  - path: .claude/reports/strategic-plan-2026-05-21/hidden-decisions.md
+    scope: forever_session_artefact
+    doc_type: hidden-decisions-review
+    owns: "Hidden-decisions review for the 8-phase architecture programme. Generated by /strategic-plan during the 2026-05-21 session."
+    update_triggers: []
+
+  - path: .claude/reports/2026-05-21-pattern-overrides-research.md
+    scope: forever_session_artefact
+    doc_type: research-finding
+    owns: "Research finding: WP 7.0 Pattern Overrides is orthogonal to converter logic (Decision 24 resolved). Keep DB-backed approach for Phase 3; Pattern Overrides is additive operator-UX layer in Phase 6."
+    update_triggers: []
+
 cold_start_reading_order:
   - 1. .claude/state.md
   - 2. .claude/handoff.md
   - 3. .claude/next-session-prompt.md
-  - 4. .claude/cloning-pipeline-flow.md (pipeline work) OR .claude/architecture.md (other)
-  - 5. .claude/plans/phase-N-*.md (active phase)
-  - 6. .claude/decisions.md (last 5-10 entries)
-  - 7. .claude/parking.md (last 5 entries)
-  - 8. Domain reference: cloning-pipeline-flow.md (absorbed tooling-map + skills-commands-map + db-tables-map) + specs/16-DETERMINISTIC-CONVERTER-V2.md (absorbed Spec 15 §12)
-  - 9. .claude/specs/common-wp-styling-errors.md (sections A-R catalogue — check BEFORE filing new "I've seen this" tickets)
-  - 10. pipeline-state/<latest-run>/leftover-buckets.json (MANDATORY before any converter-quality conjecture — see feedback_read_leftover_buckets_before_conjecturing.md)
+  - 4. .claude/plans/2026-05-21-architecture-staging.md (architecture programme — read §1 plain-English summary + §13 phase plan BEFORE dispatching any subagent)
+  - 5. .claude/cloning-pipeline-flow.md (pipeline work) OR .claude/architecture.md (other)
+  - 6. .claude/plans/phase-N-*.md (active phase)
+  - 7. .claude/decisions.md (last 5-10 entries)
+  - 8. .claude/parking.md (last 5 entries)
+  - 9. Domain reference: cloning-pipeline-flow.md (absorbed tooling-map + skills-commands-map + db-tables-map) + specs/16-DETERMINISTIC-CONVERTER-V2.md (absorbed Spec 15 §12)
+  - 10. .claude/specs/common-wp-styling-errors.md (sections A-R catalogue — check BEFORE filing new "I've seen this" tickets)
+  - 11. pipeline-state/<latest-run>/leftover-buckets.json (MANDATORY before any converter-quality conjecture — see feedback_read_leftover_buckets_before_conjecturing.md)
 
 retention_rules:
   - directory: .claude/scratch/

@@ -761,7 +761,120 @@ Mockup uses `<blockquote>` for brand-strip body; render emits `<section>`. Mocku
 
 Full evidence: `reports/2026-05-20-pipeline-root-gap-council/real-path-synthesis.md` + per-rater reports (A/B/C). Next-session plan: `.claude/next-session-prompt.md` (4-wave G1-G5 + F5 closure).
 
+## §16 — DB Consolidation (2026-05-21)
+
+> Per `.claude/plans/2026-05-21-architecture-staging.md` §6.1 — Decisions 1, 2, 11.
+
+Today three separate databases hold different parts of the WP + SGS knowledge surface:
+- `wp-blockmarkup-mcp`'s `blocks.db` — core block schemas, variations, supports, markup examples
+- `wp-devdocs-mcp`'s `hooks.db` — 7,283 WP hooks + 1,150 docs pages
+- `sgs-wp-engine`'s `sgs-framework.db` — SGS blocks, attributes, tokens, patterns, slot synonyms
+
+**Decision 1:** Add `source` column to `blocks`, `block_attributes`, and `block_supports` (values: `sgs`, `native_wp`, `third_party`). Import all `blocks.db` rows + all `hooks.db` hooks and docs into `sgs-framework.db`. After Phase 1 lands, every skill queries ONE database.
+
+**Decision 2:** Extend the `docs` table with `doc_type='cli-command'`. Seed from (a) Spec 19 SGS CLI Commands, (b) WP-CLI handbook content from `hooks.db`, (c) hand-curated SGS pipeline commands. Reuses existing schema rather than adding a new `cli_commands` table.
+
+**Decision 11:** Add `indexed_files` SGS tracking (`mtime` + `content_hash` per SGS `block.json` + style file) to enable incremental `/sgs-update` scans instead of full re-walks.
+
+**Post-merge DB heat-map update (§12.4–12.5):** Once Phase 1 lands, the `blocks` table gains all native_wp rows (from `blocks.db`'s ~280 core blocks + block variations); `block_attributes` gains the native_wp attribute rows; `block_supports` row count doubles from 404 to approximately 819 (merging SGS 404 + core 415). The three-DB topology becomes one-DB.
+
+---
+
+## §17 — Variations Table + Indexing (2026-05-21)
+
+> Per `.claude/plans/2026-05-21-architecture-staging.md` §6.1 — Decisions 7, 8.
+
+**Decision 7:** Create `sgs-framework.db.variations` table mirroring (but leaner than) `blocks.db`'s variations schema:
+```sql
+(id, block_slug, name, title, description, attributes_json, inner_blocks_json, scope, markup_example, source)
+```
+`sgs/button` has 4 named variations (`primary`, `secondary`, `outline`, `custom`) that are currently indexed nowhere. Spec 16's `register_block_variation()` activation path has no DB to consult.
+
+**Decision 8:** Index `sgs/button`'s 4 variations plus every other SGS block style alternative. Seed from `includes/variations/class-sgs-block-variations.php` + block.json `styles` arrays. After this, the converter's `register_block_variation()` path consults the DB instead of hardcoded logic.
+
+The `variations` column referenced in Spec 02's per-block table (§6.7) reads from this table.
+
+---
+
+## §18 — INNER_BLOCK_PATTERNS Retirement (2026-05-21)
+
+> Per `.claude/plans/2026-05-21-architecture-staging.md` §6.1 — Decision 12.
+
+The hardcoded `INNER_BLOCK_PATTERNS` dict in `convert.py` (2 entries after the Wave 2 hero entry from commit `ad706d0d`) is RETIRED in Phase 3. The Wave 2 hardcoded hero entry added in commit `ad706d0d` becomes obsolete once Phase 3 lands.
+
+**Decision 12:** Rewrite `_lift_inner_blocks(node, pattern)` to `_lift_inner_blocks(node, parent_slug)` and consult:
+- `blocks.parent_block` — which block is the preferred wrapper for standalone child emission
+- `slot_synonyms.standalone_block` — which standalone block a slot resolves to outside a parent context
+
+Add adjacent-slot grouping logic: when 2+ adjacent siblings need the same parent, wrap them in ONE parent block (not N). Delete `INNER_BLOCK_PATTERNS` dict from `convert.py`.
+
+**Data pre-requisite (Phase 0, already shipped):** `slot_synonyms.standalone_block` seeded for ~30 slots; `blocks.parent_block` seeded for `sgs/button → sgs/multi-button` and ~7 more composite families.
+
+---
+
+## §19 — Pre-Phase-3 Pattern Overrides Research Finding (Decision 24)
+
+> Per `.claude/plans/2026-05-21-architecture-staging.md` §6.1 — Decision 24.
+
+**Research question:** Is WP 7.0's `block_bindings_supported_attributes` filter + Pattern Overrides a cleaner alternative to extending `_lift_inner_blocks` to read from DB?
+
+**Finding (2026-05-21):** Keep the DB-backed approach. Pattern Overrides is ORTHOGONAL — it is an operator-facing per-instance editing UX for synced patterns, not converter logic. The N-button problem (fixed named slots vs variable mockup button counts) makes it unsuitable as a direct `INNER_BLOCK_PATTERNS` replacement.
+
+**Additive use:** Pattern Overrides is worth adopting as an additive operator-UX layer alongside Decision 23's `role: content` audit — adds per-instance override UI inside synced patterns. This is a Phase 6 enhancement, not a Phase 3 blocker.
+
+Full research report: `.claude/reports/2026-05-21-pattern-overrides-research.md`.
+
+---
+
+## §20 — /sgs-update Rebuild + Option B (Decision 13)
+
+> Per `.claude/plans/2026-05-21-architecture-staging.md` §6.1 — Decision 13, with completeness assurance from Decision 30.
+
+**Decision 13:** Rebuild `/sgs-update` from 4 stages to 9 stages (Phase 4). Includes porting `wp-blockmarkup-mcp` + `wp-devdocs-mcp` scraping logic into `/sgs-update --refresh-upstream` (the MCPs are deleted; only their cached `.db` files remain). The new scraper walks canonical sources and re-populates the merged tables, pinned to WP 7.0 tag.
+
+**9-stage holistic refresh:**
+
+| Stage | Function |
+|---|---|
+| 1 | SGS codebase scan (block.json + render.php + patterns) |
+| 2 | Core/Gutenberg cache refresh via `--refresh-upstream` (10 canonical sources) |
+| 3 | WP-CLI handbook refresh |
+| 4 | Style-variation sync (per-client snapshot registration) |
+| 5 | Slot synonym auto-seed (fills unseeded `standalone_block` rows) |
+| 6 | Block-replacement mapping (`blocks.replaces` for core→SGS routing) |
+| 7 | Spec doc regen (`02-SGS-BLOCKS-REFERENCE.md`) |
+| 8 | Uimax mirror (component_libraries, patterns, design_tokens, animations) |
+| 9 | Drift gate (per-release verification: every function in `since/<X.Y>/` must exist in DB) |
+
+**Decision 30 — Source completeness assurance:** `/sgs-update --refresh-upstream` MUST pull from all 10 canonical sources (gutenberg repo, wordpress-develop repo, wp-cli/handbook, `developer.wordpress.org/reference/since/<version>/`, field guide, dev blog, block-editor handbook, themes handbook, plugins handbook, REST handbook). The `since/<version>/` source was the gap that caused 6 missed WP 7.0 items in this session's initial audit.
+
+**Per-release verification gate:** when `/sgs-update --refresh-upstream` runs, it cross-references every item in `developer.wordpress.org/reference/since/<X.Y>/` against the merged DB. Missing items → visible error naming each gap.
+
+---
+
+## §21 — Backfill Audits (2026-05-21)
+
+> Per `.claude/plans/2026-05-21-architecture-staging.md` §6.1 — Decisions 9, 10, 23, 25.
+
+**Decision 9 — Markup examples:** Author `markup_examples` for all 73 SGS blocks — one per block minimum, more for variation-heavy blocks. SGS currently has zero markup examples; core has 331. Gives cv2 a copy-paste reference + operators a template.
+
+**Decision 10 — block_supports backfill:** Audit + backfill `block_supports` gaps. SGS has 404 rows vs core's 819 — 2:1 under-documentation. Under-declared supports mean missing inspector controls for operators.
+
+**Decision 23 — WP 7.0 block.json audit:** Three sub-tasks across all 73 SGS block.json files:
+- (a) Add `"role": "content"` to every content-bearing attribute (WP 7.0 requirement for `contentOnly` pattern editing — see `common-wp-styling-errors.md` §X for the error pattern)
+- (b) Bump every block to `"apiVersion": 3` (WP 7.0 enforces iframed editor on v3+ blocks; ensures consistent rendering)
+- (c) Every block using `viewScriptModule` needs proper script-module text domain declaration via WP 7.0's `wp_set_script_module_translations()` / `load_script_module_textdomain()` (approx 10–15 min added cost across the fleet)
+
+The `role: content` + `apiVersion: 3` columns in Spec 02's per-block reference (§6.7) are populated from this audit.
+
+**Decision 25 — Block visibility coexistence:** WP 7.0 adds native block visibility (toolbar + inspector device-type show/hide), partially overlapping our `device-visibility.php` extension. Resolution: WP-native for new uses, existing extension for finer-grained controls (e.g. show-on-mobile-AND-only-when-X-condition). Coexistence documented in Spec 02 per-block reference (§6.7 note).
+
+---
+
 ## 15. Wave 2 reshape — G1 + G3 + G5 are ONE wiring gap (2026-05-21)
+
+> **Note (2026-05-21):** The Wave 2 hardcoded hero entry added to `INNER_BLOCK_PATTERNS` in commit `ad706d0d` is **retired by §18** (INNER_BLOCK_PATTERNS Retirement). Once Phase 3 lands, the dict is deleted and hero inner-block emission routes through `blocks.parent_block` + `slot_synonyms.standalone_block` like every other composite block.
+
 
 The 2026-05-21 reality check (`/wp-blocks dump` + grep of `plugins/sgs-blocks/scripts/orchestrator/`) reframes §14.1, §14.3, and §14.5 as symptoms of one underlying wiring gap, not three separate problems.
 

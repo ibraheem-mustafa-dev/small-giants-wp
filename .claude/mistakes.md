@@ -1,5 +1,19 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-21 (2 new lessons from QC trio + skill cleanup session)
+**Last updated:** 2026-05-21 (architecture session — 3 additional lessons appended below QC-trio section: stale-doc regression + per-block porting anti-pattern + Gemini fabrication pattern; plus QC gate structural enforcement rule D31)
+
+## 2026-05-21 — Architecture session lesson: QC gate must be structural (blub.db row 281)
+
+### QC binding rule 255 violated 3 times in one session — structural enforcement is the only fix
+
+**What happened:** Commits `ad706d0d` (Wave 2 wiring fix), `aec54882` (Phase 0 data seeding), and a lucide-icons edit all touched `convert.py` or the orchestrator without a `[qc:<run_id>]` marker. Bean caught each violation retroactively. The prompt-discipline ("remember to run /qc before committing converter files") failed 3 times in the same session.
+
+**Rule (Decision 31):** A structural PostToolUse hook at `.claude/hooks/qc-on-converter-edit.py` is the only reliable enforcement for rules that have been violated 3+ times. Hooks fire deterministically regardless of context window, session state, or attention. Prompt rules are aspirational; structural rules are enforced. When any rule has been violated ≥ 3 times despite documentation, the rule needs structural enforcement (a hook, a validator, a gate, a schema check) — NOT a stronger prompt.
+
+**How to apply:** When reviewing a rule's violation history — 1 occurrence = document; 2 occurrences = add to mistakes.md + blub.db; 3 occurrences = build the structural enforcement. Pairs with ADHD Rule 10 (structural enforcement on reliability questions).
+
+**The architectural implication for the programme:** Every phase in the 8-phase architecture programme that touches `convert.py` or `sgs-clone-orchestrator.py` is subject to this hook. Phase 0.5 ships the hook BEFORE any other phase implementation begins, so subsequent phases inherit the enforcement from their first commit.
+
+---
 
 ## 2026-05-21 — Two lessons captured (blub.db rows 276 + 277)
 

@@ -2,11 +2,23 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-current_phase: wave-2-wiring-fix-pending-g1-g3-g5-as-one-architectural-change
-current_subphase: "Session 2026-05-21 closed. 2 commits on main (affca3f1 Wave 1 G2 Step 1+2 + session docs; ad8ca75b Spec 16 §15 Wave 2 reshape + cloning-pipeline-flow corrections + plan.md update). Wave 1 G2 Step 1+2 shipped — orchestrator merges variation CSS into _section_css, cv2 strips .page-id-N scope prefix in selector matcher, 7 unit tests pass. 5 sections doubled variation_css_rules (featured-product 15→30, brand 8→16, gift 17→34, social-proof 11→22, ingredients 7→14). Hero + trust-bar stayed at 0 (FR1 fast-path bypass). G4 chrome-strip discarded as no-op. Wave 2 reframed as ONE wiring gap (G1+G3+G5 dissolve together): cv2 doesn't query block_compositions (write-only) + doesn't query property_suffixes for visual slots. Skill side: /qc-council created (92% A-, gap-analysis B 4.2/5, S-grade confirmed) + qc-trio cross-referenced across 11 sibling skills + shared verification-rationalisations.md created + /tdd + /vbc source skills deleted + /requesting-code-review (96%) + /systematic-debugging (97%) rewritten + /gap-analysis Step 7.75 delegates to /qc-council + 2 lessons captured (blub.db 276 + 277)."
-current_subphase_step: "Next session: Wave 2 wiring fix as ONE architectural change. Task 1 design (inline Opus + /brainstorming). Task 2 validate via /qc-council Stage 5 empirical-validation gate (binding rule 276). Task 3 implement (delegated Sonnet via /delegate, single-agent dispatch). Task 4 F5 D1 media-field flow if time permits. Acceptance: hero stage_3_slot_list failures 142 → <30, hero variation_css_rules 0 → ≥8, brand pixel-diff at 1440 43.7% → <20%, coverage check (every mockup CSS declaration matches token OR lands as attr/inline). Detail in .claude/next-session-prompt.md."
+current_phase: architecture-programme-phase-0-shipped-phases-0.5-through-7-pending
+current_subphase: "Session 2026-05-21 (architecture session) closed. Phase 0 shipped (commit aec54882 — slot_synonyms.standalone_block seeding + blocks.parent_block + blocks.replaces column + --client auto-derive). 31 architectural decisions captured in .claude/plans/2026-05-21-architecture-staging.md. 4 strategic-plan session artefacts at .claude/reports/strategic-plan-2026-05-21/. Wave 2 wiring-fix work (G1+G3+G5) is now subsumed into the architectural programme — INNER_BLOCK_PATTERNS retirement (Phase 3) plus DB merge (Phase 1) collectively address the same root gap. Separate pixel-diff G-series blockers remain open until those phases land."
+current_subphase_step: "Next session: Phase 0.5 (structural QC hook, Decision 31, ~20 min, independent). Then Phase 1 (DB merge, Decisions 1+2+11, ~1.5 hr). See .claude/plans/2026-05-21-architecture-staging.md §13 for full 4-parallel-session dispatch plan. Read staging doc §3 + §11 before dispatching any subagent."
 last_updated: 2026-05-21
-latest_commit: "ad8ca75b on main — docs: Wave 2 reshape + pipeline-flow doc-accuracy corrections"
+latest_commit: "75c9a6e2 on main — session(2026-05-21): handoff + next-session-prompt + state — Wave 2 reshape ready for dispatch"
+architecture_programme:
+  staging_doc: .claude/plans/2026-05-21-architecture-staging.md
+  phase_0_status: SHIPPED (commit aec54882)
+  phase_0_5_status: PENDING (Decision 31 — structural QC hook)
+  phase_1_status: PENDING (DB merge — Decisions 1, 2, 11)
+  phase_2_status: PENDING (variations indexing — Decisions 7, 8)
+  phase_3_status: PENDING (INNER_BLOCK_PATTERNS retirement — Decisions 24, 12)
+  phase_4_status: PENDING (/sgs-update rebuild + Option B + completeness — Decisions 13, 30)
+  phase_5a_status: PENDING (variation system kill + per-site theme.json — Decisions 14', 16', 17', 18, 19)
+  phase_5b_status: PENDING (Customiser migration + button presets + view transitions — Decisions 21, 22, 27)
+  phase_6_status: PENDING (markup examples + supports backfill + WP 7.0 audits + Lucide REST — Decisions 9, 10, 23, 25, 28)
+  phase_7_status: PENDING (AI Connectors + WP-skills WP 7.0 audit — Decisions 26, 29)
 session_2026_05_20_summary: "11 commits. Council + systematic-debugging + Phase 1 architectural rewrite (Spec 16 §FR6 compliant) + Phase 2 future capabilities (header/footer/nav hook, autonomy tightening, attribute promotion, block variations). Empirical: 5 of 6 desktop regressions from initial P1.B closed via P1.B.x. D1 typed-attr lift rate 4% → 37%. mamas-munches.css 23k → 19k chars. 60+8+40+51+14 = 173 tests passing across orchestrator + token_resolver + css_router + scaffold + promotion + essence-match. Header/footer-as-blocks anti-pattern (5th occurrence today) now blocked at both tool layer (P2.0 PostToolUse hook) AND source layer (P2.i chrome-skip in stage_9b autonomy). The 1009-row attribute_gap_candidates backlog now has a promotion CLI."
 blockers:
   - "Hero 375 mobile regression (+13.3pt vs post-C baseline) — appeared in P1.B.x. Likely F5 responsive-variant-attr resolution gap. Next session investigation."
@@ -17,7 +29,42 @@ blockers:
 
 # small-giants-wp — State Snapshot
 
-11 commits shipped on main this session (8ceb8787 → 36ef9552). Phase 1 Spec 16 architectural rewrite complete + Phase 2 four future capabilities shipped. Pipeline is now structurally sound at every layer (cv2 walker + token_resolver + css_router + scaffold + promotion + variations + tool-layer hook), but pixel-diff target not yet hit pending operator-driven attribute promotion + a mobile-regression follow-up.
+**2026-05-21 architecture session** produced a 31-decision holistic redesign of the SGS framework covering DB consolidation, style-variation kill, INNER_BLOCK_PATTERNS retirement, WP 7.0 alignment, and admin UX migration to the Customiser. Phase 0 shipped (commit `aec54882`). 7 phases pending.
+
+Canonical reference for the programme: `.claude/plans/2026-05-21-architecture-staging.md`
+Strategic-plan session artefacts: `.claude/reports/strategic-plan-2026-05-21/` (risk-assessment.md, effort-pert.md, hidden-decisions.md)
+Research artefact: `.claude/reports/2026-05-21-pattern-overrides-research.md`
+
+---
+
+## Architecture programme — phase status
+
+| Phase | Decisions | Status | Notes |
+|---|---|---|---|
+| 0 | 3, 4, 5, 6 | SHIPPED `aec54882` | Data seeding — slot_synonyms + parent_block + replaces column + --client auto-derive |
+| 0.5 | 31 | PENDING | Structural QC hook — ~20 min, independent |
+| 1 | 1, 2, 11 | PENDING | DB merge — sgs-framework.db absorbs blocks.db + hooks.db |
+| 2 | 7, 8 | PENDING | Variations indexing — sgs/button 4 variations + all others |
+| 3 | 24, 12 | PENDING | INNER_BLOCK_PATTERNS retirement (Decision 24 research confirmed: keep DB-backed) |
+| 4 | 13, 30 | PENDING | /sgs-update rebuild (9-stage) + completeness assurance (10 canonical sources) |
+| 5a | 14', 16', 17', 18, 19 | PENDING | Variation system kill + per-site theme.json + push CLI |
+| 5b | 21, 22, 27 | PENDING | Customiser migration + button presets → theme.json + view transitions |
+| 6 | 9, 10, 23, 25, 28 | PENDING | Markup examples + supports backfill + WP 7.0 audits + Lucide REST |
+| 7 | 26, 29 | PENDING | AI Connectors registration + WP-skills WP 7.0 alignment audit |
+
+**Parallel dispatch plan (after Phase 1 lands):**
+- Session A: Phase 4 (`/sgs-update` rebuild)
+- Session B: Phases 2 + 3 (variations + INNER_BLOCK_PATTERNS)
+- Session C: Phases 5a + 5b (variation kill + Customiser)
+- Session D: Phases 6 + 7 (audits + WP 7.0 alignment)
+
+**Critical path:** 0.5 → 1 → (longest of Session A = Phase 4 at ~5.5 hr). ~8 hr wall-clock total.
+
+---
+
+## Previous state (pre-architecture session, preserved for context)
+
+11 commits shipped on main (8ceb8787 → 36ef9552). Phase 1 Spec 16 architectural rewrite complete + Phase 2 four future capabilities shipped. Pipeline is now structurally sound at every layer (cv2 walker + token_resolver + css_router + scaffold + promotion + variations + tool-layer hook), but pixel-diff target not yet hit pending operator-driven attribute promotion + a mobile-regression follow-up.
 
 ## Live wirings as of `36ef9552`
 

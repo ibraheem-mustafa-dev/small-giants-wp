@@ -171,6 +171,28 @@ of N1 (no operator-supplied post_id routing, no trust escalation) is honoured: t
 Customiser sanitiser runs under standard WordPress capability checks, and the renderer
 reads a static option with no user-supplied routing.
 
+## 8b. Canonical Customiser pattern reference (2026-05-21)
+
+> Per `.claude/plans/2026-05-21-architecture-staging.md` §6.5.
+
+**Spec 18 is the canonical "how to register an SGS Customiser section" reference.** Two other specs now follow this pattern:
+
+| Spec | Section | What it adopts from Spec 18 |
+|---|---|---|
+| Spec 17 §Customiser migration | `Sgs_Header_Customiser`, `Sgs_Footer_Customiser`, `Sgs_Site_Info_Customiser` | `postMessage` transport, `wp_options` backing, capability gate, sanitiser pattern |
+| Spec 11 Decision 22 (Phase 5b) | Button presets in Site Editor → Styles → Buttons | WP 7.0 native theme.json rather than Customiser section; but the `postMessage` transport model for live preview is the same reference point |
+
+**Key patterns from this spec that MUST be followed:**
+1. Data lives in a single `wp_options` serialised array (NOT `theme_mod` — survives theme switches)
+2. `$setting->transport = 'postMessage'` for all visual properties with a corresponding JS partial
+3. Sanitiser runs on save: strips unexpected keys, casts types, validates colour values
+4. Capability gate: `current_user_can('edit_theme_options')` on all write paths
+5. When both/all elements are disabled, the hook outputs nothing and skips asset enqueue entirely
+
+**WP 7.0 View Transitions (Decision 27):** Future Customiser sections should call `wp_enqueue_view_transitions_admin_css()` for smooth panel navigation. Spec 17's Phase 5b migration is the first SGS use of this WP 7.0 feature.
+
+---
+
 ## 9. Future enhancements (parked)
 
 | Enhancement | Complexity | Note |

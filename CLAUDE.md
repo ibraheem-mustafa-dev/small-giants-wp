@@ -267,7 +267,9 @@ This prevents the silent gap where a new block ships with images but no per-inst
 
 ### Style variation architecture
 
-Style variation-specific CSS (decorative images, client-specific hover effects, custom gradients, etc.) must **never** go in the base `style.css`. The correct pattern:
+> **BEING RETIRED — Architecture Decision D28 (Phase 5a).** The WP style-variation overlay system (`theme/sgs-theme/styles/<client>.json` + `active_theme_style` theme_mod + `class-sgs-variation-picker.php`) is being replaced with per-site `theme.json` snapshots at `sites/<client>/theme-snapshot.json` pushed via a new CLI. Header/footer template parts are NOT affected. Until Phase 5a ships, the pattern below remains correct. After Phase 5a ships, update this section to reference the snapshot+push workflow. See `.claude/plans/2026-05-21-architecture-staging.md` §3 Decisions 18+19.
+
+Style variation-specific CSS (decorative images, client-specific hover effects, custom gradients, etc.) must **never** go in the base `style.css`. The correct pattern (until Phase 5a ships):
 
 1. Images used by a style variation go in `theme/sgs-theme/assets/` — version-controlled with the theme, never in `uploads/`
 2. Variation-specific CSS goes in `functions.php` via `wp_add_inline_style()`, gated on the active variation:

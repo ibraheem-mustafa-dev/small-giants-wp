@@ -102,15 +102,10 @@ sgs-theme/
 │   ├── testimonials-highlight.php
 │   └── testimonials-large.php
 │
-└── styles/                         # 8 style variations (no default.json — base theme.json is the default)
-    ├── eye-care-ward-end.json      # Eye Care Ward End — clinical/professional
-    ├── helping-doctors.json        # HelpingDoctors — green palette (committed 2026-03-11)
-    ├── indus-foods.json            # Indus Foods — teal/gold (Birmingham wholesaler)
-    ├── mamas-munches.json          # Mama's Munches — coral/cream/Fraunces (added 2026-04-30)
-    ├── sgs-construction.json       # Construction industry default
-    ├── sgs-healthcare.json         # Healthcare industry default
-    ├── sgs-mosque.json             # Mosque/community organisation default
-    └── sgs-professional.json       # Professional services default
+└── styles/                         # EMPTIED (RETIRED 2026-05-21 — see §Per-site theme.json model)
+    #                               # Per-client variation files deleted by Decision 18.
+    #                               # Per-client snapshots now live at sites/<client>/theme-snapshot.json
+    #                               # and are pushed to specific sites via push-theme-snapshot.py.
 ```
 
 ---
@@ -269,12 +264,15 @@ sgs-theme/
 }
 ```
 
-### Style Variations
+### Style Variations (RETIRED 2026-05-21 — see `.claude/plans/2026-05-21-architecture-staging.md` §6.2)
 
-Each client site gets a JSON file in `styles/` that overrides just the tokens:
+The `styles/*.json` per-client overlay system is deleted by Decision 18. Each client now has `sites/<client>/theme-snapshot.json` as a full theme.json copy pushed to the specific site via `push-theme-snapshot.py`. See §Per-site theme.json model below.
+
+**Historical reference only** — the old pattern was a JSON file in `styles/` overriding tokens per-client. This shipped ALL client variations to every install, creating a privacy leak. The example below is now `sites/indus-foods/theme-snapshot.json`:
 
 ```jsonc
-// styles/indus-foods.json
+// RETIRED — previously styles/indus-foods.json
+// Now: sites/indus-foods/theme-snapshot.json (full theme.json, not just a diff)
 {
   "version": 3,
   "title": "Indus Foods",
@@ -375,10 +373,81 @@ Standard footer with:
 
 When deploying to a new client site, only these elements change:
 
-1. **Style variation JSON** — colours, fonts, spacing overrides
+1. **Per-site theme.json snapshot** — colours, fonts, spacing overrides (see §Per-site theme.json model below)
 2. **Font files** — add client-specific WOFF2 files to `assets/fonts/`
-3. **Logo/favicon** — uploaded via WordPress customiser
+3. **Logo/favicon** — uploaded via WordPress Site Editor
 4. **Header/footer patterns** — choose from available patterns or create site-specific ones
 5. **Homepage template** — may use a site-specific template if the layout is unique
 
 Everything else (block styles, responsive behaviour, performance optimisations, accessibility) is inherited from the framework.
+
+---
+
+## Per-site theme.json Model (2026-05-21)
+
+> Per `.claude/plans/2026-05-21-architecture-staging.md` §6.2 — Decisions 18, 19.
+
+### Architecture change
+
+The WP style-variation overlay system (Browse Styles UI showing all client variations to every site's admin) is **DELETED** (Decision 18). Reason: privacy leak — Indus Foods admin could see HelpingDoctors variation; every client's branding visible to every other client's operator.
+
+**Replacement:** each site has ONE `theme.json`. Our local repo holds per-client snapshots in `sites/<client>/theme-snapshot.json` that are pushed to specific sites via a CLI.
+
+**Deleted files (Decision 18 — Phase 5a):**
+- `class-sgs-variation-picker.php`
+- `class-variation-rest.php`
+- `class-sgs-legacy-theme-mod-migrator.php`
+- `active_theme_style` theme_mod logic removed from `theme/sgs-theme/functions.php`
+- Variation-CSS-enqueue-by-active-variation logic removed
+
+**Preserved (NOT affected by Decision 18):**
+- `theme/sgs-theme/parts/header.html` + `footer.html` — brand-agnostic template parts
+- All header/footer patterns — brand-agnostic starting templates
+- Block-level variations (`register_block_variation()`) — e.g. sgs/button primary/secondary/outline
+- Template part seeder, resetter, meta, header rules, footer rules, behaviours, sgs_header/sgs_footer CPTs
+
+### Local snapshot workflow (Decision 19)
+
+Per-client visual snapshots move from `theme/sgs-theme/styles/<client>.json` (framework dir, ships to every install) to `sites/<client>/theme-snapshot.json` (per-site dir, stays in our local repo).
+
+- `sites/mamas-munches/theme-snapshot.json` — full `theme.json` copy for Mama's Munches
+- `sites/indus-foods/theme-snapshot.json` — full `theme.json` copy for Indus Foods
+- etc.
+
+Snapshot format: **full `theme.json` copy** (not a diff). File is ~5–20 KB; simplicity of a 1:1 overwrite outweighs bandwidth savings of a diff.
+
+`theme/sgs-theme/styles/` is **emptied** — framework deploys contain zero client-specific variation files.
+
+### Push-theme-snapshot CLI (Decision 14′)
+
+New Python script (Phase 5a):
+
+```bash
+python plugins/sgs-blocks/scripts/push-theme-snapshot.py \
+  --client mamas-munches \
+  --target u945238940@141.136.39.73
+```
+
+Behaviour:
+1. Fetch server's current `wp-content/themes/sgs-theme/theme.json` via SSH
+2. Diff local snapshot against server file — display diff to operator
+3. Require `--yes` flag (or interactive y/N) to proceed
+4. Overwrite server `theme.json` with local snapshot
+
+**Safety note:** operator edits via Site Editor write to `wp_global_styles` (separate post type), not `theme.json` directly — file-level conflicts are rare. When they DO occur, the pre-push diff surfaces them before any overwrite.
+
+`/sgs-clone` Stage 10 invokes `push-theme-snapshot` automatically via the auto-derived `--client` flag (Decision 16′).
+
+### Hide Browse-styles UI (Decision 17′)
+
+On single-stylesheet installs, the WP Browse-styles picker is hidden via PHP filter on `wp_theme_json_data_styles` so the now-useless picker doesn't confuse operators.
+
+### WP 7.0 button preset alignment (Decision 22)
+
+WP 7.0 (released 2026-05-14) adds native pseudo-element support for `core/button` at theme.json level: `styles.elements.button:hover`, `:focus`, `:focus-visible`, `:active`. Our `wp_options.sgs_button_presets` + CSS custom property bridge is redundant. See `specs/11-SGS-BUTTON-ARCHITECTURE.md` §Decision-22 for the full migration.
+
+### Style variation sections RETIRED
+
+The following sections describing the `active_theme_style` theme_mod and style variation activation flow are retired by Decision 18:
+
+**§ Style Variations (RETIRED 2026-05-21 — see `.claude/plans/2026-05-21-architecture-staging.md` §6.2):** The `styles/*.json` per-client overlay system that shipped all client variations to every install is deleted. Replaced by per-site `theme-snapshot.json` + push CLI. The example `styles/indus-foods.json` shown above is now `sites/indus-foods/theme-snapshot.json` and is never shipped in a framework deploy.

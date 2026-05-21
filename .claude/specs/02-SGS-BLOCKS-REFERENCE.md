@@ -11,6 +11,40 @@
 
 ---
 
+## WP 7.0 Alignment Notes (2026-05-21)
+
+> Per `.claude/plans/2026-05-21-architecture-staging.md` §6.7 — Decisions 7/8, 23, 25.
+
+The following columns are pending addition to the per-block reference after the Phase 2 (variations indexing) and Phase 6 (WP 7.0 audit) work lands. They are documented here so implementers know what to populate.
+
+### Pending columns (auto-regeneration will add them post-Phase-6)
+
+| Column | Source | Decision |
+|---|---|---|
+| `variations` | `sgs-framework.db.variations` table (Phase 2) | 7, 8 |
+| `role:content attrs` | Block.json audit — which attrs carry `"role": "content"` (WP 7.0 requirement for contentOnly patterns) | 23a |
+| `apiVersion` | Block.json `"apiVersion"` value — must be 3 for WP 7.0 iframed editor | 23b |
+| `scriptModuleI18n` | Whether `wp_set_script_module_translations()` is wired for blocks using `viewScriptModule` | 23c |
+| `device visibility coexistence` | WP-native vs `device-visibility.php` extension — which blocks use which | 25 |
+
+### Block visibility coexistence (Decision 25)
+
+WP 7.0 adds native block visibility (toolbar + inspector device-type show/hide). SGS has `plugins/sgs-blocks/includes/device-visibility.php` extension for finer-grained controls. Coexistence strategy:
+
+- **Prefer WP-native** for simple show/hide on device type (operators see it in the block inspector automatically)
+- **Keep SGS extension** for controls WP-native doesn't cover (e.g. show-on-mobile-AND-only-when-condition)
+- When WP-native reaches full feature parity with the SGS extension, the extension is retired
+
+Until Phase 6 audit lands, blocks that currently use the SGS extension continue to use it. New blocks (post-WP-7.0) should default to WP-native and only add the SGS extension when needed.
+
+### Variations (Decisions 7, 8)
+
+`sgs/button` has 4 registered variations: `primary`, `secondary`, `outline`, `custom`. These are indexed in `sgs-framework.db.variations` after Phase 2 lands. The `variations` column in the per-block table will list the variation names + scope (inserter/transform/block) once the DB is populated and this file is regenerated.
+
+---
+
+---
+
 ## Contents
 
 - [Layout](#layout) (6 blocks)

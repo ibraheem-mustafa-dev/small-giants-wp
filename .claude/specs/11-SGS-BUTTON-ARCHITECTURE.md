@@ -74,21 +74,62 @@ When `inheritStyle !== 'custom'`, `render.php` outputs only the variant class (`
 
 This is the same pattern Kadence uses (`inheritStyles`) — renamed from our earlier draft `stylePreset` for naming-convention parity.
 
-### Three editing paths, one backing store
+### Three editing paths — REVISED by Decision 22 (2026-05-21)
 
-| Path | Audience | UX |
-|------|----------|-----|
-| **Settings → SGS Button Presets** (primary) | Site owners (e.g. Zainab) | Familiar admin form, all fields in one place, ~30 seconds to set up, mirrors existing Business Details admin pattern |
-| **Site Editor → Styles → Blocks → SGS Button → Variations** | Power users wanting live preview while editing | Native WP UI, multiple steps, full block-style-variation editor |
-| **`theme/sgs-theme/styles/<client>.json`** | Developers shipping a new client | Code-first, version-controlled, repeatable across sites |
+> Per `.claude/plans/2026-05-21-architecture-staging.md` §6.3 — Decision 22.
 
-All three read/write the same WP option (`sgs_button_presets`) which `theme.json` mirrors via `settings.custom.buttonPresets`. The block's `render.php` consumes via CSS custom properties:
+| Path | Audience | UX | Status |
+|------|----------|-----|--------|
+| **Settings → SGS Button Presets admin page** (was primary) | Site owners | Admin form, ~30 seconds to set up | **DELETED by Decision 22** — see below |
+| **Site Editor → Styles → Buttons** (new primary) | Site owners + power users | Native WP UI, live preview, full pseudo-element support in WP 7.0 | **New canonical path** |
+| **`sites/<client>/theme-snapshot.json`** | Developers shipping a new client | Code-first, version-controlled, per-site push CLI | **Replaces** `theme/sgs-theme/styles/<client>.json` (retired by Decision 18/19) |
+
+### Decision 22 — Move button presets to native theme.json (WP 7.0)
+
+WP 7.0 (released 2026-05-14) adds native pseudo-element support for `core/button` at theme.json level, making the entire `wp_options.sgs_button_presets` + CSS custom property bridge redundant.
+
+**What changes:**
+- DELETE `class-button-presets-admin.php` (settings admin page)
+- DELETE `wp_options.sgs_button_presets` (the option key itself, after migration)
+- Move button values into `theme.json.styles.elements.button` including WP 7.0 pseudo-element states: `:hover`, `:focus`, `:focus-visible`, `:active`
+- Operator edits via Site Editor → Styles → Buttons (native)
+
+**What stays:** The `is-style-primary`, `is-style-secondary`, `is-style-outline` className mechanism is PRESERVED. `render.php` still outputs only the variant class when `inheritStyle !== 'custom'`. What changes is the VALUE SOURCE for those classes — from `wp_options` custom properties to native theme.json CSS generation.
+
+**Critical implementation gate (Phase 5b verification required):**
+
+WP 7.0's native CSS generation from `theme.json.styles.elements.button` produces `--wp--` custom properties equivalent to the bridge. The bridge currently emits:
+- `--wp--custom--button-presets--primary--background`
+- `--wp--custom--button-presets--primary--text`
+- `--wp--custom--button-presets--primary--border`
+- `borderWidth`, `borderRadius`, `padding`, `fontSize`, `fontWeight`, `minHeight`
+- `:hover` states for background, text, border
+
+**Before deleting the manual bridge**, the Phase 5b implementer MUST verify WP 7.0's generation covers every property listed above, including `minHeight` and per-corner `borderRadius`. If any property is NOT covered by WP 7.0's native generation, keep a SLIM PHP shim that emits ONLY the missing properties from `theme.json` directly. Do not keep the full bridge; only the gap properties.
+
+The original bridge CSS:
 
 ```css
 .is-style-primary {
   background: var(--wp--custom--button-presets--primary--background);
   color: var(--wp--custom--button-presets--primary--text);
   /* ...etc... */
+}
+```
+
+**Is replaced by theme.json native:**
+
+```jsonc
+{
+  "styles": {
+    "elements": {
+      "button": {
+        "color": { "background": "var(--wp--preset--color--primary)", "text": "..." },
+        ":hover": { "color": { "background": "var(--wp--preset--color--text)" } },
+        ":focus": { "outline": "2px solid var(--wp--preset--color--primary)" }
+      }
+    }
+  }
 }
 ```
 
@@ -146,15 +187,16 @@ Without `deprecated.js`, existing post_content with old CTA attributes will trig
 
 ## 6. Build phases
 
-| Phase | Component | Time | Dependencies |
-|-------|-----------|------|--------------|
-| P1.A | Build `sgs/button` block (block.json + edit.js + render.php + style.css) | 2–3h | None — independent |
-| P1.B | Build `sgs/multi-button` block (container restricted to sgs/button children) | 2–3h | None — independent |
-| P1.C | Build button-presets settings page (clone Business Details admin pattern) | 1–1.5h | None — independent |
-| P2 | theme.json mirror — emit CSS custom properties from preset values | 30min | Needs P1.C complete |
-| P3 | Refactor sgs/hero, sgs/cta-section, sgs/product-card to InnerBlocks composition + deprecation paths | 3–4h | Needs P1.A + P1.B complete |
-| P4 | Build + deploy + visual diff vs mockup | 1h | Needs P1+P2+P3 complete |
-| **Total** | | **~10–13h** | Dispatch P1.A/B/C in parallel via /dispatching-parallel-agents |
+| Phase | Component | Time | Dependencies | Status |
+|-------|-----------|------|--------------|--------|
+| P1.A | Build `sgs/button` block (block.json + edit.js + render.php + style.css) | 2–3h | None — independent | SHIPPED 2026-05-04 |
+| P1.B | Build `sgs/multi-button` block (container restricted to sgs/button children) | 2–3h | None — independent | SHIPPED 2026-05-04 |
+| P1.C | Build button-presets settings page (`class-button-presets-admin.php`) | 1–1.5h | None — independent | SHIPPED 2026-05-04 — **PENDING DELETION by Decision 22 in Phase 5b** |
+| P2 | theme.json mirror — emit CSS custom properties from preset values | 30min | Needs P1.C complete | SHIPPED 2026-05-04 — **SUPERSEDED by native WP 7.0 theme.json in Phase 5b** |
+| P3 | Refactor sgs/hero, sgs/cta-section, sgs/product-card to InnerBlocks composition + deprecation paths | 3–4h | Needs P1.A + P1.B complete | SHIPPED 2026-05-04 |
+| P4 | Build + deploy + visual diff vs mockup | 1h | Needs P1+P2+P3 complete | SHIPPED 2026-05-04 |
+| P5 (new) | Decision 22 — Move values to theme.json native; delete admin page + wp_options bridge; verify WP 7.0 coverage gate | ~45min | Phase 5b of architecture-staging.md | PENDING |
+| **Total** | | **~10–13h shipped + ~45min pending** | | |
 
 ## 7. Parking items related to button architecture
 

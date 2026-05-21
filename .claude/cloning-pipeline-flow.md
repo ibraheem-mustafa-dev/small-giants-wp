@@ -45,6 +45,23 @@ phase_8_status: |
   Read pipeline-state/<run>/leftover-buckets.json BEFORE any converter-
   quality conjecture — orchestrator already classifies every gap. See
   feedback_read_leftover_buckets_before_conjecturing.md + blub.db row 254.
+architecture_programme_impact: |
+  2026-05-21 architecture session (31 decisions) affects this pipeline in several ways.
+  Relevant phases and when they land:
+  - Phase 1 (DB merge): sgs-framework.db absorbs blocks.db + hooks.db. Pipeline tools that
+    currently query 2 separate DBs will query 1 after this lands. No script changes needed
+    unless they hardcode the old DB paths.
+  - Phase 3 (INNER_BLOCK_PATTERNS retirement): convert.py's hardcoded dict deleted; walker
+    reads blocks.parent_block + slot_synonyms.standalone_block via DB. Stage 4 output shape
+    changes for composite blocks (hero CTAs will emit as InnerBlocks not self-closing). Update
+    this doc's Stage 4 block when Phase 3 ships.
+  - Phase 5a (variation system kill): Stage 10 active-variation REST call (`sgs/v1/active-variation`)
+    becomes obsolete once each site has its own theme.json. Stage 10 will instead call
+    push-theme-snapshot.py (or the equivalent). Update Stage 10 block when Phase 5a ships.
+  - Phase 0.5 (structural QC hook): new PostToolUse hook on convert.py + orchestrator edits.
+    Pipeline users will see a systemMessage warning before committing those files without a
+    [qc:<run_id>] marker. Expected, not an error.
+  Full staging doc: .claude/plans/2026-05-21-architecture-staging.md
 registry_entry: docs-registry.yaml canonical_docs (cloning-pipeline-flow.md)
 absorbed_docs:
   - .claude/tooling-map.md - ABSORBED 2026-05-21 → see "Script inventory" section below
@@ -1573,7 +1590,17 @@ Chrome-strip patch in `scripts/pixel-diff.py` was empirically falsified. `el.scr
 
 ### Wave 2 reshape — G1 + G3 + G5 are ONE wiring gap
 
-`/wp-blocks dump` (2026-05-21) confirmed the SGS-framework.db has the complete mapping infrastructure cv2 needs — `property_suffixes` (117 rows), `slot_synonyms` (89 rows), `block_compositions` (37 rows), `block_attributes` (1755 rows), `modifier_suffixes` (19 rows). The G1+G3+G5 symptoms (empty hero CTAs / text-only slot resolver / per-block DOM mismatches) are all manifestations of one underlying gap: cv2 doesn't walk all classes + assign CSS ownership + record parent-child relations using the tables that exist.
+`/wp-blocks dump` (2026-05-21) confirmed the SGS-framework.db has the complete mapping infrastructure cv2 needs:
+
+| Table | Row count |
+|---|---|
+| `property_suffixes` | 117 rows |
+| `slot_synonyms` | 89 rows |
+| `block_compositions` | 37 rows |
+| `block_attributes` | 1755 rows |
+| `modifier_suffixes` | 19 rows |
+
+The G1+G3+G5 symptoms (empty hero CTAs / text-only slot resolver / per-block DOM mismatches) are all manifestations of one underlying gap: cv2 doesn't walk all classes + assign CSS ownership + record parent-child relations using the tables that exist.
 
 Wave 2 = ONE architectural change wiring the DB tables into the walker's emit shape, NOT three per-block fixes. Full reshape detail: `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` §15.
 

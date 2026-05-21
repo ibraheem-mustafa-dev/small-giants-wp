@@ -1,6 +1,6 @@
 # small-giants-wp — Goals
 
-**Last updated:** 2026-05-19 (Spec 17 Waves 1+2+2.5+3 shipped 2026-05-18; Floating UI Customiser shipped post-Spec-17)
+**Last updated:** 2026-05-21 (architecture session — architecture programme added as active goal; hard constraint updated)
 
 ## Primary outcome
 
@@ -36,7 +36,7 @@ Ship a complete WordPress block framework + theme + supporting plugins (forms, b
 - No jQuery; no page builders; pure Gutenberg + Interactivity API
 - UK English in all code, comments, user-facing text
 - Every block customisable via editor inspector (no code-required settings)
-- Style variation system: client-specific work goes in `theme/sgs-theme/styles/<client>.json` + `sites/<client>/`, never in core framework
+- Style variation system: **BEING RETIRED (Decision D28, Phase 5a).** Per-client snapshots moving to `sites/<client>/theme-snapshot.json`, deployed via push CLI. Header/footer template parts unaffected. Until Phase 5a ships: old path (`theme/sgs-theme/styles/<client>.json`) still used. After Phase 5a: framework deploys contain zero client-specific files.
 
 ## Success metrics (from design-brain spec §8)
 
@@ -54,3 +54,10 @@ Ship a complete WordPress block framework + theme + supporting plugins (forms, b
 | Goal | Exit criteria | Source |
 |------|--------------|--------|
 | **Phase 1 pixel-diff closure (G1-G5 + F5)** | 1440 average pixel-diff ≤ 5%, 768 ≤ 8%, 375 ≤ 10% across 7 Mama's Munches sections | `.claude/next-session-prompt.md` (4-wave plan); evidence at `reports/2026-05-20-pipeline-root-gap-council/real-path-synthesis.md` |
+
+## Active goals (added 2026-05-21 — architecture session)
+
+| Goal | Exit criteria | Source |
+|------|--------------|--------|
+| **Architecture programme — 8-phase holistic redesign** | All 30 decisions shipped per §7 acceptance criteria: single DB, per-site theme.json, INNER_BLOCK_PATTERNS deleted, button presets in theme.json, Customiser migration done, WP 7.0 all 73 blocks aligned, `/sgs-update` 9-stage idempotent | `.claude/plans/2026-05-21-architecture-staging.md` + `.claude/plan.md` |
+| **WP 7.0 alignment (all 73 blocks + 10 skills)** | Every SGS block has `apiVersion: 3` + `role: content` + script-module text domains; 10 wp-* skills updated; AI Connectors infrastructure registered | Staging doc Decisions 23, 26, 29; Phase 6 + Phase 7 |

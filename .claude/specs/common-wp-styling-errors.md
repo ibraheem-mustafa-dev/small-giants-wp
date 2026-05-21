@@ -338,6 +338,89 @@ Then set `self_closing=False` in `emit_wp_block()` for hero (and any other Inner
 
 ---
 
+## X. `role: content` requirement under WP 7.0 (2026-05-21)
+
+> Per `.claude/plans/2026-05-21-architecture-staging.md` §6.8 — Decision 23a.
+
+**Symptom:** Block attributes that hold editable content (headlines, subheadings, body text, CTA labels) are not editable by operators using the `contentOnly` pattern editing mode (e.g. locking a pattern so operators can edit content but not structure). WP silently prevents attribute editing via the inspector.
+
+**Root cause:** WP 7.0 requires content-bearing attributes to declare `"role": "content"` in their `block.json` definition for them to appear in the `contentOnly` editing surface. Without it, the attribute is treated as a structural/configuration attribute and hidden when a pattern is locked.
+
+**Example block.json before (WP 6.x — worked):**
+
+```json
+{
+  "attributes": {
+    "headline": { "type": "string", "default": "" },
+    "subheading": { "type": "string", "default": "" }
+  }
+}
+```
+
+**Example block.json after (WP 7.0 — correct):**
+
+```json
+{
+  "attributes": {
+    "headline": { "type": "string", "default": "", "role": "content" },
+    "subheading": { "type": "string", "default": "", "role": "content" }
+  }
+}
+```
+
+**Attributes that NEED `role: content`:** any string attribute whose value an operator edits per-page — headlines, subheadings, body text, CTA labels, badge text, icon names, alt text overrides.
+
+**Attributes that do NOT need `role: content`:** layout switches (`columns`, `widthMode`, `layout`), colour pickers, spacing values, toggles (`showLabel`, `reverseOrder`), image URL/object refs (images have their own media role).
+
+**Fix:** Phase 6 audit (Decision 23a) — walk all 73 SGS block.json files and add `"role": "content"` to every content-bearing string attribute. This is a block.json-only change; no PHP or JS required.
+
+**Cross-reference:** Spec 16 §21 — this is Decision 23a of the backfill audits phase.
+
+---
+
+## Y. Pseudo-element selectors in theme.json (WP 7.0)
+
+> Per `.claude/plans/2026-05-21-architecture-staging.md` §6.8 — Decision 22.
+
+**Symptom:** Button hover/focus states look identical to base state even though hover styles are set in theme.json. Or: button colour changes in Site Editor preview but hover styling is ignored.
+
+**Root cause (pre-WP 7.0):** `theme.json` did not support pseudo-element selectors (`:hover`, `:focus`, `:focus-visible`, `:active`). Hover states had to be implemented via custom CSS, the `wp_options.sgs_button_presets` bridge, or CSS custom properties. This is now redundant.
+
+**Root cause (WP 7.0+):** If the site is on WP 7.0+ but the button styles live in `wp_options.sgs_button_presets` (the old bridge), the native theme.json values in Site Editor → Styles → Buttons won't override them. The old bridge and the native system write to different CSS surfaces.
+
+**Fix:** Decision 22 migration (Phase 5b) — move button preset values from `wp_options.sgs_button_presets` to `theme.json.styles.elements.button` including WP 7.0 pseudo-element states:
+
+```json
+{
+  "styles": {
+    "elements": {
+      "button": {
+        "color": {
+          "background": "var(--wp--preset--color--primary)",
+          "text": "var(--wp--preset--color--surface)"
+        },
+        ":hover": {
+          "color": {
+            "background": "var(--wp--preset--color--text)",
+            "text": "var(--wp--preset--color--text-inverse)"
+          }
+        },
+        ":focus": {
+          "outline": "2px solid var(--wp--preset--color--primary)",
+          "outlineOffset": "2px"
+        }
+      }
+    }
+  }
+}
+```
+
+**When deleting the old bridge:** verify WP 7.0 native generation covers every property the bridge emitted (`minHeight`, per-corner `borderRadius`, `fontWeight`, `padding`, etc.) before removing `class-button-presets-admin.php`. If any property is missing, keep a slim PHP shim for ONLY those properties.
+
+**B4 update (InnerBlocks + Decision 22):** See B4 in §B above — `save: () => <InnerBlocks.Content />` is still required for dynamic blocks with InnerBlocks slots. Decision 22 changes the VALUE SOURCE for `is-style-primary` / `is-style-secondary` / `is-style-outline` from `wp_options` custom properties to native theme.json CSS generation. The class mechanism itself (`is-style-*`) is unchanged — `render.php` still emits only the variant class when `inheritStyle !== 'custom'`. B4's guidance on InnerBlocks serialisation is unaffected.
+
+---
+
 ## How to add an entry
 
 1. Hit a real WordPress styling failure in a session.

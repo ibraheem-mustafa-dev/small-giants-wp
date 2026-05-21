@@ -20,7 +20,7 @@ references:
   - plugins/sgs-blocks/includes/class-sgs-footer-rules.php
   - plugins/sgs-blocks/includes/class-sgs-migrations.php
   - plugins/sgs-blocks/includes/class-sgs-safety-guard.php
-  - plugins/sgs-blocks/includes/class-sgs-variation-picker.php
+  - plugins/sgs-blocks/includes/class-sgs-variation-picker.php  # DELETED (Decision 18, 2026-05-21)
 cross_references:
   - wp-wpcli-and-ops skill (SKILL.md) — documents this command surface
   - .claude/specs/17-HEADER-FOOTER-ARCHITECTURE.md §S5-3
@@ -157,13 +157,14 @@ wp sgs site-info reset --user=1
 
 ### 4.5 `wp sgs seed-template-parts [--variation=<slug>] [--force] --user=<id>`
 
+> **Note (2026-05-21):** Template parts are **brand-agnostic** — they are NOT coupled to the WP style-variation system (which is deleted per Decision 18). The `--variation=<slug>` flag here refers to a registered PATTERN SLUG (e.g. `sgs/framework-header-minimal`), not a WP style variation JSON. The auto-trigger via `save_post_wp_global_styles` is removed (FR-S2-1 retired). Use this command or the admin "Reset Header/Footer" button to seed explicitly. First-install seeding happens automatically via the plugin activation hook.
+
 **Capability:** `edit_theme_options` + seeding guard must be armed (see §4.11)
 **Delegates to:** `Sgs_Template_Part_Seeder::resolve_pattern_slugs()` + `get_pattern_content()`
 
-Seeds the header and footer template parts from the named (or currently active) style
-variation's registered framework patterns. The seeder resolves `sgs/framework-header-*`
-and `sgs/framework-footer-*` pattern slugs for the variation, then writes the pattern
-content into the corresponding `wp_template_parts` post.
+Seeds the header and footer template parts from the named (or currently active) framework
+pattern. The seeder resolves `sgs/framework-header-*` and `sgs/framework-footer-*` pattern
+slugs and writes the pattern content into the corresponding `wp_template_parts` post.
 
 ```bash
 # Seed from the currently active variation
@@ -181,7 +182,7 @@ wp sgs seed-template-parts --variation=mamas-munches --force --user=1
 | Error | Cause | Fix |
 |---|---|---|
 | `Seeding is not armed` | Safety guard not triggered | Run `wp sgs seeding-arm --user=1` first |
-| `No active style variation found` | No variation active in the editor | Activate a variation in Site Editor → Styles, or pass `--variation=<slug>` |
+| `No variation slug supplied and no default pattern found` | No `--variation=<slug>` passed and no default pattern registered | Pass `--variation=<slug>` where slug is a registered pattern slug (e.g. `sgs/framework-header-minimal`) |
 | `Pattern 'sgs/...' not registered — skipping header` | Pattern not registered for this variation | Run `/sgs-update` to regenerate patterns, or register manually |
 
 ---
@@ -282,12 +283,16 @@ wp sgs footer-rules remove rule_xyz99999 --user=1
 **Delegates to:** `Sgs_Safety_Guard::arm()`
 
 Flips the FR-S7-3 seeding safety guard to armed (with a 0-second cooldown), allowing the
-template-part seeder to fire on the next style-variation save. The guard normally requires
-an upgrade cooldown period before seeding is permitted.
+template-part seeder to fire on the next explicit `wp sgs seed-template-parts` call. The
+guard normally requires an upgrade cooldown period before seeding is permitted.
+
+> **Note (2026-05-21):** The auto-trigger on style-variation save (FR-S2-1) is REMOVED by
+> Decision 18. This command now arms the guard for EXPLICIT CLI seeding only. The output
+> message below is updated accordingly.
 
 ```bash
 wp sgs seeding-arm --user=1
-# Output: Success: Seeding guard armed. The seeder will fire on the next style-variation save.
+# Output: Success: Seeding guard armed. Run wp sgs seed-template-parts to seed template parts.
 ```
 
 Run this before `wp sgs seed-template-parts` when the cooldown has not yet elapsed.
@@ -340,25 +345,9 @@ wp sgs migrations run --target=0003-some-migration --user=1
 
 ---
 
-### 4.14 `wp sgs theme-mod restore --user=<id>`
+### 4.14 `wp sgs theme-mod restore` (RETIRED 2026-05-21 — see `.claude/plans/2026-05-21-architecture-staging.md` §6.6)
 
-**Capability:** `edit_theme_options`
-**Delegates to:** `Sgs_Variation_Picker::restore_legacy_theme_mod()` (via inline logic in the command)
-
-Restores the legacy `active_theme_style` theme_mod from the backup written by
-`Sgs_Variation_Picker::maybe_migrate_legacy_theme_mod()` in `wp_options['sgs_legacy_theme_mods_backup']`.
-Use this to roll back after a failed style-variation migration.
-
-```bash
-wp sgs theme-mod restore --user=1
-# Output: Success: Legacy active_theme_style theme_mod restored: mamas-munches
-```
-
-**Common errors:**
-
-| Error | Cause | Fix |
-|---|---|---|
-| `No usable backup found` | Migration never ran or backup is empty | Check `get_option('sgs_legacy_theme_mods_backup')` directly in WP-CLI: `wp eval 'var_dump(get_option("sgs_legacy_theme_mods_backup"));'` |
+`wp sgs theme-mod restore` and `Sgs_Variation_Picker` are DELETED by Decision 18. The WP style-variation system is removed; there is no legacy `active_theme_style` theme_mod to restore. Per-site branding is managed via `push-theme-snapshot.py` (see §7 below).
 
 ---
 
@@ -371,7 +360,7 @@ wp sgs site-info set <key> <value> --user=1
 wp sgs site-info update /tmp/data.json --user=1
 wp sgs site-info reset --user=1
 
-# Template parts
+# Template parts (brand-agnostic — NOT variation-coupled; see §4.5 note)
 wp sgs seeding-arm --user=1
 wp sgs seed-template-parts [--variation=<slug>] [--force] --user=1
 wp sgs reset-template-parts [--header] [--footer] --user=1
@@ -388,8 +377,8 @@ wp sgs footer-rules remove <rule-id> --user=1
 wp sgs migrations status
 wp sgs migrations run [--target=<slug>] --user=1
 
-# Emergency rollback
-wp sgs theme-mod restore --user=1
+# wp sgs theme-mod restore — RETIRED 2026-05-21 (Decision 18, variation system deleted)
+# Use push-theme-snapshot.py for per-site branding — see §7 below
 ```
 
 ## 6. Cross-references
@@ -425,4 +414,98 @@ This spec owns the `wp sgs *` PHP CLI surface (12 commands via WP-CLI). A separa
 
 NOT a `wp sgs` subcommand because (a) it mutates source files outside WP runtime, (b) it requires manual operator confirmation gate, (c) it operates on dev-machine artefacts not server state. If future maintenance wants a `wp sgs promote-attribute` wrapper around it, that would belong in this spec.
 
-**Sgs_Variation_REST** (commit `8ceb8787`): also a separate REST surface at `sgs/v1/active-variation` (POST + GET; `manage_options` gated). Activates the style variation site-wide via `set_theme_mod`. Not exposed as a `wp sgs` command — called by the clone pipeline's Stage 10 via HTTP (REST endpoint) rather than via wp-cli.
+**Sgs_Variation_REST** (commit `8ceb8787`): REST surface at `sgs/v1/active-variation` (POST + GET; `manage_options` gated) — **RETIRED 2026-05-21 (Decision 18)**. The variation system is deleted. This endpoint is no longer needed; Stage 10 of `/sgs-clone` now calls `push-theme-snapshot.py` instead.
+
+---
+
+## 7. Adjacent CLI scripts (non-wp-sgs)
+
+> Per `.claude/plans/2026-05-21-architecture-staging.md` §6.6 — Decision 14′.
+
+These Python scripts are developer/pipeline tools that operate on dev-machine or server artefacts outside WP runtime. They are NOT `wp sgs` subcommands.
+
+### `push-theme-snapshot.py` (Phase 5a — Decision 14′)
+
+Deploys a local per-client `theme-snapshot.json` to a specific site's `wp-content/themes/sgs-theme/theme.json`.
+
+```bash
+python plugins/sgs-blocks/scripts/push-theme-snapshot.py \
+  --client mamas-munches \
+  --target u945238940@141.136.39.73
+
+# Force-overwrite without interactive prompt
+python plugins/sgs-blocks/scripts/push-theme-snapshot.py \
+  --client indus-foods \
+  --target u945238940@141.136.39.73 \
+  --yes
+```
+
+**Behaviour:**
+1. Fetch server's current `wp-content/themes/sgs-theme/theme.json` via SSH
+2. Diff local `sites/<client>/theme-snapshot.json` against server file
+3. Display diff; require `--yes` or interactive y/N
+4. Overwrite server `theme.json` with local snapshot
+
+**Safety:** operator Site Editor edits write to `wp_global_styles` (a separate post type), not `theme.json` directly. File-level conflicts are rare; the pre-push diff surfaces them before any overwrite.
+
+**Auto-invoked by:** `/sgs-clone` Stage 10 when `--client` flag is set (Decision 16′).
+
+**Snapshot format:** full `theme.json` copy (not a diff). Located at `sites/<client>/theme-snapshot.json`.
+
+### `sgs-clone-orchestrator.py` (existing)
+
+> Per `.claude/plans/2026-05-21-architecture-staging.md` §6.6.
+
+The primary pipeline orchestrator for the SGS clone workflow. Runs all pipeline stages
+(extraction, recognition, conversion, deploy). Accepts `--converter-v2` flag to route
+through the Spec 16 cv2 converter.
+
+```bash
+# Standard full run
+python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py \
+  --source https://example.com \
+  --client mamas-munches \
+  --converter-v2
+
+# Without Playwright (faster, skips responsive extraction)
+python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py \
+  --source sites/mamas-munches/mockup.html \
+  --client mamas-munches \
+  --converter-v2 \
+  --no-playwright
+```
+
+**Key flags:**
+- `--converter-v2` — REQUIRED to route through cv2 (Spec 16). Without it, legacy extract path runs silently.
+- `--client <slug>` — auto-derived from mockup path when omitted; required for Stage 10 push.
+- `--no-playwright` — skips Stage 4 Playwright responsive extraction. Use only for quick iteration; not for fidelity measurement.
+
+**Stage 10** (auto-invoked when `--client` is set): calls `push-theme-snapshot.py` to deploy the client's `theme-snapshot.json` to the target site.
+
+**IMPORTANT — `--converter-v2` required for cv2:** without this flag, `_cv2_eligible=False` for every boundary and the legacy extract path runs, silently bypassing widthMode emission and style-variation lift. This is a known footgun — captured at `~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_converter_v2_flag_required_for_cv2.md`.
+
+---
+
+### `sgs-db.py` (existing)
+
+> Per `.claude/plans/2026-05-21-architecture-staging.md` §6.6.
+
+Query tool for the SGS Framework knowledge base (`sgs-framework.db`). 619+ block attributes,
+25 design tokens, 36 patterns queryable from the command line.
+
+```bash
+python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py stats          # Framework health
+python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py block sgs/hero  # Block details
+python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py match "pricing" # Find best block
+python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py context indus-foods # Load client context
+```
+
+**Note:** after Phase 1 (DB merge) lands, this tool queries the merged sgs-framework.db which
+also contains WP core blocks, hooks, and CLI docs (Decision 1). All WP + SGS knowledge in
+one DB, one query tool.
+
+---
+
+### `stage_attribute_promotion.py`
+
+(See above — 2026-05-20 section.)

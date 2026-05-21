@@ -4,11 +4,43 @@ project: small-giants-wp
 last_updated: 2026-05-21
 ---
 
+## Opened 2026-05-21 (architecture session — 31-decision programme)
+
+**P-ARCH-PHASE-0.5** — Structural QC enforcement hook (Decision 31). New PostToolUse hook `.claude/hooks/qc-on-converter-edit.py` fires on Write/Edit to `converter_v2/convert.py` or `sgs-clone-orchestrator.py`. Emits systemMessage warning when a subsequent `git commit` on those paths lacks `[qc:<run_id>]` marker. ~20 min. **Trigger:** first session after reading the staging doc — ships BEFORE any other phase.
+
+**P-ARCH-PHASE-1** — DB merge (Decisions 1, 2, 11). `source` column added to `blocks`, `block_attributes`, `block_supports`. All blocks.db rows + all hooks.db rows imported into sgs-framework.db. `docs` table extended with `doc_type='cli-command'`. `indexed_files` table added. ~1.5 hr. **Trigger:** after Phase 0.5. Blocking for Phases 2, 3, 4.
+
+**P-ARCH-PHASE-2** — Variations indexing (Decisions 7, 8). New `variations` table. sgs/button's 4 variations (primary/secondary/outline/custom) + every other SGS block style alternative indexed. ~1.5 hr. **Trigger:** after Phase 1. Can run parallel session with Phase 3.
+
+**P-ARCH-PHASE-3** — INNER_BLOCK_PATTERNS retirement (Decision 12). Decision 24 research RESOLVED this session (keep DB-backed; Pattern Overrides is orthogonal). `_lift_inner_blocks` rewritten to read `blocks.parent_block` + `slot_synonyms.standalone_block`. Adjacent-slot grouping logic added. Dict deleted from `convert.py`. ~1 hr. **Trigger:** after Phase 1. Can run parallel with Phase 2.
+
+**P-ARCH-PHASE-4** — `/sgs-update` rebuild (Decisions 13, 30). 9-stage holistic refresh: SGS codebase scan, core/gutenberg cache refresh (10 canonical sources), WP-CLI handbook refresh, style-variation sync, slot synonym auto-seed, block-replacement mapping, spec doc regen, uimax mirror, drift gate. Per-release verification gate via `since/<version>/` cross-check. ~5.5 hr. **Trigger:** after Phase 1. Can run parallel session with Phases 5a, 5b, 6, 7.
+
+**P-ARCH-PHASE-5A** — Variation system kill + per-site theme.json (Decisions 14', 16', 17', 18, 19). DELETE 3 PHP files + MODIFY 1. Move per-client snapshots to `sites/<client>/theme-snapshot.json`. New `push-theme-snapshot.py` CLI. `/sgs-clone` Stage 10 invokes push via auto-derived `--client` flag. Browse-styles UI hidden on single-stylesheet installs. ~2 hr. **Trigger:** after Phase 1. Can run parallel with Phase 4 or 5b.
+
+**P-ARCH-PHASE-5B** — Customiser migration + button presets + View Transitions (Decisions 21, 22, 27). SGS Header Rules + Footer Rules + Site Info admin pages migrated to Customiser sections. Button presets from `wp_options` to `theme.json` native (WP 7.0 pseudo-elements). `wp_enqueue_view_transitions_admin_css()` wired. Implementer must verify View Transitions actually fire in Customiser context (function documented for "admin" — may not fire in Customiser sub-context). ~6-10 hr across 1-2 sessions. **Trigger:** after Phase 1. Can run parallel with Phase 4 or 5a.
+
+**P-ARCH-PHASE-6** — Markup examples + supports backfill + WP 7.0 audits + Lucide REST (Decisions 9, 10, 23, 25, 28). Author markup_examples for 73 SGS blocks. Audit + backfill block_supports gaps. All 73 blocks get `apiVersion: 3` + `role: content` + script-module text domain. Block visibility coexistence documented. `lucide-icons.php` refactored to use `WP_REST_Icons_Controller`. ~5 hr. **Trigger:** after Phases 1 + 2.
+
+**P-ARCH-PHASE-7** — AI Connectors + WP-skills WP 7.0 audit (Decisions 26, 29). `Sgs_Ai_Connector` PHP wrapper registered. 10 wp-* skills audited for WP 7.0 alignment (~30 min × 10 = ~5 hr). ~6 hr total. **Trigger:** any time after Phase 1.
+
+**P-ARCH-VARIATION-KILL-OPEN-QUESTIONS** — Two open questions for Phase 5a implementer: (1) Snapshot format confirmed as full theme.json copy, not diff-against-default. (2) Push CLI must do pre-push diff + require `--yes` flag when server's `theme.json` has been locally edited (rare — operator edits via Site Editor write to `wp_global_styles` CPT, not theme.json file directly). See staging doc §12. **Trigger:** Phase 5a pre-flight.
+
+**P-ARCH-WP70-BUTTON-BRIDGE-AUDIT** — Before deleting the CSS-custom-property bridge in Phase 5b (Decision 22), implementer MUST audit whether WP 7.0's CSS generation covers ALL properties the current bridge emits (background, text, border, border-width, border-radius, padding, font-size, font-weight, min-height, 4 pseudo-element states). If any property is uncovered, keep a slim PHP shim. See staging doc §6.3. **Trigger:** Phase 5b pre-flight.
+
+**P-ARCH-WP70-VIEW-TRANSITIONS-VERIFY** — View Transitions for Customiser (Decision 27): `wp_enqueue_view_transitions_admin_css()` is documented for "the admin" but Customiser-specific context not confirmed. Phase 5b implementer MUST verify transitions fire when navigating between Customiser panels on a live WP 7.0 install. Fallback: emit view-transitions CSS via `customize_controls_enqueue_scripts` hook. See staging doc §11 Decision 27. **Trigger:** Phase 5b implementation.
+
+**P-ARCH-WP-SKILLS-AUDIT-SCOPE** — Decision 29 audit scope for 10 wp-* skills: deprecated APIs (`apiVersion: 2` examples → 3), missing new APIs (Interactivity API `watch()`, Pattern Overrides, Block Bindings filter, View Transitions, AI Connectors, Icons REST, Abilities API, Script Module translations, pseudo-elements in theme.json, `role: content`, PHP-only block registration), stale code examples. See staging doc §11 Decision 29. **Trigger:** Phase 7.
+
+**P-ARCH-AI-CONNECTORS-PROVIDER-ROSTER** — `Sgs_Ai_Connector` infrastructure (Decision 26) must document supported provider roster as a roadmap (OpenAI, Anthropic, Gemini, Ollama-via-local). No specific AI features built in Phase 7 — infrastructure-only. See staging doc §11 Decision 26. **Trigger:** Phase 7 implementation.
+
+---
+
 ## Opened 2026-05-21 (Wave 2 reshape + pipeline reality findings + qc-trio follow-ups)
 
 **P-WAVE-2-RESHAPE-AS-ONE-WIRING-GAP** — G1 + G3 + G5 reframed as ONE wiring gap, not three separate problems. The SGS-framework.db has all the mapping data needed (`property_suffixes` 117 rows, `slot_synonyms` 89 rows, `block_compositions` 37 rows, `block_attributes` 1755 rows, `modifier_suffixes` 19 rows) but cv2 doesn't query all of it consistently. Wave 2 = one architectural change wiring the DB tables into the walker's emit shape, NOT three per-block fixes. See decisions.md Decision 26. **Trigger:** Wave 2 of next session.
 
-**P-BLOCK-COMPOSITIONS-READ-PATH** — `block_compositions` table is WRITE-ONLY in current code. Only `pattern-register.py` + `seed-block-compositions.py` INSERT; nothing reads. Pipeline doc line 354 claims it's read as a fallback — inaccurate. cv2 walker should query `block_compositions` for parent-child block relations to drive nested-block emission shape. **Trigger:** Wave 2 G1+G3+G5 work; concrete fix point in convert.py walker.
+**P-BLOCK-COMPOSITIONS-READ-PATH** — `block_compositions` table is WRITE-ONLY in current code. Only `pattern-register.py` + `seed-block-compositions.py` INSERT; nothing reads. Pipeline doc line 354 claims it's read as a fallback — inaccurate. cv2 walker should query `block_compositions` for parent-child block relations to drive nested-block emission shape. **STATUS: SUBSUMED by P-ARCH-PHASE-3 (INNER_BLOCK_PATTERNS retirement).** Phase 3 rewrites `_lift_inner_blocks` to consult `blocks.parent_block` + `slot_synonyms.standalone_block` — that's the read-path this item requested.
 
 **P-FR1-VARIATION-BUF-CONSISTENCY** — FR1 fast path (`convert.py:3670-3689`) shortcuts to `lift_subtree_into_block_attrs()` and returns directly without appending to `variation_buf`. Result: registered SGS blocks (hero, trust-bar) have `variation_css_rules=0` even when CSS is in `_section_css`. One-line fix: `variation_buf.append(_collect_css_for_classes(classes, css_rules))` after line 3675. Universal, not hero-special. **Trigger:** Wave 2 alongside the G1+G3+G5 wiring fix.
 
@@ -26,11 +58,11 @@ last_updated: 2026-05-21
 
 ## Opened 2026-05-20 (Phase 1 closure follow-ups + Phase 2 medium-severity items)
 
-**P-G1-HERO-INNERBLOCKS** — cv2 emits self-closing `wp:sgs/hero` block. Render.php uses `$content` (InnerBlocks) for CTAs — empty when block is self-closing. Live page 144 hero CTAs ARE INVISIBLE. ~50pp of hero's 67.8% pixel-diff. **Trigger:** Wave 2 of next session (G1).
+**P-G1-HERO-INNERBLOCKS** — cv2 emits self-closing `wp:sgs/hero` block. Render.php uses `$content` (InnerBlocks) for CTAs — empty when block is self-closing. Live page 144 hero CTAs ARE INVISIBLE. ~50pp of hero's 67.8% pixel-diff. **STATUS: SUBSUMED by P-ARCH-PHASE-3 (INNER_BLOCK_PATTERNS retirement).** Decision 12 adds adjacent-slot grouping — hero CTAs emit as nested InnerBlocks via `blocks.parent_block` lookup.
 
-**P-G2-PAGE-ID-SCOPE-STRIP** — P1.B.x scoped variation CSS to `.page-id-N .sgs-X` but cv2's `_collect_css_decls_for_element` searches for bare `.sgs-X`. Match fails. Silently kills 60-80% of value-lift on every SGS block. **Trigger:** Wave 1 of next session (G2). One-line fix: `re.sub(r"^\.page-id-\d+\s+", "", selector)` in convert.py.
+**P-G2-PAGE-ID-SCOPE-STRIP** — P1.B.x scoped variation CSS to `.page-id-N .sgs-X` but cv2's `_collect_css_decls_for_element` searches for bare `.sgs-X`. Match fails. Silently kills 60-80% of value-lift on every SGS block. **STATUS: PARTIALLY RESOLVED by Wave 1 G2 Step 1+2 (commit `affca3f1`).** Orchestrator merges variation CSS into `_section_css`; cv2 strips `.page-id-N` scope prefix in selector matcher. The root cause (scope isolation needed for D2 CSS) is architecturally addressed by the variation-kill in P-ARCH-PHASE-5A — once per-site theme.json replaces the overlay system, scope prefixes are no longer needed.
 
-**P-G3-STAGE-3-VISUAL-SLOT-MAPPING** — Stage 3 `slot_list.py` only extracts text-content slots. Visual/structural slots (backgroundImage, overlayColour, minHeight, ctaPrimaryColour, alignment) return "no value extracted" even when mockup CSS has the values. Extend slot resolver to call `_collect_css_decls_for_element` for visual slots + map CSS prop → SGS attr name via `property_suffixes`. **Trigger:** Wave 2 of next session (G3), after G1.
+**P-G3-STAGE-3-VISUAL-SLOT-MAPPING** — Stage 3 `slot_list.py` only extracts text-content slots. Visual/structural slots (backgroundImage, overlayColour, minHeight, ctaPrimaryColour, alignment) return "no value extracted" even when mockup CSS has the values. **STATUS: SUBSUMED by P-ARCH-PHASE-3 (INNER_BLOCK_PATTERNS retirement + DB-backed slot lookup).** Decision 12's `_lift_inner_blocks` rewrite reads `slot_synonyms.standalone_block` via `db.standalone_block_for()` — the same DB path that should drive visual-slot resolution. P-ARCH-PHASE-6 backfills `block_supports` gaps that expose visual slot controls. Together these address G3.
 
 **P-G4-MEASUREMENT-DECONTAMINATION** — `scripts/pixel-diff.py` screenshots include WP admin bar + sgs-header. Mockup screenshots have neither. Systematic +10-20pp inflation on EVERY section measurement. Fix: Playwright `addInitScript` removes `#wpadminbar` + `.sgs-header` before screenshot. **Trigger:** Wave 1 of next session (G4).
 

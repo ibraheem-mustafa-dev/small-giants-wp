@@ -9,7 +9,7 @@
 
 *Source: root `ARCHITECTURE.md` (2026-04-28).*
 
-> Last updated: 2026-04-28 | Status: Active Development (Phase 3.2 complete, hover variant gaps closed, Floating UI architecture decided)
+> Last updated: 2026-05-21 | Status: Architecture programme active (8 phases, Phase 0 shipped `aec54882`). See `.claude/plans/2026-05-21-architecture-staging.md` for the canonical 31-decision record.
 
 ## Overview
 
@@ -28,6 +28,30 @@ SGS is a standalone WordPress block theme and Gutenberg blocks plugin built by S
 **P-WP-ALIGNMENT-WIDTH-SYSTEM (CLOSED 2026-05-18, 3 commits):** Architectural milestone within Phase 9. (1) cv2 pipeline targets WP PAGES (`page.html` template, `is-layout-flow` main) not POSTS (`single.html`, `is-layout-constrained` with `.entry-content { max-width: 800px }`) — `c7f42003`. Canary surface moved from post 65 to page 131 (`/cv2-output-mamas-munches/`); brand-cropped pixel-diff at 1440 dropped 58.0% → 43.7% (14.3-point reduction from this template change alone). `reports/brand-walkdown-2026-05-19/upload_and_patch.py` rewritten with `argparse` — `--target page|post --target-id N`, defaults `--target page --target-id 131`. (2) sgs/container gains `widthMode` per-viewport enum (default/wide/full/custom) composing with WP-native `alignfull`/`alignwide`; converter detects mockup section widths from SGS-BEM block-root selectors and writes `settings.layout.contentSize`/`wideSize` into per-client style variation JSON idempotently; `_lift_root_supports_to_style` emits semantic `widthMode` when lifted max-width matches theme widths within ±5%, arbitrary literals fall back to legacy inline `style.dimensions.maxWidth` — `86172812`. Editor InspectorControls expose the full surface. Universal-benefit held — zero client literals; per-client style variations now inherit auto-detected layout widths. ROI measurement (full orchestrator re-run regenerating block markup with widthMode attrs, push to page 131, re-measure pixel-diff) parked as next-session work.
 
 **DB-first architecture rule (blub.db row 260, Rule 11 HARD-GATE in /sgs-clone SKILL.md):** Converter / recogniser scripts read canonical vocabulary from sgs-framework.db tables (`property_suffixes` 117 rows, `block_supports` 370 rows, `modifier_suffixes` 19 rows, `slot_synonyms`, `block_attributes` 1406 rows, `block_selectors`, `block_compositions`) via `db_lookup.py`. No hardcoded Python dicts duplicating DB data. /sgs-update keeps the DB in sync; manual dicts do not sync.
+
+**Architecture programme 2026-05-21 (31 decisions, 8 phases, Phase 0 shipped):**
+
+A session that began as a Wave 2 wiring fix pivoted into a holistic architectural redesign of the SGS framework. Five changes:
+
+1. **DB consolidation (Phase 1)** — Three databases (wp-blockmarkup-mcp blocks.db, wp-devdocs-mcp hooks.db, sgs-framework.db) merge into sgs-framework.db with a `source` column. One source of truth for all WP + SGS knowledge. After this: `/sgs-update --refresh-upstream` pulls from 10 canonical sources (gutenberg repo, wp-develop repo, wp-cli handbook, `developer.wordpress.org/reference/since/<version>/`, field guide, dev blog, 4 handbooks). Per-release verification gate checks DB completeness against `since/<version>/` API list.
+
+2. **Style-variation system killed (Phase 5a)** — Privacy by construction replaces privacy by policy. Nine per-client variation JSONs removed from framework deploy. Each live site gets ONE `theme.json`; local repo holds per-client snapshots at `sites/<client>/theme-snapshot.json`. New `push-theme-snapshot.py` CLI deploys snapshot to target site. Three PHP files deleted; header/footer infrastructure entirely preserved (template parts, CPTs, rules engines, seeder — none of these are variation-system files). The distinction between WP style variations (DELETED), header/footer template parts (PRESERVED), and block-level variations/`register_block_variation()` (PRESERVED) is load-bearing — see staging doc §2.
+
+3. **INNER_BLOCK_PATTERNS dict retired (Phase 3)** — Hardcoded two-entry dict in `convert.py` replaced by DB-backed `blocks.parent_block` + `slot_synonyms.standalone_block` lookups (both tables already exist; Phase 0 committed `aec54882` seeded them). Adjacent-slot grouping added. Decision 24 (Pattern Overrides research) was resolved in this session — Pattern Overrides is orthogonal (operator-facing editing UX for synced patterns, not converter logic); DB-backed approach stays. Full research: `.claude/reports/2026-05-21-pattern-overrides-research.md`.
+
+4. **Button presets → WP 7.0 native theme.json (Phase 5b)** — WP 7.0 (released 2026-05-14) adds native pseudo-element support for `styles.elements.button` in theme.json. The `wp_options.sgs_button_presets` + CSS-custom-property bridge becomes redundant. Operator edits via Site Editor → Styles → Buttons. The `is-style-primary/secondary/outline` className mechanism stays; only the value source changes. Implementer must audit that WP 7.0's CSS generation covers all properties the bridge currently emits before deleting the bridge.
+
+5. **`/sgs-update` rebuilt as 9-stage holistic refresh (Phase 4)** — Formerly 4 stages. New 9-stage version: SGS codebase scan, core/gutenberg cache refresh, WP-CLI handbook refresh, style-variation sync, slot synonym auto-seed, block-replacement mapping, spec doc regen, uimax mirror, drift gate.
+
+**WP 7.0 alignment (target for Phases 6 + 7):** All 73 SGS blocks get `apiVersion: 3` + `role: content` on content-bearing attrs + script-module text domain declarations. Lucide icon system refactored to use `WP_REST_Icons_Controller`. `Sgs_Ai_Connector` PHP wrapper registered (infrastructure-only; no specific AI features built). Ten wp-* skills audited and updated for WP 7.0.
+
+**Variation-concept distinction (CRITICAL — three concepts, only WP style variations are deleted):**
+
+| Concept | What it is | Fate |
+|---|---|---|
+| WP style variations (`theme/sgs-theme/styles/<client>.json`) | Per-client colour/typography overlay | DELETED — Phase 5a |
+| Header/footer template parts (`parts/header.html`, `parts/footer.html`) | Brand-agnostic alternative templates | 100% PRESERVED |
+| Block-level variations (`register_block_variation()`) | Variants within ONE block (sgs/button primary/secondary/outline) | PRESERVED — DB-indexed in Phase 2 |
 
 ## Stack
 
