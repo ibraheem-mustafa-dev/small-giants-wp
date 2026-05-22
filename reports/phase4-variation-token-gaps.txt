@@ -1,82 +1,161 @@
-# Style Variation Token Gaps — 2026-05-22 17:40:37 UTC
+# Stage 4 Style Variation Sync — 2026-05-22 19:22:38 UTC
 
-Phase 5a not yet shipped — this report is observational only.
-No writes to design_tokens. Activate after Phase 5a delivers the snapshot model.
+Phase 5a shipped. DB writes active.
 
-Found snapshots: 8. Missing: 2. Tokens checked: 31. Gaps: 31.
+Snapshots found: 8 | Missing: 2 | Inserted: 0 | Skipped: 107 | Conflicts: 106
 
-## Per-client findings
+## Per-client results
 
-### eye-care-ward-end (C:\Users\Bean\Projects\small-giants-wp\sites\eye-care-ward-end\theme-snapshot.json)
+### eye-care-ward-end
 
-_(settings.custom not found in snapshot — nothing to check)_
+Inserted: 0 | Skipped: 26 | Conflicts: 5
 
-### helping-doctors (C:\Users\Bean\Projects\small-giants-wp\sites\helping-doctors\theme-snapshot.json)
+- CONFLICT: font-size-small (framework='14px', client='clamp(0.75rem, 1.5vw, 0.875rem)') → inserted as eye-care-ward-end-font-size-small
+- CONFLICT: font-size-medium (framework='18px', client='clamp(0.875rem, 2vw, 1rem)') → inserted as eye-care-ward-end-font-size-medium
+- CONFLICT: font-size-large (framework='20px', client='clamp(1rem, 2.5vw, 1.25rem)') → inserted as eye-care-ward-end-font-size-large
+- CONFLICT: font-size-x-large (framework='24px', client='clamp(1.25rem, 3vw, 1.75rem)') → inserted as eye-care-ward-end-font-size-x-large
+- CONFLICT: font-size-xx-large (framework='36px', client='clamp(1.75rem, 4vw, 2.5rem)') → inserted as eye-care-ward-end-font-size-xx-large
 
-_2 tokens checked, 2 gaps found:_
+### helping-doctors
 
-- GAP: settings.custom.sgs-headerPattern = 'sgs/framework-header-default' — not in design_tokens
-- GAP: settings.custom.sgs-footerPattern = 'sgs/framework-footer-default' — not in design_tokens
+Inserted: 0 | Skipped: 5 | Conflicts: 14
 
-### indus-foods (C:\Users\Bean\Projects\small-giants-wp\sites\indus-foods\theme-snapshot.json)
+- CONFLICT: color-primary (framework='#0D1B2A', client='#2d6e5e') → inserted as helping-doctors-color-primary
+- CONFLICT: color-primary-dark (framework='#060D14', client='#1a4139') → inserted as helping-doctors-color-primary-dark
+- CONFLICT: color-accent (framework='#C9A84C', client='#e8a020') → inserted as helping-doctors-color-accent
+- CONFLICT: color-accent-light (framework='#F0E4C3', client='#fef3dc') → inserted as helping-doctors-color-accent-light
+- CONFLICT: color-error (framework='#DC2626', client='#dc2626') → inserted as helping-doctors-color-error
+- CONFLICT: color-surface (framework='#FFFFFF', client='#ffffff') → inserted as helping-doctors-color-surface
+- CONFLICT: color-surface-alt (framework='#F5F5F0', client='#e8f5f2') → inserted as helping-doctors-color-surface-alt
+- CONFLICT: color-text-muted (framework='#6B6B6B', client='#555555') → inserted as helping-doctors-color-text-muted
+- CONFLICT: color-text-inverse (framework='#FFFFFF', client='#ffffff') → inserted as helping-doctors-color-text-inverse
+- CONFLICT: color-border-subtle (framework='#C9A84C', client='#d4e8e4') → inserted as helping-doctors-color-border-subtle
+- CONFLICT: color-border-light (framework='#E5E7EB', client='#e5e7eb') → inserted as helping-doctors-color-border-light
+- CONFLICT: color-footer-bg (framework='#0D1B2A', client='#1a4139') → inserted as helping-doctors-color-footer-bg
+- CONFLICT: font-family-heading (framework="'DM Serif Display', Georgia, serif", client='Inter, system-ui, -apple-system, sans-serif') → inserted as helping-doctors-font-family-heading
+- CONFLICT: font-family-body (framework="'DM Sans', system-ui, sans-serif", client='Inter, system-ui, -apple-system, sans-serif') → inserted as helping-doctors-font-family-body
 
-_2 tokens checked, 2 gaps found:_
+### indus-foods
 
-- GAP: settings.custom.sgs-headerPattern = 'sgs/framework-header-default' — not in design_tokens
-- GAP: settings.custom.sgs-footerPattern = 'sgs/framework-footer-default' — not in design_tokens
+Inserted: 0 | Skipped: 6 | Conflicts: 12
 
-### mamas-munches (C:\Users\Bean\Projects\small-giants-wp\sites\mamas-munches\theme-snapshot.json)
+- CONFLICT: color-primary (framework='#0D1B2A', client='#0A7EA8') → inserted as indus-foods-color-primary
+- CONFLICT: color-primary-dark (framework='#060D14', client='#075E80') → inserted as indus-foods-color-primary-dark
+- CONFLICT: color-accent (framework='#C9A84C', client='#D8CA50') → inserted as indus-foods-color-accent
+- CONFLICT: color-accent-light (framework='#F0E4C3', client='#E7D768') → inserted as indus-foods-color-accent-light
+- CONFLICT: color-border-subtle (framework='#C9A84C', client='#2EADE2') → inserted as indus-foods-color-border-subtle
+- CONFLICT: color-success (framework='#2e7d4f', client='#2E7D4F') → inserted as indus-foods-color-success
+- CONFLICT: color-surface-alt (framework='#F5F5F0', client='#F8F7F4') → inserted as indus-foods-color-surface-alt
+- CONFLICT: color-text (framework='#1a1a1a', client='#2C3E50') → inserted as indus-foods-color-text
+- CONFLICT: color-text-muted (framework='#6B6B6B', client='#5A6070') → inserted as indus-foods-color-text-muted
+- CONFLICT: color-footer-bg (framework='#0D1B2A', client='#2C3E50') → inserted as indus-foods-color-footer-bg
+- CONFLICT: font-family-heading (framework="'DM Serif Display', Georgia, serif", client='Montserrat, system-ui, sans-serif') → inserted as indus-foods-font-family-heading
+- CONFLICT: font-family-body (framework="'DM Sans', system-ui, sans-serif", client="'Source Sans 3', system-ui, sans-serif") → inserted as indus-foods-font-family-body
 
-_27 tokens checked, 27 gaps found:_
+### mamas-munches
 
-- GAP: settings.custom.buttonPresets-primary-background = 'var(--wp--preset--color--primary)' — not in design_tokens
-- GAP: settings.custom.buttonPresets-primary-text = 'var(--wp--preset--color--text)' — not in design_tokens
-- GAP: settings.custom.buttonPresets-primary-border = 'var(--wp--preset--color--primary)' — not in design_tokens
-- GAP: settings.custom.buttonPresets-primary-border-width = '2px' — not in design_tokens
-- GAP: settings.custom.buttonPresets-primary-border-radius = '24px' — not in design_tokens
-- GAP: settings.custom.buttonPresets-primary-padding = '14px 28px 14px 28px' — not in design_tokens
-- GAP: settings.custom.buttonPresets-primary-font-size = '15px' — not in design_tokens
-- GAP: settings.custom.buttonPresets-primary-font-weight = '600' — not in design_tokens
-- GAP: settings.custom.buttonPresets-primary-min-height = '48px' — not in design_tokens
-- GAP: settings.custom.buttonPresets-primary-hover-background = 'var(--wp--preset--color--text)' — not in design_tokens
-- GAP: settings.custom.buttonPresets-primary-hover-text = 'var(--wp--preset--color--text-inverse)' — not in design_tokens
-- GAP: settings.custom.buttonPresets-primary-hover-border = 'var(--wp--preset--color--text)' — not in design_tokens
-- GAP: settings.custom.buttonPresets-secondary-background = 'transparent' — not in design_tokens
-- GAP: settings.custom.buttonPresets-secondary-text = 'var(--wp--preset--color--text)' — not in design_tokens
-- GAP: settings.custom.buttonPresets-secondary-border = 'var(--wp--preset--color--primary)' — not in design_tokens
-- GAP: settings.custom.buttonPresets-secondary-border-width = '2px' — not in design_tokens
-- GAP: settings.custom.buttonPresets-secondary-border-radius = '24px' — not in design_tokens
-- GAP: settings.custom.buttonPresets-secondary-padding = '14px 28px 14px 28px' — not in design_tokens
-- GAP: settings.custom.buttonPresets-secondary-font-size = '15px' — not in design_tokens
-- GAP: settings.custom.buttonPresets-secondary-font-weight = '600' — not in design_tokens
-- GAP: settings.custom.buttonPresets-secondary-min-height = '48px' — not in design_tokens
-- GAP: settings.custom.buttonPresets-secondary-hover-background = 'var(--wp--preset--color--text)' — not in design_tokens
-- GAP: settings.custom.buttonPresets-secondary-hover-text = 'var(--wp--preset--color--text-inverse)' — not in design_tokens
-- GAP: settings.custom.buttonPresets-secondary-hover-border = 'var(--wp--preset--color--text)' — not in design_tokens
-- GAP: settings.custom.maxWidth-narrow-420 = '420px' — not in design_tokens
-- GAP: settings.custom.sgs-headerPattern = 'sgs/framework-header-default' — not in design_tokens
-- GAP: settings.custom.sgs-footerPattern = 'sgs/framework-footer-default' — not in design_tokens
+Inserted: 0 | Skipped: 7 | Conflicts: 14
 
-### sgs-construction (C:\Users\Bean\Projects\small-giants-wp\sites\sgs-construction\theme-snapshot.json)
+- CONFLICT: color-primary (framework='#0D1B2A', client='#E68A95') → inserted as mamas-munches-color-primary
+- CONFLICT: color-primary-dark (framework='#060D14', client='#C56A7A') → inserted as mamas-munches-color-primary-dark
+- CONFLICT: color-surface (framework='#FFFFFF', client='#FBF3DC') → inserted as mamas-munches-color-surface
+- CONFLICT: color-surface-alt (framework='#F5F5F0', client='#FFF9F0') → inserted as mamas-munches-color-surface-alt
+- CONFLICT: color-accent (framework='#C9A84C', client='#F5D050') → inserted as mamas-munches-color-accent
+- CONFLICT: color-accent-text (framework='#7A6B00', client='#7A6500') → inserted as mamas-munches-color-accent-text
+- CONFLICT: color-text (framework='#1a1a1a', client='#3A2E26') → inserted as mamas-munches-color-text
+- CONFLICT: color-text-muted (framework='#6B6B6B', client='#6B5C50') → inserted as mamas-munches-color-text-muted
+- CONFLICT: color-text-inverse (framework='#FFFFFF', client='#FFFAF5') → inserted as mamas-munches-color-text-inverse
+- CONFLICT: color-border-subtle (framework='#C9A84C', client='#E8D5C0') → inserted as mamas-munches-color-border-subtle
+- CONFLICT: color-success (framework='#2e7d4f', client='#2E7D4F') → inserted as mamas-munches-color-success
+- CONFLICT: color-footer-bg (framework='#0D1B2A', client='#3A2E26') → inserted as mamas-munches-color-footer-bg
+- CONFLICT: font-family-heading (framework="'DM Serif Display', Georgia, serif", client="Fraunces, 'DM Serif Display', Georgia, serif") → inserted as mamas-munches-font-family-heading
+- CONFLICT: font-family-body (framework="'DM Sans', system-ui, sans-serif", client='Inter, system-ui, -apple-system, sans-serif') → inserted as mamas-munches-font-family-body
 
-_(settings.custom not found in snapshot — nothing to check)_
+### sgs-construction
 
-### sgs-healthcare (C:\Users\Bean\Projects\small-giants-wp\sites\sgs-healthcare\theme-snapshot.json)
+Inserted: 0 | Skipped: 15 | Conflicts: 16
 
-_(settings.custom not found in snapshot — nothing to check)_
+- CONFLICT: color-primary (framework='#0D1B2A', client='#1C1C1C') → inserted as sgs-construction-color-primary
+- CONFLICT: color-primary-dark (framework='#060D14', client='#0A0A0A') → inserted as sgs-construction-color-primary-dark
+- CONFLICT: color-accent (framework='#C9A84C', client='#E8700A') → inserted as sgs-construction-color-accent
+- CONFLICT: color-accent-light (framework='#F0E4C3', client='#FDE8D0') → inserted as sgs-construction-color-accent-light
+- CONFLICT: color-surface-alt (framework='#F5F5F0', client='#F5F3F0') → inserted as sgs-construction-color-surface-alt
+- CONFLICT: color-footer-bg (framework='#0D1B2A', client='#1C1C1C') → inserted as sgs-construction-color-footer-bg
+- CONFLICT: color-text-primary (framework='#0D1B2A', client='#1C1C1C') → inserted as sgs-construction-color-text-primary
+- CONFLICT: color-text-secondary (framework='#4A4A4A', client='#5A5A5A') → inserted as sgs-construction-color-text-secondary
+- CONFLICT: color-text-muted (framework='#6B6B6B', client='#7A7A7A') → inserted as sgs-construction-color-text-muted
+- CONFLICT: color-border-subtle (framework='#C9A84C', client='#E8700A') → inserted as sgs-construction-color-border-subtle
+- CONFLICT: font-size-small (framework='14px', client='clamp(0.75rem, 1.5vw, 0.875rem)') → inserted as sgs-construction-font-size-small
+- CONFLICT: font-size-medium (framework='18px', client='clamp(0.875rem, 2vw, 1rem)') → inserted as sgs-construction-font-size-medium
+- CONFLICT: font-size-large (framework='20px', client='clamp(1rem, 2.5vw, 1.25rem)') → inserted as sgs-construction-font-size-large
+- CONFLICT: font-size-x-large (framework='24px', client='clamp(1.25rem, 3vw, 1.75rem)') → inserted as sgs-construction-font-size-x-large
+- CONFLICT: font-size-xx-large (framework='36px', client='clamp(1.75rem, 4vw, 2.5rem)') → inserted as sgs-construction-font-size-xx-large
+- CONFLICT: font-family-heading (framework="'DM Serif Display', Georgia, serif", client="'DM Sans', system-ui, sans-serif") → inserted as sgs-construction-font-family-heading
 
-### sgs-mosque (C:\Users\Bean\Projects\small-giants-wp\sites\sgs-mosque\theme-snapshot.json)
+### sgs-healthcare
 
-_(settings.custom not found in snapshot — nothing to check)_
+Inserted: 0 | Skipped: 16 | Conflicts: 15
 
-### sgs-professional (C:\Users\Bean\Projects\small-giants-wp\sites\sgs-professional\theme-snapshot.json)
+- CONFLICT: color-primary (framework='#0D1B2A', client='#1A5F6B') → inserted as sgs-healthcare-color-primary
+- CONFLICT: color-primary-dark (framework='#060D14', client='#124550') → inserted as sgs-healthcare-color-primary-dark
+- CONFLICT: color-accent (framework='#C9A84C', client='#4CAF88') → inserted as sgs-healthcare-color-accent
+- CONFLICT: color-accent-light (framework='#F0E4C3', client='#D4F0E4') → inserted as sgs-healthcare-color-accent-light
+- CONFLICT: color-surface-alt (framework='#F5F5F0', client='#F0F9F7') → inserted as sgs-healthcare-color-surface-alt
+- CONFLICT: color-footer-bg (framework='#0D1B2A', client='#1A5F6B') → inserted as sgs-healthcare-color-footer-bg
+- CONFLICT: color-text-primary (framework='#0D1B2A', client='#1A2E35') → inserted as sgs-healthcare-color-text-primary
+- CONFLICT: color-text-secondary (framework='#4A4A4A', client='#4A6670') → inserted as sgs-healthcare-color-text-secondary
+- CONFLICT: color-text-muted (framework='#6B6B6B', client='#7A9BA6') → inserted as sgs-healthcare-color-text-muted
+- CONFLICT: color-border-subtle (framework='#C9A84C', client='#4CAF88') → inserted as sgs-healthcare-color-border-subtle
+- CONFLICT: font-size-small (framework='14px', client='clamp(0.75rem, 1.5vw, 0.875rem)') → inserted as sgs-healthcare-font-size-small
+- CONFLICT: font-size-medium (framework='18px', client='clamp(0.875rem, 2vw, 1rem)') → inserted as sgs-healthcare-font-size-medium
+- CONFLICT: font-size-large (framework='20px', client='clamp(1rem, 2.5vw, 1.25rem)') → inserted as sgs-healthcare-font-size-large
+- CONFLICT: font-size-x-large (framework='24px', client='clamp(1.25rem, 3vw, 1.75rem)') → inserted as sgs-healthcare-font-size-x-large
+- CONFLICT: font-size-xx-large (framework='36px', client='clamp(1.75rem, 4vw, 2.5rem)') → inserted as sgs-healthcare-font-size-xx-large
 
-_(settings.custom not found in snapshot — nothing to check)_
+### sgs-mosque
 
-### small-giants-studio-v2 (C:\Users\Bean\Projects\small-giants-wp\sites\small-giants-studio-v2\theme-snapshot.json)
+Inserted: 0 | Skipped: 16 | Conflicts: 15
 
-_(snapshot file not found)_
+- CONFLICT: color-primary (framework='#0D1B2A', client='#1A3D2B') → inserted as sgs-mosque-color-primary
+- CONFLICT: color-primary-dark (framework='#060D14', client='#102519') → inserted as sgs-mosque-color-primary-dark
+- CONFLICT: color-accent (framework='#C9A84C', client='#C9A035') → inserted as sgs-mosque-color-accent
+- CONFLICT: color-accent-light (framework='#F0E4C3', client='#F5E6B8') → inserted as sgs-mosque-color-accent-light
+- CONFLICT: color-surface-alt (framework='#F5F5F0', client='#F5FBF7') → inserted as sgs-mosque-color-surface-alt
+- CONFLICT: color-footer-bg (framework='#0D1B2A', client='#1A3D2B') → inserted as sgs-mosque-color-footer-bg
+- CONFLICT: color-text-primary (framework='#0D1B2A', client='#1A2E22') → inserted as sgs-mosque-color-text-primary
+- CONFLICT: color-text-secondary (framework='#4A4A4A', client='#4A6055') → inserted as sgs-mosque-color-text-secondary
+- CONFLICT: color-text-muted (framework='#6B6B6B', client='#7A9A88') → inserted as sgs-mosque-color-text-muted
+- CONFLICT: color-border-subtle (framework='#C9A84C', client='#C9A035') → inserted as sgs-mosque-color-border-subtle
+- CONFLICT: font-size-small (framework='14px', client='clamp(0.75rem, 1.5vw, 0.875rem)') → inserted as sgs-mosque-font-size-small
+- CONFLICT: font-size-medium (framework='18px', client='clamp(0.875rem, 2vw, 1rem)') → inserted as sgs-mosque-font-size-medium
+- CONFLICT: font-size-large (framework='20px', client='clamp(1rem, 2.5vw, 1.25rem)') → inserted as sgs-mosque-font-size-large
+- CONFLICT: font-size-x-large (framework='24px', client='clamp(1.25rem, 3vw, 1.75rem)') → inserted as sgs-mosque-font-size-x-large
+- CONFLICT: font-size-xx-large (framework='36px', client='clamp(1.75rem, 4vw, 2.5rem)') → inserted as sgs-mosque-font-size-xx-large
 
-### snooza-chair (C:\Users\Bean\Projects\small-giants-wp\sites\snooza-chair\theme-snapshot.json)
+### sgs-professional
 
-_(snapshot file not found)_
+Inserted: 0 | Skipped: 16 | Conflicts: 15
+
+- CONFLICT: color-primary (framework='#0D1B2A', client='#1E2D5E') → inserted as sgs-professional-color-primary
+- CONFLICT: color-primary-dark (framework='#060D14', client='#131D3E') → inserted as sgs-professional-color-primary-dark
+- CONFLICT: color-accent (framework='#C9A84C', client='#8B4A6B') → inserted as sgs-professional-color-accent
+- CONFLICT: color-accent-light (framework='#F0E4C3', client='#F0E0EA') → inserted as sgs-professional-color-accent-light
+- CONFLICT: color-surface-alt (framework='#F5F5F0', client='#F8F7F9') → inserted as sgs-professional-color-surface-alt
+- CONFLICT: color-footer-bg (framework='#0D1B2A', client='#1E2D5E') → inserted as sgs-professional-color-footer-bg
+- CONFLICT: color-text-primary (framework='#0D1B2A', client='#1E2D5E') → inserted as sgs-professional-color-text-primary
+- CONFLICT: color-text-secondary (framework='#4A4A4A', client='#4A4A6A') → inserted as sgs-professional-color-text-secondary
+- CONFLICT: color-text-muted (framework='#6B6B6B', client='#7A7A9A') → inserted as sgs-professional-color-text-muted
+- CONFLICT: color-border-subtle (framework='#C9A84C', client='#8B4A6B') → inserted as sgs-professional-color-border-subtle
+- CONFLICT: font-size-small (framework='14px', client='clamp(0.75rem, 1.5vw, 0.875rem)') → inserted as sgs-professional-font-size-small
+- CONFLICT: font-size-medium (framework='18px', client='clamp(0.875rem, 2vw, 1rem)') → inserted as sgs-professional-font-size-medium
+- CONFLICT: font-size-large (framework='20px', client='clamp(1rem, 2.5vw, 1.25rem)') → inserted as sgs-professional-font-size-large
+- CONFLICT: font-size-x-large (framework='24px', client='clamp(1.25rem, 3vw, 1.75rem)') → inserted as sgs-professional-font-size-x-large
+- CONFLICT: font-size-xx-large (framework='36px', client='clamp(1.75rem, 4vw, 2.5rem)') → inserted as sgs-professional-font-size-xx-large
+
+### small-giants-studio-v2
+
+_(theme-snapshot.json not found)_
+
+### snooza-chair
+
+_(theme-snapshot.json not found)_
