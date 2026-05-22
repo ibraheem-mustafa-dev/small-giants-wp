@@ -1,154 +1,178 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-session_tag: small-giants-wp-2026-05-23-batch-gap-analysis-plus-parking
+session_tag: small-giants-wp-2026-05-23-parking-finishers
 generated: 2026-05-22
 parent_session: small-giants-wp-2026-05-22-architecture-programme-close-out
-primary_goal: "Run /batch-gap-analysis on 14 WP/SGS skills for quality baseline (~3 hours, single focused session, blub.db row 176 hard gate forbids shortcuts), then resolve the remaining DECISION-NEEDED parking item, then walk STILL-OPEN parking items by importance."
+primary_goal: "Close every STILL-OPEN parking entry except P-BATCH-GA-14-SKILLS. Skills are LAST polish — they describe tools/scripts the other entries fix. Run /batch-gap-analysis only after every other parking entry ships."
 ---
 
-# Next session — batch gap-analysis + parking finishers
+# Next session — parking finishers (skills LAST)
 
-Invoke `/autopilot` before doing anything else.
+Invoke `/autopilot` before anything else.
 
 ## State recap (plain English)
 
-The architecture programme is **CLOSED**. All 11 phases shipped in the previous session — 18 commits on main. Sandybrown is live on WP 7.0 with `Sgs_Ai_Connector` deployed. Mode B (`/sgs-update --refresh-upstream`) verified end-to-end on all 10 sources with the working PAT.
+The architecture programme is CLOSED. All 11 phases shipped + every spec-doc gap closed + every council-flagged false closure caught. 31 commits across the close-out session.
 
-What's left: **a quality baseline grade across the 14 WP/SGS skills** we revised, plus **the still-open parking items** that didn't auto-resolve.
+What's left: **~18 STILL-OPEN parking entries.** Bean's directive: complete every one EXCEPT `P-BATCH-GA-14-SKILLS`. Skills get graded AFTER every fix lands, because skills describe tools/scripts; running `/batch-gap-analysis` against current skill content before the underlying tools improve grades against stale content.
 
-The `/batch-gap-analysis` skill mandates: FULL `/gap-analysis` protocol per target, sequential, in main conversation. **NO subagent dispatch**, NO `sgs-skillscore.py` substitution (blub.db row 176 hard gate, captured after the SSB Phase 6 violation). Realistic time: ~3 hours for 14 targets.
+The 18 entries break down by effort:
+
+- **Quick wins (~10-15 min each, 3 entries):** P-5A-CLIENT-VARIATION-CSS-PATH, P-WPCS-FUNCTIONS-PHP-DEBT, P-FR1-VARIATION-BUF-CONSISTENCY
+- **Medium (~30-45 min each, ~6 entries):** P-G4-MEASUREMENT-DECONTAMINATION, P-PHASE-5B-INERT-CUSTOMISER-OUTPUT Option A, P-ARCH-WP70-VIEW-TRANSITIONS-VERIFY, P-CLONING-PIPELINE-FLOW-DOC-DRIFT, P-QC-COUNCIL-FIXTURE-SMOKE-TEST, P-SUBAGENT-DRIVEN-DEV-VERIFY-LOOP-XREF
+- **Big-ticket (multi-hour, ~5 entries):** P-WAVE-2-RESHAPE-AS-ONE-WIRING-GAP, P-G5-PER-BLOCK-DOM-SHAPE-FIXES, P-CLONE-PIPELINE-HEADER-FOOTER-HANDLER, P-UNIVERSAL-EXTRACTION-RC-FIXES, P-11-M9 (multi-section orchestrator + live deploy)
+- **Verification-only (~30 min each, ~3 entries):** P-G1-HERO-INNERBLOCKS, P-G3-STAGE-3-VISUAL-SLOT-MAPPING, P-G2-PAGE-ID-SCOPE-STRIP — Phase 3 infrastructure shipped; live-page-144 Playwright verification step is what actually closes them
+- **Documentation (small, 1 entry):** P-SKILL-MD-LICENSING-HARD-RULE-CLEAN
 
 ## Skills to Invoke
 
-| Skill | When to use |
-|-------|-------------|
-| `/brainstorming` | ALWAYS INCLUDE — design decisions during GA opportunity selection |
-| `/gap-analysis` | ALWAYS INCLUDE — invoked PER TARGET by batch-gap-analysis (full protocol) |
-| `/lifecycle` | ALWAYS INCLUDE — for any skill edits that GA surfaces as opportunities |
-| `/research` | ALWAYS INCLUDE — gap-analysis triggers research rounds when validator flags thin findings |
-| `/strategic-plan` | ALWAYS INCLUDE — for sequencing parking item resolutions |
-| `/batch-gap-analysis` | THE main skill — orchestrates the 14-target pass |
-| `/qc-inline` | After GA report, for small artefact validations |
-| `/capture-lesson` | When GA surfaces patterns worth turning into rules |
+| Skill | When |
+|-------|------|
+| `/brainstorming` | ALWAYS — design decisions during multi-hour entries |
+| `/gap-analysis` | ALWAYS — grade outputs before declaring done |
+| `/lifecycle` | ALWAYS — any skill/pipeline edits route through here |
+| `/research` | ALWAYS — auto-routes for the multi-hour entries |
+| `/strategic-plan` | ALWAYS — sequence the entries before dispatching |
+| `/qc-council` | Before any commit that closes 2+ parking entries simultaneously |
+| `/qc-inline` | Per-entry quick verifications |
+| `/sgs-clone` | When verifying G1-G5 with a fresh pipeline run |
+| `/sgs-update` | If any Mode B re-fetch is required |
+| `/capture-lesson` | New lessons surfacing during pipeline work |
+| `/dispatching-parallel-agents` | Group the 3 quick wins into one parallel dispatch |
 
 ## MCP Servers & Tools
 
-| Tool | What to use it for |
-|------|-------------------|
-| `search.py` | Iterative research rounds when GA validator flags thin coverage |
-| `curl /api/knowledge` | Every GA target POSTs to dashboard for blub.db persistence |
-| `python ~/.agents/skills/gap-analysis/scripts/validator.py` | Per-target validator (refuses incomplete evaluations) |
-| `python ~/.claude/hooks/wp-blocks.py` | Schema queries during GA reviewing of SGS-specific skills |
-| WP-CLI over SSH | Live verification when GA flags an unverified code example |
+| Tool | What for |
+|------|----------|
+| Playwright MCP | Live-page-144 verification for G1 + G3 + G2; admin-bar decontamination for G4 |
+| WP-CLI over SSH | Mode B re-fetches; live verifications on sandybrown |
+| `~/.claude/hooks/wp-blocks.py` | Schema enumeration before any "missing X" diagnostic |
+| `gh` CLI | Mode B Source 1 + 3 (gutenberg + wp-cli handbook) need authenticated GitHub access |
+| `phpcbf --standard=WordPress` | P-WPCS-FUNCTIONS-PHP-DEBT one-shot fix |
 
 ## Agents to Delegate To
 
 | Agent | When |
 |-------|------|
-| `wp-sgs-developer` | If GA surfaces an SGS block / theme / plugin code fix worth doing inline |
-| `research-pipeline` | If a GA opportunity proposes a competitive analysis or cutting-edge feature |
+| `wp-sgs-developer` | The big-ticket cloning-pipeline entries (P-WAVE-2-RESHAPE, P-CLONE-PIPELINE-HEADER-FOOTER-HANDLER, P-11-M9) |
+| `research-pipeline` | If P-WAVE-2-RESHAPE needs upfront research on the DB-wiring architecture |
 
 ## Research Approach
 
-GA's per-target protocol triggers research automatically via validator signals. No upfront research needed — just dispatch the batch and let validator-driven research rounds fire per target. If a target's evaluation gets stuck below threshold after 3 iterations, surface to Bean rather than continuing to spin.
+Most entries are well-specified in parking.md — no upfront research needed. The exceptions: P-WAVE-2-RESHAPE may benefit from a `/research-check --tier extended` call before designing the wiring change; P-CLONE-PIPELINE-HEADER-FOOTER-HANDLER will need a brief review of how WP stores `wp_template_part` post type vs page content before designing the handler.
 
 ---
 
-## Task 1 — Batch gap-analysis on 14 skills (THE MAIN WORK)
+## Task 1 — Quick wins parallel dispatch (3 entries, ~30 min)
 
-**What:** Run `/gap-analysis` full protocol against the 14 WP/SGS skills revised in the previous session (original 10 + sgs-wp-engine + wordpress-router + sgs-extraction + sgs-clone). Per-target validation, S-grade candidate screening, opportunity detection. Single batch report at `reports/2026-05-23-batch-gap-analysis-wp-skills.md`.
+**What:** Dispatch one Sonnet subagent to handle P-5A-CLIENT-VARIATION-CSS-PATH (orchestrator helper path redirect), P-WPCS-FUNCTIONS-PHP-DEBT (`phpcbf --standard=WordPress theme/sgs-theme/functions.php`), and P-FR1-VARIATION-BUF-CONSISTENCY (one-line append after FR1 fast-path in `convert.py:3670-3689`).
 
-**Why:** Quality baseline post-WP-7.0-revisions. Identifies (a) which skills are now A-tier vs B-tier, (b) S-grade candidates worth promoting, (c) opportunities for further improvement. Without this, we have no measurable signal on whether the WP 7.0 revisions actually moved the quality bar.
+**Why:** All three are mechanical, low-risk, well-specified. Knocking out three parking entries in one commit clears the easy-win column fast.
 
-**Estimated time:** ~3 hours sequential, ~12-15 min per target.
-
-**Orchestration:**
-- Execution: **inline (main thread)** — `/batch-gap-analysis` skill's blub.db row 176 hard gate forbids subagent dispatch and forbids `sgs-skillscore.py` substitution. Full protocol per target.
-- Dispatch pattern: sequential (skill explicitly caps Cerebras parallelism at 2; this skill stays sequential per its own design)
-- Per-target: `/gap-analysis` invokes research rounds (min 2 external + 4 internal on round 1), criterion scoring, 5-lens check, opportunity detection, S-grade screen, validator pass. Iterate up to 3 times per target on validator failures.
-- /qc gate after: built into the skill's own validator (`scripts/validator.py` per target + batch).
-
-**Acceptance:**
-- 14 per-target JSON evaluation files in `reports/batch-gap-analysis-wp-2026-05-23/`
-- 1 review report at `reports/2026-05-23-batch-gap-analysis-wp-skills.md`
-- Waiting-queue surfaced: S-grade confirms + opportunity selections + circuit-breaker targets
-- Every target POSTed to `/api/knowledge` (category=gap-analysis)
-
-**The 14 targets** (paths — all symlinked between ~/.claude/skills/ and ~/.agents/skills/):
-1. wp-block-development
-2. wp-block-themes
-3. wp-interactivity-api
-4. wp-plugin-development
-5. wp-rest-api
-6. wp-wpcli-and-ops
-7. wp-performance
-8. wp-abilities-api
-9. wp-site-extraction
-10. wp-project-triage
-11. sgs-wp-engine
-12. wordpress-router
-13. sgs-extraction
-14. sgs-clone
-
-Excluded: `sgs-discover` (WP-7.0-agnostic by design per audit §4). Slash commands at `~/.claude/commands/*.md` excluded (different shape — grade separately if Bean wants).
-
-## Task 2 — Resolve P-5A-CLIENT-VARIATION-CSS-PATH
-
-**What:** Orchestrator helper currently returns a deleted path (the pre-Phase-5a `theme/sgs-theme/styles/<client>.css` location). Redirect to the new per-client path: `sites/<client>/theme-overrides.css` (if Bean confirms this is the intended new location).
-
-**Why:** Stage 0.7 of the cloning pipeline calls this helper. Without the redirect, the next clone run will reference a path that doesn't exist.
-
-**Estimated time:** ~15 min (find the helper, swap the path, verify Stage 0.7 still resolves).
+**Estimated time:** ~30 min wall-clock.
 
 **Orchestration:**
-- Execution: inline. Small enough not to need a subagent.
-- Acceptance: grep `theme/sgs-theme/styles/*.css` in orchestrator scripts returns 0 matches; the new `sites/<client>/theme-overrides.css` path is used; Stage 0.7 dry-run passes.
+- Execution: delegated, single subagent
+- Model: sonnet via /delegate
+- Dispatch: single subagent with all 3 entries in its brief
+- Acceptance: 3 commit SHAs cited; parking.md entries moved to Resolved with each SHA
 
-## Task 3 — Walk STILL-OPEN parking items by importance
+## Task 2 — Mode B verification gates (4 entries, ~45 min)
 
-**What:** Walk the 16 STILL-OPEN parking entries in `.claude/parking.md`. Top 3 by importance (per the parking sweep classifier):
-1. **P-WAVE-2-RESHAPE-AS-ONE-WIRING-GAP** — the architectural change that unlocks G1+G3+G5 (dominant pixel-diff gap). NOT a small task.
-2. **P-G4-MEASUREMENT-DECONTAMINATION** — `pixel-diff.py` admin bar + sgs-header contamination (+10-20pp systematic inflation).
-3. **P-FR1-VARIATION-BUF-CONSISTENCY** — 1-line fix in `convert.py:3670-3689`.
+**What:** Live-verify Phase 5b is genuinely shipped: (a) P-ARCH-WP70-VIEW-TRANSITIONS-VERIFY — Playwright check that view transitions fire when navigating Customiser panels; (b) P-PHASE-5B-INERT-CUSTOMISER-OUTPUT Option A — wire renderer to emit `:root { --sgs-header-bg: ...; --sgs-footer-bg: ...; }` + consume via theme.json; (c) P-QC-COUNCIL-FIXTURE-SMOKE-TEST — run `example-council.json` through `/qc-council`; (d) P-SUBAGENT-DRIVEN-DEV-VERIFY-LOOP-XREF — cross-check dispatch graph nodes.
 
-**Why:** P-FR1 is a quick win; P-G4 unblocks honest measurement; P-WAVE-2 is the big-ticket pixel-diff unlock.
+**Why:** Closes the verification debt Phase 5b accumulated. Without these, Phase 5b's "shipped" status has gaps the next /qc-council will surface.
 
-**Estimated time:** P-FR1 ~10 min; P-G4 ~30-45 min; P-WAVE-2 likely a full session of its own.
+**Estimated time:** ~45 min.
 
 **Orchestration:**
-- Execution: P-FR1 inline. P-G4 inline or single sonnet subagent. P-WAVE-2 needs a strategic plan first (use `/strategic-plan`).
-- Acceptance: P-FR1 — variation_buf gets the fast-path append, idempotency proven. P-G4 — pixel-diff with addInitScript on a known section shows expected inflation reduction.
+- Execution: inline OR sonnet subagent
+- /qc gate after: /qc-inline per entry as it closes
+- Acceptance: live verification evidence (screenshot OR Playwright snapshot OR REST query output) attached to each closure
+
+## Task 3 — G-series live verification (3 entries, ~90 min)
+
+**What:** Play-page-144 end-to-end verification for G1 (hero CTAs render), G2 (variation CSS scope-strip works), G3 (visual slots resolve). Phase 3 shipped the infrastructure; this task runs the Playwright + REST + console check that actually closes them.
+
+**Why:** Bean's recurring point — infrastructure shipped is not the same as outcome achieved. Without this verification, G1+G2+G3 stay open + the pixel-diff target stays unreachable.
+
+**Estimated time:** ~90 min (Playwright setup + per-section verification + per-section pixel-diff via `--selector .sgs-{section}` per blub.db row 256).
+
+**Orchestration:**
+- Execution: wp-sgs-developer agent
+- Dispatch pattern: sequential per section (don't fan out across sections — pixel-diff measurement contamination risk per P-G4)
+- Acceptance: per-section pixel-diff ≤ 1% across 375 / 768 / 1440 viewports
+
+## Task 4 — Big-ticket entries (sequential, multi-session candidate)
+
+**What:** P-WAVE-2-RESHAPE-AS-ONE-WIRING-GAP, P-CLONE-PIPELINE-HEADER-FOOTER-HANDLER, P-11-M9, P-G5-PER-BLOCK-DOM-SHAPE-FIXES, P-UNIVERSAL-EXTRACTION-RC-FIXES.
+
+**Why:** Each is a multi-hour architectural change. Cannot be parallel-dispatched (shared state risks). Sequential, with /qc-council between each before commit.
+
+**Estimated time:** Each entry ~2-4 hours. Realistically this is a 2-3 session arc on its own — be prepared to handoff mid-way.
+
+**Orchestration:**
+- Execution: wp-sgs-developer per entry
+- /qc gate after each: /qc-council (3 raters, full protocol) before commit
+- Acceptance per entry: measurable pixel-diff or test-suite improvement; council validates the implementation matches the fix-shape
+
+## Task 5 — Documentation drift (~30 min)
+
+**What:** P-CLONING-PIPELINE-FLOW-DOC-DRIFT (2 inaccuracies + 2 undocumented 2026-05-21 changes in the pipeline flow doc), P-SKILL-MD-LICENSING-HARD-RULE-CLEAN (renumber Rules 2-14 after Rule 1 retirement in `/sgs-clone` SKILL.md).
+
+**Why:** Documentation drift breeds wrong assumptions in future sessions.
+
+**Estimated time:** ~30 min.
+
+**Orchestration:**
+- Execution: inline
+- /qc gate: /qc-inline
+
+## Task 6 — Final polish: P-BATCH-GA-14-SKILLS
+
+**What:** Run `/batch-gap-analysis` on the 14 WP/SGS skills (full `/gap-analysis` per target, sequential, in main conversation per blub.db row 176).
+
+**Why:** Skills describe tools / scripts / pipelines. Now that Tasks 1-5 have shipped, the skills will be grading against current code — not stale assumptions.
+
+**Estimated time:** ~3 hours dedicated session.
+
+**Orchestration:**
+- Execution: inline (blub.db row 176 hard gate forbids subagent dispatch)
+- Acceptance: 14 per-target JSON evaluations + 1 review report + waiting-queue (S-grade confirms + opportunity selections)
 
 ## Dependency graph
 
 ```
-Task 1 (batch GA, ~3 hours, inline)
-  ↓ (independent — Task 2 doesn't depend on GA)
-Task 2 (P-5A redirect, ~15 min)
+Task 1 (3 quick wins, parallel)
   ↓
-Task 3.1 P-FR1 fix (~10 min)
-  ↓ /qc-inline gate
-Task 3.2 P-G4 decontamination (~30-45 min)
+Task 2 (4 verification gates, inline)
   ↓
-Task 3.3 P-WAVE-2 (likely a future session — needs strategic-plan first)
+Task 3 (G-series live verification, sequential)
+  ↓
+Task 4 (big-ticket sequential — likely needs own session)
+  ↓
+Task 5 (doc drift)
+  ↓ commit + handoff
+Task 6 (P-BATCH-GA-14-SKILLS — final polish, dedicated session)
 ```
 
 ## Methodology guardrails (do not skip)
 
-- **blub.db row 176** — `/gap-analysis` runs in main conversation, full protocol per target. NEVER substitute `sgs-skillscore.py` or `docscore.py`. Triage allowed as optional pre-step, never as replacement.
+- **blub.db row 176** — `/gap-analysis` (and `/batch-gap-analysis`) runs in main conversation, full protocol per target, no subagent dispatch substitution.
 - **blub.db row 255** — Multi-model `/qc` panel before every commit touching converter / pipeline / SGS block logic.
 - **blub.db row 256** — Per-section cropped pixel-diff via `--selector .sgs-{section}`, never full-page.
 - **blub.db row 283** — Verify WP API surface via `curl developer.wordpress.org/reference/functions/<name>/` before dismissing intelephense warnings or writing code that calls them.
-- **Skills are symlinked** between `~/.claude/skills/<name>/` and `~/.agents/skills/<name>/` (hard-linked inodes). Edit one, both update. Confirmed across 12 dispatches this session.
-- **PAT is rotated + working.** `GITHUB_PERSONAL_ACCESS_TOKEN` in `~/.openclaw/.env` ends `Gf0TcI9k` (classic format). Rate limit 4995/5000 with `public_repo` scope. Mode B `--refresh-upstream` works on all 10 sources.
-- **Sandybrown REST credentials** at `.claude/secrets/sandybrown.env`. SSH `u945238940@141.136.39.73 -p 65002`. WP 7.0 live.
+- **Skills are LAST polish.** Do not run `/batch-gap-analysis` before Tasks 1-5 ship. Skills depend on the tools they describe.
+- **Live verification beats audit.** Three audit claims this session were wrong (Icons block slug, heading variations, dimensions presets). When grading WP 7.0 behaviour, SSH to sandybrown + check.
 
 ## Reference docs
 
-- `.claude/handoff.md` — full session summary (2026-05-22)
-- `reports/phase-7-skills-audit-2026-05-22.md` — original 10-skill audit (input to GA)
-- `reports/phase-7-skills-audit-extended-2026-05-22.md` — extended 14-target audit
-- `reports/2026-05-22-parking-sweep-classification.md` — 47-entry parking classification
-- `.claude/parking.md` — live parking state (16 actually-open)
+- `.claude/handoff.md` — 2026-05-22 session summary
+- `.claude/parking.md` — live state, ~18 STILL OPEN
 - `.claude/state.md` — programme CLOSED status
+- `.claude/plans/2026-05-21-architecture-staging.md` — 31-decision plan, post-amendment
+- `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` — FR7 closure-gate per-section + FR-NEW for cv2-eligible dynamic invariant
+- `reports/2026-05-22-parking-sweep-classification.md` — first-pass classifier
+- `reports/2026-05-22-parking-sweep-tail-classification.md` — second-pass council
+- `reports/phase-7-skills-audit-2026-05-22.md` + `-extended-` — Phase 7 audit baseline (input to Task 6 GA when it runs)
