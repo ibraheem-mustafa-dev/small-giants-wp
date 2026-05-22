@@ -4,9 +4,15 @@ project: small-giants-wp
 last_updated: 2026-05-22
 ---
 
+## Opened 2026-05-22 (post-architecture-programme close-out)
+
+**P-CLONE-PIPELINE-HEADER-FOOTER-HANDLER** — The clone pipeline treats header and footer markup the same as page body. Headers and footers are template-parts on the WP target (`wp_template_part` post type), not page content. The pipeline needs a dedicated stage that (a) detects header/footer sections in the source mockup, (b) extracts them once per site rather than per page, (c) emits to template-part shape (not page-content shape), (d) handles the unique template-part wrapper classes (`wp-block-template-part`, `area="header"` / `area="footer"`). Without this handler the h/f markup either duplicates per page, drops silently, or malforms into a page-body block tree. **Trigger:** before the next multi-page clone run.
+
+**P-BATCH-GA-14-SKILLS** — Run `/batch-gap-analysis` (full `/gap-analysis` protocol per target, sequential, in main conversation per blub.db row 176) on the 14 WP/SGS skills revised during Phase 7. Targets: the 10 original WP-family skills (`wp-block-development`, `wp-block-themes`, `wp-interactivity-api`, `wp-plugin-development`, `wp-rest-api`, `wp-wpcli-and-ops`, `wp-performance`, `wp-abilities-api`, `wp-site-extraction`, `wp-project-triage`) plus `sgs-wp-engine`, `wordpress-router`, `sgs-extraction`, `sgs-clone`. **Estimated:** ~3 hours dedicated session. **Trigger:** AFTER every other parking entry closes — skills content depends on the tools / scripts / functionality the other entries fix. Running GA before the fixes ship would grade against stale code.
+
 ## Opened 2026-05-22 (Phase 1.5 session)
 
-**P-PHASE-5B-INERT-CUSTOMISER-OUTPUT** — RESOLVED `0ef032fe` 2026-05-22. Fix switched Customiser paint targets to `header.wp-block-template-part` / `footer.wp-block-template-part`. Moved to resolved section below.
+**P-PHASE-5B-INERT-CUSTOMISER-OUTPUT** — REOPENED 2026-05-22 by /qc-council Rater C. Commit `0ef032fe` fixed the Customiser paint targets (`header.wp-block-template-part` / `footer.wp-block-template-part`), but `state.md:68` describes a remaining Option A step: emit `:root { --sgs-header-bg: ...; --sgs-footer-bg: ...; }` from the renderer + consume via theme.json. ~30 min, scoped follow-up. The selector fix landed; the CSS-custom-property emission path has not shipped. **Trigger:** before the next live-page visual QA.
 
 **P-PHASE-5B-PROPERTY-COVERAGE-AUDIT** — RESOLVED 2026-05-22 (Session B). Coverage audit confirmed all properties covered by WP 7.0 native theme.json button support — no PHP shim required. Moved to resolved section below.
 
@@ -70,11 +76,11 @@ last_updated: 2026-05-22
 
 ## Opened 2026-05-20 (Phase 1 closure follow-ups + Phase 2 medium-severity items)
 
-**P-G1-HERO-INNERBLOCKS** — cv2 emits self-closing `wp:sgs/hero` block. Render.php uses `$content` (InnerBlocks) for CTAs — empty when block is self-closing. Live page 144 hero CTAs ARE INVISIBLE. ~50pp of hero's 67.8% pixel-diff. **STATUS: SUBSUMED by P-ARCH-PHASE-3 (INNER_BLOCK_PATTERNS retirement).** Decision 12 adds adjacent-slot grouping — hero CTAs emit as nested InnerBlocks via `blocks.parent_block` lookup.
+**P-G1-HERO-INNERBLOCKS** — cv2 emits self-closing `wp:sgs/hero` block. Render.php uses `$content` (InnerBlocks) for CTAs — empty when block is self-closing. Live page 144 hero CTAs ARE INVISIBLE. ~50pp of hero's 67.8% pixel-diff. **STATUS: Phase 3 infrastructure shipped (`79158da5`) but live-page-144 end-to-end verification PENDING — that is the actual closure step.** Decision 12 adds adjacent-slot grouping; hero CTAs should emit as nested InnerBlocks via `blocks.parent_block` lookup, but no Playwright run on the live URL has confirmed the CTAs render.
 
 **P-G2-PAGE-ID-SCOPE-STRIP** — P1.B.x scoped variation CSS to `.page-id-N .sgs-X` but cv2's `_collect_css_decls_for_element` searches for bare `.sgs-X`. Match fails. Silently kills 60-80% of value-lift on every SGS block. **STATUS: PARTIALLY RESOLVED by Wave 1 G2 Step 1+2 (commit `affca3f1`).** Orchestrator merges variation CSS into `_section_css`; cv2 strips `.page-id-N` scope prefix in selector matcher. The root cause (scope isolation needed for D2 CSS) is architecturally addressed by the variation-kill in P-ARCH-PHASE-5A — once per-site theme.json replaces the overlay system, scope prefixes are no longer needed.
 
-**P-G3-STAGE-3-VISUAL-SLOT-MAPPING** — Stage 3 `slot_list.py` only extracts text-content slots. Visual/structural slots (backgroundImage, overlayColour, minHeight, ctaPrimaryColour, alignment) return "no value extracted" even when mockup CSS has the values. **STATUS: SUBSUMED by P-ARCH-PHASE-3 (INNER_BLOCK_PATTERNS retirement + DB-backed slot lookup).** Decision 12's `_lift_inner_blocks` rewrite reads `slot_synonyms.standalone_block` via `db.standalone_block_for()` — the same DB path that should drive visual-slot resolution. P-ARCH-PHASE-6 backfills `block_supports` gaps that expose visual slot controls. Together these address G3.
+**P-G3-STAGE-3-VISUAL-SLOT-MAPPING** — Stage 3 `slot_list.py` only extracts text-content slots. Visual/structural slots (backgroundImage, overlayColour, minHeight, ctaPrimaryColour, alignment) return "no value extracted" even when mockup CSS has the values. **STATUS: Phase 3 + Phase 6 infrastructure shipped (`79158da5` + `d307c8b0`) but live-page-144 end-to-end verification PENDING — that is the actual closure step.** Decision 12's `_lift_inner_blocks` rewrite reads `slot_synonyms.standalone_block` via `db.standalone_block_for()`; Phase 6 backfills `block_supports` gaps that expose visual slot controls. No live verification has confirmed visual slots now resolve.
 
 **P-G4-MEASUREMENT-DECONTAMINATION** — `scripts/pixel-diff.py` screenshots include WP admin bar + sgs-header. Mockup screenshots have neither. Systematic +10-20pp inflation on EVERY section measurement. Fix: Playwright `addInitScript` removes `#wpadminbar` + `.sgs-header` before screenshot. **Trigger:** Wave 1 of next session (G4).
 
@@ -1803,7 +1809,7 @@ The QC council on Session B (`reports/2026-05-22-session-B-qc-council.md`) surfa
 
 Parking sweep classification run 2026-05-22 by subagent. All items below were confirmed resolved by git commit evidence or explicit Bean decision.
 
-- **P-PHASE-5B-INERT-CUSTOMISER-OUTPUT** — RESOLVED `0ef032fe` 2026-05-22. Customiser paint targets corrected to `header.wp-block-template-part` / `footer.wp-block-template-part`.
+- **P-PHASE-5B-INERT-CUSTOMISER-OUTPUT** — **REOPENED 2026-05-22 by /qc-council Rater C.** Commit `0ef032fe` fixed the Customiser paint targets (`header.wp-block-template-part` / `footer.wp-block-template-part`), but `state.md:68` describes a remaining Option A step: emit `:root { --sgs-header-bg: ...; --sgs-footer-bg: ...; }` from the renderer + consume via theme.json. ~30 min, scoped follow-up. The selector fix landed; the CSS-custom-property emission path has NOT shipped. Moved back to open section below.
 - **P-PHASE-5B-PROPERTY-COVERAGE-AUDIT** — RESOLVED 2026-05-22 (Session B). Coverage audit confirmed full WP 7.0 native theme.json button coverage — no PHP shim required.
 - **P-UNEXPECTED-CONTENT-BACKLOG** — RESOLVED `830f627b` + `d18b7354` 2026-05-22. Step 0 fixed 33 invalid block instances across 9 template parts for WP 7.0 save-format changes.
 - **P-EXPLICIT-DEFAULT-STYLE-RETROFIT** — DECIDED 2026-05-22. Bean confirmed implicit Default is fine; no retrofit required.
@@ -1826,3 +1832,14 @@ Parking sweep classification run 2026-05-22 by subagent. All items below were co
 - **P-NO-HEADER-FOOTER-BLOCK-HOOK** — RESOLVED `8838b6fb` 2026-05-21. PostToolUse blocker for header/footer/nav src paths wired.
 - **P-5A-MAMAS-MUNCHES-CSS** — RESOLVED `202922c1` 2026-05-22. File confirmed orphan; deleted. `theme/sgs-theme/styles/` is now empty. Mama's branding intact via `theme-snapshot.json`.
 - **P-PRE-EXISTING-LUCIDE-ICONS-PHP** — RESOLVED `202922c1` 2026-05-22. Reverted auto-generation timestamp bump; not Bean's manual edit.
+- **P-5A-COMMIT-B-RETIRED** — RESOLVED `db69b693` 2026-05-22. `plugins/sgs-blocks/_retired/` deleted; 5 files removed (~1453 LoC). Soak period since Phase 5a passed; sandybrown stable. Confirmed by /qc-council Rater B + Rater C.
+- **P-SESSION-B-DEFERRED-VIEW-TRANSITIONS-CLEANUP** — RESOLVED `c09d24cc` 2026-05-22. WP 6.x view-transitions fallback retired in `sgs-blocks.php:218-228`; all clients on WP 7.0+. Confirmed by /qc-council. NOTE: the original "DECISION-NEEDED" stub at the top of this file may still reference this entry — clean up on next parking touch.
+- **P-PHASE8-17** — RESOLVED `9a32a164` (pre-this-session). All 7 remaining static SGS blocks converted to dynamic via parallel agent dispatch. Confirmed by /qc-council Rater B and explicit "DONE" marker at parking.md:702.
+- **P-EXTRACT-GENERALISE** — **ABANDONED 2026-05-22.** Legacy `tools/recogniser-v2/extract.py` path permanently retired per Decision 2026-05-15(d) (`.claude/decisions.md:375`). `sgs-clone-orchestrator.py:1203` confirms "Legacy tools/recogniser-v2/extract.py subprocess is permanently retired." cv2 + Spec 16 universal extraction replaced it. Mechanism gone; no work pending.
+
+## Council-flagged: PARTIAL closures requiring spec-doc verification
+
+The /qc-council Rater C (Sonnet) downgraded two pass-1 closures from RESOLVED to PARTIAL because the code shipped but the spec-doc update was not verified. Both stay STILL OPEN until the docs are checked:
+
+- **P-PHASE8-16 — PARTIAL** — `_STILL_STATIC_SGS_BLOCKS = frozenset()` shipped (no-op guard) at `convert.py:961`, but the parking entry also asks for Spec 16 FR-NEW addition stating the invariant. Spec 16 doc update NOT confirmed. Doc-walker should add the FR-NEW.
+- **P-PHASE8-8 — PARTIAL** — Per-section closure-gate shipped at `autonomy_gate.py:102` (binding rule blub.db row 256), but the entry asks for `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` §Phase 4 closure-gate definition to be edited. Spec doc update NOT confirmed. Doc-walker should update §Phase 4 text.
