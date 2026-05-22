@@ -25,7 +25,6 @@
 		<!-- wp:group {"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"right"},"metadata":{"name":"Navigation and CTA"}} -->
 		<div class="wp-block-group">
 
-			<!-- Mobile nav toggle (hamburger) — proper SGS block, moveable + removable in Site Editor -->
 			<!-- wp:sgs/mobile-nav-toggle /-->
 
 			<!-- wp:navigation {"textColor":"text","layout":{"type":"flex","justifyContent":"right"},"style":{"typography":{"fontWeight":"600"},"spacing":{"blockGap":"var:preset|spacing|40"}},"fontSize":"medium"} /-->
@@ -36,7 +35,6 @@
 	</div>
 	<!-- /wp:group -->
 
-	<!-- Mobile navigation drawer — SGS block with Popover API, spring animation, stagger cascade -->
 	<!-- wp:sgs/mobile-nav {"variant":"overlay"} /-->
 
 </div>

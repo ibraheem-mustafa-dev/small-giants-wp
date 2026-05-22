@@ -87,6 +87,22 @@
 	border-radius: var(--wp--custom--border-radius--medium);
 }
 
+/* Brand logo tiles in mega menu — constrain height, auto width (replaces
+   inline style removed for WP 7.0 core/image block validation compliance) */
+.brand-logo-tile img {
+	max-height: 54px;
+	width: auto;
+}
+
+/* Sector menu images — constrain height, fill width with cover fit (replaces
+   inline style removed for WP 7.0 core/image block validation compliance) */
+.sector-menu-image img {
+	max-height: 120px;
+	width: 100%;
+	object-fit: cover;
+	border-radius: 8px;
+}
+
 .wp-block-image.is-style-rounded img {
 	border-radius: var(--wp--custom--border-radius--pill);
 }
