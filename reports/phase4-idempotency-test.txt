@@ -1,0 +1,243 @@
+# Phase 4 Idempotency Test
+# Generated: Fri May 22 18:37:16 GMTST 2026
+
+## Run 1
+
+Exception in thread Thread-1 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Python313\Lib\threading.py", line 1043, in _bootstrap_inner
+    self.run()
+    ~~~~~~~~^^
+  File "C:\Python313\Lib\threading.py", line 994, in run
+    self._target(*self._args, **self._kwargs)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python313\Lib\subprocess.py", line 1615, in _readerthread
+    buffer.append(fh.read())
+                  ~~~~~~~^^
+  File "<frozen codecs>", line 325, in decode
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0x97 in position 116: invalid start byte
+sgs-update-v2.py — repo: C:\Users\Bean\Projects\small-giants-wp
+sgs-framework.db: C:\Users\Bean\.agents\skills\sgs-wp-engine\sgs-framework.db
+
+
+==================================================
+=== Stage 1 ===
+==================================================
+Stage 1: 69 blocks scanned, 0 new rows inserted (DB current). indexed_files: 0 inserted, 0 updated, 69 unchanged.
+
+==================================================
+=== Stage 2 ===
+==================================================
+Stage 2: cached data current (0.0 days old, threshold 7 days). Skipping. Run with --refresh-upstream to force re-scrape.
+
+==================================================
+=== Stage 3 ===
+==================================================
+Stage 3: 483 candidates from hooks.db. Inserted: 0 new rows, reclassified: 0 existing rows. Total cli-command rows in DB: 483.
+
+==================================================
+=== Stage 4 ===
+==================================================
+Stage 4 [actual]: 8 snapshots found, 2 missing, 31 tokens checked, 31 gaps. Report: C:\Users\Bean\Projects\small-giants-wp\reports\phase4-variation-token-gaps.txt
+
+==================================================
+=== Stage 5 ===
+==================================================
+Stage 5 [actual]: 61 unmapped slots. Auto-updated: 0, manual review: 2, no match: 59. Report: C:\Users\Bean\Projects\small-giants-wp\reports\phase4-slot-synonym-proposals.txt
+
+==================================================
+=== Stage 6 ===
+==================================================
+Stage 6 [actual]: 18 blocks checked. Valid: 18, Stale: 0. Report: C:\Users\Bean\Projects\small-giants-wp\reports\phase4-stale-replacements.txt
+
+==================================================
+=== Stage 7 ===
+==================================================
+Stage 7: 
+
+==================================================
+=== Stage 8 ===
+==================================================
+  sgs-update Stage 3+4 — repo: C:\Users\Bean\Projects\small-giants-wp
+  sgs-framework.db: C:\Users\Bean\.agents\skills\sgs-wp-engine\sgs-framework.db
+  uimax DB:         C:\Users\Bean\.agents\skills\ui-ux-pro-max\scripts\ui-ux-pro-max.db
+  CSV regen tool:   C:\Users\Bean\.agents\skills\ui-ux-pro-max\scripts\update-db.py regenerate-csvs
+  
+  Stage 3 — Sync SGS blocks to uimax DB (canonical), regenerate CSV mirror
+    SGS blocks in sgs-framework: 194
+    Already in uimax DB:         194
+    Newly inserted to uimax DB:  0
+    Skipped (preserved):         194
+    uimax component_libraries:   338 rows total
+    CSV regen (all tables):      Regenerated 48 CSVs from DB. Skipped 2 housekeeping tables.
+
+==================================================
+=== Stage 9 ===
+==================================================
+Stage 9 [ok]: site WP 7.0 matches DB indexed version 7.0 (MAJOR.MINOR: 7.0)
+
+==================================================
+=== Summary ===
+==================================================
+  Stage 1: ok — {'scanned': 69, 'new_blocks': 0, 'new_attrs': 0, 'new_supports': 0, 'indexed_inserted': 0, 'indexed_updated': 0, 'indexed_skipped': 69, 'dry_run': False}
+  Stage 2: ok — {'status': 'cached_current', 'age_days': 0.0, 'last_full_refresh_ts': '2026-05-22T17:17:51.632900+00:00', 'wp_version_indexed': '7.0'}
+  Stage 3: ok — {'new_rows': 0, 'reclassified': 0, 'total_cli_commands': 483, 'dry_run': False}
+  Stage 4: ok — {'snapshots_found': 8, 'snapshots_missing': 2, 'tokens_checked': 31, 'gaps_found': 31, 'report_path': 'C:\\Users\\Bean\\Projects\\small-giants-wp\\reports\\phase4-variation-token-gaps.txt', 'dry_run': False, 'stub': False, 'note': 'observational pre-Phase-5a'}
+  Stage 5: ok — {'unmapped_count': 61, 'auto_inserted': 0, 'manual_review': 2, 'no_match': 59, 'report_path': 'C:\\Users\\Bean\\Projects\\small-giants-wp\\reports\\phase4-slot-synonym-proposals.txt', 'dry_run': False}
+  Stage 6: ok — {'checked': 18, 'valid': 18, 'stale': 0, 'report_path': 'C:\\Users\\Bean\\Projects\\small-giants-wp\\reports\\phase4-stale-replacements.txt', 'dry_run': False}
+  Stage 7: ok — {'output': 'C:\\Users\\Bean\\Projects\\small-giants-wp\\.claude\\specs\\02-SGS-BLOCKS-REFERENCE.md', 'blocks': None, 'exit_code': 0}
+  Stage 8: ok — {'status': 'synced', 'newly_inserted': 0, 'skipped_existing': 194, 'exit_code': 0}
+  Stage 9: ok — {'status': 'ok', 'site_version': '7.0', 'db_indexed': '7.0'}
+
+
+## Run 2
+
+Exception in thread Thread-1 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Python313\Lib\threading.py", line 1043, in _bootstrap_inner
+    self.run()
+    ~~~~~~~~^^
+  File "C:\Python313\Lib\threading.py", line 994, in run
+    self._target(*self._args, **self._kwargs)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python313\Lib\subprocess.py", line 1615, in _readerthread
+    buffer.append(fh.read())
+                  ~~~~~~~^^
+  File "<frozen codecs>", line 325, in decode
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0x97 in position 116: invalid start byte
+sgs-update-v2.py — repo: C:\Users\Bean\Projects\small-giants-wp
+sgs-framework.db: C:\Users\Bean\.agents\skills\sgs-wp-engine\sgs-framework.db
+
+
+==================================================
+=== Stage 1 ===
+==================================================
+Stage 1: 69 blocks scanned, 0 new rows inserted (DB current). indexed_files: 0 inserted, 0 updated, 69 unchanged.
+
+==================================================
+=== Stage 2 ===
+==================================================
+Stage 2: cached data current (0.0 days old, threshold 7 days). Skipping. Run with --refresh-upstream to force re-scrape.
+
+==================================================
+=== Stage 3 ===
+==================================================
+Stage 3: 483 candidates from hooks.db. Inserted: 0 new rows, reclassified: 0 existing rows. Total cli-command rows in DB: 483.
+
+==================================================
+=== Stage 4 ===
+==================================================
+Stage 4 [actual]: 8 snapshots found, 2 missing, 31 tokens checked, 31 gaps. Report: C:\Users\Bean\Projects\small-giants-wp\reports\phase4-variation-token-gaps.txt
+
+==================================================
+=== Stage 5 ===
+==================================================
+Stage 5 [actual]: 61 unmapped slots. Auto-updated: 0, manual review: 2, no match: 59. Report: C:\Users\Bean\Projects\small-giants-wp\reports\phase4-slot-synonym-proposals.txt
+
+==================================================
+=== Stage 6 ===
+==================================================
+Stage 6 [actual]: 18 blocks checked. Valid: 18, Stale: 0. Report: C:\Users\Bean\Projects\small-giants-wp\reports\phase4-stale-replacements.txt
+
+==================================================
+=== Stage 7 ===
+==================================================
+Stage 7: 
+
+==================================================
+=== Stage 8 ===
+==================================================
+  sgs-update Stage 3+4 — repo: C:\Users\Bean\Projects\small-giants-wp
+  sgs-framework.db: C:\Users\Bean\.agents\skills\sgs-wp-engine\sgs-framework.db
+  uimax DB:         C:\Users\Bean\.agents\skills\ui-ux-pro-max\scripts\ui-ux-pro-max.db
+  CSV regen tool:   C:\Users\Bean\.agents\skills\ui-ux-pro-max\scripts\update-db.py regenerate-csvs
+  
+  Stage 3 — Sync SGS blocks to uimax DB (canonical), regenerate CSV mirror
+    SGS blocks in sgs-framework: 194
+    Already in uimax DB:         194
+    Newly inserted to uimax DB:  0
+    Skipped (preserved):         194
+    uimax component_libraries:   338 rows total
+    CSV regen (all tables):      Regenerated 48 CSVs from DB. Skipped 2 housekeeping tables.
+
+==================================================
+=== Stage 9 ===
+==================================================
+Stage 9 [ok]: site WP 7.0 matches DB indexed version 7.0 (MAJOR.MINOR: 7.0)
+
+==================================================
+=== Summary ===
+==================================================
+  Stage 1: ok — {'scanned': 69, 'new_blocks': 0, 'new_attrs': 0, 'new_supports': 0, 'indexed_inserted': 0, 'indexed_updated': 0, 'indexed_skipped': 69, 'dry_run': False}
+  Stage 2: ok — {'status': 'cached_current', 'age_days': 0.0, 'last_full_refresh_ts': '2026-05-22T17:17:51.632900+00:00', 'wp_version_indexed': '7.0'}
+  Stage 3: ok — {'new_rows': 0, 'reclassified': 0, 'total_cli_commands': 483, 'dry_run': False}
+  Stage 4: ok — {'snapshots_found': 8, 'snapshots_missing': 2, 'tokens_checked': 31, 'gaps_found': 31, 'report_path': 'C:\\Users\\Bean\\Projects\\small-giants-wp\\reports\\phase4-variation-token-gaps.txt', 'dry_run': False, 'stub': False, 'note': 'observational pre-Phase-5a'}
+  Stage 5: ok — {'unmapped_count': 61, 'auto_inserted': 0, 'manual_review': 2, 'no_match': 59, 'report_path': 'C:\\Users\\Bean\\Projects\\small-giants-wp\\reports\\phase4-slot-synonym-proposals.txt', 'dry_run': False}
+  Stage 6: ok — {'checked': 18, 'valid': 18, 'stale': 0, 'report_path': 'C:\\Users\\Bean\\Projects\\small-giants-wp\\reports\\phase4-stale-replacements.txt', 'dry_run': False}
+  Stage 7: ok — {'output': 'C:\\Users\\Bean\\Projects\\small-giants-wp\\.claude\\specs\\02-SGS-BLOCKS-REFERENCE.md', 'blocks': None, 'exit_code': 0}
+  Stage 8: ok — {'status': 'synced', 'newly_inserted': 0, 'skipped_existing': 194, 'exit_code': 0}
+  Stage 9: ok — {'status': 'ok', 'site_version': '7.0', 'db_indexed': '7.0'}
+
+
+## Mode B dry-run -- FAILED
+
+Source 4 (developer.wordpress.org/reference/since/7.0.0/) returned 41 items.
+Hard minimum is 100. The page is JS-rendered; Python urllib sees a partial DOM.
+No Playwright integration available from sgs-update-v2.py at this stage.
+
+Full dry-run output:
+
+sgs-update-v2.py — repo: C:\Users\Bean\Projects\small-giants-wp
+sgs-framework.db: C:\Users\Bean\.agents\skills\sgs-wp-engine\sgs-framework.db
+[DRY RUN — no DB or file writes]
+
+
+==================================================
+=== Stage 2 ===
+==================================================
+Stage 2 [Mode B]: No GITHUB_TOKEN — using unauthenticated GitHub API (60 req/hr).
+
+[Source 1] WordPress/gutenberg packages/block-library/src/ at v7.0.0 ...
+  Found 48 block directories.
+  Source 1 done: 48 dirs, 0 new block rows, 0 new attr rows, 0 new support rows.
+
+[Source 2] WordPress/wordpress-develop PHP hook files at v7.0.0 ...
+    WARNING: src/wp-includes/post.php fetch failed: HTTP Error 429: too many requests
+    WARNING: src/wp-includes/default-filters.php fetch failed: HTTP Error 429: too many requests
+    WARNING: src/wp-includes/theme.php fetch failed: HTTP Error 429: too many requests
+    WARNING: src/wp-includes/template.php fetch failed: HTTP Error 429: too many requests
+    WARNING: src/wp-includes/formatting.php fetch failed: HTTP Error 429: too many requests
+  Source 2 done: 0 new hook rows.
+
+[Source 3] wp-cli/handbook markdown commands/ ...
+  Source 3 FAILED: HTTPError: HTTP Error 429: too many requests
+
+[Source 4] developer.wordpress.org/reference/since/7.0.0/ ...
+  Found 41 API identifiers.
+  Stage 2 Source 4 FAILED: only 41 API identifiers found from https://developer.wordpress.org/reference/since/7.0.0/. Hard minimum is 100. The page may be JS-rendered (no Playwright available from Python) or the WP 7.0.0 release page may not yet list sufficient entries. Run with --refresh-upstream after confirming the page loads 100+ items manually.
+
+[Source 5] https://make.wordpress.org/core/7.0-field-guide/ ...
+  make-core-field-guide FAILED: network error — HTTP Error 404: Not Found
+
+[Source 6] https://developer.wordpress.org/news/ ...
+  devdocs-news: 5 articles, 5 new rows.
+
+[Source 7] https://developer.wordpress.org/block-editor/ ...
+  devdocs-block-editor: 6 sections found, 1 new row.
+
+[Source 8] https://developer.wordpress.org/themes/ ...
+  devdocs-themes: 2 sections found, 1 new row.
+
+[Source 9] https://developer.wordpress.org/plugins/ ...
+  devdocs-plugins: 2 sections found, 1 new row.
+
+[Source 10] https://developer.wordpress.org/rest-api/ ...
+  devdocs-rest-api: 6 sections found, 1 new row.
+
+Stage 2 [Mode B, dry-run]: complete. Sources succeeded (dry): 7, failed: 3. Would insert: {'blocks': 0, 'block_attributes': 0, 'block_supports': 0, 'hooks': 0, 'docs': 9}.
+
+==================================================
+=== Summary ===
+==================================================
+  Stage 2: dry-run — {'status': 'refreshed', 'sources_succeeded': ['gutenberg-block-library', 'wordpress-develop-hooks', 'devdocs-news', 'devdocs-block-editor', 'devdocs-themes', 'devdocs-plugins', 'devdocs-rest-api'], 'sources_failed': ['wpcli-handbook: HTTP Error 429: too many requests', 'devdocs-since: Stage 2 Source 4 FAILED: only 41 API identifiers found from https://developer.wordpress.org/reference/since/7.0.0/. Hard minimum is 100. The page may be JS-rendered (no Playwright available from Python) or the WP 7.0.0 release page may not yet list sufficient entries. Run with --refresh-upstream after confirming the page loads 100+ items manually.', 'make-core-field-guide: URLError: HTTP Error 404: Not Found'], 'new_rows': {'blocks': 0, 'block_attributes': 0, 'block_supports': 0, 'hooks': 0, 'docs': 9}, 'items_per_source': {'gutenberg-block-library': 48, 'wordpress-develop-hooks': 0, 'devdocs-news': 5, 'devdocs-block-editor': 6, 'devdocs-themes': 2, 'devdocs-plugins': 2, 'devdocs-rest-api': 6}, 'wp_version_indexed': '7.0', 'last_full_refresh_ts': None, 'dry_run': True}
+

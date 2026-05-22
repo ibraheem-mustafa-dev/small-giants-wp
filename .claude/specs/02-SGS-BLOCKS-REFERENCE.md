@@ -5,43 +5,9 @@
 > `plugins/sgs-blocks/scripts/generate-block-reference.py`.
 > Refresh: `python plugins/sgs-blocks/scripts/generate-block-reference.py`.
 
-**Last generated:** 2026-05-18T14:09:10
+**Last generated:** 2026-05-22T18:40:37
 
 **For architectural patterns, customisation standards, and build status, see [`02-SGS-BLOCKS.md`](02-SGS-BLOCKS.md).** This file is the per-block attribute/supports/selector reference only.
-
----
-
-## WP 7.0 Alignment Notes (2026-05-21)
-
-> Per `.claude/plans/2026-05-21-architecture-staging.md` §6.7 — Decisions 7/8, 23, 25.
-
-The following columns are pending addition to the per-block reference after the Phase 2 (variations indexing) and Phase 6 (WP 7.0 audit) work lands. They are documented here so implementers know what to populate.
-
-### Pending columns (auto-regeneration will add them post-Phase-6)
-
-| Column | Source | Decision |
-|---|---|---|
-| `variations` | `sgs-framework.db.variations` table (Phase 2) | 7, 8 |
-| `role:content attrs` | Block.json audit — which attrs carry `"role": "content"` (WP 7.0 requirement for contentOnly patterns) | 23a |
-| `apiVersion` | Block.json `"apiVersion"` value — must be 3 for WP 7.0 iframed editor | 23b |
-| `scriptModuleI18n` | Whether `wp_set_script_module_translations()` is wired for blocks using `viewScriptModule` | 23c |
-| `device visibility coexistence` | WP-native vs `device-visibility.php` extension — which blocks use which | 25 |
-
-### Block visibility coexistence (Decision 25)
-
-WP 7.0 adds native block visibility (toolbar + inspector device-type show/hide). SGS has `plugins/sgs-blocks/includes/device-visibility.php` extension for finer-grained controls. Coexistence strategy:
-
-- **Prefer WP-native** for simple show/hide on device type (operators see it in the block inspector automatically)
-- **Keep SGS extension** for controls WP-native doesn't cover (e.g. show-on-mobile-AND-only-when-condition)
-- When WP-native reaches full feature parity with the SGS extension, the extension is retired
-
-Until Phase 6 audit lands, blocks that currently use the SGS extension continue to use it. New blocks (post-WP-7.0) should default to WP-native and only add the SGS extension when needed.
-
-### Variations (Decisions 7, 8)
-
-`sgs/button` has 4 registered variations: `primary`, `secondary`, `outline`, `custom`. These are indexed in `sgs-framework.db.variations` after Phase 2 lands. The `variations` column in the per-block table will list the variation names + scope (inserter/transform/block) once the DB is populated and this file is regenerated.
-
----
 
 ---
 
@@ -51,6 +17,14 @@ Until Phase 6 audit lands, blocks that currently use the SGS extension continue 
 - [Content](#content) (39 blocks)
 - [Forms](#forms) (17 blocks)
 - [Interactive](#interactive) (11 blocks)
+- [common](#common) (4 blocks)
+- [design](#design) (25 blocks)
+- [embed](#embed) (1 blocks)
+- [media](#media) (10 blocks)
+- [reusable](#reusable) (1 blocks)
+- [text](#text) (15 blocks)
+- [theme](#theme) (51 blocks)
+- [widgets](#widgets) (14 blocks)
 
 ---
 
@@ -63,14 +37,25 @@ _SGS Container_
 
 Flexible layout wrapper â€” the fundamental building block for all page sections. Supports default/wide/full/custom widthMode per viewport — composes with WP-native alignfull/alignwide.
 
-**Attributes** (35):
+**Attributes** (50):
 
 | Name | Type | Default | Responsive |
 |------|------|---------|------------|
-| `backgroundImage` | `object` | `—` | — |
+| `backgroundAttachment` | `string (enum)` | `"scroll"` | — |
+| `backgroundImage` | `object` | `—` | Yes |
+| `backgroundImageMobile` | `object` | `—` | — |
+| `backgroundImageTablet` | `object` | `—` | — |
 | `backgroundMedia` | `object` | `—` | — |
 | `backgroundOverlayColour` | `string` | `—` | — |
 | `backgroundOverlayOpacity` | `number` | `50` | — |
+| `backgroundPosition` | `string` | `"center center"` | — |
+| `backgroundRepeat` | `string (enum)` | `"no-repeat"` | — |
+| `backgroundSize` | `string (enum)` | `"cover"` | — |
+| `bgAnimationDuration` | `number` | `20` | — |
+| `bgKenBurns` | `boolean` | `false` | — |
+| `bgParallax` | `boolean` | `false` | — |
+| `bgVideo` | `object` | `—` | Yes |
+| `bgVideoMobile` | `object` | `—` | — |
 | `columns` | `number` | `2` | Yes |
 | `columnsMobile` | `number` | `1` | — |
 | `columnsTablet` | `number` | `2` | — |
@@ -86,6 +71,10 @@ Flexible layout wrapper â€” the fundamental building block for all page sec
 | `layout` | `string` | `"stack"` | — |
 | `maxWidth` | `string` | `"wide"` | — |
 | `minHeight` | `string` | `—` | — |
+| `overlayGradient` | `boolean` | `false` | — |
+| `overlayGradientAngle` | `number` | `180` | — |
+| `overlayGradientFrom` | `string` | `""` | — |
+| `overlayGradientTo` | `string` | `""` | — |
 | `shadow` | `string` | `—` | — |
 | `shapeDividerBottom` | `string` | `""` | — |
 | `shapeDividerBottomColour` | `string` | `""` | — |
@@ -3312,6 +3301,2536 @@ Tabbed content with horizontal or vertical layout, full ARIA support, and deep l
 
 ---
 
+## common
+
+### `core/form`
+_Form_
+
+**Type:** Static
+
+A form.
+
+**Attributes** (4):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `action` | `string` | `—` | — |
+| `email` | `string` | `—` | — |
+| `method` | `string` | `"post"` | — |
+| `submissionMethod` | `string` | `"email"` | — |
+
+**Supports:**
+- `anchor`, `color` ({"enabled":true,"background...), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/form-input`
+_Input Field_
+
+**Type:** Static
+
+The basic building block for forms.
+
+**Attributes** (8):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `inlineLabel` | `boolean` | `false` | — |
+| `label` | `rich-text` | `"Label"` | — |
+| `name` | `string` | `—` | — |
+| `placeholder` | `string` | `—` | — |
+| `required` | `boolean` | `false` | — |
+| `type` | `string` | `"text"` | — |
+| `value` | `string` | `""` | — |
+| `visibilityPermissions` | `string` | `"all"` | — |
+
+**Supports:**
+- `anchor`, `border` ({"enabled":true,"color":nul...), `reusable` (false), `spacing` ({"enabled":true,"margin":["...)
+
+---
+
+### `core/form-submission-notification`
+_Form Submission Notification_
+
+**Type:** Static
+
+Provide a notification message after the form has been submitted.
+
+**Attributes** (1):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `type` | `string` | `"success"` | — |
+
+**Supports:**
+_(none declared)_
+
+---
+
+### `core/form-submit-button`
+_Form Submit Button_
+
+**Type:** Static
+
+A submission button for forms.
+
+**Attributes** (0):
+
+_(no attributes declared)_
+
+**Supports:**
+_(none declared)_
+
+---
+
+## design
+
+### `core/accordion`
+_Accordion_
+
+**Type:** Static
+
+Displays a foldable layout that groups content in collapsible sections.
+
+**Attributes** (5):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `autoclose` | `boolean` | `false` | — |
+| `headingLevel` | `number` | `3` | — |
+| `iconPosition` | `string` | `"right"` | — |
+| `levelOptions` | `array` | `—` | — |
+| `showIcon` | `boolean` | `true` | — |
+
+**Supports:**
+- `align` (["wide","full"]), `anchor`, `ariaLabel`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity`, `layout`, `spacing` ({"enabled":true,"margin":["...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/accordion-heading`
+_Accordion Heading_
+
+**Type:** Static
+
+Displays a heading that toggles the accordion panel.
+
+**Attributes** (5):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `iconPosition` | `string` | `"right"` | — |
+| `level` | `number` | `—` | — |
+| `openByDefault` | `boolean` | `false` | — |
+| `showIcon` | `boolean` | `true` | — |
+| `title` | `rich-text` | `—` | — |
+
+**Supports:**
+- `align` (false), `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `interactivity`, `lock` (false), `spacing` ({"enabled":true,"margin":nu...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/accordion-item`
+_Accordion Item_
+
+**Type:** Static
+
+Wraps the heading and panel in one unit.
+
+**Attributes** (1):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `openByDefault` | `boolean` | `false` | — |
+
+**Supports:**
+- `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity`, `layout` ({"allowEditing":false}), `spacing` ({"enabled":true,"margin":["...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/accordion-panel`
+_Accordion Panel_
+
+**Type:** Static
+
+Contains the hidden or revealed content beneath the heading.
+
+**Attributes** (1):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `templateLock` | `string|boolean` | `false` | — |
+
+**Supports:**
+- `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity`, `layout` ({"allowEditing":false}), `lock` (false), `spacing` ({"enabled":true,"margin":nu...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/button`
+_Button_
+
+**Type:** Static
+
+Prompt visitors to take action with a button-style link.
+
+**Attributes** (11):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `backgroundColor` | `string` | `—` | — |
+| `gradient` | `string` | `—` | — |
+| `linkTarget` | `string` | `—` | — |
+| `placeholder` | `string` | `—` | — |
+| `rel` | `string` | `—` | — |
+| `tagName` | `string` | `"a"` | — |
+| `text` | `rich-text` | `—` | — |
+| `textColor` | `string` | `—` | — |
+| `title` | `string` | `—` | — |
+| `type` | `string` | `"button"` | — |
+| `url` | `string` | `—` | — |
+
+**Supports:**
+- `align` (false), `alignWide` (false), `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `dimensions` ({"enabled":true,"minHeight"...), `interactivity` ({"clientNavigation":true}), `reusable` (false), `spacing` ({"enabled":true,"margin":nu...), `splitting`, `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/buttons`
+_Buttons_
+
+**Type:** Static
+
+Prompt visitors to take action with a group of button-style links.
+
+**Attributes** (0):
+
+_(no attributes declared)_
+
+**Supports:**
+- `align` (["wide","full"]), `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `layout` ({"allowSwitching":false,"al...), `spacing` ({"enabled":true,"margin":["...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/column`
+_Column_
+
+**Type:** Static
+
+A single column within a columns block.
+
+**Attributes** (3):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `templateLock` | `string|boolean` | `—` | — |
+| `verticalAlignment` | `string` | `—` | — |
+| `width` | `string` | `—` | — |
+
+**Supports:**
+- `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `layout`, `reusable` (false), `spacing` ({"enabled":true,"margin":nu...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/columns`
+_Columns_
+
+**Type:** Static
+
+Display content in multiple columns, with blocks added to each column.
+
+**Attributes** (3):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `isStackedOnMobile` | `boolean` | `true` | — |
+| `templateLock` | `string|boolean` | `—` | — |
+| `verticalAlignment` | `string` | `—` | — |
+
+**Supports:**
+- `align` (["wide","full"]), `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `layout` ({"allowSwitching":false,"al...), `spacing` ({"enabled":true,"margin":["...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/comment-template`
+_Comment Template_
+
+**Type:** Static
+
+Contains the block elements used to display a comment, like the title, date, author, avatar and more.
+
+**Attributes** (0):
+
+_(no attributes declared)_
+
+**Supports:**
+- `align` (["left","center","right","w...), `anchor`, `border` ({"enabled":true,"color":tru...), `html` (false), `interactivity` ({"clientNavigation":true}), `reusable` (false), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/group`
+_Group_
+
+**Type:** Static
+
+Gather blocks in a layout container.
+
+**Attributes** (2):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `tagName` | `string` | `"div"` | — |
+| `templateLock` | `string|boolean` | `—` | — |
+
+**Supports:**
+- `align` (["wide","full"]), `anchor`, `ariaLabel`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `dimensions` ({"enabled":true,"minHeight"...), `html` (false), `interactivity` ({"clientNavigation":true}), `layout` ({"allowSizingOnChildren":true}), `position` ({"enabled":true,"sticky":true}), `spacing` ({"enabled":true,"margin":["...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/home-link`
+_Home Link_
+
+**Type:** Static
+
+Create a link that always points to the homepage of the site. Usually not necessary if there is already a site title link present in the header.
+
+**Attributes** (1):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `label` | `string` | `—` | — |
+
+**Supports:**
+- `anchor`, `html` (false), `interactivity` ({"clientNavigation":true}), `reusable` (false), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/more`
+_More_
+
+**Type:** Static
+
+Content before this block will be shown in the excerpt on your archives page.
+
+**Attributes** (2):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `customText` | `string` | `""` | — |
+| `noTeaser` | `boolean` | `false` | — |
+
+**Supports:**
+- `className` (false), `customClassName` (false), `html` (false), `interactivity` ({"clientNavigation":true}), `multiple` (false)
+
+---
+
+### `core/navigation-link`
+_Custom Link_
+
+**Type:** Static
+
+Add a page, link, or another item to your navigation.
+
+**Attributes** (10):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `description` | `string` | `—` | — |
+| `id` | `number` | `—` | — |
+| `isTopLevelLink` | `boolean` | `—` | — |
+| `kind` | `string` | `—` | — |
+| `label` | `string` | `—` | — |
+| `opensInNewTab` | `boolean` | `false` | — |
+| `rel` | `string` | `—` | — |
+| `title` | `string` | `—` | — |
+| `type` | `string` | `—` | — |
+| `url` | `string` | `—` | — |
+
+**Supports:**
+- `anchor`, `html` (false), `interactivity` ({"clientNavigation":true}), `reusable` (false), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/navigation-overlay-close`
+_Navigation Overlay Close_
+
+**Type:** Static
+
+A customizable button to close overlays.
+
+**Attributes** (2):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `displayMode` | `string` | `"icon"` | — |
+| `text` | `string` | `—` | — |
+
+**Supports:**
+- `color` ({"enabled":true,"background...), `spacing` ({"enabled":true,"margin":nu...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/navigation-submenu`
+_Submenu_
+
+**Type:** Static
+
+Add a submenu to your navigation.
+
+**Attributes** (10):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `description` | `string` | `—` | — |
+| `id` | `number` | `—` | — |
+| `isTopLevelItem` | `boolean` | `—` | — |
+| `kind` | `string` | `—` | — |
+| `label` | `string` | `—` | — |
+| `opensInNewTab` | `boolean` | `false` | — |
+| `rel` | `string` | `—` | — |
+| `title` | `string` | `—` | — |
+| `type` | `string` | `—` | — |
+| `url` | `string` | `—` | — |
+
+**Supports:**
+- `anchor`, `html` (false), `interactivity` ({"clientNavigation":true}), `reusable` (false), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/nextpage`
+_Page Break_
+
+**Type:** Static
+
+Separate your content into a multi-page experience.
+
+**Attributes** (0):
+
+_(no attributes declared)_
+
+**Supports:**
+- `className` (false), `customClassName` (false), `html` (false), `interactivity` ({"clientNavigation":true})
+
+---
+
+### `core/separator`
+_Separator_
+
+**Type:** Static
+
+Create a break between ideas or sections with a horizontal separator.
+
+**Attributes** (2):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `opacity` | `string` | `"alpha-channel"` | — |
+| `tagName` | `string` | `"hr"` | — |
+
+**Supports:**
+- `align` (["center","wide","full"]), `anchor`, `color` ({"enabled":true,"background...), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":["...)
+
+---
+
+### `core/spacer`
+_Spacer_
+
+**Type:** Static
+
+Add white space between blocks and customize its height.
+
+**Attributes** (2):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `height` | `string` | `"100px"` | — |
+| `width` | `string` | `—` | — |
+
+**Supports:**
+- `anchor`, `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":["...)
+
+---
+
+### `core/tab`
+_Tab_
+
+**Type:** Static
+
+Content for a tab in a tabbed interface.
+
+**Attributes** (1):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `label` | `string` | `""` | — |
+
+**Supports:**
+- `anchor`, `color` ({"enabled":true,"background...), `html` (false), `layout`, `reusable` (false), `spacing` ({"enabled":true,"margin":fa...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/tab-panel`
+_Tab Panel_
+
+**Type:** Static
+
+Container for tab panel content in a tabbed interface.
+
+**Attributes** (0):
+
+_(no attributes declared)_
+
+**Supports:**
+- `anchor` (false), `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `dimensions` ({"enabled":true,"minHeight"...), `html` (false), `layout` ({"default":{"type":"flex","...), `lock` (false), `reusable` (false), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/table-of-contents`
+_Table of Contents_
+
+**Type:** Static
+
+Summarize your post with a list of headings. Add HTML anchors to Heading blocks to link them here.
+
+**Attributes** (4):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `headings` | `array` | `[]` | — |
+| `maxLevel` | `number` | `—` | — |
+| `onlyIncludeCurrentPage` | `boolean` | `false` | — |
+| `ordered` | `boolean` | `true` | — |
+
+**Supports:**
+- `anchor`, `ariaLabel`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/tabs`
+_Tabs_
+
+**Type:** Static
+
+Display content in a tabbed interface to help users navigate detailed content with ease.
+
+**Attributes** (2):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `activeTabIndex` | `number` | `0` | — |
+| `editorActiveTabIndex` | `number` | `—` | — |
+
+**Supports:**
+- `align` (["left","center","right","w...), `anchor`, `color` ({"enabled":true,"background...), `html` (false), `interactivity`, `layout` ({"default":{"type":"flex","...), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/tabs-menu`
+_Tabs Menu_
+
+**Type:** Static
+
+Display the tab buttons for a tabbed interface.
+
+**Attributes** (0):
+
+_(no attributes declared)_
+
+**Supports:**
+- `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `dimensions` ({"enabled":true,"minHeight"...), `html` (false), `layout` ({"default":{"type":"flex","...), `lock` (false), `reusable` (false), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/tabs-menu-item`
+_Tab Menu Item_
+
+**Type:** Static
+
+A single tab button in the tabs menu.
+
+**Attributes** (1):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `anchor` | `string` | `""` | — |
+
+**Supports:**
+- `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `layout` ({"allowEditing":false}), `lock` (false), `reusable` (false), `spacing` ({"enabled":true,"margin":nu...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/text-columns`
+_Text Columns (deprecated)_
+
+**Type:** Static
+
+This block is deprecated. Please use the Columns block instead.
+
+**Attributes** (3):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `columns` | `number` | `2` | — |
+| `content` | `array` | `[{},{}]` | — |
+| `width` | `string` | `—` | — |
+
+**Supports:**
+- `inserter` (false), `interactivity` ({"clientNavigation":true})
+
+---
+
+## embed
+
+### `core/embed`
+_Embed_
+
+**Type:** Static
+
+Add a block that displays content pulled from other sites, like Twitter or YouTube.
+
+**Attributes** (7):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `allowResponsive` | `boolean` | `true` | — |
+| `caption` | `rich-text` | `—` | — |
+| `previewable` | `boolean` | `true` | — |
+| `providerNameSlug` | `string` | `—` | — |
+| `responsive` | `boolean` | `false` | — |
+| `type` | `string` | `—` | — |
+| `url` | `string` | `—` | — |
+
+**Supports:**
+- `align` (["left","center","right","w...), `anchor`, `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...)
+
+---
+
+## media
+
+### `core/audio`
+_Audio_
+
+**Type:** Static
+
+Embed a simple audio player.
+
+**Attributes** (7):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `autoplay` | `boolean` | `—` | — |
+| `blob` | `string` | `—` | — |
+| `caption` | `rich-text` | `—` | — |
+| `id` | `number` | `—` | — |
+| `loop` | `boolean` | `—` | — |
+| `preload` | `string` | `—` | — |
+| `src` | `string` | `—` | — |
+
+**Supports:**
+- `align` (["left","center","right","w...), `anchor`, `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...)
+
+---
+
+### `core/cover`
+_Cover_
+
+**Type:** Static
+
+Add an image or video with a text overlay.
+
+**Attributes** (22):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `alt` | `string` | `""` | — |
+| `backgroundType` | `string` | `"image"` | — |
+| `contentPosition` | `string` | `—` | — |
+| `customGradient` | `string` | `—` | — |
+| `customOverlayColor` | `string` | `—` | — |
+| `dimRatio` | `number` | `100` | — |
+| `focalPoint` | `object` | `—` | — |
+| `gradient` | `string` | `—` | — |
+| `hasParallax` | `boolean` | `false` | — |
+| `id` | `number` | `—` | — |
+| `isDark` | `boolean` | `true` | — |
+| `isRepeated` | `boolean` | `false` | — |
+| `isUserOverlayColor` | `boolean` | `—` | — |
+| `minHeight` | `number` | `—` | — |
+| `minHeightUnit` | `string` | `—` | — |
+| `overlayColor` | `string` | `—` | — |
+| `poster` | `string` | `—` | — |
+| `sizeSlug` | `string` | `—` | — |
+| `tagName` | `string` | `"div"` | — |
+| `templateLock` | `string|boolean` | `—` | — |
+| `url` | `string` | `—` | — |
+| `useFeaturedImage` | `boolean` | `false` | — |
+
+**Supports:**
+- `align` (["left","center","right","w...), `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `dimensions` ({"enabled":true,"minHeight"...), `html` (false), `interactivity` ({"clientNavigation":true}), `layout` ({"allowJustification":false}), `spacing` ({"enabled":true,"margin":["...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/file`
+_File_
+
+**Type:** Static
+
+Add a link to a downloadable file.
+
+**Attributes** (11):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `blob` | `string` | `—` | — |
+| `displayPreview` | `boolean` | `—` | — |
+| `downloadButtonText` | `rich-text` | `—` | — |
+| `fileId` | `string` | `—` | — |
+| `fileName` | `rich-text` | `—` | — |
+| `href` | `string` | `—` | — |
+| `id` | `number` | `—` | — |
+| `previewHeight` | `number` | `600` | — |
+| `showDownloadButton` | `boolean` | `true` | — |
+| `textLinkHref` | `string` | `—` | — |
+| `textLinkTarget` | `string` | `—` | — |
+
+**Supports:**
+- `align` (["left","center","right","w...), `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `interactivity`, `spacing` ({"enabled":true,"margin":tr...)
+
+---
+
+### `core/gallery`
+_Gallery_
+
+**Type:** Static
+
+Display multiple images in a rich gallery.
+
+**Attributes** (14):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `allowResize` | `boolean` | `false` | — |
+| `aspectRatio` | `string` | `"auto"` | — |
+| `caption` | `rich-text` | `—` | — |
+| `columns` | `number` | `—` | — |
+| `fixedHeight` | `boolean` | `true` | — |
+| `ids` | `array` | `[]` | — |
+| `imageCrop` | `boolean` | `true` | — |
+| `images` | `array` | `[]` | — |
+| `linkTarget` | `string` | `—` | — |
+| `linkTo` | `string` | `—` | — |
+| `navigationButtonType` | `string` | `"icon"` | — |
+| `randomOrder` | `boolean` | `false` | — |
+| `shortCodeTransforms` | `array` | `[]` | — |
+| `sizeSlug` | `string` | `"large"` | — |
+
+**Supports:**
+- `align` (["left","center","right","w...), `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `layout` ({"allowSwitching":false,"al...), `spacing` ({"enabled":true,"margin":tr...)
+
+---
+
+### `core/icon`
+_Icon_
+
+**Type:** Static
+
+Insert an SVG icon.
+
+**Attributes** (1):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `icon` | `string` | `—` | — |
+
+**Supports:**
+- `align` (["left","center","right"]), `anchor`, `ariaLabel` ({"__experimentalSkipSeriali...), `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `dimensions` ({"enabled":true,"minHeight"...), `html` (false), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...)
+
+---
+
+### `core/image`
+_Image_
+
+**Type:** Static
+
+Insert an image to make a visual statement.
+
+**Attributes** (18):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `alt` | `string` | `""` | — |
+| `aspectRatio` | `string` | `—` | — |
+| `blob` | `string` | `—` | — |
+| `caption` | `rich-text` | `—` | — |
+| `focalPoint` | `object` | `—` | — |
+| `height` | `string` | `—` | — |
+| `href` | `string` | `—` | — |
+| `id` | `number` | `—` | — |
+| `lightbox` | `object` | `—` | — |
+| `linkClass` | `string` | `—` | — |
+| `linkDestination` | `string` | `—` | — |
+| `linkTarget` | `string` | `—` | — |
+| `rel` | `string` | `—` | — |
+| `scale` | `string` | `—` | — |
+| `sizeSlug` | `string` | `—` | — |
+| `title` | `string` | `—` | — |
+| `url` | `string` | `—` | — |
+| `width` | `string` | `—` | — |
+
+**Supports:**
+- `align` (["left","center","right","w...), `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `interactivity`, `spacing` ({"enabled":true,"margin":tr...)
+
+---
+
+### `core/media-text`
+_Media & Text_
+
+**Type:** Static
+
+Set media and words side-by-side for a richer layout.
+
+**Attributes** (19):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `align` | `string` | `"none"` | — |
+| `focalPoint` | `object` | `—` | — |
+| `href` | `string` | `—` | — |
+| `imageFill` | `boolean` | `—` | — |
+| `isStackedOnMobile` | `boolean` | `true` | — |
+| `linkClass` | `string` | `—` | — |
+| `linkDestination` | `string` | `—` | — |
+| `linkTarget` | `string` | `—` | — |
+| `mediaAlt` | `string` | `""` | — |
+| `mediaId` | `number` | `—` | — |
+| `mediaLink` | `string` | `—` | — |
+| `mediaPosition` | `string` | `"left"` | — |
+| `mediaSizeSlug` | `string` | `—` | — |
+| `mediaType` | `string` | `—` | — |
+| `mediaUrl` | `string` | `—` | — |
+| `mediaWidth` | `number` | `50` | — |
+| `rel` | `string` | `—` | — |
+| `useFeaturedImage` | `boolean` | `false` | — |
+| `verticalAlignment` | `string` | `—` | — |
+
+**Supports:**
+- `align` (["wide","full"]), `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/playlist`
+_Playlist_
+
+**Type:** Static
+
+Embed a simple playlist.
+
+**Attributes** (8):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `caption` | `string` | `—` | — |
+| `currentTrack` | `string` | `—` | — |
+| `order` | `string` | `"asc"` | — |
+| `showArtists` | `boolean` | `true` | — |
+| `showImages` | `boolean` | `true` | — |
+| `showNumbers` | `boolean` | `true` | — |
+| `showTracklist` | `boolean` | `true` | — |
+| `type` | `string` | `"audio"` | — |
+
+**Supports:**
+- `align` (["left","center","right","w...), `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `interactivity`, `spacing` ({"enabled":true,"margin":tr...)
+
+---
+
+### `core/playlist-track`
+_Playlist track_
+
+**Type:** Static
+
+Playlist track.
+
+**Attributes** (10):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `album` | `string` | `—` | — |
+| `artist` | `string` | `—` | — |
+| `blob` | `string` | `—` | — |
+| `id` | `number` | `—` | — |
+| `image` | `string` | `—` | — |
+| `length` | `string` | `—` | — |
+| `src` | `string` | `—` | — |
+| `title` | `string` | `—` | — |
+| `type` | `string` | `"audio"` | — |
+| `uniqueId` | `string` | `—` | — |
+
+**Supports:**
+- `html` (false), `interactivity` ({"clientNavigation":true}), `reusable` (false)
+
+---
+
+### `core/video`
+_Video_
+
+**Type:** Static
+
+Embed a video from your media library or upload a new one.
+
+**Attributes** (12):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `autoplay` | `boolean` | `—` | — |
+| `blob` | `string` | `—` | — |
+| `caption` | `rich-text` | `—` | — |
+| `controls` | `boolean` | `true` | — |
+| `id` | `number` | `—` | — |
+| `loop` | `boolean` | `—` | — |
+| `muted` | `boolean` | `—` | — |
+| `playsInline` | `boolean` | `—` | — |
+| `poster` | `string` | `—` | — |
+| `preload` | `string` | `"metadata"` | — |
+| `src` | `string` | `—` | — |
+| `tracks` | `array` | `[]` | — |
+
+**Supports:**
+- `align` (["left","center","right","w...), `anchor`, `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...)
+
+---
+
+## reusable
+
+### `core/block`
+_Pattern_
+
+**Type:** Static
+
+Reuse this design across your site.
+
+**Attributes** (2):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `content` | `object` | `{}` | — |
+| `ref` | `number` | `—` | — |
+
+**Supports:**
+- `customClassName` (false), `html` (false), `inserter` (false), `interactivity` ({"clientNavigation":true})
+
+---
+
+## text
+
+### `core/code`
+_Code_
+
+**Type:** Static
+
+Display code snippets that respect your spacing and tabs.
+
+**Attributes** (1):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `content` | `rich-text` | `—` | — |
+
+**Supports:**
+- `align` (["wide"]), `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":["...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/details`
+_Details_
+
+**Type:** Static
+
+Hide and show additional content.
+
+**Attributes** (4):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `name` | `string` | `—` | — |
+| `placeholder` | `string` | `—` | — |
+| `showContent` | `boolean` | `false` | — |
+| `summary` | `rich-text` | `—` | — |
+
+**Supports:**
+- `align` (["wide","full"]), `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `layout` ({"allowEditing":false}), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/footnotes`
+_Footnotes_
+
+**Type:** Static
+
+Display footnotes added to the page.
+
+**Attributes** (0):
+
+_(no attributes declared)_
+
+**Supports:**
+- `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `inserter` (false), `interactivity` ({"clientNavigation":true}), `multiple` (false), `reusable` (false), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/freeform`
+_Classic_
+
+**Type:** Static
+
+Use the classic WordPress editor.
+
+**Attributes** (1):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `content` | `string` | `—` | — |
+
+**Supports:**
+- `className` (false), `customClassName` (false), `lock` (false), `reusable` (false)
+
+---
+
+### `core/heading`
+_Heading_
+
+**Type:** Static
+
+Introduce new sections and organize content to help visitors (and search engines) understand the structure of your content.
+
+**Attributes** (4):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `content` | `rich-text` | `—` | — |
+| `level` | `number` | `2` | — |
+| `levelOptions` | `array` | `—` | — |
+| `placeholder` | `string` | `—` | — |
+
+**Supports:**
+- `align` (["wide","full"]), `anchor`, `border` ({"enabled":true,"color":tru...), `className`, `color` ({"enabled":true,"background...), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...), `splitting`, `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/list`
+_List_
+
+**Type:** Static
+
+An organized collection of items displayed in a specific order.
+
+**Attributes** (6):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `ordered` | `boolean` | `false` | — |
+| `placeholder` | `string` | `—` | — |
+| `reversed` | `boolean` | `—` | — |
+| `start` | `number` | `—` | — |
+| `type` | `string` | `—` | — |
+| `values` | `string` | `""` | — |
+
+**Supports:**
+- `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/list-item`
+_List Item_
+
+**Type:** Static
+
+An individual item within a list.
+
+**Attributes** (2):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `content` | `rich-text` | `—` | — |
+| `placeholder` | `string` | `—` | — |
+
+**Supports:**
+- `anchor`, `border` ({"enabled":true,"color":tru...), `className` (false), `color` ({"enabled":true,"background...), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...), `splitting`, `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/math`
+_Math_
+
+**Type:** Static
+
+Display mathematical notation using LaTeX.
+
+**Attributes** (2):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `latex` | `string` | `—` | — |
+| `mathML` | `string` | `—` | — |
+
+**Supports:**
+- `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/missing`
+_Unsupported_
+
+**Type:** Static
+
+Your site doesn’t include support for this block.
+
+**Attributes** (3):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `originalContent` | `string` | `—` | — |
+| `originalName` | `string` | `—` | — |
+| `originalUndelimitedContent` | `string` | `—` | — |
+
+**Supports:**
+- `className` (false), `customClassName` (false), `html` (false), `inserter` (false), `interactivity` ({"clientNavigation":true}), `lock` (false), `reusable` (false)
+
+---
+
+### `core/paragraph`
+_Paragraph_
+
+**Type:** Static
+
+Start with the basic building block of all narrative.
+
+**Attributes** (4):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `content` | `rich-text` | `—` | — |
+| `direction` | `string` | `—` | — |
+| `dropCap` | `boolean` | `false` | — |
+| `placeholder` | `string` | `—` | — |
+
+**Supports:**
+- `align` (["wide","full"]), `anchor`, `border` ({"enabled":true,"color":tru...), `className` (false), `color` ({"enabled":true,"background...), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...), `splitting`, `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/preformatted`
+_Preformatted_
+
+**Type:** Static
+
+Add text that respects your spacing and tabs, and also allows styling.
+
+**Attributes** (1):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `content` | `rich-text` | `—` | — |
+
+**Supports:**
+- `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/pullquote`
+_Pullquote_
+
+**Type:** Static
+
+Give special visual emphasis to a quote from your text.
+
+**Attributes** (3):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `citation` | `rich-text` | `—` | — |
+| `textAlign` | `string` | `—` | — |
+| `value` | `rich-text` | `—` | — |
+
+**Supports:**
+- `align` (["left","right","wide","full"]), `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `dimensions` ({"enabled":true,"minHeight"...), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/quote`
+_Quote_
+
+**Type:** Static
+
+Give quoted text visual emphasis. "In quoting others, we cite ourselves." — Julio Cortázar
+
+**Attributes** (3):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `citation` | `rich-text` | `—` | — |
+| `textAlign` | `string` | `—` | — |
+| `value` | `string` | `""` | — |
+
+**Supports:**
+- `align` (["left","right","wide","full"]), `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `dimensions` ({"enabled":true,"minHeight"...), `html` (false), `interactivity` ({"clientNavigation":true}), `layout` ({"allowEditing":false}), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/table`
+_Table_
+
+**Type:** Static
+
+Create structured content in rows and columns to display information.
+
+**Attributes** (5):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `body` | `array` | `[]` | — |
+| `caption` | `rich-text` | `—` | — |
+| `foot` | `array` | `[]` | — |
+| `hasFixedLayout` | `boolean` | `true` | — |
+| `head` | `array` | `[]` | — |
+
+**Supports:**
+- `align` (["left","center","right","w...), `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/verse`
+_Poetry_
+
+**Type:** Static
+
+Insert poetry. Use special spacing formats. Or quote song lyrics.
+
+**Attributes** (1):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `content` | `rich-text` | `—` | — |
+
+**Supports:**
+- `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `dimensions` ({"enabled":true,"minHeight"...), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+## theme
+
+### `core/avatar`
+_Avatar_
+
+**Type:** Static
+
+Add a user’s avatar.
+
+**Attributes** (4):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `isLink` | `boolean` | `false` | — |
+| `linkTarget` | `string` | `"_self"` | — |
+| `size` | `number` | `96` | — |
+| `userId` | `number` | `—` | — |
+
+**Supports:**
+- `align` (["left","center","right","w...), `alignWide` (false), `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...)
+
+---
+
+### `core/breadcrumbs`
+_Breadcrumbs_
+
+**Type:** Static
+
+Display a breadcrumb trail showing the path to the current page.
+
+**Attributes** (5):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `prefersTaxonomy` | `boolean` | `false` | — |
+| `separator` | `string` | `"/"` | — |
+| `showCurrentItem` | `boolean` | `true` | — |
+| `showHomeItem` | `boolean` | `true` | — |
+| `showOnHomePage` | `boolean` | `false` | — |
+
+**Supports:**
+- `align` (["wide","full"]), `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/comment-author-avatar`
+_Comment Author Avatar (deprecated)_
+
+**Type:** Static
+
+This block is deprecated. Please use the Avatar block instead.
+
+**Attributes** (2):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `height` | `number` | `96` | — |
+| `width` | `number` | `96` | — |
+
+**Supports:**
+- `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `inserter` (false), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...)
+
+---
+
+### `core/comment-author-name`
+_Comment Author Name_
+
+**Type:** Static
+
+Displays the name of the author of the comment.
+
+**Attributes** (2):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `isLink` | `boolean` | `true` | — |
+| `linkTarget` | `string` | `"_self"` | — |
+
+**Supports:**
+- `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/comment-content`
+_Comment Content_
+
+**Type:** Static
+
+Displays the contents of a comment.
+
+**Attributes** (0):
+
+_(no attributes declared)_
+
+**Supports:**
+- `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `spacing` ({"enabled":true,"margin":nu...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/comment-date`
+_Comment Date_
+
+**Type:** Static
+
+Displays the date on which the comment was posted.
+
+**Attributes** (2):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `format` | `string` | `—` | — |
+| `isLink` | `boolean` | `true` | — |
+
+**Supports:**
+- `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/comment-edit-link`
+_Comment Edit Link_
+
+**Type:** Static
+
+Displays a link to edit the comment in the WordPress Dashboard. This link is only visible to users with the edit comment capability.
+
+**Attributes** (1):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `linkTarget` | `string` | `"_self"` | — |
+
+**Supports:**
+- `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/comment-reply-link`
+_Comment Reply Link_
+
+**Type:** Static
+
+Displays a link to reply to a comment.
+
+**Attributes** (0):
+
+_(no attributes declared)_
+
+**Supports:**
+- `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/comments`
+_Comments_
+
+**Type:** Static
+
+An advanced block that allows displaying post comments using different visual configurations.
+
+**Attributes** (2):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `legacy` | `boolean` | `false` | — |
+| `tagName` | `string` | `"div"` | — |
+
+**Supports:**
+- `align` (["wide","full"]), `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/comments-pagination`
+_Comments Pagination_
+
+**Type:** Static
+
+Displays a paginated navigation to next/previous set of comments, when applicable.
+
+**Attributes** (1):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `paginationArrow` | `string` | `"none"` | — |
+
+**Supports:**
+- `align` (["left","center","right","w...), `anchor`, `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `layout` ({"allowSwitching":false,"al...), `reusable` (false), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/comments-pagination-next`
+_Comments Next Page_
+
+**Type:** Static
+
+Displays the next comment's page link.
+
+**Attributes** (1):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `label` | `string` | `—` | — |
+
+**Supports:**
+- `anchor`, `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `reusable` (false), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/comments-pagination-numbers`
+_Comments Page Numbers_
+
+**Type:** Static
+
+Displays a list of page numbers for comments pagination.
+
+**Attributes** (0):
+
+_(no attributes declared)_
+
+**Supports:**
+- `anchor`, `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `reusable` (false), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/comments-pagination-previous`
+_Comments Previous Page_
+
+**Type:** Static
+
+Displays the previous comment's page link.
+
+**Attributes** (1):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `label` | `string` | `—` | — |
+
+**Supports:**
+- `anchor`, `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `reusable` (false), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/comments-title`
+_Comments Title_
+
+**Type:** Static
+
+Displays a title with the number of comments.
+
+**Attributes** (4):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `level` | `number` | `2` | — |
+| `levelOptions` | `array` | `—` | — |
+| `showCommentsCount` | `boolean` | `true` | — |
+| `showPostTitle` | `boolean` | `true` | — |
+
+**Supports:**
+- `align` (["left","center","right","w...), `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/loginout`
+_Login/out_
+
+**Type:** Static
+
+Show login & logout links.
+
+**Attributes** (2):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `displayLoginAsForm` | `boolean` | `false` | — |
+| `redirectToCurrent` | `boolean` | `true` | — |
+
+**Supports:**
+- `anchor`, `border` ({"enabled":true,"color":tru...), `className`, `color` ({"enabled":true,"background...), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/navigation`
+_Navigation_
+
+**Type:** Static
+
+A collection of blocks that allow visitors to get around your site.
+
+**Attributes** (20):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `__unstableLocation` | `string` | `—` | — |
+| `backgroundColor` | `string` | `—` | — |
+| `customBackgroundColor` | `string` | `—` | — |
+| `customOverlayBackgroundColor` | `string` | `—` | — |
+| `customOverlayTextColor` | `string` | `—` | — |
+| `customTextColor` | `string` | `—` | — |
+| `hasIcon` | `boolean` | `true` | — |
+| `icon` | `string` | `"handle"` | — |
+| `maxNestingLevel` | `number` | `5` | — |
+| `overlay` | `string` | `—` | — |
+| `overlayBackgroundColor` | `string` | `—` | — |
+| `overlayMenu` | `string` | `"mobile"` | — |
+| `overlayTextColor` | `string` | `—` | — |
+| `ref` | `number` | `—` | — |
+| `rgbBackgroundColor` | `string` | `—` | — |
+| `rgbTextColor` | `string` | `—` | — |
+| `showSubmenuIcon` | `boolean` | `true` | — |
+| `submenuVisibility` | `string` | `"hover"` | — |
+| `templateLock` | `string|boolean` | `—` | — |
+| `textColor` | `string` | `—` | — |
+
+**Supports:**
+- `align` (["wide","full"]), `anchor`, `ariaLabel`, `html` (false), `inserter`, `interactivity`, `layout` ({"allowSwitching":false,"al...), `spacing` ({"enabled":true,"margin":nu...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/pattern`
+_Pattern Placeholder_
+
+**Type:** Static
+
+Show a block pattern.
+
+**Attributes** (1):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `slug` | `string` | `—` | — |
+
+**Supports:**
+- `html` (false), `inserter` (false), `interactivity` ({"clientNavigation":true})
+
+---
+
+### `core/post-author`
+_Author (deprecated)_
+
+**Type:** Static
+
+This block is deprecated. Please use the Avatar block, the Author Name block, and the Author Biography block instead.
+
+**Attributes** (7):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `avatarSize` | `number` | `48` | — |
+| `byline` | `string` | `—` | — |
+| `isLink` | `boolean` | `false` | — |
+| `linkTarget` | `string` | `"_self"` | — |
+| `showAvatar` | `boolean` | `true` | — |
+| `showBio` | `boolean` | `—` | — |
+| `textAlign` | `string` | `—` | — |
+
+**Supports:**
+- `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `inserter` (false), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/post-author-biography`
+_Author Biography_
+
+**Type:** Static
+
+The author biography.
+
+**Attributes** (0):
+
+_(no attributes declared)_
+
+**Supports:**
+- `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/post-author-name`
+_Author Name_
+
+**Type:** Static
+
+The author name.
+
+**Attributes** (2):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `isLink` | `boolean` | `false` | — |
+| `linkTarget` | `string` | `"_self"` | — |
+
+**Supports:**
+- `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/post-comment`
+_Comment (deprecated)_
+
+**Type:** Static
+
+This block is deprecated. Please use the Comments block instead.
+
+**Attributes** (1):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `commentId` | `number` | `—` | — |
+
+**Supports:**
+- `html` (false), `inserter` (false), `interactivity` ({"clientNavigation":true})
+
+---
+
+### `core/post-comments-count`
+_Comments Count_
+
+**Type:** Static
+
+Display a post's comments count.
+
+**Attributes** (0):
+
+_(no attributes declared)_
+
+**Supports:**
+- `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/post-comments-form`
+_Comments Form_
+
+**Type:** Static
+
+Display a post's comments form.
+
+**Attributes** (0):
+
+_(no attributes declared)_
+
+**Supports:**
+- `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/post-comments-link`
+_Comments Link_
+
+**Type:** Static
+
+Displays the link to the current post comments.
+
+**Attributes** (0):
+
+_(no attributes declared)_
+
+**Supports:**
+- `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/post-content`
+_Content_
+
+**Type:** Static
+
+Displays the contents of a post or page.
+
+**Attributes** (1):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `tagName` | `string` | `"div"` | — |
+
+**Supports:**
+- `align` (["wide","full"]), `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `dimensions` ({"enabled":true,"minHeight"...), `html` (false), `interactivity` ({"clientNavigation":true}), `layout`, `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/post-date`
+_Date_
+
+**Type:** Static
+
+Display a custom date.
+
+**Attributes** (3):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `datetime` | `string` | `—` | — |
+| `format` | `string` | `—` | — |
+| `isLink` | `boolean` | `false` | — |
+
+**Supports:**
+- `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/post-excerpt`
+_Excerpt_
+
+**Type:** Static
+
+Display the excerpt.
+
+**Attributes** (3):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `excerptLength` | `number` | `55` | — |
+| `moreText` | `string` | `—` | — |
+| `showMoreOnNewLine` | `boolean` | `true` | — |
+
+**Supports:**
+- `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/post-featured-image`
+_Featured Image_
+
+**Type:** Static
+
+Display a post's featured image.
+
+**Attributes** (14):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `aspectRatio` | `string` | `—` | — |
+| `customGradient` | `string` | `—` | — |
+| `customOverlayColor` | `string` | `—` | — |
+| `dimRatio` | `number` | `0` | — |
+| `gradient` | `string` | `—` | — |
+| `height` | `string` | `—` | — |
+| `isLink` | `boolean` | `false` | — |
+| `linkTarget` | `string` | `"_self"` | — |
+| `overlayColor` | `string` | `—` | — |
+| `rel` | `string` | `""` | — |
+| `scale` | `string` | `"cover"` | — |
+| `sizeSlug` | `string` | `—` | — |
+| `useFirstImageFromPost` | `boolean` | `false` | — |
+| `width` | `string` | `—` | — |
+
+**Supports:**
+- `align` (["left","right","center","w...), `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...)
+
+---
+
+### `core/post-navigation-link`
+_Post Navigation Link_
+
+**Type:** Static
+
+Displays the next or previous post link that is adjacent to the current post.
+
+**Attributes** (6):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `arrow` | `string` | `"none"` | — |
+| `label` | `string` | `—` | — |
+| `linkLabel` | `boolean` | `false` | — |
+| `showTitle` | `boolean` | `false` | — |
+| `taxonomy` | `string` | `""` | — |
+| `type` | `string` | `"next"` | — |
+
+**Supports:**
+- `anchor`, `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `reusable` (false), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/post-template`
+_Post Template_
+
+**Type:** Static
+
+Contains the block elements used to render a post, like the title, date, featured image, content or excerpt, and more.
+
+**Attributes** (0):
+
+_(no attributes declared)_
+
+**Supports:**
+- `align` (["wide","full"]), `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `layout`, `reusable` (false), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/post-terms`
+_Post Terms_
+
+**Type:** Static
+
+Post terms.
+
+**Attributes** (4):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `prefix` | `string` | `""` | — |
+| `separator` | `string` | `", "` | — |
+| `suffix` | `string` | `""` | — |
+| `term` | `string` | `—` | — |
+
+**Supports:**
+- `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/post-time-to-read`
+_Time to Read_
+
+**Type:** Static
+
+Show minutes required to finish reading the post. Can also show a word count.
+
+**Attributes** (3):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `averageReadingSpeed` | `number` | `189` | — |
+| `displayAsRange` | `boolean` | `true` | — |
+| `displayMode` | `string` | `"time"` | — |
+
+**Supports:**
+- `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/post-title`
+_Title_
+
+**Type:** Static
+
+Displays the title of a post, page, or any other content-type.
+
+**Attributes** (6):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `isLink` | `boolean` | `false` | — |
+| `level` | `number` | `2` | — |
+| `levelOptions` | `array` | `—` | — |
+| `linkTarget` | `string` | `"_self"` | — |
+| `placeholder` | `string` | `—` | — |
+| `rel` | `string` | `""` | — |
+
+**Supports:**
+- `align` (["wide","full"]), `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/query`
+_Query Loop_
+
+**Type:** Static
+
+An advanced block that allows displaying post types based on different query parameters and visual configurations.
+
+**Attributes** (5):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `enhancedPagination` | `boolean` | `false` | — |
+| `namespace` | `string` | `—` | — |
+| `query` | `object` | `{"perPage":null,"pages":0,"offset":0,...` | — |
+| `queryId` | `number` | `—` | — |
+| `tagName` | `string` | `"div"` | — |
+
+**Supports:**
+- `align` (["wide","full"]), `anchor`, `html` (false), `interactivity`, `layout`
+
+---
+
+### `core/query-no-results`
+_No Results_
+
+**Type:** Static
+
+Contains the block elements used to render content when no query results are found.
+
+**Attributes** (0):
+
+_(no attributes declared)_
+
+**Supports:**
+- `align` (["left","center","right","w...), `anchor`, `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `reusable` (false), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/query-pagination`
+_Pagination_
+
+**Type:** Static
+
+Displays a paginated navigation to next/previous set of posts, when applicable.
+
+**Attributes** (2):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `paginationArrow` | `string` | `"none"` | — |
+| `showLabel` | `boolean` | `true` | — |
+
+**Supports:**
+- `align` (["left","center","right","w...), `anchor`, `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `layout` ({"allowSwitching":false,"al...), `reusable` (false), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/query-pagination-next`
+_Next Page_
+
+**Type:** Static
+
+Displays the next posts page link.
+
+**Attributes** (1):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `label` | `string` | `—` | — |
+
+**Supports:**
+- `anchor`, `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `reusable` (false), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/query-pagination-numbers`
+_Page Numbers_
+
+**Type:** Static
+
+Displays a list of page numbers for pagination.
+
+**Attributes** (1):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `midSize` | `number` | `2` | — |
+
+**Supports:**
+- `anchor`, `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `reusable` (false), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/query-pagination-previous`
+_Previous Page_
+
+**Type:** Static
+
+Displays the previous posts page link.
+
+**Attributes** (1):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `label` | `string` | `—` | — |
+
+**Supports:**
+- `anchor`, `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `reusable` (false), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/query-title`
+_Query Title_
+
+**Type:** Static
+
+Display the query title.
+
+**Attributes** (5):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `level` | `number` | `1` | — |
+| `levelOptions` | `array` | `—` | — |
+| `showPrefix` | `boolean` | `true` | — |
+| `showSearchTerm` | `boolean` | `true` | — |
+| `type` | `string` | `—` | — |
+
+**Supports:**
+- `align` (["wide","full"]), `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/query-total`
+_Query Total_
+
+**Type:** Static
+
+Display the total number of results in a query.
+
+**Attributes** (1):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `displayType` | `string` | `"total-results"` | — |
+
+**Supports:**
+- `align` (["wide","full"]), `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/read-more`
+_Read More_
+
+**Type:** Static
+
+Displays the link of a post, page, or any other content-type.
+
+**Attributes** (2):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `content` | `string` | `—` | — |
+| `linkTarget` | `string` | `"_self"` | — |
+
+**Supports:**
+- `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":["...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/site-logo`
+_Site Logo_
+
+**Type:** Static
+
+Display an image to represent this site. Update this block and the changes apply everywhere.
+
+**Attributes** (4):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `isLink` | `boolean` | `true` | — |
+| `linkTarget` | `string` | `"_self"` | — |
+| `shouldSyncIcon` | `boolean` | `—` | — |
+| `width` | `number` | `—` | — |
+
+**Supports:**
+- `align` (["left","center","right","w...), `alignWide` (false), `anchor`, `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...)
+
+---
+
+### `core/site-tagline`
+_Site Tagline_
+
+**Type:** Static
+
+Describe in a few words what this site is about. This is important for search results, sharing on social media, and gives overall clarity to visitors.
+
+**Attributes** (2):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `level` | `number` | `0` | — |
+| `levelOptions` | `array` | `[0,1,2,3,4,5,6]` | — |
+
+**Supports:**
+- `align` (["wide","full"]), `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/site-title`
+_Site Title_
+
+**Type:** Static
+
+Displays the name of this site. Update the block, and the changes apply everywhere it’s used. This will also appear in the browser title bar and in search results.
+
+**Attributes** (4):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `isLink` | `boolean` | `true` | — |
+| `level` | `number` | `1` | — |
+| `levelOptions` | `array` | `[0,1,2,3,4,5,6]` | — |
+| `linkTarget` | `string` | `"_self"` | — |
+
+**Supports:**
+- `align` (["wide","full"]), `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/template-part`
+_Template Part_
+
+**Type:** Static
+
+Edit the different global regions of your site, like the header, footer, sidebar, or create your own.
+
+**Attributes** (4):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `area` | `string` | `—` | — |
+| `slug` | `string` | `—` | — |
+| `tagName` | `string` | `—` | — |
+| `theme` | `string` | `—` | — |
+
+**Supports:**
+- `align` (["left","center","right","w...), `html` (false), `interactivity` ({"clientNavigation":true}), `reusable` (false)
+
+---
+
+### `core/term-count`
+_Term Count_
+
+**Type:** Static
+
+Displays the post count of a taxonomy term.
+
+**Attributes** (1):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `bracketType` | `string` | `"round"` | — |
+
+**Supports:**
+- `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":nu...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/term-description`
+_Term Description_
+
+**Type:** Static
+
+Display the description of categories, tags and custom taxonomies when viewing an archive.
+
+**Attributes** (0):
+
+_(no attributes declared)_
+
+**Supports:**
+- `align` (["wide","full"]), `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/term-name`
+_Term Name_
+
+**Type:** Static
+
+Displays the name of a taxonomy term.
+
+**Attributes** (4):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `isLink` | `boolean` | `false` | — |
+| `level` | `number` | `0` | — |
+| `levelOptions` | `array` | `—` | — |
+| `textAlign` | `string` | `—` | — |
+
+**Supports:**
+- `align` (["wide","full"]), `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":nu...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/term-template`
+_Term Template_
+
+**Type:** Static
+
+Contains the block elements used to render a taxonomy term, like the name, description, and more.
+
+**Attributes** (0):
+
+_(no attributes declared)_
+
+**Supports:**
+- `align` (["wide","full"]), `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `layout`, `reusable` (false), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/terms-query`
+_Terms Query_
+
+**Type:** Static
+
+An advanced block that allows displaying taxonomy terms based on different query parameters and visual configurations.
+
+**Attributes** (2):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `tagName` | `string` | `"div"` | — |
+| `termQuery` | `object` | `{"perPage":10,"taxonomy":"category","...` | — |
+
+**Supports:**
+- `align` (["wide","full"]), `anchor`, `html` (false), `interactivity`, `layout`
+
+---
+
+## widgets
+
+### `core/archives`
+_Archives_
+
+**Type:** Static
+
+Display a date archive of your posts.
+
+**Attributes** (4):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `displayAsDropdown` | `boolean` | `false` | — |
+| `showLabel` | `boolean` | `true` | — |
+| `showPostCounts` | `boolean` | `false` | — |
+| `type` | `string` | `"monthly"` | — |
+
+**Supports:**
+- `align` (["left","center","right","w...), `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/calendar`
+_Calendar_
+
+**Type:** Static
+
+A calendar of your site’s posts.
+
+**Attributes** (2):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `month` | `integer` | `—` | — |
+| `year` | `integer` | `—` | — |
+
+**Supports:**
+- `align` (["left","center","right","w...), `anchor`, `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/categories`
+_Terms List_
+
+**Type:** Static
+
+Display a list of all terms of a given taxonomy.
+
+**Attributes** (8):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `displayAsDropdown` | `boolean` | `false` | — |
+| `label` | `string` | `—` | — |
+| `showEmpty` | `boolean` | `false` | — |
+| `showHierarchy` | `boolean` | `false` | — |
+| `showLabel` | `boolean` | `true` | — |
+| `showOnlyTopLevel` | `boolean` | `false` | — |
+| `showPostCounts` | `boolean` | `false` | — |
+| `taxonomy` | `string` | `"category"` | — |
+
+**Supports:**
+- `align` (["left","center","right","w...), `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/html`
+_Custom HTML_
+
+**Type:** Static
+
+Add custom HTML code and preview it as you edit.
+
+**Attributes** (1):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `content` | `string` | `—` | — |
+
+**Supports:**
+- `className` (false), `customClassName` (false), `html` (false), `interactivity` ({"clientNavigation":true})
+
+---
+
+### `core/latest-comments`
+_Latest Comments_
+
+**Type:** Static
+
+Display a list of your most recent comments.
+
+**Attributes** (4):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `commentsToShow` | `number` | `5` | — |
+| `displayAvatar` | `boolean` | `true` | — |
+| `displayContent` | `string` | `"excerpt"` | — |
+| `displayDate` | `boolean` | `true` | — |
+
+**Supports:**
+- `align` (["left","center","right","w...), `anchor`, `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/latest-posts`
+_Latest Posts_
+
+**Type:** Static
+
+Display a list of your most recent posts.
+
+**Attributes** (18):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `addLinkToFeaturedImage` | `boolean` | `false` | — |
+| `categories` | `array` | `—` | — |
+| `columns` | `number` | `3` | — |
+| `displayAuthor` | `boolean` | `false` | — |
+| `displayFeaturedImage` | `boolean` | `false` | — |
+| `displayPostContent` | `boolean` | `false` | — |
+| `displayPostContentRadio` | `string` | `"excerpt"` | — |
+| `displayPostDate` | `boolean` | `false` | — |
+| `excerptLength` | `number` | `55` | — |
+| `featuredImageAlign` | `string` | `—` | — |
+| `featuredImageSizeHeight` | `number` | `—` | — |
+| `featuredImageSizeSlug` | `string` | `"thumbnail"` | — |
+| `featuredImageSizeWidth` | `number` | `—` | — |
+| `order` | `string` | `"desc"` | — |
+| `orderBy` | `string` | `"date"` | — |
+| `postLayout` | `string` | `"list"` | — |
+| `postsToShow` | `number` | `5` | — |
+| `selectedAuthor` | `number` | `—` | — |
+
+**Supports:**
+- `align` (["left","center","right","w...), `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/page-list`
+_Page List_
+
+**Type:** Static
+
+Display a list of all pages.
+
+**Attributes** (2):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `isNested` | `boolean` | `false` | — |
+| `parentPageID` | `integer` | `0` | — |
+
+**Supports:**
+- `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `reusable` (false), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/page-list-item`
+_Page List Item_
+
+**Type:** Static
+
+Displays a page inside a list of all pages.
+
+**Attributes** (5):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `hasChildren` | `boolean` | `—` | — |
+| `id` | `number` | `—` | — |
+| `label` | `string` | `—` | — |
+| `link` | `string` | `—` | — |
+| `title` | `string` | `—` | — |
+
+**Supports:**
+- `anchor`, `html` (false), `inserter` (false), `interactivity` ({"clientNavigation":true}), `lock` (false), `reusable` (false)
+
+---
+
+### `core/rss`
+_RSS_
+
+**Type:** Static
+
+Display entries from any RSS or Atom feed.
+
+**Attributes** (10):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `blockLayout` | `string` | `"list"` | — |
+| `columns` | `number` | `2` | — |
+| `displayAuthor` | `boolean` | `false` | — |
+| `displayDate` | `boolean` | `false` | — |
+| `displayExcerpt` | `boolean` | `false` | — |
+| `excerptLength` | `number` | `55` | — |
+| `feedURL` | `string` | `""` | — |
+| `itemsToShow` | `number` | `5` | — |
+| `openInNewTab` | `boolean` | `false` | — |
+| `rel` | `string` | `—` | — |
+
+**Supports:**
+- `align` (["left","center","right","w...), `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...)
+
+---
+
+### `core/search`
+_Search_
+
+**Type:** Static
+
+Help visitors find your content.
+
+**Attributes** (10):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `buttonPosition` | `string` | `"button-outside"` | — |
+| `buttonText` | `string` | `—` | — |
+| `buttonUseIcon` | `boolean` | `false` | — |
+| `isSearchFieldHidden` | `boolean` | `false` | — |
+| `label` | `string` | `—` | — |
+| `placeholder` | `string` | `""` | — |
+| `query` | `object` | `{}` | — |
+| `showLabel` | `boolean` | `true` | — |
+| `width` | `number` | `—` | — |
+| `widthUnit` | `string` | `—` | — |
+
+**Supports:**
+- `align` (["left","center","right"]), `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity`, `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
+### `core/shortcode`
+_Shortcode_
+
+**Type:** Static
+
+Insert additional custom elements with a WordPress shortcode.
+
+**Attributes** (1):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `text` | `string` | `—` | — |
+
+**Supports:**
+- `className` (false), `customClassName` (false), `html` (false)
+
+---
+
+### `core/social-link`
+_Social Icon_
+
+**Type:** Static
+
+Display an icon linking to a social profile or site.
+
+**Attributes** (4):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `label` | `string` | `—` | — |
+| `rel` | `string` | `—` | — |
+| `service` | `string` | `—` | — |
+| `url` | `string` | `—` | — |
+
+**Supports:**
+- `anchor`, `html` (false), `interactivity` ({"clientNavigation":true}), `reusable` (false)
+
+---
+
+### `core/social-links`
+_Social Icons_
+
+**Type:** Static
+
+Display icons linking to your social profiles or sites.
+
+**Attributes** (9):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `customIconBackgroundColor` | `string` | `—` | — |
+| `customIconColor` | `string` | `—` | — |
+| `iconBackgroundColor` | `string` | `—` | — |
+| `iconBackgroundColorValue` | `string` | `—` | — |
+| `iconColor` | `string` | `—` | — |
+| `iconColorValue` | `string` | `—` | — |
+| `openInNewTab` | `boolean` | `false` | — |
+| `showLabels` | `boolean` | `false` | — |
+| `size` | `string` | `—` | — |
+
+**Supports:**
+- `align` (["left","center","right"]), `anchor`, `border` ({"enabled":true,"color":tru...), `color` ({"enabled":true,"background...), `html` (false), `interactivity` ({"clientNavigation":true}), `layout` ({"allowSwitching":false,"al...), `spacing` ({"enabled":true,"margin":tr...)
+
+---
+
+### `core/tag-cloud`
+_Tag Cloud_
+
+**Type:** Static
+
+A cloud of popular keywords, each sized by how often it appears.
+
+**Attributes** (5):
+
+| Name | Type | Default | Responsive |
+|------|------|---------|------------|
+| `largestFontSize` | `string` | `"22pt"` | — |
+| `numberOfTags` | `number` | `45` | — |
+| `showTagCounts` | `boolean` | `false` | — |
+| `smallestFontSize` | `string` | `"8pt"` | — |
+| `taxonomy` | `string` | `"post_tag"` | — |
+
+**Supports:**
+- `align` (["left","center","right","w...), `anchor`, `border` ({"enabled":true,"color":tru...), `html` (false), `interactivity` ({"clientNavigation":true}), `spacing` ({"enabled":true,"margin":tr...), `typography` ({"enabled":true,"fontSize":...)
+
+---
+
 ## Canonical Vocabulary
 
 Source of truth for SGS attribute decomposition (Spec 15 §3.3). Regenerated from `slot_synonyms`, `property_suffixes`, and `modifier_suffixes` in `sgs-framework.db`. Used by `/sgs-update` Stage 4 (canonical assignment) and Stage 9 (drift validator).
@@ -3328,82 +5847,89 @@ Source of truth for SGS attribute decomposition (Spec 15 §3.3). Regenerated fro
 | `aspectRatio` | ["aspect"] | — | Aspect-ratio slot |
 | `autoplay` | [] | — | Autoplay boolean slot |
 | `autoplaySpeed` | [] | — | Autoplay-speed slot |
-| `avatar` | ["portrait", "profile", "authorImage"] | img | Person portrait |
+| `avatar` | ["authorImage", "avatar-img", "avatar-initials", "portrait", "profile"] | img | Person portrait |
 | `backdrop` | [] | — | Backdrop / scrim — modal / popup / drawer overlay |
-| `backgroundMedia` | ["background", "backgroundImage", "backgroundVideo", "bgColor", "bgColour", "bgImage", "bgVideo", "heroImage"] | — | Background polymorphic |
+| `backgroundMedia` | ["background", "backgroundImage", "backgroundVideo", "bg-img", "bg-media", "bg-video", "bgColor", "bgColour", "bgImage", "bgVideo", "heroImage", "svg-bg", "video-bg"] | — | Background polymorphic |
 | `badge` | ["pill"] | span | Decorative badge / pill |
-| `bar` | ["barColour", "progressBar"] | div | progress bar visual element |
+| `bar` | ["barColour", "progress", "progress-bar", "progress-step", "progress-step-label", "progress-step-number", "progress-steps", "progress-wrapper", "progressBar", "track"] | div | progress bar visual element |
 | `border` | ["borderRadius", "borderColor", "borderColour", "borderWidth", "borderStyle"] | — | Border-properties container slot |
 | `breakpoint` | [] | — | Responsive breakpoint threshold (px) |
-| `button` | ["cta", "ctaPrimary", "primaryCta", "primaryButton"] | a | Primary CTA / button |
+| `button` | ["btn", "buttons", "cta", "cta-inputs", "ctaPrimary", "ctas", "load-more", "primaryButton", "primaryCta", "readmore"] | a | Primary CTA / button |
 | `buttonSecondary` | ["ctaSecondary", "secondaryCta", "secondaryButton"] | a | Secondary CTA / button |
-| `caption` | [] | figcaption | Image caption |
-| `card` | ["cardStyle"] | — | Card-container slot |
+| `caption` | ["lightbox-caption"] | figcaption | Image caption |
+| `card` | ["card-body", "card-header", "cardStyle", "entry", "item", "item-btn", "item-link", "node", "plan", "plan-meta", "review", "review-row", "slide", "slot", "stage", "stat", "step"] | — | Card-container slot |
 | `column` | ["columns"] | — | Grid/flex column slot |
-| `date` | ["datetime", "timestamp"] | time | Date |
+| `date` | ["card-date", "datetime", "day", "period", "time", "timestamp"] | time | Date |
 | `drawer` | [] | — | Drawer-container slot |
 | `feature` | ["featureColour"] | li | pricing tier feature list item |
 | `flip` | [] | — | Mirror / scaleX(-1) transform toggle |
 | `focusRing` | [] | — | Focus-ring outline (a11y) — width / colour / offset / opacity |
 | `gap` | ["blockGap"] | — | Gap layout primitive slot |
 | `header` | ["headerBackground", "headerColour"] | header | accordion item header (distinct from page heading) |
-| `heading` | ["title", "headline", "name"] | h1 | Primary heading |
+| `heading` | ["aggregate-text", "card-title", "headline", "name", "review-header", "title"] | h1 | Primary heading |
 | `hideOn` | ["hideOnMobile", "hideOnTablet", "hideOnDesktop"] | — | Responsive-hide control slot |
 | `hover` | ["hoverState"] | — | Hover-state slot (state modifier acting as slot) |
 | `htmlTag` | [] | — | HTML tag selector (section / div / article) |
-| `icon` | ["glyph", "iconPosition", "iconSize", "iconValue", "symbol"] | svg | Iconography |
+| `icon` | ["badge-number", "check", "feature-icon", "feature-icon--check", "feature-icon--cross", "glyph", "iconPosition", "iconSize", "iconValue", "symbol", "verified-icon"] | svg | Iconography |
 | `imageAlt` | ["imageAltText"] | — | Image alt-text slot (a11y) |
-| `items` | [] | ul | Repeating list of items |
-| `label` | ["eyebrow", "kicker", "tag"] | span | Pre-heading label |
+| `items` | ["arrow", "arrows", "badges", "dot", "dots", "features", "filter", "filters", "list", "menu", "nav", "option", "set", "social", "social-link", "thumbs"] | ul | Repeating list of items |
+| `label` | ["badge-label", "badge-text", "eyebrow", "inner-label", "kicker", "node-icon", "slot-label", "tag"] | span | Pre-heading label |
 | `layout` | ["layoutType"] | — | Layout-mode slot |
 | `lazyLoad` | [] | — | Defer asset load until viewport intersection |
 | `letterSpacing` | [] | — | Letter-spacing slot |
-| `link` | ["url", "href", "anchor"] | a | Link target URL |
+| `link` | ["anchor", "count-link", "href", "image-link", "social-link", "url"] | a | Link target URL |
 | `linkOpensNewTab` | ["openInNewTab", "target"] | — | Link-target control slot |
-| `logo` | ["logoMaxWidth", "logoImage"] | — | Logo container slot |
+| `logo` | ["google-logo", "header-logo", "header-logo-link", "logoImage", "logoMaxWidth"] | — | Logo container slot |
 | `loop` | [] | — | Media loop boolean |
 | `margin` | ["margin"] | — | Margin layout primitive slot |
 | `max` | ["maxHeight", "maxWidth"] | — | Max-dimension slot |
-| `media` | ["image", "photo", "picture", "video", "embed"] | img | Polymorphic image/video slot |
+| `media` | ["badge-img", "bg-img", "embed", "image", "image-wrap", "img", "img-wrap", "photo", "picture", "side-image", "side-img", "slot-img", "split-image", "split-image--bleed", "split-image--desktop", "split-image--mobile", "thumb", "thumb-img", "video"] | img | Polymorphic image/video slot |
 | `mediaSource` | [] | — | Source discriminator: upload / youtube / vimeo / url |
 | `mediaType` | [] | — | Discriminator: image / video / svg / lottie |
 | `min` | ["minHeight", "minWidth"] | — | Min-dimension slot (peeled stem) |
 | `muted` | [] | — | Video / audio mute boolean |
-| `number` | [] | — | Numeric-display slot |
+| `nav` | ["navigation", "menu-nav"] | nav | Navigation container slot |
+| `number` | ["aggregate", "badge-number", "count", "count-link", "numeric", "stat", "stats"] | — | Numeric-display slot |
 | `opacity` | [] | — | Opacity slot |
 | `options` | [] | select | Form-field selection options |
 | `overflow` | [] | — | CSS overflow control |
-| `overlay` | [] | — | Overlay-properties slot |
+| `overlay` | ["dialog", "lightbox", "lightbox-body", "lightbox-caption", "lightbox-close", "lightbox-counter", "lightbox-img", "lightbox-next", "lightbox-prev", "overlay-bio"] | — | Overlay-properties slot |
 | `padding` | ["padding"] | — | Padding layout primitive slot |
-| `panel` | [] | — | Panel-container slot |
+| `panel` | ["panel-hint", "panel-note", "panels", "preview", "preview-container"] | — | Panel-container slot |
 | `parallax` | [] | — | Scroll-parallax intensity / behaviour |
 | `position` | [] | — | Position slot — CSS position keyword or coordinate object |
 | `positionX` | [] | — | X-axis position slot |
 | `positionY` | [] | — | Y-axis position slot |
-| `price` | ["cost", "amount"] | span | Price |
+| `price` | ["amount", "cost", "price-wrapper", "ribbon", "savings-badge"] | span | Price |
+| `progress` | ["progress-bar", "progressBar", "progress-fill"] | div | Progress indicator — fill level or step tracker |
 | `query` | ["queryArgs", "wpQuery"] | — | WP_Query / Query Loop descriptor |
 | `quote` | ["quoteText", "quoteBody"] | blockquote | testimonial quote body |
-| `rating` | ["stars", "score"] | span | Star rating |
-| `role` | ["speakerRole", "authorRole", "jobTitle"] | span | testimonial speaker role / job title |
+| `rating` | ["aggregate", "card-stars", "header-stars", "score", "stars"] | span | Star rating |
+| `review` | ["review-row", "review-item", "review-card"] | article | Single review entry (distinct from review-content body text) |
+| `ribbon` | ["price-ribbon", "plan-ribbon"] | span | Decorative ribbon overlay on a card/panel |
+| `role` | ["authorRole", "card-meta", "category", "jobTitle", "speakerRole"] | span | testimonial speaker role / job title |
 | `rotation` | ["rotate"] | — | Rotation transform slot |
-| `separator` | ["divider", "rule"] | hr | Visual divider |
+| `separator` | ["card-sep", "divider", "line", "rule", "shape", "wave"] | hr | Visual divider |
 | `shadow` | [] | — | Shadow-properties slot |
 | `showArrows` | [] | — | Show-arrows boolean slot |
 | `showDate` | [] | — | Show-date boolean slot |
 | `showDots` | [] | — | Show-dots boolean slot |
 | `size` | [] | — | Square dimension (button size, icon size, close size) |
-| `split` | [] | — | Split-layout slot |
+| `slot` | ["slot-placeholder", "slot-upload", "slot-preview", "slot-actions", "slot-label", "slot-img"] | div | Media-manager slot container (admin UI) |
+| `social` | ["social-link", "social-icon", "social-item"] | a | Social media link / icon container |
+| `split` | ["body-row", "grid", "group", "row"] | — | Split-layout slot |
 | `star` | ["starColour", "emptyStar"] | svg | star rating visual element (filled or empty variant) |
-| `subheading` | ["sub", "subHeadline", "subTitle", "subtitle"] | h2 | Sub-heading |
-| `tab` | ["tabActive", "tabActiveIndicator", "tabText", "tabBg"] | button | tab UI primitive (label + active + indicator variants) |
-| `text` | ["body", "caption", "content", "copy", "description", "textAlign", "textTransform"] | p | Paragraph body |
+| `step` | ["progress-step", "wizard-step", "stage-item"] | li | Individual step in a multi-step sequence |
+| `subheading` | ["sub", "subHeadline", "subTitle", "subheadline", "subtitle"] | h2 | Sub-heading |
+| `tab` | ["billing-toggle", "filter", "tabActive", "tabActiveIndicator", "tabBg", "tabText", "toggle-input", "toggle-label", "toggle-track"] | button | tab UI primitive (label + active + indicator variants) |
+| `text` | ["attribution", "author", "bio", "body", "body-row", "caption", "consent-text", "content", "content-preview", "copy", "custom-content", "description", "excerpt", "inner", "inner-label", "intro", "label-control", "quote", "review-content", "textAlign", "textTransform", "verified", "verified-text"] | p | Paragraph body |
 | `transition` | ["motion", "css-transition"] | — | CSS transition motion concept |
 | `variant` | ["style"] | — | Variant/style enum slot |
 | `verticalAlign` | [] | — | Vertical alignment within container |
 | `width` | [] | — | Width layout primitive slot |
 | `zIndex` | [] | — | z-index stacking order |
 
-_Total: 82 canonical slots._
+_Total: 89 canonical slots._
 
 ### Property Suffixes
 
@@ -3557,7 +6083,7 @@ _Total: 19 modifier suffixes._
 
 ## Stats
 
-- **Total blocks:** 73
+- **Total blocks:** 194
 - **Dynamic (render.php):** 73
-- **Static (save.js):** 0
-- **Total attributes:** 1740
+- **Static (save.js):** 121
+- **Total attributes:** 2230
