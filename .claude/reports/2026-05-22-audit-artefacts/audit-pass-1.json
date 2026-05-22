@@ -1,0 +1,125 @@
+{
+  "pages": {
+    "2": {
+      "title": "Sample Page",
+      "totalTopBlocks": 5,
+      "invalidCount": 0,
+      "invalid": []
+    },
+    "3": {
+      "title": "Privacy Policy",
+      "totalTopBlocks": 24,
+      "invalidCount": 0,
+      "invalid": []
+    },
+    "5": {
+      "title": "Mamas Munches Homepage Test (Phase 6 v2 Step 7)",
+      "totalTopBlocks": 12,
+      "invalidCount": 0,
+      "invalid": []
+    },
+    "8": {
+      "title": "Mamas Munches Homepage",
+      "totalTopBlocks": 1,
+      "invalidCount": 1,
+      "invalid": [
+        {
+          "path": "/sgs/hero[0]",
+          "name": "sgs/hero",
+          "clientId": "9794439d-5245-44cb-8503-3ba246783401",
+          "originalContent_excerpt": "<div class=\"wp-block-sgs-hero\">\n  \n</div>",
+          "validationIssues": [
+            "[object Object]",
+            "[object Object]"
+          ]
+        }
+      ]
+    },
+    "13": {
+      "title": "Shop",
+      "totalTopBlocks": 0,
+      "invalidCount": 0,
+      "invalid": []
+    },
+    "14": {
+      "title": "Cart",
+      "totalTopBlocks": 1,
+      "invalidCount": 0,
+      "invalid": []
+    },
+    "15": {
+      "title": "Checkout",
+      "totalTopBlocks": 1,
+      "invalidCount": 0,
+      "invalid": []
+    },
+    "16": {
+      "title": "My account",
+      "totalTopBlocks": 1,
+      "invalidCount": 0,
+      "invalid": []
+    },
+    "17": {
+      "title": "Refund and Returns Policy",
+      "totalTopBlocks": 33,
+      "invalidCount": 0,
+      "invalid": []
+    },
+    "29": {
+      "title": "Hero Clone PoC",
+      "totalTopBlocks": 1,
+      "invalidCount": 0,
+      "invalid": []
+    },
+    "52": {
+      "title": "Trustpilot Block Smoke Test",
+      "totalTopBlocks": 1,
+      "invalidCount": 0,
+      "invalid": []
+    },
+    "53": {
+      "title": "err probe",
+      "totalTopBlocks": 1,
+      "invalidCount": 0,
+      "invalid": []
+    },
+    "54": {
+      "title": "Trustpilot Block Smoke Test",
+      "totalTopBlocks": 1,
+      "invalidCount": 0,
+      "invalid": []
+    },
+    "132": {
+      "title": "Mockup Baseline — Mama's Munches",
+      "totalTopBlocks": 1,
+      "invalidCount": 0,
+      "invalid": []
+    },
+    "143": {
+      "title": "Phase 2A Test Page",
+      "totalTopBlocks": 4,
+      "invalidCount": 0,
+      "invalid": []
+    },
+    "144": {
+      "title": "RC-Fix Verification — Mama's Munches",
+      "totalTopBlocks": 7,
+      "invalidCount": 0,
+      "invalid": []
+    }
+  },
+  "posts": {
+    "65": {
+      "title": "Spec16-P7 converter v2 output [2026-05-15]",
+      "totalTopBlocks": 9,
+      "invalidCount": 0,
+      "invalid": []
+    },
+    "66": {
+      "title": "Spec16-P7 mockup baseline [2026-05-15]",
+      "totalTopBlocks": 1,
+      "invalidCount": 0,
+      "invalid": []
+    }
+  }
+}

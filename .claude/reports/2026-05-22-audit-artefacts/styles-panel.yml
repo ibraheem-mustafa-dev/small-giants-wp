@@ -1,0 +1,114 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - text:              
+    - generic:
+      - main:
+        - generic [ref=e5]:
+          - region "Navigation" [ref=e6]
+          - generic [ref=e18]:
+            - generic [ref=e19]:
+              - region "Editor top bar" [ref=e20]:
+                - generic [ref=e21]:
+                  - generic [ref=e24]:
+                    - button "Open Navigation" [ref=e25] [cursor=pointer]:
+                      - img [ref=e28]
+                    - generic:
+                      - img
+                  - toolbar "Document tools" [ref=e31]:
+                    - generic [ref=e32]:
+                      - button "Block Inserter" [ref=e33] [cursor=pointer]:
+                        - img [ref=e34]
+                      - button "Undo" [disabled] [ref=e36]:
+                        - img [ref=e37]
+                      - button "Redo" [disabled] [ref=e39]:
+                        - img [ref=e40]
+                      - button "Document Overview" [ref=e42] [cursor=pointer]:
+                        - img [ref=e43]
+                  - button "Mamas Munches Homepage · Homepage Ctrl+K" [ref=e47] [cursor=pointer]:
+                    - heading "Mamas Munches Homepage · Homepage" [level=1] [ref=e49]:
+                      - generic [ref=e50]: Mamas Munches Homepage
+                      - generic [ref=e51]: · Homepage
+                    - generic [ref=e52]: Ctrl+K
+                  - generic [ref=e53]:
+                    - link "View Page" [ref=e54] [cursor=pointer]:
+                      - /url: https://sandybrown-nightingale-600381.hostingersite.com/
+                      - img [ref=e55]
+                    - button "View" [ref=e58] [cursor=pointer]:
+                      - img [ref=e59]
+                    - button "Settings" [expanded] [pressed] [ref=e62] [cursor=pointer]:
+                      - img [ref=e63]
+                    - button "Save" [disabled] [ref=e65]
+                    - button "Options" [ref=e67] [cursor=pointer]:
+                      - img [ref=e68]
+              - generic [ref=e70]:
+                - region "Editor content" [ref=e71]:
+                  - iframe [ref=e77]:
+                    - generic [active] [ref=f3e1]:
+                      - textbox "Add title" [ref=f3e3]
+                      - 'document "Block: SGS Hero" [ref=f3e5]':
+                        - generic [ref=f3e8]:
+                          - paragraph [ref=f3e9]: Block contains unexpected or invalid content.
+                          - generic [ref=f3e10]:
+                            - button "Attempt recovery" [ref=f3e12] [cursor=pointer]
+                            - button "More options" [ref=f3e14] [cursor=pointer]:
+                              - img
+                - region "Editor settings" [ref=e78]:
+                  - generic [ref=e80]:
+                    - generic [ref=e81]:
+                      - tablist [ref=e82]:
+                        - tab "Page" [selected] [ref=e83] [cursor=pointer]:
+                          - generic [ref=e84]: Page
+                        - tab "Block" [ref=e85] [cursor=pointer]:
+                          - generic [ref=e86]: Block
+                      - button "Close Settings" [ref=e87] [cursor=pointer]:
+                        - img [ref=e88]
+                    - tabpanel "Page" [ref=e91]:
+                      - generic [ref=e93]:
+                        - generic [ref=e95]:
+                          - img [ref=e96]
+                          - heading "Mamas Munches Homepage Homepage" [level=2] [ref=e99]:
+                            - generic [ref=e100]: Mamas Munches Homepage
+                            - generic [ref=e103]: Homepage
+                          - button "Actions" [ref=e104] [cursor=pointer]:
+                            - img [ref=e105]
+                        - button "Set featured image" [ref=e109] [cursor=pointer]
+                        - generic [ref=e111]: Last edited 13 days ago.
+                        - generic [ref=e112]:
+                          - generic [ref=e113]:
+                            - generic [ref=e114]:
+                              - generic [ref=e115]: Status
+                              - 'button "Change status: Published" [ref=e118] [cursor=pointer]':
+                                - img [ref=e119]
+                                - text: Published
+                            - generic [ref=e121]:
+                              - generic [ref=e122]: Publish
+                              - 'button "Change date: May 1, 2026 10:07 am UTC+0" [ref=e125] [cursor=pointer]': May 1, 2026 10:07 am UTC+0
+                            - generic [ref=e126]:
+                              - generic [ref=e127]: Link
+                              - link "https://sandybrown-nightingale-600381.hostingersite.com/(opens in a new tab)" [ref=e129] [cursor=pointer]:
+                                - /url: https://sandybrown-nightingale-600381.hostingersite.com/
+                                - text: https://sandybrown-nightingale-600381.hostingersite.com/↗
+                            - generic [ref=e130]:
+                              - generic [ref=e131]: Author
+                              - 'button "Change author: Claude" [ref=e134] [cursor=pointer]': Claude
+                            - generic [ref=e135]:
+                              - generic [ref=e136]: Template
+                              - button "Template options" [ref=e139] [cursor=pointer]: Front Page
+                            - generic [ref=e140]:
+                              - generic [ref=e141]: Discussion
+                              - button "Change discussion options" [ref=e144] [cursor=pointer]: Closed
+                            - generic [ref=e145]:
+                              - generic [ref=e146]: Revisions
+                              - 'button "Open revisions screen: 5 revisions" [ref=e148] [cursor=pointer]': "5"
+                            - generic [ref=e149]:
+                              - generic [ref=e150]: Parent
+                              - 'button "Change parent: None" [ref=e153] [cursor=pointer]': None
+                          - button "Move to trash" [ref=e154] [cursor=pointer]
+                - region "Editor publish":
+                  - button "Open save panel" [disabled] [ref=e156]
+            - region "Editor footer" [ref=e157]:
+              - list "Block breadcrumb" [ref=e158]:
+                - listitem [ref=e159]:
+                  - generic [ref=e160]: Page
+  - paragraph [ref=e161]: Notifications
+  - generic [ref=e16]: Mamas Munches Homepage ‹ Template

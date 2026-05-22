@@ -1,0 +1,60 @@
+{
+  "pages_invalid": [],
+  "posts_invalid": [],
+  "template_parts_invalid": [
+    {
+      "slug": "mega-menu-brands",
+      "count": 2,
+      "invalid": [
+        {
+          "path": "/core/group[0]/core/columns[0]/core/column[0]/core/group[1]",
+          "name": "core/group",
+          "originalContent_excerpt": "<div class=\"wp-block-group is-layout-flex wp-block-group-is-layout-flex\" style=\"gap:var(--wp--preset--spacing--30)\">\n\n\t\t\t\t\n\n\t\t\t\t\n\n\t\t\t\t\n\n\t\t\t\t\n\n\t\t\t\t\n\n\t\t"
+        },
+        {
+          "path": "/core/group[0]/core/columns[0]/core/column[1]",
+          "name": "core/column",
+          "originalContent_excerpt": "<div class=\"wp-block-column\" style=\"flex-basis:34%;border-left-width:1px;border-left-style:solid;border-left-color:var(--wp--preset--color--border-sub"
+        }
+      ]
+    },
+    {
+      "slug": "mega-menu-resources",
+      "count": 1,
+      "invalid": [
+        {
+          "path": "/core/group[0]/core/columns[1]/core/column[1]/core/separator[2]",
+          "name": "core/separator",
+          "originalContent_excerpt": "<hr class=\"wp-block-separator has-text-color has-border-subtle-background-color has-alpha-channel-opacity has-background is-style-wide\" style=\"margin-"
+        }
+      ]
+    },
+    {
+      "slug": "mega-menu-contact",
+      "count": 3,
+      "invalid": [
+        {
+          "path": "/core/group[0]/core/columns[1]/core/column[0]/core/list[1]",
+          "name": "core/list",
+          "originalContent_excerpt": "<ul class=\"has-surface-color has-text-color\" style=\"padding-left:0;line-height:2.2;font-size:0.9rem;list-style:none\">\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t\n\t\t\t</ul>"
+        },
+        {
+          "path": "/core/group[0]/core/columns[1]/core/column[0]/core/separator[2]",
+          "name": "core/separator",
+          "originalContent_excerpt": "<hr class=\"wp-block-separator has-text-color has-border-subtle-background-color has-alpha-channel-opacity has-background is-style-wide\" style=\"margin-"
+        },
+        {
+          "path": "/core/group[0]/core/columns[1]/core/column[1]/core/group[0]/core/separator[3]",
+          "name": "core/separator",
+          "originalContent_excerpt": "<hr class=\"wp-block-separator has-text-color has-surface-alt-background-color has-alpha-channel-opacity has-background is-style-wide\" style=\"margin-to"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "pages_with_issues": 0,
+    "posts_with_issues": 0,
+    "template_parts_with_issues": 3,
+    "total_invalid_instances": 6
+  }
+}
