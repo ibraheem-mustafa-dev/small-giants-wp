@@ -1824,7 +1824,7 @@ Parking sweep classification run 2026-05-22 by subagent. All items below were co
 - **P-ARCH-PHASE-7** — RESOLVED `da19374c` + `b26abf56` 2026-05-22. `Sgs_Ai_Connector` + 10 WP-family skills audited for WP 7.0.
 - **P-ARCH-VARIATION-KILL-OPEN-QUESTIONS** — SUBSUMED by P-ARCH-PHASE-5A (RESOLVED `43a93df9`). Both questions answered during Phase 5a implementation.
 - **P-ARCH-WP70-BUTTON-BRIDGE-AUDIT** — SUBSUMED by P-PHASE-5B-PROPERTY-COVERAGE-AUDIT (RESOLVED 2026-05-22). No shim needed.
-- **P-ARCH-WP70-VIEW-TRANSITIONS-VERIFY** — SUBSUMED by P-ARCH-PHASE-5B (RESOLVED `60220b13`). `customize_controls_enqueue_scripts` fallback wired.
+- **P-ARCH-WP70-VIEW-TRANSITIONS-VERIFY** — **REOPENED 2026-05-22 by parking-vs-plan alignment check.** Decision 27 in the architecture staging plan explicitly requires a verification gate: "Phase 5b implementer MUST verify in live testing that view transitions actually fire when navigating between Customiser panels." Phase 5b shipped the `customize_controls_enqueue_scripts` wiring, and this session retired the WP 6.x fallback (`c09d24cc`) — but no live verification of view transitions firing in Customiser has been recorded. **Trigger:** before declaring Phase 5b fully shipped.
 - **P-ARCH-WP-SKILLS-AUDIT-SCOPE** — RESOLVED `b26abf56` 2026-05-22. Consolidated WP 7.0 skills audit report at `reports/2026-05-22-phase-7-wp-skills-audit.md`.
 - **P-ARCH-AI-CONNECTORS-PROVIDER-ROSTER** — RESOLVED `da19374c` 2026-05-22. `@roadmap` PHPDoc on `Sgs_Ai_Connector` lists OpenAI/Anthropic/Gemini/Ollama.
 - **P-BLOCK-COMPOSITIONS-READ-PATH** — SUBSUMED by P-ARCH-PHASE-3 (RESOLVED `79158da5`). Phase 3 rewrite is the read-path this item requested.
