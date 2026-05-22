@@ -16,10 +16,12 @@ Ship a complete WordPress block framework + theme + supporting plugins (forms, b
 | **Design-brain rebuild (Phase 4 — gates everything)** | Blueprint schema locked, council.py smoke-tested, philosophy-autoload.py wired, 8 modifier skills deleted, ui-ux-pro-max restructured into 6 progressive-disclosure modes | `plans/strategy/2026-04-24-design-brain-architecture.md` |
 | **Convention rollout (SGS-prefixed BEM canonical for drafts)** | All 8 phases of `.claude/plan.md` complete: lesson captured, Spec 13 written, ~48 surfaces propagated, `/style-replicator` renamed, Mama's mockup migrated, orchestrator rewired, validated + deployed | `.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md (§8.1; former Spec 13 absorbed 2026-05-12)` + `.claude/plan.md` |
 
-## Achieved goals (2026-05-18)
+## Achieved goals (2026-05-22)
 
 | Goal | Status | Notes |
 |------|--------|-------|
+| **Architecture programme (8 phases, 31 decisions)** | DONE | All phases shipped across 2026-05-21 → 2026-05-22. DB consolidation, style-variation system retired, INNER_BLOCK_PATTERNS retired, button presets migrated to WP 7.0 theme.json, `/sgs-update` rebuilt as 9-stage v2, WP 7.0 alignment (all 69 blocks). See `.claude/plans/2026-05-21-architecture-staging.md`. |
+| **WP 7.0 upgrade on sandybrown** | DONE | DB schema 60717 → 61833. `Sgs_Ai_Connector`, `wp_set_script_module_translations`, `WP_REST_Icons_Controller` all confirmed available. |
 | **Spec 17 — Header/Footer Architecture** | DONE | 16 FRs, 22 PHP classes, 12 WP-CLI commands across 3 waves. Full spec: `.claude/specs/17-SGS-HEADER-FOOTER-ARCHITECTURE.md` |
 | **Floating UI Customiser** | DONE | `Sgs_Floating_UI_Customiser` + `Sgs_Floating_UI_Renderer` replace admin-page approach with live Customiser preview. `sgs/back-to-top` block deprecated to no-op. |
 
@@ -36,7 +38,7 @@ Ship a complete WordPress block framework + theme + supporting plugins (forms, b
 - No jQuery; no page builders; pure Gutenberg + Interactivity API
 - UK English in all code, comments, user-facing text
 - Every block customisable via editor inspector (no code-required settings)
-- Style variation system: **BEING RETIRED (Decision D28, Phase 5a).** Per-client snapshots moving to `sites/<client>/theme-snapshot.json`, deployed via push CLI. Header/footer template parts unaffected. Until Phase 5a ships: old path (`theme/sgs-theme/styles/<client>.json`) still used. After Phase 5a: framework deploys contain zero client-specific files.
+- Style variation system: **RETIRED (Decision D28, Phase 5a shipped 2026-05-21, commit `43a93df9`).** Per-client snapshots at `sites/<client>/theme-snapshot.json`; deployed via `push-theme-snapshot.py`. Framework deploys contain zero client-specific files. Header/footer template parts unaffected.
 
 ## Success metrics (from design-brain spec §8)
 

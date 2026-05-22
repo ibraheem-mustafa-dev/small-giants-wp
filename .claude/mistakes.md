@@ -1,5 +1,5 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-22 (Phase 1.5 session — verify-wp-api-surface lesson appended at top)
+**Last updated:** 2026-05-22 (architecture close-out — 3 lessons appended below Phase 1.5 entry)
 
 ## 2026-05-22 — Verify WP API surface before dismissing static-analyser warnings (blub.db row 283)
 
@@ -34,6 +34,28 @@ Two true general facts ("intelephense lacks WP stubs" + "PHP falls back to globa
 
 - 12 sibling files in `plugins/sgs-blocks/includes/variations/` — all rewritten using Path B (`add_filter('get_block_type_variations', ...)`), validated via canary deploy + REST query, shipped at commit `cc541e94`
 - `.claude/plans/phase-1.5-variations-styles-default-styles.md` — needs sequencing amendment: canary-first + QC panel before deploy (note added to plan; full amend at archive time)
+
+---
+
+## 2026-05-22 — Architecture close-out lessons (blub.db rows 283+ and council findings)
+
+### 1. `wp-content-guard.py` over-matches `wp eval-file` (scoped guard needed)
+
+The `wp-content-guard.py` PostToolUse hook blocks commands containing `wp-content/` strings to prevent accidental live-site edits via raw file paths. During Phase 4 testing, the hook also blocked legitimate `wp eval-file /tmp/script.php` commands whose output happened to mention `wp-content/` paths in debug output. The guard pattern is too broad — it matches output text, not just the command itself.
+
+**Rule:** content-guard hooks should match only the COMMAND string (argv), not stdout/stderr output. A command that reads a file from `/tmp/` and whose PHP script produces wp-content paths in its output is not a direct wp-content edit. Pattern: `re.search(r"wp-content/", argv_str)` not `re.search(r"wp-content/", full_output)`.
+
+### 2. Audit findings must be verified live before being reported as fact
+
+Phase 7 skills audit proposed three corrections that turned out to be wrong when live-verified on sandybrown with WP 7.0: (a) Icons block slug reported as `core/icons` (plural) — actual slug is `core/icon` (singular); (b) heading block reported as having variations — it does NOT in WP 7.0; (c) `settings.dimensions.presets` reported as a WP 7.0 key — it does not exist. All three were static-analysis inferences from documentation, not live verification.
+
+**Rule:** WP API surface claims made during an audit (block slugs, function signatures, theme.json key existence) must be verified against the live WP install BEFORE reporting. Cheap check: `wp block list | grep <slug>` / `wp eval 'var_dump(isset(WP_Block_Type_Registry::get_instance()->get_registered("<slug>")));'`. Never treat documentation-pattern inference as ground truth when a two-second live check is available.
+
+### 3. `/qc-council` corrected two proposed parking closures; operator's initial classification is not ground truth
+
+The Phase 7 parking sweep proposed closing P-PHASE-5B-INERT-CUSTOMISER-OUTPUT as resolved. The `/qc-council` council (Rater C) correctly identified that the `0ef032fe` paint-fix landed the selector change only — the CSS-custom-property emission path (`--sgs-header-bg` on `:root`) had not shipped. Council REOPENED the entry. Similarly, a second council pass corrected a closure proposal for another entry. Both corrections were right on the evidence.
+
+**Rule:** parking-status proposals are claims, not facts. Run `/qc-council` on parking sweep results before committing the sweep. A council can evaluate whether the claimed evidence actually supports RESOLVED status in ~5 min per contested entry.
 
 ---
 

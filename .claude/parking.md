@@ -1837,9 +1837,5 @@ Parking sweep classification run 2026-05-22 by subagent. All items below were co
 - **P-PHASE8-17** — RESOLVED `9a32a164` (pre-this-session). All 7 remaining static SGS blocks converted to dynamic via parallel agent dispatch. Confirmed by /qc-council Rater B and explicit "DONE" marker at parking.md:702.
 - **P-EXTRACT-GENERALISE** — **ABANDONED 2026-05-22.** Legacy `tools/recogniser-v2/extract.py` path permanently retired per Decision 2026-05-15(d) (`.claude/decisions.md:375`). `sgs-clone-orchestrator.py:1203` confirms "Legacy tools/recogniser-v2/extract.py subprocess is permanently retired." cv2 + Spec 16 universal extraction replaced it. Mechanism gone; no work pending.
 
-## Council-flagged: PARTIAL closures requiring spec-doc verification
-
-The /qc-council Rater C (Sonnet) downgraded two pass-1 closures from RESOLVED to PARTIAL because the code shipped but the spec-doc update was not verified. Both stay STILL OPEN until the docs are checked:
-
-- **P-PHASE8-16 — PARTIAL** — `_STILL_STATIC_SGS_BLOCKS = frozenset()` shipped (no-op guard) at `convert.py:961`, but the parking entry also asks for Spec 16 FR-NEW addition stating the invariant. Spec 16 doc update NOT confirmed. Doc-walker should add the FR-NEW.
-- **P-PHASE8-8 — PARTIAL** — Per-section closure-gate shipped at `autonomy_gate.py:102` (binding rule blub.db row 256), but the entry asks for `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` §Phase 4 closure-gate definition to be edited. Spec doc update NOT confirmed. Doc-walker should update §Phase 4 text.
+- **P-PHASE8-16** — RESOLVED 2026-05-22. `_STILL_STATIC_SGS_BLOCKS = frozenset()` shipped at `convert.py:961`. Spec 16 FR-NEW addition landed in the same-session doc-walker pass: `is_dynamic` DB check now documented in Spec 16 §FR-NEW (`.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md`).
+- **P-PHASE8-8** — RESOLVED 2026-05-22. Per-section closure-gate shipped at `autonomy_gate.py:102` (binding rule blub.db row 256). Spec 16 §Phase 4 FR7 text updated in the same-session doc-walker pass to require per-section ≤1% with `--selector` flag.

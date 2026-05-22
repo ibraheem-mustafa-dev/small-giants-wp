@@ -421,6 +421,44 @@ Then set `self_closing=False` in `emit_wp_block()` for hero (and any other Inner
 
 ---
 
+## Z. WP 7.0 save-format drift — block instances marked invalid after upgrade (2026-05-22)
+
+> Step 0 audit on sandybrown post-WP 7.0 upgrade. 34 invalid block instances across 9 template parts fixed in commits `d18b7354` + `830f627b`.
+
+**Symptom:** After upgrading from WP 6.x to WP 7.0, the block editor flags previously-valid blocks as "This block contains unexpected or invalid content." Appears in template parts after upgrade, not in post/page content.
+
+**Root cause:** WP 7.0 tightened the save-format validation for several core blocks. The stored HTML no longer matches what `save()` produces in 7.0 because the save function changed between versions. Three patterns confirmed in production:
+
+| Block | WP 6.x save shape | WP 7.0 required shape | Pattern |
+|---|---|---|---|
+| `core/separator` | `has-{color}-background-color` class only | BOTH `has-{color}-color` AND `has-{color}-background-color` | Missing colour class |
+| `core/list` | `<ul class="">` no BEM class | `<ul class="wp-block-list">` | Missing block class |
+| `core/list-item` | `<li>` only | `<li class="wp-block-list-item">` (in some contexts) | Missing block class |
+
+**Detection:** Run the programmatic audit via `wp eval 'wp.blocks.parse()' ...` or use the WP admin block validator. The easiest approach is the Step 0 audit script: `wp eval 'global $wpdb; $posts = $wpdb->get_results(...); foreach ($posts as $p) { $blocks = parse_blocks($p->post_content); ... }'`. Any block returned by `validate_block_type_definition()` with `is_valid: false` is an invalid instance.
+
+**Fix pattern:**
+
+1. Run the audit to get a complete list of (post_id, block_name, block_index) tuples.
+2. For each invalid instance, update the stored `post_content` to match the new save shape. Use `wp post update <id> --post_content="..."` or a WP eval script that calls `wp_update_post()`.
+3. Re-run the audit — expect 0 invalid blocks.
+
+**Scope:** Template parts (`wp_template_part` post type) and patterns (`wp_block` post type) are the most likely sources. Standard posts/pages rarely use the affected blocks as stand-alone instances.
+
+**Why it matters for the pipeline:** `/sgs-clone` emits block markup that the pipeline deploys to WP pages. If the emitted markup for `core/separator` or `core/list` uses the WP 6.x save shape, deployments to a WP 7.0 install will produce "unexpected content" errors on the deployed page. The converter's `ATOMIC_TAG_MAP` and hardcoded block emit paths must output the WP 7.0-compliant shapes. Verify with `wp.blocks.isValid()` after deploy.
+
+**Audit command (Step 0 pattern):**
+
+```bash
+ssh hd "cd ~/domains/sandybrown-nightingale-600381.hostingersite.com/public_html && wp eval-file /tmp/audit-invalid-blocks.php"
+```
+
+Where `audit-invalid-blocks.php` uses `parse_blocks()` + `serialize_blocks()` to round-trip and check for `<!-- wp:html -->` wrapping (the "fallback" WP adds when it can't validate a block).
+
+**Captured 2026-05-22** during Step 0 of the architecture close-out session. 34 invalid instances found; all 34 fixed. Commits `d18b7354` + `830f627b`.
+
+---
+
 ## How to add an entry
 
 1. Hit a real WordPress styling failure in a session.

@@ -6,7 +6,7 @@ created: 2026-05-10
 last_updated: 2026-05-21
 phase_count: 10
 total_estimate_min: 1680-1920 (28-32 hours, 8-10 sessions)
-status: active — Phase 0 SHIPPED 2026-05-21 (commit aec54882). 8 phases pending. Pixel-diff closure (G1-G5 + F5) is embedded within Phases 1 + 3. Architecture programme is the master plan as of 2026-05-21.
+status: CLOSED 2026-05-22 — all 8 phases shipped. Next priorities: /batch-gap-analysis on 14 skills, then 16 STILL-OPEN parking items. See handoff.md for ordered next steps.
 prior_plan_name: convention-rollout-and-m9-completion (archived below)
 architecture_staging_doc: .claude/plans/2026-05-21-architecture-staging.md
 phase_chain:
@@ -66,11 +66,11 @@ Parked follow-ups for future sessions: see `parking.md` Session B block (7 entri
 | **1** | 1, 2, 11 | PENDING | ~1.5 hr | NO — blocks 2, 3, 4 |
 | **2** | 7, 8 | PENDING | ~1.5 hr | YES — parallel with 3 |
 | **3** | 24 (gate), 12 | PENDING | ~1.5 hr | YES — parallel with 2 |
-| **4** | 13, 30 | PENDING | ~5.5 hr | YES — parallel with 5a, 5b, 6, 7 |
-| **5a** | 14', 16', 17', 18, 19 | PENDING | ~2 hr | YES — parallel with 4, 5b |
-| **5b** | 21, 22, 27 | PENDING | ~6-10 hr | YES — parallel with 4, 5a |
-| **6** | 9, 10, 23, 25, 28 | PENDING | ~5 hr | YES — needs Phase 1+2 |
-| **7** | 26, 29 | PENDING | ~6 hr | YES — anytime after Phase 1 |
+| **4** | 13, 30 | SHIPPED `39d32799`→`99081252` 2026-05-22 | ~4 hr actual | — |
+| **5a** | 14', 16', 17', 18, 19 | SHIPPED `43a93df9` 2026-05-21 | ~90 min actual | — |
+| **5b** | 21, 22, 27 | SHIPPED `60220b13` + `0ef032fe` 2026-05-21 | ~2 hr actual | — |
+| **6** | 9, 10, 23, 25, 28 | SHIPPED `d307c8b0` + `a3109e3b` 2026-05-21 | — | — |
+| **7** | 26, 29 | SHIPPED `da19374c` + `b26abf56` 2026-05-22 | ~3 hr actual | — |
 
 **Parallel dispatch (after Phase 1):**
 - Session A: Phase 4 (`/sgs-update` rebuild)

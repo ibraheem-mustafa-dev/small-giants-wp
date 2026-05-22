@@ -26,7 +26,7 @@ Each sub-project has its own CLAUDE.md with component-specific instructions. Rea
 
 ### Client Sites (`sites/`)
 
-Each client gets a folder under `sites/` containing mockups, content briefs, research docs, and a site-specific CLAUDE.md. Style variation JSON files stay in `theme/sgs-theme/styles/` (where WordPress reads them), but everything else lives here.
+Each client gets a folder under `sites/` containing mockups, content briefs, research docs, and a site-specific CLAUDE.md. Style variation JSON files (now `theme-snapshot.json` per Phase 5a) live at `sites/<client>/theme-snapshot.json` and are pushed to each live site via `push-theme-snapshot.py`. The `theme/sgs-theme/styles/` directory is empty (retired 2026-05-21).
 
 Future clients (Dream Wedding, Workwear Now, etc.) get their own folder when onboarded.
 
@@ -109,7 +109,7 @@ This rule exists because framework fixes shipped on a feature branch pollute his
 - **Build:** `npm run build` (from `plugins/sgs-blocks/`) — uses @wordpress/scripts with `--experimental-modules`
 - **Deploy:** tar method — `tar -cf sgs-deploy.tar theme/sgs-theme plugins/sgs-blocks` → SCP → extract on server → OPcache reset → LiteSpeed purge. Full sequence in CONVERSATION-HANDOFF.md.
 - **Local dev:** `npx @wp-playground/cli server --auto-mount` — see `/wp-playground` skill
-- **Dev site:** palestine-lives.org (WP 6.9.1)
+- **Dev site:** palestine-lives.org (WP 6.9.1). **Staging/client canary:** sandybrown-nightingale-600381.hostingersite.com (WP 7.0 as of 2026-05-22).
 - **Reference site:** lightsalmon-tarsier-683012.hostingersite.com (Indus Foods original — Astra/Spectra. DO NOT modify — used as migration reference)
 - **SSH:** `ssh -i ~/.ssh/id_ed25519 -p 65002 u945238940@141.136.39.73`
 - **WP admin:** username: Claude (both sites)
@@ -131,15 +131,21 @@ python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py match "pricing" # Find b
 python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py context indus-foods # Load client
 ```
 
-### `/sgs-update` — 4 stages (updated 2026-05-10)
+### `/sgs-update` — 9 stages (rebuilt 2026-05-22 as `sgs-update-v2.py`)
 
-`/sgs-update` runs four stages in sequence:
-1. Re-scan codebase + update sgs-framework.db (`update-db.py`)
-2. Regenerate `.claude/specs/02-SGS-BLOCKS-REFERENCE.md` from the DB
-3. Mirror sgs-blocks → uimax `~/.agents/skills/ui-ux-pro-max/data/component-libraries.csv` so `/ui-ux-pro-max` (the design brain) sees current SGS blocks alongside Radix UI Primitives, Headless UI, etc.
-4. Scan `animations.is_gap_candidate=1` rows + emit markdown report at `reports/uimax-gap-candidates-<date>.md` — **short-circuits to `{"status":"retired"}` since Step 6b 2026-05-14 dropped the sgs-framework.db `animations` table** (live store is `uimax.animations` in `~/.agents/skills/ui-ux-pro-max/scripts/ui-ux-pro-max.db`)
+`/sgs-update` now invokes `plugins/sgs-blocks/scripts/sgs-update-v2.py` — a single 2,400+ line entrypoint that replaced the legacy 3-script chain. Stages:
+1. SGS codebase scan → update sgs-framework.db (`sgs-update-v2.py` Stage 1)
+2. Core/Gutenberg cache refresh from upstream sources
+3. WP-CLI handbook refresh
+4. Style-variation sync (per-client snapshots, post Phase 5a)
+5. Slot synonym auto-seed from codebase
+6. Block-replacement mapping
+7. Spec doc regen (`02-SGS-BLOCKS-REFERENCE.md`)
+8. Mirror sgs-blocks → uimax `~/.agents/skills/ui-ux-pro-max/data/component-libraries.csv` so `/ui-ux-pro-max` (the design brain) sees current SGS blocks alongside Radix UI Primitives, Headless UI, etc.
+9. Drift gate (checks for DB/codebase mismatches)
 
-Stage 3+4 implemented in `plugins/sgs-blocks/scripts/uimax-tools/sgs-update-uimax-sync.py` (idempotent). Stage 4 schema migration is dormant since the table was retired; the gate stays wired in case the table is re-introduced.
+Mode B (`--refresh-upstream`) scrapes 10 canonical sources (gutenberg repo, wp-develop repo, wp-cli handbook, `developer.wordpress.org/reference/since/<version>/`, field guide, dev blog, 4 handbooks). Verified 10/10 end-to-end with working `ghp_*` classic PAT.
+The uimax mirror step (Stage 8) is implemented in `plugins/sgs-blocks/scripts/uimax-tools/sgs-update-uimax-sync.py` (idempotent). The legacy animation gap-candidate scan short-circuits to `{"status":"retired"}` — the sgs-framework.db `animations` table was retired 2026-05-14; live store is `uimax.animations` in `~/.agents/skills/ui-ux-pro-max/scripts/ui-ux-pro-max.db`.
 
 ### `plugins/sgs-blocks/scripts/uimax-tools/` — write-side helpers
 
@@ -148,7 +154,7 @@ Stage 3+4 implemented in `plugins/sgs-blocks/scripts/uimax-tools/sgs-update-uima
 | `uimax-write-validator.py` | Pre-write validator. Rejects payloads missing `equivalent_implementations.sgs_block` on artefact tables (row 213 Rosetta Stone discipline). |
 | `uimax_write.py` | Python helper module — atomic validate-then-write. Single chokepoint so future write code can't accidentally skip the validator. |
 | `seed-block-compositions.py` | One-shot seed script for sgs-framework.db `block_compositions` table (idempotent). |
-| `sgs-update-uimax-sync.py` | Stage 3+4 sync called by `/sgs-update`. |
+| `sgs-update-uimax-sync.py` | Stage 8 uimax mirror step called by `/sgs-update` (v2). |
 
 Full README at `plugins/sgs-blocks/scripts/uimax-tools/README.md`.
 
@@ -158,12 +164,13 @@ The primary client onboarding workflow. Takes any existing website and replicate
 
 **cv2 output goes to WP PAGES (`page.html` template), never POSTS.** Posts use `single.html` which constrains `.entry-content` to `max-width: 800px` — wrong for landing-page clones. Pages use `page.html` with no such constraint. Canary surface for Mama's Munches is page **131** (`/cv2-output-mamas-munches/`) on sandybrown; raw-mockup baseline is page **132** (`/mockup-baseline-mamas-munches/`). `reports/brand-walkdown-2026-05-19/upload_and_patch.py` defaults to `--target page --target-id 131`. See `.claude/parking.md → P-USE-PAGES-NOT-POSTS`.
 
-## Framework Stats (as of 2026-05-11, post /sgs-update full rescan)
+## Framework Stats (as of 2026-05-22, post architecture programme close-out)
 
-- **67 blocks** total (60 dynamic + 7 static per `02-SGS-BLOCKS-REFERENCE.md`). Includes 2 review-source blocks — google-reviews + trustpilot-reviews. Trustpilot Sync backend infrastructure (Settings > SGS Trustpilot Sync) shipped 2026-05-11 commit `06df2807`.
-- **1343 block attributes** — all controllable via editor sidebar
-- **8 style variations** — indus-foods, helping-doctors, healthcare, construction, professional, mosque, eye-care, mamas-munches (added 2026-04-30)
-- **35 patterns**, 28 design tokens, 22 theme templates/parts (DB scan 2026-05-11)
+- **69 blocks** total (all dynamic — Phase 6 converted the last 10 static blocks; 7 formerly-static blocks now ship with `deprecated.js` shims for backward compat). Includes 2 review-source blocks — google-reviews + trustpilot-reviews. Phase 6 markup examples seeded for all 69.
+- **1,406 block attributes** (`block_attributes` rows as of Phase 4 DB rescan)
+- **Style variations retired** — 8 per-client variation JSON files deleted from `theme/sgs-theme/styles/` (Phase 5a, 2026-05-21). Per-client snapshots at `sites/<client>/theme-snapshot.json`. `design_tokens` table has 184 rows (up from 39 pre-architecture).
+- **35 patterns**, 28+ design tokens (shadow type added), 22 theme templates/parts
+- **WP 7.0** — `Sgs_Ai_Connector` registered; `wp_set_script_module_translations()` wired for 25 blocks; 87 content-bearing attributes carry `"role": "content"`; all 69 blocks at `apiVersion: 3`
 - **Competitive analysis:** `~/.claude/specs/2026-03-17-wp-competitive-analysis.md`
 
 ## Spec Documents
@@ -267,21 +274,15 @@ This prevents the silent gap where a new block ships with images but no per-inst
 
 ### Style variation architecture
 
-> **BEING RETIRED — Architecture Decision D28 (Phase 5a).** The WP style-variation overlay system (`theme/sgs-theme/styles/<client>.json` + `active_theme_style` theme_mod + `class-sgs-variation-picker.php`) is being replaced with per-site `theme.json` snapshots at `sites/<client>/theme-snapshot.json` pushed via a new CLI. Header/footer template parts are NOT affected. Until Phase 5a ships, the pattern below remains correct. After Phase 5a ships, update this section to reference the snapshot+push workflow. See `.claude/plans/2026-05-21-architecture-staging.md` §3 Decisions 18+19.
+> **RETIRED — Architecture Decision D28 (Phase 5a, shipped 2026-05-21).** The WP style-variation overlay system (`theme/sgs-theme/styles/<client>.json` + `active_theme_style` theme_mod + `class-sgs-variation-picker.php`) is replaced. `theme/sgs-theme/styles/` is now empty.
 
-Style variation-specific CSS (decorative images, client-specific hover effects, custom gradients, etc.) must **never** go in the base `style.css`. The correct pattern (until Phase 5a ships):
+**Current model (post Phase 5a):**
 
-1. Images used by a style variation go in `theme/sgs-theme/assets/` — version-controlled with the theme, never in `uploads/`
-2. Variation-specific CSS goes in `functions.php` via `wp_add_inline_style()`, gated on the active variation:
-
-```php
-$active_style = get_theme_mod( 'active_theme_style', 'default' );
-if ( 'indus-foods' === $active_style ) {
-    wp_add_inline_style( 'sgs-theme-style', $indus_foods_css );
-}
-```
-
-3. Never load variation CSS unconditionally — it must be gated so other style variations are unaffected
+1. Per-client colour/typography snapshots live at `sites/<client>/theme-snapshot.json` (and optional `theme-snapshot-colours-axis.json` / `theme-snapshot-typography-axis.json`).
+2. Deploy to a specific live site via `python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client <slug> --target <ssh-host>`. This replaces that site's `theme.json` with the snapshot. The `--no-push` flag previews without pushing.
+3. Client-specific CSS (decorative images, hover effects, custom gradients) goes into the client's `theme-snapshot.json` under `styles.css` OR into `sites/<client>/theme-overrides.css`. Never into the framework's `style.css`.
+4. Images used by a client go in `theme/sgs-theme/assets/` — version-controlled with the theme, never in `uploads/`.
+5. Header/footer template parts and block-level variations are unaffected by this model — they are entirely separate systems.
 
 ### Block customisation standard (MANDATORY)
 

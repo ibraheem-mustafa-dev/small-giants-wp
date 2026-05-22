@@ -9,7 +9,7 @@
 
 *Source: root `ARCHITECTURE.md` (2026-04-28).*
 
-> Last updated: 2026-05-21 | Status: Architecture programme active (8 phases, Phase 0 shipped `aec54882`). See `.claude/plans/2026-05-21-architecture-staging.md` for the canonical 31-decision record.
+> Last updated: 2026-05-22 | Status: Architecture programme CLOSED. All 8 phases shipped across Sessions A + B (2026-05-21) and the close-out session (2026-05-22). See `.claude/plans/2026-05-21-architecture-staging.md` for the 31-decision record.
 
 ## Overview
 
@@ -37,6 +37,15 @@ SGS is a standalone WordPress block theme and Gutenberg blocks plugin built by S
 - **WP 6.9.4 → 7.0 upgrade on sandybrown.** Pre-upgrade `mysqldump` backup at `/home/u945238940/domains/sandybrown-nightingale-600381.hostingersite.com/public_html/sandybrown-pre-wp7.sql` (7.5 MB). DB schema 60717 → 61833. Post-upgrade API check: `wp_get_connector`, `wp_is_connector_registered`, `wp_enqueue_view_transitions_admin_css`, `wp_set_script_module_translations`, `WP_REST_Icons_Controller` all available; **`wp_register_icon_collection` does NOT exist** (Lucide entry point still TBD); **`register_block_variation` does NOT exist** either (Session A's `get_block_type_variations` filter polyfill commit `cc541e94` remains load-bearing).
 
 Full empirical verdict per commit: `.claude/reports/2026-05-22-session-B-qc-council.md`. Session summary: `.claude/memory/session-summary-2026-05-22-session-B.md`.
+
+**Architecture programme close-out 2026-05-22 (Phases 4 + 7 shipped, parking swept, programme CLOSED):**
+
+- **Phase 4 — `/sgs-update` rebuilt as `sgs-update-v2.py`.** 9-stage single entrypoint (2,400+ lines) replaces the legacy 3-script chain. Mode B scrapes 10 canonical upstream sources. Source 2 counter rewritten to gate on extraction-count (scraper-health signal), not insert-count. GitHub PAT rotated to working `ghp_*` classic format — Mode B verified 10/10 sources end-to-end. Commits `39d32799` → `99081252` (6 commits). Entrypoint: `plugins/sgs-blocks/scripts/sgs-update-v2.py`. New `schema_metadata` table in sgs-framework.db (key, value store). Shadow token type added to `design_tokens` CHECK constraint; `design_tokens` now holds 184 rows post Phase 5a + Phase 4 Stage 4 (was 39).
+- **Step 0 — Unexpected-content audit + fix.** `wp.blocks.parse()` audit on sandybrown caught 34 invalid block instances across 9 template parts (WP 7.0 save-format drift: `core/separator` needs `has-{color}-color` + `has-{color}-background-color`; `core/list` needs `wp-block-list` class). All 34 fixed. Commits `d18b7354` + `830f627b`. Final count: 0 invalid blocks.
+- **Phase 7 — `Sgs_Ai_Connector` + 24 skill audits.** WP 7.0 AI Connectors wrapper at `includes/class-sgs-ai-connector.php` (commit `da19374c`). Live verification on sandybrown: 4 default connectors auto-discovered. 10 WP-family skills + 5 SGS skills + 9 slash commands revised for WP 7.0 alignment across 22 parallel subagent dispatches. Live-verified corrections: Icons block is `core/icon` (singular), `core/heading` retains `level` (no variations in WP 7.0), `settings.dimensions` has no `presets` key.
+- **Parking sweep.** 47 parking entries audited by subagent; 23 RESOLVED, 1 DECIDED, 2 WAITING (WP 7.1), 18 STILL OPEN. Executable decisions: `plugins/sgs-blocks/_retired/` (5 files) deleted; WP 6.x view-transitions fallback retired from `sgs-blocks.php`. Net open: 16 truly-open + 2 partials.
+
+Full empirical verdict per commit: `.claude/reports/2026-05-22-parking-sweep-tail-classification.md`. Session handoff: `.claude/handoff.md`.
 
 **Architecture programme 2026-05-21 (31 decisions, 8 phases, Phase 0 shipped):**
 
@@ -66,9 +75,9 @@ A session that began as a Wave 2 wiring fix pivoted into a holistic architectura
 
 | Layer | Technology | Notes |
 |---|---|---|
-| CMS | WordPress 6.9.1 | Block theme, no classic editor |
-| Theme | `sgs-theme` (block theme) | theme.json v3, template parts, style variations per client |
-| Blocks plugin | `sgs-blocks` | 67 blocks (60 dynamic + 7 static, per `02-SGS-BLOCKS-REFERENCE.md` 2026-05-11). Block extensions live in `src/blocks/extensions/`. Block Defaults system (Phase 3.2) lets clients save current attribute values as defaults for new instances site-wide. Backend integrations live alongside the blocks at `includes/`: Google Reviews (Places API + transient cache) and Trustpilot Sync (Browserless `/content` + JSON-LD parser + WP-cron). |
+| CMS | WordPress 7.0 | Block theme, no classic editor. Sandybrown upgraded 2026-05-22 (commit: Hostinger op, DB schema 60717 → 61833). |
+| Theme | `sgs-theme` (block theme) | theme.json v3, template parts. Style variations retired (Phase 5a) — per-client snapshots now at `sites/<client>/theme-snapshot.json`. |
+| Blocks plugin | `sgs-blocks` | 69 blocks (per Phase 6 audit + markup seeding 2026-05-22). Block extensions in `src/blocks/extensions/`. `Sgs_Ai_Connector` at `includes/class-sgs-ai-connector.php` wraps WP 7.0 native AI Connectors API (Phase 7, commit `da19374c`). Backend integrations: Google Reviews (Places API + transient cache) and Trustpilot Sync (Browserless `/content` + JSON-LD parser + WP-cron). |
 | Block build | `@wordpress/scripts` | `--experimental-modules` flag required for `viewScriptModule` |
 | Frontend JS | Interactivity API + vanilla ES modules | Interactivity API for stateful blocks; vanilla `viewScriptModule` for AJAX (Post Grid) |
 | Icons | Lucide (1900+ icons) | Pre-generated to `lucide-icons.php` via `scripts/generate-icons.js` |
@@ -87,9 +96,8 @@ small-giants-wp/
 │   ├── theme.json                  # Design tokens — all colour/spacing/typography vars
 │   ├── style.css                   # Theme header ONLY (16 lines, no CSS rules)
 │   ├── functions.php               # Enqueues, variation-specific CSS via wp_add_inline_style()
-│   ├── styles/                       # 8 client style variations (eye-care-ward-end, helping-doctors,
-│   │   ├── indus-foods.json          # indus-foods, mamas-munches, sgs-construction, sgs-healthcare,
-│   │   └── mamas-munches.json        # sgs-mosque, sgs-professional). mamas-munches.json added 2026-04-30.
+│   ├── styles/                       # EMPTIED — Phase 5a (2026-05-21). Per-client variation JSONs deleted.
+│   │                                 # Per-client snapshots live at sites/<client>/theme-snapshot.json.
 │   ├── templates/                  # Full-page templates (index, page, single, etc.)
 │   ├── inc/
 │   │   └── class-business-details.php  # Settings > Business Details (phone, email, address, hours, socials)

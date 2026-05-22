@@ -260,7 +260,13 @@ Net effect:
 
 **Critical detail per council finding:** Decision 22 says "delete CSS-custom-property bridge." But the `is-style-primary/secondary/outline` classes RENDER via those custom properties (`var(--wp--custom--button-presets--primary--background)`). The fix is to MOVE the property source from wp_options to theme.json's native `styles.elements.button` + variation overrides; WP 7.0's CSS generation automatically produces equivalent `--wp--` custom properties from theme.json. Confirm WP 7.0's generation covers every property the current bridge emits (background, text, border, border-width, border-radius, padding, font-size, font-weight, min-height, plus the four pseudo-element states) BEFORE deleting the manual bridge. If any property is uncovered by WP 7.0's native generation, keep a slim PHP shim that emits the missing properties from theme.json directly.
 
-### 6.4 Spec 17 — Header/Footer Architecture (SHIPPED 2026-05-18, MAJOR REVISION — bigger than first scoped per council finding)
+### 6.4 Spec 17 — Header/Footer Architecture (SHIPPED 2026-05-18 — Option A CSS-custom-property emission still pending)
+
+**AMENDMENT 2026-05-22 (post /qc-council finding):** Phase 5b paint fix (`0ef032fe`) switched Customiser paint targets to `header.wp-block-template-part` / `footer.wp-block-template-part`, but Rater C found a residual gap: `state.md:68` describes an Option A step where the renderer emits `:root { --sgs-header-bg: ...; --sgs-footer-bg: ...; }` and theme.json consumes the variables. The selector fix landed; the CSS-custom-property emission path has not. ~30-min follow-up parked as `P-PHASE-5B-INERT-CUSTOMISER-OUTPUT` (REOPENED). Spec 17 itself is correctly written; the implementation is "shipped with caveat", not "shipped fully".
+
+Bean's separate concern about clone-pipeline support for header/footer template-parts is now tracked as `P-CLONE-PIPELINE-HEADER-FOOTER-HANDLER` — the pipeline currently treats h/f the same as page body and needs a dedicated stage. Cross-reference belongs in Spec 17 once the handler is built.
+
+
 
 **Reflects Decision 18 + 21 — but the revision is bigger than I first scoped.** The council (Rater B Check 4) flagged: Spec 17 §3 architecture paragraph hardwires variation-triggered template-part seeding as the FUNDAMENTAL mechanism (variation activation → `save_post_wp_global_styles` hook → seeder fires). Decision 18 deletes that trigger, so §3's core mechanism becomes incoherent.
 
@@ -387,6 +393,8 @@ After this doc's first draft, Bean shared the canonical WP 7.0 added-API referen
 
 ### Decision 28 — Lucide icons exposed via WP 7.0 Icons REST controller
 
+**AMENDMENT 2026-05-22 (post-Phase-7 reality check):** `WP_REST_Icons_Controller` class exists in WP 7.0, but the plugin-side registration helper `wp_register_icon_collection()` does NOT ship until WP 7.1. Phase 6 cannot complete the refactor as originally scoped; parked as `P-6-LUCIDE-REST-ENTRY-POINT` WAITING on WP 7.1. Defensive guards (`class_exists` + `function_exists`) live in `class-sgs-lucide-icons-rest.php`. The decision-as-written below remains the target shape; only the timeline shifts.
+
 **Decision:** Refactor `plugins/sgs-blocks/includes/lucide-icons.php` to register icons via the native `WP_REST_Icons_Controller` endpoint added in WP 7.0. Consumers (sgs/icon-block, render.php usage, future Customiser icon-picker UI) get a unified REST endpoint instead of bespoke icon resolution code.
 
 **Why:** Standardises the icon delivery surface. Frees future feature work (e.g. icon search in editor inspector) to use the native endpoint rather than scrape lucide-icons.php directly.
@@ -394,6 +402,9 @@ After this doc's first draft, Bean shared the canonical WP 7.0 added-API referen
 **Phase:** 6 (folded into the existing audit phase). Cost: ~45 min.
 
 ### Decision 29 — Comprehensive WP-skills WP-7.0-alignment audit
+
+**AMENDMENT 2026-05-22 (Phase 7 implementation reality):** Scope expanded from 10 to 14 targets. Phase 7 Step 7.2 audited the planned 10 WP-family skills plus 4 SGS skills (`sgs-wp-engine`, `wordpress-router`, `sgs-extraction`, `sgs-clone`) plus 9 slash commands (`wp-blocks`, `wp-hook-graph`, `wp-hooks`, `wp-perf-gate`, `wp-perf`, `wp-scaffold`, `wp-theme-check`, `clone-patterns`, `sgs-db`). Cross-skill cohesion findings surfaced: (1) AI Connectors routing dead zone (only `wp-plugin-development` documented `wp_connectors_init`; sgs-wp-engine, wordpress-router, wp-hooks, wp-hook-graph all omitted it); (2) Spec 13 vs Spec 15 §8.1 split — three commands referenced obsolete spec; (3) `apiVersion: 3` absent from `wp-scaffold`, `sgs-clone` Stage 7 COMPOSE, `clone-patterns.md`. All three fixed in the parallel-subagent revision pass (commits `da19374c` + `b26abf56`).
+
 
 **Decision:** Audit every skill in the WP family (`wp-block-development`, `wp-block-themes`, `wp-interactivity-api`, `wp-plugin-development`, `wp-rest-api`, `wp-wpcli-and-ops`, `wp-performance`, `wp-abilities-api`, `wp-site-extraction`, `wp-project-triage`) for WP 7.0 alignment. Per skill, the audit checks:
 
@@ -407,6 +418,14 @@ After this doc's first draft, Bean shared the canonical WP 7.0 added-API referen
 **Phase:** 7 (paired with Decision 26 AI Connectors registration). Cost: ~30 min × 10 skills = ~5 hrs.
 
 ### Decision 30 — WP knowledge DB ingestion completeness assurance plan
+
+**AMENDMENT 2026-05-22 (Phase 4 implementation reality):** Mode B reaches 10/10 sources with three reality-based adjustments not anticipated in this section:
+
+1. **Source 4 floor recalibrated from ≥100 to ≥30.** WP 7.0 genuinely lists only 41 new public API identifiers — a smaller release than the ≥100 minimum assumed here. Floor now catches scraper-health (zero return from selector drift) without false-positiving on small releases. See `plugins/sgs-blocks/scripts/sgs-update-v2.py` (`MINIMUM_SOURCE_4_ITEMS = 30`).
+2. **Source 5 URL corrected.** Plan template `make.wordpress.org/core/<release-tag>-field-guide/` returned HTTP 404. Live URL: `make.wordpress.org/core/2026/05/14/wordpress-7-0-field-guide/`. Returns 52 sections.
+3. **Source 2 counter rewrite (/qc-council finding).** Initial implementation gated success on `INSERT OR IGNORE` rowcount sum, which silently failed in the day-to-day case where cached hooks.db already populated the rows. Counter now tracks `s2_extracted` (regex matches across all 5 files) as the scraper-health signal; success when extracted > 0. Day-to-day Mode A run reports 161 hooks extracted, 0 newly inserted (idempotent).
+
+Mode B end-to-end with rotated `ghp_*` classic PAT: 10/10 sources succeed (commit verification via `git log d18b7354..HEAD`).
 
 **Decision:** `/sgs-update --refresh-upstream` (the Option B scraper-port from Decision 13 / Phase 4) MUST pull from all 10 canonical sources, not the 4 high-level sources that produced this session's audit gap:
 

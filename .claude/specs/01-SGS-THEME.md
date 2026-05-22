@@ -114,7 +114,7 @@ sgs-theme/
 
 ### Design Tokens (Settings)
 
-> **Note:** Defaults are SGS branding. Clients override via style variations (e.g., Indus Foods uses teal #0a7ea8 + gold #d8ca50).
+> **Note:** Defaults are SGS branding. WP style variations are retired (Phase 5a, 2026-05-21). Per-client palette/typography overrides now live at `sites/<client>/theme-snapshot.json` and are pushed to each live site's `theme.json` via `push-theme-snapshot.py`. The framework `theme.json` below is the SGS default only. Requires **WordPress 7.0+** (sandybrown upgraded 2026-05-22; native pseudo-element support in `styles.elements.button` + AI Connectors API now available).
 
 ```jsonc
 {

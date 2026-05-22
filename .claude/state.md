@@ -21,20 +21,18 @@ architecture_programme:
   phase_1.5_status: SHIPPED (commit cc541e94, 2026-05-22 — 12 composite blocks × 2-4 variations × 2-3 styles, default-style via className, Path B via get_block_type_variations filter; canary-first validated)
   phase_2_status: SHIPPED (commit aca7c98 in skills repo, 2026-05-22 — variations + block_styles tables populated via runtime REST enumeration per D33; 25/25 assertions pass)
   phase_3_status: SHIPPED (commit 79158da5, 2026-05-22 — INNER_BLOCK_PATTERNS dict deleted; DB-backed lookup via blocks.parent_block + slot_synonyms.standalone_block; 5/5 regression tests)
-  phase_4_status: PENDING (/sgs-update rebuild + Option B + completeness — Decisions 13, 30; ~120-240 min; multi-session)
+  phase_4_status: SHIPPED (commits 39d32799→99081252, 2026-05-22 — 9-stage sgs-update-v2.py, Mode B 10/10 sources, Source 2 counter fix, shadow token type, schema_metadata table)
   phase_5a_status: SHIPPED-IN-SESSION-B (commit 43a93df9, 2026-05-21 — variation system kill, per-site theme.json, push CLI per Decisions 14', 16', 17', 18, 19)
   phase_5b_status: SHIPPED-IN-SESSION-B (commit 60220b13, 2026-05-21 — Customiser migration + button presets to theme.json + view transitions per Decisions 21, 22, 27)
   phase_5b_paint_fix_status: SHIPPED-IN-SESSION-B (commit 0ef032fe, 2026-05-22 — Customiser paint targets header.wp-block-template-part / footer.wp-block-template-part)
   phase_6_status: "SHIPPED-IN-SESSION-B (commit d307c8b0, 2026-05-22) with two non-blocking partials parked: 6.A markup examples 69-of-73 (4 DB rows reference blocks whose block.json source doesn't exist — parked P-6-MISSING-BLOCK-JSON); 6.B supports backfill target was wrong-assumption (predicted >500, found zero gaps because 2:1 ratio assumption false — fix is trivial architecture.md edit). Both close in Step 3 parking sweep."
-  phase_7_status: PENDING (AI Connectors + WP-skills WP 7.0 audit — Decisions 26, 29; ~75-165 min)
+  phase_7_status: SHIPPED (commits da19374c + b26abf56, 2026-05-22 — Sgs_Ai_Connector live-verified; 10 wp-family skills + 5 SGS skills + 9 slash commands audited + revised for WP 7.0; 3 live-verification corrections: core/icon singular, no heading variations, no settings.dimensions.presets)
 wp_7_0_upgrade_status: "SHIPPED 2026-05-22 (Session B Hostinger op). sandybrown core 6.9.4 → 7.0. DB schema 60717 → 61833. Pre-upgrade mysqldump at ~/sandybrown-pre-wp7.sql (7.5 MB) on Hostinger host for rollback. Two API surprises documented: (1) wp_register_icon_collection() doesn't exist — Phase 6 Lucide REST defensively no-op via class_exists + function_exists guards; (2) register_block_variation() still doesn't exist as PHP — Phase 1.5 Path B at cc541e94 remains load-bearing. Both validate blub.db row 283."
 session_2026_05_20_summary: "11 commits. Council + systematic-debugging + Phase 1 architectural rewrite (Spec 16 §FR6 compliant) + Phase 2 future capabilities (header/footer/nav hook, autonomy tightening, attribute promotion, block variations). Empirical: 5 of 6 desktop regressions from initial P1.B closed via P1.B.x. D1 typed-attr lift rate 4% → 37%. mamas-munches.css 23k → 19k chars. 60+8+40+51+14 = 173 tests passing across orchestrator + token_resolver + css_router + scaffold + promotion + essence-match. Header/footer-as-blocks anti-pattern (5th occurrence today) now blocked at both tool layer (P2.0 PostToolUse hook) AND source layer (P2.i chrome-skip in stage_9b autonomy). The 1009-row attribute_gap_candidates backlog now has a promotion CLI."
 blockers:
-  - "Phase 4 (/sgs-update rebuild) — the largest single remaining piece, ~120-240 min, multi-session-shaped. Three dispatch options surfaced in next-session-prompt.md."
-  - "Phase 7 (AI Connectors + WP-skills audit) — pending after Phase 4. Native APIs now confirmed live on WP 7.0 so Sgs_Ai_Connector wraps real native APIs not hypothetical shims."
-  - "Phase 6 partials (6.A + 6.B) — non-blocking, will be closed in Step 3 parking sweep alongside the other ~13 parking entries."
-  - "Hero 375 mobile regression (+13.3pt vs post-C baseline) — pre-architecture-programme blocker; carried forward. Subsumed by Phase 3 (INNER_BLOCK_PATTERNS retire shipped 79158da5) + Phase 4 (F5 D1 media-field flow, pending). Likely closes when Phase 4 ships."
-  - "Pixel-diff target (≤ 5% per section at 1440) NOT YET ACHIEVED. Architecture-programme foundation done; pixel-diff target needs ongoing operator promotion of attribute candidates + Phase 4 completion."
+  - "P-5A-CLIENT-VARIATION-CSS-PATH — orchestrator helper still returns a deleted path; needs redirect to sites/<client>/theme-overrides.css. Quick fix."
+  - "16 STILL-OPEN parking items — mostly cloning-pipeline G1-G5 gaps + Wave 2 wiring reshape. Not blocking current work."
+  - "Pixel-diff target (≤ 5% per section at 1440) NOT YET ACHIEVED — architecture programme foundation complete; pixel-diff target needs G1-G5 structural fixes + ongoing attribute promotion."
 ---
 
 # small-giants-wp — State Snapshot

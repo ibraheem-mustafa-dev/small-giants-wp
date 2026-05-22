@@ -239,9 +239,21 @@ Spec 16 is not closed until end-to-end visual QA passes:
 - Run `/sgs-clone --converter` on a target page (Mama's homepage is the canary)
 - Deploy resulting block markup + variation CSS to staging
 - Run `/visual-qa` against the deployed URL at 375 / 768 / 1440 viewports
-- Pixel diff ≤ 1% against the source mockup
+- **Pixel diff ≤ 1% per section** (not full-page — full-page has ~30-45% irreducible structural noise floor). Use `scripts/pixel-diff.py --selector .sgs-{section}`. Each section closes independently. Page closes when ALL sections close. (Binding rule blub.db row 256.)
 
 Until FR7 verifies, "is it visually correct?" remains unanswered.
+
+### FR-NEW — cv2-eligible blocks must be dynamic (added 2026-05-22, P-PHASE8-16)
+
+**Invariant:** the converter marks a boundary as `_cv2_eligible=True` only when the matched block is registered as a **dynamic block** (PHP `render_callback` + `save: () => null` or `save: () => <InnerBlocks.Content />`). Static blocks store their serialised HTML in `post_content` — emitting cv2 block markup for a static block produces save-format mismatches that trigger "This block contains unexpected or invalid content" on load.
+
+**Check:** before routing a boundary to cv2, confirm:
+1. `block_attributes` table row for the matched slug has `is_dynamic=true` (sgs-framework.db column populated by `/sgs-update` Stage 1).
+2. If `is_dynamic=false` or the column is NULL, route the boundary to `status=unmatched-static-block` and emit an operator-actionable warning: "Block `sgs/<slug>` is static — cv2 cannot safely emit markup for it without a save-format migration."
+
+**Why this matters:** Phase 6 converted 10 previously-static SGS blocks to dynamic (commit `a9083ca9`). The converter's `_STILL_STATIC_SGS_BLOCKS` frozenset is now empty — any newly-introduced static block would silently break the pipeline's output if this invariant isn't enforced at the routing step. The invariant is the structural gate that makes `_STILL_STATIC_SGS_BLOCKS = frozenset()` safe going forward.
+
+**Cross-reference:** Parking entry P-PHASE8-16. Common WP styling errors §B4 (InnerBlocks serialisation). `mistakes.md` 2026-05-22 — verify WP API surface (related: register_block_variation was static-only, same class of assumption error).
 
 ### FR8 — Legacy extract.py retirement (added 2026-05-14 per Bean)
 

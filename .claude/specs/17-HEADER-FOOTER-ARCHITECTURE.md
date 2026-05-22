@@ -3,14 +3,14 @@ doc_type: spec
 spec_version: 17
 revision: 2
 project: small-giants-wp
-title: Header/Footer Architecture (WP 6.9 canonical, per-site)
+title: Header/Footer Architecture (WP 7.0 canonical, per-site)
 date: 2026-05-19
 status: council-passed-ready-to-implement
 input_brief: .claude/plans/strategy/2026-05-19-header-footer-research-brief.md
 council_outcome: .claude/reports/council-outcome-spec-17.md
 parent_session: small-giants-wp-2026-05-19-phase-9b-foundation
 scope: v1-full (foundation + conditional headers + CPT-based advanced headers)
-target_wp_version: "6.9"
+target_wp_version: "7.0"
 target_php_version: "8.0+"
 companion_docs:
   - .claude/CLAUDE.md
@@ -34,7 +34,7 @@ update_triggers:
 
 ## 0. One-liner
 
-A single WP 6.9 architecture for header + footer template parts that gives every SGS client site a correct initial layout (driven by its active style variation), with site-specific data (logo, business info, social links) flowing in automatically from a single global store, while leaving every operator free to edit, replace, or revert via the Site Editor.
+A single WP 7.0 architecture for header + footer template parts that gives every SGS client site a correct initial layout, with site-specific data (logo, business info, social links) flowing in automatically from a single global store, while leaving every operator free to edit, replace, or revert via the Site Editor. Active style variations are retired (Phase 5a); client identity now comes from the site's `theme.json` snapshot.
 
 ## 1. Who this is for
 
@@ -42,7 +42,7 @@ A single WP 6.9 architecture for header + footer template parts that gives every
 |----------|--------------|
 | **Site owners (non-coders)** | One screen for business data; visible result on every page; pattern-swap via Site Editor "Replace" toolbar; inline edit any block; never lose work to a re-clone |
 | **SGS framework maintainers** | One canonical mechanism; no client-specific code in framework files; lint guards regressions |
-| **AI cloning pipeline (`/sgs-clone`)** | Deterministic landing target via WP-CLI; idempotent re-clone via `_sgs_cloned_from_pattern_slug` post meta |
+| **AI cloning pipeline (`/sgs-clone`)** | Deterministic landing target via WP-CLI; idempotent re-clone via `_sgs_cloned_from_pattern_slug` post meta. **Note:** the pipeline currently lacks a dedicated header/footer handler — h/f markup is treated as page-body content, which malforms into a page-body block tree or duplicates per page. See parking entry P-CLONE-PIPELINE-HEADER-FOOTER-HANDLER (opened 2026-05-22) for the required stage that extracts h/f once per site and emits to `wp_template_part` shape. |
 | **Future-client onboarding** | New client = new style variation + new pattern pair + Site Info config. No theme fork, no framework edit. |
 
 ## 2. The problem we are solving — 8 gaps from the research brief
