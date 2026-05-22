@@ -342,8 +342,985 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
 
 
 # ---------------------------------------------------------------------------
-# Stage 2 — Core/Gutenberg cache refresh (STUB — Step 4.4)
+# Stage 2 — Core/Gutenberg cache refresh
+# Decision 30 — 10 canonical upstream sources.
+#
+# Mode A (default): reads cached ~/.wp-blockmarkup-mcp/blocks.db
+#   + ~/.wp-devdocs-mcp/hooks.db. Checks schema_metadata.last_full_refresh_ts;
+#   if <7 days old, skips entirely. Idempotent: INSERT OR IGNORE throughout.
+#
+# Mode B (--refresh-upstream): live network scrape of 10 sources:
+#   1. WordPress/gutenberg block-library block.json files (GitHub API)
+#   2. WordPress/wordpress-develop PHP hook files (GitHub API)
+#   3. wp-cli/handbook markdown files (GitHub API)
+#   4. developer.wordpress.org/reference/since/<version>/ (urllib + html.parser)
+#   5. make.wordpress.org/core/<version>-field-guide (urllib)
+#   6-10. developer.wordpress.org/{news,block-editor,themes,plugins,rest-api} (urllib)
+#
+# Architecture decisions:
+#   - urllib.request only — no subprocess Playwright. Source 4 uses SSR; plain HTTP
+#     fetch attempted; if <100 items found, Source 4 FAILS with explicit count.
+#   - GitHub API: User-Agent: sgs-update-v2/1.0 required. Authorization header
+#     added if GITHUB_TOKEN env var is set. 403 + X-RateLimit-Remaining: 0 → FAIL.
+#   - INSERT OR IGNORE on all data tables. INSERT OR REPLACE on schema_metadata only.
+#   - Network failure per source: caught, logged to sources_failed, continue.
+#   - Second run must produce 0 new rows (idempotency proof).
 # ---------------------------------------------------------------------------
+
+import html as _html_module
+import html.parser as _html_parser
+import os
+import re
+import urllib.error
+import urllib.request
+
+
+def _github_api_get(url: str, github_token: str | None = None) -> dict | list | None:
+    """Fetch a GitHub API URL and return parsed JSON.
+
+    Returns None on any failure. Raises GithubRateLimitError on rate limit.
+    """
+    req = urllib.request.Request(url)
+    req.add_header("User-Agent", "sgs-update-v2/1.0")
+    req.add_header("Accept", "application/vnd.github.v3+json")
+    if github_token:
+        req.add_header("Authorization", f"token {github_token}")
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            raw = resp.read().decode("utf-8", errors="replace")
+            return json.loads(raw)
+    except urllib.error.HTTPError as exc:
+        if exc.code == 403:
+            remaining = exc.headers.get("X-RateLimit-Remaining", "?")
+            reset_ts = exc.headers.get("X-RateLimit-Reset", "?")
+            raise _GithubRateLimitError(
+                f"GitHub rate limit exhausted (X-RateLimit-Remaining: {remaining}, "
+                f"reset at Unix time {reset_ts}). "
+                f"Set GITHUB_TOKEN env var (5000/hr) or wait."
+            )
+        raise
+    except Exception:
+        raise
+
+
+class _GithubRateLimitError(Exception):
+    """Raised when GitHub API responds with 403 rate-limit exhausted."""
+
+
+def _http_fetch(url: str) -> str:
+    """Fetch a URL via urllib and return response body as UTF-8 string."""
+    req = urllib.request.Request(url)
+    req.add_header(
+        "User-Agent",
+        "Mozilla/5.0 (compatible; sgs-update-v2/1.0; +https://smallgiants.studio)",
+    )
+    with urllib.request.urlopen(req, timeout=30) as resp:
+        charset = "utf-8"
+        ct = resp.headers.get_content_charset()
+        if ct:
+            charset = ct
+        return resp.read().decode(charset, errors="replace")
+
+
+class _LinkTextParser(_html_parser.HTMLParser):
+    """Minimal HTML parser — extracts all visible <a> link texts + hrefs."""
+
+    def __init__(self):
+        super().__init__()
+        self.links: list[tuple[str, str]] = []  # (href, text)
+        self._current_href: str | None = None
+        self._current_text: list[str] = []
+        self._in_a = False
+
+    def handle_starttag(self, tag, attrs):
+        if tag == "a":
+            self._in_a = True
+            self._current_text = []
+            attrs_dict = dict(attrs)
+            self._current_href = attrs_dict.get("href", "")
+
+    def handle_endtag(self, tag):
+        if tag == "a" and self._in_a:
+            text = "".join(self._current_text).strip()
+            href = self._current_href or ""
+            if text and href:
+                self.links.append((href, text))
+            self._in_a = False
+            self._current_href = None
+            self._current_text = []
+
+    def handle_data(self, data):
+        if self._in_a:
+            self._current_text.append(data)
+
+
+class _TitleTextParser(_html_parser.HTMLParser):
+    """Extract all <h1>-<h3> text + first <p> per section."""
+
+    def __init__(self):
+        super().__init__()
+        self.sections: list[str] = []
+        self._in_heading = False
+        self._buf: list[str] = []
+
+    def handle_starttag(self, tag, attrs):
+        if tag in ("h1", "h2", "h3"):
+            self._in_heading = True
+            self._buf = []
+
+    def handle_endtag(self, tag):
+        if tag in ("h1", "h2", "h3") and self._in_heading:
+            text = "".join(self._buf).strip()
+            if text:
+                self.sections.append(text)
+            self._in_heading = False
+            self._buf = []
+
+    def handle_data(self, data):
+        if self._in_heading:
+            self._buf.append(data)
+
+
+def _parse_since_page(html_body: str) -> list[str]:
+    """Extract API-reference identifiers from the WP developer reference/since page.
+
+    The page lists functions/classes/hooks added in a given WP version.
+    Entries appear as <a href="/reference/functions/...">function_name</a> etc.
+    Returns a deduplicated list of identifier strings.
+    """
+    parser = _LinkTextParser()
+    parser.feed(html_body)
+    identifiers: set[str] = set()
+    for href, text in parser.links:
+        # Only include links to reference/* sections
+        if "/reference/" in href and text.strip():
+            clean = text.strip()
+            # Skip nav / pagination links
+            if clean and len(clean) > 2 and not clean.startswith("«") and not clean.startswith("»"):
+                identifiers.add(clean)
+    return sorted(identifiers)
+
+
+def _parse_handbook_sections(html_body: str) -> list[str]:
+    """Extract section titles from a WordPress handbook page."""
+    parser = _TitleTextParser()
+    parser.feed(html_body)
+    return parser.sections
+
+
+def _mode_a_read_cached(
+    conn: sqlite3.Connection,
+    dry_run: bool,
+    wp_version: str,
+) -> dict:
+    """Mode A — read cached ~/.wp-blockmarkup-mcp/blocks.db + ~/.wp-devdocs-mcp/hooks.db.
+
+    Checks schema_metadata.last_full_refresh_ts first. If <7 days old, skips.
+    If stale or never set, reads cached DBs and INSERT OR IGNOREs into sgs-framework.db.
+    """
+    blocks_db_path = Path.home() / ".wp-blockmarkup-mcp" / "blocks.db"
+    hooks_db_path = Path.home() / ".wp-devdocs-mcp" / "hooks.db"
+
+    THRESHOLD_DAYS = 7
+
+    # --- Check freshness ---
+    c = conn.cursor()
+    c.execute(
+        "SELECT value FROM schema_metadata WHERE key = 'last_full_refresh_ts'"
+    )
+    row = c.fetchone()
+    last_ts_str: str | None = row[0] if row else None
+
+    if last_ts_str:
+        try:
+            last_ts = datetime.fromisoformat(last_ts_str)
+            # Ensure timezone-aware comparison
+            if last_ts.tzinfo is None:
+                last_ts = last_ts.replace(tzinfo=timezone.utc)
+            now = datetime.now(timezone.utc)
+            age_days = (now - last_ts).total_seconds() / 86400
+            if age_days < THRESHOLD_DAYS:
+                msg = (
+                    f"Stage 2: cached data current ({age_days:.1f} days old, "
+                    f"threshold {THRESHOLD_DAYS} days). Skipping. "
+                    f"Run with --refresh-upstream to force re-scrape."
+                )
+                print(msg)
+                return {
+                    "status": "cached_current",
+                    "age_days": round(age_days, 1),
+                    "last_full_refresh_ts": last_ts_str,
+                    "wp_version_indexed": wp_version,
+                }
+        except ValueError:
+            pass  # Malformed timestamp — fall through to re-read
+
+    # --- Read cached blocks.db ---
+    new_rows: dict[str, int] = {
+        "blocks": 0,
+        "block_attributes": 0,
+        "block_supports": 0,
+        "hooks": 0,
+        "docs": 0,
+        "hooks_dropped_check_constraint": 0,
+    }
+
+    if not blocks_db_path.exists():
+        print(
+            f"Stage 2 WARNING: blocks.db not found at {blocks_db_path}. "
+            f"Run with --refresh-upstream to scrape from GitHub."
+        )
+    else:
+        if dry_run:
+            src = sqlite3.connect(str(blocks_db_path))
+            src.row_factory = sqlite3.Row
+            sc = src.cursor()
+
+            # Count what WOULD be new blocks
+            sc.execute("SELECT block_name FROM blocks")
+            for b in sc.fetchall():
+                ex = c.execute(
+                    "SELECT 1 FROM blocks WHERE slug=? AND source='native_wp'",
+                    (b["block_name"],),
+                ).fetchone()
+                if ex is None:
+                    new_rows["blocks"] += 1
+
+            sc.execute(
+                "SELECT b.block_name, a.name FROM attributes a JOIN blocks b ON a.block_id=b.id"
+            )
+            for a in sc.fetchall():
+                ex = c.execute(
+                    "SELECT 1 FROM block_attributes WHERE block_slug=? AND attr_name=? AND source='native_wp'",
+                    (a["block_name"], a["name"]),
+                ).fetchone()
+                if ex is None:
+                    new_rows["block_attributes"] += 1
+
+            sc.execute(
+                "SELECT b.block_name, s.feature FROM supports s JOIN blocks b ON s.block_id=b.id"
+            )
+            for s in sc.fetchall():
+                ex = c.execute(
+                    "SELECT 1 FROM block_supports WHERE block_slug=? AND support_name=? AND source='native_wp'",
+                    (s["block_name"], s["feature"]),
+                ).fetchone()
+                if ex is None:
+                    new_rows["block_supports"] += 1
+            src.close()
+        else:
+            src = sqlite3.connect(str(blocks_db_path))
+            src.row_factory = sqlite3.Row
+            sc = src.cursor()
+
+            # INSERT OR IGNORE blocks
+            sc.execute(
+                "SELECT block_name, title, description, category, block_type FROM blocks"
+            )
+            for b in sc.fetchall():
+                res = c.execute(
+                    """
+                    INSERT OR IGNORE INTO blocks
+                        (slug, title, description, category, type, source)
+                    VALUES (?, ?, ?, ?, ?, 'native_wp')
+                    """,
+                    (b["block_name"], b["title"], b["description"],
+                     b["category"], b["block_type"]),
+                )
+                new_rows["blocks"] += res.rowcount
+
+            # INSERT OR IGNORE block_attributes
+            sc.execute(
+                "SELECT b.block_name, a.name, a.type, a.default_val, a.selector "
+                "FROM attributes a JOIN blocks b ON a.block_id = b.id"
+            )
+            for a in sc.fetchall():
+                res = c.execute(
+                    """
+                    INSERT OR IGNORE INTO block_attributes
+                        (block_slug, attr_name, attr_type, default_value, derived_selector, source)
+                    VALUES (?, ?, ?, ?, ?, 'native_wp')
+                    """,
+                    (a["block_name"], a["name"], a["type"],
+                     a["default_val"], a["selector"]),
+                )
+                new_rows["block_attributes"] += res.rowcount
+
+            # INSERT OR IGNORE block_supports
+            sc.execute(
+                "SELECT b.block_name, s.feature, s.config "
+                "FROM supports s JOIN blocks b ON s.block_id = b.id"
+            )
+            for s in sc.fetchall():
+                res = c.execute(
+                    """
+                    INSERT OR IGNORE INTO block_supports
+                        (block_slug, support_name, support_value, source)
+                    VALUES (?, ?, ?, 'native_wp')
+                    """,
+                    (s["block_name"], s["feature"], s["config"]),
+                )
+                new_rows["block_supports"] += res.rowcount
+
+            conn.commit()
+            src.close()
+
+    # --- Read cached hooks.db ---
+    SOURCE_MAP = {
+        1: "native_wp", 2: "native_wp", 3: "native_wp",
+        4: "native_wp", 5: "native_wp", 6: "native_wp",
+        7: "native_wp", 8: "third_party",
+    }
+
+    if not hooks_db_path.exists():
+        print(
+            f"Stage 2 WARNING: hooks.db not found at {hooks_db_path}. "
+            f"Run with --refresh-upstream to scrape from GitHub."
+        )
+    else:
+        src = sqlite3.connect(str(hooks_db_path))
+        src.row_factory = sqlite3.Row
+        sc = src.cursor()
+
+        # The target hooks table has CHECK(hook_type IN ('action', 'filter')).
+        # Cached hooks.db includes JS hook types ('js_action', 'js_filter') which
+        # fail this constraint — INSERT OR IGNORE silently drops them. Both
+        # dry-run and actual paths must filter on this set so the prediction
+        # matches reality.
+        ALLOWED_HOOK_TYPES = {"action", "filter"}
+
+        if dry_run:
+            # Target hooks table has TWO independent UNIQUE constraints:
+            #   1. (name, source) — separate UNIQUE INDEX idx_hooks_name_source
+            #   2. (name, hook_type) — inline table-level UNIQUE
+            # INSERT OR IGNORE silently drops on EITHER violation. Dedupe by
+            # the union: a row inserts only if both (name, source) and
+            # (name, hook_type) are unique against the target AND we haven't
+            # already queued an insert of the same name+hook_type combo.
+            seen_hooks: set[tuple[str, str]] = set()
+            sc.execute("SELECT name, type, source_id FROM hooks")
+            for h in sc.fetchall():
+                hook_type = h["type"] or ""
+                if hook_type not in ALLOWED_HOOK_TYPES:
+                    new_rows["hooks_dropped_check_constraint"] += 1
+                    continue
+                source_label = SOURCE_MAP.get(h["source_id"], "native_wp")
+                # Within-source dedup on (name, hook_type) — first occurrence wins
+                # (matches the more restrictive of the two UNIQUE constraints).
+                key = (h["name"], hook_type)
+                if key in seen_hooks:
+                    continue
+                seen_hooks.add(key)
+                # Check BOTH UNIQUE constraints against target
+                ex = c.execute(
+                    "SELECT 1 FROM hooks WHERE (name=? AND source=?) OR (name=? AND hook_type=?)",
+                    (h["name"], source_label, h["name"], hook_type),
+                ).fetchone()
+                if ex is None:
+                    new_rows["hooks"] += 1
+
+            seen_docs: set[tuple[str, str]] = set()
+            sc.execute("SELECT slug, source_id FROM docs")
+            for d in sc.fetchall():
+                source_label = SOURCE_MAP.get(d["source_id"], "native_wp")
+                key = (d["slug"], source_label)
+                if key in seen_docs:
+                    continue
+                seen_docs.add(key)
+                ex = c.execute(
+                    "SELECT 1 FROM docs WHERE slug=? AND source=?",
+                    (d["slug"], source_label),
+                ).fetchone()
+                if ex is None:
+                    new_rows["docs"] += 1
+        else:
+            # INSERT OR IGNORE hooks — pre-filter to track dropped count
+            sc.execute(
+                "SELECT name, type, source_id, params, file_path, docblock FROM hooks"
+            )
+            for h in sc.fetchall():
+                hook_type = h["type"] or ""
+                if hook_type not in ALLOWED_HOOK_TYPES:
+                    new_rows["hooks_dropped_check_constraint"] += 1
+                    continue
+                source_label = SOURCE_MAP.get(h["source_id"], "native_wp")
+                res = c.execute(
+                    """
+                    INSERT OR IGNORE INTO hooks
+                        (name, hook_type, plugin_slug, parameters, file_path, source, docblock, type)
+                    VALUES (?, ?, NULL, ?, ?, ?, ?, ?)
+                    """,
+                    (h["name"], hook_type, h["params"],
+                     h["file_path"], source_label, h["docblock"], hook_type),
+                )
+                new_rows["hooks"] += res.rowcount
+
+            # INSERT OR IGNORE docs
+            sc.execute(
+                "SELECT file_path, slug, title, doc_type, category, content, source_id FROM docs"
+            )
+            for d in sc.fetchall():
+                source_label = SOURCE_MAP.get(d["source_id"], "native_wp")
+                res = c.execute(
+                    """
+                    INSERT OR IGNORE INTO docs
+                        (source, file_path, slug, title, doc_type, category, content)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (source_label, d["file_path"], d["slug"],
+                     d["title"], d["doc_type"], d["category"], d["content"]),
+                )
+                new_rows["docs"] += res.rowcount
+
+            conn.commit()
+        src.close()
+
+    now_ts = datetime.now(timezone.utc).isoformat()
+
+    # Insert counts only (excluding the diagnostic dropped-by-CHECK counter)
+    insert_counts = {k: v for k, v in new_rows.items() if k != "hooks_dropped_check_constraint"}
+    dropped = new_rows["hooks_dropped_check_constraint"]
+
+    if not dry_run:
+        upsert_metadata(conn, "last_full_refresh_ts", now_ts)
+        upsert_metadata(conn, "wp_version_indexed", wp_version)
+        total_new = sum(insert_counts.values())
+        dropped_note = f" Dropped {dropped} JS hooks (hook_type CHECK constraint)." if dropped else ""
+        if total_new == 0:
+            print(
+                f"Stage 2 [Mode A]: 0 new rows inserted — DB current "
+                f"(all cached rows already present).{dropped_note} wp_version_indexed={wp_version}"
+            )
+        else:
+            print(
+                f"Stage 2 [Mode A]: inserted from cache — {insert_counts}.{dropped_note} "
+                f"last_full_refresh_ts set. wp_version_indexed={wp_version}"
+            )
+    else:
+        dropped_note = f" Dropped {dropped} JS hooks (hook_type CHECK constraint)." if dropped else ""
+        print(
+            f"Stage 2 [Mode A, dry-run]: would insert — {insert_counts}.{dropped_note} "
+            f"last_full_refresh_ts + wp_version_indexed would be set to {wp_version}."
+        )
+
+    return {
+        "status": "cached_read",
+        "wp_version_indexed": wp_version,
+        "new_rows": new_rows,
+        "last_full_refresh_ts": now_ts if not dry_run else None,
+        "dry_run": dry_run,
+    }
+
+
+def _mode_b_refresh_upstream(
+    conn: sqlite3.Connection,
+    dry_run: bool,
+    wp_version: str,
+) -> dict:
+    """Mode B — live network scrape of 10 canonical sources (Decision 30).
+
+    Sources:
+      1. WordPress/gutenberg packages/block-library/src/ at v<wp_version>.0 tag
+      2. WordPress/wordpress-develop PHP hook files at v<wp_version>.0 tag
+      3. wp-cli/handbook markdown commands/
+      4. developer.wordpress.org/reference/since/<wp_version>.0/ (HARD MIN ≥100)
+      5. make.wordpress.org/core/<wp_version>-field-guide
+      6. developer.wordpress.org/news
+      7. developer.wordpress.org/block-editor
+      8. developer.wordpress.org/themes
+      9. developer.wordpress.org/plugins
+      10. developer.wordpress.org/rest-api
+
+    All inserts are INSERT OR IGNORE — idempotent.
+    Network failures per source are caught and logged to sources_failed.
+    """
+    github_token: str | None = os.environ.get("GITHUB_TOKEN")
+    if github_token:
+        print("Stage 2 [Mode B]: GITHUB_TOKEN env var found — using authenticated GitHub API (5000 req/hr).")
+    else:
+        print("Stage 2 [Mode B]: No GITHUB_TOKEN — using unauthenticated GitHub API (60 req/hr).")
+
+    c = conn.cursor()
+    sources_succeeded: list[str] = []
+    sources_failed: list[str] = []
+    new_rows: dict[str, int] = {
+        "blocks": 0, "block_attributes": 0, "block_supports": 0,
+        "hooks": 0, "docs": 0,
+    }
+    items_per_source: dict[str, int] = {}
+
+    # --- Source 1: WordPress/gutenberg block-library block.json files ---
+    source_1_name = "gutenberg-block-library"
+    try:
+        print(f"\n[Source 1] WordPress/gutenberg packages/block-library/src/ at v{wp_version}.0 ...")
+        # List directories in packages/block-library/src/
+        ref_tag = f"v{wp_version}.0"
+        dir_url = (
+            f"https://api.github.com/repos/WordPress/gutenberg/contents/"
+            f"packages/block-library/src?ref={ref_tag}"
+        )
+        entries = _github_api_get(dir_url, github_token)
+        if not isinstance(entries, list):
+            raise ValueError(f"Expected list from GitHub API, got: {type(entries)}")
+
+        block_dirs = [e for e in entries if e.get("type") == "dir"]
+        print(f"  Found {len(block_dirs)} block directories.")
+
+        s1_blocks = 0
+        s1_attrs = 0
+        s1_supports = 0
+
+        for entry in block_dirs:
+            block_name = entry["name"]
+            block_json_url = (
+                f"https://api.github.com/repos/WordPress/gutenberg/contents/"
+                f"packages/block-library/src/{block_name}/block.json?ref={ref_tag}"
+            )
+            try:
+                file_data = _github_api_get(block_json_url, github_token)
+                if not isinstance(file_data, dict):
+                    continue
+                # GitHub returns file content as base64
+                import base64
+                content_b64 = file_data.get("content", "")
+                if not content_b64:
+                    continue
+                decoded = base64.b64decode(content_b64.replace("\n", "")).decode("utf-8", errors="replace")
+                block_data = json.loads(decoded)
+            except json.JSONDecodeError:
+                continue
+            except Exception:
+                continue
+
+            slug = block_data.get("name", f"core/{block_name}")
+            title = block_data.get("title", block_name)
+            description = block_data.get("description", "")
+            category = block_data.get("category", "")
+            block_type = "dynamic" if "$schema" in block_data else "static"
+
+            if not dry_run:
+                res = c.execute(
+                    """
+                    INSERT OR IGNORE INTO blocks
+                        (slug, title, description, category, type, source)
+                    VALUES (?, ?, ?, ?, ?, 'native_wp')
+                    """,
+                    (slug, title, description, category, block_type),
+                )
+                new_rows["blocks"] += res.rowcount
+                s1_blocks += res.rowcount
+
+                # Attributes
+                for attr_name, attr_def in block_data.get("attributes", {}).items():
+                    if not isinstance(attr_def, dict):
+                        continue
+                    res = c.execute(
+                        """
+                        INSERT OR IGNORE INTO block_attributes
+                            (block_slug, attr_name, attr_type, default_value, source)
+                        VALUES (?, ?, ?, ?, 'native_wp')
+                        """,
+                        (
+                            slug, attr_name,
+                            attr_def.get("type", "string"),
+                            json.dumps(attr_def.get("default")) if "default" in attr_def else None,
+                        ),
+                    )
+                    new_rows["block_attributes"] += res.rowcount
+                    s1_attrs += res.rowcount
+
+                # Supports
+                for support_name, support_val in block_data.get("supports", {}).items():
+                    res = c.execute(
+                        """
+                        INSERT OR IGNORE INTO block_supports
+                            (block_slug, support_name, support_value, source)
+                        VALUES (?, ?, ?, 'native_wp')
+                        """,
+                        (slug, support_name, json.dumps(support_val)),
+                    )
+                    new_rows["block_supports"] += res.rowcount
+                    s1_supports += res.rowcount
+            else:
+                # dry-run: count what would be new
+                ex = c.execute(
+                    "SELECT 1 FROM blocks WHERE slug=? AND source='native_wp'", (slug,)
+                ).fetchone()
+                if ex is None:
+                    new_rows["blocks"] += 1
+                    s1_blocks += 1
+
+        if not dry_run:
+            conn.commit()
+
+        items_per_source[source_1_name] = len(block_dirs)
+        print(f"  Source 1 done: {len(block_dirs)} dirs, {s1_blocks} new block rows, "
+              f"{s1_attrs} new attr rows, {s1_supports} new support rows.")
+        sources_succeeded.append(source_1_name)
+
+    except _GithubRateLimitError as exc:
+        msg = f"Source 1 FAILED: {exc}"
+        print(f"  {msg}")
+        sources_failed.append(f"{source_1_name}: {exc}")
+    except Exception as exc:
+        msg = f"Source 1 FAILED: {type(exc).__name__}: {exc}"
+        print(f"  {msg}")
+        sources_failed.append(f"{source_1_name}: {exc}")
+
+    # --- Source 2: WordPress/wordpress-develop PHP hook files ---
+    source_2_name = "wordpress-develop-hooks"
+    try:
+        print(f"\n[Source 2] WordPress/wordpress-develop PHP hook files at v{wp_version}.0 ...")
+        # Target a representative subset of hook-dense files (full repo is unbounded)
+        hook_files = [
+            "src/wp-includes/post.php",
+            "src/wp-includes/default-filters.php",
+            "src/wp-includes/theme.php",
+            "src/wp-includes/template.php",
+            "src/wp-includes/formatting.php",
+        ]
+        ref_tag = f"{wp_version}.0"  # wordpress-develop uses plain X.Y.Z tags
+        hook_re = re.compile(
+            r"""(?:do_action|apply_filters)\s*\(\s*['"]([a-zA-Z0-9_\-]+)['"]""",
+            re.MULTILINE,
+        )
+
+        s2_hooks = 0
+        for file_path in hook_files:
+            file_url = (
+                f"https://api.github.com/repos/WordPress/wordpress-develop/contents/"
+                f"{file_path}?ref={ref_tag}"
+            )
+            try:
+                file_data = _github_api_get(file_url, github_token)
+                if not isinstance(file_data, dict):
+                    continue
+                import base64
+                content_b64 = file_data.get("content", "")
+                if not content_b64:
+                    continue
+                decoded = base64.b64decode(content_b64.replace("\n", "")).decode("utf-8", errors="replace")
+            except Exception as file_exc:
+                print(f"    WARNING: {file_path} fetch failed: {file_exc}")
+                continue
+
+            hook_names = set(hook_re.findall(decoded))
+            # Determine hook_type from context (crude: apply_filters → filter, do_action → action)
+            action_re = re.compile(r"""do_action\s*\(\s*['"]([a-zA-Z0-9_\-]+)['"]""", re.MULTILINE)
+            filter_re = re.compile(r"""apply_filters\s*\(\s*['"]([a-zA-Z0-9_\-]+)['"]""", re.MULTILINE)
+            actions = set(action_re.findall(decoded))
+            filters = set(filter_re.findall(decoded))
+
+            for hook_name in hook_names:
+                hook_type = "action" if hook_name in actions else "filter"
+                if not dry_run:
+                    res = c.execute(
+                        """
+                        INSERT OR IGNORE INTO hooks
+                            (name, hook_type, plugin_slug, file_path, source, type)
+                        VALUES (?, ?, NULL, ?, 'native_wp', ?)
+                        """,
+                        (hook_name, hook_type, file_path, hook_type),
+                    )
+                    new_rows["hooks"] += res.rowcount
+                    s2_hooks += res.rowcount
+                else:
+                    ex = c.execute(
+                        "SELECT 1 FROM hooks WHERE name=? AND source='native_wp'", (hook_name,)
+                    ).fetchone()
+                    if ex is None:
+                        new_rows["hooks"] += 1
+                        s2_hooks += 1
+
+            print(f"    {file_path}: {len(hook_names)} hook references found.")
+
+        if not dry_run:
+            conn.commit()
+
+        items_per_source[source_2_name] = s2_hooks
+        print(f"  Source 2 done: {s2_hooks} new hook rows.")
+        sources_succeeded.append(source_2_name)
+
+    except _GithubRateLimitError as exc:
+        print(f"  Source 2 FAILED: {exc}")
+        sources_failed.append(f"{source_2_name}: {exc}")
+    except Exception as exc:
+        print(f"  Source 2 FAILED: {type(exc).__name__}: {exc}")
+        sources_failed.append(f"{source_2_name}: {exc}")
+
+    # --- Source 3: wp-cli/handbook markdown files ---
+    source_3_name = "wpcli-handbook"
+    try:
+        print(f"\n[Source 3] wp-cli/handbook markdown commands/ ...")
+        dir_url = "https://api.github.com/repos/wp-cli/handbook/contents/commands"
+        entries = _github_api_get(dir_url, github_token)
+        if not isinstance(entries, list):
+            raise ValueError(f"Expected list from GitHub API, got: {type(entries)}")
+
+        md_files = [e for e in entries if e.get("name", "").endswith(".md")]
+        print(f"  Found {len(md_files)} markdown files.")
+
+        s3_docs = 0
+        for entry in md_files:
+            slug_raw = entry["name"].replace(".md", "")
+            slug = f"wpcli-{slug_raw}"
+            title = slug_raw.replace("-", " ").title()
+            download_url = entry.get("download_url", "")
+
+            content_text = ""
+            if download_url:
+                try:
+                    content_text = _http_fetch(download_url)
+                    # Trim to first 4000 chars to keep DB lean
+                    if len(content_text) > 4000:
+                        content_text = content_text[:4000] + "\n...[truncated]"
+                except Exception:
+                    content_text = f"# {title}\n\nContent fetch failed."
+
+            if not dry_run:
+                res = c.execute(
+                    """
+                    INSERT OR IGNORE INTO docs
+                        (source, slug, title, doc_type, category, content)
+                    VALUES ('native_wp', ?, ?, 'cli-command', 'wpcli', ?)
+                    """,
+                    (slug, title, content_text),
+                )
+                new_rows["docs"] += res.rowcount
+                s3_docs += res.rowcount
+            else:
+                ex = c.execute(
+                    "SELECT 1 FROM docs WHERE slug=? AND source='native_wp'", (slug,)
+                ).fetchone()
+                if ex is None:
+                    new_rows["docs"] += 1
+                    s3_docs += 1
+
+        if not dry_run:
+            conn.commit()
+
+        items_per_source[source_3_name] = len(md_files)
+        print(f"  Source 3 done: {len(md_files)} files, {s3_docs} new doc rows.")
+        sources_succeeded.append(source_3_name)
+
+    except _GithubRateLimitError as exc:
+        print(f"  Source 3 FAILED: {exc}")
+        sources_failed.append(f"{source_3_name}: {exc}")
+    except Exception as exc:
+        print(f"  Source 3 FAILED: {type(exc).__name__}: {exc}")
+        sources_failed.append(f"{source_3_name}: {exc}")
+
+    # --- Source 4: developer.wordpress.org/reference/since/<version>.0/ ---
+    # HARD MINIMUM: if <100 items found, FAIL with explicit count.
+    source_4_name = "devdocs-since"
+    MINIMUM_SOURCE_4_ITEMS = 100
+    try:
+        print(f"\n[Source 4] developer.wordpress.org/reference/since/{wp_version}.0/ ...")
+        since_url = f"https://developer.wordpress.org/reference/since/{wp_version}.0/"
+        html_body = _http_fetch(since_url)
+        identifiers = _parse_since_page(html_body)
+        count = len(identifiers)
+        print(f"  Found {count} API identifiers.")
+
+        if count < MINIMUM_SOURCE_4_ITEMS:
+            # HARD GATE — fail this source with explicit count
+            msg = (
+                f"Stage 2 Source 4 FAILED: only {count} API identifiers found from "
+                f"{since_url}. Hard minimum is {MINIMUM_SOURCE_4_ITEMS}. "
+                f"The page may be JS-rendered (no Playwright available from Python) "
+                f"or the WP {wp_version}.0 release page may not yet list sufficient entries. "
+                f"Run with --refresh-upstream after confirming the page loads {MINIMUM_SOURCE_4_ITEMS}+ items manually."
+            )
+            print(f"  {msg}")
+            sources_failed.append(f"{source_4_name}: {msg}")
+        else:
+            s4_docs = 0
+            for identifier in identifiers:
+                slug = f"wp-since-{wp_version}-{re.sub(r'[^a-z0-9_-]', '-', identifier.lower())}"
+                if not dry_run:
+                    res = c.execute(
+                        """
+                        INSERT OR IGNORE INTO docs
+                            (source, slug, title, doc_type, category)
+                        VALUES ('native_wp', ?, ?, 'api-reference', ?)
+                        """,
+                        (slug, identifier, f"WP {wp_version} new API"),
+                    )
+                    new_rows["docs"] += res.rowcount
+                    s4_docs += res.rowcount
+                else:
+                    ex = c.execute(
+                        "SELECT 1 FROM docs WHERE slug=? AND source='native_wp'", (slug,)
+                    ).fetchone()
+                    if ex is None:
+                        new_rows["docs"] += 1
+                        s4_docs += 1
+
+            if not dry_run:
+                conn.commit()
+
+            items_per_source[source_4_name] = count
+            print(f"  Source 4 done: {count} identifiers, {s4_docs} new doc rows.")
+            sources_succeeded.append(source_4_name)
+
+    except urllib.error.URLError as exc:
+        print(f"  Source 4 FAILED: network error — {exc}")
+        sources_failed.append(f"{source_4_name}: URLError: {exc}")
+    except Exception as exc:
+        print(f"  Source 4 FAILED: {type(exc).__name__}: {exc}")
+        sources_failed.append(f"{source_4_name}: {exc}")
+
+    # --- Sources 5-10: developer.wordpress.org handbook pages + make.wordpress.org ---
+    _handbook_sources = [
+        (
+            "make-core-field-guide",
+            f"https://make.wordpress.org/core/{wp_version}-field-guide/",
+            "release-notes",
+            f"WP {wp_version} Field Guide",
+            f"wp-{wp_version}-field-guide",
+        ),
+        (
+            "devdocs-news",
+            "https://developer.wordpress.org/news/",
+            "dev-blog",
+            "WordPress Developer News",
+            "wp-dev-news",
+        ),
+        (
+            "devdocs-block-editor",
+            "https://developer.wordpress.org/block-editor/",
+            "block-editor-reference",
+            "Block Editor Handbook",
+            "wp-block-editor",
+        ),
+        (
+            "devdocs-themes",
+            "https://developer.wordpress.org/themes/",
+            "theme-handbook",
+            "Theme Handbook",
+            "wp-theme-handbook",
+        ),
+        (
+            "devdocs-plugins",
+            "https://developer.wordpress.org/plugins/",
+            "plugin-handbook",
+            "Plugin Handbook",
+            "wp-plugin-handbook",
+        ),
+        (
+            "devdocs-rest-api",
+            "https://developer.wordpress.org/rest-api/",
+            "rest-api-handbook",
+            "REST API Handbook",
+            "wp-rest-api-handbook",
+        ),
+    ]
+
+    for src_idx, (src_name, src_url, doc_type, doc_title, slug_prefix) in enumerate(_handbook_sources, start=5):
+        try:
+            print(f"\n[Source {src_idx}] {src_url} ...")
+            html_body = _http_fetch(src_url)
+            sections = _parse_handbook_sections(html_body)
+            # Also parse top-level page links for news (latest 5 posts)
+            if doc_type == "dev-blog":
+                parser = _LinkTextParser()
+                parser.feed(html_body)
+                article_links = [
+                    (href, text) for href, text in parser.links
+                    if "/news/" in href and text.strip() and len(text) > 10
+                ][:5]
+                # Use article links as the docs
+                s_docs = 0
+                for i, (href, text) in enumerate(article_links):
+                    slug = f"{slug_prefix}-{i+1}"
+                    if not dry_run:
+                        res = c.execute(
+                            """
+                            INSERT OR IGNORE INTO docs
+                                (source, slug, title, doc_type, category, content)
+                            VALUES ('native_wp', ?, ?, ?, 'dev-blog', ?)
+                            """,
+                            (slug, text.strip(), doc_type, href),
+                        )
+                        new_rows["docs"] += res.rowcount
+                        s_docs += res.rowcount
+                    else:
+                        ex = c.execute(
+                            "SELECT 1 FROM docs WHERE slug=? AND source='native_wp'", (slug,)
+                        ).fetchone()
+                        if ex is None:
+                            new_rows["docs"] += 1
+                            s_docs += 1
+                if not dry_run:
+                    conn.commit()
+                items_per_source[src_name] = len(article_links)
+                print(f"  {src_name}: {len(article_links)} articles, {s_docs} new rows.")
+            else:
+                # Top-level handbook: insert as one summary doc with sections as content
+                content = "\n".join(f"## {s}" for s in sections[:50]) if sections else ""
+                slug = slug_prefix
+                s_docs = 0
+                if not dry_run:
+                    res = c.execute(
+                        """
+                        INSERT OR IGNORE INTO docs
+                            (source, slug, title, doc_type, category, content)
+                        VALUES ('native_wp', ?, ?, ?, ?, ?)
+                        """,
+                        (slug, doc_title, doc_type, doc_type, content),
+                    )
+                    new_rows["docs"] += res.rowcount
+                    s_docs += res.rowcount
+                    conn.commit()
+                else:
+                    ex = c.execute(
+                        "SELECT 1 FROM docs WHERE slug=? AND source='native_wp'", (slug,)
+                    ).fetchone()
+                    if ex is None:
+                        new_rows["docs"] += 1
+                        s_docs += 1
+                items_per_source[src_name] = len(sections)
+                print(f"  {src_name}: {len(sections)} sections found, {s_docs} new row.")
+
+            sources_succeeded.append(src_name)
+
+        except urllib.error.URLError as exc:
+            print(f"  {src_name} FAILED: network error — {exc}")
+            sources_failed.append(f"{src_name}: URLError: {exc}")
+        except Exception as exc:
+            print(f"  {src_name} FAILED: {type(exc).__name__}: {exc}")
+            sources_failed.append(f"{src_name}: {exc}")
+
+    # --- Final metadata update ---
+    now_ts = datetime.now(timezone.utc).isoformat()
+    if not dry_run:
+        upsert_metadata(conn, "wp_version_indexed", wp_version)
+        upsert_metadata(conn, "last_full_refresh_ts", now_ts)
+        print(
+            f"\nStage 2 [Mode B]: complete. "
+            f"Sources succeeded: {len(sources_succeeded)}, "
+            f"failed: {len(sources_failed)}. "
+            f"New rows: {new_rows}. wp_version_indexed={wp_version}"
+        )
+    else:
+        print(
+            f"\nStage 2 [Mode B, dry-run]: complete. "
+            f"Sources succeeded (dry): {len(sources_succeeded)}, "
+            f"failed: {len(sources_failed)}. "
+            f"Would insert: {new_rows}."
+        )
+
+    return {
+        "status": "refreshed",
+        "sources_succeeded": sources_succeeded,
+        "sources_failed": sources_failed,
+        "new_rows": new_rows,
+        "items_per_source": items_per_source,
+        "wp_version_indexed": wp_version,
+        "last_full_refresh_ts": now_ts if not dry_run else None,
+        "dry_run": dry_run,
+    }
+
 
 def stage_2_core_gutenberg_cache_refresh(
     conn: sqlite3.Connection,
@@ -351,15 +1328,27 @@ def stage_2_core_gutenberg_cache_refresh(
     wp_version: str = WP_VERSION_DEFAULT,
     dry_run: bool = False,
 ) -> dict:
-    """STUB — implemented in Step 4.4.
+    """Core/Gutenberg cache refresh — two modes (Decision 30).
 
-    Two modes:
-    Mode A (default, no --refresh-upstream): read cached ~/.wp-blockmarkup-mcp/blocks.db
-    + ~/.wp-devdocs-mcp/hooks.db.
-    Mode B (--refresh-upstream): scrape 10 canonical sources (Decision 30).
+    Mode A (default, no --refresh-upstream):
+      Reads cached ~/.wp-blockmarkup-mcp/blocks.db + ~/.wp-devdocs-mcp/hooks.db.
+      Checks schema_metadata.last_full_refresh_ts — if <7 days old, skips.
+      INSERT OR IGNORE into sgs-framework.db. Updates last_full_refresh_ts.
+
+    Mode B (--refresh-upstream):
+      Live network scrape of 10 canonical sources from Decision 30.
+      All inserts are INSERT OR IGNORE (idempotent).
+      Source 4 hard minimum: <100 items = FAIL with explicit count.
+      After all sources: updates schema_metadata wp_version_indexed + last_full_refresh_ts.
+
+    Idempotent: second run (either mode) produces 0 new rows.
     """
-    print("[stage 2] STUB — implemented in Step 4.4")
-    return {"rows_inserted": 0, "stub": True}
+    ensure_schema_metadata(conn)
+
+    if refresh_upstream:
+        return _mode_b_refresh_upstream(conn, dry_run=dry_run, wp_version=wp_version)
+    else:
+        return _mode_a_read_cached(conn, dry_run=dry_run, wp_version=wp_version)
 
 
 # ---------------------------------------------------------------------------
@@ -561,7 +1550,6 @@ def stage_8_uimax_mirror(dry_run: bool = False) -> dict:
     import re
     m_new = re.search(r"Newly inserted to uimax DB:\s*(\d+)", output)
     m_skip = re.search(r"Skipped \(preserved\):\s*(\d+)", output)
-    m_dry = re.search(r"SGS blocks in sgs-framework:\s*(\d+)", output)
     if m_new:
         newly_inserted = int(m_new.group(1))
     if m_skip:
