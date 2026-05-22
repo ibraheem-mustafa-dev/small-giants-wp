@@ -1009,7 +1009,8 @@ def _mode_b_refresh_upstream(
             re.MULTILINE,
         )
 
-        s2_hooks = 0
+        s2_extracted = 0  # Total regex matches (real scraper-health signal).
+        s2_inserted = 0   # INSERT OR IGNORE rowcount sum (diagnostic only).
         for file_path in hook_files:
             file_url = (
                 f"https://api.github.com/repos/WordPress/wordpress-develop/contents/"
@@ -1035,6 +1036,8 @@ def _mode_b_refresh_upstream(
             actions = set(action_re.findall(decoded))
             filters = set(filter_re.findall(decoded))
 
+            s2_extracted += len(hook_names)
+
             for hook_name in hook_names:
                 hook_type = "action" if hook_name in actions else "filter"
                 if not dry_run:
@@ -1047,31 +1050,34 @@ def _mode_b_refresh_upstream(
                         (hook_name, hook_type, file_path, hook_type),
                     )
                     new_rows["hooks"] += res.rowcount
-                    s2_hooks += res.rowcount
+                    s2_inserted += res.rowcount
                 else:
                     ex = c.execute(
                         "SELECT 1 FROM hooks WHERE name=? AND source='native_wp'", (hook_name,)
                     ).fetchone()
                     if ex is None:
                         new_rows["hooks"] += 1
-                        s2_hooks += 1
+                        s2_inserted += 1
 
             print(f"    {file_path}: {len(hook_names)} hook references found.")
 
         if not dry_run:
             conn.commit()
 
-        items_per_source[source_2_name] = s2_hooks
-        print(f"  Source 2 done: {s2_hooks} new hook rows.")
-        # Gate success on actual yield — connecting + parsing with zero
-        # extracted hooks across all 5 files is a silent gap, not a success.
-        # Caught by Phase 4 /qc-council 2026-05-22 (triangulated across 2 raters).
-        if s2_hooks > 0:
+        items_per_source[source_2_name] = s2_extracted
+        print(f"  Source 2 done: {s2_extracted} hooks extracted, {s2_inserted} new rows inserted.")
+        # Gate success on EXTRACTION count (scraper-health signal), not insertion
+        # count. Hooks already in sgs-framework.db from Mode A's cached merge will
+        # INSERT OR IGNORE to rowcount=0 — that's not a failure, that's
+        # idempotency. The real silent gap is the scraper extracting zero hooks
+        # (PAT bad, regex broken, files moved, etc.). Refined 2026-05-22 from
+        # the earlier council fix that mistakenly gated on insert count.
+        if s2_extracted > 0:
             sources_succeeded.append(source_2_name)
         else:
             sources_failed.append(
-                f"{source_2_name}: connected + parsed but 0 hooks extracted "
-                f"from the 5-file subset (regex matched no do_action/apply_filters)"
+                f"{source_2_name}: scraper extracted 0 hooks from the 5-file subset "
+                f"(all file fetches failed, OR regex matched no do_action/apply_filters)"
             )
 
     except _GithubRateLimitError as exc:
