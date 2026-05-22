@@ -1,0 +1,109 @@
+# Schema manifest — all SGS/uimax/core DBs
+
+## core (wp blocks) (C:\Users\Bean\.wp-blockmarkup-mcp\blocks.db)
+
+Tables: 7
+
+| Table | Columns | Rows |
+|-------|---------|------|
+| `attributes` | id, block_id, name, type, default_val, source, selector, enum_values | 475 |
+| `blocks` | id, source_id, block_name, title, description, category, block_type, api_version, …(+8) | 121 |
+| `indexed_files` | source_id, file_path, mtime_ms, content_hash | 121 |
+| `markup_examples` | id, block_id, title, description, markup, attributes_json, validation_status, features_used | 331 |
+| `sources` | id, name, type, repo_url, subfolder, local_path, token_env_var, branch, …(+1) | 1 |
+| `supports` | id, block_id, feature, config | 819 |
+| `variations` | id, block_id, name, title, description, attributes, inner_blocks, scope, …(+1) | 122 |
+
+## sgs-framework (C:\Users\Bean\.agents\skills\sgs-wp-engine\sgs-framework.db)
+
+Tables: 30
+
+| Table | Columns | Rows |
+|-------|---------|------|
+| `_meta_schema_version` | version, applied_at | 1 |
+| `animation_tokens` | id, name, keyframes, duration, easing, description, used_by, category, …(+1) | 7 |
+| `attribute_gap_candidates` | id, block_slug, attr_name, stem, proposed_action, created_at | 1129 |
+| `block_attributes` | id, block_slug, attr_name, attr_type, default_value, enum_values, description, is_responsive, …(+8) | 2230 |
+| `block_capabilities` | id, block_slug, capability | 88 |
+| `block_changes` | id, block_slug, change_type, description, changed_date | 2729 |
+| `block_compositions` | id, composition_name, block_slugs, frequency, industry, page_type, description, auto_pattern_slug | 37 |
+| `block_selectors` | id, block_slug, element, selector | 74 |
+| `block_styles` | id, block_slug, style_name, label, is_default, source | 63 |
+| `block_supports` | id, block_slug, support_name, support_value, source, is_stale | 1223 |
+| `blocks` | slug, title, category, type, status, grade, grade_score, description, …(+7) | 194 |
+| `components` | name, component_type, file_path, description, props | 9 |
+| `deploy_steps` | id, component, step_order, command, description, is_verification | 9 |
+| `design_tokens` | slug, token_type, default_value, css_var, description | 39 |
+| `docs` | id, source, file_path, slug, title, doc_type, category, content | 1158 |
+| `gotchas` | id, title, description, severity, component, workaround, discovered_date | 12 |
+| `hooks` | id, name, hook_type, plugin_slug, description, parameters, file_path, source, …(+2) | 5234 |
+| `indexed_files` | file_path, source, mtime_ms, content_hash, last_indexed | 87 |
+| `legacy_role_lookup` | kebab_role, sgs_slug, notes, added_at | 17 |
+| `markup_examples` | id, block_slug, title, description, markup_html, attributes_json, is_hand_authored, generated_from, …(+3) | 69 |
+| `modifier_suffixes` | suffix, kind, notes | 19 |
+| `pattern_coverage` | id, industry, section_type, pattern_slug, status | 108 |
+| `patterns` | slug, title, category, description, blocks_used, file_path, industry, is_auto_generated, …(+9) | 55 |
+| `pipeline_corrections` | id, pipeline, stage, source_url, technique, outcome, correction, created_at | 4 |
+| `plugins` | slug, title, namespace, text_domain, db_tables, status, description | 3 |
+| `property_suffixes` | suffix, role, css_property, is_token_matched, token_source, notes | 117 |
+| `slot_synonyms` | canonical_slot, aliases, role, description, wp_canonical, html_semantic_tag, created_at, standalone_block | 89 |
+| `style_variations` | slug, title, client, industry, tokens_json, font_heading, font_body, deploy_target, …(+5) | 8 |
+| `theme_parts` | name, part_type, file_path, description, variants | 22 |
+| `variations` | id, block_slug, variation_name, title, description, icon, scope_json, attributes_json, …(+3) | 84 |
+
+## uimax (C:\Users\Bean\.agents\skills\ui-ux-pro-max\scripts\ui-ux-pro-max.db)
+
+Tables: 49
+
+| Table | Columns | Rows |
+|-------|---------|------|
+| `_meta` | key, value | 2 |
+| `animations` | slug, name, category, duration_ms, easing, properties, best_for, accessibility_notes, …(+12) | 63 |
+| `app_interface` | no, category, issue, keywords, platform, description, do, don_t, …(+7) | 30 |
+| `attribute_gap_candidates` | id, block_slug, selector, css_property, value_seen, role_proposed, confidence, seen_count, …(+5) | 70 |
+| `chart_templates` | name, mark_type, description, encoding_channels, complexity, has_data, has_transform, has_layer, …(+4) | 626 |
+| `charts` | no, data_type, keywords, best_chart_type, secondary_options, when_to_use, when_not_to_use, data_volume_threshold, …(+7) | 25 |
+| `colors` | no, product_type, primary, on_primary, secondary, on_secondary, accent, on_accent, …(+15) | 269 |
+| `component_libraries` | library, component_name, component_key, kind, summary, wai_aria_url, framework, license, …(+7) | 217 |
+| `design_tokens` | system, system_key, token_path, token_type, value, description, license, source_url, …(+1) | 5164 |
+| `ft_chart_vocabulary` | chart_name, category, description, use_when, examples, license, source_url, provenance | 39 |
+| `functionality_gap_candidates` | id, block_slug, feature_type, css_signal, role_proposed, confidence, seen_count, last_seen, …(+4) | 0 |
+| `google_fonts` | family, category, stroke, classifications, keywords, styles, variable_axes, subsets, …(+8) | 1923 |
+| `gov_patterns` | name, kind, key, description, when_to_use, when_not_to_use, section, license, …(+5) | 68 |
+| `icon_libraries` | prefix, name, category, total_icons, author, author_url, license, license_url, …(+12) | 225 |
+| `icons` | no, category, icon_name, keywords, library, import_code, usage, best_for, …(+4) | 105 |
+| `interaction_patterns` | pattern_name, pattern_key, about, has_keyboard_section, has_aria_attrs_section, has_examples, example_count, license, …(+5) | 30 |
+| `landing` | no, pattern_name, keywords, section_order, primary_cta_placement, color_strategy, recommended_effects, conversion_optimization, …(+5) | 34 |
+| `mood_board_items` | id, mood_board, artefact_type, artefact_ref, notes, added_at | 0 |
+| `mood_boards` | name, description, source_urls, captured_at, industry_focus, mood_focus, style_focus, notes | 0 |
+| `naming_conventions` | convention_name, pattern_regex, example_class, class_anatomy, extraction_rule, platform_typical, notes, provenance, …(+2) | 16 |
+| `patterns` | slug, name, category, industry, mood, style, content_shape, fingerprint, …(+10) | 14 |
+| `products` | no, product_type, keywords, primary_style_recommendation, secondary_styles, landing_page_pattern, dashboard_style__if_applicable, color_palette_focus, …(+5) | 161 |
+| `react_performance` | no, category, issue, keywords, platform, description, do, don_t, …(+4) | 44 |
+| `recognition_log` | id, clone_run_id, bucket_type, selector, surrounding_dom, frequency, severity, proposed_action, …(+5) | 65443 |
+| `stack_angular` | no, category, guideline, description, do, don_t, code_good, code_bad, …(+3) | 50 |
+| `stack_astro` | no, category, guideline, description, do, don_t, code_good, code_bad, …(+3) | 53 |
+| `stack_bootstrap` | no, category, guideline, description, do, don_t, code_good, code_bad, …(+4) | 0 |
+| `stack_flutter` | no, category, guideline, description, do, don_t, code_good, code_bad, …(+3) | 52 |
+| `stack_html_css` | no, category, guideline, description, do, don_t, code_good, code_bad, …(+4) | 0 |
+| `stack_html_tailwind` | no, category, guideline, description, do, don_t, code_good, code_bad, …(+3) | 55 |
+| `stack_jetpack_compose` | no, category, guideline, description, do, don_t, code_good, code_bad, …(+3) | 52 |
+| `stack_laravel` | no, category, guideline, description, do, don_t, code_good, code_bad, …(+3) | 50 |
+| `stack_nextjs` | no, category, guideline, description, do, don_t, code_good, code_bad, …(+3) | 52 |
+| `stack_nuxt_ui` | no, category, guideline, description, do, don_t, code_good, code_bad, …(+3) | 50 |
+| `stack_nuxtjs` | no, category, guideline, description, do, don_t, code_good, code_bad, …(+3) | 58 |
+| `stack_php` | no, category, guideline, description, do, don_t, code_good, code_bad, …(+4) | 0 |
+| `stack_react` | no, category, guideline, description, do, don_t, code_good, code_bad, …(+3) | 53 |
+| `stack_react_native` | no, category, guideline, description, do, don_t, code_good, code_bad, …(+3) | 51 |
+| `stack_sgs_wordpress` | no, category, guideline, description, do, don_t, code_good, code_bad, …(+4) | 0 |
+| `stack_shadcn` | no, category, guideline, description, do, don_t, code_good, code_bad, …(+3) | 60 |
+| `stack_svelte` | no, category, guideline, description, do, don_t, code_good, code_bad, …(+3) | 53 |
+| `stack_swiftui` | no, category, guideline, description, do, don_t, code_good, code_bad, …(+3) | 50 |
+| `stack_threejs` | category, guideline, description, do, don_t, code_good, code_bad, severity, …(+2) | 53 |
+| `stack_vue` | no, category, guideline, description, do, don_t, code_good, code_bad, …(+3) | 49 |
+| `stack_wordpress` | no, category, guideline, description, do, don_t, code_good, code_bad, …(+4) | 0 |
+| `styles` | no, style_category, type, keywords, primary_colors, secondary_colors, effects___animation, best_for, …(+15) | 84 |
+| `typography` | no, font_pairing_name, category, heading_font, body_font, mood_style_keywords, best_for, google_fonts_url, …(+4) | 74 |
+| `ui_reasoning` | no, ui_category, recommended_pattern, style_priority, color_mood, typography_mood, key_effects, decision_rules, …(+3) | 161 |
+| `ux_guidelines` | no, category, issue, platform, description, do, don_t, code_example_good, …(+6) | 161 |
+
