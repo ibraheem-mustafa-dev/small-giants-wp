@@ -1039,7 +1039,16 @@ def _mode_b_refresh_upstream(
 
         items_per_source[source_2_name] = s2_hooks
         print(f"  Source 2 done: {s2_hooks} new hook rows.")
-        sources_succeeded.append(source_2_name)
+        # Gate success on actual yield — connecting + parsing with zero
+        # extracted hooks across all 5 files is a silent gap, not a success.
+        # Caught by Phase 4 /qc-council 2026-05-22 (triangulated across 2 raters).
+        if s2_hooks > 0:
+            sources_succeeded.append(source_2_name)
+        else:
+            sources_failed.append(
+                f"{source_2_name}: connected + parsed but 0 hooks extracted "
+                f"from the 5-file subset (regex matched no do_action/apply_filters)"
+            )
 
     except _GithubRateLimitError as exc:
         print(f"  Source 2 FAILED: {exc}")
