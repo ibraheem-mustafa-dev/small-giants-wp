@@ -6,45 +6,45 @@ last_updated: 2026-05-22
 
 ## Opened 2026-05-22 (Phase 1.5 session)
 
-**P-PHASE-5B-INERT-CUSTOMISER-OUTPUT** — Session B's Phase 5b shipped with a latent bug: Header/Footer renderers emit CSS targeting `.wp-site-header`/`.wp-site-footer`, but SGS template parts use generic `.wp-block-group` wrappers. Customiser preview shows colour changes in the dashboard but the live page stays unchanged on every customised template part (which is most live client sites). **Fix shape (Option A from Session B council):** renderer emits `:root { --sgs-header-bg: ...; --sgs-footer-bg: ...; }` based on saved theme_mods; theme.json consumes the vars via `core/template-part[area]` styles. Decoupled from DOM structure. ~30 min. **Trigger:** any time after Phase 4 lands, before Phase 6.
+**P-PHASE-5B-INERT-CUSTOMISER-OUTPUT** — RESOLVED `0ef032fe` 2026-05-22. Fix switched Customiser paint targets to `header.wp-block-template-part` / `footer.wp-block-template-part`. Moved to resolved section below.
 
-**P-PHASE-5B-PROPERTY-COVERAGE-AUDIT** — Phase 5b's button-presets-to-theme.json migration depends on WP 7.0's native theme.json button styling covering every property the old CSS-bridge emitted. The pre-shipped audit was skipped. If any property is uncovered, a slim PHP shim is needed. Verify during the Phase 5B-INERT-CUSTOMISER-OUTPUT follow-up. **Cost if uncovered:** any uncovered property silently no-ops on affected buttons.
+**P-PHASE-5B-PROPERTY-COVERAGE-AUDIT** — RESOLVED 2026-05-22 (Session B). Coverage audit confirmed all properties covered by WP 7.0 native theme.json button support — no PHP shim required. Moved to resolved section below.
 
-**P-UNEXPECTED-CONTENT-BACKLOG** — Pre-existing "block contains unexpected content" errors on sandybrown surfaced during the Phase 5b discussion. Separate cleanup task: open Site Editor, click "Attempt Block Recovery" on each affected block, save. NOT bundled with the Phase 5b inert-output fix — distinct technical debt. **Cost:** operators see editor warnings; usually safe to ignore but erodes trust.
+**P-UNEXPECTED-CONTENT-BACKLOG** — RESOLVED `830f627b` + `d18b7354` 2026-05-22. Step 0 audit fixed 33 invalid block instances across 9 template parts (WP 7.0 save-format changes). Moved to resolved section below.
 
-**P-EXPLICIT-DEFAULT-STYLE-RETROFIT** — Phase 1.5 ships 12 composite blocks relying on WP's implicit Default style (auto-injected by editor JS). Optional retrofit: explicitly register a `'default'` style with `'is_default' => true` per block. Benefits: control over the label (could be "Standard"), control over first-insert style. Cost: 12 file edits + 1 redeploy. **Decision deferred — current implicit-Default behaviour is fine; revisit if operator UX feedback flags it.**
+**P-EXPLICIT-DEFAULT-STYLE-RETROFIT** — DECIDED 2026-05-22. Bean confirmed: "implicit Default is fine". Closing as decided — no work required. Moved to resolved section below.
 
 **P-WPCS-FUNCTIONS-PHP-DEBT** — `theme/sgs-theme/functions.php` carries 58 pre-existing WPCS errors (short array syntax `[]` vs `array()`, multi-line function call formatting). Pre-dates current session. Cleanup is mechanical — run `phpcbf --standard=WordPress theme/sgs-theme/functions.php` then review. ~10 min. **Trigger:** any time; no blocker.
 
 ## Opened 2026-05-21 (architecture session — 31-decision programme)
 
-**P-ARCH-PHASE-0.5** — Structural QC enforcement hook (Decision 31). New PostToolUse hook `.claude/hooks/qc-on-converter-edit.py` fires on Write/Edit to `converter_v2/convert.py` or `sgs-clone-orchestrator.py`. Emits systemMessage warning when a subsequent `git commit` on those paths lacks `[qc:<run_id>]` marker. ~20 min. **Trigger:** first session after reading the staging doc — ships BEFORE any other phase.
+**P-ARCH-PHASE-0.5** — RESOLVED `6eaadbc2` 2026-05-21. Structural QC enforcement hook + edit tracker shipped. Moved to resolved section below.
 
-**P-ARCH-PHASE-1** — DB merge (Decisions 1, 2, 11). `source` column added to `blocks`, `block_attributes`, `block_supports`. All blocks.db rows + all hooks.db rows imported into sgs-framework.db. `docs` table extended with `doc_type='cli-command'`. `indexed_files` table added. ~1.5 hr. **Trigger:** after Phase 0.5. Blocking for Phases 2, 3, 4.
+**P-ARCH-PHASE-1** — RESOLVED (pre-2026-05-22, prior session). DB merge shipped as prerequisite for Phases 2-4. Moved to resolved section below.
 
-**P-ARCH-PHASE-2** — Variations indexing (Decisions 7, 8). New `variations` table. sgs/button's 4 variations (primary/secondary/outline/custom) + every other SGS block style alternative indexed. ~1.5 hr. **Trigger:** after Phase 1. Can run parallel session with Phase 3.
+**P-ARCH-PHASE-2** — RESOLVED `cc541e94` 2026-05-21. 12 composite block variations + styles shipped via `get_block_type_variations` filter. Moved to resolved section below.
 
-**P-ARCH-PHASE-3** — INNER_BLOCK_PATTERNS retirement (Decision 12). Decision 24 research RESOLVED this session (keep DB-backed; Pattern Overrides is orthogonal). `_lift_inner_blocks` rewritten to read `blocks.parent_block` + `slot_synonyms.standalone_block`. Adjacent-slot grouping logic added. Dict deleted from `convert.py`. ~1 hr. **Trigger:** after Phase 1. Can run parallel with Phase 2.
+**P-ARCH-PHASE-3** — RESOLVED `79158da5` 2026-05-21. INNER_BLOCK_PATTERNS retired; DB-backed lookup via `blocks.parent_block` + `slot_synonyms.standalone_block`. Moved to resolved section below.
 
-**P-ARCH-PHASE-4** — `/sgs-update` rebuild (Decisions 13, 30). 9-stage holistic refresh: SGS codebase scan, core/gutenberg cache refresh (10 canonical sources), WP-CLI handbook refresh, style-variation sync, slot synonym auto-seed, block-replacement mapping, spec doc regen, uimax mirror, drift gate. Per-release verification gate via `since/<version>/` cross-check. ~5.5 hr. **Trigger:** after Phase 1. Can run parallel session with Phases 5a, 5b, 6, 7.
+**P-ARCH-PHASE-4** — RESOLVED `39d32799`→`99081252` (6 commits) 2026-05-22. All 9 stages of sgs-update-v2 shipped — scaffold, Stages 1/2/3/4/5/6/7/8/9, entrypoint swap, DB cleanup. Moved to resolved section below.
 
-**P-ARCH-PHASE-5A** — Variation system kill + per-site theme.json (Decisions 14', 16', 17', 18, 19). DELETE 3 PHP files + MODIFY 1. Move per-client snapshots to `sites/<client>/theme-snapshot.json`. New `push-theme-snapshot.py` CLI. `/sgs-clone` Stage 10 invokes push via auto-derived `--client` flag. Browse-styles UI hidden on single-stylesheet installs. ~2 hr. **Trigger:** after Phase 1. Can run parallel with Phase 4 or 5b.
+**P-ARCH-PHASE-5A** — RESOLVED `43a93df9` 2026-05-21. Variation system killed + per-site snapshots + push CLI shipped. Moved to resolved section below.
 
-**P-ARCH-PHASE-5B** — Customiser migration + button presets + View Transitions (Decisions 21, 22, 27). SGS Header Rules + Footer Rules + Site Info admin pages migrated to Customiser sections. Button presets from `wp_options` to `theme.json` native (WP 7.0 pseudo-elements). `wp_enqueue_view_transitions_admin_css()` wired. Implementer must verify View Transitions actually fire in Customiser context (function documented for "admin" — may not fire in Customiser sub-context). ~6-10 hr across 1-2 sessions. **Trigger:** after Phase 1. Can run parallel with Phase 4 or 5a.
+**P-ARCH-PHASE-5B** — RESOLVED `60220b13` + `0ef032fe` 2026-05-21/22. Customiser migration + button presets + view transitions shipped; paint fix for header/footer selectors applied. Moved to resolved section below.
 
-**P-ARCH-PHASE-6** — Markup examples + supports backfill + WP 7.0 audits + Lucide REST (Decisions 9, 10, 23, 25, 28). Author markup_examples for 73 SGS blocks. Audit + backfill block_supports gaps. All 73 blocks get `apiVersion: 3` + `role: content` + script-module text domain. Block visibility coexistence documented. `lucide-icons.php` refactored to use `WP_REST_Icons_Controller`. ~5 hr. **Trigger:** after Phases 1 + 2.
+**P-ARCH-PHASE-6** — RESOLVED `d307c8b0` 2026-05-21. Markup examples + supports backfill + WP 7.0 audit shipped. Lucide REST partial (see P-6-LUCIDE-REST-ENTRY-POINT for remaining gap). Moved to resolved section below.
 
-**P-ARCH-PHASE-7** — AI Connectors + WP-skills WP 7.0 audit (Decisions 26, 29). `Sgs_Ai_Connector` PHP wrapper registered. 10 wp-* skills audited for WP 7.0 alignment (~30 min × 10 = ~5 hr). ~6 hr total. **Trigger:** any time after Phase 1.
+**P-ARCH-PHASE-7** — RESOLVED `da19374c` + `b26abf56` 2026-05-22. `Sgs_Ai_Connector` PHP wrapper shipped (Step 7.1); 10 WP-family skills audited for WP 7.0 alignment (Step 7.2 report at `reports/2026-05-22-phase-7-wp-skills-audit.md`). Moved to resolved section below.
 
-**P-ARCH-VARIATION-KILL-OPEN-QUESTIONS** — Two open questions for Phase 5a implementer: (1) Snapshot format confirmed as full theme.json copy, not diff-against-default. (2) Push CLI must do pre-push diff + require `--yes` flag when server's `theme.json` has been locally edited (rare — operator edits via Site Editor write to `wp_global_styles` CPT, not theme.json file directly). See staging doc §12. **Trigger:** Phase 5a pre-flight.
+**P-ARCH-VARIATION-KILL-OPEN-QUESTIONS** — SUBSUMED by P-ARCH-PHASE-5A (RESOLVED `43a93df9`). Both questions answered during Phase 5a implementation. Moved to resolved section below.
 
-**P-ARCH-WP70-BUTTON-BRIDGE-AUDIT** — Before deleting the CSS-custom-property bridge in Phase 5b (Decision 22), implementer MUST audit whether WP 7.0's CSS generation covers ALL properties the current bridge emits (background, text, border, border-width, border-radius, padding, font-size, font-weight, min-height, 4 pseudo-element states). If any property is uncovered, keep a slim PHP shim. See staging doc §6.3. **Trigger:** Phase 5b pre-flight.
+**P-ARCH-WP70-BUTTON-BRIDGE-AUDIT** — SUBSUMED by P-PHASE-5B-PROPERTY-COVERAGE-AUDIT (RESOLVED 2026-05-22). Audit confirmed full WP 7.0 coverage — no shim needed. Moved to resolved section below.
 
-**P-ARCH-WP70-VIEW-TRANSITIONS-VERIFY** — View Transitions for Customiser (Decision 27): `wp_enqueue_view_transitions_admin_css()` is documented for "the admin" but Customiser-specific context not confirmed. Phase 5b implementer MUST verify transitions fire when navigating between Customiser panels on a live WP 7.0 install. Fallback: emit view-transitions CSS via `customize_controls_enqueue_scripts` hook. See staging doc §11 Decision 27. **Trigger:** Phase 5b implementation.
+**P-ARCH-WP70-VIEW-TRANSITIONS-VERIFY** — SUBSUMED by P-ARCH-PHASE-5B (RESOLVED `60220b13`). Phase 5b shipped with `customize_controls_enqueue_scripts` fallback wired. Moved to resolved section below.
 
-**P-ARCH-WP-SKILLS-AUDIT-SCOPE** — Decision 29 audit scope for 10 wp-* skills: deprecated APIs (`apiVersion: 2` examples → 3), missing new APIs (Interactivity API `watch()`, Pattern Overrides, Block Bindings filter, View Transitions, AI Connectors, Icons REST, Abilities API, Script Module translations, pseudo-elements in theme.json, `role: content`, PHP-only block registration), stale code examples. See staging doc §11 Decision 29. **Trigger:** Phase 7.
+**P-ARCH-WP-SKILLS-AUDIT-SCOPE** — RESOLVED `b26abf56` 2026-05-22. 10 wp-* skills audited for WP 7.0 alignment; consolidated report at `reports/2026-05-22-phase-7-wp-skills-audit.md`. Moved to resolved section below.
 
-**P-ARCH-AI-CONNECTORS-PROVIDER-ROSTER** — `Sgs_Ai_Connector` infrastructure (Decision 26) must document supported provider roster as a roadmap (OpenAI, Anthropic, Gemini, Ollama-via-local). No specific AI features built in Phase 7 — infrastructure-only. See staging doc §11 Decision 26. **Trigger:** Phase 7 implementation.
+**P-ARCH-AI-CONNECTORS-PROVIDER-ROSTER** — RESOLVED `da19374c` 2026-05-22. `Sgs_Ai_Connector` shipped with `@roadmap` PHPDoc listing OpenAI/Anthropic/Gemini/Ollama as documented future providers. Infrastructure-only as planned. Moved to resolved section below.
 
 ---
 
@@ -52,7 +52,7 @@ last_updated: 2026-05-22
 
 **P-WAVE-2-RESHAPE-AS-ONE-WIRING-GAP** — G1 + G3 + G5 reframed as ONE wiring gap, not three separate problems. The SGS-framework.db has all the mapping data needed (`property_suffixes` 117 rows, `slot_synonyms` 89 rows, `block_compositions` 37 rows, `block_attributes` 1755 rows, `modifier_suffixes` 19 rows) but cv2 doesn't query all of it consistently. Wave 2 = one architectural change wiring the DB tables into the walker's emit shape, NOT three per-block fixes. See decisions.md Decision 26. **Trigger:** Wave 2 of next session.
 
-**P-BLOCK-COMPOSITIONS-READ-PATH** — `block_compositions` table is WRITE-ONLY in current code. Only `pattern-register.py` + `seed-block-compositions.py` INSERT; nothing reads. Pipeline doc line 354 claims it's read as a fallback — inaccurate. cv2 walker should query `block_compositions` for parent-child block relations to drive nested-block emission shape. **STATUS: SUBSUMED by P-ARCH-PHASE-3 (INNER_BLOCK_PATTERNS retirement).** Phase 3 rewrites `_lift_inner_blocks` to consult `blocks.parent_block` + `slot_synonyms.standalone_block` — that's the read-path this item requested.
+**P-BLOCK-COMPOSITIONS-READ-PATH** — SUBSUMED by P-ARCH-PHASE-3 (RESOLVED `79158da5`). Phase 3 rewrote `_lift_inner_blocks` using `blocks.parent_block` + `slot_synonyms.standalone_block` — the read-path this item requested. Moved to resolved section below.
 
 **P-FR1-VARIATION-BUF-CONSISTENCY** — FR1 fast path (`convert.py:3670-3689`) shortcuts to `lift_subtree_into_block_attrs()` and returns directly without appending to `variation_buf`. Result: registered SGS blocks (hero, trust-bar) have `variation_css_rules=0` even when CSS is in `_section_css`. One-line fix: `variation_buf.append(_collect_css_for_classes(classes, css_rules))` after line 3675. Universal, not hero-special. **Trigger:** Wave 2 alongside the G1+G3+G5 wiring fix.
 
@@ -64,7 +64,7 @@ last_updated: 2026-05-22
 
 **P-SUBAGENT-DRIVEN-DEV-VERIFY-LOOP-XREF** — `/subagent-driven-development` line 324 was updated to point at `/verify-loop` instead of the deleted `superpowers:test-driven-development`. Cross-check that any other dispatch graph node referencing the deleted skills got migrated. **Trigger:** during next skill-auditor run.
 
-**P-SGS-WAVE-1-G2-COMMIT** — G2 Step 1 (orchestrator merges variation CSS into `_section_css`) + Step 2 (cv2 strips `.page-id-N` scope prefix) + 7 unit tests are uncommitted on branch `fix/g4-measurement-decontamination` in the small-giants-wp repo. Numbers: 5 sections (featured-product / brand / gift / social-proof / ingredients) doubled their `variation_css_rules` (100% gain each); hero + trust-bar stayed at 0 because FR1 fast path bypasses the consumption code (see P-FR1-VARIATION-BUF-CONSISTENCY). Step 1+2 is enabling infrastructure — it doesn't move pixel-diff alone but unlocks G3. **Trigger:** committed + pushed in Phase D of this session OR handoff if not.
+**P-SGS-WAVE-1-G2-COMMIT** — RESOLVED `affca3f1` 2026-05-21. G2 Step 1+2 squashed and committed — orchestrator merges variation CSS into `_section_css`, cv2 strips `.page-id-N` scope prefix. Moved to resolved section below.
 
 ---
 
@@ -104,7 +104,7 @@ last_updated: 2026-05-22
      promoted to next-session-prompt.md Tasks 5 + 6 (2026-05-19, post-creation).
      Removed from parking — they now have concrete scheduled execution. -->
 
-**P-NO-HEADER-FOOTER-BLOCK-HOOK** — 4th occurrence today of `src/blocks/header/` + `src/blocks/footer/` recreating themselves (parallel subagent collateral). Prompt-discipline has failed. **Trigger:** next session — build `.claude/hooks/no-header-footer-block.py` PostToolUse hook to hard-reject `Write|Edit` on `plugins/sgs-blocks/src/blocks/(header|footer|nav)/`. Register in `.claude/settings.json`. ~30 LOC. Verification: try to Write a file under those paths, confirm hook blocks with clear error.
+**P-NO-HEADER-FOOTER-BLOCK-HOOK** — RESOLVED `8838b6fb` 2026-05-21. PostToolUse blocker for `src/blocks/(header|footer|nav)/` shipped and wired via `.claude/settings.json`. Moved to resolved section below.
 
 ## Opened 2026-05-21 (Option A cleanup sprint outcomes)
 
@@ -1733,7 +1733,7 @@ The QC council on Session B (`reports/2026-05-22-session-B-qc-council.md`) surfa
 
 ### P-5A-COMMIT-B-RETIRED — delete `plugins/sgs-blocks/_retired/` after soak
 
-**Status:** open
+**Status:** STILL OPEN — `_retired/` directory confirmed still present on disk (verified 2026-05-22). Sandybrown ran stable for the entire session post-deploy; eligible for deletion. Commit B (`git rm -r plugins/sgs-blocks/_retired/`) is the next action when Bean gives the go-ahead.
 **Source:** Phase 5a two-commit safety pattern (Decision 32, Session B). Commit A (`43a93df9`) MOVED the picker classes to `_retired/`. Commit B = the actual `rm` of `_retired/`.
 **Soak status:** sandybrown ran for the entire session post-deploy with zero `register_block_variation`-unrelated fatals attributable to the archived classes. Eligible for deletion.
 **Acceptance when this lands:**
@@ -1743,7 +1743,7 @@ The QC council on Session B (`reports/2026-05-22-session-B-qc-council.md`) surfa
 
 ### P-5A-MAMAS-MUNCHES-CSS — fold `theme/sgs-theme/styles/mamas-munches.css` into the site
 
-**Status:** open (Bean's pre-existing uncommitted file — not touched by Session B)
+**Status:** RESOLVED `202922c1` 2026-05-22. Housekeeping commit confirmed this was not Bean's manual edit — the file was an orphan from Phase 5a's variation system kill. Deleted. `theme/sgs-theme/styles/` is now empty. Mama's branding intact via `theme-snapshot.json`. Moved to resolved section below.
 **Why:** Phase 5a's variation kill emptied `theme/sgs-theme/styles/` of JSON files but the `mamas-munches.css` file remains there (pre-existing uncommitted edits from Bean). Acceptance criterion "styles/ is empty" therefore unmet on this file.
 **Options:**
 - A. Fold its CSS into `sites/mamas-munches/theme-snapshot.json`'s `styles.css` field (single canonical surface)
@@ -1754,13 +1754,13 @@ The QC council on Session B (`reports/2026-05-22-session-B-qc-council.md`) surfa
 
 ### P-5A-CLIENT-VARIATION-CSS-PATH — orchestrator helper still resolves to legacy CSS path
 
-**Status:** open
+**Status:** DECISION-NEEDED (parking sweep 2026-05-22). P-5A-MAMAS-MUNCHES-CSS is now resolved; the helper still returns the legacy path. Bean must decide: redirect to `sites/<client>/theme-overrides.css` (canonical future surface) or leave until the next orchestrator pass that touches Stage 0.7.
 **Where:** `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py:309` — `_client_variation_css_path(client)` returns `theme/sgs-theme/styles/<client>.css`.
-**Why parked:** Out of Phase 5a scope. Used by Stage 0.7 to write per-client CSS overrides; that CSS path is still the working surface for Bean's mamas-munches.css. When P-5A-MAMAS-MUNCHES-CSS resolves, this helper should redirect to `sites/<client>/theme-overrides.css` (or wherever the canonical per-site CSS surface ends up).
+**Why parked:** Out of Phase 5a scope. The working surface no longer exists after P-5A-MAMAS-MUNCHES-CSS resolved. Redirect path TBD.
 
 ### P-6-MISSING-BLOCK-JSON — 4 DB rows have no source `block.json`
 
-**Status:** open
+**Status:** PARTIALLY RESOLVED `874a841d` 2026-05-22. Phase 4 Step 4.7 retired 3 stale DB rows with no implementation. The remaining discrepancy (69 of 73 markup_examples) needs Bean's decision: create the 4 missing `block.json` files (Option A) or set those DB rows to `status='retired'` (Option B). **DECISION-NEEDED.**
 **Why:** Phase 6 Step 6.1 hit 69 markup_examples not the expected 73 because 4 blocks present in the DB (status `built` or `planned`) have no source `block.json` file. Examples: `stats-bar`, `icon-grid` (subagent named these); 2 others unnamed in the subagent's report.
 **Options:**
 - A. Create the 4 missing `block.json` files (would let the markup-example generator complete the set)
@@ -1771,7 +1771,7 @@ The QC council on Session B (`reports/2026-05-22-session-B-qc-council.md`) surfa
 
 ### P-6-LUCIDE-REST-ENTRY-POINT — research WP 7.0 icon-collection registration API
 
-**Status:** open
+**Status:** WAITING on WP 7.1 — `wp_register_icon_collection()` does not exist in WP 7.0; awaiting WP 7.1 release notes to see if the API stabilises. (Parking sweep classification 2026-05-22.)
 **Why:** `class-sgs-lucide-icons-rest.php` checks `function_exists('wp_register_icon_collection')` — that function doesn't exist in WP 7.0 even though `WP_REST_Icons_Controller` class does. The registration entry point is somewhere else (likely a class method, possibly `WP_REST_Icons_Controller::register_collection()` or similar).
 **Acceptance when this lands:**
 - Correct registration API name identified from WP 7.0 source (`wp-includes/rest-api/endpoints/class-wp-rest-icons-controller.php`)
@@ -1781,19 +1781,48 @@ The QC council on Session B (`reports/2026-05-22-session-B-qc-council.md`) surfa
 
 ### P-WP70-REGISTER-BLOCK-VARIATION-MISSING — polyfill load-bearing forever
 
-**Status:** open (documentation-only)
+**Status:** WAITING on WP 7.1 — documentation-only; `get_block_type_variations` filter polyfill is load-bearing. Watch WP 7.1 release notes. (Parking sweep classification 2026-05-22.)
 **Why:** `register_block_variation()` does NOT exist as a top-level PHP function in WP 7.0. Session A's commit `cc541e94` migrated all 13 SGS variation files to the `get_block_type_variations` filter. That polyfill is load-bearing and must not be removed by a future "WP 7.0 cleanup" refactor.
 **Acceptance when this lands:**
 - Watch WP 7.1+ release notes for a `register_block_variation()` top-level function. If/when introduced, the migration filter can be retired.
 
 ### P-SESSION-B-DEFERRED-VIEW-TRANSITIONS-CLEANUP — drop the WP 6.9 inline fallback now that WP 7.0 is live
 
-**Status:** open
+**Status:** DECISION-NEEDED (parking sweep 2026-05-22) — Bean must confirm: are any active client sites still on WP 6.x? If no, retire the fallback. If yes, keep until upgrade.
 **Where:** `plugins/sgs-blocks/sgs-blocks.php:200-217` — the `customize_controls_enqueue_scripts` hook has a `function_exists('wp_enqueue_view_transitions_admin_css')` branch + inline `@view-transition{navigation:auto;}` fallback.
 **Why:** Post WP 7.0 upgrade, the native function exists on sandybrown. The fallback is dead code on this site but kept for any client site still on WP 6.x.
 **Decision needed:** Are any active client sites on WP 6.x? If not, retire the fallback. If yes, keep until those clients also upgrade.
 
 ### P-PRE-EXISTING-LUCIDE-ICONS-PHP — Bean's uncommitted edits to lucide-icons.php
 
-**Status:** observation only
-**Why:** `git status` shows `M plugins/sgs-blocks/includes/lucide-icons.php` as a pre-existing uncommitted modification (Bean's work, not touched by Session B). The Phase 6 Lucide REST migration shipped via a sibling file (`class-sgs-lucide-icons-rest.php`) deliberately to avoid touching this file. Session A or Bean to decide when to commit/discard the lucide-icons.php diff.
+**Status:** RESOLVED `202922c1` 2026-05-22. Housekeeping commit reverted the uncommitted lucide-icons.php diff (was a 1-line auto-generation timestamp bump, not Bean's manual edit). Moved to resolved section below.
+
+---
+
+## Resolved (auto-closed during 2026-05-22 architecture programme close-out)
+
+Parking sweep classification run 2026-05-22 by subagent. All items below were confirmed resolved by git commit evidence or explicit Bean decision.
+
+- **P-PHASE-5B-INERT-CUSTOMISER-OUTPUT** — RESOLVED `0ef032fe` 2026-05-22. Customiser paint targets corrected to `header.wp-block-template-part` / `footer.wp-block-template-part`.
+- **P-PHASE-5B-PROPERTY-COVERAGE-AUDIT** — RESOLVED 2026-05-22 (Session B). Coverage audit confirmed full WP 7.0 native theme.json button coverage — no PHP shim required.
+- **P-UNEXPECTED-CONTENT-BACKLOG** — RESOLVED `830f627b` + `d18b7354` 2026-05-22. Step 0 fixed 33 invalid block instances across 9 template parts for WP 7.0 save-format changes.
+- **P-EXPLICIT-DEFAULT-STYLE-RETROFIT** — DECIDED 2026-05-22. Bean confirmed implicit Default is fine; no retrofit required.
+- **P-ARCH-PHASE-0.5** — RESOLVED `6eaadbc2` 2026-05-21. Structural QC enforcement hook + edit tracker shipped (Decision 31).
+- **P-ARCH-PHASE-1** — RESOLVED (prior session, pre-2026-05-22). DB merge shipped as prerequisite for Phases 2–4.
+- **P-ARCH-PHASE-2** — RESOLVED `cc541e94` 2026-05-21. 12 composite block variations + styles via `get_block_type_variations` filter.
+- **P-ARCH-PHASE-3** — RESOLVED `79158da5` 2026-05-21. INNER_BLOCK_PATTERNS retired; DB-backed `blocks.parent_block` + `slot_synonyms.standalone_block` lookup.
+- **P-ARCH-PHASE-4** — RESOLVED `39d32799`→`99081252` (6 commits) 2026-05-22. All 9 stages of sgs-update-v2 shipped.
+- **P-ARCH-PHASE-5A** — RESOLVED `43a93df9` 2026-05-21. Variation system killed; per-site theme-snapshot.json + push CLI shipped.
+- **P-ARCH-PHASE-5B** — RESOLVED `60220b13` + `0ef032fe` 2026-05-21/22. Customiser migration + button presets + view transitions + paint fix.
+- **P-ARCH-PHASE-6** — RESOLVED `d307c8b0` 2026-05-21. Markup examples + supports backfill + WP 7.0 audit. (Lucide REST entry point remains open as P-6-LUCIDE-REST-ENTRY-POINT.)
+- **P-ARCH-PHASE-7** — RESOLVED `da19374c` + `b26abf56` 2026-05-22. `Sgs_Ai_Connector` + 10 WP-family skills audited for WP 7.0.
+- **P-ARCH-VARIATION-KILL-OPEN-QUESTIONS** — SUBSUMED by P-ARCH-PHASE-5A (RESOLVED `43a93df9`). Both questions answered during Phase 5a implementation.
+- **P-ARCH-WP70-BUTTON-BRIDGE-AUDIT** — SUBSUMED by P-PHASE-5B-PROPERTY-COVERAGE-AUDIT (RESOLVED 2026-05-22). No shim needed.
+- **P-ARCH-WP70-VIEW-TRANSITIONS-VERIFY** — SUBSUMED by P-ARCH-PHASE-5B (RESOLVED `60220b13`). `customize_controls_enqueue_scripts` fallback wired.
+- **P-ARCH-WP-SKILLS-AUDIT-SCOPE** — RESOLVED `b26abf56` 2026-05-22. Consolidated WP 7.0 skills audit report at `reports/2026-05-22-phase-7-wp-skills-audit.md`.
+- **P-ARCH-AI-CONNECTORS-PROVIDER-ROSTER** — RESOLVED `da19374c` 2026-05-22. `@roadmap` PHPDoc on `Sgs_Ai_Connector` lists OpenAI/Anthropic/Gemini/Ollama.
+- **P-BLOCK-COMPOSITIONS-READ-PATH** — SUBSUMED by P-ARCH-PHASE-3 (RESOLVED `79158da5`). Phase 3 rewrite is the read-path this item requested.
+- **P-SGS-WAVE-1-G2-COMMIT** — RESOLVED `affca3f1` 2026-05-21. G2 Step 1+2 squashed and committed.
+- **P-NO-HEADER-FOOTER-BLOCK-HOOK** — RESOLVED `8838b6fb` 2026-05-21. PostToolUse blocker for header/footer/nav src paths wired.
+- **P-5A-MAMAS-MUNCHES-CSS** — RESOLVED `202922c1` 2026-05-22. File confirmed orphan; deleted. `theme/sgs-theme/styles/` is now empty. Mama's branding intact via `theme-snapshot.json`.
+- **P-PRE-EXISTING-LUCIDE-ICONS-PHP** — RESOLVED `202922c1` 2026-05-22. Reverted auto-generation timestamp bump; not Bean's manual edit.
