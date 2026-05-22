@@ -1508,17 +1508,172 @@ def stage_3_wpcli_handbook_refresh(
 # No-op pre-Phase-5a. Observational only — logs token gaps, no DB writes.
 # ---------------------------------------------------------------------------
 
+def _extract_custom_leaf_keys(node: dict, prefix: str = "") -> list[tuple[str, str]]:
+    """Recursively flatten settings.custom into (key, value) leaf pairs.
+
+    Nesting separator is hyphen — e.g. ``{'spacing': {'40': '1.5rem'}}``
+    becomes ``[('spacing-40', '1.5rem')]``.
+    """
+    results: list[tuple[str, str]] = []
+    for k, v in node.items():
+        full_key = f"{prefix}-{k}" if prefix else k
+        if isinstance(v, dict):
+            results.extend(_extract_custom_leaf_keys(v, full_key))
+        else:
+            results.append((full_key, str(v)))
+    return results
+
+
 def stage_4_style_variation_sync(
     conn: sqlite3.Connection, dry_run: bool = False
 ) -> dict:
-    """STUB — implemented in Step 4.6.
+    """Walk sites/*/theme-snapshot.json and report custom property keys not in design_tokens.
 
-    # TODO: activate writes after Phase 5a ships.
-    Pre-Phase-5a: walks sites/*/theme-snapshot.json (may not exist),
-    logs token gaps to reports/phase4-variation-token-gaps.txt, no DB writes.
+    Observational only — no DB writes. Phase 5a will activate writes.
+    Report written to reports/phase4-variation-token-gaps.txt.
+
+    Returns:
+        snapshots_found:  number of theme-snapshot.json files that exist
+        snapshots_missing: client dirs scanned where theme-snapshot.json was absent
+        tokens_checked:   total leaf keys extracted across all found snapshots
+        gaps_found:       keys not present in design_tokens.slug
+        report_path:      absolute path to the written report
+        dry_run:          forwarded flag
+        stub:             False — fully implemented
+        note:             human-readable status note
     """
-    print("[stage 4] STUB — implemented in Step 4.6 (no-op pre-Phase-5a)")
-    return {"rows_inserted": 0, "stub": True}
+    # TODO: activate writes after Phase 5a ships.
+    # When Phase 5a delivers the snapshot model, this stage should:
+    #   1. INSERT OR IGNORE new design_tokens rows for each gap key.
+    #   2. Upsert schema_metadata.last_variation_sync_ts.
+    # Until then, all findings are written to the report file only.
+
+    sites_root = REPO_ROOT / "sites"
+    report_path = REPO_ROOT / "reports" / "phase4-variation-token-gaps.txt"
+    c = conn.cursor()
+
+    snapshots_found = 0
+    snapshots_missing = 0
+    tokens_checked = 0
+    gaps_found = 0
+    ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+
+    header_lines: list[str] = [
+        f"# Style Variation Token Gaps — {ts}",
+        "",
+        "Phase 5a not yet shipped — this report is observational only.",
+        "No writes to design_tokens. Activate after Phase 5a delivers the snapshot model.",
+        "",
+    ]
+    per_client_lines: list[str] = ["## Per-client findings", ""]
+
+    if not sites_root.exists():
+        per_client_lines.append("_(sites/ directory not found — no snapshots to scan)_")
+        per_client_lines.append("")
+    else:
+        # Walk every direct child of sites/ that is a directory
+        client_dirs = sorted(
+            d for d in sites_root.iterdir() if d.is_dir()
+        )
+
+        for client_dir in client_dirs:
+            client_slug = client_dir.name
+            snapshot_path = client_dir / "theme-snapshot.json"
+            per_client_lines.append(f"### {client_slug} ({snapshot_path})")
+            per_client_lines.append("")
+
+            if not snapshot_path.exists():
+                snapshots_missing += 1
+                per_client_lines.append("_(snapshot file not found)_")
+                per_client_lines.append("")
+                continue
+
+            snapshots_found += 1
+
+            # Parse JSON — handle malformed snapshots gracefully
+            try:
+                with open(snapshot_path, encoding="utf-8") as fh:
+                    snapshot = json.load(fh)
+            except (json.JSONDecodeError, OSError) as exc:
+                per_client_lines.append(f"_(error reading snapshot: {exc})_")
+                per_client_lines.append("")
+                continue
+
+            # Navigate to settings.custom — may not exist pre-Phase-5a
+            custom_block = (
+                snapshot.get("settings", {}).get("custom", {})
+            )
+
+            if not custom_block:
+                per_client_lines.append(
+                    "_(settings.custom not found in snapshot — nothing to check)_"
+                )
+                per_client_lines.append("")
+                continue
+
+            leaves = _extract_custom_leaf_keys(custom_block)
+            client_checked = len(leaves)
+            client_gaps = 0
+            gap_lines: list[str] = []
+
+            for key, value in leaves:
+                tokens_checked += 1
+                exists = c.execute(
+                    "SELECT 1 FROM design_tokens WHERE slug = ?",
+                    (key,),
+                ).fetchone()
+                if exists is None:
+                    gaps_found += 1
+                    client_gaps += 1
+                    gap_lines.append(
+                        f"- GAP: settings.custom.{key} = {value!r} — not in design_tokens"
+                    )
+
+            if client_gaps == 0:
+                per_client_lines.append(
+                    f"_{client_checked} tokens checked, 0 gaps found — all keys in design_tokens_"
+                )
+            else:
+                per_client_lines.append(
+                    f"_{client_checked} tokens checked, {client_gaps} gaps found:_"
+                )
+                per_client_lines.append("")
+                per_client_lines.extend(gap_lines)
+
+            per_client_lines.append("")
+
+    # Assemble and write report
+    summary_line = (
+        f"Found snapshots: {snapshots_found}. "
+        f"Missing: {snapshots_missing}. "
+        f"Tokens checked: {tokens_checked}. "
+        f"Gaps: {gaps_found}."
+    )
+    all_lines = header_lines + [summary_line, ""] + per_client_lines
+
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    if not dry_run:
+        report_path.write_text("\n".join(all_lines), encoding="utf-8")
+
+    mode = "dry-run" if dry_run else "actual"
+    print(
+        f"Stage 4 [{mode}]: {snapshots_found} snapshots found, "
+        f"{snapshots_missing} missing, "
+        f"{tokens_checked} tokens checked, "
+        f"{gaps_found} gaps. "
+        f"Report: {report_path}"
+    )
+
+    return {
+        "snapshots_found": snapshots_found,
+        "snapshots_missing": snapshots_missing,
+        "tokens_checked": tokens_checked,
+        "gaps_found": gaps_found,
+        "report_path": str(report_path),
+        "dry_run": dry_run,
+        "stub": False,
+        "note": "observational pre-Phase-5a",
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -1989,19 +2144,135 @@ def stage_8_uimax_mirror(dry_run: bool = False) -> dict:
 # Stage 9 — Drift gate (STUB — Step 4.6)
 # ---------------------------------------------------------------------------
 
+def _extract_major_minor(version_str: str) -> str | None:
+    """Extract MAJOR.MINOR from a version string such as '7.0.1' → '7.0'.
+
+    Returns None if the string cannot be parsed.
+    """
+    import re as _re
+    m = _re.match(r"(\d+\.\d+)", version_str.strip())
+    return m.group(1) if m else None
+
+
 def stage_9_drift_gate(
     conn: sqlite3.Connection, dry_run: bool = False
 ) -> dict:
-    """STUB — implemented in Step 4.6.
+    """Compare live site WP MAJOR.MINOR against schema_metadata.wp_version_indexed.
 
-    Reads schema_metadata.wp_version_indexed; fetches live site WP version
-    via SSH `wp eval 'echo get_bloginfo("version");'`; compares MAJOR.MINOR only.
-    Emits warning on MAJOR.MINOR mismatch, passes silently on match.
+    1. Reads schema_metadata.wp_version_indexed (set by Stage 2).
+       Returns skipped status if the row is absent — run Stage 2 first.
+    2. Dry-run: skips the SSH call and returns immediately.
+    3. Fetches live WP version via:
+         ssh -p 65002 u945238940@141.136.39.73
+             "cd domains/sandybrown-nightingale-600381.hostingersite.com/public_html
+              && wp eval 'echo get_bloginfo(\"version\");'"
+       15-second timeout. SSH failure is non-fatal — returns skipped status.
+    4. Compares MAJOR.MINOR only. Same version → silent pass.
+       Mismatch → prints warning and returns drift_detected status.
 
-    # TODO: wire into deploy hook at .claude/hooks/ as a future integration point.
+    # TODO: wire into .claude/hooks/deploy hook as a future integration point.
+    # When the deploy pre-hook is built, call:
+    #   python plugins/sgs-blocks/scripts/sgs-update-v2.py --stage 9
+    # and gate the deploy on the returned status being 'ok' or 'skipped'.
     """
-    print("[stage 9] STUB — implemented in Step 4.6")
-    return {"matches": True, "stub": True}
+    c = conn.cursor()
+
+    # Step 1 — Read wp_version_indexed from schema_metadata
+    row = c.execute(
+        "SELECT value FROM schema_metadata WHERE key = ?",
+        ("wp_version_indexed",),
+    ).fetchone()
+
+    if row is None or not row[0]:
+        msg = "wp_version_indexed not set; run Stage 2 first"
+        print(f"Stage 9 [skipped]: {msg}")
+        return {"status": "skipped", "reason": msg}
+
+    db_indexed_raw: str = row[0]
+    db_major_minor = _extract_major_minor(db_indexed_raw)
+    if db_major_minor is None:
+        msg = f"wp_version_indexed value '{db_indexed_raw}' is not a parseable version"
+        print(f"Stage 9 [skipped]: {msg}")
+        return {"status": "skipped", "reason": msg}
+
+    # Step 2 — Dry-run: skip SSH call
+    if dry_run:
+        msg = "dry-run mode"
+        print(f"Stage 9 [dry-run]: skipping SSH version check ({msg})")
+        return {"status": "skipped", "reason": msg, "db_indexed": db_indexed_raw}
+
+    # Step 3 — Fetch live WP version via SSH (sandybrown dev site)
+    ssh_cmd = [
+        "ssh",
+        "-p", "65002",
+        "-o", "ConnectTimeout=15",
+        "-o", "BatchMode=yes",
+        "-o", "StrictHostKeyChecking=no",
+        "u945238940@141.136.39.73",
+        (
+            "cd domains/sandybrown-nightingale-600381.hostingersite.com/public_html"
+            " && wp eval 'echo get_bloginfo(\"version\");'"
+        ),
+    ]
+
+    try:
+        result = subprocess.run(
+            ssh_cmd,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            timeout=15,
+        )
+        raw_output = (result.stdout or "").strip()
+        if result.returncode != 0 or not raw_output:
+            stderr_snippet = (result.stderr or "").strip()[:200]
+            msg = f"SSH command failed (exit {result.returncode}): {stderr_snippet or '(no stderr)'}"
+            print(f"Stage 9 [skipped]: {msg}")
+            return {"status": "skipped", "reason": msg}
+    except subprocess.TimeoutExpired:
+        msg = "SSH timed out after 15 s — drift check skipped"
+        print(f"Stage 9 [skipped]: {msg}")
+        return {"status": "skipped", "reason": msg}
+    except (FileNotFoundError, OSError) as exc:
+        msg = f"SSH unavailable — drift check skipped ({exc})"
+        print(f"Stage 9 [skipped]: {msg}")
+        return {"status": "skipped", "reason": msg}
+
+    # Step 4 — Parse and compare
+    site_version_raw = raw_output
+    site_major_minor = _extract_major_minor(site_version_raw)
+
+    if site_major_minor is None:
+        msg = f"Could not parse WP version from SSH output: {site_version_raw!r}"
+        print(f"Stage 9 [skipped]: {msg}")
+        return {"status": "skipped", "reason": msg}
+
+    if site_major_minor == db_major_minor:
+        # Silent pass — versions agree at MAJOR.MINOR level
+        print(
+            f"Stage 9 [ok]: site WP {site_version_raw} matches "
+            f"DB indexed version {db_indexed_raw} (MAJOR.MINOR: {db_major_minor})"
+        )
+        return {
+            "status": "ok",
+            "site_version": site_version_raw,
+            "db_indexed": db_indexed_raw,
+        }
+
+    # MAJOR.MINOR mismatch — emit warning
+    warning = (
+        f"DRIFT DETECTED: Site is WP {site_version_raw} "
+        f"(MAJOR.MINOR {site_major_minor}) but DB indexed for WP {db_indexed_raw} "
+        f"(MAJOR.MINOR {db_major_minor}). "
+        "Run /sgs-update --refresh-upstream before deploying knowledge-dependent features."
+    )
+    print(f"\n⚠  Stage 9 [drift_detected]: {warning}\n")
+    return {
+        "status": "drift_detected",
+        "site_version": site_version_raw,
+        "db_indexed": db_indexed_raw,
+        "warning": warning,
+    }
 
 
 # ---------------------------------------------------------------------------

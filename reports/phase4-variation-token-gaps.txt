@@ -1,0 +1,82 @@
+# Style Variation Token Gaps — 2026-05-22 17:31:39 UTC
+
+Phase 5a not yet shipped — this report is observational only.
+No writes to design_tokens. Activate after Phase 5a delivers the snapshot model.
+
+Found snapshots: 8. Missing: 2. Tokens checked: 31. Gaps: 31.
+
+## Per-client findings
+
+### eye-care-ward-end (C:\Users\Bean\Projects\small-giants-wp\sites\eye-care-ward-end\theme-snapshot.json)
+
+_(settings.custom not found in snapshot — nothing to check)_
+
+### helping-doctors (C:\Users\Bean\Projects\small-giants-wp\sites\helping-doctors\theme-snapshot.json)
+
+_2 tokens checked, 2 gaps found:_
+
+- GAP: settings.custom.sgs-headerPattern = 'sgs/framework-header-default' — not in design_tokens
+- GAP: settings.custom.sgs-footerPattern = 'sgs/framework-footer-default' — not in design_tokens
+
+### indus-foods (C:\Users\Bean\Projects\small-giants-wp\sites\indus-foods\theme-snapshot.json)
+
+_2 tokens checked, 2 gaps found:_
+
+- GAP: settings.custom.sgs-headerPattern = 'sgs/framework-header-default' — not in design_tokens
+- GAP: settings.custom.sgs-footerPattern = 'sgs/framework-footer-default' — not in design_tokens
+
+### mamas-munches (C:\Users\Bean\Projects\small-giants-wp\sites\mamas-munches\theme-snapshot.json)
+
+_27 tokens checked, 27 gaps found:_
+
+- GAP: settings.custom.buttonPresets-primary-background = 'var(--wp--preset--color--primary)' — not in design_tokens
+- GAP: settings.custom.buttonPresets-primary-text = 'var(--wp--preset--color--text)' — not in design_tokens
+- GAP: settings.custom.buttonPresets-primary-border = 'var(--wp--preset--color--primary)' — not in design_tokens
+- GAP: settings.custom.buttonPresets-primary-border-width = '2px' — not in design_tokens
+- GAP: settings.custom.buttonPresets-primary-border-radius = '24px' — not in design_tokens
+- GAP: settings.custom.buttonPresets-primary-padding = '14px 28px 14px 28px' — not in design_tokens
+- GAP: settings.custom.buttonPresets-primary-font-size = '15px' — not in design_tokens
+- GAP: settings.custom.buttonPresets-primary-font-weight = '600' — not in design_tokens
+- GAP: settings.custom.buttonPresets-primary-min-height = '48px' — not in design_tokens
+- GAP: settings.custom.buttonPresets-primary-hover-background = 'var(--wp--preset--color--text)' — not in design_tokens
+- GAP: settings.custom.buttonPresets-primary-hover-text = 'var(--wp--preset--color--text-inverse)' — not in design_tokens
+- GAP: settings.custom.buttonPresets-primary-hover-border = 'var(--wp--preset--color--text)' — not in design_tokens
+- GAP: settings.custom.buttonPresets-secondary-background = 'transparent' — not in design_tokens
+- GAP: settings.custom.buttonPresets-secondary-text = 'var(--wp--preset--color--text)' — not in design_tokens
+- GAP: settings.custom.buttonPresets-secondary-border = 'var(--wp--preset--color--primary)' — not in design_tokens
+- GAP: settings.custom.buttonPresets-secondary-border-width = '2px' — not in design_tokens
+- GAP: settings.custom.buttonPresets-secondary-border-radius = '24px' — not in design_tokens
+- GAP: settings.custom.buttonPresets-secondary-padding = '14px 28px 14px 28px' — not in design_tokens
+- GAP: settings.custom.buttonPresets-secondary-font-size = '15px' — not in design_tokens
+- GAP: settings.custom.buttonPresets-secondary-font-weight = '600' — not in design_tokens
+- GAP: settings.custom.buttonPresets-secondary-min-height = '48px' — not in design_tokens
+- GAP: settings.custom.buttonPresets-secondary-hover-background = 'var(--wp--preset--color--text)' — not in design_tokens
+- GAP: settings.custom.buttonPresets-secondary-hover-text = 'var(--wp--preset--color--text-inverse)' — not in design_tokens
+- GAP: settings.custom.buttonPresets-secondary-hover-border = 'var(--wp--preset--color--text)' — not in design_tokens
+- GAP: settings.custom.maxWidth-narrow-420 = '420px' — not in design_tokens
+- GAP: settings.custom.sgs-headerPattern = 'sgs/framework-header-default' — not in design_tokens
+- GAP: settings.custom.sgs-footerPattern = 'sgs/framework-footer-default' — not in design_tokens
+
+### sgs-construction (C:\Users\Bean\Projects\small-giants-wp\sites\sgs-construction\theme-snapshot.json)
+
+_(settings.custom not found in snapshot — nothing to check)_
+
+### sgs-healthcare (C:\Users\Bean\Projects\small-giants-wp\sites\sgs-healthcare\theme-snapshot.json)
+
+_(settings.custom not found in snapshot — nothing to check)_
+
+### sgs-mosque (C:\Users\Bean\Projects\small-giants-wp\sites\sgs-mosque\theme-snapshot.json)
+
+_(settings.custom not found in snapshot — nothing to check)_
+
+### sgs-professional (C:\Users\Bean\Projects\small-giants-wp\sites\sgs-professional\theme-snapshot.json)
+
+_(settings.custom not found in snapshot — nothing to check)_
+
+### small-giants-studio-v2 (C:\Users\Bean\Projects\small-giants-wp\sites\small-giants-studio-v2\theme-snapshot.json)
+
+_(snapshot file not found)_
+
+### snooza-chair (C:\Users\Bean\Projects\small-giants-wp\sites\snooza-chair\theme-snapshot.json)
+
+_(snapshot file not found)_
