@@ -181,6 +181,18 @@ require_once SGS_BLOCKS_PATH . 'includes/class-sgs-floating-ui-renderer.php';
 Sgs_Floating_UI_Customiser::register();
 Sgs_Floating_UI_Renderer::register();
 
+// SGS AI Connector — wrapper around WP 7.0 native AI Connectors API (Phase 7, Decision 26).
+// Infrastructure-only: no AI calls. Safe-fail when no provider plugin is active.
+// API surface verified 2026-05-22 against developer.wordpress.org/reference/functions/
+// (wp_get_connector, wp_get_connectors, wp_is_connector_registered all return HTTP 200).
+// The function_exists() guard means the class is also safe to load on WP <7.0 (every
+// method returns a safe empty/false/WP_Error value), so we load unconditionally and
+// rely on the in-class guards rather than a separate is_wp_7_or_later() check.
+require_once SGS_BLOCKS_PATH . 'includes/class-sgs-ai-connector.php';
+if ( function_exists( 'wp_get_connector' ) ) {
+	add_action( 'wp_connectors_init', array( Sgs_Ai_Connector::class, 'on_connectors_init' ) );
+}
+
 // SGS Customiser sections — Phase 5b (Decision 21) — Header / Footer / Site Info live preview.
 // class-sgs-customiser-info-control.php extends WP_Customize_Control which is
 // only defined in admin / customise context — load it lazily inside the
