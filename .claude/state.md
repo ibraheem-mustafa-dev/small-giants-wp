@@ -2,13 +2,13 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-current_phase: architecture-programme-9-of-11-phases-shipped-phases-4-and-7-pending
-current_subphase: "Session 2026-05-22 closed out. 9 of 11 architecture-programme phases SHIPPED across Sessions A + B + final housekeeping. Working tree CLEAN; main at 19906e6a in sync with origin GitHub; sandybrown live on WP 7.0 (DB schema 60717 → 61833). Only Phase 4 (/sgs-update rebuild) + Phase 7 (AI Connectors + WP-skills audit) remain. Plus 2 non-blocking Phase 6 partials parked (6.A markup row count gap; 6.B supports baseline-was-wrong-assumption). Plus 2 WP 7.0 surprises documented: wp_register_icon_collection still missing; register_block_variation still missing — Path B at cc541e94 remains load-bearing forever."
-current_subphase_step: "Next session (2026-05-23) opens with Step 0 (unexpected-content audit on live site) → Step 1 (Phase 4 /sgs-update rebuild) → Step 2 (Phase 7 AI Connectors + WP-skills audit) → Step 3 (parking sweep until parking.md empty). Sequential, single session. Full tooling reference + READ PLAN FIRST gates baked into .claude/next-session-prompt.md."
+current_phase: architecture-programme-CLOSED-2026-05-22
+current_subphase: "Architecture programme officially CLOSED 2026-05-22. All 11 phases shipped. Step 0 (unexpected-content audit, 0 invalid blocks) + Step 1 (Phase 4 /sgs-update rebuild, 9 stages, Mode B verified 10/10 sources) + Step 2 (Phase 7 Sgs_Ai_Connector live + 24 WP/SGS skills audited+revised) + Step 3 (parking sweep 47→16 open) all DONE. 18 commits shipped d18b7354 → 68388b5a. Working tree CLEAN; main in sync with origin GitHub. PAT rotated + working — Mode B refresh-upstream genuinely production-ready end-to-end."
+current_subphase_step: "Next session: /batch-gap-analysis on 14 WP/SGS skills (original 10 + sgs-wp-engine + wordpress-router + sgs-extraction + sgs-clone). Full /gap-analysis protocol per target — sequential in main conversation per blub.db row 176 hard gate. ~3 hours dedicated work. Produces quality baseline + S-grade candidates + opportunity selections for Bean. After GA: walk remaining 16 STILL-OPEN parking items + decide on remaining 1 DECISION-NEEDED (P-5A-CLIENT-VARIATION-CSS-PATH orchestrator helper redirect)."
 last_updated: 2026-05-22
-latest_commit: "19906e6a on main — docs(handoff): close-out update — Session B wrap-up + 2 WP 7.0 surprises + 2 Phase 6 partials + housekeeping clear-down"
-working_tree: CLEAN (verified post 19906e6a)
-github_branches: "main ONLY (feat/phase-2a-massive deleted 2026-05-22 — work was on main via different commits; 9 stale local remote-tracking refs pruned)"
+latest_commit: "68388b5a on main — docs: phase4 schema snapshots [qc:close-out-artefacts]"
+working_tree: CLEAN
+github_branches: "main ONLY"
 session_b_records:
   qc_council_report: .claude/reports/2026-05-22-session-B-qc-council.md
   session_summary: .claude/memory/session-summary-2026-05-22-session-B.md
