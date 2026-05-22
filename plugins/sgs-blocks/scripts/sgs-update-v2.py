@@ -1352,15 +1352,155 @@ def stage_2_core_gutenberg_cache_refresh(
 
 
 # ---------------------------------------------------------------------------
-# Stage 3 — WP-CLI handbook refresh (STUB — Step 4.5)
+# Stage 3 — WP-CLI handbook refresh (Step 4.5)
+#
+# Reads existing docs rows from cached ~/.wp-devdocs-mcp/hooks.db (source_id=6,
+# wp-cli-handbook) where slug LIKE 'commands--%' (the command reference subset)
+# and INSERT OR IGNORE them into sgs-framework.db docs with
+# doc_type='cli-command', source='native_wp'.
+#
+# The live re-fetch path (Mode B Source 3 in Stage 2) handles upstream scraping.
+# Stage 3 is the cache-read path: refresh from the already-indexed cache only.
+#
+# Cross-check: after run, if total cli-command rows < 12, emit a WARNING
+# (not a failure — the threshold is a soft signal, not a gate).
+#
+# Idempotent: second run inserts 0 rows (INSERT OR IGNORE throughout).
 # ---------------------------------------------------------------------------
+
+# Minimum expected WP-CLI command rows after a successful Stage 3 run
+_WPCLI_MIN_EXPECTED = 12
+
 
 def stage_3_wpcli_handbook_refresh(
     conn: sqlite3.Connection, dry_run: bool = False
 ) -> dict:
-    """STUB — implemented in Step 4.5."""
-    print("[stage 3] STUB — implemented in Step 4.5")
-    return {"rows_inserted": 0, "stub": True}
+    """Refresh docs table with WP-CLI command reference content from the cached
+    ~/.wp-devdocs-mcp/hooks.db (source_id=6, wp-cli-handbook).
+
+    Two-step strategy:
+      1. INSERT OR IGNORE — adds any command slugs not yet in sgs-framework.db.
+      2. UPDATE doc_type — ensures all commands-- rows carry doc_type='cli-command'.
+         Stage 2 Mode A imports hooks.db docs verbatim with their original doc_types
+         (e.g. 'reference'); this step corrects that for the WP-CLI command subset.
+         Both steps are idempotent: a second run produces no effective changes.
+
+    Returns: {"new_rows": int, "reclassified": int, "total_cli_commands": int, "dry_run": bool}
+    """
+    hooks_db_path = Path.home() / ".wp-devdocs-mcp" / "hooks.db"
+    c = conn.cursor()
+
+    if not hooks_db_path.exists():
+        print(
+            f"Stage 3 WARNING: hooks.db not found at {hooks_db_path}. "
+            f"Run with --refresh-upstream to scrape from GitHub."
+        )
+        total_cli = c.execute(
+            "SELECT COUNT(*) FROM docs WHERE doc_type='cli-command' AND source='native_wp'"
+        ).fetchone()[0]
+        return {"new_rows": 0, "reclassified": 0, "total_cli_commands": total_cli,
+                "dry_run": dry_run, "warning": "hooks.db not found"}
+
+    # Open the cached hooks.db
+    src = sqlite3.connect(str(hooks_db_path))
+    src.row_factory = sqlite3.Row
+    sc = src.cursor()
+
+    # Fetch all WP-CLI command entries (slug LIKE 'commands--%', source_id=6)
+    sc.execute(
+        "SELECT slug, title, doc_type, category, content, description "
+        "FROM docs WHERE source_id=6 AND slug LIKE 'commands--%'"
+    )
+    cached_rows = sc.fetchall()
+    src.close()
+
+    new_rows = 0
+    reclassified = 0
+
+    for row in cached_rows:
+        slug = row["slug"]
+        title = row["title"] or slug.replace("commands--", "wp ").replace("-", " ")
+        category = row["category"] or "wpcli"
+        # Merge description into content if both present
+        content_parts = []
+        if row["description"]:
+            content_parts.append(row["description"])
+        if row["content"]:
+            content_parts.append(row["content"])
+        content = "\n\n".join(content_parts) if content_parts else ""
+        # Trim to keep DB lean
+        if len(content) > 4000:
+            content = content[:4000] + "\n...[truncated]"
+
+        if dry_run:
+            # Step 1 dry-run: would this be a new insert?
+            ex = c.execute(
+                "SELECT doc_type FROM docs WHERE slug=? AND source='native_wp'",
+                (slug,),
+            ).fetchone()
+            if ex is None:
+                new_rows += 1
+            elif ex[0] != "cli-command":
+                # Step 2 dry-run: would this be reclassified?
+                reclassified += 1
+        else:
+            # Step 1: INSERT OR IGNORE — adds rows not yet in DB
+            res = c.execute(
+                """
+                INSERT OR IGNORE INTO docs
+                    (source, slug, title, doc_type, category, content)
+                VALUES ('native_wp', ?, ?, 'cli-command', ?, ?)
+                """,
+                (slug, title, category, content),
+            )
+            new_rows += res.rowcount
+
+            # Step 2: UPDATE doc_type for rows that were already present but
+            # imported with the wrong doc_type (e.g. 'reference' from Stage 2).
+            if res.rowcount == 0:
+                res2 = c.execute(
+                    """
+                    UPDATE docs SET doc_type='cli-command'
+                    WHERE slug=? AND source='native_wp' AND doc_type != 'cli-command'
+                    """,
+                    (slug,),
+                )
+                reclassified += res2.rowcount
+
+    if not dry_run:
+        conn.commit()
+
+    # Cross-check: total cli-command rows after run
+    total_cli = c.execute(
+        "SELECT COUNT(*) FROM docs WHERE doc_type='cli-command' AND source='native_wp'"
+    ).fetchone()[0]
+
+    if dry_run:
+        print(
+            f"Stage 3 [dry-run]: {len(cached_rows)} candidates from hooks.db. "
+            f"Would insert {new_rows} new rows, reclassify {reclassified} existing rows. "
+            f"Current total cli-command rows: {total_cli}."
+        )
+    else:
+        print(
+            f"Stage 3: {len(cached_rows)} candidates from hooks.db. "
+            f"Inserted: {new_rows} new rows, reclassified: {reclassified} existing rows. "
+            f"Total cli-command rows in DB: {total_cli}."
+        )
+
+    if total_cli < _WPCLI_MIN_EXPECTED and not dry_run:
+        print(
+            f"Stage 3 WARNING: only {total_cli} CLI commands indexed after run; "
+            f"expected >={_WPCLI_MIN_EXPECTED}. "
+            f"Consider running --refresh-upstream to re-scrape from GitHub."
+        )
+
+    return {
+        "new_rows": new_rows,
+        "reclassified": reclassified,
+        "total_cli_commands": total_cli,
+        "dry_run": dry_run,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -1382,37 +1522,318 @@ def stage_4_style_variation_sync(
 
 
 # ---------------------------------------------------------------------------
-# Stage 5 — Slot synonym auto-seed (STUB — Step 4.5)
+# Stage 5 — Slot synonym auto-seed (Step 4.5)
+#
+# For every slot_synonyms row where standalone_block IS NULL or empty, runs
+# a heuristic name-match against the sgs blocks table to propose an
+# SGS block mapping.
+#
+# Heuristic confidence levels:
+#   high   — exact slug match (e.g. 'hero' -> 'sgs/hero') → auto-UPDATE
+#   medium — single prefix/contains match with ≥4 char overlap → LOG only
+#   low    — no match OR multiple ambiguous matches → LOG only
+#
+# High-confidence matches are applied via UPDATE (not INSERT — rows exist).
+# Medium/low proposals are written to the report file for manual review.
+#
+# Report file: reports/phase4-slot-synonym-proposals.txt (overwritten each run).
+# Report is always written (even in dry-run — it is observational).
 # ---------------------------------------------------------------------------
+
+import re as _re
+
+
+def _camel_to_kebab(name: str) -> str:
+    """Convert camelCase to kebab-case (e.g. buttonSecondary -> button-secondary)."""
+    # Insert hyphen before uppercase letters that follow lowercase letters/digits
+    s1 = _re.sub(r"([a-z0-9])([A-Z])", r"\1-\2", name)
+    return s1.lower()
+
 
 def stage_5_slot_synonym_auto_seed(
     conn: sqlite3.Connection, dry_run: bool = False
 ) -> dict:
-    """STUB — implemented in Step 4.5.
+    """Heuristic auto-seed of slot_synonyms.standalone_block for unmapped rows.
 
-    Heuristic: for each slot_synonyms row where standalone_block IS NULL,
-    check if a SGS block with matching name pattern exists. Log proposals
-    to reports/phase4-slot-synonym-proposals.txt for manual review.
+    Queries slot_synonyms WHERE standalone_block IS NULL OR standalone_block = ''.
+    For each unmapped slot, runs a 3-tier heuristic against blocks WHERE source='sgs':
+      1. Exact slug match:      sgs/<normalised-name>
+      2. Prefix match:          slug LIKE 'sgs/<normalised-name>%'  (single result only)
+      3. Contains match:        slug LIKE '%<normalised-name>%'       (single result only)
+
+    High-confidence (exact) → UPDATE slot_synonyms SET standalone_block=slug.
+    Medium-confidence (single prefix) → log to report, no write.
+    Low (contains or multiple/none) → log to report, no write.
+
+    Returns: {"unmapped_count", "auto_inserted", "manual_review", "no_match",
+              "report_path", "dry_run"}
     """
-    print("[stage 5] STUB — implemented in Step 4.5")
-    return {"rows_inserted": 0, "stub": True}
+    c = conn.cursor()
+    report_path = REPO_ROOT / "reports" / "phase4-slot-synonym-proposals.txt"
+
+    # Fetch all unmapped slot_synonyms (using rowid for reliable UPDATE targeting)
+    rows = c.execute(
+        """
+        SELECT rowid, canonical_slot
+        FROM slot_synonyms
+        WHERE standalone_block IS NULL OR standalone_block = ''
+        """
+    ).fetchall()
+
+    unmapped_count = len(rows)
+    auto_inserted = 0
+    manual_review = 0
+    no_match = 0
+
+    high_lines: list[str] = []
+    medium_lines: list[str] = []
+    low_lines: list[str] = []
+
+    for row_id, canonical_slot in rows:
+        normalised = _camel_to_kebab(canonical_slot).strip("_- ")
+
+        if not normalised:
+            low_lines.append(f"- slot='{canonical_slot}' (could not normalise name)")
+            no_match += 1
+            continue
+
+        # --- Tier 1: exact slug match ---
+        exact = c.execute(
+            "SELECT slug FROM blocks WHERE source='sgs' AND slug = ?",
+            (f"sgs/{normalised}",),
+        ).fetchone()
+
+        if exact:
+            matched_slug = exact[0]
+            high_lines.append(
+                f"- slot='{canonical_slot}' → {matched_slug} (exact match)"
+            )
+            if not dry_run:
+                c.execute(
+                    "UPDATE slot_synonyms SET standalone_block=? WHERE rowid=?",
+                    (matched_slug, row_id),
+                )
+            auto_inserted += 1
+            continue
+
+        # --- Tier 2: prefix match (sgs/<name>%) — only if single result ---
+        prefix_results = c.execute(
+            "SELECT slug FROM blocks WHERE source='sgs' AND slug LIKE ?",
+            (f"sgs/{normalised}%",),
+        ).fetchall()
+
+        if len(prefix_results) == 1 and len(normalised) >= 4:
+            matched_slug = prefix_results[0][0]
+            medium_lines.append(
+                f"- slot='{canonical_slot}' → {matched_slug} "
+                f"(prefix match — review before accepting)"
+            )
+            manual_review += 1
+            continue
+
+        if len(prefix_results) > 1:
+            candidates = ", ".join(r[0] for r in prefix_results[:5])
+            low_lines.append(
+                f"- slot='{canonical_slot}' (multiple prefix matches: {candidates})"
+            )
+            no_match += 1
+            continue
+
+        # --- Tier 3: contains match — only if single result ---
+        contains_results = c.execute(
+            "SELECT slug FROM blocks WHERE source='sgs' AND slug LIKE ?",
+            (f"%{normalised}%",),
+        ).fetchall()
+
+        if len(contains_results) == 1 and len(normalised) >= 4:
+            matched_slug = contains_results[0][0]
+            medium_lines.append(
+                f"- slot='{canonical_slot}' → {matched_slug} "
+                f"(contains match — review before accepting)"
+            )
+            manual_review += 1
+        else:
+            # No match or too many ambiguous matches
+            if len(contains_results) > 1:
+                low_lines.append(
+                    f"- slot='{canonical_slot}' "
+                    f"(ambiguous — {len(contains_results)} contains matches, no auto-seed)"
+                )
+            else:
+                low_lines.append(
+                    f"- slot='{canonical_slot}' (no SGS block matches)"
+                )
+            no_match += 1
+
+    if not dry_run:
+        conn.commit()
+
+    # --- Write report (always — observational, fine in dry-run) ---
+    ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+    lines: list[str] = [
+        f"# Slot Synonym Auto-Seed Proposals — {ts}",
+        "",
+        f"## Summary",
+        f"Unmapped rows: {unmapped_count} | "
+        f"Auto-inserted (high confidence): {auto_inserted} | "
+        f"Manual review (medium confidence): {manual_review} | "
+        f"No match (low confidence): {no_match}",
+        "",
+    ]
+
+    if high_lines:
+        lines += ["## High confidence (auto-updated)", ""] + high_lines + [""]
+    else:
+        lines += ["## High confidence (auto-updated)", "", "_(none)_", ""]
+
+    if medium_lines:
+        lines += ["## Medium confidence (manual review required)", ""] + medium_lines + [""]
+    else:
+        lines += ["## Medium confidence (manual review required)", "", "_(none)_", ""]
+
+    if low_lines:
+        lines += ["## Low confidence (no clear match)", ""] + low_lines + [""]
+    else:
+        lines += ["## Low confidence (no clear match)", "", "_(none)_", ""]
+
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    report_path.write_text("\n".join(lines), encoding="utf-8")
+
+    mode = "dry-run" if dry_run else "actual"
+    print(
+        f"Stage 5 [{mode}]: {unmapped_count} unmapped slots. "
+        f"Auto-updated: {auto_inserted}, manual review: {manual_review}, "
+        f"no match: {no_match}. "
+        f"Report: {report_path}"
+    )
+
+    return {
+        "unmapped_count": unmapped_count,
+        "auto_inserted": auto_inserted,
+        "manual_review": manual_review,
+        "no_match": no_match,
+        "report_path": str(report_path),
+        "dry_run": dry_run,
+    }
 
 
 # ---------------------------------------------------------------------------
-# Stage 6 — Block replacement mapping (STUB — Step 4.5)
+# Stage 6 — Block replacement mapping (Step 4.5)
+#
+# Walks blocks WHERE source='sgs' AND replaces IS NOT NULL.
+# For each `replaces` value (single slug or comma-separated list),
+# verifies each target slug exists in blocks WHERE source='native_wp'.
+#
+# Valid mappings:  all targets resolve → logged to valid list.
+# Stale mappings: at least one target missing → logged to stale list.
+#
+# Stale mappings are written to reports/phase4-stale-replacements.txt.
+# NO automated deletions — operator reviews and acts manually.
+# Report is always written (even in dry-run — observational).
+#
+# Idempotent: read-only against the blocks table.
 # ---------------------------------------------------------------------------
 
 def stage_6_block_replacement_mapping(
     conn: sqlite3.Connection, dry_run: bool = False
 ) -> dict:
-    """STUB — implemented in Step 4.5.
+    """Validate blocks.replaces mappings against the current native_wp block roster.
 
-    Walks blocks.replaces column; verifies each mapping still valid against
-    current blocks WHERE source='native_wp'. Logs stale mappings to
-    reports/phase4-stale-replacements.txt. No automated deletions.
+    Reads blocks WHERE source='sgs' AND replaces IS NOT NULL AND replaces != ''.
+    For each target in the replaces field (comma-separated if multiple), checks
+    SELECT 1 FROM blocks WHERE slug=target AND source='native_wp'.
+
+    Stale mappings (unresolved targets) are logged to:
+      reports/phase4-stale-replacements.txt
+
+    No automated writes to the blocks table. Operator reviews stale list manually.
+    Returns: {"checked": int, "valid": int, "stale": int, "report_path": str, "dry_run": bool}
     """
-    print("[stage 6] STUB — implemented in Step 4.5")
-    return {"rows_inserted": 0, "stub": True}
+    c = conn.cursor()
+    report_path = REPO_ROOT / "reports" / "phase4-stale-replacements.txt"
+
+    # Fetch all SGS blocks with a replaces mapping
+    rows = c.execute(
+        """
+        SELECT slug, replaces
+        FROM blocks
+        WHERE source='sgs' AND replaces IS NOT NULL AND replaces != ''
+        """
+    ).fetchall()
+
+    checked = 0
+    valid = 0
+    stale = 0
+    stale_lines: list[str] = []
+
+    for sgs_slug, replaces_raw in rows:
+        # Parse: single slug or comma-separated list
+        targets = [t.strip() for t in replaces_raw.split(",") if t.strip()]
+        if not targets:
+            continue
+
+        checked += 1
+        missing_targets: list[str] = []
+
+        for target_slug in targets:
+            exists = c.execute(
+                "SELECT 1 FROM blocks WHERE slug=? AND source='native_wp'",
+                (target_slug,),
+            ).fetchone()
+            if exists is None:
+                missing_targets.append(target_slug)
+
+        if missing_targets:
+            stale += 1
+            if len(missing_targets) == 1:
+                stale_lines.append(
+                    f"- {sgs_slug} replaces '{replaces_raw}' "
+                    f"— '{missing_targets[0]}' not found in native_wp blocks"
+                )
+            else:
+                missing_str = ", ".join(f"'{m}'" for m in missing_targets)
+                stale_lines.append(
+                    f"- {sgs_slug} replaces '{replaces_raw}' "
+                    f"— targets not found: {missing_str}"
+                )
+        else:
+            valid += 1
+
+    # --- Write stale report (always — observational) ---
+    ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+    lines: list[str] = [
+        f"# Stale Block Replacement Mappings — {ts}",
+        "",
+        f"Checked: {checked} | Valid: {valid} | Stale: {stale}",
+        "",
+    ]
+
+    if stale_lines:
+        lines += ["## Stale mappings (manual review required)", ""] + stale_lines + [""]
+    else:
+        lines += [
+            "## Stale mappings (manual review required)", "",
+            "_(none — all mappings resolve to existing native_wp blocks)_",
+            "",
+        ]
+
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    report_path.write_text("\n".join(lines), encoding="utf-8")
+
+    mode = "dry-run" if dry_run else "actual"
+    print(
+        f"Stage 6 [{mode}]: {checked} blocks checked. "
+        f"Valid: {valid}, Stale: {stale}. "
+        f"Report: {report_path}"
+    )
+
+    return {
+        "checked": checked,
+        "valid": valid,
+        "stale": stale,
+        "report_path": str(report_path),
+        "dry_run": dry_run,
+    }
 
 
 # ---------------------------------------------------------------------------

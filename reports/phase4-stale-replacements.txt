@@ -1,0 +1,7 @@
+# Stale Block Replacement Mappings — 2026-05-22 17:25:24 UTC
+
+Checked: 18 | Valid: 18 | Stale: 0
+
+## Stale mappings (manual review required)
+
+_(none — all mappings resolve to existing native_wp blocks)_
