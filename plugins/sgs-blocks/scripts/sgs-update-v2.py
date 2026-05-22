@@ -1651,7 +1651,7 @@ def stage_4_style_variation_sync(
         settings = snapshot.get("settings", {})
 
         # --- colour palette ---
-        # token_type must match DB CHECK constraint: 'colour', 'font', 'spacing', 'size'
+        # token_type must match DB CHECK constraint: 'colour', 'font', 'spacing', 'size', 'shadow'
         for item in settings.get("color", {}).get("palette", []):
             slug = item.get("slug", "")
             colour = item.get("color", "")
@@ -1661,7 +1661,7 @@ def stage_4_style_variation_sync(
                 continue
             candidates.append({
                 "slug": f"color-{slug}",
-                "token_type": "colour",  # matches DB CHECK('colour', 'font', 'spacing', 'size')
+                "token_type": "colour",  # matches DB CHECK('colour', 'font', 'spacing', 'size', 'shadow')
                 "default_value": colour,
                 "css_var": f"var(--wp--preset--color--{slug})",
                 "description": f"{name} (from {client_slug})",
@@ -1693,7 +1693,7 @@ def stage_4_style_variation_sync(
                 continue
             candidates.append({
                 "slug": f"font-family-{slug}",
-                "token_type": "font",  # matches DB CHECK('colour', 'font', 'spacing', 'size')
+                "token_type": "font",  # matches DB CHECK('colour', 'font', 'spacing', 'size', 'shadow')
                 "default_value": family,
                 "css_var": f"var(--wp--preset--font-family--{slug})",
                 "description": f"{name} (from {client_slug})",
@@ -1715,23 +1715,19 @@ def stage_4_style_variation_sync(
             })
 
         # --- shadow presets ---
-        # DB CHECK constraint only allows: 'colour', 'font', 'spacing', 'size'
-        # 'shadow' is NOT in the allowed set — skip shadow presets to avoid silent
-        # INSERT OR IGNORE failures. If the schema is extended to include 'shadow',
-        # uncomment this block and update the CHECK constraint first.
-        # for item in settings.get("shadow", {}).get("presets", []):
-        #     slug = item.get("slug", "")
-        #     shadow = item.get("shadow", "")
-        #     name = item.get("name", slug)
-        #     if not slug or not shadow:
-        #         continue
-        #     candidates.append({
-        #         "slug": f"shadow-{slug}",
-        #         "token_type": "shadow",
-        #         "default_value": shadow,
-        #         "css_var": f"var(--wp--preset--shadow--{slug})",
-        #         "description": f"{name} (from {client_slug})",
-        #     })
+        for item in settings.get("shadow", {}).get("presets", []):
+            slug = item.get("slug", "")
+            shadow = item.get("shadow", "")
+            name = item.get("name", slug)
+            if not slug or not shadow:
+                continue
+            candidates.append({
+                "slug": f"shadow-{slug}",
+                "token_type": "shadow",
+                "default_value": shadow,
+                "css_var": f"var(--wp--preset--shadow--{slug})",
+                "description": f"{name} (from {client_slug})",
+            })
 
         return candidates
 
