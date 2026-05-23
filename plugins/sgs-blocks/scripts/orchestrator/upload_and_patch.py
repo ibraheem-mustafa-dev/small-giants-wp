@@ -82,8 +82,10 @@ def main():
     parser.add_argument(
         "--target-id",
         type=int,
-        default=131,
-        help="WP object ID (default: 131 = cv2-output-mamas-munches page)",
+        default=144,
+        help="WP object ID (default: 144 = rc-fix-verification-mamas-munches page; "
+             "page 131 was deleted between 2026-05-20 and 2026-05-23, see "
+             ".claude/parking.md → P-CANARY-PAGE-131-DELETED)",
     )
     parser.add_argument(
         "--client",
@@ -200,9 +202,41 @@ def main():
         idx = resp.find('{"id"')
         if idx >= 0:
             r = json.loads(resp[idx:])
+            # Defensive: confirm the response ID matches the requested target ID.
+            # WP's REST PATCH against an existing page returns its id; if WP
+            # somehow returned a different id (race, redirect, upsert behaviour)
+            # we should halt rather than silently report success.
+            resp_id = r.get("id")
+            if resp_id is not None and str(resp_id) != str(args.target_id):
+                print(
+                    f"  HALTED: WP REST returned id={resp_id} but requested "
+                    f"target was {args.target_id}",
+                    file=sys.stderr,
+                )
+                sys.exit(5)
             print(f"  {args.target} {args.target_id} modified {r.get('modified')} link={r.get('link')}")
+        else:
+            # 200 OK but response body doesn't look like a WP REST page record.
+            # Surface the raw response so the operator can diagnose.
+            # (Exit 6 — exit 3 is already used by the variation-activation-failed
+            # path further down the script.)
+            print(
+                f"  HALTED: WP REST returned 200 but no recognisable "
+                f"id-bearing JSON record. Body head: {resp[:300]!r}",
+                file=sys.stderr,
+            )
+            sys.exit(6)
     except urllib.error.HTTPError as e:
-        print(f"  HTTP {e.code}: {e.read().decode('utf-8','ignore')[:300]}")
+        # Patch defect 2026-05-23 (P-STAGE-10-DEPLOY-SILENT-PHANTOM-PAGE):
+        # Earlier this except printed to stdout and continued. The wrapper
+        # orchestrator interpreted exit-0 as success and fell back to a
+        # literal "OK" string, masking 404s against deleted pages (verified
+        # against sandybrown page 131 which was deleted between 2026-05-20
+        # and 2026-05-23). Now we exit non-zero so the orchestrator can
+        # halt with a clear error message.
+        err_body = e.read().decode("utf-8", "ignore")[:300]
+        print(f"  HTTP {e.code}: {err_body}", file=sys.stderr)
+        sys.exit(4 if e.code == 404 else 1)
 
     # Phase 5a (2026-05-22 Decision 16') — Theme.json snapshot push.
     #

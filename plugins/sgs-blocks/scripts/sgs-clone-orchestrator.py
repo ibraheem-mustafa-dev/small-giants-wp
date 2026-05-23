@@ -2514,6 +2514,38 @@ def main():
                     f"Detail: {variation_lines[-1] if variation_lines else 'see stage-10 stdout'}",
                     file=sys.stderr,
                 )
+            elif result.returncode == 4:
+                # Exit code 4 = target page does not exist on the WP install
+                # (HTTP 404 from REST PATCH). Added 2026-05-23 to close
+                # P-STAGE-10-DEPLOY-SILENT-PHANTOM-PAGE — prior to this fix,
+                # the wrapper script swallowed 404s as exit-0 and the
+                # orchestrator falsely reported "OK". Verified empirically
+                # against sandybrown page 131 (deleted between 2026-05-20
+                # and 2026-05-23) which would have shown as patched-OK.
+                print(
+                    f"[stage-10] deploy HALTED — {target_kind} {target_id} does not exist on the WP install "
+                    f"(HTTP 404). Either the page was deleted, or the --deploy-target id is wrong. "
+                    f"Detail (stderr): {result.stderr.strip()[:300]}",
+                    file=sys.stderr,
+                )
+            elif result.returncode == 5:
+                # Exit code 5 = WP REST returned a response with an id that
+                # does NOT match the requested target id. Race / redirect /
+                # upsert behaviour — halt rather than report wrong target.
+                print(
+                    f"[stage-10] deploy HALTED — WP REST returned a page with id != requested "
+                    f"target id={target_id}. Detail: {result.stderr.strip()[:300]}",
+                    file=sys.stderr,
+                )
+            elif result.returncode == 6:
+                # Exit code 6 = HTTP 200 but response body lacks an id-bearing
+                # JSON record. Could be HTML returned instead of JSON (auth
+                # redirect, server error page rendered as 200). Halt + surface.
+                print(
+                    f"[stage-10] deploy HALTED — WP REST returned 200 but no recognisable "
+                    f"id-bearing JSON record. Detail: {result.stderr.strip()[:300]}",
+                    file=sys.stderr,
+                )
             else:
                 print(f"[stage-10] deploy soft-failed (exit {result.returncode}): {result.stderr[:200]}", file=sys.stderr)
         except Exception as exc:  # noqa: BLE001 — Stage 10 is opt-in observability; soft-fail
