@@ -250,7 +250,9 @@ The big picture in one page, with EVERY script, file, DB table and skill plotted
 │  sites/<client>/mockups/<page>/index.html (extracts <style> blocks)         │
 │                                                                             │
 │ FILES (W):                                                                  │
-│  theme/sgs-theme/styles/<client>.css (monolithic CSS dump)                  │
+│  theme/sgs-theme/styles/<client>.css (monolithic CSS dump — BEING RELOCATED  │
+│       2026-05-23 by Q3 css_router subagent to                               │
+│       pipeline-state/<run>/variation-d0-d2.css; see Decision D3 2026-05-20) │
 │                                                                             │
 │ DB tables:    none                                                          │
 │ Skills:       none                                                          │
@@ -262,7 +264,7 @@ The big picture in one page, with EVERY script, file, DB table and skill plotted
 │           feedback_cloning_preserves_intentional_bespoke_detail rule.       │
 │           Tracked as architecture debt; not a Phase 6 blocker.              │
 │                                                                             │
-│ STATUS:       LIVE - working but wrong-architecture                         │
+│ STATUS:       LIVE - wrong-architecture; Q3 relocation in progress (2026-05-23) │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -367,12 +369,19 @@ The big picture in one page, with EVERY script, file, DB table and skill plotted
 │                                                                             │
 │ Skills (X):     none                                                        │
 │                                                                             │
-│ GAP: Matches at BLOCK level only - no PATTERN-level matcher consulting      │
-│      patterns table or block_compositions before falling through. For       │
-│      Mama's: 6 of 9 sections return core/group (no match) and fall to      │
-│      Stage 9b autonomy fallback.                                            │
+│ Q1A FIX (commit d8ae4a2a, 2026-05-23): Stage 2 confidence-matrix fallback   │
+│      now emits sgs/container instead of core/group per Decision 3           │
+│      (decisions.md 2026-05-20 D3). Sentinel decoupled from block name —     │
+│      uses confidence == 0.0 flag. legacy_role_lookup table gained 1 row     │
+│      (now 18 rows, was 17). core/group fallback is now a legacy path only.  │
 │                                                                             │
-│ STATUS:       LIVE - working but missing pattern-level lookup                │
+│ GAP: Matches at BLOCK level only - no PATTERN-level matcher consulting      │
+│      patterns table or block_compositions before falling through. Remaining │
+│      unmatched sections fall to Stage 9b autonomy fallback with sgs/container│
+│      as the emit shape (better than core/group but still not typed).        │
+│                                                                             │
+│ STATUS:       LIVE - core/group fallback fixed (2026-05-23); pattern-level  │
+│               lookup still missing                                          │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -854,6 +863,11 @@ The classifier reads from `block_attributes.role` and `block_attributes.canonica
 │   regression-guard tests so the next agent doesn't re-add it. Rosetta       │
 │   Stone validation (row 213) remains.                                       │
 │                                                                             │
+│ Q1B (commit c1aa4cc5, 2026-05-23): brand.php + ingredients-section.php      │
+│      hand-authored patterns DELETED per deterministic-only rule. patterns   │
+│      table rows deleted. Pattern count now 53 (was 55). Deterministic       │
+│      pipeline must produce these via converter, not hand-authoring.         │
+│                                                                             │
 │ STATUS:       LIVE - Phase 6 v2 Step 5 complete; Rosetta Stone gate active; │
 │               NO licensing gate (deliberately). Chokepoint propagation      │
 │               tracked at P-S15-UIMAX-CHOKEPOINT-PROPAGATE in parking.md     │
@@ -914,10 +928,21 @@ The classifier reads from `block_attributes.role` and `block_attributes.canonica
 │  dev runs when the operator opts in). Soft-fail: any deploy error logs to   │
 │  stderr but does NOT halt the pipeline.                                     │
 │                                                                             │
+│ SILENT-FAILURE FIX (commit 700ff211, 2026-05-23):                          │
+│  upload_and_patch.py now exits with named codes on failure:                 │
+│   exit 4 — phantom page (page exists in WP but URL returns 404 on GET)     │
+│   exit 5 — id-mismatch (REST response id ≠ --target-id)                    │
+│   exit 6 — no-id-in-body (REST PATCH response has no "id" field)           │
+│  Orchestrator surfaces these as named halt messages rather than silent OK.  │
+│                                                                             │
 │ FILES (W):                                                                  │
 │  pipeline-state/<run>/extract.patched.json - block_markup with image URLs   │
 │                                              swapped to sandybrown URLs     │
 │  WP page/post N (sandybrown) - PATCHed via REST API                         │
+│                                                                             │
+│ CANARY PAGE (updated 2026-05-23):                                           │
+│  Current canary is page 144 (/rc-fix-verification-mamas-munches/). Page 131 │
+│  was deleted between 2026-05-20 and 2026-05-23. DO NOT use page 131.        │
 │                                                                             │
 │ ORCHESTRATOR OUTPUT:                                                        │
 │  [stage-10] deploy: patched page 144 — page 144 modified 2026-05-19T16:14:01│
@@ -929,6 +954,50 @@ The classifier reads from `block_attributes.role` and `block_attributes.canonica
 │  palestine-lives.org — framework-wide, infrequent). Stage 10 is PER-PAGE    │
 │  cv2-output deploy to a client's staging site — per-clone-run cadence.      │
 │  Different scopes, different skills.                                        │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Stage 11 — Per-section pixel-diff against deployed page [LIVE — shipped 2026-05-23]
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ SCRIPTS:                                                                    │
+│  ✓ orchestrator/upload_and_patch.py — Stage 11 fires immediately after     │
+│       Stage 10 when --deploy-target is set. Parses link= from Stage 10     │
+│       stdout to get the live page URL; runs per-section pixel-diff against  │
+│       the actual deployed page.                                             │
+│                                                                             │
+│ TRIGGER:                                                                    │
+│  Fires only when Stage 10 succeeded (link= present in stage-10 stdout).    │
+│  Requires --deploy-target flag (same as Stage 10). No-op on draft-only runs.│
+│                                                                             │
+│ COMMIT: 1331f23a (2026-05-23)                                               │
+│                                                                             │
+│ FILES (R):                                                                  │
+│  pipeline-state/<run>/stage-10-stdout (parsed for link= URL)               │
+│  sites/<client>/mockups/<page>/index.html (reference for diff)             │
+│                                                                             │
+│ FILES (W):                                                                  │
+│  pipeline-state/<run>/stage-11-pixel-diff.json — per-section diff results  │
+│       keyed by section id; each entry: {selector, viewport, diff_ratio,    │
+│       screenshot_path}. Same format as Stage 8 output.                     │
+│                                                                             │
+│ DB tables:    none                                                          │
+│ Skills:       none                                                          │
+│                                                                             │
+│ EMPIRICAL PIXEL-DIFF NUMBERS (post-fixes, page 144, 2026-05-23):           │
+│  ingredients-section 31.9%, featured-product 43.7%, header 44.9%,         │
+│  hero 73.3%, gift-section 83.0%, brand 84.0%, trust-bar 84.1%,             │
+│  social-proof 93.4%, footer 96.3% — mean 70.5%.                            │
+│  G1-G5 structural gaps are the dominant cause; today's commits (Q1A/Q1B/   │
+│  Stage 10 fix/Stage 11 wire) did NOT touch the structural gaps.            │
+│                                                                             │
+│ RELATIONSHIP TO STAGE 8:                                                    │
+│  Stage 8 diffs the locally-rendered HTML (autonomy gate). Stage 11 diffs   │
+│  the LIVE DEPLOYED PAGE — catches WP rendering differences that Stage 8    │
+│  can't see (server-side PHP rendering, WP block wrappers, Customiser CSS). │
+│                                                                             │
+│ STATUS:       LIVE — shipped 2026-05-23                                     │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -1041,7 +1110,7 @@ For any SGS block, the data stack across the 2 DBs:
 | Block **name** | `sgs-framework.blocks.slug` | `slug` (e.g. `sgs/container`) | ✅ Fully populated — 73 blocks |
 | Block **title / description / category** | `sgs-framework.blocks` | `title`, `description`, `category`, `type`, `status`, `grade` | ✅ Auto-synced by `/sgs-update` |
 | **Has-render-php / has-view-script flags** | `sgs-framework.blocks` | `has_render_php`, `has_view_script` | ✅ Auto-synced |
-| Attribute **names** | `sgs-framework.block_attributes` | `attr_name` keyed by `block_slug` | ✅ 1755 rows (post 2026-05-19) |
+| Attribute **names** | `sgs-framework.block_attributes` | `attr_name` keyed by `block_slug` | ✅ 2230 rows (updated 2026-05-23) |
 | Attribute **type + default** | `sgs-framework.block_attributes` | `attr_type`, `default_value` | ✅ Auto-synced from block.json |
 | Attribute **enum_values (possible values)** | `sgs-framework.block_attributes.enum_values` | JSON array, e.g. `'["standard","split","video","svg-animated"]'` | ✅ Populated for every block.json enum |
 | Attribute **canonical slot** | `sgs-framework.block_attributes.canonical_slot` | Stage-3 lookup target | ✅ +`slot_synonyms` table provides BEM-element aliases (89 rows) |
@@ -1050,13 +1119,13 @@ For any SGS block, the data stack across the 2 DBs:
 | **Output signature** (how the attr renders to HTML) | `sgs-framework.block_attributes.output_signature` | JSON: `{type, output_function, output_element, output_class, output_role, is_content_or_design, conditional_gates}` | ✅ |
 | **Equivalent implementations** (Rosetta Stone) | `sgs-framework.block_attributes.equivalent_implementations` | JSON: `{sgs_wp: "<wp:block …/>", html_css: "<element class='.sgs-x__slot--mod'>"}` | ✅ 1630 rows populated 2026-05-19 — every attr has a draft↔WP mapping |
 | **Derived selector** | `sgs-framework.block_attributes.derived_selector` | e.g. `.sgs-hero__label` — used by Stage 2 matching | ✅ |
-| Block **supports** (WP-native colour / typography / spacing / border + custom sgs.*) | `sgs-framework.block_supports` | Per-block flag rows | ✅ 404 rows |
-| Block **compositions** (parent → child blocks) | `sgs-framework.block_compositions` | Pattern-level inner-block lists | ✅ 37 rows |
-| Block **selectors** (CSS root + element selectors) | `sgs-framework.block_selectors` | Per-block CSS scope | ✅ 74 rows |
+| Block **supports** (WP-native colour / typography / spacing / border + custom sgs.*) | `sgs-framework.block_supports` | Per-block flag rows | ✅ 1223 rows (updated 2026-05-23) |
+| Block **compositions** (parent → child blocks) | `sgs-framework.block_compositions` | Pattern-level inner-block lists — WRITE-ONLY at clone runtime | ✅ 37 rows |
+| Block **selectors** (CSS root + element selectors) | `sgs-framework.block_selectors` | Per-block CSS scope — NOT read at clone runtime (walker uses derived_selector) | ✅ 74 rows |
 | Block **change history** | `sgs-framework.block_changes` | Auto-logged by `/sgs-update` | ✅ 2329 rows |
 | Block **hooks** (sgs_* WP filters/actions per block) | `sgs-framework.hooks` | Populated by `/wp-hooks` integration | ✅ wired 2026-05-19 |
-| **Design tokens** (colour / spacing / font / shadow per theme.json) | `sgs-framework.design_tokens` | theme.json palette + variation overrides | ✅ 39 rows post-refresh 2026-05-19 |
-| **Style variations** (per-client `styles/<client>.json`) | `sgs-framework.style_variations` | Active variation catalogue | ✅ 8 variations 2026-05-19 |
+| **Design tokens** (colour / spacing / font / shadow per theme.json) | `sgs-framework.design_tokens` | theme.json palette + variation overrides | ✅ 184 rows (updated 2026-05-23) |
+| **Style variations** (per-client `styles/<client>.json`) | `sgs-framework.style_variations` | Active variation catalogue — `.json` overlay system retired Phase 5a; snapshots at `sites/<client>/theme-snapshot.json` | ✅ stale post Phase 5a |
 | **Cross-stack components** (Radix / shadcn / Material UI / etc. with equiv_implementations) | `uimax.component_libraries` | 217 rows | ✅ |
 | **Naming conventions** (16 frameworks' BEM patterns) | `uimax.naming_conventions` | SGS WordPress = canonical | ✅ |
 | **Recognition log** (every clone pipeline boundary classification) | `uimax.recognition_log` | Append-only audit trail | ✅ Stage 9 W |
@@ -1173,8 +1242,8 @@ All other CSS/JS values are direct-passthrough — no conversion catalogue neede
 | Standalone / build / retired | 73 | Out of scope for /sgs-clone wiring |
 | Skill/command files referenced | 17 | Catalogued in skills-commands-map.md |
 | /visual-qa internal scripts | 8 | Skill-bundle scripts at ~/.agents/skills/visual-qa/scripts/ |
-| Pipeline stages defined | 10 + 4 tails | 0, 0.1, 0.5, 0.7, 1, 2, 3, 4, 5, 6, 7, 7b, 8, 9, 9b + DEPLOY/PARITY/REGISTER/UPDATE |
-| Pipeline stages LIVE | 17 | Stages 0, 0.1, 0.5, 0.7, 1, 2, 3, 4, 4.5, 5, 6, 7, 7b, 8, 9, 9b, +REGISTER (updated 2026-05-14 after Phase 6 v2 Step 4 closed — 4.5 + 5 flipped LIVE) |
+| Pipeline stages defined | 11 + 4 tails | 0, 0.1, 0.5, 0.7, 1, 2, 3, 4, 5, 6, 7, 7b, 8, 9, 9b, 9c, 10, 11 + DEPLOY/PARITY/REGISTER/UPDATE (updated 2026-05-23) |
+| Pipeline stages LIVE | 19 | Stages 0, 0.1, 0.5, 0.7, 1, 2, 3, 4, 4.5, 5, 6, 7, 7b, 8, 9, 9b, 9c, 10, 11, +REGISTER (Stage 11 added 2026-05-23) |
 | Pipeline stages UNWIRED | 0 critical | All Phase 6 v2 Step 4 wire-ins complete 2026-05-14 |
 | Pipeline stages PARTIAL | 2 | Stage 9b autonomy chain (2 of N rails); +REGISTER (validator bypass; Step 5 fix outstanding) |
 

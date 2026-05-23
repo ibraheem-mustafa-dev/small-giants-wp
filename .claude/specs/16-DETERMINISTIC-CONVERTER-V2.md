@@ -213,7 +213,7 @@ When the rule targets a class on a descendant inside a block-root, AND the CSS p
 
 When the rule targets a class on a wrapper that has NO typed-attr destination (block doesn't expose a matching attr, OR the wrapper isn't inside any block-root):
 - Emit a markup wrapper for that node (`sgs/container` or `core/group` depending on layout needs) carrying the className
-- Lift the rule into the variation CSS buffer; orchestrator writes it to `theme/sgs-theme/styles/<client>.json` `styles.css` field, scoped via `.page-id-N`
+- Lift the rule into the variation CSS buffer; orchestrator writes it to `pipeline-state/<run>/variation-d0-d2.css` (scoped via `.page-id-N`). <!-- Updated 2026-05-23 — Phase 5a retired the `.json` overlay system (commit 43a93df9); the `.css` output path relocated to pipeline-state today (Q3 commit shipping 2026-05-23); no longer writes to `theme/sgs-theme/styles/<client>.json` -->
 - The class on the emitted wrapper is the anchor for the CSS rule
 
 **Destination 3 — Attribute gap candidate:**
@@ -416,7 +416,7 @@ What stays:
 |---|---|---|
 | Q1 | Which canonical slot vocabulary is missing for v0.2? | Add `icon` canonical (Bean confirmed sgs/icon-block already exists, just needs the canonical row in slot_synonyms). Other Q5a candidates either already exist or stay deferred. |
 | Q2 | Converter as new module vs CLI substitute? | Module — same-process import via `from orchestrator.converter_v2 import convert_section`. ~50ms saved per section, easier stack traces. CLI substitute pattern only retained for `extract.py` legacy compatibility during Phase 3. |
-| Q3 | How do blocks usually store CSS? | Three places: (1) theme.json tokens (cross-block), (2) per-block style.css (block's static frontend CSS), (3) per-instance inline `style="..."` set by editor for non-token values. Spec 16's variation buffer lands in (1) at `theme/sgs-theme/styles/<client>.json` styles.css field, scoped via `.page-id-N`. |
+| Q3 | How do blocks usually store CSS? | Three places: (1) theme.json tokens (cross-block), (2) per-block style.css (block's static frontend CSS), (3) per-instance inline `style="..."` set by editor for non-token values. Spec 16's variation buffer lands in `pipeline-state/<run>/variation-d0-d2.css`, scoped via `.page-id-N`. (Updated 2026-05-23 — the previous `theme/sgs-theme/styles/<client>.json` destination was retired by Phase 5a commit 43a93df9; CSS output path relocated to pipeline-state Q3 commit 2026-05-23.) |
 | Q4 | /sgs-update + new label block typography canonicals? | Yes — manual Stage 4 pass in Phase 5. Or extend `assign-canonical.py` heuristics during Phase 5. |
 
 ## 8. Known limitations + parked items (non-blocking)
@@ -718,7 +718,30 @@ Added 2026-05-19 alongside the deploy-skill consolidation. `sgs-clone-orchestrat
 
 See orchestrator Stage 10 entry in `.claude/cloning-pipeline-flow.md` for the per-stage diagram. Acceptance verified by /qc 5/5 with live evidence: `[stage-10] deploy: patched page 144` in stdout.
 
-### 12.12 Spec 15 retirement notes
+**Stage 10 exit-code surface (Updated 2026-05-23 — commit 700ff211):** `upload_and_patch.py` previously returned a literal `"OK"` string on all non-fatal paths, making partial failures invisible. Exit codes 4 (image-upload partial failure), 5 (REST PATCH failure), 6 (both) are now named and surface as named halt messages in orchestrator stdout instead of silent "OK". Source-of-truth: commit 700ff211.
+
+### 12.12 Stage 11 — Per-section pixel-diff against deployed page (Added 2026-05-23)
+
+Added 2026-05-23 (commit 1331f23a). Runs AFTER Stage 10 succeeds; parses the target page URL from Stage 10's `link=` stdout token. Captures per-section screenshots from the live deployed page and runs `pixel-diff.py --selector .sgs-{section}` against the mockup baseline. Output written to `pipeline-state/<run>/stage-11-pixel-diff.json`. Source-of-truth: commit 1331f23a.
+
+**Canonical empirical pixel-diff numbers (2026-05-23, page 144, Mama's Munches post-fix):**
+
+| Section | Pixel-diff |
+|---|---|
+| ingredients | 31.9% |
+| featured-product | 43.7% |
+| header | 44.9% |
+| hero | 73.3% |
+| gift-section | 83.0% |
+| brand | 84.0% |
+| trust-bar | 84.1% |
+| social-proof | 93.4% |
+| footer | 96.3% |
+| **mean** | **70.5%** |
+
+These are the pre-G1–G5-fix baseline numbers. All structural gaps (G1–G5) must close before these drop significantly.
+
+### 12.13 Spec 15 retirement notes
 
 Spec 15 file (`.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md`) is retained on disk with absorption marker in its frontmatter. Future readers: this section (Spec 16 §12) is the canonical content; Spec 15 file is historical record only.
 
@@ -788,7 +811,7 @@ Today three separate databases hold different parts of the WP + SGS knowledge su
 
 **Decision 11:** Add `indexed_files` SGS tracking (`mtime` + `content_hash` per SGS `block.json` + style file) to enable incremental `/sgs-update` scans instead of full re-walks.
 
-**Post-merge DB heat-map update (§12.4–12.5):** Once Phase 1 lands, the `blocks` table gains all native_wp rows (from `blocks.db`'s ~280 core blocks + block variations); `block_attributes` gains the native_wp attribute rows; `block_supports` row count doubles from 404 to approximately 819 (merging SGS 404 + core 415). The three-DB topology becomes one-DB.
+**Post-merge DB heat-map update (§12.4–12.5):** Once Phase 1 lands, the `blocks` table gains all native_wp rows (from `blocks.db`'s ~280 core blocks + block variations); `block_attributes` gains the native_wp attribute rows; `block_supports` will grow beyond the current 1,223 SGS rows by merging core block supports. The three-DB topology becomes one-DB. <!-- Updated 2026-05-23 — block_supports canonical count is 1,223 (not 404); the "doubles to ~819" projection is superseded -->
 
 ---
 
@@ -870,7 +893,7 @@ Full research report: `.claude/reports/2026-05-21-pattern-overrides-research.md`
 
 **Decision 9 — Markup examples:** Author `markup_examples` for all 73 SGS blocks — one per block minimum, more for variation-heavy blocks. SGS currently has zero markup examples; core has 331. Gives cv2 a copy-paste reference + operators a template.
 
-**Decision 10 — block_supports backfill:** Audit + backfill `block_supports` gaps. SGS has 404 rows vs core's 819 — 2:1 under-documentation. Under-declared supports mean missing inspector controls for operators.
+**Decision 10 — block_supports backfill:** Audit + backfill `block_supports` gaps. SGS now has 1,223 rows (Updated 2026-05-23 — was 404 when Decision 10 was written; Phase 6 block-supports audit shipped 2026-05-22 found ZERO gaps per `02-SGS-BLOCKS.md` session note). Under-declared supports mean missing inspector controls for operators.
 
 **Decision 23 — WP 7.0 block.json audit:** Three sub-tasks across all 73 SGS block.json files:
 - (a) Add `"role": "content"` to every content-bearing attribute (WP 7.0 requirement for `contentOnly` pattern editing — see `common-wp-styling-errors.md` §X for the error pattern)
@@ -899,10 +922,11 @@ The SGS-framework.db has the complete mapping infrastructure cv2 needs:
 | `property_suffixes` | 117 | CSS property → block-attribute suffix | YES — via `db.css_property_suffixes()` |
 | `slot_synonyms` | 89 | canonical slot → role + tag + standalone block | YES — via slot resolver |
 | `block_compositions` | 37 | parent-child block relations | **NO — WRITE-ONLY** (only `pattern-register.py` + `seed-block-compositions.py` INSERT; nothing reads) |
-| `block_attributes` | 1755 | per-block attribute schema | YES |
+| `block_attributes` | 2230 | per-block attribute schema | YES | <!-- Updated 2026-05-23 — canonical DB count per empirical run -->
 | `modifier_suffixes` | 19 | BEM modifier resolution | YES |
-| `block_supports` | 404 | block_slug → support_name → value | YES |
-| `block_selectors` | 74 | block_slug → element → selector | YES |
+| `block_supports` | 1223 | block_slug → support_name → value | YES | <!-- Updated 2026-05-23 — canonical DB count per empirical run -->
+| `block_selectors` | 74 | block_slug → element → selector | **NO — editor-scoping config only; walker uses `block_attributes.derived_selector` instead** | <!-- Updated 2026-05-23 — per pipeline-flow.md:1486-1488 + change-input 2 -->
+
 | `legacy_role_lookup` | 18 | kebab role → SGS slug | YES — via `db_lookup.legacy_role_lookup_for()` |
 
 `block_compositions` is the missing piece. The cloning-pipeline-flow.md doc claimed (line 354) it's read as a fallback — that claim is **inaccurate**.
@@ -944,4 +968,4 @@ Step 1 (orchestrator merges `theme/sgs-theme/styles/<client>.css` into `_section
 
 ### Wave 2 acceptance criterion
 
-After the universal-extraction wiring lands (block_compositions read path + property_suffixes query for visual slots + parent-child graph drives emit shape), the acceptance is: hero `stage_3_slot_list` failures drop from 142 to under 30 AND hero `variation_css_rules` rises from 0 to at least 8 AND brand pixel-diff at 1440 drops below 20% (from 43.7%). Goal-shaped post-condition per `/qc-council` Stage 5: every CSS declaration in the mockup either matches a theme.json token (correct elision via cascade) OR lands as a block attribute / inline style on the emitted markup — coverage approaches 100%.
+After the universal-extraction wiring lands (parent-child graph via `blocks.parent_block` + `slot_synonyms.standalone_block` + property_suffixes query for visual slots drives emit shape), the acceptance is: hero `stage_3_slot_list` failures drop from 142 to under 30 AND hero `variation_css_rules` rises from 0 to at least 8 AND brand pixel-diff at 1440 drops below 20% (from 43.7%). Goal-shaped post-condition per `/qc-council` Stage 5: every CSS declaration in the mockup either matches a theme.json token (correct elision via cascade) OR lands as a block attribute / inline style on the emitted markup — coverage approaches 100%. <!-- Updated 2026-05-23 — removed "block_compositions read path": block_compositions is WRITE-ONLY at runtime (§15 line 901); parent-child graph is read from blocks.parent_block + slot_synonyms.standalone_block -->

@@ -1,5 +1,29 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-22 (architecture close-out — 3 lessons appended below Phase 1.5 entry)
+**Last updated:** 2026-05-23 (diagnostic + fix session — 3 new lessons)
+
+## 2026-05-23 — Three lessons from the diagnostic + fix session
+
+### 1. Subagent fabricated a non-existent DB table claim — fact-check before trusting
+
+A subagent report claimed `block_compositions` was "read at Stage 4 runtime by the walker to determine parent-child block relations." This is false — `block_compositions` is WRITE-ONLY at clone runtime (only `pattern-register.py` + `seed-block-compositions.py` write to it; the walker uses `block_attributes.derived_selector` and `blocks.parent_block` instead). The claim was verified false by an independent verify-loop (2026-05-23). The subagent's framing looked plausible because the table DOES contain parent-child data that *should* be used by the walker — it just isn't yet.
+
+**Rule:** Before accepting a subagent's claim about which DB tables are read at runtime, run a schema enumeration (`python ~/.claude/hooks/wp-blocks.py dump`) AND grep the production script for the table name. Plausibility is not evidence. Extends binding rule #4 (schema enumeration before gap claims).
+
+### 2. Page 131 was deleted — orchestrator reported OK via silent-failure; Stage 10 produced stale data silently
+
+Page 131 (`/cv2-output-mamas-munches/`) was the designated canary target between 2026-05-18 and 2026-05-23. It was deleted on sandybrown between sessions. Stage 10 (`upload_and_patch.py`) returned exit 0 even when patching a phantom page — the REST PATCH to `/wp/v2/pages/131` returned a response with a different id, but the script didn't validate the response. Downstream consumers received a `link=` URL pointing at a 404 page.
+
+**Rule:** Whenever a deploy target page id is inherited from a previous session, verify it exists with a live GET before running the pipeline. Stage 10 now exits 4 on phantom page (commit `700ff211`), which makes this class of failure visible. More generally: when a session hands off a canary page id, the next session's first act is `curl -s <canary_url> -o /dev/null -w "%{http_code}"` before queuing any work against it.
+
+**Current canary:** page 144 (`/rc-fix-verification-mamas-munches/`). Do NOT use page 131.
+
+### 3. Hand-authored patterns are structural debt — patterns at 0.95 confidence are scaffolds, not visual matches
+
+The deleted `brand.php` + `ingredients-section.php` patterns were created to cover the two sections that the converter couldn't yet produce. They LOOKED like a solution (sections rendered, visual regression closed) but were actually a structural bypass — the pipeline confidence metric reported "pattern matched at 0.95" which implied the converter was working well for these sections. In reality, the converter had never touched them; the PHP pattern was doing all the work. When the patterns were removed, the pixel-diff for those sections jumped from "near-zero" to 84% (brand) and 31.9% (ingredients-section), revealing the real converter state.
+
+**Rule:** Pattern confidence ≥ 0.95 that comes from a HAND-AUTHORED pattern file is NOT evidence of converter quality. It is evidence that someone bypassed the converter. The pipeline confidence metric is meaningful only when the pattern was emitted by the converter. Before citing a section's confidence as a signal of progress, verify the pattern file was registered by `register_patterns.py`, not hand-written. Any `theme/sgs-theme/patterns/<slug>.php` that isn't in `pipeline-state/<run>/` is a hand-authored bypass and should be treated as a gap-candidate, not a closure.
+
+---
 
 ## 2026-05-22 — Verify WP API surface before dismissing static-analyser warnings (blub.db row 283)
 

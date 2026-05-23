@@ -2,6 +2,20 @@
 
 Append-only. Most-recent first.
 
+## 2026-05-23 — Diagnostic + fix session (Q1A / Q1B / Q3 / Stage 10 / Stage 11)
+
+**D41 — Q1A: core/group → sgs/container as the Stage 2 confidence-matrix fallback.** The confidence-matrix fallback had been emitting `core/group` for unmatched sections. `core/group` is a WP core block with no SGS-BEM attributes — the composer_fallback then emits flat atomic blocks with no layout. Commit `d8ae4a2a` changes the fallback to `sgs/container` (the universal SGS layout primitive) and decouples the sentinel from the block name — the confidence==0.0 path is now the canonical signal. `legacy_role_lookup` table gained one row (18 rows total, was 17). Aligns with Decision D3 (2026-05-20) which defined sgs/container as the convergence point for all unmatched boundaries. Verified 2026-05-23.
+
+**D42 — Q1B: hand-authored patterns deleted; deterministic-only rule enforced.** `brand.php` + `ingredients-section.php` hand-authored patterns deleted from `theme/sgs-theme/patterns/` (commit `c1aa4cc5`). Pattern table rows deleted. Patterns count: 53 (was 55). Rationale: the deterministic converter pipeline must emit these from mockup content, not from manually-maintained PHP. Hand-authored patterns are an escape hatch that bypasses the converter and allows a second source of truth to grow. Any pattern not producible by the pipeline is a gap-candidate, not a shortcut. Extends the deterministic-only discipline that drives Spec 16.
+
+**D43 — Q3: Stage 0.7 CSS dump relocating from `theme/sgs-theme/styles/<client>.css` to `pipeline-state/<run>/variation-d0-d2.css`.** The Stage 0.7 monolithic CSS dump has always been architectural debt — dumping all CSS to a per-client variation file in `theme/sgs-theme/styles/` conflated pipeline intermediates with deploy artefacts. Now that Phase 5a retired the `.json` overlay system, keeping `.css` files there is inconsistent. Q3 css_router subagent relocates the dump destination to `pipeline-state/<run>/variation-d0-d2.css`. The framework `styles/` directory will contain only framework-level CSS after this lands. Status: in progress 2026-05-23 (parallel subagent); this doc entry to be updated when commit confirmed.
+
+**D44 — Stage 10 silent-failure fix: exits 4/5/6 on known phantom-page / id-mismatch / no-id-in-body conditions.** `upload_and_patch.py` previously returned 0 (success) even when the REST PATCH response indicated the page hadn't been updated correctly. Commit `700ff211` adds three named exit codes: exit 4 = phantom page (404 on GET after patch), exit 5 = id-mismatch (response id ≠ requested id), exit 6 = no-id-in-body (PATCH response missing "id" field). Orchestrator surfaces these as named halt messages. Silent failures at Stage 10 would cause Stage 11 to diff against stale content — fixing this before Stage 11 was added was the correct sequencing.
+
+**D45 — Stage 11 added: per-section pixel-diff against the actual deployed page.** Commit `1331f23a`. Stage 11 parses the `link=` URL from Stage 10 stdout, navigates Playwright to the live page, and runs per-section pixel-diff. Output: `pipeline-state/<run>/stage-11-pixel-diff.json`. Stage 8 diffs locally-rendered HTML (pre-deploy autonomy gate); Stage 11 diffs the live WP render (post-deploy verification). The two together close the loop: Stage 8 gates deploy, Stage 11 verifies the deployed result reflects the converter's output faithfully through the PHP render chain. Canonical pixel-diff numbers at page 144 as of 2026-05-23 captured in `cloning-pipeline-flow.md` Stage 11 block.
+
+---
+
 ## 2026-05-22 — Architecture programme close-out (Phase 4 + Phase 7 + parking sweep)
 
 **D37 — Source 2 counter gates on extraction-count, not insert-count.** Phase 4 Stage 2 originally declared success when `s2_inserted > 0`. A council review caught that the insert-count is a *consumer* metric — it stays zero on a dry-run mode. Scraper health requires the *extraction* count to be non-zero (hooks found). Fix: track both `s2_extracted` and `s2_inserted` separately; gate `sources_succeeded` on `s2_extracted > 0`. This is the canonical signal for Mode B Source 2 health. Commits `9f1e2194` + `99081252`.

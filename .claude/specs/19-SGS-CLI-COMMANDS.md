@@ -492,8 +492,7 @@ python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py \
 
 > Per `.claude/plans/2026-05-21-architecture-staging.md` §6.6.
 
-Query tool for the SGS Framework knowledge base (`sgs-framework.db`). 619+ block attributes,
-25 design tokens, 36 patterns queryable from the command line.
+Query tool for the SGS Framework knowledge base (`sgs-framework.db`). 2,230 block attributes, 184 design tokens, 53 patterns queryable from the command line. <!-- Updated 2026-05-23 — canonical DB counts per empirical run: block_attributes 2230, design_tokens 184, patterns 53 (was 619+/25/36) -->
 
 ```bash
 python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py stats          # Framework health
