@@ -333,122 +333,6 @@ def clear_essence_matches() -> None:
     _ESSENCE_MATCH_EVENTS = []
 
 
-# ============================================================================
-# Walker pre-pass — Spec 16 §15 steps 1-3 (2026-05-24)
-#
-# Per-section class-graph: built ONCE before walk() runs via
-# _walker_pre_pass(section_node, css_rules) → frozenset[str].
-# Contains every sgs-* class name in the section whose BEM block part maps
-# to a registered (status='built') SGS block.
-#
-# Used by the composite_element branch to detect when a BEM-element wrapper
-# (e.g. sgs-social-proof__inner) contains registered block descendants
-# (e.g. sgs-testimonial-slider). When the pre-pass has seen those registered
-# classes, composite_element skips claiming the wrapper as a leaf text slot
-# and lets walk() recurse through it instead, preserving the nested blocks.
-#
-# Reset per section via set_section_class_graph(frozenset()) in __init__.py.
-# ============================================================================
-_SECTION_REGISTERED_CLASSES: frozenset[str] = frozenset()
-
-
-def set_section_class_graph(registered_classes: frozenset[str]) -> None:
-    """Bind the pre-pass result for the current section. Pass frozenset() to clear."""
-    global _SECTION_REGISTERED_CLASSES
-    _SECTION_REGISTERED_CLASSES = registered_classes
-
-
-def _walker_pre_pass(section_node: Tag, css_rules: dict) -> frozenset[str]:
-    """Spec 16 §15 steps 1-3 — one-time pre-pass called per section boundary.
-
-    Walks every Tag descendant (including the section root itself) and collects
-    every sgs-* CSS class whose BEM *block* part resolves to a registered
-    (status='built') SGS block. Returns the set of such class strings.
-
-    Steps 1-3 per Spec 16 §15:
-      1. Walk every CSS class encountered in the section (full-width, one pass).
-      2. Assign CSS ownership per class — a class C owns rule R iff R's selector
-         matches direct (.C / tag.C), descendant (.parent .C / .parent > .C), or
-         compound (.C.other). Parent-qualified scope-breaks (.page-id-N .C) are
-         already stripped by Stage 2 css_strip before this code runs.
-      3. Record parent-child class relations via BEM parsing + blocks.parent_block
-         + slot_synonyms.standalone_block (NOT block_compositions — WRITE-ONLY
-         at runtime; zero readers in converter_v2/ per grep 2026-05-23).
-
-    The returned frozenset is stored in _SECTION_REGISTERED_CLASSES so the
-    composite_element branch can call _subtree_has_registered_block(node)
-    before deciding to claim a wrapper as a leaf text slot.
-
-    Called once per section — NOT inside walk() recursively (that would defeat
-    the "pre-pass" intent and inflate runtime). The call site is
-    __init__._convert_section_body() before v3.walk().
-    """
-    registered_in_section: set[str] = set()
-
-    for tag in [section_node, *section_node.find_all(True)]:
-        if not isinstance(tag, Tag):
-            continue
-        for cls in tag.get("class", []) or []:
-            if not cls.startswith("sgs-"):
-                continue
-            parsed = db.parse_sgs_bem(cls)
-            if parsed is None:
-                continue
-            # Step 3a: direct BEM block → registered block?
-            if parsed.element is None and parsed.block:
-                candidate = f"sgs/{parsed.block}"
-                if db.block_exists(candidate):
-                    registered_in_section.add(cls)
-                    _trace(
-                        "walker_pre_pass",
-                        cls=cls,
-                        matched_block=candidate,
-                        reason="direct_bem_block",
-                    )
-                    continue
-            # Step 3b: BEM element → canonical slot → standalone block?
-            if parsed.element:
-                canonical = db.canonical_slot_for(parsed.element)
-                if canonical:
-                    standalone = db.standalone_block_for(canonical)
-                    if standalone and db.block_exists(standalone):
-                        registered_in_section.add(cls)
-                        _trace(
-                            "walker_pre_pass",
-                            cls=cls,
-                            matched_block=standalone,
-                            reason="bem_element_standalone",
-                            canonical_slot=canonical,
-                        )
-
-    _trace(
-        "walker_pre_pass_summary",
-        total_registered_classes=len(registered_in_section),
-        registered_classes=sorted(registered_in_section),
-    )
-    return frozenset(registered_in_section)
-
-
-def _subtree_has_registered_block(node: Tag) -> bool:
-    """Return True if any Tag *descendant* of node has a class in
-    _SECTION_REGISTERED_CLASSES.  Used by composite_element guard (Spec 16 §15).
-
-    Only checks strict *descendants* — the node's own classes are excluded
-    because the caller already determined this node is a BEM-element wrapper
-    (not a block root). We want to know "does the content inside this wrapper
-    contain a registered block that walk() should recurse into?".
-    """
-    if not _SECTION_REGISTERED_CLASSES:
-        return False
-    for child in node.find_all(True):
-        if not isinstance(child, Tag):
-            continue
-        for cls in child.get("class", []) or []:
-            if cls in _SECTION_REGISTERED_CLASSES:
-                return True
-    return False
-
-
 def flush_essence_matches() -> list[dict]:
     """Return + clear the essence-match events for the current section."""
     events = list(_ESSENCE_MATCH_EVENTS)
@@ -4064,19 +3948,8 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
     # which handles single-line elements like <span class="sgs-foo__label">
     # by emitting sgs/label with just text+tag+variantStyle attrs. Composite
     # elements need full descendant lift — the FR1 mechanism is correct.
-    #
-    # Walker pre-pass guard (Spec 16 §15, 2026-05-24): if the section pre-pass
-    # detected registered block classes in this node's DESCENDANTS, do NOT claim
-    # this wrapper as a leaf text slot. A BEM-element wrapper that contains e.g.
-    # sgs-testimonial-slider (registered) must be walked recursively so the
-    # registered block emits as sgs/testimonial-slider rather than being swallowed
-    # by composite_element treating sgs-social-proof__inner as sgs/text.
-    # The pre-pass runs once per section in __init__._convert_section_body() before
-    # walk(); _subtree_has_registered_block() is O(n) but only fires when a BEM
-    # element is present — no overhead on FR1 / CSS-container branches.
     if (target == "sgs/container" and bem and bem.element
-            and any(isinstance(c, Tag) for c in node.children)
-            and not _subtree_has_registered_block(node)):
+            and any(isinstance(c, Tag) for c in node.children)):
         canonical = db.canonical_slot_for(bem.element)
         standalone = db.standalone_block_for(canonical) if canonical else None
         if not (standalone and db.block_exists(standalone)):
