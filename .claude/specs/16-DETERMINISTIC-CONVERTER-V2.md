@@ -903,7 +903,7 @@ The SGS-framework.db has the complete mapping infrastructure cv2 needs:
 | `modifier_suffixes` | 19 | BEM modifier resolution | YES |
 | `block_supports` | 404 | block_slug → support_name → value | YES |
 | `block_selectors` | 74 | block_slug → element → selector | YES |
-| `legacy_role_lookup` | 17 | kebab role → SGS slug | YES — via `db_lookup.legacy_role_lookup_for()` |
+| `legacy_role_lookup` | 18 | kebab role → SGS slug | YES — via `db_lookup.legacy_role_lookup_for()` |
 
 `block_compositions` is the missing piece. The cloning-pipeline-flow.md doc claimed (line 354) it's read as a fallback — that claim is **inaccurate**.
 

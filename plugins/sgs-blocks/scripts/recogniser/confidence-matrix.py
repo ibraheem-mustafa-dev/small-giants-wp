@@ -310,13 +310,19 @@ def score_candidates(
                 "kind": "block",
             })
 
-    # If nothing surfaced, emit the deferred-fallback candidate.
+    # If nothing surfaced, emit sgs/container as the section-level fallback.
+    # Per Decision 3 (decisions.md:1238): sgs/container is MANDATORY at
+    # section-level. core/group was used here previously — that was architecturally
+    # dishonest because it is both a WP core block AND a sentinel string for
+    # "no match". sgs/container is the canonical SGS section wrapper; the
+    # sentinel is now confidence == 0.0, not the block name string.
+    # Changed: Q1A fix 2026-05-23.
     if not candidates:
         candidates.append({
-            "block_name": "core/group",
+            "block_name": "sgs/container",
             "confidence": 0.0,
             "tie_breaker": "deferred-no-match",
-            "registered": False,
+            "registered": True,
             "kind": "block",
         })
 

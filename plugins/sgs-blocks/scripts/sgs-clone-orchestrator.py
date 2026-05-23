@@ -1010,7 +1010,7 @@ def stage_2_match(boundary_output: dict, run_dir: Path) -> dict:
         matches: list[dict] = []
         for boundary in boundary_output.get("boundaries", []):
             ranked = cm.score_candidates(boundary, registered, patterns, scaffolds, run_dir=run_dir)
-            top = ranked[0] if ranked else {"block_name": "core/group", "confidence": 0.0, "tie_breaker": "deferred-no-match"}
+            top = ranked[0] if ranked else {"block_name": "sgs/container", "confidence": 0.0, "tie_breaker": "deferred-no-match"}
 
             # 5.3.2 — cross-check with wp-blocks.py match (advisory, soft-fail).
             # Build a description from section_id + selector for the natural-language query.
@@ -1031,7 +1031,7 @@ def stage_2_match(boundary_output: dict, run_dir: Path) -> dict:
                     wp_top_score = raw_score / 10.0 if isinstance(raw_score, (int, float)) else 0.0
 
             cm_confidence = top.get("confidence", 0.0)
-            cm_block = top.get("block_name", "core/group")
+            cm_block = top.get("block_name", "sgs/container")
             chosen_block = cm_block
             chosen_source = "confidence_matrix"
 
@@ -1325,11 +1325,11 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
             except Exception:  # noqa: BLE001
                 _cv2_eligible = False
 
-        # Unmatched section: matcher returned core/group OR confidence 0.0.
-        # No block, no pattern, no scaffold matched the candidate slug. Per the
-        # 2026-05-14 retirement of composer_fallback, the right response is to
-        # SURFACE the gap to the operator -- not emit best-effort atomic markup
-        # that hides the catalogue gap behind plausible-looking output.
+        # Unmatched section: confidence == 0.0 means no block / pattern / scaffold
+        # matched the candidate slug. Per the 2026-05-14 retirement of
+        # composer_fallback, the right response is to SURFACE the gap to the
+        # operator -- not emit best-effort atomic markup that hides the catalogue
+        # gap behind plausible-looking output.
         #
         # The autonomy chain (stage_9b) is the proper recovery path: it scaffolds
         # a v0.1.0-scaffold block which the matcher's Tier 3 then catches at
@@ -1347,7 +1347,14 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
         # converter handles unmatched section wrappers by emitting
         # sgs/container with className so the variation CSS binds. Surfacing
         # them as "unmatched" would mask successful converter output.
-        if (target_block == "core/group" or m.get("confidence", 0) == 0) and not _cv2_eligible:
+        #
+        # Q1A fix 2026-05-23: sentinel is now SOLELY confidence == 0.0. The
+        # previous check also tested `target_block == "core/group"` but that
+        # coupled the sentinel to the fallback block name string, which broke
+        # when the fallback was renamed to sgs/container (per Decision 3). The
+        # confidence value is the canonical "no match" signal; the block name is
+        # just what gets emitted when cv2 handles the section.
+        if m.get("confidence", 0) == 0 and not _cv2_eligible:
             _emit(_trace_for(run_dir), stage="stage_4_unmatched_section",
                   boundary_id=boundary_id, section_id=m.get("section_id"),
                   selector=section_selector, target_block=target_block,

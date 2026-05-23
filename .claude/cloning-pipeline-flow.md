@@ -759,7 +759,7 @@ tracked as a follow-up.
 │   sections to autonomy chain.                                               │
 │                                                                             │
 │ Wave 3 (e60fe58e): LEGACY_ROLE_LOOKUP migrated to DB table                  │
-│   (legacy_role_lookup, 17 entries, seed-legacy-role-lookup.py).             │
+│   (legacy_role_lookup, 18 entries, seed-legacy-role-lookup.py).             │
 │   Voter refactored to call db_lookup.legacy_role_lookup_for(kebab_role).   │
 │   Hardcoded dict emptied to {}.                                             │
 │   RETIRED_BLOCK_REMAP soft-emptied to {} (consultation branch no-op;        │
@@ -1472,7 +1472,7 @@ Source: `.claude/db-tables-map.md` (926 lines, generated 2026-05-13, last-verifi
 
 **RETIRED (Step 6b 2026-05-14 -- tables dropped from sgs-framework.db):** sections_detected, extraction_cache, block_opportunities, weaknesses, animations.
 
-**NEW (Wave 3, 2026-05-21):** legacy_role_lookup (17 rows) -- voter LEGACY_ROLE_LOOKUP dict migrated here.
+**NEW (Wave 3, 2026-05-21):** legacy_role_lookup (18 rows) -- voter LEGACY_ROLE_LOOKUP dict migrated here. +1 row added Q1A 2026-05-23: core/group → sgs/container (Decision 3).
 
 ### sgs-framework.db key tables
 
@@ -1486,7 +1486,7 @@ Source: `.claude/db-tables-map.md` (926 lines, generated 2026-05-13, last-verifi
 | patterns | 41 | Stage 2 confidence boost; +REGISTER W | /sgs-update S1; register_patterns.py |
 | block_compositions | 37 | Stage 2 confidence boost; +REGISTER W | register_patterns.py |
 | attribute_gap_candidates | 107+ | Stage 9 W; D3 emission W (Wave 3); detect.py R | assign-canonical; detect.py; cv2 D3 |
-| legacy_role_lookup | 17 | Voter R via db_lookup (Wave 3) | seed-legacy-role-lookup.py; /sgs-update sync |
+| legacy_role_lookup | 18 | Voter R via db_lookup (Wave 3) | seed-legacy-role-lookup.py; /sgs-update sync |
 | modifier_suffixes | 19 | assign-canonical; drift-validator | seed scripts |
 | design_tokens | 28 | Reference; NOT read at clone runtime (reads theme.json) | /sgs-update S1 |
 | style_variations | 8 | Reference; NOT read at clone runtime | /sgs-update S1 |

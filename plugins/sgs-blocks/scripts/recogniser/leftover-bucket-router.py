@@ -310,8 +310,8 @@ def route_extraction_failed(slot_lists: dict, extract: dict, buckets: dict[str, 
       1. Stage 3 slot_lists (the classic path — only populated when Stage 2
          matched a registered block at confidence >= threshold).
       2. cv2-emitted typed blocks parsed from per_section_results.block_markup
-         (added 2026-05-16). For sections that Stage 2 dropped to core/group
-         but cv2 still emitted typed sgs/* blocks, look up each emitted
+         (added 2026-05-16). For sections that Stage 2 dropped to sgs/container
+         (confidence 0.0) but cv2 still emitted typed sgs/* blocks, look up each emitted
          block's full attr list in block_attributes and check which slots
          the converter actually populated. This gives attribute-level
          coverage signal for cv2-handled sections where Stage 3 declared
@@ -549,7 +549,7 @@ def route_structural_mismatch(matches: list[dict], extract: dict, buckets: dict[
     """Flag sections where DOM-shape disagrees with the matched block.
 
     Minimum signal for v1: chosen block is sgs/* but extract coverage is 0,
-    OR chosen block is core/group (deferred fallback) with non-trivial DOM.
+    OR confidence == 0.0 (deferred fallback; sgs/container emitted) with non-trivial DOM.
 
     Skips sections that route_unrecognised_section already classified as
     chrome_skipped or cv2_handled_no_top_level_match (per binding rule #1
@@ -578,11 +578,14 @@ def route_structural_mismatch(matches: list[dict], extract: dict, buckets: dict[
                 "block_name": block,
                 "reason": "block chosen but extractor returned zero attributes",
             }, bucket))
-        if block == "core/group" and float(m.get("confidence", 0.0)) == 0.0:
+        # Q1A fix 2026-05-23: sentinel is confidence == 0.0, not block name.
+        # The fallback block is now sgs/container (per Decision 3); testing
+        # for core/group would silently miss all unmatched sections post-Q1A.
+        if float(m.get("confidence", 0.0)) == 0.0:
             buckets[bucket].append(_enrich_item({
                 "section_id": section_id,
                 "block_name": block,
-                "reason": "deferred fallback; no SGS block matched",
+                "reason": "deferred fallback (confidence 0.0); no SGS block matched",
             }, bucket))
 
 
