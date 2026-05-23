@@ -2551,6 +2551,125 @@ def main():
         except Exception as exc:  # noqa: BLE001 — Stage 10 is opt-in observability; soft-fail
             print(f"[stage-10] deploy soft-failed: {exc}", file=sys.stderr)
 
+    # ------------------------------------------------------------------
+    # Stage 11 — Pixel-diff against the page Stage 10 actually patched
+    # (added 2026-05-23 per P-PIXEL-DIFF-NOT-IN-ORCHESTRATOR).
+    #
+    # Naturally skips when Stage 10 halted (no link= in stdout → no URL →
+    # warning + skip). The new exit codes 4/5/6 from Stage 10 mean any
+    # phantom-page deploy gets caught here without producing misleading
+    # pixel-diff numbers against a 404 / wrong-id page.
+    #
+    # Per-section pixel-diff across 375 / 768 / 1440 viewports.
+    # blub.db row 256: NEVER full-page; always --selector .sgs-{section}.
+    # Soft-fail design — never blocks the autonomy chain that follows.
+    # ------------------------------------------------------------------
+    if args.deploy_target and 'result' in locals() and result.returncode == 0:
+        try:
+            import re as _re
+            tail_lines_s11 = [
+                ln for ln in result.stdout.splitlines()
+                if "link=" in ln
+            ]
+            link_match = None
+            if tail_lines_s11:
+                link_match = _re.search(r"link=(https?://\S+)", tail_lines_s11[-1])
+            if not link_match:
+                print(
+                    "[stage-11] pixel-diff SKIPPED — no link= URL found in Stage 10 stdout. "
+                    "Stage 10 may have soft-failed without surfacing.",
+                    file=sys.stderr,
+                )
+            else:
+                sgs_url = link_match.group(1).rstrip(".,;")
+                pixel_diff_script = REPO / "scripts" / "pixel-diff.py"
+                if not pixel_diff_script.exists():
+                    print(
+                        f"[stage-11] pixel-diff SKIPPED — script not found at {pixel_diff_script}",
+                        file=sys.stderr,
+                    )
+                else:
+                    pd_out_root = run_dir / "pixel-diff"
+                    pd_out_root.mkdir(parents=True, exist_ok=True)
+                    mockup_uri = args.mockup.resolve().as_uri()
+                    selectors = [
+                        b.get("selector", "") for b in boundary.get("boundaries", [])
+                        if b.get("selector")
+                    ]
+                    viewports = ("375x812", "768x1024", "1440x900")
+                    results_s11: list[dict] = []
+                    for selector in selectors:
+                        # Drop any non-class component for the directory name
+                        safe_sel = _re.sub(r"[^a-zA-Z0-9_-]", "_", selector).strip("_")
+                        for vp in viewports:
+                            pd_out = pd_out_root / f"{safe_sel}-{vp.split('x')[0]}"
+                            try:
+                                pd_proc = subprocess.run(
+                                    [
+                                        sys.executable, str(pixel_diff_script),
+                                        "--mockup", mockup_uri,
+                                        "--sgs", sgs_url,
+                                        "--viewport", vp,
+                                        "--selector", selector,
+                                        "--out", str(pd_out),
+                                    ],
+                                    capture_output=True, text=True, timeout=120,
+                                )
+                                diff_json_path = pd_out / "diff.json"
+                                if diff_json_path.exists():
+                                    diff_data = json.loads(diff_json_path.read_text(encoding="utf-8"))
+                                    results_s11.append({
+                                        "selector": selector,
+                                        "viewport": vp,
+                                        "mismatch_percent": diff_data.get("mismatch_percent"),
+                                        "verdict": diff_data.get("verdict"),
+                                        "diff_json": str(diff_json_path.relative_to(REPO)),
+                                    })
+                                else:
+                                    results_s11.append({
+                                        "selector": selector,
+                                        "viewport": vp,
+                                        "error": pd_proc.stderr.strip()[:200] or "no diff.json produced",
+                                    })
+                            except subprocess.TimeoutExpired:
+                                results_s11.append({
+                                    "selector": selector, "viewport": vp,
+                                    "error": "timeout (120s) — Playwright capture stalled",
+                                })
+                            except Exception as inner_exc:  # noqa: BLE001
+                                results_s11.append({
+                                    "selector": selector, "viewport": vp,
+                                    "error": f"{type(inner_exc).__name__}: {inner_exc}"[:200],
+                                })
+                    s11_artefact = {
+                        "stage": 11,
+                        "name": "pixel-diff",
+                        "sgs_url": sgs_url,
+                        "mockup_uri": mockup_uri,
+                        "results": results_s11,
+                        "summary": {
+                            "captures_attempted": len(results_s11),
+                            "captures_ok": sum(1 for r in results_s11 if "mismatch_percent" in r),
+                            "captures_error": sum(1 for r in results_s11 if "error" in r),
+                            "mean_mismatch_percent": (
+                                sum(r["mismatch_percent"] for r in results_s11 if "mismatch_percent" in r)
+                                / max(1, sum(1 for r in results_s11 if "mismatch_percent" in r))
+                            ) if any("mismatch_percent" in r for r in results_s11) else None,
+                        },
+                    }
+                    (run_dir / "stage-11-pixel-diff.json").write_text(
+                        json.dumps(s11_artefact, indent=2), encoding="utf-8",
+                    )
+                    s11_summary = s11_artefact["summary"]
+                    print(
+                        f"[stage-11] pixel-diff: {s11_summary['captures_ok']}/{s11_summary['captures_attempted']} "
+                        f"captures, mean_mismatch={s11_summary['mean_mismatch_percent']:.1f}%"
+                        if s11_summary['mean_mismatch_percent'] is not None
+                        else f"[stage-11] pixel-diff: {s11_summary['captures_ok']}/{s11_summary['captures_attempted']} captures, no valid measurements"
+                    )
+        except Exception as exc:  # noqa: BLE001 — Stage 11 is observability; soft-fail
+            print(f"[stage-11] pixel-diff soft-failed: {exc}", file=sys.stderr)
+
     if args.skip_autonomy_gate:
         print("[orchestrator] DONE (autonomy gate skipped per --skip-autonomy-gate).")
         return
