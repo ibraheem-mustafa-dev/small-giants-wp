@@ -14,13 +14,23 @@ last_updated: 2026-05-22
 
 **P-PHASE-5B-INERT-CUSTOMISER-OUTPUT** — REOPENED 2026-05-22 by /qc-council Rater C. Commit `0ef032fe` fixed the Customiser paint targets (`header.wp-block-template-part` / `footer.wp-block-template-part`), but `state.md:68` describes a remaining Option A step: emit `:root { --sgs-header-bg: ...; --sgs-footer-bg: ...; }` from the renderer + consume via theme.json. ~30 min, scoped follow-up. The selector fix landed; the CSS-custom-property emission path has not shipped. **Trigger:** before the next live-page visual QA.
 
+**P-ARCH-WP70-VIEW-TRANSITIONS-VERIFY** — RESOLVED 2026-05-23 (Wave A). Playwright on sandybrown Customiser confirmed WP 7.0 native `wp_enqueue_view_transitions_admin_css` is firing — characteristic `@media (prefers-reduced-motion: no-preference) { @view-transition { navigation: auto; } #adminmenu > .menu-top { view-transition-name: attr(...); } }` CSS present inline. 0 SGS polyfill injections detected. `document.documentElement` carries `viewTransitionName: "root"`. Stylesheet bundle loads `ver=7.0` confirming WP 7.0 surface. Moved to resolved section below.
+
+**P-SESSION-B-DEFERRED-VIEW-TRANSITIONS-CLEANUP** — RESOLVED 2026-05-23 (Wave A bonus closure). Playwright verification of P-ARCH-WP70-VIEW-TRANSITIONS-VERIFY confirmed the WP 6.x fallback at `plugins/sgs-blocks/sgs-blocks.php:200-217` is NOT firing on the WP 7.0 site (0 bare `@view-transition` injections; `function_exists('wp_enqueue_view_transitions_admin_css')` evaluates true). Cleanup completed per sgs-blocks.php:219 comment 2026-05-22. Moved to resolved section below.
+
+**P-QC-COUNCIL-FIXTURE-SMOKE-TEST** — RESOLVED 2026-05-23 (Wave A). Sonnet rater walked through `~/.agents/skills/qc-council/scripts/fixtures/example-council.json` against current SKILL.md. Stage 5 hard gate logic verified against the fixture's `expected_stage_5_verdicts`: both G2 and G4 falsified as expected (G2 — consumer never received scope-prefixed input; G4 — `el.screenshot()` already clips bounding box, chrome was never in captured pixels). Schema drift check: NO drift between fixture and current SKILL.md. Stage 1.5 structural pre-gates (added since fixture was written) are non-breaking. Moved to resolved section below.
+
+**P-SUBAGENT-DRIVEN-DEV-VERIFY-LOOP-XREF** — RESOLVED 2026-05-23 (Wave A). Haiku rater enumerated 8 dispatch-graph node references in `~/.agents/skills/subagent-driven-development/SKILL.md`; 7 resolved cleanly; the lone gap was `superpowers:writing-plans` at line 319 (legacy reference; absorbed by /strategic-plan + /phase-planner during SGS lifecycle migration). Fixed inline by updating the reference to name both successor skills. NOTE: skillscore hook flagged the SKILL.md at 84% (pre-existing structural debt — no numbered stages, no hooks/, no scripts/, body 317 lines). My one-line xref fix did NOT introduce those; they pre-date this session. Surfaced as new entry P-SUBAGENT-DRIVEN-DEV-SKILLSCORE-DEBT below. Moved to resolved section below.
+
+**P-SUBAGENT-DRIVEN-DEV-SKILLSCORE-DEBT** — NEW 2026-05-23. `~/.agents/skills/subagent-driven-development/SKILL.md` scores 84% (below 90% threshold). Pre-existing issues surfaced when the line-319 xref fix triggered the skillscore hook: (a) no numbered process stages found, (b) skill doesn't declare which skills it invokes, (c) no hooks/ directory, (d) no scripts/ directory, (e) body 317 lines (over 300 working budget — needs progressive disclosure). Cleanup routes through /lifecycle per project CLAUDE.md. **Trigger:** Task 6 skill-optimiser session (mode 2 = gap analysis + research) is the natural home — bundle with /batch-gap-analysis pass on 14 WP/SGS skills.
+
 **P-PHASE-5B-PROPERTY-COVERAGE-AUDIT** — RESOLVED 2026-05-22 (Session B). Coverage audit confirmed all properties covered by WP 7.0 native theme.json button support — no PHP shim required. Moved to resolved section below.
 
 **P-UNEXPECTED-CONTENT-BACKLOG** — RESOLVED `830f627b` + `d18b7354` 2026-05-22. Step 0 audit fixed 33 invalid block instances across 9 template parts (WP 7.0 save-format changes). Moved to resolved section below.
 
 **P-EXPLICIT-DEFAULT-STYLE-RETROFIT** — DECIDED 2026-05-22. Bean confirmed: "implicit Default is fine". Closing as decided — no work required. Moved to resolved section below.
 
-**P-WPCS-FUNCTIONS-PHP-DEBT** — `theme/sgs-theme/functions.php` carries 58 pre-existing WPCS errors (short array syntax `[]` vs `array()`, multi-line function call formatting). Pre-dates current session. Cleanup is mechanical — run `phpcbf --standard=WordPress theme/sgs-theme/functions.php` then review. ~10 min. **Trigger:** any time; no blocker.
+**P-WPCS-FUNCTIONS-PHP-DEBT** — RESOLVED `1be164ce` 2026-05-23. phpcbf auto-fixed 45/58; manual docblock pass closed remaining 13. `phpcs --standard=WordPress theme/sgs-theme/functions.php` now exits 0. Moved to resolved section below.
 
 ## Opened 2026-05-21 (architecture session — 31-decision programme)
 
@@ -60,7 +70,7 @@ last_updated: 2026-05-22
 
 **P-BLOCK-COMPOSITIONS-READ-PATH** — SUBSUMED by P-ARCH-PHASE-3 (RESOLVED `79158da5`). Phase 3 rewrote `_lift_inner_blocks` using `blocks.parent_block` + `slot_synonyms.standalone_block` — the read-path this item requested. Moved to resolved section below.
 
-**P-FR1-VARIATION-BUF-CONSISTENCY** — FR1 fast path (`convert.py:3670-3689`) shortcuts to `lift_subtree_into_block_attrs()` and returns directly without appending to `variation_buf`. Result: registered SGS blocks (hero, trust-bar) have `variation_css_rules=0` even when CSS is in `_section_css`. One-line fix: `variation_buf.append(_collect_css_for_classes(classes, css_rules))` after line 3675. Universal, not hero-special. **Trigger:** Wave 2 alongside the G1+G3+G5 wiring fix.
+**P-FR1-VARIATION-BUF-CONSISTENCY** — PARTIAL-RESOLVED 2026-05-22 commit `8ceb8787` (Wave 2 Change 1) for the FR1 fast path (block-root branch, `convert.py:3839-3867`). **/qc-council 2026-05-23 found two sibling call-sites with the same pattern still open:** (a) **essence-match tier** at `convert.py:3926` — lifts then returns at `3936-3937` without `variation_buf.append`; (b) **composite-element-to-standalone-block** at `convert.py:3970` — lifts then returns at `3990-3991` without `variation_buf.append`. Same one-line fix applies to both. **Trigger:** Task 4 Wave 2 reshape — pair with G1+G3+G5 wiring fix. ~10 min for the two sibling sites once Wave 2 starts.
 
 **P-QC-COUNCIL-PHASE-B-BACKPORTS** — qc-trio gap-analysis identified 5 backports from /qc-council into /qc + /qc-inline. Phase A shipped this session via Sonnet subagent — branch `feat/qc-skills-backport-from-qc-council` commit `e340cde` in `~/.agents/skills/`. Phase B = optional follow-ups for hard-iteration-cap + persona-disagreement-carry-forward + rationalisation-table integration. Lower priority since the trio is already at 92-94% skillscore. **Trigger:** next skill-optimisation session.
 
@@ -1758,11 +1768,24 @@ The QC council on Session B (`reports/2026-05-22-session-B-qc-council.md`) surfa
 - `theme/sgs-theme/styles/` contains zero files
 - Mama's branding still renders correctly on sandybrown
 
-### P-5A-CLIENT-VARIATION-CSS-PATH — orchestrator helper still resolves to legacy CSS path
+### P-5A-CLIENT-VARIATION-CSS-PATH — orchestrator helper writes intermediate to retired deploy surface
 
-**Status:** DECISION-NEEDED (parking sweep 2026-05-22). P-5A-MAMAS-MUNCHES-CSS is now resolved; the helper still returns the legacy path. Bean must decide: redirect to `sites/<client>/theme-overrides.css` (canonical future surface) or leave until the next orchestrator pass that touches Stage 0.7.
-**Where:** `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py:309` — `_client_variation_css_path(client)` returns `theme/sgs-theme/styles/<client>.css`.
-**Why parked:** Out of Phase 5a scope. The working surface no longer exists after P-5A-MAMAS-MUNCHES-CSS resolved. Redirect path TBD.
+**Status:** REFRAMED 2026-05-23 by /qc-council. Original framing ("redirect to `sites/<client>/theme-overrides.css`") and the "retire Stage 0.7 entirely" hypothesis were both **falsified**. Council found a downstream pipeline consumer at `sgs-clone-orchestrator.py:1412-1421` (the G2 merge — reads the file back into `_section_css` so cv2's `_collect_css_decls_for_element` can see scoped rules). The `.css` file is a **legitimate pipeline intermediate**, not dead code — but it's written to the retired deploy-side path `theme/sgs-theme/styles/<client>.css`.
+
+**Bean's directive (2026-05-23):** "We're not supposed to have per client CSS variation files. It's just supposed to be the general wp theme css/styles structure which we customise per client via cli to align with their local json snapshot which is why those folders are empty. They were emptied on purpose." → applies to **DEPLOY artefacts** (the empty `theme/sgs-theme/styles/` folder is intentional and must not be repopulated with WP-enqueued files). Does NOT apply to pipeline-internal intermediates.
+
+**Refined fix-shape:** Relocate the Stage 0.7 intermediate `.css` from `theme/sgs-theme/styles/<client>.css` to `pipeline-state/<run>/variation.css` (or similar pipeline-state location). The orchestrator + cv2 still merge it via the existing G2 path; `theme/sgs-theme/styles/` stops carrying the illusion that it's a live deploy surface.
+
+**Where:**
+- `sgs-clone-orchestrator.py:319` — `_client_variation_css_path(client)` returns the legacy deploy path
+- `sgs-clone-orchestrator.py:462` + `:516` — writers via the helper
+- `sgs-clone-orchestrator.py:1412-1421` — G2 merge reader (the downstream consumer that proves this is NOT dead code)
+- `css_router.py:719` — comment refers to old path; needs update
+- `convert.py:3009` — comment refers to `mamas-munches.css`; needs update
+
+**Estimated effort:** ~30-45 min (4 file touches + a run-pipeline-and-verify-G2-still-merges sanity check). Was originally classified as a 15-min quick win — council promoted it.
+
+**Trigger:** Task 4 / Wave 2 reshape — sequenced alongside the G1+G3+G5 wiring fix (touches the same orchestrator stage boundary).
 
 ### P-6-MISSING-BLOCK-JSON — 4 DB rows have no source `block.json`
 
