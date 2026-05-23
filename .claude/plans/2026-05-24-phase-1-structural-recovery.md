@@ -21,7 +21,10 @@ primary_goal: "Close the structural pixel-diff blockers + complete the 2026-05-2
 - [ ] Hero `stage_3_slot_list` failures drop from 142 to under 30 (per Spec 16 §15 numeric acceptance)
 - [ ] Hero `variation_css_rules` rises from 0 to at least 8
 - [ ] **5 currently-falling-through body sections** (featured-product, brand, ingredients-section, gift-section, social-proof) emit with structured attrs (not just `sgs/container className-only`). Updated from 3 → 5 per 2026-05-23 Step 1.3 QA gate — match.json showed brand (conf 0.3) + ingredients-section (conf 0.0) also fall through, beyond the 3 named in leftover-buckets's `unrecognised_section` bucket. **Header + footer excluded from this gate** — they are Phase 2's scope (specialised cloning pipeline per Spec 17). Stage 11 continues capturing header/footer pixel-diff for regression monitoring only.
-- [ ] **Stage 11 pixel-diff: ≤ 1% on every (body-section × viewport) cell.** All 7 body sections (hero, trust-bar, featured-product, brand, ingredients-section, gift-section, social-proof) × 3 viewports (375, 768, 1440) = 21 cells must close at ≤ 1%. Per Bean's 2026-05-23 binding directive aligning Phase 1 body sections + Phase 2 chrome (header/footer) to a single 1%-per-section standard. Replaces the original "brand 1440 ≤ 20%" single-cell gate. Baselines vary widely (hero 1440 = 69.4%, trust-bar 1440 = 100%, ingredients 1440 = 25.1%, etc. — see `pipeline-state/mamas-munches-homepage-2026-05-23-145045/stage-11-pixel-diff.json`); the walker pre-pass closes the structural gap, post-fix tokens + per-section CSS lift close the residual.
+- [ ] **Stage 11 pixel-diff: ≤ 1% on every (body-section × viewport) cell** — STAGED across 3 sequenced gates per /qc-council 2026-05-23 finding that single walker pre-pass cannot reach ≤ 1% alone. All 7 body sections × 3 viewports = 21 cells must close at ≤ 1% by Phase 1 end via the three staged gates:
+    - **Gate 1 (Step 1.7):** structural fall-through closed — every body section emits a registered block (not bare `sgs/container`), 0 sections still at confidence < 0.5 in match.json
+    - **Gate 2 (Step 1.7.5):** per-section CSS lift + operator-promotion shipped — every body cell ≤ 10% pixel-diff (matches Wave 2 archived plan's medium-confidence prediction for brand 1440 < 20% + Spec 16 §15:203 promotion path closing last 5-10%)
+    - **Gate 3 (Step 1.7.6):** F5 D1 responsive media variants shipped — every body cell ≤ 1% pixel-diff across 375/768/1440 (final closure, including hero 375 mobile +13.3pt regression that traces to F5 D1)
 - [ ] Phase 1 hooks completion: `SELECT COUNT(*) FROM hooks` in sgs-framework.db matches legacy hooks.db count (7,283) ±2%
 - [ ] `role='content'` DB rows match source files: 87 attrs across 40 blocks (currently 17 across 11)
 - [ ] Legacy `blocks.db` + `hooks.db` removed OR retained as cache only (write a parking entry documenting which choice)
@@ -215,11 +218,11 @@ Step 1.6 — Implement Spec 16 §15 steps 1-3 (walker-entry CSS-class pre-pass)
     3. **Records parent-child class relations using BEM + DB.** READ SOURCES (both already populated, verified via sgs-db.py dump 2026-05-23): `blocks.parent_block` (22 parented blocks — accordion-item→accordion, form-field-*→form, button→multi-button) + `slot_synonyms.standalone_block` (BEM-element → standalone-block lookup). DO NOT query `block_compositions` — it is WRITE-ONLY at runtime (Spec 16 §15:971 inline comment; converter_v2/ has zero readers — confirmed by grep 2026-05-23).
     4. **Wire the resulting class-graph into emit logic — for UNMATCHED sections ONLY.** The FR1 fast path at convert.py:3826-3870 already handles registered blocks (hero + trust-bar match at conf 1.0; Wave 2 Change 1 commit at lines 3851-3859 already lands variation_buf.append). DO NOT TOUCH FR1. The pre-pass feeds a NEW fallback emit branch that fires when Stage 2 falls a section through to `sgs/container` (conf < 0.5). Path: in `walk()`'s sgs/container fallback (find it around line 3946+), check if the class-graph has structured matches for the section's children; if yes, emit those as nested blocks instead of `<className-only>` sgs/container.
 
-    EMPIRICAL ACCEPTANCE (updated 2026-05-23 Step 1.3 QA gate + Bean's ≤1% uniform directive):
+    EMPIRICAL ACCEPTANCE (updated 2026-05-23 Step 1.5 /qc-council gate — STRUCTURAL CLOSURE ONLY; CSS lift + promotion + responsive variants are Steps 1.7.5 + 1.7.6 NOT this step):
     - Hero stage_3_slot_list failures: 142 → < 30 (per Spec 16 §15 numeric acceptance)
-    - Hero variation_css_rules: 0 → ≥ 8 (per Spec 16 §15)
-    - Stage 11 pixel-diff: ALL 7 body sections × 3 viewports = 21 cells, each ≤ 1%. Body sections in scope: hero, trust-bar, featured-product, brand, ingredients-section, gift-section, social-proof. (Header + footer EXCLUDED — Phase 2 scope.) Baselines per stage-11-pixel-diff.json range widely (ingredients 1440 = 25.1%, social-proof 1440 = 100%, hero 1440 = 69.4%). The walker pre-pass + per-section CSS lift must close every body cell.
-    - 5 currently-falling-through body sections (featured-product, brand, ingredients-section, gift-section, social-proof) emit with structured attrs, NOT `sgs/container className-only`. Hero + trust-bar already match at conf 1.0 but their pixel-diff is high from incomplete slot extraction — walker pre-pass closes that too.
+    - Hero variation_css_rules: 0 → ≥ 8 (per Spec 16 §15 — likely already passing post Wave 2 Change 1 commit 2026-05-22 lines 3851-3859)
+    - **Stage 2 fall-through closure:** of the 5 currently-falling-through body sections (featured-product, brand, ingredients-section, gift-section, social-proof), 0 still emit `sgs/container` at confidence < 0.5 in match.json. Hero + trust-bar already match at conf 1.0 (don't break that).
+    - **Stage 11 pixel-diff is captured but NOT gated at ≤ 1% in this step.** The Wave 2 archived plan's empirical evidence (medium-confidence brand 1440 < 20% from full Wave 2; promotion closes last 5-10%; F5 D1 closes mobile residual) confirms ≤ 1% requires Steps 1.7.5 + 1.7.6. THIS step's pixel-diff gate is: every body cell improves vs baseline (no regression); structural failures captured by match.json + leftover-buckets.json drop to 0. Numeric targets per cell are deferred — your job is to land the structural primitive.
 
     METHODOLOGY GUARDRAILS (mandatory, per blub.db):
     - Row 254: read pipeline-state/<run>/leftover-buckets.json BEFORE conjecturing
@@ -261,17 +264,93 @@ QA Gate 1.B — Post walker-pre-pass pipeline test
   Model:   inline
   Exec:    SEQUENTIAL
   Deps:    Step 1.6 commit
-  Check:   Read pipeline-state/<latest>/stage-11-pixel-diff.json + trace.jsonl. Assert ALL of:
+  Check:   Read pipeline-state/<latest>/match.json + trace.jsonl + stage-11-pixel-diff.json. Assert ALL of (STRUCTURAL-CLOSURE-ONLY per Step 1.5 /qc-council finding; ≤1% × 21 cells gate STAGED to Steps 1.7.5 + 1.7.6):
               (a) hero `stage_3_slot_list` failures < 30 (from trace.jsonl per-boundary)
-              (b) hero `variation_css_rules` ≥ 8 (already achievable post Wave 2 Change 1 commit 2026-05-22 lines 3851-3859 — walker pre-pass should not regress this)
-              (c) **EVERY body cell ≤ 1%: 7 body sections (hero, trust-bar, featured-product, brand, ingredients-section, gift-section, social-proof) × 3 viewports (375, 768, 1440) = 21 cells, each ≤ 1%.** Per Bean's 2026-05-23 uniform-1% directive. NO partial-commit allowed — all 21 cells gate the commit.
-              (d) Stage 2 fall-throughs reduced: of the 5 currently-falling-through body sections (featured-product, brand, ingredients-section, gift-section, social-proof), match.json shows 0 still emitting `sgs/container` at confidence < 0.5
-              (e) Header + footer pixel-diff captured but NOT gated (Phase 2 scope); ONLY flag if regression > ±5% from baseline as a side-effect
-              (f) No regression on currently-matching sections at Stage 2 (hero + trust-bar conf 1.0 must stay 1.0)
-  Pass:    All 6 conditions met simultaneously. AND, not OR — if (a)+(b) pass but (c) cells > 1% remain, the walker pre-pass closed structural fall-through but per-section CSS lift is incomplete → STOP, do not commit, return to Step 1.6 with the specific failing cells + measurement-extended-set evidence per `~/.claude/rules/measurement-vs-eye.md`
+              (b) hero `variation_css_rules` ≥ 8 (already achievable post Wave 2 Change 1 commit 2026-05-22 — walker pre-pass should not regress this)
+              (c) **Stage 2 fall-through closure (NEW primary gate this step):** match.json shows 0 of the 5 originally-falling-through body sections (featured-product, brand, ingredients-section, gift-section, social-proof) still emitting `sgs/container` at confidence < 0.5
+              (d) No regression on currently-matching sections at Stage 2 (hero + trust-bar conf 1.0 must stay 1.0)
+              (e) Stage 11 pixel-diff: every body cell IMPROVES vs baseline (no regression > ±5%); absolute thresholds NOT gated this step
+              (f) Header + footer pixel-diff captured but NOT gated (Phase 2 scope); ONLY flag if regression > ±5% from baseline as a side-effect
+  Pass:    All 6 conditions met simultaneously. AND, not OR. The ≤ 1% cell gate is reserved for Step 1.7.6 — do not assert it here.
+  Fail:    Surface specific failing assertion + return to Step 1.6 with extended-measurement evidence per `~/.claude/rules/measurement-vs-eye.md`
   Pass:    All 4 conditions met; commit confirmed as the walker-pre-pass fix
   Fail:    Any regression beyond ±5% → revert Step 1.6 + return to Step 1.5 council
   Marker:  QA
+```
+
+## Step 1.7.5 — Per-section CSS lift + operator-promotion (Gate 2)
+
+```
+Step 1.7.5 — Ship Wave 2 Changes 2+3+4 (CSS lift) + operator-promotion → body cells ≤ 10%
+  Model:       wp-sgs-developer (Sonnet 4.6)
+  Action:      Step 1.6 closed structural fall-through but Wave 2 archived plan (line 164) predicted brand 1440 only reaches < 20% with full Wave 2; promotion path closes "last 5-10%" (line 203). Ship that work as a single tight commit chain:
+                - Wave 2 Change 2: cv2 queries property_suffixes for visual/structural slot types (not just text — fixes the 142-failure hero slot extraction's "visual roles" cluster like backgroundImage, overlayColour, minHeight)
+                - Wave 2 Change 3: cv2 lifts inline `style` declarations onto block.json-supported attrs gated by block_supports (per-section style decls land as inline `style.color.background` etc. on the emitted block, not as freeform CSS)
+                - Wave 2 Change 4: preserve mockup tag/class info so `<blockquote>` → `<blockquote>` (not `<section>`), `<aside>` → `<aside>` etc. — fixes brand's tag-mismatch contribution to pixel-diff
+                - Operator-promotion (P2.ii from Spec 16 §FR6 promotion path): for residual non-token CSS values, promote them as inline `style` per the block_supports gate. Closes last 5-10% after structural work.
+                Run `/sgs-clone --deploy-target page:144 --debug-trace` between each commit; per-section pixel-diff via `scripts/pixel-diff.py --selector .sgs-{section}` at 375/768/1440 captured per commit. Acceptance: every body cell ≤ 10% (matches archived-plan medium-confidence prediction).
+  Files:       plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py (multiple change sites — see archived Wave 2 plan), plugins/sgs-blocks/scripts/orchestrator/converter_v2/slot_list.py, scripts/operator-promotion.py (if separate; else inline)
+  Inputs:      Step 1.7 QA pass (structural closure confirmed)
+  Outcome:     Every body cell (7 sections × 3 viewports = 21 cells) ≤ 10% pixel-diff. Hero stage_3_slot_list failures < 30 holds.
+  Exec:        SEQUENTIAL
+  Deps:        Step 1.7 QA pass
+  Marker:      (none)
+  Time:        90-120 min
+  Tooling:     Read, Edit, Bash, /sgs-clone, scripts/pixel-diff.py, /qc-inline between commits
+  On-Fail:     If predicted-delta gate (every cell ≤ 10%) misses by > 5pp on any cell: revert last commit + return to /qc-council Stage 5 with the specific failing cell + extended-measurement evidence
+  Cold-Entry:  Wave 2 archived plan at `.claude/plans/archive/phase-wave-2-wiring-fix-complete.md` + Spec 16 §15 + §FR6 promotion path
+  Prompt:      |
+    You are dispatched to ship Wave 2 Changes 2+3+4 + operator-promotion as a tight commit chain. Step 1.6 of Phase 1 already shipped the walker pre-pass + structural fall-through closure. Your job is the per-section CSS lift work that closes body cells from ~20-40% to ≤ 10% pixel-diff per Spec 16 §15 + Wave 2 archived plan predictions.
+
+    READ FIRST:
+    - `.claude/plans/archive/phase-wave-2-wiring-fix-complete.md` — full Wave 2 spec; you implement Changes 2+3+4 (Change 1 already shipped 2026-05-22 at convert.py:3851-3859)
+    - `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` §FR6 (operator-promotion path) + §15 (Wave 2 acceptance)
+    - latest `pipeline-state/<run>/stage-11-pixel-diff.json` (post-Step-1.6 baseline)
+
+    SHIP AS A TIGHT COMMIT CHAIN (one commit per change, /qc-inline between):
+    1. Wave 2 Change 2: cv2 queries property_suffixes for visual/structural slot types
+    2. Wave 2 Change 3: cv2 lifts inline style decls onto block.json-supported attrs gated by block_supports
+    3. Wave 2 Change 4: preserve mockup tag/class info (don't normalise <blockquote> → <section>)
+    4. Operator-promotion (P2.ii): for residual non-token CSS values, promote as inline style per block_supports gate
+
+    PER-COMMIT VALIDATION:
+    Run `python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py --mockup sites/mamas-munches/mockups/homepage/index.html --client mamas-munches --page homepage --auto-section --deploy-target page:144 --debug-trace` then per-section pixel-diff `scripts/pixel-diff.py --selector .sgs-{section}` at 375/768/1440 for the affected sections. Record per-commit cell deltas.
+
+    COMMIT GATE: each commit must improve at least one body cell by ≥ 5pp without regressing any cell by > 5pp. Final state (post all 4 commits): every body cell ≤ 10%. DO NOT commit a change that misses the per-cell ≥ 5pp improvement target without surfacing back to main thread.
+
+    Safety: no `git stash`; no `git add .`/`-A`; no `--no-verify`; branch = main per CLAUDE.md branch-discipline for core SGS work.
+
+    OUTPUT: SHA per commit + pre/post cell numbers + /qc-council Stage 5 verdict per commit + any architectural rules surfaced for /capture-lesson.
+
+    Budget: 120 min wall-clock. STOP and report if exceeded.
+  Test:
+    Happy:       All 21 body cells ≤ 10%; hero stage_3_slot_list failures stay < 30; no regression on currently-matching sections
+    Edge:        1-2 cells in 10-15% band → flag as "Step 1.7.6 candidate" + commit if structural improvement clear
+    Fail:        Any cell regresses > 5pp from Step 1.7 baseline → revert + return to /qc-council
+    Integration: Step 1.7.6 (F5 D1) consumes the ≤ 10% baseline and closes to ≤ 1%
+```
+
+## Step 1.7.6 — F5 D1 responsive variants (Gate 3 — final ≤ 1% closure)
+
+```
+Step 1.7.6 — Ship F5 D1 media-field flow → body cells ≤ 1% across 375/768/1440
+  Model:       wp-sgs-developer (Sonnet 4.6)
+  Action:      F5 D1 is the "media-field responsive variants" task — extracts `*Mobile` / `*Tablet` / `*Desktop` suffixed attrs from source mockup media queries and emits them as block attrs (per Spec 16 §FR6 D1 destination). This closes the mobile pixel-diff gap (the hero 375 +13.3pt regression traces here per archived Wave 2 plan line 201). After F5 D1 ships, every body cell at 375 + 768 + 1440 reaches ≤ 1%.
+  Files:       plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py + plugins/sgs-blocks/scripts/orchestrator/converter_v2/slot_list.py (responsive-suffix lift logic) + relevant block.json files for attrs lacking *Mobile/*Tablet/*Desktop variants
+  Inputs:      Step 1.7.5 QA pass (body cells ≤ 10%)
+  Outcome:     Every body cell (21 cells) ≤ 1% pixel-diff. Phase 1 fully closed on the body side.
+  Exec:        SEQUENTIAL
+  Deps:        Step 1.7.5
+  Marker:      (none)
+  Time:        60-90 min
+  Tooling:     Read, Edit, Bash, /sgs-clone, scripts/pixel-diff.py, /qc-inline
+  On-Fail:     If any cell still > 1% after F5 D1 ships → investigate the specific cell + measurement-extension per ~/.claude/rules/measurement-vs-eye.md; may indicate a new-attribute-proposal (D3 candidate per Spec 16 R5) for the block.json
+  Cold-Entry:  Spec 16 §FR6 D1 + archived plan line 201
+  Test:
+    Happy:       All 21 cells ≤ 1%; Phase 1 success criteria fully met
+    Edge:        1-2 cells in 1-3% band → flag as Phase 3 polish parking entry (not Phase 1 close-blocker)
+    Fail:        ≥ 3 cells > 3% OR any cell > 5% → return to /qc-council; may need new-attribute work (D3)
+    Integration: closes the body-side gate; Phase 1 success criteria fully met; clean handoff to Phase 2 (chrome/header/footer cloner)
 ```
 
 ## Step 1.8 — Phase 1 hooks completion
