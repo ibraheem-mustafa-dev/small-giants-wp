@@ -22,7 +22,7 @@ primary_goal: "Close the structural pixel-diff blockers (G1+G3+G5), complete the
 **Effect.** G1+G3+G5 symptoms persist on the live page (5 of 9 sections fall through to fallback at Stage 2). Mean pixel-diff 70.5%. The architecture programme close-out's "all shipped" claim is structurally true (all decisions landed) but functionally insufficient (the decisions were undersold against the spec). Further work has been blocked because the planner trusted close-out claims that didn't match reality.
 
 **Solution.** Four sequential phases:
-- **Phase 1 — Structural pipeline recovery.** Close the walker-entry pre-pass (Spec 16 §15 steps 1-3), import the missing 2,049 hooks, re-run /sgs-update to sync role='content' DB rows, refresh stale doc claims. Empirical acceptance: hero `stage_3_slot_list` failures < 30 + brand pixel-diff at 1440 < 20% + Phase 1 hooks count matches legacy hooks.db. **Header + footer excluded from acceptance gating** (captured by Stage 11 for monitoring only — see Phase 2).
+- **Phase 1 — Universal walker + G1+G3+G5 closure + architecture programme leftovers.** Ship the universal walker (Spec 16 §15 steps 1-3) that powers the NORMAL ROUTE (FR4 + FR2 + FR3 + FR6) — the build-up path that every section takes when not matched by FR1's fast path. Close G1 (OPEN-block emission for FR1-matched composite blocks with InnerBlocks data), G3 (slot_list.py visual-slot extension via property_suffixes), G5 (per-block DOM-shape fixes — tag/class preservation + per-block render.php adjustments). Wire FR1 pattern fast-path branch (Spec 16 §FR1 branch b — section class matches registered pattern slug). Import the missing 2,049 hooks. Re-run /sgs-update for role='content' DB sync. Refresh stale doc claims. **Sections falling through to `sgs/container` is the CORRECT architectural default per FR4 + Decision 3 — NOT a defect.** The gap was that the normal route (sgs/container start + walker build-up) wasn't wired. Empirical acceptance: G1+G3+G5 closed per Spec 16 §14 acceptance criteria; pixel-diff captured as measurement only (downstream side-effect). **Header + footer excluded from acceptance gating** (Phase 2's specialised cloner scope).
 - **Phase 2 — Header + footer specialised cloning pipeline.** Build a separate one-shot script (runs once per site, not per page) that converts source HTML headers + footers into Spec 17 architecture (`header.html` / `footer.html` template parts + `Sgs_Site_Info` store + Customiser-controlled sticky/transparent/shrink behaviours + `sgs_header` / `sgs_footer` CPTs). Bypasses the generic page-clone pipeline because (a) 1-per-site means N-page sites would clone redundantly N times; (b) header/footer HTML doesn't follow the div→block pattern body content does; (c) custom behaviours (sticky, transparent, shrinking, partial-stick) live in Customiser, not block attributes. Detail in `.claude/plans/2026-05-24-phase-2-header-footer-cloner.md` (generated via `/phase-planner`).
 - **Phase 3 — Parking sweep close-out.** Finish the remaining ~22 STILL-OPEN parking entries (the original handoff's Task 4 + new entries from today's investigation). Excludes skills (Phase 4).
 - **Phase 4 — Skill + command optimisation.** /skill-optimiser mode 2 (gap analysis + research) on the 14 WP/SGS skills + /batch-gap-analysis. Runs LAST because it grades against tools the previous phases fix.
@@ -31,7 +31,7 @@ primary_goal: "Close the structural pixel-diff blockers (G1+G3+G5), complete the
 
 | Phase | Scope | Est | Sessions | Critical gate |
 |---|---|---|---|---|
-| **1** Structural recovery | Walker pre-pass + hooks completion + DB sync + doc refresh | 4-6 hrs | 1-2 | Hero `stage_3_slot_list` failures < 30 AND brand pixel-diff at 1440 < 20% (header/footer excluded — Phase 2 scope) |
+| **1** Universal walker + G1+G3+G5 closure | Universal walker (§15 steps 1-3) + FR1 pattern fast-path + G1 OPEN-block emit + G3 slot_list visual + G5 per-block DOM fixes + hooks completion + role='content' DB sync + doc refresh | 8-12 hrs | 2-3 | G1+G3+G5 closed per Spec 16 §14 acceptance + hero stage_3_slot_list < 30 + no regression on FR1-matched sections (header/footer excluded — Phase 2 scope) |
 | **2** Header + footer cloner | Separate one-shot script → Spec 17 architecture (template parts + Site Info + Customiser) | TBD by `/phase-planner` | 1-2 | Mama's Munches header + footer parity ≥ defined per-element thresholds at 375/768/1440 (header sticky behaviour exact match) |
 | **3** Parking close-out | ~22 STILL-OPEN entries (no skills) | 6-8 hrs | 2-3 | parking.md "Open" section contains zero entries beyond P-BATCH-GA-14-SKILLS |
 | **4** Skill optimisation | /skill-optimiser mode 2 on 14 WP/SGS skills + /batch-gap-analysis | 3-4 hrs | 1 (dedicated) | 14 per-skill JSON evaluations + 1 review report + S-grade confirmations queued |
@@ -41,10 +41,11 @@ primary_goal: "Close the structural pixel-diff blockers (G1+G3+G5), complete the
 ## Dependency graph
 
 ```
-Phase 1 (Structural recovery)
-  ↓ /qc-council between EVERY commit touching converter/pipeline
-  ↓ /sgs-clone --deploy-target page:144 between tasks (Stage 11 auto-captures)
-  ↓ Phase 1 gate: hero stage_3_slot_list failures < 30 + brand 1440 < 20%
+Phase 1 (Universal walker + G1+G3+G5 closure)
+  ↓ /qc-council between EVERY commit touching converter/pipeline (blub.db row 255)
+  ↓ /sgs-clone --deploy-target page:144 after EVERY code change (not bundled) — Stage 11 auto-captures
+  ↓ Phase 1 gate: G1 (hero CTAs in DOM) + G3 (hero stage_3_slot_list < 30) + G5 (per-block DOM-shape audit complete) + no regression on FR1-matched sections
+  ↓ Per-block G5 work parallelisable across blocks (file-disjoint branches)
   ↓ (Stage 11 continues capturing header + footer for monitoring; no gate)
 Phase 2 (Header + footer specialised cloner)
   ↓ Reads Spec 17 architecture (template parts + Site Info + Customiser)

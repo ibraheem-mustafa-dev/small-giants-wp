@@ -1,5 +1,41 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-23 (diagnostic + fix session — 3 new lessons)
+**Last updated:** 2026-05-24 (Step 1.6 wp-sgs-developer audit — 2 new lessons)
+
+## 2026-05-24 — Walker pre-pass commit without Stage 11 pixel-diff measurement
+
+### 1. Structural improvements can cause visual regressions — pixel-diff MUST be measured before committing converter changes
+
+Commit `124e1d06` (Spec 16 §15 steps 1-3 walker pre-pass) was committed using the leftover-buckets gate only (`unrecognised_section` bucket dropped from 5 body sections to 0). The commit did not run `/sgs-clone --deploy-target page:144` to produce a `stage-11-pixel-diff.json`, so the pixel-diff impact was unmeasured at commit time.
+
+When the wp-sgs-developer agent measured Stage 11 post-commit (run `mamas-munches-homepage-2026-05-23-181702`), the results were mixed:
+- `brand` improved (-6 to -28.7pp across all viewports) ✓
+- `gift-section` improved (-12 to -31.9pp across all viewports) ✓  
+- `featured-product 375` regressed +53.2pp (24.3% → 77.5%) ✗
+- `featured-product 768` regressed +34.7pp (29.1% → 63.7%) ✗
+- `ingredients-section` regressed +23.6 to +33.8pp across all viewports ✗
+- `header 375` regressed +58.8pp (25.4% → 84.3%) ✗ (Phase 2 scope, but exceeded ±5pp flag)
+- Mean: 70.5% → 75.1% (+4.6pp net regression)
+
+**Root cause:** `_subtree_has_registered_block()` guard correctly prevented `composite_element` from claiming `sgs-featured-product__inner` and `sgs-ingredients-section__inner` as `sgs/text`. In the baseline, those inners wrongly emitted as `sgs/text` — which coincidentally produced output CLOSER to the mockup visually (a text blob matching a text-heavy mockup section). The structurally correct output (individual `sgs/product-card`, `sgs/feature-grid` blocks) renders differently on the WP side and is currently further from the mockup visually because per-block CSS hasn't been lifted yet.
+
+**Pattern:** structural correctness and visual closeness are independent dimensions. A "structurally wrong" emit (e.g. `sgs/text` wrapping a whole section) may score better on pixel-diff than a "structurally correct" emit (individual registered blocks) if the per-block CSS lift hasn't landed yet. This is expected and documented in the plan (Step 1.7.5 — CSS lift is the next step). The lesson is: **you must measure pixel-diff BEFORE committing so you know the trade-off**. Committing blind forced this post-hoc discovery.
+
+**Rule:** Every converter_v2 commit MUST run `/sgs-clone --deploy-target page:144 --debug-trace --converter-v2` and capture `stage-11-pixel-diff.json` BEFORE committing. The Dispatch Binding B says "per sub-change" — this applies to main-thread commits too, not just agent dispatches.
+
+### 2. match.json confidence gate cannot be met by Stage 4 walker pre-pass
+
+The Phase 1 plan (Step 1.7 gate condition c) says: "match.json shows 0 of the 5 originally-falling-through body sections still emitting sgs/container at confidence < 0.5." The `_walker_pre_pass` is a Stage 4 (convert.py) primitive. Stage 2 (confidence_matrix.py) produces match.json BEFORE Stage 4 runs. The walker pre-pass cannot retroactively change Stage 2 confidence scores.
+
+After the pre-pass commit, all 5 body sections still show `confidence: 0.0` in match.json. The plan gate is structurally impossible to meet with a Stage 4 fix alone.
+
+**Resolution options (flagged for main-thread / Bean decision):**
+1. **Re-define the gate:** Update the Step 1.7 gate to use leftover-buckets `unrecognised_section` count (which DID close to 0) instead of match.json confidence.
+2. **Feed forward:** Add a post-Stage-4 confidence refinement pass that reads block_markup, infers the emitted block name, and writes back a revised confidence score into match.json for sections that were cv2-eligible.
+3. **Update Stage 2:** Enhance confidence_matrix.py to query DB child-block presence for unregistered section slugs, giving them a base confidence > 0 when registered child blocks exist.
+
+Option 1 is cheapest and already factually correct (the bucket gate IS the structural closure signal). Options 2-3 add new pipeline logic. Flag for KJC before implementing.
+
+---
 
 ## 2026-05-23 — Three lessons from the diagnostic + fix session
 

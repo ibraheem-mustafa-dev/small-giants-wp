@@ -79,15 +79,22 @@ The parking entries are grouped by effort. Each entry is referenced by ID + summ
 - **P-PHASE-5B-INERT-CUSTOMISER-OUTPUT** — already shipped per 2026-05-23 Wave A finding; mark RESOLVED in parking if not already done
 
 ### Big-ticket (~2-4 hrs each — multi-session candidates)
-- **P-CLONE-PIPELINE-HEADER-FOOTER-HANDLER** — handler for header/footer template parts in cloning pipeline
+- ~~**P-CLONE-PIPELINE-HEADER-FOOTER-HANDLER**~~ — **MOVED TO PHASE 2** (header+footer specialised cloner per 2026-05-23 strategic plan revision). No longer Phase 3 scope. See `.claude/plans/2026-05-24-phase-2-header-footer-cloner.md`.
 - **P-11-M9** — multi-section orchestrator + live deploy. Likely partially-closed by 2026-05-23 Stage 11 wire-up; verify scope remaining
 - **P-STAGE-10-DEPLOY-SILENT-PHANTOM-PAGE** — RESOLVED 2026-05-23 commit `700ff211`; verify in parking
 - **P-PIXEL-DIFF-NOT-IN-ORCHESTRATOR** — RESOLVED 2026-05-23 commit `1331f23a` (Stage 11 wire-up); verify in parking
 - **P-5A-CLIENT-VARIATION-CSS-PATH** — RESOLVED 2026-05-23 commit `f2fdd091`; verify in parking
 
-### Verification-only (~30 min each)
-- **P-G1-HERO-INNERBLOCKS / P-G2-PAGE-ID-SCOPE-STRIP / P-G3-STAGE-3-VISUAL-SLOT-MAPPING / P-G5-PER-BLOCK-DOM-SHAPE-FIXES / P-UNIVERSAL-EXTRACTION-RC-FIXES** — likely all closed by Phase 1 walker-pre-pass. Verify via Stage 11 numbers + leftover-buckets distribution.
-- **P-WAVE-2-RESHAPE-AS-ONE-WIRING-GAP** — same; should be marked RESOLVED by Phase 1
+### Verification-only (~30 min each) — closed by Phase 1 per 2026-05-23 revision
+
+Per the 2026-05-23 revision of Phase 1 (`.claude/plans/2026-05-24-phase-1-structural-recovery.md`), Phase 1 explicitly closes G1+G3+G5 + the universal walker + FR1 pattern fast-path. The entries below are verification-only IF Phase 1 closed them as scoped; if Phase 1 partially closed any of them, the residual moves into Phase 3 as actual implementation work (not verification).
+
+- **P-G1-HERO-INNERBLOCKS** — closed by Phase 1 Step 1.6 (OPEN-block emission for FR1-matched composite blocks). Verify: Playwright on sandybrown — `header.sgs-hero` has 2 CTA buttons in DOM.
+- **P-G2-PAGE-ID-SCOPE-STRIP** — closed 2026-05-22 (Wave 2 Change 1, convert.py:3851-3859). Already RESOLVED.
+- **P-G3-STAGE-3-VISUAL-SLOT-MAPPING** — closed by Phase 1 Step 1.7 (slot_list.py extension via property_suffixes). Verify: trace.jsonl per-boundary — hero stage_3_slot_list failures < 30.
+- **P-G5-PER-BLOCK-DOM-SHAPE-FIXES** — closed by Phase 1 Step 1.8 (per-block render.php fixes + tag/class preservation). Verify: visual diff brand-strip + testimonial-slider + trust-bar.
+- **P-UNIVERSAL-EXTRACTION-RC-FIXES** — closed by Phase 1 Step 1.5 (universal walker per Spec 16 §15 steps 1-3). Verify: leftover-buckets `unrecognised_section` count = 0 for body sections.
+- **P-WAVE-2-RESHAPE-AS-ONE-WIRING-GAP** — closed by Phase 1 (umbrella for G1+G3+G5 closure). Verify by confirming G1+G3+G5 verifications above all pass.
 - **P-6-MISSING-BLOCK-JSON** — 4 DB rows reference blocks with no source block.json; either create the files OR retire the DB rows
 - **P-6-LUCIDE-REST-ENTRY-POINT** — WAITING on WP 7.1; verify still blocked; document in parking as WAITING (not OPEN)
 - **P-WP70-REGISTER-BLOCK-VARIATION-MISSING** — WAITING on WP 7.1; verify

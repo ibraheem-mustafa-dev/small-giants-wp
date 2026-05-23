@@ -375,10 +375,22 @@ The big picture in one page, with EVERY script, file, DB table and skill plotted
 │      uses confidence == 0.0 flag. legacy_role_lookup table gained 1 row     │
 │      (now 18 rows, was 17). core/group fallback is now a legacy path only.  │
 │                                                                             │
-│ GAP: Matches at BLOCK level only - no PATTERN-level matcher consulting      │
-│      patterns table or block_compositions before falling through. Remaining │
-│      unmatched sections fall to Stage 9b autonomy fallback with sgs/container│
-│      as the emit shape (better than core/group but still not typed).        │
+│ TWO-ROUTE TOPOLOGY (per Spec 16 §FR1+§FR4 — REFRAMED 2026-05-23):          │
+│   FR1 fast path → section class matches a registered composite block        │
+│                    (sgs/hero, sgs/trust-bar) OR a registered pattern slug   │
+│                    (sgs/featured-product, sgs/gift-section). Emit the       │
+│                    matched block/pattern directly. Skip element-by-element  │
+│                    walk.                                                    │
+│   Normal route   → no FR1 match. Section emits sgs/container as base (per   │
+│                    FR4); universal walker (Spec 16 §15 steps 1-3) builds    │
+│                    the inner block tree element-by-element. NOT a defect —  │
+│                    this is the default architectural path.                  │
+│                                                                             │
+│ PENDING WORK: PATTERN-level fast-path matcher (FR1 branch (b)) not yet      │
+│      consulting patterns table. Currently sections matching pattern slugs   │
+│      (sgs/featured-product, sgs/gift-section, sgs/footer-indus-foods) all   │
+│      route to normal-route instead of FR1 fast-path emission. Tracked in    │
+│      Phase 1 of 2026-05-24-strategic-plan.md alongside Spec 16 §15 walker. │
 │                                                                             │
 │ STATUS:       LIVE - core/group fallback fixed (2026-05-23); pattern-level  │
 │               lookup still missing                                          │
@@ -459,6 +471,18 @@ The big picture in one page, with EVERY script, file, DB table and skill plotted
 │               unreachable. Non-SGS-BEM boundaries halt with operator note.  │
 │               D3 gap-candidate emission wired (Wave 3, e60fe58e): every     │
 │               unlifted CSS property now surfaces as attribute_gap_candidate. │
+│ STATUS (2026-05-24): _walker_pre_pass attempted (commit 124e1d06) and       │
+│               REVERTED (commit f3885f14). Reason: built a tactical guard    │
+│               for the composite_element branch only, not the universal     │
+│               walker the normal route needs per Spec 16 §15 steps 1-3.      │
+│               Caused visible pixel-diff regressions on 2 body sections     │
+│               (featured-product + ingredients-section) without CSS lift to  │
+│               support the new atomic-block emission. Bean's reframe         │
+│               2026-05-23: FR1 fast-path vs normal-route distinction         │
+│               makes the correct scope clear. Re-scoped in Phase 1 of        │
+│               2026-05-24-strategic-plan.md to close G1+G3+G5 as one         │
+│               coherent universal-walker delivery (commit sequence, not      │
+│               three deferred steps).                                        │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 

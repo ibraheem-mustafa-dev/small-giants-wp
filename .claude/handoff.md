@@ -1,71 +1,71 @@
-# Session Handoff — 2026-05-22 (architecture programme CLOSED + post-close-out cleanup)
+# Session Handoff — 2026-05-23 (Phase 1 reframe + revert + docs corrected)
 
-## Completed This Session
+## TL;DR (read this first)
 
-1. **Step 0 — Unexpected-content audit + fix.** Programmatic `wp.blocks.parse()` audit caught 34 invalid block instances (1 page hero + 33 across 9 template parts). Subagent fix + 6 inline edge-cases. Final verification: 0 invalid blocks. Commits `d18b7354` + `830f627b`.
-2. **Step 1 — Phase 4 /sgs-update rebuild.** Created `plugins/sgs-blocks/scripts/sgs-update-v2.py` — single entrypoint for 9 stages. Mode B scrapes 10 canonical upstream sources. Commits `39d32799` → `0676f0ee`.
-3. **Step 1 — /qc-council Source 2 fix.** Council caught gating success on insert-count instead of extraction-count. Rewritten to track both `s2_extracted` (scraper-health) + `s2_inserted` (diagnostic). Commits `9f1e2194` + `99081252`.
-4. **Step 2 — Phase 7.1 Sgs_Ai_Connector.** WP 7.0 native AI Connectors wrapper. API surface curl-verified pre-write per blub.db row 283. Live-tested on sandybrown: 4 default connectors auto-discovered. Commit `da19374c`.
-5. **Step 2 — Phase 7.2 skills audit + revisions (24 targets).** Original 10 WP-family skills + 14 extended (4 SGS skills + 9 slash commands + `wp-scaffold.py` + `wp-theme-check.py`) revised via 12 parallel subagents. 3 live-verification corrections to the audit: Icons block is `core/icon` singular, heading has no variations, `settings.dimensions.presets` doesn't exist. Commits `b26abf56` + `34a4be5b`.
-6. **PAT rotation + Mode B 10/10.** Bean's first PAT (`github_pat_*` fine-grained) returned 401. Rotated to `ghp_*` classic. Mode B now succeeds on all 10 sources (commit `786fa920`).
-7. **Step 3 — Parking sweep + /qc-council validation.** Subagent classified all 47 entries. 3-rater council (Haiku + Gemini Flash + Sonnet) validated 8 proposed closures. Council overturned 2 false ABANDONED claims (P-11-M9, P-RECOG-V3 still alive) AND surfaced 1 previously-RESOLVED entry that needed reopening (P-PHASE-5B-INERT-CUSTOMISER-OUTPUT — Option A CSS-custom-property step pending). Commits `34a4be5b` + `24a132d7`.
-8. **Parking-vs-plan alignment check.** Cross-referenced parking against `.claude/plans/2026-05-21-architecture-staging.md`. Surfaced 4 drift findings (D28 Lucide REST gap, D29 scope expansion, D30 Mode B amendments, §6.4 Spec 17 partial closure) + reopened P-ARCH-WP70-VIEW-TRANSITIONS-VERIFY (Decision 27 gate not executed). Commit `b1055acd`.
-9. **Doc-walker pass + plan amendments + parking promotions.** Doc-walker subagent updated 11 of 17 docs-registry canonical_docs + relevant specs. Spec 16 FR-NEW + §Phase 4 closure-gate per-section text shipped → promoted P-PHASE8-16 + P-PHASE8-8 from PARTIAL to RESOLVED. Common-wp-styling-errors Section Z added (WP 7.0 save-format drift). 4 plan-vs-reality amendments to arch-staging plan inline. Commit `8adf9e9d`.
+The previous handoff (`f28842a1`) sent next session into Phase 1 of `2026-05-24-strategic-plan.md` with the wrong architectural framing. This session caught it mid-execution, reverted one bad commit (`f3885f14` reverting `124e1d06`), corrected the framing across Spec 16 + cloning-pipeline-flow + all 4 phase plans + docs-registry, and re-wrote Phase 1 to explicitly close G1+G3+G5 entirely.
 
-## Current State
+**The architectural correction:** sections falling through to `sgs/container` is the **correct architectural default** per Spec 16 §FR4 + §R1 + §R4 + Decision 3 (2026-05-20), NOT a defect. The real gap is that the **normal route** (which every non-FR1-matched section takes — starts with `sgs/container` per FR4, then universal walker builds inner blocks element-by-element) doesn't have the universal walker (Spec 16 §15 steps 1-3) wired yet. Phase 1 now ships that walker + closes G1+G3+G5 as one coherent delivery.
 
-- **Branch:** main at `8adf9e9d`
-- **Tests:** `sgs-db-assert.py` exit 0 (27 assertions: Phase 1 + 2 + 4)
-- **Build:** N/A — Python tooling
-- **Uncommitted changes:** none
-- **Mode B verified:** 10/10 sources succeed with classic PAT
-- **Sandybrown live:** WP 7.0, Sgs_Ai_Connector deployed + tested, 0 invalid blocks
+**FR1 fast-path matches BOTH registered composite blocks AND registered pattern slugs** (Spec 16 §FR1 branch b). Section with class `sgs-featured-product` matches the `sgs/featured-product` pattern → emits `<!-- wp:pattern {"slug":"sgs/featured-product"} /-->` via FR1. Pattern fast-path is shipped alongside the universal walker in Phase 1 Step 1.5.
 
-## Known Issues / Blockers
+## Completed this session
 
-- **P-5A-CLIENT-VARIATION-CSS-PATH** — orchestrator helper returns a deleted path. Needs redirect to `sites/<client>/theme-overrides.css`. ~15 min.
-- **~18 STILL-OPEN parking entries** — mostly cloning-pipeline G1-G5 + Wave 2 wiring + Spec/doc drifts. Bean's directive: complete every entry EXCEPT `P-BATCH-GA-14-SKILLS` (skills are FINAL polish — they describe tools the other entries fix).
+1. **Caught + reverted wrong-scope commit `124e1d06`.** Agent built a tactical guard for composite_element branch instead of the universal walker. Reverted via `f3885f14`; pushed to main.
+2. **Corrected framing across all docs:**
+   - `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` §FR1 rewritten as "fast path; not the default" with two-route topology table + pattern-match branch. FR3 + FR4 clarified to make normal-route start point unambiguous. §14 G-gap framing note added. §15 reframing note added.
+   - `.claude/cloning-pipeline-flow.md` Stage 2 + Stage 4 STATUS notes rewritten with two-route topology + reverted-commit history.
+   - `.claude/plans/2026-05-24-strategic-plan.md` Phase 1 USP + summary table + dependency graph corrected.
+   - `.claude/plans/2026-05-24-phase-1-structural-recovery.md` rewritten end-to-end. New scope: ship universal walker (Step 1.5) + G1 OPEN-block emit (Step 1.6) + G3 slot_list visual extension (Step 1.7) + G5 per-block DOM fixes (Step 1.8) + hooks completion + role='content' DB sync (Step 1.9) + /qc-council verification (Step 1.10) + handoff (Step 1.11). Includes FR1 pattern fast-path branch wiring.
+   - `.claude/plans/2026-05-24-phase-3-parking-sweep.md` updated — G gaps now genuinely closed by Phase 1, so verification-only IS correct; P-CLONE-PIPELINE-HEADER-FOOTER-HANDLER moved to Phase 2 (header+footer cloner).
+   - `.claude/plans/2026-05-21-architecture-staging.md` Decision 12 footnote corrected with FR1-vs-normal-route framing.
+   - `.claude/docs-registry.yaml` updated — phase plan paths renumbered, new phase-2-header-footer-cloner added, scope descriptions corrected.
+3. **Phase 2 plan created** earlier this session: `.claude/plans/2026-05-24-phase-2-header-footer-cloner.md` (header+footer specialised cloner per Spec 17, /qc graded PASS 88/100).
+4. **Doc-drift fixes shipped earlier this session:** Spec 17 §6.4 + "73 blocks" → "69 blocks" across goals.md + cloning-pipeline-flow.md.
 
-## Next Priorities (in order)
+## Current state
 
-1. **Walk every parking entry except P-BATCH-GA-14-SKILLS.** Group by effort: quick wins first (P-5A-CLIENT-VARIATION-CSS-PATH redirect, P-WPCS-FUNCTIONS-PHP-DEBT phpcbf, P-FR1-VARIATION-BUF-CONSISTENCY one-line), then medium (P-G4-MEASUREMENT-DECONTAMINATION, P-PHASE-5B-INERT-CUSTOMISER-OUTPUT Option A emission, P-ARCH-WP70-VIEW-TRANSITIONS-VERIFY live check), then big-ticket (P-WAVE-2-RESHAPE, P-G5-PER-BLOCK-DOM-SHAPE-FIXES, P-CLONE-PIPELINE-HEADER-FOOTER-HANDLER).
-2. **Live-page-144 end-to-end verification** for G1 + G3 (Phase 3 infrastructure shipped; verification step is what actually closes them).
-3. **`P-BATCH-GA-14-SKILLS` LAST.** Run `/batch-gap-analysis` on the 14 WP/SGS skills AFTER every other parking entry closes.
+- **Branch:** main at `f3885f14` (revert commit) + this session's doc updates (uncommitted until end-of-session commit)
+- **Working tree:** all reverts + doc updates landed; pre-Phase-1-attempt state restored on code-side
+- **Pixel-diff baseline:** `pipeline-state/mamas-munches-homepage-2026-05-23-145045/stage-11-pixel-diff.json` (mean 70.5%, the canonical pre-Phase-1 measurement to compare against)
+- **Active phase:** phase-1-structural-recovery (re-scoped this session)
 
-## Files Modified
+## Captured lessons (durable corrections in CC auto-memory)
 
-| File path | What changed |
-|-----------|--------------|
-| `plugins/sgs-blocks/scripts/sgs-update-v2.py` | Created — 9-stage refresh |
-| `plugins/sgs-blocks/scripts/playwright-fetch.js` | Created — Source 4 JS-render fallback |
-| `plugins/sgs-blocks/includes/class-sgs-ai-connector.php` | Created — WP 7.0 AI Connectors wrapper |
-| `plugins/sgs-blocks/sgs-blocks.php` | Sgs_Ai_Connector registered; WP 6.x view-transitions fallback retired |
-| `plugins/sgs-blocks/_retired/` (5 files) | Deleted |
-| `theme/sgs-theme/parts/*.html` (9 files) | Block validation drift fixed |
-| `~/.claude/commands/*.md` (10 slash commands) | WP 7.0 alignment additions |
-| `~/.claude/skills/` (14 WP/SGS skills, symlinked) | WP 7.0 alignment revisions |
-| `~/.claude/hooks/wp-scaffold.py` + `wp-theme-check.py` | Block templates + validation for WP 7.0 |
-| `~/.agents/skills/sgs-wp-engine/scripts/` | Phase 4 assertions + shadow-tokens migration |
-| `.claude/parking.md` | 47 → 18 actually-open (council-validated) |
-| `.claude/state.md` | Programme CLOSED; phase_4 / phase_7 fixed from PENDING to SHIPPED |
-| `.claude/CLAUDE.md` + `architecture.md` + `plan.md` + `goals.md` | WP 7.0 + programme CLOSED |
-| `.claude/decisions.md` + `mistakes.md` | D37-D40 + 3 new lessons |
-| `.claude/specs/16` | FR-NEW + §Phase 4 closure-gate per-section |
-| `.claude/specs/17` | WP 7.0 + clone-pipeline cross-reference |
-| `.claude/specs/common-wp-styling-errors.md` | Section Z — WP 7.0 save-format drift |
-| `.claude/plans/2026-05-21-architecture-staging.md` | D28/D29/D30/§6.4 amendments |
-| `.claude/plans/archive/` | Phase 4 + Phase 7 plans archived |
-| `reports/*.md` (8 reports) | Audit + classification + idempotency artefacts |
+- `feedback_dispatched_agents_no_commit_authority.md` — agents return uncommitted artefacts; main thread + Bean decide commits. Per-sub-change /sgs-clone runs mandatory (not bundled). Living-docs + /capture-lesson + TodoWrite inline per change. Extends `feedback_dont_delegate_the_test_of_unproven_work.md` to the commit-decision boundary.
 
-## Notes for Next Session
+## Known framing pitfalls (do NOT repeat)
 
-- **Skills are LAST.** Bean's directive: every parking entry except `P-BATCH-GA-14-SKILLS` ships before the GA run. Skills describe tools/scripts; grading them before the tools/scripts get fixed would test against stale content.
-- **PAT classic format works; fine-grained doesn't.** Use `ghp_*` with `public_repo` scope. Stored at `~/.openclaw/.env` + Windows user env var (last 8 `Gf0TcI9k`).
-- **Skills are symlinked** between `~/.claude/skills/` and `~/.agents/skills/` (same inode). Edit one path, both update.
-- **Skill repo `~/.claude/`** has dozens of unrelated pending changes. The 24 skill revisions live on disk but are NOT committed in Bean's personal config repo. Bean's discretion.
-- **WP 7.0 lessons carry forward.** Icons block slug is `core/icon` singular; `core/heading` retains `level` attribute (no variations); `settings.dimensions` has no `presets` key.
-- **Council saved real bugs.** Three /qc-council runs this session collectively caught 5 false closures + 1 broken Source 2 counter + 1 needed-reopening entry. The skill is doing what it should.
+These framings led the previous handoff astray. They are now corrected in the docs but worth flagging here so the next session doesn't regress:
+
+1. **"5 of 9 sections fall through to fallback at Stage 2"** — wrong framing. Sections SHOULD fall through to `sgs/container` per FR4 + Decision 3. The actual gap is the missing normal-route universal walker.
+2. **"Walker pre-pass closes the fall-through"** — wrong target. Walker steps 1-3 BUILD the normal route (sgs/container + universal walker → element-by-element inner-block emission). They don't make sections recognised at Stage 2.
+3. **"Spec 16 §15 line 944 'every composite block inherits the same behaviour'"** — refers to registered composite blocks (hero, card-grid, multi-button), not arbitrary sections. Confirms the walker handles InnerBlocks uniformly across composite blocks INSIDE both FR1 and normal-route emit paths.
+4. **"Stage 2 match.json confidence < 0.5 is a defect"** — wrong. confidence < 0.5 means "no FR1 fast-path match → take the normal route." That's correct routing, not failure.
+5. **"_lift_inner_blocks closed G1+G3+G5"** — wrong. _lift_inner_blocks (step 4, shipped commit `79158da5`) is the DB-driven InnerBlocks emit primitive that BOTH routes consume. It doesn't close any G gap on its own — it needs steps 1-3 (universal walker) + G1 OPEN-block emit + G3 slot_list visual + G5 per-block DOM fixes.
+
+## Files modified this session
+
+| File | What changed |
+|------|--------------|
+| `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` | FR1 reframed (fast-path + pattern-match branch), FR3 + FR4 clarified, §14 + §15 framing notes added |
+| `.claude/cloning-pipeline-flow.md` | Stage 2 + Stage 4 STATUS rewritten with two-route topology |
+| `.claude/plans/2026-05-24-strategic-plan.md` | Phase 1 USP + summary table + dependency graph corrected |
+| `.claude/plans/2026-05-24-phase-1-structural-recovery.md` | End-to-end rewrite: G1+G3+G5 closure + universal walker + FR1 pattern fast-path |
+| `.claude/plans/2026-05-24-phase-3-parking-sweep.md` | G gaps reframed as verification-only (genuinely closed by Phase 1) + P-CLONE-PIPELINE-HEADER-FOOTER-HANDLER moved to Phase 2 |
+| `.claude/plans/2026-05-21-architecture-staging.md` | Decision 12 footnote corrected |
+| `.claude/docs-registry.yaml` | Phase paths renumbered, phase-2-header-footer-cloner added, scope descriptions corrected |
+| `.claude/plans/2026-05-24-phase-2-header-footer-cloner.md` | (created earlier this session) Phase 2 plan via /phase-planner + /qc fixes |
+| `goals.md` + `cloning-pipeline-flow.md:1110` | "73 blocks" → "69 blocks" |
+| `.claude/specs/17-HEADER-FOOTER-ARCHITECTURE.md` | Option A SHIPPED verified |
+| `~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_dispatched_agents_no_commit_authority.md` | New durable correction |
+
+## Next priorities (in order)
+
+1. **Execute Phase 1 of `2026-05-24-strategic-plan.md`.** Plan is at `.claude/plans/2026-05-24-phase-1-structural-recovery.md`. Closes G1+G3+G5 entirely + ships universal walker + FR1 pattern fast-path + hooks/role='content' data tasks.
+2. **Phase 2 (header+footer cloner)** after Phase 1 closes — plan at `.claude/plans/2026-05-24-phase-2-header-footer-cloner.md`.
+3. **Phase 3 (parking sweep)** after Phase 2.
+4. **Phase 4 (skill optimisation)** LAST per Bean's directive.
 
 ## Next Session Prompt
 
-See `.claude/next-session-prompt.md`.
+See `.claude/next-session-prompt.md`. **The prompt enforces strict reading discipline** — next session MUST cite specific section/line numbers + summarise each doc back before proceeding, NOT skim. This handoff's whole point is to prevent the framing-misread that broke this session.

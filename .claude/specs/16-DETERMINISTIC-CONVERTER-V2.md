@@ -143,10 +143,24 @@ The converter writes one row per (block_slug, css_property, raw_value, source_cl
 
 ## 3. The 9 functional requirements
 
-### FR1 — Block-root slot harvest
+### FR1 — Block-root / pattern-root slot harvest (FAST PATH; not the default)
 
-For every SGS-BEM draft section whose `.sgs-<block>` matches a registered block (status=built):
-- Emit one `<!-- wp:sgs/<block> {attrs} /-->` (self-closing) with attrs lifted from descendants
+**FR1 is the FAST PATH, not the default.** It fires when an exact-match exists between a section's `.sgs-<name>` class and EITHER a registered composite block slug (status=built) OR a registered pattern slug. When it fires, the converter skips the normal element-by-element build-up and emits directly from the matched block / pattern definition with descendant attrs lifted via canonical-slot lookup.
+
+**Two-route topology (binding):**
+
+| Route | When it fires | Emit shape |
+|---|---|---|
+| **FR1 (fast path)** | Section class matches EITHER (a) a registered composite block slug (sgs/hero, sgs/trust-bar, sgs/card-grid) — status=built filter passes; OR (b) a registered pattern slug (sgs/featured-product, sgs/gift-section, sgs/footer-indus-foods, etc.) — pattern file exists in `theme/sgs-theme/patterns/<slug>.php` AND the `patterns` table has a row. | Emit the matched block / pattern directly with attrs lifted from descendants. `_lift_inner_blocks` handles nested children per Decision 12. Skip element-by-element walk. |
+| **Normal route (default)** | No FR1 match — neither a registered composite block nor a registered pattern has the section's exact slug. This is the DEFAULT path — every section that isn't FR1-matched takes it. | **Start with `sgs/container` as the base of the section** (per FR4). Then the universal walker (per FR2 + FR3 + FR6 + §15 steps 1-3) walks every inner element, building up the block tree element-by-element via tag-fallback, canonical-slot resolution, and CSS-driven attribute lift. |
+
+The fast path is an OPTIMISATION for sections that are exact matches against an existing block OR an existing pattern. The normal route is the ARCHITECTURAL PRIMITIVE that handles everything else. Sections taking the normal route are NOT defective; they're correctly using the build-up path. Over time, as more patterns get registered (e.g. via `+REGISTER` autonomy chain in Stage 9b), more sections will hit FR1 fast-path naturally — but the normal route must always work as a sound fallback for anything not yet pattern-registered.
+
+**Pattern-match precedence (when both match):** if a section class matches BOTH a registered composite block AND a registered pattern with the same slug, the registered composite block wins (more specific — the block declares its own InnerBlocks shape via block.json + render.php). Patterns are templates; blocks are types.
+
+**FR1 mechanic (when fast path fires):**
+- Composite-block match: emit one `<!-- wp:sgs/<block> {attrs} /-->` (or OPEN block with nested children when InnerBlocks data is present — see G1 closure in §14.1) with attrs lifted from descendants
+- Pattern match: emit the pattern's `blocks_used` composition via `<!-- wp:pattern {"slug":"sgs/<pattern>"} /-->` (per Spec 16 §11 — pattern-target emission). The pattern's inner blocks fill from mockup-derived attrs via `sgs/site-info` bindings (for client-data slots) or directly from the descendant DOM via canonical-slot lookup.
 - Descendant elements with `__<element>` class names lift into the matching attribute via `attr_name_for_slot_or_alias(block_slug, canonical_slot_for(element))`
 - Tag-fallback fires for unclassed `<h*>` (lifts to heading-slot attr, generic via DB lookup) and CTA `<a class="sgs-button">` (lifts to ctaText/Url or ctaPrimaryText/Url + ctaSecondaryText/Url depending on schema)
 - Array-typed attrs (e.g. `packSizes` on product-card) use special-case extractors
@@ -161,19 +175,23 @@ Per ATOMIC_TAG_MAP:
 - `<button>` → `sgs/button`
 - `<span>`/`<div>` with SGS-BEM element resolving to a canonical slot that has a standalone block — route to that block (e.g. `sgs/label` for label/badge/icon)
 
-### FR3 — Pass-through wrapper rule
+### FR3 — Pass-through wrapper rule (part of the normal route)
 
-For any element that doesn't match FR1/FR2 and isn't the top-level section:
-- DO NOT emit a sgs/container wrapper
+The pass-through rule runs INSIDE the normal route, for inner elements that don't match FR1/FR2 and aren't the top-level section. It does NOT apply to top-level sections (those always get `sgs/container` per FR4 when on the normal route).
+
+For an inner non-matching element:
+- DO NOT emit a sgs/container wrapper at this depth (sgs/container is reserved for the section base per FR4 + R1)
 - Walk children, return concatenated child markup joined with newlines
 - Lift the wrapper's source CSS rules into the variation buffer (per R5)
 
-### FR4 — Top-level section container
+### FR4 — Top-level section container (normal-route start point)
 
-For the outermost section element (called with `is_top_level=True`):
+**FR4 sets the base of every section that takes the normal route.** For the outermost section element of any section NOT matched by FR1 fast-path:
 - Emit `sgs/container` with the SGS-BEM class preserved as `className`
 - Lift the section-level CSS rules into the variation buffer
-- This is the ONLY place the converter AUTO-emits sgs/container
+- The universal walker then builds the inner block tree element-by-element inside this container, per FR2 (atomic-tag emission) + FR3 (pass-through inner wrappers) + FR6 (CSS routing) + §15 steps 1-3 (walker-entry pre-pass for parent-child class graph)
+
+This is the ONLY place the converter auto-emits `sgs/container`. It is the normal-route entry point — NOT a fallback, NOT a defect. Sections that take this route are correctly using the build-up architecture (vs FR1's fast-path template-style emission).
 
 ### FR5 — Media-map resolution
 
@@ -764,6 +782,8 @@ Spec 16 §FR6 four-destination router shipped in 5 commits this session. Status 
 
 ## 14. Known gaps blocking ≤ 1% pixel-diff target (identified by honest-path council 2026-05-20)
 
+**Reframing note (2026-05-23):** The G gaps below are all NORMAL-ROUTE gaps — they describe failure modes of the build-up path (sections that DON'T match FR1's fast path). G1 is the one exception — it's an FR1-path issue where matched composite blocks emit self-closing instead of OPEN with InnerBlocks. G2 is closed (shipped 2026-05-22 Wave 2 Change 1). G3, G5 are normal-route gaps. All three remaining gaps (G1, G3, G5) dissolve when the universal walker per §15 steps 1-3 lands AND the OPEN-block emission for FR1-matched blocks with InnerBlocks data lands. See Phase 1 of `.claude/plans/2026-05-24-strategic-plan.md` for the closure plan.
+
 The four-destination router is correct per spec but pixel-diff target not yet hit due to:
 
 ### 14.1 — Self-closing block emission for composite blocks (G1)
@@ -910,6 +930,7 @@ The `role: content` + `apiVersion: 3` columns in Spec 02's per-block reference (
 
 > **Note (2026-05-21):** The Wave 2 hardcoded hero entry added to `INNER_BLOCK_PATTERNS` in commit `ad706d0d` is **retired by §18** (INNER_BLOCK_PATTERNS Retirement). Once Phase 3 lands, the dict is deleted and hero inner-block emission routes through `blocks.parent_block` + `slot_synonyms.standalone_block` like every other composite block.
 
+> **Framing note (2026-05-23):** The "wiring gap" §15 describes is the missing universal walker that powers the NORMAL ROUTE (per FR4 + FR2 + FR3 + FR6). FR1 fast-path already works for sections that match a registered composite block (sgs/hero, sgs/trust-bar). The gap is in the BUILD-UP path that every other section takes — sections starting with `sgs/container` (per FR4) need the walker to populate them with the correct nested atomic-block tree based on their inner DOM structure. Steps 1-3 below build that walker. Step 4 (DB-driven `_lift_inner_blocks`) is the InnerBlocks emit primitive that BOTH routes consume (FR1 for matched composite blocks, normal route for the sgs/container fallback's children).
 
 The 2026-05-21 reality check (`/wp-blocks dump` + grep of `plugins/sgs-blocks/scripts/orchestrator/`) reframes §14.1, §14.3, and §14.5 as symptoms of one underlying wiring gap, not three separate problems.
 

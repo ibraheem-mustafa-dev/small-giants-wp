@@ -1,8 +1,14 @@
 ---
 doc_type: parking
 project: small-giants-wp
-last_updated: 2026-05-22
+last_updated: 2026-05-24
 ---
+
+## Opened 2026-05-24 (Step 1.6 agent audit)
+
+**P-MATCH-JSON-GATE-REDEFINITION** — NEW 2026-05-24 (KJC required). The Phase 1 plan Step 1.7 gate condition (c) says "match.json shows 0 of the 5 originally-falling-through body sections still emitting sgs/container at confidence < 0.5". This gate is structurally impossible to meet with a Stage 4 walker pre-pass alone — match.json is produced by Stage 2 confidence_matrix, which runs before Stage 4. Three options: (A) redefine gate to use leftover-buckets `unrecognised_section` count (already at 0 post commit `124e1d06` — cheapest, factually correct); (B) add post-Stage-4 confidence refinement pass that infers confidence from block_markup; (C) update Stage 2 confidence_matrix to query DB child-block presence for unregistered section slugs. **Bean decision needed before Step 1.7 QA gate evaluation.**
+
+**P-WALKER-PREPASS-REGRESSION-TRIAGE** — NEW 2026-05-24 (HIGH — blocks Step 1.7 closure). Commit `124e1d06` causes visual regressions in featured-product (375: +53.2pp, 768: +34.7pp) and ingredients-section (all viewports: +23.6 to +33.8pp) while improving brand (-6 to -28.7pp) and gift-section (-12 to -31.9pp). Root cause: the pre-pass guard correctly prevented `composite_element` from claiming BEM-element wrappers as `sgs/text` — but the structurally correct output (individual blocks) renders further from the mockup visually because per-block CSS hasn't been lifted yet (Step 1.7.5). The regression was committed without Stage 11 pixel-diff measurement. Options: (A) accept regressions as expected — Steps 1.7.5+1.7.6 CSS lift will close them; (B) revert `124e1d06` and re-land once CSS lift is co-committed; (C) add CSS-lift for the regressing sections before the pre-pass commit is considered "done". **Bean decision: proceed to Step 1.7.5 or revert first?**
 
 ## Opened 2026-05-22 (post-architecture-programme close-out)
 
