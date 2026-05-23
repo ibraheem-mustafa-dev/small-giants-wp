@@ -304,9 +304,11 @@ UIMAX_DB = Path(os.path.expanduser("~/.agents/skills/ui-ux-pro-max/scripts/ui-ux
 #   stylesheets. The composer (5g.3) emits the right class hooks but without
 #   this stage the rules are silently dropped and the rendered page falls back
 #   to framework defaults. Stage 0.7 harvests every CSS source the mockup
-#   references and writes a single client-variation stylesheet at
-#   theme/sgs-theme/styles/<client>.css. functions.php enqueues it whenever
-#   the matching style variation is active.
+#   references and writes a single pipeline-intermediate stylesheet at
+#   pipeline-state/<run>/variation-d0-d2.css (Q3 fix 2026-05-23 — relocated
+#   from theme/sgs-theme/styles/<client>.css which Phase 5a retired).
+#   The G2 merge reader (line ~1419) reads from the same run_dir location.
+#   theme/sgs-theme/styles/ is intentionally empty (Phase 5a, commit 43a93df9).
 # ---------------------------------------------------------------------------
 
 _STYLE_BLOCK_RE = re.compile(r"<style[^>]*>(.*?)</style>", re.DOTALL | re.IGNORECASE)
@@ -316,8 +318,17 @@ _STYLESHEET_HREF_RE = re.compile(
 )
 
 
-def _client_variation_css_path(client: str) -> Path:
-    return REPO / "theme" / "sgs-theme" / "styles" / f"{client}.css"
+def _client_variation_css_path(client: str, run_dir: Path | None = None) -> Path:
+    """Return the pipeline-intermediate CSS path for this run.
+
+    Post Q3 fix (2026-05-23): output lives at pipeline-state/<run>/variation-d0-d2.css.
+    run_dir=None falls back to a client-named subdirectory so the helper never
+    writes to theme/sgs-theme/styles/ (Phase 5a retired that directory).
+    """
+    if run_dir is not None:
+        return run_dir / "variation-d0-d2.css"
+    # Fallback when called without a run_dir (e.g. error paths).
+    return REPO / "pipeline-state" / f"{client}-fallback" / "variation-d0-d2.css"
 
 
 def _collect_mockup_css(mockup_path: Path) -> tuple[str, list[dict], list[str]]:
@@ -393,7 +404,7 @@ def stage_0_7_css_lift(mockup_path: Path, client: str, run_dir: Path,
     Chrome-skip: rules targeting <header>/<footer>/<nav> are not emitted to D2.
 
     Output:
-      - theme/sgs-theme/styles/<client>.css  (D0 + D2 + D3-fallback only)
+      - pipeline-state/<run>/variation-d0-d2.css  (D0 + D2 + D3-fallback only; Q3 fix 2026-05-23)
       - pipeline-state/<run>/css-d1-assignments.json  (D1 typed-attr sidecar for cv2)
     """
     started = now_iso()
@@ -456,10 +467,11 @@ def stage_0_7_css_lift(mockup_path: Path, client: str, run_dir: Path,
             mockup_path=mockup_path,
             page_id=page_id,
             repo_root=REPO,
+            run_dir=run_dir,
         )
     except Exception as exc:  # noqa: BLE001
         errors.append(f"write_variation_css failed: {exc}")
-        out_path = _client_variation_css_path(client)
+        out_path = _client_variation_css_path(client, run_dir)
         total_chars = 0
 
     # ---- 5. Write D1 assignments sidecar (consumed by cv2 convert.py) ----
@@ -513,7 +525,7 @@ def _stage_0_7_verbatim_fallback(
         " */\n\n"
     )
     payload = header + css_text
-    out_path = _client_variation_css_path(client)
+    out_path = _client_variation_css_path(client, run_dir)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(payload, encoding="utf-8")
     output = {
@@ -1411,12 +1423,14 @@ def stage_4_5_6_7_8_extract(args, match_output: dict, run_dir: Path, run_ctx: di
                 # _collect_css_decls_for_element can see the scoped rules emitted
                 # by css_router (D2 destination). Without this, cv2 only ever
                 # sees the mockup's inline <style> rules; the page-id-scoped
-                # rules in theme/sgs-theme/styles/<client>.css are invisible
+                # rules in pipeline-state/<run>/variation-d0-d2.css are invisible
                 # to the consumer. Companion to the strip in convert.py
                 # _collect_css_decls_for_element. See specs/16 §14.2 +
                 # specs/common-wp-styling-errors §U. Captured 2026-05-20
                 # honest-path council; producer-side fix 2026-05-21.
-                _variation_css_path = _client_variation_css_path(args.client)
+                # Q3 fix 2026-05-23: reads from run_dir/variation-d0-d2.css
+                # (relocated from theme/sgs-theme/styles/<client>.css).
+                _variation_css_path = _client_variation_css_path(args.client, run_dir)
                 if _variation_css_path.exists():
                     try:
                         _variation_css = _variation_css_path.read_text(encoding="utf-8")

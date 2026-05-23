@@ -715,15 +715,25 @@ def write_variation_css(
     mockup_path: Path,
     page_id: int | None,
     repo_root: Path,
+    run_dir: Path | None = None,
 ) -> tuple[Path, int]:
-    """Write D0 + D2 rules to theme/sgs-theme/styles/<client>.css.
+    """Write D0 + D2 rules to the pipeline-state run directory.
+
+    Output path: <run_dir>/variation-d0-d2.css (pipeline intermediate only).
+    Falls back to <repo_root>/pipeline-state/<client>-fallback/variation-d0-d2.css
+    when run_dir is not supplied.
 
     D0 rules are written first, unscoped (they're global/reset).
     D2 rules are scoped with `.page-id-N` when page_id is supplied.
 
     Returns (output_path, char_count).
     """
-    out_path = repo_root / "theme" / "sgs-theme" / "styles" / f"{client}.css"
+    if run_dir is not None:
+        out_path = run_dir / "variation-d0-d2.css"
+    else:
+        # Fallback: run_dir unavailable — write to a predictable pipeline-state
+        # location so theme/sgs-theme/styles/ is never written.
+        out_path = repo_root / "pipeline-state" / f"{client}-fallback" / "variation-d0-d2.css"
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
     ts = datetime.now(timezone.utc).isoformat()
@@ -737,8 +747,10 @@ def write_variation_css(
         " * D0 rules: global/reset, unscoped.\n"
         " * D2 rules: wrapper CSS, scoped to .page-id-N.\n"
         " * D1 rules: lifted to block attrs via css-d1-assignments.json sidecar.\n"
-        " * Loaded by sgs-theme/functions.php when the matching style variation\n"
-        " * is active (active_theme_style theme mod).\n"
+        " *\n"
+        " * PIPELINE INTERMEDIATE ONLY — not a deploy artefact.\n"
+        " * Written to pipeline-state/<run>/variation-d0-d2.css.\n"
+        " * theme/sgs-theme/styles/ is intentionally empty (Phase 5a).\n"
         " */\n\n"
     )
 
