@@ -4,10 +4,12 @@ project: small-giants-wp
 plan_name: 2026-05-24-post-architecture-recovery-strategic-plan
 generated: 2026-05-23
 parent_plan: .claude/plans/2026-05-21-architecture-staging.md (PARTIAL — see fact-check findings)
-primary_goal: "Close the structural pixel-diff blockers (G1+G3+G5), complete the leftover work the 2026-05-21 architecture plan undersold, finish remaining parking, then optimise the skill+command surface that depends on all the above."
+primary_goal: "Close the structural pixel-diff blockers (G1+G3+G5), complete the leftover work the 2026-05-21 architecture plan undersold, build a specialised header/footer cloning pipeline, finish remaining parking, then optimise the skill+command surface that depends on all the above."
 ---
 
-# Strategic plan — post-architecture-recovery (3 phases)
+# Strategic plan — post-architecture-recovery (4 phases)
+
+**Revision 2026-05-23 (post-Step-1.1).** Phase 2 inserted: header + footer specialised cloning pipeline. Existing Phase 2 (parking) renumbered to Phase 3. Existing Phase 3 (skill optimisation) renumbered to Phase 4. Phase 1 acceptance criteria narrowed: header + footer pixel-diff still captured by Stage 11 for regression monitoring, but no longer gate Phase 1 closure (they are Phase 2's scope).
 
 ## Plain-English summary (Rule 17: Problem → Effect → Solution)
 
@@ -19,20 +21,22 @@ primary_goal: "Close the structural pixel-diff blockers (G1+G3+G5), complete the
 
 **Effect.** G1+G3+G5 symptoms persist on the live page (5 of 9 sections fall through to fallback at Stage 2). Mean pixel-diff 70.5%. The architecture programme close-out's "all shipped" claim is structurally true (all decisions landed) but functionally insufficient (the decisions were undersold against the spec). Further work has been blocked because the planner trusted close-out claims that didn't match reality.
 
-**Solution.** Three sequential phases:
-- **Phase 1 — Structural pipeline recovery.** Close the walker-entry pre-pass (Spec 16 §15 steps 1-3), import the missing 2,049 hooks, re-run /sgs-update to sync role='content' DB rows, refresh stale doc claims. Empirical acceptance: hero `stage_3_slot_list` failures < 30 + brand pixel-diff at 1440 < 20% + Phase 1 hooks count matches legacy hooks.db.
-- **Phase 2 — Parking sweep close-out.** Finish the remaining ~22 STILL-OPEN parking entries (the original handoff's Task 4 + new entries from today's investigation). Excludes skills (Phase 3).
-- **Phase 3 — Skill + command optimisation.** /skill-optimiser mode 2 (gap analysis + research) on the 14 WP/SGS skills + /batch-gap-analysis. Runs LAST because it grades against tools the previous phases fix.
+**Solution.** Four sequential phases:
+- **Phase 1 — Structural pipeline recovery.** Close the walker-entry pre-pass (Spec 16 §15 steps 1-3), import the missing 2,049 hooks, re-run /sgs-update to sync role='content' DB rows, refresh stale doc claims. Empirical acceptance: hero `stage_3_slot_list` failures < 30 + brand pixel-diff at 1440 < 20% + Phase 1 hooks count matches legacy hooks.db. **Header + footer excluded from acceptance gating** (captured by Stage 11 for monitoring only — see Phase 2).
+- **Phase 2 — Header + footer specialised cloning pipeline.** Build a separate one-shot script (runs once per site, not per page) that converts source HTML headers + footers into Spec 17 architecture (`header.html` / `footer.html` template parts + `Sgs_Site_Info` store + Customiser-controlled sticky/transparent/shrink behaviours + `sgs_header` / `sgs_footer` CPTs). Bypasses the generic page-clone pipeline because (a) 1-per-site means N-page sites would clone redundantly N times; (b) header/footer HTML doesn't follow the div→block pattern body content does; (c) custom behaviours (sticky, transparent, shrinking, partial-stick) live in Customiser, not block attributes. Detail in `.claude/plans/2026-05-24-phase-2-header-footer-cloner.md` (generated via `/phase-planner`).
+- **Phase 3 — Parking sweep close-out.** Finish the remaining ~22 STILL-OPEN parking entries (the original handoff's Task 4 + new entries from today's investigation). Excludes skills (Phase 4).
+- **Phase 4 — Skill + command optimisation.** /skill-optimiser mode 2 (gap analysis + research) on the 14 WP/SGS skills + /batch-gap-analysis. Runs LAST because it grades against tools the previous phases fix.
 
 ## Phase summary table
 
 | Phase | Scope | Est | Sessions | Critical gate |
 |---|---|---|---|---|
-| **1** Structural recovery | Walker pre-pass + hooks completion + DB sync + doc refresh | 4-6 hrs | 1-2 | Hero `stage_3_slot_list` failures < 30 AND brand pixel-diff at 1440 < 20% |
-| **2** Parking close-out | ~22 STILL-OPEN entries (no skills) | 6-8 hrs | 2-3 | parking.md "Open" section contains zero entries beyond P-BATCH-GA-14-SKILLS |
-| **3** Skill optimisation | /skill-optimiser mode 2 on 14 WP/SGS skills + /batch-gap-analysis | 3-4 hrs | 1 (dedicated) | 14 per-skill JSON evaluations + 1 review report + S-grade confirmations queued |
+| **1** Structural recovery | Walker pre-pass + hooks completion + DB sync + doc refresh | 4-6 hrs | 1-2 | Hero `stage_3_slot_list` failures < 30 AND brand pixel-diff at 1440 < 20% (header/footer excluded — Phase 2 scope) |
+| **2** Header + footer cloner | Separate one-shot script → Spec 17 architecture (template parts + Site Info + Customiser) | TBD by `/phase-planner` | 1-2 | Mama's Munches header + footer parity ≥ defined per-element thresholds at 375/768/1440 (header sticky behaviour exact match) |
+| **3** Parking close-out | ~22 STILL-OPEN entries (no skills) | 6-8 hrs | 2-3 | parking.md "Open" section contains zero entries beyond P-BATCH-GA-14-SKILLS |
+| **4** Skill optimisation | /skill-optimiser mode 2 on 14 WP/SGS skills + /batch-gap-analysis | 3-4 hrs | 1 (dedicated) | 14 per-skill JSON evaluations + 1 review report + S-grade confirmations queued |
 
-**Total: ~13 hrs across 4 sessions** (calibrate after Phase 1 actuals; quote the smallest plausible figure per `~/.claude/rules/time-estimates.md`, not the upper range).
+**Total: ~13 hrs + Phase 2 TBD, across 5-6 sessions** (calibrate after Phase 1 + Phase 2 actuals; quote the smallest plausible figure per `~/.claude/rules/time-estimates.md`, not the upper range).
 
 ## Dependency graph
 
@@ -41,13 +45,18 @@ Phase 1 (Structural recovery)
   ↓ /qc-council between EVERY commit touching converter/pipeline
   ↓ /sgs-clone --deploy-target page:144 between tasks (Stage 11 auto-captures)
   ↓ Phase 1 gate: hero stage_3_slot_list failures < 30 + brand 1440 < 20%
-Phase 2 (Parking sweep)
+  ↓ (Stage 11 continues capturing header + footer for monitoring; no gate)
+Phase 2 (Header + footer specialised cloner)
+  ↓ Reads Spec 17 architecture (template parts + Site Info + Customiser)
+  ↓ /qc-council on script commits; runs OUTSIDE main /sgs-clone pipeline
+  ↓ Phase 2 gate: per-element parity thresholds met (TBD by /phase-planner)
+Phase 3 (Parking sweep)
   ↓ /qc-inline per entry + /qc-council per multi-entry commit
   ↓ /sgs-clone after any task touching the pipeline
-  ↓ Phase 2 gate: parking.md open section = {P-BATCH-GA-14-SKILLS} only
-Phase 3 (Skill optimisation) — dedicated session
+  ↓ Phase 3 gate: parking.md open section = {P-BATCH-GA-14-SKILLS} only
+Phase 4 (Skill optimisation) — dedicated session
   ↓ blub.db row 176: /gap-analysis runs in main conversation, no subagent dispatch
-  ↓ Phase 3 gate: 14 evaluations + review report + waiting-queue
+  ↓ Phase 4 gate: 14 evaluations + review report + waiting-queue
 ```
 
 ## Methodology guardrails (apply to ALL phases)
@@ -99,14 +108,20 @@ Phase 3 (Skill optimisation) — dedicated session
 6. `.claude/plans/2026-05-24-phase-1-structural-recovery.md` — Phase 1 detailed plan
 
 **Mandatory before Phase 2:**
-1. `.claude/parking.md` — live state, all STILL-OPEN entries
-2. `.claude/plans/2026-05-24-phase-2-parking-sweep.md` — Phase 2 detailed plan
-3. Each entry's individual context (referenced inline in phase 2 plan)
+1. `.claude/specs/17-HEADER-FOOTER-ARCHITECTURE.md` — full theme-side architecture (template parts + CPTs + Customiser + Site Info store + rules engines)
+2. `.claude/plans/2026-05-24-phase-2-header-footer-cloner.md` — Phase 2 detailed plan (generated via `/phase-planner`)
+3. `pipeline-state/mamas-munches-homepage-2026-05-23-145045/stage-11-pixel-diff.json` — current header (44.9% mean) + footer (96.3% mean) baseline for delta measurement
+4. `sites/mamas-munches/mockups/homepage/index.html` — canonical source mockup header + footer DOM
 
 **Mandatory before Phase 3:**
-1. `.claude/plans/2026-05-24-phase-3-skill-optimisation.md` — Phase 3 detailed plan
+1. `.claude/parking.md` — live state, all STILL-OPEN entries
+2. `.claude/plans/2026-05-24-phase-3-parking-sweep.md` — Phase 3 detailed plan
+3. Each entry's individual context (referenced inline in phase 3 plan)
+
+**Mandatory before Phase 4:**
+1. `.claude/plans/2026-05-24-phase-4-skill-optimisation.md` — Phase 4 detailed plan
 2. blub.db row 176 binding rule — /gap-analysis runs in main conversation, no subagent dispatch
-3. `reports/phase-7-skills-audit-2026-05-22.md` + `-extended-` — Phase 7 baseline (input to Phase 3 GA)
+3. `reports/phase-7-skills-audit-2026-05-22.md` + `-extended-` — Phase 7 baseline (input to Phase 4 GA)
 4. The 14 WP/SGS skill SKILL.md files at `~/.claude/skills/`
 
 **Reference (read on demand):**
@@ -128,33 +143,39 @@ These are the decisions a junior executor would pause on mid-phase. Pre-answered
 
 3. **"What if the role='content' DB sync overwrites other attrs?"** — `/sgs-update` Stage 1 is idempotent (re-runs produce zero diffs per Phase 4 acceptance). Safe to run.
 
-4. **"Phase 2 parking entries — do we close P-BATCH-GA-14-SKILLS in Phase 2?"** — NO. That entry IS Phase 3's scope. Phase 2 closes everything ELSE.
+4. **"Phase 3 parking entries — do we close P-BATCH-GA-14-SKILLS in Phase 3?"** — NO. That entry IS Phase 4's scope. Phase 3 closes everything ELSE.
 
-5. **"When Phase 1's walker pre-pass changes Stage 4 attr counts, do we adjust the leftover-buckets classifier?"** — Possibly. The classifier currently bucks `preset_managed` slots as `extraction_failed` (documented today in cloning-pipeline-flow.md). If Phase 1 attr increases reveal more preset_managed slots, the classifier code change is a Phase 2 candidate.
+5. **"When Phase 1's walker pre-pass changes Stage 4 attr counts, do we adjust the leftover-buckets classifier?"** — Possibly. The classifier currently bucks `preset_managed` slots as `extraction_failed` (documented today in cloning-pipeline-flow.md). If Phase 1 attr increases reveal more preset_managed slots, the classifier code change is a Phase 3 candidate.
+
+7. **"Why isn't header/footer cloning part of Phase 1's walker pre-pass?"** — Headers + footers don't fit the generic page-clone pipeline: (a) they're 1-per-site (running the page pipeline N times redundantly clones them); (b) their HTML doesn't follow div→block conversion patterns; (c) custom behaviours (sticky / transparent / shrink / partial-stick) live in Customiser per Spec 17, not block attributes. Building chrome-handling into the walker pre-pass would force the wrong abstraction. Phase 2 builds a dedicated one-shot script instead.
 
 6. **"What if /sgs-clone's Stage 11 breaks during Phase 1 testing?"** — Stage 11 is soft-fail (commit `1331f23a`). If it errors, the rest of the run completes. Diagnostic: read `pipeline-state/<run>/pixel-diff/` for partial output + check Stage 10 link= URL parsing.
 
 ## Key Judgement Calls (Bean decides during execution)
 
 1. **Phase 1 acceptance threshold for "good enough":** Spec 16 §15 sets hero `stage_3_slot_list` < 30 (from 142) + hero `variation_css_rules` ≥ 8 (from 0) + brand pixel-diff at 1440 < 20% (from 83%). Lock at these numbers OR relax if first walker-pre-pass iteration shows the targets are too aggressive given other constraints?
-2. **Phase 2 sequencing:** group by file-scope (parallel-safe) OR strict-sequential per blub.db row 254 "leftover-buckets first" discipline?
-3. **Phase 3 model:** /skill-optimiser mode 2 inline (main conversation per row 176) OR subset to ~6 most-critical skills first then iterate?
+2. **Phase 2 scope decision (handled by `/phase-planner`):** does the new header/footer cloner integrate as an optional stage of `/sgs-clone` OR ship as a standalone `scripts/clone-header-footer.py` invoked separately? Trade-off: integrated = single-command UX; standalone = independent lifecycle + no risk of regressing the body pipeline.
+3. **Phase 3 sequencing:** group by file-scope (parallel-safe) OR strict-sequential per blub.db row 254 "leftover-buckets first" discipline?
+4. **Phase 4 model:** /skill-optimiser mode 2 inline (main conversation per row 176) OR subset to ~6 most-critical skills first then iterate?
 
 ## Cost estimate
 
 Per `~/.agents/skills/delegate/data/routing-table.json` defaults:
 - Phase 1 inline: ~150-200K tokens Opus + ~5 wp-sgs-developer dispatches × ~80K tokens Sonnet
-- Phase 2: ~20 /qc-inline runs × ~10K tokens + ~5 /qc-council runs × ~40K tokens
-- Phase 3: ~3 hrs inline Opus + 14 skill reads + research
+- Phase 2: TBD by `/phase-planner` — likely ~100-150K tokens Opus + 2-4 wp-sgs-developer dispatches × ~60K tokens Sonnet
+- Phase 3: ~20 /qc-inline runs × ~10K tokens + ~5 /qc-council runs × ~40K tokens
+- Phase 4: ~3 hrs inline Opus + 14 skill reads + research
 
-**Rough total: ~$50-80 API across 4-6 sessions.**
+**Rough total: ~$70-110 API across 5-7 sessions.**
 
 ---
 
 ## See also
 
 - `.claude/plans/2026-05-24-phase-1-structural-recovery.md` — Phase 1 detailed plan
-- `.claude/plans/2026-05-24-phase-2-parking-sweep.md` — Phase 2 detailed plan
-- `.claude/plans/2026-05-24-phase-3-skill-optimisation.md` — Phase 3 detailed plan
+- `.claude/plans/2026-05-24-phase-2-header-footer-cloner.md` — Phase 2 detailed plan (generated via `/phase-planner`)
+- `.claude/plans/2026-05-24-phase-3-parking-sweep.md` — Phase 3 detailed plan (renamed from `phase-2-parking-sweep.md`)
+- `.claude/plans/2026-05-24-phase-4-skill-optimisation.md` — Phase 4 detailed plan (renamed from `phase-3-skill-optimisation.md`)
+- `.claude/specs/17-HEADER-FOOTER-ARCHITECTURE.md` — Phase 2 architectural reference
 - `.claude/pipeline-state-debug-artefacts-inventory.md` — diagnostic artefact map (NEW)
 - `.claude/plans/2026-05-21-architecture-staging.md` — PARENT PLAN (PARTIAL per 2026-05-23 fact-check)

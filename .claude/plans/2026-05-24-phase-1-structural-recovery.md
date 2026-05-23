@@ -20,8 +20,8 @@ primary_goal: "Close the structural pixel-diff blockers + complete the 2026-05-2
 
 - [ ] Hero `stage_3_slot_list` failures drop from 142 to under 30 (per Spec 16 §15 numeric acceptance)
 - [ ] Hero `variation_css_rules` rises from 0 to at least 8
-- [ ] Brand pixel-diff at 1440 drops below 20% (from 83.4%)
-- [ ] 5 currently-falling-through sections (header, featured-product, gift-section, social-proof, footer) emit with structured attrs (not just `sgs/container className-only`)
+- [ ] **5 currently-falling-through body sections** (featured-product, brand, ingredients-section, gift-section, social-proof) emit with structured attrs (not just `sgs/container className-only`). Updated from 3 → 5 per 2026-05-23 Step 1.3 QA gate — match.json showed brand (conf 0.3) + ingredients-section (conf 0.0) also fall through, beyond the 3 named in leftover-buckets's `unrecognised_section` bucket. **Header + footer excluded from this gate** — they are Phase 2's scope (specialised cloning pipeline per Spec 17). Stage 11 continues capturing header/footer pixel-diff for regression monitoring only.
+- [ ] **Stage 11 pixel-diff: ≤ 1% on every (body-section × viewport) cell.** All 7 body sections (hero, trust-bar, featured-product, brand, ingredients-section, gift-section, social-proof) × 3 viewports (375, 768, 1440) = 21 cells must close at ≤ 1%. Per Bean's 2026-05-23 binding directive aligning Phase 1 body sections + Phase 2 chrome (header/footer) to a single 1%-per-section standard. Replaces the original "brand 1440 ≤ 20%" single-cell gate. Baselines vary widely (hero 1440 = 69.4%, trust-bar 1440 = 100%, ingredients 1440 = 25.1%, etc. — see `pipeline-state/mamas-munches-homepage-2026-05-23-145045/stage-11-pixel-diff.json`); the walker pre-pass closes the structural gap, post-fix tokens + per-section CSS lift close the residual.
 - [ ] Phase 1 hooks completion: `SELECT COUNT(*) FROM hooks` in sgs-framework.db matches legacy hooks.db count (7,283) ±2%
 - [ ] `role='content'` DB rows match source files: 87 attrs across 40 blocks (currently 17 across 11)
 - [ ] Legacy `blocks.db` + `hooks.db` removed OR retained as cache only (write a parking entry documenting which choice)
@@ -206,17 +206,20 @@ Step 1.6 — Implement Spec 16 §15 steps 1-3 (walker-entry CSS-class pre-pass)
     - Phase 3 (commit 79158da5) retired INNER_BLOCK_PATTERNS dict + made _lift_inner_blocks DB-driven via blocks.parent_block. This is STEP 4 of Spec 16 §15.
     - Steps 1-3 were NEVER built. 2026-05-23 fact-check by 5 investigators confirmed.
     - Today's empirical baseline (run mamas-munches-homepage-2026-05-23-145045): 5 of 9 sections fall through to sgs/container @ confidence 0.0 at Stage 2 (header, featured-product, gift-section, social-proof, footer). Mean pixel-diff 70.5%.
+    - **SCOPE: header + footer are EXCLUDED from this phase's gates.** They are handled by Phase 2's specialised cloning pipeline (Spec 17 architecture). Your acceptance criteria below target ALL 7 BODY sections (hero, trust-bar, featured-product, brand, ingredients-section, gift-section, social-proof) — including hero + trust-bar which already match registered blocks at Stage 2 confidence 1.0 but have high pixel-diff from incomplete slot extraction. Stage 11 still captures all 9 sections — header + footer are for regression monitoring only, not gating. If your changes happen to improve header + footer extraction as a side-effect, that's a bonus; if they regress beyond ±5%, flag it. Do not over-fit the walker pre-pass to header/footer DOM patterns.
+    - **Bean's 2026-05-23 directive applied:** every body cell (7 sections × 3 viewports = 21 cells) must close at ≤ 1% pixel-diff. No sliding-scale per-section thresholds — same bar across the board. Once the walker pre-pass + per-section CSS lift land, the 1% bar becomes the validation: anything still > 1% is a structural gap the walker pre-pass missed.
 
     YOUR JOB — implement steps 1-3 per Spec 16 §15:
-    1. Walker walks every CSS class encountered per section (NOT node-by-node depth-first only)
-    2. Assigns CSS ownership per class (direct + descendant + parent-qualified selectors)
-    3. Records parent-child class relations using BEM + blocks.parent_block table
-    4. Wire the resulting class-graph into emit logic so unmatched sections still produce structured cv2 output (not just sgs/container className-only)
+    1. **Walker walks every CSS class encountered per section** (NOT node-by-node depth-first only). Implementation: add a NEW function `_walker_pre_pass(section_node, css_rules) → ClassGraph` called ONCE per section boundary by `convert_section()` (or the orchestrator-level callsite that wraps `walk()`). It is NOT called inside `walk()` recursively — that would defeat the "pre-pass" intent and inflate runtime.
+    2. **Assigns CSS ownership per class.** Algorithm: a class `C` owns rule `R` iff R's selector matches one of: (a) direct (`.C` alone or `tag.C`); (b) descendant combinator (`.parent .C`, `.parent > .C`); (c) compound (`.C.other`). EXCLUDE: parent-qualified scope-breaks like `.page-id-N .C` — those are stripped by Stage 2's css_strip per §U common-wp-styling-errors before this code runs.
+    3. **Records parent-child class relations using BEM + DB.** READ SOURCES (both already populated, verified via sgs-db.py dump 2026-05-23): `blocks.parent_block` (22 parented blocks — accordion-item→accordion, form-field-*→form, button→multi-button) + `slot_synonyms.standalone_block` (BEM-element → standalone-block lookup). DO NOT query `block_compositions` — it is WRITE-ONLY at runtime (Spec 16 §15:971 inline comment; converter_v2/ has zero readers — confirmed by grep 2026-05-23).
+    4. **Wire the resulting class-graph into emit logic — for UNMATCHED sections ONLY.** The FR1 fast path at convert.py:3826-3870 already handles registered blocks (hero + trust-bar match at conf 1.0; Wave 2 Change 1 commit at lines 3851-3859 already lands variation_buf.append). DO NOT TOUCH FR1. The pre-pass feeds a NEW fallback emit branch that fires when Stage 2 falls a section through to `sgs/container` (conf < 0.5). Path: in `walk()`'s sgs/container fallback (find it around line 3946+), check if the class-graph has structured matches for the section's children; if yes, emit those as nested blocks instead of `<className-only>` sgs/container.
 
-    EMPIRICAL ACCEPTANCE (Spec 16 §15 numeric gate):
-    - Hero stage_3_slot_list failures: 142 → < 30
-    - Hero variation_css_rules: 0 → ≥ 8
-    - Brand pixel-diff at 1440: 83.4% → < 20%
+    EMPIRICAL ACCEPTANCE (updated 2026-05-23 Step 1.3 QA gate + Bean's ≤1% uniform directive):
+    - Hero stage_3_slot_list failures: 142 → < 30 (per Spec 16 §15 numeric acceptance)
+    - Hero variation_css_rules: 0 → ≥ 8 (per Spec 16 §15)
+    - Stage 11 pixel-diff: ALL 7 body sections × 3 viewports = 21 cells, each ≤ 1%. Body sections in scope: hero, trust-bar, featured-product, brand, ingredients-section, gift-section, social-proof. (Header + footer EXCLUDED — Phase 2 scope.) Baselines per stage-11-pixel-diff.json range widely (ingredients 1440 = 25.1%, social-proof 1440 = 100%, hero 1440 = 69.4%). The walker pre-pass + per-section CSS lift must close every body cell.
+    - 5 currently-falling-through body sections (featured-product, brand, ingredients-section, gift-section, social-proof) emit with structured attrs, NOT `sgs/container className-only`. Hero + trust-bar already match at conf 1.0 but their pixel-diff is high from incomplete slot extraction — walker pre-pass closes that too.
 
     METHODOLOGY GUARDRAILS (mandatory, per blub.db):
     - Row 254: read pipeline-state/<run>/leftover-buckets.json BEFORE conjecturing
@@ -258,7 +261,14 @@ QA Gate 1.B — Post walker-pre-pass pipeline test
   Model:   inline
   Exec:    SEQUENTIAL
   Deps:    Step 1.6 commit
-  Check:   Read pipeline-state/<latest>/stage-11-pixel-diff.json; assert (a) hero stage_3_slot_list failures < 30 (from trace.jsonl per-boundary), (b) hero variation_css_rules ≥ 8, (c) brand pixel-diff at 1440 < 20%, (d) NO regression on previously-converging sections (ingredients 31.9% stays ≤ 35%, trust-bar 84.1% stays ≤ 90%)
+  Check:   Read pipeline-state/<latest>/stage-11-pixel-diff.json + trace.jsonl. Assert ALL of:
+              (a) hero `stage_3_slot_list` failures < 30 (from trace.jsonl per-boundary)
+              (b) hero `variation_css_rules` ≥ 8 (already achievable post Wave 2 Change 1 commit 2026-05-22 lines 3851-3859 — walker pre-pass should not regress this)
+              (c) **EVERY body cell ≤ 1%: 7 body sections (hero, trust-bar, featured-product, brand, ingredients-section, gift-section, social-proof) × 3 viewports (375, 768, 1440) = 21 cells, each ≤ 1%.** Per Bean's 2026-05-23 uniform-1% directive. NO partial-commit allowed — all 21 cells gate the commit.
+              (d) Stage 2 fall-throughs reduced: of the 5 currently-falling-through body sections (featured-product, brand, ingredients-section, gift-section, social-proof), match.json shows 0 still emitting `sgs/container` at confidence < 0.5
+              (e) Header + footer pixel-diff captured but NOT gated (Phase 2 scope); ONLY flag if regression > ±5% from baseline as a side-effect
+              (f) No regression on currently-matching sections at Stage 2 (hero + trust-bar conf 1.0 must stay 1.0)
+  Pass:    All 6 conditions met simultaneously. AND, not OR — if (a)+(b) pass but (c) cells > 1% remain, the walker pre-pass closed structural fall-through but per-section CSS lift is incomplete → STOP, do not commit, return to Step 1.6 with the specific failing cells + measurement-extended-set evidence per `~/.claude/rules/measurement-vs-eye.md`
   Pass:    All 4 conditions met; commit confirmed as the walker-pre-pass fix
   Fail:    Any regression beyond ±5% → revert Step 1.6 + return to Step 1.5 council
   Marker:  QA
@@ -339,7 +349,7 @@ Step 1.10 — /qc-council verification of Steps 1.8+1.9 + combined commit
 ```
 Step 1.11 — Phase 1 close + Phase 2 next-session prompt
   Model:       inline
-  Action:      Invoke /handoff. Update state.md (current_phase → "phase-2-parking-sweep"). Write next-session-prompt scoped to Phase 2 (reference 2026-05-24-phase-2-parking-sweep.md). Cite Phase 1 deltas: hero failures Y→Z, brand 1440 W→V, hooks A→B, role=content C→D.
+  Action:      Invoke /handoff. Update state.md (current_phase → "phase-2-header-footer-cloner"). Write next-session-prompt scoped to Phase 2 (reference 2026-05-24-phase-2-header-footer-cloner.md). Cite Phase 1 deltas: hero failures Y→Z, brand 1440 W→V, hooks A→B, role=content C→D. Note header/footer numbers from Stage 11 as Phase 2 entry baseline.
   Files:       .claude/handoff.md, .claude/next-session-prompt.md, .claude/state.md
   Inputs:      All Step 1.* complete + /qc-council gates passed
   Outcome:     Clean phase boundary; Phase 2 ready to start
@@ -349,7 +359,7 @@ Step 1.11 — Phase 1 close + Phase 2 next-session prompt
   Time:        15 min
   Tooling:     /handoff
   On-Fail:     If /handoff stalls → manual edit + commit
-  Cold-Entry:  .claude/plans/2026-05-24-phase-2-parking-sweep.md
+  Cold-Entry:  .claude/plans/2026-05-24-phase-2-header-footer-cloner.md
   Test:
     Happy:       handoff.md regenerated; state.md timestamp updated; next-session-prompt scoped to Phase 2
     Edge:        Phase 1 had partial success (some metrics met) — document residual + carry to Phase 2 scope
@@ -396,6 +406,20 @@ Step 1.11 — Phase 1 close + Phase 2 next-session prompt
 
 - **Pre-empt 6: What if the implementer needs to add a new DB table for the class-graph cache?**
   - Pre-answer: Allowed but flag explicitly in commit message. Update `.claude/architecture.md` DB-first rule table + run /sgs-update Stage 1 to register the new table.
+
+### Hidden-Decisions (2026-05-23 Step 1.4 cross-rater pass — Sonnet + Haiku)
+
+- **Pre-empt 7 (BOTH RATERS — confirmed): Where exactly does the walker pre-pass plug into walk()?** Resolved in Step 1.6 cold prompt (item 4): pre-pass is per-section ONE-TIME, not recursive inside walk(); feeds ONLY the sgs/container fallback emit branch around convert.py:3946+; does NOT touch the FR1 fast path (which already works for hero + trust-bar).
+
+- **Pre-empt 8 (Haiku — confirmed): block_compositions vs blocks.parent_block READ source ambiguity.** Resolved in Step 1.6 cold prompt (item 3): READ sources are `blocks.parent_block` (22 parented blocks) + `slot_synonyms.standalone_block`. `block_compositions` is WRITE-ONLY at runtime (zero readers in converter_v2/ confirmed by grep 2026-05-23).
+
+- **Pre-empt 9 (Sonnet + Haiku — premature commit risk): Step 1.7 QA gate vs Step 1.6 acceptance gate misalignment.** Resolved by tightening Step 1.7 to 6 conditions (a-f) including the ≤1% × 21 cells gate AND failed-cell-list output to drive re-iteration. AND semantics enforced — no partial commits.
+
+- **Pre-empt 10 (Sonnet — STALE-SPEC FALSE-POSITIVE caught by verification): variation_css_rules ≥ 8 gate already achievable.** Spec 16 §15:967 originally claimed hero variation_css_rules stuck at 0 from FR1 fast-path bypass. Verification (convert.py:3851-3859) shows the one-liner SHIPPED 2026-05-22 (Wave 2 Change 1). Spec corrected inline 2026-05-23. Gate is reachable.
+
+- **Pre-empt 11 (Haiku — confirmed): CSS ownership algorithm undefined.** Resolved in Step 1.6 cold prompt (item 2): a class C owns rule R iff R's selector matches direct (`.C` / `tag.C`), descendant (`.parent .C` / `.parent > .C`), or compound (`.C.other`). EXCLUDE parent-qualified scope-breaks (already stripped by Stage 2 css_strip per common-wp-styling-errors §U).
+
+- **Pre-empt 12 (Sonnet — header/footer side-effect ambiguity): Walker pre-pass might over-fit to header/footer DOM patterns.** Resolved in Step 1.6 cold prompt (SCOPE block): focus on 7 body sections only; header/footer regression > ±5% is a Spec 17 phase-boundary violation, not a walker bug; do NOT tweak walker to "fix" header/footer.
 
 ---
 

@@ -1,16 +1,17 @@
 ---
 doc_type: phase-plan
-phase: 2
+phase: 3
 parent_plan: .claude/plans/2026-05-24-strategic-plan.md
 plan_label: sonnet
 docscore_grade: B+ (self-assessed)
 generated: 2026-05-23
-primary_goal: "Close every STILL-OPEN parking entry EXCEPT P-BATCH-GA-14-SKILLS (Phase 3 owns that)."
+renumbered: 2026-05-23 (was phase 2; Phase 2 slot now owned by header+footer cloner per strategic-plan revision)
+primary_goal: "Close every STILL-OPEN parking entry EXCEPT P-BATCH-GA-14-SKILLS (Phase 4 owns that)."
 ---
 
-# Phase 2 — Parking sweep close-out
+# Phase 3 — Parking sweep close-out
 
-**USP:** Phase 1 closes the structural pixel-diff blockers. Phase 2 closes everything else queued in parking — small architectural debts, doc-drift residuals, the deferred follow-ups from prior sessions. Without this sweep, every future session opens with the cognitive overhead of "what's still open?" and the parking lot keeps growing.
+**USP:** Phases 1 + 2 close the structural pixel-diff blockers and the header/footer cloner. Phase 3 closes everything else queued in parking — small architectural debts, doc-drift residuals, the deferred follow-ups from prior sessions. Without this sweep, every future session opens with the cognitive overhead of "what's still open?" and the parking lot keeps growing.
 
 **Plan label:** `[PLAN: sonnet]` — most entries are mechanical or well-scoped; only a few need Opus-level reasoning.
 

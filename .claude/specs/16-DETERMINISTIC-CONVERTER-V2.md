@@ -964,7 +964,7 @@ Both council-prescribed Wave-1 fixes (G2 cv2 strip + G4 chrome strip) implemente
 
 ### Status of G2 Step 1+2 (shipped 2026-05-21)
 
-Step 1 (orchestrator merges `theme/sgs-theme/styles/<client>.css` into `_section_css`) + Step 2 (cv2 strips `.page-id-\d+` prefix in selector matcher) + 7 regression-guard unit tests shipped 2026-05-21 (commit `affca3f1` on main). 5 sections (featured-product, brand, gift, social-proof, ingredients) doubled their `variation_css_rules` (100% each). Hero + trust-bar stayed at 0 due to FR1 fast-path bypass — parked as `P-FR1-VARIATION-BUF-CONSISTENCY` in `parking.md` for the one-line follow-up. Step 1+2 is enabling infrastructure: pixel-diff doesn't move alone, but unlocks G3 wiring.
+Step 1 (orchestrator merges `theme/sgs-theme/styles/<client>.css` into `_section_css`) + Step 2 (cv2 strips `.page-id-\d+` prefix in selector matcher) + 7 regression-guard unit tests shipped 2026-05-21 (commit `affca3f1` on main). 5 sections (featured-product, brand, gift, social-proof, ingredients) doubled their `variation_css_rules` (100% each). Hero + trust-bar originally stayed at 0 due to FR1 fast-path bypass — **CLOSED 2026-05-22 (Wave 2 Change 1, archived plan `phase-wave-2-wiring-fix-complete.md`) at convert.py:3851-3859: FR1 fast path now appends `_collect_css_for_classes(classes, css_rules)` to variation_buf same as every other emit branch.** Parking entry `P-FR1-VARIATION-BUF-CONSISTENCY` superseded. Step 1+2 is enabling infrastructure: pixel-diff doesn't move alone, but unlocks G3 wiring. (Status update 2026-05-23 Phase 1 Step 1.4 Hidden-Decisions pass.)
 
 ### Wave 2 acceptance criterion
 

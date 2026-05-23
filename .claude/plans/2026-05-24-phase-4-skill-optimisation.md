@@ -1,16 +1,17 @@
 ---
 doc_type: phase-plan
-phase: 3
+phase: 4
 parent_plan: .claude/plans/2026-05-24-strategic-plan.md
 plan_label: opus
 docscore_grade: B+ (self-assessed)
 generated: 2026-05-23
-primary_goal: "Run /skill-optimiser mode 2 + /batch-gap-analysis on the 15 WP/SGS skills now that the tools they describe have been fixed (Phases 1+2). LAST polish per Bean's directive."
+renumbered: 2026-05-23 (was phase 3; Phase 2 slot now owned by header+footer cloner per strategic-plan revision)
+primary_goal: "Run /skill-optimiser mode 2 + /batch-gap-analysis on the 15 WP/SGS skills now that the tools they describe have been fixed (Phases 1+2+3). LAST polish per Bean's directive."
 ---
 
-# Phase 3 — Skill + command optimisation
+# Phase 4 — Skill + command optimisation
 
-**USP:** Phases 1 + 2 fix the underlying tools/scripts/pipelines. The skills describe those tools — so grading them BEFORE the fixes lands measures stale content. Phase 3 runs AFTER, against the current code, so the gap-analysis is meaningful. Without this discipline, skills get graded against pre-fix scripts → false-positive gaps → wasted re-writes.
+**USP:** Phases 1 + 2 + 3 fix the underlying tools/scripts/pipelines and clear parking. The skills describe those tools — so grading them BEFORE the fixes land measures stale content. Phase 4 runs AFTER, against the current code, so the gap-analysis is meaningful. Without this discipline, skills get graded against pre-fix scripts → false-positive gaps → wasted re-writes.
 
 **Plan label:** `[PLAN: opus]` — gap-analysis runs in main conversation per blub.db row 176; multi-step analytical work; nuanced judgement on opportunity prioritisation.
 

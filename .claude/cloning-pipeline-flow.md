@@ -1107,7 +1107,7 @@ For any SGS block, the data stack across the 2 DBs:
 
 | Layer | Where it lives | Column / Table | Status (2026-05-19) |
 |-------|---------------|----------------|---------------------|
-| Block **name** | `sgs-framework.blocks.slug` | `slug` (e.g. `sgs/container`) | ✅ Fully populated — 73 blocks |
+| Block **name** | `sgs-framework.blocks.slug` | `slug` (e.g. `sgs/container`) | ✅ Fully populated — 69 blocks (DB count 2026-05-23) |
 | Block **title / description / category** | `sgs-framework.blocks` | `title`, `description`, `category`, `type`, `status`, `grade` | ✅ Auto-synced by `/sgs-update` |
 | **Has-render-php / has-view-script flags** | `sgs-framework.blocks` | `has_render_php`, `has_view_script` | ✅ Auto-synced |
 | Attribute **names** | `sgs-framework.block_attributes` | `attr_name` keyed by `block_slug` | ✅ 2230 rows (updated 2026-05-23) |
