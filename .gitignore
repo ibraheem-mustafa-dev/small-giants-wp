@@ -100,7 +100,11 @@ pipeline-state/
 # Phase 5a (2026-05-22) — WP style-variation overlay system retired.
 # Per-client snapshots now live at sites/<client>/theme-snapshot.json.
 # theme/sgs-theme/styles/ is no longer used for variation JSONs.
+# Stage 0.7 of /sgs-clone still writes to theme/sgs-theme/styles/<client>.css
+# as a pipeline intermediate — see parking entry P-5A-CLIENT-VARIATION-CSS-PATH.
+# Ignore the whole directory until the orchestrator relocates to pipeline-state/.
 theme/sgs-theme/styles/*.json
+theme/sgs-theme/styles/*.css
 theme/sgs-theme/styles/colours/
 theme/sgs-theme/styles/typography/
 

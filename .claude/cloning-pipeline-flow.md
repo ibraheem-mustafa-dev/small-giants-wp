@@ -771,6 +771,20 @@ tracked as a follow-up.
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
+### Bucket vocabulary (Stage 9 reporting)
+
+The 5-bucket `leftover-bucket-router.py` classifier emits one of these per gap. Vocabulary update 2026-05-23:
+
+| Bucket | Meaning | Example |
+|---|---|---|
+| `extraction_failed` | Slot expected by Stage 3 slot_list, no value extracted from mockup DOM/CSS, AND extraction was architecturally expected | hero `imageAlt` empty because mockup has no alt text on the hero image |
+| `preset_managed` (NEW 2026-05-23) | Slot is intentionally NOT extracted because the parent block uses a preset/variation mechanism that drives styling from theme.json. **The classifier MUST NOT flag these as `extraction_failed`**. | `ctaPrimaryStyle`, `ctaPrimaryColour`, `ctaPrimaryBackground`, hover variants — per Spec 11:78-79, when `inheritStyle != 'custom'` the render path emits className only; inline colour/border attrs are explicitly forbidden. The 15 hero CTA styling slots that fall in this category were previously mis-bucketed as `extraction_failed` (verified 2026-05-23 from `mamas-munches-131-2026-05-20-190232/leftover-buckets.json`). |
+| `unmatched_class` | DOM class found in mockup that doesn't resolve to any block / slot via DB lookup | `.sgs-mama-special-cta` (a one-off class not in any DB table) |
+| `chrome_skip` | Event surfaces during walking but is intentionally skipped (e.g. WP admin bar, page-id wrappers) — captured in chrome-skipped.log sidecar | iframe events from preview chrome |
+| `auto_derived` | Slot inferred from BEM convention but not in DB; surfaces as `attribute_gap_candidate` for review | `__mood` element with no canonical_slot match |
+
+The classifier reads from `block_attributes.role` and `block_attributes.canonical_slot` to distinguish `extraction_failed` from `preset_managed`. When a parent block has `inheritStyle` (or equivalent preset-driver) attribute and `inheritStyle != 'custom'` for the emitted instance, all CTA-style sibling attrs (colourBackground, colourText, etc.) should be classified `preset_managed`. Spec 11 §Decision-22 (2026-05-21) made this rule canonical; the classifier needs alignment.
+
 ### Stage 9b — Autonomy chain (the recovery path)
 
 ```

@@ -926,7 +926,7 @@ When (1)-(4) are wired, G1 (empty hero CTAs), G3 (Stage 3 text-only slot resolve
 | Site | Change shape |
 |---|---|
 | `convert.py walk()` FR1 fast path (line 3675) | Add `variation_buf.append(_collect_css_for_classes(classes, css_rules))` after `lift_subtree_into_block_attrs()` so registered SGS blocks consume the merged CSS (one-line consistency fix; not hero-special) |
-| `convert.py` walker entry | Walk every CSS class encountered in the section; assign ownership of CSS rules per class; record parent-child via `block_compositions` query + natural BEM relations |
+| `convert.py` walker entry | Walk every CSS class encountered in the section; assign ownership of CSS rules per class; record parent-child via `blocks.parent_block` + `slot_synonyms.standalone_block` queries + natural BEM relations. (Earlier draft of this row referenced `block_compositions query` — corrected 2026-05-23: `block_compositions` is a PATTERN-LEVEL table written by `pattern-register.py` + `seed-block-compositions.py`, NOT a walker read source. Per §15 line 901 it is `WRITE-ONLY` at runtime.) |
 | `slot_list.py` | Query `property_suffixes` for visual/structural slot types, not just text-content slots (the typed-attr-lift path of Spec 16 §FR6 Destination 1) |
 | cv2 emit shape | Use the parent-child graph to drive nested-block emission; preserve mockup class names on emitted blocks via `additionalClasses` / `className` |
 
