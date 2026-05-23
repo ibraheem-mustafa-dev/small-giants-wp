@@ -75,6 +75,61 @@ primary_goal: "Close the structural pixel-diff blockers + complete the 2026-05-2
 
 ---
 
+## Dispatch bindings — APPLY TO EVERY AGENT DISPATCH IN THIS PHASE (Steps 1.6 / 1.7.5 / 1.7.6)
+
+Per `feedback_dispatched_agents_no_commit_authority.md` (captured 2026-05-23 from Bean's pre-dispatch correction). Every Agent tool dispatch for code changes in Phase 1 MUST embed all four bindings verbatim in the cold prompt:
+
+### Binding A — NO commit authority
+
+The dispatched agent makes changes (Edit/Write), runs validation (`/sgs-clone`, `/qc-inline`), captures artefacts (Stage 11 numbers, match.json deltas, leftover-buckets.json deltas, `git diff --stat`, `git diff`), then RETURNS the **uncommitted** state to main thread. Main thread analyses + presents to Bean. Bean decides commit. The agent NEVER commits. The cold prompt must explicitly forbid `git commit`, `git add`, `git push` by the agent.
+
+### Binding B — `/sgs-clone` per sub-change (MANDATORY, NOT bundled)
+
+For each incremental code change the agent makes (every Edit/Write that affects pipeline code), the agent runs `python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py --mockup sites/mamas-munches/mockups/homepage/index.html --client mamas-munches --page homepage --auto-section --deploy-target page:144 --debug-trace` IMMEDIATELY after the change. Stage 11 numbers, match.json deltas, and leftover-buckets.json deltas are captured per-change and reported per-change. If the agent makes 5 changes, the report has 5 sets of pre/post numbers — not 1 final set. Catches per-change regressions early instead of after-the-fact attribution work.
+
+### Binding C — Living-docs + /capture-lesson inline per change
+
+The agent updates the matching doc the moment the event fires (per autopilot Living Docs Protocol):
+
+| Trigger | Doc to update |
+|---|---|
+| Architectural decision surfaced | `.claude/decisions.md` |
+| Bug, mistake, or anti-pattern surfaced | `.claude/mistakes.md` |
+| Deferred work / scope-creep | `.claude/parking.md` |
+| Pipeline stage behaviour changed | `.claude/cloning-pipeline-flow.md` |
+| DB schema, table, or read-path changed | `.claude/architecture.md` + `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "..."` verify |
+| New pipeline-state artefact added | `.claude/pipeline-state-debug-artefacts-inventory.md` |
+| New architectural RULE that should outlive session | Invoke `/capture-lesson` |
+| Correction (user-facing recurring mistake) | POST to `http://localhost:5050/api/corrections` with blub_auth cookie |
+
+Doc updates are part of the agent's per-change cycle, not saved for handoff.
+
+### Binding D — TodoWrite breakdown + per-sub-task status
+
+At dispatch start, the agent creates a TodoWrite list breaking the work into sub-tasks (one per code-change candidate). Status updates per sub-task as they complete. The agent's progress is visible mid-dispatch in the main thread — not silent for 90+ min until completion.
+
+### Required output block (cold prompt MUST include)
+
+Every dispatched agent's cold prompt ends with this OUTPUT requirement:
+
+```
+RETURN to main thread (do NOT commit):
+1. TodoWrite final state (all sub-tasks + status)
+2. Per sub-change:
+   a. File path + line range changed
+   b. `git diff <path>` (the actual diff, uncommitted)
+   c. Pre-change /sgs-clone artefact paths (Stage 11 json, match.json, leftover-buckets.json)
+   d. Post-change /sgs-clone artefact paths (same set)
+   e. Numeric deltas (mean pixel-diff, per-cell, fall-through count)
+3. Living-docs updates made (which docs, what sections)
+4. /capture-lesson invocations made (with pattern-keys)
+5. blub.db corrections POSTed (if any)
+6. Architectural surprises / new rules surfaced (flag for main-thread review)
+7. Overall recommendation: "commit all changes" / "commit changes 1+3 only, revert 2" / "do not commit; needs re-scope"
+```
+
+---
+
 # Steps
 
 ## Step 1.1 — Resume context anchor `[SESSION-START]`
@@ -232,22 +287,32 @@ Step 1.6 — Implement Spec 16 §15 steps 1-3 (walker-entry CSS-class pre-pass)
     - Row 272: schema enumeration via `python ~/.claude/hooks/wp-blocks.py dump` BEFORE any missing-X claim
     - Row 284: NO per-client CSS variation files as deploy artefacts
 
-    PIPELINE TEST (Bean directive 2026-05-23):
-    After EVERY commit, run `python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py --mockup sites/mamas-munches/mockups/homepage/index.html --client mamas-munches --page homepage --auto-section --deploy-target page:144 --debug-trace`. Stage 11 auto-captures pixel-diff numbers in stage-11-pixel-diff.json. Compare against baseline run mamas-munches-homepage-2026-05-23-145045.
+    MANDATORY DISPATCH BINDINGS (see "Dispatch bindings" section near top of this plan for full text):
+    - **Binding A — NO commit authority.** You do not run `git commit`, `git add`, or `git push`. You return the uncommitted git diff + artefacts to main thread. Main thread + Bean decide commits.
+    - **Binding B — /sgs-clone per sub-change.** After EVERY code change (each Edit/Write that affects pipeline), run `python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py --mockup sites/mamas-munches/mockups/homepage/index.html --client mamas-munches --page homepage --auto-section --deploy-target page:144 --debug-trace` immediately. Capture per-change Stage 11 numbers, match.json deltas, leftover-buckets.json deltas. Do not bundle.
+    - **Binding C — Living-docs + /capture-lesson inline.** Update mistakes.md / decisions.md / parking.md / cloning-pipeline-flow.md / architecture.md / pipeline-state-debug-artefacts-inventory.md as the work fires. Invoke /capture-lesson for new architectural rules.
+    - **Binding D — TodoWrite breakdown + per-sub-task status.** Create TodoWrite list at start; update per sub-task as they complete.
 
     SAFETY:
     - Never use `git stash` (blub.db lesson — wipes work)
-    - Never use `git add .` or `-A` (scope by exact path)
-    - Never use `--no-verify` on commits
-    - Branch discipline: this is core SGS work → commit to main
-    - DO NOT commit if Stage 11 numbers REGRESS beyond ±5% from baseline (revert + report)
+    - Never use `git add .` or `-A` (scope by exact path IF you stage at all — Binding A says you do not commit, but if you stage to inspect, scope by path)
+    - Never use `--no-verify`
+    - Branch discipline: you do not commit (Binding A); main thread will commit to main if approved
+    - If Stage 11 numbers REGRESS beyond ±5% on any body section from baseline: STOP, do NOT continue making changes, report the regression to main thread
 
-    OUTPUT:
-    1. Commit SHA
-    2. Files touched with line ranges
-    3. Pre/post Stage 11 numbers (per-section, all 3 viewports)
-    4. /qc-council Stage 5 verdict + run-id
-    5. Any new architectural rules surfaced (for /capture-lesson)
+    OUTPUT (per Required Output Block in the Dispatch bindings section):
+    1. TodoWrite final state (all sub-tasks + status)
+    2. Per sub-change:
+       a. File path + line range changed
+       b. `git diff <path>` (the actual diff, UNCOMMITTED)
+       c. Pre-change /sgs-clone artefact paths (Stage 11 json, match.json, leftover-buckets.json)
+       d. Post-change /sgs-clone artefact paths (same set)
+       e. Numeric deltas (mean pixel-diff, per-cell, fall-through count)
+    3. Living-docs updates made (which docs, what sections)
+    4. /capture-lesson invocations made (with pattern-keys)
+    5. blub.db corrections POSTed (if any)
+    6. Architectural surprises / new rules surfaced (flag for main-thread review)
+    7. Overall recommendation: "commit all changes" / "commit changes 1+3 only, revert 2" / "do not commit; needs re-scope"
 
     Budget: 90 min wall-clock. If you exceed it, STOP and report progress.
   Test:
@@ -313,14 +378,16 @@ Step 1.7.5 — Ship Wave 2 Changes 2+3+4 (CSS lift) + operator-promotion → bod
     3. Wave 2 Change 4: preserve mockup tag/class info (don't normalise <blockquote> → <section>)
     4. Operator-promotion (P2.ii): for residual non-token CSS values, promote as inline style per block_supports gate
 
-    PER-COMMIT VALIDATION:
-    Run `python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py --mockup sites/mamas-munches/mockups/homepage/index.html --client mamas-munches --page homepage --auto-section --deploy-target page:144 --debug-trace` then per-section pixel-diff `scripts/pixel-diff.py --selector .sgs-{section}` at 375/768/1440 for the affected sections. Record per-commit cell deltas.
+    MANDATORY DISPATCH BINDINGS — apply Binding A + B + C + D from the "Dispatch bindings" section at the top of this plan. Summary: NO commit authority (return uncommitted diff to main thread); /sgs-clone after EVERY code change (not bundled); living-docs + /capture-lesson inline; TodoWrite breakdown at start.
 
-    COMMIT GATE: each commit must improve at least one body cell by ≥ 5pp without regressing any cell by > 5pp. Final state (post all 4 commits): every body cell ≤ 10%. DO NOT commit a change that misses the per-cell ≥ 5pp improvement target without surfacing back to main thread.
+    PER-CHANGE VALIDATION:
+    After each code change (each of the 4 Wave 2 changes + operator-promotion): run `python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py --mockup sites/mamas-munches/mockups/homepage/index.html --client mamas-munches --page homepage --auto-section --deploy-target page:144 --debug-trace` immediately. Per-section pixel-diff via `scripts/pixel-diff.py --selector .sgs-{section}` at 375/768/1440. Record per-change cell deltas; report per-change in OUTPUT block.
 
-    Safety: no `git stash`; no `git add .`/`-A`; no `--no-verify`; branch = main per CLAUDE.md branch-discipline for core SGS work.
+    PER-CHANGE GATE (advisory to YOU, decision belongs to main thread): each change should improve at least one body cell by ≥ 5pp without regressing any cell by > 5pp. Flag any change that misses this in your OUTPUT block "Overall recommendation". DO NOT commit.
 
-    OUTPUT: SHA per commit + pre/post cell numbers + /qc-council Stage 5 verdict per commit + any architectural rules surfaced for /capture-lesson.
+    Safety: no `git stash`; no `git commit`/`add`/`push` (per Binding A); branch discipline owned by main thread.
+
+    OUTPUT: per the Required Output Block in the Dispatch bindings section. Specifically: TodoWrite final state + per-change uncommitted git diff + per-change /sgs-clone artefact paths + numeric deltas + living-docs updates made + /capture-lesson invocations + recommendation per change.
 
     Budget: 120 min wall-clock. STOP and report if exceeded.
   Test:
