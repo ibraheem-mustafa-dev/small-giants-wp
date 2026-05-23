@@ -1,178 +1,176 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-session_tag: small-giants-wp-2026-05-23-parking-finishers
-generated: 2026-05-22
-parent_session: small-giants-wp-2026-05-22-architecture-programme-close-out
-primary_goal: "Close every STILL-OPEN parking entry except P-BATCH-GA-14-SKILLS. Skills are LAST polish — they describe tools/scripts the other entries fix. Run /batch-gap-analysis only after every other parking entry ships."
+session_tag: small-giants-wp-2026-05-24-structural-g1-g5
+generated: 2026-05-23
+parent_session: small-giants-wp-2026-05-23-architecture-cleanup
+primary_goal: "Implement the G1-G5 structural converter gaps (the actual pixel-diff lever). 2026-05-23 shipped 9 commits of architectural cleanup with ZERO pixel-diff movement — verified empirically. G1-G5 is the dominant cause."
 ---
 
-# Next session — parking finishers (skills LAST)
+# Next session — Structural G1-G5 implementation
 
 Invoke `/autopilot` before anything else.
 
 ## State recap (plain English)
 
-The architecture programme is CLOSED. All 11 phases shipped + every spec-doc gap closed + every council-flagged false closure caught. 31 commits across the close-out session.
+**2026-05-23 shipped 9 commits but moved pixel-diff numbers by 0%.** Architectural debt is cleared:
+- Stage 10 silent-failure fixed — no more "patched OK" against deleted pages
+- Stage 11 added — every run auto-captures per-section pixel-diff numbers
+- core/group → sgs/container fallback corrected (Decision 3 alignment + sentinel decoupled)
+- Hand-authored brand + ingredients-section patterns deleted (deterministic-only rule)
+- Stage 0.7 CSS output relocated to `pipeline-state/<run>/variation-d0-d2.css` (Phase 5a CSS half completed)
+- All main .claude docs + numbered specs + /sgs-clone skill refreshed
+- 4 new parking entries logged
 
-What's left: **~18 STILL-OPEN parking entries.** Bean's directive: complete every one EXCEPT `P-BATCH-GA-14-SKILLS`. Skills get graded AFTER every fix lands, because skills describe tools/scripts; running `/batch-gap-analysis` against current skill content before the underlying tools improve grades against stale content.
+**Canonical pixel-diff baseline** (verified post all 2026-05-23 commits, run `mamas-munches-homepage-2026-05-23-145045`):
 
-The 18 entries break down by effort:
+| Section | Mean | 375 / 768 / 1440 |
+|---|---|---|
+| ingredients-section | 31.9% | 42.4 / 28.1 / 25.1 |
+| featured-product | 43.7% | 24.3 / 29.1 / 77.8 |
+| header | 44.9% | 25.4 / 82.5 / 26.7 |
+| hero | 73.3% | 86.6 / 63.9 / 69.4 |
+| gift-section | 83.0% | 70.3 / 88.6 / 90.1 |
+| brand | 84.0% | 90.2 / 78.5 / 83.4 |
+| trust-bar | 84.1% | 99.9 / 52.4 / 100.0 |
+| social-proof | 93.4% | 80.3 / 100.0 / 100.0 |
+| footer | 96.3% | 93.6 / 96.8 / 98.7 |
+| **MEAN** | **70.5%** | |
 
-- **Quick wins (~10-15 min each, 3 entries):** P-5A-CLIENT-VARIATION-CSS-PATH, P-WPCS-FUNCTIONS-PHP-DEBT, P-FR1-VARIATION-BUF-CONSISTENCY
-- **Medium (~30-45 min each, ~6 entries):** P-G4-MEASUREMENT-DECONTAMINATION, P-PHASE-5B-INERT-CUSTOMISER-OUTPUT Option A, P-ARCH-WP70-VIEW-TRANSITIONS-VERIFY, P-CLONING-PIPELINE-FLOW-DOC-DRIFT, P-QC-COUNCIL-FIXTURE-SMOKE-TEST, P-SUBAGENT-DRIVEN-DEV-VERIFY-LOOP-XREF
-- **Big-ticket (multi-hour, ~5 entries):** P-WAVE-2-RESHAPE-AS-ONE-WIRING-GAP, P-G5-PER-BLOCK-DOM-SHAPE-FIXES, P-CLONE-PIPELINE-HEADER-FOOTER-HANDLER, P-UNIVERSAL-EXTRACTION-RC-FIXES, P-11-M9 (multi-section orchestrator + live deploy)
-- **Verification-only (~30 min each, ~3 entries):** P-G1-HERO-INNERBLOCKS, P-G3-STAGE-3-VISUAL-SLOT-MAPPING, P-G2-PAGE-ID-SCOPE-STRIP — Phase 3 infrastructure shipped; live-page-144 Playwright verification step is what actually closes them
-- **Documentation (small, 1 entry):** P-SKILL-MD-LICENSING-HARD-RULE-CLEAN
+These are the canonical numbers as of 2026-05-23 end-of-session — every `/sgs-clone --deploy-target page:144` run regenerates them in `pipeline-state/<run>/stage-11-pixel-diff.json`.
 
-## Skills to Invoke
+## Where the leverage IS (per honest-path council 2026-05-20)
+
+The dominant pixel-diff causes are the **5 structural gaps** captured in `reports/2026-05-20-pipeline-root-gap-council/real-path-synthesis.md` + Spec 16 §15. Per `cloning-pipeline-flow.md:1603` binding statement:
+
+> *"The G1+G3+G5 symptoms (empty hero CTAs / text-only slot resolver / per-block DOM mismatches) are all manifestations of one underlying gap: cv2 doesn't walk all classes + assign CSS ownership + record parent-child relations using the tables that exist."*
+
+**Wave 2 reshape = ONE architectural change wiring the DB tables into the walker's emit shape, NOT three per-block fixes.**
+
+## Skills to invoke
 
 | Skill | When |
-|-------|------|
-| `/brainstorming` | ALWAYS — design decisions during multi-hour entries |
-| `/gap-analysis` | ALWAYS — grade outputs before declaring done |
-| `/lifecycle` | ALWAYS — any skill/pipeline edits route through here |
-| `/research` | ALWAYS — auto-routes for the multi-hour entries |
-| `/strategic-plan` | ALWAYS — sequence the entries before dispatching |
-| `/qc-council` | Before any commit that closes 2+ parking entries simultaneously |
-| `/qc-inline` | Per-entry quick verifications |
-| `/sgs-clone` | When verifying G1-G5 with a fresh pipeline run |
-| `/sgs-update` | If any Mode B re-fetch is required |
-| `/capture-lesson` | New lessons surfacing during pipeline work |
-| `/dispatching-parallel-agents` | Group the 3 quick wins into one parallel dispatch |
+|---|---|
+| `/autopilot` | FIRST — establishes live skill routing |
+| `/systematic-debugging` | Root-cause investigation before any code change |
+| `/qc-council` | Before EVERY commit touching converter/pipeline (blub.db row 255) |
+| `/verify-loop` | 2-attestation rule for every load-bearing claim (Bean directive 2026-05-23) |
+| `/dispatching-parallel-agents` | Independent file scopes only |
+| `/subagent-driven-development` | Per-step implementer + reviewer |
+| `/sgs-clone` | After every commit — measure Stage 11 numbers + compare |
+| `/sgs-wp-engine` | Block-level questions during composition |
+| `/handoff` | Session close |
+| `/capture-lesson` | New architectural rules surfaced |
 
-## MCP Servers & Tools
+## MCP servers + tools
 
 | Tool | What for |
-|------|----------|
-| Playwright MCP | Live-page-144 verification for G1 + G3 + G2; admin-bar decontamination for G4 |
-| WP-CLI over SSH | Mode B re-fetches; live verifications on sandybrown |
-| `~/.claude/hooks/wp-blocks.py` | Schema enumeration before any "missing X" diagnostic |
-| `gh` CLI | Mode B Source 1 + 3 (gutenberg + wp-cli handbook) need authenticated GitHub access |
-| `phpcbf --standard=WordPress` | P-WPCS-FUNCTIONS-PHP-DEBT one-shot fix |
+|---|---|
+| Playwright MCP | Stage 11 auto-uses pixel-diff.py via Playwright |
+| WP-CLI over SSH | Sandybrown introspection |
+| `python ~/.claude/hooks/wp-blocks.py dump` | Schema enumeration BEFORE "missing X" claim (row 272) |
+| `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py` | DB query CLI |
+| `scripts/pixel-diff.py` | Standalone diff (also auto-invoked at Stage 11) |
 
-## Agents to Delegate To
+## Methodology guardrails (HARD GATES)
 
-| Agent | When |
-|-------|------|
-| `wp-sgs-developer` | The big-ticket cloning-pipeline entries (P-WAVE-2-RESHAPE, P-CLONE-PIPELINE-HEADER-FOOTER-HANDLER, P-11-M9) |
-| `research-pipeline` | If P-WAVE-2-RESHAPE needs upfront research on the DB-wiring architecture |
+1. **Read `pipeline-state/<run>/leftover-buckets.json` + `summary.log` + `trace.jsonl` BEFORE conjecturing** (blub.db row 254). 2026-05-23 biggest insight came from trace.jsonl reading.
+2. **Multi-model `/qc-council` BEFORE every commit** touching converter / pipeline / SGS-block (row 255).
+3. **Per-section cropped pixel-diff** via `--selector .sgs-{section}`, NEVER full-page (row 256). Stage 11 already does this.
+4. **Schema enumeration** via `python ~/.claude/hooks/wp-blocks.py dump` BEFORE any "missing X" claim (row 272). A subagent on 2026-05-23 fabricated `block_conventions` + `convention_mappings` tables — verify-loop caught it.
+5. **Universal extraction only** — NO per-block legacy fixes (row 269). G1+G3+G5 dissolve simultaneously when the universal walker primitive is wired.
+6. **Verify WP API surface** before dismissing intelephense warnings (row 283).
+7. **Fact-check via independent attestation** — every load-bearing claim needs 2 sources (Bean trust-calibration 2026-05-23). Demand SQL/grep evidence inline in subagent prompts.
+8. **Pipeline test throughout all waves** — Stage 11 now does this automatically on every `--deploy-target` run.
 
-## Research Approach
+## Task 1 — G1+G3+G5 universal-extraction wiring (~2-3 hrs, THE lever)
 
-Most entries are well-specified in parking.md — no upfront research needed. The exceptions: P-WAVE-2-RESHAPE may benefit from a `/research-check --tier extended` call before designing the wiring change; P-CLONE-PIPELINE-HEADER-FOOTER-HANDLER will need a brief review of how WP stores `wp_template_part` post type vs page content before designing the handler.
+**What:** Implement Spec 16 §15 Wave 2 reshape. The walker must:
+1. Walk every CSS class encountered in each section
+2. Assign CSS ownership per class (every rule targeting that class via direct/descendant/parent-qualified selectors)
+3. Record parent-child relations between classes via natural BEM relations + `blocks.parent_block` (NOT block_compositions — WRITE-ONLY)
+4. Use the parent-child graph to drive nested-block emission shape
 
----
+**Files:**
+- Primary: `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` (walker entry + emit shape)
+- Companion: `plugins/sgs-blocks/scripts/orchestrator/converter_v2/slot_list.py` (query property_suffixes for visual slots, not just text)
 
-## Task 1 — Quick wins parallel dispatch (3 entries, ~30 min)
+**Numeric acceptance criterion (per Spec 16 §15):**
+- Hero `stage_3_slot_list` failures drop from 142 to under 30
+- Hero `variation_css_rules` rises from 0 to at least 8
+- Brand pixel-diff at 1440 drops below 20% (from 83.4%)
 
-**What:** Dispatch one Sonnet subagent to handle P-5A-CLIENT-VARIATION-CSS-PATH (orchestrator helper path redirect), P-WPCS-FUNCTIONS-PHP-DEBT (`phpcbf --standard=WordPress theme/sgs-theme/functions.php`), and P-FR1-VARIATION-BUF-CONSISTENCY (one-line append after FR1 fast-path in `convert.py:3670-3689`).
+**Process:**
+- Read Spec 16 §15 in FULL (Bean: no skim)
+- `wp-sgs-developer` agent with the full spec + this prompt + all 8 methodology guardrails embedded
+- `/qc-council` BEFORE commit
+- `/sgs-clone --deploy-target page:144` after commit to capture impact via Stage 11
 
-**Why:** All three are mechanical, low-risk, well-specified. Knocking out three parking entries in one commit clears the easy-win column fast.
+## Task 2 — G2 + G4 verification post Task 1 (~30 min)
 
-**Estimated time:** ~30 min wall-clock.
+G2 + G4 were FALSIFIED 2026-05-20 (implemented exactly to spec, 0% pixel-diff movement). With G1+G3+G5 landing, verify whether G2/G4 symptoms are still present or swept up. Read leftover-buckets.json after Task 1 for any G2/G4-shaped entries.
 
-**Orchestration:**
-- Execution: delegated, single subagent
-- Model: sonnet via /delegate
-- Dispatch: single subagent with all 3 entries in its brief
-- Acceptance: 3 commit SHAs cited; parking.md entries moved to Resolved with each SHA
+## Task 3 — Investigation residuals from 2026-05-23 (~45 min)
 
-## Task 2 — Mode B verification gates (4 entries, ~45 min)
+**Q1B follow-up — pattern quality gate (optional, high-value):**
+1% gate exists for PIPELINE success, NOT individual pattern registration. To enforce "only register patterns that pass 1% pixel-diff", add post-Stage-11 gate to `+REGISTER` in `register_patterns.py` reading `stage-11-pixel-diff.json`.
 
-**What:** Live-verify Phase 5b is genuinely shipped: (a) P-ARCH-WP70-VIEW-TRANSITIONS-VERIFY — Playwright check that view transitions fire when navigating Customiser panels; (b) P-PHASE-5B-INERT-CUSTOMISER-OUTPUT Option A — wire renderer to emit `:root { --sgs-header-bg: ...; --sgs-footer-bg: ...; }` + consume via theme.json; (c) P-QC-COUNCIL-FIXTURE-SMOKE-TEST — run `example-council.json` through `/qc-council`; (d) P-SUBAGENT-DRIVEN-DEV-VERIFY-LOOP-XREF — cross-check dispatch graph nodes.
+**Q1A residual — DB-driven fallback (optional polish):**
+2026-05-23 Q1A patch hardcoded the fallback to `sgs/container`. A purer version: `SELECT sgs_slug FROM legacy_role_lookup WHERE kebab_role = 'core/group'` so future edits go via DB row. Low priority.
 
-**Why:** Closes the verification debt Phase 5b accumulated. Without these, Phase 5b's "shipped" status has gaps the next /qc-council will surface.
+**Q3 residual — `theme/sgs-theme/styles/mamas-munches.css` cleanup:**
+Pre-existing file at `theme/sgs-theme/styles/mamas-munches.css` (parking entry P-5A-MAMAS-MUNCHES-CSS) was NOT touched by Q3. Delete now that Q3 shipped, OR park as follow-up.
 
-**Estimated time:** ~45 min.
+## Task 4 — Hardcoding purge (multi-session)
 
-**Orchestration:**
-- Execution: inline OR sonnet subagent
-- /qc gate after: /qc-inline per entry as it closes
-- Acceptance: live verification evidence (screenshot OR Playwright snapshot OR REST query output) attached to each closure
+| Site | Current | Target |
+|---|---|---|
+| `convert.py:3591` `VARIANT_MODIFIERS` | hero-specific BEM dict | Move to `block_attributes` enum_values on sgs/hero |
+| `convert.py:923` `elif slug == "sgs/button"` | per-block extraction | DB-driven via block_attributes.derived_selector |
+| `convert.py:1550` `elif slug == "sgs/info-box"` | per-block media detection | DB-driven derived_selector + media-type heuristic |
+| `lingua_franca.py:55` `_SGS_BLOCKS` set | hardcoded list | Query `blocks WHERE source='sgs' AND status='built'` |
+| `lingua_franca.py:69-156` 5 convention dicts | _BEM_BARE, _TAILWIND_UTILITY, _BOOTSTRAP, _SHADCN, _KEBAB_SEMANTIC | Requires NEW DB tables (uimax `naming_conventions` exists 16 rows — may need extension) |
+| `per-section-convention-voter.py:152` `RETIRED_BLOCK_REMAP` | legacy slug→replacement | Move to `blocks.replaces` column (exists) |
 
-## Task 3 — G-series live verification (3 entries, ~90 min)
+**Note (verify-loop falsified 2026-05-23):** `block_conventions` + `convention_mappings` tables in sgs-framework.db DO NOT EXIST. Earlier subagent claim was fabrication. Creating these tables would need to be a separate explicit step before lingua_franca.py can move to DB-driven.
 
-**What:** Play-page-144 end-to-end verification for G1 (hero CTAs render), G2 (variation CSS scope-strip works), G3 (visual slots resolve). Phase 3 shipped the infrastructure; this task runs the Playwright + REST + console check that actually closes them.
+## Task 5 — Wave 2C tidy (~15 min)
 
-**Why:** Bean's recurring point — infrastructure shipped is not the same as outcome achieved. Without this verification, G1+G2+G3 stay open + the pixel-diff target stays unreachable.
-
-**Estimated time:** ~90 min (Playwright setup + per-section verification + per-section pixel-diff via `--selector .sgs-{section}` per blub.db row 256).
-
-**Orchestration:**
-- Execution: wp-sgs-developer agent
-- Dispatch pattern: sequential per section (don't fan out across sections — pixel-diff measurement contamination risk per P-G4)
-- Acceptance: per-section pixel-diff ≤ 1% across 375 / 768 / 1440 viewports
-
-## Task 4 — Big-ticket entries (sequential, multi-session candidate)
-
-**What:** P-WAVE-2-RESHAPE-AS-ONE-WIRING-GAP, P-CLONE-PIPELINE-HEADER-FOOTER-HANDLER, P-11-M9, P-G5-PER-BLOCK-DOM-SHAPE-FIXES, P-UNIVERSAL-EXTRACTION-RC-FIXES.
-
-**Why:** Each is a multi-hour architectural change. Cannot be parallel-dispatched (shared state risks). Sequential, with /qc-council between each before commit.
-
-**Estimated time:** Each entry ~2-4 hours. Realistically this is a 2-3 session arc on its own — be prepared to handoff mid-way.
-
-**Orchestration:**
-- Execution: wp-sgs-developer per entry
-- /qc gate after each: /qc-council (3 raters, full protocol) before commit
-- Acceptance per entry: measurable pixel-diff or test-suite improvement; council validates the implementation matches the fix-shape
-
-## Task 5 — Documentation drift (~30 min)
-
-**What:** P-CLONING-PIPELINE-FLOW-DOC-DRIFT (2 inaccuracies + 2 undocumented 2026-05-21 changes in the pipeline flow doc), P-SKILL-MD-LICENSING-HARD-RULE-CLEAN (renumber Rules 2-14 after Rule 1 retirement in `/sgs-clone` SKILL.md).
-
-**Why:** Documentation drift breeds wrong assumptions in future sessions.
-
-**Estimated time:** ~30 min.
-
-**Orchestration:**
-- Execution: inline
-- /qc gate: /qc-inline
-
-## Task 6 — Final polish: P-BATCH-GA-14-SKILLS
-
-**What:** Run `/batch-gap-analysis` on the 14 WP/SGS skills (full `/gap-analysis` per target, sequential, in main conversation per blub.db row 176).
-
-**Why:** Skills describe tools / scripts / pipelines. Now that Tasks 1-5 have shipped, the skills will be grading against current code — not stale assumptions.
-
-**Estimated time:** ~3 hours dedicated session.
-
-**Orchestration:**
-- Execution: inline (blub.db row 176 hard gate forbids subagent dispatch)
-- Acceptance: 14 per-target JSON evaluations + 1 review report + waiting-queue (S-grade confirms + opportunity selections)
+Wave 2C subagent 2026-05-23 transcript was truncated. /sgs-clone SKILL.md edit landed (system-reminder confirmed). `references/pipeline-stages.md` + `references/router-pattern.md` may have been pending. Open them, verify current, fix anything stale.
 
 ## Dependency graph
 
 ```
-Task 1 (3 quick wins, parallel)
+Task 1 — G1+G3+G5 wiring (THE lever)
+  ↓ + /qc-council + /sgs-clone measurement
+Task 2 — G2/G4 verification
   ↓
-Task 2 (4 verification gates, inline)
+Task 3 — Investigation residuals
   ↓
-Task 3 (G-series live verification, sequential)
+Task 4 — Hardcoding purge (separate session(s))
   ↓
-Task 4 (big-ticket sequential — likely needs own session)
-  ↓
-Task 5 (doc drift)
-  ↓ commit + handoff
-Task 6 (P-BATCH-GA-14-SKILLS — final polish, dedicated session)
+Task 5 — Wave 2C tidy
 ```
-
-## Methodology guardrails (do not skip)
-
-- **blub.db row 176** — `/gap-analysis` (and `/batch-gap-analysis`) runs in main conversation, full protocol per target, no subagent dispatch substitution.
-- **blub.db row 255** — Multi-model `/qc` panel before every commit touching converter / pipeline / SGS block logic.
-- **blub.db row 256** — Per-section cropped pixel-diff via `--selector .sgs-{section}`, never full-page.
-- **blub.db row 283** — Verify WP API surface via `curl developer.wordpress.org/reference/functions/<name>/` before dismissing intelephense warnings or writing code that calls them.
-- **Skills are LAST polish.** Do not run `/batch-gap-analysis` before Tasks 1-5 ship. Skills depend on the tools they describe.
-- **Live verification beats audit.** Three audit claims this session were wrong (Icons block slug, heading variations, dimensions presets). When grading WP 7.0 behaviour, SSH to sandybrown + check.
 
 ## Reference docs
 
-- `.claude/handoff.md` — 2026-05-22 session summary
-- `.claude/parking.md` — live state, ~18 STILL OPEN
-- `.claude/state.md` — programme CLOSED status
-- `.claude/plans/2026-05-21-architecture-staging.md` — 31-decision plan, post-amendment
-- `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` — FR7 closure-gate per-section + FR-NEW for cv2-eligible dynamic invariant
-- `reports/2026-05-22-parking-sweep-classification.md` — first-pass classifier
-- `reports/2026-05-22-parking-sweep-tail-classification.md` — second-pass council
-- `reports/phase-7-skills-audit-2026-05-22.md` + `-extended-` — Phase 7 audit baseline (input to Task 6 GA when it runs)
+- `.claude/handoff.md` — 2026-05-23 session summary
+- `.claude/parking.md` — live state, ~20 STILL OPEN
+- `.claude/state.md` — current phase + blockers
+- `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` §15 — Wave 2 reshape (UPDATED 2026-05-23)
+- `.claude/cloning-pipeline-flow.md` — pipeline flow with new Stage 11 block
+- `.claude/decisions.md` D41-D45 — 2026-05-23 decisions
+- `.claude/mistakes.md` — 3 new lessons 2026-05-23
+- `reports/2026-05-20-pipeline-root-gap-council/real-path-synthesis.md` — G1-G5 diagnosis
+- `pipeline-state/mamas-munches-homepage-2026-05-23-145045/` — canonical pre-G1-G5 baseline
+- `pipeline-state/mamas-munches-homepage-2026-05-23-145045/stage-11-pixel-diff.json` — empirical reference
+
+## Read FIRST (per ADHD Rule 1)
+
+1. This file (you're reading it)
+2. `.claude/handoff.md`
+3. `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` §15
+4. `pipeline-state/mamas-munches-homepage-2026-05-23-145045/trace.jsonl` (tail 50 lines)
+5. `pipeline-state/mamas-munches-homepage-2026-05-23-145045/leftover-buckets.json`
+
+Then smallest-first-action per Rule 2.
