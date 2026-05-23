@@ -71,12 +71,15 @@ add_filter(
  * CSP is configured at the server/CDN level (requires listing all third-party
  * origins). These headers are safe to set unconditionally.
  */
-add_filter( 'wp_headers', function ( array $headers ): array {
-	$headers['X-Content-Type-Options'] = 'nosniff';
-	$headers['X-Frame-Options']        = 'SAMEORIGIN';
-	$headers['Referrer-Policy']        = 'strict-origin-when-cross-origin';
-	return $headers;
-} );
+add_filter(
+	'wp_headers',
+	function ( array $headers ): array {
+		$headers['X-Content-Type-Options'] = 'nosniff';
+		$headers['X-Frame-Options']        = 'SAMEORIGIN';
+		$headers['Referrer-Policy']        = 'strict-origin-when-cross-origin';
+		return $headers;
+	}
+);
 
 /**
  * Theme setup — register support for block features.
@@ -135,7 +138,7 @@ function preload_hero_image(): void {
 			continue;
 		}
 
-		$attrs    = $block['attrs'] ?? [];
+		$attrs    = $block['attrs'] ?? array();
 		$variant  = $attrs['variant'] ?? 'standard';
 		$bg_image = $attrs['backgroundImage'] ?? null;
 
@@ -161,6 +164,10 @@ function preload_hero_image(): void {
 }
 add_action( 'wp_head', __NAMESPACE__ . '\preload_hero_image', 1 );
 
+/**
+ * Preload the active site's body font so first-paint text renders in the
+ * branded family rather than falling back to the system stack.
+ */
 function preload_fonts(): void {
 	/*
 	 * Preload the body font for the active site. The WP-style-variation
@@ -171,9 +178,9 @@ function preload_fonts(): void {
 	 * sites/<client>/theme-snapshot.json's customTemplates/typography
 	 * settings — this base preload covers the body font only.
 	 */
-	$fonts = [
+	$fonts = array(
 		'inter-variable-latin.woff2',
-	];
+	);
 
 	foreach ( $fonts as $font ) {
 		printf(
@@ -194,7 +201,7 @@ function enqueue_styles(): void {
 	wp_enqueue_style(
 		'sgs-core-blocks-critical',
 		get_theme_file_uri( 'assets/css/core-blocks-critical.css' ),
-		[],
+		array(),
 		$theme_version
 	);
 
@@ -202,14 +209,14 @@ function enqueue_styles(): void {
 	wp_enqueue_style(
 		'sgs-core-blocks',
 		get_theme_file_uri( 'assets/css/core-blocks.css' ),
-		[ 'sgs-core-blocks-critical' ],
+		array( 'sgs-core-blocks-critical' ),
 		$theme_version
 	);
 
 	wp_enqueue_style(
 		'sgs-utilities',
 		get_theme_file_uri( 'assets/css/utilities.css' ),
-		[],
+		array(),
 		$theme_version
 	);
 
@@ -226,14 +233,14 @@ function enqueue_styles(): void {
 		wp_enqueue_style(
 			'sgs-dark-mode',
 			get_theme_file_uri( 'assets/css/dark-mode.css' ),
-			[],
+			array(),
 			$theme_version
 		);
 
 		wp_enqueue_script(
 			'sgs-dark-mode',
 			get_theme_file_uri( 'assets/js/dark-mode.js' ),
-			[],
+			array(),
 			$theme_version,
 			true // Load in footer — inline head script handles flash prevention.
 		);
@@ -243,7 +250,7 @@ function enqueue_styles(): void {
 	wp_enqueue_script(
 		'sgs-nav-accessibility',
 		get_theme_file_uri( 'assets/js/nav-accessibility.js' ),
-		[],
+		array(),
 		$theme_version,
 		true // Load in footer — runs after DOM is available.
 	);
@@ -257,12 +264,12 @@ function enqueue_styles(): void {
 	wp_enqueue_script(
 		'sgs-viewport-width',
 		get_theme_file_uri( 'assets/js/viewport-width.js' ),
-		[],
+		array(),
 		$theme_version,
-		[
+		array(
 			'in_footer' => false,
 			'strategy'  => 'defer',
-		]
+		)
 	);
 
 	// M17: mobile navigation is now the sgs/mobile-nav block.
@@ -273,7 +280,7 @@ function enqueue_styles(): void {
 	wp_enqueue_style(
 		'sgs-mega-menu-panels',
 		get_theme_file_uri( 'assets/css/mega-menu-panels.css' ),
-		[ 'sgs-core-blocks-critical' ],
+		array( 'sgs-core-blocks-critical' ),
 		$theme_version
 	);
 
@@ -283,14 +290,14 @@ function enqueue_styles(): void {
 		wp_enqueue_style(
 			'sgs-header-modes',
 			get_theme_file_uri( 'assets/css/header-modes.css' ),
-			[ 'sgs-core-blocks-critical' ],
+			array( 'sgs-core-blocks-critical' ),
 			$theme_version
 		);
 
 		wp_enqueue_script(
 			'sgs-header-behaviour',
 			get_theme_file_uri( 'assets/js/header-behaviour.js' ),
-			[],
+			array(),
 			$theme_version,
 			true // Load in footer — runs after DOM is available.
 		);
@@ -341,9 +348,13 @@ add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\enqueue_global_layout_fixes'
  * Converts selected <link rel="stylesheet"> tags to use the
  * media="print" onload="this.media='all'" pattern so they load
  * asynchronously without blocking first paint.
+ *
+ * @param string $tag    The HTML <link> tag for the stylesheet.
+ * @param string $handle The stylesheet handle registered via wp_enqueue_style().
+ * @return string Possibly-rewritten tag with deferred media swap.
  */
 function defer_non_critical_css( string $tag, string $handle ): string {
-	$deferred = [ 'sgs-core-blocks', 'sgs-dark-mode', 'sgs-utilities', 'sgs-extensions', 'sgs-mega-menu-panels' ];
+	$deferred = array( 'sgs-core-blocks', 'sgs-dark-mode', 'sgs-utilities', 'sgs-extensions', 'sgs-mega-menu-panels' );
 
 	if ( in_array( $handle, $deferred, true ) ) {
 		// Replace media="all" with media="print" and add onload swap.
@@ -394,15 +405,24 @@ if ( ! defined( 'WPSEO_VERSION' ) && ! defined( 'RANK_MATH_VERSION' ) ) {
  * Register block pattern category for SGS patterns.
  */
 function register_pattern_categories(): void {
-	register_block_pattern_category( 'sgs', [
-		'label' => __( 'SGS Theme', 'sgs-theme' ),
-	] );
-	register_block_pattern_category( 'sgs-headers', [
-		'label' => __( 'SGS Headers', 'sgs-theme' ),
-	] );
-	register_block_pattern_category( 'sgs-footers', [
-		'label' => __( 'SGS Footers', 'sgs-theme' ),
-	] );
+	register_block_pattern_category(
+		'sgs',
+		array(
+			'label' => __( 'SGS Theme', 'sgs-theme' ),
+		)
+	);
+	register_block_pattern_category(
+		'sgs-headers',
+		array(
+			'label' => __( 'SGS Headers', 'sgs-theme' ),
+		)
+	);
+	register_block_pattern_category(
+		'sgs-footers',
+		array(
+			'label' => __( 'SGS Footers', 'sgs-theme' ),
+		)
+	);
 }
 add_action( 'init', __NAMESPACE__ . '\register_pattern_categories' );
 
@@ -415,24 +435,33 @@ add_action( 'init', __NAMESPACE__ . '\register_pattern_categories' );
 function register_block_styles(): void {
 	// Ghost — gold border, transparent bg, gold text. For service card CTAs
 	// on dark/teal backgrounds. CSS in core-blocks.css under is-style-ghost.
-	register_block_style( 'core/button', [
-		'name'  => 'ghost',
-		'label' => __( 'Ghost (Gold outline)', 'sgs-theme' ),
-	] );
+	register_block_style(
+		'core/button',
+		array(
+			'name'  => 'ghost',
+			'label' => __( 'Ghost (Gold outline)', 'sgs-theme' ),
+		)
+	);
 
 	// SGS Primary — solid teal, white text. For main CTAs on light backgrounds.
 	// CSS in core-blocks.css under is-style-sgs-primary.
-	register_block_style( 'core/button', [
-		'name'  => 'sgs-primary',
-		'label' => __( 'SGS Primary (Teal)', 'sgs-theme' ),
-	] );
+	register_block_style(
+		'core/button',
+		array(
+			'name'  => 'sgs-primary',
+			'label' => __( 'SGS Primary (Teal)', 'sgs-theme' ),
+		)
+	);
 
 	// SGS Secondary — teal outline, transparent bg. For secondary actions.
 	// CSS in core-blocks.css under is-style-sgs-secondary.
-	register_block_style( 'core/button', [
-		'name'  => 'sgs-secondary',
-		'label' => __( 'SGS Secondary (Outline)', 'sgs-theme' ),
-	] );
+	register_block_style(
+		'core/button',
+		array(
+			'name'  => 'sgs-secondary',
+			'label' => __( 'SGS Secondary (Outline)', 'sgs-theme' ),
+		)
+	);
 
 	// SGS Accent — gold/accent bg, dark text (WCAG AA on gold).
 	// CSS in core-blocks.css under is-style-sgs-accent.
@@ -446,10 +475,13 @@ function register_block_styles(): void {
 	// Ghost / SGS Primary / SGS Secondary — WP's native `fill` is the
 	// no-click baseline. Operators wanting Accent-as-default per client
 	// should set it via Site Editor > Styles for that specific install.
-	register_block_style( 'core/button', [
-		'name'  => 'sgs-accent',
-		'label' => __( 'SGS Accent (Gold)', 'sgs-theme' ),
-	] );
+	register_block_style(
+		'core/button',
+		array(
+			'name'  => 'sgs-accent',
+			'label' => __( 'SGS Accent (Gold)', 'sgs-theme' ),
+		)
+	);
 
 	// Animation is now handled by the sgs-blocks plugin extension system
 	// (data-sgs-animation attributes via BlockEdit filter + render_block PHP).
@@ -460,6 +492,9 @@ add_action( 'init', __NAMESPACE__ . '\register_block_styles' );
 /**
  * Replace [current_year] token in rendered block output.
  * Works in block theme template parts where shortcodes are not processed.
+ *
+ * @param string $block_content Rendered HTML of the block.
+ * @return string Block content with [current_year] tokens replaced.
  */
 function replace_current_year_token( string $block_content ): string {
 	if ( str_contains( $block_content, '[current_year]' ) ) {
@@ -474,7 +509,7 @@ add_filter( 'render_block', __NAMESPACE__ . '\replace_current_year_token' );
 // The WP style-variation overlay system was removed. The Indus Foods install
 // now carries its decorative CSS via its per-site theme.json customCSS or via
 // a per-site mu-plugin — not via a base-theme require gated on a theme_mod.
-// Archive of the original extras: plugins/sgs-blocks/_retired/style-variation-indus-foods.php
+// Archive of the original extras: plugins/sgs-blocks/_retired/style-variation-indus-foods.php.
 
 
 /*
@@ -491,6 +526,10 @@ add_filter( 'render_block', __NAMESPACE__ . '\replace_current_year_token' );
  * WordPress core outputs a generic label for every submenu toggle. This filter
  * replaces it with one that includes the parent nav item text so screen readers
  * announce the correct submenu name (WCAG 2.4.6 Headings and Labels).
+ *
+ * @param string $block_content Rendered HTML of the block.
+ * @param array  $block         Parsed block data including blockName and attrs.
+ * @return string Block content with submenu aria-labels rewritten.
  */
 function specific_submenu_aria_labels( string $block_content, array $block ): string {
 	if ( empty( $block['blockName'] ) || 'core/navigation' !== $block['blockName'] ) {
@@ -547,6 +586,9 @@ add_filter( 'render_block', __NAMESPACE__ . '\specific_submenu_aria_labels', 10,
  *
  * Elements using preset classes (has-surface-color, has-accent-color, etc.)
  * keep has-text-color because WP's preset classes use !important correctly.
+ *
+ * @param string $block_content Rendered HTML of the block.
+ * @return string Block content with stray has-text-color classes removed.
  */
 function fix_has_text_color_override( string $block_content ): string {
 	if ( ! str_contains( $block_content, 'has-text-color' ) ) {
@@ -625,6 +667,10 @@ add_action( 'plugins_loaded', __NAMESPACE__ . '\fix_duotone_arg_count', 1 );
  * because the block wrapper <li> has role="none" on it — which is correct
  * ARIA practice (the <li> is presentational, role is on the trigger). This
  * filter is a no-op guard to prevent future regressions.
+ *
+ * @param string $block_content Rendered HTML of the block.
+ * @param array  $block         Parsed block data including blockName and attrs.
+ * @return string Block content with non-li children of nav <ul> guarded out.
  */
 function ensure_nav_list_structure( string $block_content, array $block ): string {
 	if ( empty( $block['blockName'] ) || 'core/navigation' !== $block['blockName'] ) {
@@ -656,6 +702,11 @@ add_filter( 'render_block', __NAMESPACE__ . '\ensure_nav_list_structure', 11, 2 
  * Uses wp_content_img_tag filter (WP 6.0+) which fires once per image in
  * the_content — much lighter than a render_block filter. Only resolves
  * dimensions for images already in the media library (cached lookups).
+ *
+ * @param string $image         Rendered <img> HTML tag.
+ * @param string $context       Filter context (e.g. 'the_content').
+ * @param int    $attachment_id Attachment post ID for the image (0 if unknown).
+ * @return string Image tag with width/height attributes added when resolvable.
  */
 function add_missing_image_dimensions( string $image, string $context, int $attachment_id ): string {
 	// Skip if already has width attribute.
