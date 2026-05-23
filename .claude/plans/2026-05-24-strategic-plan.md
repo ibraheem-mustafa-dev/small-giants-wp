@@ -32,7 +32,7 @@ primary_goal: "Close the structural pixel-diff blockers (G1+G3+G5), complete the
 | **2** Parking close-out | ~22 STILL-OPEN entries (no skills) | 6-8 hrs | 2-3 | parking.md "Open" section contains zero entries beyond P-BATCH-GA-14-SKILLS |
 | **3** Skill optimisation | /skill-optimiser mode 2 on 14 WP/SGS skills + /batch-gap-analysis | 3-4 hrs | 1 (dedicated) | 14 per-skill JSON evaluations + 1 review report + S-grade confirmations queued |
 
-**Total: ~13-18 hrs across 4-6 sessions.** Honest estimate calibrated LOW per `~/.claude/rules/time-estimates.md`.
+**Total: ~13 hrs across 4 sessions** (calibrate after Phase 1 actuals; quote the smallest plausible figure per `~/.claude/rules/time-estimates.md`, not the upper range).
 
 ## Dependency graph
 

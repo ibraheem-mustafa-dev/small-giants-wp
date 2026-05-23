@@ -105,7 +105,7 @@ Step 1.2 — Fix 3 stale doc claims surfaced by 2026-05-23 fact-check
   Action:      Three small edits:
                 (a) `.claude/specs/17-HEADER-FOOTER-ARCHITECTURE.md` and parking entry P-PHASE-5B-INERT-CUSTOMISER-OUTPUT: correct the "Option A pending" claim — Option A SHIPPED (renderer.php:73-78 emits :root --sgs-header-bg / footer-bg). Update parent plan §6.4 amendment text to match.
                 (b) `.claude/plans/2026-05-21-architecture-staging.md` lines 116, 118, 199, 317: refresh "73 blocks" → "69 blocks" (4 occurrences). Cite CLAUDE.md + DB count (69) as evidence.
-                (c) `.claude/plans/2026-05-21-architecture-staging.md` line 87 (Decision 12 — Phase 3 scope): add an inline note "Implementation landed step 4 of Spec 16 §15 only. Steps 1-3 (walker-entry pre-pass) remain open per 2026-05-23 fact-check — see Phase 1 of 2026-05-24-strategic-plan.md."
+                (c) **VERIFY-FIRST:** `.claude/plans/2026-05-21-architecture-staging.md` line 87 (Decision 12 — Phase 3 scope) should already carry the footnote about steps 1-3 being un-built (added 2026-05-23 — verify with `grep -A2 "Decision 12" .claude/plans/2026-05-21-architecture-staging.md`). If the footnote is PRESENT, skip; this sub-step is a re-verification, not a fresh insertion. If ABSENT, add an inline note: "Implementation landed step 4 of Spec 16 §15 only. Steps 1-3 (walker-entry pre-pass) remain open per 2026-05-23 fact-check — see Phase 1 of 2026-05-24-strategic-plan.md."
   Files:       .claude/specs/17-HEADER-FOOTER-ARCHITECTURE.md, .claude/plans/2026-05-21-architecture-staging.md, .claude/parking.md
   Inputs:      Step 1.1 mental model
   Outcome:     3 doc edits committed; parent plan no longer overstates Phase 3 completion

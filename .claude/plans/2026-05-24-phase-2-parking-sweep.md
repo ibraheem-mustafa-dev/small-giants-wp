@@ -28,7 +28,7 @@ primary_goal: "Close every STILL-OPEN parking entry EXCEPT P-BATCH-GA-14-SKILLS 
 ## Entry context (read before starting — MANDATORY)
 
 1. `.claude/plans/2026-05-24-strategic-plan.md` — strategic-plan parent doc
-2. `.claude/plans/2026-05-24-phase-1-structural-recovery.md` — Phase 1 plan (now SHIPPED — for context)
+2. `.claude/plans/2026-05-24-phase-1-structural-recovery.md` — Phase 1 plan (READ REGARDLESS of completion status; if Phase 1 partially shipped, the documented edge case at Step 1.E "carry residual to Phase 2 scope" applies — Phase 2 cannot scope correctly without knowing what Phase 1 actually closed)
 3. `.claude/pipeline-state-debug-artefacts-inventory.md` — diagnostic artefact map
 4. `.claude/parking.md` — live state of all entries. Read the "Still open" section in full first.
 5. `.claude/handoff.md` (post-Phase-1) — Phase 1 close-out numbers + residuals
@@ -168,6 +168,48 @@ Step 2.3 — Process each medium entry per its individual brief
     Happy: each entry has commit SHA + parking moved to Resolved
     Edge: an entry turns out to depend on Phase 3 or a deeper issue — re-classify as deferred + document
     Fail: any /qc-council Stage 5 falsifies → STOP that entry; surface for Bean
+```
+
+**Cold prompt template (use for each medium entry; substitute the bracketed sections):**
+
+```
+You are dispatched 2026-05-2X for Phase 2 Step 2.3 — close parking entry <ENTRY-ID> in the SGS WordPress project.
+
+PARKING ENTRY (verbatim — find in .claude/parking.md):
+<paste the entry's full text here — quote the acceptance criterion + "Trigger" + any referenced files>
+
+CONTEXT:
+- Phase 1 of the recovery plan (2026-05-24-phase-1-structural-recovery.md) shipped <SHIPPED|partially-shipped>; the post-Phase-1 baseline pixel-diff numbers live in pipeline-state/<latest>/stage-11-pixel-diff.json
+- Phase 2 acceptance gate: parking.md "Open" section contains zero entries other than P-BATCH-GA-14-SKILLS
+
+YOUR JOB:
+1. Read every file referenced in the parking entry (cite line numbers in your report)
+2. Implement the fix per the entry's stated acceptance criterion
+3. If your change touches converter/pipeline/SGS-block code: run /qc-council Stage 5 BEFORE commit (blub.db row 255). If docs-only, /qc-inline is sufficient.
+4. After commit, if change touched the pipeline: run `python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py --mockup sites/mamas-munches/mockups/homepage/index.html --client mamas-munches --page homepage --auto-section --deploy-target page:144 --debug-trace` and verify NO regression beyond ±5% per section vs Phase 1 close baseline (read stage-11-pixel-diff.json).
+5. Move the parking entry from "Open" to "Resolved" with the commit SHA cited.
+
+METHODOLOGY GUARDRAILS (mandatory):
+- blub.db row 254: read leftover-buckets.json BEFORE conjecturing
+- blub.db row 255: /qc-council BEFORE any converter/pipeline/SGS-block commit
+- blub.db row 256: per-section cropped pixel-diff; Stage 11 auto-captures
+- blub.db row 269: NO per-block legacy patches; universal extraction primitive only
+- blub.db row 272: schema enumeration via `python ~/.claude/hooks/wp-blocks.py dump` BEFORE any missing-X claim
+
+SAFETY:
+- Never `git stash` (wipes work)
+- Never `git add .` or `-A` (scope by exact path)
+- Never `--no-verify` on commits
+- Branch discipline: this is core SGS work → commit to main
+- DO NOT commit if Stage 11 numbers REGRESS beyond ±5% per section
+
+OUTPUT:
+- Commit SHA + files touched
+- Parking entry RESOLVED text (one paragraph)
+- Pre/post Stage 11 deltas if pipeline-touching
+- Any new architectural rules surfaced (candidates for /capture-lesson)
+
+Budget: 45 min wall-clock. If exceeded, STOP + report progress.
 ```
 
 ### QA Gate 2.A — Pipeline regression check after medium entries

@@ -49,7 +49,7 @@ This handoff is intentionally short. The detailed work is in the linked phase pl
 
 **Baseline artefacts (read for empirical state):**
 9. `pipeline-state/mamas-munches-homepage-2026-05-23-145045/summary.log` — last clean baseline
-10. `pipeline-state/mamas-munches-homepage-2026-05-23-145045/trace.jsonl` (tail 100 lines) — Stage 2 / Stage 4 verdicts per boundary
+10. `pipeline-state/mamas-munches-homepage-2026-05-23-145045/trace.jsonl` — filter by `stage` field; read `stage_2_confidence_matrix` events for the 5 fall-through boundaries (b1 header, b4 featured-product, b7 gift-section, b8 social-proof, b9 footer) + `stage_4_converter_v2` events for the same to see emit shape. Useful one-liner: `grep -E '"stage": "(stage_2_confidence_matrix|stage_4_converter_v2)"' pipeline-state/<run>/trace.jsonl`
 11. `pipeline-state/mamas-munches-homepage-2026-05-23-145045/stage-11-pixel-diff.json` — canonical pixel-diff baseline (mean 70.5%, per-section breakdown)
 12. `pipeline-state/mamas-munches-homepage-2026-05-23-145045/leftover-buckets.json` — gap classification
 13. `reports/2026-05-20-pipeline-root-gap-council/real-path-synthesis.md` — original G1-G5 honest-path council

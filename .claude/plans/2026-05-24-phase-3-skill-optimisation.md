@@ -5,7 +5,7 @@ parent_plan: .claude/plans/2026-05-24-strategic-plan.md
 plan_label: opus
 docscore_grade: B+ (self-assessed)
 generated: 2026-05-23
-primary_goal: "Run /skill-optimiser mode 2 + /batch-gap-analysis on the 14 WP/SGS skills now that the tools they describe have been fixed (Phases 1+2). LAST polish per Bean's directive."
+primary_goal: "Run /skill-optimiser mode 2 + /batch-gap-analysis on the 15 WP/SGS skills now that the tools they describe have been fixed (Phases 1+2). LAST polish per Bean's directive."
 ---
 
 # Phase 3 — Skill + command optimisation
@@ -18,7 +18,7 @@ primary_goal: "Run /skill-optimiser mode 2 + /batch-gap-analysis on the 14 WP/SG
 
 ## Phase success criteria (done when)
 
-- [ ] All 14 WP/SGS skills have a fresh `/skill-optimiser mode 2` (gap-analysis + research) evaluation
+- [ ] All 15 WP/SGS skills have a fresh `/skill-optimiser mode 2` (gap-analysis + research) evaluation
 - [ ] /batch-gap-analysis review report written with per-skill scores + priority-ordered opportunities
 - [ ] Each S-grade candidate has explicit Bean confirmation (S-grade screening per gap-analysis protocol)
 - [ ] Per-skill JSON evaluation artefacts persisted (per /gap-analysis protocol)
@@ -54,7 +54,7 @@ primary_goal: "Run /skill-optimiser mode 2 + /batch-gap-analysis on the 14 WP/SG
    - ~/.claude/skills/wp-rest-api/SKILL.md
    - ~/.claude/skills/wp-site-extraction/SKILL.md
    - ~/.claude/skills/wp-wpcli-and-ops/SKILL.md
-   (15 total — verify Phase 3 target count vs the "14 WP/SGS skills" handoff claim)
+   (15 total — verified at plan time 2026-05-23. Some prior session references said "14" — that was stale. Current canonical count = 15.)
 
 ## References
 
