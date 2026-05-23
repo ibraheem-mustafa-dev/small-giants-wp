@@ -104,6 +104,52 @@ canonical_docs:
       - master_plan_revision
       - new_top_level_milestone
 
+  - path: .claude/plans/2026-05-24-strategic-plan.md
+    scope: forever_until_recovery_complete
+    doc_type: strategic-plan
+    owns: "Post-architecture-recovery 3-phase strategic plan (Phase 1 structural recovery, Phase 2 parking sweep, Phase 3 skill optimisation). Generated after 2026-05-23 fact-check surfaced architectural gaps in the 2026-05-21 plan."
+    update_triggers:
+      - phase_close
+      - new_gap_surfaced
+      - scope_reframe
+    references:
+      - .claude/plans/2026-05-24-phase-1-structural-recovery.md
+      - .claude/plans/2026-05-24-phase-2-parking-sweep.md
+      - .claude/plans/2026-05-24-phase-3-skill-optimisation.md
+
+  - path: .claude/plans/2026-05-24-phase-1-structural-recovery.md
+    scope: forever_until_phase_1_shipped
+    doc_type: phase-plan
+    owns: "Phase 1 — close G1/G3/G5 structural pixel-diff blockers via Spec 16 §15 walker-pre-pass + Phase 1 hooks completion + role='content' DB sync + Spec 17/plan stale-claim refresh"
+    update_triggers:
+      - step_complete
+      - acceptance_criterion_met_or_failed
+
+  - path: .claude/plans/2026-05-24-phase-2-parking-sweep.md
+    scope: forever_until_phase_2_shipped
+    doc_type: phase-plan
+    owns: "Phase 2 — close every STILL-OPEN parking entry EXCEPT P-BATCH-GA-14-SKILLS"
+    update_triggers:
+      - parking_entry_closed
+      - parking_entry_reframed
+
+  - path: .claude/plans/2026-05-24-phase-3-skill-optimisation.md
+    scope: forever_until_phase_3_shipped
+    doc_type: phase-plan
+    owns: "Phase 3 — /skill-optimiser mode 2 + /batch-gap-analysis on 14 WP/SGS skills. blub.db row 176 HARD GATE: gap-analysis runs in main conversation only."
+    update_triggers:
+      - skill_evaluated
+      - opportunity_actioned_or_deferred
+
+  - path: .claude/pipeline-state-debug-artefacts-inventory.md
+    scope: forever
+    doc_type: reference
+    owns: "Catalogue of EVERY artefact written by /sgs-clone into pipeline-state/<run_id>/. Each artefact mapped to role + writing stage + reading stage + diagnostic use. MANDATORY read before conjecturing about pipeline failures (blub.db row 254)."
+    update_triggers:
+      - new_pipeline_stage_added
+      - artefact_filename_changed
+      - artefact_retired
+
   - path: .claude/cloning-pipeline-flow.md
     scope: forever
     doc_type: visual-reference

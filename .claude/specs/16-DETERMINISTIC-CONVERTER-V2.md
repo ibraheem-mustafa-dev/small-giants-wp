@@ -891,11 +891,11 @@ Full research report: `.claude/reports/2026-05-21-pattern-overrides-research.md`
 
 > Per `.claude/plans/2026-05-21-architecture-staging.md` §6.1 — Decisions 9, 10, 23, 25.
 
-**Decision 9 — Markup examples:** Author `markup_examples` for all 73 SGS blocks — one per block minimum, more for variation-heavy blocks. SGS currently has zero markup examples; core has 331. Gives cv2 a copy-paste reference + operators a template.
+**Decision 9 — Markup examples:** Author `markup_examples` for all 69 SGS blocks — one per block minimum, more for variation-heavy blocks. SGS currently has zero markup examples; core has 331. Gives cv2 a copy-paste reference + operators a template.
 
 **Decision 10 — block_supports backfill:** Audit + backfill `block_supports` gaps. SGS now has 1,223 rows (Updated 2026-05-23 — was 404 when Decision 10 was written; Phase 6 block-supports audit shipped 2026-05-22 found ZERO gaps per `02-SGS-BLOCKS.md` session note). Under-declared supports mean missing inspector controls for operators.
 
-**Decision 23 — WP 7.0 block.json audit:** Three sub-tasks across all 73 SGS block.json files:
+**Decision 23 — WP 7.0 block.json audit:** Three sub-tasks across all 69 SGS block.json files:
 - (a) Add `"role": "content"` to every content-bearing attribute (WP 7.0 requirement for `contentOnly` pattern editing — see `common-wp-styling-errors.md` §X for the error pattern)
 - (b) Bump every block to `"apiVersion": 3` (WP 7.0 enforces iframed editor on v3+ blocks; ensures consistent rendering)
 - (c) Every block using `viewScriptModule` needs proper script-module text domain declaration via WP 7.0's `wp_set_script_module_translations()` / `load_script_module_textdomain()` (approx 10–15 min added cost across the fleet)

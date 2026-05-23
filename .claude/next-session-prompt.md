@@ -1,176 +1,131 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-session_tag: small-giants-wp-2026-05-24-structural-g1-g5
+session_tag: small-giants-wp-2026-05-24-recovery-phase-1
 generated: 2026-05-23
-parent_session: small-giants-wp-2026-05-23-architecture-cleanup
-primary_goal: "Implement the G1-G5 structural converter gaps (the actual pixel-diff lever). 2026-05-23 shipped 9 commits of architectural cleanup with ZERO pixel-diff movement — verified empirically. G1-G5 is the dominant cause."
+parent_session: small-giants-wp-2026-05-23-architecture-cleanup-and-factcheck
+primary_goal: "Execute Phase 1 of the post-recovery strategic plan. Phase 1 closes the G1+G3+G5 structural pixel-diff blockers (Spec 16 §15 steps 1-3 — walker-entry CSS-class pre-pass) + completes the data gaps left by the 2026-05-21 architecture programme."
 ---
 
-# Next session — Structural G1-G5 implementation
+# Next session — Phase 1 of the post-recovery strategic plan
 
-Invoke `/autopilot` before anything else.
+**Invoke `/autopilot` before anything else.**
 
-## State recap (plain English)
+This handoff is intentionally short. The detailed work is in the linked phase plans + reference docs. Read in the order below.
 
-**2026-05-23 shipped 9 commits but moved pixel-diff numbers by 0%.** Architectural debt is cleared:
-- Stage 10 silent-failure fixed — no more "patched OK" against deleted pages
-- Stage 11 added — every run auto-captures per-section pixel-diff numbers
-- core/group → sgs/container fallback corrected (Decision 3 alignment + sentinel decoupled)
-- Hand-authored brand + ingredients-section patterns deleted (deterministic-only rule)
-- Stage 0.7 CSS output relocated to `pipeline-state/<run>/variation-d0-d2.css` (Phase 5a CSS half completed)
-- All main .claude docs + numbered specs + /sgs-clone skill refreshed
-- 4 new parking entries logged
+## Step 0 — Tooling you'll use (read which fits your task; don't read all)
 
-**Canonical pixel-diff baseline** (verified post all 2026-05-23 commits, run `mamas-munches-homepage-2026-05-23-145045`):
-
-| Section | Mean | 375 / 768 / 1440 |
-|---|---|---|
-| ingredients-section | 31.9% | 42.4 / 28.1 / 25.1 |
-| featured-product | 43.7% | 24.3 / 29.1 / 77.8 |
-| header | 44.9% | 25.4 / 82.5 / 26.7 |
-| hero | 73.3% | 86.6 / 63.9 / 69.4 |
-| gift-section | 83.0% | 70.3 / 88.6 / 90.1 |
-| brand | 84.0% | 90.2 / 78.5 / 83.4 |
-| trust-bar | 84.1% | 99.9 / 52.4 / 100.0 |
-| social-proof | 93.4% | 80.3 / 100.0 / 100.0 |
-| footer | 96.3% | 93.6 / 96.8 / 98.7 |
-| **MEAN** | **70.5%** | |
-
-These are the canonical numbers as of 2026-05-23 end-of-session — every `/sgs-clone --deploy-target page:144` run regenerates them in `pipeline-state/<run>/stage-11-pixel-diff.json`.
-
-## Where the leverage IS (per honest-path council 2026-05-20)
-
-The dominant pixel-diff causes are the **5 structural gaps** captured in `reports/2026-05-20-pipeline-root-gap-council/real-path-synthesis.md` + Spec 16 §15. Per `cloning-pipeline-flow.md:1603` binding statement:
-
-> *"The G1+G3+G5 symptoms (empty hero CTAs / text-only slot resolver / per-block DOM mismatches) are all manifestations of one underlying gap: cv2 doesn't walk all classes + assign CSS ownership + record parent-child relations using the tables that exist."*
-
-**Wave 2 reshape = ONE architectural change wiring the DB tables into the walker's emit shape, NOT three per-block fixes.**
-
-## Skills to invoke
-
-| Skill | When |
+| Tool | When you'll reach for it |
 |---|---|
-| `/autopilot` | FIRST — establishes live skill routing |
-| `/systematic-debugging` | Root-cause investigation before any code change |
-| `/qc-council` | Before EVERY commit touching converter/pipeline (blub.db row 255) |
-| `/verify-loop` | 2-attestation rule for every load-bearing claim (Bean directive 2026-05-23) |
-| `/dispatching-parallel-agents` | Independent file scopes only |
+| `/sgs-clone` | Pipeline test after every commit touching converter/pipeline. Stage 11 auto-captures per-section pixel-diff. |
+| `/sgs-update` | Re-sync sgs-framework.db after block.json / source changes |
+| `/qc-council` | Multi-rater pre-commit gate — MANDATORY before every commit touching converter / pipeline / SGS-block (blub.db row 255) |
+| `/qc-inline` | Single-file or single-entry verification |
+| `/verify-loop` | 2-attestation fact-check before trusting any load-bearing claim |
+| `/systematic-debugging` | Root-cause investigation BEFORE proposing any fix |
+| `/dispatching-parallel-agents` | Parallel work on file-independent tasks |
 | `/subagent-driven-development` | Per-step implementer + reviewer |
-| `/sgs-clone` | After every commit — measure Stage 11 numbers + compare |
-| `/sgs-wp-engine` | Block-level questions during composition |
-| `/handoff` | Session close |
 | `/capture-lesson` | New architectural rules surfaced |
-
-## MCP servers + tools
-
-| Tool | What for |
-|---|---|
-| Playwright MCP | Stage 11 auto-uses pixel-diff.py via Playwright |
-| WP-CLI over SSH | Sandybrown introspection |
-| `python ~/.claude/hooks/wp-blocks.py dump` | Schema enumeration BEFORE "missing X" claim (row 272) |
+| `/handoff` | Session close |
+| `wp-sgs-developer` agent | Phase 1 walker-pre-pass implementation + big-ticket parking |
+| Playwright MCP | Stage 11 auto-uses; manual checks on sandybrown |
+| `~/.claude/hooks/wp-blocks.py dump` | Schema enumeration BEFORE any "missing X" claim (blub.db row 272) |
 | `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py` | DB query CLI |
-| `scripts/pixel-diff.py` | Standalone diff (also auto-invoked at Stage 11) |
+| `scripts/pixel-diff.py` | Standalone pixel-diff (also Stage 11 auto-invoked) |
 
-## Methodology guardrails (HARD GATES)
+## Step 1 — Read THESE docs BEFORE starting any work (do NOT skip)
 
-1. **Read `pipeline-state/<run>/leftover-buckets.json` + `summary.log` + `trace.jsonl` BEFORE conjecturing** (blub.db row 254). 2026-05-23 biggest insight came from trace.jsonl reading.
-2. **Multi-model `/qc-council` BEFORE every commit** touching converter / pipeline / SGS-block (row 255).
-3. **Per-section cropped pixel-diff** via `--selector .sgs-{section}`, NEVER full-page (row 256). Stage 11 already does this.
-4. **Schema enumeration** via `python ~/.claude/hooks/wp-blocks.py dump` BEFORE any "missing X" claim (row 272). A subagent on 2026-05-23 fabricated `block_conventions` + `convention_mappings` tables — verify-loop caught it.
-5. **Universal extraction only** — NO per-block legacy fixes (row 269). G1+G3+G5 dissolve simultaneously when the universal walker primitive is wired.
-6. **Verify WP API surface** before dismissing intelephense warnings (row 283).
-7. **Fact-check via independent attestation** — every load-bearing claim needs 2 sources (Bean trust-calibration 2026-05-23). Demand SQL/grep evidence inline in subagent prompts.
-8. **Pipeline test throughout all waves** — Stage 11 now does this automatically on every `--deploy-target` run.
+**Phase-agnostic context (read once, applies to every session):**
+1. `.claude/pipeline-state-debug-artefacts-inventory.md` — the diagnostic artefact map. Use BEFORE conjecturing about any pipeline failure (blub.db row 254). **This doc is the most important new artefact from 2026-05-23 — gives you a holistic picture of every JSON/log file the pipeline writes and how to use each for diagnosis.**
+2. `.claude/plans/2026-05-24-strategic-plan.md` — the 3-phase recovery strategic plan
+3. `.claude/architecture.md` — system overview, DB-first rule, Phase 5a context
+4. `.claude/decisions.md` D1-D45 — full decision log
+5. `.claude/mistakes.md` — lessons (including 3 new from 2026-05-23)
 
-## Task 1 — G1+G3+G5 universal-extraction wiring (~2-3 hrs, THE lever)
+**Phase 1 specific (this session):**
+6. `.claude/plans/2026-05-24-phase-1-structural-recovery.md` — **THE Phase 1 plan with step-by-step execution + cold prompts + KJC + Hidden Decisions**
+7. `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` §15 — Wave 2 reshape 4-step requirement (the spec Phase 3 only half-implemented)
+8. `.claude/cloning-pipeline-flow.md` — current pipeline state with Stage 11 block
 
-**What:** Implement Spec 16 §15 Wave 2 reshape. The walker must:
-1. Walk every CSS class encountered in each section
-2. Assign CSS ownership per class (every rule targeting that class via direct/descendant/parent-qualified selectors)
-3. Record parent-child relations between classes via natural BEM relations + `blocks.parent_block` (NOT block_compositions — WRITE-ONLY)
-4. Use the parent-child graph to drive nested-block emission shape
+**Baseline artefacts (read for empirical state):**
+9. `pipeline-state/mamas-munches-homepage-2026-05-23-145045/summary.log` — last clean baseline
+10. `pipeline-state/mamas-munches-homepage-2026-05-23-145045/trace.jsonl` (tail 100 lines) — Stage 2 / Stage 4 verdicts per boundary
+11. `pipeline-state/mamas-munches-homepage-2026-05-23-145045/stage-11-pixel-diff.json` — canonical pixel-diff baseline (mean 70.5%, per-section breakdown)
+12. `pipeline-state/mamas-munches-homepage-2026-05-23-145045/leftover-buckets.json` — gap classification
+13. `reports/2026-05-20-pipeline-root-gap-council/real-path-synthesis.md` — original G1-G5 honest-path council
 
-**Files:**
-- Primary: `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` (walker entry + emit shape)
-- Companion: `plugins/sgs-blocks/scripts/orchestrator/converter_v2/slot_list.py` (query property_suffixes for visual slots, not just text)
+**Read only as needed (not every session):**
+- `.claude/plans/2026-05-24-phase-2-parking-sweep.md` — Phase 2 plan (don't read until Phase 1 closes)
+- `.claude/plans/2026-05-24-phase-3-skill-optimisation.md` — Phase 3 plan (don't read until Phases 1+2 close)
+- `.claude/plans/2026-05-21-architecture-staging.md` — PARENT plan (PARTIAL — see 2026-05-23 fact-check amendments inline)
+- `~/.claude/rules/time-estimates.md` — quote estimates LOW
+- `~/.claude/rules/adhd-collaboration.md` — Rules 1-17
 
-**Numeric acceptance criterion (per Spec 16 §15):**
-- Hero `stage_3_slot_list` failures drop from 142 to under 30
-- Hero `variation_css_rules` rises from 0 to at least 8
-- Brand pixel-diff at 1440 drops below 20% (from 83.4%)
+## Step 2 — Execute Phase 1 per its plan
 
-**Process:**
-- Read Spec 16 §15 in FULL (Bean: no skim)
-- `wp-sgs-developer` agent with the full spec + this prompt + all 8 methodology guardrails embedded
-- `/qc-council` BEFORE commit
-- `/sgs-clone --deploy-target page:144` after commit to capture impact via Stage 11
+Open `.claude/plans/2026-05-24-phase-1-structural-recovery.md` and follow the step-by-step (Steps 1.1 through 1.11). Each step has:
+- Model assignment (inline / sonnet / wp-sgs-developer)
+- Pre-written cold prompts for delegated steps
+- Per-step QA gate
+- Empirical acceptance criteria
 
-## Task 2 — G2 + G4 verification post Task 1 (~30 min)
+**Phase 1 SHOULD NOT close until ALL of:**
+- Hero `stage_3_slot_list` failures < 30 (from 142)
+- Hero `variation_css_rules` ≥ 8 (from 0)
+- Brand pixel-diff at 1440 < 20% (from 83.4%)
+- Hook count matches legacy hooks.db ±2%
+- DB `role='content'` matches source (87/40)
+- Spec 17 + plan 73→69 + Decision 12 footnote landed
 
-G2 + G4 were FALSIFIED 2026-05-20 (implemented exactly to spec, 0% pixel-diff movement). With G1+G3+G5 landing, verify whether G2/G4 symptoms are still present or swept up. Read leftover-buckets.json after Task 1 for any G2/G4-shaped entries.
+## Step 3 — When Phase 1 closes
 
-## Task 3 — Investigation residuals from 2026-05-23 (~45 min)
+Invoke `/handoff` per Step 1.11 of the phase plan. The handoff writes the next-session-prompt scoped to Phase 2.
 
-**Q1B follow-up — pattern quality gate (optional, high-value):**
-1% gate exists for PIPELINE success, NOT individual pattern registration. To enforce "only register patterns that pass 1% pixel-diff", add post-Stage-11 gate to `+REGISTER` in `register_patterns.py` reading `stage-11-pixel-diff.json`.
+---
 
-**Q1A residual — DB-driven fallback (optional polish):**
-2026-05-23 Q1A patch hardcoded the fallback to `sgs/container`. A purer version: `SELECT sgs_slug FROM legacy_role_lookup WHERE kebab_role = 'core/group'` so future edits go via DB row. Low priority.
+## State recap (1 sentence)
 
-**Q3 residual — `theme/sgs-theme/styles/mamas-munches.css` cleanup:**
-Pre-existing file at `theme/sgs-theme/styles/mamas-munches.css` (parking entry P-5A-MAMAS-MUNCHES-CSS) was NOT touched by Q3. Delete now that Q3 shipped, OR park as follow-up.
+The 2026-05-21 architecture programme was reported as shipped but a 2026-05-23 fact-check (5 parallel investigators + 2-attestation per claim) surfaced material gaps; this session executes Phase 1 of the 3-phase recovery plan to close them.
 
-## Task 4 — Hardcoding purge (multi-session)
+## Methodology guardrails (always-on)
 
-| Site | Current | Target |
+1. **Diagnostic discipline:** Read `.claude/pipeline-state-debug-artefacts-inventory.md` artefacts BEFORE conjecturing about pipeline failures
+2. **blub.db row 254** — leftover-buckets BEFORE converter conjecture
+3. **blub.db row 255** — /qc-council BEFORE every converter/pipeline commit
+4. **blub.db row 256** — per-section pixel-diff via Stage 11 auto-capture
+5. **blub.db row 269** — universal extraction only; NO per-block legacy fixes
+6. **blub.db row 272** — schema enumeration BEFORE "missing X" claims
+7. **blub.db row 283** — verify WP API surface before dismissing intelephense
+8. **2-attestation rule (NEW 2026-05-23)** — every load-bearing claim needs 2 independent sources; subagent prompts demand grep/SQL/file-output evidence inline
+9. **Pipeline test throughout** — Stage 11 auto-captures after every `--deploy-target` /sgs-clone run
+
+## Where to look when something feels off (escalation tree)
+
+| Symptom | First read | Then |
 |---|---|---|
-| `convert.py:3591` `VARIANT_MODIFIERS` | hero-specific BEM dict | Move to `block_attributes` enum_values on sgs/hero |
-| `convert.py:923` `elif slug == "sgs/button"` | per-block extraction | DB-driven via block_attributes.derived_selector |
-| `convert.py:1550` `elif slug == "sgs/info-box"` | per-block media detection | DB-driven derived_selector + media-type heuristic |
-| `lingua_franca.py:55` `_SGS_BLOCKS` set | hardcoded list | Query `blocks WHERE source='sgs' AND status='built'` |
-| `lingua_franca.py:69-156` 5 convention dicts | _BEM_BARE, _TAILWIND_UTILITY, _BOOTSTRAP, _SHADCN, _KEBAB_SEMANTIC | Requires NEW DB tables (uimax `naming_conventions` exists 16 rows — may need extension) |
-| `per-section-convention-voter.py:152` `RETIRED_BLOCK_REMAP` | legacy slug→replacement | Move to `blocks.replaces` column (exists) |
+| /sgs-clone reports "OK" but page didn't update | `pipeline-state/<run>/stage-10.json` exit code | If 4/5/6 → known halt path; if 0 → check trace.jsonl Stage 10 event |
+| Stage 11 pixel-diff numbers worse | `stage-11-pixel-diff.json` per-section + `trace.jsonl` stage_4 events | If a section regressed, diff convert.py changes since last commit |
+| A section emits with 0 attrs / 0 css | `match.json` for the boundary + `slot-list.json` + `extract.json` per_section_results | Stage 2 fall-through? Slot count 0? Compare to baseline run |
+| /sgs-update breaks | `summary.log` + Stage 1-9 outputs | Stage 9 drift gate catches schema mismatches |
+| A skill /qc fails | the skill's SKILL.md + `~/.agents/skills/gap-analysis/SKILL.md` 8-step protocol | Phase 3 will catch broad skill issues; one-off failure → /lifecycle |
 
-**Note (verify-loop falsified 2026-05-23):** `block_conventions` + `convention_mappings` tables in sgs-framework.db DO NOT EXIST. Earlier subagent claim was fabrication. Creating these tables would need to be a separate explicit step before lingua_franca.py can move to DB-driven.
+## Last session's empirical state (anchor for delta measurement)
 
-## Task 5 — Wave 2C tidy (~15 min)
+| Section | Mean pixel-diff (2026-05-23 baseline) |
+|---|---|
+| ingredients-section | 31.9% |
+| featured-product | 43.7% |
+| header | 44.9% |
+| hero | 73.3% |
+| gift-section | 83.0% |
+| brand | 84.0% |
+| trust-bar | 84.1% |
+| social-proof | 93.4% |
+| footer | 96.3% |
+| **mean** | **70.5%** |
 
-Wave 2C subagent 2026-05-23 transcript was truncated. /sgs-clone SKILL.md edit landed (system-reminder confirmed). `references/pipeline-stages.md` + `references/router-pattern.md` may have been pending. Open them, verify current, fix anything stale.
+After Phase 1 ships, these should drop. Compare via `stage-11-pixel-diff.json` of the new run vs run `mamas-munches-homepage-2026-05-23-145045`.
 
-## Dependency graph
+---
 
-```
-Task 1 — G1+G3+G5 wiring (THE lever)
-  ↓ + /qc-council + /sgs-clone measurement
-Task 2 — G2/G4 verification
-  ↓
-Task 3 — Investigation residuals
-  ↓
-Task 4 — Hardcoding purge (separate session(s))
-  ↓
-Task 5 — Wave 2C tidy
-```
-
-## Reference docs
-
-- `.claude/handoff.md` — 2026-05-23 session summary
-- `.claude/parking.md` — live state, ~20 STILL OPEN
-- `.claude/state.md` — current phase + blockers
-- `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` §15 — Wave 2 reshape (UPDATED 2026-05-23)
-- `.claude/cloning-pipeline-flow.md` — pipeline flow with new Stage 11 block
-- `.claude/decisions.md` D41-D45 — 2026-05-23 decisions
-- `.claude/mistakes.md` — 3 new lessons 2026-05-23
-- `reports/2026-05-20-pipeline-root-gap-council/real-path-synthesis.md` — G1-G5 diagnosis
-- `pipeline-state/mamas-munches-homepage-2026-05-23-145045/` — canonical pre-G1-G5 baseline
-- `pipeline-state/mamas-munches-homepage-2026-05-23-145045/stage-11-pixel-diff.json` — empirical reference
-
-## Read FIRST (per ADHD Rule 1)
-
-1. This file (you're reading it)
-2. `.claude/handoff.md`
-3. `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` §15
-4. `pipeline-state/mamas-munches-homepage-2026-05-23-145045/trace.jsonl` (tail 50 lines)
-5. `pipeline-state/mamas-munches-homepage-2026-05-23-145045/leftover-buckets.json`
-
-Then smallest-first-action per Rule 2.
+**Start by reading `.claude/pipeline-state-debug-artefacts-inventory.md` + `.claude/plans/2026-05-24-strategic-plan.md` + `.claude/plans/2026-05-24-phase-1-structural-recovery.md` in that order. Then execute Phase 1 Step 1.1.**
