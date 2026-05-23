@@ -382,7 +382,18 @@ def _convert_section_body(html: str, css: str, media_map: dict,
             "essence_matches": [],
         }
 
-    block_markup = v3.walk(root, css_rules, variation_buf, depth=0, is_top_level=True) or ""
+    # Spec 16 §15 steps 1-3 — walker pre-pass (2026-05-24).
+    # Run ONCE per section boundary before walk() so the composite_element
+    # branch can detect registered block descendants and avoid swallowing them
+    # as leaf text slots. See convert._walker_pre_pass() for the algorithm.
+    _pre_pass_classes = v3._walker_pre_pass(root, css_rules)
+    v3.set_section_class_graph(_pre_pass_classes)
+    try:
+        block_markup = v3.walk(root, css_rules, variation_buf, depth=0, is_top_level=True) or ""
+    finally:
+        # Always reset so no stale class-graph from this section bleeds into
+        # the next section's composite_element decisions.
+        v3.set_section_class_graph(frozenset())
 
     # Universal section-wrapper className guarantee (2026-05-21).
     # The Stage-3 section_id (e.g. "featured-product") is the canonical
