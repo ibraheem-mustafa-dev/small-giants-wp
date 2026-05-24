@@ -944,6 +944,159 @@ def _scrape_source_4_since(
     return count, used_playwright
 
 
+def _insert_dev_blog_articles(
+    c: sqlite3.Cursor,
+    conn: sqlite3.Connection,
+    article_links: list[tuple[str, str]],
+    slug_prefix: str,
+    doc_type: str,
+    new_rows: dict[str, int],
+    dry_run: bool,
+) -> int:
+    """Insert dev-blog news articles into docs. Returns the count of new rows."""
+    s_docs = 0
+    for i, (href, text) in enumerate(article_links):
+        slug = f"{slug_prefix}-{i + 1}"
+        s_docs += _insert_or_count(
+            c, new_rows, "docs", dry_run,
+            insert_sql="""
+                INSERT OR IGNORE INTO docs
+                    (source, slug, title, doc_type, category, content)
+                VALUES ('native_wp', ?, ?, ?, 'dev-blog', ?)
+                """,
+            insert_params=(slug, text.strip(), doc_type, href),
+            exists_sql=_SELECT_DOC_EXISTS_NATIVE_WP,
+            exists_params=(slug,),
+        )
+    if not dry_run:
+        conn.commit()
+    return s_docs
+
+
+def _scrape_handbook_sources_5_to_10(
+    c: sqlite3.Cursor,
+    conn: sqlite3.Connection,
+    wp_version: str,
+    new_rows: dict[str, int],
+    dry_run: bool,
+    sources_succeeded: list[str],
+    sources_failed: list[str],
+    items_per_source: dict[str, int],
+) -> None:
+    """Scrape Sources 5-10 (the shared make.wp.org + developer.wp.org loop).
+
+    Each source iteration is independently try/caught — one failure never
+    stops the rest. Sources 5-10:
+      5. make.wordpress.org/core/<version>-field-guide
+      6. developer.wordpress.org/news (dev-blog branch — different inner logic)
+      7-10. developer.wordpress.org/{block-editor, themes, plugins, rest-api}
+
+    Mutates new_rows/sources_succeeded/sources_failed/items_per_source by reference.
+    Per-source conn.commit() on success (when not dry_run).
+    """
+    _handbook_sources = [
+        (
+            "make-core-field-guide",
+            # WP 7.0 field guide published at: https://make.wordpress.org/core/2026/05/14/wordpress-7-0-field-guide/
+            # Pattern for future versions: https://make.wordpress.org/core/<YYYY>/<MM>/<DD>/wordpress-<major>-<minor>-field-guide/
+            # The legacy slug https://make.wordpress.org/core/<version>-field-guide/ returns 404 for WP 7.0+.
+            "https://make.wordpress.org/core/2026/05/14/wordpress-7-0-field-guide/",
+            "release-notes",
+            f"WP {wp_version} Field Guide",
+            f"wp-{wp_version}-field-guide",
+        ),
+        (
+            "devdocs-news",
+            "https://developer.wordpress.org/news/",
+            "dev-blog",
+            "WordPress Developer News",
+            "wp-dev-news",
+        ),
+        (
+            "devdocs-block-editor",
+            "https://developer.wordpress.org/block-editor/",
+            "block-editor-reference",
+            "Block Editor Handbook",
+            "wp-block-editor",
+        ),
+        (
+            "devdocs-themes",
+            "https://developer.wordpress.org/themes/",
+            "theme-handbook",
+            "Theme Handbook",
+            "wp-theme-handbook",
+        ),
+        (
+            "devdocs-plugins",
+            "https://developer.wordpress.org/plugins/",
+            "plugin-handbook",
+            "Plugin Handbook",
+            "wp-plugin-handbook",
+        ),
+        (
+            "devdocs-rest-api",
+            "https://developer.wordpress.org/rest-api/",
+            "rest-api-handbook",
+            "REST API Handbook",
+            "wp-rest-api-handbook",
+        ),
+    ]
+
+    for src_idx, (src_name, src_url, doc_type, doc_title, slug_prefix) in enumerate(_handbook_sources, start=5):
+        try:
+            print(f"\n[Source {src_idx}] {src_url} ...")
+            html_body = _http_fetch(src_url)
+            sections = _parse_handbook_sections(html_body)
+            # Also parse top-level page links for news (latest 5 posts)
+            if doc_type == "dev-blog":
+                parser = _LinkTextParser()
+                parser.feed(html_body)
+                article_links = [
+                    (href, text) for href, text in parser.links
+                    if "/news/" in href and text.strip() and len(text) > 10
+                ][:5]
+                s_docs = _insert_dev_blog_articles(
+                    c, conn, article_links, slug_prefix, doc_type, new_rows, dry_run,
+                )
+                items_per_source[src_name] = len(article_links)
+                print(f"  {src_name}: {len(article_links)} articles, {s_docs} new rows.")
+            else:
+                # Top-level handbook: insert as one summary doc with sections as content
+                content = "\n".join(f"## {s}" for s in sections[:50]) if sections else ""
+                slug = slug_prefix
+                s_docs = 0
+                if not dry_run:
+                    res = c.execute(
+                        """
+                        INSERT OR IGNORE INTO docs
+                            (source, slug, title, doc_type, category, content)
+                        VALUES ('native_wp', ?, ?, ?, ?, ?)
+                        """,
+                        (slug, doc_title, doc_type, doc_type, content),
+                    )
+                    new_rows["docs"] += res.rowcount
+                    s_docs += res.rowcount
+                    conn.commit()
+                else:
+                    ex = c.execute(
+                        _SELECT_DOC_EXISTS_NATIVE_WP, (slug,)
+                    ).fetchone()
+                    if ex is None:
+                        new_rows["docs"] += 1
+                        s_docs += 1
+                items_per_source[src_name] = len(sections)
+                print(f"  {src_name}: {len(sections)} sections found, {s_docs} new row.")
+
+            sources_succeeded.append(src_name)
+
+        except urllib.error.URLError as exc:
+            print(f"  {src_name} FAILED: network error — {exc}")
+            sources_failed.append(f"{src_name}: URLError: {exc}")
+        except Exception as exc:
+            print(f"  {src_name} FAILED: {type(exc).__name__}: {exc}")
+            sources_failed.append(f"{src_name}: {exc}")
+
+
 def _mode_b_refresh_upstream(
     conn: sqlite3.Connection,
     dry_run: bool,
@@ -1056,128 +1209,10 @@ def _mode_b_refresh_upstream(
         sources_failed.append(f"{source_4_name}: {exc}")
 
     # --- Sources 5-10: developer.wordpress.org handbook pages + make.wordpress.org ---
-    _handbook_sources = [
-        (
-            "make-core-field-guide",
-            # WP 7.0 field guide published at: https://make.wordpress.org/core/2026/05/14/wordpress-7-0-field-guide/
-            # Pattern for future versions: https://make.wordpress.org/core/<YYYY>/<MM>/<DD>/wordpress-<major>-<minor>-field-guide/
-            # The legacy slug https://make.wordpress.org/core/<version>-field-guide/ returns 404 for WP 7.0+.
-            "https://make.wordpress.org/core/2026/05/14/wordpress-7-0-field-guide/",
-            "release-notes",
-            f"WP {wp_version} Field Guide",
-            f"wp-{wp_version}-field-guide",
-        ),
-        (
-            "devdocs-news",
-            "https://developer.wordpress.org/news/",
-            "dev-blog",
-            "WordPress Developer News",
-            "wp-dev-news",
-        ),
-        (
-            "devdocs-block-editor",
-            "https://developer.wordpress.org/block-editor/",
-            "block-editor-reference",
-            "Block Editor Handbook",
-            "wp-block-editor",
-        ),
-        (
-            "devdocs-themes",
-            "https://developer.wordpress.org/themes/",
-            "theme-handbook",
-            "Theme Handbook",
-            "wp-theme-handbook",
-        ),
-        (
-            "devdocs-plugins",
-            "https://developer.wordpress.org/plugins/",
-            "plugin-handbook",
-            "Plugin Handbook",
-            "wp-plugin-handbook",
-        ),
-        (
-            "devdocs-rest-api",
-            "https://developer.wordpress.org/rest-api/",
-            "rest-api-handbook",
-            "REST API Handbook",
-            "wp-rest-api-handbook",
-        ),
-    ]
-
-    for src_idx, (src_name, src_url, doc_type, doc_title, slug_prefix) in enumerate(_handbook_sources, start=5):
-        try:
-            print(f"\n[Source {src_idx}] {src_url} ...")
-            html_body = _http_fetch(src_url)
-            sections = _parse_handbook_sections(html_body)
-            # Also parse top-level page links for news (latest 5 posts)
-            if doc_type == "dev-blog":
-                parser = _LinkTextParser()
-                parser.feed(html_body)
-                article_links = [
-                    (href, text) for href, text in parser.links
-                    if "/news/" in href and text.strip() and len(text) > 10
-                ][:5]
-                # Use article links as the docs
-                s_docs = 0
-                for i, (href, text) in enumerate(article_links):
-                    slug = f"{slug_prefix}-{i+1}"
-                    if not dry_run:
-                        res = c.execute(
-                            """
-                            INSERT OR IGNORE INTO docs
-                                (source, slug, title, doc_type, category, content)
-                            VALUES ('native_wp', ?, ?, ?, 'dev-blog', ?)
-                            """,
-                            (slug, text.strip(), doc_type, href),
-                        )
-                        new_rows["docs"] += res.rowcount
-                        s_docs += res.rowcount
-                    else:
-                        ex = c.execute(
-                            _SELECT_DOC_EXISTS_NATIVE_WP, (slug,)
-                        ).fetchone()
-                        if ex is None:
-                            new_rows["docs"] += 1
-                            s_docs += 1
-                if not dry_run:
-                    conn.commit()
-                items_per_source[src_name] = len(article_links)
-                print(f"  {src_name}: {len(article_links)} articles, {s_docs} new rows.")
-            else:
-                # Top-level handbook: insert as one summary doc with sections as content
-                content = "\n".join(f"## {s}" for s in sections[:50]) if sections else ""
-                slug = slug_prefix
-                s_docs = 0
-                if not dry_run:
-                    res = c.execute(
-                        """
-                        INSERT OR IGNORE INTO docs
-                            (source, slug, title, doc_type, category, content)
-                        VALUES ('native_wp', ?, ?, ?, ?, ?)
-                        """,
-                        (slug, doc_title, doc_type, doc_type, content),
-                    )
-                    new_rows["docs"] += res.rowcount
-                    s_docs += res.rowcount
-                    conn.commit()
-                else:
-                    ex = c.execute(
-                        _SELECT_DOC_EXISTS_NATIVE_WP, (slug,)
-                    ).fetchone()
-                    if ex is None:
-                        new_rows["docs"] += 1
-                        s_docs += 1
-                items_per_source[src_name] = len(sections)
-                print(f"  {src_name}: {len(sections)} sections found, {s_docs} new row.")
-
-            sources_succeeded.append(src_name)
-
-        except urllib.error.URLError as exc:
-            print(f"  {src_name} FAILED: network error — {exc}")
-            sources_failed.append(f"{src_name}: URLError: {exc}")
-        except Exception as exc:
-            print(f"  {src_name} FAILED: {type(exc).__name__}: {exc}")
-            sources_failed.append(f"{src_name}: {exc}")
+    _scrape_handbook_sources_5_to_10(
+        c, conn, wp_version, new_rows, dry_run,
+        sources_succeeded, sources_failed, items_per_source,
+    )
 
     # --- Final metadata update ---
     now_ts = datetime.now(timezone.utc).isoformat()
