@@ -1,5 +1,5 @@
 ---
-doc_type: pipeline-stages-reference
+doc_type: reference
 project: small-giants-wp
 purpose: Per-stage annotated blocks for the SGS Cloning Pipeline. Every stage shows scripts that run, files read/written, DB tables touched, skills dispatched, and wiring status. Also contains the absorbed script inventory, skill dispatch chain (full), and DB heat-map (full). Overview and stage-index table are in cloning-pipeline-flow.md.
 session_date: 2026-05-13

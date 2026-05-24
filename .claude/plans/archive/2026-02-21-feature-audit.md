@@ -1,11 +1,15 @@
 ---
 doc_type: archived-plan
-scope: forever_session_artefact
+project: small-giants-wp
 title: SGS WordPress Framework — 354-Feature Graded Roadmap
+archived: 2026-05-24
+status: shipped
 original_source: docs/2026-02-21-master-feature-audit.md
 split_from: .claude/architecture.md
 split_date: 2026-05-24
 ---
+
+# 354-Feature Graded Roadmap (archived 2026-05-24)
 
 ## Origin
 
@@ -33,7 +37,7 @@ This session closed out the bulk of P0/P1 outstanding items, all 17 "Code Exists
 - **WP block validation** — 0 invalid blocks across 96 on test page (deprecations correctly migrating old content).
 - **Hex tokenisation pass** — ~80 bare hex values → 6 acceptable exceptions (LinkedIn/Facebook/Google/Twitter brand colours + 2 regex matchers). theme.json locked palette-only.
 
-Schema markup live on test page: Organization, LocalBusiness, BreadcrumbList, FAQPage (with Question/Answer entries), Review, Product, AggregateRating, Rating, Person.
+Schema markup live on test page: `Organization` (Schema.org type), LocalBusiness, BreadcrumbList, FAQPage (with Question/Answer entries), Review, Product, AggregateRating, Rating, Person.
 
 **Verified count (2026-04-28):** ~85% code-confirmed for blocks/extensions/schema. Phase 0/1/2 complete. Phase 3 partial (3.2 Global Defaults outstanding). Phase 4 Indus Foods build pending.
 

@@ -13,7 +13,7 @@ Active stubs live at `.claude/mistakes.md`. Full body in blub.db + memory/feedba
 **Fix:** `key.endswith(suffix)` OR `key.endswith(suffix + breakpoint_tail)`. Commit `397295c3` (2026-05-18).
 
 - **Pattern key:** `camelcase-endswith-is-case-sensitive-normalise-before-compare`
-- **Feedback file:** [feedback_db_first_no_hardcoded_dicts.md](feedback_db_first_no_hardcoded_dicts.md)
+- **Feedback file:** [feedback_db_first_no_hardcoded_dicts.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_db_first_no_hardcoded_dicts.md)
 
 ---
 
@@ -26,7 +26,7 @@ Active stubs live at `.claude/mistakes.md`. Full body in blub.db + memory/feedba
 **Fix:** `try/finally` with `v3.set_trace(None, "")`. Commit `10a93d87` (2026-05-18).
 
 - **Pattern key:** `docstring-lifecycle-claim-must-be-implemented`
-- **Feedback file:** [feedback_verify_rendered_output_not_internal_metrics.md](feedback_verify_rendered_output_not_internal_metrics.md)
+- **Feedback file:** [feedback_verify_rendered_output_not_internal_metrics.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_verify_rendered_output_not_internal_metrics.md)
 
 ---
 
@@ -37,7 +37,7 @@ Active stubs live at `.claude/mistakes.md`. Full body in blub.db + memory/feedba
 **Incident:** cv2 pipeline output was being pushed to WP POST 65 rendered via `single.html`, which applies `.entry-content { max-width: 800px }`. Multiple sessions of pixel-diff optimisation baked in a template mismatch. Should have asked "post or page?" at session-1 hour 0.
 
 - **Pattern key:** `cv2-output-target-must-be-page-not-post`
-- **Feedback file:** [feedback_verify_rendered_output_not_internal_metrics.md](feedback_verify_rendered_output_not_internal_metrics.md)
+- **Feedback file:** [feedback_verify_rendered_output_not_internal_metrics.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_verify_rendered_output_not_internal_metrics.md)
 
 ---
 
@@ -49,7 +49,7 @@ Active stubs live at `.claude/mistakes.md`. Full body in blub.db + memory/feedba
 
 - **Pattern key:** `verify-rendered-output-not-internal-metrics`
 - **blub.db row:** `194`
-- **Feedback file:** [feedback_verify_rendered_output_not_internal_metrics.md](feedback_verify_rendered_output_not_internal_metrics.md)
+- **Feedback file:** [feedback_verify_rendered_output_not_internal_metrics.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_verify_rendered_output_not_internal_metrics.md)
 
 ---
 
@@ -60,7 +60,7 @@ Active stubs live at `.claude/mistakes.md`. Full body in blub.db + memory/feedba
 **Incident:** Three "Cannot redeclare" fatals shipped — `sgs_text_build_inline_style`, `sgs_heading_safe_unit`, and siblings — crashing live pages when rendered N times.
 
 - **Pattern key:** `render-php-helpers-need-function-exists-guard`
-- **Feedback file:** [feedback_verify_rendered_output_not_internal_metrics.md](feedback_verify_rendered_output_not_internal_metrics.md)
+- **Feedback file:** [feedback_verify_rendered_output_not_internal_metrics.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_verify_rendered_output_not_internal_metrics.md)
 
 ---
 
@@ -71,7 +71,7 @@ Active stubs live at `.claude/mistakes.md`. Full body in blub.db + memory/feedba
 **Incident:** `parse_css` regex required media body to end with `}` immediately after the last inner rule's `}`. Real CSS always has whitespace, so 0 of 13 @media blocks matched. Every responsive override was silently dropped.
 
 - **Pattern key:** `regex-css-parser-must-handle-whitespace-in-media-blocks`
-- **Feedback file:** [feedback_read_leftover_buckets_before_conjecturing.md](feedback_read_leftover_buckets_before_conjecturing.md)
+- **Feedback file:** [feedback_read_leftover_buckets_before_conjecturing.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_read_leftover_buckets_before_conjecturing.md)
 
 ---
 
@@ -83,7 +83,7 @@ Active stubs live at `.claude/mistakes.md`. Full body in blub.db + memory/feedba
 
 - **Pattern key:** `db-first-no-hardcoded-dicts`
 - **blub.db row:** `260`
-- **Feedback file:** [feedback_db_first_no_hardcoded_dicts.md](feedback_db_first_no_hardcoded_dicts.md)
+- **Feedback file:** [feedback_db_first_no_hardcoded_dicts.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_db_first_no_hardcoded_dicts.md)
 
 ---
 
@@ -95,7 +95,7 @@ Active stubs live at `.claude/mistakes.md`. Full body in blub.db + memory/feedba
 
 - **Pattern key:** `read-leftover-buckets-before-conjecturing`
 - **blub.db row:** `254`
-- **Feedback file:** [feedback_read_leftover_buckets_before_conjecturing.md](feedback_read_leftover_buckets_before_conjecturing.md)
+- **Feedback file:** [feedback_read_leftover_buckets_before_conjecturing.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_read_leftover_buckets_before_conjecturing.md)
 
 ---
 
@@ -107,7 +107,7 @@ Active stubs live at `.claude/mistakes.md`. Full body in blub.db + memory/feedba
 
 - **Pattern key:** `multi-model-qc-before-every-converter-commit`
 - **blub.db row:** `255`
-- **Feedback file:** [feedback_multi_model_qc_before_commit.md](feedback_multi_model_qc_before_commit.md)
+- **Feedback file:** [feedback_multi_model_qc_before_commit.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_multi_model_qc_before_commit.md)
 
 ---
 
@@ -119,7 +119,7 @@ Active stubs live at `.claude/mistakes.md`. Full body in blub.db + memory/feedba
 
 - **Pattern key:** `per-section-cropped-pixel-diff-not-full-page`
 - **blub.db row:** `256`
-- **Feedback file:** [feedback_per_section_cropped_pixel_diff.md](feedback_per_section_cropped_pixel_diff.md)
+- **Feedback file:** [feedback_per_section_cropped_pixel_diff.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_per_section_cropped_pixel_diff.md)
 
 ---
 
@@ -130,7 +130,7 @@ Active stubs live at `.claude/mistakes.md`. Full body in blub.db + memory/feedba
 **Incident:** Renamed `LICENSING_BANNED_SUBSTRINGS` → `row-211 banned-key gate` after a first nudge. Bean: "It's not the word licensing itself that is banned, it's the concept." Stripped the check entirely.
 
 - **Pattern key:** `synonym-laundering-doesnt-satisfy-concept-bans`
-- **Feedback file:** [feedback_no_licensing_talk_in_cloning_context.md](feedback_no_licensing_talk_in_cloning_context.md)
+- **Feedback file:** [feedback_no_licensing_talk_in_cloning_context.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_no_licensing_talk_in_cloning_context.md)
 
 ---
 
@@ -139,7 +139,7 @@ Active stubs live at `.claude/mistakes.md`. Full body in blub.db + memory/feedba
 **The rule:** Squash-merge to main is the default close-out of every feature-branch commit. Build → QC → commit → push → squash-merge → delete branch → checkout main → pull. Don't leave a PR open across sessions.
 
 - **Pattern key:** `always-merge-to-main-when-committing`
-- **Feedback file:** [feedback_always_merge_to_main.md](feedback_always_merge_to_main.md)
+- **Feedback file:** [feedback_always_merge_to_main.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_always_merge_to_main.md)
 
 ---
 
@@ -150,7 +150,7 @@ Active stubs live at `.claude/mistakes.md`. Full body in blub.db + memory/feedba
 **Incident:** Spec 15 Phase 1 plan had commit before QC. Panel found real fixes, requiring a follow-up commit on the same branch.
 
 - **Pattern key:** `qc-panel-gates-commit-not-follows-it`
-- **Feedback file:** [feedback_qc_before_commit.md](feedback_qc_before_commit.md)
+- **Feedback file:** [feedback_qc_before_commit.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_qc_before_commit.md)
 
 ---
 
@@ -161,7 +161,7 @@ Active stubs live at `.claude/mistakes.md`. Full body in blub.db + memory/feedba
 **Incident:** `peel_property_suffix()` used raw `name.endswith(suffix)`. `'borderRadius'.endswith('BorderRadius')` returns `False`. Caught by pytest test 7.
 
 - **Pattern key:** `camelcase-endswith-is-case-sensitive-normalise-before-compare`
-- **Feedback file:** [feedback_db_first_no_hardcoded_dicts.md](feedback_db_first_no_hardcoded_dicts.md)
+- **Feedback file:** [feedback_db_first_no_hardcoded_dicts.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_db_first_no_hardcoded_dicts.md)
 
 ---
 
@@ -172,7 +172,7 @@ Active stubs live at `.claude/mistakes.md`. Full body in blub.db + memory/feedba
 **Incident:** Trustpilot block cards stacked vertically because per-block CSS silently wasn't being enqueued. Every existing SGS block had this gap; most were masked by fallback in universal CSS.
 
 - **Pattern key:** `wordpress-scripts-style-index-vs-style-css`
-- **Feedback file:** [feedback_verify_rendered_output_not_internal_metrics.md](feedback_verify_rendered_output_not_internal_metrics.md)
+- **Feedback file:** [feedback_verify_rendered_output_not_internal_metrics.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_verify_rendered_output_not_internal_metrics.md)
 
 ---
 
@@ -183,7 +183,7 @@ Active stubs live at `.claude/mistakes.md`. Full body in blub.db + memory/feedba
 **Incident:** `includes/image-controls.php:45` — `WP_Block_Type_Registry::get_instance()` caused fatal `Class "SGS\Blocks\WP_Block_Type_Registry" not found` on first block render.
 
 - **Pattern key:** `namespaced-php-global-class-needs-backslash-prefix`
-- **Feedback file:** [feedback_verify_rendered_output_not_internal_metrics.md](feedback_verify_rendered_output_not_internal_metrics.md)
+- **Feedback file:** [feedback_verify_rendered_output_not_internal_metrics.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_verify_rendered_output_not_internal_metrics.md)
 
 ---
 
@@ -194,7 +194,7 @@ Active stubs live at `.claude/mistakes.md`. Full body in blub.db + memory/feedba
 **Incident:** Phase 8 plan referenced 7 files; only 1 existed. State.md claimed `slot-filler.py` was "1116 LOC, 8/14 tests pass" — it had never been committed. 3rd recurrence of the same pattern in 4 weeks.
 
 - **Pattern key:** `plan-files-must-reference-real-scripts`
-- **Feedback file:** [feedback_shipped_claims_need_grep_verify.md](feedback_shipped_claims_need_grep_verify.md)
+- **Feedback file:** [feedback_shipped_claims_need_grep_verify.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_shipped_claims_need_grep_verify.md)
 
 ---
 
@@ -206,7 +206,7 @@ Active stubs live at `.claude/mistakes.md`. Full body in blub.db + memory/feedba
 
 - **Pattern key:** `mockup-classes-map-to-patterns-not-blocks`
 - **blub.db row:** `209`
-- **Feedback file:** [feedback_classes_map_to_patterns_not_blocks.md](feedback_classes_map_to_patterns_not_blocks.md)
+- **Feedback file:** [feedback_classes_map_to_patterns_not_blocks.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_classes_map_to_patterns_not_blocks.md)
 
 ---
 
@@ -217,7 +217,7 @@ Active stubs live at `.claude/mistakes.md`. Full body in blub.db + memory/feedba
 **Incident:** Lifted stale script descriptions from state.md into the Phase 7 next-session-prompt. Bean: "How do you already know what stages to rewire?" — 4 named dispatcher modules didn't exist on disk.
 
 - **Pattern key:** `dont-cite-specifics-from-prior-session-without-grepping`
-- **Feedback file:** [feedback_shipped_claims_need_grep_verify.md](feedback_shipped_claims_need_grep_verify.md)
+- **Feedback file:** [feedback_shipped_claims_need_grep_verify.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_shipped_claims_need_grep_verify.md)
 
 ---
 
@@ -227,7 +227,7 @@ Active stubs live at `.claude/mistakes.md`. Full body in blub.db + memory/feedba
 
 - **Pattern key:** `bean-drafts-use-sgs-prefixed-bem-naming`
 - **blub.db row:** `236`
-- **Feedback file:** [feedback_bean_drafts_use_sgs_prefixed_bem_naming.md](feedback_bean_drafts_use_sgs_prefixed_bem_naming.md)
+- **Feedback file:** [feedback_bean_drafts_use_sgs_prefixed_bem_naming.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_bean_drafts_use_sgs_prefixed_bem_naming.md)
 
 ---
 
@@ -239,7 +239,7 @@ Active stubs live at `.claude/mistakes.md`. Full body in blub.db + memory/feedba
 
 - **Pattern key:** `dont-delegate-test-of-unproven-work`
 - **blub.db row:** `221`
-- **Feedback file:** [feedback_dont_delegate_the_test_of_unproven_work.md](feedback_dont_delegate_the_test_of_unproven_work.md)
+- **Feedback file:** [feedback_dont_delegate_the_test_of_unproven_work.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_dont_delegate_the_test_of_unproven_work.md)
 
 ---
 
@@ -252,7 +252,7 @@ Active stubs live at `.claude/mistakes.md`. Full body in blub.db + memory/feedba
 5. **Broaden the search before declaring spec wrong** — search ≥4 places including owning skill's data/ folder. (`id 220`)
 
 - **Pattern keys:** `no-resume-no-stage-resume-in-pipelines`, `c-grade-impact-litmus-not-rubric-pedantry`, `verify-production-path-by-grepping-the-script`, `analysis-skills-search-local-then-qc-inline`, `broaden-search-before-declaring-spec-wrong`
-- **Feedback files:** [feedback_no_resume_no_stage_resume_in_pipelines.md](feedback_no_resume_no_stage_resume_in_pipelines.md), [feedback_c_grade_impact_litmus_not_rubric_pedantry.md](feedback_c_grade_impact_litmus_not_rubric_pedantry.md), [feedback_verify_production_path_by_grepping_the_script.md](feedback_verify_production_path_by_grepping_the_script.md), [feedback_analysis_skills_search_local_then_qc_inline.md](feedback_analysis_skills_search_local_then_qc_inline.md), [feedback_broaden_search_before_declaring_spec_wrong.md](feedback_broaden_search_before_declaring_spec_wrong.md)
+- **Feedback files:** [feedback_no_resume_no_stage_resume_in_pipelines.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_no_resume_no_stage_resume_in_pipelines.md), [feedback_c_grade_impact_litmus_not_rubric_pedantry.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_c_grade_impact_litmus_not_rubric_pedantry.md), [feedback_verify_production_path_by_grepping_the_script.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_verify_production_path_by_grepping_the_script.md), [feedback_analysis_skills_search_local_then_qc_inline.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_analysis_skills_search_local_then_qc_inline.md), [feedback_broaden_search_before_declaring_spec_wrong.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_broaden_search_before_declaring_spec_wrong.md)
 
 ---
 
@@ -262,7 +262,7 @@ Every uimax row that describes a design artefact MUST carry equivalent-name mapp
 
 - **Pattern key:** `uimax-is-rosetta-stone-cross-platform-translation`
 - **blub.db row:** `213`
-- **Feedback file:** [feedback_uimax_is_the_rosetta_stone_of_design.md](feedback_uimax_is_the_rosetta_stone_of_design.md)
+- **Feedback file:** [feedback_uimax_is_the_rosetta_stone_of_design.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_uimax_is_the_rosetta_stone_of_design.md)
 
 ---
 
@@ -272,7 +272,7 @@ Web designs and component patterns are not licenseable artefacts. No `license`, 
 
 - **Pattern key:** `no-licensing-talk-in-cloning-context`
 - **blub.db row:** `211`
-- **Feedback file:** [feedback_no_licensing_talk_in_cloning_context.md](feedback_no_licensing_talk_in_cloning_context.md)
+- **Feedback file:** [feedback_no_licensing_talk_in_cloning_context.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_no_licensing_talk_in_cloning_context.md)
 
 ---
 
@@ -281,7 +281,7 @@ Web designs and component patterns are not licenseable artefacts. No `license`, 
 Run a peer-review panel (Sonnet practical + Gemini Flash gap-scan + Gemini Pro deep-reasoning + ecosystem) BEFORE any new substantial-skill build session. Synthesise findings into a delta list. Cost: ~30 min. Avoids a half-finished rebuild after first real-clone failure.
 
 - **Pattern key:** `design-peer-review-before-build`
-- **Feedback file:** [feedback_multi_model_qc_before_commit.md](feedback_multi_model_qc_before_commit.md)
+- **Feedback file:** [feedback_multi_model_qc_before_commit.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_multi_model_qc_before_commit.md)
 
 ---
 
@@ -290,7 +290,7 @@ Run a peer-review panel (Sonnet practical + Gemini Flash gap-scan + Gemini Pro d
 Before any substantial pipeline build, do the dissection pass — assign every captured rule to a stage with covered/partial/gap status. Top-12 gaps become next-session targets. Without this, pipeline ships with silent gaps that surface in first real run.
 
 - **Pattern key:** `rule-stage-coverage-audit-before-build`
-- **Feedback file:** [feedback_read_leftover_buckets_before_conjecturing.md](feedback_read_leftover_buckets_before_conjecturing.md)
+- **Feedback file:** [feedback_read_leftover_buckets_before_conjecturing.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_read_leftover_buckets_before_conjecturing.md)
 
 ---
 
@@ -303,7 +303,7 @@ Three related gaps:
 
 - **Pattern key:** `extend-measurement-set-when-human-eye-disputes`
 - **blub.db row:** `207`
-- **Feedback file:** [feedback_extend_measurement_set_when_human_eye_disputes.md](feedback_extend_measurement_set_when_human_eye_disputes.md)
+- **Feedback file:** [feedback_extend_measurement_set_when_human_eye_disputes.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_extend_measurement_set_when_human_eye_disputes.md)
 
 ---
 
@@ -313,7 +313,7 @@ Mockup classes/sections map to PATTERNS, not single blocks. A pattern is a compo
 
 - **Pattern key:** `mockup-classes-map-to-patterns-not-blocks`
 - **blub.db row:** `209`
-- **Feedback file:** [feedback_mockup_classes_map_to_patterns_not_blocks.md](feedback_mockup_classes_map_to_patterns_not_blocks.md)
+- **Feedback file:** [feedback_mockup_classes_map_to_patterns_not_blocks.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_mockup_classes_map_to_patterns_not_blocks.md)
 
 ---
 
@@ -323,7 +323,7 @@ When the human eye says "wrong" and the measurement says "right", the measuremen
 
 - **Pattern key:** `extend-measurement-set-when-human-eye-disputes`
 - **blub.db row:** `207`
-- **Feedback file:** [feedback_extend_measurement_set_when_human_eye_disputes.md](feedback_extend_measurement_set_when_human_eye_disputes.md)
+- **Feedback file:** [feedback_extend_measurement_set_when_human_eye_disputes.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_extend_measurement_set_when_human_eye_disputes.md)
 
 ---
 
@@ -333,7 +333,7 @@ A computed-style delta is NEVER "structural noise" without screenshot evidence. 
 
 - **Pattern key:** `verify-rendered-output-not-internal-metrics`
 - **blub.db row:** `194`
-- **Feedback file:** [feedback_verify_rendered_output_not_internal_metrics.md](feedback_verify_rendered_output_not_internal_metrics.md)
+- **Feedback file:** [feedback_verify_rendered_output_not_internal_metrics.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_verify_rendered_output_not_internal_metrics.md)
 
 ---
 
@@ -342,7 +342,7 @@ A computed-style delta is NEVER "structural noise" without screenshot evidence. 
 Editing `styles/<variation>.json` and deploying does NOT make changes visible. WP stores the merged result in a `wp_global_styles` post. Deploy procedure must include POST to `/wp-json/wp/v2/global-styles/{id}` to reset the cached merge, then re-apply the active variation.
 
 - **Pattern key:** `wp-global-styles-post-is-cache-layer`
-- **Feedback file:** [feedback_verify_rendered_output_not_internal_metrics.md](feedback_verify_rendered_output_not_internal_metrics.md)
+- **Feedback file:** [feedback_verify_rendered_output_not_internal_metrics.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_verify_rendered_output_not_internal_metrics.md)
 
 ---
 
@@ -351,7 +351,7 @@ Editing `styles/<variation>.json` and deploying does NOT make changes visible. W
 Use `document.fonts` to check `status === 'loaded'` for every font in `theme.json`. `getComputedStyle()` reports declared value even when the resource load failed. Per SGS framework: NO external CDN for fonts — self-host all fonts in `theme/sgs-theme/assets/fonts/`.
 
 - **Pattern key:** `font-resource-load-failure-is-invisible-to-getcomputedstyle`
-- **Feedback file:** [feedback_verify_rendered_output_not_internal_metrics.md](feedback_verify_rendered_output_not_internal_metrics.md)
+- **Feedback file:** [feedback_verify_rendered_output_not_internal_metrics.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_verify_rendered_output_not_internal_metrics.md)
 
 ---
 
@@ -360,7 +360,7 @@ Use `document.fonts` to check `status === 'loaded'` for every font in `theme.jso
 Take screenshots at MULTIPLE times after navigation (0ms, 200ms, 500ms, 1000ms, 3000ms). Run DOM measurement at the SAME EARLY moment (≤300ms). CSS entrance animations are a per-instance choice — never hardcode `animation: ... both; animation-delay: Nms` on structural elements.
 
 - **Pattern key:** `multi-frame-screenshot-for-first-paint-defects`
-- **Feedback file:** [feedback_always_screenshot_verify.md](feedback_always_screenshot_verify.md)
+- **Feedback file:** [feedback_always_screenshot_verify.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_always_screenshot_verify.md)
 
 ---
 
@@ -369,7 +369,7 @@ Take screenshots at MULTIPLE times after navigation (0ms, 200ms, 500ms, 1000ms, 
 `save: () => null` tells WP "this block produces no markup" — the serialiser drops the InnerBlocks tree entirely. `render.php` drives frontend output, but the save function must emit the InnerBlocks marker for `post_content` round-trips.
 
 - **Pattern key:** `dynamic-block-innerblocks-must-save-content`
-- **Feedback file:** [feedback_block_validation_recovery.md](feedback_block_validation_recovery.md)
+- **Feedback file:** [feedback_block_validation_recovery.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_block_validation_recovery.md)
 
 ---
 
@@ -378,7 +378,7 @@ Take screenshots at MULTIPLE times after navigation (0ms, 200ms, 500ms, 1000ms, 
 When "feature X needs to be available on N different blocks", ask "is this feature a block?" If yes, build the block, use InnerBlocks composition. Extensions only when the feature is NOT a block.
 
 - **Pattern key:** `composition-over-extension-for-block-features`
-- **Feedback file:** [feedback_block_validation_recovery.md](feedback_block_validation_recovery.md)
+- **Feedback file:** [feedback_block_validation_recovery.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_block_validation_recovery.md)
 
 ---
 
@@ -387,7 +387,7 @@ When "feature X needs to be available on N different blocks", ask "is this featu
 Hand-written fingerprints drift immediately when block.json gains new attributes. Every fingerprint must be auto-generated; coverage is enforced by code, not by remembering.
 
 - **Pattern key:** `fingerprints-auto-derived-from-block-json`
-- **Feedback file:** [feedback_ingest_dont_generate_reference_data.md](feedback_ingest_dont_generate_reference_data.md)
+- **Feedback file:** [feedback_ingest_dont_generate_reference_data.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_ingest_dont_generate_reference_data.md)
 
 ---
 
@@ -396,7 +396,7 @@ Hand-written fingerprints drift immediately when block.json gains new attributes
 Pull every CSS rule whose selector matches an element in the section. Classify after: block-attribute / universal / custom. Selective pulling means quietly losing design intent.
 
 - **Pattern key:** `pull-all-css-classify-after`
-- **Feedback file:** [feedback_read_leftover_buckets_before_conjecturing.md](feedback_read_leftover_buckets_before_conjecturing.md)
+- **Feedback file:** [feedback_read_leftover_buckets_before_conjecturing.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_read_leftover_buckets_before_conjecturing.md)
 
 ---
 
@@ -405,7 +405,7 @@ Pull every CSS rule whose selector matches an element in the section. Classify a
 Programmatic translation captures structure + tokens but misses design choices in the gap between block defaults and mockup-specific styling. Auto-pipeline gets to ~65/100; last 35 points need deliberate top-to-bottom rebuild section by section.
 
 - **Pattern key:** `auto-clone-needs-deliberate-topdown-walkthrough`
-- **Feedback file:** [feedback_dont_delegate_the_test_of_unproven_work.md](feedback_dont_delegate_the_test_of_unproven_work.md)
+- **Feedback file:** [feedback_dont_delegate_the_test_of_unproven_work.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_dont_delegate_the_test_of_unproven_work.md)
 
 ---
 

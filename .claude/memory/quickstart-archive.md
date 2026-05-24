@@ -173,7 +173,7 @@ To view submissions, go to **SGS Forms > Submissions** in the admin menu.
 
 ### Set up Google Reviews
 
-See the [SGS Blocks README](../plugins/sgs-blocks/README.md#google-reviews-setup) for full instructions. In short:
+See the [SGS Blocks README](../../plugins/sgs-blocks/README.md#google-reviews-setup) for full instructions. In short:
 
 1. Get a Google Places API key from the Google Cloud Console.
 2. Find your Place ID using Google's Place ID Finder tool.

@@ -1,10 +1,13 @@
 ---
 doc_type: dev-setup
-scope: forever
+project: small-giants-wp
 title: SGS WordPress Framework — Developer Setup & Operations
+last_updated: 2026-05-24
 split_from: .claude/architecture.md (Part C)
 split_date: 2026-05-24
 ---
+
+# SGS WordPress Framework — Dev Setup
 
 ## Origin
 
