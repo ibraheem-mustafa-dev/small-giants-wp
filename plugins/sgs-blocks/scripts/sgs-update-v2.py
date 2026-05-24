@@ -880,6 +880,371 @@ def _mode_a_read_cached(
     }
 
 
+def _scrape_source_1_gutenberg(
+    c: sqlite3.Cursor,
+    conn: sqlite3.Connection,
+    github_token,
+    wp_version: str,
+    new_rows: dict,
+    dry_run: bool,
+) -> int:
+    """Source 1: WordPress/gutenberg packages/block-library/src/ block.json files.
+
+    Mutates new_rows by reference.
+    Returns the number of block directories found (items count for items_per_source).
+    Raises on fatal error -- caller catches.
+    """
+    import base64 as _base64
+
+    print(f"\n[Source 1] WordPress/gutenberg packages/block-library/src/ at v{wp_version}.0 ...")
+    ref_tag = f"v{wp_version}.0"
+    dir_url = (
+        f"https://api.github.com/repos/WordPress/gutenberg/contents/"
+        f"packages/block-library/src?ref={ref_tag}"
+    )
+    entries = _github_api_get(dir_url, github_token)
+    if not isinstance(entries, list):
+        raise ValueError(f"Expected list from GitHub API, got: {type(entries)}")
+
+    block_dirs = [e for e in entries if e.get("type") == "dir"]
+    print(f"  Found {len(block_dirs)} block directories.")
+
+    s1_blocks = 0
+    s1_attrs = 0
+    s1_supports = 0
+
+    for entry in block_dirs:
+        block_name = entry["name"]
+        block_json_url = (
+            f"https://api.github.com/repos/WordPress/gutenberg/contents/"
+            f"packages/block-library/src/{block_name}/block.json?ref={ref_tag}"
+        )
+        try:
+            file_data = _github_api_get(block_json_url, github_token)
+            if not isinstance(file_data, dict):
+                continue
+            content_b64 = file_data.get("content", "")
+            if not content_b64:
+                continue
+            decoded = _base64.b64decode(content_b64.replace("\n", "")).decode("utf-8", errors="replace")
+            block_data = json.loads(decoded)
+        except json.JSONDecodeError:
+            continue
+        except Exception:
+            continue
+
+        slug = block_data.get("name", f"core/{block_name}")
+        title = block_data.get("title", block_name)
+        description = block_data.get("description", "")
+        category = block_data.get("category", "")
+        block_type = "dynamic" if "$schema" in block_data else "static"
+
+        if not dry_run:
+            res = c.execute(
+                """
+                INSERT OR IGNORE INTO blocks
+                    (slug, title, description, category, type, source)
+                VALUES (?, ?, ?, ?, ?, 'native_wp')
+                """,
+                (slug, title, description, category, block_type),
+            )
+            new_rows["blocks"] += res.rowcount
+            s1_blocks += res.rowcount
+
+            # Attributes
+            for attr_name, attr_def in block_data.get("attributes", {}).items():
+                if not isinstance(attr_def, dict):
+                    continue
+                res = c.execute(
+                    """
+                    INSERT OR IGNORE INTO block_attributes
+                        (block_slug, attr_name, attr_type, default_value, source)
+                    VALUES (?, ?, ?, ?, 'native_wp')
+                    """,
+                    (
+                        slug, attr_name,
+                        attr_def.get("type", "string"),
+                        json.dumps(attr_def.get("default")) if "default" in attr_def else None,
+                    ),
+                )
+                new_rows["block_attributes"] += res.rowcount
+                s1_attrs += res.rowcount
+
+            # Supports
+            for support_name, support_val in block_data.get("supports", {}).items():
+                res = c.execute(
+                    """
+                    INSERT OR IGNORE INTO block_supports
+                        (block_slug, support_name, support_value, source)
+                    VALUES (?, ?, ?, 'native_wp')
+                    """,
+                    (slug, support_name, json.dumps(support_val)),
+                )
+                new_rows["block_supports"] += res.rowcount
+                s1_supports += res.rowcount
+        else:
+            # dry-run: count what would be new
+            ex = c.execute(
+                _SELECT_BLOCK_EXISTS_NATIVE_WP, (slug,)
+            ).fetchone()
+            if ex is None:
+                new_rows["blocks"] += 1
+                s1_blocks += 1
+
+    if not dry_run:
+        conn.commit()
+
+    print(
+        f"  Source 1 done: {len(block_dirs)} dirs, {s1_blocks} new block rows, "
+        f"{s1_attrs} new attr rows, {s1_supports} new support rows."
+    )
+    return len(block_dirs)
+
+
+def _scrape_source_2_hooks(
+    c: sqlite3.Cursor,
+    conn: sqlite3.Connection,
+    github_token,
+    wp_version: str,
+    new_rows: dict,
+    dry_run: bool,
+) -> int:
+    """Source 2: WordPress/wordpress-develop PHP hook files.
+
+    Mutates new_rows by reference.
+    Returns total hook extraction count (s2_extracted) for items_per_source.
+    Success/fail verdict is the caller's responsibility (check returned count > 0).
+    Raises on fatal error -- caller catches.
+    """
+    import base64 as _base64
+
+    print(f"\n[Source 2] WordPress/wordpress-develop PHP hook files at v{wp_version}.0 ...")
+    hook_files = [
+        "src/wp-includes/post.php",
+        "src/wp-includes/default-filters.php",
+        "src/wp-includes/theme.php",
+        "src/wp-includes/template.php",
+        "src/wp-includes/formatting.php",
+    ]
+    ref_tag = f"{wp_version}.0"  # wordpress-develop uses plain X.Y.Z tags
+    hook_re = re.compile(
+        r"""(?:do_action|apply_filters)\s*\(\s*['\"]([a-zA-Z0-9_\-]+)[\'\"]""",
+        re.MULTILINE,
+    )
+
+    s2_extracted = 0  # Total regex matches (real scraper-health signal).
+    s2_inserted = 0   # INSERT OR IGNORE rowcount sum (diagnostic only).
+
+    for file_path in hook_files:
+        file_url = (
+            f"https://api.github.com/repos/WordPress/wordpress-develop/contents/"
+            f"{file_path}?ref={ref_tag}"
+        )
+        try:
+            file_data = _github_api_get(file_url, github_token)
+            if not isinstance(file_data, dict):
+                continue
+            content_b64 = file_data.get("content", "")
+            if not content_b64:
+                continue
+            decoded = _base64.b64decode(content_b64.replace("\n", "")).decode("utf-8", errors="replace")
+        except Exception as file_exc:
+            print(f"    WARNING: {file_path} fetch failed: {file_exc}")
+            continue
+
+        hook_names = set(hook_re.findall(decoded))
+        # Determine hook_type from context (crude: apply_filters -> filter, do_action -> action)
+        action_re = re.compile(r"""do_action\s*\(\s*['\"]([a-zA-Z0-9_\-]+)[\'\"]""", re.MULTILINE)
+        actions = set(action_re.findall(decoded))
+
+        s2_extracted += len(hook_names)
+        for hook_name in hook_names:
+            hook_type = "action" if hook_name in actions else "filter"
+            if not dry_run:
+                res = c.execute(
+                    """
+                    INSERT OR IGNORE INTO hooks
+                        (name, hook_type, plugin_slug, file_path, source, type)
+                    VALUES (?, ?, NULL, ?, 'native_wp', ?)
+                    """,
+                    (hook_name, hook_type, file_path, hook_type),
+                )
+                new_rows["hooks"] += res.rowcount
+                s2_inserted += res.rowcount
+            else:
+                ex = c.execute(
+                    "SELECT 1 FROM hooks WHERE name=? AND source='native_wp'", (hook_name,)
+                ).fetchone()
+                if ex is None:
+                    new_rows["hooks"] += 1
+                    s2_inserted += 1
+
+        print(f"    {file_path}: {len(hook_names)} hook references found.")
+
+    if not dry_run:
+        conn.commit()
+
+    print(f"  Source 2 done: {s2_extracted} hooks extracted, {s2_inserted} new rows inserted.")
+    return s2_extracted
+
+
+def _scrape_source_3_wpcli(
+    c: sqlite3.Cursor,
+    conn: sqlite3.Connection,
+    github_token,
+    new_rows: dict,
+    dry_run: bool,
+) -> int:
+    """Source 3: wp-cli/handbook markdown commands/.
+
+    Mutates new_rows by reference.
+    Returns the number of markdown files found (items count for items_per_source).
+    Raises on fatal error -- caller catches.
+    """
+    print("\n[Source 3] wp-cli/handbook markdown commands/ ...")
+    dir_url = "https://api.github.com/repos/wp-cli/handbook/contents/commands"
+    entries = _github_api_get(dir_url, github_token)
+    if not isinstance(entries, list):
+        raise ValueError(f"Expected list from GitHub API, got: {type(entries)}")
+
+    md_files = [e for e in entries if e.get("name", "").endswith(".md")]
+    print(f"  Found {len(md_files)} markdown files.")
+
+    s3_docs = 0
+    for entry in md_files:
+        slug_raw = entry["name"].replace(".md", "")
+        slug = f"wpcli-{slug_raw}"
+        title = slug_raw.replace("-", " ").title()
+        download_url = entry.get("download_url", "")
+
+        content_text = ""
+        if download_url:
+            try:
+                content_text = _http_fetch(download_url)
+                # Trim to first 4000 chars to keep DB lean
+                if len(content_text) > 4000:
+                    content_text = content_text[:4000] + "\n...[truncated]"
+            except Exception:
+                content_text = f"# {title}\n\nContent fetch failed."
+
+        if not dry_run:
+            res = c.execute(
+                """
+                INSERT OR IGNORE INTO docs
+                    (source, slug, title, doc_type, category, content)
+                VALUES ('native_wp', ?, ?, 'cli-command', 'wpcli', ?)
+                """,
+                (slug, title, content_text),
+            )
+            new_rows["docs"] += res.rowcount
+            s3_docs += res.rowcount
+        else:
+            ex = c.execute(
+                _SELECT_DOC_EXISTS_NATIVE_WP, (slug,)
+            ).fetchone()
+            if ex is None:
+                new_rows["docs"] += 1
+                s3_docs += 1
+
+    if not dry_run:
+        conn.commit()
+
+    print(f"  Source 3 done: {len(md_files)} files, {s3_docs} new doc rows.")
+    return len(md_files)
+
+
+def _scrape_source_4_since(
+    c: sqlite3.Cursor,
+    conn: sqlite3.Connection,
+    wp_version: str,
+    new_rows: dict,
+    dry_run: bool,
+) -> tuple:
+    """Source 4: developer.wordpress.org/reference/since/<version>.0/.
+
+    SCRAPER-HEALTH FLOOR: if <30 items found, raises ValueError so coordinator
+    records the source as failed with an explicit count message.
+    The minimum was originally 100 (calibrated for typical releases) but
+    WP 7.0 genuinely has only 41 new public API identifiers -- a smaller
+    release. Floor lowered to 30 so the gate still catches a broken
+    scraper (returns 0 due to selector drift or rate limit) without
+    false-positiving on small-release pages. Verified empirically
+    2026-05-22: both urllib and Playwright return 41 items for WP 7.0,
+    which is the real count, not a parsing failure.
+
+    Mutates new_rows by reference.
+    Returns (items_count, used_playwright_bool).
+    Raises ValueError on scraper-health failure; other exceptions propagate for
+    the coordinator's URLError / generic except handlers.
+    """
+    MINIMUM_SOURCE_4_ITEMS = 30
+
+    print(f"\n[Source 4] developer.wordpress.org/reference/since/{wp_version}.0/ ...")
+    since_url = f"https://developer.wordpress.org/reference/since/{wp_version}.0/"
+    html_body = _http_fetch(since_url)
+    identifiers = _parse_since_page(html_body)
+    count = len(identifiers)
+    used_playwright = False
+    print(f"  Found {count} API identifiers.")
+
+    if count < MINIMUM_SOURCE_4_ITEMS:
+        # Fallback: the page is JS-rendered -- try the Playwright Node script
+        print(
+            f"  urllib returned only {count} items (< {MINIMUM_SOURCE_4_ITEMS}). "
+            f"Page may be JS-rendered. Trying Playwright fallback..."
+        )
+        try:
+            playwright_html = _fetch_with_playwright(since_url)
+            fallback_identifiers = _parse_since_page(playwright_html)
+            fallback_count = len(fallback_identifiers)
+            print(f"  Playwright fallback: {fallback_count} identifiers found.")
+            if fallback_count >= MINIMUM_SOURCE_4_ITEMS:
+                identifiers = fallback_identifiers
+                count = fallback_count
+                used_playwright = True
+        except Exception as pw_exc:
+            print(f"  Playwright fallback FAILED: {pw_exc}")
+
+    if count < MINIMUM_SOURCE_4_ITEMS:
+        # Both urllib and Playwright (if available) yielded < floor -- hard fail
+        msg = (
+            f"Stage 2 Source 4 FAILED: only {count} API identifiers found from "
+            f"{since_url}. Hard minimum is {MINIMUM_SOURCE_4_ITEMS}. "
+            f"Both urllib and Playwright fallback exhausted. "
+            f"Verify the page loads {MINIMUM_SOURCE_4_ITEMS}+ items manually."
+        )
+        print(f"  {msg}")
+        raise ValueError(msg)
+
+    s4_docs = 0
+    for identifier in identifiers:
+        slug = f"wp-since-{wp_version}-{re.sub(r'[^a-z0-9_-]', '-', identifier.lower())}"
+        if not dry_run:
+            res = c.execute(
+                """
+                INSERT OR IGNORE INTO docs
+                    (source, slug, title, doc_type, category)
+                VALUES ('native_wp', ?, ?, 'api-reference', ?)
+                """,
+                (slug, identifier, f"WP {wp_version} new API"),
+            )
+            new_rows["docs"] += res.rowcount
+            s4_docs += res.rowcount
+        else:
+            ex = c.execute(
+                _SELECT_DOC_EXISTS_NATIVE_WP, (slug,)
+            ).fetchone()
+            if ex is None:
+                new_rows["docs"] += 1
+                s4_docs += 1
+
+    if not dry_run:
+        conn.commit()
+
+    print(f"  Source 4 done: {count} identifiers, {s4_docs} new doc rows.")
+    return count, used_playwright
+
+
 def _mode_b_refresh_upstream(
     conn: sqlite3.Connection,
     dry_run: bool,
@@ -891,7 +1256,7 @@ def _mode_b_refresh_upstream(
       1. WordPress/gutenberg packages/block-library/src/ at v<wp_version>.0 tag
       2. WordPress/wordpress-develop PHP hook files at v<wp_version>.0 tag
       3. wp-cli/handbook markdown commands/
-      4. developer.wordpress.org/reference/since/<wp_version>.0/ (scraper-health floor ≥30 — recalibrated 2026-05-22 from 100 after WP 7.0 verified to genuinely have 41 items)
+      4. developer.wordpress.org/reference/since/<wp_version>.0/ (scraper-health floor ≥30 -- recalibrated 2026-05-22 from 100 after WP 7.0 verified to genuinely have 41 items)
       5. make.wordpress.org/core/<wp_version>-field-guide
       6. developer.wordpress.org/news
       7. developer.wordpress.org/block-editor
@@ -901,216 +1266,50 @@ def _mode_b_refresh_upstream(
 
     All inserts are INSERT OR IGNORE — idempotent.
     Network failures per source are caught and logged to sources_failed.
+
+    Orchestration: each _scrape_source_N helper mutates new_rows by reference,
+    commits per-source when not dry_run, and raises on fatal error so this
+    coordinator can record the failure without stopping subsequent sources.
     """
-    github_token: str | None = os.environ.get("GITHUB_TOKEN") or os.environ.get("GITHUB_PERSONAL_ACCESS_TOKEN")
+    github_token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GITHUB_PERSONAL_ACCESS_TOKEN")
     if github_token:
         print("Stage 2 [Mode B]: GitHub PAT found — using authenticated GitHub API (5000 req/hr).")
     else:
         print("Stage 2 [Mode B]: No GitHub PAT — using unauthenticated GitHub API (60 req/hr). Set GITHUB_TOKEN or GITHUB_PERSONAL_ACCESS_TOKEN.")
 
     c = conn.cursor()
-    sources_succeeded: list[str] = []
-    sources_failed: list[str] = []
-    new_rows: dict[str, int] = {
+    sources_succeeded: list = []
+    sources_failed: list = []
+    new_rows: dict = {
         "blocks": 0, "block_attributes": 0, "block_supports": 0,
         "hooks": 0, "docs": 0,
     }
-    items_per_source: dict[str, int] = {}
+    items_per_source: dict = {}
 
     # --- Source 1: WordPress/gutenberg block-library block.json files ---
     source_1_name = "gutenberg-block-library"
     try:
-        print(f"\n[Source 1] WordPress/gutenberg packages/block-library/src/ at v{wp_version}.0 ...")
-        # List directories in packages/block-library/src/
-        ref_tag = f"v{wp_version}.0"
-        dir_url = (
-            f"https://api.github.com/repos/WordPress/gutenberg/contents/"
-            f"packages/block-library/src?ref={ref_tag}"
+        items_per_source[source_1_name] = _scrape_source_1_gutenberg(
+            c, conn, github_token, wp_version, new_rows, dry_run
         )
-        entries = _github_api_get(dir_url, github_token)
-        if not isinstance(entries, list):
-            raise ValueError(f"Expected list from GitHub API, got: {type(entries)}")
-
-        block_dirs = [e for e in entries if e.get("type") == "dir"]
-        print(f"  Found {len(block_dirs)} block directories.")
-
-        s1_blocks = 0
-        s1_attrs = 0
-        s1_supports = 0
-
-        for entry in block_dirs:
-            block_name = entry["name"]
-            block_json_url = (
-                f"https://api.github.com/repos/WordPress/gutenberg/contents/"
-                f"packages/block-library/src/{block_name}/block.json?ref={ref_tag}"
-            )
-            try:
-                file_data = _github_api_get(block_json_url, github_token)
-                if not isinstance(file_data, dict):
-                    continue
-                # GitHub returns file content as base64
-                import base64
-                content_b64 = file_data.get("content", "")
-                if not content_b64:
-                    continue
-                decoded = base64.b64decode(content_b64.replace("\n", "")).decode("utf-8", errors="replace")
-                block_data = json.loads(decoded)
-            except json.JSONDecodeError:
-                continue
-            except Exception:
-                continue
-
-            slug = block_data.get("name", f"core/{block_name}")
-            title = block_data.get("title", block_name)
-            description = block_data.get("description", "")
-            category = block_data.get("category", "")
-            block_type = "dynamic" if "$schema" in block_data else "static"
-
-            if not dry_run:
-                res = c.execute(
-                    """
-                    INSERT OR IGNORE INTO blocks
-                        (slug, title, description, category, type, source)
-                    VALUES (?, ?, ?, ?, ?, 'native_wp')
-                    """,
-                    (slug, title, description, category, block_type),
-                )
-                new_rows["blocks"] += res.rowcount
-                s1_blocks += res.rowcount
-
-                # Attributes
-                for attr_name, attr_def in block_data.get("attributes", {}).items():
-                    if not isinstance(attr_def, dict):
-                        continue
-                    res = c.execute(
-                        """
-                        INSERT OR IGNORE INTO block_attributes
-                            (block_slug, attr_name, attr_type, default_value, source)
-                        VALUES (?, ?, ?, ?, 'native_wp')
-                        """,
-                        (
-                            slug, attr_name,
-                            attr_def.get("type", "string"),
-                            json.dumps(attr_def.get("default")) if "default" in attr_def else None,
-                        ),
-                    )
-                    new_rows["block_attributes"] += res.rowcount
-                    s1_attrs += res.rowcount
-
-                # Supports
-                for support_name, support_val in block_data.get("supports", {}).items():
-                    res = c.execute(
-                        """
-                        INSERT OR IGNORE INTO block_supports
-                            (block_slug, support_name, support_value, source)
-                        VALUES (?, ?, ?, 'native_wp')
-                        """,
-                        (slug, support_name, json.dumps(support_val)),
-                    )
-                    new_rows["block_supports"] += res.rowcount
-                    s1_supports += res.rowcount
-            else:
-                # dry-run: count what would be new
-                ex = c.execute(
-                    _SELECT_BLOCK_EXISTS_NATIVE_WP, (slug,)
-                ).fetchone()
-                if ex is None:
-                    new_rows["blocks"] += 1
-                    s1_blocks += 1
-
-        if not dry_run:
-            conn.commit()
-
-        items_per_source[source_1_name] = len(block_dirs)
-        print(f"  Source 1 done: {len(block_dirs)} dirs, {s1_blocks} new block rows, "
-              f"{s1_attrs} new attr rows, {s1_supports} new support rows.")
         sources_succeeded.append(source_1_name)
-
     except _GithubRateLimitError as exc:
-        msg = f"Source 1 FAILED: {exc}"
-        print(f"  {msg}")
+        print(f"  Source 1 FAILED: {exc}")
         sources_failed.append(f"{source_1_name}: {exc}")
     except Exception as exc:
-        msg = f"Source 1 FAILED: {type(exc).__name__}: {exc}"
-        print(f"  {msg}")
+        print(f"  Source 1 FAILED: {type(exc).__name__}: {exc}")
         sources_failed.append(f"{source_1_name}: {exc}")
 
     # --- Source 2: WordPress/wordpress-develop PHP hook files ---
     source_2_name = "wordpress-develop-hooks"
     try:
-        print(f"\n[Source 2] WordPress/wordpress-develop PHP hook files at v{wp_version}.0 ...")
-        # Target a representative subset of hook-dense files (full repo is unbounded)
-        hook_files = [
-            "src/wp-includes/post.php",
-            "src/wp-includes/default-filters.php",
-            "src/wp-includes/theme.php",
-            "src/wp-includes/template.php",
-            "src/wp-includes/formatting.php",
-        ]
-        ref_tag = f"{wp_version}.0"  # wordpress-develop uses plain X.Y.Z tags
-        hook_re = re.compile(
-            r"""(?:do_action|apply_filters)\s*\(\s*['"]([a-zA-Z0-9_\-]+)['"]""",
-            re.MULTILINE,
+        s2_extracted = _scrape_source_2_hooks(
+            c, conn, github_token, wp_version, new_rows, dry_run
         )
-
-        s2_extracted = 0  # Total regex matches (real scraper-health signal).
-        s2_inserted = 0   # INSERT OR IGNORE rowcount sum (diagnostic only).
-        for file_path in hook_files:
-            file_url = (
-                f"https://api.github.com/repos/WordPress/wordpress-develop/contents/"
-                f"{file_path}?ref={ref_tag}"
-            )
-            try:
-                file_data = _github_api_get(file_url, github_token)
-                if not isinstance(file_data, dict):
-                    continue
-                import base64
-                content_b64 = file_data.get("content", "")
-                if not content_b64:
-                    continue
-                decoded = base64.b64decode(content_b64.replace("\n", "")).decode("utf-8", errors="replace")
-            except Exception as file_exc:
-                print(f"    WARNING: {file_path} fetch failed: {file_exc}")
-                continue
-
-            hook_names = set(hook_re.findall(decoded))
-            # Determine hook_type from context (crude: apply_filters → filter, do_action → action)
-            action_re = re.compile(r"""do_action\s*\(\s*['"]([a-zA-Z0-9_\-]+)['"]""", re.MULTILINE)
-            actions = set(action_re.findall(decoded))
-
-            s2_extracted += len(hook_names)
-
-            for hook_name in hook_names:
-                hook_type = "action" if hook_name in actions else "filter"
-                if not dry_run:
-                    res = c.execute(
-                        """
-                        INSERT OR IGNORE INTO hooks
-                            (name, hook_type, plugin_slug, file_path, source, type)
-                        VALUES (?, ?, NULL, ?, 'native_wp', ?)
-                        """,
-                        (hook_name, hook_type, file_path, hook_type),
-                    )
-                    new_rows["hooks"] += res.rowcount
-                    s2_inserted += res.rowcount
-                else:
-                    ex = c.execute(
-                        "SELECT 1 FROM hooks WHERE name=? AND source='native_wp'", (hook_name,)
-                    ).fetchone()
-                    if ex is None:
-                        new_rows["hooks"] += 1
-                        s2_inserted += 1
-
-            print(f"    {file_path}: {len(hook_names)} hook references found.")
-
-        if not dry_run:
-            conn.commit()
-
         items_per_source[source_2_name] = s2_extracted
-        print(f"  Source 2 done: {s2_extracted} hooks extracted, {s2_inserted} new rows inserted.")
         # Gate success on EXTRACTION count (scraper-health signal), not insertion
         # count. Hooks already in sgs-framework.db from Mode A's cached merge will
-        # INSERT OR IGNORE to rowcount=0 — that's not a failure, that's
+        # INSERT OR IGNORE to rowcount=0 -- that's not a failure, that's
         # idempotency. The real silent gap is the scraper extracting zero hooks
         # (PAT bad, regex broken, files moved, etc.). Refined 2026-05-22 from
         # the earlier council fix that mistakenly gated on insert count.
@@ -1121,7 +1320,6 @@ def _mode_b_refresh_upstream(
                 f"{source_2_name}: scraper extracted 0 hooks from the 5-file subset "
                 f"(all file fetches failed, OR regex matched no do_action/apply_filters)"
             )
-
     except _GithubRateLimitError as exc:
         print(f"  Source 2 FAILED: {exc}")
         sources_failed.append(f"{source_2_name}: {exc}")
@@ -1132,58 +1330,10 @@ def _mode_b_refresh_upstream(
     # --- Source 3: wp-cli/handbook markdown files ---
     source_3_name = "wpcli-handbook"
     try:
-        print("\n[Source 3] wp-cli/handbook markdown commands/ ...")
-        dir_url = "https://api.github.com/repos/wp-cli/handbook/contents/commands"
-        entries = _github_api_get(dir_url, github_token)
-        if not isinstance(entries, list):
-            raise ValueError(f"Expected list from GitHub API, got: {type(entries)}")
-
-        md_files = [e for e in entries if e.get("name", "").endswith(".md")]
-        print(f"  Found {len(md_files)} markdown files.")
-
-        s3_docs = 0
-        for entry in md_files:
-            slug_raw = entry["name"].replace(".md", "")
-            slug = f"wpcli-{slug_raw}"
-            title = slug_raw.replace("-", " ").title()
-            download_url = entry.get("download_url", "")
-
-            content_text = ""
-            if download_url:
-                try:
-                    content_text = _http_fetch(download_url)
-                    # Trim to first 4000 chars to keep DB lean
-                    if len(content_text) > 4000:
-                        content_text = content_text[:4000] + "\n...[truncated]"
-                except Exception:
-                    content_text = f"# {title}\n\nContent fetch failed."
-
-            if not dry_run:
-                res = c.execute(
-                    """
-                    INSERT OR IGNORE INTO docs
-                        (source, slug, title, doc_type, category, content)
-                    VALUES ('native_wp', ?, ?, 'cli-command', 'wpcli', ?)
-                    """,
-                    (slug, title, content_text),
-                )
-                new_rows["docs"] += res.rowcount
-                s3_docs += res.rowcount
-            else:
-                ex = c.execute(
-                    _SELECT_DOC_EXISTS_NATIVE_WP, (slug,)
-                ).fetchone()
-                if ex is None:
-                    new_rows["docs"] += 1
-                    s3_docs += 1
-
-        if not dry_run:
-            conn.commit()
-
-        items_per_source[source_3_name] = len(md_files)
-        print(f"  Source 3 done: {len(md_files)} files, {s3_docs} new doc rows.")
+        items_per_source[source_3_name] = _scrape_source_3_wpcli(
+            c, conn, github_token, new_rows, dry_run
+        )
         sources_succeeded.append(source_3_name)
-
     except _GithubRateLimitError as exc:
         print(f"  Source 3 FAILED: {exc}")
         sources_failed.append(f"{source_3_name}: {exc}")
@@ -1192,82 +1342,13 @@ def _mode_b_refresh_upstream(
         sources_failed.append(f"{source_3_name}: {exc}")
 
     # --- Source 4: developer.wordpress.org/reference/since/<version>.0/ ---
-    # SCRAPER-HEALTH FLOOR: if <30 items found, FAIL with explicit count.
-    # The minimum was originally 100 (calibrated for typical releases) but
-    # WP 7.0 genuinely has only 41 new public API identifiers — a smaller
-    # release. Floor lowered to 30 so the gate still catches a broken
-    # scraper (returns 0 due to selector drift or rate limit) without
-    # false-positiving on small-release pages. Verified empirically
-    # 2026-05-22: both urllib and Playwright return 41 items for WP 7.0,
-    # which is the real count, not a parsing failure.
     source_4_name = "devdocs-since"
-    MINIMUM_SOURCE_4_ITEMS = 30
     try:
-        print(f"\n[Source 4] developer.wordpress.org/reference/since/{wp_version}.0/ ...")
-        since_url = f"https://developer.wordpress.org/reference/since/{wp_version}.0/"
-        html_body = _http_fetch(since_url)
-        identifiers = _parse_since_page(html_body)
-        count = len(identifiers)
-        print(f"  Found {count} API identifiers.")
-
-        if count < MINIMUM_SOURCE_4_ITEMS:
-            # Fallback: the page is JS-rendered — try the Playwright Node script
-            print(
-                f"  urllib returned only {count} items (< {MINIMUM_SOURCE_4_ITEMS}). "
-                f"Page may be JS-rendered. Trying Playwright fallback..."
-            )
-            playwright_html: str | None = None
-            try:
-                playwright_html = _fetch_with_playwright(since_url)
-                fallback_identifiers = _parse_since_page(playwright_html)
-                fallback_count = len(fallback_identifiers)
-                print(f"  Playwright fallback: {fallback_count} identifiers found.")
-                if fallback_count >= MINIMUM_SOURCE_4_ITEMS:
-                    identifiers = fallback_identifiers
-                    count = fallback_count
-            except Exception as pw_exc:
-                print(f"  Playwright fallback FAILED: {pw_exc}")
-
-        if count < MINIMUM_SOURCE_4_ITEMS:
-            # Both urllib and Playwright (if available) yielded < 100 — hard fail
-            msg = (
-                f"Stage 2 Source 4 FAILED: only {count} API identifiers found from "
-                f"{since_url}. Hard minimum is {MINIMUM_SOURCE_4_ITEMS}. "
-                f"Both urllib and Playwright fallback exhausted. "
-                f"Verify the page loads {MINIMUM_SOURCE_4_ITEMS}+ items manually."
-            )
-            print(f"  {msg}")
-            sources_failed.append(f"{source_4_name}: {msg}")
-        else:
-            s4_docs = 0
-            for identifier in identifiers:
-                slug = f"wp-since-{wp_version}-{re.sub(r'[^a-z0-9_-]', '-', identifier.lower())}"
-                if not dry_run:
-                    res = c.execute(
-                        """
-                        INSERT OR IGNORE INTO docs
-                            (source, slug, title, doc_type, category)
-                        VALUES ('native_wp', ?, ?, 'api-reference', ?)
-                        """,
-                        (slug, identifier, f"WP {wp_version} new API"),
-                    )
-                    new_rows["docs"] += res.rowcount
-                    s4_docs += res.rowcount
-                else:
-                    ex = c.execute(
-                        _SELECT_DOC_EXISTS_NATIVE_WP, (slug,)
-                    ).fetchone()
-                    if ex is None:
-                        new_rows["docs"] += 1
-                        s4_docs += 1
-
-            if not dry_run:
-                conn.commit()
-
-            items_per_source[source_4_name] = count
-            print(f"  Source 4 done: {count} identifiers, {s4_docs} new doc rows.")
-            sources_succeeded.append(source_4_name)
-
+        count, _used_pw = _scrape_source_4_since(
+            c, conn, wp_version, new_rows, dry_run
+        )
+        items_per_source[source_4_name] = count
+        sources_succeeded.append(source_4_name)
     except urllib.error.URLError as exc:
         print(f"  Source 4 FAILED: network error — {exc}")
         sources_failed.append(f"{source_4_name}: URLError: {exc}")
@@ -1428,7 +1509,6 @@ def _mode_b_refresh_upstream(
         "last_full_refresh_ts": now_ts if not dry_run else None,
         "dry_run": dry_run,
     }
-
 
 def stage_2_core_gutenberg_cache_refresh(
     conn: sqlite3.Connection,
