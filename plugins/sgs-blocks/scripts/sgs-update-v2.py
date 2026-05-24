@@ -18,15 +18,15 @@ Stages (per .claude/plans/phase-4-sgs-update-rebuild.md):
   9. drift_gate             — warn on MAJOR.MINOR WP version mismatch
 
 Usage:
-    python sgs-update-v2.py [--stage N] [--refresh-upstream] [--dry-run] [--wp-version X.Y]
+    python sgs-update-v2.py [--stage N] [--dry-run] [--wp-version X.Y]
 
-    --stage N          Run only stage N (1-9). Omit to run all stages.
-    --refresh-upstream Stage 2 live network scrape (default reads cached .db files)
+    --stage N          Run only stage N (1-9; stage 3 is retired). Omit to run all.
     --dry-run          Compute row counts without writing to DB or files
     --wp-version X.Y   WP version tag for Stage 2 (default: 7.0)
 """
 
 import argparse
+import base64
 import hashlib
 import json
 import sqlite3
@@ -384,14 +384,15 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
 # Stage 2 — Core/Gutenberg cache refresh
 # Decision 30 — 10 canonical upstream sources.
 #
-# Mode A (default): reads cached ~/.wp-blockmarkup-mcp/blocks.db
-#   + ~/.wp-devdocs-mcp/hooks.db. Checks schema_metadata.last_full_refresh_ts;
-#   if <7 days old, skips entirely. Idempotent: INSERT OR IGNORE throughout.
+# Architecture-staging Phase 1 close-out (decisions.md D56) retired the Mode A
+# (cached-source-DB read) path along with the standalone source DB files. Stage
+# 2 now ALWAYS live-scrapes the 10 canonical sources every invocation; the
+# `--refresh-upstream` CLI flag was removed (the default IS the refresh).
 #
-# Mode B (--refresh-upstream): live network scrape of 10 sources:
+# Sources:
 #   1. WordPress/gutenberg block-library block.json files (GitHub API)
 #   2. WordPress/wordpress-develop PHP hook files (GitHub API)
-#   3. wp-cli/handbook markdown files (GitHub API)
+#   3. wp-cli/handbook markdown files (GitHub API) — replaces retired Stage 3
 #   4. developer.wordpress.org/reference/since/<version>/ (urllib + html.parser)
 #   5. make.wordpress.org/core/<version>-field-guide (urllib)
 #   6-10. developer.wordpress.org/{news,block-editor,themes,plugins,rest-api} (urllib)
@@ -569,316 +570,6 @@ def _fetch_with_playwright(url: str, timeout: int = 60) -> str:
     return result.stdout
 
 
-def _mode_a_read_cached(
-    conn: sqlite3.Connection,
-    dry_run: bool,
-    wp_version: str,
-) -> dict:
-    """Mode A — read cached source DBs and INSERT OR IGNORE into sgs-framework.db.
-
-    Source DBs (~/.wp-blockmarkup-mcp/blocks.db + ~/.wp-devdocs-mcp/hooks.db) were
-    retired on 2026-05-24 (architecture-staging Phase 1) — the canonical data lives
-    in sgs-framework.db now. When the source files are absent, Mode A is a no-op
-    that returns a `cached_current` / `cache_missing` status. Use Mode B
-    (--refresh-upstream) to live-fetch updates from GitHub.
-
-    Checks schema_metadata.last_full_refresh_ts first. If <7 days old, skips.
-    If stale or never set AND source DBs exist, reads them; otherwise no-ops.
-    """
-    blocks_db_path = Path.home() / ".wp-blockmarkup-mcp" / "blocks.db"
-    hooks_db_path = Path.home() / ".wp-devdocs-mcp" / "hooks.db"
-
-    THRESHOLD_DAYS = 7
-
-    # --- Check freshness ---
-    c = conn.cursor()
-    c.execute(
-        "SELECT value FROM schema_metadata WHERE key = 'last_full_refresh_ts'"
-    )
-    row = c.fetchone()
-    last_ts_str: str | None = row[0] if row else None
-
-    if last_ts_str:
-        try:
-            last_ts = datetime.fromisoformat(last_ts_str)
-            # Ensure timezone-aware comparison
-            if last_ts.tzinfo is None:
-                last_ts = last_ts.replace(tzinfo=timezone.utc)
-            now = datetime.now(timezone.utc)
-            age_days = (now - last_ts).total_seconds() / 86400
-            if age_days < THRESHOLD_DAYS:
-                msg = (
-                    f"Stage 2: cached data current ({age_days:.1f} days old, "
-                    f"threshold {THRESHOLD_DAYS} days). Skipping. "
-                    f"Run with --refresh-upstream to force re-scrape."
-                )
-                print(msg)
-                return {
-                    "status": "cached_current",
-                    "age_days": round(age_days, 1),
-                    "last_full_refresh_ts": last_ts_str,
-                    "wp_version_indexed": wp_version,
-                }
-        except ValueError:
-            pass  # Malformed timestamp — fall through to re-read
-
-    # --- Read cached blocks.db ---
-    new_rows: dict[str, int] = {
-        "blocks": 0,
-        "block_attributes": 0,
-        "block_supports": 0,
-        "hooks": 0,
-        "docs": 0,
-        "hooks_dropped_check_constraint": 0,
-    }
-
-    if not blocks_db_path.exists():
-        print(
-            "Stage 2 [Mode A] no-op: source cache absent (retired 2026-05-24). "
-            "sgs-framework.db is the canonical store now. "
-            "Run with --refresh-upstream to live-fetch from GitHub."
-        )
-    else:
-        if dry_run:
-            src = sqlite3.connect(str(blocks_db_path))
-            src.row_factory = sqlite3.Row
-            sc = src.cursor()
-
-            # Count what WOULD be new blocks
-            sc.execute("SELECT block_name FROM blocks")
-            for b in sc.fetchall():
-                ex = c.execute(
-                    _SELECT_BLOCK_EXISTS_NATIVE_WP,
-                    (b["block_name"],),
-                ).fetchone()
-                if ex is None:
-                    new_rows["blocks"] += 1
-
-            sc.execute(
-                "SELECT b.block_name, a.name FROM attributes a JOIN blocks b ON a.block_id=b.id"
-            )
-            for a in sc.fetchall():
-                ex = c.execute(
-                    "SELECT 1 FROM block_attributes WHERE block_slug=? AND attr_name=? AND source='native_wp'",
-                    (a["block_name"], a["name"]),
-                ).fetchone()
-                if ex is None:
-                    new_rows["block_attributes"] += 1
-
-            sc.execute(
-                "SELECT b.block_name, s.feature FROM supports s JOIN blocks b ON s.block_id=b.id"
-            )
-            for s in sc.fetchall():
-                ex = c.execute(
-                    "SELECT 1 FROM block_supports WHERE block_slug=? AND support_name=? AND source='native_wp'",
-                    (s["block_name"], s["feature"]),
-                ).fetchone()
-                if ex is None:
-                    new_rows["block_supports"] += 1
-            src.close()
-        else:
-            src = sqlite3.connect(str(blocks_db_path))
-            src.row_factory = sqlite3.Row
-            sc = src.cursor()
-
-            # INSERT OR IGNORE blocks
-            sc.execute(
-                "SELECT block_name, title, description, category, block_type FROM blocks"
-            )
-            for b in sc.fetchall():
-                res = c.execute(
-                    """
-                    INSERT OR IGNORE INTO blocks
-                        (slug, title, description, category, type, source)
-                    VALUES (?, ?, ?, ?, ?, 'native_wp')
-                    """,
-                    (b["block_name"], b["title"], b["description"],
-                     b["category"], b["block_type"]),
-                )
-                new_rows["blocks"] += res.rowcount
-
-            # INSERT OR IGNORE block_attributes
-            sc.execute(
-                "SELECT b.block_name, a.name, a.type, a.default_val, a.selector "
-                "FROM attributes a JOIN blocks b ON a.block_id = b.id"
-            )
-            for a in sc.fetchall():
-                res = c.execute(
-                    """
-                    INSERT OR IGNORE INTO block_attributes
-                        (block_slug, attr_name, attr_type, default_value, derived_selector, source)
-                    VALUES (?, ?, ?, ?, ?, 'native_wp')
-                    """,
-                    (a["block_name"], a["name"], a["type"],
-                     a["default_val"], a["selector"]),
-                )
-                new_rows["block_attributes"] += res.rowcount
-
-            # INSERT OR IGNORE block_supports
-            sc.execute(
-                "SELECT b.block_name, s.feature, s.config "
-                "FROM supports s JOIN blocks b ON s.block_id = b.id"
-            )
-            for s in sc.fetchall():
-                res = c.execute(
-                    """
-                    INSERT OR IGNORE INTO block_supports
-                        (block_slug, support_name, support_value, source)
-                    VALUES (?, ?, ?, 'native_wp')
-                    """,
-                    (s["block_name"], s["feature"], s["config"]),
-                )
-                new_rows["block_supports"] += res.rowcount
-
-            conn.commit()
-            src.close()
-
-    # --- Read cached hooks.db ---
-    SOURCE_MAP = {
-        1: "native_wp", 2: "native_wp", 3: "native_wp",
-        4: "native_wp", 5: "native_wp", 6: "native_wp",
-        7: "native_wp", 8: "third_party",
-    }
-
-    if not hooks_db_path.exists():
-        print(
-            "Stage 2 [Mode A] no-op (hooks): source cache absent (retired 2026-05-24). "
-            "Run with --refresh-upstream to live-fetch from GitHub."
-        )
-    else:
-        src = sqlite3.connect(str(hooks_db_path))
-        src.row_factory = sqlite3.Row
-        sc = src.cursor()
-
-        # The target hooks table has CHECK(hook_type IN ('action', 'filter')).
-        # Cached hooks.db includes JS hook types ('js_action', 'js_filter') which
-        # fail this constraint — INSERT OR IGNORE silently drops them. Both
-        # dry-run and actual paths must filter on this set so the prediction
-        # matches reality.
-        ALLOWED_HOOK_TYPES = {"action", "filter"}
-
-        if dry_run:
-            # Target hooks table has TWO independent UNIQUE constraints:
-            #   1. (name, source) — separate UNIQUE INDEX idx_hooks_name_source
-            #   2. (name, hook_type) — inline table-level UNIQUE
-            # INSERT OR IGNORE silently drops on EITHER violation. Dedupe by
-            # the union: a row inserts only if both (name, source) and
-            # (name, hook_type) are unique against the target AND we haven't
-            # already queued an insert of the same name+hook_type combo.
-            seen_hooks: set[tuple[str, str]] = set()
-            sc.execute("SELECT name, type, source_id FROM hooks")
-            for h in sc.fetchall():
-                hook_type = h["type"] or ""
-                if hook_type not in ALLOWED_HOOK_TYPES:
-                    new_rows["hooks_dropped_check_constraint"] += 1
-                    continue
-                source_label = SOURCE_MAP.get(h["source_id"], "native_wp")
-                # Within-source dedup on (name, hook_type) — first occurrence wins
-                # (matches the more restrictive of the two UNIQUE constraints).
-                key = (h["name"], hook_type)
-                if key in seen_hooks:
-                    continue
-                seen_hooks.add(key)
-                # Check BOTH UNIQUE constraints against target
-                ex = c.execute(
-                    "SELECT 1 FROM hooks WHERE (name=? AND source=?) OR (name=? AND hook_type=?)",
-                    (h["name"], source_label, h["name"], hook_type),
-                ).fetchone()
-                if ex is None:
-                    new_rows["hooks"] += 1
-
-            seen_docs: set[tuple[str, str]] = set()
-            sc.execute("SELECT slug, source_id FROM docs")
-            for d in sc.fetchall():
-                source_label = SOURCE_MAP.get(d["source_id"], "native_wp")
-                key = (d["slug"], source_label)
-                if key in seen_docs:
-                    continue
-                seen_docs.add(key)
-                ex = c.execute(
-                    "SELECT 1 FROM docs WHERE slug=? AND source=?",
-                    (d["slug"], source_label),
-                ).fetchone()
-                if ex is None:
-                    new_rows["docs"] += 1
-        else:
-            # INSERT OR IGNORE hooks — pre-filter to track dropped count
-            sc.execute(
-                "SELECT name, type, source_id, params, file_path, docblock FROM hooks"
-            )
-            for h in sc.fetchall():
-                hook_type = h["type"] or ""
-                if hook_type not in ALLOWED_HOOK_TYPES:
-                    new_rows["hooks_dropped_check_constraint"] += 1
-                    continue
-                source_label = SOURCE_MAP.get(h["source_id"], "native_wp")
-                res = c.execute(
-                    """
-                    INSERT OR IGNORE INTO hooks
-                        (name, hook_type, plugin_slug, parameters, file_path, source, docblock, type)
-                    VALUES (?, ?, NULL, ?, ?, ?, ?, ?)
-                    """,
-                    (h["name"], hook_type, h["params"],
-                     h["file_path"], source_label, h["docblock"], hook_type),
-                )
-                new_rows["hooks"] += res.rowcount
-
-            # INSERT OR IGNORE docs
-            sc.execute(
-                "SELECT file_path, slug, title, doc_type, category, content, source_id FROM docs"
-            )
-            for d in sc.fetchall():
-                source_label = SOURCE_MAP.get(d["source_id"], "native_wp")
-                res = c.execute(
-                    """
-                    INSERT OR IGNORE INTO docs
-                        (source, file_path, slug, title, doc_type, category, content)
-                    VALUES (?, ?, ?, ?, ?, ?, ?)
-                    """,
-                    (source_label, d["file_path"], d["slug"],
-                     d["title"], d["doc_type"], d["category"], d["content"]),
-                )
-                new_rows["docs"] += res.rowcount
-
-            conn.commit()
-        src.close()
-
-    now_ts = datetime.now(timezone.utc).isoformat()
-
-    # Insert counts only (excluding the diagnostic dropped-by-CHECK counter)
-    insert_counts = {k: v for k, v in new_rows.items() if k != "hooks_dropped_check_constraint"}
-    dropped = new_rows["hooks_dropped_check_constraint"]
-
-    if not dry_run:
-        upsert_metadata(conn, "last_full_refresh_ts", now_ts)
-        upsert_metadata(conn, "wp_version_indexed", wp_version)
-        total_new = sum(insert_counts.values())
-        dropped_note = f" Dropped {dropped} JS hooks (hook_type CHECK constraint)." if dropped else ""
-        if total_new == 0:
-            print(
-                f"Stage 2 [Mode A]: 0 new rows inserted — DB current "
-                f"(all cached rows already present).{dropped_note} wp_version_indexed={wp_version}"
-            )
-        else:
-            print(
-                f"Stage 2 [Mode A]: inserted from cache — {insert_counts}.{dropped_note} "
-                f"last_full_refresh_ts set. wp_version_indexed={wp_version}"
-            )
-    else:
-        dropped_note = f" Dropped {dropped} JS hooks (hook_type CHECK constraint)." if dropped else ""
-        print(
-            f"Stage 2 [Mode A, dry-run]: would insert — {insert_counts}.{dropped_note} "
-            f"last_full_refresh_ts + wp_version_indexed would be set to {wp_version}."
-        )
-
-    return {
-        "status": "cached_read",
-        "wp_version_indexed": wp_version,
-        "new_rows": new_rows,
-        "last_full_refresh_ts": now_ts if not dry_run else None,
-        "dry_run": dry_run,
-    }
-
 
 def _scrape_source_1_gutenberg(
     c: sqlite3.Cursor,
@@ -894,7 +585,6 @@ def _scrape_source_1_gutenberg(
     Returns the number of block directories found (items count for items_per_source).
     Raises on fatal error -- caller catches.
     """
-    import base64 as _base64
 
     print(f"\n[Source 1] WordPress/gutenberg packages/block-library/src/ at v{wp_version}.0 ...")
     ref_tag = f"v{wp_version}.0"
@@ -926,7 +616,7 @@ def _scrape_source_1_gutenberg(
             content_b64 = file_data.get("content", "")
             if not content_b64:
                 continue
-            decoded = _base64.b64decode(content_b64.replace("\n", "")).decode("utf-8", errors="replace")
+            decoded = base64.b64decode(content_b64.replace("\n", "")).decode("utf-8", errors="replace")
             block_data = json.loads(decoded)
         except json.JSONDecodeError:
             continue
@@ -1016,7 +706,6 @@ def _scrape_source_2_hooks(
     Success/fail verdict is the caller's responsibility (check returned count > 0).
     Raises on fatal error -- caller catches.
     """
-    import base64 as _base64
 
     print(f"\n[Source 2] WordPress/wordpress-develop PHP hook files at v{wp_version}.0 ...")
     hook_files = [
@@ -1047,7 +736,7 @@ def _scrape_source_2_hooks(
             content_b64 = file_data.get("content", "")
             if not content_b64:
                 continue
-            decoded = _base64.b64decode(content_b64.replace("\n", "")).decode("utf-8", errors="replace")
+            decoded = base64.b64decode(content_b64.replace("\n", "")).decode("utf-8", errors="replace")
         except Exception as file_exc:
             print(f"    WARNING: {file_path} fetch failed: {file_exc}")
             continue
@@ -1512,185 +1201,38 @@ def _mode_b_refresh_upstream(
 
 def stage_2_core_gutenberg_cache_refresh(
     conn: sqlite3.Connection,
-    refresh_upstream: bool = False,
     wp_version: str = WP_VERSION_DEFAULT,
     dry_run: bool = False,
 ) -> dict:
-    """Core/Gutenberg cache refresh — two modes (Decision 30).
+    """Stage 2 — live-scrape 10 canonical upstream sources (Decision 30).
 
-    Mode A (default, no --refresh-upstream):
-      Reads cached source DBs if present and INSERT OR IGNOREs into sgs-framework.db.
-      Source DBs were retired 2026-05-24 (architecture-staging Phase 1); when absent
-      Mode A is a no-op with an informative status message. Use Mode B for live
-      updates. Checks schema_metadata.last_full_refresh_ts — if <7 days old, skips.
+    Architecture-staging Phase 1 close-out (decisions.md D56) retired the
+    Mode A / Mode B distinction along with the standalone source DB caches.
+    Every `/sgs-update` invocation now hits the canonical sources directly:
 
-    Mode B (--refresh-upstream):
-      Live network scrape of 10 canonical sources from Decision 30.
-      All inserts are INSERT OR IGNORE (idempotent).
-      Source 4 scraper-health floor: <30 items = FAIL with explicit count.
-      After all sources: updates schema_metadata wp_version_indexed + last_full_refresh_ts.
+      1. WordPress/gutenberg block-library `block.json` files (GitHub API)
+      2. WordPress/wordpress-develop PHP hook files (GitHub API)
+      3. wp-cli/handbook commands/ markdown (GitHub API)
+      4. developer.wordpress.org/reference/since/{wp_version}.0/ (+ Playwright fallback)
+      5. make.wordpress.org/core/{wp_version}-field-guide
+      6-10. developer.wordpress.org subpaths (news / block-editor / themes / plugins / rest-api)
 
-    Idempotent: second run (either mode) produces 0 new rows.
+    All inserts are INSERT OR IGNORE (idempotent). After all sources: updates
+    schema_metadata wp_version_indexed + last_full_refresh_ts.
+
+    With GITHUB_PERSONAL_ACCESS_TOKEN set, the GitHub-API sources have a
+    5,000 req/hr limit — effectively unlimited for normal usage.
     """
     ensure_schema_metadata(conn)
-
-    if refresh_upstream:
-        return _mode_b_refresh_upstream(conn, dry_run=dry_run, wp_version=wp_version)
-    else:
-        return _mode_a_read_cached(conn, dry_run=dry_run, wp_version=wp_version)
+    return _mode_b_refresh_upstream(conn, dry_run=dry_run, wp_version=wp_version)
 
 
 # ---------------------------------------------------------------------------
-# Stage 3 — WP-CLI handbook refresh (Step 4.5)
+# Stage 3 — RETIRED (architecture-staging Phase 1 close-out, decisions.md D56)
 #
-# Reads existing docs rows from cached ~/.wp-devdocs-mcp/hooks.db (source_id=6,
-# wp-cli-handbook) where slug LIKE 'commands--%' (the command reference subset)
-# and INSERT OR IGNORE them into sgs-framework.db docs with
-# doc_type='cli-command', source='native_wp'.
-#
-# The live re-fetch path (Mode B Source 3 in Stage 2) handles upstream scraping.
-# Stage 3 is the cache-read path: refresh from the already-indexed cache only.
-#
-# Cross-check: after run, if total cli-command rows < 12, emit a WARNING
-# (not a failure — the threshold is a soft signal, not a gate).
-#
-# Idempotent: second run inserts 0 rows (INSERT OR IGNORE throughout).
+# WP-CLI handbook content is now refreshed by Stage 2 Source 3 directly.
+# The orchestrator prints a tombstone line and skips this stage number.
 # ---------------------------------------------------------------------------
-
-# Minimum expected WP-CLI command rows after a successful Stage 3 run
-_WPCLI_MIN_EXPECTED = 12
-
-
-def stage_3_wpcli_handbook_refresh(
-    conn: sqlite3.Connection, dry_run: bool = False
-) -> dict:
-    """Refresh docs table with WP-CLI command reference content from the cached
-    ~/.wp-devdocs-mcp/hooks.db (source_id=6, wp-cli-handbook).
-
-    Two-step strategy:
-      1. INSERT OR IGNORE — adds any command slugs not yet in sgs-framework.db.
-      2. UPDATE doc_type — ensures all commands-- rows carry doc_type='cli-command'.
-         Stage 2 Mode A imports hooks.db docs verbatim with their original doc_types
-         (e.g. 'reference'); this step corrects that for the WP-CLI command subset.
-         Both steps are idempotent: a second run produces no effective changes.
-
-    Returns: {"new_rows": int, "reclassified": int, "total_cli_commands": int, "dry_run": bool}
-    """
-    hooks_db_path = Path.home() / ".wp-devdocs-mcp" / "hooks.db"
-    c = conn.cursor()
-
-    if not hooks_db_path.exists():
-        print(
-            "Stage 3 no-op: hooks.db source cache absent (retired 2026-05-24). "
-            "sgs-framework.db is the canonical docs store. "
-            "Run with --refresh-upstream to live-fetch WP-CLI handbook updates."
-        )
-        total_cli = c.execute(
-            "SELECT COUNT(*) FROM docs WHERE doc_type='cli-command' AND source='native_wp'"
-        ).fetchone()[0]
-        return {"new_rows": 0, "reclassified": 0, "total_cli_commands": total_cli,
-                "dry_run": dry_run, "status": "source_cache_retired"}
-
-    # Open the cached hooks.db
-    src = sqlite3.connect(str(hooks_db_path))
-    src.row_factory = sqlite3.Row
-    sc = src.cursor()
-
-    # Fetch all WP-CLI command entries (slug LIKE 'commands--%', source_id=6)
-    sc.execute(
-        "SELECT slug, title, doc_type, category, content, description "
-        "FROM docs WHERE source_id=6 AND slug LIKE 'commands--%'"
-    )
-    cached_rows = sc.fetchall()
-    src.close()
-
-    new_rows = 0
-    reclassified = 0
-
-    for row in cached_rows:
-        slug = row["slug"]
-        title = row["title"] or slug.replace("commands--", "wp ").replace("-", " ")
-        category = row["category"] or "wpcli"
-        # Merge description into content if both present
-        content_parts = []
-        if row["description"]:
-            content_parts.append(row["description"])
-        if row["content"]:
-            content_parts.append(row["content"])
-        content = "\n\n".join(content_parts) if content_parts else ""
-        # Trim to keep DB lean
-        if len(content) > 4000:
-            content = content[:4000] + "\n...[truncated]"
-
-        if dry_run:
-            # Step 1 dry-run: would this be a new insert?
-            ex = c.execute(
-                "SELECT doc_type FROM docs WHERE slug=? AND source='native_wp'",
-                (slug,),
-            ).fetchone()
-            if ex is None:
-                new_rows += 1
-            elif ex[0] != "cli-command":
-                # Step 2 dry-run: would this be reclassified?
-                reclassified += 1
-        else:
-            # Step 1: INSERT OR IGNORE — adds rows not yet in DB
-            res = c.execute(
-                """
-                INSERT OR IGNORE INTO docs
-                    (source, slug, title, doc_type, category, content)
-                VALUES ('native_wp', ?, ?, 'cli-command', ?, ?)
-                """,
-                (slug, title, category, content),
-            )
-            new_rows += res.rowcount
-
-            # Step 2: UPDATE doc_type for rows that were already present but
-            # imported with the wrong doc_type (e.g. 'reference' from Stage 2).
-            if res.rowcount == 0:
-                res2 = c.execute(
-                    """
-                    UPDATE docs SET doc_type='cli-command'
-                    WHERE slug=? AND source='native_wp' AND doc_type != 'cli-command'
-                    """,
-                    (slug,),
-                )
-                reclassified += res2.rowcount
-
-    if not dry_run:
-        conn.commit()
-
-    # Cross-check: total cli-command rows after run
-    total_cli = c.execute(
-        "SELECT COUNT(*) FROM docs WHERE doc_type='cli-command' AND source='native_wp'"
-    ).fetchone()[0]
-
-    if dry_run:
-        print(
-            f"Stage 3 [dry-run]: {len(cached_rows)} candidates from hooks.db. "
-            f"Would insert {new_rows} new rows, reclassify {reclassified} existing rows. "
-            f"Current total cli-command rows: {total_cli}."
-        )
-    else:
-        print(
-            f"Stage 3: {len(cached_rows)} candidates from hooks.db. "
-            f"Inserted: {new_rows} new rows, reclassified: {reclassified} existing rows. "
-            f"Total cli-command rows in DB: {total_cli}."
-        )
-
-    if total_cli < _WPCLI_MIN_EXPECTED and not dry_run:
-        print(
-            f"Stage 3 WARNING: only {total_cli} CLI commands indexed after run; "
-            f"expected >={_WPCLI_MIN_EXPECTED}. "
-            f"Consider running --refresh-upstream to re-scrape from GitHub."
-        )
-
-    return {
-        "new_rows": new_rows,
-        "reclassified": reclassified,
-        "total_cli_commands": total_cli,
-        "dry_run": dry_run,
-    }
 
 
 # ---------------------------------------------------------------------------
@@ -2169,7 +1711,8 @@ def _match_slot_to_block(cursor, normalised: str) -> tuple:
     if len(prefix_results) == 1 and len(normalised) >= 4:
         return ("medium-prefix", prefix_results[0][0], [])
     if len(prefix_results) > 1:
-        return ("low-ambiguous-prefix", None, [r[0] for r in prefix_results[:5]])
+        # Return full list — coordinator slices for display (consistency with contains branch).
+        return ("low-ambiguous-prefix", None, [r[0] for r in prefix_results])
 
     # Tier 3: contains match
     contains_results = cursor.execute(
@@ -2296,8 +1839,10 @@ def stage_5_slot_synonym_auto_seed(
             manual_review += 1
 
         elif confidence == "low-ambiguous-prefix":
+            # Display up to 5 candidates — preserves original behaviour (the helper now
+            # returns the full list so the helper's API is uniform across both ambiguous tiers).
             low_lines.append(
-                f"- slot='{canonical_slot}' (multiple prefix matches: {', '.join(candidates)})"
+                f"- slot='{canonical_slot}' (multiple prefix matches: {', '.join(candidates[:5])})"
             )
             no_match += 1
 
@@ -2741,7 +2286,7 @@ def stage_9_drift_gate(
         f"DRIFT DETECTED: Site is WP {site_version_raw} "
         f"(MAJOR.MINOR {site_major_minor}) but DB indexed for WP {db_indexed_raw} "
         f"(MAJOR.MINOR {db_major_minor}). "
-        "Run /sgs-update --refresh-upstream before deploying knowledge-dependent features."
+        "Run /sgs-update (Stage 2 live-scrapes upstream) before deploying knowledge-dependent features."
     )
     print(f"\n⚠  Stage 9 [drift_detected]: {warning}\n")
     return {
@@ -2767,11 +2312,6 @@ def main() -> None:
         choices=range(1, 10),
         metavar="N",
         help="Run a single stage only (1-9). Omit to run all stages.",
-    )
-    parser.add_argument(
-        "--refresh-upstream",
-        action="store_true",
-        help="Stage 2 live network scrape (default reads cached .db files)",
     )
     parser.add_argument(
         "--dry-run",
@@ -2807,12 +2347,15 @@ def main() -> None:
         elif stage_num == 2:
             results[2] = stage_2_core_gutenberg_cache_refresh(
                 conn,
-                refresh_upstream=args.refresh_upstream,
                 wp_version=args.wp_version,
                 dry_run=args.dry_run,
             )
         elif stage_num == 3:
-            results[3] = stage_3_wpcli_handbook_refresh(conn, dry_run=args.dry_run)
+            print(
+                "Stage 3 retired (architecture-staging Phase 1 close-out, decisions.md D56). "
+                "WP-CLI handbook refresh now lives in Stage 2 Source 3. Skipping."
+            )
+            results[3] = {"status": "retired", "dry_run": args.dry_run}
         elif stage_num == 4:
             results[4] = stage_4_style_variation_sync(conn, dry_run=args.dry_run)
         elif stage_num == 5:

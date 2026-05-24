@@ -1140,7 +1140,7 @@ Added 2026-05-19 in response to scattered-info findability gap; supersedes ad-ho
 |----|------|--------|---------|------------|
 | **sgs-framework.db** (canonical SGS knowledge) | `~/.claude/skills/sgs-wp-engine/sgs-framework.db` AND mirrored at `~/.agents/skills/sgs-wp-engine/sgs-framework.db` (DUAL — always write both) | 25 | Block schemas, attribute catalogue, slot vocab, supports, patterns, hooks, gotchas, deploy steps | Every clone-pipeline stage (R) + `/sgs-update` (R+W) |
 | **uimax.db** (cross-platform design intelligence) | `~/.agents/skills/ui-ux-pro-max/scripts/ui-ux-pro-max.db` | 48 | Naming conventions, Rosetta Stone equivalents, design tokens, animation library, component libraries (Radix/shadcn/etc.), recognition log, mood boards | Stage 9 (W — gap-writers), +REGISTER (W), `/sgs-update` Stage 8 (mirror) |
-| (3rd party reference) **core/blocks.db** | `~/.wp-blockmarkup-mcp/blocks.db` | 7 | Verified WP-core block schemas + markup examples | `/wp-blocks` CLI only |
+| (core WP reference) **native_wp rows in sgs-framework.db** | same `sgs-framework.db` as above, filter by `source='native_wp'` (architecture-staging Phase 1 close-out 2026-05-24 — see decisions.md D56) | n/a (rows mixed into the main tables) | Verified WP-core block schemas + 475 attrs + 819 supports + 122 variations + 331 markup examples | `/wp-blocks` CLI only |
 
 **Canonical schema dump (run this before any "missing column" claim):**
 

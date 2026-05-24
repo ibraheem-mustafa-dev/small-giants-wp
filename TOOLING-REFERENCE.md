@@ -615,8 +615,8 @@ Built 2026-04-04 to reduce MCP schema-registration token cost. All live in `C:\U
 
 | CLI | Replaces | Data source | Slash command |
 |-----|----------|-------------|---------------|
-| `wp-blocks.py` | `wp-blockmarkup` + `sgs-blockmarkup` MCPs | `~/.wp-blockmarkup-mcp/blocks.db` + `~/.agents/skills/sgs-wp-engine/sgs-framework.db` | `/wp-blocks` |
-| `wp-docs.py` | `wp-devdocs` MCP | `~/.wp-devdocs-mcp/hooks.db` (7,283 hooks / 1,150 docs / 523 APIs / 106 blocks) | `/wp-hooks` |
+| `wp-blocks.py` | `wp-blockmarkup` + `sgs-blockmarkup` MCPs | `~/.agents/skills/sgs-wp-engine/sgs-framework.db` — filter rows by `source='native_wp'` (121 core blocks, 475 attrs, 819 supports, 122 variations, 331 markup examples) or `source='sgs'` (73 SGS blocks). Architecture-staging Phase 1 close-out — see decisions.md D56. | `/wp-blocks` |
+| `wp-docs.py` | `wp-devdocs` MCP | `~/.agents/skills/sgs-wp-engine/sgs-framework.db` — `hooks` table (2,775 native + 2,633 third_party + 13 sgs) and `docs` table (1,142 native_wp + 16 sgs). Architecture-staging Phase 1 close-out — see decisions.md D56. | `/wp-hooks` |
 | `a11y-audit.py` | `a11y-accessibility` MCP | Playwright + axe-core via CDN | `/a11y-audit` |
 
 ### The 7 Novel Tools (new capabilities, not replacements)

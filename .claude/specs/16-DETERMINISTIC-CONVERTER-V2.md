@@ -821,14 +821,11 @@ Full evidence: `reports/2026-05-20-pipeline-root-gap-council/real-path-synthesis
 
 > Per `.claude/plans/2026-05-21-architecture-staging.md` §6.1 — Decisions 1, 2, 11.
 
-Today three separate databases hold different parts of the WP + SGS knowledge surface:
-- `wp-blockmarkup-mcp`'s `blocks.db` — core block schemas, variations, supports, markup examples
-- `wp-devdocs-mcp`'s `hooks.db` — 7,283 WP hooks + 1,150 docs pages
-- `sgs-wp-engine`'s `sgs-framework.db` — SGS blocks, attributes, tokens, patterns, slot synonyms
+**Status: CLOSED 2026-05-24.** Originally three separate databases held different parts of the WP + SGS knowledge surface; the consolidation shipped in architecture-staging Phase 1 close-out (see decisions.md D56). Today the canonical store is a single database: `~/.agents/skills/sgs-wp-engine/sgs-framework.db`. Rows in `blocks`, `block_attributes`, `block_supports`, `variations`, `markup_examples`, `hooks`, and `docs` carry a `source` column with values `sgs`, `native_wp`, or `third_party` for the relevant tables.
 
-**Decision 1:** Add `source` column to `blocks`, `block_attributes`, and `block_supports` (values: `sgs`, `native_wp`, `third_party`). Import all `blocks.db` rows + all `hooks.db` hooks and docs into `sgs-framework.db`. After Phase 1 lands, every skill queries ONE database.
+**Decision 1 [SHIPPED]:** `source` column added to `blocks`, `block_attributes`, `block_supports`, `variations`, `markup_examples`, `hooks`, `docs` (values: `sgs`, `native_wp`, `third_party`). Every skill queries ONE database.
 
-**Decision 2:** Extend the `docs` table with `doc_type='cli-command'`. Seed from (a) Spec 19 SGS CLI Commands, (b) WP-CLI handbook content from `hooks.db`, (c) hand-curated SGS pipeline commands. Reuses existing schema rather than adding a new `cli_commands` table.
+**Decision 2 [SHIPPED]:** `docs` table carries `doc_type='cli-command'` for WP-CLI commands, seeded from (a) Spec 19 SGS CLI Commands, (b) WP-CLI handbook scrape via Mode B Source 3, (c) hand-curated SGS pipeline commands. No separate `cli_commands` table.
 
 **Decision 11:** Add `indexed_files` SGS tracking (`mtime` + `content_hash` per SGS `block.json` + style file) to enable incremental `/sgs-update` scans instead of full re-walks.
 
@@ -886,7 +883,7 @@ Full research report: `.claude/reports/2026-05-21-pattern-overrides-research.md`
 
 > Per `.claude/plans/2026-05-21-architecture-staging.md` §6.1 — Decision 13, with completeness assurance from Decision 30.
 
-**Decision 13:** Rebuild `/sgs-update` from 4 stages to 9 stages (Phase 4). Includes porting `wp-blockmarkup-mcp` + `wp-devdocs-mcp` scraping logic into `/sgs-update --refresh-upstream` (the MCPs are deleted; only their cached `.db` files remain). The new scraper walks canonical sources and re-populates the merged tables, pinned to WP 7.0 tag.
+**Decision 13 [SHIPPED]:** `/sgs-update` rebuilt from 4 stages to 9 stages (Phase 4). All upstream scraping logic now lives inside `/sgs-update --refresh-upstream` (Mode B); the legacy source DBs + their MCP servers have been retired. Mode B walks 10 canonical sources and re-populates the merged tables, pinned to the active WP version tag.
 
 **9-stage holistic refresh:**
 
