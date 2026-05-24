@@ -2,7 +2,7 @@
 doc_type: next-session-prompt
 project: small-giants-wp
 session_tag: small-giants-wp-2026-05-25-step-1.7-g3-slot-list-visual-extension
-generated: 2026-05-24
+generated: 2026-05-25
 parent_session: small-giants-wp-2026-05-24-bem-canonical-walker-stage4-wiring
 primary_goal: "Ship Step 1.7 (G3 slot_list visual extension via property_suffixes) — the highest-leverage move to close the +30% pixel-diff regression on featured-product / ingredients-section. The 2026-05-24 commit (e3cd1a04) landed the data-layer + BEM-canonical walker foundation; this session lifts visual/structural slots (backgroundImage, overlayColour, minHeight, gridTemplateColumns, etc.) into typed attrs on the new richer skeleton."
 ---
@@ -90,8 +90,8 @@ Drift between spec and implementation is a real failure mode (Spec 16 §12.6 dec
 
 ## Mandatory READING (in order, before any code work)
 
-1. `.claude/handoff.md` — 2026-05-24 session summary + systematic-debugging retrospective + 6 binding rules (above)
-2. `.claude/plans/2026-05-24-phase-1-structural-recovery.md` — Phase 1 plan + "What ACTUALLY shipped" section + F1+F2 follow-on items at end
+1. `.claude/handoff.md` — 2026-05-24 session summary + systematic-debugging retrospective + 6 binding rules (above) + **doc-op programme section added 2026-05-25** covering 17 canonical doc-type templates + docscore auto-hook (this session will get doc-edit advisories automatically)
+2. `.claude/plans/2026-05-24-phase-1-structural-recovery.md` — Phase 1 plan + "What ACTUALLY shipped" section + F1+F2 follow-on items at end (note: pending Pre-conditions checklist + Parking lot sections now present per new phase-plan template)
 3. `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` — §14.3 (G3 specific gap) + §15 (status update second-pass) + §12.3 (canonical slot vocabulary including new quote row)
 4. `.claude/specs/00-naming-conventions.md` §3.1 — BEM-as-canonical recognition rule (NEW)
 5. `pipeline-state/mamas-munches-homepage-2026-05-24-122653/` — read `summary.log`, `match.json`, `stage-11-pixel-diff.json`, `convert-trace-b4.jsonl` (featured-product), `convert-trace-b6.jsonl` (ingredients-section), `leftover-buckets.json`
@@ -129,6 +129,7 @@ After Phase 1 closes: Phase 1 follow-on F1 (ARRAY_LIFT_PATTERNS full migration) 
 | Playwright MCP | Stage 11 + live-page DOM verification for G1 (CTAs present in `header.sgs-hero`) |
 | `python ~/.claude/hooks/wp-blocks.py dump` | **MANDATORY before any "missing X" claim or "needs new column/table" proposal** |
 | `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py` | DB queries |
+| `python ~/.agents/skills/shared-references/docscore.py <path>` | Score any `.claude/`, `specs/`, or `plans/` doc on demand (auto-runs on every Write/Edit via `docscore-on-doc-edit` PostToolUse hook since 2026-05-25 — silent on pass; stderr advisory < 90% A-) |
 
 ## Dispatch bindings (MANDATORY — per `feedback_dispatched_agents_no_commit_authority.md`)
 

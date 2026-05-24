@@ -6,7 +6,7 @@
 
 **Architectural theme of this commit (D48–D54):** BEM is the canonical signal for block recognition. HTML tag is rendering shape only. Walker code stays universal; data layer drives recognition. Adding new block recognition = adding DB rows, not editing walker code.
 
-**Steps 1.6 / 1.7 / 1.8 / 1.9 / 1.10 / 1.11 of the Phase 1 plan remain TODO.** Phase 1 follow-on items F1 + F2 appended at end of `phase-1-structural-recovery.md`.
+**Steps 1.6 / 1.7 / 1.8 / 1.9 / 1.10 / 1.11 of the Phase 1 plan remain pending.** Phase 1 follow-on items F1 + F2 appended at end of `phase-1-structural-recovery.md`.
 
 ## Completed this session
 
@@ -101,7 +101,7 @@ The 6 binding rules above are embedded as MANDATORY pre-action checks in `.claud
 
 - **Branch:** main at `e3cd1a04` — pushed to GitHub
 - **Working tree:** clean (commit + push confirmed)
-- **Active phase:** Phase 1 second pass shipped uncommitted-then-committed. Steps 1.6 / 1.7 / 1.8 / 1.9 / 1.10 / 1.11 of the Phase 1 plan remain TODO.
+- **Active phase:** Phase 1 second pass shipped uncommitted-then-committed. Steps 1.6 / 1.7 / 1.8 / 1.9 / 1.10 / 1.11 of the Phase 1 plan remain pending.
 - **Pixel-diff baseline for next session:** `pipeline-state/mamas-munches-homepage-2026-05-24-122653/stage-11-pixel-diff.json` (mean 73.9%)
 
 ## Captured lessons (durable corrections in CC auto-memory)
@@ -112,7 +112,7 @@ The 6 binding rules above are embedded as MANDATORY pre-action checks in `.claud
 - `feedback_header_footer_site_suffix_naming_convention.md` — per-site headers/footers MUST be `sgs/header-<client>` / `sgs/footer-<client>` shape
 - `feedback_dispatched_agents_no_commit_authority.md` — agents return uncommitted artefacts; main thread + Bean decide commits
 
-## Files modified this session
+## Files modified (this session)
 
 | File | What changed |
 |---|---|
@@ -149,6 +149,47 @@ The 6 binding rules above are embedded as MANDATORY pre-action checks in `.claud
 7. **Phase 1 follow-on F1** — ARRAY_LIFT_PATTERNS full migration to universal extraction (after Step 1.7 lands the visual slot extension that 1e-B needs).
 8. **Phase 1 follow-on F2** — 9 remaining NULL-canonical array attrs (vocab additions OR new canonicals OR design decisions).
 9. **Phase 2 — Header + footer specialised cloner** (after Phase 1 closes).
+
+## Doc-op programme — added 2026-05-25 (covers 2026-05-24 execution + 2026-05-25 standards close)
+
+The full doc-op programme ran across two sessions (parallel to the BEM-canonical work above):
+- 2026-05-24 execution session — Phases 1-5 + 6c + 7 + 12 + 13 initial
+- 2026-05-25 continuation session — Phases 6a + 6b + 9 + 10 + 13 expanded + back-door close + skill alignment + plan templates + qc-council remediation + adoption surfaces
+
+Total: 21+ commits across the programme. Original handoff trio archived to `.claude/memory/handoff-doc-op-2026-05-24-25.md` + `.claude/memory/next-session-prompt-doc-op-2026-05-24-25.md` (containing the granular per-task detail).
+
+### What shipped (high-level)
+
+- **parking.md restructured** — 1,914 lines / 158 entries → ~91 active entries with 6 stable taxonomy buckets + canonical `**Status:**` field (OPEN/PARTIAL/BLOCKED/DEFERRED) + slug-uniqueness gate in `/handoff`
+- **mistakes.md keyword-stub migration** — 1,013 lines → 179 lines / 30 active stubs linking to feedback_*.md + blub.db; `/capture-lesson` updated to write the new format
+- **decisions.md compressed** — 1,398 lines → 296 lines / 62 active D-entries (D-id + ≤3 body lines + commit SHA)
+- **Spec relocation (Phase 9)** — 33 → 19 numbered specs in `.claude/specs/`; comparator reports → `reports/`; legacy → `plans/archive/`; cross-repo specs → `~/.claude/specs/`
+- **Heavy doc splits (Phase 10)** — architecture.md 2,101 → 163 lines + new feature-audit (1,074) + new dev-setup.md (592); cloning-pipeline-flow.md 1,757 → 123 overview + new cloning-pipeline-stages.md (827); CLAUDE.md 73 → 40 lines Karpathy manifest-style; plan.md 200 → 14 line stub; docs-registry.yaml 435 → 254 lines
+- **17 canonical doc-type templates** in `~/.agents/skills/shared-references/doc-templates/` (added `archived-plan`, `dev-setup`, `reference`, `spec`, `strategic-plan`, `phase-plan` to the original 11)
+- **docscore.py** — new auto-detect (filename + parent-dir + frontmatter doc_type with filename_glob + required_dir constraints to close self-declaration back-door); 3 new structural checks (U5 dead-links, X1 registry-resolves, X5 MEMORY.md size); spec/plan/claude-md-specific checks; cognitive-complexity refactor (10 SonarLint warnings closed; behaviour preserved); `~/.claude/hooks/docscore-on-doc-edit.py` PostToolUse hook auto-runs docscore on every in-scope edit (silent on pass, stderr advisory < 90% A-)
+- **17 decisions logged** (D55-D68) — covers DB retirement, parking restructure, spec relocation, retention TTL, /docscore rule integration, plan templates, hook, adoption surfaces, /qc-council remediation
+- **Adoption surfaces propagated** — `~/.claude/CLAUDE.md` (global) + `<project-root>/CLAUDE.md` + `~/.claude/commands/handoff.md` (new Gate 4.6 docscore check) + `~/.claude/skills/autopilot/SKILL.md` (preload templates on plan-keyword opening messages) + 5 doc-touching skills aligned (spec-writer, capture-lesson, phase-planner, project-init, project-consolidate, strategic-plan)
+- **Research notes**: `~/.openclaw/workspace/memory/research/2026-05-24-spec-docs-and-karpathy-manifest-best-practice.md` + `~/.openclaw/workspace/memory/research/2026-05-24-strategic-plan-and-phase-plan-best-practice.md`
+
+### Empirical final state
+
+**15/15 in-scope docs at 100% Grade A docscore** (CLAUDE.md, parking, mistakes, decisions, dev-setup, cloning-pipeline-stages, 2 specs, 2 archived plans, 5 active plans). Hook in place to keep them there.
+
+### Doc-op decisions for cross-reference
+
+- D55 — block_compositions table merge
+- D56 — source-DB retirement (blocks.db + hooks.db)
+- D57 — parking.md formatting v2 (6 taxonomy buckets + Status enum)
+- D58 — spec relocation
+- D59 — per-doc-type retention TTL
+- D60 — Phase 13 expanded (U5 + X1 + X5 + 4 templates)
+- D62 — doc_type self-declaration back-door closed
+- D63 — 7 doc-touching skills aligned
+- D64 — docscore.py technical debt closed (10 SonarLint warnings)
+- D65 — strategic-plan + phase-plan templates (merged from skill spec + research)
+- D66 — PostToolUse hook docscore-on-doc-edit
+- D67 — adoption surface updates (global + project + handoff + autopilot)
+- D68 — /qc-council remediation on plan templates (3 fixes)
 
 ## Next Session Prompt
 
