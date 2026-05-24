@@ -1,24 +1,6 @@
 # docs-registry.yaml — authoritative list of project-tracked docs.
-# Walked by /handoff Gate 4.5 on every session close + by autopilot
-# session-init for context preload. Keep this list LEAN — only docs
-# that are load-bearing for session resume, active reference, or
-# append-only history. Absorbed docs / archived plans / non-doc
-# artefacts (hooks, secrets) do NOT belong here.
-#
-# Trim history:
-# - 2026-05-21: trimmed 28 → 17 entries (Bean directive). Removed
-#   4 absorbed docs (tooling-map.md + skills-commands-map.md +
-#   db-tables-map.md + specs/15-...md), 2 historical plans
-#   (spec-15-master-execution-plan + phase-7-spec-16-converter-
-#   rollout), 2 gitignored secrets files, 4 enforcement hooks
-#   (Python, not docs — hook lifecycle ≠ doc lifecycle). Sibling
-#   .md version retired same session (yaml is readable as-is).
-# - 2026-05-22: housekeeping pass. Archived 10 completed phase plans
-#   to plans/archive/. Moved handoff-track-b.md → memory/.
-#   Deleted obsolete next-session-prompt-B.md (5a + 5b shipped).
-#   specs/README.md repopulated with full inventory. No registry
-#   entries added or removed — the existing 17 canonical entries
-#   continue to cover the live load-bearing surface.
+# Walked by /handoff Gate 4.5 + autopilot session-init for context preload.
+# Trim history in git log (`git log --follow .claude/docs-registry.yaml`).
 
 generated: 2026-05-15
 last_trimmed: 2026-05-21

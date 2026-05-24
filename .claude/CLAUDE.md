@@ -23,11 +23,6 @@ This file is the entry point for the working area — what's where, in canonical
 | Reports | `reports/` | Generated audit / QC / lifecycle reports |
 | Scratch | `scratch/` | Ephemeral working notes |
 | Memory | `memory/` | Archived handoffs + consolidation receipts |
-| Subproject registry | `subprojects.md` | Active subprojects (Indus Foods etc.) |
-
-## Subprojects
-
-See `subprojects.md`.
 
 ## Quickstart for new tools / agents
 
