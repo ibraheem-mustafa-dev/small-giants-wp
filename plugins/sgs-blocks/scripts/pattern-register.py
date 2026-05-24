@@ -403,8 +403,17 @@ def _insert_block_compositions(
     dry_run: bool,
 ) -> None:
     """
-    INSERT rows into `block_compositions` for each detected composition.
-    The classify step may return a list of dicts or a list of slug strings.
+    UPDATE `patterns.block_composition` JSON column for the given pattern.
+
+    Migration note (2026-05-24): the previous `block_compositions` table was
+    merged into `patterns.block_composition` (JSON object). This function now
+    composes a JSON payload and UPDATEs the pattern row in-place rather than
+    INSERTing into the dropped table.
+
+    Schema of the JSON payload:
+      { "name": str, "block_slugs": [...], "frequency": int, "industry": str,
+        "page_type": str, "description": str, "migrated_from": str,
+        "migrated_at": str }
     """
     raw = classification.get("block_composition", [])
     if not raw:
@@ -418,35 +427,49 @@ def _insert_block_compositions(
         elif isinstance(item, dict):
             compositions.append(item)
 
-    insert_sql = (
-        "INSERT INTO block_compositions "
-        "(composition_name, block_slugs, frequency, industry, page_type, "
-        " description, auto_pattern_slug) "
-        "VALUES (?, ?, ?, ?, ?, ?, ?)"
+    if not compositions:
+        return
+
+    # When multiple compositions classify under one pattern, fold them all
+    # into a single JSON payload on patterns.block_composition (a JSON array
+    # of composition objects, OR a single object if there's exactly one).
+    payloads = []
+    for comp in compositions:
+        block_slugs = comp.get("block_slugs", "")
+        if isinstance(block_slugs, str):
+            try:
+                block_slugs = json.loads(block_slugs)
+            except (ValueError, TypeError):
+                block_slugs = [block_slugs] if block_slugs else []
+        payload = {
+            "name": comp.get("composition_name", slug),
+            "block_slugs": block_slugs,
+            "frequency": comp.get("frequency", 1),
+            "industry": comp.get("industry", classification.get("industry", "general")),
+            "page_type": comp.get("page_type", ""),
+            "description": comp.get("description", ""),
+            "migrated_from": "block_compositions",
+            "migrated_at": "2026-05-24",
+        }
+        payloads.append(payload)
+
+    composition_json = json.dumps(
+        payloads[0] if len(payloads) == 1 else payloads,
+        ensure_ascii=False,
     )
 
-    for comp in compositions:
-        comp_name = comp.get("composition_name", slug)
-        block_slugs = comp.get("block_slugs", "")
-        if isinstance(block_slugs, list):
-            block_slugs = json.dumps(block_slugs)
-        frequency = comp.get("frequency", 1)
-        industry = comp.get("industry", classification.get("industry", "general"))
-        page_type = comp.get("page_type", "")
-        description = comp.get("description", "")
-        params = (comp_name, block_slugs, frequency, industry, page_type, description, slug)
-
-        if dry_run:
-            preview = insert_sql
-            for p in params:
-                preview = preview.replace("?", repr(p), 1)
-            print(f"[dry-run] block_compositions INSERT:\n  {preview}\n")
-        else:
-            cur = con.cursor()
-            cur.execute(insert_sql, params)
-    if not dry_run:
+    if dry_run:
+        print(f"[dry-run] patterns.block_composition UPDATE for '{slug}':\n  {composition_json[:200]}{'...' if len(composition_json) > 200 else ''}\n")
+    else:
+        cur = con.cursor()
+        cur.execute(
+            "UPDATE patterns SET block_composition = ? WHERE slug = ?",
+            (composition_json, slug),
+        )
+        if cur.rowcount == 0:
+            print(f"[warn] pattern '{slug}' not found in patterns table — composition not stored")
         con.commit()
-        print(f"[ok] block_compositions rows inserted for '{slug}'")
+        print(f"[ok] patterns.block_composition updated for '{slug}'")
 
 
 # ---------------------------------------------------------------------------

@@ -99,52 +99,59 @@ def upsert(
     refresh_existing: bool,
     dry_run: bool,
 ) -> str:
-    """Insert if absent, optionally refresh content if present.
+    """Upsert composition data into patterns.block_composition JSON column.
 
-    Returns 'inserted' / 'updated' / 'unchanged' / 'skipped-existing'.
+    Migration note (2026-05-24): the previous `block_compositions` table was
+    merged into `patterns.block_composition` (JSON column). This function now
+    updates that JSON column on the matching pattern row rather than
+    INSERTing into the dropped table.
+
+    Returns 'inserted' / 'updated' / 'unchanged' / 'skipped-existing' /
+    'skipped-no-pattern'.
     """
+    slug = info["auto_pattern_slug"]
     cur = conn.execute(
-        "SELECT id, block_slugs, composition_name, description "
-        "FROM block_compositions WHERE auto_pattern_slug = ?",
-        (info["auto_pattern_slug"],),
+        "SELECT block_composition FROM patterns WHERE slug = ?",
+        (slug,),
     )
-    existing = cur.fetchone()
-    new_block_slugs_json = json.dumps(info["block_slugs"])
+    pattern_row = cur.fetchone()
 
-    if existing is None:
+    # If no pattern exists with that slug, skip — block_composition is a
+    # column ON patterns, so the pattern row must exist first. The pattern
+    # gets registered by pattern-register.py; this script only enriches.
+    if pattern_row is None:
+        return "skipped-no-pattern"
+
+    existing_composition = pattern_row[0]
+    new_payload = {
+        "name": info["composition_name"],
+        "block_slugs": info["block_slugs"],
+        "description": info["description"],
+        "migrated_from": "block_compositions",
+        "migrated_at": "2026-05-24",
+    }
+    new_json = json.dumps(new_payload, ensure_ascii=False)
+
+    if existing_composition is None:
         if dry_run:
             return "inserted"
         conn.execute(
-            "INSERT INTO block_compositions "
-            "(composition_name, block_slugs, description, auto_pattern_slug) "
-            "VALUES (?, ?, ?, ?)",
-            (
-                info["composition_name"],
-                new_block_slugs_json,
-                info["description"],
-                info["auto_pattern_slug"],
-            ),
+            "UPDATE patterns SET block_composition = ? WHERE slug = ?",
+            (new_json, slug),
         )
         return "inserted"
 
     if not refresh_existing:
         return "skipped-existing"
 
-    row_id, db_slugs, db_name, db_desc = existing
-    if (
-        db_slugs == new_block_slugs_json
-        and db_name == info["composition_name"]
-        and (db_desc or "") == info["description"]
-    ):
+    if existing_composition == new_json:
         return "unchanged"
 
     if dry_run:
         return "updated"
     conn.execute(
-        "UPDATE block_compositions "
-        "SET block_slugs = ?, composition_name = ?, description = ? "
-        "WHERE id = ?",
-        (new_block_slugs_json, info["composition_name"], info["description"], row_id),
+        "UPDATE patterns SET block_composition = ? WHERE slug = ?",
+        (new_json, slug),
     )
     return "updated"
 
@@ -176,7 +183,7 @@ def main(argv: list[str]) -> int:
         return 0
 
     conn = sqlite3.connect(DB_PATH)
-    counters = {"inserted": 0, "updated": 0, "unchanged": 0, "skipped-existing": 0, "skipped-no-header": 0}
+    counters = {"inserted": 0, "updated": 0, "unchanged": 0, "skipped-existing": 0, "skipped-no-header": 0, "skipped-no-pattern": 0}
     skipped_files: list[str] = []
 
     try:
@@ -212,10 +219,15 @@ def main(argv: list[str]) -> int:
         more = f" (+{len(skipped_files) - 10} more)" if len(skipped_files) > 10 else ""
         print(f"  no-header files  : {sample}{more}")
 
+    # Migration 2026-05-24: block_compositions table merged into
+    # patterns.block_composition (JSON column) and dropped. Report patterns
+    # rows with composition data populated instead.
     conn = sqlite3.connect(DB_PATH)
-    total = conn.execute("SELECT COUNT(*) FROM block_compositions").fetchone()[0]
+    total = conn.execute(
+        "SELECT COUNT(*) FROM patterns WHERE block_composition IS NOT NULL"
+    ).fetchone()[0]
     conn.close()
-    print(f"  total rows now   : {total}")
+    print(f"  patterns with composition: {total}")
 
     return 0
 

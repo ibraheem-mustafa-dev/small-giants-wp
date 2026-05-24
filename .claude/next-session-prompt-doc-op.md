@@ -228,3 +228,99 @@ Run `/handoff` to generate a fresh `handoff.md` + `next-session-prompt.md` for *
 ## First action
 
 After reading `handoff-doc-op.md` + verifying the MEMORY.md size via `wc -c`, start with Phase 1 (F2 MEMORY.md compression). It's 10 minutes; recovers ~15-20 silently-dropped binding rules; zero risk. Highest impact-per-minute in the entire plan.
+
+---
+
+## ADDITIONAL TASKS (added 2026-05-24 after DB-state audit)
+
+### Task H — Source-DB deletion (`blocks.db` + `hooks.db`)
+
+**Context.** Architecture-staging.md Phase 1 / Decisions 1+2 specified merging `~/.wp-blockmarkup-mcp/blocks.db` (459 KB, core WP block schemas) + `~/.wp-devdocs-mcp/hooks.db` (24 MB, WP hooks + 1,150 docs pages) into `sgs-framework.db` and then DELETING the source files. The data IS already merged (verified 2026-05-24: 121 native_wp blocks + 5,221 native_wp/third_party hooks present in sgs-framework.db with `source` column). **But the source files have NOT been deleted because 3 scripts still READ from them as primary source.**
+
+**Blocking dependencies (all 3 must be ported BEFORE source deletion):**
+
+1. **`~/.claude/hooks/wp-blocks.py` line 37** — `CORE_DB = HOME / '.wp-blockmarkup-mcp' / 'blocks.db'`. The `dump` command reads this for the core-DB section of the 3-DB schema output. PORT: change `CORE_DB` to `sgs-framework.db` and update the query to filter `WHERE source='native_wp'`.
+
+2. **`~/.claude/hooks/wp-docs.py` line 30** — `DB_PATH = Path.home() / '.wp-devdocs-mcp' / 'hooks.db'`. Reads hooks + docs tables. PORT: switch to `sgs-framework.db` (which now holds hooks 5,234 rows + docs 1,158 rows per the Phase 4 migration). Verify all callers still work.
+
+3. **`plugins/sgs-blocks/scripts/sgs-update-v2.py` Mode A** (lines 568–760 ish) — `_mode_a_read_cached()` reads both source DBs to do incremental cache refresh. PORT options: (a) make Mode A read sgs-framework.db (the now-canonical store) and use last-refresh timestamps to decide what to update; (b) retire Mode A entirely if Mode B `--refresh-upstream` is sufficient; (c) make Mode A a no-op when the source DBs are absent (graceful degradation).
+
+**Execution shape (Task H sub-phases):**
+
+| Sub-phase | What | Effort | Risk |
+|---|---|---|---|
+| H1 | Port `wp-blocks.py` to read sgs-framework.db with `source='native_wp'` filter. Smoke-test `python ~/.claude/hooks/wp-blocks.py dump`. | 15 min | Low |
+| H2 | Port `wp-docs.py` similarly. Confirm any callers (commands / skills) still resolve hooks + docs queries. | 15 min | Low |
+| H3 | Decide + execute `sgs-update-v2.py` Mode A strategy. | 30 min | Medium |
+| H4 | After all 3 ports verified working: `rm ~/.wp-blockmarkup-mcp/blocks.db ~/.wp-devdocs-mcp/hooks.db` (and the parent directories if empty). | 5 min | Zero (data fully mirrored) |
+| H5 | Update `architecture.md` + `docs-registry.yaml` to remove references to the old DB paths. Decision entry in `decisions.md`. | 10 min | Zero |
+
+**Total: ~75 min.** Bundle as a single commit after the 3 ports verify.
+
+### Task I — block_compositions merge follow-up
+
+**Status: merge completed 2026-05-24** as part of the audit that surfaced Task H. 35 of 37 rows merged into `patterns.block_composition` JSON column; 2 orphans (pointed to deleted patterns) dropped; `block_compositions` table dropped from sgs-framework.db. Two scripts that wrote to the dropped table were patched to write to `patterns.block_composition` instead:
+
+- `plugins/sgs-blocks/scripts/pattern-register.py:_insert_block_compositions` — composes JSON payload + UPDATE patterns SET block_composition = ?
+- `plugins/sgs-blocks/scripts/uimax-tools/seed-block-compositions.py:upsert` — same shape; gracefully handles "no pattern row exists" with new `skipped-no-pattern` counter
+
+Verified: `python plugins/sgs-blocks/scripts/uimax-tools/seed-block-compositions.py --dry-run` reports 35 patterns with composition + 9 would-be-new (need pattern rows registered first).
+
+**Remaining for Task I:**
+- I1 — Add the migration to `decisions.md` as a formal architectural-staging decision close-out
+- I2 — Update `architecture.md` line ~30 (the DB-first architecture rule) — change `block_compositions (37 rows)` mention to `patterns.block_composition column (35 populated)`
+- I3 — Audit `pattern-register.py` and `seed-block-compositions.py` for ANY OTHER references to `block_compositions` we may have missed (e.g. in comments / docstrings / log messages that don't break execution but cause drift)
+
+### Task J — Capture 5 lessons from this session
+
+The doc-op + DB-state-audit work surfaced 5 durable lessons worth `/capture-lesson` on next run. Don't park or stub — write each as a `feedback_*.md` file in the auto-memory directory:
+
+| # | Lesson | Pattern key | Where to write |
+|---|---|---|---|
+| **L1** | **Active prune > age-cutoff archive.** Old entries can be USEFUL; new entries can be JUNK. Active human-style review separates the two. Pure age-cutoff archives lose load-bearing rules + retain junk. | `active-prune-over-age-cutoff-archive` | `feedback_active_prune_over_age_cutoff_archive.md` |
+| **L2** | **Append-only docs with canonical SoT elsewhere should be keyword stubs not full text.** mistakes.md re-states what's in blub.db `learnings`. Cut to keywords + row ref. Saves tokens; preserves searchability. | `mistakes-md-as-keyword-stubs` | `feedback_mistakes_md_as_keyword_stubs.md` |
+| **L3** | **MEMORY.md silent dropout = functional safety bug.** When the auto-memory index exceeds the 24.4 KB autoload cap, Claude silently drops the bottom portion. Rules that don't load = rules that don't enforce. Detect via `wc -c MEMORY.md ≤ 24576`. | `memory-md-silent-dropout-safety-bug` | `feedback_memory_md_silent_dropout_safety_bug.md` |
+| **L4** | **"Shipped" claims in plans need grep-verify before treating as canonical.** Architecture-staging.md Phase 1 marked `phase_1_status: SHIPPED` for the DB merge — but block_compositions wasn't actually merged into patterns until 2026-05-24, weeks later. Spec-vs-impl drift again (D50 sibling). Pattern: after every "Phase X SHIPPED" claim in a plan, grep the codebase to verify the actual end-state matches the claim. | `shipped-claims-need-grep-verify` | `feedback_shipped_claims_need_grep_verify.md` |
+| **L5** | **Data migration ≠ source deletion. Read-paths must be ported FIRST.** blocks.db + hooks.db data was mirrored into sgs-framework.db, but the source files couldn't be deleted because 3 scripts still read from them. Migration is a 2-step process: (1) copy data + add `source` column, (2) port every consumer to read the new location. Step 2 was skipped. Pattern: before any "delete source" task, grep for ALL readers and verify they're ported to the new location. | `data-migration-needs-read-path-port` | `feedback_data_migration_needs_read_path_port.md` |
+
+Each feedback file body uses the keyword-stub format Bean specified for mistakes.md going forward:
+```markdown
+---
+name: <pattern-key>
+description: <one-line summary, ≤200 chars>
+metadata:
+  type: feedback
+---
+
+**Rule.** [1–3 sentences stating the rule.]
+
+**Why.** [2–4 sentences with the incident or reasoning that produced it.]
+
+**How to apply.** [bullet list, ≤6 items.]
+
+**Related.** [[pattern-key]] for sibling rules.
+```
+
+**MEMORY.md updates DEFERRED to Phase F2** — adding more entries before F2 (compression to one-line stubs) worsens the silent-dropout bug. Write the feedback files now; let F2 build the new MEMORY.md index from scratch using one-line stubs that reference these 5 + the existing 76 feedback files.
+
+### Updated phase order (with H, I, J inserted)
+
+The 10-phase doc-op plan now becomes 13 phases:
+
+1. F2 — MEMORY.md compression (highest priority — fixes silent dropout)
+2. F1 — Worktree force-removal (4.4 GB recovery)
+3. A' — gitignore 02-SGS-BLOCKS-REFERENCE.md atomically
+4. F5 + F6 + F3 — small fixes (broken subprojects ref + registry comment trim + stale memory cleanup)
+5. **J — Capture the 5 lessons as feedback_*.md files** (do this BEFORE F2 ideally, but if F2 ships first the feedback files still land — they just need the F2 index rebuild to include them)
+6. B' — active prune of mistakes.md / decisions.md / parking.md (with Bean's refinements)
+7. F4 — eviction policy in registry
+8. **I — block_compositions merge follow-up (decisions entry + architecture.md update + double-check no missed code refs)**
+9. C' — relocate misplaced specs + archive quickstart
+10. D' — restructure heavy docs (atomic commits per the boundary table)
+11. **H — Port wp-blocks.py + wp-docs.py + sgs-update-v2.py Mode A, then delete blocks.db + hooks.db**
+12. E' — registry sync + decision entry
+13. G — `/docscore` rule-set integration
+
+**Suggested execution order rationale.** Run J (lesson capture) BEFORE F2 if possible — that way the feedback files exist when F2 rebuilds the MEMORY.md index. If F2 ships first, the feedback files written in J will land later; F2's new MEMORY.md just won't index them until a follow-up edit.
+
+H runs late because the 3 ports + verification take ~75 min and shouldn't block the cheaper wins. H4 (the actual `rm`) only runs after all 3 ports verify.
