@@ -1,3 +1,19 @@
+---
+doc_type: spec
+spec_id: 2
+spec_version: "1.0"
+project: small-giants-wp
+title: SGS Blocks — Custom Gutenberg Block Library
+status: shipped
+last_verified: 2026-05-24
+authors: Bean + Claude
+session_date: 2026-02-01
+status_history:
+  - 2026-02-01: initial draft
+  - 2026-05-22: Phase 6 markup-examples + apiVersion 3 audit shipped
+  - 2026-05-24: frontmatter added per Phase 13 spec template
+---
+
 # SGS Blocks — Custom Gutenberg Block Library
 
 > **Session B 2026-05-22 update — Phase 6 (commit `d307c8b0`).** Markup examples seeded for 69 SGS blocks (56 auto-generated from `block.json` defaults via `plugins/sgs-blocks/scripts/generate-markup-examples.py`; 13 hand-authored composite examples for sgs/hero, sgs/card-grid, sgs/tabs, sgs/testimonial, sgs/accordion, sgs/gallery, sgs/post-grid, sgs/form, sgs/form-row, sgs/pricing-table, sgs/countdown-timer, sgs/team-member, sgs/multi-column). 4 DB rows reference blocks with no source `block.json` file (parked as P-6-MISSING-BLOCK-JSON). Block-supports audit found ZERO gaps — the original 2:1 under-documentation prediction was wrong; 360 active rows + 44 flagged `is_stale=true` (retired/planned blocks). 87 content-bearing attributes across 40 blocks now carry `"role": "content"`. All 69 source blocks already at `apiVersion: 3` — no bulk bump needed. `wp_set_script_module_translations()` wired in `class-sgs-blocks.php` registration loop for 25 blocks using `viewScriptModule`. Lucide icon delivery untouched (sibling REST file `class-sgs-lucide-icons-rest.php` shipped defensively with double guards; existing `sgs_get_lucide_icon()` shim still canonical). Device-visibility coexistence rule documented in `includes/device-visibility.php`. Sandybrown upgraded to **WP 7.0** mid-session — `wp_set_script_module_translations` + `WP_REST_Icons_Controller` + `wp_get_connector` now natively available.
@@ -91,7 +107,7 @@ Decided 2026-05-03 — full spec at [`11-SGS-BUTTON-ARCHITECTURE.md`](11-SGS-BUT
 
 ## Pipeline / extraction
 
-Mockup HTML → SGS block markup pipeline at [`12-DRAFT-TO-SGS-PIPELINE.md`](12-DRAFT-TO-SGS-PIPELINE.md). Key rules:
+Mockup HTML → SGS block markup pipeline at [`16-DETERMINISTIC-CONVERTER-V2.md`](16-DETERMINISTIC-CONVERTER-V2.md) (Spec 12 absorbed into Spec 16 §12 Appendix A 2026-05-12). Key rules:
 
 - Fingerprints auto-derived from `block.json` — never hand-written. Adding an attribute to a block automatically grows the recogniser's coverage.
 - Pull all CSS every run, classify into block-attribute / universal-handled / one-time-custom. No silent loss.
@@ -1076,7 +1092,7 @@ All SGS blocks receive animation and interaction controls via the block extensio
 **Implementation status (as of 2026-04-28):**
 - Entrance animations: **16 of 16 spec'd built** (added `bounce-in`, `reveal-up` 2026-04-28)
 - Hover effects (universal extension): **7 of 8 built** — lift (via scale + shadow), scale, glow, border-accent, shadow-grow, colour-shift, tilt-3d. Missing: `border-accent` was per-block-only until 2026-04-28; now universal.
-- Scroll-linked: **1 of 3 built** — `sgsScrollProgress` CSS variable (global, exposes `--sgs-scroll-progress` 0-1 on documentElement). Still missing: `sgsParallax` (background + element variants) — TODO.
+- Scroll-linked: **1 of 3 built** — `sgsScrollProgress` CSS variable (global, exposes `--sgs-scroll-progress` 0-1 on documentElement). Still missing: `sgsParallax` (background + element variants) — pending.
 
 #### Entrance Animations (scroll-triggered via IntersectionObserver)
 

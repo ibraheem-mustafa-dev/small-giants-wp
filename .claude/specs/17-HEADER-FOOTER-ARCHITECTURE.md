@@ -5,7 +5,10 @@ revision: 2
 project: small-giants-wp
 title: Header/Footer Architecture (WP 7.0 canonical, per-site)
 date: 2026-05-19
-status: council-passed-ready-to-implement
+status: active
+status_history:
+  - 2026-05-19: council-passed (ready to implement)
+  - 2026-05-24: normalised to canonical enum (council-passed → active)
 input_brief: .claude/plans/strategy/2026-05-19-header-footer-research-brief.md
 council_outcome: .claude/reports/council-outcome-spec-17.md
 parent_session: small-giants-wp-2026-05-19-phase-9b-foundation
@@ -160,7 +163,7 @@ Each FR carries: behaviour, acceptance criteria, model recommendation, 4-layer t
 **Acceptance criteria:**
 - 4 header files exist in `parts/`
 - 4 patterns registered with `blockTypes: ['core/template-part/header']`
-- v1 pattern bodies defer to `sgs/framework-header-default` content with a `// TODO: variant-specific markup, v1.1` comment
+- v1 pattern bodies defer to `sgs/framework-header-default` content with an inline future-work note ("variant-specific markup, v1.1")
 - Site Editor "Replace" picker shows all 4 + any client headers
 
 **Model:** Sonnet

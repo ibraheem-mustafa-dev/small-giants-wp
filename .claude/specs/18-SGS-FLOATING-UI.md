@@ -4,7 +4,10 @@ spec_id: 18
 spec_version: 0.1
 project: small-giants-wp
 title: SGS Floating UI — Customiser-Based Back-to-Top + Reading Progress
-status: ACCEPTED — implementation pending
+status: active
+status_history:
+  - 2026-05-19: ACCEPTED — implementation pending
+  - 2026-05-24: normalised to canonical enum (accepted → active)
 shipped: false
 session_date: 2026-05-19
 authors: Bean + Claude (Sonnet 4.6)
@@ -109,7 +112,7 @@ window.addEventListener('scroll', () => {
 }, { passive: true });
 ```
 
-The back-to-top button click handler scrolls to `{ top: 0, behavior: 'smooth' }`.
+The back-to-top button click handler scrolls smoothly to top — `window.scrollTo({ top: 0, behavior: 'smooth' })` (web-platform identifier; UK-spelling exemption applies).
 
 ### 3.4 CSS
 

@@ -4,7 +4,11 @@ spec_id: 16
 spec_version: 0.3
 project: small-giants-wp
 title: Deterministic Slot-Aware Converter — Spec 15 §7 Stages 3-7 Implementation
-status: PARTIAL CLOSURE 2026-05-15 — Phase 1 + Phase 7 architectural shipped; Phase 4 visual gate redefined as per-section; Phase 8 section-by-section work pending. **2026-05-18 ADDENDUM: P-WP-ALIGNMENT-WIDTH-SYSTEM closed (3 commits, see decisions.md D2+D3).** Converter `_lift_root_supports_to_style` now emits semantic `widthMode` (default/wide/full) instead of always lifting raw max-width to `style.dimensions.maxWidth`. New helpers `_detect_client_layout_widths` + `_write_client_layout_widths` + `_load_theme_widths` + `_match_theme_width` (±5% tolerance) add a one-time pipeline pass before the per-section walker — see `.claude/cloning-pipeline-flow.md` "Stage 0.8" for the annotated flow. Module-level constants: `_LIFT_CONTEXT`, `_WIDTH_MATCH_TOLERANCE_PCT=5.0`, `_SGS_BEM_BLOCK_ROOT_RE` (segmented kebab, blocks `--` modifier shapes — see common-wp-styling-errors.md Section T), `_FULL_BLEED_WIDTH_VALUES`. Universal-benefit: zero client literals in framework code.
+status: active
+status_note: |
+  PARTIAL CLOSURE 2026-05-15: Phase 1 + Phase 7 architectural shipped; Phase 4 visual gate redefined as per-section; Phase 8 section-by-section work pending.
+  2026-05-18 ADDENDUM: P-WP-ALIGNMENT-WIDTH-SYSTEM closed (3 commits, see decisions.md D2+D3). Converter `_lift_root_supports_to_style` now emits semantic `widthMode` (default/wide/full) instead of always lifting raw max-width. New helpers `_detect_client_layout_widths` + `_write_client_layout_widths` + `_load_theme_widths` + `_match_theme_width` (±5% tolerance) add a one-time pipeline pass before the per-section walker — see `.claude/cloning-pipeline-flow.md` "Stage 0.8". Module-level constants: `_LIFT_CONTEXT`, `_WIDTH_MATCH_TOLERANCE_PCT=5.0`, `_SGS_BEM_BLOCK_ROOT_RE` (segmented kebab, blocks `--` modifier shapes — see common-wp-styling-errors.md Section T), `_FULL_BLEED_WIDTH_VALUES`. Universal-benefit: zero client literals in framework code.
+  2026-05-24: status normalised to canonical enum (PARTIAL-CLOSURE → active).
 session_date: 2026-05-15
 authors: Bean + Claude (Opus 4.7)
 status_history:
@@ -224,7 +228,7 @@ This destination prevents the converter from halting on legitimate "reset" CSS o
 
 When the rule targets a class on a descendant inside a block-root, AND the CSS property maps to a typed attribute on that parent block via `property_suffixes`:
 - Apply CSS-token-snap to the value (Spec 15 §5.4): look up nearest theme.json token via `design_tokens`; ΔE2000 ≤ 2.0 → snap (confidence 1.0); ≤ 5.0 → snap (0.85); ≤ 10.0 → snap (0.6); > 10.0 → keep raw + flag gap candidate
-- Lift the (possibly snapped) value into the typed attribute
+- Lift the value (snapped or raw) into the typed attribute
 - The rule does NOT ship in variation CSS — the block's render.php applies the styling via inline styles or block-level CSS at editor save
 
 **Destination 2 — Markup wrapper carrying className (fallback):**
@@ -999,6 +1003,6 @@ The "universal walker" originally specified in §15 steps 1–3 was REINTERPRETE
 4. **`/sgs-update` Stage 4 wiring** — `sgs-update-v2.py:stage_1_sgs_codebase_scan()` tail invokes `assign-canonical.py` (previously orphaned standalone script, never auto-run despite §12.6 declaration). Extended with singularise + Tier B (registered-block reverse-lookup via standalone_block) so 12 plural-named array-attr canonical_slots populated (testimonials→review, logos→logo, plans→card, steps→step, reviews→review, images→media, icons→icon, etc.).
 5. **Brand mockup BEM rename** — `<blockquote class="sgs-brand__body">` → `<div class="sgs-brand__quote">` + `<footer>` → `<p class="sgs-brand__attribution">`. Spec 00 BEM-as-canonical consistency. Brand now emits `<!-- wp:sgs/quote {"className":"sgs-brand__quote","attribution":"— Zainab…",...} /-->`.
 
-Empirical Stage 11 mean pixel-diff: 70.5% (baseline) → 73.9% (post 5 changes). Block-type mapping is correct; pixel-diff regression on featured-product/ingredients is the CSS-lift gap on the new richer skeleton — closes when G3 (slot_list visual extension) lands. **G1 / G3 / G5 acceptance criteria remain TODO** — the second pass shipped the data-layer + universal-architecture foundation; the per-block content extraction lift is the next high-leverage move.
+Empirical Stage 11 mean pixel-diff: 70.5% (baseline) → 73.9% (post 5 changes). Block-type mapping is correct; pixel-diff regression on featured-product/ingredients is the CSS-lift gap on the new richer skeleton — closes when G3 (slot_list visual extension) lands. **G1 / G3 / G5 acceptance criteria remain PENDING** — the second pass shipped the data-layer + universal-architecture foundation; the per-block content extraction lift is the next high-leverage move.
 
 ARRAY_LIFT_PATTERNS hardcoded dict (convert.py:1008-1031) deletion deferred — provides `count_stars` rating extractor + multi-selector fallback chains that universal 1e-B path doesn't yet replicate. Tracked as Phase 1 follow-on F1 (`.claude/plans/2026-05-24-phase-1-structural-recovery.md`).
