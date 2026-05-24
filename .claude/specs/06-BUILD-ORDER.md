@@ -55,7 +55,7 @@ Framework **v1 shipped** 2026-04-29. Phases 0–5 complete.
 
 ## Polish backlog (low priority, non-blocking)
 
-- **Gold-standard audit refresh** — [`09-GOLD-STANDARD-AUDIT.md`](09-GOLD-STANDARD-AUDIT.md) covers ~25 of 59 blocks. Add comparison rows for the 34 newer blocks (post-grid, gallery, tabs, countdown, star-rating, team-member, pricing-table, modal, breadcrumbs, table-of-contents, icon-block, social-icons, mobile-nav, mega-menu, announcement-bar, etc.).
+- **Gold-standard audit refresh** — [`09-GOLD-STANDARD-AUDIT.md`](../../reports/reference/09-GOLD-STANDARD-AUDIT.md) covers ~25 of 59 blocks. Add comparison rows for the 34 newer blocks (post-grid, gallery, tabs, countdown, star-rating, team-member, pricing-table, modal, breadcrumbs, table-of-contents, icon-block, social-icons, mobile-nav, mega-menu, announcement-bar, etc.).
 - **announcement-bar / google-reviews legacy custom UK attrs** — `backgroundColour` / `textColour` are kept as fallback in render.php's `??` chain. Can be removed in a future major version after a full content sweep confirms no posts still rely on them.
 - **`/library-docs` cache** for block-editor APIs — may be worth memoising common WP block API doc lookups locally.
 - **Extension docs** — `plugins/sgs-blocks/src/blocks/extensions/` has animation, hover, visibility, off-canvas extensions. They're documented in `02-SGS-BLOCKS.md` and `architecture.md` but a dedicated extensions reference is not written.
@@ -69,5 +69,5 @@ Framework **v1 shipped** 2026-04-29. Phases 0–5 complete.
 | [`../../CLAUDE.md`](../../CLAUDE.md) | Hard rules, deploy commands, gotchas. |
 | [`../../docs/plans/2026-02-21-master-feature-audit.md`](../../docs/plans/2026-02-21-master-feature-audit.md) | 354-feature graded roadmap. Last full refresh 2026-02-26 — directional, not current. |
 | [`../plans/strategy/2026-04-24-design-brain-architecture.md`](../plans/strategy/2026-04-24-design-brain-architecture.md) | Pipeline 6 (QA → Deploy) and Council reviewer architecture. |
-| [`./2026-04-27-optimisation-toolkit-design.md`](2026-04-27-optimisation-toolkit-design.md) | Optimisation toolkit + rubric system. |
+| `~/.claude/specs/2026-04-27-optimisation-toolkit-design.md` | Optimisation toolkit + rubric system (relocated to user-level specs). |
 | [`./common-wp-styling-errors.md`](common-wp-styling-errors.md) | Real failure-pattern catalogue from 2026-04-29 polish session + 2026-04-30 audit. |

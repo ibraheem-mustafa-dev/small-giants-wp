@@ -640,7 +640,7 @@ Bean's framing: "The Rosetta Stone point is what I was thinking of but I didn't 
 
 **Captured as blub.db row 211, embedded across 4 surfaces** (project CLAUDE.md no-licensing block, sgs-wp-engine SKILL.md, both spec REVISIONS sections, both spec recovery stubs).
 
-Bean rejected this twice in the same session. First in `cloning-skill-salvage-matrix-2026-05-05.md` REVISIONS: *"the licensing thing is absurdly stupid, you can't license a web design or pattern of web components."* Then again 2026-05-06: *"Already told you not to mention licensing again."*
+Bean rejected this twice in the same session. First in `.claude/plans/archive/cloning-skill-salvage-matrix-2026-05-05.md` REVISIONS: *"the licensing thing is absurdly stupid, you can't license a web design or pattern of web components."* Then again 2026-05-06: *"Already told you not to mention licensing again."*
 
 **Rule:** web designs and component patterns are not licenseable artifacts in the way I had been treating them. Treating them as IP-managed inflates schemas, builds firewalls that don't need to exist, and signals to Bean that I'm reasoning from a wrong frame. The cloning pipeline only needs to know **where a pattern came from** — not who owns it.
 

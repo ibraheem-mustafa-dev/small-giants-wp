@@ -25,21 +25,21 @@ entry_condition: triage signed off + kills executed + dispatch-graph-validator c
 - [ ] email-html-builder structural pass: skillscore ≥85%
 - [ ] P2.2b — surviving tools triaged + ~50–60 rubrics drafted (each QC-passed + Bean-confirmed)
 - [ ] P2.2c — 13 pipeline rubrics drafted (each QC-passed + Bean-confirmed)
-- [ ] **Tooling spec finalised** — the v2 spec at `.claude/specs/2026-04-27-optimisation-toolkit-design.md` updated with confirmed-rubric references and any scope adjustments surfaced during P2.2a/b/c
+- [ ] **Tooling spec finalised** — the v2 spec at `~/.claude/specs/2026-04-27-optimisation-toolkit-design.md` updated with confirmed-rubric references and any scope adjustments surfaced during P2.2a/b/c
 
 **Entry condition (P1.5 → P2):** triage signed off + kills executed + dispatch-graph-validator clean + sandbox-preview gate green.
 
 **Entry context (read before starting this phase):**
 - `.claude/plans/strategy/2026-04-29-tooling-triage.md` — signed-off triage decisions
-- `.claude/specs/2026-04-27-optimisation-toolkit-design.md §10.1` — 22 confirmed rubric paths
-- `.claude/specs/2026-04-27-optimisation-toolkit-design.md §5 Phase 2a/2b/2c` — phase spec
+- `~/.claude/specs/2026-04-27-optimisation-toolkit-design.md §10.1` — 22 confirmed rubric paths
+- `~/.claude/specs/2026-04-27-optimisation-toolkit-design.md §5 Phase 2a/2b/2c` — phase spec
 - `.claude/plans/master-plan.md §Phase 2` — P2.2a/b/c units + G2 gate
 - `~/.claude/agents/.rubrics/seo-technical.md` — confirmed rubric reference shape (canonical example)
 - `~/.claude/agents/.rubrics/backlog.md` — deferred B/C/D gaps
 - `.claude/state.md` — confirm `current_phase: phase-2-rubrics-universe` (set by P1.5f handoff)
 
 **References:**
-- [`.claude/specs/2026-04-27-optimisation-toolkit-design.md`](../specs/2026-04-27-optimisation-toolkit-design.md) — master spec
+- `~/.claude/specs/2026-04-27-optimisation-toolkit-design.md` — master spec
 - [`.claude/plans/master-plan.md`](master-plan.md)
 - `~/.agents/skills/shared-references/correction-ledger.md` — past planning mistakes
 - `~/.agents/skills/shared-references/model-routing.md` — dispatch rules
@@ -458,8 +458,8 @@ Step 19 — P2.2c: Bean confirmation pass
 ```
 Step 20 — Update tooling spec with confirmed-rubric references
   Model:       inline
-  Action:      Read all confirmed rubrics across P2.2a Track 1, Track 2, P2.2b, P2.2c. Update .claude/specs/2026-04-27-optimisation-toolkit-design.md: §10.1 rubric paths corrected (interactivity-capture exists, not "NEW"), §5 Phase 2 reflects actual scope, any §5 Phase 4 scope adjustments surfaced during rubric drafting.
-  Files:       .claude/specs/2026-04-27-optimisation-toolkit-design.md
+  Action:      Read all confirmed rubrics across P2.2a Track 1, Track 2, P2.2b, P2.2c. Update ~/.claude/specs/2026-04-27-optimisation-toolkit-design.md: §10.1 rubric paths corrected (interactivity-capture exists, not "NEW"), §5 Phase 2 reflects actual scope, any §5 Phase 4 scope adjustments surfaced during rubric drafting.
+  Files:       ~/.claude/specs/2026-04-27-optimisation-toolkit-design.md
   Outcome:     Spec aligned with confirmed rubrics; ready as Phase 4 input
   Exec:        SEQUENTIAL
   Deps:        Steps 13, 16, 19 complete

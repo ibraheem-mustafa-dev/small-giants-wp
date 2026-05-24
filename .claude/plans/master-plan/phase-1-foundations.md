@@ -4,7 +4,7 @@ phase: phase-1-foundations
 project: small-giants-wp
 project_id: 14
 parent_plan: .claude/plans/master-plan.md
-spec_source: .claude/specs/2026-04-27-optimisation-toolkit-design.md
+spec_source: ~/.claude/specs/2026-04-27-optimisation-toolkit-design.md
 generated_by: /phase-planner
 last_updated: 2026-04-29
 ---

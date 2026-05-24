@@ -2,14 +2,14 @@
 doc_type: master-plan
 project: small-giants-wp
 project_id: 14
-plan_source: .claude/specs/2026-04-27-optimisation-toolkit-design.md
+plan_source: ~/.claude/specs/2026-04-27-optimisation-toolkit-design.md
 last_updated: 2026-04-29
 generated_by: /strategic-plan (executed by Claude during /project-consolidate Stage 4)
 ---
 
 # small-giants-wp — Master Plan
 
-> **Source of truth:** [`.claude/specs/2026-04-27-optimisation-toolkit-design.md`](../specs/2026-04-27-optimisation-toolkit-design.md). This master plan is the navigation + execution layer; the spec is the design + reasoning layer. **If they disagree, the spec wins for design questions and this plan wins for sequencing/effort/gates.**
+> **Source of truth:** [`~/.claude/specs/2026-04-27-optimisation-toolkit-design.md`](~/.claude/specs/2026-04-27-optimisation-toolkit-design.md). This master plan is the navigation + execution layer; the spec is the design + reasoning layer. **If they disagree, the spec wins for design questions and this plan wins for sequencing/effort/gates.**
 
 ## 1. Goal
 
@@ -113,7 +113,7 @@ Studio does NOT replace the deploy. It sits in front of it. The existing tar+scp
 4. **Client-shareable HTTPS URL with caveats.** Studio's wp.build Preview Sites give a free, hosted, 7-day URL — but: (a) **10-preview cap per WP.com account** can block mid-deploy if other previews are live; (b) **WP.com OAuth dependency** means auth must be valid (2-week token) for `preview create`/`update` to succeed; (c) Preview ships only `wp-content`, not core. Within those limits: replaces "deploy live → Bean spots issues → redeploy" with "preview → Bean reviews → deploy clean". Indus Foods 2-week cycle becomes 7-day-renew-via-CLI, with a `preview list` check before each renewal.
 
 **Reference docs:**
-- AI Operating Manual: `.claude/specs/2026-04-29-wp-studio-ai-manual.md` — every CLI command, every MCP tool (24 Studio tools + 1 wpcom-mcp tool), Blueprint format, 5 standard workflows (Hostinger import, Preview URL, /verify-loop chaining, sandbox refresh, version-drift detection), 13 priority-ordered gotchas, Claude-specific anti-patterns.
+- AI Operating Manual: `~/.claude/skills/wp-studio/wp-studio-ai-manual.md` — every CLI command, every MCP tool (24 Studio tools + 1 wpcom-mcp tool), Blueprint format, 5 standard workflows (Hostinger import, Preview URL, /verify-loop chaining, sandbox refresh, version-drift detection), 13 priority-ordered gotchas, Claude-specific anti-patterns.
 - Decision research: `.claude/reports/2026-04-29-wp-studio-vs-local-flywheel.md` — Studio chosen for HTTPS preview surface, Local kept as backup for MySQL / DB-heavy work.
 
 **Critical gotcha (Phase 1.5 must address):** Studio runs PHP-WASM, which **cannot host a native MySQL server** — it ships with the SQLite integration plugin and intercepts `wpdb` at runtime. Hostinger is MySQL. The original "blueprint MUST force `DB_ENGINE=mysql`" framing was unimplementable in Studio's runtime (verified against the Studio AI manual L10 + L332). Replacement: **best-effort SQL parity**. The blueprint must document SQLite-vs-MySQL drift surfaces (collation, GROUP BY semantics, REGEXP, fulltext indexes), and any DB-heavy regression check must run against Local by Flywheel (real MySQL) in addition to Studio. The `/verify-loop --target-url` Studio Preview gate covers rendered-DOM, screenshots, console errors — NOT SQL-flavour drift. SQL-flavour drift remains the user's responsibility, with Local-by-Flywheel as the tier-2 backstop.
@@ -126,7 +126,7 @@ Studio does NOT replace the deploy. It sits in front of it. The existing tar+scp
 | **P1.5b** | Cross-reference `plans/strategy/2026-04-21-non-essential-pipelines-deferred.md` and parking lots; produce a single triage table (kill / merge / park / keep, one row per tool) | `.claude/plans/strategy/2026-04-29-tooling-triage.md` (new) | P1.5a | Triage table | YES |
 | **P1.5c** | Bean sign-off on the triage table (HARD GATE — scope-shaping decision) | (chat) | P1.5b | Confirmed triage decisions | YES |
 | **P1.5d** | Execute kills (delete + redirect) + merges (parallel where safe) | Various skill/agent files | P1.5c | Surviving roster | YES |
-| **P1.5e** | Sandbox-preview gate setup — pin Studio version + create `sgs-base.blueprint.json` + Hostinger import flow doc + `/verify-loop --target-url` flag + `studio-preview-up.ps1` helper + `deploy-check` `--studio-pass` flag | `theme/sgs-theme/sgs-base.blueprint.json`, `CLAUDE.md` deploy section, `~/.claude/skills/verify-loop/SKILL.md`, `~/.claude/skills/deploy-check/` | WP Studio AI manual at `.claude/specs/2026-04-29-wp-studio-ai-manual.md` | Pre-deploy verification gate operational | NO (parallel to P1.5d) |
+| **P1.5e** | Sandbox-preview gate setup — pin Studio version + create `sgs-base.blueprint.json` + Hostinger import flow doc + `/verify-loop --target-url` flag + `studio-preview-up.ps1` helper + `deploy-check` `--studio-pass` flag | `theme/sgs-theme/sgs-base.blueprint.json`, `CLAUDE.md` deploy section, `~/.claude/skills/verify-loop/SKILL.md`, `~/.claude/skills/deploy-check/` | WP Studio AI manual at `~/.claude/skills/wp-studio/wp-studio-ai-manual.md` | Pre-deploy verification gate operational | NO (parallel to P1.5d) |
 | **P1.5f** | Run `/phase-planner` to draft Phase 2 phase-plan against the surviving roster (sized correctly post-triage) | `.claude/plans/phase-2-rubrics-universe.md` (new) | P1.5d | Phase 2 phase-plan ready | YES |
 
 **Phase exit (G1.5):** triage decisions logged + kills/merges executed + sandbox-preview gate working + Phase 2 phase-plan drafted.
@@ -343,7 +343,7 @@ Each phase below hands off to `/phase-planner` as a separate session. Plan-level
 ```
 [Phase 1 — handoff]
   Trigger: invoke /phase-planner with phase scope = "Phase 1 — Foundations"
-  Entry context: .claude/specs/2026-04-27-optimisation-toolkit-design.md §5 Phase 1 + Section 4
+  Entry context: ~/.claude/specs/2026-04-27-optimisation-toolkit-design.md §5 Phase 1 + Section 4
   Plan-Level Label hint: PLAN: sonnet  (4 utilities + 8 skill updates — well-scoped, mechanical-shaped)
 
 [Phase 2 — handoff]
@@ -390,7 +390,7 @@ This plan triggers updates to:
 
 | Doc | Role |
 |-----|------|
-| [`.claude/specs/2026-04-27-optimisation-toolkit-design.md`](../specs/2026-04-27-optimisation-toolkit-design.md) | Source spec — design and reasoning |
+| [`~/.claude/specs/2026-04-27-optimisation-toolkit-design.md`](~/.claude/specs/2026-04-27-optimisation-toolkit-design.md) | Source spec — design and reasoning |
 | [`.claude/plans/strategy/2026-04-21-step2-strategic-plan.md`](strategy/2026-04-21-step2-strategic-plan.md) | Step 2 of master plan (5-client queue) |
 | [`.claude/plans/strategy/2026-04-21-toolset-spec-from-sgs-studio-session.md`](strategy/2026-04-21-toolset-spec-from-sgs-studio-session.md) | Verified tool inventory + 13 pipelines |
 | [`.claude/plans/strategy/2026-04-24-design-brain-architecture.md`](strategy/2026-04-24-design-brain-architecture.md) | Phase 4 design-brain spec |

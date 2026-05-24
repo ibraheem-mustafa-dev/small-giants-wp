@@ -2,7 +2,7 @@
 
 Spec files with status tags. One spec per file.
 
-**Last reviewed:** 2026-05-22 (Phase 1.5 session housekeeping)
+**Last reviewed:** 2026-05-24 (Phase 9 spec relocation)
 
 ## Status tags
 
@@ -27,8 +27,8 @@ Spec files with status tags. One spec per file.
 | 06 | [06-BUILD-ORDER.md](06-BUILD-ORDER.md) | Dependencies + phasing | shipped |
 | 07 | [07-SGS-POPUPS.md](07-SGS-POPUPS.md) | Conversion pop-ups plugin | deferred |
 | 08 | [08-SGS-CHATBOT.md](08-SGS-CHATBOT.md) | Live chat + AI chatbot | deferred |
-| 09 | [09-GOLD-STANDARD-AUDIT.md](09-GOLD-STANDARD-AUDIT.md) | Per-block competitor gap analysis | active |
-| 10 | [10-COMPETITOR-RESEARCH.md](10-COMPETITOR-RESEARCH.md) | Spectra / Kadence / GenerateBlocks research | shipped |
+| 09 | [09-GOLD-STANDARD-AUDIT.md](../../reports/reference/09-GOLD-STANDARD-AUDIT.md) | Per-block competitor gap analysis | active |
+| 10 | [10-COMPETITOR-RESEARCH.md](../../reports/10-COMPETITOR-RESEARCH.md) | Spectra / Kadence / GenerateBlocks research | shipped |
 | 11 | [11-SGS-BUTTON-ARCHITECTURE.md](11-SGS-BUTTON-ARCHITECTURE.md) | sgs/button + sgs/multi-button canonical (includes 2026-05-22 double-default fix) | shipped |
 | 15 | (absorbed into Spec 16 — deleted 2026-05-12) | Deterministic converter Spec 15 | absorbed |
 | 16 | [16-DETERMINISTIC-CONVERTER-V2.md](16-DETERMINISTIC-CONVERTER-V2.md) | Slot-aware DOM walker | active |
@@ -46,23 +46,23 @@ The 31-decision architecture programme lives at [`.claude/plans/2026-05-21-archi
 | File | Purpose | Status |
 |---|---|---|
 | [common-wp-styling-errors.md](common-wp-styling-errors.md) | Recurring WP styling mistakes catalogue — actively maintained | active |
-| [chrome-devtools-stage-8-integration.md](chrome-devtools-stage-8-integration.md) | Stage 8 / Chrome DevTools spec | research |
-| [cloning-skill-salvage-matrix-2026-05-05.md](cloning-skill-salvage-matrix-2026-05-05.md) | Clone-skill audit matrix (referenced by architecture.md) | research |
-| [pattern-dedup-classify-mechanics-2026-05-05.md](pattern-dedup-classify-mechanics-2026-05-05.md) | Pattern dedup mechanics (referenced by architecture.md) | research |
-| [hostinger-mcp-catalogue.md](hostinger-mcp-catalogue.md) | Hostinger MCP integration catalogue | research |
-| [2026-04-16-local-code-review-architecture.md](2026-04-16-local-code-review-architecture.md) | Local code-review brainstorm (absorbed into qc skills) | shipped |
-| [2026-04-27-optimisation-toolkit-design.md](2026-04-27-optimisation-toolkit-design.md) | Optimisation toolkit design | shipped |
-| [2026-04-29-wp-studio-ai-manual.md](2026-04-29-wp-studio-ai-manual.md) | WP Studio AI integration manual | research |
-| [RESEARCH-PROMPT.md](RESEARCH-PROMPT.md) | Reusable research prompt template | active |
+| [chrome-devtools-stage-8-integration.md](../plans/strategy/chrome-devtools-stage-8-integration.md) | Stage 8 / Chrome DevTools spec | research |
+| [cloning-skill-salvage-matrix-2026-05-05.md](../plans/archive/cloning-skill-salvage-matrix-2026-05-05.md) | Clone-skill audit matrix (referenced by architecture.md) | archived |
+| [pattern-dedup-classify-mechanics-2026-05-05.md](../plans/archive/pattern-dedup-classify-mechanics-2026-05-05.md) | Pattern dedup mechanics (referenced by architecture.md) | archived |
+| hostinger-mcp-catalogue.md | Hostinger MCP integration catalogue — moved to `~/.claude/specs/hostinger-mcp-catalogue.md` | relocated |
+| 2026-04-16-local-code-review-architecture.md | Local code-review brainstorm — moved to `~/.claude/specs/2026-04-16-local-code-review-architecture.md` | relocated |
+| 2026-04-27-optimisation-toolkit-design.md | Optimisation toolkit design — moved to `~/.claude/specs/2026-04-27-optimisation-toolkit-design.md` | relocated |
+| 2026-04-29-wp-studio-ai-manual.md | WP Studio AI integration manual — moved to `~/.claude/skills/wp-studio/wp-studio-ai-manual.md` | relocated |
+| RESEARCH-PROMPT.md | Reusable research prompt template — deleted (generic utility, no project-specific content) | deleted |
 
 ## Legacy specs
 
-Files prefixed `legacy-` are historical reference for systems substantively replaced. Kept for context; not active specs.
+Files prefixed `legacy-` are historical reference for systems substantively replaced. All four have been moved to `.claude/plans/archive/`:
 
-- `legacy-2026-03-17-header-system-design.md` — superseded by Spec 17
-- `legacy-2026-03-25-mobile-nav-attributes.md` — superseded by Spec 17 mobile-nav work
-- `legacy-2026-03-27-mobile-nav-v2-composition.md` — same
-- `legacy-2026-03-27-wp7-nav-overlay-compat.md` — same
+- [`legacy-2026-03-17-header-system-design.md`](../plans/archive/legacy-2026-03-17-header-system-design.md) — superseded by Spec 17
+- [`legacy-2026-03-25-mobile-nav-attributes.md`](../plans/archive/legacy-2026-03-25-mobile-nav-attributes.md) — superseded by Spec 17 mobile-nav work
+- [`legacy-2026-03-27-mobile-nav-v2-composition.md`](../plans/archive/legacy-2026-03-27-mobile-nav-v2-composition.md) — same
+- [`legacy-2026-03-27-wp7-nav-overlay-compat.md`](../plans/archive/legacy-2026-03-27-wp7-nav-overlay-compat.md) — same
 
 ## Sub-directories
 
