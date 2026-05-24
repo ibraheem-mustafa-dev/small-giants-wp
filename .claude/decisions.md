@@ -6,6 +6,10 @@ Append-only. Most-recent first.
 
 ---
 
+## 2026-05-24 — Doc-op programme: docscore.py technical-debt close-out
+
+**D64 — 10 SonarLint warnings on docscore.py closed (cognitive complexity + dead-code).** Per Bean's "nothing parked" rule: refactor extracted 11 helper functions (`_coerce_fm_scalar`, `_find_fm_end`, `_detect_doc_type_from_path`, `_warn_doc_type_constraint`, `_score_folder_json`, `_score_folder_human_subprojects`, `_score_folder_human_flat`, `_resolve_walk_root`, `_build_doc_context`, `_registry_missing_paths`, `_group_by_subproject`, `_score_paths_human`). `parse_frontmatter` cc 25→≤15; `detect_doc_type` cc 16→≤15; `score_folder` cc 49→≤15. Removed 5 Unicode-box-drawing section dividers SonarLint flagged as commented-out code. Removed unused `current_key` variable. Behaviour preservation gate verified: 10/10 in-scope docs still 100% Grade A; adversarial back-door test still rejects. Lives in `~/.agents/skills/shared-references/docscore.py` (1168 → 1185 lines = +17 net for the helpers).
+
 ## 2026-05-24 — Doc-op programme: doc-type back-door close + skill alignment
 
 **D62 — doc_type self-declaration back-door closed in `docscore.py`.** Per qc-council Rater B finding (2026-05-24): any file could declare `doc_type: spec` in frontmatter and bypass spec-only checks. Fix: spec/archived-plan/dev-setup templates gain `filename_glob` + `required_dir` + `required_grandparent_dir` fields. `detect_doc_type` validates these constraints before honouring a declared doc_type; mismatches emit stderr warning + fall through. `reference` catch-all has no constraints (any doc can claim it). Adversarial tests pass: `doc_type: spec` on non-numbered or wrong-dir files rejected. Off-tree commit in `~/.agents/skills/shared-references/docscore.py` + 3 template files.
