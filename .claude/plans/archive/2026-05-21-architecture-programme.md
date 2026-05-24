@@ -1,5 +1,5 @@
 ---
-doc_type: plan
+doc_type: archived-plan
 project: small-giants-wp
 plan_name: architecture-programme-2026-05-21
 created: 2026-05-10
