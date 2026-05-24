@@ -35,7 +35,7 @@ primary_goal: "Run /skill-optimiser mode 2 + /batch-gap-analysis on the 15 WP/SG
 1. `.claude/plans/2026-05-24-strategic-plan.md` — strategic-plan parent
 2. `.claude/plans/2026-05-24-phase-1-structural-recovery.md` (SHIPPED) — what changed about the converter/pipeline tools
 3. `.claude/plans/2026-05-24-phase-2-parking-sweep.md` (SHIPPED) — what parking entries were closed
-4. `.claude/pipeline-state-debug-artefacts-inventory.md` — diagnostic artefact map
+4. `.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md` — diagnostic artefact map
 5. `.claude/cloning-pipeline-flow.md` — current pipeline state post Phases 1+2
 6. `reports/phase-7-skills-audit-2026-05-22.md` + `-extended-` — Phase 7 baseline (input)
 7. blub.db row 176 — gap-analysis discipline rule (https://blub.db / via curl)

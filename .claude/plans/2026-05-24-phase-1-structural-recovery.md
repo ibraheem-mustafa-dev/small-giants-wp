@@ -54,7 +54,7 @@ Empirical, evidence-cited, all required:
 
 1. `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` §2 (R1-R5 architectural rules) + §3 (FR1-FR9, especially FR1's two-route topology + FR4's normal-route start) + §14 (G1-G5 detail) + §15 (Wave 2 reshape = universal walker for normal route)
 2. `.claude/cloning-pipeline-flow.md` Stage 2 + Stage 4 (post-2026-05-23 reframing notes)
-3. `.claude/pipeline-state-debug-artefacts-inventory.md` — diagnostic artefact map
+3. `.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md` — diagnostic artefact map
 4. `pipeline-state/mamas-munches-homepage-2026-05-23-145045/` — canonical pre-Phase-1 baseline
    - Read `summary.log` first
    - Then `trace.jsonl` (filter by stage_2 + stage_4 per boundary)
@@ -124,7 +124,7 @@ The agent updates the matching doc the moment the event fires:
 | Deferred work / scope-creep | `.claude/parking.md` |
 | Pipeline stage behaviour changed | `.claude/cloning-pipeline-flow.md` |
 | DB schema, table, or read-path changed | `.claude/architecture.md` |
-| New pipeline-state artefact added | `.claude/pipeline-state-debug-artefacts-inventory.md` |
+| New pipeline-state artefact added | `.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md` |
 | New architectural RULE that should outlive session | Invoke `/capture-lesson` |
 
 ### Binding D — TodoWrite breakdown + per-sub-task status

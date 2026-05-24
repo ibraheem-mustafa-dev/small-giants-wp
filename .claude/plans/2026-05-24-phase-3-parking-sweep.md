@@ -30,7 +30,7 @@ primary_goal: "Close every STILL-OPEN parking entry EXCEPT P-BATCH-GA-14-SKILLS 
 
 1. `.claude/plans/2026-05-24-strategic-plan.md` — strategic-plan parent doc
 2. `.claude/plans/2026-05-24-phase-1-structural-recovery.md` — Phase 1 plan (READ REGARDLESS of completion status; if Phase 1 partially shipped, the documented edge case at Step 1.E "carry residual to Phase 2 scope" applies — Phase 2 cannot scope correctly without knowing what Phase 1 actually closed)
-3. `.claude/pipeline-state-debug-artefacts-inventory.md` — diagnostic artefact map
+3. `.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md` — diagnostic artefact map
 4. `.claude/parking.md` — live state of all entries. Read the "Still open" section in full first.
 5. `.claude/handoff.md` (post-Phase-1) — Phase 1 close-out numbers + residuals
 6. `pipeline-state/<latest>/stage-11-pixel-diff.json` — Phase 1 close baseline (no regression beyond ±5% allowed)

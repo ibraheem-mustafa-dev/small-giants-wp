@@ -67,7 +67,7 @@ Before applying any DB change:
 Architectural changes touch 10–15 docs, not 3.
 
 Doc walk = enumerate ALL of:
-- `.claude/*.md` (architecture, state, decisions, mistakes, parking, handoff, next-session-prompt, plans/, plan.md, goals.md, cloning-pipeline-flow.md, pipeline-state-debug-artefacts-inventory.md)
+- `.claude/*.md` (architecture, state, decisions, mistakes, parking, handoff, next-session-prompt, plans/, plan.md, goals.md, cloning-pipeline-flow.md, specs/21-PIPELINE-STATE-ARTEFACTS.md)
 - EVERY entry in `.claude/docs-registry.yaml` (29 canonical docs)
 - EVERY numbered spec in `.claude/specs/` (25 spec docs)
 - Active plans in `.claude/plans/*.md` (7 docs)

@@ -64,7 +64,7 @@ Phase 4 (Skill optimisation) — dedicated session
 
 ## Methodology guardrails (apply to ALL phases)
 
-1. **Diagnostic discipline (NEW 2026-05-23):** Before ANY pipeline-related fix-shape proposal, read the artefacts named in `.claude/pipeline-state-debug-artefacts-inventory.md` first. Do NOT conjecture root cause without trace.jsonl + summary.log + leftover-buckets.json in hand.
+1. **Diagnostic discipline (NEW 2026-05-23):** Before ANY pipeline-related fix-shape proposal, read the artefacts named in `.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md` first. Do NOT conjecture root cause without trace.jsonl + summary.log + leftover-buckets.json in hand.
 2. **blub.db row 254** — `pipeline-state/<run>/leftover-buckets.json` BEFORE converter conjecture
 3. **blub.db row 255** — Multi-model `/qc-council` BEFORE every commit touching converter/pipeline/SGS-block logic
 4. **blub.db row 256** — Per-section cropped pixel-diff via `--selector .sgs-{section}`; Stage 11 auto-does this
@@ -103,7 +103,7 @@ Phase 4 (Skill optimisation) — dedicated session
 ## Reference docs (READ BEFORE STARTING ANY PHASE)
 
 **Mandatory before Phase 1:**
-1. `.claude/pipeline-state-debug-artefacts-inventory.md` — diagnostic artefact map (NEW 2026-05-23)
+1. `.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md` — diagnostic artefact map (NEW 2026-05-23)
 2. `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` §15 — Wave 2 reshape full 4-step requirement
 3. `.claude/cloning-pipeline-flow.md` — pipeline flow with new Stage 11 + per-stage R/W tables
 4. `pipeline-state/mamas-munches-homepage-2026-05-23-145045/` — canonical baseline run + Stage 11 numbers
@@ -180,5 +180,5 @@ Per `~/.agents/skills/delegate/data/routing-table.json` defaults:
 - `.claude/plans/2026-05-24-phase-3-parking-sweep.md` — Phase 3 detailed plan (renamed from `phase-2-parking-sweep.md`)
 - `.claude/plans/2026-05-24-phase-4-skill-optimisation.md` — Phase 4 detailed plan (renamed from `phase-3-skill-optimisation.md`)
 - `.claude/specs/17-HEADER-FOOTER-ARCHITECTURE.md` — Phase 2 architectural reference
-- `.claude/pipeline-state-debug-artefacts-inventory.md` — diagnostic artefact map (NEW)
+- `.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md` — diagnostic artefact map (NEW)
 - `.claude/plans/2026-05-21-architecture-staging.md` — PARENT PLAN (PARTIAL per 2026-05-23 fact-check)

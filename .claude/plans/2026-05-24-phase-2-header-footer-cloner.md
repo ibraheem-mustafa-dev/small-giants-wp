@@ -49,7 +49,7 @@ primary_goal: "Build a specialised one-shot cloner that converts source mockup h
 10. `pipeline-state/mamas-munches-homepage-2026-05-23-145045/stage-11-pixel-diff.json` — header/footer baseline (44.9% / 96.3% mean)
 11. `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` — Phase 1 orchestrator (read only if KJC 1 picks integration mode)
 12. `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` — walker output shape (read only if KJC 1 picks integration; cloner reuses NOTHING from cv2 unless integration mode wins)
-13. `.claude/pipeline-state-debug-artefacts-inventory.md` — diagnostic artefact map (binding rule discipline)
+13. `.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md` — diagnostic artefact map (binding rule discipline)
 14. **`.claude/specs/19-SGS-CLI-COMMANDS.md` §4 — canonical `wp sgs ...` command surface (13 commands today, all already in production).** The cloner's deploy-actions.sh MUST call only commands listed here; never invent new commands. Particularly: `wp sgs site-info update <json>` (§4.3) for bulk Site Info, `wp sgs header-rules add <json>` (§4.8) for rule entries, `wp sgs footer-rules add` (§4.10), `wp sgs seed-template-parts [--variation=<slug>]` (§4.5) for template-part seeding. Run `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT * FROM hooks WHERE source = 'wp-cli'"` for the runtime-truth list if Spec 19 drifts.
 
 ## References

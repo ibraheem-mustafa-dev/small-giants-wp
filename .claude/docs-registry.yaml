@@ -8,231 +8,50 @@ last_updated: 2026-05-24
 project: small-giants-wp
 
 canonical_docs:
-  - path: .claude/CLAUDE.md
-    scope: forever
-    doc_type: project-rules
-    owns: "Project rules, hard rules, deploy commands, gotchas, framework architecture, naming conventions"
-    update_triggers:
-      - new_project_wide_rule
-      - hard_constraint_added
-      - deploy_command_change
+  # Narrative removed 2026-05-24 (Phase 10 D'-6). Each row carries path +
+  # scope + doc_type only; update_triggers + owns moved to per-template
+  # docs at ~/.agents/skills/shared-references/doc-templates/. Comments below
+  # mark removed entries for git-blame continuity.
 
-  - path: .claude/architecture.md
-    scope: forever
-    doc_type: architecture
-    owns: "System design + 354-feature audit + dev setup (high-level only)"
-    update_triggers:
-      - architectural_decision_affecting_system_shape
-      - major_dev_setup_change
-
-  - path: .claude/goals.md
-    scope: forever
-    doc_type: goals
-    owns: "Active project goals + exit criteria"
-    update_triggers:
-      - new_goal
-      - exit_criterion_change
-
-  - path: .claude/state.md
-    scope: forever_auto_regen
-    doc_type: state
-    sot_for: "current_phase, current_subphase, current_step, blockers"
-    update_triggers:
-      - handoff_run
-      - phase_transition
-      - subphase_transition
-      - new_blocker
-      - blocker_resolved
-
-  - path: .claude/handoff.md
-    scope: forever_auto_regen
-    doc_type: handoff
-    update_triggers:
-      - handoff_run
-
-  - path: .claude/next-session-prompt.md
-    scope: forever_auto_regen
-    doc_type: next-session-prompt
-    update_triggers:
-      - handoff_run_with_clear_next_task
-
-  - path: .claude/decisions.md
-    scope: forever_append_only
-    doc_type: decisions
-    update_triggers:
-      - architectural_decision
-      - scope_decision
-      - tooling_decision
-
-  - path: .claude/mistakes.md
-    scope: forever_append_only
-    doc_type: mistakes
-    sot_note: "blub.db /api/corrections is the actual SoT; this is human-readable mirror"
-    update_triggers:
-      - project_specific_behavioural_correction
-
-  - path: .claude/parking.md
-    scope: forever_append_only_with_status
-    doc_type: parking
-    update_triggers:
-      - deferred_work_added
-      - parked_item_resolved
-
-  - path: .claude/plan.md
-    scope: forever_master
-    doc_type: master-plan
-    update_triggers:
-      - phase_rename
-      - master_plan_revision
-      - new_top_level_milestone
-
-  - path: .claude/plans/2026-05-24-strategic-plan.md
-    scope: forever_until_recovery_complete
-    doc_type: strategic-plan
-    owns: "Post-architecture-recovery 4-phase strategic plan. Phase 1 = universal walker + G1+G3+G5 closure + arch programme leftovers. Phase 2 = header+footer specialised cloner (Spec 17). Phase 3 = parking sweep. Phase 4 = skill optimisation. Revised 2026-05-23 to insert Phase 2 + correct Phase 1 framing (FR1 fast-path vs normal-route per Spec 16 §FR1)."
-    update_triggers:
-      - phase_close
-      - new_gap_surfaced
-      - scope_reframe
-    references:
-      - .claude/plans/2026-05-24-phase-1-structural-recovery.md
-      - .claude/plans/2026-05-24-phase-2-header-footer-cloner.md
-      - .claude/plans/2026-05-24-phase-3-parking-sweep.md
-      - .claude/plans/2026-05-24-phase-4-skill-optimisation.md
-
-  - path: .claude/plans/2026-05-24-phase-1-structural-recovery.md
-    scope: forever_until_phase_1_shipped
-    doc_type: phase-plan
-    owns: "Phase 1 — close G1+G3+G5 entirely + ship universal walker (Spec 16 §15 steps 1-3 = normal-route build-up path) + FR1 pattern fast-path branch + OPEN-block emit for FR1-matched composite blocks + slot_list visual-slot extension + per-block DOM-shape fixes + hooks completion + role='content' DB sync + doc refresh"
-    update_triggers:
-      - step_complete
-      - acceptance_criterion_met_or_failed
-
-  - path: .claude/plans/2026-05-24-phase-2-header-footer-cloner.md
-    scope: forever_until_phase_2_shipped
-    doc_type: phase-plan
-    owns: "Phase 2 — Header + footer specialised cloning pipeline (new 2026-05-23). Standalone script that converts source mockup header/footer into Spec 17 architecture (template parts + Site Info + Customiser-controlled behaviours). Bypasses generic /sgs-clone page pipeline because chrome is 1-per-site + non-div-shaped + behaviours live in Customiser."
-    update_triggers:
-      - phase_scope_change
-      - phase_step_added_or_removed
-
-  - path: .claude/plans/2026-05-24-phase-3-parking-sweep.md
-    scope: forever_until_phase_3_shipped
-    doc_type: phase-plan
-    owns: "Phase 3 — close every STILL-OPEN parking entry EXCEPT P-BATCH-GA-14-SKILLS (Phase 4 owns that). Renumbered 2026-05-23 (was phase 2)."
-    update_triggers:
-      - parking_entry_closed
-      - parking_entry_reframed
-
-  - path: .claude/plans/2026-05-24-phase-4-skill-optimisation.md
-    scope: forever_until_phase_4_shipped
-    doc_type: phase-plan
-    owns: "Phase 4 — /skill-optimiser mode 2 + /batch-gap-analysis on 14 WP/SGS skills. blub.db row 176 HARD GATE: gap-analysis runs in main conversation only. Renumbered 2026-05-23 (was phase 3)."
-    update_triggers:
-      - skill_evaluated
-      - opportunity_actioned_or_deferred
-
-  - path: .claude/pipeline-state-debug-artefacts-inventory.md
-    scope: forever
-    doc_type: reference
-    owns: "Catalogue of EVERY artefact written by /sgs-clone into pipeline-state/<run_id>/. Each artefact mapped to role + writing stage + reading stage + diagnostic use. MANDATORY read before conjecturing about pipeline failures (blub.db row 254)."
-    update_triggers:
-      - new_pipeline_stage_added
-      - artefact_filename_changed
-      - artefact_retired
-
-  - path: .claude/cloning-pipeline-flow.md
-    scope: forever
-    doc_type: visual-reference
-    owns: "Annotated visual flow of /sgs-clone + /sgs-update with per-stage scripts, files, DB, skills, status"
-    update_triggers:
-      - pipeline_stage_change
-      - script_wired_or_unwired
-      - db_schema_change_affecting_pipeline
-      - skill_dispatch_change
+  - {path: .claude/CLAUDE.md,                                          scope: forever,                          doc_type: project-rules}
+  - {path: .claude/architecture.md,                                    scope: forever,                          doc_type: architecture}
+  - {path: .claude/dev-setup.md,                                       scope: forever,                          doc_type: dev-setup}
+  - {path: .claude/goals.md,                                           scope: forever,                          doc_type: goals}
+  - {path: .claude/state.md,                                           scope: forever_auto_regen,               doc_type: state}
+  - {path: .claude/handoff.md,                                         scope: forever_auto_regen,               doc_type: handoff}
+  - {path: .claude/next-session-prompt.md,                             scope: forever_auto_regen,               doc_type: next-session-prompt}
+  - {path: .claude/decisions.md,                                       scope: forever_append_only,              doc_type: decisions}
+  - {path: .claude/mistakes.md,                                        scope: forever_append_only,              doc_type: mistakes, sot_note: "blub.db /api/corrections + memory/feedback_*.md are SoT; this is keyword-stub index"}
+  - {path: .claude/parking.md,                                         scope: forever_append_only_with_status,  doc_type: parking}
+  - {path: .claude/plan.md,                                            scope: forever_master,                   doc_type: master-plan}
+  - {path: .claude/plans/2026-05-24-strategic-plan.md,                 scope: forever_until_recovery_complete,  doc_type: strategic-plan}
+  - {path: .claude/plans/2026-05-24-phase-1-structural-recovery.md,    scope: forever_until_phase_1_shipped,    doc_type: phase-plan}
+  - {path: .claude/plans/2026-05-24-phase-2-header-footer-cloner.md,   scope: forever_until_phase_2_shipped,    doc_type: phase-plan}
+  - {path: .claude/plans/2026-05-24-phase-3-parking-sweep.md,          scope: forever_until_phase_3_shipped,    doc_type: phase-plan}
+  - {path: .claude/plans/2026-05-24-phase-4-skill-optimisation.md,     scope: forever_until_phase_4_shipped,    doc_type: phase-plan}
+  - {path: .claude/specs/21-PIPELINE-STATE-ARTEFACTS.md,               scope: spec_version_canonical,           doc_type: spec, spec_version: 21}
+  - {path: .claude/cloning-pipeline-flow.md,                           scope: forever,                          doc_type: visual-reference}
+  - {path: .claude/cloning-pipeline-stages.md,                         scope: forever,                          doc_type: pipeline-stages-reference}
+  - {path: .claude/specs/02-SGS-BLOCKS.md,                             scope: spec_version_canonical,           doc_type: spec, spec_version: 2}
+  - {path: .claude/specs/16-DETERMINISTIC-CONVERTER-V2.md,             scope: spec_version_canonical,           doc_type: spec, spec_version: 16}
+  - {path: .claude/specs/17-HEADER-FOOTER-ARCHITECTURE.md,             scope: spec_version_canonical,           doc_type: spec, spec_version: 17}
+  - {path: .claude/specs/18-SGS-FLOATING-UI.md,                        scope: spec_version_canonical,           doc_type: spec, spec_version: 18}
+  - {path: .claude/specs/19-SGS-CLI-COMMANDS.md,                       scope: spec_version_canonical,           doc_type: spec, spec_version: 19}
+  - {path: .claude/specs/20-STRUCTURED-PIPELINE-LOG-SURFACING.md,      scope: spec_version_canonical,           doc_type: spec, spec_version: 20}
+  - {path: .claude/specs/common-wp-styling-errors.md,                  scope: forever_append_only,              doc_type: errors-catalogue}
 
   # REMOVED 2026-05-21: tooling-map.md / skills-commands-map.md / db-tables-map.md
-  # absorbed into cloning-pipeline-flow.md (Script inventory + Skill dispatch chain +
-  # DB heat-map sections). 9-line redirect stubs remain on disk but the registry
-  # walk no longer touches them.
-
-  - path: .claude/specs/02-SGS-BLOCKS.md
-    scope: spec_version_canonical
-    doc_type: spec
-    spec_version: 2
-    owns: "Block-by-block specifications + Phase 2A additions (sgs/responsive-logo, sgs/icon multi-source, sgs/timeline, pricing-table polish, universal-extension components, block attribute audit)"
-    update_triggers:
-      - block_added
-      - block_attribute_change
-      - block_retired
-
-  - path: .claude/specs/17-HEADER-FOOTER-ARCHITECTURE.md
-    scope: spec_version_canonical
-    doc_type: spec
-    spec_version: 17
-    owns: "Spec 17 header/footer architecture (Site Info store + rules engines + CPTs + WP-CLI + behaviour layer via body_class)"
-    update_triggers:
-      - architectural_change
-      - fr_addition
-      - new_behaviour_added
-
-  - path: .claude/specs/18-SGS-FLOATING-UI.md
-    scope: spec_version_canonical
-    doc_type: spec
-    spec_version: 18
-    owns: "Floating UI Customiser controls (7 canonical) — Back to Top + Reading Progress + integration with Sgs_Floating_UI_Renderer"
-    update_triggers:
-      - control_added_or_removed
-      - renderer_logic_change
-
-  - path: .claude/specs/19-SGS-CLI-COMMANDS.md
-    scope: spec_version_canonical
-    doc_type: spec
-    spec_version: 19
-    owns: "Canonical wp sgs CLI surface (12 commands + behaviour parameter — see Spec 17 behaviour layer)"
-    update_triggers:
-      - cli_command_added_or_removed
-      - cli_parameter_change
-
-  - path: .claude/specs/20-STRUCTURED-PIPELINE-LOG-SURFACING.md
-    scope: spec_version_canonical
-    doc_type: spec
-    spec_version: 20
-    note: "Stage 9c orchestrator surfaces per-severity logs from trace.jsonl at pipeline end. Shipped 2026-05-19 commit 1ea586b2 (B1 fix). Stage 9c placement-bug regression caught + fixed 2026-05-19 commit d2be3d6e."
-    owns: "Structured per-severity log emission (summary.log always; chrome-skipped.log / errors.log / warnings.log conditional) into pipeline-state/<run>/"
-    update_triggers:
-      - new_severity_bucket
-      - classifier_rule_change
-      - stage_9c_wiring_change
-
+  # → absorbed into cloning-pipeline-flow.md.
   # REMOVED 2026-05-21: specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md
-  # absorbed into Spec 16 §12 Appendix A. File retained for git-blame only.
-
-  - path: .claude/specs/16-DETERMINISTIC-CONVERTER-V2.md
-    scope: spec_version_canonical
-    doc_type: spec
-    spec_version: 16
-    note: "Concrete implementation of Spec 15 §7 Stages 3-7 via slot-aware DOM walker. Added 2026-05-14."
-    update_triggers:
-      - architectural_change
-      - fr_addition
-      - phase_rename
-
+  # → absorbed into Spec 16 §12 Appendix A.
   # REMOVED 2026-05-21: plans/spec-15-master-execution-plan.md and
-  # plans/phase-7-spec-16-converter-rollout.md — historical phase plans whose
-  # phases shipped 2026-05-13 → 2026-05-21. The active phase plan is whatever
-  # .claude/plans/phase-N-<active>.md exists (autopilot derives the active
-  # phase by walking that directory for the earliest non-complete plain file).
-  # Files remain on disk for git-blame; registry walk no longer touches them.
-
-  - path: .claude/specs/common-wp-styling-errors.md
-    scope: forever_append_only
-    doc_type: errors-catalogue
-    owns: "Cross-session catalogue of common WP styling/rendering errors with reproduction notes + fixes. Sections A-R as of 2026-05-15."
-    update_triggers:
-      - new_error_class_observed
-      - fix_documented_after_recurrence
-    note: "Captured lessons that point to specific styling-error rows should cross-link here so the catalogue stays the single search target for 'I've seen this before'."
+  # plans/phase-7-spec-16-converter-rollout.md → shipped phases; git-blame only.
+  # RENAMED 2026-05-24 (Phase 10 D'-3): pipeline-state-debug-artefacts-inventory.md
+  # → specs/21-PIPELINE-STATE-ARTEFACTS.md.
+  # SPLIT 2026-05-24 (Phase 10 D'-2): cloning-pipeline-flow.md → overview + new
+  # cloning-pipeline-stages.md.
+  # SPLIT 2026-05-24 (Phase 10 D'-1): architecture.md → Part A (here) +
+  # plans/archive/2026-02-21-feature-audit.md + new dev-setup.md.
 
 # Project credentials — gitignored files at .claude/secrets/credentials.yml
 # and .claude/secrets/sandybrown.env. NOT registry-tracked: they're loaded
