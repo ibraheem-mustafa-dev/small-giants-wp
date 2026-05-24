@@ -6,6 +6,21 @@ Append-only. Most-recent first.
 
 ---
 
+## 2026-05-24 — Doc-op programme: doc-type back-door close + skill alignment
+
+**D62 — doc_type self-declaration back-door closed in `docscore.py`.** Per qc-council Rater B finding (2026-05-24): any file could declare `doc_type: spec` in frontmatter and bypass spec-only checks. Fix: spec/archived-plan/dev-setup templates gain `filename_glob` + `required_dir` + `required_grandparent_dir` fields. `detect_doc_type` validates these constraints before honouring a declared doc_type; mismatches emit stderr warning + fall through. `reference` catch-all has no constraints (any doc can claim it). Adversarial tests pass: `doc_type: spec` on non-numbered or wrong-dir files rejected. Off-tree commit in `~/.agents/skills/shared-references/docscore.py` + 3 template files.
+
+**D63 — Doc-touching skills aligned to Phase 13 standards.** Audit (Sonnet subagent 2026-05-24) of every doc-producing skill/command found 4 minor + 3 major drifts from the new templates. All 7 fixed in `~/.claude/skills/` + `~/.agents/skills/`:
+- `docscore` command: doc-type list updated 11 → 15 (added archived-plan, dev-setup, reference, spec)
+- `spec-writer` output-templates: status enum 6 → 8 values (added superseded, retired)
+- `spec-writer` CLAUDE.md template: rewritten to reference Karpathy R1-R7 rules (≤80 lines, ≤5 IMPORTANT markers, verb-first, no inferable knowledge, hooks over repeated rules)
+- `phase-planner`: `doc_type: plan` → `doc_type: archived-plan` for completed phases
+- `project-init`: Phase 0 scaffold expanded 13 → 14 items (added `dev-setup.md`)
+- `strategic-plan` plan-template: added YAML frontmatter stub with status enum
+- `project-consolidate`: scaffold count 13 → 14; added Phase 13 doc-type addendum (archived-plan / dev-setup / reference + scope rule excluding memory/scratch/reports)
+
+`capture-lesson` + `handoff` command + `gap-analysis` + `qc-council` already aligned (shipped earlier this session). 8 doc-touching skills/commands verified in-sync.
+
 ## 2026-05-24 — Doc-op programme: Phase 13 full /docscore rule integration
 
 **D60 — Phase 13 expanded: U5 + X1 + X5 checks added to docscore.py + 5 doc-type templates rewritten to Phase 6c canonical shape.** Built on D59 by recovering U1-U8 / X1-X5 rule spec from `2774a269` (dropped by `3488b537`'s prompt update). Lives in `~/.agents/skills/shared-references/`. Template gains `meta: dict` field; `check_heading_hierarchy` honours per-template `require_h1: false`; 3 new checks: `check_no_dead_links` (U5), `check_registry_resolves` (X1), `check_memory_md_size` (X5). Verified: parking=100% A, next-session-prompt=100% A, decisions=79% B-, handoff=68% C, mistakes=69% C. Commit `3488b537` + this session.
