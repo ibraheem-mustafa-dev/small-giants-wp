@@ -142,7 +142,7 @@ These are the decisions a junior executor would pause on mid-phase. Pre-answered
 
 1. **"When the walker pre-pass conflicts with the existing FR1 fast-path, which wins?"** — The FR1 fast-path is correctly matching hero + trust-bar today. Don't break it. The new pre-pass is for sections that DON'T match FR1 — it should produce structured emit even when no registered block matches.
 
-2. **"What if Phase 1 hooks completion breaks the DB schema?"** — The schema is already correct. The gap is data, not structure. Use `/sgs-update --refresh-upstream` which is already implemented (Phase 4). Verify before commit via `SELECT COUNT(*) FROM hooks` matching legacy hooks.db count.
+2. **"What if Phase 1 hooks completion breaks the DB schema?"** — The schema is already correct. The gap is data, not structure. Run `/sgs-update` (Stage 2 live-scrapes the 10 canonical sources — `--refresh-upstream` flag retired 2026-05-24, see D56). Verify before commit via `SELECT COUNT(*) FROM hooks WHERE source IN ('native_wp', 'third_party')` against the pre-deletion baseline.
 
 3. **"What if the role='content' DB sync overwrites other attrs?"** — `/sgs-update` Stage 1 is idempotent (re-runs produce zero diffs per Phase 4 acceptance). Safe to run.
 

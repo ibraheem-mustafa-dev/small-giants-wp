@@ -883,14 +883,14 @@ Full research report: `.claude/reports/2026-05-21-pattern-overrides-research.md`
 
 > Per `.claude/plans/2026-05-21-architecture-staging.md` §6.1 — Decision 13, with completeness assurance from Decision 30.
 
-**Decision 13 [SHIPPED]:** `/sgs-update` rebuilt from 4 stages to 9 stages (Phase 4). All upstream scraping logic now lives inside `/sgs-update --refresh-upstream` (Mode B); the legacy source DBs + their MCP servers have been retired. Mode B walks 10 canonical sources and re-populates the merged tables, pinned to the active WP version tag.
+**Decision 13 [SHIPPED]:** `/sgs-update` rebuilt from 4 stages to 9 stages (Phase 4). All upstream scraping logic now lives inside `/sgs-update`; the legacy source DBs + their MCP servers have been retired. Stage 2 walks 10 canonical sources every invocation and re-populates the merged tables, pinned to the active WP version tag. **Post-shipment 2026-05-24 (D56):** the Mode A / Mode B distinction + the `--refresh-upstream` flag were retired (the refresh IS the default now). Stage 3 retired in the same close-out — Stage 2 Source 3 covers the wp-cli/handbook scrape.
 
 **9-stage holistic refresh:**
 
 | Stage | Function |
 |---|---|
 | 1 | SGS codebase scan (block.json + render.php + patterns) |
-| 2 | Core/Gutenberg cache refresh via `--refresh-upstream` (10 canonical sources) |
+| 2 | Core/Gutenberg cache refresh via live-scrape of 10 canonical sources (every invocation; `--refresh-upstream` flag retired 2026-05-24 — D56) |
 | 3 | WP-CLI handbook refresh |
 | 4 | Style-variation sync (per-client snapshot registration) |
 | 5 | Slot synonym auto-seed (fills unseeded `standalone_block` rows) |
@@ -899,9 +899,9 @@ Full research report: `.claude/reports/2026-05-21-pattern-overrides-research.md`
 | 8 | Uimax mirror (component_libraries, patterns, design_tokens, animations) |
 | 9 | Drift gate (per-release verification: every function in `since/<X.Y>/` must exist in DB) |
 
-**Decision 30 — Source completeness assurance:** `/sgs-update --refresh-upstream` MUST pull from all 10 canonical sources (gutenberg repo, wordpress-develop repo, wp-cli/handbook, `developer.wordpress.org/reference/since/<version>/`, field guide, dev blog, block-editor handbook, themes handbook, plugins handbook, REST handbook). The `since/<version>/` source was the gap that caused 6 missed WP 7.0 items in this session's initial audit.
+**Decision 30 — Source completeness assurance:** `/sgs-update` Stage 2 MUST pull from all 10 canonical sources (gutenberg repo, wordpress-develop repo, wp-cli/handbook, `developer.wordpress.org/reference/since/<version>/`, field guide, dev blog, block-editor handbook, themes handbook, plugins handbook, REST handbook). The `since/<version>/` source was the gap that caused 6 missed WP 7.0 items in this session's initial audit.
 
-**Per-release verification gate:** when `/sgs-update --refresh-upstream` runs, it cross-references every item in `developer.wordpress.org/reference/since/<X.Y>/` against the merged DB. Missing items → visible error naming each gap.
+**Per-release verification gate:** when `/sgs-update` runs (the `--refresh-upstream` flag was retired 2026-05-24 — the refresh is now the default), it cross-references every item in `developer.wordpress.org/reference/since/<X.Y>/` against the merged DB. Missing items → visible error naming each gap.
 
 ---
 

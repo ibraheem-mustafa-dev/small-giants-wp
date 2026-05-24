@@ -144,7 +144,7 @@ python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py context indus-foods # Lo
 8. Mirror sgs-blocks → uimax `~/.agents/skills/ui-ux-pro-max/data/component-libraries.csv` so `/ui-ux-pro-max` (the design brain) sees current SGS blocks alongside Radix UI Primitives, Headless UI, etc.
 9. Drift gate (checks for DB/codebase mismatches)
 
-Mode B (`--refresh-upstream`) scrapes 10 canonical sources (gutenberg repo, wp-develop repo, wp-cli handbook, `developer.wordpress.org/reference/since/<version>/`, field guide, dev blog, 4 handbooks). Verified 10/10 end-to-end with working `ghp_*` classic PAT.
+Stage 2 live-scrapes 10 canonical sources every invocation (gutenberg repo, wp-develop repo, wp-cli handbook, `developer.wordpress.org/reference/since/<version>/`, field guide, dev blog, 4 handbooks). Verified 10/10 end-to-end with working `ghp_*` classic PAT. **Note (2026-05-24, D56):** the Mode A / Mode B distinction + the `--refresh-upstream` CLI flag were retired — `/sgs-update` always live-scrapes now. Stage 3 retired in the same close-out (Stage 2 Source 3 covers the same wp-cli/handbook scrape).
 The uimax mirror step (Stage 8) is implemented in `plugins/sgs-blocks/scripts/uimax-tools/sgs-update-uimax-sync.py` (idempotent). The legacy animation gap-candidate scan short-circuits to `{"status":"retired"}` — the sgs-framework.db `animations` table was retired 2026-05-14; live store is `uimax.animations` in `~/.agents/skills/ui-ux-pro-max/scripts/ui-ux-pro-max.db`.
 
 ### `plugins/sgs-blocks/scripts/uimax-tools/` — write-side helpers

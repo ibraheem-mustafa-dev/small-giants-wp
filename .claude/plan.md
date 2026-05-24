@@ -88,7 +88,7 @@ Parked follow-ups for future sessions: see `parking.md` Session B block (7 entri
 - Button presets: `wp_options.sgs_button_presets` row deleted; values in theme.json; primary/secondary/outline render correctly
 - Customiser: header/footer/site-info admin pages migrated; live-preview works for colours + typography + spacing
 - WP 7.0: all 73 SGS blocks have `apiVersion: 3` + `role: content` + script-module text domains; pseudo-element styles render correctly
-- `/sgs-update`: 9-stage version idempotent; `--refresh-upstream` repopulates from 10 canonical sources; drift gate catches mismatches
+- `/sgs-update`: 9-stage version idempotent; Stage 2 always live-scrapes 10 canonical sources every invocation (the Mode A / Mode B distinction + `--refresh-upstream` flag were retired 2026-05-24 — see D56); drift gate catches mismatches
 
 ## Methodology guardrails (carry forward)
 

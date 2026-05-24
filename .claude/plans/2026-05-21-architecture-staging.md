@@ -7,7 +7,7 @@ generated: 2026-05-21
 absorbs_to: Specs 01, 02, 11, 16, 17, 18, 19 + common-wp-styling-errors.md (revision plan in §6)
 authors: Bean + Claude (Opus 4.7)
 wp_target_version: 7.0 (released 2026-05-14)
-implementation_status: Phase 0 SHIPPED 2026-05-21 (commit aec54882). 7 of 8 phases pending.
+implementation_status: All 8 phases SHIPPED (Phase 0 → 7 closed 2026-05-21 → 2026-05-22). Doc-op close-out 2026-05-24 retired the Mode A / Mode B distinction + the `--refresh-upstream` CLI flag (the refresh IS the default) + Stage 3 (Stage 2 Source 3 covers wp-cli/handbook). See decisions.md D56 + state.md `doc_op_programme` block.
 session_rounds: 5 pushback rounds before scope lock
 ---
 
@@ -18,6 +18,13 @@ This document is the **single canonical record** of all architectural decisions 
 **Purpose:** capture every decision with reasoning + WP 7.0 context + the existing-spec revision plan, BEFORE those existing specs get edited piecemeal. Once specs 01/02/11/16/17/18/19/common-wp-styling-errors are revised in light of this document (Phase C work), this staging doc gets archived to `.claude/plans/archive/`.
 
 **Origin:** session committed `ad706d0d` (Wave 2 wiring fix) then pivoted on Bean's brain-dump challenging the architecture as patchwork. Five rounds of pressure-testing produced this consolidated decision set.
+
+> **POST-SHIPMENT STATUS (2026-05-24 doc-op programme close-out).** All decisions below SHIPPED. Two architectural simplifications landed AFTER the 2026-05-21 design session and are NOT reflected in the historical decision text below:
+>
+> 1. **Mode A / Mode B / Stage 3 collapse** — the `--refresh-upstream` flag was retired; Stage 2 always live-scrapes 10 sources every invocation; Stage 3 retired (its wp-cli/handbook scrape moved to Stage 2 Source 3). The "Decision 13 + 30" wording below still uses "Mode B" + "--refresh-upstream" terminology — that's the original design language, preserved here as the historical record. See decisions.md D56 for the actual current-state post-shipment.
+> 2. **`block_compositions` table merged into `patterns.block_composition` JSON column** — see decisions.md D55.
+>
+> When reading this doc going forward: every "--refresh-upstream" → "Stage 2 (always-on)"; every "Mode B" → "Stage 2"; every "block_compositions table" → "patterns.block_composition JSON column".
 
 ---
 
