@@ -140,19 +140,33 @@ Update `docs-registry.yaml` paths post-Phase-9 moves. Write doc-optimisation dec
 
 Update `~/.claude/commands/docscore.md` (or its skill equivalent) with the universal + doc-type-specific rules from the original next-session-prompt-doc-op.md (sections U1-U8 + doc-type table + X1-X5 cross-doc rules + output format). Command should output a per-doc score against the rule-set + a remediation list.
 
-## Efficiency improvements (use these from session start)
+## Efficiency improvements — USE EXISTING SKILLS (corrected per Bean 2026-05-24)
 
-Per the 2026-05-24 execution session retrospective, these skills/commands would substantially accelerate the remaining work IF you build them first:
+Honest retrospective from the execution session: ~30-45 min of avoidable manual work + excess Sonnet tokens were burned by NOT using existing skills/commands. Use these from session start:
 
-1. **`/cc-refactor <function-name>`** — codifies the workflow used 10+ times in the cc sweep. Investigation → /qc-inline → baseline → implementer (cold prompt) → smoke-test → 2-rater review → fix non-blockers → commit. Saves ~5-10 min per refactor.
+| Skill / command | When to use | What it replaces |
+|---|---|---|
+| **`/capture-lesson`** | Every lesson surfaced during the session | Manual Write + frontmatter + blub.db POST. Saves ~5 min/lesson; ensures all 3 persistence layers stay in sync |
+| **`/handoff`** | Session close | Manual hand-writing of handoff.md + next-session-prompt.md. Auto-walks docs-registry.yaml for stale docs. Saves 10-15 min |
+| **`/delegate`** | EVERY Agent dispatch | Manual sonnet/haiku picking. Returns cheapest model that will succeed per task shape; routes mechanical reviewers to Cerebras (zero-cost) or Gemini Flash |
+| **`/qc-council`** | Multi-rater validation before any commit on pipeline code | Ad-hoc Agent-tool parallel reviewers. Has empirical pre/post measurement gates baked in + structured `qc_review` JSON outputs |
+| **`/subagent-prompt`** | Every cold-prompt-shaped Agent dispatch | Hand-writing the 6-section prompt template inline. Faster + more consistent across dispatches |
+| **`/search--local`** | Stage 1.5 of every task that builds/researches/evaluates (mandatory per autopilot) | I skipped this 100% of the time. Would have surfaced 2026-05-21 architecture-staging's shared-helper-pattern recommendations |
+| **`local-search.py` hook** | Same as `/search--local` (the underlying impl) | Zero-cost local context preload. Autopilot mandates this; I never ran it |
+| **`/dispatching-parallel-agents`** | Any parallel-Agent fanout (especially the 3-agent investigation pattern) | I ran the pattern manually 10+ times. Skill codifies it + handles failure cases |
+| **`/diagnostics` (mcp__ide__getDiagnostics)** | Reading SonarLint cc warnings + parse errors | Waiting for IDE auto-scan + reading from system-reminder. Direct call eliminates round-trip latency |
+| **`/cerebras`, `/gemini-flash`, `/gemini-pro`** | Mechanical reviewers + bulk processing | Routing everything to Sonnet/Haiku. Cerebras is zero-cost; perfect for "read this diff + answer 10 yes/no questions" reviewer slots |
+| **`/research-check` / `/research-buddies`** | Any "best practice for X" question that came up mid-refactor | Inline guessing or web search. Returns multi-source answers with citations |
+| **`/wp-blocks dump`** (via `wp-blocks.py`) | Schema enumeration before any "missing column/table" claim | Manual `python -c "import sqlite3..."` invocations. Binding rule #4 mandates the wp-blocks.py route |
+| **`/qc-inline`** | Reviewing any artifact mid-conversation | Ad-hoc reading. I used this once for the agent proposals; should have used it on every batch's diff |
 
-2. **`/baseline-and-smoke <cmd>`** — Bash helper that captures-runs-diffs in one call. Used ~10x this session.
+### Concrete use-by-phase
 
-3. **`/parking-entry <KEY>`** — quick parking entry writer with consistent format. Phase 6c will use this 10-20 times for the OPEN-only conversion.
-
-4. **Local `sonarlint` CLI hook** — function-name-keyed cc dump. Eliminates IDE-diagnostic round-trip + line-drift confusion that bit Batch 5 several times.
-
-If these don't get built, Phases 6, 9, 10 should still proceed using the manual workflow — just plan for ~20% extra time.
+- **Phase 6 (active prune):** Use `/capture-lesson` for each behavioural lesson surfaced during the prune (e.g. "this entry was kept because of X reasoning"). Use `/delegate` to route the mechanical entry-classification subagents to Cerebras.
+- **Phase 9 (spec relocation):** Use `/dispatching-parallel-agents` to fan out per-spec inbound-ref grep + same-commit-update. Use `/delegate` to route the mechanical grep-and-update branches to Haiku/Cerebras.
+- **Phase 10 (heavy-doc restructure):** Use `/subagent-prompt` for the cold prompts (6 atomic commits = 6 cold prompts). Use `/qc-council` for the multi-rater review on the architecture.md split (high-risk doc).
+- **Phase 13 (`/docscore` rules):** Use `/skill-writer` (already exists via `/lifecycle`) for the actual edit. Use `/qc-inline` on the rule-set after writing.
+- **Session close:** Use `/handoff` — don't hand-write next-session-prompt again.
 
 ## Process discipline that worked
 

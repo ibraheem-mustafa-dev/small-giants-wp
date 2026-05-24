@@ -124,31 +124,25 @@ This session was ~7 hours and dispatched 20+ subagents. Patterns worth codifying
 3. **Initial cc estimates from agents were optimistic.** Sonnet predicted `_scrape_handbook_sources_5_to_10` at cc=10 post-split; actual was 15 (had to split again). cc=29 reduction predictions landed at cc=29. Estimates over-reduced by ~30-40%. A `sonarlint` local CLI hook to ground-truth cc per function pre-implementation would calibrate.
 4. **Re-running `wc -c` / `grep` / `diff` manually for commit gates** — ~10 times this session. A `/baseline-and-smoke <command>` helper that captures-runs-diffs in one call would save tool overhead.
 
-### Skills/commands worth building before next refactor session
+### Existing skills/commands I should have used more aggressively
 
-1. **`/cc-refactor <function-name>`** — codifies the workflow used 10+ times this session:
-   - Identifies cc via SonarLint or AST analysis
-   - Dispatches investigation agent for refactor proposal
-   - Runs `/qc-inline` on the proposal
-   - Captures baseline (function-N stdout + return dict + relevant report file bytes)
-   - Dispatches implementer with cold prompt + commit-gate spec
-   - Re-runs baseline diff
-   - Dispatches 2-rater (Sonnet + Haiku) parallel review on the diff
-   - Auto-fixes any non-blocking concerns the reviewers raise
-   - Commits + pushes if all gates pass
+Honest retrospective (Bean directive 2026-05-24): ~30-45 min + excess Sonnet tokens burned this session by NOT using the tools that already exist:
 
-2. **`/baseline-and-smoke <cmd>`** — one Bash invocation that:
-   - Captures `cmd` output before edit (sha256 + first/last line)
-   - Reminds the operator to make their edit
-   - Re-runs `cmd` after edit
-   - Outputs the byte-diff + sha256 match indicator
-   - Optional `--report-file <path>` to diff a regenerated report file ignoring timestamp lines
+| Skill / command | What I did manually | Saving per use |
+|---|---|---|
+| `/capture-lesson` | Wrote 5 feedback_*.md files via Write tool | ~5 min/lesson — handles all 3 persistence layers (workspace + CC auto-memory + blub.db) consistently |
+| `/handoff` | Hand-wrote this handoff (~10 min effort) | ~10-15 min — auto-walks docs-registry.yaml for stale docs |
+| `/delegate` | Manually picked sonnet/haiku for ~20 Agent dispatches | Routes mechanical reviewers to Cerebras (zero-cost) or Gemini Flash |
+| `/qc-council` | Ad-hoc 2-rater Agent dispatches 10+ times | Built-in empirical pre/post measurement gate + structured `qc_review` JSON |
+| `/subagent-prompt` | Wrote cold prompts inline 15+ times | Structured 6-section template — faster + more consistent |
+| `/search--local` (autopilot Stage 1.5) | Never ran it once | Mandatory pre-build check. Would have surfaced 2026-05-21 architecture-staging's shared-helper-pattern recommendations |
+| `/dispatching-parallel-agents` | Ran the pattern manually 10+ times | Codifies failure handling + max_parallel caps |
+| `/diagnostics` (mcp__ide__getDiagnostics) | Read SonarLint cc warnings from system-reminder lag | Direct read — no round-trip wait |
+| `/cerebras`, `/gemini-flash` | Routed everything to Sonnet/Haiku | Cerebras zero-cost; perfect for mechanical reviewer slots |
+| `/wp-blocks dump` (binding rule #4) | Manual `python -c "import sqlite3..."` invocations | Mandated by binding rule #4 for any "missing column" claim |
+| `/qc-inline` | Used once for agent proposals; should have used per-batch | Inline single-pass QC verdict |
 
-3. **`/parking-entry <KEY>`** — quick parking-entry write with consistent format (status / context / trigger / effort), inserted in `.claude/parking.md` under the right date heading.
-
-4. **Local `sonarlint` CLI hook** — runs Cognitive Complexity rule on a single function by name, returns the number. Eliminates the IDE-diagnostic round-trip + line-drift confusion.
-
-5. **`/refactor-sweep <file>`** — given a single file with N cc warnings, dispatches one holistic investigation agent (like the one used this session for the 8-function batch plan), then runs `/cc-refactor` per function in dependency-aware order (shared-helper functions first), then commits each as a separate cohesive commit.
+Net: the next-session-prompt-doc-op.md `Efficiency improvements` section now lists these per-phase. Use them.
 
 ## Files modified this session
 
