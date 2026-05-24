@@ -1271,17 +1271,9 @@ def _extract_custom_leaf_keys(node: dict, prefix: str = "") -> list[tuple[str, s
 # Stage 4 helpers (promoted from inner defs for cognitive-complexity reduction)
 # ---------------------------------------------------------------------------
 
-def _build_token_candidates(snapshot: dict, client_slug: str) -> list[dict]:
-    """Extract design_token candidate rows from a parsed theme-snapshot.json.
-
-    Pure — no DB writes.
-    token_type values match DB CHECK constraint: 'colour'|'font'|'spacing'|'size'|'shadow'.
-    """
-    candidates: list[dict] = []
-    settings = snapshot.get("settings", {})
-
-    # --- colour palette ---
-    # token_type must match DB CHECK constraint: 'colour', 'font', 'spacing', 'size', 'shadow'
+def _extract_colour_tokens(settings: dict, client_slug: str) -> list[dict]:
+    """Extract colour tokens from settings.color.palette."""
+    result: list[dict] = []
     for item in settings.get("color", {}).get("palette", []):
         slug = item.get("slug", "")
         colour = item.get("color", "")
@@ -1289,15 +1281,19 @@ def _build_token_candidates(snapshot: dict, client_slug: str) -> list[dict]:
         # Skip forward-reference colours (value is another slug, not a hex/rgb)
         if not slug or not colour or colour.startswith("var(") or not colour.startswith("#"):
             continue
-        candidates.append({
+        result.append({
             "slug": f"color-{slug}",
             "token_type": "colour",  # matches DB CHECK('colour', 'font', 'spacing', 'size', 'shadow')
             "default_value": colour,
             "css_var": f"var(--wp--preset--color--{slug})",
             "description": f"{name} (from {client_slug})",
         })
+    return result
 
-    # --- font sizes ---
+
+def _extract_font_size_tokens(settings: dict, client_slug: str) -> list[dict]:
+    """Extract font-size tokens from settings.typography.fontSizes."""
+    result: list[dict] = []
     for item in settings.get("typography", {}).get("fontSizes", []):
         slug = item.get("slug", "")
         size = item.get("size", "")
@@ -1305,61 +1301,142 @@ def _build_token_candidates(snapshot: dict, client_slug: str) -> list[dict]:
         # Skip invalid / placeholder entries (e.g. slug="px", size="px")
         if not slug or not size or size == slug or "px" == slug:
             continue
-        candidates.append({
+        result.append({
             "slug": f"font-size-{slug}",
             "token_type": "size",
             "default_value": str(size),
             "css_var": f"var(--wp--preset--font-size--{slug})",
             "description": f"{name} (from {client_slug})",
         })
+    return result
 
-    # --- font families ---
-    # token_type 'font' matches DB CHECK constraint
+
+def _extract_font_family_tokens(settings: dict, client_slug: str) -> list[dict]:
+    """Extract font-family tokens from settings.typography.fontFamilies."""
+    result: list[dict] = []
     for item in settings.get("typography", {}).get("fontFamilies", []):
         slug = item.get("slug", "")
         family = item.get("fontFamily", "")
         name = item.get("name", slug)
         if not slug or not family:
             continue
-        candidates.append({
+        result.append({
             "slug": f"font-family-{slug}",
             "token_type": "font",  # matches DB CHECK('colour', 'font', 'spacing', 'size', 'shadow')
             "default_value": family,
             "css_var": f"var(--wp--preset--font-family--{slug})",
             "description": f"{name} (from {client_slug})",
         })
+    return result
 
-    # --- spacing sizes ---
+
+def _extract_spacing_tokens(settings: dict, client_slug: str) -> list[dict]:
+    """Extract spacing tokens from settings.spacing.spacingSizes."""
+    result: list[dict] = []
     for item in settings.get("spacing", {}).get("spacingSizes", []):
         slug = item.get("slug", "")
         size = item.get("size", "")
         name = item.get("name", slug)
         if not slug or not size or size == slug or slug == "px":
             continue
-        candidates.append({
+        result.append({
             "slug": f"spacing-{slug}",
             "token_type": "spacing",  # matches DB CHECK constraint
             "default_value": str(size),
             "css_var": f"var(--wp--preset--spacing--{slug})",
             "description": f"{name} (from {client_slug})",
         })
+    return result
 
-    # --- shadow presets ---
+
+def _extract_shadow_tokens(settings: dict, client_slug: str) -> list[dict]:
+    """Extract shadow tokens from settings.shadow.presets."""
+    result: list[dict] = []
     for item in settings.get("shadow", {}).get("presets", []):
         slug = item.get("slug", "")
         shadow = item.get("shadow", "")
         name = item.get("name", slug)
         if not slug or not shadow:
             continue
-        candidates.append({
+        result.append({
             "slug": f"shadow-{slug}",
             "token_type": "shadow",
             "default_value": shadow,
             "css_var": f"var(--wp--preset--shadow--{slug})",
             "description": f"{name} (from {client_slug})",
         })
+    return result
 
-    return candidates
+
+def _build_token_candidates(snapshot: dict, client_slug: str) -> list[dict]:
+    """Extract design_token candidate rows from a parsed theme-snapshot.json.
+
+    Pure — no DB writes.
+    token_type values match DB CHECK constraint: 'colour'|'font'|'spacing'|'size'|'shadow'.
+    """
+    settings = snapshot.get("settings", {})
+    return (
+        _extract_colour_tokens(settings, client_slug)
+        + _extract_font_size_tokens(settings, client_slug)
+        + _extract_font_family_tokens(settings, client_slug)
+        + _extract_spacing_tokens(settings, client_slug)
+        + _extract_shadow_tokens(settings, client_slug)
+    )
+
+
+def _resolve_token_conflict(
+    cursor: sqlite3.Cursor,
+    tok: dict,
+    client_slug: str,
+) -> tuple[str | None, tuple | None]:
+    """If slug exists with a different value, return (prefixed_slug, existing_prefixed_row).
+
+    Returns (None, None) if no conflict (no existing row or matching value).
+    existing_prefixed_row is the `cursor.fetchone()` tuple (truthy) when the
+    prefixed row already exists in design_tokens, else None. Callers should
+    check `is not None`, not unpack the tuple.
+    """
+    slug = tok["slug"]
+    existing = cursor.execute(
+        "SELECT default_value FROM design_tokens WHERE slug = ?",
+        (slug,),
+    ).fetchone()
+    if existing is None or existing[0] == tok["default_value"]:
+        return (None, None)
+    prefixed_slug = f"{client_slug}-{slug}"
+    existing_prefixed = cursor.execute(
+        "SELECT 1 FROM design_tokens WHERE slug = ?",
+        (prefixed_slug,),
+    ).fetchone()
+    return (prefixed_slug, existing_prefixed)
+
+
+def _do_insert_token(cursor: sqlite3.Cursor, slug: str, tok: dict, dry_run: bool) -> bool:
+    """INSERT OR IGNORE into design_tokens with the standard column set.
+
+    Returns True when a row was (or would be) inserted, False on duplicate.
+    In dry-run mode does a defensive SELECT 1 to determine the would-be outcome.
+    """
+    if dry_run:
+        exists = cursor.execute(
+            "SELECT 1 FROM design_tokens WHERE slug = ?", (slug,)
+        ).fetchone()
+        return exists is None
+    res = cursor.execute(
+        """
+        INSERT OR IGNORE INTO design_tokens
+            (slug, token_type, default_value, css_var, description)
+        VALUES (?, ?, ?, ?, ?)
+        """,
+        (
+            slug,
+            tok["token_type"],
+            tok["default_value"],
+            tok["css_var"],
+            tok["description"],
+        ),
+    )
+    return res.rowcount > 0
 
 
 def _write_token_row(
@@ -1381,66 +1458,37 @@ def _write_token_row(
     client slug is passed via tok['_client_slug'] private key (injected by caller).
     """
     slug = tok["slug"]
+
+    # Check for existing row first (needed for the no-conflict path)
     existing = cursor.execute(
         "SELECT default_value FROM design_tokens WHERE slug = ?",
         (slug,),
     ).fetchone()
 
+    if existing is not None and existing[0] == tok["default_value"]:
+        # Exact match — idempotent skip
+        return ("skipped", None)
+
     if existing is not None:
-        if existing[0] == tok["default_value"]:
-            # Exact match — idempotent skip
-            return ("skipped", None)
-        else:
-            # Different value — prefix slug with client slug to avoid collision.
-            client_slug = tok["_client_slug"]
-            prefixed_slug = f"{client_slug}-{slug}"
-            existing_prefixed = cursor.execute(
-                "SELECT 1 FROM design_tokens WHERE slug = ?",
-                (prefixed_slug,),
-            ).fetchone()
-            if existing_prefixed is not None:
-                # Prefixed row already written on a previous run — conflict but no new insert
-                return ("conflict-skipped", prefixed_slug)
-            if not dry_run:
-                cursor.execute(
-                    """
-                    INSERT OR IGNORE INTO design_tokens
-                        (slug, token_type, default_value, css_var, description)
-                    VALUES (?, ?, ?, ?, ?)
-                    """,
-                    (
-                        prefixed_slug,
-                        tok["token_type"],
-                        tok["default_value"],
-                        tok["css_var"],
-                        tok["description"],
-                    ),
-                )
-            return ("conflict-inserted", prefixed_slug)
-    else:
-        # New row — insert
-        if not dry_run:
-            res = cursor.execute(
-                """
-                INSERT OR IGNORE INTO design_tokens
-                    (slug, token_type, default_value, css_var, description)
-                VALUES (?, ?, ?, ?, ?)
-                """,
-                (
-                    slug,
-                    tok["token_type"],
-                    tok["default_value"],
-                    tok["css_var"],
-                    tok["description"],
-                ),
-            )
-            if res.rowcount > 0:
-                return ("inserted", None)
-            else:
-                return ("skipped", None)
-        else:
-            # dry-run: count as would-insert
-            return ("inserted", None)
+        # Different value — conflict path
+        client_slug = tok["_client_slug"]
+        prefixed_slug, existing_prefixed = _resolve_token_conflict(cursor, tok, client_slug)
+        if existing_prefixed is not None:
+            # Prefixed row already written on a previous run — conflict but no new insert
+            return ("conflict-skipped", prefixed_slug)
+        # Return value intentionally ignored: _resolve_token_conflict already
+        # verified the prefixed row does NOT exist (existing_prefixed is None
+        # above), so this insert is always a new write under normal conditions.
+        # A race-condition duplicate would still emit ("conflict-inserted",…),
+        # which matches the original behaviour pre-refactor.
+        _do_insert_token(cursor, prefixed_slug, tok, dry_run)
+        return ("conflict-inserted", prefixed_slug)
+
+    # New row — insert
+    inserted = _do_insert_token(cursor, slug, tok, dry_run)
+    if inserted:
+        return ("inserted", None)
+    return ("skipped", None)
 
 
 def _process_client_snapshot(
