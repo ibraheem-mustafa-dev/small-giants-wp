@@ -4,7 +4,7 @@
 
 generated: 2026-05-15
 last_trimmed: 2026-05-21
-last_updated: 2026-05-22
+last_updated: 2026-05-24
 project: small-giants-wp
 
 canonical_docs:
@@ -413,8 +413,22 @@ retention_rules:
     note: durable QC / audit / lifecycle reports
 
   - directory: .claude/memory/
-    policy: forever
+    policy: per_doc_type_ttl
     note: archived handoffs + consolidation receipts; handoff rotates current INTO memory on next session
+    # Phase 7 (F4, 2026-05-24) — per-doc-type TTL for files inside .claude/memory/.
+    # Trigger: manual prune at /handoff session-close until APScheduler runner picks it up.
+    # Filename matchers below are evaluated in order; first match wins.
+    by_doc_type:
+      - matches: "next-session-prompt-*.md"
+        ttl_days: 30
+        rationale: "Next-session prompts go stale fast — the session they targeted either ran or got superseded. Keep last 30 days for git-blame back-reference; rotate older into git log."
+      - matches: "handoff-*.md"
+        ttl_days: 60
+        rationale: "Handoffs hold the only narrative continuity record across sessions. 60 days covers the typical 'what happened on this branch' lookback window."
+      - matches: "*"
+        ttl_days: null
+        rationale: "Consolidation receipts, archived specs, and other memory artefacts are forever — they're the audit trail."
+    cleanup_script: "(future) plugins/sgs-blocks/scripts/prune-memory-by-ttl.py — manual today, APScheduler-triggered post-Phase-1 migration"
 
   - directory: .claude/scratch/absorbed/
     policy: forever
