@@ -187,7 +187,7 @@ This master plan was archived 2026-05-18; Phase 7 (Spec 16 converter rollout) an
 
 G1 + G3 + G5 reframed as ONE wiring gap. Detail in `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` §15.
 
-The 2026-05-20 council framing (5 structural gaps + F5 = 4 waves) is superseded by the 2026-05-21 reality check finding: the SGS-framework.db has the complete mapping infrastructure cv2 needs (`property_suffixes` 117 / `slot_synonyms` 89 / `block_compositions` 37 / `block_attributes` 1755 / `modifier_suffixes` 19) but cv2 doesn't query `block_compositions` at all and doesn't query `property_suffixes` for visual / structural slots. Wave 2 is one architectural change wiring the DB tables into the walker's emit shape, not three per-block fixes.
+The 2026-05-20 council framing (5 structural gaps + F5 = 4 waves) is superseded by the 2026-05-21 reality check finding: the SGS-framework.db has the complete mapping infrastructure cv2 needs (`property_suffixes` 117 / `slot_synonyms` 89 / `block_attributes` 1755 / `modifier_suffixes` 19, plus pattern-composition data on the `patterns.block_composition` JSON column) but cv2 doesn't query that composition data at all and doesn't query `property_suffixes` for visual / structural slots. Wave 2 is one architectural change wiring the DB tables into the walker's emit shape, not three per-block fixes.
 
 **Status as of 2026-05-21 close:**
 - G2 Step 1+2 shipped — enabling infrastructure (commit `affca3f1`)

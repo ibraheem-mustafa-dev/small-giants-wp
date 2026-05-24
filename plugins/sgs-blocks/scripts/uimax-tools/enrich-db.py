@@ -940,7 +940,7 @@ def run_all(repo_path: Path | None, dry_run: bool) -> None:
         results.setdefault("2.7", {})[label] = n
 
         # 2.8 pattern_coverage
-        print(f"\n{verb}Target 2.8 — pattern_coverage from block_compositions + patterns")
+        print(f"\n{verb}Target 2.8 — pattern_coverage from patterns + patterns.block_composition")
         n = target_28_pattern_coverage(conn, repo_path, dry_run)
         print(f"  {verb}inserted pattern_coverage: {n}")
         results.setdefault("2.8", {})[label] = n

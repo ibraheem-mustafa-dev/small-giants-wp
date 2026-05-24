@@ -1,24 +1,23 @@
 #!/usr/bin/env python3
-"""Seed sgs-framework.db `block_compositions` from theme pattern files.
+"""Seed `patterns.block_composition` JSON column from theme pattern files.
 
 Walks theme/sgs-theme/patterns/*.php, extracts the `Slug:` + `Title:` +
-`Description:` headers and every <!-- wp:sgs/<block> --> marker, then INSERTs
-one row per pattern into block_compositions.
+`Description:` headers and every <!-- wp:sgs/<block> --> marker, then UPDATEs
+the matching `patterns` row's `block_composition` JSON column with the
+composition payload.
+
+This script enriches existing pattern rows in place — it does NOT register
+new patterns. Pattern registration is owned by `pattern-register.py`; rows
+for patterns that haven't been registered yet are reported under the
+`skipped-no-pattern` counter.
 
 Idempotent semantics:
-- Existing rows (matched by `auto_pattern_slug`) are LEFT ALONE. Any manual
-  edits to composition_name / block_slugs / industry / page_type / description
-  are preserved on re-run.
-- New patterns produce a fresh INSERT.
-- Removed patterns leave orphan rows; they are NOT auto-deleted (deletion is a
-  separate maintenance concern).
-
-This means the row count is monotonically non-decreasing across runs once the
-table is populated -- "re-run preserves count" per the README contract.
-
-Run with `--refresh-existing` to UPDATE existing rows with freshly-scanned
-block_slugs / description (useful when pattern files drift and you want the DB
-to catch up).
+- Pattern rows that already have a non-NULL `block_composition` value are LEFT
+  ALONE so any operator edits are preserved on re-run. Pass
+  `--refresh-existing` to overwrite them with freshly-scanned data.
+- Pattern rows with NULL `block_composition` get a fresh write.
+- Pattern files whose slug doesn't match a registered pattern are reported
+  under `skipped-no-pattern` and left for `pattern-register.py` to handle.
 """
 
 from __future__ import annotations
@@ -101,11 +100,6 @@ def upsert(
 ) -> str:
     """Upsert composition data into patterns.block_composition JSON column.
 
-    Migration note (2026-05-24): the previous `block_compositions` table was
-    merged into `patterns.block_composition` (JSON column). This function now
-    updates that JSON column on the matching pattern row rather than
-    INSERTing into the dropped table.
-
     Returns 'inserted' / 'updated' / 'unchanged' / 'skipped-existing' /
     'skipped-no-pattern'.
     """
@@ -127,8 +121,6 @@ def upsert(
         "name": info["composition_name"],
         "block_slugs": info["block_slugs"],
         "description": info["description"],
-        "migrated_from": "block_compositions",
-        "migrated_at": "2026-05-24",
     }
     new_json = json.dumps(new_payload, ensure_ascii=False)
 
@@ -157,7 +149,7 @@ def upsert(
 
 
 def main(argv: list[str]) -> int:
-    parser = argparse.ArgumentParser(description="Seed block_compositions from theme patterns.")
+    parser = argparse.ArgumentParser(description="Seed patterns.block_composition JSON column from theme patterns.")
     parser.add_argument(
         "--refresh-existing",
         action="store_true",
@@ -207,7 +199,7 @@ def main(argv: list[str]) -> int:
         mode.append("REFRESH MODE")
     mode_str = f" ({', '.join(mode)})" if mode else ""
 
-    print(f"block_compositions seed complete{mode_str}:")
+    print(f"patterns.block_composition seed complete{mode_str}:")
     print(f"  scanned          : {len(php_files)} pattern files")
     print(f"  inserted         : {counters['inserted']}")
     print(f"  updated          : {counters['updated']}")
@@ -219,9 +211,6 @@ def main(argv: list[str]) -> int:
         more = f" (+{len(skipped_files) - 10} more)" if len(skipped_files) > 10 else ""
         print(f"  no-header files  : {sample}{more}")
 
-    # Migration 2026-05-24: block_compositions table merged into
-    # patterns.block_composition (JSON column) and dropped. Report patterns
-    # rows with composition data populated instead.
     conn = sqlite3.connect(DB_PATH)
     total = conn.execute(
         "SELECT COUNT(*) FROM patterns WHERE block_composition IS NOT NULL"

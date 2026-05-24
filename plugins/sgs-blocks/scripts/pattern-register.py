@@ -7,7 +7,8 @@ Takes an HTML file + classification metadata and registers a new SGS WordPress p
   3. Classifies the pattern (via pattern-classify.py when available)
   4. Operator confirmation (skipped with --auto or --dry-run)
   5. Writes pattern.php + pattern.meta.json to disk
-  6. INSERTs into `patterns` and `block_compositions` tables
+  6. INSERTs into the `patterns` table (composition data stored in the
+     `patterns.block_composition` JSON column)
   7. Calls /sgs-update to refresh the DB scan
 
 Usage:
@@ -396,7 +397,7 @@ def _insert_pattern(
         print(f"[ok] Inserted pattern '{slug}' into DB.")
 
 
-def _insert_block_compositions(
+def _write_block_composition(
     con: sqlite3.Connection,
     slug: str,
     classification: dict,
@@ -405,15 +406,9 @@ def _insert_block_compositions(
     """
     UPDATE `patterns.block_composition` JSON column for the given pattern.
 
-    Migration note (2026-05-24): the previous `block_compositions` table was
-    merged into `patterns.block_composition` (JSON object). This function now
-    composes a JSON payload and UPDATEs the pattern row in-place rather than
-    INSERTing into the dropped table.
-
     Schema of the JSON payload:
       { "name": str, "block_slugs": [...], "frequency": int, "industry": str,
-        "page_type": str, "description": str, "migrated_from": str,
-        "migrated_at": str }
+        "page_type": str, "description": str }
     """
     raw = classification.get("block_composition", [])
     if not raw:
@@ -448,8 +443,6 @@ def _insert_block_compositions(
             "industry": comp.get("industry", classification.get("industry", "general")),
             "page_type": comp.get("page_type", ""),
             "description": comp.get("description", ""),
-            "migrated_from": "block_compositions",
-            "migrated_at": "2026-05-24",
         }
         payloads.append(payload)
 
@@ -769,7 +762,7 @@ def run(args: argparse.Namespace) -> None:
     # -----------------------------------------------------------------------
     print("[step 6/6] Inserting into DB and refreshing SGS knowledge base...")
     _insert_pattern(con, args.slug, classification, fp_result, args.source, target_dir, args.dry_run)
-    _insert_block_compositions(con, args.slug, classification, args.dry_run)
+    _write_block_composition(con, args.slug, classification, args.dry_run)
     con.close()
 
     _call_sgs_update(args.dry_run)

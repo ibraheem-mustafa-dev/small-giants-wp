@@ -119,7 +119,7 @@ This rule exists because framework fixes shipped on a feature branch pollute his
 
 The `sgs-wp-engine` skill is the central authority. Invoke it for any SGS work. It provides:
 
-- **SQLite knowledge base** — 66 blocks, 619+ attributes, 25 design tokens, 36 patterns (block_compositions table seeded 2026-05-10)
+- **SQLite knowledge base** — 66 blocks, 619+ attributes, 25 design tokens, 36 patterns (composition data on `patterns.block_composition` JSON column)
 - **33 reference docs** — migration methodology, design-compare tool, QA pipeline, marketing playbook, brand.json, Indus comparison data, and more
 - **12 scripts** — 6 design QA JS scripts, sgs-db.py, touch-scan, pattern generator, DB tools
 
@@ -153,7 +153,7 @@ The uimax mirror step (Stage 8) is implemented in `plugins/sgs-blocks/scripts/ui
 |---|---|
 | `uimax-write-validator.py` | Pre-write validator. Rejects payloads missing `equivalent_implementations.sgs_block` on artefact tables (row 213 Rosetta Stone discipline). |
 | `uimax_write.py` | Python helper module — atomic validate-then-write. Single chokepoint so future write code can't accidentally skip the validator. |
-| `seed-block-compositions.py` | One-shot seed script for sgs-framework.db `block_compositions` table (idempotent). |
+| `seed-block-compositions.py` | One-shot seed script for the `patterns.block_composition` JSON column (idempotent). |
 | `sgs-update-uimax-sync.py` | Stage 8 uimax mirror step called by `/sgs-update` (v2). |
 
 Full README at `plugins/sgs-blocks/scripts/uimax-tools/README.md`.

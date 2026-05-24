@@ -63,7 +63,7 @@ Option 1 is cheapest and already factually correct (the bucket gate IS the struc
 
 ### 1. Subagent fabricated a non-existent DB table claim — fact-check before trusting
 
-A subagent report claimed `block_compositions` was "read at Stage 4 runtime by the walker to determine parent-child block relations." This is false — `block_compositions` is WRITE-ONLY at clone runtime (only `pattern-register.py` + `seed-block-compositions.py` write to it; the walker uses `block_attributes.derived_selector` and `blocks.parent_block` instead). The claim was verified false by an independent verify-loop (2026-05-23). The subagent's framing looked plausible because the table DOES contain parent-child data that *should* be used by the walker — it just isn't yet.
+A subagent report claimed `block_compositions` (a since-dropped table, merged into the `patterns.block_composition` JSON column on 2026-05-24) was "read at Stage 4 runtime by the walker to determine parent-child block relations." This was false — that data has always been WRITE-ONLY at clone runtime (only `pattern-register.py` + `seed-block-compositions.py` write to it; the walker uses `block_attributes.derived_selector` and `blocks.parent_block` instead). The claim was verified false by an independent verify-loop (2026-05-23). The subagent's framing looked plausible because the data *should* be used by the walker — it just isn't yet.
 
 **Rule:** Before accepting a subagent's claim about which DB tables are read at runtime, run a schema enumeration (`python ~/.claude/hooks/wp-blocks.py dump`) AND grep the production script for the table name. Plausibility is not evidence. Extends binding rule #4 (schema enumeration before gap claims).
 
@@ -434,7 +434,7 @@ Function-level behavioural equivalence is NOT sufficient. Captured as `feedback_
 
 ## 2026-05-17 — Added rows to hardcoded `_CSS_PROP_TO_SUFFIX` dict when property_suffixes DB table already had 99 rows for the same purpose
 
-**The rule:** Before adding hardcoded lookup data to converter / recogniser / orchestrator scripts (`convert.py`, `per-section-convention-voter.py`, etc.), check `.claude/db-tables-map.md` for an existing canonical table. sgs-framework.db has `property_suffixes` (117 rows), `block_supports` (370 rows), `modifier_suffixes` (19 rows, kind='breakpoint' + corner + side + state), `slot_synonyms`, `block_attributes` (1406 rows), `block_selectors`, `block_compositions`. Refactor scripts to read via `db_lookup.py`; never add another in-script dict. The DB is canonical, fed by `/sgs-update`; manual dicts in scripts do not sync.
+**The rule:** Before adding hardcoded lookup data to converter / recogniser / orchestrator scripts (`convert.py`, `per-section-convention-voter.py`, etc.), check `.claude/db-tables-map.md` for an existing canonical table. sgs-framework.db has `property_suffixes` (117 rows), `block_supports` (370 rows), `modifier_suffixes` (19 rows, kind='breakpoint' + corner + side + state), `slot_synonyms`, `block_attributes` (1406 rows), `block_selectors`, and pattern composition data on `patterns.block_composition`. Refactor scripts to read via `db_lookup.py`; never add another in-script dict. The DB is canonical, fed by `/sgs-update`; manual dicts in scripts do not sync.
 
 **Incident:** Added margin/gap rows to `convert.py:_CSS_PROP_TO_SUFFIX` (taking it to 21 hardcoded rows) when Bean pointed out the DB has a `property_suffixes` table. Inspection revealed 99 rows for the same lookup. Every "small fix" that session (margin/gap suffix, retired-block remap, hero `__split-image` lookup) duplicated DB-driven data. The recognition gap was not missing DATA — it was missing DB READS.
 
@@ -646,7 +646,7 @@ Bean rejected this twice in the same session. First in `cloning-skill-salvage-ma
 
 The entire `source` taxonomy is `idea` / `draft` / `<URL>`. No `license`, `provenance_license`, `source_license`, or "IP firewall" columns. No separate `clone_observations` table justified by IP risk.
 
-**How to apply:** when designing schemas for `patterns`, `block_compositions`, uimax tables, or any cloning artefact, do not propose licensing/copyright/provenance-IP columns. When framing competitor patterns, never use IP-risk / redistribution-risk language. If a future spec genuinely needs copyright thinking (e.g. paid stock image asset attribution), surface it as **attribution** (asset-level), not **licensing** (pattern-level), and ask Bean first. Self-check trigger phrases: "license", "IP", "copyright", "provenance", "redistribution", "firewall between", "promotion path", "external_patterns".
+**How to apply:** when designing schemas for `patterns`, uimax tables, or any cloning artefact, do not propose licensing/copyright/provenance-IP columns. When framing competitor patterns, never use IP-risk / redistribution-risk language. If a future spec genuinely needs copyright thinking (e.g. paid stock image asset attribution), surface it as **attribution** (asset-level), not **licensing** (pattern-level), and ask Bean first. Self-check trigger phrases: "license", "IP", "copyright", "provenance", "redistribution", "firewall between", "promotion path", "external_patterns".
 
 ## 2026-05-08 — 4-model peer review found 11 fixes the design needed before first clone
 

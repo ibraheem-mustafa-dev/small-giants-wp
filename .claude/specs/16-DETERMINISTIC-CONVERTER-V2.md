@@ -576,10 +576,10 @@ L3 — MAPPING LAYER (Rosetta Stone): slot synonyms · property suffixes · modi
      suffixes · output-signature canonicalisation · token value-matcher · default-
      inheritance check · cross-platform composition
 L2 — DATA LAYER: sgs-framework.db (blocks, block_attributes [canonical_slot + role
-     + derived_selector + output_signature + equivalent_implementations], patterns,
-     block_compositions, design_tokens, block_selectors, slot_synonyms,
-     property_suffixes, modifier_suffixes, legacy_role_lookup [added Wave 3c
-     2026-05-21]) + uimax (component_libraries, patterns, design_tokens, animations,
+     + derived_selector + output_signature + equivalent_implementations], patterns
+     [including `block_composition` JSON column], design_tokens, block_selectors,
+     slot_synonyms, property_suffixes, modifier_suffixes, legacy_role_lookup
+     [added Wave 3c 2026-05-21]) + uimax (component_libraries, patterns, design_tokens, animations,
      naming_conventions, recognition_log, attribute_gap_candidates,
      functionality_gap_candidates) + theme.json + per-client style variations
 L1 — CONVENTION LAYER: SGS-BEM canonical (.sgs-<block>__<element>--<modifier>);
@@ -661,7 +661,7 @@ Lives in `sgs-framework.db.modifier_suffixes` (19 rows across 6 kinds):
 | 2 — Block.json native | Parse each block.json. Populate block_attributes (basic) + block_selectors + block_supports |
 | 3 — Behavioural analysis | Parse render.php / save.js per block. Extract output_signature per attribute |
 | 4 — Canonical assignment | Decompose attr name per §12.2, look up canonical_slot via slot_synonyms, assign role via property_suffixes, derive selector. Write to block_attributes |
-| 5 — Pattern composition | Parse `theme/sgs-theme/patterns/*.php` for nested block markers. Populate block_compositions |
+| 5 — Pattern composition | Parse `theme/sgs-theme/patterns/*.php` for nested block markers. Populate `patterns.block_composition` JSON column |
 | 6 — Token sync | Parse theme.json. Sync settings.* to design_tokens; sync styles.* defaults to theme_defaults cache |
 | 7 — Animation sync | Scan sgsAnimation enum values; sync to uimax animations |
 | 8 — Uimax mirror | Sync to uimax (component_libraries, patterns, design_tokens, animations, naming_conventions) |
@@ -943,7 +943,7 @@ The SGS-framework.db has the complete mapping infrastructure cv2 needs:
 |---|---|---|---|
 | `property_suffixes` | 117 | CSS property → block-attribute suffix | YES — via `db.css_property_suffixes()` |
 | `slot_synonyms` | 89 | canonical slot → role + tag + standalone block | YES — via slot resolver |
-| `block_compositions` | 37 | parent-child block relations | **NO — WRITE-ONLY** (only `pattern-register.py` + `seed-block-compositions.py` INSERT; nothing reads) |
+| `patterns.block_composition` | 35 of 53 populated | pattern-level inner-block list (JSON column on `patterns`) | **NO — WRITE-ONLY** (only `pattern-register.py` + `seed-block-compositions.py` write; nothing reads) |
 | `block_attributes` | 2230 | per-block attribute schema | YES | <!-- Updated 2026-05-23 — canonical DB count per empirical run -->
 | `modifier_suffixes` | 19 | BEM modifier resolution | YES |
 | `block_supports` | 1223 | block_slug → support_name → value | YES | <!-- Updated 2026-05-23 — canonical DB count per empirical run -->
@@ -951,7 +951,7 @@ The SGS-framework.db has the complete mapping infrastructure cv2 needs:
 
 | `legacy_role_lookup` | 18 | kebab role → SGS slug | YES — via `db_lookup.legacy_role_lookup_for()` |
 
-`block_compositions` is the missing piece. The cloning-pipeline-flow.md doc claimed (line 354) it's read as a fallback — that claim is **inaccurate**.
+The pattern composition data is the missing piece for walker-side parent-child resolution. Parent-child relations between blocks live on `blocks.parent_block` + `slot_synonyms.standalone_block`; `patterns.block_composition` is a pattern-level catalogue, not a walker read source.
 
 ### The one wiring gap
 
@@ -972,7 +972,7 @@ When (1)-(4) are wired, G1 (empty hero CTAs), G3 (Stage 3 text-only slot resolve
 | Site | Change shape |
 |---|---|
 | `convert.py walk()` FR1 fast path (line 3675) | Add `variation_buf.append(_collect_css_for_classes(classes, css_rules))` after `lift_subtree_into_block_attrs()` so registered SGS blocks consume the merged CSS (one-line consistency fix; not hero-special) |
-| `convert.py` walker entry | Walk every CSS class encountered in the section; assign ownership of CSS rules per class; record parent-child via `blocks.parent_block` + `slot_synonyms.standalone_block` queries + natural BEM relations. (Earlier draft of this row referenced `block_compositions query` — corrected 2026-05-23: `block_compositions` is a PATTERN-LEVEL table written by `pattern-register.py` + `seed-block-compositions.py`, NOT a walker read source. Per §15 line 901 it is `WRITE-ONLY` at runtime.) |
+| `convert.py` walker entry | Walk every CSS class encountered in the section; assign ownership of CSS rules per class; record parent-child via `blocks.parent_block` + `slot_synonyms.standalone_block` queries + natural BEM relations. (Pattern composition data on `patterns.block_composition` is pattern-level catalogue, NOT a walker read source.) |
 | `slot_list.py` | Query `property_suffixes` for visual/structural slot types, not just text-content slots (the typed-attr-lift path of Spec 16 §FR6 Destination 1) |
 | cv2 emit shape | Use the parent-child graph to drive nested-block emission; preserve mockup class names on emitted blocks via `additionalClasses` / `className` |
 
@@ -990,7 +990,7 @@ Step 1 (orchestrator merges `theme/sgs-theme/styles/<client>.css` into `_section
 
 ### Wave 2 acceptance criterion
 
-After the universal-extraction wiring lands (parent-child graph via `blocks.parent_block` + `slot_synonyms.standalone_block` + property_suffixes query for visual slots drives emit shape), the acceptance is: hero `stage_3_slot_list` failures drop from 142 to under 30 AND hero `variation_css_rules` rises from 0 to at least 8 AND brand pixel-diff at 1440 drops below 20% (from 43.7%). Goal-shaped post-condition per `/qc-council` Stage 5: every CSS declaration in the mockup either matches a theme.json token (correct elision via cascade) OR lands as a block attribute / inline style on the emitted markup — coverage approaches 100%. <!-- Updated 2026-05-23 — removed "block_compositions read path": block_compositions is WRITE-ONLY at runtime (§15 line 901); parent-child graph is read from blocks.parent_block + slot_synonyms.standalone_block -->
+After the universal-extraction wiring lands (parent-child graph via `blocks.parent_block` + `slot_synonyms.standalone_block` + property_suffixes query for visual slots drives emit shape), the acceptance is: hero `stage_3_slot_list` failures drop from 142 to under 30 AND hero `variation_css_rules` rises from 0 to at least 8 AND brand pixel-diff at 1440 drops below 20% (from 43.7%). Goal-shaped post-condition per `/qc-council` Stage 5: every CSS declaration in the mockup either matches a theme.json token (correct elision via cascade) OR lands as a block attribute / inline style on the emitted markup — coverage approaches 100%.
 
 ### Status update 2026-05-24 (second-pass reinterpretation)
 

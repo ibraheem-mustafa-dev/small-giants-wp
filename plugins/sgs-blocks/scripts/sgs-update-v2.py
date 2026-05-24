@@ -52,6 +52,14 @@ WP_VERSION_DEFAULT = "7.0"
 # Files excluded from indexed_files scan
 EXCLUDED_DIRS = {"node_modules", "build", "vendor", ".git", "__pycache__"}
 
+# Re-used SQL literals (kept as constants so they stay in sync across call sites)
+_SELECT_BLOCK_EXISTS_NATIVE_WP = "SELECT 1 FROM blocks WHERE slug=? AND source='native_wp'"
+_SELECT_DOC_EXISTS_NATIVE_WP = "SELECT 1 FROM docs WHERE slug=? AND source='native_wp'"
+
+# Re-used string literals
+_UTC_TIMESTAMP_FMT = "%Y-%m-%d %H:%M:%S UTC"
+_REPORT_NONE_MARKER = "_(none)_"
+
 # Parent-child block relationships (mirrors populate-db.py PARENT_CHILD)
 PARENT_CHILD = {
     "accordion": ["accordion-item"],
@@ -428,8 +436,6 @@ def _github_api_get(url: str, github_token: str | None = None) -> dict | list | 
                 f"Set GITHUB_TOKEN or GITHUB_PERSONAL_ACCESS_TOKEN env var (5000/hr) or wait."
             )
         raise
-    except Exception:
-        raise
 
 
 class _GithubRateLimitError(Exception):
@@ -565,10 +571,16 @@ def _mode_a_read_cached(
     dry_run: bool,
     wp_version: str,
 ) -> dict:
-    """Mode A — read cached ~/.wp-blockmarkup-mcp/blocks.db + ~/.wp-devdocs-mcp/hooks.db.
+    """Mode A — read cached source DBs and INSERT OR IGNORE into sgs-framework.db.
+
+    Source DBs (~/.wp-blockmarkup-mcp/blocks.db + ~/.wp-devdocs-mcp/hooks.db) were
+    retired on 2026-05-24 (architecture-staging Phase 1) — the canonical data lives
+    in sgs-framework.db now. When the source files are absent, Mode A is a no-op
+    that returns a `cached_current` / `cache_missing` status. Use Mode B
+    (--refresh-upstream) to live-fetch updates from GitHub.
 
     Checks schema_metadata.last_full_refresh_ts first. If <7 days old, skips.
-    If stale or never set, reads cached DBs and INSERT OR IGNOREs into sgs-framework.db.
+    If stale or never set AND source DBs exist, reads them; otherwise no-ops.
     """
     blocks_db_path = Path.home() / ".wp-blockmarkup-mcp" / "blocks.db"
     hooks_db_path = Path.home() / ".wp-devdocs-mcp" / "hooks.db"
@@ -619,8 +631,9 @@ def _mode_a_read_cached(
 
     if not blocks_db_path.exists():
         print(
-            f"Stage 2 WARNING: blocks.db not found at {blocks_db_path}. "
-            f"Run with --refresh-upstream to scrape from GitHub."
+            "Stage 2 [Mode A] no-op: source cache absent (retired 2026-05-24). "
+            "sgs-framework.db is the canonical store now. "
+            "Run with --refresh-upstream to live-fetch from GitHub."
         )
     else:
         if dry_run:
@@ -632,7 +645,7 @@ def _mode_a_read_cached(
             sc.execute("SELECT block_name FROM blocks")
             for b in sc.fetchall():
                 ex = c.execute(
-                    "SELECT 1 FROM blocks WHERE slug=? AND source='native_wp'",
+                    _SELECT_BLOCK_EXISTS_NATIVE_WP,
                     (b["block_name"],),
                 ).fetchone()
                 if ex is None:
@@ -726,8 +739,8 @@ def _mode_a_read_cached(
 
     if not hooks_db_path.exists():
         print(
-            f"Stage 2 WARNING: hooks.db not found at {hooks_db_path}. "
-            f"Run with --refresh-upstream to scrape from GitHub."
+            "Stage 2 [Mode A] no-op (hooks): source cache absent (retired 2026-05-24). "
+            "Run with --refresh-upstream to live-fetch from GitHub."
         )
     else:
         src = sqlite3.connect(str(hooks_db_path))
@@ -996,7 +1009,7 @@ def _mode_b_refresh_upstream(
             else:
                 # dry-run: count what would be new
                 ex = c.execute(
-                    "SELECT 1 FROM blocks WHERE slug=? AND source='native_wp'", (slug,)
+                    _SELECT_BLOCK_EXISTS_NATIVE_WP, (slug,)
                 ).fetchone()
                 if ex is None:
                     new_rows["blocks"] += 1
@@ -1060,9 +1073,7 @@ def _mode_b_refresh_upstream(
             hook_names = set(hook_re.findall(decoded))
             # Determine hook_type from context (crude: apply_filters → filter, do_action → action)
             action_re = re.compile(r"""do_action\s*\(\s*['"]([a-zA-Z0-9_\-]+)['"]""", re.MULTILINE)
-            filter_re = re.compile(r"""apply_filters\s*\(\s*['"]([a-zA-Z0-9_\-]+)['"]""", re.MULTILINE)
             actions = set(action_re.findall(decoded))
-            filters = set(filter_re.findall(decoded))
 
             s2_extracted += len(hook_names)
 
@@ -1118,7 +1129,7 @@ def _mode_b_refresh_upstream(
     # --- Source 3: wp-cli/handbook markdown files ---
     source_3_name = "wpcli-handbook"
     try:
-        print(f"\n[Source 3] wp-cli/handbook markdown commands/ ...")
+        print("\n[Source 3] wp-cli/handbook markdown commands/ ...")
         dir_url = "https://api.github.com/repos/wp-cli/handbook/contents/commands"
         entries = _github_api_get(dir_url, github_token)
         if not isinstance(entries, list):
@@ -1157,7 +1168,7 @@ def _mode_b_refresh_upstream(
                 s3_docs += res.rowcount
             else:
                 ex = c.execute(
-                    "SELECT 1 FROM docs WHERE slug=? AND source='native_wp'", (slug,)
+                    _SELECT_DOC_EXISTS_NATIVE_WP, (slug,)
                 ).fetchone()
                 if ex is None:
                     new_rows["docs"] += 1
@@ -1241,7 +1252,7 @@ def _mode_b_refresh_upstream(
                     s4_docs += res.rowcount
                 else:
                     ex = c.execute(
-                        "SELECT 1 FROM docs WHERE slug=? AND source='native_wp'", (slug,)
+                        _SELECT_DOC_EXISTS_NATIVE_WP, (slug,)
                     ).fetchone()
                     if ex is None:
                         new_rows["docs"] += 1
@@ -1340,7 +1351,7 @@ def _mode_b_refresh_upstream(
                         s_docs += res.rowcount
                     else:
                         ex = c.execute(
-                            "SELECT 1 FROM docs WHERE slug=? AND source='native_wp'", (slug,)
+                            _SELECT_DOC_EXISTS_NATIVE_WP, (slug,)
                         ).fetchone()
                         if ex is None:
                             new_rows["docs"] += 1
@@ -1368,7 +1379,7 @@ def _mode_b_refresh_upstream(
                     conn.commit()
                 else:
                     ex = c.execute(
-                        "SELECT 1 FROM docs WHERE slug=? AND source='native_wp'", (slug,)
+                        _SELECT_DOC_EXISTS_NATIVE_WP, (slug,)
                     ).fetchone()
                     if ex is None:
                         new_rows["docs"] += 1
@@ -1425,9 +1436,10 @@ def stage_2_core_gutenberg_cache_refresh(
     """Core/Gutenberg cache refresh — two modes (Decision 30).
 
     Mode A (default, no --refresh-upstream):
-      Reads cached ~/.wp-blockmarkup-mcp/blocks.db + ~/.wp-devdocs-mcp/hooks.db.
-      Checks schema_metadata.last_full_refresh_ts — if <7 days old, skips.
-      INSERT OR IGNORE into sgs-framework.db. Updates last_full_refresh_ts.
+      Reads cached source DBs if present and INSERT OR IGNOREs into sgs-framework.db.
+      Source DBs were retired 2026-05-24 (architecture-staging Phase 1); when absent
+      Mode A is a no-op with an informative status message. Use Mode B for live
+      updates. Checks schema_metadata.last_full_refresh_ts — if <7 days old, skips.
 
     Mode B (--refresh-upstream):
       Live network scrape of 10 canonical sources from Decision 30.
@@ -1486,14 +1498,15 @@ def stage_3_wpcli_handbook_refresh(
 
     if not hooks_db_path.exists():
         print(
-            f"Stage 3 WARNING: hooks.db not found at {hooks_db_path}. "
-            f"Run with --refresh-upstream to scrape from GitHub."
+            "Stage 3 no-op: hooks.db source cache absent (retired 2026-05-24). "
+            "sgs-framework.db is the canonical docs store. "
+            "Run with --refresh-upstream to live-fetch WP-CLI handbook updates."
         )
         total_cli = c.execute(
             "SELECT COUNT(*) FROM docs WHERE doc_type='cli-command' AND source='native_wp'"
         ).fetchone()[0]
         return {"new_rows": 0, "reclassified": 0, "total_cli_commands": total_cli,
-                "dry_run": dry_run, "warning": "hooks.db not found"}
+                "dry_run": dry_run, "status": "source_cache_retired"}
 
     # Open the cached hooks.db
     src = sqlite3.connect(str(hooks_db_path))
@@ -1665,7 +1678,7 @@ def stage_4_style_variation_sync(
     total_skipped = 0
     total_filtered = 0
     total_conflicts = 0
-    ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+    ts = datetime.now(timezone.utc).strftime(_UTC_TIMESTAMP_FMT)
 
     header_lines: list[str] = [
         f"# Stage 4 Style Variation Sync — {ts}",
@@ -1797,7 +1810,6 @@ def stage_4_style_variation_sync(
 
             client_inserted = 0
             client_skipped = 0
-            client_filtered = 0
             client_conflicts = 0
             conflict_lines: list[str] = []
 
@@ -1881,7 +1893,6 @@ def stage_4_style_variation_sync(
             # Also count filtered (custom keys not emitted as candidates)
             # We can't easily count these post-hoc — so we report 0 filtered
             # (filtering happens inside _build_token_candidates implicitly).
-            client_filtered = 0  # All filtering is structural, inside the builder
 
             per_client_lines.append(
                 f"Inserted: {client_inserted} | Skipped: {client_skipped} | "
@@ -2075,11 +2086,11 @@ def stage_5_slot_synonym_auto_seed(
         conn.commit()
 
     # --- Write report (always — observational, fine in dry-run) ---
-    ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+    ts = datetime.now(timezone.utc).strftime(_UTC_TIMESTAMP_FMT)
     lines: list[str] = [
         f"# Slot Synonym Auto-Seed Proposals — {ts}",
         "",
-        f"## Summary",
+        "## Summary",
         f"Unmapped rows: {unmapped_count} | "
         f"Auto-inserted (high confidence): {auto_inserted} | "
         f"Manual review (medium confidence): {manual_review} | "
@@ -2090,17 +2101,17 @@ def stage_5_slot_synonym_auto_seed(
     if high_lines:
         lines += ["## High confidence (auto-updated)", ""] + high_lines + [""]
     else:
-        lines += ["## High confidence (auto-updated)", "", "_(none)_", ""]
+        lines += ["## High confidence (auto-updated)", "", _REPORT_NONE_MARKER, ""]
 
     if medium_lines:
         lines += ["## Medium confidence (manual review required)", ""] + medium_lines + [""]
     else:
-        lines += ["## Medium confidence (manual review required)", "", "_(none)_", ""]
+        lines += ["## Medium confidence (manual review required)", "", _REPORT_NONE_MARKER, ""]
 
     if low_lines:
         lines += ["## Low confidence (no clear match)", ""] + low_lines + [""]
     else:
-        lines += ["## Low confidence (no clear match)", "", "_(none)_", ""]
+        lines += ["## Low confidence (no clear match)", "", _REPORT_NONE_MARKER, ""]
 
     report_path.parent.mkdir(parents=True, exist_ok=True)
     report_path.write_text("\n".join(lines), encoding="utf-8")
@@ -2183,7 +2194,7 @@ def stage_6_block_replacement_mapping(
 
         for target_slug in targets:
             exists = c.execute(
-                "SELECT 1 FROM blocks WHERE slug=? AND source='native_wp'",
+                _SELECT_BLOCK_EXISTS_NATIVE_WP,
                 (target_slug,),
             ).fetchone()
             if exists is None:
@@ -2206,7 +2217,7 @@ def stage_6_block_replacement_mapping(
             valid += 1
 
     # --- Write stale report (always — observational) ---
-    ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+    ts = datetime.now(timezone.utc).strftime(_UTC_TIMESTAMP_FMT)
     lines: list[str] = [
         f"# Stale Block Replacement Mappings — {ts}",
         "",
@@ -2484,7 +2495,7 @@ def stage_9_drift_gate(
         msg = "SSH timed out after 15 s — drift check skipped"
         print(f"Stage 9 [skipped]: {msg}")
         return {"status": "skipped", "reason": msg}
-    except (FileNotFoundError, OSError) as exc:
+    except OSError as exc:
         msg = f"SSH unavailable — drift check skipped ({exc})"
         print(f"Stage 9 [skipped]: {msg}")
         return {"status": "skipped", "reason": msg}

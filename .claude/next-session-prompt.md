@@ -78,7 +78,7 @@ Classify each as MUST-UPDATE / LIKELY-AFFECTED / UNAFFECTED, then update the fir
 
 ### Rule 6 — Grep-verify spec claims before trusting
 
-When a spec declares behaviour ("Stage X runs in /sgs-update", "the converter routes Y through Z", "block_compositions is read at runtime"), grep the orchestrator code to confirm.
+When a spec declares behaviour ("Stage X runs in /sgs-update", "the converter routes Y through Z", "table Y is read at runtime"), grep the orchestrator code to confirm.
 
 ```
 grep -rn "stage_X\|invokes assign-canonical\|standalone_block" plugins/sgs-blocks/scripts/

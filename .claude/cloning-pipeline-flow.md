@@ -907,7 +907,7 @@ The classifier reads from `block_attributes.role` and `block_attributes.canonica
 │                                                                             │
 │ DB tables (W):                                                              │
 │  patterns (sgs-framework.db) - INSERT new auto-registered pattern row       │
-│  block_compositions (sgs-framework.db) - INSERT inner-block list row        │
+│       (composition data goes into patterns.block_composition JSON column)   │
 │  patterns (uimax) - INSERT via validate_and_write with Rosetta Stone        │
 │       equivalent_implementations enforcement (sgs_block + html_css)         │
 │                                                                             │
@@ -1181,7 +1181,7 @@ For any SGS block, the data stack across the 2 DBs:
 | **Equivalent implementations** (Rosetta Stone) | `sgs-framework.block_attributes.equivalent_implementations` | JSON: `{sgs_wp: "<wp:block …/>", html_css: "<element class='.sgs-x__slot--mod'>"}` | ✅ 1630 rows populated 2026-05-19 — every attr has a draft↔WP mapping |
 | **Derived selector** | `sgs-framework.block_attributes.derived_selector` | e.g. `.sgs-hero__label` — used by Stage 2 matching | ✅ |
 | Block **supports** (WP-native colour / typography / spacing / border + custom sgs.*) | `sgs-framework.block_supports` | Per-block flag rows | ✅ 1223 rows (updated 2026-05-23) |
-| Block **compositions** (parent → child blocks) | `sgs-framework.block_compositions` | Pattern-level inner-block lists — WRITE-ONLY at clone runtime | ✅ 37 rows |
+| Pattern **composition** (parent → child blocks) | `sgs-framework.patterns.block_composition` (JSON column on `patterns`) | Pattern-level inner-block list — WRITE-ONLY at clone runtime | ✅ 35 of 53 patterns populated |
 | Block **selectors** (CSS root + element selectors) | `sgs-framework.block_selectors` | Per-block CSS scope — NOT read at clone runtime (walker uses derived_selector) | ✅ 74 rows |
 | Block **change history** | `sgs-framework.block_changes` | Auto-logged by `/sgs-update` | ✅ 2329 rows |
 | Block **hooks** (sgs_* WP filters/actions per block) | `sgs-framework.hooks` | Populated by `/wp-hooks` integration | ✅ wired 2026-05-19 |
@@ -1253,8 +1253,7 @@ All other CSS/JS values are direct-passthrough — no conversion catalogue neede
 | `slot_synonyms` | sgs-framework | Stage 1 (R) |
 | `block_supports` | sgs-framework | Stage 5 (R, when supports_writer wired) |
 | `blocks` | sgs-framework | Stage 2 (R via filesystem) |
-| `patterns` | sgs-framework | +REGISTER (W) |
-| `block_compositions` | sgs-framework | +REGISTER (W) |
+| `patterns` | sgs-framework | +REGISTER (W) — including `block_composition` JSON column |
 | `attribute_gap_candidates` | sgs-framework | Stage 9 (W, when wired) |
 | `recognition_log` | uimax | Stage 9 (W) |
 | `functionality_gap_candidates` | uimax | Stage 9 (W, when wired) |
@@ -1594,7 +1593,7 @@ Source: `.claude/db-tables-map.md` (926 lines, generated 2026-05-13, last-verifi
 | 5 | block_supports (R) | -- |
 | 6 | block_attributes (R), design_tokens (R via theme.json) | -- |
 | 9 | attribute_gap_candidates (W) | recognition_log (W), functionality_gap_candidates (W) |
-| +REGISTER | patterns (W), block_compositions (W) | patterns (W), component_libraries (R+W) |
+| +REGISTER | patterns (W) — includes `block_composition` JSON column | patterns (W), component_libraries (R+W) |
 | /sgs-update S1 | blocks, block_attributes, block_supports, block_selectors, block_capabilities, design_tokens, style_variations, patterns, theme_parts, hooks, components, plugins, deploy_steps, gotchas, pattern_coverage, block_changes (all W) | -- |
 | /sgs-update S2-4 | block_attributes (W: canonical_slot, role), slot_synonyms (W), attribute_gap_candidates (W) | -- |
 | /sgs-update S3 | blocks (R), legacy_role_lookup (R, Wave 3) | component_libraries (W) |
@@ -1613,8 +1612,7 @@ Source: `.claude/db-tables-map.md` (926 lines, generated 2026-05-13, last-verifi
 | block_supports | 347 | Stage 5 supports_writer R | /sgs-update S1 |
 | property_suffixes | 117 | assign-canonical; cv2 db_lookup.css_property_suffixes() | seed + 2026-05-17 migration |
 | blocks | 67 | Stage 2 cross-check; /sgs-update S3 uimax sync | /sgs-update S1 |
-| patterns | 41 | Stage 2 confidence boost; +REGISTER W | /sgs-update S1; register_patterns.py |
-| block_compositions | 37 | Stage 2 confidence boost; +REGISTER W | register_patterns.py |
+| patterns | 53 | Stage 2 confidence boost; +REGISTER W (including `block_composition` JSON column, 35 populated) | /sgs-update S1; register_patterns.py |
 | attribute_gap_candidates | 107+ | Stage 9 W; D3 emission W (Wave 3); detect.py R | assign-canonical; detect.py; cv2 D3 |
 | legacy_role_lookup | 18 | Voter R via db_lookup (Wave 3) | seed-legacy-role-lookup.py; /sgs-update sync |
 | modifier_suffixes | 19 | assign-canonical; drift-validator | seed scripts |
@@ -1740,7 +1738,7 @@ Chrome-strip patch in `scripts/pixel-diff.py` was empirically falsified. `el.scr
 |---|---|
 | `property_suffixes` | 117 rows |
 | `slot_synonyms` | 89 rows |
-| `block_compositions` | 37 rows |
+| `patterns.block_composition` (JSON column) | 35 of 53 populated |
 | `block_attributes` | 1755 rows |
 | `modifier_suffixes` | 19 rows |
 
@@ -1748,12 +1746,11 @@ The G1+G3+G5 symptoms (empty hero CTAs / text-only slot resolver / per-block DOM
 
 Wave 2 = ONE architectural change wiring the DB tables into the walker's emit shape, NOT three per-block fixes. Full reshape detail: `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` §15.
 
-### Doc-accuracy corrections (this doc was inaccurate in two places)
+### Doc-accuracy corrections (this doc was inaccurate)
 
-1. **Line 354 claim "patterns table or block_compositions before falling through" is WRONG.** `block_compositions` is write-only in the current code — only `pattern-register.py` + `seed-block-compositions.py` INSERT, nothing reads. cv2 walker does NOT query the table. This is the canonical Wave 2 wiring fix.
-2. **Line 116 "Live entry-point chain (verified 2026-05-13)" is STALE.** The 2026-05-20 architectural rewrite added `css_router.py`, `essence_match_detector.py`, `stage_attribute_promotion.py` which are not in the chain ASCII art. The new files exist on disk and are wired but the ASCII visualisation predates them.
+**Line 116 "Live entry-point chain (verified 2026-05-13)" is STALE.** The 2026-05-20 architectural rewrite added `css_router.py`, `essence_match_detector.py`, `stage_attribute_promotion.py` which are not in the chain ASCII art. The new files exist on disk and are wired but the ASCII visualisation predates them.
 
-Both corrections parked as `P-CLONING-PIPELINE-FLOW-DOC-DRIFT` — full rewrite of the entry-point chain + DB heat-map sections deferred to a dedicated doc-accuracy session.
+Parked as `P-CLONING-PIPELINE-FLOW-DOC-DRIFT` — full rewrite of the entry-point chain + DB heat-map sections deferred to a dedicated doc-accuracy session.
 
 ### Methodology lesson — empirical-validation gate (blub.db row 276)
 
