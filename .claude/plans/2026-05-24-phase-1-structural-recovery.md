@@ -341,7 +341,7 @@ The original plan above scoped a "universal walker pre-pass" (Spec 16 §15 steps
 
 **Empirical**: Stage 11 mean pixel-diff 70.5% (baseline) → 73.9% (post all 5 changes). Block-type mapping is correct; pixel-diff regression on featured-product/ingredients is the CSS-lift gap on the new richer skeleton — closes when Step 1.7 G3 (slot_list visual extension) lands.
 
-**Steps 1.6 (G1 hero OPEN-block), 1.7 (G3 slot_list visual extension), 1.8 (G5 per-block DOM fixes), 1.9 (hooks + role='content'), 1.10 (final /qc-council), 1.11 (handoff) all remain TODO.** The session's work has the walker emitting structurally correct block trees for the 5 normal-route body sections (was: 1-block collapse; now: 4-10 inner blocks per section). The remaining pixel-diff closure comes from CSS lift onto the new richer emit + per-block render-shape fixes.
+**Steps 1.6 (G1 hero OPEN-block), 1.7 (G3 slot_list visual extension), 1.8 (G5 per-block DOM fixes), 1.9 (hooks + role='content'), 1.10 (final /qc-council), 1.11 (handoff) all remain pending.** The session's work has the walker emitting structurally correct block trees for the 5 normal-route body sections (was: 1-block collapse; now: 4-10 inner blocks per section). The remaining pixel-diff closure comes from CSS lift onto the new richer emit + per-block render-shape fixes.
 
 ---
 

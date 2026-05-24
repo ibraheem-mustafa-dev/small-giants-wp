@@ -24,7 +24,7 @@ primary_goal: "Close the structural pixel-diff blockers (G1+G3+G5), complete the
 **Solution.** Four sequential phases:
 - **Phase 1 — Universal walker + G1+G3+G5 closure + architecture programme leftovers.** Ship the universal walker (Spec 16 §15 steps 1-3) that powers the NORMAL ROUTE (FR4 + FR2 + FR3 + FR6) — the build-up path that every section takes when not matched by FR1's fast path. Close G1 (OPEN-block emission for FR1-matched composite blocks with InnerBlocks data), G3 (slot_list.py visual-slot extension via property_suffixes), G5 (per-block DOM-shape fixes — tag/class preservation + per-block render.php adjustments). Wire FR1 pattern fast-path branch (Spec 16 §FR1 branch b — section class matches registered pattern slug). Import the missing 2,049 hooks. Re-run /sgs-update for role='content' DB sync. Refresh stale doc claims. **Sections falling through to `sgs/container` is the CORRECT architectural default per FR4 + Decision 3 — NOT a defect.** The gap was that the normal route (sgs/container start + walker build-up) wasn't wired. Empirical acceptance: G1+G3+G5 closed per Spec 16 §14 acceptance criteria; pixel-diff captured as measurement only (downstream side-effect). **Header + footer excluded from acceptance gating** (Phase 2's specialised cloner scope).
 
-  **REVISION 2026-05-24 (second pass) — Phase 1 partially shipped via 5 different changes than originally planned.** Mid-session investigation found the existing `convert.py:walk()` already contains 9 named branches that together deliver the walker outcome — provided the data layer is correct. So instead of building a new "pre-pass class graph", we shipped: (1) slot_synonyms cleanup, (2) section_inner_absorb walker pre-pass (one-section-one-container), (3) quote canonical migration, (4) /sgs-update Stage 4 wiring (assign-canonical.py was orphaned), (5) brand mockup BEM rename. G1/G3/G5 remain TODO. Stage 11 mean pixel-diff 70.5% → 73.9%. Full detail in phase-1-structural-recovery.md "What ACTUALLY shipped" section + follow-on items F1+F2 at the end. **Steps 1.6/1.7/1.8/1.9/1.10/1.11 remain pending in the original plan** — the next Phase 1 session should pick up Step 1.7 G3 (slot_list visual extension) as the highest-leverage move to close the pixel-diff regression on featured-product/ingredients-section.
+  **REVISION 2026-05-24 (second pass) — Phase 1 partially shipped via 5 different changes than originally planned.** Mid-session investigation found the existing `convert.py:walk()` already contains 9 named branches that together deliver the walker outcome — provided the data layer is correct. So instead of building a new "pre-pass class graph", we shipped: (1) slot_synonyms cleanup, (2) section_inner_absorb walker pre-pass (one-section-one-container), (3) quote canonical migration, (4) /sgs-update Stage 4 wiring (assign-canonical.py was orphaned), (5) brand mockup BEM rename. G1/G3/G5 remain pending. Stage 11 mean pixel-diff 70.5% → 73.9%. Full detail in phase-1-structural-recovery.md "What ACTUALLY shipped" section + follow-on items F1+F2 at the end. **Steps 1.6/1.7/1.8/1.9/1.10/1.11 remain pending in the original plan** — the next Phase 1 session should pick up Step 1.7 G3 (slot_list visual extension) as the highest-leverage move to close the pixel-diff regression on featured-product/ingredients-section.
 - **Phase 2 — Header + footer specialised cloning pipeline.** Build a separate one-shot script (runs once per site, not per page) that converts source HTML headers + footers into Spec 17 architecture (`header.html` / `footer.html` template parts + `Sgs_Site_Info` store + Customiser-controlled sticky/transparent/shrink behaviours + `sgs_header` / `sgs_footer` CPTs). Bypasses the generic page-clone pipeline because (a) 1-per-site means N-page sites would clone redundantly N times; (b) header/footer HTML doesn't follow the div→block pattern body content does; (c) custom behaviours (sticky, transparent, shrinking, partial-stick) live in Customiser, not block attributes. Detail in `.claude/plans/2026-05-24-phase-2-header-footer-cloner.md` (generated via `/phase-planner`).
 - **Phase 3 — Parking sweep close-out.** Finish the remaining ~22 STILL-OPEN parking entries (the original handoff's Task 4 + new entries from today's investigation). Excludes skills (Phase 4).
 - **Phase 4 — Skill + command optimisation.** /skill-optimiser mode 2 (gap analysis + research) on the 14 WP/SGS skills + /batch-gap-analysis. Runs LAST because it grades against tools the previous phases fix.
@@ -34,11 +34,11 @@ primary_goal: "Close the structural pixel-diff blockers (G1+G3+G5), complete the
 | Phase | Scope | Est | Sessions | Critical gate |
 |---|---|---|---|---|
 | **1** Universal walker + G1+G3+G5 closure | Universal walker (§15 steps 1-3) + FR1 pattern fast-path + G1 OPEN-block emit + G3 slot_list visual + G5 per-block DOM fixes + hooks completion + role='content' DB sync + doc refresh | 8-12 hrs | 2-3 | G1+G3+G5 closed per Spec 16 §14 acceptance + hero stage_3_slot_list < 30 + no regression on FR1-matched sections (header/footer excluded — Phase 2 scope) |
-| **2** Header + footer cloner | Separate one-shot script → Spec 17 architecture (template parts + Site Info + Customiser) | TBD by `/phase-planner` | 1-2 | Mama's Munches header + footer parity ≥ defined per-element thresholds at 375/768/1440 (header sticky behaviour exact match) |
+| **2** Header + footer cloner | Separate one-shot script → Spec 17 architecture (template parts + Site Info + Customiser) | to be set by `/phase-planner` | 1-2 | Mama's Munches header + footer parity ≥ defined per-element thresholds at 375/768/1440 (header sticky behaviour exact match) |
 | **3** Parking close-out | ~22 STILL-OPEN entries (no skills) | 6-8 hrs | 2-3 | parking.md "Open" section contains zero entries beyond P-BATCH-GA-14-SKILLS |
 | **4** Skill optimisation | /skill-optimiser mode 2 on 14 WP/SGS skills + /batch-gap-analysis | 3-4 hrs | 1 (dedicated) | 14 per-skill JSON evaluations + 1 review report + S-grade confirmations queued |
 
-**Total: ~13 hrs + Phase 2 TBD, across 5-6 sessions** (calibrate after Phase 1 + Phase 2 actuals; quote the smallest plausible figure per `~/.claude/rules/time-estimates.md`, not the upper range).
+**Total: ~13 hrs + Phase 2 pending phase-planner detail, across 5-6 sessions** (calibrate after Phase 1 + Phase 2 actuals; quote the smallest plausible figure per `~/.claude/rules/time-estimates.md`, not the upper range).
 
 ## Dependency graph
 
@@ -52,7 +52,7 @@ Phase 1 (Universal walker + G1+G3+G5 closure)
 Phase 2 (Header + footer specialised cloner)
   ↓ Reads Spec 17 architecture (template parts + Site Info + Customiser)
   ↓ /qc-council on script commits; runs OUTSIDE main /sgs-clone pipeline
-  ↓ Phase 2 gate: per-element parity thresholds met (TBD by /phase-planner)
+  ↓ Phase 2 gate: per-element parity thresholds met (to be set by /phase-planner)
 Phase 3 (Parking sweep)
   ↓ /qc-inline per entry + /qc-council per multi-entry commit
   ↓ /sgs-clone after any task touching the pipeline
@@ -148,7 +148,7 @@ These are the decisions a junior executor would pause on mid-phase. Pre-answered
 
 4. **"Phase 3 parking entries — do we close P-BATCH-GA-14-SKILLS in Phase 3?"** — NO. That entry IS Phase 4's scope. Phase 3 closes everything ELSE.
 
-5. **"When Phase 1's walker pre-pass changes Stage 4 attr counts, do we adjust the leftover-buckets classifier?"** — Possibly. The classifier currently bucks `preset_managed` slots as `extraction_failed` (documented today in cloning-pipeline-flow.md). If Phase 1 attr increases reveal more preset_managed slots, the classifier code change is a Phase 3 candidate.
+5. **"When Phase 1's walker pre-pass changes Stage 4 attr counts, do we adjust the leftover-buckets classifier?"** — Conditional on observed bucket shift. The classifier currently buckets `preset_managed` slots as `extraction_failed` (documented today in cloning-pipeline-flow.md). If Phase 1 attr increases reveal more preset_managed slots, the classifier code change is a Phase 3 candidate.
 
 7. **"Why isn't header/footer cloning part of Phase 1's walker pre-pass?"** — Headers + footers don't fit the generic page-clone pipeline: (a) they're 1-per-site (running the page pipeline N times redundantly clones them); (b) their HTML doesn't follow div→block conversion patterns; (c) custom behaviours (sticky / transparent / shrink / partial-stick) live in Customiser per Spec 17, not block attributes. Building chrome-handling into the walker pre-pass would force the wrong abstraction. Phase 2 builds a dedicated one-shot script instead.
 
@@ -165,7 +165,7 @@ These are the decisions a junior executor would pause on mid-phase. Pre-answered
 
 Per `~/.agents/skills/delegate/data/routing-table.json` defaults:
 - Phase 1 inline: ~150-200K tokens Opus + ~5 wp-sgs-developer dispatches × ~80K tokens Sonnet
-- Phase 2: TBD by `/phase-planner` — likely ~100-150K tokens Opus + 2-4 wp-sgs-developer dispatches × ~60K tokens Sonnet
+- Phase 2: to be set by `/phase-planner` — likely ~100-150K tokens Opus + 2-4 wp-sgs-developer dispatches × ~60K tokens Sonnet
 - Phase 3: ~20 /qc-inline runs × ~10K tokens + ~5 /qc-council runs × ~40K tokens
 - Phase 4: ~3 hrs inline Opus + 14 skill reads + research
 

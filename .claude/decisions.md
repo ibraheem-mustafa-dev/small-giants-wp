@@ -6,6 +6,18 @@ Append-only. Most-recent first.
 
 ---
 
+## 2026-05-25 — Doc-op programme: strategic-plan + phase-plan templates (merged from skill spec + research)
+
+**D65 — `strategic-plan` and `phase-plan` doc-type templates created** in `~/.agents/skills/shared-references/doc-templates/`. Built by merging OUR skills' learned output specs (`strategic-plan` plan-template + `phase-planner` 14-field step block) with research-distilled rules (PMI / SAFe / Shape Up / OKR / Stage-gate / DevOps runbook / Ansible / Claude Code best practices).
+
+**Strategic-plan template** keeps OUR sophistication (Work Units with Files/Depends/Blocks/Estimate/Risk/checkbox Steps/VERIFY, GATE blocks with Pass/Fail/Decision, Effort Summary + Session Plan tables, Hidden Decisions pass, per-phase handoffs) AND adds RESEARCH anti-pattern fixes (mandatory `timebox` frontmatter field per Shape Up, mandatory `## Out of scope` section per Shape Up + Stage-gate, ROAM risk-status enum per SAFe, dependency owner column per SAFe, phase overview table ≤13 rows per PMI, problem statement ≤200 words).
+
+**Phase-plan template** keeps OUR sophistication (Plan-Level Label `[PLAN: opus|sonnet|blub]`, USP / Aggregate cost in phase header, 4-layer Verification block — Happy/Edge/Fail/Integration, Marker enum — SESSION-START/HANDOFF/QA, Cold-Entry + Prompt fields for subagent dispatch, Tooling Index table) AND adds RESEARCH additions (mandatory `## Pre-conditions` checklist BEFORE start, per-step `Pre-condition:` + `Rollback:` fields completing the PAVR shape, mandatory `## Parking lot` section even if empty, no-shared-file-parallel HARD GATE via Files-field cross-check, cold-prompt-readiness rule for parallel-dispatched steps).
+
+**Verification:** 5/5 project plan docs score 100% Grade A against the new templates. Total 15/15 in-scope docs now passing at 100% A (CLAUDE / parking / mistakes / decisions / dev-setup / cloning-pipeline-stages / spec 17 / spec 21 / 2 archived plans / 5 active plans).
+
+Full research: `~/.openclaw/workspace/memory/research/2026-05-24-strategic-plan-and-phase-plan-best-practice.md` (11 cited sources). Skill output specs (`strategic-plan/references/plan-template.md`, `phase-planner/SKILL.md` Step Format) remain as-is for now — next session can update them to emit the new mandatory sections automatically.
+
 ## 2026-05-24 — Doc-op programme: docscore.py technical-debt close-out
 
 **D64 — 10 SonarLint warnings on docscore.py closed (cognitive complexity + dead-code).** Per Bean's "nothing parked" rule: refactor extracted 11 helper functions (`_coerce_fm_scalar`, `_find_fm_end`, `_detect_doc_type_from_path`, `_warn_doc_type_constraint`, `_score_folder_json`, `_score_folder_human_subprojects`, `_score_folder_human_flat`, `_resolve_walk_root`, `_build_doc_context`, `_registry_missing_paths`, `_group_by_subproject`, `_score_paths_human`). `parse_frontmatter` cc 25→≤15; `detect_doc_type` cc 16→≤15; `score_folder` cc 49→≤15. Removed 5 Unicode-box-drawing section dividers SonarLint flagged as commented-out code. Removed unused `current_key` variable. Behaviour preservation gate verified: 10/10 in-scope docs still 100% Grade A; adversarial back-door test still rejects. Lives in `~/.agents/skills/shared-references/docscore.py` (1168 → 1185 lines = +17 net for the helpers).
