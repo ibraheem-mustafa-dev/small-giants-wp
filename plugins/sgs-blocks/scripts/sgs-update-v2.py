@@ -1967,6 +1967,100 @@ def _camel_to_kebab(name: str) -> str:
     return s1.lower()
 
 
+def _match_slot_to_block(cursor, normalised: str) -> tuple:
+    """Run the 3-tier slot→block match. Pure query — no writes, no side effects.
+
+    Returns:
+        (confidence, matched_slug, candidate_slugs)
+        confidence ∈ {'high', 'medium-prefix', 'medium-contains',
+                      'low-ambiguous-prefix', 'low-ambiguous-contains',
+                      'low-none', 'low-no-normalised'}
+        matched_slug: slug for 'high' / 'medium-*' tiers, None otherwise
+        candidate_slugs: list for 'low-ambiguous-*' (multiple matches), empty for the rest
+    """
+    if not normalised:
+        return ("low-no-normalised", None, [])
+
+    # Tier 1: exact slug match
+    exact = cursor.execute(
+        "SELECT slug FROM blocks WHERE source='sgs' AND slug = ?",
+        (f"sgs/{normalised}",),
+    ).fetchone()
+    if exact:
+        return ("high", exact[0], [])
+
+    # Tier 2: prefix match
+    prefix_results = cursor.execute(
+        "SELECT slug FROM blocks WHERE source='sgs' AND slug LIKE ?",
+        (f"sgs/{normalised}%",),
+    ).fetchall()
+    if len(prefix_results) == 1 and len(normalised) >= 4:
+        return ("medium-prefix", prefix_results[0][0], [])
+    if len(prefix_results) > 1:
+        return ("low-ambiguous-prefix", None, [r[0] for r in prefix_results[:5]])
+
+    # Tier 3: contains match
+    contains_results = cursor.execute(
+        "SELECT slug FROM blocks WHERE source='sgs' AND slug LIKE ?",
+        (f"%{normalised}%",),
+    ).fetchall()
+    if len(contains_results) == 1 and len(normalised) >= 4:
+        return ("medium-contains", contains_results[0][0], [])
+    if len(contains_results) > 1:
+        return ("low-ambiguous-contains", None, [r[0] for r in contains_results])
+
+    return ("low-none", None, [])
+
+
+def _apply_high_confidence_match(cursor, row_id: int, slug: str, dry_run: bool) -> None:
+    """Isolate the single UPDATE write for a high-confidence match."""
+    if not dry_run:
+        cursor.execute(
+            "UPDATE slot_synonyms SET standalone_block=? WHERE rowid=?",
+            (slug, row_id),
+        )
+
+
+def _build_synonym_report(
+    high_lines: list,
+    medium_lines: list,
+    low_lines: list,
+    counts: dict,
+    ts: str,
+) -> str:
+    """Assemble the markdown report.
+
+    `counts` keys: unmapped_count, auto_inserted, manual_review, no_match.
+    """
+    lines: list = [
+        f"# Slot Synonym Auto-Seed Proposals — {ts}",
+        "",
+        "## Summary",
+        f"Unmapped rows: {counts['unmapped_count']} | "
+        f"Auto-inserted (high confidence): {counts['auto_inserted']} | "
+        f"Manual review (medium confidence): {counts['manual_review']} | "
+        f"No match (low confidence): {counts['no_match']}",
+        "",
+    ]
+
+    if high_lines:
+        lines += ["## High confidence (auto-updated)", ""] + high_lines + [""]
+    else:
+        lines += ["## High confidence (auto-updated)", "", _REPORT_NONE_MARKER, ""]
+
+    if medium_lines:
+        lines += ["## Medium confidence (manual review required)", ""] + medium_lines + [""]
+    else:
+        lines += ["## Medium confidence (manual review required)", "", _REPORT_NONE_MARKER, ""]
+
+    if low_lines:
+        lines += ["## Low confidence (no clear match)", ""] + low_lines + [""]
+    else:
+        lines += ["## Low confidence (no clear match)", "", _REPORT_NONE_MARKER, ""]
+
+    return "\n".join(lines)
+
+
 def stage_5_slot_synonym_auto_seed(
     conn: sqlite3.Connection, dry_run: bool = False
 ) -> dict:
@@ -2002,84 +2096,52 @@ def stage_5_slot_synonym_auto_seed(
     manual_review = 0
     no_match = 0
 
-    high_lines: list[str] = []
-    medium_lines: list[str] = []
-    low_lines: list[str] = []
+    high_lines: list = []
+    medium_lines: list = []
+    low_lines: list = []
 
     for row_id, canonical_slot in rows:
         normalised = _camel_to_kebab(canonical_slot).strip("_- ")
+        confidence, matched_slug, candidates = _match_slot_to_block(c, normalised)
 
-        if not normalised:
-            low_lines.append(f"- slot='{canonical_slot}' (could not normalise name)")
-            no_match += 1
-            continue
-
-        # --- Tier 1: exact slug match ---
-        exact = c.execute(
-            "SELECT slug FROM blocks WHERE source='sgs' AND slug = ?",
-            (f"sgs/{normalised}",),
-        ).fetchone()
-
-        if exact:
-            matched_slug = exact[0]
-            high_lines.append(
-                f"- slot='{canonical_slot}' → {matched_slug} (exact match)"
-            )
-            if not dry_run:
-                c.execute(
-                    "UPDATE slot_synonyms SET standalone_block=? WHERE rowid=?",
-                    (matched_slug, row_id),
-                )
+        if confidence == "high":
+            high_lines.append(f"- slot='{canonical_slot}' → {matched_slug} (exact match)")
+            _apply_high_confidence_match(c, row_id, matched_slug, dry_run)
             auto_inserted += 1
-            continue
 
-        # --- Tier 2: prefix match (sgs/<name>%) — only if single result ---
-        prefix_results = c.execute(
-            "SELECT slug FROM blocks WHERE source='sgs' AND slug LIKE ?",
-            (f"sgs/{normalised}%",),
-        ).fetchall()
-
-        if len(prefix_results) == 1 and len(normalised) >= 4:
-            matched_slug = prefix_results[0][0]
+        elif confidence == "medium-prefix":
             medium_lines.append(
                 f"- slot='{canonical_slot}' → {matched_slug} "
                 f"(prefix match — review before accepting)"
             )
             manual_review += 1
-            continue
 
-        if len(prefix_results) > 1:
-            candidates = ", ".join(r[0] for r in prefix_results[:5])
-            low_lines.append(
-                f"- slot='{canonical_slot}' (multiple prefix matches: {candidates})"
-            )
-            no_match += 1
-            continue
-
-        # --- Tier 3: contains match — only if single result ---
-        contains_results = c.execute(
-            "SELECT slug FROM blocks WHERE source='sgs' AND slug LIKE ?",
-            (f"%{normalised}%",),
-        ).fetchall()
-
-        if len(contains_results) == 1 and len(normalised) >= 4:
-            matched_slug = contains_results[0][0]
+        elif confidence == "medium-contains":
             medium_lines.append(
                 f"- slot='{canonical_slot}' → {matched_slug} "
                 f"(contains match — review before accepting)"
             )
             manual_review += 1
-        else:
-            # No match or too many ambiguous matches
-            if len(contains_results) > 1:
-                low_lines.append(
-                    f"- slot='{canonical_slot}' "
-                    f"(ambiguous — {len(contains_results)} contains matches, no auto-seed)"
-                )
-            else:
-                low_lines.append(
-                    f"- slot='{canonical_slot}' (no SGS block matches)"
-                )
+
+        elif confidence == "low-ambiguous-prefix":
+            low_lines.append(
+                f"- slot='{canonical_slot}' (multiple prefix matches: {', '.join(candidates)})"
+            )
+            no_match += 1
+
+        elif confidence == "low-ambiguous-contains":
+            low_lines.append(
+                f"- slot='{canonical_slot}' "
+                f"(ambiguous — {len(candidates)} contains matches, no auto-seed)"
+            )
+            no_match += 1
+
+        elif confidence == "low-no-normalised":
+            low_lines.append(f"- slot='{canonical_slot}' (could not normalise name)")
+            no_match += 1
+
+        else:  # low-none
+            low_lines.append(f"- slot='{canonical_slot}' (no SGS block matches)")
             no_match += 1
 
     if not dry_run:
@@ -2087,34 +2149,15 @@ def stage_5_slot_synonym_auto_seed(
 
     # --- Write report (always — observational, fine in dry-run) ---
     ts = datetime.now(timezone.utc).strftime(_UTC_TIMESTAMP_FMT)
-    lines: list[str] = [
-        f"# Slot Synonym Auto-Seed Proposals — {ts}",
-        "",
-        "## Summary",
-        f"Unmapped rows: {unmapped_count} | "
-        f"Auto-inserted (high confidence): {auto_inserted} | "
-        f"Manual review (medium confidence): {manual_review} | "
-        f"No match (low confidence): {no_match}",
-        "",
-    ]
-
-    if high_lines:
-        lines += ["## High confidence (auto-updated)", ""] + high_lines + [""]
-    else:
-        lines += ["## High confidence (auto-updated)", "", _REPORT_NONE_MARKER, ""]
-
-    if medium_lines:
-        lines += ["## Medium confidence (manual review required)", ""] + medium_lines + [""]
-    else:
-        lines += ["## Medium confidence (manual review required)", "", _REPORT_NONE_MARKER, ""]
-
-    if low_lines:
-        lines += ["## Low confidence (no clear match)", ""] + low_lines + [""]
-    else:
-        lines += ["## Low confidence (no clear match)", "", _REPORT_NONE_MARKER, ""]
-
+    counts = {
+        "unmapped_count": unmapped_count,
+        "auto_inserted": auto_inserted,
+        "manual_review": manual_review,
+        "no_match": no_match,
+    }
+    report_content = _build_synonym_report(high_lines, medium_lines, low_lines, counts, ts)
     report_path.parent.mkdir(parents=True, exist_ok=True)
-    report_path.write_text("\n".join(lines), encoding="utf-8")
+    report_path.write_text(report_content, encoding="utf-8")
 
     mode = "dry-run" if dry_run else "actual"
     print(
