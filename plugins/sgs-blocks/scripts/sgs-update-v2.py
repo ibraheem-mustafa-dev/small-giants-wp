@@ -58,6 +58,7 @@ _SELECT_BLOCK_EXISTS_NATIVE_WP = "SELECT 1 FROM blocks WHERE slug=? AND source='
 _SELECT_DOC_EXISTS_NATIVE_WP = "SELECT 1 FROM docs WHERE slug=? AND source='native_wp'"
 _SELECT_BLOCK_ATTR_EXISTS_NATIVE_WP = "SELECT 1 FROM block_attributes WHERE block_slug=? AND attr_name=? AND source='native_wp'"
 _SELECT_BLOCK_SUPPORT_EXISTS_NATIVE_WP = "SELECT 1 FROM block_supports WHERE block_slug=? AND support_name=? AND source='native_wp'"
+_SELECT_TOKEN_DEFAULT_VALUE = "SELECT default_value FROM design_tokens WHERE slug = ?"
 
 # Re-used string literals
 _UTC_TIMESTAMP_FMT = "%Y-%m-%d %H:%M:%S UTC"
@@ -145,19 +146,21 @@ def _parent_for_block(block_dir_name: str) -> str | None:
 # so idempotency is guaranteed — a second run produces zero new rows.
 # ---------------------------------------------------------------------------
 
-def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -> dict:
-    """Walk src/blocks/*/block.json → INSERT OR IGNORE into blocks + block_attributes.
+def _index_sgs_block_files(
+    blocks_dir: Path,
+    c: sqlite3.Cursor,
+    dry_run: bool,
+) -> dict:
+    """Walk blocks_dir/*/block.json, INSERT OR IGNORE blocks/attrs/supports rows.
 
-    Updates indexed_files mtime + content_hash.
-    Updates schema_metadata.indexed_blocks_count after scan.
+    Also updates indexed_files mtime + content_hash per block.json processed.
+    Returns counters dict: scanned, new_blocks, new_attrs, new_supports,
+    indexed_inserted, indexed_updated, indexed_skipped.
 
-    Idempotent: second run produces zero new rows (INSERT OR IGNORE throughout).
-    PORTED FROM: ~/.agents/skills/sgs-wp-engine/scripts/update-db.py + populate-db.py
+    The caller (`stage_1_sgs_codebase_scan`) owns `conn.commit()` after this
+    helper returns — keeping the commit responsibility at one frame up keeps
+    helper signatures lean.
     """
-    blocks_dir = REPO_ROOT / "plugins" / "sgs-blocks" / "src" / "blocks"
-    if not blocks_dir.exists():
-        return {"error": f"blocks dir not found: {blocks_dir}"}
-
     scanned = 0
     new_blocks = 0
     new_attrs = 0
@@ -165,8 +168,6 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
     indexed_inserted = 0
     indexed_updated = 0
     indexed_skipped = 0
-
-    c = conn.cursor()
 
     for block_dir in sorted(blocks_dir.iterdir()):
         if not block_dir.is_dir() or block_dir.name in EXCLUDED_DIRS:
@@ -313,36 +314,73 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
         except Exception as exc:
             print(f"  WARNING: indexed_files update failed for {block_json_path}: {exc}")
 
+    return {
+        "scanned": scanned,
+        "new_blocks": new_blocks,
+        "new_attrs": new_attrs,
+        "new_supports": new_supports,
+        "indexed_inserted": indexed_inserted,
+        "indexed_updated": indexed_updated,
+        "indexed_skipped": indexed_skipped,
+    }
+
+
+def _run_canonical_assignment(conn: sqlite3.Connection) -> None:
+    """Run assign-canonical.py as a subprocess (Stage 1 tail step).
+
+    Releases the write lock briefly so the subprocess can open its own connection.
+    Prints a one-line summary; swallows all errors as warnings.
+    """
+    try:
+        ac_script = REPO_ROOT / "plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py"
+        if not ac_script.exists():
+            return
+        conn.commit()
+        result = subprocess.run(
+            ["python", str(ac_script)],
+            capture_output=True, text=True, timeout=60,
+        )
+        if result.returncode == 0:
+            tail = [
+                ln for ln in (result.stdout or "").splitlines()
+                if "resolved" in ln.lower() or "gaps" in ln.lower()
+            ]
+            print(f"Stage 1 tail (canonical assignment): {tail[-1] if tail else 'completed'}")
+        else:
+            print(
+                f"Stage 1 tail (canonical assignment): WARN exit={result.returncode}; "
+                f"stderr={result.stderr[:200]}"
+            )
+    except Exception as exc:  # noqa: BLE001
+        print(f"Stage 1 tail (canonical assignment): WARN {exc}")
+
+
+def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -> dict:
+    """Walk src/blocks/*/block.json → INSERT OR IGNORE into blocks + block_attributes.
+
+    Updates indexed_files mtime + content_hash.
+    Updates schema_metadata.indexed_blocks_count after scan.
+
+    Idempotent: second run produces zero new rows (INSERT OR IGNORE throughout).
+    PORTED FROM: ~/.agents/skills/sgs-wp-engine/scripts/update-db.py + populate-db.py
+    """
+    blocks_dir = REPO_ROOT / "plugins" / "sgs-blocks" / "src" / "blocks"
+    if not blocks_dir.exists():
+        return {"error": f"blocks dir not found: {blocks_dir}"}
+
+    c = conn.cursor()
+    counts = _index_sgs_block_files(blocks_dir, c, dry_run)
+    scanned = counts["scanned"]
+    new_blocks = counts["new_blocks"]
+    new_attrs = counts["new_attrs"]
+    new_supports = counts["new_supports"]
+    indexed_inserted = counts["indexed_inserted"]
+    indexed_updated = counts["indexed_updated"]
+    indexed_skipped = counts["indexed_skipped"]
+
     if not dry_run:
         conn.commit()
-
-        # Stage 1 tail (2026-05-24) — run canonical-slot assignment so new
-        # block_attributes rows from this scan get canonical_slot + role +
-        # derived_selector populated immediately. Without this wire-in,
-        # assign-canonical.py was a standalone script that nobody invoked,
-        # leaving NULL canonical_slot on many array attrs and blocking the
-        # walker's universal extraction. See Spec 16 §12.6 Stage 4 spec intent.
-        try:
-            import subprocess as _subprocess
-            from pathlib import Path as _Path
-            _repo_root = _Path(__file__).resolve().parents[3]
-            _ac_script = _repo_root / "plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py"
-            if _ac_script.exists():
-                # assign-canonical.py opens its own DB connection — release ours
-                # briefly so SQLite's write lock isn't held during the subprocess.
-                conn.commit()
-                result = _subprocess.run(
-                    ["python", str(_ac_script)],
-                    capture_output=True, text=True, timeout=60,
-                )
-                if result.returncode == 0:
-                    # Extract the summary line (the script prints a final "Total resolved: N, Total gaps: M")
-                    tail = [ln for ln in (result.stdout or "").splitlines() if "resolved" in ln.lower() or "gaps" in ln.lower()]
-                    print(f"Stage 1 tail (canonical assignment): {tail[-1] if tail else 'completed'}")
-                else:
-                    print(f"Stage 1 tail (canonical assignment): WARN exit={result.returncode}; stderr={result.stderr[:200]}")
-        except Exception as _exc:  # noqa: BLE001
-            print(f"Stage 1 tail (canonical assignment): WARN {_exc}")
+        _run_canonical_assignment(conn)
 
         # Update schema_metadata.indexed_blocks_count
         count_row = c.execute(
@@ -351,16 +389,17 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
         total_sgs_blocks = count_row[0]
         upsert_metadata(conn, "indexed_blocks_count", str(total_sgs_blocks))
 
-        summary = (
-            f"Stage 1: {scanned} blocks scanned, "
-            f"{new_blocks} new block rows, {new_attrs} new attr rows, "
-            f"{new_supports} new support rows inserted. "
-            f"indexed_files: {indexed_inserted} inserted, {indexed_updated} updated, "
-            f"{indexed_skipped} unchanged."
-        )
         if new_blocks == 0 and new_attrs == 0 and new_supports == 0:
             summary = (
                 f"Stage 1: {scanned} blocks scanned, 0 new rows inserted (DB current). "
+                f"indexed_files: {indexed_inserted} inserted, {indexed_updated} updated, "
+                f"{indexed_skipped} unchanged."
+            )
+        else:
+            summary = (
+                f"Stage 1: {scanned} blocks scanned, "
+                f"{new_blocks} new block rows, {new_attrs} new attr rows, "
+                f"{new_supports} new support rows inserted. "
                 f"indexed_files: {indexed_inserted} inserted, {indexed_updated} updated, "
                 f"{indexed_skipped} unchanged."
             )
@@ -601,6 +640,116 @@ def _insert_or_count(
     return delta
 
 
+def _insert_block_attrs_and_supports(
+    c: sqlite3.Cursor,
+    slug: str,
+    block_data: dict,
+    new_rows: dict,
+    dry_run: bool,
+) -> tuple[int, int]:
+    """Insert block attributes and supports rows for one block.
+
+    Returns (attrs_delta, supports_delta).
+    Only called when not dry_run (caller must guard).
+    """
+    a_delta = 0
+    for attr_name, attr_def in block_data.get("attributes", {}).items():
+        if not isinstance(attr_def, dict):
+            continue
+        a_delta += _insert_or_count(
+            c, new_rows, "block_attributes", dry_run,
+            insert_sql="""
+                INSERT OR IGNORE INTO block_attributes
+                    (block_slug, attr_name, attr_type, default_value, source)
+                VALUES (?, ?, ?, ?, 'native_wp')
+                """,
+            insert_params=(
+                slug, attr_name,
+                attr_def.get("type", "string"),
+                json.dumps(attr_def.get("default")) if "default" in attr_def else None,
+            ),
+            exists_sql=_SELECT_BLOCK_ATTR_EXISTS_NATIVE_WP,
+            exists_params=(slug, attr_name),
+        )
+
+    s_delta = 0
+    for support_name, support_val in block_data.get("supports", {}).items():
+        s_delta += _insert_or_count(
+            c, new_rows, "block_supports", dry_run,
+            insert_sql="""
+                INSERT OR IGNORE INTO block_supports
+                    (block_slug, support_name, support_value, source)
+                VALUES (?, ?, ?, 'native_wp')
+                """,
+            insert_params=(slug, support_name, json.dumps(support_val)),
+            exists_sql=_SELECT_BLOCK_SUPPORT_EXISTS_NATIVE_WP,
+            exists_params=(slug, support_name),
+        )
+
+    return (a_delta, s_delta)
+
+
+def _process_gutenberg_block_dir(
+    c: sqlite3.Cursor,
+    github_token,
+    entry: dict,
+    ref_tag: str,
+    new_rows: dict,
+    dry_run: bool,
+) -> tuple:
+    """Fetch + parse one block.json from gutenberg, INSERT OR IGNORE rows.
+
+    Mutates new_rows by reference.
+    Returns (blocks_delta, attrs_delta, supports_delta).
+    Returns (0, 0, 0) silently on fetch/parse errors.
+    """
+    block_name = entry["name"]
+    block_json_url = (
+        f"https://api.github.com/repos/WordPress/gutenberg/contents/"
+        f"packages/block-library/src/{block_name}/block.json?ref={ref_tag}"
+    )
+    try:
+        file_data = _github_api_get(block_json_url, github_token)
+        if not isinstance(file_data, dict):
+            return (0, 0, 0)
+        content_b64 = file_data.get("content", "")
+        if not content_b64:
+            return (0, 0, 0)
+        decoded = base64.b64decode(content_b64.replace("\n", "")).decode("utf-8", errors="replace")
+        block_data = json.loads(decoded)
+    except json.JSONDecodeError:
+        return (0, 0, 0)
+    except Exception:
+        return (0, 0, 0)
+
+    slug = block_data.get("name", f"core/{block_name}")
+    title = block_data.get("title", block_name)
+    description = block_data.get("description", "")
+    category = block_data.get("category", "")
+    block_type = "dynamic" if "$schema" in block_data else "static"
+
+    b_delta = _insert_or_count(
+        c, new_rows, "blocks", dry_run,
+        insert_sql="""
+            INSERT OR IGNORE INTO blocks
+                (slug, title, description, category, type, source)
+            VALUES (?, ?, ?, ?, ?, 'native_wp')
+            """,
+        insert_params=(slug, title, description, category, block_type),
+        exists_sql=_SELECT_BLOCK_EXISTS_NATIVE_WP,
+        exists_params=(slug,),
+    )
+
+    a_delta = 0
+    s_delta = 0
+    if not dry_run:
+        a_delta, s_delta = _insert_block_attrs_and_supports(
+            c, slug, block_data, new_rows, dry_run
+        )
+
+    return (b_delta, a_delta, s_delta)
+
+
 def _scrape_source_1_gutenberg(
     c: sqlite3.Cursor,
     conn: sqlite3.Connection,
@@ -615,7 +764,6 @@ def _scrape_source_1_gutenberg(
     Returns the number of block directories found (items count for items_per_source).
     Raises on fatal error -- caller catches.
     """
-
     print(f"\n[Source 1] WordPress/gutenberg packages/block-library/src/ at v{wp_version}.0 ...")
     ref_tag = f"v{wp_version}.0"
     dir_url = (
@@ -634,77 +782,10 @@ def _scrape_source_1_gutenberg(
     s1_supports = 0
 
     for entry in block_dirs:
-        block_name = entry["name"]
-        block_json_url = (
-            f"https://api.github.com/repos/WordPress/gutenberg/contents/"
-            f"packages/block-library/src/{block_name}/block.json?ref={ref_tag}"
-        )
-        try:
-            file_data = _github_api_get(block_json_url, github_token)
-            if not isinstance(file_data, dict):
-                continue
-            content_b64 = file_data.get("content", "")
-            if not content_b64:
-                continue
-            decoded = base64.b64decode(content_b64.replace("\n", "")).decode("utf-8", errors="replace")
-            block_data = json.loads(decoded)
-        except json.JSONDecodeError:
-            continue
-        except Exception:
-            continue
-
-        slug = block_data.get("name", f"core/{block_name}")
-        title = block_data.get("title", block_name)
-        description = block_data.get("description", "")
-        category = block_data.get("category", "")
-        block_type = "dynamic" if "$schema" in block_data else "static"
-
-        s1_blocks += _insert_or_count(
-            c, new_rows, "blocks", dry_run,
-            insert_sql="""
-                INSERT OR IGNORE INTO blocks
-                    (slug, title, description, category, type, source)
-                VALUES (?, ?, ?, ?, ?, 'native_wp')
-                """,
-            insert_params=(slug, title, description, category, block_type),
-            exists_sql=_SELECT_BLOCK_EXISTS_NATIVE_WP,
-            exists_params=(slug,),
-        )
-
-        if not dry_run:
-            # Attributes
-            for attr_name, attr_def in block_data.get("attributes", {}).items():
-                if not isinstance(attr_def, dict):
-                    continue
-                s1_attrs += _insert_or_count(
-                    c, new_rows, "block_attributes", dry_run,
-                    insert_sql="""
-                        INSERT OR IGNORE INTO block_attributes
-                            (block_slug, attr_name, attr_type, default_value, source)
-                        VALUES (?, ?, ?, ?, 'native_wp')
-                        """,
-                    insert_params=(
-                        slug, attr_name,
-                        attr_def.get("type", "string"),
-                        json.dumps(attr_def.get("default")) if "default" in attr_def else None,
-                    ),
-                    exists_sql=_SELECT_BLOCK_ATTR_EXISTS_NATIVE_WP,
-                    exists_params=(slug, attr_name),
-                )
-
-            # Supports
-            for support_name, support_val in block_data.get("supports", {}).items():
-                s1_supports += _insert_or_count(
-                    c, new_rows, "block_supports", dry_run,
-                    insert_sql="""
-                        INSERT OR IGNORE INTO block_supports
-                            (block_slug, support_name, support_value, source)
-                        VALUES (?, ?, ?, 'native_wp')
-                        """,
-                    insert_params=(slug, support_name, json.dumps(support_val)),
-                    exists_sql=_SELECT_BLOCK_SUPPORT_EXISTS_NATIVE_WP,
-                    exists_params=(slug, support_name),
-                )
+        b, a, s = _process_gutenberg_block_dir(c, github_token, entry, ref_tag, new_rows, dry_run)
+        s1_blocks += b
+        s1_attrs += a
+        s1_supports += s
 
     if not dry_run:
         conn.commit()
@@ -974,6 +1055,33 @@ def _insert_dev_blog_articles(
     return s_docs
 
 
+def _insert_handbook_doc(
+    c: sqlite3.Cursor,
+    conn: sqlite3.Connection,
+    slug: str,
+    doc_title: str,
+    doc_type: str,
+    content: str,
+    new_rows: dict[str, int],
+    dry_run: bool,
+) -> int:
+    """INSERT OR IGNORE one handbook doc row. Returns number of new rows (0 or 1).
+
+    Commits conn when not dry_run (matching original per-source commit semantics).
+    """
+    return _insert_or_count(
+        c, new_rows, "docs", dry_run,
+        insert_sql="""
+            INSERT OR IGNORE INTO docs
+                (source, slug, title, doc_type, category, content)
+            VALUES ('native_wp', ?, ?, ?, ?, ?)
+            """,
+        insert_params=(slug, doc_title, doc_type, doc_type, content),
+        exists_sql=_SELECT_DOC_EXISTS_NATIVE_WP,
+        exists_params=(slug,),
+    )
+
+
 def _scrape_handbook_sources_5_to_10(
     c: sqlite3.Cursor,
     conn: sqlite3.Connection,
@@ -1064,27 +1172,11 @@ def _scrape_handbook_sources_5_to_10(
             else:
                 # Top-level handbook: insert as one summary doc with sections as content
                 content = "\n".join(f"## {s}" for s in sections[:50]) if sections else ""
-                slug = slug_prefix
-                s_docs = 0
+                s_docs = _insert_handbook_doc(
+                    c, conn, slug_prefix, doc_title, doc_type, content, new_rows, dry_run,
+                )
                 if not dry_run:
-                    res = c.execute(
-                        """
-                        INSERT OR IGNORE INTO docs
-                            (source, slug, title, doc_type, category, content)
-                        VALUES ('native_wp', ?, ?, ?, ?, ?)
-                        """,
-                        (slug, doc_title, doc_type, doc_type, content),
-                    )
-                    new_rows["docs"] += res.rowcount
-                    s_docs += res.rowcount
                     conn.commit()
-                else:
-                    ex = c.execute(
-                        _SELECT_DOC_EXISTS_NATIVE_WP, (slug,)
-                    ).fetchone()
-                    if ex is None:
-                        new_rows["docs"] += 1
-                        s_docs += 1
                 items_per_source[src_name] = len(sections)
                 print(f"  {src_name}: {len(sections)} sections found, {s_docs} new row.")
 
@@ -1434,7 +1526,7 @@ def _resolve_token_conflict(
     """
     slug = tok["slug"]
     existing = cursor.execute(
-        "SELECT default_value FROM design_tokens WHERE slug = ?",
+        _SELECT_TOKEN_DEFAULT_VALUE,
         (slug,),
     ).fetchone()
     if existing is None or existing[0] == tok["default_value"]:
@@ -1497,7 +1589,7 @@ def _write_token_row(
 
     # Check for existing row first (needed for the no-conflict path)
     existing = cursor.execute(
-        "SELECT default_value FROM design_tokens WHERE slug = ?",
+        _SELECT_TOKEN_DEFAULT_VALUE,
         (slug,),
     ).fetchone()
 
@@ -1580,7 +1672,7 @@ def _process_client_snapshot(
             client_conflicts += 1
             # Recover the existing framework value for the report line
             existing_val = c.execute(
-                "SELECT default_value FROM design_tokens WHERE slug = ?",
+                _SELECT_TOKEN_DEFAULT_VALUE,
                 (tok["slug"],),
             ).fetchone()
             existing_display = existing_val[0] if existing_val else "?"
