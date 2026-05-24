@@ -944,7 +944,7 @@ Source: Session 2026-05-20 sandybrown smoke test (Spec 17 live verification).
 ### P-S18-TRANSPARENT-PATTERN-IS-STUB: framework-header-transparent currently delegates 100% to default pattern
 **Status:** OPEN
 
-**Captured 2026-05-20.** `theme/sgs-theme/patterns/framework-header-transparent.php` is `<!-- wp:pattern {"slug":"sgs/framework-header-default"} /-->` with a TODO comment "v1.1: variant-specific markup + transparent-over-hero behaviour."
+**Captured 2026-05-20.** `theme/sgs-theme/patterns/framework-header-transparent.php` is `<!-- wp:pattern {"slug":"sgs/framework-header-default"} /-->` with an inline future-work note: "v1.1: variant-specific markup + transparent-over-hero behaviour."
 
 **Impact:** the conditional-rule engine cannot be verified end-to-end at the rendered-output layer for the transparent variant — both default and transparent rules produce byte-identical HTML. Resolver verification works in isolation (`Sgs_Header_Rules::evaluate()` returns 13151 bytes correctly), but the visible-distinction acceptance criterion from Spec 17 ("transparent header renders on homepage when rule fires") is untestable.
 
@@ -1059,7 +1059,7 @@ _3 entries._
 ### P-6-LUCIDE-REST-ENTRY-POINT — research WP 7.0 icon-collection registration API
 
 **Status:** BLOCKED
-**Why:** `class-sgs-lucide-icons-rest.php` checks `function_exists('wp_register_icon_collection')` — that function doesn't exist in WP 7.0 even though `WP_REST_Icons_Controller` class does. The registration entry point is somewhere else (likely a class method, possibly `WP_REST_Icons_Controller::register_collection()` or similar).
+**Why:** `class-sgs-lucide-icons-rest.php` checks `function_exists('wp_register_icon_collection')` — that function doesn't exist in WP 7.0 even though `WP_REST_Icons_Controller` class does. The registration entry point is somewhere else — likely a class method on `WP_REST_Icons_Controller` (candidate: `register_collection()`).
 **Acceptance when this lands:**
 - Correct registration API name identified from WP 7.0 source (`wp-includes/rest-api/endpoints/class-wp-rest-icons-controller.php`)
 - `class-sgs-lucide-icons-rest.php` updated to actually register the SGS Lucide collection
