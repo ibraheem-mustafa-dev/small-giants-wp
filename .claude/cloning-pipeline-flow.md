@@ -483,6 +483,43 @@ The big picture in one page, with EVERY script, file, DB table and skill plotted
 │               2026-05-24-strategic-plan.md to close G1+G3+G5 as one         │
 │               coherent universal-walker delivery (commit sequence, not      │
 │               three deferred steps).                                        │
+│                                                                             │
+│ STATUS (2026-05-24 second pass — SHIPPED): five data-layer + walker        │
+│   changes shipped after Bean redirect from tactical guard to "BEM-is-      │
+│   canonical, walker uses DB universally":                                   │
+│   1. slot_synonyms cleanup — removed 7 structural-wrapper aliases from     │
+│      text canonical (inner, content, body-row, custom-content, quote,      │
+│      textAlign, textTransform). Source of root cause for wrappers          │
+│      collapsing to sgs/text via composite_element.                          │
+│   2. section_inner_absorb walker pre-pass at convert.py before walk() —    │
+│      transparent single-child wrappers (BEM-named, no gap/positioning)     │
+│      absorbed into section root so emit is ONE outer sgs/container with    │
+│      merged className. Skips FR1-matched sections (composite block handles│
+│      internally). 4 single-wrapper Mama's sections collapse cleanly.       │
+│   3. quote canonical migration — slot_synonyms.quote.aliases extended     │
+│      with ["quote","blockquote","pullquote"]; "quote" removed from text   │
+│      canonical aliases. __quote BEM now routes to sgs/quote standalone    │
+│      via existing composite_element branch — NO walker code change. Spec  │
+│      00 §3.1 + Spec 16 §12.3 updated.                                      │
+│   4. /sgs-update Stage 1 tail wired to invoke assign-canonical.py +       │
+│      assign-canonical.py extended with singularise + Tier B (registered   │
+│      block reverse-lookup) — fills canonical_slot for 12 previously-NULL  │
+│      array attrs (testimonials→review, logos→logo, plans→card, steps→     │
+│      step, reviews→review, images→media, icons→icon, badges→badge, …)    │
+│      plus messages text alias. assign-canonical.py was previously a       │
+│      standalone-only script — wiring closes the spec-vs-impl drift in     │
+│      §12.6 Stage 4.                                                         │
+│   5. Mama's brand mockup BEM rename — <blockquote class="sgs-brand__body">│
+│      → <div class="sgs-brand__quote"> + <footer> → <p class="sgs-brand__   │
+│      attribution">. Consistency with Spec 00 BEM-as-canonical rule.       │
+│   Empirical: Stage 11 mean pixel-diff baseline 70.5% → 73.9% post-changes │
+│   (regression on featured-product / ingredients is CSS-lift gap on the    │
+│   new richer skeleton — closes when Step 1.7 G3 slot_list visual          │
+│   extension lands; block-type mapping is the gate for this commit).       │
+│   ARRAY_LIFT_PATTERNS hardcoded dict NOT yet deleted — count_stars         │
+│   rating extractor + multi-selector fallback are special features the     │
+│   universal 1e-B path doesn't yet replicate. Parked as                    │
+│   P-ARRAY-LIFT-PATTERNS-FULL-MIGRATION.                                   │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 

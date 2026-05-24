@@ -324,3 +324,64 @@ Time: 20 min. Inline /handoff.
 ## What success looks like (one-line)
 
 After Phase 1: re-running `/sgs-clone --deploy-target page:144` produces a stage-11-pixel-diff.json where every body cell improves vs baseline; G1 verified by Playwright (hero CTAs in DOM); G3 verified by trace.jsonl (hero stage_3_slot_list failures < 30); G5 verified by per-block visual diff. The universal walker + FR1 pattern fast-path + OPEN-block emission + slot_list visual extension + per-block DOM fixes ship as a coherent commit sequence, all gated by /qc-council and Bean-approved commits per Binding A.
+
+---
+
+## What ACTUALLY shipped — Phase 1 second pass (2026-05-24, uncommitted at end of session)
+
+The original plan above scoped a "universal walker pre-pass" (Spec 16 §15 steps 1-3) as the primary architectural rewrite. Mid-session investigation surfaced that the existing `convert.py:walk()` already contains 9 named branches (FR1 block-root, essence-match, composite_element, css-driven container, sgs-bem-wrapper, pass-through, top-level container + 5 atomic-tag swaps) that together deliver the walker outcome — provided the data layer they consume is correct. Bean's redirect: data-layer fixes + a minimal pre-pass for transparent wrappers + Stage 4 wiring.
+
+**5 changes shipped uncommitted in this session:**
+
+1. **slot_synonyms cleanup** — 7 bad aliases removed from text canonical (inner, content, body-row, custom-content, quote, textAlign, textTransform) in DB + seed-slot-synonyms.py (so /sgs-update doesn't re-seed). Root cause for wrapper divs collapsing to sgs/text.
+2. **section_inner_absorb walker pre-pass** (convert.py + db_lookup.py + 4 callsites) — single transparent-wrapper children absorbed into section root for one-section-one-container architecture. Skips FR1-matched sections.
+3. **quote canonical migration** — `__quote` / `__blockquote` / `__pullquote` BEM elements route to sgs/quote via composite_element branch + slot_synonyms data. Zero walker code changes. Spec 00 §3.1 + Spec 16 §12.3 updated.
+4. **/sgs-update Stage 4 wiring** — `sgs-update-v2.py:stage_1_sgs_codebase_scan()` tail invokes `assign-canonical.py` (previously standalone, never auto-run despite Spec 16 §12.6 saying it ran). Extended `assign-canonical.py` with singularise + Tier B (registered-block reverse-lookup via standalone_block) so 12 plural-named array attrs got canonical_slot populated.
+5. **Brand mockup BEM rename** — `<blockquote class="sgs-brand__body">` → `<div class="sgs-brand__quote">`; `<footer>` → `<p class="sgs-brand__attribution">`. Spec 00 BEM-as-canonical consistency. Brand now emits `<!-- wp:sgs/quote ... -->` with attribution lifted.
+
+**Empirical**: Stage 11 mean pixel-diff 70.5% (baseline) → 73.9% (post all 5 changes). Block-type mapping is correct; pixel-diff regression on featured-product/ingredients is the CSS-lift gap on the new richer skeleton — closes when Step 1.7 G3 (slot_list visual extension) lands.
+
+**Steps 1.6 (G1 hero OPEN-block), 1.7 (G3 slot_list visual extension), 1.8 (G5 per-block DOM fixes), 1.9 (hooks + role='content'), 1.10 (final /qc-council), 1.11 (handoff) all remain TODO.** The session's work has the walker emitting structurally correct block trees for the 5 normal-route body sections (was: 1-block collapse; now: 4-10 inner blocks per section). The remaining pixel-diff closure comes from CSS lift onto the new richer emit + per-block render-shape fixes.
+
+---
+
+## Phase 1 follow-on items (deferred from this session; not parked because they're load-bearing data work)
+
+These were surfaced during the second-pass investigation and are too important for parking — they live here so the next Phase 1 work session picks them up:
+
+### F1 — ARRAY_LIFT_PATTERNS full migration to DB-driven universal extraction
+
+**What:** Delete the hardcoded `ARRAY_LIFT_PATTERNS` dict at `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py:1008-1031` + the `_array_lift_text_of_first` / `_array_lift_count_stars` helpers. Let the existing 1e-B universal lifter (already in convert.py:lift_subtree_into_block_attrs around line 3502) handle all array attrs via `block_attributes.canonical_slot/derived_selector` + `slot_synonyms.standalone_block`.
+
+**Why deferred:** The hardcoded dict provides two features 1e-B doesn't yet replicate:
+- (a) `count_stars` extractor for sgs/testimonial.rating (counts ★ chars from text content)
+- (b) Multi-selector fallback chains like `p.sgs-testimonial__text,blockquote,p` (try several selectors, first hit wins)
+
+**Fix shape when picked up:**
+- Add a role-based extractor map to 1e-B: when `block_attributes.role='rating'` (or canonical_slot='rating'), use star-count extractor on the matched element's text content. Other role-based special extractors as needed.
+- Extend `derived_selector` semantics to support multi-selector OR strings (comma-separated) — already partially supported in atomic_text_standalone branch.
+- After both land: delete ARRAY_LIFT_PATTERNS dict + helpers + the iteration sites at convert.py:3494 + :3621.
+
+**Verification:** post-fix `/sgs-clone` on Mama's social-proof section emits sgs/testimonial-slider with testimonials[] array of 3 items, each carrying quote/name/rating, identical to current state. No regression.
+
+**Audit-trail receipt:** Investigation showed the hardcoded selectors `p.sgs-testimonial__text` and `p.sgs-testimonial__author` DON'T MATCH the DB-canonical `.sgs-testimonial__quote` and `.sgs-testimonial__name` derived_selectors. Authored against older BEM convention; DB tracks current. Migrating to DB-driven auto-cures the drift.
+
+### F2 — Remaining 9 NULL-canonical_slot array attrs: vocabulary additions OR new canonicals
+
+After Change 4a-c (Stage 4 fix + messages vocab), 9 array attrs still have NULL canonical_slot because neither Tier A (singularise + slot_synonyms lookup) nor Tier B (registered-block reverse-lookup) resolves them. They're domain-specific names that need either (a) alias additions to existing canonicals OR (b) net-new canonicals for the concept.
+
+| Block.attr | Suggested resolution | Required action |
+|---|---|---|
+| `sgs/form-field-address.fields` | Add `fields` to `items` canonical aliases | seed-slot-synonyms.py edit + DB |
+| `sgs/form-field-file.allowedTypes` | Likely needs a new `mime-type` or `allowed-type` canonical OR accept NULL (configuration enum, not extractable) | design decision |
+| `sgs/form-field-tiles.tiles` | Add `tiles` to `card` canonical aliases | seed + DB |
+| `sgs/gallery.mediaItems` | Add `mediaItems` + `mediaItem` to `media` canonical aliases | seed + DB |
+| `sgs/info-box.elementOrder` | Configuration data (block-design ordering), not a slot. Accept NULL. | document — no canonical needed |
+| `sgs/product-card.packSizes` | Block-specific feature; add `packSize` + `packSizes` to new `pack-size` canonical OR `options` canonical | design decision |
+| `sgs/table-of-contents.headingLevels` | Enum data, not a slot. Accept NULL. | document |
+| `sgs/team-member.socialLinks` | Add `socialLinks` + `socialLink` to `link` canonical aliases | seed + DB |
+| `sgs/timeline.entries` | Currently blocked by guard `WHERE derived_selector IS NULL` in assign-canonical.py — `derived_selector='.sgs-timeline__item'` is pre-populated. Resolution: relax guard for canonical_slot-only backfill OR manual one-shot UPDATE. Would resolve to `card` (Tier A — entry is in card aliases). | code or DB |
+
+**Fix shape when picked up:** Batch the alias additions (~5 entries) into seed-slot-synonyms.py + apply DB UPDATEs to both mirrors. For sgs/timeline.entries specifically: relax the guard or manual UPDATE.
+
+**Why this is here (not parking):** Without these, ~9 array attrs across the block catalogue can't have their items walked by the universal extractor when those blocks get used in client mockups. The data IS the architecture per Spec 00 BEM-as-canonical; missing canonical_slot rows = missing recognition paths. Load-bearing for cross-client cloning beyond Mama's.

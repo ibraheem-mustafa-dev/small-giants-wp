@@ -111,19 +111,33 @@ ALIAS_EXTENSIONS: list[tuple[str, list[str]]] = [
     ]),
 
     # ----- text / body slot aliases ------------------------------------
+    # NOTE 2026-05-24: structural-wrapper terms (inner, body-row, custom-content)
+    # removed — they were causing wrapper divs (__inner, __content, __body-row)
+    # to wrongly collapse into sgs/text via the composite_element walker branch.
+    # The walker's section_inner_absorb pre-pass (2026-05-24) + correct BEM
+    # resolution now handles wrappers properly. "quote" moved to its own
+    # canonical (below) so __quote BEM element resolves to sgs/quote per Spec 00
+    # BEM-as-canonical rule (HTML tag is NOT a recognition signal).
     ("text", [
         "bio",                # biography text (team-member, testimonial)
         "excerpt",            # post excerpt (post-grid cards)
         "intro",              # introductory paragraph
-        "body-row",           # text body row (multi-column text layouts)
         "review-content",     # review body text (review blocks)
         "consent-text",       # legal consent copy (forms)
         "content-preview",    # content preview pane (editor UI)
-        "custom-content",     # custom body content slot
-        "inner",              # generic inner content wrapper
         "inner-label",        # inner label text
         "label-control",      # label associated with a form control
-        "quote",              # quote body (deprecated alias — canonical already has 'quote')
+    ]),
+
+    # ----- quote slot aliases (added 2026-05-24 — moved from text canonical) ----
+    # Spec 00 §3.4: quote is a first-class canonical slot. BEM element __quote
+    # (or __blockquote, __pullquote) on a draft routes to sgs/quote standalone
+    # block via slot_synonyms.standalone_block lookup. HTML tag is NOT used for
+    # recognition — pure BEM-canonical path.
+    ("quote", [
+        "quote",              # primary BEM element name
+        "blockquote",         # semantic-HTML-friendly alias for the same intent
+        "pullquote",          # pullquote variant (same block, different style)
     ]),
 
     # ----- heading slot aliases ----------------------------------------
@@ -207,6 +221,9 @@ ALIAS_EXTENSIONS: list[tuple[str, list[str]]] = [
         "author",             # author name (post cards, testimonials)
         "verified-text",      # 'Verified buyer' label text
         "verified",           # verification status text
+        # Added 2026-05-24: announcement-bar messages[] array items are short text
+        "messages",           # plural form (announcement-bar.messages array attr)
+        "message",            # singular form (singularised stem)
     ]),
 
     # ----- role (job title) aliases -----------------------------------

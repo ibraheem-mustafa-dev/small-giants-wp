@@ -104,6 +104,11 @@ def _uimax_write():
 
 _SLUG_RE = re.compile(r"^[a-z][a-z0-9-]*$")
 
+# Pixel-diff closure threshold for pattern INSERT gate (Sub-task E, 2026-05-24).
+# A section must pass at ALL THREE standard viewports to earn a patterns table row.
+_PIXEL_DIFF_THRESHOLD_PCT: float = 1.0
+_REQUIRED_VIEWPORTS: tuple[str, ...] = ("375", "768", "1440")
+
 
 @dataclass
 class PatternRegistration:
@@ -157,6 +162,163 @@ def _section_class_to_slug(section_class: str) -> str:
 def _composed_inner_blocks(block_markup: str) -> list[str]:
     """Extract registered block names used inside the composed markup."""
     return sorted(set(re.findall(r"<!-- wp:([a-z0-9/_-]+)", block_markup)))
+
+
+def _read_stage11_pixel_diff(run_dir: Path) -> dict[str, dict[str, float]]:
+    """Read stage-11-pixel-diff.json from run_dir.
+
+    Returns {section_id: {viewport_width: mismatch_pct}} or empty dict when
+    the file is absent or malformed. viewport_width is a string prefix that
+    matches the start of the viewport string (e.g. "375" matches "375x812").
+    """
+    diff_file = run_dir / "stage-11-pixel-diff.json"
+    if not diff_file.exists():
+        return {}
+    try:
+        data = json.loads(diff_file.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+
+    results: dict[str, dict[str, float]] = {}
+    for entry in data.get("results", []):
+        # selector is like "section.sgs-featured-product"
+        selector = entry.get("selector", "")
+        # extract the last class (sgs-X) as the section id
+        parts = selector.rsplit(".", 1)
+        raw_class = parts[-1] if len(parts) > 1 else selector
+        # strip the sgs- prefix to get the section_id
+        if raw_class.startswith("sgs-"):
+            section_id = raw_class[4:]
+        else:
+            section_id = raw_class
+
+        viewport = entry.get("viewport", "")  # e.g. "375x812"
+        mismatch = float(entry.get("mismatch_percent", 100.0))
+
+        if section_id not in results:
+            results[section_id] = {}
+        # Key by the width prefix (e.g. "375")
+        width = viewport.split("x")[0] if "x" in viewport else viewport
+        results[section_id][width] = mismatch
+
+    return results
+
+
+def _pixel_diff_gate(section_id: str, run_dir: Path | None,
+                     stage11_data: dict[str, dict[str, float]] | None = None,
+                     ) -> tuple[bool, str]:
+    """Check whether the section passed pixel-diff <= 1% at all 3 viewports.
+
+    Args:
+        section_id: the canonical section identifier (e.g. "featured-product")
+        run_dir:    the pipeline-state run directory (used to read stage-11 when
+                    stage11_data is not pre-supplied)
+        stage11_data: optional pre-loaded stage-11 dict (avoids repeated file reads)
+
+    Returns:
+        (passed: bool, reason: str)
+        reason is empty when passed=True; actionable error code when passed=False.
+        Error codes (per Sub-task E spec):
+            "stage_11_missing"             - file not found in run_dir
+            "pixel_diff_too_high:<v>=<n>%" - specific viewport failed
+    """
+    if stage11_data is None:
+        if run_dir is None:
+            return False, "stage_11_missing"
+        stage11_data = _read_stage11_pixel_diff(run_dir)
+
+    if not stage11_data:
+        return False, "stage_11_missing"
+
+    section_data = stage11_data.get(section_id)
+    if section_data is None:
+        # Section not in stage-11 at all
+        return False, "stage_11_missing"
+
+    for vp in _REQUIRED_VIEWPORTS:
+        val = section_data.get(vp)
+        if val is None:
+            return False, f"pixel_diff_too_high:{vp}=missing"
+        if val > _PIXEL_DIFF_THRESHOLD_PCT:
+            return False, f"pixel_diff_too_high:{vp}={val:.4f}%"
+
+    return True, ""
+
+
+def _log_recognition_event(
+    slug: str,
+    status: str,
+    section_id: str,
+    run_id: str,
+    stage11_data: dict[str, dict[str, float]],
+    reason: str = "",
+    uimax_db: Path = UIMAX_DB,
+) -> None:
+    """Write one row to uimax.recognition_log for this INSERT attempt.
+
+    status in: inserted | rejected_high_diff | rejected_missing_diff | rejected_other
+    Per Sub-task E spec: log every attempt (pass or fail).
+    Soft-fail — never raises; uimax is catalogue layer, not a runtime gate.
+    """
+    if not uimax_db.exists():
+        return
+    try:
+        con = sqlite3.connect(str(uimax_db), timeout=10.0)
+    except sqlite3.Error:
+        return
+    try:
+        # Check the table exists and has the minimal columns we need.
+        has_table = con.execute(
+            "SELECT 1 FROM sqlite_master WHERE type='table' AND name='recognition_log'"
+        ).fetchone()
+        if not has_table:
+            return
+
+        cols = {r[1] for r in con.execute("PRAGMA table_info(recognition_log)").fetchall()}
+
+        # Build the per-viewport delta string for the proposed_action column.
+        section_data = stage11_data.get(section_id, {})
+        delta_parts = [f"{vp}={section_data.get(vp, 'missing'):.4f}%"
+                       if isinstance(section_data.get(vp), float)
+                       else f"{vp}=missing"
+                       for vp in _REQUIRED_VIEWPORTS]
+        delta_str = " ".join(delta_parts)
+
+        proposed = (
+            f"pattern_gate slug=sgs/{slug} status={status} "
+            f"run_id={run_id} section={section_id} "
+            f"deltas=[{delta_str}]"
+            + (f" reason={reason}" if reason else "")
+        )
+
+        payload: dict = {}
+        if "clone_run_id" in cols:
+            payload["clone_run_id"] = run_id
+        if "bucket_type" in cols:
+            payload["bucket_type"] = "pattern_gate"
+        if "selector" in cols:
+            payload["selector"] = f".sgs-{section_id}"
+        if "proposed_action" in cols:
+            payload["proposed_action"] = proposed
+        if "severity" in cols:
+            payload["severity"] = "high" if "rejected" in status else "info"
+        if "created_at" in cols:
+            payload["created_at"] = _now_iso()
+
+        if not payload:
+            return
+
+        cols_sql = ", ".join(payload.keys())
+        placeholders = ", ".join("?" for _ in payload)
+        con.execute(
+            f"INSERT INTO recognition_log ({cols_sql}) VALUES ({placeholders})",
+            list(payload.values()),
+        )
+        con.commit()
+    except sqlite3.Error:
+        pass  # soft-fail per contract
+    finally:
+        con.close()
 
 
 def _emit_php(slug: str, title: str, category: str, description: str,
@@ -381,6 +543,12 @@ def register_run(
 
     patterns_dir.mkdir(parents=True, exist_ok=True)
 
+    # Sub-task E (2026-05-24): Pre-load Stage 11 pixel-diff data once per run.
+    # All per-section INSERT attempts are gated against this data.
+    # Soft-fail: if the file is absent, every INSERT is rejected with
+    # "stage_11_missing" so broken/half-made patterns never land in the catalogue.
+    stage11_data: dict[str, dict[str, float]] = _read_stage11_pixel_diff(run_dir)
+
     for entry in composed:
         section_id = entry.get("section_id") or ""
         boundary_id = entry.get("boundary_id") or ""
@@ -397,6 +565,54 @@ def register_run(
         if not _SLUG_RE.match(slug):
             reg.skipped_reason = f"invalid pattern slug derived: {slug!r}"
             result.skipped.append(reg)
+            continue
+
+        # ------------------------------------------------------------------
+        # Sub-task E gate: pixel-diff check BEFORE PHP write or DB INSERT.
+        # A section must pass <= 1% at all three viewports (375/768/1440).
+        # If it fails, log to recognition_log and skip -- no PHP file written,
+        # no DB row inserted. This is the architectural fix that ensures no
+        # future hand-made or half-made patterns land in the catalogue.
+        # ------------------------------------------------------------------
+        gate_ok, gate_reason = _pixel_diff_gate(section_id, run_dir, stage11_data)
+        if not gate_ok:
+            err_code = gate_reason  # e.g. "stage_11_missing" / "pixel_diff_too_high:375=24.3%"
+            log_status = "rejected_missing_diff" if err_code == "stage_11_missing" else "rejected_high_diff"
+            _log_recognition_event(
+                slug=slug,
+                status=log_status,
+                section_id=section_id,
+                run_id=run_id,
+                stage11_data=stage11_data,
+                reason=err_code,
+                uimax_db=uimax_db,
+            )
+            reg.skipped_reason = (
+                f"+REGISTER pixel-diff gate REJECTED: {err_code}. "
+                f"Section must pass <= {_PIXEL_DIFF_THRESHOLD_PCT}% at "
+                f"viewports {', '.join(_REQUIRED_VIEWPORTS)} before a patterns "
+                f"table row is written. Fix the converter first, re-run /sgs-clone."
+            )
+            result.skipped.append(reg)
+            # Emit gate rejection to trace so it surfaces in pipeline-state logs.
+            if tr:
+                try:
+                    tr.event(
+                        stage="register_pattern_gate_rejected",
+                        run_id=run_id,
+                        slug=f"sgs/{reg.slug}",
+                        section_id=section_id,
+                        gate_reason=err_code,
+                    )
+                except Exception:
+                    pass
+            # Print actionable error to stderr so operator sees it immediately.
+            print(
+                f"[+REGISTER] GATE REJECTED sgs/{slug}: {err_code} "
+                f"— section must reach pixel-diff <= {_PIXEL_DIFF_THRESHOLD_PCT}% "
+                f"at {'/'.join(_REQUIRED_VIEWPORTS)} before registration.",
+                file=sys.stderr,
+            )
             continue
 
         php_path = patterns_dir / f"{slug}.php"
@@ -468,6 +684,16 @@ def register_run(
             )
         except sqlite3.Error as exc:
             result.errors.append(f"uimax insert failed for {slug}: {exc}")
+
+        # Log successful INSERT to recognition_log.
+        _log_recognition_event(
+            slug=slug,
+            status="inserted",
+            section_id=section_id,
+            run_id=run_id,
+            stage11_data=stage11_data,
+            uimax_db=uimax_db,
+        )
 
         result.registered.append(reg)
 

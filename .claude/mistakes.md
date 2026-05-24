@@ -1,5 +1,27 @@
 # small-giants-wp — Mistakes & Recurring Lessons
-**Last updated:** 2026-05-24 (Step 1.6 wp-sgs-developer audit — 2 new lessons)
+**Last updated:** 2026-05-24 (BEM-canonical second-pass — 5 new lessons)
+
+## 2026-05-24 second pass — Five lessons from the BEM-canonical walker work
+
+### Lesson 1 — Surface-level "fix" via HTML-tag side-channel violates Spec 00 BEM-as-canonical
+
+Initial blockquote-routes-to-sgs/text bug was fixed via tag-side-channel (reading `slot_synonyms.html_semantic_tag` column). Bean caught it: per Spec 00 BEM is canonical naming layer. Tag-based routing creates a second canonical path that conflicts and won't generalise to draft authoring (where `<div class="sgs-X__quote">` should route equivalently). Reverted. Correct fix was data-layer (move "quote" from text canonical to quote canonical) so existing composite_element branch routes BEM `__quote` to sgs/quote naturally. **When a script-level "fix" routes recognition via a different signal than Spec 00 names as canonical, it's a side-channel — wrong path.** Captured as feedback_evidence_based_deduction_not_probabilistic.md.
+
+### Lesson 2 — Single-column DB fix leaves seed-script stale; future /sgs-update re-seeds the bug
+
+Change 1 removed 6 bad aliases from `slot_synonyms` DB via direct UPDATE. Did NOT update `seed-slot-synonyms.py` where the same aliases were authored. Seed comment at line 126 LITERALLY said `"quote",  # quote body (deprecated alias — canonical already has 'quote')` — author knew it was wrong but never finished the migration. Next `/sgs-update --refresh-upstream` would have re-seeded the bug, undoing the fix invisibly. **Data-layer changes must update the WRITE path (seed/migration scripts), not just the read path.** Captured as feedback_comprehensive_db_audit_before_data_layer_changes.md.
+
+### Lesson 3 — Spec-vs-impl drift: declared pipeline stages may not actually run
+
+Spec 16 §12.6 Stage 4 declares "Canonical assignment" as part of `/sgs-update`. But `assign-canonical.py` was a standalone script never invoked from `sgs-update-v2.py`. Operators reading the spec assumed Stage 4 ran; in fact it didn't, leaving 31 array attrs with NULL canonical_slot. **When a spec declares a stage runs, grep the orchestrator code to verify before trusting the spec.** Wiring shipped at `sgs-update-v2.py:stage_1_sgs_codebase_scan()` tail.
+
+### Lesson 4 — Hardcoded dicts in scripts drift silently from DB-canonical data
+
+`ARRAY_LIFT_PATTERNS` dict at `convert.py:1008` had selector strings (`p.sgs-testimonial__text`, `p.sgs-testimonial__author`) that DIDN'T MATCH `block_attributes.derived_selector` values (`.sgs-testimonial__quote`, `.sgs-testimonial__name`). Authored against older BEM convention; DB tracks current. Two sources of truth, drifted, script wins silently because it runs first. **Data duplicated between DB and script-level dict WILL drift. Migrate to DB-driven or accept invisible bugs.** Tracked as Phase 1 follow-on (added at end of Phase 1 plan).
+
+### Lesson 5 — Comprehensive doc walk required for architectural changes
+
+Initial scope (3 docs: cloning-pipeline-flow + mistakes + decisions) missed: Spec 00 + Spec 16 + Phase 1 plan + strategic plan + parking + state.md + architecture.md + docs-registry.yaml + every numbered spec. **Architectural changes touch 10-15 docs, not 3. Doc walk MUST enumerate `.claude/*.md` + every entry in `.claude/docs-registry.yaml` + every numbered spec in `.claude/specs/` + active plans, then classify MUST-UPDATE / LIKELY-AFFECTED / UNAFFECTED.** Caught mid-walk by Bean: "All docs on the yaml registry absolutely need to be checked, as well as all the numbered spec docs."
 
 ## 2026-05-24 — Walker pre-pass commit without Stage 11 pixel-diff measurement
 

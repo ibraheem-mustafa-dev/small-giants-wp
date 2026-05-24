@@ -109,6 +109,8 @@ def convert_page(html_text: str, media_map_path: Path | None) -> tuple[str, list
         # is_top_level=True so unmatched section wrappers DO emit sgs/container.
         # Nested wrappers inside (passed through recursive walk) get is_top_level=False
         # and pass through without container wrapping.
+        # Transparent-wrapper absorb pre-pass (2026-05-24) — see convert.py docstring.
+        v3._absorb_transparent_wrappers(sec, css_rules)
         markup = v3.walk(sec, css_rules, variation_buf, is_top_level=True)
         if markup:
             block_markup_parts.append(markup)
@@ -185,6 +187,7 @@ def main(argv: list[str]) -> int:
                       "status": "empty", "extracted_attributes": {}, "block_markup": "",
                       "variation_css": "", "attribute_gap_candidates": []}
         else:
+            v3._absorb_transparent_wrappers(root, css_rules)
             block_markup = v3.walk(root, css_rules, variation_buf, depth=0, is_top_level=True) or ""
             section_id = root.get("id", "")
             selector_classes: list[str] = root.get("class", []) or []

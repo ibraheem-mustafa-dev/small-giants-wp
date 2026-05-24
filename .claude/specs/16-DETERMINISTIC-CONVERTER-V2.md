@@ -607,6 +607,7 @@ Lives in `sgs-framework.db.slot_synonyms`. v1 seed table:
 | Sub-heading | `subheading` | subtitle, subHeadline, sub |
 | Pre-heading label | `label` | eyebrow, kicker, tag |
 | Paragraph body | `text` | body, description, content, caption, copy |
+| Multi-paragraph quote + attribution | `quote` | blockquote, pullquote, quoteText, quoteBody — routes to `sgs/quote` (2026-05-24) |
 | Polymorphic image/video | `media` | image, photo, picture, video, embed |
 | Background polymorphic | `backgroundMedia` | backgroundImage, backgroundVideo, bgImage, bgVideo, heroImage |
 | Image alt text | `alt` | — |
@@ -990,3 +991,17 @@ Step 1 (orchestrator merges `theme/sgs-theme/styles/<client>.css` into `_section
 ### Wave 2 acceptance criterion
 
 After the universal-extraction wiring lands (parent-child graph via `blocks.parent_block` + `slot_synonyms.standalone_block` + property_suffixes query for visual slots drives emit shape), the acceptance is: hero `stage_3_slot_list` failures drop from 142 to under 30 AND hero `variation_css_rules` rises from 0 to at least 8 AND brand pixel-diff at 1440 drops below 20% (from 43.7%). Goal-shaped post-condition per `/qc-council` Stage 5: every CSS declaration in the mockup either matches a theme.json token (correct elision via cascade) OR lands as a block attribute / inline style on the emitted markup — coverage approaches 100%. <!-- Updated 2026-05-23 — removed "block_compositions read path": block_compositions is WRITE-ONLY at runtime (§15 line 901); parent-child graph is read from blocks.parent_block + slot_synonyms.standalone_block -->
+
+### Status update 2026-05-24 (second-pass reinterpretation)
+
+The "universal walker" originally specified in §15 steps 1–3 was REINTERPRETED mid-session after Bean redirect. Investigation surfaced that `convert.py:walk()` already contains 9 named branches (FR1 block-root, essence-match, composite_element, css_driven_container, sgs_bem_wrapper, pass_through, top_level_container + 5 atomic-tag swaps) that together deliver the walker outcome — provided the data layer they consume is correct. So instead of building a new "pre-pass class graph", the second pass shipped data-layer + minimal walker additions:
+
+1. **slot_synonyms cleanup** — 7 bad text-canonical aliases removed (inner, content, body-row, custom-content, quote, textAlign, textTransform) in DB + seed.
+2. **section_inner_absorb walker pre-pass** at `convert.py` — single transparent-wrapper children absorbed into section root for one-section-one-container architecture. FR1-matched sections skipped (composite block handles internally).
+3. **Quote canonical migration** — `__quote` / `__blockquote` / `__pullquote` BEM elements now route to sgs/quote via existing composite_element branch + slot_synonyms data. Zero walker code changes.
+4. **`/sgs-update` Stage 4 wiring** — `sgs-update-v2.py:stage_1_sgs_codebase_scan()` tail invokes `assign-canonical.py` (previously orphaned standalone script, never auto-run despite §12.6 declaration). Extended with singularise + Tier B (registered-block reverse-lookup via standalone_block) so 12 plural-named array-attr canonical_slots populated (testimonials→review, logos→logo, plans→card, steps→step, reviews→review, images→media, icons→icon, etc.).
+5. **Brand mockup BEM rename** — `<blockquote class="sgs-brand__body">` → `<div class="sgs-brand__quote">` + `<footer>` → `<p class="sgs-brand__attribution">`. Spec 00 BEM-as-canonical consistency. Brand now emits `<!-- wp:sgs/quote {"className":"sgs-brand__quote","attribution":"— Zainab…",...} /-->`.
+
+Empirical Stage 11 mean pixel-diff: 70.5% (baseline) → 73.9% (post 5 changes). Block-type mapping is correct; pixel-diff regression on featured-product/ingredients is the CSS-lift gap on the new richer skeleton — closes when G3 (slot_list visual extension) lands. **G1 / G3 / G5 acceptance criteria remain TODO** — the second pass shipped the data-layer + universal-architecture foundation; the per-block content extraction lift is the next high-leverage move.
+
+ARRAY_LIFT_PATTERNS hardcoded dict (convert.py:1008-1031) deletion deferred — provides `count_stars` rating extractor + multi-selector fallback chains that universal 1e-B path doesn't yet replicate. Tracked as Phase 1 follow-on F1 (`.claude/plans/2026-05-24-phase-1-structural-recovery.md`).

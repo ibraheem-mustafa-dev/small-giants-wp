@@ -58,6 +58,24 @@ Single source of truth for every identifier used across the SGS WordPress Framew
 
 **Anti-pattern:** `.sgs_hero__headline`, `.SGS-hero--Card`, `.sgs-hero__Headline` — underscores are forbidden; mixed case is forbidden.
 
+### 3.1 BEM element → block recognition (canonical signal)
+
+The BEM element segment is the **canonical signal** for block recognition in the converter walker. The HTML tag is rendering-shape only — it does NOT determine which block the converter emits.
+
+Recognition path (deterministic):
+1. Walker reads the BEM element from the class (`sgs-X__<element>`)
+2. Looks up the canonical slot via `slot_synonyms.aliases` (e.g. `__quote` → `quote` canonical; `__body` → `text` canonical; `__card` → `card` canonical)
+3. Resolves canonical → standalone block via `slot_synonyms.standalone_block` (e.g. `quote` → `sgs/quote`; `card` → `sgs/info-box`; `label` → `sgs/label`)
+4. Emits the resolved standalone block
+
+**Quote example (illustrates BEM-canonical-only routing):**
+- `<div class="sgs-X__quote">` → `quote` canonical → `sgs/quote` ✓
+- `<blockquote class="sgs-X__quote">` → `quote` canonical → `sgs/quote` ✓ (tag doesn't matter)
+- `<div class="sgs-X__body">` → `text` canonical → `sgs/text` (intentional — `body` is generic text-content)
+- `<blockquote class="sgs-X__body">` → `text` canonical → `sgs/text` (tag doesn't change recognition)
+
+**Canonical vocabulary** lives in `sgs-framework.db.slot_synonyms` and is documented in [Spec 16 §12.3](16-DETERMINISTIC-CONVERTER-V2.md#123-canonical-slot-vocabulary-spec-15-34). To author a draft that routes to a specific block, name the BEM element with one of that canonical's aliases.
+
 ---
 
 ## 4. PHP function prefixes

@@ -200,6 +200,7 @@ def convert_page(html_path: "str | object", media_map_path: "str | object | None
         selector = f"{sec.name}.{selector_cls}" if sec_classes else sec.name
 
         variation_buf_sec: list[str] = []
+        v3._absorb_transparent_wrappers(sec, css_rules)
         markup_str = v3.walk(sec, css_rules, variation_buf_sec, is_top_level=True) or ""
 
         # Parse attrs from emitted markup — brace-depth scan handles nested objects.
@@ -381,6 +382,15 @@ def _convert_section_body(html: str, css: str, media_map: dict,
             "token_resolutions": [],
             "essence_matches": [],
         }
+
+    # Transparent-wrapper absorb pre-pass (2026-05-24).
+    # When a section has exactly one direct element child that's a transparent
+    # wrapper (BEM-named, no internal block-spacing or positioning, not a
+    # registered composite block), absorb its className into the section root
+    # so the walker emits ONE sgs/container instead of two nested ones.
+    # No-op when section root is a registered SGS composite (FR1 handles those).
+    # Full rule + trace events in convert.py:_absorb_transparent_wrappers docstring.
+    v3._absorb_transparent_wrappers(root, css_rules)
 
     block_markup = v3.walk(root, css_rules, variation_buf, depth=0, is_top_level=True) or ""
 

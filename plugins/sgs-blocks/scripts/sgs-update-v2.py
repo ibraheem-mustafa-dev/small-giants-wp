@@ -302,6 +302,34 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
     if not dry_run:
         conn.commit()
 
+        # Stage 1 tail (2026-05-24) — run canonical-slot assignment so new
+        # block_attributes rows from this scan get canonical_slot + role +
+        # derived_selector populated immediately. Without this wire-in,
+        # assign-canonical.py was a standalone script that nobody invoked,
+        # leaving NULL canonical_slot on many array attrs and blocking the
+        # walker's universal extraction. See Spec 16 §12.6 Stage 4 spec intent.
+        try:
+            import subprocess as _subprocess
+            from pathlib import Path as _Path
+            _repo_root = _Path(__file__).resolve().parents[3]
+            _ac_script = _repo_root / "plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py"
+            if _ac_script.exists():
+                # assign-canonical.py opens its own DB connection — release ours
+                # briefly so SQLite's write lock isn't held during the subprocess.
+                conn.commit()
+                result = _subprocess.run(
+                    ["python", str(_ac_script)],
+                    capture_output=True, text=True, timeout=60,
+                )
+                if result.returncode == 0:
+                    # Extract the summary line (the script prints a final "Total resolved: N, Total gaps: M")
+                    tail = [ln for ln in (result.stdout or "").splitlines() if "resolved" in ln.lower() or "gaps" in ln.lower()]
+                    print(f"Stage 1 tail (canonical assignment): {tail[-1] if tail else 'completed'}")
+                else:
+                    print(f"Stage 1 tail (canonical assignment): WARN exit={result.returncode}; stderr={result.stderr[:200]}")
+        except Exception as _exc:  # noqa: BLE001
+            print(f"Stage 1 tail (canonical assignment): WARN {_exc}")
+
         # Update schema_metadata.indexed_blocks_count
         count_row = c.execute(
             "SELECT COUNT(*) FROM blocks WHERE source = 'sgs'"

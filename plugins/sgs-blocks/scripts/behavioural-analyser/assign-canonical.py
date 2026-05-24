@@ -255,6 +255,98 @@ def resolve_canonical_slot(
 
 
 # ---------------------------------------------------------------------------
+# Singularisation + reverse standalone_block lookup (2026-05-24)
+# ---------------------------------------------------------------------------
+# Used by the array-attr fallback in run() so plural collection-attr names
+# (e.g. testimonials, logos, reviews, plans, entries) resolve to the canonical
+# of the SINGULAR (testimonial → review canonical via standalone_block
+# reverse-lookup; logo → logo canonical via direct alias).
+#
+# Universal — no hardcoded attr names. Driven by slot_synonyms + blocks tables.
+
+
+def _singularise(plural: str) -> str:
+    """Simple English plural-to-singular conversion sufficient for SGS attr names.
+
+    Rules (applied in order, first-match-wins):
+      - "ies" → "y"  (entries → entry, stories → story)
+      - "ses" → "s"  (addresses → address — preserves 'ss' stems)
+      - trailing "s"  (testimonials → testimonial, logos → logo)
+      - "ss" stems stay  (process → process — never strip from -ss)
+
+    Returns the input unchanged if no rule applies.
+    """
+    if not plural:
+        return plural
+    p = plural
+    if p.endswith("ies") and len(p) > 3:
+        return p[:-3] + "y"
+    if p.endswith("ses") and len(p) > 3:
+        return p[:-2]  # addresses → address
+    if p.endswith("s") and not p.endswith("ss"):
+        return p[:-1]
+    return p
+
+
+def standalone_block_to_canonical(
+    conn: sqlite3.Connection,
+    block_slug: str,
+) -> tuple[Optional[str], Optional[str]]:
+    """Reverse-lookup: find the canonical_slot whose standalone_block equals
+    the given block_slug. Returns (canonical_slot, role) or (None, None).
+
+    e.g. 'sgs/testimonial' → ('review', 'identity')  via slot_synonyms row
+    where standalone_block='sgs/testimonial' (canonical_slot='review').
+    """
+    if not block_slug:
+        return None, None
+    row = conn.execute(
+        "SELECT canonical_slot, role FROM slot_synonyms "
+        "WHERE standalone_block = ?",
+        (block_slug,),
+    ).fetchone()
+    if row is None:
+        return None, None
+    return row["canonical_slot"], row["role"]
+
+
+def resolve_array_canonical(
+    stem: str,
+    slot_map: dict[str, dict],
+    conn: sqlite3.Connection,
+) -> tuple[Optional[str], Optional[str]]:
+    """Two-tier fallback for array-attr canonical resolution.
+
+    Tier A — singularise stem, look up singular in slot_map (covers
+      'logo', 'step', 'review', 'plan', 'entry', 'image', 'icon', etc.).
+    Tier B — if Tier A misses, check whether `sgs/<singular>` is a
+      registered block. If so, reverse-lookup the canonical_slot whose
+      standalone_block points to that block (covers 'testimonial' →
+      'review' via standalone_block='sgs/testimonial').
+
+    Returns (canonical_slot, role) or (None, None) if neither tier resolves.
+    """
+    singular = _singularise(stem)
+    if singular == stem:
+        return None, None  # nothing to fall back to
+
+    # Tier A
+    canonical, role = resolve_canonical_slot(singular, slot_map)
+    if canonical is not None:
+        return canonical, role
+
+    # Tier B — registered-block reverse lookup
+    candidate_slug = f"sgs/{singular}"
+    row = conn.execute(
+        "SELECT 1 FROM blocks WHERE slug = ? AND status = 'built'",
+        (candidate_slug,),
+    ).fetchone()
+    if row is None:
+        return None, None
+    return standalone_block_to_canonical(conn, candidate_slug)
+
+
+# ---------------------------------------------------------------------------
 # Selector derivation (§5.2)
 # ---------------------------------------------------------------------------
 
@@ -335,7 +427,7 @@ def run() -> None:
     # explicitly via SQL.).
     cur = conn.cursor()
     cur.execute(
-        "SELECT id, block_slug, attr_name FROM block_attributes "
+        "SELECT id, block_slug, attr_name, attr_type FROM block_attributes "
         "WHERE canonical_slot IS NULL "
         "AND role IS NULL "
         "AND derived_selector IS NULL"
@@ -352,6 +444,7 @@ def run() -> None:
         row_id: int = row["id"]
         block_slug: str = row["block_slug"]
         attr_name: str = row["attr_name"]
+        attr_type: str = row["attr_type"]
 
         stem, prop_suffix, prop_info, modifiers = decompose_attr_name(
             attr_name, property_suffixes, modifier_map
@@ -359,6 +452,18 @@ def run() -> None:
 
         # Slot resolution
         canonical_slot, slot_role = resolve_canonical_slot(stem, slot_map)
+
+        # Array-attr fallback (2026-05-24): when an array-typed attr's stem
+        # doesn't directly match a canonical alias, try singularise + Tier-B
+        # registered-block reverse-lookup. Covers plural collection-attr names
+        # like 'testimonials', 'logos', 'reviews', 'plans', 'entries' that
+        # weren't naturally in slot_synonyms aliases. Universal — no hardcoded
+        # attr names. Returns None,None when neither tier resolves; row
+        # falls through to the existing gap-candidate path.
+        if canonical_slot is None and attr_type == "array":
+            canonical_slot, slot_role = resolve_array_canonical(
+                stem, slot_map, conn,
+            )
 
         # Role: property suffix role takes priority; fall back to slot role
         if prop_info and prop_info.get("role"):

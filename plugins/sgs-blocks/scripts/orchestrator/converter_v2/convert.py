@@ -3787,6 +3787,132 @@ def _extract_attr_value(desc: Tag, attr_name: str, attr_type: str, schema: dict)
     return desc.get_text(strip=True)
 
 
+# ============================================================================
+# Transparent-wrapper absorb pre-pass (2026-05-24)
+# ============================================================================
+# Universal rule: every section root emits ONE sgs/container at the top level.
+# When a section has exactly ONE direct element child AND that child is a
+# transparent wrapper (BEM-named, no internal block-spacing, no positioning
+# rules, not itself a registered composite block, has children to preserve),
+# absorb its className + CSS into the section root BEFORE walk() runs. The
+# walker's existing top_level_container branch then emits ONE sgs/container
+# with merged className; CSS collection via _collect_css_for_classes()
+# naturally picks up rules for BOTH classes since both live on the root.
+#
+# Skips:
+# - Section roots that ARE registered SGS composite blocks (FR1 handles them)
+# - Sections with multiple direct element children (would lose grouping)
+# - Children with block-spacing rules (gap, row-gap, column-gap, grid-gap) —
+#   their child-spacing scope is distinct from the outer's; can't merge
+# - Children with positioning rules (grid-area, grid-column, grid-row,
+#   align-self, justify-self, flex-grow/shrink/basis) — these are grid/flex
+#   item positions; unwrapping would orphan the positioning context
+# - Children that ARE registered SGS composite blocks (sgs-X with no element)
+# - Leaf children (no Tag children) — unwrapping would delete content
+
+
+_ABSORB_GAP_PROPS = frozenset({
+    "gap", "row-gap", "column-gap", "grid-gap", "block-gap",
+})
+_ABSORB_POSITIONING_PROPS = frozenset({
+    "grid-area", "grid-column", "grid-row",
+    "grid-column-start", "grid-column-end",
+    "grid-row-start", "grid-row-end",
+    "align-self", "justify-self",
+    "flex-grow", "flex-shrink", "flex-basis",
+})
+
+
+def _is_absorbable_wrapper(child: "Tag", css_rules: dict) -> tuple[bool, str]:
+    """Decide whether a direct child of a section root is an absorbable wrapper.
+
+    Returns (is_absorbable, reason_if_not).
+    """
+    if not isinstance(child, Tag):
+        return False, "not a Tag"
+    if child.name in SKIP_TOP_LEVEL_TAGS:
+        return False, f"<{child.name}> in SKIP_TOP_LEVEL_TAGS"
+    if not any(isinstance(c, Tag) for c in child.children):
+        return False, "leaf (no Tag children) — unwrap would delete content"
+    classes = child.get("class", []) or []
+    bem_classes = [c for c in classes if c.startswith("sgs-") and "__" in c]
+    if not bem_classes:
+        return False, "no sgs-X__Y BEM class"
+    # Don't absorb if any class is a registered SGS composite block root
+    root_classes = [c for c in classes
+                    if c.startswith("sgs-") and "__" not in c and "--" not in c]
+    for c in root_classes:
+        slug = f"sgs/{c[4:]}"
+        if db.block_exists(slug):
+            return False, f".{c} is a registered block ({slug})"
+    # Don't absorb when the child carries block-spacing / positioning at its scope.
+    for bc in bem_classes:
+        target_sel = f".{bc}"
+        for css_sel, decls in css_rules.items():
+            if target_sel not in css_sel:
+                continue
+            for prop in decls:
+                p = prop.lower()
+                if p in _ABSORB_GAP_PROPS:
+                    return False, f"child has spacing rule ({css_sel} {{ {prop}: ... }})"
+                if p in _ABSORB_POSITIONING_PROPS:
+                    return False, f"child has positioning rule ({css_sel} {{ {prop}: ... }})"
+    return True, ""
+
+
+def _absorb_transparent_wrappers(section_root: "Tag", css_rules: dict) -> list[str]:
+    """Pre-pass: absorb one transparent wrapper child into the section root.
+
+    Mutates section_root in place by unwrapping the absorbable child and
+    appending its classes to section_root's class list.
+
+    Returns the list of class names absorbed (empty list if nothing absorbed).
+    """
+    if not isinstance(section_root, Tag):
+        return []
+    section_classes = list(section_root.get("class", []) or [])
+    # Skip if section root is itself a registered SGS composite block (FR1 will fire).
+    root_block_classes = [c for c in section_classes
+                          if c.startswith("sgs-") and "__" not in c and "--" not in c]
+    for c in root_block_classes:
+        slug = f"sgs/{c[4:]}"
+        if db.block_exists(slug):
+            _trace("absorb_skipped_section",
+                   node_tag=section_root.name,
+                   node_classes=section_classes,
+                   reason=f"section root .{c} is registered block ({slug}) — FR1 path")
+            return []
+    direct_children = [c for c in list(section_root.children) if isinstance(c, Tag)]
+    if len(direct_children) != 1:
+        _trace("absorb_skipped_section",
+               node_tag=section_root.name,
+               node_classes=section_classes,
+               reason=f"{len(direct_children)} direct element children (need exactly 1)")
+        return []
+    child = direct_children[0]
+    ok, reason = _is_absorbable_wrapper(child, css_rules)
+    if not ok:
+        _trace("absorb_skipped_child",
+               node_tag=child.name,
+               node_classes=child.get("class", []) or [],
+               reason=reason)
+        return []
+    child_classes = list(child.get("class", []) or [])
+    added: list[str] = []
+    for cc in child_classes:
+        if cc not in section_classes:
+            section_classes.append(cc)
+            added.append(cc)
+    section_root["class"] = section_classes
+    _trace("absorb_applied",
+           node_tag=child.name,
+           node_classes=child_classes,
+           classes_added=added,
+           section_classes_after=section_classes)
+    child.unwrap()
+    return added
+
+
 def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
          is_top_level: bool = False) -> str | None:
     """Recursively convert a DOM node into WP block markup.
