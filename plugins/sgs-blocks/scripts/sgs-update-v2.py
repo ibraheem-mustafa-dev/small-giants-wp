@@ -60,6 +60,9 @@ _SELECT_DOC_EXISTS_NATIVE_WP = "SELECT 1 FROM docs WHERE slug=? AND source='nati
 _UTC_TIMESTAMP_FMT = "%Y-%m-%d %H:%M:%S UTC"
 _REPORT_NONE_MARKER = "_(none)_"
 
+# Keys in settings.custom that are routing config, not design tokens.
+# Excluded from design_tokens writes.
+
 # Parent-child block relationships (mirrors populate-db.py PARENT_CHILD)
 PARENT_CHILD = {
     "accordion": ["accordion-item"],
@@ -1632,6 +1635,275 @@ def _extract_custom_leaf_keys(node: dict, prefix: str = "") -> list[tuple[str, s
     return results
 
 
+# ---------------------------------------------------------------------------
+# Stage 4 helpers (promoted from inner defs for cognitive-complexity reduction)
+# ---------------------------------------------------------------------------
+
+def _build_token_candidates(snapshot: dict, client_slug: str) -> list[dict]:
+    """Extract design_token candidate rows from a parsed theme-snapshot.json.
+
+    Pure — no DB writes.
+    token_type values match DB CHECK constraint: 'colour'|'font'|'spacing'|'size'|'shadow'.
+    """
+    candidates: list[dict] = []
+    settings = snapshot.get("settings", {})
+
+    # --- colour palette ---
+    # token_type must match DB CHECK constraint: 'colour', 'font', 'spacing', 'size', 'shadow'
+    for item in settings.get("color", {}).get("palette", []):
+        slug = item.get("slug", "")
+        colour = item.get("color", "")
+        name = item.get("name", slug)
+        # Skip forward-reference colours (value is another slug, not a hex/rgb)
+        if not slug or not colour or colour.startswith("var(") or not colour.startswith("#"):
+            continue
+        candidates.append({
+            "slug": f"color-{slug}",
+            "token_type": "colour",  # matches DB CHECK('colour', 'font', 'spacing', 'size', 'shadow')
+            "default_value": colour,
+            "css_var": f"var(--wp--preset--color--{slug})",
+            "description": f"{name} (from {client_slug})",
+        })
+
+    # --- font sizes ---
+    for item in settings.get("typography", {}).get("fontSizes", []):
+        slug = item.get("slug", "")
+        size = item.get("size", "")
+        name = item.get("name", slug)
+        # Skip invalid / placeholder entries (e.g. slug="px", size="px")
+        if not slug or not size or size == slug or "px" == slug:
+            continue
+        candidates.append({
+            "slug": f"font-size-{slug}",
+            "token_type": "size",
+            "default_value": str(size),
+            "css_var": f"var(--wp--preset--font-size--{slug})",
+            "description": f"{name} (from {client_slug})",
+        })
+
+    # --- font families ---
+    # token_type 'font' matches DB CHECK constraint
+    for item in settings.get("typography", {}).get("fontFamilies", []):
+        slug = item.get("slug", "")
+        family = item.get("fontFamily", "")
+        name = item.get("name", slug)
+        if not slug or not family:
+            continue
+        candidates.append({
+            "slug": f"font-family-{slug}",
+            "token_type": "font",  # matches DB CHECK('colour', 'font', 'spacing', 'size', 'shadow')
+            "default_value": family,
+            "css_var": f"var(--wp--preset--font-family--{slug})",
+            "description": f"{name} (from {client_slug})",
+        })
+
+    # --- spacing sizes ---
+    for item in settings.get("spacing", {}).get("spacingSizes", []):
+        slug = item.get("slug", "")
+        size = item.get("size", "")
+        name = item.get("name", slug)
+        if not slug or not size or size == slug or slug == "px":
+            continue
+        candidates.append({
+            "slug": f"spacing-{slug}",
+            "token_type": "spacing",  # matches DB CHECK constraint
+            "default_value": str(size),
+            "css_var": f"var(--wp--preset--spacing--{slug})",
+            "description": f"{name} (from {client_slug})",
+        })
+
+    # --- shadow presets ---
+    for item in settings.get("shadow", {}).get("presets", []):
+        slug = item.get("slug", "")
+        shadow = item.get("shadow", "")
+        name = item.get("name", slug)
+        if not slug or not shadow:
+            continue
+        candidates.append({
+            "slug": f"shadow-{slug}",
+            "token_type": "shadow",
+            "default_value": shadow,
+            "css_var": f"var(--wp--preset--shadow--{slug})",
+            "description": f"{name} (from {client_slug})",
+        })
+
+    return candidates
+
+
+def _write_token_row(
+    cursor: sqlite3.Cursor,
+    tok: dict,
+    dry_run: bool,
+) -> tuple[str, str | None]:
+    """Single-token upsert into design_tokens.
+
+    Returns (verb, conflict_slug) where:
+      verb ∈ {'inserted', 'skipped', 'conflict-inserted', 'conflict-skipped'}
+      conflict_slug is the prefixed slug when a conflict was detected, else None.
+
+    'conflict-inserted'  → conflict found AND the prefixed row was newly written
+    'conflict-skipped'   → conflict found but the prefixed row already exists (idempotent)
+
+    Conflict rule: slug exists with a DIFFERENT value → prefix with client slug
+    to avoid silently overwriting the framework default.
+    client slug is passed via tok['_client_slug'] private key (injected by caller).
+    """
+    slug = tok["slug"]
+    existing = cursor.execute(
+        "SELECT default_value FROM design_tokens WHERE slug = ?",
+        (slug,),
+    ).fetchone()
+
+    if existing is not None:
+        if existing[0] == tok["default_value"]:
+            # Exact match — idempotent skip
+            return ("skipped", None)
+        else:
+            # Different value — prefix slug with client slug to avoid collision.
+            client_slug = tok["_client_slug"]
+            prefixed_slug = f"{client_slug}-{slug}"
+            existing_prefixed = cursor.execute(
+                "SELECT 1 FROM design_tokens WHERE slug = ?",
+                (prefixed_slug,),
+            ).fetchone()
+            if existing_prefixed is not None:
+                # Prefixed row already written on a previous run — conflict but no new insert
+                return ("conflict-skipped", prefixed_slug)
+            if not dry_run:
+                cursor.execute(
+                    """
+                    INSERT OR IGNORE INTO design_tokens
+                        (slug, token_type, default_value, css_var, description)
+                    VALUES (?, ?, ?, ?, ?)
+                    """,
+                    (
+                        prefixed_slug,
+                        tok["token_type"],
+                        tok["default_value"],
+                        tok["css_var"],
+                        tok["description"],
+                    ),
+                )
+            return ("conflict-inserted", prefixed_slug)
+    else:
+        # New row — insert
+        if not dry_run:
+            res = cursor.execute(
+                """
+                INSERT OR IGNORE INTO design_tokens
+                    (slug, token_type, default_value, css_var, description)
+                VALUES (?, ?, ?, ?, ?)
+                """,
+                (
+                    slug,
+                    tok["token_type"],
+                    tok["default_value"],
+                    tok["css_var"],
+                    tok["description"],
+                ),
+            )
+            if res.rowcount > 0:
+                return ("inserted", None)
+            else:
+                return ("skipped", None)
+        else:
+            # dry-run: count as would-insert
+            return ("inserted", None)
+
+
+def _process_client_snapshot(
+    conn: sqlite3.Connection,
+    client_dir: "Path",
+    dry_run: bool,
+) -> tuple[dict, list[str]]:
+    """Read + parse a client's theme-snapshot.json, write tokens, return counters + report lines.
+
+    Returns:
+        (counters_dict, conflict_lines) where counters_dict has keys:
+            client_inserted, client_skipped, client_conflicts
+        and conflict_lines is the list of conflict bullet strings for the report.
+
+    Calls conn.commit() at the end if not dry_run (preserves original per-client commit semantics).
+    """
+    client_slug = client_dir.name
+    snapshot_path = client_dir / "theme-snapshot.json"
+
+    # Missing snapshot — caller has already appended the section header
+    if not snapshot_path.exists():
+        return (
+            {"client_inserted": 0, "client_skipped": 0, "client_conflicts": 0, "_missing": True},
+            [],
+        )
+
+    try:
+        with open(snapshot_path, encoding="utf-8") as fh:
+            snapshot = json.load(fh)
+    except (json.JSONDecodeError, OSError) as exc:
+        return (
+            {"client_inserted": 0, "client_skipped": 0, "client_conflicts": 0, "_error": str(exc)},
+            [],
+        )
+
+    candidates = _build_token_candidates(snapshot, client_slug)
+
+    client_inserted = 0
+    client_skipped = 0
+    client_conflicts = 0
+    conflict_lines: list[str] = []
+
+    c = conn.cursor()
+    for tok in candidates:
+        # Inject private _client_slug so _write_token_row can build the prefixed slug
+        tok["_client_slug"] = client_slug
+        verb, conflict_slug = _write_token_row(c, tok, dry_run)
+        if verb == "inserted":
+            client_inserted += 1
+        elif verb == "skipped":
+            client_skipped += 1
+        elif verb in ("conflict-inserted", "conflict-skipped"):
+            client_conflicts += 1
+            # Recover the existing framework value for the report line
+            existing_val = c.execute(
+                "SELECT default_value FROM design_tokens WHERE slug = ?",
+                (tok["slug"],),
+            ).fetchone()
+            existing_display = existing_val[0] if existing_val else "?"
+            conflict_lines.append(
+                f"- CONFLICT: {tok['slug']} (framework={existing_display!r}, client={tok['default_value']!r}) "
+                f"→ inserted as {conflict_slug}"
+            )
+            if verb == "conflict-inserted":
+                # New prefixed row — also counts as inserted
+                client_inserted += 1
+            # conflict-skipped: prefixed row already exists — no inserted increment
+
+    if not dry_run:
+        conn.commit()
+
+    return (
+        {"client_inserted": client_inserted, "client_skipped": client_skipped, "client_conflicts": client_conflicts},
+        conflict_lines,
+    )
+
+
+def _write_stage4_report(
+    report_path: "Path",
+    header_lines: list[str],
+    per_client_lines: list[str],
+    summary_line: str,
+    dry_run: bool,
+) -> None:
+    """Assemble and write the Stage 4 plain-text audit report.
+
+    Writes only in non-dry-run mode (matches the original behaviour). The
+    report directory is still created so a follow-up actual run finds it ready.
+    """
+    all_lines = header_lines + [summary_line, ""] + per_client_lines
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    if not dry_run:
+        report_path.write_text("\n".join(all_lines), encoding="utf-8")
+
+
 def stage_4_style_variation_sync(
     conn: sqlite3.Connection, dry_run: bool = False
 ) -> dict:
@@ -1640,11 +1912,11 @@ def stage_4_style_variation_sync(
     Phase 5a is shipped (commit 43a93df9). Writes are now active.
 
     For each client snapshot, harvests:
-      - settings.color.palette  → token_type='color'
+      - settings.color.palette  → token_type='colour'
       - settings.typography.fontSizes → token_type='size'
       - settings.spacing.spacingSizes → token_type='spacing'
       - settings.shadow.presets → token_type='shadow'
-      - settings.typography.fontFamilies → token_type='font-family'
+      - settings.typography.fontFamilies → token_type='font'
 
     Routing config keys (settings.custom.sgs-headerPattern, sgs-footerPattern,
     buttonPresets, maxWidth, etc.) are excluded — these are structural config,
@@ -1670,7 +1942,6 @@ def stage_4_style_variation_sync(
     """
     sites_root = REPO_ROOT / "sites"
     report_path = REPO_ROOT / "reports" / "phase4-variation-token-gaps.txt"
-    c = conn.cursor()
 
     snapshots_found = 0
     snapshots_missing = 0
@@ -1688,103 +1959,11 @@ def stage_4_style_variation_sync(
     ]
     per_client_lines: list[str] = ["## Per-client results", ""]
 
-    # Keys in settings.custom that are routing config, not design tokens.
-    # Excluded from design_tokens writes.
-    _CUSTOM_KEY_BLACKLIST = {"sgs", "buttonPresets", "maxWidth"}
-
-    def _build_token_candidates(snapshot: dict, client_slug: str) -> list[dict]:
-        """Extract design_token candidate rows from a parsed theme-snapshot.json."""
-        candidates: list[dict] = []
-        settings = snapshot.get("settings", {})
-
-        # --- colour palette ---
-        # token_type must match DB CHECK constraint: 'colour', 'font', 'spacing', 'size', 'shadow'
-        for item in settings.get("color", {}).get("palette", []):
-            slug = item.get("slug", "")
-            colour = item.get("color", "")
-            name = item.get("name", slug)
-            # Skip forward-reference colours (value is another slug, not a hex/rgb)
-            if not slug or not colour or colour.startswith("var(") or not colour.startswith("#"):
-                continue
-            candidates.append({
-                "slug": f"color-{slug}",
-                "token_type": "colour",  # matches DB CHECK('colour', 'font', 'spacing', 'size', 'shadow')
-                "default_value": colour,
-                "css_var": f"var(--wp--preset--color--{slug})",
-                "description": f"{name} (from {client_slug})",
-            })
-
-        # --- font sizes ---
-        for item in settings.get("typography", {}).get("fontSizes", []):
-            slug = item.get("slug", "")
-            size = item.get("size", "")
-            name = item.get("name", slug)
-            # Skip invalid / placeholder entries (e.g. slug="px", size="px")
-            if not slug or not size or size == slug or "px" == slug:
-                continue
-            candidates.append({
-                "slug": f"font-size-{slug}",
-                "token_type": "size",
-                "default_value": str(size),
-                "css_var": f"var(--wp--preset--font-size--{slug})",
-                "description": f"{name} (from {client_slug})",
-            })
-
-        # --- font families ---
-        # token_type 'font' matches DB CHECK constraint
-        for item in settings.get("typography", {}).get("fontFamilies", []):
-            slug = item.get("slug", "")
-            family = item.get("fontFamily", "")
-            name = item.get("name", slug)
-            if not slug or not family:
-                continue
-            candidates.append({
-                "slug": f"font-family-{slug}",
-                "token_type": "font",  # matches DB CHECK('colour', 'font', 'spacing', 'size', 'shadow')
-                "default_value": family,
-                "css_var": f"var(--wp--preset--font-family--{slug})",
-                "description": f"{name} (from {client_slug})",
-            })
-
-        # --- spacing sizes ---
-        for item in settings.get("spacing", {}).get("spacingSizes", []):
-            slug = item.get("slug", "")
-            size = item.get("size", "")
-            name = item.get("name", slug)
-            if not slug or not size or size == slug or slug == "px":
-                continue
-            candidates.append({
-                "slug": f"spacing-{slug}",
-                "token_type": "spacing",  # matches DB CHECK constraint
-                "default_value": str(size),
-                "css_var": f"var(--wp--preset--spacing--{slug})",
-                "description": f"{name} (from {client_slug})",
-            })
-
-        # --- shadow presets ---
-        for item in settings.get("shadow", {}).get("presets", []):
-            slug = item.get("slug", "")
-            shadow = item.get("shadow", "")
-            name = item.get("name", slug)
-            if not slug or not shadow:
-                continue
-            candidates.append({
-                "slug": f"shadow-{slug}",
-                "token_type": "shadow",
-                "default_value": shadow,
-                "css_var": f"var(--wp--preset--shadow--{slug})",
-                "description": f"{name} (from {client_slug})",
-            })
-
-        return candidates
-
     if not sites_root.exists():
         per_client_lines.append("_(sites/ directory not found — no snapshots to scan)_")
         per_client_lines.append("")
     else:
-        client_dirs = sorted(d for d in sites_root.iterdir() if d.is_dir())
-
-        for client_dir in client_dirs:
+        for client_dir in sorted(d for d in sites_root.iterdir() if d.is_dir()):
             client_slug = client_dir.name
             snapshot_path = client_dir / "theme-snapshot.json"
             per_client_lines.append(f"### {client_slug}")
@@ -1797,102 +1976,19 @@ def stage_4_style_variation_sync(
                 continue
 
             snapshots_found += 1
+            counters, conflict_lines = _process_client_snapshot(conn, client_dir, dry_run)
 
-            try:
-                with open(snapshot_path, encoding="utf-8") as fh:
-                    snapshot = json.load(fh)
-            except (json.JSONDecodeError, OSError) as exc:
-                per_client_lines.append(f"_(error reading snapshot: {exc})_")
+            if "_error" in counters:
+                per_client_lines.append(f"_(error reading snapshot: {counters['_error']})_")
                 per_client_lines.append("")
                 continue
 
-            candidates = _build_token_candidates(snapshot, client_slug)
-
-            client_inserted = 0
-            client_skipped = 0
-            client_conflicts = 0
-            conflict_lines: list[str] = []
-
-            for tok in candidates:
-                slug = tok["slug"]
-                # Check for existing row
-                existing = c.execute(
-                    "SELECT default_value FROM design_tokens WHERE slug = ?",
-                    (slug,),
-                ).fetchone()
-
-                if existing is not None:
-                    if existing[0] == tok["default_value"]:
-                        # Exact match — idempotent skip
-                        client_skipped += 1
-                        total_skipped += 1
-                    else:
-                        # Different value — prefix slug with client to avoid collision
-                        prefixed_slug = f"{client_slug}-{slug}"
-                        existing_prefixed = c.execute(
-                            "SELECT 1 FROM design_tokens WHERE slug = ?",
-                            (prefixed_slug,),
-                        ).fetchone()
-                        conflict_lines.append(
-                            f"- CONFLICT: {slug} (framework={existing[0]!r}, client={tok['default_value']!r}) "
-                            f"→ inserted as {prefixed_slug}"
-                        )
-                        client_conflicts += 1
-                        total_conflicts += 1
-                        if not dry_run and existing_prefixed is None:
-                            c.execute(
-                                """
-                                INSERT OR IGNORE INTO design_tokens
-                                    (slug, token_type, default_value, css_var, description)
-                                VALUES (?, ?, ?, ?, ?)
-                                """,
-                                (
-                                    prefixed_slug,
-                                    tok["token_type"],
-                                    tok["default_value"],
-                                    tok["css_var"],
-                                    tok["description"],
-                                ),
-                            )
-                            client_inserted += 1
-                            total_inserted += 1
-                        elif dry_run and existing_prefixed is None:
-                            client_inserted += 1
-                            total_inserted += 1
-                else:
-                    # New row — insert
-                    if not dry_run:
-                        res = c.execute(
-                            """
-                            INSERT OR IGNORE INTO design_tokens
-                                (slug, token_type, default_value, css_var, description)
-                            VALUES (?, ?, ?, ?, ?)
-                            """,
-                            (
-                                slug,
-                                tok["token_type"],
-                                tok["default_value"],
-                                tok["css_var"],
-                                tok["description"],
-                            ),
-                        )
-                        if res.rowcount > 0:
-                            client_inserted += 1
-                            total_inserted += 1
-                        else:
-                            client_skipped += 1
-                            total_skipped += 1
-                    else:
-                        # dry-run: count as would-insert
-                        client_inserted += 1
-                        total_inserted += 1
-
-            if not dry_run:
-                conn.commit()
-
-            # Also count filtered (custom keys not emitted as candidates)
-            # We can't easily count these post-hoc — so we report 0 filtered
-            # (filtering happens inside _build_token_candidates implicitly).
+            client_inserted = counters["client_inserted"]
+            client_skipped = counters["client_skipped"]
+            client_conflicts = counters["client_conflicts"]
+            total_inserted += client_inserted
+            total_skipped += client_skipped
+            total_conflicts += client_conflicts
 
             per_client_lines.append(
                 f"Inserted: {client_inserted} | Skipped: {client_skipped} | "
@@ -1907,17 +2003,13 @@ def stage_4_style_variation_sync(
     if not dry_run:
         upsert_metadata(conn, "last_variation_sync_ts", datetime.now(timezone.utc).isoformat())
 
-    # Assemble report
     summary_line = (
         f"Snapshots found: {snapshots_found} | Missing: {snapshots_missing} | "
         f"Inserted: {total_inserted} | Skipped: {total_skipped} | "
         f"Conflicts: {total_conflicts}"
     )
-    all_lines = header_lines + [summary_line, ""] + per_client_lines
 
-    report_path.parent.mkdir(parents=True, exist_ok=True)
-    if not dry_run:
-        report_path.write_text("\n".join(all_lines), encoding="utf-8")
+    _write_stage4_report(report_path, header_lines, per_client_lines, summary_line, dry_run)
 
     mode = "dry-run" if dry_run else "actual"
     print(
