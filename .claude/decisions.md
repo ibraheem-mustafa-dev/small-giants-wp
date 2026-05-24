@@ -2,6 +2,22 @@
 
 Append-only. Most-recent first.
 
+## 2026-05-24 — Doc-op programme: Phase 13 full /docscore rule integration
+
+**D60 — Phase 13 expanded: U5 + X1 + X5 checks added to docscore.py + 5 doc-type templates rewritten to Phase 6c canonical shape.** Built on D59 by recovering the original U1-U8 / X1-X5 rule spec from git commit `2774a269` (which had been dropped by `3488b537`'s prompt update). Lives in `~/.agents/skills/shared-references/` (not a git repo on its own; Bean syncs separately).
+
+**What changed:**
+- `docscore.py`: 3 new checks — `check_no_dead_links` (U5), `check_registry_resolves` (X1, runs on docs-registry.yaml only), `check_memory_md_size` (X5, runs on MEMORY.md only). Template gains `meta: dict` field carrying arbitrary frontmatter; `parse_frontmatter` recognises `true`/`false` as Python bools; `check_heading_hierarchy` honours per-template `require_h1: false`.
+- `doc-templates/parking.md`: shipped earlier (`ed1a4477`) — 6 stable taxonomy buckets, **Status:** field, slug-uniqueness, 5-value enum.
+- `doc-templates/mistakes.md`: keyword-stub format per Phase 6c — max 30 active, blub.db row + feedback file refs per entry, ≤3 body lines.
+- `doc-templates/decisions.md`: compressed format — D-id + 1-line title + ≤3 body lines + commit SHA pointer + active-status enum.
+- `doc-templates/handoff.md`: 6 canonical sections (TL;DR ≤5 lines + completed-this-session + current state + files modified + next priorities + next session prompt), session_tag in frontmatter.
+- `doc-templates/next-session-prompt.md`: mandatory reading list with cite-line discipline + tool bindings table + first action ≤5 lines.
+
+**Verified via empirical audit:** parking.md = 100% / A; next-session-prompt.md = 100% / A; decisions.md = 79% (B-); handoff.md = 68% (C); mistakes.md = 69% (C). The latter three's gap to A is now visible + tractable — exactly what Phase 13 was supposed to surface.
+
+**Not done (deferred):** U1 `scope: reference` exemption (small refactor); U2 tables-over-prose detection (fuzzy); U4 auto-gen-not-in-git heuristic; U7/U8/X4 (manual SoT flags, not mechanically detectable). 6 doc-type templates still legacy-shaped (state, goals, claude-md, current-mission, specs-readme, architecture). Templates for numbered-specs / plans / plans-archive / cloning-pipeline-flow / auto-gen-files / memory-archive don't yet exist as separate files (auto-detect falls through to closest match).
+
 ## 2026-05-24 — Doc-op programme: parking.md restructure + spec relocation + retention policy
 
 **D57 — Parking.md formatting v2 (Phase 6c).** The active parking file's grouping convention shifts from date-ordered "## Opened YYYY-MM-DD" sections to 6 stable taxonomy buckets (cloning pipeline / framework + SGS / skills + agents + pipelines / infrastructure / cross-platform / other). Every entry now carries a canonical `**Status:**` field on its second line with one of OPEN / PARTIAL / BLOCKED / DEFERRED, replacing the implicit RESOLVED-marker regex that previously gated archive moves. Together with the slug-uniqueness gate added to `/handoff` (commands/handoff.md:275), this gives parking.md a deterministic shape — any future `/handoff` can grep `^\*\*Status:\*\* RESOLVED` to auto-archive shipped entries, and `grep ... | uniq -d` to surface duplicate slugs before commit. Final state: 103 active entries down from 135 pre-Phase-6c (29 IMPLICITLY-RESOLVED / OUTDATED archived per the multi-rater triage). Commits `52e34171` (split + T1 triage) + `ed05757f` (T2 Status backfill) + this commit (T3 taxonomy + Phase 12 close).
