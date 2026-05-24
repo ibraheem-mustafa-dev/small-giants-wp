@@ -412,5 +412,5 @@ $result = wp_update_post( array(
 if ( is_wp_error( $result ) ) {
     echo "ERROR: " . $result->get_error_message() . "\n";
 } else {
-    echo "Food Service page updated. ID: {$result}\n";
+    echo "Food Service page updated. ID: " . absint( $result ) . "\n";
 }

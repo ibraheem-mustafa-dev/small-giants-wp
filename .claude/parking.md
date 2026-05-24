@@ -8,22 +8,25 @@ last_updated: 2026-05-24
 
 ## Cloning pipeline (cv2 / orchestrator / DOM walker / pixel-diff)
 
-_66 entries._
-
-**P-BLOCKQUOTE-TAG-OVERRIDE-FOR-QUOTE-CANONICAL-history** — NEW 2026-05-24 (surfaced by /qc-council on Changes 1+2; both raters convergent). When the walker's composite_element branch hits a `<blockquote>` element with a BEM element name (e.g. `<blockquote class="sgs-brand__body">`), the BEM-slot path resolves `body` → text-canonical → `sgs/text` — losing the multi-paragraph quote content and emitting the wrong block type. `sgs/quote` is the registered block designed for this shape (has `body[]` array + `attribution` string attrs). Pre-existed Changes 1+2 but was HIDDEN by the collapse bug fixed in Change 2; the unwrap correctly surfaces the blockquote as its own block, exposing the wrong-block-type routing. **Fix shape (Rater B):** at `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` around the composite_element branch (line ~3939), add HTML-tag override BEFORE BEM-slot resolution: if `node.name == "blockquote"` and `bem.element` set, prefer `db.canonical_slot_for("quote")` → `db.standalone_block_for("quote")` (returns `sgs/quote`). Keeps non-blockquote `__body` BEM usage routing to `sgs/text` correctly. **Trigger to action:** Step 1.7 (G3) or Step 1.8 (G5) — slot-extension OR DOM-shape work; whichever step touches the composite_element branch next.
-**Status:** PARTIAL
+_58 entries._
 
 
-**P-G1-EXTEND-TO-OTHER-CONTAINER-SHAPED-COMPOSITES** — NEW 2026-05-24 (scoped narrow). Step 1.6 (G1 closure) ships OPEN-block emit for `sgs/hero` only this phase, plus FR1 branch-(b) pattern-reference emission in Step 1.5. All other composite blocks (info-box, product-card, card-grid, etc.) continue to emit self-closing. **Why scoped narrow:** no DB column today cleanly identifies "container-shaped composite block" — `blocks.parent_block`, `block_supports`, `patterns.block_composition`, `block_attributes.output_signature` each describe partial facets but none excludes info-box / product-card from a "container-outer + InnerBlocks" definition. Investigated candidates: (a) add `is_pattern_shaped` boolean to `blocks`, hand-curated; (b) new `/sgs-update` stage that static-analyses each `render.php` for `<InnerBlocks />` inside an outer container element; (c) manual `block.json` annotation under `supports.sgs.containerShaped: true`. **Trigger to re-open:** after Phase 1 ships and we have empirical evidence of WHICH other composite blocks visibly need OPEN-block emit (Stage 11 per-section pixel-diff results on body sections where the matched block today emits self-closing).
+**P-G1-EXTEND-TO-OTHER-CONTAINER-SHAPED-COMPOSITES** — NEW 2026-05-24 (scoped narrow). Step 1.6 (G1 closure) ships OPEN-block emit for `sgs/hero` only this phase, plus FR1 branch-(b) pattern-reference emission in Step 1.5. All other composite blocks (info-box, product-card, card-grid, etc.) continue to emit self-closing. **Why scoped narrow:** no DB column today cleanly identifies "container-shaped composite block" — `blocks.parent_block`, `block_supports`, `patterns.block_composition`, `block_attributes.output_signature` each describe partial facets but none excludes info-box / product-card from a "container-outer + InnerBlocks" definition. Investigated candidates: (a) add `is_pattern_shaped` boolean to `blocks`, hand-curated; (b) new `/sgs-update` stage that static-analyses each `render.php` for `<InnerBlocks />` inside an outer container element; (c) manual `block.json` annotation under `supports.sgs.containerShaped: true`.
+**Status:** DEFERRED
+**Trigger:** After Phase 1 ships AND Stage 11 per-section pixel-diff results show empirical evidence of WHICH other composite blocks visibly need OPEN-block emit from body sections emitting self-closing today.
+
+
+**P-MATCH-JSON-GATE-REDEFINITION** — NEW 2026-05-24 (KJC required). The Phase 1 plan Step 1.7 gate condition (c) says "match.json shows 0 of the 5 originally-falling-through body sections still emitting sgs/container at confidence < 0.5". This gate is structurally impossible to meet with a Stage 4 walker pre-pass alone — match.json is produced by Stage 2 confidence_matrix, which runs before Stage 4. Three options: (A) redefine gate to use leftover-buckets `unrecognised_section` count (already at 0 post commit `124e1d06` — cheapest, factually correct); (B) add post-Stage-4 confidence refinement pass that infers confidence from block_markup; (C) update Stage 2 confidence_matrix to query DB child-block presence for unregistered section slugs.
+**Status:** DEFERRED
+**Trigger:** Bean decision needed before Step 1.7 QA gate evaluation. Present options A/B/C at that session start — Option A is recommended (cheapest, factually correct).
+
+
+**P-WALKER-PREPASS-REGRESSION-TRIAGE** — HIGH — blocks Step 1.7 closure. Commit `124e1d06` causes visual regressions in featured-product (375: +53.2pp, 768: +34.7pp) and ingredients-section (all viewports: +23.6 to +33.8pp) while improving brand (-6 to -28.7pp) and gift-section (-12 to -31.9pp). Root cause: the pre-pass guard correctly prevented `composite_element` from claiming BEM-element wrappers as `sgs/text` — but the structurally correct output (individual blocks) renders further from the mockup visually because per-block CSS hasn't been lifted yet (Step 1.7.5).
 **Status:** OPEN
-
-
-**P-MATCH-JSON-GATE-REDEFINITION** — NEW 2026-05-24 (KJC required). The Phase 1 plan Step 1.7 gate condition (c) says "match.json shows 0 of the 5 originally-falling-through body sections still emitting sgs/container at confidence < 0.5". This gate is structurally impossible to meet with a Stage 4 walker pre-pass alone — match.json is produced by Stage 2 confidence_matrix, which runs before Stage 4. Three options: (A) redefine gate to use leftover-buckets `unrecognised_section` count (already at 0 post commit `124e1d06` — cheapest, factually correct); (B) add post-Stage-4 confidence refinement pass that infers confidence from block_markup; (C) update Stage 2 confidence_matrix to query DB child-block presence for unregistered section slugs. **Bean decision needed before Step 1.7 QA gate evaluation.**
-**Status:** OPEN
-
-
-**P-WALKER-PREPASS-REGRESSION-TRIAGE** — NEW 2026-05-24 (HIGH — blocks Step 1.7 closure). Commit `124e1d06` causes visual regressions in featured-product (375: +53.2pp, 768: +34.7pp) and ingredients-section (all viewports: +23.6 to +33.8pp) while improving brand (-6 to -28.7pp) and gift-section (-12 to -31.9pp). Root cause: the pre-pass guard correctly prevented `composite_element` from claiming BEM-element wrappers as `sgs/text` — but the structurally correct output (individual blocks) renders further from the mockup visually because per-block CSS hasn't been lifted yet (Step 1.7.5). The regression was committed without Stage 11 pixel-diff measurement. Options: (A) accept regressions as expected — Steps 1.7.5+1.7.6 CSS lift will close them; (B) revert `124e1d06` and re-land once CSS lift is co-committed; (C) add CSS-lift for the regressing sections before the pre-pass commit is considered "done". **Bean decision: proceed to Step 1.7.5 or revert first?**
-**Status:** OPEN
+**Bean decision (pick one, ~2 min):**
+1. **Proceed to Step 1.7.5** _(recommended)_ — accept regressions as structural correctness; Steps 1.7.5+1.7.6 CSS lift will close them. Net direction is right.
+2. **Revert `124e1d06`** — safer if Steps 1.7.5/1.7.6 are delayed >1 session; keeps the baseline clean at the cost of re-landing the pre-pass commit later.
+3. **CSS-lift first** — add CSS-lift for the regressing sections before Step 1.7 is closed; most thorough but adds ~1-2 hrs before the gate clears.
 
 
 **P-CLONE-PIPELINE-HEADER-FOOTER-HANDLER** — The clone pipeline treats header and footer markup the same as page body. Headers and footers are template-parts on the WP target (`wp_template_part` post type), not page content. The pipeline needs a dedicated stage that (a) detects header/footer sections in the source mockup, (b) extracts them once per site rather than per page, (c) emits to template-part shape (not page-content shape), (d) handles the unique template-part wrapper classes (`wp-block-template-part`, `area="header"` / `area="footer"`). Without this handler the h/f markup either duplicates per page, drops silently, or malforms into a page-body block tree. **Trigger:** before the next multi-page clone run.
@@ -42,16 +45,19 @@ _66 entries._
 **Status:** PARTIAL
 
 
-**P-CLONING-PIPELINE-FLOW-DOC-DRIFT** — 2026-05-21 reality check found that the entry-point chain "verified 2026-05-13" predates the 2026-05-20 architectural rewrite (`css_router.py`, `essence_match_detector.py`, `stage_attribute_promotion.py` added but ASCII chain not refreshed). Plus 2026-05-21 G2 Step 1+2 changes (orchestrator-side CSS merge into `_section_css` + cv2 scope strip) aren't documented yet. **Trigger:** after G2 Step 1+2 commits land + as part of any pipeline architecture work.
+**P-CLONING-PIPELINE-FLOW-DOC-DRIFT** — 2026-05-21 reality check found that the entry-point chain "verified 2026-05-13" predates the 2026-05-20 architectural rewrite (`css_router.py`, `essence_match_detector.py`, `stage_attribute_promotion.py` added but ASCII chain not refreshed). Plus G2 Step 1+2 changes (orchestrator-side CSS merge into `_section_css` + cv2 scope strip) aren't documented yet.
 **Status:** OPEN
+**Trigger:** Before the next architectural pipeline change that modifies the stage boundary or script chain. G2 Step 1+2 changes (commit `affca3f1`) are the immediate outstanding update.
 
 
 **P-G1-HERO-INNERBLOCKS** — cv2 emits self-closing `wp:sgs/hero` block. Render.php uses `$content` (InnerBlocks) for CTAs — empty when block is self-closing. Live page 144 hero CTAs ARE INVISIBLE. ~50pp of hero's 67.8% pixel-diff. **STATUS: Phase 3 infrastructure shipped (`79158da5`) but live-page-144 end-to-end verification PENDING — that is the actual closure step.** Decision 12 adds adjacent-slot grouping; hero CTAs should emit as nested InnerBlocks via `blocks.parent_block` lookup, but no Playwright run on the live URL has confirmed the CTAs render.
 **Status:** OPEN
+**Trigger:** Before next pixel-diff session on hero (~15 min Playwright verification run on page 144). Pair with P-G3-STAGE-3-VISUAL-SLOT-MAPPING in the same run.
 
 
 **P-G3-STAGE-3-VISUAL-SLOT-MAPPING** — Stage 3 `slot_list.py` only extracts text-content slots. Visual/structural slots (backgroundImage, overlayColour, minHeight, ctaPrimaryColour, alignment) return "no value extracted" even when mockup CSS has the values. **STATUS: Phase 3 + Phase 6 infrastructure shipped (`79158da5` + `d307c8b0`) but live-page-144 end-to-end verification PENDING — that is the actual closure step.** Decision 12's `_lift_inner_blocks` rewrite reads `slot_synonyms.standalone_block` via `db.standalone_block_for()`; Phase 6 backfills `block_supports` gaps that expose visual slot controls. No live verification has confirmed visual slots now resolve.
 **Status:** OPEN
+**Trigger:** Same Playwright run as P-G1-HERO-INNERBLOCKS (page 144, before next pixel-diff session). Pair both verifications in one 15-min run to amortise overhead.
 
 
 **P-G4-MEASUREMENT-DECONTAMINATION** — `scripts/pixel-diff.py` screenshots include WP admin bar + sgs-header. Mockup screenshots have neither. Systematic +10-20pp inflation on EVERY section measurement. Fix: Playwright `addInitScript` removes `#wpadminbar` + `.sgs-header` before screenshot. **Trigger:** Wave 1 of next session (G4).
@@ -86,20 +92,20 @@ _66 entries._
 **Status:** DEFERRED
 
 
-**P-LEGACY-FILES-PHYSICAL-DELETION** — `tools/recogniser-v2/extract.py` + `extract_strategies.py` + `overrides/hero.py` (1942 LOC) remain on disk; unreachable from orchestrator. Physical deletion deferred until universal extraction handles hero via D1/D3 (no per-block legacy). **Trigger:** Wave 3 verification re-runs PASS on hero universal-handling.
+**P-LEGACY-FILES-PHYSICAL-DELETION** — `tools/recogniser-v2/extract.py` + `extract_strategies.py` + `overrides/hero.py` (1942 LOC) remain on disk; unreachable from orchestrator. Physical deletion deferred until universal extraction handles hero via D1/D3 (no per-block legacy).
 **Status:** OPEN
+**Trigger:** Phase 1 G5 (per-block DOM-shape fixes) verification PASSES on hero universal-handling at all 3 viewports. "Wave 3" in earlier entry text = current Phase 1 G5 wave.
 
 
-**P-TEST-POLLUTION-HYGIENE** — `test_licensed_in_description_rejected` fails after `test_staged_merge` (now N/A after Wave 2b revert, but underlying state-leak pattern likely affects other cross-file runs). **Trigger:** any cross-file pytest ordering failure.
+**P-TEST-POLLUTION-HYGIENE** — `test_licensed_in_description_rejected` fails after `test_staged_merge` (now N/A after Wave 2b revert, but underlying state-leak pattern likely affects other cross-file runs).
+**Status:** DEFERRED
+**Trigger:** Revisit on first cross-file pytest ordering failure. No active failure observed since Wave 2b revert.
+
+
+
+**P-WAVE-4-DOC-FOLLOWUPS** — Sonnet /qc raters surfaced: `/research-buddies` skill missing from dispatch chain; Wave 3 Indus heritage-strip not in flow doc body; `+DEPLOY`/`+PARITY` tails could use dedicated stage blocks; FR36/FR37/FR40 status incomplete in Spec 16 §12.9.
 **Status:** OPEN
-
-
-**P-MAMAS-ANNOTATED-INDEX-MIGRATION** — `sites/mamas-munches/mockups/homepage/annotated-index.html` still uses `.sgs-heritage-strip` (canonical `index.html` migrated). **Trigger:** ~10 min Haiku migration in any wait window.
-**Status:** OPEN
-
-
-**P-WAVE-4-DOC-FOLLOWUPS** — Sonnet /qc raters surfaced: `/research-buddies` skill missing from dispatch chain; Wave 3 Indus heritage-strip not in flow doc body; `+DEPLOY`/`+PARITY` tails could use dedicated stage blocks; FR36/FR37/FR40 status incomplete in Spec 16 §12.9. **Trigger:** next session Phase 4.
-**Status:** OPEN
+**Trigger:** Next doc-op session specifically targeting Spec 16 §12.9 and cloning-pipeline-flow.md. "Phase 4" in the original trigger = `.claude/plans/2026-05-24-phase-4-skill-optimisation.md` — check that plan's scope before opening this entry.
 
 
 ### P-DETECT-INNER-ELEMENT-WIDTHS — `_detect_client_layout_widths` misses `__inner` element widths (~20 min)
@@ -116,7 +122,7 @@ _66 entries._
 **Status:** OPEN
 
 
-**What:** Pixel-diff against page 131 selecting `.sgs-footer` at 1440 returns 98.7% diff — but the cause isn't the footer rendering badly; it's that `.sgs-footer` matches a stray `<h2 class="...sgs-footer-label">` heading on the page, NOT the actual `<footer>` wrapper. The sgs/footer block's render.php emits the `<footer>` element without adding `sgs-footer` as its block-root class. Selector-by-prefix mismatches cause this collision.
+**What:** Pixel-diff against page 144 (canary — page 131 was deleted) selecting `.sgs-footer` at 1440 returns 98.7% diff — but the cause isn't the footer rendering badly; it's that `.sgs-footer` matches a stray `<h2 class="...sgs-footer-label">` heading on the page, NOT the actual `<footer>` wrapper. The sgs/footer block's render.php emits the `<footer>` element without adding `sgs-footer` as its block-root class. Selector-by-prefix mismatches cause this collision.
 
 **Fix shape:** audit sgs/footer (and sgs/header — same issue suspected; header diff 24% may also be wrong-element-matched) render.php to add `sgs-<block-name>` class to the wrapper alongside any existing `wp-block-sgs-<name>`. Re-measure with the corrected wrapper class to get a real footer diff.
 
@@ -126,9 +132,9 @@ _66 entries._
 **Status:** PARTIAL
 
 
-**What:** Similar to footer. Header at 24% (clean baseline) is suspiciously low given the visual rendering shows substantial differences. Possible that the selector is matching only a partial header sub-tree. Confirm by checking what `.sgs-header` matches on page 131.
+**What:** Similar to footer. Header at 24% (clean baseline) is suspiciously low given the visual rendering shows substantial differences. Possible that the selector is matching only a partial header sub-tree. Confirm by checking what `.sgs-header` matches on page 144 (canary page — page 131 was deleted).
 
-**Fix shape:** read first `<*[class*=sgs-header]>` element on the page; if it's not a `<header>` wrapper, the same fix as footer applies.
+**Fix shape:** read first `<*[class*=sgs-header]>` element on page 144; if it's not a `<header>` wrapper, apply the same fix as P-FOOTER-WRAPPER-CLASS-MISSING. **Closure criterion:** Playwright confirms `.sgs-header` matches a `<header>` wrapper element on page 144.
 
 **Trigger:** alongside P-FOOTER-WRAPPER-CLASS-MISSING.
 
@@ -155,13 +161,6 @@ _66 entries._
 
 **Trigger:** First serif-typography client OR when adding a non-Inter style variation.
 
-### P-MULTI-CLASS-BEM-PRIMARY-DISAMBIG — Multi-class section needs primary-block selection (~45 min)
-**Status:** OPEN
-
-
-**What:** Rater 4 finding. A section like `<section class="sgs-brand sgs-section sgs-section--alt">` collects all three as className. `_lift_root_supports_to_style` merges CSS from all three. If `.sgs-section { padding: 0 }` and `.sgs-brand { padding: 64px 20px }` both apply, last-key-wins ordering is non-deterministic.
-
-**Approach:** Pick the first SGS-BEM-shape class (not modifier, not utility) as canonical primary. Remaining classes become additional className for variation selection. Add unit test for multi-class disambiguation.
 
 ### P-BORDER-STYLE-ENUM-PARITY — sgs/heading vs sgs/quote borderStyle enum mismatch (~5 min)
 **Status:** OPEN
@@ -171,41 +170,22 @@ _66 entries._
 
 **Approach:** Standardise to the 5-value set across heading + text + quote + future. One-line edit in each block.json.
 
-### P-VOTER-IMPORT-ASSERT-UX — Voter assert fires at import time, no helpful error (~10 min)
-**Status:** OPEN
 
-
-**What:** Rater 4 finding. `_REGISTERED = _registered_block_slug_roots()` followed by `assert not _collision` runs at module import. Collision → `AssertionError` at import = stage-3 pipeline crash without useful operator message.
-
-**Approach:** Move the check to a function called by the orchestrator with explicit error logging + soft-failure (warning, not fatal).
-
-### P-PIXEL-DIFF-LAZY-LOAD-DYNAMIC-WAIT — Replace 1200ms hardcoded wait (~15 min)
-**Status:** OPEN
-
-
-**What:** Rater 3 finding. `page.wait_for_timeout(1200)` works on local but is arbitrary; could undercount on slow networks.
-
-**Approach:** Use `page.wait_for_function("() => Array.from(document.querySelectorAll('img[loading=lazy]')).every(img => img.complete)")` before screenshot.
 
 ### P-WP-AUTOP-INTERACTION — Audit how WP `wpautop` interacts with sgs/text emission (~30 min)
-**Status:** OPEN
+**Status:** DEFERRED
 
+**Trigger:** Revisit if a real test failure surfaces showing double-wrap on sgs/text content — currently theoretical only.
 
 **What:** Rater 4 theoretical risk. WP's `wpautop` filter wraps bare text in `<p>` — if sgs/text emits `<p>` content, double-wrap risk.
 
 **Approach:** Test scenario; if real, add `wpautop` opt-out in block render.
 
-### P-CSS-IMPORTANT-STRIP — Strip `!important` from CSS values before regex match (~10 min)
-**Status:** OPEN
-
-
-**What:** Rater 4 theoretical. `display: grid !important` doesn't equal `"grid"` after `.strip()` → css_driven_container branch skips entirely.
-
-**Approach:** Strip `!important` (and whitespace) from values before equality checks in `_detect_grid_container_from_css`.
 
 ### P-WP-UNIQUE-ID-CACHE-COLLISION — Anchor scoping under fragment cache (~30 min)
-**Status:** OPEN
+**Status:** DEFERRED
 
+**Trigger:** Revisit if a production collision is observed (fragment-cached ID mismatch manifests as a broken style scope). Currently theoretical.
 
 **What:** Rater 4 theoretical. `wp_unique_id()` is per-request sequential. Fragment cache combining requests could mismatch scoped `<style>` ID with rendered element ID.
 
@@ -239,7 +219,7 @@ Captured 2026-05-17 from /qc-inline finding 1 (HIGH).
 
 **Approach:** craft a synthetic mockup snippet where a sgs/X-rooted block also has `display: grid` in its mockup CSS. Run through converter. Assert `attrs["style"]` doesn't get clobbered by the second pass.
 
-**Trigger:** When a real client mockup hits this dual-pattern OR before shipping any further root-supports work.
+**Trigger:** Before shipping any further `_lift_root_supports_to_style` changes (immediate gate). The synthetic test scenario is the acceptance criterion — write it once, run it on every lift commit thereafter.
 
 Captured 2026-05-17 from /qc-inline finding 4 (LOW).
 
@@ -380,29 +360,14 @@ After universal-class filter (the 5 above are universal → don't count), the bl
 
 **Approach:** Add a module-load assertion that no `RETIRED_BLOCK_REMAP` value collides with a currently-registered block slug (via `db.registered_block_slugs()`). Or invert the priority: check `block_exists()` first, only remap when the block is actually gone.
 
-### P-PHASE9-7 — Watch list for SGS-BEM grouping-wrapper preservation (Adversarial B3)
-**Status:** OPEN
 
+### P-PHASE9-NITS-BATCH — Fresh-eyes nits in convert.py / db_lookup.py
+**Status:** DEFERRED
 
-**What:** The walker fix (commit `df3a6cbf`) now preserves any sgs/container wrapper with a BEM `__element`. Previously these were dropped. Future patterns receiving SGS-BEM `__element` wrappers may need explicit nesting tolerance — if a pattern PHP file doesn't expect a nested container at a given slot, the wrapper introduces unexpected DOM.
+**Trigger:** Batch these during the next convert.py general maintenance pass — no functional impact, pure readability.
 
-**Approach:** When new patterns are authored, audit them for assumptions about whether `__content` / `__media` / etc. wrappers exist. Add a pattern-level test that validates structural conformance.
-
-### P-PHASE9-8 — Inline thin DB-lookup wrappers (Fresh-eyes nit)
-**Status:** OPEN
-
-
-**What:** `convert.py:_css_prop_to_suffix()` and `_breakpoint_suffixes()` are thin wrappers (`return db.css_property_suffixes()`, `return db.breakpoint_suffix_rules()`) with no transformation. Pointless indirection.
-
-**Approach:** Inline the calls at the 3 call sites; drop the wrapper functions. ~10 lines removed.
-
-### P-PHASE9-9 — Rename `_kind_for` → `_value_kind_for_suffix` (Fresh-eyes nit)
-**Status:** OPEN
-
-
-**What:** `db_lookup._kind_for(suffix, role)` is opaque on cold read. A new dev has to read the body to learn "kind" means convert.py's value-conversion kind (colour / number_px / string / etc.).
-
-**Approach:** Rename to `_value_kind_for_suffix()`. Update the 1 call site.
+- **P-PHASE9-8:** `convert.py:_css_prop_to_suffix()` and `_breakpoint_suffixes()` are thin wrappers with no transformation. Inline the calls at the 3 call sites; drop the wrapper functions. ~10 lines removed.
+- **P-PHASE9-9:** `db_lookup._kind_for(suffix, role)` is opaque on cold read. Rename to `_value_kind_for_suffix()`. Update the 1 call site.
 
 ### P-PHASE8-14 — Section-collapses-into-leaf-block guard
 **Status:** OPEN
@@ -584,25 +549,21 @@ After universal-class filter (the 5 above are universal → don't count), the bl
 - 690-file foundation commit lands (currently uncommitted on main since 2026-05-08)
 - Bucket-2 session unblocks for Tasks 10-12 dogfood loop
 
-**Source docs (still relevant for M7-M10):**
-- `.claude/handoff.md` — 2026-05-08 mega-session digest (M1-M6 completed work + framework state)
-- `.claude/reports/rule-stage-coverage-audit-2026-05-07.md` — 97 rules audited; Top-5 closed in Wave 4
-- `.claude/reports/fingerprint-design-review-synthesis-2026-05-07.md` — 11 review findings; critical fixes 5/5 PASS
-- `.claude/specs/12-DRAFT-TO-SGS-PIPELINE.md` — canonical 9-stage pipeline spec
-- `.claude/plans/archive/cloning-skill-salvage-matrix-2026-05-05.md` REVISIONS section
-- `.claude/plans/archive/pattern-dedup-classify-mechanics-2026-05-05.md` REVISIONS section
+**Source docs (M9 only — M7+M8 complete):**
+- `.claude/handoff.md` — most recent session digest
+- `.claude/next-session-prompt.md` — full M9 task brief with skills/MCP/agents tables
+- **Note:** `.claude/specs/12-DRAFT-TO-SGS-PIPELINE.md` was deleted (Spec 12 retired). Successor is Spec 15 (`.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md`) + Spec 16 (`.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md`).
 
-**Canonical next-session-prompt:** `.claude/next-session-prompt.md` — full M7-M10 task brief with skills/MCP/agents tables.
+**Effort:** ~3 hours wall-time remaining (M9 main-thread + foundation commit).
 
-**Effort:** ~3 hours wall-time remaining (M7 sequential + M8/M9 main-thread + M10 close).
-
-**Resume trigger:** when Bean has a focused window for the M7-M10 build session.
+**Resume trigger:** When Bean has a focused window for the M9 build session.
 
 ---
 
 ### P-9 — Bucket 2 new blocks + timeline rework
 **Status:** OPEN
 
+**Depends on:** P-11-M9 must ship first (pipeline stability prerequisite). If P-11-M9 is substantially delayed, demote this to DEFERRED.
 
 **Captured:** 2026-05-07
 
@@ -627,7 +588,7 @@ Total estimate: 3.5-5.5 hrs.
 
 ## Framework + SGS surface (blocks / theme / specs / Header-Footer)
 
-_24 entries._
+_21 entries._
 
 **P-SGS-UPDATE-V2-COGNITIVE-COMPLEXITY-REFACTOR** — PARTIAL-RESOLVED 2026-05-24 (3 of ~9 functions shipped this session; 6 remain). SonarLint surfaced 9 functions in `plugins/sgs-blocks/scripts/sgs-update-v2.py` (2,400-line `/sgs-update` orchestrator) with Cognitive Complexity above the 15 allowed.
 **Status:** PARTIAL
@@ -650,9 +611,6 @@ _24 entries._
 **P-HEADER-FOOTER-SITE-SUFFIX-NAMING-CONVENTION** — NEW 2026-05-24 (clone pipeline convention). Headers + footers produced from drafts by the clone pipeline MUST be saved as `sgs/header-<client-slug>` / `sgs/footer-<client-slug>` (e.g. `sgs/header-mamas-munches`, `sgs/footer-mamas-munches`, `sgs/footer-indus-foods`). Bare `sgs/header` / `sgs/footer` are framework defaults, never site-specific. **Existing misnamed patterns:** `sgs/mamas-munches-header` + `sgs/mamas-munches-footer` use the inverted order (`<client>-<role>` instead of `<role>-<client>`). Phase 2 header/footer cloner should: (a) author headers/footers under the canonical convention, (b) rename the misnamed mamas-munches pair, (c) add a `/sgs-update` Stage 9 drift rule that fails when a `sgs/header-*` / `sgs/footer-*` pattern doesn't follow the canonical order. Spec 17 §S6 enforces this convention for framework defaults already; this entry extends it to client-derived patterns.
 **Status:** OPEN
 
-
-**P-PHP-FOOD-SERVICE-INT-INTERPOLATION** — Pre-existing Intelephense diagnostic at `sites/indus-foods/deploy/food-service-page.php:413` (`$result` int interpolation). Benign. **Trigger:** Indus PHP-tooling pass.
-**Status:** OPEN
 
 
 ### P-S17-B — Pattern versioning on `wp_template_part` records (~2 hrs)
@@ -692,14 +650,13 @@ _24 entries._
 **Source:** Spec 17 council, Seat 2 walkthrough #2.
 
 ### P-S17-E — Public browseable pattern library marketing page (~1-2 days)
-**Status:** OPEN
+**Status:** DEFERRED
 
+**Trigger:** When SGS has 20+ client-facing patterns OR a sales lead explicitly asks "what do my header options look like?"
 
 **What:** Frost (the block theme) hosts `frostwp.com/patterns` — a public page listing every header/footer/section pattern with screenshots. Useful for sales conversations: agency can show a prospective client "here are 12 header shapes that work with this framework" before they commit.
 
 **Fix shape:** Static page generated from the pattern registry (auto-screenshot via Playwright or hand-curated). Hosted on smallgiantsstudio.co.uk or a subdomain.
-
-**Trigger:** When SGS has 20+ client-facing patterns OR a sales lead asks "what do my header options look like?"
 
 **Source:** Research brief idea #7.
 
@@ -716,56 +673,19 @@ _24 entries._
 **Source:** Spec 17 council, Seat 3 Round 2.
 
 ### P-S17-G — Down-migrations + rollback in the migration framework (~4-6 hrs)
-**Status:** OPEN
+**Status:** DEFERRED
 
+**Trigger:** Before the first data-destructive migration is added. Build rollback capability then, not speculatively now.
 
 **What:** FR-S7-2's migration framework is one-way. If a future migration breaks something and the framework is rolled back, attribute data may be in an unrecoverable state. Top WP plugins (WooCommerce, Yoast) ship down-migration support.
 
 **Fix shape:** Each migration callable in `plugins/sgs-blocks/includes/migrations/{version}.php` gains an optional `down()` method. CLI gets `wp sgs migrations rollback --to=<version>`.
 
-**Trigger:** Either (a) a migration ships and immediately needs revert, OR (b) before any data-destructive migration is added (the trigger should be "before we ship a destructive migration, build this first").
-
 **Source:** Spec 17 council, Seat 3 Round 1.
 
-### P-S17-H — WP-CLI `--allow-root` + server-user capability audit (~1-2 hrs)
-**Status:** OPEN
-
-
-**What:** WP-CLI commands (FR-S5-3) run as the server OS user by default — no WordPress `current_user_can()` enforcement unless `--user=<id>` is set. If a command is ever exposed via a web-accessible path (e.g. a REST wrapper for the cloning pipeline), capability enforcement must be added explicitly — it does not inherit from the WP-CLI path. v1 explicitly forbids REST wrappers for write paths, but this is a known long-term landmine.
-
-**Fix shape:** Each CLI command's handler asserts `current_user_can` AFTER WP-CLI loads the user context. Document `--allow-root` and `--user` behaviour. Add integration tests that verify a command run with no user context fails-closed.
-
-**Trigger:** When considering ANY REST wrapper around a CLI command, OR when adding pipeline service-user authentication.
-
-**Source:** Spec 17 council, Seat 3 Round 2.
 
 ---
 
-### P-SGS-QUOTE-BLOCK — Build `sgs/quote` block for blockquote + attribution patterns (~2-3 hrs)
-**Status:** OPEN
-
-
-**Bean's directive 2026-05-17:** "Option A for the block quote." Current converter routes `<blockquote class="sgs-brand__body">` to `sgs/container` (losing the blockquote tag/italic inheritance) and the inner `<footer>` attribution to `sgs/text` with `tag: "p"` (losing the footer semantic + the mockup CSS rule `blockquote footer { color: var(--primary) }` no longer matches).
-
-**Solution:** new composite `sgs/quote` block that holds:
-- Quote body paragraphs (rendered inside `<blockquote>` for italic inheritance)
-- Attribution string + colour + spacing (rendered inside `<footer>` inside the blockquote, matching HTML5 spec)
-
-**Attrs (~30 spec'd):**
-- `body` (string OR repeated paragraphs array)
-- `attribution` (string)
-- `attributionColour`, `attributionFontSize`, `attributionFontWeight`, `attributionFontStyle` + viewports + Unit
-- `attributionMarginTop` + viewports + Unit
-- Body styling: `bodyColour`, `bodyFontSize`, `bodyLineHeight`, `bodyFontStyle` (default "italic"), `bodyMarginBottom` (between paragraphs)
-- Wrapper: `backgroundColour`, `borderRadius`, `padding` (4 sides × 3 viewports + Unit), `borderLeft` accent
-- `variantStyle`: enum "default"|"pullquote"|"testimonial"
-- WP supports: className, anchor
-
-**Converter integration:** detect `<blockquote>` with SGS-BEM class → emit `sgs/quote` with body + attribution lifted from inner `<p>` × N + `<footer>`. Replaces current sgs/container + sgs/text-x4 routing for blockquote subtrees.
-
-**Trigger:** Next session OR when another client mockup uses a blockquote pattern.
-
-Captured 2026-05-17 from brand walkdown design discussion.
 
 ### P-17 — Shared universal icon picker component (framework-wide upgrade)
 **Status:** OPEN
@@ -894,24 +814,28 @@ Source: Sonnet QC 2026-05-14
 ### P-S16-3: variantStyle enum hardcoded in converter
 **Status:** OPEN
 
-`["standard","trial","gift"]` hardcoded in convert.py:lift_subtree_into_block_attrs. Move to live DB read via block_attributes.enum_values when wiring as Phase 3.
+`["standard","trial","gift"]` hardcoded in convert.py:lift_subtree_into_block_attrs. Move to live DB read via block_attributes.enum_values.
+**Trigger:** Spec 16 Phase 3 wave (next converter iteration touching lift_subtree).
 
 ### P-S16-4: Pre-emit JSON serialisation validation
 **Status:** OPEN
 
-Source text with newlines / unescaped quotes / control chars could break the JSON serialisation in block markup. Currently no pre-emit validator. Add in Phase 3.
+Source text with newlines / unescaped quotes / control chars could break the JSON serialisation in block markup. Currently no pre-emit validator.
+**Trigger:** Spec 16 Phase 3 wave (same converter pass as P-S16-3). Batch these together.
 Source: Gemini Flash QC 2026-05-14
 
 ### P-S16-5: Nested block-roots edge case (block inside block)
 **Status:** OPEN
 
-sgs-product-card inside sgs-featured-product would trigger lift_subtree on the outer block but its descendant walk would consume the inner block's slots into outer attrs. Add recursion guard in Phase 3.
+sgs-product-card inside sgs-featured-product would trigger lift_subtree on the outer block but its descendant walk would consume the inner block's slots into outer attrs. Add recursion guard.
+**Trigger:** Spec 16 Phase 3 wave OR when a real client mockup hits this nested pattern (check leftover-buckets first).
 Source: Sonnet QC architectural review 2026-05-14
 
 ### P-S16-6: Indus Foods + helping-doctors converter validation
 **Status:** OPEN
 
-Spec 16 §9 item 7 (closure criterion): run converter on second client without code changes. Indus Foods and helping-doctors mockups exist but haven't been tested yet. Schedule after Mama's Phase 4 closes.
+Spec 16 §9 item 7 (closure criterion): run converter on second client without code changes. Indus Foods and helping-doctors mockups exist but haven't been tested yet.
+**Trigger:** After Mama's pipeline reaches ≤1% per-section pixel-diff across 375/768/1440 (Phase 1 G1-G5 structural gaps closed). Estimated ~30 min once stable. "Mama's Phase 4" in older entry text = current Phase 1 structural recovery work.
 
 ### P-S17-W2-ADMIN-SPLIT: Split class-sgs-site-info-admin.php (502 lines → ~250 + ~80 + existing fields companion)
 **Status:** OPEN
@@ -958,7 +882,8 @@ Source: Session 2026-05-20 sandybrown smoke test (Spec 17 live verification).
 Source: Session 2026-05-20 sandybrown smoke test (Task 1 acceptance criterion 4).
 
 ### P-TIMELINE-ADVANCED-VISUAL-EFFECTS: sgs/timeline needs textured / themed line + progressive-fill effects
-**Status:** OPEN
+**Status:** DEFERRED
+**Trigger:** MIC (Muslims in Construction) client requests the bricks timeline effect, OR any other client specifically requests a textured timeline. Do not build speculatively.
 
 **Captured 2026-05-20.** Bean's directive (originally requested before Phase 2A, re-flagged at session end): the sgs/timeline block shipped in Phase 2A Branch D supports orientation (vertical default / horizontal), alignment, scroll-reveal via IntersectionObserver, and prefers-reduced-motion honour. But the LINE itself + per-entry backgrounds need advanced visual treatment Bean specifically asked for:
 
@@ -1004,10 +929,11 @@ Source: Bean's 2026-05-20 directive — captured at end of Phase 2A massive sess
 
 ## Skills, agents, pipelines (lifecycle + QC + meta-tooling)
 
-_5 entries._
+_4 entries._
 
-**P-BATCH-GA-14-SKILLS** — Run `/batch-gap-analysis` (full `/gap-analysis` protocol per target, sequential, in main conversation per blub.db row 176) on the 14 WP/SGS skills revised during Phase 7. Targets: the 10 original WP-family skills (`wp-block-development`, `wp-block-themes`, `wp-interactivity-api`, `wp-plugin-development`, `wp-rest-api`, `wp-wpcli-and-ops`, `wp-performance`, `wp-abilities-api`, `wp-site-extraction`, `wp-project-triage`) plus `sgs-wp-engine`, `wordpress-router`, `sgs-extraction`, `sgs-clone`. **Estimated:** ~3 hours dedicated session. **Trigger:** AFTER every other parking entry closes — skills content depends on the tools / scripts / functionality the other entries fix. Running GA before the fixes ship would grade against stale code.
+**P-BATCH-GA-14-SKILLS** — Run `/batch-gap-analysis` (full `/gap-analysis` protocol per target, sequential, in main conversation per blub.db row 176) on the 14 WP/SGS skills revised during Phase 7. Targets: the 10 original WP-family skills (`wp-block-development`, `wp-block-themes`, `wp-interactivity-api`, `wp-plugin-development`, `wp-rest-api`, `wp-wpcli-and-ops`, `wp-performance`, `wp-abilities-api`, `wp-site-extraction`, `wp-project-triage`) plus `sgs-wp-engine`, `wordpress-router`, `sgs-extraction`, `sgs-clone`. **Estimated:** ~3 hours dedicated session.
 **Status:** OPEN
+**Trigger:** After P-11-M9 ships AND G1-G5 structural gaps close (skills reference those pipeline components — grading against stale code is pointless). Do NOT run before both those milestones land.
 
 
 **P-SUBAGENT-DRIVEN-DEV-SKILLSCORE-DEBT** — NEW 2026-05-23. `~/.agents/skills/subagent-driven-development/SKILL.md` scores 84% (below 90% threshold). Pre-existing issues surfaced when the line-319 xref fix triggered the skillscore hook: (a) no numbered process stages found, (b) skill doesn't declare which skills it invokes, (c) no hooks/ directory, (d) no scripts/ directory, (e) body 317 lines (over 300 working budget — needs progressive disclosure). Cleanup routes through /lifecycle per project CLAUDE.md. **Trigger:** Task 6 skill-optimiser session (mode 2 = gap analysis + research) is the natural home — bundle with /batch-gap-analysis pass on 14 WP/SGS skills.
@@ -1017,9 +943,6 @@ _5 entries._
 **P-QC-COUNCIL-PHASE-B-BACKPORTS** — qc-trio gap-analysis identified 5 backports from /qc-council into /qc + /qc-inline. Phase A shipped this session via Sonnet subagent — branch `feat/qc-skills-backport-from-qc-council` commit `e340cde` in `~/.agents/skills/`. Phase B = optional follow-ups for hard-iteration-cap + persona-disagreement-carry-forward + rationalisation-table integration. Lower priority since the trio is already at 92-94% skillscore. **Trigger:** next skill-optimisation session.
 **Status:** OPEN
 
-
-**P-SUBAGENT-DRIVEN-DEV-VERIFY-LOOP-XREF** — `/subagent-driven-development` line 324 was updated to point at `/verify-loop` instead of the deleted `superpowers:test-driven-development`. Cross-check that any other dispatch graph node referencing the deleted skills got migrated. **Trigger:** during next skill-auditor run.
-**Status:** OPEN
 
 
 ### P-OPS-1 — Skill-type classifier in sgs-skillscore v3
@@ -1044,9 +967,9 @@ _3 entries._
 
 ### P-4 — Trustpilot 4-review scrape (Mama's Munches)
 
-**Status:** BLOCKED
+**Status:** OPEN
 
-**Trigger to resume:** Mid-design-clone session, when the testimonials section is reached top-down.
+**Trigger:** ~15-20 min task via Playwright MCP. Pick it up mid-clone session when the testimonials section is reached top-down.
 
 **What:** Capture the 4 real reviews from `https://uk.trustpilot.com/review/mamasmunches.com` — quote, first name, star rating, date — into `sites/mamas-munches/research/trustpilot-reviews.json`. Then either render as static `sgs/testimonial` cards (matching mockup design) and add the free Trustpilot Mini widget for live star count, or skip and use the placeholder testimonials already in `reports/mamas-munches-page-content.html`.
 
@@ -1071,7 +994,8 @@ _3 entries._
 _3 entries._
 
 ### P-CP-1 — `/sgs-emit` (cross-platform component emitter)
-**Status:** OPEN
+**Status:** DEFERRED
+**Trigger:** M9 production-stable + ≥3 successful clones banked. Do not start before then.
 
 
 **What it does:** Read a `/sgs-clone` result (composition + filled slots + recognised SGS blocks) and emit equivalent component code for non-WP platforms. Targets in priority order: React (web SPA), React Native (mobile), Flutter (mobile), SwiftUI (iOS native), Web Components (framework-agnostic). Emit pathway uses `role-templates.json` direction:generate entries plus uimax `equivalent_implementations` payloads to map SGS blocks to platform-idiomatic components.
@@ -1089,7 +1013,8 @@ _3 entries._
 **Dependencies:** M9 production-stable (so the clone pipeline is reliable before we extend it); ≥3 successful clones banked (test data); Phase 4 propagation complete (so `/sgs-clone` body honours Spec 13 lingua-franca rule).
 
 ### P-CP-2 — Style translation (theme.json → React/Flutter/SwiftUI styles)
-**Status:** OPEN
+**Status:** DEFERRED
+**Trigger:** P-CP-1 in flight OR client request for style-only cross-platform port. Do not start before M9 production-stable.
 
 
 **What it does:** Read `theme.json` palette + spacing + typography tokens (or uimax `design_tokens` table directly) and emit equivalent style objects for: React (CSS-in-JS objects, styled-components ThemeProvider props, Tailwind config), Flutter (`ThemeData` + per-component overrides), SwiftUI (custom modifier extensions on `View`), Web Components (CSS custom property block). Honours DTCG token format already in uimax.
@@ -1106,7 +1031,8 @@ _3 entries._
 **Dependencies:** Not strictly required after P-CP-1 but synergistic — emit + translate ship together for full app-component parity. Deferred until M9 production-stable.
 
 ### P-CP-3 — Animation translation (uimax animations → React-spring / Flutter / SwiftUI)
-**Status:** OPEN
+**Status:** DEFERRED
+**Trigger:** P-CP-1 + P-CP-2 in flight AND animation-rich app port requested. Do not start before M9 production-stable.
 
 
 **What it does:** Translate CSS keyframe animations captured in uimax `animations` table to: React-spring config (`useSpring` calls + `config` objects), Flutter `AnimationController` + `Tween` setups, SwiftUI `.animation()` and `withAnimation { }` form. Reads via `equivalent_implementations` Rosetta Stone payloads on each animation row.
@@ -1144,8 +1070,9 @@ _2 entries._
 ### P-2 — Phase 2.5 / G2.5 deferred work
 **Status:** BLOCKED
 
+**Blocker:** Waiting for Phase 2 G2 gate to close. The referenced `.claude/plans/phase-2-rubrics-universe.md` has been deleted — G2 gate status unverified. Verify current G2 status in `.claude/plans/` before opening this entry.
 
-See `.claude/plans/phase-2-rubrics-universe.md` G2.5 section. Triggered by Phase 2 G2 gate close + tooling spec finalisation.
+See G2.5 section in the Phase 2 plan. Triggered by Phase 2 G2 gate close + tooling spec finalisation.
 
 - Track 2 optimiser passes (4 skills): /extract, /harden, /ethics-gate, /interactivity-capture
 - Structural debt content fixes (3 agents): design-reviewer, seo-auditor, sgs-extraction

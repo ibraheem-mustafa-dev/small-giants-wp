@@ -1248,4 +1248,43 @@ _From: Active items (cloning pipeline focus) - triage: /sgs-update Stage 3+4 - R
 
 ---
 
+## 2026-05-24 (council-validated)
+
+_Triage-pass additions — moved by /qc-council recommendations, applied by implementer._
+
+_From: Cloning pipeline — commit `e3cd1a04` + archive line 21 RESOLVED_
+
+**P-BLOCKQUOTE-TAG-OVERRIDE-FOR-QUOTE-CANONICAL-history** — RESOLVED 2026-05-24 (council-validated). Commit `e3cd1a04` + prior archive line 21 (P-BLOCKQUOTE-TAG-OVERRIDE-FOR-QUOTE-CANONICAL) confirms resolution via data-layer fix: "quote" alias moved from text canonical to quote canonical in `slot_synonyms`; "blockquote" + "pullquote" added as quote canonical aliases. Brand mockup BEM renamed to `<div class="sgs-brand__quote">`. The `-history` variant entry in parking.md tracked the walker fix shape that was ultimately superseded by the data-layer approach. No further action needed.
+
+_From: Framework + SGS — commit `8af7b6b9` — block files exist at `plugins/sgs-blocks/src/blocks/quote/`_
+
+**P-SGS-QUOTE-BLOCK** — RESOLVED 2026-05-17 via commit `8af7b6b9`. Block files confirmed at `plugins/sgs-blocks/src/blocks/quote/`. The parking entry predated the block being built. `sgs/quote` ships with body array + attribution + variant styles as specced.
+
+_From: Cloning pipeline — commit `62e8e23d`_
+
+**P-MULTI-CLASS-BEM-PRIMARY-DISAMBIG** — RESOLVED 2026-05-17 via commit `62e8e23d`. Primary BEM class disambiguation landed in that commit. Council-validated closed 2026-05-24.
+
+_From: Cloning pipeline — commit `62e8e23d`_
+
+**P-CSS-IMPORTANT-STRIP** — RESOLVED 2026-05-17 via commit `62e8e23d`. `!important` strip before equality checks in `_detect_grid_container_from_css` landed in that commit. Council-validated closed 2026-05-24.
+
+_From: Cloning pipeline — commit `62e8e23d`_
+
+**P-VOTER-IMPORT-ASSERT-UX** — RESOLVED 2026-05-17 via commit `62e8e23d`. Voter assert moved to orchestrator-called function with explicit error logging. Council-validated closed 2026-05-24.
+
+_From: Cloning pipeline — commit `62e8e23d`_
+
+**P-PIXEL-DIFF-LAZY-LOAD-DYNAMIC-WAIT** — RESOLVED 2026-05-17 via commit `62e8e23d`. `page.wait_for_timeout(1200)` replaced with `wait_for_function` lazy-load image completion check. Council-validated closed 2026-05-24.
+
+_From: Skills — archive line 48 RESOLVED 2026-05-23 + SKILL.md:319 fix confirmed_
+
+**P-SUBAGENT-DRIVEN-DEV-VERIFY-LOOP-XREF** — RESOLVED 2026-05-23 (Wave A). Haiku rater enumerated 8 dispatch-graph node references; the lone gap (line 319 `superpowers:writing-plans` legacy reference) fixed inline by updating to successor skills `/strategic-plan` + `/phase-planner`. Full resolution details in parking-archive.md 2026-05-23 section. Council-validated and confirmed closed 2026-05-24.
+
+_From: Cloning pipeline — Group 4 quick-close, heritage-strip migration completed 2026-05-24_
+
+**P-MAMAS-ANNOTATED-INDEX-MIGRATION** — RESOLVED 2026-05-24 (Group 4 quick-close). `sites/mamas-munches/mockups/homepage/annotated-index.html` migrated from `.sgs-heritage-strip*` to `.sgs-brand*` CSS and HTML, matching the canonical `index.html`. All 8 `.sgs-heritage-strip` references replaced: 5 in CSS block (incl. 2 `@media` overrides), 3 in HTML section. Verified 0 remaining references via grep. DOM restructured to match canonical BEM: `sgs-brand`, `sgs-brand__content`, `sgs-brand__headline`, `sgs-brand__quote`, `sgs-brand__attribution`, `sgs-brand__cta`, `sgs-brand__image`.
+
+_From: Framework + SGS — Group 4 quick-close, int interpolation fixed 2026-05-24_
+
+**P-PHP-FOOD-SERVICE-INT-INTERPOLATION** — RESOLVED 2026-05-24 (Group 4 quick-close). `sites/indus-foods/deploy/food-service-page.php` line 415: `{$result}` string interpolation of int replaced with `absint( $result )` concatenation. Intelephense diagnostic cleared.
 

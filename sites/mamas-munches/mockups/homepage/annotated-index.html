@@ -459,22 +459,25 @@
     /* ══════════════════════════════════════════
        BRAND STORY
     ══════════════════════════════════════════ */
-    .sgs-heritage-strip { background: var(--surface-alt); padding: 64px 20px; }
-    .sgs-heritage-strip__inner {
+    /* Brand-story section — uses sgs/brand pattern (replaces retired sgs/heritage-strip, 2026-05-16). */
+    .sgs-brand {
+      background: var(--surface-alt);
+      padding: 64px 20px;
       max-width: 1000px;
       margin: 0 auto;
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-columns: 1fr;
       gap: 32px;
     }
-    .sgs-heritage-strip__image {
+    .sgs-brand__content { display: flex; flex-direction: column; gap: 16px; }
+    .sgs-brand__image {
       width: 100%;
       max-height: 380px;
       object-fit: cover;
       border-radius: 16px;
       order: -1;
     }
-    .sgs-heritage-strip__text h2 { font-size: 28px; font-weight: 600; color: var(--text); margin-bottom: 20px; }
+    .sgs-brand__headline { font-size: 28px; font-weight: 600; color: var(--text); margin-bottom: 20px; }
 
     blockquote { font-style: italic; }
     blockquote p { font-size: 17px; color: var(--text-muted); line-height: 1.75; margin-bottom: 16px; }
@@ -487,17 +490,13 @@
     }
 
     @media (min-width: 768px) {
-      .sgs-heritage-strip__inner { flex-direction: row; align-items: center; gap: 56px; }
-      .sgs-heritage-strip__image {
-        order: 2;
-        width: 40%;
-        min-width: 280px;
-        flex-shrink: 0;
+      .sgs-brand { grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+      .sgs-brand__image {
+        order: 0;
         max-height: 440px;
         height: 440px;
       }
-      .sgs-heritage-strip__text { flex: 1; }
-      .sgs-heritage-strip__text h2 { font-size: 36px; }
+      .sgs-brand__headline { font-size: 36px; }
     }
 
 
@@ -870,21 +869,18 @@
 <!-- ══════════════════════════════════════════
      BRAND STORY
 ══════════════════════════════════════════ -->
-<section aria-labelledby="story-h2" class="sgs-heritage-strip">
-<div class="sgs-heritage-strip__inner">
-<img alt="A mum smiling and holding Mama's Munches cookies" class="sgs-heritage-strip__image" data-sgs="heroImage:image" height="1080" loading="lazy" src="../../research/photography/wp-media-library/Halimahs.jpeg" width="1920"/>
-<div class="sgs-heritage-strip__text">
-<h2 data-sgs="headline" id="story-h2">A story that started with a friend</h2>
-<blockquote>
+<section class="sgs-brand" aria-labelledby="story-h2">
+<div class="sgs-brand__content">
+<h2 id="story-h2" class="sgs-brand__headline" data-sgs="headline">A story that started with a friend</h2>
+<div class="sgs-brand__quote">
 <p data-sgs="testimonialText">She was struggling with breastfeeding her newborn. We started making lactation cookies together — using oats, brewer's yeast, flaxseed, fenugreek. The same ingredients that have appeared in traditional postpartum foods from Pakistan to West Africa for generations.</p>
 <p data-sgs="testimonialText">They helped her. I was so grateful.</p>
 <p data-sgs="testimonialText">Now I make them for breastfeeding mums across the UK. Not because I can promise they'll work for every mum — I can't, and I won't. But because they're real food, with real ingredients, made with real care. And many mums tell me they helped.</p>
-<footer data-sgs="testimonialAuthor">— Zainab, Founder of Mama's Munches</footer>
-</blockquote>
-<br/>
-<a class="sgs-button sgs-button--ghost" data-sgs="ctaUrl:link" href="/about/" style="margin-top:8px;">Read the full story →</a>
+<p class="sgs-brand__attribution" data-sgs="testimonialAuthor">— Zainab, Founder of Mama's Munches</p>
 </div>
+<a href="/about/" class="sgs-brand__cta sgs-button sgs-button--ghost" data-sgs="ctaUrl:link" style="margin-top:8px;">Read the full story →</a>
 </div>
+<img class="sgs-brand__image" data-sgs="heroImage:image" src="../../research/photography/wp-media-library/Halimahs.jpeg" alt="A mum smiling and holding Mama's Munches cookies" loading="lazy" width="1920" height="1080"/>
 </section>
 <!-- ══════════════════════════════════════════
      INGREDIENT EDUCATION
