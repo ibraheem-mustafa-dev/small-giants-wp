@@ -34,6 +34,7 @@ import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Callable
 
 # Windows / UTF-8 output fix — must be before any print()
 sys.stdout.reconfigure(encoding="utf-8")
@@ -2004,72 +2005,31 @@ def stage_5_slot_synonym_auto_seed(
 # Idempotent: read-only against the blocks table.
 # ---------------------------------------------------------------------------
 
-def stage_6_block_replacement_mapping(
-    conn: sqlite3.Connection, dry_run: bool = False
-) -> dict:
-    """Validate blocks.replaces mappings against the current native_wp block roster.
+def _build_stale_report_line(sgs_slug: str, replaces_raw: str, missing_targets: list[str]) -> str:
+    """Format one stale-mapping bullet line for the report.
 
-    Reads blocks WHERE source='sgs' AND replaces IS NOT NULL AND replaces != ''.
-    For each target in the replaces field (comma-separated if multiple), checks
-    SELECT 1 FROM blocks WHERE slug=target AND source='native_wp'.
-
-    Stale mappings (unresolved targets) are logged to:
-      reports/phase4-stale-replacements.txt
-
-    No automated writes to the blocks table. Operator reviews stale list manually.
-    Returns: {"checked": int, "valid": int, "stale": int, "report_path": str, "dry_run": bool}
+    Handles singular/plural wording based on len(missing_targets).
     """
-    c = conn.cursor()
-    report_path = REPO_ROOT / "reports" / "phase4-stale-replacements.txt"
+    if len(missing_targets) == 1:
+        return (
+            f"- {sgs_slug} replaces '{replaces_raw}' "
+            f"— '{missing_targets[0]}' not found in native_wp blocks"
+        )
+    missing_str = ", ".join(f"'{m}'" for m in missing_targets)
+    return (
+        f"- {sgs_slug} replaces '{replaces_raw}' "
+        f"— targets not found: {missing_str}"
+    )
 
-    # Fetch all SGS blocks with a replaces mapping
-    rows = c.execute(
-        """
-        SELECT slug, replaces
-        FROM blocks
-        WHERE source='sgs' AND replaces IS NOT NULL AND replaces != ''
-        """
-    ).fetchall()
 
-    checked = 0
-    valid = 0
-    stale = 0
-    stale_lines: list[str] = []
-
-    for sgs_slug, replaces_raw in rows:
-        # Parse: single slug or comma-separated list
-        targets = [t.strip() for t in replaces_raw.split(",") if t.strip()]
-        if not targets:
-            continue
-
-        checked += 1
-        missing_targets: list[str] = []
-
-        for target_slug in targets:
-            exists = c.execute(
-                _SELECT_BLOCK_EXISTS_NATIVE_WP,
-                (target_slug,),
-            ).fetchone()
-            if exists is None:
-                missing_targets.append(target_slug)
-
-        if missing_targets:
-            stale += 1
-            if len(missing_targets) == 1:
-                stale_lines.append(
-                    f"- {sgs_slug} replaces '{replaces_raw}' "
-                    f"— '{missing_targets[0]}' not found in native_wp blocks"
-                )
-            else:
-                missing_str = ", ".join(f"'{m}'" for m in missing_targets)
-                stale_lines.append(
-                    f"- {sgs_slug} replaces '{replaces_raw}' "
-                    f"— targets not found: {missing_str}"
-                )
-        else:
-            valid += 1
-
-    # --- Write stale report (always — observational) ---
+def _write_stale_report(
+    report_path: Path,
+    checked: int,
+    valid: int,
+    stale: int,
+    stale_lines: list[str],
+) -> None:
+    """Assemble and write the stale-replacements report to disk."""
     ts = datetime.now(timezone.utc).strftime(_UTC_TIMESTAMP_FMT)
     lines: list[str] = [
         f"# Stale Block Replacement Mappings — {ts}",
@@ -2089,6 +2049,58 @@ def stage_6_block_replacement_mapping(
 
     report_path.parent.mkdir(parents=True, exist_ok=True)
     report_path.write_text("\n".join(lines), encoding="utf-8")
+
+
+def stage_6_block_replacement_mapping(
+    conn: sqlite3.Connection, dry_run: bool = False
+) -> dict:
+    """Validate blocks.replaces mappings against the current native_wp block roster.
+
+    Reads blocks WHERE source='sgs' AND replaces IS NOT NULL AND replaces != ''.
+    For each target in the replaces field (comma-separated if multiple), checks
+    SELECT 1 FROM blocks WHERE slug=target AND source='native_wp'.
+
+    Stale mappings (unresolved targets) are logged to:
+      reports/phase4-stale-replacements.txt
+
+    No automated writes to the blocks table. Operator reviews stale list manually.
+    Returns: {"checked": int, "valid": int, "stale": int, "report_path": str, "dry_run": bool}
+    """
+    c = conn.cursor()
+    report_path = REPO_ROOT / "reports" / "phase4-stale-replacements.txt"
+
+    rows = c.execute(
+        """
+        SELECT slug, replaces
+        FROM blocks
+        WHERE source='sgs' AND replaces IS NOT NULL AND replaces != ''
+        """
+    ).fetchall()
+
+    checked = 0
+    valid = 0
+    stale = 0
+    stale_lines: list[str] = []
+
+    for sgs_slug, replaces_raw in rows:
+        targets = [t.strip() for t in replaces_raw.split(",") if t.strip()]
+        if not targets:
+            continue
+
+        checked += 1
+        missing_targets: list[str] = []
+        for target_slug in targets:
+            exists = c.execute(_SELECT_BLOCK_EXISTS_NATIVE_WP, (target_slug,)).fetchone()
+            if exists is None:
+                missing_targets.append(target_slug)
+
+        if missing_targets:
+            stale += 1
+            stale_lines.append(_build_stale_report_line(sgs_slug, replaces_raw, missing_targets))
+        else:
+            valid += 1
+
+    _write_stale_report(report_path, checked, valid, stale, stale_lines)
 
     mode = "dry-run" if dry_run else "actual"
     print(
@@ -2394,6 +2406,33 @@ def stage_9_drift_gate(
 # Main dispatcher
 # ---------------------------------------------------------------------------
 
+def _build_stage_dispatch(conn: sqlite3.Connection, args: argparse.Namespace) -> dict[int, Callable[[], dict]]:
+    """Build {stage_num: lambda} mapping; each lambda runs the right stage function.
+
+    Stage 3 is retired — its lambda prints the tombstone line and returns
+    {"status": "retired", "dry_run": args.dry_run}.
+    """
+    return {
+        1: lambda: stage_1_sgs_codebase_scan(conn, dry_run=args.dry_run),
+        2: lambda: stage_2_core_gutenberg_cache_refresh(
+            conn, wp_version=args.wp_version, dry_run=args.dry_run
+        ),
+        3: lambda: (
+            print(
+                "Stage 3 retired (architecture-staging Phase 1 close-out, decisions.md D56). "
+                "WP-CLI handbook refresh now lives in Stage 2 Source 3. Skipping."
+            )
+            or {"status": "retired", "dry_run": args.dry_run}
+        ),
+        4: lambda: stage_4_style_variation_sync(conn, dry_run=args.dry_run),
+        5: lambda: stage_5_slot_synonym_auto_seed(conn, dry_run=args.dry_run),
+        6: lambda: stage_6_block_replacement_mapping(conn, dry_run=args.dry_run),
+        7: lambda: stage_7_spec_doc_regen(dry_run=args.dry_run),
+        8: lambda: stage_8_uimax_mirror(dry_run=args.dry_run),
+        9: lambda: stage_9_drift_gate(conn, dry_run=args.dry_run),
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="SGS framework knowledge base — 9-stage holistic refresh",
@@ -2428,39 +2467,15 @@ def main() -> None:
     ensure_schema_metadata(conn)
 
     stages_to_run = [args.stage] if args.stage else list(range(1, 10))
+    dispatch = _build_stage_dispatch(conn, args)
 
     results: dict[int, dict] = {}
     for stage_num in stages_to_run:
-        print(f"\n{'=' * 50}")
-        print(f"=== Stage {stage_num} ===")
-        print(f"{'=' * 50}")
-
-        if stage_num == 1:
-            results[1] = stage_1_sgs_codebase_scan(conn, dry_run=args.dry_run)
-        elif stage_num == 2:
-            results[2] = stage_2_core_gutenberg_cache_refresh(
-                conn,
-                wp_version=args.wp_version,
-                dry_run=args.dry_run,
-            )
-        elif stage_num == 3:
-            print(
-                "Stage 3 retired (architecture-staging Phase 1 close-out, decisions.md D56). "
-                "WP-CLI handbook refresh now lives in Stage 2 Source 3. Skipping."
-            )
-            results[3] = {"status": "retired", "dry_run": args.dry_run}
-        elif stage_num == 4:
-            results[4] = stage_4_style_variation_sync(conn, dry_run=args.dry_run)
-        elif stage_num == 5:
-            results[5] = stage_5_slot_synonym_auto_seed(conn, dry_run=args.dry_run)
-        elif stage_num == 6:
-            results[6] = stage_6_block_replacement_mapping(conn, dry_run=args.dry_run)
-        elif stage_num == 7:
-            results[7] = stage_7_spec_doc_regen(dry_run=args.dry_run)
-        elif stage_num == 8:
-            results[8] = stage_8_uimax_mirror(dry_run=args.dry_run)
-        elif stage_num == 9:
-            results[9] = stage_9_drift_gate(conn, dry_run=args.dry_run)
+        print(f"\n{'=' * 50}\n=== Stage {stage_num} ===\n{'=' * 50}")
+        if stage_num not in dispatch:
+            print(f"Unknown stage: {stage_num}. Valid: 1-9.")
+            continue
+        results[stage_num] = dispatch[stage_num]()
 
     conn.close()
 
