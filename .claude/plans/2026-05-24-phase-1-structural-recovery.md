@@ -11,6 +11,19 @@ primary_goal: "Close G1+G3+G5 entirely by shipping the universal walker that pow
 
 # Phase 1 — Universal walker + G1+G3+G5 closure + architecture programme leftovers
 
+## Pre-conditions
+
+Required BEFORE starting this phase (must be true to begin):
+
+- [ ] Working tree clean on main (no uncommitted changes from prior session)
+- [ ] Parent strategic plan read end-to-end (this session's context anchor)
+- [ ] `pipeline-state/<latest-run>/leftover-buckets.json` reviewed if any pipeline-touching work (binding rule blub.db row 254)
+- [ ] Relevant specs read (Spec 16 + Spec 17 for cloning-pipeline work; specs/02 for block work; etc.)
+- [ ] `~/.openclaw/workspace/memory/research/*` checked for prior research on the phase domain
+- [ ] Confirmation that no in-flight uncommitted changes from earlier sessions need attention first
+
+If any pre-condition fails, surface to Bean before proceeding — don't start the phase mid-state.
+
 ## Reframing (2026-05-23 — corrects earlier misframings)
 
 This phase was originally scoped as "structural pipeline recovery" with the framing "5 sections fall through to fallback at Stage 2 → walker pre-pass closes the fall-through." That framing was **wrong**. Sections falling through to `sgs/container` is the **correct architectural default** per Spec 16 §FR4 + §R1 + §R4 + Decision 3 (2026-05-20). The actual gap is that the **normal route** (which starts every non-FR1-matched section with `sgs/container` per FR4) lacks the universal walker to populate inner blocks correctly.
@@ -385,3 +398,11 @@ After Change 4a-c (Stage 4 fix + messages vocab), 9 array attrs still have NULL 
 **Fix shape when picked up:** Batch the alias additions (~5 entries) into seed-slot-synonyms.py + apply DB UPDATEs to both mirrors. For sgs/timeline.entries specifically: relax the guard or manual UPDATE.
 
 **Why this is here (not parking):** Without these, ~9 array attrs across the block catalogue can't have their items walked by the universal extractor when those blocks get used in client mockups. The data IS the architecture per Spec 00 BEM-as-canonical; missing canonical_slot rows = missing recognition paths. Load-bearing for cross-client cloning beyond Mama's.
+
+
+## Parking lot
+
+Items surfaced during this phase that don't belong in the active step sequence — captured here so they don't get lost:
+
+(empty at phase start — add entries as they surface; move closed items to `.claude/parking.md` archive at phase close)
+

@@ -11,6 +11,19 @@ primary_goal: "Run /skill-optimiser mode 2 + /batch-gap-analysis on the 15 WP/SG
 
 # Phase 4 — Skill + command optimisation
 
+## Pre-conditions
+
+Required BEFORE starting this phase (must be true to begin):
+
+- [ ] Working tree clean on main (no uncommitted changes from prior session)
+- [ ] Parent strategic plan read end-to-end (this session's context anchor)
+- [ ] `pipeline-state/<latest-run>/leftover-buckets.json` reviewed if any pipeline-touching work (binding rule blub.db row 254)
+- [ ] Relevant specs read (Spec 16 + Spec 17 for cloning-pipeline work; specs/02 for block work; etc.)
+- [ ] `~/.openclaw/workspace/memory/research/*` checked for prior research on the phase domain
+- [ ] Confirmation that no in-flight uncommitted changes from earlier sessions need attention first
+
+If any pre-condition fails, surface to Bean before proceeding — don't start the phase mid-state.
+
 **USP:** Phases 1 + 2 + 3 fix the underlying tools/scripts/pipelines and clear parking. The skills describe those tools — so grading them BEFORE the fixes land measures stale content. Phase 4 runs AFTER, against the current code, so the gap-analysis is meaningful. Without this discipline, skills get graded against pre-fix scripts → false-positive gaps → wasted re-writes.
 
 **Plan label:** `[PLAN: opus]` — gap-analysis runs in main conversation per blub.db row 176; multi-step analytical work; nuanced judgement on opportunity prioritisation.
@@ -247,3 +260,11 @@ Step 3.E — Phase 3 close + post-recovery handoff
 ## What success looks like
 
 After Phase 3: 14-15 per-skill JSON evaluations exist + cross-skill review report exists + opportunity waiting-queue documented + state.md shows recovery programme complete. Next session opens with a clean parking + clean skills + measurable pipeline pixel-diff position (Phase 1 numbers held).
+
+
+## Parking lot
+
+Items surfaced during this phase that don't belong in the active step sequence — captured here so they don't get lost:
+
+(empty at phase start — add entries as they surface; move closed items to `.claude/parking.md` archive at phase close)
+

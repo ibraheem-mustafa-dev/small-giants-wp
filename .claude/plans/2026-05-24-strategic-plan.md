@@ -29,6 +29,28 @@ primary_goal: "Close the structural pixel-diff blockers (G1+G3+G5), complete the
 - **Phase 3 — Parking sweep close-out.** Finish the remaining ~22 STILL-OPEN parking entries (the original handoff's Task 4 + new entries from today's investigation). Excludes skills (Phase 4).
 - **Phase 4 — Skill + command optimisation.** /skill-optimiser mode 2 (gap analysis + research) on the 14 WP/SGS skills + /batch-gap-analysis. Runs LAST because it grades against tools the previous phases fix.
 
+## Out of scope
+
+Explicit "No-Gos" for this plan — anything not here is implicitly out:
+
+- **Block library expansion** — no new SGS blocks built during this plan (Phase 4 audits existing skills only).
+- **Performance optimisation** — pixel-diff measurement only; no Core Web Vitals work.
+- **New client onboarding** — Mama's Munches is the canary; no other clients added.
+- **Spec rewrites** — Spec 16 / Spec 17 frozen for the duration; revisions go through new spec_version + status_history.
+- **`/sgs-clone` UX overhaul** — orchestrator API + output format stable; only bug fixes.
+- **Cross-platform emit paths (M9+)** — deferred per parking entries.
+
+## Phase overview
+
+Same content as Phase summary table below — re-presented here as the canonical "phase / name / timebox / deliverable / depends-on" shape per the strategic-plan template (Shape Up + PMI convention).
+
+| Phase | Name | Timebox | Deliverable | Depends on |
+|-------|------|---------|-------------|------------|
+| 1 | Universal walker + G1+G3+G5 closure | 8-12 hrs / 2-3 sessions | G1+G3+G5 closed per Spec 16 §14; hero stage_3_slot_list < 30 | none |
+| 2 | Header + footer specialised cloner | pending phase-planner | Mama's header + footer parity at 375/768/1440 | Phase 1 |
+| 3 | Parking sweep close-out | ~3 hrs / 1 session | parking.md open == {P-BATCH-GA-14-SKILLS} only | Phase 2 |
+| 4 | Skill + command optimisation | dedicated session | 14 skill evaluations + review report + waiting queue | Phase 3 |
+
 ## Phase summary table
 
 | Phase | Scope | Est | Sessions | Critical gate |

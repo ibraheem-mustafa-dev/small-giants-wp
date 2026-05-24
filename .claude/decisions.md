@@ -6,6 +6,25 @@ Append-only. Most-recent first.
 
 ---
 
+## 2026-05-25 — Doc-op programme: adoption surface + hook + council remediation
+
+**D66 — PostToolUse hook `docscore-on-doc-edit.py` shipped.** Auto-runs `docscore.py` on every Write/Edit to in-scope `.claude/`/`specs/`/`plans/` markdown. Silent on pass; advisory to stderr when score < 90% Grade A-. Registered in `~/.claude/settings.json` under the existing `Write|Edit` PostToolUse matcher. Out-of-scope dirs (memory/, scratch/, reports/, .git/) skipped at the hook level for parity with docscore's own scope rule. Means future doc edits get scored automatically without operator-remembered docscore invocation.
+
+**D67 — Adoption-surface updates across global + project + working-area.** Phase 13 standards now propagated to every surface that drives behaviour:
+- `~/.claude/CLAUDE.md` (global) — added `## Doc-op standards (2026-05-24)` 12-line section listing all 17 canonical doc-types + 6 rules
+- `~/.claude/commands/handoff.md` — added `Gate 4.6 — Docscore on changed in-scope docs` between Gate 4.5 and Gate 4.8 + parking.md shape check in Gate 4.5
+- `~/.claude/skills/autopilot/SKILL.md` — added `docs/doc-op/docscore/template/frontmatter` row to Domain Classification + strategic/phase-plan preload rule in Stage 0
+- `<project-root>/CLAUDE.md` — added `## Doc-op standards (Phase 13 close, 2026-05-25)` 11-line section pointing at D57-D65 + 4 per-session rules
+- `~/.agents/skills/subagent-prompt/SKILL.md` — fixed stale "11 doc types" → "17 doc types"
+- `.claude/CLAUDE.md` (working area) — updated D57-D60 reference to D57-D65
+
+**D68 — /qc-council triangulated 3 high-confidence template fixes (applied):**
+- T1 (over-engineering): 4-layer Verification was mandatory on every step. Now conditional — `Happy:` + `Outcome:` always; `Edge:` + `Fail:` + `Integration:` only on `Marker: QA` steps OR steps where `Files:` touches live infra (SSH/DB/REST/deploy). "N/A" acceptable elsewhere. Drops phase-plan writing overhead ~40% on simple plans.
+- T2 (functional bug): templates declared `required_sections: []` empty while prose said certain sections were mandatory. Mandatory sections now in YAML: strategic-plan `[Out of scope, Phase overview]`, phase-plan `[Pre-conditions, Parking lot]`. Docscore checks now machine-enforce.
+- H1 (ADHD Rule 3 alignment): strategic-plan frontmatter gains `motivation:` field — re-entry after 7+ days surfaces "why this matters".
+
+5 active plan docs updated with the new mandatory sections (Out of scope + Phase overview on strategic; Pre-conditions + Parking lot on each phase) — all 5 still 100% Grade A.
+
 ## 2026-05-25 — Doc-op programme: strategic-plan + phase-plan templates (merged from skill spec + research)
 
 **D65 — `strategic-plan` and `phase-plan` doc-type templates created** in `~/.agents/skills/shared-references/doc-templates/`. Built by merging OUR skills' learned output specs (`strategic-plan` plan-template + `phase-planner` 14-field step block) with research-distilled rules (PMI / SAFe / Shape Up / OKR / Stage-gate / DevOps runbook / Ansible / Claude Code best practices).

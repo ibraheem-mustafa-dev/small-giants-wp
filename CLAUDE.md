@@ -313,6 +313,17 @@ Never use absolute server paths or hard-coded `/wp-content/...` URLs in CSS, PHP
 - JS/CSS: use CSS custom properties set by PHP via `wp_add_inline_style()` or `wp_localize_script()`
 - Never: `/wp-content/themes/sgs-theme/assets/image.png` (breaks on any non-standard install)
 
+## Doc-op standards (Phase 13 close, 2026-05-25)
+
+Architectural record for the doc-op programme: `.claude/decisions.md` D57-D65.
+Canonical templates for all 17 doc-types: `~/.agents/skills/shared-references/doc-templates/`
+
+Four rules every session must respect:
+1. **parking entries** carry `**Status:** OPEN|PARTIAL|BLOCKED|DEFERRED` and belong to one of 6 taxonomy buckets
+2. **specs** use `FR-{spec_id}-{N}` for requirement IDs (e.g. `FR-16-3`, not `FR3`)
+3. **mistakes.md** is a keyword-stub index only — body (≤3 lines) links to `memory/feedback_*.md` + blub.db row
+4. **plans** use the strategic-plan + phase-plan templates (timebox / ROAM / 16-field step block)
+
 ## Non-Negotiables
 
 - WCAG 2.2 AA accessible, mobile-first responsive (44px minimum touch targets)

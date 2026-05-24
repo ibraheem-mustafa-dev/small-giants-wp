@@ -11,6 +11,19 @@ primary_goal: "Close every STILL-OPEN parking entry EXCEPT P-BATCH-GA-14-SKILLS 
 
 # Phase 3 — Parking sweep close-out
 
+## Pre-conditions
+
+Required BEFORE starting this phase (must be true to begin):
+
+- [ ] Working tree clean on main (no uncommitted changes from prior session)
+- [ ] Parent strategic plan read end-to-end (this session's context anchor)
+- [ ] `pipeline-state/<latest-run>/leftover-buckets.json` reviewed if any pipeline-touching work (binding rule blub.db row 254)
+- [ ] Relevant specs read (Spec 16 + Spec 17 for cloning-pipeline work; specs/02 for block work; etc.)
+- [ ] `~/.openclaw/workspace/memory/research/*` checked for prior research on the phase domain
+- [ ] Confirmation that no in-flight uncommitted changes from earlier sessions need attention first
+
+If any pre-condition fails, surface to Bean before proceeding — don't start the phase mid-state.
+
 **USP:** Phases 1 + 2 close the structural pixel-diff blockers and the header/footer cloner. Phase 3 closes everything else queued in parking — small architectural debts, doc-drift residuals, the deferred follow-ups from prior sessions. Without this sweep, every future session opens with the cognitive overhead of "what's still open?" and the parking lot keeps growing.
 
 **Plan label:** `[PLAN: sonnet]` — most entries are mechanical or well-scoped; only a few need Opus-level reasoning.
@@ -311,3 +324,11 @@ Step 2.E — Phase 2 close + Phase 3 next-session prompt
 ## What success looks like
 
 After Phase 2: parking.md "Open" section contains exactly one entry — P-BATCH-GA-14-SKILLS. Stage 11 numbers held steady vs Phase 1 close (no regression). Phase 3 starts with a clean slate.
+
+
+## Parking lot
+
+Items surfaced during this phase that don't belong in the active step sequence — captured here so they don't get lost:
+
+(empty at phase start — add entries as they surface; move closed items to `.claude/parking.md` archive at phase close)
+

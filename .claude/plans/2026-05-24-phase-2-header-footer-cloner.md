@@ -11,6 +11,19 @@ primary_goal: "Build a specialised one-shot cloner that converts source mockup h
 
 # Phase 2 — Header + footer specialised cloning pipeline
 
+## Pre-conditions
+
+Required BEFORE starting this phase (must be true to begin):
+
+- [ ] Working tree clean on main (no uncommitted changes from prior session)
+- [ ] Parent strategic plan read end-to-end (this session's context anchor)
+- [ ] `pipeline-state/<latest-run>/leftover-buckets.json` reviewed if any pipeline-touching work (binding rule blub.db row 254)
+- [ ] Relevant specs read (Spec 16 + Spec 17 for cloning-pipeline work; specs/02 for block work; etc.)
+- [ ] `~/.openclaw/workspace/memory/research/*` checked for prior research on the phase domain
+- [ ] Confirmation that no in-flight uncommitted changes from earlier sessions need attention first
+
+If any pre-condition fails, surface to Bean before proceeding — don't start the phase mid-state.
+
 **USP:** Headers + footers are 1-per-site (not per page), their HTML doesn't follow the div→block patterns body content does, and their behaviour (sticky / transparent / shrink) lives in Customiser-controlled body classes per Spec 17 — not block attributes. Forcing them through the generic page-clone pipeline produces N-redundant copies on multi-page sites AND mismatches the architecture. A dedicated one-shot cloner unlocks chrome fidelity on every client site without compromising Phase 1's body-content pixel-diff lever.
 
 **Plan label:** `[PLAN: opus]` — architectural, multi-hop DOM-to-pattern mapping, novel script in greenfield territory.
@@ -534,3 +547,11 @@ Step 2.12 — Phase 2 close + Phase 3 next-session prompt
 ## What success looks like (one-line)
 
 After Phase 2: running `python scripts/clone-header-footer.py --mockup sites/mamas-munches/mockups/homepage/index.html --client mamas-munches --deploy-target sandybrown` followed by `wp sgs clone-header-footer-deploy --site-info-json=... --header-rules-json=... --footer-rules-json=...` produces a sandybrown page where the header pixel-diff at 1440 dropped from 26.7% to ≤ 15%, the footer at 1440 from 98.7% to ≤ 20%, the sticky behaviour engages on scroll, and re-running both commands is byte-stable.
+
+
+## Parking lot
+
+Items surfaced during this phase that don't belong in the active step sequence — captured here so they don't get lost:
+
+(empty at phase start — add entries as they surface; move closed items to `.claude/parking.md` archive at phase close)
+
