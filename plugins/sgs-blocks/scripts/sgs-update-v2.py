@@ -55,6 +55,8 @@ EXCLUDED_DIRS = {"node_modules", "build", "vendor", ".git", "__pycache__"}
 # Re-used SQL literals (kept as constants so they stay in sync across call sites)
 _SELECT_BLOCK_EXISTS_NATIVE_WP = "SELECT 1 FROM blocks WHERE slug=? AND source='native_wp'"
 _SELECT_DOC_EXISTS_NATIVE_WP = "SELECT 1 FROM docs WHERE slug=? AND source='native_wp'"
+_SELECT_BLOCK_ATTR_EXISTS_NATIVE_WP = "SELECT 1 FROM block_attributes WHERE block_slug=? AND attr_name=? AND source='native_wp'"
+_SELECT_BLOCK_SUPPORT_EXISTS_NATIVE_WP = "SELECT 1 FROM block_supports WHERE block_slug=? AND support_name=? AND source='native_wp'"
 
 # Re-used string literals
 _UTC_TIMESTAMP_FMT = "%Y-%m-%d %H:%M:%S UTC"
@@ -571,6 +573,33 @@ def _fetch_with_playwright(url: str, timeout: int = 60) -> str:
 
 
 
+def _insert_or_count(
+    cursor: sqlite3.Cursor,
+    new_rows: dict,
+    counter_key: str,
+    dry_run: bool,
+    insert_sql: str,
+    insert_params: tuple,
+    exists_sql: str,
+    exists_params: tuple,
+) -> int:
+    """Generic INSERT OR IGNORE / dry-run SELECT 1 helper used by Sources 1-4.
+
+    - Live: executes ``insert_sql``, increments ``new_rows[counter_key]`` by rowcount,
+      returns that rowcount.
+    - Dry-run: executes ``exists_sql``; if no row exists, increments
+      ``new_rows[counter_key]`` by 1 and returns 1, else returns 0.
+    """
+    if not dry_run:
+        res = cursor.execute(insert_sql, insert_params)
+        delta = res.rowcount
+    else:
+        ex = cursor.execute(exists_sql, exists_params).fetchone()
+        delta = 1 if ex is None else 0
+    new_rows[counter_key] += delta
+    return delta
+
+
 def _scrape_source_1_gutenberg(
     c: sqlite3.Cursor,
     conn: sqlite3.Connection,
@@ -629,57 +658,52 @@ def _scrape_source_1_gutenberg(
         category = block_data.get("category", "")
         block_type = "dynamic" if "$schema" in block_data else "static"
 
-        if not dry_run:
-            res = c.execute(
-                """
+        s1_blocks += _insert_or_count(
+            c, new_rows, "blocks", dry_run,
+            insert_sql="""
                 INSERT OR IGNORE INTO blocks
                     (slug, title, description, category, type, source)
                 VALUES (?, ?, ?, ?, ?, 'native_wp')
                 """,
-                (slug, title, description, category, block_type),
-            )
-            new_rows["blocks"] += res.rowcount
-            s1_blocks += res.rowcount
+            insert_params=(slug, title, description, category, block_type),
+            exists_sql=_SELECT_BLOCK_EXISTS_NATIVE_WP,
+            exists_params=(slug,),
+        )
 
+        if not dry_run:
             # Attributes
             for attr_name, attr_def in block_data.get("attributes", {}).items():
                 if not isinstance(attr_def, dict):
                     continue
-                res = c.execute(
-                    """
-                    INSERT OR IGNORE INTO block_attributes
-                        (block_slug, attr_name, attr_type, default_value, source)
-                    VALUES (?, ?, ?, ?, 'native_wp')
-                    """,
-                    (
+                s1_attrs += _insert_or_count(
+                    c, new_rows, "block_attributes", dry_run,
+                    insert_sql="""
+                        INSERT OR IGNORE INTO block_attributes
+                            (block_slug, attr_name, attr_type, default_value, source)
+                        VALUES (?, ?, ?, ?, 'native_wp')
+                        """,
+                    insert_params=(
                         slug, attr_name,
                         attr_def.get("type", "string"),
                         json.dumps(attr_def.get("default")) if "default" in attr_def else None,
                     ),
+                    exists_sql=_SELECT_BLOCK_ATTR_EXISTS_NATIVE_WP,
+                    exists_params=(slug, attr_name),
                 )
-                new_rows["block_attributes"] += res.rowcount
-                s1_attrs += res.rowcount
 
             # Supports
             for support_name, support_val in block_data.get("supports", {}).items():
-                res = c.execute(
-                    """
-                    INSERT OR IGNORE INTO block_supports
-                        (block_slug, support_name, support_value, source)
-                    VALUES (?, ?, ?, 'native_wp')
-                    """,
-                    (slug, support_name, json.dumps(support_val)),
+                s1_supports += _insert_or_count(
+                    c, new_rows, "block_supports", dry_run,
+                    insert_sql="""
+                        INSERT OR IGNORE INTO block_supports
+                            (block_slug, support_name, support_value, source)
+                        VALUES (?, ?, ?, 'native_wp')
+                        """,
+                    insert_params=(slug, support_name, json.dumps(support_val)),
+                    exists_sql=_SELECT_BLOCK_SUPPORT_EXISTS_NATIVE_WP,
+                    exists_params=(slug, support_name),
                 )
-                new_rows["block_supports"] += res.rowcount
-                s1_supports += res.rowcount
-        else:
-            # dry-run: count what would be new
-            ex = c.execute(
-                _SELECT_BLOCK_EXISTS_NATIVE_WP, (slug,)
-            ).fetchone()
-            if ex is None:
-                new_rows["blocks"] += 1
-                s1_blocks += 1
 
     if not dry_run:
         conn.commit()
@@ -749,24 +773,17 @@ def _scrape_source_2_hooks(
         s2_extracted += len(hook_names)
         for hook_name in hook_names:
             hook_type = "action" if hook_name in actions else "filter"
-            if not dry_run:
-                res = c.execute(
-                    """
+            s2_inserted += _insert_or_count(
+                c, new_rows, "hooks", dry_run,
+                insert_sql="""
                     INSERT OR IGNORE INTO hooks
                         (name, hook_type, plugin_slug, file_path, source, type)
                     VALUES (?, ?, NULL, ?, 'native_wp', ?)
                     """,
-                    (hook_name, hook_type, file_path, hook_type),
-                )
-                new_rows["hooks"] += res.rowcount
-                s2_inserted += res.rowcount
-            else:
-                ex = c.execute(
-                    "SELECT 1 FROM hooks WHERE name=? AND source='native_wp'", (hook_name,)
-                ).fetchone()
-                if ex is None:
-                    new_rows["hooks"] += 1
-                    s2_inserted += 1
+                insert_params=(hook_name, hook_type, file_path, hook_type),
+                exists_sql="SELECT 1 FROM hooks WHERE name=? AND source='native_wp'",
+                exists_params=(hook_name,),
+            )
 
         print(f"    {file_path}: {len(hook_names)} hook references found.")
 
@@ -816,24 +833,17 @@ def _scrape_source_3_wpcli(
             except Exception:
                 content_text = f"# {title}\n\nContent fetch failed."
 
-        if not dry_run:
-            res = c.execute(
-                """
+        s3_docs += _insert_or_count(
+            c, new_rows, "docs", dry_run,
+            insert_sql="""
                 INSERT OR IGNORE INTO docs
                     (source, slug, title, doc_type, category, content)
                 VALUES ('native_wp', ?, ?, 'cli-command', 'wpcli', ?)
                 """,
-                (slug, title, content_text),
-            )
-            new_rows["docs"] += res.rowcount
-            s3_docs += res.rowcount
-        else:
-            ex = c.execute(
-                _SELECT_DOC_EXISTS_NATIVE_WP, (slug,)
-            ).fetchone()
-            if ex is None:
-                new_rows["docs"] += 1
-                s3_docs += 1
+            insert_params=(slug, title, content_text),
+            exists_sql=_SELECT_DOC_EXISTS_NATIVE_WP,
+            exists_params=(slug,),
+        )
 
     if not dry_run:
         conn.commit()
