@@ -95,7 +95,7 @@ Drift between spec and implementation is a real failure mode (Spec 16 §12.6 dec
 3. `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` — §14.3 (G3 specific gap) + §15 (status update second-pass) + §12.3 (canonical slot vocabulary including new quote row)
 4. `.claude/specs/00-naming-conventions.md` §3.1 — BEM-as-canonical recognition rule (NEW)
 5. `pipeline-state/mamas-munches-homepage-2026-05-24-122653/` — read `summary.log`, `match.json`, `stage-11-pixel-diff.json`, `convert-trace-b4.jsonl` (featured-product), `convert-trace-b6.jsonl` (ingredients-section), `leftover-buckets.json`
-6. `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` lines 3093-3117 (`_slot_attr_prefix`) + lines 3120-3340 (`_lift_styling_attrs`) — the actual edit target for Step 1.7 G3. **NO `slot_list.py` file exists** — earlier prompt wording was Rule 6 drift, corrected 2026-05-25 after grep-verify on `find … -name "slot_list.py"` returned zero. The orchestrator's `sgs-clone-orchestrator.py:stage_3_slot_list` (lines 1102-1204) is a metadata-only scaffold builder and is correct as-is.
+6. **Step 1.7 status (revised 2026-05-25 D71): CLOSED.** The pixel-diff side closed via D70 (Stage 10 inline-CSS deploy of variation-d0-d2.css, commit `d8caa569`). The failure-count side (`<30` gate) was empirically misframed — 440 of 473 failures are legitimate `value_empty` for features absent from mockups. Don't pick up Step 1.7 in next session; move directly to Step 1.8 (universal-nesting / G1-extension). Earlier prompt references to `slot_list.py` (file doesn't exist) and `_slot_attr_prefix` (addresses only 7 of 473) were both wrong and have been reverted across Spec 16 + Phase 1 plan + this prompt.
 7. The 5 feedback memory files referenced in `MEMORY.md` index — covers the binding rules' full context
 
 After reading: cite the line numbers + summarise back ≤ 200 words per doc (READING DISCIPLINE from previous session's prompt remains in force).
@@ -104,7 +104,7 @@ After reading: cite the line numbers + summarise back ≤ 200 words per doc (REA
 
 | Step | What | Why this order | Est |
 |---|---|---|---|
-| **1.7** | **G3 — `convert.py:_slot_attr_prefix` fallback for visual-only slots** | HIGHEST LEVERAGE. Closes the +30% pixel-diff regression on featured-product / ingredients-section. `_slot_attr_prefix` (line 3093) currently returns None for canonical slots without a text-content anchor attr, short-circuiting `_lift_styling_attrs` (line 3120) and blocking CSS lift for backgroundMedia / hover / media / animation / layout slot families. Fix: stem-stripping fallback via `property_suffixes` table (117 rows). | 60–90 min |
+| ~~**1.7**~~ | ~~G3 fix~~ | **CLOSED 2026-05-25 (D70 pixel-diff side; D71 reframe of failure-count side).** Don't pick up. | — |
 | 1.6 | G1 — hero OPEN-block emit (CTAs as InnerBlocks instead of self-closing attrs) | After 1.7. Hero already at FR1 confidence 1.0; this is structural correctness inside the matched block. Scoped narrow to hero only per Bean. | 45–60 min |
 | 1.8 | G5 — per-block DOM-shape fixes (parallel across blocks) | Parallelisable across blockquote / testimonial-slider / trust-bar fixes. File-disjoint per block. | 90–120 min |
 | 1.9 | Hooks completion (2,049 missing) + role='content' DB sync via /sgs-update Stage 1 | Independent of walker work. Data-only. | 30–45 min |
@@ -141,7 +141,7 @@ Embed all four in every Agent cold prompt:
 
 ## Phase 1 success criteria for Step 1.7 (G3 closure)
 
-- [ ] `convert.py:_slot_attr_prefix` (line 3093-3117) extended with stem-stripping fallback via `property_suffixes` table. Visual-only canonical slot families (backgroundMedia, hover, media, animation, layout) now receive a derived prefix → `_lift_styling_attrs` succeeds for `backgroundImage`, `overlayColour`, `minHeight`, `gridTemplateColumns`, `alignment`, `padding*`, `margin*`, etc.
+- [x] **Step 1.7 G3 closed 2026-05-25 (D70).** Pixel-diff regression closed via inline-CSS deploy. Failure-count gate re-framed (D71) — merged into Step 1.8 universal-nesting work.
 - [ ] Hero `stage_3_slot_list` failures drop from 142 to under 30 (per Spec 16 §15 numeric acceptance)
 - [ ] Featured-product / ingredients-section / social-proof Stage 11 pixel-diff drops measurably from 73.6% / 62.0% / 94.8% respectively (no required numeric threshold; just measurable improvement)
 - [ ] No regression on FR1 sections (hero / trust-bar stay at confidence 1.0)
@@ -177,13 +177,13 @@ Step 1.7 should drop featured-product / ingredients-section / social-proof by 10
 
 ## First action
 
-After reading discipline (Tier 1 docs above), do not skip Rule 3 (Data-first audit). Before touching `convert.py:_slot_attr_prefix`:
+**Step 1.7 is closed.** Next-session entry point is Step 1.8 (universal-nesting / G1 extension to non-hero composites). Before any code:
 
-1. `python ~/.claude/hooks/wp-blocks.py dump` (schema enumeration)
-2. `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT block_slug, attr_name, canonical_slot, role, derived_selector, output_signature FROM block_attributes WHERE block_slug='sgs/hero' AND canonical_slot IS NOT NULL LIMIT 30"`
-3. Read `convert.py:_slot_attr_prefix` (lines 3093-3117) + `convert.py:_lift_styling_attrs` (lines 3120-3340) + `convert.py:_collect_css_decls_for_element` (lines 2943-3090) — confirm the prefix-derivation chokepoint
-4. Surface findings + ONE proposed approach to Bean (per Rule 2: no options for him to pick; deduce the conclusion + cite evidence)
+1. Read Spec 16 §15 line 969 in full — the canonical primitive: every composite block emits OPEN with InnerBlocks children mirroring mockup parent-child shape.
+2. Read parking entry `P-G1-EXTEND-TO-OTHER-CONTAINER-SHAPED-COMPOSITES` — the open architectural work.
+3. Read `feedback_read_full_spec_before_proposing_architectural_fix_shape.md` (lesson captured 2026-05-25 after multiple wrong diagnoses in one session).
+4. State the universal-nesting primitive in your own words BEFORE proposing any fix-shape. Fix-shapes that don't directly invoke the primitive are surface fixes — STOP.
 
-**Drift correction note (2026-05-25):** Earlier versions of this prompt referenced `slot_list.py` as the edit target. That file does not exist. Rule 6 grep-verify caught it. Spec 16 §14.3 + §15 + Phase 1 plan all updated alongside this prompt.
+**Drift correction history (2026-05-25):** Earlier versions of this prompt referenced `slot_list.py` (file doesn't exist) then `convert.py:_slot_attr_prefix` extension (Sonnet ran the fix; addressed only 7 of 473 failures). Both prescriptions reverted in same-day D71 patch. Spec 16 §14.3 + §15 + Phase 1 plan all re-framed around D70 pixel-diff closure + §15 universal-nesting primitive.
 
 Then dispatch implementer subagent with full cold prompt + bindings A–D + 6 binding rules embedded.
