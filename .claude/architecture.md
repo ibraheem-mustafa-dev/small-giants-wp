@@ -5,13 +5,13 @@ title: SGS WordPress Framework — System Architecture
 split_note: "2026-05-24 — split into 3 parts: architecture.md (this file, system design), .claude/dev-setup.md (build/deploy/SSH), .claude/plans/archive/2026-02-21-feature-audit.md (354-feature graded roadmap)"
 ---
 
-> Last updated: 2026-05-24 (post doc-op split). Architecture programme CLOSED (2026-05-22). 31 decisions across 8 phases. See `.claude/plans/2026-05-21-architecture-staging.md` for the full decision record.
+> Last updated: 2026-05-25 (qc-council session + Phase 1 universal-extraction plan locked). Architecture programme CLOSED (2026-05-22, 31 decisions). Cloning-pipeline universal-extraction Phase 1 NOT YET STARTED (Phase 1 plan + ~110-item canonical register shipped this session; F1 spike is HARD GATE before full dispatch). See `.claude/plans/2026-05-21-architecture-staging.md` for the architecture programme + `.claude/reports/2026-05-25-qc-council-issue-register.md` for the universal-extraction register.
 
 ## Overview
 
-SGS is a standalone WordPress block theme and Gutenberg blocks plugin built by Small Giants Studio. It competes directly with Kadence, Spectra, and GenerateBlocks — every block must be fully configurable by non-technical clients through the block editor alone. The framework is client-agnostic; Indus Foods is the first client and acts as the proving ground, but every architectural decision must hold for any business type.
+SGS is a standalone WordPress block theme and Gutenberg blocks plugin built by Small Giants Studio. It competes directly with Kadence, Spectra, and GenerateBlocks — every block must be fully configurable by non-technical clients through the block editor alone. The framework is client-agnostic; Mama's Munches is the current pipeline canary, Indus Foods is the design-language proving ground, and every architectural decision must hold for any business type.
 
-**Framework stats (2026-05-22):** 69 blocks (all dynamic), 2,230 block attributes, 184 design tokens, 35 patterns, 1,223 block supports, 89 slot synonyms, 117 property suffixes, 5,234 hooks. All blocks at `apiVersion: 3`.
+**Framework stats (2026-05-25):** 69 blocks (all dynamic; sgs/trust-bar retired D72), 2,246 block attributes, 184 design tokens, 35 patterns, 1,216 block supports, 89 slot synonyms, 117 property suffixes (incl. hover-state suffixes), 19 modifier_suffixes (variant/state/breakpoint/side/corner/unit kinds), 85 block_capabilities, 5,421 hooks, 18 SGS blocks declare `blocks.replaces` mapping to core. All blocks at `apiVersion: 3`. WP 7.0.
 
 **Feature audit (354 features, graded roadmap):** moved to `.claude/plans/archive/2026-02-21-feature-audit.md`.
 
@@ -96,6 +96,43 @@ small-giants-wp/
 12. **DB-first architecture rule** — Converter / recogniser scripts read canonical vocabulary from `sgs-framework.db` via `db_lookup.py`. No hardcoded Python dicts duplicating DB data. `/sgs-update` keeps the DB in sync.
 
 13. **Rosetta Stone discipline** — Every uimax row describing a design artefact MUST carry equivalent-name mappings across SGS blocks, vanilla HTML/CSS, Bootstrap, shadcn/Radix, Tailwind, React generic, and AI-builder outputs. Missing SGS equivalent = gap candidate, never silent drop.
+
+14. **Universal-nesting primitive (Spec 16 §15 line 990, locked 2026-05-25)** — Every composite block emits OPEN with InnerBlocks children mirroring the mockup's parent-child shape — NOT flat-attrs lifted from descendants. **Every BEM-class div in the mockup becomes its own emitted block, carrying its mockup className.** When the converter's `_lift_inner_blocks` (convert.py:1430) returns empty for a parent slug — because `blocks.parent_block` has no DB rows for it — the **F1 fallback** walks direct child div + semantic-tag descendants and calls back into the universal `walk()`, which routes each child via FR2 atomic-tag emission or class-based recognition. F1 is the canonical closure for G1 (self-closing composite blocks) + G3 (text-only slot resolver) + G5 (per-block DOM mismatches) — all three were council-reframed in 2026-05-21 as ONE wiring gap. Canonical worked example: brand `sgs/quote` (Section R5 of qc-council register).
+
+15. **DB-driven ATOMIC_TAG_MAP via `blocks.replaces` (locked 2026-05-25 per D75)** — Bare HTML tags route to their SGS replacement, not core blocks. 18 SGS blocks declare `replaces` mapping: `<p>` → sgs/text (replaces core/paragraph); `<h1>`–`<h6>` → sgs/heading (replaces core/heading); `<img>` → sgs/media (replaces core/image); `<blockquote>` → sgs/quote; `<a class*="sgs-button">` → sgs/button; `<ul>`/`<ol>` → sgs/icon-list. Walker queries `SELECT slug FROM blocks WHERE replaces=? AND source='sgs'` at recognition time. No parallel hardcoded mapping. The current hardcoded `ATOMIC_TAG_MAP` at convert.py:698 is Cheat Q14 in the register's Section Q — slated for replacement in Phase 1B (Commit 9 of phase-1 plan).
+
+16. **Cascade-fold (per-property default + override, NOT binary uniformity gate; locked 2026-05-25 per blub.db row 287)** — For N sibling wrappers sharing a BEM-element class, the walker compares CSS values per-property across siblings: most-common value hoists to parent's "per-direct-child default" attr; divergent values stay as override attrs on the specific child that contradicts. Wrapper blocks always exist (preserve className for CSS targeting); their attrs carry only the divergence; parent carries the defaults. Content uniformity is irrelevant — each grid item / column carries unique content; folding happens at the styling layer only. The canonical precedent is `sgs/multi-button` (14 parent attrs set group defaults; inner `sgs/button` children render via `$content` and override per-instance).
+
+17. **Hero is NOT a clean architectural reference (corrected 2026-05-25)** — Hero's current ≤1% pixel-diff achievement is via hardcoded cheats in `convert.py` (per-slug `if block_slug == "sgs/hero":` guard at 3557 for split-image; hero-specific `VARIANT_MODIFIERS` dict at 3591-3608; `ARRAY_LIFT_PATTERNS` recipes at 1008-1030). The universal architecture is NOT yet proven by hero's current state. Each cheat in Section Q of the register is a roadmap item — what universal mechanism + DB data needs to exist for the cheat to be removed. Cheat removal sequence requires hero attribute-count parity gate (not just pixel-diff) — pixel-diff alone allows silent regression.
+
+18. **Phases never ship as single commits (binding rule D73, blub.db row 288)** — Within any phase, every major task commits separately with: (a) `/qc-council` or `/qc-inline` pre-commit gate; (b) living-docs updates for the matched doc-type per trigger table; (c) `/sgs-clone --debug-trace` + Stage 11 measurement comparing pre/post values; (d) commit message citing predicted vs actual delta from the experiment frame. Per-task skill bindings: `/subagent-driven-development` for implementation (one implementer + 2 reviewers); `/delegate` for model routing; `/verify-loop` for 2-attestation. Anti-pattern of record: 2026-05-24 second-pass session (5 changes shipped as one wave, regressed pixel-diff 70.5% → 73.9%, regression unattributable).
+
+19. **Per-section acceptance gate, NOT mean (locked 2026-05-25)** — Phase 1 closure = per-section ≤30% × 3 viewports for all 7 body sections (21 cells; each must hit ≤30% independently). Phase 1.5 closure = per-section ≤1% × 3 viewports. Mean averaging hides hidden failures (e.g. hero staying at 70% while 6 others drop to 22% averages to 28% — appears to pass; in reality hero is broken).
+
+---
+
+## 2026-05-25 cloning-pipeline session summary
+
+The 2026-05-25 session ran a 4-rater `/qc-council` against the consolidated cloning-pipeline recovery plan and produced:
+
+- **`.claude/reports/2026-05-25-qc-council-issue-register.md`** — canonical register, ~110 items across Sections A-R:
+  - Section A (7 confirmed defects) — F1 universal-nesting + atomic_button missing CSS lift + brand empty body[] + D1 sidecar collisions
+  - Section B (7 DB-first violations) — hardcoded dicts to migrate
+  - Section P (27 binding design principles) — extracted from Bean's prior-session messages; THE rules every commit obeys
+  - Section Q (20-cheat inventory) — file:line + replacement path for every hardcoded shortcut in `convert.py` + `css_router.py`
+  - Section R (consolidated phase plan) + R1 (blocks.replaces audit) + R2 (allowed-nesting audit) + R5 (brand sgs/quote worked example end-to-end)
+
+- **`.claude/plans/2026-05-25-phase-1-universal-extraction.md`** — 19-commit phase plan with model routing + skills + predicted deltas + risk per commit. F1 spike (Commit 7) is HARD GATE before full dispatch.
+
+- **Decisions D70-D75 logged in `.claude/decisions.md`:**
+  - D70 — Stage 10 inline-CSS deploy of `variation-d0-d2.css` (closes 4-section pixel-diff regression; mean 74.1% → 68.4%)
+  - D71 — Step 1.7 G3 reframed (pixel-diff side closed by D70; failure-count side empirically misframed)
+  - D72 — sgs/trust-bar block retired in favour of universal-nesting (mean 68.4% → 63.2%)
+  - D73 — phases never ship as single commits (binding rule)
+  - D74 — Phase 1 scope = full universal-extraction backbone (one consolidated plan, NOT a series of small phases)
+  - D75 — qc-council verdict CONDITIONAL APPROVE pending F1 spike
+
+**Current empirical baseline (2026-05-25 latest run, page 144 sandybrown):** mean pixel-diff 63.2% across 27 captures; hero 17% extracted with cheats inside; brand `sgs/quote` self-closing with empty `body[]`; F1 fallback proposed at `convert.py:1430`.
 
 ---
 

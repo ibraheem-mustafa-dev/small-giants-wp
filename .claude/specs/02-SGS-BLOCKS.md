@@ -46,7 +46,7 @@ sgs-blocks/
 │   │   ├── hero/                 # Hero section (multiple variants) — refactor to InnerBlocks composition queued (spec 11)
 │   │   ├── info-box/             # Info/feature card
 │   │   ├── counter/              # Animated statistic counter
-│   │   ├── trust-bar/            # Horizontal stats strip
+│   │   ├── (trust-bar/ — RETIRED D72, 2026-05-25; universal-nesting handles trust-bar sections via sgs/container + sgs/label/sgs/counter children)
 │   │   ├── card-grid/            # Flexible image+content grid (overlay/card variants)
 │   │   ├── testimonial/          # Single testimonial card
 │   │   ├── testimonial-slider/   # Multi-testimonial carousel
@@ -245,9 +245,20 @@ block-name/
 
 ---
 
-### 5. Trust Bar (`sgs/trust-bar`)
+### 5. Trust Bar — RETIRED 2026-05-25 (D72)
 
-**Purpose:** Horizontal strip of 3-5 stats/trust signals.
+**Status: RETIRED.** Block source files deleted (`src/blocks/trust-bar/`, `build/blocks/trust-bar/`). DB rows deleted across 9 tables. Hardcoded special-case removed from `confidence-matrix.py`, `seed-legacy-role-lookup.py`, `lingua_franca.py`, `generate-markup-examples.py`, `BlockDeprecationsTest.php`, `blocks.spec.ts`, `test_ensure_root_section_class.py`. See decisions.md D72.
+
+**Replacement architecture:**
+- **Counter use-cases** (animated statistics like "5,000+" / "Next-Day"): use `sgs/counter` (canonical single-counter block; remains active).
+- **Badge use-cases** (trust signals like "Halal Certified" / "Family Owned Since 1962"): emit via universal-nesting — `sgs/container` (grid layout) + `sgs/label` or `sgs/icon` children per badge. The converter resolves `__badge` BEM elements to the appropriate block via `slot_synonyms.standalone_block`.
+- **Worked example:** Mama's homepage trust-bar section now emits as `sgs/container` (4-col grid) with 4 nested child blocks (icon + text per badge). See Phase 1 plan Commit 13 (1F — G1 OPEN-block emission for FR1-matched composites) for the universal-nesting closure.
+
+Block reference content for `sgs/trust-bar` is preserved in git history (last commit referencing it: `668ca50a`). The block.json schema is no longer registered.
+
+#### Historical content (for migration reference only — block does NOT exist post-D72)
+
+**Original Purpose:** Horizontal strip of 3-5 stats/trust signals.
 
 **Attributes:**
 - `items` — array of { value, suffix, label, animated } objects
