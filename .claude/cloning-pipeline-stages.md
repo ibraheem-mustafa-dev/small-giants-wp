@@ -503,7 +503,7 @@ The 5-bucket `leftover-bucket-router.py` classifier. Vocabulary update 2026-05-2
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Stage 10 — Per-page deploy [LIVE — shipped 2026-05-19]
+### Stage 10 — Per-page deploy [LIVE — shipped 2026-05-19; inline-CSS injection added 2026-05-25 D70]
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -513,13 +513,27 @@ The 5-bucket `leftover-bucket-router.py` classifier. Vocabulary update 2026-05-2
 │       Silent-failure fix (commit 700ff211, 2026-05-23):                     │
 │         exit 4 — phantom page; exit 5 — id-mismatch; exit 6 — no-id-in-body│
 │                                                                             │
+│  SUB-STEPS (in order):                                                      │
+│    1. Upload mockup-relative images to WP media library, capture id+url    │
+│    2. Patch block_markup: rewrite mockup img paths → WP attachment URLs    │
+│    3. Inline-CSS injection (D70, 2026-05-25):                              │
+│       Read pipeline-state/<run>/variation-d0-d2.css if present             │
+│       Wrap in wp:html block carrying <style id="sgs-cv2-page-css"         │
+│         data-page-id="<id>" data-run-id="<run>">…</style>                   │
+│       Prepend to block_markup so the page carries its own scoped CSS       │
+│       (rules already scoped via .page-id-N → no cross-page leak)           │
+│    4. Save pipeline-state/<run>/extract.patched.json                       │
+│    5. WP REST PATCH /wp/v2/pages/<id> with the patched content             │
+│                                                                             │
 │ FILES (W):  pipeline-state/<run>/extract.patched.json                       │
 │             WP page/post N (sandybrown) via REST PATCH                       │
+│ FILES (R):  pipeline-state/<run>/extract.json                               │
+│             pipeline-state/<run>/variation-d0-d2.css (D70)                  │
 │                                                                             │
 │ CANARY PAGE (updated 2026-05-23): page 144 (/rc-fix-verification-mamas-    │
 │   munches/). Page 131 was deleted — DO NOT use page 131.                   │
 │                                                                             │
-│ STATUS:       LIVE - shipped 2026-05-19                                     │
+│ STATUS:       LIVE - shipped 2026-05-19; D70 inline-CSS injection 2026-05-25│
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 

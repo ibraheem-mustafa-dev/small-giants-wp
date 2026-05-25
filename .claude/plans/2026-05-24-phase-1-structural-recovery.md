@@ -38,7 +38,10 @@ This phase was originally scoped as "structural pipeline recovery" with the fram
 **G1/G3/G5 mapped to the two routes:**
 
 - **G1** (OPEN-block emission for composite blocks with InnerBlocks data) — **FR1-path** fix. `sgs/hero` matched at Stage 2 currently emits self-closing; should emit OPEN with nested `sgs/multi-button` + `sgs/button` for CTAs.
-- **G3** (Stage 3 slot resolver only extracts text content) — **Both routes** affected. `slot_list.py` needs to query `property_suffixes` for visual/structural slots, not just text content. Fixes hero's 142 stage_3_slot_list failures on FR1 path AND enables the normal route's universal walker to lift CSS-driven attrs on inner blocks.
+- **G3** (Stage 3 slot resolver only extracts text content) — **Both routes** affected. `convert.py:_slot_attr_prefix` (line 3093-3117) needs a fallback for canonical slots without a text-content anchor attr — when it returns None, `_lift_styling_attrs` (line 3120) short-circuits and no CSS is lifted. Empirical baseline: 473 `extraction_failed` events in 2026-05-24-122653 run (hero 142, normal-route 41-49 each, trust-bar 14), all on visual/structural slot names. Fixes hero's 142 failures AND unblocks visual lift on sgs/container for normal-route sections.
+
+<!-- 2026-05-25 — corrected file references. Earlier wording said "slot_list.py needs to query property_suffixes" but no `slot_list.py` file exists. The real Stage-3 builder is `sgs-clone-orchestrator.py:stage_3_slot_list` (lines 1102-1204; metadata-only scaffold, correct as-is). CSS lift gated by `convert.py:_slot_attr_prefix` (3093) → `_lift_styling_attrs` (3120). Drift caught by Rule 6 grep-verify on 2026-05-25 session. -->
+
 - **G5** (Per-block DOM-shape mismatches) — **Normal-route** fix mostly. Tag/class preservation (blockquote stays blockquote, not normalised to section) + per-block render.php adjustments where mockup nesting doesn't match block render output (testimonial-slider 3-col grid vs single-card carousel, trust-bar `__badge` vs `__item`).
 
 **Spec 16 §15 steps 1-3** = the universal walker that makes the **normal route** work. Step 4 (`_lift_inner_blocks` DB-driven InnerBlocks emit) already shipped 2026-05-21 (commit `79158da5`) and fires from both FR1 and normal route emit branches.
@@ -52,7 +55,7 @@ This phase was originally scoped as "structural pipeline recovery" with the fram
 Empirical, evidence-cited, all required:
 
 - [ ] **G1 closed.** Hero's CTAs render on the live page. Test: load `https://sandybrown-nightingale-600381.hostingersite.com/rc-fix-verification-mamas-munches/`, inspect `header.sgs-hero` — the two CTA buttons are present in the DOM (not just the lifted attrs as text). Same for any other FR1-matched composite block whose mockup contains InnerBlocks-shaped descendants.
-- [ ] **G3 closed.** Hero `stage_3_slot_list` failures drop from 142 to under 30 (per Spec 16 §15 numeric acceptance). `slot_list.py` queries `property_suffixes` for visual/structural slots; trace.jsonl shows `stage_3_slot_list` events for visual slots (backgroundImage, overlayColour, minHeight, ctaPrimaryColour, alignment) with values lifted instead of "no value extracted".
+- [ ] **G3 closed.** Hero `stage_3_slot_list` failures drop from 142 to under 30 (per Spec 16 §15 numeric acceptance). `convert.py:_slot_attr_prefix` extended with stem-stripping fallback via `property_suffixes`; `_lift_styling_attrs` runs successfully for visual-only slot families (backgroundMedia, hover, media, animation, layout); leftover-buckets.json shows `extraction_failed` count for visual slots dropping from 473 → ~150-200.
 - [ ] **G5 closed.** Per-block DOM-shape audit complete: blockquote stays blockquote (brand-strip body), 3-col grid renders as 3-col grid (testimonial-slider), `__badge` / `__text` preserved (trust-bar items + inline SVG). Per-block render.php fixes shipped where the mockup DOM doesn't match current block render output. Spec 16 §14.5 list addressed.
 - [ ] **Universal walker (Spec 16 §15 steps 1-3) shipped.** `_walker_pre_pass(section_node, css_rules) → ClassGraph` runs once per section before walk(); walker uses the class-graph to drive nested-block emission on the normal route (the `sgs/container` fallback path). Per blub.db row 269: universal extraction primitive — NO per-block special-case branches in the walker.
 - [ ] **Stage 11 pixel-diff captured for every body cell.** All 7 body sections × 3 viewports = 21 cells measured per-commit and post-Phase-1. Not gated to ≤ 1% in this phase — measurement-only. (The walker landing correctly + G1/G3/G5 fixes are the gate; pixel-diff is a downstream side-effect that will land below ~20% after Phase 1 ships, with the final ≤1% closure depending on F5 D1 responsive variants + operator-promotion work currently parked.)
@@ -76,7 +79,7 @@ Empirical, evidence-cited, all required:
 5. `reports/2026-05-20-pipeline-root-gap-council/real-path-synthesis.md` — original G1-G5 honest-path council
 6. `.claude/plans/archive/phase-wave-2-wiring-fix-complete.md` — Wave 2 archived plan documenting the 4 changes that constitute the universal walker
 7. `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` lines 3780-3970 (current walk() function — FR1 fast path at 3826-3870; normal route falls through to sgs/container at the bottom)
-8. `plugins/sgs-blocks/scripts/orchestrator/converter_v2/slot_list.py` — current slot resolver (text-only)
+8. `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` lines 3093-3117 (`_slot_attr_prefix`) + lines 3120-3340 (`_lift_styling_attrs`) — the actual CSS-lift seam. **NO `slot_list.py` file exists** — earlier plan wording was drift, corrected 2026-05-25. The Stage-3 scaffold-builder is `sgs-clone-orchestrator.py:stage_3_slot_list` (lines 1102-1204); it is metadata-only and correct as-is.
 9. `plugins/sgs-blocks/scripts/orchestrator/converter_v2/__init__.py` — orchestrator-level callsite for `_convert_section_body`
 10. `plugins/sgs-blocks/scripts/sgs-update-v2.py` lines 540-720 — current hooks import logic
 11. **Reverted attempt** (do NOT re-implement this shape): commit `124e1d06` (reverted via `f3885f14`) built a tactical guard for composite_element branch only — not the universal walker. The mistake was treating walker steps 1-3 as a "section recognition" fix; they're a "normal-route build-up" fix.
@@ -168,7 +171,7 @@ RETURN to main thread (do NOT commit):
 
 ## Step 1.1 — Resume context anchor `[SESSION-START]`
 
-Read every file in "Entry context" above. Spend extra time on Spec 16 §FR1 + §FR4 + §15 (the two-route topology + universal walker spec). Write a paragraph confirming the FR1 fast-path vs normal-route distinction is internalised: "FR1 fast path fires when section class matches a registered block OR registered pattern. Normal route is the default — starts with sgs/container per FR4, universal walker builds inner block tree element-by-element. G1 closes by OPEN-block emission on FR1 path. G3 closes by slot_list.py querying property_suffixes for visual slots. G5 closes by per-block DOM-shape fixes." Time: 20 min. Inline.
+Read every file in "Entry context" above. Spend extra time on Spec 16 §FR1 + §FR4 + §15 (the two-route topology + universal walker spec). Write a paragraph confirming the FR1 fast-path vs normal-route distinction is internalised: "FR1 fast path fires when section class matches a registered block OR registered pattern. Normal route is the default — starts with sgs/container per FR4, universal walker builds inner block tree element-by-element. G1 closes by OPEN-block emission on FR1 path. G3 closes by extending `convert.py:_slot_attr_prefix` with a stem-stripping fallback that derives prefixes for visual-only canonical slots via the `property_suffixes` table. G5 closes by per-block DOM-shape fixes." Time: 20 min. Inline.
 
 ## Step 1.2 — Refresh stale doc claims (quick wins, already shipped 2026-05-23)
 
@@ -185,7 +188,7 @@ Per blub.db row 254 — read leftover-buckets.json + match.json + trace.jsonl fr
 
 1. **FR1 fast-path currently matches 2 sections**: hero (conf 1.0) + trust-bar (conf 1.0). The other 7 (header, footer, featured-product, brand, ingredients-section, gift-section, social-proof) take the normal route → emit bare `sgs/container` because the universal walker (§15 steps 1-3) isn't built.
 2. **Pattern table HAS pattern slugs matching the 5 body fall-through sections**: query `SELECT slug FROM patterns WHERE slug IN ('sgs/featured-product','sgs/gift-section','sgs/brand','sgs/ingredients-section','sgs/social-proof','sgs/header','sgs/footer')`. If matches exist, those sections COULD hit FR1 fast-path branch (b) once pattern-match is wired.
-3. **Hero stage_3_slot_list failures = 142** in trace.jsonl. Most are visual/structural slots (backgroundImage, overlayColour, minHeight, ctaPrimaryColour). G3 fix (slot_list.py + property_suffixes query) addresses these.
+3. **Hero stage_3_slot_list failures = 142** in trace.jsonl. Most are visual/structural slots (backgroundImage, overlayColour, minHeight, ctaPrimaryColour). G3 fix (`convert.py:_slot_attr_prefix` stem-stripping fallback via `property_suffixes`) addresses these.
 
 Time: 30 min. Inline. Surface findings to Bean before proceeding.
 
@@ -222,13 +225,30 @@ Model: wp-sgs-developer (subagent, sonnet). Apply Dispatch Bindings.
 
 Time: 45-60 min.
 
-## Step 1.7 — G3 closure: slot_list.py visual-slot extension via property_suffixes
+## Step 1.7 — G3 closure: `_slot_attr_prefix` fallback for visual-only slots
 
-Per Spec 16 §14.3: `slot_list.py` resolver handles text-content slots but returns "no value extracted" for visual/structural slots (backgroundImage, overlayColour, minHeight, ctaPrimaryColour, alignment). 142 of hero's 171 slots fail not because CSS is missing but because the resolver doesn't know how to read it.
+> **2026-05-25 — file targets corrected from "slot_list.py" (which doesn't exist) to the actual code in `convert.py`. Rule 6 grep-verify caught the drift; Spec 16 §14.3 + §15 updated alongside this plan.**
 
-**Fix:** extend slot_list.py to call `_collect_css_decls_for_element` for visual slots + map CSS property → SGS attr name via `property_suffixes` table (the existing D1 typed-attr-lift path per Spec 16 §FR6 Destination 1). Per-slot-role dispatch:
-- Text content slot → existing text path
-- Colour / dimension / image / structural slot → new CSS-driven path via `property_suffixes`
+Per Spec 16 §14.3 (corrected): the Stage-3 extraction pipeline returns "no value extracted" for visual/structural slots (backgroundImage, overlayColour, minHeight, ctaPrimaryColour, alignment). 142 of hero's 171 slots fail not because CSS is missing but because `convert.py:_slot_attr_prefix` (lines 3093-3117) returns None for canonical slots without a text-content anchor attr — causing `_lift_styling_attrs` (line 3120) to short-circuit at line 3146-3147.
+
+**Fix:** extend `_slot_attr_prefix` with a fallback that runs when the existing text-anchor lookup returns None:
+1. Iterate schema attrs assigned to this canonical_slot (filter by `info.get("canonical_slot") == canonical_slot`).
+2. For each attr_name, strip recognised property suffixes via the existing 117-row `property_suffixes` table (`db.css_property_suffixes()` already cached).
+3. Group stripped stems; return the most-common stem as the prefix.
+4. If zero schema attrs match the canonical_slot, return None (unchanged behaviour).
+
+This is data-driven through `property_suffixes` (no per-block branches; satisfies blub.db row 269 universal-extraction primitive). The downstream `_lift_styling_attrs` + `_collect_css_decls_for_element` path is already CSS-driven via D1 typed-attr-lift (§FR6 Destination 1) — it just needs a valid prefix to fire.
+
+**Acceptance gate (numeric, hard pass):**
+- Hero `stage_3_slot_list` failures: 142 → under 30 (Spec 16 §15 line 994)
+- Total `extraction_failed` across page: 473 → 150-200
+- Featured-product pixel-diff: 73.6% → 50-58%
+- Ingredients-section pixel-diff: 62.0% → 40-50%
+- Hero + trust-bar match.json confidence: still 1.0 (no FR1 regression)
+
+**Out of scope (deferred):**
+- Gap B — button-family prefix collision (`ctaPrimaryText` used as prefix, generates non-existent `ctaPrimaryTextColour`). Only fix if Gap A measurements show button colours visibly wrong.
+- Gap C — normal-route section-root visual attrs via `_lift_root_supports_to_style` (different code path). Trace-verify AFTER Gap A lands to confirm whether sgs/container's container-CSS path lifts background-image/min-height correctly today.
 
 Affects BOTH FR1 path (hero slot extraction improves) AND normal route (walker's slot resolution becomes correct for visual properties).
 

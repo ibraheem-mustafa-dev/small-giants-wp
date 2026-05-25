@@ -183,6 +183,26 @@ def main():
         new_bm = new_bm.replace(old, new)
     print(f"\nPatched block_markup: {len(bm)} -> {len(new_bm)} chars")
 
+    # Prepend variation-d0-d2.css as an inline <style> block so the page
+    # carries its own scoped CSS (Spec 16 §FR6 D2). Rules in the file are
+    # already scoped via `.page-id-N`, so no per-page leak risk. Wrapped in
+    # a `wp:html` block so Gutenberg preserves the raw <style> tag verbatim
+    # across edits without converting it to a paragraph or stripping it.
+    css_path = run_dir / "variation-d0-d2.css"
+    if css_path.exists():
+        css_text = css_path.read_text(encoding="utf-8")
+        if css_text.strip():
+            style_block = (
+                "<!-- wp:html -->\n"
+                f'<style id="sgs-cv2-page-css" data-page-id="{args.target_id}" '
+                f'data-run-id="{run_dir.name}">\n{css_text}\n</style>\n'
+                "<!-- /wp:html -->\n\n"
+            )
+            new_bm = style_block + new_bm
+            print(f"Prepended variation-d0-d2.css ({len(css_text)} chars) as inline <style> block")
+    else:
+        print(f"  (no variation-d0-d2.css found at {css_path} -- skipping inline CSS injection)")
+
     # Save patched markup
     out = run_dir / "extract.patched.json"
     d["block_markup"] = new_bm

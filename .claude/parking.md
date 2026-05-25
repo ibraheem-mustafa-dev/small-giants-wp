@@ -8,7 +8,17 @@ last_updated: 2026-05-24
 
 ## Cloning pipeline (cv2 / orchestrator / DOM walker / pixel-diff)
 
-_58 entries._
+_60 entries._
+
+
+**P-DUPLICATE-HEADER-EXPOSED-BY-INLINE-CSS-FIX** — NEW 2026-05-25 (after D70 Stage 10 inline-CSS shipped). With variation-d0-d2.css now deployed inline per-page, the mockup's `<header class="sgs-header">` block in cv2 output renders visually for the first time — appearing BELOW the framework's `<header>` template part (rendered on every page by `theme/sgs-theme/parts/header.html`). Visible regression: header section pixel-diff at 375px jumped from 25.4% → 84.8% (+59.4pp) in run mamas-munches-homepage-2026-05-25-060541. Sister sections (768, 1440) only +0.9 / -2.3pp because framework header dominates the viewport there. **Resolution:** Phase 2 — header + footer specialised cloner (already planned per `.claude/plans/2026-05-24-phase-1-structural-recovery.md` Next priorities #9). The specialised cloner emits to wp_template_part shape, not page-content shape, and dedupes against framework header. Until then the live page carries both headers on mobile.
+**Status:** OPEN
+**Trigger:** Phase 2 kickoff.
+
+
+**P-INGREDIENTS-1440-REGRESSION-AFTER-INLINE-CSS** — NEW 2026-05-25 (after D70). Stage 11 ingredients-section at 1440px regressed from 31.5% → 53.9% (+22.4pp) post-fix while same section dropped -22pp at 375 and -20pp at 768 (clear net win at the other two viewports). Hypothesis A: a desktop rule in variation-d0-d2.css overrides framework defaults at 1440 with a partial cascade conflict. Hypothesis B: screenshot-timing — page wasn't fully painted when Playwright captured. Hypothesis C: a desktop-specific rule in variation CSS doesn't match the live DOM shape exactly. **Trigger:** trace investigation — pixel-diff/section.sgs-ingredients-1440x900/diff.json + mockup.png + sgs.png + heatmap.png in run mamas-munches-homepage-2026-05-25-060541. Re-run /sgs-clone to rule out timing artefact first.
+**Status:** OPEN
+
 
 
 **P-G1-EXTEND-TO-OTHER-CONTAINER-SHAPED-COMPOSITES** — NEW 2026-05-24 (scoped narrow). Step 1.6 (G1 closure) ships OPEN-block emit for `sgs/hero` only this phase, plus FR1 branch-(b) pattern-reference emission in Step 1.5. All other composite blocks (info-box, product-card, card-grid, etc.) continue to emit self-closing. **Why scoped narrow:** no DB column today cleanly identifies "container-shaped composite block" — `blocks.parent_block`, `block_supports`, `patterns.block_composition`, `block_attributes.output_signature` each describe partial facets but none excludes info-box / product-card from a "container-outer + InnerBlocks" definition. Investigated candidates: (a) add `is_pattern_shaped` boolean to `blocks`, hand-curated; (b) new `/sgs-update` stage that static-analyses each `render.php` for `<InnerBlocks />` inside an outer container element; (c) manual `block.json` annotation under `supports.sgs.containerShaped: true`.

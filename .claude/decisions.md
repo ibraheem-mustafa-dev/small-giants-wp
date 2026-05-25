@@ -6,6 +6,12 @@ Append-only. Most-recent first.
 
 ---
 
+## 2026-05-25 — Stage 10 inline-CSS deploy (closes 4-section pixel-diff regression)
+
+**D70 — Stage 10 (`upload_and_patch.py`) now deploys `variation-d0-d2.css` as an inline `<style>` block prepended to the page's `post_content` (wrapped in `wp:html` so Gutenberg preserves it across edits).** Closes the architectural gap where the 4-destination CSS router (Spec 16 §FR6) wrote correctly-scoped D0/D2 rules to `pipeline-state/<run>/variation-d0-d2.css` but Phase 5a's snapshot-only deploy never moved them off-disk. Result on Mama's homepage: Stage 11 mean 74.1% → 68.4% (-5.7pp), with localised body-section drops of -15 to -41pp (gift-section -39pp at desktop, social-proof -40pp at desktop, ingredients -22pp at mobile). Header at 375px regressed +59pp due to pre-existing duplicate-header issue (mockup header now visible alongside framework header part) — separately tracked at parking entry `P-DUPLICATE-HEADER-EXPOSED-BY-INLINE-CSS-FIX`, resolves at Phase 2 (header+footer cloner). Rules already scoped via `.page-id-N` prefix in router output → no cross-page leak. Spec 16 §FR6 D2 description updated. Pipeline-stages doc updated. ~20-line addition at `upload_and_patch.py` after block_markup image-URL patching, before extract.patched.json write.
+
+---
+
 ## 2026-05-25 — Doc-op programme: adoption surface + hook + council remediation
 
 **D66 — PostToolUse hook `docscore-on-doc-edit.py` shipped.** Auto-runs `docscore.py` on every Write/Edit to in-scope `.claude/`/`specs/`/`plans/` markdown. Silent on pass; advisory to stderr when score < 90% Grade A-. Registered in `~/.claude/settings.json` under the existing `Write|Edit` PostToolUse matcher. Out-of-scope dirs (memory/, scratch/, reports/, .git/) skipped at the hook level for parity with docscore's own scope rule. Means future doc edits get scored automatically without operator-remembered docscore invocation.

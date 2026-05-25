@@ -236,6 +236,7 @@ When the rule targets a class on a descendant inside a block-root, AND the CSS p
 When the rule targets a class on a wrapper that has NO typed-attr destination (block doesn't expose a matching attr, OR the wrapper isn't inside any block-root):
 - Emit a markup wrapper for that node (`sgs/container` or `core/group` depending on layout needs) carrying the className
 - Lift the rule into the variation CSS buffer; orchestrator writes it to `pipeline-state/<run>/variation-d0-d2.css` (scoped via `.page-id-N`). <!-- Updated 2026-05-23 — Phase 5a retired the `.json` overlay system (commit 43a93df9); the `.css` output path relocated to pipeline-state today (Q3 commit shipping 2026-05-23); no longer writes to `theme/sgs-theme/styles/<client>.json` -->
+- **Stage 10 deploy** (`upload_and_patch.py`) reads `variation-d0-d2.css` and prepends it as an inline `<style id="sgs-cv2-page-css">` block to the page's `post_content`, wrapped in `wp:html` so Gutenberg preserves it across edits. Per-page scoping via `.page-id-N` selector prefix (already written by router) prevents cross-page cascade leak. Added 2026-05-25 (D70) — without this, the router's D2 output sat on-disk and never reached the live page. <!-- 2026-05-25 D70 — closed extract-but-don't-deploy gap; Mama's homepage Stage 11 mean 74.1% → 68.4% with body-section localised drops -15 to -41pp -->
 - The class on the emitted wrapper is the anchor for the CSS rule
 
 **Destination 3 — Attribute gap candidate:**
@@ -805,9 +806,11 @@ P1.B.x correctly scoped variation CSS rules to `.page-id-N .sgs-X` for cascade i
 
 ### 14.3 — Stage 3 slot resolver only extracts text content (G3)
 
-`slot_list.py` resolver handles text-content slots but returns "no value extracted" for visual/structural slots (backgroundImage, overlayColour, minHeight, ctaPrimaryColour, alignment). 142 of hero's 171 slots fail not because CSS is missing but because the resolver doesn't know how to read it.
+> **Drift correction 2026-05-25 (D69 forthcoming):** earlier wording referenced a non-existent `slot_list.py` file. The actual code lives across two files: `sgs-clone-orchestrator.py:stage_3_slot_list` (lines 1102-1204) builds a metadata SCAFFOLD only (no CSS extraction); CSS-to-attr extraction lives in `convert.py:_lift_styling_attrs` (line 3120) gated by `convert.py:_slot_attr_prefix` (line 3093). The true gap is in `_slot_attr_prefix` — it returns None for canonical slots without a text-content anchor attr, which causes `_lift_styling_attrs` to return early at line 3146-3147 with no CSS lifted. Empirical: 473 `extraction_failed` events in the 2026-05-24 baseline run, all on visual/structural slot names (backgroundImage, minHeight, gridTemplateColumns, overlayGradient, etc.).
 
-**Fix shape:** extend slot_list to call `_collect_css_decls_for_element` for visual slots + map CSS property → SGS attr name via `property_suffixes` table (the existing D1 typed-attr-lift path per §FR6). Per-slot-role dispatch: text → existing path; colour/dimension/image/structural → new CSS-driven path.
+The Stage 3 / Stage 4 extraction pipeline handles text-content slots but returns "no value extracted" for visual/structural slots (backgroundImage, overlayColour, minHeight, ctaPrimaryColour, alignment). 142 of hero's 171 slots fail not because CSS is missing but because `_slot_attr_prefix` (convert.py:3093-3117) can't derive a prefix for slots without a text-content anchor attr — so `_lift_styling_attrs` (convert.py:3120) short-circuits before reading CSS.
+
+**Fix shape:** extend `_slot_attr_prefix` with a fallback that derives the prefix from the canonical_slot name itself when no text-content attr exists. Iterate schema attrs assigned to this canonical_slot; strip known property suffixes via the existing 117-row `property_suffixes` table; return the most-common stripped stem as the prefix. The downstream `_lift_styling_attrs` loop and its `_collect_css_decls_for_element` call are already CSS-driven via the D1 typed-attr-lift path (§FR6 Destination 1) — they just need a valid prefix to proceed.
 
 ### 14.4 — Measurement-side contamination (G4)
 
@@ -974,7 +977,7 @@ When (1)-(4) are wired, G1 (empty hero CTAs), G3 (Stage 3 text-only slot resolve
 |---|---|
 | `convert.py walk()` FR1 fast path (line 3675) | Add `variation_buf.append(_collect_css_for_classes(classes, css_rules))` after `lift_subtree_into_block_attrs()` so registered SGS blocks consume the merged CSS (one-line consistency fix; not hero-special) |
 | `convert.py` walker entry | Walk every CSS class encountered in the section; assign ownership of CSS rules per class; record parent-child via `blocks.parent_block` + `slot_synonyms.standalone_block` queries + natural BEM relations. (Pattern composition data on `patterns.block_composition` is pattern-level catalogue, NOT a walker read source.) |
-| `slot_list.py` | Query `property_suffixes` for visual/structural slot types, not just text-content slots (the typed-attr-lift path of Spec 16 §FR6 Destination 1) |
+| `convert.py:_slot_attr_prefix` (line 3093-3117) | Extend with fallback: when no text-content anchor attr exists for the canonical_slot, derive prefix from the slot name + `property_suffixes` stem-stripping. Unblocks `_lift_styling_attrs` (line 3120) for visual-only slot families (backgroundMedia, hover, media, animation, layout). The typed-attr-lift path of §FR6 Destination 1 is already CSS-driven; the gap is in prefix derivation, not CSS reading. <!-- 2026-05-25 D69 — earlier wording referenced non-existent `slot_list.py` file --> |
 | cv2 emit shape | Use the parent-child graph to drive nested-block emission; preserve mockup class names on emitted blocks via `additionalClasses` / `className` |
 
 ### What G4 looked like and why it was discarded
