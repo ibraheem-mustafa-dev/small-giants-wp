@@ -31,7 +31,7 @@ Prior handoff archived to `.claude/memory/handoff-2026-05-24-bem-canonical-walke
 
 ## Next Priorities (in order)
 
-1. **F1 spike on brand alone** (Commit 7 of phase-1 plan) — minimal ~20-line fallback at `convert.py:1430`; run `/sgs-clone --section brand --debug-trace`; HARD GATE: brand drops ≥20pp at 1440 OR halt + re-investigate.
+1. **F1 spike on brand alone** (Commit 7 of phase-1 plan) — minimal ~20-line fallback at `convert.py:1430`; run `/sgs-clone --section "section.sgs-brand" --debug-trace`; HARD GATE: brand drops ≥20pp at 1440 OR halt + re-investigate.
 2. **Phase 0E independent cheat cleanup** (Commits 1–6) — Q6/Q7/Q8/Q9/Q10/Q11/Q12/Q1+Q2/Q16/Q17 DB-data migrations + delete. Per-commit `/qc-council` gate + Stage 11 measurement.
 3. **Phase 1B full F1 + DB-driven ATOMIC_TAG_MAP** (Commit 9) — extends to bare `<a>`, `<button>`, `<ul>`, `<ol>`, `<blockquote>` per `blocks.replaces` audit. Scope-guard for Stage 2 recogniser boundary.
 4. **Commits 10–18** per phase-1 plan — universal child-block + array-attr extraction, G3 visual slots, G1 OPEN-block, conditional G5, sgs/quote render.php β-migration, patterns.block_composition population, pattern fast-path, delete dead code.
@@ -117,13 +117,19 @@ Full orchestration plan at `.claude/next-session-prompt.md`. Summary tables:
 - **Per-section cropped pixel-diff** via `--selector .sgs-{section}` (blub.db 256)
 - **WP_DEBUG_DISPLAY stays false** on staging — debug notices contaminate every pixel-diff
 
-**First task — F1 spike (HARD GATE):**
+**First task — F1 spike (HARD GATE) — full step-by-step in `.claude/next-session-prompt.md`:**
 
-1. Read `_lift_inner_blocks` at `convert.py:1350-1517` end-to-end
-2. Implement ~20-line F1 fallback at line 1430 (when `_db_children(parent_slug)` returns empty, walk direct child elements and call `walk()` recursively)
-3. Run `/sgs-clone --section brand --deploy-target page:144 --debug-trace`
-4. Measure brand at 375/768/1440 vs baseline (73.8/59.4/50.0)
-5. **GATE:** brand drops ≥20pp at 1440 → proceed to Phase 0E. Otherwise HALT, diagnose, surface to Bean.
-6. Append spike result to register as new Section S.
+1. Read `_lift_inner_blocks` at `convert.py:1350-1517` end-to-end (5 min)
+2. Capture hero attribute-count baseline for regression guard (5 min — command in next-session-prompt Step 2)
+3. Implement ~20-line F1 fallback at line 1430. CRITICAL: walk direct child div + semantic-tag descendants (`<div>`, `<p>`, `<a>`, `<img>`, `<h1>`-`<h6>`, `<blockquote>`, `<ul>`, `<ol>`, `<figure>`, `<button>`) and call back into `walk()` recursively (15 min)
+4. Run: `python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py --mockup sites/mamas-munches/mockups/homepage/index.html --section "section.sgs-brand" --client mamas-munches --page homepage --deploy-target page:144 --debug-trace` (5 min). **CLI verified against current orchestrator arg parser; `--section` takes a CSS selector, NOT a section name.**
+5. Measure brand at 375/768/1440 vs baseline (73.8 / 59.4 / **50.0%**). Hero regression guard: hero 1440 must stay within ±2pp of 69.6% (F1 should NOT fire on hero — it has parent_block DB rows).
+6. **HARD GATE on brand 1440 cell:**
+   - ≤30% (≥20pp drop) → F1 validated → proceed to Phase 0E + full Phase 1
+   - 30-40% (10-20pp drop) → F1 partial → surface to Bean (DO NOT proceed without go-ahead)
+   - >40% (<10pp drop) OR regression → F1 falsified → HALT + re-investigate per blub.db row 285
+7. Append spike result to register as new Section S (predicted vs actual + verdict + implication).
 
-Full Phase 1 plan: `.claude/plans/2026-05-25-phase-1-universal-extraction.md`. Full evidence base: `.claude/reports/2026-05-25-qc-council-issue-register.md` Sections A-R.
+Total wall-time: ~40 min if straightforward, up to 60 min including build + deploy.
+
+Full Phase 1 plan: `.claude/plans/2026-05-25-phase-1-universal-extraction.md`. Full evidence base: `.claude/reports/2026-05-25-qc-council-issue-register.md` Sections A-R. Step-by-step + predicted numeric outcome + critical implementation notes + HARD GATE math: `.claude/next-session-prompt.md`.
