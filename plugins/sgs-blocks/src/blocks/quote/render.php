@@ -17,7 +17,13 @@
  * @since 2026-05-17  Initial — sgs/quote block
  *
  * @var array    $attributes Block attributes.
- * @var string   $content    Inner block content (unused — leaf block).
+ * @var string   $content    Rendered InnerBlocks output. When non-empty (e.g. from
+ *                           the deterministic converter v2 F1 universal-nesting
+ *                           path — Spec 16 §15 line 990), this is the body source
+ *                           and the legacy $attributes['body'] array + attribution
+ *                           attribute rendering are skipped. When empty (legacy
+ *                           operator-edited posts using the body[] array UI in
+ *                           edit.js), the previous render path runs verbatim.
  * @var WP_Block $block      Block instance.
  *
  * @package SGS\Blocks
@@ -28,14 +34,27 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 // ---------------------------------------------------------------------------
-// 1. Soft-fail: nothing to render if both body and attribution are empty.
+// 1. Resolve body source: InnerBlocks $content (β-path) vs legacy body[] attr.
+//
+// The deterministic converter v2 F1 universal-nesting fallback (Spec 16 §15 line
+// 990) emits sgs/quote with nested core/paragraph + sgs/text children inside its
+// InnerBlocks slot rather than populating $attributes['body']. When $content is
+// non-empty, we emit it as the rendered body and skip the legacy body[] + the
+// attribution-attr path (the converter already places attribution as the final
+// InnerBlock — emitting it twice would duplicate it).
+//
+// Legacy posts authored through edit.js continue to use $attributes['body'][] +
+// $attributes['attribution'] verbatim.
 // ---------------------------------------------------------------------------
+
+$content_str        = is_string( $content ) ? trim( $content ) : '';
+$has_inner_blocks   = '' !== $content_str;
 
 $body           = isset( $attributes['body'] ) && is_array( $attributes['body'] ) ? $attributes['body'] : array();
 $attribution    = isset( $attributes['attribution'] ) ? (string) $attributes['attribution'] : '';
 $attrib_enabled = ! empty( $attributes['attributionEnabled'] ) || ! isset( $attributes['attributionEnabled'] );
 
-// Remove blank body entries for the emptiness check.
+// Remove blank body entries for the emptiness check (legacy path only).
 $body_non_empty = array_filter(
 	$body,
 	function ( $item ) {
@@ -43,7 +62,9 @@ $body_non_empty = array_filter(
 	}
 );
 
-if ( empty( $body_non_empty ) && '' === trim( wp_strip_all_tags( $attribution ) ) ) {
+// Soft-fail: nothing to render if both legacy body and attribution are empty
+// AND InnerBlocks $content is empty. Any one source being populated triggers render.
+if ( ! $has_inner_blocks && empty( $body_non_empty ) && '' === trim( wp_strip_all_tags( $attribution ) ) ) {
 	return;
 }
 
@@ -672,33 +693,42 @@ if ( $responsive_css ) {
 ?>
 <blockquote <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 	<?php
-	// Body paragraphs.
-	$body_tag_escaped = tag_escape( $body_tag );
-	foreach ( $body as $item ) {
-		$item_text = (string) $item;
-		// Skip entirely blank items.
-		if ( '' === trim( wp_strip_all_tags( $item_text ) ) ) {
-			continue;
+	if ( $has_inner_blocks ) {
+		// β-path: emit rendered InnerBlocks output as the body. Attribution
+		// arrives as a child block (sgs/text with .sgs-brand__attribution-style
+		// className from the converter) — do NOT also render the attribution
+		// attribute, that would duplicate it.
+		echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	} else {
+		// Legacy path: iterate $attributes['body'][] array per the operator UI
+		// in edit.js, then emit the attribution attribute below.
+		$body_tag_escaped = tag_escape( $body_tag );
+		foreach ( $body as $item ) {
+			$item_text = (string) $item;
+			// Skip entirely blank items.
+			if ( '' === trim( wp_strip_all_tags( $item_text ) ) ) {
+				continue;
+			}
+			$body_style_attr = $body_style_str ? ' style="' . esc_attr( $body_style_str ) . '"' : '';
+			printf(
+				'<%1$s class="wp-block-sgs-quote__body"%2$s>%3$s</%1$s>',
+				$body_tag_escaped, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				$body_style_attr, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				wp_kses_post( $item_text )
+			);
 		}
-		$body_style_attr = $body_style_str ? ' style="' . esc_attr( $body_style_str ) . '"' : '';
-		printf(
-			'<%1$s class="wp-block-sgs-quote__body"%2$s>%3$s</%1$s>',
-			$body_tag_escaped, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			$body_style_attr, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			wp_kses_post( $item_text )
-		);
-	}
 
-	// Attribution.
-	if ( $attrib_enabled && '' !== trim( wp_strip_all_tags( $attribution ) ) ) {
-		$attrib_tag_escaped = tag_escape( $attrib_tag );
-		$attrib_style_attr  = $attrib_style_str ? ' style="' . esc_attr( $attrib_style_str ) . '"' : '';
-		printf(
-			'<%1$s class="wp-block-sgs-quote__attribution"%2$s>%3$s</%1$s>',
-			$attrib_tag_escaped, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			$attrib_style_attr, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			wp_kses_post( $attribution )
-		);
+		// Attribution — legacy path only. β-path attribution arrives via InnerBlocks.
+		if ( $attrib_enabled && '' !== trim( wp_strip_all_tags( $attribution ) ) ) {
+			$attrib_tag_escaped = tag_escape( $attrib_tag );
+			$attrib_style_attr  = $attrib_style_str ? ' style="' . esc_attr( $attrib_style_str ) . '"' : '';
+			printf(
+				'<%1$s class="wp-block-sgs-quote__attribution"%2$s>%3$s</%1$s>',
+				$attrib_tag_escaped, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				$attrib_style_attr, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				wp_kses_post( $attribution )
+			);
+		}
 	}
 	?>
 </blockquote>

@@ -3913,6 +3913,62 @@ def _absorb_transparent_wrappers(section_root: "Tag", css_rules: dict) -> list[s
     return added
 
 
+def _f1_universal_walk_direct_children(
+    node: Tag,
+    css_rules: dict,
+    variation_buf: list[str],
+    depth: int,
+) -> list[str]:
+    """F1 universal-nesting fallback (Spec 16 §15 line 990 + Bean P7, blub.db D74).
+
+    When DB-driven `_lift_inner_blocks` returns an empty list (because there are
+    no rows in `blocks.parent_block` for the parent slug), this fallback walks
+    direct child Tag descendants of `node` and recurses into `walk()` on each.
+
+    Implements the architectural primitive: "every BEM-class div in a mockup is
+    an emitted block, nested where the mockup nests them" (Bean P15 + Spec 16
+    §15 line 990). Bean's actionable framing (P7): "if empty array, walk direct
+    div block descendants and insert them into the array".
+
+    Returns a list of WP block markup strings for emission as the parent's
+    InnerBlocks (concatenated into `inner_blocks_markup` and passed to
+    `emit_wp_block(..., self_closing=False)`).
+
+    Walkable tag set: divs + content-bearing semantic tags. Bare tags emit via
+    walk's FR2 ATOMIC_TAG_MAP route (e.g. `<p>` → core/paragraph). Tags with
+    SGS-BEM classes route via walk's class-based recognition path.
+
+    SPIKE-SCOPE NOTE (2026-05-25 F1 validation on brand): no guard yet against
+    double-attribution where `lift_subtree_into_block_attrs` already lifted a
+    child's text into a parent scalar attr (e.g. brand's `__attribution` p
+    consumed into sgs/quote's `attribution` attr). Refinement deferred to
+    post-spike commit if the live page shows duplicated attribution text.
+    """
+    walkable_tags = {
+        "div", "p", "a", "img",
+        "h1", "h2", "h3", "h4", "h5", "h6",
+        "blockquote", "ul", "ol", "figure", "button",
+    }
+    fallback: list[str] = []
+    for child in node.children:
+        if not isinstance(child, Tag):
+            continue
+        if child.name not in walkable_tags:
+            continue
+        child_markup = walk(child, css_rules, variation_buf, depth + 1, is_top_level=False)
+        if child_markup:
+            fallback.append(child_markup)
+    if fallback:
+        _trace(
+            "inner_blocks_fallback_universal_walk",
+            child_count=len(fallback),
+            depth=depth,
+            node_tag=node.name,
+            node_classes=node.get("class", []) or [],
+        )
+    return fallback
+
+
 def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
          is_top_level: bool = False) -> str | None:
     """Recursively convert a DOM node into WP block markup.
@@ -3985,8 +4041,14 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
 
         # Phase 3 (Decision 12): InnerBlocks emission via DB-backed lookup.
         # _lift_inner_blocks queries blocks.parent_block for children of `target`.
-        # Returns [] if no DB children exist (no-op, falls through to self-close).
+        # Returns [] if no DB children exist — used to fall through to self-close.
+        # F1 (D74, 2026-05-25): on empty DB lookup, run the universal-nesting
+        # fallback (walk direct child Tag descendants) per Spec 16 §15 line 990 +
+        # Bean P7. Implements "every BEM-class div is a block, nested where the
+        # mockup nests them" universally — no per-block special-case.
         inner_markup = _lift_inner_blocks(node, target)
+        if not inner_markup:
+            inner_markup = _f1_universal_walk_direct_children(node, css_rules, variation_buf, depth)
         if inner_markup:
             return emit_wp_block(target, merged, inner_markup, self_closing=False)
 
@@ -4058,6 +4120,9 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
                     merged["_variationSlug"] = em_result.variation_slug  # stripped before emit
                     _lift_root_supports_to_style(node, parent, css_rules, merged)
                     inner_markup = _lift_inner_blocks(node, parent)
+                    if not inner_markup:
+                        # F1 universal-nesting fallback (D74, 2026-05-25)
+                        inner_markup = _f1_universal_walk_direct_children(node, css_rules, variation_buf, depth)
                     if inner_markup:
                         return emit_wp_block(parent, merged, inner_markup, self_closing=False)
                     return emit_wp_block(parent, merged, [], self_closing=True)
@@ -4112,6 +4177,9 @@ def walk(node: Tag, css_rules: dict, variation_buf: list[str], depth: int = 0,
                     f"for block_slug={standalone}.\n"
                 )
             inner_markup = _lift_inner_blocks(node, standalone)
+            if not inner_markup:
+                # F1 universal-nesting fallback (D74, 2026-05-25)
+                inner_markup = _f1_universal_walk_direct_children(node, css_rules, variation_buf, depth)
             if inner_markup:
                 return emit_wp_block(standalone, merged, inner_markup, self_closing=False)
             return emit_wp_block(standalone, merged, [], self_closing=True)
