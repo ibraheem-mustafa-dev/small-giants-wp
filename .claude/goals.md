@@ -1,8 +1,20 @@
 # small-giants-wp — Goals
 
-**Last updated:** 2026-05-21 (architecture session — architecture programme added as active goal; hard constraint updated)
+**Last updated:** 2026-05-25 (cloning-pipeline universal-extraction promoted to primary near-term goal per qc-council session)
 
-## Primary outcome
+## Primary near-term goal (2026-05-25 onwards — gates everything until met)
+
+**Cloning pipeline delivers ≤1% pixel-diff PER BODY SECTION × 3 viewports (375/768/1440) irrespective of mockup content variations, from any Claude-generated SGS-BEM HTML draft.**
+
+- **Phase 1 gate:** per-section ≤30% × 3 viewports for all 7 body sections (21 cells; current baseline mean 63.2%). Builds the universal-extraction architectural backbone (F1 + extended DB-driven ATOMIC_TAG_MAP + universal child/array extraction + cheat removal). Plan: `.claude/plans/2026-05-25-phase-1-universal-extraction.md`.
+- **Phase 1.5 gate:** per-section ≤1% × 3 viewports. Section-by-section closure of residual diff. Scope determined empirically by Phase 1 end-results.
+- **Phase 2 gate:** header + footer cloner ships after Phase 1.5 hits per-section ≤1%.
+
+Canonical register (full evidence + ~110 items + Section P binding rules + Section Q 20-cheat inventory + Section R consolidated plan): `.claude/reports/2026-05-25-qc-council-issue-register.md`
+
+Empirical baseline (2026-05-25): `pipeline-state/mamas-munches-homepage-2026-05-25-101222/stage-11-pixel-diff.json` — mean 63.2% across 27 captures; hero 86.5/64.1/69.6%; trust-bar 37.0/24.6/33.1%; brand 73.8/59.4/50.0%; deployed to canary page 144 on sandybrown.
+
+## Primary outcome (long-term)
 
 Ship a complete WordPress block framework + theme + supporting plugins (forms, booking, client-notes, popups, chatbot) that competes with Kadence / Spectra / GenerateBlocks on functionality, customisation depth, and client experience — and use it to deliver 5 priority client builds end-to-end with Bean only acting as QC/internal client.
 

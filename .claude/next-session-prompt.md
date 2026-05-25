@@ -1,189 +1,121 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-session_tag: small-giants-wp-2026-05-25-step-1.7-g3-slot-list-visual-extension
+session_tag: small-giants-wp-2026-05-25-phase-1-universal-extraction-start
 generated: 2026-05-25
-parent_session: small-giants-wp-2026-05-24-bem-canonical-walker-stage4-wiring
-primary_goal: "Ship Step 1.7 (G3 slot_list visual extension via property_suffixes) — the highest-leverage move to close the +30% pixel-diff regression on featured-product / ingredients-section. The 2026-05-24 commit (e3cd1a04) landed the data-layer + BEM-canonical walker foundation; this session lifts visual/structural slots (backgroundImage, overlayColour, minHeight, gridTemplateColumns, etc.) into typed attrs on the new richer skeleton."
+parent_session: small-giants-wp-2026-05-25-qc-council-session
+primary_goal: "Start Phase 1 of the universal-extraction backbone for the cloning pipeline. First commit MUST be the F1 spike (single-section validation on brand) before any Phase 0 cheat removal or Phase 1B full dispatch. Acceptance: per-section ≤30% × 3 viewports for all 7 body sections (mean baseline 63.2%; hero 17% extracted; brand sgs/quote self-closing with empty body[])."
 ---
 
-# Next session — Step 1.7 G3 slot_list visual extension + remaining Phase 1 steps
+# Next session — Phase 1 universal-extraction backbone (start with F1 spike)
 
 **Invoke `/autopilot` before anything else.**
 
-## STOP — 6 BINDING RULES (mandatory, derived from 2026-05-24 systematic-debugging retrospective)
+## STOP — read these 6 docs in order BEFORE any code work
 
-The previous session shipped Changes 1+2+3'+4+5 + +REGISTER gate to main (`e3cd1a04`). 12 mistakes were caught + corrected during the session via Bean redirects. Those mistakes cluster into 6 themes. The binding rules below prevent each theme from recurring. **Apply ALL six on every proposal, plan, or conclusion in this session.**
+1. **`.claude/reports/2026-05-25-qc-council-issue-register.md`** — canonical reference. ~110 items across Sections A-R. Most important sections to read end-to-end:
+   - **Section R (R1-R5)** — consolidated plan with `blocks.replaces` audit + nesting audit + brand `sgs/quote` worked example
+   - **Section P (P1-P27)** — 27 binding design principles from Bean's prior-session messages
+   - **Section Q (Q1-Q20)** — comprehensive cheat inventory with file:line + replacement path
+   - **Section J (J1-J6)** — methodology lessons from the 3-round council
+   - **Section L15** — hero is NOT a clean reference (achieves ≤1% via hardcoded cheats per Bean 2026-05-25)
+   - **Section O** — total inventory summary
 
-### Rule 1 — Comprehensive scope inventory before ANY conclusion
+2. **`.claude/plans/2026-05-25-phase-1-universal-extraction.md`** — THIS PHASE PLAN. 19-commit sequence with model routing + skills + predicted deltas + risk per commit. Includes the F1 spike (Commit 7) as the pre-dispatch HARD GATE.
 
-Before proposing, recommending, or concluding ANYTHING: enumerate the FULL set, not a sample.
+3. **`.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md`** — Spec 16. Read §FR1/FR2/FR3/FR4 routing topology; §14 G1-G5 gaps + closure status; §15 universal walker spec.
 
-- For a section/block analysis: read ALL 9 sections of the mockup CSS + every relevant block.json, not just the one in question.
-- For a canonical/alias question: read every row in slot_synonyms + every relevant block_attributes row, not just one.
-- For a "does this apply to X?" question: list X's full scope and check each member with evidence, not pattern-match a sample.
+4. **`.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md`** — Spec 21 diagnostic artefacts map. Critical for understanding what every pipeline-state JSON/JSONL contains.
 
-**Pressure-test question before presenting:** "Did I check the FULL scope or did I sample?" If sampled, go back and enumerate.
+5. **`pipeline-state/mamas-munches-homepage-2026-05-25-101222/`** — empirical baseline. Read in order:
+   - `summary.log` (30 sec)
+   - `stage-11-pixel-diff.json` (mean 63.2%; per-section/viewport numbers)
+   - `extract.json` per_section_results (brand sgs/quote at b5 — self-closing, no body[])
+   - `trace.jsonl` (11 `inner_blocks_no_children` soft-fail traces)
+   - `leftover-buckets.json` (500 extraction_failed events)
+   - `stage-2.json` (Stage 2 matches; hero conf=1.0; everything else container fallback)
+   - `stage-9.json` (coverage: hero 17%; others 0%)
 
-**Captured at:** `~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_evidence_based_deduction_not_probabilistic.md`.
+6. **Recent feedback files in `~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/`** — start with `feedback_phases_never_ship_as_single_commits.md` (blub.db row 288). Then per MEMORY.md index.
 
-### Rule 2 — Engineering deduction is MY job, not Bean's
+## 11 binding rules (THE rules — most important ones from Section P + captured lessons)
 
-When Bean hints at a pattern ("doesn't X look universal?", "what about Y?"), that's a RESEARCH QUESTION. Go answer it with evidence. Come back with ONE conclusion + file:line citations.
+These gate every commit in Phase 1. Read full text in Section P of the register OR the linked feedback files:
 
-**Banned patterns:**
-- "Options (a) / (b) / (c) — pick one" when (a) can be verified by reading 5 files
-- "I'd default to (i)" / "probably (b)" — probabilistic phrases without evidence
-- Treating Bean's hypothesis as the answer; he asks, I deduce
+1. **Universally-applicable mechanisms** (P1) — no per-block hyperfocus
+2. **Empirical-check before architectural conclusion** (P2) — `/sgs-clone --debug-trace` then read artefacts before proposing fix-shapes
+3. **All div classes are blocks; just some nested inside others** (P15) — THE structural primitive in operator language
+4. **Pipeline must achieve ≤1% deterministically; allowed manual work = block functionality extension + pipeline scripts only** (P17)
+5. **Universal flat-scanning preserves hierarchy + accurately assigns CSS rules and content to direct owner** (P18)
+6. **Empty InnerBlocks array → walk direct child div descendants** (P7) — the F1 fallback in actionable form
+7. **One fix at a time with /verify-loop** (P20)
+8. **Don't agree, disagree, or propose without evidence. Find it first.** (P26)
+9. **Read full spec before proposing architectural fix-shape** (blub.db 285) — state the primitive in plain English BEFORE proposing
+10. **Check sgs-db block capability before evaluating** (blub.db 286)
+11. **Phases never ship as single commits** (blub.db 288) — every major task commits separately with /qc-council + measurement + predicted/actual delta in message
 
-**Pressure-test question before presenting:** "Could I have answered this myself with 5–15 minutes of file reads / DB queries?" If yes, do it before asking.
+Plus the 6 binding rules from the 2026-05-24 systematic-debugging retrospective in `.claude/handoff.md`.
 
-### Rule 3 — Data-first audit before code change
-
-Before any walker / converter / pipeline code edit:
-
-1. **Schema enumeration**: `python ~/.claude/hooks/wp-blocks.py dump` (~1500 tokens — shows all 87 tables across 3 DBs).
-2. **DB rows for the target**: `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT … FROM …"` for every relevant block_attributes / slot_synonyms / block_supports / block_selectors row.
-3. **Existing helpers**: grep `db_lookup.py` + `convert.py` for existing functions that already do what you're about to write.
-4. **Spec 00 §3 BEM-as-canonical**: if the proposed code change adds a recognition path that isn't via BEM, STOP. It's a side-channel — use the data layer instead.
-
-**Pressure-test question:** "Is this a code change because the data is wrong, or because I'm reaching for code-first thinking?" If data is wrong, fix data.
-
-**Captured at:** `feedback_comprehensive_db_audit_before_data_layer_changes.md` + blub.db row 269 (universal extraction primitive).
-
-### Rule 4 — Write-path audit on every data-layer change
-
-Every DB UPDATE / INSERT / DELETE must be paired with the corresponding seed-script + migration-script updates.
-
-Before applying any DB change:
-- Locate the seed script(s) that wrote the original data (`plugins/sgs-blocks/scripts/uimax-tools/seed-*.py`, `plugins/sgs-blocks/scripts/migrations/*.py`)
-- Update the seed script in the SAME commit
-- `git grep` for the term to find any other duplicate write-back paths
-
-**Pressure-test question:** "Where else does this data get written? Did I update those paths too?" If not, the fix is a re-seeding vulnerability.
-
-### Rule 5 — Comprehensive doc walk on architectural changes
-
-Architectural changes touch 10–15 docs, not 3.
-
-Doc walk = enumerate ALL of:
-- `.claude/*.md` (architecture, state, decisions, mistakes, parking, handoff, next-session-prompt, plans/, plan.md, goals.md, cloning-pipeline-flow.md, specs/21-PIPELINE-STATE-ARTEFACTS.md)
-- EVERY entry in `.claude/docs-registry.yaml` (29 canonical docs)
-- EVERY numbered spec in `.claude/specs/` (25 spec docs)
-- Active plans in `.claude/plans/*.md` (7 docs)
-
-Classify each as MUST-UPDATE / LIKELY-AFFECTED / UNAFFECTED, then update the first two tiers.
-
-**Pressure-test question:** "Did I check every doc in the registry + every numbered spec, or did I update the 3 obvious ones?"
-
-### Rule 6 — Grep-verify spec claims before trusting
-
-When a spec declares behaviour ("Stage X runs in /sgs-update", "the converter routes Y through Z", "table Y is read at runtime"), grep the orchestrator code to confirm.
-
-```
-grep -rn "stage_X\|invokes assign-canonical\|standalone_block" plugins/sgs-blocks/scripts/
-```
-
-Drift between spec and implementation is a real failure mode (Spec 16 §12.6 declared Stage 4 ran in /sgs-update; assign-canonical.py was orphaned). Don't trust spec docs as proof of implementation — verify with the code.
-
-**Pressure-test question:** "Did I grep the orchestrator code to confirm this spec claim, or am I trusting the spec text?"
-
-## Mandatory READING (in order, before any code work)
-
-1. `.claude/handoff.md` — 2026-05-24 session summary + systematic-debugging retrospective + 6 binding rules (above) + **doc-op programme section added 2026-05-25** covering 17 canonical doc-type templates + docscore auto-hook (this session will get doc-edit advisories automatically)
-2. `.claude/plans/2026-05-24-phase-1-structural-recovery.md` — Phase 1 plan + "What ACTUALLY shipped" section + F1+F2 follow-on items at end (note: pending Pre-conditions checklist + Parking lot sections now present per new phase-plan template)
-3. `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` — §14.3 (G3 specific gap) + §15 (status update second-pass) + §12.3 (canonical slot vocabulary including new quote row)
-4. `.claude/specs/00-naming-conventions.md` §3.1 — BEM-as-canonical recognition rule (NEW)
-5. `pipeline-state/mamas-munches-homepage-2026-05-24-122653/` — read `summary.log`, `match.json`, `stage-11-pixel-diff.json`, `convert-trace-b4.jsonl` (featured-product), `convert-trace-b6.jsonl` (ingredients-section), `leftover-buckets.json`
-6. **Step 1.7 status (revised 2026-05-25 D71): CLOSED.** The pixel-diff side closed via D70 (Stage 10 inline-CSS deploy of variation-d0-d2.css, commit `d8caa569`). The failure-count side (`<30` gate) was empirically misframed — 440 of 473 failures are legitimate `value_empty` for features absent from mockups. Don't pick up Step 1.7 in next session; move directly to Step 1.8 (universal-nesting / G1-extension). Earlier prompt references to `slot_list.py` (file doesn't exist) and `_slot_attr_prefix` (addresses only 7 of 473) were both wrong and have been reverted across Spec 16 + Phase 1 plan + this prompt.
-7. The 5 feedback memory files referenced in `MEMORY.md` index — covers the binding rules' full context
-
-After reading: cite the line numbers + summarise back ≤ 200 words per doc (READING DISCIPLINE from previous session's prompt remains in force).
-
-## Phase 1 remaining steps (priority order)
-
-| Step | What | Why this order | Est |
-|---|---|---|---|
-| ~~**1.7**~~ | ~~G3 fix~~ | **CLOSED 2026-05-25 (D70 pixel-diff side; D71 reframe of failure-count side).** Don't pick up. | — |
-| 1.6 | G1 — hero OPEN-block emit (CTAs as InnerBlocks instead of self-closing attrs) | After 1.7. Hero already at FR1 confidence 1.0; this is structural correctness inside the matched block. Scoped narrow to hero only per Bean. | 45–60 min |
-| 1.8 | G5 — per-block DOM-shape fixes (parallel across blocks) | Parallelisable across blockquote / testimonial-slider / trust-bar fixes. File-disjoint per block. | 90–120 min |
-| 1.9 | Hooks completion (2,049 missing) + role='content' DB sync via /sgs-update Stage 1 | Independent of walker work. Data-only. | 30–45 min |
-| 1.10 | Final /qc-council Stage 5 on combined Phase 1 work | Multi-rater verification before Phase 1 close. | 30 min |
-| 1.11 | Phase 1 close /handoff | Trigger handoff skill at close. | 20 min |
-
-After Phase 1 closes: Phase 1 follow-on F1 (ARRAY_LIFT_PATTERNS full migration) + F2 (9 remaining NULL canonical_slot array attrs).
-
-## Tool bindings (mandatory)
+## Tooling table (mandatory references in plan execution)
 
 | Tool | When |
 |---|---|
-| `/qc-council` | BEFORE every commit touching converter/pipeline/SGS-block (blub.db row 255) |
-| `/qc-inline` | Single-file checks during implementation |
-| `/sgs-clone --deploy-target page:144 --debug-trace` | AFTER EACH code change (per Binding B — NO --converter-v2 flag needed; it's default since 2026-05-21) |
+| `/qc-council` | Pre-commit gate on HIGH-leverage commits (marked ⚡ in the phase plan) — blub.db row 255 |
+| `/qc-inline` | Per-file checks during implementation |
 | `/verify-loop` | 2-attestation per load-bearing claim |
-| `/systematic-debugging` | Root-cause investigation before fix proposals (use the 4-phase methodology) |
-| `/dispatching-parallel-agents` | Per-block G5 work (Step 1.8) |
-| `/subagent-prompt` | Pre-write cold prompts for dispatched implementers |
+| `/systematic-debugging` | Root-cause investigation if any commit regresses |
+| `/subagent-driven-development` | Implementer + 2 reviewers pattern for non-trivial commits |
+| `/dispatching-parallel-agents` | F1F + 1G parallel work across composites/blocks |
+| `/subagent-prompt` | Cold prompts (embed all 4 Dispatch Bindings A/B/C/D verbatim) |
+| `/delegate` | Picks model per task (Haiku mechanical / Sonnet architectural / Cerebras+Gemini Flash validation) |
 | `/capture-lesson` | New architectural rules surfaced |
-| `/handoff` | Phase 1 close (Step 1.11) |
-| Playwright MCP | Stage 11 + live-page DOM verification for G1 (CTAs present in `header.sgs-hero`) |
-| `python ~/.claude/hooks/wp-blocks.py dump` | **MANDATORY before any "missing X" claim or "needs new column/table" proposal** |
-| `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py` | DB queries |
-| `python ~/.agents/skills/shared-references/docscore.py <path>` | Score any `.claude/`, `specs/`, or `plans/` doc on demand (auto-runs on every Write/Edit via `docscore-on-doc-edit` PostToolUse hook since 2026-05-25 — silent on pass; stderr advisory < 90% A-) |
+| `/sgs-clone --deploy-target page:144 --debug-trace` | After every commit (Binding B per blub.db 240) |
+| `/sgs-update` Stage 1 | role='content' DB sync (Phase 0C) |
+| `/docscore` | Auto-runs on every doc Write/Edit per PostToolUse hook |
+| `/handoff` | Phase 1 close |
+| Playwright MCP | Live-page DOM verification for G1 (hero CTAs) |
+| `python ~/.claude/hooks/wp-blocks.py dump` | Schema enumeration BEFORE any "missing X" claim — blub.db 272 |
+| `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py` | DB query CLI |
 
-## Dispatch bindings (MANDATORY — per `feedback_dispatched_agents_no_commit_authority.md`)
+## First action — F1 spike (Commit 7 of the phase plan)
 
-Embed all four in every Agent cold prompt:
-- **A — NO commit authority.** Agent returns uncommitted artefacts.
-- **B — `/sgs-clone` per sub-change (NOT bundled).** Stage 11 auto-captures.
-- **C — Living-docs + /capture-lesson inline per change.** Update mistakes / decisions / parking / cloning-pipeline-flow / architecture as the work fires.
-- **D — TodoWrite breakdown + per-sub-task status.**
+**Per blub.db row 276 (council fix-shape proposals are HYPOTHESES not specs) — F1 needs smallest-pipeline-slice validation before Phase 1 dispatch.**
 
-## Phase 1 success criteria for Step 1.7 (G3 closure)
+1. Read `_lift_inner_blocks` at convert.py:1350-1517 end-to-end. Understand the empty-return at line 1430.
+2. Implement a minimal ~20-line F1 fallback inline at line 1430:
+   - When `_db_children(parent_slug)` returns empty, walk node's direct child elements (divs AND semantic tags)
+   - For each child, call back into `walk(child, ...)` so the universal walker (FR2 atomic-tag + class-based routing) handles them
+   - Return the list of emitted markup
+3. **Single-section run:** `python plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py --mockup sites/mamas-munches/mockups/homepage/index.html --client mamas-munches --page homepage --section brand --deploy-target page:144 --debug-trace`
+4. **Measure:** per-section pixel-diff on brand at 375/768/1440 vs baseline (73.8/59.4/50.0).
+5. **HARD GATE:**
+   - If brand drops ≥20pp at 1440 (≤30%) → F1 validated. Proceed to Phase 0 + full Phase 1.
+   - If brand drops <10pp at 1440 OR regresses → HALT. Diagnose. Per blub.db 285, state the architectural primitive in plain English again; verify it's invoked correctly. Surface to Bean before any further work.
+6. **Capture the spike result** — append actual numbers + verdict to `.claude/reports/2026-05-25-qc-council-issue-register.md` (new Section S) so the empirical baseline is recorded.
 
-- [x] **Step 1.7 G3 closed 2026-05-25 (D70).** Pixel-diff regression closed via inline-CSS deploy. Failure-count gate re-framed (D71) — merged into Step 1.8 universal-nesting work.
-- [ ] Hero `stage_3_slot_list` failures drop from 142 to under 30 (per Spec 16 §15 numeric acceptance)
-- [ ] Featured-product / ingredients-section / social-proof Stage 11 pixel-diff drops measurably from 73.6% / 62.0% / 94.8% respectively (no required numeric threshold; just measurable improvement)
-- [ ] No regression on FR1 sections (hero / trust-bar stay at confidence 1.0)
-- [ ] /qc-council Stage 5 on the Step 1.7 commit passes
+## Phase 1 acceptance gate (refresher)
 
-## Pre-Step-1.7 baseline (compare against post-Step-1.7)
+Per-section ≤30% × 3 viewports for all 7 body sections (21 cells, each must hit ≤30% independently). NO section regresses >5pp. ≥5 of 7 sections drop ≥10pp. Hero attribute-count parity maintained across Phase 0 cheat removal. Full table in `.claude/plans/2026-05-25-phase-1-universal-extraction.md`.
 
-From `pipeline-state/mamas-munches-homepage-2026-05-24-122653/stage-11-pixel-diff.json`:
+## Where things sit now
 
-| Section | Pixel-diff (post-2026-05-24-commit, this is the new baseline) |
-|---|---|
-| header (chrome-skipped) | 44.9% |
-| hero | 73.3% |
-| trust-bar | 79.8% |
-| featured-product | 73.6% (regressed from 43.7% baseline — CSS-lift gap on new richer skeleton) |
-| brand | 66.3% |
-| ingredients-section | 62.0% (regressed from 31.9% — same CSS-lift gap) |
-| gift-section | 81.0% |
-| social-proof | 94.8% (slight increase) |
-| footer | 96.3% |
-| **mean** | **73.9%** |
+- **Old phase-1 plan archived:** `.claude/plans/archive/2026-05-24-phase-1-structural-recovery-superseded-by-phase-1-universal-extraction.md`
+- **New phase-1 plan canonical:** `.claude/plans/2026-05-25-phase-1-universal-extraction.md`
+- **Goals updated:** `.claude/goals.md` — per-section ≤1% pixel-diff is the primary near-term goal until met
+- **Decisions logged:** `.claude/decisions.md` D73 (binding rule) + D74 (Phase 1 scope) + D75 (qc-council verdict)
+- **Lesson captured:** blub.db row 288 + `feedback_phases_never_ship_as_single_commits.md`
+- **Empirical baseline:** `pipeline-state/mamas-munches-homepage-2026-05-25-101222/` (mean 63.2%, page 144 sandybrown)
 
-Step 1.7 should drop featured-product / ingredients-section / social-proof by 10–25 percentage points each.
+## Drift correction history (2026-05-25)
 
-## Where to look when something feels off
+This session caught + corrected:
+- Earlier-day prescription to extend `_slot_attr_prefix` was empirically falsified (D71); reverted across Spec 16 + Phase 1 plan + this prompt
+- "References to a block that no longer exists" (Tier 1 cheating per Bean 2026-05-25) — sgs/trust-bar retired (D72); badge→sgs/label synonym was wrong
+- "Hero already at ≤1%" framing was wrong — hero clones via hardcoded cheats (Section L15); architecture is NOT yet proven by hero
+- "Wrapper-context noise floor" claim was wrong per Bean — HTML/CSS/JS translates cleanly through PHP; the diff is converter bugs
 
-| Symptom | First read | Then |
-|---|---|---|
-| Universal walker regresses an FR1 section | `pipeline-state/<run>/match.json` per-boundary — hero/trust-bar should stay at conf 1.0 | If dropped, code change touched Stage 2 incorrectly |
-| /sgs-clone reports OK but live page didn't update | `pipeline-state/<run>/stage-10.json` exit code | If 4/5/6 → known halt path; if "OK" but stale, verify deploy target page-id is 144 (not 131 which is deleted) |
-| Slot_list extension breaks existing text extraction | `convert-trace-b*.jsonl` per boundary — `stage_3_slot_list` events | Should still resolve text slots correctly; visual slots should now ALSO resolve |
-| canonical_slot is NULL on an attr you expected populated | Run `python plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py` manually | Stage 1 tail wires it but immediate one-off ensures the latest state |
+Don't repeat any of these. Read Section L15 + L9 + P9 + K17 in the register if any of the above feels new.
 
-## First action
+## After Phase 1 closes
 
-**Step 1.7 is closed.** Next-session entry point is Step 1.8 (universal-nesting / G1 extension to non-hero composites). Before any code:
-
-1. Read Spec 16 §15 line 969 in full — the canonical primitive: every composite block emits OPEN with InnerBlocks children mirroring mockup parent-child shape.
-2. Read parking entry `P-G1-EXTEND-TO-OTHER-CONTAINER-SHAPED-COMPOSITES` — the open architectural work.
-3. Read `feedback_read_full_spec_before_proposing_architectural_fix_shape.md` (lesson captured 2026-05-25 after multiple wrong diagnoses in one session).
-4. State the universal-nesting primitive in your own words BEFORE proposing any fix-shape. Fix-shapes that don't directly invoke the primitive are surface fixes — STOP.
-
-**Drift correction history (2026-05-25):** Earlier versions of this prompt referenced `slot_list.py` (file doesn't exist) then `convert.py:_slot_attr_prefix` extension (Sonnet ran the fix; addressed only 7 of 473 failures). Both prescriptions reverted in same-day D71 patch. Spec 16 §14.3 + §15 + Phase 1 plan all re-framed around D70 pixel-diff closure + §15 universal-nesting primitive.
-
-Then dispatch implementer subagent with full cold prompt + bindings A–D + 6 binding rules embedded.
+Phase 1.5 (per-section ≤1% closure) opens. Then Phase 2 (header/footer cloner). See `.claude/plans/2026-05-24-phase-2-header-footer-cloner.md` for Phase 2 scope (parked until Phase 1.5 hits ≤1%).

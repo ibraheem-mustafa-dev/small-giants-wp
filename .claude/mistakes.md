@@ -5,6 +5,11 @@
 
 ## Active stubs (most recent 30)
 
+### [2026-05-25] Phases never ship as single commits; major-task cadence with /qc-council + /sgs-clone + predicted/actual delta per commit
+- **Pattern key:** `phases-never-ship-as-single-commits`
+- **blub.db row:** `288`
+- **Feedback file:** [feedback_phases_never_ship_as_single_commits.md](~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_phases_never_ship_as_single_commits.md)
+
 ### [2026-05-24] wp eval blocked by project hook; use wp-load + HTTP curl instead
 - **Pattern key:** `wp-eval-blocked-use-wp-load-curl-pattern`
 - **blub.db row:** `<pending sync>`

@@ -1,451 +1,200 @@
 # SGS WordPress Framework — Claude Code Instructions
 
-## What This Is
+## What this is
 
-A custom WordPress development framework for Small Giants Studio. Contains a block theme, custom Gutenberg blocks plugin (with forms), a booking plugin, and a client notes plugin. Built and maintained entirely by Claude Code.
+A custom WordPress block framework built by Claude Code: theme + blocks plugin (with forms) + booking plugin + client-notes plugin. Competes with Kadence / Spectra / GenerateBlocks. Used to deliver 5 priority client builds with Bean as QC only.
 
-## Repository Structure
+## Active focus (2026-05-25 onwards — gates everything until met)
+
+**Cloning pipeline delivers ≤1% pixel-diff per body section × 3 viewports (375/768/1440) irrespective of mockup content variations, from any Claude-generated SGS-BEM HTML draft.**
+
+- **Phase 1 (now):** per-section ≤30% × 3 viewports — universal-extraction backbone (F1 universal-nesting + DB-driven ATOMIC_TAG_MAP + universal child/array extraction + 20 cheats removed). Plan: [`.claude/plans/2026-05-25-phase-1-universal-extraction.md`](.claude/plans/2026-05-25-phase-1-universal-extraction.md). Register (full evidence): [`.claude/reports/2026-05-25-qc-council-issue-register.md`](.claude/reports/2026-05-25-qc-council-issue-register.md).
+- **Phase 1.5:** per-section ≤1% — section-by-section closure (scope emerges from Phase 1 measurements).
+- **Phase 2:** header + footer cloner (parked until Phase 1.5 hits ≤1%).
+- **Baseline (2026-05-25):** mean 63.2% across 9 sections × 3 viewports on Mama's Munches canary page 144 (sandybrown). See `pipeline-state/mamas-munches-homepage-2026-05-25-101222/`.
+
+## 11 binding rules (gate every commit)
+
+Full text in Section P of the canonical register. Headlines:
+
+1. **Universally-applicable mechanisms (P1)** — no per-block hyperfocus; mechanisms work for ALL future client drafts
+2. **All div classes are blocks; just some nested inside others (P15)** — THE structural primitive in operator language
+3. **Empty InnerBlocks array → walk direct child div descendants (P7)** — the F1 fallback in actionable form
+4. **Pipeline must achieve ≤1% deterministically (P17)** — allowed manual work = block functionality extension + pipeline scripts only; NEVER hand-author patterns or per-section bespoke fixes
+5. **Universal flat-scanning preserves hierarchy + accurately assigns CSS rules and content to direct owner (P18)**
+6. **Per-property cascade-fold not binary uniformity gate (P6 + blub.db 287)** — wrapper blocks always exist carrying className; defaults hoist to parent, divergent values override on the child
+7. **One fix at a time with /verify-loop (P20)**
+8. **Don't agree, disagree, or propose without evidence — find it first (P26)**
+9. **Read full spec before proposing architectural fix-shape (blub.db 285)** — state the primitive in plain English BEFORE proposing
+10. **Check sgs-db block capability before evaluating (blub.db 286)** — `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py block <slug>`
+11. **Phases never ship as single commits (blub.db 288)** — every major task commits separately with /qc-council + measurement + predicted/actual delta in message
+
+Sibling rules: blub.db 254 (read leftover-buckets first), 255 (multi-model /qc per converter commit), 256 (per-section cropped pixel-diff), 269 (universal extraction; walker stays universal), 272 (schema enumeration before "missing X" claim), 276 (council fix-shapes are HYPOTHESES not specs).
+
+## Repository structure
 
 ```
 small-giants-wp/
-├── theme/sgs-theme/          # WordPress block theme (has its own CLAUDE.md)
+├── theme/sgs-theme/          # Block theme (own CLAUDE.md). styles/ retired Phase 5a — empty.
 ├── plugins/
-│   ├── sgs-blocks/           # Custom Gutenberg blocks + forms (has its own CLAUDE.md)
-│   ├── sgs-booking/          # Appointment & event booking (has its own CLAUDE.md)
-│   └── sgs-client-notes/     # Visual annotation system (has its own CLAUDE.md)
-├── sites/                    # Client-specific content (one folder per client)
-│   └── indus-foods/          # Indus Foods — mockups, content, research (has its own CLAUDE.md)
-├── specs/                    # Specification documents (00-09)
-├── docs/plans/               # Planning documents and audits
-│   └── 2026-02-21-master-feature-audit.md  # Truth document: 354-feature graded roadmap
-├── ARCHITECTURE.md           # Architecture overview, block inventory, data flow
-└── CLAUDE.md                 # This file — framework-wide instructions
+│   ├── sgs-blocks/           # Gutenberg blocks + forms (own CLAUDE.md)
+│   ├── sgs-booking/          # Appointment + event booking (own CLAUDE.md)
+│   └── sgs-client-notes/     # Visual annotation system (own CLAUDE.md)
+├── sites/<client>/           # Client mockups + content + theme-snapshot.json
+│                             #   (own CLAUDE.md — e.g. sites/indus-foods/CLAUDE.md for that client's design context)
+├── .claude/                  # Working area — plans/, specs/, decisions.md, parking.md, reports/
+└── CLAUDE.md                 # This file
 ```
 
-Each sub-project has its own CLAUDE.md with component-specific instructions. Read the relevant one when working on that component.
+Each sub-project + each client site has its own CLAUDE.md. Read the relevant one when working on that component or client.
 
-### Client Sites (`sites/`)
+## Canonical pointers
 
-Each client gets a folder under `sites/` containing mockups, content briefs, research docs, and a site-specific CLAUDE.md. Style variation JSON files (now `theme-snapshot.json` per Phase 5a) live at `sites/<client>/theme-snapshot.json` and are pushed to each live site via `push-theme-snapshot.py`. The `theme/sgs-theme/styles/` directory is empty (retired 2026-05-21).
-
-Future clients (Dream Wedding, Workwear Now, etc.) get their own folder when onboarded.
-
-## Naming Convention
-
-**Full rules, examples, and anti-patterns:** [`.claude/specs/00-naming-conventions.md`](.claude/specs/00-naming-conventions.md)
-**CI linter:** `python scripts/lint-naming-conventions.py`
-
-- Theme: `sgs-theme`
-- Plugins: `sgs-blocks`, `sgs-booking`, `sgs-client-notes`
-- PHP namespace: `SGS\Theme`, `SGS\Blocks`, `SGS\Booking`, `SGS\ClientNotes`
-- Text domain: `sgs-theme`, `sgs-blocks`, `sgs-booking`, `sgs-client-notes`
-- CSS prefix: `.sgs-` (BEM: `sgs-<block>__<element>--<modifier>`, hyphens only)
-- Block namespace: `sgs/block-name`
-- Pattern slugs: `sgs/<role>` (framework) or `sgs/<client-slug>-<role>` (client) — `sgs-theme/` is deprecated
-- Hook prefix: `sgs_`
-- `wp_options` keys: `sgs_*`
-- Post-meta keys: `_sgs_*` (private) / `sgs_*` (public)
-
-## Design Tokens
-
-All components read from `theme.json` design tokens. Defaults are SGS branding (clients override via style variations):
-
-```
---primary: #0F7E80 (teal)        --accent: #F87A1F (orange)
---primary-dark: #0A5B5D          --accent-light: #FEE8D4
---success: #2E7D4F (green)       --whatsapp: #25D366
---surface: #FFFFFF               --surface-alt: #F5F7F7
---text: #1E1E1E                  --text-muted: #555555
---text-inverse: #C0D5D6          --border-subtle: #0D5557
-```
-
-Fonts: Inter variable (body + headings, 48KB) — self-hosted WOFF2, no CDN. DM Serif Display + DM Sans available for client style variations.
-
-## Design-to-Ship Pipelines (Coming — Session Next-04)
-
-6 standardised pipelines are being designed for SGS work:
-1. **New build** — client brief → research → design system → blocks → QA → deploy
-2. **WP → SGS migration** — extract → replicate → visual diff → QA fix loop
-3. **Draft → SGS** — HTML/JS/image mockup → extract design → SGS blocks → visual comparison
-4. **Audit → redesign** — site-reviewer → SEO → gap-analysis → proposal with pricing
-5. **Client onboarding** — hosting → WP install → style variation → content migration
-6. **QA → deploy** — orchestrated QA chain → fix loop → deploy checklist
-
-Pipeline architecture at: `A:/.openclaw/rehab-project/Prompts/SESSION_NEXT_04_SECTION_A_SGS.md`
-Pipeline audit at: `A:/.openclaw/workspace/memory/research/2026-03-19-design-build-pipeline-audit.md`
-
-**Known reliability issues to fix:** corrupted images during migration, broken CSS, lost styles. Pipeline A2 includes hash verification, CSS comparison, and visual diff at 3 breakpoints.
-
-## Agent Delegation
-
-**MANDATORY:** Delegate all heavy WordPress build work to the `wp-sgs-developer` agent — page builds, template creation, block configuration, theme customisation, plugin development, site migrations, fidelity comparisons. This rule applies across all WP projects and non-WP projects with WP integrations.
-
-## Git
-
-**Remote:** `github.com/ibraheem-mustafa-dev/small-giants-wp` (private). See global CLAUDE.md for workflow rules.
-
-### ⚠️ BRANCH DISCIPLINE — MANDATORY, NO EXCEPTIONS
-
-**Before every `git commit` or `git push`, run `git branch --show-current` and verify the branch matches the scope of the work.**
-
-| Work type | Correct branch |
-|-----------|---------------|
-| Core SGS block fixes (any file in `plugins/sgs-blocks/src/`, `theme/sgs-theme/`, plugin PHP) | `main` |
-| Client-specific work (`sites/indus-foods/`, `theme/sgs-theme/styles/indus-foods.json`, etc.) | client feature branch (e.g. `feat/indus-foods-*`) |
-| HelpingDoctors style variation | `feat/helpingdoctors-style-variation` |
-| New framework features | `feat/<feature-name>` branched from `main` |
-
-**Never commit core SGS framework changes to a client or feature branch.** If you discover you are on the wrong branch mid-work:
-1. Stop before committing
-2. Stash changes: `git stash`
-3. Switch to the correct branch
-4. Pop stash: `git stash pop`
-5. Then commit
-
-This rule exists because framework fixes shipped on a feature branch pollute history, break cherry-pick hygiene, and risk being lost or mis-attributed. This happened on 2026-03-10 and caused unnecessary remediation work.
-
-## Development
-
-- **Build:** `npm run build` (from `plugins/sgs-blocks/`) — uses @wordpress/scripts with `--experimental-modules`
-- **Deploy:** tar method — `tar -cf sgs-deploy.tar theme/sgs-theme plugins/sgs-blocks` → SCP → extract on server → OPcache reset → LiteSpeed purge. Full sequence in CONVERSATION-HANDOFF.md.
-- **Local dev:** `npx @wp-playground/cli server --auto-mount` — see `/wp-playground` skill
-- **Dev site:** palestine-lives.org (WP 6.9.1). **Staging/client canary:** sandybrown-nightingale-600381.hostingersite.com (WP 7.0 as of 2026-05-22).
-- **Reference site:** lightsalmon-tarsier-683012.hostingersite.com (Indus Foods original — Astra/Spectra. DO NOT modify — used as migration reference)
-- **SSH:** `ssh -i ~/.ssh/id_ed25519 -p 65002 u945238940@141.136.39.73`
-- **WP admin:** username: Claude (both sites)
-- **No Node.js on server** — build locally, deploy compiled `build/` output
-
-## SGS WP Engine Skill
-
-The `sgs-wp-engine` skill is the central authority. Invoke it for any SGS work. It provides:
-
-- **SQLite knowledge base** — 66 blocks, 619+ attributes, 25 design tokens, 36 patterns (composition data on `patterns.block_composition` JSON column)
-- **33 reference docs** — migration methodology, design-compare tool, QA pipeline, marketing playbook, brand.json, Indus comparison data, and more
-- **12 scripts** — 6 design QA JS scripts, sgs-db.py, touch-scan, pattern generator, DB tools
-
-Key commands:
-```bash
-python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py stats          # Framework health
-python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py block sgs/hero # Block details
-python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py match "pricing" # Find best block
-python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py context indus-foods # Load client
-```
-
-### `/sgs-update` — 9 stages (rebuilt 2026-05-22 as `sgs-update-v2.py`)
-
-`/sgs-update` now invokes `plugins/sgs-blocks/scripts/sgs-update-v2.py` — a single 2,400+ line entrypoint that replaced the legacy 3-script chain. Stages:
-1. SGS codebase scan → update sgs-framework.db (`sgs-update-v2.py` Stage 1)
-2. Core/Gutenberg cache refresh from upstream sources
-3. WP-CLI handbook refresh
-4. Style-variation sync (per-client snapshots, post Phase 5a)
-5. Slot synonym auto-seed from codebase
-6. Block-replacement mapping
-7. Spec doc regen (`02-SGS-BLOCKS-REFERENCE.md`)
-8. Mirror sgs-blocks → uimax `~/.agents/skills/ui-ux-pro-max/data/component-libraries.csv` so `/ui-ux-pro-max` (the design brain) sees current SGS blocks alongside Radix UI Primitives, Headless UI, etc.
-9. Drift gate (checks for DB/codebase mismatches)
-
-Stage 2 live-scrapes 10 canonical sources every invocation (gutenberg repo, wp-develop repo, wp-cli handbook, `developer.wordpress.org/reference/since/<version>/`, field guide, dev blog, 4 handbooks). Verified 10/10 end-to-end with working `ghp_*` classic PAT. **Note (2026-05-24, D56):** the Mode A / Mode B distinction + the `--refresh-upstream` CLI flag were retired — `/sgs-update` always live-scrapes now. Stage 3 retired in the same close-out (Stage 2 Source 3 covers the same wp-cli/handbook scrape).
-The uimax mirror step (Stage 8) is implemented in `plugins/sgs-blocks/scripts/uimax-tools/sgs-update-uimax-sync.py` (idempotent). The legacy animation gap-candidate scan short-circuits to `{"status":"retired"}` — the sgs-framework.db `animations` table was retired 2026-05-14; live store is `uimax.animations` in `~/.agents/skills/ui-ux-pro-max/scripts/ui-ux-pro-max.db`.
-
-### `plugins/sgs-blocks/scripts/uimax-tools/` — write-side helpers
-
-| File | Role |
+| Doc | What |
 |---|---|
-| `uimax-write-validator.py` | Pre-write validator. Rejects payloads missing `equivalent_implementations.sgs_block` on artefact tables (row 213 Rosetta Stone discipline). |
-| `uimax_write.py` | Python helper module — atomic validate-then-write. Single chokepoint so future write code can't accidentally skip the validator. |
-| `seed-block-compositions.py` | One-shot seed script for the `patterns.block_composition` JSON column (idempotent). |
-| `sgs-update-uimax-sync.py` | Stage 8 uimax mirror step called by `/sgs-update` (v2). |
+| [`.claude/reports/2026-05-25-qc-council-issue-register.md`](.claude/reports/2026-05-25-qc-council-issue-register.md) | THE current cloning-pipeline register (~110 items, Sections A-R) |
+| [`.claude/plans/2026-05-25-phase-1-universal-extraction.md`](.claude/plans/2026-05-25-phase-1-universal-extraction.md) | Active phase plan (19 commits) |
+| [`.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md`](.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md) | Converter v2 spec; §15 universal walker; §FR1-FR9; §14 G1-G5 gaps |
+| [`.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md`](.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md) | Pipeline-state artefact map (read BEFORE conjecturing) |
+| [`.claude/cloning-pipeline-flow.md`](.claude/cloning-pipeline-flow.md) + [`-stages.md`](.claude/cloning-pipeline-stages.md) | Stage map + per-stage detail |
+| [`.claude/dev-setup.md`](.claude/dev-setup.md) | Build / deploy / SSH / local environment / gotchas |
+| [`.claude/decisions.md`](.claude/decisions.md) | D-numbered architectural log |
+| [`.claude/parking.md`](.claude/parking.md) | OPEN deferred work (6 taxonomy buckets) |
+| [`.claude/goals.md`](.claude/goals.md) | Active near-term + long-term goals |
 
-Full README at `plugins/sgs-blocks/scripts/uimax-tools/README.md`.
+## Naming convention
 
-## Site Migration
+Full rules: [`.claude/specs/00-naming-conventions.md`](.claude/specs/00-naming-conventions.md). CI linter: `python scripts/lint-naming-conventions.py`.
 
-The primary client onboarding workflow. Takes any existing website and replicates it using SGS blocks — everything through editor attributes, zero hardcoding. Methodology at `~/.claude/skills/sgs-wp-engine/references/fidelity-comparator.md`.
+- Theme `sgs-theme`; plugins `sgs-blocks` / `sgs-booking` / `sgs-client-notes`
+- PHP namespace `SGS\Theme` / `SGS\Blocks` / `SGS\Booking` / `SGS\ClientNotes`; text domains match plugin/theme slugs; hook prefix `sgs_`
+- CSS `.sgs-` prefix; BEM: `.sgs-<block>__<element>--<modifier>` (hyphens only)
+- Block namespace `sgs/block-name`; pattern slugs `sgs/<role>` (framework) or `sgs/<role>-<client-slug>` (client)
+- `wp_options` keys `sgs_*`; post-meta `_sgs_*` (private) / `sgs_*` (public)
 
-**cv2 output goes to WP PAGES (`page.html` template), never POSTS.** Posts use `single.html` which constrains `.entry-content` to `max-width: 800px` — wrong for landing-page clones. Pages use `page.html` with no such constraint. Canary surface for Mama's Munches as of 2026-05-23 is page **144** (`/rc-fix-verification-mamas-munches/`) on sandybrown; raw-mockup baseline is page **132** (`/mockup-baseline-mamas-munches/`). (Earlier reference to page 131 (`/cv2-output-mamas-munches/`) is STALE — that page was deleted between 2026-05-20 and 2026-05-23, verified via `wp/v2/pages` REST list 2026-05-23. Pipeline runs targeting `--deploy-target page:131` will silently report "OK" against a phantom page — see parking entry P-STAGE-10-DEPLOY-SILENT-PHANTOM-PAGE.) `reports/brand-walkdown-2026-05-19/upload_and_patch.py` default `--target-id` needs updating from 131 → 144. See `.claude/parking.md → P-USE-PAGES-NOT-POSTS`.
+## Agent + skill delegation (MANDATORY)
 
-## Framework Stats (as of 2026-05-22, post architecture programme close-out)
+| Work | Route to |
+|---|---|
+| Heavy WP build (pages, templates, blocks, plugins, migrations, fidelity) | `wp-sgs-developer` agent |
+| Skill / agent / pipeline / router lifecycle | `/lifecycle` |
+| Cloning pipeline work | `/sgs-clone` + register the result via `/sgs-update` |
+| Doc edits | `docscore-on-doc-edit` PostToolUse hook auto-runs |
+| Model picking per task | `/delegate` (Haiku mechanical / Sonnet architectural / Cerebras+Gemini Flash validation) |
+| Multi-rater code-review before commit on converter/pipeline/SGS-block | `/qc-council` (per blub.db 255) |
+| Per-file checks inline | `/qc-inline` |
+| Parallel work across disjoint files | `/dispatching-parallel-agents` |
+| Implementer + 2 reviewers pattern | `/subagent-driven-development` |
+| Cold prompts | `/subagent-prompt` (embed dispatch bindings A/B/C/D verbatim) |
+| 2-attestation per load-bearing claim | `/verify-loop` |
+| Root-cause investigation | `/systematic-debugging` |
+| New architectural rule surfaced | `/capture-lesson` |
+| Live-page DOM verification | Playwright MCP |
+| Schema check BEFORE "missing X" claim | `python ~/.claude/hooks/wp-blocks.py dump` |
+| DB query | `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py` |
+| Session close | `/handoff` |
 
-- **69 blocks** total (all dynamic — Phase 6 converted the last 10 static blocks; 7 formerly-static blocks now ship with `deprecated.js` shims for backward compat). Includes 2 review-source blocks — google-reviews + trustpilot-reviews. Phase 6 markup examples seeded for all 69.
-- **1,406 block attributes** (`block_attributes` rows as of Phase 4 DB rescan)
-- **Style variations retired** — 8 per-client variation JSON files deleted from `theme/sgs-theme/styles/` (Phase 5a, 2026-05-21). Per-client snapshots at `sites/<client>/theme-snapshot.json`. `design_tokens` table has 184 rows (up from 39 pre-architecture).
-- **35 patterns**, 28+ design tokens (shadow type added), 22 theme templates/parts
-- **WP 7.0** — `Sgs_Ai_Connector` registered; `wp_set_script_module_translations()` wired for 25 blocks; 87 content-bearing attributes carry `"role": "content"`; all 69 blocks at `apiVersion: 3`
-- **Competitive analysis:** `~/.claude/specs/2026-03-17-wp-competitive-analysis.md`
+## Git workflow
 
-## Spec Documents
+**Before every commit/push:** run `git branch --show-current` and verify branch matches scope.
 
-Full specifications in `specs/` directory:
-- `00-OVERVIEW.md` — Framework overview, philosophy, architecture
-- `01-SGS-THEME.md` — Block theme spec (theme.json v3, templates, performance)
-- `02-SGS-BLOCKS.md` — All block specifications (20 content/layout blocks + 12 form blocks + extensions)
-- `03-SGS-BOOKING.md` — Booking system spec (phases 1-4)
-- `04-SGS-FORMS.md` — Form system spec (built into sgs-blocks)
-- `05-SGS-CLIENT-NOTES.md` — Visual annotation system spec
-- `06-BUILD-ORDER.md` — Dependencies, phasing, testing strategy
-- `07-SGS-POPUPS.md` — Conversion pop-ups plugin spec
-- `08-SGS-CHATBOT.md` — Live chat + AI chatbot plugin spec
-- `09-GOLD-STANDARD-AUDIT.md` — Per-block competitor comparison and gap analysis
+| Work | Branch |
+|---|---|
+| Core SGS (plugins/sgs-blocks/src/, theme/sgs-theme/, plugin PHP) | `main` |
+| Client-specific (sites/<client>/, per-client snapshot) | `feat/<client>-*` |
+| New framework feature | `feat/<feature>` branched from `main` |
 
-## Master Feature Audit
+**Never commit core framework changes to a client/feature branch.** If on wrong branch mid-work: stash → switch → pop → commit. See global CLAUDE.md for full git workflow rules.
 
-The truth document for feature scope, priorities, and competitive position is:
-**`docs/plans/2026-02-21-master-feature-audit.md`** — 354 features graded by impact, difficulty, and priority (P0-P4).
+## Build & deploy (one-liners; full sequence in dev-setup.md)
 
-Current framework maturity: **23% verified (68/294)** — targeting 72% after Phase 2-3, 90% after S-tier phase. Last updated: 2026-02-26. Note: this percentage is likely outdated — 23 blocks were added since the audit. Re-run `/sgs-update` to refresh.
+```bash
+cd plugins/sgs-blocks && npm run build
+# Build uses @wordpress/scripts with --experimental-modules + --webpack-copy-php (PHP render.php copied to build/)
 
-**Phase 2 blocks — ALL DONE (2026-02-26):**
-- ✓ Post Grid / Query Loop — grid/list/masonry/carousel + AJAX pagination
-- ✓ Image Gallery + Lightbox — grid/masonry/carousel + Interactivity API lightbox
-- ✓ Tabs — horizontal/vertical, InnerBlocks, ARIA
-- ✓ Countdown Timer — date-based + evergreen; flip/simple variants
-- ✓ Star Rating — SVG stars; Schema.org/Rating
-- ✓ Team Member — photo/name/role/bio/socials; Schema.org/Person
+# Deploy via tar (scp -r creates nested dirs on Hostinger)
+tar -cf sgs-deploy.tar --exclude='node_modules' --exclude='.git' --exclude='plugins/sgs-blocks/src' \
+    --exclude='theme/sgs-theme/styles/*.json' --exclude='plugins/sgs-blocks/_retired' \
+    theme/sgs-theme plugins/sgs-blocks
+# Then SCP, extract, OPcache reset (HTTP, CLI reset is a separate pool). Full sequence in dev-setup.md.
 
-**Phase 3 priorities (P1 extensions + P2 blocks, next to build):**
-1. Hover scale transform, hover shadow elevation, hover image zoom (inner) — apply to all blocks
-2. Transition duration/easing control — CSS transition shorthand per block
-3. Block link (wrap entire block in link)
-4. Block style variations (register_block_style) — multiple presets per block
-5. Icon Block — single icon with link, Lucide library
-6. Timeline — vertical/horizontal, scroll reveal (278 Kadence votes — their #1 request)
-7. Pricing Table — 2-4 tiers, monthly/yearly toggle
+# Per-client theme snapshot (post Phase 5a — no per-client .json in theme/sgs-theme/styles/)
+python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client <slug> --target <ssh-host>
+```
 
-## Architecture Rules
+- **Dev site:** palestine-lives.org (WP 6.9.1). **Staging/canary:** sandybrown-nightingale-600381.hostingersite.com (WP 7.0). Canary page for Mama's = 144 (`/rc-fix-verification-mamas-munches/`).
+- **SSH:** `ssh -i ~/.ssh/id_ed25519 -p 65002 u945238940@141.136.39.73` (alias `ssh hd`). WP admin user: `Claude`.
+- **No Node.js on server** — build locally, deploy compiled `build/`.
+
+## Architecture rules
 
 ### SGS is a standalone framework, not a client project
+Theme + blocks must work on ANY WordPress install for ANY client. Every design decision must pass: "Will this make sense for a restaurant, a wedding planner, AND a law firm — not just <current client>?" Never hard-code client colours, copy, imagery, structure into base theme / blocks plugin. Client-specific work lives in `sites/<client>/` only.
 
-SGS Theme and SGS Blocks must work correctly on **any** WordPress installation for **any** client. They compete directly with Kadence, Spectra, and GenerateBlocks. Every design decision must pass this test: "Will this make sense for a restaurant, a wedding planner, and a law firm — not just Indus Foods?"
-
-- Never hard-code Indus Foods colours, copy, imagery, or structure into the base theme or blocks plugin
-- Client-specific work lives in `sites/indus-foods/` and `theme/sgs-theme/styles/indus-foods.json` only
-- The base theme's `style.css` and the blocks plugin's CSS must contain zero client-specific rules
+### cv2 output goes to WP PAGES, not POSTS
+Posts use `single.html` which constrains `.entry-content` to `max-width: 800px` — wrong for landing-page clones. Pages use `page.html` with no such constraint. `/sgs-clone --deploy-target page:144` for current Mama's canary.
 
 ### Client experience is primary
+No block feature is complete until it has full block-editor UI controls. Clients are tech-illiterate — they use the block editor exclusively. Every customisable property must be exposed as an inspector control. If a setting requires touching code, it is not done. WP-CLI is a developer tool only; never something clients touch.
 
-No block feature is complete until it has full block editor UI controls. Clients are tech-illiterate — they use the block editor exclusively, never code or WP-CLI. Every customisable property (colour, spacing, text, layout) must be exposed as an inspector control in the editor. If a setting requires touching code, it is not done.
+### Universal-extraction primitive (Spec 16 §15 line 990)
+Every composite block emits OPEN with InnerBlocks children mirroring the mockup's parent-child shape — NOT flat-attrs lifted from descendants. Every BEM-class div becomes its own emitted block, carrying its mockup className. When `_lift_inner_blocks` returns empty, walk direct child descendants per binding rule P7.
 
-### WP-CLI is a developer tool only
+### DB-first, no hardcoded dicts (blub.db 260)
+Before adding any hardcoded lookup dict in pipeline scripts, check sgs-framework.db: `property_suffixes` (117), `block_supports` (1216), `modifier_suffixes` (19), `slot_synonyms` (89), `block_attributes` (2246), `block_capabilities` (85). Refactor to `db_lookup.py` reads.
 
-WP-CLI is used by the developer (Claude Code) during setup, debugging, and deployment. It is **never** something clients interact with. Do not design features that require WP-CLI for normal operation. Document WP-CLI commands in CLAUDE.md files, not in user-facing documentation.
+### Rosetta Stone discipline (uimax cross-platform translation)
+Every uimax row describing a design artefact MUST carry equivalent-name mappings across SGS blocks + vanilla HTML/CSS + Bootstrap + shadcn/Radix + Tailwind + React + AI-builder. Missing SGS equivalent = gap candidate, never silently dropped. `uimax` = DB/data layer; `/ui-ux-pro-max` = intelligence skill that USES the DB. Captured 2026-05-06 blub.db 213.
 
-### Rosetta Stone discipline (uimax cross-platform translation layer)
+### Bean-controlled drafts use SGS-BEM (Spec 15 §8.1, blub.db 236)
+`.sgs-<block>__<element>--<modifier>`. `/sgs-clone` Stage 0 hard-rejects non-conforming on production runs; `--draft-mode` = soft warning; `--legacy` bypasses. Live scrapes use lingua-franca conversion at write time.
 
-uimax is the **cross-platform translation layer** for SGS. Every uimax row that describes a design artefact (pattern, component, animation, naming convention, design token) MUST carry equivalent-name mappings across SGS blocks, vanilla HTML/CSS draft expressions, Bootstrap, shadcn/Radix, Tailwind utility composition, React generic, and AI-builder outputs (Lovable / v0 / Bolt where relevant).
-
-Any tool that feeds uimax — `/sgs-clone` plus its sibling commands `/uimax-scrape`, `/uimax-sgs-scrape-pattern`, `/uimax-mood-board`, `/uimax-scrape-animation`, `/uimax-classify-naming` — MUST also emit the SGS-block translation. If an artefact has no SGS equivalent, flag it as a **gap candidate** (new-SGS-block suggestion) — never silently drop the translation.
-
-**Distinction:** `uimax` (the abbreviation) refers to the DB / data activity layer (write/read/query/ingest). `/ui-ux-pro-max` is the intelligence skill that USES the DB for recommendations and judgement. The `/uimax-*` slash commands are pure DB activity. `/sgs-clone` orchestrates them; calls `/ui-ux-pro-max` only when judgement is needed (style picks, classification confirmations).
-
-`/animation-harvest` standalone form is the anti-pattern (captures animations without writing to uimax with SGS-block-attribute mapping). Replaced by `/uimax-scrape-animation` 2026-05-07. Captured 2026-05-06 as blub.db row 213.
-
-### Draft naming convention — SGS-prefixed BEM (canonical for all Bean-controlled drafts)
-
-Every Bean-controlled draft (mockup, sketch, hand-coded HTML produced in-house) MUST use `.sgs-<block>__<element>--<modifier>`. Block matches an SGS block slug, element matches a slot, modifier matches an attribute value. The `/sgs-clone` Stage 0 pre-flight gate hard-rejects non-conforming drafts on production runs; `--draft-mode` downgrades to a soft lint warning; `--legacy` bypasses the gate for pre-rule mockups. Live scrapes (sites Bean does NOT control) use lingua-franca-conversion at recognition time: `/uimax-*` skills convert source-convention class names to SGS-BEM as primary at write time, preserving original convention as a sibling row in `equivalent_implementations`.
-
-**Canonical reference:** `.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md (§8.1; former Spec 13 absorbed 2026-05-12)` (locked 2026-05-10). Captured as blub.db row 236, pattern_key `bean-drafts-use-sgs-prefixed-bem-naming`. Convention rollout plan: `.claude/plan.md` + `.claude/plans/phase-1..8.md`.
-
-### Saved-defaults model (canonical)
-
-Operator-facing defaults split across four WordPress-native channels. Do NOT reintroduce any parallel saved-defaults infrastructure (no `withSaveAsDefault` HOC, no `<BlockDefaultsPanel>`, no `wp_options`-backed defaults store).
-
-1. **Visual styling defaults** (colour / typography / spacing / border / shadow / hover / animation tokens) live in the Site Editor Styles panel. Backed by `wp_global_styles` overlaying `theme.json`.
-2. **Structural starting state** (mode / layout / variant / columns / behaviour switches) lives in block patterns at `plugins/sgs-blocks/includes/block-patterns.php`. Reachable from the inserter pattern library.
-3. **Per-operator memory across one editor session** uses the `useLastUsedAttributes` sessionStorage hook (`plugins/sgs-blocks/src/components/useLastUsedAttributes.js`). Browser-scoped, no server round-trip. Opt-in per block.
-4. **Per-instance customisation** lives in block inspector controls.
-
-The retired saved-defaults system was removed 2026-05-08 (audit + migration at `.claude/reports/saved-defaults-audit-2026-05-08.md`).
-
-### Image controls discipline
-
-Every new SGS block that renders an `<img>` MUST declare `"imageControls": true` inside `supports.sgs` in its block.json so the universal image-controls extension applies to it automatically. Example:
-
-```json
-"supports": {
-    "sgs": { "imageControls": true }
-}
-```
-
-If a block deliberately wants no image-position / max-width / height controls (e.g. logos in brand-strip or certification-bar), document the omission either in the block's own CLAUDE.md or in its block.json `description` field.
-
-This prevents the silent gap where a new block ships with images but no per-instance `objectPosition` / `maxWidth` / `height` controls — captured 2026-05-08 (parking P-6 implementation).
-
-**Opted-in blocks (as of 2026-05-08):** `sgs/decorative-image`, `sgs/gallery`, `sgs/card-grid`, `sgs/hero`, `sgs/info-box`, `sgs/team-member`, `sgs/testimonial`.
-
-### Style variation architecture
-
-> **RETIRED — Architecture Decision D28 (Phase 5a, shipped 2026-05-21).** The WP style-variation overlay system (`theme/sgs-theme/styles/<client>.json` + `active_theme_style` theme_mod + `class-sgs-variation-picker.php`) is replaced. `theme/sgs-theme/styles/` is now empty.
-
-**Current model (post Phase 5a):**
-
-1. Per-client colour/typography snapshots live at `sites/<client>/theme-snapshot.json` (and optional `theme-snapshot-colours-axis.json` / `theme-snapshot-typography-axis.json`).
-2. Deploy to a specific live site via `python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client <slug> --target <ssh-host>`. This replaces that site's `theme.json` with the snapshot. The `--no-push` flag previews without pushing.
-3. Client-specific CSS (decorative images, hover effects, custom gradients) goes into the client's `theme-snapshot.json` under `styles.css` OR into `sites/<client>/theme-overrides.css`. Never into the framework's `style.css`.
-4. Images used by a client go in `theme/sgs-theme/assets/` — version-controlled with the theme, never in `uploads/`.
-5. Header/footer template parts and block-level variations are unaffected by this model — they are entirely separate systems.
+### Saved-defaults model (canonical, retired 2026-05-08 — do NOT reintroduce parallel infra)
+Four WordPress-native channels: (1) visual styling defaults → Site Editor Styles panel (`wp_global_styles` over `theme.json`); (2) structural starting state → block patterns at `plugins/sgs-blocks/includes/block-patterns.php`; (3) per-operator session memory → `useLastUsedAttributes` sessionStorage hook; (4) per-instance customisation → block inspector. NO `withSaveAsDefault` HOC, NO `<BlockDefaultsPanel>`, NO `wp_options`-backed defaults store.
 
 ### Block customisation standard (MANDATORY)
+Every block: (1) native `supports` for wrapper-level controls; (2) custom attrs + controls for each inner text element; (3) custom attrs + controls for CTAs; (4) CSS fallback colours use `:not([style*="color"])` so custom values win; (5) Block Selectors API in `block.json` targets native typography to primary text element.
 
-Every block MUST provide per-element customisation matching Kadence/Spectra depth:
-
-1. Native WordPress `supports` for wrapper-level controls (colour, typography, spacing, border)
-2. Custom attributes + controls for each inner text element (colour, font size)
-3. Custom attributes + controls for interactive elements like CTAs (text colour, background colour)
-4. CSS fallback colours use `:not([style*="color"])` so custom values always win
-5. Use Block Selectors API in `block.json` to target native typography to primary text element
-
-### Hover controls spec
-
-Blocks with interactive hover states MUST expose these controls in the editor inspector:
-- **Scale transform** — `transform: scale()` on hover (GPU-composited, safe)
-- **Shadow elevation** — box-shadow transition on hover
-- **Image zoom (inner)** — `overflow:hidden` + scale on `<img>` on hover
-- **Transition duration** — CSS transition-duration control (default 300ms)
-- **Transition easing** — CSS transition-timing-function (ease, ease-in-out, etc.)
-
-Colour-only hover shifts (bg/text/border) are already done in Phase 1.3 for 4 blocks. The above controls are P1 for Phase 2.
+### Image controls discipline
+Every new block rendering `<img>` MUST declare `"imageControls": true` in `block.json` `supports.sgs` so the universal image-controls extension applies. Document deliberate opt-out in the block's own CLAUDE.md or block.json description.
 
 ### No hard-coded environment paths
+PHP: `get_theme_file_uri()` / `get_stylesheet_directory_uri()` / `wp_upload_dir()`. JS/CSS: CSS custom properties via `wp_add_inline_style()` or `wp_localize_script()`. Never `/wp-content/themes/sgs-theme/assets/image.png` (breaks on non-standard installs).
 
-Never use absolute server paths or hard-coded `/wp-content/...` URLs in CSS, PHP, or JS. Always use WordPress functions that resolve correctly on any install:
+### Style-variation system retired (D28, Phase 5a 2026-05-21)
+`theme/sgs-theme/styles/` is empty. Per-client colour/typography lives at `sites/<client>/theme-snapshot.json` and deploys via `push-theme-snapshot.py`. Client-specific CSS goes into the snapshot's `styles.css` OR `sites/<client>/theme-overrides.css`. Never into framework's `style.css`.
 
-- PHP: `get_theme_file_uri()`, `get_stylesheet_directory_uri()`, `wp_upload_dir()`
-- JS/CSS: use CSS custom properties set by PHP via `wp_add_inline_style()` or `wp_localize_script()`
-- Never: `/wp-content/themes/sgs-theme/assets/image.png` (breaks on any non-standard install)
+### sgs/trust-bar retired (D72, 2026-05-25)
+Counter use-cases route to `sgs/counter`; badge use-cases emit via universal-nesting (`sgs/container` > `sgs/label` children, walker resolves `__badge` BEM elements to sgs/label via slot_synonyms).
 
-## Doc-op standards (Phase 13 close, 2026-05-25)
+## Non-negotiables
 
-Architectural record for the doc-op programme: `.claude/decisions.md` D57-D65.
-Canonical templates for all 17 doc-types: `~/.agents/skills/shared-references/doc-templates/`
+- WCAG 2.2 AA accessible, mobile-first responsive (44px minimum touch targets, 4.5:1 contrast)
+- No jQuery — vanilla JS only frontend; `viewScriptModule` (ES modules) for interactive blocks
+- All REST endpoints: nonces, capability checks, sanitisation, prepared statements (`$wpdb->prepare()`)
+- Performance budget: <100KB CSS, <50KB JS per page; green Core Web Vitals
+- UK English in all code, comments, user-facing text
+- Cross-project sync: any change affecting sgs-booking REST must also update `specs/03-SGS-BOOKING.md` + `plugins/sgs-booking/CLAUDE.md`
 
-Four rules every session must respect:
-1. **parking entries** carry `**Status:** OPEN|PARTIAL|BLOCKED|DEFERRED` and belong to one of 6 taxonomy buckets
-2. **specs** use `FR-{spec_id}-{N}` for requirement IDs (e.g. `FR-16-3`, not `FR3`)
-3. **mistakes.md** is a keyword-stub index only — body (≤3 lines) links to `memory/feedback_*.md` + blub.db row
-4. **plans** use the strategic-plan + phase-plan templates (timebox / ROAM / 16-field step block)
+## Doc-op standards (Phase 13 close, 2026-05-24)
 
-## Non-Negotiables
+Architectural record: `.claude/decisions.md` D57-D65. Canonical templates: `~/.agents/skills/shared-references/doc-templates/`.
 
-- WCAG 2.2 AA accessible, mobile-first responsive (44px minimum touch targets)
-- No jQuery — vanilla JS only for frontend
-- All REST endpoints: nonces, capability checks, input sanitisation, prepared statements
-- Progressive enhancement — blocks must render meaningful content without JS
-- Performance budget: < 100KB CSS, < 50KB JS per page, green Core Web Vitals
-- UK English in all code, comments, and user-facing text
-- **Cross-project sync** — any API or feature change affecting the booking WP plugin must also update `specs/03-SGS-BOOKING.md` and `plugins/sgs-booking/CLAUDE.md`
+1. **parking entries** carry `**Status:** OPEN|PARTIAL|BLOCKED|DEFERRED` + one of 6 taxonomy buckets
+2. **specs** use `FR-{spec_id}-{N}` for requirement IDs (e.g. `FR-16-3`)
+3. **mistakes.md** is a keyword-stub index only — body links to `feedback_*.md` + blub.db row
+4. **plans** use strategic-plan + phase-plan templates (timebox / ROAM / 16-field step block)
 
-## Deploy Commands
+## Framework stats (2026-05-25, post architecture programme + trust-bar retirement)
 
-> **LiteSpeed Cache plugin deleted from test sites 2026-05-05.** No LiteSpeed purge needed during dev/staging deploys to palestine-lives.org or sandybrown-nightingale-600381.hostingersite.com. Production sites may still need it — check `wp plugin list | grep litespeed` per site before deploying production changes. Hostinger's hPanel edge cache still applies (purge via hPanel if needed).
+69 blocks (all dynamic); 2246 block attributes; 89 slot_synonyms rows; 117 property_suffixes; 19 modifier_suffixes (incl. Hover/Active/Focus/Disabled state-kind); 85 block_capabilities; 184 design tokens; 35 patterns; WP 7.0 compatible (`Sgs_Ai_Connector` + `wp_set_script_module_translations()` wired). `/sgs-update` rebuilt as 9-stage v2. Style-variation system retired (per-client `theme-snapshot.json`).
 
-```bash
-# Build blocks plugin
-cd plugins/sgs-blocks && npm run build
+## Design context for current client builds
 
-# Deploy via tar (RELIABLE — scp -r creates nested dirs on Hostinger)
-# Phase 5a (2026-05-22) — `theme/sgs-theme/styles/*.json` excluded: per-client snapshots
-# now live at `sites/<client>/theme-snapshot.json` and are deployed via
-# `plugins/sgs-blocks/scripts/push-theme-snapshot.py`, not the framework tar.
-cd /path/to/small-giants-wp
-tar -cf sgs-deploy.tar --exclude='node_modules' --exclude='.git' --exclude='plugins/sgs-blocks/src' --exclude='theme/sgs-theme/styles/*.json' --exclude='plugins/sgs-blocks/_retired' theme/sgs-theme plugins/sgs-blocks
-scp -P 65002 sgs-deploy.tar u945238940@141.136.39.73:sgs-deploy.tar
-ssh -p 65002 u945238940@141.136.39.73 "WP=domains/palestine-lives.org/public_html/wp-content && rm -rf \$WP/themes/sgs-theme \$WP/plugins/sgs-blocks && tar -xf sgs-deploy.tar && mv theme/sgs-theme \$WP/themes/ && mv plugins/sgs-blocks \$WP/plugins/ && rm -rf theme plugins sgs-deploy.tar"
-rm sgs-deploy.tar
+Per-client design context lives in `sites/<client>/CLAUDE.md`. Active clients:
 
-# Deploy single files (for quick patches)
-scp -P 65002 -i ~/.ssh/id_ed25519 path/to/file u945238940@141.136.39.73:domains/palestine-lives.org/public_html/wp-content/path/to/file
+- `sites/mamas-munches/` — current pipeline canary
+- `sites/indus-foods/` — Heritage / Partnership / Ambition; teal+gold palette; B2B trade buyers
+- `sites/helping-doctors/` — green palette; medical sector
 
-# Clear LiteSpeed page cache — Only required if LiteSpeed plugin is active on the target site
-# (Removed from palestine-lives.org and sandybrown-nightingale-600381.hostingersite.com on 2026-05-05.)
-ssh hd "cd ~/domains/palestine-lives.org/public_html && wp litespeed-purge all"
-# Also clear the CSS/JS optimiser cache — Only required if LiteSpeed plugin is active
-ssh hd "rm -rf ~/domains/palestine-lives.org/public_html/wp-content/litespeed/css/*.css"
-# Purge a single URL — Only required if LiteSpeed plugin is active
-ssh hd "cd ~/domains/palestine-lives.org/public_html && wp litespeed-purge url https://palestine-lives.org/page-slug/"
-
-# Reset PHP OPcache after deploying PHP files (CLI reset is a SEPARATE pool — must use HTTP)
-ssh hd "echo '<?php opcache_reset(); echo \"ok\";' > ~/domains/palestine-lives.org/public_html/op-reset-tmp.php" && curl -s https://palestine-lives.org/op-reset-tmp.php && ssh hd "rm ~/domains/palestine-lives.org/public_html/op-reset-tmp.php"
-```
-
-## Gotchas
-
-- **SCP `-r` creates nested directories** — `scp -r theme/sgs-theme remote:path/sgs-theme` creates `sgs-theme/sgs-theme/`. Always use the tar method above, or SCP to the parent directory (`scp -r theme/sgs-theme remote:path/themes/`).
-- **Hostinger caches CSS aggressively** — bump the version in `style.css` after CSS changes to bust the cache. The theme version is used as the query string for all enqueued styles.
-- **`--webpack-copy-php` flag** — the build script copies `render.php` to `build/` automatically. Dynamic blocks won't render without this.
-- **`--experimental-modules` flag** — required in build/start scripts for `viewScriptModule` in block.json. Check if stabilised in your @wordpress/scripts version.
-- **Deprecations required** — when changing a static block's `save.js` output, you MUST add a deprecation to avoid "This block contains unexpected content" errors on existing posts.
-- **SSH remote variable expansion** — use single quotes for the outer string when running `ssh hd '...'` so `$WP` expands on the server. Double quotes expand locally (to empty), silently breaking the deploy.
-- **Tar deploy: delete before move** — `mv plugins/sgs-blocks $WP/plugins/` fails with "Directory not empty" if the target exists. Always `rm -rf $WP/plugins/sgs-blocks` first in the same SSH command, then `mv`.
-- **Tar `--exclude='src'` breaks vendor** — `--exclude='src'` is too broad; it strips `vendor/*/src/` subdirectories (e.g. myclabs, phpunit) causing fatal PHP errors on the server. Always use `--exclude='plugins/sgs-blocks/src'` to target only the JS source directory.
-- **WP-CLI inline PHP escaping** — `wp eval '...'` breaks on shell special chars (`!--`, `$b[0]`, heredocs, etc.). Reliable fallback: write to `/tmp/script.php` with `cat << 'PHPEOF'`, `scp` to server, then `wp eval-file ~/script.php`, then `rm`.
-- **`parse_blocks()` is shallow** — only returns top-level blocks. Finding nested blocks (inside Columns, Groups, etc.) requires a recursive function that walks `$b['innerBlocks']` at every level.
-- **Theme spec drift** — `specs/01-SGS-THEME.md` still shows DM Serif Display + DM Sans as default fonts. The actual `theme.json` uses Inter variable. The CLAUDE.md files are correct; the spec needs updating.
-
-## External Services
-
-- **N8N** (72.62.212.169) — all notifications via webhooks, not wp_mail()
-- **Stripe** — payment processing for booking and forms
-- **Google Calendar** — 2-way sync for booking (Phase 5)
-- **ACF Pro** — kept for non-block custom fields, usage decreasing over time
-- **Rank Math Free** — SEO, no reason to rebuild
-
-
-## HelpingDoctors Brand Style Variation
-
-- File: `theme/sgs-theme/styles/helping-doctors.json`
-- Committed: `f18889a` (2026-03-11)
-- Deployed to: helpingdoctors.org`/wp-content/themes/sgs-theme/styles/`helping-doctors.json`
-- **To activate:** WP Admin → Appearance → Editor → Styles (top right) → Browse styles → select 'HelpingDoctors'
-- Palette: Primary Green `#1B8A5A`, Dark Green `#0A5C3A`, Light Mint `#E8F5F0`, Dark `#1A1A2E`, White `#FFFFFF`
-- Buttons, links all use green tokens
-
-## Design Context
-
-### Users
-
-**Primary:** B2B trade buyers — restaurant owners, takeaway operators, catering managers, hotel chefs, retail shop owners, other wholesalers. They browse at odd hours (after shifts), on mobile, under time pressure. They want to know: "Can I trust these people? What's the minimum order? How fast is delivery?" Decision-making is relationship-driven, not transactional.
-
-**Secondary:** Start-up food entrepreneurs who Indus actively mentors — first-time caterers, small retailers entering the ethnic food market. Lower confidence, need reassurance and guidance.
-
-### Brand Personality
-
-**Heritage. Partnership. Ambition.**
-
-- **Heritage** — three generations since 1962, on-site production since 1975, Birmingham Balti Triangle roots. Unchallengeable depth of story. This is the warmth layer.
-- **Partnership** — not just a supplier but an active partner in customers' success. Mentors start-ups, sits on industry councils (FWD), champions independent wholesalers nationally. "We will always encourage new opportunities, even if we don't directly benefit financially."
-- **Ambition** — quietly forward-looking. £1.5M manufacturing investment, exclusive distribution deals, technology-driven (Erudus integration, mobile ordering). Innovates without being flashy.
-
-**Tone of voice:** Warm, direct, confident but never boastful. Speaks like a knowledgeable family business owner, not a marketing department. UK English. No jargon, no corporate platitudes, no "synergy."
-
-**Emotional target:** Trust-first for the business decision ("these people are solid"), warmth underneath for the relationship ("they actually care about my business"). The handshake before the hug.
-
-### Aesthetic Direction
-
-**Visual tone:** Premium independent — warmer than corporate, more polished than discount. The approved homepage design at lightsalmon-tarsier-683012.hostingersite.com sets the foundation: teal/gold palette, Montserrat/Source Sans 3 typography, card-based layouts, gradient hero sections. Build on this — don't reinvent.
-
-**What it should feel like:** A quality family business that has invested in doing things properly. Like walking into a well-run warehouse where everything is organised and the owner greets you by name.
-
-**What it should NOT feel like:**
-- Generic corporate B2B (no stock handshake photos, no "leverage our synergies")
-- Cheap wholesale catalogue (no cluttered product grids, no ALL CAPS DEALS)
-- Template website (no cookie-cutter layouts — personality in the details)
-
-**Reference points:** JK Foods has good bones (clean, modern) but lacks personality and warmth. KTC Food Group has good structure (channel-segmented) but feels cold. Neither captures the family heritage feel. Think more like a premium independent brand than either competitor.
-
-**Colour usage (Indus Foods variation):**
-- Teal (#0A7EA8) = trust, professionalism, primary actions
-- Gold (#D8CA50) = heritage, warmth, accent backgrounds (never as text on light — use #7A6B00 for text)
-- Warm white (#F8F7F4) = breathing room, surface-alt sections
-- Dark teal (#075E80) = depth, premium sections, hero gradients
-
-### Design Principles
-
-1. **Trust before conversion** — every section earns trust before asking for action. Stats, heritage, testimonials, certifications come before CTAs. A tired restaurant owner at 11pm needs confidence, not pressure.
-
-2. **Show the family, not the corporation** — real photography over stock, human language over marketing speak, Amir's story over corporate values statements. The 60-year heritage is the strongest differentiator in the sector — use it visually.
-
-3. **Respect the user's time** — these are busy operators. Clear hierarchy, scannable sections, obvious next steps. No scroll-to-discover patterns. Mobile-first because they're browsing on phones after shifts.
-
-4. **Premium but approachable** — generous whitespace, quality typography, polished hover states and transitions. But not intimidating — low minimum orders (£75), WhatsApp as a contact channel, "Apply in 3 minutes" messaging.
-
-5. **Accessible by default** — WCAG 2.2 AA minimum, 44px touch targets, 4.5:1 contrast ratios. Not as a compliance checkbox but because the users include older business owners, people with varying tech literacy, and night-shift workers on dim screens.
+Do NOT inline client-specific design context into framework CLAUDE.md. Always read the client's own CLAUDE.md when working on that client.
