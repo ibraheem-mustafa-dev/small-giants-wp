@@ -180,13 +180,17 @@ def test_chrome_skipped_noop():
 
 
 def test_self_closing_block_stays_self_closing():
-    """Self-closing block gets className injected without breaking syntax."""
-    markup = '<!-- wp:sgs/trust-bar {"items":[{"label":"Fast"}]} /-->'
-    result = _fn(markup, "trust-bar")
+    """Self-closing block gets className injected without breaking syntax.
+
+    2026-05-25 D72: previously tested via sgs/trust-bar (now retired). Switched
+    to sgs/notice-banner which is also a self-closing emit target.
+    """
+    markup = '<!-- wp:sgs/notice-banner {"text":"Important"} /-->'
+    result = _fn(markup, "notice-banner")
     assert result.endswith("/-->"), f"Must stay self-closing, got: {result[-20:]!r}"
-    assert "sgs-trust-bar" in result
+    assert "sgs-notice-banner" in result
     attrs = _first_block_attrs(result)
-    assert attrs.get("className") == "sgs-trust-bar"
+    assert attrs.get("className") == "sgs-notice-banner"
 
 
 def test_prepend_does_not_duplicate():

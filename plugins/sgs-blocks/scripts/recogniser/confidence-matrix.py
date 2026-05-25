@@ -87,11 +87,14 @@ COMPOSITE_PRIORITY = {
     "sgs/cta-section": 8,
     "sgs/feature-grid": 7,
     "sgs/testimonial-slider": 7,
-    "sgs/trust-bar": 6,
     "sgs/info-box": 4,
     "sgs/testimonial": 4,
     "sgs/product-card": 3,
 }
+# Removed 2026-05-25 (D72): sgs/trust-bar block retired. Sections previously
+# matching trust-bar now take normal route -> sgs/container with className
+# preserved; inner content emits via universal-nesting (sgs/icon-list for
+# badge rows, sgs/card-grid + sgs/counter for counter rows).
 # Removed 2026-05-14: sgs/featured-product, sgs/header, sgs/footer (stub blocks
 # deleted after PR #18). Re-add when proper composite blocks are authored for
 # these slots, or when the deterministic block generator (next-session work)

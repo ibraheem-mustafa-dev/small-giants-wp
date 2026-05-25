@@ -51,7 +51,7 @@ class BlockDeprecationsTest extends TestCase {
 		'certification-bar',
 		'counter',
 		'notice-banner',
-		'trust-bar',
+		// 2026-05-25 D72: 'trust-bar' removed — block retired.
 	);
 
 	// ── Data provider ─────────────────────────────────────────────────────────

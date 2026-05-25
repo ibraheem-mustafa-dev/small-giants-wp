@@ -140,7 +140,8 @@ _KEBAB_SEMANTIC = {
         "team-grid":     "team-member",
         "card-grid":     "card-grid",
         "hero-copy":     "hero",
-        "trust-bar":     "trust-bar",
+        # 2026-05-25 D72: "trust-bar": "trust-bar" mapping removed — block retired.
+        # Sections with "trust-bar" class now fall to normal route (sgs/container).
         "site-header":   "header",
         "site-footer":   "footer",
         "info-box":      "info-box",

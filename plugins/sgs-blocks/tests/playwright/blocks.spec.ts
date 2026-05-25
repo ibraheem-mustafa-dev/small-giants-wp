@@ -42,10 +42,10 @@ const EXPECTED_BLOCKS = [
   'heritage-strip', 'hero', 'icon', 'icon-list', 'info-box', 'mega-menu', 'modal',
   'notice-banner', 'post-grid', 'pricing-table', 'process-steps', 'site-info',
   'social-icons', 'star-rating', 'svg-background', 'tab', 'table-of-contents',
-  'tabs', 'team-member', 'testimonial', 'testimonial-slider', 'trust-bar', 'whatsapp-cta',
+  'tabs', 'team-member', 'testimonial', 'testimonial-slider', 'whatsapp-cta',
 ];
 
-test('all 55 SGS block types are registered', async ({ request }) => {
+test('all 54 SGS block types are registered', async ({ request }) => {
   const res = await request.get(`${REST}/wp/v2/block-types`, {
     headers: { Authorization: AUTH },
   });
@@ -133,10 +133,6 @@ test('create page with SGS blocks and verify frontend render', async ({ request,
 <!-- wp:sgs/pricing-table {"title":"Pro Plan","price":"49","period":"month","features":["Feature 1","Feature 2","Feature 3"],"buttonText":"Choose Plan"} -->
 <div class="wp-block-sgs-pricing-table"></div>
 <!-- /wp:sgs/pricing-table -->
-
-<!-- wp:sgs/trust-bar {"items":[{"icon":"shield","text":"Secure"},{"icon":"clock","text":"Fast"}]} -->
-<div class="wp-block-sgs-trust-bar"></div>
-<!-- /wp:sgs/trust-bar -->
 
 <!-- wp:sgs/process-steps {"steps":[{"title":"Step 1","description":"Do this"},{"title":"Step 2","description":"Then this"}]} -->
 <div class="wp-block-sgs-process-steps"></div>
