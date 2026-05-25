@@ -46,7 +46,7 @@ If any pre-condition fails, surface to Bean before proceeding — don't start th
 ## Entry context (read before starting — MANDATORY)
 
 1. `.claude/plans/2026-05-24-strategic-plan.md` — strategic-plan parent
-2. `.claude/plans/2026-05-24-phase-1-structural-recovery.md` (SHIPPED) — what changed about the converter/pipeline tools
+2. `.claude/plans/2026-05-25-phase-1-universal-extraction.md` (SHIPPED) — what changed about the converter/pipeline tools
 3. `.claude/plans/2026-05-24-phase-2-parking-sweep.md` (SHIPPED) — what parking entries were closed
 4. `.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md` — diagnostic artefact map
 5. `.claude/cloning-pipeline-flow.md` — current pipeline state post Phases 1+2

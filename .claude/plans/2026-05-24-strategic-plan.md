@@ -130,7 +130,7 @@ Phase 4 (Skill optimisation) — dedicated session
 3. `.claude/cloning-pipeline-flow.md` — pipeline flow with new Stage 11 + per-stage R/W tables
 4. `pipeline-state/mamas-munches-homepage-2026-05-23-145045/` — canonical baseline run + Stage 11 numbers
 5. `reports/2026-05-20-pipeline-root-gap-council/real-path-synthesis.md` — original G1-G5 honest-path council finding
-6. `.claude/plans/2026-05-24-phase-1-structural-recovery.md` — Phase 1 detailed plan
+6. `.claude/plans/2026-05-25-phase-1-universal-extraction.md` — Phase 1 detailed plan
 
 **Mandatory before Phase 2:**
 1. `.claude/specs/17-HEADER-FOOTER-ARCHITECTURE.md` — full theme-side architecture (template parts + CPTs + Customiser + Site Info store + rules engines)
@@ -197,7 +197,7 @@ Per `~/.agents/skills/delegate/data/routing-table.json` defaults:
 
 ## See also
 
-- `.claude/plans/2026-05-24-phase-1-structural-recovery.md` — Phase 1 detailed plan
+- `.claude/plans/2026-05-25-phase-1-universal-extraction.md` — Phase 1 detailed plan
 - `.claude/plans/2026-05-24-phase-2-header-footer-cloner.md` — Phase 2 detailed plan (generated via `/phase-planner`)
 - `.claude/plans/2026-05-24-phase-3-parking-sweep.md` — Phase 3 detailed plan (renamed from `phase-2-parking-sweep.md`)
 - `.claude/plans/2026-05-24-phase-4-skill-optimisation.md` — Phase 4 detailed plan (renamed from `phase-3-skill-optimisation.md`)

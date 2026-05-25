@@ -42,7 +42,7 @@ If any pre-condition fails, surface to Bean before proceeding — don't start th
 ## Entry context (read before starting — MANDATORY)
 
 1. `.claude/plans/2026-05-24-strategic-plan.md` — strategic-plan parent doc
-2. `.claude/plans/2026-05-24-phase-1-structural-recovery.md` — Phase 1 plan (READ REGARDLESS of completion status; if Phase 1 partially shipped, the documented edge case at Step 1.E "carry residual to Phase 2 scope" applies — Phase 2 cannot scope correctly without knowing what Phase 1 actually closed)
+2. `.claude/plans/2026-05-25-phase-1-universal-extraction.md` — Phase 1 plan (READ REGARDLESS of completion status; if Phase 1 partially shipped, the documented edge case at Step 1.E "carry residual to Phase 2 scope" applies — Phase 2 cannot scope correctly without knowing what Phase 1 actually closed)
 3. `.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md` — diagnostic artefact map
 4. `.claude/parking.md` — live state of all entries. Read the "Still open" section in full first.
 5. `.claude/handoff.md` (post-Phase-1) — Phase 1 close-out numbers + residuals
@@ -100,7 +100,7 @@ The parking entries are grouped by effort. Each entry is referenced by ID + summ
 
 ### Verification-only (~30 min each) — closed by Phase 1 per 2026-05-23 revision
 
-Per the 2026-05-23 revision of Phase 1 (`.claude/plans/2026-05-24-phase-1-structural-recovery.md`), Phase 1 explicitly closes G1+G3+G5 + the universal walker + FR1 pattern fast-path. The entries below are verification-only IF Phase 1 closed them as scoped; if Phase 1 partially closed any of them, the residual moves into Phase 3 as actual implementation work (not verification).
+Per the 2026-05-23 revision of Phase 1 (`.claude/plans/2026-05-25-phase-1-universal-extraction.md`), Phase 1 explicitly closes G1+G3+G5 + the universal walker + FR1 pattern fast-path. The entries below are verification-only IF Phase 1 closed them as scoped; if Phase 1 partially closed any of them, the residual moves into Phase 3 as actual implementation work (not verification).
 
 - **P-G1-HERO-INNERBLOCKS** — closed by Phase 1 Step 1.6 (OPEN-block emission for FR1-matched composite blocks). Verify: Playwright on sandybrown — `header.sgs-hero` has 2 CTA buttons in DOM.
 - **P-G2-PAGE-ID-SCOPE-STRIP** — closed 2026-05-22 (Wave 2 Change 1, convert.py:3851-3859). Already RESOLVED.
@@ -200,7 +200,7 @@ PARKING ENTRY (verbatim — find in .claude/parking.md):
 <paste the entry's full text here — quote the acceptance criterion + "Trigger" + any referenced files>
 
 CONTEXT:
-- Phase 1 of the recovery plan (2026-05-24-phase-1-structural-recovery.md) shipped <SHIPPED|partially-shipped>; the post-Phase-1 baseline pixel-diff numbers live in pipeline-state/<latest>/stage-11-pixel-diff.json
+- Phase 1 of the recovery plan (2026-05-25-phase-1-universal-extraction.md) shipped <SHIPPED|partially-shipped>; the post-Phase-1 baseline pixel-diff numbers live in pipeline-state/<latest>/stage-11-pixel-diff.json
 - Phase 2 acceptance gate: parking.md "Open" section contains zero entries other than P-BATCH-GA-14-SKILLS
 
 YOUR JOB:

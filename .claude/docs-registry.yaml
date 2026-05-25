@@ -25,10 +25,11 @@ canonical_docs:
   - {path: .claude/parking.md,                                         scope: forever_append_only_with_status,  doc_type: parking}
   - {path: .claude/plan.md,                                            scope: forever_master,                   doc_type: master-plan}
   - {path: .claude/plans/2026-05-24-strategic-plan.md,                 scope: forever_until_recovery_complete,  doc_type: strategic-plan}
-  - {path: .claude/plans/2026-05-24-phase-1-structural-recovery.md,    scope: forever_until_phase_1_shipped,    doc_type: phase-plan}
-  - {path: .claude/plans/2026-05-24-phase-2-header-footer-cloner.md,   scope: forever_until_phase_2_shipped,    doc_type: phase-plan}
+  - {path: .claude/plans/2026-05-25-phase-1-universal-extraction.md,   scope: forever_until_phase_1_shipped,    doc_type: phase-plan, supersedes: ".claude/plans/archive/2026-05-24-phase-1-structural-recovery-superseded-by-phase-1-universal-extraction.md"}
+  - {path: .claude/plans/2026-05-24-phase-2-header-footer-cloner.md,   scope: forever_until_phase_2_shipped,    doc_type: phase-plan, blocked_by: "phase-1.5 per-section ≤1% gate"}
   - {path: .claude/plans/2026-05-24-phase-3-parking-sweep.md,          scope: forever_until_phase_3_shipped,    doc_type: phase-plan}
   - {path: .claude/plans/2026-05-24-phase-4-skill-optimisation.md,     scope: forever_until_phase_4_shipped,    doc_type: phase-plan}
+  - {path: .claude/reports/2026-05-25-qc-council-issue-register.md,    scope: forever_until_phase_1_shipped,    doc_type: reference, sot_note: "Canonical register for Phase 1 — ~110 items across Sections A-R; Section P = 27 binding design principles; Section Q = 20-cheat inventory; Section R = consolidated phase plan"}
   - {path: .claude/specs/21-PIPELINE-STATE-ARTEFACTS.md,               scope: spec_version_canonical,           doc_type: spec, spec_version: 21}
   - {path: .claude/cloning-pipeline-flow.md,                           scope: forever,                          doc_type: visual-reference}
   - {path: .claude/cloning-pipeline-stages.md,                         scope: forever,                          doc_type: pipeline-stages-reference}

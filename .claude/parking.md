@@ -1,17 +1,19 @@
 ---
 doc_type: parking
 project: small-giants-wp
-last_updated: 2026-05-24
+last_updated: 2026-05-25
 ---
 
 <!-- ACTIVE — open parking items only. Resolved entries → memory/parking-archive.md with completion date in heading. -->
+
+> **2026-05-25 note (Phase 1 plan supersedes individual G1-G5 entries):** Many cloning-pipeline entries below (P-WAVE-2-RESHAPE-AS-ONE-WIRING-GAP, P-G1-HERO-INNERBLOCKS, P-G3-STAGE-3-VISUAL-SLOT-MAPPING, P-G5-PER-BLOCK-DOM-SHAPE-FIXES, P-FR1-VARIATION-BUF-CONSISTENCY) are now folded into commits of `.claude/plans/2026-05-25-phase-1-universal-extraction.md`. They stay here for cross-reference until Phase 1 closes — at which point closed entries move to `memory/parking-archive.md`. The canonical truth for cloning-pipeline work is the phase plan + register (`.claude/reports/2026-05-25-qc-council-issue-register.md` Section R + Section Q). Other cloning entries (P-DUPLICATE-HEADER, P-INGREDIENTS-1440-REGRESSION, etc.) are deferred to Phase 1.5 or Phase 2 per Bean's gate decisions.
 
 ## Cloning pipeline (cv2 / orchestrator / DOM walker / pixel-diff)
 
 _60 entries._
 
 
-**P-DUPLICATE-HEADER-EXPOSED-BY-INLINE-CSS-FIX** — NEW 2026-05-25 (after D70 Stage 10 inline-CSS shipped). With variation-d0-d2.css now deployed inline per-page, the mockup's `<header class="sgs-header">` block in cv2 output renders visually for the first time — appearing BELOW the framework's `<header>` template part (rendered on every page by `theme/sgs-theme/parts/header.html`). Visible regression: header section pixel-diff at 375px jumped from 25.4% → 84.8% (+59.4pp) in run mamas-munches-homepage-2026-05-25-060541. Sister sections (768, 1440) only +0.9 / -2.3pp because framework header dominates the viewport there. **Resolution:** Phase 2 — header + footer specialised cloner (already planned per `.claude/plans/2026-05-24-phase-1-structural-recovery.md` Next priorities #9). The specialised cloner emits to wp_template_part shape, not page-content shape, and dedupes against framework header. Until then the live page carries both headers on mobile.
+**P-DUPLICATE-HEADER-EXPOSED-BY-INLINE-CSS-FIX** — NEW 2026-05-25 (after D70 Stage 10 inline-CSS shipped). With variation-d0-d2.css now deployed inline per-page, the mockup's `<header class="sgs-header">` block in cv2 output renders visually for the first time — appearing BELOW the framework's `<header>` template part (rendered on every page by `theme/sgs-theme/parts/header.html`). Visible regression: header section pixel-diff at 375px jumped from 25.4% → 84.8% (+59.4pp) in run mamas-munches-homepage-2026-05-25-060541. Sister sections (768, 1440) only +0.9 / -2.3pp because framework header dominates the viewport there. **Resolution:** Phase 2 — header + footer specialised cloner. Gated on Phase 1.5 hitting per-section ≤1% (per `.claude/plans/2026-05-25-phase-1-universal-extraction.md` + `.claude/plans/2026-05-24-phase-2-header-footer-cloner.md`). The specialised cloner emits to wp_template_part shape, not page-content shape, and dedupes against framework header. Until then the live page carries both headers on mobile.
 **Status:** OPEN
 **Trigger:** Phase 2 kickoff.
 

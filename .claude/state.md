@@ -2,13 +2,21 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-current_phase: doc-optimisation-programme-PARTIAL-2026-05-24
-current_subphase: "Doc-Optimisation programme partial close — 14 commits shipped to main this session (a252fb75 → f00aa90f). Tasks I (block_compositions → patterns.block_composition JSON column) + H (source-DB retirement + 3 script ports + cache dirs) shipped. Mode A/B/Stage-3 collapsed (--refresh-upstream flag removed; live-scrape is now the default). Full SonarLint cc sweep landed on sgs-update-v2.py — 10 functions refactored across Proposals A/B/C + Batches 1-5 (cc 142→13, 85→9, 73→8, etc.). Phases 1 (F2 MEMORY.md compression), 2 (F1 worktree removal — 4.39 GB recovered), 3 (A' gitignore auto-gen reference), 4 (F5+F6+F3 small fixes), 5 (J 5 lessons captured) done. ~5 GB total disk recovered. BEM-canonical Step 1.7 G3 (slot_list visual extension) DEFERRED behind doc-op completion."
-current_subphase_step: "Phases 6 (B' active prune), 7 (F4 retention policy), 9 (C' spec relocation), 10 (D' heavy-doc restructure), 12 (E' registry sync), 13 (G /docscore rules) PENDING — see .claude/next-session-prompt-doc-op.md. After doc-op closes: resume Step 1.7 G3 per .claude/next-session-prompt.md (BEM-canonical version, preserved untouched this session per Bean directive)."
-last_updated: 2026-05-24
-latest_commit: "f00aa90f on main — docs: replace 'build new tools' efficiency notes with existing-skill recommendations"
+current_phase: phase-1-universal-extraction-NOT-STARTED-2026-05-25
+current_subphase: "Phase 1 universal-extraction backbone NOT YET STARTED. 2026-05-25 session built the consolidated qc-council recovery plan + canonical register (~110 items in .claude/reports/2026-05-25-qc-council-issue-register.md) + new phase-1 plan (.claude/plans/2026-05-25-phase-1-universal-extraction.md, 19 commits). Old phase-1 plan archived. CLAUDE.md reworked 452→155 lines per Karpathy R1-R7. Lesson captured (blub.db row 288 — phases-never-ship-as-single-commits). Decisions D73+D74+D75 logged. /qc-council 4-rater verdict: CONDITIONAL APPROVE pending F1 spike (Commit 7 of phase-1 plan) before full Phase 1 dispatch. Next session boots with F1 spike on brand alone — HARD GATE: brand drops ≥20pp at 1440 OR halt + re-investigate."
+current_subphase_step: "Phase 1 first action = F1 spike (Commit 7 of phase-1 plan). See .claude/next-session-prompt.md. Empirical baseline: pipeline-state/mamas-munches-homepage-2026-05-25-101222/ — mean pixel-diff 63.2% across 27 captures; hero 17% extracted; brand sgs/quote self-closing with empty body[]; F1 fallback proposed at convert.py:1430."
+last_updated: 2026-05-25
+latest_commit: "89b42188 on main — docs: handoff for 2026-05-25 qc-council session"
 working_tree: CLEAN
 github_branches: "main ONLY"
+phase_1_universal_extraction:
+  status: NOT_STARTED
+  plan: .claude/plans/2026-05-25-phase-1-universal-extraction.md
+  register: .claude/reports/2026-05-25-qc-council-issue-register.md
+  commits_planned: 19 (Commit 7 = F1 spike HARD GATE; Commits 8-18 = full Phase 1 work; Commit 19 = close /qc-council + /handoff)
+  acceptance_gate: per-section ≤30% × 3 viewports for all 7 body sections (21 cells; mean baseline 63.2%)
+  empirical_baseline: pipeline-state/mamas-munches-homepage-2026-05-25-101222/stage-11-pixel-diff.json
+  council_verdict: CONDITIONAL_APPROVE_pending_F1_spike (D75)
 doc_op_programme:
   status: PARTIAL — phases 1-5 + Tasks I + H + cc sweep shipped; 6/7/9/10/12/13 pending
   handoff: .claude/handoff-doc-op.md
@@ -34,9 +42,10 @@ architecture_programme:
 wp_7_0_upgrade_status: "SHIPPED 2026-05-22 (Session B Hostinger op). sandybrown core 6.9.4 → 7.0. DB schema 60717 → 61833. Pre-upgrade mysqldump at ~/sandybrown-pre-wp7.sql (7.5 MB) on Hostinger host for rollback. Two API surprises documented: (1) wp_register_icon_collection() doesn't exist — Phase 6 Lucide REST defensively no-op via class_exists + function_exists guards; (2) register_block_variation() still doesn't exist as PHP — Phase 1.5 Path B at cc541e94 remains load-bearing. Both validate blub.db row 283."
 session_2026_05_20_summary: "11 commits. Council + systematic-debugging + Phase 1 architectural rewrite (Spec 16 §FR6 compliant) + Phase 2 future capabilities (header/footer/nav hook, autonomy tightening, attribute promotion, block variations). Empirical: 5 of 6 desktop regressions from initial P1.B closed via P1.B.x. D1 typed-attr lift rate 4% → 37%. mamas-munches.css 23k → 19k chars. 60+8+40+51+14 = 173 tests passing across orchestrator + token_resolver + css_router + scaffold + promotion + essence-match. Header/footer-as-blocks anti-pattern (5th occurrence today) now blocked at both tool layer (P2.0 PostToolUse hook) AND source layer (P2.i chrome-skip in stage_9b autonomy). The 1009-row attribute_gap_candidates backlog now has a promotion CLI."
 blockers:
-  - "Doc-Optimisation programme Phases 6/7/9/10/12/13 PENDING — see .claude/next-session-prompt-doc-op.md. ~3-4 hours of work. Step 1.7 G3 (BEM-canonical slot_list visual extension) deferred behind doc-op completion."
-  - "16 STILL-OPEN parking items — mostly cloning-pipeline G1-G5 gaps + Wave 2 wiring reshape. Not blocking current work."
-  - "Pixel-diff target (≤ 5% per section at 1440) NOT YET ACHIEVED — architecture programme foundation complete; pixel-diff target needs G1-G5 structural fixes + ongoing attribute promotion. P-SGS-UPDATE-V2-COGNITIVE-COMPLEXITY-REFACTOR resolved 2026-05-24 (all 10 originally-flagged functions refactored; file under SonarLint threshold)."
+  - "F1 spike NOT YET RUN — Phase 1 dispatch gated on this per /qc-council verdict + blub.db row 276. First action in next session."
+  - "Pixel-diff target (≤1% per body section × 3 viewports) NOT YET ACHIEVED — current baseline mean 63.2%. Phase 1 gate is per-section ≤30%; Phase 1.5 closes to ≤1%; Phase 2 (header/footer cloner) opens after."
+  - "blub.db dashboard API was unreachable during 2026-05-25 session (port 5050) — fell back to direct SQLite INSERT for lesson row 288. Dashboard sync queued; resync when API back up."
+  - "Several STILL-OPEN parking items (~16) folded into Phase 1 plan sub-tasks (G1-G5 closure, F5 D1 media-field, FR1-variation-buf sibling sites). Will close as Phase 1 commits ship."
 ---
 
 # small-giants-wp — State Snapshot
