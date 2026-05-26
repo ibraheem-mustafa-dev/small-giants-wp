@@ -62,6 +62,18 @@ Per Spec 22 §6. Highlights:
 - **R-22-12** — /qc-council pre-commit gate enforced via `pipeline-stage-gate.py` hook for Commits 1.3 + 1.4
 - **R-22-13** — Bean visual sign-off co-authoritative with pixel-diff for Commit 1.5 close
 
+## Phase 1 pre-conditions — ALL VERIFIED 2026-05-27 (closing session)
+
+- ✅ Branch on main
+- ✅ Spec 22 status: active (§16 ratification gate ticked)
+- ✅ `python sgs-db.py stats` clean (194 blocks / 2,246 attrs / 89 slot_synonyms)
+- ✅ `npm run build` exits 0 (webpack compiled successfully, 98 styles up to date)
+- ✅ Sandybrown canary HTTP 200 (1.89s response — `/rc-fix-verification-mamas-munches/`)
+- ✅ Pre-rewrite DB snapshot exists (`pipeline-state/_snapshots/sgs-framework-pre-spec22.db` SHA256 `d088...0017bc`)
+- ✅ `slot_synonyms` content-bearing rows audited: 10 of 11 NULL `standalone_block` are correctly NULL by design (alt/ariaLabel/bar/feature/header/nav/slot/options/progress/ribbon — accessibility / color / 0-usage / role-excluded). 1 gap filled (`role.standalone_block = sgs/label` activates team-member + testimonial role routing).
+- ✅ FR-22-8 performance threshold verified (cold mean 3.2ms ≤20ms; warm mean 0.0002ms ≤2ms)
+- ✅ All tests PASS: db_lookup 5/5, external-derivation 4/4, wp-blocks adversarial 30/30
+
 ## First action
 
 `git mv plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py plugins/sgs-blocks/scripts/orchestrator/_retired/convert_pre_spec22.py` (after `mkdir -p plugins/sgs-blocks/scripts/orchestrator/_retired`). Confirm git status shows the rename. Add a one-line note to state.md noting the rename. Commit 1.1.
