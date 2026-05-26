@@ -1,5 +1,22 @@
 # Session Handoff — 2026-05-25 (qc-council on cloning-pipeline recovery + Phase 1 plan)
 
+> **2026-05-26 ADDENDUM — post-handoff work shipped:** After this handoff was written, a follow-up session implemented Commit 7 of the Phase 1 plan (F1 universal-nesting spike) and Phase 1H sgs/quote render migration in a single commit `a757ff1c` (2026-05-25 23:53).
+>
+> **F1 implementation location:** new helper `_f1_universal_walk_direct_children` at `convert.py:3916`, wired at 3 callsites inside `walk()` (lines 4047, 4124, 4181). This avoids the "no `walk`/`css_rules` in `_lift_inner_blocks` scope" problem by making the fallback a sibling helper called from `walk()` itself, where those vars ARE in scope. `_lift_inner_blocks` stays pure DB-driven.
+>
+> **Brand spike empirical (run `mamas-munches-homepage-2026-05-25-225113` vs baseline `101222`):**
+> - 375 mobile: 73.8 → 50.0 (−23.8pp) ✅ WIN
+> - 768 tablet: 59.4 → 46.4 (−13.0pp) ✅ WIN
+> - 1440 desktop: 50.0 → 50.8 (+0.8pp) ❌ FAILED strict HARD GATE (target ≤30%)
+>
+> **Verdict (implementer's own commit message):** *"F1+1H architecturally validated; desktop needs separate layout investigation."* Diagnosis was correct — the missing-nested-blocks issue was real for mobile and tablet, but desktop 1440 has a SEPARATE CSS/layout issue unrelated to nested-block emission. That's the open question now.
+>
+> **Lesson captured (feedback_grep_verify_handoff_diagnostic_premises.md, point 3 sub-rule added 2026-05-25 follow-up):** output-only inference is a trap. A fresh session halted on this F1 spike claiming brand had "no body paragraphs to nest" because it only read extract.json (output). The brand MOCKUP HTML actually has 3 `<p>` body paragraphs that were being LOST in extraction. Always verify both directions — code-shape AND source-of-truth input — before declaring a diagnostic premise false.
+>
+> **Next action:** investigate desktop 1440 brand layout directly. See updated `next-session-prompt.md`. Phase 1 Commits 1-6 + 8-19 still ahead but blocked on understanding 1440 first.
+
+---
+
 Prior handoff archived to `.claude/memory/handoff-2026-05-24-bem-canonical-walker.md`.
 
 ## Completed This Session

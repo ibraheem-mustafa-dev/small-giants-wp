@@ -511,7 +511,10 @@ if ( ! $inherit_style ) {
 	}
 
 	// Custom width.
-	if ( null !== $custom_width ) {
+	// Treat empty string the same as null so absent-attr instances don't emit
+	// `max-width:0px` (block.json default for `customWidth` is `""`, not null).
+	// Captured 2026-05-26: empty-string-not-null-in-wp-block-render pattern.
+	if ( null !== $custom_width && '' !== $custom_width ) {
 		$wrapper_style_parts[] = 'max-width:' . floatval( $custom_width ) . esc_attr( $custom_width_unit );
 	}
 

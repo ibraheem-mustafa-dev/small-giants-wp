@@ -1480,3 +1480,90 @@ Then return with an evidence-grounded answer: "given that `_lift_inner_blocks` a
 ### ANSWERED — Q10 Section P + J correctness check
 - **Evidence:** Bean's 2026-05-25 message expanded Section P from 14 to 25 principles (P1-P25) and corrected P9 + K17 + N5 framings. Sections P and J reflect Bean's actual design contributions.
 - **VERDICT:** Section P + J ratified by Bean's corrective feedback loop.
+
+---
+
+## Section S — F1 spike empirical result + desktop 1440 root cause (2026-05-26)
+
+### S1. F1 spike outcome (Commit 7, `a757ff1c`)
+
+F1 universal-nesting helper (`_f1_universal_walk_direct_children` at `convert.py:3916`) shipped, wired at 3 callsites inside `walk()` (lines 4047, 4124, 4181). Phase 1H sgs/quote render branch-on-InnerBlocks-content + save.js → InnerBlocks.Content + deprecated.js v1 null-save shim shipped in same commit.
+
+**Brand spike empirical** (run `mamas-munches-homepage-2026-05-25-225113` vs baseline `101222`):
+
+| Viewport | Baseline | Post-F1 | Δ | Verdict |
+|---|---|---|---|---|
+| 375 mobile | 73.8% | 50.0% | **−23.8pp** | ✅ WIN |
+| 768 tablet | 59.4% | 46.4% | **−13.0pp** | ✅ WIN |
+| 1440 desktop | 50.0% | 50.8% | **+0.8pp** | ❌ FAILED strict HARD GATE (≤30%) |
+
+**HARD GATE verdict per next-session-prompt.md Section "Predicted numeric outcome":** F1 PARTIAL (10-20pp drop on mobile WIN, FLAT on desktop). Per the prompt's verdict table, "F1 partial → surface to Bean. The diagnosis is right but the fix shape needs adjustment."
+
+**Honest implementer note (commit message):** "F1+1H architecturally validated; desktop needs separate layout investigation."
+
+### S2. Desktop 1440 root cause — `customWidth` empty-string vs null in quote render.php
+
+Investigation conducted via Playwright on live page 144 at 1440 viewport (2026-05-26). Computed-style diff revealed brand section was **3175px tall** (expected ~500px). The `__content` div alone was **3047px tall**; the `blockquote.sgs-brand__quote` was **2890px tall with width 0**. Each paragraph wrapped one character per line because the blockquote was constrained to 0 width.
+
+**Evidence chain:**
+
+| Layer | File:line | What happens |
+|---|---|---|
+| Block schema | `plugins/sgs-blocks/src/blocks/quote/block.json:413-416` | `"customWidth": { "type": "string", "default": "" }` — default empty string, not null |
+| Attribute read | `plugins/sgs-blocks/src/blocks/quote/render.php:180` | `$custom_width = isset( $attributes['customWidth'] ) ? $attributes['customWidth'] : null;` — returns `""` (key exists with empty string), NOT `null` |
+| Null check | `plugins/sgs-blocks/src/blocks/quote/render.php:514` | `if ( null !== $custom_width ) { ... }` — `""` is NOT `null`, so branch fires |
+| Style emission | `plugins/sgs-blocks/src/blocks/quote/render.php:515` | `'max-width:' . floatval( $custom_width ) . esc_attr( $custom_width_unit )` — `floatval("") === 0.0` → emits `max-width:0px` |
+| Computed result | live `.sgs-brand__quote` | inline style: `max-width:0px` → blockquote width=0, paragraphs wrap 1 char/line, height 2890px |
+
+**Why this is desktop-only:** at mobile/tablet, the brand section is single-column. The blockquote's parent (`.sgs-brand__content` flex column) is itself narrow (~335px on mobile, ~640px on tablet), and the broken `max-width: 0` is overridden by something in the responsive cascade (need to confirm — possibly mobile-specific CSS doesn't trigger the same width collapse). At desktop 1440, the parent is wide (433px), and the `max-width: 0` inline style (specificity-king) collapses the blockquote.
+
+Actually — re-checking — `max-width: 0px` should collapse at ALL viewports. The fact that pixel-diff went DOWN at 375/768 means F1's nested paragraphs are visibly closer-to-mockup even with a collapsed-width blockquote. Possibly because mockup itself has narrower expected widths at those viewports + the rendered-character-per-line shape is partially obscured by other section diffs. The 1440 pixel-diff stays flat because the 50% baseline was already accounting for the empty-quote nothing-rendered shape — F1 added the paragraphs but they're collapsed-width, so still nothing usefully readable visible.
+
+The bug is the same at all viewports — the visibility-cost just happens to surface most at 1440. Fixing `max-width:0px` should improve ALL viewports, with the biggest gain at 1440.
+
+### S3. Ranked fix-shape menu (Bean to choose)
+
+**Option A — Minimal one-line fix on quote/render.php line 514 (RECOMMENDED).**
+
+Change:
+```php
+if ( null !== $custom_width ) {
+```
+To:
+```php
+if ( '' !== $custom_width && null !== $custom_width ) {
+```
+
+**Cost:** ~5 minutes (edit + build + deploy + measure).
+**Predicted impact:** brand 1440 drops from 50.8% → ≤30% (probably much lower; the blockquote width collapse was the dominant defect). Mobile/tablet also improve (additional ~5-10pp drop each).
+**Risk:** zero — defensive null-and-empty check, no behaviour change for instances where customWidth IS set.
+**Phase 1 gate:** brand likely passes ≤30% × 3 viewports after this commit alone.
+
+**Option B — Fix all empty-string-vs-null patterns in `quote/render.php`.**
+
+Audit the entire render.php for `null !==` checks on string-default attrs (likely also affects border-radius, padding-*, margin-* emissions). Replace with helper `sgs_attr_has_value($val)` that excludes both null and empty string.
+
+**Cost:** ~20 minutes (audit + helper + replace + build + deploy + measure).
+**Predicted impact:** same brand visual fix as Option A + removes ~10 redundant `0px` declarations from inline style (cosmetic only — they collapsed to 0 anyway, no layout change).
+**Risk:** low — defensive checks across one file.
+**Recommendation:** subsume into Option C — same pattern is system-wide, not just quote.
+
+**Option C — Universal sweep of all sgs/*/render.php files for empty-string-vs-null pattern.**
+
+The empty-string-default-treated-as-real-value pattern almost certainly exists in other sgs blocks too. Audit every render.php that uses `null !== $foo` after `isset()` against a string-default attr. Add `sgs_attr_has_value()` helper to `includes/render-helpers.php`. Replace pattern across all blocks. Add Phase 1H-style integration test to catch regressions.
+
+**Cost:** ~60-90 minutes (full audit + helper + 25+ block edits + build + deploy + multi-section measure).
+**Predicted impact:** Option A's visual fix + prevents future regressions in any block that ships with optional max-width / similar layout-affecting attrs.
+**Risk:** medium — touches many blocks; needs canary deploy per `feedback_verify_wp_api_surface_before_dismissing_static_analyser`.
+**Phase 1 cadence fit:** would be its own commit (per blub.db row 288), gated by `/qc-council` pre-commit because it's a multi-block edit.
+
+### S4. Recommendation
+
+**Ship Option A as the next commit** (~5 min). It closes brand at all 3 viewports almost certainly under the ≤30% gate and validates the diagnostic chain end-to-end. Then **schedule Option C as a separate Phase 1 hygiene commit** (per binding rule blub.db row 288 — phases never ship as single commits). Option B is subsumed by Option C.
+
+### S5. Lessons captured
+
+| Pattern key | Where | Why it matters |
+|---|---|---|
+| `empty-string-not-null-in-wp-block-render` | new — TBD | WP block.json `string` types default to `""` not `null`. `isset($attr['foo']) ? $attr['foo'] : null` returns `""` when the operator hasn't set the attr. `null !== $val` check fails to exclude `""`. Use `'' !== $val && null !== $val` OR a helper `sgs_attr_has_value()`. |
+| Sibling: `output-only-inference-trap` (added to feedback_grep_verify_handoff_diagnostic_premises.md, 2026-05-25 follow-up) | `~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_grep_verify_handoff_diagnostic_premises.md` point 3 sub-rule | The fresh session that halted on F1 read only extract.json; should have read the mockup HTML AND inspected live page DOM at the target viewport. Today's diagnosis took 15 min because Playwright + computed-style diff at the actual disputed viewport surfaced the inline-style `max-width:0px` immediately. |
