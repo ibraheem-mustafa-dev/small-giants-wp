@@ -158,12 +158,104 @@ def log(msg: str) -> None:
     print(f"[{ts}] {msg}", flush=True)
 
 
+def _detect_chrome_height(page) -> tuple[int, int, int]:
+    """Measure WP chrome (admin bar + template-part header) at top of page.
+
+    Phase 0.3 measurement-methodology hardening (Spec 22 FR-22-7 + R-22-13).
+    Returns (chrome_height_px, adminbar_height, template_part_header_height).
+
+    Detection logic:
+      - `#wpadminbar`: visible only to logged-in users with admin capability;
+        always rendered above-the-fold when present.
+      - First `header.wp-block-template-part` or `.sgs-header.wp-block-template-part`:
+        the framework header template part rendered ABOVE the body content on
+        SGS-clone pages. This is distinct from a cv2-emitted body-content
+        `<header class="sgs-header">` (without `wp-block-template-part`) which
+        IS part of the body comparison surface and must NOT be cropped.
+      - Multiple template-part headers: prefer one with `data-area="header"`;
+        otherwise first match.
+
+    All measurements via `getBoundingClientRect().bottom` to capture the full
+    visible extent (including any padding/border/box-shadow that bleeds into
+    the screenshot). Graceful on missing elements — returns 0 for absent.
+    """
+    js = """
+    () => {
+      const out = { adminbar: 0, template_part_header: 0 };
+      const ab = document.querySelector('#wpadminbar');
+      if (ab) {
+        const r = ab.getBoundingClientRect();
+        if (r && r.bottom > 0) out.adminbar = Math.ceil(r.bottom);
+      }
+      // Prefer data-area="header" if present, else first matching template-part.
+      let tph = document.querySelector(
+        'header.wp-block-template-part[data-area="header"], ' +
+        '.sgs-header.wp-block-template-part[data-area="header"]'
+      );
+      if (!tph) {
+        tph = document.querySelector(
+          'header.wp-block-template-part, ' +
+          '.sgs-header.wp-block-template-part'
+        );
+      }
+      if (tph) {
+        const r = tph.getBoundingClientRect();
+        if (r && r.bottom > 0) out.template_part_header = Math.ceil(r.bottom);
+      }
+      return out;
+    }
+    """
+    try:
+        result = page.evaluate(js)
+    except Exception:  # noqa: BLE001
+        return (0, 0, 0)
+    ab = int(result.get("adminbar") or 0)
+    tph = int(result.get("template_part_header") or 0)
+    # template_part_header.bottom already includes adminbar offset if both
+    # present (it's a viewport-relative measurement). Use max() to avoid
+    # double-counting; fall back to sum only if tph < ab (rare misordering).
+    if tph > 0 and tph >= ab:
+        chrome_height = tph
+    else:
+        chrome_height = ab + tph
+    return (chrome_height, ab, tph)
+
+
+def _wait_for_fonts(page, timeout_ms: int = 8000) -> None:
+    """Block until `document.fonts.ready` resolves or timeout.
+
+    Phase 0.3 measurement-methodology hardening. Font-load timing is one of
+    the residual ~4pp noise sources identified for Phase 1.5: unstyled text
+    captured before font swap inflates pixel-diff. Wrapped in timeout because
+    `document.fonts.ready` hangs forever on broken font URLs.
+    """
+    import time
+    started = time.monotonic()
+    try:
+        page.evaluate(
+            "() => Promise.race(["
+            "  document.fonts.ready,"
+            "  new Promise(r => setTimeout(r, " + str(timeout_ms) + "))"
+            "])"
+        )
+        elapsed_ms = int((time.monotonic() - started) * 1000)
+        if elapsed_ms >= timeout_ms - 50:
+            log(f"WAIT-FONTS timed out after {timeout_ms}ms — capturing anyway")
+        else:
+            log(f"WAIT-FONTS document.fonts.ready resolved in {elapsed_ms}ms")
+    except Exception as e:  # noqa: BLE001
+        log(f"WAIT-FONTS evaluation failed ({e}) — capturing anyway")
+
+
 def capture(
     url: str,
     viewport: tuple[int, int],
     out_path: Path,
     selector: str | None = None,
-) -> None:
+    is_sgs: bool = False,
+    wait_fonts: bool = False,
+    keep_chrome: bool = False,
+) -> int:
     """Capture a screenshot. If selector is given, crop to that element's
     bounding box; otherwise full-page capture.
 
@@ -171,8 +263,21 @@ def capture(
     scripts/screenshot-diff-helper.js --selector) — eliminates the structural
     DOM-wrapper differences between converter-rendered output and mockup-as-
     raw-HTML that inflate full-page diffs.
+
+    When `is_sgs=True` AND full-page mode (no selector OR selector fallback),
+    detect WP chrome at the top (admin bar + framework template-part header)
+    and crop it from the saved PNG. Phase 0.3 hardening (Spec 22 R-22-13);
+    closes the 60px chrome-bleed measurement artefact on hero-clone-poc.
+
+    When `wait_fonts=True`, blocks on `document.fonts.ready` (up to 8s) before
+    screenshot. Closes Phase 1.5 font-swap-timing noise source.
+
+    Returns the chrome_height_px applied (0 in selector-success mode where
+    `element.screenshot()` already crops to the target element's bounding box,
+    or when not is_sgs, or when no chrome detected).
     """
     w, h = viewport
+    chrome_height_applied = 0
     with sync_playwright() as pw:
         browser = pw.chromium.launch(headless=True)
         ctx = browser.new_context(
@@ -182,15 +287,88 @@ def capture(
         page = ctx.new_page()
         page.goto(url, wait_until="networkidle", timeout=45000)
         page.wait_for_timeout(800)
+        if wait_fonts:
+            _wait_for_fonts(page)
         if selector:
             el = page.locator(selector).first
             try:
                 el.wait_for(state="visible", timeout=5000)
+                # Phase 0.3 measurement-methodology hardening (Spec 22 R-22-13).
+                # The hero-clone-poc 60px chrome-bleed lives here: sticky/fixed
+                # WP chrome (admin bar, sticky template-part header) re-anchors
+                # to viewport-top during `el.screenshot()` scrolling and paints
+                # OVER the top rows of the captured element. Identified via
+                # post-scroll DOM inspection: `position:sticky;top:0` template-
+                # part header with bb.bottom=246 overlapping `.sgs-hero` viewport
+                # bb.top=180 → 66px cream band on the captured hero PNG.
+                # Mitigation: hide sticky/fixed chrome (visibility:hidden, not
+                # display:none — preserves layout, only blocks paint) before
+                # `el.screenshot()`. Restore handled by browser close so no
+                # explicit cleanup needed. Mockup side never has chrome so the
+                # hide is is_sgs-gated.
+                ch, ab, tph = (0, 0, 0)
+                if is_sgs and not keep_chrome:
+                    ch, ab, tph = _detect_chrome_height(page)
+                    log(
+                        f"CHROME-DETECT sgs pre-scroll chrome_height_px={ch} "
+                        f"(adminbar={ab}px, template_part_header={tph}px)"
+                    )
+                elif is_sgs and keep_chrome:
+                    log(
+                        "CHROME-KEEP --keep-chrome flag set; skipping chrome "
+                        "detection + hide (debug observability mode per "
+                        "P-PIXEL-DIFF-KEEP-CHROME-FLAG)"
+                    )
                 # Scroll the target element into view so any lazy-loaded images
                 # within it actually fetch + decode. Without this, sections far
                 # below the initial viewport screenshot with empty `<img>` slots
                 # because `loading="lazy"` keeps them deferred. Captured
                 # 2026-05-17 during brand walkdown.
+                # Hide sticky/fixed WP chrome BEFORE scroll + screenshot.
+                # Only on SGS side (mockup is a static HTML file with no WP chrome).
+                # visibility:hidden preserves layout (no shift), only blocks paint.
+                hidden_chrome_count = 0
+                if is_sgs and not keep_chrome:
+                    hidden_chrome_count = page.evaluate(
+                        """() => {
+                            const targets = [
+                                '#wpadminbar',
+                                'header.wp-block-template-part',
+                                '.sgs-header.wp-block-template-part'
+                            ];
+                            let n = 0;
+                            for (const sel of targets) {
+                                document.querySelectorAll(sel).forEach(el => {
+                                    const cs = getComputedStyle(el);
+                                    if (cs.position === 'sticky' || cs.position === 'fixed') {
+                                        el.style.visibility = 'hidden';
+                                        n++;
+                                    } else {
+                                        // Even non-sticky chrome is irrelevant for
+                                        // an element screenshot below it, but hide
+                                        // anyway so any margin-collapsing doesn't
+                                        // shift the captured element vertically.
+                                        // Skip if the element is sgs/body content
+                                        // (no wp-block-template-part class but
+                                        // matches '.sgs-header' selector — that's
+                                        // a cv2-emitted body header).
+                                        if (el.matches('.sgs-header') &&
+                                            !el.matches('.wp-block-template-part')) {
+                                            return;
+                                        }
+                                        el.style.visibility = 'hidden';
+                                        n++;
+                                    }
+                                });
+                            }
+                            return n;
+                        }"""
+                    )
+                    if hidden_chrome_count > 0:
+                        log(
+                            f"CHROME-HIDE sgs hid {hidden_chrome_count} sticky/fixed "
+                            f"chrome elements before element.screenshot()"
+                        )
                 el.scroll_into_view_if_needed()
                 # P-PIXEL-DIFF-LAZY-LOAD-DYNAMIC-WAIT (closed 2026-05-17):
                 # Replace the arbitrary 1200 ms fixed wait with a dynamic poll
@@ -216,11 +394,52 @@ def capture(
                     pass
                 el.screenshot(path=str(out_path))
                 browser.close()
-                return
+                # Sticky chrome was hidden pre-screenshot (CHROME-HIDE branch
+                # above) so element.screenshot() captures clean content.
+                # Return the pre-scroll chrome height for telemetry so diff.json
+                # records what would have bled in without the mitigation.
+                return ch if (is_sgs and hidden_chrome_count > 0) else 0
             except Exception:  # noqa: BLE001
                 log(f"WARN: selector {selector!r} not found on {url} — falling back to full page")
+        # Full-page path (no selector OR selector fallback). For SGS captures,
+        # measure + crop chrome BEFORE writing the PNG that downstream diff
+        # consumes. --keep-chrome short-circuits this for debug observability.
+        if is_sgs and not keep_chrome:
+            chrome_height, ab, tph = _detect_chrome_height(page)
+            chrome_height_applied = chrome_height
+            log(
+                f"CHROME-DETECT sgs_screenshot chrome_height_px={chrome_height} "
+                f"(adminbar={ab}px, template_part_header={tph}px)"
+            )
+        elif is_sgs and keep_chrome:
+            log(
+                "CHROME-KEEP full-page: --keep-chrome flag set; skipping "
+                "chrome detection + post-screenshot crop"
+            )
         page.screenshot(path=str(out_path), full_page=True)
         browser.close()
+    # Crop chrome off the saved PNG. Done AFTER browser close to keep the
+    # Playwright session lean and reuse PIL (already an import dependency).
+    if chrome_height_applied > 0:
+        try:
+            img = Image.open(str(out_path))
+            iw, ih = img.size
+            if chrome_height_applied >= ih:
+                log(
+                    f"CHROME-CROP skipped: detected height {chrome_height_applied}px "
+                    f">= image height {ih}px — leaving uncropped"
+                )
+                return 0
+            cropped = img.crop((0, chrome_height_applied, iw, ih))
+            cropped.save(str(out_path))
+            log(
+                f"CHROME-CROP sgs_screenshot cropped by {chrome_height_applied}px "
+                f"(adminbar+template_part_header)"
+            )
+        except Exception as e:  # noqa: BLE001
+            log(f"WARN: chrome-crop failed ({e}) — leaving uncropped")
+            return 0
+    return chrome_height_applied
 
 
 def find_body_start_y(img: Image.Image, anchor_color: tuple[int, int, int] = (255, 248, 233)) -> int:
@@ -342,6 +561,26 @@ def main() -> int:
              "flat {attr: value} dict OR a per_section_results entry "
              "({extracted_attributes: {...}, ...}).",
     )
+    ap.add_argument(
+        "--wait-fonts",
+        action="store_true",
+        default=False,
+        help="Wait for `document.fonts.ready` (up to 8s) before capturing each "
+             "screenshot. Phase 0.3 measurement-methodology hardening — closes "
+             "font-swap-timing noise on the pixel-diff result. Default OFF for "
+             "backward compatibility; recommend ON for CI / Phase 1 runs.",
+    )
+    ap.add_argument(
+        "--keep-chrome",
+        action="store_true",
+        default=False,
+        help="Debug observability override: skip the SGS-side chrome detection "
+             "+ visibility:hidden mitigation (and the full-page post-screenshot "
+             "chrome crop). Use when you need to SEE chrome rendering (e.g. "
+             "verifying admin bar renders correctly). Default OFF (production "
+             "measurement runs apply chrome-hide for clean comparison). Per "
+             "P-PIXEL-DIFF-KEEP-CHROME-FLAG / /qc-council Task 5 Rater B 2026-05-27.",
+    )
     args = ap.parse_args()
 
     try:
@@ -362,14 +601,24 @@ def main() -> int:
 
     log(f"INIT output dir: {out_dir}  selector={args.selector or '(full page)'}")
     log(f"CAPTURE mockup @ {w}x{h}: {args.mockup}")
+    mockup_chrome_height = 0
+    sgs_chrome_height = 0
     try:
-        capture(args.mockup, (w, h), mockup_png, args.selector)
+        mockup_chrome_height = capture(
+            args.mockup, (w, h), mockup_png, args.selector,
+            is_sgs=False, wait_fonts=args.wait_fonts,
+            keep_chrome=args.keep_chrome,
+        )
     except Exception as e:  # noqa: BLE001
         log(f"ERROR: mockup capture failed: {e}")
         return 3
     log(f"CAPTURE sgs @ {w}x{h}: {args.sgs}")
     try:
-        capture(args.sgs, (w, h), sgs_png, args.selector)
+        sgs_chrome_height = capture(
+            args.sgs, (w, h), sgs_png, args.selector,
+            is_sgs=True, wait_fonts=args.wait_fonts,
+            keep_chrome=args.keep_chrome,
+        )
     except Exception as e:  # noqa: BLE001
         log(f"ERROR: sgs capture failed: {e}")
         return 3
@@ -382,6 +631,18 @@ def main() -> int:
         return 4
 
     log(f"DECODE mockup {mockup.width}x{mockup.height}, sgs {sgs.width}x{sgs.height}")
+    # Defensive guard (Phase 0.3 R-22-13): if chrome-crop was applied to SGS
+    # but the resulting SGS image is now SHORTER than the mockup by >100px on
+    # full-page (selector=None) mode, the mockup may inadvertently carry
+    # chrome itself (e.g. file paths swapped). Surface a warning rather than
+    # silently producing a misaligned diff.
+    if args.selector is None and sgs_chrome_height > 0:
+        if mockup.height - sgs.height > 100:
+            log(
+                f"WARN: post-crop sgs ({sgs.width}x{sgs.height}) is >100px shorter "
+                f"than mockup ({mockup.width}x{mockup.height}). Mockup file may "
+                f"include chrome; verify --mockup target is a clean mockup."
+            )
     body_a = find_body_start_y(mockup)
     body_b = find_body_start_y(sgs)
     log(f"BODY-ANCHOR mockup_y={body_a}  sgs_y={body_b}")
@@ -416,6 +677,9 @@ def main() -> int:
             else "FAIL"
         ),
         "captured_at": datetime.now(timezone.utc).isoformat(),
+        "sgs_chrome_height_px": sgs_chrome_height,
+        "wait_fonts": bool(args.wait_fonts),
+        "keep_chrome": bool(args.keep_chrome),
     }
 
     # Phase 9 split-metric: attribute-coverage% sits alongside the pixel-diff%.

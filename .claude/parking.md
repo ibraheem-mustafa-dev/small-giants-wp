@@ -1,8 +1,10 @@
 ---
 doc_type: parking
 project: small-giants-wp
-last_updated: 2026-05-26
+last_updated: 2026-05-27
 ---
+
+> **2026-05-27 note (D85 — role-exclusion DB-derive + Tier C deletion):** `P-D85-ROLE-EXCLUSION-DB-DERIVE` and `P-TIER-C-DELETE-OR-PROVE` closed-as-completed (no separate parking entries existed; tracked here for completeness). The two hardcoded frozensets (`_CONTENT_BEARING_ROLES`, `_ROLE_EXCLUSION_ALLOWLIST`) in `db_lookup.py` are gone — replaced by DB-driven `_content_bearing_roles()` / `_styling_behaviour_roles()` querying the new `slot_synonyms.role_classification` column (idempotent migration at module load). Tier C derivation deleted from `equivalent_block_for()` per qc-council Rater B + Bean directive. Spec 22 §FR-22-2.1 / §FR-22-2.3 / §15 amended. Re-introduction of a role-derived tier gated on `P-SGS-UPDATE-ROLE-DETECTION-IMPROVE` (closed for role detection itself, but a follow-up parking entry can be re-opened if Tier C inputs accumulate).
 
 <!-- ACTIVE — open parking items only. Resolved entries → memory/parking-archive.md with completion date in heading. -->
 
@@ -11,8 +13,11 @@ last_updated: 2026-05-26
 > **P-LEGACY-GAP-CANDIDATES-MIGRATION** — 1,480 legacy rows in `sgs-framework.db.attribute_gap_candidates` (Spec 16 era). Spec 22 FR-22-8.1 makes this table read-only; all new D3 writes go to uimax's `attribute_gap_candidates` (91 rows, with confidence + provenance columns). Migration of the 1,480 legacy rows is out-of-scope for Spec 22. **Trigger:** post-Spec-22 close, when Phase 1.5 considers cleaning up legacy data surfaces.
 > **Status:** DEFERRED
 
-> **P-SGS-UPDATE-ROLE-DETECTION-IMPROVE** — NEW 2026-05-27 (surfaced during D84 scope correction). `/sgs-update` Stage 4 currently leaves `role` NULL for many plausibly content-bearing attrs. Sample triple-NULL rows where role might reasonably be set: `sgs/icon.icon` (role=identity?), `sgs/icon.link` (role=link-href?), `sgs/responsive-logo.url` (role=link-href?). Today these stay NULL and skip both Tier B and Tier C derivation. Future improvement: tighten role detection in `behavioural-analyser/assign-canonical.py` to populate `role` from `block.json` patterns (attr name regex matching + `format` field heuristics + JSON-schema `description` keyword scan). Out of scope for Phase 0.1 — captured here so the observation isn't lost. If role detection later populates these rows, they become Tier C candidates and `assign-canonical.py` derivation activates. **Trigger:** post-Phase-1 close, when Tier B backfill steady-state is established and the next derivation surface is Tier C.
-> **Status:** OPEN — low priority
+> **P-SGS-UPDATE-ROLE-DETECTION-IMPROVE** — CLOSED 2026-05-27 (Spec 22 Phase 0.1.b implementation). Role-detection module added to `plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py` (`detect_role_from_block_json()` + dry-run + apply mode). Three-tier heuristic: (1) attr-name regex against the 5 content-bearing role families; (2) JSON-schema `format` hint (uri/email → link-href); (3) description-keyword scan as low-confidence fallback. Hard guard: only proposes values in `_CONTENT_BEARING_ROLES` (text-content / image-object / content / link-href / identity) — never styling roles. Dry-run output: `pipeline-state/_snapshots/role-detection-diff-2026-05-26T12-03-24Z.json` (94 high-confidence proposals: 42 text-content, 31 link-href, 12 identity, 7 image-object, 2 content). Acceptance verified: sgs/icon.iconSource/iconName resolve to `identity`, linkTarget to `link-href`, sgs/timeline.entries to `content` (all four match spec's expected outcomes). 11 unit-test cases pass via `--self-test`. Apply with `--apply-roles --role-diff-file <path>`.
+> **Status:** CLOSED 2026-05-27
+
+> **P-D85-BASELINE-CONSTANT-DRIFT** — CLOSED 2026-05-27 (Spec 22 Phase 0.1.b implementation). Replaces the hardcoded `1142` triple-NULL baseline constant in assign-canonical.py with a file-backed snapshot at `pipeline-state/_snapshots/triple-null-baseline.json`. Sanity check now reads the snapshot at script start and reports `OK — guardrail intact, matches snapshot` on match, or a drift message naming the snapshot + capture date on mismatch. New `--recapture-baseline` CLI flag writes a fresh snapshot with the current count when /sgs-update Stage 4 legitimately adds new blocks. Eliminates alert fatigue when DB grows.
+> **Status:** CLOSED 2026-05-27
 
 ## Cloning pipeline (cv2 / orchestrator / DOM walker / pixel-diff)
 
@@ -78,8 +83,10 @@ _60 entries._
 **Trigger:** Same Playwright run as P-G1-HERO-INNERBLOCKS (page 144, before next pixel-diff session). Pair both verifications in one 15-min run to amortise overhead.
 
 
-**P-G4-MEASUREMENT-DECONTAMINATION** — `scripts/pixel-diff.py` screenshots include WP admin bar + sgs-header. Mockup screenshots have neither. Systematic +10-20pp inflation on EVERY section measurement. Fix: Playwright `addInitScript` removes `#wpadminbar` + `.sgs-header` before screenshot. **Trigger:** Wave 1 of next session (G4).
-**Status:** OPEN
+**P-G4-MEASUREMENT-DECONTAMINATION** — `scripts/pixel-diff.py` screenshots include WP admin bar + sgs-header. Mockup screenshots have neither. Systematic +10-20pp inflation on EVERY section measurement. Fix: Playwright `addInitScript` removes `#wpadminbar` + `.sgs-header` before screenshot. **PARTIAL-RESOLVED 2026-05-28** by Spec 22 Phase 0.3 work on `scripts/pixel-diff.py`: chrome-detect (`#wpadminbar` + first `header.wp-block-template-part`) + chrome-hide (`visibility:hidden` pre-screenshot, only on `is_sgs=True` captures of sticky/fixed chrome) + new `--wait-fonts` flag. Empirical: hero-clone-poc 1440 54.5% → 10.3% (-44.2pp); Mama's hero 1440 69.6% → 60.8% (-8.8pp). Most non-chrome-affected cells unchanged. Trust-bar / brand-1440 / hero-768 / hero-375 dimensions baseline unchanged.
+**Status:** PARTIAL — closed for sticky template-part-header overlay (the primary 60px chrome bleed). Residual: cv2-emitted `<header class="sgs-header">` body content is NOT hidden (correctly — it's part of the comparison surface, gated on `.wp-block-template-part` class check). **Note (D88 2026-05-27 — /qc-council Task 5 Rater A correction):** Mama's brand-375 +2.4pp shift (53.2% → 55.6%) is NOT flake — three byte-identical-PNG re-runs confirmed determinism. It's a REAL methodology shift from the 83px sticky-chrome hide at 375. Implication: every chrome-affected Mama's cell partially-stale on 2026-05-26 mean 63.0% baseline; Wave B re-captures full Mama's baseline with new pixel-diff.py. Phase 1.5 stretch goal owns any further measurement-script tuning.
+**P-PIXEL-DIFF-VERTICAL-ANCHOR-FIX** — Closed by Phase 0.3 (Spec 22 Commit 0.3). 60px chrome-bleed on hero-clone-poc identified as `position:sticky;top:0` template-part header overlaying `el.screenshot()` viewport. Mitigated by pre-screenshot `visibility:hidden` on detected sticky/fixed chrome. Telemetry: `sgs_chrome_height_px` + `wait_fonts` now written to every `diff.json`. See `pipeline-state/_phase-0-3-regression/` for postfix evidence.
+**Status:** CLOSED 2026-05-28
 
 
 **P-G5-PER-BLOCK-DOM-SHAPE-FIXES** — Per-block mismatches between mockup and render output:

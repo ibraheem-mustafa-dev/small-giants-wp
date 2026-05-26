@@ -28,6 +28,88 @@ if not UIMAX_DB.exists():
 
 
 # ----------------------------------------------------------------------------
+# Idempotent schema migration — slot_synonyms.role_classification
+# ----------------------------------------------------------------------------
+# Spec 22 §FR-22-2.2 / D85 (qc-council Rater B 2026-05-27): role classification
+# moves out of hardcoded Python frozensets into a DB column on slot_synonyms.
+# Honours R-22-1 (DB-first, no hardcoded dicts; blub.db row 260).
+#
+# The column carries three permitted values:
+#   - 'content-bearing'    — role routes content via block-equivalence
+#   - 'styling-behaviour'  — role is a scalar styling/behaviour attr
+#   - 'unclassified'       — role NULL or otherwise not yet classified
+#
+# Population mapping (per D85 brief 2026-05-27, derived from the previous
+# hardcoded _CONTENT_BEARING_ROLES + _ROLE_EXCLUSION_ALLOWLIST frozensets):
+_ROLE_CLASSIFICATION_MAP: dict[str, str] = {
+    # Content-bearing roles
+    "text-content":         "content-bearing",
+    "image-object":         "content-bearing",
+    "content":              "content-bearing",
+    "link-href":            "content-bearing",
+    "identity":             "content-bearing",
+    # Styling / behaviour roles
+    "typography":           "styling-behaviour",
+    "color":                "styling-behaviour",
+    "colour-gradient":      "styling-behaviour",
+    "colour-text":          "styling-behaviour",
+    "spacing-token":        "styling-behaviour",
+    "number-css-px":        "styling-behaviour",
+    "number-css-percent":   "styling-behaviour",
+    "layout":               "styling-behaviour",
+    "motion":               "styling-behaviour",
+    "visual":               "styling-behaviour",
+    "behaviour":            "styling-behaviour",
+    "boolean-visibility":   "styling-behaviour",
+    "select-from-enum":     "styling-behaviour",
+    "enum-class-probe":     "styling-behaviour",
+    "query-descriptor":     "styling-behaviour",
+}
+
+
+def _migrate_role_classification() -> None:
+    """Idempotent migration: add slot_synonyms.role_classification column if absent
+    and populate it from _ROLE_CLASSIFICATION_MAP.
+
+    Safe to call repeatedly. Runs at module load. Honours R-22-1: the mapping
+    above is the one-time seed of the catalogue, NOT a runtime lookup dict —
+    once seeded, all callers query the DB column via the public helper
+    functions below.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        cols = {row[1] for row in conn.execute("PRAGMA table_info(slot_synonyms)").fetchall()}
+        if "role_classification" not in cols:
+            conn.execute(
+                "ALTER TABLE slot_synonyms ADD COLUMN role_classification TEXT"
+            )
+        # Populate any row whose classification is missing (NULL). Idempotent:
+        # already-classified rows are left alone, so re-runs are no-ops.
+        rows = conn.execute(
+            "SELECT canonical_slot, role FROM slot_synonyms "
+            "WHERE role_classification IS NULL OR role_classification = ''"
+        ).fetchall()
+        for canonical_slot, role in rows:
+            classification = _ROLE_CLASSIFICATION_MAP.get(role, "unclassified")
+            conn.execute(
+                "UPDATE slot_synonyms SET role_classification = ? "
+                "WHERE canonical_slot = ?",
+                (classification, canonical_slot),
+            )
+        conn.commit()
+    except sqlite3.OperationalError:
+        # DB read-only / locked / missing — soft-fail. Callers fall back to
+        # unclassified-default behaviour (positive-allowlist returns None).
+        pass
+    finally:
+        conn.close()
+
+
+# Run migration at module load (idempotent).
+_migrate_role_classification()
+
+
+# ----------------------------------------------------------------------------
 # Trace emitter (debug-trace evidence chain)
 # ----------------------------------------------------------------------------
 # Mirrors the pattern in convert.py. set_trace() is called by convert.py's
@@ -666,6 +748,204 @@ def legacy_role_lookup_for(kebab_role: str) -> str | None:
 
 
 # ----------------------------------------------------------------------------
+# equivalent_block_for — Spec 22 §FR-22-2.1 two-tier derivation
+# ----------------------------------------------------------------------------
+# Canonical implementation of the universal walker's block-equivalence question:
+# "Given (block_slug, attr_name), is the attr block-equivalent — and if so,
+#  which standalone block is its content emitted as?"
+#
+# Two tiers, in order (Tier C deleted 2026-05-27 per D85 / qc-council Rater B
+# — see Spec 22 §15 F-AP-2 / F-SC-11 RESOLVED via deletion; will be re-added
+# when role detection generates real Tier C inputs per parking entry
+# P-SGS-UPDATE-ROLE-DETECTION-IMPROVE):
+#   A. Direct join: block_attributes.canonical_slot IS NOT NULL → join
+#      slot_synonyms.canonical_slot → return standalone_block.
+#   B. BEM-element extraction: when canonical_slot IS NULL but derived_selector
+#      is set (e.g. '.sgs-product-card__image'), extract the BEM element
+#      (regex __([a-z0-9-]+)) → match against slot_synonyms.aliases
+#      (JSON-decoded) → return standalone_block.
+#
+# FR-22-2.2 role-exclusion is applied BEFORE tier matching as a positive
+# allowlist: return None when the attr's role is NOT classified
+# 'content-bearing' on slot_synonyms.role_classification. Prevents the
+# "typography looks like heading" trap (headlineFontSizeDesktop has
+# canonical_slot='heading' but role='typography' → must NOT route content
+# to a heading block). Per D85 the classification lives in the DB
+# (slot_synonyms.role_classification), not in hardcoded Python frozensets
+# (honours R-22-1; blub.db row 260).
+#
+# LRU cache (maxsize=2048): walker calls this function per-node-per-attr;
+# canonical_slot + derived_selector + role are static for the lifetime of a
+# pipeline run, so cached lookups are safe and necessary for the ≤2ms
+# cache-warm performance threshold (FR-22-8).
+
+
+@functools.lru_cache(maxsize=1)
+def _content_bearing_roles() -> frozenset[str]:
+    """Return the set of role names classified 'content-bearing' on
+    slot_synonyms.role_classification (DB-driven; D85 2026-05-27).
+
+    Replaces the previous hardcoded _CONTENT_BEARING_ROLES frozenset.
+    Cached at module-load price; the column is static for the lifetime
+    of a pipeline run.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT DISTINCT role FROM slot_synonyms "
+            "WHERE role_classification = 'content-bearing' "
+            "  AND role IS NOT NULL AND role != ''"
+        ).fetchall()
+    except sqlite3.OperationalError:
+        # Column missing (migration soft-failed). Return empty — positive
+        # allowlist closes by default, which is the safe direction.
+        return frozenset()
+    finally:
+        conn.close()
+    return frozenset(r[0] for r in rows)
+
+
+@functools.lru_cache(maxsize=1)
+def _styling_behaviour_roles() -> frozenset[str]:
+    """Return the set of role names classified 'styling-behaviour' on
+    slot_synonyms.role_classification (DB-driven; D85 2026-05-27).
+
+    Diagnostic helper — not consulted by the gate in equivalent_block_for()
+    (the gate is a positive allowlist on _content_bearing_roles()). Provided
+    for downstream tooling that needs to enumerate styling-behaviour roles
+    explicitly.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT DISTINCT role FROM slot_synonyms "
+            "WHERE role_classification = 'styling-behaviour' "
+            "  AND role IS NOT NULL AND role != ''"
+        ).fetchall()
+    except sqlite3.OperationalError:
+        return frozenset()
+    finally:
+        conn.close()
+    return frozenset(r[0] for r in rows)
+
+# BEM element extractor: matches the FIRST __element segment in a selector.
+# e.g. '.sgs-product-card__image' → 'image'; '.sgs-icon__glyph, [data-icon]'
+# → 'glyph'; 'audio' / 'figure > a' / 'h1,h2,h3' → no match (core/* shapes).
+_BEM_ELEMENT_RE = re.compile(r"__([a-z0-9-]+)")
+
+
+@functools.lru_cache(maxsize=1)
+def _slot_alias_to_standalone() -> dict[str, str]:
+    """Return {alias_lowercase: standalone_block} from slot_synonyms.
+
+    Walks every row's canonical_slot + aliases JSON; maps each term (lowercased)
+    to the row's standalone_block. Used by Tier B BEM-element matching.
+    Excludes rows where standalone_block is NULL/empty.
+    """
+    import json
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT canonical_slot, aliases, standalone_block FROM slot_synonyms "
+            "WHERE standalone_block IS NOT NULL AND standalone_block != ''"
+        ).fetchall()
+    finally:
+        conn.close()
+    out: dict[str, str] = {}
+    for canonical, aliases_json, standalone in rows:
+        out[canonical.lower()] = standalone
+        if aliases_json:
+            try:
+                for alias in json.loads(aliases_json):
+                    out[alias.lower()] = standalone
+            except (ValueError, TypeError):
+                pass
+    return out
+
+
+@functools.lru_cache(maxsize=2048)
+def equivalent_block_for(block_slug: str, attr_name: str) -> str | None:
+    """Return the standalone block slug if (block_slug, attr_name) is block-equivalent,
+    else None.
+
+    Spec 22 §FR-22-2.1 two-tier derivation + §FR-22-2.2 role-exclusion.
+    (Tier C deleted 2026-05-27 per D85 / qc-council Rater B — see module
+    docstring above. Re-introduction gated on
+    P-SGS-UPDATE-ROLE-DETECTION-IMPROVE generating real Tier C inputs.)
+
+    Performance: cached per (block_slug, attr_name); cache size 2048 sized for the
+    walker's per-node-per-attr call pattern across a full body-section run.
+
+    Examples:
+        equivalent_block_for('sgs/product-card', 'description')   -> 'sgs/text'
+        equivalent_block_for('sgs/hero', 'headlineFontSizeDesktop') -> None
+            (Tier A matches canonical_slot='heading' but role='typography' → excluded)
+        equivalent_block_for('sgs/back-to-top', 'position')       -> None
+            (triple-NULL; no tier matches)
+        equivalent_block_for('sgs/icon', 'iconSource')            -> 'sgs/icon'
+            (Tier B: derived_selector='.sgs-icon__glyph...', elem='glyph' →
+             slot_synonyms.icon.aliases contains 'glyph' → standalone='sgs/icon')
+    """
+    if not block_slug or not attr_name:
+        return None
+
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        row = conn.execute(
+            "SELECT canonical_slot, derived_selector, role "
+            "FROM block_attributes "
+            "WHERE block_slug = ? AND attr_name = ?",
+            (block_slug, attr_name),
+        ).fetchone()
+    finally:
+        conn.close()
+
+    if row is None:
+        return None
+
+    canonical_slot, derived_selector, role = row
+
+    # FR-22-2.2 role-exclusion as positive-allowlist (D85 2026-05-27 — moved
+    # from hardcoded frozenset to DB-driven query of slot_synonyms.role_classification
+    # per Rater B finding; honours R-22-1).
+    #
+    # The original negative-blocklist `if role and role in _ROLE_EXCLUSION_ALLOWLIST`
+    # short-circuited on falsy role (NULL/empty), letting 171 rows with
+    # canonical_slot set + role NULL through to tier resolution. The 3 confirmed
+    # misroutes were sgs/cta-section.textTransform / sgs/hero.textTransform /
+    # sgs/info-box.textTransform — all returned 'sgs/text' because
+    # canonical_slot='text' matched slot_synonyms.aliases but role-NULL
+    # bypassed the exclusion check.
+    #
+    # Positive-allowlist closes the hole: a row's content is routed via
+    # block-equivalence ONLY when role is explicitly content-bearing per the
+    # DB-driven classification. Role-NULL → return None. Role in
+    # styling/behaviour set → return None. Role unknown to either set → return
+    # None (defensive — new roles must be classified before routing).
+    if role not in _content_bearing_roles():
+        return None
+
+    # Tier A — direct join: canonical_slot → slot_synonyms.standalone_block
+    if canonical_slot:
+        standalone = _slot_alias_to_standalone().get(canonical_slot.lower())
+        if standalone:
+            return standalone
+        # canonical_slot set but no standalone_block on slot_synonyms row
+        # → falls through to next tier (defensive; should be rare).
+
+    # Tier B — BEM-element from derived_selector → slot_synonyms.aliases match
+    if derived_selector:
+        m = _BEM_ELEMENT_RE.search(derived_selector)
+        if m:
+            element = m.group(1).lower()
+            standalone = _slot_alias_to_standalone().get(element)
+            if standalone:
+                return standalone
+
+    return None
+
+
+# ----------------------------------------------------------------------------
 # Smoke test
 # ----------------------------------------------------------------------------
 
@@ -691,3 +971,47 @@ if __name__ == "__main__":
     print("\n== block_attrs(sgs/container) sample ==")
     for a, info in list(block_attrs("sgs/container").items())[:5]:
         print(f"  {a:25} -> {info}")
+
+    # -----------------------------------------------------------------
+    # equivalent_block_for — Spec 22 §FR-22-2.1 unit tests
+    # -----------------------------------------------------------------
+    print("\n== equivalent_block_for (Spec 22 §FR-22-2.1) ==")
+    cases: list[tuple[str, str, str | None, str]] = [
+        # (block_slug, attr_name, expected, label)
+        ("sgs/product-card", "description", "sgs/text",
+         "Tier A: role=text-content (in content allowlist) + canonical_slot='text' → sgs/text"),
+        ("sgs/hero", "headlineFontSizeDesktop", None,
+         "Positive-allowlist: role=typography NOT in content set → None"),
+        ("sgs/back-to-top", "position", None,
+         "Triple-NULL row: role=None → None (positive-allowlist closes by default)"),
+        ("sgs/icon", "iconSource", "sgs/icon",
+         "Tier A: role='image-object' (content-bearing per slot_synonyms.role_classification) "
+         "+ canonical_slot='icon' → sgs/icon. Expectation updated 2026-05-27 (D85) — prior "
+         "expectation of None assumed role=None, but DB has role='image-object' (verified)."),
+        # Rater A adversarial test (2026-05-27 /qc-council finding): textTransform is a
+        # styling attr whose canonical_slot was set to 'text' in the DB; original
+        # negative-blocklist short-circuited on role=NULL and returned 'sgs/text',
+        # producing the FR-22-2.2 "typography looks like heading" misroute. Positive-
+        # allowlist closes the hole because role=None is not in _CONTENT_BEARING_ROLES.
+        ("sgs/cta-section", "textTransform", None,
+         "FR-22-2.2 adversarial (Rater A 2026-05-27): canonical_slot='text' matches "
+         "Tier A but role=None bypasses content allowlist → None (was 'sgs/text' pre-fix)"),
+    ]
+    failures: list[str] = []
+    for block_slug, attr_name, expected, label in cases:
+        actual = equivalent_block_for(block_slug, attr_name)
+        ok = actual == expected
+        status = "PASS" if ok else "FAIL"
+        print(f"  [{status}] {block_slug}.{attr_name}")
+        print(f"         expected={expected!r}  actual={actual!r}")
+        print(f"         {label}")
+        if not ok:
+            failures.append(f"{block_slug}.{attr_name}: expected {expected!r} got {actual!r}")
+    print()
+    if failures:
+        print(f"FAILURES: {len(failures)}")
+        for f in failures:
+            print(f"  - {f}")
+        sys.exit(1)
+    else:
+        print("All equivalent_block_for tests PASS.")

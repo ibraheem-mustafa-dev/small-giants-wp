@@ -112,63 +112,46 @@ Every `block_attributes` row's "equivalent_block" status is derived at query tim
 **PASS test:** for every product-card emission in extract.json post-Spec-22, `image`/`description`/`productName`/`packSizes` slots are emitted as child InnerBlocks (sgs/media, sgs/text, sgs/heading, sgs/button) — NOT as scalar attrs on the parent product-card block. `variantStyle` and `trialTag` remain as scalar attrs.
 **FAIL test:** any extract.json entry where `description` appears both as a parent attr AND as a child sgs/text block (the double-render).
 
-#### FR-22-2.1 — Three-tier derivation for `equivalent_block_for()` (implementation reference)
+#### FR-22-2.1 — Two-tier derivation for `equivalent_block_for()` (implementation reference)
 
-The derivation function lives in `converter_v2/db_lookup.py`. Three tiers, in order:
+The derivation function lives in `converter_v2/db_lookup.py`. Two tiers, in order:
 
 1. **Tier A — Direct join.** `block_attributes.canonical_slot` IS NOT NULL → join `slot_synonyms` → return `standalone_block`.
 2. **Tier B — BEM-element from derived_selector.** When canonical_slot is NULL but `derived_selector` is set (e.g. `.sgs-product-card__image`), extract the BEM element (`image`), match against `slot_synonyms.aliases` (JSON-decoded), return the matching `standalone_block`.
-3. **Tier C — Role-to-block (derived from existing `slot_synonyms` table, no new table).** When canonical_slot AND derived_selector are both NULL, query `slot_synonyms` for the dominant `standalone_block` for the attr's `role`:
-   ```
-   SELECT standalone_block FROM (
-       SELECT standalone_block, COUNT(*) as freq
-       FROM slot_synonyms
-       WHERE role = ? AND standalone_block IS NOT NULL
-       GROUP BY standalone_block ORDER BY freq DESC LIMIT 1
-   )
-   ```
-   If the role has a clear dominant block (current data: `text-content` → sgs/text freq=4; `image-object` → sgs/media freq=3; `content` → sgs/button freq=3; `visual` → sgs/divider freq=1) return it. If the role spreads ambiguously (current data: `identity` spreads across 7 blocks at freq=1 each), return NULL — fall through to unresolved-log + operator fix (populate canonical_slot directly).
+
+**Tier C deleted 2026-05-27** per D85 / qc-council Rater B verdict (Bean directive). Re-introduction is gated on parking entry `P-SGS-UPDATE-ROLE-DETECTION-IMPROVE` generating real Tier C inputs — at which point the path will be re-added with empirical evidence backing it. See §15 F-AP-2 / F-SC-11 / F-PE-5 (all RESOLVED via deletion).
 
 **Empirical DB state (2026-05-27, scope-corrected — supersedes earlier "1,214 NULL rows to backfill" framing):** of 2,246 block_attributes rows:
 - 1,032 (46%) have `canonical_slot` populated → Tier A active.
 - 72 (3%) have `canonical_slot` NULL but `derived_selector` set → Tier B candidates (the actual backfill scope).
-- 0 rows have `canonical_slot` NULL with `role` set but `derived_selector` NULL → Tier C derivation path has zero inputs in current DB state. Logic ships dormant for future-proofing.
 - 1,142 (51%) are triple-NULL (canonical_slot + derived_selector + role all NULL). These are **correctly NULL by design** — behavioural / sizing / styling / enum / identity attrs (e.g. `back-to-top.position`, `reading-progress.wpm`, `icon.size`). The `block_attributes` table catalogues every block × every attr; `canonical_slot` is sparsely populated by intent, NOT a sign of missing data. They are **NOT backfill targets**. Forcing canonical_slot onto them would mass-corrupt the FR-22-2.2 role-exclusion guarantee.
 
-`/sgs-update assign-canonical.py` extension under Spec 22 Phase 0.1 is scope-locked to the ≤72 Tier B candidates. Script guardrail per D84: MUST refuse to operate on any row where `derived_selector IS NULL`. Tier C logic ships dormant. Long-term Tier B usage drives toward zero as canonical_slot is populated via the dry-run-then-review cycle.
+(Previously a third bucket — rows with canonical_slot NULL + derived_selector NULL + role set — would have been Tier C derivation candidates. Empirically 0 rows in the current DB; Tier C deleted 2026-05-27 per D85. Re-introduction gated on `P-SGS-UPDATE-ROLE-DETECTION-IMPROVE`.)
+
+`/sgs-update assign-canonical.py` extension under Spec 22 Phase 0.1 is scope-locked to the ≤72 Tier B candidates. Script guardrail per D84: MUST refuse to operate on any row where `derived_selector IS NULL`. Long-term Tier B usage drives toward zero as canonical_slot is populated via the dry-run-then-review cycle.
 
 #### FR-22-2.2 — Role-exclusion rule (the "typography looks like heading" trap)
 
 Not every attr whose `canonical_slot` joins to a `standalone_block` is content-bearing. `sgs/hero` has 134 attrs that join via canonical_slot to a standalone_block — but most are typography/spacing/colour attrs on the `heading` canonical slot (e.g. `headlineFontSizeDesktop` has canonical_slot=`heading` because it styles the heading, NOT because the operator should drop a sgs/heading block there).
 
-The role-exclusion rule: `equivalent_block_for()` returns the slug ONLY when the attr's role is in the content-bearing role allowlist:
+The role-exclusion rule: `equivalent_block_for()` returns the slug ONLY when the attr's role is classified `content-bearing` on `slot_synonyms.role_classification` (DB-driven positive allowlist; D85 2026-05-27 — see §4 data layer):
 
 Content-bearing roles (return slug): text-content, image-object, content, link-href, identity.
 
 Styling/behaviour roles (return NULL even if canonical_slot joins): typography, color, colour-gradient, colour-text, spacing-token, number-css-px, number-css-percent, layout, motion, visual, behaviour, boolean-visibility, select-from-enum, enum-class-probe, query-descriptor.
+
+Per R-22-1 the classification is NOT a hardcoded Python frozenset — it lives in `slot_synonyms.role_classification` (TEXT column, values `content-bearing` / `styling-behaviour` / `unclassified`) and is queried at runtime by `db_lookup._content_bearing_roles()`. The seed mapping is in `db_lookup._ROLE_CLASSIFICATION_MAP` (one-time idempotent migration at module load; not a runtime lookup dict).
 
 This shrinks the "hybrid block" set from 63 raw blocks down to a smaller true-content-bearing set (estimated 8-15; surfaced empirically by the Phase 0.4 audit query — see Phase 0).
 
 **PASS test:** `equivalent_block_for('sgs/hero', 'headlineFontSizeDesktop')` returns NULL (typography role, not content).
 **FAIL test:** `equivalent_block_for('sgs/product-card', 'description')` returns NULL (should return sgs/text — text-content role).
 
-#### FR-22-2.3 — Tier C uses existing `slot_synonyms` data (no new table)
+#### FR-22-2.3 — (RETIRED 2026-05-27, D85) — Tier C role-to-block derivation
 
-Tier C's role-to-block resolution queries the EXISTING `slot_synonyms` table — which already carries both `role` and `standalone_block` columns. No new DB table required. R-22-1 (no hardcoded dicts) is preserved by deriving from existing DB data rather than adding a Python lookup.
+**Status:** RETIRED. Earlier drafts proposed a third derivation tier (role-to-dominant-block via `slot_synonyms.role + standalone_block` query) for use when both `canonical_slot` and `derived_selector` were NULL on a `block_attributes` row. Empirically there are 0 such rows in the current DB; the path was dormant on ship. Per qc-council Rater B (2026-05-27) and Bean directive, Tier C is deleted from the codebase rather than shipped dormant — R-22-7 (council fix-shapes are hypotheses, not specs) applied to the original proposal: there were no empirical inputs to validate the dominance heuristic against. Re-introduction is gated on `P-SGS-UPDATE-ROLE-DETECTION-IMPROVE` generating real Tier C inputs, at which point a fresh spec amendment will re-add the path with measurement evidence.
 
-Empirical state of the role-derivation surface (queried 2026-05-26):
-
-| role | Dominant standalone_block | Frequency | Resolves under Tier C? |
-|---|---|---|---|
-| text-content | sgs/text | 4 of 9 rows | YES (4 > others) |
-| image-object | sgs/media | 3 of 4 rows | YES |
-| content | sgs/button | 3 of 3 rows | YES |
-| visual | sgs/divider | 1 of 1 row | YES |
-| identity | (7 blocks tied at freq=1) | ambiguous | NO — falls through to unresolved-log |
-
-Adding a new role-to-block relationship is achieved by adding rows to `slot_synonyms`, NOT by editing Python code. R-22-1 binding force preserved without schema change.
-
-Operator path when a new role surfaces with no `slot_synonyms` coverage: add `slot_synonyms` rows via `/sgs-update` Stage 4. Per FR-22-2.4 unresolved-log catches it pre-walker-emit.
+Adding a new role-to-block relationship is achieved by adding rows to `slot_synonyms` and populating `canonical_slot` on the relevant `block_attributes` rows (Tier A) or `derived_selector` (Tier B). No new DB table required.
 
 #### FR-22-2.4 — Unresolved attr handling
 
@@ -377,7 +360,7 @@ Stage 2 (the confidence matrix) continues to produce `stage-2.json` / `match.jso
 | `block_selectors` | 72 | Block-slug → element → selector mapping |
 | `block_styles` | 63 | Block style variations |
 | `block_changes` | 2,719 | Audit log |
-| `slot_synonyms` | 89 | THE central table for FR-22-1. canonical_slot → aliases (JSON) + standalone_block + role + html_semantic_tag |
+| `slot_synonyms` | 89 | THE central table for FR-22-1. canonical_slot → aliases (JSON) + standalone_block + role + html_semantic_tag + **role_classification** (D85 2026-05-27 — added by `db_lookup._migrate_role_classification()` idempotent migration; values: `content-bearing` / `styling-behaviour` / `unclassified`; consumed by FR-22-2.2 positive-allowlist gate). |
 | `property_suffixes` | 117 | CSS property → block-attribute suffix (D1 routing) |
 | `modifier_suffixes` | 19 | BEM modifier kinds |
 | `legacy_role_lookup` | 16 | kebab role → SGS slug (cross-convention compatibility) |
@@ -454,12 +437,12 @@ Retired scripts move to `plugins/sgs-blocks/scripts/orchestrator/_retired/` so t
 | Hybrid block render.php (8-15 blocks per FR-22-2 audit) | Per FR-22-6 + FR-22-6.1 — emit InnerBlocks content for block-equivalent slots; deprecated.js shim; parallel-session-eligible. |
 | Stage 9 leftover-bucket classifier | New `unresolved_equivalent_block` bucket; `extraction_failed` count drops |
 | trace.jsonl event taxonomy | Per-branch event types drop (`fr1_matched` / `essence_matched` / `composite_to_standalone`); universal `walker_emit` gains bem-resolution path field |
-| `converter_v2/db_lookup.py` | New functions: `equivalent_block_for()`, `atomic_tag_map()`, `resolve_slug_from_bem()`, `lift_behavioural_attrs()`, `emit_sgs_container_wrapping()` + LRU cache |
+| `converter_v2/db_lookup.py` | New functions: `equivalent_block_for()` (2-tier; Tier C deleted D85 2026-05-27), `atomic_tag_map()`, `resolve_slug_from_bem()`, `lift_behavioural_attrs()`, `emit_sgs_container_wrapping()` + LRU cache + `_migrate_role_classification()` idempotent migration at module load + `_content_bearing_roles()` / `_styling_behaviour_roles()` DB-driven helpers replacing the prior hardcoded `_CONTENT_BEARING_ROLES` / `_ROLE_EXCLUSION_ALLOWLIST` frozensets. |
 
 ### Enriches
 
 - `block_attributes.canonical_slot` — `/sgs-update assign-canonical.py` extended for Tier B backfill only (≤72 candidate rows per D84 scope correction; 1,142 triple-NULL rows are correctly NULL behavioural attrs and stay NULL by design)
-- `slot_synonyms` — new rows added for gaps surfaced during the universal sweep (also serves as Tier C role-to-block lookup per FR-22-2.3 — no new table needed)
+- `slot_synonyms` — new rows added for gaps surfaced during the universal sweep. New column `role_classification` added by D85 (2026-05-27) idempotent migration in `db_lookup._migrate_role_classification()`; populated from `_ROLE_CLASSIFICATION_MAP` seed (one-time at module load). Tier C derivation no longer required (FR-22-2.3 retired); the column powers the FR-22-2.2 positive-allowlist gate.
 - uimax `recognition_log` — every walker emit logs an outcome (no schema change; writes increase)
 
 ## 6. Architectural rules (binding for every Spec 22 commit)
@@ -488,7 +471,7 @@ Retired scripts move to `plugins/sgs-blocks/scripts/orchestrator/_retired/` so t
 
 **Commit 0.2 — wp-blocks.py extension.** Add 6 new subcommands per FR-22-8 (~150 LoC). Adversarial test corpus per F-RA-3: positive cases (block-equivalent attrs return correct slug) + negative cases (behavioural attrs return null) + edge cases (hyphen-compound BEM elements).
 
-**Commit 0.3 — Phase 0 measurement-methodology hardening.** Patch `scripts/pixel-diff.py` to fix the 60px vertical-anchor offset identified in hero-clone-poc validation: detect chrome at top of SGS screenshot, crop before comparison. Add `--wait-fonts` flag to wait for `document.fonts.ready`. Optional but recommended. Without it the Phase 1 ≤5% gate is measured against a script with known noise; with it the gate has empirical foundation. Decision: ship per F-RA-9.
+**Commit 0.3 — Phase 0 measurement-methodology hardening.** Patch `scripts/pixel-diff.py` to fix the 60px vertical-anchor offset identified in hero-clone-poc validation: detect sticky/fixed WP chrome (admin bar + framework template-part header) on the SGS page and apply `visibility:hidden` BEFORE `el.screenshot()` so the chrome's `position:sticky;top:0` re-anchoring during scroll-into-view does not paint over the captured element. **Post-screenshot crop-by-detected-height was tried and rejected (D87 2026-05-27, /qc-council Task 5 Rater B): empirically over-crops by `chrome_height − target_viewport_offset` (the bleed on `el.screenshot()` is `tph_bottom − target_top` ≈ 66px at 1440, NOT the full 247px chrome height; cropping by the full height produced 57% > 54.5% baseline).** Retain post-screenshot crop ONLY for full-page captures where no target offset exists. Add `--wait-fonts` flag to wait for `document.fonts.ready` (default OFF; `/sgs-clone` orchestrator passes ON automatically for Spec-22-gated runs per P-SGS-CLONE-WAIT-FONTS-ORCHESTRATION). Add `--keep-chrome` debug-override flag (skip chrome detection + hide; for observability use cases). Empirical result: hero-clone-poc 1440 went 54.5% → 10.3% (−44.2pp); Mama's hero 1440 IMPROVED 69.6% → 60.8% (−8.8pp; honest new baseline since chrome was contaminating prior measurement). Without this work the Phase 1 ≤5% gate is measured against a script with known noise; with it the gate has empirical foundation.
 
 **Commit 0.4 — Hybrid-block audit.** Query `equivalent_block_for()` against every block × every attr. Filter via FR-22-2.2 role-exclusion. Produce roster at `.claude/reports/2026-05-26-hybrid-block-roster.md`. Sets Phase 2 scope (estimated 8-15 blocks, not 63).
 
@@ -705,7 +688,7 @@ Example seed (live-derived at startup, not hardcoded):
 | Council finding | Severity | Address in v0.3 |
 |---|---|---|
 | F-AP-1 / F-SC-1 — "No branches" structural contradiction | CRIT | FR-22-3 explicitly names exactly 3 permitted exceptions; PASS/FAIL test added |
-| F-AP-2 / F-SC-11 — ROLE_TO_BLOCK dict violates R-22-1 | CRIT | Tier C derives from existing `slot_synonyms.role + standalone_block` columns (FR-22-2.3) — no Python dict, no new table, uses data already in DB |
+| F-AP-2 / F-SC-11 — ROLE_TO_BLOCK dict violates R-22-1 | CRIT | **RESOLVED via Tier C deletion (D85 2026-05-27).** Earlier v0.3 mitigation derived Tier C from existing `slot_synonyms.role + standalone_block` columns; qc-council Rater B (2026-05-27) and Bean directive removed Tier C entirely on empirical grounds (0 inputs in current DB → no measurement evidence for the dominance heuristic). The DB-derived role-classification column (`slot_synonyms.role_classification`) now powers FR-22-2.2 via the positive-allowlist gate without any Python lookup dict. R-22-1 honoured. |
 | F-PE-3 — ATOMIC_TAG_MAP via blocks.replaces wrong direction | CRIT | Resolution algorithm specified in Appendix B (§14) — 2-tier lookup via slot_synonyms.html_semantic_tag + blocks.replaces reverse |
 | F-PE-4 — Hybrid scope 90 not 5 | CRIT | Recalibrated: 63 raw → 8-15 true hybrid via FR-22-2.2 role-exclusion |
 | F-RA-1 — Phase 0.1 backfill semantic golden corpus | CRIT → DOWNGRADED LOW (D84, 2026-05-27) | Mitigation restructured: script constrained by construction to `derived_selector IS NOT NULL` input. DB audit 2026-05-27 showed 1,142 of 1,214 "NULL canonical_slot" rows are correctly-NULL behavioural attrs (NOT backfill targets); real backfill scope is ≤72 Tier B rows reviewable inline. Golden corpus DROPPED — dry-run JSON diff IS the review surface. |
@@ -715,7 +698,7 @@ Example seed (live-derived at startup, not hardcoded):
 | F-AP-3 — "Hybrid block" is renamed "container-shaped composite" | HIGH | Acknowledged honestly in §1 point 3 |
 | F-AP-5 / F-SC-12 / F-SC-6 — Cross-DB invariants undefined | HIGH | FR-22-8.1 defines authoritative source + write destination per logical entity |
 | F-AP-6 / F-SC-4 / F-SC-5 / F-SC-7 — Stale cross-doc references | HIGH | **Commit 0.0 is now the gate for Spec 22 status flip from draft → active**; touches 11 of the 18 docs |
-| F-PE-5 — Tier C covers 0 rows in current DB | HIGH | FR-22-2.1 Tier C reworked to query existing `slot_synonyms` data (5 roles covered today: text-content, image-object, content, visual, identity); FR-22-2.1 documents empirical state honestly |
+| F-PE-5 — Tier C covers 0 rows in current DB | HIGH | **RESOLVED via Tier C deletion (D85 2026-05-27).** Original v0.3 mitigation kept Tier C wired-but-dormant; qc-council Rater B + Bean directive removed it entirely. Re-introduction gated on parking entry `P-SGS-UPDATE-ROLE-DETECTION-IMPROVE` generating real Tier C inputs. |
 | F-PE-7 — Multi-SGS-class disambiguation unspecified | HIGH | FR-22-1 row added + `_pick_primary_sgs_block` tiebreaker named |
 | F-PE-8 — packSizes array-of-objects has no resolution | HIGH | FR-22-2.5 (Array-of-objects resolution) added |
 | F-RA-3 — wp-blocks.py adversarial test corpus | HIGH | Required in Commit 0.2 |
