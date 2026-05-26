@@ -1,67 +1,50 @@
-/* ===== SGS Section Heading — Frontend + Editor ===== */
-/* Baseline values match the Mama's Munches gift-section heading cluster.      */
-/* Inline styles (written by save.js) ALWAYS take precedence over these rules. */
+/* ===== SGS Heading — Frontend + Editor (v0.4.0 single-element) ===== */
+/* Inline styles written by render.php ALWAYS take precedence.          */
 
 /* ----- Wrapper ----- */
 .wp-block-sgs-heading {
 	text-align: center;
 }
 
-/* ----- Label (eyebrow / kicker) ----- */
-.wp-block-sgs-heading__label {
-	display: block;
-	font-size: 12px;
-	font-weight: 600;
-	letter-spacing: 1.5px;
-	text-transform: uppercase;
-	margin-bottom: 8px;
-
-	/* :not([style*="color"]) ensures the default token never overrides an
-	   operator-supplied inline colour value from the inspector. */
-}
-
-.wp-block-sgs-heading__label:not([style*="color"]) {
-	color: var(--wp--preset--color--primary);
-}
-
-/* ----- Headline ----- */
-.wp-block-sgs-heading__headline {
-	font-size: 28px;
-	font-weight: 700;
-	line-height: 1.2;
+/* ----- Text element (heading or subheading) ----- */
+.wp-block-sgs-heading__text {
 	margin-top: 0;
 	margin-bottom: 8px;
 }
 
-.wp-block-sgs-heading__headline:not([style*="color"]) {
+/* Default colour fallback — :not([style*="color"]) ensures the operator-
+   supplied inline colour from the inspector always wins. */
+.wp-block-sgs-heading__text:not([style*="color"]) {
 	color: var(--wp--preset--color--text);
 }
 
-/* Tablet — scale headline up to 36px */
+/* ----- Heading role defaults ----- */
+.wp-block-sgs-heading:not(.wp-block-sgs-heading--subheading) .wp-block-sgs-heading__text {
+	font-size: 28px;
+	font-weight: 700;
+	line-height: 1.2;
+}
+
+/* Tablet — scale heading up */
 @media (min-width: 768px) {
-	.wp-block-sgs-heading__headline {
+	.wp-block-sgs-heading:not(.wp-block-sgs-heading--subheading) .wp-block-sgs-heading__text {
 		font-size: 36px;
 	}
 }
 
-/* ----- Sub (intro / supporting copy) ----- */
-.wp-block-sgs-heading__sub {
+/* ----- Subheading role defaults ----- */
+/* Only applied when text colour / font-weight are not overridden inline. */
+.wp-block-sgs-heading--subheading .wp-block-sgs-heading__text {
 	font-size: 16px;
 	line-height: 1.5;
-	margin-top: 0;
-	margin-bottom: 0;
 }
 
-.wp-block-sgs-heading__sub:not([style*="color"]) {
+.wp-block-sgs-heading--subheading .wp-block-sgs-heading__text:not([style*="font-weight"]) {
+	font-weight: 400;
+}
+
+.wp-block-sgs-heading--subheading .wp-block-sgs-heading__text:not([style*="color"]) {
 	color: var(--wp--preset--color--text-muted);
-}
-
-/* ----- Icon / emoji prefix ----- */
-.wp-block-sgs-heading__icon {
-	display: block;
-	font-size: 1.5em;
-	line-height: 1;
-	margin-bottom: 8px;
 }
 
 /* ===== Reduced motion ===== */
