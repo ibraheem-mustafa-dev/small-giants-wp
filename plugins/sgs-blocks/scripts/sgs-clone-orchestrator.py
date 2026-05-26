@@ -2227,6 +2227,22 @@ def main():
              "falling through to the retired legacy extractor.",
     )
     parser.add_argument(
+        "--spec-22-acceptance", action="store_true", default=False,
+        help="Spec 22 Phase 1 acceptance-gate mode. Propagates --wait-fonts to "
+             "Stage 11 pixel-diff invocations so the ≤5%% per-section gate "
+             "(FR-22-7) is measured against `document.fonts.ready`-stable "
+             "screenshots, not flash-of-unstyled-text noise. OFF by default "
+             "for backward-compat with pre-Spec-22 runs.",
+    )
+    parser.add_argument(
+        "--strict-spec-22-gate", action="store_true", default=False,
+        help="When set, Stage 11 exits non-zero if ANY pixel-diff cell reports "
+             "diff.json.wait_fonts=false. Use during Phase 1 acceptance runs to "
+             "fail hard rather than soft-warn. Implied by --spec-22-acceptance "
+             "only at the warning level; this flag elevates the gate to a "
+             "hard halt. (default: False — soft warning only)",
+    )
+    parser.add_argument(
         "--no-schema-validation", action="store_true", default=False,
         help="Skip Stage 6 block.json attribute schema validation. By default, the "
              "orchestrator halts with an actionable error if any block emits attributes "
@@ -2618,6 +2634,16 @@ def main():
                         if b.get("selector")
                     ]
                     viewports = ("375x812", "768x1024", "1440x900")
+                    # Spec 22 Phase 0.3.b — propagate --wait-fonts to pixel-diff
+                    # when the run is a Spec 22-gated acceptance run or a
+                    # debug-trace walkdown. Without this the ≤5% gate (FR-22-7)
+                    # measures against FOUT-noisy screenshots. Backward-compat:
+                    # pre-Spec-22 runs (no --spec-22-acceptance, no --debug-trace)
+                    # behave exactly as before. See P-SGS-CLONE-WAIT-FONTS-ORCHESTRATION.
+                    _wait_fonts_on = bool(
+                        getattr(args, "spec_22_acceptance", False)
+                        or getattr(args, "debug_trace", False)
+                    )
                     results_s11: list[dict] = []
                     for selector in selectors:
                         # Drop any non-class component for the directory name
@@ -2625,15 +2651,18 @@ def main():
                         for vp in viewports:
                             pd_out = pd_out_root / f"{safe_sel}-{vp.split('x')[0]}"
                             try:
+                                _pd_cmd = [
+                                    sys.executable, str(pixel_diff_script),
+                                    "--mockup", mockup_uri,
+                                    "--sgs", sgs_url,
+                                    "--viewport", vp,
+                                    "--selector", selector,
+                                    "--out", str(pd_out),
+                                ]
+                                if _wait_fonts_on:
+                                    _pd_cmd.append("--wait-fonts")
                                 pd_proc = subprocess.run(
-                                    [
-                                        sys.executable, str(pixel_diff_script),
-                                        "--mockup", mockup_uri,
-                                        "--sgs", sgs_url,
-                                        "--viewport", vp,
-                                        "--selector", selector,
-                                        "--out", str(pd_out),
-                                    ],
+                                    _pd_cmd,
                                     capture_output=True, text=True, timeout=120,
                                 )
                                 diff_json_path = pd_out / "diff.json"
@@ -2644,6 +2673,7 @@ def main():
                                         "viewport": vp,
                                         "mismatch_percent": diff_data.get("mismatch_percent"),
                                         "verdict": diff_data.get("verdict"),
+                                        "wait_fonts": diff_data.get("wait_fonts"),
                                         "diff_json": str(diff_json_path.relative_to(REPO)),
                                     })
                                 else:
@@ -2662,16 +2692,25 @@ def main():
                                     "selector": selector, "viewport": vp,
                                     "error": f"{type(inner_exc).__name__}: {inner_exc}"[:200],
                                 })
+                    # Spec 22 FR-22-7 wait_fonts assertion — count cells whose
+                    # diff.json reports wait_fonts=false. Soft-warn by default;
+                    # --strict-spec-22-gate elevates to hard exit.
+                    _wait_fonts_false_cells = [
+                        r for r in results_s11
+                        if "mismatch_percent" in r and r.get("wait_fonts") is False
+                    ]
                     s11_artefact = {
                         "stage": 11,
                         "name": "pixel-diff",
                         "sgs_url": sgs_url,
                         "mockup_uri": mockup_uri,
+                        "wait_fonts_requested": _wait_fonts_on,
                         "results": results_s11,
                         "summary": {
                             "captures_attempted": len(results_s11),
                             "captures_ok": sum(1 for r in results_s11 if "mismatch_percent" in r),
                             "captures_error": sum(1 for r in results_s11 if "error" in r),
+                            "wait_fonts_false_count": len(_wait_fonts_false_cells),
                             "mean_mismatch_percent": (
                                 sum(r["mismatch_percent"] for r in results_s11 if "mismatch_percent" in r)
                                 / max(1, sum(1 for r in results_s11 if "mismatch_percent" in r))
@@ -2688,6 +2727,29 @@ def main():
                         if s11_summary['mean_mismatch_percent'] is not None
                         else f"[stage-11] pixel-diff: {s11_summary['captures_ok']}/{s11_summary['captures_attempted']} captures, no valid measurements"
                     )
+                    # Spec 22 FR-22-7 wait_fonts gate.
+                    if _wait_fonts_false_cells:
+                        for _cell in _wait_fonts_false_cells:
+                            print(
+                                f"[stage-11] WARNING: diff.json.wait_fonts=false on "
+                                f"section.{_cell['selector']}.{_cell['viewport']} — "
+                                f"Spec 22 acceptance gate (FR-22-7) requires "
+                                f"wait_fonts=true. Re-run with --spec-22-acceptance "
+                                f"(or --debug-trace) to propagate --wait-fonts.",
+                                file=sys.stderr,
+                            )
+                        if getattr(args, "strict_spec_22_gate", False):
+                            sys.exit(
+                                f"[stage-11] FATAL: --strict-spec-22-gate set and "
+                                f"{len(_wait_fonts_false_cells)} of "
+                                f"{s11_summary['captures_ok']} pixel-diff cells reported "
+                                f"wait_fonts=false. FR-22-7 acceptance measurement invalid."
+                            )
+                    elif _wait_fonts_on and s11_summary['captures_ok']:
+                        print(
+                            f"[stage-11] FR-22-7 wait_fonts gate PASS: all "
+                            f"{s11_summary['captures_ok']} cells report wait_fonts=true."
+                        )
         except Exception as exc:  # noqa: BLE001 — Stage 11 is observability; soft-fail
             print(f"[stage-11] pixel-diff soft-failed: {exc}", file=sys.stderr)
 
