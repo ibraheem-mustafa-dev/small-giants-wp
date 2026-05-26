@@ -8,7 +8,7 @@ last_consolidated: 2026-05-24
 registry_entry: docs-registry.yaml canonical_docs (cloning-pipeline-flow.md)
 companion_docs:
   - .claude/cloning-pipeline-stages.md - per-stage annotated blocks (scripts, files, DB, skills, status)
-  - .claude/specs/16-DETERMINISTIC-CONVERTER-V2.md - single end-goal spec (Spec 15 absorbed §12)
+  - .claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md - canonical pipeline spec (Spec 16 retired 2026-05-26)
 update_triggers:
   - Pipeline stage change (new stage, retired stage, renumbered)
   - Script wired or unwired (status flip in any stage block)
@@ -76,12 +76,16 @@ Tracked: `P-CLONING-PIPELINE-FLOW-DOC-DRIFT` in parking.md.
 
 ---
 
-## Two-route topology (Spec 16 §FR1 + §FR4)
+## Universal-path topology (Spec 22 FR-22-3)
 
-- **FR1 fast path** — section class matches a registered composite block (`sgs/hero`, `sgs/trust-bar`) OR a registered pattern slug. Emit the matched block/pattern directly; skip element-by-element walk.
-- **Normal route** — no FR1 match. Section emits `sgs/container` as base (FR4); universal walker (Spec 16 §15 steps 1-3) builds the inner block tree element-by-element.
+The cloning pipeline emits via a single universal walker path with exactly 3 permitted exceptions. The legacy "two-route" topology (Spec 16 FR1 fast path + FR4 normal route) is **retired** — Spec 16 archived 2026-05-26.
 
-Pattern-level fast-path matcher (FR1 branch b) is not yet consulting the patterns table — sections matching pattern slugs fall to the normal route. Tracked: Phase 1 of `2026-05-24-strategic-plan.md`.
+- **Universal path** — every BEM-classed DOM node resolves to a block slug via Spec 00 §3.1 BEM canonical signal + `slot_synonyms.standalone_block` lookup. Walker recurses into children. Per-block behaviour comes from DB rows, not code branches. See Spec 22 §3 FR-22-1 + FR-22-3.
+- **Permitted exception 1** — Atomic-tag swap (Spec 22 FR-22-3 / Appendix B). Bare HTML tags with no SGS classes route via DB-driven `db.atomic_tag_map()` (`slot_synonyms.html_semantic_tag` + `blocks.replaces` reverse-walk).
+- **Permitted exception 2** — Chrome-skip at top level (header/footer/nav tags in `SKIP_TOP_LEVEL_TAGS` constant).
+- **Permitted exception 3** — Top-level section wrap in `sgs/container` per architecture decision #4.
+
+No other branches. Adding a 4th requires spec amendment with empirical justification (R-22-3). Canonical reference: `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md`.
 
 ---
 
@@ -117,7 +121,7 @@ Pattern-level fast-path matcher (FR1 branch b) is not yet consulting the pattern
 ## See also
 
 - **Per-stage detail:** `.claude/cloning-pipeline-stages.md` — stage annotated blocks, script inventory, skill dispatch chain (full), DB heat-map (full)
-- **Single end-goal spec:** `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md`
+- **Canonical pipeline spec:** `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` (Spec 16 retired 2026-05-26, archived at `.claude/specs/archive/`)
 - **State:** `.claude/state.md`
 - **Decisions log:** `.claude/decisions.md`
 - **Artefact catalogue:** `.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md`

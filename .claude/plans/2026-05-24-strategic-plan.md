@@ -4,10 +4,12 @@ project: small-giants-wp
 plan_name: 2026-05-24-post-architecture-recovery-strategic-plan
 generated: 2026-05-23
 parent_plan: .claude/plans/2026-05-21-architecture-staging.md (PARTIAL — see fact-check findings)
-primary_goal: "Close the structural pixel-diff blockers (G1+G3+G5), complete the leftover work the 2026-05-21 architecture plan undersold, build a specialised header/footer cloning pipeline, finish remaining parking, then optimise the skill+command surface that depends on all the above."
+primary_goal: "Close the structural pixel-diff blockers via Spec 22 (Universal Block-Equivalent Extraction; replaces the 2026-05-23 G1+G3+G5 framing entirely), build a specialised header/footer cloning pipeline, finish remaining parking, then optimise the skill+command surface that depends on all the above."
 ---
 
 # Strategic plan — post-architecture-recovery (4 phases)
+
+> **Revision 2026-05-26 — Phase 1 superseded by Spec 22.** The "Universal walker + G1+G3+G5 closure" framing below is retired. Phase 1 implementation is now defined by **Spec 22 (Universal Block-Equivalent Extraction)** at `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` and its Phase 1 plan at `.claude/plans/2026-05-26-phase-1-spec-22-implementation.md`. Acceptance gate softened from "G1+G3+G5 closed per Spec 16 §14" to "per-section ≤5% × 3 viewports + Bean visual sign-off" (Phase 1) with ≤1% Phase 1.5 stretch. Phases 2-4 (header/footer cloner, parking sweep, skill optimisation) remain valid scope; sequencing unchanged.
 
 **Revision 2026-05-23 (post-Step-1.1).** Phase 2 inserted: header + footer specialised cloning pipeline. Existing Phase 2 (parking) renumbered to Phase 3. Existing Phase 3 (skill optimisation) renumbered to Phase 4. Phase 1 acceptance criteria narrowed: header + footer pixel-diff still captured by Stage 11 for regression monitoring, but no longer gate Phase 1 closure (they are Phase 2's scope).
 

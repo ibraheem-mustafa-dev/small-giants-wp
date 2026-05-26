@@ -186,15 +186,16 @@ Overview and stage-index table: `.claude/cloning-pipeline-flow.md`
 │                                                                             │
 │ DB tables (R):  blocks (sgs-framework.db, via filesystem scan)              │
 │                                                                             │
-│ TWO-ROUTE TOPOLOGY (Spec 16 §FR1+§FR4):                                     │
-│   FR1 fast path → composite block or registered pattern slug → emit direct  │
-│   Normal route  → no FR1 match → sgs/container base + universal walker      │
+│ UNIVERSAL-PATH TOPOLOGY (Spec 22 FR-22-3, 2026-05-26):                      │
+│   Single recursive walker; per-block behaviour from DB rows, not branches.  │
+│   Exactly 3 permitted exceptions: atomic-tag swap / chrome-skip /           │
+│   top-level container wrap. Spec 16 two-route topology retired.             │
+│                                                                             │
+│ Stage 2 produces match.json for every section boundary (FR-22-12) even      │
+│ when walker bypasses top_pick via unambiguous BEM signal.                   │
 │                                                                             │
 │ Q1A FIX (commit d8ae4a2a, 2026-05-23): Stage 2 fallback emits sgs/container │
 │   instead of core/group per Decision 3. legacy_role_lookup: 18 rows.        │
-│                                                                             │
-│ PENDING: Pattern-level fast-path matcher (FR1 branch b) not yet consulting  │
-│   patterns table. Tracked: Phase 1 of 2026-05-24-strategic-plan.md          │
 │                                                                             │
 │ STATUS:       LIVE - core/group fallback fixed (2026-05-23)                 │
 └─────────────────────────────────────────────────────────────────────────────┘
@@ -221,7 +222,10 @@ Overview and stage-index table: `.claude/cloning-pipeline-flow.md`
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Stage 4 — Slot extraction
+### Stage 4 — Universal block-equivalent extraction (Spec 22)
+
+> **Spec 22 (2026-05-26) replaces Spec 16's slot-extraction architecture in full.** Single universal walker path with exactly 3 permitted exceptions per FR-22-3. The 9-branch walk(), `lift_subtree_into_block_attrs`, `_lift_inner_blocks`, F1 fallback, `ARRAY_LIFT_PATTERNS`, hardcoded `ATOMIC_TAG_MAP` are all retired. Per-block behaviour comes from DB rows (slot_synonyms.standalone_block + block_attributes.canonical_slot + role-exclusion), not code branches. Phase 1 implementation in 5 commits per `.claude/plans/2026-05-26-phase-1-spec-22-implementation.md`. Acceptance gate: per-section ≤5% × 3 viewports (Phase 1.5 stretch ≤1%).
+
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -823,7 +827,7 @@ The Phase 2A pricing-table additions (Branch E) also extend the recogniser surfa
 - **G5** — Per-block DOM-shape mismatches (`<blockquote>` vs `<section>`; mockup-grid vs render-carousel).
 - **F5** — D1 media-field flow: responsive variants stored but not routed to `<attr>Mobile/Tablet/Desktop` attrs.
 
-G1+G3+G5 are manifestations of one gap: cv2 doesn't walk all classes + assign CSS ownership via the DB tables that exist. Wave 2 = ONE architectural change (Spec 16 §15). See `specs/16-DETERMINISTIC-CONVERTER-V2.md` §14 for full evidence + fix-shape.
+G1+G3+G5 are manifestations of one gap: cv2 doesn't walk all classes + assign CSS ownership via the DB tables that exist. **This is the gap Spec 22 closes.** Spec 16's diagnosis was correct; Spec 22 is the canonical fix-shape — single universal walker, exactly 3 permitted exceptions, DB-driven recognition. See `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` §2-§3 for the structural architecture. (Spec 16 retired 2026-05-26; archived at `.claude/specs/archive/` for historical evidence.)
 
 ---
 

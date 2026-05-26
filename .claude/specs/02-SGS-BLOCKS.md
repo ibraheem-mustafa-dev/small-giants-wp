@@ -107,7 +107,7 @@ Decided 2026-05-03 — full spec at [`11-SGS-BUTTON-ARCHITECTURE.md`](11-SGS-BUT
 
 ## Pipeline / extraction
 
-Mockup HTML → SGS block markup pipeline at [`16-DETERMINISTIC-CONVERTER-V2.md`](16-DETERMINISTIC-CONVERTER-V2.md) (Spec 12 absorbed into Spec 16 §12 Appendix A 2026-05-12). Key rules:
+Mockup HTML → SGS block markup pipeline at [`22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md`](22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md) (Spec 12 absorbed into Spec 16 §12 Appendix A 2026-05-12; Spec 16 retired into Spec 22 2026-05-26). Key rules:
 
 - Fingerprints auto-derived from `block.json` — never hand-written. Adding an attribute to a block automatically grows the recogniser's coverage.
 - Pull all CSS every run, classify into block-attribute / universal-handled / one-time-custom. No silent loss.
@@ -1408,4 +1408,4 @@ Audit report at reports/2026-05-20-block-attribute-audit.csv. 9 block.json retro
 
 **Attribute promotion:** new operator-driven CLI `stage_attribute_promotion.py` (commands: `list --top N`, `promote --id <row_id>`, `status`) mutates block.json `attributes` + emits render.php inline-style branch for promoted gap candidates. Reads from BOTH uimax DB + sgs-framework DB candidates (1128-row backlog). Manual confirmation gate + idempotent. Commit `37c92950`.
 
-**How blocks evolve over time:** during clone runs, cv2 routes gap candidates to D3 (per Spec 16 §FR6). Operator periodically runs the promotion CLI to convert high-confidence candidates into block.json schema additions. Next clone run picks up the new attrs, lifting them via D1 instead of flagging as gap. Each promoted attr permanently expands the block's typed surface for future clones.
+**How blocks evolve over time:** during clone runs, the universal walker routes gap candidates to D3 (per Spec 22 FR-22-5; was Spec 16 §FR6 before retirement). Operator periodically runs the promotion CLI to convert high-confidence candidates into block.json schema additions. Next clone run picks up the new attrs, lifting them via D1 instead of flagging as gap. Each promoted attr permanently expands the block's typed surface for future clones.

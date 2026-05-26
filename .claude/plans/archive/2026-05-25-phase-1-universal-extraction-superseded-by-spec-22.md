@@ -1,12 +1,20 @@
 ---
-doc_type: phase-plan
+doc_type: archived-plan
 project: small-giants-wp
 phase: phase-1-universal-extraction
 generated: 2026-05-25
+archived: 2026-05-26
+superseded_by: .claude/plans/2026-05-26-phase-1-spec-22-implementation.md
+status: superseded
 supersedes: .claude/plans/archive/2026-05-24-phase-1-structural-recovery-superseded-by-phase-1-universal-extraction.md
 canonical_register: .claude/reports/2026-05-25-qc-council-issue-register.md
 primary_goal: Cloning pipeline delivers ≤30% pixel-diff per body section × 3 viewports for all 7 body sections (Phase 1 gate). Phase 1.5 then closes to ≤1% per-section. Phase 2 (header/footer) opens after.
 empirical_baseline: pipeline-state/mamas-munches-homepage-2026-05-25-101222/stage-11-pixel-diff.json (mean 63.2%)
+archival_note: |
+  SUPERSEDED 2026-05-26 by .claude/plans/2026-05-26-phase-1-spec-22-implementation.md.
+  The Spec 22 canonical phase plan absorbs this plan's scope and recalibrates against
+  council findings (acceptance gate ≤5% Phase 1 / ≤1% Phase 1.5 stretch; cross-doc
+  sync as Commit 0.0 gate; 5-commit walker rewrite cadence per R-22-5).
 ---
 
 # Phase 1 — Universal-extraction backbone

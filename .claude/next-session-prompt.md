@@ -13,6 +13,18 @@ hard_gate_pending: "None this session — diagnostic investigation, not a fix. O
 
 **Invoke `/autopilot` before anything else.**
 
+## Mandatory READING
+
+Before doing any work, read in order: this file (the next-session-prompt), `.claude/state.md` (current pipeline state + Spec 22 ratification status), `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` (canonical pipeline spec), `.claude/plans/2026-05-26-phase-1-spec-22-implementation.md` (active Phase 1 plan), `.claude/cloning-pipeline-flow.md` (stage map). For pipeline-quality investigations, also read `pipeline-state/<latest-run>/leftover-buckets.json` before conjecturing about causes (binding rule blub.db row 254).
+
+## Tool bindings
+
+Active skills + commands for this session: `/autopilot` (session-init router; FIRST), `/sgs-clone --debug-trace` (canonical pipeline run with Stage 11 measurement), `/sgs-db` (sgs-framework.db query CLI), `/qc-council` (multi-rater pre-commit gate for converter/pipeline/SGS-block commits per blub.db row 255), `/qc-inline` (single-file QC), `/verify-loop` (2-attestation per load-bearing claim), `/handoff` (session-close). Subagent dispatch: `/delegate` selects model (Sonnet for mechanical, Opus for architectural). All dispatched agents are NO-COMMIT-AUTHORITY per `feedback_dispatched_agents_no_commit_authority.md`.
+
+## First action
+
+Open Playwright at viewport 1440, navigate to sandybrown canary page 144, screenshot the `section.sgs-brand` element. Open the mockup file at `sites/mamas-munches/mockups/homepage/index.html` at 1440, screenshot brand. Diff the two visually. If the visible delta IS the defect, run `getComputedStyle()` on the diverging element to name the exact CSS property. Then write the diagnostic note to `.claude/reports/` and present a ranked fix-shape menu (do NOT implement the fix this session; diagnostic only).
+
 ---
 
 ## TL;DR for a fresh session (under 2 min read)
@@ -173,7 +185,7 @@ Phase 1H sgs/quote ALSO shipped in same commit: render.php now branches on Inner
 
 - **F1 implementation:** `convert.py:3916` (`_f1_universal_walk_direct_children`) + callsites 4047/4124/4181
 - **Post-F1 brand run:** `pipeline-state/mamas-munches-homepage-2026-05-25-225113/`
-- **Phase 1 plan canonical:** `.claude/plans/2026-05-25-phase-1-universal-extraction.md` (Commit 7 SHIPPED, Commits 1-6 + 8-19 pending)
+- **Phase 1 plan canonical:** `.claude/plans/2026-05-26-phase-1-spec-22-implementation.md` (Spec 22 walker rewrite — 5 commits; Commit 1.1 = pre-rewrite snapshot, Commit 1.4 = universal walker core). Old plan `2026-05-25-phase-1-universal-extraction.md` archived to `.claude/plans/archive/` 2026-05-26.
 - **Canonical register (~110 items):** `.claude/reports/2026-05-25-qc-council-issue-register.md` (Section S to be added this session)
 - **Lesson on output-only inference trap:** `~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_grep_verify_handoff_diagnostic_premises.md`
 - **Measurement-vs-eye binding rule:** `~/.claude/rules/measurement-vs-eye.md`

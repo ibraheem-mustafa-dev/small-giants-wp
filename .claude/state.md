@@ -2,24 +2,25 @@
 doc_type: state
 project: small-giants-wp
 project_id: 14
-current_phase: phase-1-universal-extraction-COMMIT-7-SHIPPED-PARTIAL-2026-05-26
-current_subphase: "Phase 1 Commit 7 (F1 universal-nesting spike) SHIPPED in commit a757ff1c (2026-05-25 23:53). Architecturally validated on mobile + tablet; FAILED HARD GATE at desktop 1440. Brand 375: 73.8 → 50.0 (−23.8pp WIN). Brand 768: 59.4 → 46.4 (−13.0pp WIN). Brand 1440: 50.0 → 50.8 (+0.8pp FLAT — separate layout issue exposed, not a missing-nested-blocks issue). F1 helper at convert.py:3916 (_f1_universal_walk_direct_children) wired at 3 callsites (4047/4124/4181). Phase 1H sgs/quote render.php branch-on-InnerBlocks-content + save.js → InnerBlocks.Content + deprecated.js v1 null-save shim also shipped in same commit. Honest assessment from implementer commit message: F1+1H architecturally validated; desktop 1440 needs separate layout investigation. Commit 7 gate FAILED strict but the diagnosis was correct — desktop has a CSS/layout problem independent of nested-block emission. Lesson captured: output-only inference is a trap (see feedback_grep_verify_handoff_diagnostic_premises.md point 3 sub-rule, 2026-05-25 follow-up edit)."
-current_subphase_step: "Next action = investigate desktop 1440 brand layout directly via Playwright (open page 144 at 1440, screenshot brand, diff against mockup, identify CSS/layout delta). Phase 1 Commits 1-6 (Phase 0E independent cheat cleanup) + Commits 8-19 still ahead but blocked on understanding the 1440 layout issue before extending F1 to all sections."
+current_phase: spec-22-ratified-cross-doc-sync-complete-2026-05-26
+current_subphase: "Spec 22 (Universal Block-Equivalent Extraction) v0.4 ratified 2026-05-26 via 4-rater /gap-analysis council (Architectural Purist, Spec Checker, Pragmatic Engineer, Risk Auditor — 48 findings: 33 valid+addressed, 10 partial-recalibrated, 5 dropped). Spec 16 retired in full and archived. Commit 0.0 cross-doc sync complete: 18+ docs updated (architecture.md decisions #14/#15/#17/#19 rewritten + new #20; cloning-pipeline-flow.md two-route topology retired; cloning-pipeline-stages.md Stage 4 universal-extraction note; Spec 00 §3.1 link target updated; decisions.md D78-D83 prepended; parking.md 6 entries closed + P-LEGACY-GAP-CANDIDATES-MIGRATION added; docs-registry.yaml updated; CLAUDE.md trio updated). Spec 22 Phase 1 plan at .claude/plans/2026-05-26-phase-1-spec-22-implementation.md (5-commit walker rewrite cadence per R-22-5). Acceptance gate: per-section ≤5% × 3 viewports (Phase 1) + ≤1% (Phase 1.5 stretch via measurement-script hardening). Hero-clone-poc page 29 (/hero-clone-poc/) is the visual proof-of-concept. F1 spike commit a757ff1c (2026-05-25) is the empirical evidence that drove the double-render diagnosis + Spec 22 architecture."
+current_subphase_step: "Next action = Spec 22 Phase 0.1 (DB enrichment + golden corpus). assign-canonical.py extension for canonical_slot backfill + pre-rewrite DB snapshot + slot_synonyms gap-fill for content-bearing roles. Then 0.2 (wp-blocks.py extension), 0.3 (pixel-diff.py hardening), 0.4 (hybrid-block audit roster). Phase 1 walker rewrite starts at Commit 1.1 (pre-rewrite snapshot) only after Phase 0 closes."
 last_updated: 2026-05-26
-latest_commit: "a757ff1c on main — feat(converter+quote): F1 universal-nesting + Phase 1H render beta-migration"
-working_tree: "1 untracked change in plugins/sgs-blocks/includes/lucide-icons.php (unrelated to Phase 1)"
+latest_commit: "(pending Commit 0.0 — Spec 22 ratification + cross-doc sync this session)"
+working_tree: "Spec 22 v0.4 + new phase plan + 18+ docs updated; staged for Commit 0.0"
 github_branches: "main ONLY"
-phase_1_universal_extraction:
-  status: COMMIT_7_SHIPPED_PARTIAL_PASS
-  plan: .claude/plans/2026-05-25-phase-1-universal-extraction.md
-  register: .claude/reports/2026-05-25-qc-council-issue-register.md
-  commits_planned: 19 (Commit 7 = F1 spike SHIPPED partial; Commits 1-6 + 8-18 still ahead; Commit 19 = close /qc-council + /handoff)
-  commits_shipped: [Commit 7 — a757ff1c — F1 + Phase 1H quote migration]
-  acceptance_gate: per-section ≤30% × 3 viewports for all 7 body sections (21 cells)
-  baseline_run: pipeline-state/mamas-munches-homepage-2026-05-25-101222/stage-11-pixel-diff.json (mean 63.2%)
-  post_f1_brand_run: pipeline-state/mamas-munches-homepage-2026-05-25-225113/stage-11-pixel-diff.json (brand 50.0 / 46.4 / 50.8)
-  council_verdict: CONDITIONAL_APPROVE_validated_partial (D75 — F1 architecturally validated but desktop 1440 separate layout issue exposed)
-  open_question: "Why did brand 1440 stay flat (+0.8pp) when 375 + 768 dropped 23.8 + 13.0pp? F1 fired correctly per implementer trace. Separate CSS/layout cause at desktop only."
+spec_22_implementation:
+  status: SPEC_RATIFIED_PHASE_0_PENDING
+  spec: .claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md
+  spec_version: 0.4
+  phase_plan: .claude/plans/2026-05-26-phase-1-spec-22-implementation.md
+  council_findings_total: 48 (33 valid+addressed, 10 partial-recalibrated, 5 dropped)
+  docscore: "100% Grade A"
+  acceptance_gate_phase_1: per-section ≤5% × 3 viewports for all 7 body sections + Bean visual sign-off (R-22-13 co-authoritative)
+  acceptance_gate_phase_1_5: per-section ≤1% × 3 viewports (stretch — bridges via pixel-diff.py vertical-anchor fix + chrome cropping + font-load timing)
+  empirical_baseline: pipeline-state/mamas-munches-homepage-2026-05-26-012625/stage-11-pixel-diff.json (mean 63.0%)
+  hero_clone_poc: "/hero-clone-poc/ (page 29) — visual parity proof; 54.5% pixel-diff is 60px chrome-bleed alignment artefact, not visual divergence"
+  retired_in_this_session: ["Spec 16 (archived 2026-05-26)", "Phase 1 plan 2026-05-25-phase-1-universal-extraction.md (archived 2026-05-26)"]
 doc_op_programme:
   status: PARTIAL — phases 1-5 + Tasks I + H + cc sweep shipped; 6/7/9/10/12/13 pending
   handoff: .claude/handoff-doc-op.md
@@ -53,6 +54,30 @@ blockers:
 
 # small-giants-wp — State Snapshot
 
+## State Snapshot
+
+- **current_phase:** spec-22-ratified-cross-doc-sync-complete-2026-05-26
+- **current_subphase:** Spec 22 v0.4 ratified; cross-doc sync (Commit 0.0) complete; Phase 0 pending
+- **current_step:** Phase 0.1 — DB enrichment + golden corpus (assign-canonical.py backfill + slot_synonyms gap-fill)
+- **latest_commit:** a757ff1c (F1 universal-nesting + Phase 1H render beta-migration, 2026-05-25); Commit 0.0 staged
+- **working_tree:** Spec 22 v0.4 + new phase plan + 18+ docs updated; staged for Commit 0.0
+- **github_branches:** main ONLY
+- **spec_22_status:** SPEC_RATIFIED_PHASE_0_PENDING — council 4-rater /gap-analysis, 48 findings (33 valid+addressed, 10 partial-recalibrated, 5 dropped)
+- **acceptance_gate_phase_1:** per-section ≤5% × 3 viewports for all 7 body sections (21 cells, each independently)
+- **acceptance_gate_phase_1_5:** per-section ≤1% × 3 viewports (stretch — vertical-anchor + chrome-crop + font-load fixes)
+- **empirical_baseline:** mean 63.0% pixel-diff (pipeline-state/mamas-munches-homepage-2026-05-26-012625/stage-11-pixel-diff.json)
+- **blockers:** Desktop 1440 brand pixel-diff flat at 50.8% post-F1; blub.db dashboard API unreachable (port 5050); ~16 open parking items folded into Phase 1 sub-tasks
+
+## Human Summary
+
+The SGS cloning-pipeline has reached a major architectural turning point. Spec 22 (Universal Block-Equivalent Extraction) was ratified on 2026-05-26 after a 4-rater council review (Architectural Purist, Spec Checker, Pragmatic Engineer, Risk Auditor) produced 48 findings. The council accepted 33 findings as valid and addressed, recalibrated 10, and dropped 5. This ratification formally retires Spec 16, which is now archived at `.claude/specs/archive/`. The entire layered FR1/FR4/lift_subtree/F1/9-branch walk() architecture of Spec 16 has been superseded by a single universal walker path.
+
+The cross-document sync (Commit 0.0) has updated 18+ docs to reflect the new architecture, including architecture.md (decisions #14–#20), cloning-pipeline-flow.md, cloning-pipeline-stages.md, decisions.md (D78–D83), and the parking lot (6 entries closed). The next session begins at Phase 0.1 — DB enrichment before the walker rewrite — specifically: extending `assign-canonical.py` for `canonical_slot` backfill, capturing a pre-rewrite DB snapshot, and filling `slot_synonyms` gaps for content-bearing roles.
+
+The empirical baseline stands at mean 63.0% pixel-diff across 9 sections × 3 viewports on the Mama's Munches canary (page 144, sandybrown). The F1 spike commit (a757ff1c, 2026-05-25) confirmed the "double-render" structural bug that drove Spec 22's architecture. Phase 1 (walker rewrite, 5 commits per R-22-5) opens only after Phase 0 closes. The hero-clone-poc at page 29 provides visual proof-of-concept that the new architecture achieves visual parity.
+
+---
+
 **2026-05-21 architecture session** produced a 31-decision holistic redesign of the SGS framework covering DB consolidation, style-variation kill, INNER_BLOCK_PATTERNS retirement, WP 7.0 alignment, and admin UX migration to the Customiser. Phase 0 shipped (commit `aec54882`). 7 phases pending.
 
 Canonical reference for the programme: `.claude/plans/2026-05-21-architecture-staging.md`
@@ -83,65 +108,4 @@ Research artefact: `.claude/reports/2026-05-21-pattern-overrides-research.md`
 
 ---
 
-## Previous state (pre-architecture session, preserved for context)
-
-11 commits shipped on main (8ceb8787 → 36ef9552). Phase 1 Spec 16 architectural rewrite complete + Phase 2 four future capabilities shipped. Pipeline is now structurally sound at every layer (cv2 walker + token_resolver + css_router + scaffold + promotion + variations + tool-layer hook), but pixel-diff target not yet hit pending operator-driven attribute promotion + a mobile-regression follow-up.
-
-## Live wirings as of `36ef9552`
-
-- **Stage 10 deploy:** new REST endpoint `sgs/v1/active-variation` activates style variation site-wide via theme_mod after page-PATCH. Read-back confirmation + exit-code-3 distinct failure surface.
-- **Stage 4.5 token-snap:** `token_resolver.resolve_batch` wired into cv2 value-lift. Strict exact-match guard rejects "close" snaps that diverge from literal (Bean's step 3 binding).
-- **Stage 0.7 four-destination router:** every CSS rule routes to exactly one of D0/D1/D2/D3 per Spec 16 §FR6. @media inner selectors scoped with `.page-id-N`. D1 suffix-scan over all block attrs. D2 emission filters D1-lifted props. D1 sidecar keyed by `block_slug:section_id` with media field preserved. Chrome-skip routes to D0.
-- **Stage 9b autonomy:** chrome-skip header/footer/nav at source. 5-file scaffold quality scoring + report.
-- **`.claude/hooks/no-header-footer-block.py`:** PostToolUse hook hard-rejects Write|Edit on `plugins/sgs-blocks/src/blocks/(header|footer|nav)/`. Defence in depth with autonomy chrome-skip.
-- **`stage_attribute_promotion.py`:** operator-driven CLI promotes `attribute_gap_candidates` rows (1128 today) into block.json schema additions + render.php inline-style support. Three commands (list / promote / status), manual confirmation gate, idempotent.
-- **`essence_match_detector.py`:** cv2 walker tier between FR1 and scaffold — when confidence 0.70-0.90 against existing block, emits `register_block_variation()` named variant instead of scaffolding new block.
-
-## Phase 1 deliverables (Spec 16 §FR6 compliance)
-
-- ✓ Cascade-on-edit property activated (token_resolver wired)
-- ✓ Strict exact-match guard prevents lossy snaps
-- ✓ Four-destination router replaces verbatim Stage 0.7 dump
-- ✓ Dedup + @media scope + suffix-scan + 5 supplementary fixes (P1.B.x)
-- ✓ D1 lift rate 4% → 37% (close to ≥40% acceptance criterion)
-- ✓ mamas-munches.css 23,038 → 19,983 chars
-
-## Phase 2 deliverables (future capabilities)
-
-- ✓ P2.0 PostToolUse blocker hook (tool-layer 5th-occurrence prevention)
-- ✓ P2.i Stage 9b autonomy chain tightening (5-file scaffolds + chrome-skip + quality report)
-- ✓ P2.ii Attribute-gap promotion CLI (1128-row backlog → operator-promotable into block.json)
-- ✓ P2.iii Block-variation system (essence-match-with-differences via register_block_variation)
-
-## Pixel-diff trajectory (1440 viewport, worst-case section per stage)
-
-- Pre-C baseline: 99.9% (social-proof 1440)
-- Post-C: 99.9% → 56.8% (variation activation gave -43pt)
-- Post-P1.A-patched: 57.2% (token-snap cascade-on-edit, pixel-flat as expected)
-- Post-P1.B raw: 70.7% regression (specificity inversion)
-- **Post-P1.B.x: 57.2% (regression recovered via @media scope fix)**
-- Final post-Phase-2: pending background measurement
-
-## Known blockers / next session
-
-1. **Hero 375 mobile +13.3pt regression** — likely F5 responsive-variant-attr flow gap. ~30-45 min investigation + targeted fix.
-2. **Social-proof 768 partial regression +5.1pt** — same probable cause as above.
-3. **Dead-CSS-selector problem (council R2)** — requires ongoing operator-driven promotion via P2.ii CLI. Each promoted candidate converts a dead rule into a D1 lift on next pipeline run.
-4. **2 P1.B.x follow-up tickets:** comma-grouped @media inner selectors only first-part scoped; nested @supports inside @media → invalid CSS.
-5. **2 Phase 2 medium-severity follow-ups:** P2.ii _CSS_VALUE_RE could be tighter; P2.iii essence-match tier currently only fires when target=sgs/container.
-
-## Captured lessons this session
-
-| Pattern key | Source | Why it matters |
-|---|---|---|
-| token-snap-strict-exact-match-not-nearest | P1.A regression on #FFFFFF → text-inverse | Bean's step 3 binding — token references only when LITERAL VALUE MATCHES |
-| css-router-media-scope-prefix-required | P1.B regression council finding | Without scoping inner @media selectors, base specificity wins → no responsive overrides |
-| pipeline-extension-routes-to-output-d2-not-csv | P1.B file size 39k vs target 12k | Dedup at write-time prevents per-property routing from inflating output |
-| header-footer-recurrence-now-5th | P1.B subagent recreated dirs | Tool-layer + source-layer defence-in-depth shipped (P2.0 + P2.i) |
-| qc-panel-finds-real-bugs-multi-rater-wins | P1.B QC found dedup bug, P1.B.x panel found 2 follow-ups | Council format with rater diversity caught issues a single-Sonnet review missed |
-
-## Captured lesson 2026-05-22 (blub.db row 283)
-
-| Pattern key | Source | Why it matters |
-|---|---|---|
-| verify-wp-api-surface-before-dismissing-static-analyser | Phase 1.5 first-attempt deploy: 12 PHP files calling non-existent `register_block_variation()`, site 500'd | Two true general facts ("intelephense lacks WP stubs" + "PHP falls back namespace→global") chained into false conclusion ("therefore noise"). Cheap check: `curl developer.wordpress.org/reference/functions/<name>/` returns 404 if the function doesn't exist. Canary-first deploy discipline prevents site outages when introducing new WP API calls at scale. Sibling rule: feedback_verify_rendered_output_not_internal_metrics (row 194). Embedding offer surfaced to `/wp-plugin-development`, `/wp-block-development`, `/strategic-plan`, `/phase-planner`, `/research` per classifier-router. |
+**Previous session context (Spec 16 era — now retired):** Architecture programme phases 0/0.5/1/1.5/5a/5b/5b-paint-fix/6/7 all SHIPPED 2026-05-21–22. Spec 16 walker (cv2) achieved mean 63.0% pixel-diff with D1 lift rate 37%; double-render bug confirmed 2026-05-25 via F1 spike commit a757ff1c. Full session details in `.claude/memory/` + `.claude/handoff.md`. Spec 16 archived at `.claude/specs/archive/`. Captured lessons indexed in `MEMORY.md` + blub.db rows 283–288.

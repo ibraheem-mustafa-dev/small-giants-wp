@@ -6,30 +6,35 @@ A custom WordPress block framework built by Claude Code: theme + blocks plugin (
 
 ## Active focus (2026-05-25 onwards — gates everything until met)
 
-**Cloning pipeline delivers ≤1% pixel-diff per body section × 3 viewports (375/768/1440) irrespective of mockup content variations, from any Claude-generated SGS-BEM HTML draft.**
+**Cloning pipeline delivers ≤5% pixel-diff per body section × 3 viewports (375/768/1440) — Phase 1 acceptance. Phase 1.5 stretch closes to ≤1% via measurement-script hardening.**
 
-- **Phase 1 (now):** per-section ≤30% × 3 viewports — universal-extraction backbone (F1 universal-nesting + DB-driven ATOMIC_TAG_MAP + universal child/array extraction + 20 cheats removed). Plan: [`.claude/plans/2026-05-25-phase-1-universal-extraction.md`](.claude/plans/2026-05-25-phase-1-universal-extraction.md). Register (full evidence): [`.claude/reports/2026-05-25-qc-council-issue-register.md`](.claude/reports/2026-05-25-qc-council-issue-register.md).
-- **Phase 1.5:** per-section ≤1% — section-by-section closure (scope emerges from Phase 1 measurements).
-- **Phase 2:** header + footer cloner (parked until Phase 1.5 hits ≤1%).
-- **Baseline (2026-05-25):** mean 63.2% across 9 sections × 3 viewports on Mama's Munches canary page 144 (sandybrown). See `pipeline-state/mamas-munches-homepage-2026-05-25-101222/`.
+- **Canonical spec:** [Spec 22 — Universal Block-Equivalent Extraction](.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md). Replaces Spec 16 (archived 2026-05-26).
+- **Phase 1 plan:** [`.claude/plans/2026-05-26-phase-1-spec-22-implementation.md`](.claude/plans/2026-05-26-phase-1-spec-22-implementation.md) — 5-commit walker rewrite (1.1 pre-rewrite snapshot, 1.2 atomic-tag map migration, 1.3 array-of-objects resolution, 1.4 universal walker, 1.5 measurement+decide).
+- **Phase 1 acceptance:** per-section ≤5% × 3 viewports (7 body sections, 21 cells) + Bean visual sign-off (R-22-13 co-authoritative).
+- **Phase 1.5 stretch:** per-section ≤1% via pixel-diff.py vertical-anchor fix + chrome cropping + font-load timing.
+- **Phase 2:** header + footer cloner (parked until Phase 1 closes).
+- **Baseline (2026-05-26):** mean 63.0% across 9 sections × 3 viewports on Mama's Munches canary page 144. See `pipeline-state/mamas-munches-homepage-2026-05-26-012625/`.
+- **Visual POC:** [`/hero-clone-poc/` page 29](https://sandybrown-nightingale-600381.hostingersite.com/hero-clone-poc/) — visual parity proof (54.5% script number is 60px chrome-bleed alignment artefact, not visual divergence).
 
-## 11 binding rules (gate every commit)
+## 13 binding rules (Spec 22 R-22-1 through R-22-13; gate every commit)
 
-Full text in Section P of the canonical register. Headlines:
+Full text in Spec 22 §6. Headlines:
 
-1. **Universally-applicable mechanisms (P1)** — no per-block hyperfocus; mechanisms work for ALL future client drafts
-2. **All div classes are blocks; just some nested inside others (P15)** — THE structural primitive in operator language
-3. **Empty InnerBlocks array → walk direct child div descendants (P7)** — the F1 fallback in actionable form
-4. **Pipeline must achieve ≤1% deterministically (P17)** — allowed manual work = block functionality extension + pipeline scripts only; NEVER hand-author patterns or per-section bespoke fixes
-5. **Universal flat-scanning preserves hierarchy + accurately assigns CSS rules and content to direct owner (P18)**
-6. **Per-property cascade-fold not binary uniformity gate (P6 + blub.db 287)** — wrapper blocks always exist carrying className; defaults hoist to parent, divergent values override on the child
-7. **One fix at a time with /verify-loop (P20)**
-8. **Don't agree, disagree, or propose without evidence — find it first (P26)**
-9. **Read full spec before proposing architectural fix-shape (blub.db 285)** — state the primitive in plain English BEFORE proposing
-10. **Check sgs-db block capability before evaluating (blub.db 286)** — `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py block <slug>`
-11. **Phases never ship as single commits (blub.db 288)** — every major task commits separately with /qc-council + measurement + predicted/actual delta in message
+1. **DB-first, no hardcoded dicts (R-22-1)** — All lookups via DB tables; `SKIP_TOP_LEVEL_TAGS` is the only permitted constant (3 entries: header/footer/nav). Tier C role-to-block derived from existing `slot_synonyms.role + standalone_block` data.
+2. **BEM is the only recognition signal (R-22-2 / Spec 00 §3.1)** — HTML tag is rendering-shape only.
+3. **Three permitted walker exceptions, no others (R-22-3)** — atomic-tag swap / chrome-skip at top level / top-level container wrap. Adding a 4th requires spec amendment.
+4. **Pixel-diff gates every commit (R-22-4)** — `/sgs-clone --debug-trace` Stage 11 pre/post; commit message cites predicted vs actual delta.
+5. **Phases never ship as single commits (R-22-5)** — Phase 1 walker rewrite splits into 5 commits.
+6. **Output-only inference is a trap (R-22-6)** — verify mockup HTML + extract.json + live DOM at each milestone.
+7. **Council fix-shapes are hypotheses, not specs (R-22-7)** — multi-rater proposals require empirical pre/post measurement.
+8. **Schema enumeration before "missing X" (R-22-8)** — query `sgs-framework.db` via `/sgs-db` first.
+9. **Universal mechanisms, no per-block hyperfocus (R-22-9)** — every fix passes "does this apply to all 68 SGS blocks?"
+10. **Read full spec before proposing fix-shape (R-22-10)** — state architectural primitive in plain English first.
+11. **Verify rendered output, not internal metrics (R-22-11)** — live Playwright DOM is canonical.
+12. **QC gates are structural, not prompt (R-22-12)** — `pipeline-stage-gate.py` hook enforces /qc-council.
+13. **Bean visual sign-off is co-authoritative (R-22-13)** — script measurement + Bean's eye + visual cropped-pair BOTH consulted; numbers alone don't close, eye alone doesn't close.
 
-Sibling rules: blub.db 254 (read leftover-buckets first), 255 (multi-model /qc per converter commit), 256 (per-section cropped pixel-diff), 269 (universal extraction; walker stays universal), 272 (schema enumeration before "missing X" claim), 276 (council fix-shapes are HYPOTHESES not specs).
+Sibling rules: blub.db 254 (read leftover-buckets first), 255 (multi-model /qc per converter commit), 256 (per-section cropped pixel-diff), 260 (db-first-no-hardcoded-dicts), 272 (schema enumeration before "missing X"), 276 (council fix-shapes are HYPOTHESES not specs), 281 (qc gate must be structural), 288 (phases never ship as single commits).
 
 ## Repository structure
 
@@ -53,8 +58,8 @@ Each sub-project + each client site has its own CLAUDE.md. Read the relevant one
 | Doc | What |
 |---|---|
 | [`.claude/reports/2026-05-25-qc-council-issue-register.md`](.claude/reports/2026-05-25-qc-council-issue-register.md) | THE current cloning-pipeline register (~110 items, Sections A-R) |
-| [`.claude/plans/2026-05-25-phase-1-universal-extraction.md`](.claude/plans/2026-05-25-phase-1-universal-extraction.md) | Active phase plan (19 commits) |
-| [`.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md`](.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md) | Converter v2 spec; §15 universal walker; §FR1-FR9; §14 G1-G5 gaps |
+| [`.claude/plans/2026-05-26-phase-1-spec-22-implementation.md`](.claude/plans/2026-05-26-phase-1-spec-22-implementation.md) | Active phase plan (5-commit walker rewrite + 4-phase implementation) |
+| [`.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md`](.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md) | Canonical pipeline spec; single-path universal walker; FR-22-1 through FR-22-13; R-22-1 through R-22-13 binding rules. (Spec 16 retired 2026-05-26 — archived at `.claude/specs/archive/`.) |
 | [`.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md`](.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md) | Pipeline-state artefact map (read BEFORE conjecturing) |
 | [`.claude/cloning-pipeline-flow.md`](.claude/cloning-pipeline-flow.md) + [`-stages.md`](.claude/cloning-pipeline-stages.md) | Stage map + per-stage detail |
 | [`.claude/dev-setup.md`](.claude/dev-setup.md) | Build / deploy / SSH / local environment / gotchas |
@@ -137,8 +142,8 @@ Posts use `single.html` which constrains `.entry-content` to `max-width: 800px` 
 ### Client experience is primary
 No block feature is complete until it has full block-editor UI controls. Clients are tech-illiterate — they use the block editor exclusively. Every customisable property must be exposed as an inspector control. If a setting requires touching code, it is not done. WP-CLI is a developer tool only; never something clients touch.
 
-### Universal-extraction primitive (Spec 16 §15 line 990)
-Every composite block emits OPEN with InnerBlocks children mirroring the mockup's parent-child shape — NOT flat-attrs lifted from descendants. Every BEM-class div becomes its own emitted block, carrying its mockup className. When `_lift_inner_blocks` returns empty, walk direct child descendants per binding rule P7.
+### Universal block-equivalent extraction (Spec 22 FR-22-3, locked 2026-05-26)
+Walker is a single recursive function with exactly 3 permitted exceptions (atomic-tag swap / top-level chrome-skip / top-level container wrap). Every BEM-classed DOM node resolves to a block slug via `slot_synonyms.standalone_block` lookup; per-block behaviour comes from DB rows, not code branches. Block-equivalent attrs (FR-22-2) become child InnerBlocks rather than scalar attrs (eliminates double-render). Spec 16's layered FR1/FR4/lift_subtree/F1/9-branch architecture retired 2026-05-26.
 
 ### DB-first, no hardcoded dicts (blub.db 260)
 Before adding any hardcoded lookup dict in pipeline scripts, check sgs-framework.db: `property_suffixes` (117), `block_supports` (1216), `modifier_suffixes` (19), `slot_synonyms` (89), `block_attributes` (2246), `block_capabilities` (85). Refactor to `db_lookup.py` reads.

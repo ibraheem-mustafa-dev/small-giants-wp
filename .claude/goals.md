@@ -1,18 +1,18 @@
 # small-giants-wp — Goals
 
-**Last updated:** 2026-05-25 (cloning-pipeline universal-extraction promoted to primary near-term goal per qc-council session)
+**Last updated:** 2026-05-26 (Spec 22 ratified — replaces Spec 16; Phase 1 acceptance gate softened to ≤5% with ≤1% Phase 1.5 stretch)
 
-## Primary near-term goal (2026-05-25 onwards — gates everything until met)
+## Primary near-term goal (2026-05-26 onwards — gates everything until met)
 
-**Cloning pipeline delivers ≤1% pixel-diff PER BODY SECTION × 3 viewports (375/768/1440) irrespective of mockup content variations, from any Claude-generated SGS-BEM HTML draft.**
+**Cloning pipeline delivers ≤5% pixel-diff PER BODY SECTION × 3 viewports (375/768/1440) — Phase 1 acceptance — irrespective of mockup content variations, from any Claude-generated SGS-BEM HTML draft. Phase 1.5 stretch closes residual to ≤1%.**
 
-- **Phase 1 gate:** per-section ≤30% × 3 viewports for all 7 body sections (21 cells; current baseline mean 63.2%). Builds the universal-extraction architectural backbone (F1 + extended DB-driven ATOMIC_TAG_MAP + universal child/array extraction + cheat removal). Plan: `.claude/plans/2026-05-25-phase-1-universal-extraction.md`.
-- **Phase 1.5 gate:** per-section ≤1% × 3 viewports. Section-by-section closure of residual diff. Scope determined empirically by Phase 1 end-results.
-- **Phase 2 gate:** header + footer cloner ships after Phase 1.5 hits per-section ≤1%.
+- **Phase 1 gate:** per-section ≤5% × 3 viewports for all 7 body sections (21 cells; current baseline mean 63.0% post-F1 Option-A/C) + Bean visual sign-off on cropped-pair artefacts (R-22-13 co-authoritative). Implements Spec 22 walker rewrite (5 commits: snapshot, atomic-tag migration, ARRAY_LIFT_PATTERNS retirement, universal walker, measurement+decide). Plan: `.claude/plans/2026-05-26-phase-1-spec-22-implementation.md`.
+- **Phase 1.5 gate:** per-section ≤1% × 3 viewports. Bridges residual ~4pp via pixel-diff.py vertical-anchor fix + chrome cropping + font-load timing. Scope determined empirically by Phase 1 end-results.
+- **Phase 2 gate:** header + footer cloner ships after Phase 1 hits ≤5% (Phase 1.5 may run in parallel).
 
-Canonical register (full evidence + ~110 items + Section P binding rules + Section Q 20-cheat inventory + Section R consolidated plan): `.claude/reports/2026-05-25-qc-council-issue-register.md`
+Canonical spec: `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` (replaces Spec 16, retired 2026-05-26). Council findings register: `.claude/reports/2026-05-25-qc-council-issue-register.md` (~110 items + Section P binding rules + Section Q 20-cheat inventory — drove the Spec 22 architecture).
 
-Empirical baseline (2026-05-25): `pipeline-state/mamas-munches-homepage-2026-05-25-101222/stage-11-pixel-diff.json` — mean 63.2% across 27 captures; hero 86.5/64.1/69.6%; trust-bar 37.0/24.6/33.1%; brand 73.8/59.4/50.0%; deployed to canary page 144 on sandybrown.
+Empirical baseline (2026-05-26): `pipeline-state/mamas-munches-homepage-2026-05-26-012625/stage-11-pixel-diff.json` — mean 63.0% across 27 captures; hero 86.5/64.1/69.6%; trust-bar 37.0/24.6/33.1%; brand 53.2/50.9/46.0% (post-F1 Option A + C); deployed to canary page 144 on sandybrown. Visual proof-of-concept at `/hero-clone-poc/` (page 29) — visual parity achievable, script-measurement noise floor handled in Phase 1.5.
 
 ## Primary outcome (long-term)
 
@@ -28,7 +28,7 @@ Ship a complete WordPress block framework + theme + supporting plugins (forms, b
 | **Design-brain rebuild (Phase 4 — gates everything)** | Blueprint schema locked, council.py smoke-tested, philosophy-autoload.py wired, 8 modifier skills deleted, ui-ux-pro-max restructured into 6 progressive-disclosure modes | `plans/strategy/2026-04-24-design-brain-architecture.md` |
 | **Convention rollout (SGS-prefixed BEM canonical for drafts)** | All 8 phases of `.claude/plan.md` complete: lesson captured, Spec 13 written, ~48 surfaces propagated, `/style-replicator` renamed, Mama's mockup migrated, orchestrator rewired, validated + deployed | `.claude/specs/15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md (§8.1; former Spec 13 absorbed 2026-05-12)` + `.claude/plan.md` |
 
-## Achieved goals (2026-05-22)
+## Completed
 
 | Goal | Status | Notes |
 |------|--------|-------|

@@ -3,8 +3,18 @@ doc_type: spec
 spec_id: 16
 spec_version: 0.3
 project: small-giants-wp
-title: Deterministic Slot-Aware Converter — Spec 15 §7 Stages 3-7 Implementation
-status: active
+title: Deterministic Slot-Aware Converter — Spec 15 §7 Stages 3-7 Implementation (RETIRED)
+status: retired
+retired_by: 22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md
+retired_date: 2026-05-26
+retirement_note: |
+  RETIRED 2026-05-26 — superseded by Spec 22 (Universal Block-Equivalent Extraction).
+  Spec 16's layered FR1/FR2/FR3/FR4/lift_subtree/F1/9-branch walk() architecture is
+  retired in full. The architectural rules R5 (CSS-drives-emission), FR6 (four-destination
+  CSS router), and FR7 (visual-QA verification) migrated into Spec 22. Everything else
+  is deleted per Spec 22 §1. See Spec 22 §15 for council findings driving the retirement.
+  Original frontmatter status preserved below for git-blame continuity.
+original_status_at_retirement: active
 status_note: |
   PARTIAL CLOSURE 2026-05-15: Phase 1 + Phase 7 architectural shipped; Phase 4 visual gate redefined as per-section; Phase 8 section-by-section work pending.
   2026-05-18 ADDENDUM: P-WP-ALIGNMENT-WIDTH-SYSTEM closed (3 commits, see decisions.md D2+D3). Converter `_lift_root_supports_to_style` now emits semantic `widthMode` (default/wide/full) instead of always lifting raw max-width. New helpers `_detect_client_layout_widths` + `_write_client_layout_widths` + `_load_theme_widths` + `_match_theme_width` (±5% tolerance) add a one-time pipeline pass before the per-section walker — see `.claude/cloning-pipeline-flow.md` "Stage 0.8". Module-level constants: `_LIFT_CONTEXT`, `_WIDTH_MATCH_TOLERANCE_PCT=5.0`, `_SGS_BEM_BLOCK_ROOT_RE` (segmented kebab, blocks `--` modifier shapes — see common-wp-styling-errors.md Section T), `_FULL_BLEED_WIDTH_VALUES`. Universal-benefit: zero client literals in framework code.

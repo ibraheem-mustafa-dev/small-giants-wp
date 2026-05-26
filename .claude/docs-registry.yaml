@@ -4,7 +4,7 @@
 
 generated: 2026-05-15
 last_trimmed: 2026-05-21
-last_updated: 2026-05-24
+last_updated: 2026-05-26
 project: small-giants-wp
 
 canonical_docs:
@@ -24,8 +24,8 @@ canonical_docs:
   - {path: .claude/mistakes.md,                                        scope: forever_append_only,              doc_type: mistakes, sot_note: "blub.db /api/corrections + memory/feedback_*.md are SoT; this is keyword-stub index"}
   - {path: .claude/parking.md,                                         scope: forever_append_only_with_status,  doc_type: parking}
   - {path: .claude/plan.md,                                            scope: forever_master,                   doc_type: master-plan}
-  - {path: .claude/plans/2026-05-24-strategic-plan.md,                 scope: forever_until_recovery_complete,  doc_type: strategic-plan}
-  - {path: .claude/plans/2026-05-25-phase-1-universal-extraction.md,   scope: forever_until_phase_1_shipped,    doc_type: phase-plan, supersedes: ".claude/plans/archive/2026-05-24-phase-1-structural-recovery-superseded-by-phase-1-universal-extraction.md"}
+  - {path: .claude/plans/2026-05-24-strategic-plan.md,                 scope: forever_until_recovery_complete,  doc_type: strategic-plan, note: "Phase 1 scope superseded by Spec 22; Phases 2-4 still active"}
+  - {path: .claude/plans/2026-05-26-phase-1-spec-22-implementation.md, scope: forever_until_phase_1_shipped,    doc_type: phase-plan, canonical_spec: ".claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md", supersedes: ".claude/plans/archive/2026-05-25-phase-1-universal-extraction-superseded-by-spec-22.md"}
   - {path: .claude/plans/2026-05-24-phase-2-header-footer-cloner.md,   scope: forever_until_phase_2_shipped,    doc_type: phase-plan, blocked_by: "phase-1.5 per-section ≤1% gate"}
   - {path: .claude/plans/2026-05-24-phase-3-parking-sweep.md,          scope: forever_until_phase_3_shipped,    doc_type: phase-plan}
   - {path: .claude/plans/2026-05-24-phase-4-skill-optimisation.md,     scope: forever_until_phase_4_shipped,    doc_type: phase-plan}
@@ -34,7 +34,8 @@ canonical_docs:
   - {path: .claude/cloning-pipeline-flow.md,                           scope: forever,                          doc_type: visual-reference}
   - {path: .claude/cloning-pipeline-stages.md,                         scope: forever,                          doc_type: pipeline-stages-reference}
   - {path: .claude/specs/02-SGS-BLOCKS.md,                             scope: spec_version_canonical,           doc_type: spec, spec_version: 2}
-  - {path: .claude/specs/16-DETERMINISTIC-CONVERTER-V2.md,             scope: spec_version_canonical,           doc_type: spec, spec_version: 16}
+  - {path: .claude/specs/archive/16-DETERMINISTIC-CONVERTER-V2-retired-by-spec-22.md, scope: archived_for_git_blame, doc_type: spec, spec_version: 16, status: retired, retired_by: ".claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md", retired_date: "2026-05-26"}
+  - {path: .claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md,  scope: spec_version_canonical,           doc_type: spec, spec_version: 22, supersedes: ".claude/specs/archive/16-DETERMINISTIC-CONVERTER-V2-retired-by-spec-22.md", note: "Canonical cloning-pipeline spec — replaces Spec 16 2026-05-26"}
   - {path: .claude/specs/17-HEADER-FOOTER-ARCHITECTURE.md,             scope: spec_version_canonical,           doc_type: spec, spec_version: 17}
   - {path: .claude/specs/18-SGS-FLOATING-UI.md,                        scope: spec_version_canonical,           doc_type: spec, spec_version: 18}
   - {path: .claude/specs/19-SGS-CLI-COMMANDS.md,                       scope: spec_version_canonical,           doc_type: spec, spec_version: 19}
@@ -128,7 +129,7 @@ pipeline_run_artefacts:
       owns: "Stage 10 — block_markup with mockup-relative image URLs swapped to live WP media library URLs. Used by upload_and_patch.py to PATCH the target page/post via REST."
       read_when: "Verifying which images were sideloaded + what final markup landed on the live page after Stage 10."
       writer: plugins/sgs-blocks/scripts/orchestrator/upload_and_patch.py
-      spec: .claude/specs/16-DETERMINISTIC-CONVERTER-V2.md §12.11
+      spec: .claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md §5 (Stage 10 inline-CSS deploy; Spec 16 §12.11 was the original spec — Spec 16 retired 2026-05-26)
 
     # Standard per-stage artefacts written by sgs-clone-orchestrator.py for
     # every run. Cross-reference cloning-pipeline-flow.md per-stage entries
@@ -172,10 +173,12 @@ pipeline_run_artefacts:
 #   - cloning-pipeline-flow-status-check.py — never built; planned future hook
 #   - role-templates-vs-property-suffixes-check.py — never built; planned future hook
 
-# Architecture session artefacts — added 2026-05-21. Single canonical record of 31 architectural
-# decisions + 4 strategic-plan session reports. architecture-staging.md is the working truth doc
-# until specs 01/02/11/16/17/18/19 + common-wp-styling-errors.md are revised in Phase C. After that
-# it archives to .claude/plans/archive/.
+# Architecture session artefacts — added 2026-05-21. Spec retirement chain note (2026-05-26):
+# - The 2026-05-21 architecture programme closed 2026-05-22 (all 8 phases shipped).
+# - The artefacts below are session archaeology — decisions embedded in decisions.md D1-D31 + Spec 22.
+# - Per Bean directive 2026-05-26 + Track 2 audit: section retained as reference (NOT walked by /handoff
+#   Gate 4.5; scope marker `session_archaeology` excludes from active doc-cycle). May be moved to
+#   .claude/memory/ in a follow-up cleanup; left here for git-blame continuity until then.
 architecture_session_artefacts:
 
   - path: .claude/plans/2026-05-21-architecture-staging.md
@@ -214,12 +217,12 @@ cold_start_reading_order:
   - 1. .claude/state.md
   - 2. .claude/handoff.md
   - 3. .claude/next-session-prompt.md
-  - 4. .claude/plans/2026-05-21-architecture-staging.md (architecture programme — read §1 plain-English summary + §13 phase plan BEFORE dispatching any subagent)
-  - 5. .claude/cloning-pipeline-flow.md (pipeline work) OR .claude/architecture.md (other)
-  - 6. .claude/plans/phase-N-*.md (active phase)
-  - 7. .claude/decisions.md (last 5-10 entries)
+  - 4. .claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md (canonical pipeline spec — read §0 Purpose + §2 architecture diagram + §3 FRs + §16 ratification gate)
+  - 5. .claude/plans/2026-05-26-phase-1-spec-22-implementation.md (active Phase 1 plan — read pre-conditions + Phase 0 commits + commit cadence)
+  - 6. .claude/cloning-pipeline-flow.md (pipeline work) OR .claude/architecture.md (other)
+  - 7. .claude/decisions.md (last 5-10 entries; D78-D83 = Spec 22 ratification chain)
   - 8. .claude/parking.md (last 5 entries)
-  - 9. Domain reference: cloning-pipeline-flow.md (absorbed tooling-map + skills-commands-map + db-tables-map) + specs/16-DETERMINISTIC-CONVERTER-V2.md (absorbed Spec 15 §12)
+  - 9. Domain reference: cloning-pipeline-flow.md (absorbed tooling-map + skills-commands-map + db-tables-map). Spec 22 is the canonical spec; Spec 16 retired and archived 2026-05-26 at .claude/specs/archive/.
   - 10. .claude/specs/common-wp-styling-errors.md (sections A-R catalogue — check BEFORE filing new "I've seen this" tickets)
   - 11. pipeline-state/<latest-run>/leftover-buckets.json (MANDATORY before any converter-quality conjecture — see feedback_read_leftover_buckets_before_conjecturing.md)
 

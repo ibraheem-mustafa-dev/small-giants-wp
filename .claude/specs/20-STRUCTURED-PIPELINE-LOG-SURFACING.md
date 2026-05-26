@@ -6,8 +6,8 @@ shipped_in: commit 1ea586b2 (sgs-clone-orchestrator.py stage-9c + plugins/sgs-bl
 absorbs: none
 absorbed_by: none
 related_specs:
-  - 16-DETERMINISTIC-CONVERTER-V2.md (§7 stage 9c)
-  - 15-DETERMINISTIC-DRAFT-TO-SGS-CONVERTER.md (legacy reference)
+  - 22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md (canonical pipeline spec; Stage 9c preserved per §5)
+  # Spec 15 absorbed into Spec 16 2026-05-12; Spec 16 retired into Spec 22 2026-05-26
 related_docs:
   - .claude/cloning-pipeline-flow.md (stage 9c)
   - .claude/architecture.md (observability layer)
@@ -111,14 +111,13 @@ Re-run after commit 1ea586b2:
 
 ## Relationship to other deploy surfaces (added 2026-05-19)
 
-- **Spec 16 §12.11 Stage 10** — per-page deploy via `--deploy-target page:<id>` (the cloning pipeline's own deploy stage; per-clone-run cadence). Stage 9c logs surface BEFORE Stage 10 runs, so a deploy failure is captured in `errors.log`.
+- **Spec 22 §FR-22-10 Stage 10** (formerly Spec 16 §12.11; Spec 16 retired 2026-05-26) — per-page deploy via `--deploy-target page:<id>` (the cloning pipeline's own deploy stage; per-clone-run cadence). Stage 9c logs surface BEFORE Stage 10 runs, so a deploy failure is captured in `errors.log`.
 - **`/wp-sgs-deploy` skill** — framework deploy (sgs-blocks + sgs-theme to palestine-lives.org; per-framework-change cadence). Canonical path: `.claude/skills/wp-sgs-deploy/SKILL.md`. Renamed from `/deploy` 2026-05-19 + absorbed `/deploy-check` as Phase 1. Different scope from Stage 10 — framework-wide vs per-page.
 - **Stage 9c surfacing** (this spec) — observability layer that sits OVER both deploy paths. Errors from either deploy land in the same `errors.log` shape so operators have one place to look.
 
 ## See also
 
-- Spec 16 §12.10 — Spec 20 cross-reference
-- Spec 16 §12.11 — Stage 10 (the consumer of Stage 9c logs when --deploy-target is set)
+- Spec 22 §FR-22-10 Stage 9c + Stage 10 — pipeline-stage cross-reference (Spec 16 §12.10/§12.11 retired 2026-05-26)
 - `cloning-pipeline-flow.md` Stage 9c entry + Stage 10 entry
 - `.claude/skills/wp-sgs-deploy/SKILL.md` — companion framework-deploy skill
 - `feedback_universal_extraction_no_per_block_legacy.md` — same root philosophy (universal extraction, observable evidence)

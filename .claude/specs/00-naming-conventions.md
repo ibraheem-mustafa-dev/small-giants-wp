@@ -74,7 +74,7 @@ Recognition path (deterministic):
 - `<div class="sgs-X__body">` → `text` canonical → `sgs/text` (intentional — `body` is generic text-content)
 - `<blockquote class="sgs-X__body">` → `text` canonical → `sgs/text` (tag doesn't change recognition)
 
-**Canonical vocabulary** lives in `sgs-framework.db.slot_synonyms` and is documented in [Spec 16 §12.3](16-DETERMINISTIC-CONVERTER-V2.md#123-canonical-slot-vocabulary-spec-15-34). To author a draft that routes to a specific block, name the BEM element with one of that canonical's aliases.
+**Canonical vocabulary** lives in `sgs-framework.db.slot_synonyms` and is documented in [Spec 22 §3 FR-22-1 + FR-22-2](22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md#fr-22-1--bem-is-the-only-recognition-signal). To author a draft that routes to a specific block, name the BEM element with one of that canonical's aliases.
 
 ---
 

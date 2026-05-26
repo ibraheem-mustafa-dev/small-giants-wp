@@ -460,7 +460,7 @@ python plugins/sgs-blocks/scripts/push-theme-snapshot.py \
 
 The primary pipeline orchestrator for the SGS clone workflow. Runs all pipeline stages
 (extraction, recognition, conversion, deploy). Accepts `--converter-v2` flag to route
-through the Spec 16 cv2 converter.
+through the Spec 22 universal walker converter (Spec 16 was the predecessor; retired 2026-05-26).
 
 ```bash
 # Standard full run

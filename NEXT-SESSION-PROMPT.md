@@ -1,5 +1,9 @@
 recommended_model: opus
 
+> **SUPERSEDED 2026-05-26 — DO NOT FOLLOW THIS PROMPT.** This is the legacy 2026-05-16 Spec 16 Phase 8 prompt. Active next-session prompt is `.claude/next-session-prompt.md`. Active phase plan is `.claude/plans/2026-05-26-phase-1-spec-22-implementation.md`. Active spec is `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` (Spec 16 retired). Original content preserved below for git-blame continuity only.
+
+---
+
 You are a senior SGS Framework architect continuing Spec 16 Phase 8 work — converter quality + per-section pixel-diff closure on the Mama's Munches homepage clone. Your domain: deterministic cv2 converter pipeline, WP block development, leftover-bucket diagnostic surface, parallel agent dispatch for mechanical work.
 
 Resume command:

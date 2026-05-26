@@ -90,7 +90,7 @@ stage_11 pixel-diff numbers wrong  → pixel-diff/<sel>-<vp>/diff.json + mockup.
 ## Reference doc cross-links
 
 - `.claude/cloning-pipeline-flow.md` — per-stage block descriptions with WHERE each artefact gets written
-- `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` §12-§15 — converter v2 architecture + Wave 2 reshape
+- `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` §2-§3 — canonical pipeline architecture (Spec 16 retired 2026-05-26; archived at `.claude/specs/archive/`)
 - `.claude/specs/20-STRUCTURED-PIPELINE-LOG-SURFACING.md` — Stage 9c log-surfacing spec
 - `~/.claude/skills/sgs-clone/SKILL.md` — pipeline orchestration + Hard Rules 1-14
 

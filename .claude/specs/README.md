@@ -2,17 +2,22 @@
 
 Spec files with status tags. One spec per file.
 
-**Last reviewed:** 2026-05-24 (Phase 9 spec relocation)
+**Last reviewed:** 2026-05-26 (Spec 22 ratification + Spec 16 archival).
 
-## Status tags
+## Specification Standards
+
+Specs are versioned, status-tracked artifacts that document architectural commitments. Each spec carries `doc_type: spec`, a numeric `spec_id`, and a `status` from the enum below. Specs supersede each other via the `supersedes` / `retired_by` frontmatter fields (see Spec 22 retiring Spec 16 2026-05-26 as the canonical example). Retired specs move to `.claude/specs/archive/` with retirement headers preserved for git-blame continuity.
+
+### Status tags
 
 - `draft` — being written
 - `active` — approved, being implemented
 - `shipped` — complete
 - `deferred` — paused, not cancelled
 - `cancelled` — abandoned
+- `retired` — superseded by a newer spec; moved to archive/
 
-## Numbered canonical specs
+## Specification Index
 
 | # | File | Subject | Status |
 |---|---|---|---|
@@ -30,12 +35,14 @@ Spec files with status tags. One spec per file.
 | 09 | [09-GOLD-STANDARD-AUDIT.md](../../reports/reference/09-GOLD-STANDARD-AUDIT.md) | Per-block competitor gap analysis | active |
 | 10 | [10-COMPETITOR-RESEARCH.md](../../reports/10-COMPETITOR-RESEARCH.md) | Spectra / Kadence / GenerateBlocks research | shipped |
 | 11 | [11-SGS-BUTTON-ARCHITECTURE.md](11-SGS-BUTTON-ARCHITECTURE.md) | sgs/button + sgs/multi-button canonical (includes 2026-05-22 double-default fix) | shipped |
-| 15 | (absorbed into Spec 16 — deleted 2026-05-12) | Deterministic converter Spec 15 | absorbed |
-| 16 | [16-DETERMINISTIC-CONVERTER-V2.md](16-DETERMINISTIC-CONVERTER-V2.md) | Slot-aware DOM walker | active |
+| 15 | (absorbed into Spec 16 2026-05-12, then absorbed-chain retired with Spec 16 2026-05-26) | Deterministic converter Spec 15 | absorbed → retired |
+| 16 | [archive/16-DETERMINISTIC-CONVERTER-V2-retired-by-spec-22.md](archive/16-DETERMINISTIC-CONVERTER-V2-retired-by-spec-22.md) | Slot-aware DOM walker (RETIRED — superseded by Spec 22 2026-05-26) | retired |
 | 17 | [17-HEADER-FOOTER-ARCHITECTURE.md](17-HEADER-FOOTER-ARCHITECTURE.md) | Header/footer infrastructure | shipped |
 | 18 | [18-SGS-FLOATING-UI.md](18-SGS-FLOATING-UI.md) | Back to Top + Reading Progress | shipped |
 | 19 | [19-SGS-CLI-COMMANDS.md](19-SGS-CLI-COMMANDS.md) | `wp sgs` command tree (includes Phase 1 DB seed) | shipped |
 | 20 | [20-STRUCTURED-PIPELINE-LOG-SURFACING.md](20-STRUCTURED-PIPELINE-LOG-SURFACING.md) | Per-severity sidecar logs | shipped |
+| 21 | [21-PIPELINE-STATE-ARTEFACTS.md](21-PIPELINE-STATE-ARTEFACTS.md) | Pipeline-state debug artefacts catalogue | active |
+| 22 | [22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md](22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md) | SGS Cloning Pipeline — Universal Block-Equivalent Extraction (CANONICAL; supersedes Spec 16 2026-05-26) | active |
 
 ## Architecture programme (2026-05-21+) — not yet a numbered spec
 

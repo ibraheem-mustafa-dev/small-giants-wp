@@ -18,7 +18,7 @@ Required BEFORE starting this phase (must be true to begin):
 - [ ] Working tree clean on main (no uncommitted changes from prior session)
 - [ ] Parent strategic plan read end-to-end (this session's context anchor)
 - [ ] `pipeline-state/<latest-run>/leftover-buckets.json` reviewed if any pipeline-touching work (binding rule blub.db row 254)
-- [ ] Relevant specs read (Spec 16 + Spec 17 for cloning-pipeline work; specs/02 for block work; etc.)
+- [ ] Relevant specs read (Spec 22 + Spec 17 for cloning-pipeline work; specs/02 for block work; etc. — Spec 16 retired 2026-05-26, see Spec 22)
 - [ ] `~/.openclaw/workspace/memory/research/*` checked for prior research on the phase domain
 - [ ] Confirmation that no in-flight uncommitted changes from earlier sessions need attention first
 
