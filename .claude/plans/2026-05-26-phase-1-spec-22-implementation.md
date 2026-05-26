@@ -9,7 +9,7 @@ primary_goal: |
   Implement Spec 22 (SGS Cloning Pipeline — Universal Block-Equivalent Extraction).
   Acceptance: per-section pixel-diff ≤5% across 3 viewports (375 / 768 / 1440) for
   every body section. Phase 1.5 stretch: bridge to ≤1% via noise-floor diagnosis.
-empirical_baseline: pipeline-state/mamas-munches-homepage-2026-05-26-012625/stage-11-pixel-diff.json (mean 63.0%; brand 53.2/50.9/46.0; product-card 75.0/72.6/87.9; full table per FR-22-7 enumeration)
+empirical_baseline: pipeline-state/mamas-munches-144-2026-05-26-122349/stage-11-pixel-diff.json (Wave B re-capture 2026-05-27; overall mean 58.91%; hero 1440 honest correction 69.6%→60.8% per D88; brand-375 +2.4pp methodology shift, deterministic across re-runs; previous mean-63.0% baseline at mamas-munches-homepage-2026-05-26-012625/ retained as historical reference per D88)
 ---
 
 # Phase 1 — Spec 22 implementation
@@ -40,7 +40,7 @@ Items surfaced during Phase 1 that don't belong in the active step sequence:
 
 ## What this phase does (one paragraph)
 
-Implements Spec 22's universal block-equivalent extraction architecture. Stage 4 of the cloning pipeline (`convert.py`) is rewritten as a single-path walker with exactly 3 permitted exceptions (atomic-tag swap, top-level chrome skip, top-level container wrap — FR-22-3). Per-block branches retire: `lift_subtree_into_block_attrs`, `_lift_inner_blocks`, F1 fallback, 9-branch walk(), ARRAY_LIFT_PATTERNS, hardcoded ATOMIC_TAG_MAP. New foundation: `equivalent_block_for()` in `converter_v2/db_lookup.py` with 3-tier derivation from existing `slot_synonyms` data. `wp-blocks.py` extended as unified data CLI. Hybrid blocks (8-15 estimated, set empirically by Phase 0.4 audit) get render.php migration to `echo $content` for block-equivalent slots. Acceptance: per-section ≤5% pixel-diff × 3 viewports + Bean visual sign-off.
+Implements Spec 22's universal block-equivalent extraction architecture. Stage 4 of the cloning pipeline (`convert.py`) is rewritten as a single-path walker with exactly 3 permitted exceptions (atomic-tag swap, top-level chrome skip, top-level container wrap — FR-22-3). Per-block branches retire: `lift_subtree_into_block_attrs`, `_lift_inner_blocks`, F1 fallback, 9-branch walk(), ARRAY_LIFT_PATTERNS, hardcoded ATOMIC_TAG_MAP. New foundation: `equivalent_block_for()` in `converter_v2/db_lookup.py` with 2-tier derivation (Tier A direct join + Tier B BEM-element; Tier C deleted per D86) over `slot_synonyms.role_classification` column. `wp-blocks.py` extended as unified data CLI. Hybrid blocks (Phase 0.4 audit shipped 2026-05-27: **61 hybrid blocks** identified — `de300eb2`) get render.php migration to `echo $content` for block-equivalent slots; Phase 2 prioritises by hybrid_attr_count descending. Acceptance: per-section ≤5% pixel-diff × 3 viewports + Bean visual sign-off.
 
 ## Skills + tooling
 
@@ -68,7 +68,7 @@ Implements Spec 22's universal block-equivalent extraction architecture. Stage 4
 3. `.claude/specs/00-naming-conventions.md` §3.1 — BEM canonical signal
 4. `.claude/cloning-pipeline-flow.md` + `.claude/cloning-pipeline-stages.md` — stage map (post Commit 0.0 update)
 5. `.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md` — diagnostic artefacts
-6. `pipeline-state/mamas-munches-homepage-2026-05-26-012625/` — empirical baseline (mean 63.0%)
+6. `pipeline-state/mamas-munches-144-2026-05-26-122349/` — current empirical baseline (Wave B re-capture 2026-05-27; overall mean 58.91%). Earlier `pipeline-state/mamas-munches-homepage-2026-05-26-012625/` (mean 63.0%) retained as historical reference per D88 — partially stale on chrome-affected cells.
 7. Recent feedback files in `~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/` — `feedback_phases_never_ship_as_single_commits.md` (blub.db 288) + `feedback_grep_verify_handoff_diagnostic_premises.md` (output-only inference trap)
 
 ## Binding rules (every commit obeys all R-22-1 through R-22-13)
@@ -103,7 +103,7 @@ Each commit follows the cadence per R-22-5 / blub.db 288:
 | 0.1 | **DB enrichment (scope-corrected per D84 2026-05-27).** Extend `/sgs-update assign-canonical.py` with **Tier B BEM-element derivation only**. Script structurally refuses to operate on rows where `derived_selector IS NULL` (guardrail by construction — makes the F-RA-1 misroute impossible). `--dry-run` mode emits a JSON diff of proposed updates (one entry per row: block_slug, attr_name, proposed canonical_slot, derivation source). Expected yield ≤72 Tier B candidate updates (audited 2026-05-27). Bean inline-reviews the diff BEFORE any DB write. **Tier C ships dormant** — zero candidates exist in current DB state. **Golden corpus DROPPED** (1,142 of 1,214 "NULL" rows are correctly-NULL behavioural attrs, not backfill targets). **Pre-rewrite DB snapshot** to `pipeline-state/_snapshots/sgs-framework-pre-spec22.db` (already captured 2026-05-26, SHA256 `d08806295db262a35db0b7a25948d35d86e782f74847fe87c1ded824e00017bc`). | Sonnet via `/delegate` | `/qc-council` ⚡ pre-commit; sgs-db verification; Bean inline diff review | ≤72 Tier B rows resolve; 1,142 triple-NULL rows verified unchanged | LOW (structural guardrail eliminates the original MEDIUM risk surface) |
 | 0.2 | **wp-blocks.py extension.** Add 6 new subcommands per Spec 22 FR-22-8 (`equivalent-block`, `recognition-log --write`, `naming-convention`, `gap-candidate --write`, `animation`, `component-library-match`). Adversarial test corpus: positive cases (block-equivalent attrs return correct slug) + negative cases (behavioural attrs return null) + edge cases (hyphen-compound BEM elements). | Sonnet via `/delegate` | `/qc-council` ⚡; unit tests | Single CLI interface for converter data queries | MEDIUM (single point of failure for walker — adversarial tests mitigate) |
 | 0.3 | **pixel-diff.py hardening.** Fix the 60px vertical-anchor offset identified in hero-clone-poc validation. Detect chrome at top of SGS screenshot, crop before comparison. Add `--wait-fonts` flag. | Sonnet | `/qc-inline`; regression test on hero-clone-poc (page 29) | Measurement script reports honest pixel-diff (down from 54.5% to expected ≤5% on visually-matching content) | LOW |
-| 0.4 | **Hybrid-block audit.** Query `equivalent_block_for()` against every block × every attr. Filter via FR-22-2.2 role-exclusion. Produce roster at `.claude/reports/2026-05-26-hybrid-block-roster.md`. Sets Phase 2 scope (estimated 8-15 blocks). | Haiku via `/delegate` (mechanical) | sgs-db verification; `/qc-inline` | Phase 2 scope locked empirically | LOW |
+| 0.4 | **Hybrid-block audit — SHIPPED 2026-05-27 (commit `de300eb2`).** Queried `equivalent_block_for()` against every block × every attr; filtered via FR-22-2.2 role-exclusion + D85 positive-allowlist. Roster at `.claude/reports/2026-05-27-hybrid-block-roster.md`. **Actual: 61 hybrid blocks** (vs earlier "8-15" estimate; the canonical FR-22-6 criterion captures wider truth than the original high-content-composite guess). | Haiku (shipped) | `/qc-inline` | Phase 2 scope locked empirically (Phase 2 prioritises by hybrid_attr_count) | LOW (shipped) |
 
 ### Phase 1 — Walker rewrite (5 commits per R-22-5)
 

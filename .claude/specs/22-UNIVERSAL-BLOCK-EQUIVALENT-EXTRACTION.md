@@ -142,7 +142,7 @@ Styling/behaviour roles (return NULL even if canonical_slot joins): typography, 
 
 Per R-22-1 the classification is NOT a hardcoded Python frozenset — it lives in `slot_synonyms.role_classification` (TEXT column, values `content-bearing` / `styling-behaviour` / `unclassified`) and is queried at runtime by `db_lookup._content_bearing_roles()`. The seed mapping is in `db_lookup._ROLE_CLASSIFICATION_MAP` (one-time idempotent migration at module load; not a runtime lookup dict).
 
-This shrinks the "hybrid block" set from 63 raw blocks down to a smaller true-content-bearing set (estimated 8-15; surfaced empirically by the Phase 0.4 audit query — see Phase 0).
+This shrinks the "hybrid block" set from the raw block count down to a true-content-bearing set. **Phase 0.4 audit (2026-05-27 commit `de300eb2`) surfaced the actual count: 61 hybrid blocks across 77 SGS audited (1,740 attrs scanned). Earlier "8-15" estimate was a guess at high-content-composite count only; the canonical FR-22-6 criterion (≥1 content-bearing attr after role-exclusion) captures the wider truth.** Roster at `.claude/reports/2026-05-27-hybrid-block-roster.md`. Phase 2 prioritises by hybrid_attr_count descending.
 
 **PASS test:** `equivalent_block_for('sgs/hero', 'headlineFontSizeDesktop')` returns NULL (typography role, not content).
 **FAIL test:** `equivalent_block_for('sgs/product-card', 'description')` returns NULL (should return sgs/text — text-content role).
@@ -209,7 +209,7 @@ The D1 routing change from Spec 16: when a CSS rule targets `.sgs-X__Y`, D1 rout
 
 ### FR-22-6 — Hybrid block render.php migration
 
-A "hybrid block" is any block where `equivalent_block_for()` returns non-NULL for ≥1 attr (after FR-22-2.2 role-exclusion). The classification is empirically determined by the Phase 0.4 audit query — NOT hand-curated. Estimated count: 8-15 (true content-bearing hybrid set), not 63 (the raw count before role-exclusion).
+A "hybrid block" is any block where `equivalent_block_for()` returns non-NULL for ≥1 attr (after FR-22-2.2 role-exclusion). The classification is empirically determined by the Phase 0.4 audit query — NOT hand-curated. **Phase 0.4 audit shipped 2026-05-27 (commit `de300eb2`): 61 hybrid blocks identified across 77 SGS audited (mean 3.08 attrs/block; median 2). Phase 2 prioritises by hybrid_attr_count descending (top: sgs/hero=11, sgs/media=8, sgs/icon-list=7, sgs/cta-section=6, sgs/form-field-number=6).**
 
 Per FR-22-6 the render.php migration pattern (proven by sgs/product-card's CTA migration at commit `a757ff1c` — line 32 deprecates ctaText/ctaUrl, line 99 emits InnerBlocks content):
 
@@ -447,7 +447,7 @@ Retired scripts move to `plugins/sgs-blocks/scripts/orchestrator/_retired/` so t
 
 ## 6. Architectural rules (binding for every Spec 22 commit)
 
-1. **R-22-1 — DB-first, no hardcoded dicts** (blub.db 260). All lookups via DB tables; the only "permitted" dict-like constant is `SKIP_TOP_LEVEL_TAGS` (3 entries: header/footer/nav — bounded HTML semantic tags, not block-specific). Tier C role-to-block lookup derives from existing `slot_synonyms.role + standalone_block` data — no new table, no Python dict.
+1. **R-22-1 — DB-first, no hardcoded dicts** (blub.db 260). All lookups via DB tables; the only "permitted" dict-like constant is `SKIP_TOP_LEVEL_TAGS` (3 entries: header/footer/nav — bounded HTML semantic tags, not block-specific). Role classification (replacing the original Tier C row-derivation concept) now lives in the `slot_synonyms.role_classification` column (DB-migrated 2026-05-27 per D85/D86) — Python frozensets retired.
 2. **R-22-2 — BEM is the only recognition signal** (Spec 00 §3.1). HTML tag is rendering-shape only, except in the bounded atomic-tag-swap permitted exception.
 3. **R-22-3 — Three permitted walker exceptions, no others** (FR-22-3). Adding a 4th branch requires spec amendment with empirical justification.
 4. **R-22-4 — Pixel-diff measurement gates every commit** (blub.db 256). `/sgs-clone --debug-trace` Stage 11 per-section pixel-diff captured pre/post. Commit message cites predicted vs actual delta.
@@ -595,7 +595,7 @@ After Spec 22 Phase 4.3 closes:
 - Hybrid-block roster (Phase 0.4) empty of unresolved blocks (every hybrid has migrated render.php)
 - `_retired/` folder bulk-deleted after Phase 4 acceptance
 - decisions.md + mistakes.md cleaned of stale Spec 16 references
-- Zero hardcoded class-to-block dicts remain in Python (Tier C derives from existing `slot_synonyms` data)
+- Zero hardcoded class-to-block dicts remain in Python (role classification migrated to `slot_synonyms.role_classification` column per D85/D86; Tier C derivation deleted)
 - ≤72-row Tier B backfill diff reviewed by Bean + applied; 1,142 triple-NULL behavioural rows verified unchanged post-script (per D84 scope correction)
 - A fresh `/sgs-clone` run on any client mockup produces deterministic ≤5% per-section output (Phase 1) with a clear path to ≤1% (Phase 1.5)
 

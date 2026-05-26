@@ -57,17 +57,17 @@ blockers:
 
 ## State Snapshot
 
-- **current_phase:** spec-22-ratified-cross-doc-sync-complete-2026-05-26
-- **current_subphase:** Spec 22 v0.4 ratified; cross-doc sync (Commit 0.0) complete; Phase 0 pending
-- **current_step:** Phase 0.1 — DB enrichment + golden corpus (assign-canonical.py backfill + slot_synonyms gap-fill)
-- **latest_commit:** a757ff1c (F1 universal-nesting + Phase 1H render beta-migration, 2026-05-25); Commit 0.0 staged
-- **working_tree:** Spec 22 v0.4 + new phase plan + 18+ docs updated; staged for Commit 0.0
+- **current_phase:** spec-22-phase-0-closed-2026-05-27 (next: Phase 1.1 walker rewrite)
+- **current_subphase:** Phase 0 ALL CLOSED — 7 task-commits (884d13e9 / 49bd2f24 / 82821922 / c417b7a4 / 6f565b13 / de300eb2 / b62e1660) + handoff (59accb69)
+- **current_step:** Phase 1.1 — pre-rewrite snapshot (`git mv convert.py _retired/convert_pre_spec22.py`)
+- **latest_commit:** 59accb69 (handoff + next-session-prompt for Phase 1)
+- **working_tree:** clean on main (1 file uncommitted: `plugins/sgs-blocks/includes/lucide-icons.php` — build timestamp drift, non-substantive)
 - **github_branches:** main ONLY
-- **spec_22_status:** SPEC_RATIFIED_PHASE_0_PENDING — council 4-rater /gap-analysis, 48 findings (33 valid+addressed, 10 partial-recalibrated, 5 dropped)
+- **spec_22_status:** ACTIVE — Phase 0 closed; Phase 1 (walker rewrite, 5 commits per R-22-5) opens next session
 - **acceptance_gate_phase_1:** per-section ≤5% × 3 viewports for all 7 body sections (21 cells, each independently)
-- **acceptance_gate_phase_1_5:** per-section ≤1% × 3 viewports (stretch — vertical-anchor + chrome-crop + font-load fixes)
-- **empirical_baseline:** mean 63.0% pixel-diff (pipeline-state/mamas-munches-homepage-2026-05-26-012625/stage-11-pixel-diff.json)
-- **blockers:** Desktop 1440 brand pixel-diff flat at 50.8% post-F1; blub.db dashboard API unreachable (port 5050); ~16 open parking items folded into Phase 1 sub-tasks
+- **acceptance_gate_phase_1_5:** per-section ≤1% × 3 viewports (stretch — Phase 1.5 noise-floor work post Phase 1)
+- **empirical_baseline:** overall mean 58.91% (Wave B re-capture 2026-05-27 — `pipeline-state/mamas-munches-144-2026-05-26-122349/stage-11-pixel-diff.json` — chrome-hide + wait-fonts methodology). Prior baseline at `pipeline-state/mamas-munches-homepage-2026-05-26-012625/` (mean 63.0%) retained as historical reference per D88.
+- **blockers:** NONE for Phase 1.1. Two soft items: P-SGS-UPDATE-ROLE-DETECTION-IMPROVE OPEN MED (more rows may need role over time); P-D85-ROLE-EXCLUSION-DB-DERIVE OPEN (one-time-seed Python dict is R-22-1 compliant but ideally future `role_classification` table)
 
 ## Human Summary
 

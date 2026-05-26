@@ -1,18 +1,18 @@
 # small-giants-wp — Goals
 
-**Last updated:** 2026-05-26 (Spec 22 ratified — replaces Spec 16; Phase 1 acceptance gate softened to ≤5% with ≤1% Phase 1.5 stretch)
+**Last updated:** 2026-05-27 (Spec 22 Phase 0 closed — 7 task-commits + handoff; Phase 1.1 walker rewrite opens next session)
 
 ## Primary near-term goal (2026-05-26 onwards — gates everything until met)
 
 **Cloning pipeline delivers ≤5% pixel-diff PER BODY SECTION × 3 viewports (375/768/1440) — Phase 1 acceptance — irrespective of mockup content variations, from any Claude-generated SGS-BEM HTML draft. Phase 1.5 stretch closes residual to ≤1%.**
 
-- **Phase 1 gate:** per-section ≤5% × 3 viewports for all 7 body sections (21 cells; current baseline mean 63.0% post-F1 Option-A/C) + Bean visual sign-off on cropped-pair artefacts (R-22-13 co-authoritative). Implements Spec 22 walker rewrite (5 commits: snapshot, atomic-tag migration, ARRAY_LIFT_PATTERNS retirement, universal walker, measurement+decide). Plan: `.claude/plans/2026-05-26-phase-1-spec-22-implementation.md`.
+- **Phase 1 gate:** per-section ≤5% × 3 viewports for all 7 body sections (21 cells; current baseline overall mean 58.91% per Wave B re-capture 2026-05-27 — chrome-hide + wait-fonts methodology now in pixel-diff.py per D87) + Bean visual sign-off on cropped-pair artefacts (R-22-13 co-authoritative). Implements Spec 22 walker rewrite (5 commits: snapshot, atomic-tag migration, ARRAY_LIFT_PATTERNS retirement, universal walker, measurement+decide). Plan: `.claude/plans/2026-05-26-phase-1-spec-22-implementation.md`. **Phase 0 closed 2026-05-27 (7 task-commits + handoff).**
 - **Phase 1.5 gate:** per-section ≤1% × 3 viewports. Bridges residual ~4pp via pixel-diff.py vertical-anchor fix + chrome cropping + font-load timing. Scope determined empirically by Phase 1 end-results.
 - **Phase 2 gate:** header + footer cloner ships after Phase 1 hits ≤5% (Phase 1.5 may run in parallel).
 
 Canonical spec: `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` (replaces Spec 16, retired 2026-05-26). Council findings register: `.claude/reports/2026-05-25-qc-council-issue-register.md` (~110 items + Section P binding rules + Section Q 20-cheat inventory — drove the Spec 22 architecture).
 
-Empirical baseline (2026-05-26): `pipeline-state/mamas-munches-homepage-2026-05-26-012625/stage-11-pixel-diff.json` — mean 63.0% across 27 captures; hero 86.5/64.1/69.6%; trust-bar 37.0/24.6/33.1%; brand 53.2/50.9/46.0% (post-F1 Option A + C); deployed to canary page 144 on sandybrown. Visual proof-of-concept at `/hero-clone-poc/` (page 29) — visual parity achievable, script-measurement noise floor handled in Phase 1.5.
+Empirical baseline (Wave B re-capture 2026-05-27): `pipeline-state/mamas-munches-144-2026-05-26-122349/stage-11-pixel-diff.json` — overall mean 58.91% (was 62.99% pre-chrome-hide); hero 1440 honest correction 69.6% → 60.8% (-8.8pp per D88); brand-375 +2.4pp methodology shift confirmed deterministic across re-runs. Spec 22 body cells aggregate 57.83% → 57.14% (within tolerance). 23/23 captured cells have chrome-detect + wait_fonts=true telemetry. Earlier `pipeline-state/mamas-munches-homepage-2026-05-26-012625/` baseline (mean 63.0%) retained as historical reference per D88 — partially stale on chrome-affected cells. Visual proof-of-concept at `/hero-clone-poc/` (page 29) — visual parity achievable; pre-fix 54.5% → post-fix 10.3% at 1440 (-44.2pp per D87).
 
 ## Primary outcome (long-term)
 
