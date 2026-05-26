@@ -1,171 +1,127 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-session_tag: small-giants-wp-2026-05-28-spec-22-phase-0-4-hybrid-roster
+session_tag: small-giants-wp-2026-05-28-spec-22-phase-1-walker-rewrite
 generated: 2026-05-27
-parent_session: small-giants-wp-2026-05-27-spec-22-phase-0-1-foundation
-primary_goal: "Close Spec 22 Phase 0 by running the hybrid-block audit (Phase 0.4). Produces the empirically-scoped roster of blocks needing render.php migration in Phase 2. Estimated 8–15 blocks per FR-22-2.2 role-exclusion + D85 positive-allowlist. Phase 1 walker rewrite (Commits 1.1–1.5) opens after Phase 0.4 closes."
-first_action_eta: "5 minutes (read Spec 22 §FR-22-6 + Phase 1 plan Phase 0.4 row; dispatch Haiku via /delegate with the brief below)"
+parent_session: small-giants-wp-2026-05-27-spec-22-phase-0-foundation
+primary_goal: "Open Spec 22 Phase 1 — universal walker rewrite. Phase 0 closed 2026-05-27 (6 commits). Phase 1 ships as 5 commits per R-22-5: 1.1 pre-rewrite snapshot, 1.2 atomic-tag map migration, 1.3 ARRAY_LIFT_PATTERNS retirement + array-of-objects resolution, 1.4 universal walker (THE core rewrite), 1.5 measurement + halt/proceed."
+first_action_eta: "10 minutes for Commit 1.1 (pre-rewrite snapshot — git mv convert.py to _retired/convert_pre_spec22.py + living-docs note). Then ~5-6 hours for Commits 1.2-1.4."
 ---
 
-# Next session — Spec 22 Phase 0.4 (hybrid-block audit roster)
+# Next session — Spec 22 Phase 1 (universal walker rewrite)
 
-You are a senior SGS Framework architect implementing the final commit of Spec 22 Phase 0. Domain: cloning-pipeline foundation. Goal: empirically scope which SGS blocks need render.php migration for Phase 2, by querying `equivalent_block_for()` against every block × attr and filtering through the FR-22-2.2 positive-allowlist (D85 — content-bearing roles only).
+Phase 0 is closed. The cloning pipeline foundation is in place:
+- Tier B canonical_slot backfill applied (4 rows)
+- Role detection from block.json populated 94 rows (94 role writes; 52 reclassifications)
+- `equivalent_block_for()` shared 3-tier-now-2-tier derivation function shipped with positive-allowlist role-exclusion (D85), Tier C deleted (D86)
+- DB-derived role classification via `slot_synonyms.role_classification` column
+- pixel-diff.py chrome-hide + --wait-fonts + --keep-chrome (D87)
+- sgs-clone-orchestrator.py auto-passes --wait-fonts on Spec-22-gated runs
+- wp-blocks.py FR-22-8 CLI shipped (6 subcommands) + 30/30 adversarial tests pass
+- External regression test (4/4 PASS) guards against future drift
+- Mama's baseline re-captured: overall mean 62.99% → 58.91%, hero 1440 honest -8.8pp correction
+- Hybrid-block roster: 61 blocks (canonical Phase 2 scope; prioritise by hybrid_attr_count descending)
 
-## State recap
-
-Phase 0.1 + 0.2 + 0.3 ALL CLOSED in the 2026-05-27 session (4 commits on `main`):
-
-- **`884d13e9`** — D84 scope correction (1,214 → ≤72 Tier B backfill)
-- **`49bd2f24`** — Phase 0.1 + 0.3.a bundle: DB enrichment + role classification + pixel-diff chrome-hide + D85-D88
-- **`82821922`** — Phase 0.3.b: orchestrator `--wait-fonts` propagation
-- **`c417b7a4`** — Phase 0.2: wp-blocks.py test infra (FR-22-8 CLI extensions)
-
-Empirical state of the DB post Phase 0.1-0.3:
-- `block_attributes` rows: 2,246 total; canonical_slot populated: 1,036; role populated: 962
-- Triple-NULL baseline corrected from 1,142 → **1,090** (role-detection apply reclassified 52 mis-tagged-as-behavioural rows as content-bearing; snapshot at `pipeline-state/_snapshots/triple-null-baseline.json`)
-- `slot_synonyms.role_classification` column added: 33 content-bearing / 3 styling-behaviour / 53 unclassified
-- Tier C DELETED from `db_lookup.equivalent_block_for()` per D86 (Spec 22 now 2-tier)
-- D85 — positive-allowlist closes FR-22-2.2 NULL-role hole. Walker now correctly returns None for styling attrs whose canonical_slot looks content-bearing.
-- Pixel-diff hardening — hero-clone-poc 1440 went 54.5% → 10.3% (-44.2pp); Mama's hero 1440 honest baseline 69.6% → 60.8% (D88 — methodology shift not flake)
-
-Wave B (Mama's full-page baseline re-capture with new pixel-diff.py) was dispatched at session close 2026-05-27. **Check status of Wave B Haiku at session start** — if completed, review the new baseline + commit it; if still running, wait.
-
-## Mandatory reading
+## Mandatory reading (in order)
 
 1. This file
-2. `.claude/state.md` (current_subphase_step — post Phase 0.3 close)
-3. `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` §FR-22-2 (full) + §FR-22-6 (hybrid block render.php migration) + §FR-22-6.1 (parallel-session coordination) + §7 Commit 0.4
-4. `.claude/plans/2026-05-26-phase-1-spec-22-implementation.md` Phase 0.4 row + Phase 2 row (the consumer of this roster)
-5. `.claude/decisions.md` D84, D85, D86, D87, D88 (top entries)
-6. `plugins/sgs-blocks/scripts/orchestrator/converter_v2/db_lookup.py` (`equivalent_block_for()` function — the roster query target)
+2. `.claude/state.md` — current_subphase_step shows Phase 0 closed
+3. `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` — §3 FRs (especially FR-22-1, FR-22-2, FR-22-3, FR-22-5), §6 R-22-1 through R-22-13, §7 Phase 1 commits (1.1-1.5), §13 Appendix A (walker pseudocode)
+4. `.claude/plans/2026-05-26-phase-1-spec-22-implementation.md` — full Phase 1 plan with model routing + risk + estimates per commit
+5. `.claude/decisions.md` D78-D88 (top entries) — full Spec 22 architecture context
+6. `.claude/reports/2026-05-27-hybrid-block-roster.md` — Phase 2 scope (consumed by Phase 2, NOT Phase 1; reference only)
+
+## Phase 1 commit cadence (per R-22-5)
+
+| Commit | Scope | Model | Risk | Estimated time |
+|--------|-------|-------|------|---------------|
+| **1.1** | Pre-rewrite snapshot — `git mv plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py plugins/sgs-blocks/scripts/orchestrator/_retired/convert_pre_spec22.py`; no behavioural change | Inline | LOW | ~10 min |
+| **1.2** | Atomic-tag map migration — replace hardcoded `ATOMIC_TAG_MAP` (convert.py:698-704) with DB-driven `db.atomic_tag_map()` per Spec 22 §14 Appendix B | Sonnet via `/delegate` | LOW (structural cleanup) | ~1-2 hours |
+| **1.3** | ARRAY_LIFT_PATTERNS retirement + array-of-objects resolution per FR-22-2.5 — delete `ARRAY_LIFT_PATTERNS` dict; walker treats array attrs as sibling-class container; per-item resolution via FR-22-1 BEM signature | Sonnet via `/subagent-driven-development` | MEDIUM | ~2 hours |
+| **1.4** ⚡ | **Universal walker (THE core rewrite).** Delete `lift_subtree_into_block_attrs` (convert.py:3387), `_lift_inner_blocks` (convert.py:1350), F1 fallback (convert.py:3916), 9-branch walk(), per-block hardcoded branches. Implement single-path walker per FR-22-3 + Appendix A. New helper functions in `converter_v2/db_lookup.py`. LRU cache. | Sonnet via `/subagent-driven-development` (one implementer + 2 reviewers) | ⚡ HIGH | ~5-6 hours |
+| **1.5** ⚡ | Phase 1 measurement + halt/proceed decision. Full-page `/sgs-clone --auto-section --debug-trace`. Every body section measured. If all 7 sections × 3 viewports ≤5%, Phase 1 closes; if any > 5%, halt + diagnose | Inline | ⚡ HIGH (gate evaluation) | ~1 hour |
 
 ## Tool bindings
 
-- **Skills:** `/autopilot` (SessionStart), `/sgs-wp-engine` (when touching SGS code), `/qc-inline` (small-artefact gate), `/delegate` (model picking), `/handoff` (session close)
-- **DB queries:** `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py stats` (sanity); `python ~/.claude/hooks/wp-blocks.py equivalent-block <slug> <attr>` (per-attr lookup via FR-22-8 CLI now wired)
-- **External regression test:** `python plugins/sgs-blocks/scripts/orchestrator/_tests/external-derivation-regression.py` (4/4 PASS at session start should hold)
+- **Skills:** `/autopilot` (SessionStart), `/sgs-wp-engine` (any framework code), `/qc-council` (pre-commit gate per blub.db 255 for Commits 1.3 + 1.4 — converter-adjacent), `/qc-inline` (Commit 1.2 + 1.5), `/delegate` (model picking), `/subagent-driven-development` (Commits 1.3 + 1.4), `/verify-loop` (2-attestation), `/capture-lesson` (any new corrective rule surfaced), `/handoff` (session close)
+- **DB query tools:** `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py block <slug>` (block schema); `python ~/.claude/hooks/wp-blocks.py equivalent-block <slug> <attr>` (FR-22-8 CLI); `/sgs-db` (slash command)
+- **Pipeline tools:** `/sgs-clone --debug-trace` (Stage 11 pixel-diff measurement after each commit per R-22-4)
+- **Live verification:** Playwright MCP (live-page DOM check is canonical per R-22-11)
+- **Tests:** `python plugins/sgs-blocks/scripts/orchestrator/converter_v2/db_lookup.py` (5/5 expected); `python plugins/sgs-blocks/scripts/orchestrator/_tests/external-derivation-regression.py` (4/4 expected); `python plugins/sgs-blocks/scripts/orchestrator/_tests/wp-blocks-adversarial.py` (30/30 expected)
+
+## Binding rules every commit obeys
+
+Per Spec 22 §6. Highlights:
+
+- **R-22-1** — DB-first, no hardcoded dicts; only permitted const is `SKIP_TOP_LEVEL_TAGS` (3 entries)
+- **R-22-3** — Three permitted walker exceptions, no others (atomic-tag swap / chrome-skip / top-level container wrap)
+- **R-22-4** — Pixel-diff measurement gates every commit; commit message cites predicted vs actual delta
+- **R-22-5** — Phases never ship as single commits; Phase 1 IS the 5-commit cadence above
+- **R-22-9** — Universal mechanisms, no per-block hyperfocus
+- **R-22-11** — Verify rendered output, not internal metrics (live Playwright DOM is canonical)
+- **R-22-12** — /qc-council pre-commit gate enforced via `pipeline-stage-gate.py` hook for Commits 1.3 + 1.4
+- **R-22-13** — Bean visual sign-off co-authoritative with pixel-diff for Commit 1.5 close
 
 ## First action
 
-Dispatch Haiku via `/delegate` with the Phase 0.4 brief below. ETA: ~30-45 min wall-time. Returns roster file `.claude/reports/2026-05-27-hybrid-block-roster.md` (date stamp may shift to actual run date).
+`git mv plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py plugins/sgs-blocks/scripts/orchestrator/_retired/convert_pre_spec22.py` (after `mkdir -p plugins/sgs-blocks/scripts/orchestrator/_retired`). Confirm git status shows the rename. Add a one-line note to state.md noting the rename. Commit 1.1.
 
----
+Then proceed sequentially to 1.2 → 1.3 → 1.4 → 1.5. Each commit gets:
+1. Implement (model per table above)
+2. Pre-commit gate (`/qc-council` ⚡ or `/qc-inline` per table)
+3. Living-docs updates per Spec 22 §8 cross-doc impact list
+4. Measurement — `/sgs-clone --debug-trace` + Stage 11 pixel-diff capture
+5. Commit message citing predicted vs actual delta
+6. `/verify-loop` 2-attestation per load-bearing claim
 
-## Phase 0.4 — Hybrid-block audit (Haiku, ~30-45 min)
+## Phase 1 acceptance gate
 
-**What:** Query `equivalent_block_for(block_slug, attr_name)` against every block × every attr in `block_attributes`. Group results by block. Filter via FR-22-2.2 role-exclusion (only count attrs returning non-NULL slug). Produce a markdown roster at `.claude/reports/2026-05-27-hybrid-block-roster.md` (or current date).
+**Per-section ≤5% × 3 viewports for all 7 body sections (21 cells each ≤5%).** Plus Bean visual sign-off on cropped-pair artefacts (R-22-13 co-authoritative).
 
-**Why:** Spec 22 Phase 2 needs an empirical roster — not hand-curated — of blocks where `equivalent_block_for()` returns non-NULL for ≥1 attr after role-exclusion. Per FR-22-2.2 + D85 + D86, this set is much smaller than the 63 raw blocks (the role-exclusion + Tier C deletion shrinks scope dramatically). Estimated 8-15 true content-bearing hybrid blocks.
+Baseline at `pipeline-state/mamas-munches-144-2026-05-26-122349/stage-11-pixel-diff.json` (overall mean 58.91% post-Wave-B re-capture):
 
-**Estimated time:** ~30-45 min.
+| Section | 375 baseline | 768 baseline | 1440 baseline | Phase 1 target |
+|---------|------|------|------|----|
+| hero | 87.8% | 64.1% | 60.8% | ≤5% × 3 |
+| trust-bar | 37.0% | 24.6% | 33.1% | ≤5% × 3 |
+| featured-product | (re-baselined) | 68.6% | (re-baselined) | ≤5% × 3 |
+| brand | 55.6% | 50.9% | 46.0% | ≤5% × 3 |
+| ingredients-section | (re-baselined) | (re-baselined) | (re-baselined) | ≤5% × 3 |
+| gift-section | (re-baselined) | (re-baselined) | (re-baselined) | ≤5% × 3 |
+| social-proof | (re-baselined) | (re-baselined) | (re-baselined) | ≤5% × 3 |
 
-**Orchestration:**
-- Execution: delegated subagent (Haiku via `/delegate`)
-- Dispatch pattern: single Haiku agent (mechanical DB query + report generation)
-- /qc gate after: `/qc-inline` — Bean visual review of roster count (expect 8-15; if >20 or <5, role-exclusion rule needs revisiting)
-- Acceptance: roster file exists with `block_slug | hybrid_attr_count | example_attrs` table; Bean confirms count is within 8-15
+Plus: NO section regresses >2pp from baseline at Commit 1.4 measurement; ≥5 of 7 sections drop ≥40pp toward target.
 
-**Cold prompt for Haiku agent:**
+## Phase 1.5 stretch (parked here for visibility)
 
-```
-You are Haiku producing the Spec 22 Phase 0.4 hybrid-block audit roster. Mechanical task. UK English. ~30 min.
+After Phase 1 closes at ≤5%, Phase 1.5 diagnoses the residual ~4pp via:
+- Theme.json-token vs inline-value cascade rendering precision
+- Image-dimension rounding noise
+- Other font / cascade artefacts
 
-# Working directory
-c:\Users\Bean\Projects\small-giants-wp (branch: main, post commit c417b7a4)
+Phase 1.5 work is empirically scoped after Phase 1 measurements arrive.
 
-# Goal
-Query equivalent_block_for() against every block × every attr in block_attributes; group results by block; produce roster of blocks with ≥1 content-bearing attr (filtered through FR-22-2.2 + D85 positive-allowlist).
+## Dispatch bindings (verbatim in every Agent cold prompt — per blub.db row 240)
 
-# Reading (5 min)
-- plugins/sgs-blocks/scripts/orchestrator/converter_v2/db_lookup.py — `equivalent_block_for()` function (the query target)
-- Spec 22 §FR-22-6 + §FR-22-2.2 (role-exclusion rule)
-- Verify db_lookup self-tests pass: `python plugins/sgs-blocks/scripts/orchestrator/converter_v2/db_lookup.py` should show 5/5 PASS
+- **Binding A** — NO commit authority. Return uncommitted artefacts.
+- **Binding B** — Per-sub-change `/sgs-clone --debug-trace` measurement (Stage 11 auto-captures).
+- **Binding C** — Living-docs + `/capture-lesson` inline per change.
+- **Binding D** — TodoWrite breakdown + per-sub-task status.
+- **Binding E (Spec 22 FR-22-6.1)** — No shared-file edits in parallel agents (Phase 2 only; doesn't apply to Phase 1 since 1.2-1.4 all touch convert.py sequentially).
+- **Binding F** — No `git stash` / `git reset` / `git restore` / `git checkout` (per blub.db row 230 + Wave A Sonnet 2's flagged violation).
 
-# Audit logic
-1. SELECT DISTINCT block_slug FROM block_attributes ORDER BY block_slug
-2. For each block_slug:
-   - SELECT attr_name FROM block_attributes WHERE block_slug = ?
-   - For each attr_name, call equivalent_block_for(block_slug, attr_name)
-   - Collect attrs where return is non-NULL
-3. Filter blocks: keep only blocks with ≥1 non-NULL attr
-4. Sort descending by hybrid_attr_count
+## What success looks like (one line)
 
-# Output: `.claude/reports/<date>-hybrid-block-roster.md` (use today's date)
+Phase 1 closes when every body cell on Stage 11 measures ≤5%, the universal walker is shipped per Spec 22 with exactly 3 permitted exceptions, `convert.py` is reduced ~50-60% in LoC, all 20 catalogued Spec 16 cheats are removed, and `/sgs-clone` produces deterministic ≤5% per-section output on any client mockup with a clear path to ≤1% via Phase 1.5.
 
-Required schema:
-```
----
-doc_type: report
-generated: 2026-05-27
-spec_ref: 22-FR-22-6
----
+## Out-of-scope this session
 
-# Spec 22 Phase 0.4 — Hybrid-block roster
+- Phase 2 (hybrid block render.php migrations) — opens after Phase 1.5 closes per Spec 22 §7
+- Phase 1.5 noise-floor work — empirically scoped post-Phase-1
+- Header/footer cloner — Phase 2 sibling, parked
+- Cross-client validation (Indus Foods) — Phase 4.2
 
-## Summary
-- Total SGS blocks audited: <N>
-- Total block_attributes rows scanned: <N>
-- Hybrid blocks (≥1 content-bearing attr): <N>
-- Estimated Phase 2 render.php migrations: <N>
+## Out-of-scope-but-recently-flagged
 
-## Roster
-
-| block_slug | hybrid_attr_count | example_attrs (first 5) |
-|---|---|---|
-| sgs/product-card | <N> | description, image, productName, packSizes, ctaText |
-| sgs/info-box | <N> | heading, body, image |
-| ...  | ... | ... |
-
-## Per-block-attr breakdown
-(Optional — for blocks with hybrid_attr_count ≥ 3, list all attrs + resolved equivalent_block)
-
-## Methodology
-- equivalent_block_for() implementation: db_lookup.py:799 (positive-allowlist 2-tier per D85/D86)
-- Query date: <UTC timestamp>
-- DB snapshot: triple-NULL = 1,090 (baseline)
-```
-
-# Halt conditions
-- equivalent_block_for() raises on any (slug, attr) pair → halt + report the pair
-- Roster count outside 5-20 range → flag for Bean review at top of report (do NOT halt; report is still the deliverable)
-- DB query takes >5 min → check LRU cache warmth; halt if anomalous
-
-# Bindings
-- A: NO commit authority — main session reviews + commits
-- C: Living-docs — note in roster file's footer that Phase 2 scope is locked by this roster
-- D: TodoWrite per major step (query, group, sort, write)
-- F: Pure read-only against the DB; only write the roster markdown file
-```
-
-**Post-Haiku-return main-session steps:**
-1. Review the roster file inline (Bean confirms count)
-2. `/qc-inline` on the report (optional — it's a mechanical query result)
-3. Update `.claude/state.md` current_subphase_step → "Phase 0 CLOSED; ready for Phase 1.1 (pre-rewrite snapshot)"
-4. Commit Phase 0.4 with message citing predicted count vs actual
-5. Update Spec 22 §FR-22-6 + §7 Commit 0.4 to cross-reference the roster file path
-
-## Wave B (Mama's baseline re-capture) — check at session start
-
-A Haiku agent was dispatched at the end of 2026-05-27 session to re-capture the Mama's full-page baseline with the new pixel-diff.py (chrome-hide + --wait-fonts). Per D88, the 2026-05-26 baseline was partially stale on chrome-affected cells.
-
-- **If Wave B completed before this session opens:** check `pipeline-state/mamas-munches-baseline-2026-05-27-<timestamp>/` for the new run dir. Review the per-section deltas. If all cells within ±2pp or improved, commit the new baseline + update `.claude/state.md empirical_baseline` pointer + update Spec 22 §FR-22-7 with new baseline figures.
-- **If Wave B is still running:** check the background task log + wait for completion before Phase 0.4. The two are independent so Phase 0.4 can start in parallel — but the Mama's baseline commit should land before Phase 1.4 dispatches anyway.
-
-## Methodology guardrails (do not skip)
-
-- **DB-first, no hardcoded dicts (R-22-1)** — Phase 0.4 audit uses the live `equivalent_block_for()` function + DB. No hand-curated lists.
-- **Universal mechanisms, no per-block hyperfocus (R-22-9)** — every roster entry passes "does this block have ≥1 content-bearing attr per `equivalent_block_for()`?" — same logic for all blocks.
-- **Read full spec before proposing fix-shape (R-22-10)** — for any block in the roster, the next session writing its render.php migration must read the full block.json + render.php END-TO-END before proposing the migration shape.
-- **Verify rendered output, not internal metrics (R-22-11)** — Phase 2's commit gate is live editor smoke test ("no unexpected content" warning) + Stage 11 pixel-diff, not "the function returns the right slug".
-- **/qc-council pre-commit gate (R-22-12)** — Phase 2 per-block migrations are converter-adjacent (blub.db 255); each commit gets multi-rater council.
-- **Bean visual sign-off (R-22-13)** — Phase 4 acceptance is co-authoritative: script measurement + Bean's eye.
-
-## Guardrails — what must not break
-
-- Phase 0.4 audit must NOT modify any DB rows (read-only query).
-- The roster file is the SOLE Phase 2 scope source — no hand-curated additions in Phase 2 dispatch briefs.
-- `pipeline-state/_snapshots/triple-null-baseline.json` must still report 1,090 post-Phase-0.4 (no drift; this audit is read-only).
-- All 30 wp-blocks-adversarial.py tests must still pass (`python plugins/sgs-blocks/scripts/orchestrator/_tests/wp-blocks-adversarial.py`).
-- All 5 db_lookup.py unit tests must still pass.
-- External regression test 4/4 PASS must hold.
+- `sgs/responsive-logo.width` Tier B row rejected by Bean — flagged for review post role-detection-enrichment (see P-SGS-UPDATE-ROLE-DETECTION-IMPROVE)
+- Form-field family classifications validated 2026-05-27 (block.json declares role="content" on label/placeholder/helpText explicitly; conditionalField/Operator/Value also correctly classified per Bean review)
