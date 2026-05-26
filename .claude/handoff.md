@@ -1,84 +1,66 @@
-# Session Handoff — 2026-05-26 (Spec 22 ratification + Spec 16 retirement)
+# Session Handoff — 2026-05-27
 
-## TL;DR
+## Completed This Session
 
-Spec 22 (Universal Block-Equivalent Extraction) ratified and shipped to main in commit `d9bd1c00`. Replaces Spec 16 in full — single universal walker, 3 permitted exceptions, BEM-only recognition, hybrid render.php migration pattern. Acceptance gate softened to ≤5% Phase 1 + ≤1% Phase 1.5 stretch per Bean directive. 4-rater /gap-analysis council validated; 48 findings absorbed. 31 files in Commit 0.0 cross-doc sync. 22 of 22 scored docs at A 100% post fix-application. Next session begins Spec 22 Phase 0.1 (DB enrichment + golden corpus + pre-rewrite DB snapshot) gating Phase 1 walker rewrite.
+1. **D84 scope correction (884d13e9)** — DB audit verified 1,142 of 1,214 "NULL canonical_slot" rows are correctly-NULL behavioural attrs by design; real backfill scope = ≤72 Tier B candidates. Golden corpus dropped; structural script guardrail replaced it.
+2. **Phase 0.1 + 0.3.a bundle (49bd2f24)** — D85 role-exclusion positive-allowlist closes FR-22-2.2 NULL-role hole (171 rows audited; 3 confirmed misroutes closed). D86 Tier C deleted (40+ LoC, 0 inputs) + Spec 22 amended to 2-tier. DB-derive `slot_synonyms.role_classification` column added. D87 pixel-diff chrome-hide via `visibility:hidden` (architectural divergence from spec "crop" wording — empirically falsified). D88 Mama's brand-375 +2.4pp confirmed methodology shift not flake.
+3. **Phase 0.3.b orchestrator (82821922)** — `sgs-clone-orchestrator.py` auto-passes `--wait-fonts` to Stage 11 on Spec-22-gated runs; per-cell `wait_fonts` audit in results[]; `--strict-spec-22-gate` for hard-exit on missing.
+4. **Phase 0.2 test infra (c417b7a4)** — `_tests/wp-blocks-adversarial.py` (30 tests including 6 equivalent-block cases) + `_tests/wp-blocks-bench.py` (latency benchmark). `wp-blocks.py cmd_equivalent_block()` wired post Phase 0.1 to `db_lookup.equivalent_block_for()`; 30/30 PASS.
+5. **Wave B Mama's re-capture (6f565b13)** — full-page baseline re-captured with new pixel-diff.py at `pipeline-state/mamas-munches-144-2026-05-26-122349/`. Overall mean 62.99% → 58.91% (-4.08pp); hero 1440 -8.8pp honest correction. 23/23 cells chrome-detected + wait_fonts=true.
+6. **Phase 0.4 hybrid roster (de300eb2)** — Haiku audit at `.claude/reports/2026-05-27-hybrid-block-roster.md`: 61 hybrid blocks across 77 SGS audited (1,740 attrs scanned). Top: sgs/hero (11), sgs/media (8), sgs/icon-list (7), sgs/cta-section (6), sgs/form-field-number (6). Classifications validated against block.json source.
+7. **Phase 1 pre-condition audit (b62e1660)** — slot_synonyms gap audit: 10 of 11 NULL standalone_block rows correctly NULL by design. 1 gap filled: `role.standalone_block = sgs/label` (activates team-member + testimonial routing). FR-22-8 perf re-verified cleanly: cold 3.2ms / warm 0.0002ms.
 
-## Completed this session
+## Current State
 
-1. **Spec 22 (Universal Block-Equivalent Extraction) drafted v0.1 → v0.4 → ratified v1.0** — replaces Spec 16 in full. Single universal walker with exactly 3 permitted exceptions (atomic-tag swap / top-level chrome skip / top-level container wrap). 13 FRs (FR-22-1 through FR-22-12), 13 binding rules (R-22-1 through R-22-13). docscore Grade A 100%. Frontmatter `status: active` post-Commit-0.0.
-2. **4-rater /gap-analysis council on Spec 22 v0.2** — Architectural Purist, Spec Checker, Pragmatic Engineer, Risk Auditor dispatched in parallel. 48 findings: 33 valid+addressed, 10 partial-recalibrated, 5 dropped as category errors. v0.3 + v0.4 absorbed feedback (e.g. role_block_mapping table proposal dropped in favour of querying existing slot_synonyms data).
-3. **Spec 16 archived** — `git mv` to `.claude/specs/archive/16-DETERMINISTIC-CONVERTER-V2-retired-by-spec-22.md` with retirement frontmatter. Same for old phase plan to `.claude/plans/archive/2026-05-25-phase-1-universal-extraction-superseded-by-spec-22.md`.
-4. **New Phase 1 plan written** at `.claude/plans/2026-05-26-phase-1-spec-22-implementation.md` — 5-commit walker rewrite cadence per R-22-5 (1.1 snapshot → 1.2 atomic-tag → 1.3 array-of-objects → 1.4 universal walker → 1.5 measurement+decide). docscore A 100%.
-5. **Commit 0.0 cross-doc sync — 31 files** in single commit `d9bd1c00`. Architecture.md decisions #14/#15/#17/#19 rewritten + new #20 added. Decisions.md prepended D78-D83. Parking.md: 6 entries dissolved + P-LEGACY-GAP-CANDIDATES-MIGRATION added. State.md, goals.md, CLAUDE.md trio, cloning-pipeline-flow.md, cloning-pipeline-stages.md, docs-registry.yaml, plus 7 other specs + 3 phase plans + README all updated.
-6. **4 subagent audits dispatched in parallel post-Commit-0.0** — Track 1 (state.md + architecture.md structural fixes → A 100%); Track 2 (docs-registry.yaml audit — 27 entries, 7 stale); Track 3 (/qc on 13 updated docs — 6 needs-fix surfaced); Track 4 (stale-ref audit on 80+ non-updated docs — 24 findings). All critical + high + medium fixes applied this commit.
-7. **Acceptance gate softened per Bean directive** — Phase 1 ≤5% per-section × 3 viewports + Bean visual sign-off (R-22-13 co-authoritative). Phase 1.5 stretch ≤1% via pixel-diff.py vertical-anchor fix + chrome cropping + font-load timing (addresses the 60px chrome-bleed alignment artefact identified on hero-clone-poc page 29).
-8. **Empirical validation** — F1 spike commit `a757ff1c` (2026-05-25) is the evidence base for the architecture. Hero-clone-poc page 29 (`/hero-clone-poc/`) is the visual-parity proof-of-concept (54.5% pixel-diff is alignment artefact, not visual divergence).
-9. **All scored docs at A 100%** — 22 of 22 docscore-eligible docs at Grade A 100% post-fix-application. 2 custom doc_types (plan.md `master-plan`, cloning-pipeline-flow.md `visual-reference`) intentionally unscored — no templates for them.
-
-## Current state
-
-- **Branch:** main at `d9bd1c00`
-- **Tests:** no test suite run (docs-only commit; pipeline tests gate Phase 0+ work)
-- **Build:** n/a (no code changes in commit)
-- **Uncommitted changes:** none
-- **Outcome assessment (Gate 3.5):** OUTCOME ACHIEVED for stated outcome (Spec 22 ratification + Spec 16 retirement + Commit 0.0 cross-doc sync). Next stated outcome (Spec 22 Phase 0.1 DB enrichment + golden corpus) correctly named as pending — work for next session.
+- **Branch:** main at `b62e1660`
+- **Tests:** 39/39 PASS (db_lookup 5/5 + external-derivation 4/4 + wp-blocks-adversarial 30/30)
+- **Build:** npm webpack compiles clean (98 styles)
+- **Uncommitted changes:** 1 file (`plugins/sgs-blocks/includes/lucide-icons.php` — build timestamp drift, non-substantive)
+- **Sandybrown canary:** HTTP 200 (1.89s)
+- **DB:** triple-NULL = 1,090 (baseline); canonical_slot populated = 1,036; role populated = 962
 
 ## Known Issues / Blockers
 
-- **Phase 0 of Spec 22 implementation is NOT YET STARTED.** Foundation work (DB enrichment, wp-blocks.py extension, pixel-diff.py hardening, hybrid-block audit) gates Phase 1 walker rewrite. Next session begins at Commit 0.1.
-- **plan.md + cloning-pipeline-flow.md have custom doc_types** (`master-plan` / `visual-reference`) without docscore templates — unscored but coherent. Could be addressed by adding templates OR re-tagging to canonical types.
+None blocking Phase 1.1. Two soft items remain deferred:
+- **P-SGS-UPDATE-ROLE-DETECTION-IMPROVE** OPEN MEDIUM — role detection shipped 94 writes but more rows may need role assignment over time.
+- **P-D85-ROLE-EXCLUSION-DB-DERIVE** OPEN — `_ROLE_CLASSIFICATION_MAP` is one-time-seed Python dict (R-22-1 compliant but ideally future `role_classification` table).
 
-## Next priorities (in order)
+## Next Priorities (in order)
 
-1. **Spec 22 Phase 0.1 — DB enrichment + golden corpus** — extend `/sgs-update assign-canonical.py` for canonical_slot backfill across 1,214 NULL rows. Verify `slot_synonyms` coverage for content-bearing roles (text-content, image-object, content, link-href, identity, visual). Write golden corpus at `.claude/specs/22-golden-corpus.json`. Pre-rewrite DB snapshot to `pipeline-state/_snapshots/sgs-framework-pre-spec22.db`.
-2. **Phase 0.2 — wp-blocks.py extension** — add 6 new subcommands (`equivalent-block`, `recognition-log`, `naming-convention`, `gap-candidate`, `animation`, `component-library-match`) with adversarial test corpus.
-3. **Phase 0.3 — pixel-diff.py hardening** — vertical-anchor fix for the 60px chrome-bleed identified on hero-clone-poc + `--wait-fonts` flag.
-4. **Phase 0.4 — Hybrid-block audit** — query `equivalent_block_for()` across every block × attr, filter via FR-22-2.2 role-exclusion, produce roster at `.claude/reports/2026-05-26-hybrid-block-roster.md`.
-5. **Phase 1 walker rewrite begins** at Commit 1.1 (pre-rewrite snapshot) ONLY after Phase 0 closes.
+1. **Phase 1.1 — Pre-rewrite snapshot** (~10 min, inline). `git mv plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py plugins/sgs-blocks/scripts/orchestrator/_retired/convert_pre_spec22.py`. Commit. Living-docs note.
+2. **Phase 1.2 — Atomic-tag map migration** (~1-2h, Sonnet). Replace hardcoded `ATOMIC_TAG_MAP` (convert.py:698-704) with DB-driven `db.atomic_tag_map()` per Spec 22 §14 Appendix B.
+3. **Phase 1.3 — ARRAY_LIFT_PATTERNS retirement** (~2h, Sonnet via /subagent-driven-development). Delete dict; implement FR-22-2.5 array-of-objects resolution. /qc-council gate.
+4. **Phase 1.4 — Universal walker (core)** (~5-6h, Sonnet via /subagent-driven-development). Delete `lift_subtree_into_block_attrs` + `_lift_inner_blocks` + F1 + 9-branch walk(). Implement FR-22-3 single-path walker. ⚡ HIGH; /qc-council multi-rater.
+5. **Phase 1.5 — Measurement + halt/proceed** (~1h, inline). Full-page `/sgs-clone --auto-section --debug-trace`. Every body section ≤5% × 3 viewports gates close.
 
-## Files modified
+## Files Modified
 
-| File path | What changed |
-|---|---|
-| `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` | NEW — canonical spec; v1.0 active |
-| `.claude/plans/2026-05-26-phase-1-spec-22-implementation.md` | NEW — Spec 22 Phase 1 plan |
-| `.claude/specs/archive/16-DETERMINISTIC-CONVERTER-V2-retired-by-spec-22.md` | RENAMED from `.claude/specs/16-*` with retirement header |
-| `.claude/plans/archive/2026-05-25-phase-1-universal-extraction-superseded-by-spec-22.md` | RENAMED from `.claude/plans/2026-05-25-*` |
-| `CLAUDE.md` + `.claude/CLAUDE.md` + `NEXT-SESSION-PROMPT.md` (root) + `plugins/sgs-blocks/CLAUDE.md` | Active focus + binding rules + canonical pointers updated to Spec 22 |
-| `.claude/architecture.md` | Decisions #14/#15/#17/#19 rewritten; new #20 (Spec 22 ratification) |
-| `.claude/decisions.md` | D78-D83 prepended (Spec 16 retirement + Spec 22 chain) |
-| `.claude/parking.md` | 6 entries dissolved (P-WAVE-2-RESHAPE, P-G1-EXTEND, P-FR1-VARIATION-BUF, P-MATCH-JSON-GATE, P-G3-STAGE-3, P-G5-PER-BLOCK); P-LEGACY-GAP-CANDIDATES-MIGRATION added |
-| `.claude/state.md` | current_phase + spec_22_implementation block + Track 1 structural fix |
-| `.claude/goals.md` | ≤5% Phase 1 + ≤1% Phase 1.5 + Completed section |
-| `.claude/cloning-pipeline-flow.md` + `.claude/cloning-pipeline-stages.md` | Two-route topology retired; Stage 4 Spec 22 note |
-| `.claude/docs-registry.yaml` | Spec 22 entry; Spec 16 archived; cold-start reading order updated |
-| `.claude/specs/00, 02, 17, 19, 20, 21 + README` | Spec 16 → Spec 22 cross-refs |
-| `.claude/plans/2026-05-24-strategic-plan + phase-2/3/4` | Phase 1 supersession banner + pre-condition updates |
-| `.claude/dev-setup.md` + `.claude/next-session-prompt.md` + `.claude/plan.md` | Spec 22 pointer + Mandatory READING / Tool bindings / First action sections |
+| File | What changed |
+|------|--------------|
+| `plugins/sgs-blocks/scripts/orchestrator/converter_v2/db_lookup.py` | +equivalent_block_for() 2-tier + positive-allowlist + DB-derive role_classification + Tier C deleted + 5 unit tests |
+| `plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py` | +Tier B backfill + structural guardrail + role detection from block.json + snapshot baseline |
+| `scripts/pixel-diff.py` | +chrome-hide (visibility:hidden) + --wait-fonts + --keep-chrome + diff.json telemetry |
+| `plugins/sgs-blocks/scripts/sgs-clone-orchestrator.py` | +auto-pass --wait-fonts + per-cell audit + --strict-spec-22-gate |
+| `~/.claude/hooks/wp-blocks.py` (out of repo) | +6 FR-22-8 subcommands; cmd_equivalent_block wired |
+| `plugins/sgs-blocks/scripts/orchestrator/_tests/external-derivation-regression.py` | NEW — 4 assertions defending Tier B SQL filter |
+| `plugins/sgs-blocks/scripts/orchestrator/_tests/wp-blocks-adversarial.py` | NEW — 30 adversarial tests |
+| `plugins/sgs-blocks/scripts/orchestrator/_tests/wp-blocks-bench.py` | NEW — latency benchmark |
+| `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` | §FR-22-2.1 2-tier + §FR-22-2.3 retired + §10/§15 RESOLVED + §7 Commit 0.3/0.4 wording |
+| `.claude/decisions.md` | D84-D88 prepended |
+| `.claude/parking.md` | Multiple closures (P-G4 / P-PIXEL-DIFF-VERTICAL / P-SLOT-SYNONYMS-CONTENT / P-SGS-UPDATE-ROLE / P-D85-BASELINE-CONSTANT) |
+| `.claude/state.md` | current_subphase_step rewritten + empirical_baseline pointer updated |
+| `.claude/next-session-prompt.md` | Rewritten for Phase 1.1 orchestration plan |
+| `.claude/reports/2026-05-27-hybrid-block-roster.md` | NEW — 61 hybrid blocks |
+| `pipeline-state/_snapshots/` | +triple-null-baseline.json + tier-b-backfill-approved + role-detection-diff |
 
 ## Notes for Next Session
 
-- **Cold replacement, not feature-flag dual-run** — Bean's call. Pre-rewrite DB snapshot at Phase 0.1 enables rollback (legacy code + legacy DB state). Stage 11 measurement at Commit 1.4 catches walker regression immediately.
-- **R-22-13 is novel and load-bearing** — Bean visual sign-off is co-authoritative with pixel-diff. Script numbers + Bean's eye + visual cropped-pair (mockup.png vs sgs.png) BOTH consulted. Numbers alone don't close a section; eye alone doesn't close. Phase 1.5 fixes the measurement methodology — until then the noise floor is real.
-- **Role-exclusion rule (FR-22-2.2) is the surprise from Track 4 PE audit** — 63 raw "hybrid blocks" shrinks to ~8-15 true content-bearing hybrids after filtering out typography/spacing/layout roles. Phase 0.4 audit produces the exact roster.
-- **F1 commit `a757ff1c` empirical findings preserved** — F1 won mobile/tablet (-23.8pp/-13.0pp brand) but failed desktop 1440 (+0.8pp). The double-render bug on sgs/product-card (8569 chars post-F1 vs 2303 pre-F1, 3.7× explosion) is what drove the Spec 22 architecture — every council finding builds on that diagnostic.
-- **Phase 1.5 isn't a vague future thing** — it's specifically the measurement-script hardening + noise-floor diagnosis. Per Bean it's "insurance" — only fired if ≤1% can't be reached via Phase 1 alone.
+- **DB mutated this session.** Pre-rewrite snapshot at `pipeline-state/_snapshots/sgs-framework-pre-spec22.db` (SHA256 `d088...0017bc`) is the rollback target. Live DB now has 4 Tier B + 94 role-detection writes. Per-row reversibility via `_snapshots/` diff files.
+- **block.json `role: "content"` is canonical truth** for content-attr classification per WordPress core. Used in Phase 0.4 audit validation. Future Phase 2 migrations cite this directly; do not infer.
+- **8-15 hybrid block estimate was wrong.** Actual = 61 per FR-22-6 canonical criterion. Phase 2 prioritises by `hybrid_attr_count` descending — not "61 migrations".
+- **/qc-council Task 2 Rater A's adversarial 5th test paid for the protocol.** Caught role-exclusion NULL-role hole no single dispatch would have surfaced. Pattern: bind every load-bearing classification to an external regression test.
+- **Wave A Sonnet 2 self-reported `git stash` Binding E violation** mid-session. No state loss. Honesty-on-violation pattern worth preserving in future dispatch briefs.
 
 ## Next Session Prompt
 
-See `.claude/next-session-prompt.md` (canonical lowercase path) for the full Phase 0.1 orchestration plan. Highlights:
-
-- **Skills to invoke:** `/autopilot` (auto-injected at SessionStart), `/brainstorming`, `/gap-analysis`, `/lifecycle`, `/research`, `/strategic-plan`, `/sgs-wp-engine`, `/wp-block-development`, `/wordpress-router`, `/qc-council`, `/qc-inline`, `/verify-loop`, `/delegate`, `/capture-lesson`, `/handoff`.
-- **MCP & tools:** Playwright MCP (live-page DOM verification for Phase 0.3 measurement-script hardening), `~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py` (canonical_slot backfill audit + DB stats), `~/.claude/hooks/wp-blocks.py` (extended in Phase 0.2; unified data CLI for both DBs).
-- **Agents:** `wp-sgs-developer` (heavy SGS WordPress work), `code-reviewer` (per-commit reviewer per `/subagent-driven-development`), Sonnet subagents via `/delegate` for mechanical Phase 0.1-0.4 work.
-- **First task:** Phase 0.1 DB enrichment + golden corpus. ETA ~3 hours. Inline main thread for the golden corpus design; Sonnet subagent for the assign-canonical.py extension via `/subagent-driven-development`.
-
-## Guardrails
-
-- Spec 22 binding rules R-22-1 through R-22-13 gate every commit. No exceptions.
-- /qc-council pre-commit gate enforced via `pipeline-stage-gate.py` hook on every converter/pipeline/SGS-block commit (blub.db row 255, R-22-12).
-- Per-section cropped pixel-diff only — `--selector .sgs-{section}` not full-page (blub.db row 256, R-22-4).
-- Phases never ship as single commits — every major task commits separately with predicted vs actual delta in message (blub.db row 288, R-22-5).
-- Output-only inference is a trap (R-22-6 + `feedback_grep_verify_handoff_diagnostic_premises.md`). Verify mockup HTML + extract.json + live DOM at each milestone.
-- Bean visual sign-off is co-authoritative with pixel-diff (R-22-13). Numbers alone don't close.
+See `.claude/next-session-prompt.md` — full orchestration plan with per-task model routing, dispatch patterns, dependency graph, and methodology guardrails for the 5-commit Phase 1 walker rewrite cadence (1.1 → 1.5).
