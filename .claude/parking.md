@@ -22,6 +22,18 @@ last_updated: 2026-05-27
 > **P-D85-BASELINE-CONSTANT-DRIFT** — CLOSED 2026-05-27 (Spec 22 Phase 0.1.b implementation). Replaces the hardcoded `1142` triple-NULL baseline constant in assign-canonical.py with a file-backed snapshot at `pipeline-state/_snapshots/triple-null-baseline.json`. Sanity check now reads the snapshot at script start and reports `OK — guardrail intact, matches snapshot` on match, or a drift message naming the snapshot + capture date on mismatch. New `--recapture-baseline` CLI flag writes a fresh snapshot with the current count when /sgs-update Stage 4 legitimately adds new blocks. Eliminates alert fatigue when DB grows.
 > **Status:** CLOSED 2026-05-27
 
+## Spec 22 walker — deferred routing work
+
+**P-SUBHEADING-ROUTING-TO-SGS-HEADING** — NEW 2026-05-28. **BLOCKED on Phase 1.4 walker existing.** Now that sgs/heading γ-rebuild (Track B 2026-05-28) ships with a `headingRole` enum (`heading` | `subheading`), the cloning pipeline can route mockup subheadings to `sgs/heading{headingRole:'subheading'}` instead of the current `sgs/text` emission. **Why this can't be done now:** updating `slot_synonyms.subheading.standalone_block` from `sgs/text` to `sgs/heading` without walker support would cause `equivalent_block_for(parent, 'subheading')` to emit `sgs/heading` with default `headingRole='heading'` — rendering subheading content as an h-tag instead of a paragraph. The walker (Commit 1.4) must learn to set `headingRole='subheading'` when emitting for a subheading-classified canonical_slot. The mechanism is either: (a) a walker-level derive rule inferring `headingRole` from the canonical_slot identity at emission time; OR (b) a new DB column `slot_synonyms.standalone_block_default_attrs` (JSON) carrying per-slot default attr overrides. Option (a) is cheaper; option (b) is more universal. Currently `subheading.standalone_block` remains `sgs/text`.
+> **Status:** BLOCKED
+> **Trigger:** Phase 1.4 walker rewrite shipping — pick mechanism (a) or (b) at that decision point.
+
+**P-SLOT-SYNONYMS-ATOMIC-CLEANUP** — CLOSED 2026-05-28. Five conflicting `slot_synonyms.html_semantic_tag` rows NULL'd inline as part of Track A DB-first cleanup: `subheading.h2`, `tab.button`, `review.article`, `step.li`, `items.ul`. `standalone_block` values left untouched (no walker-routing effect). Guardrail tests 39/39 PASS post-NULL (zero behavioural impact — atomic_tag_map no longer queries this column, html_tag_for_slot() helper has no production callers). Future cleanup of remaining slot-contextual-only rows (avatar.img, buttonSecondary.a, social.a, star.svg, ribbon.span, price.span, rating.span, etc.) is no-cost low-priority; left until a /sgs-update audit sweep picks it up.
+> **Status:** CLOSED 2026-05-28
+
+**P-COMPOSITE-ATTR-ROUTING** — DROPPED 2026-05-28. Originally raised as a needed `slot_synonyms.composite_attr` column to handle composite-block routing in the walker (label/headline/sub attr-targeting on sgs/heading). The Track B γ-rebuild on 2026-05-28 collapsed sgs/heading from composite to single-element + `headingRole` enum, eliminating the underlying need. The remaining single-attr routing concern is captured by `P-SUBHEADING-ROUTING-TO-SGS-HEADING` above.
+> **Status:** DROPPED (superseded by sgs/heading γ-rebuild + P-SUBHEADING-ROUTING-TO-SGS-HEADING)
+
 ## Cloning pipeline (cv2 / orchestrator / DOM walker / pixel-diff)
 
 _60 entries._

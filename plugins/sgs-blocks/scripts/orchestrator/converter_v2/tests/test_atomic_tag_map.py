@@ -35,7 +35,19 @@ _db_lookup = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_db_lookup)
 
 atomic_tag_map = _db_lookup.atomic_tag_map
-_HTML_TAG_TO_CORE_SLUG = _db_lookup._HTML_TAG_TO_CORE_SLUG
+
+# DB-first sanity: query html_tag_to_core_block to derive expected map size.
+# Test no longer references a Python constant — proves the runtime path is
+# DB-driven (R-22-1 hardening 2026-05-28).
+import sqlite3 as _sqlite3
+_SGS_DB = _db_lookup.SGS_DB
+_conn = _sqlite3.connect(_SGS_DB)
+try:
+    _EXPECTED_TAG_COUNT = _conn.execute(
+        "SELECT COUNT(*) FROM html_tag_to_core_block"
+    ).fetchone()[0]
+finally:
+    _conn.close()
 
 
 def run_tests() -> None:
@@ -125,13 +137,14 @@ def run_tests() -> None:
              f"these tags leaked into atomic_tag_map (slot_synonyms still being queried?): {leaked}")
 
     # ------------------------------------------------------------------
-    # 5. Map size — should equal len(_HTML_TAG_TO_CORE_SLUG); no extras.
+    # 5. Map size — should equal row count in html_tag_to_core_block (DB).
+    #    No Python constant referenced — proves runtime is DB-driven.
     # ------------------------------------------------------------------
-    if len(m) == len(_HTML_TAG_TO_CORE_SLUG):
-        ok(f"atomic_tag_map size = {len(m)} (matches _HTML_TAG_TO_CORE_SLUG)")
+    if len(m) == _EXPECTED_TAG_COUNT:
+        ok(f"atomic_tag_map size = {len(m)} (matches html_tag_to_core_block row count)")
     else:
         fail("map size",
-             f"expected {len(_HTML_TAG_TO_CORE_SLUG)} entries (from _HTML_TAG_TO_CORE_SLUG), got {len(m)}")
+             f"expected {_EXPECTED_TAG_COUNT} entries (from html_tag_to_core_block DB), got {len(m)}")
 
     # ------------------------------------------------------------------
     # 6. LRU cache: two consecutive calls return the same dict object

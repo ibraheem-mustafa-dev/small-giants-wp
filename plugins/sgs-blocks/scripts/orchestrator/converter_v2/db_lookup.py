@@ -110,6 +110,80 @@ _migrate_role_classification()
 
 
 # ----------------------------------------------------------------------------
+# Idempotent schema migration — html_tag_to_core_block
+# ----------------------------------------------------------------------------
+# Spec 22 §14 Appendix B / R-22-1 (2026-05-28 hardening): the bridge between
+# HTML primitive tags and canonical WordPress core block slugs moves out of
+# a hardcoded Python dict into a DB table. Runtime path (atomic_tag_map()
+# below) queries the DB ONLY.
+#
+# Mapping rationale:
+#   - HTML semantics are an external standard (HTML living spec). The seed
+#     below encodes that standard once, at migration time, into the DB.
+#   - Per-runtime callers never read this Python dict — they query
+#     html_tag_to_core_block via the public atomic_tag_map() helper.
+#   - This mirrors the _ROLE_CLASSIFICATION_MAP precedent above: code-level
+#     dict is one-time-seed data, never runtime routing.
+_HTML_TAG_TO_CORE_BLOCK_SEED: dict[str, tuple[str, str]] = {
+    # html_tag: (core_block_slug, note)
+    "h1": ("core/heading", "Heading level 1 — atomic walker fallback"),
+    "h2": ("core/heading", "Heading level 2"),
+    "h3": ("core/heading", "Heading level 3"),
+    "h4": ("core/heading", "Heading level 4"),
+    "h5": ("core/heading", "Heading level 5"),
+    "h6": ("core/heading", "Heading level 6"),
+    "p":  ("core/paragraph", "Paragraph text"),
+    "img": ("core/image", "Image — atomic media leaf"),
+    "hr":  ("core/separator", "Horizontal rule — divider"),
+    "button": ("core/button",
+               "Bare button — Bean directive 2026-05-28: walker auto-wraps in sgs/multi-button"),
+    "a":   ("core/button", "Link shape — routes to same atomic leaf as button"),
+    "blockquote": ("core/quote", "Quote block"),
+    "ul":  ("core/list", "Unordered list — atomic leaf"),
+    "ol":  ("core/list", "Ordered list — same routing as ul at atomic level"),
+}
+
+
+def _migrate_html_tag_to_core_block() -> None:
+    """Idempotent migration: create html_tag_to_core_block table if absent
+    and populate it from _HTML_TAG_TO_CORE_BLOCK_SEED.
+
+    Safe to call repeatedly. Runs at module load. Honours R-22-1: the seed
+    dict above is one-time migration data, NOT runtime lookup — atomic_tag_map()
+    queries the DB table only.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        conn.execute(
+            "CREATE TABLE IF NOT EXISTS html_tag_to_core_block ("
+            "  html_tag TEXT PRIMARY KEY,"
+            "  core_block_slug TEXT NOT NULL,"
+            "  note TEXT,"
+            "  created_at TEXT DEFAULT CURRENT_TIMESTAMP"
+            ")"
+        )
+        # INSERT OR IGNORE — idempotent; never overwrites existing rows. To
+        # change a mapping, edit the row directly or DROP + recreate the table.
+        for html_tag, (core_slug, note) in _HTML_TAG_TO_CORE_BLOCK_SEED.items():
+            conn.execute(
+                "INSERT OR IGNORE INTO html_tag_to_core_block "
+                "(html_tag, core_block_slug, note) VALUES (?, ?, ?)",
+                (html_tag, core_slug, note),
+            )
+        conn.commit()
+    except sqlite3.OperationalError:
+        # DB read-only / locked / missing — soft-fail. atomic_tag_map() then
+        # returns an empty dict; walker callers must handle the empty-map case.
+        pass
+    finally:
+        conn.close()
+
+
+# Run migration at module load (idempotent).
+_migrate_html_tag_to_core_block()
+
+
+# ----------------------------------------------------------------------------
 # Trace emitter (debug-trace evidence chain)
 # ----------------------------------------------------------------------------
 # Mirrors the pattern in convert.py. set_trace() is called by convert.py's
@@ -949,72 +1023,32 @@ def equivalent_block_for(block_slug: str, attr_name: str) -> str | None:
 # atomic_tag_map — Spec 22 §14 Appendix B / Commit 1.2
 # ----------------------------------------------------------------------------
 # DB-driven replacement for the legacy hardcoded ATOMIC_TAG_MAP dict in
-# _retired/convert_pre_spec22.py (9-entry dict, violates R-22-1).
+# _retired/convert_pre_spec22.py (9-entry dict, violated R-22-1).
 #
 # The atomic_tag_map operates at the walker's NO-BEM-CLASS fallback level —
 # when a DOM node carries no `sgs-*` BEM classification, the walker uses this
 # map to route the bare HTML tag to its html-canonical SGS block (Spec 22 §13
 # walker pseudocode line 642).
 #
-# Resolution algorithm (two-tier html-canonical resolution):
-#   Tier A — _HTML_TAG_TO_CORE_SLUG → blocks.replaces reverse-walk (DB-derived)
-#             For each html tag in _HTML_TAG_TO_CORE_SLUG (HTML-spec semantics),
-#             find the SGS block whose `blocks.replaces` value matches the
-#             canonical core slug. Output: html-canonical routing.
-#
+# Resolution algorithm (two-tier html-canonical resolution, fully DB-driven):
+#   Tier A — DB join: html_tag_to_core_block → blocks.replaces reverse-walk
+#             For each row in html_tag_to_core_block, find the SGS block
+#             whose `blocks.replaces` value matches the canonical core slug.
 #   Tier B — fallback to core block slug
 #             If no SGS block replaces the tag's canonical core slug, return
-#             the core/* slug directly (core/paragraph, core/heading, etc.).
+#             the core/* slug directly from html_tag_to_core_block.
 #
-# WHY slot_synonyms.html_semantic_tag is NOT consulted here (corrected 2026-05-28):
+# WHY slot_synonyms.html_semantic_tag is NOT consulted here (2026-05-28):
 #   slot_synonyms.html_semantic_tag captures SLOT-CONTEXTUAL rendering
 #   ("in slot X context, this slot is rendered as tag Y"). It is NOT a global
-#   html-canonical tag→block routing table. A single html_semantic_tag value
-#   may appear on multiple rows with different standalone_block routes (e.g.
-#   canonical_slot='subheading' html='h2' → sgs/text vs the expectation that
-#   bare h2 → sgs/heading). Using slot_synonyms for atomic resolution produces
-#   slot-contextual routing where html-canonical routing is needed. slot_synonyms
-#   data stays unchanged (correct for its slot-resolution purpose); atomic_tag_map
-#   simply does not query it.
+#   html-canonical tag→block routing table. Using it for atomic resolution
+#   produced slot-contextual routing where html-canonical routing is needed.
+#   slot_synonyms data stays unchanged; atomic_tag_map simply does not query it.
 #
-# Why _HTML_TAG_TO_CORE_SLUG doesn't violate R-22-1:
-#   R-22-1 forbids hardcoded SGS routing dicts (CLASS_TO_BLOCK,
-#   SLOT_TO_STANDALONE_BLOCK, ATOMIC_TAG_MAP). This constant maps HTML spec
-#   tags to their canonical WordPress core block equivalents — it encodes the
-#   HTML specification, not SGS routing logic. It is the bridge between the
-#   HTML world and the core block world before the DB reverse-walk takes over.
-
-# HTML-spec constant: html tag → canonical WordPress core block slug.
-# Covers only tags relevant to the atomic-tag-map domain (truly atomic HTML
-# primitives the walker may encounter outside any BEM-classified subtree).
-# NOT an SGS dict — encodes the HTML specification, not SGS routing.
-_HTML_TAG_TO_CORE_SLUG: dict[str, str] = {
-    # Headings — all h1-h6 route to sgs/heading via blocks.replaces='core/heading'
-    "h1": "core/heading",
-    "h2": "core/heading",
-    "h3": "core/heading",
-    "h4": "core/heading",
-    "h5": "core/heading",
-    "h6": "core/heading",
-    # Text — paragraph
-    "p":  "core/paragraph",
-    # Media — image
-    "img": "core/image",
-    # Separator — divider
-    "hr":  "core/separator",
-    # Buttons + links — both shapes route to sgs/button at atomic level.
-    # The walker (Commit 1.4) is responsible for auto-wrapping bare buttons
-    # in sgs/multi-button per SGS convention; atomic_tag_map only names the
-    # leaf block.
-    "button": "core/button",
-    "a": "core/button",
-    # Quote
-    "blockquote": "core/quote",
-    # Lists — both ordered and unordered route to sgs/icon-list at atomic
-    # level (sgs/icon-list replaces core/list per blocks.replaces).
-    "ul":  "core/list",
-    "ol":  "core/list",
-}
+# R-22-1 compliance (2026-05-28 hardening):
+#   No hardcoded SGS routing dict in code. The html-tag→core-block bridge data
+#   lives in the html_tag_to_core_block DB table, seeded once at module load
+#   from _HTML_TAG_TO_CORE_BLOCK_SEED. Runtime path queries DB only.
 
 
 @functools.lru_cache(maxsize=1)
@@ -1046,18 +1080,28 @@ def _blocks_replaces_reverse() -> dict[str, str]:
 def atomic_tag_map() -> dict[str, str]:
     """Return {html_tag: block_slug} for all HTML tags the universal walker may encounter.
 
-    DB-driven replacement for the legacy hardcoded ATOMIC_TAG_MAP (R-22-1 compliance).
+    Fully DB-driven (R-22-1 compliance, 2026-05-28 hardening). Reads
+    html_tag_to_core_block at runtime and joins against blocks.replaces.
+    No hardcoded routing dict in code.
+
     Resolution is html-canonical (NOT slot-contextual):
+      Tier A: html_tag_to_core_block → blocks.replaces reverse-walk
+      Tier B: fallback to core/* slug from html_tag_to_core_block
 
-      Tier A: _HTML_TAG_TO_CORE_SLUG → blocks.replaces reverse-walk (DB-derived)
-      Tier B: _HTML_TAG_TO_CORE_SLUG fallback (returns core/* slug)
-
-    See the module-level comment block above _HTML_TAG_TO_CORE_SLUG for why
-    slot_synonyms.html_semantic_tag is intentionally NOT consulted here.
+    See the module-level comment block above for why slot_synonyms.html_semantic_tag
+    is intentionally NOT consulted here.
     """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT html_tag, core_block_slug FROM html_tag_to_core_block"
+        ).fetchall()
+    finally:
+        conn.close()
+
     replaces_reverse = _blocks_replaces_reverse()
     out: dict[str, str] = {}
-    for html_tag, core_slug in _HTML_TAG_TO_CORE_SLUG.items():
+    for html_tag, core_slug in rows:
         # Tier A: reverse-walk blocks.replaces — find SGS block that replaces this core slug
         sgs_slug = replaces_reverse.get(core_slug)
         # Tier B: fallback to the core slug itself

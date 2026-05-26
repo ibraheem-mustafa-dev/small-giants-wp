@@ -58,7 +58,7 @@ blockers:
 ## State Snapshot
 
 - **current_phase:** spec-22-phase-1-walker-rewrite-opened-2026-05-28 (Phase 0 closed 2026-05-27)
-- **current_subphase:** Phase 1.2 — atomic-tag map DB migration SHIPPED (`atomic_tag_map()` added to `db_lookup.py`; html-canonical resolution via `_HTML_TAG_TO_CORE_SLUG` + `blocks.replaces` reverse-walk; 14-entry output; slot_synonyms.html_semantic_tag NOT consulted by design per 2026-05-28 algorithmic correction)
+- **current_subphase:** Phase 1.2 + 1.2a + parallel sgs/heading γ-rebuild SHIPPED. Phase 1.2a hardening: `_HTML_TAG_TO_CORE_SLUG` constant deleted; new DB table `html_tag_to_core_block` (14 rows, idempotent migration); `atomic_tag_map()` queries DB-only path; 5 conflicting `slot_synonyms.html_semantic_tag` rows NULL'd (subheading/tab/review/step/items — zero-blast-radius cleanup). Parallel: sgs/heading γ-rebuild — composite collapsed (130+ attrs → 70 wrapper-attrs only), new `headingRole` enum, deprecated.js migration shipped, 2 block patterns capture the old visual cluster. /qc 17/17 scenarios PASS. /sgs-update 9/9 stages OK (18 new attrs registered for sgs/heading).
 - **current_step:** Phase 1.3 — ARRAY_LIFT_PATTERNS retirement + FR-22-2.5 array-of-objects resolution
 - **latest_commit:** 59accb69 (handoff + next-session-prompt for Phase 1)
 - **working_tree:** clean on main (1 file uncommitted: `plugins/sgs-blocks/includes/lucide-icons.php` — build timestamp drift, non-substantive)
