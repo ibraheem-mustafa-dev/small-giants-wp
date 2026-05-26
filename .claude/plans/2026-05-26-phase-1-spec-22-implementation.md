@@ -40,7 +40,26 @@ Items surfaced during Phase 1 that don't belong in the active step sequence:
 
 ## What this phase does (one paragraph)
 
-Implements Spec 22's universal block-equivalent extraction architecture. Stage 4 of the cloning pipeline (`convert.py`) is rewritten as a single-path walker with exactly 3 permitted exceptions (atomic-tag swap, top-level chrome skip, top-level container wrap — FR-22-3). Per-block branches retire: `lift_subtree_into_block_attrs`, `_lift_inner_blocks`, F1 fallback, 9-branch walk(), ARRAY_LIFT_PATTERNS, hardcoded ATOMIC_TAG_MAP. New foundation: `equivalent_block_for()` in `db_lookup.py` with 3-tier derivation from existing `slot_synonyms` data. `wp-blocks.py` extended as unified data CLI. Hybrid blocks (8-15 estimated, set empirically by Phase 0.4 audit) get render.php migration to `echo $content` for block-equivalent slots. Acceptance: per-section ≤5% pixel-diff × 3 viewports + Bean visual sign-off.
+Implements Spec 22's universal block-equivalent extraction architecture. Stage 4 of the cloning pipeline (`convert.py`) is rewritten as a single-path walker with exactly 3 permitted exceptions (atomic-tag swap, top-level chrome skip, top-level container wrap — FR-22-3). Per-block branches retire: `lift_subtree_into_block_attrs`, `_lift_inner_blocks`, F1 fallback, 9-branch walk(), ARRAY_LIFT_PATTERNS, hardcoded ATOMIC_TAG_MAP. New foundation: `equivalent_block_for()` in `converter_v2/db_lookup.py` with 3-tier derivation from existing `slot_synonyms` data. `wp-blocks.py` extended as unified data CLI. Hybrid blocks (8-15 estimated, set empirically by Phase 0.4 audit) get render.php migration to `echo $content` for block-equivalent slots. Acceptance: per-section ≤5% pixel-diff × 3 viewports + Bean visual sign-off.
+
+## Skills + tooling
+
+**SGS WordPress domain skills (MUST be invoked when touching framework code):**
+- `/sgs-wp-engine` — SGS Framework workflow + sgs-db.py knowledge base. Invoke at session start before ANY work in `plugins/sgs-blocks/` or `theme/sgs-theme/`.
+- `/wp-block-development` — block.json + render.php + deprecations. For `src/blocks/<slug>/` edits.
+- `/wp-plugin-development` — plugin architecture + hooks + Settings API. For `plugins/sgs-blocks/sgs-blocks.php` + `includes/` edits.
+- `/wordpress-router` — first-line if unsure which WP skill applies.
+
+**Session-wide skills:** `/autopilot` (SessionStart auto-injects), `/brainstorming`, `/research`, `/strategic-plan`, `/lifecycle`, `/gap-analysis`, `/qc-council` (pre-commit gate per blub.db 255), `/qc-inline`, `/verify-loop`, `/delegate`, `/subagent-driven-development`, `/dispatching-parallel-agents`, `/capture-lesson`, `/sgs-clone --debug-trace`, `/handoff`.
+
+**DB query tools:**
+- `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py` — sgs-framework.db (block schemas + attrs + slot_synonyms + property_suffixes)
+- `python ~/.claude/hooks/wp-blocks.py` — current dual-DB CLI (sgs-framework.db + uimax db); Phase 0.2 extends with 6 new subcommands
+- `/uimax` skill — query uimax db directly. SGS-WP-relevant tables: `naming_conventions`, `attribute_gap_candidates`, `recognition_log`, `animations`, `component_libraries`, `patterns`.
+
+**Pre-rewrite code lives in:** `plugins/sgs-blocks/scripts/orchestrator/converter_v2/` (NOT `plugins/sgs-blocks/scripts/orchestrator/`). Key files: `convert.py` (the walker; lift_subtree at L3387; F1 helper at L3916; ATOMIC_TAG_MAP at L698; ARRAY_LIFT_PATTERNS at L1008), `db_lookup.py` (extended in Phase 0.1 with `equivalent_block_for()`).
+
+**`assign-canonical.py` lives at:** `plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py` (NOT in orchestrator/). Wired via `sgs-update-v2.py:stage_1_sgs_codebase_scan()` tail per D50.
 
 ## Canonical references (read in order before starting)
 
@@ -93,7 +112,7 @@ Each commit follows the cadence per R-22-5 / blub.db 288:
 | 1.1 | **Pre-rewrite snapshot.** Archive current `convert.py` to `_retired/convert_pre_spec22.py`. No behavioural change. Living-docs note pending rewrite. | Inline | `/qc-inline` | No change | LOW |
 | 1.2 | **Atomic-tag map migration.** Replace hardcoded `ATOMIC_TAG_MAP` (convert.py:698-704) with DB-driven `db.atomic_tag_map()` per Spec 22 Appendix B (§14). 2-tier resolution: `slot_synonyms.html_semantic_tag` then `blocks.replaces` reverse-walk. | Sonnet via `/delegate` | `/qc-inline`; `/sgs-clone --debug-trace` | No pixel-diff change (structural cleanup) | LOW |
 | 1.3 | **ARRAY_LIFT_PATTERNS retirement + array-of-objects resolution.** Implement FR-22-2.5. Delete `ARRAY_LIFT_PATTERNS` dict. Walker treats array attrs as sibling-class container; per-item resolution via FR-22-1 BEM signature. | Sonnet via `/subagent-driven-development` | `/qc-council` ⚡; per-section measurement | social-proof + featured-product show modest improvement (array attrs now resolve universally) | MEDIUM |
-| 1.4 | **Universal walker (THE core rewrite).** Delete `lift_subtree_into_block_attrs` (convert.py:3387), `_lift_inner_blocks` (convert.py:1350), F1 fallback (convert.py:3916), 9-branch walk(), per-block hardcoded branches (convert.py:1532, 1550). Implement single-path walker per FR-22-3 + Appendix A. New `equivalent_block_for()` + `resolve_slug_from_bem()` + `lift_behavioural_attrs()` + `emit_sgs_container_wrapping()` in `db_lookup.py`. LRU cache. | Sonnet via `/subagent-driven-development` (one implementer + 2 reviewers) | `/qc-council` ⚡ pre-commit (multi-rater); `/verify-loop`; `/sgs-clone --debug-trace` full Stage 11 | brand drops substantially toward ≤5%; product-card double-render closes (-30 to -50pp from current); other body sections drop ~5-15pp | ⚡ HIGH |
+| 1.4 | **Universal walker (THE core rewrite).** Delete `lift_subtree_into_block_attrs` (convert.py:3387), `_lift_inner_blocks` (convert.py:1350), F1 fallback (convert.py:3916), 9-branch walk(), per-block hardcoded branches (convert.py:1532, 1550). Implement single-path walker per FR-22-3 + Appendix A. New `equivalent_block_for()` + `resolve_slug_from_bem()` + `lift_behavioural_attrs()` + `emit_sgs_container_wrapping()` in `converter_v2/db_lookup.py`. LRU cache. | Sonnet via `/subagent-driven-development` (one implementer + 2 reviewers) | `/qc-council` ⚡ pre-commit (multi-rater); `/verify-loop`; `/sgs-clone --debug-trace` full Stage 11 | brand drops substantially toward ≤5%; product-card double-render closes (-30 to -50pp from current); other body sections drop ~5-15pp | ⚡ HIGH |
 | 1.5 | **Phase 1 measurement + halt/proceed decision.** Full-page `/sgs-clone --auto-section --debug-trace`. Every body section measured. If all 7 sections × 3 viewports ≤5%, Phase 1 closes; proceed to Phase 2. If any section > 5%, halt + diagnose (Phase 1.5 territory if structural; per-block fix if isolated). | Inline | `/qc-council` ⚡ Stage 5 multi-rater | Phase 1 acceptance gate evaluated | ⚡ HIGH (gate evaluation) |
 
 ### Phase 2 — Hybrid block render.php migration (parallel-session-eligible per FR-22-6.1)

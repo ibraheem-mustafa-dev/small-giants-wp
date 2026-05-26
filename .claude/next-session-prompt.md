@@ -18,11 +18,47 @@ Spec 22 ratified yesterday (2026-05-26, commit `d9bd1c00` on main). It replaces 
 
 ## Mandatory READING
 
-Before doing any work, read in order: this file → `.claude/state.md` → `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` (FR-22-2 + FR-22-8 + §7 Phase 0 + §16 ratification gate) → `.claude/plans/2026-05-26-phase-1-spec-22-implementation.md` (Phase 0 commits 0.1-0.4) → `.claude/cloning-pipeline-flow.md` (stage map). For DB queries, use `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py`. For pipeline-quality investigations, ALWAYS read `pipeline-state/<latest-run>/leftover-buckets.json` before conjecturing about causes (binding rule blub.db row 254).
+Before doing any work, read in order:
+1. This file (you're here)
+2. `.claude/state.md` (current pipeline state + Spec 22 ratification status)
+3. `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` — focus on FR-22-2 (block-equivalent attrs), FR-22-2.1 (3-tier derivation), FR-22-2.3 (Tier C uses existing slot_synonyms — NO new table), FR-22-8 (wp-blocks.py unified CLI), FR-22-8.1 (cross-DB invariants), FR-22-9 (uimax SGS-WP-relevant tables), §7 Phase 0 commits, §16 ratification gate
+4. `.claude/plans/2026-05-26-phase-1-spec-22-implementation.md` — Phase 0 commits 0.1-0.4 + 5-commit walker rewrite cadence
+5. `.claude/cloning-pipeline-flow.md` + `.claude/cloning-pipeline-stages.md` — stage map (Spec 22 is canonical; Spec 16 retired 2026-05-26)
+
+**Domain references (read BEFORE invoking the relevant skill):**
+- `~/.claude/skills/sgs-wp-engine/SKILL.md` — read at the moment of touching SGS framework code (before invoking `/sgs-wp-engine`)
+- `~/.claude/rules/wp-project-tooling.md` — WP-specific skill + agent + MCP tool tables (auto-loaded by global CLAUDE.md)
+- `~/.claude/rules/measurement-vs-eye.md` — the binding rule behind R-22-13 (Bean visual sign-off co-authoritative). Phase 0.3 pixel-diff hardening references this directly.
+
+**Live state (always check BEFORE conjecturing about pipeline causes):**
+- `pipeline-state/<latest-run>/leftover-buckets.json` — orchestrator gap classification (binding rule blub.db row 254 — MANDATORY first read on any pipeline-quality investigation)
+- `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py stats` — DB row counts sanity (sgs-framework.db)
+- `python ~/.claude/hooks/wp-blocks.py health` — verify both sgs-framework.db AND uimax db are reachable from the converter's data layer
 
 ## Tool bindings
 
-Active skills + commands: `/autopilot` (SessionStart auto-injects), `/brainstorming` (design-mode for golden corpus structure), `/research` (auto-routes — use `/research-check` for any quick lookup), `/strategic-plan` (if a sub-task needs micro-planning), `/lifecycle` (any skill/agent edits), `/gap-analysis` (grade outputs before delivery), `/qc-council` (pre-commit gate per blub.db 255), `/qc-inline` (per-file checks), `/verify-loop` (2-attestation per load-bearing claim), `/delegate` (model routing — Sonnet for mechanical Phase 0 work, Opus for architectural design), `/subagent-driven-development` (implementer + 2 reviewers pattern), `/dispatching-parallel-agents` (Phase 0.2 + 0.3 can run in parallel), `/capture-lesson` (any new architectural rule), `/sgs-clone --debug-trace` (Stage 11 pixel-diff measurement after each commit), `/handoff` (session close).
+**Session-wide skills (always available):** `/autopilot` (SessionStart auto-injects), `/brainstorming` (design-mode for golden corpus structure), `/research` (auto-routes — use `/research-check` for any quick lookup), `/strategic-plan`, `/lifecycle` (any skill/agent edits), `/gap-analysis`, `/qc-council` (pre-commit gate per blub.db 255), `/qc-inline`, `/verify-loop`, `/delegate`, `/subagent-driven-development`, `/dispatching-parallel-agents`, `/capture-lesson`, `/handoff`.
+
+**SGS WordPress domain skills (MUST be invoked for any WP / SGS work):**
+- `/sgs-wp-engine` — SGS Framework workflow + block dev + mockup-to-blocks + sgs-db.py knowledge base. **Invoke at session start before touching plugins/sgs-blocks/.**
+- `/wp-block-development` — Gutenberg block.json + render.php + deprecations. Use when touching `src/blocks/<slug>/`.
+- `/wp-plugin-development` — Plugin architecture + hooks + Settings API + security. Use for `plugins/sgs-blocks/sgs-blocks.php` + `includes/`.
+- `/wordpress-router` — Classify a WP repo and route to the right WP skill. First-line when unsure.
+- `/wp-rest-api` — `register_rest_route` + controllers + schema validation (relevant if Phase 0.2 wp-blocks.py extends to REST endpoints).
+
+**DB query tools:**
+- `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py <command>` — query sgs-framework.db (619+ block attributes; supports `block <slug>`, `tokens`, `stats`, `sql "<query>"`, `dump`).
+- `python ~/.claude/hooks/wp-blocks.py <command>` — current dual-DB CLI (queries both sgs-framework.db AND uimax db). Phase 0.2 EXTENDS this with 6 new subcommands (Task 4).
+- `/uimax` skill — query uimax db directly (the SGS-WP-relevant tables: `naming_conventions`, `attribute_gap_candidates`, `recognition_log`, `animations`, `component_libraries`, `patterns`). Useful for verifying Spec 22 FR-22-9 cross-DB invariants before Task 4.
+- `/sgs-db` slash command — shortcut to query sgs-framework.db.
+
+**Pipeline tools:**
+- `/sgs-clone --debug-trace` — Stage 11 pixel-diff measurement after each commit (binding rule blub.db 256 — per-section cropped via `--selector .sgs-{section}`, never full-page).
+- `/sgs-update` — DB sync from source-of-truth files (Stage 1 invokes `behavioural-analyser/assign-canonical.py` per D50; Phase 0.1 extends that script).
+
+**Live verification:**
+- Playwright MCP — live-page DOM verification (Phase 0.3 hardening; hero-clone-poc regression test).
+- `python ~/.claude/hooks/wp-blocks.py dump` — schema enumeration BEFORE any "missing X" claim (binding rule blub.db 272, R-22-8).
 
 ## First action
 
@@ -57,7 +93,7 @@ Read Spec 22 §3 FR-22-2 (block-equivalent attrs) + FR-22-2.1 (three-tier deriva
 - Model: Sonnet via `/delegate` (mechanical script extension; well-scoped)
 - Dispatch pattern: `/subagent-driven-development` (one implementer + 2 reviewers — code-reviewer agent + Bean visual check on diff)
 - Brief: extend `assign-canonical.py` with 3-tier derivation logic per Spec 22 FR-22-2.1. Add `--dry-run` flag (lists what would change without writing). Add `--golden-corpus <path>` flag that compares dry-run output against the golden corpus and exits non-zero on diff.
-- Context: assign-canonical.py lives in `plugins/sgs-blocks/scripts/orchestrator/`. Current behaviour: populates canonical_slot for rows where attr name matches slot_synonyms.aliases. Extension: add Tier B (BEM-element from derived_selector match against aliases) + Tier C (role-to-block via slot_synonyms.role + standalone_block columns — NO new table, query existing data).
+- Context: assign-canonical.py lives at `plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py` (NOT under `orchestrator/`). Current behaviour: populates canonical_slot for rows where attr name matches slot_synonyms.aliases — wired via `sgs-update-v2.py:stage_1_sgs_codebase_scan()` tail (per D50). Extension: add Tier B (BEM-element from derived_selector match against aliases) + Tier C (role-to-block via slot_synonyms.role + standalone_block columns — NO new table, query existing data). `db_lookup.py` lives at `plugins/sgs-blocks/scripts/orchestrator/converter_v2/db_lookup.py` (the new `equivalent_block_for()` function lands here).
 - Depends on: Task 1 (golden corpus)
 - Parallel with: none (Task 3 + 4 can run in parallel AFTER this lands)
 - /qc gate after: `/qc-council` multi-rater (Sonnet + Haiku + Gemini Flash + Cerebras) per blub.db 255 — this is converter-adjacent infrastructure.

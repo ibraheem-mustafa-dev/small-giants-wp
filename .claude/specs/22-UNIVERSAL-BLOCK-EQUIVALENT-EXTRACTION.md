@@ -114,7 +114,7 @@ Every `block_attributes` row's "equivalent_block" status is derived at query tim
 
 #### FR-22-2.1 — Three-tier derivation for `equivalent_block_for()` (implementation reference)
 
-The derivation function lives in `db_lookup.py`. Three tiers, in order:
+The derivation function lives in `converter_v2/db_lookup.py`. Three tiers, in order:
 
 1. **Tier A — Direct join.** `block_attributes.canonical_slot` IS NOT NULL → join `slot_synonyms` → return `standalone_block`.
 2. **Tier B — BEM-element from derived_selector.** When canonical_slot is NULL but `derived_selector` is set (e.g. `.sgs-product-card__image`), extract the BEM element (`image`), match against `slot_synonyms.aliases` (JSON-decoded), return the matching `standalone_block`.
@@ -218,7 +218,7 @@ Spec 16's FR6 four-destination CSS router (D0 / D1 / D2 / D3) is preserved:
 - **D2** — Scoped variation CSS → `pipeline-state/<run>/variation-d0-d2.css`, deployed inline at Stage 10
 - **D3** — `attribute_gap_candidates` (the operator-promotion queue) — **uimax table only** (see FR-22-8.1 for the sgs-framework.db legacy table handling)
 
-The D1 routing change from Spec 16: when a CSS rule targets `.sgs-X__Y`, D1 routing calls `equivalent_block_for(parent_X, Y)`. If non-NULL, the rule attributes to the CHILD block, not the parent's `Y` attr. This is the SAME function call as FR-22-2 — single authoritative implementation in `db_lookup.py`.
+The D1 routing change from Spec 16: when a CSS rule targets `.sgs-X__Y`, D1 routing calls `equivalent_block_for(parent_X, Y)`. If non-NULL, the rule attributes to the CHILD block, not the parent's `Y` attr. This is the SAME function call as FR-22-2 — single authoritative implementation in `converter_v2/db_lookup.py`.
 
 **PASS test:** `css-d1-assignments.json` contains zero entries where a CSS rule targeting `.sgs-X__Y` is attributed to the parent block's `Y` attr when `equivalent_block_for(parent, Y)` returns non-NULL.
 **FAIL test:** any D1 assignment violates the child-attribution rule.
@@ -302,12 +302,12 @@ Bridge the residual ~4pp from ≤5% to ≤1% via:
 
 The existing subcommands (`search`, `schema`, `attrs`, `markup`, `validate`, `match`, `tokens`, `gaps`, `impact`, `weaknesses`, `health`, `dump`) are preserved. Estimated extension cost: ~150 LoC (the dual-DB connection already exists; only new query surfaces + subcommand wiring are net-new).
 
-The converter calls `wp-blocks.py` via subprocess for ad-hoc CLI use; for performance-critical walker queries (called per node per attr), the converter imports the underlying `db_lookup.py` functions directly. **Performance threshold (committed):** equivalent-block lookup ≤2ms cache-warm, ≤20ms cold per call. If subprocess latency exceeds this, the converter MUST use the imported library path.
+The converter calls `wp-blocks.py` via subprocess for ad-hoc CLI use; for performance-critical walker queries (called per node per attr), the converter imports the underlying `converter_v2/db_lookup.py` functions directly. **Performance threshold (committed):** equivalent-block lookup ≤2ms cache-warm, ≤20ms cold per call. If subprocess latency exceeds this, the converter MUST use the imported library path.
 
 Per binding rule blub.db row 260 (db-first-no-hardcoded-dicts).
 
-**PASS test:** grep for direct sqlite3.connect to sgs-framework.db or ui-ux-pro-max.db in convert.py / sgs-clone-orchestrator.py returns zero hits; all DB access goes through `db_lookup.py`.
-**FAIL test:** any pipeline stage opening a direct sqlite3.connect to either DB outside `db_lookup.py`.
+**PASS test:** grep for direct sqlite3.connect to sgs-framework.db or ui-ux-pro-max.db in convert.py / sgs-clone-orchestrator.py returns zero hits; all DB access goes through `converter_v2/db_lookup.py`.
+**FAIL test:** any pipeline stage opening a direct sqlite3.connect to either DB outside `converter_v2/db_lookup.py`.
 
 #### FR-22-8.1 — Cross-DB invariants
 
@@ -422,7 +422,7 @@ Per FR-22-9. Other 43 uimax tables are out-of-scope for this spec.
 - Stages 0 / 0.1 / 0.5 / 0.7 / 1 / 2 / 3 / 4.5 / 5 / 6 / 7 / 7b / 8 / 9 / 9b / 9c / 10 / 11 / +REG — pipeline shape unchanged
 - FR6 four-destination CSS router (D0 / D1 / D2 / D3) — preserved with FR-22-5 D1 enrichment
 - FR7 visual-QA verification (per-section pixel-diff) — preserved with FR-22-7 ≤5%/≤1% gate
-- `db_lookup.py` — extended (new `equivalent_block_for()`, etc.)
+- `converter_v2/db_lookup.py` — extended (new `equivalent_block_for()`, etc.)
 - `sgs/container` as universal layout primitive — architecture decision #4 preserved
 - DB-first principle (binding rule blub.db row 260) — promoted to FR-22-1 / FR-22-8
 - Stage 2 `match.json` artefact production (FR-22-12)
@@ -453,7 +453,7 @@ Retired scripts move to `plugins/sgs-blocks/scripts/orchestrator/_retired/` so t
 | Hybrid block render.php (8-15 blocks per FR-22-2 audit) | Per FR-22-6 + FR-22-6.1 — emit InnerBlocks content for block-equivalent slots; deprecated.js shim; parallel-session-eligible. |
 | Stage 9 leftover-bucket classifier | New `unresolved_equivalent_block` bucket; `extraction_failed` count drops |
 | trace.jsonl event taxonomy | Per-branch event types drop (`fr1_matched` / `essence_matched` / `composite_to_standalone`); universal `walker_emit` gains bem-resolution path field |
-| `db_lookup.py` | New functions: `equivalent_block_for()`, `atomic_tag_map()`, `resolve_slug_from_bem()`, `lift_behavioural_attrs()`, `emit_sgs_container_wrapping()` + LRU cache |
+| `converter_v2/db_lookup.py` | New functions: `equivalent_block_for()`, `atomic_tag_map()`, `resolve_slug_from_bem()`, `lift_behavioural_attrs()`, `emit_sgs_container_wrapping()` + LRU cache |
 
 ### Enriches
 
@@ -590,7 +590,7 @@ Phase 1.5 work is empirically scoped after Phase 1 measurements arrive. May be i
 | Phase 1 walker rewrite drops sections that legacy walker handled via essence-match | MEDIUM | Pixel-diff regression on specific section | **Pre-rewrite DB snapshot** (Commit 0.1) enables true rollback (legacy code + legacy DB state). Stage 11 measurement at Commit 1.4 catches the regression immediately. |
 | Hybrid block render.php migration breaks existing posts | MEDIUM | "Unexpected content" warnings; clients see broken blocks | deprecated.js shim per FR-22-6 step 4; tested in editor before deploy. |
 | Cross-client validation surfaces new naming gaps | LIKELY (feature, not risk) | Slot_synonyms / naming_conventions rows added | Validated against Mama's pipeline run AFTER each addition; rollback if Mama's regresses. |
-| Performance regression — walker DB queries per node | LOW | Slow `/sgs-clone` runs | `db_lookup.py` LRU cache; performance threshold committed in FR-22-8 (≤2ms cache-warm, ≤20ms cold). |
+| Performance regression — walker DB queries per node | LOW | Slow `/sgs-clone` runs | `converter_v2/db_lookup.py` LRU cache; performance threshold committed in FR-22-8 (≤2ms cache-warm, ≤20ms cold). |
 | `recognition_log` writes (75k+ rows already) become bottleneck | LOW | Slow `/sgs-clone` runs | Buffered append-only writes; uimax compaction job already exists. |
 | `wp-blocks.py` unified CLI is single point of failure | MEDIUM | All walker emits depend on one function correctness | **Adversarial test corpus** (Commit 0.2) per F-RA-3. Positive + negative + edge cases. |
 | Parallel Phase 2 agents collide on shared file | LOW (mitigated) | PHP fatal error on render-helpers.php | **FR-22-6.1 coordination protocol** forbids shared-file edits in parallel agents. |
