@@ -58,8 +58,8 @@ blockers:
 ## State Snapshot
 
 - **current_phase:** spec-22-phase-1-walker-rewrite-opened-2026-05-28 (Phase 0 closed 2026-05-27)
-- **current_subphase:** Phase 1.1 — pre-rewrite snapshot SHIPPED (convert.py renamed to `_retired/convert_pre_spec22.py` as rollback reference per F-RA-2)
-- **current_step:** Phase 1.2 — atomic-tag map DB migration (hardcoded `ATOMIC_TAG_MAP` at convert.py:698-704 → `db.atomic_tag_map()` per Spec 22 §14 Appendix B)
+- **current_subphase:** Phase 1.2 — atomic-tag map DB migration SHIPPED (`atomic_tag_map()` added to `db_lookup.py`; html-canonical resolution via `_HTML_TAG_TO_CORE_SLUG` + `blocks.replaces` reverse-walk; 14-entry output; slot_synonyms.html_semantic_tag NOT consulted by design per 2026-05-28 algorithmic correction)
+- **current_step:** Phase 1.3 — ARRAY_LIFT_PATTERNS retirement + FR-22-2.5 array-of-objects resolution
 - **latest_commit:** 59accb69 (handoff + next-session-prompt for Phase 1)
 - **working_tree:** clean on main (1 file uncommitted: `plugins/sgs-blocks/includes/lucide-icons.php` — build timestamp drift, non-substantive)
 - **github_branches:** main ONLY

@@ -946,6 +946,126 @@ def equivalent_block_for(block_slug: str, attr_name: str) -> str | None:
 
 
 # ----------------------------------------------------------------------------
+# atomic_tag_map — Spec 22 §14 Appendix B / Commit 1.2
+# ----------------------------------------------------------------------------
+# DB-driven replacement for the legacy hardcoded ATOMIC_TAG_MAP dict in
+# _retired/convert_pre_spec22.py (9-entry dict, violates R-22-1).
+#
+# The atomic_tag_map operates at the walker's NO-BEM-CLASS fallback level —
+# when a DOM node carries no `sgs-*` BEM classification, the walker uses this
+# map to route the bare HTML tag to its html-canonical SGS block (Spec 22 §13
+# walker pseudocode line 642).
+#
+# Resolution algorithm (two-tier html-canonical resolution):
+#   Tier A — _HTML_TAG_TO_CORE_SLUG → blocks.replaces reverse-walk (DB-derived)
+#             For each html tag in _HTML_TAG_TO_CORE_SLUG (HTML-spec semantics),
+#             find the SGS block whose `blocks.replaces` value matches the
+#             canonical core slug. Output: html-canonical routing.
+#
+#   Tier B — fallback to core block slug
+#             If no SGS block replaces the tag's canonical core slug, return
+#             the core/* slug directly (core/paragraph, core/heading, etc.).
+#
+# WHY slot_synonyms.html_semantic_tag is NOT consulted here (corrected 2026-05-28):
+#   slot_synonyms.html_semantic_tag captures SLOT-CONTEXTUAL rendering
+#   ("in slot X context, this slot is rendered as tag Y"). It is NOT a global
+#   html-canonical tag→block routing table. A single html_semantic_tag value
+#   may appear on multiple rows with different standalone_block routes (e.g.
+#   canonical_slot='subheading' html='h2' → sgs/text vs the expectation that
+#   bare h2 → sgs/heading). Using slot_synonyms for atomic resolution produces
+#   slot-contextual routing where html-canonical routing is needed. slot_synonyms
+#   data stays unchanged (correct for its slot-resolution purpose); atomic_tag_map
+#   simply does not query it.
+#
+# Why _HTML_TAG_TO_CORE_SLUG doesn't violate R-22-1:
+#   R-22-1 forbids hardcoded SGS routing dicts (CLASS_TO_BLOCK,
+#   SLOT_TO_STANDALONE_BLOCK, ATOMIC_TAG_MAP). This constant maps HTML spec
+#   tags to their canonical WordPress core block equivalents — it encodes the
+#   HTML specification, not SGS routing logic. It is the bridge between the
+#   HTML world and the core block world before the DB reverse-walk takes over.
+
+# HTML-spec constant: html tag → canonical WordPress core block slug.
+# Covers only tags relevant to the atomic-tag-map domain (truly atomic HTML
+# primitives the walker may encounter outside any BEM-classified subtree).
+# NOT an SGS dict — encodes the HTML specification, not SGS routing.
+_HTML_TAG_TO_CORE_SLUG: dict[str, str] = {
+    # Headings — all h1-h6 route to sgs/heading via blocks.replaces='core/heading'
+    "h1": "core/heading",
+    "h2": "core/heading",
+    "h3": "core/heading",
+    "h4": "core/heading",
+    "h5": "core/heading",
+    "h6": "core/heading",
+    # Text — paragraph
+    "p":  "core/paragraph",
+    # Media — image
+    "img": "core/image",
+    # Separator — divider
+    "hr":  "core/separator",
+    # Buttons + links — both shapes route to sgs/button at atomic level.
+    # The walker (Commit 1.4) is responsible for auto-wrapping bare buttons
+    # in sgs/multi-button per SGS convention; atomic_tag_map only names the
+    # leaf block.
+    "button": "core/button",
+    "a": "core/button",
+    # Quote
+    "blockquote": "core/quote",
+    # Lists — both ordered and unordered route to sgs/icon-list at atomic
+    # level (sgs/icon-list replaces core/list per blocks.replaces).
+    "ul":  "core/list",
+    "ol":  "core/list",
+}
+
+
+@functools.lru_cache(maxsize=1)
+def _blocks_replaces_reverse() -> dict[str, str]:
+    """Return {core_block_slug: sgs_block_slug} from blocks.replaces (status='built').
+
+    blocks.replaces stores a single plain core slug per row (e.g. 'core/paragraph').
+    When multiple sgs blocks replace the same core slug, the first slug alphabetically
+    wins (ORDER BY slug ASC) for deterministic output.
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        rows = conn.execute(
+            "SELECT replaces, slug FROM blocks "
+            "WHERE replaces IS NOT NULL AND replaces != '' AND status = 'built' "
+            "ORDER BY slug ASC"
+        ).fetchall()
+    finally:
+        conn.close()
+    out: dict[str, str] = {}
+    for core_slug, sgs_slug in rows:
+        # First writer wins (ORDER BY slug ASC gives determinism).
+        if core_slug not in out:
+            out[core_slug] = sgs_slug
+    return out
+
+
+@functools.lru_cache(maxsize=1)
+def atomic_tag_map() -> dict[str, str]:
+    """Return {html_tag: block_slug} for all HTML tags the universal walker may encounter.
+
+    DB-driven replacement for the legacy hardcoded ATOMIC_TAG_MAP (R-22-1 compliance).
+    Resolution is html-canonical (NOT slot-contextual):
+
+      Tier A: _HTML_TAG_TO_CORE_SLUG → blocks.replaces reverse-walk (DB-derived)
+      Tier B: _HTML_TAG_TO_CORE_SLUG fallback (returns core/* slug)
+
+    See the module-level comment block above _HTML_TAG_TO_CORE_SLUG for why
+    slot_synonyms.html_semantic_tag is intentionally NOT consulted here.
+    """
+    replaces_reverse = _blocks_replaces_reverse()
+    out: dict[str, str] = {}
+    for html_tag, core_slug in _HTML_TAG_TO_CORE_SLUG.items():
+        # Tier A: reverse-walk blocks.replaces — find SGS block that replaces this core slug
+        sgs_slug = replaces_reverse.get(core_slug)
+        # Tier B: fallback to the core slug itself
+        out[html_tag] = sgs_slug if sgs_slug else core_slug
+    return out
+
+
+# ----------------------------------------------------------------------------
 # Smoke test
 # ----------------------------------------------------------------------------
 
