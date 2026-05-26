@@ -6,6 +6,18 @@ Append-only. Most-recent first.
 
 ---
 
+## 2026-05-27 — Spec 22 Phase 0.1 scope correction
+
+**D84 — Phase 0.1 scope corrected from "backfill 1,214 NULL canonical_slot rows" to "backfill ≤72 Tier B derived_selector candidates."** Empirical DB audit 2026-05-27 (verified by parallel queries against `sgs-framework.db`): of 1,214 rows with `canonical_slot IS NULL`, 1,142 (94%) are triple-NULL (canonical_slot + derived_selector + role all NULL) and are **correctly NULL by design** — behavioural / sizing / styling / enum / identity attrs catalogued in `block_attributes` (the table catalogues every block × every attr; `canonical_slot` is sparsely populated by intent, not gap). 72 rows (6%) have `derived_selector` set and are the actual Tier B backfill candidates. 0 rows have `role` set without `derived_selector` (Tier C dormant — wired for future-proofing per Spec 22 §FR-22-2.1 but has no inputs to act on today). Sample triple-NULL rows confirm the pattern: `back-to-top.position`, `reading-progress.wpm`, `icon.size` — content-NULL by design, not by gap.
+
+Phase 0.1 script guardrail added: `assign-canonical.py` MUST refuse to operate on any row where `derived_selector IS NULL` (structural input filter; not optional). This makes the F-RA-1 "mis-tag behavioural attr as block-equivalent" failure mode **impossible by input shape**, not by regression test. F-RA-1 mitigation downgraded from "golden corpus regression test" to "structural guardrail + dry-run JSON diff + Bean inline review" — risk surface reduced from 1,214 rows to ≤72 reviewable rows (one screen of JSON). Golden corpus (`.claude/specs/22-golden-corpus.json`) and F-RA-9 mitigation both DROPPED — the dry-run diff IS the review surface; a hand-authored corpus would test a category-error premise.
+
+Spec 22 §FR-22-2.1 empirical-state framing rewritten in same commit. §10 F-RA-1 row downgraded. §11 success criteria adds "≤72-row Tier B diff reviewed + applied; 1,142 triple-NULL rows verified unchanged" bullet. §7 Commit 0.1 rewritten. Phase 1 plan Phase 0.1 row rewritten (estimate 3h → 1.5h). Next-session-prompt Task 1 DROPPED, Task 2 rescoped.
+
+Lesson captured at `~/.claude/projects/c--Users-Bean-Projects-small-giants-wp/memory/feedback_grep_verify_handoff_diagnostic_premises.md` continues to apply — the next-session-prompt + Spec 22 empirical-state section both carried a category-error framing (treating sparse-by-design as gap) until DB audit pressure-tested it. Sibling rule: R-22-8 (schema enumeration before "missing X" claim) — when an empirical-state count is load-bearing for a downstream action (script extension, Sonnet brief, council finding mitigation), the count itself is subject to the same gate as the action.
+
+---
+
 ## 2026-05-26 — Spec 22 ratification + Spec 16 retirement
 
 **D83 — Spec 22 acceptance gate softened to ≤5% Phase 1 + ≤1% Phase 1.5 stretch.** Bean directive 2026-05-26 after empirical validation surfaced: ZERO sections have ever hit ≤1% across 128 pipeline runs (best-ever absolute: trust-bar 24.6% at 768 viewport). D72 trust-bar retirement delivered −50.4pp / −27pp / −66.9pp relative wins but landed at 33.1/24.6/37.0% absolute — directional proof, not absolute. Hero-clone-poc page 29 (`/hero-clone-poc/`) is the visual-parity proof-of-concept: content matches mockup visually but pixel-diff reports 54.5% due to a 60px chrome-bleed alignment artefact in `scripts/pixel-diff.py`. Phase 1.5 stretch goal addresses the measurement methodology to bridge the residual ~4pp. R-22-13 makes Bean visual sign-off co-authoritative with the script number.

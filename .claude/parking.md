@@ -11,6 +11,9 @@ last_updated: 2026-05-26
 > **P-LEGACY-GAP-CANDIDATES-MIGRATION** — 1,480 legacy rows in `sgs-framework.db.attribute_gap_candidates` (Spec 16 era). Spec 22 FR-22-8.1 makes this table read-only; all new D3 writes go to uimax's `attribute_gap_candidates` (91 rows, with confidence + provenance columns). Migration of the 1,480 legacy rows is out-of-scope for Spec 22. **Trigger:** post-Spec-22 close, when Phase 1.5 considers cleaning up legacy data surfaces.
 > **Status:** DEFERRED
 
+> **P-SGS-UPDATE-ROLE-DETECTION-IMPROVE** — NEW 2026-05-27 (surfaced during D84 scope correction). `/sgs-update` Stage 4 currently leaves `role` NULL for many plausibly content-bearing attrs. Sample triple-NULL rows where role might reasonably be set: `sgs/icon.icon` (role=identity?), `sgs/icon.link` (role=link-href?), `sgs/responsive-logo.url` (role=link-href?). Today these stay NULL and skip both Tier B and Tier C derivation. Future improvement: tighten role detection in `behavioural-analyser/assign-canonical.py` to populate `role` from `block.json` patterns (attr name regex matching + `format` field heuristics + JSON-schema `description` keyword scan). Out of scope for Phase 0.1 — captured here so the observation isn't lost. If role detection later populates these rows, they become Tier C candidates and `assign-canonical.py` derivation activates. **Trigger:** post-Phase-1 close, when Tier B backfill steady-state is established and the next derivation surface is Tier C.
+> **Status:** OPEN — low priority
+
 ## Cloning pipeline (cv2 / orchestrator / DOM walker / pixel-diff)
 
 _60 entries._

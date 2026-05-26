@@ -4,13 +4,13 @@ project: small-giants-wp
 session_tag: small-giants-wp-2026-05-27-spec-22-phase-0-1-foundation
 generated: 2026-05-26
 parent_session: small-giants-wp-2026-05-26-spec-22-ratification
-primary_goal: "Start Spec 22 Phase 0 (Foundation). Phase 0.1 (DB enrichment + golden corpus + pre-rewrite DB snapshot) is the first work — gates Phase 1 walker rewrite per R-22-5."
-first_action_eta: "15 minutes (read Spec 22 §3 FR-22-2 + Phase 1 plan Phase 0.1 commit; then start golden corpus design inline)"
+primary_goal: "Start Spec 22 Phase 0 (Foundation). Phase 0.1 (DB enrichment — Tier B ≤72-row backfill of canonical_slot, per D84 scope correction 2026-05-27) is the first work — gates Phase 1 walker rewrite per R-22-5. Pre-rewrite DB snapshot already captured 2026-05-26."
+first_action_eta: "10 minutes (dispatch Sonnet via /delegate with the rescoped Task 2 brief; structural guardrail by construction; dry-run diff back to Bean for inline review BEFORE any DB write)"
 ---
 
-# Next session — Spec 22 Phase 0.1 (DB enrichment + golden corpus)
+# Next session — Spec 22 Phase 0.1 (DB enrichment, Tier B backfill — scope-corrected D84)
 
-You are a senior SGS Framework architect implementing Spec 22 (Universal Block-Equivalent Extraction). Your domain: cloning-pipeline foundation work — DB enrichment of `block_attributes.canonical_slot` backfill, the `equivalent_block_for()` 3-tier derivation specified in Spec 22 §FR-22-2, the unified `wp-blocks.py` data CLI per FR-22-8, and the pixel-diff.py measurement-methodology hardening that closes Phase 1.5's noise floor.
+You are a senior SGS Framework architect implementing Spec 22 (Universal Block-Equivalent Extraction). Your domain: cloning-pipeline foundation work — DB enrichment of `block_attributes.canonical_slot` (Tier B backfill ONLY per D84 scope correction; ≤72 candidate rows; NOT 1,214 — 1,142 of those are correctly-NULL behavioural attrs by design), the `equivalent_block_for()` 3-tier derivation specified in Spec 22 §FR-22-2 (Tier C ships dormant — 0 candidates exist in current DB state), the unified `wp-blocks.py` data CLI per FR-22-8, and the pixel-diff.py measurement-methodology hardening that closes Phase 1.5's noise floor.
 
 ## State recap
 
@@ -62,43 +62,52 @@ Before doing any work, read in order:
 
 ## First action
 
-Read Spec 22 §3 FR-22-2 (block-equivalent attrs) + FR-22-2.1 (three-tier derivation) + §7 Commit 0.1 specification end-to-end. Then design the golden corpus structure inline (main thread, Opus): 10-15 representative SGS blocks × expected canonical_slot + role per attr. Use `python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py block <slug>` to read current state of each candidate block. Output: `.claude/specs/22-golden-corpus.json` draft for Bean review BEFORE dispatching Sonnet for the assign-canonical.py extension. ETA: ~20 min for golden-corpus design.
+Dispatch Sonnet via `/delegate` with the rescoped Task 2 brief (below). Brief includes structural guardrail by construction (script refuses `derived_selector IS NULL` input) + `--dry-run` JSON diff output. Agent returns uncommitted artefact. Bean reviews the diff inline (≤72 rows ≈ one screen of JSON) BEFORE main session applies the script to write canonical_slot. ETA: ~10 min for dispatch + ~30-45 min for Sonnet to return diff + ~5 min Bean review.
 
 ---
 
-## Task 1 — Design golden corpus for canonical_slot backfill regression test
+## Task 1 — DROPPED (D84, 2026-05-27)
 
-**What:** Hand-author a golden corpus JSON at `.claude/specs/22-golden-corpus.json` listing 10-15 representative SGS blocks × expected `canonical_slot` + `role` per content-bearing attr. Used as regression test for the extended `assign-canonical.py` script. If extended-script output diverges from golden corpus, halt Phase 0.1 before Phase 1 dispatch.
-**Why:** F-RA-1 critical finding — without semantic validation, Phase 0.1 backfill could mis-tag behavioural attrs as block-equivalent (e.g. variantStyle wrongly assigned canonical_slot=text), causing the universal walker to emit child blocks where scalar attrs belong. Pixel-diff alone can't detect this; only golden-corpus comparison does.
-**Estimated time:** 20-30 min.
+Originally scoped as: hand-authored golden corpus at `.claude/specs/22-golden-corpus.json` to regression-test the assign-canonical.py extension across all 1,214 NULL canonical_slot rows.
 
-**Orchestration:**
-- Execution: inline (main thread, Opus)
-- Brief: read Spec 22 §FR-22-2.1 + §7 Phase 0.1; query DB for hero / product-card / quote / info-box / heading / button / text / media / counter / brand (the 10 highest-traffic SGS blocks); for each, list every attr where derivation should/shouldn't fire and document the expected (canonical_slot, role, equivalent_block) triple.
-- Context: empirical state — 1,032 of 2,246 attrs have canonical_slot populated; 1,142 are triple-NULL (canonical_slot + derived_selector + role all NULL). The golden corpus picks 10-15 blocks covering the full distribution.
-- Depends on: none
-- Parallel with: none (foundational)
-- /qc gate after: `/qc-inline` — does the corpus cover content-bearing attrs (image, description, heading, body, etc.) AND behavioural attrs (variantStyle, trialTag, anchor) for at least one block each?
+**Why dropped:** DB audit 2026-05-27 (sums verified: 1,032 + 1,142 + 72 + 0 = 2,246) showed 1,142 of the "1,214 NULL" rows are correctly-NULL behavioural attrs (`back-to-top.position`, `reading-progress.wpm`, `icon.size`, etc.) — the `block_attributes` table catalogues every block × every attr, `canonical_slot` is sparsely populated by intent. Real backfill scope is ≤72 Tier B candidates. The dry-run JSON diff (one screen, 20-50 entries expected) IS the review surface — a hand-authored corpus would test a category-error premise. Mitigation moved from "hand-author corpus" → "structural script guardrail + diff review". See D84 in decisions.md.
 
-**Acceptance:** corpus file exists, contains 10-15 blocks × 10-20 attrs each, every (attr, expected) pair derived from actual DB query + Bean visual review of any ambiguous cases.
+## Task 2 — Extend `assign-canonical.py` with Tier B BEM-element derivation (SCOPE-CORRECTED D84)
 
-## Task 2 — Extend `/sgs-update assign-canonical.py` for canonical_slot backfill
+**What:** Extend `plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py` with Tier B derivation per Spec 22 §FR-22-2.1 (BEM-element from `derived_selector` → match against `slot_synonyms.aliases` JSON-decoded → return `standalone_block`). Two ironclad constraints:
 
-**What:** Extend `assign-canonical.py` to populate `canonical_slot` across the 1,214 NULL rows where derivation tiers (slot_synonyms join, BEM-element from derived_selector, role-to-block via slot_synonyms.role) succeed. Add regression test that runs the extended script against the golden corpus from Task 1 — must produce zero diff.
-**Why:** Spec 22 FR-22-2.1 — the universal walker reads `canonical_slot` at runtime to resolve equivalent_block. Without backfill, Tier B + Tier C fire constantly and walker emits unresolved-log instead of correct child blocks. Long-term invariant: Tier B + Tier C usage drives toward zero.
-**Estimated time:** 2-3 hours.
+1. **Structural input guardrail by construction.** The script's row-iterator MUST filter to `canonical_slot IS NULL AND derived_selector IS NOT NULL`. NO other input shape is permitted. This makes the F-RA-1 misroute failure impossible by shape — the script CANNOT touch the 1,142 triple-NULL behavioural rows because they don't pass the filter.
+2. **Dry-run is the default mode.** `--dry-run` (default ON; `--apply` to write) emits a JSON file at `pipeline-state/_snapshots/tier-b-backfill-diff-<timestamp>.json` with one entry per proposed update: `{block_slug, attr_name, derived_selector, proposed_canonical_slot, matched_alias, source_synonym_row_id}`. Bean reviews the file; only `--apply` writes to the DB.
+
+**Tier C ships dormant.** Wire the path per Spec 22 §FR-22-2.1 for future-proofing, but log a single-line warning `"Tier C: 0 candidates in current DB state — path dormant"` when invoked. Do not write any rows from Tier C this commit.
+
+**Why:** Spec 22 FR-22-2.1 — the universal walker reads `canonical_slot` at runtime to resolve equivalent_block. Tier B backfill closes 72 derivation gaps; Tier C is dormant (0 inputs). Universal walker rewrite (Phase 1.4) can then trust `canonical_slot` as authoritative for content-bearing slots without inventing Python conditionals.
+
+**Estimated time:** ~1.5 hours (script extension + dry-run output + Bean diff review).
 
 **Orchestration:**
-- Execution: delegated subagent
-- Model: Sonnet via `/delegate` (mechanical script extension; well-scoped)
-- Dispatch pattern: `/subagent-driven-development` (one implementer + 2 reviewers — code-reviewer agent + Bean visual check on diff)
-- Brief: extend `assign-canonical.py` with 3-tier derivation logic per Spec 22 FR-22-2.1. Add `--dry-run` flag (lists what would change without writing). Add `--golden-corpus <path>` flag that compares dry-run output against the golden corpus and exits non-zero on diff.
-- Context: assign-canonical.py lives at `plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py` (NOT under `orchestrator/`). Current behaviour: populates canonical_slot for rows where attr name matches slot_synonyms.aliases — wired via `sgs-update-v2.py:stage_1_sgs_codebase_scan()` tail (per D50). Extension: add Tier B (BEM-element from derived_selector match against aliases) + Tier C (role-to-block via slot_synonyms.role + standalone_block columns — NO new table, query existing data). `db_lookup.py` lives at `plugins/sgs-blocks/scripts/orchestrator/converter_v2/db_lookup.py` (the new `equivalent_block_for()` function lands here).
-- Depends on: Task 1 (golden corpus)
-- Parallel with: none (Task 3 + 4 can run in parallel AFTER this lands)
-- /qc gate after: `/qc-council` multi-rater (Sonnet + Haiku + Gemini Flash + Cerebras) per blub.db 255 — this is converter-adjacent infrastructure.
+- Execution: delegated subagent.
+- Model: Sonnet via `/delegate` (mechanical script extension; well-scoped).
+- Dispatch pattern: `/subagent-driven-development` — one implementer + 2 reviewers (code-reviewer agent + main-session diff review).
+- Brief contents (verbatim in cold prompt):
+  - Read Spec 22 §FR-22-2.1 + §FR-22-2.3 + §7 Commit 0.1 (the rewritten 0.1 description).
+  - Read current `plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py` (wired via `sgs-update-v2.py:stage_1_sgs_codebase_scan()` tail per D50).
+  - Add Tier B derivation per the algorithm above.
+  - Add structural input guardrail (filter clause is non-negotiable; refuse to start if dataset includes any `derived_selector IS NULL` rows).
+  - Add `--dry-run` (default ON) emitting JSON to `pipeline-state/_snapshots/tier-b-backfill-diff-<timestamp>.json`.
+  - Add Tier C dormant-warning log line.
+  - NO golden corpus regression test. The diff file is the review artefact.
+  - Verbatim dispatch bindings (per `feedback_dispatched_agents_no_commit_authority.md` blub.db 240): A NO commit authority, B `/sgs-clone` per sub-change, C living-docs + `/capture-lesson` inline, D TodoWrite per sub-task.
+- Depends on: none (DB snapshot already captured 2026-05-26).
+- Parallel with: Tasks 4 + 5 (independent surfaces — wp-blocks.py + pixel-diff.py).
+- `/qc gate after:` `/qc-council` multi-rater (Sonnet + Haiku + Gemini Flash + Cerebras) per blub.db 255 — converter-adjacent infrastructure. Specifically rate: does the guardrail truly refuse `derived_selector IS NULL` input by construction (not just by convention)?
 
-**Acceptance:** dry-run against golden corpus produces zero diff. Real run on full 1,214 NULL rows reports per-tier counts (Tier A direct join / Tier B BEM extraction / Tier C role mapping / unresolvable). Bean visual review of unresolvable list.
+**Acceptance:**
+- Dry-run executes against `sgs-framework.db` and emits a JSON diff file with ≤72 entries.
+- Bean reviews diff inline. Any entry where Bean flags the proposed canonical_slot as wrong stays NULL.
+- `--apply` run (post-review) writes ONLY the Bean-approved rows.
+- Post-apply sanity: `SELECT COUNT(*) FROM block_attributes WHERE canonical_slot IS NULL AND derived_selector IS NULL AND role IS NULL` returns **exactly 1,142** (unchanged — guardrail proof).
+- Post-apply Tier B count drops by N where N = approved rows.
 
 ## Task 3 — Pre-rewrite DB snapshot
 
@@ -173,22 +182,21 @@ Read Spec 22 §3 FR-22-2 (block-equivalent attrs) + FR-22-2.1 (three-tier deriva
 ## Dependency graph
 
 ```
-Task 3 (DB snapshot — 5 min, inline)
-  ↓
-Task 1 (golden corpus — 20-30 min, inline Opus)
-  ↓
-Task 2 (assign-canonical.py extension — 2-3hrs, Sonnet, /qc-council)
+Task 3 (DB snapshot — DONE 2026-05-26, SHA256 d088...0017bc)
+Task 1 (golden corpus — DROPPED D84 2026-05-27, see Task 1 section above)
+  │
+Task 2 (assign-canonical.py Tier B extension — ~1.5hrs, Sonnet, /qc-council)
   ↓
   ├─ Task 4 (wp-blocks.py extension — 3-4hrs, Sonnet, /qc-council)  ┐
-  ├─ Task 5 (pixel-diff.py hardening — 2-3hrs, Sonnet, /qc-inline)  ├─ PARALLEL
-  └─ Task 6 (hybrid-block audit — 30-45 min, Haiku, /qc-inline)     ┘
+  ├─ Task 5 (pixel-diff.py hardening — 2-3hrs, Sonnet, /qc-inline)  ├─ PARALLEL (Tasks 4 + 5 + 6 independent of Task 2 — can dispatch immediately)
+  └─ Task 6 (hybrid-block audit — 30-45 min, Haiku, /qc-inline)     ┘    (Task 6 prefers Task 2 to finish for cleaner roster but not blocked)
   ↓
 Commit per task with /qc-council gate + Stage 11 measurement (where applicable)
   ↓
 Phase 0 closes; Phase 1 walker rewrite begins at Commit 1.1 (next session)
 ```
 
-Total wall-time estimate for Phase 0: ~8-10 hours across 1-2 sessions.
+Total wall-time estimate for Phase 0 (post D84 scope correction): ~7-8 hours across 1-2 sessions.
 
 ## Methodology guardrails (do not skip)
 

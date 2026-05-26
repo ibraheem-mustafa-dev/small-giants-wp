@@ -129,12 +129,13 @@ The derivation function lives in `converter_v2/db_lookup.py`. Three tiers, in or
    ```
    If the role has a clear dominant block (current data: `text-content` → sgs/text freq=4; `image-object` → sgs/media freq=3; `content` → sgs/button freq=3; `visual` → sgs/divider freq=1) return it. If the role spreads ambiguously (current data: `identity` spreads across 7 blocks at freq=1 each), return NULL — fall through to unresolved-log + operator fix (populate canonical_slot directly).
 
-**Empirical DB state (2026-05-26):** of 2,246 block_attributes rows:
-- 1,032 (46%) have canonical_slot populated → Tier A
-- 72 (3%) have canonical_slot NULL but derived_selector set → Tier B
-- 1,142 (51%) have all three NULL — fall through to `unresolved_equivalent_block.log` per FR-22-2.4
+**Empirical DB state (2026-05-27, scope-corrected — supersedes earlier "1,214 NULL rows to backfill" framing):** of 2,246 block_attributes rows:
+- 1,032 (46%) have `canonical_slot` populated → Tier A active.
+- 72 (3%) have `canonical_slot` NULL but `derived_selector` set → Tier B candidates (the actual backfill scope).
+- 0 rows have `canonical_slot` NULL with `role` set but `derived_selector` NULL → Tier C derivation path has zero inputs in current DB state. Logic ships dormant for future-proofing.
+- 1,142 (51%) are triple-NULL (canonical_slot + derived_selector + role all NULL). These are **correctly NULL by design** — behavioural / sizing / styling / enum / identity attrs (e.g. `back-to-top.position`, `reading-progress.wpm`, `icon.size`). The `block_attributes` table catalogues every block × every attr; `canonical_slot` is sparsely populated by intent, NOT a sign of missing data. They are **NOT backfill targets**. Forcing canonical_slot onto them would mass-corrupt the FR-22-2.2 role-exclusion guarantee.
 
-`/sgs-update assign-canonical.py` is the long-term mechanism that drives Tier B + Tier C usage toward zero by populating canonical_slot.
+`/sgs-update assign-canonical.py` extension under Spec 22 Phase 0.1 is scope-locked to the ≤72 Tier B candidates. Script guardrail per D84: MUST refuse to operate on any row where `derived_selector IS NULL`. Tier C logic ships dormant. Long-term Tier B usage drives toward zero as canonical_slot is populated via the dry-run-then-review cycle.
 
 #### FR-22-2.2 — Role-exclusion rule (the "typography looks like heading" trap)
 
@@ -449,7 +450,7 @@ Retired scripts move to `plugins/sgs-blocks/scripts/orchestrator/_retired/` so t
 | Surface | What changes |
 |---|---|
 | `wp-blocks.py` | Extended (~150 LoC) per FR-22-8 — 6 new subcommands |
-| `/sgs-update assign-canonical.py` | Extended (Phase 0.1) to backfill `canonical_slot` across the 1,214 NULL rows where derivation tiers can populate it. **Includes golden-corpus regression test** per F-RA-1 / F-RA-9. |
+| `/sgs-update assign-canonical.py` | Extended (Phase 0.1) with **Tier B BEM-element derivation only**. Scope-corrected per D84 (2026-05-27): real backfill scope is ≤72 Tier B candidates, not 1,214. Structural guardrail refuses `derived_selector IS NULL` input. Dry-run diff reviewed by Bean before any write. Golden corpus dropped (1,142 triple-NULL rows are correctly NULL by design). |
 | Hybrid block render.php (8-15 blocks per FR-22-2 audit) | Per FR-22-6 + FR-22-6.1 — emit InnerBlocks content for block-equivalent slots; deprecated.js shim; parallel-session-eligible. |
 | Stage 9 leftover-bucket classifier | New `unresolved_equivalent_block` bucket; `extraction_failed` count drops |
 | trace.jsonl event taxonomy | Per-branch event types drop (`fr1_matched` / `essence_matched` / `composite_to_standalone`); universal `walker_emit` gains bem-resolution path field |
@@ -457,7 +458,7 @@ Retired scripts move to `plugins/sgs-blocks/scripts/orchestrator/_retired/` so t
 
 ### Enriches
 
-- `block_attributes.canonical_slot` — `/sgs-update assign-canonical.py` extended for backfill (drives ~1,214 NULL rows toward zero)
+- `block_attributes.canonical_slot` — `/sgs-update assign-canonical.py` extended for Tier B backfill only (≤72 candidate rows per D84 scope correction; 1,142 triple-NULL rows are correctly NULL behavioural attrs and stay NULL by design)
 - `slot_synonyms` — new rows added for gaps surfaced during the universal sweep (also serves as Tier C role-to-block lookup per FR-22-2.3 — no new table needed)
 - uimax `recognition_log` — every walker emit logs an outcome (no schema change; writes increase)
 
@@ -483,7 +484,7 @@ Retired scripts move to `plugins/sgs-blocks/scripts/orchestrator/_retired/` so t
 
 **Commit 0.0 — Cross-doc sync (gate for Spec 22 status flip).** This MUST land BEFORE Spec 22 status flips from `draft` to `active`. Updates: `architecture.md` decision #14 rewrite, `cloning-pipeline-flow.md` two-route topology retirement, `cloning-pipeline-stages.md` Stage 4 rewrite, `Spec 00 §3.1` link target update (currently points to retired Spec 16 §12.3), `Spec 16` move to archive, `docs-registry.yaml` Spec 22 add, parking entries close (P-WAVE-2-RESHAPE-AS-ONE-WIRING-GAP, P-G1-EXTEND-TO-OTHER-CONTAINER-SHAPED-COMPOSITES, P-FR1-VARIATION-BUF-CONSISTENCY, P-MATCH-JSON-GATE-REDEFINITION, P-G3-STAGE-3-VISUAL-SLOT-MAPPING, P-G5-PER-BLOCK-DOM-SHAPE-FIXES). Per F-AP-6 / F-SC-4 / F-SC-5 / F-SC-7. No code change.
 
-**Commit 0.1 — DB enrichment + golden corpus.** Extend `/sgs-update assign-canonical.py` to backfill `canonical_slot` across the 1,214 NULL rows. Verify `slot_synonyms` coverage for content-bearing roles (text-content, image-object, content, link-href, identity, visual) — add `slot_synonyms` rows for any role currently lacking a `standalone_block` mapping. **Includes a golden corpus** at `.claude/specs/22-golden-corpus.json` with 10-15 representative SGS blocks × expected canonical_slot/role per attr (per F-RA-1 / F-RA-9). Backfill script regression-tests against the golden corpus. Pre-rewrite DB snapshot saved to `pipeline-state/_snapshots/sgs-framework-pre-spec22.db` (per F-RA-2 — enables genuine rollback). No new DB tables — `role_block_mapping` proposal dropped in v0.4 (Tier C derives from existing `slot_synonyms.role + standalone_block` columns).
+**Commit 0.1 — DB enrichment (scope-corrected per D84 2026-05-27).** Extend `/sgs-update assign-canonical.py` with **Tier B BEM-element derivation only**. Structural guardrail by construction: script refuses to operate on any row where `derived_selector IS NULL` — makes the F-RA-1 "mis-tag behavioural attr" failure mode impossible by input shape. `--dry-run` mode emits a JSON diff (block_slug, attr_name, proposed canonical_slot, derivation source). Expected yield ≤72 Tier B candidate updates (DB audit 2026-05-27 confirmed). Bean inline-reviews the diff BEFORE any DB write — 20-50 rows fits one screen. **Tier C ships dormant** — 0 candidates in current DB state (the path is wired for future-proofing per FR-22-2.1 but has no inputs to act on today). **Golden corpus DROPPED** — 1,142 of 1,214 "NULL canonical_slot" rows are correctly-NULL behavioural attrs (size, position, enum toggles, identity), NOT backfill targets; the dry-run diff IS the review surface. Pre-rewrite DB snapshot at `pipeline-state/_snapshots/sgs-framework-pre-spec22.db` (captured 2026-05-26, SHA256 `d08806295db262a35db0b7a25948d35d86e782f74847fe87c1ded824e00017bc`). No new DB tables.
 
 **Commit 0.2 — wp-blocks.py extension.** Add 6 new subcommands per FR-22-8 (~150 LoC). Adversarial test corpus per F-RA-3: positive cases (block-equivalent attrs return correct slug) + negative cases (behavioural attrs return null) + edge cases (hyphen-compound BEM elements).
 
@@ -586,7 +587,7 @@ Phase 1.5 work is empirically scoped after Phase 1 measurements arrive. May be i
 
 | Risk | Probability | Impact | Mitigation |
 |---|---|---|---|
-| Phase 0.1 `canonical_slot` backfill wrongly tags behavioural attr as block-equivalent | MEDIUM | Walker mis-emits child block for what should be scalar attr; detectable but slows iteration | **Golden corpus** (Commit 0.1) regression-tests backfill. Empty test = halt before Phase 1. |
+| Phase 0.1 `canonical_slot` backfill wrongly tags behavioural attr as block-equivalent | LOW (scope-corrected 2026-05-27 — D84) | Walker mis-emits child block for what should be scalar attr | **Structural guardrail**: assign-canonical.py refuses to operate on rows where `derived_selector IS NULL`. Risk surface reduced from 1,214 rows to ≤72 Tier B candidates. Dry-run JSON diff (one screen) reviewed by Bean before any DB write. 1,142 triple-NULL behavioural attrs untouched by construction. Golden corpus regression test DROPPED — diff IS the review surface. |
 | Phase 1 walker rewrite drops sections that legacy walker handled via essence-match | MEDIUM | Pixel-diff regression on specific section | **Pre-rewrite DB snapshot** (Commit 0.1) enables true rollback (legacy code + legacy DB state). Stage 11 measurement at Commit 1.4 catches the regression immediately. |
 | Hybrid block render.php migration breaks existing posts | MEDIUM | "Unexpected content" warnings; clients see broken blocks | deprecated.js shim per FR-22-6 step 4; tested in editor before deploy. |
 | Cross-client validation surfaces new naming gaps | LIKELY (feature, not risk) | Slot_synonyms / naming_conventions rows added | Validated against Mama's pipeline run AFTER each addition; rollback if Mama's regresses. |
@@ -612,6 +613,7 @@ After Spec 22 Phase 4.3 closes:
 - `_retired/` folder bulk-deleted after Phase 4 acceptance
 - decisions.md + mistakes.md cleaned of stale Spec 16 references
 - Zero hardcoded class-to-block dicts remain in Python (Tier C derives from existing `slot_synonyms` data)
+- ≤72-row Tier B backfill diff reviewed by Bean + applied; 1,142 triple-NULL behavioural rows verified unchanged post-script (per D84 scope correction)
 - A fresh `/sgs-clone` run on any client mockup produces deterministic ≤5% per-section output (Phase 1) with a clear path to ≤1% (Phase 1.5)
 
 **The business outcome: cloning a new client mockup takes a `/sgs-clone` command plus a Bean visual review — not "weeks of converter tuning."** Phase 1 puts the system in operational range (≤5%); Phase 1.5 polishes to brand-tier (≤1%).
@@ -623,7 +625,7 @@ Per F-PE-13 the previous greenfield-assumption gave 31-41 hours. With the correc
 | Phase | Work | Estimate |
 |---|---|---|
 | 0.0 (cross-doc sync) | 11 docs touched, no code | ~2 hours |
-| 0.1 (DB enrichment + golden corpus) | assign-canonical.py extension, slot_synonyms gap-fill, golden corpus, DB snapshot | ~3 hours |
+| 0.1 (DB enrichment, scope-corrected D84) | assign-canonical.py Tier B extension + structural guardrail + dry-run diff + Bean review (≤72 rows). DB snapshot already captured. | ~1.5 hours |
 | 0.2 (wp-blocks.py extension) | 6 subcommands, adversarial tests | ~3 hours |
 | 0.3 (pixel-diff.py hardening) | vertical-anchor fix, font-load wait | ~2 hours |
 | 0.4 (hybrid-block audit) | Query + report | ~1 hour |
@@ -706,7 +708,7 @@ Example seed (live-derived at startup, not hardcoded):
 | F-AP-2 / F-SC-11 — ROLE_TO_BLOCK dict violates R-22-1 | CRIT | Tier C derives from existing `slot_synonyms.role + standalone_block` columns (FR-22-2.3) — no Python dict, no new table, uses data already in DB |
 | F-PE-3 — ATOMIC_TAG_MAP via blocks.replaces wrong direction | CRIT | Resolution algorithm specified in Appendix B (§14) — 2-tier lookup via slot_synonyms.html_semantic_tag + blocks.replaces reverse |
 | F-PE-4 — Hybrid scope 90 not 5 | CRIT | Recalibrated: 63 raw → 8-15 true hybrid via FR-22-2.2 role-exclusion |
-| F-RA-1 — Phase 0.1 backfill semantic golden corpus | CRIT | Golden corpus added to Commit 0.1 |
+| F-RA-1 — Phase 0.1 backfill semantic golden corpus | CRIT → DOWNGRADED LOW (D84, 2026-05-27) | Mitigation restructured: script constrained by construction to `derived_selector IS NOT NULL` input. DB audit 2026-05-27 showed 1,142 of 1,214 "NULL canonical_slot" rows are correctly-NULL behavioural attrs (NOT backfill targets); real backfill scope is ≤72 Tier B rows reviewable inline. Golden corpus DROPPED — dry-run JSON diff IS the review surface. |
 | F-RA-2 — Cold rollback broken by DB mutation | CRIT | Pre-rewrite DB snapshot in Commit 0.1 |
 | F-SC-2 — Body sections not enumerated | CRIT | Explicit table in FR-22-7 |
 | F-AP-4 / F-RA-4 — ≤1% has no empirical precedent | CRIT → Resolved | **Acceptance gate softened to ≤5% Phase 1; ≤1% Phase 1.5 stretch per Bean directive** |
@@ -724,7 +726,7 @@ Example seed (live-derived at startup, not hardcoded):
 | F-AP-8 / F-RA-6 — Commit 1.2 packed; Phase 2/3 sequencing | MED | Phase 1 split into 1.1/1.2/1.3/1.4/1.5; FR-22-6.1 sequences Phase 2 → Phase 3 |
 | F-RA-7 — decisions.md / mistakes.md pruning safeguards | MED | Phase 5 explicit "modernised, not deleted when lesson applies"; git preserves |
 | F-RA-8 — Cross-client validation re-opens accepted gate | MED | Cross-client added per FR-22-9 with regression check against Mama's pipeline |
-| F-RA-9 — assign-canonical.py golden corpus | MED | Combined with F-RA-1 mitigation |
+| F-RA-9 — assign-canonical.py golden corpus | MED → DROPPED (D84, 2026-05-27) | Golden corpus made obsolete by structural guardrail (script refuses `derived_selector IS NULL` input). See F-RA-1 row above. |
 | F-RA-10 — "Preserved" claims need verification | MED | §5 Survives + FR-22-12 (Stage 2 artefact production guaranteed) |
 | F-SC-9 — Parallel-session statement is planning note | MED | Moved from FR-22-6 body to FR-22-6.1 (operational protocol) + §7 Phase 2 implementation notes |
 | F-SC-10 — FR-22-8 defers interface decision | MED | Performance threshold committed (≤2ms cache-warm, ≤20ms cold) — gate not deferred |
@@ -754,4 +756,4 @@ Spec 22 status flip from `draft` → `active` requires:
 [X] Council findings table (§15) all addressed/dropped/recalibrated
 ```
 
-**ALL 4 BOXES TICKED 2026-05-26.** Spec status flipped from `draft` → `active`. Phase 0.1 (DB enrichment + golden corpus) begins next session.
+**ALL 4 BOXES TICKED 2026-05-26.** Spec status flipped from `draft` → `active`. Phase 0.1 (DB enrichment — Tier B ≤72-row backfill per D84 scope correction 2026-05-27) begins next session.
