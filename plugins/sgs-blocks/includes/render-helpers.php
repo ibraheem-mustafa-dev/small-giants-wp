@@ -12,6 +12,37 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
+ * Determine whether an attribute value is meaningfully set.
+ *
+ * WordPress passes `type:"string"` attributes with `default:""` into render.php
+ * as an empty string, not null. A bare `null !== $val` check wrongly fires for
+ * those absent-attr cases, causing `floatval("")` = 0.0 to emit e.g. `padding-top:0px`.
+ *
+ * This helper returns `true` only when the value is neither null nor an empty string,
+ * so it is safe to use as the gate for CSS emission. Numeric zero (`0` or `"0"`) returns
+ * `true` because that is a legitimate explicitly-set value (e.g. `padding-top:0px` when
+ * the operator intentionally wants zero padding).
+ *
+ * Typical usage (replaces bare `null !== $val` in CSS emission guards):
+ *
+ *   if ( sgs_attr_has_value( $padding_top ) ) {
+ *       $style_parts[] = 'padding-top:' . floatval( $padding_top ) . esc_attr( $padding_unit );
+ *   }
+ *
+ * @param mixed $val The attribute value to test.
+ * @return bool True if the value is neither null nor empty string; false otherwise.
+ */
+function sgs_attr_has_value( $val ): bool {
+	if ( null === $val ) {
+		return false;
+	}
+	if ( '' === $val ) {
+		return false;
+	}
+	return true;
+}
+
+/**
  * Determine whether a value is a direct CSS colour rather than a design token slug.
  *
  * Handles all modern CSS colour formats:

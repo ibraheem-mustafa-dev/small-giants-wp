@@ -431,42 +431,45 @@ if ( ! $inherit_style ) {
 	}
 
 	// Border radius — per-corner takes precedence over shorthand.
+	// sgs_attr_has_value() guards against empty-string defaults (borderRadiusTL etc.
+	// are type:string with default:"" — bare null !== would fire on absent attrs).
 	if (
-		null !== $border_radius_tl ||
-		null !== $border_radius_tr ||
-		null !== $border_radius_bl ||
-		null !== $border_radius_br
+		sgs_attr_has_value( $border_radius_tl ) ||
+		sgs_attr_has_value( $border_radius_tr ) ||
+		sgs_attr_has_value( $border_radius_bl ) ||
+		sgs_attr_has_value( $border_radius_br )
 	) {
 		$u                     = esc_attr( $border_radius_unit );
-		$tl                    = null !== $border_radius_tl ? floatval( $border_radius_tl ) . $u : '0' . $u;
-		$tr                    = null !== $border_radius_tr ? floatval( $border_radius_tr ) . $u : '0' . $u;
-		$bl                    = null !== $border_radius_bl ? floatval( $border_radius_bl ) . $u : '0' . $u;
-		$br                    = null !== $border_radius_br ? floatval( $border_radius_br ) . $u : '0' . $u;
+		$tl                    = sgs_attr_has_value( $border_radius_tl ) ? floatval( $border_radius_tl ) . $u : '0' . $u;
+		$tr                    = sgs_attr_has_value( $border_radius_tr ) ? floatval( $border_radius_tr ) . $u : '0' . $u;
+		$bl                    = sgs_attr_has_value( $border_radius_bl ) ? floatval( $border_radius_bl ) . $u : '0' . $u;
+		$br                    = sgs_attr_has_value( $border_radius_br ) ? floatval( $border_radius_br ) . $u : '0' . $u;
 		$wrapper_style_parts[] = "border-radius:{$tl} {$tr} {$br} {$bl}";
-	} elseif ( null !== $border_radius ) {
+	} elseif ( sgs_attr_has_value( $border_radius ) ) {
 		$wrapper_style_parts[] = 'border-radius:' . floatval( $border_radius ) . esc_attr( $border_radius_unit );
 	}
 
 	// Border.
 	if ( 'none' !== $border_style ) {
 		// Per-side widths when any side is set; fall back to shorthand.
+		// sgs_attr_has_value() guards empty-string defaults (borderWidthTop etc. type:string default:"").
 		if (
-			null !== $border_width_top ||
-			null !== $border_width_right ||
-			null !== $border_width_bottom ||
-			null !== $border_width_left
+			sgs_attr_has_value( $border_width_top ) ||
+			sgs_attr_has_value( $border_width_right ) ||
+			sgs_attr_has_value( $border_width_bottom ) ||
+			sgs_attr_has_value( $border_width_left )
 		) {
 			$u = esc_attr( $border_width_unit );
-			if ( null !== $border_width_top ) {
+			if ( sgs_attr_has_value( $border_width_top ) ) {
 				$wrapper_style_parts[] = 'border-top-width:' . floatval( $border_width_top ) . $u;
 			}
-			if ( null !== $border_width_right ) {
+			if ( sgs_attr_has_value( $border_width_right ) ) {
 				$wrapper_style_parts[] = 'border-right-width:' . floatval( $border_width_right ) . $u;
 			}
-			if ( null !== $border_width_bottom ) {
+			if ( sgs_attr_has_value( $border_width_bottom ) ) {
 				$wrapper_style_parts[] = 'border-bottom-width:' . floatval( $border_width_bottom ) . $u;
 			}
-			if ( null !== $border_width_left ) {
+			if ( sgs_attr_has_value( $border_width_left ) ) {
 				$wrapper_style_parts[] = 'border-left-width:' . floatval( $border_width_left ) . $u;
 			}
 		}
@@ -483,30 +486,32 @@ if ( ! $inherit_style ) {
 	}
 
 	// Margin.
-	if ( null !== $margin_top ) {
+	// sgs_attr_has_value() guards empty-string defaults (marginTop etc. type:string default:"").
+	if ( sgs_attr_has_value( $margin_top ) ) {
 		$wrapper_style_parts[] = 'margin-top:' . floatval( $margin_top ) . esc_attr( $margin_unit );
 	}
-	if ( null !== $margin_right ) {
+	if ( sgs_attr_has_value( $margin_right ) ) {
 		$wrapper_style_parts[] = 'margin-right:' . floatval( $margin_right ) . esc_attr( $margin_unit );
 	}
-	if ( null !== $margin_bottom ) {
+	if ( sgs_attr_has_value( $margin_bottom ) ) {
 		$wrapper_style_parts[] = 'margin-bottom:' . floatval( $margin_bottom ) . esc_attr( $margin_unit );
 	}
-	if ( null !== $margin_left ) {
+	if ( sgs_attr_has_value( $margin_left ) ) {
 		$wrapper_style_parts[] = 'margin-left:' . floatval( $margin_left ) . esc_attr( $margin_unit );
 	}
 
 	// Padding.
-	if ( null !== $padding_top ) {
+	// sgs_attr_has_value() guards empty-string defaults (paddingTop etc. type:string default:"").
+	if ( sgs_attr_has_value( $padding_top ) ) {
 		$wrapper_style_parts[] = 'padding-top:' . floatval( $padding_top ) . esc_attr( $padding_unit );
 	}
-	if ( null !== $padding_right ) {
+	if ( sgs_attr_has_value( $padding_right ) ) {
 		$wrapper_style_parts[] = 'padding-right:' . floatval( $padding_right ) . esc_attr( $padding_unit );
 	}
-	if ( null !== $padding_bottom ) {
+	if ( sgs_attr_has_value( $padding_bottom ) ) {
 		$wrapper_style_parts[] = 'padding-bottom:' . floatval( $padding_bottom ) . esc_attr( $padding_unit );
 	}
-	if ( null !== $padding_left ) {
+	if ( sgs_attr_has_value( $padding_left ) ) {
 		$wrapper_style_parts[] = 'padding-left:' . floatval( $padding_left ) . esc_attr( $padding_unit );
 	}
 
@@ -612,34 +617,36 @@ $css_attrib_mobile = sgs_quote_slot_responsive_css(
 );
 
 // Wrapper — tablet.
+// sgs_attr_has_value() guards empty-string defaults (marginTopTablet etc. type:string default:"").
 $css_wrapper_tablet = ! $inherit_style ? sgs_quote_wrapper_responsive_css(
 	$scope,
 	'@media (min-width:768px) and (max-width:1023px)',
-	null !== $margin_top_tablet ? floatval( $margin_top_tablet ) : null,
-	null !== $margin_right_tablet ? floatval( $margin_right_tablet ) : null,
-	null !== $margin_bottom_tablet ? floatval( $margin_bottom_tablet ) : null,
-	null !== $margin_left_tablet ? floatval( $margin_left_tablet ) : null,
+	sgs_attr_has_value( $margin_top_tablet ) ? floatval( $margin_top_tablet ) : null,
+	sgs_attr_has_value( $margin_right_tablet ) ? floatval( $margin_right_tablet ) : null,
+	sgs_attr_has_value( $margin_bottom_tablet ) ? floatval( $margin_bottom_tablet ) : null,
+	sgs_attr_has_value( $margin_left_tablet ) ? floatval( $margin_left_tablet ) : null,
 	$margin_unit,
-	null !== $padding_top_tablet ? floatval( $padding_top_tablet ) : null,
-	null !== $padding_right_tablet ? floatval( $padding_right_tablet ) : null,
-	null !== $padding_bottom_tablet ? floatval( $padding_bottom_tablet ) : null,
-	null !== $padding_left_tablet ? floatval( $padding_left_tablet ) : null,
+	sgs_attr_has_value( $padding_top_tablet ) ? floatval( $padding_top_tablet ) : null,
+	sgs_attr_has_value( $padding_right_tablet ) ? floatval( $padding_right_tablet ) : null,
+	sgs_attr_has_value( $padding_bottom_tablet ) ? floatval( $padding_bottom_tablet ) : null,
+	sgs_attr_has_value( $padding_left_tablet ) ? floatval( $padding_left_tablet ) : null,
 	$padding_unit
 ) : '';
 
 // Wrapper — mobile.
+// sgs_attr_has_value() guards empty-string defaults (marginTopMobile etc. type:string default:"").
 $css_wrapper_mobile = ! $inherit_style ? sgs_quote_wrapper_responsive_css(
 	$scope,
 	'@media (max-width:767px)',
-	null !== $margin_top_mobile ? floatval( $margin_top_mobile ) : null,
-	null !== $margin_right_mobile ? floatval( $margin_right_mobile ) : null,
-	null !== $margin_bottom_mobile ? floatval( $margin_bottom_mobile ) : null,
-	null !== $margin_left_mobile ? floatval( $margin_left_mobile ) : null,
+	sgs_attr_has_value( $margin_top_mobile ) ? floatval( $margin_top_mobile ) : null,
+	sgs_attr_has_value( $margin_right_mobile ) ? floatval( $margin_right_mobile ) : null,
+	sgs_attr_has_value( $margin_bottom_mobile ) ? floatval( $margin_bottom_mobile ) : null,
+	sgs_attr_has_value( $margin_left_mobile ) ? floatval( $margin_left_mobile ) : null,
 	$margin_unit,
-	null !== $padding_top_mobile ? floatval( $padding_top_mobile ) : null,
-	null !== $padding_right_mobile ? floatval( $padding_right_mobile ) : null,
-	null !== $padding_bottom_mobile ? floatval( $padding_bottom_mobile ) : null,
-	null !== $padding_left_mobile ? floatval( $padding_left_mobile ) : null,
+	sgs_attr_has_value( $padding_top_mobile ) ? floatval( $padding_top_mobile ) : null,
+	sgs_attr_has_value( $padding_right_mobile ) ? floatval( $padding_right_mobile ) : null,
+	sgs_attr_has_value( $padding_bottom_mobile ) ? floatval( $padding_bottom_mobile ) : null,
+	sgs_attr_has_value( $padding_left_mobile ) ? floatval( $padding_left_mobile ) : null,
 	$padding_unit
 ) : '';
 
