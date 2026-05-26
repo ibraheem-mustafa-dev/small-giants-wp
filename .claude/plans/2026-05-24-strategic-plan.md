@@ -15,18 +15,12 @@ primary_goal: "Close the structural pixel-diff blockers via Spec 22 (Universal B
 
 ## Plain-English summary (Rule 17: Problem → Effect → Solution)
 
-**Problem.** The 2026-05-21 architecture programme was reported as fully shipped, but a 2026-05-23 fact-check (5 parallel investigators + inline 2-attestation) surfaced material gaps:
-1. Phase 3 implemented only step 4 of Spec 16 §15's 4-step Wave 2 reshape — steps 1-3 (walker-entry CSS-class pre-pass) were never built
-2. Phase 1 imported 5,234 of 7,283 hooks — 2,049 hooks (28%) unimported; legacy `blocks.db` + `hooks.db` still active dependencies
-3. Phase 6 changed 87 `role='content'` attrs in source block.json files but DB has only 17 — `/sgs-update` never ran post-Phase-6
-4. Several stale doc claims (Spec 17 §6.4 Option A, plan block count 73 vs 69, etc.)
+**Problem.** The cloning pipeline's Spec 16 layered architecture (FR1 fast path + FR2/3/4 + lift_subtree + F1 + 9-branch walk + ARRAY_LIFT_PATTERNS + hardcoded ATOMIC_TAG_MAP) accumulated five recognition/consumption paths over time. The 2026-05-26 diagnostic chain proved the layers double-render content slots and that the DB already holds the complete mapping. The 2026-05-23 G1+G3+G5 framing addressed symptoms one slot at a time; the underlying architecture was the fault.
 
-**Effect.** G1+G3+G5 symptoms persist on the live page (5 of 9 sections fall through to fallback at Stage 2). Mean pixel-diff 70.5%. The architecture programme close-out's "all shipped" claim is structurally true (all decisions landed) but functionally insufficient (the decisions were undersold against the spec). Further work has been blocked because the planner trusted close-out claims that didn't match reality.
+**Effect.** Pixel-diff stayed in the 60-75% mean range across iterations. Per-section investigation cost mounted; every "fix the failing section" wave produced regressions on another section. The system needed an architectural reset, not another patch wave.
 
 **Solution.** Four sequential phases:
-- **Phase 1 — Universal walker + G1+G3+G5 closure + architecture programme leftovers.** Ship the universal walker (Spec 16 §15 steps 1-3) that powers the NORMAL ROUTE (FR4 + FR2 + FR3 + FR6) — the build-up path that every section takes when not matched by FR1's fast path. Close G1 (OPEN-block emission for FR1-matched composite blocks with InnerBlocks data), G3 (slot_list.py visual-slot extension via property_suffixes), G5 (per-block DOM-shape fixes — tag/class preservation + per-block render.php adjustments). Wire FR1 pattern fast-path branch (Spec 16 §FR1 branch b — section class matches registered pattern slug). Import the missing 2,049 hooks. Re-run /sgs-update for role='content' DB sync. Refresh stale doc claims. **Sections falling through to `sgs/container` is the CORRECT architectural default per FR4 + Decision 3 — NOT a defect.** The gap was that the normal route (sgs/container start + walker build-up) wasn't wired. Empirical acceptance: G1+G3+G5 closed per Spec 16 §14 acceptance criteria; pixel-diff captured as measurement only (downstream side-effect). **Header + footer excluded from acceptance gating** (Phase 2's specialised cloner scope).
-
-  **REVISION 2026-05-24 (second pass) — Phase 1 partially shipped via 5 different changes than originally planned.** Mid-session investigation found the existing `convert.py:walk()` already contains 9 named branches that together deliver the walker outcome — provided the data layer is correct. So instead of building a new "pre-pass class graph", we shipped: (1) slot_synonyms cleanup, (2) section_inner_absorb walker pre-pass (one-section-one-container), (3) quote canonical migration, (4) /sgs-update Stage 4 wiring (assign-canonical.py was orphaned), (5) brand mockup BEM rename. G1/G3/G5 remain pending. Stage 11 mean pixel-diff 70.5% → 73.9%. Full detail in phase-1-structural-recovery.md "What ACTUALLY shipped" section + follow-on items F1+F2 at the end. **Steps 1.6/1.7/1.8/1.9/1.10/1.11 remain pending in the original plan** — the next Phase 1 session should pick up Step 1.7 G3 (slot_list visual extension) as the highest-leverage move to close the pixel-diff regression on featured-product/ingredients-section.
+- **Phase 1 — Spec 22 universal walker rewrite.** Replace the Spec 16 layered architecture with a single universal walker per Spec 22 §FR-22-3 (exactly 3 permitted exceptions: atomic-tag swap / chrome-skip / top-level container wrap). BEM is the only recognition signal (FR-22-1); block-equivalent attrs become child blocks via `equivalent_block_for()` (FR-22-2); CSS attributes to direct owner per FR-22-5; hybrid blocks get render.php migration per FR-22-6 (61-block roster shipped 2026-05-27 — see `.claude/reports/2026-05-27-hybrid-block-roster.md`). Phase 0 (foundation: DB enrichment + wp-blocks.py FR-22-8 CLI + pixel-diff.py methodology hardening + hybrid-block audit) closed 2026-05-27 in 7 task-commits + handoff. Phase 1 (walker rewrite, 5 commits per R-22-5: 1.1 pre-rewrite snapshot / 1.2 atomic-tag map migration / 1.3 ARRAY_LIFT_PATTERNS retirement / 1.4 universal walker / 1.5 measurement gate) opens next session. Acceptance: per-section ≤5% pixel-diff × 3 viewports + Bean visual sign-off (R-22-13 co-authoritative). G1+G3+G5 framing retired — all three dissolve into the Spec 22 single-path walker.
 - **Phase 2 — Header + footer specialised cloning pipeline.** Build a separate one-shot script (runs once per site, not per page) that converts source HTML headers + footers into Spec 17 architecture (`header.html` / `footer.html` template parts + `Sgs_Site_Info` store + Customiser-controlled sticky/transparent/shrink behaviours + `sgs_header` / `sgs_footer` CPTs). Bypasses the generic page-clone pipeline because (a) 1-per-site means N-page sites would clone redundantly N times; (b) header/footer HTML doesn't follow the div→block pattern body content does; (c) custom behaviours (sticky, transparent, shrinking, partial-stick) live in Customiser, not block attributes. Detail in `.claude/plans/2026-05-24-phase-2-header-footer-cloner.md` (generated via `/phase-planner`).
 - **Phase 3 — Parking sweep close-out.** Finish the remaining ~22 STILL-OPEN parking entries (the original handoff's Task 4 + new entries from today's investigation). Excludes skills (Phase 4).
 - **Phase 4 — Skill + command optimisation.** /skill-optimiser mode 2 (gap analysis + research) on the 14 WP/SGS skills + /batch-gap-analysis. Runs LAST because it grades against tools the previous phases fix.
@@ -38,7 +32,7 @@ Explicit "No-Gos" for this plan — anything not here is implicitly out:
 - **Block library expansion** — no new SGS blocks built during this plan (Phase 4 audits existing skills only).
 - **Performance optimisation** — pixel-diff measurement only; no Core Web Vitals work.
 - **New client onboarding** — Mama's Munches is the canary; no other clients added.
-- **Spec rewrites** — Spec 16 / Spec 17 frozen for the duration; revisions go through new spec_version + status_history.
+- **Spec rewrites** — Spec 22 is the canonical pipeline spec (Spec 16 retired + archived 2026-05-26). Spec 22 itself may receive amendments via its §16 ratification mechanism; other specs (17 header/footer, 18 floating UI, 19 CLI, 20 log surfacing, 21 pipeline-state, 02 SGS blocks) frozen for the duration unless a Phase touches them directly. Revisions go through new spec_version + status_history.
 - **`/sgs-clone` UX overhaul** — orchestrator API + output format stable; only bug fixes.
 - **Cross-platform emit paths (M9+)** — deferred per parking entries.
 
@@ -67,11 +61,15 @@ Same content as Phase summary table below — re-presented here as the canonical
 ## Dependency graph
 
 ```
-Phase 1 (Universal walker + G1+G3+G5 closure)
-  ↓ /qc-council between EVERY commit touching converter/pipeline (blub.db row 255)
-  ↓ /sgs-clone --deploy-target page:144 after EVERY code change (not bundled) — Stage 11 auto-captures
-  ↓ Phase 1 gate: G1 (hero CTAs in DOM) + G3 (hero stage_3_slot_list < 30) + G5 (per-block DOM-shape audit complete) + no regression on FR1-matched sections
-  ↓ Per-block G5 work parallelisable across blocks (file-disjoint branches)
+Phase 1 (Spec 22 universal walker rewrite — 5 commits per R-22-5)
+  ↓ Commit 1.1 pre-rewrite snapshot (git mv convert.py to _retired/) — inline, ~10 min
+  ↓ Commit 1.2 atomic-tag map migration (DB-driven per §14 Appendix B) — Sonnet, /qc-inline
+  ↓ Commit 1.3 ARRAY_LIFT_PATTERNS retirement (FR-22-2.5 array-of-objects) — Sonnet, /qc-council
+  ↓ Commit 1.4 universal walker (THE core: delete lift_subtree + _lift_inner_blocks + F1 + 9-branch walk()) — Sonnet, /qc-council multi-rater, /verify-loop
+  ↓ Commit 1.5 measurement + halt/proceed (full-page Stage 11 against Wave B baseline)
+  ↓ /qc-council multi-rater between EVERY commit touching converter/pipeline (blub.db row 255)
+  ↓ /sgs-clone --debug-trace after EVERY code change (not bundled) — Stage 11 auto-captures, --wait-fonts auto-passed per Phase 0.3.b
+  ↓ Phase 1 gate: per-section ≤5% × 3 viewports for all 7 body sections + Bean visual sign-off (R-22-13)
   ↓ (Stage 11 continues capturing header + footer for monitoring; no gate)
 Phase 2 (Header + footer specialised cloner)
   ↓ Reads Spec 17 architecture (template parts + Site Info + Customiser)
@@ -97,7 +95,7 @@ Phase 4 (Skill optimisation) — dedicated session
 7. **blub.db row 283** — Verify WP API surface via `developer.wordpress.org/reference/functions/<name>/` BEFORE dismissing intelephense warnings
 8. **2-attestation rule (NEW 2026-05-23, Bean trust-calibration):** Every load-bearing claim needs 2 independent sources. Subagent prompts MUST demand grep/SQL/file-output evidence inline.
 9. **Pipeline test throughout** — `/sgs-clone --deploy-target page:144` after every commit touching converter/pipeline. Stage 11 captures numbers in `stage-11-pixel-diff.json` automatically.
-10. **NO Phase 3-style underselling** — when a plan decision says "rewrite function X", check the canonical spec (Spec 16 / cloning-pipeline-flow.md) for the FULL scope before scoping the work. Spec 16 §15 written same-day as Phase 3 ship caught this — but only retrospectively. Pre-check spec scope FIRST.
+10. **NO underselling** — when a plan decision says "rewrite function X", check the canonical spec (Spec 22 / cloning-pipeline-flow.md / cloning-pipeline-stages.md) for the FULL scope before scoping the work. R-22-10 (read full spec before proposing fix-shape) is the binding rule. Pre-check spec scope FIRST.
 
 ## Tooling index (used across all 3 phases)
 
@@ -127,12 +125,12 @@ Phase 4 (Skill optimisation) — dedicated session
 ## Reference docs (READ BEFORE STARTING ANY PHASE)
 
 **Mandatory before Phase 1:**
-1. `.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md` — diagnostic artefact map (NEW 2026-05-23)
-2. `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` §15 — Wave 2 reshape full 4-step requirement
-3. `.claude/cloning-pipeline-flow.md` — pipeline flow with new Stage 11 + per-stage R/W tables
-4. `pipeline-state/mamas-munches-homepage-2026-05-23-145045/` — canonical baseline run + Stage 11 numbers
-5. `reports/2026-05-20-pipeline-root-gap-council/real-path-synthesis.md` — original G1-G5 honest-path council finding
-6. `.claude/plans/2026-05-25-phase-1-universal-extraction.md` — Phase 1 detailed plan
+1. `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` — canonical spec (§3 FRs, §6 R-22-1 through R-22-13 binding rules, §7 Phase commits, §13 Appendix A walker pseudocode, §14 Appendix B atomic_tag_map algorithm)
+2. `.claude/plans/2026-05-26-phase-1-spec-22-implementation.md` — active Phase 1 phase-plan (5-commit cadence + per-commit model routing)
+3. `.claude/specs/21-PIPELINE-STATE-ARTEFACTS.md` — diagnostic artefact map (read BEFORE conjecturing about pipeline failures)
+4. `.claude/cloning-pipeline-flow.md` + `.claude/cloning-pipeline-stages.md` — pipeline flow with Stage 11 + per-stage R/W tables
+5. `pipeline-state/mamas-munches-144-2026-05-26-122349/` — current Wave B baseline (mean 58.91%); also `pipeline-state/mamas-munches-homepage-2026-05-26-012625/` for the pre-chrome-hide reference per D88
+6. `.claude/decisions.md` D78-D88 — Spec 22 ratification chain + Phase 0 lessons (D84 scope correction, D85 role-exclusion fix, D86 Tier C delete, D87 pixel-diff divergence, D88 baseline staleness)
 
 **Mandatory before Phase 2:**
 1. `.claude/specs/17-HEADER-FOOTER-ARCHITECTURE.md` — full theme-side architecture (template parts + CPTs + Customiser + Site Info store + rules engines)
@@ -155,7 +153,7 @@ Phase 4 (Skill optimisation) — dedicated session
 - `.claude/architecture.md` — system overview + DB-first rule + Phase 5a context
 - `.claude/decisions.md` D1-D45 — architectural decision log
 - `.claude/mistakes.md` — lessons from past sessions (incl. 3 new from 2026-05-23)
-- `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md` (full) — converter v2 architecture
+- `.claude/specs/archive/16-DETERMINISTIC-CONVERTER-V2-retired-by-spec-22.md` (archived) — pre-Spec-22 converter architecture; retained for git-blame continuity
 - `.claude/cloning-pipeline-flow.md` Stage 11 block — pixel-diff orchestrator integration
 - `~/.claude/skills/sgs-clone/SKILL.md` — pipeline orchestration + Hard Rules
 - `~/.claude/rules/time-estimates.md` — estimates default LOW
@@ -164,15 +162,15 @@ Phase 4 (Skill optimisation) — dedicated session
 
 These are the decisions a junior executor would pause on mid-phase. Pre-answered here:
 
-1. **"When the walker pre-pass conflicts with the existing FR1 fast-path, which wins?"** — The FR1 fast-path is correctly matching hero + trust-bar today. Don't break it. The new pre-pass is for sections that DON'T match FR1 — it should produce structured emit even when no registered block matches.
+1. **"What if the Spec 22 walker rewrite drops sections that the legacy walker handled via essence-match or F1?"** — The pre-rewrite DB snapshot at `pipeline-state/_snapshots/sgs-framework-pre-spec22.db` (SHA256 `d088...0017bc`) + `_retired/convert_pre_spec22.py` enables true rollback per F-RA-2. Stage 11 measurement at Commit 1.4 catches any regression immediately; halt if any section regresses >2pp from Wave B baseline.
 
-2. **"What if Phase 1 hooks completion breaks the DB schema?"** — The schema is already correct. The gap is data, not structure. Run `/sgs-update` (Stage 2 live-scrapes the 10 canonical sources — `--refresh-upstream` flag retired 2026-05-24, see D56). Verify before commit via `SELECT COUNT(*) FROM hooks WHERE source IN ('native_wp', 'third_party')` against the pre-deletion baseline.
+2. **"What if the 4 Tier B applied rows + 94 role-detection writes need adjustment post-walker?"** — Per-row reversibility via `pipeline-state/_snapshots/` diff files. If a row routes incorrectly post-walker, UPDATE block_attributes to null the canonical_slot/role and re-think before re-applying.
 
-3. **"What if the role='content' DB sync overwrites other attrs?"** — `/sgs-update` Stage 1 is idempotent (re-runs produce zero diffs per Phase 4 acceptance). Safe to run.
+3. **"What if the `slot_synonyms.role_classification` migration drifts during Phase 1?"** — It's idempotent (re-runs are no-ops on already-classified rows). The external regression test (`_tests/external-derivation-regression.py`) asserts triple-NULL=1090 baseline + 10 canonical triple-NULL rows stay NULL + role classification invariant. Run before every Phase 1 commit.
 
 4. **"Phase 3 parking entries — do we close P-BATCH-GA-14-SKILLS in Phase 3?"** — NO. That entry IS Phase 4's scope. Phase 3 closes everything ELSE.
 
-5. **"When Phase 1's walker pre-pass changes Stage 4 attr counts, do we adjust the leftover-buckets classifier?"** — Conditional on observed bucket shift. The classifier currently buckets `preset_managed` slots as `extraction_failed` (documented today in cloning-pipeline-flow.md). If Phase 1 attr increases reveal more preset_managed slots, the classifier code change is a Phase 3 candidate.
+5. **"Do the 11 slot_synonyms.standalone_block NULL rows block Phase 1.4?"** — NO. Per audit 2026-05-27 (commit b62e1660), 10 of 11 are correctly NULL by design (accessibility props, color attrs, 0-usage, role-excluded). One filled: `role.standalone_block = sgs/label` activates team-member + testimonial routing. Per FR-22-2.4 the walker logs unresolved-equivalent-block.log for any NULL standalone_block hits — that's the operator-fix path, not a hard block.
 
 7. **"Why isn't header/footer cloning part of Phase 1's walker pre-pass?"** — Headers + footers don't fit the generic page-clone pipeline: (a) they're 1-per-site (running the page pipeline N times redundantly clones them); (b) their HTML doesn't follow div→block conversion patterns; (c) custom behaviours (sticky / transparent / shrink / partial-stick) live in Customiser per Spec 17, not block attributes. Building chrome-handling into the walker pre-pass would force the wrong abstraction. Phase 2 builds a dedicated one-shot script instead.
 
@@ -180,7 +178,7 @@ These are the decisions a junior executor would pause on mid-phase. Pre-answered
 
 ## Key Judgement Calls (Bean decides during execution)
 
-1. **Phase 1 acceptance threshold for "good enough":** Spec 16 §15 sets hero `stage_3_slot_list` < 30 (from 142) + hero `variation_css_rules` ≥ 8 (from 0) + brand pixel-diff at 1440 < 20% (from 83%). Lock at these numbers OR relax if first walker-pre-pass iteration shows the targets are too aggressive given other constraints?
+1. **Phase 1 acceptance threshold for "good enough":** Spec 22 §FR-22-7 sets per-section ≤5% × 3 viewports for all 7 body sections (21 cells) + Bean visual sign-off (R-22-13 co-authoritative). Lock at ≤5% OR relax to ≤8% if first walker-rewrite iteration shows ≤5% requires Phase 1.5 noise-floor work the spec already parks?
 2. **Phase 2 scope decision (handled by `/phase-planner`):** does the new header/footer cloner integrate as an optional stage of `/sgs-clone` OR ship as a standalone `scripts/clone-header-footer.py` invoked separately? Trade-off: integrated = single-command UX; standalone = independent lifecycle + no risk of regressing the body pipeline.
 3. **Phase 3 sequencing:** group by file-scope (parallel-safe) OR strict-sequential per blub.db row 254 "leftover-buckets first" discipline?
 4. **Phase 4 model:** /skill-optimiser mode 2 inline (main conversation per row 176) OR subset to ~6 most-critical skills first then iterate?
@@ -199,7 +197,7 @@ Per `~/.agents/skills/delegate/data/routing-table.json` defaults:
 
 ## See also
 
-- `.claude/plans/2026-05-25-phase-1-universal-extraction.md` — Phase 1 detailed plan
+- `.claude/plans/2026-05-26-phase-1-spec-22-implementation.md` — current Phase 1 detailed plan (5-commit walker rewrite cadence per R-22-5). Earlier `.claude/plans/archive/2026-05-25-phase-1-universal-extraction-superseded-by-spec-22.md` is archived for git-blame continuity.
 - `.claude/plans/2026-05-24-phase-2-header-footer-cloner.md` — Phase 2 detailed plan (generated via `/phase-planner`)
 - `.claude/plans/2026-05-24-phase-3-parking-sweep.md` — Phase 3 detailed plan (renamed from `phase-2-parking-sweep.md`)
 - `.claude/plans/2026-05-24-phase-4-skill-optimisation.md` — Phase 4 detailed plan (renamed from `phase-3-skill-optimisation.md`)

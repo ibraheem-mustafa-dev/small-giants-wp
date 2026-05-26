@@ -102,12 +102,14 @@ The parking entries are grouped by effort. Each entry is referenced by ID + summ
 
 Per the 2026-05-23 revision of Phase 1 (`.claude/plans/2026-05-25-phase-1-universal-extraction.md`), Phase 1 explicitly closes G1+G3+G5 + the universal walker + FR1 pattern fast-path. The entries below are verification-only IF Phase 1 closed them as scoped; if Phase 1 partially closed any of them, the residual moves into Phase 3 as actual implementation work (not verification).
 
-- **P-G1-HERO-INNERBLOCKS** — closed by Phase 1 Step 1.6 (OPEN-block emission for FR1-matched composite blocks). Verify: Playwright on sandybrown — `header.sgs-hero` has 2 CTA buttons in DOM.
-- **P-G2-PAGE-ID-SCOPE-STRIP** — closed 2026-05-22 (Wave 2 Change 1, convert.py:3851-3859). Already RESOLVED.
-- **P-G3-STAGE-3-VISUAL-SLOT-MAPPING** — closed by Phase 1 Step 1.7 (slot_list.py extension via property_suffixes). Verify: trace.jsonl per-boundary — hero stage_3_slot_list failures < 30.
-- **P-G5-PER-BLOCK-DOM-SHAPE-FIXES** — closed by Phase 1 Step 1.8 (per-block render.php fixes + tag/class preservation). Verify: visual diff brand-strip + testimonial-slider + trust-bar.
-- **P-UNIVERSAL-EXTRACTION-RC-FIXES** — closed by Phase 1 Step 1.5 (universal walker per Spec 16 §15 steps 1-3). Verify: leftover-buckets `unrecognised_section` count = 0 for body sections.
-- **P-WAVE-2-RESHAPE-AS-ONE-WIRING-GAP** — closed by Phase 1 (umbrella for G1+G3+G5 closure). Verify by confirming G1+G3+G5 verifications above all pass.
+> **Status note (2026-05-26 Spec 22 ratification):** The G1/G3/G5 parking entries below were CLOSED by Spec 22's universal walker architecture (parking.md preamble lines 9-10). They no longer require Phase 3 sweep action — the FR-22-3 single-path walker (Phase 1 Commit 1.4) makes them dissolve. Retained here as historical reference; Phase 3 should skip them and focus on the genuinely-still-OPEN entries below.
+
+- **P-G1-HERO-INNERBLOCKS** — CLOSED by Spec 22 FR-22-3 (universal walker handles InnerBlocks emission via `equivalent_block_for()` per FR-22-2; no per-composite OPEN-block branch needed). Historical: was Phase 1 Step 1.6 in the pre-Spec-22 framing.
+- **P-G2-PAGE-ID-SCOPE-STRIP** — RESOLVED 2026-05-22 (Wave 2 Change 1, convert.py:3851-3859 in pre-rewrite code; behaviour preserved into Spec 22 walker per FR-22-5 D2 scoping).
+- **P-G3-STAGE-3-VISUAL-SLOT-MAPPING** — CLOSED by Spec 22 FR-22-5 D1 routing + FR-22-2.2 role-exclusion (parking.md preamble). Historical: was Phase 1 Step 1.7 slot_list.py extension.
+- **P-G5-PER-BLOCK-DOM-SHAPE-FIXES** — CLOSED by Spec 22 FR-22-3 universal walker — no per-block branches permitted (parking.md preamble). Historical: was Phase 1 Step 1.8 per-block render.php fixes.
+- **P-UNIVERSAL-EXTRACTION-RC-FIXES** — CLOSED by Spec 22 FR-22-3 (single universal walker with exactly 3 permitted exceptions; per blub.db row 269 universal extraction primitive only). Verify post-Phase-1.4: leftover-buckets `unrecognised_section` count = 0 for body sections.
+- **P-WAVE-2-RESHAPE-AS-ONE-WIRING-GAP** — CLOSED by Spec 22 (parking.md preamble: "dissolved — IS Spec 22"). The G1+G3+G5 closure framing retired; all three dissolve into the Spec 22 single-path walker.
 - **P-6-MISSING-BLOCK-JSON** — 4 DB rows reference blocks with no source block.json; either create the files OR retire the DB rows
 - **P-6-LUCIDE-REST-ENTRY-POINT** — WAITING on WP 7.1; verify still blocked; document in parking as WAITING (not OPEN)
 - **P-WP70-REGISTER-BLOCK-VARIATION-MISSING** — WAITING on WP 7.1; verify
@@ -254,7 +256,7 @@ Step 2.4 — Big-ticket entries (sequential, /qc-council per entry)
   Action:      For each genuinely-still-open big-ticket entry (likely fewer than the snapshot list because many were closed by 2026-05-23 commits):
                  (a) /research-check if scope ambiguity
                  (b) Read entry context (referenced specs, prior commit history)
-                 (c) Cold-prompt wp-sgs-developer with FULL parking entry text + Spec 16 §15 if relevant + Phase 1 outcomes for context
+                 (c) Cold-prompt wp-sgs-developer with FULL parking entry text + Spec 22 §FR-22-* + R-22-1 through R-22-13 binding rules if relevant + Phase 1 outcomes (commits 1.1-1.5) for context. Note: G1/G3/G5 entries above closed by Spec 22 walker — skip in Phase 3 sweep.
                  (d) /qc-council Stage 5 BEFORE commit
                  (e) /sgs-clone post-commit; verify Stage 11 numbers
                  (f) Move parking to Resolved with SHA
