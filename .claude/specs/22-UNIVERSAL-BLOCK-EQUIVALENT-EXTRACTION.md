@@ -433,7 +433,7 @@ Retired scripts move to `plugins/sgs-blocks/scripts/orchestrator/_retired/` so t
 
 | Surface | What goes | Archive location |
 |---|---|---|
-| Spec 16 (`.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md`) | Entire spec retired | `.claude/specs/archive/` |
+| Spec 16 (was `.claude/specs/16-DETERMINISTIC-CONVERTER-V2.md`; now `.claude/specs/archive/16-DETERMINISTIC-CONVERTER-V2-retired-by-spec-22.md`) | Entire spec retired 2026-05-26 (commit d9bd1c00) | `.claude/specs/archive/` |
 | `lift_subtree_into_block_attrs` (convert.py:3387) | Function deleted | inline removal |
 | 9-branch walk() | Collapsed to 3-exception FR-22-3 path | inline removal |
 | FR1 fast path / "normal route" distinction | Dissolved | inline removal |

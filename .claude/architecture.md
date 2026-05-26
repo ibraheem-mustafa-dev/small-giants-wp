@@ -208,7 +208,7 @@ The 2026-05-25 session ran a 4-rater `/qc-council` against the consolidated clon
   - D74 — Phase 1 scope = full universal-extraction backbone (one consolidated plan, NOT a series of small phases)
   - D75 — qc-council verdict CONDITIONAL APPROVE pending F1 spike
 
-**Current empirical baseline (2026-05-25 latest run, page 144 sandybrown):** mean pixel-diff 63.2% across 27 captures; hero 17% extracted with cheats inside; brand `sgs/quote` self-closing with empty `body[]`; F1 fallback proposed at `convert.py:1430`.
+**Empirical baseline (2026-05-26 post-Spec-22-ratification — Spec 22 §3 acceptance gate referenced):** mean pixel-diff 63.0% across 27 captures (run `mamas-munches-homepage-2026-05-26-012625/stage-11-pixel-diff.json`); brand 53.2/50.9/46.0% (post-F1 + Option-A customWidth fix + Option-C sgs_attr_has_value helper); hero unchanged via Spec 16 cheats (cheats removed automatically by Spec 22 cold-replacement walker rewrite — see Phase 1 plan Commit 1.4). F1 helper SHIPPED at `convert.py:3916` (`_f1_universal_walk_direct_children`) wired at 3 callsites in `walk()` lines 4051/4125/4182 — F1 is retired into the Spec 22 universal walker at Phase 1 Commit 1.4.
 
 ---
 

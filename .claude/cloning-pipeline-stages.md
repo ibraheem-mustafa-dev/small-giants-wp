@@ -98,7 +98,7 @@ Overview and stage-index table: `.claude/cloning-pipeline-flow.md`
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Stage 0.7 — CSS lift (four-destination router, Spec 16 §FR6)
+### Stage 0.7 — CSS lift (four-destination router, Spec 22 §FR-22-5)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -119,7 +119,8 @@ Overview and stage-index table: `.claude/cloning-pipeline-flow.md`
 │ DB tables:    none                                                          │
 │ Skills:       none                                                          │
 │                                                                             │
-│ STATUS:       LIVE - Spec 16 §FR6 compliant (2026-05-20 architectural rewrite) │
+│ STATUS:       LIVE - Spec 22 §FR-22-5 compliant (formerly Spec 16 §FR6;       │
+│               Spec 16 retired 2026-05-26; preserved verbatim per Spec 22 §1)  │
 │               Previously LIVE wrong-architecture (monolithic CSS dump).     │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -302,7 +303,7 @@ Overview and stage-index table: `.claude/cloning-pipeline-flow.md`
 (cv2 emission) can now target the 9 framework header/footer patterns shipped in Spec 17
 (`sgs/framework-header-{default,sticky,transparent,shrink,minimal,centred}` +
 `sgs/framework-footer-{default,compact,informational}`) instead of always generating
-bespoke header/footer markup. Spec 16 §7 Stage 6 needs an extension to recognise the
+bespoke header/footer markup. (Header/footer cloner is Phase 2 sibling spec, parked until Spec 22 Phase 1 closes — see `.claude/plans/2026-05-24-phase-2-header-footer-cloner.md`.) The legacy Spec 16 §7 Stage 6 framing here is historical — Spec 22 §3 FR-22-6 (hybrid block render.php migration) governs the equivalent work for body sections.
 match; tracked as a follow-up.
 
 ```
@@ -835,7 +836,7 @@ G1+G3+G5 are manifestations of one gap: cv2 doesn't walk all classes + assign CS
 
 ### Architectural debt (not blocking)
 
-1. **Stage 0.7 CSS lift** — previous monolithic dump architecture replaced (Spec 16 §FR6). D3/D2 split still evolving.
+1. **Stage 0.7 CSS lift** — previous monolithic dump architecture replaced (Spec 22 §FR-22-5; was Spec 16 §FR6, retired 2026-05-26). D3/D2 split still evolving.
 2. **Stage 2 has no pattern-level matcher** — sections matching pattern slugs fall to normal route. Tracked: Phase 1 of strategic-plan.
 3. **5 dead DB tables** — `sections_detected`, `extraction_cache`, `block_opportunities`, `weaknesses`, `animations` — retire or remove from schema.
 4. **ARRAY_LIFT_PATTERNS hardcoded dict** — `count_stars` + multi-selector fallback not yet migrated to universal 1e-B path. Tracked: `P-ARRAY-LIFT-PATTERNS-FULL-MIGRATION`.

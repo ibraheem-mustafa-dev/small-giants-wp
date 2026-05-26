@@ -48,7 +48,7 @@ Same content as Phase summary table below — re-presented here as the canonical
 
 | Phase | Name | Timebox | Deliverable | Depends on |
 |-------|------|---------|-------------|------------|
-| 1 | Universal walker + G1+G3+G5 closure | 8-12 hrs / 2-3 sessions | G1+G3+G5 closed per Spec 16 §14; hero stage_3_slot_list < 30 | none |
+| 1 | Spec 22 universal walker rewrite + acceptance gate | 32-40 hrs / 6-10 sessions | Per-section ≤5% × 3 viewports + Bean visual sign-off (R-22-13); see `.claude/plans/2026-05-26-phase-1-spec-22-implementation.md`. G1+G3+G5 framing retired — all three dissolve into the Spec 22 single-path walker. | none |
 | 2 | Header + footer specialised cloner | pending phase-planner | Mama's header + footer parity at 375/768/1440 | Phase 1 |
 | 3 | Parking sweep close-out | ~3 hrs / 1 session | parking.md open == {P-BATCH-GA-14-SKILLS} only | Phase 2 |
 | 4 | Skill + command optimisation | dedicated session | 14 skill evaluations + review report + waiting queue | Phase 3 |
@@ -57,7 +57,7 @@ Same content as Phase summary table below — re-presented here as the canonical
 
 | Phase | Scope | Est | Sessions | Critical gate |
 |---|---|---|---|---|
-| **1** Universal walker + G1+G3+G5 closure | Universal walker (§15 steps 1-3) + FR1 pattern fast-path + G1 OPEN-block emit + G3 slot_list visual + G5 per-block DOM fixes + hooks completion + role='content' DB sync + doc refresh | 8-12 hrs | 2-3 | G1+G3+G5 closed per Spec 16 §14 acceptance + hero stage_3_slot_list < 30 + no regression on FR1-matched sections (header/footer excluded — Phase 2 scope) |
+| **1** Spec 22 universal walker rewrite + acceptance gate | Spec 22 implementation per `.claude/plans/2026-05-26-phase-1-spec-22-implementation.md`. Phase 0 foundation (DB enrichment + golden corpus + wp-blocks.py extension + pixel-diff.py hardening + hybrid-block audit), then Phase 1 walker rewrite (5 commits: snapshot, atomic-tag, ARRAY_LIFT_PATTERNS retirement, universal walker, measurement), then Phase 2 hybrid render.php migrations, Phase 3 legacy cleanup, Phase 4 acceptance, Phase 5 decisions/mistakes pruning. | 32-40 hrs | 6-10 | Per-section ≤5% × 3 viewports for all 7 body sections + Bean visual sign-off (R-22-13). Phase 1.5 stretch ≤1% via measurement-script hardening. Header/footer excluded — Phase 2 scope. |
 | **2** Header + footer cloner | Separate one-shot script → Spec 17 architecture (template parts + Site Info + Customiser) | to be set by `/phase-planner` | 1-2 | Mama's Munches header + footer parity ≥ defined per-element thresholds at 375/768/1440 (header sticky behaviour exact match) |
 | **3** Parking close-out | ~22 STILL-OPEN entries (no skills) | 6-8 hrs | 2-3 | parking.md "Open" section contains zero entries beyond P-BATCH-GA-14-SKILLS |
 | **4** Skill optimisation | /skill-optimiser mode 2 on 14 WP/SGS skills + /batch-gap-analysis | 3-4 hrs | 1 (dedicated) | 14 per-skill JSON evaluations + 1 review report + S-grade confirmations queued |

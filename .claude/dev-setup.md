@@ -574,12 +574,12 @@ python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py context indus-foods # Lo
 
 ---
 
-## 2026-05-20 — Phase 1 Spec 16 §FR6 architectural rewrite
+## 2026-05-20 — Phase 1 four-destination CSS router architectural rewrite (was Spec 16 §FR6; now Spec 22 §FR-22-5)
 
 13 commits (`8ceb8787` → `bb3de12b`) added:
 
 **New modules:**
-- `plugins/sgs-blocks/scripts/orchestrator/css_router.py` (661 LOC) — Spec 16 §FR6 four-destination router (D0/D1/D2/D3)
+- `plugins/sgs-blocks/scripts/orchestrator/css_router.py` (661 LOC) — Spec 22 §FR-22-5 four-destination router (D0/D1/D2/D3); was Spec 16 §FR6 — retired 2026-05-26
 - `plugins/sgs-blocks/scripts/orchestrator/stage_attribute_promotion.py` — operator-driven CLI for promoting gap candidates into block.json schema
 - `plugins/sgs-blocks/scripts/orchestrator/essence_match_detector.py` — cv2 walker tier for essence-match-with-differences → block-variation emit
 - `plugins/sgs-blocks/includes/class-variation-rest.php` — sgs/v1/active-variation REST endpoint

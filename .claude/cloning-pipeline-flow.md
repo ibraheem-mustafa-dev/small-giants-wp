@@ -28,7 +28,7 @@ Per-stage annotated blocks (scripts, files, DB tables, skills, status) are in
 | 0 | Pre-flight + Theme Cache | `orchestrator/preflight_chain.py` | `stage-0-preflight.json` | LIVE |
 | 0.1 | BEM compliance lint | `lints/bem-lint.py` | `stage-0.1-bem-lint.json` | LIVE |
 | 0.5 | Token-usage lint | `lints/token-lint.py` | `stage-0.5-token-lint.json` | LIVE |
-| 0.7 | CSS lift (four-destination router) | `orchestrator/css_router.py` | `css-d1-assignments.json` + variation CSS | LIVE (Spec 16 §FR6) |
+| 0.7 | CSS lift (four-destination router) | `orchestrator/css_router.py` | `css-d1-assignments.json` + variation CSS | LIVE (Spec 22 §FR-22-5; was Spec 16 §FR6 — retired 2026-05-26) |
 | 0.8 | Theme-widths detection | `converter_v2/convert.py` (inline fns) | `styles/<client>.json` (idempotent) | LIVE |
 | 1 | Section boundary detection | `recogniser/per-section-convention-voter.py` | `voter.json` | LIVE |
 | 2 | Block-type match | `recogniser/confidence-matrix.py` | `stage-2.json` | LIVE |
