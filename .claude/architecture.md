@@ -5,7 +5,7 @@ title: SGS WordPress Framework — System Architecture
 split_note: "2026-05-24 — split into 3 parts: architecture.md (this file, system design), .claude/dev-setup.md (build/deploy/SSH), .claude/plans/archive/2026-02-21-feature-audit.md (354-feature graded roadmap)"
 ---
 
-> Last updated: 2026-05-26 (Spec 22 ratification + Spec 16 retirement). Architecture programme CLOSED (2026-05-22, 31 decisions). Cloning-pipeline canonical spec is now **Spec 22 (Universal Block-Equivalent Extraction)** — Spec 16 retired and archived. Phase 1 plan refactored to Spec 22's 5-commit walker rewrite + ≤5% acceptance gate (≤1% Phase 1.5 stretch). See `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` + `.claude/plans/2026-05-26-phase-1-spec-22-implementation.md`.
+> Last updated: 2026-05-27 (Spec 22 Phase 1 ARCHITECTURAL CLOSED — 8 task-commits + handoff shipped; Phase 1.5 empirical pixel-diff measurement pending). Architecture programme CLOSED (2026-05-22, 31 decisions). Cloning-pipeline canonical spec is **Spec 22 (Universal Block-Equivalent Extraction)** — Spec 16 retired and archived. NEW universal walker at `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` (1873 LoC vs retired 4803 = 61% reduction); R-22-3 PASS test self-runs in `__main__`. See `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` + `.claude/plans/2026-05-26-phase-1-spec-22-implementation.md`.
 
 # SGS WordPress Framework — System Architecture
 

@@ -9,7 +9,7 @@ primary_goal: |
   Implement Spec 22 (SGS Cloning Pipeline — Universal Block-Equivalent Extraction).
   Acceptance: per-section pixel-diff ≤5% across 3 viewports (375 / 768 / 1440) for
   every body section. Phase 1.5 stretch: bridge to ≤1% via noise-floor diagnosis.
-empirical_baseline: pipeline-state/mamas-munches-144-2026-05-26-122349/stage-11-pixel-diff.json (Wave B re-capture 2026-05-27; overall mean 58.91%; hero 1440 honest correction 69.6%→60.8% per D88; brand-375 +2.4pp methodology shift, deterministic across re-runs; previous mean-63.0% baseline at mamas-munches-homepage-2026-05-26-012625/ retained as historical reference per D88)
+empirical_baseline: "pipeline-state/mamas-munches-144-2026-05-26-122349/stage-11-pixel-diff.json (Wave B re-capture 2026-05-27; mean_mismatch_percent: 63.61% per file [27 captures, 0 errors]; corrected 2026-05-27 post-handoff audit — earlier '58.91%' figure was unverifiable drift that didn't match the cited file; hero 1440 honest correction 69.6%→60.8% per D88; brand-375 +2.4pp methodology shift, deterministic across re-runs; previous mean-63.0% baseline at mamas-munches-homepage-2026-05-26-012625/ retained as historical reference per D88)"
 ---
 
 # Phase 1 — Spec 22 implementation
