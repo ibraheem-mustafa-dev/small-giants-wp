@@ -171,7 +171,18 @@ For array-typed attrs (e.g. `packSizes`, `testimonials`, `badges` — block_attr
 3. Per-item attrs (label, state) lift via the same role-aware mechanism as scalar attrs.
 4. If array attr has NULL canonical_slot, walker queries the children's BEM signature for the slot (the children's `__element` BEM segment → resolve via slot_synonyms.aliases → standalone_block).
 
-**Phase 0.1 backfill priority list:** the 4 array-typed attrs with NULL canonical_slot on hot blocks (product-card.packSizes, social-proof.testimonials, certification-bar.badges, info-box.items) must be populated BEFORE Phase 1 walker rewrite ships. Caught explicitly per F-PE-8.
+**Phase 1.3a backfill priority list (corrected 2026-05-27 — drift fix per D89):** the original priority list (product-card.packSizes, social-proof.testimonials, certification-bar.badges, info-box.items) was a Spec-22-drafting drift — 3 of 4 entries didn't grep against the codebase (no `sgs/social-proof` block exists; `info-box.items` attr doesn't exist (real array is `elementOrder`, a slot-name config list); `certification-bar.badges` attr name was wrong (real attr is `items`, already populated)). The CORRECTED priority list, verified against `block_attributes` 2026-05-27, is the 4 sgs/* array attrs with NULL canonical_slot that genuinely carry content:
+
+1. `sgs/product-card.packSizes` → canonical_slot = `button` (per FR-22-2.5 §1 example)
+2. `sgs/gallery.mediaItems` → canonical_slot = `media`, role = `image-object` (mirrors sgs/gallery.images)
+3. `sgs/form-field-address.fields` → canonical_slot = `options`, role = `content` (matches form-field-checkbox/radio/select pattern)
+4. `sgs/form-field-tiles.tiles` → canonical_slot = `options`, role = `content` (same form-field-options pattern)
+
+Plus 3 config-only arrays explicitly flagged role=`layout` (styling-behaviour) so the positive-allowlist gate correctly skips them: `sgs/form-field-file.allowedTypes`, `sgs/info-box.elementOrder`, `sgs/table-of-contents.headingLevels`. These stay canonical_slot NULL by design (config, not content).
+
+`sgs/team-member.socialLinks` was on an earlier draft of this list. The Phase 1.3b refactor (2026-05-27) converts it from a flat array attr → InnerBlocks slot defaulting to one `sgs/social-icons` child block. The attribute is removed; no canonical_slot backfill needed.
+
+All four backfills + three config flags ship in Phase 1.3a alongside the new `db_lookup.array_item_slot_for()` helper that the walker (Commit 1.4) consumes.
 
 ### FR-22-3 — Walker is a single universal path with exactly 3 permitted exceptions
 

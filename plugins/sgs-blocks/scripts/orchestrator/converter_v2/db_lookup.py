@@ -1110,6 +1110,75 @@ def atomic_tag_map() -> dict[str, str]:
 
 
 # ----------------------------------------------------------------------------
+# array_item_slot_for — Spec 22 §FR-22-2.5 / Commit 1.3
+# ----------------------------------------------------------------------------
+# DB-driven resolution for array-typed attrs. When the walker encounters an
+# array attr (block_attributes.attr_type='array') on a block, it asks this
+# helper: "what's the per-item content slot?" The answer drives one of two
+# emission paths in the universal walker (Commit 1.4):
+#
+#   Tier A (DB-populated canonical_slot — preferred):
+#     equivalent_block_for(block_slug, attr_name) resolves canonical_slot to
+#     a standalone_block; the walker emits one child block per array item.
+#     e.g. sgs/product-card.packSizes (canonical_slot='button') → walker emits
+#     one sgs/button child per pack-size item.
+#
+#   Tier B (NULL canonical_slot — walker falls back to children's BEM):
+#     If canonical_slot is NULL, the walker queries the children's BEM
+#     signature for the slot (per FR-22-2.5 §4). This helper returns None
+#     for that case — the walker handles the BEM-fallback path itself.
+#
+# Replaces hardcoded ARRAY_LIFT_PATTERNS dict at _retired/convert_pre_spec22.py:1008-1031
+# (R-22-1 compliance).
+
+@functools.lru_cache(maxsize=2048)
+def array_item_slot_for(block_slug: str, attr_name: str) -> str | None:
+    """Return the canonical_slot for the items of an array-typed attribute.
+
+    Returns:
+        - The canonical_slot string when populated (Tier A — walker emits
+          one child block per item via equivalent_block_for + standalone_block).
+        - None when canonical_slot is NULL on a true array attr (Tier B —
+          walker falls back to children's BEM signature per FR-22-2.5 §4).
+        - None when the attribute does not exist OR is not array-typed
+          (caller should not have invoked this helper for non-array attrs).
+
+    The role gate is INCLUSIVE here (unlike equivalent_block_for): array
+    attrs whose role is None but canonical_slot is populated still resolve.
+    This matches the FR-22-2.5 §1 statement: "If the parent block's attr
+    has canonical_slot populated → that's the array slot's content type".
+
+    Caller (the walker) is responsible for then resolving canonical_slot via
+    equivalent_block_for or standalone_block_for to get the emitted block slug.
+
+    Examples:
+        array_item_slot_for('sgs/product-card', 'packSizes') -> 'button'
+        array_item_slot_for('sgs/gallery', 'mediaItems')     -> 'media'
+        array_item_slot_for('sgs/form-field-tiles', 'tiles') -> 'options'
+        array_item_slot_for('sgs/info-box', 'elementOrder')  -> None
+            (config array, role='layout', canonical_slot NULL — walker skips)
+        array_item_slot_for('sgs/hero', 'headlineFontSize')  -> None
+            (not an array attr — caller misuse)
+    """
+    conn = sqlite3.connect(SGS_DB)
+    try:
+        row = conn.execute(
+            "SELECT canonical_slot, attr_type FROM block_attributes "
+            "WHERE block_slug = ? AND attr_name = ?",
+            (block_slug, attr_name),
+        ).fetchone()
+    finally:
+        conn.close()
+
+    if row is None:
+        return None  # Attribute does not exist
+    canonical_slot, attr_type = row
+    if attr_type != "array":
+        return None  # Caller misuse — non-array attr passed
+    return canonical_slot  # May be None (Tier B fallback) or populated (Tier A)
+
+
+# ----------------------------------------------------------------------------
 # Smoke test
 # ----------------------------------------------------------------------------
 

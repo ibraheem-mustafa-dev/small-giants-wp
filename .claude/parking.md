@@ -34,6 +34,11 @@ last_updated: 2026-05-27
 **P-COMPOSITE-ATTR-ROUTING** — DROPPED 2026-05-28. Originally raised as a needed `slot_synonyms.composite_attr` column to handle composite-block routing in the walker (label/headline/sub attr-targeting on sgs/heading). The Track B γ-rebuild on 2026-05-28 collapsed sgs/heading from composite to single-element + `headingRole` enum, eliminating the underlying need. The remaining single-attr routing concern is captured by `P-SUBHEADING-ROUTING-TO-SGS-HEADING` above.
 > **Status:** DROPPED (superseded by sgs/heading γ-rebuild + P-SUBHEADING-ROUTING-TO-SGS-HEADING)
 
+**P-TEAM-MEMBER-SCHEMA-ORG-SAMEAS-RESTORATION** — NEW 2026-05-27 (Phase 1.3b regression). The pre-1.3b `sgs/team-member.render.php` emitted Schema.org `Person` JSON-LD with a `sameAs` array populated from the flat `socialLinks[].url` values. Phase 1.3b converted `socialLinks` to a child `sgs/social-icons` InnerBlocks slot — the social URLs are now inside child block markup, not accessible as flat attrs from team-member's render.php. The `sameAs` Schema.org array was REMOVED rather than parsed back from `$content`. **Effect:** team-member blocks no longer emit `sameAs` Schema.org structured data → SEO regression for any team-member pages relying on Schema.org Person markup. **Resolution options:** (a) parse `$content` via `parse_blocks()` in team-member render.php and walk the child sgs/social-icons block's `icons` attr to extract URLs — cheapest, most localised; (b) move Schema.org JSON-LD emission into sgs/social-icons render.php with a `context: 'person'` flag passed down via block ancestry; (c) server-side meta marker on team-member that the new sgs/social-icons render.php reads up-tree. Option (a) is recommended.
+> **Status:** OPEN
+> **Bucket:** SEO / structured-data regression
+> **Trigger:** Phase 2 (post Phase 1.5) OR sooner if any team-member-using client surfaces an SEO Schema audit issue.
+
 ## Cloning pipeline (cv2 / orchestrator / DOM walker / pixel-diff)
 
 _60 entries._
