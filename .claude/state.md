@@ -57,9 +57,9 @@ blockers:
 
 ## State Snapshot
 
-- **current_phase:** spec-22-phase-1-walker-rewrite-opened-2026-05-28 (Phase 0 closed 2026-05-27)
-- **current_subphase:** Phase 1.2 + 1.2a + parallel sgs/heading γ-rebuild SHIPPED. Phase 1.2a hardening: `_HTML_TAG_TO_CORE_SLUG` constant deleted; new DB table `html_tag_to_core_block` (14 rows, idempotent migration); `atomic_tag_map()` queries DB-only path; 5 conflicting `slot_synonyms.html_semantic_tag` rows NULL'd (subheading/tab/review/step/items — zero-blast-radius cleanup). Parallel: sgs/heading γ-rebuild — composite collapsed (130+ attrs → 70 wrapper-attrs only), new `headingRole` enum, deprecated.js migration shipped, 2 block patterns capture the old visual cluster. /qc 17/17 scenarios PASS. /sgs-update 9/9 stages OK (18 new attrs registered for sgs/heading).
-- **current_step:** Phase 1.3 — ARRAY_LIFT_PATTERNS retirement + FR-22-2.5 array-of-objects resolution
+- **current_phase:** spec-22-phase-1-architectural-CLOSED-2026-05-27 (Phase 1.5 empirical gate is next)
+- **current_subphase:** **Phase 1 ARCHITECTURAL work COMPLETE.** 8 substantive commits shipped this session (Phase 1.1 + 1.2 + 1.2a + sgs/heading γ-rebuild + 1.3a + sgs/team-member InnerBlocks + 1.4a walker helpers + 1.4b universal walker). New `convert.py` (1842 LoC, ~50% reduction from retired 4700) replaces the entire Spec 16 walker. R-22-3 PASS test self-runs (exactly 3 routing branches, zero illegal block-slug literals). /qc-council 4-rater multi-model gate (Sonnet + Haiku + Gemini Flash + main-thread) surfaced 5 real diagnostics + 1 by-design; all 5 fixed in-flight before Phase 1.4b commit. 145+/145+ test suite PASS. 18 commits pushed to origin/main. Only Phase 1.5 (Stage 11 pixel-diff measurement against Mama's canary page 144) remains for Phase 1 acceptance.
+- **current_step:** Phase 1.5 — Stage 11 pixel-diff measurement + halt/proceed decision (deploy walker to sandybrown, capture pre/post pixel-diff for 7 body sections × 3 viewports, Bean visual sign-off per R-22-13)
 - **latest_commit:** 59accb69 (handoff + next-session-prompt for Phase 1)
 - **working_tree:** clean on main (1 file uncommitted: `plugins/sgs-blocks/includes/lucide-icons.php` — build timestamp drift, non-substantive)
 - **github_branches:** main ONLY

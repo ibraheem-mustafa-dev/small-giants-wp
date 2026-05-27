@@ -1,54 +1,47 @@
 ---
 doc_type: next-session-prompt
 project: small-giants-wp
-session_tag: small-giants-wp-2026-05-28-spec-22-phase-1-walker-rewrite
+session_tag: small-giants-wp-2026-05-28-spec-22-phase-1.5-pixel-diff-measurement
 generated: 2026-05-27
-parent_session: small-giants-wp-2026-05-27-spec-22-phase-0-foundation
-primary_goal: "Open Spec 22 Phase 1 — universal walker rewrite. Phase 0 closed 2026-05-27 (7 commits). Phase 1 ships as 5 commits per R-22-5: 1.1 pre-rewrite snapshot, 1.2 atomic-tag map migration, 1.3 ARRAY_LIFT_PATTERNS retirement + array-of-objects resolution, 1.4 universal walker (THE core rewrite), 1.5 measurement + halt/proceed."
+parent_session: small-giants-wp-2026-05-27-spec-22-phase-1-architectural-CLOSED
+primary_goal: "Phase 1.5 — Stage 11 pixel-diff measurement. Empirical gate for Phase 1 acceptance: every body section ≤5% × 3 viewports (Phase 1) with R-22-13 Bean visual sign-off co-authoritative. Walker rewrite is shipped + council-gated + 145+ tests PASS; now measure rendered output against Mama's canary page 144."
 ---
 
-# Next session — Spec 22 Phase 1 (universal walker rewrite)
+# Next session — Spec 22 Phase 1.5 (Stage 11 pixel-diff measurement)
 
-You are the SGS framework architect implementing Spec 22's universal walker. The cloning pipeline's foundation is in place (Phase 0 closed); next session opens the walker rewrite that replaces Spec 16's layered FR1/lift_subtree/F1/9-branch architecture with a single recursive function obeying exactly 3 permitted exceptions (atomic-tag swap / chrome-skip / top-level container wrap).
+You are the SGS framework architect closing Spec 22 Phase 1. The universal walker rewrite is **shipped + architecturally gated** (Phase 1.4a + 1.4b committed yesterday). What remains is the **empirical gate**: measure the rendered cloning-pipeline output against the Mama's Munches canary page 144 at sandybrown staging. Decide halt-or-proceed based on the per-section pixel-diff results AND Bean's visual sign-off (R-22-13 co-authoritative).
 
-## State recap
+## State recap (plain English)
 
-Phase 0 closed on `main` at `b62e1660` after 7 commits this session. The DB now carries: positive-allowlist role-exclusion (D85) that closes the FR-22-2.2 NULL-role hole; deleted Tier C (D86) reducing the spec to a 2-tier system; DB-derived `slot_synonyms.role_classification` column replacing hardcoded frozensets; 4 Tier B canonical_slot writes + 94 role-detection writes applied + 1 slot_synonyms gap filled (`role.standalone_block = sgs/label`). `scripts/pixel-diff.py` ships chrome-hide via `visibility:hidden` (D87 — empirical divergence from spec's "crop" wording) + `--wait-fonts` + `--keep-chrome`; orchestrator auto-passes `--wait-fonts` on Spec-22-gated runs (Phase 0.3.b). `wp-blocks.py` exposes the 6 FR-22-8 subcommands with `equivalent-block` wired to `db_lookup.equivalent_block_for()`. Three test suites guard against drift (39/39 PASS total). Wave B baseline at `pipeline-state/mamas-munches-144-2026-05-26-122349/` (mean 58.91% post-chrome-hide). Hybrid roster at `.claude/reports/2026-05-27-hybrid-block-roster.md`: 61 blocks (canonical Phase 2 scope; not consumed by Phase 1).
+The Spec 16 walker was retired and replaced by a single universal walker in `plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py` (1842 LoC, ~50% reduction). The walker has EXACTLY 3 routing branches per R-22-3, no per-block conditionals, no hardcoded routing dicts. It consumes 8 new DB-driven helpers shipped this session. /qc-council 4-rater multi-model gate found and fixed 5 real bugs before the walker commit. 145+/145+ test suite PASS.
 
-## Phase 1 pre-conditions — ALL VERIFIED 2026-05-27
-
-- Branch on main ✓
-- Spec 22 status: active (§16 ratification gate)
-- `sgs-db.py stats` clean (194 blocks / 2,246 attrs)
-- `npm run build` exits 0
-- Sandybrown canary HTTP 200 (1.89s)
-- Pre-rewrite DB snapshot at `pipeline-state/_snapshots/sgs-framework-pre-spec22.db` (SHA256 `d088...0017bc`)
-- FR-22-8 perf: cold 3.2ms (≤20ms) / warm 0.0002ms (≤2ms)
-- 39/39 tests PASS
+**Now we test it against reality.** The acceptance criterion is per-section ≤5% pixel-diff × 3 viewports (375/768/1440) across 7 body sections (Phase 1 gate). If all 21 cells (7 sections × 3 viewports) hit ≤5% AND Bean visually signs off → Phase 1 closes, Phase 2 opens (61-block hybrid render.php migration roster). If any cell exceeds ≤5% → diagnose root cause; walker is structurally correct so failures are class-of-issue, not per-section bugs.
 
 ## Mandatory reading (in order)
 
 1. This file
-2. `.claude/state.md` — current_subphase_step
-3. `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` — §3 FRs (FR-22-1/2/3/5), §6 R-22-1 through R-22-13, §7 Phase 1 commits (1.1-1.5), §13 Appendix A (walker pseudocode), §14 Appendix B (atomic_tag_map algorithm)
-4. `.claude/plans/2026-05-26-phase-1-spec-22-implementation.md` — full Phase 1 plan with model routing per commit
-5. `.claude/decisions.md` D78-D88
-6. `.claude/handoff.md` — last session full context
+2. `.claude/handoff.md` — last session full context (8 commits, Phase 1.4 close)
+3. `.claude/state.md` — current state snapshot
+4. `.claude/specs/22-UNIVERSAL-BLOCK-EQUIVALENT-EXTRACTION.md` §11 success criteria + §6 R-22-13 visual sign-off rule + §FR-22-7 body section enumeration
+5. `.claude/plans/2026-05-26-phase-1-spec-22-implementation.md` Task 5 (Phase 1.5 measurement)
+6. `pipeline-state/mamas-munches-144-2026-05-26-122349/stage-11-pixel-diff.json` (Wave B baseline, mean 58.91% — for predicted-vs-actual delta comparison)
+7. `.claude/cloning-pipeline-stages.md` Stage 11 detail
 
 ## Skills to Invoke
 
 | Skill | When to use |
 |-------|-------------|
-| `/brainstorming` | ALWAYS INCLUDE — architectural / strategy decisions |
-| `/gap-analysis` | ALWAYS INCLUDE — grade outputs before delivery |
-| `/lifecycle` | ALWAYS INCLUDE — start pipeline before any skill/agent edits |
-| `/research` | ALWAYS INCLUDE — auto-routes to research tier |
-| `/strategic-plan` | ALWAYS INCLUDE — plan implementation order |
-| `/sgs-wp-engine` | Touch any framework code — invoke first |
-| `/qc-council` | Pre-commit gate for Commits 1.3 + 1.4 (converter-adjacent per blub.db 255) |
-| `/qc-inline` | Commits 1.2 + 1.5 (smaller change surface) |
-| `/delegate` | Pick model per task |
-| `/subagent-driven-development` | Commits 1.3 + 1.4 (implementer + 2 reviewers) |
+| `/brainstorming` | ALWAYS — Phase 1.5 halt/proceed decision is architectural |
+| `/gap-analysis` | ALWAYS — grade results before delivery |
+| `/lifecycle` | ALWAYS — start pipeline before any skill edit |
+| `/research` | ALWAYS — auto-routes if Phase 1.5 reveals an unfamiliar failure class |
+| `/strategic-plan` | ALWAYS — only if Phase 1.5 fails + Phase 1.5.1 diagnosis needs sequencing |
+| `/sgs-wp-engine` | Touch any framework code |
+| `/qc-council` | Pre-commit gate on ANY converter/walker edit (per blub.db 255) |
+| `/qc-inline` | Smaller artefacts; final readout summary |
+| `/sgs-clone` | THE primary tool for this session — runs the full pipeline + Stage 11 measurement |
+| `/sgs-update` | After any block/theme change |
+| `/delegate` | Pick model per task (Sonnet for diagnosis, Haiku for mechanical checks) |
 | `/verify-loop` | 2-attestation per load-bearing claim |
 | `/capture-lesson` | Any new corrective rule surfaced |
 | `/handoff` | Session close |
@@ -57,147 +50,131 @@ Phase 0 closed on `main` at `b62e1660` after 7 commits this session. The DB now 
 
 | Tool | What to use it for |
 |------|-------------------|
-| `playwright` | Live-page DOM verification per R-22-11 (canonical) |
-| `wp-blocks.py equivalent-block` | FR-22-8 CLI per-attr lookup |
+| `playwright` | Live-page DOM verification per R-22-11 (canonical); chrome-detection for pixel-diff cells |
+| `chrome-devtools-mcp` | Browser inspection during section-level diagnosis if Playwright is overkill |
+| `wp-blocks.py equivalent-block` | FR-22-8 per-attr DB lookup during diagnosis |
 | `sgs-db.py block <slug>` | Block schema queries |
-| `chrome-devtools-mcp` | Browser inspection during walker dev if Playwright is overkill |
+| `scripts/pixel-diff.py` | Per-section cropped pixel-diff (FR-22-7); already shipped chrome-hide via visibility:hidden |
 
 ## Agents to Delegate To
 
 | Agent | When |
 |-------|------|
-| `wp-sgs-developer` | Heavy SGS framework work (walker rewrite scope) |
-| Sonnet subagents via /delegate | Commits 1.2 / 1.3 / 1.4 implementation |
-| `code-reviewer` (via /subagent-driven-development) | Reviewer #1 on Commits 1.3 + 1.4 |
-| `test-and-explain` | Post-walker rewrite verification for non-coder readability |
+| `wp-sgs-developer` | Heavy framework work if Phase 1.5 fails + walker logic needs adjustment |
+| Sonnet via /delegate | Mechanical diagnosis tasks |
+| `test-and-explain` | Post-Phase-1.5 readout for non-coder Bean readability |
 
 ---
 
-## Task 1 — Phase 1.1 Pre-rewrite snapshot
+## Task 1 — Build + deploy walker to sandybrown staging
 
-**What:** `git mv plugins/sgs-blocks/scripts/orchestrator/converter_v2/convert.py plugins/sgs-blocks/scripts/orchestrator/_retired/convert_pre_spec22.py` (after `mkdir -p _retired`). Living-docs note. Commit.
-**Why:** Enables true rollback per F-RA-2 — pairs with the pre-rewrite DB snapshot already captured (`pipeline-state/_snapshots/sgs-framework-pre-spec22.db`).
+**What:** `npm run build` + tar deploy + OPcache reset on sandybrown staging (`sandybrown-nightingale-600381.hostingersite.com`). The Phase 1.4 walker code is currently sitting on origin/main but the staging server still has the pre-walker code.
+**Why:** Pixel-diff measurement against stale code measures stale output — captured rule (`feedback_wp_debug_display_contaminates_pixel_diff`). Deploy MUST precede measurement.
 **Estimated time:** 10 min.
 
 **Orchestration:**
 - Execution: inline (main thread, Opus)
 - Depends on: none
-- Parallel with: none (foundational; sequence-gated)
-- /qc gate after: `/qc-inline` (trivial structural change)
+- Parallel with: none (foundational — sequence-gated)
+- /qc gate after: trivial; build exit 0 + curl-200 on the canary URL suffices
 
-**Acceptance:** `git log -1` shows the rename commit; `convert_pre_spec22.py` exists in `_retired/`; main session continues to Task 2.
+**Acceptance:** sandybrown page 144 returns HTTP 200 after deploy; `php -r "echo opcache_get_status();"` (or curl reset endpoint) confirms opcache cleared; `WP_DEBUG_DISPLAY` confirmed `false` per blub.db row 263.
 
-## Task 2 — Phase 1.2 Atomic-tag map migration
+## Task 2 — Stage 11 pixel-diff measurement (full body sections × 3 viewports)
 
-**What:** Replace hardcoded `ATOMIC_TAG_MAP` (convert.py:698-704) with DB-driven `db.atomic_tag_map()` per Spec 22 §14 Appendix B (2-tier resolution: `slot_synonyms.html_semantic_tag` then `blocks.replaces` reverse-walk).
-**Why:** Eliminates the last hardcoded class-to-block dict per R-22-1; walker reads canonical mapping at startup from DB.
-**Estimated time:** 1-2 hours.
+**What:** `python plugins/sgs-blocks/scripts/orchestrator/sgs-clone-orchestrator.py --client mamas-munches --target page:144 --auto-section --debug-trace --converter-v2 --spec-22-acceptance` against sandybrown. Captures pre/post pixel-diff for 7 body sections × 3 viewports (375/768/1440) = 21 cells.
+**Why:** Empirical gate for Phase 1 acceptance per R-22-4 + R-22-13.
+**Estimated time:** 30-45 min wall-time (the pipeline + Playwright + per-section crop measurements).
 
 **Orchestration:**
-- Execution: delegated subagent
-- Model: Sonnet via `/delegate` (mechanical refactor; well-scoped)
-- Dispatch pattern: single-agent
-- Brief: replace the dict with a function reading from sgs-framework.db at module load; LRU cache the result; preserve existing behaviour for the 9 current entries; add tests for the 2-tier resolution.
-- Context the subagent needs: `convert.py:698-704` is the current dict; Spec 22 §14 Appendix B has the resolution algorithm; db_lookup.py already has the `equivalent_block_for()` pattern to model on.
+- Execution: inline (main thread, Opus) — the orchestrator runs the measurement; this task is just invoking it and parsing the output
 - Depends on: Task 1
-- Parallel with: none (sequential per Spec 22 §7)
-- /qc gate after: `/qc-inline` + `/sgs-clone --debug-trace` Stage 11 measurement (predicted no pixel-diff change)
+- Parallel with: none
+- /qc gate after: none (the measurement IS the gate)
 
-**Acceptance:** ATOMIC_TAG_MAP dict deleted from convert.py; `db.atomic_tag_map()` returns expected mapping; Stage 11 pixel-diff within ±0.5pp of baseline.
+**Acceptance:** `pipeline-state/mamas-munches-144-<timestamp>/stage-11-pixel-diff.json` exists with 21 cells populated. Per-cell deltas captured. Cell-by-cell halt/proceed analysis follows in Task 3.
 
-## Task 3 — Phase 1.3 ARRAY_LIFT_PATTERNS retirement + array-of-objects resolution
+## Task 3 — Halt/proceed decision + Bean visual sign-off
 
-**What:** Delete `ARRAY_LIFT_PATTERNS` dict (convert.py:1008-1031). Implement FR-22-2.5: walker treats array attrs as sibling-class containers; per-item resolution via FR-22-1 BEM signature.
-**Why:** Hardcoded `ARRAY_LIFT_PATTERNS` violates R-22-1; FR-22-2.5 makes array handling universal.
-**Estimated time:** 2 hours.
+**What:** Parse Stage 11 output. For each of 21 cells, classify:
+- **PASS** (cell ≤5%): acceptable
+- **FAIL** (cell >5%): root-cause diagnosis required
+
+Per R-22-13, ALSO surface cropped-pair artefacts (sgs.png + mockup.png + diff.png + heatmap.png) per-section for Bean's visual sign-off. Bean's eye is co-authoritative — if a cell measures ≤5% but Bean's eye says "wrong colour" or "wrong layout", the cell is NOT closed (per `feedback_extend_measurement_set_when_human_eye_disputes`).
+
+**Why:** This is the actual go/no-go for Phase 1.
+**Estimated time:** 20-30 min (parsing + cropped-pair review + Bean's sign-off pass).
 
 **Orchestration:**
-- Execution: delegated subagent via `/subagent-driven-development`
-- Model: Sonnet via `/delegate`
-- Dispatch pattern: 1 implementer + 2 reviewers (code-reviewer agent + main-session review)
-- Brief: delete ARRAY_LIFT_PATTERNS; for any array-typed attr (block_attributes.attr_type='array'), walker finds the sibling-class container in DOM + emits one child block per item; per-item attrs lift via the same role-aware mechanism as scalars.
-- Context the subagent needs: Spec 22 §FR-22-2.5 has the algorithm; convert.py:1008-1031 is the current dict; sgs/product-card.packSizes / sgs/timeline.entries are canonical test cases.
+- Execution: inline (main thread, Opus) — needs Bean's visual sign-off interactively
 - Depends on: Task 2
 - Parallel with: none
-- /qc gate after: `/qc-council` multi-rater (converter-adjacent per blub.db 255) + Stage 11 measurement (predicted social-proof + featured-product show modest improvement)
 
-**Acceptance:** ARRAY_LIFT_PATTERNS deleted; walker emits one child block per array item on canonical test cases; Stage 11 measurement cited in commit message.
+**Acceptance:**
+- If all 21 cells PASS measurement AND Bean signs off visually → **Phase 1 CLOSED**, Phase 2 opens (hybrid render.php migration roster from Phase 0.4 audit). Update state.md current_phase to `spec-22-phase-1-closed-2026-05-28`. Commit a small Phase 1.5 close-note commit. Open next-session-prompt for Phase 2.
+- If any cell FAILS → escalate to Task 4 (root cause diagnosis).
 
-## Task 4 — Phase 1.4 Universal walker (THE core rewrite) ⚡
+## Task 4 — Root cause diagnosis (only if Task 3 surfaces FAILs)
 
-**What:** Delete `lift_subtree_into_block_attrs` (convert.py:3387), `_lift_inner_blocks` (convert.py:1350), F1 fallback (convert.py:3916), 9-branch walk(), per-block hardcoded branches (convert.py:1532, 1550). Implement single-path walker per FR-22-3 + Appendix A. New helper functions in `converter_v2/db_lookup.py`. LRU cache.
-**Why:** Replaces Spec 16's layered architecture with the universal walker. Closes the "double-render" bug structurally. Activates Tier B-applied + role-detection-applied rows.
-**Estimated time:** 5-6 hours.
+**What:** For each FAIL cell, ask: "what's the CLASS of failure?" Walker is structurally correct (council-gated, R-22-3 PASS). Failures will be class-of-issue:
+- **Class A — CSS routing:** walker emits block but block-scoped CSS doesn't reach the rendered output. Inspect variation_buf path; cross-check FR-22-5 routing.
+- **Class B — Lift-attr coverage:** lift_behavioural_attrs misses an attr that's actually content-bearing. Inspect block_attributes rows for the affected block; cross-check FR-22-2 role classification.
+- **Class C — Atomic-emission semantics:** emit_atomic emits wrong attr names for an atomic-target slug. Cross-check `_atomic_attrs_for` per-(slug, tag) maps vs current block.json schema.
+- **Class D — Pass-through routing:** walker pass-through subtree drops a block that should emit. Inspect walk_passthrough path; verify variation_buf threading (D1 fix already applied; new regressions likely a different shape).
+- **Class E — Sibling-class container resolution (FR-22-2.5):** array-typed attr's sibling-class container not found in the DOM. Inspect array_item_slot_for path.
 
-**Orchestration:**
-- Execution: delegated subagent via `/subagent-driven-development`
-- Model: Sonnet via `/delegate` (one implementer + 2 reviewers)
-- Dispatch pattern: implementer + spec-reviewer + quality-reviewer (3 agents per blub.db 240 + Spec 22 R-22-12)
-- Brief: implement the universal walker per FR-22-3 (3 permitted exceptions: atomic-tag swap, chrome-skip at top, top-level container wrap). New helper functions (`resolve_slug_from_bem()`, `lift_behavioural_attrs()`, `emit_sgs_container_wrapping()`) in `converter_v2/db_lookup.py`. Walker reads BEM class → resolves slug via DB → emits block. No per-block conditionals (`if slug == 'sgs/X'` patterns BANNED per FR-22-3).
-- Context: §13 Appendix A has the pseudocode; pre-rewrite convert.py archived at `_retired/convert_pre_spec22.py`; the 4 Tier B applied rows (sgs/icon.iconSource/iconName/linkTarget + sgs/timeline.entries) now have role populated and will activate via equivalent_block_for() — verify they emit child blocks correctly.
-- Depends on: Task 3
-- Parallel with: none
-- /qc gate after: `/qc-council` ⚡ pre-commit (4-rater multi-model per blub.db 255 — Sonnet + Haiku + Gemini Flash + Cerebras) + `/verify-loop` 2-attestation + `/sgs-clone --debug-trace` full Stage 11
-
-**Acceptance:** All 4 deleted functions gone; walker is single recursive function with exactly 3 branches; brand pixel-diff drops substantially toward ≤5%; product-card double-render closes (-30 to -50pp from current 75%); NO section regresses >2pp from baseline. Per Spec 22 R-22-13 Bean visual sign-off on cropped-pair artefacts co-authoritative.
-
-## Task 5 — Phase 1.5 Measurement + halt/proceed decision ⚡
-
-**What:** Full-page `/sgs-clone --auto-section --debug-trace`. Every body section measured. If all 7 sections × 3 viewports ≤5%, Phase 1 closes. If any > 5%, halt + diagnose.
-**Why:** Empirical gate — code shipped ≠ outcome achieved.
-**Estimated time:** 1 hour.
+**Why:** Universal mechanisms, not per-block hyperfocus (R-22-9).
+**Estimated time:** Per FAIL cell, 30-60 min diagnosis. /qc-council 4-rater MANDATORY if a fix-shape is dispatched (blub.db 255).
 
 **Orchestration:**
-- Execution: inline (main thread, Opus) — gate evaluation requires Bean visual sign-off per R-22-13
-- Depends on: Task 4
-- Parallel with: none
-- /qc gate after: `/qc-council` Stage 5 multi-rater on the measurement interpretation
+- Execution: per-cell, mostly inline; subagent dispatch only if the fix is well-bounded
+- Depends on: Task 3 surfaces FAILs
+- Parallel with: per-FAIL diagnosis can parallelise via `/dispatching-parallel-agents`
+- /qc gate after: `/qc-council` 4-rater BEFORE any commit (Sonnet + Haiku + Gemini Flash + main-thread)
 
-**Acceptance:** Phase 1 close condition met (all 21 cells ≤5%) OR halt with diagnosed root cause + Phase 1.5 territory determination. Bean visual sign-off recorded.
+**Acceptance:** Each FAIL cell either (a) ships a validated fix that drops the cell ≤5% on re-measurement, OR (b) is parked with a clear root-cause classification + Phase 1.5 → Phase 2 escalation note.
 
 ---
 
 ## Dependency graph
 
 ```
-Task 1 — Phase 1.1 snapshot (inline, Opus, 10 min)
+Task 1 — Deploy (inline, Opus, 10 min)
   ↓
-Task 2 — Phase 1.2 atomic-tag (Sonnet, 1-2h)
-  ↓ /qc-inline + Stage 11
-Task 3 — Phase 1.3 array-of-objects (Sonnet via /subagent-driven-development, 2h)
-  ↓ /qc-council
-Task 4 — Phase 1.4 walker rewrite (Sonnet via /subagent-driven-development, 5-6h) ⚡
-  ↓ /qc-council multi-rater + /verify-loop
-Task 5 — Phase 1.5 measurement (inline, Opus, 1h) ⚡
-  ↓ /qc-council Stage 5
-Phase 1 closes; Phase 2 (hybrid render.php migrations) opens
+Task 2 — Stage 11 measurement (inline, Opus, 30-45 min)
+  ↓
+Task 3 — Halt/proceed decision + Bean visual sign-off (inline, Opus, 20-30 min)
+  ↓
+  ├─ All 21 cells PASS → Phase 1 CLOSED → Phase 2 opens
+  └─ Any FAIL → Task 4 root cause diagnosis (per-cell, /qc-council gated)
 ```
 
-Total Phase 1 wall-time: ~9-12 hours across 2-3 sessions.
+Total Phase 1.5 wall-time best case: ~60-90 min. Worst case (multiple FAILs requiring diagnosis): 3-5 hours.
 
 ## Methodology guardrails (do not skip)
 
 - **Deploy before measure** — Stage 11 measurement runs against LIVE sandybrown page 144. Build + tar deploy + OPcache reset BEFORE Stage 11 invocation. Stale code = stale measurement.
-- **Root cause before instance fix** — if a section regresses, ask "what's the class of failure?" before patching that section. Universal mechanisms (R-22-9), not per-block hyperfocus.
-- **Outcome vs completion** — if Phase 1.4 ships but pixel-diff doesn't drop, the task is NOT done. Don't redefine "done" to mean "code shipped".
-- **/qc-council multi-rater BEFORE Commits 1.3 + 1.4** (converter-adjacent per blub.db 255)
+- **Root cause before instance fix** — if a section FAILs, ask "what's the class of failure?" before patching that section. Universal mechanisms (R-22-9), not per-block hyperfocus.
+- **Outcome vs completion** — if Phase 1.5 ships measurement but cells stay >5%, the task is NOT done. Don't redefine "done" to mean "measurement captured".
+- **/qc-council multi-rater BEFORE any walker fix-shape commit** (converter-adjacent per blub.db 255)
 - **Per-section cropped pixel-diff** via `--selector .sgs-{section}`, never full-page (blub.db 256)
-- **--converter-v2 + --debug-trace + --spec-22-acceptance** on Phase 1 measurement runs (orchestrator now auto-passes `--wait-fonts`)
-- **WP_DEBUG_DISPLAY must stay false** on sandybrown — debug notices contaminate every pixel-diff
-- **R-22-3 enforcement** — walker has exactly 3 conditionals; any 4th branch requires spec amendment
-- **R-22-13** — Bean visual sign-off co-authoritative with script number for Commit 1.5 close
-- **No git stash/reset/restore/checkout** in subagents (blub.db 230)
+- **--converter-v2 + --debug-trace + --spec-22-acceptance** on Phase 1.5 measurement runs
+- **WP_DEBUG_DISPLAY must stay false** on sandybrown — debug notices contaminate every pixel-diff (blub.db 263)
+- **R-22-13** — Bean visual sign-off co-authoritative with script number. Script ≤5% + Bean says "wrong" → not closed. Script >5% + Bean says "visually fine, this is a noise floor issue" → close per Phase 1.5 stretch territory.
+- **R-22-3 PASS test self-runs** — convert.py's `__main__` AST-walks walk() and asserts zero illegal block-slug literals. Any walker fix in Task 4 MUST keep this passing.
+- **No git stash/reset/restore/checkout** in subagents (blub.db row 230)
 
 ## Guardrails — what must not break
 
-- `pipeline-state/_snapshots/sgs-framework-pre-spec22.db` rollback target MUST stay byte-identical (read-only).
-- 39/39 test suite (db_lookup 5/5 + external-derivation 4/4 + wp-blocks-adversarial 30/30) MUST stay PASS through every commit.
-- Triple-NULL DB count = 1090 baseline MUST hold (no behavioural-attr drift).
-- `_retired/convert_pre_spec22.py` is the rollback code reference — do NOT modify post-Task 1.
+- `_retired/convert_pre_spec22.py` rollback target MUST stay byte-identical (read-only)
+- 145+ test suite MUST stay PASS through every commit
+- Triple-NULL DB baseline = 1101 MUST hold (no behavioural-attr drift)
+- The walker's exactly-3-routing-branches structure is binding — adding a 4th is a spec amendment, not a code fix
 
 ## Out-of-scope this session
 
 - Phase 2 (hybrid render.php migrations across 61-block roster) — opens after Phase 1.5 closes
-- Phase 1.5 noise-floor diagnosis — empirically scoped post-Phase-1
-- Header/footer cloner — Phase 2 sibling, parked
-- Cross-client validation (Indus Foods) — Phase 4.2
+- P-TEAM-MEMBER-SCHEMA-ORG-SAMEAS-RESTORATION — SEO regression parked; Phase 2 picks it up
+- P-SUBHEADING-ROUTING-TO-SGS-HEADING — blocked on walker existing (now exists, but routing change is Phase 2 walker work, not Phase 1.5 measurement)
+- 5 pre-existing duplicate parking slugs — separate parking cleanup pass
+- Dashboard at port 5050 restart — separate ops task
