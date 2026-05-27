@@ -9,6 +9,46 @@ primary_goal: "Execute Stream A of Phase 2 (Hybrid Block Migration plan) — 5 s
 
 # Next Session — Spec 22 Phase 2 Stream A (DB-quality pre-pass + corrected Fix 2b)
 
+> ## ⚠ READ THIS BEFORE ANYTHING ELSE ⚠
+>
+> Bean has named a 5+ session repeat-failure pattern: captured lessons exist, agent doesn't operationally apply them, same anti-pattern ships, Bean catches it, cycle repeats. This session's Round 1 hit exactly this — 7 dispatched agents recommended building 5 new bespoke section blocks (flagrant R-22-9 violation; the rule was already captured + Bean P1 locked). See `feedback_lessons_must_be_operationally_surfaced_not_just_archived.md`.
+>
+> **The three structural defences below are operational guards, not advisory notes. Read them; quote them back to yourself before any agent dispatch.**
+
+## Architectural primitive — quote this verbatim before any fix-shape proposal
+
+Per Spec 22 §0 (canonical, plain English): **"Read each div's BEM class, look up which SGS block it equates to in the database, emit that block, recurse into its children. Three precisely-enumerated exceptions are permitted (atomic-tag swap, top-level chrome skip, top-level container wrap — see FR-22-3). No others. Same code for sgs/hero, sgs/product-card, sgs/quote, sgs/text, sgs/media, every BEM-class div in any mockup."**
+
+Per R-22-9 (Bean P1 locked 2026-05-25): **"Universal mechanisms, no per-block hyperfocus."**
+
+Per R-22-14 (Bean P1 locked 2026-05-27 per D92): **"FR-22-6 migrations never carry server-side legacy fallback hacks. Never add `if (empty($content) && !empty($legacy_attr)) { ...legacy scalar render... }`. The hybrid problem is exclusively SGS framework debt; zero core blocks on Phase 0.4 roster. Canonical backwards-compat: full 61-block roster migration + WP-CLI batch existing-post migration."**
+
+## Anti-pattern STOP catalogue — if you find yourself doing X, STOP
+
+| # | If you find yourself proposing | STOP — because |
+|---|---|---|
+| 1 | Building a new bespoke SGS block per mockup section (`sgs/brand`, `sgs/featured-product`, `sgs/gift-section`, etc.) | R-22-9 violation. The framework stays at ~70 reusable primitives. Mockup-section variation comes from `slot_synonyms` DB rows pointing at `sgs/container`, not new code. (Caught Round 1 of THIS session.) |
+| 2 | Adding `if (empty($content) && !empty($legacy_attr)) { ...scalar render... }` to a migrated render.php | R-22-14 violation. The FR-22-6 hybrid problem is exclusively SGS debt. Per-block fallback = 600-1200 lines of dead scalar code across 61 blocks. Backwards-compat via WP-CLI batch existing-post migration script. (Caught Fix 4 Rater B THIS session.) |
+| 3 | Batching multiple DB row changes then measuring once | `row-by-row-measurement-gate-per-db-change` lesson. Aggregate deltas mask per-row attribution. Fix 2 lost +2.34pp because 25+ rows shipped together. Ship one row OR small related batch + Stage 11 measurement between each. |
+| 4 | Running `python seed-slot-synonyms.py` directly without verifying BOTH DBs after | `db-rows-canonical-flow` lesson. Seed writes both DBs by design BUT implementer-verification error caused Fix 2 mirror-DB divergence (claimed both written; didn't query .agents). After every seed run, INDEPENDENTLY query both `~/.claude` and `~/.agents` DBs. |
+| 5 | Routing a section-root BEM class (e.g. `social-proof`, `brand`) to a content-block primitive (`sgs/testimonial-slider`, `sgs/feature-grid`) in slot_synonyms | `section-root-aliases-target-sgs-container-only` lesson. Section roots → `sgs/container` ONLY. Routing to content-block collapses sibling structure (Trustpilot bar absorbed as testimonial child = +21pp regression). Inner BEM elements (`__testimonials`) can target content-blocks. |
+| 6 | Proposing a fix shape without reading the relevant Spec section + flow + stages + active phase plan end-to-end | `read-full-spec-before-proposing-architectural-fix-shape` lesson (2026-05-25). State the architectural primitive in plain English FIRST. If your fix doesn't directly invoke the primitive, it's a surface fix — STOP. (Caught 3+ confidently-wrong diagnoses per prior session.) |
+| 7 | Acting on a load-bearing claim in a doc/prompt/handoff without grep-verifying against the codebase | `grep-verify-handoff-diagnostic-premises` lesson (2026-05-25) + `grep-verify-spec-claims-finds-drift` (2026-05-25). Docs drift; specs claim files that don't exist; handoffs cite line numbers that moved. 60s `find`/`grep`/`ls` BEFORE acting. |
+
+## Pre-flight self-attestation ritual — answer ALL FIVE inline before any agent dispatch or fix-shape proposal
+
+Before dispatching any subagent OR proposing any fix shape, write these out in your response:
+
+1. **What's the architectural primitive in plain English?** (Quote Spec 22 §0 above or rephrase.)
+2. **Which binding rule (R-22-N) governs this fix shape?** Name it explicitly.
+3. **Which captured lessons (feedback_*) apply?** List by filename + cite the load-bearing claim.
+4. **What's the proposed fix shape, in 1-3 sentences?**
+5. **Does it match ANY entry in the Anti-pattern STOP catalogue above?** If yes, the fix shape is wrong; re-anchor on the primitive.
+
+This ritual is non-optional. Skipping it is what caused 5+ sessions of repeat-failure (per the meta-lesson `feedback_lessons_must_be_operationally_surfaced_not_just_archived`).
+
+---
+
 You are coordinating the active Stream A of Phase 2 (Hybrid Block Migration). The walker is shipped (Fix 1 commit `5731dc36`, mean 81.55% → 58.6%); what's blocking further pixel-diff progress is (a) missing slot_synonyms rows for section-internal BEM wrappers (`__content`, `__media`, etc.) causing the walker to collapse them, and (b) 61 hybrid blocks whose render.php ignores `$content`. Stream A addresses (a); Streams B/C/D (currently deferred) address (b).
 
 ## State recap (plain English, no assumed pretext)

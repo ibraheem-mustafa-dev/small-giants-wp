@@ -64,6 +64,22 @@ Phase 1.5 CLOSED with just Fix 1 shipped (walker FR-22-3 #3 ordering, commit 573
 | `.claude/docs-registry.yaml` | Phase 2 plan IN; Phase 1.5 archive trail | `37dd2c79` |
 | `.claude/reports/2026-05-27-phase-1.5-systematic-debugging-synthesis.md` | NEW — Round 2 corrected synthesis | `5731dc36` |
 
+## Anti-pattern STOP catalogue (operationally surfaced — read before any next-session action)
+
+Bean identified a 5+ session repeat-failure pattern this session: captured lessons exist but aren't operationally applied, same anti-patterns re-ship, cycle repeats. Meta-lesson captured: `feedback_lessons_must_be_operationally_surfaced_not_just_archived.md`. The 7 anti-patterns below are the explicit guards. If you find yourself doing X, STOP.
+
+| # | Anti-pattern | Why it's wrong |
+|---|---|---|
+| 1 | Building bespoke per-mockup-section SGS blocks (`sgs/brand`, `sgs/gift-section`, etc.) | R-22-9. Framework stays ~70 primitives. Section variation via `slot_synonyms` DB rows → `sgs/container`. (Caught Round 1 THIS session.) |
+| 2 | Server-side legacy fallback hacks in migrated render.php | R-22-14. FR-22-6 hybrid problem is SGS-exclusive. Backwards-compat via WP-CLI batch existing-post migration script. (Caught Fix 4 Rater B THIS session.) |
+| 3 | Batched multi-row DB changes without per-row measurement | `row-by-row-measurement-gate-per-db-change`. Fix 2 lost +2.34pp via batched 25-row regression. |
+| 4 | Direct `python seed-slot-synonyms.py` execution without verifying BOTH DBs | `db-rows-canonical-flow`. Seed writes both by design BUT implementer-verification error caused Fix 2 mirror-divergence. Query `.claude` AND `.agents` DBs independently. |
+| 5 | Section-root aliases → content-block primitive (e.g. `social-proof → sgs/testimonial-slider`) | `section-root-aliases-target-sgs-container-only`. Section roots → `sgs/container` ONLY. Inner BEM elements (`__testimonials`) can target content-blocks. |
+| 6 | Proposing architectural fix-shape without reading spec + flow + stages + plan end-to-end first | `read-full-spec-before-proposing-architectural-fix-shape` (2026-05-25). State primitive in plain English FIRST. |
+| 7 | Acting on a load-bearing claim in a doc/handoff without grep-verifying the codebase | `grep-verify-handoff-diagnostic-premises` + `grep-verify-spec-claims-finds-drift` (2026-05-25). Docs drift; 60s `find`/`grep`/`ls` BEFORE acting. |
+
+The full pre-flight self-attestation ritual + architectural primitive verbatim quote lives at the top of `.claude/next-session-prompt.md` — read it before any agent dispatch.
+
 ## Notes for Next Session
 
 - **Bean directive: Stream A ONLY** — do not dispatch Stream B implementers until Stream A measurement closes. Streams B/C/D in plan are documentation, not active scope.
